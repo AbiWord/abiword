@@ -1307,7 +1307,7 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 	fp_VerticalContainer* pOldContainer = static_cast<fp_VerticalContainer *>(pOldLine->getContainer());
 	fp_Column * pOldColumn = NULL;
 	fp_Column * pOldLeader = NULL;
-	fp_Page* pOldPage = pOldContainer->getPage();
+	fp_Page* pOldPage = pOldLine->getPage();
 	bool bDocSection = pOldSL->getType() == FL_SECTION_DOC;
 	bool bEndNoteSection =	pOldSL->getType() == FL_SECTION_ENDNOTE;
 	bool bFootnoteSection = pOldSL->getType() == FL_SECTION_FOOTNOTE;
@@ -2965,15 +2965,8 @@ bool FV_View::_drawOrClearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition 
 				{
 					CellLine * pCellLine = new CellLine();
 					pCellLine->m_pCell = pCell;
-					if(!pCell->isInNestedTable())
-					{
-						pCellLine->m_pBrokenTable = pTab;
-					}
-					else
-					{
-						pCellLine->m_pBrokenTable = NULL;
-					}
 					pCellLine->m_pLine = pLine;
+					pCellLine->m_pBrokenTable = pTab;
 					xxx_UT_DEBUGMSG(("cellLine %x cell %x Table %x Line %x \n",pCellLine,pCellLine->m_pCell,pCellLine->m_pBrokenTable,pCellLine->m_pLine));
 					vecTables.addItem(static_cast<void *>(pCellLine));
 				}
@@ -3076,11 +3069,9 @@ bool FV_View::_drawOrClearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition 
 	for(i=0; i< static_cast<UT_sint32>(vecTables.getItemCount()); i++)
 	{
  		CellLine * pCellLine = static_cast<CellLine *>(vecTables.getNthItem(i));
-		if(!pCellLine->m_pCell->isInNestedTable())
-		{
-			pCellLine->m_pCell->drawLines(pCellLine->m_pBrokenTable,getGraphics()); 	
-			pCellLine->m_pCell->drawLinesAdjacent();
-		} 	
+		pCellLine->m_pCell->drawLines(pCellLine->m_pBrokenTable,getGraphics());
+		pCellLine->m_pCell->drawLinesAdjacent();
+
 	}
 	UT_VECTOR_PURGEALL(CellLine *, vecTables);
 	xxx_UT_DEBUGMSG(("Finished Drawing lines in tables \n"));
@@ -3347,7 +3338,7 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 			return;
 		}
 
-		fp_Page* pPointPage = pLine->getContainer()->getPage();
+		fp_Page* pPointPage = pLine->getPage();
 
 		UT_sint32 iPageOffset;
 		getPageYOffset(pPointPage, iPageOffset);

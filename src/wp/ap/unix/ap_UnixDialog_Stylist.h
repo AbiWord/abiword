@@ -44,9 +44,11 @@ public:
 
 private:
 	GtkWidget *		_constructWindow(void);
-	void					_populateWindowData(void);
+	void			_populateWindowData(void);
+	void            _connectSignals(void);
 
 	GtkWidget * m_windowMain;
+	GtkWidget * m_wStyleList;
 };
 
 #endif /* AP_UNIXDIALOG_STYLIST_H */

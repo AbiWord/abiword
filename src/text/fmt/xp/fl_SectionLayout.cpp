@@ -1550,7 +1550,7 @@ void fl_DocSectionLayout::deleteBrokenTablesFromHere(fl_TableLayout * pTL)
 			fp_TableContainer * pTabC = static_cast<fp_TableContainer *>(pTabL->getFirstContainer());
 			if(pTabC != NULL)
 			{
-				pTabC->deleteBrokenTables();
+				pTabC->deleteBrokenTables(true);
 			}
 		}
 		pCL = pCL->getNext();

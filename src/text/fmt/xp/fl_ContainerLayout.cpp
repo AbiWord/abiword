@@ -312,6 +312,13 @@ fl_ContainerLayout * fl_ContainerLayout::insert(PL_StruxDocHandle sdh, fl_Contai
 			fp_TableContainer * pTab = static_cast<fp_TableContainer *>(static_cast<fl_TableLayout *>(pL)->getLastContainer());
 			static_cast<fl_TableLayout *>(pL)->insertTableContainer(static_cast<fp_TableContainer *>(pTab));
 		}
+		if(getContainerType() == FL_CONTAINER_CELL)
+		{
+			fl_CellLayout * pCell = static_cast<fl_CellLayout *>(this);
+			pCell->incNumNestedTables();
+			fl_TableLayout * pTab = static_cast<fl_TableLayout *>(pCell->myContainingLayout());
+			pTab->incNumNestedTables();
+		}
 		break;
 	case FL_CONTAINER_CELL:
 		pL = static_cast<fl_ContainerLayout *>(new fl_CellLayout(getDocLayout(),sdh, indexAP, this));

@@ -46,7 +46,9 @@ XAP_Dialog * AP_UnixDialog_Stylist::static_constructor(XAP_DialogFactory * pFact
 
 AP_UnixDialog_Stylist::AP_UnixDialog_Stylist(XAP_DialogFactory * pDlgFactory,
 												   XAP_Dialog_Id id)
-	: AP_Dialog_Stylist(pDlgFactory,id), m_windowMain(0)
+	: AP_Dialog_Stylist(pDlgFactory,id), 
+	  m_windowMain(NULL),
+	  m_wStyleList(NULL)
 {
 }
 
@@ -92,5 +94,27 @@ void AP_UnixDialog_Stylist::runModeless(XAP_Frame * pFrame)
 
 GtkWidget * AP_UnixDialog_Stylist::_constructWindow(void)
 {
-	return NULL;
+	// get the path where our glade file is located
+	XAP_UnixApp * pApp = static_cast<XAP_UnixApp*>(m_pApp);
+	UT_String glade_path( pApp->getAbiSuiteAppGladeDir() );
+	glade_path += "/ap_UnixDialog_Sylist.glade";
+
+	// load the dialog from the glade file
+	GladeXML *xml = abiDialogNewFromXML( glade_path.c_str() );
+	if (!xml)
+		return NULL;
+	
+	const XAP_StringSet * pSS = m_pApp->getStringSet ();
+
+	m_windowMain   = glade_xml_get_widget(xml, "ap_UnixDialog_WordCount");
+	m_wStyleList  = glade_xml_get_widget(xml,"styleList");
 }
+
+void  AP_UnixDialog_Stylist::_populateWindowData(void)
+{
+}
+
+void  AP_UnixDialog_Stylist::_connectSignals(void)
+{
+}
+

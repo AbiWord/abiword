@@ -143,6 +143,7 @@ public:
 	UT_sint32           getSpannedHeight(void);
 	void                setLineMarkers(void);
 	bool                containsFootnoteReference(void);
+	void                deleteBrokenTables(bool bClearFirst=true);
 	bool                getFootnoteContainers(UT_Vector * pvecFoots);
 	void                getLeftTopOffsets(UT_sint32 & xoff, UT_sint32 & yoff);
    UT_sint32           getLeftAttach(void) const
@@ -231,6 +232,7 @@ public:
 	    {  return m_bDirty;}
 	bool                doesIntersectClip(fp_TableContainer * pBroke, UT_Rect * rClip);
 	bool                isInNestedTable(void);
+	bool                containsNestedTables(void);
 #ifdef FMT_TEST
 	void				__dump(FILE * fp) const;
 #endif
@@ -343,9 +345,11 @@ public:
 	void				layout(void);
 	virtual void        setY(UT_sint32 iY);
 	virtual UT_sint32   getHeight(void);
+	virtual void        setHeight(UT_sint32 iHeight);
 	virtual void        setContainer(fp_Container * pContainer);
 	virtual void		draw(dg_DrawArgs*);
 	virtual void		draw(GR_Graphics*) {}
+	fp_Column *         getBrokenColumn(void);
 	void                drawLines();
 	bool                containsFootnoteReference(void);
 	bool                getFootnoteContainers(UT_Vector * pvecFoots);
@@ -356,6 +360,7 @@ public:
 	virtual UT_sint32   wantVBreakAt(UT_sint32);
 	virtual UT_sint32   wantHBreakAt(UT_sint32) {return 0;}
 	virtual fp_ContainerObject * VBreakAt(UT_sint32);
+	void                breakCellsAt(UT_sint32 vpos);
 	virtual fp_ContainerObject * HBreakAt(UT_sint32) {return NULL;}
 	UT_sint32           getBrokenNumber(void);
 	void                setToAllocation(void);
@@ -411,7 +416,7 @@ public:
 	fp_TableContainer * getLastBrokenTable(void) const;
 	void                setFirstBrokenTable(fp_TableContainer * pBroke);
 	void                setLastBrokenTable(fp_TableContainer * pBroke);
-	void                deleteBrokenTables(bool bClearFirst=true);
+	void                deleteBrokenTables(bool bClearFirst, bool bRecurseUp = true);
 	void                adjustBrokenTables(void);
 	UT_sint32           getNumRows(void) const;
 	UT_sint32           getNumCols(void) const;
@@ -424,6 +429,7 @@ public:
 	fp_TableRowColumn *     getNthRow(UT_sint32 i);
 	UT_sint32               getBrokenTop(void);
 	UT_sint32               getBrokenBot(void);
+	bool                    containsNestedTables(void);
 	void                    setBrokenTop(UT_sint32 iTop) 
 		{ m_iBrokenTop = iTop;}
 	void                    setBrokenBot(UT_sint32 iBot) 

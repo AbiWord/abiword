@@ -198,6 +198,9 @@ UT_sint32                    getBottomOffset(void) const;
 	const PP_PropertyMap::Line & getLeftStyle ()   const { return m_lineLeft; }
 	const PP_PropertyMap::Line & getRightStyle ()  const { return m_lineRight; }
 	const PP_PropertyMap::Line & getTopStyle ()    const { return m_lineTop; }
+	UT_sint32                getNumNestedTables(void) const;
+	void                     incNumNestedTables(void);
+	void                     decNumNestedTables(void);
 
 protected:
 	virtual void		        _lookupProperties(void);
@@ -242,6 +245,7 @@ private:
 	PP_PropertyMap::Line   m_lineLeft;
 	PP_PropertyMap::Line   m_lineRight;
 	PP_PropertyMap::Line   m_lineTop;
+	UT_sint32              m_iNumNestedTables;
 };
 
 
@@ -291,6 +295,10 @@ public:
 UT_sint32                    getRightOffset(void) const;
 	UT_sint32                getTopOffset(void) const;
 UT_sint32                    getBottomOffset(void) const;
+	UT_sint32                getNumNestedTables(void) const;
+	void                     incNumNestedTables(void);
+	void                     decNumNestedTables(void);
+
 protected:
 	virtual void		     _lookupProperties(void);
 	virtual void             _purgeLayout(void);
@@ -324,6 +332,7 @@ private:
 
 	void                   _updateCell(void);
 	void                   _localCollapse();
+	UT_sint32              m_iNumNestedTables;
 };
 
 ///

@@ -932,7 +932,7 @@ void fp_Run::Run_ClearScreen(bool bFullLineHeightRect)
 	{
 		return;
 	}
-
+	markAsDirty();
 	if (m_bIsCleared)
 	{
 		// no need to clear if we've already done so.
@@ -954,7 +954,6 @@ void fp_Run::Run_ClearScreen(bool bFullLineHeightRect)
 
 			// make sure we only get erased once
 			_setDirty(true);
-			markAsDirty();
 			m_bIsCleared = true;
 		}
 		else

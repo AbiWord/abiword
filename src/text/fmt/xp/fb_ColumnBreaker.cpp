@@ -180,7 +180,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 //
 // Rebreak it
 //
-						pVTab->deleteBrokenTables();
+						pVTab->deleteBrokenTables(true,true);
 						pVTab->VBreakAt(0);
 						pVTab->setLastWantedVBreak(iBreakAt);
 					}
@@ -842,7 +842,7 @@ bool fb_ColumnBreaker::_breakTable(fp_Container*& pOffendingContainer,
 // This is the first of this table set. Clear the old broken tables
 // and rebreak.
 //
-		pTab->deleteBrokenTables();
+		pTab->deleteBrokenTables(true,true);
 		bDoTableBreak = true;
 		xxx_UT_DEBUGMSG(("SEVIOR: Need Table Break 1 \n"));
 		xxx_UT_DEBUGMSG(("firstbroke %x lastbroke %x \n",pTab->getFirstBrokenTable(),pTab->getLastBrokenTable()));
@@ -892,7 +892,7 @@ bool fb_ColumnBreaker::_breakTable(fp_Container*& pOffendingContainer,
 			{
 				xxx_UT_DEBUGMSG(("SEVIOR: Container of next %d \n",pNext->getContainerType()));
 			}
-			pTab->deleteBrokenTables();
+			pTab->deleteBrokenTables(true,true);
 			pTab->VBreakAt(0);
 		}
 //

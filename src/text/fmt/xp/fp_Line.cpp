@@ -269,33 +269,7 @@ fp_Container * fp_Line::getColumn(void)
 	}
 
 	fp_CellContainer * pCell = static_cast<fp_CellContainer *>(pCon);
-	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pCell->getContainer());
-	if(pTab == NULL)
-	{
-	  return NULL;
-	}
-	UT_ASSERT(pTab->getContainerType() == FP_CONTAINER_TABLE);
-	fp_TableContainer * pBroke = pTab->getFirstBrokenTable();
-	if(pBroke == NULL)
-	{
-		return pCon->getColumn();
-	}
-	bool bFound = false;
-
-	while(pBroke && !bFound)
-	{
-		if(pBroke->isInBrokenTable(pCell,this))
-		{
-			bFound = true;
-			break;
-		}
-		pBroke = static_cast<fp_TableContainer *>(pBroke->getNext());
-	}
-	if(bFound)
-	{
-		return pBroke->getColumn();
-	}
-	return pCon->getColumn();
+	return pCell->getColumn(this);
 }
 
 /*!
@@ -303,7 +277,15 @@ fp_Container * fp_Line::getColumn(void)
  */
 fp_Page * fp_Line::getPage(void)
 {
-	return getColumn()->getPage();
+	fp_Container * pCon = getColumn();
+	if(pCon)
+	{
+		return pCon->getPage();
+	}
+	else
+	{
+		return NULL;
+	}
 }
 
 
@@ -1840,7 +1822,7 @@ void fp_Line::layout(void)
 			the normal direction.
 	*/
 
-	UT_DEBUGMSG(("fp_Line::layout (0x%x)\n",this));
+	xxx_UT_DEBUGMSG(("fp_Line::layout (0x%x)\n",this));
 
 	// first of all, work out the height
 	recalcHeight();

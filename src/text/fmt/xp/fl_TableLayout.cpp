@@ -94,7 +94,8 @@ fl_TableLayout::fl_TableLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh,
 	  m_iLeftColPos(0),
 	  m_bRecursiveFormat(false),
 	  m_iRowHeightType(FL_ROW_HEIGHT_NOT_DEFINED),
-	  m_iRowHeight(0)
+	  m_iRowHeight(0),
+	  m_iNumNestedTables(0)
 {
 	UT_DEBUGMSG(("Created Table Layout %x \n",this));
 	UT_ASSERT(pLayout);
@@ -142,6 +143,23 @@ void fl_TableLayout::createTableContainer(void)
 //
 // The container of the tbale is set in getNewContainer()
 //
+}
+
+
+UT_sint32 fl_TableLayout::getNumNestedTables(void) const
+{
+	return m_iNumNestedTables;
+}
+
+
+void fl_TableLayout::incNumNestedTables(void)
+{
+	m_iNumNestedTables++;
+}
+
+void fl_TableLayout::decNumNestedTables(void)
+{
+	m_iNumNestedTables--;
 }
 
 /*!
@@ -331,7 +349,7 @@ void fl_TableLayout::format(void)
 		static_cast<fp_TableContainer *>(getFirstContainer())->layout();
 		UT_DEBUGMSG(("SEVIOR: Layout pass 2 \n"));
 		setNeedsRedraw();
-		markAllRunsDirty();
+   		markAllRunsDirty();
 		m_bIsDirty = false;
 	}
 //	m_bNeedsReformat = m_bIsDirty;
@@ -341,11 +359,17 @@ void fl_TableLayout::format(void)
 		UT_DEBUGMSG(("SEVIOR: After format in TableLayout need another format \n"));
 	}
 	UT_sint32 iNewHeight = -10;
+	bool isBroken = false;
 	if(getFirstContainer())
 	{
 		iNewHeight = getFirstContainer()->getHeight();
+		fp_TableContainer * pTab = static_cast<fp_TableContainer *>(getFirstContainer());
+		if(pTab->getFirstBrokenTable() != NULL)
+		{
+			isBroken = true;
+		}
 	}
-	if(iNewHeight != iOldHeight)
+	if((iNewHeight != iOldHeight)  || !isBroken)
 	{
 		//
 		// Set a section break.
@@ -378,6 +402,7 @@ void fl_TableLayout::markAllRunsDirty(void)
 	{
 		return;
 	}
+	setDirty();
 	fl_ContainerLayout*	pCL = getFirstLayout();
 	while (pCL)
 	{
@@ -1176,11 +1201,18 @@ bool fl_TableLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)
 {
 	UT_ASSERT(pcrx->getType()==PX_ChangeRecord::PXT_DeleteStrux);
 	UT_ASSERT(pcrx->getStruxType()== PTX_SectionTable);
-
+	fl_ContainerLayout * pCL = myContainingLayout();
+	if(pCL->getContainerType() == FL_CONTAINER_CELL)
+	{
+		fl_CellLayout * pCell = static_cast<fl_CellLayout *>(pCL);
+		pCell->decNumNestedTables();
+		fl_TableLayout * pTab = static_cast<fl_TableLayout *>(pCell->myContainingLayout());
+		pTab->decNumNestedTables();
+	}
 	xxx_UT_DEBUGMSG(("SEVIOR: !!!!!!!! Doing table delete strux!! \n"));
 	fl_ContainerLayout * pPrev = getPrev();
 	fl_ContainerLayout * pNext = getNext();
-
+	
 	collapse();
 
 	if(pPrev != NULL)
@@ -1271,7 +1303,8 @@ fl_CellLayout::fl_CellLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_At
 	  m_iTopAttach(0),
 	  m_iBottomAttach(1),
 	  m_bCellPositionedOnPage(false),
-	  m_iCellHeight(0)
+	  m_iCellHeight(0),
+	  m_iNumNestedTables(0)
 {
 	createCellContainer();
 }
@@ -1343,6 +1376,21 @@ void fl_CellLayout::createCellContainer(void)
 
 }
 
+UT_sint32 fl_CellLayout::getNumNestedTables(void) const
+{
+	return m_iNumNestedTables;
+}
+
+
+void fl_CellLayout::incNumNestedTables(void)
+{
+	m_iNumNestedTables++;
+}
+
+void fl_CellLayout::decNumNestedTables(void)
+{
+	m_iNumNestedTables--;
+}
 
 /*!
  * This method sets all the parameters of the cell container from
