@@ -68,8 +68,7 @@ fp_TextRun::fp_TextRun(fl_BlockLayout* pBL,
 	m_bIsOverhanging(false),
 	m_bKeepWidths(false),
 	m_pItem(NULL),
-	m_pRenderInfo(NULL),
-	m_eScriptType(GRScriptType_Undefined)
+	m_pRenderInfo(NULL)
 {
 	_setField(NULL);
 
@@ -1028,6 +1027,11 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 		m_pRenderInfo->m_iLength = getLength();
 		m_pRenderInfo->split(pNew->m_pRenderInfo, iSplitOffset - getBlockOffset(), bReverse);
 	}
+
+	if(m_pItem)
+	{
+		pNew->m_pItem = m_pItem->makeCopy();
+	}
 	
 	setLength(iSplitOffset - getBlockOffset(), false);
 
@@ -1809,14 +1813,15 @@ bool fp_TextRun::_refreshDrawBuffer()
 
 	if(iLen && bRefresh)
 	{
+		UT_return_val_if_fail(m_pItem, false);
+
 		FriBidiCharType iVisDir = getVisDirection();
 		PD_StruxIterator text(getBlock()->getStruxDocHandle(),
 							  getBlockOffset() + fl_BLOCK_STRUX_OFFSET);
 
-		GR_ShapingInfo si(text,iLen, GRScriptType_Undefined, m_pLanguage, iVisDir,
-						  GR_Font::s_doesGlyphExist, (void*)getFont(),
+		GR_ShapingInfo si(text,iLen, m_pLanguage, iVisDir,
 						  m_pRenderInfo ? m_pRenderInfo->m_eShapingResult : GRSR_Unknown,
-						  _getFont());
+						  _getFont(), m_pItem);
 
 		getGraphics()->shape(si, m_pRenderInfo);
 		

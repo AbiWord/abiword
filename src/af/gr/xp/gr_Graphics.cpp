@@ -868,12 +868,12 @@ bool GR_Graphics::itemize(UT_TextIterator & text, GR_Itemization & I)
 */
 bool GR_Graphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& pri)
 {
-	if(si.m_Type == GRScriptType_Void)
+	if(!si.m_pItem || si.m_pItem->getType() == GRScriptType_Void)
 		return false;
 
 	if(!pri)
 	{
-		pri = new GR_XPRenderInfo(si.m_Type);
+		pri = new GR_XPRenderInfo(si.m_pItem->getType());
 		UT_return_val_if_fail(pri, false);
 		pri->m_pGraphics = this;
 	}
@@ -898,7 +898,7 @@ bool GR_Graphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& pri)
 	}
 
 	pRI->m_iLength = si.m_iLength;
-	pRI->m_eScriptType = si.m_Type;
+	pRI->m_eScriptType = si.m_pItem->getType();
 	
 	if(si.m_eShapingRequired == GRSR_None)
 	{
@@ -907,13 +907,13 @@ bool GR_Graphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& pri)
 		// copyString()
 		pRI->m_eShapingResult = cg.copyString(si.m_Text,pRI->m_pChars, si.m_iLength, si.m_pLang,
 											  si.m_iVisDir,
-											  si.m_isGlyphAvailable, si.m_param);
+											  GR_Font::s_doesGlyphExist, si.m_pFont);
 	}
 	else
 	{
-		pRI->m_eShapingResult = cg.renderString(si.m_Text,pRI->m_pChars, si.m_iLength,si.m_pLang,
+		pRI->m_eShapingResult = cg.renderString(si.m_Text,pRI->m_pChars, si.m_iLength, si.m_pLang,
 												si.m_iVisDir,
-												si.m_isGlyphAvailable, si.m_param);
+												GR_Font::s_doesGlyphExist, si.m_pFont);
 	}
 
 	pRI->m_eState = GRSR_BufferClean;

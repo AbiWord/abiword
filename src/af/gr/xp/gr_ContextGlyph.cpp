@@ -1252,12 +1252,12 @@ GlyphContext GR_ContextGlyph::_evalGlyphContext(UT_TextIterator & text, UT_sint3
     returns value indicating what kind of characters this text contained
  */
 GRShapingResult GR_ContextGlyph::renderString(UT_TextIterator & text,
-								   UT_UCSChar *dest,
-								   UT_uint32 len,
-								   const XML_Char   * pLang,
-							       FriBidiCharType    iDirection,
-								   bool (*isGlyphAvailable)(UT_UCS4Char g, void * param),
-								   void * fparam) const
+											  UT_UCSChar *dest,
+											  UT_uint32 len,
+											  const XML_Char   * pLang,
+											  FriBidiCharType    iDirection,
+											  bool (*isGlyphAvailable)(UT_UCS4Char g, void * param),
+											  void * fparam) const
 {
 	UT_return_val_if_fail(text.getStatus() == UTIter_OK, GRSR_Error);
 	UT_return_val_if_fail(dest, GRSR_Error);

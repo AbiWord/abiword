@@ -288,32 +288,30 @@ class GR_ShapingInfo
 {
   public:
 	GR_ShapingInfo(UT_TextIterator & text, UT_uint32 iLen,
-				   GR_ScriptType type, const char * pLang,
+				   const char * pLang,
 				   FriBidiCharType iVisDir,
-				   bool (*isGlyphAvailable)(UT_UCS4Char g, void * custom),
-				   void * param, GRShapingResult eShapingRequired,
-				   GR_Font * pFont)
-		:m_Text(text), m_Type(type), m_iLength(iLen), m_pLang(pLang), m_iVisDir(iVisDir),
-	     m_isGlyphAvailable(isGlyphAvailable), m_param(param),
+				   GRShapingResult eShapingRequired,
+				   GR_Font * pFont,
+				   GR_Item * pItem)
+		:m_Text(text), m_iLength(iLen), m_pLang(pLang), m_iVisDir(iVisDir),
 		 m_eShapingRequired(eShapingRequired),
 	     m_pFont(pFont),
-	     m_iJustifyBy(0){};
+	     m_iJustifyBy(0),
+	     m_pItem(pItem){};
 	
 	virtual ~GR_ShapingInfo() {};
 
 	UT_TextIterator &   m_Text;
-	GR_ScriptType       m_Type;
 	UT_uint32           m_iLength;
 	const char *        m_pLang;
 	FriBidiCharType     m_iVisDir;
-	bool (*m_isGlyphAvailable)(UT_UCS4Char g, void * custom);
-	void *              m_param;
 	GRShapingResult     m_eShapingRequired;
 
 	GR_Font *           m_pFont;
 
 	UT_uint32           m_iJustifyBy;
-	
+
+	GR_Item *           m_pItem;
 };
 
 

@@ -104,8 +104,6 @@ public:
 												  | (UT_uint32)eR);
 	                      }
 
-	GR_ScriptType       getScriptType() const {return m_eScriptType;}
-	void                setScriptType(GR_ScriptType eType) {m_eScriptType = eType;}
 	void                setItem(GR_Item * i) {m_pItem = i;}
 	GR_Item *           getItem() const {return m_pItem;}
 	
@@ -191,14 +189,6 @@ private:
 
 	GR_Item *               m_pItem;
 	GR_RenderInfo   *       m_pRenderInfo;
-
-	// This is a bit of a nusaince: we obtain the script type from the
-	// itemize() step, but we only create m_pRenderInfo at the shape()
-	// step, so we need to keep the type value somewhere until it can
-	// be stored in m_pRenderInfo (I do not see any easy way around
-	// that, since we have no way of instantiating m_pRenderInfo,
-	// because the instance has to be platform-specific).
-	GR_ScriptType           m_eScriptType;
 };
 
 #endif /* FP_TEXTRUN_H */
