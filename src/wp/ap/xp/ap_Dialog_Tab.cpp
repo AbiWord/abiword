@@ -324,13 +324,14 @@ void AP_Dialog_Tab::_event_ClearAll(void)
 	FV_View *pView = (FV_View *)m_pFrame->getCurrentView();
 
 	delete m_pszTabStops;
-	m_pszTabStops = NULL;
+	m_pszTabStops = new char [1]; m_pszTabStops[0] = 0;
 	buildTabStops(pView->getGraphics(), m_pszTabStops, m_tabInfo);
 
 	_clearList();
 
 	// something changed...
 	_event_somethingChanged();
+	delete m_pszTabStops;
 }
 
 /*static*/ unsigned char AP_Dialog_Tab::AlignmentToChar( eTabType a )
