@@ -2233,7 +2233,8 @@ bool IE_Imp_RTF::StuffCurrentGroup(UT_ByteBuf & buf)
 	return true;
 }
 
-static iegftForRTF(IE_Imp_RTF::PictFormat format)
+static IEGraphicFileType
+iegftForRTF(IE_Imp_RTF::PictFormat format)
 {
 	switch (format) 
 		{
