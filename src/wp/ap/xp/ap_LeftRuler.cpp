@@ -226,11 +226,16 @@ void AP_LeftRuler::mousePress(EV_EditModifierState /* ems */, EV_EditMouseButton
 
 	if(m_pView == NULL || m_pView->getPoint() == 0)
 		return;
+	FV_View * pView = static_cast<FV_View *>(m_pView);
+    if(pView->getDocument()->isPieceTableChanging())
+	{
+		return;
+	}
 	xxx_UT_DEBUGMSG(("LeftRuler: In mouse press x %d y %d\n",x,y));
 	m_bValidMouseClick = false;
 	m_draggingWhat = DW_NOTHING;
 	m_bEventIgnored = false;
-	FV_View * pView = static_cast<FV_View *>(m_pView);
+
 	GR_Graphics * pG = pView->getGraphics();
 	pView->getLeftRulerInfo(&m_infoCache);
 	UT_ASSERT(m_infoCache.m_yTopMargin >= 0);
@@ -262,7 +267,6 @@ void AP_LeftRuler::mousePress(EV_EditModifierState /* ems */, EV_EditMouseButton
 
  	if (rBottomMargin.containsPoint(x,y))
  	{
-		FV_View *pView = static_cast<FV_View *>(m_pView);
 
  		m_bValidMouseClick = true;
  		m_draggingWhat = DW_BOTTOMMARGIN;
@@ -316,6 +320,15 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 	{
 		return;
 	}
+	if(pView->getDocument() == NULL)
+	{
+		return;
+	}
+	if(pView->getDocument()->isPieceTableChanging())
+	{
+		return;
+	}
+
 	if (!m_bValidMouseClick || m_bEventIgnored)
 	{
 		m_draggingWhat = DW_NOTHING;
@@ -770,6 +783,14 @@ UT_sint32 AP_LeftRuler::setTableLineDrag(PT_DocPosition pos, UT_sint32 & iFixed,
 	{
 		return 0;
 	}
+	if(pView->getDocument() == NULL)
+	{
+		return 0;
+	}
+	if(pView->getDocument()->isPieceTableChanging())
+	{
+		return 0;
+	}
 	pView->getLeftRulerInfo(pos,&m_infoCache);
 	UT_ASSERT(m_infoCache.m_yTopMargin >= 0);
 
@@ -834,6 +855,14 @@ void AP_LeftRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 
 		{
 			m_pG->setCursor( GR_Graphics::GR_CURSOR_WAIT);
 		}
+		return;
+	}
+	if(pView->getDocument() == NULL)
+	{
+		return;
+	}
+	if(pView->getDocument()->isPieceTableChanging())
+	{
 		return;
 	}
 	if(!m_bValidMouseClick)
@@ -1180,6 +1209,16 @@ bool AP_LeftRuler::notify(AV_View * pView, const AV_ChangeMask mask)
 	// Handle AV_Listener events on the view.
 
 	UT_ASSERT(pView==m_pView);
+	FV_View * pVView = static_cast<FV_View *>(m_pView);
+
+	if(pVView->getDocument() == NULL)
+	{
+		return false;
+	}
+	if(pVView->getDocument()->isPieceTableChanging())
+	{
+		return false;
+	}
 
 	// If the caret has moved to a different page or any of the properties
 	// on the page (such as the margins) have changed, we force a redraw.
@@ -1221,6 +1260,15 @@ void AP_LeftRuler::scrollRuler(UT_sint32 yoff, UT_sint32 ylimit)
 {
 	UT_Rect rClip;
 	UT_Rect * prClip;
+	FV_View * pView = static_cast<FV_View *>(m_pView);
+	if(pView->getDocument() == NULL)
+	{
+		return;
+	}
+	if(pView->getDocument()->isPieceTableChanging())
+	{
+		return;
+	}
 
 	if (ylimit > 0)
 		m_yScrollLimit = ylimit;
@@ -1589,13 +1637,24 @@ void AP_LeftRuler::_drawCellMark(UT_Rect *prDrag, bool bUp)
 
 void AP_LeftRuler::draw(const UT_Rect * pClipRect)
 {
-	if (!m_pView)
+
+	FV_View * pView = static_cast<FV_View *>(m_pView);
+	if (!pView)
 		return;
-	if(m_pView->getPoint() == 0)
+	if(pView->getPoint() == 0)
 	{
 		return;
 	}
-	(static_cast<FV_View *>(m_pView))->getLeftRulerInfo(&m_tempInfo);
+
+	if(pView->getDocument() == NULL)
+	{
+		return;
+	}
+	if(pView->getDocument()->isPieceTableChanging())
+	{
+		return;
+	}
+	pView->getLeftRulerInfo(&m_tempInfo);
 	
 // lfi will be reference to m_lfi which will be deleted before taking this.
 // value. This prevents a memory leak.

@@ -59,6 +59,7 @@ fp_MathRun::fp_MathRun(fl_BlockLayout* pBL,
 
 fp_MathRun::~fp_MathRun(void)
 {
+
   // LUCA: It is fundamental to do this before the MathView object
   // gets destroyed to avoid resuscitating it
   m_pMathView->resetRootElement();
@@ -104,7 +105,10 @@ void fp_MathRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	UT_DEBUGMSG(("MATH ML string is... \n %s \n",m_sMathML.utf8_str()));
 
 // Load this into MathView
-	if(m_pMathView == NULL)
+
+	// LUCA: It is fundamental to do this before the MathView object
+	// gets destroyed to avoid resuscitating it
+	if(	m_pMathView == NULL)
 	{
 		m_pMathView = libxml2_MathView::create();
 		m_pMathView->setLogger(getLogger());

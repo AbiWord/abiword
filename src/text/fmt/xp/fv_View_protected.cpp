@@ -4593,8 +4593,8 @@ UT_Error FV_View::_deleteBookmark(const char* szName, bool bSignal, PT_DocPositi
 		// Signal PieceTable Changes have finished
 		if(bSignal)
 		{
-			_generalUpdate();
 			_restorePieceTableState();
+			_generalUpdate();
 		}
 	}
 	else
@@ -4691,8 +4691,8 @@ UT_Error FV_View::_deleteHyperlink(PT_DocPosition &pos1, bool bSignal)
 	// Signal PieceTable Changes have finished
 	if(bSignal)
 	{
-		_generalUpdate();
 		_restorePieceTableState();
+		_generalUpdate();
 	}
 	return true;
 }
@@ -5253,15 +5253,15 @@ bool FV_View::_charInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce)
 		}
 	}
 
+	// Signal PieceTable Changes have finished
+	_restorePieceTableState();
+
 	_generalUpdate();
 
 
 	// restore updates and clean up dirty lists
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
-
-	// Signal PieceTable Changes have finished
-	_restorePieceTableState();
 
 	_setPoint(getPoint());
 	_fixInsertionPointCoords();

@@ -600,7 +600,7 @@ BOOL AP_Win32Dialog_PageSetup::_onCommandTab(HWND hWnd, WPARAM wParam, LPARAM lP
 		{
 			char buf[BUFSIZE];
 			GetDlgItemText( hWnd, wId, buf, BUFSIZE );
-			if( atoi(buf) >= 0.0 && atoi(buf) != getPageScale() )
+			if( atoi(buf) >= 1.0 && atoi(buf) <= 1000.0 && atoi(buf) != getPageScale() )
 			{
 				setPageScale( atoi(buf) );
 

@@ -7759,18 +7759,27 @@ UT_return_val_if_fail(pDialog, false);
 	//
 	// Set first page of the dialog properties.
 	//
-	if (orig_def == fp_PageSize::psCustom)
-	{
-		orig_ut = pDoc->m_docPageSize.getDims();
-		orig_ht = pDoc->m_docPageSize.Width(orig_ut);
-		orig_wid = pDoc->m_docPageSize.Height(orig_ut);
-		pSize.Set(orig_ht, orig_wid, orig_ut);
-	}
-	pDialog->setPageSize(pSize);
 	AP_Dialog_PageSetup::Orientation orig_ori,final_ori;
 	orig_ori =	AP_Dialog_PageSetup::PORTRAIT;
 	if(pDoc->m_docPageSize.isPortrait() == false)
+	{
 		orig_ori = AP_Dialog_PageSetup::LANDSCAPE;
+	}
+	if (orig_def == fp_PageSize::psCustom)
+	{
+		orig_ut = pDoc->m_docPageSize.getDims();
+		orig_wid = pDoc->m_docPageSize.Width(orig_ut);
+		orig_ht = pDoc->m_docPageSize.Height(orig_ut);
+		if(orig_ori == AP_Dialog_PageSetup::LANDSCAPE)
+		{
+			pSize.Set(orig_ht, orig_wid, orig_ut);
+		}
+		else
+		{
+			pSize.Set(orig_wid, orig_ht, orig_ut);
+		}
+	}
+	pDialog->setPageSize(pSize);
 	pDialog->setPageOrientation(orig_ori);
 	UT_Dimension orig_unit,final_unit,orig_margu,final_margu;
 	double orig_scale,final_scale;
@@ -7891,6 +7900,7 @@ UT_return_val_if_fail(pDialog, false);
 	final_ori = pDialog->getPageOrientation();
 	final_unit = pDialog->getPageUnits();
 	final_scale = pDialog->getPageScale()/100.0;
+	pSize.Set(final_def,final_unit);
 
 	if (final_def == fp_PageSize::psCustom)
 	{
@@ -7904,24 +7914,39 @@ UT_return_val_if_fail(pDialog, false);
 		//
 		// Set the new Page Stuff
 		//
- 		pDoc->m_docPageSize.Set(pSize.PredefinedToName(final_def));
- 		pDoc->m_docPageSize.Set(final_unit);
+ 		pDoc->m_docPageSize.Set(final_def,final_unit);
 
+		bool p = (final_ori == AP_Dialog_PageSetup::PORTRAIT);
 		if (final_def == fp_PageSize::psCustom)
 		{
 			pDoc->m_docPageSize.Set(final_wid,
 									final_ht,
 									final_ut);
+			pDoc->m_docPageSize.Set(final_def,final_ut);
 		}
-
-		bool p = (final_ori == AP_Dialog_PageSetup::PORTRAIT);
-		if( p == true)
+		if( p == true )
 		{
 			pDoc->m_docPageSize.setPortrait();
 		}
 		else
 		{
 			pDoc->m_docPageSize.setLandscape();
+		}
+//
+// Landscape out and custom then swap
+//
+		if(!p && (final_def == fp_PageSize::psCustom))
+		{
+			final_ut = pDialog->getPageSize().getDims();
+			final_wid = pDialog->getPageSize().Width(final_ut);
+			final_ht = pDialog->getPageSize().Height(final_ut);
+//
+// Page size swaps width for height in landscape orientation.
+//
+			pDoc->m_docPageSize.Set(final_ht,
+									final_wid,
+									final_ut);
+			pDoc->m_docPageSize.Set(final_def,final_ut);
 		}
 		pDoc->m_docPageSize.setScale(final_scale);
 
@@ -9523,7 +9548,8 @@ Defun(style)
 	
 	UT_UTF8String utf8(pCallData->m_pData, pCallData->m_dataLength);
 	const XML_Char * style = reinterpret_cast<const XML_Char *>(utf8.utf8_str());
-	pView->setStyle(style);
+	pView->setStyle(style,false);
+	pView->notifyListeners(AV_CHG_MOTION  | AV_CHG_HDRFTR);
 	
 	return true;
 }
@@ -9959,7 +9985,7 @@ Defun1(toggleIndent)
 	  return true;
 
   fl_BlockLayout * pBL = pView->getCurrentBlock();
-  if(pBL && pBL->isListItem() || !pView->isSelectionEmpty() )
+  if(pBL && (!pBL->isListItem() || !pView->isSelectionEmpty()) )
   {
 	  doLists = false;
   }
@@ -9990,7 +10016,7 @@ Defun1(toggleUnIndent)
   if ( allowed <= 0. )
 	  return true ;
 
-  if(pBL && !pBL->isListItem() || !pView->isSelectionEmpty() )
+  if(pBL && (!pBL->isListItem() || !pView->isSelectionEmpty()) )
   {
 	 doLists = false;
   }
@@ -10199,7 +10225,8 @@ Defun1(setStyleHeading1)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	const XML_Char * style = "Heading 1";
-	pView->setStyle(style);
+	pView->setStyle(style,false);
+	pView->notifyListeners(AV_CHG_MOTION | AV_CHG_HDRFTR);
 	return true;
 }
 
@@ -10209,7 +10236,8 @@ Defun1(setStyleHeading2)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	const XML_Char * style = "Heading 2";
-	pView->setStyle(style);
+	pView->setStyle(style,false);
+	pView->notifyListeners(AV_CHG_MOTION | AV_CHG_HDRFTR);
 	return true;
 }
 
@@ -10218,7 +10246,8 @@ Defun1(setStyleHeading3)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	const XML_Char * style = "Heading 3";
-	pView->setStyle(style);
+	pView->setStyle(style,false);
+	pView->notifyListeners(AV_CHG_MOTION | AV_CHG_HDRFTR);
 	return true;
 }
 

@@ -97,18 +97,21 @@ GnomePrintConfig * XAP_UnixGnomePrintGraphics::s_setup_config (XAP_Frame * pFram
 	gnome_print_config_set (cfg, reinterpret_cast<const guchar *>(GNOME_PRINT_KEY_PAGE_ORIENTATION) ,
 							pView->getPageSize().isPortrait () ? reinterpret_cast<const guchar *>("R0") : reinterpret_cast<const guchar *>("R90"));
 
-	if (!strcmp (pView->getPageSize().getPredefinedName (), "Custom")) {
-		const GnomePrintUnit * to  = gnome_print_unit_get_by_abbreviation (reinterpret_cast<const guchar*>("Pt"));
+	if (!strcmp (pView->getPageSize().getPredefinedName (), "Custom")) 
+	{
+
 		const GnomePrintUnit *from = gnome_print_unit_get_by_abbreviation (reinterpret_cast<const guchar*>("mm"));
 		
 		double width, height;
 		width = pView->getPageSize().Width (DIM_MM);
 		height = pView->getPageSize().Height (DIM_MM);
-
-		gnome_print_convert_distance (&width, from, to);
+		if(!pView->getPageSize().isPortrait())
+		{
+			height = pView->getPageSize().Width (DIM_MM);
+			width = pView->getPageSize().Height (DIM_MM);
+		}
 		gnome_print_config_set_length (cfg, reinterpret_cast<const guchar*>(GNOME_PRINT_KEY_PAPER_WIDTH), width, from);
 		
-		gnome_print_convert_distance (&height, from, to);
 		gnome_print_config_set_length (cfg, reinterpret_cast<const guchar*>(GNOME_PRINT_KEY_PAPER_HEIGHT), height, from);
 	}
 

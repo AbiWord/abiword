@@ -39,6 +39,7 @@ public:
 	virtual void event_PageSizeChanged (fp_PageSize::Predefined pageSize);
 	virtual void event_PageUnitsChanged ();
 	virtual void event_MarginUnitsChanged ();
+	void event_LandscapeChanged(void);
 
 	void doWidthEntry(void);
 	void doHeightEntry(void);

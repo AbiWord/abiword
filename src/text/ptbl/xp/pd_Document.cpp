@@ -2938,10 +2938,25 @@ bool PD_Document::getNextStruxOfType(PL_StruxDocHandle sdh,PTStruxType pts,
 	const pf_Frag_Strux * pfs = static_cast<const pf_Frag_Strux *>(sdh);
 	UT_return_val_if_fail (pfs, false);
 	pfs = static_cast<pf_Frag_Strux *>(pfs->getNext());
+	UT_sint32 iNest = 0;
 	for (const pf_Frag * pf=pfs; (pf); pf=pf->getNext())
 		if (pf->getType() == pf_Frag::PFT_Strux)
 		{
 			const pf_Frag_Strux * pfsTemp = static_cast<const pf_Frag_Strux *>(pf);
+			if((pfsTemp->getStruxType() == PTX_SectionTable) && (pts != PTX_SectionTable))
+			{
+				iNest++;
+				continue;
+			}
+			if((iNest > 0) && (pfsTemp->getStruxType() == PTX_EndTable))
+			{
+				iNest--;
+				continue;
+			}
+			if(iNest > 0)
+			{
+				continue;
+			}
 			if (pfsTemp->getStruxType() == pts)	// did we find it
 			{
 				*nextsdh = pfsTemp;
@@ -4108,15 +4123,22 @@ bool PD_Document:: setPageSizeFromFile(const XML_Char ** attributes)
 
 	// set portrait by default
 	m_docPageSize.setPortrait();
-
-	// custom page sizes are always in "Portrait" mode
-	if ( UT_XML_stricmp(szPageSize,"Custom") != 0 )
-	  {
-	    if( UT_XML_stricmp(szOrientation,"landscape") == 0 )
-	      {
+	if( UT_XML_stricmp(szOrientation,"landscape") == 0 )
+	{
+		width = UT_convertDimensionless(szWidth);
+		height = UT_convertDimensionless(szHeight);
+		if(strcmp(szUnits,"cm") == 0)
+			u = DIM_CM;
+		else if(strcmp(szUnits,"mm") == 0)
+			u = DIM_MM;
+		else if(strcmp(szUnits,"inch") == 0)
+			u = DIM_IN;
 		m_docPageSize.setLandscape();
-	      }
-	  }
+		//
+		// Setting landscape causes the width and height to be swapped
+		// so
+		m_docPageSize.Set(height,width,u); // swap them so they out right
+	}
 
 	return true;
 }

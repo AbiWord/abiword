@@ -1111,18 +1111,18 @@ void GR_Win32Graphics::handleSetCursorMessage(void)
 		cursor_name = IDC_CROSS;
 		hinst = NULL;
 		break;
-		default:
+
+	default:
+	{
+		// this assert makes debugging virtuall impossible !!!
+		static bool bDoneThisAlready = false;
+		if(!bDoneThisAlready)
 		{
-			// this assert makes debugging virtuall impossible !!!
-			static bool bDoneThisAlready = false;
-			if(!bDoneThisAlready)
-			{
-				bDoneThisAlready = true;
-				UT_ASSERT(UT_NOT_IMPLEMENTED);
-			}
-			
+			bDoneThisAlready = true;
+			UT_ASSERT(UT_NOT_IMPLEMENTED);
 		}
-			
+		
+	}
 		/*FALLTHRU*/
 	case GR_CURSOR_DEFAULT:
 		cursor_name = IDC_ARROW;		// top-left arrow
@@ -1160,6 +1160,10 @@ void GR_Win32Graphics::handleSetCursorMessage(void)
 	case GR_CURSOR_LEFTARROW:
 		cursor_name = IDC_ARROW;		// TODO change this
 		hinst = NULL;
+		break;
+
+	case GR_CURSOR_DOWNARROW:
+		cursor_name = MAKEINTRESOURCE(IDC_ABIDOWNARROW);
 		break;
 
 	case GR_CURSOR_IMAGE:

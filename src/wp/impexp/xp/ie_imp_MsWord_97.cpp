@@ -4365,7 +4365,7 @@ void IE_Imp_MsWord_97::_cell_open (const wvParseStruct *ps, const PAP *apap)
 		  pSpan->iLeft = iLeft;
 		  pSpan->iRight = iRight;
 		  pSpan->width = width;
-		  xxx_UT_DEBUGMSG(("MsImport iLeft %d  iRight %d width  %d \n",iLeft,iRight,width));
+		  UT_DEBUGMSG(("MsImport iLeft %d  iRight %d width  %d \n",iLeft,iRight,width));
 		  m_vecColumnWidths.addItem(pSpan);
 	  }
   }
