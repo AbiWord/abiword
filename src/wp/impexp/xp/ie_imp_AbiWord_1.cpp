@@ -525,7 +525,7 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		// seem a little odd (perhaps an &lf; entity would be better).
 		// Anyway, this distinction from ordinary LF's in the document
 		// (which get mapped into SPACE) keeps the file sanely editable.
-
+	
 	case TT_BREAK:
 		if(X_TestParseState(_PS_Field))
 			return; // just return
