@@ -71,6 +71,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_FILE_NEW,			0,0,0,0,	"fileNew",			NULL,					NULL);
 	_s(AP_MENU_ID_FILE_NEW_USING_TEMPLATE,			0,1,0,0,	"fileNewUsingTemplate",			NULL,					NULL);
 	_s(AP_MENU_ID_FILE_OPEN,		0,1,0,0,	"fileOpen",			NULL,					NULL);
+	_s(AP_MENU_ID_FILE_IMPORTSTYLES,		0,1,0,0,	"importStyles",	NULL,					NULL);
 	_s(AP_MENU_ID_FILE_SAVE,		0,0,0,0,	"fileSave",			ap_GetState_Changes,					NULL);
 	_s(AP_MENU_ID_FILE_SAVEAS,		0,1,0,0,	"fileSaveAs",		NULL,					NULL);
 	_s(AP_MENU_ID_FILE_SAVEIMAGE,		0,1,0,0,	"fileSaveImage",		NULL,					NULL);
@@ -82,16 +83,10 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_FILE_PAGESETUP,	0,1,0,0,	"pageSetup",		NULL,					NULL);
 	_s(AP_MENU_ID_FILE_PRINT,		0,1,0,0,	"print",			NULL,					NULL);
 	_s(AP_MENU_ID_FILE_PRINT_PREVIEW, 0,1,0,0, "printPreview", NULL, NULL);
-	_s(AP_MENU_ID_FILE_RECENT,	1,0,0,0,	NULL, ap_GetState_Recent,NULL);
 	_s(AP_MENU_ID_FILE_RECENT_1,	0,0,0,0,	"openRecent_1",		NULL,					ap_GetLabel_Recent);
 	_s(AP_MENU_ID_FILE_RECENT_2,	0,0,0,0,	"openRecent_2",		NULL,					ap_GetLabel_Recent);
 	_s(AP_MENU_ID_FILE_RECENT_3,	0,0,0,0,	"openRecent_3",		NULL,					ap_GetLabel_Recent);
 	_s(AP_MENU_ID_FILE_RECENT_4,	0,0,0,0,	"openRecent_4",		NULL,					ap_GetLabel_Recent);
-	_s(AP_MENU_ID_FILE_RECENT_5,	0,0,0,0,	"openRecent_5",		NULL,					ap_GetLabel_Recent);
-	_s(AP_MENU_ID_FILE_RECENT_6,	0,0,0,0,	"openRecent_6",		NULL,					ap_GetLabel_Recent);
-	_s(AP_MENU_ID_FILE_RECENT_7,	0,0,0,0,	"openRecent_7",		NULL,					ap_GetLabel_Recent);
-	_s(AP_MENU_ID_FILE_RECENT_8,	0,0,0,0,	"openRecent_8",		NULL,					ap_GetLabel_Recent);
-	_s(AP_MENU_ID_FILE_RECENT_9,	0,0,0,0,	"openRecent_9",		NULL,					ap_GetLabel_Recent);
 	_s(AP_MENU_ID_FILE_REVERT, 0,0,0,0, "fileRevert", ap_GetState_Changes, NULL);
 	_s(AP_MENU_ID_FILE_EXIT,		0,0,0,0,	"querySaveAndExit",	NULL,					NULL);
 	_s(AP_MENU_ID_OPEN_TEMPLATE, 0,1,0,0, "openTemplate", NULL, NULL);
@@ -198,7 +193,6 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_FMT_IMAGE, 0,1,0,0, "dlgFmtImage", ap_GetState_InImage, NULL);
 	_s(AP_MENU_ID_FMT_STYLE_DEFINE,		0,1,0,0,	"dlgStyle",			NULL,					NULL);
 	_s(AP_MENU_ID_FMT_STYLE,		1,0,0,0,	NULL,			NULL,					NULL);
-	_s(AP_MENU_ID_FMT_IMPORTSTYLES,		0,1,0,0,	"importStyles",	NULL,					NULL);
 	_s(AP_MENU_ID_FMT_STYLIST,		0,1,0,0,	"dlgStylist",	NULL,					NULL);
 	_s(AP_MENU_ID_FMT_TABS,			0,1,0,0,	"dlgTabs",			NULL,					NULL);
 	_s(AP_MENU_ID_FMT_BOLD,			0,0,1,0,	"toggleBold",		ap_GetState_CharFmt,	NULL);

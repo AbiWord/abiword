@@ -192,7 +192,7 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Recent)
 	UT_return_val_if_fail (pApp && pLabel, NULL);
 
 	UT_ASSERT_HARMLESS(id >= AP_MENU_ID_FILE_RECENT_1);
-	UT_ASSERT_HARMLESS(id <= AP_MENU_ID_FILE_RECENT_9);
+	UT_ASSERT_HARMLESS(id <= AP_MENU_ID_FILE_RECENT_4);
 
 	UT_uint32 ndx = (id - AP_MENU_ID_FILE_RECENT_1 + 1);
 
