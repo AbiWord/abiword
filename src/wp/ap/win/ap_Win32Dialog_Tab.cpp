@@ -151,25 +151,20 @@ BOOL AP_Win32Dialog_Tab::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		return 1;
 
 	case AP_RID_DIALOG_TABS_LEFT_RADIO:
-		_event_AlignmentChange();
-		return 1;
-		
 	case AP_RID_DIALOG_TABS_CENTER_RADIO:
-		_event_AlignmentChange();
-		return 1;
-		
 	case AP_RID_DIALOG_TABS_RIGHT_RADIO:
-		_event_AlignmentChange();
-		return 1;
-		
 	case AP_RID_DIALOG_TABS_DECIMAL_RADIO:
-		_event_AlignmentChange();
-		return 1;
-		
 	case AP_RID_DIALOG_TABS_BAR_RADIO:
 		_event_AlignmentChange();
 		return 1;
 
+	case AP_RID_DIALOG_TABS_NONE_RADIO:
+	case AP_RID_DIALOG_TABS_DOTS_RADIO:
+	case AP_RID_DIALOG_TABS_DASH_RADIO:
+	case AP_RID_DIALOG_TABS_UNDERLINE_RADIO:
+		_event_somethingChanged();
+		return 1;
+		
 	case AP_RID_DIALOG_TABS_CLEAR_ALL_BUTTON:
 		_event_ClearAll();
 		return 1;
@@ -311,50 +306,35 @@ eTabType AP_Win32Dialog_Tab::_gatherAlignment()
 
 void AP_Win32Dialog_Tab::_setAlignment( eTabType a )
 {
-	
 	_win32Dialog.checkButton(AP_RID_DIALOG_TABS_LEFT_RADIO, a == FL_TAB_LEFT);
-
-	
 	_win32Dialog.checkButton(AP_RID_DIALOG_TABS_RIGHT_RADIO, a == FL_TAB_RIGHT);
-
-	
 	_win32Dialog.checkButton(AP_RID_DIALOG_TABS_CENTER_RADIO, a == FL_TAB_CENTER);
-
-	
 	_win32Dialog.checkButton(AP_RID_DIALOG_TABS_DECIMAL_RADIO, a == FL_TAB_DECIMAL);
-
-	
 	_win32Dialog.checkButton(AP_RID_DIALOG_TABS_BAR_RADIO, a == FL_TAB_BAR);
-
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
 eTabLeader AP_Win32Dialog_Tab::_gatherLeader()
 {
+	if(_win32Dialog.isChecked(AP_RID_DIALOG_TABS_DOTS_RADIO))
+		return FL_LEADER_DOT;
+
+	if(_win32Dialog.isChecked(AP_RID_DIALOG_TABS_DASH_RADIO))
+		return FL_LEADER_HYPHEN;
+
+	if(_win32Dialog.isChecked(AP_RID_DIALOG_TABS_UNDERLINE_RADIO))
+		return FL_LEADER_UNDERLINE;
+
 	return FL_LEADER_NONE;
 }
 
 void AP_Win32Dialog_Tab::_setLeader( eTabLeader a )
 {
-/*
-	// NOTE - tControl id_LEADER_NONE .. id_ALIGN_BAR must be in the same order
-	// as the tAlignment enums.
-
-	// magic noted above
-	tControl id = (tControl)((UT_uint32)id_LEADER_NONE + (UT_uint32)a);	
-	UT_ASSERT( id >= id_LEADER_NONE && id <= id_LEADER_UNDERLINE );
-
-	// time to set the alignment radiobutton widget
-	GtkWidget *w = _lookupWidget( id );
-	UT_ASSERT(w && GTK_IS_RADIO_BUTTON(w));
-
-	// tell the change routines to ignore this message
-
-	m_bInSetCall = true;
-	gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON(w), TRUE );
-	m_bInSetCall = false;
-*/
+	_win32Dialog.checkButton(AP_RID_DIALOG_TABS_NONE_RADIO, a == FL_LEADER_NONE);
+	_win32Dialog.checkButton(AP_RID_DIALOG_TABS_DOTS_RADIO, a == FL_LEADER_DOT);
+	_win32Dialog.checkButton(AP_RID_DIALOG_TABS_DASH_RADIO, a == FL_LEADER_HYPHEN);
+	_win32Dialog.checkButton(AP_RID_DIALOG_TABS_UNDERLINE_RADIO, a == FL_LEADER_UNDERLINE);
 }
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
