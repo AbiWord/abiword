@@ -502,7 +502,7 @@ public:
 	void                getVisibleDocumentPagesAndRectangles(UT_Vector &vRect, UT_Vector &vPages) const;
 
 	//
-	// image selection functions
+	// image selection && resizing && dragging functions
 	//
 	void				setImageSelRect(UT_Rect r);
 	UT_Rect				getImageSelRect();
@@ -515,9 +515,6 @@ public:
 	void				stopImageResizing();
 	bool				isResizingImage();
 	void				getResizeOrigin(UT_sint32 &xOrigin, UT_sint32 &yOrigin);
-	//
-	// image dragging functions
-	//
 	bool				isDraggingImage();
 	void				setDraggedImage(fp_Run * pRun, UT_sint32 xPos, UT_sint32 yPos);
 	void				stopImageDrag(UT_sint32 xPos, UT_sint32 yPos);
