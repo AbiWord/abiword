@@ -55,7 +55,7 @@ public:
 	virtual ~AP_App(void);
 
 	virtual UT_Bool					initialize(int * pArgc, char *** pArgv);
-	virtual UT_Bool					rememberFrame(AP_Frame * pFrame, AP_Frame * pCloneOf=NULL);
+	virtual UT_Bool					rememberFrame(AP_Frame * pFrame, AP_Frame * pCloneOf=(AP_Frame*)NULL);
 	virtual UT_Bool					forgetFrame(AP_Frame * pFrame);
 	virtual AP_Frame * 				newFrame(void) = 0;
 
