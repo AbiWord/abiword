@@ -68,6 +68,7 @@ mkdir -p $TARGET/bin
 echo "Installing program binaries to [$TARGET/bin]..."
 # Setup bins (only dynamic in RPM)
 (cp $SRCDIR/bin/AbiWord_d $TARGET/bin)
+chmod 755 $TARGET/bin
 
 
 ########################################################################
@@ -85,13 +86,16 @@ mkdir -p /usr/share/pixmaps
 
 echo "Installing GNOME desktiop icon at [/usr/share/pixmaps/abiword_48.png]..."
 cp $SRCDIR/AbiSuite/icons/abiword_48.png /usr/share/pixmaps/abiword_48.png
+chmod 755 /usr/share/pixmaps/abiword_48.png
 
 echo "Installing GNOME desktiop icon at [/usr/share/pixmaps/abiword_48.xpm]..."
 cp $SRCDIR/AbiSuite/icons/abiword_48.xpm /usr/share/pixmaps/abiword_48.xpm
+chmod 755 /usr/share/pixmaps/abiword_48.xpm
 
 echo "Installing GNOME desktop hook at [/usr/share/gnome/apps/Applications/abiword.desktop]..."
 mkdir -p /usr/share/gnome/apps/Applications
 cp rpm/data/abiword.desktop /usr/share/gnome/apps/Applications/abiword.desktop
+chmod 755 /usr/share/gnome/apps/Applications/abiword.desktop
 
 ########################################################################
 # Install documentation in standard Red Hat places
@@ -106,7 +110,9 @@ found at http://www.abisource.com/.  This information will always
 be current and in-sync with the latest AbiSuite development efforts.
 EOF
 cp $SRCDIR/AbiSuite/readme.txt /usr/doc/abisuite/copyright
+chmod 755 /usr/doc/abisuite/copyright
 cp $SRCDIR/AbiSuite/COPYING /usr/doc/abisuite/COPYING
+chmod 755 /usr/doc/abisuite/COPYING
 
 ########################################################################
 # Dynamically construct a wrapper for AbiSuite binaries
