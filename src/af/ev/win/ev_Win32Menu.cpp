@@ -917,8 +917,7 @@ void EV_Win32Menu::onDrawItem(HWND hwnd, WPARAM wParam, LPARAM lParam)
 		}	
 
     SelectObject(lpdis->hDC, hfontOld); 
-    SetTextColor(lpdis->hDC, crText); 
-	
+    SetTextColor(lpdis->hDC, crText); 	
 	if (hBitmap)
 		DeleteObject(hBitmap);	
 }
@@ -964,8 +963,8 @@ bool EV_Win32Menu::onMenuSelect(XAP_Frame * pFrame, AV_View * pView,
 	if (!szMsg || !*szMsg)
 		szMsg = "TODO This menu item doesn't have a StatusMessage defined.";
 	
-	//UT_DEBUGMSG(("SetMessage [%s]\n",szMsg));
-	pFrame->setStatusMessage(szMsg);
+	UT_String str = AP_Win32App::s_fromUTF8ToAnsi(szMsg);
+	pFrame->setStatusMessage(str.c_str());
 	return true;
 }
 
