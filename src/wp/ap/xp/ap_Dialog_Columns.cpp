@@ -391,33 +391,34 @@ const UT_sint32 iLinesToDraw = 16;
 
 void AP_Columns_preview::draw(void)
 {
-	UT_sint32 iWidth = getWindowWidth();
-	UT_sint32 iHeight = getWindowHeight();
-    double maxHeightPercent = m_pColumns->getMaxHeightPercent();
+	UT_sint32 iWidth = _UL(getWindowWidth());
+	UT_sint32 iHeight = _UL(getWindowHeight());
+
+  double maxHeightPercent = m_pColumns->getMaxHeightPercent();
 	double SpacePercent = m_pColumns->getSpaceAfterPercent();
-	UT_Rect pageRect(5, 5, iWidth - 10, iHeight - 10);
+	UT_Rect pageRect(_UL(5), _UL(5), iWidth - _UL(10), iHeight - _UL(10));
 
 	m_gc->fillRect(GR_Graphics::CLR3D_Background, 0, 0, iWidth, iHeight);
 	m_gc->clearArea(pageRect.left, pageRect.top, pageRect.width,
 					pageRect.height);
 
-	m_gc->setLineWidth(1);
+	m_gc->setLineWidth(_UL(1));
 	m_gc->drawLine(pageRect.left, pageRect.top,
 				   pageRect.left + pageRect.width, pageRect.top);
 	m_gc->drawLine(pageRect.left, pageRect.top,
 				   pageRect.left, pageRect.top + pageRect.height);
 
-	m_gc->setLineWidth(3);
-	m_gc->drawLine(pageRect.left + pageRect.width, pageRect.top + 1,
+	m_gc->setLineWidth(_UL(3));
+	m_gc->drawLine(pageRect.left + pageRect.width, pageRect.top + _UL(1),
 				   pageRect.left + pageRect.width,
 				   pageRect.top + pageRect.height);
-	m_gc->drawLine(pageRect.left + 1, pageRect.top + pageRect.height,
+	m_gc->drawLine(pageRect.left + _UL(1), pageRect.top + pageRect.height,
 				   pageRect.left + pageRect.width,
 				   pageRect.top + pageRect.height);
 
 
-	pageRect.top += 5;
-	pageRect.height -= 5;
+	pageRect.top += _UL(5);
+	pageRect.height -= _UL(5);
 	m_previewDrawer.draw(m_gc, pageRect, m_iColumns, m_bLineBetween,maxHeightPercent, SpacePercent);
 }
 
@@ -433,7 +434,7 @@ void AP_Columns_preview_drawer::draw(GR_Graphics *gc, UT_Rect &rect, UT_sint32 i
 	UT_sint32 y_end = rect.top + rect.height - iHalfColumnGap;
 
 	UT_sint32 y_step = (y_end - y_start) / iLinesToDraw;
-	y_step = 2;
+	y_step = _UL(2);
 	UT_DEBUGMSG(("SEVIOR: maxheightpercent = %f \n",maxHeightPercent));
 	maxHeightPercent = maxHeightPercent/100.0;
 	SpacePercent = SpacePercent/100.0;
@@ -441,7 +442,7 @@ void AP_Columns_preview_drawer::draw(GR_Graphics *gc, UT_Rect &rect, UT_sint32 i
 	{
 		maxHeightPercent = 1.1;
 	}
-	gc->setLineWidth(1);
+	gc->setLineWidth(_UL(1));
 	UT_RGBColor Line_color(0, 0, 0);
 	gc->setColor(Line_color);
 
