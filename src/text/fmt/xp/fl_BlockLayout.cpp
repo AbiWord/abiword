@@ -3511,6 +3511,7 @@ bool fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 		// Update the display
 //		pPrevBL->_lookupProperties();	// TODO: this may be needed
 		pPrevBL->setNeedsReformat();
+		pPrevBL->checkSpelling(); //Fix for bug #1119
 	}
 
 	// In case we've never checked this one
