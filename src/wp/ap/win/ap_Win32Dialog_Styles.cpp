@@ -59,7 +59,9 @@ AP_Win32Dialog_Styles::AP_Win32Dialog_Styles(XAP_DialogFactory * pDlgFactory,
 :	AP_Dialog_Styles(pDlgFactory,id),
 	_win32Dialog(this),
 	_win32DialogNewModify(this),
-	m_whichType(AP_Win32Dialog_Styles::USED_STYLES)
+	m_whichType(AP_Win32Dialog_Styles::USED_STYLES),
+	m_bisNewStyle(true),
+	m_selectToggle(0)
 {
 }
 
@@ -73,13 +75,12 @@ void AP_Win32Dialog_Styles::runModal(XAP_Frame * pFrame)
 //
 // Get View and Document pointers. Place them in member variables
 //
-
 	setFrame(pFrame);
+
 	setView((FV_View *) pFrame->getCurrentView());
 	UT_ASSERT(getView());
 
 	setDoc(getView()->getLayout()->getDocument());
-
 	UT_ASSERT(getDoc());
 
 
@@ -105,83 +106,256 @@ BOOL AP_Win32Dialog_Styles::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPara
 	XAP_Win32App * app = static_cast<XAP_Win32App *> (m_pApp);
 	UT_ASSERT(app);
 	
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
+
 	char szTemp[20];
 	GetWindowText(hWnd, szTemp, 20 );
 
 	if( strncmp(szTemp, "Styles", 20) == 0 )
 	{
-	// m_hThisDlg = hWnd;
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
+		// m_hThisDlg = hWnd;
 	
-	SetWindowText(hWnd, pSS->getValue(AP_STRING_ID_DLG_Styles_StylesTitle));
+		SetWindowText(hWnd, pSS->getValue(AP_STRING_ID_DLG_Styles_StylesTitle));
 
-	// localize controls
-	struct control_id_string_id {
-		UT_sint32		controlId;
-		XAP_String_Id	stringId;
-	} static const rgMapping[] =
-	{
-		AP_RID_DIALOG_STYLES_TOP_TEXT_LIST				, AP_STRING_ID_DLG_Styles_List,
-		AP_RID_DIALOG_STYLES_TOP_TEXT_PARAGRAPH_PREVIEW	, AP_STRING_ID_DLG_Styles_ParaPrev,
-		AP_RID_DIALOG_STYLES_TOP_TEXT_CHARACTER_PREVIEW	, AP_STRING_ID_DLG_Styles_CharPrev,
-		AP_RID_DIALOG_STYLES_TOP_TEXT_DESCRIPTION		, AP_STRING_ID_DLG_Styles_Description,
-		AP_RID_DIALOG_STYLES_TOP_BUTTON_DELETE			, AP_STRING_ID_DLG_Styles_Delete,
-		AP_RID_DIALOG_STYLES_TOP_BUTTON_MODIFY			, AP_STRING_ID_DLG_Styles_Modify,
-		AP_RID_DIALOG_STYLES_TOP_BUTTON_NEW				, AP_STRING_ID_DLG_Styles_New,
-		AP_RID_DIALOG_STYLES_TOP_TEXT_AVAILABLE			, AP_STRING_ID_DLG_Styles_Available,	// "Available Styles" GROUPBOX
-		AP_RID_DIALOG_STYLES_TOP_BUTTON_APPLY			, XAP_STRING_ID_DLG_OK,
-		AP_RID_DIALOG_STYLES_TOP_BUTTON_CLOSE			, XAP_STRING_ID_DLG_Cancel
-	};
+		// localize controls
+		struct control_id_string_id {
+			UT_sint32		controlId;
+			XAP_String_Id	stringId;
+		} static const rgMapping[] =
+		{
+			AP_RID_DIALOG_STYLES_TOP_TEXT_LIST				, AP_STRING_ID_DLG_Styles_List,
+			AP_RID_DIALOG_STYLES_TOP_TEXT_PARAGRAPH_PREVIEW	, AP_STRING_ID_DLG_Styles_ParaPrev,
+			AP_RID_DIALOG_STYLES_TOP_TEXT_CHARACTER_PREVIEW	, AP_STRING_ID_DLG_Styles_CharPrev,
+			AP_RID_DIALOG_STYLES_TOP_TEXT_DESCRIPTION		, AP_STRING_ID_DLG_Styles_Description,
+			AP_RID_DIALOG_STYLES_TOP_BUTTON_DELETE			, AP_STRING_ID_DLG_Styles_Delete,
+			AP_RID_DIALOG_STYLES_TOP_BUTTON_MODIFY			, AP_STRING_ID_DLG_Styles_Modify,
+			AP_RID_DIALOG_STYLES_TOP_BUTTON_NEW				, AP_STRING_ID_DLG_Styles_New,
+			AP_RID_DIALOG_STYLES_TOP_TEXT_AVAILABLE			, AP_STRING_ID_DLG_Styles_Available,	// "Available Styles" GROUPBOX
+			AP_RID_DIALOG_STYLES_TOP_BUTTON_APPLY			, XAP_STRING_ID_DLG_Apply,
+			AP_RID_DIALOG_STYLES_TOP_BUTTON_CLOSE			, XAP_STRING_ID_DLG_Close
+		};
 
-	for (int i = 0; i < NrElements(rgMapping); ++i)
-	{
-		_win32Dialog.setControlText(rgMapping[i].controlId,
-									pSS->getValue(rgMapping[i].stringId));
-	}
+		for (int i = 0; i < NrElements(rgMapping); ++i)
+		{
+			_win32Dialog.setControlText(rgMapping[i].controlId,
+										pSS->getValue(rgMapping[i].stringId));
+		}
 
-	// Set the list combo.
+		// Set the list combo.
 
-	_win32Dialog.addItemToCombo(AP_RID_DIALOG_STYLES_TOP_COMBO_LIST, 
+		_win32Dialog.addItemToCombo(AP_RID_DIALOG_STYLES_TOP_COMBO_LIST, 
 									pSS->getValue (AP_STRING_ID_DLG_Styles_LBL_InUse));
-	_win32Dialog.addItemToCombo(AP_RID_DIALOG_STYLES_TOP_COMBO_LIST, 
+		_win32Dialog.addItemToCombo(AP_RID_DIALOG_STYLES_TOP_COMBO_LIST, 
 									pSS->getValue(AP_STRING_ID_DLG_Styles_LBL_All));
-	_win32Dialog.addItemToCombo(AP_RID_DIALOG_STYLES_TOP_COMBO_LIST,
+		_win32Dialog.addItemToCombo(AP_RID_DIALOG_STYLES_TOP_COMBO_LIST,
 									pSS->getValue(AP_STRING_ID_DLG_Styles_LBL_UserDefined));
-	_win32Dialog.selectComboItem(AP_RID_DIALOG_STYLES_TOP_COMBO_LIST, (int)m_whichType);
+		_win32Dialog.selectComboItem(AP_RID_DIALOG_STYLES_TOP_COMBO_LIST, (int)m_whichType);
 	
-/*
-#define _DS(c,s)	_win32Dialog.setControlText(AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
-	_DS(COLUMN_GROUP1,					DLG_Column_Number);
-	_DS(COLUMN_GROUP2,					DLG_Column_Preview);
-	_DS(COLUMN_TEXT_ONE,				DLG_Column_One);
-	_DS(COLUMN_TEXT_TWO,				DLG_Column_Two);
-	_DS(COLUMN_TEXT_THREE,				DLG_Column_Three);
-	_DS(COLUMN_CHECK_LINE_BETWEEN,		DLG_Column_Line_Between);
-#undef _DS
-*/
 
-	// Create a preview windows.
+		// Create a preview windows.
 
-	HWND hwndChild = GetDlgItem(hWnd, AP_RID_DIALOG_STYLES_TOP_TEXT_PARAGRAPH_PREVIEW);
+		HWND hwndChild = GetDlgItem(hWnd, AP_RID_DIALOG_STYLES_TOP_TEXT_PARAGRAPH_PREVIEW);
 
-	m_pParaPreviewWidget = new XAP_Win32PreviewWidget(static_cast<XAP_Win32App *>(m_pApp),
-													  hwndChild,
-													  0);
-	UT_uint32 w,h;
-	m_pParaPreviewWidget->getWindowSize(&w,&h);
-	_createParaPreviewFromGC(m_pParaPreviewWidget->getGraphics(), w, h);
-	m_pParaPreviewWidget->setPreview(m_pParaPreview);
+		m_pParaPreviewWidget = new XAP_Win32PreviewWidget(static_cast<XAP_Win32App *>(m_pApp),
+														  hwndChild,
+														  0);
+		UT_uint32 w,h;
+		m_pParaPreviewWidget->getWindowSize(&w,&h);
+		_createParaPreviewFromGC(m_pParaPreviewWidget->getGraphics(), w, h);
+		m_pParaPreviewWidget->setPreview(m_pParaPreview);
 
-	hwndChild = GetDlgItem(hWnd, AP_RID_DIALOG_STYLES_TOP_TEXT_CHARACTER_PREVIEW);
+		hwndChild = GetDlgItem(hWnd, AP_RID_DIALOG_STYLES_TOP_TEXT_CHARACTER_PREVIEW);
 
-	m_pCharPreviewWidget = new XAP_Win32PreviewWidget(static_cast<XAP_Win32App *>(m_pApp),
-													  hwndChild,
-													  0);
-	m_pCharPreviewWidget->getWindowSize(&w,&h);
-	_createCharPreviewFromGC(m_pCharPreviewWidget->getGraphics(), w, h);
-	m_pCharPreviewWidget->setPreview(m_pCharPreview);
+		m_pCharPreviewWidget = new XAP_Win32PreviewWidget(static_cast<XAP_Win32App *>(m_pApp),
+														  hwndChild,
+														  0);
+		m_pCharPreviewWidget->getWindowSize(&w,&h);
+		_createCharPreviewFromGC(m_pCharPreviewWidget->getGraphics(), w, h);
+		m_pCharPreviewWidget->setPreview(m_pCharPreview);
 
-	_populateWindowData();
+		_populateWindowData();
+	}
+	else  // This is either the new or Modify sub dialog of styles
+	{
+		// Localize the controls Labels etc...
+		SetWindowText(hWnd, pSS->getValue( (m_bisNewStyle) ? 
+                                           AP_STRING_ID_DLG_Styles_NewTitle :
+                                           AP_STRING_ID_DLG_Styles_ModifyTitle ));
+		
+		#define _DS(c,s)  _win32DialogNewModify.setControlText(AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
+		#define _DSX(c,s)  _win32DialogNewModify.setControlText(AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
+		_DS(STYLES_NEWMODIFY_LBL_NAME,			DLG_Styles_ModifyName);
+		_DS(STYLES_NEWMODIFY_LBL_BASEDON,		DLG_Styles_ModifyBasedOn);
+		_DS(STYLES_NEWMODIFY_LBL_TYPE,			DLG_Styles_ModifyType);
+		_DS(STYLES_NEWMODIFY_LBL_FOLLOWPARA,	DLG_Styles_ModifyFollowing);
+		_DS(STYLES_NEWMODIFY_LBL_REMOVE,		DLG_Styles_RemoveLab);
+		_DS(STYLES_NEWMODIFY_GBX_PREVIEW,		DLG_Styles_ModifyPreview);
+		_DS(STYLES_NEWMODIFY_GBX_DESC,			DLG_Styles_ModifyDescription);
+		_DS(STYLES_NEWMODIFY_BTN_REMOVE,		DLG_Styles_RemoveButton);
+		_DS(STYLES_NEWMODIFY_BTN_TOGGLEITEMS,	DLG_Styles_ModifyFormat);
+		_DS(STYLES_NEWMODIFY_BTN_SHORTCUT,		DLG_Styles_ModifyShortCut);
+		_DSX(STYLES_NEWMODIFY_BTN_OK,			DLG_OK);
+		_DSX(STYLES_NEWMODIFY_BTN_CANCEL,		DLG_Cancel);
+		#undef _DSX
+		#undef _DS
+
+		// Changes basic controls based upon either New or Modify Dialog
+		_win32DialogNewModify.showControl( AP_RID_DIALOG_STYLES_NEWMODIFY_EBX_BASEDON , 
+                                           (m_bisNewStyle) ? SW_HIDE : SW_SHOW );
+		_win32DialogNewModify.showControl( AP_RID_DIALOG_STYLES_NEWMODIFY_EBX_TYPE , 
+                                           (m_bisNewStyle) ? SW_HIDE : SW_SHOW );
+		_win32DialogNewModify.showControl( AP_RID_DIALOG_STYLES_NEWMODIFY_EBX_FOLLOWPARA , 
+                                           (m_bisNewStyle) ? SW_HIDE : SW_SHOW );
+		_win32DialogNewModify.showControl( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_BASEDON , 
+                                           (m_bisNewStyle) ? SW_SHOW : SW_HIDE );
+		_win32DialogNewModify.showControl( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_TYPE , 
+                                           (m_bisNewStyle) ? SW_SHOW : SW_HIDE );
+		_win32DialogNewModify.showControl( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_FOLLOWPARA , 
+                                           (m_bisNewStyle) ? SW_SHOW : SW_HIDE );
+		// Initialize the controls with appropriate data
+		if( m_bisNewStyle )
+		{
+			size_t nStyles = getDoc()->getStyleCount();
+			const char * name = NULL;
+			const PD_Style * pcStyle = NULL;
+			for (UT_uint32 i = 0; i < nStyles; i++)
+			{
+	    		getDoc()->enumStyles(i, &name, &pcStyle);
+				_win32DialogNewModify.addItemToCombo( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_BASEDON, name );
+				_win32DialogNewModify.addItemToCombo( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_FOLLOWPARA, name );
+			}
+
+		
+			// Add last Member item which will be defined as the default value
+			_win32DialogNewModify.addItemToCombo( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_BASEDON, 
+                                                  pSS->getValue(AP_STRING_ID_DLG_Styles_DefNone) );
+			_win32DialogNewModify.addItemToCombo( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_FOLLOWPARA, 
+                                                  pSS->getValue(AP_STRING_ID_DLG_Styles_DefCurrent) );
+
+			_win32DialogNewModify.addItemToCombo( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_TYPE,
+                                                  pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyParagraph) );
+			_win32DialogNewModify.addItemToCombo( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_TYPE,
+                                                  pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyCharacter) );
+			// Set the Default Item
+			UT_sint32 result;
+			result = SendDlgItemMessage(hWnd, AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_BASEDON, CB_FINDSTRING, -1,
+										(LPARAM) pSS->getValue(AP_STRING_ID_DLG_Styles_DefNone));
+			_win32DialogNewModify.selectComboItem( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_BASEDON, result );
+			result = SendDlgItemMessage(hWnd, AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_FOLLOWPARA, CB_FINDSTRING, -1,
+										(LPARAM) pSS->getValue(AP_STRING_ID_DLG_Styles_DefCurrent));
+			_win32DialogNewModify.selectComboItem( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_FOLLOWPARA, result );
+			result = SendDlgItemMessage(hWnd, AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_TYPE, CB_FINDSTRING, -1,
+										(LPARAM) pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyParagraph));
+			_win32DialogNewModify.selectComboItem( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_TYPE, result );
+
+			eventBasedOn();
+			eventFollowedBy();
+			eventStyleType();
+			fillVecFromCurrentPoint();			
+		}
+		else
+		{
+			const char * szCurrentStyle = NULL;
+			const char * szBasedOn = NULL;
+			const char * szFollowedBy = NULL;
+			PD_Style * pStyle = NULL;
+			PD_Style * pBasedOnStyle = NULL;
+			PD_Style * pFollowedByStyle = NULL;
+			
+			szCurrentStyle = m_selectedStyle.c_str();
+		
+			_win32DialogNewModify.setControlText( AP_RID_DIALOG_STYLES_NEWMODIFY_EBX_NAME,
+                                                  (char *) szCurrentStyle );
+                                                  
+			if(szCurrentStyle)
+				getDoc()->getStyle(szCurrentStyle,&pStyle);
+			if(!pStyle)
+			{
+				XAP_Frame * pFrame = getFrame();
+				pFrame->showMessageBox( pSS->getValue(AP_STRING_ID_DLG_Styles_ErrNoStyle),
+										XAP_Dialog_MessageBox::b_O,
+										XAP_Dialog_MessageBox::a_OK);                                        
+				m_answer = AP_Dialog_Styles::a_CANCEL;
+				return false;
+			}
+			//
+			// Valid style get the Based On and followed by values
+			//
+		    pBasedOnStyle = pStyle->getBasedOn();
+			pFollowedByStyle = pStyle->getFollowedBy();
+			
+			size_t nStyles = getDoc()->getStyleCount();
+			const char * name = NULL;
+			const PD_Style * pcStyle = NULL;
+			for (UT_uint32 i = 0; i < nStyles; i++)
+			{
+			    getDoc()->enumStyles(i, &name, &pcStyle);
+
+				if(pBasedOnStyle && pcStyle == pBasedOnStyle)
+				{
+					szBasedOn = name;
+				}
+				if(pFollowedByStyle && pcStyle == pFollowedByStyle)
+				{
+					szFollowedBy = name;
+				}
+			}
+		
+			if(pBasedOnStyle != NULL)
+			{
+				_win32DialogNewModify.setControlText( AP_RID_DIALOG_STYLES_NEWMODIFY_EBX_BASEDON, szBasedOn);
+			}
+			else
+			{
+				_win32DialogNewModify.setControlText( AP_RID_DIALOG_STYLES_NEWMODIFY_EBX_BASEDON, 
+                                                      pSS->getValue(AP_STRING_ID_DLG_Styles_DefNone) );
+			}
+
+			if(pFollowedByStyle != NULL)
+			{
+				_win32DialogNewModify.setControlText( AP_RID_DIALOG_STYLES_NEWMODIFY_EBX_FOLLOWPARA, szFollowedBy);
+			}
+			else
+			{
+				_win32DialogNewModify.setControlText( AP_RID_DIALOG_STYLES_NEWMODIFY_EBX_FOLLOWPARA, 
+                                                      pSS->getValue(AP_STRING_ID_DLG_Styles_DefCurrent) );
+			}
+			
+			if(strstr(getAttsVal("type"),"P") != 0)
+			{
+				_win32DialogNewModify.setControlText( AP_RID_DIALOG_STYLES_NEWMODIFY_EBX_TYPE, 
+                                                      pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyParagraph) );
+			}
+			else
+			{
+				_win32DialogNewModify.setControlText( AP_RID_DIALOG_STYLES_NEWMODIFY_EBX_TYPE, 
+                                                      pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyCharacter) );
+			}
+
+			// Disable for editing top controls in Modify Dialog
+			_win32DialogNewModify.enableControl( AP_RID_DIALOG_STYLES_NEWMODIFY_EBX_NAME, false );
+			_win32DialogNewModify.enableControl( AP_RID_DIALOG_STYLES_NEWMODIFY_EBX_BASEDON, false );
+			_win32DialogNewModify.enableControl( AP_RID_DIALOG_STYLES_NEWMODIFY_EBX_TYPE, false ); 
+			_win32DialogNewModify.enableControl( AP_RID_DIALOG_STYLES_NEWMODIFY_EBX_FOLLOWPARA , false ); 
+
+			fillVecWithProps(szCurrentStyle,true);
+		}
+
+		// Generate the Preview class
+		HWND hwndChild = GetDlgItem( hWnd, AP_RID_DIALOG_STYLES_NEWMODIFY_CTL_PREVIEW );
+
+		m_pAbiPreviewWidget = new XAP_Win32PreviewWidget(static_cast<XAP_Win32App *>(m_pApp),
+														  hwndChild,
+														  0);
+		UT_uint32 w,h;
+		m_pAbiPreviewWidget->getWindowSize(&w,&h);
+		_createAbiPreviewFromGC(m_pAbiPreviewWidget->getGraphics(), w, h);
+		_populateAbiPreview(m_bisNewStyle);
+		m_pAbiPreviewWidget->setPreview(m_pAbiPreview);
+
+		rebuildDeleteProps();
+		_populatePreviews(true);
+
 	}
 	return 1;							// 1 == we did not call SetFocus()
 }
@@ -194,19 +368,45 @@ BOOL AP_Win32Dialog_Styles::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 
 	switch (wId)
 	{
+	case AP_RID_DIALOG_STYLES_TOP_BUTTON_APPLY:
+		{
+			const XML_Char * szStyle = getCurrentStyle();
+			if(szStyle && *szStyle)
+			{
+				getView()->setStyle(szStyle);
+			}		
+		}
+		m_answer = a_OK;
+		return 1;
+
+	case AP_RID_DIALOG_STYLES_TOP_BUTTON_CLOSE:
 	case IDCANCEL:
 		m_answer = a_CANCEL;
 		EndDialog(hWnd,0);
 		return 1;
 
 	case IDOK:
+		{	
+			_win32DialogNewModify.getControlText( AP_RID_DIALOG_STYLES_NEWMODIFY_EBX_NAME,
+                                                  m_newStyleName,
+	                                              MAX_EBX_LENGTH );
+			if( !m_newStyleName || !strlen(m_newStyleName) )
+			{
+     			const XAP_StringSet * pSS = m_pApp->getStringSet ();
+			    getFrame()->showMessageBox( pSS->getValue (AP_STRING_ID_DLG_Styles_ErrBlankName),
+											XAP_Dialog_MessageBox::b_O,
+											XAP_Dialog_MessageBox::a_OK);
+
+			    return 1;
+    		}
+		}
 		m_answer = a_OK;
 		EndDialog(hWnd,0);
 		return 1;
 
 
 	case AP_RID_DIALOG_STYLES_TOP_COMBO_LIST:
-		if (wNotifyCode == CBN_SELCHANGE)
+		if( wNotifyCode == CBN_SELCHANGE )
 		{
 			switch(_win32Dialog.getComboSelectedIndex(AP_RID_DIALOG_STYLES_TOP_COMBO_LIST))
 			{
@@ -251,14 +451,175 @@ BOOL AP_Win32Dialog_Styles::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		}
 		return 1;
 
+	case AP_RID_DIALOG_STYLES_TOP_BUTTON_DELETE:
+		{
+			if( m_selectedStyle != "" )
+			{
+				if ( !getDoc()->removeStyle(m_selectedStyle.c_str()) ) // actually remove the style
+				{
+					const XAP_StringSet * pSS = m_pApp->getStringSet();
+					getFrame()->showMessageBox( pSS->getValue (AP_STRING_ID_DLG_Styles_ErrStyleCantDelete),
+												XAP_Dialog_MessageBox::b_O,
+												XAP_Dialog_MessageBox::a_OK	);
+					return 1;
+				}
+				getFrame()->repopulateCombos();
+				_populateWindowData(); // force a refresh
+				getDoc()->signalListeners(PD_SIGNAL_UPDATE_LAYOUT);
+			}
+    	}
+		return 1;
+
 	case AP_RID_DIALOG_STYLES_TOP_BUTTON_NEW:
 		{
-		XAP_Frame* pFrame = getFrame();
-		_win32DialogNewModify.runModal(pFrame, AP_DIALOG_ID_STYLES, AP_RID_DIALOG_STYLES_NEWMODIFY, this);
+			m_bisNewStyle = true;
+			//_win32Dialog.showWindow(SW_HIDE);
+			XAP_Frame* pFrame = getFrame();
+			_win32DialogNewModify.runModal(pFrame, AP_DIALOG_ID_STYLES, AP_RID_DIALOG_STYLES_NEWMODIFY, this);
+			if(m_answer == AP_Dialog_Styles::a_OK)
+			{
+				createNewStyle((XML_Char *) m_newStyleName);
+				//_populateWindowData(); // force a refresh	_populateCList();
+				_populateCList();
+			}
+			destroyAbiPreview();
+			DELETEP(m_pAbiPreviewWidget);
+			//_win32Dialog.showWindow(SW_SHOW);
 		}
 		return 1;
 
 	case AP_RID_DIALOG_STYLES_TOP_BUTTON_MODIFY:
+		{
+			// Verify that a style is selected
+			if( m_selectedStyle == "" )
+			{
+				XAP_Frame * pFrame = getFrame();
+				const XAP_StringSet * pSS = m_pApp->getStringSet();
+				pFrame->showMessageBox( pSS->getValue(AP_STRING_ID_DLG_Styles_ErrNoStyle),
+										XAP_Dialog_MessageBox::b_O,
+										XAP_Dialog_MessageBox::a_OK);                                        
+				m_answer = AP_Dialog_Styles::a_CANCEL;
+				return 1;
+			}
+			else
+			{
+				PD_Style * pStyle = NULL;
+				getDoc()->getStyle(m_selectedStyle.c_str(), &pStyle);
+
+				// Verify that it isn't a builtin style
+				if( !pStyle->isUserDefined() )
+				{
+					const XAP_StringSet * pSS = m_pApp->getStringSet();
+					getFrame()->showMessageBox( pSS->getValue(AP_STRING_ID_DLG_Styles_ErrStyleBuiltin),
+											XAP_Dialog_MessageBox::b_O,
+											XAP_Dialog_MessageBox::a_OK);                       
+					m_answer = AP_Dialog_Styles::a_CANCEL;
+					return 1;
+				}
+
+				m_bisNewStyle = false;
+				//_win32Dialog.showWindow(SW_HIDE);
+				XAP_Frame* pFrame = getFrame();
+				_win32DialogNewModify.runModal(pFrame, AP_DIALOG_ID_STYLES, AP_RID_DIALOG_STYLES_NEWMODIFY, this);
+
+				if(m_answer == AP_Dialog_Styles::a_OK)
+				{
+					applyModifiedStyleToDoc();
+					getDoc()->updateDocForStyleChange(getCurrentStyle(),true);
+					getDoc()->signalListeners(PD_SIGNAL_UPDATE_LAYOUT);
+				}
+
+				destroyAbiPreview();
+				DELETEP(m_pAbiPreviewWidget);
+				//_win32Dialog.showWindow(SW_SHOW);
+			}
+		}
+		return 1;
+
+	case AP_RID_DIALOG_STYLES_NEWMODIFY_BTN_REMOVE:
+		{
+			char szTemp[40];
+			_win32DialogNewModify.getControlText( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_REMOVE,
+                                                  szTemp,
+	                                              40 );			
+			removeVecProp(szTemp);
+			rebuildDeleteProps();
+			updateCurrentStyle();
+		}
+		return 1;
+
+	case AP_RID_DIALOG_STYLES_NEWMODIFY_BTN_TOGGLEUP:
+		if(m_selectToggle == 0 ) 
+		{ 
+			m_selectToggle = MAX_POS;
+		}
+		else
+		{
+			m_selectToggle--;
+		}
+		_updateToggleButtonText();
+		return 1;
+
+
+	case AP_RID_DIALOG_STYLES_NEWMODIFY_BTN_TOGGLEDOWN:
+		if(m_selectToggle == MAX_POS) 
+		{ 
+			m_selectToggle = 0;
+		}
+		else
+		{
+			m_selectToggle++;
+		}
+		_updateToggleButtonText();
+		return 1;
+
+	case AP_RID_DIALOG_STYLES_NEWMODIFY_BTN_TOGGLEITEMS:
+		switch( m_selectToggle )
+		{
+		case 0:
+			break;
+		case 1:
+			ModifyParagraph();
+			break;
+		case 2:
+			ModifyFont();
+			break;
+		case 3:
+			ModifyTabs();
+			break;
+		case 4:
+			ModifyLists();
+			break;
+		case 5:
+			ModifyLang();
+			break;
+		}
+		rebuildDeleteProps();
+		updateCurrentStyle();
+		return 1;
+
+
+	case AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_BASEDON:
+		if( wNotifyCode == CBN_SELCHANGE )
+		{
+			eventBasedOn();
+			rebuildDeleteProps();
+		}	
+		return 1;
+
+	case AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_FOLLOWPARA:
+		if( wNotifyCode == CBN_SELCHANGE )
+		{
+			eventFollowedBy();
+		}	
+		return 1;
+
+	case AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_TYPE:
+		if( wNotifyCode == CBN_SELCHANGE )
+		{
+			eventStyleType();
+		}
+		return 1;
 
 	default:							// we did not handle this notification
 		UT_DEBUGMSG(("WM_Command for id %ld\n",wId));
@@ -322,3 +683,93 @@ void AP_Win32Dialog_Styles::setDescription (const char * desc) const
 	p_This->_win32Dialog.setControlText(AP_RID_DIALOG_STYLES_TOP_LABEL_DESCRIPTION, desc);
 }
 
+void AP_Win32Dialog_Styles::setModifyDescription (const char * desc)
+{
+	AP_Win32Dialog_Styles *p_This = (AP_Win32Dialog_Styles *)this; // Cast away const
+
+	p_This->_win32DialogNewModify.setControlText(AP_RID_DIALOG_STYLES_NEWMODIFY_CTL_DESC, desc);
+}
+
+void AP_Win32Dialog_Styles::_updateToggleButtonText()
+{
+	XAP_Win32App * app = static_cast<XAP_Win32App *> (m_pApp);
+	UT_ASSERT(app);
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
+
+	AP_Win32Dialog_Styles *p_This = (AP_Win32Dialog_Styles *)this; // Cast away const
+
+	switch(m_selectToggle)
+	{
+	case 0:
+		p_This->_win32DialogNewModify.setControlText( AP_RID_DIALOG_STYLES_NEWMODIFY_BTN_TOGGLEITEMS,
+                                                      pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyFormat) );
+		break;
+	case 1:
+		p_This->_win32DialogNewModify.setControlText( AP_RID_DIALOG_STYLES_NEWMODIFY_BTN_TOGGLEITEMS,
+                                                      pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyParagraph) );
+		break;
+	case 2:
+		p_This->_win32DialogNewModify.setControlText( AP_RID_DIALOG_STYLES_NEWMODIFY_BTN_TOGGLEITEMS,
+                                                      pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyFont) );
+		break;
+	case 3:
+		p_This->_win32DialogNewModify.setControlText( AP_RID_DIALOG_STYLES_NEWMODIFY_BTN_TOGGLEITEMS,
+                                                      pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyTabs) );
+		break;
+	case 4:
+		p_This->_win32DialogNewModify.setControlText( AP_RID_DIALOG_STYLES_NEWMODIFY_BTN_TOGGLEITEMS,
+                                                      pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyNumbering) );
+		break;
+	case 5:
+		p_This->_win32DialogNewModify.setControlText( AP_RID_DIALOG_STYLES_NEWMODIFY_BTN_TOGGLEITEMS,
+                                                      pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyLanguage) );
+		break;
+	}
+}	
+
+void AP_Win32Dialog_Styles::rebuildDeleteProps()
+{
+	AP_Win32Dialog_Styles *p_This = (AP_Win32Dialog_Styles *)this; // Cast away const
+	p_This->_win32DialogNewModify.resetComboContent(AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_REMOVE);
+
+	UT_sint32 count = m_vecAllProps.getItemCount();
+	UT_sint32 i= 0;
+	for(i=0; i< count; i+=2)
+	{
+		p_This->_win32DialogNewModify.addItemToCombo( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_REMOVE, 
+                                                      (const char *) m_vecAllProps.getNthItem(i) );
+	}
+}
+
+void AP_Win32Dialog_Styles::eventBasedOn()
+{
+	char szTemp[40];
+	_win32DialogNewModify.getControlText( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_BASEDON,
+                                          szTemp,
+	                                      40 );			
+	addOrReplaceVecAttribs("basedon",szTemp);
+	fillVecWithProps(szTemp,false);
+	updateCurrentStyle();
+}
+
+void AP_Win32Dialog_Styles::eventFollowedBy()
+{
+	char szTemp[40];
+	_win32DialogNewModify.getControlText( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_FOLLOWPARA,
+                                          szTemp,
+	                                      40 );			
+	addOrReplaceVecAttribs("followedby",szTemp);
+}
+
+void AP_Win32Dialog_Styles::eventStyleType()
+{
+	const XAP_StringSet * pSS = m_pApp->getStringSet();	
+	const XML_Char * pszSt = "P";
+	char szTemp[40];
+	_win32DialogNewModify.getControlText( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_TYPE,
+                                          szTemp,
+                                          40 );			
+	if(strstr(szTemp, pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyCharacter)) != 0)
+		pszSt = "C";
+	addOrReplaceVecAttribs("type",pszSt);
+}

@@ -24,6 +24,8 @@
 #include "xap_Win32DialogHelper.h"
 #include "xap_Win32PreviewWidget.h"
 
+#define MAX_EBX_LENGTH 40
+#define MAX_POS 5
 /*****************************************************************/
 
 class AP_Win32Dialog_Styles: public AP_Dialog_Styles, XAP_Win32Dialog
@@ -43,13 +45,19 @@ protected:
 
 	virtual const char * getCurrentStyle (void) const;
 	virtual void setDescription (const char * desc) const;
-	virtual void setModifyDescription (const char * desc) {}
+	virtual void setModifyDescription (const char * desc);
 
 	XAP_Win32PreviewWidget	* 	m_pParaPreviewWidget;
 	XAP_Win32PreviewWidget	* 	m_pCharPreviewWidget;
+	XAP_Win32PreviewWidget	*	m_pAbiPreviewWidget;
 
 	void				_populateWindowData(void);
 	void                _populateCList(void);
+	void				_updateToggleButtonText();
+	void				rebuildDeleteProps();
+	void				eventBasedOn();
+	void				eventFollowedBy();
+	void				eventStyleType();
 
 protected:
 	BOOL					_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
@@ -61,7 +69,9 @@ private:
 	XAP_Win32DialogHelper		_win32DialogNewModify;
 	StyleType					m_whichType;
 	UT_String					m_selectedStyle;
-
+	bool						m_bisNewStyle;
+	UT_sint32					m_selectToggle;
+	XML_Char    				m_newStyleName[MAX_EBX_LENGTH];
 };
 
 
