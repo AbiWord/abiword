@@ -190,7 +190,7 @@ public:
 	bool                        repopulateCombos();
 
 	void                        rebuildAllToolbars(void);
-	void                        refillToolbarsInFrameData(void) { return m_pFrameImpl->_refillToolbarsInFrameData(); }
+	void                        refillToolbarsInFrameData(void) { m_pFrameImpl->_refillToolbarsInFrameData(); }
 	void                        dragBegin(XAP_Toolbar_Id srcId, 
 										  EV_Toolbar * pTBsrc);
 	void                        dragDropToIcon(XAP_Toolbar_Id srcId,

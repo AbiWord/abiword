@@ -73,7 +73,7 @@ private:
 class ABI_EXPORT GR_RasterImage : public GR_Image
 {
 public:
-   	virtual GRType		getType() { return GRT_Raster; }
+   	virtual GRType		getType() const { return GRT_Raster; }
 };
 
 class ABI_EXPORT GR_ImageFactory
