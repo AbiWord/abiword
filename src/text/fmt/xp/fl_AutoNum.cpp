@@ -171,12 +171,18 @@ void    fl_AutoNum::markAsDirty(void)
 
 void    fl_AutoNum::findAndSetParentItem(void)
 {
-        if(m_pParent != NULL)
+	if(m_pParent != NULL)
 	{
-	  //        fixListOrder();
-	  //	m_pParent->fixListOrder();
+	//	fixListOrder();
+	//	m_pParent->fixListOrder();
 		m_pParent->update(0);
-                PL_StruxDocHandle pCurFirst =  (PL_StruxDocHandle) m_pItems.getFirstItem();
+
+		if (m_pItems.getItemCount() == 0)
+		{
+			return;
+		}
+
+		PL_StruxDocHandle pCurFirst =  (PL_StruxDocHandle) m_pItems.getFirstItem();
 		if(pCurFirst == NULL)
 		       return;
 		PT_DocPosition posCur = m_pDoc->getStruxPosition(pCurFirst);
@@ -186,28 +192,28 @@ void    fl_AutoNum::findAndSetParentItem(void)
 		PT_DocPosition posParent=0;
 		if(pParentItem != NULL)
 		{
-		       posParent = m_pDoc->getStruxPosition(pParentItem);
+			posParent = m_pDoc->getStruxPosition(pParentItem);
 		}
 		while(pParentItem != NULL && (posParent < posCur))
 		{
-		       i++;
-		       pParentItem = m_pParent->getNthBlock(i);
-		       if(pParentItem != NULL)
-		       {
-		               posParent = m_pDoc->getStruxPosition(pParentItem);
-		       }
+			i++;
+			pParentItem = m_pParent->getNthBlock(i);
+			if(pParentItem != NULL)
+			{
+				posParent = m_pDoc->getStruxPosition(pParentItem);
+			}
 		}
 		if( i > 0)
 		{
-		       i--;
-		       m_pParentItem = m_pParent->getNthBlock(i);
+			i--;
+			m_pParentItem = m_pParent->getNthBlock(i);
 		}
 		else
 		{
-		       m_pParentItem = NULL;
-		       m_pParent = NULL;
-		       m_iParentID = 0;
-		       m_iLevel = 1;
+			m_pParentItem = NULL;
+			m_pParent = NULL;
+			m_iParentID = 0;
+			m_iLevel = 1;
 		}
 		m_bDirty = UT_TRUE;
 		update(0);
@@ -721,6 +727,12 @@ const UT_Bool fl_AutoNum::isEmpty()
 		return UT_FALSE;
 	else
 		return UT_TRUE;
+}
+
+PL_StruxDocHandle fl_AutoNum::getFirstItem()
+{
+	return (PL_StruxDocHandle)
+		(m_pItems.getItemCount() ? m_pItems.getFirstItem() : 0);
 }
 
 UT_Bool fl_AutoNum::doesItemHaveLabel( fl_BlockLayout * pItem)
