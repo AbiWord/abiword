@@ -1377,7 +1377,7 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 {
 	PAP *apap = static_cast <PAP *>(prop);
 
-	XML_Char propBuffer [DOC_PROPBUFFER_SIZE];
+	UT_String propBuffer;
 	UT_String props;
 
 	//
@@ -1509,34 +1509,34 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 
 	// tab stops
 	if (apap->itbdMac) {
-		strcpy(propBuffer, "tabstops:");
+		propBuffer += "tabstops:";
 
 		for (int iTab = 0; iTab < apap->itbdMac; iTab++) {
-			UT_String_sprintf(propBuffer + strlen(propBuffer),
-					"%s/",
-					UT_convertInchesToDimensionString(DIM_IN, (((float)apap->rgdxaTab[iTab]) 
-															   / 1440), "1.4"));
+			propBuffer += UT_String_sprintf(
+							"%s/",
+							UT_convertInchesToDimensionString(DIM_IN, (((float)apap->rgdxaTab[iTab]) 
+												   / 1440), "1.4"));
 			switch (apap->rgtbd[iTab].jc) {
 			case 1:
-				strcat(propBuffer, "C,");
+				propBuffer += "C,";
 				break;
 			case 2:
-				strcat(propBuffer, "R,");
+				propBuffer += "R,";
 				break;
 			case 3:
-				strcat(propBuffer, "D,");
+				propBuffer += "D,";
 				break;	
 			case 4:
-				strcat(propBuffer, "B,");
+				propBuffer += "B,";
 				break;
 			case 0:
 			default:
-				strcat(propBuffer, "L,");
+				propBuffer += "L,";
 				break;
 			}
 		}
 		// replace final comma with a semi-colon
-		propBuffer[strlen(propBuffer)-1] = ';';
+		propBuffer[propBuffer.size()-1] = ';';
 		props += propBuffer;
 	}
 

@@ -178,8 +178,8 @@ protected:
 	void				_handleField(PT_AttrPropIndex api);
 	void                _outputData(const UT_UCSChar * data, UT_uint32 length);
 
-	void				_convertFontSize(char* szDest, const char* szFontSize);
-	void                _convertColor(char* szDest, const char* pszColor);
+	void				_convertFontSize(UT_String& szDest, const char* szFontSize);
+	void                _convertColor(UT_String& szDest, const char* pszColor);
 
 	void				_closeSection();
 	void				_closeBlock();
@@ -887,19 +887,19 @@ void s_XSL_FO_Listener::_closeSpan()
 /*****************************************************************/
 /*****************************************************************/
 
-void s_XSL_FO_Listener::_convertColor(char* szDest, const char* pszColor)
+void s_XSL_FO_Listener::_convertColor(UT_String& szDest, const char* pszColor)
 {
 	/*
 	 * TODO we might want to be a little more careful about this.
 	 * The proper XSL-FO color is #rrggbb, which is basically the same
 	 * as what we use this.
 	 */
-	strcpy(szDest, pszColor);
+	szDest = pszColor;
 }
 
-void s_XSL_FO_Listener::_convertFontSize(char* szDest, const char* pszFontSize)
+void s_XSL_FO_Listener::_convertFontSize(UT_String& szDest, const char* pszFontSize)
 {
-	strcpy (szDest, pszFontSize);
+	szDest = pszFontSize;
 }
 
 /*****************************************************************/

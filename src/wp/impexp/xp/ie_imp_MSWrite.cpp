@@ -202,7 +202,7 @@ int IE_Imp_MSWrite::read_ffntb ()
     font_count = 0;
     wri_fonts = NULL;
 	
-    while (1) {
+    while (true) {
 		if (2 != fread (byt, 1, 2, mFile)) {
 			perror ("wri_file");
 			return 1;
@@ -272,17 +272,15 @@ int IE_Imp_MSWrite::read_pap ()
     unsigned char pap_page[0x80];
     static const char *text_align[] = { "left", "center", "right", "justify" };
 
-	XML_Char* pProps = "props";
-	XML_Char propBuffer[1024];	//TODO is this big enough?  better to make it a member and stop running all over the stack
-	XML_Char tempBuffer[1024];
-
-	propBuffer [0] = 0;
-
+    XML_Char* pProps = "props";
+    UT_String propBuffer;
+    UT_String tempBuffer;
+	
     fcMac = wri_struct_value (write_file_header, "fcMac");
     page = wri_struct_value (write_file_header, "pnPara");
     fcFirst = 0x80;
 	
-    while (1) {
+    while (true) {
 		fseek (mFile, page++ * 0x80, SEEK_SET);
 		fread (pap_page, 1, 0x80, mFile);
 		cfod = pap_page[0x7f];
@@ -355,38 +353,38 @@ int IE_Imp_MSWrite::read_pap ()
 				UT_DEBUGMSG(("Headers and footers not supported, skipping...\n")); 
             } else {
 				setlocale (LC_NUMERIC, "C");
-				sprintf (propBuffer, "text-align:%s; line-height:%.1f",
-						 text_align[jc], (float)dyaLine / 240.0);
+				UT_String_sprintf (propBuffer, "text-align:%s; line-height:%.1f",
+						   text_align[jc], (float)dyaLine / 240.0);
 //				strcat (propBuffer, tempBuffer);
 
 				/* tabs */
 				if (tab_count) {
-					strcat (propBuffer, "; tabstops:");
+					propBuffer += "; tabstops:";
 					for (n=0; n < tab_count; n++) {
-						sprintf (tempBuffer, "%.4fin/%c0", ((float)tabs[n]) / 1440.0,
-								 jcTab[n] ? 'D' : 'L');
-						strcat (propBuffer, tempBuffer);
+					  UT_String_sprintf (tempBuffer, "%.4fin/%c0", ((float)tabs[n]) / 1440.0,
+							     jcTab[n] ? 'D' : 'L');
+						propBuffer += tempBuffer;
 						if (n != (tab_count - 1)) {
-							strcat (propBuffer, ",");
+							propBuffer += ",";
 						}
 					}
 				}
 				
 				/* indentation */
 				if (dxaLeft1) {
-					sprintf (tempBuffer, "; text-indent:%.4fin", 
+					UT_String_sprintf (tempBuffer, "; text-indent:%.4fin", 
 							 (float) dxaLeft1 / 1440.0);
-					strcat (propBuffer, tempBuffer);
+					propBuffer += tempBuffer;
 				}
 				if (dxaLeft) {
-					sprintf (tempBuffer, "; margin-left:%.4fin", 
-							 (float) dxaLeft / 1440.0);
-					strcat (propBuffer, tempBuffer);
+					UT_String_sprintf (tempBuffer, "; margin-left:%.4fin", 
+							   (float) dxaLeft / 1440.0);
+					propBuffer += tempBuffer;
 				}
 				if (dxaRight) {
-					sprintf (tempBuffer, "; margin-right:%.4fin", 
+					UT_String_sprintf (tempBuffer, "; margin-right:%.4fin", 
 							 (float) dxaRight / 1440.0);
-					strcat (propBuffer, tempBuffer);
+					propBuffer += tempBuffer;
 				}
 				setlocale (LC_NUMERIC, "");
 
@@ -394,7 +392,7 @@ int IE_Imp_MSWrite::read_pap ()
 
 				const XML_Char* propsArray[3];
 				propsArray[0] = pProps;
-				propsArray[1] = propBuffer;
+				propsArray[1] = propBuffer.c_str();
 				propsArray[2] = NULL;
 				
 				getDoc()->appendStrux (PTX_Block, propsArray);
@@ -423,15 +421,14 @@ int IE_Imp_MSWrite::read_char (int fcFirst2, int fcLim2) {
     unsigned char char_page[0x80];
 
 	XML_Char* pProps = "props";
-	XML_Char propBuffer[1024];	//TODO is this big enough?  better to make it a member and stop running all over the stack
-	XML_Char tempBuffer[1024];
-	propBuffer [0] = 0;
+	UT_String propBuffer;
+	UT_String tempBuffer;
 	
     fcMac = wri_struct_value (write_file_header, "fcMac");
     page = (fcMac + 127) / 128;
     fcFirst = 0x80;
 	
-    while (1) {
+    while (true) {
 		fseek (mFile, page++ * 0x80, SEEK_SET);
 		fread (char_page, 1, 0x80, mFile);
 		cfod = char_page[0x7f];
@@ -477,22 +474,22 @@ int IE_Imp_MSWrite::read_char (int fcFirst2, int fcLim2) {
 				mCharBuf.clear ();
 				setlocale (LC_NUMERIC, "C");
 				
-				sprintf (propBuffer, "font-weight:%s", bold ? "bold" : "normal");
+				UT_String_sprintf (propBuffer, "font-weight:%s", bold ? "bold" : "normal");
 				if (italic)  {
-					strcat (propBuffer, "; font-style:italic");
+					propBuffer += "; font-style:italic";
 				}
 				if (underline) {
-					strcat (propBuffer, "; font-decoration:underline");
+					propBuffer += "; font-decoration:underline";
 				}
 				if (hpsPos) {
-					sprintf (tempBuffer, "; font-position:%s; font-size:%dpt", 
-							 hpsPos >= 128 ? "superscript" : "subscript",
-							 hps / 2);
-					strcat (propBuffer, tempBuffer);
+					UT_String_sprintf (tempBuffer, "; font-position:%s; font-size:%dpt", 
+							   hpsPos >= 128 ? "superscript" : "subscript",
+							   hps / 2);
+					propBuffer += tempBuffer;
 				}
 				if (wri_fonts_count) {
-					sprintf (tempBuffer, "; font-family:%s", wri_fonts[ftc].name);
-					strcat (propBuffer, tempBuffer);
+					UT_String_sprintf (tempBuffer, "; font-family:%s", wri_fonts[ftc].name);
+					propBuffer += tempBuffer;
 				}
 				
 				while (fcFirst2 >= fcFirst) {
@@ -506,7 +503,7 @@ int IE_Imp_MSWrite::read_char (int fcFirst2, int fcLim2) {
 				
 				const XML_Char* propsArray[3];
 				propsArray[0] = pProps;
-				propsArray[1] = propBuffer;
+				propsArray[1] = propBuffer.c_str();
 				propsArray[2] = NULL;
 				
 				if (mCharBuf.size() > 0) {

@@ -171,8 +171,8 @@ protected:
 	void				_outputInheritanceLine(const char* ClassName);
 	void 				_outputBegin(PT_AttrPropIndex api);
 	void				_handleDataItems(void);
-	void				_convertFontSize(char* szDest, const char* pszFontSize);
-	void				_convertColor(char* szDest, const char* pszColor);
+	void				_convertFontSize(UT_String& szDest, const char* pszFontSize);
+	void				_convertColor(UT_String& szDest, const char* pszColor);
 	void				_storeStyles(void);
 	char *				_stripSuffix(const char* from, char delimiter);
 	
@@ -754,7 +754,7 @@ void s_HTML_Listener::_openSection(PT_AttrPropIndex api)
 	m_pie->write("<div>\r\n");
 }
 
-void s_HTML_Listener::_convertColor(char* szDest, const char* pszColor)
+void s_HTML_Listener::_convertColor(UT_String& szDest, const char* pszColor)
 {
 	/*
 	  TODO we might want to be a little more careful about this.
@@ -763,10 +763,10 @@ void s_HTML_Listener::_convertColor(char* szDest, const char* pszColor)
 	  forgiving than we are, so this is probably not a big
 	  problem.
 	*/
-	strcpy(szDest, pszColor);
+	szDest = pszColor;
 }
 
-void s_HTML_Listener::_convertFontSize(char* szDest, const char* pszFontSize)
+void s_HTML_Listener::_convertFontSize(UT_String& szDest, const char* pszFontSize)
 {
 	double fSizeInPoints = UT_convertToPoints(pszFontSize);
 
@@ -777,31 +777,31 @@ void s_HTML_Listener::_convertFontSize(char* szDest, const char* pszFontSize)
 	
 	if (fSizeInPoints <= 7)
 	{
-		strcpy(szDest, "1");
+		szDest = "1";
 	}
 	else if (fSizeInPoints <= 10)
 	{
-		strcpy(szDest, "2");
+		szDest = "2";
 	}
 	else if (fSizeInPoints <= 12)
 	{
-		strcpy(szDest, "3");
+		szDest = "3";
 	}
 	else if (fSizeInPoints <= 16)
 	{
-		strcpy(szDest, "4");
+		szDest = "4";
 	}
 	else if (fSizeInPoints <= 24)
 	{
-		strcpy(szDest, "5");
+		szDest = "5";
 	}
 	else if (fSizeInPoints <= 36)
 	{
-		strcpy(szDest, "6");
+		szDest = "6";
 	}
 	else
 	{
-		strcpy(szDest, "7");
+		szDest = "7";
 	}
 }
 
