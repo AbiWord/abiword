@@ -522,12 +522,12 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 		if(height > width)
 		{
 			rat = static_cast<gint>( 100.0 *height/width);
-			gtk_widget_set_usize (wPreviewFrame, 100, rat); // was -2
+			gtk_window_set_default_size (GTK_WINDOW(wPreviewFrame), 100, rat); // was -2
 		}
 		else
 		{
 			rat = static_cast<gint>( 200.* height/width);
-			gtk_widget_set_usize(wPreviewFrame, 200, rat);
+			gtk_window_set_default_size (GTK_WINDOW(wPreviewFrame), 200, rat);
 		}
 	}
 	else

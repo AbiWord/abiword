@@ -319,7 +319,7 @@ void XAP_UnixDialog_PluginManager::runModal(XAP_Frame * pFrame)
   
   // build the dialog
   GtkWidget * cf = _constructWindow();
-  gtk_widget_set_usize(cf, 450, 300);
+  gtk_window_set_default_size(GTK_WINDOW(cf), 450, 300);
 
   // select the 1st row && force a refresh
   gtk_clist_select_row(GTK_CLIST(m_clist), 0, 0);

@@ -261,7 +261,7 @@ GtkWidget * AP_UnixDialog_Goto::_constructWindow (void)
 	//initially hide the bookmark list; also we want the bookmark list to be
 	// of same size as the descriptive text, so that when we swap them
 	// the whole window does not get resized
-	gtk_widget_set_usize(m_swindow,(gint)m_dlabel->allocation.width,(gint)m_dlabel->allocation.height);
+	gtk_window_set_default_size(GTK_WINDOW(m_swindow),(gint)m_dlabel->allocation.width,(gint)m_dlabel->allocation.height);
 	gtk_widget_hide(m_swindow);
 	
 	_connectSignals ();

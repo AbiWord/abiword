@@ -121,7 +121,7 @@ void XAP_UnixDialog_Language::runModal(XAP_Frame * pFrame)
   GtkWidget * cf = constructWindow();
   
   // make the window big
-  gtk_widget_set_usize(cf, 290, 350);
+  gtk_window_set_default_size(GTK_WINDOW(cf), 300, 400);
 
   // fill the listbox
   gtk_clist_freeze(GTK_CLIST(m_pLanguageList));

@@ -1345,7 +1345,7 @@ void XAP_UnixFrameImpl::_setGeometry ()
 	if (cap_resize)
 	    gtk_window_resize(GTK_WINDOW(m_wTopLevelWindow), w, h);
 	else
-	    gtk_widget_set_usize(m_wTopLevelWindow, w, h); // deprecated
+	    gtk_window_set_default_size(GTK_WINDOW(m_wTopLevelWindow), w, h); // deprecated
 #endif
 
 	// Because we're clever, we only honor this flag when we

@@ -190,7 +190,7 @@ GtkWidget * XAP_UnixDialog_WindowMore::_constructWindow(void)
   
   scrollWindows = gtk_scrolled_window_new(NULL, NULL);
   gtk_widget_show(scrollWindows);
-  gtk_widget_set_usize(scrollWindows, 350, 210);
+  gtk_window_set_default_size(GTK_WINDOW(scrollWindows), 350, 210);
   gtk_container_set_border_width(GTK_CONTAINER(scrollWindows), 10);
   gtk_box_pack_start(GTK_BOX(vboxMain), scrollWindows, TRUE, TRUE, 0);
   

@@ -106,7 +106,7 @@ GtkWidget * AP_UnixDialog_ListRevisions::constructWindow ()
 	
   gtk_window_set_modal (GTK_WINDOW (dialog1), TRUE);
   gtk_window_set_policy (GTK_WINDOW (dialog1), TRUE, TRUE, FALSE);
-  gtk_widget_set_usize ( dialog1, 250, 250 ) ;
+  gtk_window_set_default_size ( GTK_WINDOW(dialog1), 250, 250 ) ;
 
   dialog_vbox1 = GTK_DIALOG (dialog1)->vbox;
   gtk_widget_show (dialog_vbox1);
