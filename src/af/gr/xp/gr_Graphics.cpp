@@ -229,7 +229,11 @@ UT_UCSChar GR_Graphics::remapGlyph(const UT_UCSChar actual_, UT_Bool noMatterWha
 			if (!width) remap = m_ucRemapGlyphsDefault;
 		}
 	}
-	if (remap != actual) UT_DEBUGMSG(("GR_Graphics::remapGlyph( 0x%04X ) -> 0x%04X    tick: %d [%d]\n", actual, remap, t, s));
+	if (remap != actual)
+	{
+		UT_DEBUGMSG(("GR_Graphics::remapGlyph( 0x%04X ) -> 0x%04X    tick: %d [%d]\n", actual, remap, t, s));
+	}
+
 	return remap;
 }
 
