@@ -115,19 +115,22 @@ void AP_UnixDialog_PageNumbers::event_HdrFtrChanged(AP_Dialog_PageNumbers::tCont
 
 void AP_UnixDialog_PageNumbers::runModal(XAP_Frame * pFrame)
 {
+	UT_return_if_fail(pFrame);
+	
     // Build the window's widgets and arrange them
     GtkWidget * mainWindow = _constructWindow();
-    UT_ASSERT(mainWindow);
+    UT_return_if_fail(mainWindow);
 
-	gtk_widget_show ( mainWindow ) ;
+	// show everything before creating the preview
+	gtk_widget_show_all ( mainWindow ) ;
 
     // *** this is how we add the gc ***
     {
       // attach a new graphics context to the drawing area
       XAP_UnixApp * unixapp = static_cast<XAP_UnixApp *> (m_pApp);
     
-      UT_ASSERT(unixapp);
-      UT_ASSERT(m_previewArea && m_previewArea->window);
+      UT_return_if_fail(unixapp);
+      UT_return_if_fail(m_previewArea && m_previewArea->window);
       DELETEP (m_unixGraphics);
       
       // make a new Unix GC
