@@ -5898,8 +5898,6 @@ Defun(viewNormalLayout)
 	pView->updateScreen(false);
 	pView->notifyListeners(AV_CHG_ALL);
 
-	EX(zoomWidth);
-
 	return true;
 }
 
@@ -5927,7 +5925,6 @@ Defun(viewWebLayout)
 
 	pScheme->setValue(AP_PREF_KEY_LayoutMode, "3");
 
-	EX(zoomWidth);
 	return true;
 }
 
