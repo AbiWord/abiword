@@ -202,9 +202,26 @@ static int s_compareB(const void * l, const void *e)
 #endif
 }
 
+/*!
+ Set the language name attribut in the language table. It takes the localized
+ names from the available stringset. This function is supplied to set the names
+ after the stringset is known to the application.
+*/
+void UT_Language_updateLanguageNames() 
+{
+    const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
+    UT_return_if_fail(pSS);
+    
+    for(UT_uint32 i = 0; i < NrElements(s_Table); i++)
+    {
+        s_Table[i].m_szLangName = const_cast<XML_Char *>(pSS->getValue(s_Table[i].m_nID));
+    }
+
+    qsort(&s_Table[0], NrElements(s_Table), sizeof(UT_LangRecord), s_compareQ);
+}
+
 
 bool UT_Language::s_Init = true;
-
 
 /*!
  The constructor looks up the translations for the language code and sorts the table
@@ -212,20 +229,11 @@ bool UT_Language::s_Init = true;
  */
 UT_Language::UT_Language()
 {
-	if(s_Init) //only do this once
-	{
-		const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
-
-		UT_return_if_fail(pSS);
-		
-		for(UT_uint32 i = 0; i < NrElements(s_Table); i++)
-		{
-			s_Table[i].m_szLangName = const_cast<XML_Char *>(pSS->getValue(s_Table[i].m_nID));
-		}
-
-		qsort(&s_Table[0], NrElements(s_Table), sizeof(UT_LangRecord), s_compareQ);
-		s_Init = false;
-	}
+	if(s_Init) // do this once here
+    {
+        UT_Language_updateLanguageNames();
+        s_Init = false;
+    }
 }
 
 UT_uint32 UT_Language::getCount()
