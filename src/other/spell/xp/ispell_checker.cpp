@@ -295,6 +295,7 @@ static const Ispell2Lang_t m_mapping[] = {
   { "francais.hash",   "fr-CA" },
   { "francais.hash",   "fr-CH" },
   { "francais.hash",   "fr-FR" },
+  { "hungarian.hash",  "hu-HU" },
   { "irish.hash",      "ga-IE" },
   { "galician.hash",   "gl-ES" },
   { "italian.hash",    "it-IT" },
