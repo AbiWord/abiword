@@ -12,6 +12,7 @@ Shaw Terwilliger <sterwill@abisource.com>
 contributors
 ------------
 Matthew Allen <fret@ozemail.com.au>             MouseWheel fix
+Tim Allen <rita_tim@tpg.com.au>			Goto Localization, Indonesian Translation
 Peter Arnold <petera@intrinsica.co.uk>          RTF import
 Darren Benham <gecko@benham.net>                Debian package, ispell whiz
 Henrik Berg <henrik@lansen.se>                  ispell i18n
@@ -21,6 +22,7 @@ Scott Boesch <scott@abisource.com>              artist, trade shows
 Brian Bosse <bhb002@drake.edu>
 Justin Bradford <justin@ukans.edu>              Word import, spell dialog
 John Brewer <jbrewer@jera.com>                  started MacOS port
+Thomas Briggs <tom@sane.com>			Bug 919 Fix
 Andy Burnett <andy@abisource.com>
 Christopher Caron <ChrisDigo@aol.com>           Help (French)
 Heath D. Carr <heath@abisource.com>
@@ -53,16 +55,17 @@ Kenneth MacDonald <kenny@holyrood.ed.ac.uk>     Color Printing patch
 Brian Marick <marick@rstcorp.com>       
 Lalo Martins <lalo@webcom.com>
 Caolan McNamara <Caolan.McNamara@ul.ie>         Word import
+Anders Melchiorsen <postmaster@and.nospam.kampsax.k-net.dk> 	GTK Window Autosize
 Mike Meyer <mwm@mired.org>                      ParseAFM isspace() fix
 James Montgomerie <jamie@montgomerie.net>       ANSI C patrol, libole2 integration
 Tom Newton <Tom.Newton@gtl.com>
 Mike Nordell <tamlin@algonet.se>                Windows printing fix
 Bruce Pearson <BruceP@wn.com.au>                full justification
-Michael Pritchett <MPritchett@attglobal.net>    Cygwin 1.1.0 build fixes
-Bryan Prusha <bryanp@wolfram.com>
-Andy Richardson <andy@promethium.chem.ucl.ac.uk>    PostScript image handling
+Michael Pritchett <MPritchett@attglobal.net>    BMP Import, Cygwin 1.1.0 build fixes
+Bryan Prusha <bryanp@wolfram.com>		Mac Port Work
+Andy Richardson <andy@promethium.chem.ucl.ac.uk>	PostScript image handling
 Duncan Rose <d.rose@salford.ac.uk>
-Bernhard Rosenkraenzer <bero@redhat.de>         gcc 2.96 lint
+Bernhard Rosenkraenzer <bero@redhat.de>         gcc 2.96 lint, IA64
 Pierre Sarrazin <ps@cam.org>
 Dan Schreiber <dan@abisource.com>
 Martin Sevior <msevior@physics.unimelb.edu.au>  Symbol dialog, Overline, cursor motion fixes
@@ -86,7 +89,6 @@ Alan Young <ayoung@teleport.com>                Alpha/NT
 translators
 -----------
 Albi <albi@linuxfan.com> <onderste@casema.net>  Dutch
-Tim & Rita Allen <tim@proximity.com.au>         Indonesian
 Jesus Bravo Alvarez <jba@pobox.com>             Galician
 Henrik Berg <henrik@lansen.se>                  Swedish
 Frédéric CELLA <fcella@mahj.org>                French
@@ -136,4 +138,16 @@ To get your name added to this list, see:
   abiword-dev@abisource.com
 
 Last updated: $Date$
+
+
+
+
+
+
+
+
+
+
+
+
 
