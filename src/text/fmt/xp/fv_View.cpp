@@ -577,7 +577,19 @@ PT_DocPosition FV_View::_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp,
 		{
 			fp_Run* pLastRun = pLine->getLastRun();
 
-			iPos = pLastRun->getBlockOffset() + pLastRun->getLength() + pBlock->getPosition();
+			while (!pLastRun->isFirstRunOnLine() && pLastRun->isForcedBreak())
+			{
+				pLastRun = pLastRun->getPrev();
+			}
+
+			if(pLastRun->isForcedBreak())
+			{
+				iPos = pBlock->getPosition() + pLastRun->getBlockOffset();
+			}
+			else
+			{
+				iPos = pBlock->getPosition() + pLastRun->getBlockOffset() + pLastRun->getLength();
+			}
 		}
 		break;
 
