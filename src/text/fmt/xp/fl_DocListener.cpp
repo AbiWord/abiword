@@ -1464,7 +1464,20 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 			// first of all, increase view tick, so that the view's
 			// property caches are invalidated ...
 			getLayout()->getView()->incTick();
-			getLayout()->getView()->notifyListeners(chgMask);
+			fl_ContainerLayout * pCL = (fl_ContainerLayout *)sfh;
+			bool doNotify = true;
+			if(pCL->isCollapsed())
+			{
+				doNotify = false;
+			}
+			if(doNotify)
+			{
+				getLayout()->getView()->notifyListeners(chgMask);
+			}
+			else
+			{
+				m_chgMaskCached |= chgMask;
+			}
 		}
 	}
 	
