@@ -199,8 +199,12 @@ protected:
 
 	void					_purgeSquiggles(void);
 	void					_addPartNotSpellChecked(UT_uint32 iOffset, UT_uint32 iLen);
+	fl_PartOfBlock*			_getSquiggle(UT_uint32 iOffset);
 	void					_addSquiggle(UT_uint32 iOffset, UT_uint32 iLen);
 	void					_updateSquiggle(fl_PartOfBlock* pPOB);
+	void					_moveSquiggles(UT_uint32 iOffset, 
+										   UT_sint32 chg, 
+										   fl_BlockLayout* pBlock=NULL);
 
 	UT_uint32				_getLastChar();
 

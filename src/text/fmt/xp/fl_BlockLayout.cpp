@@ -1186,6 +1186,28 @@ extending beyond the block size... no time fix now.
 
 }
 
+fl_PartOfBlock* fl_BlockLayout::_getSquiggle(UT_uint32 iOffset)
+{
+	// get the squiggle which spans iOffset, if any
+	fl_PartOfBlock* res = NULL;
+
+	UT_uint32 iSquiggles = m_vecSquiggles.getItemCount();
+	UT_uint32 j;
+	for (j=0; j<iSquiggles; j++)
+	{
+		fl_PartOfBlock* pPOB = (fl_PartOfBlock *) m_vecSquiggles.getNthItem(j);
+
+		if ((pPOB->iOffset <= iOffset) && 
+			((pPOB->iOffset + pPOB->iLength) >= iOffset))
+		{
+			res = pPOB;
+			break;
+		}
+	}
+
+	return res;
+}
+
 void fl_BlockLayout::_addSquiggle(UT_uint32 iOffset, UT_uint32 iLen)
 {
 	fl_PartOfBlock*	pPOB = new fl_PartOfBlock();
@@ -1210,6 +1232,41 @@ void fl_BlockLayout::_updateSquiggle(fl_PartOfBlock* pPOB)
 	PT_DocPosition pos2 = pos1 + pPOB->iLength;
 
 	pView->_clearBetweenPositions(pos1, pos2, UT_TRUE);
+}
+
+void fl_BlockLayout::_moveSquiggles(UT_uint32 iOffset, UT_sint32 chg, fl_BlockLayout* pBlock)
+{
+	UT_ASSERT(chg);
+
+	// move existing squiggles to reflect insert/delete at iOffset
+	// all subsequent squiggles should be switched to (non-null) pBlock
+
+	UT_uint32 target = (chg > 0) ? iOffset : (UT_uint32)((UT_sint32)iOffset - chg);
+
+	UT_uint32 iSquiggles = m_vecSquiggles.getItemCount();
+	UT_uint32 j;
+	for (j=iSquiggles; j>0; j--)
+	{
+		fl_PartOfBlock* pPOB = (fl_PartOfBlock *) m_vecSquiggles.getNthItem(j-1);
+
+		// only interested in squiggles after change
+		// overlapping squiggles already got handled elsewhere
+		if (pPOB->iOffset >= target)
+		{
+			// yep, this one moves
+			pPOB->iOffset = (UT_uint32)((UT_sint32)iOffset + chg);
+
+			if (pBlock)
+			{
+				UT_ASSERT(pBlock != this);
+				UT_ASSERT(chg < 0);
+					
+				// move squiggle to another block
+				pBlock->m_vecSquiggles.addItem(pPOB);
+				m_vecSquiggles.deleteNthItem(j-1);
+			}	
+		}
+	}
 }
 
 void fl_BlockLayout::checkSpelling(void)
@@ -1276,7 +1333,7 @@ void fl_BlockLayout::checkSpelling(void)
 			}
 
 			// for some reason, the spell checker fails on all 1-char words & really big ones
-			if ((wordLength > 1) && (!isdigit(pBlockText[wordBeginning]) && (wordLength < 100)))
+			if ((wordLength > 1) && (!UT_UCS_isdigit(pBlockText[wordBeginning]) && (wordLength < 100)))
 			{
 				if (! SpellCheckNWord16( &(pBlockText[wordBeginning]), wordLength))
 				{
