@@ -139,7 +139,8 @@ fp_Run::fp_Run(fl_BlockLayout* pBL,
 	m_pTmpLine(NULL),
 	m_bDrawSelection(false),
 	m_iSelLow(0),
-	m_iSelHigh(0)
+	m_iSelHigh(0),
+	m_iFontAllocNo(0)
 {
 	xxx_UT_DEBUGMSG(("fp_Run %x created!!! \n",this));
 	pBL->setPrevListLabel(false);
@@ -1032,6 +1033,29 @@ const UT_RGBColor fp_Run::getFGColor(void) const
 	return s_fgColor;
 }
 
+void fp_Run::_setFont(GR_Font * f)
+{
+	m_pFont = f;
+
+#ifdef DEBUG
+	if(f)
+		m_iFontAllocNo = f->getAllocNumber();
+#endif
+}
+
+GR_Font * fp_Run::_getFont(void) const
+{
+#ifdef DEBUG
+	if(m_pFont)
+	{
+		// if this assert fails we are in deep trouble; basically, the font pointer points
+		// to some other font that it was when it was set
+		UT_ASSERT_HARMLESS( m_iFontAllocNo ==  m_pFont->getAllocNumber());
+	}
+#endif
+	
+	return m_pFont;
+}
 
 void fp_Run::_setDirty(bool b)
 {

@@ -42,6 +42,10 @@ class ABI_EXPORT GR_Win32USPFont : public GR_Win32Font
 	virtual ~GR_Win32USPFont();
 
 	SCRIPT_CACHE * getScriptCache() {return &m_sc;}
+
+  protected:
+	virtual void _clearAnyCachedInfo();
+
   private:
 	SCRIPT_CACHE m_sc;
 };
@@ -63,6 +67,8 @@ public:
 	static const char *    getUSPVersion();
 	static GR_Graphics *   graphicsAllocator(GR_AllocInfo&);
 
+	virtual void			setFont(GR_Font* pFont);
+	
 	virtual void			drawChars(const UT_UCSChar* pChars,
 									  int iCharOffset, int iLength,
 									  UT_sint32 xoff, UT_sint32 yoff,
@@ -114,7 +120,11 @@ public:
   private:
 	bool      _constructorCommonCode();
 	virtual GR_Win32Font * _newFont(LOGFONT & lf){return new GR_Win32USPFont(lf);}
-	
+
+	void   _setupFontOnDC(GR_Win32USPFont *pFont);
+
+	UT_uint32 m_iDCFontAllocNo;
+
 	static HINSTANCE s_hUniscribe;
 	static UT_uint32 s_iInstanceCount;
 	static UT_VersionInfo s_Version;

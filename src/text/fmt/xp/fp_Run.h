@@ -371,8 +371,8 @@ protected:
 	void				_setDirection(UT_BidiCharType c) { m_iDirection = c; }
 	UT_BidiCharType		_getDirection(void) const { return m_iDirection; }
 	UT_BidiCharType		_getVisDirection(void) const { return m_iVisDirection; }
-	GR_Font *			_getFont(void) const { return m_pFont; }
-	void  				_setFont(GR_Font * f) { m_pFont = f; }
+	GR_Font *			_getFont(void) const;
+	void  				_setFont(GR_Font * f);
 	unsigned char		_getDecorations(void) const { return m_fDecorations; }
 	void				_setDecorations(unsigned char d) {m_fDecorations = d;}
 	
@@ -475,6 +475,10 @@ private:
     bool                    m_bDrawSelection;
     PT_DocPosition          m_iSelLow;
     PT_DocPosition          m_iSelHigh;
+
+#ifdef DEBUG
+	UT_uint32               m_iFontAllocNo;
+#endif
 };
 
 class ABI_EXPORT fp_TabRun : public fp_Run

@@ -65,6 +65,9 @@ public:
 	virtual GR_CharWidths* newFontWidths(void) const;
 	void markGUIFont() {m_bGUIFont = true;}
 
+	HDC   getFontHDC() const {return m_oldHDC;}
+	HFONT getFontHandle() const {return m_layoutFont;}
+	
 protected:
 	GR_Win32CharWidths * _getCharWidths() const
 	{
@@ -73,7 +76,12 @@ protected:
 #else
 		UT_return_val_if_fail(UT_NOT_IMPLEMENTED,NULL);
 #endif
-	}	
+	}
+
+	// this function should clear any cached information the font might cary
+	// it is prinicipally intened to be used when we share fonts between screen and
+	// printer 
+	virtual void _clearAnyCachedInfo() {};
    	
 private:
 

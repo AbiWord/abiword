@@ -236,7 +236,7 @@ GR_RenderInfo * GR_Win32USPRenderInfo::s_pOwnerChar         = NULL;
 
 
 GR_Win32USPGraphics::GR_Win32USPGraphics(HDC hdc, HWND hwnd, XAP_App * pApp)
-	:GR_Win32Graphics(hdc, hwnd, pApp)
+	:GR_Win32Graphics(hdc, hwnd, pApp), m_iDCFontAllocNo(0)
 {
 	if(!_constructorCommonCode())
 	{
@@ -248,7 +248,7 @@ GR_Win32USPGraphics::GR_Win32USPGraphics(HDC hdc, HWND hwnd, XAP_App * pApp)
 
 GR_Win32USPGraphics::GR_Win32USPGraphics(HDC hdc, const DOCINFO * pDI, XAP_App * pApp,
 										 HGLOBAL hDevMode)
-	:GR_Win32Graphics(hdc, pDI, pApp, hDevMode)
+	:GR_Win32Graphics(hdc, pDI, pApp, hDevMode), m_iDCFontAllocNo(0)
 {
 	if(!_constructorCommonCode())
 	{
@@ -471,6 +471,34 @@ GR_Graphics *   GR_Win32USPGraphics::graphicsAllocator(GR_AllocInfo& info)
 	}
 }
 
+/*!
+    The USP library maintains an internal font cache, which allows it to avoid accessing
+    the DC for things like measuring fonts, etc. This means that often it is not necessary
+    to have the font selected into the DC, and as SelectObject() is very time consuming,
+    we will not be calling it from here at all, instead, we will only note which font is
+    being set and call SelectObject() from inside the functions that access the DC only if
+    that is necessary.
+*/
+void GR_Win32USPGraphics::setFont(GR_Font* pFont)
+{
+	UT_ASSERT_HARMLESS(pFont);	// TODO should we allow pFont == NULL?
+	m_pFont = static_cast<GR_Win32Font *>(pFont);
+	m_iFontAllocNo = pFont->getAllocNumber();
+}
+
+void GR_Win32USPGraphics::_setupFontOnDC(GR_Win32USPFont *pFont)
+{
+	UT_return_if_fail( pFont );
+
+	if(pFont->getAllocNumber() != m_iDCFontAllocNo ||
+	   (HFONT) GetCurrentObject(m_hdc, OBJ_FONT) != pFont->getFontHandle())
+	{
+		UT_ASSERT_HARMLESS( SelectObject(m_hdc, pFont->getFontHandle()) );
+		m_iDCFontAllocNo = pFont->getAllocNumber();
+	}
+}
+
+
 #define GRWIN32USP_CHARBUFF_SIZE 100
 #define GRWIN32USP_ITEMBUFF_SIZE 20
 bool GR_Win32USPGraphics::itemize(UT_TextIterator & text, GR_Itemization & I)
@@ -659,11 +687,13 @@ bool GR_Win32USPGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 	
 	int iGlyphCount = 0;
 
+	HDC hdc = 0;
 	if(*(pFont->getScriptCache()) == NULL)
 	{
 		// need to make sure that the HDC has the correct font set
 		// so that ScriptShape measures it correctly for the cache
-		setFont(pFont);
+		_setupFontOnDC(pFont);
+		hdc = m_hdc;
 	}
 
 	RI->m_bShapingFailed = false;
@@ -671,8 +701,20 @@ bool GR_Win32USPGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 	
 	// we need to make sure that the analysis embeding level is in sync with si.m_iVisDir
 	pItem->m_si.a.fRTL = si.m_iVisDir == UT_BIDI_RTL ? 1 : 0;
-	HRESULT hRes = fScriptShape(m_hdc, pFont->getScriptCache(), pInChars, si.m_iLength, iGlyphBuffSize,
-							   & pItem->m_si.a, pGlyphs, RI->m_pClust, pVa, &iGlyphCount);
+	HRESULT hRes = fScriptShape(hdc, pFont->getScriptCache(), pInChars, si.m_iLength,
+								iGlyphBuffSize, & pItem->m_si.a, pGlyphs,
+								RI->m_pClust, pVa, &iGlyphCount);
+
+	if( hRes == E_PENDING)
+	{
+		UT_ASSERT_HARMLESS( hdc == 0 );
+
+		_setupFontOnDC(pFont);
+		hdc = m_hdc;
+		hRes = fScriptShape(hdc, pFont->getScriptCache(), pInChars, si.m_iLength,
+							iGlyphBuffSize, & pItem->m_si.a, pGlyphs,
+							RI->m_pClust, pVa, &iGlyphCount);
+	}
 
 	if(hRes == E_OUTOFMEMORY)
 	{
@@ -699,7 +741,7 @@ bool GR_Win32USPGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 			
 			bDeleteGlyphs = true; // glyphs in dynamically alloc. memory
 
-			hRes = fScriptShape(m_hdc, pFont->getScriptCache(), pInChars, si.m_iLength, iGlyphBuffSize,
+			hRes = fScriptShape(hdc, pFont->getScriptCache(), pInChars, si.m_iLength, iGlyphBuffSize,
 							   & pItem->m_si.a, pGlyphs, RI->m_pClust, pVa, &iGlyphCount);
 			
 		}while(hRes == E_OUTOFMEMORY);
@@ -722,7 +764,7 @@ bool GR_Win32USPGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 		WORD eScript = pItem->m_si.a.eScript;
 		pItem->m_si.a.eScript = GRScriptType_Undefined;
 
-		hRes = fScriptShape(m_hdc, pFont->getScriptCache(), pInChars, si.m_iLength, iGlyphBuffSize,
+		hRes = fScriptShape(hdc, pFont->getScriptCache(), pInChars, si.m_iLength, iGlyphBuffSize,
 						   & pItem->m_si.a, pGlyphs, RI->m_pClust, pVa, &iGlyphCount);
 
 		pItem->m_si.a.eScript = eScript;
@@ -983,6 +1025,9 @@ void GR_Win32USPGraphics::renderChars(GR_RenderInfo & ri)
 		RI.m_bInvalidateFontCache = false;
 	}
 
+	// need to make sure that the HDC has the correct font set
+	_setupFontOnDC(pFont);
+	
 	int * pJustify = RI.m_pJustify && RI.m_bRejustify ? RI.s_pJustify + iGlyphOffset : NULL;
 	
 	// not sure how expensive SetBkMode is, but GetBkMode() should not
@@ -1041,13 +1086,34 @@ void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 		}
 	}
 
+	HDC hdc = 0;
+	if(*(pFont->getScriptCache()) == NULL)
+	{
+		// need to make sure that the HDC has the correct font set
+		_setupFontOnDC(pFont);
+		hdc = m_hdc;
+	}
+	
 	// need to disapble shaping if call to ScriptShape failed ...
 	WORD eScript = pItem->m_si.a.eScript;
 	if(RI.m_bShapingFailed)
 		pItem->m_si.a.eScript = GRScriptType_Undefined;
 	
-	HRESULT hRes = fScriptPlace(m_hdc, pFont->getScriptCache(), RI.m_pIndices, RI.m_iIndicesCount,
-							   RI.m_pVisAttr, & pItem->m_si.a, RI.m_pAdvances, RI.m_pGoffsets, & RI.m_ABC);
+	HRESULT hRes = fScriptPlace(hdc, pFont->getScriptCache(), RI.m_pIndices,
+								RI.m_iIndicesCount, RI.m_pVisAttr,
+								& pItem->m_si.a, RI.m_pAdvances, RI.m_pGoffsets, & RI.m_ABC);
+
+	if( hRes == E_PENDING)
+	{
+		UT_ASSERT_HARMLESS( hdc == 0 );
+		_setupFontOnDC(pFont);
+		hdc = m_hdc;
+		
+		hRes = fScriptPlace(hdc, pFont->getScriptCache(), RI.m_pIndices,
+							RI.m_iIndicesCount, RI.m_pVisAttr,
+							& pItem->m_si.a, RI.m_pAdvances, RI.m_pGoffsets, & RI.m_ABC);
+	}
+	
 
 	pItem->m_si.a.eScript = eScript;
 
@@ -1571,8 +1637,9 @@ UT_uint32 GR_Win32USPGraphics::XYToPosition(const GR_RenderInfo & ri, UT_sint32 
 		RI.s_pOwnerCP = &RI;
 	}
 	
-	HRESULT hRes = fScriptXtoCP(x, RI.m_iLength, RI.m_iIndicesCount, RI.m_pClust, RI.m_pVisAttr, pAdvances,
-							   & pItem->m_si.a, &iPos, &iTrail);
+	HRESULT hRes = fScriptXtoCP(x, RI.m_iLength, RI.m_iIndicesCount, RI.m_pClust,
+								RI.m_pVisAttr, pAdvances,
+								& pItem->m_si.a, &iPos, &iTrail);
 
 	UT_ASSERT_HARMLESS( !hRes );
 	return iPos + iTrail;
@@ -1654,10 +1721,19 @@ void GR_Win32USPGraphics::drawChars(const UT_UCSChar* pChars,
 	SCRIPT_STRING_ANALYSIS SSA;
 	UT_uint32 flags = SSA_GLYPHS;
 
-	fScriptStringAnalyse(m_hdc, pwChars, iLength, iLength*3/2 + 1,
+	// need to make sure that the HDC has the correct font set
+	// so that ScriptShape measures it correctly for the cache
+	GR_Win32USPFont * pFont = static_cast<GR_Win32USPFont *>(m_pFont);
+	_setupFontOnDC(pFont);
+	
+	HRESULT hRes = fScriptStringAnalyse(m_hdc, pwChars, iLength, iLength*3/2 + 1,
 						-1, flags, 0, NULL, NULL, NULL, NULL, NULL, &SSA);
 
-	fScriptStringOut(SSA, _tduX(xoff), _tduY(yoff), 0, NULL, 0, 0, FALSE);
+	UT_ASSERT_HARMLESS( !hRes );
+	
+	hRes = fScriptStringOut(SSA, _tduX(xoff), _tduY(yoff), 0, NULL, 0, 0, FALSE);
+
+	UT_ASSERT_HARMLESS( !hRes );
 
 	if(SSA)
 		fScriptStringFree(&SSA);
@@ -1836,11 +1912,20 @@ bool GR_Win32USPRenderInfo::isJustified() const
 	return (m_pJustify != NULL);
 }
 
+void GR_Win32USPFont::_clearAnyCachedInfo()
+{
+	if(m_sc != NULL)
+	{
+		GR_Win32USPGraphics::fScriptFreeCache(&m_sc);
+		m_sc = NULL;
+	}
+}
+
 
 GR_Win32USPFont::~GR_Win32USPFont()
 {
 	GR_Win32USPGraphics::fScriptFreeCache(&m_sc);
-};
+}
 
 
 /*********************************/

@@ -1263,6 +1263,7 @@ void fp_TextRun::_measureCharWidths()
 	m_pRenderInfo->m_iVisDir =  getVisDirection();
 	m_pRenderInfo->m_iOffset =  getBlockOffset();
 	m_pRenderInfo->m_iLength =  getLength();
+	m_pRenderInfo->m_pFont = _getFont();
 
 	getGraphics()->setFont(_getFont());
 	getGraphics()->measureRenderedCharWidths(*m_pRenderInfo);
@@ -1318,6 +1319,7 @@ bool fp_TextRun::_addupCharWidths(void)
 
 	m_pRenderInfo->m_iOffset = 0;
 	m_pRenderInfo->m_iLength = getLength();
+	m_pRenderInfo->m_pFont = _getFont();
 	
 	iWidth = getGraphics()->getTextWidth(*m_pRenderInfo);
 	
@@ -1667,6 +1669,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 						  getBlockOffset() + fl_BLOCK_STRUX_OFFSET);
 
 	m_pRenderInfo->m_pText = &text;
+	m_pRenderInfo->m_pFont = _getFont();
 	
 	/*
 		if the text on either side of this run is in italics, there is a good
@@ -1752,6 +1755,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	// now draw the string
 	m_pRenderInfo->m_iOffset = 0;
 	m_pRenderInfo->m_iLength = getLength();
+	m_pRenderInfo->m_pFont = _getFont();
 	
 	pG->prepareToRenderChars(*m_pRenderInfo);
 	pG->setFont(_getFont());
@@ -2014,6 +2018,7 @@ void fp_TextRun::_drawLastChar(bool bSelection)
 
 	m_pRenderInfo->m_iLength = 1;
 	m_pRenderInfo->m_xoff -= getGraphics()->getTextWidth(*m_pRenderInfo);
+	m_pRenderInfo->m_pFont = _getFont();
 
 	// renderChars() takes VISUAL offset
 	UT_BidiCharType iVisDirection = getVisDirection();
@@ -2076,6 +2081,8 @@ void fp_TextRun::_drawFirstChar(bool bSelection)
 	m_pRenderInfo->m_iLength = 1;
 	
 	m_pRenderInfo->m_iOffset = iVisOffset;
+	m_pRenderInfo->m_pFont = _getFont();
+	
 	pG->prepareToRenderChars(*m_pRenderInfo);
 	painter.renderChars(*m_pRenderInfo);
 }

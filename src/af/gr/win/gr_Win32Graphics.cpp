@@ -300,8 +300,13 @@ void GR_Win32Graphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
 	xoff = _tduX(xoff);
 	yoff = _tduY(yoff);
 
+#if 0 // this bypassesthe font handling mechanism
 	HFONT hFont = GR_Win32Font::Acq::getDisplayFont(*m_pFont, this);
 	SelectObject(m_hdc, hFont);
+#else
+	GR_Win32Font::Acq::selectFontIntoDC(*m_pFont, this, m_hdc);
+#endif
+	
 	SetTextAlign(m_hdc, TA_LEFT | TA_TOP);
 	SetBkMode(m_hdc, TRANSPARENT);		// TODO: remember and reset?
 
@@ -320,7 +325,7 @@ void GR_Win32Graphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
 	// Reference Microsoft knowledge base:
 	// Q145754 - PRB ExtTextOutW or TextOutW Unicode Text Output Is Blank
 	LOGFONT lf;
-	int iRes = GetObject(hFont, sizeof(LOGFONT), &lf);
+	int iRes = GetObject(m_pFont->getFontHandle(), sizeof(LOGFONT), &lf);
 	UT_ASSERT(iRes);
 	if (UT_IsWinNT() == false && lf.lfCharSet == SYMBOL_CHARSET)
 	{
@@ -552,7 +557,8 @@ void GR_Win32Graphics::setFont(GR_Font* pFont)
 
 	// this should work though, the allocation number is unique, even
 	// if the pointers are identical
-	if (m_pFont == NULL || pFont->getAllocNumber() != m_iFontAllocNo)
+	if (m_pFont == NULL || pFont->getAllocNumber() != m_iFontAllocNo
+		|| pWin32Font->getFontHDC() != m_hdc)
 	{
 		m_pFont = pWin32Font;
 		m_iFontAllocNo = pFont->getAllocNumber();
@@ -1540,7 +1546,12 @@ UT_sint32 GR_Win32Font::Acq::measureUnRemappedChar(GR_Win32Font& font, UT_UCSCha
 
 void GR_Win32Font::Acq::selectFontIntoDC(GR_Win32Font& font, GR_Graphics * pGr, HDC hdc)
 {
-	SelectObject(hdc, getDisplayFont(font, pGr));
+	HFONT hFont = getDisplayFont(font, pGr);
+	HGDIOBJ hRet = SelectObject(hdc, hFont);
+
+	// hate having to do the cast, here
+	UT_ASSERT_HARMLESS( hRet != (void*)GDI_ERROR);
+	
 	if (hdc != font.m_oldHDC)
 	{
 		// invalidate cached info when we change hdc's.
@@ -1550,6 +1561,7 @@ void GR_Win32Font::Acq::selectFontIntoDC(GR_Win32Font& font, GR_Graphics * pGr, 
 		// TODO to not invalidate if old and new are
 		// TODO both on screen.
 
+		font._clearAnyCachedInfo();
 		font.m_oldHDC = hdc;
 	}
 }
