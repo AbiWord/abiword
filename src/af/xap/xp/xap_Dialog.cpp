@@ -186,25 +186,26 @@ void XAP_Dialog_Modeless::setActiveFrame(XAP_Frame *pFrame)
 }
 
 
-char *  XAP_Dialog_Modeless::BuildWindowName( char * pWindowName, char* pDialogName, UT_sint32 width)
+void XAP_Dialog_Modeless::BuildWindowName(char * pWindowName, char * pDialogName, UT_uint32 width)
 {
-// This function returns contructs the window name of a modeless dialog by
-// concatonating the active frame with the dialog name
+// This function constructs and returns the window name of a modeless dialog by
+// concatenating the active frame with the dialog name
 
 	const UT_sint32 count = (UT_sint32) strlen(pDialogName);
 
 	*pWindowName = (char) NULL;
-	pWindowName = strncat(pWindowName,pDialogName,count);
+	UT_UTF8String wn = UT_UTF8String(pDialogName);
 
 	XAP_Frame* pFrame = getActiveFrame();
 	if (pFrame)
 	{
-		const char* pFrameTitle =  pFrame->getTitle(width-count-3);
-		pWindowName = strncat(pWindowName," - ",3);
-		pWindowName = strncat(pWindowName,pFrameTitle,width-count-3);
+		wn += " - ";
+		wn += pFrame->getTitle(width-count-3);
 	}
 
-	return pWindowName;
+	UT_uint32 len = UT_MIN(wn.byteLength(), width);
+	strncpy(pWindowName, wn.utf8_str(), len);
+	pWindowName[len] = '\0';
 }
 
 
