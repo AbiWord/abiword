@@ -1351,6 +1351,7 @@ static void _sFrequentRepeat(UT_Worker * pWorker)
 //
 // Once then delete, stop and set to NULL
 //
+	DELETEP(pFreq->m_pData);
 	delete pFreq;
 	s_pFrequentRepeat->stop();
 	delete s_pFrequentRepeat;
@@ -4910,13 +4911,43 @@ static bool pView->cmdCharInsert(const UT_UCS4Char * pText, UT_uint32 iLen,
 }
 #endif
 
-
+static void sActualInsertData(AV_View *  pAV_View, EV_EditMethodCallData * pCallData)
+{
+	ABIWORD_VIEW;
+	pView->cmdCharInsert(pCallData->m_pData, pCallData->m_dataLength);
+	return;
+}
 Defun(insertData)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-	return pView->cmdCharInsert(pCallData->m_pData, pCallData->m_dataLength);
+//
+// Do this operation in an idle loop so when can reject queued events
+//
+//
+// This code sets things up to handle the warp right in an idle loop.
+//
+	int inMode = UT_WorkerFactory::IDLE | UT_WorkerFactory::TIMER;
+	UT_WorkerFactory::ConstructMode outMode = UT_WorkerFactory::NONE;
+	GR_Graphics * pG = pView->getGraphics();
+	EV_EditMethodCallData * pNewData = new  EV_EditMethodCallData(pCallData->m_pData,pCallData->m_dataLength);
+	_Freq * pFreq = new _Freq(pView,pNewData,sActualInsertData);
+	s_pFrequentRepeat = UT_WorkerFactory::static_constructor (_sFrequentRepeat,pFreq, inMode, outMode, pG);
+
+	UT_ASSERT(s_pFrequentRepeat);
+	UT_ASSERT(outMode != UT_WorkerFactory::NONE);
+
+	// If the worker is working on a timer instead of in the idle
+	// time, set the frequency of the checks.
+	if ( UT_WorkerFactory::TIMER == outMode )
+	{
+		// this is really a timer, so it's safe to static_cast it
+		static_cast<UT_Timer*>(s_pFrequentRepeat)->set(1);
+	}
+	s_pFrequentRepeat->start();
+	return true;
 }
+
 
 Defun(insertClosingParenthesis)
 {
@@ -6174,11 +6205,40 @@ Defun1(copy)
 	return true;
 }
 
+static void sActualPaste(AV_View *  pAV_View, EV_EditMethodCallData * pCallData)
+{
+	ABIWORD_VIEW;
+	pView->cmdPaste();
+	return;
+}
+
 Defun1(paste)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-	pView->cmdPaste();
+//
+// Do this operation in an idle loop so when can reject queued events
+//
+//
+// This code sets things up to handle the warp right in an idle loop.
+//
+	int inMode = UT_WorkerFactory::IDLE | UT_WorkerFactory::TIMER;
+	UT_WorkerFactory::ConstructMode outMode = UT_WorkerFactory::NONE;
+	GR_Graphics * pG = pView->getGraphics();
+	_Freq * pFreq = new _Freq(pView,NULL,sActualPaste);
+	s_pFrequentRepeat = UT_WorkerFactory::static_constructor (_sFrequentRepeat,pFreq, inMode, outMode, pG);
+
+	UT_ASSERT(s_pFrequentRepeat);
+	UT_ASSERT(outMode != UT_WorkerFactory::NONE);
+
+	// If the worker is working on a timer instead of in the idle
+	// time, set the frequency of the checks.
+	if ( UT_WorkerFactory::TIMER == outMode )
+	{
+		// this is really a timer, so it's safe to static_cast it
+		static_cast<UT_Timer*>(s_pFrequentRepeat)->set(1);
+	}
+	s_pFrequentRepeat->start();
 
 	return true;
 }
