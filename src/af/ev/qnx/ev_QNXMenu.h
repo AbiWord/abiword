@@ -51,17 +51,12 @@ public:
 
 protected:
 
-	//bool				_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot);
 	bool				_refreshMenu(AV_View * pView, void * wMenuRoot);
 	bool				_isItemPresent(XAP_Menu_Id id) const;
 
 	XAP_QNXApp *		m_pQNXApp;
 	XAP_Frame *		m_pFrame;
 
-	// Menu accelerator group, dynamically filled on synth()
-//	GtkAccelGroup * 	m_accelGroup;
-	
-	// actual GTK menu widgets
 	UT_Vector			m_vecMenuWidgets;
 
 	virtual bool		_doAddMenuItem(UT_uint32 layout_pos);

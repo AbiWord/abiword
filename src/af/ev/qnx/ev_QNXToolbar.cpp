@@ -28,6 +28,7 @@
 #include "xap_QNXApp.h"
 #include "xap_QNXFrameImpl.h"
 #include "xap_Frame.h"
+#include "ap_QNXFrameImpl.h"
 #include "ut_iconv.h"
 #include "ev_Toolbar_Actions.h"
 #include "ev_Toolbar_Layouts.h"
@@ -84,7 +85,8 @@ bool EV_QNXToolbar::toolbarEvent(XAP_Toolbar_Id id,
 	AV_View * pView = m_pFrame->getCurrentView();
 
 	//Right away switch the focus
-//	m_pFrame->setDocumentFocus();
+	static_cast<AP_QNXFrameImpl *>(m_pFrame->getFrameImpl())->setDocumentFocus();
+
 
 	// make sure we ignore presses on "down" group buttons
 	if (pAction->getItemType() == EV_TBIT_GroupButton) 

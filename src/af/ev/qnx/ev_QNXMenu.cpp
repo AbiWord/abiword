@@ -161,11 +161,6 @@ bool EV_QNXMenu::menuEvent(XAP_Menu_Id id)
 	EV_EditMethod * pEM = pEMC->findEditMethodByName(szMethodName);
 	UT_ASSERT(pEM);						// make sure it's bound to something
 
-	//Right away switch the focus back to the document, do this before
-	//we invoke the menu method since the menu method could tell us to 
-	//self destruct (ie a close selection) on the frame.
-//	m_pQNXFrame->setDocumentFocus();
-
 	UT_String script_name(pAction->getScriptName());
 	invokeMenuMethod(m_pFrame->getCurrentView(), pEM, script_name);
 
