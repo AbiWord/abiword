@@ -7042,7 +7042,7 @@ Defun1(insFile)
 
 	  // create a new layout and view object for the doc
 	  FL_DocLayout *pDocLayout = new FL_DocLayout(newDoc,pGraphics);
-	  pDocLayout->formatAll();
+	  pDocLayout->fillLayouts();
 	 
 	  UT_DEBUGMSG(("DOM: new pDocLayout and formatted\n"));
 

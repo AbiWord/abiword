@@ -59,7 +59,14 @@ fl_DocListener::fl_DocListener(PD_Document* doc, FL_DocLayout *pLayout)
 {
 	m_pDoc = doc;
 	m_pLayout = pLayout;
-	m_bScreen = pLayout->getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN);
+	if(pLayout->getGraphics() != NULL)
+	{
+		m_bScreen = pLayout->getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN);
+	}
+	else
+	{
+		m_bScreen = false;
+	}
 	m_iGlobCounter = 0;
 	m_pCurrentSL = NULL;
 }

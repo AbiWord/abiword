@@ -6930,7 +6930,14 @@ void FV_View::_drawBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2)
 	UT_sint32 xoff;
 	UT_sint32 yoff;
 	UT_uint32 uheight;
-
+//
+// This fixes a bug from insert file, when the view we copy from is selected
+// If don't bail out now we get all kinds of crazy dirty on the screen.
+//
+	if(m_pParentData == NULL)
+	{
+		return;
+	}
 	_fixInsertionPointCoords();
 	{
 		UT_sint32 x;
