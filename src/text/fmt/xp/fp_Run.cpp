@@ -843,18 +843,18 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 
 		if(r_type == PP_REVISION_ADDITION)
 		{
-			getGR()->fillRect(s_fgColor,pDA->xoff, pDA->yoff, iWidth, 1);
-			getGR()->fillRect(s_fgColor,pDA->xoff, pDA->yoff + 2, iWidth, 1);
+			getGR()->fillRect(s_fgColor,pDA->xoff, pDA->yoff, iWidth, getGR()->tlu(1));
+			getGR()->fillRect(s_fgColor,pDA->xoff, pDA->yoff + getGR()->tlu(2), iWidth, getGR()->tlu(1));
 		}
 		else if(r_type == PP_REVISION_FMT_CHANGE)
 		{
 			// draw a thick line underneath
-			getGR()->fillRect(s_fgColor,pDA->xoff, pDA->yoff, iWidth, 2);
+			getGR()->fillRect(s_fgColor,pDA->xoff, pDA->yoff, iWidth, getGR()->tlu(2));
 		}
 		else
 		{
 			// draw a strike-through line
-			getGR()->fillRect(s_fgColor,pDA->xoff, pDA->yoff - m_iHeight/3, iWidth, 2);
+			getGR()->fillRect(s_fgColor,pDA->xoff, pDA->yoff - m_iHeight/3, iWidth, getGR()->tlu(2));
 		}
 
 	}
