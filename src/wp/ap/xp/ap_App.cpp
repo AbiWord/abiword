@@ -20,8 +20,13 @@
 #include "ap_App.h"
 #include "ap_Args.h"
 
+#if defined(WIN32)
+AP_App::AP_App (HINSTANCE hInstance, XAP_Args * pArgs, const char * szAppName)
+  : XAP_App_BaseClass ( hInstance, pArgs, szAppName )
+#else
 AP_App::AP_App (XAP_Args * pArgs, const char * szAppName)
   : XAP_App_BaseClass ( pArgs, szAppName )
+#endif
 {
 }
 

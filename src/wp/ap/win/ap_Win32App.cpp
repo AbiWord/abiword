@@ -37,6 +37,7 @@
 #include "ut_bytebuf.h"
 #include "ut_string.h"
 #include "xap_Args.h"
+#include "ap_Args.h"
 #include "ap_Convert.h"
 #include "ap_Win32Frame.h"
 #include "ap_Win32App.h"
@@ -72,7 +73,7 @@
 /*****************************************************************/
 
 AP_Win32App::AP_Win32App(HINSTANCE hInstance, XAP_Args * pArgs, const char * szAppName)
-	: XAP_Win32App(hInstance, pArgs,szAppName)
+	: AP_App(hInstance, pArgs,szAppName)
 {
 	m_pStringSet = NULL;
 	m_pClipboard = NULL;
@@ -765,48 +766,19 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 // We put this in a block to force the destruction of Args in the stack
 {	
 	// Load the command line into an XAP_Args class
-	XAP_Args Args = XAP_Args(szCmdLine);
+	// Win32 does not put the program name in argv[0], we give it a dummy value
+	UT_String szNewCmdLine = UT_String_sprintf ( "AbiWord_dummy %s", szCmdLine ) ;
+	XAP_Args XArgs = XAP_Args(szNewCmdLine.c_str());
 
 	// initialize our application.
-	pMyWin32App = new AP_Win32App(hInstance, &Args, szAppName);
+	pMyWin32App = new AP_Win32App(hInstance, &XArgs, szAppName);
+	AP_Args Args = AP_Args(&XArgs, szAppName, pMyWin32App);
+
 	pMyWin32App->initialize();
   
-	// Quick & Dirty command-line 
-	// check to make sure we didn't do a conversion
-
-	// Win32 does not put the program name in argv[0], 
-	// so [0] is the first argument
-	int nFirstArg = 0;
-	int k;
  			
-	for (k=nFirstArg; (k<Args.m_argc); k++) {
-		if (*Args.m_argv[k] == '-') {
-			if ( (UT_stricmp(Args.m_argv[k],"-to") == 0) ||
-                 (UT_stricmp(Args.m_argv[k],"--to") == 0) || 
-                 (UT_stricmp(Args.m_argv[k],"-help") == 0) ||
-                 (UT_stricmp(Args.m_argv[k],"--help") == 0) )
-           {
- 				bShowApp = false;
-				bShowSplash = false;
-			}
-			if( (UT_stricmp(Args.m_argv[k],"-nosplash") == 0) ||
-                (UT_stricmp(Args.m_argv[k],"--nosplash") == 0) )
-			{
-				bShowSplash = false;
-			}
-		}
-	}	
-
-    for (k=nFirstArg; (k<Args.m_argc); k++) {
-		if (*Args.m_argv[k] == '-') {
-			if ((UT_stricmp(Args.m_argv[k],"-show") == 0) ||
-				(UT_stricmp(Args.m_argv[k],"--show") == 0) )
-            {
- 				bShowApp = true;
-				bShowSplash = true;
-			}
-		}
-	}	
+	bShowApp    = Args.getShowApp();
+	bShowSplash = Args.getShowSplash();
 
 	// Consider the user saved preferences for the Splash Screen
    	const XAP_Prefs * pPrefs = pMyWin32App->getPrefs();
@@ -854,6 +826,7 @@ __try
 	// destroy the App.  It should take care of deleting all frames.
 	pMyWin32App->shutdown();
 	delete pMyWin32App;
+	
 	
 }// end of thes block is controlled by the SEH 
 
@@ -1130,3 +1103,54 @@ bool AP_Win32App::handleModelessDialogMessage( MSG * msg )
 	return false;
 }
 
+void AP_Win32App::initPopt(AP_Args *Args)
+{
+	int nextopt, v, i;
+
+	for (i = 0; Args->const_opts[i].longName != NULL; i++)
+		;
+
+	v = i;
+
+	struct poptOption * opts = (struct poptOption *)
+		UT_calloc(v+1, sizeof(struct poptOption));
+	for (int j = 0; j < v; j++)
+		opts[j] = Args->const_opts[j];
+
+	Args->options = opts;
+	Args->poptcon = poptGetContext("AbiWord", 
+				       Args->XArgs->m_argc, Args->XArgs->m_argv, 
+				       Args->options, 0);
+
+    while ((nextopt = poptGetNextOpt (Args->poptcon)) > 0 || 
+		   nextopt == POPT_ERROR_BADOPT)
+        /* do nothing */ ;
+
+    if (nextopt != -1) 
+	{
+		char *pszMessage = (char*)malloc( 500 );
+		strcpy( pszMessage, "Error on option " );
+		strcat( pszMessage, poptBadOption (Args->poptcon, 0) );
+		strcat( pszMessage, ": " );
+		strcat( pszMessage, poptStrerror (nextopt) );
+		strcat( pszMessage, "\nRun with --help' to see a full list of available command line options.\n" );
+		MessageBox(NULL, pszMessage, "Command Line Option Error", MB_OK);
+		free( pszMessage );
+
+//        printf ("Error on option %s: %s.\nRun '%s --help' to see a full list of available command line options.\n",
+//                 poptBadOption (Args->poptcon, 0),
+//                 poptStrerror (nextopt),
+//                 Args->XArgs->m_argv[0]);
+
+        exit (1);
+    }
+}
+
+/*!
+ * A callback for AP_Args's doWindowlessArgs call which handles
+ * platform-specific windowless args.
+ */
+bool AP_Win32App::doWindowlessArgs(const AP_Args *Args)
+{
+	return false;
+}

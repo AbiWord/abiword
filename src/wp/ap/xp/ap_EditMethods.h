@@ -20,6 +20,7 @@
 #ifndef ap_EditMethodsDefined
 #define ap_EditMethodsDefined
 
+#include "fv_View.h"
 
 UT_Error fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft);
 

@@ -323,6 +323,7 @@ else
 ABI_PEER_INCS=	/../../expat/lib
 endif
 ABI_PEER_INCS+=/../../wv/exporter
+ABI_PEER_INCS+=/../../popt
 
 # Test for iconv in system locations
 HAVE_ICONV_SYSTEM := $(shell if [ -r /usr/include/iconv.h -o -r /usr/local/include/iconv.h ] ; then echo 1 ; fi)

@@ -26,8 +26,10 @@
 #ifndef AP_WIN32APP_H
 #define AP_WIN32APP_H
 
+#include "popt.h"
+
 #include "xap_Args.h"
-#include "xap_Win32App.h"
+#include "ap_App.h"
 #include "ap_Win32Prefs.h"
 #include "ap_Win32Clipboard.h"
 #include "ie_types.h"
@@ -36,7 +38,7 @@ class PD_DocumentRange;
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-class AP_Win32App : public XAP_Win32App
+class AP_Win32App : public AP_App
 {
 public:
 	AP_Win32App(HINSTANCE hInstance, XAP_Args * pArgs, const char * szAppName);
@@ -54,6 +56,8 @@ public:
 	virtual bool					canPasteFromClipboard(void);
 	virtual void					cacheCurrentSelection(AV_View *) {};
 
+	virtual void 					initPopt (AP_Args *);
+	virtual bool 					doWindowlessArgs (const AP_Args *);
 	void							ParseCommandLine(int iCmdShow);
 	
 	static int WinMain (const char * szAppName, HINSTANCE hInstance, 

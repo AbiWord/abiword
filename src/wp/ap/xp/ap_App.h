@@ -54,7 +54,11 @@ class AP_App : public XAP_App_BaseClass
 {
  public:
 
+#if defined(WIN32)
+	AP_App (HINSTANCE hInstance, XAP_Args * pArgs, const char * szAppName);
+#else
 	AP_App (XAP_Args * pArgs, const char * szAppName);
+#endif
 	virtual ~AP_App ();
 	virtual void initPopt (AP_Args *);
 	virtual bool doWindowlessArgs (const AP_Args *);
