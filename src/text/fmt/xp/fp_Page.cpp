@@ -334,6 +334,7 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool bAlwaysUseWhiteBackground)
 // only call this for printing and honour the option to not fill the paper with
 // color.
 //
+	int i=0;
 	if(!bAlwaysUseWhiteBackground && !pDA->pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
 		xxx_UT_DEBUGMSG(("Doing a rectangular color fill \n"));
@@ -359,7 +360,7 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool bAlwaysUseWhiteBackground)
 
 	// draw each column on the page
 	int count = m_vecColumnLeaders.getItemCount();
-	for (int i=0; i<count; i++)
+	for (i=0; i<count; i++)
 	{
 		fp_Column* pCol = (fp_Column*) m_vecColumnLeaders.getNthItem(i);
 		while (pCol)
@@ -407,7 +408,7 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool bAlwaysUseWhiteBackground)
 
 	// draw footnotes
 	count = m_vecFootnotes.getItemCount();
-	for (int i=0; i<count; i++)
+	for (i=0; i<count; i++)
 	{
 		fp_FootnoteContainer* pFC = (fp_FootnoteContainer*) m_vecFootnotes.getNthItem(i);
 		dg_DrawArgs da = *pDA;
@@ -731,11 +732,12 @@ void fp_Page::_reformatColumns(void)
 #endif
 
 	// we need the height of the footnotes on this page, to deduct.
+	UT_uint32 i = 0;
 	UT_uint32 iFootnoteHeight = 0;
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	UT_uint32 iFootnoteHeightLayoutUnits = 0;
 #endif
-	for (UT_uint32 i = 0; i < countFootnoteContainers(); i++)
+	for (i = 0; i < countFootnoteContainers(); i++)
 	{
 		iFootnoteHeight += getNthFootnoteContainer(i)->getHeight();
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
@@ -743,7 +745,7 @@ void fp_Page::_reformatColumns(void)
 #endif
 	}
 
-	for (UT_uint32 i = 0; i < count; i++)
+	for (i = 0; i < count; i++)
 	{
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 		if (iYLayoutUnits >= (getHeightInLayoutUnits() - iBottomMarginLayoutUnits))
@@ -893,7 +895,8 @@ void fp_Page::_reformatFootnotes(void)
 	UT_uint32 pageHeight = getAvailableHeight();
 	UT_uint32 iFootnoteHeight = 0;
 #endif
-	for (UT_uint32 i = 0; i < countFootnoteContainers(); i++)
+	UT_uint32 i = 0;
+	for (i = 0; i < countFootnoteContainers(); i++)
 	{
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 		iFootnoteHeightLayoutUnits += getNthFootnoteContainer(i)->getHeightInLayoutUnits();
@@ -909,7 +912,7 @@ void fp_Page::_reformatFootnotes(void)
 	pageHeight -= iFootnoteHeight;
 	UT_DEBUGMSG(("got page height %d, footnote height %d\n", pageHeight, iFootnoteHeight));
 #endif
-	for (UT_uint32 i = 0; i < countFootnoteContainers(); i++)
+	for (i = 0; i < countFootnoteContainers(); i++)
 	{
 		fp_FootnoteContainer * pFC = getNthFootnoteContainer(i);
 		fl_DocSectionLayout* pSL = (getNthColumnLeader(0)->getDocSectionLayout());

@@ -815,6 +815,8 @@ private:
 	UT_Byte					m_fPosition;
 };
 
+/*  Missing implimentation - bad, bad, plam  */
+#if 0
 class ABI_EXPORT fp_FieldEndnoteRefRun : public fp_FieldRun
 {
 public:
@@ -832,6 +834,7 @@ private:
 	UT_uint32 m_iPID;
 #endif
 };
+#endif
 
 class ABI_EXPORT fp_FieldEndnoteAnchorRun : public fp_FieldRun
 {
