@@ -722,6 +722,7 @@ void XAP_QNXFrameImpl::createTopLevelWindow(void)
 	//Get fall-back defaults from pref
 	UT_uint32 pref_flags, pref_width, pref_height;
 	UT_sint32 pref_x, pref_y;
+	pref_flags = pref_width = pref_height = pref_x = pref_y = 0;
 	m_pQNXApp->getPrefs()->getGeometry(&pref_x, &pref_y, &pref_width, &pref_height, &pref_flags);
 	if (!(f & XAP_QNXApp::GEOMETRY_FLAG_SIZE)
 	&& (pref_flags & PREF_FLAG_GEOMETRY_SIZE))
