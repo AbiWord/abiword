@@ -26,8 +26,11 @@
 GR_Win32Image::GR_Win32Image(BITMAPINFO* pDIB, const char* szName)
 {
 	m_pDIB = pDIB;
-	
-	setDisplaySize(m_pDIB->bmiHeader.biWidth, m_pDIB->bmiHeader.biHeight);
+
+	if (m_pDIB)
+	{
+		setDisplaySize(m_pDIB->bmiHeader.biWidth, m_pDIB->bmiHeader.biHeight);
+	}
 
 	if (szName)
 	{
