@@ -224,7 +224,7 @@ const char * UT_pathSuffix(const char * path)
 
 bool UT_isWordDelimiter(UT_UCSChar currentChar, UT_UCSChar followChar)
 {
-#if 1
+#if 0
 	/* wjc ... these UT_UCS_isXXX() functions aren't really right for UCS */
 	if (UT_UCS_isalnum(currentChar)) return false;
 	// This is for the unicode character used to represent AbiWord
@@ -283,6 +283,7 @@ bool UT_isWordDelimiter(UT_UCSChar currentChar, UT_UCSChar followChar)
 		{
 			return true;
 		}
+	case UCS_ABI_OBJECT:
 	default:
 		return false;
 	}
