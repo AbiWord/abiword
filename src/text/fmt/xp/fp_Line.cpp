@@ -908,11 +908,16 @@ void fp_Line::clearScreenFromRunToEnd(fp_Run * ppRun)
 			pRun->markAsDirty();
 			getBlock()->setNeedsRedraw();
 			setNeedsRedraw();
-			UT_sint32 i;
-			for (i = runIndex; i < count; i++)
+			pRun = pRun->getNext();
+			bool bStop = false;
+			while(pRun && !bStop)
 			{
-				pRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(_getRunLogIndx(i)));
 				pRun->markAsDirty();
+				pRun = pRun->getNext();
+				if(pRun && (pRun->getLine() != this))
+				{
+					bStop = true;
+				}
 			}
 		}
 
@@ -1047,12 +1052,19 @@ void fp_Line::clearScreenFromRunToEnd(UT_uint32 runIndex)
 		setNeedsRedraw();
 		if(bUseFirst)
 		{
-		    runIndex = 0;
+			pRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(_getRunLogIndx(0)));
 		}
-		for (i = runIndex; i < count; i++)
+		pRun->markAsDirty();
+		pRun = pRun->getNext();
+		bool bStop = false;
+		while(pRun && !bStop)
 		{
-			pRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(_getRunLogIndx(i)));
 			pRun->markAsDirty();
+			pRun = pRun->getNext();
+			if(pRun && (pRun->getLine() != this))
+			{
+				bStop = true;
+			}
 		}
 	}
 }
