@@ -34,21 +34,26 @@ class SpellChecker
 	
 public:
 	
-	typedef enum _SpellCheckResult {
+	enum SpellCheckResult
+	{
 		LOOKUP_SUCCEEDED = 0, // looking up the word succeeded
 		LOOKUP_FAILED = 1,    // could not find the word
 		LOOKUP_ERROR = 2      // internal error
-	} SpellCheckResult;
+	};
 	
-	virtual SpellChecker::SpellCheckResult checkWord (const UT_UCSChar * word, size_t len) = 0;
-	virtual UT_Vector * suggestWord (const UT_UCSChar * word, size_t len) = 0;
+	virtual SpellCheckResult	checkWord(const UT_UCSChar* word, size_t len) = 0;
+	virtual UT_Vector*			suggestWord(const UT_UCSChar* word, size_t len) = 0;
 	
 protected:
 	virtual bool requestDictionary (const char * szLang) = 0;
 	
 protected:
-    SpellChecker ();
-    virtual ~SpellChecker ();
+    SpellChecker();
+    virtual ~SpellChecker();
+
+private:
+	SpellChecker(const SpellChecker&);		// no impl
+	void operator=(const SpellChecker&);	// no impl
 };
 
 

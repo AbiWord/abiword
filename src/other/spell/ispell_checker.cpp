@@ -2,6 +2,7 @@
 #include "ut_vector.h"
 
 #include "ispell.h"
+#undef const
 #include "sp_spell.h"
 #include "iconv.h"
 
@@ -202,10 +203,12 @@ ISpellChecker::suggestWord(const UT_UCSChar *word16, size_t length)
     {
         /* copy to 8bit string and null terminate */
         register char *p;
-        register int x;
+        register size_t x;
 
-        for (x = 0, p = word8; x < length; x++)
+        for (x = 0, p = word8; x < length; ++x)
+		{
             *p++ = (unsigned char)*word16++;
+		}
         *p = '\0';
     }
     else
@@ -297,7 +300,7 @@ ISpellChecker::requestDictionary(const char *szLang)
 	// by now I just pick american.hash dictionary
 	const char *hashname = "american.hash";
 
-    if (linit(const_cast<ICONV_CONST char *>(hashname)) < 0)
+    if (linit(const_cast<char*>(hashname)) < 0)
     {
         /* TODO gripe -- could not load the dictionary */
         return false;
@@ -332,7 +335,7 @@ ISpellChecker::requestDictionary(const char *szLang)
             }
         }
     }
-    try_autodetect_charset(const_cast<ICONV_CONST char *>(hashname));
+    try_autodetect_charset(const_cast<char*>(hashname));
 
     /* Test for known "hashname"s */
     if(translate_in == (iconv_t)-1)

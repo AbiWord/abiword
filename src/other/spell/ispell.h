@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.13  2001/04/13 12:33:12  tamlin
+ * ispell can now be used from C++
+ *
  * Revision 1.12  2001/03/25 01:30:02  tomb
  * 1. Fixed ispell #define problems on Win32
  * 2. Changed the way that togglable toolbars are tracked so that Full
@@ -267,7 +270,7 @@ extern int		gnMaskBits;
 #define MAXSEARCH 4
 #endif
 
-#ifdef __STDC__
+#if defined(__STDC__) || defined(__cplusplus)
 #define P(x)	x
  #ifndef VOID
    #define VOID	void
