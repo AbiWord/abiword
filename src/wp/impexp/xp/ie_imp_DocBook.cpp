@@ -54,9 +54,9 @@ IE_Imp_DocBook::IE_Imp_DocBook(PD_Document * pDocument)
 UT_Bool IE_Imp_DocBook::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
 {
   // no doubt, this could be better
-  // but this should sufficefor all I care
+  // but this should suffice for all I care
 
-  if(strstr(szBuf, "<!DOCTYPE book") == NULL)
+  if(strstr(szBuf, "<!DOCTYPE book") == NULL && strstr(szBuf, "<!doctype book") == NULL)
     return UT_FALSE;
 
   if(strstr(szBuf, "<book") == NULL)
