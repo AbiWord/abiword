@@ -5222,6 +5222,10 @@ bool PD_Document::acceptAllRevisions()
 			t.reset(iEnd, NULL);
 	}
 
+	// _acceptRejectRevison() function unfortunately leaves some unwanted fmt marks in the
+	// document; we will purge all fmt marks
+	purgeFmtMarks();
+	
 	endUserAtomicGlob();
 	notifyPieceTableChangeEnd();
 	signalListeners(PD_SIGNAL_UPDATE_LAYOUT);
@@ -5296,6 +5300,10 @@ bool PD_Document::rejectAllHigherRevisions(UT_uint32 iLevel)
 			t.reset(iEnd, NULL);
 	}
 
+	// _acceptRejectRevison() function unfortunately leaves some unwanted fmt marks in the
+	// document; we will purge all fmt marks
+	purgeFmtMarks();
+	
 	endUserAtomicGlob();
 	notifyPieceTableChangeEnd();
 	signalListeners(PD_SIGNAL_UPDATE_LAYOUT);
