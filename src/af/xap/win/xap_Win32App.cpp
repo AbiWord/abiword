@@ -37,6 +37,10 @@
 #pragma warning(disable:4355)	// 'this' used in base member initializer list
 #endif
 
+#ifdef __MINGW32__
+#include <w32api.h>
+#endif
+
 #ifdef UNICODE
 char XAP_Win32App::m_buffer[MAX_CONVBUFFER] = "";
 WCHAR XAP_Win32App::m_wbuffer[MAX_CONVBUFFER] = L"";
@@ -410,7 +414,8 @@ void XAP_Win32App::_setBidiOS(void)
 	gcpResult.lpDx = distanceArray;     // Distances between character cells
 	gcpResult.lpCaretPos = NULL;		// Caret positions
 	gcpResult.lpClass = NULL;         // Character classifications
-#ifdef __MINGW32__
+// w32api changed lpGlyphs from UINT * to LPWSTR to match MS PSDK in w32api v2.4
+#if defined(__MINGW32__) && (__W32API_MAJOR_VERSION == 2 && __W32API_MINOR_VERSION < 4)
 	gcpResult.lpGlyphs = (UINT *) glyphArray;    // Character glyphs
 #else	
 	gcpResult.lpGlyphs = (unsigned short *) glyphArray;    // Character glyphs
