@@ -206,11 +206,6 @@ void AP_Dialog_FormatTable::setAllSensitivities(void)
 	if (pView->isInTable())
 	{
 		pView->getCellLineStyle(m_iCellSource,&m_iLeftStyle,&m_iRightStyle,&m_iTopStyle,&m_iBottomStyle);
-		
-	/*	setSensitivity(radio_top, m_iTopStyle != 0); // style is -1 if not set at all...
-		setSensitivity(radio_bottom, m_iBottomStyle != 0);
-		setSensitivity(radio_left, m_iLeftStyle != 0);
-		setSensitivity(radio_right, m_iRightStyle != 0);*/
 	}
 }
 

@@ -28,6 +28,7 @@
 #include "xav_View.h"
 #include "pt_Types.h"
 #include "gr_DrawArgs.h"
+#include "gr_Graphics.h"
 #include "ev_EditBits.h"
 #include "ie_types.h"
 #include "xap_Prefs.h"
@@ -479,6 +480,7 @@ public:
 	UT_RGBColor			getColorSelBackground(void) const { return m_colorSelBackground; }
 	UT_RGBColor			getColorFieldOffset(void) const { return m_colorFieldOffset; }
 	UT_RGBColor			getColorImage(void) const { return m_colorImage; }
+	UT_RGBColor			getColorImageResize(void) const { return m_colorImageResize; }
 	UT_RGBColor			getColorHyperLink(void) const { return m_colorHyperLink; }
 	UT_RGBColor			getColorRevisions(int rev) const { 
 		if (rev < 0) rev = 9;
@@ -489,6 +491,21 @@ public:
 
 	void                getVisibleDocumentPagesAndRectangles(UT_Vector &vRect, UT_Vector &vPages) const;
 
+	//
+	// image selection functions
+	//
+	void				setImageSelRect(UT_Rect r);
+	UT_Rect				getImageSelRect();
+	UT_sint32			getImageSelInfo();
+	GR_Graphics::Cursor getImageSelCursor();
+	void				setCurImageSel(UT_Rect r);
+	UT_Rect				getCurImageSel();
+	bool				isOverImageResizeBox(GR_Graphics::Cursor &cur, UT_uint32 xPos, UT_uint32 yPos);
+	void				startImageResizing(UT_sint32 xPos, UT_sint32 yPos);
+	void				stopImageResizing();
+	bool				isResizingImage();
+	void				getResizeOrigin(UT_sint32 &xOrigin, UT_sint32 &yOrigin);
+	
 protected:
 	void				_saveAndNotifyPieceTableChange(void);
 	void				_restorePieceTableState(void);
@@ -649,18 +666,30 @@ private:
 
 	bool				m_bWarnedThatRestartNeeded;
 
+	// properties for image selection
+	UT_Rect				m_selImageRect;
+	UT_uint32			m_iImageSelBoxSize;
+	GR_Graphics::Cursor	m_imageSelCursor;
+	UT_sint32			m_ixResizeOrigin;
+	UT_sint32			m_iyResizeOrigin;
+	bool				m_bIsResizingImage;
+	UT_Rect				m_curImageSel;
+
+	// default color values
 	UT_RGBColor			m_colorShowPara;
 	UT_RGBColor			m_colorSquiggle;
 	UT_RGBColor			m_colorMargin;
 	UT_RGBColor			m_colorSelBackground;
 	UT_RGBColor			m_colorFieldOffset;
 	UT_RGBColor			m_colorImage;
+	UT_RGBColor			m_colorImageResize;
 	UT_RGBColor			m_colorHyperLink;
 	UT_RGBColor         m_colorRevisions[10];
 	UT_RGBColor			m_colorHdrFtr;
 	UT_RGBColor			m_colorColumnLine;
 
 	UT_uint32 m_countDisable; // cursor disable count
+
 };
 
 #endif /* FV_VIEW_H */

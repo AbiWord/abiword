@@ -2843,7 +2843,7 @@ void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 		xxx_UT_DEBUGMSG(("SEVIOR: Drawing image now \n"));
 		getGR()->drawImage(m_pImage, xoff, yoff);
 
-		// if we're the selection, draw a pretty box
+		// if we're the selection, draw some pretty selection markers
 		if (getGR()->queryProperties(GR_Graphics::DGP_SCREEN))
 		{
 			UT_uint32 iRunBase = getBlock()->getPosition() + getBlockOffset();
@@ -2862,22 +2862,23 @@ void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 				&& (iSel2 > iRunBase)
 				)
 			{
-				UT_Point pts[5];
-
+				UT_RGBColor c = pView->getColorImageResize();
+				
 				UT_uint32 top = yoff;
 				UT_uint32 left = xoff;
 				UT_uint32 right = xoff + getWidth() - 1;
 				UT_uint32 bottom = yoff + getHeight() - 1;
 
-				pts[0].x = left; 	pts[0].y = top;
-				pts[1].x = right;	pts[1].y = top;
-				pts[2].x = right;	pts[2].y = bottom;
-				pts[3].x = left; 	pts[3].y = bottom;
-				pts[4].x = left;	pts[4].y = top;
-
-				getGR()->setColor(pView->getColorImage());
-				getGR()->polyLine(pts, 5);
-
+				UT_sint32 boxSize = pView->getImageSelInfo();
+			
+				getGR()->fillRect(c, left, top, boxSize, boxSize); 												// North West
+				getGR()->fillRect(c, left + (right - left)/2 - boxSize/2, top, boxSize, boxSize); 				// North
+				getGR()->fillRect(c, right-boxSize, top, boxSize, boxSize); 									// North East
+				getGR()->fillRect(c, right-boxSize, top + ((bottom - top) / 2) - boxSize/2, boxSize, boxSize); 	// East
+				getGR()->fillRect(c, right-boxSize, bottom - boxSize, boxSize, boxSize); 						// South East
+				getGR()->fillRect(c, left + (right - left)/2 - boxSize/2, bottom - boxSize, boxSize, boxSize); 	// South
+				getGR()->fillRect(c, left, bottom - boxSize, boxSize, boxSize); 								// South West
+				getGR()->fillRect(c, left, top + ((bottom - top) / 2) - boxSize/2, boxSize, boxSize); 			// West
 			}
 		}
 

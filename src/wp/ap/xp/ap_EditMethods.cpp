@@ -277,6 +277,9 @@ public:
 
 	static EV_EditMethod_Fn replaceChar;
 
+	static EV_EditMethod_Fn resizeImage;
+	static EV_EditMethod_Fn endResizeImage;
+
 	// TODO add functions for all of the standard menu commands.
 	// TODO here are a few that i started.
 
@@ -663,33 +666,34 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(dlgBullets),			0,	""),
 	EV_EditMethod(NF(dlgColorPickerBack),	0,	""),
 	EV_EditMethod(NF(dlgColorPickerFore),	0,	""),
-	EV_EditMethod(NF(dlgColumns),			0,		""),
-	EV_EditMethod(NF(dlgFmtImage), 0, ""),
-	EV_EditMethod(NF(dlgFont),				0,		""),
-	EV_EditMethod(NF(dlgHdrFtr),			0,		""),
-	EV_EditMethod(NF(dlgLanguage),			0,		""),
-	EV_EditMethod(NF(dlgMetaData), 0, ""),
-	EV_EditMethod(NF(dlgMoreWindows),		0,		""),
-	EV_EditMethod(NF(dlgOptions),			0,			""),
-	EV_EditMethod(NF(dlgParagraph), 		0,		""),
-	EV_EditMethod(NF(dlgPlugins), 0, ""),
-	EV_EditMethod(NF(dlgSpell), 		0,		""),
-	EV_EditMethod(NF(dlgSpellPrefs), 0, ""),
-	EV_EditMethod(NF(dlgStyle), 			0,		""),
-	EV_EditMethod(NF(dlgTabs),				0,		""),
-	EV_EditMethod(NF(dlgToggleCase),				0,				""),
-	EV_EditMethod(NF(dlgWordCount), 		0,		""),
-	EV_EditMethod(NF(dlgZoom),				0,		""),
-	EV_EditMethod(NF(doBullets),			0,		""),
-	EV_EditMethod(NF(doNumbers),			0,		""),
-	EV_EditMethod(NF(doubleSpace),			0,		""),
+	EV_EditMethod(NF(dlgColumns),			0,	""),
+	EV_EditMethod(NF(dlgFmtImage), 			0, ""),
+	EV_EditMethod(NF(dlgFont),				0,	""),
+	EV_EditMethod(NF(dlgHdrFtr),			0,	""),
+	EV_EditMethod(NF(dlgLanguage),			0,	""),
+	EV_EditMethod(NF(dlgMetaData), 			0, ""),
+	EV_EditMethod(NF(dlgMoreWindows),		0,	""),
+	EV_EditMethod(NF(dlgOptions),			0,	""),
+	EV_EditMethod(NF(dlgParagraph), 		0,	""),
+	EV_EditMethod(NF(dlgPlugins), 			0,	""),
+	EV_EditMethod(NF(dlgSpell), 			0,	""),
+	EV_EditMethod(NF(dlgSpellPrefs), 		0,	""),
+	EV_EditMethod(NF(dlgStyle), 			0,	""),
+	EV_EditMethod(NF(dlgTabs),				0,	""),
+	EV_EditMethod(NF(dlgToggleCase),		0,	""),
+	EV_EditMethod(NF(dlgWordCount), 		0,	""),
+	EV_EditMethod(NF(dlgZoom),				0,	""),
+	EV_EditMethod(NF(doBullets),			0,	""),
+	EV_EditMethod(NF(doNumbers),			0,	""),
+	EV_EditMethod(NF(doubleSpace),			0,	""),
 	EV_EditMethod(NF(dragToXY), 			0,	""),
 	EV_EditMethod(NF(dragToXYword), 		0,	""),
 
 	// e
 	EV_EditMethod(NF(editFooter),			0,	""),
 	EV_EditMethod(NF(editHeader),			0,	""),
-	EV_EditMethod(NF(endDrag),			0,	""),
+	EV_EditMethod(NF(endDrag),				0,	""),
+	EV_EditMethod(NF(endResizeImage),		0,	""),
 	EV_EditMethod(NF(executeScript),		EV_EMT_REQUIRE_SCRIPT_NAME, ""),
 	EV_EditMethod(NF(extSelBOB),			0,	""),
 	EV_EditMethod(NF(extSelBOD),			0,	""),
@@ -875,6 +879,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(removeHeader), 		0,	""),
 	EV_EditMethod(NF(replace),				0,	""),
 	EV_EditMethod(NF(replaceChar),			_D_,""),
+	EV_EditMethod(NF(resizeImage),			0,  ""),
 	EV_EditMethod(NF(revisionAccept),		0,  ""),
 	EV_EditMethod(NF(revisionReject),		0,  ""),
 	EV_EditMethod(NF(revisionSetViewLevel),	0,  ""),
@@ -3567,8 +3572,6 @@ Defun1(cursorImage)
 Defun1(cursorImageSize)
 {
 	CHECK_FRAME;
-// TODO figure out which corner or side we are on and
-	// TODO map cursor to one of the standard 8 resizers.
 	ABIWORD_VIEW;
 
 	// clear status bar of any lingering messages
@@ -3578,7 +3581,8 @@ Defun1(cursorImageSize)
 	GR_Graphics * pG = pView->getGraphics();
 	if (pG)
 	{
-		pG->setCursor(GR_Graphics::GR_CURSOR_IBEAM);
+		// set the mouse cursor to the appropriate shape
+		pG->setCursor( pView->getImageSelCursor() );
 	}
 	return true;
 }
@@ -10127,3 +10131,220 @@ Defun1(revisionSetViewLevel)
 
 	return true;
 }
+
+Defun(resizeImage)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+
+	// clear status bar of any lingering messages
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
+	pFrame->setStatusMessage(NULL);
+
+	GR_Graphics * pG = pView->getGraphics();
+	if(pG)
+	{
+		bool bIsResizing = pView->isResizingImage();
+		if (!bIsResizing)
+			pView->startImageResizing(pCallData->m_xPos, pCallData->m_yPos);
+	
+		UT_sint32 xOrigin;
+		UT_sint32 yOrigin;
+		UT_sint32 xDiff; 
+		UT_sint32 yDiff;
+		
+		pView->getResizeOrigin(xOrigin, yOrigin);
+		UT_Rect orgImgRect = pView->getImageSelRect();
+		
+		xDiff = pCallData->m_xPos - xOrigin;
+		yDiff = pCallData->m_yPos - yOrigin;	
+		
+		UT_DEBUGMSG(("MARCM: ap_EditMethods::resizing image! Origin at pos: (x:%d,y:%d) - mouse at pos (x:%d,y:%d)\n", xOrigin, yOrigin, pCallData->m_xPos, pCallData->m_yPos));
+	
+		UT_sint32 x1,x2,y1,y2,iHeight,iWidth;
+		bool bEOL = false;
+		bool bDir = false;
+	
+		const fp_PageSize & page = pView->getPageSize ();
+	
+		PT_DocPosition pos = pView->getDocPositionFromXY(xOrigin, yOrigin);
+	
+		fl_BlockLayout * pBlock = pView->getBlockAtPosition(pos);
+		fp_Run *  pRun = NULL;
+		if(pBlock)
+		{
+			pRun = pBlock->findPointCoords(pos,bEOL,x1,y1,x2,y2,iHeight,bDir);
+			while(pRun && pRun->getType() != FPRUN_IMAGE)
+			{
+				pRun = pRun->getNext();
+			}
+			if(pRun && pRun->getType() == FPRUN_IMAGE)
+			{
+				UT_DEBUGMSG(("MARCM: Image run on pos \n"));
+			}
+			else
+			{
+				//UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+				return false;
+			}
+		}
+
+		UT_Rect r = orgImgRect;
+		double aRatio = r.height/r.width;
+		
+		// we can savely use the cursor format to see what kind of dragging we are doing
+		GR_Graphics::Cursor cur = pView->getImageSelCursor();
+		switch (cur)
+		{
+			case GR_Graphics::GR_CURSOR_IMAGESIZE_NW:
+				r.left += xDiff;
+				r.top += (UT_sint32)(xDiff * aRatio);
+				r.width -= xDiff;
+				r.height -= (UT_sint32)xDiff * aRatio;
+				break;
+			case GR_Graphics::GR_CURSOR_IMAGESIZE_N:
+				r.top += yDiff;
+				r.height -= yDiff;
+				break;
+			case GR_Graphics::GR_CURSOR_IMAGESIZE_NE:
+				r.top -= (UT_sint32)(xDiff * aRatio);
+				r.width += xDiff;
+				r.height += (UT_sint32)(xDiff * aRatio);
+				break;		
+			case GR_Graphics::GR_CURSOR_IMAGESIZE_E:
+				r.width += xDiff;
+				break;
+			case GR_Graphics::GR_CURSOR_IMAGESIZE_SE:
+				r.width += xDiff;
+				r.height += (UT_sint32)(xDiff * aRatio);
+				break;
+			case GR_Graphics::GR_CURSOR_IMAGESIZE_S:			
+				r.height += yDiff;
+				break;
+			case GR_Graphics::GR_CURSOR_IMAGESIZE_SW:			
+				r.left += xDiff;
+				r.width -= xDiff;
+				r.height -= (UT_sint32)(xDiff * aRatio);
+				break;
+			case GR_Graphics::GR_CURSOR_IMAGESIZE_W:
+				r.left += xDiff;
+				r.width -= xDiff;
+				break;
+			default:
+				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		}
+		
+		pG->setLineProperties(1, GR_Graphics::JOIN_MITER, GR_Graphics::CAP_BUTT, GR_Graphics::LINE_ON_OFF_DASH); // MARCM: setting the line style doesn't seem to work with GTK2 :-?
+		pG->setColor(UT_RGBColor(255,255,255));
+		if (bIsResizing)
+		{
+			UT_DEBUGMSG(("MARCM: Clearing old line\n"));
+			xorRect(pG, pView->getCurImageSel());
+		}
+		pView->setCurImageSel(r);
+		xorRect(pG, r);
+		pG->setLineProperties(1, GR_Graphics::JOIN_MITER, GR_Graphics::CAP_BUTT, GR_Graphics::LINE_SOLID);
+				
+		UT_DEBUGMSG(("MARCM: image display size: (w:%d,h:%d) - total change (w:%d,h:%d)\n",r.width,r.height,xDiff, yDiff));
+	}
+		
+	return true;
+}
+
+Defun(endResizeImage)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+
+	// clear status bar of any lingering messages
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
+	pFrame->setStatusMessage(NULL);
+
+	GR_Graphics * pG = pView->getGraphics();
+	if(pG)
+	{
+		pView->stopImageResizing();
+	
+		UT_sint32 xOrigin;
+		UT_sint32 yOrigin;
+		pView->getResizeOrigin(xOrigin, yOrigin);
+		UT_Rect newImgBounds = pView->getCurImageSel();
+		
+		// an approximate... TODO: make me more accurate
+		const fp_PageSize & page = pView->getPageSize ();		
+		double max_width = 0., max_height = 0.;
+		max_width  = page.Width (DIM_IN) * 72.0;
+		max_height = page.Height (DIM_IN) * 72.0;
+		
+		// some range checking stuff
+		newImgBounds.width = abs(newImgBounds.width);
+		newImgBounds.height = abs(newImgBounds.height);
+		
+		if (newImgBounds.width > max_width)
+			newImgBounds.width = (UT_sint32)max_width;
+		
+		if (newImgBounds.height > max_height)
+			newImgBounds.height = (UT_sint32)max_height;
+		
+		if (newImgBounds.width == 0)
+			newImgBounds.width = 1;
+
+		if (newImgBounds.height == 0)
+			newImgBounds.height = 1;
+		
+		// clear the resizing line
+		pG->setLineProperties(1, GR_Graphics::JOIN_MITER, GR_Graphics::CAP_BUTT, GR_Graphics::LINE_ON_OFF_DASH); // MARCM: setting the line style doesn't seem to work with GTK2 :-?
+		pG->setColor(UT_RGBColor(255,255,255));
+		xorRect(pG, pView->getCurImageSel());
+		pG->setLineProperties(1, GR_Graphics::JOIN_MITER, GR_Graphics::CAP_BUTT, GR_Graphics::LINE_SOLID);
+		
+		UT_DEBUGMSG(("MARCM: ap_EditMethods::done resizing image! new size in px (h:%d,w:%d)\n", newImgBounds.width, newImgBounds.height));
+	
+		UT_sint32 x1,x2,y1,y2,iHeight,iWidth;
+		bool bEOL = false;
+		bool bDir = false;
+	
+		PT_DocPosition pos = pView->getDocPositionFromXY(xOrigin, yOrigin);
+	
+		fl_BlockLayout * pBlock = pView->getBlockAtPosition(pos);
+		fp_Run *  pRun = NULL;
+		if(pBlock)
+		{
+			pRun = pBlock->findPointCoords(pos,bEOL,x1,y1,x2,y2,iHeight,bDir);
+			while(pRun && pRun->getType() != FPRUN_IMAGE)
+			{
+				pRun = pRun->getNext();
+			}
+			if(pRun && pRun->getType() == FPRUN_IMAGE)
+			{
+				UT_DEBUGMSG(("MARCM: Image run on pos \n"));
+			}
+			else
+			{
+				//UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+				return false;
+			}
+		}
+		pView->cmdSelect(pos,pos+1);
+	
+		char widthBuf[32];
+		char heightBuf[32];
+		
+		// TODO: set format
+		const XML_Char * properties[] = {"width", NULL, "height", NULL, 0};
+		char * old_locale = setlocale(LC_NUMERIC, "C");
+		sprintf(widthBuf, "%fin", UT_convertDimToInches(newImgBounds.width, DIM_PX));
+		sprintf(heightBuf, "%fin", UT_convertDimToInches(newImgBounds.height, DIM_PX));
+		setlocale(LC_NUMERIC, old_locale);
+		
+		UT_DEBUGMSG(("MARCM: nw:%s nh:%s\n", widthBuf, heightBuf));
+		
+		properties[1] = widthBuf;
+		properties[3] = heightBuf;
+		pView->setCharFormat(properties);
+		pView->updateScreen();
+	}
+		
+	return true;
+}
+

@@ -541,9 +541,9 @@ class ABI_EXPORT GR_Graphics
 	GR_Transform     m_Transform;
 };
 
-#ifdef DEBUG
 void xorRect(GR_Graphics* pG, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h);
 void xorRect(GR_Graphics* pG, const UT_Rect& r);
+#ifdef DEBUG
 void flash(GR_Graphics* pG, const UT_Rect& r, const UT_RGBColor& c);
 #endif
 

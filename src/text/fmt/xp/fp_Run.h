@@ -686,6 +686,7 @@ public:
 	virtual bool			letPointPass(void) const;
 	const char *            getDataId(void) const;
 	virtual bool 			hasLayoutProperties(void) const;
+
 protected:
 	virtual void			_lookupProperties(const PP_AttrProp * pSpanAP,
 											  const PP_AttrProp * pBlockAP,

@@ -141,12 +141,20 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_iMouseY(0),
 		m_iViewRevision(0),
 		m_bWarnedThatRestartNeeded(false),
+		m_selImageRect(-1,-1,-1,-1),
+		m_iImageSelBoxSize(8),
+		m_imageSelCursor(GR_Graphics::GR_CURSOR_IBEAM),
+		m_ixResizeOrigin(0),
+		m_iyResizeOrigin(0),
+		m_bIsResizingImage(false),
+		m_curImageSel(-1,-1,-1,-1),
 		m_colorShowPara(127,127,127),
 		m_colorSquiggle(255, 0, 0),
 		m_colorMargin(127, 127, 127),
 		m_colorSelBackground(192, 192, 192),
 		m_colorFieldOffset(10, 10, 10),
 		m_colorImage(0, 0, 255),
+		m_colorImageResize(0, 0, 0),
 		m_colorHyperLink(0, 0, 255),
 		m_colorHdrFtr(0, 0, 0),
 		m_colorColumnLine(0, 0, 0),
@@ -5879,7 +5887,7 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 		xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (7), run type %d\n", pRun->getType()));
 		return EV_EMC_HYPERLINK;
 	}
-
+	
 	switch (pRun->getType())
 	{
 	case FPRUN_TEXT:
@@ -5893,11 +5901,48 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 		return EV_EMC_TEXT;
 
 	case FPRUN_IMAGE:
-		// TODO see if the image is selected and current x,y
-		// TODO is over the image border or the border handles.
-		// TODO if so, return EV_EMC_IMAGESIZE
-		return EV_EMC_IMAGE;
-
+		{
+			// clear the image selection rect
+			setImageSelRect(UT_Rect(-1,-1,-1,-1));
+		
+			// check if this image is selected
+			UT_uint32 iRunBase = pRun->getBlock()->getPosition() + pRun->getBlockOffset();
+	
+			UT_uint32 iSelAnchor = getSelectionAnchor();
+			UT_uint32 iPoint = getPoint();
+	
+			UT_uint32 iSel1 = UT_MIN(iSelAnchor, iPoint);
+			UT_uint32 iSel2 = UT_MAX(iSelAnchor, iPoint);
+	
+			UT_ASSERT(iSel1 <= iSel2);
+	
+			if (
+				getFocus()!=AV_FOCUS_NONE &&
+				(iSel1 <= iRunBase)
+				&& (iSel2 > iRunBase)
+				)
+			{
+				// This image is selected. Now get the image size.
+				
+				UT_sint32 xoff = 0, yoff = 0;
+				pRun->getLine()->getScreenOffsets(pRun, xoff, yoff);
+	
+				// Sevior's infamous + 1....
+				yoff += pRun->getLine()->getAscent() - pRun->getAscent() + 1;				
+				
+				// Set the image size in the image selection rect
+				m_selImageRect = UT_Rect(xoff,yoff,pRun->getWidth(),pRun->getHeight());
+			}
+		
+			if (isOverImageResizeBox(m_imageSelCursor, xPos, yPos))
+			{
+				return EV_EMC_IMAGESIZE;
+			}
+			else
+			{
+				return EV_EMC_IMAGE;
+			}
+		}
 	case FPRUN_TAB:
 	case FPRUN_FORCEDLINEBREAK:
 	case FPRUN_FORCEDCOLUMNBREAK:
@@ -5984,8 +6029,8 @@ void FV_View::setCursorToContext()
 		cursor = GR_Graphics::GR_CURSOR_IMAGE;
 		break;
 	case EV_EMC_IMAGESIZE:
-		cursor = GR_Graphics::GR_CURSOR_IMAGE;
-		break;
+		cursor = m_imageSelCursor;
+		break;	
 	case EV_EMC_FIELD:
 		cursor = GR_Graphics::GR_CURSOR_DEFAULT;
 		break;
@@ -6063,7 +6108,7 @@ EV_EditMouseContext FV_View::getInsertionPointContext(UT_sint32 * pxPos, UT_sint
 	{
 		return EV_EMC_HYPERLINK;
 	}
-
+	
 	switch (pRun->getType())
 	{
 	case FPRUN_TEXT:
@@ -6075,11 +6120,48 @@ EV_EditMouseContext FV_View::getInsertionPointContext(UT_sint32 * pxPos, UT_sint
 		return EV_EMC_TEXT;
 
 	case FPRUN_IMAGE:
-		// TODO see if the image is selected and current x,y
-		// TODO is over the image border or the border handles.
-		// TODO if so, return EV_EMC_IMAGESIZE
-		return EV_EMC_IMAGE;
-
+		{
+			// clear the image selection rect
+			setImageSelRect(UT_Rect(-1,-1,-1,-1));
+		
+			// check if this image is selected
+			UT_uint32 iRunBase = pRun->getBlock()->getPosition() + pRun->getBlockOffset();
+	
+			UT_uint32 iSelAnchor = getSelectionAnchor();
+			UT_uint32 iPoint = getPoint();
+	
+			UT_uint32 iSel1 = UT_MIN(iSelAnchor, iPoint);
+			UT_uint32 iSel2 = UT_MAX(iSelAnchor, iPoint);
+	
+			UT_ASSERT(iSel1 <= iSel2);
+	
+			if (
+				getFocus()!=AV_FOCUS_NONE &&
+				(iSel1 <= iRunBase)
+				&& (iSel2 > iRunBase)
+				)
+			{
+				// This image is selected. Now get the image size.
+				
+				UT_sint32 xoff = 0, yoff = 0;
+				pRun->getLine()->getScreenOffsets(pRun, xoff, yoff);
+	
+				// Sevior's infamous + 1....
+				yoff += pRun->getLine()->getAscent() - pRun->getAscent() + 1;				
+				
+				// Set the image size in the image selection rect
+				m_selImageRect = UT_Rect(xoff,yoff,pRun->getWidth(),pRun->getHeight());
+			}
+		
+			if (isOverImageResizeBox(m_imageSelCursor, m_xPoint, m_yPoint + m_iPointHeight))
+			{
+				return EV_EMC_IMAGESIZE;
+			}
+			else
+			{
+				return EV_EMC_IMAGE;
+			}
+		}			
 	case FPRUN_TAB:
 	case FPRUN_FORCEDLINEBREAK:
 	case FPRUN_FORCEDCOLUMNBREAK:
@@ -7804,6 +7886,119 @@ void FV_View:: getVisibleDocumentPagesAndRectangles(UT_Vector &vRect, UT_Vector 
 
 		pPage = pPage->getNext();
 	}
-
 }
 
+void FV_View::setImageSelRect(UT_Rect r)
+{
+	m_selImageRect = r;
+}
+
+UT_Rect FV_View::getImageSelRect()
+{
+	return m_selImageRect;
+}
+
+/*! Returns the size of the image selection boxes
+*/
+UT_sint32 FV_View::getImageSelInfo()
+{
+	return m_iImageSelBoxSize;
+}
+
+GR_Graphics::Cursor FV_View::getImageSelCursor()
+{
+	return m_imageSelCursor;
+}
+
+/*! Returns true if the given coords are in an image selection box, false otherwise.
+
+    \param cur -- Will be set to the appropriate mouse cursor, if the given xPos and yPos are 
+                  in a selection box. Will be left unchanged otherwise
+    \param xPos -- x position to check
+    \param xPos -- y position to check
+*/
+bool FV_View::isOverImageResizeBox(GR_Graphics::Cursor &cur, UT_uint32 xPos, UT_uint32 yPos)
+{
+	if (UT_Rect(m_selImageRect.left, m_selImageRect.top, m_iImageSelBoxSize, m_iImageSelBoxSize).containsPoint(xPos, yPos))
+	{
+		cur = GR_Graphics::GR_CURSOR_IMAGESIZE_NW; // North West
+		return true;
+	}
+
+	if (UT_Rect(m_selImageRect.left + (m_selImageRect.width/2) - m_iImageSelBoxSize/2, m_selImageRect.top, m_iImageSelBoxSize, m_iImageSelBoxSize).containsPoint(xPos, yPos))
+	{
+		cur  = GR_Graphics::GR_CURSOR_IMAGESIZE_N; // North
+		return true;
+	}
+	
+	if (UT_Rect(m_selImageRect.left + m_selImageRect.width - m_iImageSelBoxSize, m_selImageRect.top, m_iImageSelBoxSize, m_iImageSelBoxSize).containsPoint(xPos, yPos))
+	{
+		cur  = GR_Graphics::GR_CURSOR_IMAGESIZE_NE; // North East
+		return true;
+	}
+	
+	if (UT_Rect(m_selImageRect.left + m_selImageRect.width - m_iImageSelBoxSize, m_selImageRect.top + m_selImageRect.height/2 - m_iImageSelBoxSize/2, m_iImageSelBoxSize, m_iImageSelBoxSize).containsPoint(xPos, yPos))
+	{
+		cur  = GR_Graphics::GR_CURSOR_IMAGESIZE_E; // East
+		return true;
+	}
+
+	if (UT_Rect(m_selImageRect.left + m_selImageRect.width - m_iImageSelBoxSize, m_selImageRect.top + m_selImageRect.height - m_iImageSelBoxSize, m_iImageSelBoxSize, m_iImageSelBoxSize).containsPoint(xPos, yPos))
+	{
+		cur  = GR_Graphics::GR_CURSOR_IMAGESIZE_SE; // South East
+		return true;
+	}
+
+	if (UT_Rect(m_selImageRect.left + (m_selImageRect.width/2) - m_iImageSelBoxSize/2, m_selImageRect.top + m_selImageRect.height - m_iImageSelBoxSize, m_iImageSelBoxSize, m_iImageSelBoxSize).containsPoint(xPos, yPos))
+	{
+		cur  = GR_Graphics::GR_CURSOR_IMAGESIZE_S; // South
+		return true;
+	}
+
+	if (UT_Rect(m_selImageRect.left, m_selImageRect.top + m_selImageRect.height - m_iImageSelBoxSize, m_iImageSelBoxSize, m_iImageSelBoxSize).containsPoint(xPos, yPos))
+	{
+		cur  = GR_Graphics::GR_CURSOR_IMAGESIZE_SW; // South West
+		return true;
+	}
+
+	if (UT_Rect(m_selImageRect.left, m_selImageRect.top + m_selImageRect.height/2 - m_iImageSelBoxSize/2, m_iImageSelBoxSize, m_iImageSelBoxSize).containsPoint(xPos, yPos))
+	{
+		cur = GR_Graphics::GR_CURSOR_IMAGESIZE_W; // West
+		return true;
+	}
+	
+	return false;
+}
+
+void FV_View::startImageResizing(UT_sint32 xPos, UT_sint32 yPos)
+{
+	m_ixResizeOrigin = xPos;
+	m_iyResizeOrigin = yPos;
+	m_bIsResizingImage = true;
+}
+
+void FV_View::stopImageResizing()
+{
+	m_bIsResizingImage = false;
+}
+
+bool FV_View::isResizingImage()
+{
+	return m_bIsResizingImage;
+}
+
+void FV_View::getResizeOrigin(UT_sint32 &xOrigin, UT_sint32 &yOrigin)
+{
+	xOrigin = m_ixResizeOrigin;
+	yOrigin = m_iyResizeOrigin;
+}
+
+void FV_View::setCurImageSel(UT_Rect r)
+{
+	m_curImageSel = r;
+}
+
+UT_Rect FV_View::getCurImageSel()
+{
+	return m_curImageSel;
+}

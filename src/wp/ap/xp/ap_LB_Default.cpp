@@ -91,7 +91,8 @@ ap_bs_Mouse MouseTable[] =
 //  { context	{ click				doubleclick		drag,		dbldrag,		release,	doublerelease }},
 	{_CI _B1,	{ "warpInsPtToXY",	"selectObject",				"",			"",				"",			""	}},
 	{_CF _B1,	{ "warpInsPtToXY",	"selectObject",				"",			"",				"",			""	}},
-
+	{_CF _B1,	{ "warpInsPtToXY",	"selectObject",				"",			"",				"",			""	}},
+	
 //	Button-1, Text-context
 //  { context	{ click				doubleclick		drag,		dbldrag,		release,	doublerelease	}},
 	{_CT _B1,	{ "warpInsPtToXY",	"selectWord",	"dragToXY",	"dragToXYword",	"endDrag",	"endDrag"		}},
@@ -116,6 +117,7 @@ ap_bs_Mouse MouseTable[] =
 
 //	Button-1, Image-context
 //  { context	{ click				doubleclick		drag,		dbldrag,	release,		doublerelease	}},
+	{_CZ _B1,	{ "",				"",				"resizeImage",	"",		"endResizeImage",	""				}},
 //	{_CI _B1,	{ "selectImage",	"editImage",	"moveImage","",			"endImageMove",	""				}},
 
 //	Button-1, ImageSize-context
