@@ -54,8 +54,9 @@ utf16_to_utf8(const unsigned short *word16, int length)
   UT_UCS_cloneString (&ucs2, word16);
 
   /* Note that length is in shorts, so we have to double it here */
-  (char *) result = UT_convert ((const char *)ucs2, length*2, UCS_2_INTERNAL,
-                                "utf-8", NULL, &len_out);
+  result = (unsigned char*)
+			UT_convert ((const char *)ucs2, length*2, UCS_2_INTERNAL,
+                         "utf-8", NULL, &len_out);
 
   /* We assume that UT_convert creates a buffer big enough for this: */
   result[len_out] = 0;
@@ -79,8 +80,9 @@ utf8_to_utf16(const char *word8, int length)
   unsigned char *result;
   UT_UCSChar * word16;
 
-  (char *) result = UT_convert (word8, length, "utf-8",UCS_2_INTERNAL,
-		              NULL, &len_out);
+  result = (unsigned char *)
+	UT_convert (word8, length, "utf-8",UCS_2_INTERNAL, NULL, &len_out);
+
   if (! result)
     return NULL;
 
