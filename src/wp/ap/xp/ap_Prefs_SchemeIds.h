@@ -62,6 +62,8 @@
 #define AP_PREF_KEY_RulerVisible					"RulerVisible"				/* are the rulers visible? {0,1} */
 #define AP_PREF_DEFAULT_RulerVisible				"1"
 
+#define AP_PREF_KEY_ParaVisible                     "ParaVisible"               /* are the paragraphs/spaces/tats/etc. visible? {0,1} */
+#define AP_PREF_DEFAULT_ParaVisible                 "0"
 
 
 #define AP_PREF_KEY_SpellCheckWordList				"SpellCheckWordList"		/* name of ispell hash file */
@@ -111,6 +113,7 @@ dcl(SpellCheckInternet)
 dcl(OptionsTabNumber)
 dcl(RulerUnits)
 dcl(RulerVisible)
+dcl(ParaVisible)
 dcl(SpellCheckWordList)
 dcl(StringSet)
 dcl(KeyBindings)

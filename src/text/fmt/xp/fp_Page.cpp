@@ -151,10 +151,49 @@ FL_DocLayout* fp_Page::getDocLayout()
 	return m_pLayout;
 }
 
+void fp_Page::_drawCropMarks(dg_DrawArgs* pDA)
+{
+    if(m_pView->getShowPara() && pDA->pG->queryProperties(GR_Graphics::DGP_SCREEN)){
+        fp_Column* pFirstColumnLeader = getNthColumnLeader(0);
+        fl_DocSectionLayout* pFirstSectionLayout = (pFirstColumnLeader->getDocSectionLayout());
+        UT_ASSERT(m_pOwner == pFirstSectionLayout);
+        UT_sint32 iLeftMargin = pFirstSectionLayout->getLeftMargin();
+        UT_sint32 iRightMargin = pFirstSectionLayout->getRightMargin();
+        UT_sint32 iTopMargin = pFirstSectionLayout->getTopMargin();
+        UT_sint32 iBottomMargin = pFirstSectionLayout->getBottomMargin();
+
+        UT_sint32 xoffStart = pDA->xoff + iLeftMargin - 1;
+        UT_sint32 yoffStart = pDA->yoff + iTopMargin - 1;
+        UT_sint32 xoffEnd = pDA->xoff + getWidth() - iRightMargin + 2;
+        UT_sint32 yoffEnd = pDA->yoff + getHeight() - iBottomMargin + 2;
+
+        UT_sint32 iLeftWidth = UT_MIN(iLeftMargin,20);
+        UT_sint32 iRightWidth = UT_MIN(iRightMargin,20);
+        UT_sint32 iTopHeight = UT_MIN(iTopMargin,20);
+        UT_sint32 iBottomHeight = UT_MIN(iBottomMargin,20);
+
+        UT_RGBColor clr(127,127,127);
+        pDA->pG->setColor(clr);
+        pDA->pG->drawLine(xoffStart, yoffStart, xoffStart, yoffStart - iTopHeight);
+        pDA->pG->drawLine(xoffStart, yoffStart, xoffStart - iLeftWidth, yoffStart);
+
+        pDA->pG->drawLine(xoffEnd, yoffStart - iTopHeight, xoffEnd, yoffStart);
+        pDA->pG->drawLine(xoffEnd, yoffStart, xoffEnd + iRightWidth, yoffStart);
+
+        pDA->pG->drawLine(xoffStart, yoffEnd, xoffStart, yoffEnd + iBottomHeight);
+        pDA->pG->drawLine(xoffStart - iLeftWidth, yoffEnd, xoffStart, yoffEnd);
+
+        pDA->pG->drawLine(xoffEnd, yoffEnd, xoffEnd, yoffEnd + iBottomHeight);
+        pDA->pG->drawLine(xoffEnd, yoffEnd, xoffEnd + iRightWidth, yoffEnd);
+    }
+}
+
 void fp_Page::draw(dg_DrawArgs* pDA)
 {
 	// draw each column on the page
 	int count = m_vecColumnLeaders.getItemCount();
+
+    _drawCropMarks(pDA);
 
 	for (int i=0; i<count; i++)
 	{

@@ -122,6 +122,7 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 
 	m_wrappedEnd = UT_FALSE;
 	m_startPosition = 0;
+    m_bShowPara = UT_FALSE;
 }
 
 FV_View::~FV_View()
@@ -5204,3 +5205,10 @@ FV_DocCount FV_View::countWords(void)
 	return (wCount);
 }
 
+void FV_View::setShowPara(UT_Bool bShowPara)
+{
+    if(bShowPara != m_bShowPara){
+        m_bShowPara = bShowPara;
+        draw();
+    }
+};

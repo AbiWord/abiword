@@ -103,6 +103,7 @@ void AP_Dialog_Options::_storeWindowData(void)
 
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_CursorBlink, _gatherViewCursorBlink() );
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_RulerVisible, _gatherViewShowRuler() );
+    Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_ParaVisible, _gatherViewUnprintable() );
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 	// If we changed whether the ruler is to be visible
@@ -113,6 +114,17 @@ void AP_Dialog_Options::_storeWindowData(void)
 		pFrameData->m_bShowRuler = _gatherViewShowRuler() ;
 		m_pFrame->toggleRuler( _gatherViewShowRuler() );
 	}
+
+    if ( _gatherViewUnprintable() != pFrameData->m_bShowPara )
+    {
+        pFrameData->m_bShowPara = _gatherViewUnprintable() ;
+        AV_View * pAVView = m_pFrame->getCurrentView();
+        UT_ASSERT(pAVView);
+
+        FV_View * pView = static_cast<FV_View *> (pAVView);
+
+        pView->setShowPara( _gatherViewUnprintable() );
+    }
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 	// save ruler units value
@@ -181,6 +193,9 @@ void AP_Dialog_Options::_populateWindowData(void)
 	if (pPrefs->getPrefsValueBool(AP_PREF_KEY_RulerVisible,&b))
 		_setViewShowRuler (b);
 
+    if (pPrefs->getPrefsValueBool(AP_PREF_KEY_ParaVisible,&b))
+        _setViewUnprintable (b);
+
 	if (pPrefs->getPrefsValueBool(AP_PREF_KEY_CursorBlink,&b))
 		_setViewCursorBlink (b);
 
@@ -234,7 +249,6 @@ void AP_Dialog_Options::_initEnableControls()
 	_controlEnable( id_CHECK_VIEW_SHOW_TOOLBARS,	UT_FALSE );
 	_controlEnable( id_CHECK_VIEW_ALL,				UT_FALSE );
 	_controlEnable( id_CHECK_VIEW_HIDDEN_TEXT,		UT_FALSE );
-	_controlEnable( id_CHECK_VIEW_UNPRINTABLE,		UT_FALSE );
 
 	// general
 	_controlEnable( id_BUTTON_SAVE,					UT_FALSE );

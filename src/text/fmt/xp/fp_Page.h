@@ -89,6 +89,7 @@ public:
 #endif
 	
 protected:
+    void                _drawCropMarks(dg_DrawArgs*);
 	void				_reformat(void);
 
 	FL_DocLayout*		m_pLayout;

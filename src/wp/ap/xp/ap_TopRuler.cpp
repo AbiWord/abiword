@@ -1279,7 +1279,9 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 
 			_xorGuide(UT_TRUE);
 			m_draggingWhat = DW_NOTHING;
-			(static_cast<FV_View *>(m_pView))->setSectionFormat(properties);
+            FV_View *pView = static_cast<FV_View *>(m_pView);
+            pView->setSectionFormat(properties);
+            pView->draw(NULL);
 		}
 		return;
 
@@ -1297,7 +1299,9 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 
 			_xorGuide(UT_TRUE);
 			m_draggingWhat = DW_NOTHING;
-			(static_cast<FV_View *>(m_pView))->setSectionFormat(properties);
+            FV_View *pView = static_cast<FV_View *>(m_pView);
+            pView->setSectionFormat(properties);
+            pView->draw(NULL);
 		}
 		return;
 
@@ -1313,7 +1317,9 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 			UT_DEBUGMSG(("TopRuler: ColumnGap [%s]\n",properties[1]));
 
 			m_draggingWhat = DW_NOTHING;
-			(static_cast<FV_View *>(m_pView))->setSectionFormat(properties);
+            FV_View *pView = static_cast<FV_View *>(m_pView);
+            pView->setSectionFormat(properties);
+            pView->draw(NULL);
 		}
 		return;
 		

@@ -200,6 +200,7 @@ UT_Error AP_BeOSFrame::_showDocument(UT_uint32 iZoom)
 	//((AP_FrameData*)m_pData)->m_pStatusBar->setView(pView);
 
 	pView->setInsertMode(((AP_FrameData*)m_pData)->m_bInsertMode);
+    ((FV_View *) m_pView)->setShowPara(((AP_FrameData*)m_pData)->m_bShowPara);
 	
 	m_pBeDocView->Window()->Lock();
 	m_pView->setWindowSize(m_pBeDocView->Bounds().Width(),

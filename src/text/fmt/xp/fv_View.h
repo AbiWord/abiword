@@ -236,6 +236,8 @@ public:
 
 	FV_DocCount                     countWords(void);
 
+    void            setShowPara(UT_Bool);    
+    inline UT_Bool  getShowPara(void) const { return m_bShowPara; };
 protected:
 	void				_generalUpdate(void);
 	
@@ -352,6 +354,8 @@ protected:
 
 	// prefs listener - to change cursor blink on/off (and possibly others)
 	static void _prefsListener( XAP_App *, XAP_Prefs *, UT_AlphaHashTable *, void *);
+
+    UT_Bool             m_bShowPara;
 };
 
 #endif /* FV_VIEW_H */

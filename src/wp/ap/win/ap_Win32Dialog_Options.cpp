@@ -375,6 +375,7 @@ BOOL AP_Win32Dialog_Options::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		{
 			// localize controls
 			_DS(OPTIONS_CHK_ViewShowRuler,			DLG_Options_Label_ViewRuler);
+            _DS(OPTIONS_CHK_ViewUnprintable,        DLG_Options_Label_ViewUnprintable);
 			_DS(OPTIONS_CHK_ViewCursorBlink,		DLG_Options_Label_ViewCursorBlink);
 			_DS(OPTIONS_CHK_ViewShowToolbars,		DLG_Options_Label_ViewToolbars);
 			_DS(OPTIONS_CHK_ViewAll,				DLG_Options_Label_ViewAll);

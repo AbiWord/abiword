@@ -150,6 +150,7 @@ public:
 	virtual	UT_Bool			recalcWidth(void);
 	
 	virtual void			_draw(dg_DrawArgs*) = 0;
+    void                    _drawTextLine(UT_sint32, UT_sint32, UT_uint32, UT_uint32, UT_UCSChar *);
 	virtual void       		_clearScreen(UT_Bool bFullLineHeightRect) = 0;
 	virtual UT_Bool			canBreakAfter(void) const = 0;
 	virtual UT_Bool			canBreakBefore(void) const = 0;
@@ -223,6 +224,9 @@ class fp_TabRun : public fp_Run
 	void					setWidth(UT_sint32);
 	
 protected:
+    UT_RGBColor             m_colorFG;
+
+    virtual void            _drawArrow(UT_uint32 iLeft,UT_uint32 iTop,UT_uint32 iWidth, UT_uint32 iHeight);
 	virtual void			_draw(dg_DrawArgs*);
 	virtual void       		_clearScreen(UT_Bool bFullLineHeightRect);
 };

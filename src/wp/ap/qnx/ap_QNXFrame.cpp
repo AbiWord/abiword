@@ -212,6 +212,7 @@ UT_Error AP_QNXFrame::_showDocument(UT_uint32 iZoom)
 	((AP_FrameData*)m_pData)->m_pStatusBar->setView(pView);
 
 	pView->setInsertMode(((AP_FrameData*)m_pData)->m_bInsertMode);
+    ((FV_View *) m_pView)->setShowPara(((AP_FrameData*)m_pData)->m_bShowPara);
 	
 	unsigned short w, h;
 	UT_QNXGetWidgetArea(m_dArea, NULL, NULL, &w, &h);

@@ -3958,8 +3958,26 @@ Defun1(viewPara)
 	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
 	UT_ASSERT(pFrame);
 
-	// TODO: synch this implementation with ap_GetState_View
-	s_TellNotImplemented(pFrame, "Show/Hide Paragraphs", __LINE__);
+    AP_FrameData *pFrameData = (AP_FrameData *)pFrame->getFrameData();
+    UT_ASSERT(pFrameData);
+
+    pFrameData->m_bShowPara = !pFrameData->m_bShowPara;
+
+    ABIWORD_VIEW;
+    pView->setShowPara(pFrameData->m_bShowPara);
+
+#if 0
+    // POLICY: make this the default for new frames, too
+    XAP_App * pApp = pFrame->getApp();
+    UT_ASSERT(pApp);
+    XAP_Prefs * pPrefs = pApp->getPrefs();
+    UT_ASSERT(pPrefs);
+    XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(UT_TRUE);
+    UT_ASSERT(pScheme);
+
+    pScheme->setValueBool(AP_PREF_KEY_ParaVisible, pFrameData->m_bShowPara);
+#endif
+
 	return UT_TRUE;
 }
 

@@ -109,6 +109,8 @@ protected:
 	fl_SectionLayout*		m_pSectionLayout;
 
 	GR_Graphics*			m_pG;
+
+    void                    _drawBoundaries(dg_DrawArgs* pDA);
 };
 
 class fp_Column : public fp_Container

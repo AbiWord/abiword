@@ -811,6 +811,9 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	}
 
 	_drawDecors(pDA->xoff, yTopOfRun);
+    if(pView->getShowPara()){
+        _drawInvisibles(pDA->xoff, yTopOfRun);
+    }
 
 	// TODO: draw this underneath (ie, before) the text and decorations
 	m_bSquiggled = UT_FALSE;
@@ -1117,6 +1120,56 @@ text so we can keep the original code.
 	*/ 
 	m_iLineWidth = old_LineWidth;
 	m_pG->setLineWidth(m_iLineWidth);
+}
+
+void fp_TextRun::_drawInvisibleSpaces(UT_sint32 xoff, UT_sint32 yoff)
+{
+    UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths()->getCharWidths();
+    UT_uint16* pCharWidths = pgbCharWidths->getPointer(0);
+    const UT_UCSChar* pSpan;
+    UT_uint32 lenSpan;
+    UT_uint32 len = m_iLen;
+    UT_sint32 iWidth = 0;
+    UT_sint32 cur_linewidth = 1+ (UT_MAX(10,m_iAscent)-10)/8;
+    UT_sint32 iRectSize = cur_linewidth * 3 / 2;
+    UT_Bool bContinue = UT_TRUE;
+    UT_uint32 offset = m_iOffsetFirst;
+
+    if(findCharacter(0, UCS_SPACE) > 0){
+        while(bContinue){
+            bContinue = m_pBL->getSpanPtr(offset,&pSpan,&lenSpan);
+            UT_ASSERT(lenSpan > 0);
+
+
+            if(lenSpan > len){
+                lenSpan = len;
+            }
+
+            UT_uint32 iy = yoff + getAscent() * 2 / 3;
+
+            for (UT_uint32 i = 0;i < lenSpan;i++){
+               if(pSpan[i] == UCS_SPACE){
+                   m_pG->fillRect(m_colorFG,xoff + iWidth + (pCharWidths[i + offset] - iRectSize) / 2,iy,iRectSize,iRectSize);
+               }
+               iWidth += pCharWidths[i + offset];
+            }
+            if (len <= lenSpan){
+                bContinue = UT_FALSE;
+            }else{
+                offset += lenSpan;
+                len -= lenSpan;
+            }
+
+        }
+    }
+}
+
+void fp_TextRun::_drawInvisibles(UT_sint32 xoff, UT_sint32 yoff)
+{
+    if (!(m_pG->queryProperties(GR_Graphics::DGP_SCREEN))){
+        return;
+    }
+    _drawInvisibleSpaces(xoff,yoff);
 }
 
 void fp_TextRun::_drawSquiggle(UT_sint32 top, UT_sint32 left, UT_sint32 right)

@@ -24,6 +24,7 @@
 #include "fp_Column.h"
 #include "fp_Page.h"
 #include "fp_Line.h"
+#include "fv_View.h"
 #include "fl_SectionLayout.h"
 #include "gr_DrawArgs.h"
 
@@ -215,6 +216,24 @@ void fp_Container::clearScreen(void)
 	}
 }
 
+void fp_Container::_drawBoundaries(dg_DrawArgs* pDA)
+{
+    UT_ASSERT(pDA->pG == m_pG);
+    if(m_pPage->getDocLayout()->getView()->getShowPara() && m_pG->queryProperties(GR_Graphics::DGP_SCREEN)){
+        UT_RGBColor clr(127,127,127);
+        m_pG->setColor(clr);
+        UT_sint32 xoffBegin = pDA->xoff - 1;
+        UT_sint32 yoffBegin = pDA->yoff - 1;
+        UT_sint32 xoffEnd = pDA->xoff + m_iWidth + 2;
+        UT_sint32 yoffEnd = pDA->yoff + m_iMaxHeight + 2;
+
+        m_pG->drawLine(xoffBegin, yoffBegin, xoffEnd, yoffBegin);
+        m_pG->drawLine(xoffBegin, yoffEnd, xoffEnd, yoffEnd);
+        m_pG->drawLine(xoffBegin, yoffBegin, xoffBegin, yoffEnd);
+        m_pG->drawLine(xoffEnd, yoffBegin, xoffEnd, yoffEnd);
+    }
+}
+
 void fp_Container::draw(dg_DrawArgs* pDA)
 {
 	int count = m_vecLines.getItemCount();
@@ -227,6 +246,8 @@ void fp_Container::draw(dg_DrawArgs* pDA)
 		da.yoff += pLine->getY();
 		pLine->draw(&da);
 	}
+
+    _drawBoundaries(pDA);
 
 #if 0
 	m_pG->drawLine(pDA->xoff, pDA->yoff, pDA->xoff + m_iWidth, pDA->yoff);

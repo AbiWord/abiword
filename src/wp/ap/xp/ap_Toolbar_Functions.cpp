@@ -312,7 +312,10 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_SectionFmt)
 		const XML_Char ** props_in = NULL;
 		const XML_Char * sz = NULL;
 
-		if (!pView->getSectionFormat(&props_in))
+        UT_Bool bResult = pView->getSectionFormat(&props_in);
+        pView->draw(NULL);
+
+        if (!bResult)
 			return s;
 
 		// NB: maybe *no* properties are consistent across the selection

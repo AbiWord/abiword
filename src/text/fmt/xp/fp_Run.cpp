@@ -309,7 +309,24 @@ const PP_AttrProp* fp_Run::getAP(void) const
 	return pSpanAP;
 }
 
+void fp_Run::_drawTextLine(UT_sint32 xoff,UT_sint32 yoff,UT_uint32 iWidth,UT_uint32 iHeight,UT_UCSChar *pText)
+{
+    m_pG->setFont(m_pG->getGUIFont());
 
+    UT_uint32 iTextLen = UT_UCS_strlen(pText);
+    UT_uint32 iTextWidth = m_pG->measureString(pText,0,iTextLen,NULL); 
+    UT_uint32 iTextHeight = m_pG->getFontHeight();
+
+    UT_uint32 xoffText = xoff + (iWidth - iTextWidth) / 2;
+    UT_uint32 yoffText = yoff - m_pG->getFontAscent() * 2 / 3;
+
+    m_pG->drawLine(xoff,yoff,xoff + iWidth,yoff);
+    UT_RGBColor clrPaper(255,255,255);
+    if((iTextWidth < iWidth) && (iTextHeight < iHeight)){
+        m_pG->fillRect(clrPaper,xoffText,yoffText,iTextWidth,iTextHeight);
+        m_pG->drawChars(pText,0,iTextLen,xoffText,yoffText);
+    }
+}
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
@@ -331,6 +348,8 @@ void fp_TabRun::lookupProperties(void)
 	// look for fonts in this DocLayout's font cache
 	FL_DocLayout * pLayout = m_pBL->getDocLayout();
 	GR_Font* pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, FL_DocLayout::FIND_FONT_AT_SCREEN_RESOLUTION);
+
+    UT_parseColor(PP_evalProperty("color",pSpanAP,pBlockAP,pSectionAP, m_pBL->getDocument(), UT_TRUE), m_colorFG);
 
 	m_pG->setFont(pFont);
 	m_iAscent = m_pG->getFontAscent();	
@@ -410,6 +429,51 @@ void fp_TabRun::_clearScreen(UT_Bool /* bFullLineHeightRect */)
 	m_pG->clearArea(xoff, yoff, m_iWidth, m_pLine->getHeight());
 }
 
+void fp_TabRun::_drawArrow(UT_uint32 iLeft,UT_uint32 iTop,UT_uint32 iWidth, UT_uint32 iHeight)
+{
+    if (!(m_pG->queryProperties(GR_Graphics::DGP_SCREEN))){
+        return;
+    }
+
+    #define NPOINTS 8
+
+    UT_Point * points = (UT_Point *)calloc(NPOINTS,sizeof(UT_Point));
+    UT_ASSERT(points);
+
+    UT_sint32 cur_linewidth = 1 + (UT_MAX(10,m_iAscent) - 10) / 8;
+    UT_uint32 iyAxis = iTop + m_pLine->getAscent() * 2 / 3;
+    UT_uint32 iMaxWidth = iWidth / 10 * 6;
+    UT_uint32 ixGap = (iWidth - iMaxWidth) / 2;
+
+    points[0].x = iLeft + ixGap;
+    points[0].y = iyAxis - cur_linewidth / 2;
+
+    points[1].x = iLeft + ixGap + iMaxWidth - cur_linewidth * 4;
+    points[1].y = points[0].y;
+
+    points[2].x = points[1].x;
+    points[2].y = points[0].y - cur_linewidth * 2;
+
+    points[3].x = iLeft + iWidth - ixGap;
+    points[3].y = iyAxis;
+
+    points[4].x = points[1].x;
+    points[4].y = iyAxis + cur_linewidth * 2;
+
+    points[5].x = points[1].x;
+    points[5].y = iyAxis + cur_linewidth / 2;
+
+    points[6].x = points[0].x;
+    points[6].y = points[5].y;
+
+    points[7].x = points[0].x;
+    points[7].y = points[0].y;
+
+    m_pG->setColor(m_colorFG);
+    m_pG->polyLine(points,NPOINTS);
+    FREEP(points);
+}
+
 void fp_TabRun::_draw(dg_DrawArgs* pDA)
 {
 	UT_ASSERT(pDA->pG == m_pG);
@@ -438,10 +502,16 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 		)
 	{
 		m_pG->fillRect(clrSelBackground, pDA->xoff, iFillTop, m_iWidth, iFillHeight);
+        if(pView->getShowPara()){
+            _drawArrow(pDA->xoff, iFillTop, m_iWidth, iFillHeight);
+        }
 	}
 	else
 	{
 		m_pG->fillRect(clrNormalBackground, pDA->xoff, iFillTop, m_iWidth, iFillHeight);
+        if(pView->getShowPara()){
+            _drawArrow(pDA->xoff, iFillTop, m_iWidth, iFillHeight);
+        }
 	}
 }
 
@@ -1073,11 +1143,34 @@ void fp_ForcedColumnBreakRun::_clearScreen(UT_Bool /* bFullLineHeightRect */)
 {
 	UT_ASSERT(!m_bDirty);
 	UT_ASSERT(m_pG->queryProperties(GR_Graphics::DGP_SCREEN));
+
+    UT_sint32 xoff = 0, yoff = 0;
+    m_pLine->getScreenOffsets(this, xoff, yoff);
+    UT_sint32 iWidth  = m_pLine->getMaxWidth() - m_pLine->calculateWidthOfLine();
+
+    m_pG->clearArea(xoff,yoff,iWidth,m_pLine->getHeight());
 }
 
 void fp_ForcedColumnBreakRun::_draw(dg_DrawArgs* pDA)
 {
 	UT_ASSERT(pDA->pG == m_pG);
+
+    if (!(m_pG->queryProperties(GR_Graphics::DGP_SCREEN))){
+        return;
+    }
+
+    FV_View* pView = m_pBL->getDocLayout()->getView();
+    UT_ASSERT(pView);
+    if(!pView->getShowPara()){
+        return;
+    }
+
+    UT_sint32 iLineWidth  = m_pLine->getMaxWidth() - m_pLine->calculateWidthOfLine();
+
+    UT_UCSChar *pColumnBreak;
+    UT_UCS_cloneString_char(&pColumnBreak,"Column Break");
+    _drawTextLine(pDA->xoff,pDA->yoff - m_pLine->getAscent() / 3,iLineWidth,m_pLine->getHeight(),pColumnBreak);
+    FREEP(pColumnBreak);
 }
 
 //////////////////////////////////////////////////////////////////
@@ -1142,10 +1235,33 @@ void fp_ForcedPageBreakRun::_clearScreen(UT_Bool /* bFullLineHeightRect */)
 {
 	UT_ASSERT(!m_bDirty);
 	UT_ASSERT(m_pG->queryProperties(GR_Graphics::DGP_SCREEN));
+
+    UT_sint32 xoff = 0, yoff = 0;
+    m_pLine->getScreenOffsets(this, xoff, yoff);
+    UT_sint32 iWidth  = m_pLine->getMaxWidth() - m_pLine->calculateWidthOfLine();
+
+    m_pG->clearArea(xoff,yoff,iWidth,m_pLine->getHeight());
 }
 
 void fp_ForcedPageBreakRun::_draw(dg_DrawArgs* pDA)
 {
 	UT_ASSERT(pDA->pG == m_pG);
+
+    if (!(m_pG->queryProperties(GR_Graphics::DGP_SCREEN))){
+        return;
+    }
+
+    FV_View* pView = m_pBL->getDocLayout()->getView();
+    UT_ASSERT(pView);
+    if(!pView->getShowPara()){
+        return;
+    }
+
+    UT_sint32 iLineWidth  = m_pLine->getMaxWidth() - m_pLine->calculateWidthOfLine();
+
+    UT_UCSChar *pPageBreak;
+    UT_UCS_cloneString_char(&pPageBreak,"Page Break");
+    _drawTextLine(pDA->xoff,pDA->yoff - m_pLine->getAscent() / 3,iLineWidth,m_pLine->getHeight(),pPageBreak);
+    FREEP(pPageBreak);
 }
 
