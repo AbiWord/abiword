@@ -25,6 +25,7 @@
 #include <stdio.h>
 
 /*****************************************************************/
+extern PtWidget_t *gTimerWidget;
 	
 UT_Timer* UT_Timer::static_constructor(UT_TimerCallback pCallback, void* pData, GR_Graphics * /*pG*/)
 {
@@ -44,7 +45,7 @@ UT_QNXTimer::UT_QNXTimer(UT_TimerCallback pCallback, void* pData)
 
 UT_QNXTimer::~UT_QNXTimer()
 {
-	UT_DEBUGMSG(("ut_unixTimer.cpp:  timer destructor\n"));
+	UT_DEBUGMSG(("TIMER:  timer destructor "));
 
 	stop();
 }
@@ -55,8 +56,6 @@ static int _Timer_Proc(PtWidget_t *w, void *p, PtCallbackInfo_t *info)
 	UT_QNXTimer* pTimer = (UT_QNXTimer*) p;
 	UT_ASSERT(pTimer);
 
-//	UT_DEBUGMSG(("ut_unixTimer.cpp:  timer fire\n"));
-	
 	pTimer->fire();
 
 	/*
@@ -68,6 +67,7 @@ static int _Timer_Proc(PtWidget_t *w, void *p, PtCallbackInfo_t *info)
 	*/
 	return 0;
 }
+
 static void * _Timer_Thread(void *p)
 {
 	UT_QNXTimer* pTimer = (UT_QNXTimer*) p;
@@ -98,12 +98,8 @@ UT_sint32 UT_QNXTimer::set(UT_uint32 iMilliseconds)
 	  for other platforms.
 	*/
 
-	//UT_DEBUGMSG(("ut_unixTimer.cpp: timer set\n"));
 
-#if 0
-	UT_sint32 idTimer = gtk_timeout_add(iMilliseconds, _Timer_Proc, this);
-	setIdentifier(idTimer);
-#endif
+	setIdentifier(0);
 
 #if !defined(USE_TIMER_THREADS) 
 	PtArg_t args[5];
@@ -112,17 +108,20 @@ UT_sint32 UT_QNXTimer::set(UT_uint32 iMilliseconds)
 
 	PtSetArg(&args[n++], Pt_ARG_TIMER_INITIAL, iMilliseconds, 0);
 	PtSetArg(&args[n++], Pt_ARG_TIMER_REPEAT, iMilliseconds, 0);
-	if (!(idTimer = PtCreateWidget(PtTimer, NULL, n, args))) {
+	if (!gTimerWidget || !PtWidgetIsRealized(gTimerWidget)) {
+		UT_DEBUGMSG(("TIMER: Can't access timer widget "));
+		return 1;	
+	}
+	if (!(idTimer = PtCreateWidget(PtTimer, gTimerWidget, n, args))) {
+		UT_DEBUGMSG(("TIMER: Can't create timer "));
 		return 1;
 	}
 	PtAddCallback(idTimer, Pt_CB_TIMER_ACTIVATE, _Timer_Proc, this);
 	//All bad things go away when I don't use this
-#if I_DONT_GET_IT
 	PtRealizeWidget(idTimer);
-#endif
 	setIdentifier((UT_sint32)idTimer);
 #else
-	//This really blows chunks
+	//This really blows chunks ... not quite finished
 	SIGEV_THREAD_INIT(&event, _Timer_Thread, NULL);
 	event.sigev_value.sival_ptr =  this;
 	off.it_value.tv_sec = 
@@ -133,7 +132,7 @@ UT_sint32 UT_QNXTimer::set(UT_uint32 iMilliseconds)
 	timer_settime(timerid, 0, &off, NULL); 
 	setIdentifier(&timerid);
 #endif
-	
+
 	m_iMilliseconds = iMilliseconds;
 	m_bStarted = UT_TRUE;
 	return 0;
@@ -153,9 +152,11 @@ void UT_QNXTimer::stop(void)
 	//PtSetResources((PtWidget_t *)getIdentifier(), 1, &arg);
 	//OR
 #if !defined(USE_TIMER_THREADS) 
-#if I_DONT_GET_IT
-	PtDestroyWidget((PtWidget_t *)getIdentifier());
-#endif
+	PtWidget_t *timer;
+	if (!(timer = (PtWidget_t *)getIdentifier()) || !PtWidgetIsRealized(timer)) {
+		return;
+	}
+	PtDestroyWidget(timer);
 #else
 	timer_delete(timerid);
 #endif
