@@ -402,7 +402,7 @@ msgstr "Anwendung"
 #. DLG_Options_Btn_Apply
 #: po/tmp/ap_String_Id.h.h:149 po/tmp/xap_String_Id.h.h:47
 msgid "Apply"
-msgstr ""
+msgstr "Anwenden"
 
 #. DLG_Lists_Apply_Current
 #: po/tmp/ap_String_Id.h.h:151
@@ -820,7 +820,7 @@ msgstr "Spiegelstriche"
 #. FIELD_Type_Datetime
 #: po/tmp/ap_String_Id.h.h:309
 msgid "Date and Time"
-msgstr ""
+msgstr "Datum und Uhrzeit"
 
 #. FIELD_DateTime_DOY
 #: po/tmp/ap_String_Id.h.h:311
@@ -880,7 +880,7 @@ msgstr "Löschen"
 #. DLG_Styles_ModifyDescription
 #: po/tmp/ap_String_Id.h.h:333 po/tmp/xap_String_Id.h.h:143
 msgid "Description"
-msgstr ""
+msgstr "Beschreibung"
 
 #. DLG_Lists_Diamond_List
 #: po/tmp/ap_String_Id.h.h:335
@@ -1477,7 +1477,7 @@ msgstr "PERSÖNLICH"
 #. DLG_PageSetup_Page
 #: po/tmp/ap_String_Id.h.h:559 po/tmp/xap_String_Id.h.h:287
 msgid "Page"
-msgstr ""
+msgstr "Seite"
 
 #. DLG_Para_PushPageBreakBefore
 #: po/tmp/ap_String_Id.h.h:561
@@ -1578,7 +1578,7 @@ msgstr "Optionen"
 #. DLG_PageNumbers_Preview
 #: po/tmp/ap_String_Id.h.h:599 po/tmp/xap_String_Id.h.h:299
 msgid "Preview"
-msgstr ""
+msgstr "Vorschau"
 
 #. DLG_Para_PreviewPrevParagraph
 #: po/tmp/ap_String_Id.h.h:601
@@ -1893,7 +1893,7 @@ msgstr "Zu löschende Tabstopps:"
 #. DLG_Tab_TabTitle
 #: po/tmp/ap_String_Id.h.h:721
 msgid "Tabs"
-msgstr ""
+msgstr "Tabstopps"
 
 #. AUTOTEXT_CLOSING_9
 #: po/tmp/ap_String_Id.h.h:723
@@ -1964,7 +1964,7 @@ msgstr "Drei"
 #. DLG_Lists_Tick_List
 #: po/tmp/ap_String_Id.h.h:745
 msgid "Tick List"
-msgstr ""
+msgstr "Häckchenliste"
 
 #. FIELD_DateTime_TimeZone
 #: po/tmp/ap_String_Id.h.h:747
@@ -2030,7 +2030,7 @@ msgstr "Lsite aus großen römischen Ziffern"
 #. DLG_Column_RtlOrder
 #: po/tmp/ap_String_Id.h.h:771
 msgid "Use RTL Order"
-msgstr ""
+msgstr "RTL Reihenfolge"
 
 #. DLG_Styles_LBL_UserDefined
 #: po/tmp/ap_String_Id.h.h:773
@@ -2055,7 +2055,7 @@ msgstr "VIA 24h-ZULIEFERUNG"
 #. FIELD_Application_Version
 #: po/tmp/ap_String_Id.h.h:781 po/tmp/xap_String_Id.h.h:419
 msgid "Version"
-msgstr ""
+msgstr "Version"
 
 #. DLG_Options_TabLabel_View
 #: po/tmp/ap_String_Id.h.h:783
@@ -2090,7 +2090,7 @@ msgstr "Mit Erweiterung:"
 #. FIELD_Numbers_WordCount
 #: po/tmp/ap_String_Id.h.h:795
 msgid "Word Count"
-msgstr ""
+msgstr "Wortanzahl"
 
 #. DLG_NEW_Tab1
 #: po/tmp/ap_String_Id.h.h:797
@@ -2219,7 +2219,7 @@ msgstr "AbiWord: Druckvorschau"
 #: po/tmp/xap_String_Id.h.h:29
 #, c-format
 msgid "About %s"
-msgstr ""
+msgstr "Über"
 
 #. DLG_MW_MoreWindows
 #: po/tmp/xap_String_Id.h.h:31
@@ -2244,17 +2244,17 @@ msgstr "Afrikaans"
 #. DLG_FOSA_ALL
 #: po/tmp/xap_String_Id.h.h:41
 msgid "All (*.*)"
-msgstr ""
+msgstr "Alle"
 
 #. DLG_FOSA_ALLDOCS
 #: po/tmp/xap_String_Id.h.h:43
 msgid "All Documents"
-msgstr ""
+msgstr "Alle Dokumente"
 
 #. DLG_FOSA_ALLIMAGES
 #: po/tmp/xap_String_Id.h.h:45
 msgid "All Image Files"
-msgstr ""
+msgstr "Alle Bilddateien"
 
 #. LANG_AR_EG
 #: po/tmp/xap_String_Id.h.h:49
@@ -2935,7 +2935,7 @@ msgstr "Datei speichern als Typ:"
 #. DLG_UFS_ScriptLabel
 #: po/tmp/xap_String_Id.h.h:331
 msgid "Script:"
-msgstr ""
+msgstr "Manusscript"
 
 #. DLG_UENC_EncLabel
 #: po/tmp/xap_String_Id.h.h:333
@@ -3026,7 +3026,7 @@ msgstr "Ungültiges Druckerkommando."
 #. DLG_UFS_ToplineCheck
 #: po/tmp/xap_String_Id.h.h:369
 msgid "Topline"
-msgstr ""
+msgstr "Kopfzeile"
 
 #. LANG_TR_TR
 #: po/tmp/xap_String_Id.h.h:371
@@ -3257,4 +3257,4 @@ msgstr "pica"
 #. DLG_Unit_points
 #: po/tmp/xap_String_Id.h.h:463
 msgid "points"
-msgstr ""
+msgstr "Punkte"
