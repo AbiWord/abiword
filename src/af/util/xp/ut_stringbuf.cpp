@@ -191,7 +191,8 @@ void UT_Stringbuf::grow_common(size_t n, bool bCopy)
 
 void UT_Stringbuf::copy(char_type* pDest, const char_type* pSrc, size_t n)
 {
-	memcpy(pDest, pSrc, n * sizeof(char_type));
+	if (pDest && pSrc && n)
+		memcpy(pDest, pSrc, n * sizeof(char_type));
 }
 
 

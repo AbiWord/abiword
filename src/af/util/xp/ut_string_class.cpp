@@ -81,7 +81,7 @@ UT_String::UT_String()
 }
 
 UT_String::UT_String(const char* sz, size_t n)
-:	pimpl(new UT_Stringbuf(sz, n ? n : (sz) ? strlen(sz) : 0))
+:	pimpl(new UT_Stringbuf(sz, n ? n : (sz ? strlen(sz) : 0)))
 {
 }
 
