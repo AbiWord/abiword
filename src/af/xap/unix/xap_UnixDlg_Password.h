@@ -39,7 +39,7 @@ public:
 
 private:
 
-	void event_Authenticate ();
+	void event_OK ();
 	void event_Cancel ();
 	
 	void event_Return () ;

@@ -34,13 +34,7 @@
 #include "xap_Dialog_Id.h"
 #include "xap_UnixDlg_Password.h"
 
-/*****************************************************************/
-
-#define CUSTOM_RESPONSE_AUTHENTICATE 1
-
-/*****************************************************************/
-
-void XAP_UnixDialog_Password::event_Authenticate ()
+void XAP_UnixDialog_Password::event_OK ()
 {
 	const char * txt = gtk_entry_get_text (GTK_ENTRY(mTextEntry));
 	if (txt && strlen(txt)) {
@@ -84,10 +78,10 @@ void XAP_UnixDialog_Password::runModal(XAP_Frame * pFrame)
 	gtk_widget_show (cf);
 	gdk_keyboard_grab(cf->window, FALSE, GDK_CURRENT_TIME);
 	
-	switch ( abiRunModalDialog ( GTK_DIALOG(cf), pFrame, this, CUSTOM_RESPONSE_AUTHENTICATE, false ) )
+	switch ( abiRunModalDialog ( GTK_DIALOG(cf), pFrame, this, GTK_RESPONSE_OK, false ) )
     {
-    case CUSTOM_RESPONSE_AUTHENTICATE:
-		event_Authenticate(); break;
+    case GTK_RESPONSE_OK:
+		event_OK(); break;
     default:
 		event_Cancel(); break;
     }
@@ -117,8 +111,7 @@ GtkWidget * XAP_UnixDialog_Password::_constructWindow ()
 	gtk_window_set_title (GTK_WINDOW(mMainWindow), pSS->getValueUTF8(XAP_STRING_ID_DLG_Password_Title).c_str());
 
 	/* localize labels */
-	localizeLabelMarkup (glade_xml_get_widget (xml, "lbPassword"), pSS, XAP_STRING_ID_DLG_Password_Password_No_Colon);
-	localizeButtonUnderline (glade_xml_get_widget (xml, "btAuthenticate"), pSS, XAP_STRING_ID_DLG_Password_Authenticate);
+	localizeLabel (glade_xml_get_widget (xml, "lbPassword"), pSS, XAP_STRING_ID_DLG_Password_Password);
 	
 	g_signal_connect (G_OBJECT(mTextEntry), "activate",
 					  G_CALLBACK(s_return_hit),
