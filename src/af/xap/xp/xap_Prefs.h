@@ -223,7 +223,7 @@ private:
 // application-independent preferences.
 
 #define XAP_PREF_DEFAULT_AutoSavePrefs		"1"
-#define XAP_PREF_DEFAULT_MaxRecent			"4"
+#define XAP_PREF_DEFAULT_MaxRecent			"9"
 #define XAP_PREF_DEFAULT_UseEnvLocale		"1"
 
 #define XAP_PREF_LIMIT_MaxRecent			9
