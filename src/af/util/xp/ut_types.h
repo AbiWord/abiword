@@ -39,8 +39,8 @@ typedef		unsigned char		UT_Byte;
 typedef		unsigned short		UT_UCSChar;	/* Unicode */
 
 typedef		unsigned short		UT_uint16;
-typedef		unsigned long		UT_uint32;
-typedef		signed long			UT_sint32;
+typedef		unsigned int		UT_uint32;
+typedef		signed int			UT_sint32;
 
 /*
 	TODO we currently use plain old C 'int' all over the place.
