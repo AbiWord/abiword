@@ -28,6 +28,13 @@
 	#else
 		#define UT_BIG_ENDIAN
 	#endif
+#elif defined(__sgi)
+	#include <sys/endian.h>
+	#if BYTE_ORDER == LITTLE_ENDIAN
+		#define UT_LITTLE_ENDIAN
+	#else
+		#define UT_BIG_ENDIAN
+	#endif
 #else /* this is for Linux */
 	#include <endian.h>
 	#if __BYTE_ORDER == __LITTLE_ENDIAN		
