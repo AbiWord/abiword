@@ -711,7 +711,7 @@ void XAP_EncodingManager::initialize()
 		    len += sprintf(buf+len,"\\usepackage[%s]{inputenc}\n",NativeTexEncodingName);
 		if (NativeBabelArgument)
 		    len += sprintf(buf+len,"\\usepackage[%s]{babel}\n",NativeBabelArgument);
-		TexPrologue = len ? strdup(buf)  : "";
+		TexPrologue = len ? UT_strdup(buf)  : "";
 	    };
 	}
 	if (cjk_locale()) {

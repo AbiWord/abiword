@@ -715,7 +715,7 @@ void PS_Graphics::_emit_IncludeResource(void)
 			}
 		if(match)
 		  continue;
-		fontKey[fontKeyCount++]=strdup(unixfont->getFontKey());
+		fontKey[fontKeyCount++]=UT_strdup(unixfont->getFontKey());
 
 		// Make sure the font file will open, maybe it disappeared...
 		if(!unixfont->openPFA())
