@@ -430,6 +430,12 @@ bool XAP_Win32FrameImpl::_openURL(const char * szURL)
 
 	UT_String sURL = szURL;
 
+	// strip file:///\ from URL, the extra forward-slash back-slash is passed in from "View as Web Page"
+	if ( "file:///\\" == sURL.substr(0,9) )
+	{
+		sURL = sURL.substr(9, sURL.size() - 9);
+	}
+
 	// strip "file://" from URL, win32 doesn't handle them well
 	if ( "file://" == sURL.substr(0, 7) )
 	{
