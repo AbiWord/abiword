@@ -22,6 +22,7 @@
 #define XAP_MENU_LAYOUTS_H
 
 #include "ev_Menu_Layouts.h"
+#include "ev_Menu_Labels.h"
 #include "ev_EditBits.h"
 
 class XAP_App;
@@ -63,8 +64,8 @@ public:
 private:
 
   mutable UT_Vector m_vecTT;
-  mutable UT_Vector m_vecLabs;
   XAP_App * m_pApp;
+  EV_Menu_LabelSet * m_pLabelSet;
   XAP_Menu_Id m_maxID;
 };
 #endif /* XAP_MENU_LAYOUTS_H */
