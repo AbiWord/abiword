@@ -560,7 +560,11 @@ fp_Container* fl_DocSectionLayout::getNewContainer(void)
 			else
 			{
 				pPage = pTmpPage;
+#if 0 // This fixes bug 966 but introduces new problems - jskov 2001.06.10
+				pAfterColumn = pPrevCol;
+#else
 				pAfterColumn = pPage->getNthColumnLeader(pPage->countColumnLeaders()-1);
+#endif
 			}
 		}
 		else
