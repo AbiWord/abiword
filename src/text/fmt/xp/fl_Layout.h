@@ -27,6 +27,7 @@
 
 class PP_AttrProp;
 class PD_Document;
+class fd_Field;
 class fl_AutoNum;
 
 /*
@@ -49,7 +50,7 @@ public:
 	void				setAttrPropIndex(PT_AttrPropIndex apIndex);
 	UT_Bool				getAttrProp(const PP_AttrProp ** ppAP) const;
 	UT_Bool				getSpanAttrProp(UT_uint32 offset, UT_Bool bLeftSide, const PP_AttrProp ** ppAP) const;
-	
+	UT_Bool				getField(UT_uint32 offset, fd_Field * &pField);
 	virtual	void		listUpdate(void) { return; }
 	inline fl_AutoNum *	getAutoNum(void) const { return m_pAutoNum; }
 	void    		setAutoNum(fl_AutoNum * pAutoNum);

@@ -187,7 +187,7 @@ void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_
 	{
 		fp_Run* pRun2 = (fp_Run*) m_vecRuns.getNthItem(i);
 
-		if (pRun2->canContainPoint())
+		if (pRun2->canContainPoint()  || pRun2->isField())
 		{
 			UT_sint32 y2 = y - pRun2->getY() - m_iAscent + pRun2->getAscent();
 			if ((x >= (UT_sint32) pRun2->getX()) && (x < (UT_sint32) (pRun2->getX() + pRun2->getWidth())))
@@ -266,8 +266,15 @@ void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_
 	UT_ASSERT(pClosestRun);
 	
 	UT_sint32 y2 = y - pClosestRun->getY() - m_iAscent + pClosestRun->getAscent();
-	pClosestRun->mapXYToPosition(x - pClosestRun->getX(), y2, pos, bBOL, bEOL);
-
+	if(pClosestRun->isField())
+	{
+	       UT_uint32 width = pClosestRun->getWidth() + 1;
+	       pClosestRun->mapXYToPosition(width , y2, pos, bBOL, bEOL);
+	}
+	else
+	{
+	       pClosestRun->mapXYToPosition(x - pClosestRun->getX(), y2, pos, bBOL, bEOL);
+	}
 	UT_ASSERT(bEOL == UT_TRUE || bEOL == UT_FALSE);
 	UT_ASSERT(bBOL == UT_TRUE || bBOL == UT_FALSE);
 

@@ -239,6 +239,8 @@ void IE_Imp_AbiWord_1::_startElement(const XML_Char *name, const XML_Char **atts
 		return;
 		
 	case TT_INLINE:
+        // ignored for fields
+                if (m_parseState == _PS_Field) return;
 		X_VerifyParseState(_PS_Block);
 		X_CheckError(_pushInlineFmt(atts));
 		X_CheckError(m_pDocument->appendFmt(&m_vecInlineFmt));
@@ -256,6 +258,7 @@ void IE_Imp_AbiWord_1::_startElement(const XML_Char *name, const XML_Char **atts
 
 	case TT_FIELD:
 		X_VerifyParseState(_PS_Block);
+                m_parseState = _PS_Field;
 		X_CheckError(m_pDocument->appendObject(PTO_Field,atts));
 		return;
 
@@ -389,6 +392,8 @@ void IE_Imp_AbiWord_1::_endElement(const XML_Char *name)
 		
 	case TT_INLINE:
 		UT_ASSERT(m_lenCharDataSeen==0);
+        // ignore within fields
+        if (m_parseState == _PS_Field) return;
 		X_VerifyParseState(_PS_Block);
 		X_CheckDocument(_getInlineDepth()>0);
 		_popInlineFmt();
@@ -402,7 +407,8 @@ void IE_Imp_AbiWord_1::_endElement(const XML_Char *name)
 
 	case TT_FIELD:						// not a container, so we don't pop stack
 		UT_ASSERT(m_lenCharDataSeen==0);
-		X_VerifyParseState(_PS_Block);
+		X_VerifyParseState(_PS_Field);
+                m_parseState = _PS_Block;
 		return;
 
 	case TT_BREAK:						// not a container, so we don't pop stack

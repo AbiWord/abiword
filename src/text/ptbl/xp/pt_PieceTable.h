@@ -72,14 +72,23 @@ public:
 										 const XML_Char ** attributes,
 										 const XML_Char ** properties);
 
+	UT_Bool					insertObject(PT_DocPosition dpos,
+										 PTObjectType pto,
+										 const XML_Char ** attributes,
+										 const XML_Char ** properties, pf_Frag_Object ** ppfo );
+
 	UT_Bool					insertSpan(PT_DocPosition dpos,
 									   const UT_UCSChar * p,
-									   UT_uint32 length);
+									   UT_uint32 length, fd_Field * pField = NULL);
 
 	UT_Bool					deleteSpan(PT_DocPosition dpos1,
 									   PT_DocPosition dpos2,
 									   PP_AttrProp *p_AttrProp_Before);
+	UT_Bool					insertSpan_norec(PT_DocPosition dpos,
+									   const UT_UCSChar * p,
+									   UT_uint32 length, fd_Field * pField = NULL);
 
+        UT_Bool                 deleteFieldFrag(pf_Frag * pf);
 	UT_Bool					changeSpanFmt(PTChangeFmt ptc,
 										  PT_DocPosition dpos1,
 										  PT_DocPosition dpos2,
@@ -107,6 +116,7 @@ public:
 	// the append- methods are only available while importing
 	// the document.
 
+        PD_Document *                           getDocument(void);
 	UT_Bool					appendStrux(PTStruxType pts, const XML_Char ** attributes);
 	UT_Bool					appendFmt(const XML_Char ** attributes);
 	UT_Bool					appendFmt(const UT_Vector * pVecAttributes);
@@ -138,13 +148,24 @@ public:
 	UT_Bool					getFragFromPosition(PT_DocPosition docPos,
 												pf_Frag ** ppf,
 												PT_BlockOffset * pOffset) const;
-	UT_Bool					getStruxFromPosition(PL_ListenerId listenerId,
-												 PT_DocPosition docPos,
-												 PL_StruxFmtHandle * psfh) const;
-	UT_Bool					getStruxOfTypeFromPosition(PL_ListenerId listenerId,
-													   PT_DocPosition docPos,
-													   PTStruxType pts,
-													   PL_StruxFmtHandle * psfh) const;
+
+	UT_Bool					getStruxOfTypeFromPosition(
+						PL_ListenerId listenerId,
+						PT_DocPosition docPos,
+						PTStruxType pts,
+						PL_StruxFmtHandle * psfh) 
+	                                        const;
+
+
+	UT_Bool					getStruxOfTypeFromPosition(
+						PT_DocPosition docPos,   
+						PTStruxType pts,  
+						PL_StruxDocHandle * sdh) const;
+
+	UT_Bool                                 getStruxFromPosition(
+                                                PL_ListenerId listenerId,
+						PT_DocPosition docPos,
+						PL_StruxFmtHandle * psfh) const;
 
 	UT_Bool					getFragsFromPositions(PT_DocPosition dPos1, PT_DocPosition dPos2,
 												  pf_Frag ** ppf1, PT_BlockOffset * pOffset1,
@@ -155,6 +176,9 @@ public:
 									   const char ** pszName, const PD_Style ** ppStyle) const;
 
 	void					clearIfAtFmtMark(PT_DocPosition dpos);
+
+    pt_VarSet &             getVarSet(void) {return m_varset;};
+    pf_Fragments &          getFragments(void) {return m_fragments;};
 	
 #ifdef PT_TEST
 	UT_TestStatus			__test_VerifyCoalescedFrags(FILE * fp) const;
@@ -182,7 +206,8 @@ protected:
 	UT_Bool					_insertObject(pf_Frag * pf,
 										  PT_BlockOffset fragOffset,									 
 										  PTObjectType pto,
-										  PT_AttrPropIndex indexAP);
+										  PT_AttrPropIndex indexAP,
+                                          pf_Frag_Object * &pfo);
 	
 	UT_Bool					_createObject(PTObjectType pto,
 										  PT_AttrPropIndex indexAP,
@@ -192,7 +217,8 @@ protected:
 										PT_BufIndex bi,
 										PT_BlockOffset fragOffset,
 										UT_uint32 length,
-										PT_AttrPropIndex indexAP);
+										PT_AttrPropIndex indexAP,
+                                        fd_Field * pField = NULL);
 
 	UT_Bool					_deleteSpan(pf_Frag_Text * pft, UT_uint32 fragOffset,
 										PT_BufIndex bi, UT_uint32 length,
@@ -213,14 +239,24 @@ protected:
 	UT_Bool					_unlinkStrux_Section(pf_Frag_Strux * pfs,
 												 pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd);
 
-	UT_Bool					_deleteSpanWithNotify(PT_DocPosition dpos,
+	UT_Bool					_deleteSpan_norec(PT_DocPosition dpos,
 												  pf_Frag_Text * pft, UT_uint32 fragOffset,
 												  UT_uint32 length,
 												  pf_Frag_Strux * pfs,
 												  pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd);
 	UT_Bool					_canCoalesceDeleteSpan(PX_ChangeRecord_Span * pcrSpan) const;
+
+	UT_Bool					_deleteSpanWithNotify(PT_DocPosition dpos,
+												  pf_Frag_Text * pft, UT_uint32 fragOffset,
+												  UT_uint32 length,
+												  pf_Frag_Strux * pfs,
+												  pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd);
+
+
 	UT_Bool					_isSimpleDeleteSpan(PT_DocPosition dpos1,
 												PT_DocPosition dpos2) const;
+    void					_tweakFieldSpan(PT_DocPosition& dpos1,
+                                            PT_DocPosition& dpos2) const;
 	UT_Bool					_tweakDeleteSpanOnce(PT_DocPosition& dpos1, 
 												 PT_DocPosition& dpos2,
 												 UT_Stack * pstDelayStruxDelete) const;
@@ -229,7 +265,12 @@ protected:
 											 UT_Stack * pstDelayStruxDelete) const;
 	UT_Bool					_deleteFormatting(PT_DocPosition dpos1,
 											  PT_DocPosition dpos2);
+
 	UT_Bool					_deleteComplexSpan(PT_DocPosition dpos1,
+											   PT_DocPosition dpos2);
+
+
+	UT_Bool					_deleteComplexSpan_norec(PT_DocPosition dpos1,
 											   PT_DocPosition dpos2);
 	
 	UT_Bool					_deleteObject(pf_Frag_Object * pfo,
@@ -241,9 +282,22 @@ protected:
 													pf_Frag_Strux * pfs,
 													pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd);
 
+
+	
+	UT_Bool					_deleteObject_norec(PT_DocPosition dpos,
+													pf_Frag_Object * pfo, UT_uint32 fragOffset,
+													UT_uint32 length,
+													pf_Frag_Strux * pfs,
+													pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd);
+
 	UT_Bool					_deleteStruxWithNotify(PT_DocPosition dpos,
 												   pf_Frag_Strux * pfs,
 												   pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd);
+
+	UT_Bool					_deleteStrux_norec(PT_DocPosition dpos,
+												   pf_Frag_Strux * pfs,
+												   pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd);
+
 
 	UT_Bool					_fmtChangeStrux(pf_Frag_Strux * pfs,
 											PT_AttrPropIndex indexNewAP);
@@ -335,3 +389,7 @@ protected:
 };
 
 #endif /* PT_PIECETABLE_H */
+
+
+
+

@@ -39,7 +39,7 @@
 UT_Bool pt_PieceTable::insertObject(PT_DocPosition dpos,
 									PTObjectType pto,
 									const XML_Char ** attributes,
-									const XML_Char ** properties)
+									const XML_Char ** properties,  pf_Frag_Object ** ppfo)
 {
 	UT_ASSERT(properties == NULL);
 	
@@ -66,16 +66,67 @@ UT_Bool pt_PieceTable::insertObject(PT_DocPosition dpos,
 	UT_Bool bFoundStrux = _getStruxFromFrag(pf,&pfs);
 	UT_ASSERT(bFoundStrux);
 	PT_BlockOffset blockOffset = _computeBlockOffset(pfs,pf) + fragOffset;
-
-	if (!_insertObject(pf,fragOffset,pto,indexAP))
+        pf_Frag_Object * pfo = NULL;
+	if (!_insertObject(pf,fragOffset,pto,indexAP,pfo))
 		return UT_FALSE;
 	
 	// create a change record, add it to the history, and notify
 	// anyone listening.
-
+   
 	PX_ChangeRecord_Object * pcr
 		= new PX_ChangeRecord_Object(PX_ChangeRecord::PXT_InsertObject,
-									 dpos,indexAP,pto,blockOffset);
+									 dpos,indexAP,pto,blockOffset,
+                                     pfo->getField());
+	UT_ASSERT(pcr);
+
+	m_history.addChangeRecord(pcr);
+	m_pDocument->notifyListeners(pfs,pcr);
+        *ppfo = pfo;
+	return UT_TRUE;
+}
+
+
+UT_Bool pt_PieceTable::insertObject(PT_DocPosition dpos,
+									PTObjectType pto,
+									const XML_Char ** attributes,
+									const XML_Char ** properties )
+{
+	UT_ASSERT(properties == NULL);
+	
+	// TODO currently we force the caller to pass in the attr/prop.
+	// TODO this is probably a good thing for Images, but might be
+	// TODO bogus for things like Fields.
+	
+	UT_ASSERT(m_pts==PTS_Editing);
+
+	// store the attributes and properties and get an index to them.
+	
+	PT_AttrPropIndex indexAP;
+	if (!m_varset.storeAP(attributes,&indexAP))
+		return UT_FALSE;
+
+	// get the fragment at the given document position.
+	
+	pf_Frag * pf = NULL;
+	PT_BlockOffset fragOffset = 0;
+	UT_Bool bFound = getFragFromPosition(dpos,&pf,&fragOffset);
+	UT_ASSERT(bFound);
+
+	pf_Frag_Strux * pfs = NULL;
+	UT_Bool bFoundStrux = _getStruxFromFrag(pf,&pfs);
+	UT_ASSERT(bFoundStrux);
+	PT_BlockOffset blockOffset = _computeBlockOffset(pfs,pf) + fragOffset;
+    pf_Frag_Object * pfo = NULL;
+	if (!_insertObject(pf,fragOffset,pto,indexAP,pfo))
+		return UT_FALSE;
+	
+	// create a change record, add it to the history, and notify
+	// anyone listening.
+   
+	PX_ChangeRecord_Object * pcr
+		= new PX_ChangeRecord_Object(PX_ChangeRecord::PXT_InsertObject,
+									 dpos,indexAP,pto,blockOffset,
+                                     pfo->getField());
 	UT_ASSERT(pcr);
 
 	m_history.addChangeRecord(pcr);
@@ -122,9 +173,10 @@ UT_Bool pt_PieceTable::_createObject(PTObjectType pto,
 UT_Bool pt_PieceTable::_insertObject(pf_Frag * pf,
 									 PT_BlockOffset fragOffset,									 
 									 PTObjectType pto,
-									 PT_AttrPropIndex indexAP)
+									 PT_AttrPropIndex indexAP,
+                                     pf_Frag_Object * & pfo)
 {
-	pf_Frag_Object * pfo = NULL;
+	pfo = NULL;
 	if (!_createObject(pto,indexAP,&pfo))
 		return UT_FALSE;
 
@@ -150,7 +202,7 @@ UT_Bool pt_PieceTable::_insertObject(pf_Frag * pf,
 		pf_Frag_Text * pft = static_cast<pf_Frag_Text *>(pf);
 		UT_uint32 lenTail = pft->getLength() - fragOffset;
 		PT_BufIndex biTail = m_varset.getBufIndex(pft->getBufIndex(),fragOffset);
-		pf_Frag_Text * pftTail = new pf_Frag_Text(this,biTail,lenTail,pft->getIndexAP());
+		pf_Frag_Text * pftTail = new pf_Frag_Text(this,biTail,lenTail,pft->getIndexAP(),pft->getField());
 		if (!pftTail)
 			goto MemoryError;
 			

@@ -35,6 +35,7 @@
 #include "fp_TextRun.h"
 #include "fp_FieldListLabelRun.h"
 #include "pd_Document.h"
+#include "fd_Field.h"
 #include "pd_Style.h"
 #include "pp_Property.h"
 #include "pp_AttrProp.h"
@@ -549,17 +550,8 @@ void fl_BlockLayout::_lookupProperties(void)
 	}
 
 	// Add this in for loading - see if better way to fix.
-	//	if (m_bListItem && !m_bListLabelCreated && m_pFirstRun)
-//  	{
-//  	        if(m_pAutoNum->doesItemHaveLabel(this) == UT_TRUE)
-//  	        {
-//  	                m_bListLabelCreated = UT_TRUE;
-//  		}
-//  		else
-//  		{
-//  		        _createListLabel();
-//  		}
-//  	}
+	// if (m_bListItem && !m_bListLabelCreated && m_pFirstRun)
+	//	_createListLabel();
 }
 
 fl_BlockLayout::~fl_BlockLayout()
@@ -2255,6 +2247,7 @@ UT_Bool fl_BlockLayout::doclistener_populateSpan(const PX_ChangeRecord_Span * pc
 	UT_uint32 	iNormalBase = 0;
 	UT_Bool		bNormal = UT_FALSE;
 	UT_uint32 i;
+	UT_DEBUGMSG(("SEVIOR: in fl_BlockLayout populate span \n"));
 	for (i=0; i<len; i++)
 	{
 		switch (pChars[i])
@@ -2263,6 +2256,8 @@ UT_Bool fl_BlockLayout::doclistener_populateSpan(const PX_ChangeRecord_Span * pc
 		case UCS_FF:	// form feed, forced page break
 		case UCS_VTAB:	// vertical tab, forced column break
 		case UCS_LF:	// newline
+		case UCS_FIELDSTART: // zero length line to mark field start
+		case UCS_FIELDEND: // zero length line to mark field end
 		case UCS_TAB:	// tab
 			if (bNormal)
 			{
@@ -2286,6 +2281,14 @@ UT_Bool fl_BlockLayout::doclistener_populateSpan(const PX_ChangeRecord_Span * pc
 				
 			case UCS_LF:
 				_doInsertForcedLineBreakRun(i + blockOffset);
+				break;
+				
+			case UCS_FIELDSTART:
+				_doInsertFieldStartRun(i + blockOffset);
+				break;
+				
+			case UCS_FIELDEND:
+				_doInsertFieldEndRun(i + blockOffset);
 				break;
 				
 			case UCS_TAB:
@@ -2378,6 +2381,30 @@ UT_Bool	fl_BlockLayout::_doInsertForcedLineBreakRun(PT_BlockOffset blockOffset)
 	return bResult;
 }
 
+UT_Bool	fl_BlockLayout::_doInsertFieldStartRun(PT_BlockOffset blockOffset)
+{
+	fp_Run* pNewRun = new fp_FieldStartRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	UT_ASSERT(pNewRun);	// TODO check for outofmem
+
+	UT_Bool bResult = _doInsertRun(pNewRun);
+	if (bResult)
+	    _breakLineAfterRun(pNewRun);
+
+	return bResult;
+}
+
+UT_Bool	fl_BlockLayout::_doInsertFieldEndRun(PT_BlockOffset blockOffset)
+{
+	fp_Run* pNewRun = new fp_FieldEndRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	UT_ASSERT(pNewRun);	// TODO check for outofmem
+
+	UT_Bool bResult = _doInsertRun(pNewRun);
+	if (bResult)
+	    _breakLineAfterRun(pNewRun);
+
+	return bResult;
+}
+
 UT_Bool	fl_BlockLayout::_doInsertForcedPageBreakRun(PT_BlockOffset blockOffset)
 {
 	fp_Run* pNewRun = new fp_ForcedPageBreakRun(this, m_pLayout->getGraphics(), blockOffset, 1);
@@ -2426,7 +2453,7 @@ UT_Bool	fl_BlockLayout::_doInsertImageRun(PT_BlockOffset blockOffset, FG_Graphic
 	return _doInsertRun(pNewRun);
 }
 
-UT_Bool	fl_BlockLayout::_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_ChangeRecord_Object * /* pcro */)
+UT_Bool	fl_BlockLayout::_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_ChangeRecord_Object * pcro /* pcro */)
 {
 	const PP_AttrProp * pSpanAP = NULL;
 	
@@ -2461,16 +2488,27 @@ UT_Bool	fl_BlockLayout::_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_C
 	}
 	else
 	{
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		pNewRun = NULL;
+	  //		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	  //	pNewRun = NULL;
+	  // New Piece Table Field Leave it for that code..
+	  //
+	         pNewRun = new fp_FieldRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+		//		return _doInsertRun(pNewRun);
 	}
 
 	UT_ASSERT(pNewRun);	// TODO check for outofmem
 	
 	pNewRun->lookupProperties();
 	pNewRun->calculateValue();
+        
+	_doInsertRun(pNewRun);
+	recalculateFields();
+	return UT_TRUE;
+}
 
-	return _doInsertRun(pNewRun);
+FV_View * fl_BlockLayout::getView( void)
+{
+        return  m_pLayout->getView();
 }
 
 UT_Bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
@@ -2657,6 +2695,7 @@ UT_Bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs
 		sqlist = new UT_uint32(len);
 	}
 	xxx_UT_DEBUGMSG(("fl_BlockLayout::doclistener_insertSpan(), len=%d, c=|%c|\n", len, pChars[0]));
+	UT_DEBUGMSG(("fl_BlockLayout::doclistener_insertSpan(), len=%d, c=|%c|\n", len, pChars[0]));
 	for (i=0; i<len; i++)
 	{
 		switch (pChars[i])
@@ -2664,6 +2703,8 @@ UT_Bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs
 		case UCS_FF:	// form feed, forced page break
 		case UCS_VTAB:	// vertical tab, forced column break
 		case UCS_LF:	// newline
+		case UCS_FIELDSTART: // zero length line to mark field start
+		case UCS_FIELDEND: // zero length line to mark field end
 		case UCS_TAB:	// tab
 			if (bNormal)
 			{
@@ -2687,6 +2728,14 @@ UT_Bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs
 				
 			case UCS_LF:
 				_doInsertForcedLineBreakRun(i + blockOffset);
+				break;
+
+			case UCS_FIELDSTART:
+				_doInsertFieldStartRun(i + blockOffset);
+				break;
+				
+			case UCS_FIELDEND:
+				_doInsertFieldEndRun(i + blockOffset);
 				break;
 				
 			case UCS_TAB:
@@ -2977,6 +3026,29 @@ UT_Bool fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcr
 	UT_ASSERT(pcrx->getType()==PX_ChangeRecord::PXT_DeleteStrux);
 	UT_ASSERT(pcrx->getStruxType()==PTX_Block);
 
+	//
+	// First see if the block in a list. If so remove it!
+	//
+	if(m_pAutoNum != NULL)
+	{
+	        if( m_pAutoNum->isItem(getStruxDocHandle()) == UT_TRUE)
+		{
+		  //
+		  // First prevent updates
+		  // 
+		  //      m_pAutoNum->setUpdatePolicy(UT_FALSE);
+		  //
+		  // This nifty method handles all the details
+		  //
+		        m_pAutoNum->removeItem(getStruxDocHandle());
+		  //
+		  // Now restore updates
+		  // 
+		  //      m_pAutoNum->setUpdatePolicy(UT_TRUE);
+		  //
+
+		}
+	}
 	fl_BlockLayout*	pPrevBL = m_pPrev;
 	if (!pPrevBL)
 	{
@@ -3731,7 +3803,10 @@ UT_Bool fl_BlockLayout::recalculateFields(void)
 
 			bResult = bResult || bSizeChanged;
 		}
-		
+		//       		else if(pRun->isField() == UT_TRUE)
+		//	{
+		//       bResult = pRun->getField()->update();
+		//}
 		pRun = pRun->getNext();
 	}
 	return bResult;
@@ -4546,6 +4621,7 @@ void    fl_BlockLayout::StartList( List_Type lType, UT_uint32 start,const XML_Ch
 	vp.addItem( (void *) "margin-left");	vp.addItem( (void *) pszAlign);
 	vp.addItem( (void *) "text-indent");	vp.addItem( (void *) pszIndent);
 	va.addItem( (void *) "style");	va.addItem( (void *) style);
+
 
 	pAutoNum = new fl_AutoNum(id, iParentID, lType, start, lDelim, m_pDoc);
 	if (!pAutoNum)

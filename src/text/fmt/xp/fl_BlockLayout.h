@@ -171,6 +171,7 @@ public:
 	void		redrawUpdate();
 
 	fp_Line*	getNewLine(void);
+	FV_View *       getView(void);
 
 // TODO: What I want to test is XML_Char != char
 #ifdef HAVE_GNOME_XML2
@@ -357,6 +358,8 @@ protected:
 
 	UT_Bool					_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len);
 	UT_Bool					_doInsertForcedLineBreakRun(PT_BlockOffset blockOffset);
+	UT_Bool					_doInsertFieldStartRun(PT_BlockOffset blockOffset);
+	UT_Bool					_doInsertFieldEndRun(PT_BlockOffset blockOffset);
 	UT_Bool					_doInsertForcedColumnBreakRun(PT_BlockOffset blockOffset);
 	UT_Bool					_doInsertForcedPageBreakRun(PT_BlockOffset blockOffset);
 	UT_Bool					_doInsertTabRun(PT_BlockOffset blockOffset);

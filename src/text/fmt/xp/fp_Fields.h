@@ -23,6 +23,9 @@ _FIELDTYPE(NUMBERS, AP_STRING_ID_FIELD_Type_Numbers)
 _FIELD(NUMBERS, AP_STRING_ID_FIELD_Numbers_PageNumber, page_number)
 _FIELD(NUMBERS, AP_STRING_ID_FIELD_Numbers_PagesCount, page_count)
 _FIELD(NUMBERS, AP_STRING_ID_FIELD_Numbers_ListLabel, list_label)
+_FIELDTYPE(PIECETABLE, AP_STRING_ID_FIELD_Type_PieceTable)
+_FIELD(PIECETABLE, AP_STRING_ID_FIELD_PieceTable_Test, test)
+_FIELD(PIECETABLE, AP_STRING_ID_FIELD_PieceTable_MartinTest, martin_test)
 
 #ifdef __OLD
 _FIELDTYPE(DATETIME, "Date and Time")
@@ -31,6 +34,9 @@ _FIELDTYPE(NUMBERS, "Numbers")
 _FIELD(NUMBERS, "Page number", page_number)
 _FIELD(NUMBERS, "Number of pages", page_count)
 _FIELD(NUMBERS, "List Label", list_label)
+_FIELDTYPE(PIECETABLE, "Piece Table")
+_FIELD(PIECETABLE,"Kevins Test",test)
+_FIELD(PIECETABLE,"Martins Test",martin_test)
 #endif
 
 

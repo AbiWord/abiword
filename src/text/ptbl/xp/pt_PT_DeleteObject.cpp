@@ -56,7 +56,7 @@ UT_Bool pt_PieceTable::_deleteObjectWithNotify(PT_DocPosition dpos,
 	PX_ChangeRecord_Object * pcr
 		= new PX_ChangeRecord_Object(PX_ChangeRecord::PXT_DeleteObject,
 									 dpos, pfo->getIndexAP(), pfo->getObjectType(),
-									 blockOffset);
+									 blockOffset, pfo->getField());
 	UT_ASSERT(pcr);
 
 	// actually remove the fragment from the list and delete it.
@@ -66,6 +66,37 @@ UT_Bool pt_PieceTable::_deleteObjectWithNotify(PT_DocPosition dpos,
 	m_history.addChangeRecord(pcr);
 	m_pDocument->notifyListeners(pfs,pcr);
 	
+	return UT_TRUE;
+}
+
+
+UT_Bool pt_PieceTable::_deleteObject_norec(PT_DocPosition dpos,
+											   pf_Frag_Object * pfo, UT_uint32 fragOffset,
+											   UT_uint32 length,
+											   pf_Frag_Strux * pfs,
+											   pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd)
+{
+	// create a change record for this change and put it in the history.
+
+	UT_ASSERT(pfs);
+	UT_ASSERT(length == pfo->getLength());
+	UT_ASSERT(fragOffset == 0);
+
+	PT_BlockOffset blockOffset = _computeBlockOffset(pfs,pfo) + fragOffset;
+
+	PX_ChangeRecord_Object * pcr
+		= new PX_ChangeRecord_Object(PX_ChangeRecord::PXT_DeleteObject,
+									 dpos, pfo->getIndexAP(), pfo->getObjectType(),
+									 blockOffset, pfo->getField());
+	UT_ASSERT(pcr);
+
+	// actually remove the fragment from the list and delete it.
+
+	_deleteObject(pfo,ppfEnd,pfragOffsetEnd);
+	
+	m_pDocument->notifyListeners(pfs,pcr);
+	delete pcr;
+
 	return UT_TRUE;
 }
 

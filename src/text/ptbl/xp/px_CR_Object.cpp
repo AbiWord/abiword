@@ -21,16 +21,19 @@
 #include "ut_types.h"
 #include "px_CR_Object.h"
 #include "px_ChangeRecord.h"
+#include "fd_Field.h"
 
 PX_ChangeRecord_Object::PX_ChangeRecord_Object(PXType type,
 											   PT_DocPosition position,
 											   PT_AttrPropIndex indexAP,
 											   PTObjectType objectType,
-											   PT_BlockOffset blockOffset)
+											   PT_BlockOffset blockOffset,
+                                               fd_Field * pField)
 	: PX_ChangeRecord(type, position, indexAP)
 {
 	m_objectType = objectType;
 	m_blockOffset = blockOffset;
+    m_field = pField;
 }
 
 PX_ChangeRecord_Object::~PX_ChangeRecord_Object()
@@ -40,7 +43,7 @@ PX_ChangeRecord_Object::~PX_ChangeRecord_Object()
 PX_ChangeRecord * PX_ChangeRecord_Object::reverse(void) const
 {
 	PX_ChangeRecord_Object * pcr
-		= new PX_ChangeRecord_Object(getRevType(),m_position,m_indexAP,m_objectType,m_blockOffset);
+		= new PX_ChangeRecord_Object(getRevType(),m_position,m_indexAP,m_objectType,m_blockOffset,m_field);
 	UT_ASSERT(pcr);
 	return pcr;
 }

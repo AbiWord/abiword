@@ -193,3 +193,34 @@ UT_Bool pt_PieceTable::_deleteStruxWithNotify(PT_DocPosition dpos,
 
 	return UT_TRUE;
 }
+
+			
+UT_Bool pt_PieceTable::_deleteStrux_norec(PT_DocPosition dpos,
+											  pf_Frag_Strux * pfs,
+											  pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd)
+{
+	PX_ChangeRecord_Strux * pcrs
+		= new PX_ChangeRecord_Strux(PX_ChangeRecord::PXT_DeleteStrux,
+									dpos, pfs->getIndexAP(), pfs->getStruxType());
+	UT_ASSERT(pcrs);
+
+	if (!_unlinkStrux(pfs,ppfEnd,pfragOffsetEnd))
+		return UT_FALSE;
+	
+	// No history for field updates..
+	// m_history.addChangeRecord(pcrs);
+	m_pDocument->notifyListeners(pfs,pcrs);
+
+	delete pfs;
+
+	return UT_TRUE;
+}
+
+
+
+
+
+
+
+
+

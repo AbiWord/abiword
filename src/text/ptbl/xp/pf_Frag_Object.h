@@ -24,6 +24,7 @@
 #include "ut_types.h"
 #include "pf_Frag.h"
 #include "pt_Types.h"
+#include "fd_Field.h"
 
 // pf_Frag_Object represents an object (such as
 // an image) in the document.

@@ -22,7 +22,10 @@
 #include "pf_Frag_Object.h"
 #include "px_ChangeRecord.h"
 #include "px_CR_Object.h"
-
+#include "pt_Types.h"
+#include "fd_Field.h"
+#include "ut_string.h"
+#include "pt_PieceTable.h"
 
 pf_Frag_Object::pf_Frag_Object(pt_PieceTable * pPT,
 							   PTObjectType objectType,
@@ -31,10 +34,52 @@ pf_Frag_Object::pf_Frag_Object(pt_PieceTable * pPT,
 {
 	m_objectType = objectType;
 	m_indexAP = indexAP;
+    const PP_AttrProp * pAP = NULL;
+    m_pPieceTable->getAttrProp(m_indexAP,&pAP);
+    UT_ASSERT(pAP);
+    const XML_Char* pszType = NULL;
+    (pAP)->getAttribute("type", pszType);
+	UT_ASSERT(pszType);
+    fd_Field::FieldType fieldType;
+    if (objectType==PTO_Field) 
+    {
+
+        if (0 == UT_stricmp(pszType, "test"))
+        {
+            fieldType = fd_Field::FD_Test;
+        }
+        else if (0 == UT_stricmp(pszType, "martin_test"))
+        {
+            fieldType = fd_Field::FD_MartinTest;
+        }
+        else if (0 == UT_stricmp(pszType, "time"))
+        {
+            fieldType = fd_Field::FD_Time;
+        }
+        else if (0 == UT_stricmp(pszType, "page_number"))
+        {
+            fieldType = fd_Field::FD_PageNumber;
+        }
+        else if (0 == UT_stricmp(pszType, "page_count"))
+        {
+            fieldType = fd_Field::FD_PageCount;
+        }
+        else if (0 == UT_stricmp(pszType, "list_label"))
+        {
+            fieldType = fd_Field::FD_ListLabel;
+        }
+        else
+        {
+            UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+        }
+        m_pField = new fd_Field(*this, pPT,fieldType);
+    }
 }
 
 pf_Frag_Object::~pf_Frag_Object()
 {
+    if (m_pField) delete m_pField;
+    m_pField = NULL;
 }
 
 PTObjectType pf_Frag_Object::getObjectType(void) const
@@ -61,7 +106,7 @@ UT_Bool pf_Frag_Object::createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
 	PX_ChangeRecord_Object * pcr
 		= new PX_ChangeRecord_Object(PX_ChangeRecord::PXT_InsertObject,
 									 dpos, m_indexAP, m_objectType,
-									 blockOffset);
+									 blockOffset, m_pField);
 	if (!pcr)
 		return UT_FALSE;
 

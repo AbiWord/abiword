@@ -54,7 +54,7 @@ fp_TextRun::fp_TextRun(fl_BlockLayout* pBL,
 	m_iLineWidth = 0;
 	m_bSquiggled = UT_FALSE;
 	m_iSpaceWidthBeforeJustification = JUSTIFICATION_NOT_USED;
-
+        m_pField = NULL;
 	if (bLookupProperties)
 	{
 		lookupProperties();
@@ -72,10 +72,9 @@ void fp_TextRun::lookupProperties(void)
 	const PP_AttrProp * pSpanAP = NULL;
 	const PP_AttrProp * pBlockAP = NULL;
 	const PP_AttrProp * pSectionAP = NULL; // TODO do we care about section-level inheritance?
-	
 	m_pBL->getSpanAttrProp(m_iOffsetFirst,UT_FALSE,&pSpanAP);
 	m_pBL->getAttrProp(&pBlockAP);
-
+        static_cast<fl_Layout *>(m_pBL)->getField(m_iOffsetFirst,m_pField);
 	// look for fonts in this DocLayout's font cache
 	FL_DocLayout * pLayout = m_pBL->getDocLayout();
 	m_pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, FL_DocLayout::FIND_FONT_AT_SCREEN_RESOLUTION);
@@ -454,6 +453,7 @@ UT_Bool fp_TextRun::canMergeWithNext(void)
 		|| (m_iHeight != pNext->m_iHeight)
 		|| (m_iSpaceWidthBeforeJustification != JUSTIFICATION_NOT_USED)
 		|| (pNext->m_iSpaceWidthBeforeJustification != JUSTIFICATION_NOT_USED)
+                || (pNext->m_pField != m_pField)
 		)
 	{
 		return UT_FALSE;
@@ -480,7 +480,7 @@ void fp_TextRun::mergeWithNext(void)
 	UT_ASSERT(m_iLineWidth == pNext->m_iLineWidth);
 //	UT_ASSERT(m_iSpaceWidthBeforeJustification == pNext->m_iSpaceWidthBeforeJustification);
 
-
+        m_pField = pNext->m_pField;
 	m_iWidth += pNext->m_iWidth;
 	m_iWidthLayoutUnits += pNext->m_iWidthLayoutUnits;
 	m_iLen += pNext->m_iLen;
@@ -507,6 +507,7 @@ UT_Bool fp_TextRun::split(UT_uint32 iSplitOffset)
 	pNew->m_pFontLayout = this->m_pFontLayout;
 	pNew->m_fDecorations = this->m_fDecorations;
 	pNew->m_colorFG = this->m_colorFG;
+	pNew->m_pField = this->m_pField;
         pNew->m_fPosition = this->m_fPosition;
 
 	pNew->m_iAscent = this->m_iAscent;
@@ -713,6 +714,10 @@ void fp_TextRun::_clearScreen(UT_Bool /* bFullLineHeightRect */)
 		  changed, for things such as table cells.
 		*/
 		UT_RGBColor clrNormalBackground(255,255,255);
+		if (m_pField)
+		{
+		        UT_setColor(clrNormalBackground,220, 220, 220);
+		}
 		m_pG->setColor(clrNormalBackground);
 		
 		UT_sint32 xoff = 0, yoff = 0;
@@ -758,8 +763,14 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	  appropriate selection background color based on the color
 	  of the foreground text, probably.
 	*/
+	UT_RGBColor clrNormalBackground(255,255,255);
 	UT_RGBColor clrSelBackground(192, 192, 192);
-
+	if (m_pField)
+	{
+	         UT_setColor(clrNormalBackground,220, 220, 220);
+	         UT_setColor(clrSelBackground,112, 112, 112);
+	}
+    
 	UT_uint32 iRunBase = iBase + m_iOffsetFirst;
 
 	FV_View* pView = m_pBL->getDocLayout()->getView();
@@ -774,6 +785,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	if (pView->getFocus()==AV_FOCUS_NONE || iSel1 == iSel2)
 	{
 		// nothing in this run is selected
+        _fillRect(clrNormalBackground, pDA->xoff, yTopOfSel, m_iOffsetFirst, m_iLen, pgbCharWidths);
 		_drawPart(pDA->xoff, yTopOfRun, m_iOffsetFirst, m_iLen, pgbCharWidths);
 	}
 	else if (iSel1 <= iRunBase)
@@ -781,6 +793,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 		if (iSel2 <= iRunBase)
 		{
 			// nothing in this run is selected
+            _fillRect(clrNormalBackground, pDA->xoff, yTopOfSel, m_iOffsetFirst, m_iLen, pgbCharWidths);
 			_drawPart(pDA->xoff, yTopOfRun, m_iOffsetFirst, m_iLen, pgbCharWidths);
 		}
 		else if (iSel2 >= (iRunBase + m_iLen))
@@ -796,17 +809,19 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 
 			_fillRect(clrSelBackground, pDA->xoff, yTopOfSel, m_iOffsetFirst, iSel2 - iRunBase, pgbCharWidths);
 			_drawPart(pDA->xoff, yTopOfRun, m_iOffsetFirst, iSel2 - iRunBase, pgbCharWidths);
-
+            _fillRect(clrNormalBackground, pDA->xoff, yTopOfSel, iSel2 - iBase, m_iLen - (iSel2 - iRunBase), pgbCharWidths);
 			_drawPart(pDA->xoff, yTopOfRun, iSel2 - iBase, m_iLen - (iSel2 - iRunBase), pgbCharWidths);
 		}
 	}
 	else if (iSel1 >= (iRunBase + m_iLen))
 	{
 		// nothing in this run is selected
+        _fillRect(clrNormalBackground, pDA->xoff, yTopOfSel, m_iOffsetFirst, m_iLen, pgbCharWidths);
 		_drawPart(pDA->xoff, yTopOfRun, m_iOffsetFirst, m_iLen, pgbCharWidths);
 	}
 	else
 	{
+        _fillRect(clrNormalBackground, pDA->xoff, yTopOfSel, m_iOffsetFirst, iSel1 - iRunBase, pgbCharWidths);
 		_drawPart(pDA->xoff, yTopOfRun, m_iOffsetFirst, iSel1 - iRunBase, pgbCharWidths);
 		
 		if (iSel2 >= (iRunBase + m_iLen))
@@ -818,7 +833,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 		{
 			_fillRect(clrSelBackground, pDA->xoff, yTopOfSel, iSel1 - iBase, iSel2 - iSel1, pgbCharWidths);
 			_drawPart(pDA->xoff, yTopOfRun, iSel1 - iBase, iSel2 - iSel1, pgbCharWidths);
-
+            _fillRect(clrNormalBackground, pDA->xoff, yTopOfSel, iSel2 - iBase, m_iLen - (iSel2 - iRunBase), pgbCharWidths);
 			_drawPart(pDA->xoff, yTopOfRun, iSel2 - iBase, m_iLen - (iSel2 - iRunBase), pgbCharWidths);
 		}
 	}
@@ -1664,6 +1679,18 @@ UT_uint32 fp_TextRun::countJustificationPoints(void) const
 	}
 
 	return iCount;
+}
+
+UT_Bool fp_TextRun::canContainPoint(void) const
+{
+        if (m_pField) 
+	{
+	        return UT_FALSE;
+	}
+	else
+	{
+	        return UT_TRUE;
+	}
 }
 
 //////////////////////////////////////////////////////////////////

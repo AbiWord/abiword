@@ -36,7 +36,8 @@ public:
 	pf_Frag_Text(pt_PieceTable * pPT,
 				 PT_BufIndex bufIndex,
 				 UT_uint32 length,
-				 PT_AttrPropIndex indexAP);
+				 PT_AttrPropIndex indexAP,
+                 fd_Field * m_pField);
 	virtual ~pf_Frag_Text();
 	
 	virtual UT_Bool			createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
@@ -52,7 +53,7 @@ public:
 	void					setIndexAP(PT_AttrPropIndex indexNewAP);
 	void					changeLength(UT_uint32 newLength);
 	void					adjustOffsetLength(PT_BufIndex bi, UT_uint32 newLength);
-	
+    void                    setField(fd_Field * pField);
 #ifdef PT_TEST
 	virtual void			__dump(FILE * fp) const;
 #endif

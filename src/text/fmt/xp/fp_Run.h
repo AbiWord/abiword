@@ -43,6 +43,7 @@ class PD_Document;
 class PP_AttrProp;
 struct dg_DrawArgs;
 class fl_CharWidths;
+class fd_Field;
 
 struct fp_RunSplitInfo
 {
@@ -78,7 +79,9 @@ enum FP_RUN_TYPE
 	FPRUN_FORCEDPAGEBREAK			= 6,
 	FPRUN_FIELD						= 7,
 	FPRUN_FMTMARK					= 8,
-	FPRUN__LAST__					= 8
+	FPRUN_FIELDSTARTRUN					= 9,
+	FPRUN_FIELDENDRUN					= 10,
+	FPRUN__LAST__					= 11
 };
 
 /*
@@ -92,6 +95,8 @@ enum FP_RUN_TYPE
 		fp_ImageRun
 		fp_FieldRun
 		fp_FmtMarkRun
+		fp_FieldStartRun
+		fp_FieldEndRun
 
 	As far as the formatter's concerned, each subclass behaves somewhat 
 	differently, but they can all be treated like rectangular blocks to 
@@ -111,6 +116,7 @@ public:
 	inline UT_sint32		getX(void) const 				{ return m_iX; }
 	inline UT_sint32		getY(void) const 				{ return m_iY; }
 	inline UT_sint32		getHeight(void) const     		{ return m_iHeight; }
+	inline UT_sint32		getHeightInLayoutUnits(void) const     		{ return m_iHeightLayoutUnits; }
 	inline UT_sint32		getWidth(void) const     		{ return m_iWidth; }
 	inline UT_sint32		getWidthInLayoutUnits(void) const     { return m_iWidthLayoutUnits; }
 	inline fp_Run* 			getNext(void) const     		{ return m_pNext; }
@@ -124,6 +130,8 @@ public:
 	inline UT_uint32		getDescentInLayoutUnits(void) const 	{ return m_iDescentLayoutUnits; }
 	void					insertIntoRunListBeforeThis(fp_Run& newRun);
 	void					insertIntoRunListAfterThis(fp_Run& newRun);
+	fd_Field *                      getField(void) { return   m_pField;}
+	UT_Bool                         isField(void) { return (UT_Bool) (m_pField != NULL) ;}
 	void					unlinkFromRunList();
 	
 	void					setLine(fp_Line*);
@@ -205,6 +213,7 @@ protected:
 	UT_uint32				m_iDescentLayoutUnits;
 	GR_Graphics*            m_pG;
 	UT_Bool					m_bDirty;		// run erased @ old coords, needs to be redrawn
+	fd_Field *                 m_pField;
 
 private:
 	fp_Run(const fp_Run&);			// no impl.
@@ -237,6 +246,46 @@ class fp_ForcedLineBreakRun : public fp_Run
 {
  public:
 	fp_ForcedLineBreakRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+
+	virtual UT_Bool			canContainPoint(void) const;
+	virtual UT_uint32 		containsOffset(UT_uint32 iOffset);
+	virtual void			lookupProperties(void);
+	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL);
+	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height);
+	virtual UT_Bool			canBreakAfter(void) const;
+	virtual UT_Bool			canBreakBefore(void) const;
+	virtual UT_Bool			letPointPass(void) const;
+	virtual UT_Bool			isForcedBreak(void) const { return UT_TRUE; }
+	virtual UT_Bool			findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce=UT_FALSE);
+protected:
+	virtual void			_draw(dg_DrawArgs*);
+	virtual void       		_clearScreen(UT_Bool bFullLineHeightRect);
+};
+
+class fp_FieldStartRun : public fp_Run
+{
+ public:
+	fp_FieldStartRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+
+	virtual UT_Bool			canContainPoint(void) const;
+	virtual UT_uint32 		containsOffset(UT_uint32 iOffset);
+	virtual void			lookupProperties(void);
+	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL);
+	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height);
+	virtual UT_Bool			canBreakAfter(void) const;
+	virtual UT_Bool			canBreakBefore(void) const;
+	virtual UT_Bool			letPointPass(void) const;
+	virtual UT_Bool			isForcedBreak(void) const { return UT_TRUE; }
+	virtual UT_Bool			findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce=UT_FALSE);
+protected:
+	virtual void			_draw(dg_DrawArgs*);
+	virtual void       		_clearScreen(UT_Bool bFullLineHeightRect);
+};
+
+class fp_FieldEndRun : public fp_Run
+{
+ public:
+	fp_FieldEndRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual UT_Bool			canContainPoint(void) const;
 	virtual UT_uint32 		containsOffset(UT_uint32 iOffset);
@@ -390,10 +439,10 @@ public:
 
 	UT_Bool					_setValue(UT_UCSChar *p_new_value);					
 
-	virtual UT_Bool			calculateValue(void) = 0;
+	virtual UT_Bool			calculateValue(void);
 	
 protected:
-	virtual void			_draw(dg_DrawArgs*) = 0;
+	virtual void			_draw(dg_DrawArgs*) {};
 	virtual void			_defaultDraw(dg_DrawArgs*);
 	virtual void       		_clearScreen(UT_Bool bFullLineHeightRect);
 

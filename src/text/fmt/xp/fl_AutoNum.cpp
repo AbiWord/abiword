@@ -42,6 +42,7 @@ fl_AutoNum::fl_AutoNum(UT_uint32 id, UT_uint32 start,  PL_StruxDocHandle pFirst,
 	m_bUpdatingItems = UT_FALSE;
 	m_bWordMultiStyle = UT_TRUE;
 	m_ioffset = 0;
+	m_bDirty = UT_FALSE;
         i =  UT_XML_strncpy( m_pszDelim, 80, lDelim);
 	i =  UT_XML_strncpy( m_pszDecimal, 80, lDecimal);
 	m_pParent = pParent;
@@ -75,6 +76,7 @@ fl_AutoNum::fl_AutoNum(UT_uint32 id, UT_uint32 parent_id, List_Type lType, UT_ui
 	m_bUpdatingItems = UT_FALSE;
 	m_ioffset = 0;
 	m_bWordMultiStyle = UT_TRUE;
+	m_bDirty = UT_FALSE;
 
 	// Set in Block???
 	UT_XML_strncpy( m_pszDelim, 80, lDelim);
@@ -95,6 +97,7 @@ void fl_AutoNum::addItem(PL_StruxDocHandle pItem)
 	{
 	        m_pItems.addItem(const_cast<void *>(pItem));
 	}
+	m_bDirty = UT_TRUE;
 }
 
 void fl_AutoNum::fixHierarchy(PD_Document * pDoc)
@@ -113,6 +116,7 @@ void fl_AutoNum::fixHierarchy(PD_Document * pDoc)
 		m_iLevel = m_pParent->getLevel() + 1;
 	else
 		m_iLevel = 1;
+	m_bDirty = UT_TRUE;
 }
 
 fl_AutoNum::~fl_AutoNum()
@@ -347,11 +351,16 @@ void fl_AutoNum::setListType(List_Type lType)
         m_List_Type = lType;
 }
 
+UT_Bool fl_AutoNum::isDirty(void)
+{
+        return m_bDirty;
+}
 
 void fl_AutoNum::setDelim(const XML_Char * lDelim)
 {
 	UT_uint32 i;
 	i =  UT_XML_strncpy( m_pszDelim, 80, lDelim);
+	m_bDirty = UT_TRUE;
 }
 
 const XML_Char * fl_AutoNum::getDelim( void)
@@ -363,6 +372,7 @@ void fl_AutoNum::setDecimal(const XML_Char * lDecimal)
 {
 	UT_uint32 i;
 	i =  UT_XML_strncpy( m_pszDecimal, 80, lDecimal);
+	m_bDirty = UT_TRUE;
 }
 
 List_Type fl_AutoNum::getType(void)
@@ -379,6 +389,7 @@ void fl_AutoNum::setStartValue(UT_uint32 start)
 void fl_AutoNum::setAsciiOffset(UT_uint32 new_asciioffset)
 {
         m_iAsciiOffset = (UT_uint16) new_asciioffset;
+	m_bDirty = UT_TRUE;
 }
 
 UT_uint32 fl_AutoNum::getStartValue32(void)
@@ -398,11 +409,16 @@ void fl_AutoNum::insertFirstItem(PL_StruxDocHandle pItem, PL_StruxDocHandle pLas
 	if(m_pItems.getItemCount() > 0)
 	        i = m_pItems.findItem((void *) pItem);
 	if(i < 0)
+	{
 	        m_pItems.insertItemAt((void *) pItem, 0);
+		m_bDirty = UT_TRUE;
+	}
+
 
 	if (m_pParent)
 	{
 		m_pParentItem = pLast;
+		m_bDirty = UT_TRUE;
 	}
 	if ( getAutoNumFromSdh(pItem) == this)
 		_updateItems(0,NULL);
@@ -417,6 +433,7 @@ PL_StruxDocHandle fl_AutoNum::getParentItem(void)
 void fl_AutoNum::setParentItem(PL_StruxDocHandle pItem)
 {
         m_pParentItem = pItem;
+	m_bDirty = UT_TRUE;
 }
 
 void fl_AutoNum::insertItem(PL_StruxDocHandle pItem, PL_StruxDocHandle pPrev)
@@ -426,6 +443,7 @@ void fl_AutoNum::insertItem(PL_StruxDocHandle pItem, PL_StruxDocHandle pPrev)
 	ndx = m_pItems.findItem((void *) pItem);
 	if(ndx >= 0)
 	        return;
+	m_bDirty = UT_TRUE;
 	ndx = m_pItems.findItem((void *) pPrev) + 1;
 	m_pItems.insertItemAt((void *) pItem, ndx);
 	if(m_bUpdate == UT_FALSE)
@@ -440,6 +458,7 @@ void fl_AutoNum::insertItem(PL_StruxDocHandle pItem, PL_StruxDocHandle pPrev)
 		if( pPrev == pAuto->getParentItem())
 		{
 		        pAuto->setParentItem(pItem);
+			pAuto->m_bDirty = UT_TRUE;
 			pAuto->_updateItems(0,NULL);
 		}
 	}
@@ -457,6 +476,7 @@ void fl_AutoNum::prependItem(PL_StruxDocHandle pItem, PL_StruxDocHandle pNext)
 	ndx = m_pItems.findItem((void *) pItem);
 	if(ndx >= 0)
 	        return;
+	m_bDirty = UT_TRUE;
 	ndx = m_pItems.findItem((void *) pNext);
 	if(ndx > 0)
 	{
@@ -476,6 +496,7 @@ void fl_AutoNum::prependItem(PL_StruxDocHandle pItem, PL_StruxDocHandle pNext)
 		        if( pPrev == pAuto->getParentItem())
 		        {
 		                pAuto->setParentItem(pItem);
+				pAuto->m_bDirty = UT_TRUE;
 				pAuto->_updateItems(0,NULL);
 			}
 		}
@@ -495,8 +516,8 @@ void fl_AutoNum::removeItem(PL_StruxDocHandle pItem)
 	        ppItem =  ( PL_StruxDocHandle) m_pItems.getNthItem(ndx - 1);
 	}
 	
-	//UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	m_pItems.deleteNthItem(ndx);
+	m_bDirty = UT_TRUE;
 
 	// scan through all the lists and update parent pointers
 	
@@ -520,9 +541,11 @@ void fl_AutoNum::removeItem(PL_StruxDocHandle pItem)
 				}
 				pAuto->setLevel(level);
 				pAuto->setParent(getParent());
+				pAuto->m_bDirty = UT_TRUE;
 				pAuto->setParentItem(getParentItem());
 			}
-			pAuto->_updateItems(0,NULL);
+			if(m_bUpdate)
+			        pAuto->_updateItems(0,NULL);
 		}
 	}
 	_updateItems(ndx,NULL);
@@ -653,6 +676,7 @@ fl_AutoNum * fl_AutoNum::getActiveParent(void)
 
 void fl_AutoNum::setParent(fl_AutoNum * pParent)
 {
+	m_bDirty = UT_TRUE;
 	m_pParent = pParent;
 }
 
@@ -699,6 +723,7 @@ void fl_AutoNum::_updateItems(UT_uint32 start, PL_StruxDocHandle notMe)
 			}
 		}
 		m_bUpdatingItems = UT_FALSE;
+		m_bDirty = UT_FALSE;
 	}
 }
 

@@ -31,6 +31,7 @@
 #include "px_ChangeRecord.h"
 #include "px_CR_Object.h"
 #include "px_CR_ObjectChange.h"
+#include "fd_Field.h"
 
 #define SETP(p,v)	do { if (p) (*(p)) = (v); } while (0)
 
@@ -96,6 +97,7 @@ UT_Bool pt_PieceTable::_fmtChangeObject(pf_Frag_Object * pfo,
 	// actually apply the format change.
 	
 	pfo->setIndexAP(indexNewAP);
+    //    if (pfo->getField()) pfo->getField()->update();
 	SETP(ppfNewEnd, pfo->getNext());
 	SETP(pfragOffsetNewEnd, 0);
 	return UT_TRUE;

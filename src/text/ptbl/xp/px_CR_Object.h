@@ -24,6 +24,8 @@
 #include "ut_types.h"
 #include "px_ChangeRecord.h"
 
+class fd_Field;
+
 // PX_ChangeRecord_Object describes an insertObject or
 // deleteObject change made to the document.
 // This description should be sufficient to allow undo to
@@ -45,17 +47,21 @@ public:
 						   PT_DocPosition position,
 						   PT_AttrPropIndex indexAP,
 						   PTObjectType ObjectType,
-						   PT_BlockOffset blockOffset);
+						   PT_BlockOffset blockOffset,
+                           fd_Field * field);
 	~PX_ChangeRecord_Object();
 
 	virtual PX_ChangeRecord * reverse(void) const;
 	
 	PTObjectType			getObjectType(void) const;
 	PT_BlockOffset			getBlockOffset(void) const;
-
+    fd_Field *              getField(void) const {return m_field;}; 
 protected:
 	PTObjectType			m_objectType;		/* our type (image, etc.) */
 	PT_BlockOffset			m_blockOffset; /* offset of span from beginning of paragraph */
+    // this only serves as a unique identifier of a field
+    // it should not be thought of as a valid pointer
+    fd_Field *              m_field; 
 };
 
 #endif /* PX_CHANGERECORD_OBJECT_H */

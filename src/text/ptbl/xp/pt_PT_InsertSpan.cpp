@@ -38,7 +38,7 @@
 #include "px_CR_Span.h"
 #include "px_CR_SpanChange.h"
 #include "px_CR_Strux.h"
-
+#include "fd_Field.h"
 /****************************************************************/
 /****************************************************************/
 	
@@ -46,7 +46,8 @@ UT_Bool pt_PieceTable::_insertSpan(pf_Frag * pf,
 								   PT_BufIndex bi,
 								   PT_BlockOffset fragOffset,
 								   UT_uint32 length,
-								   PT_AttrPropIndex indexAP)
+								   PT_AttrPropIndex indexAP,
+                                   fd_Field * pField)
 {
 	// update the fragment and/or the fragment list.
 	// return true if successful.
@@ -94,7 +95,7 @@ UT_Bool pt_PieceTable::_insertSpan(pf_Frag * pf,
 		return UT_FALSE;
 	}
 
-	if (pft)
+	if (pft&&pField==NULL)
 	{
 		// we have a text frag containing or adjacent to the position.
 		// deal with merging/splitting/etc.
@@ -121,7 +122,7 @@ UT_Bool pt_PieceTable::_insertSpan(pf_Frag * pf,
 				// one that follows (this can happen after a delete-char followed
 				// by undo).  if so, we coalesce them.
 
-				if (pft->getNext() && (pft->getNext()->getType() == pf_Frag::PFT_Text))
+				if (pft->getNext() && (pft->getNext()->getType() == pf_Frag::PFT_Text) && (pft->getNext()->getField()==NULL))
 				{
 					pf_Frag_Text * pftNext = static_cast<pf_Frag_Text *>(pft->getNext());
 					if (   (pft->getIndexAP() == pftNext->getIndexAP())
@@ -154,7 +155,7 @@ UT_Bool pt_PieceTable::_insertSpan(pf_Frag * pf,
 				// one that preceeds us (this can happen after a delete-char followed
 				// by undo).  if so, we coalesce them.
 
-				if (pft->getPrev() && (pft->getPrev()->getType() == pf_Frag::PFT_Text))
+				if (pft->getPrev() && (pft->getPrev()->getType() == pf_Frag::PFT_Text)&&(pft->getPrev()->getField()==NULL))
 				{
 					pf_Frag_Text * pftPrev = static_cast<pf_Frag_Text *>(pft->getPrev());
 					if (   (pft->getIndexAP() == pftPrev->getIndexAP())
@@ -175,7 +176,7 @@ UT_Bool pt_PieceTable::_insertSpan(pf_Frag * pf,
 			// it, let's stick it in the previous fragment.
 
 			pf_Frag * pfPrev = pft->getPrev();
-			if (pfPrev && pfPrev->getType()==pf_Frag::PFT_Text)
+			if (pfPrev && pfPrev->getType()==pf_Frag::PFT_Text && (pfPrev->getField()==NULL))
 			{
 				pf_Frag_Text * pftPrev = static_cast<pf_Frag_Text *>(pfPrev);
 				UT_uint32 prevLength = pftPrev->getLength();
@@ -193,8 +194,8 @@ UT_Bool pt_PieceTable::_insertSpan(pf_Frag * pf,
 	// new text is not contiguous, we need to insert one or two new text
 	// fragment(s) into the list.  first we construct a new text fragment
 	// for the data that we inserted.
-
-	pf_Frag_Text * pftNew = new pf_Frag_Text(this,bi,length,indexAP);
+    
+	pf_Frag_Text * pftNew = new pf_Frag_Text(this,bi,length,indexAP,pField);
 	if (!pftNew)
 		return UT_FALSE;
 
@@ -224,7 +225,7 @@ UT_Bool pt_PieceTable::_insertSpan(pf_Frag * pf,
 	
 	UT_uint32 lenTail = pft->getLength() - fragOffset;
 	PT_BufIndex biTail = m_varset.getBufIndex(pft->getBufIndex(),fragOffset);
-	pf_Frag_Text * pftTail = new pf_Frag_Text(this,biTail,lenTail,pft->getIndexAP());
+	pf_Frag_Text * pftTail = new pf_Frag_Text(this,biTail,lenTail,pft->getIndexAP(),pft->getField());
 	if (!pftTail)
 		return UT_FALSE;
 			
@@ -272,17 +273,11 @@ UT_Bool pt_PieceTable::_lastUndoIsThisFmtMark(PT_DocPosition dpos)
 
 UT_Bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 								  const UT_UCSChar * p,
-								  UT_uint32 length)
+								  UT_uint32 length, fd_Field * pField)
 {
 	// insert character data into the document at the given position.
 
 	UT_ASSERT(m_pts==PTS_Editing);
-
-	// append the text data to the end of the current buffer.
-
-	PT_BufIndex bi;
-	if (!m_varset.appendBuf(p,length,&bi))
-		return UT_FALSE;
 
 	// get the fragment at the given document position.
 	
@@ -290,6 +285,13 @@ UT_Bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 	PT_BlockOffset fragOffset = 0;
 	UT_Bool bFound = getFragFromPosition(dpos,&pf,&fragOffset);
 	UT_ASSERT(bFound);
+    
+
+	// append the text data to the end of the current buffer.
+
+	PT_BufIndex bi;
+	if (!m_varset.appendBuf(p,length,&bi))
+		return UT_FALSE;
 
 	UT_Bool bSuccess = UT_FALSE;
 	pf_Frag_Strux * pfs = NULL;
@@ -381,14 +383,14 @@ UT_Bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 			// try to append text to the previous rather than prepend to the current.
 			// this makes us consistent with other places in the code.
 
-			if ( (fragOffset==0) && (pf->getPrev()) && (pf->getPrev()->getType() == pf_Frag::PFT_Text) )
+			if ( (fragOffset==0) && (pf->getPrev()) && (pf->getPrev()->getType() == pf_Frag::PFT_Text) && pf->getPrev()->getField()== NULL )
 			{
 				// append to the end of the previous frag rather than prepend to the current one.
 				pf = pf->getPrev();
 				fragOffset = pf->getLength();
 			}
 		}
-		else if (pf->getPrev()->getType() == pf_Frag::PFT_Text)
+		else if (pf->getPrev()->getType() == pf_Frag::PFT_Text && pf->getPrev()->getField()==NULL)
 		{
 			pf_Frag_Text * pfPrevText = static_cast<pf_Frag_Text *>(pf->getPrev());
 			indexAP = pfPrevText->getIndexAP();
@@ -399,18 +401,37 @@ UT_Bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 		}
 		else
 		{
+		  // is existing fragment a field? If so do nothing 
+		  // Or should we display a message to the user?
+     
+		        if(pf->getField() != NULL)
+			{
+		                UT_DEBUGMSG(("SEVIOR: Can't insert text in middle of a field"));
+				return UT_FALSE;
+			}
+
 			indexAP = _chooseIndexAP(pf,fragOffset);
 		}
 	}
 	else
 	{
+  	         // is existing fragment a field? If so do nothing 
+	  // Or should we display a message to the user?
+     
+                if(pf->getField() != NULL)
+		{
+		       UT_DEBUGMSG(("SEVIOR: Can't insert text in middle of a field"));
+		       return UT_FALSE;
+		}
+
+
 		indexAP = _chooseIndexAP(pf,fragOffset);
 	}
 	
 	PT_BlockOffset blockOffset = _computeBlockOffset(pfs,pf) + fragOffset;
 	PX_ChangeRecord_Span * pcr = NULL;
 	
-	if (!_insertSpan(pf,bi,fragOffset,length,indexAP))
+	if (!_insertSpan(pf,bi,fragOffset,length,indexAP,pField))
 		goto Finish;
 
 	// note: because of coalescing, pf should be considered invalid at this point.
@@ -419,7 +440,8 @@ UT_Bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 	// anyone listening.
 
 	pcr = new PX_ChangeRecord_Span(PX_ChangeRecord::PXT_InsertSpan,
-								   dpos,indexAP,bi,length,blockOffset);
+								   dpos,indexAP,bi,length,
+                                   blockOffset, pField);
 	UT_ASSERT(pcr);
 
 	if (_canCoalesceInsertSpan(pcr))
@@ -440,6 +462,197 @@ Finish:
 	if (bNeedGlob)
 		endMultiStepGlob();
 	
+	return bSuccess;
+}
+
+
+UT_Bool pt_PieceTable::insertSpan_norec(PT_DocPosition dpos,
+								  const UT_UCSChar * p,
+								  UT_uint32 length, fd_Field * pField)
+{
+	// insert character data into the document at the given position.
+  //No not throw a change record. 
+  // We need this to getupdate fields working correctly
+
+	UT_ASSERT(m_pts==PTS_Editing);
+        UT_uint32 recnt = m_history.getUndoPos();
+	// get the fragment at the given document position.
+	
+	pf_Frag * pf = NULL;
+	PT_BlockOffset fragOffset = 0;
+	UT_Bool bFound = getFragFromPosition(dpos,&pf,&fragOffset);
+	UT_ASSERT(bFound);
+    
+
+	// append the text data to the end of the current buffer.
+
+	PT_BufIndex bi;
+	if (!m_varset.appendBuf(p,length,&bi))
+		return UT_FALSE;
+
+	UT_Bool bSuccess = UT_FALSE;
+	pf_Frag_Strux * pfs = NULL;
+	UT_Bool bFoundStrux = _getStruxFromFrag(pf,&pfs);
+	UT_ASSERT(bFoundStrux);
+
+	// we just did a getFragFromPosition() which gives us the
+	// the thing *starting* at that position.  if we have a
+	// fragment boundary at that position, it's sort of arbitrary
+	// whether we treat this insert as a prepend to the one we just found
+	// or an append to the previous one (when it's a text frag).
+	// in the normal case, we want the Attr/Prop of a character
+	// insertion to take the AP of the thing to the immediate
+	// left (seems to be what MS-Word and MS-WordPad do).  It's also
+	// useful when the user hits the BOLD button (without a)
+	// selection) and then starts typing -- ideally you'd like
+	// all of the text to have bold not just the first.  therefore,
+	// we will see if we are on a text-text boundary and backup
+	// (and thus appending) to the previous.
+
+	UT_Bool bNeedGlob = UT_FALSE;
+	PT_AttrPropIndex indexAP = 0;
+	
+	if ( (fragOffset==0) && (pf->getPrev()) )
+	{
+		UT_Bool bRightOfFmtMark = (pf->getPrev()->getType() == pf_Frag::PFT_FmtMark);
+		if (bRightOfFmtMark)
+		{
+			// if we're just to the right of a _FmtMark, we want to replace
+			// it with a _Text frag with the same attr/prop (we
+			// only used the _FmtMark to remember a toggle format
+			// before we had text for it).
+
+			pf_Frag_FmtMark * pfPrevFmtMark = static_cast<pf_Frag_FmtMark *>(pf->getPrev());
+			indexAP = pfPrevFmtMark->getIndexAP();
+
+			if (_lastUndoIsThisFmtMark(dpos))
+			{
+				// if the last thing in the undo history is the insertion of this
+				// _FmtMark, then let's remember the indexAP, do an undo, and then
+				// insert the text.  this way the only thing remaining in the undo
+				// is the insertion of this text (with no globbing around it).  then
+				// a user-undo will undo all of the coalesced text back to this point
+				// and leave the insertion point as if the original InsertFmtMark
+				// had never happened.
+				//
+				// we don't allow consecutive FmtMarks, but the undo may be a
+				// changeFmtMark and thus just re-change the mark frag rather
+				// than actually deleting it.  so we loop here to get back to
+				// the original insertFmtMark (this is the case if the user hit
+				// BOLD then ITALIC then UNDERLINE then typed a character).
+
+				do { undoCmd(); } while (_lastUndoIsThisFmtMark(dpos));
+			}
+			else
+			{
+				// for some reason, something else has happened to the document
+				// since this _FmtMark was inserted (perhaps it was one that we
+				// inserted when we did a paragraph break and inserted several
+				// to remember the current inline formatting).
+				//
+				// here we have to do it the hard way and use a glob and an
+				// explicit deleteFmtMark.  note that this messes up the undo
+				// coalescing.  that is, if the user starts typing at this
+				// position and then hits UNDO, we will erase all of the typing
+				// except for the first character.  the second UNDO, will erase
+				// the first character and restores the current FmtMark.  if the
+				// user BACKSPACES instead of doing the second UNDO, both the
+				// first character and the FmtMark would be gone.
+				//
+				// TODO decide if we like this...
+				// NOTE this causes BUG#431.... :-)
+
+				bNeedGlob = UT_TRUE;
+				beginMultiStepGlob();
+				_deleteFmtMarkWithNotify(dpos,pfPrevFmtMark,pfs,&pf,&fragOffset);
+			}
+
+			// we now need to consider pf invalid, since the fragment list may have
+			// been coalesced as the FmtMarks were deleted.  let's recompute them
+			// but with a few shortcuts.
+
+			bFound = getFragFromPosition(dpos,&pf,&fragOffset);
+			UT_ASSERT(bFound);
+			bFoundStrux = _getStruxFromFrag(pf,&pfs);
+			UT_ASSERT(bFoundStrux);
+
+			// with the FmtMark now gone, we make a minor adjustment so that we
+			// try to append text to the previous rather than prepend to the current.
+			// this makes us consistent with other places in the code.
+
+			if ( (fragOffset==0) && (pf->getPrev()) && (pf->getPrev()->getType() == pf_Frag::PFT_Text) && pf->getPrev()->getField()== NULL )
+			{
+				// append to the end of the previous frag rather than prepend to the current one.
+				pf = pf->getPrev();
+				fragOffset = pf->getLength();
+			}
+		}
+		else if (pf->getPrev()->getType() == pf_Frag::PFT_Text && pf->getPrev()->getField()==NULL)
+		{
+			pf_Frag_Text * pfPrevText = static_cast<pf_Frag_Text *>(pf->getPrev());
+			indexAP = pfPrevText->getIndexAP();
+
+			// append to the end of the previous frag rather than prepend to the current one.
+			pf = pf->getPrev();
+			fragOffset = pf->getLength();
+		}
+		else
+		{
+		  // is existing fragment a field? If so do nothing 
+		  // Or should we display a message to the user?
+     
+		        if(pf->getField() != NULL)
+			{
+		                UT_DEBUGMSG(("SEVIOR: Can't insert text in middle of a field"));
+				return UT_FALSE;
+			}
+
+			indexAP = _chooseIndexAP(pf,fragOffset);
+		}
+	}
+	else
+	{
+  	         // is existing fragment a field? If so do nothing 
+	  // Or should we display a message to the user?
+     
+                if(pf->getField() != NULL)
+		{
+		       UT_DEBUGMSG(("SEVIOR: Can't insert text in middle of a field"));
+		       return UT_FALSE;
+		}
+
+
+		indexAP = _chooseIndexAP(pf,fragOffset);
+	}
+	
+	PT_BlockOffset blockOffset = _computeBlockOffset(pfs,pf) + fragOffset;
+	PX_ChangeRecord_Span * pcr = NULL;
+	
+	if (!_insertSpan(pf,bi,fragOffset,length,indexAP,pField))
+		goto Finish;
+
+	// note: because of coalescing, pf should be considered invalid at this point.
+	
+	// create a change record, add it to the history, and notify
+	// anyone listening.
+
+	pcr = new PX_ChangeRecord_Span(PX_ChangeRecord::PXT_InsertSpan,
+								   dpos,indexAP,bi,length,
+                                   blockOffset, pField);
+	UT_ASSERT(pcr);
+
+	// Need this to update formatting
+	m_pDocument->notifyListeners(pfs,pcr);
+	// We've finished with this now so delete it
+
+	delete pcr;
+	bSuccess = UT_TRUE;
+	
+Finish:
+	if (bNeedGlob)
+		endMultiStepGlob();
+        UT_uint32 recnta = m_history.getUndoPos();
+	UT_DEBUGMSG(("SEVIOR: Change records after _InsertSpan_norec before = %d after %d \n",recnt,recnta));	
 	return bSuccess;
 }
 

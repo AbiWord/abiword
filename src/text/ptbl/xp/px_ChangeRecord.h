@@ -49,7 +49,8 @@ public:
 						   PXT_InsertObject=6,		PXT_DeleteObject=7,		PXT_ChangeObject=8,
 						   PXT_InsertFmtMark=9,		PXT_DeleteFmtMark=10,	PXT_ChangeFmtMark=11,
 			       PXT_ChangePoint=12,  PXT_ListUpdate=13, 
- PXT_StopList=14
+			       PXT_StopList=14,  PXT_DontChangeInsPoint=15,
+			       PXT_AllowChangeInsPoint=16, PXT_UpdateField=17
 	} PXType;
 
 	PX_ChangeRecord(PXType type,

@@ -155,7 +155,7 @@ UT_Bool pt_PieceTable::_fmtChangeSpan(pf_Frag_Text * pft, UT_uint32 fragOffset, 
 
 		// otherwise, we need to actually split this one....
 		
-		pf_Frag_Text * pftNew = new pf_Frag_Text(this,bi_1,len_1,indexNewAP);
+		pf_Frag_Text * pftNew = new pf_Frag_Text(this,bi_1,len_1,indexNewAP,pft->getField());
 		if (!pftNew)
 			return UT_FALSE;
 
@@ -200,7 +200,7 @@ UT_Bool pt_PieceTable::_fmtChangeSpan(pf_Frag_Text * pft, UT_uint32 fragOffset, 
 
 		// otherwise, we actually need to split this one....
 
-		pf_Frag_Text * pftNew = new pf_Frag_Text(this,bi_2,len_2,indexNewAP);
+		pf_Frag_Text * pftNew = new pf_Frag_Text(this,bi_2,len_2,indexNewAP,pft->getField());
 		if (!pftNew)
 			return UT_FALSE;
 
@@ -222,9 +222,9 @@ UT_Bool pt_PieceTable::_fmtChangeSpan(pf_Frag_Text * pft, UT_uint32 fragOffset, 
 	UT_uint32 len_3 = pft->getLength() - (fragOffset+length);
 	PT_BufIndex bi_2 = m_varset.getBufIndex(pft->getBufIndex(),fragOffset);
 	PT_BufIndex bi_3 = m_varset.getBufIndex(pft->getBufIndex(),fragOffset+length);
-	pf_Frag_Text * pft_2 = new pf_Frag_Text(this,bi_2,len_2,indexNewAP);
+	pf_Frag_Text * pft_2 = new pf_Frag_Text(this,bi_2,len_2,indexNewAP,pft->getField());
 	UT_ASSERT(pft_2);
-	pf_Frag_Text * pft_3 = new pf_Frag_Text(this,bi_3,len_3,pft->getIndexAP());
+	pf_Frag_Text * pft_3 = new pf_Frag_Text(this,bi_3,len_3,pft->getIndexAP(),pft->getField());
 	UT_ASSERT(pft_3);
 
 	pft->changeLength(len_1);
@@ -310,7 +310,7 @@ UT_Bool pt_PieceTable::changeSpanFmt(PTChangeFmt ptc,
 	// apply a span-level formatting change to the given region.
 	
 	UT_ASSERT(m_pts==PTS_Editing);
-
+    _tweakFieldSpan(dpos1,dpos2);
 	if (dpos1 == dpos2) 		// if length of change is zero, then we have a toggle format.
 	{
 		UT_Bool bRes = _insertFmtMarkFragWithNotify(ptc,dpos1,attributes,properties);
@@ -330,7 +330,7 @@ UT_Bool pt_PieceTable::changeSpanFmt(PTChangeFmt ptc,
 	UT_Bool bHaveAttributes = (attributes && *attributes);
 	UT_Bool bHaveProperties = (properties && *properties);
 	UT_ASSERT(bHaveAttributes || bHaveProperties); // must have something to do
-
+    
 	pf_Frag * pf_First;
 	pf_Frag * pf_End;
 	PT_BlockOffset fragOffset_First;

@@ -94,7 +94,7 @@ class fp_TextRun : public fp_Run
 	virtual void                            setMinOverline(UT_sint32 xoff);
 	virtual UT_sint32                       getMinOverline(void);
 	UT_uint32				countTrailingSpaces(void) const;
-
+    UT_Bool                 canContainPoint(void) const;
 #ifdef FMT_TEST
 	virtual void			__dump(FILE * fp) const;
 #endif	

@@ -54,7 +54,6 @@ protected:
     const XML_Char *	_getDataItemName(const XML_Char ** atts);
     const XML_Char *	_getDataItemMimeType(const XML_Char ** atts);
     UT_Bool		_getDataItemEncoded(const XML_Char ** atts);
-	
     UT_Bool			m_bDocHasLists;
 };
 

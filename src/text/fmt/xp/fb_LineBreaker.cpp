@@ -286,6 +286,8 @@ UT_sint32 fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 					
 				case FPRUN_FIELD:
 				case FPRUN_IMAGE:
+				case FPRUN_FIELDSTARTRUN:
+				case FPRUN_FIELDENDRUN:
 				case FPRUN_TEXT:
 				{
 

@@ -289,6 +289,11 @@ UT_Bool pt_PieceTable::getSpanPtr(PL_StruxDocHandle sdh, UT_uint32 offset,
 	return UT_FALSE;
 }
 
+PD_Document * pt_PieceTable::getDocument(void)
+{
+        return m_pDocument;
+}
+
 UT_Bool pt_PieceTable::getBlockBuf(PL_StruxDocHandle sdh, UT_GrowBuf * pgb) const
 {
 	// copy the contents (unicode character data) of the
@@ -550,6 +555,20 @@ UT_Bool pt_PieceTable::getStruxOfTypeFromPosition(PL_ListenerId listenerId,
 	return UT_TRUE;
 }
 
+UT_Bool pt_PieceTable::getStruxOfTypeFromPosition( PT_DocPosition docPos,
+						   PTStruxType pts, 
+						   PL_StruxDocHandle * sdh) const
+{
+	// return the SDH of the last strux of the given type
+	// immediately prior to the given absolute document position.
+
+	pf_Frag_Strux * pfs = NULL;
+	if (!_getStruxOfTypeFromPosition(docPos,pts,&pfs))
+		return UT_FALSE;
+	*sdh = ( PL_StruxDocHandle ) pfs;
+	return UT_TRUE;
+}
+
 UT_Bool pt_PieceTable::_getStruxFromPosition(PT_DocPosition docPos,
 											 pf_Frag_Strux ** ppfs) const
 {
@@ -679,3 +698,6 @@ UT_Bool pt_PieceTable::_changePointWithNotify(PT_DocPosition dpos)
 
 	return UT_TRUE;
 }
+
+
+

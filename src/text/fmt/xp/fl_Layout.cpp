@@ -25,7 +25,7 @@
 
 #include "fl_Layout.h"
 #include "pd_Document.h"
-
+#include "fd_Field.h"
 
 fl_Layout::fl_Layout(PTStruxType type, PL_StruxDocHandle sdh)
 {
@@ -74,7 +74,14 @@ UT_Bool fl_Layout::getSpanAttrProp(UT_uint32 offset, UT_Bool bLeftSide, const PP
 	return m_pDoc->getSpanAttrProp(m_sdh,offset,bLeftSide,ppAP);
 }
 
+UT_Bool fl_Layout::getField(UT_uint32 offset, fd_Field * & pField)
+{
+    return m_pDoc->getField(m_sdh,offset,pField);
+}
+
 void fl_Layout::setAutoNum(fl_AutoNum * pAutoNum)
 {
 	m_pAutoNum = pAutoNum;
 }
+
+

@@ -26,6 +26,7 @@
 #include "pt_Types.h"
 class pt_PieceTable;
 class PX_ChangeRecord;
+class fd_Field;
 
 
 // pf_Frag represents a fragment of the document.  This may
@@ -52,7 +53,7 @@ public:
 	pf_Frag *				setPrev(pf_Frag * pPrev);
 
 	inline UT_uint32		getLength(void) const	{ return m_length; }
-	
+	fd_Field *                 getField(void); 
 	// createSpecialChangeRecord() constructs a change
 	// record which describes the fragment itself and
 	// not an actual change (editing) operation.  the
@@ -71,7 +72,7 @@ protected:
 	
 	pf_Frag *				m_next;
 	pf_Frag *				m_prev;
-
+    fd_Field *              m_pField;
 	pt_PieceTable *			m_pPieceTable;
 };
 

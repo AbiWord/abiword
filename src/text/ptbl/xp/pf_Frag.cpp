@@ -29,6 +29,7 @@ pf_Frag::pf_Frag(pt_PieceTable * pPT, PFType type, UT_uint32 length)
 	m_next = NULL;
 	m_prev = NULL;
 	m_pPieceTable = pPT;
+    m_pField = NULL;
 }
 
 pf_Frag::~pf_Frag()
@@ -60,4 +61,9 @@ UT_Bool pf_Frag::createSpecialChangeRecord(PX_ChangeRecord ** /*ppcr*/,
 	
 	UT_ASSERT(0);
 	return UT_TRUE;
+}
+
+fd_Field * pf_Frag::getField(void)
+{
+    return m_pField;
 }

@@ -120,7 +120,7 @@ UT_Bool pt_PieceTable::appendSpan(UT_UCSChar * pbuf, UT_uint32 length)
 	
 	// could not coalesce, so create a new fragment for this text span.
 
-	pf_Frag_Text * pft = new pf_Frag_Text(this,bi,length,loading.m_indexCurrentInlineAP);
+	pf_Frag_Text * pft = new pf_Frag_Text(this,bi,length,loading.m_indexCurrentInlineAP,NULL);
 	if (!pft)
 		return UT_FALSE;
 

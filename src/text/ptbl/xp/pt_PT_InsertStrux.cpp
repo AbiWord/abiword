@@ -151,7 +151,7 @@ void pt_PieceTable::_insertStrux(pf_Frag * pf,
 
 				UT_uint32 lenTail = pft->getLength() - fragOffset;
 				PT_BufIndex biTail = m_varset.getBufIndex(pft->getBufIndex(),fragOffset);
-				pf_Frag_Text * pftTail = new pf_Frag_Text(this,biTail,lenTail,pft->getIndexAP());
+				pf_Frag_Text * pftTail = new pf_Frag_Text(this,biTail,lenTail,pft->getIndexAP(),pft->getField());
 				UT_ASSERT(pftTail);
 			
 				pft->changeLength(fragOffset);

@@ -73,6 +73,22 @@ UT_Bool pt_VarSet::appendBuf(const UT_UCSChar * pBuf, UT_uint32 length, PT_BufIn
 	return UT_FALSE;
 }
 
+UT_Bool pt_VarSet::overwriteBuf(UT_UCSChar * pBuf, UT_uint32 length, PT_BufIndex * pbi)
+{
+	if (m_buffer[_varsetFromBufIndex(*pbi)]
+        .overwrite(_subscriptFromBufIndex(*pbi),
+                   pBuf,
+                   length))
+	{
+		return UT_TRUE;
+	}
+
+	UT_DEBUGMSG(("could not overwriteBuf\n"));
+	return UT_FALSE;
+}
+
+
+
 UT_Bool pt_VarSet::storeAP(const XML_Char ** attributes, PT_AttrPropIndex * papi)
 {
 	if (!m_bInitialized)

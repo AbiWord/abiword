@@ -22,13 +22,15 @@
 #include "pt_Types.h"
 #include "px_ChangeRecord.h"
 #include "px_CR_Span.h"
+#include "fd_Field.h"
 
 PX_ChangeRecord_Span::PX_ChangeRecord_Span(PXType type,
 										   PT_DocPosition position,
 										   PT_AttrPropIndex indexNewAP,
 										   PT_BufIndex bufIndex,
 										   UT_uint32 length,
-										   PT_BlockOffset blockOffset)
+										   PT_BlockOffset blockOffset,
+                                           fd_Field * pField)
 	: PX_ChangeRecord(type, position, indexNewAP)
 {
 	UT_ASSERT(length > 0);
@@ -36,6 +38,7 @@ PX_ChangeRecord_Span::PX_ChangeRecord_Span(PXType type,
 	m_bufIndex = bufIndex;
 	m_length = length;
 	m_blockOffset = blockOffset;
+    m_pField = pField;
 }
 
 PX_ChangeRecord_Span::~PX_ChangeRecord_Span()
@@ -46,7 +49,8 @@ PX_ChangeRecord * PX_ChangeRecord_Span::reverse(void) const
 {
 	PX_ChangeRecord_Span * pcr
 		= new PX_ChangeRecord_Span(getRevType(),m_position,m_indexAP,
-								   m_bufIndex,m_length,m_blockOffset);
+								   m_bufIndex,m_length,m_blockOffset,
+                                   m_pField);
 	UT_ASSERT(pcr);
 	return pcr;
 }

@@ -36,7 +36,15 @@
 #include "ie_exp.h"
 #include "pf_Frag_Strux.h"
 #include "pd_Style.h"
+#include "pf_Frag_Object.h"
+#include "pf_Frag.h"
+#include "fd_Field.h"
+#include "fl_BlockLayout.h"
+#include "fl_Layout.h"
+#include "fl_DocLayout.h"
+#include "fv_View.h"
 #include "fl_AutoNum.h"
+
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
@@ -120,6 +128,7 @@ UT_Error PD_Document::readFromFile(const char * szFilename, int ieft)
 	}
 
 	m_pPieceTable->setPieceTableState(PTS_Editing);
+        updateFields();
 	_setClean();							// mark the document as not-dirty
 	return UT_OK;
 }
@@ -248,6 +257,20 @@ UT_Bool	PD_Document::insertObject(PT_DocPosition dpos,
 {
 	return m_pPieceTable->insertObject(dpos, pto, attributes, properties);
 }
+
+
+
+UT_Bool	PD_Document::insertObject(PT_DocPosition dpos,
+										 PTObjectType pto,
+										 const XML_Char ** attributes,
+										 const XML_Char ** properties, fd_Field ** pField)
+{
+        pf_Frag_Object * pfo = NULL;
+        UT_Bool bres =  m_pPieceTable->insertObject(dpos, pto, attributes, properties, &pfo);
+	*pField = pfo->getField();
+	return bres;
+}
+
 
 UT_Bool PD_Document::insertSpan(PT_DocPosition dpos,
 								  const UT_UCSChar * p,
@@ -553,6 +576,39 @@ UT_Bool PD_Document::getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset, UT
 	return m_pPieceTable->getSpanAttrProp(sdh,offset,bLeftSide,ppAP);
 }
 
+UT_Bool PD_Document::getField(PL_StruxDocHandle sdh, UT_uint32 offset,
+                               fd_Field * & pField)
+{
+    
+    pf_Frag * pf = (pf_Frag *)sdh;
+    UT_ASSERT(pf->getType() == pf_Frag::PFT_Strux);
+	pf_Frag_Strux * pfsBlock = static_cast<pf_Frag_Strux *> (pf);
+	UT_ASSERT(pfsBlock->getStruxType() == PTX_Block);
+
+	UT_uint32 cumOffset = 0;
+    pf_Frag_Text * pft = NULL;
+	for (pf_Frag * pfTemp=pfsBlock->getNext(); (pfTemp); pfTemp=pfTemp->getNext())
+	{
+        cumOffset += pfTemp->getLength();
+        if (offset < cumOffset)
+        {
+            switch (pfTemp->getType()) 
+            {
+            case pf_Frag::PFT_Text:
+                pft = static_cast<pf_Frag_Text *> (pfTemp);
+                pField = pft->getField();
+                return UT_TRUE; // break out of loop
+                break;
+            default:
+                return UT_FALSE;
+                break;
+            }
+        }
+        
+    }
+    return UT_FALSE;
+}
+
 UT_Bool PD_Document::getStruxFromPosition(PL_ListenerId listenerId,
 										  PT_DocPosition docPos,
 										  PL_StruxFmtHandle * psfh) const
@@ -823,6 +879,101 @@ void PD_Document::clearIfAtFmtMark(PT_DocPosition dpos)
 	m_pPieceTable->clearIfAtFmtMark(dpos);
 }
 
+UT_Bool PD_Document::updateFields(void)
+{
+  //
+  // Turn off Insertion point motion during this general update
+  //
+    setDontChangeInsPoint();
+    pf_Frag * currentFrag = m_pPieceTable->getFragments().getFirst();
+    UT_ASSERT(currentFrag);
+    while (currentFrag!=m_pPieceTable->getFragments().getLast())
+    {
+        if (currentFrag->getType()==pf_Frag::PFT_Object)
+        {
+            pf_Frag_Object * pfo = static_cast<pf_Frag_Object *>
+                (currentFrag);
+            if (pfo->getObjectType()==PTO_Field)
+            {
+                UT_ASSERT (pfo->getField());
+                pfo->getField()->update();
+            }
+        }
+        currentFrag = currentFrag->getNext();
+    }
+    //
+    // Restore insertion point motion
+    //
+    allowChangeInsPoint();
+    return true;
+}
+
+void PD_Document::setDontChangeInsPoint(void)
+{
+        //
+        // Notify all views that they cannot change the insertion point
+        //
+        pf_Frag * currentFrag = m_pPieceTable->getFragments().getFirst();
+     //
+     //Look for the first strux so we can notify the views via a strux listner
+     //
+        while (currentFrag!=m_pPieceTable->getFragments().getLast())
+        {
+              if (currentFrag->getType()==pf_Frag::PFT_Strux)
+	      {
+		     break;
+	      }
+        currentFrag = currentFrag->getNext();
+	}
+	if(currentFrag!=m_pPieceTable->getFragments().getLast())
+	{
+	      pf_Frag_Strux * pfs = ( pf_Frag_Strux *) currentFrag;
+	      PT_AttrPropIndex pAppIndex = pfs->getIndexAP();
+	      PT_DocPosition pos = getStruxPosition(pfs);
+	      const PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_DontChangeInsPoint,pos,pAppIndex);
+	      notifyListeners(pfs, pcr);
+	      delete pcr;		
+	}				  
+	else
+	{
+	      UT_DEBUGMSG(("setDontChangeInsPoint: No strux in document!! \n"));
+	      UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	}
+}
+
+void PD_Document::allowChangeInsPoint(void)
+{
+  //
+  // Notify all views that they can change the insertion point
+  //
+        pf_Frag * currentFrag = m_pPieceTable->getFragments().getFirst();
+     //
+     //Look for the first strux so we can notify the views via a strux listner
+     //
+        while (currentFrag!=m_pPieceTable->getFragments().getLast())
+        {
+              if (currentFrag->getType()==pf_Frag::PFT_Strux)
+	      {
+		     break;
+	      }
+        currentFrag = currentFrag->getNext();
+	}
+	if(currentFrag!=m_pPieceTable->getFragments().getLast())
+	{
+	      pf_Frag_Strux * pfs = ( pf_Frag_Strux *) currentFrag;
+	      PT_AttrPropIndex pAppIndex = pfs->getIndexAP();
+	      PT_DocPosition pos = getStruxPosition(pfs);
+	      const PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_AllowChangeInsPoint,pos,pAppIndex);
+	      notifyListeners(pfs, pcr);
+	      delete pcr;		
+	}
+	else
+	{
+	      UT_DEBUGMSG(("allowChangeInsPoint: No strux in document!! \n"));
+	      UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	}
+}
+
 ////////////////////////////////////////////////////////////////
 // List Vector Functions
 
@@ -988,6 +1139,22 @@ void PD_Document::enableListUpdates(void)
 	         pAutoNum->setUpdatePolicy(UT_TRUE);
 	}
 }
+
+void PD_Document::updateDirtyLists(void)
+{
+        UT_uint32 iNumLists = m_vecLists.getItemCount();
+	UT_uint32 i;
+	fl_AutoNum * pAutoNum;
+	for(i=0; i< iNumLists; i++)
+	{
+	         pAutoNum = (fl_AutoNum *) m_vecLists.getNthItem(i);
+	         if(pAutoNum->isDirty() == UT_TRUE)
+		 {
+		         pAutoNum->update(0);
+		 }
+	}
+}
+
 
 UT_Bool PD_Document::fixListHierarchy(void)
 {

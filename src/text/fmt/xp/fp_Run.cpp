@@ -34,6 +34,7 @@
 #include "gr_DrawArgs.h"
 #include "fv_View.h"
 #include "pp_AttrProp.h"
+#include "fd_Field.h"
 
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
@@ -90,6 +91,7 @@ fp_Run::fp_Run(fl_BlockLayout* pBL,
 	m_iDescent = 0;
 	m_iAscentLayoutUnits = 0;
 	m_iDescentLayoutUnits = 0;
+        m_pField = NULL;
 }
 
 fp_Run::~fp_Run()
@@ -361,6 +363,8 @@ void fp_TabRun::lookupProperties(void)
 	
 	m_pBL->getSpanAttrProp(m_iOffsetFirst,UT_FALSE,&pSpanAP);
 	m_pBL->getAttrProp(&pBlockAP);
+        m_pBL->getField(m_iOffsetFirst,m_pField);
+
 
 	// look for fonts in this DocLayout's font cache
 	FL_DocLayout * pLayout = m_pBL->getDocLayout();
@@ -535,10 +539,13 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 
 fp_ForcedLineBreakRun::fp_ForcedLineBreakRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_FORCEDLINEBREAK)
 {
+        lookupProperties();
 }
 
 void fp_ForcedLineBreakRun::lookupProperties(void)
 {
+        m_pBL->getField(m_iOffsetFirst,m_pField);
+
 }
 
 UT_Bool fp_ForcedLineBreakRun::canContainPoint(void) const
@@ -602,6 +609,145 @@ void fp_ForcedLineBreakRun::_draw(dg_DrawArgs* pDA)
 	UT_ASSERT(pDA->pG == m_pG);
 }
 
+
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+
+fp_FieldStartRun::fp_FieldStartRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_FIELDSTARTRUN)
+{
+        lookupProperties();
+}
+
+void fp_FieldStartRun::lookupProperties(void)
+{
+        m_pBL->getField(m_iOffsetFirst,m_pField);
+	m_iWidth = 0;
+}
+
+UT_Bool fp_FieldStartRun::canContainPoint(void) const
+{
+	return UT_FALSE;
+}
+
+UT_uint32 fp_FieldStartRun::containsOffset(UT_uint32 /* iOffset */)
+{
+	return FP_RUN_NOT;
+}
+
+UT_Bool fp_FieldStartRun::canBreakAfter(void) const
+{
+	return UT_TRUE;
+}
+
+UT_Bool fp_FieldStartRun::canBreakBefore(void) const
+{
+	return UT_TRUE;
+}
+
+UT_Bool fp_FieldStartRun::letPointPass(void) const
+{
+	return UT_TRUE;
+}
+
+UT_Bool	fp_FieldStartRun::findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 /* iMaxLeftWidth */, fp_RunSplitInfo& /* si */, UT_Bool /* bForce */)
+{
+	return UT_FALSE;
+}
+
+void fp_FieldStartRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL)
+{
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	
+	pos = m_pBL->getPosition() + m_iOffsetFirst;
+	bBOL = UT_FALSE;
+	bEOL = UT_FALSE;
+}
+
+void fp_FieldStartRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height)
+{
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+}
+
+void fp_FieldStartRun::_clearScreen(UT_Bool /* bFullLineHeightRect */)
+{
+	UT_ASSERT(!m_bDirty);
+	UT_ASSERT(m_pG->queryProperties(GR_Graphics::DGP_SCREEN));
+}
+
+void fp_FieldStartRun::_draw(dg_DrawArgs* pDA)
+{
+	UT_ASSERT(pDA->pG == m_pG);
+}
+
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+
+fp_FieldEndRun::fp_FieldEndRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_FIELDENDRUN)
+{
+        lookupProperties();
+}
+
+void fp_FieldEndRun::lookupProperties(void)
+{
+        m_pBL->getField(m_iOffsetFirst,m_pField);
+	m_iWidth = 0;
+}
+
+UT_Bool fp_FieldEndRun::canContainPoint(void) const
+{
+	return UT_FALSE;
+}
+
+UT_uint32 fp_FieldEndRun::containsOffset(UT_uint32 /* iOffset */)
+{
+	return FP_RUN_NOT;
+}
+
+UT_Bool fp_FieldEndRun::canBreakAfter(void) const
+{
+	return UT_TRUE;
+}
+
+UT_Bool fp_FieldEndRun::canBreakBefore(void) const
+{
+	return UT_TRUE;
+}
+
+UT_Bool fp_FieldEndRun::letPointPass(void) const
+{
+	return UT_TRUE;
+}
+
+UT_Bool	fp_FieldEndRun::findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 /* iMaxLeftWidth */, fp_RunSplitInfo& /* si */, UT_Bool /* bForce */)
+{
+	return UT_FALSE;
+}
+
+void fp_FieldEndRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL)
+{
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	
+	pos = m_pBL->getPosition() + m_iOffsetFirst;
+	bBOL = UT_FALSE;
+	bEOL = UT_FALSE;
+}
+
+void fp_FieldEndRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height)
+{
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+}
+
+void fp_FieldEndRun::_clearScreen(UT_Bool /* bFullLineHeightRect */)
+{
+	UT_ASSERT(!m_bDirty);
+	UT_ASSERT(m_pG->queryProperties(GR_Graphics::DGP_SCREEN));
+}
+
+void fp_FieldEndRun::_draw(dg_DrawArgs* pDA)
+{
+	UT_ASSERT(pDA->pG == m_pG);
+}
+
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
@@ -626,6 +772,7 @@ fp_ImageRun::~fp_ImageRun()
 
 void fp_ImageRun::lookupProperties(void)
 {
+        m_pBL->getField(m_iOffsetFirst,m_pField);
 	if (m_pImage)
 	{
 		m_iWidth = m_pImage->getDisplayWidth();
@@ -875,7 +1022,11 @@ void fp_FieldRun::lookupProperties(void)
 	
 	PD_Document * pDoc = m_pBL->getDocument();
 	m_pBL->getAttrProp(&pBlockAP);
-
+        m_pBL->getField(m_iOffsetFirst+1,m_pField); // Next Pos?
+	if(m_pField != NULL)
+	{
+	         m_pField->setBlock(m_pBL);
+	}
 	// look for fonts in this DocLayout's font cache
 	FL_DocLayout * pLayout = m_pBL->getDocLayout();
 	if(m_iFieldType == FPFIELD_list_label)
@@ -917,7 +1068,10 @@ void fp_FieldRun::lookupProperties(void)
 	{
 		m_fPosition = TEXT_POSITION_SUBSCRIPT;
 	} 
-	else m_fPosition = TEXT_POSITION_NORMAL;
+	else
+	{
+		 m_fPosition = TEXT_POSITION_NORMAL;
+	} 
 
 	pSpanAP->getAttribute((XML_Char*)"type", pszType);
 	UT_ASSERT(pszType);
@@ -933,7 +1087,8 @@ void fp_FieldRun::lookupProperties(void)
 	}
 	if( fp_FieldFmts[i].m_Tag == NULL )
 	{
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+        // probably new type of field
+        //		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
 }
 
@@ -1010,10 +1165,50 @@ void fp_FieldRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y,
 	{
 		yoff += m_iDescent /* * 3/2 */;
 	}
-
         x = xoff;
 	y = yoff;
 	height = m_iHeight;
+}
+
+UT_Bool fp_FieldRun::calculateValue(void)
+{
+  //
+  // Code for the Piece Table Fields Calculation
+  // Get size of the field from the following runs
+  //
+  //      return m_pField->update();
+  //        UT_ASSERT(m_pField);
+
+  /*        UT_sint32 count = 0;
+        fp_Run* pNext = getNext();
+	while(pNext != NULL && pNext->getField() != NULL )
+	{
+	        if(m_pField == NULL)
+		{
+		        m_pField = pNext->getField();
+		}
+	        pNext = getNext();
+		count++;
+	}
+	if( count == 0)
+	{
+	        m_iWidth = 0;
+		m_iHeight = 0;
+		m_iWidthLayoutUnits = 0;
+		m_iHeightLayoutUnits = 0;
+	}
+	else
+        {
+	        pNext = getPrev();
+	        m_iWidth = pNext->getWidth();
+		m_iHeight = pNext->getHeight();
+		m_iWidthLayoutUnits = pNext->getWidthInLayoutUnits();
+		m_iHeightLayoutUnits = pNext->getHeightInLayoutUnits();
+	}
+	if(m_pField != NULL)
+	m_pField->update(); 
+*/
+	return UT_TRUE;
 }
 
 void fp_FieldRun::_clearScreen(UT_Bool /* bFullLineHeightRect */)
@@ -1195,6 +1390,9 @@ fp_ForcedColumnBreakRun::fp_ForcedColumnBreakRun(fl_BlockLayout* pBL, GR_Graphic
 
 void fp_ForcedColumnBreakRun::lookupProperties(void)
 {
+
+        m_pBL->getField(m_iOffsetFirst,m_pField);
+
 }
 
 UT_Bool fp_ForcedColumnBreakRun::canContainPoint(void) const
@@ -1288,6 +1486,7 @@ fp_ForcedPageBreakRun::fp_ForcedPageBreakRun(fl_BlockLayout* pBL, GR_Graphics* p
 
 void fp_ForcedPageBreakRun::lookupProperties(void)
 {
+        m_pBL->getField(m_iOffsetFirst,m_pField);
 }
 
 UT_Bool fp_ForcedPageBreakRun::canContainPoint(void) const
@@ -1364,6 +1563,9 @@ void fp_ForcedPageBreakRun::_draw(dg_DrawArgs* pDA)
     _drawTextLine(pDA->xoff,pDA->yoff - m_pLine->getAscent() / 3,iLineWidth,m_pLine->getHeight(),pPageBreak);
     FREEP(pPageBreak);
 }
+
+
+
 
 
 

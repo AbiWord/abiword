@@ -45,7 +45,8 @@ public:
 									const XML_Char ** attributes, const XML_Char ** properties,
 									PT_AttrPropIndex * papiNew);
 	UT_Bool					addIfUniqueAP(PP_AttrProp * pAP, PT_AttrPropIndex * papi);
-	
+    UT_Bool                 overwriteBuf(UT_UCSChar * pBuf, UT_uint32 length, PT_BufIndex * pbi);
+
 private:
 	inline UT_uint32		_subscriptFromBufIndex(PT_BufIndex bi) const;
 	inline UT_uint32		_subscriptFromAPIndex(PT_AttrPropIndex api) const;

@@ -53,7 +53,7 @@
 #include "ap_TopRuler.h"
 #include "ap_LeftRuler.h"
 #include "ap_Prefs.h"
-
+#include "fd_Field.h"
 #include "sp_spell.h"
 
 #include "xap_EncodingManager.h"
@@ -129,6 +129,7 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 	m_bShowPara = UT_FALSE;
 	m_bCursorIsOn = UT_FALSE;
 	m_bdontSpellCheckRightNow = UT_FALSE;
+	m_bDontChangeInsPoint = UT_FALSE;
 }
 
 FV_View::~FV_View()
@@ -1088,7 +1089,8 @@ UT_Bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count, UT_Bool bForc
 			m_pDoc->beginUserAtomicGlob();
 			cmdCharDelete(UT_TRUE,count);
 		}
-
+		UT_uint32 d = (UT_uint32) text[0];
+		UT_ASSERT( d != 63);
 		bResult = m_pDoc->insertSpan(getPoint(), text, count);
 
 		if (bOverwrite)
@@ -1219,10 +1221,7 @@ UT_Bool FV_View::isPointBeforeListLabel(void)
 			if(pFRun->getFieldType() == FPFIELD_list_label)
 			        bBefore = UT_FALSE;
 		}
-		else
-		{
-		        pRun = pRun->getPrev();
-		}
+		pRun = pRun->getPrev();
 	}
 	return bBefore;
 }
@@ -5250,11 +5249,29 @@ void FV_View::_setPoint(PT_DocPosition pt, UT_Bool bEOL)
 {
 	UT_ASSERT(bEOL == UT_TRUE || bEOL == UT_FALSE);
 
+	if(m_bDontChangeInsPoint == UT_TRUE)
+	       return;
 	m_iInsPoint = pt;
 	m_bPointEOL = bEOL;
 
 	m_pLayout->considerPendingSmartQuoteCandidate();
 	_checkPendingWordForSpell();
+}
+
+void FV_View::setDontChangeInsPoint(void)
+{
+        m_bDontChangeInsPoint = UT_TRUE;
+}
+
+void FV_View::allowChangeInsPoint(void)
+{
+        m_bDontChangeInsPoint = UT_FALSE;
+}
+
+
+UT_Bool FV_View::isDontChangeInsPoint(void)
+{
+         return m_bDontChangeInsPoint;
 }
 
 void FV_View::_checkPendingWordForSpell(void)
@@ -5293,23 +5310,46 @@ UT_Bool FV_View::_charMotion(UT_Bool bForward,UT_uint32 countChars)
 	// return UT_FALSE if we ran into an end (or had an error).
 
 	PT_DocPosition posOld = m_iInsPoint;
-
+	fp_Run* pRun;
+	fl_BlockLayout* pBlock;
+	UT_sint32 x;
+	UT_sint32 y;
+	UT_uint32 uheight;
 	m_bPointEOL = UT_FALSE;
-	
-	if (bForward)
-	{
-		m_iInsPoint += countChars;
-	}
-	else
-	{
-		m_iInsPoint -= countChars;
-	}
 
+	/*
+	  we don't really care about the coords.  We're calling these
+	  to get the Run pointer
+	*/
 	PT_DocPosition posBOD;
 	PT_DocPosition posEOD;
 	UT_Bool bRes;
 
 	bRes = m_pDoc->getBounds(UT_FALSE, posBOD);
+	bRes = m_pDoc->getBounds(UT_TRUE, posEOD);
+	UT_ASSERT(bRes);
+	
+	if (bForward)
+	{
+		m_iInsPoint += countChars;
+		_findPositionCoords(m_iInsPoint-1, UT_FALSE, x, y, uheight, &pBlock, &pRun);
+		while(pRun != NULL && (pRun->isField() == UT_TRUE || pRun->getType() == FPRUN_FIELD && m_iInsPoint < posEOD))
+		{
+		        m_iInsPoint++;
+		        _findPositionCoords(m_iInsPoint, UT_FALSE, x, y, uheight, &pBlock, &pRun);
+		}
+	}
+	else
+	{
+		m_iInsPoint -= countChars;
+		_findPositionCoords(m_iInsPoint, UT_FALSE, x, y, uheight, &pBlock, &pRun);
+		while(pRun != NULL && (pRun->isField() == UT_TRUE || pRun->getType() == FPRUN_FIELD) && m_iInsPoint > posBOD)
+		{
+		        m_iInsPoint--;
+		        _findPositionCoords(m_iInsPoint-1, UT_FALSE, x, y, uheight, &pBlock, &pRun);
+		}
+	}
+
 	UT_ASSERT(bRes);
 
 	if ((UT_sint32) m_iInsPoint < (UT_sint32) posBOD)
@@ -5326,9 +5366,6 @@ UT_Bool FV_View::_charMotion(UT_Bool bForward,UT_uint32 countChars)
 		
 		return UT_FALSE;
 	}
-
-	bRes = m_pDoc->getBounds(UT_TRUE, posEOD);
-	UT_ASSERT(bRes);
 
 	if ((UT_sint32) m_iInsPoint > (UT_sint32) posEOD)
 	{
@@ -5372,11 +5409,21 @@ void FV_View::cmdUndo(UT_uint32 count)
 	// Signal Spell checks are unsafe 
         m_bdontSpellCheckRightNow = UT_TRUE;
 
-	m_pDoc->undoCmd(count);
+	// Turn off list updates
+	m_pDoc->disableListUpdates();
 
+	m_pDoc->undoCmd(count);
+	allowChangeInsPoint();
 	_generalUpdate();
 	
 	notifyListeners(AV_CHG_DIRTY);
+	// Move insertion point out of field run if it is in one
+	//
+	_charMotion(UT_Bool UT_TRUE, 0);
+
+	// restore updates and clean up dirty lists
+	m_pDoc->enableListUpdates();
+	m_pDoc->updateDirtyLists();
 
 	// Signal Spell checks are safe again
         m_bdontSpellCheckRightNow = UT_FALSE;
@@ -5445,9 +5492,16 @@ void FV_View::cmdCut(void)
 		// clipboard does nothing if there is no selection
 		return;
 	}
-	
+	//
+	// Disable list updates until after we've finished
+	//
+	m_pDoc->disableListUpdates();
 	cmdCopy();
 	_deleteSelection();
+
+	// restore updates and clean up dirty lists
+	m_pDoc->enableListUpdates();
+	m_pDoc->updateDirtyLists();
 
 	_generalUpdate();
 	
@@ -5705,20 +5759,29 @@ UT_Error FV_View::cmdInsertField(const char* szName)
 		"type", szName,
 		NULL, NULL
 	};
-
+	UT_DEBUGMSG(("SEVIOR: field type= %s \n",szName));
+	fl_BlockLayout* pBL = _findBlockAtPosition(getPoint());
+	fd_Field * pField = NULL;
 	if (!isSelectionEmpty())
 	{
 		m_pDoc->beginUserAtomicGlob();
 		_deleteSelection();
-		bResult = m_pDoc->insertObject(getPoint(), PTO_Field, attributes, NULL);
+		bResult = m_pDoc->insertObject(getPoint(), PTO_Field, attributes, NULL,&pField);
+		if(pField != NULL)
+		{
+		        pField->update();
+		}
 		m_pDoc->endUserAtomicGlob();
 	}
 	else
 	{
 		_eraseInsertionPoint();
-		bResult = m_pDoc->insertObject(getPoint(), PTO_Field, attributes, NULL);
+		bResult = m_pDoc->insertObject(getPoint(), PTO_Field, attributes, NULL, &pField);
+		if(pField != NULL)
+		{
+		        pField->update();
+		}
 	}
-
 	_generalUpdate();
 
 	if (!_ensureThatInsertionPointIsOnScreen())

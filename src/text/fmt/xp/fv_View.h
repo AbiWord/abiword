@@ -170,6 +170,11 @@ public:
 	UT_Bool cmdStopList(void);
 	void    changeListStyle( fl_AutoNum * pAuto,  List_Type lType, UT_uint32 startv, XML_Char * pszDelim, XML_Char * pszDecimal, XML_Char * pszFormat, float Aligm, float Indent);
 
+        void    setDontChangeInsPoint(void);
+        void    allowChangeInsPoint(void);
+        UT_Bool isDontChangeInsPoint(void);
+
+
 	UT_Bool setCharFormat(const XML_Char * properties[]);
 	UT_Bool getCharFormat(const XML_Char *** properties,UT_Bool bExpandStyles=UT_TRUE);
 
@@ -177,6 +182,8 @@ public:
 	UT_Bool getStyle(const XML_Char ** style);
 
 	UT_Bool dontSpellCheckRightNow(void);
+
+
 
 	void insertParagraphBreak(void);
 	void insertParagraphBreaknoListUpdate(void);
@@ -352,7 +359,7 @@ protected:
 
 	UT_Bool				m_bPointVisible;
 	UT_Bool				m_bPointEOL;
-
+	UT_Bool                         m_bDontChangeInsPoint;
 	FL_DocLayout*		m_pLayout;
 	PD_Document*		m_pDoc;
 	GR_Graphics*		m_pG;

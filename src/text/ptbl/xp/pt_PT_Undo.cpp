@@ -44,7 +44,7 @@
 #include "px_CR_Strux.h"
 #include "px_CR_StruxChange.h"
 #include "px_CR_Glob.h"
-
+#include "fd_Field.h"
 /****************************************************************/
 /****************************************************************/
 
@@ -78,9 +78,9 @@ UT_Bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, UT_Bool bUndo)
 			pf_Frag_Strux * pfs = NULL;
 			UT_Bool bFoundStrux = _getStruxFromFrag(pf,&pfs);
 			UT_ASSERT(bFoundStrux);
-
 			if (!_insertSpan(pf,pcrSpan->getBufIndex(),fragOffset,
-							 pcrSpan->getLength(),pcrSpan->getIndexAP()))
+							 pcrSpan->getLength(),pcrSpan->getIndexAP(),
+                             pcrSpan->getField()))
 				return UT_FALSE;
 
 			DONE();
@@ -243,12 +243,26 @@ UT_Bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, UT_Bool bUndo)
 			pf_Frag_Strux * pfs = NULL;
 			UT_Bool bFoundStrux = _getStruxFromFrag(pf,&pfs);
 			UT_ASSERT(bFoundStrux);
-
-			if (!_insertObject(pf,fragOffset,pcrObject->getObjectType(),pcrObject->getIndexAP()))
+            pf_Frag_Object * pfo = NULL;
+			if (!_insertObject(pf,fragOffset,pcrObject->getObjectType(),
+                               pcrObject->getIndexAP(),pfo))
 				return UT_FALSE;
-
-			DONE();
+            UT_ASSERT(pfo);
+            
+            // need to set field pointers to values of new pointer
+            // as old field doesn't exist
+            pf = pfo->getNext();
+            while (pf&&pf->getType()==pf_Frag::PFT_Text&&
+                   pf->getField())
+            {
+                pf_Frag_Text * pft = 
+                    static_cast<pf_Frag_Text *>(pf);
+                pft->setField(pfo->getField());
+                pf = pft->getNext();
+            }
+			DONE();            
 			m_pDocument->notifyListeners(pfs,pcr);
+            // don't update field until all of changes have been made
 		}
 		return UT_TRUE;
 		
@@ -453,7 +467,10 @@ UT_Bool pt_PieceTable::undoCmd(void)
 			break;
 
 	} while (m_history.getUndo(&pcr));
-
+	UT_uint32 recnt = m_history.getUndoPos();
+        m_pDocument->updateFields();
+	UT_uint32 recnta = m_history.getUndoPos();
+	UT_DEBUGMSG(("SEVIOR: history pos before update = %d history pos after update = %d \n",recnt,recnta));
 	return UT_TRUE;
 }
 

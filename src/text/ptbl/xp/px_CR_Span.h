@@ -24,6 +24,8 @@
 #include "ut_types.h"
 #include "px_ChangeRecord.h"
 
+class fd_Field;
+
 // PX_ChangeRecord_Span describes an insertSpan or
 // deleteSpan change made to the document.
 // This description should be sufficient to allow undo to
@@ -50,7 +52,8 @@ public:
 						 PT_AttrPropIndex indexAP,
 						 PT_BufIndex bufIndex,
 						 UT_uint32 length,
-						 PT_BlockOffset blockOffset);
+						 PT_BlockOffset blockOffset,
+                         fd_Field * pField);
 	~PX_ChangeRecord_Span();
 
 	virtual PX_ChangeRecord * reverse(void) const;
@@ -59,11 +62,12 @@ public:
 	PT_BufIndex				getBufIndex(void) const;
 	void					coalesce(const PX_ChangeRecord_Span * pcr);
 	PT_BlockOffset			getBlockOffset(void) const;
-	
+	fd_Field *                 getField(void) const {return m_pField;};
 protected:
 	PT_BufIndex				m_bufIndex;	/* bufIndex to our text */
 	UT_uint32				m_length;	/* length of our text */
 	PT_BlockOffset			m_blockOffset; /* offset of span from beginning of paragraph */
+    fd_Field *              m_pField;
 };
 
 #endif /* PX_CHANGERECORD_SPAN_H */

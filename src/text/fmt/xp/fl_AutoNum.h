@@ -48,7 +48,7 @@ public:
 	void					setDelim(const XML_Char * pszDelim);
 	const XML_Char *                        getDelim(void);
 	void					setDecimal(const XML_Char * pszDecimal);
-
+	UT_Bool                                 isDirty(void);
 	UT_uint16				getStartValue(void) { return m_iStartValue; }
 
 	UT_uint32				getStartValue32(void);
@@ -103,6 +103,7 @@ protected:
 	UT_uint16				m_iAsciiOffset;
 	UT_Bool					m_bUpdatingItems;
 	UT_Bool                                 m_bUpdate;
+	UT_Bool                                 m_bDirty;
 	UT_sint32				m_ioffset;
 	XML_Char                                m_pszDecimal[80];
 	XML_Char                                m_pszDelim[80];

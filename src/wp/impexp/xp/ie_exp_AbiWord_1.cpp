@@ -32,6 +32,7 @@
 #include "px_CR_Strux.h"
 #include "xap_App.h"
 #include "pd_Style.h"
+#include "fd_Field.h"
 #include "xap_EncodingManager.h"
 #include "fl_AutoNum.h"
 
@@ -114,6 +115,7 @@ protected:
 	void				_closeSection(void);
 	void				_closeBlock(void);
 	void				_closeSpan(void);
+	void				_closeField(void);
 	void				_openSpan(PT_AttrPropIndex apiSpan);
 	void				_openTag(const char * szPrefix, const char * szSuffix,
 								 UT_Bool bNewLineAfter, PT_AttrPropIndex api);
@@ -128,6 +130,7 @@ protected:
 	UT_Bool				m_bInBlock;
 	UT_Bool				m_bInSpan;
 	PT_AttrPropIndex	m_apiLastSpan;
+    fd_Field *             m_pCurrentField;
 };
 
 void s_AbiWord_1_Listener::_closeSection(void)
@@ -157,6 +160,15 @@ void s_AbiWord_1_Listener::_closeSpan(void)
 
 	m_pie->write("</c>");
 	m_bInSpan = UT_FALSE;
+	return;
+}
+void s_AbiWord_1_Listener::_closeField(void)
+{
+	if (!m_pCurrentField)
+		return;
+    _closeSpan();
+	m_pie->write("</field>");
+    m_pCurrentField = NULL;
 	return;
 }
 
@@ -384,7 +396,7 @@ s_AbiWord_1_Listener::s_AbiWord_1_Listener(PD_Document * pDocument,
 	m_bInBlock = UT_FALSE;
 	m_bInSpan = UT_FALSE;
 	m_apiLastSpan = 0;
-
+    m_pCurrentField = 0;
 	// Be nice to XML apps.  See the notes in _outputData() for more 
 	// details on the charset used in our documents.  By not declaring 
 	// any encoding, XML assumes we're using UTF-8.  Note that US-ASCII 
@@ -513,7 +525,10 @@ UT_Bool s_AbiWord_1_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 	case PX_ChangeRecord::PXT_InsertSpan:
 		{
 			const PX_ChangeRecord_Span * pcrs = static_cast<const PX_ChangeRecord_Span *> (pcr);
-
+            if (pcrs->getField()!=m_pCurrentField)
+            {
+                _closeField();
+            }
 			PT_AttrPropIndex api = pcr->getIndexAP();
 			_openSpan(api);
 			
@@ -531,14 +546,19 @@ UT_Bool s_AbiWord_1_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 			{
 			case PTO_Image:
 				_closeSpan();
+                _closeField();
 				_openTag("image","/",UT_FALSE,api);
 				return UT_TRUE;
 
 			case PTO_Field:
-				_closeSpan();
-				_openTag("field","/",UT_FALSE,api);
-				return UT_TRUE;
-
+                {
+                    _closeSpan();
+                    _closeField();
+                    _openTag("field","",UT_FALSE,api);
+                    m_pCurrentField = pcro->getField(); 
+                    UT_ASSERT(m_pCurrentField);
+                    return UT_TRUE;
+                }
 			default:
 				UT_ASSERT(0);
 				return UT_FALSE;
@@ -567,6 +587,7 @@ UT_Bool s_AbiWord_1_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 	case PTX_Section:
 		{
 			_closeSpan();
+            _closeField();
 			_closeBlock();
 			_closeSection();
 			_openTag("section","",UT_TRUE,pcr->getIndexAP());
@@ -577,6 +598,7 @@ UT_Bool s_AbiWord_1_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 	case PTX_Block:
 		{
 			_closeSpan();
+            _closeField();
 			_closeBlock();
 			_openTag("p","",UT_FALSE,pcr->getIndexAP());
 			m_bInBlock = UT_TRUE;

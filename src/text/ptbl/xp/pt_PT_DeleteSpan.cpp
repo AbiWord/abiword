@@ -100,7 +100,7 @@ UT_Bool pt_PieceTable::_deleteSpan(pf_Frag_Text * pft, UT_uint32 fragOffset,
 	UT_uint32 startTail = fragOffset + length;
 	UT_uint32 lenTail = pft->getLength() - startTail;
 	PT_BufIndex biTail = m_varset.getBufIndex(pft->getBufIndex(),startTail);
-	pf_Frag_Text * pftTail = new pf_Frag_Text(this,biTail,lenTail,pft->getIndexAP());
+	pf_Frag_Text * pftTail = new pf_Frag_Text(this,biTail,lenTail,pft->getIndexAP(),pft->getField());
 	UT_ASSERT(pftTail);
 	pft->changeLength(fragOffset);
 	m_fragments.insertFrag(pft,pftTail);
@@ -139,7 +139,7 @@ UT_Bool pt_PieceTable::_deleteSpanWithNotify(PT_DocPosition dpos,
 		= new PX_ChangeRecord_Span(PX_ChangeRecord::PXT_DeleteSpan,
 								   dpos, pft->getIndexAP(),
 								   m_varset.getBufIndex(pft->getBufIndex(),fragOffset),
-								   length,blockOffset);
+								   length,blockOffset,pft->getField());
 	UT_ASSERT(pcr);
 
 	UT_Bool bResult = _deleteSpan(pft,fragOffset,pft->getBufIndex(),length,ppfEnd,pfragOffsetEnd);
@@ -155,6 +155,46 @@ UT_Bool pt_PieceTable::_deleteSpanWithNotify(PT_DocPosition dpos,
 		m_history.addChangeRecord(pcr);
 		m_pDocument->notifyListeners(pfs,pcr);
 	}
+
+	return bResult;
+}
+
+
+UT_Bool pt_PieceTable::_deleteSpan_norec(PT_DocPosition dpos,
+											 pf_Frag_Text * pft, UT_uint32 fragOffset,
+											 UT_uint32 length,
+											 pf_Frag_Strux * pfs,
+											 pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd)
+{
+	// create a change record for this change and put it in the history.
+
+	UT_ASSERT(pfs);
+	
+	if (length == 0)					// TODO decide if this is an error.
+	{
+		UT_DEBUGMSG(("_deleteSpanWithNotify: length==0\n"));
+		SETP(ppfEnd, pft->getNext());
+		SETP(pfragOffsetEnd, 0);
+		return UT_TRUE;
+	}
+
+	// we do this before the actual change because various fields that
+	// we need are blown away during the delete.  we then notify all
+	// listeners of the change.
+
+	PT_BlockOffset blockOffset = _computeBlockOffset(pfs,pft) + fragOffset;
+		
+	PX_ChangeRecord_Span * pcr
+		= new PX_ChangeRecord_Span(PX_ChangeRecord::PXT_DeleteSpan,
+								   dpos, pft->getIndexAP(),
+								   m_varset.getBufIndex(pft->getBufIndex(),fragOffset),
+								   length,blockOffset,pft->getField());
+	UT_ASSERT(pcr);
+
+	UT_Bool bResult = _deleteSpan(pft,fragOffset,pft->getBufIndex(),length,ppfEnd,pfragOffsetEnd);
+
+	m_pDocument->notifyListeners(pfs,pcr);
+	delete pcr;
 
 	return bResult;
 }
@@ -252,6 +292,8 @@ UT_Bool pt_PieceTable::_tweakDeleteSpanOnce(PT_DocPosition & dpos1,
 	UT_Bool bFoundStrux = _getStruxFromPosition(dpos1,&pfsContainer);
 	UT_ASSERT(bFoundStrux);
 
+    _tweakFieldSpan(dpos1,dpos2);
+
 	switch (pfsContainer->getStruxType())
 	{
 	default:
@@ -302,7 +344,7 @@ UT_Bool pt_PieceTable::_tweakDeleteSpanOnce(PT_DocPosition & dpos1,
 			break;
 		}
 	}
-
+    
 	if (fragOffset_First == 0 && fragOffset_End == 0 && pf_First != pf_End)
 	{
 		pf_Frag * pf_Before = pf_First->getPrev();
@@ -516,6 +558,101 @@ UT_Bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 	return UT_TRUE;
 }
 
+
+UT_Bool pt_PieceTable::_deleteComplexSpan_norec(PT_DocPosition dpos1,
+										  PT_DocPosition dpos2)
+{
+	pf_Frag * pfNewEnd;
+	UT_uint32 fragOffsetNewEnd;
+
+	pf_Frag * pf_First;
+	pf_Frag * pf_End;
+	PT_BlockOffset fragOffset_First;
+	PT_BlockOffset fragOffset_End;
+	
+	UT_Bool bFound = getFragsFromPositions(dpos1,dpos2,&pf_First,&fragOffset_First,&pf_End,&fragOffset_End);
+	UT_ASSERT(bFound);
+
+	pf_Frag_Strux * pfsContainer = NULL;
+	UT_Bool bFoundStrux = _getStruxFromPosition(dpos1,&pfsContainer);
+	UT_ASSERT(bFoundStrux);
+
+	// loop to delete the amount requested, one text fragment at a time.
+	// if we encounter any non-text fragments along the way, we delete
+	// them too.  that is, we implicitly delete Strux and Objects here.
+
+	UT_uint32 length = dpos2 - dpos1;
+	while (length > 0)
+	{
+		UT_uint32 lengthInFrag = pf_First->getLength() - fragOffset_First;
+		UT_uint32 lengthThisStep = UT_MIN(lengthInFrag, length);
+		
+		switch (pf_First->getType())
+		{
+		case pf_Frag::PFT_EndOfDoc:
+		default:
+			UT_ASSERT(0);
+			return UT_FALSE;
+			
+		case pf_Frag::PFT_Strux:
+			{
+				pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *> (pf_First);
+				
+				UT_Bool bResult = _deleteStrux_norec(dpos1,pfs,
+														 &pfNewEnd,&fragOffsetNewEnd);
+				UT_ASSERT(bResult);
+				// we do not update pfsContainer because we just deleted pfs.
+			}
+			break;
+
+		case pf_Frag::PFT_Text:
+			{
+				UT_Bool bResult
+					= _deleteSpan_norec(dpos1,static_cast<pf_Frag_Text *>(pf_First),
+											fragOffset_First,lengthThisStep,
+											pfsContainer,&pfNewEnd,&fragOffsetNewEnd);
+				UT_ASSERT(bResult);
+			}
+			break;
+
+		case pf_Frag::PFT_Object:
+			{
+				UT_Bool bResult
+					= _deleteObject_norec(dpos1,static_cast<pf_Frag_Object *>(pf_First),
+											  fragOffset_First,lengthThisStep,
+											  pfsContainer,&pfNewEnd,&fragOffsetNewEnd);
+				UT_ASSERT(bResult);
+			}
+			break;
+
+		case pf_Frag::PFT_FmtMark:
+			// we already took care of these...
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			break;
+			
+		}
+
+		// we do not change dpos1, since we are deleting stuff, but we
+		// do decrement the length-remaining.
+		// dpos2 becomes bogus at this point.
+
+		length -= lengthThisStep;
+		
+		// since _delete{*}WithNotify(), can delete pf_First, mess with the
+		// fragment list, and does some aggressive coalescing of
+		// fragments, we cannot just do a pf_First->getNext() here.
+		// to advance to the next fragment, we use the *NewEnd variables
+		// that each of the _delete routines gave us.
+
+		pf_First = pfNewEnd;
+		if (!pf_First)
+			length = 0;
+		fragOffset_First = fragOffsetNewEnd;
+	}
+
+	return UT_TRUE;
+}
+
 UT_Bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 								  PT_DocPosition dpos2,
 								  PP_AttrProp *p_AttrProp_Before)
@@ -623,3 +760,96 @@ UT_Bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 	return bSuccess;
 }
 
+// need a special delete for a field update because otherwise
+// the whole field object would be deleted by _tweakDeleteSpan
+UT_Bool pt_PieceTable::deleteFieldFrag(pf_Frag * pf)
+{
+	
+
+	UT_ASSERT(m_pts==PTS_Editing);
+
+	UT_Bool bSuccess = UT_TRUE;
+	UT_Stack stDelayStruxDelete;
+        UT_uint32 recnt = m_history.getUndoPos();
+
+	PT_DocPosition dpos1 = getFragPosition(pf);
+        UT_ASSERT(dpos1);
+        PT_DocPosition dpos2 = dpos1 + pf->getLength();
+    
+    
+	//  If the delete is sure to be within a fragment, we don't 
+        //  need to worry about much of the bookkeeping of a complex
+        //  delete.
+        bSuccess = _deleteComplexSpan_norec(dpos1, dpos2);
+        UT_uint32 recnta = m_history.getUndoPos();
+	UT_DEBUGMSG(("SEVIOR: Change records after _deleteComplexSpan_norec before = %d after %d \n",recnt,recnta));
+	if(recnt != recnta)
+	  {
+	    UT_DEBUGMSG(("SEVIOR: Change records after _deleteComplexSpan_norec before = %d after %d \n",recnt,recnta));
+	    UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	  }
+	return bSuccess;
+}
+
+void pt_PieceTable::_tweakFieldSpan(PT_DocPosition & dpos1, 
+                                    PT_DocPosition & dpos2) const
+{
+	//  Our job is to adjust the end positions of the delete
+	//  operating to delete those structural object that the 
+	//  user will expect to have deleted, even if the dpositions
+	//  aren't quite right to encompass those.
+
+	pf_Frag * pf_First;
+	pf_Frag * pf_End;
+	pf_Frag * pf_Other;
+	PT_BlockOffset fragOffset_First;
+	PT_BlockOffset fragOffset_End;
+	
+	UT_Bool bFound = getFragsFromPositions(dpos1,dpos2,&pf_First,&fragOffset_First,&pf_End,&fragOffset_End);
+	UT_ASSERT(bFound);
+
+	pf_Frag_Strux * pfsContainer = NULL;
+	UT_Bool bFoundStrux = _getStruxFromPosition(dpos1,&pfsContainer);
+	UT_ASSERT(bFoundStrux);
+
+    // if start in middle of field widen to include object
+    if ((pf_First->getType() == pf_Frag::PFT_Text)&&
+        (static_cast<pf_Frag_Text *>(pf_First)->getField()))
+    {
+        pf_Frag_Text * pft = static_cast<pf_Frag_Text *>(pf_First);
+        pf_Frag_Text * pft2 = NULL;
+        // we can't delete part of a field so widen deletion to 
+        // include object at start
+        while (pft->getPrev()->getType() == pf_Frag::PFT_Text)
+        {
+            pft2 = static_cast<pf_Frag_Text *>(pft->getPrev());
+            UT_ASSERT(pft->getField() == pft2->getField());
+            pft = pft2;            
+        }
+        UT_ASSERT(pft->getPrev()->getType() == pf_Frag::PFT_Object);
+        pf_Frag_Object *pfo = 
+            static_cast<pf_Frag_Object *>(pft->getPrev());
+        UT_ASSERT(pfo->getObjectType()==PTO_Field);
+        UT_ASSERT(pfo->getField()==pft->getField());
+        dpos1 = getFragPosition(pfo);
+    }
+    // if end in middle of field widen to include whole Frag_Text
+    if (((pf_End->getType() == pf_Frag::PFT_Text)&&
+         (pf_End)->getField())/*||
+        ((pf_End->getType() == pf_Frag::PFT_Object
+          )&&
+         (static_cast<pf_Frag_Object *>(pf_End)
+         ->getObjectType()==PTO_Field))*/)
+    {
+        fd_Field * pField = pf_End->getField();
+        UT_ASSERT(pField);
+        pf_Other = pf_End->getNext();
+        UT_ASSERT(pf_Other);
+        while (pf_Other->getField()==pField)
+        {
+            pf_Other = pf_Other->getNext();
+            UT_ASSERT(pf_Other);
+        }
+        dpos2 = getFragPosition(pf_Other);
+    }
+}

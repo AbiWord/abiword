@@ -64,6 +64,7 @@ void px_ChangeHistory::_invalidateRedo(void)
 		m_savePosition = -1;
 }
 
+        
 UT_Bool px_ChangeHistory::addChangeRecord(PX_ChangeRecord * pcr)
 {
 	// add a change record to the history.
@@ -86,6 +87,11 @@ UT_Bool px_ChangeHistory::canDo(UT_Bool bUndo) const
 UT_sint32 px_ChangeHistory::getSavePosition(void) const
 {
 	return m_savePosition;
+}
+
+UT_uint32 px_ChangeHistory::getUndoPos(void)
+{
+        return m_undoPosition;
 }
 
 void px_ChangeHistory::setSavePosition(UT_sint32 savePosition)
@@ -186,3 +192,5 @@ UT_Bool px_ChangeHistory::isDirty(void) const
 {
 	return (m_savePosition != (UT_sint32) m_undoPosition);
 }
+
+

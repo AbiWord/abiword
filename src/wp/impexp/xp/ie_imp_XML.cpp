@@ -173,6 +173,10 @@ Cleanup:
 		XML_ParserFree(parser);
 	_closeFile();
 #endif /* HAVE_GNOME_XML2 */
+	if(m_error ==  UT_IE_BOGUSDOCUMENT)
+	  {
+	    UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	  }
 	return m_error;
 }
 
@@ -219,6 +223,14 @@ void IE_Imp_XML::_charData(const XML_Char *s, int len)
 			return;
 		}
 		
+     case _PS_Field:
+         {
+            // discard contents of the field - force recalculation
+            // this gives us a higher chance of correcting fields 
+            // with the wrong values
+            return;
+        }
+ 	
 	case _PS_Block:
 		{
 			UT_ASSERT(sizeof(XML_Char) == sizeof(UT_Byte));

@@ -44,7 +44,9 @@ class PP_AttrProp;
 class pf_Frag_Strux;
 class PX_ChangeRecord;
 class PD_Style;
+class fd_Field;
 class fl_AutoNum;
+
 
 #ifdef PT_TEST
 #include "ut_test.h"
@@ -82,6 +84,10 @@ public:
 										 PTObjectType pto,
 										 const XML_Char ** attributes,
 										 const XML_Char ** properties);
+	UT_Bool					insertObject(PT_DocPosition dpos,
+										 PTObjectType pto,
+										 const XML_Char ** attributes,
+										 const XML_Char ** properties, fd_Field ** pField );
 
 	UT_Bool					insertSpan(PT_DocPosition dpos,
 									   const UT_UCSChar * p,
@@ -169,6 +175,12 @@ public:
 
 	const char *                            getFileName() { return m_szFilename; }
 	UT_uint32                               getLastType() { return m_lastSavedAsType; }
+        UT_Bool                 updateFields(void);
+        UT_Bool                 getField(PL_StruxDocHandle sdh, 
+					 UT_uint32 offset,
+                                     fd_Field * &pField);
+	void                    setDontChangeInsPoint(void);
+	void                    allowChangeInsPoint(void);
 	
 	// List Functions
 	fl_AutoNum *    getListByID(UT_uint32 id) const;
@@ -183,6 +195,7 @@ public:
 	void            StopList(PL_StruxDocHandle sdh);
 	void            disableListUpdates(void);
 	void            enableListUpdates(void);
+	void            updateDirtyLists(void);
 #ifdef PT_TEST
 	void					__dump(FILE * fp) const;
 #endif

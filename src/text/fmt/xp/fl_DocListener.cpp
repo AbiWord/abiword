@@ -517,6 +517,28 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		pBL->StopList();
 		goto finish_up;
 	}
+	case PX_ChangeRecord::PXT_DontChangeInsPoint:
+	{
+		FV_View* pView = m_pLayout->getView();
+		pView->setDontChangeInsPoint();
+		goto finish_up;
+	}
+	case PX_ChangeRecord::PXT_AllowChangeInsPoint:
+	{
+		FV_View* pView = m_pLayout->getView();
+		pView->allowChangeInsPoint();
+		goto finish_up;
+	}
+	case PX_ChangeRecord::PXT_UpdateField:
+	{
+		fl_Layout * pL = (fl_Layout *)sfh;
+		UT_ASSERT(pL->getType() == PTX_Block);
+		fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
+		pBL->format();
+		FV_View* pView = m_pLayout->getView();
+		pView->updateScreen();
+		goto finish_up;
+	}
 	default:
 		UT_ASSERT(0);
 		bResult = UT_FALSE;
