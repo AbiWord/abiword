@@ -3835,7 +3835,7 @@ Defun1(delEOW)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-	pView->delTo(FV_DOCPOS_EOW_SELECT);
+	pView->delTo(FV_DOCPOS_EOW_MOVE);
 	return true;
 }
 
