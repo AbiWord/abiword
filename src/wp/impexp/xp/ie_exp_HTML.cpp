@@ -1390,16 +1390,19 @@ void s_HTML_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 		default:
 			if (*pData > 0x007f)
 			{
+#ifdef IE_EXP_HTML_UTF8_OPTIONAL
+				// "try_nativeToU(0xa1) == 0xa1" looks dodgy to me (fjf)
 				if(XAP_EncodingManager::get_instance()->isUnicodeLocale() || 
 				   (XAP_EncodingManager::get_instance()->try_nativeToU(0xa1) == 0xa1))
-
 				{
+#endif /* IE_EXP_HTML_UTF8_OPTIONAL */
 					XML_Char * pszUTF8 = UT_encodeUTF8char(*pData++);
 					while (*pszUTF8)
 					{
 						sBuf += (char)*pszUTF8;
 						pszUTF8++;
 					}
+#ifdef IE_EXP_HTML_UTF8_OPTIONAL
 				}
 				else
 				{
@@ -1424,6 +1427,7 @@ void s_HTML_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 						pData++;
 					}
 				}
+#endif /* IE_EXP_HTML_UTF8_OPTIONAL */
 			}
 			else
 			{
