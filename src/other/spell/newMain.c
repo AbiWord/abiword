@@ -1,6 +1,8 @@
+
 #include <stdio.h>
 #include "config.h"
 #include "ispell.h"
+#include "sp_spell.h"
 
 #ifndef HASHPATH
 #define HASHPATH "/home/davet/ispell-install/lib"
@@ -36,17 +38,12 @@ struct strchartype 		*chartypes;  /* String character type collection */
 /***************************************************************************/
 
 
-
-
-
-void myfree (ptr)
-void*  ptr;
+void myfree (void *ptr)
 {
-    free (ptr);
+    free(ptr);
 }
 
-void *mymalloc (size)
-unsigned int    size;
+void *mymalloc (unsigned int size)
 {
     return (void *) malloc (size);
 }
@@ -55,7 +52,6 @@ unsigned int    size;
 
 int SpellCheckInit(char *hashname)
 {
-
 	if (linit(hashname) < 0)
 	{
 		printf("Couldn't load the hash table (dictionary)\n");
@@ -132,6 +128,13 @@ int SpellCheckWord(char *word)
 }
 
 
+#if 0
+
+/*
+  I'm removing this main() since we don't really need it for anything
+  but test purposes.		-- EWS
+*/
+
 /********************************************************************
 
 	To use the Ispell checker at this stage, the following two calls
@@ -191,4 +194,4 @@ char *argv[];
 
 }
 
-
+#endif

@@ -21,7 +21,7 @@
 ABI_DEPTH=..
 include $(ABI_DEPTH)/config/abi_defs.mk
 
-DIRS=		expat
+DIRS=		expat spell
 
 include $(ABI_DEPTH)/config/abi_rules.mk
 

@@ -49,11 +49,37 @@ static char Rcs_Id[] =
 
 /*
  * $Log$
- * Revision 1.1  1998/12/28 18:04:43  davet
- * Spell checker code stripped from ispell.  At this point, there are
- * two external routines...  the Init routine, and a check-a-word routine
- * which returns a boolean value, and takes a 16 bit char string.
- * The code resembles the ispell code as much as possible still.
+ * Revision 1.2  1998/12/28 22:16:22  eric
+ * These changes begin to incorporate the spell checker into AbiWord.  Most
+ * of this is a hack.
+ *
+ * 1.  added other/spell to the -I list in config/abi_defs
+ * 2.  replaced other/spell/Makefile with one which is more like
+ * 	our build system.
+ * 3.  added other/spell to other/Makefile so that the build will now
+ * 	dive down and build the spell check library.
+ * 4.  added the AbiSpell library to the Makefiles in wp/main
+ * 5.  added a call to SpellCheckInit in wp/main/unix/UnixMain.cpp.
+ * 	This call is a HACK and should be replaced with something
+ * 	proper later.
+ * 6.  added code to fv_View.cpp as follows:
+ * 	whenever you double-click on a word, the spell checker
+ * 	verifies that word and prints its status to stdout.
+ *
+ * Caveats:
+ * 1.  This will break the Windows build.  I'm going to work on fixing it
+ * 	now.
+ * 2.  This only works if your dictionary is in /usr/lib/ispell/american.hash.
+ * 	The dictionary location is currently hard-coded.  This will be
+ * 	fixed as well.
+ *
+ * Anyway, such as it is, it works.
+ *
+ * 2.  This only works if your dictionary is in /usr/lib/ispell/american.hash.
+ * 	The dictionary location is currently hard-coded.  This will be
+ * 	fixed as well.
+ *
+ * Anyway, such as it is, it works.
  *
  * Revision 1.1  1998/12/28 18:04:43  davet
  * Spell checker code stripped from ispell.  At this point, there are
@@ -222,7 +248,7 @@ static void pfx_list_chk (word, ucword, len, optflags, sfxopts, ind,
 
 #if 0 /* DELETE_ME */
 		if (cflag)
-		    if ((dent = lookup (tword, 1)) != NULL)
+		    flagpr (tword, BITTOCHAR (flent->flagbit), flent->stripl,
 		      flent->affl, -1, 0);
 		else 
 #endif /* DELETE_ME */
@@ -247,7 +273,7 @@ static void pfx_list_chk (word, ucword, len, optflags, sfxopts, ind,
 			    }
 #if 0 /* Capitalization handler 12/98 */
 			(void) ins_root_cap (tword2, word,
-		else if ((dent = lookup (tword, 1)) != NULL
+			  flent->stripl, preadd,
 			  0, (cp - tword2) - tlen - preadd,
 			  dent, flent, (struct flagent *) NULL);
 #endif /* Capitalizaition handler 12/98 */
@@ -409,7 +435,7 @@ static void suf_list_chk (word, ucword, len, ind, optflags, pfxent,
 			  BITTOCHAR (flent->flagbit), flent->affl);
 		    else
 			flagpr (tword, -1, 0, 0,
-		    if ((dent = lookup (tword, 1)) != NULL)
+			  BITTOCHAR (flent->flagbit), flent->affl);
 		    }
 		else 
 #endif /* DELETE_ME */
@@ -450,7 +476,7 @@ static void suf_list_chk (word, ucword, len, ind, optflags, pfxent,
 #if 0 /* Capitalization handler 12/98 */
 			(void) ins_root_cap (tword2, word,
 			  (optflags & FF_CROSSPRODUCT) ? pfxent->stripl : 0,
-		else if ((dent = lookup (tword, 1)) != NULL
+			  preadd,
 			  flent->stripl, (cp - tword2) - tlen - preadd,
 			  dent, pfxent, flent);
 #endif /* Capitalization handler 12/98 */

@@ -42,7 +42,7 @@
 #include "gr_Graphics.h"
 #include "gr_DrawArgs.h"
 #include "ie_types.h"
-
+#include "sp_spell.h"
 
 #define DELETEP(p)	do { if (p) delete p; } while (0)
 #define FREEP(p)	do { if (p) free(p); } while (0)
@@ -2423,6 +2423,53 @@ void FV_View::cmdSelect(UT_sint32 xPos, UT_sint32 yPos, FV_DocPos dpBeg, FV_DocP
 	m_bSelection = UT_TRUE;
 	
 	_drawSelection();
+
+	/*
+	  HACK if we're selecting a whole word, we now spell check it.
+	  This is a hack to test the spell check code.
+	  TODO remove this
+	*/
+	if ((dpBeg == FV_DOCPOS_BOW) && (dpEnd == FV_DOCPOS_EOW))
+	{
+		UT_GrowBuf pgb(1024);
+		fp_Run* pRun1;
+		UT_uint32 uheight;
+		UT_sint32 x;
+		UT_sint32 y;
+		fl_BlockLayout* pBlock;
+		
+		_findPositionCoords(iPosLeft, UT_FALSE, x, y, uheight, &pBlock, &pRun1);
+		
+		UT_Bool bRes = pBlock->getBlockBuf(&pgb);
+		UT_ASSERT(bRes);
+		UT_sint32 iBlockOffset = pBlock->getPosition();
+		
+		const UT_UCSChar* pSpan = pgb.getPointer(0);
+
+		char szWord[64];
+		int iLen = 0;
+
+		for (PT_DocPosition iPos = iPosLeft; iPos < iPosRight; iPos++)
+		{
+			UT_UCSChar ch = pSpan[iPos - iBlockOffset];
+			if (isalpha(ch))
+			{
+				szWord[iLen++] = ch;
+			}
+		}
+		szWord[iLen] = 0;
+
+		printf("Selected word:  %s is ", szWord);
+
+		if (SpellCheckWord(szWord))
+		{
+			printf("GOOD\n");
+		}
+		else
+		{
+			printf("BAD\n");
+		}
+	}
 }
 
 // -------------------------------------------------------------------------

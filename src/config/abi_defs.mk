@@ -81,6 +81,7 @@ ABI_WP_INCS=	/wp/fmt/xp				\
 
 ABI_OTH_INCS=	/other/expat/xmltok			\
 		/other/expat/xmlparse			\
+		/other/spell				\
 		/../dist/$(OBJDIR)/include
 
 ABI_ALL_INCS=	$(ABI_XAP_INCS) $(ABI_CALC_INCS) $(ABI_WP_INCS) $(ABI_OTH_INCS)

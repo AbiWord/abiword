@@ -1,3 +1,9 @@
+
+/*
+  TODO looks like a lot of this file could go away.  AbiWord
+  doesn't really need most of it. --EWS
+*/
+
 /*
  * Copyright 1992, 1993, Geoff Kuenning, Granada Hills, CA
  * All rights reserved.
@@ -55,6 +61,32 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.2  1998/12/28 22:16:22  eric
+ * These changes begin to incorporate the spell checker into AbiWord.  Most
+ * of this is a hack.
+ *
+ * 1.  added other/spell to the -I list in config/abi_defs
+ * 2.  replaced other/spell/Makefile with one which is more like
+ * 	our build system.
+ * 3.  added other/spell to other/Makefile so that the build will now
+ * 	dive down and build the spell check library.
+ * 4.  added the AbiSpell library to the Makefiles in wp/main
+ * 5.  added a call to SpellCheckInit in wp/main/unix/UnixMain.cpp.
+ * 	This call is a HACK and should be replaced with something
+ * 	proper later.
+ * 6.  added code to fv_View.cpp as follows:
+ * 	whenever you double-click on a word, the spell checker
+ * 	verifies that word and prints its status to stdout.
+ *
+ * Caveats:
+ * 1.  This will break the Windows build.  I'm going to work on fixing it
+ * 	now.
+ * 2.  This only works if your dictionary is in /usr/lib/ispell/american.hash.
+ * 	The dictionary location is currently hard-coded.  This will be
+ * 	fixed as well.
+ *
+ * Anyway, such as it is, it works.
+ *
  * Revision 1.1  1998/12/28 18:04:43  davet
  * Spell checker code stripped from ispell.  At this point, there are
  * two external routines...  the Init routine, and a check-a-word routine

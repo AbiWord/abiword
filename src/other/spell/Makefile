@@ -1,15 +1,48 @@
-CC=gcc
-CFLAGS = -g 
+#! gmake
 
-OBJS = newMain.o \
-		good.o \
-		tgood.o \
-		lookup.o \
-		makedent.o \
-		hash.o 
+## AbiSource Program Utilities
+## Copyright (C) 1998 AbiSource, Inc.
+##
+## This program is free software; you can redistribute it and/or
+## modify it under the terms of the GNU General Public License
+## as published by the Free Software Foundation; either version 2
+## of the License, or (at your option) any later version.
+## 
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+## 
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+## 02111-1307, USA.
 
-spell: $(OBJS)
-	$(CC) -o $@ $(OBJS)
+# TODO we should move this down into src/other/spell/xp
 
-clean:
-	rm -f spell $(OBJS)
+ABI_DEPTH = ../..
+
+include $(ABI_DEPTH)/config/abi_defs.mk
+
+EXPORT_HEADERS= spell.h
+
+HEADERS= spell.h
+
+RELEASE_HEADERS=	$(EXPORT_HEADERS)
+RELEASE_HEADERS_DEST=	$(RELEASE_INCLUDE_DIR)
+
+CSRCS=			newMain.c good.c tgood.c lookup.c makedent.c hash.c
+
+LIBRARY_NAME=		AbiSpell
+LIBRARY_VERSION=	$(ABI_VERSION)
+TARGETS=		$(LIBRARY)
+
+include $(ABI_DEPTH)/config/abi_rules.mk
+
+build:: $(TARGETS)
+	@echo Exporting library $(LIBRARY_NAME) from `pwd`...
+	@$(subst xxxx,$(DIST)/lib,$(VERIFY_DIRECTORY))
+	@$(INSTALL) -m 444 $(TARGETS) $(DIST)/lib
+
+
+
