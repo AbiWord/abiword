@@ -434,10 +434,8 @@ UT_Bool EV_QNXMenu::synthesizeMenu(PtWidget_t * wMenuRoot)
 				}
 
 				stack.push(wmenu);
-				m_vecMenuWidgets.addItem(wbutton);
-				//TODO: Which of these should get added?
-				//I can test against wmenu == PtMenu and then get it's parent
-				//m_vecMenuWidgets.addItem(wmenu);
+				//If you need the menu button for manipulation, you can always get the parent
+				m_vecMenuWidgets.addItem(wmenu /* wbutton */);
 			}
 			else {
 				// Add a placeholder item in the list
@@ -497,6 +495,8 @@ static void set_menu_enabled(PtWidget_t *w, int enabled, int checked) {
 //      any case it is on the TODO list.
 UT_Bool EV_QNXMenu::_refreshMenu(AV_View * pView, void * wMenuRoot)
 {
+	PtWidget_t *item, *wParent;
+
 	// update the status of stateful items on menu bar.
 	const EV_Menu_ActionSet * pMenuActionSet = m_pQNXApp->getMenuActionSet();
 	UT_ASSERT(pMenuActionSet);
@@ -549,10 +549,9 @@ UT_Bool EV_QNXMenu::_refreshMenu(AV_View * pView, void * wMenuRoot)
 				const char ** data = _ev_GetLabelName(m_pQNXApp, m_pQNXFrame, pAction, pLabel);
 				const char * szLabelName = data[0];
 				
-				//TODO: Some sort of funky child checking see UNIX version 
-
 				// Get the item we are pointing at
-				PtWidget_t * item = (PtWidget_t *) m_vecMenuWidgets.getNthItem(k);
+				item = (PtWidget_t *) m_vecMenuWidgets.getNthItem(k);
+				stack.viewTop((void **)&wParent);
 
 				// No dynamic label then just check/enable the item
 				if (!pAction->hasDynamicLabel())
@@ -579,10 +578,7 @@ UT_Bool EV_QNXMenu::_refreshMenu(AV_View * pView, void * wMenuRoot)
 					// test that an empty (to be replaced) item in the vector should
 					// have no children
 
-					PtWidget_t *w = NULL;
-
-					void ** blah = NULL;
-					if(m_vecMenuWidgets.setNthItem(k, w, blah))
+					if(m_vecMenuWidgets.setNthItem(k, NULL /* New */, NULL /* Old */))
 					{
 						UT_DEBUGMSG(("Could not update dynamic menu widget vector item %s.", k));
 						UT_ASSERT(0);
@@ -594,18 +590,58 @@ UT_Bool EV_QNXMenu::_refreshMenu(AV_View * pView, void * wMenuRoot)
 				else {
 					// create a new updated label
 					char labelbuf[1024], accel[2];
-					// convert label into underscored version
-					_ev_convert(labelbuf, szLabelName);
-					
-					if (!item) {
-						printf("TODO: Create a new menu item! \n");
-						break;
-					}
 
 					// convert label into underscored version
 					accel[0] = _ev_convert(labelbuf, szLabelName);
 					accel[1] = '\0';
 
+
+					if (!item) {
+						int n;
+						PtArg_t args[10];
+						
+						n = 0;
+						PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, labelbuf, 0); 
+						PtSetArg(&args[n++], Pt_ARG_ACCEL_KEY, accel, 0); 
+						/*
+						if (szMnemonicName && *szMnemonicName) {
+							PtSetArg(&args[n++], Pt_ARG_ACCEL_TEXT, szMnemonicName, 0); 
+						}
+						*/
+
+						if (pAction->isCheckable()) {
+							PtSetArg(&args[n++], Pt_ARG_FLAGS,
+								Pt_MENU_BUTTON | Pt_AUTOHIGHLIGHT | Pt_SET, 
+								Pt_MENU_BUTTON | Pt_AUTOHIGHLIGHT | Pt_SET);
+							item = PtCreateWidget(PtToggleButton, wParent, n, args);
+						} else {
+							item = PtCreateWidget(PtMenuButton, wParent, n, args); 
+						}
+						PtRealizeWidget(item);
+
+						struct _cb_menu *mcb;
+						mcb = (struct _cb_menu *)malloc(sizeof(*mcb));
+						mcb->widget = item;
+						mcb->id = id;
+						mcb->qnxmenu = this;
+						PtAddCallback(item, Pt_CB_ACTIVATE, s_menu_activate, mcb);
+						PtAddCallback(item, Pt_CB_ARM, s_menu_select, mcb);
+						PtAddCallback(item, Pt_CB_DISARM, s_menu_deselect, mcb);
+
+						/*
+						if (szMnemonicName && *szMnemonicName && get_hotkey_key(szMnemonicName) != '\0') {
+							PtAddHotkeyHandler(PtGetParent(wMenuRoot, PtWindow),
+									   get_hotkey_key(szMnemonicName), 
+									   get_hotkey_code(szMnemonicName),
+										0, mcb, s_menu_activate); 
+						}
+						*/
+
+						//Now that we have an item, add it to the vector
+						m_vecMenuWidgets.setNthItem(k, item, NULL);
+
+						break;
+					}
 
 					PtSetResource(item, Pt_ARG_TEXT_STRING, labelbuf, 0);
 					//PtSetArg(&args[n++], Pt_ARG_ACCEL_KEY, accel, 0);
@@ -624,15 +660,14 @@ UT_Bool EV_QNXMenu::_refreshMenu(AV_View * pView, void * wMenuRoot)
 
 			// we need to nest sub menus to have some sort of context so
 			// we can parent menu items
-			PtWidget_t * item = (PtWidget_t *) m_vecMenuWidgets.getNthItem(k);
+			item = (PtWidget_t *) m_vecMenuWidgets.getNthItem(k);
 			UT_ASSERT(item);
-
 			stack.push(item);
 			break;
 		}
 		case EV_MLF_EndSubMenu:
 		{
-			PtWidget_t * item = NULL;
+			item = NULL;
 			bResult = stack.pop((void **)&item);
 			UT_ASSERT(bResult);
 			break;
