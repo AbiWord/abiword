@@ -8383,6 +8383,16 @@ bool IE_Imp_RTF::HandleAbiTable(void)
 	PL_StruxDocHandle sdhEndTable = NULL;
 	bool bFound = getDoc()->getStruxOfTypeFromPosition(m_dposPaste,PTX_SectionTable,&sdhTable);
 	PT_DocPosition posTable = 0;
+	XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
+	if(pFrame == NULL)
+	{
+		return false;
+	}
+	FV_View * pView = static_cast<FV_View*>(pFrame->getCurrentView());
+	if(pView == NULL)
+	{
+		return false;
+	}
 	if(bFound)
 	{
 		posTable = getDoc()->getStruxPosition(sdhTable);
@@ -8398,9 +8408,14 @@ bool IE_Imp_RTF::HandleAbiTable(void)
 				UT_String sThisTableSDH;
 				UT_String_sprintf(sThisTableSDH,"%x",sdhTable);
 				UT_DEBUGMSG(("sThisTableSDH %s sPasteTableSDH %s \n",sThisTableSDH.c_str(),sPasteTableSDH.c_str()));
-				if(sThisTableSDH == sPasteTableSDH)
+				bool isRow = (pView->getSelectionMode() == FV_SelectionMode_TableRow);
+				if(!isRow && pView->getSelectionMode() == FV_SelectionMode_NONE)
 				{
-					UT_DEBUGMSG(("Pasting into same Table!!!!! \n"));
+					isRow = (pView->getPrevSelectionMode() == FV_SelectionMode_TableRow);
+				}
+				if((sThisTableSDH == sPasteTableSDH) && isRow)
+				{
+					UT_DEBUGMSG(("Paste Whole Row into same Table!!!!! \n"));
 					bIsPasteIntoSame = true;
 					pPaste->m_bPasteAfterRow = true;
 					PL_StruxDocHandle sdhCell = NULL;
@@ -8675,7 +8690,7 @@ bool IE_Imp_RTF::HandleAbiCell(void)
 		UT_String_setProperty(sProps,sBotProp,sBot);
 		pPaste->m_iCurTopCell = iMyTop;
 	}
-	UT_DEBUGMSG(("RTF_Import: Paste: Cell props are: %s \n",sProps.c_str()));
+	UT_DEBUGMSG(("RTF_Import: Pos %d Paste: Cell props are: %s \n",m_dposPaste,sProps.c_str()));
 	const XML_Char * attrs[3] = {"props",NULL,NULL};
 	attrs[1] = sProps.c_str();
  	getDoc()->insertStrux(m_dposPaste,PTX_SectionCell,attrs,NULL);

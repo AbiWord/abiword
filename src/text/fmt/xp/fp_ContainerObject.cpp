@@ -500,7 +500,7 @@ void  fg_FillType::setParent(fg_FillType * pParent)
  */
 void fg_FillType::setColor(UT_RGBColor & color)
 {
-	UT_DEBUGMSG(("Fill type set to color class \n"));
+	xxx_UT_DEBUGMSG(("Fill type set to color class \n"));
 	m_FillType = FG_FILL_COLOR;
 	m_color = color;
 	m_bColorSet = true;

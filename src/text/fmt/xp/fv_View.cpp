@@ -6582,6 +6582,11 @@ UT_sint32 FV_View::getNumSelections(void) const
 	return m_Selection.getNumSelections();
 }
 
+void FV_View::setSelectionMode(FV_SelectionMode selMode)
+{
+	m_Selection.setMode(selMode);
+}
+
 void FV_View::getDocumentRangeOfCurrentSelection(PD_DocumentRange * pdr)
 {
 	PT_DocPosition iPos1, iPos2;

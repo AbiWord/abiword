@@ -369,7 +369,7 @@ public:
 	FV_SelectionMode getPrevSelectionMode(void) const;
 	PD_DocumentRange * getNthSelection(UT_sint32 i);
 	UT_sint32          getNumSelections(void) const;
-
+	void            setSelectionMode(FV_SelectionMode selMode);
 // ----------------------
 // Stuff for spellcheck context menu
 //

@@ -586,7 +586,7 @@ void fl_BlockLayout::_lookupProperties(const PP_AttrProp* pBlockAP)
 		const MarginAndIndent_t& mai = rgProps[iRg];
 		const PP_PropertyTypeSize * pProp = static_cast<const PP_PropertyTypeSize *>(getPropertyType(static_cast<const XML_Char*>(mai.szProp), Property_type_size));
 		*mai.pVar	= UT_convertSizeToLayoutUnits(pProp->getValue(), pProp->getDim());
-		UT_DEBUGMSG(("para prop %s layout size %d \n",mai.szProp,*mai.pVar));
+		xxx_UT_DEBUGMSG(("para prop %s layout size %d \n",mai.szProp,*mai.pVar));
 	}
 
 	{

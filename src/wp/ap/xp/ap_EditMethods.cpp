@@ -4673,6 +4673,7 @@ Defun1(selectRow)
 	}
 	posEndRow = pDoc->getStruxPosition(endRowSDH)+1;
 	pView->cmdSelect(posStartRow,posEndRow);
+	pView->setSelectionMode(FV_SelectionMode_TableRow);
 	return true;
 }
 
