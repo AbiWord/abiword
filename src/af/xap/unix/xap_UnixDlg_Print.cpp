@@ -65,6 +65,7 @@ XAP_UnixDialog_Print::XAP_UnixDialog_Print(XAP_DialogFactory * pDlgFactory,
 XAP_UnixDialog_Print::~XAP_UnixDialog_Print(void)
 {
 //	DELETEP(m_pPSGraphics);
+	FREEP(m_persistPrintDlg.szPrintCommand);
 }
 
 void XAP_UnixDialog_Print::useStart(void)
@@ -385,7 +386,7 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 	
 	gtk_widget_set_sensitive(entryPrint, GTK_TOGGLE_BUTTON(buttonPrint)->active);
 	gtk_entry_set_text (GTK_ENTRY (entryPrint), m_persistPrintDlg.szPrintCommand);
-	
+	FREEP(m_persistPrintDlg.szPrintCommand);
 	gtk_widget_set_sensitive(buttonRange, m_persistPrintDlg.bEnablePageRange);
 	gtk_widget_set_sensitive(buttonSelection, m_persistPrintDlg.bEnableSelection);
 	
@@ -532,7 +533,7 @@ void XAP_UnixDialog_Print::_getGraphics(void)
 										fontmgr,
 										false, app);
 	}
-
+	FREEP(m_szPrintCommand);
 	UT_ASSERT(m_pPSGraphics);
 
 	// set the color mode
