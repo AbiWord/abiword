@@ -28,6 +28,7 @@ public:
 	AP_MacPrefs(XAP_App * pApp);
 	
 	virtual const char *	getPrefsPathname(void) const;
+	virtual void			overlayEnvironmentPrefs(void);
 };
 
 #endif /* AP_MACPREFS_H */

@@ -41,7 +41,6 @@ XAP_MacApp::XAP_MacApp(XAP_Args * pArgs, const char * szAppName)
 XAP_MacApp::~XAP_MacApp(void)
 {
 	DELETEP(m_pMacToolbarIcons);
-	DELETEP(_pClipboard);
 }
 
 UT_Bool XAP_MacApp::initialize(void)
@@ -56,7 +55,7 @@ UT_Bool XAP_MacApp::initialize(void)
 	
 	// do anything else we need here...
 
-	_pClipboard = new AP_MacClipboard();
+	// _pClipboard = new AP_MacClipboard();
 	
 	return UT_TRUE;
 }
@@ -74,6 +73,19 @@ XAP_DialogFactory * XAP_MacApp::getDialogFactory(void)
 XAP_Toolbar_ControlFactory * XAP_MacApp::getControlFactory(void)
 {
 	return &m_controlFactory;
+}
+
+const char * XAP_MacApp::getUserPrivateDirectory(void) {
+        /* return a pointer to a static buffer */
+
+#ifndef PATH_MAX
+#define PATH_MAX 4096
+#endif
+
+        static char buf[PATH_MAX];
+        memset(buf,0,sizeof(buf));
+
+        return buf;                                     
 }
 
 UT_uint32 XAP_MacApp::_getExeDir(char* pDirBuf, UT_uint32 iBufLen)

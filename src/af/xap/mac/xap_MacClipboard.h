@@ -22,31 +22,29 @@
 #define XAP_MACCLIPBOARD_H
 
 #include "ut_types.h"
+#include "ut_vector.h"
 
 #include "xap_Clipboard.h"
+#include "xap_FakeClipboard.h"
 
-class AP_MacClipboard : public AP_Clipboard
+class XAP_MacClipboard : public XAP_FakeClipboard
 {
 public:
-	AP_MacClipboard();
+	XAP_MacClipboard();
 	
-	virtual UT_Bool		open(void);
-	virtual UT_Bool		close(void);
-	virtual UT_Bool		addData(char* format, void* pData, UT_sint32 iNumBytes);
-	virtual UT_sint32	getDataLen(char* format);
-	virtual UT_Bool		getData(char* format, void* pData);
-	virtual UT_Bool		hasFormat(char* format);
-	virtual UT_sint32	countFormats(void);
-	virtual char*		getNthFormat(UT_sint32 n);
-	virtual UT_Bool		clear(void);
-
-	virtual GR_Image*	getImage(void);
-	virtual UT_Bool		addImage(GR_Image*);
+	// virtual UT_Bool			openClipboard(void);
+	// virtual UT_Bool			closeClipboard(void);
+	// virtual UT_Bool			clearClipboard(void);
+	virtual UT_Bool			addData(const char* format, void* pData, UT_sint32 iNumBytes);
+	virtual UT_Bool			hasFormat(const char * format);
 
 protected:
-	UT_uint32	_convertFormatString(char* format);
-	
-	UT_uint32			m_cfRTF;
+	// virtual UT_uint32		_convertFormatString(const char * format) const;
+	// virtual const char *	_convertToFormatString(UT_uint32 fmt) const;
+
+	UT_Bool					m_bOpen;
+	UT_Vector				m_vecFormat;
+	UT_Vector				m_vecCF;
 };
 
 #endif /* XAP_MACCLIPBOARD_H */

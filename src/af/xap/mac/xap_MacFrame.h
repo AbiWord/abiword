@@ -47,7 +47,7 @@ public:
 	virtual ~XAP_MacFrame(void);
 
 	virtual	XAP_Frame *			cloneFrame(void);
-	virtual UT_Bool				loadDocument(const char * szFilename);
+	virtual UT_Bool				loadDocument(const char * szFilename,  int ieft)=0;
 	virtual UT_Bool				close(void);
 	virtual UT_Bool				raise(void);
 	virtual UT_Bool				show(void);
@@ -56,8 +56,11 @@ public:
 	virtual XAP_DialogFactory *	getDialogFactory(void);
 	virtual void				setXScrollRange(void);
 	virtual void				setYScrollRange(void);
+	virtual UT_Bool 			runModalContextMenu(AV_View * pView, const char * szMenuName, UT_sint32 x, UT_sint32 y);
+	virtual void                            setStatusMessage(const char * szMsg) = 0;
 
 protected:
+	void						_createTopLevelWindow(void);
 	WindowPtr theWP;
 	Rect theBounds;
 };

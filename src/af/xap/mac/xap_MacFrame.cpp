@@ -67,11 +67,6 @@ XAP_Frame *	XAP_MacFrame::cloneFrame(void)
 	return 0;
 }
 
-UT_Bool	XAP_MacFrame::loadDocument(const char * szFilename)
-{
-	return UT_TRUE;
-}
-
 UT_Bool	XAP_MacFrame::close(void)
 {
 	return UT_TRUE;
@@ -100,10 +95,17 @@ XAP_DialogFactory *XAP_MacFrame::getDialogFactory(void)
 	return 0;
 }
 
+void XAP_MacFrame::_createTopLevelWindow(void)
+{
+}
 void XAP_MacFrame::setXScrollRange(void)
 {
 }
 
 void XAP_MacFrame::setYScrollRange(void)
 {
+}
+
+UT_Bool XAP_MacFrame::runModalContextMenu(AV_View * /* pView */, const char * szMenuName, UT_sint32 x, UT_sint32 y) {
+	return(UT_FALSE);
 }

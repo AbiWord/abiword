@@ -30,6 +30,7 @@
 #include "xap_Args.h"
 #include "xap_MacApp.h"
 #include "ap_MacPrefs.h"
+#include "ap_MacClipboard.h"
 
 class AP_MacApp : public XAP_MacApp
 {
@@ -41,9 +42,18 @@ public:
 	virtual XAP_Frame *		newFrame(void);
 	virtual UT_Bool			shutdown(void);
 
+	virtual const XAP_StringSet *	getStringSet(void) const;
+	virtual const char *			getAbiSuiteAppDir(void) const;
+	virtual void					copyToClipboard(PD_DocumentRange * pDocRange);
+	virtual void					pasteFromClipboard(PD_DocumentRange * pDocRange, UT_Bool);
+	virtual UT_Bool					canPasteFromClipboard(void);
+	virtual void					cacheCurrentSelection(AV_View *) {};
+
 	static int MacMain (const char * szAppName, int argc, char **argv);
 
 protected:
+	XAP_StringSet *			m_pStringSet;
+	AP_MacClipboard *		m_pClipboard;
 };
 
 #endif /* XAP_MACAPP_H */

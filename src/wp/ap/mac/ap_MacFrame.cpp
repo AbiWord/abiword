@@ -18,7 +18,9 @@
  * 02111-1307, USA.
  */
 
+#include "ap_FrameData.h"
 #include "ap_MacFrame.h"
+#include "ap_Prefs.h"
 
 AP_MacFrame::AP_MacFrame(XAP_MacApp * app)
 	: XAP_MacFrame(app)
@@ -34,14 +36,51 @@ AP_MacFrame::~AP_MacFrame(void)
 {
 }
 
+UT_Bool AP_MacFrame::initialize()
+{
+	if (!initFrameData())
+		return UT_FALSE;
+
+	if (!XAP_MacFrame::initialize(AP_PREF_KEY_KeyBindings,AP_PREF_DEFAULT_KeyBindings,
+									AP_PREF_KEY_MenuLayout, AP_PREF_DEFAULT_MenuLayout,
+									AP_PREF_KEY_MenuLabelSet, AP_PREF_DEFAULT_MenuLabelSet,
+									AP_PREF_KEY_ToolbarLayouts, AP_PREF_DEFAULT_ToolbarLayouts,
+									AP_PREF_KEY_ToolbarLabelSet, AP_PREF_DEFAULT_ToolbarLabelSet))
+		return UT_FALSE;
+
+	_createTopLevelWindow();
+	return UT_TRUE;
+}
+
 XAP_Frame *	AP_MacFrame::cloneFrame(void)
 {
 	return 0;
 }
 
-UT_Bool	AP_MacFrame::loadDocument(const char * szFilename)
+void AP_MacFrame::setStatusMessage(const char * szMsg)
+{
+	//TODO
+}                                                                        
+
+UT_Bool	AP_MacFrame::loadDocument(const char * szFilename, int ieft)
 {
 	return UT_TRUE;
+}
+
+UT_Bool AP_MacFrame::initFrameData(void)
+{
+	UT_ASSERT(!((AP_FrameData*)m_pData));
+
+	AP_FrameData* pData = new AP_FrameData();
+	m_pData = (void*) pData;
+	
+	return (pData ? UT_TRUE : UT_FALSE);
+}
+
+void AP_MacFrame::killFrameData(void)
+{
+	DELETEP(m_pData);
+	m_pData = NULL;
 }
 
 UT_Bool	AP_MacFrame::close(void)

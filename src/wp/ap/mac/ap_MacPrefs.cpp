@@ -63,3 +63,9 @@ const char * AP_MacPrefs::getPrefsPathname(void) const
 	return NULL;
 #endif
 }
+
+void AP_MacPrefs::overlayEnvironmentPrefs(void)
+{
+	// TODO steal the appropriate code from the unix version
+	// TODO after it is finished.
+}

@@ -46,6 +46,7 @@ public:
 
 	virtual XAP_DialogFactory *				getDialogFactory(void);
 	virtual XAP_Toolbar_ControlFactory *	getControlFactory(void);
+	virtual const char *					getUserPrivateDirectory(void);
 
 protected:
 	UT_uint32	_getExeDir(char* pDirBuf, UT_uint32 iBufLen);

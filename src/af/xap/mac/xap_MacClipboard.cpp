@@ -23,64 +23,16 @@
 
 #include "xap_MacClipboard.h"
 
-AP_MacClipboard::AP_MacClipboard() : AP_Clipboard()
+XAP_MacClipboard::XAP_MacClipboard() : XAP_FakeClipboard()
 {
 }
 
-UT_Bool		AP_MacClipboard::open(void)
+UT_Bool XAP_MacClipboard::addData(const char* format, void* pData, UT_sint32 iNumBytes)
 {
-	if (m_bOpen)
-	{
-		return UT_FALSE;
-	}
-
-	return UT_FALSE;
+	return XAP_FakeClipboard::addData(format, pData, iNumBytes);
 }
 
-UT_Bool		AP_MacClipboard::close(void)
+UT_Bool XAP_MacClipboard::hasFormat(const char* format)
 {
-	m_bOpen = UT_FALSE;
-	return UT_TRUE;
+	return XAP_FakeClipboard::hasFormat(format);
 }
-
-UT_uint32	AP_MacClipboard::_convertFormatString(char* format)
-{
-	return 0;
-}
-
-UT_Bool		AP_MacClipboard::addData(char* format, void* pData, UT_sint32 iNumBytes)
-{
-	return UT_TRUE;
-}
-
-UT_Bool		AP_MacClipboard::hasFormat(char* format)
-{
-	return UT_FALSE;
-}
-
-UT_sint32	AP_MacClipboard::getDataLen(char* format)
-{
-	return -1;
-}
-
-UT_Bool		AP_MacClipboard::getData(char* format, void* pData)
-{
-	return UT_FALSE;
-}
-
-UT_sint32	AP_MacClipboard::countFormats(void)
-{
-	return 0;
-}
-
-char*		AP_MacClipboard::getNthFormat(UT_sint32 n)
-{
-	return AP_CLIPBOARD_UNKNOWN;
-}
-
-UT_Bool		AP_MacClipboard::clear(void)
-{
-	return UT_TRUE;
-}
-
-

@@ -54,7 +54,7 @@ UT_StringPool::UT_PoolBucket::UT_PoolBucket(int iSize)
 
 UT_StringPool::UT_PoolBucket::~UT_PoolBucket()
 {
-	delete pChars;
+	delete [] pChars;
 }
 
 int UT_StringPool::addBucket()

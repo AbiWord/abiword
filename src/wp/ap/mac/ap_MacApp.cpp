@@ -38,11 +38,15 @@
 AP_MacApp::AP_MacApp(XAP_Args * pArgs, const char * szAppName)
 	: XAP_MacApp(pArgs,szAppName)
 {
+	m_pStringSet = NULL;
+	m_pClipboard = NULL;
 }
 
 AP_MacApp::~AP_MacApp(void)
 {
 	SpellCheckCleanup();
+	DELETEP(m_pStringSet);
+	DELETEP(m_pClipboard);
 }
 
 UT_Bool AP_MacApp::initialize(void)
@@ -57,8 +61,14 @@ UT_Bool AP_MacApp::initialize(void)
 		   
 	// now that preferences are established, let the xap init
 		   
+	m_pClipboard = new AP_MacClipboard();
+	UT_ASSERT(m_pClipboard);
+
 	if (! XAP_MacApp::initialize())
 		return UT_FALSE;
+
+	m_pClipboard = new AP_MacClipboard();
+	UT_ASSERT(m_pClipboard);
 
 #if 0
 	//////////////////////////////////////////////////////////////////
@@ -104,6 +114,32 @@ UT_Bool AP_MacApp::shutdown(void)
 		m_prefs->savePrefsFile();
 
 	return UT_TRUE;
+}
+
+const char * AP_MacApp::getAbiSuiteAppDir(void) const
+{
+	// we return a static string, use it quickly.
+	
+	static XML_Char buf[1024] = "";
+	return buf;
+}
+
+const XAP_StringSet * AP_MacApp::getStringSet(void) const
+{
+	return m_pStringSet;
+}
+
+void AP_MacApp::copyToClipboard(PD_DocumentRange * pDocRange)
+{
+}
+
+void AP_MacApp::pasteFromClipboard(PD_DocumentRange * pDocRange, UT_Bool)
+{
+}
+
+UT_Bool AP_MacApp::canPasteFromClipboard(void)
+{
+	return UT_FALSE;
 }
 
 /*****************************************************************/
