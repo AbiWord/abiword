@@ -1307,6 +1307,15 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 		}
 	}
 
+	// The code used to only glob for the complex case. But when
+	// there's a simple delete, we may still end up adding the
+	// formatmark below (i.e., when deleting all the text in a
+	// document), and thus creating a two-step undo for a perceived
+	// one-step operation. See Bug FIXME
+	if(!bDontGlob)
+	{
+		beginMultiStepGlob();
+	}
 
 	bool bIsSimple = _isSimpleDeleteSpan(dpos1, dpos2) && stDelayStruxDelete.getDepth() == 0;
 	if (bIsSimple)
@@ -1320,12 +1329,7 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 	{
 		//  If the delete spans multiple fragments, we need to 
 		//  be a bit more careful about deleting the formatting 
-		//  first, and then the actual spans.  Also, glob all
-		//  changes together.
-		if(!bDontGlob)
-		{
-			beginMultiStepGlob();
-		}
+		//  first, and then the actual spans.
 		_changePointWithNotify(old_dpos2);
 
 		bSuccess = _deleteFormatting(dpos1, dpos2);
@@ -1365,16 +1369,15 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 		xxx_UT_DEBUGMSG(("pt_PieceTable::deleteSpan Paragraph empty\n"));
 
 		// All text in paragraph is deleted so insert a text format.
-		// Except if we're realy don't want it. We know we dont if bDontGlob is true.
+		// Except if we're realy don't want it. We know we dont if
+		// bDontGlob is true.
 		if(!bDontGlob)
 			_insertFmtMarkFragWithNotify(PTC_AddFmt, dpos1, &AttrProp_Before);
 
 	}
 
-	// By ending the glob after having inserted the FmtMark, an undo
-	// behaves properly, instead of being a two-step operation. See
-	// bug 1140.
-	if (!bIsSimple && !bDontGlob)
+	// End the glob after (maybe) having inserted the FmtMark
+	if (!bDontGlob)
 	{
 		endMultiStepGlob();
 	}
