@@ -121,8 +121,8 @@ GtkWidget * AP_UnixDialog_InsertTable::_constructWindow(void)
 	
 	// set the dialog title
 	UT_UTF8String s;
-	AP_STRING_ID_DLG_InsertTable_TableTitle,s);
-	abiDialogSetTitle(window, pSS->getValueUTF8(s.utf8_str());
+	pSS->getValueUTF8(AP_STRING_ID_DLG_InsertTable_TableTitle,s);
+	abiDialogSetTitle(window, s.utf8_str());
 	
 	// localize the strings in our dialog, and set tags for some widgets
 	
