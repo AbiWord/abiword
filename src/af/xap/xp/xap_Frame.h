@@ -149,7 +149,7 @@ public:
 	void						setAutoSaveFile(bool);
 	void						setAutoSaveFilePeriod(int);
 	void						setAutoSaveFileExt(const UT_String &);
-
+	
 	XAP_Dialog_MessageBox::tAnswer		showMessageBox(XAP_String_Id id,
 													   XAP_Dialog_MessageBox::tButtons buttons,
 													   XAP_Dialog_MessageBox::tAnswer default_answer,
@@ -174,6 +174,8 @@ public:
 	const bool                  isExposedAreaAccessed(void) const;
 	void                        setExposedAreaAccessed(bool bAccessedState);
 	virtual void                doRepaint( UT_Rect * rClip) {}
+	bool                        getClipLock(void);
+	bool                        releaseClipLock(void);
 protected:
 	virtual void				_createToolbars(void);
 	virtual EV_Toolbar *		_newToolbar(XAP_App *app, XAP_Frame *frame, const char *, const char *)
@@ -220,7 +222,14 @@ private:
 	UT_Rect                     m_PendingExposeArea;
 	bool                        m_bExposePending;
 	bool                        m_bIsExposedAreaAccessed;
+	bool                        m_bClipLock;
 };
 
 #endif /* XAP_Frame_H */
+
+
+
+
+
+
 

@@ -59,7 +59,8 @@ public:
 
 	void				setWidth(UT_sint32);
 	void				setWidthInLayoutUnits(UT_sint32);
-
+	void                setMaxLineHeight(UT_sint32 iLineHeight);
+	UT_sint32           getMaxLineHeight(void) const;
 	void				setHeight(UT_sint32);
 	void				setMaxHeight(UT_sint32);
 	void				setMaxHeightInLayoutUnits(UT_sint32);
@@ -238,6 +239,8 @@ protected:
 	  will delete the container.
 	 */
 	bool					m_bIntentionallyEmpty;
+private:
+	UT_sint32               m_imaxLineHeight;
 };
 
 class fp_Column : public fp_Container

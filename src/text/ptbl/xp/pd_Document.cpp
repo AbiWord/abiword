@@ -146,7 +146,7 @@ UT_Error PD_Document::importFile(const char * szFilename, int ieft,
 	m_pPieceTable->setPieceTableState(PTS_Editing);
 	updateFields();
 
-	if(markClean)
+	if(markClean)	
 		_setClean();
 
 	return UT_OK;
@@ -316,6 +316,7 @@ bool PD_Document::isDirty(void) const
 void PD_Document::_setClean(void)
 {
 	m_pPieceTable->setClean();
+	m_pPieceTable->getFragments().cleanFrags();
 }
 
 //////////////////////////////////////////////////////////////////
@@ -326,7 +327,8 @@ bool	PD_Document::insertObject(PT_DocPosition dpos,
 								  const XML_Char ** attributes,
 								  const XML_Char ** properties)
 {
-	return m_pPieceTable->insertObject(dpos, pto, attributes, properties);
+	bool res = m_pPieceTable->insertObject(dpos, pto, attributes, properties);
+	return res;
 }
 
 
@@ -353,7 +355,7 @@ bool PD_Document::insertSpan(PT_DocPosition dpos,
 		m_pPieceTable->insertFmtMark(PTC_AddFmt, dpos, p_AttrProp);
 	}
 
-	return m_pPieceTable->insertSpan(dpos,p,length);
+	return m_pPieceTable->insertSpan(dpos,p, length);
 }
 
 bool PD_Document::deleteSpan(PT_DocPosition dpos1,

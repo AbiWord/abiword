@@ -90,12 +90,14 @@ void pf_Frag_Text::changeLength(UT_uint32 newLength)
 {
 	UT_ASSERT(newLength > 0);
 	m_length = newLength;
+	m_pPieceTable->getFragments().setFragsDirty();
 }
 
 void pf_Frag_Text::adjustOffsetLength(PT_BufIndex bi, UT_uint32 newLength)
 {
 	m_bufIndex = bi;
 	m_length = newLength;
+	m_pPieceTable->getFragments().setFragsDirty();
 }
 
 void pf_Frag_Text::setField(fd_Field * pField)

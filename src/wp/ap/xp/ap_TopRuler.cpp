@@ -289,7 +289,10 @@ void AP_TopRuler::draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 		return;
 	
 	if (pClipRect)
+	{
+		m_pFrame->getClipLock();
 		m_pG->setClipRect(pClipRect);
+	}
 
 	// draw the background
 
@@ -300,7 +303,10 @@ void AP_TopRuler::draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 	_draw(pClipRect,pUseInfo);
 	
 	if (pClipRect)
+	{
 		m_pG->setClipRect(NULL);
+		m_pFrame->releaseClipLock();
+	}
 }
 
 void AP_TopRuler::_drawBar(const UT_Rect * pClipRect, AP_TopRulerInfo * pInfo,

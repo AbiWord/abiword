@@ -54,9 +54,12 @@ static gint abi_expose_repaint( gpointer p)
 	UT_Rect localCopy;
 	XAP_UnixFrame * pF = static_cast<XAP_UnixFrame *>(p);
 	if(pF->isSpawnedRedraw())
-		return FALSE;
+	{
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return TRUE;
+	}
 	pF->setSpawnedRedraw(true);
-	while(pF->isExposePending())
+	if(pF->isExposePending())
 	{
 		while(pF->isExposedAreaAccessed())
 		{
@@ -65,27 +68,23 @@ static gint abi_expose_repaint( gpointer p)
 		pF->setExposedAreaAccessed(true);
 		localCopy.set(pF->getPendingRect()->left,pF->getPendingRect()->top,
 					  pF->getPendingRect()->width,pF->getPendingRect()->height);
-//		pF->setPendingRect(localCopy.left,localCopy.top,0,0);
-		pF->setExposedAreaAccessed(false);
-
 //
 // Clear out this set of expose info
 //
 		pF->setExposePending(false);
+		pF->setExposedAreaAccessed(false);
 		AV_View * pView = pF->getCurrentView();
 		if (pView)
 		{
 			xxx_UT_DEBUGMSG(("Painting area:  left=%d, top=%d, width=%d, height=%d\n", localCopy.left, localCopy.top, localCopy.width, localCopy.height));
-
 			pView->draw(&localCopy);
 		}
 	}
 //
-// OK we've finshed. This process dies now.
+// OK we've finshed. Wait for the next signal
 //
 	pF->setSpawnedRedraw(false);
-	UT_ASSERT(!pF->isExposePending());
-	return FALSE;
+	return TRUE;
 }
 
 
@@ -391,78 +390,44 @@ gint XAP_UnixFrame::_fe::expose(GtkWidget * w, GdkEventExpose* pExposeEvent)
 void  XAP_UnixFrame::doRepaint( UT_Rect * rClip)
 {
 //
-// See if the redraw process has started. If not start it up.
-//
-	if(!isSpawnedRedraw())
-	{
-//
 // Look if we have a pending expose left over.
 //
-		if(isExposePending())
+//  	if(isExposePending())
+//  	{
+//  		//
+//          // If so merge in the current expose area
+//          //
+//  		while(isExposedAreaAccessed())
+//  		{
+//  			UT_usleep(10); // 10 microseconds
+//  		}
+//  		setExposedAreaAccessed(true);
+//  		unionPendingRect( rClip);
+//  		setExposedAreaAccessed(false);
+//  	}
+//  	else
+//  	{
+//  //
+//  // Otherwise Load the current expose area into the redraw area.
+//  //
+//  		while(isExposedAreaAccessed())
+//  		{
+//  			UT_usleep(10); // 10 microseconds
+//  		}
+//  		setExposedAreaAccessed(true);
+//  		setPendingRect(rClip->left,rClip->top,rClip->width,rClip->height);
+//  		setExposePending(true);
+//  		setExposedAreaAccessed(false);
+//  	}
+		AV_View * pView = getCurrentView();
+		if (pView)
 		{
-		//
-        // If so merge in the current expose area
-        //
-
-			setExposedAreaAccessed(true);
-			unionPendingRect( rClip);
-			setExposedAreaAccessed(false);
+			xxx_UT_DEBUGMSG(("Painting area:  left=%d, top=%d, width=%d, height=%d\n", localCopy.left, localCopy.top, localCopy.width, localCopy.height));
+			pView->draw(rClip);
 		}
-		else
-		{
-//
-// Otherwise Load the current expose area into the redraw area.
-//
-			setPendingRect(rClip->left,rClip->top,rClip->width,rClip->height);
-		}
-		setExposePending(true);
-		setExposedAreaAccessed(false);
-//
-// Start the background redraw
-//
-		gtk_timeout_add(1,(GtkFunction) abi_expose_repaint, (gpointer) this);
-//
-// OK accumulate expose events in the expose area
-//
-		return;
-	}
-//
-// Make certain we don't stomp on our shared area
-//
-	if(isExposePending())
-	{
-		while(isExposedAreaAccessed())
-		{
-			UT_usleep(10); // 10 microseconds
-		}
-		//
-        // Merge in the current expose area
-        //
-		setExposedAreaAccessed(true);
-		unionPendingRect( rClip);
-		setExposedAreaAccessed(false);
-        //
-        // Accumulate more expose events.
-        //
-	}
-	else
-	{
-//
-// If not, set this area for repaint
-//
-		setExposePending(true);
-		while(isExposedAreaAccessed())
-		{
-			UT_usleep(10); // 10 microseconds
-		}
-		setExposedAreaAccessed(true);
-		setPendingRect(rClip->left,rClip->top,rClip->width,rClip->height);
-		setExposedAreaAccessed(false);
 //
 // OK this event is handled.
 //
-	}
-	UT_ASSERT(isSpawnedRedraw());
 }
 	
 void XAP_UnixFrame::_fe::vScrollChanged(GtkAdjustment * w, gpointer /*data*/)
@@ -561,6 +526,11 @@ bool XAP_UnixFrame::initialize(const char * szKeyBindingsKey, const char * szKey
 	
 	m_pMouse = new EV_UnixMouse(pEEM);
 	UT_ASSERT(m_pMouse);
+
+//
+// Start background repaint
+//
+//	gtk_timeout_add(200,(GtkFunction) abi_expose_repaint, (gpointer) this);
 
 	return true;
 }

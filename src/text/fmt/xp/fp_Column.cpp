@@ -48,7 +48,8 @@ fp_Container::fp_Container(UT_uint32 iType, fl_SectionLayout* pSectionLayout)
 			m_iX(0),
 			m_iY(0),
 			m_pSectionLayout(pSectionLayout),
-			m_bIntentionallyEmpty(0)
+			m_bIntentionallyEmpty(0),
+			m_imaxLineHeight(0)
 {
 	UT_ASSERT(pSectionLayout);
 	m_pG = m_pSectionLayout->getDocLayout()->getGraphics();
@@ -316,6 +317,25 @@ void fp_Container::_drawBoundaries(dg_DrawArgs* pDA)
 }
 
 /*!
+ * Returns the maximum line height as determined from the layout method
+ * This used by the draw method to determine if a line should be drawn in
+ * a clipping rectangle
+ */
+UT_sint32 fp_Container::getMaxLineHeight(void) const
+{
+	return m_imaxLineHeight;
+}
+
+/*!
+ * Set the maximum line Height
+\params UT_sint32 iLineHeight the largest line height yet found.
+ */
+void fp_Container::setMaxLineHeight( UT_sint32 iLineHeight)
+{
+	m_imaxLineHeight = iLineHeight;
+}
+
+/*!
  Draw container content
  \param pDA Draw arguments
  */
@@ -327,19 +347,14 @@ void fp_Container::draw(dg_DrawArgs* pDA)
 	UT_sint32 i;
 	if(pClipRect)
 	{
-		ybot = pClipRect->height;
-		for(i = 0; i< count; i++)
-		{
-			fp_Line* pLine = (fp_Line*) m_vecLines.getNthItem(i);
-			ybot = UT_MAX(ybot,pLine->getHeight());
-		}
+		ybot = UT_MAX(pClipRect->height,getMaxLineHeight());
 		ytop = pClipRect->top;
         ybot += ytop + 1;
 	}
 	else
 	{
 		ytop = 0;
-		ybot = 32700;
+		ybot = 999999999;
 	}
 	bool bStop = false;
 	bool bStart = false;
@@ -649,6 +664,7 @@ void fp_Column::_drawBoundaries(dg_DrawArgs* pDA)
 */
 void fp_Column::layout(void)
 {
+	setMaxLineHeight(0);
 	UT_sint32 iYLayoutUnits = 0;
 	UT_sint32 iY = 0, iPrevY = 0;
 	double ScaleLayoutUnitsToScreen;
@@ -658,7 +674,8 @@ void fp_Column::layout(void)
 	for (UT_uint32 i=0; i < iCountLines; i++)
 	{
 		pLine = (fp_Line*) m_vecLines.getNthItem(i);
-
+		if(pLine->getHeight() > getMaxLineHeight())
+			setMaxLineHeight(pLine->getHeight());
 		UT_sint32 iLineHeightLayoutUnits = pLine->getHeightInLayoutUnits();
 //		UT_sint32 iLineMarginBefore = (i != 0) ? pLine->getMarginBefore() : 0;
 		UT_sint32 iLineMarginAfterLayoutUnits = pLine->getMarginAfterInLayoutUnits();

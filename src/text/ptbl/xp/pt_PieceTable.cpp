@@ -400,19 +400,13 @@ bool pt_PieceTable::getBounds(bool bEnd, PT_DocPosition & docPos) const
 	{
 		// NOTE: this gets called for every cursor motion
 		// TODO: be more efficient & cache the doc length
-		PT_DocPosition sum = 0;
-		pf_Frag * pfLast = NULL;
-
-		for (pf_Frag * pf = m_fragments.getFirst(); (pf); pf=pf->getNext())
+		// Sevior I did this 6/6/2001
+		if(m_fragments.areFragsDirty())
 		{
-			sum += pf->getLength();
-			pfLast = pf;
+			m_fragments.cleanFragsConst();
 		}
-
-		UT_ASSERT(pfLast && (pfLast->getType() == pf_Frag::PFT_EndOfDoc));
-		docPos = sum;
+		docPos = m_fragments.getLast()->getPos()+m_fragments.getLast()->getLength();
 	}
-
 	return res;
 }
 
@@ -427,18 +421,9 @@ PT_DocPosition pt_PieceTable::getStruxPosition(PL_StruxDocHandle sdh) const
 
 PT_DocPosition pt_PieceTable::getFragPosition(const pf_Frag * pfToFind) const
 {
-	PT_DocPosition sum = 0;
-
-	for (pf_Frag * pf = m_fragments.getFirst(); (pf); pf=pf->getNext())
-	{
-		if (pf == pfToFind)
-			return sum;
-
-		sum += pf->getLength();
-	}
-
-	UT_ASSERT(0);
-	return 0;
+	if(m_fragments.areFragsDirty())
+		m_fragments.cleanFragsConst();
+	return  pfToFind->getPos();
 }
 
 bool pt_PieceTable::getFragFromPosition(PT_DocPosition docPos,
@@ -446,47 +431,72 @@ bool pt_PieceTable::getFragFromPosition(PT_DocPosition docPos,
 										   PT_BlockOffset * pFragOffset) const
 {
 	// return the frag at the given doc position.
+//
+// Sevior do a binary search here now
+//
+	pf_Frag * pfLast = m_fragments.findFirstFragBeforePos(docPos);
 
-	PT_DocPosition sum = 0;
-	pf_Frag * pfLast = NULL;
-	
-	for (pf_Frag * pf = m_fragments.getFirst(); (pf); pf=pf->getNext())
+	if(pfLast)
 	{
-		if ((docPos >= sum) && (docPos < sum+pf->getLength()))
+		while(pfLast->getNext() && docPos >= pfLast->getPos()+pfLast->getLength())
 		{
-			*ppf = pf;
-			if (pFragOffset)
-				*pFragOffset = docPos - sum;
-
-			// a FmtMark has length zero.  we don't want to find it
-			// in this loop -- rather we want the thing just past it.
-			
-			UT_ASSERT(pf->getType() != pf_Frag::PFT_FmtMark);
-			
-			return true;
+			pfLast = pfLast->getNext();
 		}
-
-		sum += pf->getLength();
-		pfLast = pf;
+		if (pFragOffset)
+			*pFragOffset = docPos - pfLast->getPos();
+		*ppf = pfLast;
+		return true;
+		xxx_UT_DEBUGMSG(("SEVIOR: I found frag %d \n",getFragNumber(pfLast)));
 	}
-
-	// if we fall out of the loop, we didn't have a node
-	// at or around the document position requested.
-	// since we now have an EOD fragment, we should not
-	// ever see this -- unless the caller sends a bogus
-	// doc position.
 
 	UT_ASSERT(pfLast);
 	UT_ASSERT(pfLast->getType() == pf_Frag::PFT_EndOfDoc);
-
-	// TODO if (docPos > sum) we should probably complain...
 	
-	*ppf = pfLast;
-	if (pFragOffset)
-		*pFragOffset = docPos - sum;
-
 	return true;
 }
+	//  PT_DocPosition sum = 0;
+//  	pfLast = NULL;
+//  	pf_Frag * pf = NULL;
+//  	for (pf = m_fragments.getFirst(); (pf); pf=pf->getNext())
+//  	{
+//  		if ((docPos >= sum) && (docPos < sum+pf->getLength()))
+//  		{
+//  			*ppf = pf;
+//  			if (pFragOffset)
+//  				*pFragOffset = docPos - sum;
+
+//  			// a FmtMark has length zero.  we don't want to find it
+//  			// in this loop -- rather we want the thing just past it.
+			
+//  			UT_ASSERT(pf->getType() != pf_Frag::PFT_FmtMark);
+//  			UT_DEBUGMSG(("SEVIOR: Jeff finds frag %d at Pos %d \n",getFragNumber(pf),docPos));
+			
+//  			return true;
+//  		}
+
+//  		sum += pf->getLength();
+//  		pfLast = pf;
+//  	}
+
+//  	// if we fall out of the loop, we didn't have a node
+//  	// at or around the document position requested.
+//  	// since we now have an EOD fragment, we should not
+//  	// ever see this -- unless the caller sends a bogus
+//  	// doc position.
+
+//  	UT_ASSERT(pfLast);
+//  	UT_ASSERT(pfLast->getType() == pf_Frag::PFT_EndOfDoc);
+
+//  	// TODO if (docPos > sum) we should probably complain...
+	
+//  	*ppf = pfLast;
+//  	if (pFragOffset)
+//  		*pFragOffset = docPos - sum;
+//  	UT_DEBUGMSG(("SEVIOR: Jeff finds Last frag Number %d at Pos %d \n",getFragNumber(pf),docPos));
+
+
+//  	return true;
+//  }
 
 bool pt_PieceTable::getFragsFromPositions(PT_DocPosition dPos1, PT_DocPosition dPos2,
 											 pf_Frag ** ppf1, PT_BlockOffset * pOffset1,
@@ -581,30 +591,44 @@ bool pt_PieceTable::_getStruxFromPosition(PT_DocPosition docPos,
 {
 	// return the strux fragment immediately prior (containing)
 	// the given absolute document position.
-	
-	PT_DocPosition sum = 0;
-	pf_Frag * pfLastStrux = NULL;
-
-	for (pf_Frag * pf = m_fragments.getFirst(); (pf); pf=pf->getNext())
+	pf_Frag * pfFirst = m_fragments.findFirstFragBeforePos( docPos);
+	while(pfFirst && pfFirst->getPrev() && pfFirst->getPos()  >= docPos)
 	{
-		if (pf->getType() == pf_Frag::PFT_Strux)
-			pfLastStrux = pf;
-
-		sum += pf->getLength();
-
-		if (sum >= docPos)
-			goto FoundIt;
+		pfFirst = pfFirst->getPrev();
 	}
+	while(pfFirst && pfFirst->getPrev() && pfFirst->getType() !=pf_Frag::PFT_Strux)
+	{
+		pfFirst = pfFirst->getPrev();
+	}
+//	UT_DEBUGMSG(("SEVIOR: I find strux frag number %d  sum = %d at pos %d \n",getFragNumber(pfFirst),pfFirst->getPos(),docPos));
+  	pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *> (pfFirst);
+  	*ppfs = pfs;
+    return true;
+
+	//  PT_DocPosition sum = pfFirst->getPos();
+//  	pf_Frag * pfLastStrux = NULL;
+
+//  	for (pf_Frag * pf = pfFirst; (pf); pf=pf->getNext())
+//  	{
+//  		if (pf->getType() == pf_Frag::PFT_Strux)
+//  			pfLastStrux = pf;
+
+//  		sum += pf->getLength();
+
+//  		if (sum >= docPos)
+//  			goto FoundIt;
+//  	}
 
 	// if we fall out of the loop, we didn't have a text node
 	// at or around the document position requested.
 	// return the last strux in the document.
 
- FoundIt:
+//   FoundIt:
 
-	pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *> (pfLastStrux);
-	*ppfs = pfs;
-	return true;
+//  	pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *> (pfLastStrux);
+//  	UT_DEBUGMSG(("SEVIOR: Jeff find strux frag number %d  sum = %d at pos %d \n",getFragNumber(pfLastStrux),sum,docPos));
+//  	*ppfs = pfs;
+//      return true;
 }
 
 bool pt_PieceTable::_getStruxOfTypeFromPosition(PT_DocPosition dpos,

@@ -56,7 +56,9 @@ public:
 
 	inline UT_uint32		getLength(void) const	{ return m_length; }
 	pt_PieceTable *			getPieceTable(void) { return m_pPieceTable;}
-	fd_Field *				getField(void); 
+	fd_Field *				getField(void);
+	PT_DocPosition          getPos(void) const { return m_docPos;}
+	void                    setPos(PT_DocPosition pos) { m_docPos = pos;}
 	// createSpecialChangeRecord() constructs a change
 	// record which describes the fragment itself and
 	// not an actual change (editing) operation.  the
@@ -72,11 +74,13 @@ public:
 protected:
 	PFType					m_type;
 	UT_uint32				m_length;	/* in PT_DocPosition-space */
-	
 	pf_Frag *				m_next;
 	pf_Frag *				m_prev;
+	
     fd_Field *              m_pField;
 	pt_PieceTable *			m_pPieceTable;
+private:
+	PT_DocPosition          m_docPos;
 };
 
 #endif /* PF_FRAG_H */

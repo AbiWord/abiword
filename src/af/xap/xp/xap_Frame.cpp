@@ -49,6 +49,7 @@
 #include "xap_DialogFactory.h"
 #include "xap_Dialog_Id.h"
 #include "xap_Dlg_Zoom.h"
+#include "ut_sleep.h"
 
 /*****************************************************************/
 
@@ -78,8 +79,8 @@ XAP_Frame::XAP_Frame(XAP_App * app)
 	  m_bBackupRunning(false),
 	  m_bSpawnedRedraw(false),
 	  m_bExposePending(false),
-	  m_bIsExposedAreaAccessed(false)
-
+	  m_bIsExposedAreaAccessed(false),
+	  m_bClipLock(false)
 {
 	m_app->rememberFrame(this);
 	memset(m_szTitle,0,sizeof(m_szTitle));
@@ -107,7 +108,11 @@ XAP_Frame::XAP_Frame(XAP_Frame * f)
 	m_pData(0),
 	m_pInputModes(0),
 	m_iIdAutoSaveTimer(0),
-	m_bBackupRunning(false)
+	m_bBackupRunning(false),
+	m_bSpawnedRedraw(false),
+	m_bExposePending(false),
+	m_bIsExposedAreaAccessed(false),
+	m_bClipLock(false)
 {
 	m_app->rememberFrame(this, f);
 	memset(m_szTitle,0,sizeof(m_szTitle));
@@ -851,7 +856,22 @@ const UT_Rect * XAP_Frame::getPendingRect(void) const
 	return & m_PendingExposeArea;
 }
 
+bool XAP_Frame::getClipLock(void)
+{
+//  	while(m_bClipLock)
+//  	{
+//  		UT_usleep(100); // wait 100 microseconds...
+//  	}
+//  	m_bClipLock = true;
+	return true;
+}
 
+
+bool XAP_Frame::releaseClipLock(void)
+{
+	m_bClipLock = false;
+	return m_bClipLock;
+}
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////

@@ -700,54 +700,55 @@ void GR_UnixGraphics::scroll(UT_sint32 dx, UT_sint32 dy, XAP_Frame * pFrame)
 	if(pFrame != NULL)
 	{
 //
-// Handle pending expose 
+// Handle pending expose. The idea is that if there is an expose event that
+// has not yet been painted, we expand the expose area to take account of the
+// scroll we're about to make.
 //
-		while(pFrame->isExposedAreaAccessed())
+		if(pFrame->isExposePending())
 		{
-			UT_usleep(10); // 10 microseconds
+			while(pFrame->isExposedAreaAccessed())
+			{
+				UT_usleep(10); // 10 microseconds
+			}
+//
+// Don't let the repaint procede until after this adjustment
+//
+			pFrame->setExposedAreaAccessed(true);
+			exposeArea.top = pFrame->getPendingRect()->top;
+			exposeArea.left = pFrame->getPendingRect()->left;
+			exposeArea.width = pFrame->getPendingRect()->width;
+			exposeArea.height = pFrame->getPendingRect()->height;
+			if(dy < 0)
+			{
+				//
+				// We're moving up so height is increased top is reduced.
+				//
+				exposeArea.height -= dy;
+				doExposeEvent = true;
+			}
+			if(dy > 0)
+			{
+				exposeArea.top -= dy;
+				exposeArea.height += dy;
+				doExposeEvent = true;
+			}
+			if(dx < 0)
+			{
+				exposeArea.width -= dx;
+				doExposeEvent = true;
+			}
+			if(dx > 0)
+			{
+				//
+				// We're moving left so left is reduced
+				//
+				exposeArea.left += dx;
+				exposeArea.width += dx;
+				doExposeEvent = true;
+			}
+			pFrame->unionPendingRect(&exposeArea);
+			pFrame->setExposedAreaAccessed(false);
 		}
-		pFrame->setExposedAreaAccessed(true);
-		exposeArea.top = pFrame->getPendingRect()->top;
-		exposeArea.left = pFrame->getPendingRect()->left;
-		exposeArea.width = pFrame->getPendingRect()->width;
-		exposeArea.height = pFrame->getPendingRect()->height;
-		pFrame->setExposedAreaAccessed(false);
-		if(dy < 0)
-		{
-			//
-			// We're moving up so height is increased top is reduced.
-			//
-			exposeArea.height -= dy;
-			doExposeEvent = true;
-		}
-		if(dy > 0)
-		{
-			exposeArea.top -= dy;
-			exposeArea.height += dy;
-			doExposeEvent = true;
-		}
-		if(dx < 0)
-		{
-			exposeArea.width -= dx;
-			doExposeEvent = true;
-		}
-		if(dx > 0)
-		{
-			//
-			// We're moving left so left is reduced
-			//
-			exposeArea.left += dx;
-			exposeArea.width += dx;
-			doExposeEvent = true;
-		}
-		while(pFrame->isExposedAreaAccessed())
-		{
-			UT_usleep(10); // 10 microseconds
-		}
-		pFrame->setExposedAreaAccessed(true);
-		pFrame->unionPendingRect(&exposeArea);
-		pFrame->setExposedAreaAccessed(false);
-		pFrame->setExposePending(true);
 	}
 	if (dy > 0)
     {

@@ -790,6 +790,7 @@ void AP_LeftRuler::draw(const UT_Rect * pClipRect, AP_LeftRulerInfo & lfi)
 	if (pClipRect)
 	{
 		//UT_DEBUGMSG(("LeftRuler:: draw [clip %ld %ld %ld %ld]\n",pClipRect->left,pClipRect->top,pClipRect->width,pClipRect->height));
+		m_pFrame->getClipLock();
 		m_pG->setClipRect(pClipRect);
 	}
 	else
@@ -940,8 +941,10 @@ void AP_LeftRuler::draw(const UT_Rect * pClipRect, AP_LeftRulerInfo & lfi)
 	_drawMarginProperties(pClipRect, &lfi, GR_Graphics::CLR3D_Foreground);
 	
 	if (pClipRect)
+	{
 		m_pG->setClipRect(NULL);
-
+		m_pFrame->releaseClipLock();
+	}
 	m_lfi = lfi;
 }
 

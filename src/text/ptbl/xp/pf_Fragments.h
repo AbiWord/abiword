@@ -33,6 +33,7 @@
 
 #include <stdio.h>
 #include "pf_Frag.h"
+#include "ut_vector.h"
 
 class pf_Fragments
 {
@@ -43,17 +44,29 @@ public:
 	void					appendFrag(pf_Frag * pf);
 	void					insertFrag(pf_Frag * pfPlace, pf_Frag * pfNew);
 	void					unlinkFrag(pf_Frag * pf);
-	
+	void                    cleanFrags(void);
+	void                    cleanFragsConst(void) const;
+	pf_Frag *               getNthFrag( UT_uint32 nthFrag) const;
+	pf_Frag *               findFirstFragBeforePos(PT_DocPosition pos) const;
+	UT_uint32               getNumberOfFrags( void) const;
+	UT_uint32               getFragNumber( const pf_Frag * pf) const;
 	pf_Frag *				getFirst(void) const;
 	pf_Frag *				getLast(void) const;
+	void                    setFragsDirty(void) {m_bFragsClean = false;}
+	bool                    areFragsDirty( void) const { return !m_bFragsClean;}
 
 #ifdef PT_TEST
 	void					__dump(FILE * fp) const;
 #endif
 	
 protected:
+private:
 	pf_Frag *				m_pFirst;
 	pf_Frag *				m_pLast;
+	UT_Vector               m_vecFrags;
+	bool                    m_bFragsClean;
+
+
 };
 
 #endif /* PF_FRAGMENTS_H */

@@ -6260,7 +6260,9 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 		r.top = y;
 		r.width = width;
 		r.height = height;
-
+		XAP_Frame * pFrame = (XAP_Frame *) getParentData();
+		UT_ASSERT(pFrame);
+		pFrame->getClipLock();
 		m_pG->setClipRect(&r);
 	}
 
@@ -6437,6 +6439,9 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 
 	if (bClip)
 	{
+		XAP_Frame * pFrame = (XAP_Frame *) getParentData();
+		UT_ASSERT(pFrame);
+		pFrame->releaseClipLock();
 		m_pG->setClipRect(NULL);
 	}
 

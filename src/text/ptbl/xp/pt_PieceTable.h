@@ -181,10 +181,9 @@ public:
 									   const char ** pszName, const PD_Style ** ppStyle) const;
 
 	void					clearIfAtFmtMark(PT_DocPosition dpos);
-
+	UT_uint32               getFragNumber(pf_Frag * pFrag) const {return m_fragments.getFragNumber(pFrag);}
     pt_VarSet &             getVarSet(void) {return m_varset;};
     pf_Fragments &          getFragments(void) {return m_fragments;};
-	
 #ifdef PT_TEST
 	UT_TestStatus			__test_VerifyCoalescedFrags(FILE * fp) const;
 	void					__dump(FILE * fp) const;
