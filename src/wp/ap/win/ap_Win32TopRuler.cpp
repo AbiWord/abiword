@@ -28,6 +28,8 @@
 #include "xap_Win32App.h"
 #include "ap_Win32Frame.h"
 
+#include "fv_View.h"
+
 /*****************************************************************/
 
 #define GWL(hwnd)		(AP_Win32TopRuler*)GetWindowLong((hwnd), GWL_USERDATA)
@@ -196,6 +198,13 @@ LRESULT CALLBACK AP_Win32TopRuler::_TopRulerWndProc(HWND hwnd, UINT iMsg, WPARAM
 	
 	case WM_PAINT:
 		{
+//			const AV_View* pAView = getView();
+//			FV_View * pView = const_cast<FV_View *> pAView;
+			FV_View * pView = (FV_View *) pRuler->getView();
+			if(pView && (pView->getPoint() == 0))
+			{
+				return 0;
+			}
 			PAINTSTRUCT ps;
 			HDC hdc = BeginPaint(hwnd, &ps);
 			UT_Rect r(ps.rcPaint.left,ps.rcPaint.top,

@@ -566,26 +566,30 @@ LRESULT CALLBACK XAP_Win32Frame::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wPar
 		int nWidth = LOWORD(lParam);
 		int nHeight = HIWORD(lParam);
 
-		if (nWidth != (int) f->m_iSizeWidth && f->m_hwndRebar != NULL)
+		if( pView && !pView->isLayoutFilling() )
 		{
-			MoveWindow(f->m_hwndRebar, 0, 0, nWidth, f->m_iBarHeight, TRUE); 
-		}
+			f->_startViewAutoUpdater();
 
-		// leave room for the toolbars and the status bar
-		nHeight -= f->m_iBarHeight;
-		nHeight -= f->m_iStatusBarHeight;
+			if (nWidth != (int) f->m_iSizeWidth && f->m_hwndRebar != NULL)
+			{
+				MoveWindow(f->m_hwndRebar, 0, 0, nWidth, f->m_iBarHeight, TRUE); 
+			}
 
-		if (f->m_hwndContainer)
-			MoveWindow(f->m_hwndContainer, 0, f->m_iBarHeight, nWidth, nHeight, TRUE);
+			// leave room for the toolbars and the status bar
+			nHeight -= f->m_iBarHeight;
+			nHeight -= f->m_iStatusBarHeight;
 
-		if (f->m_hwndStatusBar)
-			MoveWindow(f->m_hwndStatusBar, 0, f->m_iBarHeight+nHeight, nWidth, f->m_iStatusBarHeight, TRUE);
+			if (f->m_hwndContainer)
+				MoveWindow(f->m_hwndContainer, 0, f->m_iBarHeight, nWidth, nHeight, TRUE);
+
+			if (f->m_hwndStatusBar)
+				MoveWindow(f->m_hwndStatusBar, 0, f->m_iBarHeight+nHeight, nWidth, f->m_iStatusBarHeight, TRUE);
 			
-		f->m_iSizeWidth = nWidth;
-		f->m_iSizeHeight = nHeight;
+			f->m_iSizeWidth = nWidth;
+			f->m_iSizeHeight = nHeight;
 
-		// If Dynamic Zoom recalculate zoom setting
-		f->updateZoom();
+			f->updateZoom();
+		}
 
 		return 0;
 	}
