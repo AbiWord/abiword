@@ -70,6 +70,7 @@ else
 endif
 
 DEFINES		=
+OPTIMIZER	=
 
 ifeq ($(ABI_OPT_PROF),1)
 OPTIMIZER   	= -pg -fprofile-arcs -ftest-coverage
