@@ -15,7 +15,7 @@ class ISpellChecker : public SpellChecker
 
 public:
 	ISpellChecker();
-	~ISpellChecker();
+	virtual ~ISpellChecker();
 
 	virtual SpellCheckResult	checkWord(const UT_UCSChar* word, size_t len);
 	virtual UT_Vector*			suggestWord(const UT_UCSChar* word, size_t len);

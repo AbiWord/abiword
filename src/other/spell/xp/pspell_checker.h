@@ -28,7 +28,7 @@ class PSpellChecker : public SpellChecker
 	friend class SpellManager;
 
 public:
-	~PSpellChecker();
+	virtual ~PSpellChecker();
 
 	virtual SpellChecker::SpellCheckResult checkWord (const UT_UCSChar * word, size_t len);
 	virtual UT_Vector * suggestWord (const UT_UCSChar * word, size_t len);
