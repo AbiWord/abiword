@@ -22,6 +22,7 @@
 *****************************************************************/
 
 #define WIN32_LEAN_AND_MEAN
+#include <stdlib.h>
 #include <windows.h>
 #include <commctrl.h>   // includes the common control header
 #include <crtdbg.h>
