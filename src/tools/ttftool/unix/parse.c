@@ -2,7 +2,9 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <stdio.h>
+#ifdef HAVE_MALLOC_H
 #include <malloc.h>
+#endif
 #include <string.h>
 #include "types.h"
 #include "proto.h"

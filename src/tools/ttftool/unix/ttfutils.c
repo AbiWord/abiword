@@ -1,6 +1,8 @@
 #include <sys/types.h>
 #include <unistd.h>
+#ifdef HAVE_MALLOC_H
 #include <malloc.h>
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
