@@ -613,6 +613,11 @@ bool	fp_TextRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitIn
 				|| bForce
 				)
 			{
+				UT_sint32 ispace = 0;
+				if(pSpan[i] == UCS_SPACE)
+				{
+					ispace = iCW;
+				} 
 				if (iLeftWidth <= iMaxLeftWidth)
 				{
 					si.iLeftWidth = iLeftWidth;
@@ -624,6 +629,7 @@ bool	fp_TextRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitIn
 //
 // Ignore trailing space when chosing break points
 //
+					UT_sint32 ispace = 0;
 					if((pSpan[i] == UCS_SPACE) && ((iLeftWidth - _getPrevContSpace(i,offset,pSpan,pCharWidths)) <= iMaxLeftWidth ))
 					{
 						si.iLeftWidth = iLeftWidth;

@@ -305,6 +305,19 @@ void fp_Line::updateBackgroundColor()
 		static_cast<fp_Run *>(m_vecRuns.getNthItem(i))->updateBackgroundColor();
 }
 
+UT_sint32 fp_Line::getFilledWidth(void)
+{
+	UT_sint32 width = 0;
+	UT_uint32 count = m_vecRuns.getItemCount();
+	UT_uint32 i = 0;
+	for(i=0;i<count;i++)
+	{
+		fp_Run * pRun = static_cast<fp_Run *>(m_vecRuns.getNthItem(i));
+		width += pRun->getWidth();
+	}
+	return width;
+}
+
 bool fp_Line::removeRun(fp_Run* pRun, bool bTellTheRunAboutIt)
 {
 	// need to tell the previous run to redraw, in case this run contained

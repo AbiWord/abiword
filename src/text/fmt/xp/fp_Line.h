@@ -110,7 +110,7 @@ public:
     virtual void        setHeight(UT_sint32) {}
 	virtual UT_sint32   getWidth(void) const { return m_iWidth;}
 	virtual UT_sint32   getDrawingWidth(void) const;
-	
+	UT_sint32           getFilledWidth(void);
     virtual bool        isVBreakable(void) { return false;}
     virtual bool        isHBreakable(void) {return true;}
 	virtual UT_sint32   wantVBreakAt(UT_sint32) { return 0;}
