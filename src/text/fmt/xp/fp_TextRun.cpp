@@ -2534,6 +2534,21 @@ void fp_TextRun::justify(UT_sint32 iAmount, UT_uint32 iSpacesInRun)
 		m_pRenderInfo->m_iLength = getLength();
 	
 		_setWidth(getWidth() + iAmount);
+
+#ifdef XP_UNIX_TARGET_GTK
+		// Because Pango does not yet support justification, we need to iterate over the raw
+		// text counting spaces; this is not required by the default graphics class, nor
+		// Uniscribe and for performance reasons it is therefore only conditionally compiled
+		// in; once Pango supports justification, this will not be needed, so this whole lot
+		// will be again removed
+		UT_uint32 iPosStart = getBlockOffset() + fl_BLOCK_STRUX_OFFSET;
+		PD_StruxIterator text(getBlock()->getStruxDocHandle(),iPosStart);
+		text.setUpperLimit(iPosStart + getLength() - 1);
+		m_pRenderInfo->m_pText = & text;
+#else
+		m_pRenderInfo->m_pText = NULL;
+#endif
+
 		m_pRenderInfo->m_iJustificationPoints = iSpacesInRun;
 		m_pRenderInfo->m_iJustificationAmount = iAmount;
 		getGraphics()->justify(*m_pRenderInfo);
@@ -2552,6 +2567,22 @@ UT_sint32 fp_TextRun::countJustificationPoints(bool bLast) const
 	UT_return_val_if_fail(m_pRenderInfo, 0);
 	m_pRenderInfo->m_iLength = getLength();
 
+	UT_return_val_if_fail(m_pRenderInfo->m_iLength > 0, 0);
+
+#ifdef XP_UNIX_TARGET_GTK
+	// Because Pango does not yet support justification, we need to iterate over the raw
+	// text counting spaces; this is not required by the default graphics class, nor
+	// Uniscribe and for performance reasons it is therefore only conditionally compiled
+	// in; once Pango supports justification, this will not be needed, so this whole lot
+	// will be again removed
+	UT_uint32 iPosStart = getBlockOffset() + fl_BLOCK_STRUX_OFFSET;
+	PD_StruxIterator text(getBlock()->getStruxDocHandle(),iPosStart);
+	text.setUpperLimit(iPosStart + getLength() - 1);
+	m_pRenderInfo->m_pText = & text;
+#else
+	m_pRenderInfo->m_pText = NULL;
+#endif
+	
 	m_pRenderInfo->m_bLastOnLine = bLast;
 	return getGraphics()->countJustificationPoints(*m_pRenderInfo);
 }
