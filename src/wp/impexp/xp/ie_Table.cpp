@@ -2005,6 +2005,9 @@ IE_Imp_TableHelper::IE_Imp_TableHelper (PD_Document * pDocument, pf_Frag_Strux *
 	m_bBlockInsertedForCell(false),
 	m_bCaptionOn(false)
 {
+	m_thead.clear();
+	m_tfoot.clear();
+	m_tbody.clear();
 	UT_DEBUGMSG(("TableHelper created document = %x \n",m_pDocument)); 
 }
 

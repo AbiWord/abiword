@@ -619,8 +619,14 @@ bool IE_Imp_XHTML::pasteFromBuffer(PD_DocumentRange * pDocRange,
 	UT_Error e = newXML->parse (&buf);
 	if(e != UT_OK)
 	{
+		UT_UTF8String sData;
+		sData.clear();
+		sData.append(reinterpret_cast<const char *>(pData), lenData);
 		UT_DEBUGMSG(("Error pasting HTML.... \n"));
-		UT_DEBUGMSG(("Data is %s Length of buffer is %d \n",buf.getPointer(0),lenData));
+		if(lenData < 10000)
+		{
+			UT_DEBUGMSG(("Data is %s Length of buffer is %d \n",sData.utf8_str(),lenData));
+		}
 		delete p;
 		delete newXML;
 		UNREFP( newDoc);

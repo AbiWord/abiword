@@ -117,7 +117,12 @@ static void _fatalErrorSAXFunc(void *ctx,
   UT_DEBUGMSG((" fatal SAX function error here \n"));
 
   UT_DEBUGMSG(("%s", errorMessage.c_str()));
+  xmlParserCtxt * pCtx = reinterpret_cast<xmlParserCtxt *>(ctx);
+  UT_XML * pXML = static_cast<UT_XML *>(pCtx->userData);
+  UT_DEBUGMSG((" userData pointer is %x \n",pXML));
   UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+  pXML->stop();
+
 }
 
 #ifdef __MRC__
