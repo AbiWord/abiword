@@ -255,6 +255,15 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 				strcpy(szFile, m_szInitialPathname + (pLastSlash-szDir+1));
 			else
 				strcpy(szFile, m_szInitialPathname);
+
+			// if the file name has an extension, remove it
+			// (if we don't, and the document is of a different
+			// type than the one initially selected in the dialogue
+			// and the user just clicks OK, we get type - extension
+			// mismatch)
+			char * dot = strrchr(szFile, '.');
+			if(dot)
+				*dot = 0;
 		}
 	}
 
