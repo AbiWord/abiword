@@ -47,7 +47,7 @@ BeginSet(EnUS)
 
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_NEW,		"New", 		tb_new_xpm,		NULL, "Create a new document")	
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_OPEN,		"Open",		tb_open_xpm,	NULL, "Open an existing document")
-	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVE,		"Save", 	tb_save_xpm,	NULL, "Save the document to a file")
+	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVE,		"Save", 	tb_save_xpm,	NULL, "Save the document")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVEAS,		"Save As", 	tb_save_as_xpm,	NULL, "Save the document under a different name")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_PRINT,		"Print",	tb_print_xpm,	NULL, "Print the document")
 
