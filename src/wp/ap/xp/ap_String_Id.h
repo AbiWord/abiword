@@ -64,7 +64,6 @@ dcl(DLG_Spell_ChangeAll,		"Change All")
 dcl(DLG_Spell_Ignore,			"Ignore")
 dcl(DLG_Spell_IgnoreAll,		"Ignore All")
 dcl(DLG_Spell_AddToDict,		"Add to Dictionary")
-dcl(DLG_Spell_Cancel,			"Cancel")
 dcl(DLG_Spell_NoSuggestions,		"(no spelling suggestions)")
 
 /* Paragraph dialog */
