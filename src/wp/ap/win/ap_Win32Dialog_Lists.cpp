@@ -151,6 +151,7 @@ BOOL AP_Win32Dialog_Lists::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam
 		AP_RID_DIALOG_LIST_STATIC_FORMAT		, AP_STRING_ID_DLG_Lists_Format,
 		AP_RID_DIALOG_LIST_STATIC_FONT			, AP_STRING_ID_DLG_Lists_Font,
 		AP_RID_DIALOG_LIST_BTN_FONT				, AP_STRING_ID_DLG_Lists_ButtonFont,
+		AP_RID_DIALOG_LIST_STATIC_FORMAT		, AP_STRING_ID_DLG_Lists_DelimiterString,
 		AP_RID_DIALOG_LIST_STATIC_LEVEL			, AP_STRING_ID_DLG_Lists_Level,
 		AP_RID_DIALOG_LIST_STATIC_START_AT		, AP_STRING_ID_DLG_Lists_Start,
 		AP_RID_DIALOG_LIST_STATIC_LIST_ALIGN	, AP_STRING_ID_DLG_Lists_Align,
@@ -206,6 +207,7 @@ BOOL AP_Win32Dialog_Lists::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam
 	activate();
 
 	m_pAutoUpdateLists = UT_Timer::static_constructor(autoupdateLists, this);
+	m_bDestroy_says_stopupdating = false;
 	m_pAutoUpdateLists->set(500);	// auto-updater at 1/2 Hz
 
 	return 1;							// 1 == we did not call SetFocus()
@@ -284,6 +286,7 @@ BOOL AP_Win32Dialog_Lists::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	case AP_RID_DIALOG_LIST_EDIT_INDENT_ALIGN:
 	case AP_RID_DIALOG_LIST_EDIT_START_AT:
 	case AP_RID_DIALOG_LIST_EDIT_LEVEL:
+	case AP_RID_DIALOG_LIST_EDIT_DECIMAL:
 		if (wNotifyCode == EN_CHANGE)
 		{
 			_getDisplayedData(wId);
@@ -362,6 +365,10 @@ void AP_Win32Dialog_Lists::destroy(void)
 
 	// Check that our hWnd still is valid. This is not always the case,
 	// such as when shutting down the application.
+	m_bDestroy_says_stopupdating = true;
+	while (m_bAutoUpdate_happening_now == true) ;
+	m_pAutoUpdateLists->stop();
+	setAnswer(AP_Dialog_Lists::a_CLOSE);	
 	if (IsWindow(m_hThisDlg))
 	{
 		_win32Dialog.destroyWindow();
@@ -727,8 +734,10 @@ static const UT_sint32 rgCustomIds[] =
 	AP_RID_DIALOG_LIST_EDIT_FORMAT,
 	AP_RID_DIALOG_LIST_STATIC_FONT,
 	AP_RID_DIALOG_LIST_STATIC_LEVEL,
-	AP_RID_DIALOG_LIST_EDIT_LEVEL,
-	AP_RID_DIALOG_LIST_SPIN_LEVEL,
+	AP_RID_DIALOG_LIST_STATIC_DECIMAL,
+	AP_RID_DIALOG_LIST_EDIT_DECIMAL,
+	//AP_RID_DIALOG_LIST_EDIT_LEVEL,
+	//AP_RID_DIALOG_LIST_SPIN_LEVEL,
 	AP_RID_DIALOG_LIST_BTN_FONT
 };
 
@@ -795,17 +804,16 @@ static void updateControlValue(XAP_Win32DialogHelper& helper, UT_sint32 id, LPCS
 //
 void AP_Win32Dialog_Lists::_setDisplayedData()
 {
-	updateControlValue(_win32Dialog, AP_RID_DIALOG_LIST_EDIT_START_AT,
-						getiStartValue());
+	updateControlValue(_win32Dialog, AP_RID_DIALOG_LIST_EDIT_START_AT,getiStartValue());
+	updateControlValue(_win32Dialog, AP_RID_DIALOG_LIST_EDIT_FORMAT	, getDelim());
+	updateControlValue(_win32Dialog, AP_RID_DIALOG_LIST_EDIT_LEVEL	, getiLevel());
+	updateControlValue(_win32Dialog, AP_RID_DIALOG_LIST_EDIT_DECIMAL, getDecimal());
 
 	updateControlValue(_win32Dialog,AP_RID_DIALOG_LIST_EDIT_LIST_ALIGN,
 						UT_convertToDimensionlessString(getfAlign(), ".2"));
 
 	updateControlValue(_win32Dialog, AP_RID_DIALOG_LIST_EDIT_INDENT_ALIGN,
 						UT_convertToDimensionlessString(getfIndent(), ".2"));
-
-	updateControlValue(_win32Dialog, AP_RID_DIALOG_LIST_EDIT_FORMAT	, getDelim());
-	updateControlValue(_win32Dialog, AP_RID_DIALOG_LIST_EDIT_LEVEL	, getiLevel());
 
 	_setListType(getNewListType());
 
@@ -869,6 +877,11 @@ void AP_Win32Dialog_Lists::_getDisplayedData(UT_sint32 controlId)
 	{
 		_win32Dialog.getControlText(AP_RID_DIALOG_LIST_EDIT_FORMAT, szTmp, sizeof(szTmp));
 		copyCharToDelim(szTmp);
+	}
+	if (controlId == -1 || controlId == AP_RID_DIALOG_LIST_EDIT_DECIMAL)
+	{
+		_win32Dialog.getControlText(AP_RID_DIALOG_LIST_EDIT_DECIMAL, szTmp, sizeof(szTmp));
+		copyCharToDecimal(szTmp);
 	}
 }
 
@@ -1014,12 +1027,12 @@ void AP_Win32Dialog_Lists::_selectFont()
 }
 
 
-void AP_Win32Dialog_Lists::autoupdateLists(UT_Worker * pTimer)
+void AP_Win32Dialog_Lists::autoupdateLists(UT_Worker * pWorker)
 {
-	UT_ASSERT(pTimer);
+	UT_ASSERT(pWorker);
 	// this is a static callback method and does not have a 'this' pointer.
 	AP_Win32Dialog_Lists* pDialog =
-		reinterpret_cast<AP_Win32Dialog_Lists*>(pTimer->getInstanceData());
+		reinterpret_cast<AP_Win32Dialog_Lists*>(pWorker->getInstanceData());
 	// Handshaking code. Plus only update if something in the document
 	// changed.
 
@@ -1035,8 +1048,15 @@ void AP_Win32Dialog_Lists::autoupdateLists(UT_Worker * pTimer)
 		if (!pView || pView->getTick() != pDialog->getTick())
 		{
 			pDialog->setTick(pView ? pView->getTick() : 0);
+			pDialog->PopulateDialogData();
+			pDialog->_setDisplayedData();
+			pDialog->clearDirty();
+			// This is done improperly by _setDisplayedData()
+			// since it leaves the Apply button enabled.
 			pDialog->_enableControls();
-			pDialog->_previewExposed();
+			// This is done by _setDisplayedData();
+			//pDialog->_previewExposed();
+
 		}
 	}
 }

@@ -82,6 +82,8 @@ private:
 	void					_selectFont();
 	virtual const XML_Char*	_getDingbatsFontName() const;
 
+	bool					m_bDestroy_says_stopupdating;
+	bool					m_bAutoUpdate_happening_now;
 	UT_Timer*				m_pAutoUpdateLists;
 	XAP_Win32DialogHelper	_win32Dialog;
 	XAP_Win32PreviewWidget*	m_pPreviewWidget;
