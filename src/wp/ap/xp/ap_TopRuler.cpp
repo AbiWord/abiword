@@ -1295,8 +1295,9 @@ bool AP_TopRuler::isMouseOverTab(UT_uint32 x, UT_uint32 y)
 // Sevior: Look to cache this.
 	// first hit-test against the tab toggle control
 	(static_cast<FV_View *>(m_pView))->getTopRulerInfo(&m_infoCache);
-	UT_sint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
-	UT_sint32 xStartPixel = xFixed + (UT_sint32) m_infoCache.m_xPageViewMargin;
+	//UT_sint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
+	//UT_sint32 xStartPixel = xFixed + (UT_sint32) m_infoCache.m_xPageViewMargin;
+
 
 	UT_Rect rToggle;
 
@@ -1318,10 +1319,26 @@ bool AP_TopRuler::isMouseOverTab(UT_uint32 x, UT_uint32 y)
 	eTabLeader iLeader;
 	ap_RulerTicks tick(m_pG,m_dim);
 	UT_sint32 iTab = _findTabStop(&m_infoCache, x, s_iFixedHeight/2 + s_iFixedHeight/4 - 3, anchor, iType, iLeader);
+
+	UT_sint32 xAbsLeft = _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn);
+    UT_sint32 xrel;
+
+#ifdef BIDI_ENABLED
+	UT_sint32 xAbsRight = xAbsLeft + m_infoCache.u.c.m_xColumnWidth;
+	bool bRTLglobal;	
+	XAP_App::getApp()->getPrefsValueBool((XML_Char*)AP_PREF_KEY_DefaultDirectionRtl, &bRTLglobal);
+	
+	bool bRTLpara = (static_cast<FV_View *>(m_pView))->getCurrentBlock()->getDominantDirection() == FRIBIDI_TYPE_RTL;
+	if(bRTLpara)
+		xrel = xAbsRight - anchor;
+	else
+#endif
+		xrel = anchor - xAbsLeft;
+	
 	if (iTab >= 0)
 	{
 		m_pG->setCursor(GR_Graphics::GR_CURSOR_LEFTRIGHT);
-		_displayStatusMessage(AP_STRING_ID_TabStopStatus, tick, anchor - xStartPixel);
+		_displayStatusMessage(AP_STRING_ID_TabStopStatus, tick, xrel);
 		return true;
 	}
 
@@ -1337,19 +1354,40 @@ bool AP_TopRuler::isMouseOverTab(UT_uint32 x, UT_uint32 y)
 	if (rLeftIndent.containsPoint(x,y))
 	{
 		m_pG->setCursor(GR_Graphics::GR_CURSOR_LEFTRIGHT);
-		_displayStatusMessage(AP_STRING_ID_LeftIndentStatus, tick,  rLeftIndent.left - xStartPixel);
+#ifdef BIDI_ENABLED	
+	if(bRTLpara)
+		xrel = xAbsRight - rLeftIndent.left;
+	else
+#endif
+		xrel = rLeftIndent.left - xAbsLeft;
+		
+		_displayStatusMessage(AP_STRING_ID_LeftIndentStatus, tick,  xrel);
 		return true;
 	}
 	if (rRightIndent.containsPoint(x,y))
 	{
 		m_pG->setCursor(GR_Graphics::GR_CURSOR_LEFTRIGHT);
-		_displayStatusMessage(AP_STRING_ID_RightIndentStatus, tick, rRightIndent.left - xStartPixel);
+#ifdef BIDI_ENABLED	
+	if(bRTLpara)
+		xrel = xAbsRight - rRightIndent.left;
+	else
+#endif
+		xrel = rRightIndent.left - xAbsLeft;
+		
+		_displayStatusMessage(AP_STRING_ID_RightIndentStatus, tick, xrel);
 		return true;
 	}
 	if (rFirstLineIndent.containsPoint(x,y))
 	{
 		m_pG->setCursor(GR_Graphics::GR_CURSOR_LEFTRIGHT);
-		_displayStatusMessage(AP_STRING_ID_FirstLineIndentStatus, tick, rFirstLineIndent.left - xStartPixel);
+#ifdef BIDI_ENABLED	
+	if(bRTLpara)
+		xrel = xAbsRight - rFirstLineIndent.left;
+	else
+#endif
+		xrel = rFirstLineIndent.left - xAbsLeft;
+		
+		_displayStatusMessage(AP_STRING_ID_FirstLineIndentStatus, tick, xrel);
 		return true;
 	}
 
@@ -1374,13 +1412,13 @@ bool AP_TopRuler::isMouseOverTab(UT_uint32 x, UT_uint32 y)
 	if (rLeftMargin.containsPoint(x,y))
 	{
 		m_pG->setCursor(GR_Graphics::GR_CURSOR_LEFTRIGHT);
-		_displayStatusMessage(AP_STRING_ID_LeftMarginStatus, tick, rLeftMargin.left - xStartPixel);
+		_displayStatusMessage(AP_STRING_ID_LeftMarginStatus, tick, m_infoCache.u.c.m_xaLeftMargin);
 		return true;
 	}
 	if (rRightMargin.containsPoint(x,y))
 	{
 		m_pG->setCursor(GR_Graphics::GR_CURSOR_LEFTRIGHT);
-		_displayStatusMessage(AP_STRING_ID_RightMarginStatus, tick, rRightMargin.left - xStartPixel);
+		_displayStatusMessage(AP_STRING_ID_RightMarginStatus, tick, m_infoCache.u.c.m_xaRightMargin);
 		return true;
 	}
 	AP_FrameData * pFrameData = (AP_FrameData *)m_pFrame->getFrameData();
@@ -1634,6 +1672,7 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */,
 		else
 #endif		
 		m_draggingCenter = xAbsLeft + xgrid;
+		UT_DEBUGMSG(("m_draggingCenter = %d\n",m_draggingCenter));
 		
 		_getTabStopRect(&m_infoCache,m_draggingCenter,&m_draggingRect);
 		if (!m_bBeforeFirstMotion && (m_draggingCenter != oldDraggingCenter))
@@ -1719,6 +1758,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 	
 	if (xgrid == m_oldX) // Not moved - clicked and released
 	{
+		UT_DEBUGMSG(("release only\n"));
 		m_draggingWhat = DW_NOTHING;
 		m_pG->setCursor(GR_Graphics::GR_CURSOR_DEFAULT);
 		return;
@@ -1970,8 +2010,18 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 		 	UT_sint32 anchor;
        		eTabType iType;
 			eTabLeader iLeader;
+    		UT_sint32 xrel;
+	
+#ifdef BIDI_ENABLED	
+			bool bRTLpara = (static_cast<FV_View *>(m_pView))->getCurrentBlock()->getDominantDirection() == FRIBIDI_TYPE_RTL;
 
-			UT_sint32 iTab = _findTabStop(&m_infoCache, xgrid+xAbsLeft, s_iFixedHeight/2 + s_iFixedHeight/4 - 3, anchor, iType, iLeader);
+			if(bRTLpara)
+				xrel = xAbsRight - xgrid;
+			else
+#endif
+				xrel = xgrid + xAbsLeft;
+
+			UT_sint32 iTab = _findTabStop(&m_infoCache, xrel, s_iFixedHeight/2 + s_iFixedHeight/4 - 3, anchor, iType, iLeader);
 			
 			UT_DEBUGMSG (("iTab: %i, m_draggingTab: %i\n", iTab, m_draggingTab));
 			
@@ -2000,8 +2050,25 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 
 void AP_TopRuler::_setTabStops(ap_RulerTicks tick, UT_sint32 iTab, eTabLeader iLeader, bool bDelete)
 {
+
+	
 	UT_sint32 xAbsLeft = _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn);
-	double dxrel = tick.scalePixelDistanceToUnits(m_draggingCenter-xAbsLeft);
+    UT_sint32 xrel;
+	
+#ifdef BIDI_ENABLED	
+	//bool bRTLglobal;	
+	//XAP_App::getApp()->getPrefsValueBool((XML_Char*)AP_PREF_KEY_DefaultDirectionRtl, &bRTLglobal);
+	
+	bool bRTLpara = (static_cast<FV_View *>(m_pView))->getCurrentBlock()->getDominantDirection() == FRIBIDI_TYPE_RTL;
+	UT_sint32 xAbsRight = xAbsLeft + m_infoCache.u.c.m_xColumnWidth;
+
+	if(bRTLpara)
+		xrel = xAbsRight - m_draggingCenter;
+	else
+#endif
+		xrel = m_draggingCenter-xAbsLeft;
+	
+	double dxrel = tick.scalePixelDistanceToUnits(xrel);
 	
 	UT_String buf;
 
