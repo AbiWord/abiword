@@ -34,7 +34,8 @@ enum AV_Focus
 {
 	AV_FOCUS_HERE,
 	AV_FOCUS_NEARBY,
-	AV_FOCUS_NONE
+	AV_FOCUS_NONE,
+        AV_FOCUS_MODELESS
 };
 
 typedef enum _AV_ScrollCmd

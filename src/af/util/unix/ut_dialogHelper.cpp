@@ -107,7 +107,7 @@ static gboolean focus_in_event_Modeless(GtkWidget *widget,GdkEvent */*event*/,gp
       AV_View * pView = pFrame->getCurrentView();
       if(pView!= NULL)
       {
-            pView->focusChange(AV_FOCUS_NEARBY);
+            pView->focusChange(AV_FOCUS_MODELESS);
       }
       return FALSE;
 }

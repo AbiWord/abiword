@@ -168,6 +168,17 @@ void FV_View::focusChange(AV_Focus focus)
 			_drawSelection();
 		}
 		break;
+	case AV_FOCUS_MODELESS:
+		if (isSelectionEmpty())
+		{
+			_fixInsertionPointCoords();
+			_drawInsertionPoint();
+		}
+		else
+		{
+			_drawSelection();
+		}
+		break;
 	case AV_FOCUS_NONE:
 		if (isSelectionEmpty())
 		{
@@ -3714,7 +3725,7 @@ void FV_View::_drawInsertionPoint()
 {
 	if(m_focus==AV_FOCUS_NONE)
 		return;
-	if (m_bCursorBlink && m_focus==AV_FOCUS_HERE)
+	if (m_bCursorBlink && (m_focus==AV_FOCUS_HERE || m_focus==AV_FOCUS_MODELESS) )
 	{
 		if (m_pAutoCursorTimer == NULL) {
 			m_pAutoCursorTimer = UT_Timer::static_constructor(_autoDrawPoint, this, m_pG);
