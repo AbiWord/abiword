@@ -43,8 +43,10 @@
 #include "xap_App.h"
 #include "xap_EncodingManager.h"
 
-#include "ut_debugmsg.h"
 #include "ut_string_class.h"
+
+// We terminate each line with a \r\n sequence to make IE think that
+// our XHTML is really HTML. This is a stupid IE bug
 
 /*****************************************************************/
 /*****************************************************************/
@@ -57,6 +59,7 @@
 
 // we use a reference-counted sniffer
 static IE_Exp_HTML_Sniffer * m_sniffer = 0;
+static IE_Exp_HTML4_Sniffer * m_4sniffer = 0;
 
 ABI_FAR extern "C"
 int abi_plugin_register (XAP_ModuleInfo * mi)
@@ -65,19 +68,22 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 	if (!m_sniffer)
 	{
 		m_sniffer = new IE_Exp_HTML_Sniffer ();
+		m_4sniffer = new IE_Exp_HTML4_Sniffer ();
 	}
 	else
 	{
 		m_sniffer->ref();
+		m_4sniffer->ref();
 	}
 
 	mi->name = "HTML Exporter";
-	mi->desc = "Export HTML Documents";
+	mi->desc = "Export HTML4.0 and XHTML Documents";
 	mi->version = ABI_VERSION_STRING;
 	mi->author = "Abi the Ant";
 	mi->usage = "No Usage";
 
 	IE_Exp::registerExporter (m_sniffer);
+	IE_Exp::registerExporter (m_4sniffer);
 	return 1;
 }
 
@@ -91,12 +97,20 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 	mi->usage = 0;
 
 	UT_ASSERT (m_sniffer);
+	UT_ASSERT (m_4sniffer);
 
 	IE_Exp::unregisterExporter (m_sniffer);
+	IE_Exp::unregisterExporter (m_4sniffer);
+
 	if (!m_sniffer->unref())
 	{
 		m_sniffer = 0;
 	}
+
+	if(!m_4sniffer->unref())
+	  {
+	    m_4sniffer = 0;
+	  }
 
 	return 1;
 }
@@ -131,8 +145,34 @@ bool IE_Exp_HTML_Sniffer::getDlgLabels(const char ** pszDesc,
 									   const char ** pszSuffixList,
 									   IEFileType * ft)
 {
-	*pszDesc = "XHTML (.html, .htm, .xhtml)";
-	*pszSuffixList = "*.html; *.htm; *.xhtml";
+	*pszDesc = "XHTML 1.0 (.xhtml)";
+	*pszSuffixList = "*.xhtml";
+	*ft = getFileType();
+	return true;
+}
+
+// HTML 4
+
+bool IE_Exp_HTML4_Sniffer::recognizeSuffix(const char * szSuffix)
+{
+	return (!(UT_stricmp(szSuffix,".html"))
+		|| !(UT_stricmp(szSuffix,".htm")));
+}
+
+UT_Error IE_Exp_HTML4_Sniffer::constructExporter(PD_Document * pDocument,
+													 IE_Exp ** ppie)
+{
+	IE_Exp_HTML * p = new IE_Exp_HTML(pDocument, true);
+	*ppie = p;
+	return UT_OK;
+}
+
+bool IE_Exp_HTML4_Sniffer::getDlgLabels(const char ** pszDesc,
+									   const char ** pszSuffixList,
+									   IEFileType * ft)
+{
+	*pszDesc = "HTML 4.0 (.html, .htm)";
+	*pszSuffixList = "*.html; *.htm";
 	*ft = getFileType();
 	return true;
 }
@@ -140,8 +180,8 @@ bool IE_Exp_HTML_Sniffer::getDlgLabels(const char ** pszDesc,
 /*****************************************************************/
 /*****************************************************************/
 
-IE_Exp_HTML::IE_Exp_HTML(PD_Document * pDocument)
-	: IE_Exp(pDocument), m_pListener(0)
+IE_Exp_HTML::IE_Exp_HTML(PD_Document * pDocument, bool is4)
+  : IE_Exp(pDocument), m_pListener(0), m_bIs4(is4)
 {
 	m_error = 0;
 }
@@ -166,7 +206,7 @@ class s_HTML_Listener : public PL_Listener
 {
 public:
 	s_HTML_Listener(PD_Document * pDocument,
-						IE_Exp_HTML * pie);
+			IE_Exp_HTML * pie, bool is4);
 	virtual ~s_HTML_Listener();
 
 	virtual bool		populate(PL_StruxFmtHandle sfh,
@@ -213,6 +253,7 @@ protected:
 	bool				m_bNextIsSpace;
 	bool				m_bWroteText;
 	bool				m_bFirstWrite;
+        bool                            m_bIs4;
 	const PP_AttrProp*	m_pAP_Span;
 
 	// Need to look up proper type, and place to stick #defines...
@@ -248,16 +289,6 @@ static char* removeWhiteSpace(const char * text)
 	return ref;
 }
 
-extern "C" { // for MRC compiler (Mac)
-	static int s_str_compare (const void * a, const void * b)
-	{
-		const char * a1 = (const char *)a;
-		const char * b1 = (const char *)b;
-		UT_DEBUGMSG(("DOM: comparing %s && %s\n", a1, b1));
-		return UT_strcmp (a1, b1);
-	}
-}
-
 /*!	This function returns true if the given property is a valid CSS
 	property.  It is based on the list in pp_Property.cpp, and, as such,
 	is quite brittle.
@@ -275,15 +306,6 @@ static bool is_CSS(const char* property)
 										"text-decoration", "text-indent",
 										"widows", "width"};
 
-#if 0
-	// TODO: why doesn't this work? make this work
-	const char * prop = (const char *) bsearch (property, prop_list, 
-												sizeof (prop_list)/sizeof(prop_list[0]),
-												sizeof (char *), 
-												s_str_compare);
-
-	return ((prop != NULL) ? true : false);
-#else
 	#define PropListLen sizeof(prop_list)/sizeof(prop_list[0])
 
 	for (UT_uint32 i = 0; i < PropListLen; i++) 
@@ -294,7 +316,6 @@ static bool is_CSS(const char* property)
 	return false;
 
 	#undef PropListLen
-#endif
 }
 
 
@@ -305,7 +326,7 @@ void s_HTML_Listener::_closeSection(void)
 		return;
 	}
 	
-	m_pie->write("</div>\n");
+	m_pie->write("</div>\r\n");
 	m_bInSection = false;
 	return;
 }
@@ -321,25 +342,25 @@ void s_HTML_Listener::_closeTag(void)
 	{
 		if(!m_bWroteText)
 		{
-			m_pie->write("<br />\n");
+			m_pie->write("<br />\r\n");
 		}
-		m_pie->write("</p>\n");
+		m_pie->write("</p>\r\n");
 	}
 
 	else if(m_iBlockType == BT_HEADING1)
-		m_pie->write("</h1>\n");
+		m_pie->write("</h1>\r\n");
 
 	else if(m_iBlockType == BT_HEADING2)
-		m_pie->write("</h2>\n");
+		m_pie->write("</h2>\r\n");
 
 	else if(m_iBlockType == BT_HEADING3)
-		m_pie->write("</h3>\n");
+		m_pie->write("</h3>\r\n");
 
 	else if(m_iBlockType == BT_BLOCKTEXT)
-		m_pie->write("</blockquote>\n");
+		m_pie->write("</blockquote>\r\n");
 
 	else if(m_iBlockType == BT_PLAINTEXT)
-		m_pie->write("</pre>\n");
+		m_pie->write("</pre>\r\n");
 
 	else if(m_iBlockType == BT_NUMBEREDLIST || m_iBlockType == BT_BULLETLIST)
 	{	/* do nothing, lists are handled differently, as they have multiple tags */ }
@@ -347,7 +368,7 @@ void s_HTML_Listener::_closeTag(void)
         // Add "catchall" for now
 
 	else
-	  m_pie->write("</p>\n");
+	  m_pie->write("</p>\r\n");
 
 	m_bInBlock = false;
 	return;
@@ -399,15 +420,15 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 					if(UT_strcmp((const char*) szStyleType, "Bullet List") != 0)
 					{
 						m_iBlockType = BT_NUMBEREDLIST;
-						m_pie->write("\n<ol class=\"");
+						m_pie->write("\r\n<ol class=\"");
 					}
 					else 
 					{
 						m_iBlockType = BT_BULLETLIST;
-						m_pie->write("\n<ul class=\"");
+						m_pie->write("\r\n<ul class=\"");
 					}
 					_outputInheritanceLine((const char*) szValue);
-					m_pie->write("\">\n");
+					m_pie->write("\">\r\n");
 					pushed = new UT_uint16(m_iBlockType);
 					m_utsListType.push(pushed);
 				}
@@ -421,7 +442,7 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 					 	"Bullet List") == 0 ||
 					 _inherits((const char*) szStyleType, "BulletList"))) ) )
 				{						/* list type switched */
-					m_pie->write("</li>\n");
+					m_pie->write("</li>\r\n");
 
 					m_iBlockType = (m_iBlockType == BT_NUMBEREDLIST ?
 						BT_BULLETLIST : BT_NUMBEREDLIST);
@@ -431,22 +452,22 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 						if(m_iPrevListDepth == m_iListDepth &&
 							*popped == m_iBlockType)
 						{
-							m_pie->write("<li>\n");
+							m_pie->write("<li>\r\n");
 							break;
 						}
 						else if(m_iPrevListDepth == m_iListDepth)
 						{
 							if(m_iBlockType == BT_BULLETLIST)
 							{
-								m_pie->write("</ol>\n<ul class=\"");
+								m_pie->write("</ol>\r\n<ul class=\"");
 							}
 							else
 							{
-								m_pie->write("</ul>\n<ol class=\"");
+								m_pie->write("</ul>\r\n<ol class=\"");
 							}
 
 							_outputInheritanceLine((const char*) szValue);
-							m_pie->write("\">\n");
+							m_pie->write("\">\r\n");
 							pushed = new UT_uint16(m_iBlockType);
 							m_utsListType.push(pushed);
 
@@ -454,34 +475,34 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 						}
 						else if(*popped == BT_NUMBEREDLIST)
 						{
-							m_pie->write("</ol>\n");
+							m_pie->write("</ol>\r\n");
 						}
 						else if(*popped == BT_BULLETLIST)
 						{
-							m_pie->write("</ul>\n");
+							m_pie->write("</ul>\r\n");
 						}
 
-						if(--m_iPrevListDepth > 0) m_pie->write("</li>\n");
+						if(--m_iPrevListDepth > 0) m_pie->write("</li>\r\n");
 					}
 							
 				}
 				else
 				{
-					m_pie->write("</li>\n");
+					m_pie->write("</li>\r\n");
 					for(UT_uint16 i = 0; i < m_iPrevListDepth - m_iListDepth;
 						i++)
 					{
 						if(m_utsListType.pop((void**) &popped) &&
 							*popped == BT_NUMBEREDLIST)
 						{
-							m_pie->write("</ol>\n");
+							m_pie->write("</ol>\r\n");
 						}
 						else
 						{
-							m_pie->write("</ul>\n");
+							m_pie->write("</ul>\r\n");
 						}
 						DELETEP(popped);
-						m_pie->write("</li>\n");
+						m_pie->write("</li>\r\n");
 					}
 				}
 				m_pie->write("<li");
@@ -495,11 +516,11 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 					if(m_utsListType.pop((void**) &popped) &&
 						*popped == BT_NUMBEREDLIST)
 					{
-						m_pie->write("</li>\n</ol>\n");
+						m_pie->write("</li>\r\n</ol>\r\n");
 					}
 					else
 					{
-						m_pie->write("</li>\n</ul>\n");
+						m_pie->write("</li>\r\n</ul>\r\n");
 					}
 					DELETEP(popped);
 				}
@@ -511,7 +532,7 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 					// <p style="Heading 1"> ...
 
 					m_iBlockType = BT_HEADING1;
-					m_pie->write("\n<h1");
+					m_pie->write("\r\n<h1");
 					if(_inherits((const char*) szValue, "Heading1"))
 					{
 						m_pie->write(" class=\"");
@@ -526,7 +547,7 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 					// <p style="Heading 2"> ...
 
 					m_iBlockType = BT_HEADING2;
-					m_pie->write("\n<h2");
+					m_pie->write("\r\n<h2");
 					if(_inherits((const char*) szValue, "Heading2"))
 					{
 						m_pie->write(" class=\"");
@@ -541,7 +562,7 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 					// <p style="Heading 3"> ...
 
 					m_iBlockType = BT_HEADING3;
-					m_pie->write("\n<h3");
+					m_pie->write("\r\n<h3");
 					if(_inherits((const char*) szValue, "Heading3"))
 					{
 						m_pie->write(" class=\"");
@@ -614,11 +635,11 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 				if(m_utsListType.pop((void**) &popped) &&
 					*popped == BT_NUMBEREDLIST)
 				{
-					m_pie->write("</li>\n</ol>\n");
+					m_pie->write("</li>\r\n</ol>\r\n");
 				}
 				else
 				{
-					m_pie->write("</li>\n</ul>\n");
+					m_pie->write("</li>\r\n</ul>\r\n");
 				}
 				DELETEP(popped);
 			}
@@ -739,7 +760,7 @@ void s_HTML_Listener::_openSection(PT_AttrPropIndex api)
 		_outputBegin(api);
 	}
 
-	m_pie->write("<div>\n");
+	m_pie->write("<div>\r\n");
 }
 
 void s_HTML_Listener::_convertColor(char* szDest, const char* pszColor)
@@ -1406,85 +1427,43 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 	const PP_AttrProp * pAP = NULL;
 	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
 
-#if 0
-	if (!XAP_EncodingManager::get_instance()->cjk_locale())
-	{
-	    m_pie->write("<?xml version=\"1.0\" encoding=\"");
-		// TODO Use charset of document instead of charset of machine.
-	    m_pie->write(XAP_EncodingManager::get_instance()->getNativeEncodingName());
-	    m_pie->write("\"?>\n");
-	}
+	// we always encode as UTF-8
+	if ( !m_bIs4 )
+	  {
+	    m_pie->write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n");
+	    m_pie->write("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\r\n");
+	  }
 	else
-	{
-	    m_pie->write("<?xml version=\"1.0\"?>\n");
-	};
-#else
-	// we always encode as UTF-8
-	m_pie->write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-#endif
-	m_pie->write("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n");
+	  {
+	    m_pie->write("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\" \"http://www.w3.org/TR/REC-html40/loose.dtd\">\r\n");
+	  }
 
-	m_pie->write("<!-- ================================================================================  -->\n");
-	m_pie->write("<!-- This HTML file was created by AbiWord.                                            -->\n");
-	m_pie->write("<!-- AbiWord is a free, Open Source word processor.                                    -->\n");
-	m_pie->write("<!-- You may obtain more information about AbiWord at www.abisource.com                -->\n");
-	m_pie->write("<!-- ================================================================================  -->\n");
-	m_pie->write("\n");
+	m_pie->write("<!-- ================================================================================  -->\r\n");
+	m_pie->write("<!-- This HTML file was created by AbiWord.                                            -->\r\n");
+	m_pie->write("<!-- AbiWord is a free, Open Source word processor.                                    -->\r\n");
+	m_pie->write("<!-- You may obtain more information about AbiWord at www.abisource.com                -->\r\n");
+	m_pie->write("<!-- ================================================================================  -->\r\n");
+	m_pie->write("\r\n");
 
-	if (XAP_App::s_szBuild_ID && XAP_App::s_szBuild_ID[0])
-	{
-		m_pie->write("<!--         Build_ID          = ");
-		m_pie->write(XAP_App::s_szBuild_ID);
-		m_pie->write(" -->\n");
-	}
-	if (XAP_App::s_szBuild_Version && XAP_App::s_szBuild_Version[0])
-	{
-		m_pie->write("<!--         Build_Version     = ");
-		m_pie->write(XAP_App::s_szBuild_Version);
-		m_pie->write(" -->\n");
-	}
-	if (XAP_App::s_szBuild_Options && XAP_App::s_szBuild_Options[0])
-	{
-		m_pie->write("<!--         Build_Options     = ");
-		m_pie->write(XAP_App::s_szBuild_Options);
-		m_pie->write(" -->\n");
-	}
-	if (XAP_App::s_szBuild_Target && XAP_App::s_szBuild_Target[0])
-	{
-		m_pie->write("<!--         Build_Target      = ");
-		m_pie->write(XAP_App::s_szBuild_Target);
-		m_pie->write(" -->\n");
-	}
-	if (XAP_App::s_szBuild_CompileTime && XAP_App::s_szBuild_CompileTime[0])
-	{
-		m_pie->write("<!--         Build_CompileTime = ");
-		m_pie->write(XAP_App::s_szBuild_CompileTime);
-		m_pie->write(" -->\n");
-	}
-	if (XAP_App::s_szBuild_CompileDate && XAP_App::s_szBuild_CompileDate[0])
-	{
-		m_pie->write("<!--         Build_CompileDate = ");
-		m_pie->write(XAP_App::s_szBuild_CompileDate);
-		m_pie->write(" -->\n");
-	}
-	
-	m_pie->write("\n");	
-	m_pie->write("<html xmlns=\"http://www.w3.org/1999/xhtml\">\n");
-	m_pie->write("<head>\n");
-#if 0
-	m_pie->write("<meta http-equiv=\"content-type\" content=\"text/html; charset=");
-	// TODO Use charset of document instead of charset of machine.
-	m_pie->write(XAP_EncodingManager::get_instance()->getNativeEncodingName());
-	m_pie->write("\" />\n");
-#else
+	if ( !m_bIs4 )
+	  {
+	    m_pie->write("<html xmlns=\"http://www.w3.org/1999/xhtml\">\r\n");
+	  }
+	else
+	  {
+	    m_pie->write("<html>\r\n");
+	  }
+
+	m_pie->write("<head>\r\n");
+
 	// we always encode as UTF-8
-	m_pie->write("<meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\" />\n");
-#endif
+	m_pie->write("<meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\" />\r\n");
+
 	m_pie->write("<title>");
 	m_pie->write(m_pie->getFileName());
-	m_pie->write("</title>\n");
-	m_pie->write("<style type=\"text/css\">\n");
-	m_pie->write("body\n{\n\t");
+	m_pie->write("</title>\r\n");
+	m_pie->write("<style type=\"text/css\">\r\n");
+	m_pie->write("body\r\n{\r\n\t");
 	if(bHaveProp && pAP)
 	{							// global page styles refer to the <body> tag
 		PD_Style *pStyle = NULL;
@@ -1513,7 +1492,7 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 				}						// only quote non-keyword family names
 				else
 					m_pie->write(szValue);
-				m_pie->write(";\n\t");
+				m_pie->write(";\r\n\t");
 			}
 		}
 
@@ -1525,7 +1504,7 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 		if (*szValue != '#')
 			m_pie->write("#");
 		m_pie->write(szValue);
-		m_pie->write(";\n}\n\n@media print\n{\n\tbody\n\t{\n\t\t");
+		m_pie->write(";\r\n}\r\n\r\n@media print\r\n{\r\n\tbody\r\n\t{\r\n\t\t");
 		
 		szValue = PP_evalProperty("page-margin-top",
 								  NULL, NULL, pAP, m_pDocument, true);
@@ -1539,7 +1518,7 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 		
 		szValue = PP_evalProperty("page-margin-left",
 								  NULL, NULL, pAP, m_pDocument, true);
-		m_pie->write(";\n\t\tpadding-left: ");
+		m_pie->write(";\r\n\t\tpadding-left: ");
 		m_pie->write(szValue);
 
 		szValue = PP_evalProperty("page-margin-right",
@@ -1547,7 +1526,7 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 		m_pie->write("; padding-right: ");
 		m_pie->write(szValue);
 		
-		m_pie->write(";\n\t}\n}\n\n");
+		m_pie->write(";\r\n\t}\r\n}\r\n\r\n");
 	}
 
 	const PD_Style* p_pds;
@@ -1581,7 +1560,7 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 
 			m_pie->write(".");			// generic class qualifier, CSS
 			m_pie->write(myStyleName);
-			m_pie->write("\n{");
+			m_pie->write("\r\n{");
 
 			FREEP(myStyleName);
 
@@ -1591,7 +1570,7 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 				if(!is_CSS(static_cast<const char*>(szName)))
 					continue;
 				
-				m_pie->write("\n\t");
+				m_pie->write("\r\n\t");
 				m_pie->write(szName);
 				m_pie->write(": ");
 				m_pie->write(szValue);
@@ -1602,7 +1581,7 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 			{
 				if(!is_CSS(static_cast<const char*>(szName)))
 					continue;
-				m_pie->write("\n\t");
+				m_pie->write("\r\n\t");
 				m_pie->write(szName);
 				m_pie->write(": ");
 				if (UT_strcmp(szName, "font-family") == 0 &&
@@ -1626,31 +1605,25 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 				m_pie->write(";");
 			}
 
-			m_pie->write("\n}\n\n");
+			m_pie->write("\r\n}\r\n\r\n");
 		}
 	}
 		
-	m_pie->write("</style>\n");
-	m_pie->write("</head>\n");
+	m_pie->write("</style>\r\n");
+	m_pie->write("</head>\r\n");
 	m_pie->write("<body>");
 
 	m_bFirstWrite = false;
 }
 
 s_HTML_Listener::s_HTML_Listener(PD_Document * pDocument,
-								 IE_Exp_HTML * pie)
+				 IE_Exp_HTML * pie, bool is4):
+  m_pDocument (pDocument), m_pie(pie), m_bInSection(false),
+  m_bInBlock(false), m_bInSpan(false), m_bNextIsSpace(false),
+  m_bWroteText(false), m_bFirstWrite(true), m_bIs4(is4),
+  m_pAP_Span(0), m_iBlockType(0), m_iListDepth(0),
+  m_iPrevListDepth(0), m_iImgCnt(0)
 {
-	m_pDocument = pDocument;
-	m_pie = pie;
-	m_bInSection = false;
-	m_bInBlock = false;
-	m_bInSpan = false;
-	m_bNextIsSpace = false;
-	m_bWroteText = false;
-	m_bFirstWrite = true;
-	m_iListDepth = 0;
-	m_iPrevListDepth = 0;
-	m_iImgCnt = 0;
 }
 
 s_HTML_Listener::~s_HTML_Listener()
@@ -1659,11 +1632,11 @@ s_HTML_Listener::~s_HTML_Listener()
 	_closeTag();
 	if(m_iListDepth > 0)
 	{
-		m_pie->write("</li>\n");
+		m_pie->write("</li>\r\n");
 		if(m_iBlockType == BT_NUMBEREDLIST)
-			m_pie->write("</ol>\n");
+			m_pie->write("</ol>\r\n");
 		else
-			m_pie->write("</ul>\n");
+			m_pie->write("</ul>\r\n");
 	}
 	_closeSection();
 	_handleDataItems();
@@ -1674,8 +1647,8 @@ s_HTML_Listener::~s_HTML_Listener()
 		DELETEP(popped);
 	}
 	
-	m_pie->write("</body>\n");
-	m_pie->write("</html>\n");
+	m_pie->write("</body>\r\n");
+	m_pie->write("</html>\r\n");
 }
 
 bool s_HTML_Listener::populate(PL_StruxFmtHandle /*sfh*/,
@@ -1726,7 +1699,7 @@ bool s_HTML_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 				m_pie->write("\" src=\"");
 				m_pie->write(m_pie->getFileName());
 				m_pie->write(buf);
-				m_pie->write("\" />\n");
+				m_pie->write("\" />\r\n");
 				return true;
 
 			case PTO_Field:
@@ -1881,7 +1854,7 @@ bool s_HTML_Listener::signal(UT_uint32 /* iSignal */)
 
 UT_Error IE_Exp_HTML::_writeDocument(void)
 {
-	m_pListener = new s_HTML_Listener(getDoc(),this);
+	m_pListener = new s_HTML_Listener(getDoc(),this, m_bIs4);
 	if (!m_pListener)
 		return UT_IE_NOMEMORY;
 	if (!getDoc()->tellListener(static_cast<PL_Listener *>(m_pListener)))
@@ -1923,7 +1896,6 @@ void s_HTML_Listener::_handleDataItems(void)
 	  
 	  while (cnt < len)
 	    {
-	      xxx_UT_DEBUGMSG(("DOM: len: %d cnt: %d\n", len, cnt));
 	      cnt += fwrite (pByteBuf->getPointer(cnt), sizeof(UT_Byte), len-cnt, fp);
 	    }
 	  

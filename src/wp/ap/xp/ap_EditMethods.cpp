@@ -1754,7 +1754,7 @@ Defun1(fileSaveAs)
 Defun1(fileSaveAsWeb)
 {
   XAP_Frame * pFrame = static_cast<XAP_Frame *>(pAV_View->getParentData());
-  IEFileType ieft = IE_Exp::fileTypeForSuffix (".html");
+  IEFileType ieft = IE_Exp::fileTypeForSuffix (".xhtml");
   char * pNewFile = NULL;
   bool bOK = s_AskForPathname(pFrame,true,pFrame->getFilename(),&pNewFile,&ieft);
   
@@ -1800,7 +1800,7 @@ Defun1(filePreviewWeb)
 
   // we do this because we don't want to change the default
   // document extension or rename what we're working on
-  errSaved = pAV_View->cmdSaveAs(szTempFileName, IE_Exp::fileTypeForSuffix(".html"), false);
+  errSaved = pAV_View->cmdSaveAs(szTempFileName, IE_Exp::fileTypeForSuffix(".xhtml"), false);
 
   if(errSaved != UT_OK)
     {

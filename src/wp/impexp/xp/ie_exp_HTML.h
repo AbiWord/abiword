@@ -44,10 +44,26 @@ public:
 										IE_Exp ** ppie);
 };
 
+class IE_Exp_HTML4_Sniffer : public IE_ExpSniffer
+{
+	friend class IE_Exp;
+
+public:
+	IE_Exp_HTML4_Sniffer () {}
+	virtual ~IE_Exp_HTML4_Sniffer () {}
+
+	virtual bool recognizeSuffix (const char * szSuffix);
+	virtual bool getDlgLabels (const char ** szDesc,
+							   const char ** szSuffixList,
+							   IEFileType * ft);
+	virtual UT_Error constructExporter (PD_Document * pDocument,
+										IE_Exp ** ppie);
+};
+
 class IE_Exp_HTML : public IE_Exp
 {
 public:
-	IE_Exp_HTML(PD_Document * pDocument);
+	IE_Exp_HTML(PD_Document * pDocument, bool is4 = false);
 	virtual ~IE_Exp_HTML();
 
 	static bool		RecognizeSuffix(const char * szSuffix);
@@ -63,6 +79,7 @@ protected:
 
  private:	
 	s_HTML_Listener *	m_pListener;
+	bool                    m_bIs4;
 };
 
 #endif /* IE_EXP_HTML_H */

@@ -92,6 +92,7 @@ void IE_ImpExp_RegisterXP ()
 	IE_Exp::registerExporter(new IE_Exp_MsWord_97_Sniffer ());
 #endif	
 	IE_Exp::registerExporter(new IE_Exp_XSL_FO_Sniffer ());
+	IE_Exp::registerExporter(new IE_Exp_HTML4_Sniffer ());
 	IE_Exp::registerExporter(new IE_Exp_HTML_Sniffer ());
 	IE_Exp::registerExporter(new IE_Exp_ISCII_Sniffer ());
 	IE_Exp::registerExporter(new IE_Exp_LaTeX_Sniffer ());

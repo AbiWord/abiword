@@ -509,72 +509,9 @@ s_AbiWord_1_Listener::s_AbiWord_1_Listener(PD_Document * pDocument,
 	m_pie->write("<!-- =====================================================================  -->\n");
 	m_pie->write("\n");
 
-	m_pie->write("<!--         Build_ID          = ");
-	if (XAP_App::s_szBuild_ID && XAP_App::s_szBuild_ID[0])
-	{
-		m_pie->write(XAP_App::s_szBuild_ID);
-	}
-	else
-	{
-		m_pie->write("(none)");
-	}
-	m_pie->write(" -->\n");
-	m_pie->write("<!--         Build_Version     = ");
-	if (XAP_App::s_szBuild_Version && XAP_App::s_szBuild_Version[0])
-	{
-		m_pie->write(XAP_App::s_szBuild_Version);
-	}
-	else
-	{
-		m_pie->write("(none)");
-	}
-	m_pie->write(" -->\n");
-	m_pie->write("<!--         Build_Options     = ");
-	if (XAP_App::s_szBuild_Options && XAP_App::s_szBuild_Options[0])
-	{
-		m_pie->write(XAP_App::s_szBuild_Options);
-	}
-	else
-	{
-		m_pie->write("(none)");
-	}
-	m_pie->write(" -->\n");
-	m_pie->write("<!--         Build_Target      = ");
-	if (XAP_App::s_szBuild_Target && XAP_App::s_szBuild_Target[0])
-	{
-		m_pie->write(XAP_App::s_szBuild_Target);
-	}
-	else
-	{
-		m_pie->write("(none)");
-	}
-	m_pie->write(" -->\n");
-	m_pie->write("<!--         Build_CompileTime = ");
-	if (XAP_App::s_szBuild_CompileTime && XAP_App::s_szBuild_CompileTime[0])
-	{
-		m_pie->write(XAP_App::s_szBuild_CompileTime);
-	}
-	else
-	{
-		m_pie->write("(none)");
-	}
-	m_pie->write(" -->\n");
-	m_pie->write("<!--         Build_CompileDate = ");
-	if (XAP_App::s_szBuild_CompileDate && XAP_App::s_szBuild_CompileDate[0])
-	{
-		m_pie->write(XAP_App::s_szBuild_CompileDate);
-	}
-	else
-	{
-		m_pie->write("(none)");
-	}
-	m_pie->write(" -->\n");
-	m_pie->write("\n");
-
 	// end of preamble.
 	// now we begin the actual document.
-	
-	
+		
 	_handleStyles();
 	_handleIgnoredWords();
 	_handleLists();
