@@ -84,7 +84,7 @@ class GR_Win32Graphics : public GR_Graphics
 {
 public:
 	GR_Win32Graphics(HDC, HWND, XAP_App *);					/* for screen */
-	GR_Win32Graphics(HDC, const DOCINFO *, XAP_App *);		/* for printing */
+	GR_Win32Graphics(HDC, const DOCINFO *, XAP_App *, HGLOBAL hDevMode = NULL);	/* for printing */
 	~GR_Win32Graphics();
 
 	virtual void			drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff);
@@ -187,6 +187,7 @@ private:
 	// since we have to construct a screen graphics before we can print, this should guarantee
 	// us the correct hdc
 	static UT_sint32        s_iScreenResolution;
+ 	HGLOBAL					m_hDevMode;
 	
 #ifdef BIDI_ENABLED
 	UT_UCSChar*				m_remapIndices;
