@@ -199,8 +199,8 @@ private:
 	UT_RGBColor				m_curColor;
 	GdkPixbuf *				m_saveBuf;
 	UT_Rect *				m_saveRect;
-	bool                    m_bIsSymbolFont;
-	bool                    m_bIsDingbatFont;
+	bool                    m_bIsSymbol;       
+	bool                    m_bIsDingbat;       
 };
 
 #endif /* GR_UNIXGRAPHICS_H */

@@ -111,7 +111,9 @@ public:
 	virtual void fillRect(GR_Color3D c, UT_Rect &r);
 	virtual void setPageSize(char* pageSizeName, UT_uint32 iwidth = 0, UT_uint32 iheight=0);
 	virtual void setPageCount(UT_uint32 iCount) { m_iPageCount = iCount;}
-	
+	virtual void	  saveRectangle(UT_Rect & r) {}
+	virtual void	  restoreRectangle() {}
+
 #ifdef WITH_PANGO
 private:
 	virtual void _drawFT2Bitmap(UT_sint32 x, UT_sint32 y, FT_Bitmap * pBitmap) const;

@@ -3505,6 +3505,10 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		}
 		else if (strcmp((char*)pKeyword, "itap") == 0)
 		{
+			if(!m_pImportFile)
+			{
+				return true;
+			}
 			m_currentRTFState.m_paraProps.m_tableLevel = param;
 //
 // Look to see if the nesting level of our tables has changed.

@@ -407,8 +407,11 @@ void s_HTML_Listener::_closeTable()
 
 void s_HTML_Listener::_closeCell()
 {
+  if(mTableHelper.getNestDepth() <1)
+  {
+	  return;
+  }
   m_pie->write("</td>\r\n");
-
   if ( mTableHelper.getNumCols () == mTableHelper.getRight () )
     {
       // logical end of a row
@@ -480,7 +483,10 @@ void s_HTML_Listener::_openCell(PT_AttrPropIndex api)
 	{
 		return;
 	}
-
+	if(mTableHelper.getNestDepth() < 1)
+	{
+		_openTable(api);
+	}
 	const PP_AttrProp * pAP = NULL;
 	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
 
@@ -2214,11 +2220,18 @@ bool s_HTML_Listener::populateStrux(PL_StruxDocHandle sdh,
 
 	case PTX_SectionCell:
 	  {
-	    mTableHelper.OpenCell(pcr->getIndexAP()) ;
-	    _closeSpan();
-	    _closeTag();
-	    _openCell(pcr->getIndexAP());
-	    return true;
+		  if(mTableHelper.getNestDepth() <1)
+		  {
+			  mTableHelper.OpenTable(sdh,pcr->getIndexAP()) ;
+			  _closeSpan();
+			  _closeTag();
+			  _openTable(pcr->getIndexAP());
+		  }
+		  mTableHelper.OpenCell(pcr->getIndexAP()) ;
+		  _closeSpan();
+		  _closeTag();
+		  _openCell(pcr->getIndexAP());
+		  return true;
 	  }
 
 	case PTX_EndTable:
@@ -2233,6 +2246,11 @@ bool s_HTML_Listener::populateStrux(PL_StruxDocHandle sdh,
 	  {
 	    _closeTag();
 	    _closeCell();
+		if(mTableHelper.getNestDepth() <1)
+		{
+			return true;
+		}
+
 	    mTableHelper.CloseCell();
 	    return true;
 	  }

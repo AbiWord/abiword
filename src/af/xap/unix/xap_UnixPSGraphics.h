@@ -116,7 +116,9 @@ public:
 	virtual void fillRect(GR_Color3D c, UT_Rect &r);
 	virtual void setPageSize(char* pageSizeName, UT_uint32 iwidth = 0, UT_uint32 iheight=0);
 	virtual void setPageCount(UT_uint32 iCount) { m_iPageCount = iCount;}
-	
+	virtual void	  saveRectangle(UT_Rect & r) {}
+	virtual void	  restoreRectangle() {}
+
 
 protected:
 	UT_uint32		_scale(UT_uint32 units) const;

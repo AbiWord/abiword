@@ -377,6 +377,8 @@ GR_UnixGraphics::GR_UnixGraphics(GdkWindow * win, XAP_UnixFontManager * fontMana
 	m_cs = GR_Graphics::GR_COLORSPACE_COLOR;
 	m_cursor = GR_CURSOR_INVALID;
 	setCursor(GR_CURSOR_DEFAULT);
+	m_bIsSymbol = false;
+	m_bIsDingbat = false;
 
 #if (!defined(WITH_PANGO) || !defined(USE_XFT))
 
@@ -500,7 +502,7 @@ void GR_UnixGraphics::drawGlyph(UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff)
 
 #ifdef USE_XFT
 	UT_uint32 iChar = Char;
-	if(m_bIsSymbolFont && iChar < 255  && iChar >= 32)
+	if(m_bIsSymbol && iChar < 255  && iChar >= 32)
 	{
 		iChar = adobeToUnicode(Char);
 		UT_DEBUGMSG(("DrawGlyph remapped %d to %d \n",Char,iChar));
@@ -553,14 +555,14 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 		return;
 	
 	yoff += m_pXftFont->ascent;
-	if(m_bIsSymbolFont && pCharWidths == NULL)
+	if(m_bIsSymbol && pCharWidths == NULL)
 	{
 		UT_DEBUGMSG(("FIXME: Put some code here!!! \n"));
 	}
 
 	if (!pCharWidths)
 	{
-		if(!m_bIsSymbolFont)
+		if(!m_bIsSymbol)
 		{
 			XftDrawString32(m_pXftDraw, &m_XftColor, m_pXftFont, xoff, yoff,
 							const_cast<XftChar32*> (pChars + iCharOffset), iLength);
@@ -594,7 +596,7 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 		UT_uint32 uChar = (UT_uint32) pCharSpec[0].ucs4;
 		pCharSpec[0].x = xoff;
 		pCharSpec[0].y = yoff;
-		if(m_bIsSymbolFont && uChar < 255 && uChar >=32)
+		if(m_bIsSymbol && uChar < 255 && uChar >=32)
 		{
 			pCharSpec[0].ucs4 = (FT_UInt) adobeToUnicode(uChar);
 			UT_DEBUGMSG(("DrawGlyph remapped %d to %d \n",uChar,pCharSpec[0].ucs4));
@@ -602,7 +604,7 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 		for (int i = 1; i < iLength; ++i)
 		{
 			uChar = (UT_uint32) pCharSpec[i].ucs4;
-			if(m_bIsSymbolFont && uChar < 255 && uChar >=32)
+			if(m_bIsSymbol && uChar < 255 && uChar >=32)
 			{
 				pCharSpec[i].ucs4 = (FT_UInt) adobeToUnicode(uChar);
 			}
@@ -790,20 +792,32 @@ void GR_UnixGraphics::setFont(GR_Font * pFont)
 	//   so I will not meddle with this, but it needs to be
 	//   investigated by someone who knows better -- Tomas
 	
-	
+	m_bIsSymbol = false;
+	m_bIsDingbat = false;
 	if(m_pFont && (pUFont->getUnixFont() == m_pFont->getUnixFont()) &&
 	   (pUFont->getSize() == m_pFont->getSize()))
 		return;
 
 	m_pFont = pUFont;
-	const char * szFontName = m_pFont->getUnixFont()->getName();
-	m_bIsSymbolFont = false;
-	m_bIsDingbatFont = false;
+	const char * szFontName = UT_lowerString(m_pFont->getUnixFont()->getName());
+	if(strstr(szFontName,"symbol") != NULL)
+	{
+		m_bIsSymbol = true;
+		if(strstr(szFontName,"star") != NULL)
+		{
+			m_bIsSymbol = false;
+		}
+		UT_DEBUGMSG(("UnixGraphics: Found Symbol font \n"));
+	}
+	if(strstr(szFontName,"dingbat") != NULL)
+	{
+		m_bIsDingbat = true;
+	}
 #ifdef USE_XFT
 	UT_uint32 size = pUFont->getSize();
 	if(strstr(szFontName,"Symbol") != NULL)
 	{
-		m_bIsSymbolFont = true;
+		m_bIsSymbol = true;
 		UT_DEBUGMSG(("unixGraphics: Found Symbol Font! \n"));
 	}
 	if (size < MAX_ABI_GDK_FONT_SIZE)
@@ -866,7 +880,7 @@ UT_uint32 GR_UnixGraphics::measureUnRemappedChar(const UT_UCSChar c)
 	if (m_bLayoutUnits)
 	{
 		xxx_UT_DEBUGMSG(("Using measureUnRemappedChar in layout units\n"));
-		if(!m_bIsSymbolFont)
+		if(!m_bIsSymbol)
 		{
 			width = m_pFont->getUnixFont()->measureUnRemappedChar(c, m_pFont->getSize());
 		}
@@ -881,7 +895,7 @@ UT_uint32 GR_UnixGraphics::measureUnRemappedChar(const UT_UCSChar c)
 		xxx_UT_DEBUGMSG(("Using measureUnRemappedChar in screen units\n"));
 		XGlyphInfo extents;
 		UT_UCSChar cc = c;
-		if(m_bIsSymbolFont)
+		if(m_bIsSymbol)
 		{
 			cc = adobeToUnicode((UT_uint32) cc);
 		}

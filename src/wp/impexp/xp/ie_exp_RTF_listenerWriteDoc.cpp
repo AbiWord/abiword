@@ -834,6 +834,14 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 
 void s_RTF_ListenerWriteDoc::_open_cell(PT_AttrPropIndex api)
 {
+//
+// If we copy text to the clipboard we may not cover a open table strux.
+// Put this in to prevent crashes.
+//
+	if(m_Table.getNestDepth() < 1)
+	{
+		_open_table(api);
+	}
 	UT_sint32 iOldRow = m_iTop;
 	UT_sint32 i =0;
 	m_Table.OpenCell(api);
@@ -1197,6 +1205,10 @@ void s_RTF_ListenerWriteDoc::_open_table(PT_AttrPropIndex api)
 
 void s_RTF_ListenerWriteDoc::_close_cell(void)
 {
+	if(m_Table.getNestDepth() < 1)
+	{
+		return;
+	}
 	if(m_Table.getNestDepth() < 2)
 	{
 		m_pie->_rtf_keyword("cell");

@@ -1667,8 +1667,8 @@ void fp_TableContainer::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition
 void fp_TableContainer::resize(UT_sint32 n_rows, UT_sint32 n_cols)
 {
   
-  if (n_rows != m_iRows ||
-      n_cols != m_iCols)
+  if ((n_rows != m_iRows) ||
+     ( n_cols != m_iCols))
   {
 	  fp_CellContainer * child = (fp_CellContainer *) getNthCon(0);
       while(child)
@@ -2338,6 +2338,7 @@ void  fp_TableContainer::_size_request_init(void)
   {
 	  getNthRow(row)->requisition = 0;
   }
+  m_iCols =  m_vecColumns.getItemCount();
   for (col = 0; col < m_iCols; col++)
   {
 	  getNthCol(col)->requisition = 0;
@@ -2669,7 +2670,7 @@ void  fp_TableContainer::_size_request_pass2(void)
   if (m_bIsHomogeneous)
   {
       max_width = 0;
-      
+      m_iCols = m_vecColumns.getItemCount();
       for (col = 0; col < m_iCols; col++)
 	  {
 		  max_width = UT_MAX (max_width, getNthCol(col)->requisition);
@@ -2795,6 +2796,7 @@ void  fp_TableContainer::_size_allocate_init(void)
    *  Those values are modified by the children that occupy
    *  the rows and cols.
    */
+  m_iCols = m_vecColumns.getItemCount();
   for (col = 0; col < m_iCols; col++)
   {
       getNthCol(col)->allocation = getNthCol(col)->requisition;
@@ -2955,6 +2957,8 @@ void  fp_TableContainer::_size_allocate_init(void)
   /* Loop over the columns and set the expand and shrink values
    *  if the column can be expanded or shrunk.
    */
+
+  m_iCols = m_vecColumns.getItemCount();
   for (col = 0; col < m_iCols; col++)
   {
       if (getNthCol(col)->empty)
@@ -3025,6 +3029,7 @@ void  fp_TableContainer::_size_allocate_pass1(void)
   if (m_bIsHomogeneous)
   {
       nexpand = 0;
+	  m_iCols = m_vecColumns.getItemCount();
       for (col = 0; col < m_iCols; col++)
 	  {
 		  if (getNthCol(col)->expand)
@@ -3057,6 +3062,7 @@ void  fp_TableContainer::_size_allocate_pass1(void)
       nexpand = 0;
       nshrink = 0;
       
+	  m_iCols = m_vecColumns.getItemCount();
       for (col = 0; col < m_iCols; col++)
 	  {
 		  width += getNthCol(col)->requisition;
@@ -3102,6 +3108,7 @@ void  fp_TableContainer::_size_allocate_pass1(void)
 		  while (total_nshrink > 0 && extra > 0)
 		  {
 			  nshrink = total_nshrink;
+			  m_iCols = m_vecColumns.getItemCount();
 			  for (col = 0; col < m_iCols; col++)
 			  {
 				  if (getNthCol(col)->shrink)
@@ -3232,7 +3239,7 @@ void  fp_TableContainer::_size_allocate_pass2(void)
   const UT_Vector * pVecColProps = pTL->getVecColProps();
   if(pVecColProps->getItemCount() > 0)
   {
-	  for (col = 0; col < getNumCols(); col++)
+	  for (col = 0; (col < pVecColProps->getItemCount()) && (col <getNumCols()); col++)
 	  {
 		  fl_ColProps * pColProp = (fl_ColProps *) pVecColProps->getNthItem(col);
 		  getNthCol(col)->allocation = pColProp->m_iColWidth - getNthCol(col)->spacing;
@@ -3353,9 +3360,10 @@ void fp_TableContainer::sizeRequest(fp_Requisition * pRequisition)
   _size_request_pass3 ();
   _size_request_pass2 ();
   
+  m_iCols = m_vecColumns.getItemCount();
   for (col = 0; col < m_iCols; col++)
   {
-	  if(bDefinedColWidth)
+	  if(bDefinedColWidth && (col < pVecColProps->getItemCount()) )
 	  {
 		  fl_ColProps * pColProp = (fl_ColProps *) pVecColProps->getNthItem(col);
 		  getNthCol(col)->requisition = pColProp->m_iColWidth;

@@ -1558,14 +1558,14 @@ void FV_View::_moveInsPtNextPrevScreen(bool bNext)
 	{
 		iYnext = yoff + m_iWindowHeight;
 		iYscroll = m_yScrollOffset + m_iWindowHeight;
-		UT_DEBUGMSG(("SEVIOR:!!!!!! Yoff %d iYnext %d page %x \n",yoff,iYnext,pPage));
+		xxx_UT_DEBUGMSG(("SEVIOR:!!!!!! Yoff %d iYnext %d page %x \n",yoff,iYnext,pPage));
 		while(pPage && (iYnext > pPage->getHeight()))
 		{
 			iYnext -= pPage->getHeight();
 			iYnext -= getPageViewSep();
 			pPage = pPage->getNext();
 		}
-		UT_DEBUGMSG(("SEVIOR:!!!!!! Set to iYnext %d page %x \n",iYnext,pPage));
+		xxx_UT_DEBUGMSG(("SEVIOR:!!!!!! Set to iYnext %d page %x \n",iYnext,pPage));
 		if(pPage == NULL)
 		{
 			return;
