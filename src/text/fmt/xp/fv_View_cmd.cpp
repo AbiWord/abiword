@@ -3935,7 +3935,14 @@ UT_Error FV_View::cmdInsertHyperlink(const char * szName)
 
 		return false;
 	}
+	if(isTOCSelected())
+	{
+//
+// Fixme place message box here
+//
+		return false;
 
+	}
 	// Silently fail (TODO: pop up message) if we try to nest hyperlinks.
 	if (_getHyperlinkInRange(posStart, posEnd) != NULL)
 		return false;
@@ -4033,6 +4040,17 @@ UT_Error FV_View::cmdInsertBookmark(const char * szName)
 	fl_BlockLayout * pBL2 =_findBlockAtPosition(posEnd);
 	if(pBL1 != pBL2)
 	{
+//
+// Fixme put message boxes here
+//
+		_restorePieceTableState();
+		return false;
+	}
+	if(isTOCSelected())
+	{
+//
+// Fixme put message boxes here
+//
 		_restorePieceTableState();
 		return false;
 	}
