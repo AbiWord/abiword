@@ -45,21 +45,12 @@ DLL_SUFFIX	= so
 AR		= ar cr $@
 
 # Compiler flags
-# NOTE:  Using both "-Wall" and "-W" turn on every single darn message
-# NOTE:  GCC can throw, and it turns quiet compiles into raging rivers of
-# NOTE:  warnings.  -Wall includes the very useful warnings, -W includes
-# NOTE:  more stylistic warnings.  -pedantic just gets really picky about
-# NOTE:  ANSI things.
 ifdef ABI_OPT_DEBUG
-OPTIMIZER	= -g # -Wall -W -ansi -pedantic
+OPTIMIZER	= -g # -Wall -ansi -pedantic
 DEFINES		= -DDEBUG -UNDEBUG
 OBJ_DIR_SFX	= DBG
 else
-# NOTE:  In some instances, GCC can only know about truly unused variables
-# NOTE:  when optimizations are enabled in the compilation.  For this reason,
-# NOTE:  building with optimizations may reveal further warnings not 
-# NOTE:  visible without any -O[number] option.
-OPTIMIZER	= -O2 # -Wall -W -ansi -pedantic
+OPTIMIZER	= -O2 # -Wall -ansi -pedantic
 DEFINES		=
 OBJ_DIR_SFX	= OBJ
 endif
