@@ -115,6 +115,8 @@ public:
 	bool				isParentFrame(const XAP_Win32Frame& frame) const;
 	void				setParentFrame(const XAP_Win32Frame* pFrame);
 	XAP_Win32Frame*		getParentFrame();
+	void 				centerDialog();
+	static void			s_centerDialog(HWND hWnd);
 
 private:
 	XAP_Win32Dialog	*			m_pDialog;

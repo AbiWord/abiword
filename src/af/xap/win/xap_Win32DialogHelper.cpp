@@ -326,3 +326,22 @@ XAP_Win32Frame* XAP_Win32DialogHelper::getParentFrame()
 			GetWindowLong(m_hDlg, GWL_HWNDPARENT));
 }
 
+void XAP_Win32DialogHelper::centerDialog()
+{
+	_assertValidDlgHandle(m_hDlg);
+	
+	s_centerDialog(m_hDlg);
+    
+} 	
+
+void XAP_Win32DialogHelper::s_centerDialog(HWND hWnd)
+{
+	RECT rc;
+
+    GetWindowRect(hWnd, &rc);
+
+    SetWindowPos(hWnd, NULL,
+       ((GetSystemMetrics(SM_CXSCREEN) - (rc.right - rc.left)) / 2),
+       ((GetSystemMetrics(SM_CYSCREEN) - (rc.bottom - rc.top)) / 2),
+       0, 0, SWP_NOSIZE | SWP_NOACTIVATE);	
+}

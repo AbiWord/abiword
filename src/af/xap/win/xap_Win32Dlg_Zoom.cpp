@@ -34,7 +34,7 @@
 #include "xap_Win32PreviewWidget.h"
 
 #include "gr_Win32Graphics.h"
-
+#include "xap_Win32DialogHelper.h"
 #include "xap_Win32Resources.rc2"
 
 /*****************************************************************/
@@ -189,7 +189,9 @@ BOOL XAP_Win32Dialog_Zoom::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam
 	_createPreviewFromGC(m_pPreviewWidget->getGraphics(),w,h);
 	m_pPreviewWidget->setPreview(m_zoomPreview); // we need this to call draw() on WM_PAINTs
 	_updatePreviewZoomPercent(getZoomPercent());
-
+	
+	XAP_Win32DialogHelper::s_centerDialog(hWnd);	
+	
 	return 1;							// 1 == we did not call SetFocus()
 }
 

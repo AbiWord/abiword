@@ -38,8 +38,8 @@ public:
 
 protected:
 
-	XAP_Win32Frame *	m_pWin32Frame;		
-	HWND			m_hwndDlg;	//  dialog box Windows
+	XAP_Win32Frame *			m_pWin32Frame;		
+	HWND						m_hwndDlg;	//  dialog box Windows
 	
 	
 	BOOL			_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);

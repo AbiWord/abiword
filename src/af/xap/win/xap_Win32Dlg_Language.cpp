@@ -31,7 +31,7 @@
 #include "xap_Dialog_Id.h"
 #include "xap_Dlg_Language.h"
 #include "xap_Win32Dlg_Language.h"
-
+#include "xap_Win32DialogHelper.h"
 #include "xap_Win32Resources.rc2"
 
 /*****************************************************************/
@@ -125,7 +125,9 @@ BOOL XAP_Win32Dialog_Language::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lP
 			SendMessage( hwndList, LB_SETCURSEL, (WPARAM) result, 0 );
 		}
 	}		
-
+	
+	XAP_Win32DialogHelper::s_centerDialog(hWnd);	
+			
 	return 1;							// 1 == we did not call SetFocus()
 }
 

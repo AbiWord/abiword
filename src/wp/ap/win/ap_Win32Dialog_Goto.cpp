@@ -31,9 +31,8 @@
 #include "ap_Dialog_Id.h"
 #include "ap_Dialog_Goto.h"
 #include "ap_Win32Dialog_Goto.h"
-
 #include "ap_Win32Resources.rc2"
-
+#include "xap_Win32DialogHelper.h"
 #include "fv_View.h"
 
 /*****************************************************************/
@@ -235,6 +234,8 @@ BOOL AP_Win32Dialog_Goto::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 
 
 	SetFocus( GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_EDIT_NUMBER) );
+	
+	XAP_Win32DialogHelper::s_centerDialog(hWnd);	
 
 	return 0;							// 0 == we called SetFocus()
 }

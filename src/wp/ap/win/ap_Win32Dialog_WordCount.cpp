@@ -31,7 +31,7 @@
 #include "ap_Dialog_Id.h"
 #include "ap_Dialog_WordCount.h"
 #include "ap_Win32Dialog_WordCount.h"
-
+#include "xap_Win32DialogHelper.h"
 #include "ap_Win32Resources.rc2"
 
 /*****************************************************************/
@@ -287,6 +287,8 @@ BOOL AP_Win32Dialog_WordCount::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lP
 	_DSI(WORDCOUNT_VAL_CHSP,		ch_sp);
 	_DSI(WORDCOUNT_VAL_PARA,		para);
 	_DSI(WORDCOUNT_VAL_LINE,		line);
+	
+	XAP_Win32DialogHelper::s_centerDialog(hWnd);	
 
 	return 1;							// 1 == we did not call SetFocus()
 }

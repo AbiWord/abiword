@@ -33,7 +33,7 @@
 #include "ap_Win32Dialog_Columns.h"
 
 #include "gr_Win32Graphics.h"
-
+#include "xap_Win32DialogHelper.h"
 #include "ap_Win32Resources.rc2"
 #include "xap_Win32Toolbar_Icons.h"
 
@@ -164,8 +164,9 @@ BOOL AP_Win32Dialog_Columns::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPar
 	m_pPreviewWidget->getWindowSize(&w,&h);
 	_createPreviewFromGC(m_pPreviewWidget->getGraphics(), w, h);
 	m_pPreviewWidget->setPreview(m_pColumnsPreview);
-
-
+	
+	XAP_Win32DialogHelper::s_centerDialog(hWnd);	
+	
 	return 1;							// 1 == we did not call SetFocus()
 }
 

@@ -34,7 +34,7 @@
 #include "ap_Dialog_Id.h"
 #include "ap_Dialog_Replace.h"
 #include "ap_Win32Dialog_Replace.h"
-
+#include "xap_Win32DialogHelper.h"
 #include "ap_Win32Resources.rc2"
 
 /*****************************************************************/
@@ -250,6 +250,8 @@ BOOL AP_Win32Dialog_Replace::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPar
 
 	SetFocus( GetDlgItem(hWnd,AP_RID_DIALOG_REPLACE_EDIT_FIND) );
 
+	XAP_Win32DialogHelper::s_centerDialog(hWnd);	
+	
 	return 0;							// 0 == we did call SetFocus()
 }
 

@@ -31,7 +31,7 @@
 #include "ap_Dialog_Id.h"
 #include "ap_Dialog_Tab.h"
 #include "ap_Win32Dialog_Tab.h"
-
+#include "xap_Win32DialogHelper.h"
 #include "ap_Win32Resources.rc2"
 
 /*****************************************************************/
@@ -105,6 +105,9 @@ BOOL AP_Win32Dialog_Tab::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	_DS(TABS_CLEAR_ALL_BUTTON,			DLG_Tab_Button_ClearAll);
 
 	_populateWindowData();
+	
+	_win32Dialog.centerDialog();
+	
 	return 1;							// 1 == we did not call SetFocus()
 }
 

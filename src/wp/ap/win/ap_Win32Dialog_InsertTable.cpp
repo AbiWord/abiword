@@ -38,6 +38,7 @@
 
 #include "AP_Win32Dialog_InsertTable.h"
 #include "ap_Win32Resources.rc2"
+#include "xap_Win32DialogHelper.h"
 
 #define BUFSIZE		128
 
@@ -140,8 +141,9 @@ BOOL AP_Win32Dialog_InsertTable::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM 
 	
 	SetFocus(GetDlgItem(hWnd,AP_RID_DIALOG_INSERTTABLE_VAL_COLUMN));
 	SendDlgItemMessage(hWnd, AP_RID_DIALOG_INSERTTABLE_VAL_COLUMN, EM_SETSEL, 0, -1);
-	
 
+	XAP_Win32DialogHelper::s_centerDialog(hWnd);	
+	
 	return 0; // 0 because we called SetFocus
 }
 

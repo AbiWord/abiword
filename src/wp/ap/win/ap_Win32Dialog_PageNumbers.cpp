@@ -34,7 +34,7 @@
 #include "ap_Win32Dialog_PageNumbers.h"
 
 #include "gr_Win32Graphics.h"
-
+#include "xap_Win32DialogHelper.h"
 #include "ap_Win32Resources.rc2"
 
 #include "fv_View.h"
@@ -138,6 +138,8 @@ BOOL AP_Win32Dialog_PageNumbers::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM 
 
 	_createPreviewWidget();
 	_updatePreview(m_align, m_control);
+	
+	m_helper.centerDialog();
 
 	return 1;	// 0 == we called SetFocus()
 }
