@@ -348,7 +348,7 @@ UT_RGBColor AP_UnixFrameImpl::getColorSelBackground () const
     state = GTK_STATE_ACTIVE;
   
   GdkColor clr = m_dArea->style->base[state];
-  return UT_RGBColor (clr.red/255, clr.green/255, clr.blue/255);
+  return UT_RGBColor (clr.red >> 8, clr.green >> 8, clr.blue >> 8);
 }
 
 UT_RGBColor AP_UnixFrameImpl::getColorSelForeground () const
@@ -363,5 +363,5 @@ UT_RGBColor AP_UnixFrameImpl::getColorSelForeground () const
     state = GTK_STATE_ACTIVE;
   
   GdkColor clr = m_dArea->style->text[state];
-  return UT_RGBColor (clr.red/255, clr.green/255, clr.blue/255);
+  return UT_RGBColor (clr.red >> 8, clr.green >> 8, clr.blue >> 8);
 }

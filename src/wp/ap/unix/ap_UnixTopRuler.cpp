@@ -131,7 +131,7 @@ void AP_UnixTopRuler::setView(AV_View * pView)
 
 	GtkWidget * ruler = gtk_hruler_new ();
 	pG->init3dColors(get_ensured_style(ruler));
-	abiDestroyWidget (ruler);
+	//abiDestroyWidget (ruler);
 }
 
 void AP_UnixTopRuler::getWidgetPosition(gint * x, gint * y)

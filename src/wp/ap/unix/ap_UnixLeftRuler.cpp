@@ -61,7 +61,6 @@ AP_UnixLeftRuler::AP_UnixLeftRuler(XAP_Frame * pFrame)
 							  "client_event",
 							  G_CALLBACK(ruler_style_changed),
 							  (gpointer)this);
-	m_wVruler = NULL;
 }
 
 AP_UnixLeftRuler::~AP_UnixLeftRuler(void)
@@ -73,7 +72,6 @@ AP_UnixLeftRuler::~AP_UnixLeftRuler(void)
 		UT_usleep(100);
 	}
 	DELETEP(m_pG);
-	abiDestroyWidget (m_wVruler);
 }
 
 void AP_UnixLeftRuler::_ruler_style_changed (void)
@@ -144,10 +142,9 @@ void AP_UnixLeftRuler::setView(AV_View * pView)
 	m_pG = pG;
 	UT_ASSERT(m_pG);
 
-	if (!m_wVruler) {
-		m_wVruler = gtk_vruler_new ();
-		pG->init3dColors(get_ensured_style (m_wVruler));
-	}
+	GtkWidget * ruler = gtk_vruler_new ();
+	pG->init3dColors(get_ensured_style (ruler));
+	//abiDestroyWidget (ruler);
 }
 
 void AP_UnixLeftRuler::getWidgetPosition(gint * x, gint * y)
