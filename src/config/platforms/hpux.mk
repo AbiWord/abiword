@@ -62,6 +62,8 @@ OS_INCLUDES		= -I/usr/contrib/include -I/usr/local/include
 G++INCLUDES		= -I/usr/include/g++
 
 # Compiler flags
+PLATFORM_FLAGS		= -L/usr/contrib/lib -L/usr/local/lib
+PORT_FLAGS		= -DHAVE_STRERROR -D_HPUX_SOURCE
 OS_CFLAGS		= $(DSO_CFLAGS) $(PLATFORM_FLAGS) $(PORT_FLAGS)
 
 PLATFORM_FLAGS		+= 
