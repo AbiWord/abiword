@@ -568,10 +568,10 @@
 
         <row>
           <cell>Edit / Find</cell>
-          <cell value="unknown"/>
           <cell value="yes"/>
-          <cell value="unknown"/>
-          <cell value="unknown"/>
+          <cell value="yes"/>
+          <cell value="yes"/>
+          <cell value="yes"/>
           <cell value="unknown"/>
           <cell value="unknown"/>
           <cell value="no"/>
@@ -604,7 +604,7 @@
           <cell value="yes"/>
           <cell value="yes"/>
           <cell value="yes"/>
-          <cell value="unknown"/>
+          <cell value="yes"/>
           <cell value="unknown"/>
           <cell value="unknown"/>
           <cell value="no"/>
@@ -624,7 +624,7 @@
         <row>
           <cell>Insert / DateTime</cell>
           <cell value="partially"><bug id="1219"/></cell>
-          <cell value="partially"><bug id="1219"/></cell> 
+          <cell value="yes"/> 
           <cell value="yes"/>
           <cell value="yes"/>
           <cell value="unknown"/>
@@ -636,8 +636,8 @@
           <cell>Insert / Field</cell>
           <cell value="yes"/>
           <cell value="yes"/>
-          <cell value="unknown"/>
-          <cell value="unknown"/>
+          <cell value="yes"/>
+          <cell value="yes"/>
           <cell value="unknown"/>
           <cell value="unknown"/>
           <cell value="no"/>
