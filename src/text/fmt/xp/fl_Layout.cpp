@@ -22,7 +22,7 @@
 #include "ut_types.h"
 #include "pt_Types.h"
 #include "ut_assert.h"
-
+#include "ut_debugmsg.h"
 #include "fl_Layout.h"
 #include "pd_Document.h"
 #include "fd_Field.h"
@@ -54,6 +54,12 @@ PTStruxType	fl_Layout::getType(void) const
 	return m_type;
 }
 
+
+void fl_Layout::setType(PTStruxType type)
+{
+	m_type = type;
+}
+
 PT_AttrPropIndex fl_Layout::getAttrPropIndex(void) const
 {
 	return m_apIndex;
@@ -67,6 +73,7 @@ void fl_Layout::setAttrPropIndex(PT_AttrPropIndex apIndex)
 bool fl_Layout::getAttrProp(const PP_AttrProp ** ppAP) const
 {
 	return m_pDoc->getAttrProp(m_apIndex,ppAP);
+	UT_DEBUGMSG(("SEVIOR: In fl_Layout m_apIndex = %x \n",m_apIndex));
 }
 
 bool fl_Layout::getSpanAttrProp(UT_uint32 offset, bool bLeftSide, const PP_AttrProp ** ppAP) const

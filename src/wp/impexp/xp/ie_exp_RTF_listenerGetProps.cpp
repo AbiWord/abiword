@@ -198,6 +198,16 @@ bool s_RTF_ListenerGetProps::populateStrux(PL_StruxDocHandle /*sdh*/,
 			return true;
 		}
 
+	case PTX_SectionHdrFtr:
+		{
+			_closeSpan();
+			_closeBlock();
+			_closeSection();
+			m_bInSection = true;
+			m_apiThisSection = pcr->getIndexAP();
+			return true;
+		}
+
 	case PTX_Block:
 		{
 			_closeSpan();

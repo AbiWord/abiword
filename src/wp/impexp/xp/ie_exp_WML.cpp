@@ -319,6 +319,9 @@ bool s_WML_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 	case PTX_Section:
 		return true;
 
+	case PTX_SectionHdrFtr:
+		return true;
+
 	case PTX_Block:
 	{
 		_closeSpan();

@@ -313,6 +313,19 @@ bool pt_PieceTable::_tweakDeleteSpanOnce(PT_DocPosition & dpos1,
 		dpos1 -= pfsContainer->getLength();
 		return true;
 
+	case PTX_SectionHdrFtr:
+		// if the previous container is a Header/Footersection, then pf_First
+		// must be the first block in the section.
+		UT_ASSERT((pf_First->getPrev() == pfsContainer));
+		UT_ASSERT((pf_First->getType() == pf_Frag::PFT_Strux));
+		UT_ASSERT(((static_cast<pf_Frag_Strux *>(pf_First))->getStruxType() == PTX_Block));
+		// since, we cannot delete the first block in a section, we
+		// secretly translate this into a request to delete the section;
+		// the block we have will then be slurped into the previous
+		// section.
+		dpos1 -= pfsContainer->getLength();
+		return true;
+
 	case PTX_Block:
 		// if the previous container is a block, we're ok.
 		// the loop below will take care of everything.
@@ -341,6 +354,22 @@ bool pt_PieceTable::_tweakDeleteSpanOnce(PT_DocPosition & dpos1,
 				dpos2 += pf_Other->getLength();
 				return true;
 			}
+		case PTX_SectionHdrFtr:
+			UT_ASSERT(fragOffset_First == 0);
+			if (dpos2 == dpos1 + pf_First->getLength())
+			{
+				//  If we are just deleting a section break, then 
+				//  we should delete the first block marker in the
+				//  next section, combining the blocks before and
+				//  after the section break.
+				pf_Other = pf_First->getNext();
+				UT_ASSERT(pf_Other);
+				UT_ASSERT(pf_Other->getType() == pf_Frag::PFT_Strux);
+				UT_ASSERT(((static_cast<pf_Frag_Strux *>(pf_Other))->getStruxType() == PTX_Block));
+				dpos2 += pf_Other->getLength();
+				return true;
+			}
+
 			break;
 		}
 	}

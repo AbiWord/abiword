@@ -416,6 +416,12 @@ bool s_Psion_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 				return false;
 			return true;
 			break;
+		case PTX_SectionHdrFtr:
+			UT_DEBUGMSG(("New section (ignored)\n"));
+			if (!_closeParagraph())
+				return false;
+			return true;
+			break;
 		default:
 			UT_ASSERT(0);
 			 return false;

@@ -60,6 +60,10 @@ bool pt_PieceTable::_createStrux(PTStruxType pts,
 		pfs = new pf_Frag_Strux_Block(this,indexAP);
 		break;
 
+	case PTX_SectionHdrFtr:
+		pfs = new pf_Frag_Strux_SectionHdrFtr(this,indexAP);
+		break;
+
 	default:
 		UT_ASSERT(UT_NOT_IMPLEMENTED);
 		break;

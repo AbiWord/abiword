@@ -58,6 +58,13 @@ void pf_Frag_Strux_Section::__dump(FILE * fp) const
 			(void*)this,(long)m_indexAP);
 }
 
+
+void pf_Frag_Strux_SectionHdrFtr::__dump(FILE * fp) const
+{
+	fprintf(fp,"    Section %p api[%08lx]\n",
+			(void*)this,(long)m_indexAP);
+}
+
 void pf_Frag_Text::__dump(FILE * fp) const
 {
 	fprintf(fp,"        TextFragment %p b[%08lx,%ld] api[%08lx]\n",

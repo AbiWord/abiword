@@ -108,6 +108,8 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_doneFind(false),
 		m_bEditHdrFtr(false),
 		m_pEditShadow(NULL),
+		m_iSavedPosition(0),
+		m_bNeedSavedPosition(false),
 		_m_matchCase(false),
 		_m_findNextString(0),
 		m_bShowPara(false),
@@ -1294,6 +1296,7 @@ fl_BlockLayout* FV_View::_findBlockAtPosition(PT_DocPosition pos) const
 	{
 		fl_HdrFtrSectionLayout * pSSL = (fl_HdrFtrSectionLayout *) pBL->getSectionLayout();
 		pBL = pSSL->getFirstShadow()->findMatchingBlock(pBL);
+		UT_DEBUGMSG(("<<<<SEVIOR>>>: getfirstshadow in view \n"));
 	}
 	return pBL;
 }
@@ -1403,9 +1406,9 @@ bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count, bool bForce)
 			bResult = m_pDoc->insertSpan(getPoint(), text, count);
 			if(!bResult)
 			{
-				const fl_Layout * pL = (fl_Layout *) getCurrentBlock();
+				const fl_BlockLayout * pBL = getCurrentBlock();
 				const PP_AttrProp *pBlockAP = NULL;
-				pL->getAttrProp(&pBlockAP);
+				pBL->getAttrProp(&pBlockAP);
 				bResult = m_pDoc->insertSpan(getPoint(), text, count,const_cast<PP_AttrProp *>(pBlockAP));
 				UT_ASSERT(bResult);
 			}
@@ -1819,7 +1822,7 @@ bool FV_View::appendStyle(const XML_Char ** style)
 	return m_pDoc->appendStyle(style);
 }
 
-bool FV_View::setStyle(const XML_Char * style)
+bool FV_View::setStyle(const XML_Char * style, bool bDontGeneralUpdate)
 {
 	bool bRet;
 
@@ -1957,7 +1960,8 @@ bool FV_View::setStyle(const XML_Char * style)
 #endif		
 	}
 
-	_generalUpdate();
+	if(!bDontGeneralUpdate)
+		_generalUpdate();
 
 
 	// restore updates and clean up dirty lists
@@ -2665,6 +2669,11 @@ bool FV_View::processPageNumber(bool bIsFooter, const XML_Char ** atts)
 	if (isSelectionEmpty())
 		_eraseInsertionPoint();
 
+    //Glob it all together so it can be undone with one
+    // click
+
+	m_pDoc->beginUserAtomicGlob();
+
     //
     // Insert a blank paragraph at the beginning of the Section
     //
@@ -2677,9 +2686,10 @@ bool FV_View::processPageNumber(bool bIsFooter, const XML_Char ** atts)
 	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,pos,pos,NULL,atts,PTX_Block);
 
 	// Insert the page_number field with the requested attributes at the top
-    // of the header/footer
+    // of the header/footer. 
 
 	bRet = m_pDoc->insertObject(pos, PTO_Field, f_attributes, NULL);
+	m_pDoc->endUserAtomicGlob();
 
 	// Signal PieceTable Changes have finished
 	m_pDoc->notifyPieceTableChangeEnd();
@@ -6300,7 +6310,8 @@ bool FV_View::isLeftMargin(UT_sint32 xPos, UT_sint32 yPos)
 
 void FV_View::cmdSelect(PT_DocPosition dpBeg, PT_DocPosition dpEnd)
 {
-        _eraseInsertionPoint();
+
+	_eraseInsertionPoint();
 
 	if (!isSelectionEmpty())
 	{
@@ -6531,11 +6542,28 @@ void FV_View::cmdUndo(UT_uint32 count)
 	// Turn off list updates
 	m_pDoc->disableListUpdates();
 
+    // Remember the current position, We might need it later.
+    rememberCurrentPosition();
+
 	m_pDoc->undoCmd(count);
 	allowChangeInsPoint();
+//
+// Now do a general update to make everything look good again.
+//
 	_generalUpdate();
 	
 	notifyListeners(AV_CHG_DIRTY);
+
+// Look to see if we need the saved insertion point after the undo
+    if(needSavedPosition())
+	{
+//
+// We do, so restore insertion point to that value.
+//
+		_setPoint(getSavedPosition());
+		clearSavedPosition();
+	}
+
 	// Move insertion point out of field run if it is in one
 	//
 	_charMotion(true, 0);
@@ -7648,15 +7676,12 @@ void FV_View::setHdrFtrEdit(fl_HdrFtrShadow * pShadow)
 {
 	m_bEditHdrFtr = true;
 	m_pEditShadow = pShadow;
+//
+// Draw the decorations around the Header/Footer
+//
+	updateScreen();
 }
 
-/*!
- *   Returns true if we're currently edditting a HdrFtr section.
- */
-bool FV_View::isHdrFtrEdit(void)
-{
-        return m_bEditHdrFtr;
-}
 
 /*!
  *  This method sets a bool variable which tells getEditableBounds we are
@@ -7667,7 +7692,77 @@ void FV_View::clearHdrFtrEdit(void)
 {
 	m_bEditHdrFtr = false;
 	m_pEditShadow = NULL;
+//
+// Remove the decorations around the Header/Footer
+//
+	updateScreen();
 }
+
+/*!
+ *   Returns the pointer to the current shadow.
+ */
+fl_HdrFtrShadow *  FV_View::getEditShadow(void)
+{
+	return m_pEditShadow;
+}
+
+/*!
+ *   Returns true if we're currently edditting a HdrFtr section.
+ */
+bool FV_View::isHdrFtrEdit(void)
+{
+	return m_bEditHdrFtr;
+}
+
+/*!
+ * This method saves the current insertion point of the insertion point in the
+ * doc. This is needed during undo's of insert Page Number. Maybe elsewhere 
+ * later.
+ */
+void FV_View::rememberCurrentPosition(void)
+{
+    m_iSavedPosition = getPoint();
+	m_bNeedSavedPosition = false;
+}
+
+/*!
+ * This method returns the saved insertion point of the insertion point in the
+ * doc. This is needed during undo's of insert Page Number. Maybe elsewhere 
+ * later.
+ */
+
+PT_DocPosition FV_View::getSavedPosition(void)
+{
+	return m_iSavedPosition;
+}
+
+/*!
+ * This method clears the saved position of the insertion point in the
+ * doc. 
+ */
+void FV_View::clearSavedPosition(void)
+{
+	m_iSavedPosition = (PT_DocPosition) 0;
+	m_bNeedSavedPosition = false;
+}
+
+/*!
+ * This method tells us we need the old position after an undo because of 
+ * header/footer undo's. Might be useful for other stuff later.
+ */
+bool FV_View::needSavedPosition(void)
+{
+	return m_bNeedSavedPosition;
+}
+
+/*!
+ * This method tells the undo to use the remembered position.
+ */
+void FV_View::markSavedPositionAsNeeded(void)
+{
+	m_bNeedSavedPosition = true;
+}
+
 
 /*!
 
@@ -7774,67 +7869,67 @@ bool FV_View::getEditableBounds(bool isEnd, PT_DocPosition &posEOD, bool bOverid
    \todo speed this up by finding clever way to cache the size of the 
          header/footer region so we can just subtract it off.
 */
-bool FV_View::getEditableBounds(bool isEnd, PT_DocPosition &posEOD )
-{
-	bool res=true;
-	fl_SectionLayout * pSL = NULL;
-	fl_BlockLayout * pBL = NULL;
-	if(!isEnd && !m_bEditHdrFtr)
-	{
-		res = m_pDoc->getBounds(isEnd,posEOD);
-		return res;
-	}
-	if(!m_bEditHdrFtr)
-	{	
-		pSL = (fl_SectionLayout *)  m_pLayout->getLastSection();
-		while(pSL->getNext() != NULL && pSL->getType() == FL_SECTION_DOC)
-		{
-			pSL  = pSL->getNext();
-		}
-		if( pSL->getType() == FL_SECTION_DOC)
-		{
-			res = m_pDoc->getBounds(isEnd,posEOD);
-			return res;
-		}
-//
-// Now loop through all the HdrFtrSections, find the first in the doc and 
-// use that to get the end of edittable region.
-//
-		PT_DocPosition posFirst = pSL->getFirstBlock()->getPosition(true) - 1;
-		PT_DocPosition posNext;
-		while(pSL->getNext() != NULL)
-		{
-			pSL = pSL->getNext();
-			posNext = pSL->getFirstBlock()->getPosition(true) - 1;
-			if(posNext < posFirst)
-				posFirst = posNext;
-		}
-		posEOD = posFirst;
-		return res;
-	}
-//
-// Constrain insertion point to the header/Footer Layout
-//
-	if(!isEnd)
-	{
-		posEOD = m_pEditShadow->getFirstBlock()->getPosition();
-		return true;
-	}
-	pBL = m_pEditShadow->getLastBlock();
-	posEOD = pBL->getPosition(false);
-	PT_DocPosition posDocEnd;
-	m_pDoc->getBounds(isEnd,posDocEnd);
-	fp_Run * pRun = pBL->getFirstRun();
-	while( pRun->getNext() != NULL)
-	{
-		pRun = pRun->getNext();
-	}
-	posEOD += pRun->getBlockOffset();
-	while(_findBlockAtPosition(posEOD) == pBL && posEOD <= posDocEnd)
-		posEOD++;
-	posEOD--;
-	return true;
-}
+//  bool FV_View::getEditableBounds(bool isEnd, PT_DocPosition &posEOD )
+//  {
+//  	bool res=true;
+//  	fl_SectionLayout * pSL = NULL;
+//  	fl_BlockLayout * pBL = NULL;
+//  	if(!isEnd && !m_bEditHdrFtr)
+//  	{
+//  		res = m_pDoc->getBounds(isEnd,posEOD);
+//  		return res;
+//  	}
+//  	if(!m_bEditHdrFtr)
+//  	{	
+//  		pSL = (fl_SectionLayout *)  m_pLayout->getLastSection();
+//  		while(pSL->getNext() != NULL && pSL->getType() == FL_SECTION_DOC)
+//  		{
+//  			pSL  = pSL->getNext();
+//  		}
+//  		if( pSL->getType() == FL_SECTION_DOC)
+//  		{
+//  			res = m_pDoc->getBounds(isEnd,posEOD);
+//  			return res;
+//  		}
+//  //
+//  // Now loop through all the HdrFtrSections, find the first in the doc and 
+//  // use that to get the end of edittable region.
+//  //
+//  		PT_DocPosition posFirst = pSL->getFirstBlock()->getPosition(true) - 1;
+//  		PT_DocPosition posNext;
+//  		while(pSL->getNext() != NULL)
+//  		{
+//  			pSL = pSL->getNext();
+//  			posNext = pSL->getFirstBlock()->getPosition(true) - 1;
+//  			if(posNext < posFirst)
+//  				posFirst = posNext;
+//  		}
+//  		posEOD = posFirst;
+//  		return res;
+//  	}
+//  //
+//  // Constrain insertion point to the header/Footer Layout
+//  //
+//  	if(!isEnd)
+//  	{
+//  		posEOD = m_pEditShadow->getFirstBlock()->getPosition();
+//  		return true;
+//  	}
+//  	pBL = m_pEditShadow->getLastBlock();
+//  	posEOD = pBL->getPosition(false);
+//  	PT_DocPosition posDocEnd;
+//  	m_pDoc->getBounds(isEnd,posDocEnd);
+//  	fp_Run * pRun = pBL->getFirstRun();
+//  	while( pRun->getNext() != NULL)
+//  	{
+//  		pRun = pRun->getNext();
+//  	}
+//  	posEOD += pRun->getBlockOffset();
+//  	while(_findBlockAtPosition(posEOD) == pBL && posEOD <= posDocEnd)
+//  		posEOD++;
+//  	posEOD--;
+//  	return true;
+//  }
 
 bool FV_View::insertHeaderFooter(const XML_Char ** props, bool ftr)
 {
@@ -7908,7 +8003,6 @@ bool FV_View::insertHeaderFooter(const XML_Char ** props, bool ftr)
 
 	UT_uint32 iPoint = getPoint();
 	m_pDoc->insertStrux(getPoint(), PTX_Block);
-
 	//
 	// If there is a list item here remove it!
 	//
@@ -7922,25 +8016,41 @@ bool FV_View::insertHeaderFooter(const XML_Char ** props, bool ftr)
 		}     
 	} 
 
+//
+// Next set the style to Normal so weird properties at the end of the doc aren't
+// inherited into the header.
+//
+	setStyle("Normal",true);
+//
+// This moves the insertion point and screws up other commands to the piecetable
+// so put them back
+//
+	m_pDoc->notifyPieceTableChangeStart();
+	m_pDoc->disableListUpdates();
+
+	if(isSelectionEmpty())
+		_eraseInsertionPoint();
+
 	//
 	// Now Insert the footer section.
-	// Doing things this way will grab the previously intereted block
-	// and put into the footter section.
+	// Doing things this way will grab the previously inserted block
+	// and put into the footer section.
 
-//	m_pDoc->insertStrux(iPoint, PTX_Block);
-	m_pDoc->insertStrux(iPoint, PTX_Section);
-	fl_SectionLayout * pSL = _findBlockAtPosition(getPoint())->getSectionLayout();
-	pSL->format();
+	m_pDoc->insertStrux(iPoint, PTX_SectionHdrFtr);
 	
-     // Make the new section into a footer
+//
+// Give the Footer section the properties it needs to attach itself to the
+// correct DocSectionLayout.
+//
 
-      	m_pDoc->changeStruxFmt(PTC_AddFmt, getPoint(), getPoint(), sec_attributes1, NULL, PTX_Section);
+      	m_pDoc->changeStruxFmt(PTC_AddFmt, getPoint(), getPoint(), sec_attributes1, NULL, PTX_SectionHdrFtr);
 
 	// Change the formatting of the new footer appropriately 
     //(currently just center it)
 
 	m_pDoc->changeStruxFmt(PTC_AddFmt, getPoint(), getPoint(), NULL, props, PTX_Block);
-//	m_pDoc->insertStrux(getPoint(), PTX_Block);
+
+// OK it's in!
 
 	return true;
 }

@@ -218,14 +218,14 @@ public:
 	bool	setCharFormat(const XML_Char * properties[]);
 	bool	getCharFormat(const XML_Char *** properties,bool bExpandStyles=true);
 
-	bool	setStyle(const XML_Char * style);
+	bool	setStyle(const XML_Char * style, bool bDontGeneralUpdate=false);
 	bool	getStyle(const XML_Char ** style);
 	bool appendStyle(const XML_Char ** style);
 
 	UT_uint32		getCurrentPageNumber(void);
 
-	bool    getEditableBounds(bool bEnd, PT_DocPosition & docPos, bool bOverride);
-	bool    getEditableBounds(bool bEnd, PT_DocPosition & docPos);
+	bool    getEditableBounds(bool bEnd, PT_DocPosition & docPos, bool bOverride=false);
+//	bool    getEditableBounds(bool bEnd, PT_DocPosition & docPos);
 
 	void	insertParagraphBreak(void);
 	void	insertParagraphBreaknoListUpdate(void);
@@ -273,7 +273,12 @@ public:
 	void                setHdrFtrEdit(fl_HdrFtrShadow * pShadow);
 	void                clearHdrFtrEdit(void);
 	bool                isHdrFtrEdit(void);
-	
+	fl_HdrFtrShadow *   getEditShadow(void);
+    void                rememberCurrentPosition(void);
+	PT_DocPosition      getSavedPosition(void);
+	void                clearSavedPosition(void);
+	void                markSavedPositionAsNeeded(void);
+	bool                needSavedPosition(void);
 // ----------------------
 
 	bool 		gotoTarget(AP_JumpTarget type, UT_UCSChar * data);
@@ -459,6 +464,8 @@ protected:
 
 	bool                m_bEditHdrFtr;
 	fl_HdrFtrShadow *   m_pEditShadow;
+	PT_DocPosition      m_iSavedPosition;
+	bool                m_bNeedSavedPosition;
 	PT_DocPosition 		_BlockOffsetToPos(fl_BlockLayout * block, PT_DocPosition offset);
 	
 	fl_BlockLayout * 	_findGetCurrentBlock(void);

@@ -55,7 +55,7 @@
   into smaller ones.
 */
 
-fl_SectionLayout::fl_SectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_AttrPropIndex indexAP, UT_uint32 iType)
+fl_SectionLayout::fl_SectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_AttrPropIndex indexAP, SectionType iType)
 	: fl_Layout(PTX_Section, sdh)
 {
 	UT_ASSERT(pLayout);
@@ -86,8 +86,11 @@ const char*	fl_SectionLayout::getAttribute(const char * pszName) const
 	const PP_AttrProp * pAP = NULL;
 	getAttrProp(&pAP);
 	
+	UT_DEBUGMSG(("SEVIOR: In get Attribute, pAP = %x looking for %s \n",pAP,pszName));
 	const XML_Char* pszAtt = NULL;
 	pAP->getAttribute((XML_Char*)pszName, pszAtt);
+	
+	UT_DEBUGMSG(("SEVIOR: In getAttribute Found %s \n",pszAtt));
 
 	return pszAtt;
 }
@@ -339,6 +342,17 @@ bool fl_SectionLayout::bl_doclistener_insertSection(fl_BlockLayout* pBL, const P
 	return pBL->doclistener_insertSection(pcrx, sdh, lid, pfnBindHandles);
 }
 
+
+bool fl_SectionLayout::bl_doclistener_insertHdrFtrSection(fl_BlockLayout* pBL, const PX_ChangeRecord_Strux * pcrx,
+													PL_StruxDocHandle sdh,
+													PL_ListenerId lid,
+													void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+																			PL_ListenerId lid,
+																			PL_StruxFmtHandle sfhNew))
+{
+	return pBL->doclistener_insertHdrFtrSection(pcrx, sdh, lid, pfnBindHandles);
+}
+
 bool fl_SectionLayout::bl_doclistener_insertObject(fl_BlockLayout* pBL, const PX_ChangeRecord_Object * pcro)
 {
 	return pBL->doclistener_insertObject(pcro);
@@ -403,10 +417,20 @@ fl_DocSectionLayout::~fl_DocSectionLayout()
 	}
 }
 
-void fl_DocSectionLayout::setHdrFtr(UT_uint32 /*iType*/, fl_HdrFtrSectionLayout* pHFSL)
+void fl_DocSectionLayout::setHdrFtr(HdrFtrType iType, fl_HdrFtrSectionLayout* pHFSL)
 {
-	// TODO use the type
-	
+	if(pHFSL == NULL)
+	{
+		if(iType == FL_HDRFTR_HEADER)
+		{
+			m_pHeaderSL = NULL;
+		}
+		else
+		{
+			m_pFooterSL = NULL;
+		}
+		return;
+	}
 	const char* pszID = pHFSL->getAttribute("id");
 
 	const char* pszAtt = NULL;
@@ -1497,13 +1521,14 @@ struct _PageHdrFtrShadowPair
 	fl_HdrFtrShadow*	pShadow;
 };
 
-fl_HdrFtrSectionLayout::fl_HdrFtrSectionLayout(UT_uint32 iHFType, FL_DocLayout* pLayout, fl_DocSectionLayout* pDocSL, PL_StruxDocHandle sdh, PT_AttrPropIndex indexAP)
+fl_HdrFtrSectionLayout::fl_HdrFtrSectionLayout(HdrFtrType iHFType, FL_DocLayout* pLayout, fl_DocSectionLayout* pDocSL, PL_StruxDocHandle sdh, PT_AttrPropIndex indexAP)
 	: fl_SectionLayout(pLayout, sdh, indexAP, FL_SECTION_HDRFTR)
 {
 	m_pDocSL = pDocSL;
 	m_iHFType = iHFType;
 	m_iType = FL_SECTION_HDRFTR;
 	m_pVirContainer = NULL;
+	fl_Layout::setType(PTX_SectionHdrFtr); // Set the type of this strux
 }
 
 fl_HdrFtrSectionLayout::~fl_HdrFtrSectionLayout()
@@ -1522,12 +1547,42 @@ fl_HdrFtrSectionLayout::~fl_HdrFtrSectionLayout()
 // Take this section layout out of the linked list
 //
 	m_pLayout->removeHdrFtrSection((fl_SectionLayout *) this);
+//
+// Null out pointer to this HdrFtrSection in the attached DocLayoutSection
+//
+	m_pDocSL->setHdrFtr(m_iHFType, NULL);
+//
+// Since we're almost certainly removing blocks at the end of the doc, tell the
+// view to remember the current position on the active view.
+//
+	FV_View * pView = m_pLayout->getView();
+	if(pView && pView->isActive())
+	{
+		pView->markSavedPositionAsNeeded();
+	}
+//
 	UT_VECTOR_PURGEALL(struct _PageHdrFtrShadowPair*, m_vecPages);
 }
 
-
+/*!
+ * This method removes all the lines and containers associated with the shadows
+ * and the lines associated with this HdrFtrSectionLayout.
+ *
+ */ 
 void fl_HdrFtrSectionLayout::collapse(void)
 {
+//
+// If a view exists and we're editting a header footer take the pointer out of
+// the header/footer. This will also clear the box around the header/footer
+//
+	FV_View * pView = m_pLayout->getView();
+	if(pView && pView->isHdrFtrEdit())
+	{
+		pView->clearHdrFtrEdit();
+		pView->warpInsPtToXY(0,0,false);
+		pView->rememberCurrentPosition();
+	}
+
 	localCollapse();
 	UT_uint32 iCount = m_vecPages.getItemCount();
 	UT_uint32 i;
@@ -1682,6 +1737,7 @@ void fl_HdrFtrSectionLayout::changeStrux( fl_DocSectionLayout * pSL)
 	// Remove old section from the section linked list!!
 	//
 	m_pLayout->removeSection(pSL);
+//
 	DELETEP(pSL); // Old Section layout is totally gone
 	//
 	// Create and Format the shadows
@@ -1689,6 +1745,62 @@ void fl_HdrFtrSectionLayout::changeStrux( fl_DocSectionLayout * pSL)
 	format();
 
 	// Finished! we now have a header/footer
+}
+
+/*! 
+ * Remove the strux identifing this as a seperate section has been deleted so
+ * we have to remove this HdrFtrSectionLayout class and all the shadow sections
+ * attached to it. The blocks in this class are moved to the DocSectionLayout
+ * associated with this class. 
+ * I do this because I expect that this will be called as part
+ * on an undo "Insert Header" command. The rest of the undo needs blocks to
+ * delete so I'm putting them there to keep the rest of the undo code happy
+\param pcrx the changerecord identifying this action as necesary. 
+\returns true
+*/
+bool fl_HdrFtrSectionLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)
+{
+	UT_ASSERT(pcrx->getType()==PX_ChangeRecord::PXT_DeleteStrux);
+	UT_ASSERT(pcrx->getStruxType()==PTX_SectionHdrFtr);
+//
+// Get last doc section. Move all the blocks from here to there after deleting 
+// this strux.
+//
+	fl_DocSectionLayout* pPrevSL = m_pDocSL;
+	if (!pPrevSL)
+	{
+		UT_DEBUGMSG(("no prior SectionLayout"));
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	}
+//
+// Get rid of all the shadows, all the containers, and all the layout 
+// information for all the blocks.
+//	
+	collapse();
+//
+// Now copy these line-less blocks into the previous docSectionLayout.
+// Note: I expect that these blocks will be deleted by a later delete strux
+// on these blocks.
+//
+	fl_BlockLayout * pBL = NULL;
+	while (m_pFirstBlock)
+	{
+		pBL = m_pFirstBlock;
+		removeBlock(pBL);
+		pPrevSL->addBlock(pBL);
+	}
+//
+// Format the new section containing the blocks.
+//
+	pPrevSL->format();
+//
+// Finally delete this HdrFtrSectionLayout. This could be done the docListener
+// class but here I'm following the convention for the DocSectionLayout. It
+// works there so I hope it works here. The HdrFtrSection destructor takes care
+// of the details of unlinking the section etc.
+//
+	delete this;
+	return true;
 }
 
 void fl_HdrFtrSectionLayout::addPage(fp_Page* pPage)
@@ -2001,6 +2113,7 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_insertSpan(fl_BlockLayout* pBL, cons
 		// Find matching block in this shadow.
 
 		pShadowBL = pPair->pShadow->findMatchingBlock(pBL);
+		UT_DEBUGMSG(("SEVIOR: SectionLayout for shadow %d is %x \n",i,pShadowBL->getSectionLayout()));
 		bResult = pShadowBL->doclistener_insertSpan(pcrs)
 			&& bResult;
 	}
@@ -2333,6 +2446,8 @@ fl_HdrFtrShadow::fl_HdrFtrShadow(FL_DocLayout* pLayout, fp_Page* pPage, fl_HdrFt
 	{
 		m_pContainer =  m_pPage->getFooterContainer(m_pHdrFtrSL);
 	}
+	m_iType = FL_SECTION_SHADOW;
+	fl_Layout::setType(PTX_Section); // Set the type of this strux
 }
 
 fl_HdrFtrShadow::~fl_HdrFtrShadow()
@@ -2638,6 +2753,46 @@ bool fl_ShadowListener::populateStrux(PL_StruxDocHandle sdh,
 	switch (pcrx->getStruxType())
 	{
 	case PTX_Section:
+	{
+		PT_AttrPropIndex indexAP = pcr->getIndexAP();
+		const PP_AttrProp* pAP = NULL;
+		if (m_pDoc->getAttrProp(indexAP, &pAP) && pAP)
+		{
+			const XML_Char* pszSectionType = NULL;
+			pAP->getAttribute("type", pszSectionType);
+			if (
+				!pszSectionType
+				|| (0 == UT_strcmp(pszSectionType, "doc"))
+				)
+			{
+				m_bListening = false;
+			}
+			else
+			{
+				if (
+					(0 == UT_strcmp(pszSectionType, "header"))
+					|| (0 == UT_strcmp(pszSectionType, "footer"))
+					)
+				{
+					// TODO verify id match
+					
+					m_bListening = true;
+				}
+				else
+				{
+					return false;
+				}
+			}
+		}
+		else
+		{
+			// TODO fail?
+			return false;
+		}
+	}
+	break;
+
+	case PTX_SectionHdrFtr:
 	{
 		PT_AttrPropIndex indexAP = pcr->getIndexAP();
 		const PP_AttrProp* pAP = NULL;

@@ -46,6 +46,7 @@ public:
 
 	PL_StruxDocHandle               getStruxDocHandle(void);
 	PTStruxType			getType(void) const;
+	void                setType(PTStruxType type);
 	PT_AttrPropIndex 	getAttrPropIndex(void) const;
 	void				setAttrPropIndex(PT_AttrPropIndex apIndex);
 	bool				getAttrProp(const PP_AttrProp ** ppAP) const;

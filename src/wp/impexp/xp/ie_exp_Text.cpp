@@ -289,6 +289,12 @@ bool s_Text_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 			return true;
 		}
 
+	case PTX_SectionHdrFtr:
+		{
+			_closeBlock();
+			return true;
+		}
+
 	case PTX_Block:
 		{
 			_closeBlock();

@@ -289,8 +289,6 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 			UT_DEBUGMSG(("no memory for BlockLayout"));
 			return false;
 		}
-		UT_DEBUGMSG(("SEVIOR: appending block %x to Section %x \n",pBL,m_pCurrentSL));
-		UT_DEBUGMSG(("SEVIOR: Section Type = %d \n",m_pCurrentSL->getType()));
 
 		// BUGBUG: this is *not* thread-safe, but should work for now
 		if (m_bScreen)
@@ -384,7 +382,9 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 			pHdr->bl_doclistener_insertSpan(pBL, pcrs);
 		}
 		else
+		{
 			bResult = pBLSL->bl_doclistener_insertSpan(pBL, pcrs);
+		}
 		goto finish_up;
 	}
 
@@ -507,6 +507,18 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 				bResult = pBLSL->bl_doclistener_deleteStrux(pBL, pcrx);
 			goto finish_up;
 		}
+		case PTX_SectionHdrFtr:
+		{
+			fl_Layout * pL = (fl_Layout *)sfh;
+			UT_ASSERT(pL->getType() == PTX_SectionHdrFtr);
+			fl_HdrFtrSectionLayout * pSL = static_cast<fl_HdrFtrSectionLayout *>(pL);
+//
+// Nuke the HdrFtrSectionLayout and the shadows associated with it.
+//
+			pSL->doclistener_deleteStrux(pcrx); 
+			m_pLayout->updateLayout();
+			goto finish_up;
+		}
 
 		default:
 			UT_ASSERT(0);
@@ -527,6 +539,8 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		UT_ASSERT(pL->getAttrPropIndex() == pcrxc->getOldIndexAP());
 		UT_ASSERT(pL->getAttrPropIndex() != pcr->getIndexAP());
 
+		UT_DEBUGMSG(("SEVIOR: pL->getType() = %d \n",pL->getType()));
+
 		switch (pL->getType())
 		{
 		case PTX_Section:
@@ -542,7 +556,6 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 	
 			const XML_Char* pszSectionType = NULL;
 			pAP->getAttribute("type", pszSectionType);
-
 			//
 			// OK Sevior adds code to actually change a 
 			// sectionlayout to
@@ -642,19 +655,108 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 				bResult = pBLSL->bl_doclistener_changeStrux(pBL, pcrxc);
 			goto finish_up;
 		}
-					
+		case PTX_SectionHdrFtr:
+		{
+//
+// OK A previous "insertStrux" has created a HdrFtrSectionLayout but it
+// Doesn't know if it's a header or a footer or the DocSection and hences pages
+// It associated with. Tell it now.
+//
+			fl_HdrFtrSectionLayout* pHFSL = static_cast<fl_HdrFtrSectionLayout*>(pL);
+			
+			PT_AttrPropIndex indexAP = pcr->getIndexAP();
+//
+// Save this new index to the Attributes/Properties of this section in the
+// HdrFtrSection Class
+//
+			pHFSL->setAttrPropIndex(pcrxc->getIndexAP());
+			const PP_AttrProp* pHFAP = NULL;
+			
+			bool bres = (m_pDoc->getAttrProp(indexAP, &pHFAP) && pHFAP);
+			UT_ASSERT(bres);
+	
+			const XML_Char* pszHFSectionType = NULL;
+			pHFAP->getAttribute("type", pszHFSectionType);
+			//
+            // Got a header
+			//
+			if(pszHFSectionType && UT_strcmp(pszHFSectionType,"header") == 0)
+			{
+				//
+				//  OK now we need a previous section with a
+				//  matching ID
+				//
+				const XML_Char* pszHFID = NULL;
+				pHFAP->getAttribute("id", pszHFID);
+
+				fl_DocSectionLayout* pDocSL = m_pLayout->findSectionForHdrFtr((char*)pszHFID);
+				
+				UT_ASSERT(pDocSL); 
+			        
+				// Set the Headerness and overall docSectionLayout
+				//
+				pHFSL->setDocSectionLayout(pDocSL);
+				pHFSL->setHdrFtr(FL_HDRFTR_HEADER);
+				//
+				// Set the pointers to this header/footer
+				//
+				pDocSL->setHdrFtr(FL_HDRFTR_HEADER, pHFSL);
+
+				// OK now Format this and attach it to it's pages
+				
+				pHFSL->format();
+
+				bResult = true;
+				goto finish_up;
+			}
+			else if(pszHFSectionType && UT_strcmp(pszHFSectionType,"footer") == 0)
+			{
+				//
+				//  OK now we need a previous section with a
+				//  matching ID
+				//
+				const XML_Char* pszHFID = NULL;
+				pHFAP->getAttribute("id", pszHFID);
+
+				fl_DocSectionLayout* pDocSL = m_pLayout->findSectionForHdrFtr((char*)pszHFID);
+				UT_ASSERT(pDocSL); 
+			        
+				// Set the Footerness and overall docSectionLayout
+				//
+				pHFSL->setDocSectionLayout(pDocSL);
+				pHFSL->setHdrFtr(FL_HDRFTR_FOOTER);
+				//
+				// Set the pointers to this header/footer
+				//
+				pDocSL->setHdrFtr(FL_HDRFTR_FOOTER, pHFSL);
+
+				// OK now Format this and attach it to it's pages
+				
+				pHFSL->format();
+			        
+				bResult = true;
+				goto finish_up;
+			}
+			UT_DEBUGMSG(("SEVIOR: Unknown change record on a SectionHdrFtr strux \n"));
+			UT_DEBUGMSG(("SEVIOR: Most like we're undoing an Insert HdrFtr. Carry on! \n"));
+			bResult = true;
+			goto finish_up;
+		}
 		default:
+		{
 			UT_ASSERT(0);
 			bResult = false;
 			goto finish_up;
 		}
+		}
 	}
 
 	case PX_ChangeRecord::PXT_InsertStrux:
+	{
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		bResult = false;
 		goto finish_up;
-
+	}
 	case PX_ChangeRecord::PXT_InsertObject:
 	{
 		const PX_ChangeRecord_Object * pcro = static_cast<const PX_ChangeRecord_Object *> (pcr);
@@ -767,9 +869,11 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		goto finish_up;
 	}
 	default:
+	{
 		UT_ASSERT(0);
 		bResult = false;
 		goto finish_up;
+	}
 	}
 
  finish_up:
@@ -830,6 +934,14 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 	
 			return bResult;
 		}
+		case PTX_SectionHdrFtr:				// we are inserting a HdrFtr section.
+			// We are inserting a HdrFtr section immediately after a section 
+			// (with no
+			// intervening block).  This is probably a bug, because there should
+			// at least be an empty block between them (so that the user can set
+			// the cursor there and start typing, if nothing else).
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			return false;
 
 		default:						// unknown strux.
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -885,7 +997,27 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 	
 			return bResult;
 		}
+	    case PTX_SectionHdrFtr:
+		{
+			// The immediately prior strux is a block.  Everything
+			// from this point forward (to the next section) needs to
+			// be re-parented to this new HdrFtr section.  We also need to
+			// verify that there is a block immediately after this new
+			// section -- a section must be followed by a block
+			// because a section cannot contain content.
 			
+			fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
+			fl_SectionLayout* pBLSL = pBL->getSectionLayout();
+			bool bResult = pBLSL->bl_doclistener_insertHdrFtrSection(pBL, pcrx,sdh,lid,pfnBindHandles);
+			if (0 == m_iGlobCounter)
+			{
+#ifndef UPDATE_LAYOUT_ON_SIGNAL
+				m_pLayout->updateLayout();
+#endif
+			}
+	
+			return bResult;
+		}
 		default:
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			return false;

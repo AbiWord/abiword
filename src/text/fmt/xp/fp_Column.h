@@ -261,8 +261,14 @@ public:
  	void				draw(dg_DrawArgs*);
   	void				layout(void);
  	void				clearScreen(void);
-	
+	void                clearHdrFtrBoundaries(void);
 protected:
+	void                _drawHdrFtrBoundaries(dg_DrawArgs * pDA);
+	bool                m_bHdrFtrBoxDrawn;
+	UT_sint32           m_ixoffBegin;
+	UT_sint32           m_iyoffBegin;
+	UT_sint32           m_ixoffEnd;
+	UT_sint32           m_iyoffEnd;
 
 };
 

@@ -46,6 +46,9 @@ bool pt_PieceTable::_unlinkStrux(pf_Frag_Strux * pfs,
 	{
 	case PTX_Section:
 		return _unlinkStrux_Section(pfs,ppfEnd,pfragOffsetEnd);
+
+	case PTX_SectionHdrFtr:
+		return _unlinkStrux_Section(pfs,ppfEnd,pfragOffsetEnd);
 		
 	case PTX_Block:
 		return _unlinkStrux_Block(pfs,ppfEnd,pfragOffsetEnd);
@@ -104,6 +107,20 @@ bool pt_PieceTable::_unlinkStrux_Block(pf_Frag_Strux * pfs,
 			return false;
 		}
 
+
+	case PTX_SectionHdrFtr:
+		// we are the first paragraph in this section.  if we have
+		// content, we cannot be deleted, since there is no one to
+		// inherit our content.
+
+		if (_struxHasContent(pfs))
+		{
+			// TODO decide if this should assert or just fail...
+			UT_DEBUGMSG(("Cannot delete first paragraph with content.\n"));
+			UT_ASSERT(0);
+			return false;
+		}
+
 		// no content in this paragraph.
 		
 		_unlinkFrag(pfs,ppfEnd,pfragOffsetEnd);
@@ -118,7 +135,7 @@ bool pt_PieceTable::_unlinkStrux_Block(pf_Frag_Strux * pfs,
 bool pt_PieceTable::_unlinkStrux_Section(pf_Frag_Strux * pfs,
 											pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd)
 {
-	UT_ASSERT(pfs->getStruxType()==PTX_Section);
+	UT_ASSERT(pfs->getStruxType()==PTX_Section || pfs->getStruxType()==PTX_SectionHdrFtr );
 	
 	// unlink this Section strux from the document.
 	// the caller is responsible for deleting pfs.
@@ -160,6 +177,15 @@ bool pt_PieceTable::_unlinkStrux_Section(pf_Frag_Strux * pfs,
 		return true;
 
 	case PTX_Section:
+		// there are no blocks (paragraphs) between this section
+		// and the previous section.  this is not possible.
+		// TODO decide if this should assert or just fail...
+		UT_DEBUGMSG(("No blocks between sections ??\n"));
+		UT_ASSERT(0);
+		return false;
+
+
+	case PTX_SectionHdrFtr:
 		// there are no blocks (paragraphs) between this section
 		// and the previous section.  this is not possible.
 		// TODO decide if this should assert or just fail...

@@ -351,6 +351,10 @@ bool s_Applix_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 		{
 			return true;
 		}
+	case PTX_SectionHdrFtr:
+		{
+			return true;
+		}
 
 	case PTX_Block:
 		{

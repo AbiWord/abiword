@@ -674,6 +674,7 @@ fp_HdrFtrContainer::fp_HdrFtrContainer(UT_sint32 iX,
 	m_iHeightLayoutUnits = iHeightLayout;
 	m_iMaxHeight = m_iHeight;
 	m_iMaxHeightLayoutUnits = (UT_sint32)(  (double) m_iHeight * ( (double) iHeightLayout/ (double) m_iMaxHeight)) ;
+    m_bHdrFtrBoxDrawn = false;
 }
 
 fp_HdrFtrContainer::~fp_HdrFtrContainer()
@@ -682,9 +683,10 @@ fp_HdrFtrContainer::~fp_HdrFtrContainer()
 
 void fp_HdrFtrContainer::layout(void)
 {
-	UT_sint32 iYLayoutUnits = 0;
 	double ScaleLayoutUnitsToScreen;
+	double yHardOffset = 5.0; // Move 5 pixels away from the very edge 
 	ScaleLayoutUnitsToScreen = (double)m_pG->getResolution() / UT_LAYOUT_UNITS;
+	UT_sint32 iYLayoutUnits = (UT_sint32) (yHardOffset/	ScaleLayoutUnitsToScreen);
 	UT_uint32 iCountLines = m_vecLines.getItemCount();
 	
 	for (UT_uint32 i=0; i < iCountLines; i++)
@@ -696,7 +698,7 @@ void fp_HdrFtrContainer::layout(void)
 		UT_sint32 sum = iLineHeightLayoutUnits + iLineMarginAfterLayoutUnits;
 		if(iYLayoutUnits + sum <= m_iMaxHeightLayoutUnits)
 		{
-			pLine->setY((int)(ScaleLayoutUnitsToScreen * iYLayoutUnits));
+			pLine->setY((UT_sint32)(ScaleLayoutUnitsToScreen * iYLayoutUnits));
 			pLine->setYInLayoutUnits(iYLayoutUnits);
 		}
 		else
@@ -754,6 +756,7 @@ void fp_HdrFtrContainer::clearScreen(void)
 
 		pLine->clearScreen();
 	}
+	clearHdrFtrBoundaries();
 }
 
 
@@ -786,7 +789,68 @@ void fp_HdrFtrContainer::draw(dg_DrawArgs* pDA)
 			break;
 		pLine->draw(&da);
 	}
-	_drawBoundaries(pDA);
+	FV_View * pView = m_pPage->getDocLayout()->getView();
+    if(pView && pView->isHdrFtrEdit() && m_pG->queryProperties(GR_Graphics::DGP_SCREEN) && pView->getEditShadow() == getShadow())
+	{
+		_drawHdrFtrBoundaries(pDA);
+	}
+	else
+	{
+        clearHdrFtrBoundaries();
+		_drawBoundaries(pDA);
+	}
+}
+
+/*! 
+ * This method draws a solid box around the currently editted Header/Footer
+ */
+void fp_HdrFtrContainer::_drawHdrFtrBoundaries(dg_DrawArgs * pDA)
+{
+    UT_ASSERT(pDA->pG == m_pG);
+//
+// Can put these
+//
+//	if(m_bHdrFtrBoxDrawn)
+//		return;
+	UT_RGBColor clrDrawHdrFtr(0,0,0);
+	m_pG->setLineWidth(3);
+	m_pG->setColor(clrDrawHdrFtr);
+//
+// These magic number stop blanking the lines
+//
+	m_ixoffBegin = pDA->xoff-2; 
+	m_iyoffBegin = pDA->yoff+2;
+	m_ixoffEnd = pDA->xoff + m_iWidth +1;
+	m_iyoffEnd = pDA->yoff + m_iMaxHeight -1;
+
+	m_pG->drawLine(m_ixoffBegin, m_iyoffBegin, m_ixoffEnd, m_iyoffBegin);
+	m_pG->drawLine(m_ixoffBegin, m_iyoffEnd, m_ixoffEnd, m_iyoffEnd);
+	m_pG->drawLine(m_ixoffBegin, m_iyoffBegin, m_ixoffBegin, m_iyoffEnd);
+	m_pG->drawLine(m_ixoffEnd, m_iyoffBegin, m_ixoffEnd, m_iyoffEnd);
+	m_pG->setLineWidth(1);
+    m_bHdrFtrBoxDrawn = true;
+}
+
+
+/*! 
+ * This method clears the solid box around the curently editted Header/Footer
+ */
+void fp_HdrFtrContainer::clearHdrFtrBoundaries(void)
+{
+	if(!m_bHdrFtrBoxDrawn)
+		return;
+	UT_RGBColor clrClearHdrFtr(255,255,255);
+	m_pG->setLineWidth(3);
+	m_pG->setColor(clrClearHdrFtr);
+//
+// Paint over the previous lines with "white"
+//
+	m_pG->drawLine(m_ixoffBegin, m_iyoffBegin, m_ixoffEnd, m_iyoffBegin);
+	m_pG->drawLine(m_ixoffBegin, m_iyoffEnd, m_ixoffEnd, m_iyoffEnd);
+	m_pG->drawLine(m_ixoffBegin, m_iyoffBegin, m_ixoffBegin, m_iyoffEnd);
+	m_pG->drawLine(m_ixoffEnd, m_iyoffBegin, m_ixoffEnd, m_iyoffEnd);
+	m_pG->setLineWidth(1);
+	m_bHdrFtrBoxDrawn = false;
 }
 
 /*!

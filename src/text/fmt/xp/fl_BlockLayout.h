@@ -309,6 +309,12 @@ public:
 								   void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
 														   PL_ListenerId lid,
 														   PL_StruxFmtHandle sfhNew));
+	bool doclistener_insertHdrFtrSection(const PX_ChangeRecord_Strux * pcrx,
+								   PL_StruxDocHandle sdh,
+								   PL_ListenerId lid,
+								   void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+														   PL_ListenerId lid,
+														   PL_StruxFmtHandle sfhNew));
 	bool doclistener_insertObject(const PX_ChangeRecord_Object * pcro);
 	bool doclistener_deleteObject(const PX_ChangeRecord_Object * pcro);
 	bool doclistener_changeObject(const PX_ChangeRecord_ObjectChange * pcroc);

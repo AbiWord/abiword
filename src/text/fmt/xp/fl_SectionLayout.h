@@ -29,6 +29,7 @@
 #include "pt_Types.h"
 #include "fl_Layout.h"
 #include "pl_Listener.h"
+#include "ut_debugmsg.h"
 
 class fp_Page;
 class FL_DocLayout;
@@ -52,22 +53,29 @@ class PX_ChangeRecord_Strux;
 class PX_ChangeRecord_StruxChange;
 class fl_HdrFtrSectionLayout;
 
-#define FL_SECTION_DOC			1
-#define FL_SECTION_HDRFTR		2
-#define FL_SECTION_SHADOW		3
+typedef enum 
+{
+	FL_SECTION_DOC,
+    FL_SECTION_HDRFTR,
+    FL_SECTION_SHADOW
+} SectionType;
 
-#define FL_HDRFTR_HEADER		1
-#define FL_HDRFTR_FOOTER		2
+
+typedef enum 
+{       
+	FL_HDRFTR_HEADER,
+	FL_HDRFTR_FOOTER
+} HdrFtrType;
 
 class fl_SectionLayout : public fl_Layout
 {
 	friend class fl_DocListener;
 
 public:
-	fl_SectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_AttrPropIndex ap, UT_uint32 iType);
+	fl_SectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_AttrPropIndex ap, SectionType iType);
 	virtual ~fl_SectionLayout();
 
-	inline UT_uint32	getType(void) const { return m_iType; }
+	SectionType     	getType(void) const { return m_iType; }
 
 	virtual bool		recalculateFields(void);
 	
@@ -121,6 +129,12 @@ public:
 											  void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
 																	  PL_ListenerId lid,
 																	  PL_StruxFmtHandle sfhNew));
+	virtual bool bl_doclistener_insertHdrFtrSection(fl_BlockLayout*, const PX_ChangeRecord_Strux * pcrx,
+											  PL_StruxDocHandle sdh,
+											  PL_ListenerId lid,
+											  void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+																	  PL_ListenerId lid,
+																	  PL_StruxFmtHandle sfhNew));
 	virtual bool bl_doclistener_insertObject(fl_BlockLayout*, const PX_ChangeRecord_Object * pcro);
 	virtual bool bl_doclistener_deleteObject(fl_BlockLayout*, const PX_ChangeRecord_Object * pcro);
 	virtual bool bl_doclistener_changeObject(fl_BlockLayout*, const PX_ChangeRecord_ObjectChange * pcroc);
@@ -139,7 +153,7 @@ protected:
 	void				_purgeLayout();
 	fb_LineBreaker *	_getLineBreaker(void);
 
-	UT_uint32			m_iType;
+	SectionType			m_iType;
 	
 	fl_SectionLayout*	m_pPrev;
 	fl_SectionLayout*	m_pNext;
@@ -197,7 +211,7 @@ public:
 	virtual bool 	doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc);
 	bool				doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx);
 
-	void				setHdrFtr(UT_uint32 iType, fl_HdrFtrSectionLayout* pHFSL);
+	void				setHdrFtr(HdrFtrType iType, fl_HdrFtrSectionLayout* pHFSL);
 
 	fl_HdrFtrSectionLayout*         getHeader(void);
 	fl_HdrFtrSectionLayout*         getFooter(void);
@@ -257,14 +271,15 @@ class fl_HdrFtrSectionLayout : public fl_SectionLayout
 	friend class fl_DocListener;
 
 public:
-	fl_HdrFtrSectionLayout(UT_uint32 iHFType, FL_DocLayout* pLayout, fl_DocSectionLayout* pDocSL, PL_StruxDocHandle sdh, PT_AttrPropIndex ap);
+	fl_HdrFtrSectionLayout(HdrFtrType iHFType, FL_DocLayout* pLayout, fl_DocSectionLayout* pDocSL, PL_StruxDocHandle sdh, PT_AttrPropIndex ap);
 	virtual ~fl_HdrFtrSectionLayout();
 	
 	inline fl_DocSectionLayout*	getDocSectionLayout(void) const { return m_pDocSL; }
-	inline UT_uint32			getHFType(void) const { return m_iHFType; }
-
+	HdrFtrType      			getHFType(void) const { return m_iHFType; }
+	void                        setDocSectionLayout(fl_DocSectionLayout * pDSL) { m_pDocSL = pDSL;}
+	void                        setHdrFtr(HdrFtrType iHFType) { 	m_iHFType = iHFType;}
 	virtual bool		recalculateFields(void);
-	
+	bool                        doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx);
 	void                        localFormat(void);
 	void                        localCollapse(void);
 	virtual void				format(void);
@@ -316,7 +331,7 @@ protected:
 	virtual void				_lookupProperties(void);
 	
 	fl_DocSectionLayout*		m_pDocSL;
-	UT_uint32					m_iHFType;
+	HdrFtrType					m_iHFType;
 	fp_Container *              m_pVirContainer;
 	UT_Vector					m_vecPages;
 };

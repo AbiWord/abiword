@@ -444,6 +444,22 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 			return true;
 		}
 
+	case PTX_SectionHdrFtr: // just a copy of the code from ptx_section for now
+		{
+			_closeSpan();
+			_closeBlock();
+			_closeSection();
+
+			// begin a new section.  in RTF this is expressed as
+			//
+			// <section> := <secfmt>* <hdrftr>? <para>+ (\sect <section>)?
+			//
+			// here we deal with everything except for the <para>+
+			m_sdh = sdh;
+			_rtf_open_section(pcr->getIndexAP());
+			return true;
+		}
+
 	case PTX_Block:
 		{
 			_closeSpan();

@@ -590,6 +590,16 @@ bool s_MsWord_97_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 			return true;
 		}
 
+	case PTX_SectionHdrFtr:
+		{
+			_closeSpan();
+			_closeBlock();
+			_closeSection();
+			_openTag("section","",true,pcr->getIndexAP());
+			m_bInSection = true;
+			return true;
+		}
+
 	case PTX_Block:
 		{
 			_closeSpan();

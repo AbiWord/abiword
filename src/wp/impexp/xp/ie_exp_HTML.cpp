@@ -1306,6 +1306,39 @@ bool s_HTML_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 		return true;
 	}
 
+	case PTX_SectionHdrFtr:
+	{
+		_closeSpan();
+		_closeTag();
+		_closeSection();
+
+		PT_AttrPropIndex indexAP = pcr->getIndexAP();
+		const PP_AttrProp* pAP = NULL;
+		if (m_pDocument->getAttrProp(indexAP, &pAP) && pAP)
+		{
+			const XML_Char* pszSectionType = NULL;
+			pAP->getAttribute("type", pszSectionType);
+			if (
+				!pszSectionType
+				|| (0 == UT_strcmp(pszSectionType, "doc"))
+				)
+			{
+				_openSection(pcr->getIndexAP());
+				m_bInSection = true;
+			}
+			else
+			{
+				m_bInSection = false;
+			}
+		}
+		else
+		{
+			m_bInSection = false;
+		}
+		
+		return true;
+	}
+
 	case PTX_Block:
 	{
 		_closeSpan();
