@@ -31,6 +31,7 @@ gladedir=$(pkgdatadir)/AbiWord/glade
 
 glade_DATA = \
 	xap_UnixDlg_About.glade \
+	xap_UnixDlg_PluginManager.glade \
 	xap_UnixDlg_Zoom.glade
 
 libXap_unix_a_SOURCES=\
@@ -69,6 +70,3 @@ libXap_unix_a_SOURCES=\
 	xap_UnixFrameImpl.cpp			\
 	xap_UnixGtkColorPicker.cpp              \
 	xap_UnixTableWidget.cpp
-
-
-

@@ -1243,4 +1243,3 @@ void AP_Lists_preview::draw(void)
 
 	delete font;
 }
-
