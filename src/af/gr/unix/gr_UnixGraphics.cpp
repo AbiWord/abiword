@@ -567,9 +567,27 @@ GR_Font * GR_UnixGraphics::findFont(const char* pszFontFamily,
 	XAP_UnixFont * unixfont = m_pFontManager->getFont(pszFontFamily, s);	
 	if (!unixfont)
 	{
-		// Oops!  We don't have that font here.  substitute something
-		// we know we have (get smarter about this later)
+		// Oops!  We don't have that font here.
+		// first try "Times New Roman", which should be sensible, and should
+		// be there unless the user fidled with the installation
 		unixfont = m_pFontManager->getFont("Times New Roman", s);
+		
+		// Oh well, see if there are any fonts at all, and if so
+		// just take the first one ...
+		if(!unixfont)
+		{
+				UT_Vector *	pVec = m_pFontManager->getAllFonts();
+				if(pVec && pVec->getItemCount() > 0)
+				{
+					// get the first font we have
+					unixfont = static_cast<XAP_UnixFont *>(pVec->getNthItem(0));
+				}
+		
+		}
+			
+		// this is really desperate, we do not seem to have any fonts
+		// we cannot be blamed if we just give up
+		
 		if (!unixfont)
 		{
 			char message[1024];
@@ -581,6 +599,7 @@ GR_Font * GR_UnixGraphics::findFont(const char* pszFontFamily,
 					   "\n"
 					   "AbiWord cannot continue without this font.", pszFontFamily);
 			messageBoxOK(message);
+			
 			exit(1);
 		}
 		
