@@ -52,6 +52,7 @@
 #include "ut_map.h"
 #include "gr_CharWidthsCache.h"
 #include "gr_ContextGlyph.h"
+#include "xav_Listener.h"
 
 UT_Map * abi_ut_map_instance = 0;
 
@@ -105,6 +106,7 @@ XAP_App::XAP_App(XAP_Args * pArgs, const char * szAppName)
 	m_pMenuFactory = new XAP_Menu_Factory(this);
 	m_pToolbarFactory = new XAP_Toolbar_Factory(this);
 	clearIdTable();
+	m_vecPluginListeners.clear(); // Just to be safe
 
 	/* hack to force the linker to link in UT_Map functions
 	 */
@@ -324,6 +326,106 @@ bool XAP_App::initialize(const char * szKeyBindingsKey, const char * szKeyBindin
 	
 	return true;
 }
+
+/*!
+ * Plugins can register themselves here if they want to receive
+ * notifications of document changes.
+ */
+bool XAP_App::addListener(AV_Listener * pListener, 
+							 AV_ListenerId * pListenerId)
+{
+	UT_uint32 kLimit = m_vecPluginListeners.getItemCount();
+	UT_uint32 k;
+
+	// see if we can recycle a cell in the vector.
+	
+	for (k=0; k<kLimit; k++)
+		if (m_vecPluginListeners.getNthItem(k) == 0)
+		{
+			static_cast<void>(m_vecPluginListeners.setNthItem(k,pListener,NULL));
+			goto ClaimThisK;
+		}
+
+	// otherwise, extend the vector for it.
+	
+	if (m_vecPluginListeners.addItem(pListener,&k) != 0)
+	{
+		return false;				// could not add item to vector
+	}
+
+  ClaimThisK:
+
+	// give our vector index back to the caller as a "Listener Id".
+	
+	*pListenerId = k;
+	return true;
+}
+
+
+/*!
+ * Plugins must remove themselves if they've registered.
+ */
+bool XAP_App::removeListener(AV_ListenerId listenerId)
+{
+	if (listenerId == (AV_ListenerId) -1)
+		return false;
+		
+	return (m_vecPluginListeners.setNthItem(listenerId,NULL,NULL) == 0);
+}
+
+/*!
+ * Send notifications to all the registered plugins
+ */
+bool XAP_App::notifyListeners(AV_View * pView, const AV_ChangeMask hint)
+{
+	/*
+		App-specific logic calls this virtual method when relevant portions of 
+		the view state *may* have changed.  (That's why it's called a hint.)
+
+		This base class implementation doesn't do any filtering of those 
+		hints, it just broadcasts those hints to all listeners.  
+
+		Subclasses are encouraged to improve the quality of those hints by 
+		filtering out mask bits which haven't *actually* changed since the 
+		last notification.  To do so, they would 
+
+			- copy the hint (it's passed as a const),
+			- clear any irrelevant bits, and 
+			- call this implementation on the way out
+
+		Good hinting logic is app-specific, and non-trivial to tune, but it's 
+		worth doing, because it helps minimizes flicker for things like 
+		toolbar button state.  
+	*/
+
+	// make sure there's something left
+
+	if (hint == AV_CHG_NONE)
+	{
+		return false;
+	}
+	
+	// notify listeners of a change.
+		
+	AV_ListenerId lid;
+	AV_ListenerId lidCount = m_vecPluginListeners.getItemCount();
+
+	// for each listener in our vector, we send a notification.
+	// we step over null listners (for listeners which have been
+	// removed (views that went away)).
+
+	for (lid=0; lid<lidCount; lid++)
+	{
+		AV_Listener * pListener = static_cast<AV_Listener *>(m_vecPluginListeners.getNthItem(lid));
+		if(pListener)
+		{
+				pListener->notify(pView,hint);
+		}
+	}
+
+	return true;
+}
+
 
 void XAP_App::resetToolbarsToDefault(void)
 {

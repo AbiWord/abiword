@@ -4272,24 +4272,6 @@ UT_Error FV_View::cmdInsertHyperlink(const char * szName)
 		return false;
 
 	}
-	PT_DocPosition posNext = 0;
-	if(pBl1->getNext())
-	{
-		posNext = pBl1->getNext()->getPosition(true);
-	}
-	else
-	{
-		posNext = pBl1->getPosition(true) + pBl1->getLength();
-	}
-	if((posStart <= pBl1->getPosition(true)) || (posEnd > posNext))
-	{
-		XAP_Frame * pFrame = static_cast<XAP_Frame *>(getParentData());
-		UT_ASSERT((pFrame));
-
-		pFrame->showMessageBox(AP_STRING_ID_MSG_HyperlinkCrossesBoundaries, XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK);
-		return false;
-	}
-
 	// Silently fail (TODO: pop up message) if we try to nest hyperlinks.
 	if (_getHyperlinkInRange(posStart, posEnd) != NULL)
 		return false;

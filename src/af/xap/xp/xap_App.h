@@ -36,6 +36,7 @@
 #include "ut_Language.h"
 #include "ut_string_class.h"
 #include "xap_AppImpl.h"
+#include "xav_Listener.h"
 
 #define NUM_MODELESSID 39
 
@@ -65,6 +66,7 @@ class GR_GraphicsFactory;
 class GR_Graphics;
 class GR_AllocInfo;
 class XAP_InputModes;
+class AV_Listener;
 
 /*****************************************************************
 ******************************************************************
@@ -228,6 +230,9 @@ public:
 	virtual UT_sint32			setInputMode(const char * szName);
 	const char *				getInputMode() const;
 	EV_EditEventMapper *		getEditEventMapper() const;
+	bool			            addListener(AV_Listener * pListener, AV_ListenerId * pListenerId);
+	bool			            removeListener(AV_ListenerId listenerId);
+	virtual bool	            notifyListeners(AV_View * pView, const AV_ChangeMask hint);
 
 protected:
 	void									_setAbiSuiteLibDir(const char * sz);
@@ -280,6 +285,7 @@ private:
 	void _fundamentalAsserts() const;
 #endif
 	XAP_AppImpl* m_pImpl;
+    UT_GenericVector<AV_Listener *>         m_vecPluginListeners;
 };
 
 #endif /* XAP_APP_H */

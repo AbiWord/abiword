@@ -142,7 +142,7 @@ bool AV_View::notifyListeners(const AV_ChangeMask hint)
 				pListener->notify(this,hint);
 		}
 	}
-
+	getApp()->notifyListeners(this,hint);
 	return true;
 }
 
