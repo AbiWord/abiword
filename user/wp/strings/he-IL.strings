@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="iso-8859-8"?>
+
 <!-- ==============================================================  -->
 <!-- This file contains AbiWord Strings.  AbiWord is an Open Source  -->
 <!-- word processor developed by AbiSource, Inc.  Information about  -->
@@ -6,7 +7,8 @@
 <!-- This file contains the string translations for one language.    -->
 <!-- This file is covered by the GNU Public License (GPL).           -->
 <!-- ==============================================================  -->
-<!-- Hebrew Localisation provided by Omer Zak omerz@actcom.co.il> -->
+
+<!-- Hebrew Localisation provided by Omer Zak <omerz@actcom.co.il> -->
 
 <AbiStrings app="AbiWord" ver="1.0" language="he-IL">
 
@@ -41,6 +43,7 @@ DLG_Para_PreviewSampleFallback="פיסקה זו מציגה טקסט, כפי שהוא עשוי להופיע במסמך 
 DLG_Tab_Radio_Center="ממורכז"
 FIELD_DateTime_MilTime="24 Hour Time"
 DLG_PageNumbers_Center="ממורכז"
+
 MENU_LABEL__BOGUS1__=" "
 MENU_LABEL_FILE="&amp;קובץ"
 MENU_LABEL_FILE_NEW="&amp;חדש"
@@ -87,7 +90,7 @@ MENU_LABEL_VIEW_TB_FORMAT="עי&amp;צוב"
 MENU_LABEL_VIEW_TB_EXTRA="&amp;תוספים"
 MENU_LABEL_VIEW_RULER="&amp;סרגל"
 MENU_LABEL_VIEW_STATUSBAR="&amp;שורת מצב"
-MENU_LABEL_VIEW_SHOWPARA="Show Para&amp;graphs"
+MENU_LABEL_VIEW_SHOWPARA="הצג &amp;פיסקאות"
 MENU_LABEL_VIEW_HEADFOOT="&amp;כותרת עליונה וכותרת תחתונה"
 MENU_LABEL_VIEW_FULLSCREEN="מסך &amp;מלא"
 MENU_LABEL_VIEW_ZOOM="מרחק מת&amp;צוגה"
@@ -163,10 +166,10 @@ MENU_LABEL_SPELL_SUGGEST_6="%s"
 MENU_LABEL_SPELL_SUGGEST_7="%s"
 MENU_LABEL_SPELL_SUGGEST_8="%s"
 MENU_LABEL_SPELL_SUGGEST_9="%s"
-MENU_LABEL_SPELL_IGNOREALL="&amp;Ignore All"
-MENU_LABEL_SPELL_ADD="&amp;Add"
-MENU_LABEL_INSERT_AUTOTEXT="&amp;Autotext"
-MENU_LABEL_AUTOTEXT_ATTN="Attention:"
+MENU_LABEL_SPELL_IGNOREALL="&amp;התעלם מכל שגיאות האיות"
+MENU_LABEL_SPELL_ADD="&amp;הוספה"
+MENU_LABEL_INSERT_AUTOTEXT="&amp;טקסט אוטומטי"
+MENU_LABEL_AUTOTEXT_ATTN="לתשומת לבך:"
 MENU_LABEL_AUTOTEXT_CLOSING="Closing:"
 MENU_LABEL_AUTOTEXT_MAIL="Mail Instructions:"
 MENU_LABEL_AUTOTEXT_REFERENCE="Reference:"
@@ -174,6 +177,7 @@ MENU_LABEL_AUTOTEXT_SALUTATION="Salutation:"
 MENU_LABEL_AUTOTEXT_SUBJECT="נושא:"
 MENU_LABEL_AUTOTEXT_EMAIL="כתובת דואר אלקטרוני:"
 MENU_LABEL__BOGUS2__=" "
+
 MENU_STATUSLINE__BOGUS1__=" "
 MENU_STATUSLINE_FILE=" "
 MENU_STATUSLINE_FILE_NEW="צור מסמך חדש"
@@ -200,13 +204,13 @@ MENU_STATUSLINE_FILE_EXIT="סגור את כל החלונות ביישום וצא"
 MENU_STATUSLINE_EDIT=" "
 MENU_STATUSLINE_EDIT_UNDO="בטל פעולה"
 MENU_STATUSLINE_EDIT_REDO="בצע מחדש פעולה שבוטלה"
-MENU_STATUSLINE_EDIT_CUT="Cut the selection and put it on the Clipboard"
-MENU_STATUSLINE_EDIT_COPY="Copy the selection and put it on the Clipboard"
-MENU_STATUSLINE_EDIT_PASTE="Insert Clipboard contents"
-MENU_STATUSLINE_EDIT_CLEAR="Delete the selection"
+MENU_STATUSLINE_EDIT_CUT="גזירת הקטע הנבחר והצבתו בלוח"
+MENU_STATUSLINE_EDIT_COPY="העתקת הקטע הנבחר והצבתו בלוח"
+MENU_STATUSLINE_EDIT_PASTE="הוספת תוכן הלוח"
+MENU_STATUSLINE_EDIT_CLEAR="מחיקת הקטע הנבחר"
 MENU_STATUSLINE_EDIT_SELECTALL="בחר את כל המסמך"
-MENU_STATUSLINE_EDIT_FIND="Find the specified text"
-MENU_STATUSLINE_EDIT_REPLACE="Replace the specified text with different text"
+MENU_STATUSLINE_EDIT_FIND="חיפוש הטקסט שצויין"
+MENU_STATUSLINE_EDIT_REPLACE="החלפת טקסט מסויים בטקסט אחר"
 MENU_STATUSLINE_EDIT_GOTO="Move the insertion point to a specific location"
 MENU_STATUSLINE_EDIT_EDITHEADER="ערוך את הכותרת העליונה בעמוד הנוכחי"
 MENU_STATUSLINE_EDIT_EDITFOOTER="ערוך את הכותרת התחתונה בעמוד הנוכחי"
@@ -309,4 +313,5 @@ MENU_STATUSLINE_AUTOTEXT_EMAIL=" "
 MENU_STATUSLINE__BOGUS2__=" "
 />
 
-</AbiStrings>  
+</AbiStrings>
+
