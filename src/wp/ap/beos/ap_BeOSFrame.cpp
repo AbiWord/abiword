@@ -50,18 +50,14 @@
 
 void AP_BeOSFrame::setZoomPercentage(UT_uint32 iZoom)
 {
-        _showDocument(iZoom);
+	AP_Frame::setZoomPercentage(iZoom);
 	if (m_pBeDocView->Window()->Lock())
 	{
 		m_pBeDocView->Invalidate();
 		m_pBeDocView->Window()->Unlock();
 	}
 }
-
-UT_uint32 AP_BeOSFrame::getZoomPercentage(void)
-{
-        return ((AP_FrameData*)m_pData)->m_pG->getZoomPercentage();
-}            
+           
 
 UT_Error AP_BeOSFrame::_showDocument(UT_uint32 iZoom)
 {

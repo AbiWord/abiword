@@ -46,7 +46,6 @@ public:
 	virtual void				setYScrollRange(void);
 
 	virtual void 				setZoomPercentage(UT_uint32 iZoom);
-	virtual UT_uint32 			getZoomPercentage(void);
 	virtual void 				setStatusMessage(const char * szMsg);
 	
 	virtual void				toggleRuler(bool bRulerOn);
