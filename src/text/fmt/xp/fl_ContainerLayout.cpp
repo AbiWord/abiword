@@ -125,10 +125,10 @@ void fl_ContainerLayout::lookupProperties(void)
 FPVisibility fl_ContainerLayout::getAP(const PP_AttrProp *& pAP)const
 {
 	FL_DocLayout* pDL =	getDocLayout();
-	UT_return_if_fail(pDL);
+	UT_return_val_if_fail(pDL,FP_VISIBLE);
 
 	FV_View* pView = pDL->getView();
-	UT_return_if_fail(pView);
+	UT_return_val_if_fail(pView,FP_VISIBLE);
 
 	UT_uint32 iId  = pView->getRevisionLevel();
 	bool bShow     = pView->isShowRevisions();

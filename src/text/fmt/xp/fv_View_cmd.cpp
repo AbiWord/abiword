@@ -4029,6 +4029,14 @@ UT_Error FV_View::cmdInsertBookmark(const char * szName)
 	
 	posEnd++;
 
+	fl_BlockLayout * pBL1 =_findBlockAtPosition(posStart);
+	fl_BlockLayout * pBL2 =_findBlockAtPosition(posEnd);
+	if(pBL1 != pBL2)
+	{
+		_restorePieceTableState();
+		return false;
+	}
+
 	if(!m_pDoc->isBookmarkUnique(static_cast<const XML_Char*>(szName)))
 	{
 		//bookmark already exists -- remove it and then reinsert

@@ -272,4 +272,9 @@ ABI_EXPORT void * UT_calloc ( UT_uint32 nmemb, UT_uint32 size );
 #define XP_UNIX_TARGET_GTK 1
 #endif
 
+// this is maximum revision level; it is intentionally not defined as
+// 0xffffffff to avoid problems with bad 64-bit compilers
+
+#define PD_MAX_REVISION 0x0fffffff
+
 #endif /* UT_TYPES_H */
