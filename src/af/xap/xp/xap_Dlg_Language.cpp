@@ -20,39 +20,67 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-
+#include <windows.h>   
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_Language.h"
 #include "xap_Dlg_Language.h"
+#include "xap_Strings.h"   
+
+
+static int s_compareQ(const void * a, const void * b)                           
+{                                                                               
+	const XML_Char ** A = (const XML_Char **)(a);                                              
+	const XML_Char ** B = (const XML_Char **)(b);                                   	
+	return UT_strcoll(*A,*B);                                               
+}       
 
 /*****************************************************************/
 
 XAP_Dialog_Language::XAP_Dialog_Language(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: XAP_Dialog_NonPersistent(pDlgFactory,id, "interface/dialoglanguage")
 {
+	UT_uint32 nDontSort = 0, nSort = 0;
+	UT_uint32 i;
+	const XML_Char ** ppLanguagesTemp = new const XML_Char * [m_pLangTable->getCount()];	
+
 	m_answer		   = a_CANCEL;
 	m_pLanguage		   = NULL;
 	m_pLangProperty	   = NULL;
 	m_bChangedLanguage = false;
 	m_pLangTable = new UT_Language;
-
+	
 	UT_ASSERT(m_pLangTable);
 	m_iLangCount = m_pLangTable->getCount();
-	m_ppLanguages = new const XML_Char * [m_iLangCount];
+	m_ppLanguages = new const XML_Char * [m_iLangCount];	
 	m_ppLanguagesCode = new const XML_Char * [m_iLangCount];
+	
+	for(i=0; i<m_iLangCount; i++)                                           
+	{                                                                       
+		if (m_pLangTable->getNthId(i)==XAP_STRING_ID_LANG_0) // Unsorted languages
+		{
+			m_ppLanguages[nDontSort]=m_pLangTable->getNthLangName(i);                                                    
+			nDontSort++;                                             
+		}
+		else
+		{
+			ppLanguagesTemp[nSort] = m_pLangTable->getNthLangName(i);                                                                     
+			nSort++;
+		}
+	}                                                                       
 
-	for(UT_uint32 i = 0; i < m_iLangCount; i++)
-	{
-		m_ppLanguages[i] = m_pLangTable->getNthLangName(i);
-		m_ppLanguagesCode[i] = m_pLangTable->getNthLangCode(i);
-	}
+	// sort the temporary array                                                                                                                      
+	qsort(ppLanguagesTemp, m_iLangCount-nDontSort, sizeof(XML_Char *), s_compareQ);
 
-	// Assign each language its code
+	  
+	// Copy the sorted codes and a ssign each language its code
 	for(UT_uint32 nLang = 0; nLang < m_iLangCount; nLang++)
 	{
-		for(UT_uint32 i = 0; i < m_iLangCount; i++)
+		if (nLang>=nDontSort)
+			m_ppLanguages[nLang]=ppLanguagesTemp[nLang-nDontSort];
+
+		for(i = 0; i < m_iLangCount; i++)
 		{
 			if (strcmp (m_ppLanguages[nLang], m_pLangTable->getNthLangName(i))==0)
 			{
@@ -61,6 +89,7 @@ XAP_Dialog_Language::XAP_Dialog_Language(XAP_DialogFactory * pDlgFactory, XAP_Di
 			}
 		}
 	}
+	delete [] ppLanguagesTemp;
 
 	// TODO: move spell-checking into XAP land and make this dialog
 	// TODO: more like the MSWord one (i.e. add):
