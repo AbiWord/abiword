@@ -125,7 +125,7 @@ $(PROGRAM): $(OBJS)
 ifeq ($(OS_NAME),WINNT)
 	@$(CC) -nologo $(OBJS) -Fe$@ -link $(LDFLAGS) $(OS_LIBS) $(EXTRA_LIBS)
 else
-	@$(CC) -o $@ $(CFLAGS) $(OBJS) $(LDFLAGS)
+	@$(CCC) -o $@ $(CFLAGS) $(OBJS) $(LDFLAGS)
 endif
 
 $(LIBRARY): $(OBJS)
