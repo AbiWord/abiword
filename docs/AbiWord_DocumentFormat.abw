@@ -1,3 +1,5 @@
+<?xml version="1.0"?>
+<abiword version="unnumbered">
 <!-- =====================================================================  -->
 <!-- This file is an AbiWord document.                                      -->
 <!-- AbiWord is a free, Open Source word processor.                         -->
@@ -5,162 +7,204 @@
 <!-- You should not edit this file by hand.                                 -->
 <!-- =====================================================================  -->
 
-<!--         Build_ID          = freebird-jeff -->
-<!--         Build_Options     = JavaScript:Off Debug:On -->
-<!--         Build_Target      = Linux_2.0.33_i386_DBG -->
-<!--         Build_CompileTime = 20:01:27 -->
-<!--         Build_CompileDate = Mar  9 1999 -->
+<!--         Build_ID          = (none) -->
+<!--         Build_Version     = unnumbered -->
+<!--         Build_Options     = LicensedTrademarks:Off Debug:On Gnome:Off -->
+<!--         Build_Target      = /home/sam/abi/abi/src/Linux_2.3.36_i386_DBG/obj -->
+<!--         Build_CompileTime = 15:13:42 -->
+<!--         Build_CompileDate = Mar  2 2000 -->
 
-<awml>
 <section>
-<p><c PROPS="font-size:18pt; font-weight:bold">It is my intention to keep this document in sync with the current state of the code.  Thus, this document does not yet describe the full feature set planned for version 1.0.  This document is current with version 0.5.0 of the code.</c></p>
+<p><c props="font-size:18pt; font-weight:bold">It is my intention to keep this document in sync with the current state of the code.  Thus, this document does not yet describe the full feature set planned for version 1.0.  This document is current with version 0.7.8 of the code.</c></p>
 <p></p>
-<p><c PROPS="font-family:courier; font-size:11pt">$Id$</c></p>
+<p><c props="font-family:courier; font-size:11pt">$Id$</c></p>
 <p></p>
-<p PROPS="text-align:center"><c PROPS="font-size:24pt; font-weight:bold">AbiWord Document Format</c></p>
-<p PROPS="text-align:center"><c PROPS="font-size:10pt">Version 1.0</c></p>
-<p PROPS="text-align:center"><c PROPS="font-size:11pt">Copyright (C) 1999 AbiSource, Inc., All Rights Reserved.</c></p>
-<p PROPS="text-align:center"><c PROPS="font-style:italic">Jeff Hostetler</c></p>
-<p PROPS="text-align:center"><c PROPS="font-family:courier">jeff@abisource.com</c></p>
-<p PROPS="text-align:center">AbiSource, Inc.</p>
-<p PROPS="text-align:center"><c PROPS="font-family:courier">$Date$</c></p>
-<p PROPS="text-align:left"></p>
-<p PROPS="text-align:left"><c PROPS="font-weight:bold">1. Introduction</c></p>
-<p PROPS="text-align:left"></p>
-<p PROPS="text-align:left">This document describes the AbiWord file format used to represent AbiWord native documents. This document describes file format version 1.0.</p>
-<p PROPS="text-align:left"></p>
-<p PROPS="text-align:left">AbiWord uses XML[1] to represent a document. This does not imply that AbiWord is an XML editor; but rather, AbiWord is a Word Processor that just happens to use XML as a convenient syntax for representing documents. AbiWord contains a very strict and unforgiving import; it requires well-formed XML in strict adherence to the AbiWord DTD[2]. Our primary goal is to support documents written by AbiWord rather than hand written XML.</p>
-<p PROPS="text-align:left"></p>
-<p PROPS="text-align:left">AbiWord also uses some of the syntax and conventions from CSS2[3] to represent certain concepts, such as character formatting. CSS2 was designed as a style mechanism for WWW documents and not as a style mechanism for page-oriented documents. We used CSS2 as a guideline, taking parts that were of use and inventing our own mechanism as necessary.</p>
-<p PROPS="text-align:left"></p>
-<p PROPS="text-align:left"><c PROPS="font-weight:bold">2. Document Structure</c></p>
-<p PROPS="text-align:left"></p>
-<p PROPS="text-align:left">The AbiWord file format is an 7bit-clean ASCII XML file. Non-US-ASCII characters are represented using standard XML numeric entities (e.g., "<c PROPS="font-family:Courier New">&amp;#xff;</c><c PROPS="font-family:Times New Roman">"</c> or "<c PROPS="font-family:Courier New">&amp;#xffff;</c><c PROPS="font-family:Times New Roman">").</c></p>
-<p PROPS="text-align:left"></p>
-<p PROPS="text-align:left"><c PROPS="font-family:Times New Roman">The following illustrates the basic form of an AbiWord file:</c></p>
-<p PROPS="text-align:left"></p>
-<p PROPS="text-align:left"><c PROPS="font-family:Courier New; font-size:12pt">	&lt;awml&gt;<br/>		&lt;section&gt;<br/>			&lt;p PROPS="text-align:center"&gt;Hello World.&lt;/p&gt;<br/>			&lt;p&gt;This is a test paragraph.&lt;/p&gt;<br/>			&lt;p&gt;This word is<br/>				&lt;c PROPS="font-weight:bold"&gt;bold&lt;/c&gt;.&lt;/p&gt;<br/>		&lt;/section&gt;<br/>		&lt;section PROPS="column-gap:0.25in; columns:2"&gt;<br/>			&lt;p&gt;This section has two columns.&lt;/p&gt;<br/>		&lt;/section&gt;<br/>		&lt;data&gt;<br/>			&lt;d name="foo"&gt;<br/>				XXXXXXXXXX...<br/>			&lt;/d&gt;<br/>		&lt;/data&gt;<br/>	&lt;/awml&gt;</c></p>
-<p PROPS="text-align:left"></p>
-<p PROPS="text-align:left"><c PROPS="font-family:Courier New; font-weight:normal">2.1.  </c><c PROPS="font-family:Courier New; font-style:normal; font-weight:normal">&lt;AWML&gt;...&lt;/AWML&gt;</c></p>
-<p PROPS="text-align:left"></p>
-<p PROPS="text-align:left"><c PROPS="font-style:normal; font-weight:normal">The entire content of the document is contained within this pair of tags. Within these tags are a series of sections and an optional data block.</c></p>
-<p PROPS="text-align:left"></p>
-<p PROPS="text-align:left"><c PROPS="font-family:Courier New; font-style:normal; font-weight:normal">2.2.  &lt;SECTION&gt;...</c><c PROPS="font-family:Courier New; font-size:14pt; font-style:normal; font-weight:normal">&lt;/SECTION&gt;</c></p>
-<p PROPS="text-align:left"></p>
-<p PROPS="text-align:left"><c PROPS="font-family:Times New Roman; font-size:14pt; font-style:normal; font-weight:normal">These tags delimit a section. A section is a portion of a document that has some common characteristic, such as its column layout. A section does not necessarily correspond to anything in the actual content, such as a chapter.</c></p>
-<p PROPS="text-align:left"></p>
-<p PROPS="text-align:left"><c PROPS="font-family:Times New Roman; font-size:14pt; font-style:normal; font-weight:normal">The following are section-level properties and may appear in the value of the PROPS attribute of the &lt;section&gt; tag:</c></p>
-<p PROPS="text-align:left"></p>
-<p PROPS="text-align:left"><c PROPS="font-family:Courier New; font-size:14pt; font-style:normal; font-weight:normal">	columns: </c><c PROPS="font-family:Courier New; font-size:14pt; font-style:italic; font-weight:normal">integer-number-of-columns</c><c PROPS="font-family:Courier New; font-size:14pt; font-style:normal; font-weight:normal"> ;</c></p>
-<p PROPS="text-align:left"><c PROPS="font-family:Courier New; font-size:14pt; font-style:normal; font-weight:normal">	column-gap: </c><c PROPS="font-family:Courier New; font-size:14pt; font-style:italic; font-weight:normal">dimensioned-distance</c><c PROPS="font-family:Courier New; font-size:14pt; font-style:normal; font-weight:normal"> ;</c></p>
-<p PROPS="text-align:left"><c PROPS="font-family:Courier New; font-size:14pt; font-style:normal; font-weight:normal">	section-space-after: ...;</c></p>
-<p PROPS="text-align:left"><c PROPS="font-family:Courier New; font-size:14pt; font-style:normal; font-weight:normal">	page-margin-top: ...;</c></p>
-<p PROPS="text-align:left"><c PROPS="font-family:Courier New; font-size:14pt; font-style:normal; font-weight:normal">	page-margin-left: ...;</c></p>
-<p PROPS="text-align:left"><c PROPS="font-family:Courier New; font-size:14pt; font-style:normal; font-weight:normal">	page-margin-right: ...;</c></p>
-<p PROPS="text-align:left"><c PROPS="font-family:Courier New; font-size:14pt; font-style:normal; font-weight:normal">	page-margin-bottom: ...;</c></p>
-<p PROPS="text-align:left"></p>
-<p PROPS="text-align:left"><c PROPS="font-family:Courier New; font-size:14pt; font-weight:normal">2.2.1.  &lt;P&gt;...&lt;/P&gt; </c></p>
-<p PROPS="text-align:left"></p>
-<p PROPS="text-align:left"><c PROPS="font-family:Times New Roman; font-size:14pt; font-style:normal">These tags represent a block (or paragraph). All document text must be within a block. Blocks may not be nested (at the current time). All paragraph formatting options appear as attributes of the this tag. All document content must appear within a block.  A section must contain at least one paragraph.</c></p>
-<p PROPS="text-align:left"></p>
-<p PROPS="text-align:left">The following are block-level properties and may appear in the value of the PROPS attribute:</p>
-<p PROPS="text-align:left"></p>
-<p PROPS="text-align:left"><c PROPS="font-family:Courier New; font-size:14pt">	text-align: </c><c PROPS="font-family:Courier New; font-size:14pt; font-weight:bold">left</c><c PROPS="font-family:Courier New; font-size:14pt"> | center | right | justify ;</c></p>
-<p PROPS="text-align:left"><c PROPS="font-family:Courier New; font-size:14pt">	text-decoration: </c><c PROPS="font-family:Courier New; font-size:14pt; font-weight:bold">none</c><c PROPS="font-family:Courier New; font-size:14pt"> | underline line-through;</c></p>
-<p PROPS="text-align:left"><c PROPS="font-family:Courier New; font-size:14pt">	line-height: </c><c PROPS="font-family:Courier New; font-size:14pt; font-style:italic">dimensioned-distance</c><c PROPS="font-family:Courier New; font-size:14pt">;</c></p>
-<p PROPS="text-align:left"><c PROPS="font-family:Courier New">	orphans: ...;</c></p>
-<p PROPS="text-align:left"><c PROPS="font-family:Courier New">	widows: ...;</c></p>
-<p PROPS="text-align:left"><c PROPS="font-family:Courier New">	keep-together: ...;</c></p>
-<p PROPS="text-align:left"><c PROPS="font-family:Courier New">	keep-with-next: ...;</c></p>
-<p PROPS="text-align:left"><c PROPS="font-family:Courier New">	margin-top: ...;</c></p>
-<p PROPS="text-align:left"><c PROPS="font-family:Courier New">	margin-left: ...;</c></p>
-<p PROPS="text-align:left"><c PROPS="font-family:Courier New">	margin-right: ...;</c></p>
-<p PROPS="text-align:left"><c PROPS="font-family:Courier New">	margin-bottom: ...;</c></p>
-<p PROPS="text-align:left"><c PROPS="font-family:Courier New">	text-indent: ...;</c></p>
-<p PROPS="text-align:left"><c PROPS="font-family:Courier New">	tabstops: ...;</c></p>
-<p PROPS="text-align:left"><c PROPS="font-family:Courier New">	default-tab-interval: ...;</c></p>
-<p PROPS="text-align:left"></p>
-<p PROPS="text-align:left"><c PROPS="font-family:Courier New">2.2.2.  &lt;C&gt;...&lt;/C&gt;</c></p>
-<p PROPS="text-align:left"></p>
-<p PROPS="text-align:left"><c PROPS="font-family:Times New Roman; font-size:14pt; font-style:normal">These tags delimit an in-line span format. These tags are used to apply a span-level format change within a block. For example, making a word italic within a paragraph.</c></p>
-<p PROPS="text-align:left"></p>
-<p PROPS="text-align:left"><c PROPS="font-family:Times New Roman; font-size:14pt; font-style:normal">Spans may be nested, but this should be thought of as a convenience for document translators; AbiWord will flatten these during import and will write them out flattened on export.</c></p>
-<p PROPS="text-align:left"></p>
-<p PROPS="text-align:left"><c PROPS="font-family:Times New Roman; font-size:14pt; font-style:normal">A set of start and end C tags delimit a span of document text. These are only necessary to change a style from the settings inherited from the block. Text need not be enclosed in C tags.</c></p>
-<p PROPS="text-align:left"></p>
-<p PROPS="text-align:left"><c PROPS="font-family:Times New Roman; font-size:14pt">The following are span-level properties and may appear in the value of the PROPS attribute:</c></p>
-<p PROPS="text-align:left"></p>
-<p PROPS="text-align:left"><c PROPS="font-family:Courier New; font-size:14pt">	color: ...;</c></p>
-<p PROPS="text-align:left"><c PROPS="font-family:Courier New">	font-family: ...;</c></p>
-<p PROPS="text-align:left"><c PROPS="font-family:Courier New">	font-style: ...;</c></p>
-<p PROPS="text-align:left"><c PROPS="font-family:Courier New">	font-variant: ...; </c></p>
-<p PROPS="text-align:left"><c PROPS="font-family:Courier New">	font-weight: ...;</c></p>
-<p PROPS="text-align:left"><c PROPS="font-family:Courier New">	font-stretch: ...;</c></p>
-<p PROPS="text-align:left"><c PROPS="font-family:Courier New">	font-size: ...;</c></p>
-<p PROPS="text-align:left"></p>
-<p PROPS="text-align:left"><c PROPS="font-family:Courier New">2.2.3.  &lt;I/&gt;</c></p>
-<p PROPS="text-align:left"></p>
-<p PROPS="text-align:left">This tag defines an in-line image reference.</p>
-<p PROPS="text-align:left"></p>
-<p PROPS="text-align:left">The &lt;I&gt; tag has the following attributes:</p>
-<p PROPS="text-align:left"></p>
-<p PROPS="text-align:left"><c PROPS="font-family:Courier New">	dataid=</c><c PROPS="font-family:Courier New; font-style:italic">data-item-name</c></p>
-<p PROPS="text-align:left"></p>
-<p PROPS="text-align:left">The dataid is a reference to a named Data Item in the Data section of the file.</p>
-<p PROPS="text-align:left"></p>
-<p PROPS="text-align:left">The &lt;I&gt; tag has the following properties that may appear in the value of the PROPS attribute:</p>
-<p PROPS="text-align:left"></p>
-<p PROPS="text-align:left"><c PROPS="font-family:Courier New">	width: ...;</c></p>
-<p PROPS="text-align:left"><c PROPS="font-family:Courier New">	height: ...;</c></p>
-<p PROPS="text-align:left"></p>
-<p PROPS="text-align:left"><c PROPS="font-family:Courier New">2.2.4.  &lt;BR/&gt;</c></p>
-<p PROPS="text-align:left"></p>
-<p PROPS="text-align:left"><c PROPS="font-family:Times New Roman">This tag defines a forced line-break.  This tag has no attributes or properties.</c></p>
-<p PROPS="text-align:left"></p>
-<p PROPS="text-align:left"><c PROPS="font-family:Courier New">2.2.5.  &lt;CBR/&gt;</c></p>
-<p PROPS="text-align:left"></p>
-<p PROPS="text-align:left"><c PROPS="font-family:Times New Roman">This tag defines a forced column-break.  This tag has no attributes or properties.</c></p>
-<p PROPS="text-align:left"></p>
-<p PROPS="text-align:left"><c PROPS="font-family:Courier New">2.2.6.  &lt;PBR/&gt;</c></p>
-<p PROPS="text-align:left"></p>
-<p PROPS="text-align:left"><c PROPS="font-family:Times New Roman">This tag defines a forced page-break.  This tag has no attributes or properties.</c></p>
-<p PROPS="text-align:left"></p>
-<p PROPS="text-align:left"><c PROPS="font-family:Courier New">2.2.7.  &lt;F/&gt;</c></p>
-<p PROPS="text-align:left"></p>
-<p PROPS="text-align:left"><c PROPS="font-family:Times New Roman">This tag defines an in-line computed field reference.</c></p>
-<p PROPS="text-align:left"></p>
-<p PROPS="text-align:left"><c PROPS="font-family:Times New Roman">TODO define the set of attributes and properties for &lt;F/&gt;.</c></p>
-<p PROPS="text-align:left"></p>
-<p PROPS="text-align:left"><c PROPS="font-family:Nimbus Mono">2.3.  &lt;DATA&gt;...&lt;/DATA&gt;</c></p>
-<p PROPS="text-align:left"></p>
-<p PROPS="text-align:left">These tags delimit a series of one or more data items.</p>
-<p PROPS="text-align:left"></p>
-<p PROPS="text-align:left"><c PROPS="font-family:Courier New">2.3.1.  &lt;D&gt;...&lt;/D&gt;</c></p>
-<p PROPS="text-align:left"></p>
-<p PROPS="text-align:left">These tags define a Data Item -- an opaque blob of Base64-Encoded data.  Encoded content may be broken up on multiple lines as in MIME.  For images, these are Base64-encoded PNG objects.  Other types of objects may be defined in the future.</p>
-<p PROPS="text-align:left"></p>
-<p PROPS="text-align:left">The &lt;D&gt; tag has the following attributes:</p>
-<p PROPS="text-align:left"></p>
-<p PROPS="text-align:left"><c PROPS="font-family:Courier New">	name=</c><c PROPS="font-family:Courier New; font-style:italic">unique-data-item-name</c></p>
-<p PROPS="text-align:left"></p>
-<p PROPS="text-align:left">The name attribute provides a target for the DATAID attribute of the &lt;I&gt; and other tags.</p>
-<p PROPS="text-align:left"> </p>
-<p PROPS="text-align:left"><c PROPS="font-weight:bold">3.  Example Document</c></p>
-<p PROPS="text-align:left"></p>
-<p PROPS="text-align:left">The source for this document can be used as an example to study from. Additionally, the source tree contains numerous simple example documents (in <c PROPS="font-family:courier">abi/docs</c><c PROPS="font-family:times"> and </c><c PROPS="font-family:courier">abi/src/wp/samples</c>). The XML source for these documents can be viewed with any text editor.</p>
-<p PROPS="text-align:left"></p>
-<p PROPS="text-align:left"><c PROPS="font-weight:bold">4.  References</c></p>
-<p PROPS="text-align:left"></p>
-<p PROPS="text-align:left">[1] XML</p>
-<p PROPS="text-align:left">[2] AbiWord DTD</p>
-<p PROPS="text-align:left">[3] CSS2</p>
-<p PROPS="text-align:left">[4] The AbiWord source. (See <c PROPS="font-family:courier; font-weight:normal">http://www.abisource.com/lxr/</c> for a fully cross-referenced view of the AbiWord source code.)</p>
-<p PROPS="text-align:left"></p>
-<p PROPS="text-align:left"><c PROPS="font-weight:bold">5.  TODO</c></p>
-<p PROPS="text-align:left"></p>
-<p PROPS="text-align:left">[]	Discuss white-space handling within content and around tags.</p>
-<p PROPS="text-align:left"></p>
-<p PROPS="text-align:left">[]	Discuss mapping of CR, LF, VT, HT, FF into various tags and vice versa.</p>
-<p PROPS="text-align:left"></p>
+<p props="text-align:center"><c props="font-size:24pt; font-weight:bold">AbiWord Document Format</c></p>
+<p props="text-align:center"><c props="font-size:10pt">Version 1.0</c></p>
+<p props="text-align:center"><c props="font-size:11pt">Copyright (C) 1999-2000 AbiSource, Inc., All Rights Reserved.</c></p>
+<p props="text-align:center"><c props="font-style:italic">Jeff Hostetler</c></p>
+<p props="text-align:center"><c props="font-family:courier">jeff@abisource.com</c></p>
+<p props="text-align:center">AbiSource, Inc.</p>
+<p props="text-align:center"><c props="font-family:courier">$Date$</c></p>
+<p props="text-align:left"></p>
+<p props="text-align:left"><c props="font-size:12pt; font-style:normal; font-weight:normal">1. Introduction</c></p>
+<p props="text-align:left"></p>
+<p props="text-align:left"><c props="font-size:12pt; font-style:normal; font-weight:normal">This document describes the AbiWord file format used to represent AbiWord native documents. This document describes file format version 1.0.</c></p>
+<p props="text-align:left"></p>
+<p props="text-align:left"><c props="font-size:12pt; font-style:normal; font-weight:normal">AbiWord uses XML[1] to represent a document. This does not imply that AbiWord is an XML editor; but rather, AbiWord is a Word Processor that just happens to use XML as a convenient syntax for representing documents. AbiWord contains a very strict and unforgiving import; it requires well-formed XML in strict adherence the format specified by the code.  This code is primarily located in ie_exp_AbiWord_1.cpp and ie_imp_AbiWord_1.cpp. AbiWord has a DTD[2], but it should </c><c props="font-size:12pt; font-style:italic; font-weight:normal">not </c><c props="font-size:12pt; font-style:normal; font-weight:normal">be taken as definitive.  Our primary goal is to support documents written by AbiWord rather than hand written XML.</c></p>
+<p props="text-align:left"></p>
+<p props="text-align:left"><c props="font-size:12pt; font-style:normal; font-weight:normal">AbiWord also uses some of the syntax and conventions from CSS2[3] to represent certain concepts, such as character formatting. CSS2 was designed as a style mechanism for WWW documents and not as a style mechanism for page-oriented documents. We used CSS2 as a guideline, taking parts that were of use and inventing our own mechanism as necessary.</c></p>
+<p props="text-align:left"></p>
+<p props="text-align:left"><c props="font-size:12pt; font-style:normal; font-weight:normal">2. Document Structure</c></p>
+<p props="text-align:left"></p>
+<p props="text-align:left"><c props="font-size:12pt; font-style:normal; font-weight:normal">The AbiWord file format is an 7bit-clean ASCII XML file. Non-US-ASCII characters are represented using standard XML numeric entities (e.g., "</c><c props="font-family:Courier New; font-size:12pt; font-style:normal; font-weight:normal">&amp;#xff;</c><c props="font-family:Times New Roman; font-size:12pt; font-style:normal; font-weight:normal">"</c><c props="font-size:12pt; font-style:normal; font-weight:normal"> or "</c><c props="font-family:Courier New; font-size:12pt; font-style:normal; font-weight:normal">&amp;#xffff;</c><c props="font-family:Times New Roman; font-size:12pt; font-style:normal; font-weight:normal">").</c></p>
+<p props="text-align:left"></p>
+<p props="text-align:left"><c props="font-family:Times New Roman; font-size:12pt; font-style:normal; font-weight:normal">The following illustrates the basic form of an AbiWord file:</c></p>
+<p props="text-align:left"></p>
+<p props="text-align:left">	<c props="font-family:Nimbus Mono; font-size:12pt">&lt;?xml version="1.0"?&gt;</c></p>
+<p props="text-align:left"><c props="font-family:Courier New; font-size:12pt; font-style:normal; font-weight:normal">	&lt;abiword version="0.7.8"&gt;<br/>		&lt;section&gt;<br/>			&lt;p props="text-align:center"&gt;Hello World.&lt;/p&gt;<br/>			&lt;p&gt;This is a test paragraph.&lt;/p&gt;<br/>			&lt;p&gt;This word is<br/>				&lt;c props="font-weight:bold"&gt;bold&lt;/c&gt;.&lt;/p&gt;<br/>		&lt;/section&gt;<br/>		&lt;section props="column-gap:0.25in; columns:2"&gt;<br/>			&lt;p&gt;This section &lt;image dataid="foo"&gt;has two 					columns.&lt;/p&gt;<br/>		&lt;/section&gt;<br/>		&lt;data&gt;<br/>			&lt;d name="foo"&gt;<br/>				XXXXXXXXXX...<br/>			&lt;/d&gt;<br/>		&lt;/data&gt;<br/>	&lt;/abiword&gt;</c></p>
+<p props="text-align:left"></p>
+<p props="text-align:left"><c props="font-family:Courier New; font-size:12pt; font-style:normal; font-weight:normal">2.1.  &lt;abiword&gt;...&lt;/abiword&gt;</c></p>
+<p props="text-align:left"></p>
+<p props="text-align:left"><c props="font-size:12pt; font-style:normal; font-weight:normal">The entire content of the document is contained within this pair of tags. Within these tags are a series of sections and an optional data block.</c></p>
+<p props="text-align:left"></p>
+<p props="text-align:left"><c props="font-size:12pt; font-style:normal; font-weight:normal">The only property of the &lt;abiword&gt; tag is:</c></p>
+<p props="text-align:left"></p>
+<p props="text-align:left"><c props="font-size:12pt; font-style:normal; font-weight:normal">	</c><c props="font-family:Nimbus Mono; font-size:12pt; font-style:normal; font-weight:normal">version = number | "unnumbered"</c></p>
+<p props="text-align:left"></p>
+<p props="text-align:left"><c props="font-family:Courier New; font-size:12pt; font-style:normal; font-weight:normal">2.2.  &lt;section&gt;...&lt;/section&gt;</c></p>
+<p props="text-align:left"></p>
+<p props="text-align:left"><c props="font-family:Times New Roman; font-size:12pt; font-style:normal; font-weight:normal">These tags delimit a section. A section is a portion of a document that has some common characteristic, such as its column layout. A section does not necessarily correspond to anything in the actual content, such as a chapter.  Every document must contain at least one section.  </c></p>
+<p props="text-align:left"></p>
+<p props="text-align:left"><c props="font-family:Times New Roman; font-size:12pt; font-style:normal; font-weight:normal">The following are section-level properties and may appear in the value of the props attribute of the &lt;section&gt; tag:</c></p>
+<p props="text-align:left"></p>
+<p props="text-align:left"><c props="font-family:Courier New; font-size:12pt; font-style:normal; font-weight:normal">	columns: integer-number-of-columns ;</c></p>
+<p props="text-align:left"><c props="font-family:Courier New; font-size:12pt; font-style:normal; font-weight:normal">	column-gap: dimensioned-distance ;</c></p>
+<p props="text-align:left"><c props="font-family:Courier New; font-size:12pt; font-style:normal; font-weight:normal">	section-space-after: ...;</c></p>
+<p props="text-align:left"><c props="font-family:Courier New; font-size:12pt; font-style:normal; font-weight:normal">	page-margin-top: ...;</c></p>
+<p props="text-align:left"><c props="font-family:Courier New; font-size:12pt; font-style:normal; font-weight:normal">	page-margin-left: ...;</c></p>
+<p props="text-align:left"><c props="font-family:Courier New; font-size:12pt; font-style:normal; font-weight:normal">	page-margin-right: ...;</c></p>
+<p props="text-align:left"><c props="font-family:Courier New; font-size:12pt; font-style:normal; font-weight:normal">	page-margin-bottom: ...;</c></p>
+<p props="text-align:left"></p>
+<p props="text-align:left"><c props="font-size:12pt">Other section-level properties are:</c></p>
+<p props="text-align:left"></p>
+<p props="text-align:left"><c props="font-size:12pt">	</c><c props="font-family:Nimbus Mono; font-size:12pt">type: footer | ...</c></p>
+<p props="text-align:left"><c props="font-family:Nimbus Mono; font-size:12pt">	id: unique-section-id</c></p>
+<p props="text-align:left"><c props="font-family:Nimbus Mono; font-size:12pt">	footer: section-id</c></p>
+<p props="text-align:left"></p>
+<p props="text-align:left"><c props="font-family:Courier New; font-size:12pt; font-style:normal; font-weight:normal">2.2.1.  &lt;p&gt;...&lt;/p&gt; </c></p>
+<p props="text-align:left"></p>
+<p props="text-align:left"><c props="font-family:Times New Roman; font-size:12pt; font-style:normal; font-weight:normal">These tags represent a block (or paragraph). All document text must be within a block. Blocks may not be nested (at the current time). All paragraph formatting options appear as attributes of the this tag. All document content must appear within a block.  A section must contain at least one paragraph.</c></p>
+<p props="text-align:left"></p>
+<p props="text-align:left"><c props="font-size:12pt; font-style:normal; font-weight:normal">The following are block-level properties and may appear in the value of the props attribute:</c></p>
+<p props="text-align:left"></p>
+<p props="text-align:left"><c props="font-family:Courier New; font-size:12pt; font-style:normal; font-weight:normal">	text-align: left | center | right | justify ;</c></p>
+<p props="text-align:left"><c props="font-family:Courier New; font-size:12pt; font-style:normal; font-weight:normal">	line-height: dimensioned-distance;</c></p>
+<p props="text-align:left"><c props="font-family:Courier New; font-size:12pt; font-style:normal; font-weight:normal">	orphans: ...;</c></p>
+<p props="text-align:left"><c props="font-family:Courier New; font-size:12pt; font-style:normal; font-weight:normal">	widows: ...;</c></p>
+<p props="text-align:left"><c props="font-family:Courier New; font-size:12pt; font-style:normal; font-weight:normal">	keep-together: ...;</c></p>
+<p props="text-align:left"><c props="font-family:Courier New; font-size:12pt; font-style:normal; font-weight:normal">	keep-with-next: ...;</c></p>
+<p props="text-align:left"><c props="font-family:Courier New; font-size:12pt; font-style:normal; font-weight:normal">	margin-top: ...;</c></p>
+<p props="text-align:left"><c props="font-family:Courier New; font-size:12pt; font-style:normal; font-weight:normal">	margin-left: ...;</c></p>
+<p props="text-align:left"><c props="font-family:Courier New; font-size:12pt; font-style:normal; font-weight:normal">	margin-right: ...;</c></p>
+<p props="text-align:left"><c props="font-family:Courier New; font-size:12pt; font-style:normal; font-weight:normal">	margin-bottom: ...;</c></p>
+<p props="text-align:left"><c props="font-family:Courier New; font-size:12pt; font-style:normal; font-weight:normal">	text-indent: ...;</c></p>
+<p props="text-align:left"><c props="font-family:Courier New; font-size:12pt; font-style:normal; font-weight:normal">	tabstops: ...;</c></p>
+<p props="text-align:left"><c props="font-family:Courier New; font-size:12pt; font-style:normal; font-weight:normal">	default-tab-interval: ...;</c></p>
+<p props="text-align:left"></p>
+<p props="text-align:left"><c props="font-family:Times New Roman; font-size:12pt; font-style:normal; font-weight:normal">The following are other properties of the p tag:</c></p>
+<p props="text-align:left"></p>
+<p props="text-align:left"><c props="font-family:Courier New; font-size:12pt; font-style:normal; font-weight:normal">	level: number</c></p>
+<p props="text-align:left"><c props="font-family:Courier New; font-size:12pt; font-style:normal; font-weight:normal">	style: style-name</c></p>
+<p props="text-align:left"><c props="font-family:Courier New; font-size:12pt; font-style:normal; font-weight:normal">	id: unique-p-id</c></p>
+<p props="text-align:left"></p>
+<p props="text-align:left"><c props="font-family:Courier New; font-size:12pt; font-style:normal; font-weight:normal">2.2.2.  &lt;c&gt;...&lt;/c&gt;</c></p>
+<p props="text-align:left"></p>
+<p props="text-align:left"><c props="font-family:Times New Roman; font-size:12pt; font-style:normal; font-weight:normal">These tags delimit an in-line span format. These tags are used to apply a span-level format change within a block. For example, making a word italic within a paragraph.</c></p>
+<p props="text-align:left"></p>
+<p props="text-align:left"><c props="font-family:Times New Roman; font-size:12pt; font-style:normal; font-weight:normal">Spans may be nested, but this should be thought of as a convenience for document translators; AbiWord will flatten these during import and will write them out flattened on export.</c></p>
+<p props="text-align:left"></p>
+<p props="text-align:left"><c props="font-family:Times New Roman; font-size:12pt; font-style:normal; font-weight:normal">A set of start and end c tags delimit a span of document text. These are only necessary to change a style from the settings inherited from the block. Text need not be enclosed in c tags.</c></p>
+<p props="text-align:left"></p>
+<p props="text-align:left"><c props="font-family:Times New Roman; font-size:12pt; font-style:normal; font-weight:normal">The following are span-level properties and may appear in the value of the props attribute:</c></p>
+<p props="text-align:left"></p>
+<p props="text-align:left"><c props="font-family:Courier New; font-size:12pt; font-style:normal; font-weight:normal">	color: ...;</c></p>
+<p props="text-align:left"><c props="font-family:Courier New; font-size:12pt; font-style:normal; font-weight:normal">	font-family: font-name;</c></p>
+<p props="text-align:left"><c props="font-family:Courier New; font-size:12pt; font-style:normal; font-weight:normal">	font-style: ...;</c></p>
+<p props="text-align:left"><c props="font-family:Courier New; font-size:12pt; font-style:normal; font-weight:normal">	font-variant: ...; </c></p>
+<p props="text-align:left"><c props="color:000000; font-family:Courier New; font-size:12pt; font-style:normal; font-weight:normal; text-decoration:none; text-position:normal">	text-decoration: none | underline | line-through | overline;</c></p>
+<p props="text-align:left"><c props="font-family:Courier New; font-size:12pt; font-style:normal; font-weight:normal">	font-weight: bold | normal;</c></p>
+<p props="text-align:left"><c props="font-family:Courier New; font-size:12pt; font-style:normal; font-weight:normal">	font-stretch: ...;</c></p>
+<p props="text-align:left"><c props="font-family:Courier New; font-size:12pt; font-style:normal; font-weight:normal">	font-size: floating-point;</c></p>
+<p props="text-align:left"></p>
+<p props="text-align:left"><c props="font-family:Times New Roman; font-size:12pt; font-style:normal; font-weight:normal">The following are additional attributes of the c tag:</c></p>
+<p props="text-align:left"></p>
+<p props="text-align:left"><c props="font-family:Courier New; font-size:12pt; font-style:normal; font-weight:normal">	type: list-label</c></p>
+<p props="text-align:left"><c props="font-family:Courier New; font-size:12pt; font-style:normal; font-weight:normal">	style: style-name</c></p>
+<p props="text-align:left"></p>
+<p props="text-align:left"><c props="font-family:Courier New; font-size:12pt; font-style:normal; font-weight:normal">2.2.3.  &lt;image/&gt;</c></p>
+<p props="text-align:left"></p>
+<p props="text-align:left"><c props="font-size:12pt; font-style:normal; font-weight:normal">This tag defines an in-line image reference.</c></p>
+<p props="text-align:left"></p>
+<p props="text-align:left"><c props="font-size:12pt; font-style:normal; font-weight:normal">The &lt;image/&gt; tag has the following attributes:</c></p>
+<p props="text-align:left"></p>
+<p props="text-align:left"><c props="font-family:Courier New; font-size:12pt; font-style:normal; font-weight:normal">	dataid = data-item-name</c></p>
+<p props="text-align:left"><c props="font-family:Courier New; font-size:12pt; font-style:normal; font-weight:normal">	props = formatting specification</c></p>
+<p props="text-align:left"></p>
+<p props="text-align:left"><c props="font-size:12pt; font-style:normal; font-weight:normal">The dataid is a reference to a named Data Item in the Data section of the file.</c></p>
+<p props="text-align:left"></p>
+<p props="text-align:left"><c props="font-size:12pt; font-style:normal; font-weight:normal">The &lt;image/&gt; tag has the following properties that may appear in the value of the PROPS attribute:</c></p>
+<p props="text-align:left"></p>
+<p props="text-align:left"><c props="font-family:Courier New; font-size:12pt; font-style:normal; font-weight:normal">	width: ...;</c></p>
+<p props="text-align:left"><c props="font-family:Courier New; font-size:12pt; font-style:normal; font-weight:normal">	height: ...;</c></p>
+<p props="text-align:left"></p>
+<p props="text-align:left"><c props="font-family:Courier New; font-size:12pt; font-style:normal; font-weight:normal">2.2.4.  &lt;br/&gt;</c></p>
+<p props="text-align:left"></p>
+<p props="text-align:left"><c props="font-family:Times New Roman; font-size:12pt; font-style:normal; font-weight:normal">This tag defines a forced line-break.  This tag has no attributes or properties.</c></p>
+<p props="text-align:left"></p>
+<p props="text-align:left"><c props="font-family:Courier New; font-size:12pt; font-style:normal; font-weight:normal">2.2.5.  &lt;cbr/&gt;</c></p>
+<p props="text-align:left"></p>
+<p props="text-align:left"><c props="font-family:Times New Roman; font-size:12pt; font-style:normal; font-weight:normal">This tag defines a forced column-break.  This tag has no attributes or properties.</c></p>
+<p props="text-align:left"></p>
+<p props="text-align:left"><c props="font-family:Courier New; font-size:12pt; font-style:normal; font-weight:normal">2.2.6.  &lt;pbr/&gt;</c></p>
+<p props="text-align:left"></p>
+<p props="text-align:left"><c props="font-family:Times New Roman; font-size:12pt; font-style:normal; font-weight:normal">This tag defines a forced page-break.  This tag has no attributes or properties.</c></p>
+<p props="text-align:left"></p>
+<p props="text-align:left"><c props="font-family:Courier New; font-size:12pt; font-style:normal; font-weight:normal">2.2.7.  &lt;field/&gt;</c></p>
+<p props="text-align:left"></p>
+<p props="text-align:left"><c props="font-family:Times New Roman; font-size:12pt; font-style:normal; font-weight:normal">This tag defines an in-line computed field reference.</c></p>
+<p props="text-align:left"></p>
+<p props="text-align:left"><c props="font-family:Times New Roman; font-size:12pt; font-style:normal; font-weight:normal">This tag has the following attribute:</c></p>
+<p props="text-align:left"></p>
+<p props="text-align:left"><c props="font-family:Times New Roman; font-size:12pt; font-style:normal; font-weight:normal">	</c><c props="font-family:Courier New; font-size:12pt; font-style:normal; font-weight:normal">type: list-label | page-number | page-count | time</c></p>
+<p props="text-align:left"></p>
+<p props="text-align:left"><c props="font-size:12pt">Currently, we are in the process of updating our entire field model, so this will likely change in the near future.  </c></p>
+<p props="text-align:left"></p>
+<p props="text-align:left"><c props="font-family:Nimbus Mono; font-size:12pt; font-style:normal; font-weight:normal">2.3.  &lt;data&gt;...&lt;/data&gt;</c></p>
+<p props="text-align:left"></p>
+<p props="text-align:left"><c props="font-size:12pt; font-style:normal; font-weight:normal">These tags delimit a series of one or more data items.</c></p>
+<p props="text-align:left"></p>
+<p props="text-align:left"><c props="font-family:Courier New; font-size:12pt; font-style:normal; font-weight:normal">2.3.1.  &lt;d&gt;...&lt;/d&gt;</c></p>
+<p props="text-align:left"></p>
+<p props="text-align:left"><c props="font-size:12pt; font-style:normal; font-weight:normal">These tags define a Data Item -- an opaque blob of Base64-Encoded data.  Encoded content may be broken up on multiple lines as in MIME.  For images, these are Base64-encoded PNG objects.  Other types of objects may be defined in the future.</c></p>
+<p props="text-align:left"></p>
+<p props="text-align:left"><c props="font-size:12pt; font-style:normal; font-weight:normal">The &lt;d&gt; tag has the following attributes:</c></p>
+<p props="text-align:left"></p>
+<p props="text-align:left"><c props="font-family:Courier New; font-size:12pt; font-style:normal; font-weight:normal">	name=unique-data-item-name</c></p>
+<p props="text-align:left"></p>
+<p props="text-align:left"><c props="font-size:12pt; font-style:normal; font-weight:normal">The name attribute provides a target for the DATAID attribute of the &lt;I&gt; and other tags.</c></p>
+<p props="text-align:left"></p>
+<p props="text-align:left"><c props="font-family:Nimbus Mono; font-size:12pt; font-style:normal; font-weight:normal">2.4.	&lt;styles&gt;...&lt;/styles&gt;</c></p>
+<p props="text-align:left"></p>
+<p props="text-align:left"><c props="font-size:12pt">These tags delimit a series of one or more styles.  </c></p>
+<p props="text-align:left"></p>
+<p props="text-align:left"><c props="font-family:Nimbus Mono; font-size:12pt">2.4.1. &lt;s&gt;...&lt;/s&gt;</c></p>
+<p props="text-align:left"></p>
+<p props="text-align:left"><c props="font-family:Times New Roman; font-size:12pt">These tags define a style -- a set of formatting commands that can be applied to any p or c element in any &lt;section&gt;.  When applied, these specify formatting for that span.  </c></p>
+<p props="text-align:left"></p>
+<p props="text-align:left"><c props="font-family:Times New Roman; font-size:12pt">The &lt;s&gt; tag has the following attributes:</c></p>
+<p props="text-align:left"></p>
+<p props="text-align:left"><c props="font-family:Times New Roman; font-size:12pt">	</c><c props="font-family:Courier New; font-size:12pt">basedon = style-name</c></p>
+<p props="text-align:left"><c props="font-family:Courier New; font-size:12pt">	name = unique-style-name</c></p>
+<p props="text-align:left"><c props="font-family:Courier New; font-size:12pt">	type = ...</c></p>
+<p props="text-align:left"><c props="font-family:Courier New; font-size:12pt">	props = any properties of a p or a c tag</c></p>
+<p props="text-align:left"><c props="font-size:12pt; font-style:normal; font-weight:normal"> </c></p>
+<p props="text-align:left"><c props="font-size:12pt; font-style:normal; font-weight:normal">3.  Example Document</c></p>
+<p props="text-align:left"></p>
+<p props="text-align:left"><c props="font-size:12pt; font-style:normal; font-weight:normal">The source for this document can be used as an example to study from. Additionally, the source tree contains numerous simple example documents (in </c><c props="font-family:courier; font-size:12pt; font-style:normal; font-weight:normal">abi/docs</c><c props="font-family:times; font-size:12pt; font-style:normal; font-weight:normal"> and </c><c props="font-family:courier; font-size:12pt; font-style:normal; font-weight:normal">abi/src/wp/samples</c><c props="font-size:12pt; font-style:normal; font-weight:normal">). The XML source for these documents can be viewed with any text editor.</c></p>
+<p props="text-align:left"></p>
+<p props="text-align:left"><c props="font-size:12pt; font-style:normal; font-weight:normal">4.  References</c></p>
+<p props="text-align:left"></p>
+<p props="text-align:left"><c props="font-size:12pt; font-style:normal; font-weight:normal">[1] XML - </c><c props="font-family:Courier New; font-size:12pt; font-style:normal; font-weight:normal">http://www.w3.org/TR/REC-xml</c></p>
+<p props="text-align:left"><c props="font-size:12pt; font-style:normal; font-weight:normal">[2] AbiWord DTD - </c><c props="font-family:Courier New; font-size:12pt; font-style:normal; font-weight:normal">http://www.abisource.com/awml.dtd</c></p>
+<p props="text-align:left"><c props="font-size:12pt; font-style:normal; font-weight:normal">[3] CSS2 - </c><c props="font-family:Courier New; font-size:12pt; font-style:normal; font-weight:normal">http://www.w3.org/TR/REC-CSS2</c></p>
+<p props="text-align:left"><c props="font-size:12pt; font-style:normal; font-weight:normal">[4] The AbiWord source. (See </c><c props="font-family:courier; font-size:12pt; font-style:normal; font-weight:normal">http://www.abisource.com/lxr/</c><c props="font-size:12pt; font-style:normal; font-weight:normal"> for a fully cross-referenced view of the AbiWord source code.)</c></p>
+<p props="text-align:left"></p>
+<p props="text-align:left"><c props="font-size:12pt; font-style:normal; font-weight:normal">5.  TODO</c></p>
+<p props="text-align:left"></p>
+<p props="text-align:left"><c props="font-size:12pt; font-style:normal; font-weight:normal">[]	Discuss white-space handling within content and around tags.</c></p>
+<p props="text-align:left"></p>
+<p props="text-align:left"><c props="font-size:12pt; font-style:normal; font-weight:normal">[]	Discuss mapping of CR, LF, VT, HT, FF into various tags and vice versa.</c></p>
+<p props="text-align:left"></p>
 </section>
-</awml>
+</abiword>
