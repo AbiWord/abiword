@@ -226,7 +226,7 @@ const char* XAP_EncodingManager::strToNative(const char* in, const char* charset
 		bUseSysEncoding ? getNativeSystemEncodingName() : getNativeEncodingName(), charset);
 #else
 	UT_iconv_t iconv_handle;
-	char * pNative =  bUseSysEncoding ? getNativeSystemEncodingName() : getNativeEncodingName();
+	const char * pNative =  bUseSysEncoding ? getNativeSystemEncodingName() : getNativeEncodingName();
 	
 	if(!strcmp(pNative, "utf-8") || !strcmp(pNative, "UTF-8"))
 		pNative = getNative8BitEncodingName();
