@@ -82,6 +82,10 @@ protected:
 	PT_AttrPropIndex	m_apiThisSection;
 	PT_AttrPropIndex	m_apiThisBlock;
 	UT_Wctomb		m_wctomb;
+	PL_StruxDocHandle       m_sdh;
 };
 
 #endif /* IE_EXP_RTF_LISTENERWRITEDOC */
+
+
+

@@ -39,17 +39,21 @@
 #include "px_CR_Object.h"
 #include "px_CR_Span.h"
 #include "px_CR_Strux.h"
+#include "fl_AutoNum.h"
+#include "fl_AutoLists.h"
 
 #include "xap_EncodingManager.h"
 void s_RTF_ListenerWriteDoc::_closeSection(void)
 {
 	m_apiThisSection = 0;
+	m_sdh = NULL;
 	return;
 }
 
 void s_RTF_ListenerWriteDoc::_closeBlock(void)
 {
 	m_apiThisBlock = 0;
+	m_sdh = NULL;
 	return;
 }
 
@@ -332,7 +336,7 @@ s_RTF_ListenerWriteDoc::s_RTF_ListenerWriteDoc(PD_Document * pDocument,
 	m_apiLastSpan = 0;
 	m_apiThisSection = 0;
 	m_apiThisBlock = 0;
-
+	m_sdh = NULL;
 	m_bToClipboard = bToClipboard;
 	// when we are going to the clipboard, we should implicitly
 	// assume that we are starting in the middle of a section
@@ -414,7 +418,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
   UT_DEBUGMSG(("TODO: Write code to go in here. In _openTag, szPrefix = %s  api = %x \n",szPrefix,api));
 }
 
-bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle /*sdh*/,
+bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 										   const PX_ChangeRecord * pcr,
 										   PL_StruxFmtHandle * psfh)
 {
@@ -435,7 +439,7 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle /*sdh*/,
 			// <section> := <secfmt>* <hdrftr>? <para>+ (\sect <section>)?
 			//
 			// here we deal with everything except for the <para>+
-
+			m_sdh = sdh;
 			_rtf_open_section(pcr->getIndexAP());
 			return true;
 		}
@@ -445,6 +449,7 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle /*sdh*/,
 			_closeSpan();
 			_closeBlock();
 			_rtf_open_block(pcr->getIndexAP());
+			m_sdh = sdh;
 			return true;
 		}
 
@@ -521,7 +526,7 @@ void s_RTF_ListenerWriteDoc::_rtf_docfmt(void)
 													 pSpanAP,pBlockAP,pSectionAP,
 													 m_pDocument,true);
 	m_pie->_rtf_keyword_ifnotdefault_twips("margt",(char*)szTopMargin,1440);
-	const XML_Char * szBottomMargin = PP_evalProperty("page-margin-Bottom",
+	const XML_Char * szBottomMargin = PP_evalProperty("page-margin-bottom",
 													 pSpanAP,pBlockAP,pSectionAP,
 													 m_pDocument,true);
 	m_pie->_rtf_keyword_ifnotdefault_twips("margb",(char*)szBottomMargin,1440);
@@ -658,7 +663,10 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 	/// OK if there is list info in this paragraph we encase it inside
 	/// the {\*\abilist..} extension
 	///
+	UT_uint32 id = 0;
 	if(szListid != NULL)
+	        id = atoi(szListid);
+	if(id != 0 )
 	{
 	        m_pie->_rtf_open_brace();
 	        m_pie->_rtf_keyword("*");
@@ -701,7 +709,152 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 
 	}
 
+	///
+	/// Output fallback numbered/bulleted label for rtf readers that don't 
+	/// know /*/pn
+	///
+	if(id != 0 )
+	{
+		m_pie->_rtf_open_brace();
+	        m_pie->_rtf_keyword("pntext");
+		// if string is "left" use "ql", but that is the default, so we don't need to write it out.
+		if (UT_strcmp(szTextAlign,"right")==0)		// output one of q{lrcj} depending upon paragraph alignment
+		        m_pie->_rtf_keyword("qr");
+		else if (UT_strcmp(szTextAlign,"center")==0)
+		        m_pie->_rtf_keyword("qc");
+		else if (UT_strcmp(szTextAlign,"justify")==0)
+		        m_pie->_rtf_keyword("qj");
+		m_pie->_rtf_keyword_ifnotdefault_twips("fi",(char*)szFirstLineIndent,0);
+		m_pie->_rtf_keyword_ifnotdefault_twips("li",(char*)szLeftIndent,0);
+		m_pie->_rtf_keyword_ifnotdefault_twips("ri",(char*)szRightIndent,0);
+		m_pie->_rtf_keyword_ifnotdefault_twips("sb",(char*)szTopMargin,0);
+		m_pie->_rtf_keyword_ifnotdefault_twips("sa",(char*)szBottomMargin,0);
+		fl_AutoNum * pAuto = m_pDocument->getListByID(id);
+		UT_ASSERT(pAuto);
+		if(pAuto->getType()==BULLETED_LIST)
+		{
+		        m_pie->_rtf_keyword("bullet");
+		}
+		else
+		{
+		        const char * lab = pAuto->getLabel(m_sdh);
+			if(lab != NULL)
+			{
+			        UT_uint32 len = strlen(lab);
+			        m_pie->_rtf_chardata(lab,len);
+			}
+			else
+			  {
+			    UT_DEBUGMSG(("SEVIOR: We should not be here! id = %d \n",id));
+			  }
+		}
+		m_pie->_rtf_close_brace();
+	}
+	///
+	/// OK Now output word-95 style lists
+	///
 
+	if(id != 0 )
+	{
+		m_pie->_rtf_open_brace();
+	        m_pie->_rtf_keyword("*");
+	        m_pie->_rtf_keyword("pn");
+		fl_AutoNum * pAuto = m_pDocument->getListByID(id);
+		UT_ASSERT(pAuto);
+	        m_pie->_rtf_keyword("pnql");
+	        m_pie->_rtf_keyword("pnstart",pAuto->getStartValue32());
+		List_Type lType = pAuto->getType();
+
+		///
+		/// extract text before and after numbering symbol
+		///
+		static XML_Char p[80],leftDelim[80],rightDelim[80];
+		sprintf(p, "%s",pAuto->getDelim());
+		UT_uint32 rTmp;
+	
+		UT_uint32 i = 0;
+	
+		while (p[i] && p[i] != '%' && p[i+1] != 'L')
+	        {
+		        leftDelim[i] = p[i];
+			i++;
+		}
+		leftDelim[i] = '\0';
+		i += 2;
+		rTmp = i;
+		while (p[i] || p[i] != '\0')
+		{
+		        rightDelim[i - rTmp] = p[i];
+			i++;
+		}
+		rightDelim[i - rTmp] = '\0';
+
+		fl_AutoNum * pParent = pAuto->getParent();
+		if(pParent == NULL && (lType < BULLETED_LIST))
+		{
+		        m_pie->_rtf_keyword("pnlvlbody");
+		}
+		else if(lType >= BULLETED_LIST && (lType != NOT_A_LIST))
+		{
+		        m_pie->_rtf_keyword("pnlvlblt");
+		}
+		else
+		{
+		        m_pie->_rtf_keyword("pnprev");
+		        m_pie->_rtf_keyword("pnlvl",9);
+		}
+		if(lType == NUMBERED_LIST)
+		{
+		        m_pie->_rtf_keyword("pndec");
+		}
+		else if(lType == LOWERCASE_LIST)
+		{
+		        m_pie->_rtf_keyword("pnlcltr");
+		}
+		else if(lType == UPPERCASE_LIST)
+		{
+		        m_pie->_rtf_keyword("pnucltr");
+		}
+		else if(lType == LOWERROMAN_LIST)
+		{
+		        m_pie->_rtf_keyword("pnlcrm");
+		}
+		else if(lType == UPPERROMAN_LIST)
+		{
+		        m_pie->_rtf_keyword("pnucrm");
+		}
+		else if(lType == NOT_A_LIST)
+		{
+		        m_pie->_rtf_keyword("pnucrm");
+		}
+		if(lType < BULLETED_LIST)
+		{
+		        m_pie->_rtf_open_brace();
+			m_pie->_rtf_keyword("pntxtb");
+			m_pie->_rtf_chardata((const char *)leftDelim,strlen((const char *) leftDelim));
+		        m_pie->_rtf_close_brace();
+		        m_pie->_rtf_open_brace();
+			m_pie->_rtf_keyword("pntxta");
+			m_pie->_rtf_chardata((const char *)rightDelim,strlen((const char *) rightDelim));
+		        m_pie->_rtf_close_brace();
+		}
+		else if(lType == BULLETED_LIST)
+		{
+		        m_pie->_rtf_open_brace();
+			m_pie->_rtf_keyword("pntxtb");
+			m_pie->_rtf_keyword("bullet");
+		        m_pie->_rtf_close_brace();
+		}
+		else if(lType > BULLETED_LIST)
+		{
+		        m_pie->_rtf_open_brace();
+			m_pie->_rtf_keyword("pntxtb");
+			sprintf(p, "%s",pAuto->getLabel(m_sdh));
+			m_pie->_rtf_chardata((const char *)p,strlen((const char *) p));
+		        m_pie->_rtf_close_brace();
+		}
+		m_pie->_rtf_close_brace();
+	}
 
 	// if string is "left" use "ql", but that is the default, so we don't need to write it out.
 	if (UT_strcmp(szTextAlign,"right")==0)		// output one of q{lrcj} depending upon paragraph alignment

@@ -892,8 +892,14 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
        		{
            	 return ParseChar(UCS_FF);
         	}
+	        else if (strcmp((char*)pKeyword, "pntext") == 0 && m_numLists > 0 )
+       		{
+		  //
+		  // skip this!
+		  //
+			m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
 			break;
-
+		}
 	case 'q':
 		if (strcmp((char*)pKeyword, "ql") == 0)
 		{
