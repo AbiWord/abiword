@@ -313,15 +313,15 @@ int XAP_EncodingManager::XAP_XML_UnknownEncodingHandler(void* /*encodingHandlerD
 			size_t ibuflen = 1, obuflen=2;
 			const char* iptr = ibuf;
 			char* optr = obuf;
-			ibuf[0] = (unsigned char)i;
+			ibuf[0] = static_cast<unsigned char>(i);
 			size_t donecnt = UT_iconv(iconv_handle,&iptr,&ibuflen,&optr,&obuflen);			
 			if (donecnt!=(size_t)-1 && ibuflen==0) 
 			{
 				unsigned short uval;
-				unsigned short b0 = (unsigned char)obuf[swap_stou];
-				unsigned short b1 = (unsigned char)obuf[!swap_stou];
+				unsigned short b0 = static_cast<unsigned char>(obuf[swap_stou]);
+				unsigned short b1 = static_cast<unsigned char>(obuf[!swap_stou]);
 				uval =  b0 | (b1<<8);
-				info->map[i] = (unsigned int) uval;
+				info->map[i] = static_cast<unsigned int>(uval);
 			}
 			else
 				info->map[i] = -1;/* malformed character. Such cases exist - e.g. 0x98 in cp1251*/
@@ -382,7 +382,7 @@ static UT_UCSChar try_CToU(UT_UCSChar c,UT_iconv_t iconv_handle)
 	const char * iptr = ibuf;
 	char * optr = obuf;
 
-	ibuf[0]	= (unsigned char) c;
+	ibuf[0]	= static_cast<unsigned char>(c);
 
 	size_t donecnt = UT_iconv(iconv_handle,&iptr,&ibuflen,&optr,&obuflen);			
 
@@ -637,7 +637,8 @@ static const char* zh_TW_big5_keys[]=
 static const _rmap cjk_word_fontname_mapping_data[]=
 {
     {NULL},
-    {(char*)zh_TW_big5,zh_TW_big5_keys},
+	// TODO c++ cast - how?
+    {(const char*)zh_TW_big5,zh_TW_big5_keys},
     {NULL}
 };
 

@@ -123,7 +123,7 @@ unalias_lang (char *lang)
       read_aliases ("/usr/openwin/lib/locale/locale.alias");
     }
   i = 0;
-  while ((p=(char*)g_hash_table_lookup(alias_table,lang)) && strcmp(p, lang))
+  while ((p=static_cast<char*>(g_hash_table_lookup(alias_table,lang))) && strcmp(p, lang))
     {
       lang = p;
       if (i++ == 30)
@@ -327,7 +327,7 @@ g_i18n_get_language_list (const gchar *category_name)
 #if 0
 		// we want a fresh reading of the LANG variable every time so we can
 		// work out the 8bit encoding under utf-8 locale
-		list= (GList *)g_hash_table_lookup (category_table, (const gpointer) category_name);
+		list= static_cast<GList *>(g_hash_table_lookup (category_table, const_cast<const gpointer>(category_name)));
 #else
 		xxx_UT_DEBUGMSG(("recreating hash table\n"));
 		g_hash_table_destroy (category_table);
@@ -353,7 +353,7 @@ g_i18n_get_language_list (const gchar *category_name)
 		if (! category_value)
 			category_value = "C";
 		orig_category_memory = category_memory =
-			(gchar*) g_malloc (strlen (category_value)+1);
+			static_cast<gchar*>(g_malloc (strlen (category_value)+1));
       
 		while (category_value[0] != '\0')
 		{
@@ -384,7 +384,7 @@ g_i18n_get_language_list (const gchar *category_name)
 		if (!c_locale_defined)
 			list= g_list_append (list, (void*)"C");
 
-		g_hash_table_insert (category_table, (gpointer) category_name, list);
+		g_hash_table_insert (category_table, static_cast<gpointer>(const_cast<gchar *>(category_name)), list);
     }
 
    g_hash_table_foreach(alias_table, free_entry, NULL);
@@ -463,7 +463,7 @@ const char* XAP_UnixEncodingManager::getLanguageISOTerritory() const
 void  XAP_UnixEncodingManager::initialize()
 {	
 	const GList* lst = g_i18n_get_language_list ("LANG");
-	const char* locname = (char*)lst->data;
+	const char* locname = static_cast<char*>(lst->data);
 	
 	NativeEncodingName =
 	NativeSystemEncodingName =
@@ -497,16 +497,17 @@ void  XAP_UnixEncodingManager::initialize()
 			if (cs[1])
 				{
 					int length = strlen (cs + 1);
-					char * name = (char *) malloc (length + 3);
+					char * name = static_cast<char *>(malloc (length + 3));
 					if (name)
 						{
 							strcpy (name, cs + 1);
 
 							/* make the encoding name upper-case
+							 * TODO why not use the UT_islower/UT_isupper?
 							 */
 							for (int i = 0; i < length; i++)
-								if (islower ((int)((unsigned char)(name[i]))))
-									name[i] = (char) toupper ((int)((unsigned char)(name[i])));
+								if (islower (static_cast<int>(static_cast<unsigned char>(name[i]))))
+									name[i] = static_cast<char>(toupper (static_cast<int>(static_cast<unsigned char>(name[i]))));
 
 							/* encoding names may be presented as iso88591 or ISO8859-1,
 							 * but we need both hyphens for iconv
