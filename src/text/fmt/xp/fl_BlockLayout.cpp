@@ -695,11 +695,7 @@ void fl_BlockLayout::_lookupProperties(void)
 	fl_BlockLayout * prevBlockInList = NULL;
 	fl_BlockLayout * nextBlockInList = NULL;
 	fl_AutoNum * pAutoNum;
-	if(id != 0)
-	{
-		xxx_UT_DEBUGMSG(("SEVIOR: id = %d parent_id= %d \n",id,parent_id));
-		//UT_DEBUGMSG(("SEVIOR: margin-left = %s \n", getProperty("margin-left")));
-	}
+
 	if ((m_pAutoNum) && (id) && (m_pAutoNum->getID() != id))
 	{
 		// We have stopped or started a multi-level list

@@ -104,6 +104,7 @@ private:
 	XAP_ModuleInfo        m_info;
 };
 
+#if 0 // TODO: make me 100% and turn me on again one day
 #ifndef ABI_PLUGIN_SOURCE
 static inline bool
 _isCurrentAbiVersion(int a, int b, int c)
@@ -122,11 +123,16 @@ _isCurrentAbiVersion(int a, int b, int c)
 }
 #endif /* ! ABI_PLUGIN_SOURCE */
 
+#define isCurrentAbiVersion(a,b,c) _isCurrentAbiVersion(a, b, c)
+
+#else
+#define isCurrentAbiVersion(a,b,c) true
+#endif
+
 #ifdef ABI_PLUGIN_SOURCE
 #define ABI_VERSION_STRING ABI_PLUGIN_VERSION
 #else
 #define ABI_VERSION_STRING ABI_BUILD_VERSION
 #endif
-#define isCurrentAbiVersion(a,b,c) _isCurrentAbiVersion(a, b, c)
 
 #endif /* XAP_MODULE_H */

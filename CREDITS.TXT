@@ -186,6 +186,7 @@ Sam Tobin-Hochstadt <sytobinh@uchicago.edu> 		Lots of fun stuff
 John Tunison <nosinut@WIND.REM.CMU.EDU> 		GNOME dialogs
 Göran Thyni <goran@kirra.net>				libxml support,
 							some autoconf work
+Sam Trenholme <abiword_bugs@yahoo.com>             RTF exporter fixes
 Kevin Vajk <kvajk@ricochet.net> 			File import/export
 							detection, hpux
 Martin Vermeer <martin.vermeer@fgi.fi>			Unicode Latex export

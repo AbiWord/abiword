@@ -2591,36 +2591,7 @@ void fp_Line::recalcMaxWidth()
 
 	setX(iX);
 
-
-
 	UT_ASSERT(iMaxWidth > 0);
-#if 0
-	// have to deal with non-sensical block margins. This happens
-	// when a large block margin is set by the user and then
-	// then the container is changed to a smaller one. In this case
-	// we will reset one or both offending margins
-	if(m_pBlock->getRightMargin() >= iMaxWidth)
-		m_pBlock->setRightMargin(0);
-	
-	if(m_pBlock->getLeftMargin() >= iMaxWidth)
-		m_pBlock->setLeftMargin(0);
-
-	if(m_pBlock->getTextIndent() >= iMaxWidth)
-		m_pBlock->setTextIndent(0);
-				
-	if(m_pBlock->getRightMargin() + m_pBlock->getLeftMargin() >= iMaxWidth)
-	{
-		m_pBlock->setRightMargin(0);
-		m_pBlock->setLeftMargin(0);
-	}
-	
-	if(m_pBlock->getRightMargin() + m_pBlock->getLeftMargin() + m_pBlock->getTextIndent() >= iMaxWidth)
-	{
-		m_pBlock->setTextIndent(0);
-		m_pBlock->setRightMargin(0);
-		m_pBlock->setLeftMargin(0);
-	}
-#endif		
 		
 	fl_DocSectionLayout * pSL =  getBlock()->getDocSectionLayout();
 	UT_ASSERT(pSL);
