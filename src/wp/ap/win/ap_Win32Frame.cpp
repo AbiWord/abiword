@@ -67,8 +67,10 @@ bool AP_Win32Frame::initialize(XAP_FrameMode frameMode)
 									AP_PREF_KEY_StringSet, AP_PREF_DEFAULT_StringSet))
 		return false;
 
-	_showOrHideToolbars();
-	_showOrHideStatusbar();
+	AP_Win32FrameImpl * pFrameImpl = static_cast<AP_Win32FrameImpl *>(getFrameImpl());
+
+	pFrameImpl->_showOrHideToolbars();
+	pFrameImpl->_showOrHideStatusbar();
 
 	return true;
 }
@@ -80,6 +82,9 @@ void AP_Win32Frame::toggleBar(UT_uint32 iBarNb, bool bBarOn)
 #if INPROGRESS
 	// TMN: Yes, this cast is correct. We store EV_Win32Toolbar in
 	// m_vecToolbars, but we only need the EV_Toolbar part of it.
+	// Tomas (Jan 25, 2003): I have removed the m_vecToolbars, etc. from this class,
+	// since they hide the members in the base classs (which is what
+	// we should be accessing)
 	EV_Toolbar* pToolbar = (EV_Toolbar*)m_vecToolbars.getNthItem(iBarNb);
 
 	UT_ASSERT(pToolbar);
@@ -169,22 +174,6 @@ void AP_Win32Frame::toggleStatusBar(bool bStatusBarOn)
 	UpdateWindow(static_cast<AP_Win32FrameImpl *>(getFrameImpl())->_getHwndContainer());
 }
 
-void AP_Win32Frame::_showOrHideToolbars(void)
-{
-	bool *bShowBar = static_cast<AP_FrameData*>(getFrameData())->m_bShowBar;
-
-	for (UT_uint32 i = 0; i < m_vecToolbarLayoutNames.getItemCount(); i++)
-	{
-		if (!bShowBar[i])
-			toggleBar( i, false );
-	}
-}
-
-void AP_Win32Frame::_showOrHideStatusbar(void)
-{
-	bool bShowStatusBar = static_cast<AP_FrameData*>(getFrameData())->m_bShowStatusBar;
-	toggleStatusBar(bShowStatusBar);
-}
 
 void AP_Win32Frame::setZoomPercentage(UT_uint32 iZoom)
 {
@@ -267,21 +256,7 @@ bool AP_Win32Frame::_createScrollBarListeners(AV_View * pView, AV_ScrollObj *& p
 
 void AP_Win32Frame::_bindToolbars(AV_View *pView)
 {
-	const UT_uint32 nrToolbars = m_vecToolbarLayoutNames.getItemCount();
-	for (UT_uint32 k = 0; k < nrToolbars; ++k)
-	{
-		// TODO Toolbars are a frame-level item, but a view-listener is
-		// TODO a view-level item.  I've bound the toolbar-view-listeners
-		// TODO to the current view within this frame and have code in the
-		// TODO toolbar to allow the view-listener to be rebound to a different
-		// TODO view.  in the future, when we have support for multiple views
-		// TODO in the frame (think splitter windows), we will need to have
-		// TODO a loop like this to help change the focus when the current
-		// TODO view changes.
-
-		EV_Win32Toolbar* pWin32Toolbar = (EV_Win32Toolbar *)m_vecToolbars.getNthItem(k);
-		pWin32Toolbar->bindListenerToView(pView);
-	}
+	static_cast<AP_Win32FrameImpl *>(getFrameImpl())->_bindToolbars(pView);
 }
 
 void AP_Win32Frame::_replaceView(GR_Graphics * pG, FL_DocLayout *pDocLayout,

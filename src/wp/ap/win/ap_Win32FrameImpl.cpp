@@ -205,6 +205,46 @@ void AP_Win32FrameImpl::_rebuildToolbar(UT_uint32 ibar)
 	UT_ASSERT(UT_NOT_IMPLEMENTED);
 }
 
+void AP_Win32FrameImpl::_bindToolbars(AV_View *pView)
+{
+	const UT_uint32 nrToolbars = m_vecToolbars.getItemCount();
+	for (UT_uint32 k = 0; k < nrToolbars; ++k)
+	{
+		// TODO Toolbars are a frame-level item, but a view-listener is
+		// TODO a view-level item.  I've bound the toolbar-view-listeners
+		// TODO to the current view within this frame and have code in the
+		// TODO toolbar to allow the view-listener to be rebound to a different
+		// TODO view.  in the future, when we have support for multiple views
+		// TODO in the frame (think splitter windows), we will need to have
+		// TODO a loop like this to help change the focus when the current
+		// TODO view changes.
+
+		EV_Win32Toolbar* pWin32Toolbar = (EV_Win32Toolbar *)m_vecToolbars.getNthItem(k);
+		pWin32Toolbar->bindListenerToView(pView);
+	}
+}
+
+void AP_Win32FrameImpl::_showOrHideToolbars(void)
+{
+	XAP_Frame* pFrame = getFrame();
+	UT_ASSERT( pFrame );
+	bool *bShowBar = static_cast<AP_FrameData*>(pFrame->getFrameData())->m_bShowBar;
+
+	for (UT_uint32 i = 0; i < m_vecToolbarLayoutNames.getItemCount(); i++)
+	{
+		if (!bShowBar[i])
+			pFrame->toggleBar( i, false );
+	}
+}
+
+void AP_Win32FrameImpl::_showOrHideStatusbar(void)
+{
+	XAP_Frame* pFrame = getFrame();
+	UT_ASSERT( pFrame );
+	bool bShowStatusBar = static_cast<AP_FrameData*>(pFrame->getFrameData())->m_bShowStatusBar;
+	pFrame->toggleStatusBar(bShowStatusBar);
+}
+
 void AP_Win32FrameImpl::_createTopRuler(XAP_Frame *pFrame)
 {
 	RECT r;

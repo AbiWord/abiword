@@ -40,6 +40,10 @@ class ABI_EXPORT AP_Win32FrameImpl : public XAP_Win32FrameImpl
 
 	virtual void _refillToolbarsInFrameData();
 	virtual void _rebuildToolbar(UT_uint32 ibar);
+	virtual void _bindToolbars(AV_View *pView);
+
+	void						_showOrHideToolbars(void);
+	void						_showOrHideStatusbar(void);
 
 	virtual void 				_toggleTopRuler(AP_Win32Frame *pFrame, bool bRulerOn);
 	virtual void 				_toggleLeftRuler(AP_Win32Frame *pFrame, bool bRulerOn);
