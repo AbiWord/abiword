@@ -1,19 +1,22 @@
 
-Build Instructions -- Linux, Solaris, ...
------------------------------------------
+Build Instructions -- Linux, Solaris, AIX, ...
+----------------------------------------------
 
 The Linux tree should build easily assuming that you have all the tools
 properly installed.  You'll need gcc, make, and all the tools which usually
 accompany them.
 
-You'll also need GTK version 1.1.15 or later.
+For AIX, please see the notes below.
+
+You'll also need GTK version 1.2.7 or later.
 
 Building the tree is a pretty simple process.  We use a "diving make" system,
 where virtually every directory in the tree hierarchy has its own Makefile,
 which contains the instructions for how to build the contents of that directory.
 
 If you are building on Slackware with libc5 (or any platform without iconv
-installed on it) using the diving make system, run 'make ABI_REQUIRE_PEER_ICONV=1' as your make line.
+installed on it) using the diving make system, run 'make ABI_REQUIRE_PEER_ICONV=1' 
+as your make line.
 
 There are several ways to build and run AbiWord:
 
@@ -54,6 +57,35 @@ There are several ways to build and run AbiWord:
 
     If you are building from CVS, you will need to run autogen.sh in
     abiword-plugins in order to create the build system.
+
+    AIX platform Notes
+    ------------------
+
+    You need the current GNU versions of some programs instead of AIX's
+    ones : make, m4, ...
+
+    You also need some program not available with AIX: bash, automake ...
+    Have a look here :
+      http://www.bull.de/pub/
+      http://freeware.bull.net/
+    
+    Build it using the autoconf build system:
+
+    $ cd .../abiword/abi
+
+    $ alias make=/usr/local/bin/make
+    $ alias m4=/usr/local/bin/m4
+
+    $ export CPPFLAGS="-D_ALL_SOURCE -D_BSD"
+    $ export LDFLAGS="-Wl,-bbigtoc"
+    $ export CC=gcc
+
+    $ bash ./autogen.sh   ( maybe 2 times )
+    $ bash ./configure
+
+    $ make
+    # make install
+
 
 Build Instructions -- Windows NT
 --------------------------------
