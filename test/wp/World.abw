@@ -85,7 +85,8 @@
 <p></p>
 <p><c props="font-weight:bold">Only a 3-letter ISO 639 language code</c><c props="font-weight:bold"></c></p>
 <p></p>
-<p style="Sample"><c style="ISO">haw-US</c>	Hawaiian	<c props="lang:-none-">Hele ā makemake ka honua e walaʻau, ʻōlelo ʻo ia i ka ʻōlelo Unicode</c></p>
+<p style="Sample"><c style="ISO">hau-NG</c>	Hausa	<c props="lang:hau-NG">Da duniya ta so yin magana, ta yi ta Unicode</c></p>
+<p style="Sample"><c style="ISO">haw-US</c>	Hawaiian	<c props="lang:haw-US">Hele ā makemake ka honua e walaʻau, ʻōlelo ʻo ia i ka ʻōlelo Unicode</c></p>
 <p></p>
 <p><c props="font-weight:bold">These have no ISO 639 2-letter or 3-letter language code</c><c props="font-weight:bold"></c></p>
 <p></p>
