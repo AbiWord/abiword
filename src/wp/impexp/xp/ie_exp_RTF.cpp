@@ -27,6 +27,7 @@
 #include "ie_exp_RTF.h"
 #include "pd_Document.h"
 #include "pp_AttrProp.h"
+#include "pp_Property.h"
 #include "px_ChangeRecord.h"
 #include "px_CR_Object.h"
 #include "px_CR_Span.h"
@@ -58,7 +59,7 @@ IE_Exp_RTF::IE_Exp_RTF(PD_Document * pDocument)
 IE_Exp_RTF::~IE_Exp_RTF()
 {
 	UT_VECTOR_PURGEALL(char *,m_vecColors);
-//	UT_VECTOR_PURGEALL(.... *,m_vecFonts);
+	UT_VECTOR_PURGEALL(_rtf_font_info *,m_vecFonts);
 }
 
 /*****************************************************************/
@@ -389,8 +390,15 @@ void IE_Exp_RTF::_rtf_chardata(const char * pbuf, UT_uint32 buflen)
 	m_bLastWasKeyword = UT_FALSE;
 }
 
+void IE_Exp_RTF::_rtf_nl(void)
+{
+	write("\n");
+}
+
 UT_Bool IE_Exp_RTF::_write_rtf_header(void)
 {
+	UT_uint32 k,kLimit;
+	
 	// write <rtf-header>
 	// return UT_FALSE on error
 
@@ -398,22 +406,44 @@ UT_Bool IE_Exp_RTF::_write_rtf_header(void)
 	_rtf_keyword("rtf",1);				// major version number of spec version 1.5
 	
 	_rtf_keyword("ansi");
-//	_rtf_keyword("ansicpg",1252);		// TODO what CodePage do we want here ??
+	_rtf_keyword("ansicpg",1252);		// TODO what CodePage do we want here ??
 
 	_rtf_keyword("deff",0);				// default font is index 0 aka black
 
-	// TODO write the "font table"....
-	// TODO write the "file table"....
+	// write the "font table"....
 
+	kLimit = m_vecFonts.getItemCount();
+	_rtf_nl();
+	_rtf_open_brace();
+	_rtf_keyword("fonttbl");
+	for (k=0; k<kLimit; k++)
+	{
+		const _rtf_font_info * pk = (const _rtf_font_info *)m_vecFonts.getNthItem(k);
+		_rtf_nl();
+		_rtf_open_brace();
+		_rtf_keyword("f",k);								// font index number
+		_rtf_keyword(_rtf_compute_font_family(pk));			// {\fnil,\froman,\fswiss,...}
+		_rtf_keyword("fcharset",0);							// TODO find correct value here
+		_rtf_keyword("fprq",_rtf_compute_font_pitch(pk));	// {0==default,1==fixed,2==variable}
+		// we do nothing with or use default values for
+		// \falt \panose \fname \fbias \ftnil \fttruetype \fontfile
+		
+		_rtf_close_brace();
+	}
+	_rtf_close_brace();
+	
+	// TODO write the "file table" if necessary...
+
+	kLimit = m_vecColors.getItemCount();
+	_rtf_nl();
 	_rtf_open_brace();
 	_rtf_keyword("colortbl");
-	UT_uint32 kLimit = m_vecColors.getItemCount();
-	UT_uint32 k;
 	for (k=0; k<kLimit; k++)
 	{
 		const char * szColor = (const char *)m_vecColors.getNthItem(k);
 		UT_RGBColor localColor;
 		UT_parseColor(szColor,localColor);
+		_rtf_nl();
 		_rtf_keyword("red",  localColor.m_red);
 		_rtf_keyword("green",localColor.m_grn);
 		_rtf_keyword("blue", localColor.m_blu);
@@ -425,6 +455,11 @@ UT_Bool IE_Exp_RTF::_write_rtf_header(void)
 	// TODO write the "list table"...
 	// TODO write the "rev table"...
 
+	// write default character properties at global scope...
+	_rtf_nl();
+	_rtf_keyword("kerning",0);			// turn off kerning
+	_rtf_keyword("cf",0);				// set color 0 -- black
+	
 	return (m_error == 0);
 }
 
@@ -432,4 +467,60 @@ UT_Bool IE_Exp_RTF::_write_rtf_trailer(void)
 {
 	_rtf_close_brace();
 	return (m_error == 0);
+}
+
+UT_sint32 IE_Exp_RTF::_findFont(const _rtf_font_info * pfi) const
+{
+	UT_ASSERT(pfi);
+
+	UT_uint32 k;
+	UT_uint32 kLimit = m_vecFonts.getItemCount();
+
+	for (k=0; k<kLimit; k++)
+	{
+		const _rtf_font_info * pk = (const _rtf_font_info *)m_vecFonts.getNthItem(k);
+		if (pk->_is_same(pfi))
+			return k;
+	}
+
+	return -1;
+}
+
+void IE_Exp_RTF::_addFont(const _rtf_font_info * pfi)
+{
+	UT_ASSERT(pfi && (_findFont(pfi)==-1));
+
+	// note: this does not guarantee uniqueness of actual fonts,
+	// note: since the three AP's may have other stuff besides
+	// note: just font info -- two identical fonts with different
+	// note: colors, for example -- will appear as two distinct
+	// note: entries -- we don't care.
+	
+	_rtf_font_info * pNew = new _rtf_font_info(*pfi);
+	if (pNew)
+		m_vecFonts.addItem(pNew);
+
+	return;
+}
+
+const char * IE_Exp_RTF::_rtf_compute_font_family(const _rtf_font_info * pfi) const
+{
+	const XML_Char * szFontFamily = PP_evalProperty("font-family",
+													pfi->m_pSpanAP,pfi->m_pBlockAP,pfi->m_pSectionAP,
+													m_pDocument,UT_TRUE);
+
+	// TODO use font properties (and possibly platform-specific font name)
+	// TODO to compute the rtf family { fnil, froman, fswiss, ... )
+	// TODO for now just return nil
+	
+	return "fnil";
+}
+
+UT_uint32 IE_Exp_RTF::_rtf_compute_font_pitch(const _rtf_font_info * pfi) const
+{
+	// TODO use font properties (and possibly platform-specific font name)
+	// TODO to compute the rtf pitch { 0==default, 1==fixed, 2==variable }
+	// TODO for now just return default.
+
+	return 0;
 }

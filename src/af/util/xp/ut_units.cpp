@@ -120,10 +120,6 @@ double UT_convertToInches(const char* s)
 	if (!s || !*s)
 		return 0;
 
-	/*
-		TODO later, this routine needs to handle more units.
-	*/
-
 	double f = atof(s);
 	const char *p = s;
 	while ((*p) && (isdigit(*p) || (*p == '-') || (*p == '.')))
@@ -154,7 +150,7 @@ double UT_convertToInches(const char* s)
 		else
 		{
 			UT_ASSERT(0);
-			// unknown unit
+			result = f;					// unknown unit -- pass thru as is ??
 		}
 	}
 
@@ -168,13 +164,9 @@ double UT_convertToPoints(const char* s)
 	if (!s || !*s)
 		return 0;
 
-	/*
-		TODO later, this routine needs to handle more units.
-	*/
-
 	double f = atof(s);
 	const char *p = s;
-	while ((*p) && (isdigit(*p) || (*p == '.')))
+	while ((*p) && (isdigit(*p) || (*p == '-') || (*p == '.')))
 	{
 		p++;
 	}
@@ -202,7 +194,7 @@ double UT_convertToPoints(const char* s)
 		else
 		{
 			UT_ASSERT(0);
-			// unknown unit
+			result = f;					// unknown unit -- pass thru as is ??
 		}
 	}
 

@@ -23,8 +23,10 @@
 ** the contents of the document to the RTF file.
 ******************************************************************/
 
+#include <string.h>
 #include <stdlib.h>
 #include "ut_string.h"
+#include "ut_units.h"
 #include "ie_exp_RTF_listenerWriteDoc.h"
 #include "pd_Document.h"
 #include "pp_AttrProp.h"
@@ -88,7 +90,38 @@ void s_RTF_ListenerWriteDoc::_openSpan(PT_AttrPropIndex apiSpan)
 	const XML_Char * szColor = PP_evalProperty("color",pSpanAP,pBlockAP,pSectionAP,m_pDocument,UT_TRUE);
 	UT_sint32 ndxColor = m_pie->_findColor(szColor);
 	UT_ASSERT(ndxColor != -1);
-	m_pie->_rtf_keyword("cf",ndxColor);
+	if (ndxColor != 0)
+		m_pie->_rtf_keyword("cf",ndxColor);
+
+	UT_sint32 ndxFont = m_pie->_findFont(&_rtf_font_info(pSpanAP,pBlockAP,pSectionAP));
+	UT_ASSERT(ndxFont != -1);
+	m_pie->_rtf_keyword("f",ndxFont);	// font index in fonttbl
+
+	const XML_Char * szFontSize = PP_evalProperty("font-size",pSpanAP,pBlockAP,pSectionAP,m_pDocument,UT_TRUE);
+	double dbl = UT_convertToPoints(szFontSize);
+	UT_sint32 d = (UT_sint32)(dbl*2.0);
+	if (d != 24)
+		m_pie->_rtf_keyword("fs",d);	// font size in half points
+
+	const XML_Char * szFontStyle = PP_evalProperty("font-style",pSpanAP,pBlockAP,pSectionAP,m_pDocument,UT_TRUE);
+	if (szFontStyle && *szFontStyle && (UT_stricmp(szFontStyle,"italic")==0))
+		m_pie->_rtf_keyword("i");
+
+	const XML_Char * szFontWeight = PP_evalProperty("font-weight",pSpanAP,pBlockAP,pSectionAP,m_pDocument,UT_TRUE);
+	if (szFontWeight && *szFontWeight && (UT_stricmp(szFontWeight,"bold")==0))
+		m_pie->_rtf_keyword("b");
+
+	const XML_Char * szFontDecoration = PP_evalProperty("text-decoration",pSpanAP,pBlockAP,pSectionAP,m_pDocument,UT_TRUE);
+	if (szFontDecoration && *szFontDecoration)
+	{
+		if (strstr(szFontDecoration,"underline") != 0)
+			m_pie->_rtf_keyword("ul");
+		if (strstr(szFontDecoration,"line-through") != 0)
+			m_pie->_rtf_keyword("strike");
+	}
+
+	// TODO do something with our font-stretch and font-variant properties
+	// note: we assume that kerning has been turned off at global scope.
 	
 	m_bInSpan = UT_TRUE;
 	m_apiLastSpan = apiSpan;
@@ -326,11 +359,55 @@ void s_RTF_ListenerWriteDoc::_rtf_docfmt(void)
 {
 	// emit everything necessary for <docfmt>* portion of the document
 
+	const PP_AttrProp * pSpanAP = NULL;
+	const PP_AttrProp * pBlockAP = NULL;
+	const PP_AttrProp * pSectionAP = NULL;
+
+	// <docfmt>
+	
+	const XML_Char * szDefaultTabs = PP_evalProperty("default-tab-interval",
+													 pSpanAP,pBlockAP,pSectionAP,
+													 m_pDocument,UT_TRUE);
+	m_pie->_rtf_keyword_ifnotdefault_twips("deftab",szDefaultTabs,720);
+
+	// <docfmt> -- document views and zoom level
+	
 	m_pie->_rtf_keyword("viewkind",1);	/* PageLayout */
 
-	// TODO there are about 6 pages of additional properties listed
-	// TODO in the specification -- see which ones we need.
+	// TODO <docfmt> -- footnotes and endnotes
+
+	// <docfmt> -- page information
+
+	const XML_Char * szPaperWidth = "8.5in"; // TODO look this up in the document
+	m_pie->_rtf_keyword_ifnotdefault_twips("paperw",szPaperWidth,0);
+	const XML_Char * szPaperHeight = "11in"; // TODO look this up in the document
+	m_pie->_rtf_keyword_ifnotdefault_twips("paperh",szPaperHeight,0);
 	
+	const XML_Char * szLeftMargin = PP_evalProperty("page-margin-left",
+													 pSpanAP,pBlockAP,pSectionAP,
+													 m_pDocument,UT_TRUE);
+	m_pie->_rtf_keyword_ifnotdefault_twips("margl",szLeftMargin,1800);
+	const XML_Char * szRightMargin = PP_evalProperty("page-margin-right",
+													 pSpanAP,pBlockAP,pSectionAP,
+													 m_pDocument,UT_TRUE);
+	m_pie->_rtf_keyword_ifnotdefault_twips("margr",szRightMargin,1800);
+	const XML_Char * szTopMargin = PP_evalProperty("page-margin-top",
+													 pSpanAP,pBlockAP,pSectionAP,
+													 m_pDocument,UT_TRUE);
+	m_pie->_rtf_keyword_ifnotdefault_twips("margt",szTopMargin,1440);
+	const XML_Char * szBottomMargin = PP_evalProperty("page-margin-Bottom",
+													 pSpanAP,pBlockAP,pSectionAP,
+													 m_pDocument,UT_TRUE);
+	m_pie->_rtf_keyword_ifnotdefault_twips("margb",szBottomMargin,1440);
+	m_pie->_rtf_keyword("widowctl");	// enable widow and orphan control
+	
+	// TODO <docfmt> -- linked styles
+	// TODO <docfmt> -- compatibility options
+	// TODO <docfmt> -- forms
+	// TODO <docfmt> -- revision marks
+	// TODO <docfmt> -- comments (annotations)
+	// TODO <docfmt> -- bidirectional controls
+	// TODO <docfmt> -- page borders
 }
 
 //////////////////////////////////////////////////////////////////
@@ -346,11 +423,16 @@ void s_RTF_ListenerWriteDoc::_rtf_open_section(PT_AttrPropIndex api)
 
 	m_pDocument->getAttrProp(m_apiThisSection,&pSectionAP);
 
-	const XML_Char * szColumns = PP_evalProperty("columns",pSpanAP,pBlockAP,pSectionAP,m_pDocument,UT_TRUE);
-	const XML_Char * szColumnGap = PP_evalProperty("column-gap",pSpanAP,pBlockAP,pSectionAP,m_pDocument,UT_TRUE);
+	const XML_Char * szColumns = PP_evalProperty("columns",
+												 pSpanAP,pBlockAP,pSectionAP,
+												 m_pDocument,UT_TRUE);
+	const XML_Char * szColumnGap = PP_evalProperty("column-gap",
+												   pSpanAP,pBlockAP,pSectionAP,
+												   m_pDocument,UT_TRUE);
 		
 	// TODO add other properties here
 
+	m_pie->_rtf_nl();
 	m_pie->_rtf_keyword("sect");								// begin a new section
 	m_pie->_rtf_keyword("sectd");								// restore all defaults for this section
 	m_pie->_rtf_keyword("sbknone");								// no page break implied
@@ -360,6 +442,32 @@ void s_RTF_ListenerWriteDoc::_rtf_open_section(PT_AttrPropIndex api)
 }
 
 //////////////////////////////////////////////////////////////////
+
+class _t 
+{
+public:
+	_t(const char * szTT, const char * szTK, UT_sint32 tp)
+		{
+			m_szTabTypeKeyword = szTT;
+			m_szTabKindKeyword = szTK;
+			m_iTabPosition = tp;
+		}
+	const char *	m_szTabTypeKeyword;
+	const char *	m_szTabKindKeyword;
+	UT_sint32		m_iTabPosition;
+};
+
+static int compare_tabs(const void* p1, const void* p2)
+{
+	_t ** ppTab1 = (_t **) p1;
+	_t ** ppTab2 = (_t **) p2;
+
+	if ((*ppTab1)->m_iTabPosition < (*ppTab2)->m_iTabPosition)
+		return -1;
+	if ((*ppTab1)->m_iTabPosition > (*ppTab2)->m_iTabPosition)
+		return 1;
+	return 0;
+}
 
 void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 {
@@ -382,21 +490,21 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 	const XML_Char * szLineHeight = PP_evalProperty("line-height",pSpanAP,pBlockAP,pSectionAP,m_pDocument,UT_TRUE);
 	const XML_Char * szKeepTogether = PP_evalProperty("keep-together",pSpanAP,pBlockAP,pSectionAP,m_pDocument,UT_TRUE);
 	const XML_Char * szKeepWithNext = PP_evalProperty("keep-with-next",pSpanAP,pBlockAP,pSectionAP,m_pDocument,UT_TRUE);
-	
+	const XML_Char * szTabStops = PP_evalProperty("tabstops",pSpanAP,pBlockAP,pSectionAP,m_pDocument,UT_TRUE);
 
 	// TODO add other properties here
 
-	m_pie->_rtf_keyword("par");									// begin a new paragraph
-	m_pie->_rtf_keyword("pard");								// restore all defaults for this paragraph
+	m_pie->_rtf_nl();
+	m_pie->_rtf_keyword("par");			// begin a new paragraph
+	m_pie->_rtf_keyword("pard");		// restore all defaults for this paragraph
 
-	if (UT_stricmp(szTextAlign,"right")==0)						// output one of q{lrcj} depending upon paragraph alignment
+	// if string is "left" use "ql", but that is the default, so we don't need to write it out.
+	if (UT_stricmp(szTextAlign,"right")==0)		// output one of q{lrcj} depending upon paragraph alignment
 		m_pie->_rtf_keyword("qr");
 	else if (UT_stricmp(szTextAlign,"center")==0)
 		m_pie->_rtf_keyword("qc");
 	else if (UT_stricmp(szTextAlign,"justify")==0)
 		m_pie->_rtf_keyword("qj");
-	else
-		m_pie->_rtf_keyword("ql");
 
 	m_pie->_rtf_keyword_ifnotdefault_twips("fi",szFirstLineIndent,0);
 	m_pie->_rtf_keyword_ifnotdefault_twips("li",szLeftIndent,0);
@@ -421,7 +529,87 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 		m_pie->_rtf_keyword("keep");
 	if (UT_stricmp(szKeepWithNext,"yes")==0)
 		m_pie->_rtf_keyword("keepn");
-	
-	// TODO write tabstops
+
+	if (szTabStops && *szTabStops)
+	{
+		// write tabstops for this paragraph
+		// TODO the following parser was copied from abi/src/text/fmt/xp/fl_BlockLayout.cpp
+		// TODO we should extract both of them and share the code.
+
+		unsigned char iType = 0;
+		UT_sint32 iPosition = 0;
+		UT_Vector vecTabs;
+		
+		const char* pStart = szTabStops;
+		while (*pStart)
+		{
+			const char * szTT = "tx";	// TabType -- assume text tab (use "tb" for bar tab)
+			const char * szTK = NULL;	// TabKind -- assume left tab
+			
+			const char* pEnd = pStart;
+			while (*pEnd && (*pEnd != ','))
+				pEnd++;
+			const char* p1 = pStart;
+			while ((p1 < pEnd) && (*p1 != '/'))
+				p1++;
+			if ( (p1 == pEnd) || ((p1+1) == pEnd) )
+				;						// left-tab is default
+			else
+			{
+				switch (p1[1])
+				{
+				default:
+				case 'L': 	szTK = NULL; 	break;
+				case 'R':	szTK = "tqr";	break;
+				case 'C':	szTK = "tqc";	break;
+				case 'D':	szTK = "tqdec";	break;
+				case 'B':	szTT = "tb";	break; // TabKind == bar tab
+				}
+			}
+
+			char pszPosition[32];
+			UT_uint32 iPosLen = p1 - pStart;
+			UT_ASSERT(iPosLen < 32);
+			for (UT_uint32 k=0; k<iPosLen; k++)
+				pszPosition[k] = pStart[k];
+			pszPosition[k] = 0;
+			// convert position into twips
+			double dbl = UT_convertToPoints(pszPosition);
+			UT_sint32 d = (UT_sint32)(dbl * 20.0);
+			
+			_t * p_t = new _t(szTT,szTK,d);
+			vecTabs.addItem(p_t);
+
+			pStart = pEnd;
+			if (*pStart)
+			{
+				pStart++;	// skip past delimiter
+				while (*pStart == UCS_SPACE)
+					pStart++;
+			}
+		}
+
+		// write each tab in order:
+		// <tabdef> ::= ( <tab> | <bartab> )+
+		// <tab>    ::= <tabkind>? <tablead>? \tx
+		// <bartab> ::= <tablead>? \tb
+
+		vecTabs.qsort(compare_tabs);
+
+		UT_uint32 k;
+		UT_uint32 kLimit = vecTabs.getItemCount();
+		for (k=0; k<kLimit; k++)
+		{
+			_t * p_t = (_t *)vecTabs.getNthItem(k);
+			// write <tabkind>
+			if (p_t->m_szTabKindKeyword && *p_t->m_szTabKindKeyword)
+				m_pie->_rtf_keyword(p_t->m_szTabKindKeyword);
+			// TODO write leader character in <tablead>
+			// write tab type
+			m_pie->_rtf_keyword(p_t->m_szTabTypeKeyword,p_t->m_iTabPosition);
+
+			delete p_t;
+		}
+	}
 
 }

@@ -26,8 +26,10 @@
 #include "ut_misc.h"
 #include "pl_Listener.h"
 class PD_Document;
+class PP_AttrProp;
 class s_RTF_ListenerWriteDoc;
 class s_RTF_ListenerGetProps;
+class _rtf_font_info;
 
 // The exporter/writer for RTF file format (based upon spec version 1.5).
 
@@ -65,20 +67,61 @@ protected:
 	void				_rtf_keyword_ifnotdefault_twips(const char * szKey, const char * szValue, UT_sint32 defaultValue);
 	void				_rtf_semi(void);
 	void				_rtf_chardata(const char * pbuf, UT_uint32 buflen);
+	void				_rtf_nl(void);
 	UT_Bool				_write_rtf_header(void);
 	UT_Bool				_write_rtf_trailer(void);
+	UT_sint32			_findFont(const _rtf_font_info * pfi) const;
+	void				_addFont(const _rtf_font_info * pfi);
+	const char *		_rtf_compute_font_family(const _rtf_font_info * pfi) const;
+	UT_uint32			_rtf_compute_font_pitch(const _rtf_font_info * pfi) const;
 	
 	s_RTF_ListenerWriteDoc *	m_pListenerWriteDoc;
 	s_RTF_ListenerGetProps *	m_pListenerGetProps;
 	PL_ListenerId				m_lid;
 	UT_Vector					m_vecColors;			/* vector of "const char * szColor" */
-//	UT_Vector					m_vecFonts;				/* vector of struct _font */
+	UT_Vector					m_vecFonts;				/* vector of struct _font */
 	UT_Bool						m_bNeedUnicodeText;		/* doc has unicode chars */
 	UT_sint32					m_braceLevel;			/* nesting depth of {} braces */
 	UT_Bool						m_bLastWasKeyword;		/* just wrote a keyword, so need space before text data */
 
 public:
 	UT_Bool						m_error;
+};
+
+/*****************************************************************/
+/*****************************************************************/
+
+class _rtf_font_info
+{
+public:
+	_rtf_font_info(const PP_AttrProp * pSpanAP,
+				   const PP_AttrProp * pBlockAP,
+				   const PP_AttrProp * pSectionAP)
+		{
+			m_pSpanAP = pSpanAP;
+			m_pBlockAP = pBlockAP;
+			m_pSectionAP = pSectionAP;
+		}
+
+	~_rtf_font_info(void)
+		{
+		}
+
+	UT_Bool _is_same(const PP_AttrProp * pSpanAP,
+					 const PP_AttrProp * pBlockAP,
+					 const PP_AttrProp * pSectionAP) const
+		{
+			return ((pSpanAP==m_pSpanAP) && (pBlockAP==m_pBlockAP) && (pSectionAP==m_pSectionAP));
+		}
+
+	UT_Bool _is_same(const _rtf_font_info * pfi) const
+		{
+			return _is_same(pfi->m_pSpanAP,pfi->m_pBlockAP,pfi->m_pSectionAP);
+		}
+	
+	const PP_AttrProp * m_pSpanAP;
+	const PP_AttrProp * m_pBlockAP;
+	const PP_AttrProp * m_pSectionAP;
 };
 
 #endif /* IE_EXP_RTF_H */

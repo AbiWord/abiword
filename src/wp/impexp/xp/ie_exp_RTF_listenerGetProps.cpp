@@ -82,11 +82,8 @@ void s_RTF_ListenerGetProps::_openSpan(PT_AttrPropIndex apiSpan)
 	m_pDocument->getAttrProp(m_apiThisBlock,&pBlockAP);
 	m_pDocument->getAttrProp(apiSpan,&pSpanAP);
 
-	const XML_Char * szColor = PP_evalProperty("color",pSpanAP,pBlockAP,pSectionAP,m_pDocument,UT_TRUE);
-	UT_sint32 ndxColor = m_pie->_findColor(szColor);
-	if (ndxColor == -1)
-		m_pie->_addColor(szColor);
-
+	_compute_span_properties(pSpanAP,pBlockAP,pSectionAP);
+	
 	m_bInSpan = UT_TRUE;
 	m_apiLastSpan = apiSpan;
 	return;
@@ -197,6 +194,7 @@ UT_Bool s_RTF_ListenerGetProps::populateStrux(PL_StruxDocHandle /*sdh*/,
 			_closeBlock();
 			_closeSection();
 			m_bInSection = UT_TRUE;
+			m_apiThisSection = pcr->getIndexAP();
 			return UT_TRUE;
 		}
 
@@ -205,6 +203,7 @@ UT_Bool s_RTF_ListenerGetProps::populateStrux(PL_StruxDocHandle /*sdh*/,
 			_closeSpan();
 			_closeBlock();
 			m_bInBlock = UT_TRUE;
+			m_apiThisBlock = pcr->getIndexAP();
 			return UT_TRUE;
 		}
 
@@ -237,4 +236,29 @@ UT_Bool s_RTF_ListenerGetProps::signal(UT_uint32 /* iSignal */)
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	return UT_FALSE;
+}
+
+void s_RTF_ListenerGetProps::_compute_span_properties(const PP_AttrProp * pSpanAP,
+													  const PP_AttrProp * pBlockAP,
+													  const PP_AttrProp * pSectionAP)
+{
+	// see if we have a previously unused color reference.
+	
+	const XML_Char * szColor = PP_evalProperty("color",pSpanAP,pBlockAP,pSectionAP,m_pDocument,UT_TRUE);
+	UT_sint32 ndxColor = m_pie->_findColor(szColor);
+	if (ndxColor == -1)
+		m_pie->_addColor(szColor);
+
+	// convert our font properties into an item for the rtf font table.
+	// in this pass thru the document we are just collecting all the
+	// info that we need to put into the rtf header, so we can't just
+	// write it out now.  so, we build a vector of the stuff we want
+	// to write (and make sure it's unique).
+
+	_rtf_font_info fi(pSpanAP,pBlockAP,pSectionAP);
+	UT_sint32 ndxFont = m_pie->_findFont(&fi);
+	if (ndxFont == -1)
+		m_pie->_addFont(&fi);
+
+	return;
 }

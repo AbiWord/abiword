@@ -61,6 +61,9 @@ protected:
 	void				_closeSpan(void);
 	void				_openSpan(PT_AttrPropIndex apiSpan);
 	void				_outputData(const UT_UCSChar * p, UT_uint32 length);
+	void				_compute_span_properties(const PP_AttrProp * pSpanAP,
+												 const PP_AttrProp * pBlockAP,
+												 const PP_AttrProp * pSectionAP);
 	
 	PD_Document *		m_pDocument;
 	IE_Exp_RTF *		m_pie;
