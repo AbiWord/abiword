@@ -65,21 +65,21 @@ void XAP_QNXDialog_MessageBox::runModal(XAP_Frame * pFrame)
 	switch (m_buttons)
 	{
 	case b_OC: // OK && Cancel
-		str2 = pSS->getValue(XAP_STRING_ID_DLG_Cancel);
+str2 = pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel).c_str();
 		if (m_defaultAnswer == a_CANCEL) {
 			def_button = 2;
 		}
 
 	case b_O: // OK
-		str1 = pSS->getValue(XAP_STRING_ID_DLG_OK);
+str1 = pSS->getValueUTF8(XAP_STRING_ID_DLG_OK).c_str();
 		break;
 
 	case b_YNC: // Yes && No && Cancel
-		str3 = pSS->getValue(XAP_STRING_ID_DLG_Cancel);
+str3 = pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel).c_str();
 
 	case b_YN: // Yes && No
-		str1 = pSS->getValue(XAP_STRING_ID_DLG_QNXMB_Yes);
-		str2 = pSS->getValue(XAP_STRING_ID_DLG_QNXMB_No);
+str1 = pSS->getValueUTF8(XAP_STRING_ID_DLG_QNXMB_Yes).c_str();
+str2 = pSS->getValueUTF8(XAP_STRING_ID_DLG_QNXMB_No).c_str();
 		if (m_defaultAnswer == a_NO) {
 			def_button = 2;
 		}

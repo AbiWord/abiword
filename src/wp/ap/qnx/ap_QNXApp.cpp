@@ -243,13 +243,13 @@ bool AP_QNXApp::initialize(void)
 	
 	for (i = 0; fp_FieldTypes[i].m_Type != FPFIELDTYPE_END; i++)
 	{
-	    (&fp_FieldTypes[i])->m_Desc = m_pStringSet->getValue(fp_FieldTypes[i].m_DescId);
+(&fp_FieldTypes[i])->m_Desc = m_pStringSet->getValueUTF8(fp_FieldTypes[i].m_DescId).c_str();
 	    UT_DEBUGMSG(("Setting field type desc for type %d, desc=%s\n", fp_FieldTypes[i].m_Type, fp_FieldTypes[i].m_Desc));
 	}
 
 	for (i = 0; fp_FieldFmts[i].m_Tag != NULL; i++)
 	{
-	    (&fp_FieldFmts[i])->m_Desc = m_pStringSet->getValue(fp_FieldFmts[i].m_DescId);
+(&fp_FieldFmts[i])->m_Desc = m_pStringSet->getValueUTF8(fp_FieldFmts[i].m_DescId).c_str();
 	    UT_DEBUGMSG(("Setting field desc for field %s, desc=%s\n", fp_FieldFmts[i].m_Tag, fp_FieldFmts[i].m_Desc));
 	}
 
@@ -881,12 +881,6 @@ int AP_QNXApp::main(const char * szAppName, int argc, const char ** argv)
 	// continue out the door.
 	if (pMyQNXApp->parseCommandLine() && bShowApp)
 	{
-		PtCallbackList_t *cl;
-
-		XAP_QNXFrame *pFrame = static_cast<XAP_QNXFrame*>(XAP_App::getApp()->getLastFocussedFrame());
-		//XXX: Kinda nasty.
-		PtGetResource(pFrame->getTopLevelWindow(),Pt_CB_GOT_FOCUS,&cl,0);
-		(int)(*cl->cb.event_f)(0,pFrame,0);		
 		PtMainLoop();
 	}
 	
@@ -1020,39 +1014,39 @@ bool AP_QNXApp::parseCommandLine(void)
 					switch (error)
 					{
 					case -301:
-						pDialog->setMessage((char*)pSS->getValue(AP_STRING_ID_MSG_IE_FileNotFound),m_pArgs->m_argv[k]);
+pDialog->setMessage((char*)pSS->getValueUTF8(AP_STRING_ID_MSG_IE_FileNotFound).c_str() ,m_pArgs->m_argv[k]);
 						break;
 						
 					case -302:
-						pDialog->setMessage((char*)pSS->getValue(AP_STRING_ID_MSG_IE_NoMemory),m_pArgs->m_argv[k]);
+pDialog->setMessage((char*)pSS->getValueUTF8(AP_STRING_ID_MSG_IE_NoMemory).c_str() ,m_pArgs->m_argv[k]);
 						break;
 						
 					case -303:
-						pDialog->setMessage((char*)pSS->getValue(AP_STRING_ID_MSG_IE_UnknownType),m_pArgs->m_argv[k]);
+pDialog->setMessage((char*)pSS->getValueUTF8(AP_STRING_ID_MSG_IE_UnknownType).c_str() ,m_pArgs->m_argv[k]);
 						break;
 						
 					case -304:
-						pDialog->setMessage((char*)pSS->getValue(AP_STRING_ID_MSG_IE_BogusDocument),m_pArgs->m_argv[k]);
+pDialog->setMessage((char*)pSS->getValueUTF8(AP_STRING_ID_MSG_IE_BogusDocument).c_str() ,m_pArgs->m_argv[k]);
 						break;
 						
 					case -305:
-						pDialog->setMessage((char*)pSS->getValue(AP_STRING_ID_MSG_IE_CouldNotOpen),m_pArgs->m_argv[k]);
+pDialog->setMessage((char*)pSS->getValueUTF8(AP_STRING_ID_MSG_IE_CouldNotOpen).c_str() ,m_pArgs->m_argv[k]);
 						break;
 							
 					case -306:
-						pDialog->setMessage((char*)pSS->getValue(AP_STRING_ID_MSG_IE_CouldNotWrite),m_pArgs->m_argv[k]);
+pDialog->setMessage((char*)pSS->getValueUTF8(AP_STRING_ID_MSG_IE_CouldNotWrite).c_str() ,m_pArgs->m_argv[k]);
 						break;
 						
 					case -307:
-						pDialog->setMessage((char*)pSS->getValue(AP_STRING_ID_MSG_IE_FakeType),m_pArgs->m_argv[k]);
+pDialog->setMessage((char*)pSS->getValueUTF8(AP_STRING_ID_MSG_IE_FakeType).c_str() ,m_pArgs->m_argv[k]);
 						break;
 						
 					case -311:
-						pDialog->setMessage((char*)pSS->getValue(AP_STRING_ID_MSG_IE_UnsupportedType),m_pArgs->m_argv[k]);
+pDialog->setMessage((char*)pSS->getValueUTF8(AP_STRING_ID_MSG_IE_UnsupportedType).c_str() ,m_pArgs->m_argv[k]);
 						break;
 						
 					default:
-						pDialog->setMessage((char*)pSS->getValue(AP_STRING_ID_MSG_ImportError),m_pArgs->m_argv[k]);
+pDialog->setMessage((char*)pSS->getValueUTF8(AP_STRING_ID_MSG_ImportError).c_str() ,m_pArgs->m_argv[k]);
 					}
 					pDialog->setButtons(XAP_Dialog_MessageBox::b_O);
 					pDialog->setDefaultAnswer(XAP_Dialog_MessageBox::a_OK);

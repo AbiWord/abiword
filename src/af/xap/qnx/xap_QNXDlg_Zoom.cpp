@@ -347,7 +347,7 @@ PtWidget_t * XAP_QNXDialog_Zoom::_constructWindow(void)
 	char  *unixstr;
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, pSS->getValue(XAP_STRING_ID_DLG_Zoom_ZoomTitle), 0);
+PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, pSS->getValueUTF8(XAP_STRING_ID_DLG_Zoom_ZoomTitle).c_str(), 0);
     PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, ABI_MODAL_WINDOW_RENDER_FLAGS);
     PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 0, ABI_MODAL_WINDOW_MANAGE_FLAGS);
 
@@ -375,17 +375,17 @@ PtWidget_t * XAP_QNXDialog_Zoom::_constructWindow(void)
 				Pt_GROUP_EXCLUSIVE | Pt_GROUP_EQUAL_SIZE_HORIZONTAL, 
 				Pt_GROUP_EXCLUSIVE | Pt_GROUP_EQUAL_SIZE_HORIZONTAL);
 	vboxZoomTo = PtCreateWidget(PtGroup, hboxFrames, n, args);
-	pretty_group(vboxZoomTo, pSS->getValue(XAP_STRING_ID_DLG_Zoom_RadioFrameCaption));
+pretty_group(vboxZoomTo, pSS->getValueUTF8(XAP_STRING_ID_DLG_Zoom_RadioFrameCaption ).c_str());
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, Pt_GROUP_VERTICAL); 
 	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING_Y, 10, 0); 
 	vboxZoomPreview = PtCreateWidget(PtGroup, hboxFrames, n, args);
-	pretty_group(vboxZoomPreview, pSS->getValue(XAP_STRING_ID_DLG_Zoom_PreviewFrame));
+	pretty_group(vboxZoomPreview, pSS->getValueUTF8(XAP_STRING_ID_DLG_Zoom_PreviewFrame ).c_str());
 
 #if 0
 	n = 0;
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(XAP_STRING_ID_DLG_Zoom_RadioFrameCaption));
+UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(XAP_STRING_ID_DLG_Zoom_RadioFrameCaption ).c_str();
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
 	PtCreateWidget(PtLabel, vboxZoomTo, n, args);
 	FREEP(unixstr);
@@ -393,7 +393,7 @@ PtWidget_t * XAP_QNXDialog_Zoom::_constructWindow(void)
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_FLAGS, 0, Pt_GETS_FOCUS);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(XAP_STRING_ID_DLG_Zoom_200));
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(XAP_STRING_ID_DLG_Zoom_200 ).c_str());
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
 	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_ONE_OF_MANY, 0);
 	radiobutton200 = PtCreateWidget(PtToggleButton, vboxZoomTo, n, args);
@@ -402,7 +402,7 @@ PtWidget_t * XAP_QNXDialog_Zoom::_constructWindow(void)
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_FLAGS, 0, Pt_GETS_FOCUS);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(XAP_STRING_ID_DLG_Zoom_100));
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(XAP_STRING_ID_DLG_Zoom_100 ).c_str());
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0); 
 	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_ONE_OF_MANY, 0);
 	radiobutton100 = PtCreateWidget(PtToggleButton, vboxZoomTo, n, args);
@@ -411,7 +411,7 @@ PtWidget_t * XAP_QNXDialog_Zoom::_constructWindow(void)
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_FLAGS, 0, Pt_GETS_FOCUS);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(XAP_STRING_ID_DLG_Zoom_75));
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(XAP_STRING_ID_DLG_Zoom_75 ).c_str());
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0); 
 	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_ONE_OF_MANY, 0);
 	radiobutton75 = PtCreateWidget(PtToggleButton, vboxZoomTo, n, args);
@@ -420,7 +420,7 @@ PtWidget_t * XAP_QNXDialog_Zoom::_constructWindow(void)
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_FLAGS, 0, Pt_GETS_FOCUS);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(XAP_STRING_ID_DLG_Zoom_PageWidth));
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(XAP_STRING_ID_DLG_Zoom_PageWidth ).c_str());
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
 	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_ONE_OF_MANY, 0);
 	radiobuttonPageWidth = PtCreateWidget(PtToggleButton, vboxZoomTo, n, args);
@@ -429,7 +429,7 @@ PtWidget_t * XAP_QNXDialog_Zoom::_constructWindow(void)
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_FLAGS, 0, Pt_GETS_FOCUS);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(XAP_STRING_ID_DLG_Zoom_WholePage));
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(XAP_STRING_ID_DLG_Zoom_WholePage ).c_str());
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
 	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_ONE_OF_MANY, 0);
 	radiobuttonWholePage = PtCreateWidget(PtToggleButton, vboxZoomTo, n, args);
@@ -438,7 +438,7 @@ PtWidget_t * XAP_QNXDialog_Zoom::_constructWindow(void)
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_FLAGS, 0, Pt_GETS_FOCUS);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(XAP_STRING_ID_DLG_Zoom_Percent));
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(XAP_STRING_ID_DLG_Zoom_Percent ).c_str());
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
 	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_ONE_OF_MANY, 0);
 	radiobuttonPercent = PtCreateWidget(PtToggleButton, vboxZoomTo, n, args);
@@ -455,7 +455,7 @@ PtWidget_t * XAP_QNXDialog_Zoom::_constructWindow(void)
 
 #if 0
 	n = 0;
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(XAP_STRING_ID_DLG_Zoom_PreviewFrame));
+UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(XAP_STRING_ID_DLG_Zoom_PreviewFrame ).c_str();
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
 	PtCreateWidget(PtLabel, vboxZoomPreview, n, args);
 	FREEP(unixstr);
@@ -497,13 +497,13 @@ PtWidget_t * XAP_QNXDialog_Zoom::_constructWindow(void)
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_OK), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(XAP_STRING_ID_DLG_OK).c_str(), 0);
 	buttonOK = PtCreateWidget(PtButton, vboxButtons, n, args);
 	PtAddCallback(buttonOK, Pt_CB_ACTIVATE, s_ok_clicked, this);
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_Cancel), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel).c_str(), 0);
 	buttonCancel = PtCreateWidget(PtButton, vboxButtons, n, args);
 	PtAddCallback(buttonCancel, Pt_CB_ACTIVATE, s_cancel_clicked, this);
 

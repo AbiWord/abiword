@@ -547,9 +547,9 @@ void AP_QNXDialog_Styles::event_ListClicked(const char * which)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-	if (!strcmp(which, pSS->getValue(AP_STRING_ID_DLG_Styles_LBL_InUse)))
+if (!strcmp(which, pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_LBL_InUse).c_str()))
 		m_whichType = USED_STYLES;
-	else if (!strcmp(which, pSS->getValue(AP_STRING_ID_DLG_Styles_LBL_UserDefined)))
+else if (!strcmp(which, pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_LBL_UserDefined).c_str()))
 		m_whichType = USER_STYLES;
 	else
 		m_whichType = ALL_STYLES;
@@ -602,7 +602,7 @@ PtWidget_t * AP_QNXDialog_Styles::_constructWindow(void)
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, 
-		pSS->getValue(AP_STRING_ID_DLG_Styles_StylesTitle), 0);
+pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_StylesTitle).c_str(), 0);
     PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, ABI_MODAL_WINDOW_RENDER_FLAGS);
     PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 0, ABI_MODAL_WINDOW_MANAGE_FLAGS);
 	windowStyles = PtCreateWidget(PtWindow, NULL, n, args);
@@ -624,7 +624,7 @@ PtWidget_t * AP_QNXDialog_Styles::_constructWindow(void)
 	/* Left pane is a list of styles and types */
 	n = 0;
 	hgroup = PtCreateWidget(PtGroup, vgroup, n, args);
-	//frameStyles = gtk_frame_new(pSS->getValue(AP_STRING_ID_DLG_Styles_Available));
+//frameStyles = gtk_frame_new(pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_Available ).c_str();
 
 	PtWidget_t *top_vgrouplist, *top_vgroupshow;
 
@@ -643,11 +643,11 @@ PtWidget_t * AP_QNXDialog_Styles::_constructWindow(void)
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, PREVIEW_WIDTH, 0);
 	comboList = PtCreateWidget(PtComboBox, top_vgrouplist, n, args);
-	//frameList = gtk_frame_new( pSS->getValue(AP_STRING_ID_DLG_Styles_List));
+//frameList = gtk_frame_new( pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_List ).c_str();
 	const char *items[3];
 	items[0] = pSS->getValue (AP_STRING_ID_DLG_Styles_LBL_InUse);
-	items[1] = pSS->getValue(AP_STRING_ID_DLG_Styles_LBL_All);
-	items[2] = pSS->getValue(AP_STRING_ID_DLG_Styles_LBL_UserDefined);
+items[1] = pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_LBL_All).c_str();
+items[2] = pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_LBL_UserDefined).c_str();
 	PtListAddItems(comboList, items, 3, 0);  
 	UT_QNXComboSetPos(comboList, 1);
 	PtAddCallback(comboList, Pt_CB_SELECTION, s_typeslist_changed, this);
@@ -659,7 +659,7 @@ PtWidget_t * AP_QNXDialog_Styles::_constructWindow(void)
 
 	n = 0;
 	frameParaPrev = PtCreateWidget(PtGroup, top_vgroupshow, n, args);
-	pretty_group(frameParaPrev, pSS->getValue(AP_STRING_ID_DLG_Styles_ParaPrev));
+	pretty_group(frameParaPrev, pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ParaPrev ).c_str());
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, PREVIEW_WIDTH, 0);
 	PtSetArg(&args[n++], Pt_ARG_HEIGHT, 70, 0);
@@ -670,7 +670,7 @@ PtWidget_t * AP_QNXDialog_Styles::_constructWindow(void)
 
 	n = 0;
 	frameCharPrev = PtCreateWidget(PtGroup, top_vgroupshow, n, args);
-	pretty_group(frameCharPrev, pSS->getValue(AP_STRING_ID_DLG_Styles_CharPrev));
+	pretty_group(frameCharPrev, pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_CharPrev ).c_str());
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, PREVIEW_WIDTH, 0);
 	PtSetArg(&args[n++], Pt_ARG_HEIGHT, 50, 0);
@@ -681,7 +681,7 @@ PtWidget_t * AP_QNXDialog_Styles::_constructWindow(void)
 
 	n = 0;
 	frameDescription = PtCreateWidget(PtGroup, top_vgroupshow, n, args);
-	pretty_group(frameDescription, pSS->getValue(AP_STRING_ID_DLG_Styles_Description));
+	pretty_group(frameDescription, pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_Description ).c_str());
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, PREVIEW_WIDTH, 0);
 	PtSetArg(&args[n++], Pt_ARG_HEIGHT, 60, 0);
@@ -699,19 +699,19 @@ PtWidget_t * AP_QNXDialog_Styles::_constructWindow(void)
 	hgroup = PtCreateWidget(PtGroup, vgroup, n, args);
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_Styles_New), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_New).c_str(), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	buttonNew = PtCreateWidget(PtButton, hgroup, n, args);
 	PtAddCallback(buttonNew, Pt_CB_ACTIVATE, s_newbtn_clicked, this);
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_Styles_Modify), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_Modify).c_str(), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	buttonModify = PtCreateWidget(PtButton, hgroup, n, args);
 	PtAddCallback(buttonModify, Pt_CB_ACTIVATE, s_modifybtn_clicked, this);
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_Styles_Delete), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_Delete).c_str(), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	buttonDelete = PtCreateWidget(PtButton, hgroup, n, args);
 	PtAddCallback(buttonDelete, Pt_CB_ACTIVATE, s_deletebtn_clicked, this);
@@ -721,13 +721,13 @@ PtWidget_t * AP_QNXDialog_Styles::_constructWindow(void)
 	hgroup = PtCreateWidget(PtGroup, vgroup, n, args);
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_Close), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(XAP_STRING_ID_DLG_Close).c_str(), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	buttonClose = PtCreateWidget(PtButton, hgroup, n, args);
 	PtAddCallback(buttonClose, Pt_CB_ACTIVATE, s_close_clicked, this);
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_Apply), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(XAP_STRING_ID_DLG_Apply).c_str(), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	buttonApply = PtCreateWidget(PtButton, hgroup, n, args);
 	PtAddCallback(buttonApply, Pt_CB_ACTIVATE, s_apply_clicked, this);
@@ -894,10 +894,10 @@ PtWidget_t *  AP_QNXDialog_Styles::_constructModifyDialog(void)
 	n = 0;
 	if(!isNew()) {
 		PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, 
-			pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyTitle), 0);
+pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyTitle).c_str(), 0);
 	} else {
 		PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, 
-			pSS->getValue(AP_STRING_ID_DLG_Styles_NewTitle), 0);
+pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_NewTitle).c_str(), 0);
 	}
     PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, ABI_MODAL_WINDOW_RENDER_FLAGS);
     PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 0, ABI_MODAL_WINDOW_MANAGE_FLAGS);
@@ -922,11 +922,11 @@ PtWidget_t *  AP_QNXDialog_Styles::_constructModifyDialog(void)
 	hgroup = PtCreateWidget(PtGroup, vgroup, n, args);
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyName), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyName).c_str(), 0);
 	nameLabel = PtCreateWidget(PtLabel, hgroup, n, args);
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyType), 0); 
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyType).c_str(), 0);
 	styleTypeLabel = PtCreateWidget(PtLabel, hgroup, n, args);
 
 	n = 0;
@@ -941,11 +941,11 @@ PtWidget_t *  AP_QNXDialog_Styles::_constructModifyDialog(void)
 
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyBasedOn), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyBasedOn).c_str(), 0);
 	basedOnLabel = PtCreateWidget(PtLabel, hgroup, n, args);
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyFollowing), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyFollowing).c_str(), 0);
 	followingLabel = PtCreateWidget(PtLabel, hgroup, n, args);
 
 	n = 0;
@@ -967,7 +967,7 @@ PtWidget_t *  AP_QNXDialog_Styles::_constructModifyDialog(void)
 	hgroup = PtCreateWidget(PtGroup, vgroup, n, args);
 	n = 0;
 	previewFrame = PtCreateWidget(PtGroup, hgroup, n, args);
-	pretty_group(previewFrame, pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyPreview));
+	pretty_group(previewFrame, pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyPreview ).c_str());
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, PREVIEW_WIDTH, 0);
 	PtSetArg(&args[n++], Pt_ARG_HEIGHT, 120, 0);
@@ -981,7 +981,7 @@ PtWidget_t *  AP_QNXDialog_Styles::_constructModifyDialog(void)
 	hgroup = PtCreateWidget(PtGroup, vgroup, n, args);
 	n = 0;
 	descriptionFrame = PtCreateWidget(PtGroup, hgroup, n, args);
-	pretty_group(descriptionFrame, pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyDescription));
+	pretty_group(descriptionFrame, pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyDescription ).c_str());
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, PREVIEW_WIDTH, 0);
 	PtSetArg(&args[n++], Pt_ARG_HEIGHT, 120, 0);
@@ -992,7 +992,7 @@ PtWidget_t *  AP_QNXDialog_Styles::_constructModifyDialog(void)
 	hgroup = PtCreateWidget(PtGroup, vgroup, n, args);
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_Styles_RemoveLab), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_RemoveLab).c_str(), 0);
 	PtWidget_t * deleteLabel = PtCreateWidget(PtLabel, hgroup, n, args);
 
 	n = 0;
@@ -1000,7 +1000,7 @@ PtWidget_t *  AP_QNXDialog_Styles::_constructModifyDialog(void)
 	deletePropEntry = PtCreateWidget(PtComboBox, hgroup, n, args);
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_Styles_RemoveButton), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_RemoveButton).c_str(), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	deletePropButton = PtCreateWidget(PtButton, hgroup, n, args);
 	PtAddCallback(deletePropButton, Pt_CB_ACTIVATE, s_remove_property, this);
@@ -1010,11 +1010,11 @@ PtWidget_t *  AP_QNXDialog_Styles::_constructModifyDialog(void)
 	gtk_box_pack_start (GTK_BOX (OverallVbox), checkBoxRow, TRUE, TRUE, 0);
 	gtk_container_set_border_width (GTK_CONTAINER (checkBoxRow), 2);
 
-	checkAddTo = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyTemplate));
+checkAddTo = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyTemplate ).c_str();
 	gtk_widget_show (checkAddTo);
 	gtk_box_pack_start (GTK_BOX (checkBoxRow), checkAddTo, TRUE, TRUE, 0);
 
-	checkAutoUpdate = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyAutomatic));
+checkAutoUpdate = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyAutomatic ).c_str();
 	gtk_widget_show (checkAutoUpdate);
 	gtk_box_pack_start (GTK_BOX (checkBoxRow), checkAutoUpdate, TRUE, TRUE, 0);
 #endif
@@ -1030,13 +1030,13 @@ PtWidget_t *  AP_QNXDialog_Styles::_constructModifyDialog(void)
 	hgroup = PtCreateWidget(PtGroup, vgroup, n, args);
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_Cancel), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel).c_str(), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	buttonCancel = PtCreateWidget(PtButton, hgroup, n, args);
 	PtAddCallback(buttonCancel, Pt_CB_ACTIVATE, s_modify_cancel_clicked, this);
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_OK), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(XAP_STRING_ID_DLG_OK).c_str(), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	buttonOK = PtCreateWidget(PtButton, hgroup, n, args);
 	PtAddCallback(buttonOK, Pt_CB_ACTIVATE, s_modify_ok_clicked, this);
@@ -1048,7 +1048,7 @@ PtWidget_t *  AP_QNXDialog_Styles::_constructModifyDialog(void)
 	_constructFormatList(FormatMenu);
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyShortCut), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyShortCut).c_str(), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	shortCutButton = PtCreateWidget(PtButton, hgroup, n, args);
 	//PtAddCallback(shortCutButton, Pt_CB_ACTIVATE, s_modify_ok_clicked, this);
@@ -1082,22 +1082,22 @@ void  AP_QNXDialog_Styles::_constructFormatList(PtWidget_t * FormatMenu)
 	
 	const char *item;
 
-	item = pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyFormat);
+item = pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyFormat).c_str();
 	PtListAddItems(FormatMenu, &item, 1, 0);
 
-	item = pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyParagraph);
+item = pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyParagraph).c_str();
 	PtListAddItems(FormatMenu, &item, 1, 0);
 
-	item = pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyFont);
+item = pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyFont).c_str();
 	PtListAddItems(FormatMenu, &item, 1, 0);
 
-	item = pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyTabs);
+item = pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyTabs).c_str();
 	PtListAddItems(FormatMenu, &item, 1, 0);
 
-	item = pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyNumbering);
+item = pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyNumbering).c_str();
 	PtListAddItems(FormatMenu, &item, 1, 0);
 
-	item = pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyLanguage);
+item = pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyLanguage).c_str();
 	PtListAddItems(FormatMenu, &item, 1, 0);
 
 	PtAddCallback(FormatMenu, Pt_CB_SELECTION, s_modify_format, this);
@@ -1170,17 +1170,17 @@ void AP_QNXDialog_Styles::new_styleName(void)
 	char * psz = NULL;
 	psz = _combo_or_text_entry(m_wStyleNameEntry, NULL);
 
-	if(psz && strcmp(psz,pSS->getValue(AP_STRING_ID_DLG_Styles_DefNone))== 0)
+if(psz && strcmp(psz,pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_DefNone ).c_str())== 0)
 	{
 			// TODO: do a real error dialog
-		sprintf(message,"%s%s%s",pSS->getValue(AP_STRING_ID_DLG_Styles_ErrNotTitle1),psz,pSS->getValue(AP_STRING_ID_DLG_Styles_ErrNotTitle2));
+sprintf(message,"%s%s%s",pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ErrNotTitle1).c_str(),psz,pSS->getValue(AP_STRING_ID_DLG_Styles_ErrNotTitle2));
 		//messageBoxOK((const char *) message);
 		return;
 	}
-	if(psz && strcmp(psz,pSS->getValue(AP_STRING_ID_DLG_Styles_DefCurrent))== 0)
+if(psz && strcmp(psz,pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_DefCurrent).c_str())== 0)
 	{
 			// TODO: do a real error dialog
-		sprintf(message,"%s%s%s",pSS->getValue(AP_STRING_ID_DLG_Styles_ErrNotTitle1),psz,pSS->getValue(AP_STRING_ID_DLG_Styles_ErrNotTitle2));
+sprintf(message,"%s%s%s",pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ErrNotTitle1).c_str(),psz,pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ErrNotTitle2).c_str());
 		//messageBoxOK((const char *) message);
 		return;
 	}
@@ -1261,7 +1261,7 @@ void AP_QNXDialog_Styles::event_styleType(void)
 
 	snprintf((char *) m_styleType,40,"%s",psz);
 	const XML_Char * pszSt = "P";
-	if(strstr(m_styleType, pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyCharacter)) != 0)
+if(strstr(m_styleType, pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyCharacter ).c_str()) != 0)
 		pszSt = "C";
 	addOrReplaceVecAttribs("type",pszSt);
 }
@@ -1460,7 +1460,7 @@ bool  AP_QNXDialog_Styles::_populateModify(void)
 		if(!szCurrentStyle)
 		{
 			// TODO: change me to use a real messagebox
-			//messageBoxOK( pSS->getValue(AP_STRING_ID_DLG_Styles_ErrNoStyle));
+//messageBoxOK( pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ErrNoStyle ).c_str();
 			m_answer = AP_Dialog_Styles::a_CANCEL;
 			return false;
 		}
@@ -1493,7 +1493,7 @@ bool  AP_QNXDialog_Styles::_populateModify(void)
 		if(!pStyle)
 		{
 			// TODO: do a real error dialog
-			//messageBoxOK( pSS->getValue(AP_STRING_ID_DLG_Styles_ErrStyleNot));
+//messageBoxOK( pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ErrStyleNot ).c_str();
 			m_answer = AP_Dialog_Styles::a_CANCEL;
 			return false;
 		}
@@ -1531,16 +1531,16 @@ bool  AP_QNXDialog_Styles::_populateModify(void)
 		PtListAddItems(m_wFollowingEntry, &name, 1, 0);
 	}
 
-	const char *item = pSS->getValue(AP_STRING_ID_DLG_Styles_DefCurrent);
+const char *item = pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_DefCurrent).c_str();
 	_combo_or_text_entry(m_wFollowingEntry, item); 
 
-	item = pSS->getValue(AP_STRING_ID_DLG_Styles_DefNone);
+item = pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_DefNone).c_str();
 	_combo_or_text_entry(m_wBasedOnEntry, item); 
 
-	item = pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyParagraph);
+item = pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyParagraph).c_str();
 	_combo_or_text_entry(m_wStyleTypeEntry, item); 
 
-	item = pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyCharacter);
+item = pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyCharacter).c_str();
 	_combo_or_text_entry(m_wStyleTypeEntry, item); 
  
 	/*
@@ -1557,26 +1557,26 @@ bool  AP_QNXDialog_Styles::_populateModify(void)
 		if(pBasedOnStyle != NULL)
 			_combo_or_text_entry(m_wBasedOnEntry, szBasedOn);
 		else
-			_combo_or_text_entry(m_wBasedOnEntry, pSS->getValue(AP_STRING_ID_DLG_Styles_DefNone));
+	_combo_or_text_entry(m_wBasedOnEntry, pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_DefNone ).c_str());
 
 		if(pFollowedByStyle != NULL)
 			_combo_or_text_entry(m_wFollowingEntry, szFollowedBy);
 		else
-			_combo_or_text_entry(m_wFollowingEntry, pSS->getValue(AP_STRING_ID_DLG_Styles_DefCurrent));
+_combo_or_text_entry(m_wFollowingEntry, pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_DefCurrent ).c_str());
 
 		if(strstr(getAttsVal("type"),"P") != 0)
-			_combo_or_text_entry(m_wStyleTypeEntry, pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyParagraph));
+_combo_or_text_entry(m_wStyleTypeEntry, pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyParagraph ).c_str());
 		else
-			_combo_or_text_entry(m_wStyleTypeEntry, pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyCharacter));
+_combo_or_text_entry(m_wStyleTypeEntry, pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyCharacter ).c_str());
 	}
 	else
 	{
 		//
 		// Hardwire defaults for "new"
 		//
-		_combo_or_text_entry(m_wBasedOnEntry, pSS->getValue(AP_STRING_ID_DLG_Styles_DefNone));
-		_combo_or_text_entry(m_wFollowingEntry, pSS->getValue(AP_STRING_ID_DLG_Styles_DefCurrent));
-		_combo_or_text_entry(m_wStyleTypeEntry, pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyParagraph));
+_combo_or_text_entry(m_wBasedOnEntry, pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_DefNone ).c_str());
+_combo_or_text_entry(m_wFollowingEntry, pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_DefCurrent ).c_str());
+_combo_or_text_entry(m_wStyleTypeEntry, pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyParagraph ).c_str());
 	}
 
 	//

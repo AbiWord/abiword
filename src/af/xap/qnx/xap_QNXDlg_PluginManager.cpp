@@ -100,8 +100,7 @@ void XAP_QNXDialog_PluginManager::event_Deactivate ()
 	else 
 	{
 		// error message box - didn't select a plugin
-		_errorMessage (m_pFrame, 
-					   pSS->getValue(XAP_STRING_ID_DLG_PLUGIN_MANAGER_NONE_SELECTED));
+		_errorMessage (m_pFrame, pSS->getValueUTF8(XAP_STRING_ID_DLG_PLUGIN_MANAGER_NONE_SELECTED ).c_str());
 		return;
 	}
 
@@ -116,14 +115,14 @@ void XAP_QNXDialog_PluginManager::event_Deactivate ()
 		{
 			// error message box
 			_errorMessage (m_pFrame, 
-						   pSS->getValue(XAP_STRING_ID_DLG_PLUGIN_MANAGER_COULDNT_UNLOAD));
+pSS->getValueUTF8(XAP_STRING_ID_DLG_PLUGIN_MANAGER_COULDNT_UNLOAD ).c_str());
 		}
 	}
 	else
 	{
 		// error message box
 		_errorMessage (m_pFrame, 
-					   pSS->getValue(XAP_STRING_ID_DLG_PLUGIN_MANAGER_COULDNT_UNLOAD));
+pSS->getValueUTF8(XAP_STRING_ID_DLG_PLUGIN_MANAGER_COULDNT_UNLOAD ).c_str());
 	}
 }
 
@@ -180,8 +179,7 @@ void XAP_QNXDialog_PluginManager::event_Load ()
 			else
 			{
 				// error message
-				_errorMessage (m_pFrame, 
-							   pSS->getValue(XAP_STRING_ID_DLG_PLUGIN_MANAGER_COULDNT_LOAD));
+				_errorMessage (m_pFrame, pSS->getValueUTF8(XAP_STRING_ID_DLG_PLUGIN_MANAGER_COULDNT_LOAD ).c_str());
 			}
 		}
 	}
@@ -381,7 +379,7 @@ PtWidget_t * XAP_QNXDialog_PluginManager::_constructWindow ()
 	PtArg_t args[10];
 	int n=0;
 
-	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, pSS->getValue(XAP_STRING_ID_DLG_PLUGIN_MANAGER_TITLE) , 0);
+PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, pSS->getValueUTF8(XAP_STRING_ID_DLG_PLUGIN_MANAGER_TITLE).c_str() , 0);
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, ABI_MODAL_WINDOW_RENDER_FLAGS);
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 0, ABI_MODAL_WINDOW_MANAGE_FLAGS);
 	windowPlugins = PtCreateWidget(PtWindow, NULL, n, args);
@@ -492,13 +490,13 @@ PtWidget_t * XAP_QNXDialog_PluginManager::_constructWindow ()
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_OK), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(XAP_STRING_ID_DLG_OK).c_str(), 0);
 	PtWidget_t *buttonOK = PtCreateWidget(PtButton, hgroup, n, args);
 	PtAddCallback(buttonOK, Pt_CB_ACTIVATE, s_close_clicked, this);
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_Close), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(XAP_STRING_ID_DLG_Close).c_str(), 0);
 	PtWidget_t *buttonClose = PtCreateWidget(PtButton, hgroup, n, args);
 	PtAddCallback(buttonClose, Pt_CB_ACTIVATE, s_close_clicked, this);
 	

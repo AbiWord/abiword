@@ -296,7 +296,7 @@ PtWidget_t * AP_QNXDialog_WordCount::_constructWindow(void)
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, pSS->getValue(AP_STRING_ID_DLG_WordCount_WordCountTitle), 0);
+PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, pSS->getValueUTF8(AP_STRING_ID_DLG_WordCount_WordCountTitle).c_str(), 0);
     PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, ABI_MODAL_WINDOW_RENDER_FLAGS);
     PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, Ph_WM_FFRONT, ABI_MODAL_WINDOW_MANAGE_FLAGS|Ph_WM_FFRONT);
 	PtSetArg(&args[n++],Pt_ARG_WINDOW_STATE,Pt_TRUE,Ph_WM_STATE_ISFRONT);
@@ -334,7 +334,7 @@ PtWidget_t * AP_QNXDialog_WordCount::_constructWindow(void)
 	/* Pages */
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, 
-		UT_XML_transNoAmpersands(pSS->getValue(AP_STRING_ID_DLG_WordCount_Pages)), 0);	
+	UT_XML_transNoAmpersands(pSS->getValueUTF8(AP_STRING_ID_DLG_WordCount_Pages ).c_str()), 0);
 	PtCreateWidget(PtLabel, vboxlabel, n, args);
 
 	n = 0;
@@ -347,7 +347,7 @@ PtWidget_t * AP_QNXDialog_WordCount::_constructWindow(void)
 	/* Words */
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, 
-		UT_XML_transNoAmpersands(pSS->getValue(AP_STRING_ID_DLG_WordCount_Words)), 0);	
+	UT_XML_transNoAmpersands(pSS->getValueUTF8(AP_STRING_ID_DLG_WordCount_Words ).c_str()), 0);
 	PtCreateWidget(PtLabel, vboxlabel, n, args);
 
 	n = 0;
@@ -360,7 +360,7 @@ PtWidget_t * AP_QNXDialog_WordCount::_constructWindow(void)
 	/* Characters (no spaces) */
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING,
-		UT_XML_transNoAmpersands(pSS->getValue(AP_STRING_ID_DLG_WordCount_Characters_No)), 0);	
+	UT_XML_transNoAmpersands(pSS->getValueUTF8(AP_STRING_ID_DLG_WordCount_Characters_No ).c_str()), 0);
 	PtCreateWidget(PtLabel, vboxlabel, n, args);
 
 	n = 0;
@@ -373,7 +373,7 @@ PtWidget_t * AP_QNXDialog_WordCount::_constructWindow(void)
 	/* Characters (spaces) */
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, 
-		UT_XML_transNoAmpersands(pSS->getValue(AP_STRING_ID_DLG_WordCount_Characters_Sp)), 0);	
+	UT_XML_transNoAmpersands(pSS->getValueUTF8(AP_STRING_ID_DLG_WordCount_Characters_Sp ).c_str()), 0);
 	PtCreateWidget(PtLabel, vboxlabel, n, args);
 
 	n = 0;
@@ -386,7 +386,7 @@ PtWidget_t * AP_QNXDialog_WordCount::_constructWindow(void)
 	/* Paragraphs */
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, 
-		UT_XML_transNoAmpersands(pSS->getValue(AP_STRING_ID_DLG_WordCount_Paragraphs)), 0);	
+	UT_XML_transNoAmpersands(pSS->getValueUTF8(AP_STRING_ID_DLG_WordCount_Paragraphs ).c_str()), 0);
 	PtCreateWidget(PtLabel, vboxlabel, n, args);
 
 	n = 0;
@@ -399,7 +399,7 @@ PtWidget_t * AP_QNXDialog_WordCount::_constructWindow(void)
 	/* Lines */
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING,
-		UT_XML_transNoAmpersands(pSS->getValue(AP_STRING_ID_DLG_WordCount_Lines)), 0);	
+	UT_XML_transNoAmpersands(pSS->getValueUTF8(AP_STRING_ID_DLG_WordCount_Lines ).c_str()), 0);
 	PtCreateWidget(PtLabel, vboxlabel, n, args);
 
 	n = 0;
@@ -414,13 +414,13 @@ PtWidget_t * AP_QNXDialog_WordCount::_constructWindow(void)
 	PtWidget_t *hgroup = PtCreateWidget(PtGroup, vgroup, n, args);
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_Update), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(XAP_STRING_ID_DLG_Update).c_str(), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	buttonUpdate = PtCreateWidget(PtButton, hgroup, n, args);
 	PtAddCallback(buttonUpdate, Pt_CB_ACTIVATE, s_update_clicked, this);
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_Close), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(XAP_STRING_ID_DLG_Close).c_str(), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	buttonOK = PtCreateWidget(PtButton, hgroup, n, args);
 	PtAddCallback(buttonOK, Pt_CB_ACTIVATE, s_ok_clicked, this);

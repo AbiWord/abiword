@@ -162,7 +162,7 @@ PtWidget_t *PtButton_cancel;
 		PhDim_t dim = { 250,100 };
 		PtArg_t args[] = {
 			Pt_ARG(Pt_ARG_DIM,&dim,0),
-			Pt_ARG(Pt_ARG_WINDOW_TITLE,pSS->getValue(AP_STRING_ID_DLG_InsertHyperlink_Title),0),
+			Pt_ARG(Pt_ARG_WINDOW_TITLE,pSS->getValueUTF8(AP_STRING_ID_DLG_InsertHyperlink_Title).c_str(),0),
 			Pt_ARG(Pt_ARG_WINDOW_RENDER_FLAGS,0,ABI_MODAL_WINDOW_RENDER_FLAGS),
 			Pt_ARG(Pt_ARG_WINDOW_MANAGED_FLAGS,0,ABI_MODAL_WINDOW_MANAGE_FLAGS)
 		};
@@ -187,7 +187,7 @@ PtWidget_t *PtButton_cancel;
 	 PhArea_t area4 = { { 2, 5 }, { 241, 21 } };
 	 PtArg_t args4[] = {
 		Pt_ARG( Pt_ARG_AREA, &area4, 0 ),
-		Pt_ARG( Pt_ARG_TEXT_STRING,pSS->getValue(AP_STRING_ID_DLG_InsertHyperlink_Msg) , 0 ),
+		Pt_ARG( Pt_ARG_TEXT_STRING,pSS->getValueUTF8(AP_STRING_ID_DLG_InsertHyperlink_Msg).c_str() , 0 ),
 		};
 	//Bottom pane.
 	 PhArea_t area5 = { { 0, 201 }, { 248, 33 } };
@@ -202,13 +202,13 @@ PtWidget_t *PtButton_cancel;
 	 PhArea_t area6 = { { 72, 2 }, { 82, 27 } };
 	 PtArg_t args6[] = {
 		Pt_ARG( Pt_ARG_AREA, &area6, 0 ),
-		Pt_ARG( Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_Cancel), 0 ),
+		Pt_ARG( Pt_ARG_TEXT_STRING, pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel).c_str(), 0 ),
 		};
 	//OK button
 	 PhArea_t area7 = { { 160, 2 }, { 82, 27 } };
 	 PtArg_t args7[] = {
 		Pt_ARG( Pt_ARG_AREA, &area7, 0 ),
-		Pt_ARG( Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_OK), 0 ),
+		Pt_ARG( Pt_ARG_TEXT_STRING, pSS->getValueUTF8(XAP_STRING_ID_DLG_OK).c_str(), 0 ),
 		};
 
 	windowHyperlink= PtCreateWidget(PtWindow,NULL,sizeof(args) / sizeof(PtArg_t),args);

@@ -34,6 +34,7 @@
 #include "xap_Dialog_Id.h"
 #include "xap_Dlg_Insert_Symbol.h"
 #include "xap_QNXDlg_Insert_Symbol.h"
+#include "xap_Draw_Symbol.h"
 #include "ut_qnxHelper.h"
 
 
@@ -163,7 +164,7 @@ static int s_new_font(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
 static int s_keypressed(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
 {
 	XAP_QNXDialog_Insert_Symbol *dlg = (XAP_QNXDialog_Insert_Symbol *)data;
-	dlg->Key_Pressed( NULL );
+	dlg->Key_Pressed( info->event);
 
 	return Pt_CONTINUE;
 }
@@ -269,21 +270,12 @@ void XAP_QNXDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
     // variable "m_Insert_Symbol_font" the first time this dialog is
     // called. Afterwards it is just whatever was left from the last
     // call.
-
-#if 0 //Always set this value ...
-	if ( xap_QNXDlg_Insert_Symbol_first == 0) //BOGUS: the gcs need a font.
+	if(xap_QNXDlg_Insert_Symbol_first == 0)
 	{
-#endif
-		char **items;
-		PtGetResource(m_fontcombo,Pt_ARG_ITEMS,&items,0);
-		iDrawSymbol->setSelectedFont(items[0] );
-		m_CurrentSymbol = ' ';
-		m_PreviousSymbol = ' ';
+		iDrawSymbol->setSelectedFont("Symbol");
 		xap_QNXDlg_Insert_Symbol_first = 1;
-#if 0
 	}
-#endif
-
+	PtListGotoPos(m_fontcombo,PtListItemPos(m_fontcombo,iDrawSymbol->getSelectedFont()));
 
 	// Show the Previously selected symbol
 	m_PreviousSymbol = m_CurrentSymbol;
@@ -458,7 +450,7 @@ PtWidget_t * XAP_QNXDialog_Insert_Symbol::_constructWindow(void)
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, 
-				UT_XML_transNoAmpersands(pSS->getValue(XAP_STRING_ID_DLG_Insert_SymbolTitle)), 0); 
+	UT_XML_transNoAmpersands(pSS->getValueUTF8(XAP_STRING_ID_DLG_Insert_SymbolTitle ).c_str()), 0);
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, ABI_MODAL_WINDOW_RENDER_FLAGS);
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 0, ABI_MODAL_WINDOW_MANAGE_FLAGS);
 	windowInsertS = PtCreateWidget(PtWindow, NULL, n, args);
@@ -471,15 +463,16 @@ PtWidget_t * XAP_QNXDialog_Insert_Symbol::_constructWindow(void)
  	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING_Y, 10, 0);
 	PtSetArg(&args[n++], Pt_ARG_MARGIN_HEIGHT, ABI_MODAL_MARGIN_SIZE, 0); 
 	PtSetArg(&args[n++], Pt_ARG_MARGIN_WIDTH, ABI_MODAL_MARGIN_SIZE, 0); 
+	PtSetArg(&args[n++], Pt_ARG_FLAGS,Pt_FALSE,Pt_GETS_FOCUS);
 	vboxInsertS = PtCreateWidget(PtGroup, windowInsertS, n, args);
 
 	// First put in a combo box so the user can select fonts
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_FLAGS, 0, Pt_EDITABLE);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, 3 * ABI_DEFAULT_BUTTON_WIDTH, 0);
+	PtSetArg(&args[n++], Pt_ARG_FLAGS,Pt_FALSE,Pt_GETS_FOCUS);
 	fontcombo = PtCreateWidget(PtComboBox, vboxInsertS, n, args);
 	PtAddCallback(fontcombo, Pt_CB_SELECTION, s_new_font, this);
-
 	FontDetails *font_list;
 	int alloc = PfQueryFonts(PHFONT_ALL_SYMBOLS,PHFONT_SCALABLE, NULL, 0);
 
@@ -505,6 +498,7 @@ PtWidget_t * XAP_QNXDialog_Insert_Symbol::_constructWindow(void)
 		PtSetArg(&args[n++], Pt_ARG_HEIGHT, 147, 0);
 		PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, 
 			Pt_GROUP_STRETCH_HORIZONTAL, Pt_GROUP_STRETCH_HORIZONTAL);
+	PtSetArg(&args[n++], Pt_ARG_FLAGS,Pt_FALSE,Pt_GETS_FOCUS);
 		PtWidget_t *symgroup = PtCreateWidget(PtGroup, vboxInsertS, n, args);
 
 		n = 0;
@@ -513,9 +507,11 @@ PtWidget_t * XAP_QNXDialog_Insert_Symbol::_constructWindow(void)
 		void *data = (void *)this;
 		PtSetArg(&args[n++], Pt_ARG_USER_DATA, &data, sizeof(this)); 
 		PtSetArg(&args[n++], Pt_ARG_RAW_DRAW_F, &s_sym_SymbolMap_exposed, 1); 
+  	PtSetArg(&args[n++], Pt_ARG_FLAGS,Pt_TRUE,Pt_GETS_FOCUS);
 		SymbolMap = PtCreateWidget(PtRaw, symgroup, n, args);
 		PtAddEventHandler(SymbolMap, Ph_EV_BUT_PRESS/* | Ph_EV_BUT_RELEASE */, 
 							s_SymbolMap_clicked, this);
+		PtAddEventHandler(SymbolMap,Ph_EV_KEY,s_keypressed,this);
    	}
 	
 	// Then horizontally group the OK, Preview, Cancel widgets
@@ -526,7 +522,7 @@ PtWidget_t * XAP_QNXDialog_Insert_Symbol::_constructWindow(void)
 	hboxInsertS = PtCreateWidget(PtGroup, vboxInsertS, n, args);
 
 	n = 0;
- 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_OK), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(XAP_STRING_ID_DLG_OK).c_str(), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	buttonOK = PtCreateWidget(PtButton, hboxInsertS, n, args);
 	PtAddCallback(buttonOK, Pt_CB_ACTIVATE, s_ok_clicked, this);
@@ -547,12 +543,11 @@ PtWidget_t * XAP_QNXDialog_Insert_Symbol::_constructWindow(void)
 		PtSetArg(&args[n++], Pt_ARG_USER_DATA, &data, sizeof(this)); 
 		PtSetArg(&args[n++], Pt_ARG_RAW_DRAW_F, &s_Symbolarea_exposed, 1); 
 		areaCurrentSym = PtCreateWidget(PtRaw, symgroup, n, args);
-		PtAddEventHandler(areaCurrentSym, Ph_EV_BUT_PRESS /* | Ph_EV_BUT_RELEASE */, 
-							s_CurrentSymbol_clicked, this);
+		PtAddEventHandler(areaCurrentSym, Ph_EV_BUT_PRESS /* | Ph_EV_BUT_RELEASE */, s_CurrentSymbol_clicked, this);
    	}
 
 	n = 0;
- 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_Cancel), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel).c_str(), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	buttonCancel = PtCreateWidget(PtButton, hboxInsertS, n, args);
 	PtAddCallback(buttonCancel, Pt_CB_ACTIVATE, s_cancel_clicked, this);
@@ -567,7 +562,6 @@ PtWidget_t * XAP_QNXDialog_Insert_Symbol::_constructWindow(void)
 	m_SymbolMap = 	SymbolMap;
 	m_fontcombo = fontcombo;
 	m_areaCurrentSym = areaCurrentSym;
-
 	return windowInsertS;
 }
 

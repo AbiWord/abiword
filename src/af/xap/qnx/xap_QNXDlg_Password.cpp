@@ -74,8 +74,8 @@ void XAP_QNXDialog_Password::runModal(XAP_Frame * pFrame)
 	int pwdreturn;
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	char **buttons=(char**)calloc(2,sizeof(char*));
-	buttons[0]= (char*) pSS->getValue(XAP_STRING_ID_DLG_Cancel);
-	buttons[1]=(char*)pSS->getValue(XAP_STRING_ID_DLG_OK);
+buttons[0]= (char*) pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel).c_str();
+buttons[1]=(char*)pSS->getValueUTF8(XAP_STRING_ID_DLG_OK).c_str();
     
 
   // To center the dialog, we need the frame of its parent.
@@ -88,9 +88,9 @@ void XAP_QNXDialog_Password::runModal(XAP_Frame * pFrame)
 	
 	pwdreturn=PtPassword(parentWindow, /* Parent */
 						  NULL, /* Location */
-							pSS->getValue(XAP_STRING_ID_DLG_Password_Title), /* Title*/
+pSS->getValueUTF8(XAP_STRING_ID_DLG_Password_Title).c_str(), /* Title*/
 							NULL, /* Image*/
-							pSS->getValue(XAP_STRING_ID_DLG_Password_Title), /* Msg */
+pSS->getValueUTF8(XAP_STRING_ID_DLG_Password_Title).c_str(), /* Msg */
 							NULL, /* font*/
 							(const char **)buttons, /* button strings */
 							NULL, /* font*/

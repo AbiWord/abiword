@@ -76,8 +76,8 @@ void XAP_QNXDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	{
 	case XAP_DIALOG_ID_FILE_SAVEAS:
 	{
-		szTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_SaveAsTitle);
-		szFileTypeLabel = pSS->getValue(XAP_STRING_ID_DLG_FOSA_FileSaveTypeLabel);
+szTitle = pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_SaveAsTitle).c_str();
+szFileTypeLabel = pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileSaveTypeLabel).c_str();
 		bCheckWritePermission = true;
 		/* Allow non-existant files to be selected and confirm overwrite */
 		flags = Pt_FSR_NO_FCHECK | Pt_FSR_CONFIRM_EXISTING;
@@ -85,43 +85,43 @@ void XAP_QNXDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	}
 	case XAP_DIALOG_ID_PRINTTOFILE:
 	{
-		szTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_PrintToFileTitle);
-		szFileTypeLabel = pSS->getValue(XAP_STRING_ID_DLG_FOSA_FilePrintTypeLabel);
+szTitle = pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_PrintToFileTitle).c_str();
+szFileTypeLabel = pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FilePrintTypeLabel).c_str();
 		bCheckWritePermission = true;
 		flags = Pt_FSR_NO_FCHECK | Pt_FSR_CONFIRM_EXISTING;
 		break;
 	}
 		case XAP_DIALOG_ID_INSERT_PICTURE:
 	  {
-	        szTitle = pSS->getValue(XAP_STRING_ID_DLG_IP_Title);
-		szFileTypeLabel = pSS->getValue(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel);
+szTitle = pSS->getValueUTF8(XAP_STRING_ID_DLG_IP_Title).c_str();
+szFileTypeLabel = pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel).c_str();
 		bCheckWritePermission = false;    
 	  }
 	case XAP_DIALOG_ID_FILE_OPEN:
 	{
-		szTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_OpenTitle);
-		szFileTypeLabel = pSS->getValue(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel);
+szTitle = pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_OpenTitle).c_str();
+szFileTypeLabel = pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel).c_str();
 		bCheckWritePermission = false;
 		break;
 	}
 	case XAP_DIALOG_ID_FILE_IMPORT:
 	  {
-		szTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_ImportTitle);
-		szFileTypeLabel = pSS->getValue(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel);
+szTitle = pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_ImportTitle).c_str();
+szFileTypeLabel = pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel).c_str();
 		bCheckWritePermission = false;
 	    break;
 	  }
 	case XAP_DIALOG_ID_INSERT_FILE:
 	  {
-		szTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_InsertTitle);
-		szFileTypeLabel = pSS->getValue(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel);
+szTitle = pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_InsertTitle).c_str();
+szFileTypeLabel = pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel).c_str();
 		bCheckWritePermission = false;
 		break;
 	  }
 	case XAP_DIALOG_ID_FILE_EXPORT:
 	  {
-		szTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_ExportTitle);
-		szFileTypeLabel = pSS->getValue(XAP_STRING_ID_DLG_FOSA_FileSaveTypeLabel);
+szTitle = pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_ExportTitle).c_str();
+szFileTypeLabel = pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileSaveTypeLabel).c_str();
 		bCheckWritePermission = true;
 		flags = Pt_FSR_NO_FCHECK | Pt_FSR_CONFIRM_EXISTING;
     break;

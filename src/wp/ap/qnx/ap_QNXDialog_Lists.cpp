@@ -451,7 +451,7 @@ PtWidget_t * AP_QNXDialog_Lists::_constructWindow (void)
 	n = 0;
 	group = PtCreateWidget(PtGroup, ctlgroup, n, args);
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_Lists_Type), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Type).c_str(), 0);
 	lblType = PtCreateWidget(PtLabel, group, n, args);
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, 2*ABI_DEFAULT_BUTTON_WIDTH, 0);
@@ -460,17 +460,17 @@ PtWidget_t * AP_QNXDialog_Lists::_constructWindow (void)
 	PtAddCallback(listType, Pt_CB_SELECTION, s_typeChanged, this);
 
 	const char *text;
-	text = pSS->getValue(AP_STRING_ID_DLG_Lists_Type_none);
+text = pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Type_none).c_str();
 	PtListAddItems(listType, &text, 1, 0);
-	text = pSS->getValue(AP_STRING_ID_DLG_Lists_Type_bullet);
+text = pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Type_bullet).c_str();
 	PtListAddItems(listType, &text, 1, 0);
-	text = pSS->getValue(AP_STRING_ID_DLG_Lists_Type_numbered);
+text = pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Type_numbered).c_str();
 	PtListAddItems(listType, &text, 1, 0);
 
 	n = 0;
 	group = PtCreateWidget(PtGroup, ctlgroup, n, args);
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_Lists_Style), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Style).c_str(), 0);
 	lblStyle = PtCreateWidget(PtLabel, group, n, args);
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, 2*ABI_DEFAULT_BUTTON_WIDTH, 0);
@@ -480,7 +480,7 @@ PtWidget_t * AP_QNXDialog_Lists::_constructWindow (void)
 
 #if 0
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_Lists_Customize), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Customize).c_str(), 0);
 	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_TOGGLE_OUTLINE, 0);
 	PtSetArg(&args[n++], Pt_ARG_FLAGS, 0, Pt_SET);
 	togCustomize = PtCreateWidget(PtToggleButton, ctlgroup, n, args);
@@ -499,29 +499,29 @@ PtWidget_t * AP_QNXDialog_Lists::_constructWindow (void)
 	PtSetArg(&args[n++], Pt_ARG_FLAGS, Pt_DELAY_REALIZE | Pt_HIGHLIGHTED, Pt_DELAY_REALIZE | Pt_HIGHLIGHTED);
 */
 	grpCustomize = PtCreateWidget(PtGroup, ctlgroup, n, args);
-	pretty_group(grpCustomize, pSS->getValue(AP_STRING_ID_DLG_Lists_Customize));
+	pretty_group(grpCustomize, pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Customize ).c_str());
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
 	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING, 5, 0);
 	group = PtCreateWidget(PtGroup, grpCustomize, n, args);
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_Lists_Format), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Format).c_str(), 0);
 	PtCreateWidget(PtLabel, group, n, args);
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_Lists_Font), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Font).c_str(), 0);
 	PtCreateWidget(PtLabel, group, n, args);
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_Lists_DelimiterString), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_DelimiterString).c_str(), 0);
 	PtCreateWidget(PtLabel, group, n, args);
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_Lists_Start), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Start).c_str(), 0);
 	PtCreateWidget(PtLabel, group, n, args);
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_Lists_Align), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Align).c_str(), 0);
 	PtCreateWidget(PtLabel, group, n, args);
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_Lists_Indent), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Indent).c_str(), 0);
 	PtCreateWidget(PtLabel, group, n, args);
 
 	n = 0;
@@ -593,16 +593,16 @@ PtWidget_t * AP_QNXDialog_Lists::_constructWindow (void)
 	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING, 5, 0);
 	group = PtCreateWidget(PtGroup, vgroup, n, args);
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_Lists_Start_New), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Start_New).c_str(), 0);
 	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_TOGGLE_RADIO, 0);
 	PtSetArg(&args[n++], Pt_ARG_FLAGS, Pt_SET, Pt_SET);
 	radnewlist = PtCreateWidget(PtToggleButton, group, n, args);
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_TOGGLE_RADIO, 0);
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_Lists_Apply_Current), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Apply_Current).c_str(), 0);
 	radexisting = PtCreateWidget(PtToggleButton, group, n, args);
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_Lists_Start_Sub), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Start_Sub).c_str(), 0);
 	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_TOGGLE_RADIO, 0);
 	radsublist = PtCreateWidget(PtToggleButton, group, n, args);
 
@@ -660,7 +660,7 @@ void AP_QNXDialog_Lists::_fillNoneStyleMenu( PtWidget_t *listmenu)
 	PtListDeleteAllItems(listmenu);
 	m_styleVector.clear();
 
-	text = pSS->getValue(AP_STRING_ID_DLG_Lists_Type_none);
+text = pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Type_none).c_str();
 	PtListAddItems(listmenu, &text, 1, 0);
 	m_styleVector.addItem((void *)NOT_A_LIST);
 }
@@ -673,29 +673,29 @@ void AP_QNXDialog_Lists::_fillNumberedStyleMenu( PtWidget_t *listmenu)
 	PtListDeleteAllItems(listmenu);
 	m_styleVector.clear();
 
-	text = pSS->getValue(AP_STRING_ID_DLG_Lists_Numbered_List);
+text = pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Numbered_List).c_str();
 	PtListAddItems(listmenu, &text, 1, 0);
 	m_styleVector.addItem((void *)NUMBERED_LIST);
 
-	text = pSS->getValue(AP_STRING_ID_DLG_Lists_Lower_Case_List);
+text = pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Lower_Case_List).c_str();
 	PtListAddItems(listmenu, &text, 1, 0);
 	m_styleVector.addItem((void *)LOWERCASE_LIST);
 
-	text = pSS->getValue(AP_STRING_ID_DLG_Lists_Upper_Case_List);
+text = pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Upper_Case_List).c_str();
 	PtListAddItems(listmenu, &text, 1, 0);
 	m_styleVector.addItem((void *)UPPERCASE_LIST);
 
-	text = pSS->getValue(AP_STRING_ID_DLG_Lists_Lower_Roman_List);
+text = pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Lower_Roman_List).c_str();
 	PtListAddItems(listmenu, &text, 1, 0);
 	m_styleVector.addItem((void *)LOWERROMAN_LIST);
 
-	text = pSS->getValue(AP_STRING_ID_DLG_Lists_Upper_Roman_List);
+text = pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Upper_Roman_List).c_str();
 	PtListAddItems(listmenu, &text, 1, 0);
 	m_styleVector.addItem((void *)UPPERROMAN_LIST);
-	text = pSS->getValue(AP_STRING_ID_DLG_Lists_Arabic_List);
+text = pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Arabic_List).c_str();
 	PtListAddItems(listmenu, &text, 1, 0);
 	m_styleVector.addItem((void *)ARABICNUMBERED_LIST);
-	text = pSS->getValue(AP_STRING_ID_DLG_Lists_Hebrew_List);
+text = pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Hebrew_List).c_str();
 	PtListAddItems(listmenu, &text, 1, 0);
 	m_styleVector.addItem((void *)HEBREW_LIST);
 }
@@ -708,47 +708,47 @@ void AP_QNXDialog_Lists::_fillBulletedStyleMenu( PtWidget_t *listmenu)
 	PtListDeleteAllItems(listmenu);
 	m_styleVector.clear();
 
-	text = pSS->getValue(AP_STRING_ID_DLG_Lists_Bullet_List);
+text = pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Bullet_List).c_str();
 	PtListAddItems(listmenu, &text, 1, 0);
 	m_styleVector.addItem((void *)BULLETED_LIST);
 
-	text = pSS->getValue(AP_STRING_ID_DLG_Lists_Dashed_List);
+text = pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Dashed_List).c_str();
 	PtListAddItems(listmenu, &text, 1, 0);
 	m_styleVector.addItem((void *)DASHED_LIST);
 
-	text = pSS->getValue(AP_STRING_ID_DLG_Lists_Square_List);
+text = pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Square_List).c_str();
 	PtListAddItems(listmenu, &text, 1, 0);
 	m_styleVector.addItem((void *)SQUARE_LIST);
 
-	text = pSS->getValue(AP_STRING_ID_DLG_Lists_Triangle_List);
+text = pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Triangle_List).c_str();
 	PtListAddItems(listmenu, &text, 1, 0);
 	m_styleVector.addItem((void *)TRIANGLE_LIST);
 
-	text = pSS->getValue(AP_STRING_ID_DLG_Lists_Diamond_List);
+text = pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Diamond_List).c_str();
 	PtListAddItems(listmenu, &text, 1, 0);
 	m_styleVector.addItem((void *)DIAMOND_LIST);
 
-	text = pSS->getValue(AP_STRING_ID_DLG_Lists_Star_List);
+text = pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Star_List).c_str();
 	PtListAddItems(listmenu, &text, 1, 0);
 	m_styleVector.addItem((void *)STAR_LIST);
 
-	text = pSS->getValue(AP_STRING_ID_DLG_Lists_Implies_List);
+text = pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Implies_List).c_str();
 	PtListAddItems(listmenu, &text, 1, 0);
 	m_styleVector.addItem((void *)IMPLIES_LIST);
 
-	text = pSS->getValue(AP_STRING_ID_DLG_Lists_Tick_List);
+text = pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Tick_List).c_str();
 	PtListAddItems(listmenu, &text, 1, 0);
 	m_styleVector.addItem((void *)TICK_LIST);
 
-	text = pSS->getValue(AP_STRING_ID_DLG_Lists_Box_List);
+text = pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Box_List).c_str();
 	PtListAddItems(listmenu, &text, 1, 0);
 	m_styleVector.addItem((void *)BOX_LIST);
 
-	text = pSS->getValue(AP_STRING_ID_DLG_Lists_Hand_List);
+text = pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Hand_List).c_str();
 	PtListAddItems(listmenu, &text, 1, 0);
 	m_styleVector.addItem((void *)HAND_LIST);
 
-	text = pSS->getValue(AP_STRING_ID_DLG_Lists_Heart_List);
+text = pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Heart_List).c_str();
 	PtListAddItems(listmenu, &text, 1, 0);
 	m_styleVector.addItem((void *)HEART_LIST);
 }
@@ -759,11 +759,11 @@ void AP_QNXDialog_Lists::_setRadioButtonLabels(void)
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	PopulateDialogData();
 	// Button 0 is Start New List, button 2 is resume list
-	PtSetResource(m_wStartNewList, Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_Lists_Start_New), 0);
-	PtSetResource(m_wStartSubList, Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_Lists_Resume), 0);
+PtSetResource(m_wStartNewList, Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Start_New).c_str(), 0);
+PtSetResource(m_wStartSubList, Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Resume).c_str(), 0);
 /*
-	gtk_label_set_text( GTK_LABEL(m_wStartNew_label), pSS->getValue(AP_STRING_ID_DLG_Lists_Start_New));
-	gtk_label_set_text( GTK_LABEL(m_wStartSub_label), pSS->getValue(AP_STRING_ID_DLG_Lists_Resume));
+gtk_label_set_text( GTK_LABEL(m_wStartNew_label), pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Start_New ).c_str();
+gtk_label_set_text( GTK_LABEL(m_wStartSub_label), pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Resume ).c_str();
 */
 }
 

@@ -139,7 +139,7 @@ const XAP_StringSet * pSS = m_pApp->getStringSet();
 	 PhDim_t dim = { 450,100};
 		PtArg_t args[] = {
 		Pt_ARG(Pt_ARG_DIM,&dim,0),
-		Pt_ARG(Pt_ARG_WINDOW_TITLE,pSS->getValue(AP_STRING_ID_DLG_InsertBookmark_Title),0),
+		Pt_ARG(Pt_ARG_WINDOW_TITLE,pSS->getValueUTF8(AP_STRING_ID_DLG_InsertBookmark_Title).c_str(),0),
 		Pt_ARG(Pt_ARG_WINDOW_RENDER_FLAGS,0,ABI_MODAL_WINDOW_RENDER_FLAGS),
 		Pt_ARG(Pt_ARG_WINDOW_MANAGED_FLAGS,0,ABI_MODAL_WINDOW_MANAGE_FLAGS)
 		};
@@ -160,7 +160,7 @@ const XAP_StringSet * pSS = m_pApp->getStringSet();
 	 PhArea_t area3 = { { 5, 0 }, { 450, 20 } };
 	 PtArg_t args3[] = {
 		Pt_ARG( Pt_ARG_AREA, &area3, 0 ),
-		Pt_ARG( Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_InsertBookmark_Msg) , 0 ),
+		Pt_ARG( Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_InsertBookmark_Msg).c_str() , 0 ),
 		};
 
 		// Bottom most PtPane (where OK and cancel button are..)
@@ -176,20 +176,20 @@ const XAP_StringSet * pSS = m_pApp->getStringSet();
 	 PhArea_t area5 = { { 285, 0 }, { 50, 27 } };
 	 PtArg_t args5[] = {
 		Pt_ARG( Pt_ARG_AREA, &area5, 0 ),
-		Pt_ARG( Pt_ARG_TEXT_STRING,pSS->getValue(XAP_STRING_ID_DLG_Cancel), 0 ),
+Pt_ARG( Pt_ARG_TEXT_STRING,pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel).c_str(), 0 ),
 		};
 
 	//Delete button
 	PhArea_t area6 = { { 340, 0 }, { 50, 27 } };
 	PtArg_t args6[] = {
 		Pt_ARG(Pt_ARG_AREA,&area6,0),
-		Pt_ARG(Pt_ARG_TEXT_STRING,pSS->getValue(XAP_STRING_ID_DLG_Delete),0)
+		Pt_ARG(Pt_ARG_TEXT_STRING,pSS->getValueUTF8(XAP_STRING_ID_DLG_Delete).c_str(),0)
 		};
 		//OK Button.
 	 PhArea_t area7 = { { 395, 0 }, { 50, 27 } };
 	 PtArg_t args7[] = {
 		Pt_ARG( Pt_ARG_AREA, &area7, 0 ),
-		Pt_ARG( Pt_ARG_TEXT_STRING,pSS->getValue(XAP_STRING_ID_DLG_OK), 0 ),
+Pt_ARG( Pt_ARG_TEXT_STRING,pSS->getValueUTF8(XAP_STRING_ID_DLG_OK).c_str(), 0 ),
 		};
 	
 

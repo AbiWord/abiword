@@ -254,7 +254,7 @@ PtWidget_t * AP_QNXDialog_Columns::_constructWindow(void)
 	PtArg_t args[10];
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, pSS->getValue(AP_STRING_ID_DLG_Column_ColumnTitle), 0);
+PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, pSS->getValueUTF8(AP_STRING_ID_DLG_Column_ColumnTitle).c_str(), 0);
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, ABI_MODAL_WINDOW_RENDER_FLAGS);
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 0, ABI_MODAL_WINDOW_MANAGE_FLAGS);
 	m_windowMain = PtCreateWidget(PtWindow, NULL, n, args);
@@ -281,11 +281,11 @@ PtWidget_t * AP_QNXDialog_Columns::_constructWindow(void)
 	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING_Y, 5, 0);
 	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, Pt_GROUP_EXCLUSIVE, Pt_GROUP_EXCLUSIVE);
 	PtWidget_t *vbuttons = PtCreateWidget(PtGroup, hitem, n, args);
-	pretty_group(vbuttons, pSS->getValue(AP_STRING_ID_DLG_Column_Number));
+	pretty_group(vbuttons, pSS->getValueUTF8(AP_STRING_ID_DLG_Column_Number ).c_str());
 	
 #if 0
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_Column_Number), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_Column_Number).c_str(), 0);
 	PtCreateWidget(PtLabel, vbuttons, n, args);
 #endif
 
@@ -301,7 +301,7 @@ PtWidget_t * AP_QNXDialog_Columns::_constructWindow(void)
 	label_button_with_abi_pixmap(m_wtoggleOne, "tb_1column_xpm");
 	PtAddCallback(m_wtoggleOne, Pt_CB_ACTIVATE, s_toggle_clicked, this);
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_Column_One), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_Column_One).c_str(), 0);
 	PtCreateWidget(PtLabel, group, n, args);
 	//Put this in for padding since the pretty_group doesn't seem to grow groups
 	n = 0;
@@ -318,7 +318,7 @@ PtWidget_t * AP_QNXDialog_Columns::_constructWindow(void)
 	label_button_with_abi_pixmap(m_wtoggleTwo, "tb_2column_xpm");
 	PtAddCallback(m_wtoggleTwo, Pt_CB_ACTIVATE, s_toggle_clicked, this);
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_Column_Two), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_Column_Two).c_str(), 0);
 	PtCreateWidget(PtLabel, group, n, args);
 
 	n = 0;
@@ -331,7 +331,7 @@ PtWidget_t * AP_QNXDialog_Columns::_constructWindow(void)
 	label_button_with_abi_pixmap(m_wtoggleThree, "tb_3column_xpm");
 	PtAddCallback(m_wtoggleThree, Pt_CB_ACTIVATE, s_toggle_clicked, this);
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_Column_Three), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_Column_Three).c_str(), 0);
 	PtCreateWidget(PtLabel, group, n, args);
 
 	/* Create a vertical group for the preview */
@@ -339,11 +339,11 @@ PtWidget_t * AP_QNXDialog_Columns::_constructWindow(void)
 	PtSetArg(&args[n++], Pt_ARG_HEIGHT, GROUP_HEIGHT, 0);
 	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
 	PtWidget_t *vpreview = PtCreateWidget(PtGroup, hitem, n, args);
-	pretty_group(vpreview, pSS->getValue(AP_STRING_ID_DLG_Column_Preview));
+	pretty_group(vpreview, pSS->getValueUTF8(AP_STRING_ID_DLG_Column_Preview ).c_str());
 
 #if 0
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING,  pSS->getValue(AP_STRING_ID_DLG_Column_Preview), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_Column_Preview).c_str(), 0);
 	PtCreateWidget(PtLabel, vpreview, n, args);
 #endif
 
@@ -364,13 +364,13 @@ PtWidget_t * AP_QNXDialog_Columns::_constructWindow(void)
 
 	n = 0;
     PtSetArg(&args[n++], Pt_ARG_WIDTH,  ABI_DEFAULT_BUTTON_WIDTH, 0);
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_OK), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(XAP_STRING_ID_DLG_OK).c_str(), 0);
 	m_buttonOK = PtCreateWidget(PtButton, vaction, n, args);
 	PtAddCallback(m_buttonOK, Pt_CB_ACTIVATE, s_ok_clicked, this);
 
 	n = 0;
     PtSetArg(&args[n++], Pt_ARG_WIDTH,  ABI_DEFAULT_BUTTON_WIDTH, 0);
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_Cancel), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel).c_str(), 0);
 	m_buttonCancel = PtCreateWidget(PtButton, vaction, n, args);
 	PtAddCallback(m_buttonCancel, Pt_CB_ACTIVATE, s_cancel_clicked, this);
 

@@ -191,7 +191,7 @@ PtWidget_t * AP_QNXDialog_Insert_DateTime::_constructWindow(void)
 	XML_Char * unixstr = NULL;	// used for conversions
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, UT_XML_transNoAmpersands(pSS->getValue(AP_STRING_ID_DLG_DateTime_DateTimeTitle)), 0);
+	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, UT_XML_transNoAmpersands(pSS->getValueUTF8(AP_STRING_ID_DLG_DateTime_DateTimeTitle ).c_str()), 0);
     PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, ABI_MODAL_WINDOW_RENDER_FLAGS);
     PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 0, ABI_MODAL_WINDOW_MANAGE_FLAGS);
 	windowMain = PtCreateWidget(PtWindow, NULL, n, args);
@@ -215,7 +215,7 @@ PtWidget_t * AP_QNXDialog_Insert_DateTime::_constructWindow(void)
 	PtSetArg(&args[n++],Pt_ARG_HEIGHT,2 * ABI_DEFAULT_BUTTON_WIDTH,0);
 	PtSetArg(&args[n++],Pt_ARG_WIDTH,ABI_DEFAULT_BUTTON_WIDTH,0);
 	vboxGroup =  PtCreateWidget(PtGroup, vboxMain, n, args);
-  	pretty_group(vboxGroup, UT_XML_transNoAmpersands(pSS->getValue(AP_STRING_ID_DLG_DateTime_AvailableFormats)));
+	pretty_group(vboxGroup, UT_XML_transNoAmpersands(pSS->getValueUTF8(AP_STRING_ID_DLG_DateTime_AvailableFormats  ).c_str()));
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_FLAGS, 0, Pt_EDITABLE);
@@ -230,13 +230,13 @@ PtWidget_t * AP_QNXDialog_Insert_DateTime::_constructWindow(void)
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING,  pSS->getValue(XAP_STRING_ID_DLG_OK), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(XAP_STRING_ID_DLG_OK).c_str(), 0);
 	buttonOK = PtCreateWidget(PtButton, hboxGroup, n, args);
 	PtAddCallback(buttonOK, Pt_CB_ACTIVATE, s_ok_clicked, this);
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING,  pSS->getValue(XAP_STRING_ID_DLG_Cancel), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel).c_str(), 0);
 	buttonCancel = PtCreateWidget(PtButton, hboxGroup, n, args);
 	PtAddCallback(buttonCancel, Pt_CB_ACTIVATE, s_cancel_clicked, this);
 

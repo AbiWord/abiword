@@ -151,7 +151,7 @@ int n=0;
 const XAP_StringSet *pSS = m_pApp->getStringSet();	
 
 
-	PtSetArg(&args[n++],Pt_ARG_WINDOW_TITLE,/* pSS->getValue(AP_STRING_ID_DLG_InsertTable)*/"Table Title",0);
+PtSetArg(&args[n++],Pt_ARG_WINDOW_TITLE,/* pSS->getValueUTF8(AP_STRING_ID_DLG_InsertTable).c_str()*/"Table Title",0);
 	PtSetArg(&args[n++],Pt_ARG_WINDOW_RENDER_FLAGS,0,ABI_MODAL_WINDOW_RENDER_FLAGS);
 	PtSetArg(&args[n++],Pt_ARG_WINDOW_MANAGED_FLAGS,0,ABI_MODAL_WINDOW_MANAGE_FLAGS);
 	PtSetArg(&args[n++],Pt_ARG_RESIZE_FLAGS,Pt_RESIZE_XY_AS_REQUIRED,Pt_RESIZE_XY_AS_REQUIRED);
@@ -165,7 +165,7 @@ const XAP_StringSet *pSS = m_pApp->getStringSet();
 	group_main = PtCreateWidget(PtGroup,mainwindow,n,args);
 
 	n=0;
-	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,/*pSS->getValue(AP_STRING_ID_DLG_InsertTable_TableSize)*/"Table Size:",0);
+PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,/*pSS->getValueUTF8(AP_STRING_ID_DLG_InsertTable_TableSize).c_str()*/"Table Size:",0);
 	PtCreateWidget(PtLabel,group_main,n,args);
 
 	n=0;
@@ -178,7 +178,7 @@ const XAP_StringSet *pSS = m_pApp->getStringSet();
 
 	n=0;
 	
-	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,/*pSS->getValue(AP_STRING_ID_DLG_InsertTable_NumCols)*/"NumCols:",0);
+	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,pSS->getValueUTF8(AP_STRING_ID_DLG_InsertTable_NumCols).c_str(),0);
 	PtCreateWidget(PtLabel,group_size_col,n,args);
 	
 	n=0;
@@ -196,7 +196,7 @@ const XAP_StringSet *pSS = m_pApp->getStringSet();
 
 	n=0;
 	
-	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,/*pSS->getValue(AP_STRING_ID_DLG_InsertTable_NumRows)*/"NumRows:",0);
+	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,pSS->getValueUTF8(AP_STRING_ID_DLG_InsertTable_NumRows).c_str(),0);
 	PtCreateWidget(PtLabel,group_size_rows,n,args);
 	
 	n=0;
@@ -207,7 +207,7 @@ const XAP_StringSet *pSS = m_pApp->getStringSet();
 
 	n=0;
 
-	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,/*pSS->getValue(AP_STRING_ID_DLG_InsertTable_AutoFit)*/"Autofit:",0);
+	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,pSS->getValueUTF8(AP_STRING_ID_DLG_InsertTable_AutoFit).c_str(),0);
 	PtCreateWidget(PtLabel,group_main,n,args);
 
 	n=0;
@@ -223,13 +223,13 @@ const XAP_StringSet *pSS = m_pApp->getStringSet();
 	group_fit_toggle = PtCreateWidget(PtGroup,group_fit_main,n,args);
 
 	n=0;
-	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,/*pSS->getValue(AP_STRING_ID_DLG_InsertTable_AutoColSize)*/"Auto Col Size",0);
+PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,pSS->getValueUTF8(AP_STRING_ID_DLG_InsertTable_AutoColSize).c_str(),0);
 	PtSetArg(&args[n++],Pt_ARG_INDICATOR_TYPE,Pt_TOGGLE_RADIO,0);
 	toggle_auto = PtCreateWidget(PtToggleButton,group_fit_toggle,n,args);
 
 
 	n=0;
-	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,/*pSS->getValue(AP_STRING_ID_DLG_InsertTable_FixedColSize)*/"Fixed col size",0);
+PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,pSS->getValueUTF8(AP_STRING_ID_DLG_InsertTable_FixedColSize).c_str(),0);
 	PtSetArg(&args[n++],Pt_ARG_INDICATOR_TYPE,Pt_TOGGLE_RADIO,0);
 	toggle_fixed = PtCreateWidget(PtToggleButton,group_fit_toggle,n,args);
 
@@ -254,11 +254,11 @@ const XAP_StringSet *pSS = m_pApp->getStringSet();
 	group_btn = PtCreateWidget(PtGroup,group_main,n,args);
 
 	n=0;
-	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,pSS->getValue(XAP_STRING_ID_DLG_OK),0);
+	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,pSS->getValueUTF8(XAP_STRING_ID_DLG_OK).c_str(),0);
 	btn_ok = PtCreateWidget(PtButton,group_btn,n,args);
 
 	n=0;
-	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,pSS->getValue(XAP_STRING_ID_DLG_Cancel),0);
+	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel).c_str(),0);
 	btn_cancel = PtCreateWidget(PtButton,group_btn,n,args);
 
 	PtAddCallback(btn_ok,Pt_CB_ACTIVATE,ph_event_ok,this);

@@ -297,8 +297,7 @@ PtWidget_t * AP_QNXDialog_New::_constructWindow ()
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, 
-	    UT_XML_transNoAmpersands(pSS->getValue(AP_STRING_ID_DLG_NEW_Title)), 0);
+	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, UT_XML_transNoAmpersands(pSS->getValueUTF8(AP_STRING_ID_DLG_NEW_Title).c_str()), 0);
     PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, ABI_MODAL_WINDOW_RENDER_FLAGS);
     PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 0, ABI_MODAL_WINDOW_MANAGE_FLAGS);
     PtSetArg(&args[n++], Pt_ARG_WIDTH, 200, 0);
@@ -324,7 +323,7 @@ PtWidget_t * AP_QNXDialog_New::_constructWindow ()
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_TOGGLE_RADIO, 0);
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_NEW_Create), NULL);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_NEW_Create).c_str(), NULL);
 	PtSetArg(&args[n++], Pt_ARG_FLAGS,Pt_TRUE,Pt_CALLBACKS_ACTIVE);
 	m_radioNew = PtCreateWidget(PtToggleButton, hgroup, n, args);
 	PtAddCallback(m_radioNew, Pt_CB_ACTIVATE, s_radio_clicked, this);
@@ -385,7 +384,7 @@ PtWidget_t * AP_QNXDialog_New::_constructWindow ()
 	
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_TOGGLE_RADIO, 0);
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_NEW_Open), NULL);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_NEW_Open).c_str(), NULL);
 	PtSetArg(&args[n++], Pt_ARG_FLAGS,Pt_TRUE,Pt_CALLBACKS_ACTIVE);
 	m_radioExisting = PtCreateWidget(PtToggleButton, hgroup, n, args);
 	PtAddCallback(m_radioExisting, Pt_CB_ACTIVATE, s_radio_clicked, this);
@@ -395,12 +394,12 @@ PtWidget_t * AP_QNXDialog_New::_constructWindow ()
 
 	n = 0; 
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, 2*ABI_DEFAULT_BUTTON_WIDTH, 0);
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_NEW_NoFile), NULL);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_NEW_NoFile).c_str(), NULL);
 	m_entryFilename = PtCreateWidget(PtText, hgroup2, n, args);
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_NEW_Choose), NULL);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_NEW_Choose).c_str(), NULL);
 	PtWidget_t *choose = PtCreateWidget(PtButton, hgroup2, n, args);
 	PtAddCallback(choose, Pt_CB_ACTIVATE, s_choose_clicked, this);
 
@@ -411,7 +410,7 @@ PtWidget_t * AP_QNXDialog_New::_constructWindow ()
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_TOGGLE_RADIO, 0);
 	PtSetArg(&args[n++], Pt_ARG_FLAGS, Pt_SET|Pt_CALLBACKS_ACTIVE, Pt_SET|Pt_CALLBACKS_ACTIVE);
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_NEW_StartEmpty), NULL);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_NEW_StartEmpty).c_str(), NULL);
 	m_radioEmpty = PtCreateWidget(PtToggleButton, hgroup, n, args);
 	PtAddCallback(m_radioEmpty, Pt_CB_ACTIVATE, s_radio_clicked, this);
 
@@ -420,13 +419,13 @@ PtWidget_t * AP_QNXDialog_New::_constructWindow ()
 	hgroup = PtCreateWidget(PtGroup, vgroup, n, args);
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_Cancel), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel).c_str(), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	PtWidget_t *buttonCancel = PtCreateWidget(PtButton, hgroup, n, args);
 	PtAddCallback(buttonCancel, Pt_CB_ACTIVATE, s_cancel_clicked, this);
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_OK), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(XAP_STRING_ID_DLG_OK).c_str(), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	PtWidget_t *buttonOK = PtCreateWidget(PtButton, hgroup, n, args);
 	PtAddCallback(buttonOK, Pt_CB_ACTIVATE, s_ok_clicked, this);

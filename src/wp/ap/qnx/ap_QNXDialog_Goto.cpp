@@ -191,7 +191,7 @@ PtWidget_t * AP_QNXDialog_Goto::_constructWindow (void)
 	PtWidget_t *vlistgroup = PtCreateWidget(PtGroup, htextgroup, n, args);
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _TR(pSS->getValue(AP_STRING_ID_DLG_Goto_Label_What)), 0);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Goto_Label_What ).c_str()), 0);
 	PtCreateWidget(PtLabel, vlistgroup, n, args);
 
 	n = 0;
@@ -212,7 +212,7 @@ PtWidget_t * AP_QNXDialog_Goto::_constructWindow (void)
 	PtWidget_t *vlabelgroup = PtCreateWidget(PtGroup, htextgroup, n, args);
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _TR(pSS->getValue(AP_STRING_ID_DLG_Goto_Label_Number)), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Goto_Label_Number ).c_str()), 0);
 	PtCreateWidget(PtLabel, vlabelgroup, n, args);
 
 	n = 0;

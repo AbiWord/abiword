@@ -251,7 +251,7 @@ PtWidget_t * AP_QNXDialog_PageNumbers::_constructWindow (void)
   const XAP_StringSet * pSS = m_pApp->getStringSet();
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Title), 0);
+PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, pSS->getValueUTF8(AP_STRING_ID_DLG_PageNumbers_Title).c_str(), 0);
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, ABI_MODAL_WINDOW_RENDER_FLAGS);
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 0, ABI_MODAL_WINDOW_MANAGE_FLAGS);
 	m_window = PtCreateWidget(PtWindow, NULL, n, args);
@@ -275,7 +275,7 @@ PtWidget_t * AP_QNXDialog_PageNumbers::_constructWindow (void)
 
 	//Create the first label/combo combination
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Position), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_PageNumbers_Position).c_str(), 0);
 	label1 = PtCreateWidget(PtLabel, vgroup_inner, n, args);
 
 	n = 0;
@@ -283,9 +283,9 @@ PtWidget_t * AP_QNXDialog_PageNumbers::_constructWindow (void)
 	PtSetArg(&args[n++],Pt_ARG_TEXT_FLAGS,Pt_FALSE,Pt_EDITABLE);	
 	combo1 = PtCreateWidget(PtComboBox, vgroup_inner, n, args);
 	const char *add;
-	add = pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Footer); 
+add = pSS->getValueUTF8(AP_STRING_ID_DLG_PageNumbers_Footer).c_str();
 	PtListAddItems(combo1, &add, 1, 0);
-	add = pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Header); 
+add = pSS->getValueUTF8(AP_STRING_ID_DLG_PageNumbers_Header).c_str();
 	PtListAddItems(combo1, &add, 1, 0);
 	m_vecposition.addItem((void *)AP_Dialog_PageNumbers::id_FTR);
 	m_vecposition.addItem((void *)AP_Dialog_PageNumbers::id_HDR);
@@ -294,7 +294,7 @@ PtWidget_t * AP_QNXDialog_PageNumbers::_constructWindow (void)
 
 	//Create the second label/combo combination
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Alignment), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_PageNumbers_Alignment).c_str(), 0);
 	label2 = PtCreateWidget(PtLabel, vgroup_inner, n, args);
 
 	n = 0;
@@ -302,11 +302,11 @@ PtWidget_t * AP_QNXDialog_PageNumbers::_constructWindow (void)
 	PtSetArg(&args[n++],Pt_ARG_TEXT_FLAGS,Pt_FALSE,Pt_EDITABLE);	
 	
 	combo2 = PtCreateWidget(PtComboBox, vgroup_inner, n, args);
-	add = pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Right); 
+add = pSS->getValueUTF8(AP_STRING_ID_DLG_PageNumbers_Right).c_str();
 	PtListAddItems(combo2, &add, 1, 0);
-	add = pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Left); 
+add = pSS->getValueUTF8(AP_STRING_ID_DLG_PageNumbers_Left).c_str();
 	PtListAddItems(combo2, &add, 1, 0);
-	add = pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Center); 
+add = pSS->getValueUTF8(AP_STRING_ID_DLG_PageNumbers_Center).c_str();
 	PtListAddItems(combo2, &add, 1, 0);
 	m_vecalign.addItem((void *)AP_Dialog_PageNumbers::id_RALIGN);
 	m_vecalign.addItem((void *)AP_Dialog_PageNumbers::id_LALIGN);
@@ -315,7 +315,7 @@ PtWidget_t * AP_QNXDialog_PageNumbers::_constructWindow (void)
 	UT_QNXComboSetPos(combo2, 3);
 
 	//Create the preview area
-	//frame1 = gtk_frame_new (pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Preview));
+//frame1 = gtk_frame_new (pSS->getValueUTF8(AP_STRING_ID_DLG_PageNumbers_Preview ).c_str();
 	n = 0;
 	PtWidget_t *rgroup = PtCreateWidget(PtGroup, hgroup, n, args);
 	n = 0;

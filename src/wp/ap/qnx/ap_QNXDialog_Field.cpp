@@ -251,7 +251,7 @@ PtWidget_t * AP_QNXDialog_Field::_constructWindow(void)
 	// Start with the main window
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, 
-	    UT_XML_transNoAmpersands(pSS->getValue(AP_STRING_ID_DLG_Field_FieldTitle)), 0);
+	UT_XML_transNoAmpersands(pSS->getValueUTF8(AP_STRING_ID_DLG_Field_FieldTitle ).c_str()), 0);
     PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, ABI_MODAL_WINDOW_RENDER_FLAGS);
     PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 0, ABI_MODAL_WINDOW_MANAGE_FLAGS);
 	m_windowMain = PtCreateWidget(PtWindow, NULL, n, args);
@@ -276,11 +276,11 @@ PtWidget_t * AP_QNXDialog_Field::_constructWindow(void)
 
 	// Label the Types Box
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, UT_XML_transNoAmpersands(pSS->getValue(AP_STRING_ID_DLG_Field_Types)), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, UT_XML_transNoAmpersands(pSS->getValueUTF8(AP_STRING_ID_DLG_Field_Types ).c_str()), 0);
 	PtCreateWidget(PtLabel, hgroup, n, args);
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, UT_XML_transNoAmpersands(pSS->getValue(AP_STRING_ID_DLG_Field_Fields)), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, UT_XML_transNoAmpersands(pSS->getValueUTF8(AP_STRING_ID_DLG_Field_Fields ).c_str()), 0);
 	PtCreateWidget(PtLabel, hgroup, n, args);
 
 #define LIST_HEIGHT 250
@@ -304,13 +304,13 @@ PtWidget_t * AP_QNXDialog_Field::_constructWindow(void)
 	hgroup = PtCreateWidget(PtGroup, vboxMain, n, args);
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_Cancel), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel).c_str(), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	PtWidget_t *buttonCancel = PtCreateWidget(PtButton, hgroup, n, args);
 	PtAddCallback(buttonCancel, Pt_CB_ACTIVATE, s_cancel_clicked, this);
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_OK), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(XAP_STRING_ID_DLG_OK).c_str(), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	PtWidget_t *buttonOK = PtCreateWidget(PtButton, hgroup, n, args);
 	PtAddCallback(buttonOK, Pt_CB_ACTIVATE, s_ok_clicked, this);

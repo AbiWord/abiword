@@ -327,9 +327,9 @@ PtWidget_t * AP_QNXDialog_Replace::_constructWindow(void)
 
 	// conditionally set title
 	if (m_id == AP_DIALOG_ID_FIND)
-		UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_FR_FindTitle));
+		UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_FR_FindTitle).c_str());
 	else
-		UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_FR_ReplaceTitle));		
+		UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_FR_ReplaceTitle).c_str());		
 
 	// find is smaller
 	if (m_id == AP_DIALOG_ID_FIND) {
@@ -348,9 +348,9 @@ PtWidget_t * AP_QNXDialog_Replace::_constructWindow(void)
 	PtSetArg(&args[n++],Pt_ARG_FLAGS,Pt_FALSE,Pt_GETS_FOCUS );
 
 	if (m_id == AP_DIALOG_ID_FIND)
-		PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, pSS->getValue(AP_STRING_ID_DLG_FR_FindTitle), 0);
+		PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, pSS->getValueUTF8(AP_STRING_ID_DLG_FR_FindTitle).c_str(), 0);
 	else
-		PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, pSS->getValue(AP_STRING_ID_DLG_FR_ReplaceTitle), 0);
+		PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, pSS->getValueUTF8(AP_STRING_ID_DLG_FR_ReplaceTitle).c_str(), 0);
 	windowReplace = PtCreateWidget(PtWindow, NULL, n, args);
 	PtAddCallback(windowReplace, Pt_CB_WINDOW_CLOSING, s_delete_clicked, this);
 
@@ -361,7 +361,7 @@ PtWidget_t * AP_QNXDialog_Replace::_constructWindow(void)
 #define GEN_SPACER    10
 	// find label is always here
 	n = 0;
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_FR_FindLabel));
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_FR_FindLabel).c_str());
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
 	area.pos.x = GEN_SPACER; area.pos.y = GEN_SPACER;
 	area.size.w = LABEL_WIDTH; area.size.h = GEN_HEIGHT;
@@ -381,7 +381,7 @@ PtWidget_t * AP_QNXDialog_Replace::_constructWindow(void)
 	{	
 		// create replace label
 		n = 0;
-		UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_FR_ReplaceWithLabel));	
+		UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_FR_ReplaceWithLabel).c_str());	
 		PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
 		area.pos.x = GEN_SPACER; area.pos.y += area.size.h + GEN_SPACER;
 		area.size.w = LABEL_WIDTH; area.size.h = GEN_HEIGHT;
@@ -415,7 +415,7 @@ PtWidget_t * AP_QNXDialog_Replace::_constructWindow(void)
 	hbuttonbox1 = PtCreateWidget(PtGroup, windowReplace, n, args);
 
 	n = 0;
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_FR_FindNextButton));	
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_FR_FindNextButton).c_str());	
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	buttonFindNext = PtCreateWidget(PtButton, hbuttonbox1, n, args);
@@ -424,14 +424,14 @@ PtWidget_t * AP_QNXDialog_Replace::_constructWindow(void)
 	if (m_id == AP_DIALOG_ID_REPLACE)
 	{
 		n = 0;
-		UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_FR_ReplaceButton));	
+		UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_FR_ReplaceButton).c_str());	
 		PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
 		PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 		buttonReplace = PtCreateWidget(PtButton, hbuttonbox1, n, args);
 		PtAddCallback(buttonReplace, Pt_CB_ACTIVATE, s_replace_clicked, this);
 
 		n = 0;
-		UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_FR_ReplaceAllButton));	
+		UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_FR_ReplaceAllButton).c_str());	
 		PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
 		PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 		buttonReplaceAll = PtCreateWidget(PtButton, hbuttonbox1, n, args);
@@ -442,15 +442,15 @@ PtWidget_t * AP_QNXDialog_Replace::_constructWindow(void)
 	}
 
 	n = 0;
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_FR_ReplaceAllButton));	
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_Cancel), 0);
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_FR_ReplaceAllButton).c_str());	
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel).c_str(), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	buttonCancel = PtCreateWidget(PtButton, hbuttonbox1, n, args);
 	PtAddCallback(buttonCancel, Pt_CB_ACTIVATE, s_cancel_clicked, this);
 	
 	// match case is always here at the bottom
 	n = 0;
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_FR_MatchCase));	
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_FR_MatchCase).c_str());	
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
 	area.pos.x = GEN_SPACER; 
 	area.pos.y = GEN_SPACER + GEN_HEIGHT + GEN_SPACER; 

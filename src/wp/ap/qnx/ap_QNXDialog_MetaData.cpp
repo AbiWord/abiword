@@ -152,7 +152,7 @@ PtWidget_t *btnOk,*btnCancel;
 	static const PhDim_t dim = {361,317};
 	static const PtArg_t args[] = {
      		Pt_ARG(Pt_ARG_DIM,&dim,0),
-		Pt_ARG(Pt_ARG_WINDOW_TITLE,pSS->getValue(AP_STRING_ID_DLG_MetaData_Title),0),
+		Pt_ARG(Pt_ARG_WINDOW_TITLE,pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_Title).c_str(),0),
 		Pt_ARG(Pt_ARG_WINDOW_RENDER_FLAGS,0,ABI_MODAL_WINDOW_RENDER_FLAGS),
 		Pt_ARG(Pt_ARG_WINDOW_MANAGED_FLAGS,0,ABI_MODAL_WINDOW_MANAGE_FLAGS)
 	};
@@ -167,7 +167,7 @@ PtWidget_t *btnOk,*btnCancel;
 		Pt_ARG( Pt_ARG_AREA, &area2, 0 ),
 		Pt_ARG( Pt_ARG_FLAGS, 256,256 ),
 		Pt_ARG( Pt_ARG_BEVEL_WIDTH, 1, 0 ),
-		Pt_ARG( Pt_ARG_TITLE, pSS->getValue(AP_STRING_ID_DLG_MetaData_TAB_General), 0 ),
+Pt_ARG( Pt_ARG_TITLE, pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_TAB_General).c_str(), 0 ),
 		};
 
 	static const PhArea_t area3 = { { 92, 6 }, { 247, 27 } };
@@ -179,7 +179,7 @@ PtWidget_t *btnOk,*btnCancel;
 	static const PhArea_t area4 = { { 7, 9 }, { 61, 21 } };
 	static const PtArg_t args4[] = {
 		Pt_ARG( Pt_ARG_AREA, &area4, 0 ),
-		Pt_ARG( Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_MetaData_Title_LBL), 0 ),
+Pt_ARG( Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_Title_LBL).c_str(), 0 ),
 		};
 
 	static const PhArea_t area5 = { { 92, 38 }, { 247, 27 } };
@@ -191,7 +191,7 @@ PtWidget_t *btnOk,*btnCancel;
 	static const PhArea_t area6 = { { 7, 41 }, { 61, 21 } };
 	static const PtArg_t args6[] = {
 		Pt_ARG( Pt_ARG_AREA, &area6, 0 ),
-		Pt_ARG( Pt_ARG_TEXT_STRING,  pSS->getValue(AP_STRING_ID_DLG_MetaData_Subject_LBL), 0 ),
+Pt_ARG( Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_Subject_LBL).c_str(), 0 ),
 		};
 
 	static const PhArea_t area7 = { { 92, 70 }, { 247, 27 } };
@@ -203,7 +203,7 @@ PtWidget_t *btnOk,*btnCancel;
 	static const PhArea_t area8 = { { 7, 73 }, { 61, 21 } };
 	static const PtArg_t args8[] = {
 		Pt_ARG( Pt_ARG_AREA, &area8, 0 ),
-		Pt_ARG( Pt_ARG_TEXT_STRING,  pSS->getValue(AP_STRING_ID_DLG_MetaData_Author_LBL), 0 ),
+Pt_ARG( Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_Author_LBL).c_str(), 0 ),
 		};
 
 	static const PhArea_t area9 = { { 92, 102 }, { 247, 27 } };
@@ -215,7 +215,7 @@ PtWidget_t *btnOk,*btnCancel;
 	static const PhArea_t area10 = { { 7, 105 }, { 62, 21 } };
 	static const PtArg_t args10[] = {
 		Pt_ARG( Pt_ARG_AREA, &area10, 0 ),
-		Pt_ARG( Pt_ARG_TEXT_STRING,  pSS->getValue(AP_STRING_ID_DLG_MetaData_Publisher_LBL), 0 ),
+Pt_ARG( Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_Publisher_LBL).c_str(), 0 ),
 		};
 
 	static const PhArea_t area11 = { { 92, 134 }, { 247, 27 } };
@@ -227,7 +227,7 @@ PtWidget_t *btnOk,*btnCancel;
 	static const PhArea_t area12 = { { 7, 137 }, { 75, 21 } };
 	static const PtArg_t args12[] = {
 		Pt_ARG( Pt_ARG_AREA, &area12, 0 ),
-		Pt_ARG( Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_MetaData_CoAuthor_LBL) , 0 ),
+Pt_ARG( Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_CoAuthor_LBL).c_str() , 0 ),
 		};
 
 	static const PhArea_t area13 = { { -32768, -32768 }, { 345, 247 } };
@@ -235,13 +235,13 @@ PtWidget_t *btnOk,*btnCancel;
 		Pt_ARG( Pt_ARG_AREA, &area13, 0 ),
 		Pt_ARG( Pt_ARG_FLAGS, 256,256 ),
 		Pt_ARG( Pt_ARG_BEVEL_WIDTH, 1, 0 ),
-		Pt_ARG( Pt_ARG_TITLE, pSS->getValue(AP_STRING_ID_DLG_MetaData_TAB_Summary), 0 ),
+Pt_ARG( Pt_ARG_TITLE, pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_TAB_Summary).c_str(), 0 ),
 		};
 
 	static const PhArea_t area14 = { { 5, 9 }, { 61, 21 } };
 	static const PtArg_t args14[] = {
 		Pt_ARG( Pt_ARG_AREA, &area14, 0 ),
-		Pt_ARG( Pt_ARG_TEXT_STRING,  pSS->getValue(AP_STRING_ID_DLG_MetaData_Category_LBL), 0 ),
+Pt_ARG( Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_Category_LBL).c_str(), 0 ),
 		};
 
 	static const PhArea_t area15 = { { 93, 6 }, { 247, 27 } };
@@ -259,7 +259,7 @@ PtWidget_t *btnOk,*btnCancel;
 	static const PhArea_t area17 = { { 5, 41 }, { 70, 21 } };
 	static const PtArg_t args17[] = {
 		Pt_ARG( Pt_ARG_AREA, &area17, 0 ),
-		Pt_ARG( Pt_ARG_TEXT_STRING,  pSS->getValue(AP_STRING_ID_DLG_MetaData_Keywords_LBL), 0 ),
+Pt_ARG( Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_Keywords_LBL).c_str(), 0 ),
 		};
 
 	static const PhArea_t area18 = { { 93, 70 }, { 247, 27 } };
@@ -271,13 +271,13 @@ PtWidget_t *btnOk,*btnCancel;
 	static const PhArea_t area19 = { { 5, 73 }, { 91, 21 } };
 	static const PtArg_t args19[] = {
 		Pt_ARG( Pt_ARG_AREA, &area19, 0 ),
-		Pt_ARG( Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_MetaData_Languages_LBL), 0 ),
+Pt_ARG( Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_Languages_LBL).c_str(), 0 ),
 		};
 
 	static const PhArea_t area20 = { { 5, 163 }, { 74, 22 } };
 	static const PtArg_t args20[] = {
 		Pt_ARG( Pt_ARG_AREA, &area20, 0 ),
-		Pt_ARG( Pt_ARG_TEXT_STRING,  pSS->getValue(AP_STRING_ID_DLG_MetaData_Description_LBL), 0 ),
+Pt_ARG( Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_Description_LBL).c_str(), 0 ),
 		};
 
 	static const PhArea_t area21 = { { 92, 121 }, { 248, 116 } };
@@ -291,7 +291,7 @@ PtWidget_t *btnOk,*btnCancel;
 		Pt_ARG( Pt_ARG_AREA, &area22, 0 ),
 		Pt_ARG( Pt_ARG_FLAGS, 256,256 ),
 		Pt_ARG( Pt_ARG_BEVEL_WIDTH, 1, 0 ),
-		Pt_ARG( Pt_ARG_TITLE, pSS->getValue(AP_STRING_ID_DLG_MetaData_TAB_Permission), 0 ),
+Pt_ARG( Pt_ARG_TITLE, pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_TAB_Permission).c_str(), 0 ),
 		};
 
 	static const PhArea_t area23 = { { 93, 5 }, { 247, 27 } };
@@ -303,7 +303,7 @@ PtWidget_t *btnOk,*btnCancel;
 	static const PhArea_t area24 = { { 7, 8 }, { 61, 21 } };
 	static const PtArg_t args24[] = {
 		Pt_ARG( Pt_ARG_AREA, &area24, 0 ),
-		Pt_ARG( Pt_ARG_TEXT_STRING,  pSS->getValue(AP_STRING_ID_DLG_MetaData_Source_LBL), 0 ),
+Pt_ARG( Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_Source_LBL).c_str(), 0 ),
 		};
 
 	static const PhArea_t area25 = { { 93, 42 }, { 247, 27 } };
@@ -315,7 +315,7 @@ PtWidget_t *btnOk,*btnCancel;
 	static const PhArea_t area26 = { { 7, 45 }, { 61, 21 } };
 	static const PtArg_t args26[] = {
 		Pt_ARG( Pt_ARG_AREA, &area26, 0 ),
-		Pt_ARG( Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_MetaData_Relation_LBL), 0 ),
+Pt_ARG( Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_Relation_LBL).c_str(), 0 ),
 		};
 
 	static const PhArea_t area27 = { { 93, 74 }, { 247, 27 } };
@@ -327,7 +327,7 @@ PtWidget_t *btnOk,*btnCancel;
 	static const PhArea_t area28 = { { 7, 77 }, { 65, 21 } };
 	static const PtArg_t args28[] = {
 		Pt_ARG( Pt_ARG_AREA, &area28, 0 ),
-		Pt_ARG( Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_MetaData_Coverage_LBL), 0 ),
+Pt_ARG( Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_Coverage_LBL).c_str(), 0 ),
 		};
 
 	static const PhArea_t area29 = { { 93, 106 }, { 247, 27 } };
@@ -339,19 +339,19 @@ PtWidget_t *btnOk,*btnCancel;
 	static const PhArea_t area30 = { { 7, 109 }, { 61, 21 } };
 	static const PtArg_t args30[] = {
 		Pt_ARG( Pt_ARG_AREA, &area30, 0 ),
-		Pt_ARG( Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_MetaData_Rights_LBL), 0 ),
+Pt_ARG( Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_Rights_LBL).c_str(), 0 ),
 		};
 
 	static const PhArea_t area31 = { { 288, 290 }, { 70, 27 } };
 	static const PtArg_t args31[] = {
 		Pt_ARG( Pt_ARG_AREA, &area31, 0 ),
-		Pt_ARG( Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_OK), 0 ),
+Pt_ARG( Pt_ARG_TEXT_STRING, pSS->getValueUTF8(XAP_STRING_ID_DLG_OK).c_str(), 0 ),
 		};
 
 	static const PhArea_t area32 = { { 214, 290 }, { 70, 27 } };
 	static const PtArg_t args32[] = {
 		Pt_ARG( Pt_ARG_AREA, &area32, 0 ),
-		Pt_ARG( Pt_ARG_TEXT_STRING,pSS->getValue(XAP_STRING_ID_DLG_Cancel) , 0 ),
+Pt_ARG( Pt_ARG_TEXT_STRING,pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel).c_str() , 0 ),
 		};
 
 	mainwindow = PtCreateWidget(PtWindow,NULL,sizeof(args) / sizeof(PtArg_t),args);

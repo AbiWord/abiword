@@ -82,7 +82,7 @@ void XAP_QNXDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	newfont = (char *)PtFontSelection(parentWindow,	/* Parent */
 							  		  NULL, 		/* Position (centered) */
 							  				/* Title */
- 							  		  pSS->getValue(XAP_STRING_ID_DLG_UFS_FontTitle),
+pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_FontTitle).c_str(),
 							  		  "helv10",		/* Initial font */
 							  		  -1,			/* Symbol to select fonts by */							
 							  		  PHFONT_SCALABLE, /* Which type of fonts */

@@ -251,7 +251,7 @@ UT_Error AP_QNXFrame::_showDocument(UT_uint32 iZoom)
 	}
 	if (point != 0)
 		((FV_View *) m_pView)->moveInsPtTo(point);
-	m_pView->draw();
+	m_pView->draw(NULL);
 
 	/*TF DIFF: QNX code to control the ruler looks like:
 	  if ( ((AP_FrameData*)m_pData)->m_bShowRuler  ) {

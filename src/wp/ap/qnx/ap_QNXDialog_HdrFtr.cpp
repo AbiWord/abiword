@@ -216,7 +216,7 @@ PtWidget_t *RestartLabel;
 	PhDim_t dim = { 496,355 };
 	PtArg_t args[] = {
 		Pt_ARG(Pt_ARG_DIM,&dim,0),
-		Pt_ARG(Pt_ARG_WINDOW_TITLE,pSS->getValue(AP_STRING_ID_DLG_HdrFtr_Title),0),
+		Pt_ARG(Pt_ARG_WINDOW_TITLE,pSS->getValueUTF8(AP_STRING_ID_DLG_HdrFtr_Title).c_str(),0),
 		Pt_ARG(Pt_ARG_WINDOW_RENDER_FLAGS,0,ABI_MODAL_WINDOW_RENDER_FLAGS),
 		Pt_ARG(Pt_ARG_WINDOW_MANAGED_FLAGS,0,ABI_MODAL_WINDOW_MANAGE_FLAGS)
 		};
@@ -239,31 +239,31 @@ PtWidget_t *RestartLabel;
 	 PhArea_t area3 = { { 5, 5 }, { 466, 24 } };
 	 PtArg_t args3[] = {
 		Pt_ARG( Pt_ARG_AREA, &area3, 0 ),
-		Pt_ARG( Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_HdrFtr_HeaderEven), 0 ),
+Pt_ARG( Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_HdrFtr_HeaderEven).c_str(), 0 ),
 		};
 		/* PtToggle, diff head first page */
 	 PhArea_t area4 = { { 5, 31 }, { 469, 24 } };
 	 PtArg_t args4[] = {
 		Pt_ARG( Pt_ARG_AREA, &area4, 0 ),
-		Pt_ARG( Pt_ARG_TEXT_STRING,pSS->getValue(AP_STRING_ID_DLG_HdrFtr_HeaderFirst), 0 ),
+Pt_ARG( Pt_ARG_TEXT_STRING,pSS->getValueUTF8(AP_STRING_ID_DLG_HdrFtr_HeaderFirst).c_str(), 0 ),
 		};
 	 /* PtToggle diff head last page */
 	 PhArea_t area5 = { { 5, 58 }, { 469, 24 } };
 	 PtArg_t args5[] = {
 		Pt_ARG( Pt_ARG_AREA, &area5, 0 ),
-		Pt_ARG( Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_HdrFtr_HeaderLast) , 0 ),
+Pt_ARG( Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_HdrFtr_HeaderLast).c_str() , 0 ),
 		};
 	/* Head label  */
 	 PhArea_t area6 = { { 5, 0 }, { 206, 21 } };
 	 PtArg_t args6[] = {
 		Pt_ARG( Pt_ARG_AREA, &area6, 0 ),
-		Pt_ARG( Pt_ARG_TEXT_STRING,pSS->getValue(AP_STRING_ID_DLG_HdrFtr_HeaderFrame) , 0 ),
+Pt_ARG( Pt_ARG_TEXT_STRING,pSS->getValueUTF8(AP_STRING_ID_DLG_HdrFtr_HeaderFrame).c_str() , 0 ),
 		};
 		/* Footer label */
 	 PhArea_t area7 = { { 5, 133 }, { 308, 21 } };
 	 PtArg_t args7[] = {
 		Pt_ARG( Pt_ARG_AREA, &area7, 0 ),
-		Pt_ARG( Pt_ARG_TEXT_STRING,pSS->getValue(AP_STRING_ID_DLG_HdrFtr_FooterFrame) , 0 ),
+Pt_ARG( Pt_ARG_TEXT_STRING,pSS->getValueUTF8(AP_STRING_ID_DLG_HdrFtr_FooterFrame).c_str() , 0 ),
 		};
  	/*PtPane  Footer*/
 	 PhArea_t area8 = { { 3, 159 }, { 486, 95 } };
@@ -276,31 +276,31 @@ PtWidget_t *RestartLabel;
 	 PhArea_t area9 = { { 5, 31 }, { 472, 24 } };
 	 PtArg_t args9[] = {
 		Pt_ARG( Pt_ARG_AREA, &area9, 0 ),
-		Pt_ARG( Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_HdrFtr_FooterFirst), 0 ),
+Pt_ARG( Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_HdrFtr_FooterFirst).c_str(), 0 ),
 		};
 	 /*PtToggle Diff foor last page */
 	 PhArea_t area10 = { { 5, 58 }, { 469, 24 } };
 	 PtArg_t args10[] = {
 		Pt_ARG( Pt_ARG_AREA, &area10, 0 ),
-		Pt_ARG( Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_HdrFtr_FooterLast), 0 ),
+Pt_ARG( Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_HdrFtr_FooterLast).c_str(), 0 ),
 		};
 	/*PtToggle, diff foot on even page */
 	 PhArea_t area11 = { { 5, 5 }, { 472, 24 } };
 	 PtArg_t args11[] = {
 		Pt_ARG( Pt_ARG_AREA, &area11, 0 ),
-		Pt_ARG( Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_HdrFtr_FooterEven), 0 ),
+Pt_ARG( Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_HdrFtr_FooterEven).c_str(), 0 ),
 		};
 	 /* PtToggle, restart page number on new section */
 	 PhArea_t area12 = { { 10, 282 }, { 268, 24 } };
 	 PtArg_t args12[] = {
 		Pt_ARG( Pt_ARG_AREA, &area12, 0 ),
-		Pt_ARG( Pt_ARG_TEXT_STRING,pSS->getValue(AP_STRING_ID_DLG_HdrFtr_RestartCheck), 0 ),
+Pt_ARG( Pt_ARG_TEXT_STRING,pSS->getValueUTF8(AP_STRING_ID_DLG_HdrFtr_RestartCheck).c_str(), 0 ),
 		};
 		/* PtLabel restart numbering at.. */
 	 PhArea_t area13 = { { 288, 285 }, { 139, 21 } };
 	 PtArg_t args13[] = {
 		Pt_ARG( Pt_ARG_AREA, &area13, 0 ),
-		Pt_ARG( Pt_ARG_TEXT_STRING,pSS->getValue(AP_STRING_ID_DLG_HdrFtr_RestartNumbers) , 0 ),
+Pt_ARG( Pt_ARG_TEXT_STRING,pSS->getValueUTF8(AP_STRING_ID_DLG_HdrFtr_RestartNumbers).c_str() , 0 ),
 		};
 		/*PtText, where to restart numbering.  */
 	 PhArea_t area14 = { { 432, 280 }, { 37, 27 } };
@@ -326,14 +326,14 @@ PtWidget_t *RestartLabel;
 	 PhArea_t area17 = { { 320, 2 }, { 82, 27 } };
 	 PtArg_t args17[] = {
 		Pt_ARG( Pt_ARG_AREA, &area17, 0 ),
-		Pt_ARG( Pt_ARG_TEXT_STRING,pSS->getValue(XAP_STRING_ID_DLG_Cancel) , 0 ),
+Pt_ARG( Pt_ARG_TEXT_STRING,pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel).c_str() , 0 ),
 		Pt_ARG( Pt_ARG_ANCHOR_FLAGS, 48,8191 ),
 		};
 		/* PtButton OK*/
 	 PhArea_t area18 = { { 408, 2 }, { 82, 27 } };
 	 PtArg_t args18[] = {
 		Pt_ARG( Pt_ARG_AREA, &area18, 0 ),
-		Pt_ARG( Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_OK), 0 ),
+Pt_ARG( Pt_ARG_TEXT_STRING, pSS->getValueUTF8(XAP_STRING_ID_DLG_OK).c_str(), 0 ),
 		};
 
 	mainWindow=PtCreateWidget( PtWindow,NULL,sizeof(args) / sizeof(PtArg_t),args);
@@ -392,7 +392,7 @@ PtWidget_t *RestartLabel;
 	UT_sint32 j = (UT_sint32) HdrEven;
 	for(j = (UT_sint32) HdrEven ; j<= (UT_sint32) FtrLast; j++)
 	{
-		bool value = getValue( (HdrFtr_Control) j);
+		bool value = getValue ( (HdrFtr_Control) j);
 		if(value)
 		{
 		 PtSetResource(m_wHdrFtr[j],Pt_ARG_FLAGS,Pt_TRUE,Pt_SET);

@@ -206,13 +206,13 @@ const XAP_StringSet *pSS = m_pApp->getStringSet();
 	static const PhArea_t area1 = { { 201, 205 }, { 70, 27 } };
 	static const PtArg_t args1[] = {
 		Pt_ARG( Pt_ARG_AREA, &area1, 0 ),
-		Pt_ARG( Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_OK), 0 ),
+Pt_ARG( Pt_ARG_TEXT_STRING, pSS->getValueUTF8(XAP_STRING_ID_DLG_OK).c_str(), 0 ),
 		};
 
 	static const PhArea_t area2 = { { 129, 205 }, { 70, 27 } };
 	static const PtArg_t args2[] = {
 		Pt_ARG( Pt_ARG_AREA, &area2, 0 ),
-		Pt_ARG( Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_Cancel), 0 ),
+Pt_ARG( Pt_ARG_TEXT_STRING, pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel).c_str(), 0 ),
 		};
 
 	static const PhArea_t area3 = { { 6, 190 }, { 265, 7 } };

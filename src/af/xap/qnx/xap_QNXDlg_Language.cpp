@@ -145,7 +145,7 @@ PtWidget_t * XAP_QNXDialog_Language::constructWindow(void)
 	int n;
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, pSS->getValue(XAP_STRING_ID_DLG_ULANG_LangTitle), 0);
+PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, pSS->getValueUTF8(XAP_STRING_ID_DLG_ULANG_LangTitle).c_str(), 0);
     PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, ABI_MODAL_WINDOW_RENDER_FLAGS);
     PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 0, ABI_MODAL_WINDOW_MANAGE_FLAGS);
 	windowLangSelection = PtCreateWidget(PtWindow, NULL, n, args);
@@ -169,7 +169,7 @@ PtWidget_t * XAP_QNXDialog_Language::constructWindow(void)
 				Pt_GROUP_STRETCH_VERTICAL | Pt_GROUP_STRETCH_HORIZONTAL);
 		PtSetArg(&args[n++],Pt_ARG_HEIGHT,2 * ABI_DEFAULT_BUTTON_WIDTH,0);
 		vboxMain =  PtCreateWidget(PtGroup, vboxOuter, n, args);
-  	pretty_group(vboxMain, pSS->getValue(XAP_STRING_ID_DLG_ULANG_LangLabel));
+		pretty_group(vboxMain, pSS->getValueUTF8(XAP_STRING_ID_DLG_ULANG_LangLabel).c_str());
 
 	n = 0;
 	m_pLanguageList = PtCreateWidget(PtList, vboxMain, n, args);
@@ -191,13 +191,13 @@ PtWidget_t * XAP_QNXDialog_Language::constructWindow(void)
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING,  pSS->getValue(XAP_STRING_ID_DLG_OK), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(XAP_STRING_ID_DLG_OK).c_str(), 0);
 	buttonOK = PtCreateWidget(PtButton, hboxBut, n, args);
 	PtAddCallback(buttonOK, Pt_CB_ACTIVATE, s_ok_clicked, this);
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING,  pSS->getValue(XAP_STRING_ID_DLG_Cancel), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel).c_str(), 0);
 	buttonCancel = PtCreateWidget(PtButton, hboxBut, n, args);
 	PtAddCallback(buttonCancel, Pt_CB_ACTIVATE, s_cancel_clicked, this);
 
