@@ -38,6 +38,8 @@
 #include "xav_Listener.h"
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
+#include "ut_timer.h"
+
 
 FL_DocLayout::FL_DocLayout(PD_Document* doc, DG_Graphics* pG) : m_hashFontCache(19)
 {
@@ -364,3 +366,59 @@ void FL_DocLayout::__dump(FILE * fp) const
 	// TODO dump the section layouts
 }
 #endif
+
+
+
+static void _spellCheckBlockCallBack(UT_Timer * pTimer)
+{
+	fl_BlockLayout *pB;
+	UT_DLList  * listOfBlocksToBeSpellChecked = (UT_DLList *) 
+							pTimer->getInstanceData();
+	UT_ASSERT(listOfBlocksToBeSpellChecked);
+
+	pB = (fl_BlockLayout *) listOfBlocksToBeSpellChecked->head();
+
+	if (pB != NULL)
+	{
+		pB->checkSpelling();
+		listOfBlocksToBeSpellChecked->remove();
+	}
+
+	return;
+}
+
+#define SPELL_CHECK_MSECS 100
+
+void FL_DocLayout::addBlockToSpellCheckQueue(fl_BlockLayout *pBlockToBeChecked)
+{
+	fl_BlockLayout *pB;
+
+	/* this routine called when a block has been invalidated, and should
+		be spell checked at some later time... */
+
+	if (spellCheckTimer == NULL)
+	{
+		/* initialize */
+		spellCheckTimer = UT_Timer::static_constructor(
+										_spellCheckBlockCallBack, 
+									&listOfBlocksToBeSpellChecked);
+									
+
+		spellCheckTimer->set(SPELL_CHECK_MSECS);
+	}
+
+	pB = (fl_BlockLayout *) listOfBlocksToBeSpellChecked.head();
+	while ( pB != NULL)
+	{
+		if (pB == pBlockToBeChecked)
+		{
+			/* this block is already on the list, so forget about it... */
+			return;
+		}
+
+		pB = (fl_BlockLayout *) listOfBlocksToBeSpellChecked.next();
+	}
+	
+	listOfBlocksToBeSpellChecked.append(pBlockToBeChecked);
+}
+

@@ -25,8 +25,10 @@
 #include <stdio.h>
 #include "ut_types.h"
 #include "ut_vector.h"
+#include "ut_dllist.h"
 #include "ut_hash.h"
 #include "pt_Types.h"
+
 
 class FV_View;
 class fl_DocListener;
@@ -37,6 +39,8 @@ class PD_Document;
 class PP_AttrProp;
 class DG_Graphics;
 class DG_Font;
+class UT_Timer;
+
 
 // the following get used by view and layout code, 
 // since they're private to the formatter, we stick 'em here
@@ -103,6 +107,8 @@ public:
 	int			formatAll();
 	int			reformat();
 
+	void 		addBlockToSpellCheckQueue(fl_BlockLayout *pBlockToBeChecked);
+
 #ifdef FMT_TEST
 	void		__dump(FILE * fp) const;
 #endif
@@ -117,6 +123,10 @@ protected:
 	UT_Vector		m_vecPages;
 	UT_Vector		m_vecSectionLayouts;
 	UT_HashTable	m_hashFontCache;
+
+	UT_Timer *	spellCheckTimer; 
+	UT_DLList	listOfBlocksToBeSpellChecked;
+
 };
 
 #endif /* DOCLAYOUT_H */
