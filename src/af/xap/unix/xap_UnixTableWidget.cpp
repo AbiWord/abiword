@@ -21,6 +21,8 @@
  * 02111-1307, USA.
  */
 
+#undef GTK_DISABLE_DEPRECATED
+
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>
 #include <gdk/gdk.h>
@@ -30,6 +32,7 @@
 #include <gtk/gtkbutton.h>
 #include <gtk/gtkwindow.h>
 #include <gtk/gtksignal.h>
+#include <gtk/gtktoolbar.h>
 #include "xap_UnixTableWidget.h"
 #include "xap_Strings.h"
 #include "ap_Strings.h"
@@ -38,7 +41,7 @@
 #include "ut_debugmsg.h"
 
 /* NONE:UINT,UINT (/dev/stdin:1) */
-void
+static void
 g_cclosure_user_marshal_VOID__UINT_UINT (GClosure     *closure,
                                          GValue       *return_value,
                                          guint         n_param_values,
@@ -86,11 +89,11 @@ static GtkObjectClass *abi_table_parent_class;
 
 /* ------------------- now the guts of AbiTable ---------------------- */
 
-const guint cell_width = 24;
-const guint cell_height = 24;
-const guint cell_spacing = 4;
-const guint init_rows = 0;
-const guint init_cols = 0;
+static const guint cell_width = 24;
+static const guint cell_height = 24;
+static const guint cell_spacing = 4;
+static const guint init_rows = 0;
+static const guint init_cols = 0;
 
 static inline void
 cells_to_pixels(guint cols, guint rows, guint* w, guint* h)
