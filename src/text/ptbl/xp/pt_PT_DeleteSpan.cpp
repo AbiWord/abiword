@@ -204,7 +204,6 @@ UT_Bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 
 	while (length > 0)
 	{
-		UT_ASSERT(dpos1+length==dpos2);
 		UT_uint32 lengthInFrag = pf_First->getLength() - fragOffset_First;
 		UT_uint32 lengthThisStep = UT_MIN(lengthInFrag, length);
 		
@@ -238,6 +237,7 @@ UT_Bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 
 		// we do not change dpos1, since we are deleting stuff, but we
 		// do decrement the length-remaining.
+		// dpos2 becomes bogus at this point.
 
 		length -= lengthThisStep;
 		
