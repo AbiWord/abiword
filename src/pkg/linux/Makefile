@@ -194,7 +194,6 @@ deb::
 	@install -m 644 deb/copyright $(DEB_ROOT)/usr/share/doc/abiword/.
 	@install -m 644 deb/changelog $(DEB_ROOT)/usr/share/doc/abiword/changelog.Debian
 	@install -m 644 $(OUTDIR)/AbiSuite/readme.txt $(DEB_ROOT)/usr/share/doc/abiword/README
-	@cp -R $(OUTDIR)/AbiSuite/AbiWord/sample/* $(DEB_ROOT)/usr/share/doc/abiword/examples/.
 	@gzip -9 $(DEB_ROOT)/usr/share/doc/abiword/README
 	@gzip -9 $(DEB_ROOT)/usr/share/doc/abiword/changelog.Debian
 	@gzip -9 $(DEB_ROOT)/usr/share/man/man1/AbiWord_d.1
