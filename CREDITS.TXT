@@ -24,6 +24,7 @@ John Brewer <jbrewer@jera.com>                  started MacOS port
 Andy Burnett <andy@abisource.com>
 Christopher Caron (ChrisDigo@aol.com)           Help (French)
 Heath D. Carr <heath@abisource.com>
+Joaquín Cuenca Abela <cuenca@ie2.u-psud.fr>     GNOME front end, LaTeX exporter
 Philippe Defert <Philippe.Defert@cern.ch>       AIX, HPUX, IRIX64, OSF1
 Ryan Dooley <ryan@coe.missouri.edu>             started IRIX port
 Danny Faught <faught@rstcorp.com>               
@@ -36,7 +37,6 @@ Roman Hodek <Roman.Hodek@informatik.uni-erlangen.de>    m68k Endian patch
 Ming-I Hsieh <mihs@wm28.csie.ncu.edu.tw>        FreeBSD
 Perry Ismangil (perry@trabas.com) 		AbiHello
 Richard Jefts <babs@cs.jhu.edu>                 layout navigation, font dialog, .zabw impexp
-Cuenca Abela Joaquin <cuenca@ie2.u-psud.fr>     GNOME front end, LaTeX exporter
 Luke Jordan <ljordan@mweb.co.za>                subscript, superscript
 Matt Kimball <robozapp@xmission.com>            layout fixes
 Larry Kollar <kollar@stc.net>                   MkLinux

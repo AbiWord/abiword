@@ -173,6 +173,10 @@ void XAP_UnixGnomeFrame::_createTopLevelWindow(void)
 	// or if we return 'FALSE' in the "delete_event" callback.
 	gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), "destroy",
 					   GTK_SIGNAL_FUNC(_fe::destroy), NULL);
+	gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), "focus_in_event",
+					   GTK_SIGNAL_FUNC(_fe::focus_in_event), NULL);
+	gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), "focus_out_event",
+					   GTK_SIGNAL_FUNC(_fe::focus_out_event), NULL);
 
 	// create a VBox inside it.
 	
