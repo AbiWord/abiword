@@ -249,17 +249,18 @@ public:
 								 const char ** szAlign, 
 								 const char ** szIndent, 
 								 const char ** szListStyle);
-	UT_sint32 levelStartAt;
-	UT_uint32 AbiLevelID;
-	UT_uint32 RTFListType;
-	UT_String levelNumber;
-	UT_String levelText;
-    RTFProps_ParaProps * pParaProps;
-	RTFProps_CharProps *  pCharProps;
-    RTFProps_bParaProps * pbParaProps;
-	RTFProps_bCharProps *  pbCharProps;
+	bool ParseLevelText(const UT_String szLevelText,const UT_String szLevelNumbers, UT_uint32 iLevel);
+	UT_sint32 m_levelStartAt;
+	UT_uint32 m_AbiLevelID;
+	UT_uint32 m_RTFListType;
+	UT_String m_listDelim;
+	bool m_bStartNewList;
+    RTFProps_ParaProps * m_pParaProps;
+	RTFProps_CharProps *  m_pCharProps;
+    RTFProps_bParaProps * m_pbParaProps;
+	RTFProps_bCharProps *  m_pbCharProps;
 private:
-	UT_uint32 localLevel;
+	UT_uint32 m_localLevel;
 	RTF_msword97_list * m_pMSWord97_list ;
 };
 
@@ -269,9 +270,9 @@ class ABI_EXPORT RTF_msword97_list
 public:
 	RTF_msword97_list(	IE_Imp_RTF * pie_rtf);
     ~RTF_msword97_list();
-	UT_uint32 RTF_listID;
-	UT_uint32 RTF_listTemplateID;
-	RTF_msword97_level * RTF_level[9];
+	UT_uint32 m_RTF_listID;
+	UT_uint32 m_RTF_listTemplateID;
+	RTF_msword97_level * m_RTF_level[9];
 private:
 	IE_Imp_RTF * m_pie_rtf;
 };
@@ -293,12 +294,12 @@ public:
 								 const char ** szIndent, 
 								 const char ** szListStyle,
 								 UT_uint32 iLevel);
-	UT_uint32 RTF_listID;
-	UT_uint32 OverideCount;
-	RTFProps_ParaProps * pParaProps;
-	RTFProps_CharProps * pCharProps;
-	RTFProps_bParaProps * pbParaProps;
-	RTFProps_bCharProps * pbCharProps;
+	UT_uint32 m_RTF_listID;
+	UT_uint32 m_OverideCount;
+	RTFProps_ParaProps * m_pParaProps;
+	RTFProps_CharProps * m_pCharProps;
+	RTFProps_bParaProps * m_pbParaProps;
+	RTFProps_bCharProps * m_pbCharProps;
 	bool setList(void);
 	bool isTab(UT_uint32 iLevel);
 	UT_Vector * getTabStopVect(UT_uint32 iLevel);
@@ -343,15 +344,15 @@ private:
 // Section properties
 struct ABI_EXPORT RTFProps_SectionProps
 {
-	enum SectionBreak {sbkNone, sbkColumn, sbkEven, sbkOdd, sbkPage};
-	enum PageNumber {pgDecimal, pgURoman, pgLRoman, pgULtr, pgLLtr};
+	enum ESectionBreak {sbkNone, sbkColumn, sbkEven, sbkOdd, sbkPage};
+	enum EPageNumber {pgDecimal, pgURoman, pgLRoman, pgULtr, pgLLtr};
 
 	RTFProps_SectionProps();
 	RTFProps_SectionProps& operator=(const RTFProps_SectionProps&);
 
 	UT_uint32		m_numCols;
-	SectionBreak	m_breakType;
-	PageNumber		m_pageNumFormat;
+	ESectionBreak	m_breakType;
+	EPageNumber		m_pageNumFormat;
 #ifdef BIDI_ENABLED
 	FriBidiCharType m_dir;
 #endif

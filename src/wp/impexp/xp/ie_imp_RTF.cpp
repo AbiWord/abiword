@@ -157,24 +157,26 @@ bool	IE_Imp_RTF_Sniffer::getDlgLabels(const char ** pszDesc,
 //////////////////////////////////////////////////////////////////
 RTF_msword97_level::RTF_msword97_level(RTF_msword97_list * pmsword97List, UT_uint32 level )
 {
-	levelStartAt = 1;
-	AbiLevelID = UT_rand();
-	while(AbiLevelID < 10000)
-		AbiLevelID = UT_rand();
-	pParaProps = NULL;
-	pCharProps = NULL;
-	pbParaProps = NULL;
-	pbCharProps = NULL;
+	m_levelStartAt = 1;
+	m_AbiLevelID = UT_rand();
+	while(m_AbiLevelID < 10000)
+		m_AbiLevelID = UT_rand();
+	m_pParaProps = NULL;
+	m_pCharProps = NULL;
+	m_pbParaProps = NULL;
+	m_pbCharProps = NULL;
 	m_pMSWord97_list = pmsword97List;
-	localLevel = level;
+	m_localLevel = level;
+	m_bStartNewList = false;
+	m_listDelim = "%L";
 }
 
 RTF_msword97_level::~RTF_msword97_level(void)
 {
-	DELETEP(pParaProps);
-	DELETEP(pCharProps);
-	DELETEP(pbParaProps);
-	DELETEP(pbCharProps);
+	DELETEP(m_pParaProps);
+	DELETEP(m_pCharProps);
+	DELETEP(m_pbParaProps);
+	DELETEP(m_pbCharProps);
 }
 
 void RTF_msword97_level::buildAbiListProperties( const char ** szListID, 
@@ -193,7 +195,7 @@ void RTF_msword97_level::buildAbiListProperties( const char ** szListID,
 //
 // Start with List ID.
 //
-	sprintf(buf,"%d",AbiLevelID);
+	sprintf(buf,"%d",m_AbiLevelID);
 	ListID = (const char *) buf;
 	*szListID = ListID.c_str();
 	buf[0] = 0;
@@ -201,9 +203,9 @@ void RTF_msword97_level::buildAbiListProperties( const char ** szListID,
 // Now Parent ID.
 //
 	UT_uint32 iParentID = 0;
-	if(localLevel> 0)
+	if(m_localLevel> 0 && !m_bStartNewList)
 	{
-		iParentID = m_pMSWord97_list->RTF_level[localLevel-1]->AbiLevelID;
+		iParentID = m_pMSWord97_list->m_RTF_level[m_localLevel-1]->m_AbiLevelID;
 	}
 	sprintf(buf,"%d", iParentID);
 	ParentID = (const char *) buf;
@@ -212,14 +214,14 @@ void RTF_msword97_level::buildAbiListProperties( const char ** szListID,
 //
 // level
 //
-	sprintf(buf,"%d",localLevel);
+	sprintf(buf,"%d",m_localLevel);
     Level = (const char *) buf; 
     *szLevel = Level.c_str();
     buf[0] = 0;
 //
 // Start At.
 //
-	sprintf(buf,"%d",levelStartAt);
+	sprintf(buf,"%d",m_levelStartAt);
     StartAt = (const char *) buf; 
     *szStartat = StartAt.c_str();
     buf[0] = 0;
@@ -227,31 +229,31 @@ void RTF_msword97_level::buildAbiListProperties( const char ** szListID,
 // List Style
 //
     List_Type abiListType = NUMBERED_LIST;
-    if(RTFListType == 0)
+    if(m_RTFListType == 0)
     {
         abiListType = NUMBERED_LIST;
     }
-    else if(RTFListType == 1)
+    else if(m_RTFListType == 1)
     {
         abiListType = UPPERROMAN_LIST;
     }
-    else if(RTFListType == 2)
+    else if(m_RTFListType == 2)
     {
         abiListType = LOWERROMAN_LIST;
     }
-    else if(RTFListType == 3)
+    else if(m_RTFListType == 3)
     {
         abiListType = UPPERCASE_LIST;
     }
-    else if(RTFListType == 4)
+    else if(m_RTFListType == 4)
     {
         abiListType = LOWERCASE_LIST;
     }
-    else if(RTFListType == 5)
+    else if(m_RTFListType == 5)
     {
         abiListType = UPPERCASE_LIST;
     }
-    else if(RTFListType == 23)
+    else if(m_RTFListType == 23)
     {
         abiListType = BULLETED_LIST;
     }
@@ -265,13 +267,13 @@ void RTF_msword97_level::buildAbiListProperties( const char ** szListID,
     {
         FieldFont = "symbol";
     }
-    if(pParaProps &&  pParaProps->m_pszFieldFont)
-	    FieldFont = pParaProps->m_pszFieldFont;
+    if(m_pParaProps &&  m_pParaProps->m_pszFieldFont)
+	    FieldFont = m_pParaProps->m_pszFieldFont;
     *szFieldFont = FieldFont.c_str();
 //
 // List Delim
 //
-    *szListDelim = "%L";
+    *szListDelim = m_listDelim.c_str();
 //
 // List Decimal
 //
@@ -279,21 +281,21 @@ void RTF_msword97_level::buildAbiListProperties( const char ** szListID,
 //
 // szAlign - left position of the paragraph 
 //
-	if(pbParaProps && pbParaProps->bm_indentLeft)
+	if(m_pbParaProps && m_pbParaProps->bm_indentLeft)
 	{
-		Align = UT_convertInchesToDimensionString(DIM_IN, (double) pParaProps->m_indentLeft/1440);
+		Align = UT_convertInchesToDimensionString(DIM_IN, (double) m_pParaProps->m_indentLeft/1440);
 	}
 	else
 	{
-		Align = UT_convertInchesToDimensionString(DIM_IN, ((double) localLevel)*0.5);
+		Align = UT_convertInchesToDimensionString(DIM_IN, ((double) m_localLevel)*0.5);
 	}
 	*szAlign = Align.c_str();
 //
 // szIndent - offset from the left position for the listlabel
 //
-	if(pbParaProps && pbParaProps->bm_indentLeft)
+	if(m_pbParaProps && m_pbParaProps->bm_indentLeft)
 	{
-		Indent = UT_convertInchesToDimensionString(DIM_IN, (double) pParaProps->m_indentFirst/1440);
+		Indent = UT_convertInchesToDimensionString(DIM_IN, (double) m_pParaProps->m_indentFirst/1440);
 	}
 	else
 	{
@@ -302,26 +304,118 @@ void RTF_msword97_level::buildAbiListProperties( const char ** szListID,
 	*szIndent = Indent.c_str();
 }
 
+/*!
+  Parse the leveltext and levelnumbers values.
+  The idea is to translate the strings into AbiWord compatible format.
+  
+  From the RTF standard: "... a level three number such as '1.a.(i)' would 
+  generate the following RTF: '{\leveltext \'07\'00.\'01.(\'02)'}' where \'07
+  is the string length, the \'00 \'01 and \'02 are level place holders, and the
+  rest is surrounding text. The corresponding levelnumbers would be
+  {\levelnumbers \'01\'03\'06} because the level place holders have indices 
+  1,3,6.
+
+  In AbiWord, either this level resuses the parent label and adds on more text, or
+  starts a new label. So we can only get 1.a.(i) if the parent label is 1.a. or 1.a
+
+  \todo look up the parent label and be more precise about what is added by this label.
+ */
+bool RTF_msword97_level::ParseLevelText(const UT_String szLevelText,const UT_String szLevelNumbers, UT_uint32 iLevel)
+{
+	//read the text string into a int array, set the place holders to 
+	//values less than zero.
+	UT_sint32 iLevelText[1000];
+	char const * pText = szLevelText.c_str();
+	UT_sint32 ilength = 0;
+	UT_sint32 icurrent = 0;
+	UT_sint32 istrlen = szLevelText.size();
+	bool bIsUnicode;
+	while (pText[0] != '\0')
+	{
+		bIsUnicode = ((pText[0] == '\\') && (pText[1] == '\'') && UT_UCS_isdigit(pText[2]) && UT_UCS_isdigit(pText[3]));
+		// A broken exporter writes some junk at the beginning of the string.
+		// Look for the first \'nn string
+		if ((bIsUnicode) && (ilength == 0))
+		{
+			ilength = 10*(pText[2] - '0') + (pText[3] - '0');
+			pText += 3;
+		}
+		else if (ilength >0)
+		{
+			// I have read the string length, I can read off the values.
+			if (bIsUnicode)
+			{
+				iLevelText[icurrent++] = -10*(pText[2] - '0') - (pText[3] - '0');
+				pText += 3;
+			}
+			else
+			{
+				iLevelText[icurrent++] = pText[0];
+			}
+		}
+		// sanity check
+		if (istrlen <= pText - szLevelText.c_str())
+		{
+			UT_DEBUGMSG(("RTF: parsed past the end of leveltext string %s\n",szLevelText));
+			return false;
+		}
+		pText++;
+	}
+	UT_ASSERT(ilength == icurrent);
+	// Find the occurance of a previous level place holder
+	for (icurrent = ilength-1; icurrent>=0; icurrent--)
+	{
+		if(-iLevelText[icurrent] > (UT_sint32)iLevel)
+		{
+			break;
+		}
+	}
+	if (icurrent < 0)
+	{
+		// No previous level place holder
+		m_bStartNewList = true;
+	}
+	else
+	{
+		//TODO - find the end of the previous level place holder label
+	}
+	// Stuff the rest of the string
+	m_listDelim = "";
+	for (icurrent++; icurrent < ilength; icurrent++)
+	{
+		if (iLevelText[icurrent]<=0)
+		{
+			m_listDelim += "%L";
+			UT_ASSERT(-iLevelText[icurrent] == (UT_sint32)iLevel);
+		}
+		else
+		{
+			m_listDelim += (char)iLevelText[icurrent];
+		}
+	}
+
+	return true;
+}
 /////////////////////////////////////////////////////////////////////////////////////////
 
 RTF_msword97_list::RTF_msword97_list(IE_Imp_RTF * pie_rtf)
 {
-	RTF_listID = 0;
-	RTF_listTemplateID = 0;
+	m_RTF_listID = 0;
+	m_RTF_listTemplateID = 0;
 	m_pie_rtf = pie_rtf;
 	for(UT_uint32 i=0; i< 9 ; i++)
 	{
-		RTF_level[i] = new RTF_msword97_level(this,i);
+		m_RTF_level[i] = new RTF_msword97_level(this,i);
 	}
 }
 
 RTF_msword97_list::~RTF_msword97_list(void)
 {
-	RTF_listID = 0;
-	RTF_listTemplateID = 0;
+	m_RTF_listID = 0;
+	m_RTF_listTemplateID = 0;
 	for(UT_uint32 i=0; i< 9 ; i++)
 	{
-		delete RTF_level[i];
+		delete m_RTF_level[i];
 	}
 }
 
@@ -329,22 +423,22 @@ RTF_msword97_list::~RTF_msword97_list(void)
 
 RTF_msword97_listOveride::RTF_msword97_listOveride(IE_Imp_RTF * pie_rtf )
 {
-	RTF_listID = 0;
-	OverideCount = 0;
-	pParaProps = NULL;
-	pCharProps = NULL;
-	pbParaProps = NULL;
-	pbCharProps = NULL;
+	m_RTF_listID = 0;
+	m_OverideCount = 0;
+	m_pParaProps = NULL;
+m_pParaProps = NULL;
+	m_pbParaProps = NULL;
+	m_pbCharProps = NULL;
 	m_pie_rtf = pie_rtf;
 	m_pList = NULL;
 }
 
 RTF_msword97_listOveride::~RTF_msword97_listOveride(void)
 {
-	DELETEP(pParaProps);
-	DELETEP(pCharProps);
-	DELETEP(pbParaProps);
-	DELETEP(pbCharProps);
+	DELETEP(m_pParaProps);
+	DELETEP(m_pParaProps);
+	DELETEP(m_pbParaProps);
+	DELETEP(m_pbCharProps);
 }
 
 /*!
@@ -358,7 +452,7 @@ bool RTF_msword97_listOveride::setList(void)
 	for(i=0; i< count; i++)
 	{
 		RTF_msword97_list * pList = m_pie_rtf->get_vecWord97NthList(i);
-		if(pList->RTF_listID == RTF_listID)
+		if(pList->m_RTF_listID == m_RTF_listID)
 		{
 			m_pList = pList;
 			return true;
@@ -371,80 +465,80 @@ bool RTF_msword97_listOveride::setList(void)
  */
 UT_Vector * RTF_msword97_listOveride::getTabStopVect(UT_uint32 iLevel)
 {
-	RTF_msword97_level * pLevel = m_pList->RTF_level[iLevel];
-	return &(pLevel->pParaProps->m_tabStops);
+	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
+	return &(pLevel->m_pParaProps->m_tabStops);
 }
 /*!
  * This returns returns a pointer to the tab Type vector defined in the list level.
  */
 UT_Vector * RTF_msword97_listOveride::getTabTypeVect(UT_uint32 iLevel)
 {
-	RTF_msword97_level * pLevel = m_pList->RTF_level[iLevel];
-	return &(pLevel->pParaProps->m_tabTypes);
+	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
+	return &(pLevel->m_pParaProps->m_tabTypes);
 }
 /*!
  * This returns returns a pointer to the tab Leadervector defined in the list level.
  */
 UT_Vector * RTF_msword97_listOveride::getTabLeaderVect(UT_uint32 iLevel)
 {
-	RTF_msword97_level * pLevel = m_pList->RTF_level[iLevel];
-	return &(pLevel->pParaProps->m_tabLeader);
+	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
+	return &(pLevel->m_pParaProps->m_tabLeader);
 }
 /*!
  * This function returns true is there is a tab defined in the list definition.
  */
 bool RTF_msword97_listOveride::isTab(UT_uint32 iLevel)
 {
-	RTF_msword97_level * pLevel = m_pList->RTF_level[iLevel];
-	return (pLevel->pbParaProps->bm_tabStops);
+	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
+	return (pLevel->m_pbParaProps->bm_tabStops);
 }
 /*!
  * This function returns true if deleted is changed in the list definition.
  */
 bool RTF_msword97_listOveride::isDeletedChanged(UT_uint32 iLevel)
 {
-	RTF_msword97_level * pLevel = m_pList->RTF_level[iLevel];
-	return (pLevel->pbCharProps->bm_deleted);
+	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
+	return (pLevel->m_pbCharProps->bm_deleted);
 }
 /*!
  * This function returns the Deleted state in the list definition
  */
 bool RTF_msword97_listOveride::getDeleted(UT_uint32 iLevel)
 {
-	RTF_msword97_level * pLevel = m_pList->RTF_level[iLevel];
-	return (pLevel->pCharProps->m_deleted);
+	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
+	return (pLevel->m_pCharProps->m_deleted);
 }
 /*!
  * This function returns true if Bold is changed in the list definition.
  */
 bool RTF_msword97_listOveride::isBoldChanged(UT_uint32 iLevel)
 {
-	RTF_msword97_level * pLevel = m_pList->RTF_level[iLevel];
-	return (pLevel->pbCharProps->bm_bold);
+	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
+	return (pLevel->m_pbCharProps->bm_bold);
 }
 /*!
  * This function the bold state in the List definition.
  */
 bool RTF_msword97_listOveride::getBold(UT_uint32 iLevel)
 {
-	RTF_msword97_level * pLevel = m_pList->RTF_level[iLevel];
-	return (pLevel->pCharProps->m_bold);
+	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
+	return (pLevel->m_pCharProps->m_bold);
 }
 /*!
  * This function returns true if Italic is changed in the list definition.
  */
 bool RTF_msword97_listOveride::isItalicChanged(UT_uint32 iLevel)
 {
-	RTF_msword97_level * pLevel = m_pList->RTF_level[iLevel];
-	return (pLevel->pbCharProps->bm_italic);
+	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
+	return (pLevel->m_pbCharProps->bm_italic);
 }
 /*!
  * This function returns the Italic state in the list definition.
  */
 bool RTF_msword97_listOveride::getItalic(UT_uint32 iLevel)
 {
-	RTF_msword97_level * pLevel = m_pList->RTF_level[iLevel];
-	return (pLevel->pCharProps->m_italic);
+	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
+	return (pLevel->m_pCharProps->m_italic);
 }
 /*!
  * This function returns true if Underline is changed in the list definition.
@@ -452,48 +546,48 @@ bool RTF_msword97_listOveride::getItalic(UT_uint32 iLevel)
 bool RTF_msword97_listOveride::isUnderlineChanged(UT_uint32 iLevel)
 {
 	
-	RTF_msword97_level * pLevel = m_pList->RTF_level[iLevel];
-	return (pLevel->pbCharProps->bm_underline);
+	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
+	return (pLevel->m_pbCharProps->bm_underline);
 }
 /*!
  * This function returns the Underline state in the list definition.
  */
 bool RTF_msword97_listOveride::getUnderline(UT_uint32 iLevel)
 {
-	RTF_msword97_level * pLevel = m_pList->RTF_level[iLevel];
-	return (pLevel->pCharProps->m_underline);
+	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
+	return (pLevel->m_pCharProps->m_underline);
 }
 /*!
  * This function returns true if Strikeout is changed in the list definition.
  */
 bool RTF_msword97_listOveride::isStrikeoutChanged(UT_uint32 iLevel)
 {
-	RTF_msword97_level * pLevel = m_pList->RTF_level[iLevel];
-	return (pLevel->pbCharProps->bm_strikeout);
+	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
+	return (pLevel->m_pbCharProps->bm_strikeout);
 }
 /*!
  * This function returns the Strikeout state in the list definition.
  */
 bool RTF_msword97_listOveride::getStrikeout(UT_uint32 iLevel)
 {
-	RTF_msword97_level * pLevel = m_pList->RTF_level[iLevel];
-	return (pLevel->pCharProps->m_strikeout);
+	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
+	return (pLevel->m_pCharProps->m_strikeout);
 }
 /*!
  * This function returns true if Superscript is changed in the list definition.
  */
 bool RTF_msword97_listOveride::isSuperscriptChanged(UT_uint32 iLevel)
 {
-	RTF_msword97_level * pLevel = m_pList->RTF_level[iLevel];
-	return (pLevel->pbCharProps->bm_superscript);
+	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
+	return (pLevel->m_pbCharProps->bm_superscript);
 }
 /*!
  * This function returns the Superscript state in the list definition.
  */
 bool RTF_msword97_listOveride::getSuperscript(UT_uint32 iLevel)
 {
-	RTF_msword97_level * pLevel = m_pList->RTF_level[iLevel];
-	return (pLevel->pCharProps->m_superscript);
+	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
+	return (pLevel->m_pCharProps->m_superscript);
 }
 /*!
  * This function returns true if Superscript Position is changed in the list 
@@ -501,144 +595,144 @@ bool RTF_msword97_listOveride::getSuperscript(UT_uint32 iLevel)
  */
 bool RTF_msword97_listOveride::isSuperscriptPosChanged(UT_uint32 iLevel)
 {
-	RTF_msword97_level * pLevel = m_pList->RTF_level[iLevel];
-	return (pLevel->pbCharProps->bm_superscript_pos);
+	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
+	return (pLevel->m_pbCharProps->bm_superscript_pos);
 }
 /*!
  * This function returns the Superscript Position in the list definition.
  */
 double RTF_msword97_listOveride::getSuperscriptPos(UT_uint32 iLevel)
 {
-	RTF_msword97_level * pLevel = m_pList->RTF_level[iLevel];
-	return (pLevel->pCharProps->m_superscript_pos);
+	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
+	return (pLevel->m_pCharProps->m_superscript_pos);
 }
 /*!
  * This function returns true if Subscript is changed in the list definition.
  */
 bool RTF_msword97_listOveride::isSubscriptChanged(UT_uint32 iLevel)
 {
-	RTF_msword97_level * pLevel = m_pList->RTF_level[iLevel];
-	return (pLevel->pbCharProps->bm_subscript);
+	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
+	return (pLevel->m_pbCharProps->bm_subscript);
 }
 /*!
  * This function returns the Subscript state in the list definition.
  */
 bool RTF_msword97_listOveride::getSubscript(UT_uint32 iLevel)
 {
-	RTF_msword97_level * pLevel = m_pList->RTF_level[iLevel];
-	return (pLevel->pCharProps->m_subscript);
+	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
+	return (pLevel->m_pCharProps->m_subscript);
 }
 /*!
  * This function returns the Subscript state in the list definition.
  */
 bool RTF_msword97_listOveride::isSubscriptPosChanged(UT_uint32 iLevel)
 {
-	RTF_msword97_level * pLevel = m_pList->RTF_level[iLevel];
-	return (pLevel->pbCharProps->bm_subscript_pos);
+	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
+	return (pLevel->m_pbCharProps->bm_subscript_pos);
 }
 /*!
  * This function returns the Subscript state in the list definition.
  */
 double RTF_msword97_listOveride::getSubscriptPos(UT_uint32 iLevel)
 {
-	RTF_msword97_level * pLevel = m_pList->RTF_level[iLevel];
-	return (pLevel->pCharProps->m_subscript_pos);
+	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
+	return (pLevel->m_pCharProps->m_subscript_pos);
 }
 /*!
  * This function returns true if Fontsize is changed in the list definition.
  */
 bool RTF_msword97_listOveride::isFontSizeChanged(UT_uint32 iLevel)
 {
-	RTF_msword97_level * pLevel = m_pList->RTF_level[iLevel];
-	return (pLevel->pbCharProps->bm_fontSize);
+	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
+	return (pLevel->m_pbCharProps->bm_fontSize);
 }
 /*!
  * This function returns the Fontsize in the list definition.
  */
 double RTF_msword97_listOveride::getFontSize(UT_uint32 iLevel)
 {
-	RTF_msword97_level * pLevel = m_pList->RTF_level[iLevel];
-	return (pLevel->pCharProps->m_fontSize);
+	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
+	return (pLevel->m_pCharProps->m_fontSize);
 }
 /*!
  * This function returns true if the Hascolor state has changed.
  */
 bool RTF_msword97_listOveride::isHasColourChanged(UT_uint32 iLevel)
 {
-	RTF_msword97_level * pLevel = m_pList->RTF_level[iLevel];
-	return (pLevel->pbCharProps->bm_hasColour);
+	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
+	return (pLevel->m_pbCharProps->bm_hasColour);
 }
 /*!
  * This function returns the Hascolor state in the list definition.
  */
 bool RTF_msword97_listOveride::getHasColour(UT_uint32 iLevel)
 {
-	RTF_msword97_level * pLevel = m_pList->RTF_level[iLevel];
-	return (pLevel->pCharProps->m_hasColour);
+	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
+	return (pLevel->m_pCharProps->m_hasColour);
 }
 /*!
  * This function returns true if ColourNumber is changed in the list definition.
  */
 bool RTF_msword97_listOveride::isColourNumberChanged(UT_uint32 iLevel)
 {
-	RTF_msword97_level * pLevel = m_pList->RTF_level[iLevel];
-	return (pLevel->pbCharProps->bm_colourNumber);
+	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
+	return (pLevel->m_pbCharProps->bm_colourNumber);
 }
 /*!
  * This function returns the ColourNumber in the list definition.
  */
 UT_uint32 RTF_msword97_listOveride::getColourNumber(UT_uint32 iLevel)
 {
-	RTF_msword97_level * pLevel = m_pList->RTF_level[iLevel];
-	return (pLevel->pCharProps->m_colourNumber);
+	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
+	return (pLevel->m_pCharProps->m_colourNumber);
 }
 /*!
  * This function returns true if HasBgcolour is changed in the list definition.
  */
 bool RTF_msword97_listOveride::isHasBgColourChanged(UT_uint32 iLevel)
 {
-	RTF_msword97_level * pLevel = m_pList->RTF_level[iLevel];
-	return (pLevel->pbCharProps->bm_hasBgColour);
+	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
+	return (pLevel->m_pbCharProps->bm_hasBgColour);
 }
 /*!
  * This function returns the HasBgcolour state in the list definition.
  */
 bool RTF_msword97_listOveride::getHasBgColour(UT_uint32 iLevel)
 {
-	RTF_msword97_level * pLevel = m_pList->RTF_level[iLevel];
-	return (pLevel->pCharProps->m_hasBgColour);
+	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
+	return (pLevel->m_pCharProps->m_hasBgColour);
 }
 /*!
  * This function returns true if BgColourNumber is changed in the list definition.
  */
 bool RTF_msword97_listOveride::isBgColourNumberChanged(UT_uint32 iLevel)
 {
-	RTF_msword97_level * pLevel = m_pList->RTF_level[iLevel];
-	return (pLevel->pbCharProps->bm_bgcolourNumber);
+	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
+	return (pLevel->m_pbCharProps->bm_bgcolourNumber);
 }
 /*!
  * This function returns the BgColourNumber  in the list definition.
  */
 UT_uint32 RTF_msword97_listOveride::getBgColourNumber(UT_uint32 iLevel)
 {
-	RTF_msword97_level * pLevel = m_pList->RTF_level[iLevel];
-	return (pLevel->pCharProps->m_bgcolourNumber);
+	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
+	return (pLevel->m_pCharProps->m_bgcolourNumber);
 }
 /*!
  * This function returns true if FontNumber is changed in the list definition.
  */
 bool RTF_msword97_listOveride::isFontNumberChanged(UT_uint32 iLevel)
 {
-	RTF_msword97_level * pLevel = m_pList->RTF_level[iLevel];
-	return (pLevel->pbCharProps->bm_fontNumber);
+	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
+	return (pLevel->m_pbCharProps->bm_fontNumber);
 }
 /*!
  * This function returns the FontNumber if changed in the list definition.
  */
 UT_uint32 RTF_msword97_listOveride::getFontNumber(UT_uint32 iLevel)
 {
-	RTF_msword97_level * pLevel = m_pList->RTF_level[iLevel];
-	return (pLevel->pCharProps->m_fontNumber);
+	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
+	return (pLevel->m_pCharProps->m_fontNumber);
 }
 
 
@@ -658,7 +752,7 @@ void RTF_msword97_listOveride::buildAbiListProperties( const char ** szListID,
 								 UT_uint32 iLevel)
 {
 	
-	m_pList->RTF_level[iLevel]->buildAbiListProperties(szListID, szParentID, szLevel, szStartat, szFieldFont, 
+	m_pList->m_RTF_level[iLevel]->buildAbiListProperties(szListID, szParentID, szLevel, szStartat, szFieldFont, 
 									 szListDelim, szListDecimal, szAlign, szIndent, szListStyle);
 
 }
@@ -4237,11 +4331,11 @@ bool IE_Imp_RTF::HandleTableList(void)
 			}
 			if(strcmp((char *)keyword,"listtemplateid") == 0)
 			{
-				pList->RTF_listTemplateID = parameter;
+				pList->m_RTF_listTemplateID = parameter;
 			}
 			else if(strcmp((char *) keyword,"listid") == 0)
 			{
-				pList->RTF_listID = (UT_uint32) parameter;
+				pList->m_RTF_listID = (UT_uint32) parameter;
 			}
 			else
 			{
@@ -4262,6 +4356,8 @@ bool IE_Imp_RTF::HandleListLevel(RTF_msword97_list * pList, UT_uint32 levelCount
 	long parameter = 0;
 	bool paramUsed = false;
 	UT_uint32 nesting = 1;
+	UT_String szLevelNumbers;
+	UT_String szLevelText;
 //
 // OK define this in the data structure.
 //
@@ -4270,15 +4366,15 @@ bool IE_Imp_RTF::HandleListLevel(RTF_msword97_list * pList, UT_uint32 levelCount
 	RTFProps_CharProps *  pChars = new	RTFProps_CharProps();
     RTFProps_bParaProps * pbParas =  new RTFProps_bParaProps();
 	RTFProps_bCharProps *  pbChars = new	RTFProps_bCharProps();
-	pLevel->pParaProps = pParas;
-	pLevel->pCharProps = pChars;
-	pLevel->pbParaProps = pbParas;
-	pLevel->pbCharProps = pbChars;
-	pList->RTF_level[levelCount] = pLevel;
+	pLevel->m_pParaProps = pParas;
+	pLevel->m_pCharProps = pChars;
+	pLevel->m_pbParaProps = pbParas;
+	pLevel->m_pbCharProps = pbChars;
+	pList->m_RTF_level[levelCount] = pLevel;
 	UT_uint32 rnd =0;
 	while(rnd < 10000)
 		rnd = UT_rand();
-	pLevel->AbiLevelID = rnd;
+	pLevel->m_AbiLevelID = rnd;
 	while(nesting > 0)
 	{
 		if (!ReadCharFromFile(&ch))
@@ -4293,13 +4389,11 @@ bool IE_Imp_RTF::HandleListLevel(RTF_msword97_list * pList, UT_uint32 levelCount
 			}
 			if(strcmp((char *) keyword,"levelnumbers") == 0)
 			{
-				char * szLevelNumbers = getCharsInsideBrace();
-				pLevel->levelNumber = szLevelNumbers;
+				szLevelNumbers = getCharsInsideBrace();
 			}
 			else if(strcmp((char *) keyword,"leveltext") == 0)
 			{
-				char * szLevelText = getCharsInsideBrace();
-				pLevel->levelText = szLevelText;
+				szLevelText = getCharsInsideBrace();
 			}
 			else
 			{
@@ -4318,7 +4412,7 @@ bool IE_Imp_RTF::HandleListLevel(RTF_msword97_list * pList, UT_uint32 levelCount
 			}
 			if(strcmp((char *) keyword,"levelnfc") == 0) // RTF list Type
 			{
-				pLevel->RTFListType = (UT_uint32) parameter;
+				pLevel->m_RTFListType = (UT_uint32) parameter;
 			}
 			else if(strcmp((char *) keyword,"levelnfcn") == 0)  // Not in my docs
 			{
@@ -4332,9 +4426,9 @@ bool IE_Imp_RTF::HandleListLevel(RTF_msword97_list * pList, UT_uint32 levelCount
 			else if(strcmp((char *) keyword,"levelfollow") == 0) // Tab following
 			{
 			}
-			else if(strcmp((char *) keyword,"levelstartat") == 0)
+			else if(strcmp((char *) keyword,"levelStartAt") == 0)
 			{
-				pLevel->levelStartAt = (UT_uint32) parameter;
+				pLevel->m_levelStartAt = (UT_uint32) parameter;
 			}
 			else if(strcmp((char *) keyword,"levelspace") == 0) // ignore
 			{
@@ -4352,6 +4446,7 @@ bool IE_Imp_RTF::HandleListLevel(RTF_msword97_list * pList, UT_uint32 levelCount
 			}
 		}
 	}
+	pLevel->ParseLevelText(szLevelText,szLevelNumbers, levelCount);
 	return true;
 }
 
@@ -4666,10 +4761,10 @@ bool IE_Imp_RTF::HandleTableListOveride(void)
 	RTFProps_CharProps *  pChars = new	RTFProps_CharProps();
     RTFProps_bParaProps * pbParas =  new RTFProps_bParaProps();
 	RTFProps_bCharProps *  pbChars = new	RTFProps_bCharProps();
-	pLOver->pParaProps = pParas;
-	pLOver->pCharProps = pChars;
-	pLOver->pbParaProps = pbParas;
-	pLOver->pbCharProps = pbChars;
+	pLOver->m_pParaProps = pParas;
+	pLOver->m_pCharProps = pChars;
+	pLOver->m_pbParaProps = pbParas;
+	pLOver->m_pbCharProps = pbChars;
 
 	UT_uint32 nesting = 1;
 	while (nesting >0) // Outer loop
@@ -4694,7 +4789,7 @@ bool IE_Imp_RTF::HandleTableListOveride(void)
 			}
 			if(strcmp((char *)keyword,"listid") == 0)
 			{
-				pLOver->RTF_listID = (UT_uint32) parameter;
+				pLOver->m_RTF_listID = (UT_uint32) parameter;
 				if(!pLOver->setList())
 				{
 					return false;
@@ -4706,7 +4801,7 @@ bool IE_Imp_RTF::HandleTableListOveride(void)
 			}
 			else if(strcmp((char *)keyword,"ls")== 0)
 			{
-				pLOver->OverideCount = (UT_uint32) parameter;
+				pLOver->m_OverideCount = (UT_uint32) parameter;
 			}
 		    else
 			{
@@ -5189,10 +5284,10 @@ bool IE_Imp_RTF::HandleLists(_rtfListTable & rtfTable )
 		}
 		else
 		{
-			if (strcmp((char*)keyword, "levelstartat") == 0)
+			if (strcmp((char*)keyword, "m_levelStartAt") == 0)
 			{
 				rtfTable.start_value = (UT_uint32) parameter;
-				UT_DEBUGMSG(("FOUND levelstartat in stream \n"));
+				UT_DEBUGMSG(("FOUND m_levelStartAt in stream \n"));
 			}
 			if (strcmp((char*)keyword, "pnstart") == 0)
 			{
