@@ -30,6 +30,10 @@
 #include "ut_assert.h"
 #include "ut_string.h"
 #include "ut_debugmsg.h"
+
+#include "fl_AutoLists.h" // need definition of AUTO_LIST_RESERVED
+#include <limits.h>
+
 /*****************************************************************/
 /*****************************************************************/
 
@@ -975,3 +979,49 @@ void * UT_calloc ( UT_uint32 nmemb, UT_uint32 size )
   return ::calloc ( nmemb, size ) ;
 #endif
 }
+
+
+//////////////////////////////////////////////////
+UT_UniqueId::UT_UniqueId()
+{
+	memset(m_iID,0,sizeof(m_iID));
+
+	UT_uint32 i = (UT_uint32) List;
+	m_iID[i] = AUTO_LIST_RESERVED;
+}
+
+
+/*!
+    returns unique id (0 <= id < 0xffffffff) of given type or
+    0xffffffff on failure
+*/
+UT_uint32 UT_UniqueId::getUID(idType t)
+{
+	UT_return_val_if_fail(t < _Last, 0xffffffff);
+	UT_uint32 i = (UT_uint32)t;
+	UT_uint32 r = m_iID[i]++;
+	return r;
+}
+
+/*!
+    sets the minimum id to be returned by subsequent calls to getUID()
+    to iMin and returns true on success; returns false if it fails
+    (either because unknown type is specified or because the value of
+    iMin is too high)
+*/
+bool UT_UniqueId::setMinId(idType t, UT_uint32 iMin)
+{
+	UT_return_val_if_fail(t < _Last, false);
+
+	// we really want some space left to generate future id's
+	UT_return_val_if_fail(iMin < UINT_MAX - 1000, false);
+	
+	UT_uint32 i = (UT_uint32) t;
+
+	if(m_iID[i] > iMin)
+		return false;
+	
+	m_iID[i] = iMin;
+	return true;
+}
+

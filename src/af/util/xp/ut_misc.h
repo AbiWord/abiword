@@ -169,4 +169,30 @@ UT_Vector * simpleSplit (const UT_String & str, char separator = ' ',
 
 void warpString(UT_String& str, size_t col_max = 75);
 UT_uint32 UT_HeadingDepth(const char * szHeadName);
+
+class ABI_EXPORT UT_UniqueId
+{
+  public:
+	UT_UniqueId();
+	~UT_UniqueId(){};
+	
+	enum idType
+	{
+		List = 0,
+		Footnote,
+		Endnote,
+		HeaderFtr,
+		Image,
+
+		/* must be last */
+		_Last
+	};
+	
+	UT_uint32 getUID(idType t);
+	bool      setMinId(idType t, UT_uint32 iMin);
+
+  private:
+	UT_uint32 m_iID[(UT_uint32)_Last];
+};
+
 #endif /* UTMISC_H */
