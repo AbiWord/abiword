@@ -43,4 +43,18 @@ install:
 		SCRIPTDIR=$(ABI_ROOT)/src/pkg/common/unix/scripts \
 		$(ABI_ROOT)/src/pkg/common/unix/scripts/install.sh
 
+########################################################################
+
+# Tgz target is provided by a common Unix makefile
+
+include $(ABI_ROOT)/src/pkg/common/unix/tgz.mk
+
+########################################################################
+
+# TODO : add tardist format here?
+
+########################################################################
+
+# This target should build all packages defined for this platform
+distribution: tgz
 
