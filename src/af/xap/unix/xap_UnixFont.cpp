@@ -186,7 +186,6 @@ XAP_UnixFont::XAP_UnixFont(XAP_UnixFont & copy)
 
 XAP_UnixFont::~XAP_UnixFont(void)
 {
-	UT_DEBUGMSG(("SEVIOR: Deleting font %s \n",m_name));
 	
 	FREEP(m_name);
 	

@@ -36,6 +36,9 @@
 #include "fl_AutoNum.h"
 #include "fl_BlockLayout.h"
 
+class IE_Imp_RTF;
+class RTF_msword97_list;
+
 // Font table entry
 struct RTFFontTableItem
 {
@@ -56,13 +59,12 @@ struct RTFFontTableItem
 	char* m_pAlternativeFontName;
 };
 
-
-
-// Character properties
-struct RTFProps_CharProps
+// Set true if Character properties have been changed in list structure.
+class RTFProps_CharProps
 {
-	RTFProps_CharProps();
-
+public:
+	RTFProps_CharProps(void);
+	~RTFProps_CharProps(void);
 	bool	m_deleted;
 	bool	m_bold;
 	bool	m_italic;
@@ -71,17 +73,71 @@ struct RTFProps_CharProps
 	bool	m_strikeout;
 	bool	m_topline;
 	bool	m_botline;
-	bool m_superscript;
-	double m_superscript_pos;       // unit is pt. if 0.0, ignore
-	bool m_subscript;
-	double m_subscript_pos;         // unit is pt. if 0.0, ignore	
-	double	m_fontSize;			// font size in points
-	UT_uint32 m_fontNumber;		// index into font table
+	bool    m_superscript;
+	double    m_superscript_pos;       // unit is pt. if 0.0, ignore
+	bool    m_subscript;
+	double    m_subscript_pos;         // unit is pt. if 0.0, ignore	
+	double    m_fontSize;			// font size in points
+	UT_uint32    m_fontNumber;		// index into font table
 	bool    m_hasColour;        // if false, ignore colour number
-	UT_uint32 m_colourNumber;	// index into colour table
-	bool m_hasBgColour; // if false, ignore colour number
-	UT_uint32 m_bgcolourNumber; // index into colour table
+    UT_uint32    m_colourNumber;	// index into colour table
+	bool    m_hasBgColour; // if false, ignore colour number
+	UT_uint32    m_bgcolourNumber; // index into colour table
 };                  
+
+class RTFProps_bCharProps
+{
+public:
+	RTFProps_bCharProps(void);
+	~RTFProps_bCharProps(void);
+
+	bool	bm_deleted;
+	bool	bm_bold;
+	bool	bm_italic;
+	bool	bm_underline;
+	bool    bm_overline;
+	bool	bm_strikeout;
+	bool	bm_topline;
+	bool	bm_botline;
+	bool bm_superscript;
+	bool bm_superscript_pos;       // unit is pt. if 0.0, ignore
+	bool bm_subscript;
+	bool bm_subscript_pos;         // unit is pt. if 0.0, ignore	
+	bool bm_fontSize;			// font size in points
+	bool bm_fontNumber;		// index into font table
+	bool    bm_hasColour;        // if false, ignore colour number
+	bool bm_colourNumber;	// index into colour table
+	bool bm_hasBgColour; // if false, ignore colour number
+	bool bm_bgcolourNumber; // index into colour table
+};
+
+struct _rtfListTable
+{      
+	UT_uint32 start_value;
+	UT_uint32 level;
+	bool bullet;
+	bool simple;
+	bool continueList;
+	bool hangingIndent;
+	List_Type type;
+	bool bold;
+	bool italic;
+	bool caps;
+	bool scaps;
+	bool underline;
+	bool nounderline;
+	bool strike;
+	bool isList;
+	UT_uint32 forecolor;
+	UT_uint32 font;
+	UT_uint32 fontsize;
+	UT_uint32 indent;
+	bool prevlist;
+	char textbefore[129];
+	char textafter[129];
+	UT_uint32 iWord97Overide;
+	UT_uint32 iWord97Level;
+};
 
 
 // Paragraph properties
@@ -114,6 +170,32 @@ struct RTFProps_ParaProps
 	UT_uint32       m_startValue;         // Start value of the list
 	eTabType        m_curTabType;        // Current Tab type
 	eTabLeader      m_curTabLeader;       // Current Tab Leader
+	UT_uint32       m_iOveride;          // 1's index to overide table
+	UT_uint32       m_iOverideLevel;     // 0's index to the level
+	_rtfListTable   m_rtfListTable; 
+};                  
+
+// These are set true if changed in list definitions.
+class RTFProps_bParaProps
+{
+public:
+    RTFProps_bParaProps(void);
+    ~RTFProps_bParaProps(void);
+
+	bool        bm_justification;
+	bool    	bm_spaceBefore;	// space above paragraph in twips
+	bool    	bm_spaceAfter;	// space above paragraph in twips
+    bool    	bm_indentLeft;	// left indent in twips
+    bool    	bm_indentRight;	// right indent in twips
+    bool    	bm_indentFirst;	// first line indent in twips
+	bool	    bm_lineSpaceVal;		// line spaceing value
+	bool	    bm_lineSpaceExact;	// TRUE if m_lineSpaceVal is an exact value, FALSE if multiple
+	bool        bm_tabStops;
+	bool        bm_tabTypes;
+	bool        bm_tabLeader;
+	bool        bm_curTabType;        // Current Tab type
+	bool        bm_curTabLeader;       // Current Tab Leader
+	bool        bm_rtfListTable; 
 };                  
 
 
@@ -126,6 +208,113 @@ struct RTFProps_ParaProps
 //    PGN pgnFormat;              // how the page number is formatted
 //} SEP;                  // SEction Properties
 
+
+// Lists Level class
+class RTF_msword97_level
+{
+public:
+    RTF_msword97_level(	RTF_msword97_list * pmsword97List, UT_uint32 level);
+	~RTF_msword97_level();
+	void buildAbiListProperties( const char ** szListID, 
+								 const char ** szParentID, 
+								 const char ** szLevel,
+								 const char ** szStartat, 
+								 const char ** szFieldFont, 
+								 const char ** szListDelim, 
+								 const char ** szListDecimal, 
+								 const char ** szAlign, 
+								 const char ** szIndent, 
+								 const char ** szListStyle);
+	UT_sint32 levelStartAt;
+	UT_uint32 AbiLevelID;
+	UT_uint32 RTFListType;
+	UT_String levelNumber;
+	UT_String levelText;
+    RTFProps_ParaProps * pParaProps;
+	RTFProps_CharProps *  pCharProps;
+    RTFProps_bParaProps * pbParaProps;
+	RTFProps_bCharProps *  pbCharProps;
+private:
+	UT_uint32 localLevel;
+	RTF_msword97_list * m_pMSWord97_list ;
+};
+
+// List Header Class
+class RTF_msword97_list
+{
+public:
+	RTF_msword97_list(	IE_Imp_RTF * pie_rtf);
+    ~RTF_msword97_list();
+	UT_uint32 RTF_listID;
+	UT_uint32 RTF_listTemplateID;
+	RTF_msword97_level * RTF_level[9];
+private:
+	IE_Imp_RTF * m_pie_rtf;
+};
+
+// List Header Overide
+class RTF_msword97_listOveride
+{
+public:
+	RTF_msword97_listOveride(	IE_Imp_RTF * pie_rtf);
+    ~RTF_msword97_listOveride();
+	void buildAbiListProperties( const char ** szListID, 
+								 const char ** szParentID, 
+								 const char ** szLevel,
+								 const char ** szStartat, 
+								 const char ** szFieldFont, 
+								 const char ** szListDelim, 
+								 const char ** szListDecimal, 
+								 const char ** szAlign, 
+								 const char ** szIndent, 
+								 const char ** szListStyle,
+								 UT_uint32 iLevel);
+	UT_uint32 RTF_listID;
+	UT_uint32 OverideCount;
+	RTFProps_ParaProps * pParaProps;
+	RTFProps_CharProps * pCharProps;
+	RTFProps_bParaProps * pbParaProps;
+	RTFProps_bCharProps * pbCharProps;
+	bool setList(void);
+	bool isTab(UT_uint32 iLevel);
+	UT_Vector * getTabStopVect(UT_uint32 iLevel);
+	UT_Vector * getTabTypeVect(UT_uint32 iLevel);
+	UT_Vector * getTabLeaderVect(UT_uint32 iLevel);
+	bool isDeletedChanged(UT_uint32 iLevel);
+	bool getDeleted(UT_uint32 iLevel);
+	bool isBoldChanged(UT_uint32 iLevel);
+	bool getBold(UT_uint32 iLevel);
+	bool isItalicChanged(UT_uint32 iLevel);
+	bool getItalic(UT_uint32 iLevel);
+	bool isUnderlineChanged(UT_uint32 iLevel);
+	bool getUnderline(UT_uint32 iLevel);
+	bool isStrikeoutChanged(UT_uint32 iLevel);
+	bool getStrikeout(UT_uint32 iLevel);
+	bool isSuperscriptChanged(UT_uint32 iLevel);
+	bool getSuperscript(UT_uint32 iLevel);
+	bool isSuperscriptPosChanged(UT_uint32 iLevel);
+	double getSuperscriptPos(UT_uint32 iLevel);
+	bool isSubscriptChanged(UT_uint32 iLevel);
+	bool getSubscript(UT_uint32 iLevel);
+	bool isSubscriptPosChanged(UT_uint32 iLevel);
+	double getSubscriptPos(UT_uint32 iLevel);
+ 	bool isFontSizeChanged(UT_uint32 iLevel);
+ 	double getFontSize(UT_uint32 iLevel);
+ 	bool isHasColourChanged(UT_uint32 iLevel);
+ 	bool getHasColour(UT_uint32 iLevel);
+ 	bool isColourNumberChanged(UT_uint32 iLevel);
+ 	UT_uint32 getColourNumber(UT_uint32 iLevel);
+ 	bool isHasBgColourChanged(UT_uint32 iLevel);
+ 	bool getHasBgColour(UT_uint32 iLevel);
+	bool isBgColourNumberChanged(UT_uint32 iLevel);
+ 	UT_uint32 getBgColourNumber(UT_uint32 iLevel);
+ 	bool isFontNumberChanged(UT_uint32 iLevel);
+ 	UT_uint32 getFontNumber(UT_uint32 iLevel);
+
+private:
+	IE_Imp_RTF * m_pie_rtf;
+	RTF_msword97_list* m_pList;
+};
 
 // Section properties
 struct RTFProps_SectionProps
@@ -227,7 +416,9 @@ public:
 	virtual UT_Error	importFile(const char * szFilename);
 	virtual void		pasteFromBuffer(PD_DocumentRange * pDocRange,
 										unsigned char * pData, UT_uint32 lenData, const char * szEncoding = 0);
-
+	UT_sint32 get_vecWord97ListsCount(void) { return m_vecWord97Lists.getItemCount();}
+	RTF_msword97_list *  get_vecWord97NthList(UT_sint32 i) { return (RTF_msword97_list *) m_vecWord97Lists.getNthItem(i);}
+    bool  isWord97Lists(void) const { return (m_vecWord97Lists.getItemCount() > 0);}
 protected:
 	UT_Error			_parseFile(FILE * fp);
 	UT_Error			_writeHeader(FILE * fp);
@@ -276,6 +467,16 @@ private:
 	UT_uint32 GetNthTableColour(UT_uint32 colNum);
 	UT_sint32 GetNthTableBgColour(UT_uint32 colNum);
 
+// ListTable handlers.
+	bool ReadListTable(void);
+	bool HandleListLevel(RTF_msword97_list * pList, UT_uint32 levelCount  );
+	bool HandleTableList(void);
+	char * getCharsInsideBrace(void);
+	bool ParseCharParaProps( unsigned char * pKeyword, long param, bool fParam, RTFProps_CharProps * pChars, RTFProps_ParaProps * pParas, RTFProps_bCharProps * pbChars, RTFProps_bParaProps * pbParas);
+	bool ReadListOverideTable(void);
+	bool HandleTableListOveride(void);
+
+
 	// Character property handlers
 	bool ResetCharacterAttributes();
 	bool ApplyCharacterAttributes();
@@ -306,16 +507,16 @@ private:
 	bool ApplyParagraphAttributes();
 	bool SetParaJustification(RTFProps_ParaProps::ParaJustification just);
 	bool AddTabstop(UT_sint32 stopDist, eTabType tabType, eTabLeader tableader);
+	bool AddTabstop(UT_sint32 stopDist, eTabType tabType, eTabLeader tabLeader,  RTFProps_ParaProps * pParas);
 
 	bool HandleAbiLists(void);
-	bool HandleLists(void);
+	bool HandleLists(_rtfListTable & rtfListTable );
         UT_uint32 mapID(UT_uint32 id);
 	UT_uint32 mapParentID(UT_uint32 id);
 
 	// Section property handlers
 	bool ApplySectionAttributes();
 	bool ResetSectionAttributes();
-
 	typedef enum {
 	    RTF_TOKEN_NONE = 0,
 	    RTF_TOKEN_OPEN_BRACE,
@@ -364,7 +565,6 @@ private:
 		UT_uint32 mapped_parentid;
 	};
 	UT_Vector m_vecAbiListTable;
-//	_rtfAbiListTable m_rtfAbiListTable[2000]; // this will be a vector eventually
 	_rtfAbiListTable * getAbiList( UT_uint32 i) {return (_rtfAbiListTable *) m_vecAbiListTable.getNthItem(i);}
 
 	UT_uint32 m_numLists;
@@ -372,32 +572,6 @@ private:
 	bool m_bisNOTList; // true if the current stream does not have  abi list extensions
 	bool m_bParaHasRTFList;
 	bool m_bParaHasRTFContinue;
-	struct _rtfListTable
-	{      
-		UT_uint32 start_value;
-		UT_uint32 level;
-		bool bullet;
-		bool simple;
-		bool continueList;
-		bool hangingIndent;
-		List_Type type;
-		bool bold;
-		bool italic;
-		bool caps;
-		bool scaps;
-		bool underline;
-		bool nounderline;
-		bool strike;
-		bool isList;
-		UT_uint32 forecolor;
-		UT_uint32 font;
-		UT_uint32 fontsize;
-		UT_uint32 indent;
-		bool prevlist;
-		char textbefore[129];
-		char textafter[129];
-	};
-	_rtfListTable m_rtfListTable; 
  
 	FILE* m_pImportFile;
 
@@ -408,13 +582,23 @@ private:
 	UT_uint32		deflangid;
 	UT_Mbtowc		m_mbtowc;
 	bool                m_parsingHdrFtr;
-
+	UT_uint32           m_icurOveride;
+	UT_uint32           m_icurOverideLevel;
+	UT_Vector           m_vecWord97Lists;
+	UT_Vector           m_vecWord97ListOveride;
 	void _appendHdrFtr ();
 	bool _appendField (const XML_Char *xmlField);
 	XML_Char *_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField);
 };
 
 #endif /* IE_IMP_RTF_H */
+
+
+
+
+
+
+
 
 
 
