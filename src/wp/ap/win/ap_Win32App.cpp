@@ -1046,8 +1046,10 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 
 	// Step 3: Create windows as appropriate.
 	// if some args are botched, it returns false and we should
-	// continue out the door.	
-	if (!pMyWin32App->parseCommandLine(Args.poptcon))
+	// continue out the door.
+	// We used to check for bShowApp here.  It shouldn't be needed
+	// anymore, because doWindowlessArgs was supposed to bail already. -PL
+	if (!pMyWin32App->openCmdLineFiles(Args.poptcon))
 	{
 		pMyWin32App->shutdown();	// properly shutdown the app 1st
 		delete pMyWin32App;

@@ -1188,7 +1188,7 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
     gtk_set_locale();
     gboolean have_display = gtk_init_check(&XArgs.m_argc,(char ***)&XArgs.m_argv);
 
-    if (have_display || Args.getShowApp()) {
+    if (have_display) {
 #ifndef HAVE_GNOME
       gtk_init (&XArgs.m_argc,(char ***)&XArgs.m_argv);
 #else
@@ -1230,17 +1230,15 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
 
     // do we show the app&splash?
     bool bShowSplash = Args.getShowSplash();
-    bool bShowApp = Args.getShowApp();
-    pMyUnixApp->setDisplayStatus(bShowApp);
 
     const XAP_Prefs * pPrefs = pMyUnixApp->getPrefs();
     UT_ASSERT(pPrefs);
     bool bSplashPref = true;
     if (pPrefs && 
-	pPrefs->getPrefsValueBool (AP_PREF_KEY_ShowSplash, &bSplashPref))
-      {
-	bShowSplash = bShowSplash && bSplashPref;
-      }
+		pPrefs->getPrefsValueBool (AP_PREF_KEY_ShowSplash, &bSplashPref))
+	{
+		bShowSplash = bShowSplash && bSplashPref;
+	}
     
     if (bShowSplash)
       _showSplash(1500);
@@ -1276,15 +1274,17 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
     // Step 3: Create windows as appropriate.
     // if some args are botched, it returns false and we should
     // continue out the door.
-    if (pMyUnixApp->parseCommandLine(Args.poptcon) && bShowApp)
-      {
-	// turn over control to gtk
-	gtk_main();
-      }
+	// We used to check for bShowApp here.  It shouldn't be needed
+	// anymore, because doWindowlessArgs was supposed to bail already. -PL
+    if (pMyUnixApp->openCmdLineFiles(Args.poptcon))
+	{
+		// turn over control to gtk
+		gtk_main();
+	}
     else
-      {
-	UT_DEBUGMSG(("DOM: not parsing command line or showing app\n"));
-      }
+	{
+		UT_DEBUGMSG(("DOM: not parsing command line or showing app\n"));
+	}
     
     // Step 4: Destroy the App.  It should take care of deleting all frames.
     pMyUnixApp->shutdown();
@@ -1322,14 +1322,14 @@ void AP_UnixApp::errorMsgBadFile(XAP_Frame * pFrame, const char * file,
  */
 bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args)
 {
-  if (Args->m_sGeometry)
+	if (Args->m_sGeometry)
     {
-      // [--geometry <X geometry string>]
+		// [--geometry <X geometry string>]
       
-      // TODO : does X have a dummy geometry value reserved for this?
-      gint dummy = 1 << ((sizeof(gint) * 8) - 1);
-      gint x = dummy;
-      gint y = dummy;
+		// TODO : does X have a dummy geometry value reserved for this?
+		gint dummy = 1 << ((sizeof(gint) * 8) - 1);
+		gint x = dummy;
+		gint y = dummy;
 		guint width = 0;
 		guint height = 0;
 		
@@ -1375,8 +1375,7 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args)
 			printf("Error: no file to print!\n");
 	    }
 
-		if (!Args->m_iShow)
-			return false;
+		return false;
 	}
 
 	if(Args->m_sPlugin)

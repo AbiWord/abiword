@@ -610,13 +610,15 @@ int AP_QNXApp::main(const char * szAppName, int argc, const char ** argv)
 	// this function takes care of all the command line args.
 	// if some args are botched, it returns false and we should
 	// continue out the door.
-	if (pMyQNXApp->parseCommandLine(Args.poptcon) && bShowApp)
+	// We used to check for bShowApp here.  It shouldn't be needed
+	// anymore, because doWindowlessArgs was supposed to bail already. -PL
+	if (pMyQNXApp->openCmdLineFiles(Args.poptcon))
 	{
 		PtMainLoop();
 	}
 	else
 	{
-	UT_DEBUGMSG(("Not parsing command line or showing app\n"));
+		UT_DEBUGMSG(("Not parsing command line or showing app\n"));
 	}
 	
 	// destroy the App.  It should take care of deleting all frames.

@@ -43,7 +43,7 @@ AP_App::~AP_App ()
  * \return False if an unknown command line option was used, true
  * otherwise.  
  */
-bool AP_App::parseCommandLine(poptContext poptcon)
+bool AP_App::openCmdLineFiles(poptContext poptcon)
 {
 	int kWindowsOpened = 0;
 	const char *file = NULL;
@@ -85,6 +85,10 @@ bool AP_App::parseCommandLine(poptContext poptcon)
 	return true;
 }
 
+/*! Processes all the command line options and puts them in AP_Args.
+ * Leaves the files to open in the poptContext for ::openCmdLineFiles
+ * to handle.
+ */
 void AP_App::initPopt (AP_Args * Args)
 {
 	int nextopt, v, i;

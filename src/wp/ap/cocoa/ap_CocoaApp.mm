@@ -1028,8 +1028,6 @@ int AP_CocoaApp::main(const char * szAppName, int argc, const char ** argv)
 
 	// do we show the app&splash?
   	bool bShowSplash = Args.getShowSplash();
- 	bool bShowApp = Args.getShowApp();
-    pMyCocoaApp->setDisplayStatus(bShowApp);
 
     const XAP_Prefs * pPrefs = pMyCocoaApp->getPrefs();
 	UT_ASSERT(pPrefs);
@@ -1073,7 +1071,9 @@ int AP_CocoaApp::main(const char * szAppName, int argc, const char ** argv)
     // this function takes care of all the command line args.
     // if some args are botched, it returns false and we should
     // continue out the door.
-    if (pMyCocoaApp->parseCommandLine(Args.poptcon) && bShowApp)
+	// We used to check for bShowApp here.  It shouldn't be needed
+	// anymore, because doWindowlessArgs was supposed to bail already. -PL
+    if (pMyCocoaApp->parseCommandLine(Args.poptcon))
     {
 		// turn over control to Cocoa
 		[NSApp run];

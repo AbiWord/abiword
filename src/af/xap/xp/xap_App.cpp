@@ -50,7 +50,6 @@ UT_Map * abi_ut_map_instance = 0;
 /*****************************************************************/
 
 XAP_App * XAP_App::m_pApp = NULL;
-bool XAP_App::s_bShowDisplay = true;
 
 XAP_App * XAP_App::getApp() {return m_pApp;}
 
@@ -815,42 +814,3 @@ void XAP_App::parseAndSetGeometry(const char *string)
 		setGeometry(nx, ny, nw, nh, nflags);
 	}
 } 
-
-void XAP_App::_printUsage()
-{
-	// just print to stdout, not stderr
-	printf("\nUsage: %s [option]... [file]...\n\n", m_pArgs->m_argv[0]);
-	printf("  -to               The target format of the file\n");
-	printf("                    (abw, zabw, rtf, txt, utf8, html, latex)\n");
-	printf("  -verbose          The verbosity level (0, 1, 2)\n");
-	printf("  -show             If you really want to start the GUI\n");
-	printf("                    (even if you use the -to option)\n");
-#ifdef DEBUG
-	printf("  -dumpstrings      dump strings strings to file\n");
-#endif
-	printf("  -geometry geom    set initial frame geometry\n");
-	printf("  -lib dir          use dir for application components\n");
-	printf("  -nosplash         do not show splash screen\n");
-
-	printf("\n");
-}
-
-
-bool XAP_App::setDisplayStatus(bool b)
-{
-    s_bShowDisplay = b;
-    return true;
-}
-
-bool XAP_App::getDisplayStatus(void) const
-{
-	return s_bShowDisplay;
-}
-
-
-
-
-
-
-
-

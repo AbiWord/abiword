@@ -180,15 +180,10 @@ public:
 		                                             { return m_bAllowCustomizing;}
     void                                    setToolbarsCustomizable(bool b);
     
-	virtual bool 							getDisplayStatus(void) const;
-	virtual bool 							setDisplayStatus(bool b);
-
 	XAP_HashDownloader *			getHashDownloader(void) const { return m_pHashDownloader; };
 
 protected:
 	void									_setAbiSuiteLibDir(const char * sz);
-	virtual void							_printUsage();   
-	
 	XAP_Args *								m_pArgs;
 	const char *							m_szAppName;
 	const char *							m_szAbiSuiteLibDir;
@@ -207,8 +202,6 @@ protected:
 	XAP_Toolbar_Factory *                   m_pToolbarFactory;
 
 	XAP_HashDownloader *			        m_pHashDownloader;
-
-	static bool 							s_bShowDisplay;
 
 	struct modeless_pair 
 	{ 

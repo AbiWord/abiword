@@ -47,7 +47,6 @@ const char * AP_Args::m_sTo = NULL;
 int    AP_Args::m_iToPNG = 0;
 const char * AP_Args::m_sPrintTo = NULL;
 int    AP_Args::m_iVerbose = 1;
-int    AP_Args::m_iShow = 0;
 const char * AP_Args::m_sPlugin = NULL;
 int    AP_Args::m_iNosplash = 0;
 const char * AP_Args::m_sFile = NULL;
@@ -58,7 +57,7 @@ struct poptOption * AP_Args::options = NULL;
 int  AP_Args::m_iAbiControl = 0;
 
 AP_Args::AP_Args(XAP_Args * pArgs, const char * szAppName, AP_App * pApp)
-	: XArgs (pArgs), m_bShowApp(true), m_bShowSplash(true), m_pApp(pApp)
+	: XArgs (pArgs), m_bShowSplash(true), m_pApp(pApp)
 {
 	pApp->initPopt (this);
 
@@ -72,27 +71,13 @@ AP_Args::AP_Args(XAP_Args * pArgs, const char * szAppName, AP_App * pApp)
 		exit(0);
  	}
 
-
 	if (m_iHelp)
 	{
 		poptPrintHelp(poptcon, stdout, 0);
 		exit(0);
 	}
 
-
-	if (m_sTo || m_iToPNG || m_sPrintTo)
-	{
-	    m_bShowApp = false;
-	    m_bShowSplash = false;
-	}
-
-	if (m_iShow)
-	{
-	    m_bShowApp = true;
-	    m_bShowSplash = true;	   
-	}
- 
-	if (m_iNosplash || m_sPlugin)
+	if (m_sTo || m_iToPNG || m_sPrintTo || m_iNosplash || m_sPlugin)
 	{
 	    m_bShowSplash = false;
 	}
@@ -108,8 +93,7 @@ AP_Args::~AP_Args()
 
 /*!
  * Handles arguments which require an XAP_App but no windows.
- * It should callback getApp()::doWindowlessArgs(), but since
- * we don't have AP_App yet, I'm taking a callback for now.
+ * It has a callback to getApp()::doWindowlessArgs().
  */
 bool AP_Args::doWindowlessArgs() const
 {
@@ -142,9 +126,7 @@ bool AP_Args::doWindowlessArgs() const
 		while ((m_sFile = poptGetArg (poptcon)) != NULL)
 			conv->convertTo(m_sFile, m_sTo);
 		delete conv;
-
-		if (!m_iShow)
-		  return false;
+		return false;
 	}
 	
 	if (m_iToPNG) {
@@ -156,9 +138,8 @@ bool AP_Args::doWindowlessArgs() const
 	  while ((m_sFile = poptGetArg (poptcon)) != NULL)
 	    conv->convertToPNG(m_sFile);
 	  delete conv;
-	  
-	  if (!m_iShow)
-	    return false;
+
+	  return false;
 	}
 
 	if (!m_pApp->doWindowlessArgs(this))
@@ -182,7 +163,6 @@ const struct poptOption AP_Args::const_opts[] =
 	 {"to-png", '\0', POPT_ARG_NONE, &m_iToPNG, 0, "Convert incoming file to a PNG image", ""},
 	 {"verbose", 'v', POPT_ARG_INT, &m_iVerbose, 0, "Set verbosity level (0, 1, 2)", "LEVEL"},
 	 {"print", 'p', POPT_ARG_STRING, &m_sPrintTo, 0, "Print this file to FILE or printer", "FILE or |lpr"},
-	 {"show", '\0', POPT_ARG_NONE, &m_iShow, 0, "Mandatorily start the GUI (regardless of --to)", ""},
 	 {"plugin", '\0', POPT_ARG_STRING, &m_sPlugin, 0, "Execute plugin NAME instead of the main application ", "NAME"},
 	 {"AbiControl", '\0', POPT_ARG_NONE, &m_iAbiControl, 0, "Execute plugin AbiControl instead of the main application ", ""},
 	 // GNOME build kills everything after "version"

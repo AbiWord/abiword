@@ -39,7 +39,6 @@ public:
 	poptContext poptcon;
 
 	bool getShowSplash() const { return m_bShowSplash; }
-	bool getShowApp() const { return m_bShowApp; }
 	AP_App* getApp() const { return m_pApp; }
 	bool doWindowlessArgs() const;
 
@@ -67,7 +66,7 @@ public:
 	static const char * m_sDisplay;
 	static int    m_iAbiControl;
 private:
-	bool          m_bShowApp, m_bShowSplash;
+	bool          m_bShowSplash;
 	AP_App*       m_pApp;
 };
 

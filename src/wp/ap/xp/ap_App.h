@@ -80,7 +80,7 @@ class AP_App : public XAP_App_BaseClass
 	/* Create a new XAP_Frame object. */
 	virtual XAP_Frame * newFrame(AP_App *);
 
-	bool parseCommandLine(poptContext poptcon);
+	bool openCmdLineFiles(poptContext poptcon);
  private:
 
 };
