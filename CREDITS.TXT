@@ -54,6 +54,7 @@ Martin Sevior <msevior@kosal0.triumf.ca>        Symbol dialog, Overline
 Dan Schreiber <dan@abisource.com>
 <kstailey@kstailey.tzo.com>                     OpenBSD
 Alexey Sinutin <megabyte@salesexplosion.com>    Insert Date/Time dialog
+Owen Stenseth (owen@pdaverticals.com)		Script to Output translation data
 Nigel Stepp <stepp@mithril.res.cmu.edu>         VI keybindings
 Jim Studt <jim@federated.com>                   ARM configuration
 Sam Tobin-Hochstadt <sytobinh@uchicago.edu>     File I/O error handling, misc fixes
