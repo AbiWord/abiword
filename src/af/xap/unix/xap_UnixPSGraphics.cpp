@@ -837,7 +837,7 @@ void PS_Graphics::_emit_DocumentNeededResources(void)
 void PS_Graphics::_emit_IncludeResource(void)
 {
    	UT_Vector vec;
-   	UT_uint32 k,n;
+   	UT_uint32 k;
    	UT_uint32 kLimit = m_vecFontList.getItemCount();
 
 	// fonts are always embedded in the document now, as this was causing way

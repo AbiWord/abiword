@@ -4789,7 +4789,6 @@ void s_HTML_Listener::_doEndnotes () {
 		// Some combined bug fixes make tagpops no longer necessary, afaict.
 	}
 	UT_VECTOR_PURGEALL(PD_DocumentRange *,m_vecEndnotes);
-	m_vecEndnotes = NULL;
 }
 
 void s_HTML_Listener::_doFootnotes () {	
@@ -5747,8 +5746,8 @@ void s_TemplateHandler::Default (const XML_Char * buffer, int length)
 IE_Exp_HTML::IE_Exp_HTML (PD_Document * pDocument)
 	: IE_Exp(pDocument),
 	  m_style_tree(new s_StyleTree(pDocument)),
-	  m_bSuppressDialog(false),
-	  m_toc_helper(0)
+	  m_toc_helper(0),
+	  m_bSuppressDialog(false)
 {
 	m_exp_opt.bIs4         = false;
 	m_exp_opt.bIsAbiWebDoc = false;

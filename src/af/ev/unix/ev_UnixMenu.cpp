@@ -438,7 +438,7 @@ static guint _ev_get_underlined_char(const char * szString)
 	
 	// return the keycode right after the underline
 	const UT_UCS4String str(szString);
-	for (int i = 0; i < str.length() - 1; )
+	for (UT_uint32 i = 0; i + 1 < str.length(); )
 	{
 		if (str[i++] == '_')
 			return gdk_unicode_to_keyval(str[i]);

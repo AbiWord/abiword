@@ -5145,12 +5145,14 @@ static bool pView->cmdCharInsert(const UT_UCS4Char * pText, UT_uint32 iLen,
 }
 #endif
 
+#if 0 // disabled because of conditionnal below
 static void sActualInsertData(AV_View *  pAV_View, EV_EditMethodCallData * pCallData)
 {
 	ABIWORD_VIEW;
 	pView->cmdCharInsert(pCallData->m_pData, pCallData->m_dataLength);
 	return;
 }
+#endif
 Defun(insertData)
 {
 	CHECK_FRAME;

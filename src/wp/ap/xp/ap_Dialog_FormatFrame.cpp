@@ -349,7 +349,8 @@ void AP_Dialog_FormatFrame::setAllSensitivities(void)
 {
 	XAP_Frame * frame = m_pApp->getLastFocussedFrame();
 	if (frame) {
-		if (FV_View * pView = static_cast<FV_View *>(frame->getCurrentView())) {
+		FV_View * pView = static_cast<FV_View *>(frame->getCurrentView());
+		if (pView) {
 			bool bInFrame = m_bSensitive; // pView->isInFrame(pView->getPoint());
 			setSensitivity(bInFrame);
 		}

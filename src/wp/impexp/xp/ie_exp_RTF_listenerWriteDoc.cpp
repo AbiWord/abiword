@@ -88,9 +88,6 @@ void s_RTF_ListenerWriteDoc::_closeBlock(PT_AttrPropIndex  nextApi)
 //
 // Force the output of char properties for blank lines or list items.
 //
-	bool bInList = false;
-	const XML_Char * szListid=NULL;
-	const PP_AttrProp * pBlockAP = NULL;
 	xxx_UT_DEBUGMSG(("SEVIOR: Close Block \n"));
 	
 	if(m_bInSpan)
@@ -3052,7 +3049,7 @@ void s_RTF_ListenerWriteDoc::_open_cell(PT_AttrPropIndex api)
 		_export_AbiWord_Cell_props(api,false);
 	}
 
-	UT_sint32 iOldRow = m_iTop;
+	//UT_sint32 iOldRow = m_iTop;
 	UT_sint32 i =0;
 	UT_sint32 iOldRight = m_iRight;
 	xxx_UT_DEBUGMSG(("Setting cell API 1 NOW!!!!!!!!!!!!!!!!! %d \n",api));

@@ -956,7 +956,7 @@ bool IE_Exp_RTF::_write_rtf_header(void)
 		_rtf_semi();
 		_rtf_close_brace();
 		
-		for(UT_sint32 i = 0; i < Revs.getItemCount(); ++i)
+		for(UT_uint32 i = 0; i < Revs.getItemCount(); ++i)
 		{
 			AD_Revision* pRev = Revs.getNthItem(i);
 			if(!pRev)
