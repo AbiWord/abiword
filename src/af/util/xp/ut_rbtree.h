@@ -118,6 +118,7 @@ private:
 	Node* _prev(Node* pn);
 	Node* _first();
 	Node* _last();
+	static Node* getLeaf();
 
 	Node* m_pRoot;
 	comparator m_comp;

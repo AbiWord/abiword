@@ -646,6 +646,7 @@ bool s_AbiWord_1_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 					m_pUsedImages.insert(image_name);
 
 				_openTag("image","/",false,api);
+
 				return true;
 				}
 			case PTO_Field:
@@ -938,9 +939,7 @@ void s_AbiWord_1_Listener::_handleDataItems(void)
 		UT_Set::Iterator it(m_pUsedImages.find_if(szName, ut_lexico_equal));
 		if (it == end)
 		{
-//
-// This data item is no longer used. Don't output it to a file.
-//
+			// This data item is no longer used. Don't output it to a file.
 			UT_DEBUGMSG(("item #%s# not found in set:\n", szName));
 			continue;
 		}
@@ -949,6 +948,7 @@ void s_AbiWord_1_Listener::_handleDataItems(void)
 			UT_DEBUGMSG(("item #%s# found:\n", szName));
 			m_pUsedImages.erase(it);
 		}
+
 		if (!bWroteOpenDataSection)
 		{
 			m_pie->write("<data>\n");

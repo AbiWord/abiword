@@ -31,12 +31,13 @@
 struct UT_RBTree::Node
 {
 	enum Color { red, black } color;
-	UT_RBTree::key_t item;
+	key_t item;
 	Node* left;
 	Node* right;
 	Node* parent;
 
-	Node() : color(red), item(0), left(0), right(0), parent(0) {}
+	Node(Color c = red, key_t i = 0, Node* l = 0, Node* r = 0, Node* p = 0)
+		: color(c), item(i), left(l), right(r), parent(p) {}
 
 #ifdef DEBUG
 	void print()
@@ -67,7 +68,7 @@ UT_RBTree::key_t UT_RBTree::Iterator::value() const
 // UT_RBTree
 ///////////////////////////////////////////
 UT_RBTree::UT_RBTree(UT_RBTree::comparator comp)
-	: m_pRoot(0),
+	: m_pRoot(getLeaf()),
 	  m_comp(comp),
 	  m_nSize(0)
 {
@@ -75,7 +76,7 @@ UT_RBTree::UT_RBTree(UT_RBTree::comparator comp)
 
 UT_RBTree::~UT_RBTree()
 {
-	if (m_pRoot)
+	if (m_pRoot != getLeaf())
 		s_delete_tree(m_pRoot);
 }
 
@@ -83,13 +84,14 @@ void
 UT_RBTree::_insertBST(Node* pNewNode)
 {
 	Node* pNode = m_pRoot;
+	Node* pleaf = getLeaf();
 	UT_ASSERT(pNewNode);
 
-	while(pNode)
+	while(pNode != pleaf)
 	{
 		if (m_comp(pNewNode->item, pNode->item))
 		{
-			if (pNode->left)
+			if (pNode->left != pleaf)
 				pNode = pNode->left;
 			else
 			{
@@ -100,7 +102,7 @@ UT_RBTree::_insertBST(Node* pNewNode)
 		}
 		else
 		{
-			if (pNode->right)
+			if (pNode->right != pleaf)
 				pNode = pNode->right;
 			else
 			{
@@ -111,7 +113,7 @@ UT_RBTree::_insertBST(Node* pNewNode)
 		}
 	}
 
-	if (!pNode)
+	if (pNode == pleaf)
 	{
 		m_pRoot = pNewNode;
 		m_pRoot->color = Node::black;
@@ -190,15 +192,14 @@ UT_RBTree::_insertFixup(Node* x)
 }
 
 bool
-UT_RBTree::insert(const void* item)
+UT_RBTree::insert(UT_RBTree::key_t item)
 {
-	Node* pnode = new Node;
+	Node* pnode = new Node(Node::red, item, getLeaf(), getLeaf(), 0);
 
 	if (!pnode)
 		return false;
 
 	++m_nSize;
-	pnode->item = item;
 	_insertBST(pnode);
 	_insertFixup(pnode);
 
@@ -217,15 +218,15 @@ UT_RBTree::erase(Iterator& c)
 	UT_ASSERT(pNode);
 	Node* y;
 
-	if (pNode->left == 0 || pNode->right == 0)
+	if (pNode->left == getLeaf() || pNode->right == getLeaf())
 		y = pNode;
 	else
 		y = _prev(pNode);
 
-	UT_ASSERT(y->left == 0 || y->right == 0);
-	Node* son = y->left ? y->left : y->right;
-	if (son)
-		son->parent = y->parent;
+	UT_ASSERT(y->left == getLeaf() || y->right == getLeaf());
+	Node* son = y->left != getLeaf() ? y->left : y->right;
+	UT_ASSERT(son);
+	son->parent = y->parent;
 
 	if (!y->parent)
 		m_pRoot = son;
@@ -238,88 +239,90 @@ UT_RBTree::erase(Iterator& c)
 	if (y != pNode)
 		pNode->item = y->item;
 
-	if (y->color == Node::black && son)
+	if (y->color == Node::black)
 		_eraseFixup(son);
 
 	delete y;
 }
 
 void
-UT_RBTree::_eraseFixup(UT_RBTree::Node *x)
+UT_RBTree::_eraseFixup(UT_RBTree::Node* x)
 {
-    while (x != m_pRoot && x->color == Node::black)
+	while (x != m_pRoot && x->color == Node::black)
 	{
-        if (x == x->parent->left)
+		if (x == x->parent->left)
 		{
-            Node *tmp = x->parent->right;
-            if (tmp->color == Node::red)
+			Node *tmp = x->parent->right;
+			if (tmp->color == Node::red)
 			{
-                tmp->color = Node::black;
-                x->parent->color = Node::red;
-                _leftRotate(x->parent);
-                tmp = x->parent->right;
-            }
-            if (tmp->left->color == Node::black && tmp->right->color == Node::black)
+				tmp->color = Node::black;
+				x->parent->color = Node::red;
+				_leftRotate(x->parent);
+				tmp = x->parent->right;
+			}
+			if (tmp->left->color == Node::black && tmp->right->color == Node::black)
 			{
-                tmp->color = Node::red;
-                x = x->parent;
-            }
+				tmp->color = Node::red;
+				x = x->parent;
+			}
 			else
 			{
-                if (tmp->right->color == Node::black)
+				if (tmp->right->color == Node::black)
 				{
-                    tmp->left->color = Node::black;
-                    tmp->color = Node::red;
-                    _rightRotate(tmp);
-                    tmp = x->parent->right;
-                }
-                tmp->color = x->parent->color;
-                x->parent->color = Node::black;
-                tmp->right->color = Node::black;
-                _leftRotate(x->parent);
-                x = m_pRoot;
-            }
-        }
+					tmp->left->color = Node::black;
+					tmp->color = Node::red;
+					_rightRotate(tmp);
+					tmp = x->parent->right;
+				}
+				tmp->color = x->parent->color;
+				x->parent->color = Node::black;
+				tmp->right->color = Node::black;
+				_leftRotate(x->parent);
+				x = m_pRoot;
+			}
+		}
 		else
 		{
-            Node *tmp = x->parent->left;
-            if (tmp->color == Node::red)
+			Node* tmp = x->parent->left;
+			if (tmp->color == Node::red)
 			{
-                tmp->color = Node::black;
-                x->parent->color = Node::red;
-                _rightRotate(x->parent);
-                tmp = x->parent->left;
-            }
-            if (tmp->right->color == Node::black && tmp->left->color == Node::black)
+				tmp->color = Node::black;
+				x->parent->color = Node::red;
+				_rightRotate(x->parent);
+				tmp = x->parent->left;
+			}
+			if (tmp->right->color == Node::black && tmp->left->color == Node::black)
 			{
-                tmp->color = Node::red;
-                x = x->parent;
+				tmp->color = Node::red;
+				x = x->parent;
             }
 			else
 			{
-                if (tmp->left->color == Node::black)
+				if (tmp->left->color == Node::black)
 				{
-                    tmp->right->color = Node::black;
-                    tmp->color = Node::red;
-                    _leftRotate(tmp);
-                    tmp = x->parent->left;
-                }
-                tmp->color = x->parent->color;
-                x->parent->color = Node::black;
-                tmp->left->color = Node::black;
-                _rightRotate(x->parent);
-                x = m_pRoot;
-            }
-        }
-    }
+					tmp->right->color = Node::black;
+					tmp->color = Node::red;
+					_leftRotate(tmp);
+					tmp = x->parent->left;
+				}
+				tmp->color = x->parent->color;
+				x->parent->color = Node::black;
+				tmp->left->color = Node::black;
+				_rightRotate(x->parent);
+				x = m_pRoot;
+			}
+		}
+	}
 	x->color = Node::black;
 }
 
 UT_RBTree::Iterator
-UT_RBTree::find(const void* item)
+UT_RBTree::find(UT_RBTree::key_t item)
 {
 	Node* x = m_pRoot;
-	while(x)
+	Node* pleaf = getLeaf();
+
+	while(x != pleaf)
 	{
 		if (item == x->item)
 			return Iterator(this, x);
@@ -334,10 +337,12 @@ UT_RBTree::find(const void* item)
 }
 
 UT_RBTree::Iterator
-UT_RBTree::find_if(const void* item, comparator pred)
+UT_RBTree::find_if(UT_RBTree::key_t item, comparator pred)
 {
 	Node* x = m_pRoot;
-	while(x)
+	Node* pleaf = getLeaf();
+
+	while(x != pleaf)
 	{
 		if (pred(item, x->item))
 			return Iterator(this, x);
@@ -354,13 +359,15 @@ UT_RBTree::find_if(const void* item, comparator pred)
 const UT_RBTree::Node*
 UT_RBTree::_prev(const UT_RBTree::Node* pn) const
 {
-	if (pn)
+	Node* pleaf = getLeaf();
+
+	if (pn != pleaf)
 	{
-		if (pn->left)
+		if (pn->left != pleaf)
 		{
 			pn = pn->left;
 
-			while(pn->right)
+			while(pn->right != pleaf)
 				pn = pn->right;
 		}
 		else
@@ -383,13 +390,15 @@ UT_RBTree::_prev(const UT_RBTree::Node* pn) const
 UT_RBTree::Node*
 UT_RBTree::_prev(UT_RBTree::Node* pn)
 {
-	if (pn)
+	Node* pleaf = getLeaf();
+
+	if (pn != pleaf)
 	{
-		if (pn->left)
+		if (pn->left != pleaf)
 		{
 			pn = pn->left;
 
-			while(pn->right)
+			while(pn->right != pleaf)
 				pn = pn->right;
 		}
 		else
@@ -412,13 +421,15 @@ UT_RBTree::_prev(UT_RBTree::Node* pn)
 const UT_RBTree::Node*
 UT_RBTree::_next(const UT_RBTree::Node* pn) const
 {
-	if (pn)
+	Node* pleaf = getLeaf();
+
+	if (pn != pleaf)
 	{
-		if (pn->right)
+		if (pn->right != pleaf)
 		{
 			pn = pn->right;
 
-			while(pn->left)
+			while(pn->left != pleaf)
 				pn = pn->left;
 		}
 		else
@@ -441,13 +452,15 @@ UT_RBTree::_next(const UT_RBTree::Node* pn) const
 UT_RBTree::Node*
 UT_RBTree::_next(UT_RBTree::Node* pn)
 {
-	if (pn)
+	Node* pleaf = getLeaf();
+
+	if (pn != pleaf)
 	{
-		if (pn->right)
+		if (pn->right != pleaf)
 		{
 			pn = pn->right;
 
-			while(pn->left)
+			while(pn->left != pleaf)
 				pn = pn->left;
 		}
 		else
@@ -471,8 +484,12 @@ const UT_RBTree::Node*
 UT_RBTree::_first() const
 {
 	Node* pn = m_pRoot;
+	Node* pleaf = getLeaf();
 
-	while(pn && pn->left)
+	if (pn == pleaf)
+		return 0;
+
+	while(pn->left != pleaf)
 		pn = pn->left;
 
 	return pn;
@@ -482,8 +499,12 @@ UT_RBTree::Node*
 UT_RBTree::_first()
 {
 	Node* pn = m_pRoot;
+	Node* pleaf = getLeaf();
 
-	while(pn && pn->left)
+	if (pn == pleaf)
+		return 0;
+
+	while(pn->left != pleaf)
 		pn = pn->left;
 
 	return pn;
@@ -493,9 +514,13 @@ const UT_RBTree::Node*
 UT_RBTree::_last() const
 {
 	Node* pn = m_pRoot;
+	Node* pleaf = getLeaf();
 
-	while(pn && pn->left)
-		pn = pn->left;
+	if (pn == pleaf)
+		return 0;
+
+	while(pn->right != pleaf)
+		pn = pn->right;
 
 	return pn;
 }
@@ -504,9 +529,13 @@ UT_RBTree::Node*
 UT_RBTree::_last()
 {
 	Node* pn = m_pRoot;
+	Node* pleaf = getLeaf();
 
-	while(pn && pn->left)
-		pn = pn->left;
+	if (pn == pleaf)
+		return 0;
+
+	while(pn->right != pleaf)
+		pn = pn->right;
 
 	return pn;
 }
@@ -519,7 +548,7 @@ UT_RBTree::_leftRotate(UT_RBTree::Node* x)
     /* Turn y's left sub-tree into x's right sub-tree */
     x->right = y->left;
 
-    if (y->left)
+    if (y->left != getLeaf())
         y->left->parent = x;
 
     /* y's new parent was x's parent */
@@ -547,7 +576,7 @@ UT_RBTree::_rightRotate(UT_RBTree::Node* x)
 	y = x->left;
 	x->left = y->right;
 
-	if (y->right)
+	if (y->right != getLeaf())
 		y->right->parent = x;
 
 	y->parent = x->parent;
@@ -567,9 +596,9 @@ UT_RBTree::_rightRotate(UT_RBTree::Node* x)
 void
 UT_RBTree::s_delete_tree(UT_RBTree::Node* node)
 {
-	if (node->left)
+	if (node->left != getLeaf())
 		s_delete_tree(node->left);
-	if (node->right)
+	if (node->right != getLeaf())
 		s_delete_tree(node->right);
 	delete node;
 }
@@ -578,7 +607,7 @@ UT_RBTree::s_delete_tree(UT_RBTree::Node* node)
 void
 UT_RBTree::print() const
 {
-	if (m_pRoot)
+	if (m_pRoot != getLeaf())
 		m_pRoot->print();
 	else
 		printf("empty set\n");
@@ -595,8 +624,8 @@ UT_RBTree::_countBlackNodes(const Iterator& it)
 	{
 		if (pn->color == Node::black)
 			++retval;
-		else
-			if (pn->parent && pn->parent->color == Node::red)
+		else  // we're red
+			if (pn->parent && pn->parent->color == Node::red) // and also our father!!
 				return -1;
 
 		pn = pn->parent;
@@ -621,13 +650,20 @@ UT_RBTree::checkInvariants()
 		return false;
 
 	for (; it != end; ++it)
-		if (!it.getNode()->left && !it.getNode()->right &&
+		if (it.getNode()->left == getLeaf() && it.getNode()->right == getLeaf() &&
 			nb_blacks != _countBlackNodes(it))
 			return false;
 	
 	return true;
 }
 #endif
+
+UT_RBTree::Node*
+UT_RBTree::getLeaf()
+{
+	static Node leaf(Node::black);
+	return &leaf;
+}
 
 bool ut_lexico_lesser(UT_RBTree::key_t x, UT_RBTree::key_t y)
 {

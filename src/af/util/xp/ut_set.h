@@ -32,22 +32,22 @@ public:
 	UT_Set();
 	UT_Set(comparator comp);
 
-	inline bool insert(key_t item) { return m_rbtree.insert(item); }
-	inline void erase(Iterator& c) { m_rbtree.erase(c); }
+	bool insert(key_t item) { return m_rbtree.insert(item); }
+	void erase(Iterator& c) { m_rbtree.erase(c); }
 
-	inline UT_Set::Iterator find(key_t item) { return m_rbtree.find(item); }
-	inline UT_Set::Iterator find_if(key_t item, comparator pred) { return m_rbtree.find_if(item, pred); }
+	Iterator find(key_t item) { return m_rbtree.find(item); }
+	Iterator find_if(key_t item, comparator pred) { return m_rbtree.find_if(item, pred); }
 
-	inline UT_Set::Iterator begin() { return m_rbtree.begin(); }
-	inline UT_Set::Iterator end() { return m_rbtree.end(); }
-	inline UT_Set::Iterator rbegin() { return m_rbtree.rbegin(); }
-	inline UT_Set::Iterator rend() { return m_rbtree.rend(); }
-	inline size_t size() { return m_rbtree.size(); }
+	Iterator begin() { return m_rbtree.begin(); }
+	Iterator end() { return m_rbtree.end(); }
+	Iterator rbegin() { return m_rbtree.rbegin(); }
+	Iterator rend() { return m_rbtree.rend(); }
+	size_t size() { return m_rbtree.size(); }
 
 #ifdef DEBUG
-	inline void print() const { m_rbtree.print(); }
+	void print() const { m_rbtree.print(); }
 	// This method should be const.  See UT_RBTree::checkInvariants comment
-	inline bool checkInvariants() { return m_rbtree.checkInvariants(); }
+	bool checkInvariants() { return m_rbtree.checkInvariants(); }
 #endif
 
 private:
