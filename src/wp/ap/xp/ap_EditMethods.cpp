@@ -3020,6 +3020,7 @@ Defun(contextMisspellText)
 
 Defun(contextImage)
 {
+#ifdef DEBUG
 	ABIWORD_VIEW;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
 	UT_ASSERT(pFrame);
@@ -3028,7 +3029,7 @@ Defun(contextImage)
 	  {
 	    // select the image if it isn't already
 	    UT_DEBUGMSG(("Selecting image\n"));
-#if 0
+#if 1
 	    pView->warpInsPtToXY(pCallData->m_xPos, pCallData->m_yPos, true);
 	    pView->moveInsPtTo(FV_DOCPOS_EOW_MOVE);
 	    pView->moveInsPtTo(FV_DOCPOS_BOW);
@@ -3038,8 +3039,10 @@ Defun(contextImage)
 			     FV_DOCPOS_BOW, FV_DOCPOS_EOW_SELECT);
 #endif
 	  }
-
 	return s_doContextMenu(EV_EMC_IMAGE,pCallData->m_xPos, pCallData->m_yPos,pView,pFrame);
+#else
+	return true;
+#endif
 }
 
 Defun(contextHyperlink)
