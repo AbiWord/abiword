@@ -70,7 +70,7 @@ public:
 	bool		copy(const UT_Vector *pVec);
 	inline UT_uint32 size() const { return getItemCount(); }
 
-protected:
+private:
 	UT_sint32		grow(UT_uint32);
 	
 	void**			m_pEntries;

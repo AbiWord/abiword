@@ -305,20 +305,22 @@ typedef struct {
 
 // please try to keep this ordered alphabetically by country-code
 static const Ispell2Lang_t m_mapping[] = {
-  { "danish.hash",     "da-DK" },
+  { "dansk.hash",      "da-DK" },
   { "german.hash",     "de-DE" },
   { "australian.hash", "en-AU" },
   { "canadian.hash",   "en-CA" },
   { "british.hash",    "en-GB" },
   { "american.hash",   "en-US" },
   { "spanish.hash",    "es-ES" },
+  { "italian.hash",    "it-IT" },
+  { "lietuviu.hash",   "lt-LT" },
   { "dutch96.hash",    "nl-NL" },
   { "nynorsk.hash",    "nn-NO" },
   { "french.hash",     "fr-FR" },
   { "lietuviu.hash",   "lt-LT" },
   { "portugal.hash",   "pt-PT" },
   { "russian.hash",    "ru-RU" },
-  { "swedish.hash",    "sv-SE"}
+  { "swedish.hash",    "sv-SE" }
 };
 
 bool
