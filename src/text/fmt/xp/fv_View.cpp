@@ -1176,20 +1176,23 @@ void FV_View::cmdScroll(UT_sint32 iScrollCmd, UT_uint32 iPos)
 	}
 }
 
-void FV_View::addScrollListener(void (*pfn)(UT_sint32, UT_sint32))
+//void FV_View::addScrollListener(void (*pfn)(FV_View*,UT_sint32, UT_sint32))
+void FV_View::addScrollListener(FV_ScrollObj* pObj)
 {
-	m_scrollListeners.addItem((void *)pfn);
+	m_scrollListeners.addItem((void *)pObj);
 }
 
-void FV_View::removeScrollListener(void (*pfn)(UT_sint32, UT_sint32))
+//void FV_View::removeScrollListener(void (*pfn)(UT_sint32, UT_sint32))
+void FV_View::removeScrollListener(FV_ScrollObj* pObj)
 {
 	UT_sint32 count = m_scrollListeners.getItemCount();
 
 	for (UT_sint32 i = 0; i < count; i++)
 	{
-		void (*pfn2)(UT_sint32, UT_sint32)  = (void (*)(UT_sint32,UT_sint32)) m_scrollListeners.getNthItem(i);
+		FV_ScrollObj* obj = (FV_ScrollObj*) m_scrollListeners.getNthItem(i);
+//		void (*pfn2)(FV_View*,UT_sint32, UT_sint32)  = (void (*)(FV_ScrollObj*,UT_sint32,UT_sint32)) m_scrollListeners.getNthItem(i);
 
-		if (pfn2 == pfn)
+		if (obj == pObj)
 		{
 			m_scrollListeners.deleteNthItem(i);
 			break;
@@ -1203,9 +1206,11 @@ void FV_View::sendScrollEvent(UT_sint32 xoff, UT_sint32 yoff)
 
 	for (UT_sint32 i = 0; i < count; i++)
 	{
-		void (*pfn)(UT_sint32, UT_sint32)  = (void ((*)(UT_sint32,UT_sint32))) m_scrollListeners.getNthItem(i);
+		FV_ScrollObj* pObj = (FV_ScrollObj*) m_scrollListeners.getNthItem(i);
+//		void (*pfn)(FV_View*,UT_sint32, UT_sint32)  = (void ((*)(FV_ScrollObj*,UT_sint32,UT_sint32))) m_scrollListeners.getNthItem(i);
 
-		pfn(xoff, yoff);
+		pObj->m_pfn(pObj->m_pData, xoff, yoff);
+//		pfn(this, xoff, yoff);
 	}
 }
 

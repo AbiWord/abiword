@@ -52,6 +52,13 @@ enum
 	DG_SCROLLCMD_TOPOSITION
 };
 
+class FV_ScrollObj
+{
+ public:
+	void* m_pData;
+	void (*m_pfn)(void *, UT_sint32, UT_sint32);
+};
+
 class FV_View
 {
 	friend class fl_DocListener;
@@ -75,8 +82,10 @@ public:
 	void insertCharacterFormatting(const XML_Char * properties[]);
 
 	void cmdScroll(UT_sint32 iScrollCmd, UT_uint32 iPos = 0);
-	void addScrollListener(void (*pfn)(UT_sint32, UT_sint32));
-	void removeScrollListener(void (*pfn)(UT_sint32, UT_sint32));
+//	void addScrollListener(void (*pfn)(FV_View*,UT_sint32, UT_sint32));
+//	void removeScrollListener(void (*pfn)(FV_View*,UT_sint32, UT_sint32));
+	void addScrollListener(FV_ScrollObj*);
+	void removeScrollListener(FV_ScrollObj*);
 	void sendScrollEvent(UT_sint32 xoff, UT_sint32 yoff);
 
 	void cmdFormatBlock(const XML_Char * properties[]);
