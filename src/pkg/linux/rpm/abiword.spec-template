@@ -236,7 +236,7 @@ cd ../abi
 %{ABIPREFIX}/AbiSuite/AbiWord/help/en-US
 %{ABIPREFIX}/AbiSuite/AbiWord/strings
 %{ABIPREFIX}/AbiSuite/AbiWord/system.profile-*
-%attr(755,-,-,-)%{ABIPREFIX}/AbiSuite/bin
+%{ABIPREFIX}/AbiSuite/bin
 %{ABIPREFIX}/AbiSuite/dictionary/*american*.hash*
 %{ABIPREFIX}/AbiSuite/icons
 %{ABIPREFIX}/AbiSuite/templates
@@ -286,13 +286,13 @@ cd ../abi
 %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiMSWrite.*
 %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiPalmDoc.*
 %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiPW.*
-%{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiSDW.*
+#%{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiSDW.*
 %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiT602.*
 %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiWML.*
 %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiWordPerfect.*
 %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiXHTML.*
 %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiXSLFO.*
-%{ABIPREFIX}/AbiSuite/AbiWord/plugins/libOpenWriter.*
+#%{ABIPREFIX}/AbiSuite/AbiWord/plugins/libOpenWriter.*
 %endif
 
 %files clipart
@@ -308,6 +308,9 @@ cd ../abi
 %{ABIPREFIX}/AbiSuite/fonts/*.pfb
 %{ABIPREFIX}/AbiSuite/fonts/*.e2u
 %{ABIPREFIX}/AbiSuite/fonts/*.u2g
+
+%post
+chmod a+x %{ABIPREFIX}/AbiSuite/bin/*
 
 %post fonts
 if test -z "`grep AbiSuite /etc/X11/fs/config`" ; then
