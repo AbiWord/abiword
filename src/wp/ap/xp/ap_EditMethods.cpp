@@ -1693,6 +1693,10 @@ static UT_Bool s_doPrint(FV_View * pView, UT_Bool bTryToSuppressDialog)
 		da.width = pDocLayout->getWidth();
 		da.height = pDocLayout->getHeight();
 
+		// TODO these are here temporarily to make printing work.  We'll fix the hack later.
+		da.width /= pLayout->countPages();
+		da.height /= pLayout->countPages();
+		
 		UT_uint32 j,k;
 
 		pGraphics->startPrint();
