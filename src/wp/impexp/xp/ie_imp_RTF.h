@@ -535,7 +535,6 @@ private:
 	bool HandlePicture();
 	bool HandleObject();
 	bool HandleField();
-	bool HandleHyperlink();
 	bool HandleStyleDefinition(void);
 	bool HandleHeaderFooter(RTFHdrFtr::HdrFtrType hftype, UT_uint32 & headerID);
 	bool SkipCurrentGroup(bool bConsumeLastBrace = false);
@@ -713,6 +712,8 @@ private:
 	bool                  m_bInFootnote;
 	UT_uint32             m_iDepthAtFootnote;
 	UT_uint32             m_iLastFootnoteId;
+	UT_String             m_hyperlinkBase;
+	bool                  m_bHyperlinkOpen;
 };
 
 #endif /* IE_IMP_RTF_H */

@@ -1275,7 +1275,8 @@ IE_Imp_RTF::IE_Imp_RTF(PD_Document * pDocument)
 	m_bNestTableProps(false),
 	m_bParaWrittenForSection(false),
 	m_bCellBlank(true),
-	m_bEndTableOpen(false)
+	m_bEndTableOpen(false),
+	m_bHyperlinkOpen(false)
 {
 	m_pPasteBuffer = NULL;
 	m_lenPasteBuffer = 0;
@@ -1301,6 +1302,7 @@ IE_Imp_RTF::IE_Imp_RTF(PD_Document * pDocument)
 	m_bAppendAnyway = false;
 	m_bInFootnote = false;
 	m_iDepthAtFootnote = 0;
+	m_hyperlinkBase.clear();
 }
 
 
@@ -2971,6 +2973,13 @@ bool IE_Imp_RTF::HandleField()
 		// continue
 	}
 
+	if(m_bHyperlinkOpen)
+	{
+		FlushStoredChars(true);
+		getDoc()->appendObject(PTO_Hyperlink,NULL);
+		m_bHyperlinkOpen = false;
+	}
+		
 	return true;
 }
 
@@ -3062,7 +3071,71 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField, 
 	case 'H':
 		if (strcmp (instr, "HYPERLINK") == 0)
 		{
-			UT_DEBUGMSG (("RTF: HYPERLINK fieldinst not handled yet\n"));
+			xxx_UT_DEBUGMSG (("RTF: HYPERLINK fieldinst not handled yet\n"));
+			// set these so that HandleField outputs the result
+			xmlField = NULL;
+			isXML = false;
+			
+			instr = strtok(0, " \\{}");
+			const XML_Char *new_atts[3];
+
+			new_atts[0] = "xlink:href";
+			UT_String href;
+			if ( !strcmp(instr, "l") )
+			{
+				instr = strtok (NULL, " \\{}");
+				href = "#";
+			}
+			else
+			{
+				href.clear();
+			}
+
+			// the full address is enclosed in quotation marks,
+			// which need to be removed
+			if(*instr == '\"')
+				instr++;
+
+			if(instr[strlen(instr)-1])
+				instr[strlen(instr)-1] = 0;
+
+			href += instr;
+
+			UT_String full_href;
+
+			const char * s = href.c_str();
+
+			if(*s != '#' && !UT_isUrl(s))
+			{
+				// TODO we are dealing with a relative URL; until AW
+				// can handle relative URLs we will convert it into an
+				// absolute one
+				full_href = m_hyperlinkBase;
+				const char * s2 = full_href.c_str();
+				
+				if(*s != '/' && s2[strlen(s2)-1] != '/')
+				{
+					full_href += '/';
+					full_href += s;
+				}
+				else if(*s == '/' && s2[strlen(s2)-1] == '/')
+				{
+					full_href += (s+1);
+				}
+				else
+				{
+					full_href += s;
+				}
+				
+				s = full_href.c_str();
+			}
+			
+			new_atts[1] = s;
+			new_atts[2] = 0;
+
+			FlushStoredChars(true);
+			getDoc()->appendObject(PTO_Hyperlink,new_atts);
+			m_bHyperlinkOpen = true;
 		}
 		break;
 	case 'I':
@@ -3255,13 +3328,6 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField, 
 	}
 	free (newBuf);
 	return xmlField;
-}
-
-
-bool IE_Imp_RTF::HandleHyperlink()
-{
-	UT_ASSERT (UT_NOT_IMPLEMENTED); // see bug 2438
-	return false;
 }
 
 
@@ -4314,6 +4380,24 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 								return _appendField(pszAbiField);
 							}
 							FREEP(pszAbiField);
+						}
+						else if (strcmp(reinterpret_cast<char*>(keyword_star), "hlinkbase") == 0)
+						{
+							m_hyperlinkBase.clear();
+							unsigned char ch = 0;
+
+							if(!ReadCharFromFile(&ch))
+								return false;
+
+							while (ch != '}')
+							{
+								m_hyperlinkBase += ch;
+								if(!ReadCharFromFile(&ch))
+								   return false;
+							}
+							
+							PopRTFState();
+							return true;
 						}
 					}
 				}
