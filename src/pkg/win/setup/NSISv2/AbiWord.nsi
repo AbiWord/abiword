@@ -98,6 +98,9 @@ InstallDirRegKey HKLM SOFTWARE\${APPSET}\${PRODUCT}\v${VERSION_MAJOR} "Install_D
   ; specify where to get resources from for UI elements (default)
   !define MUI_UI "${NSISDIR}\Contrib\UIs\modern.exe"
 
+  ; quirk, seems to need to be defined before including Mui.nsh to work
+  !define MUI_COMPONENTSPAGE_SMALLDESC
+
   ; include the Modern UI support
   !include "Mui.nsh"
 
@@ -109,7 +112,7 @@ InstallDirRegKey HKLM SOFTWARE\${APPSET}\${PRODUCT}\v${VERSION_MAJOR} "Install_D
   !insertmacro MUI_PAGE_LICENSE $(LicenseTXT)
   ; allow user to select what parts to install
     ; put the description below choices
-    !define MUI_COMPONENTSPAGE_SMALLDESC
+;    !define MUI_COMPONENTSPAGE_SMALLDESC
   !insertmacro MUI_PAGE_COMPONENTS
   ; and where to install to
   !insertmacro MUI_PAGE_DIRECTORY
