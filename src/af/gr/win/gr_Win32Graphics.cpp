@@ -646,8 +646,6 @@ void GR_Win32Graphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sin
 	UT_DEBUGMSG(("GR_Win32Graphics::drawLine %u %u %u %u\n", x1,  y1, x2,  y2));	
 	#endif			   	
 	
-	GR_CaretDisabler caretDisabler(getCaret());	
-
 	x1 = _tduX(x1);
 	x2 = _tduX(x2);
 	y1 = _tduY(y1);
@@ -746,8 +744,6 @@ void GR_Win32Graphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint
 	UT_DEBUGMSG(("GR_Win32Graphics::xorLine %u %u %u %u\n", x1,  y1, x2,  y2));	
 	#endif
 	
-	GR_CaretDisabler caretDisabler(getCaret());
-	
 	/*
 	  Note that we always use a pixel width of 1 for xorLine, since
 	  this should always be done to the screen.
@@ -782,8 +778,6 @@ void GR_Win32Graphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 	UT_DEBUGMSG(("GR_Win32Graphics::polyLine %u\n", nPoints));	
 	#endif
 	
-	GR_CaretDisabler caretDisabler(getCaret());
-		
 	HPEN hPen = CreatePen(PS_SOLID, _tduR(m_iLineWidth), m_clrCurrent);
 	HPEN hOldPen = (HPEN) SelectObject(m_hdc, hPen);
 
@@ -815,7 +809,6 @@ void GR_Win32Graphics::fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y, 
 	h=_tduR(h);
 
 	COLORREF clr = RGB(c.m_red, c.m_grn, c.m_blu);
-	GR_CaretDisabler caretDisabler(getCaret());
 
 	#ifdef GR_GRAPHICS_DEBUG
 	UT_DEBUGMSG(("GR_Win32Graphics::fillRect %x %u %u %u %u\n",  clr, r.left, r.top, w, h));	
@@ -940,8 +933,6 @@ void GR_Win32Graphics::clearArea(UT_sint32 x, UT_sint32 y, UT_sint32 width, UT_s
 	UT_DEBUGMSG(("GR_Win32Graphics::clearArea %u %u %u %u\n",  x, y, width, height));	
 	#endif
 	
-	GR_CaretDisabler caretDisabler(getCaret());
-	 
 	x = _tduX(x);
 	y = _tduY(y);
 	width = _tduR(width);
@@ -961,8 +952,6 @@ void GR_Win32Graphics::invertRect(const UT_Rect* pRect)
 	#ifdef GR_GRAPHICS_DEBUG
 	UT_DEBUGMSG(("GR_Win32Graphics::invertRect\n"));	
 	#endif
-	
-	GR_CaretDisabler caretDisabler(getCaret());
 	
 	RECT r;
 
@@ -1024,8 +1013,6 @@ void GR_Win32Graphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDes
 {
 	UT_ASSERT(pImg);
 	
-	GR_CaretDisabler caretDisabler(getCaret());
-
 	xDest = _tduX(xDest);
 	yDest = _tduY(yDest);
 	
@@ -1211,8 +1198,6 @@ void GR_Win32Graphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint3
 	UT_DEBUGMSG(("GR_Win32Graphics::fillRect GR_Color3D  %x %u %u %u %u\n",  c, x, y, w, h));	
 	#endif
 	
-	GR_CaretDisabler caretDisabler(getCaret());
- 
 	RECT r;
 	r.left = _tduX(x);
 	r.top = _tduY(y);
@@ -1517,8 +1502,6 @@ void GR_Win32Font::Acq::selectFontIntoDC(GR_Win32Font& font, GR_Graphics * pGr, 
 
 void GR_Win32Graphics::polygon(UT_RGBColor& c,UT_Point *pts,UT_uint32 nPoints)
 {
-    GR_CaretDisabler caretDisabler(getCaret());
-	 
 	HPEN hPen = CreatePen(PS_SOLID, _tduR(m_iLineWidth), RGB(c.m_red, c.m_grn, c.m_blu));
 	HPEN hOldPen = (HPEN)SelectObject(m_hdc,hPen);
 

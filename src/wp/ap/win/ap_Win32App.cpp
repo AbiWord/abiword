@@ -87,6 +87,8 @@
 #include "ap_Strings.h"
 
 #include "pt_PieceTable.h"
+
+#include "gr_Painter.h"
 // extern prototype - this is defined in ap_EditMethods.cpp
 extern XAP_Dialog_MessageBox::tAnswer s_CouldNotLoadFileMessage(XAP_Frame * pFrame, const char * pNewFile, UT_Error errorCode);
 /*****************************************************************/
@@ -1103,7 +1105,9 @@ static LRESULT CALLBACK _SplashWndProc(HWND hWnd, UINT message, WPARAM wParam, L
 		{
 			// TODO: find XAP_App pointer for this
 			GR_Graphics * pG = new GR_Win32Graphics(hdc, hwndSplash, 0);
-			pG->drawImage(pSplash, 0, 0);
+			GR_Painter GP(pG);
+
+			GP.drawImage(pSplash, 0, 0);
 			DELETEP(pG);
 		}
         EndPaint(hWnd, &ps);
