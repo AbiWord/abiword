@@ -4416,7 +4416,7 @@ void    fl_BlockLayout::StartList( const XML_Char * style)
   //
 	List_Type lType;
 	const XML_Char * lDelim = "%L";
-	const XML_Char font[30],lDecimal[10];
+	XML_Char font[30],lDecimal[10];
 	UT_uint32 level = 1;
 	UT_uint32 startv = 1;
 	float fAlign = 0.25;
