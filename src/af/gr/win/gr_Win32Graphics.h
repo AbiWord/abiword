@@ -57,12 +57,13 @@ public:
 		static UT_uint32	getFontHeight(const GR_Win32Font& font)
 			{ return font.m_tm.tmHeight; }
 
-		static void				selectFontIntoDC(GR_Win32Font& font, GR_Graphics * pGr, HDC hdc);
+		static void	 selectFontIntoDC(GR_Win32Font& font, GR_Graphics * pGr, HDC hdc);
 	};
 	friend class Acq;
 
 	virtual UT_sint32 measureUnremappedCharForCache(UT_UCSChar cChar) const;
 	virtual GR_CharWidths* newFontWidths(void) const;
+	void markGUIFont() {m_bGUIFont = true;}
 
 protected:
 	GR_Win32CharWidths * _getCharWidths() const
@@ -92,6 +93,7 @@ private:
 
 	// a cache of 'allocFont *' at a given size
 	mutable UT_Vector		m_allocFonts;
+	bool                    m_bGUIFont;
 };
 
 //////////////////////////////////////////////////////////////////

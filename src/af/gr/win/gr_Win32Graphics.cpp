@@ -204,6 +204,7 @@ GR_Font* GR_Win32Graphics::getGUIFont(void)
 		DeleteObject(f);
 	}
 
+	m_pFontGUI->markGUIFont();
 	return m_pFontGUI;
 }
 
@@ -1287,7 +1288,8 @@ GR_Win32Font::GR_Win32Font(LOGFONT & lf)
 :	m_oldHDC(0),
 	m_layoutFont (0),
 	m_defaultCharWidth(0),
-	m_tm(TEXTMETRIC())
+	m_tm(TEXTMETRIC()),
+	m_bGUIFont(false)
 {
 	
 	m_iHeight = abs(lf.lfHeight);
@@ -1444,8 +1446,8 @@ void GR_Win32Font::fetchFont(UT_uint32 pixelsize) const
 
 HFONT GR_Win32Font::Acq::getDisplayFont(GR_Win32Font& font, GR_Graphics * pG)
 {
-	UT_uint32 zoom = pG->getDoNotZoomText() ? 100 : pG->getZoomPercentage();
-	UT_uint32 pixels = pG->getDoNotZoomText() ? font.m_iHeight : font.m_iHeight*zoom/100;
+	UT_uint32 zoom = font.m_bGUIFont ? 100 : pG->getZoomPercentage();
+	UT_uint32 pixels = font.m_bGUIFont ? font.m_iHeight : font.m_iHeight*zoom/100;
 		
 	HFONT pFont = font.getFontFromCache(pixels, false, zoom);
 	if (pFont)
