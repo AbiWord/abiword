@@ -1657,7 +1657,7 @@ s_RTF_ListenerWriteDoc::s_RTF_ListenerWriteDoc(PD_Document * pDocument,
 	m_sdh = NULL;
 	m_bToClipboard = bToClipboard;
 	m_bStartedList = false;
-	m_bBlankLine = false;
+	m_bBlankLine = true;
 	m_Table.setDoc(m_pDocument);
 	m_iCurRow = -1;
 	m_bNewTable = false;
