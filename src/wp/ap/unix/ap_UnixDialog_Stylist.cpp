@@ -53,6 +53,7 @@ static void s_types_clicked(GtkTreeView *treeview,
 	GValue value = {0,};
 	gtk_tree_model_get_value (model, &iter,1,&value);
 	row = g_value_get_int(&value);
+	g_value_unset (&value);
 	gtk_tree_model_get_value (model, &iter,2,&value);
 	col = g_value_get_int(&value);
 	dlg->styleClicked(row,col);
