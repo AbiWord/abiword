@@ -17,50 +17,27 @@
  * 02111-1307, USA.
  */
 
-#ifndef AP_UNIXDIALOG_BREAK_H
-#define AP_UNIXDIALOG_BREAK_H
+#ifndef AP_UNIXGNOMEDIALOG_BREAK_H
+#define AP_UNIXGNOMEDIALOG_BREAK_H
 
-#include "ap_Dialog_Break.h"
+#include "ap_UnixDialog_Break.h"
 
 class XAP_UnixFrame;
 
 /*****************************************************************/
 
-class AP_UnixDialog_Break: public AP_Dialog_Break
+class AP_UnixGnomeDialog_Break: public AP_UnixDialog_Break
 {
 public:
-	AP_UnixDialog_Break(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
-	virtual ~AP_UnixDialog_Break(void);
-
-	virtual void			runModal(XAP_Frame * pFrame);
+	AP_UnixGnomeDialog_Break(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
+	virtual ~AP_UnixGnomeDialog_Break(void);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
-
-	// callbacks can fire these events
-
-	virtual void			event_OK(void);
-	virtual void			event_Cancel(void);
-	virtual void			event_WindowDelete(void);
 
 protected:
 
 	// private construction functions
-	virtual GtkWidget * _constructWindow(void);
-	void		_populateWindowData(void);
-	void 		_storeWindowData(void);
-
-	GtkWidget * _findRadioByID(AP_Dialog_Break::breakType b);
-	AP_Dialog_Break::breakType _getActiveRadioItem(void);
-	
-	// pointers to widgets we need to query/set
-	GtkWidget * m_windowMain;
-
-	// group of radio buttons for easy traversal
-	GSList *	m_radioGroup;
-
-	GtkWidget * m_buttonOK;
-	GtkWidget * m_buttonCancel;
-
+	GtkWidget * _constructWindow(void);
 };
 
 #endif /* AP_UNIXDIALOG_BREAK_H */

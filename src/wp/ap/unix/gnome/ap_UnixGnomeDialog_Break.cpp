@@ -18,6 +18,7 @@
  */
 
 #include <stdlib.h>
+#include <gnome.h>
 
 #include "ut_string.h"
 #include "ut_assert.h"
@@ -35,6 +36,7 @@
 #include "ap_Dialog_Id.h"
 #include "ap_Dialog_Break.h"
 #include "ap_UnixDialog_Break.h"
+#include "ap_UnixGnomeDialog_Break.h"
 
 /*****************************************************************/
 
@@ -42,26 +44,20 @@
 
 /*****************************************************************/
 
-XAP_Dialog * AP_UnixDialog_Break::static_constructor(XAP_DialogFactory * pFactory,
-													   XAP_Dialog_Id id)
+XAP_Dialog * AP_UnixGnomeDialog_Break::static_constructor(XAP_DialogFactory * pFactory,
+														  XAP_Dialog_Id id)
 {
-	AP_UnixDialog_Break * p = new AP_UnixDialog_Break(pFactory,id);
+	AP_UnixGnomeDialog_Break * p = new AP_UnixGnomeDialog_Break(pFactory,id);
 	return p;
 }
 
-AP_UnixDialog_Break::AP_UnixDialog_Break(XAP_DialogFactory * pDlgFactory,
-										 XAP_Dialog_Id id)
-	: AP_Dialog_Break(pDlgFactory,id)
+AP_UnixGnomeDialog_Break::AP_UnixGnomeDialog_Break(XAP_DialogFactory * pDlgFactory,
+												   XAP_Dialog_Id id)
+	: AP_UnixDialog_Break(pDlgFactory, id)
 {
-	m_windowMain = NULL;
-
-	m_buttonOK = NULL;
-	m_buttonCancel = NULL;
-
-	m_radioGroup = NULL;
 }
 
-AP_UnixDialog_Break::~AP_UnixDialog_Break(void)
+AP_UnixGnomeDialog_Break::~AP_UnixGnomeDialog_Break(void)
 {
 }
 
@@ -89,64 +85,7 @@ static void s_delete_clicked(GtkWidget * /* widget */,
 
 /*****************************************************************/
 
-void AP_UnixDialog_Break::runModal(XAP_Frame * pFrame)
-{
-	// Build the window's widgets and arrange them
-	GtkWidget * mainWindow = _constructWindow();
-	UT_ASSERT(mainWindow);
-
-	connectFocus(GTK_WIDGET(mainWindow),pFrame);
-	// Populate the window's data items
-	_populateWindowData();
-	
-	// To center the dialog, we need the frame of its parent.
-	XAP_UnixFrame * pUnixFrame = static_cast<XAP_UnixFrame *>(pFrame);
-	UT_ASSERT(pUnixFrame);
-	
-	// Get the GtkWindow of the parent frame
-	GtkWidget * parentWindow = pUnixFrame->getTopLevelWindow();
-	UT_ASSERT(parentWindow);
-	
-	// Center our new dialog in its parent and make it a transient
-	// so it won't get lost underneath
-	centerDialog(parentWindow, mainWindow);
-
-	// Show the top level dialog,
-	gtk_widget_show(mainWindow);
-
-	// Make it modal, and stick it up top
-	gtk_grab_add(mainWindow);
-
-	// Run into the GTK event loop for this window.
-	gtk_main();
-
-	_storeWindowData();
-	
-	gtk_widget_destroy(mainWindow);
-}
-
-void AP_UnixDialog_Break::event_OK(void)
-{
-	// TODO save out state of radio items
-	m_answer = AP_Dialog_Break::a_OK;
-	gtk_main_quit();
-}
-
-void AP_UnixDialog_Break::event_Cancel(void)
-{
-	m_answer = AP_Dialog_Break::a_CANCEL;
-	gtk_main_quit();
-}
-
-void AP_UnixDialog_Break::event_WindowDelete(void)
-{
-	m_answer = AP_Dialog_Break::a_CANCEL;	
-	gtk_main_quit();
-}
-
-/*****************************************************************/
-
-GtkWidget * AP_UnixDialog_Break::_constructWindow(void)
+GtkWidget * AP_UnixGnomeDialog_Break::_constructWindow(void)
 {
 
 	GtkWidget * windowBreak;
@@ -161,25 +100,20 @@ GtkWidget * AP_UnixDialog_Break::_constructWindow(void)
 	GtkWidget * radiobuttonEvenPage;
 	GtkWidget * radiobuttonOddPage;
 	GtkWidget * labelSectionBreaks;
-	GtkWidget * hseparator9;
 	GtkWidget * hseparator10;
-	GtkWidget * hbuttonboxBreak;
 	GtkWidget * buttonOK;
 	GtkWidget * buttonCancel;
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	XML_Char * unixstr = NULL;	// used for conversions
 
-	windowBreak = gtk_window_new (GTK_WINDOW_DIALOG);
+	windowBreak = gnome_dialog_new (pSS->getValue(AP_STRING_ID_DLG_Break_BreakTitle),
+									GNOME_STOCK_BUTTON_OK, GNOME_STOCK_BUTTON_CANCEL, NULL);
 	gtk_object_set_data (GTK_OBJECT (windowBreak), "windowBreak", windowBreak);
-	gtk_window_set_title (GTK_WINDOW (windowBreak), pSS->getValue(AP_STRING_ID_DLG_Break_BreakTitle));
 	gtk_window_set_policy (GTK_WINDOW (windowBreak), FALSE, FALSE, FALSE);
 	
-	vboxMain = gtk_vbox_new (FALSE, 0);
+  	vboxMain = GNOME_DIALOG (windowBreak)->vbox;
 	gtk_object_set_data (GTK_OBJECT (windowBreak), "vboxMain", vboxMain);
-	gtk_widget_show (vboxMain);
-	gtk_container_add (GTK_CONTAINER (windowBreak), vboxMain);
-	gtk_container_set_border_width (GTK_CONTAINER (vboxMain), 10);
 
 	tableInsert = gtk_table_new (7, 2, FALSE);
 	gtk_object_set_data (GTK_OBJECT (windowBreak), "tableInsert", tableInsert);
@@ -268,36 +202,17 @@ GtkWidget * AP_UnixDialog_Break::_constructWindow(void)
 	gtk_label_set_justify (GTK_LABEL (labelSectionBreaks), GTK_JUSTIFY_LEFT);
 	gtk_misc_set_alignment (GTK_MISC (labelSectionBreaks), 0, 0.5);
 	
-	hseparator9 = gtk_hseparator_new ();
-	gtk_object_set_data (GTK_OBJECT (windowBreak), "hseparator9", hseparator9);
-	gtk_widget_show (hseparator9);
-	gtk_table_attach (GTK_TABLE (tableInsert), hseparator9, 0, 2, 6, 7,
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 6);
-
 	hseparator10 = gtk_hseparator_new ();
 	gtk_object_set_data (GTK_OBJECT (windowBreak), "hseparator10", hseparator10);
 	gtk_widget_show (hseparator10);
 	gtk_table_attach (GTK_TABLE (tableInsert), hseparator10, 0, 2, 2, 3,
 					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 6);
 
-	hbuttonboxBreak = gtk_hbutton_box_new ();
-	gtk_object_set_data (GTK_OBJECT (windowBreak), "hbuttonboxBreak", hbuttonboxBreak);
-	gtk_widget_show (hbuttonboxBreak);
-	gtk_box_pack_start (GTK_BOX (vboxMain), hbuttonboxBreak, FALSE, FALSE, 4);
-	gtk_button_box_set_layout (GTK_BUTTON_BOX (hbuttonboxBreak), GTK_BUTTONBOX_END);
-	gtk_button_box_set_spacing (GTK_BUTTON_BOX (hbuttonboxBreak), 10);
-	gtk_button_box_set_child_size (GTK_BUTTON_BOX (hbuttonboxBreak), 85, 24);
-	gtk_button_box_set_child_ipadding (GTK_BUTTON_BOX (hbuttonboxBreak), 0, 0);
-
-	buttonOK = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_OK));
+	buttonOK = (GtkWidget *) g_list_previous (g_list_last (GNOME_DIALOG (windowBreak)->buttons))->data;
 	gtk_object_set_data (GTK_OBJECT (windowBreak), "buttonOK", buttonOK);
-	gtk_widget_show (buttonOK);
-	gtk_container_add (GTK_CONTAINER (hbuttonboxBreak), buttonOK);
 
-	buttonCancel = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Cancel));
+  	buttonCancel = (GtkWidget *) g_list_last (GNOME_DIALOG (windowBreak)->buttons)->data;
 	gtk_object_set_data (GTK_OBJECT (windowBreak), "buttonCancel", buttonCancel);
-	gtk_widget_show (buttonCancel);
-	gtk_container_add (GTK_CONTAINER (hbuttonboxBreak), buttonCancel);
 
 	// the control buttons
 	gtk_signal_connect(GTK_OBJECT(buttonOK),
@@ -334,54 +249,3 @@ GtkWidget * AP_UnixDialog_Break::_constructWindow(void)
 	
 	return windowBreak;
 }
-
-void AP_UnixDialog_Break::_populateWindowData(void)
-{
-	// We're a pretty stateless dialog, so we just set up
-	// the defaults from our members.
-
-	GtkWidget * widget = _findRadioByID(m_break);
-	UT_ASSERT(widget);
-	
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(widget), TRUE);
-}
-
-void AP_UnixDialog_Break::_storeWindowData(void)
-{
-	m_break = _getActiveRadioItem();
-}
-
-// TODO if this function is useful elsewhere, move it to Unix dialog
-// TODO helpers and standardize on a user-data tag for WIDGET_ID_TAG_KEY
-GtkWidget * AP_UnixDialog_Break::_findRadioByID(AP_Dialog_Break::breakType b)
-{
-	UT_ASSERT(m_radioGroup);
-	for (GSList * item = m_radioGroup ; item ; item = item->next)
-	{
-		if (GPOINTER_TO_INT(gtk_object_get_data(GTK_OBJECT(item->data), WIDGET_ID_TAG_KEY)) ==
-			(gint) b)
-			return (GtkWidget *) item->data;
-	}
-
-	return NULL;
-
-}
-
-AP_Dialog_Break::breakType AP_UnixDialog_Break::_getActiveRadioItem(void)
-{
-	UT_ASSERT(m_radioGroup);
-	for (GSList * item = m_radioGroup ; item ; item = item->next)
-	{
-		if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(item->data)))
-		{
-			return (AP_Dialog_Break::breakType)
-				GPOINTER_TO_INT(gtk_object_get_data(GTK_OBJECT(item->data), WIDGET_ID_TAG_KEY));
-		}
-	}
-
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-
-	return AP_Dialog_Break::b_PAGE;
-}
-
-
