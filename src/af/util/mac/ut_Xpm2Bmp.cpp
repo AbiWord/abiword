@@ -22,6 +22,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <QuickDraw.h>
+#include <MacMemory.h>
+
 #include "ut_types.h"
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
