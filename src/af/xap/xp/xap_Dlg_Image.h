@@ -52,6 +52,8 @@ public:
 	double getMaxWidth () const { return m_maxWidth; }
 	double getMaxHeight () const { return m_maxHeight; }
 
+	tAnswer getAnswer () const { return m_answer; }
+
  protected:	  
 	void setAnswer ( tAnswer ans ) { m_answer = ans; }
 

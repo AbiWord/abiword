@@ -40,6 +40,7 @@ libXap_unix_a_SOURCES=\
 	xap_UnixDlg_MessageBox.cpp		\
 	xap_UnixDlg_Print.cpp			\
 	xap_UnixDlg_WindowMore.cpp		\
+	xap_UnixDlg_Image.cpp			\
 	xap_UnixDlg_Zoom.cpp			\
 	xap_UnixDlg_Insert_Symbol.cpp		\
 	xap_UnixFontXLFD.cpp			\

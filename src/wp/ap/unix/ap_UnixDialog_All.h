@@ -45,6 +45,7 @@
 #   include "xap_UnixDlg_ClipArt.h"
 #   include "xap_UnixDlg_Encoding.h"
 #include "xap_UnixDlg_Password.h"
+#include "xap_UnixDlg_Image.h"
 
 #	include "ap_UnixDialog_Replace.h"
 #	include "ap_UnixDialog_Break.h"
@@ -81,6 +82,7 @@
 #   include "xap_UnixGnomeDlg_Language.h"
 #   include "xap_UnixGnomeDlg_PluginManager.h"
 #include "xap_UnixGnomeDlg_Password.h"
+#include "xap_UnixGnomeDlg_Image.h"
 
 #   include "ap_UnixGnomeDialog_Break.h"
 #	include "ap_UnixGnomeDialog_Replace.h"
@@ -161,6 +163,7 @@
      DeclareDialog(XAP_DIALOG_ID_INSERT_FILE, XAP_UnixDialog_FileOpenSaveAs)
  	DeclareDialog(AP_DIALOG_ID_INSERTHYPERLINK,	AP_UnixGnomeDialog_InsertHyperlink)
  	DeclareDialog(AP_DIALOG_ID_INSERTBOOKMARK,	AP_UnixGnomeDialog_InsertBookmark)	
+     DeclareDialog(XAP_DIALOG_ID_IMAGE, XAP_UnixGnomeDialog_Image)
      // ... also add new dialogs here ...
 #   else
 	DeclareDialog(XAP_DIALOG_ID_MESSAGE_BOX,	XAP_UnixDialog_MessageBox)
@@ -207,6 +210,7 @@
      DeclareDialog(XAP_DIALOG_ID_PASSWORD, XAP_UnixDialog_Password)
  	DeclareDialog(AP_DIALOG_ID_INSERTBOOKMARK,	AP_UnixDialog_InsertBookmark)
  	DeclareDialog(AP_DIALOG_ID_INSERTHYPERLINK,	AP_UnixDialog_InsertHyperlink)	
+     DeclareDialog(XAP_DIALOG_ID_IMAGE, XAP_UnixDialog_Image)
  	// ... also add new dialogs here ...
 #   endif
 

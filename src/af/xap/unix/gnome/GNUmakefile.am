@@ -35,6 +35,7 @@ libXap_Gnome_a_SOURCES=\
 	xap_UnixGnomeDlg_Print.cpp         \
 	xap_UnixGnomeDlg_PrintPreview.cpp  \
 	xap_UnixGnomeDlg_Zoom.cpp          \
+	xap_UnixGnomeDlg_Image.cpp	\
 	xap_UnixGnomeFrame.cpp 	           \
 	xap_UnixGnomeDlg_Language.cpp	   \
 	xap_UnixGnomeDlg_Password.cpp	\

@@ -42,6 +42,7 @@ PLATFORM_OBJS=	$(OBJDIR)/xap_$(ABI_FE)App.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_$(ABI_FE)Dlg_Password.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/xap_$(ABI_FE)Frame.$(OBJ_SUFFIX) \
 		$(OBJDIR)/xap_$(ABI_FE)Dlg_Language.$(OBJ_SUFFIX)	\
+		$(OBJDIR)/xap_$(ABI_FE)Dlg_Image.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/xap_$(ABI_FE)Dlg_Encoding.$(OBJ_SUFFIX)
 
 # gnome has its own about dialog
@@ -96,6 +97,7 @@ PLATFORM_OBJS +=	$(OBJDIR)/xap_$(ABI_FE)$(ABI_GNOME_PREFIX)App.$(OBJ_SUFFIX)		\
 			$(OBJDIR)/xap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dlg_Zoom.$(OBJ_SUFFIX)	\
 			$(OBJDIR)/xap_$(ABI_FE)$(ABI_GNOME_PREFIX)Frame.$(OBJ_SUFFIX)           \
 			$(OBJDIR)/xap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dlg_Password.$(OBJ_SUFFIX)	\
+			$(OBJDIR)/xap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dlg_Image.$(OBJ_SUFFIX)	\
 			$(OBJDIR)/xap_$(ABI_FE)$(ABI_GNOME_PREFIX)PrintGraphics.$(OBJ_SUFFIX)
 endif
 #			$(OBJDIR)/xap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dlg_Encoding.$(OBJ_SUFFIX)    \
@@ -113,6 +115,7 @@ OBJS=		$(PLATFORM_OBJS)						\
 		$(OBJDIR)/xap_Dlg_FileOpenSaveAs.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_Dlg_FontChooser.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_Dlg_MessageBox.$(OBJ_SUFFIX)			\
+		$(OBJDIR)/xap_Dlg_Image.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/xap_Dlg_Password.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_Dlg_PluginManager.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_Dlg_Print.$(OBJ_SUFFIX)				\

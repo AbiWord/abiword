@@ -31,3 +31,4 @@
 #include "ap_ML_ContextText.h"
 #include "ap_ML_ContextSquiggle.h"
 #include "ap_ML_ContextHyperlink.h"
+#include "ap_ML_ContextImage.h"

@@ -146,7 +146,7 @@ ap_bs_Mouse MouseTable[] =
 	{_CT _B3,	{ "contextText",		"",			"",		"",			"",			""				}},
 	//{_CL _B3,	{ "contextLeftOfText",	"",			"",		"",			"",			""				}},
 	{_CM _B3,	{ "contextMisspellText","",			"",		"",			"",			""				}},
-	//{_CI _B3,	{ "contextImage",		"",			"",		"",			"",			""				}},
+	{_CI _B3,	{ "contextImage",		"",			"",		"",			"",			""				}},
 	//{_CZ _B3,	{ "contextImageSize",	"",			"",		"",			"",			""				}},
 	//{_CF _B3,	{ "contextField",		"",			"",		"",			"",			""				}},
 

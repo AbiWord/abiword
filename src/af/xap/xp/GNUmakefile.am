@@ -37,6 +37,7 @@ libXap_xp_a_SOURCES=\
 	xap_Dlg_FileOpenSaveAs.cpp	\
 	xap_Dlg_FontChooser.cpp		\
 	xap_Dlg_Language.cpp		\
+	xap_Dlg_Image.cpp		\
 	xap_Dlg_MessageBox.cpp		\
 	xap_Dlg_Password.cpp		\
 	xap_Dlg_PluginManager.cpp	\

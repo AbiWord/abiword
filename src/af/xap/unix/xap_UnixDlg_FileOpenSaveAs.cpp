@@ -41,6 +41,8 @@
 #include "ut_svg.h"
 #include "ut_misc.h"
 #include "gr_UnixGraphics.h"
+#include "fg_Graphic.h"
+#include "fg_GraphicRaster.h"
 
 #if defined(HAVE_GNOME)
 #include "gr_UnixGnomeImage.h"
@@ -769,14 +771,14 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 	int answer = 0;
 
 	UT_ByteBuf *pBB = NULL;
-	IEGraphicFileType iegft = IEGFT_Unknown;
+	FG_Graphic * pGraphic = 0;
 	IE_ImpGraphic* pIEG = NULL;
 	UT_Error errorCode = UT_OK;
 	GR_Image *pImage = NULL;
 
 	double		scale_factor = 0.0;
-	UT_sint32	scaled_width,scaled_height;
-	UT_sint32	iImageWidth,iImageHeight;
+	UT_sint32     scaled_width,scaled_height;
+	UT_sint32     iImageWidth,iImageHeight;
 
 	if (!buf)
 	  {
@@ -802,82 +804,59 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 	pBB->insertFromFile(0, buf);
 
 	// Build an Import Graphic based on file type
-	errorCode = IE_ImpGraphic::constructImporter(buf, iegft, &pIEG);
+	errorCode = IE_ImpGraphic::constructImporter(buf, IEGFT_Unknown, &pIEG);
 	if (errorCode)
 	{
 		DELETEP(pBB);
 		pGr->drawChars (ucstext, 0, len, 12, 35);
 		goto Cleanup;
 	}
-	iegft = pIEG->fileTypeForContents( (const char *) pBB->getPointer(0), pBB->getLength());
 
-	// Skip import if PNG or SVG file
-	if (iegft != IEGFT_PNG && iegft != IEGFT_SVG)
-	{
-		// Convert to PNG or SVG (pBB Memoried freed in function
-		UT_ByteBuf *pTempBB = NULL; 
-		errorCode = pIEG->convertGraphic(pBB, &pTempBB);  
-		pBB = pTempBB;
-		if (errorCode)
-		{
-			DELETEP(pIEG);
-			DELETEP(pBB);
-			pGr->drawChars (ucstext, 0, len, 12, 35);
-			goto Cleanup;
-		}
-	}
-	// Reset file type based on conversion
-	iegft = pIEG->fileTypeForContents( (const char *) pBB->getPointer(0), pBB->getLength());
-	DELETEP(pIEG);
+	pIEG->importGraphic (pBB, &pGraphic);
 
-	if (iegft == IEGFT_PNG)
-	{
-		UT_PNG_getDimensions(pBB, iImageWidth, iImageHeight);
-	}
-	else if (iegft == IEGFT_SVG)
-	{
-		UT_sint32 layoutWidth;
-		UT_sint32 layoutHeight;
-		UT_SVG_getDimensions(pBB, pGr, iImageWidth, iImageHeight, layoutWidth, layoutHeight);
-	}
-	else
-	{
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN); // But it could, I think.
-	}
+	UT_ASSERT(pGraphic);
+	if (!pGraphic)
+	  {
+	    pGr->drawChars (ucstext, 0, len, 12, 35);
+	    goto Cleanup;
+	  }
 
-	if (m_preview->allocation.width >= iImageWidth && m_preview->allocation.height >= iImageHeight)
-		scale_factor = 1.0;
-	else
-		scale_factor = MIN( (double) m_preview->allocation.width/iImageWidth,
-				    (double) m_preview->allocation.height/iImageHeight);
-
-	scaled_width  = (int) (scale_factor * iImageWidth);
-	scaled_height = (int) (scale_factor * iImageHeight);
-
-	if (iegft == IEGFT_PNG)
+	if ( FGT_Raster == pGraphic->getType () )
 	{
 #if defined(HAVE_GNOME)
 		pImage = new GR_UnixGnomeImage(NULL,false);
 #else
 		pImage = new GR_UnixImage(NULL);
 #endif
+		UT_DEBUGMSG(("DOM: %f %f\n", scaled_width, scaled_height));
+		UT_DEBUGMSG(("DOM: '%d' %s\n", static_cast<FG_GraphicRaster*>(pGraphic)->getRaster_PNG()->getLength (),
+			     static_cast<FG_GraphicRaster*>(pGraphic)->getRaster_PNG()->getPointer(0)));
+
+		UT_ByteBuf * png = static_cast<FG_GraphicRaster*>(pGraphic)->getRaster_PNG();
+		UT_PNG_getDimensions (png, iImageWidth, iImageHeight);
+
+		if (m_preview->allocation.width >= iImageWidth && m_preview->allocation.height >= iImageHeight)
+		  scale_factor = 1.0;
+		else
+		  scale_factor = MIN( (double) m_preview->allocation.width/iImageWidth,
+				      (double) m_preview->allocation.height/iImageHeight);
+		
+		scaled_width  = (int)(scale_factor * iImageWidth);
+		scaled_height = (int)(scale_factor * iImageHeight);
+
+		pImage->convertFromBuffer(png, scaled_width, scaled_height);
+		
+		pGr->drawImage(pImage,
+			       (int)((m_preview->allocation.width  - scaled_width ) / 2),
+			       (int)((m_preview->allocation.height - scaled_height) / 2));
+		
+		answer = 1;
 	}
-	else // if (iegft == IEGFT_SVG)
+	else // if ( FGT_Vector == pGraphic->getType () )
 	{
-		pImage = new GR_VectorImage(NULL);
+	  //pImage = new GR_VectorImage(NULL);
 	}
 
-	if ( iegft == IEGFT_PNG ) // disable png for now
-	  {
-
-	    pImage->convertFromBuffer(pBB, scaled_width, scaled_height);
-	    
-	    pGr->drawImage(pImage,
-			   (m_preview->allocation.width  - scaled_width ) / 2,
-			   (m_preview->allocation.height - scaled_height) / 2);
-	    
-	    answer = 1;
-	  }
  Cleanup:
 	DELETEP(pBB);
 	DELETEP(pImage);

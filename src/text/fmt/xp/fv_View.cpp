@@ -2974,6 +2974,16 @@ bool FV_View::getCharFormat(const XML_Char *** pProps, bool bExpandStyles)
 	if(f->m_val != NULL)
 		v.addItem( (void *) f);
 
+#if 1
+	f = new _fmtPair("width",pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
+	if(f->m_val != NULL)
+		v.addItem( (void *) f);
+
+	f = new _fmtPair("height",pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
+	if(f->m_val != NULL)
+		v.addItem( (void *) f);
+#endif
+
 	// 2. prune 'em as they vary across selection
 	if (!bSelEmpty)
 	{

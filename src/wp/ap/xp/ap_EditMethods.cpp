@@ -21,6 +21,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <locale.h>
+
 #include "ut_debugmsg.h"
 #include "ut_string.h"
 #include "ut_bytebuf.h"
@@ -85,6 +87,7 @@
 #include "xap_Dlg_Insert_Symbol.h"
 #include "xap_Dlg_Language.h"
 #include "xap_Dlg_PluginManager.h"
+#include "xap_Dlg_Image.h"
 
 #include "ie_imp.h"
 #include "ie_impGraphic.h"
@@ -160,6 +163,7 @@ public:
 	static EV_EditMethod_Fn cursorImage;
 	static EV_EditMethod_Fn cursorImageSize;
 
+        static EV_EditMethod_Fn contextImage;
 	static EV_EditMethod_Fn contextHyperlink;
 	static EV_EditMethod_Fn contextMenu;
 	static EV_EditMethod_Fn contextText;
@@ -322,6 +326,7 @@ public:
 	static EV_EditMethod_Fn dlgBullets;
 	static EV_EditMethod_Fn dlgBorders;
 	static EV_EditMethod_Fn dlgColumns;
+        static EV_EditMethod_Fn dlgFmtImage;
 	static EV_EditMethod_Fn dlgHdrFtr;
 	static EV_EditMethod_Fn style;
 	static EV_EditMethod_Fn dlgBackground;
@@ -572,6 +577,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(colorBackTB), _D_, ""),
 	EV_EditMethod(NF(colorForeTB), _D_, ""),
 	EV_EditMethod(NF(contextHyperlink),			0,	""),
+	EV_EditMethod(NF(contextImage), 0, ""),
 	EV_EditMethod(NF(contextMenu),			0,	""),
 	EV_EditMethod(NF(contextMisspellText),	0,	""),
 	EV_EditMethod(NF(contextText),			0,	""),
@@ -611,6 +617,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(dlgColorPickerBack),   0,  ""),
 	EV_EditMethod(NF(dlgColorPickerFore),   0,  ""),
 	EV_EditMethod(NF(dlgColumns),			0,		""),
+	EV_EditMethod(NF(dlgFmtImage), 0, ""),
 	EV_EditMethod(NF(dlgFont),  			0,		""),
 	EV_EditMethod(NF(dlgHdrFtr),			0,		""),
 	EV_EditMethod(NF(dlgLanguage),			0,		""),
@@ -3009,6 +3016,30 @@ Defun(contextMisspellText)
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
 	UT_ASSERT(pFrame);
 	return s_doContextMenu(EV_EMC_MISSPELLEDTEXT,pCallData->m_xPos, pCallData->m_yPos,pView,pFrame);
+}
+
+Defun(contextImage)
+{
+	ABIWORD_VIEW;
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
+	UT_ASSERT(pFrame);
+	
+	if ( pView->isSelectionEmpty () )
+	  {
+	    // select the image if it isn't already
+	    UT_DEBUGMSG(("Selecting image\n"));
+#if 0
+	    pView->warpInsPtToXY(pCallData->m_xPos, pCallData->m_yPos, true);
+	    pView->moveInsPtTo(FV_DOCPOS_EOW_MOVE);
+	    pView->moveInsPtTo(FV_DOCPOS_BOW);
+	    pView->extSelTo(FV_DOCPOS_EOW_SELECT);    
+#else
+	    pView->cmdSelect(pCallData->m_xPos, pCallData->m_yPos, 
+			     FV_DOCPOS_BOW, FV_DOCPOS_EOW_SELECT);
+#endif
+	  }
+
+	return s_doContextMenu(EV_EMC_IMAGE,pCallData->m_xPos, pCallData->m_yPos,pView,pFrame);
 }
 
 Defun(contextHyperlink)
@@ -6386,6 +6417,96 @@ Defun1(dlgBorders)
 
 	s_TellNotImplemented(pFrame, "Border and shading dialog", __LINE__);
 	return true;
+}
+
+Defun(dlgFmtImage)
+{
+  ABIWORD_VIEW;
+
+	XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
+	UT_ASSERT(pFrame);
+
+	pFrame->raise();
+
+	XAP_DialogFactory * pDialogFactory
+		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+
+	XAP_Dialog_Image * pDialog
+		= (XAP_Dialog_Image *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_IMAGE));
+	UT_ASSERT(pDialog);
+	if (!pDialog)
+		return false;
+
+	double width = 0., height = 0.;
+	double max_width = 0., max_height = 0.;
+	
+	// TODO: if we can't use get/set CharFormat. we need to find an alternative
+
+	const XML_Char ** props_in = NULL;
+	if (pView->getCharFormat(&props_in))
+	{
+	  // stuff properties into the dialog.
+
+	  const XML_Char* szWidth = UT_getAttribute("width", props_in);
+	  const XML_Char* szHeight = UT_getAttribute("height", props_in);
+
+	  // 72.0 is pixels/inch
+
+	  setlocale (LC_NUMERIC, "C");
+	  if (szWidth)	    
+	    width = UT_convertToInches (szWidth) * 72.0;
+	  if (szHeight)
+	    height = UT_convertToInches (szHeight) * 72.0;
+	  setlocale (LC_NUMERIC, 0);
+
+	  const fp_PageSize & page = pView->getPageSize ();
+
+	  // an approximate... TODO: make me more accurate
+	  max_width  = page.Width (fp_PageSize::inch) * 72.0;
+	  max_height = page.Height (fp_PageSize::inch) * 72.0;
+
+	  pDialog->setWidth (width);
+	  pDialog->setHeight (height);
+	  pDialog->setMaxWidth (max_width);
+	  pDialog->setMaxHeight (max_height);
+
+	  UT_DEBUGMSG(("DOM: w: %f h: %f mw: %f mh: %f\n", width, height, max_width, max_height));
+	  
+	  pDialog->runModal(pFrame);
+	  
+	  XAP_Dialog_Image::tAnswer ans = pDialog->getAnswer();
+	  bool bOK = (ans == XAP_Dialog_Image::a_OK);
+	  
+	  if (bOK)
+	    {
+	      // now get them back in inches
+	      width  = pDialog->getWidth () / 72.0;
+	      height = pDialog->getHeight () / 72.0;
+
+	      char widthBuf[32];
+	      char heightBuf[32];
+
+	      // TODO: set format
+	      const XML_Char * properties[] = {"width", NULL, "height", NULL, 0};
+	      setlocale(LC_NUMERIC, "C");
+	      sprintf(widthBuf, "%fin", width);
+	      sprintf(heightBuf, "%fin", height);
+	      setlocale(LC_NUMERIC, 0);
+
+	      UT_DEBUGMSG(("DOM: nw:%s nh:%s\n", widthBuf, heightBuf));
+
+	      properties[1] = widthBuf;
+	      properties[3] = heightBuf;
+	      pView->setCharFormat(properties);
+	    }
+	  
+	  pDialogFactory->releaseDialog(pDialog);
+	  return true;
+	}
+	else
+	  {
+	    return false;
+	  }
 }
 
 Defun(dlgColumns)

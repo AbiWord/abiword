@@ -25,7 +25,7 @@
 ******************************************************************
 *****************************************************************/
 
-BeginLayout(ContextImageT,EV_EMC_IMAGESIZE)
+BeginLayout(ContextImageT,EV_EMC_IMAGE)
 
 	BeginPopupMenu()
 		MenuItem(AP_MENU_ID_FMT_IMAGE)

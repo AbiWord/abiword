@@ -106,17 +106,8 @@ void XAP_UnixDialog_Image::runModal(XAP_Frame * pFrame)
   
   // Run the dialog
   gtk_widget_show (cf);
-  gtk_grab_add (cf);
-  
-  // grab focus from the keyboard to the current window
-  // reduces chances of password snooping
-  window = gtk_widget_get_parent_window(GTK_WIDGET(cf));
-  gdk_keyboard_grab(window, FALSE, GDK_CURRENT_TIME);
-  
   gtk_main();
-  
-  gdk_keyboard_ungrab(GDK_CURRENT_TIME);
-  
+
   if (cf && GTK_IS_WIDGET(cf))
     gtk_widget_destroy (cf);
 }

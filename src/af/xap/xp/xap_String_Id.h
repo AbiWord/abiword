@@ -193,8 +193,8 @@ dcl(DLG_ABOUT_Title,					"About %s")
 
      /* image size dialog */
      dcl(DLG_Image_Title, "Image Properties")
-     dcl(DLG_Image_Width, "Width:")
-     dcl(DLG_Image_Height, "Height:")
+     dcl(DLG_Image_Width, "Width in pixels:")
+     dcl(DLG_Image_Height, "Height in pixels:")
 
 dcl(DLG_Options_Label_UnixFontWarning, "Show font warning at start up")
 dcl(DLG_Options_Label_ModifyUnixFontPath, "Modify Unix Font Path")

@@ -143,6 +143,7 @@ menuitem(FMT_BOTTOMLINE)
 menuitem(FMT_SUPERSCRIPT)
 menuitem(FMT_SUBSCRIPT)
 menuitem(FMT_LANGUAGE)
+menuitem(FMT_IMAGE)
 
 menuitem(TOOLS)
 menuitem(TOOLS_SPELLING)
