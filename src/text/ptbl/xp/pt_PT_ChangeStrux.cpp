@@ -216,7 +216,15 @@ UT_Bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 												   NULL,NULL,
 												   pfsContainer,&pfNewEnd,&fragOffsetNewEnd);
 					UT_ASSERT(bResult);
-					UT_ASSERT(fragOffsetNewEnd == 0);
+					if (fragOffsetNewEnd > 0)
+					{
+						// skip over the rest of this frag since we've already
+						// dealt with it.
+						dpos += pfNewEnd->getLength() - fragOffsetNewEnd;
+						pfNewEnd = pfNewEnd->getNext();
+						fragOffsetNewEnd = 0;
+					}
+						
 				}
 				break;
 
@@ -244,7 +252,6 @@ UT_Bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 			pf = pfNewEnd;
 			if (!pf)
 				bFinished = UT_TRUE;
-//			fragOffset_First = fragOffsetNewEnd;
 		}
 	}
 
