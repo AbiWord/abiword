@@ -93,9 +93,8 @@ void fp_Run::__dump(FILE * fp) const
 	UT_ASSERT(NrElements(s_names)==(FPRUN__LAST__-FPRUN__FIRST__+1));
 	const char * szName = (((m_iType >= FPRUN__FIRST__) && (m_iType <= FPRUN__LAST__)) ? s_names[m_iType-1] : "Unknown");
 
-	fprintf(fp,"    Run: %p T=%s Off=%d Len=%d D=%c Line=%p [x %d y %d w %d h %d]\n",
-			this, szName, m_iOffsetFirst, m_iLen, 
-			((m_bDirty) ? 'y' : 'n'), m_pLine,
+	fprintf(fp,"    Run: 0x%p T=%s Off=%d Len=%d D=%c [x %d y %d w %d h %d]\n",
+			this, szName, m_iOffsetFirst, m_iLen, ((m_bDirty) ? 'y' : 'n'),
 			m_iX, m_iY, m_iWidth, m_iHeight);
 }
 #endif
@@ -935,6 +934,8 @@ void fp_FieldRun::lookupProperties(void)
 	const PP_AttrProp * pSectionAP = NULL; // TODO do we care about section-level inheritance?
 	
 	m_pBL->getSpanAttrProp(m_iOffsetFirst,UT_FALSE,&pSpanAP);
+	
+	PD_Document * pDoc = m_pBL->getDocument();
 	m_pBL->getAttrProp(&pBlockAP);
 
 	// look for fonts in this DocLayout's font cache
@@ -945,6 +946,7 @@ void fp_FieldRun::lookupProperties(void)
 	UT_parseColor(PP_evalProperty("color",pSpanAP,pBlockAP,pSectionAP, m_pBL->getDocument(), UT_TRUE), m_colorFG);
 
 	m_pG->setFont(m_pFont);
+
 	m_iAscent = m_pG->getFontAscent();	
 	m_iDescent = m_pG->getFontDescent();
 	m_iHeight = m_pG->getFontHeight();
@@ -957,6 +959,19 @@ void fp_FieldRun::lookupProperties(void)
 	m_pG->setFont(m_pFont);
 
 	const XML_Char* pszType = NULL;
+
+	const XML_Char * pszPosition = PP_evalProperty("text-position",pSpanAP,pBlockAP,pSectionAP, pDoc, UT_TRUE);
+
+	if (0 == UT_stricmp(pszPosition, "superscript"))
+	{
+		m_fPosition = TEXT_POSITION_SUPERSCRIPT;
+	}
+	else if (0 == UT_stricmp(pszPosition, "subscript"))
+	{
+		m_fPosition = TEXT_POSITION_SUBSCRIPT;
+	} 
+	else m_fPosition = TEXT_POSITION_NORMAL;
+
 	pSpanAP->getAttribute("type", pszType);
 	UT_ASSERT(pszType);
 
@@ -990,6 +1005,16 @@ UT_Bool	fp_FieldRun::findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 /* iMaxLeft
 	return UT_FALSE;
 }
 
+UT_Bool fp_FieldRun::isSuperscript(void) const 
+{
+	return (m_fPosition == TEXT_POSITION_SUPERSCRIPT);
+}
+
+UT_Bool fp_FieldRun::isSubscript(void) const
+{
+	return (m_fPosition == TEXT_POSITION_SUBSCRIPT);
+}
+
 void fp_FieldRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL)
 {
 	pos = m_pBL->getPosition() + m_iOffsetFirst;
@@ -1006,7 +1031,26 @@ void fp_FieldRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y,
 	UT_ASSERT(m_pLine);
 	
 	m_pLine->getOffsets(this, xoff, yoff);
-	x = xoff;
+
+
+	// Assuming there is only one offset in this Run, the point
+	// can be either before or after this offset. Return X
+	// position accordingly.
+	UT_ASSERT(1 == m_iLen);
+	if (iOffset > m_iOffsetFirst)
+	{
+		xoff += m_iWidth;
+	}
+	if (m_fPosition == TEXT_POSITION_SUPERSCRIPT)
+	{
+		yoff -= m_iAscent * 1/2;
+	}
+	else if (m_fPosition == TEXT_POSITION_SUBSCRIPT)
+	{
+		yoff += m_iDescent /* * 3/2 */;
+	}
+
+        x = xoff;
 	y = yoff;
 	height = m_iHeight;
 }
@@ -1028,6 +1072,19 @@ void fp_FieldRun::_draw(dg_DrawArgs* pDA)
 {
 	UT_ASSERT(pDA->pG == m_pG);
 
+
+
+	UT_sint32 iYdraw =  pDA->yoff - getAscent();
+	
+	if (m_fPosition == TEXT_POSITION_SUPERSCRIPT)
+	{
+	        iYdraw -= getAscent() * 1/2;
+	}
+        else if (m_fPosition == TEXT_POSITION_SUBSCRIPT) 
+	{
+	        iYdraw +=  getDescent(); // * 3/2   
+	} 
+ 
 	if (m_pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
 		UT_uint32 iRunBase = m_pBL->getPosition() + m_iOffsetFirst;
@@ -1040,12 +1097,11 @@ void fp_FieldRun::_draw(dg_DrawArgs* pDA)
 		  with fields always being drawn a little darker than the
 		  surrounding text.
 		*/
-		
 		UT_RGBColor clrSelBackground(112, 112, 112);
 		UT_RGBColor clrNormalBackground(220, 220, 220);
-
-		UT_sint32 iFillHeight = m_pLine->getHeight();
-		UT_sint32 iFillTop = pDA->yoff - m_pLine->getAscent();
+		
+		UT_sint32 iFillTop = iYdraw;
+		UT_sint32 iFillHeight = getAscent() + getDescent();
 		
 		FV_View* pView = m_pBL->getDocLayout()->getView();
 		UT_uint32 iSelAnchor = pView->getSelectionAnchor();
@@ -1073,7 +1129,7 @@ void fp_FieldRun::_draw(dg_DrawArgs* pDA)
 	m_pG->setFont(m_pFont);
 	m_pG->setColor(m_colorFG);
 	
-	m_pG->drawChars(m_sFieldValue, 0, UT_UCS_strlen(m_sFieldValue), pDA->xoff, pDA->yoff - m_iAscent);
+	m_pG->drawChars(m_sFieldValue, 0, UT_UCS_strlen(m_sFieldValue), pDA->xoff,iYdraw);
 }
 
 //////////////////////////////////////////////////////////////////

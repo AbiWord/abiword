@@ -4117,7 +4117,6 @@ static UT_Bool s_doWordCountDlg(FV_View * pView)
 
         if(pDialog->isRunning())
 	{
-	  //        	pDialog->setCount(pView->countWords());
 		pDialog->activate();
 	}
         else

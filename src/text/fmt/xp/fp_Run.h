@@ -371,6 +371,8 @@ public:
 	virtual UT_Bool			findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce=UT_FALSE);
 
 	UT_Bool					calculateValue(void);
+        virtual UT_Bool                 isSuperscript(void) const;
+        virtual UT_Bool                 isSubscript(void) const;
 	
 protected:
 	virtual void			_draw(dg_DrawArgs*);
@@ -381,6 +383,13 @@ protected:
 	UT_RGBColor				m_colorFG;
 	UT_UCSChar				m_sFieldValue[FPFIELD_MAX_LENGTH];
 	fp_FieldsEnum			m_iFieldType;
+        enum
+        {
+                TEXT_POSITION_NORMAL,
+                TEXT_POSITION_SUPERSCRIPT,
+                TEXT_POSITION_SUBSCRIPT
+        };
+        UT_Byte                         m_fPosition;
 };
 
 class fp_FmtMarkRun : public fp_Run
