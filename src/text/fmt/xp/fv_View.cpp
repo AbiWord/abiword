@@ -1862,7 +1862,7 @@ UT_Bool FV_View::gotoTarget(FV_JumpTarget type, UT_UCSChar * data)
 
 // ---------------- start find and replace ---------------
 	
-UT_Bool FV_View::findNext(const UT_UCSChar * find, UT_Bool * bDoneEntireDocument)
+UT_Bool FV_View::findNext(const UT_UCSChar * find, UT_Bool matchCase, UT_Bool * bDoneEntireDocument)
 {
 	if (!isSelectionEmpty())
 	{
@@ -1873,7 +1873,7 @@ UT_Bool FV_View::findNext(const UT_UCSChar * find, UT_Bool * bDoneEntireDocument
 		_eraseInsertionPoint();
 	}
 
-	UT_Bool bRes = _findNext(find, bDoneEntireDocument);
+	UT_Bool bRes = _findNext(find, matchCase, bDoneEntireDocument);
 
 	if (isSelectionEmpty())
 	{
@@ -1894,7 +1894,7 @@ UT_Bool FV_View::findNext(const UT_UCSChar * find, UT_Bool * bDoneEntireDocument
 	return bRes;
 }
 
-UT_Bool FV_View::_findNext(const UT_UCSChar * find, UT_Bool * bDoneEntireDocument)
+UT_Bool FV_View::_findNext(const UT_UCSChar * find, UT_Bool matchCase, UT_Bool * bDoneEntireDocument)
 {
 	UT_ASSERT(find);
 
@@ -1911,8 +1911,20 @@ UT_Bool FV_View::_findNext(const UT_UCSChar * find, UT_Bool * bDoneEntireDocumen
 		// magic number; range of UT_sint32 falls short of extremely large docs
 		UT_sint32 foundAt = -1;
 
-		// change this when adding new searches
-		foundAt = _findBlockSearchDumb(buffer, find);
+		// Change the ordering of searches to accomodate new searches (like
+		// regular expressions, case-sensitive, or reverse searches).
+		// Right now we just work off case searches.
+		if (matchCase == UT_TRUE)
+		{
+			// this search will do case-sensitive work
+			foundAt = _findBlockSearchDumb(buffer, find);
+		}
+		else if (matchCase == UT_FALSE)
+		{
+			// TODO call the right function
+			UT_ASSERT(UT_NOT_IMPLEMENTED);
+		}
+
 
 		if (foundAt != -1)
 		{
@@ -2056,29 +2068,32 @@ UT_UCSChar * FV_View::_findGetNextBlockBuffer(fl_BlockLayout ** block, PT_DocPos
 	return bufferSegment;
 }
 
-UT_Bool FV_View::findSetNextString(UT_UCSChar * string)
+UT_Bool FV_View::findSetNextString(UT_UCSChar * string, UT_Bool matchCase)
 {
 	UT_ASSERT(string);
 
-	FREEP(_m_findNextString);
+	// update case matching
+	_m_matchCase = matchCase;
 
+	// update string
+	FREEP(_m_findNextString);
 	return UT_UCS_cloneString(&_m_findNextString, string);
 }
 
-UT_Bool FV_View::findAgain(void)
+UT_Bool FV_View::findAgain()
 {
 	if (_m_findNextString && *_m_findNextString)
 	{
-		return findNext(_m_findNextString, NULL);
+		return findNext(_m_findNextString, _m_matchCase, NULL);
 	}
 	
 	return UT_FALSE;
 }
 
 UT_Bool	FV_View::findReplace(const UT_UCSChar * find, const UT_UCSChar * replace,
-							 UT_Bool * bDoneEntireDocument)
+							 UT_Bool matchCase, UT_Bool * bDoneEntireDocument)
 {
-	UT_Bool bRes = _findReplace(find, replace, bDoneEntireDocument);
+	UT_Bool bRes = _findReplace(find, replace, matchCase, bDoneEntireDocument);
 
 	_updateScreen();
 	
@@ -2102,7 +2117,7 @@ UT_Bool	FV_View::findReplace(const UT_UCSChar * find, const UT_UCSChar * replace
 }
 
 UT_Bool	FV_View::_findReplace(const UT_UCSChar * find, const UT_UCSChar * replace,
-							 UT_Bool * bDoneEntireDocument)
+							  UT_Bool matchCase, UT_Bool * bDoneEntireDocument)
 {
 	// if we have done a find, and there is a selection, then replace what's in the
 	// selection and move on to next find (batch run, the common case)
@@ -2135,7 +2150,7 @@ UT_Bool	FV_View::_findReplace(const UT_UCSChar * find, const UT_UCSChar * replac
 		// a replace, but account for the 1 that the find advanced.
 		m_iInsPoint ++;
 
-		_findNext(find, bDoneEntireDocument);
+		_findNext(find, matchCase, bDoneEntireDocument);
 		return result;
 	}
 
@@ -2143,14 +2158,14 @@ UT_Bool	FV_View::_findReplace(const UT_UCSChar * find, const UT_UCSChar * replac
 	// but no replace
 	if (m_doneFind == UT_TRUE && isSelectionEmpty() == UT_TRUE)
 	{
-		_findNext(find, bDoneEntireDocument);
+		_findNext(find, matchCase, bDoneEntireDocument);
 		return UT_FALSE;
 	}
 	
 	// if we haven't done a find yet, do a find for them
 	if (m_doneFind == UT_FALSE)
 	{
-		_findNext(find, bDoneEntireDocument);
+		_findNext(find, matchCase, bDoneEntireDocument);
 		return UT_FALSE;
 	}
 
@@ -2158,7 +2173,8 @@ UT_Bool	FV_View::_findReplace(const UT_UCSChar * find, const UT_UCSChar * replac
 	return UT_FALSE;
 }
 
-UT_uint32 FV_View::findReplaceAll(const UT_UCSChar * find, const UT_UCSChar * replace)
+UT_uint32 FV_View::findReplaceAll(const UT_UCSChar * find, const UT_UCSChar * replace,
+								  UT_Bool matchCase)
 {
 	UT_uint32 numReplaced = 0;
 	m_pDoc->beginUserAtomicGlob();
@@ -2166,7 +2182,7 @@ UT_uint32 FV_View::findReplaceAll(const UT_UCSChar * find, const UT_UCSChar * re
 	UT_Bool bDoneEntireDocument = UT_FALSE;
 	
 	// prime it with a find
-	if (!_findNext(find, &bDoneEntireDocument))
+	if (!_findNext(find, matchCase, &bDoneEntireDocument))
 	{
 		// can't find a single thing, we're done
 		m_pDoc->endUserAtomicGlob();
@@ -2178,7 +2194,7 @@ UT_uint32 FV_View::findReplaceAll(const UT_UCSChar * find, const UT_UCSChar * re
 	{
 		// if it returns false, it found nothing more before
 		// it hit the end of the document
-		if (!_findReplace(find, replace, &bDoneEntireDocument))
+		if (!_findReplace(find, replace, matchCase, &bDoneEntireDocument))
 		{
 			m_pDoc->endUserAtomicGlob();
 			return numReplaced;
