@@ -110,7 +110,7 @@ void AP_CocoaDialog_New::event_ToggleOpenExisting ()
 	XAP_Dialog_Id dlgid = XAP_DIALOG_ID_FILE_OPEN;
 
 	XAP_DialogFactory * pDialogFactory
-		= (XAP_DialogFactory *) m_pFrame->getDialogFactory();
+		= (XAP_DialogFactory *) XAP_App::getApp()->getDialogFactory();
 
 	XAP_Dialog_FileOpenSaveAs * pDialog
 		= (XAP_Dialog_FileOpenSaveAs *)(pDialogFactory->requestDialog(dlgid));
