@@ -824,7 +824,7 @@ void AP_Win32Dialog_Lists::_getDisplayedData(UT_sint32 controlId)
 	if (controlId == -1 || controlId == AP_RID_DIALOG_LIST_EDIT_LIST_ALIGN)
 	{
 		_win32Dialog.getControlText(AP_RID_DIALOG_LIST_EDIT_LIST_ALIGN, szTmp, 30);
-		setfAlign((float)UT_convertDimensionless(szTmp));
+		setfAlign((float)UT_convertDimensionless(szTmp));	
 	}
 
 	if (controlId == -1 || controlId == AP_RID_DIALOG_LIST_EDIT_INDENT_ALIGN)
@@ -837,12 +837,20 @@ void AP_Win32Dialog_Lists::_getDisplayedData(UT_sint32 controlId)
 		controlId == AP_RID_DIALOG_LIST_EDIT_LIST_ALIGN ||
 		controlId == AP_RID_DIALOG_LIST_EDIT_INDENT_ALIGN)
 	{
-		if ((getfIndent() + getfAlign()) < 0.0)
+		if( getfAlign() < 0.0 )
+		{	
+			setfAlign(0.0);
+			_win32Dialog.setControlText(AP_RID_DIALOG_LIST_EDIT_INDENT_ALIGN,
+								UT_convertToDimensionlessString(0.0, ".2"));
+		}                                       
+
+		if ( (getfIndent() + getfAlign()) < 0.0 )
 		{
 			setfIndent(-getfAlign());
 			_win32Dialog.setControlText(AP_RID_DIALOG_LIST_EDIT_INDENT_ALIGN,
 								UT_convertToDimensionlessString(0.0, ".2"));
 		}
+
 	}
 
 	if (getbisCustomized())
