@@ -351,7 +351,7 @@ public:
 
 	void endDragSelection(UT_sint32 xPos, UT_sint32 yPos);
 
-	PT_DocPosition  getDocPositionFromXY(UT_sint32 xpos, UT_sint32 ypos);
+	PT_DocPosition  getDocPositionFromXY(UT_sint32 xpos, UT_sint32 ypos, bool bNotFrames = false);
 	PT_DocPosition  getDocPositionFromLastXY(void);
 
 	fl_BlockLayout* getBlockAtPosition(PT_DocPosition pos) const {return _findBlockAtPosition(pos);};

@@ -1728,7 +1728,7 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 			pVCon = (static_cast<fp_VerticalContainer *>(pCon->getContainer()));
 			pVCon->getOffsets(pCon, xLineOff, yLineOff);
 			xFpos += xLineOff;
-			yFpos += yLineOff + pFirstLine->getY();
+			yFpos += yLineOff;
 			// OK, we have the X and Y positions of the frame relative to
 			// the page.
 			

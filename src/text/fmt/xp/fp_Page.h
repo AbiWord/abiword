@@ -72,6 +72,7 @@ public:
 	inline fl_DocSectionLayout* getOwningSection(void) const { return m_pOwner; }
 
 	PT_DocPosition		getFirstLastPos(bool bFirst) const;
+	void				mapXYToPosition(bool bNotFrames,UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool bUseHdrFtr = false, fl_HdrFtrShadow ** pShadow = NULL);
 	void				mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool bUseHdrFtr = false, fl_HdrFtrShadow ** pShadow = NULL);
 	void				getScreenOffsets(fp_Container*, UT_sint32& xoff, UT_sint32& yoff) const;
 

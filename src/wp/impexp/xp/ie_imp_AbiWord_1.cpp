@@ -732,6 +732,12 @@ void IE_Imp_AbiWord_1::endElement(const XML_Char *name)
 		X_CheckError(appendStrux(PTX_EndCell,NULL));
 		return;
 
+	case TT_FRAME:
+		X_VerifyParseState(_PS_Sec);
+		m_bWroteSection = true;
+		X_CheckError(appendStrux(PTX_EndFrame,NULL));
+		return;
+
 	case TT_BLOCK:
 		UT_ASSERT_HARMLESS(m_lenCharDataSeen==0);
 		X_VerifyParseState(_PS_Block);

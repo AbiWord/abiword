@@ -4586,7 +4586,7 @@ void FV_View::extSelTo(FV_DocPos dp)
 /*!
  * This method returns the document position at xpos,ypos on the screen.
  */
-PT_DocPosition FV_View::getDocPositionFromXY(UT_sint32 xpos, UT_sint32 ypos)
+PT_DocPosition FV_View::getDocPositionFromXY(UT_sint32 xpos, UT_sint32 ypos, bool bNotFrames)
 {
 	// Figure out which page we clicked on.
 	// Pass the click down to that page.
@@ -4596,7 +4596,7 @@ PT_DocPosition FV_View::getDocPositionFromXY(UT_sint32 xpos, UT_sint32 ypos)
 	PT_DocPosition iNewPoint;
 	bool bBOL = false;
 	bool bEOL = false;
-	pPage->mapXYToPosition(xClick, yClick, iNewPoint, bBOL, bEOL, true);
+	pPage->mapXYToPosition(bNotFrames,xClick, yClick, iNewPoint, bBOL, bEOL, true,NULL);
 	return iNewPoint;
 }
 

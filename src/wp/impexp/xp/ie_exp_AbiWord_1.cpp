@@ -855,6 +855,7 @@ bool s_AbiWord_1_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
             _closeField();
             _closeHyperlink();
 			_closeBlock();
+			m_pie->write("</frame>");
 			return true;
 		}
 	case PTX_Block:

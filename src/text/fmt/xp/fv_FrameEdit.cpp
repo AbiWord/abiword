@@ -324,7 +324,7 @@ bool FV_FrameEdit::getFrameStrings(UT_sint32 x, UT_sint32 y,
 // Find the block that contains (x,y). We'll insert the frame after
 // this block in PT and position it on the page relative to this block.
 //
-		posAtXY = m_pView->getDocPositionFromXY(x,y);
+		posAtXY = m_pView->getDocPositionFromXY(x,y,true);
 		fl_BlockLayout * pBL = NULL;
 		fp_Run * pRun = NULL;
 		fp_Line * pLine = NULL;
@@ -332,6 +332,7 @@ bool FV_FrameEdit::getFrameStrings(UT_sint32 x, UT_sint32 y,
 		UT_uint32 height;
 		bool b,bDir;
 		m_pView->_findPositionCoords(posAtXY,b,x1,y1,x2,y2,height,bDir,&pBL,&pRun);
+		UT_DEBUGMSG((" frameEdit y1= %d y2= %d \n",y1,y2));
 		if((pBL == NULL) || (pRun == NULL))
 		{
 			return false;
@@ -353,6 +354,7 @@ bool FV_FrameEdit::getFrameStrings(UT_sint32 x, UT_sint32 y,
 		UT_sint32 xLineOff = 0;
 		UT_sint32 yLineOff = 0;
 		pLine->getScreenOffsets(pRun, xLineOff,yLineOff);
+		UT_DEBUGMSG(("Raw yLineoff %d \n",yLineOff));
 		xLineOff = x + pRun->getX() - xLineOff  + xBlockOff;
 		yLineOff = y + pRun->getY() - yLineOff  + yBlockOff;
 		UT_DEBUGMSG(("fv_FrameEdit: (x,y) %d %d xLineOff %d yLineOff %d \n",x,y,xLineOff,yLineOff));

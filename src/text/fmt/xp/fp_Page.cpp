@@ -1215,11 +1215,26 @@ PT_DocPosition fp_Page::getFirstLastPos(bool bFirst) const
 	return pos;
 }
 
+void fp_Page::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool bUseHdrFtr, fl_HdrFtrShadow ** pShadow )
+{
+	fl_HdrFtrShadow * pShad = NULL;
+	if(pShadow == NULL)
+	{
+		mapXYToPosition(false,x,y,pos,bBOL,bEOL, bUseHdrFtr, NULL);
+		return;
+	}
+	else
+	{
+		mapXYToPosition(false,x,y,pos,bBOL,bEOL, bUseHdrFtr, &pShad);
+	}
+	*pShadow = pShad;
+}
 /*!
  * This method maps an x,y location on the page to the position in the
  * document of the corrsponding element.
  * This variation looks in the header/footer region and returns the
  * SectionLayout shadow of the
+ \param bNotFrames if true don't look inside frames
  \param x coordinate
  \param y coordinate
  \param bBOL
@@ -1227,7 +1242,7 @@ PT_DocPosition fp_Page::getFirstLastPos(bool bFirst) const
  \return pos The Document position corresponding the text at location x,y
  \return pShadow A pointer to the shadow corresponding to this header/footer
  */
-void fp_Page::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool bUseHdrFtr, fl_HdrFtrShadow ** pShadow)
+void fp_Page::mapXYToPosition(bool bNotFrames,UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool bUseHdrFtr, fl_HdrFtrShadow ** pShadow )
 {
 	int count = m_vecColumnLeaders.getItemCount();
 	UT_uint32 iMinDist = 0xffffffff;
@@ -1242,40 +1257,42 @@ void fp_Page::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, boo
 //
 	UT_sint32 i =0;
 	fp_FrameContainer * pFrameC = NULL;
-	for (i=0; i<static_cast<UT_sint32>(countFrameContainers()); i++)
+	if(!bNotFrames)
 	{
-		pFrameC = getNthFrameContainer(i);
-		if (pFrameC->getFirstContainer())
+		for (i=0; i<static_cast<UT_sint32>(countFrameContainers()); i++)
 		{
-			if ((x >= pFrameC->getX())
-				&& (x < (pFrameC->getX() + pFrameC->getWidth()))
-				&& (y >= pFrameC->getY())
-				&& (y < (pFrameC->getY() + pFrameC->getHeight()))
-				)
+			pFrameC = getNthFrameContainer(i);
+			if (pFrameC->getFirstContainer())
 			{
-				pFrameC->mapXYToPosition(x - pFrameC->getX(), y - pFrameC->getY(), pos, bBOL, bEOL);
-					return;
-			}
-
-			iDist = pFrameC->distanceFromPoint(x, y);
-			if (iDist < iMinDist)
-			{
-				iMinDist = iDist;
-				pMinDist = static_cast<fp_VerticalContainer *>(pFrameC);
-			}
-
-			if ( (y >= pFrameC->getY())
-				 && (y < (pFrameC->getY() + pFrameC->getHeight()))) 
-			{
-				if (iDist < iMinXDist)
+				if ((x >= pFrameC->getX())
+					&& (x < (pFrameC->getX() + pFrameC->getWidth()))
+					&& (y >= pFrameC->getY())
+					&& (y < (pFrameC->getY() + pFrameC->getHeight()))
+					)
 				{
-					iMinXDist = iDist;
-					pMinXDist = static_cast<fp_VerticalContainer *>(pFrameC);
+					pFrameC->mapXYToPosition(x - pFrameC->getX(), y - pFrameC->getY(), pos, bBOL, bEOL);
+					return;
+				}
+				
+				iDist = pFrameC->distanceFromPoint(x, y);
+				if (iDist < iMinDist)
+				{
+					iMinDist = iDist;
+					pMinDist = static_cast<fp_VerticalContainer *>(pFrameC);
+				}
+				
+				if ( (y >= pFrameC->getY())
+					 && (y < (pFrameC->getY() + pFrameC->getHeight()))) 
+				{
+					if (iDist < iMinXDist)
+					{
+						iMinXDist = iDist;
+						pMinXDist = static_cast<fp_VerticalContainer *>(pFrameC);
+					}
 				}
 			}
 		}
 	}
-
 //
 // Look in header for insertion point
 //
