@@ -897,6 +897,10 @@ bool EV_Win32Toolbar::_refreshItem(AV_View * pView, const EV_Toolbar_Action * pA
 
 	switch (pAction->getItemType())
 	{
+		// These two are unhandled and for the moment drop down to PushButton
+		case EV_TBIT_ColorFore:
+		case EV_TBIT_ColorBack:
+
 		case EV_TBIT_PushButton:
 			{
 				bool bGrayed = EV_TIS_ShouldBeGray(tis);
@@ -948,10 +952,11 @@ bool EV_Win32Toolbar::_refreshItem(AV_View * pView, const EV_Toolbar_Action * pA
 		case EV_TBIT_EditText:
 		case EV_TBIT_DropDown:
 		case EV_TBIT_StaticLabel:
+		case EV_TBIT_Spacer:
 			// TODO do these later...
 			break;
 			
-		case EV_TBIT_Spacer:
+
 		case EV_TBIT_BOGUS:
 		default:
 			UT_ASSERT(0);
