@@ -235,7 +235,7 @@ Marco Innocenti <dot0037@iperbole.bologna.it>		Italian
 Jarmo Karvonen <jarmo@dawn.joensuu.fi>			Finnish
 Mantas Kriauciunas <mantelis@centras.lt>		Lithuanian (lt-LT)
 Michl Ladislav <xmichl03@stud.fee.vutbr.cz> 		Czech
-Karl Ove Hufthammer <huftis@bigfoot.com>		Norwegian (Nynorsk)
+Karl Ove Hufthammer <karl@huftis.org>		Norwegian (Nynorsk)
 Gro Elin Hansen  <Gro.Hansen@student.uib.no>		Norwegian (Bokmål)
 Edouard Lafargue <Edouard.Lafargue@bigfoot.com>		Norwegian (Bokmål)
 Kjartan Maraas <kmaraas@online.no>			Norwegian (Bokmål)
