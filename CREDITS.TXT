@@ -146,7 +146,7 @@ Giovanni dos Reis Nunes <giovanni@skydome.net>  Portugese (Brazil)
 Rasmus Toftdahl Olesen <rto@post.tele.dk>       Danish
 Gediminas Paulauskas <menesis@03bar.ktu.lt>     Lithuanian
 Eutanazy Sercxemulo <szperacz@free.net.pl>      Polish
-Rui Silva <rms@ssi.aaum.pt>                     Portugese
+Rui M. Silva Seabra <rms@greymalkin.yi.org>     Portugese
 Christian Terboven <cterboven@gmx.net>          German
 Owen Thomas <owen@llanilar.freeserve.co.uk>     Welsh
 I Made Wiryana <made@nakula.rvs.uni-bielefeld.de> Indonesian
