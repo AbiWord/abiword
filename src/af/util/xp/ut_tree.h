@@ -54,14 +54,17 @@
 
     to
 
-	 \htmlonly <pre> \endhtmlonly
+	 \htmlonly <pre>
+	 \endhtmlonly
 	 
 		    a
 		   / \
 		  b   c
 		       \
 		        d
-	 \htmlonly </pre> \endhtmlonly
+				
+	 \htmlonly </pre>
+	 \endhtmlonly
 
     After creation, the object is intialised from a sequentiall representation of the data
     (such as found in an xml file or AbiWord piecetable). This is done either by repeated
