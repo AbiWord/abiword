@@ -9,7 +9,7 @@ Name: abiword
 Version: %{version}
 Release: %{release}
 Copyright: GPL
-Group: Applications/Editors
+Group: Applications/Productivity
 Source: abisuite-%{version}.tar
 URL: http://www.abisource.com/
 Vendor: AbiSource, Inc.
