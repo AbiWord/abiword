@@ -1485,6 +1485,8 @@ void s_RTF_ListenerWriteDoc::_outputData(const UT_UCSChar * data, UT_uint32 leng
 		case UCS_NBSP:					// NBSP -- non breaking space
 			FlushBuffer();
 			m_pie->_rtf_keyword("~");
+			m_pie->m_bLastWasKeyword = false;       // no space needed afterward
+			
 			pData++;
 			break;
 
@@ -4136,7 +4138,7 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 		{
 			xxx_UT_DEBUGMSG(("_rtf_listenerWriteDoc: Populate block \n"));
 			_closeSpan();
-			if(!m_bBlankLine)
+			if(!m_bBlankLine && !m_bOpennedFootnote)
 			{
 				m_bInBlock = true;
 			}
