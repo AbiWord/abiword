@@ -1270,6 +1270,11 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
 #endif
 	  // GNOME handles 'parsePoptOpts'.  Isn't it grand?
 #endif
+
+	// Fix the GtkToolbar style properties, so our size is sane
+	gtk_rc_parse_string ("style \"abi-defaults\" {\n"
+						 "  GtkToolbar::internal-padding = 2\n"
+						 "} class \"GtkToolbar\" style \"abi-defaults\"\n");
     }
 	else {
 		// no display, but we still need to at least parse our own arguments, damnit, for --to, --to-png, and --print

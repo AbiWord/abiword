@@ -66,6 +66,7 @@ Joaquín Cuenca Abela <cuenca@ie2.u-psud.fr> 		GNOME front end,
 							perl bindings,
 							misc. fixes
 Kenneth J. Davis <jeremyd@computer.org> 		Bidi fixes
+Rodney Dawes <dobey@free.fr>				Toolbar fixes
 Philippe Defert <Philippe.Defert@cern.ch>		AIX, HPUX, IRIX64, OSF1
 Andrew Dunbar <hippietrail@yahoo.com>			UTF-8 text recognition,
 							encoding stuff
