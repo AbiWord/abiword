@@ -36,7 +36,7 @@ public:
 
 	virtual UT_Bool				initialize(void);
 	virtual	XAP_Frame *			cloneFrame(void);
-	virtual UT_Bool				loadDocument(const char * szFilename, IEFileType ieft);
+	virtual UT_Bool				loadDocument(const char * szFilename, int ieft);
 	virtual UT_Bool				initFrameData(void);
 	virtual void				killFrameData(void);
 

@@ -28,9 +28,6 @@
 #include "ev_EditBits.h"
 class XAP_App;
 
-// TODO:  remove this, it's not XAP
-#include "../../wp/impexp/xp/ie_types.h"
-
 typedef enum _AV_ScrollCmd
 {
 	AV_SCROLLCMD_PAGEUP,
@@ -93,7 +90,7 @@ public:
 	virtual void	cmdUndo(UT_uint32 count) = 0;
 	virtual void	cmdRedo(UT_uint32 count) = 0;
 	virtual UT_Bool	cmdSave(void) = 0;
-	virtual UT_Bool	cmdSaveAs(const char * szFilename, IEFileType ieft) = 0;
+	virtual UT_Bool	cmdSaveAs(const char * szFilename, int ieft) = 0;
 
 	virtual EV_EditMouseContext getMouseContext(UT_sint32 xPos, UT_sint32 yPos) = 0;
 	virtual EV_EditMouseContext getInsertionPointContext(UT_sint32 * pxPos, UT_sint32 * pyPos) = 0;

@@ -405,9 +405,9 @@ Cleanup:
 	return NULL;
 }
 
-UT_Bool AP_UnixFrame::loadDocument(const char * szFilename, IEFileType ieft)
+UT_Bool AP_UnixFrame::loadDocument(const char * szFilename, int ieft)
 {
-	if (! _loadDocument(szFilename, ieft))
+	if (! _loadDocument(szFilename, (IEFileType) ieft))
 	{
 		// we could not load the document.
 		// we cannot complain to the user here, we don't know

@@ -1124,7 +1124,7 @@ Defun1(fileSaveAs)
 
 	UT_DEBUGMSG(("fileSaveAs: saving as [%s]\n",pNewFile));
 
-	UT_Bool bSaved = pAV_View->cmdSaveAs(pNewFile,ieft);
+	UT_Bool bSaved = pAV_View->cmdSaveAs(pNewFile,(int) ieft);
 
 	if (!bSaved)
 	{

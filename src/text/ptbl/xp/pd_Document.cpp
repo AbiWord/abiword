@@ -66,7 +66,7 @@ PD_Document::~PD_Document()
 	// since these are not owned by us.
 }
 
-UT_Bool PD_Document::readFromFile(const char * szFilename, IEFileType ieft)
+UT_Bool PD_Document::readFromFile(const char * szFilename, int ieft)
 {
 	if (!szFilename || !*szFilename)
 	{
@@ -84,7 +84,7 @@ UT_Bool PD_Document::readFromFile(const char * szFilename, IEFileType ieft)
 	IE_Imp * pie = NULL;
 	IEStatus ies;
 
-	ies = IE_Imp::constructImporter(this,szFilename,ieft,&pie);
+	ies = IE_Imp::constructImporter(this,szFilename,(IEFileType) ieft,&pie);
 	if (ies != IES_OK)
 	{
 		UT_DEBUGMSG(("PD_Document::readFromFile -- could not construct importer\n"));
@@ -109,7 +109,7 @@ UT_Bool PD_Document::readFromFile(const char * szFilename, IEFileType ieft)
 	}
 
 	// save out file type so future saves know the type imported as
-	m_lastSavedAsType = ieft;
+	m_lastSavedAsType = (IEFileType) ieft;
 	
 	m_pPieceTable->setPieceTableState(PTS_Editing);
 	_setClean();							// mark the document as not-dirty
@@ -137,7 +137,7 @@ UT_Bool PD_Document::newDocument(void)
 	return UT_TRUE;
 }
 
-UT_Bool PD_Document::saveAs(const char * szFilename, IEFileType ieft)
+UT_Bool PD_Document::saveAs(const char * szFilename, int ieft)
 {
 	if (!szFilename)
 		return UT_FALSE;
@@ -145,7 +145,7 @@ UT_Bool PD_Document::saveAs(const char * szFilename, IEFileType ieft)
 	IE_Exp * pie = NULL;
 	IEStatus ies;
 
-	ies = IE_Exp::constructExporter(this,szFilename,ieft,&pie);
+	ies = IE_Exp::constructExporter(this,szFilename,(IEFileType) ieft,&pie);
 	if (ies != IES_OK)
 	{
 		UT_DEBUGMSG(("PD_Document::Save -- could not construct exporter\n"));
@@ -175,7 +175,7 @@ UT_Bool PD_Document::saveAs(const char * szFilename, IEFileType ieft)
 	m_szFilename = szFilenameCopy;
 
 	// save the type we just saved as
-	m_lastSavedAsType = ieft;
+	m_lastSavedAsType = (IEFileType) ieft;
 	
 	_setClean();
 	return UT_TRUE;

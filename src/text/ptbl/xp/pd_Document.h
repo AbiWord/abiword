@@ -60,7 +60,7 @@ public:
 	PD_Document();
 	~PD_Document();
 
-	virtual UT_Bool			readFromFile(const char * szFilename, IEFileType ieft);
+	virtual UT_Bool			readFromFile(const char * szFilename, int ieft);
 	virtual UT_Bool			newDocument(void);
 	virtual UT_Bool			isDirty(void) const;
 
@@ -69,7 +69,7 @@ public:
 	virtual UT_Bool			redoCmd(UT_uint32 repeatCount);
 
 // ----------------------
-	UT_Bool					saveAs(const char * szFilename, IEFileType ieft);
+	UT_Bool					saveAs(const char * szFilename, int ieft);
 	UT_Bool					save(void);
 
 	void					beginUserAtomicGlob(void);

@@ -4063,7 +4063,7 @@ UT_Bool FV_View::cmdSave(void)
 	return UT_TRUE;
 }
 
-UT_Bool FV_View::cmdSaveAs(const char * szFilename, IEFileType ieft)
+UT_Bool FV_View::cmdSaveAs(const char * szFilename, int ieft)
 {
 	if (!m_pDoc->saveAs(szFilename, ieft))
 		return UT_FALSE;

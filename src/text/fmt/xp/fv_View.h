@@ -99,7 +99,7 @@ public:
 	virtual void	cmdUndo(UT_uint32 count);
 	virtual void	cmdRedo(UT_uint32 count);
 	virtual UT_Bool	cmdSave(void);
-	virtual UT_Bool	cmdSaveAs(const char * szFilename, IEFileType ieft);
+	virtual UT_Bool	cmdSaveAs(const char * szFilename, int ieft);
 
 	UT_Bool			_insertPNGImage(UT_ByteBuf* pBB, const char* szName, UT_sint32 iImageWidth, UT_sint32 iImageHeight);
 	UT_Bool			cmdInsertPNGImage(UT_ByteBuf*, const char*);

@@ -548,9 +548,9 @@ HWND AP_Win32Frame::_createDocumentWindow(HWND hwndParent,
 	return hwndContainer;
 }
 
-UT_Bool AP_Win32Frame::loadDocument(const char * szFilename, IEFileType ieft)
+UT_Bool AP_Win32Frame::loadDocument(const char * szFilename, int ieft)
 {
-	if (! _loadDocument(szFilename, ieft))
+	if (! _loadDocument(szFilename, (IEFileType) ieft))
 	{
 		// we could not load the document.
 		// we cannot complain to the user here, we don't know
