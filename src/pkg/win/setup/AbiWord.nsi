@@ -60,6 +60,10 @@ Section "Abiword.exe (required)"
 		File "libAbiWord.dll"
 	!endif
 
+	; We need BMP plugin for cut-n-paste of images on Windows
+	SetOutPath $INSTDIR\AbiWord\plugins
+	File "..\plugins\libAbi_IEG_BMP.dll"
+
 	SetOutPath $INSTDIR\AbiWord
 	File "..\AbiSuite\AbiWord\system.*"
 	File /r "..\AbiSuite\AbiWord\strings"
