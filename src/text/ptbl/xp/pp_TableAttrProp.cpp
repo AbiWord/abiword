@@ -72,7 +72,7 @@ UT_Bool pp_TableAttrProp::findMatch(const XML_Char ** attributes,
 	{
 		// we preload the zeroth cell with empty attributes.
 		*pSubscript = 0;
-		return UT_FALSE;
+		return UT_TRUE;
 	}
 
 	// TODO compute a hash on the contents of the attributes and
@@ -93,7 +93,7 @@ UT_Bool pp_TableAttrProp::findMatch(const UT_Vector * pVector,
 	{
 		// we preload the zeroth cell with empty attributes.
 		*pSubscript = 0;
-		return UT_FALSE;
+		return UT_TRUE;
 	}
 
 	// TODO compute a hash on the contents of the attributes and

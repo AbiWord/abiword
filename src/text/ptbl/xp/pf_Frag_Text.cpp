@@ -67,7 +67,7 @@ void pf_Frag_Text::adjustOffsetLength(PT_BufIndex bi, UT_uint32 newLength)
 void pf_Frag_Text::dump(FILE * fp) const
 {
 #ifdef UT_DEBUG
-	fprintf(fp,"      TextFragment 0x%08lx b[%08lx,%d] api[%d]\n",
+	fprintf(fp,"      TextFragment 0x%08lx b[%08lx,%d] api[%08lx]\n",
 			(UT_uint32)this,m_bufIndex,m_length,m_indexAP);
 
 	const UT_UCSChar * ptr = m_pPieceTable->getPointer(m_bufIndex);
