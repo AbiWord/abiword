@@ -1558,7 +1558,7 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args)
 		
 		return false;
 #else
-		fprintf(stdeff,"Only works in GNOME build \n");
+		fprintf(stderr,"Only works in GNOME build \n");
 #endif
 	}
 
