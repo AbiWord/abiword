@@ -1494,7 +1494,6 @@ bool IE_Imp_RTF::StartNewSection()
 // 
 bool IE_Imp_RTF::AddChar(UT_UCSChar ch)
 {
-	UT_DEBUGMSG(("SEVIOR: Adding char %x %c \n",ch, (unsigned char) ch));
 	return m_gbBlock.ins(m_gbBlock.getLength(), &ch, 1);
 }
 
