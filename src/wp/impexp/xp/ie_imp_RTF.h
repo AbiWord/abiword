@@ -387,6 +387,11 @@ struct ABI_EXPORT RTFProps_ImageProps
 	UT_uint16 scaleY;
 	UT_uint32 width;
 	UT_uint32 height;
+	bool bCrop;
+	UT_sint32 cropt;
+	UT_sint32 cropb;
+	UT_sint32 cropl;
+	UT_sint32 cropr;
 };
 
 // Section properties

@@ -1257,6 +1257,8 @@ RTFProps_ImageProps::RTFProps_ImageProps()
 	sizeType = ipstNone;
 	wGoal = hGoal = width = height = 0;
 	scaleX = scaleY = 100;
+	bCrop = false;
+	cropt = cropb = cropl = cropr = 0;
 }
 
 RTFProps_CellProps::RTFProps_CellProps()
