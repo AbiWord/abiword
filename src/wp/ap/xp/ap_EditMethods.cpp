@@ -269,6 +269,7 @@ public:
 	static EV_EditMethod_Fn fileOpen;
 	static EV_EditMethod_Fn fileSave;
 	static EV_EditMethod_Fn fileSaveAs;
+	static EV_EditMethod_Fn fileSaveImage;
 	static EV_EditMethod_Fn fileExport;
 	static EV_EditMethod_Fn fileImport;
 	static EV_EditMethod_Fn formatPainter;
@@ -686,6 +687,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(fileSave), 			0,	""),
 	EV_EditMethod(NF(fileSaveAs),			0,	""),
 	EV_EditMethod(NF(fileSaveAsWeb),				0, ""),
+	EV_EditMethod(NF(fileSaveImage),		0,	""),
 	EV_EditMethod(NF(find), 				0,	""),
 	EV_EditMethod(NF(findAgain),			0,	""),	
 	EV_EditMethod(NF(fontFamily),			_D_,	""),
@@ -2114,6 +2116,58 @@ Defun1(fileSaveAsWeb)
 	}
 
   return true;
+}
+
+Defun1(fileSaveImage)
+{
+	CHECK_FRAME;
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
+	UT_ASSERT(pFrame);
+
+	XAP_DialogFactory * pDialogFactory
+		= (XAP_DialogFactory *) pFrame->getDialogFactory();
+	
+	XAP_Dialog_FileOpenSaveAs * pDialog
+		= (XAP_Dialog_FileOpenSaveAs *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_FILE_SAVEAS));
+	UT_ASSERT(pDialog);
+	
+	UT_uint32 filterCount = 1;
+	const char ** szDescList = (const char **) UT_calloc(filterCount + 1, sizeof(char *));
+	const char ** szSuffixList = (const char **) UT_calloc(filterCount + 1, sizeof(char *));
+	IEFileType * nTypeList = (IEFileType *) UT_calloc(filterCount + 1, sizeof(IEFileType));
+	
+	// we only support saving images in png format for now
+	szDescList[0] = "Portable Network Graphics (.png)";
+	szSuffixList[0] = "*.png";
+	nTypeList[0] = (IEFileType)1;	
+	
+	pDialog->setFileTypeList(szDescList, szSuffixList, 
+							 (const UT_sint32 *) nTypeList);
+	
+	pDialog->setDefaultFileType((IEFileType)1);	
+	
+	pDialog->runModal(pFrame);
+	
+	XAP_Dialog_FileOpenSaveAs::tAnswer ans = pDialog->getAnswer();
+	bool bOK = (ans == XAP_Dialog_FileOpenSaveAs::a_OK);
+
+	if (bOK)
+	{
+		const char * szResultPathname = pDialog->getPathname();
+		if (szResultPathname && *szResultPathname)
+		{
+			FV_View * pView = static_cast<FV_View *>(pAV_View);
+			pView->saveSelectedImage (szResultPathname);
+		}
+	}
+	
+	FREEP(szDescList);
+	FREEP(szSuffixList);
+	FREEP(nTypeList);
+	
+	pDialogFactory->releaseDialog(pDialog);
+	
+	return true;
 }
 
 Defun1(filePreviewWeb)

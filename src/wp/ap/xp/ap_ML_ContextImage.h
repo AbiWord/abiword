@@ -29,6 +29,7 @@ BeginLayout(ContextImageT,EV_EMC_IMAGE)
 
 	BeginPopupMenu()
 		MenuItem(AP_MENU_ID_FMT_IMAGE)
+		MenuItem(AP_MENU_ID_FILE_SAVEIMAGE)
 		Separator()
 		MenuItem(AP_MENU_ID_EDIT_CUT)
 		MenuItem(AP_MENU_ID_EDIT_COPY)
