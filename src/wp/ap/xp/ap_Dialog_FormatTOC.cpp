@@ -367,7 +367,7 @@ void AP_Dialog_FormatTOC::fillTOCPropsFromDoc(void)
 	}
 	else
 	{
-		PT_DocPosition pos = pView->getSelectionAnchor();
+		PT_DocPosition pos = pView->getSelectionAnchor()+1;
 		PL_StruxDocHandle sdhTOC = NULL;
 		m_pDoc->getStruxOfTypeFromPosition(pos,PTX_SectionTOC, &sdhTOC);
 		UT_return_if_fail (sdhTOC);
@@ -448,6 +448,6 @@ void AP_Dialog_FormatTOC::fillTOCPropsFromDoc(void)
 void AP_Dialog_FormatTOC::applyTOCPropsToDoc(void)
 {
 	FV_View * pView = static_cast<FV_View *>(getActiveFrame()->getCurrentView());
-	PT_DocPosition pos = pView->getSelectionAnchor();
+	PT_DocPosition pos = pView->getSelectionAnchor()+1;
 	pView->setTOCProps(pos,m_sTOCProps.utf8_str());
 }

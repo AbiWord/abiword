@@ -674,8 +674,8 @@ void  FV_View::cmdSelectTOC(UT_sint32 x, UT_sint32 y)
 	fp_Page* pPage = _getPageForXY(x,y,xClick,yClick);
 	fl_TOCLayout * pTOCL = pPage->getLastMappedTOC();
 	m_Selection.setTOCSelected(pTOCL);
-	PT_DocPosition pos = pTOCL-> getPosition();
-	m_iInsPoint = pos+1;
+	PT_DocPosition pos = pTOCL->getPosition();
+	m_iInsPoint = pos;
 	if(m_pG->getCaret())
 	{
 		m_pG->getCaret()->disable();

@@ -243,6 +243,8 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 									if(eStrux2Type != PTX_EndFrame)
 										continue;
 									break;
+							    default:
+									break;
 							}
 
 							// if we got this far, we found what we are looking for and we have the
@@ -625,6 +627,15 @@ bool pt_PieceTable::_tweakDeleteSpanOnce(PT_DocPosition & dpos1,
 			}
 
 			break;
+		}
+	}
+
+	if(pf_End->getType() ==  pf_Frag::PFT_Strux)
+	{
+	    if(static_cast<pf_Frag_Strux *>(pf_End) == PTX_EndTOC)
+		{
+			dpos2++;
+			return true;
 		}
 	}
 
