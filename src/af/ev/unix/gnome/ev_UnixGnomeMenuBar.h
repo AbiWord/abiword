@@ -41,7 +41,6 @@ public:
 	virtual ~EV_UnixGnomeMenuBar(void);
 
 	virtual bool     synthesizeMenuBar(void);
-	virtual bool     rebuildMenuBar(void);
 	virtual void     destroy(void);
     bool             refreshMenu(AV_View * pView);
 

@@ -404,6 +404,24 @@ void XAP_UnixGnomeFrame::_createTopLevelWindow(void)
 	return;
 }
 
+void  XAP_UnixGnomeFrame::rebuildMenus(void)
+{
+	((EV_UnixGnomeMenuBar *) m_pUnixMenu)->destroy();
+//
+// Delete the old class
+//
+	DELETEP(m_pUnixMenu);
+//
+// Build a new one.
+//
+	m_pUnixMenu = new EV_UnixGnomeMenuBar(m_pUnixApp,this,
+									 m_szMenuLayoutName,
+									 m_szMenuLabelSetName);
+	UT_ASSERT(m_pUnixMenu);
+
+	((EV_UnixGnomeMenuBar *) m_pUnixMenu)->synthesizeMenuBar();
+}
+
 bool XAP_UnixGnomeFrame::openURL(const char * szURL)
 {
 	gnome_url_show(szURL);

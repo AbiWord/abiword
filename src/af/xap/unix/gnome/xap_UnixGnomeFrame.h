@@ -49,6 +49,7 @@ public:
 	virtual bool				openURL(const char * szURL);
 	virtual bool				runModalContextMenu(AV_View * pView, const char * szMenuName,
 													UT_sint32 x, UT_sint32 y);
+	virtual void rebuildMenus(void);
 
   	enum AbiMimeId
   	{
@@ -69,3 +70,6 @@ protected:
 };
 
 #endif /* XAP_UNIXGNOMEFRAME_H */
+
+
+

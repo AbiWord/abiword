@@ -517,7 +517,6 @@ GnomeUIInfo * EV_UnixGnomeMenu::_convertMenu2UIInfo (int &pos)
 		XAP_Menu_Id id = pLayoutItem->getMenuId();
 		const EV_Menu_Action * pAction = pMenuActionSet->getAction(id);
 		const EV_Menu_Label * pLabel = m_pMenuLabelSet->getLabel(id);
-
 		UT_ASSERT(pLayoutItem);
 		UT_ASSERT(pAction);
 		UT_ASSERT(pLabel);
@@ -1093,22 +1092,28 @@ EV_UnixGnomeMenuBar::~EV_UnixGnomeMenuBar()
 
 void  EV_UnixGnomeMenuBar::destroy(void)
 {
-	gtk_widget_destroy(m_wMenuBar);
+    GnomeApp *app;
+    app = GNOME_APP(m_pUnixFrame->getTopLevelWindow());
+	//
+	// Destroy the menu bar
+	//
+	GtkWidget *menubar = app->menubar;
+	//
+	// This destroys the menu bar's parent, which frees up the slot for the menu
+    // to reappear in.
+    //
+	gtk_widget_destroy(menubar->parent);
+	//
+	// Destroy the UIInfo
+	_destroyUIInfo (m_pUIInfo);
+	m_pUIInfo = NULL;
+	m_wMenuBar = NULL;
+	app->menubar = NULL; 
 }
+
 
 
 bool EV_UnixGnomeMenuBar::synthesizeMenuBar()
-{
-	m_wMenuBar = gtk_menu_bar_new();
-
-	synthesizeMenu(m_wMenuBar);
-	gtk_widget_show(m_wMenuBar);
-	gnome_app_set_menus(GNOME_APP(m_pUnixFrame->getTopLevelWindow()), GTK_MENU_BAR(m_wMenuBar));
-
-	return true;
-}
-
-bool EV_UnixGnomeMenuBar::rebuildMenuBar()
 {
 	m_wMenuBar = gtk_menu_bar_new();
 
