@@ -285,11 +285,13 @@ void PS_Graphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	// which doesn't match this expectation.  Adding the ascent of the
 	// font will bring it back to the correct position.
 	yoff += getFontAscent();
-	
-	char buf[OUR_LINE_LIMIT*2];
+
+	// unsigned buffer holds Latin-1 data to character code 255
+	unsigned char buf[OUR_LINE_LIMIT*2];
+	unsigned char * pD = buf;
+
 	const UT_UCSChar * pS = pChars+iCharOffset;
 	const UT_UCSChar * pEnd = pS+iLength;
-	char * pD = buf;
 
 	*pD++ = '(';
 	while (pS<pEnd)
@@ -315,12 +317,12 @@ void PS_Graphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 		case '\\':		*pD++ = '\\';	*pD++ = '\\';	break;
 		case '(':		*pD++ = '\\';	*pD++ = '(';	break;
 		case ')':		*pD++ = '\\';	*pD++ = ')';	break;
-		default:		*pD++ = (char)*pS;				break;
+		default:		*pD++ = (unsigned char) *pS; 	break;
 		}
 		pS++;
 	}
 	*pD++ = ')';
-	sprintf(pD," %ld %ld MS\n",xoff,yoff);
+	sprintf((char *) pD," %ld %ld MS\n",xoff,yoff);
 	m_ps->writeBytes(buf);
 }
 
@@ -577,6 +579,8 @@ void PS_Graphics::_emit_IncludeResource(void)
 
 	for (k=0; k<kLimit; k++)
 	{
+		char buf[128];
+
 		PSFont * psf = (PSFont *) m_vecFontList.getNthItem(k);
 		
 		// m_ps->formatComment("IncludeResource",psf->getMetricsData()->gfi->fontName);
@@ -590,6 +594,13 @@ void PS_Graphics::_emit_IncludeResource(void)
 		while ((ch = unixfont->getPFAChar()) != EOF)
 			m_ps->writeBytes((UT_Byte *) &ch, 1);
 		unixfont->closePFA();
+		// after each font, change the encoding vector to ISO Latin1
+		snprintf(buf, 128, "/%s findfont\n"
+				 "LAT\n"
+				 "/%s EXC\n",
+				 psf->getMetricsData()->gfi->fontName,
+				 psf->getMetricsData()->gfi->fontName);
+		m_ps->writeBytes(buf);
 	}
 
 	// TODO add any other IncludeResource's here
@@ -608,6 +619,12 @@ void PS_Graphics::_emit_PrologMacros(void)
 		"/BPL {BP SZ 90 rotate} bind def",					// Begin Landscape Page. <w> <h> <res> BPP
 		"/EP  {grestore showpage} bind def",				// EP
 		"/ML  {neg moveto neg lineto} bind def",			// Move and Line. <x2> <y2> <x1> <y1> ML
+		"/LAT {dup length dict begin",						// Change encoding vector for current font to Latin1
+		"       {1 index /FID ne {def} {pop pop} ifelse} forall",
+		"       /Encoding ISOLatin1Encoding def",
+		"       currentdict",
+		"       end} bind def",
+		"/EXC {exch definefont pop} bind def"				// Exchange font entry
 	};
 
 	char buf[1024];

@@ -94,7 +94,14 @@ UT_Bool	ps_Generate::writeByte(UT_Byte byte)
 
 UT_Bool ps_Generate::writeBytes(const char * sz)
 {
-	return writeBytes((UT_Byte*)sz,strlen(sz));
+	return writeBytes((const unsigned char *) sz);
+}
+
+UT_Bool ps_Generate::writeBytes(const unsigned char * sz)
+{
+	// is that strlen correct?  Will we lose sign data on
+	// anything?
+	return writeBytes((UT_Byte*)sz,strlen((const char *)sz));
 }
 
 UT_Bool ps_Generate::writeBytes(UT_Byte * pBytes, UT_uint32 length)

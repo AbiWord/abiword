@@ -35,6 +35,7 @@ public:
 	void		abortFile(void);
 	UT_Bool		writeByte(UT_Byte byte);
 	UT_Bool		writeBytes(const char * sz);
+	UT_Bool		writeBytes(const unsigned char * sz);	
 	UT_Bool		writeBytes(UT_Byte * pBytes, UT_uint32 length);
 	UT_Bool		formatComment(const char * szCommentName);
 	UT_Bool		formatComment(const char * szCommentName, const char * szArg1);
