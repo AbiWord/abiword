@@ -3399,7 +3399,52 @@ void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 	}
 	if(pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
-	    pG->setClipRect(&pClipRect);
+		//
+		// Take the interesction of the applied rectangle;
+		if(pSavedRect != NULL)
+		{
+			UT_sint32 iTop,iLeft,iWidth,iHeight;
+			iTop = 0;
+			iLeft = 0;
+			iWidth = 0;
+			iHeight = 0;
+			iTop =  pClipRect.top;
+			if(pSavedRect->top > pClipRect.top)
+			{
+				iTop = pSavedRect->top;
+			}
+			UT_sint32 iBot = pClipRect.top + pClipRect.height;
+			if((pSavedRect->top + pSavedRect->height) < (pClipRect.top + pClipRect.height))
+			{
+				iBot = pSavedRect->top + pSavedRect->height;
+			}
+			iHeight = iBot - iTop;
+			if(iHeight < pG->tlu(1))
+			{
+				iHeight = pG->tlu(2);
+			}
+			iLeft = pClipRect.left;
+			if(pSavedRect->left  > pClipRect.left)
+			{
+				iLeft = pSavedRect->left;
+			}
+			UT_sint32 iRight = pClipRect.left + pClipRect.width;
+			if((pSavedRect->left + pSavedRect->width) < (pClipRect.left + pClipRect.width))
+			{
+				iRight = pSavedRect->left + pSavedRect->width;
+			}
+			iWidth = iRight - iLeft;
+			if(iWidth < pG->tlu(1))
+			{
+				iWidth = pG->tlu(2);
+			}
+			pClipRect.left = iLeft;
+			pClipRect.width = iWidth;
+			pClipRect.top = iTop;
+			pClipRect.height = iHeight;
+			pG->setClipRect(&pClipRect);
+		}
+		
 	}
 
 	FV_View* pView = _getView();
