@@ -129,6 +129,15 @@ bool GR_CocoaImage::render(GR_Graphics *pGR, UT_sint32 iDisplayWidth, UT_sint32 
 	return false;
 }
 
+void GR_CocoaImage::setFromImageRep(NSImageRep *imageRep)
+{ 
+	[m_image release]; 
+	NSSize size = [imageRep size];
+	m_image = [[NSImage alloc] initWithSize:size];
+	[m_image addRepresentation:imageRep];
+	m_iDisplayWidth = lrintf(size.width);
+	m_iDisplayHeight = lrintf(size.height);
+}
 
 NSImage * GR_CocoaImage::imageFromPNG (NSData * data, UT_uint32 & image_width, UT_uint32 & image_height)
 {

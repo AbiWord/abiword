@@ -53,6 +53,7 @@ public:
    	virtual GRType		getType() const { return m_grtype; }
    	virtual bool		render(GR_Graphics *pGR, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
 	
+	void setFromImageRep(NSImageRep *imgRep);
 	NSImage * getNSImage ()
 		{ return m_image; };
 

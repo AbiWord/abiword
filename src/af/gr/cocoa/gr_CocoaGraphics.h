@@ -115,7 +115,7 @@ class GR_CocoaGraphics : public GR_Graphics
 	virtual UT_uint32 getFontDescent(GR_Font *);
 	virtual UT_uint32 getFontHeight(GR_Font *);
 
-    virtual GR_Image * genImageFromRectangle(UT_Rect & r) { return NULL;}
+    virtual GR_Image * genImageFromRectangle(UT_Rect & r);
 	virtual void	  saveRectangle(UT_Rect & r, UT_uint32 iIndx);
 	virtual void	  restoreRectangle(UT_uint32 iIndx);
 	virtual UT_uint32 getDeviceResolution(void) const;
@@ -125,11 +125,6 @@ class GR_CocoaGraphics : public GR_Graphics
 	void				_setUpdateCallback (gr_cocoa_graphics_update callback, void * param);
 	bool				_callUpdateCallback(NSRect *aRect);
 	XAP_CocoaNSView *	_getView () { return m_pWin; };
-#ifdef USE_OFFSCREEN
-	NSImage*			_getOffscreen () { return m_offscreen; };
-#else
-	void				_unusedMethod1() {};
-#endif
 	void 				_updateRect(NSView * v, NSRect aRect);
 	static bool			_isFlipped();
 	static NSColor				*_utRGBColorToNSColor (const UT_RGBColor& clr);
@@ -166,11 +161,6 @@ private:
 	XAP_CocoaNSView *  			m_pWin;
 	NSMutableDictionary*		m_fontProps;
 	CGContextRef				m_CGContext;
-#ifdef USE_OFFSCREEN
-	NSImage*					m_offscreen;
-#else
-	void*						_unused;
-#endif
 	UT_Vector					m_cacheArray;
 	UT_Vector					m_cacheRectArray;
 	NSImage*					m_xorCache;
