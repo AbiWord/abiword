@@ -1,5 +1,5 @@
 /* XPM */
-static char * kursiv_xpm[] = {
+static char * tb_text_italic_K_xpm[] = {
 "24 24 2 1",
 " 	c None",
 ".	c #000000",
