@@ -41,7 +41,6 @@ OBJS=	$(PLATFORM_OBJS)	\
         $(OBJDIR)/ie_exp_AWT.$(OBJ_SUFFIX)                          \
         $(OBJDIR)/ie_exp_GZipAbiWord.$(OBJ_SUFFIX)                  \
         $(OBJDIR)/ie_exp_HTML.$(OBJ_SUFFIX)                         \
-        $(OBJDIR)/ie_exp_MsWord_97.$(OBJ_SUFFIX)                    \
         $(OBJDIR)/ie_exp_Text.$(OBJ_SUFFIX)                         \
         $(OBJDIR)/ie_exp_RTF.$(OBJ_SUFFIX)                          \
         $(OBJDIR)/ie_exp_RTF_AttrProp.$(OBJ_SUFFIX)                 \

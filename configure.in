@@ -542,4 +542,8 @@ cat <<EOF
 
 EOF
 
+if test "x$_abi_wv_warning" = "xyes"; then
+	ABI_WV_WARNING
+fi
+
 AC_MSG_RESULT([Type make to build AbiWord.])

@@ -24,6 +24,8 @@
 
 AC_DEFUN([ABI_WV], [
 
+_abi_wv_warning=no
+
 AC_ARG_WITH(sys_wv,[  --with-sys-wv    Use system libwv],[
 	abi_sys_wv="$withval"
 ],[	abi_sys_wv=no
@@ -43,15 +45,20 @@ if test "x$abi_sys_wv" != "xno"; then
 	else
 		AC_PATH_PROG(WVLIBCFG,wv-libconfig,,[$PATH])
 	fi
-	if [ test "x$WVLIBCFG" = "x" ]; then
+	if test "x$WVLIBCFG" = "x"; then
 		AC_MSG_WARN([* * * Can't find wv-libconfig, so I'm just going to guess what libs I need. * * *])
 		abi_wv_libs="-lwv -lpng -lz"
 	else
 		abi_wv_libs=`$WVLIBCFG`
 	fi
-	AC_CHECK_LIB(wv,wvInitParser,,[AC_MSG_ERROR([* * * Sorry, unable to link against libwv. * * *])],$abi_wv_libs)
-	AC_CHECK_HEADER(wv.h,        ,[AC_MSG_ERROR([* * * Sorry, unable to find wv.h * * *])])
-	AC_CHECK_HEADER(wvexporter.h,,[AC_MSG_ERROR([* * * Sorry, unable to find wvexporter.h * * *])])
+	AC_CHECK_LIB(wv,wvInitParser,,[
+		AC_MSG_WARN([* * * unable to link against libwv. * * *])
+		_abi_wv_warning=yes
+	],$abi_wv_libs)
+	AC_CHECK_HEADER(wv.h,        ,[
+		AC_MSG_WARN([* * * unable to find wv.h * * *])
+		_abi_wv_warning=yes
+	])
 	WV_CFLAGS=""
 	WV_LIBS="$abi_wv_libs"
 	WV_PEERDIR=""
@@ -97,5 +104,23 @@ fi
 AM_CONDITIONAL(LOCAL_WV,[test "x$abi_sys_wv" = "xno"])
 AC_SUBST(WV_CFLAGS)
 AC_SUBST(WV_LIBS)
+
+])
+
+AC_DEFUN([ABI_WV_WARNING],[
+
+echo ""
+echo "WARNING: building against wv as a system library is generally not recommended."
+echo "         Compatibility of abi's source with the concurrent wv sources is"
+echo "         maintained, and wv itself is developed in AbiSource's CVS repository."
+echo "         "
+echo "         No doubt you have your reasons; I'll trust you to figure out the"
+echo "         awkward dependencies. If you have the corresponding wv sources handy,"
+echo "         try adding the source tree to header path, e.g.:"
+echo "         "
+echo "             ./configure ... CPPFLAGS=\"-I/home/me/src/wv-0.7.5\""
+echo "         "
+echo "         Note: AbiWord-1.0.x requires a different version of libwv"
+echo ""
 
 ])
