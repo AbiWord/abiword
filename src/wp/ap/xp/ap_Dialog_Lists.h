@@ -112,7 +112,46 @@ public:
 	virtual void 				_createPreviewFromGC(GR_Graphics * gc, UT_uint32 width, UT_uint32 height);
 	void						setModal(void) {m_bIsModal = true;}
 	bool						isModal(void) const { return m_bIsModal;}
+
 protected:
+	virtual const XML_Char*	_getDingbatsFontName() const;
+
+	// declare JavaBean-like accessors for private variable needed in the
+	// platform code.
+
+#define SET_GATHER(a, u)  inline u get##a(void) const {return m_##a;} \
+			  inline void set##a(u p##a) {m_##a = p##a;}
+
+	SET_GATHER(iLocalTick,		UT_uint32);
+	SET_GATHER(iStartValue,	    UT_uint32);
+	SET_GATHER(newStartValue,	UT_uint32);
+	SET_GATHER(fAlign,	  	    float);
+	SET_GATHER(fIndent,		    float);
+	SET_GATHER(bStartNewList,	bool);
+	SET_GATHER(bApplyToCurrent,	bool);
+	SET_GATHER(bResumeList,		bool);
+	SET_GATHER(bisCustomized,	bool);
+	SET_GATHER(isListAtPoint,	bool);
+	SET_GATHER(bguiChanged,	    bool);
+	SET_GATHER(NewListType,	    List_Type);
+	SET_GATHER(DocListType,	    List_Type);
+	SET_GATHER(iLevel,	        UT_uint32);
+	SET_GATHER(pView,	        FV_View *);
+
+
+#undef SET_GATHER
+
+    void copyCharToDelim(const char* pszDelim) { sprintf(m_pszDelim,"%s",pszDelim);}
+	const char * getDelim( void) { return (const char *) m_pszDelim;}
+    void copyCharToDecimal(const  char * pszDecimal) { sprintf(m_pszDecimal,"%s",pszDecimal);}
+	const char * getDecimal( void)  { return (const char *) m_pszDecimal;}
+    void copyCharToFont(const char* pszFont) { sprintf(m_pszFont,"%s",pszFont);}
+	const char * getFont( void) { return (const char *) m_pszFont;}
+	void                        setAnswer(AP_Dialog_Lists::tAnswer ans ) {m_Answer = ans;}
+    void copyCharToWindowName(const char* pszName) { sprintf(m_WindowName,"%s",pszName);}
+    const char * getWindowName( void) { return (const char *) m_WindowName;}  
+private:
+
 
 	// These are the "current use" dialog data items,
 	// which are liberally read and set by the
@@ -123,14 +162,13 @@ protected:
 	// These will all be rationalized after windows and beos get the
 	// new dialog
 
-	tAnswer					m_answer;
+	tAnswer					m_Answer;
 	char					m_WindowName[100];
 	bool					m_isListAtPoint;
 	bool					m_previousListExistsAtPoint;
-	char					m_curListType[100];
 	UT_UCSChar				m_curListLabel[100];
 	UT_UCSChar				m_newListLabel[100];
-	List_Type				m_newListType;
+	List_Type				m_NewListType;
 	XML_Char				m_pszDelim[80];
 	XML_Char				m_pszDecimal[80];
 	XML_Char				m_pszFont[80];
@@ -147,16 +185,12 @@ protected:
 	UT_uint32				m_curListLevel;
 	UT_uint32				m_newListLevel;
 	UT_uint32				m_iID;
-	List_Type				m_iListType;
+	List_Type				m_DocListType;
 
 	bool					m_bStartList;
-	bool					m_bStopList;
-	bool					m_bChangeStartValue;
-	bool					m_bresumeList;
 
 	bool					m_bStartNewList;
 	bool					m_bApplyToCurrent;
-	bool					m_bStartSubList;
 	bool					m_bResumeList;
 	bool					m_bisCustomized;
 	bool					m_bguiChanged;
@@ -168,8 +202,6 @@ protected:
 	PL_StruxDocHandle		m_pFakeSdh[4];
 	fl_AutoNum*				m_pFakeAuto;
 	PD_Document *			m_pFakeDoc;
-private:
-	virtual const XML_Char*	_getDingbatsFontName() const;
 	bool					m_bDirty;
 	bool					m_bIsModal;
 	UT_Vector				m_OutProps;

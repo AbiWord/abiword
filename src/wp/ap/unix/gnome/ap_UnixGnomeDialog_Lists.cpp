@@ -65,22 +65,32 @@ GtkWidget * AP_UnixGnomeDialog_Lists::_constructWindow(void)
 	GtkWidget *wApply;
 
 	ConstructWindowName();
-	wMainWindow = gnome_dialog_new (m_WindowName, NULL);
+	wMainWindow = gnome_dialog_new (getWindowName(), NULL);
 	_setMainWindow(wMainWindow);
 
 	gtk_box_pack_start (GTK_BOX (GNOME_DIALOG (wMainWindow)->vbox),
 						_constructWindowContents (), TRUE, TRUE, 0);
 
 	// apply button
-	gnome_dialog_append_button(GNOME_DIALOG(wMainWindow), 
+	if(!isModal())
+		gnome_dialog_append_button(GNOME_DIALOG(wMainWindow), 
 							   GNOME_STOCK_BUTTON_APPLY);
+	else
+		gnome_dialog_append_button(GNOME_DIALOG(wMainWindow), 
+							   GNOME_STOCK_BUTTON_OK);
+
 	wApply = GTK_WIDGET (g_list_last (GNOME_DIALOG (wMainWindow)->buttons)->data);
 	gtk_widget_show (wApply);
 	_setApplyButton(wApply);
 
 	// close button
-	gnome_dialog_append_button(GNOME_DIALOG(wMainWindow), 
+	if(!isModal())	
+		gnome_dialog_append_button(GNOME_DIALOG(wMainWindow), 
 							   GNOME_STOCK_BUTTON_CLOSE);
+	else
+		gnome_dialog_append_button(GNOME_DIALOG(wMainWindow), 
+							   GNOME_STOCK_BUTTON_CANCEL);
+
 	wClose = GTK_WIDGET (g_list_last (GNOME_DIALOG (wMainWindow)->buttons)->data);
 	gtk_widget_show (wClose);
 	_setCloseButton(wClose);
