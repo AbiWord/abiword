@@ -262,6 +262,8 @@ bool FV_View::cmdMergeCells(PT_DocPosition posSource, PT_DocPosition posDestinat
 				iLineType = _changeCellParams(posTable, tableSDH);
 			}
 			bChanged = true;
+			posSource = findCellPosAt(posTable,sTop,sLeft) +1;
+			posDestination = findCellPosAt(posTable,dTop,dLeft) +1;
 			_MergeCells(posDestination,posSource,true);
 		}
 		else
@@ -317,6 +319,8 @@ bool FV_View::cmdMergeCells(PT_DocPosition posSource, PT_DocPosition posDestinat
 				iLineType = _changeCellParams(posTable, tableSDH);
 			}
 			bChanged = true;
+			posSource = findCellPosAt(posTable,sTop,sLeft) +1;
+			posDestination = findCellPosAt(posTable,dTop,dLeft) +1;
 			_MergeCells(posDestination,posSource,true);
 		}
 	}
@@ -394,6 +398,8 @@ bool FV_View::cmdMergeCells(PT_DocPosition posSource, PT_DocPosition posDestinat
 				iLineType = _changeCellParams(posTable, tableSDH);
 			}
 			bChanged = true;
+			posSource = findCellPosAt(posTable,sTop,sLeft) +1;
+			posDestination = findCellPosAt(posTable,dTop,dLeft) +1;
 			_MergeCells(posDestination,posSource,true);
 		}
 		else
@@ -469,6 +475,8 @@ bool FV_View::cmdMergeCells(PT_DocPosition posSource, PT_DocPosition posDestinat
 				iLineType = _changeCellParams(posTable, tableSDH);
 			}
 			bChanged = true;
+			posSource = findCellPosAt(posTable,sTop,sLeft) +1;
+			posDestination = findCellPosAt(posTable,dTop,dLeft) +1;
 			_MergeCells(posDestination,posSource,true);
 		}
 	}
