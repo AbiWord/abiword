@@ -168,6 +168,10 @@ ifeq ($(OS_NAME), SunOS)
 include $(ABI_DEPTH)/config/platforms/sunos.mk
 endif
 
+ifeq ($(OS_NAME), IRIX)
+include $(ABI_DEPTH)/config/platforms/irix.mk
+endif
+
 # Catch all for undefined platform (CC will always be defined on a working platform)
 ifndef CC
 fake-target::
