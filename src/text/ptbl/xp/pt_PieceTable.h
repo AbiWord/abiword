@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -63,12 +63,66 @@ public:
 
 	void					setClean(void);
 	bool					isDirty(void) const;
-	
+
 	bool					canDo(bool bUndo) const;
 	UT_uint32                               undoCount(bool bUndo) const;
 	bool					undoCmd(void);
 	bool					redoCmd(void);
 
+protected:
+	bool					_realInsertObject(PT_DocPosition dpos,
+										 PTObjectType pto,
+										 const XML_Char ** attributes,
+										 const XML_Char ** properties);
+
+	bool					_realInsertObject(PT_DocPosition dpos,
+										 PTObjectType pto,
+										 const XML_Char ** attributes,
+										 const XML_Char ** properties, pf_Frag_Object ** ppfo );
+
+	bool					_realInsertSpan(PT_DocPosition dpos,
+									   const UT_UCSChar * p,
+									   UT_uint32 length, fd_Field * pField = NULL);
+
+	bool					_realDeleteSpan(PT_DocPosition dpos1,
+									   PT_DocPosition dpos2,
+									   PP_AttrProp *p_AttrProp_Before, bool bDontGlob=false);
+
+#if 0
+	// this is for fields and so should be needed with revisions
+	bool					_realInsertSpan_norec(PT_DocPosition dpos,
+											 const UT_UCSChar * p,
+											 UT_uint32 length, fd_Field * pField = NULL);
+	bool                	_realDeleteFieldFrag(pf_Frag * pf);
+#endif
+
+	// this one I am not sure about
+	void                	_realDeleteHdrFtrStrux(pf_Frag_Strux * pfs);
+
+	bool					_realChangeSpanFmt(PTChangeFmt ptc,
+										  PT_DocPosition dpos1,
+										  PT_DocPosition dpos2,
+										  const XML_Char ** attributes,
+										  const XML_Char ** properties);
+
+	bool					_realInsertStrux(PT_DocPosition dpos,
+										PTStruxType pts);
+
+	bool					_realChangeStruxFmt(PTChangeFmt ptc,
+										   PT_DocPosition dpos1,
+										   PT_DocPosition dpos2,
+										   const XML_Char ** attributes,
+										   const XML_Char ** properties,
+										   PTStruxType pts);
+
+	bool                    _realChangeStruxForLists(PL_StruxDocHandle sdh,
+												const char * pszParentID);
+    bool                    _realChangeSectionAttsNoUpdate(pf_Frag_Strux * pfStrux, const char * attr, const char * attvalue);
+
+	/******************************************************************
+	    these are the new revisions aware methods
+	*/
+public:
 	bool					insertObject(PT_DocPosition dpos,
 										 PTObjectType pto,
 										 const XML_Char ** attributes,
@@ -87,6 +141,8 @@ public:
 									   PT_DocPosition dpos2,
 									   PP_AttrProp *p_AttrProp_Before, bool bDontGlob=false);
 
+	//if I understand this correctly, this is only used by fields and
+	//we do not want field updates behaving as revisions
 	bool					insertSpan_norec(PT_DocPosition dpos,
 											 const UT_UCSChar * p,
 											 UT_uint32 length, fd_Field * pField = NULL);
@@ -111,10 +167,12 @@ public:
 										   const XML_Char ** properties,
 										   PTStruxType pts);
 
-	bool                    changeStruxForLists(PL_StruxDocHandle sdh, 
+	bool                    changeStruxForLists(PL_StruxDocHandle sdh,
 												const char * pszParentID);
     bool                    changeSectionAttsNoUpdate(pf_Frag_Strux * pfStrux, const char * attr, const char * attvalue);
-	
+
+
+	/**********************	END OF REVISIONS AWARE METHODS ******/
 	bool					insertFmtMark(PTChangeFmt ptc,
 										  PT_DocPosition dpos,
 										  PP_AttrProp *p_AttrProp)
@@ -138,10 +196,10 @@ public:
 	bool					tellListener(PL_Listener * pListener);
 	bool					tellListenerSubset(PL_Listener * pListener,
 											   PD_DocumentRange * pDocRange);
-	
+
 	bool					addListener(PL_Listener * pListener,
 										PL_ListenerId listenerId);
-	
+
 	bool					getAttrProp(PT_AttrPropIndex indexAP,
 										const PP_AttrProp ** ppAP) const;
 	bool					getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset, bool bLeftSide,
@@ -163,7 +221,7 @@ public:
 	bool					getBounds(bool bEnd, PT_DocPosition & docPos) const;
 	PT_DocPosition			getStruxPosition(PL_StruxDocHandle sdh) const;
 	PT_DocPosition			getFragPosition(const pf_Frag * pfToFind) const;
-	
+
 	bool					getFragFromPosition(PT_DocPosition docPos,
 												pf_Frag ** ppf,
 												PT_BlockOffset * pOffset) const;
@@ -174,8 +232,8 @@ public:
 													   PL_StruxFmtHandle * psfh) const;
 
 
-	bool					getStruxOfTypeFromPosition(PT_DocPosition docPos,   
-													   PTStruxType pts,  
+	bool					getStruxOfTypeFromPosition(PT_DocPosition docPos,
+													   PTStruxType pts,
 													   PL_StruxDocHandle * sdh) const;
 
 	bool					getStruxFromPosition(PL_ListenerId listenerId,
@@ -185,7 +243,7 @@ public:
 	bool					getFragsFromPositions(PT_DocPosition dPos1, PT_DocPosition dPos2,
 												  pf_Frag ** ppf1, PT_BlockOffset * pOffset1,
 												  pf_Frag ** ppf2, PT_BlockOffset * pOffset2) const;
-	
+
 	bool					getStyle(const char * szName, PD_Style ** ppStyle) const;
 	bool					enumStyles(UT_uint32 k,
 									   const char ** pszName, const PD_Style ** ppStyle) const;
@@ -201,13 +259,13 @@ public:
 		{ return &m_history; }
 
 #endif /* PT_TEST */
-	
+
 protected:
 
 	bool					_tellAndMaybeAddListener(PL_Listener * pListener,
 													 PL_ListenerId listenerId,
 													 bool bAdd);
-	
+
 	void					_captureActiveSpan(pf_Frag_Strux_Block * pfsBlock);
 	PT_AttrPropIndex		_chooseIndexAP(pf_Frag * pf, PT_BlockOffset fragOffset);
 	bool					_canCoalesceInsertSpan(PX_ChangeRecord_Span * pcrSpan) const;
@@ -221,15 +279,15 @@ protected:
 										 pf_Frag_Strux * pfsNew);
 
 	bool					_insertObject(pf_Frag * pf,
-										  PT_BlockOffset fragOffset,									 
+										  PT_BlockOffset fragOffset,
 										  PTObjectType pto,
 										  PT_AttrPropIndex indexAP,
                                           pf_Frag_Object * &pfo);
-	
+
 	bool					_createObject(PTObjectType pto,
 										  PT_AttrPropIndex indexAP,
 										  pf_Frag_Object ** ppfo);
-	
+
 	bool					_insertSpan(pf_Frag * pf,
 										PT_BufIndex bi,
 										PT_BlockOffset fragOffset,
@@ -274,10 +332,10 @@ protected:
 												PT_DocPosition dpos2) const;
     void					_tweakFieldSpan(PT_DocPosition& dpos1,
                                             PT_DocPosition& dpos2) const;
-	bool					_tweakDeleteSpanOnce(PT_DocPosition& dpos1, 
+	bool					_tweakDeleteSpanOnce(PT_DocPosition& dpos1,
 												 PT_DocPosition& dpos2,
 												 UT_Stack * pstDelayStruxDelete) const;
-	bool					_tweakDeleteSpan(PT_DocPosition& dpos1, 
+	bool					_tweakDeleteSpan(PT_DocPosition& dpos1,
 											 PT_DocPosition& dpos2,
 											 UT_Stack * pstDelayStruxDelete) const;
 	bool					_deleteFormatting(PT_DocPosition dpos1,
@@ -289,10 +347,10 @@ protected:
 
 	bool					_deleteComplexSpan_norec(PT_DocPosition dpos1,
 													 PT_DocPosition dpos2);
-	
+
 	bool					_deleteObject(pf_Frag_Object * pfo,
 										  pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd);
-	
+
 	bool					_deleteObjectWithNotify(PT_DocPosition dpos,
 													pf_Frag_Object * pfo, UT_uint32 fragOffset,
 													UT_uint32 length,
@@ -300,7 +358,7 @@ protected:
 													pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd);
 
 
-	
+
 	bool					_deleteObject_norec(PT_DocPosition dpos,
 												pf_Frag_Object * pfo, UT_uint32 fragOffset,
 												UT_uint32 length,
@@ -321,7 +379,7 @@ protected:
 
 	bool					_fmtChangeStrux(pf_Frag_Strux * pfs,
 											PT_AttrPropIndex indexNewAP);
-	
+
 	bool					_fmtChangeStruxWithNotify(PTChangeFmt ptc,
 													  pf_Frag_Strux * pfs,
 													  const XML_Char ** attributes,
@@ -330,7 +388,7 @@ protected:
 	bool					_fmtChangeSpan(pf_Frag_Text * pft, UT_uint32 fragOffset, UT_uint32 length,
 										   PT_AttrPropIndex indexNewAP,
 										   pf_Frag ** ppfNewEnd, UT_uint32 * pfragOffsetNewEnd);
-	
+
 	bool					_fmtChangeSpanWithNotify(PTChangeFmt ptc,
 													 pf_Frag_Text * pft, UT_uint32 fragOffset,
 													 PT_DocPosition dpos,
@@ -355,7 +413,7 @@ protected:
 													   pf_Frag_Strux * pfs,
 													   pf_Frag ** ppfNewEnd,
 													   UT_uint32 * pfragOffsetNewEnd);
-	
+
 	bool					_getStruxFromFrag(pf_Frag * pfStart, pf_Frag_Strux ** ppfs) const;
 	UT_uint32				_computeBlockOffset(pf_Frag_Strux * pfs,pf_Frag * pfTarget) const;
 
@@ -379,7 +437,7 @@ protected:
 	bool					_deleteFmtMark(pf_Frag_FmtMark * pffm,
 										   pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd);
 	bool					_fmtChangeFmtMarkWithNotify(PTChangeFmt ptc, pf_Frag_FmtMark * pffm,
-														PT_DocPosition dpos, 
+														PT_DocPosition dpos,
 														const XML_Char ** attributes, const XML_Char ** properties,
 														pf_Frag_Strux * pfs,
 														pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd);
@@ -400,7 +458,7 @@ protected:
 	px_ChangeHistory		m_history;
 	pf_Fragments			m_fragments;
 	UT_StringPtrMap		    m_hashStyles;
-	
+
 	struct {
 		PT_AttrPropIndex	m_indexCurrentInlineAP;
 	} loading;							/* stuff only valid while m_pts==PTS_Loading */

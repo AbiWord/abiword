@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -39,6 +39,12 @@
 
 /****************************************************************/
 /****************************************************************/
+bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
+								PTStruxType pts)
+{
+	return _realInsertStrux(dpos,pts);
+}
+
 
 bool pt_PieceTable::_createStrux(PTStruxType pts,
 									PT_AttrPropIndex indexAP,
@@ -48,14 +54,14 @@ bool pt_PieceTable::_createStrux(PTStruxType pts,
 	// return *pfs and true if successful.
 
 	// create an unlinked strux fragment.
-	
+
 	pf_Frag_Strux * pfs = NULL;
 	switch (pts)
 	{
 	case PTX_Section:
 		pfs = new pf_Frag_Strux_Section(this,indexAP);
 		break;
-		
+
 	case PTX_Block:
 		pfs = new pf_Frag_Strux_Block(this,indexAP);
 		break;
@@ -125,7 +131,7 @@ void pt_PieceTable::_insertStrux(pf_Frag * pf,
 			m_fragments.insertFrag(pf,pfsNew);
 			return;
 		}
-		
+
 	case pf_Frag::PFT_Text:
 		{
 			// insert pfsNew somewhere inside pf.
@@ -170,7 +176,7 @@ void pt_PieceTable::_insertStrux(pf_Frag * pf,
 				PT_BufIndex biTail = m_varset.getBufIndex(pft->getBufIndex(),fragOffset);
 				pf_Frag_Text * pftTail = new pf_Frag_Text(this,biTail,lenTail,pft->getIndexAP(),pft->getField());
 				UT_ASSERT(pftTail);
-			
+
 				pft->changeLength(fragOffset);
 				m_fragments.insertFrag(pft,pfsNew);
 				m_fragments.insertFrag(pfsNew,pftTail);
@@ -182,7 +188,7 @@ void pt_PieceTable::_insertStrux(pf_Frag * pf,
 }
 
 
-bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
+bool pt_PieceTable::_realInsertStrux(PT_DocPosition dpos,
 								   PTStruxType pts)
 {
 	// insert a new structure fragment at the given document position.
@@ -199,7 +205,7 @@ bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
 	UT_ASSERT(bFoundFrag);
 
 	// get the strux containing the given position.
-	
+
 	pf_Frag_Strux * pfsContainer = NULL;
 	bool bFoundContainer = _getStruxFromPosition(dpos,&pfsContainer);
 	UT_ASSERT(bFoundContainer);
@@ -219,11 +225,11 @@ bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
 		// TODO paul, of the previous strux.
 		indexAP = pfsContainer->getIndexAP();
 	}
-	
+
 	pf_Frag_Strux * pfsNew = NULL;
 	if (!_createStrux(pts,indexAP,&pfsNew))
 		return false;
-	
+
 	// when inserting paragraphs, we try to remember the current
 	// span formatting active at the insertion point and add a
 	// FmtMark immediately after the block.  this way, if the
@@ -265,7 +271,7 @@ bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
 
 	// create a change record to describe the change, add
 	// it to the history, and let our listeners know about it.
-	
+
 	PX_ChangeRecord_Strux * pcrs
 		= new PX_ChangeRecord_Strux(PX_ChangeRecord::PXT_InsertStrux,
 									dpos,indexAP,pts);
@@ -281,7 +287,7 @@ bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
 		_insertFmtMarkAfterBlockWithNotify(pfsNew,dpos+pfsNew->getLength(),apFmtMark);
 		endMultiStepGlob();
 	}
-	
+
 	return true;
 }
 
@@ -319,7 +325,7 @@ bool pt_PieceTable::_computeFmtMarkForNewBlock(pf_Frag_Strux * /* pfsNewBlock */
 				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 				return false;
 			}
-			
+
 		case pf_Frag::PFT_Text:
 			{
 				pf_Frag_Text * pfPrevText = static_cast<pf_Frag_Text *>(pfPrev);
@@ -346,7 +352,7 @@ bool pt_PieceTable::_computeFmtMarkForNewBlock(pf_Frag_Strux * /* pfsNewBlock */
 			}
 
 		case pf_Frag::PFT_Strux:
-			{	
+			{
 				return false;
 			}
 

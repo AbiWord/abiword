@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -41,6 +41,28 @@
 
 /****************************************************************/
 /****************************************************************/
+bool pt_PieceTable::changeStruxForLists(PL_StruxDocHandle sdh,
+										const char * pszParentID)
+{
+	return _realChangeStruxForLists(sdh, pszParentID);
+}
+
+bool pt_PieceTable::changeSectionAttsNoUpdate(pf_Frag_Strux * pfs,
+											  const char * atts,
+											  const char * attsValue)
+{
+	return _realChangeSectionAttsNoUpdate(pfs, atts, attsValue);
+}
+
+bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
+									  PT_DocPosition dpos1,
+									  PT_DocPosition dpos2,
+									  const XML_Char ** attributes,
+									  const XML_Char ** properties,
+								   PTStruxType pts)
+{
+	return _realChangeStruxFmt(ptc, dpos1, dpos2, attributes, properties, pts);
+}
 
 bool pt_PieceTable::_fmtChangeStrux(pf_Frag_Strux * pfs,
 									   PT_AttrPropIndex indexNewAP)
@@ -68,9 +90,9 @@ bool pt_PieceTable::_fmtChangeStruxWithNotify(PTChangeFmt ptc,
 	// it up by position it will be to the right of the beginning of
 	// the fragment and will find us -- rather than finding the end of
 	// the previous fragment.
-	
+
 	PT_DocPosition dpos = getFragPosition(pfs) + pfs->getLength();
-	
+
 	PX_ChangeRecord_StruxChange * pcr
 		= new PX_ChangeRecord_StruxChange(PX_ChangeRecord::PXT_ChangeStrux,
 										  dpos,
@@ -91,7 +113,7 @@ bool pt_PieceTable::_fmtChangeStruxWithNotify(PTChangeFmt ptc,
 /*!
  * This Method implements the change strux we need to reparent lists.
  */
-bool pt_PieceTable::changeStruxForLists(PL_StruxDocHandle sdh, 
+bool pt_PieceTable::_realChangeStruxForLists(PL_StruxDocHandle sdh,
 									   const char * pszParentID)
 {
 	pf_Frag_Strux * pfs = (pf_Frag_Strux *) sdh;
@@ -111,9 +133,9 @@ bool pt_PieceTable::changeStruxForLists(PL_StruxDocHandle sdh,
 	// it up by position it will be to the right of the beginning of
 	// the fragment and will find us -- rather than finding the end of
 	// the previous fragment.
-	
+
 	PT_DocPosition dpos = getFragPosition(pfs) + pfs->getLength();
-	
+
 	PX_ChangeRecord_StruxChange * pcr
 		= new PX_ChangeRecord_StruxChange(PX_ChangeRecord::PXT_ChangeStrux,
 										  dpos,
@@ -136,8 +158,8 @@ bool pt_PieceTable::changeStruxForLists(PL_StruxDocHandle sdh,
 /*!
  * This Method implements the change strux we need to reparent lists.
  */
-bool pt_PieceTable::changeSectionAttsNoUpdate(pf_Frag_Strux * pfs, 
-											  const char * atts, 
+bool pt_PieceTable::_realChangeSectionAttsNoUpdate(pf_Frag_Strux * pfs,
+											  const char * atts,
 											  const char * attsValue)
 {
 	const char * attributes[3] = {atts,attsValue,NULL};
@@ -159,7 +181,7 @@ bool pt_PieceTable::changeSectionAttsNoUpdate(pf_Frag_Strux * pfs,
 
 }
 
-bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
+bool pt_PieceTable::_realChangeStruxFmt(PTChangeFmt ptc,
 									  PT_DocPosition dpos1,
 									  PT_DocPosition dpos2,
 									  const XML_Char ** attributes,
@@ -181,13 +203,13 @@ bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 
 	// look backwards and find the containing strux of the given
 	// type for both end points of the change.
-	
+
 	bool bFoundFirst;
 	bFoundFirst = _getStruxOfTypeFromPosition(dpos1,pts,&pfs_First);
 	bool bFoundEnd;
 	bFoundEnd = _getStruxOfTypeFromPosition(dpos2,pts,&pfs_End);
 	UT_ASSERT(bFoundFirst && bFoundEnd);
-	
+
 	// see if the change is exactly one block.  if so, we have
 	// a simple change.  otherwise, we have a multistep change.
 
@@ -214,7 +236,7 @@ bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 			default:
 				UT_ASSERT(0);
 				return false;
-				
+
 			case pf_Frag::PFT_Strux:
 				{
 					pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);
@@ -240,15 +262,15 @@ bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 	}
 	else
 	{
-		// when applying a block-level style, we also need to clear 
-		// any props at the frag level, which might trigger coalescing, 
+		// when applying a block-level style, we also need to clear
+		// any props at the frag level, which might trigger coalescing,
 		// thus this version of the loop is more complex.
 
 //
 // OK for styles we expand out all defined properties including BasedOn styles
 // Then we use these to eliminate any specfic properties in the current strux
 // Then properties in the current strux will resolve to those defined in the
-// style (they exist there) to specifc values in strux (if not overridden by 
+// style (they exist there) to specifc values in strux (if not overridden by
 // the style) then finally to default value.
 //
 // TODO this is not right; first of all, paragraph style should be applied
@@ -259,7 +281,7 @@ bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 //		is not defined is assumed to default, not to be inherited from a style
 //		we are trying to get rid off.
 //
-// NO. We want to remove all character level properties that clash with properties 
+// NO. We want to remove all character level properties that clash with properties
 // defined in th strux level style. -MES
 //
 		const XML_Char * szStyle = UT_getAttribute(PT_STYLE_ATTRIBUTE_NAME,attributes);
@@ -291,13 +313,13 @@ bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 		pf_Frag_Strux * pfsContainer = pfs_First;
 		pf_Frag * pfNewEnd;
 		UT_uint32 fragOffsetNewEnd;
-		
+
 		bool bEndSeen = false;
 
 		while (!bFinished)
 		{
 			UT_uint32 lengthThisStep = pf->getLength();
-			
+
 			switch (pf->getType())
 			{
 			case pf_Frag::PFT_EndOfDoc:
@@ -308,7 +330,7 @@ bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 			default:
 				UT_ASSERT(0);
 				return false;
-				
+
 			case pf_Frag::PFT_Strux:
 				{
 					pfNewEnd = pf->getNext();
@@ -330,7 +352,7 @@ bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 			case pf_Frag::PFT_Text:
 				{
 					bool bResult;
-							
+
 					bResult = _fmtChangeSpanWithNotify(ptcs,static_cast<pf_Frag_Text *>(pf),
 												   0,dpos,lengthThisStep,
 													   attributes,sProps,
@@ -344,7 +366,7 @@ bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 						pfNewEnd = pfNewEnd->getNext();
 						fragOffsetNewEnd = 0;
 					}
-						
+
 				}
 				break;
 
@@ -364,7 +386,7 @@ bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 				{
 					bool bResult;
 				 	bResult = _fmtChangeFmtMarkWithNotify(ptcs,static_cast<pf_Frag_FmtMark *>(pf),
-														  dpos, 
+														  dpos,
 														  attributes,sProps,
 													  pfsContainer,&pfNewEnd,&fragOffsetNewEnd);
 					UT_ASSERT(bResult);
@@ -372,14 +394,14 @@ bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 				break;
 			}
 			dpos += lengthThisStep;
-			
+
 			// since _fmtChange{Span,FmtMark,...}WithNotify(), can delete pf, mess with the
 			// fragment list, and does some aggressive coalescing of
 			// fragments, we cannot just do a pf->getNext() here.
 			// to advance to the next fragment, we use the *NewEnd variables
 			// that each of the cases routines gave us.
 			pf = pfNewEnd;
-			
+
 			if (!pf)
 				bFinished = true;
 		}
@@ -388,7 +410,7 @@ bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 
 	if (!bSimple)
 		endMultiStepGlob();
-		
+
 	return true;
 }
 

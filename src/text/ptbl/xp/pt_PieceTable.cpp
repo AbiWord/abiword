@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -45,7 +45,7 @@
 /*****************************************************************/
 /*****************************************************************/
 
-pt_PieceTable::pt_PieceTable(PD_Document * pDocument) 
+pt_PieceTable::pt_PieceTable(PD_Document * pDocument)
   : m_hashStyles(11), m_pts(PTS_Create), m_pDocument(pDocument),
     m_atomicGlobCount(0)
 {
@@ -96,7 +96,7 @@ void pt_PieceTable::_unlinkFrag(pf_Frag * pf,
 		*ppfEnd = pf->getNext();
 	if (pfragOffsetEnd)
 		*pfragOffsetEnd = 0;
-	
+
 	pf_Frag * pp = pf->getPrev();
 
 	m_fragments.unlinkFrag(pf);
@@ -159,7 +159,7 @@ bool pt_PieceTable::_getSpanAttrPropHelper(pf_Frag * pf, const PP_AttrProp ** pp
 
 	case pf_Frag::PFT_Text:
 		ReturnThis( pf_Frag_Text, pf );
-		
+
 	case pf_Frag::PFT_Object:
 		ReturnThis( pf_Frag_Object, pf );
 
@@ -172,14 +172,14 @@ bool pt_PieceTable::_getSpanAttrPropHelper(pf_Frag * pf, const PP_AttrProp ** pp
 #undef ReturnThis
 }
 
-		  
+
 bool pt_PieceTable::getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset, bool bLeftSide,
 									   const PP_AttrProp ** ppAP) const
 {
 	// return the AP for the text at the given offset from the given strux.
 	// offset zero now refers to the first character in the block, so adding
 	// fl_BLOCK_STRUX_OFFSET to the offset in the call is no longer necessary.
-	
+
 	UT_ASSERT(sdh);
 	UT_ASSERT(ppAP);
 
@@ -197,7 +197,7 @@ bool pt_PieceTable::getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset, boo
 
 		if (offset > cumEndOffset)		// the place we want is way past the end of pfTemp,
 			continue;					// so keep searching.
-		
+
 		if (offset == cumOffset)		// there's a frag boundary exactly where we want. pfTemp is to our right.
 		{
 			// FmtMarks have length zero, so we have to see what side of the position the caller wants.
@@ -208,12 +208,12 @@ bool pt_PieceTable::getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset, boo
 		}
 
 		UT_ASSERT(offset > cumOffset);
-		
+
 		if (offset == cumEndOffset)		// there's a frag boundary exactly where we want. pfTemp is to our left.
 		{
 			if (!bLeftSide)
 				continue;				// return the next one on the next loop iteration
-			
+
 			// FmtMarks have length zero, so we advance to put it to our left and then decide what to do
 			if (pfTemp->getNext() && (pfTemp->getNext()->getType()==pf_Frag::PFT_FmtMark))
 				continue;				// we'll return this one on the next loop iteration
@@ -240,7 +240,7 @@ bool pt_PieceTable::getSpanPtr(PL_StruxDocHandle sdh, UT_uint32 offset,
 
 	*ppSpan = NULL;
 	*pLength = 0;
-	
+
 	pf_Frag * pf = (pf_Frag *)sdh;
 	UT_ASSERT(pf->getType() == pf_Frag::PFT_Strux);
 	pf_Frag_Strux * pfsBlock = static_cast<pf_Frag_Strux *> (pf);
@@ -253,10 +253,10 @@ bool pt_PieceTable::getSpanPtr(PL_StruxDocHandle sdh, UT_uint32 offset,
 		{
 			if (pfTemp->getType() == pf_Frag::PFT_FmtMark)
 				continue;
-			
+
 			if (pfTemp->getType() != pf_Frag::PFT_Text)
 				return false;
-			
+
 			pf_Frag_Text * pfText = static_cast<pf_Frag_Text *> (pfTemp);
 			*ppSpan = getPointer(pfText->getBufIndex());
 			*pLength = pfText->getLength();
@@ -294,18 +294,18 @@ PD_Document * pt_PieceTable::getDocument(void)
   Copy the contents (unicode character data) of the paragraph (block)
   into the growbuf given.  We append the content onto the growbuf.
 */
-bool pt_PieceTable::getBlockBuf(PL_StruxDocHandle sdh, 
+bool pt_PieceTable::getBlockBuf(PL_StruxDocHandle sdh,
                                    UT_GrowBuf * pgb) const
 {
     UT_ASSERT(pgb);
-	
+
     pf_Frag * pf = (pf_Frag *)sdh;
     UT_ASSERT(pf->getType() == pf_Frag::PFT_Strux);
     pf_Frag_Strux * pfsBlock = static_cast<pf_Frag_Strux *> (pf);
     UT_ASSERT(pfsBlock->getStruxType() == PTX_Block);
 
     UT_uint32 bufferOffset = pgb->getLength();
-	
+
     pf_Frag * pfTemp = pfsBlock->getNext();
     while (pfTemp)
     {
@@ -317,21 +317,21 @@ bool pt_PieceTable::getBlockBuf(PL_StruxDocHandle sdh,
         case pf_Frag::PFT_EndOfDoc:
             pfTemp = NULL;
             break;
-            
+
         case pf_Frag::PFT_FmtMark:
             pfTemp = pfTemp->getNext();
             break;
-            
+
         case pf_Frag::PFT_Text:
         {
             pf_Frag_Text * pft = static_cast<pf_Frag_Text *>(pfTemp);
             const UT_UCSChar * pSpan = getPointer(pft->getBufIndex());
             UT_uint32 length = pft->getLength();
-            
+
             bool bAppended;
             bAppended = pgb->ins(bufferOffset,(UT_GrowBufElement*)pSpan,length);
             UT_ASSERT(bAppended);
-            
+
             bufferOffset += length;
         }
         pfTemp = pfTemp->getNext();
@@ -349,7 +349,7 @@ bool pt_PieceTable::getBlockBuf(PL_StruxDocHandle sdh,
               buffer.  Obviously, those codes aren't useful, but at
               least the app doesn't crash, and the rest of the text in
               the block is safely stored in the buffer in the proper
-              location. 
+              location.
 
               The UCS_ABI_OBJECT used to be defined as a space, but
               that caused selection code to fail for fields since the
@@ -357,15 +357,15 @@ bool pt_PieceTable::getBlockBuf(PL_StruxDocHandle sdh,
               spaces. Now the UCS_ABI_OBJECT is instead defined as an
               alpha character. Doesn't really matter since it'll never
               be used for anything but limit checking anyway. See bug
-              #223 for details. 
+              #223 for details.
 			*/
 
             UT_uint32 length = pfTemp->getLength();
-            
+
             // TODO investigate appending the SPACES directly to
             // TODO the pgb.  **or** investigate the cost of this
             // TODO malloc and what happens when it fails....
-				
+
             UT_UCSChar* pSpaces = new UT_UCSChar[length];
             for (UT_uint32 i=0; i<length; i++)
             {
@@ -375,7 +375,7 @@ bool pt_PieceTable::getBlockBuf(PL_StruxDocHandle sdh,
             bAppended = pgb->ins(bufferOffset, (UT_GrowBufElement*)pSpaces, length);
             delete[] pSpaces;
             UT_ASSERT(bAppended);
-		
+
             bufferOffset += length;
         }
         pfTemp = pfTemp->getNext();
@@ -421,6 +421,11 @@ PT_DocPosition pt_PieceTable::getStruxPosition(PL_StruxDocHandle sdh) const
 
 void pt_PieceTable::deleteHdrFtrStrux(pf_Frag_Strux * pfs)
 {
+	_realDeleteHdrFtrStrux(pfs);
+}
+
+void pt_PieceTable::_realDeleteHdrFtrStrux(pf_Frag_Strux * pfs)
+{
 	_deleteHdrFtrStruxWithNotify(pfs);
 }
 
@@ -458,7 +463,7 @@ bool pt_PieceTable::getFragFromPosition(PT_DocPosition docPos,
 
 	UT_ASSERT(pfLast);
 	UT_ASSERT(pfLast->getType() == pf_Frag::PFT_EndOfDoc);
-	
+
 	return true;
 }
 	//  PT_DocPosition sum = 0;
@@ -474,10 +479,10 @@ bool pt_PieceTable::getFragFromPosition(PT_DocPosition docPos,
 
 //  			// a FmtMark has length zero.  we don't want to find it
 //  			// in this loop -- rather we want the thing just past it.
-			
+
 //  			UT_ASSERT(pf->getType() != pf_Frag::PFT_FmtMark);
 //  			UT_DEBUGMSG(("SEVIOR: Jeff finds frag %d at Pos %d \n",getFragNumber(pf),docPos));
-			
+
 //  			return true;
 //  		}
 
@@ -495,7 +500,7 @@ bool pt_PieceTable::getFragFromPosition(PT_DocPosition docPos,
 //  	UT_ASSERT(pfLast->getType() == pf_Frag::PFT_EndOfDoc);
 
 //  	// TODO if (docPos > sum) we should probably complain...
-	
+
 //  	*ppf = pfLast;
 //  	if (pFragOffset)
 //  		*pFragOffset = docPos - sum;
@@ -510,13 +515,13 @@ bool pt_PieceTable::getFragsFromPositions(PT_DocPosition dPos1, PT_DocPosition d
 											 pf_Frag ** ppf2, PT_BlockOffset * pOffset2) const
 {
 	// compute the (fragment,offset) pairs for each position given.
-	
+
 	UT_ASSERT(dPos1 <= dPos2);
 	UT_ASSERT(ppf1);
 	UT_ASSERT(pOffset1);
-	
+
 	// the first set has to be done the hard way.
-	
+
 	if (!getFragFromPosition(dPos1,ppf1,pOffset1))
 		return false;
 
@@ -546,7 +551,7 @@ bool pt_PieceTable::getFragsFromPositions(PT_DocPosition dPos1, PT_DocPosition d
 		*pOffset2 = offset+deltaPos;
 	return true;
 }
-	
+
 bool pt_PieceTable::getStruxFromPosition(PL_ListenerId listenerId,
 											PT_DocPosition docPos,
 											PL_StruxFmtHandle * psfh) const
@@ -557,7 +562,7 @@ bool pt_PieceTable::getStruxFromPosition(PL_ListenerId listenerId,
 	pf_Frag_Strux * pfs = NULL;
 	if (!_getStruxFromPosition(docPos,&pfs))
 		return false;
-	
+
 	*psfh = pfs->getFmtHandle(listenerId);
 	return true;
 }
@@ -573,7 +578,7 @@ bool pt_PieceTable::getStruxOfTypeFromPosition(PL_ListenerId listenerId,
 	pf_Frag_Strux * pfs = NULL;
 	if (!_getStruxOfTypeFromPosition(docPos,pts,&pfs))
 		return false;
-	
+
 	*psfh = pfs->getFmtHandle(listenerId);
 	return true;
 }
@@ -582,7 +587,7 @@ bool pt_PieceTable::getStruxOfTypeFromPosition(PL_ListenerId listenerId,
 /// immediately prior to the given absolute document position.
 ///
 bool pt_PieceTable::getStruxOfTypeFromPosition( PT_DocPosition docPos,
-						   PTStruxType pts, 
+						   PTStruxType pts,
 						   PL_StruxDocHandle * sdh) const
 {
 
@@ -646,7 +651,7 @@ bool pt_PieceTable::_getStruxOfTypeFromPosition(PT_DocPosition dpos,
 	// the given absolute document position.
 	UT_ASSERT(ppfs);
 	*ppfs = NULL;
-	
+
 	pf_Frag_Strux * pfs = NULL;
 	if (!_getStruxFromPosition(dpos,&pfs))
 		return false;
@@ -671,7 +676,7 @@ bool pt_PieceTable::_getStruxOfTypeFromPosition(PT_DocPosition dpos,
 		}
 
 	// did not find it.
-	
+
 	return false;
 }
 
@@ -706,7 +711,7 @@ UT_uint32 pt_PieceTable::_computeBlockOffset(pf_Frag_Strux * pfs,pf_Frag * pfTar
 	return sum;
 }
 
-	
+
 void pt_PieceTable::clearIfAtFmtMark(PT_DocPosition dpos)
 {
 	while (_lastUndoIsThisFmtMark(dpos))

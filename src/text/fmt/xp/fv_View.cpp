@@ -4927,36 +4927,8 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 			}
 		}
 
-		bool bMark = isMarkRevisions();
-
-		PP_AttrProp * pAttrProp;
-		const XML_Char * ppRevAttrib[4];
-		PP_RevisionAttr Revisions; // new to create it here so it
-								   // persists long enough
-
-
 		if(!curBlock)
 			curBlock = _findBlockAtPosition(getPoint());
-
-		if(bMark)
-		{
-			curBlock->getSpanAttrProp(getPoint() - curBlock->getPosition(false),false,const_cast<const PP_AttrProp **>(&pAttrProp));
-
-			const XML_Char name[] = "revision";
-
-			const XML_Char * pRevision = NULL;
-
-			if(pAttrProp)
-				pAttrProp->getAttribute(name, pRevision);
-
-			Revisions.setRevision(pRevision);
-			Revisions.addRevision(m_pDoc->getRevisionId(),PP_REVISION_DELETION,NULL,NULL);
-
-			ppRevAttrib[0] = name;
-			ppRevAttrib[1] = Revisions.getXMLstring();
-			ppRevAttrib[2] = NULL;
-			ppRevAttrib[3] = NULL;
-		}
 
 		if (amt > 0)
 		{
@@ -4984,41 +4956,17 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 				}
 				else if(bisList == true)
 				{
-					if(bMark)
-					{
-						m_pDoc->changeSpanFmt(PTC_AddFmt, posCur, posCur+amt, ppRevAttrib, NULL);
-					}
-					else
-					{
-						m_pDoc->deleteSpan(posCur, posCur+amt);
-						nBlock->remItemFromList();
-					}
-
-				}
-				else
-				{
-					if(bMark)
-					{
-
-						m_pDoc->changeSpanFmt(PTC_AddFmt, posCur, posCur+amt, ppRevAttrib, NULL);
-					}
-					else
-					{
-						m_pDoc->deleteSpan(posCur, posCur+amt);
-					}
-
-				}
-			}
-			else
-			{
-				if(bMark)
-				{
-					m_pDoc->changeSpanFmt(PTC_AddFmt, posCur, posCur+amt, ppRevAttrib, NULL);
+					m_pDoc->deleteSpan(posCur, posCur+amt);
+					nBlock->remItemFromList();
 				}
 				else
 				{
 					m_pDoc->deleteSpan(posCur, posCur+amt);
 				}
+			}
+			else
+			{
+				m_pDoc->deleteSpan(posCur, posCur+amt);
 			}
 
 			if(fontFlag)
@@ -5031,14 +4979,7 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 //
 		if(isTabListAheadPoint())
 		{
-			if(bMark)
-			{
-				m_pDoc->changeSpanFmt(PTC_AddFmt, getPoint(), getPoint()+2, ppRevAttrib, NULL);
-			}
-			else
-			{
-				m_pDoc->deleteSpan(getPoint(), getPoint()+2);
-			}
+			m_pDoc->deleteSpan(getPoint(), getPoint()+2);
 		}
 
 		// restore updates and clean up dirty lists

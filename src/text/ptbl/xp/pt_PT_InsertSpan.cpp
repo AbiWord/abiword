@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -41,7 +41,16 @@
 #include "fd_Field.h"
 /****************************************************************/
 /****************************************************************/
-	
+
+
+bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
+								  const UT_UCSChar * p,
+							   UT_uint32 length, fd_Field * pField)
+{
+	return _realInsertSpan(dpos, p, length, pField);
+}
+
+
 bool pt_PieceTable::_insertSpan(pf_Frag * pf,
 								   PT_BufIndex bi,
 								   PT_BlockOffset fragOffset,
@@ -51,9 +60,9 @@ bool pt_PieceTable::_insertSpan(pf_Frag * pf,
 {
 	// update the fragment and/or the fragment list.
 	// return true if successful.
-	
+
 	pf_Frag_Text * pft = NULL;
-	
+
 	switch (pf->getType())
 	{
 	default:
@@ -81,7 +90,7 @@ bool pt_PieceTable::_insertSpan(pf_Frag * pf,
 		// otherwise, we will just insert it before us.
 		fragOffset = 0;
 		break;
-		
+
 	case pf_Frag::PFT_Text:
 		pft = static_cast<pf_Frag_Text *>(pf);
 		break;
@@ -101,7 +110,7 @@ bool pt_PieceTable::_insertSpan(pf_Frag * pf,
 		// deal with merging/splitting/etc.
 
 		UT_uint32 fragLen = pft->getLength();
-	
+
 		// try to coalesce this character data with an existing fragment.
 		// this is very likely to be sucessful during normal data entry.
 
@@ -133,7 +142,7 @@ bool pt_PieceTable::_insertSpan(pf_Frag * pf,
 						delete pftNext;
 					}
 				}
-				
+
 				return true;
 			}
 		}
@@ -142,7 +151,7 @@ bool pt_PieceTable::_insertSpan(pf_Frag * pf,
 		{
 			// we are to insert it immediately before this fragment.
 			// if we are coalescable, just prepend it to this fragment.
-		
+
 			if (   (pft->getIndexAP()==indexAP)
 				&& m_varset.isContiguous(bi,length,pft->getBufIndex()))
 			{
@@ -166,7 +175,7 @@ bool pt_PieceTable::_insertSpan(pf_Frag * pf,
 						delete pft;
 					}
 				}
-			
+
 				return true;
 			}
 
@@ -180,7 +189,7 @@ bool pt_PieceTable::_insertSpan(pf_Frag * pf,
 			{
 				pf_Frag_Text * pftPrev = static_cast<pf_Frag_Text *>(pfPrev);
 				UT_uint32 prevLength = pftPrev->getLength();
-			
+
 				if (   (pftPrev->getIndexAP() == indexAP)
 					&& (m_varset.isContiguous(pftPrev->getBufIndex(),prevLength,bi)))
 				{
@@ -190,11 +199,11 @@ bool pt_PieceTable::_insertSpan(pf_Frag * pf,
 			}
 		}
 	}
-	
+
 	// new text is not contiguous, we need to insert one or two new text
 	// fragment(s) into the list.  first we construct a new text fragment
 	// for the data that we inserted.
-    
+
 	pf_Frag_Text * pftNew = new pf_Frag_Text(this,bi,length,indexAP,pField);
 	if (!pftNew)
 		return false;
@@ -222,17 +231,17 @@ bool pt_PieceTable::_insertSpan(pf_Frag * pf,
 	// a second new text fragment for the portion after the insert.
 
 	UT_ASSERT(pft);
-	
+
 	UT_uint32 lenTail = pft->getLength() - fragOffset;
 	PT_BufIndex biTail = m_varset.getBufIndex(pft->getBufIndex(),fragOffset);
 	pf_Frag_Text * pftTail = new pf_Frag_Text(this,biTail,lenTail,pft->getIndexAP(),pft->getField());
 	if (!pftTail)
 		return false;
-			
+
 	pft->changeLength(fragOffset);
 	m_fragments.insertFrag(pft,pftNew);
 	m_fragments.insertFrag(pftNew,pftTail);
-	
+
 	return true;
 }
 
@@ -240,7 +249,7 @@ bool pt_PieceTable::_lastUndoIsThisFmtMark(PT_DocPosition dpos)
 {
 	// look backwards thru the undo from this point and see
 	// if we have <InsertFmtMark>[<ChangeFmtMark>*]
-	
+
 	PX_ChangeRecord * pcr;
 	UT_uint32 undoNdx = 0;
 
@@ -254,7 +263,7 @@ bool pt_PieceTable::_lastUndoIsThisFmtMark(PT_DocPosition dpos)
 			return false;
 		if (pcr->getPosition() != dpos)
 			return false;
-		
+
 		switch (pcr->getType())
 		{
 		default:
@@ -271,7 +280,7 @@ bool pt_PieceTable::_lastUndoIsThisFmtMark(PT_DocPosition dpos)
 	return false;
 }
 
-bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
+bool pt_PieceTable::_realInsertSpan(PT_DocPosition dpos,
 								  const UT_UCSChar * p,
 								  UT_uint32 length, fd_Field * pField)
 {
@@ -280,12 +289,12 @@ bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 	UT_ASSERT(m_pts==PTS_Editing);
 
 	// get the fragment at the given document position.
-	
+
 	pf_Frag * pf = NULL;
 	PT_BlockOffset fragOffset = 0;
 	bool bFound = getFragFromPosition(dpos,&pf,&fragOffset);
 	UT_ASSERT(bFound);
-    
+
 
 	// append the text data to the end of the current buffer.
 
@@ -314,7 +323,7 @@ bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 
 	bool bNeedGlob = false;
 	PT_AttrPropIndex indexAP = 0;
-	
+
 	if ( (fragOffset==0) && (pf->getPrev()) )
 	{
 		bool bRightOfFmtMark = (pf->getPrev()->getType() == pf_Frag::PFT_FmtMark);
@@ -401,9 +410,9 @@ bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 		}
 		else
 		{
-		  // is existing fragment a field? If so do nothing 
+		  // is existing fragment a field? If so do nothing
 		  // Or should we display a message to the user?
-     
+
 		        if(pf->getField() != NULL)
 			{
 				return false;
@@ -414,9 +423,9 @@ bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 	}
 	else
 	{
-  	         // is existing fragment a field? If so do nothing 
+  	         // is existing fragment a field? If so do nothing
 	  // Or should we display a message to the user?
-     
+
                 if(pf->getField() != NULL)
 		{
 		       return false;
@@ -425,15 +434,15 @@ bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 
 		indexAP = _chooseIndexAP(pf,fragOffset);
 	}
-	
+
 	PT_BlockOffset blockOffset = _computeBlockOffset(pfs,pf) + fragOffset;
 	PX_ChangeRecord_Span * pcr = NULL;
-	
+
 	if (!_insertSpan(pf,bi,fragOffset,length,indexAP,pField))
 		goto Finish;
 
 	// note: because of coalescing, pf should be considered invalid at this point.
-	
+
 	// create a change record, add it to the history, and notify
 	// anyone listening.
 
@@ -455,11 +464,11 @@ bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 	}
 
 	bSuccess = true;
-	
+
 Finish:
 	if (bNeedGlob)
 		endMultiStepGlob();
-	
+
 	return bSuccess;
 }
 
@@ -469,17 +478,17 @@ bool pt_PieceTable::insertSpan_norec(PT_DocPosition dpos,
 								  UT_uint32 length, fd_Field * pField)
 {
 	// insert character data into the document at the given position.
-  //No not throw a change record. 
+  //No not throw a change record.
   // We need this to getupdate fields working correctly
 
 	UT_ASSERT(m_pts==PTS_Editing);
 	// get the fragment at the given document position.
-	
+
 	pf_Frag * pf = NULL;
 	PT_BlockOffset fragOffset = 0;
 	bool bFound = getFragFromPosition(dpos,&pf,&fragOffset);
 	UT_ASSERT(bFound);
-    
+
 
 	// append the text data to the end of the current buffer.
 
@@ -508,7 +517,7 @@ bool pt_PieceTable::insertSpan_norec(PT_DocPosition dpos,
 
 	bool bNeedGlob = false;
 	PT_AttrPropIndex indexAP = 0;
-	
+
 	if ( (fragOffset==0) && (pf->getPrev()) )
 	{
 		bool bRightOfFmtMark = (pf->getPrev()->getType() == pf_Frag::PFT_FmtMark);
@@ -595,9 +604,9 @@ bool pt_PieceTable::insertSpan_norec(PT_DocPosition dpos,
 		}
 		else
 		{
-		  // is existing fragment a field? If so do nothing 
+		  // is existing fragment a field? If so do nothing
 		  // Or should we display a message to the user?
-     
+
 		        if(pf->getField() != NULL)
 			{
 				return false;
@@ -608,9 +617,9 @@ bool pt_PieceTable::insertSpan_norec(PT_DocPosition dpos,
 	}
 	else
 	{
-  	         // is existing fragment a field? If so do nothing 
+  	         // is existing fragment a field? If so do nothing
 	  // Or should we display a message to the user?
-     
+
                 if(pf->getField() != NULL)
 		{
 		       return false;
@@ -619,15 +628,15 @@ bool pt_PieceTable::insertSpan_norec(PT_DocPosition dpos,
 
 		indexAP = _chooseIndexAP(pf,fragOffset);
 	}
-	
+
 	PT_BlockOffset blockOffset = _computeBlockOffset(pfs,pf) + fragOffset;
 	PX_ChangeRecord_Span * pcr = NULL;
-	
+
 	if (!_insertSpan(pf,bi,fragOffset,length,indexAP,pField))
 		goto Finish;
 
 	// note: because of coalescing, pf should be considered invalid at this point.
-	
+
 	// create a change record, add it to the history, and notify
 	// anyone listening.
 
@@ -642,7 +651,7 @@ bool pt_PieceTable::insertSpan_norec(PT_DocPosition dpos,
 
 	delete pcr;
 	bSuccess = true;
-	
+
 Finish:
 	if (bNeedGlob)
 		endMultiStepGlob();
@@ -694,7 +703,7 @@ PT_AttrPropIndex pt_PieceTable::_chooseIndexAP(pf_Frag * pf, PT_BlockOffset frag
 		pf_Frag_FmtMark * pffm = static_cast<pf_Frag_FmtMark *>(pf);
 		return pffm->getIndexAP();
 	}
-	
+
 	if ((pf->getType() == pf_Frag::PFT_Text) && (fragOffset > 0))
 	{
 		// if we are inserting at the middle or end of a text fragment,
@@ -707,7 +716,7 @@ PT_AttrPropIndex pt_PieceTable::_chooseIndexAP(pf_Frag * pf, PT_BlockOffset frag
 	// we are not looking forward at a text fragment or
 	// we are at the beginning of a text fragment.
 	// look to the previous fragment to see what to do.
-	
+
 	pf_Frag * pfPrev = pf->getPrev();
 	switch (pfPrev->getType())
 	{
@@ -735,7 +744,7 @@ PT_AttrPropIndex pt_PieceTable::_chooseIndexAP(pf_Frag * pf, PT_BlockOffset frag
 			}
 
 			// we can't find anything, just use the default.
-			
+
 			return 0;
 		}
 
@@ -752,14 +761,14 @@ PT_AttrPropIndex pt_PieceTable::_chooseIndexAP(pf_Frag * pf, PT_BlockOffset frag
 			{
 			case PTO_Image:
 				return _chooseIndexAP(pf->getPrev(),pf->getPrev()->getLength());
-				
+
 			case PTO_Field:
 				return pfo->getIndexAP();
 
 			// TODO: determine what we want to do about these guys
 			case PTO_Bookmark:
 			case PTO_Hyperlink:
-				return 0;			
+				return 0;
 
 			default:
 				UT_ASSERT(0);
@@ -770,11 +779,11 @@ PT_AttrPropIndex pt_PieceTable::_chooseIndexAP(pf_Frag * pf, PT_BlockOffset frag
 	case pf_Frag::PFT_FmtMark:
 		{
 			// TODO i'm not sure this is possible
-			
+
 			pf_Frag_FmtMark * pffm = static_cast<pf_Frag_FmtMark *>(pfPrev);
 			return pffm->getIndexAP();
 		}
-		
+
 	default:
 		UT_ASSERT(0);
 		return 0;

@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -45,19 +45,28 @@
 /****************************************************************/
 /****************************************************************/
 
+bool pt_PieceTable::changeSpanFmt(PTChangeFmt ptc,
+									 PT_DocPosition dpos1,
+									 PT_DocPosition dpos2,
+									 const XML_Char ** attributes,
+								  const XML_Char ** properties)
+{
+	return _realChangeSpanFmt(ptc, dpos1, dpos2, attributes, properties);
+}
+
 bool pt_PieceTable::_fmtChangeSpan(pf_Frag_Text * pft, UT_uint32 fragOffset, UT_uint32 length,
 									  PT_AttrPropIndex indexNewAP,
 									  pf_Frag ** ppfNewEnd, UT_uint32 * pfragOffsetNewEnd)
 {
 	UT_ASSERT(length > 0);
 	UT_ASSERT(fragOffset+length <= pft->getLength());
-	
+
 	// insert a format change within this text fragment.
 
 	// TODO for each place in this function where we apply a change
 	// TODO see if the new fragment could be coalesced with something
 	// TODO already in the fragment list.
-	
+
 	if ((fragOffset == 0) && (length == pft->getLength()))
 	{
 		// we have an exact match (we are changing the entire fragment).
@@ -66,7 +75,7 @@ bool pt_PieceTable::_fmtChangeSpan(pf_Frag_Text * pft, UT_uint32 fragOffset, UT_
 		// first we try the pft->next -- if that works, we can stop because
 		// the unlink will take care of checking pft->next with pft->prev.
 		// if it doesn't work, we then try pft->prev.
-		
+
 		pf_Frag * pfNext = pft->getNext();
 		if (pfNext && pfNext->getType()==pf_Frag::PFT_Text)
 		{
@@ -112,11 +121,11 @@ bool pt_PieceTable::_fmtChangeSpan(pf_Frag_Text * pft, UT_uint32 fragOffset, UT_
 		}
 
 		// otherwise, we just overwrite the indexAP on this fragment.
-		
+
 		pft->setIndexAP(indexNewAP);
 		SETP(ppfNewEnd, pft->getNext());
 		SETP(pfragOffsetNewEnd, 0);
-		
+
 		return true;
 	}
 
@@ -148,13 +157,13 @@ bool pt_PieceTable::_fmtChangeSpan(pf_Frag_Text * pft, UT_uint32 fragOffset, UT_
 				pft->adjustOffsetLength(bi_2,len_2);
 				SETP(ppfNewEnd, pft);
 				SETP(pfragOffsetNewEnd, 0);
-		
+
 				return true;
 			}
 		}
 
 		// otherwise, we need to actually split this one....
-		
+
 		pf_Frag_Text * pftNew = new pf_Frag_Text(this,bi_1,len_1,indexNewAP,pft->getField());
 		if (!pftNew)
 			return false;
@@ -164,7 +173,7 @@ bool pt_PieceTable::_fmtChangeSpan(pf_Frag_Text * pft, UT_uint32 fragOffset, UT_
 
 		SETP(ppfNewEnd, pft);
 		SETP(pfragOffsetNewEnd, 0);
-		
+
 		return true;
 	}
 
@@ -209,7 +218,7 @@ bool pt_PieceTable::_fmtChangeSpan(pf_Frag_Text * pft, UT_uint32 fragOffset, UT_
 
 		SETP(ppfNewEnd, pftNew->getNext());
 		SETP(pfragOffsetNewEnd, 0);
-		
+
 		return true;
 	}
 
@@ -233,10 +242,10 @@ bool pt_PieceTable::_fmtChangeSpan(pf_Frag_Text * pft, UT_uint32 fragOffset, UT_
 
 	SETP(ppfNewEnd, pft_3);
 	SETP(pfragOffsetNewEnd, 0);
-		
+
 	return true;
 }
-	
+
 bool pt_PieceTable::_fmtChangeSpanWithNotify(PTChangeFmt ptc,
 												pf_Frag_Text * pft, UT_uint32 fragOffset,
 												PT_DocPosition dpos,
@@ -258,7 +267,7 @@ bool pt_PieceTable::_fmtChangeSpanWithNotify(PTChangeFmt ptc,
 	}
 
 	UT_ASSERT(fragOffset+length <= pft->getLength());
-	
+
 	PT_AttrPropIndex indexNewAP;
 	PT_AttrPropIndex indexOldAP = pft->getIndexAP();
 	bool bMerged;
@@ -278,10 +287,10 @@ bool pt_PieceTable::_fmtChangeSpanWithNotify(PTChangeFmt ptc,
 			SETP(ppfNewEnd, pft);
 			SETP(pfragOffsetNewEnd, fragOffset+length);
 		}
-		
+
 		return true;
 	}
-	
+
 	// we do this before the actual change because various fields that
 	// we need may be blown away during the change.  we then notify all
 	// listeners of the change.
@@ -303,14 +312,14 @@ bool pt_PieceTable::_fmtChangeSpanWithNotify(PTChangeFmt ptc,
 	return bResult;
 }
 
-bool pt_PieceTable::changeSpanFmt(PTChangeFmt ptc,
+bool pt_PieceTable::_realChangeSpanFmt(PTChangeFmt ptc,
 									 PT_DocPosition dpos1,
 									 PT_DocPosition dpos2,
 									 const XML_Char ** attributes,
 									 const XML_Char ** properties)
 {
 	// apply a span-level formatting change to the given region.
-	
+
 	UT_ASSERT(m_pts==PTS_Editing);
     _tweakFieldSpan(dpos1,dpos2);
 
@@ -326,7 +335,7 @@ bool pt_PieceTable::changeSpanFmt(PTChangeFmt ptc,
 // OK for styles we expand out all defined properties including BasedOn styles
 // Then we use these to eliminate any specfic properties in the current strux
 // Then properties in the current strux will resolve to those defined in the
-// style (they exist there) to specifc values in strux (if not overridden by 
+// style (they exist there) to specifc values in strux (if not overridden by
 // the style) then finally to default value.
 //
 		const XML_Char * szStyle = UT_getAttribute(PT_STYLE_ATTRIBUTE_NAME,attributes);
@@ -373,13 +382,13 @@ bool pt_PieceTable::changeSpanFmt(PTChangeFmt ptc,
 		}
 		return bRes;
 	}
-	
+
 	UT_ASSERT(dpos1 < dpos2);
 	bool bHaveAttributes, bHaveProperties;
 	bHaveAttributes = (attributes && *attributes);
 	bHaveProperties = (lProps && *lProps);
 	UT_ASSERT(bHaveAttributes || bHaveProperties); // must have something to do
-    
+
 	pf_Frag * pf_First;
 	pf_Frag * pf_End;
 	PT_BlockOffset fragOffset_First;
@@ -400,7 +409,7 @@ bool pt_PieceTable::changeSpanFmt(PTChangeFmt ptc,
 		UT_ASSERT((pf1==pf_First) && (fragOffset_First==fo1));
 		UT_ASSERT((pf2==pf_End) && (fragOffset_End==fo2));
 	}
-#endif	
+#endif
 
 	// see if the amount of text to be changed is completely
 	// contained within a single fragment.  if so, we have a
@@ -430,7 +439,7 @@ bool pt_PieceTable::changeSpanFmt(PTChangeFmt ptc,
 		// FIXME: Special check to support a FmtMark at the end of the
 		// document. This is necessary because FmtMarks don't have a
 		// length...  See bug 452.
-		if (0 == length 
+		if (0 == length
 			&& (!pf_First || pf_Frag::PFT_FmtMark != pf_First->getType()))
 			break;
 
@@ -438,7 +447,7 @@ bool pt_PieceTable::changeSpanFmt(PTChangeFmt ptc,
 
 		UT_uint32 lengthInFrag = pf_First->getLength() - fragOffset_First;
 		UT_uint32 lengthThisStep = UT_MIN(lengthInFrag, length);
-		
+
 		switch (pf_First->getType())
 		{
 		case pf_Frag::PFT_EndOfDoc:
@@ -450,7 +459,7 @@ bool pt_PieceTable::changeSpanFmt(PTChangeFmt ptc,
 				FREEP(sProps);
 			}
 			return false;
-			
+
 		case pf_Frag::PFT_Strux:
 			{
 				// we are only applying span-level changes, so we ignore strux.
@@ -519,7 +528,7 @@ bool pt_PieceTable::changeSpanFmt(PTChangeFmt ptc,
 
 		dpos1 += lengthThisStep;
 		length -= lengthThisStep;
-		
+
 		// since _fmtChange{Span,FmtMark,...}WithNotify(), can delete pf_First, mess with the
 		// fragment list, and does some aggressive coalescing of
 		// fragments, we cannot just do a pf_First->getNext() here.
@@ -538,7 +547,7 @@ bool pt_PieceTable::changeSpanFmt(PTChangeFmt ptc,
 
 	if (!bSimple)
 		endMultiStepGlob();
-		
+
 	return true;
 }
 

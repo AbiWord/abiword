@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -35,8 +35,23 @@
 
 /*****************************************************************/
 /*****************************************************************/
+bool pt_PieceTable::insertObject(PT_DocPosition dpos,
+									PTObjectType pto,
+									const XML_Char ** attributes,
+									  const XML_Char ** properties,  pf_Frag_Object ** ppfo)
+{
+	return _realInsertObject(dpos, pto, attributes, properties, ppfo);
+}
 
 bool pt_PieceTable::insertObject(PT_DocPosition dpos,
+									PTObjectType pto,
+									const XML_Char ** attributes,
+									  const XML_Char ** properties )
+{
+	return _realInsertObject(dpos, pto, attributes, properties);
+}
+
+bool pt_PieceTable::_realInsertObject(PT_DocPosition dpos,
 									PTObjectType pto,
 									const XML_Char ** attributes,
 									const XML_Char ** properties,  pf_Frag_Object ** ppfo)
@@ -46,21 +61,21 @@ bool pt_PieceTable::insertObject(PT_DocPosition dpos,
 	// dpos == 1 seems to be generally bad. - plam
 	// I'm curious about how often it happens.  Please mail me if it does!
 	UT_ASSERT(dpos > 1);
-	
+
 	// TODO currently we force the caller to pass in the attr/prop.
 	// TODO this is probably a good thing for Images, but might be
 	// TODO bogus for things like Fields.
-	
+
 	UT_ASSERT(m_pts==PTS_Editing);
 
 	// store the attributes and properties and get an index to them.
-	
+
 	PT_AttrPropIndex indexAP;
 	if (!m_varset.storeAP(attributes,&indexAP))
 		return false;
 
 	// get the fragment at the given document position.
-	
+
 	pf_Frag * pf = NULL;
 	PT_BlockOffset fragOffset = 0;
 	bool bFound = getFragFromPosition(dpos,&pf,&fragOffset);
@@ -73,10 +88,10 @@ bool pt_PieceTable::insertObject(PT_DocPosition dpos,
         pf_Frag_Object * pfo = NULL;
 	if (!_insertObject(pf,fragOffset,pto,indexAP,pfo))
 		return false;
-	
+
 	// create a change record, add it to the history, and notify
 	// anyone listening.
-   
+
 	PX_ChangeRecord_Object * pcr
 		= new PX_ChangeRecord_Object(PX_ChangeRecord::PXT_InsertObject,
 									 dpos,indexAP,pto,blockOffset,
@@ -90,7 +105,7 @@ bool pt_PieceTable::insertObject(PT_DocPosition dpos,
 }
 
 
-bool pt_PieceTable::insertObject(PT_DocPosition dpos,
+bool pt_PieceTable::_realInsertObject(PT_DocPosition dpos,
 									PTObjectType pto,
 									const XML_Char ** attributes,
 									const XML_Char ** properties )
@@ -100,21 +115,21 @@ bool pt_PieceTable::insertObject(PT_DocPosition dpos,
 	// dpos == 1 seems to be generally bad. - plam
 	// I'm curious about how often it happens.  Please mail me if it does!
 	UT_ASSERT(dpos > 1);
-	
+
 	// TODO currently we force the caller to pass in the attr/prop.
 	// TODO this is probably a good thing for Images, but might be
 	// TODO bogus for things like Fields.
-	
+
 	UT_ASSERT(m_pts==PTS_Editing);
 
 	// store the attributes and properties and get an index to them.
-	
+
 	PT_AttrPropIndex indexAP;
 	if (!m_varset.storeAP(attributes,&indexAP))
 		return false;
 
 	// get the fragment at the given document position.
-	
+
 	pf_Frag * pf = NULL;
 	PT_BlockOffset fragOffset = 0;
 	bool bFound = getFragFromPosition(dpos,&pf,&fragOffset);
@@ -127,10 +142,10 @@ bool pt_PieceTable::insertObject(PT_DocPosition dpos,
     pf_Frag_Object * pfo = NULL;
 	if (!_insertObject(pf,fragOffset,pto,indexAP,pfo))
 		return false;
-	
+
 	// create a change record, add it to the history, and notify
 	// anyone listening.
-   
+
 	PX_ChangeRecord_Object * pcr
 		= new PX_ChangeRecord_Object(PX_ChangeRecord::PXT_InsertObject,
 									 dpos,indexAP,pto,blockOffset,
@@ -142,7 +157,7 @@ bool pt_PieceTable::insertObject(PT_DocPosition dpos,
 
 	return true;
 }
-	
+
 bool pt_PieceTable::_createObject(PTObjectType pto,
 									 PT_AttrPropIndex indexAP,
 									 pf_Frag_Object ** ppfo)
@@ -187,7 +202,7 @@ bool pt_PieceTable::_createObject(PTObjectType pto,
 }
 
 bool pt_PieceTable::_insertObject(pf_Frag * pf,
-									 PT_BlockOffset fragOffset,									 
+									 PT_BlockOffset fragOffset,
 									 PTObjectType pto,
 									 PT_AttrPropIndex indexAP,
                                      pf_Frag_Object * & pfo)
@@ -221,7 +236,7 @@ bool pt_PieceTable::_insertObject(pf_Frag * pf,
 		pf_Frag_Text * pftTail = new pf_Frag_Text(this,biTail,lenTail,pft->getIndexAP(),pft->getField());
 		if (!pftTail)
 			goto MemoryError;
-			
+
 		pft->changeLength(fragOffset);
 		m_fragments.insertFrag(pft,pfo);
 		m_fragments.insertFrag(pfo,pftTail);
