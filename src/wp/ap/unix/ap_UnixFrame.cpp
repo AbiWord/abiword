@@ -162,8 +162,20 @@ XAP_Frame * AP_UnixFrame::cloneFrame()
 bool AP_UnixFrame::initialize(XAP_FrameMode frameMode)
 {
 	AP_UnixFrameImpl * pFrameImpl = static_cast<AP_UnixFrameImpl *>(getFrameImpl());
-	UT_DEBUGMSG(("AP_UnixFrame::initialize!!!! \n"));
-
+#if DEBUG
+	if(frameMode == XAP_NormalFrame)
+	{
+		UT_DEBUGMSG(("AP_UnixFrame::initialize!!!! NormalFrame \n"));
+	}
+	else if(frameMode == XAP_NoMenusWindowLess)
+	{
+		UT_DEBUGMSG(("AP_UnixFrame::initialize!!!! NoMenus No Window \n"));
+	}
+	else if(frameMode == XAP_WindowLess)
+	{
+		UT_DEBUGMSG(("AP_UnixFrame::initialize!!!! No Window with menus \n"));
+	}
+#endif
 	setFrameMode(frameMode);
 	setFrameLocked(false);
 

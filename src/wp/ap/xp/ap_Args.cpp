@@ -55,6 +55,7 @@ int    AP_Args::m_iVersion = 0;
 int    AP_Args::m_iHelp = 0;
 const char * AP_Args::m_sDisplay = NULL;
 struct poptOption * AP_Args::options = NULL;
+int  AP_Args::m_iAbiControl = 0;
 
 AP_Args::AP_Args(XAP_Args * pArgs, const char * szAppName, AP_App * pApp)
 	: XArgs (pArgs), m_bShowApp(true), m_bShowSplash(true), m_pApp(pApp)
@@ -183,6 +184,7 @@ const struct poptOption AP_Args::const_opts[] =
 	 {"print", 'p', POPT_ARG_STRING, &m_sPrintTo, 0, "Print this file to FILE or printer", "FILE or |lpr"},
 	 {"show", '\0', POPT_ARG_NONE, &m_iShow, 0, "Mandatorily start the GUI (regardless of --to)", ""},
 	 {"plugin", '\0', POPT_ARG_STRING, &m_sPlugin, 0, "Execute plugin NAME instead of the main application ", "NAME"},
+	 {"AbiControl", '\0', POPT_ARG_NONE, &m_iAbiControl, 0, "Execute plugin AbiControl instead of the main application ", ""},
 	 // GNOME build kills everything after "version"
 	 {"version", '\0', POPT_ARG_NONE, &m_iVersion, 0, "Print AbiWord version", NULL},
  	 {"help", '?', POPT_ARG_NONE, &m_iHelp, 0, "Display help", NULL},

@@ -65,7 +65,7 @@ public:
 	static int    m_iVersion;
 	static int    m_iHelp;
 	static const char * m_sDisplay;
-
+	static int    m_iAbiControl;
 private:
 	bool          m_bShowApp, m_bShowSplash;
 	AP_App*       m_pApp;

@@ -1349,16 +1349,68 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args)
 	    const char * szName = NULL;
 		XAP_Module * pModule = NULL;
 		Args->m_sPlugin = poptGetArg(Args->poptcon);
-		bool bFound = false;
+		bool bFound = false;	
+		printf(" Looking for plugin name %s \n",Args->m_sPlugin);
 		if(Args->m_sPlugin != NULL)
 		{
 			const UT_Vector * pVec = XAP_ModuleManager::instance().enumModules ();
+			printf(" %d plugins loaded \n",pVec->getItemCount());
 			for (UT_uint32 i = 0; (i < pVec->size()) && !bFound; i++)
 			{
 				pModule = (XAP_Module *)pVec->getNthItem (i);
 				szName = pModule->getModuleInfo()->name;
+				printf("Plugin %s loaded \n",szName);
 				if(UT_strcmp(szName,Args->m_sPlugin) == 0)
+				{
+					printf("plugin %s found sending control there! \n",szName);
 					bFound = true;
+				}
+			}
+		}
+		if(!bFound)
+		{
+			printf("Plugin %s not found or loaded \n",Args->m_sPlugin);
+			return false;
+		}
+//
+// You must put the name of the ev_EditMethod in the usage field
+// of the plugin registered information.
+//
+		const char * evExecute = pModule->getModuleInfo()->usage;
+		EV_EditMethodContainer* pEMC = pMyUnixApp->getEditMethodContainer();
+		const EV_EditMethod * pInvoke = pEMC->findEditMethodByName(evExecute);
+		if(!pInvoke)
+		{
+			printf("Plugin %s invoke method %s not found \n",
+				   Args->m_sPlugin,evExecute);
+			return false;
+		}
+//
+// Execute the plugin, then quit
+//
+		ev_EditMethod_invoke(pInvoke, "Called From Unix[Gnome]App");
+		return false;
+	}
+
+
+	if(Args->m_iAbiControl)
+	{
+//
+// Start a plugin rather than the main abiword application.
+//
+	    const char * szName = NULL;
+		XAP_Module * pModule = NULL;
+		bool bFound = false;	
+		const UT_Vector * pVec = XAP_ModuleManager::instance().enumModules ();
+		for (UT_uint32 i = 0; (i < pVec->size()) && !bFound; i++)
+		{
+			pModule = (XAP_Module *)pVec->getNthItem (i);
+			szName = pModule->getModuleInfo()->name;
+			printf("Plugin %s loaded \n",szName);
+			if(UT_strcmp(szName,"AbiControl") == 0)
+			{
+				printf("plugin %s found sending control there! \n",szName);
+				bFound = true;
 			}
 		}
 		if(!bFound)
