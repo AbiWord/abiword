@@ -97,17 +97,19 @@ public:
 	void								_createPreviewFromGC(GR_Graphics * gc,
 															 UT_uint32 width,
 															 UT_uint32 height);
-															 
+				
+	UT_RGBColor							m_borderColor;
+	
 	XML_Char *							m_leftColor;
 	XML_Char *							m_rightColor;
 	XML_Char *							m_topColor;
 	XML_Char *							m_bottomColor;															 
 	
 	UT_sint32							m_lineStyle;
-	UT_sint32							m_leftStyle;
-	UT_sint32							m_rightStyle;
-	UT_sint32							m_topStyle;
-	UT_sint32							m_bottomStyle;
+	XML_Char *							m_leftStyle;
+	XML_Char *							m_rightStyle;
+	XML_Char *							m_topStyle;
+	XML_Char *							m_bottomStyle;
 	
 	XML_Char *							m_bgColor;
 	XML_Char *							m_bgFillStyle;
@@ -137,6 +139,8 @@ private:
 	UT_sint32                           m_iNumCols;
 	fp_TableContainer *                 m_pTab;
 	UT_Timer *                          m_pAutoUpdaterMC;
+	
+	bool								m_borderToggled;
 	
 	// Handshake variables
 	bool m_bDestroy_says_stopupdating;

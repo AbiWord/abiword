@@ -48,8 +48,16 @@ AP_Dialog_FormatTable::AP_Dialog_FormatTable(XAP_DialogFactory * pDlgFactory, XA
 	m_rightColor(NULL),
 	m_topColor(NULL),
 	m_bottomColor(NULL),
+	
+	m_lineStyle(LS_NORMAL),
+	m_leftStyle(NULL),
+	m_rightStyle(NULL),
+	m_topStyle(NULL),
+	m_bottomStyle(NULL),
+	
 	m_bgColor(NULL),
 	m_bgFillStyle(NULL),
+	
 	m_answer(a_OK),
 	m_pFormatTablePreview(NULL),
 	m_iCellSource(0),
@@ -60,24 +68,28 @@ AP_Dialog_FormatTable::AP_Dialog_FormatTable(XAP_DialogFactory * pDlgFactory, XA
 	m_iBottomStyle(0),
     m_iNumRows(0),
     m_iNumCols(0),
-	m_lineStyle(1),   // 1 == normal line style
-	m_leftStyle(1),   // 1 == normal line style
-	m_rightStyle(1),  // 1 == normal line style
-	m_topStyle(1),    // 1 == normal line style
-	m_bottomStyle(1), // 1 == normal line style
-    m_pTab(NULL),
-	  m_pAutoUpdaterMC(NULL),
+
+	m_pTab(NULL),
+	m_pAutoUpdaterMC(NULL),
+	m_borderToggled(false),
 	m_bDestroy_says_stopupdating(false),
-    m_bAutoUpdate_happening_now(false)
+	m_bAutoUpdate_happening_now(false)
 {
-      if(m_vecProps.getItemCount() > 0)
-		  m_vecProps.clear();
+	UT_String s = UT_String_sprintf("%d", m_lineStyle);	
+	
+	CLONEP(m_leftStyle, s.c_str());
+	CLONEP(m_rightStyle, s.c_str());
+	CLONEP(m_topStyle, s.c_str());
+	CLONEP(m_bottomStyle, s.c_str());	
+	
+	if(m_vecProps.getItemCount() > 0)
+		m_vecProps.clear();
 	  
-      if(m_vecPropsRight.getItemCount() > 0)
-		  m_vecPropsRight.clear();
+	if(m_vecPropsRight.getItemCount() > 0)
+		m_vecPropsRight.clear();
 	  
-      if(m_vecPropsBottom.getItemCount() > 0)
-		  m_vecPropsBottom.clear();
+	if(m_vecPropsBottom.getItemCount() > 0)
+		m_vecPropsBottom.clear();
 }
 
 AP_Dialog_FormatTable::~AP_Dialog_FormatTable(void)
@@ -232,36 +244,66 @@ void AP_Dialog_FormatTable::finalize(void)
 }
 
 /*!
- * Set the merge Type
+ * Set the color and style of the toggled button
  */
 void AP_Dialog_FormatTable::toggleLineType(toggle_button btn, bool enabled)
 {
+	UT_String cTmp = UT_String_sprintf("%02x%02x%02x", m_borderColor.m_red, m_borderColor.m_grn, m_borderColor.m_blu);	
+	UT_String sTmp = UT_String_sprintf("%d", (enabled ? m_lineStyle : LS_OFF));
+
 	switch (btn)
 	{
 		case toggle_left:
-			m_leftStyle = (enabled ? m_lineStyle : 0);
-			break;
+		{
+			CLONEP(m_leftColor, cTmp.c_str());
+			CLONEP(m_leftStyle, sTmp.c_str());
+			addOrReplaceVecProp(m_vecProps, "left-style", m_leftStyle);
+			addOrReplaceVecProp(m_vecProps, "left-color", m_leftColor);
+		}
+		break;
 		case toggle_right:
-			m_rightStyle = (enabled ? m_lineStyle : 0);
-			break;
+		{	
+			CLONEP(m_rightColor, cTmp.c_str());
+			CLONEP(m_rightStyle, sTmp.c_str());
+			addOrReplaceVecProp(m_vecProps, "right-style", m_rightStyle);
+			addOrReplaceVecProp(m_vecProps, "right-color", m_rightColor);
+		}
+		break;
 		case toggle_top:
-			m_topStyle = (enabled ? m_lineStyle : 0);
-			break;
+		{			
+			CLONEP(m_topColor, cTmp.c_str());
+			CLONEP(m_topStyle, sTmp.c_str());
+			addOrReplaceVecProp(m_vecProps, "top-style", m_topStyle);
+			addOrReplaceVecProp(m_vecProps, "top-color", m_topColor);
+		}
+		break;
 		case toggle_bottom:
-			m_bottomStyle = (enabled ? m_lineStyle : 0);
-			break;
+		{			
+			CLONEP(m_bottomColor, cTmp.c_str());
+			CLONEP(m_bottomStyle, sTmp.c_str());
+			addOrReplaceVecProp(m_vecProps, "bot-style", m_bottomStyle);
+			addOrReplaceVecProp(m_vecProps, "bot-color", m_bottomColor);
+		}
+		break;
 	}
+	
+	m_borderToggled = true;
 }
 
 void AP_Dialog_FormatTable::setBorderColor(UT_RGBColor clr)
 {
-	UT_String s = UT_String_sprintf("%02x%02x%02x", clr.m_red, clr.m_grn, clr.m_blu);
+	m_borderColor = clr;
+	
+	if (m_borderToggled)
+		return;
+
+	UT_String s = UT_String_sprintf("%02x%02x%02x", clr.m_red, clr.m_grn, clr.m_blu);	
 	
 	CLONEP(m_leftColor, s.c_str());
 	CLONEP(m_rightColor, s.c_str());
 	CLONEP(m_topColor, s.c_str());
-	CLONEP(m_bottomColor, s.c_str());
-	
+	CLONEP(m_bottomColor, s.c_str());	
+
 	addOrReplaceVecProp(m_vecProps, "left-color", m_leftColor);
 	addOrReplaceVecProp(m_vecProps, "right-color", m_rightColor);
 	addOrReplaceVecProp(m_vecProps, "top-color", m_topColor);
@@ -417,9 +459,10 @@ void AP_FormatTable_preview::draw(void)
 //
 //  Draw the cell borders
 //
+	UT_String lineStyleString = UT_String_sprintf("%d", LS_OFF);	
 	
 	// top border
-	if (m_pFormatTable->m_topStyle != 0)
+	if (m_pFormatTable->m_topStyle && strcmp(m_pFormatTable->m_topStyle, lineStyleString.c_str()))
 	{
 		if (m_pFormatTable->m_topColor)
 		{
@@ -431,9 +474,9 @@ void AP_FormatTable_preview::draw(void)
 		m_gc->drawLine(pageRect.left + whiteBorder, pageRect.top + whiteBorder,
 					   pageRect.left + pageRect.width - whiteBorder, pageRect.top + whiteBorder);
 	}
-	
+
 	// left border
-	if (m_pFormatTable->m_leftStyle != 0)
+	if (m_pFormatTable->m_leftStyle && strcmp(m_pFormatTable->m_leftStyle, lineStyleString.c_str()))
 	{
 		if (m_pFormatTable->m_leftColor)
 		{
@@ -447,11 +490,11 @@ void AP_FormatTable_preview::draw(void)
 	}
 	
 	// right border
-	if (m_pFormatTable->m_rightStyle != 0)
+	if (m_pFormatTable->m_rightStyle && strcmp(m_pFormatTable->m_rightStyle, lineStyleString.c_str()))
 	{
-		if (m_pFormatTable->m_topColor)
+		if (m_pFormatTable->m_rightColor)
 		{
-			UT_parseColor(m_pFormatTable->m_topColor, lineColor);
+			UT_parseColor(m_pFormatTable->m_rightColor, lineColor);
 			m_gc->setColor(lineColor);
 		}
 		else
@@ -461,7 +504,7 @@ void AP_FormatTable_preview::draw(void)
 	}
 	
 	// bottom border
-	if (m_pFormatTable->m_bottomStyle != 0)
+	if (m_pFormatTable->m_bottomStyle && strcmp(m_pFormatTable->m_bottomStyle, lineStyleString.c_str()))
 	{
 		if (m_pFormatTable->m_bottomColor)
 		{
