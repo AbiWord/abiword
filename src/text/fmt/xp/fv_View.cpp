@@ -5808,6 +5808,9 @@ bool FV_View::setCellFormat(const XML_Char * properties[], FormatTable applyTo)
 				colStart = 0;
 				colEnd = numCols-1;
 				break;
+			default:
+				// should not happen
+				break;
 		}		
 		
 		// Loop through the table cells to adjust their formatting		
