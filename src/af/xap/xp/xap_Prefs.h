@@ -107,7 +107,7 @@ public:
 	virtual const char *		getPrefsPathname(void) const = 0;
 
 	void					addListener	  ( PrefsListener pFunc, void *data );
-	void					removeListener ( PrefsListener pFunc );
+	void					removeListener ( PrefsListener pFunc, void *data = 0 );
 	void					startBlockChange();
 	void					endBlockChange();
 

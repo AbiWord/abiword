@@ -1028,7 +1028,9 @@ void XAP_Prefs::addListener	  ( PrefsListener pFunc, void *data )
 	m_vecPrefsListeners.addItem( (void *)pPair );
 }
 
-void XAP_Prefs::removeListener ( PrefsListener pFunc )
+// optional parameter, data.  If given (i.e., != 0), will try to match data,
+// otherwise, will delete all calls to pFunc
+void XAP_Prefs::removeListener ( PrefsListener pFunc, void *data )
 {
 	UT_uint32 index;
 	tPrefsListenersPair *pPair;
@@ -1038,7 +1040,7 @@ void XAP_Prefs::removeListener ( PrefsListener pFunc )
 		pPair = (tPrefsListenersPair *)m_vecPrefsListeners.getNthItem(index);
 		UT_ASSERT(pPair);
 		if ( pPair ) {
-			if ( pPair->m_pFunc == pFunc ) {
+			if ( pPair->m_pFunc == pFunc && (!data || pPair->m_pData == data) ) {
 				m_vecPrefsListeners.deleteNthItem(index);
 				delete pPair;
 			}
