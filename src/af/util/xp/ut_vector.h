@@ -113,6 +113,7 @@ public:
 	void		deleteNthItem(UT_uint32 n);
 	void		clear();
 	void		qsort(int (*compar)(const void *, const void *));
+	UT_uint32	binarysearch(void *key, int (*compar)(const void *, const void *));
 
 	bool		copy(const UT_Vector *pVec);
 	inline UT_uint32 size() const { return getItemCount(); }

@@ -236,6 +236,34 @@ void UT_Vector::qsort(int (*compar)(const void *, const void *))
 	::qsort(m_pEntries, m_iCount, sizeof(void*), compar);
 }
 
+// this binary search finds the earliest element (lowest index)
+// in the vector which matches the key
+// based on code from Tim Bray's 'On the Goodness of Binary Search'
+// http://tbray.org/ongoing/When/200x/2003/03/22/Binary
+
+UT_uint32 UT_Vector::binarysearch(void * key, int (*compar)(const void *, const void *))
+{
+	UT_sint32 high = m_iCount;
+	UT_sint32 low = -1;
+	UT_sint32 probe;
+
+	while (high - low > 1)
+	{
+		int res;
+		probe = (high + low) / 2;
+		res = (*compar)(key, &m_pEntries[probe]);
+		if (0 < res)
+			low = probe;
+		else
+			high = probe;
+	}
+
+	if ((high == m_iCount) || (0 != (*compar)(key, &m_pEntries[high])))
+		return -1;
+	else
+		return high;
+}
+
 bool UT_Vector::copy(const UT_Vector *pVec)
 {
 	clear();

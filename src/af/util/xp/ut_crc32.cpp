@@ -137,19 +137,19 @@ void UT_CRC32::Fill(const char *s, UT_uint32 n)
 void UT_CRC32::Fill(const unsigned char *s, UT_uint32 n)
 {
 	UT_uint32 crc = 0;
-	unsigned int * p = new unsigned int [n/4 + 1];
-	unsigned int i = 0;
+	UT_uint32 * p = new UT_uint32 [n/4 + 2];
+	UT_uint32 i = 0;
 	unsigned char * q = reinterpret_cast<unsigned char *>(p);
 
 	for(i=0; i < n+4 ; i++)
 	  {
 	    if(i<n)
 	      {
-		q[i] = s[i];
+			  q[i] = s[i];
 	      }
 	    else
 	      { 
-		q[i] = 0;
+			  q[i] = static_cast<unsigned char>(0);
 	      }
 	  }
 	for(; q && n > 0; n--)
