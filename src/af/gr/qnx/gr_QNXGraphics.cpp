@@ -95,7 +95,6 @@ int GR_QNXGraphics::DrawSetup() {
 			UT_DEBUGMSG(("and clip list %d,%d %d,%d ",
 						  m_pClipList->rect.ul.x, m_pClipList->rect.ul.y,
 						  m_pClipList->rect.lr.x, m_pClipList->rect.lr.y));
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			//Instead set a 0,0 area
 			memset(&_rdraw, 0, sizeof(_rdraw));
 		}
@@ -375,13 +374,14 @@ GR_Font * GR_QNXGraphics::findFont(const char* pszFontFamily,
 	UT_ASSERT(pszFontWeight);
 	UT_ASSERT(pszFontSize);
 
-	UT_DEBUGMSG(("GR: findFont [%s] [%s] [%s] [%s] ",
-			pszFontFamily, pszFontStyle, pszFontWeight, pszFontSize));
 
 	char fname[MAX_FONT_TAG];
 
 	int size = (int)UT_convertToPoints(pszFontSize);
-
+	size = size * getZoomPercentage()/100;
+	UT_DEBUGMSG(("GR: findFont [%s] [%s] [%s] [%s] Zoomed [%d]",
+			pszFontFamily, pszFontStyle, pszFontWeight, pszFontSize,size));
+	
 	int style = 0;
 	// Only check for bold weight and italic style
 	if (UT_strcmp(pszFontWeight, "bold") == 0) {
@@ -758,7 +758,7 @@ void GR_QNXGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 	xxx_UT_DEBUGMSG(("GR Scroll1 %d,%d %d,%d  by %d,%d",
 			rect.ul.x, rect.ul.y, rect.lr.x, rect.lr.y, offset.x, offset.y));
 
-//	PhBlit(PtWidgetRid(PtFindDisjoint(m_pDraw)), &rect, &offset);
+	PhBlit(PtWidgetRid(PtFindDisjoint(m_pDraw)), &rect, &offset);
 	//to get an expose call PtDamageExtent(region_widget, damage_rect)
 }
 
@@ -824,7 +824,7 @@ void GR_QNXGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 			rect.ul.x, rect.ul.y, rect.lr.x, rect.lr.y, offset.x, offset.y));
 
 
-//	PhBlit(PtWidgetRid(PtFindDisjoint(m_pDraw)), &rect, &offset);
+	PhBlit(PtWidgetRid(PtFindDisjoint(m_pDraw)), &rect, &offset);
 }
 
 void GR_QNXGraphics::clearArea(UT_sint32 x, UT_sint32 y,
@@ -884,7 +884,7 @@ void GR_QNXGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
 				&pos,					/* Position */
 				&size,					/* Size */
 				3 /* 24 bit image */ * image->width,	/* BPL */
-				0);						/* tag (CRC) */
+				PtCRC((const char *)image->data,(image->width*3)*image->height));						/* tag (CRC) */
 	PgFlush();
 
 	DRAW_END
