@@ -61,7 +61,6 @@ void fb_ColumnBreaker::setStartPage(fp_Page * pPage)
 */
 UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 {
-	bool bHasFootnote = false, bFirstColumn = true;
 	m_bReBreak = false;
 
 	fl_ContainerLayout* pFirstLayout = NULL;
@@ -296,7 +295,6 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 					fp_Container* pFirstContainerInBlock = 
 						pConLayout->getFirstContainer();
 					pCurContainer = pFirstContainerInBlock;
-					fp_Container * pPrevContainer = NULL;
 					while (pCurContainer)
 					{
 						if (bFoundOffending)

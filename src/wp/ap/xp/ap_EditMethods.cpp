@@ -8322,7 +8322,6 @@ Defun1(formatFootnotes)
 	CHECK_FRAME;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
-	ABIWORD_VIEW;
 	pFrame->raise();
 
 	XAP_DialogFactory * pDialogFactory

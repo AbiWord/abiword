@@ -1108,7 +1108,7 @@ void AP_Lists_preview::draw(void)
 				ucs_label[j] = *lv++;
 			}
 
-			ucs_label[len] = NULL;
+			ucs_label[len] = 0;
 
 			len = UT_UCS4_strlen(ucs_label);
 			yloc = yoff + iAscent + (iHeight - 2*yoff -iFont)*i/4;
@@ -1201,7 +1201,7 @@ void AP_Lists_preview::draw(void)
 						ucs_label[j] = *lv++;
 				}
 
-				ucs_label[len] = NULL;
+				ucs_label[len] = 0;
 				len = UT_UCS4_strlen(ucs_label);
 				yloc = yoff + iAscent + (iHeight - 2*yoff -iFont)*i/8;
 

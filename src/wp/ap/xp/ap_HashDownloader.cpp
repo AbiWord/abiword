@@ -133,7 +133,7 @@ AP_HashDownloader::downloadDictionaryList(XAP_Frame *pFrame, const char *endiane
 
 	szFName = UT_String_sprintf (getAbiSpellListName(), endianess);
 	szPath = UT_catPathname(XAP_App::getApp()->getUserPrivateDirectory(), szFName.c_str());
-	if (listRedirect[0] != NULL)
+	if (listRedirect[0] != 0)
 		szURLBase = UT_strdup(listRedirect);
 	else
 		szURLBase = UT_strdup(getDefaultAbiSpellListURL(pFrame));
@@ -143,7 +143,7 @@ AP_HashDownloader::downloadDictionaryList(XAP_Frame *pFrame, const char *endiane
 #ifdef CURLHASH_NEVER_UPDATE_LIST
 	if (!UT_isRegularFile(szPath) || listRedirect[0] != NULL) {
 #else
-	if (forceDownload || listRedirect[0] != NULL || !UT_isRegularFile(szPath) || UT_mTime(szPath) + dictionaryListMaxAge < time(NULL)) {
+	if (forceDownload || listRedirect[0] != 0 || !UT_isRegularFile(szPath) || UT_mTime(szPath) + dictionaryListMaxAge < time(NULL)) {
 #endif	
 		if (fileData.data)
 			free(fileData.data);
@@ -202,7 +202,7 @@ AP_HashDownloader::downloadDictionaryList(XAP_Frame *pFrame, const char *endiane
 	}
 	
 	/* If 'redirect' was set, follow that URL instead */
-	if (listRedirect[0] != NULL) {
+	if (listRedirect[0] != 0) {
 		/* If we have been redirected more than 10 times, stop trying and exit */
 		if (++numListRedirect > 10)
 			return(-1);

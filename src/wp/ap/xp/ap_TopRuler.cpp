@@ -4109,10 +4109,10 @@ void AP_TopRuler::_displayStatusMessage(XAP_String_Id FormatMessageID)
 	UT_sint32 fakeY = pRuler->s_iFixedHeight/2 + pRuler->s_iFixedHeight/4 - _UL(3);
 	if (pRuler->m_aScrollDirection == 'L')
 	{
-		pRuler->mouseMotion(NULL, 0, fakeY); // it wants to see something < xFixed and 0 is gonna be
+		pRuler->mouseMotion(0, 0, fakeY); // it wants to see something < xFixed and 0 is gonna be
 	}
 	else
 	{
-		pRuler->mouseMotion(NULL, (UT_sint32) pRuler->m_iWidth + 1, fakeY); // m_iWidth+1 will be greater than m_iWidth
+		pRuler->mouseMotion(0, (UT_sint32) pRuler->m_iWidth + 1, fakeY); // m_iWidth+1 will be greater than m_iWidth
 	}
 }
