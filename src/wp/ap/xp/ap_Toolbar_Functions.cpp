@@ -188,7 +188,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Clipboard)
 		break;
 
 	case AP_TOOLBAR_ID_FMTPAINTER:
-	  if (XAP_App::getApp()->canPasteFromClipboard() &&
+	  if (pView && XAP_App::getApp()->canPasteFromClipboard() &&
 	       !pView->isSelectionEmpty())
 	    s = EV_TIS_ZERO;
 	  else
