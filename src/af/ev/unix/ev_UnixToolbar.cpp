@@ -68,7 +68,7 @@ public:									// we create...
 
 	// TODO: should this move out of wd?  It's convenient here; maybe I'll make
 	// a microclass for combo boxes.
-	static void s_combo_changed(GtkEntry * widget, gpointer user_data)
+	static void s_combo_changed(GtkWidget * widget, gpointer user_data)
 	{
 		_wd * wd = (_wd *) user_data;
 		UT_ASSERT(wd);
@@ -76,7 +76,7 @@ public:									// we create...
 		if (wd->m_blockSignal)
 			return;
 		
-		gchar * buffer = gtk_entry_get_text(widget);
+		gchar * buffer = gtk_entry_get_text(GTK_ENTRY(widget));
 		UT_uint32 length = strlen(buffer);
 		UT_ASSERT(length > 0);
 
@@ -94,7 +94,7 @@ public:									// we create...
 
 	// block the changed signals on popdown (so we don't get real-time formatting
 	// updating as a user scrolls through the choices)
-	static void s_combo_show(GtkEntry * widget, gpointer user_data)
+	static void s_combo_show(GtkWidget * widget, gpointer user_data)
 	{
 		_wd * wd = (_wd *) user_data;
 		UT_ASSERT(wd);
@@ -103,12 +103,21 @@ public:									// we create...
 	}
 
 	// unblock when the menu goes away
-	static void s_combo_hide(GtkEntry * widget, gpointer user_data)
+	static void s_combo_hide(GtkWidget * widget, gpointer user_data)
 	{
 		_wd * wd = (_wd *) user_data;
 		UT_ASSERT(wd);
 
 		wd->m_blockSignal = false;
+
+		// since the last "changed" event happens before we ever
+		// get here (before the list goes away), we have to
+		// manually trigger an edit method
+		GtkWidget * combo = GTK_WIDGET(widget)->parent;
+		UT_ASSERT(combo);
+		GtkWidget * entry = GTK_COMBO(combo)->entry;
+		UT_ASSERT(entry);
+		s_combo_changed(entry, user_data);
 	}
 	
 	EV_UnixToolbar *	m_pUnixToolbar;
@@ -289,18 +298,17 @@ UT_Bool EV_UnixToolbar::synthesize(void)
 				gtk_entry_set_editable(GTK_ENTRY(GTK_COMBO(comboBox)->entry), FALSE);
 										 
 				// handle popup events, so we can block our signals until the popdown
-				GtkWidget * popup = GTK_WIDGET(GTK_COMBO(comboBox)->popwin);
-				UT_ASSERT(popup);
-#if 0				
-				gtk_signal_connect(GTK_OBJECT(popup),
-								   "show",
+				GtkWidget * button = GTK_WIDGET(GTK_COMBO(comboBox)->button);
+				UT_ASSERT(button);
+				gtk_signal_connect(GTK_OBJECT(button),
+								   "pressed",
 								   GTK_SIGNAL_FUNC(_wd::s_combo_show),
 								   wd);
-				gtk_signal_connect(GTK_OBJECT(popup),
-								   "hide",
+				gtk_signal_connect(GTK_OBJECT(button),
+								   "released",
 								   GTK_SIGNAL_FUNC(_wd::s_combo_hide),
 								   wd);
-#endif
+				
 				// handle changes in content
 				GtkEntry * blah = GTK_ENTRY(GTK_COMBO(comboBox)->entry);
 				GtkEditable * yuck = GTK_EDITABLE(blah);
