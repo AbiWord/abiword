@@ -21,7 +21,7 @@ foreach my $file (qw(./src/wp/ap/xp/ap_String_Id.h ./src/af/xap/xp/xap_String_Id
     or die "Cannot open $file";
   
   while (<STRINGS>) {
-    next unless /(DLG_.*)\s*,\s*\"(.*)\"/;
+    next unless /dcl\((.*)\s*,\s*\"(.*)\"/;
     my ($dlg,$string) = ($1,$2);
     $string =~ s/&amp/&/;
     $dlgs{$dlg}{$lang} = $string;
@@ -45,7 +45,7 @@ closedir DIR;
   $noamp{$lang} = 0;
 
   while (<STRINGS>) {
-    next unless /^(DLG_.*)=\"(.*)\"/;
+    next unless /^(\w*)=\"(.*)\"/;
     my ($dlg,$string) = ($1,$2);
     $string =~ s/&amp;/&/;
     $dlgs{$dlg}{$lang} = $string;
@@ -130,7 +130,7 @@ print
        ), "\n";
 
 print
-  a({name=>"LongestSummary"}, h2('Longest Language Summary'));
+  a({name=>'LongestSummary'}, h2('Longest Language Summary : Sorted by Language'));
 
 my @td = ();
 foreach my $dlg (sort { $longest{$a} cmp $longest{$b}  } keys %dlgs) {
