@@ -40,11 +40,6 @@ pf_Frag_Text::~pf_Frag_Text()
 {
 }
 
-void pf_Frag_Text::setIndexAP(PT_AttrPropIndex indexNewAP)
-{
-	m_indexAP = indexNewAP;
-}
-
 bool pf_Frag_Text::createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
 												PT_DocPosition dpos,
 												PT_BlockOffset blockOffset) const

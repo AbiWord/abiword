@@ -664,6 +664,16 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 			getDoc()->setEditTime(i);
 		}
 		
+		szS = UT_getAttribute("uid",atts);
+		if(szS)
+		{
+			PD_DocumentUID * u = new PD_DocumentUID(szS);
+
+			UT_return_if_fail(u);
+			
+			getDoc()->setDocUID(u);
+		}
+		
 		return;
 	}
 	
@@ -678,6 +688,7 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 			UT_uint32 iId = atoi(szS);
 			time_t tTime = 0;
 			UT_uint32 iEditTime = 0;
+			UT_uint32 iUID = 0;
 			
 			szS = UT_getAttribute("time",atts);
 			if(szS)
@@ -687,7 +698,11 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 			if(szS)
 				iEditTime = atoi(szS);
 
-			PD_VersionData v(iId, tTime, iEditTime);
+			szS = UT_getAttribute("uid",atts);
+			if(szS)
+				iUID = atoi(szS);
+
+			PD_VersionData v(iId, tTime, iEditTime, iUID);
 			getDoc()->addRecordToHistory(v);
 		}
 

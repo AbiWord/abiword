@@ -59,6 +59,10 @@ public:
 	fd_Field *				getField(void);
 	PT_DocPosition          getPos(void) const { return m_docPos;}
 	void                    setPos(PT_DocPosition pos) const { m_docPos = pos;}
+
+	inline PT_AttrPropIndex	getIndexAP(void) const {return m_indexAP;}
+	virtual void			setIndexAP(PT_AttrPropIndex indexNewAP)	{m_indexAP = indexNewAP;}
+
 	// createSpecialChangeRecord() constructs a change
 	// record which describes the fragment itself and
 	// not an actual change (editing) operation.  the
@@ -79,6 +83,7 @@ protected:
 	
     fd_Field *              m_pField;
 	pt_PieceTable *			m_pPieceTable;
+	PT_AttrPropIndex		m_indexAP;
 
 private:
 	mutable PT_DocPosition  m_docPos;

@@ -53,16 +53,6 @@ bool pf_Frag_Strux::setFmtHandle(PL_ListenerId lid, PL_StruxFmtHandle sfh)
 	return (m_vecFmtHandle.setNthItem(lid,(void *)sfh,NULL) == 0);
 }
 
-PT_AttrPropIndex pf_Frag_Strux::getIndexAP(void) const
-{
-	return m_indexAP;
-}
-
-void pf_Frag_Strux::setIndexAP(PT_AttrPropIndex indexNewAP)
-{
-	m_indexAP = indexNewAP;
-}
-
 bool pf_Frag_Strux::createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
 												 PT_DocPosition dpos) const
 {

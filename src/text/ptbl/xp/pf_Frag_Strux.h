@@ -52,16 +52,12 @@ public:
 	
 	virtual bool			createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
 													  PT_DocPosition dpos) const;
-	PT_AttrPropIndex		getIndexAP(void) const;
-	void					setIndexAP(PT_AttrPropIndex indexNewAP);
-
 #ifdef PT_TEST
 	virtual void			__dump(FILE * fp) const = 0;
 #endif
 	
 protected:
 	PTStruxType				m_struxType;
-	PT_AttrPropIndex		m_indexAP;
 	UT_Vector				m_vecFmtHandle;
 };
 

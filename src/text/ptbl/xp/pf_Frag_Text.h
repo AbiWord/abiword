@@ -54,12 +54,7 @@ public:
 	{
 	    return m_bufIndex;
 	}
-	inline PT_AttrPropIndex getIndexAP(void) const
-	{
-	    return m_indexAP;
-	}
 
-	void					setIndexAP(PT_AttrPropIndex indexNewAP);
 	void					changeLength(UT_uint32 newLength);
 	void					adjustOffsetLength(PT_BufIndex bi, UT_uint32 newLength);
     void                    setField(fd_Field * pField);
@@ -69,7 +64,6 @@ public:
 
 protected:
 	PT_BufIndex				m_bufIndex;
-	PT_AttrPropIndex		m_indexAP;
 };
 
 #endif /* PF_FRAG_TEXT_H */

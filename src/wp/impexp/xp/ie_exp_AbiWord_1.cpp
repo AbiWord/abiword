@@ -1321,22 +1321,25 @@ void s_AbiWord_1_Listener::_handleHistory(void)
 		UT_uint32 iVersion  =  m_pDocument->getHistoryNthId(k);
 		UT_uint32 iEditTime =  m_pDocument->getHistoryNthEditTime(k);
 		time_t tTime        =  m_pDocument->getHistoryNthTime(k);
+		UT_uint32 iUID      =  m_pDocument->getHistoryNthUID(k);
 		
 		UT_String s;
 		
 		if (!bWroteOpenSection)
 		{
-			UT_String_sprintf(s, "<history version=\"%d\" edit-time=\"%d\" last-saved=\"%d\">\n",
+			UT_String_sprintf(s, "<history version=\"%d\" edit-time=\"%d\" last-saved=\"%d\" "
+							     "uid=\"%s\">\n",
 							  m_pDocument->getDocVersion(),
 							  m_pDocument->getEditTime(),
-							  m_pDocument->getLastSavedTime());
+							  m_pDocument->getLastSavedTime(),
+							  m_pDocument->getDocUIDString());
 			
 			m_pie->write(s.c_str());
 			bWroteOpenSection = true;
 		}
 
-		UT_String_sprintf(s, "<version id=\"%d\" time=\"%d\" edit-time=\"%d\"/>\n",
-						  iVersion, tTime, iEditTime);
+		UT_String_sprintf(s, "<version id=\"%d\" time=\"%d\" edit-time=\"%d\" uid=\"%d\"/>\n",
+						  iVersion, tTime, iEditTime, iUID);
 		
 		m_pie->write(s.c_str());
 	}

@@ -30,6 +30,7 @@
 #include "ut_bytebuf.h"
 #include "ut_base64.h"
 #include "ut_misc.h"
+#include "ut_rand.h"
 #include "pd_Document.h"
 #include "xad_Document.h"
 #include "pt_PieceTable.h"
@@ -45,6 +46,7 @@
 #include "px_CR_SpanChange.h"
 #include "px_CR_Strux.h"
 #include "pf_Frag.h"
+#include "pd_Iterator.h"
 #include "fd_Field.h"
 #include "po_Bookmark.h"
 #include "fl_AutoNum.h"
@@ -108,7 +110,8 @@ PD_Document::PD_Document(XAP_App *pApp)
 	  m_iVDLastPos(0xffffffff),
 	  m_iVersion(0),
 	  m_bWasSaved(false),
-	  m_iEditTime(0)
+	  m_iEditTime(0),
+	  m_pDocUID(NULL)
 {
 	m_pApp = pApp;
 	
@@ -135,6 +138,9 @@ PD_Document::~PD_Document()
 	UT_HASH_PURGEDATA(UT_UTF8String*, &m_metaDataMap, delete) ;
 	UT_HASH_PURGEDATA(UT_UTF8String*, &m_mailMergeMap, delete) ;
 
+	if(m_pDocUID)
+		delete m_pDocUID;
+	
 	// we do not purge the contents of m_vecListeners
 	// since these are not owned by us.
 
@@ -382,6 +388,13 @@ UT_Error PD_Document::importFile(const char * szFilename, int ieft,
 			m_bLockedStyles = !(strcmp(pA, "locked"));
 		}
 	}
+
+	if(!m_pDocUID)
+	{
+		UT_DEBUGMSG(("PD_Document::importFile: no doc UID, generating ...\n"));
+		m_pDocUID = new PD_DocumentUID();
+	}
+	
 	
 	m_pPieceTable->setPieceTableState(PTS_Editing);
 	updateFields();
@@ -481,6 +494,12 @@ UT_Error PD_Document::readFromFile(const char * szFilename, int ieft,
 		}
 	}
 
+	if(!m_pDocUID)
+	{
+		UT_DEBUGMSG(("PD_Document::readFromFile: no doc UID, generating ...\n"));
+		m_pDocUID = new PD_DocumentUID();
+	}
+	
 	m_pPieceTable->setPieceTableState(PTS_Editing);
 	updateFields();
 	_setClean();							// mark the document as not-dirty
@@ -594,6 +613,14 @@ UT_Error PD_Document::newDocument(void)
 
 	setDocVersion(0);
 	setEditTime(0);
+
+	if(m_pDocUID)
+	{
+		UT_DEBUGMSG(("PD_Document::newDocument: doc UID set !!!, deleting ...\n"));
+		delete m_pDocUID;
+	}
+	
+	m_pDocUID = new PD_DocumentUID;
 	
 	// mark the document as not-dirty
 	_setClean();
@@ -4322,4 +4349,215 @@ UT_uint32 PD_Document::getHistoryNthEditTime(UT_uint32 i)const
 		return 0;
 
 	return v->getEditTime();
+}
+
+UT_uint32 PD_Document::getHistoryNthUID(UT_uint32 i) const
+{
+	if(!m_vHistory.getItemCount())
+		return 0;
+
+	PD_VersionData * v = (PD_VersionData*)m_vHistory.getNthItem(i);
+
+	if(!v)
+		return 0;
+
+	return v->getUID();
+}
+
+
+bool PD_Document::areDocumentsRelated(const PD_Document & d) const
+{
+	if((!m_pDocUID && d.getDocUID()) || (m_pDocUID && !d.getDocUID()))
+		return false;
+
+	return (*m_pDocUID == *(d.getDocUID()));
+}
+
+bool PD_Document::areDocumentHistoriesEqual(const PD_Document & d) const
+{
+	if((!m_pDocUID && d.getDocUID()) || (m_pDocUID && !d.getDocUID()))
+		return false;
+
+	if(!(*m_pDocUID == *(d.getDocUID())))
+		return false;
+
+	UT_uint32 iHCount = getHistoryCount();
+	if(iHCount != d.getHistoryCount())
+		return false;
+
+	for(UT_uint32 i = 0; i < iHCount; ++i)
+	{
+		PD_VersionData * v1 = (PD_VersionData*)m_vHistory.getNthItem(i);
+		PD_VersionData * v2 = (PD_VersionData*)d.m_vHistory.getNthItem(i);
+	
+		if(!(*v1 == *v2))
+			return false;
+	}
+	
+	return true;		
+}
+
+/*!
+    parameter d cannot be constant because the PD_DocIterator cleans
+    the fragments
+*/
+bool PD_Document::areDocumentContentsEqual(const PD_Document &d, bool bIgnoreFmt) const
+{
+	UT_return_val_if_fail(m_pPieceTable || d.m_pPieceTable, false);
+
+	if(m_pPieceTable->getFragments().areFragsDirty())
+		m_pPieceTable->getFragments().cleanFrags();
+	
+	if(d.m_pPieceTable->getFragments().areFragsDirty())
+		d.m_pPieceTable->getFragments().cleanFrags();
+		
+	// test the docs for length
+	UT_uint32 end1, end2;
+
+	pf_Frag * pf = m_pPieceTable->getFragments().getLast();
+
+	UT_return_val_if_fail(pf,false);
+		
+	end1 = pf->getPos() + pf->getLength();
+	
+	pf = d.m_pPieceTable->getFragments().getLast();
+
+	UT_return_val_if_fail(pf,false);
+		
+	end2 = pf->getPos() + pf->getLength();
+
+	if(end1 != end2)
+		return false;
+	
+	//  scroll through the documents comparing contents
+	PD_DocIterator t1(*this);
+	PD_DocIterator t2(d);
+		
+
+	while(t1.getStatus() == UTIter_OK && t2.getStatus() == UTIter_OK)
+	{
+		if(t1.getChar() != t2.getChar())
+			return false;
+
+		if(!bIgnoreFmt)
+		{
+			// need to cmp contents
+			const pf_Frag * pf1 = t1.getFrag();
+			const pf_Frag * pf2 = t2.getFrag();
+
+			UT_return_val_if_fail(pf1 && pf2, false);
+
+			PT_AttrPropIndex ap1 = pf1->getIndexAP();
+			PT_AttrPropIndex ap2 = pf2->getIndexAP();
+
+			// because the indexes are into different piecetables, we
+			// have to expand them
+			const PP_AttrProp * pAP1;
+			const PP_AttrProp * pAP2;
+
+			m_pPieceTable->getAttrProp(ap1, &pAP1);
+			d.m_pPieceTable->getAttrProp(ap2, &pAP2);
+
+			UT_return_val_if_fail(pAP1 && pAP2, false);
+
+			if(!pAP1->isEquivalent(pAP2))
+				return false;
+		}
+		
+
+		++t1;
+		++t2;
+	}
+
+	if(   (t1.getStatus() == UTIter_OK && t2.getStatus() != UTIter_OK)
+		  || (t1.getStatus() != UTIter_OK && t2.getStatus() == UTIter_OK))
+	{
+		// documents are of different lenght ...
+		return false;
+	}
+
+	return true;
+}
+
+
+void PD_Document::setDocUID(PD_DocumentUID * u)
+{
+	if(!m_pPieceTable || m_pPieceTable->getPieceTableState() != PTS_Loading)
+	{
+		UT_return_if_fail(0);
+	}
+	
+	m_pDocUID = u;
+}
+
+
+const char * PD_Document::getDocUIDString() const
+{
+	UT_return_val_if_fail(m_pDocUID, NULL);
+
+	return m_pDocUID->getUIDString();
+}
+
+///////////////////////////////////////////////////
+// PD_VersionData
+//
+// constructor for new entries
+PD_VersionData::PD_VersionData(UT_uint32 v, time_t t, UT_uint32 e)
+	:m_iId(v),m_tTime(t), m_iEditTime(e), m_iUID(0)
+{
+	while(!m_iUID)
+		m_iUID = UT_rand();
+}
+
+
+
+//////////////////////////////////////////////////
+// PD_DocumentUID
+
+// constructor for new documents
+PD_DocumentUID::PD_DocumentUID()
+
+{
+	for(UT_uint32 i = 0; i < PD_DOCUID_SIZE; ++i)
+	{
+		m_iUID[i] = 0;
+		
+		while(!m_iUID[i])
+			m_iUID[i] = UT_rand();
+	}
+	
+
+	const char * fmt = "%08x";
+	UT_String no;
+	
+	for(UT_uint32 j = 0; j < PD_DOCUID_SIZE; ++j)
+	{
+		UT_String_sprintf(no, fmt, m_iUID[j]);
+
+		m_sUID += no;
+
+		if(j < PD_DOCUID_SIZE - 1)
+			m_sUID += "-";
+	}
+}
+
+// constructor for importers
+PD_DocumentUID::PD_DocumentUID(const char * uid)
+{
+	UT_return_if_fail(uid);
+	
+	m_sUID = uid;
+	char * u = UT_strdup(uid);
+
+	char * p = strtok(u, "-");
+	UT_uint32 i = 0;
+
+	while(p && i < PD_DOCUID_SIZE)
+	{
+		m_iUID[i] = strtol(p,NULL,16);
+		p = strtok(NULL,"-");
+		i++;
+	}
+
+	UT_ASSERT( i == PD_DOCUID_SIZE);
 }

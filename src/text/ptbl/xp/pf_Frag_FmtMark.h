@@ -45,15 +45,12 @@ public:
 	virtual bool			createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
 													  PT_DocPosition dpos,
 													  PT_BlockOffset blockOffset) const;
-	PT_AttrPropIndex		getIndexAP(void) const;
-	void					setIndexAP(PT_AttrPropIndex indexNewAP);
-	
+
 #ifdef PT_TEST
 	virtual void			__dump(FILE * fp) const;
 #endif
 
 protected:
-	PT_AttrPropIndex		m_indexAP;
 };
 
 #endif /* PF_FRAG_FMTMARK_H */

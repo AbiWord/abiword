@@ -52,7 +52,7 @@ class pf_Frag;
 class ABI_EXPORT PD_DocIterator : public UT_TextIterator
 {
   public:
-	PD_DocIterator(PD_Document & doc, PT_DocPosition dpos = 0);
+	PD_DocIterator(const PD_Document & doc, PT_DocPosition dpos = 0);
 
 	virtual UT_UCS4Char  getChar(); // return character at present position
 
@@ -69,6 +69,8 @@ class ABI_EXPORT PD_DocIterator : public UT_TextIterator
 	virtual UT_TextIterator & operator -=  (UT_sint32 i);
 	
 	virtual UT_UCS4Char   operator [](UT_uint32 dpos);
+
+	const pf_Frag * getFrag() {return m_frag;}
 
   private:
 	// private constructor

@@ -42,7 +42,7 @@
     \param doc - the document which we want to iterate
     \param dpos - document position we want to start from
 */
-PD_DocIterator::PD_DocIterator(PD_Document &doc, PT_DocPosition dpos)
+PD_DocIterator::PD_DocIterator(const PD_Document &doc, PT_DocPosition dpos)
 	: m_pt(*doc.getPieceTable()), m_pos(dpos), m_frag(NULL), m_status(UTIter_OK)
 {
 	// find the frag at requested postion

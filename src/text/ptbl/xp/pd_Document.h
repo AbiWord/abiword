@@ -169,34 +169,74 @@ class PD_Revision
 class PD_VersionData
 {
   public:
-	PD_VersionData(UT_uint32 v, time_t t, UT_uint32 e)
-		:m_iId(v),m_tTime(t), m_iEditTime(e){};
+
+	// constructor for importers
+	PD_VersionData(UT_uint32 v, time_t t, UT_uint32 e, UT_uint32 uid)
+		:m_iId(v),m_tTime(t), m_iEditTime(e), m_iUID(uid){};
 	
+	// constructor for new entries
+	PD_VersionData(UT_uint32 v, time_t t, UT_uint32 e);
+
+	// copy constructor
 	PD_VersionData(const PD_VersionData & v)
-		:m_iId(v.m_iId),m_tTime(v.m_tTime),m_iEditTime(v.m_iEditTime){};
+		:m_iId(v.m_iId),m_tTime(v.m_tTime),m_iEditTime(v.m_iEditTime), m_iUID(v.m_iUID){};
 	
 	PD_VersionData & operator = (const PD_VersionData &v)
 	{
 		m_iId       = v.m_iId;
 		m_tTime     = v.m_tTime;
 		m_iEditTime = v.m_iEditTime;
-		
+		m_iUID      = v.m_iUID;
 		return *this;
+	}
+
+	bool operator == (const PD_VersionData &v)
+	{
+		return (m_iId == v.m_iId && m_tTime == v.m_tTime && m_iUID == v.m_iUID);
 	}
 
 	UT_uint32   getId()const{return m_iId;}
 	time_t      getTime()const {return m_tTime;}
 	UT_uint32   getEditTime()const {return m_iEditTime;}
+	UT_uint32   getUID()const {return m_iUID;}
 	
-	void        setId(UT_uint32 i) {m_iId = i;}
-	void        setTime(time_t t) {m_tTime = t;}
+	// we only allow modification of edit time ...
 	void        setEditTime(UT_uint32 t) {m_iEditTime = t;}
 	
   private:
 	UT_uint32   m_iId;
 	time_t      m_tTime;
 	UT_uint32   m_iEditTime;
+	UT_uint32   m_iUID;
 };
+
+// class for managing Documents UID
+#define PD_DOCUID_SIZE 4
+class PD_DocumentUID
+{
+  public:
+	// constructor for new documents
+	PD_DocumentUID();
+
+	// constructor for importers
+	PD_DocumentUID(const char * uid);
+	
+	bool operator == (const PD_DocumentUID & u)
+	{
+		for(UT_uint32 i = 0; i < PD_DOCUID_SIZE; ++i)
+			if (m_iUID[i] != u.m_iUID[i])
+				return false;
+
+		return true;
+	}
+
+	const char * getUIDString() const {return m_sUID.c_str();}
+	
+  private:
+	UT_uint32 m_iUID[PD_DOCUID_SIZE];
+	UT_String m_sUID;
+};
+
 
 
 /*!
@@ -564,6 +604,15 @@ public:
 	UT_uint32 getHistoryNthId(UT_uint32 i)const;
 	time_t    getHistoryNthTime(UT_uint32 i)const;
 	UT_uint32 getHistoryNthEditTime(UT_uint32 i)const;
+	UT_uint32 getHistoryNthUID(UT_uint32 i)const;
+
+	bool      areDocumentsRelated (const PD_Document &d) const;
+	bool      areDocumentHistoriesEqual(const PD_Document &d) const;
+	bool      areDocumentContentsEqual(const PD_Document &d, bool bIgnoreFmt = false) const;
+
+	const PD_DocumentUID * getDocUID()const {return m_pDocUID;}
+	void                   setDocUID(PD_DocumentUID * u);
+	const char *           getDocUIDString()const;
 	
 protected:
 	~PD_Document();
@@ -632,6 +681,7 @@ private:
 	bool                    m_bWasSaved;
 	UT_uint32               m_iEditTime;
 	UT_Vector               m_vHistory;
+	PD_DocumentUID *        m_pDocUID;
 };
 
 #endif /* PD_DOCUMENT_H */

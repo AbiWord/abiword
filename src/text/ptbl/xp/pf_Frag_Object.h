@@ -45,8 +45,6 @@ public:
 													  PT_DocPosition dpos,
 													  PT_BlockOffset blockOffset) const;
 
-	PT_AttrPropIndex		getIndexAP(void) const;
-	void					setIndexAP(PT_AttrPropIndex indexNewAP);
 	po_Bookmark *			getBookmark() const;
 
 #ifdef PT_TEST
@@ -55,7 +53,6 @@ public:
 
 protected:
 	PTObjectType			m_objectType;
-	PT_AttrPropIndex		m_indexAP;
 	void *					m_pObjectSubclass;
 };
 
