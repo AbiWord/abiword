@@ -93,7 +93,6 @@ public:
 	virtual UT_Bool	cmdSaveAs(const char * szFilename, int ieft) = 0;
 
 	virtual EV_EditMouseContext getMouseContext(UT_sint32 xPos, UT_sint32 yPos) = 0;
-	virtual EV_EditMouseContext getInsertionPointContext(UT_sint32 * pxPos, UT_sint32 * pyPos) = 0;
 	
 protected:
 	XAP_App *			m_pApp;
