@@ -3807,12 +3807,14 @@ class FV_View_Insert_symbol_listener : public XAP_Insert_symbol_listener
 	{
 	public:
 
-	        void setView( AV_View * pJustFocussedView)
+		void setView( AV_View * pJustFocussedView)
 	        {
 			p_view = (FV_View *) pJustFocussedView ;
 	        }
 		UT_Bool insertSymbol(UT_UCSChar Char, char *p_font_name)
 			{
+			UT_ASSERT(p_view != NULL);
+
 			const XML_Char ** props_in = NULL;
 			const XML_Char * currentfont;
 			p_view->getCharFormat(&props_in);
@@ -3844,7 +3846,10 @@ static UT_Bool s_InsertSymbolDlg(FV_View * pView, XAP_Dialog_Id id  )
 	XAP_Dialog_Insert_Symbol * pDialog
 		= (XAP_Dialog_Insert_Symbol *)(pDialogFactory->requestDialog(id));
 	UT_ASSERT(pDialog);
-        if(pDialog->isRunning() == UT_TRUE)
+	
+	symbol_Listener.setView(pView);
+	
+	if(pDialog->isRunning() == UT_TRUE)
 	{
 	       pDialog->activate();
 	}
