@@ -275,6 +275,7 @@ static GtkWidget * wSplash = NULL;
 static GR_Image * pSplashImage = NULL;
 static GR_UnixGraphics * pUnixGraphics = NULL;
 static guint timeout_handler = 0;
+static UT_Bool firstExpose = FALSE;
 
 static gint s_hideSplash(gpointer /*data*/)
 {
@@ -306,8 +307,16 @@ static gint s_drawingarea_expose(GtkWidget * /* widget */,
 	if (pUnixGraphics && pSplashImage)
 	{
 		pUnixGraphics->drawImage(pSplashImage, 0, 0);
+
+		// on the first full paint of the image, start a 2 second timer
+		if (!firstExpose)
+		{
+			firstExpose = UT_TRUE;
+			timeout_handler = gtk_timeout_add(2000, s_hideSplash, NULL);
+		}
 	}
-		return FALSE;
+
+	return FALSE;
 }
 
 static GR_Image * _showSplash(XAP_Args * pArgs, const char * /*szAppName*/)
@@ -404,9 +413,6 @@ static GR_Image * _showSplash(XAP_Args * pArgs, const char * /*szAppName*/)
 		pUnixGraphics = new GR_UnixGraphics(da->window, NULL);
 		pSplashImage = pUnixGraphics->createNewImage("splash", pBB, iSplashWidth, iSplashHeight);
 
-		// do timeout handler (so it automatically disappears in 2 seconds)
-		timeout_handler = gtk_timeout_add(2000, s_hideSplash, NULL);
-
 		// another for luck (to bring it up forward and paint)
 		gtk_widget_show(wSplash);
 	}
@@ -442,10 +448,12 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
 		delete pMyUnixApp;
 		return -1;	// make this something standard?
 	}
-	_showSplash(&Args, szAppName);
 
 	pMyUnixApp->ParseCommandLine();
 
+	_showSplash(&Args, szAppName);
+
+	// we just let it time out at 2 seconds, or let the user click
 //	s_hideSplash(NULL);
 
 	// turn over control to gtk
