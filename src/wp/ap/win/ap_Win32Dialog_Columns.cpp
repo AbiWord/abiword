@@ -57,10 +57,12 @@ AP_Win32Dialog_Columns::AP_Win32Dialog_Columns(XAP_DialogFactory * pDlgFactory,
 	: AP_Dialog_Columns(pDlgFactory,id), _win32Dialog(this)
 {
 	m_hThisDlg = NULL;
+	m_pPreviewWidget = NULL;
 }
 
 AP_Win32Dialog_Columns::~AP_Win32Dialog_Columns(void)
 {
+	delete m_pPreviewWidget;
 }
 
 /*****************************************************************/

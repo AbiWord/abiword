@@ -6045,7 +6045,10 @@ static bool s_doPageSetupDlg (FV_View * pView)
 	bool bOK = (ans == AP_Dialog_PageSetup::a_OK);
 
 	if(bOK == false)
-		   return true;
+	{
+		delete pDialog;
+		return true;
+	}
 
 	final_def = pSize.NameToPredefined(pDialog->getPageSize().getPredefinedName());
 	final_ori = pDialog->getPageOrientation();
@@ -6222,6 +6225,7 @@ static bool s_doPageSetupDlg (FV_View * pView)
 
 	ppView->setSectionFormat(props);
 	FREEP(props);
+	delete pDialog;
 	return true;
 }
 
