@@ -72,14 +72,14 @@ SplashWin::SplashWin(BMessage *data)
                         view->SetViewBitmap(bitmap, B_FOLLOW_ALL, 0);
 		view->Sync();
         }                                     
-	ignore = 0;
+	ignore = 10;
 	SetPulseRate(5000000);	//5 s pulse
 }
 
 void SplashWin::DispatchMessage(BMessage *msg, BHandler *handler) {
 	switch (msg->what) {
 	case B_PULSE:
-		if (!ignore++)
+		if (ignore-- > 0)
 			break;
 	case B_KEY_DOWN:
 	case B_MOUSE_DOWN:

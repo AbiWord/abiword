@@ -550,7 +550,6 @@ be_DocView *be_Window::_createDocumentWindow() {
 	BRect r;
 	
         //Set up the scroll bars on the outer edges of the document area
-        printf("Setting up scroll bars \n");
         r = m_winRectAvailable;
         r.bottom -= B_H_SCROLL_BAR_HEIGHT;
         r.left = r.right - B_V_SCROLL_BAR_WIDTH;
@@ -572,7 +571,6 @@ be_DocView *be_Window::_createDocumentWindow() {
 #define TOP_HEIGHT 32
 #define LEFT_WIDTH 32
 	// create the top ruler
-	printf("Starting top ruler creation \n");
 	r = m_winRectAvailable;
 	r.bottom = r.top + TOP_HEIGHT;
 	AP_BeOSTopRuler * pBeOSTopRuler = new AP_BeOSTopRuler(m_pBeOSFrame);
