@@ -33,7 +33,8 @@ CPPSRCS=		fv_View.cpp			\
 			fp_Column.cpp			\
 			fp_Line.cpp			\
 			fp_Page.cpp			\
-			fp_Run.cpp
+			fp_Run.cpp			\
+			fp_TextRun.cpp
 
 LIBRARY_NAME=		AbiFmt
 LIBRARY_VERSION=	$(ABI_VERSION)

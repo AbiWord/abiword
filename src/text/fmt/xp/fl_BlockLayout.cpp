@@ -29,6 +29,7 @@
 #include "fp_Column.h"
 #include "fp_Line.h"
 #include "fp_Run.h"
+#include "fp_TextRun.h"
 #include "pd_Document.h"
 #include "pp_Property.h"
 #include "pp_AttrProp.h"
