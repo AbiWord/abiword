@@ -9900,6 +9900,7 @@ bool FV_View::insertPageNum(const XML_Char ** props, HdrFtrType hfType)
 		return false;
 
 	// Insert the page_number field
+
 	bResult = m_pDoc->insertObject(getPoint(), PTO_Field, f_attributes, NULL);
 
 	moveInsPtTo(oldPos);	// Get back to where you once belonged.
