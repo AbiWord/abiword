@@ -16,8 +16,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
  * 02111-1307, USA.
  */
- 
-
 
 #include <string.h>
 #include <stdlib.h>
@@ -179,8 +177,8 @@ const char * UT_pathSuffix(const char * path)
 	// a dot, and if the dot happens AFTER the last slash (if there
 	// is a slash), we consider the stuff beyond the dot (in
 	// the forward direction) the extension.
-	char * dotpos = rindex(path, '.');
-	char * slashpos = rindex(path, '/');
+	char * dotpos = strrchr(path, '.');
+	char * slashpos = strrchr(path, '/');
 
 	if (slashpos)
 	{
