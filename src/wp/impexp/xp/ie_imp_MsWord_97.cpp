@@ -3670,8 +3670,7 @@ bool IE_Imp_MsWord_97::_insertTOC(field *f)
 		{
 			UT_UTF8String_sprintf(sTemp, "toc-dest-style%d:TOC %d", i, i);
 			sProps += sTemp;
-			if(i < 9)
-				sProps += ";";
+			sProps += ";";
 
 			if(sLeader.size())
 			{
@@ -3686,8 +3685,7 @@ bool IE_Imp_MsWord_97::_insertTOC(field *f)
 		{
 			UT_UTF8String_sprintf(sTemp, "toc-dest-style%d:nonexistentstyle", i);
 			sProps += sTemp;
-			if(i < 9)
-				sProps += ";";
+			sProps += ";";
 		}
 	}
 
@@ -3699,7 +3697,7 @@ bool IE_Imp_MsWord_97::_insertTOC(field *f)
 		// style-based toc, the params have the format
 		// \t "style,level,style,level ..."
 		bSupported = true;
-		t1 = strchr(params, '\"');
+		t1 = strchr(t, '\"');
 		if(!t1)
 		{
 			bRet = false;
@@ -3738,7 +3736,7 @@ bool IE_Imp_MsWord_97::_insertTOC(field *f)
 			sProps += sTemp;
 			sProps += ";";
 
-			sProps += "tod-dest-style";
+			sProps += "toc-dest-style";
 			sProps += t1;
 			sProps += ":TOC ";
 			sProps += t1;
