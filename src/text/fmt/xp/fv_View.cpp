@@ -5500,7 +5500,7 @@ UT_Bool FV_View::_charMotion(UT_Bool bForward,UT_uint32 countChars)
 	bRes = m_pDoc->getBounds(UT_FALSE, posBOD);
 	bRes = m_pDoc->getBounds(UT_TRUE, posEOD);
 	UT_ASSERT(bRes);
-	
+
 	if (bForward)
 	{
 		m_iInsPoint += countChars;
@@ -5508,19 +5508,23 @@ UT_Bool FV_View::_charMotion(UT_Bool bForward,UT_uint32 countChars)
 		//		while(pRun != NULL && (pRun->isField() == UT_TRUE || pRun->getType() == FPRUN_FIELD && m_iInsPoint < posEOD))
 		while(pRun != NULL && pRun->isField() == UT_TRUE && m_iInsPoint < posEOD)
 		{
-		        m_iInsPoint++;
-		        _findPositionCoords(m_iInsPoint, UT_FALSE, x, y, uheight, &pBlock, &pRun);
+			m_iInsPoint++;
+			_findPositionCoords(m_iInsPoint, UT_FALSE, x, y, uheight, &pBlock, &pRun);
 		}
 	}
 	else
 	{
 		m_iInsPoint -= countChars;
+		if (m_iInsPoint < posBOD)
+		{
+			m_iInsPoint = posBOD;
+		}
 		_findPositionCoords(m_iInsPoint, UT_FALSE, x, y, uheight, &pBlock, &pRun);
 		//		while(pRun != NULL && (pRun->isField() == UT_TRUE || pRun->getType() == FPRUN_FIELD) && m_iInsPoint > posBOD)
 		while(pRun != NULL && pRun->isField() == UT_TRUE && m_iInsPoint > posBOD)
 		{
-		        m_iInsPoint--;
-		        _findPositionCoords(m_iInsPoint-1, UT_FALSE, x, y, uheight, &pBlock, &pRun);
+			m_iInsPoint--;
+			_findPositionCoords(m_iInsPoint-1, UT_FALSE, x, y, uheight, &pBlock, &pRun);
 		}
 	}
 
@@ -5552,7 +5556,7 @@ UT_Bool FV_View::_charMotion(UT_Bool bForward,UT_uint32 countChars)
 			_clearIfAtFmtMark(posOld);
 			notifyListeners(AV_CHG_MOTION);
 		}
-		
+
 		return UT_FALSE;
 	}
 
@@ -5563,7 +5567,7 @@ UT_Bool FV_View::_charMotion(UT_Bool bForward,UT_uint32 countChars)
 		_clearIfAtFmtMark(posOld);
 		notifyListeners(AV_CHG_MOTION);
 	}
-	
+
 	return UT_TRUE;
 }
 // -------------------------------------------------------------------------
