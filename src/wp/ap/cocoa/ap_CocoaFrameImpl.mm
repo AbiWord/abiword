@@ -500,7 +500,7 @@ void AP_CocoaFrameImpl::_showOrHideToolbars()
 	bool *bShowBar = static_cast<AP_FrameData*> (pFrame->getFrameData())->m_bShowBar;
 	UT_uint32 cnt = m_vecToolbarLayoutNames.getItemCount();
 
-	XAP_CocoaToolbarWindow* tlbr = [XAP_CocoaToolbarWindow sharedToolbar];
+	XAP_CocoaToolbarWindow_Controller* tlbr = [XAP_CocoaToolbarWindow_Controller sharedToolbar];
 	[tlbr lock];
 	for (UT_uint32 i = 0; i < cnt; i++)
 	{
