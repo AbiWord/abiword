@@ -1,6 +1,9 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2001 Hubert Figuiere
+ * Copyright (C) 2004 Francis James Franklin
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -26,6 +29,8 @@
     PEF / CFM version is in xap_MacCFMModule.{h,cpp}
 */
 
+#include "ut_string_class.h"
+
 #include "xap_Module.h"
 
 class XAP_CocoaModule : public XAP_Module 
@@ -35,21 +40,28 @@ class XAP_CocoaModule : public XAP_Module
 
 protected:
 
-   XAP_CocoaModule () ;
-   virtual ~XAP_CocoaModule (void);
+	XAP_CocoaModule () ;
 
-   virtual bool   load (const char * name);
-   virtual bool   unload (void);
+	virtual ~XAP_CocoaModule (void);
+
+	virtual bool   load (const char * name);
+	virtual bool   unload (void);
 
 public:
-   virtual bool   resolveSymbol (const char * symbol_name, void ** symbol);
-   virtual bool   getModuleName (char ** dest) const;
-   virtual bool   getErrorMsg (char ** dest) const;
+	virtual bool   resolveSymbol (const char * symbol_name, void ** symbol);
+	virtual bool   getModuleName (char ** dest) const;
+	virtual bool   getErrorMsg (char ** dest) const;
 
- private:
-   bool m_bLoaded;
-   char * m_szname;
-   void * m_module;
+private:
+	UT_UTF8String	m_szname;
+	UT_UTF8String	m_module_path;
+
+	void *			m_module;
+	void *			m_cocoa_plugin;
+
+	bool			m_bLoaded;
+	bool			m_bBundle;
+	bool			m_bCocoa;
 };
 
 #endif /* XAP_COCOAMODULE_H */
