@@ -57,6 +57,10 @@ top: 0;
 bottom: auto;
 }
 
+div.search {
+padding-top: 0.75em;
+}
+
 a.bars {
 color: white;
 }
