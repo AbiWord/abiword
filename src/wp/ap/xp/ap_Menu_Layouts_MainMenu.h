@@ -34,16 +34,14 @@ BeginLayout(Main,0)
 		MenuItem(AP_MENU_ID_FILE_SAVE)
 		MenuItem(AP_MENU_ID_FILE_SAVEAS)
 	    MenuItem(AP_MENU_ID_FILE_EXPORT)
-		Separator()
-	    MenuItem(AP_MENU_ID_FILE_SAVEASWEB)
-	    MenuItem(AP_MENU_ID_FILE_WEBPREVIEW)
 	    Separator()
 		MenuItem(AP_MENU_ID_FILE_PAGESETUP)
 #if defined(HAVE_GNOME)
                 MenuItem(AP_MENU_ID_FILE_PRINT_PREVIEW)
 #endif
 		MenuItem(AP_MENU_ID_FILE_PRINT)
-#ifdef HAVE_GNOME_DIRECT_PRINT
+
+#if 0 // HAVE_GNOME_DIRECT_PRINT
 		MenuItem(AP_MENU_ID_FILE_PRINT_DIRECTLY)
 #endif
 		Separator()
@@ -179,7 +177,7 @@ BeginLayout(Main,0)
 		MenuItem(AP_MENU_ID_FMT_FONT)
 		MenuItem(AP_MENU_ID_FMT_PARAGRAPH)
 		MenuItem(AP_MENU_ID_FMT_BULLETS)
-#ifdef DEBUG
+#if 0 // someone code and turn this back on
 		MenuItem(AP_MENU_ID_FMT_BORDERS)
 #endif
                 MenuItem(AP_MENU_ID_FMT_DOCUMENT)
@@ -233,6 +231,11 @@ BeginLayout(Main,0)
 		MenuItem(AP_MENU_ID_WINDOW_8)
 		MenuItem(AP_MENU_ID_WINDOW_9)
 		MenuItem(AP_MENU_ID_WINDOW_MORE)
+	EndSubMenu()
+
+	BeginSubMenu(AP_MENU_ID_WEB)
+	    MenuItem(AP_MENU_ID_FILE_SAVEASWEB)
+	    MenuItem(AP_MENU_ID_FILE_WEBPREVIEW)
 	EndSubMenu()
 
 	BeginSubMenu(AP_MENU_ID_HELP)

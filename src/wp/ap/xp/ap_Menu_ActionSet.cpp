@@ -74,8 +74,6 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_FILE_SAVEAS,		0,1,0,	"fileSaveAs",		NULL,					NULL);
 	_s(AP_MENU_ID_FILE_IMPORT, 0,1,0, "fileImport", NULL, NULL);
 	_s(AP_MENU_ID_FILE_EXPORT, 0,1,0, "fileExport", NULL, NULL);
-	_s(AP_MENU_ID_FILE_SAVEASWEB, 0,1,0, "fileSaveAsWeb", NULL, NULL);
-	_s(AP_MENU_ID_FILE_WEBPREVIEW, 0,1,0, "filePreviewWeb", NULL, NULL);
 	_s(AP_MENU_ID_FILE_CLOSE,		0,0,0,	"closeWindow",		NULL,					NULL);
 	_s(AP_MENU_ID_FILE_PAGESETUP,	0,1,0,	"pageSetup",		NULL,					NULL);
 	_s(AP_MENU_ID_FILE_PRINT,		0,1,0,	"print",			NULL,					NULL);
@@ -93,6 +91,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_FILE_RECENT_8,	0,0,0,	"openRecent_8",		NULL,					ap_GetLabel_Recent);
 	_s(AP_MENU_ID_FILE_RECENT_9,	0,0,0,	"openRecent_9",		NULL,					ap_GetLabel_Recent);
 	_s(AP_MENU_ID_FILE_EXIT,		0,0,0,	"querySaveAndExit",	NULL,					NULL);
+	_s(AP_MENU_ID_OPEN_TEMPLATE, 0,1,0, "openTemplate", NULL, NULL);
 
 	_s(AP_MENU_ID_EDIT,				1,0,0,	NULL,				NULL,					NULL);
 	_s(AP_MENU_ID_EDIT_UNDO,		0,0,0,	"undo",				ap_GetState_Changes,	NULL);
@@ -178,6 +177,10 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_WINDOW_9,			0,0,0,	"activateWindow_9",	ap_GetState_Window,		ap_GetLabel_Window);
 	_s(AP_MENU_ID_WINDOW_MORE,		0,1,0,	"dlgMoreWindows",	NULL,					ap_GetLabel_WindowMore);
 	
+	_s(AP_MENU_ID_WEB, 1,0,0, NULL, NULL, NULL); 
+	_s(AP_MENU_ID_FILE_SAVEASWEB, 0,1,0, "fileSaveAsWeb", NULL, NULL);
+	_s(AP_MENU_ID_FILE_WEBPREVIEW, 0,1,0, "filePreviewWeb", NULL, NULL);
+
 	_s(AP_MENU_ID_HELP,				1,0,0,	NULL,				NULL,					NULL);
 	_s(AP_MENU_ID_HELP_CONTENTS,		0,0,0,	"helpContents",			NULL,					ap_GetLabel_Contents);
 	_s(AP_MENU_ID_HELP_INDEX,		0,0,0,	"helpIndex",			NULL,					ap_GetLabel_Index);
