@@ -292,8 +292,7 @@ dnl might not.
 dnl
 dnl check for an xml parser
 
-ABI_NEED_XML_PARSER="yes"
-ABI_XML_PARSER(${abs_srcdir}/../expat)
+ABI_XML_PARSER
 
 dnl check for psiconv
 
@@ -330,7 +329,7 @@ if test $peerconfig = "true"; then
 			echo "Running configure in ${i}"
 			config_flags='--disable-shared --enable-static'
 			if test `basename "$i"` = wv; then
-				config_flags="$config_flags --with-exporter --with-glib=$abi_glib_opt"
+				config_flags="$config_flags --with-exporter --with-glib=$abi_glib_opt $abi_wv_xml"
 			fi
 			(cd $i; ./configure $config_flags)
 		fi
