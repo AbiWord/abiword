@@ -2497,7 +2497,10 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const XML
 	{
 		return 0; 
 	}
-
+	if(isInTable() && isHdrFtrEdit())
+	{
+		return 0;
+	}
 //
 // Do all the stuff we need to make this go smoothly and to undo in a single step.
 //

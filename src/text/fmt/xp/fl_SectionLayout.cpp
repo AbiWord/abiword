@@ -4218,7 +4218,10 @@ void fl_HdrFtrSectionLayout::checkAndAdjustCellSize(fl_ContainerLayout * pCL)
 		_PageHdrFtrShadowPair* pPair = m_vecPages.getNthItem(i);
 		// Find matching block in this shadow.
 		pShadowBL = pPair->getShadow()->findMatchingContainer(pCL);
-		static_cast<fl_SectionLayout *>(pShadowBL)->checkAndAdjustCellSize();
+		if(pShadowBL)
+		{
+			static_cast<fl_SectionLayout *>(pShadowBL)->checkAndAdjustCellSize();
+		}
 	}
 	// Update the overall block too.
 

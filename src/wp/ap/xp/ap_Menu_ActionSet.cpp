@@ -245,8 +245,8 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	
 	_s(AP_MENU_ID_TABLE,1,0,0,0,NULL,NULL,NULL);
 	_s(AP_MENU_ID_TABLE_INSERT,1,0,0,0, NULL, NULL, NULL);
-	_s(AP_MENU_ID_TABLE_INSERT_TABLE,0,1,0,0, "insertTable",NULL, NULL);
-	_s(AP_MENU_ID_TABLE_INSERTTABLE,0,1,0,0, "insertTable",NULL , NULL);
+	_s(AP_MENU_ID_TABLE_INSERT_TABLE,0,1,0,0, "insertTable",ap_GetState_TableOK, NULL);
+	_s(AP_MENU_ID_TABLE_INSERTTABLE,0,1,0,0, "insertTable",ap_GetState_TableOK , NULL);
 	_s(AP_MENU_ID_TABLE_INSERT_COLUMNS_BEFORE,0,0,0,0, "insertColsBefore", ap_GetState_InTable, NULL);
 	_s(AP_MENU_ID_TABLE_INSERT_COLUMNS_AFTER,0,0,0,0, "insertColsAfter", ap_GetState_InTable, NULL);
 	_s(AP_MENU_ID_TABLE_INSERTCOLUMN,0,0,0,0, "insertColsAfter", ap_GetState_InTable, NULL);
