@@ -26,7 +26,8 @@ ABI_WP_INCS+=	/wp/ap/$(ABI_NATIVE)/$(ABI_GNOME_DIR)
 
 PLATFORM_OBJS+=	$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)App.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Break.$(OBJ_SUFFIX)		\
-		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Replace.$(OBJ_SUFFIX)
+		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Replace.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_WordCount.$(OBJ_SUFFIX)
 #		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)DialogFactory.$(OBJ_SUFFIX)
 #		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Clipboard.$(OBJ_SUFFIX)		\
 #		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Paragraph.$(OBJ_SUFFIX)		\
@@ -46,7 +47,8 @@ PLATFORM_OBJS+=	$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)App.$(OBJ_SUFFIX)			\
 
 CPPSRCS=		ap_$(ABI_FE)$(ABI_GNOME_PREFIX)App.cpp			\
 			ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Break.cpp		\
-			ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Replace.cpp
+			ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Replace.cpp	\
+			ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_WordCount.cpp
 #			ap_$(ABI_FE)$(ABI_GNOME_PREFIX)DialogFactory.cpp
 #			ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Clipboard.cpp		\
 #			ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Paragraph.cpp	\

@@ -56,6 +56,8 @@
 
 #   include "ap_UnixGnomeDialog_Replace.h"
 #   include "ap_UnixGnomeDialog_Break.h"
+#   include "ap_UnixGnomeDialog_WordCount.h"
+
 #endif
 
 	// ... add new dialogs here ...
@@ -79,7 +81,7 @@
 	DeclareDialog(AP_DIALOG_ID_SPELL,			AP_UnixDialog_Spell)
 	DeclareDialog(AP_DIALOG_ID_PARAGRAPH,		AP_UnixDialog_Paragraph)	
 	DeclareDialog(AP_DIALOG_ID_OPTIONS,			AP_UnixDialog_Options)	
-        DeclareDialog(AP_DIALOG_ID_WORDCOUNT,                   AP_UnixDialog_WordCount)
+	DeclareDialog(AP_DIALOG_ID_WORDCOUNT,       AP_UnixGnomeDialog_WordCount)
 
 	// ... also add new dialogs here ...
 #   else
