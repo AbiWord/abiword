@@ -60,8 +60,8 @@ void GR_Win32CharWidths::setCharWidthsOfRange(HDC hdc, UT_UCSChar c0, UT_UCSChar
 			}
 			else
 			{
-#ifdef DEBUG
 				GetCharWidth32W(hdc,k,k,&w);
+#ifdef DEBUG
 				ABC abc;
 				int iRes = GetCharABCWidthsW(hdc,k,k,&abc);
 #endif
