@@ -92,7 +92,7 @@ else
 endif
 
 ifeq ($(USE_EXTERNAL_SNPRINTF),1)
-  OS_LIBS += -L/opt/libiconv/lib -liconv -L/opt/snprintf/lib -lsnprintf
+  OS_LIBS += -L/opt/libiconv/lib -liconv #-L/opt/snprintf/lib -lsnprintf <== no longer needed -MG
 endif
 
 OS_CFLAGS		= $(DSO_CFLAGS) $(PLATFORM_FLAGS) $(PORT_FLAGS)
