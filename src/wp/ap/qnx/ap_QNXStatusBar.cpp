@@ -23,6 +23,7 @@
 #include "ut_debugmsg.h"
 #include "xap_QNXFrameImpl.h"
 #include "xap_Frame.h"
+#include "ap_QNXFrameImpl.h"
 #include "gr_QNXGraphics.h"
 #include "ap_QNXStatusBar.h"
 #include "ap_StatusBar.h"
@@ -91,6 +92,7 @@ PtWidget_t * AP_QNXStatusBar::createWidget(void)
 	PtSetArg(&args[n++], Pt_ARG_ANCHOR_FLAGS,Pt_TRUE,Pt_LEFT_ANCHORED_LEFT|Pt_RIGHT_ANCHORED_RIGHT|Pt_BOTTOM_ANCHORED_BOTTOM);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH,*w,0);
 	PtSetArg(&args[n++], Pt_ARG_POS,&ptr,0);
+	PtSetArg(&args[n++], Pt_ARG_FLAGS,Pt_DELAY_REALIZE,Pt_DELAY_REALIZE);
 	m_wStatusBar = PtCreateWidget(PtToolbar,toplevel,n,args); 
 	n=0;
 
@@ -122,8 +124,6 @@ PtWidget_t * AP_QNXStatusBar::createWidget(void)
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN); // there are no other kinds of elements
 		}
 	}
-	PtRealizeWidget(m_wStatusBar);
-			
 	return m_wStatusBar;
 }
 
@@ -132,12 +132,21 @@ PtWidget_t * AP_QNXStatusBar::createWidget(void)
 	
 void AP_QNXStatusBar::show(void)
 {
-	PtRealizeWidget (m_wStatusBar);
+	int *height;
+	if(!PtWidgetIsRealized(m_wStatusBar)) {
+		PtGetResource(m_wStatusBar,Pt_ARG_HEIGHT,&height,0);
+		PtRealizeWidget (m_wStatusBar);
+		static_cast<AP_QNXFrameImpl *>(m_pFrame->getFrameImpl())->_reflowLayout(-(*height),0,0,0);
+	}
 }
 
 void AP_QNXStatusBar::hide(void)
 {
-	PtUnrealizeWidget (m_wStatusBar);
-			
-	m_pFrame->queue_resize();
+	int *height;
+	if(PtWidgetIsRealized(m_wStatusBar)) {
+		PtUnrealizeWidget (m_wStatusBar);
+		PtGetResource(m_wStatusBar,Pt_ARG_HEIGHT,&height,0);
+		static_cast<AP_QNXFrameImpl *> (m_pFrame->getFrameImpl())->_reflowLayout(*height,0,0,0);	
+		m_pFrame->queue_resize();
+	}
 }
