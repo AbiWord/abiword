@@ -79,7 +79,7 @@ _LIBWV_:
 		echo Found libwv in peer directory;		\
 		if [ ! -r $(ABI_ROOT)/../wv/config.h ]; then	\
 			cd $(ABI_ROOT)/../wv; 			\
-			CC=cl.exe CONFIG_SHELL=bash.exe bash ./configure;	\
+			CC=cl.exe CONFIG_SHELL=bash.exe bash ./configure --with-peer-iconv=abi;	\
 		fi;						\
 		$(MAKE) -f Makefile.abi -C $(ABI_ROOT)/../wv;  	\
 	else							\
