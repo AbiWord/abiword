@@ -245,50 +245,7 @@ gint XAP_CocoaFrame::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
 
 	return 1;
 }
-	
-gint XAP_CocoaFrame::_fe::motion_notify_event(GtkWidget* w, GdkEventMotion* e)
-{
-	XAP_CocoaFrame * pCocoaFrame = (XAP_CocoaFrame *)g_object_get_user_data(G_OBJECT(w));
-	pCocoaFrame->setTimeOfLastEvent(e->time);
-	AV_View * pView = pCocoaFrame->getCurrentView();
-	EV_CocoaMouse * pCocoaMouse = static_cast<EV_CocoaMouse *>(pCocoaFrame->getMouse());
-	
-	if (pView)
-		pCocoaMouse->mouseMotion(pView, e);
-	
-	return 1;
-}
-	
-gint XAP_CocoaFrame::_fe::delete_event(GtkWidget * w, GdkEvent * /*event*/, gpointer /*data*/)
-{
-	XAP_CocoaFrame * pCocoaFrame = (XAP_CocoaFrame *) g_object_get_user_data(G_OBJECT(w));
-	XAP_App * pApp = pCocoaFrame->getApp();
-	UT_ASSERT(pApp);
 
-	const EV_Menu_ActionSet * pMenuActionSet = pApp->getMenuActionSet();
-	UT_ASSERT(pMenuActionSet);
-
-	const EV_EditMethodContainer * pEMC = pApp->getEditMethodContainer();
-	UT_ASSERT(pEMC);
-	
-	const EV_EditMethod * pEM = pEMC->findEditMethodByName("closeWindowX");
-	UT_ASSERT(pEM);
-	
-	if (pEM)
-	{
-		if ((*pEM->getFn())(pCocoaFrame->getCurrentView(),NULL))
-		{
-			// returning FALSE means destroy the window, continue along the
-			// chain of Gtk destroy events
-
-			return FALSE;
-		}
-	}
-		
-	// returning TRUE means do NOT destroy the window; halt the message
-	// chain so it doesn't see destroy
-	return TRUE;
-}
 	
 gint XAP_CocoaFrame::_fe::expose(GtkWidget * w, GdkEventExpose* pExposeEvent)
 {
@@ -844,6 +801,71 @@ void XAP_CocoaFrame::_setController (XAP_CocoaFrameController * ctrl)
 /* Objective C section */
 
 @implementation XAP_CocoaFrameController
+
+- (BOOL)windowShouldClose:(id)sender
+{
+	UT_DEBUGMSG (("shouldCloseDocument\n"));
+	UT_ASSERT (m_frame);
+	XAP_App * pApp = m_frame->getApp();
+	UT_ASSERT(pApp);
+
+	const EV_Menu_ActionSet * pMenuActionSet = pApp->getMenuActionSet();
+	UT_ASSERT(pMenuActionSet);
+
+	const EV_EditMethodContainer * pEMC = pApp->getEditMethodContainer();
+	UT_ASSERT(pEMC);
+	
+	const EV_EditMethod * pEM = pEMC->findEditMethodByName("closeWindowX");
+	UT_ASSERT(pEM);
+	
+	if (pEM)
+	{
+		if ((*pEM->getFn())(m_frame->getCurrentView(),NULL))
+		{
+			// returning YES means close the window
+			
+			return YES;
+		}
+	}
+		
+	// returning NO means do NOT close the window
+	return NO;
+}
+
+
+- (void)mouseDown:(NSEvent *)theEvent
+{
+	XAP_CocoaFrame * pFrame = m_frame;
+//  	pFrame->setTimeOfLastEvent([theEvent timestamp]);
+	AV_View * pView = pFrame->getCurrentView();
+	EV_CocoaMouse * pCocoaMouse = static_cast<EV_CocoaMouse *> (pFrame->getMouse());
+
+	if (pView)
+		pCocoaMouse->mouseClick (pView, theEvent);
+}
+
+- (void)mouseDragged:(NSEvent *)theEvent
+{
+	XAP_CocoaFrame * pFrame = m_frame;
+//  	pFrame->setTimeOfLastEvent([theEvent timestamp]);
+	AV_View * pView = pFrame->getCurrentView();
+	EV_CocoaMouse * pCocoaMouse = static_cast<EV_CocoaMouse *> (pFrame->getMouse());
+
+	if (pView)
+		pCocoaMouse->mouseMotion (pView, theEvent);
+}
+
+- (void)mouseUp:(NSEvent *)theEvent
+{
+	XAP_CocoaFrame * pFrame = m_frame;
+//  	pFrame->setTimeOfLastEvent([theEvent timestamp]);
+	AV_View * pView = pFrame->getCurrentView();
+	EV_CocoaMouse * pCocoaMouse = static_cast<EV_CocoaMouse *> (pFrame->getMouse());
+
+	if (pView)
+		pCocoaMouse->mouseUp (pView, theEvent);
+}
+
 - (void)keyDown:(NSEvent *)theEvent
 {
 	XAP_CocoaFrame * pFrame = m_frame;
@@ -895,6 +917,7 @@ void XAP_CocoaFrame::_setController (XAP_CocoaFrameController * ctrl)
 - (id)initWith:(XAP_CocoaFrame *)frame
 {
 	UT_DEBUGMSG (("Cocoa: @XAP_CocoaNSView initWith:Frame\n"));
+	UT_ASSERT (frame);
 	m_pFrame = frame;
 	m_pGR = NULL;
 	return self;
@@ -907,8 +930,11 @@ void XAP_CocoaFrame::_setController (XAP_CocoaFrameController * ctrl)
 
 - (BOOL)becomeFirstResponder
 {
-	if (m_pFrame->getCurrentView())
+	UT_ASSERT (m_pFrame);
+	
+	if (m_pFrame->getCurrentView()) {
 		m_pFrame->getCurrentView()->focusChange(AV_FOCUS_HERE);
+	}
 
 	UT_DEBUGMSG(("became first responder!\n"));
 	return YES;

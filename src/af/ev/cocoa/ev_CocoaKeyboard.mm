@@ -59,14 +59,15 @@ bool ev_CocoaKeyboard::keyPressEvent(AV_View* pView,
 	EV_EditMethod * pEM;
 
         // note that we don't usually want keyCode, but instead [e characters].
-        UT_DEBUGMSG(("KeyPressEvent: keyval=%x characters=%s state=%x\n",[e keyCode],
+        xxx_UT_DEBUGMSG(("KeyPressEvent: keyval=%x characters=%s state=%x\n",[e keyCode],
                      [[e characters] cString], state));
 
-	if ([e modifierFlags] & NSShiftKeyMask)
+	unsigned int modifierFlags = [e modifierFlags];
+	if (modifierFlags & NSShiftKeyMask)
 		state |= EV_EMS_SHIFT;
-	if ([e modifierFlags] & NSControlKeyMask)
+	if (modifierFlags & NSControlKeyMask)
 		state |= EV_EMS_CONTROL;
-	if ([e modifierFlags] & NSAlternateKeyMask)
+	if (modifierFlags & NSAlternateKeyMask)
 		state |= EV_EMS_ALT;
 
 	const char * s = [[e characters] UTF8String];
@@ -78,12 +79,12 @@ bool ev_CocoaKeyboard::keyPressEvent(AV_View* pView,
 	for (int ind = 0; ind < uLength; ind++)
 	{
 		UT_uint32 charData = (UT_uint32)ucs[ind];
-		UT_DEBUGMSG(("CocoaKeyboard::pressKeyEvent: key value %x\n",charData));
+		xxx_UT_DEBUGMSG(("CocoaKeyboard::pressKeyEvent: key value %x\n",charData));
 		if (s_isVirtualKeyCode(charData))
 		{
 			EV_EditBits nvk = s_mapVirtualKeyCodeToNVK(charData);
 	
-			UT_DEBUGMSG(("Virtual 0x%x (ignore is 0x%x) \n", nvk, EV_NVK__IGNORE__));
+			xxx_UT_DEBUGMSG(("Virtual 0x%x (ignore is 0x%x) \n", nvk, EV_NVK__IGNORE__));
 			switch (nvk)
 			{
 			case EV_NVK__IGNORE__:

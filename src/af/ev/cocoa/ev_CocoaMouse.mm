@@ -39,8 +39,6 @@ EV_CocoaMouse::EV_CocoaMouse(EV_EditEventMapper * pEEM)
 
 void EV_CocoaMouse::mouseUp(AV_View* pView, NSEvent* e)
 {
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
-#if 0
 	EV_EditMethod * pEM;
 	EV_EditModifierState ems = 0;
 	EV_EditEventMapperResult result;
@@ -48,28 +46,37 @@ void EV_CocoaMouse::mouseUp(AV_View* pView, NSEvent* e)
 	EV_EditMouseOp mop;
 	EV_EditMouseContext emc = 0;
 	
-	if (e->state & GDK_SHIFT_MASK)
+	UT_DEBUGMSG (("Received mouse up...\n"));
+	
+	unsigned int modifierFlags = [e modifierFlags];
+	if (modifierFlags & NSShiftKeyMask)
 		ems |= EV_EMS_SHIFT;
-	if (e->state & GDK_CONTROL_MASK)
+	if (modifierFlags & NSControlKeyMask)
 		ems |= EV_EMS_CONTROL;
-	if (e->state & GDK_MOD1_MASK)
+	if (modifierFlags & NSAlternateKeyMask)
 		ems |= EV_EMS_ALT;
 
-	if (e->state & GDK_BUTTON1_MASK)
-		emb = EV_EMB_BUTTON1;
-	else if (e->state & GDK_BUTTON2_MASK)
-		emb = EV_EMB_BUTTON2;
-	else if (e->state & GDK_BUTTON3_MASK)
-		emb = EV_EMB_BUTTON3;
+	int buttonNumber = [e buttonNumber];
+	switch (buttonNumber) {
+	case 0:
+		emb = EV_EMB_BUTTON1; // left
+		break;
+	case 1:
+		emb = EV_EMB_BUTTON2; // right 
+		break;
+	case 2:
+		emb = EV_EMB_BUTTON3; // middle
+		break;
 	// these are often used for X scrolling mice, 4 is down, 5 is up
-	else if (e->state & GDK_BUTTON4_MASK)
-		emb = EV_EMB_BUTTON4;
-	else if (e->state & GDK_BUTTON5_MASK)
-		emb = EV_EMB_BUTTON5;
-	else
-	{
+	case 3:
+		emb = EV_EMB_BUTTON4; // scroll down
+		break;
+	case 4:
+		emb = EV_EMB_BUTTON5; // scroll up
+		break;
+	default:
 		// TODO decide something better to do here....
-		UT_DEBUGMSG(("EV_CocoaMouse::mouseUp: unknown button %d\n",e->button));
+		UT_DEBUGMSG(("EV_CocoaMouse::mouseUp: unknown button %d\n", buttonNumber));
 		return;
 	}
 
@@ -89,7 +96,7 @@ void EV_CocoaMouse::mouseUp(AV_View* pView, NSEvent* e)
 	{
 	case EV_EEMR_COMPLETE:
 		UT_ASSERT(pEM);
-		invokeMouseMethod(pView, pEM, (UT_sint32) e->x, (UT_sint32) e->y);
+		invokeMouseMethod(pView, pEM, (UT_sint32) [e deltaX], (UT_sint32) [e deltaY]);
 		return;
 	case EV_EEMR_INCOMPLETE:
 		// I'm not sure this makes any sense, but we allow it.
@@ -102,13 +109,10 @@ void EV_CocoaMouse::mouseUp(AV_View* pView, NSEvent* e)
 		UT_ASSERT(0);
 		return;
 	}
-#endif
 }
 
 void EV_CocoaMouse::mouseClick(AV_View* pView, NSEvent* e)
 {
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
-#if 0
 	EV_EditMethod * pEM;
 	EV_EditModifierState state = 0;
 	EV_EditEventMapperResult result;
@@ -116,42 +120,56 @@ void EV_CocoaMouse::mouseClick(AV_View* pView, NSEvent* e)
 	EV_EditMouseOp mop = 0;
 	EV_EditMouseContext emc = 0;
 
-	if (e->button == 1)
-		emb = EV_EMB_BUTTON1;
-	else if (e->button == 2)
-		emb = EV_EMB_BUTTON2;
-	else if (e->button == 3)
-		emb = EV_EMB_BUTTON3;
+	UT_DEBUGMSG (("Received mouse click...\n"));
+
+	int buttonNumber = [e buttonNumber];
+	switch (buttonNumber) {
+	case 0:
+		emb = EV_EMB_BUTTON1; // left
+		break;
+	case 1:
+		emb = EV_EMB_BUTTON2; // right 
+		break;
+	case 2:
+		emb = EV_EMB_BUTTON3; // middle
+		break;
 	// these are often used for X scrolling mice, 4 is down, 5 is up
-	else if (e->button == 4)
-		emb = EV_EMB_BUTTON4;
-	else if (e->button == 5)
-	        emb = EV_EMB_BUTTON5;
-	else
-	{
+	case 3:
+		emb = EV_EMB_BUTTON4; // scroll down
+		break;
+	case 4:
+		emb = EV_EMB_BUTTON5; // scroll up
+		break;
+	default:
 		// TODO decide something better to do here....
-		UT_DEBUGMSG(("EV_CocoaMouse::mouseClick: unknown button %d\n",e->button));
+		UT_DEBUGMSG(("EV_CocoaMouse::mouseClick: unknown button %d\n", buttonNumber));
 		return;
 	}
 	
-	if (e->state & GDK_SHIFT_MASK)
+	unsigned int modifierFlags = [e modifierFlags];
+	if (modifierFlags & NSShiftKeyMask)
 		state |= EV_EMS_SHIFT;
-	if (e->state & GDK_CONTROL_MASK)
+	if (modifierFlags & NSControlKeyMask)
 		state |= EV_EMS_CONTROL;
-	if (e->state & GDK_MOD1_MASK)
+	if (modifierFlags & NSAlternateKeyMask)
 		state |= EV_EMS_ALT;
 
-	if (e->type == GDK_BUTTON_PRESS)
+	NSEventType evtType = [e type];
+	switch (evtType) {
+	case NSLeftMouseDown:
+	case NSRightMouseDown:
+	case NSOtherMouseDown:
 		mop = EV_EMO_SINGLECLICK;
-	else if (e->type == GDK_2BUTTON_PRESS)
-		mop = EV_EMO_DOUBLECLICK;
-	else
-	{
+		//detect double clicks
+		// TODO
+		//mop = EV_EMO_DOUBLECLICK;
+		break;
+	default:
 		// TODO decide something better to do here....
 		return;
 	}
 
-	emc = pView->getMouseContext((UT_sint32)e->x,(UT_sint32)e->y);
+	emc = pView->getMouseContext((UT_sint32)[e deltaX],(UT_sint32)[e deltaY]);
 	
 	m_clickState = mop;					// remember which type of click
 	m_contextState = emc;				// remember context of click
@@ -162,7 +180,7 @@ void EV_CocoaMouse::mouseClick(AV_View* pView, NSEvent* e)
 	{
 	case EV_EEMR_COMPLETE:
 		UT_ASSERT(pEM);
-		invokeMouseMethod(pView,pEM,(UT_sint32)e->x,(UT_sint32)e->y);
+		invokeMouseMethod(pView,pEM,(UT_sint32)[e deltaX], (UT_sint32)[e deltaY]);
 		return;
 	case EV_EEMR_INCOMPLETE:
 		// I'm not sure this makes any sense, but we allow it.
@@ -175,13 +193,11 @@ void EV_CocoaMouse::mouseClick(AV_View* pView, NSEvent* e)
 		UT_ASSERT(0);
 		return;
 	}
-#endif
 }
+
 
 void EV_CocoaMouse::mouseMotion(AV_View* pView, NSEvent *e)
 {
-	UT_ASSERT (UT_NOT_IMPLEMENTED);
-#if 0
 	EV_EditMethod * pEM;
 	EV_EditModifierState ems = 0;
 	EV_EditEventMapperResult result;
@@ -189,21 +205,31 @@ void EV_CocoaMouse::mouseMotion(AV_View* pView, NSEvent *e)
 	EV_EditMouseOp mop;
 	EV_EditMouseContext emc = 0;
 	
-	if (e->state & GDK_SHIFT_MASK)
+	UT_DEBUGMSG (("Received mouse motion...\n"));
+	unsigned int modifierFlags = [e modifierFlags];
+	if (modifierFlags & NSShiftKeyMask)
 		ems |= EV_EMS_SHIFT;
-	if (e->state & GDK_CONTROL_MASK)
+	if (modifierFlags & NSControlKeyMask)
 		ems |= EV_EMS_CONTROL;
-	if (e->state & GDK_MOD1_MASK)
+	if (modifierFlags & NSAlternateKeyMask)
 		ems |= EV_EMS_ALT;
 
-	if (e->state & GDK_BUTTON1_MASK)
-		emb = EV_EMB_BUTTON1;
-	else if (e->state & GDK_BUTTON2_MASK)
-		emb = EV_EMB_BUTTON2;
-	else if (e->state & GDK_BUTTON3_MASK)
-		emb = EV_EMB_BUTTON3;
-	else
+	int buttonNumber = [e buttonNumber];
+	switch (buttonNumber) {
+	case 0:
+		emb = EV_EMB_BUTTON1; // left
+		break;
+	case 1:
+		emb = EV_EMB_BUTTON2; // right 
+		break;
+	case 2:
+		emb = EV_EMB_BUTTON3; // middle
+		break;
+	default:
+		// TODO decide something better to do here....
 		emb = EV_EMB_BUTTON0;
+		break;
+	}
 
 	// TODO confirm that we report movements under the
 	// TODO mouse button that we did the capture on.
@@ -211,7 +237,7 @@ void EV_CocoaMouse::mouseMotion(AV_View* pView, NSEvent *e)
 	if (m_clickState == 0)
 	{
 		mop = EV_EMO_DRAG;
-		emc = pView->getMouseContext((UT_sint32)e->x,(UT_sint32)e->y);
+		emc = pView->getMouseContext((UT_sint32)[e deltaX],(UT_sint32)[e deltaY]);
 	}
 	else if (m_clickState == EV_EMO_SINGLECLICK)
 	{
@@ -235,7 +261,7 @@ void EV_CocoaMouse::mouseMotion(AV_View* pView, NSEvent *e)
 	{
 	case EV_EEMR_COMPLETE:
 		UT_ASSERT(pEM);
-		invokeMouseMethod(pView,pEM,(UT_sint32)e->x,(UT_sint32)e->y);
+		invokeMouseMethod(pView,pEM,(UT_sint32)[e deltaX],(UT_sint32)[e deltaY]);
 		return;
 	case EV_EEMR_INCOMPLETE:
 		// I'm not sure this makes any sense, but we allow it.
@@ -248,5 +274,4 @@ void EV_CocoaMouse::mouseMotion(AV_View* pView, NSEvent *e)
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return;
 	}
-#endif
 }
