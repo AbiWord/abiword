@@ -2767,11 +2767,18 @@ void fl_HdrFtrSectionLayout::addPage(fp_Page* pPage)
 	{
 		return;
 	}
-	if(m_vecPages.getItemCount() > 0)
+	//
+	// see if this page has a shadow attached already. This can happen
+    // is a page goes from being odd to even.
+	//
+	fp_ShadowContainer* pOldShadow = pPage->getHdrFtrP(m_iHFType);
+	//
+	// If so remove it.
+	//
+	if(pOldShadow != NULL)
 	{
-		_PageHdrFtrShadowPair* ppPair = (_PageHdrFtrShadowPair*) m_vecPages.getNthItem(0);
-		xxx_UT_DEBUGMSG(("SEVIOR: New page %x prev pair %x prev page %x\n",pPage,ppPair,ppPair->getPage()));
-	}		
+		pOldShadow->getHdrFtrSectionLayout()->deletePage(pPage);
+	}
 
 	_PageHdrFtrShadowPair* pPair = new _PageHdrFtrShadowPair();
 	// TODO outofmem
@@ -2909,7 +2916,8 @@ void fl_HdrFtrSectionLayout::deletePage(fp_Page* pPage)
 	UT_ASSERT(pPair->getShadow());
 
 
-	fp_Page * ppPage = pPair->getPage(); 
+	fp_Page * ppPage = pPair->getPage();
+	UT_ASSERT(pPage == ppPage);
 	delete pPair->getShadow();
 	if(getDocLayout()->findPage(ppPage) >= 0)
 	{

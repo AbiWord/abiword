@@ -7973,7 +7973,6 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			da.pG = m_pG;
 			da.xoff = getPageViewLeftMargin() - m_xScrollOffset;
 			da.yoff = adjustedTop;
-
 			UT_sint32 adjustedLeft	= getPageViewLeftMargin() - m_xScrollOffset;
 			UT_sint32 adjustedRight = adjustedLeft + iPageWidth;
 
@@ -7983,6 +7982,11 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			{	
 			  UT_RGBColor * pClr = pPage->getOwningSection()->getPaperColor();
 			  m_pG->fillRect(*pClr,adjustedLeft+1,adjustedTop+1,iPageWidth-1,iPageHeight-1);
+//
+// Since we're clearing everything we have to draw every run no matter
+// what.
+//
+			  da.bDirtyRunsOnly = false;
 			}
 			pPage->draw(&da);
 

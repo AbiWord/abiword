@@ -59,7 +59,7 @@ public:
 	fp_Page*			getPrev(void) const;
 	void				setNext(fp_Page*);
 	void				setPrev(fp_Page*);
-
+	void                markAllDirty(void);
 	UT_sint32			getColumnGap(void) const {return getOwningSection()->getColumnGap(); }
 						
 	FL_DocLayout*		getDocLayout();
