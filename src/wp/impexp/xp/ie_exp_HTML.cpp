@@ -47,6 +47,7 @@
 #include "px_CR_Strux.h"
 #include "xap_App.h"
 #include "xap_EncodingManager.h"
+#include "ie_Table.h"
 
 #include "ut_string_class.h"
 
@@ -202,6 +203,7 @@ protected:
         UT_uint16               m_iImgCnt;
 	UT_Wctomb		m_wmctomb;
         bool                    m_bToClipboard;
+  ie_Table mTableHelper;
 };
 
 /*!	This function copies a string to a new string, removing all the white
@@ -333,6 +335,12 @@ void s_HTML_Listener::_closeTable()
 void s_HTML_Listener::_closeCell()
 {
   m_pie->write("</td>\r\n");
+
+  if ( mTableHelper.getNumCols () == mTableHelper.getRight () )
+    {
+      // logical end of a row
+      m_pie->write("</tr>\r\n");
+    } 
 }
 
 void s_HTML_Listener::_openTable(PT_AttrPropIndex api)
@@ -352,17 +360,39 @@ void s_HTML_Listener::_openTable(PT_AttrPropIndex api)
 
 	if (bHaveProp && pAP)
 	{
+
+	  UT_sint32 cellPadding = 1;
+	  UT_sint32 border = 1;
+
+	  char * prop = NULL ;
+
+	  prop = mTableHelper.getTableProp("table-line-thickness");
+	  if(prop)
+	    {
+	      border = atoi(prop);
+	    }
+
 #if 0
 	  pSectionAP->getProperty("table-col-spacing", (const XML_Char *&)pszTableColSpacing);
 	  pSectionAP->getProperty("table-row-spacing", (const XML_Char *&)pszTableRowSpacing);
-	  pSectionAP->getProperty("table-line-thickness", (const XML_Char *&)pszLineThick);
 	  pSectionAP->getProperty("cell-margin-left", (const XML_Char *&)pszLeftOffset);
 	  pSectionAP->getProperty("cell-margin-top", (const XML_Char *&)pszTopOffset);
 	  pSectionAP->getProperty("cell-margin-right", (const XML_Char *&)pszRightOffset);
 	  pSectionAP->getProperty("cell-margin-bottom", (const XML_Char *&)pszBottomOffset);
 #endif
+
+	  UT_sint32 nCols = mTableHelper.getNumCols();
 	  
-	  m_pie->write("\n<table width=\"100%\" cellpadding=\"1\" border=\"1\">\r\n<tbody>\r\n");
+	  UT_String tableSpec = UT_String_sprintf("<table width=\"100%%\" cellpadding=\"%d\" border=\"%d\">\r\n",
+						  cellPadding, border);
+	  m_pie->write(tableSpec.c_str(), tableSpec.size());
+
+	  char * old_locale = setlocale(LC_NUMERIC, "C");
+	  UT_String colSpec = UT_String_sprintf("<colgroup width=\"%f%%\" span=\"%d\" />\r\n", 100./nCols, nCols);
+	  m_pie->write(colSpec.c_str(), colSpec.size());
+	  setlocale(LC_NUMERIC, old_locale);
+
+	  m_pie->write("<tbody>\r\n");
 	}
 }
 
@@ -385,22 +415,25 @@ void s_HTML_Listener::_openCell(PT_AttrPropIndex api)
 	{
 	  UT_String bgcolor ("");
 
-#if 0
-	  pSectionAP->getProperty("left-attach", (const XML_Char *&)pszLeftAttach);
-	  pSectionAP->getProperty("right-attach", (const XML_Char *&)pszRightAttach);
-	  pSectionAP->getProperty("top-attach", (const XML_Char *&)pszTopAttach);
-	  pSectionAP->getProperty("bot-attach", (const XML_Char *&)pszBottomAttach);
-#endif
-	  
-	  const char* pszBgColor = NULL;
-	  pAP->getProperty("bgcolor", (const XML_Char *&)pszBgColor);
+	  UT_sint32 rowspan = 1, colspan = 1;
+
+	  rowspan = mTableHelper.getBot() - mTableHelper.getTop();
+	  colspan = mTableHelper.getRight() - mTableHelper.getLeft();
+
+	  if (mTableHelper.getLeft() == 0)
+	    {
+	      // beginning of a new row
+	      m_pie->write("<tr>\r\n");
+	    }
+
+	  const char* pszBgColor = mTableHelper.getCellProp("bgcolor");
 	  if(pszBgColor && pszBgColor[0])
 	    {
 	      bgcolor = UT_String_sprintf(" bgcolor: %s;", pszBgColor);
 	    }
 	  
-	  UT_String td = UT_String_sprintf("<td%s>\r\n", bgcolor.c_str());
-	  m_pie->write(td.c_str());
+	  UT_String td = UT_String_sprintf("<td%s rowspan=\"%d\" colspan=\"%d\">\r\n", bgcolor.c_str(), rowspan, colspan);
+	  m_pie->write(td.c_str());	  
 	}
 }
 
@@ -1824,7 +1857,7 @@ s_HTML_Listener::s_HTML_Listener(PD_Document * pDocument,
   m_bInBlock(false), m_bInSpan(false), m_bNextIsSpace(false),
   m_bWroteText(false), m_bFirstWrite(true), m_bIs4(is4),
   m_pAP_Span(0), m_iBlockType(0), m_iListDepth(0),
-  m_iPrevListDepth(0), m_iImgCnt(0), m_bToClipboard ( toClipboard )
+  m_iPrevListDepth(0), m_iImgCnt(0), m_bToClipboard ( toClipboard ), mTableHelper(pDocument)
 {
 }
 
@@ -2014,9 +2047,9 @@ bool s_HTML_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 	}
 }
 
-bool s_HTML_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
-										   const PX_ChangeRecord * pcr,
-										   PL_StruxFmtHandle * psfh)
+bool s_HTML_Listener::populateStrux(PL_StruxDocHandle sdh,
+				    const PX_ChangeRecord * pcr,
+				    PL_StruxFmtHandle * psfh)
 {
 	UT_return_val_if_fail(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux, false);
 	const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);
@@ -2076,6 +2109,7 @@ bool s_HTML_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 
 	case PTX_SectionTable:
 	  {
+	    mTableHelper.OpenTable(sdh,pcr->getIndexAP()) ;
 	    _closeSpan();
 	    _closeTag();
 	    _openTable(pcr->getIndexAP());
@@ -2084,6 +2118,7 @@ bool s_HTML_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 
 	case PTX_SectionCell:
 	  {
+	    mTableHelper.OpenCell(pcr->getIndexAP()) ;
 	    _closeSpan();
 	    _closeTag();
 	    _openCell(pcr->getIndexAP());
@@ -2094,6 +2129,7 @@ bool s_HTML_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 	  {
 	    _closeTag();
 	    _closeTable();
+	    mTableHelper.CloseTable();
 	    return true;
 	  }
 
@@ -2101,6 +2137,7 @@ bool s_HTML_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 	  {
 	    _closeTag();
 	    _closeCell();
+	    mTableHelper.CloseCell();
 	    return true;
 	  }
 
