@@ -27,7 +27,12 @@
 
 //////////////////////////////////////////////////////////////////
 
-static const size_t g_nGrowExtraBytes = 4;
+static const size_t g_nGrowBy = 2;
+
+static inline size_t priv_max(size_t a, size_t b)
+{
+	return a < b ? b : a;
+}
 
 
 UT_Stringbuf::UT_Stringbuf()
@@ -134,10 +139,8 @@ void UT_Stringbuf::grow_nocopy(size_t n)
 	++n;	// allow for zero termination
 	if (n > capacity()) {
 		const size_t nCurSize = size();
-		if (m_psz) {
-			delete[] m_psz;
-		}
-		n += g_nGrowExtraBytes;
+		n = priv_max(n, nCurSize * g_nGrowBy);
+		delete[] m_psz;
 		m_psz  = new char_type[n];
 		m_pEnd = m_psz + nCurSize;
 		m_size = n;
@@ -148,9 +151,9 @@ void UT_Stringbuf::grow_copy(size_t n)
 {
 	++n;	// allow for zero termination
 	if (n > capacity()) {
-		n += g_nGrowExtraBytes;
-		char_type* p = new char_type[n];
 		const size_t nCurSize = size();
+		n = priv_max(n, nCurSize * g_nGrowBy);
+		char_type* p = new char_type[n];
 		if (m_psz) {
 			memcpy(p, m_psz, size() + 1);
 			delete[] m_psz;

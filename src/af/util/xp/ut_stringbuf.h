@@ -49,7 +49,6 @@ public:
 	const char_type*	data()		const { return m_psz; }
 
 private:
-	void	replace(const char_type* p, size_t n);
 	void	grow_nocopy(size_t n);
 	void	grow_copy(size_t n);
 
