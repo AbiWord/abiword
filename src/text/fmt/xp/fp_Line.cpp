@@ -2476,17 +2476,26 @@ UT_sint32 fp_Line::getMarginBefore(void) const
 	{
 		fl_ContainerLayout * pPrevC = getBlock()->getPrev();
 		UT_sint32 iBottomMargin = 0;
-		if(pPrevC->getContainerType() == FL_CONTAINER_BLOCK)
+		bool bLoop = true;
+		while(bLoop)
 		{
-			iBottomMargin = static_cast<fl_BlockLayout *>(pPrevC)->getBottomMargin();
-		}
-		else if(pPrevC->getContainerType() == FL_CONTAINER_TABLE)
-		{
-			iBottomMargin = static_cast<fl_TableLayout *>(pPrevC)->getBottomOffset();
-		}
-		else
-		{
-			iBottomMargin = 0;
+			if(pPrevC->getContainerType() == FL_CONTAINER_BLOCK)
+			{
+				bLoop = false;
+				iBottomMargin = static_cast<fl_BlockLayout *>(pPrevC)->getBottomMargin();
+			}
+			else if(pPrevC->getContainerType() == FL_CONTAINER_TABLE)
+			{
+				bLoop = false;
+				iBottomMargin = static_cast<fl_TableLayout *>(pPrevC)->getBottomOffset();
+			}
+			else
+			{
+				if(pPrevC->getPrev())
+				{
+					pPrevC = pPrevC->getPrev();
+				}
+			}
 		}
 		UT_sint32 iNextTopMargin = getBlock()->getTopMargin();
 
@@ -2505,14 +2514,30 @@ UT_sint32 fp_Line::getMarginAfter(void) const
 		fl_ContainerLayout * pNext = getBlock()->getNext();
 		if (!pNext)
 			return 0;
-		if(pNext->getContainerType() != FL_CONTAINER_BLOCK)
-		{
-			return getBlock()->getBottomMargin();
-		}
+
 		UT_sint32 iBottomMargin = getBlock()->getBottomMargin();
 
-		UT_sint32 iNextTopMargin = static_cast<fl_BlockLayout *>(pNext)->getTopMargin();
-
+		UT_sint32 iNextTopMargin = 0;
+		bool bLoop = true;
+		while(bLoop)
+		{
+			if(pNext->getContainerType() == FL_CONTAINER_BLOCK)
+			{
+				iNextTopMargin = static_cast<fl_BlockLayout *>(pNext)->getTopMargin();
+				bLoop = false;
+			}
+			else
+			{
+				if(pNext->getNext())
+				{
+					pNext = pNext->getNext();
+				}
+				else
+				{
+					bLoop = false;
+				}
+			}
+		}
 		UT_sint32 iMargin = UT_MAX(iBottomMargin, iNextTopMargin);
 
 		return iMargin;

@@ -757,18 +757,6 @@ void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 	PP_PropertyMap::Line lineRight  = getRightStyle  (pTableLayout);
 	PP_PropertyMap::Line lineTop    = getTopStyle    (pTableLayout);
 
-	if ((lineBottom.m_t_linestyle == PP_PropertyMap::linestyle_none) &&
-		(  lineLeft.m_t_linestyle == PP_PropertyMap::linestyle_none) &&
-		( lineRight.m_t_linestyle == PP_PropertyMap::linestyle_none) &&
-		(   lineTop.m_t_linestyle == PP_PropertyMap::linestyle_none) &&
-		(background.m_t_background == PP_PropertyMap::background_none))
-		{
-			/* nothing to draw
-			 */
-			return;
-		}
-
-
 	fp_Container * pCon = getContainer();
 	if(pCon->getContainer() && !pCon->getContainer()->isColumnType())
 	{
@@ -785,54 +773,37 @@ void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 	if (pPage != NULL)
 	{
 		xxx_UT_DEBUGMSG(("_clear: top %d bot %d cell left %d top %d \n",bRec.top,bRec.top+bRec.height,m_iLeftAttach,m_iTopAttach));
-// only clear the lines if no background is set: the background clearing will also clear the lines
-// FIXME MARCM: this switch SHOULD work but it doesn't... adding it will show clearing errors when moving
-// FIXME MARCM: tables around with cells in it that have their bgcolor set. 
-// FIXME MARCM: When the backgroud is on, it _should_ also clear the lines, but it doesn't
-		//if (m_iBgStyle == FS_OFF)
-		{
-			if (lineLeft.m_t_linestyle != PP_PropertyMap::linestyle_none)
-			{
-				lineLeft.m_t_linestyle = PP_PropertyMap::linestyle_solid;
-				lineLeft.m_color = *getFillType()->getColor();
-				_drawLine (lineLeft, bRec.left, bRec.top, bRec.left,  bRec.top + bRec.height,getGraphics());
-			}
-			if (lineTop.m_t_linestyle != PP_PropertyMap::linestyle_none)
-			{	
-				lineTop.m_t_linestyle = PP_PropertyMap::linestyle_solid;
-				lineTop.m_color =  *getFillType()->getColor();
-				_drawLine (lineTop, bRec.left, bRec.top, bRec.left + bRec.width,  bRec.top,getGraphics()); 
-				if(pBroke && pBroke->getPage() && pBroke->getBrokenTop() > 0)
-				{
-					UT_sint32 col_x,col_y;
-					fp_Column * pCol = static_cast<fp_Column *>(pBroke->getBrokenColumn());
-					pBroke->getPage()->getScreenOffsets(pCol, col_x,col_y);
-					_drawLine (lineTop, bRec.left, col_y, bRec.left + bRec.width,  col_y,getGraphics());
-				}
-			}
-			if (lineRight.m_t_linestyle != PP_PropertyMap::linestyle_none)
-			{	
-				lineRight.m_t_linestyle = PP_PropertyMap::linestyle_solid;
-				lineRight.m_color =  *getFillType()->getColor();
-				_drawLine (lineRight, bRec.left + bRec.width, bRec.top, bRec.left + bRec.width, bRec.top + bRec.height,getGraphics()); 
-			}
-			if (lineBottom.m_t_linestyle != PP_PropertyMap::linestyle_none)
-			{	
-				lineBottom.m_t_linestyle = PP_PropertyMap::linestyle_solid;
-				lineBottom.m_color =  *getFillType()->getColor();
-				_drawLine (lineBottom, bRec.left, bRec.top + bRec.height, bRec.left + bRec.width , bRec.top + bRec.height,getGraphics());
-				xxx_UT_DEBUGMSG(("_Clear: pBroke %x \n",pBroke));
-				if(pBroke && pBroke->getPage() && pBroke->getBrokenBot() >= 0)
-				{
-					UT_sint32 col_x,col_y;
-					fp_Column * pCol = static_cast<fp_Column *>(pBroke->getBrokenColumn());
-					pBroke->getPage()->getScreenOffsets(pCol, col_x,col_y);
-					UT_sint32 bot = col_y + pCol->getHeight();
-					xxx_UT_DEBUGMSG(("_clear: Clear broken bottom %d \n",bot));
-					_drawLine (lineBottom, bRec.left, bot, bRec.left + bRec.width,  bot,getGraphics());
-				}
 
-			}
+		lineLeft.m_t_linestyle = PP_PropertyMap::linestyle_solid;
+		lineLeft.m_color = *getFillType()->getColor();
+		_drawLine (lineLeft, bRec.left, bRec.top, bRec.left,  bRec.top + bRec.height,getGraphics());
+
+		lineTop.m_t_linestyle = PP_PropertyMap::linestyle_solid;
+		lineTop.m_color =  *getFillType()->getColor();
+		_drawLine (lineTop, bRec.left, bRec.top, bRec.left + bRec.width,  bRec.top,getGraphics()); 
+		if(pBroke && pBroke->getPage() && pBroke->getBrokenTop() > 0)
+		{
+			UT_sint32 col_x,col_y;
+			fp_Column * pCol = static_cast<fp_Column *>(pBroke->getBrokenColumn());
+			pBroke->getPage()->getScreenOffsets(pCol, col_x,col_y);
+			_drawLine (lineTop, bRec.left, col_y, bRec.left + bRec.width,  col_y,getGraphics());
+		}
+		lineRight.m_t_linestyle = PP_PropertyMap::linestyle_solid;
+		lineRight.m_color =  *getFillType()->getColor();
+		_drawLine (lineRight, bRec.left + bRec.width, bRec.top, bRec.left + bRec.width, bRec.top + bRec.height,getGraphics()); 
+		
+		lineBottom.m_t_linestyle = PP_PropertyMap::linestyle_solid;
+		lineBottom.m_color =  *getFillType()->getColor();
+		_drawLine (lineBottom, bRec.left, bRec.top + bRec.height, bRec.left + bRec.width , bRec.top + bRec.height,getGraphics());
+		xxx_UT_DEBUGMSG(("_Clear: pBroke %x \n",pBroke));
+		if(pBroke && pBroke->getPage() && pBroke->getBrokenBot() >= 0)
+		{
+			UT_sint32 col_x,col_y;
+			fp_Column * pCol = static_cast<fp_Column *>(pBroke->getBrokenColumn());
+			pBroke->getPage()->getScreenOffsets(pCol, col_x,col_y);
+			UT_sint32 bot = col_y + pCol->getHeight();
+			xxx_UT_DEBUGMSG(("_clear: Clear broken bottom %d \n",bot));
+			_drawLine (lineBottom, bRec.left, bot, bRec.left + bRec.width,  bot,getGraphics());
 		}
 		getGraphics()->setLineWidth(1 );
 		xxx_UT_DEBUGMSG(("_clear: BRec.top %d  Brec.height %d \n",bRec.top,bRec.height));
