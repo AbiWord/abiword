@@ -1,12 +1,85 @@
-#include "xap_EncodingManager.h"
+#include <string.h>
+
+#include "ut_assert.h"
+#include "ut_debugmsg.h"
+#include "xap_QNXEncodingManager.h"
+
+/************************************************************/
 
 XAP_EncodingManager *XAP_EncodingManager::get_instance()
 {
 	if (_instance == 0)
 	{
-		_instance = new XAP_EncodingManager();
+		UT_DEBUGMSG(("Building XAP_EncodingManager\n"));
+		_instance = new XAP_QNXEncodingManager();
 		_instance->initialize();
+		UT_DEBUGMSG(("XAP_EncodingManager built\n"));
 	}
 
 	return _instance;
 }
+
+/************************************************************/
+
+XAP_QNXEncodingManager::XAP_QNXEncodingManager() 
+{
+}
+
+XAP_QNXEncodingManager::~XAP_QNXEncodingManager() {}
+
+static const char * NativeEncodingName;
+static const char * NativeSystemEncodingName;
+static const char * Native8BitEncodingName;
+static const char * NativeUnicodeEncodingName;
+static const char * LanguageISOName;
+static const char * LanguageISOTerritory;
+
+const char* XAP_QNXEncodingManager::getNativeEncodingName() const
+{     return NativeEncodingName; };
+
+const char* XAP_QNXEncodingManager::getNativeSystemEncodingName() const
+{     return NativeSystemEncodingName; };
+
+const char* XAP_QNXEncodingManager::getNative8BitEncodingName() const
+{     return Native8BitEncodingName; };
+
+const char* XAP_QNXEncodingManager::getNativeUnicodeEncodingName() const
+{     return NativeUnicodeEncodingName; };
+
+const char* XAP_QNXEncodingManager::getLanguageISOName() const
+{ 	return LanguageISOName; };
+
+const char* XAP_QNXEncodingManager::getLanguageISOTerritory() const
+{ 	return LanguageISOTerritory; };
+
+
+void  XAP_QNXEncodingManager::initialize()
+{
+	char szLocaleInfo[64];
+	static char szCodepage[64];
+	static char szSystemCodepage[64];
+	static char szLanguage[64];
+	static char szTerritory[64];
+	bool bNorwaySpecialCase = false;
+	char *ABLANG;
+	char *val;
+	char *lang;
+	Native8BitEncodingName = NativeSystemEncodingName = NativeEncodingName = "CP1252";
+	LanguageISOName = "en";
+	LanguageISOTerritory = "US";
+
+
+	if((ABLANG=getenv("ABLANG")))
+	{
+	lang=strdup(ABLANG);
+			if((val=strsep(&lang,"_")))
+				{
+					LanguageISOName=val;
+					LanguageISOTerritory=lang;
+				}
+	}
+	XAP_EncodingManager::initialize();
+	describe();
+};
+
+
