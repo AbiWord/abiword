@@ -79,27 +79,50 @@ bool
 fl_BlockLayout::_spellCheckWord(const UT_UCSChar * word,
 								UT_uint32 len, UT_uint32 blockPos)
 {
-	SpellChecker * checker = NULL;
+	// the idea behind the static's here is to cache the dictionary, so
+	// we do not have to do dictionary lookup all the time; rather, we
+	// will cache the AP's and checker, and if the AP's have not
+	// changed we will reuse the previous dictionary
+	// this works because when the PT is asked to change formatting,
+	// it will create a new AP with the new attr/props, rather than
+	// add them to the existing AP for the section of the document, so
+	// that identical AP's always imply identical formatting, and thus
+	// language
+	
+	static SpellChecker * checker = NULL;
+	
+	// initialize these to 1, so as to force initial lang evaluation
+	static const PP_AttrProp * pPrevSpanAP = (const PP_AttrProp *)1;
+	static const PP_AttrProp * pPrevBlockAP = (const PP_AttrProp *)1;
 
 	const PP_AttrProp * pSpanAP = NULL;
 	const PP_AttrProp * pBlockAP = NULL;
-
+		
 	getSpanAttrProp(blockPos, false, &pSpanAP);
 	getAttrProp(&pBlockAP);
 
-	const char * szLang = (const char * ) PP_evalProperty("lang",pSpanAP,pBlockAP,NULL,m_pDoc,true);
+	
 
-	if (szLang)
+	if(pSpanAP != pPrevSpanAP || pBlockAP != pPrevBlockAP)
 	{
-		//UT_DEBUGMSG(("fl_BlockLaout::_spellCheckWord: lang = %s\n", szLang));
-		// we get smart and request the proper dictionary
-		checker = SpellManager::instance().requestDictionary(szLang);
+		const char * szLang = (const char * ) PP_evalProperty("lang",pSpanAP,pBlockAP,NULL,m_pDoc,true);
+
+		if (szLang)
+		{
+			//UT_DEBUGMSG(("fl_BlockLaout::_spellCheckWord: lang = %s\n", szLang));
+			// we get smart and request the proper dictionary
+			checker = SpellManager::instance().requestDictionary(szLang);
+		}
+		else
+		{
+			// we just (dumbly) default to the last dictionary
+			checker = SpellManager::instance().lastDictionary();
+		}
+
+		pPrevSpanAP = pSpanAP;
+		pPrevBlockAP = pBlockAP;
 	}
-	else
-	{
-		// we just (dumbly) default to the last dictionary
-		checker = SpellManager::instance().lastDictionary();
-	}
+	
 
 	if (!checker)
 	{
