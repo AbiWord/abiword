@@ -486,36 +486,33 @@ void fp_Column::setPrev(fp_Column*p)
 
 void fp_Column::layout(void)
 {
-	UT_sint32 iY = 0;
 	UT_sint32 iYLayoutUnits = 0;
+	double ScaleLayoutUnitsToScreen;
+	ScaleLayoutUnitsToScreen = (double)m_pG->getResolution() / UT_LAYOUT_UNITS;
 
 	UT_uint32 iCountLines = m_vecLines.getItemCount();
 	for (UT_uint32 i=0; i < iCountLines; i++)
 	{
 		fp_Line* pLine = (fp_Line*) m_vecLines.getNthItem(i);
 		
-		UT_sint32 iLineHeight = pLine->getHeight();
 		UT_sint32 iLineHeightLayoutUnits = pLine->getHeightInLayoutUnits();
 //		UT_sint32 iLineMarginBefore = (i != 0) ? pLine->getMarginBefore() : 0;
-		UT_sint32 iLineMarginAfter = pLine->getMarginAfter();
 		UT_sint32 iLineMarginAfterLayoutUnits = pLine->getMarginAfterInLayoutUnits();
 
 //		iY += iLineMarginBefore;
-		pLine->setY(iY);
+		pLine->setY((int)(ScaleLayoutUnitsToScreen * iYLayoutUnits));
 		pLine->setYInLayoutUnits(iYLayoutUnits);
-		iY += iLineHeight;
-		iY += iLineMarginAfter;
 		iYLayoutUnits += iLineHeightLayoutUnits;
 		iYLayoutUnits += iLineMarginAfterLayoutUnits;
 	}
 
-	UT_sint32 iNewHeight = iY;
+	UT_sint32 iNewHeight = (int)(ScaleLayoutUnitsToScreen * iYLayoutUnits);
 	if (m_iHeight == iNewHeight)
 	{
 		return;
 	}
 
-	m_iHeight = iY;
+	m_iHeight = iNewHeight;
 	m_iHeightLayoutUnits = iYLayoutUnits;
 	
 	m_pPage->columnHeightChanged(this);
