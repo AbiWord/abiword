@@ -622,7 +622,7 @@ void AP_TopRuler::_drawTabProperties(const UT_Rect * pClipRect,
 		// loop over all explicit tabs
 
 		UT_sint32 xAbsLeft = _getFirstPixelInColumn(pInfo,pInfo->m_iCurrentColumn);
-		UT_sint32 left = xAbsLeft + UT_MIN(pInfo->m_xrLeftIndent, pInfo->m_xrFirstLineIndent);
+		UT_sint32 left = xAbsLeft + pInfo->m_xrLeftIndent;
 
 		for (UT_sint32 i = 0; i < pInfo->m_iTabStops; i++)
 		{

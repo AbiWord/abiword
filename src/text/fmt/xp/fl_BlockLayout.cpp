@@ -2794,7 +2794,7 @@ UT_Bool	fl_BlockLayout::findNextTabStop(UT_sint32 iStartX, UT_sint32 iMaxX, UT_s
 	
 	// now, handle the default tabs
 
-	UT_sint32 iMin = UT_MIN(m_iLeftMargin, m_iTextIndent);
+	UT_sint32 iMin = m_iLeftMargin;
 
 	if (iMin > iStartX)
 	{
