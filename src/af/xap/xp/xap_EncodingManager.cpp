@@ -353,55 +353,92 @@ static void init_values(const XAP_EncodingManager* that)
 
 static UT_UCSChar try_CToU(UT_UCSChar c,UT_iconv_t iconv_handle)
 {
-	 /* 
-	   We don't support multibyte chars yet. wcstombcs should be used. 	   
+	if (!UT_iconv_isValid (iconv_handle)) return 0;
+	UT_iconv_reset (iconv_handle);
+
+	/* We don't support multibyte chars yet. wcstombcs should be used.
+	 * NOTE: if so, then we shouldn't be using this function at all! [TODO: ugh.]
 	 */
-	if (c>255)
-		return 0;			
-	if (!UT_iconv_isValid(iconv_handle))
-		return 0;
-	char ibuf[1],obuf[2];			
-	size_t ibuflen = 1, obuflen=2;
-	const char* iptr = ibuf;
-	char* optr = obuf;
-	ibuf[0]	= (unsigned char)c;	
+	if (c > 255)
+		{
+			UT_DEBUGMSG(("WARNING: character code %lx received, substituting 'E'\n", c));
+			c = 'E'; // was return 0, but that can be dangerous...
+		}
+
+	char ibuf[1];
+	char obuf[4];
+	size_t ibuflen = 1;
+	size_t obuflen = 4;
+	const char * iptr = ibuf;
+	char * optr = obuf;
+
+	ibuf[0]	= (unsigned char) c;
+
 	size_t donecnt = UT_iconv(iconv_handle,&iptr,&ibuflen,&optr,&obuflen);			
+
+	UT_UCSChar uval = 0;
+
 	if (donecnt!=(size_t)-1 && ibuflen==0) 
 	{
-		unsigned short uval;
-		unsigned short b0 = (unsigned char)obuf[XAP_EncodingManager::swap_stou];
-		unsigned short b1 = (unsigned char)obuf[!XAP_EncodingManager::swap_stou];
-		uval = (b1<<8) | b0;
-		return uval;
-	} else
-		return  0;
+		if (XAP_EncodingManager::swap_stou)
+			{
+				uval = static_cast<UT_UCSChar>(static_cast<unsigned char>(obuf[3]));
+				uval = static_cast<UT_UCSChar>(static_cast<unsigned char>(obuf[2])) | (uval<<8);
+				uval = static_cast<UT_UCSChar>(static_cast<unsigned char>(obuf[1])) | (uval<<8);
+				uval = static_cast<UT_UCSChar>(static_cast<unsigned char>(obuf[0])) | (uval<<8);
+			}
+		else
+			{
+				uval = static_cast<UT_UCSChar>(static_cast<unsigned char>(obuf[0]));
+				uval = static_cast<UT_UCSChar>(static_cast<unsigned char>(obuf[1])) | (uval<<8);
+				uval = static_cast<UT_UCSChar>(static_cast<unsigned char>(obuf[2])) | (uval<<8);
+				uval = static_cast<UT_UCSChar>(static_cast<unsigned char>(obuf[3])) | (uval<<8);
+			}
+	}
+	return uval;
 };
 
 static UT_UCSChar try_UToC(UT_UCSChar c,UT_iconv_t iconv_handle)
 {
-	if (!UT_iconv_isValid(iconv_handle))
-		return 0;
-	char ibuf[2],obuf[10];			
-	size_t ibuflen = sizeof(ibuf), obuflen=sizeof(obuf);
-	const char* iptr = ibuf;
-	char* optr = obuf;
-	{
-		unsigned char b0 = c & 0xff, b1 = c >>8;
-		ibuf[XAP_EncodingManager::swap_utos] = b0;
-		ibuf[!XAP_EncodingManager::swap_utos] = b1;
-	}
-	size_t donecnt = UT_iconv(iconv_handle,&iptr,&ibuflen,&optr,&obuflen);
-	/* reset state */
-	UT_iconv_reset(iconv_handle);
+	if (!UT_iconv_isValid(iconv_handle)) return 0;
+	UT_iconv_reset (iconv_handle);
+
+	char ibuf[4];
+	char obuf[6];
+	size_t ibuflen = 4;
+	size_t obuflen = 6;
+	const char * iptr = ibuf;
+	char * optr = obuf;
+
+	if (XAP_EncodingManager::swap_utos)
+		{
+			ibuf[0] = static_cast<char>((c      ) & 0xff);
+			ibuf[1] = static_cast<char>((c >>  8) & 0xff);
+			ibuf[2] = static_cast<char>((c >> 16) & 0xff);
+			ibuf[3] = static_cast<char>((c >> 24) & 0xff);
+		}
+	else
+		{
+			ibuf[0] = static_cast<char>((c >> 24) & 0xff);
+			ibuf[1] = static_cast<char>((c >> 16) & 0xff);
+			ibuf[2] = static_cast<char>((c >>  8) & 0xff);
+			ibuf[3] = static_cast<char>((c      ) & 0xff);
+		}
+
+	size_t donecnt = UT_iconv (iconv_handle,&iptr,&ibuflen,&optr,&obuflen);
+
+	UT_UCSChar byte = 0;
+
 	if (donecnt!=(size_t)-1 && ibuflen==0) 
 	{
-		int len = sizeof(obuf) - obuflen;
-		if (len!=1)
-			return 0x1ff;/* tell that singlebyte encoding can't represent it*/
-		else
-			return (unsigned char)*obuf;
-	} else
-		return  0;
+		if (obuflen != 5) // grr... [TODO: ugh.]
+			{
+				UT_DEBUGMSG(("WARNING: character code %lx received, substituting 'E'\n", c));
+				byte = static_cast<UT_UCSChar>(static_cast<unsigned char>('E'));
+			}
+		else byte = static_cast<UT_UCSChar>(static_cast<unsigned char>(obuf[0]));
+	}
+	return byte;
 };
 
 UT_UCSChar XAP_EncodingManager::try_nativeToU(UT_UCSChar c) const
@@ -867,8 +904,8 @@ const XAP_LangInfo* XAP_EncodingManager::findLangInfo(const char* key,XAP_LangIn
 	return NULL;
 };
 
-bool XAP_EncodingManager::swap_utos = 0;
-bool XAP_EncodingManager::swap_stou = 0;
+bool XAP_EncodingManager::swap_utos = false;
+bool XAP_EncodingManager::swap_stou = false;
 
 UT_Bijection XAP_EncodingManager::cjk_word_fontname_mapping;
 UT_Bijection XAP_EncodingManager::fontsizes_mapping;
@@ -1042,7 +1079,7 @@ void XAP_EncodingManager::initialize()
 	
 	init_values(this); /*do this unconditionally! */	
 	{
-	    swap_utos = swap_stou = 0;
+	    swap_utos = swap_stou = false;
 	    swap_utos = UToNative(0x20) != 0x20;
 	    swap_stou = nativeToU(0x20) != 0x20;
 	    
