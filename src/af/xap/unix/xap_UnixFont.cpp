@@ -41,7 +41,8 @@ AP_UnixFont::AP_UnixFont(void)
 		
 	m_fontfile = NULL;
 	m_metricfile = NULL;
-
+	m_metricsData = NULL;
+	
 	m_PFAFile = NULL;
 	
 	m_fontKey = NULL;
@@ -155,6 +156,28 @@ const char * AP_UnixFont::getXLFD(void)
 {
 	ASSERT_MEMBERS;
 	return m_xlfd;
+}
+
+FontInfo * AP_UnixFont::getMetricsData(void)
+{
+	if (m_metricsData)
+		return m_metricsData;
+
+	// open up the metrics file, which should have been proven to
+	// exist earlier in the construction of this object.
+	FILE * fp = fopen(m_metricfile, "r");
+	UT_ASSERT(fp);
+	
+	// call down to the Adobe code
+	int result = parseFile(fp, &m_metricsData, P_GW);
+	if (result != ok)
+	{
+		UT_DEBUGMSG(("Metric file [%s] could not be parsed for font metrics (error %d)\n", m_metricfile, result));
+		return NULL;
+	}
+	UT_ASSERT(m_metricsData);
+	UT_ASSERT(m_metricsData->gfi);
+	return m_metricsData;
 }
 
 UT_Bool AP_UnixFont::openPFA(void)
