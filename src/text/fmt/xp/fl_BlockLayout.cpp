@@ -9579,9 +9579,12 @@ void fl_BlockLayout::listUpdate(void)
 
 	if ((m_bListLabelCreated == false) && (m_bStopList == false))
 		_createListLabel();
-
+	//
+	// Need to recalculate the line location.
+	//
+	m_bForceSectionBreak = true;
 	format();
-	
+
 }
 
 void fl_BlockLayout::transferListFlags(void)
