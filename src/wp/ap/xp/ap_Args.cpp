@@ -66,11 +66,8 @@ AP_Args::AP_Args(XAP_Args * pArgs, const char * szAppName, AP_App * pApp)
 
 	// Let's do --version right away, since we only read static data.
  	if (m_iVersion)
- 	{
-		MessageBox(NULL, XAP_App::s_szBuild_Version, "Version", MB_OK|MB_ICONINFORMATION);
-
+ 	{		
  		printf("%s\n", XAP_App::s_szBuild_Version);
-
 		exit(0);
  	}
 
