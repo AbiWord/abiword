@@ -118,7 +118,7 @@ static void ReplaceCallback(GtkWidget * widget, AP_UnixDialog_Replace * repDialo
 }
 
 static void ReplaceAllCallback(GtkWidget *widget, 
-							AP_UnixDialog_Replace  *repDialog)
+							   AP_UnixDialog_Replace  *repDialog)
 {
 	UT_ASSERT(widget);
 	UT_ASSERT(repDialog);
@@ -147,11 +147,16 @@ static void ReplaceAllCallback(GtkWidget *widget,
 	FREEP(replaceString);
 }
 
-static void MatchCaseCallback(GtkWidget * checkbutton, GtkWidget * entry)
+static void MatchCaseCallback(GtkWidget * checkbutton,
+							  AP_UnixDialog_Replace * repDialog)
 {
-	gtk_entry_set_visibility(GTK_ENTRY(entry),
-						GTK_TOGGLE_BUTTON(checkbutton)->active);
-    UT_DEBUGMSG(("MatchCaseCallback(): I've been called\n"));
+	UT_ASSERT(checkbutton);
+	UT_ASSERT(repDialog);
+
+	UT_DEBUGMSG(("Match case is %d.\n",
+				 gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(checkbutton))));
+	
+	repDialog->m_matchCase = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(checkbutton));
 }
 
 static void CancelCallback(GtkWidget * object, GtkWidget * data)
@@ -263,7 +268,7 @@ void AP_UnixDialog_Replace::runModal(XAP_Frame * pFrame)
 	gtk_signal_connect(GTK_OBJECT(matchCaseCheck),
 					   "toggled",
 					   GTK_SIGNAL_FUNC(MatchCaseCallback),
-					   (gpointer) this);
+					   this);
 
 	if (m_id == AP_DIALOG_ID_REPLACE)
 	{
