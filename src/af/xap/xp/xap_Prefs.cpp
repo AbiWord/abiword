@@ -31,7 +31,7 @@ XAP_PrefsScheme::XAP_PrefsScheme(const XML_Char * szSchemeName)
 	: m_hash(13)
 {
 	if (szSchemeName && *szSchemeName)
-		UT_XML_cloneString(m_szName,szSchemeName);
+		UT_XML_cloneString((XML_Char *&)m_szName,szSchemeName);
 	else
 		m_szName = NULL;
 }
@@ -480,7 +480,7 @@ void XAP_Prefs::_startElement(const XML_Char *name, const XML_Char **atts)
 			if (UT_XML_stricmp(a[0], "scheme") == 0)
 			{
 				FREEP(m_parserState.m_szSelectedSchemeName);
-				if (!UT_cloneString(m_parserState.m_szSelectedSchemeName,a[1]))
+				if (!UT_cloneString((char *&)m_parserState.m_szSelectedSchemeName,a[1]))
 					goto MemoryError;
 			}
 			else if (UT_XML_stricmp(a[0], "autosaveprefs") == 0)
@@ -588,7 +588,7 @@ void XAP_Prefs::_startElement(const XML_Char *name, const XML_Char **atts)
 				// NOTE: taking advantage of the fact that XML_Char == char
 				UT_ASSERT((sizeof(XML_Char) == sizeof(char)));
 				XML_Char * sz;
-				UT_XML_cloneString((char *&)sz, a[1]);
+				UT_XML_cloneString((XML_Char *&)sz, a[1]);
 
 				// NOTE: we keep the copied string in the vector
 				m_vecRecent.addItem((void *)sz);

@@ -72,7 +72,7 @@ void DLGHandler::MessageReceived(BMessage *msg) {
 		msg->FindRef("directory", &ref);
 		BDirectory  dir(&ref);
 		BPath path(&dir, NULL, false);
-		msg->FindString("name", &name);
+		msg->FindString("name", (const char **) &name);
 		path.Append(name);
 		m_pDlg->SetAnswer(XAP_Dialog_FileOpenSaveAs::a_OK);
 		m_pDlg->SetPathname(path.Path());

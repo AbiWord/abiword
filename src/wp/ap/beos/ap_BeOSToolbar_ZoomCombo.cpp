@@ -54,12 +54,12 @@ UT_Bool AP_BeOSToolbar_ZoomCombo::populate(void)
 	m_vecContents.clear();
 
 	// populate the vector
-	m_vecContents.addItem("200%");
-	m_vecContents.addItem("150%");
-	m_vecContents.addItem("100%");
-	m_vecContents.addItem("75%");
-	m_vecContents.addItem("50%");
-	m_vecContents.addItem("25%");
+	m_vecContents.addItem((void *)"200%");
+	m_vecContents.addItem((void *)"150%");
+	m_vecContents.addItem((void *)"100%");
+	m_vecContents.addItem((void *)"75%");
+	m_vecContents.addItem((void *)"50%");
+	m_vecContents.addItem((void *)"25%");
 
 	return UT_TRUE;
 }

@@ -3337,7 +3337,7 @@ static UT_Bool _toggleSpan(FV_View * pView,
 
 				// now see if anything's left
 				XML_Char * q;
-				UT_cloneString(q, buf);
+				UT_cloneString((char *&)q, buf);
 
 				if (q && strtok(q, " "))
 					props_out[1] = buf;		// yep, use it

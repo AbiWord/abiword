@@ -289,7 +289,7 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 			const XML_Char* pszDecor = szValue;
 
 			XML_Char* p;
-			if (!UT_cloneString(p, pszDecor))
+			if (!UT_cloneString((char *&)p, pszDecor))
 			{
 				// TODO outofmem
 			}
@@ -317,7 +317,7 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 			const XML_Char* pszDecor = szValue;
 			
 			XML_Char* p;
-			if (!UT_cloneString(p, pszDecor))
+			if (!UT_cloneString((char *&)p, pszDecor))
 			{
 				// TODO outofmem
 			}
@@ -413,7 +413,7 @@ void s_HTML_Listener::_closeSpan(void)
 			const XML_Char* pszDecor = szValue;
 			
 			XML_Char* p;
-			if (!UT_cloneString(p, pszDecor))
+			if (!UT_cloneString((char *&)p, pszDecor))
 			{
 				// TODO outofmem
 			}
@@ -441,7 +441,7 @@ void s_HTML_Listener::_closeSpan(void)
 			const XML_Char* pszDecor = szValue;
 			
 			XML_Char* p;
-			if (!UT_cloneString(p, pszDecor))
+			if (!UT_cloneString((char *&)p, pszDecor))
 			{
 				// TODO outofmem
 			}

@@ -64,27 +64,27 @@ void XAP_Dialog_FontChooser::setGraphicsContext(GR_Graphics * pGraphics)
 
 void XAP_Dialog_FontChooser::setFontFamily(const XML_Char * pFontFamily)
 {
-	CLONEP(m_pFontFamily, pFontFamily);
+	CLONEP((char *&) m_pFontFamily, pFontFamily);
 }
 
 void XAP_Dialog_FontChooser::setFontSize(const XML_Char * pFontSize)
 {
-	CLONEP(m_pFontSize, pFontSize);
+	CLONEP((char *&) m_pFontSize, pFontSize);
 }
 
 void XAP_Dialog_FontChooser::setFontWeight(const XML_Char * pFontWeight)
 {
-	CLONEP(m_pFontWeight, pFontWeight);
+	CLONEP((char *&) m_pFontWeight, pFontWeight);
 }
 
 void XAP_Dialog_FontChooser::setFontStyle(const XML_Char * pFontStyle)
 {
-	CLONEP(m_pFontStyle, pFontStyle);
+	CLONEP((char *&)m_pFontStyle, pFontStyle);
 }
 
 void XAP_Dialog_FontChooser::setColor(const XML_Char * pColor)
 {
-	CLONEP(m_pColor, pColor);
+	CLONEP((char *&)m_pColor, pColor);
 }
 
 void XAP_Dialog_FontChooser::setFontDecoration(UT_Bool bUnderline, UT_Bool bStrikeOut)

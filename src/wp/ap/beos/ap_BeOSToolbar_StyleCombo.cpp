@@ -58,12 +58,12 @@ UT_Bool AP_BeOSToolbar_StyleCombo::populate(void)
 
 #if 1
 	// HACK: for now, just hardwire it
-	m_vecContents.addItem("Normal");
-	m_vecContents.addItem("Heading 1");
-	m_vecContents.addItem("Heading 2");
-	m_vecContents.addItem("Heading 3");
-	m_vecContents.addItem("Plain Text");
-	m_vecContents.addItem("Block Text");
+	m_vecContents.addItem((void *)"Normal");
+	m_vecContents.addItem((void *)"Heading 1");
+	m_vecContents.addItem((void *)"Heading 2");
+	m_vecContents.addItem((void *)"Heading 3");
+	m_vecContents.addItem((void *)"Plain Text");
+	m_vecContents.addItem((void *)"Block Text");
 #else
 	// TODO: need a view/doc pointer to get this right
 	// ALSO: will need to repopulate as new styles added

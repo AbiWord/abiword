@@ -20,7 +20,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-
+#include <math.h>
 #include "gr_BeOSGraphics.h"
 #include "gr_BeOSImage.h"
 
@@ -91,6 +91,12 @@ if (m_pFrontView->Window()->Lock())
 	}
 #else
 	m_pShadowView = m_pFrontView;
+	m_pShadowView->Window()->Lock();
+	m_pShadowView->SetFlags(m_pShadowView->Flags() /*| B_SUBPIXEL_PRECISE*/);
+	m_pShadowView->Window()->Unlock();
+	m_pFrontView->Window()->Lock();
+	m_pFrontView->SetFlags(m_pFrontView->Flags() /*| B_SUBPIXEL_PRECISE*/);
+	m_pFrontView->Window()->Unlock();
 #endif
 /*
  white for _highlight & _bevelup
@@ -202,25 +208,42 @@ void GR_BeOSGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	
 	if (m_pShadowView->Window()->Lock())
 	{
-	//Should I manipulate high and low colour here?
-	//rgb_color old = m_pShadowView->LowColor();
-	//m_pShadowView->SetLowColor(m_pShadowView->HighColor());
 
 	//This is really strange ... I have to offset all the 
 	//text by the ascent, descent, leading values ...
 	font_height fh;
 	m_pShadowView->GetFontHeight(&fh);
-
-	//int offset = (int)(fh.ascent + fh.descent + fh.leading + 0.5);
-	int offset = (int)(fh.ascent + 0.5); /* Huh? Why 0.5*/
-	//m_pShadowView->SetDrawingMode(B_OP_COPY);
-	m_pShadowView->DrawString(buffer, BPoint(xoff, yoff+offset ) );
-	//m_pShadowView->Invalidate(BRect(BPoint(xoff,yoff),BPoint(xoff+m_pShadowView->StringWidth(buffer),yoff+offset)));	
-	//m_pShadowView->SetLowColor(old);
+/*I just had a brainstorm on how to fix the jitter problem.
+ * Let's measure the string, and draw using the charwidths Abi thinks
+ * we are using. This involves moving the pen and using DrawChar, which sucks,
+ * but let's see if it works.
+ * And it does.
+ * Perfectly.
+ */
+	int offset=(int)(fh.ascent + 0.5);
+	BFont viewFont;
+	m_pShadowView->GetFont(&viewFont);
+	BPoint *escapementArray=new BPoint[iLength];
+	escapement_delta tempdelta;
+	tempdelta.space=0.0;
+	tempdelta.nonspace=0.0;
+	float fontsize=viewFont.Size();
+	viewFont.GetEscapements(buffer,iLength,&tempdelta,escapementArray);
+	m_pShadowView->DrawChar(buffer[0],BPoint(xoff,yoff+offset));
+	for (i=1;i<iLength;i++)
+	{
+		int widthAbiWants;
+		/*Measure the width of the previous character, draw char at new
+		 * offset
+		 */
+		widthAbiWants=(unsigned short int)ceil(escapementArray[i-1].x*fontsize);
+		xoff+=widthAbiWants;
+		m_pShadowView->DrawChar(buffer[i],BPoint(xoff,yoff+offset));
+	}
 	m_pShadowView->Window()->Unlock();
+	delete [] escapementArray;
 	}
 	delete [] buffer;
-	
 	UPDATE_VIEW
 }
 
@@ -406,7 +429,6 @@ UT_uint32 GR_BeOSGraphics::getFontDescent()
 	DPRINTF(printf("GR: Font Descent %d\n",(int)(fh.descent + 0.5)));
 	return((UT_uint32)(fh.descent + 0.5));
 }
-
 UT_uint32 GR_BeOSGraphics::measureString(const UT_UCSChar* s, int iOffset,
 									  int num,  unsigned short* pWidths)
 {
@@ -417,10 +439,29 @@ UT_uint32 GR_BeOSGraphics::measureString(const UT_UCSChar* s, int iOffset,
 		return(0);
 	}
 	//Set the character, then set the length of the character
+	size=0;
 	memset(buffer, 0, num+1*sizeof(char));
+	BFont viewFont;
+	BPoint *escapementArray=new BPoint[num];
+	m_pShadowView->GetFont(&viewFont);
+	viewFont.SetSpacing(B_BITMAP_SPACING);
+	m_pShadowView->Window()->Lock();
+	m_pShadowView->SetFont(&viewFont);
+	m_pShadowView->Window()->Unlock();
 	for (i=0; i<num; i++) {
 		buffer[i] = (char)(s[i+iOffset]);						
-		pWidths[i] = (short unsigned int) m_pShadowView->StringWidth(&buffer[i]);				
+	//	pWidths[i] = (short unsigned int) m_pShadowView->StringWidth(&buffer[i]);				
+	}
+	escapement_delta tempdelta;
+	tempdelta.space=0.0;
+	tempdelta.nonspace=0.0;
+	viewFont.GetEscapements(buffer,num,&tempdelta,escapementArray);
+	float fontsize=viewFont.Size();
+	for (i=0;i<num;i++)
+	{
+		pWidths[i]=(short unsigned int) ceil(escapementArray[i].x*fontsize) ;
+	//	printf("Escapement for %d is %d (%f)\n",i,(short unsigned int) ceil(escapementArray[i].x*fontsize),ceil(escapementArray[i].x*fontsize));
+		size+=ceil(escapementArray[i].x *fontsize);
 	}
 /*
  Note Now with R4 we should use for more accurate measurements:
@@ -430,7 +471,7 @@ BRect r;
 escapement_delta d;
 mFont->GetBoundinfBoxesForStrings(buffer, 1, B_SCREEN_METRIC, &d, &r);
 */
-	size = (UT_uint32) m_pShadowView->StringWidth(buffer);
+	//size = (UT_uint32) m_pShadowView->StringWidth(buffer);
 	delete [] buffer;
 	return(size);
 	
@@ -451,7 +492,7 @@ mFont->GetBoundinfBoxesForStrings(buffer, 1, B_SCREEN_METRIC, &d, &r);
 
 UT_uint32 GR_BeOSGraphics::_getResolution() const
 {
-	return 75;
+	return 72;
 }
 
 void GR_BeOSGraphics::setColor(UT_RGBColor& clr)
@@ -902,7 +943,6 @@ void GR_BeOSGraphics::fillRect(GR_Color3D c, UT_Rect &r)
 // This is a static method in the GR_Font base class implemented
 // in platform code.
 //////////////////////////////////////////////////////////////////
-
 void GR_Font::s_getGenericFontProperties(const char * szFontName,
 										 FontFamilyEnum * pff,
 										 FontPitchEnum * pfp,

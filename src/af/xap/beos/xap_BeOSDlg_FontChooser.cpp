@@ -35,7 +35,7 @@ class FontWin:public BWindow {
 	public:
 		FontWin(BMessage *data);
 		void SetDlg(XAP_BeOSDialog_FontChooser *font);
-		virtual void DispatchMessage(BMessage *msg, BHandler *handler);
+		void MessageReceived(BMessage *msg);
 		virtual bool QuitRequested(void);
 		void UpdateFontList();
 		void UpdateTypeList();
@@ -44,21 +44,96 @@ class FontWin:public BWindow {
 	private:
 		int 			spin;
 		XAP_BeOSDialog_FontChooser *m_FontChooser;
-		BFont *CurrentFont;
-		};
-void FontWin::UpdateFontList()
-{
-	Lock();
-	BListView *FontList=(BListView *)FindView("fontlist");
-	FontList->AddItem(new BStringItem("test item"));
-	Unlock();
-}
+		BFont m_CurrentFont;
+};
 void FontWin::UpdateTypeList()
 {
 	Lock();
-	BListView *TypeList=(BListView *)FindView("typelist");
-	TypeList->AddItem(new BStringItem("test item2"));
+	BStringItem *currItem;
+	BListView *typeList=(BListView *)FindView("typelist");
+
+	while ((currItem=dynamic_cast<BStringItem *>(typeList->RemoveItem(0L))))
+	{
+		delete currItem;
+	}
+	font_family currFamily;
+	font_style currStyle;
+	m_CurrentFont.GetFamilyAndStyle(&currFamily,&currStyle);
+	UT_uint32 numStyles=count_font_styles(currFamily);
+	UT_uint32 i;
+	UT_uint32 flags;
+	for (i=0;i<numStyles;i++)
+	{
+		if (get_font_style(currFamily,(long int)i,&currStyle,(uint32 *) &flags)==B_OK)
+			typeList->AddItem(new BStringItem(currStyle));
+	}
+	typeList->Select(0);
 	Unlock();
+
+}
+void FontWin::UpdateFontList()
+{
+	font_family family;
+	UT_uint32 i;
+	UT_uint32 numFamilies;
+	UT_uint32 flags;
+	numFamilies=count_font_families();
+	Lock();
+	BListView *fontList=(BListView *)FindView("fontlist");
+	BStringItem *currItem;
+	while ((currItem=dynamic_cast<BStringItem *>(fontList->RemoveItem(0L))))
+	{
+		delete currItem;
+	}
+	for (i=0;i<numFamilies;i++)
+	{
+		if(get_font_family(i,&family,(uint32 *)&flags) == B_OK)
+		{
+			fontList->AddItem(new BStringItem(family));
+		}
+	}
+	fontList->Select(0);
+	Unlock();
+}
+void FontWin::MessageReceived(BMessage *msg)
+{
+	switch (msg->what)
+	{
+		case 'fsel':
+		{
+			UT_sint32 index=0;
+			BListView *theView;
+			msg->FindInt32("index",(int32 *)&index);
+			msg->FindPointer("source",(void **)&theView);
+
+			if (index > -1)
+			{
+				BStringItem *theItem=dynamic_cast<BStringItem *>(theView->ItemAt(index));
+
+				m_CurrentFont.SetFamilyAndStyle(theItem->Text(),NULL);
+				UpdateTypeList();
+				UpdatePreview();
+			}
+		}
+		break;
+		case 'tsel':
+		{
+			UT_sint32 index=0;
+			BListView *theView;
+			msg->FindInt32("index",(int32 *)&index);
+			msg->FindPointer("source",(void **)&theView);
+			if (index > -1)
+			{
+				BStringItem *theItem=dynamic_cast<BStringItem *>(theView->ItemAt(index));
+				m_CurrentFont.SetFamilyAndStyle(NULL,theItem->Text());
+				UpdatePreview();
+			}
+		}
+		break;
+		default:
+			BWindow::MessageReceived(msg);
+			break;
+	}
 }
 void FontWin::UpdatePreview()
 {
@@ -67,23 +142,7 @@ void FontWin::UpdatePreview()
 FontWin::FontWin(BMessage *data) 
 	  :BWindow(data) {
 	spin = 1;	
-int32 numFamilies = count_font_families(); 
-for ( int32 i = 0; i < numFamilies; i++ ) { 
-font_family family; 
- uint32 flags; 
-if ( get_font_family(i, &family, &flags) == B_OK ) { 
-     printf("Found a font family %s\n",family); 
-	       int32 numStyles = count_font_styles(family); 
-        for ( int32 j = 0; j < numStyles; j++ ) { 
-            font_style style; 
-            if ( get_font_style(family, j, &style, &flags) 
-                                              == B_OK ) { 
-		printf("Found a font style:%s\n",style);
-           } 
-       } 
-    } 
 }
-} //FontWin::FontWin
 
 void FontWin::SetDlg(XAP_BeOSDialog_FontChooser *font) {
 	m_FontChooser = font;
@@ -96,20 +155,25 @@ void FontWin::SetDlg(XAP_BeOSDialog_FontChooser *font) {
 	while (spin) { snooze(1000); }
 	Hide();
 }
-
-void FontWin::DispatchMessage(BMessage *msg, BHandler *handler) {
-	switch(msg->what) {
-	default:
-		BWindow::DispatchMessage(msg, handler);
-	}
-} 
-
 //Behave like a good citizen
 bool FontWin::QuitRequested() {
 /*
 	UT_ASSERT(m_DlgFont);
 	m_DlgFont->setAnswer(AP_Dialog_Font::a_CANCEL);
 */
+	BListView *FontList=(BListView *)FindView("fontlist");
+	
+	BStringItem *TheItem;
+	
+	while ((TheItem=dynamic_cast<BStringItem *>(FontList->RemoveItem(0L))))
+	{
+		delete(TheItem);
+	}
+	FontList=(BListView *)FindView("typelist");
+	while ((TheItem=dynamic_cast<BStringItem *>(FontList->RemoveItem(0L))))
+	{
+		delete(TheItem);
+	}
 	spin = 0;
 	return(true);
 }

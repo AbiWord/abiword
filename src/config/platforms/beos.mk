@@ -51,13 +51,12 @@ DLL_SUFFIX	= so
 AR		= ar cr $@
 
 # Compiler flags
-# TODO evaluate the full set of compiler options.
 ifdef ABI_OPT_DEBUG
-OPTIMIZER	= -g -fpermissive
+OPTIMIZER	= -g 
 DEFINES		= -DDEBUG -UNDEBUG
 OBJ_DIR_SFX	= DBG
 else
-OPTIMIZER	= -O99 -fpermissive
+OPTIMIZER	= -O3 
 DEFINES		=
 OBJ_DIR_SFX	= OBJ
 endif

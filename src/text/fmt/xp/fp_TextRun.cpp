@@ -91,7 +91,7 @@ void fp_TextRun::lookupProperties(void)
 	m_fDecorations = 0;
 
 	XML_Char* p;
-	if (!UT_cloneString(p, pszDecor))
+	if (!UT_cloneString((char *&)p, pszDecor))
 	{
 		// TODO outofmem
 	}

@@ -701,7 +701,7 @@ void fl_DocSectionLayout::_lookupProperties(void)
 	*/
 	
 	const char* pszNumColumns = NULL;
-	pSectionAP->getProperty("columns", pszNumColumns);
+	pSectionAP->getProperty("columns", (const XML_Char *&)pszNumColumns);
 	if (pszNumColumns && pszNumColumns[0])
 	{
 		m_iNumColumns = atoi(pszNumColumns);
@@ -712,7 +712,7 @@ void fl_DocSectionLayout::_lookupProperties(void)
 	}
 
 	const char* pszColumnGap = NULL;
-	pSectionAP->getProperty("column-gap", pszColumnGap);
+	pSectionAP->getProperty("column-gap", (const XML_Char *&)pszColumnGap);
 	if (pszColumnGap && pszColumnGap[0])
 	{
 		m_iColumnGap = m_pLayout->getGraphics()->convertDimension(pszColumnGap);
@@ -723,7 +723,7 @@ void fl_DocSectionLayout::_lookupProperties(void)
 	}
 
 	const char* pszSpaceAfter = NULL;
-	pSectionAP->getProperty("section-space-after", pszSpaceAfter);
+	pSectionAP->getProperty("section-space-after", (const XML_Char *&)pszSpaceAfter);
 	if (pszSpaceAfter && pszSpaceAfter[0])
 	{
 		m_iSpaceAfter = m_pLayout->getGraphics()->convertDimension(pszSpaceAfter);
@@ -737,10 +737,10 @@ void fl_DocSectionLayout::_lookupProperties(void)
 	const char* pszTopMargin = NULL;
 	const char* pszRightMargin = NULL;
 	const char* pszBottomMargin = NULL;
-	pSectionAP->getProperty("page-margin-left", pszLeftMargin);
-	pSectionAP->getProperty("page-margin-top", pszTopMargin);
-	pSectionAP->getProperty("page-margin-right", pszRightMargin);
-	pSectionAP->getProperty("page-margin-bottom", pszBottomMargin);
+	pSectionAP->getProperty("page-margin-left", (const XML_Char *&)pszLeftMargin);
+	pSectionAP->getProperty("page-margin-top", (const XML_Char *&)pszTopMargin);
+	pSectionAP->getProperty("page-margin-right", (const XML_Char *&)pszRightMargin);
+	pSectionAP->getProperty("page-margin-bottom", (const XML_Char *&)pszBottomMargin);
 
 	// TODO are page margins really an all or nothing proposition ??
 	
