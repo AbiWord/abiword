@@ -30,6 +30,7 @@
 #include "xap_Win32App.h"
 #include "xap_Win32Frame.h"
 
+#include "ap_Strings.h"
 #include "ap_Dialog_Id.h"
 #include "ap_Dialog_Replace.h"
 #include "ap_Win32Dialog_Replace.h"
@@ -123,8 +124,23 @@ void AP_Win32Dialog_Replace::_initButtons(HWND hWnd)
 	return;
 }
 
+#define _DS(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
+
 BOOL AP_Win32Dialog_Replace::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
+	
+	if (m_id == AP_DIALOG_ID_FIND)
+		SetWindowText(hWnd, pSS->getValue(AP_STRING_ID_DLG_FR_FindTitle));
+	else
+		SetWindowText(hWnd, pSS->getValue(AP_STRING_ID_DLG_FR_ReplaceTitle));
+
+	// localize controls shared across dialogs
+	_DS(REPLACE_BTN_FINDNEXT,		DLG_FR_FindNextButton);
+	_DS(REPLACE_BTN_CLOSE,			DLG_FR_CancelButton);
+	_DS(REPLACE_TEXT_FIND,			DLG_FR_FindLabel);
+	_DS(REPLACE_CHECK_MATCHCASE,	DLG_FR_MatchCase);
+
 	{
 		UT_UCSChar * bufferUnicode = getFindString();
 		UT_uint32 lenUnicode = UT_UCS_strlen(bufferUnicode);
@@ -137,6 +153,7 @@ BOOL AP_Win32Dialog_Replace::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPar
 		}
 		FREEP(bufferUnicode);
 	}
+
 	if (m_id == AP_DIALOG_ID_REPLACE)
 	{
 		UT_UCSChar * bufferUnicode = getReplaceString();
@@ -149,6 +166,11 @@ BOOL AP_Win32Dialog_Replace::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPar
 			DELETEP(bufferNormal);
 		}
 		FREEP(bufferUnicode);
+
+		// localize replace-specific controls
+		_DS(REPLACE_BTN_REPLACE,	DLG_FR_ReplaceButton);
+		_DS(REPLACE_BTN_REPLACEALL,	DLG_FR_ReplaceAllButton);
+		_DS(REPLACE_TEXT_REPLACE,	DLG_FR_ReplaceWithLabel);
 	}
 
 	CheckDlgButton(hWnd,AP_RID_DIALOG_REPLACE_CHECK_MATCHCASE,

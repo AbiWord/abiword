@@ -27,6 +27,7 @@
 #include "xap_Win32App.h"
 #include "xap_Win32Frame.h"
 
+#include "xap_Strings.h"
 #include "xap_Dialog_Id.h"
 #include "xap_Dlg_WindowMore.h"
 #include "xap_Win32Dlg_WindowMore.h"
@@ -95,8 +96,19 @@ BOOL CALLBACK XAP_Win32Dialog_WindowMore::s_dlgProc(HWND hWnd,UINT msg,WPARAM wP
 	}
 }
 
+#define _DS(c,s)	SetDlgItemText(hWnd,XAP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
+
 BOOL XAP_Win32Dialog_WindowMore::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
+	
+	SetWindowText(hWnd, pSS->getValue(XAP_STRING_ID_DLG_MW_MoreWindows));
+
+	// localize controls
+	_DS(WINDOWMORE_TEXT_ACTIVATE,	DLG_MW_Activate);
+	_DS(WINDOWMORE_BTN_OK,			DLG_OK);
+	_DS(WINDOWMORE_BTN_CANCEL,		DLG_Cancel);
+
 	{
 		HWND hwndList = GetDlgItem(hWnd, XAP_RID_DIALOG_WINDOWMORE_LIST);  
 

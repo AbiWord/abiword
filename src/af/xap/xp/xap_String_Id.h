@@ -37,7 +37,7 @@ dcl(DLG_UnixMB_Yes,				"_Yes")
 dcl(DLG_UnixMB_No,				"_No")
 	
 /* More Windows dialog */
-dcl(DLG_MW_MoreWindows,		"More Windows")
+dcl(DLG_MW_MoreWindows,		"Activate Window")
 dcl(DLG_MW_Activate,		"Activate:")
 
 /* Unix Font Selector dialog */
