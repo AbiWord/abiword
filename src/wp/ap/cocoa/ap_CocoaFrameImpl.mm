@@ -188,6 +188,7 @@ void AP_CocoaFrameImpl::_setHScrollbarValues()
 		[m_hScrollbar setEnabled:YES];
 		[m_hScrollbar setFloatValue:value knobProportion:knob];
 	}
+	[m_hScrollbar setNeedsDisplay:YES];
 }
 
 
@@ -215,6 +216,7 @@ void AP_CocoaFrameImpl::_setVScrollbarValues()
 		[m_vScrollbar setEnabled:YES];
 		[m_vScrollbar setFloatValue:value knobProportion:knob];
 	}
+	[m_vScrollbar setNeedsDisplay:YES];
 }
 
 
