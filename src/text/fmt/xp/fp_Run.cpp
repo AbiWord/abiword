@@ -518,9 +518,18 @@ UT_Bool	fp_ImageRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSpl
 
 void fp_ImageRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL)
 {
-	pos = m_pBL->getPosition() + m_iOffsetFirst;
-	bBOL = UT_FALSE;
-	bEOL = UT_FALSE;
+	if (x > m_iWidth)
+	{
+		pos = m_pBL->getPosition() + m_iOffsetFirst + m_iLen;
+		bBOL = UT_FALSE;
+		bEOL = UT_FALSE;
+	}
+	else
+	{
+		pos = m_pBL->getPosition() + m_iOffsetFirst;
+		bBOL = UT_FALSE;
+		bEOL = UT_FALSE;
+	}
 }
 
 void fp_ImageRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height)

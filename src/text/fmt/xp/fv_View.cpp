@@ -4073,11 +4073,10 @@ void FV_View::_insertPNGImage(UT_ByteBuf* pBB, const char* szName, UT_sint32 iIm
 	*/
 	char szProps[256];
 	
-	// TODO could get res from img instead of hard-coded to 72
-	double fWidthInInches = iImageWidth / 72.0;
-	double fHeightInInches = iImageHeight / 72.0;
+	double fWidthInInches = iImageWidth / ((double) m_pG->getResolution());
+	double fHeightInInches = iImageHeight / ((double) m_pG->getResolution());
 
-	sprintf(szProps, "width:%3.2f in; height:%3.2f in", fWidthInInches, fHeightInInches);
+	sprintf(szProps, "width:%3.2fin; height:%3.2fin", fWidthInInches, fHeightInInches);
 	
 	const XML_Char*	attributes[] = {
 		"dataid", szName,
