@@ -106,7 +106,6 @@ void SpellChecker::correctWord (const UT_UCSChar *toCorrect, size_t toCorrectLen
 
 	UT_String buf (UT_String_sprintf(pApp->getStringSet ()->getValue (XAP_STRING_ID_SPELL_CANTLOAD_DICT),
 									 szLang));
-
 	if (pFrame)
 		pFrame->showMessageBox (buf.c_str(),
 								XAP_Dialog_MessageBox::b_O,
@@ -191,10 +190,12 @@ SpellManager::requestDictionary (const char * szLang)
 		m_map.insert (szLang, static_cast<void *>(checker));
 		m_lastDict = checker;
 		m_nLoadedDicts++;
+		checker->setDictionaryFound(true);
 		return checker;
     }
 	else
     {
+		checker->setDictionaryFound(false);
 		m_missingHashs += szLang;
 		delete checker;
 		return 0;

@@ -133,8 +133,15 @@ PSpellChecker::PSpellChecker ()
 PSpellChecker::~PSpellChecker()
 {
 	// some versions of pspell segfault here for some reason
-	if (m_pPSpellManager)
-		delete_pspell_manager(m_pPSpellManager);
+
+	// On RedHat 9 the default pspell segfaults if you attempt this without
+	// a loaded dictionary, this is a work around until pspell is fixed.
+    //
+	if(isDictionaryFound())
+	{
+		if (m_pPSpellManager)
+			delete_pspell_manager(m_pPSpellManager);
+	}
 
 #if defined(WIN32)
 	UT_DEBUGMSG(("SPELL: --pspell == %d\n", sm_nDllUseCount-1));

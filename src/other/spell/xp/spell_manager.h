@@ -72,7 +72,10 @@ public:
     }
 
 	bool requestDictionary (const char * szLang);
-
+	bool isDictionaryFound(void)
+		{ return m_bFoundDictionary;}
+	void setDictionaryFound(bool b)
+		{ m_bFoundDictionary = b;}
 
 protected:
 
@@ -93,6 +96,7 @@ protected:
 
     bool				m_bIsBarbarism;
 	bool				m_bIsDictionaryWord;
+	bool                m_bFoundDictionary;
 
 private:
     SpellChecker(const SpellChecker&);		// no impl

@@ -37,7 +37,6 @@ public:
 	virtual bool addToCustomDict (const UT_UCSChar *word, size_t len);
 	virtual void correctWord (const UT_UCSChar *toCorrect, size_t toCorrectLen,
 							  const UT_UCSChar *correct, size_t correctLen);
-
 protected:
 	PSpellChecker();
 
