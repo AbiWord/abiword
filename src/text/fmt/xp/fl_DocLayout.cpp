@@ -2213,20 +2213,27 @@ fl_DocSectionLayout* FL_DocLayout::findSectionForHdrFtr(const char* pszHdrFtrID)
 	bool b;
 	FL_DocLayout *pDocLayout = static_cast<FL_DocLayout *>(data);
 
-	// UT_DEBUGMSG(("spell_prefsListener\n"));
+	xxx_UT_DEBUGMSG(("spell_prefsListener %p\n", pDocLayout));
 	UT_ASSERT( pApp && pPrefs && data );
 
 	// caps/number/internet
+
+    // Note that these options are now "ignore..." in the prefs pane,
+    // so the opton settings are reverted for use in the doclayout
+    // (b = !b)
 	bool changed = false;
 	pPrefs->getPrefsValueBool( static_cast<XML_Char *>(AP_PREF_KEY_SpellCheckCaps), &b );
+    b = !b;
 	changed = changed || (b != pDocLayout->getSpellCheckCaps());
 	pDocLayout->m_bSpellCheckCaps = b;
 
 	pPrefs->getPrefsValueBool( static_cast<XML_Char *>(AP_PREF_KEY_SpellCheckNumbers), &b );
+    b = !b;
 	changed = changed || (b != pDocLayout->getSpellCheckNumbers());
 	pDocLayout->m_bSpellCheckNumbers = b;
 
 	pPrefs->getPrefsValueBool( static_cast<XML_Char *>(AP_PREF_KEY_SpellCheckInternet), &b );
+    b = !b;
 	changed = changed || (b != pDocLayout->getSpellCheckInternet());
 	pDocLayout->m_bSpellCheckInternet = b;
 
