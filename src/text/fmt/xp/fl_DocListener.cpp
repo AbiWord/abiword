@@ -2102,6 +2102,13 @@ bool fl_DocListener::signal(UT_uint32 iSignal)
 	case PD_SIGNAL_DOCPROPS_CHANGED_NO_REBUILD:
 		m_pLayout->updatePropsNoRebuild();
 		break;
+	case PD_SIGNAL_DOCNAME_CHANGED:
+		m_pLayout->notifyListeners(AV_CHG_FILENAME);
+		break;
+	case PD_SIGNAL_DOCDIRTY_CHANGED:
+		m_pLayout->notifyListeners(AV_CHG_DIRTY);
+		break;
+
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		break;

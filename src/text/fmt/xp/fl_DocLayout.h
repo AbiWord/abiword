@@ -28,6 +28,7 @@
 #include "fp_PageSize.h"
 #include "fl_Layout.h"
 #include "ut_units.h"
+#include "xav_Listener.h"
 
 
 typedef enum _FootnoteType
@@ -260,6 +261,8 @@ public:
 	void            updatePropsRebuild(void);
 	PT_DocPosition  getDocSize(void) 
 		{ return m_iDocSize;}
+
+	void            notifyListeners(AV_ChangeMask mask);
 
 #ifdef FMT_TEST
 	//! Pointer to last instatiated FL_DocLayout. Used for debugging.

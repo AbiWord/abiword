@@ -3251,3 +3251,9 @@ inline void FL_DocLayout::addList(fl_AutoNum * pAutoNum)
 {
 	m_pDoc->addList(pAutoNum);
 }
+
+void FL_DocLayout::notifyListeners(AV_ChangeMask mask)
+{
+	if (m_pView)
+		m_pView->notifyListeners(mask);
+}
