@@ -750,7 +750,7 @@ msgstr "S'munda të shkruaj në skedarin %s"
 #. DLG_NEW_Tab1_FAX1
 #: po/tmp/ap_String_Id.h.h:281
 msgid "Create a fax"
-msgstr "Krijo një fax"
+msgstr "Krijo një faks"
 
 #. DLG_NEW_Tab1_WP1
 #: po/tmp/ap_String_Id.h.h:283
@@ -1792,7 +1792,7 @@ msgstr "Listë Yll"
 #. DLG_Lists_Start
 #: po/tmp/ap_String_Id.h.h:681
 msgid "Start At:"
-msgstr "Yll Në:"
+msgstr "Fillo Në:"
 
 #. DLG_Lists_Start_New
 #: po/tmp/ap_String_Id.h.h:683
@@ -2343,7 +2343,7 @@ msgstr "Europa Qendrore, ISO-8859-2"
 #. ENC_CENT_MAC
 #: po/tmp/xap_String_Id.h.h:83
 msgid "Central European, Macintosh"
-msgstr "Europa Qendore, Macintosh"
+msgstr "Europa Qenrdore, Macintosh"
 
 #. ENC_CENT_WIN
 #: po/tmp/xap_String_Id.h.h:85
@@ -2388,7 +2388,7 @@ msgstr "Kineze e Thjeshtuar, HZ"
 #. ENC_CHSI_WIN
 #: po/tmp/xap_String_Id.h.h:101
 msgid "Chinese Simplified, Windows Code Page 936"
-msgstr "Kineze e Thhjeshtuar, Windows Code Page 936"
+msgstr "Kineze e Thjeshtuar, Windows Code Page 936"
 
 #. ENC_CHTR_BIG5
 #: po/tmp/xap_String_Id.h.h:103
@@ -2403,7 +2403,7 @@ msgstr "Kineze Tradicionale, EUC-TW"
 #. ENC_CHTR_WIN
 #: po/tmp/xap_String_Id.h.h:107
 msgid "Chinese Traditional, Windows Code Page 950"
-msgstr "Kineze TRadicionale, Windows Code Page 950"
+msgstr "Kineze Tradicionale, Windows Code Page 950"
 
 #. DLG_CLIPART_Title
 #: po/tmp/xap_String_Id.h.h:109
@@ -2483,7 +2483,7 @@ msgstr "Danezet"
 #. DLG_PLUGIN_MANAGER_DEACTIVATE_ALL
 #: po/tmp/xap_String_Id.h.h:139
 msgid "Deactivate all plugins"
-msgstr "Ç''aktivizo tërë shtojcat"
+msgstr "Ç'aktivizo tërë shtojcat"
 
 #. DLG_PLUGIN_MANAGER_DEACTIVATE
 #: po/tmp/xap_String_Id.h.h:141
@@ -2548,7 +2548,7 @@ msgstr "Angleze (MB)"
 #. LANG_EN_US
 #: po/tmp/xap_String_Id.h.h:167
 msgid "English (US)"
-msgstr "Angleze (US0"
+msgstr "Angleze (US)"
 
 #. DLG_FOSA_ExportTitle
 #: po/tmp/xap_String_Id.h.h:169
@@ -2574,7 +2574,7 @@ msgstr "Skedar ekzistues. Të mbishkruaj skedarin '%s'? "
 #. LANG_FI_FI
 #: po/tmp/xap_String_Id.h.h:177
 msgid "Finnish"
-msgstr "Përfundo"
+msgstr "Finlandeze"
 
 #. LANG_FR_FR
 #: po/tmp/xap_String_Id.h.h:183
@@ -2744,7 +2744,7 @@ msgstr "Koreane"
 #. ENC_KORE_EUC
 #: po/tmp/xap_String_Id.h.h:251
 msgid "Korean, EUC-KR"
-msgstr "koreane, EUC-KR"
+msgstr "Koreane, EUC-KR"
 
 #. ENC_KORE_JOHAB
 #: po/tmp/xap_String_Id.h.h:253
