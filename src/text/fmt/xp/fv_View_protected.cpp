@@ -324,7 +324,7 @@ bool FV_View::_MergeCells( PT_DocPosition posDestination,PT_DocPosition posSourc
 	{
 		return false;
 	}
-	endDestSDH = m_pDoc-> m_pDoc->getEndCellStruxFromCellSDH(destinationSDH);
+	endDestSDH = m_pDoc->getEndCellStruxFromCellSDH(destinationSDH);
 	PT_DocPosition posEndDestCell = m_pDoc->getStruxPosition(endSourceSDH)-1;
 	if(!bBefore)
 	{
