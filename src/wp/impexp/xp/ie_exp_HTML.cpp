@@ -157,31 +157,9 @@ static bool is_CSS (const char* property)
 }
 
 /*!	This function copies a string to a new string, removing all the white
-	space in the process.  Note that this function allocates the new
-	string (and so the caller must make sure to deallocate it).
- */
-static char * removeWhiteSpace (const char * text)
-{
-	char * temp = (char *) UT_calloc (strlen (text) + 1, sizeof (char));
-	char * ref = temp;
-
-	const char * ptr = text; // only a pointer for quick traversal
-
-	while (*ptr)
-	{
-		if (!isspace (*ptr))
-		{
-			*temp++ = *ptr;
-		}
-		ptr++;
-	}
-	return ref;
-}
-
-/*!	This function copies a string to a new string, removing all the white
 	space in the process.
  */
-static char * removeWhiteSpace (const char * text, UT_UTF8String & utf8str)
+static char * s_removeWhiteSpace (const char * text, UT_UTF8String & utf8str)
 {
 	utf8str = "";
 
@@ -441,10 +419,15 @@ private:
 	void	_openSpan (PT_AttrPropIndex api);
 	void	_outputData (const UT_UCSChar * p, UT_uint32 length);
 	bool	_inherits (const char * style, const char * from);
-	void	_handleDataItems (void);
 	void	_storeStyles (void);
-	char *	_stripSuffix (const char * from, char delimiter);
 	
+	void	_writeImage (const UT_ByteBuf * pByteBuf,
+						 const UT_String & imagedir, const UT_String & filename);
+	void	_handleImage (PT_AttrPropIndex api);
+	void	_handleField (const PX_ChangeRecord_Object * pcro, PT_AttrPropIndex api);
+	void	_handleHyperlink (PT_AttrPropIndex api);
+	void	_handleBookmark (PT_AttrPropIndex api);
+
 	PD_Document *		m_pDocument;
 	IE_Exp_HTML *		m_pie;
 	bool				m_bInSection;
@@ -460,16 +443,26 @@ private:
 	UT_uint16		m_iBlockType;	// BT_*
 	UT_uint16		m_iListDepth;	// 0 corresponds to not in a list
 	UT_Stack		m_utsListType;
-	UT_Vector		m_utvDataIDs;	// list of data ids for image enumeration
 	UT_uint16		m_iImgCnt;
 	UT_Wctomb		m_wmctomb;
+
+	enum WhiteSpace
+	{
+		ws_None = 0,
+		ws_Pre  = 1,
+		ws_Post = 2,
+		ws_Both = 3
+	};
 
 	/* low-level; these may use m_utf8_0 but not m_utf8_1
 	 */
 	void			tagNewIndent (UT_uint32 extra = 0);
-	void			tagOpenClose (const UT_UTF8String & content, bool suppress, bool ws = true);
-	void			tagOpen  (UT_uint32 tagID, const UT_UTF8String & content, bool ws = true);
-	void			tagClose (UT_uint32 tagID, const UT_UTF8String & content, bool ws = true);
+	void			tagOpenClose (const UT_UTF8String & content, bool suppress,
+								  WhiteSpace ws = ws_Both);
+	void			tagOpen  (UT_uint32 tagID, const UT_UTF8String & content,
+							  WhiteSpace ws = ws_Both);
+	void			tagClose (UT_uint32 tagID, const UT_UTF8String & content,
+							  WhiteSpace ws = ws_Both);
 	void			tagClose (UT_uint32 tagID);
 	UT_uint32		tagTop ();
 	void			tagPI (const char * target, const UT_UTF8String & content);
@@ -494,6 +487,8 @@ private:
 	UT_UTF8String	m_utf8_0; // low-level
 	UT_UTF8String	m_utf8_1; // intermediate
 
+	UT_UTF8String	m_utf8_span; // span tag-string cache
+
 	UT_Stack		m_tagStack;
 
 	UT_uint32		m_styleIndent;
@@ -509,9 +504,10 @@ void s_HTML_Listener::tagNewIndent (UT_uint32 extra)
 	for (UT_uint32 i = 0; i < (depth &  7); i++) m_utf8_0 += " ";
 }
 
-void s_HTML_Listener::tagOpenClose (const UT_UTF8String & content, bool suppress, bool ws)
+void s_HTML_Listener::tagOpenClose (const UT_UTF8String & content, bool suppress,
+									WhiteSpace ws)
 {
-	if (ws)
+	if (ws & ws_Pre)
 		tagNewIndent ();
 	else
 		m_utf8_0 = "";
@@ -523,14 +519,15 @@ void s_HTML_Listener::tagOpenClose (const UT_UTF8String & content, bool suppress
 	else
 		m_utf8_0 += " />";
 
-	if (ws) m_utf8_0 += "\r\n";
+	if (ws & ws_Post) m_utf8_0 += "\r\n";
 
 	m_pie->write (m_utf8_0.utf8_str ());
 }
 
-void s_HTML_Listener::tagOpen (UT_uint32 tagID, const UT_UTF8String & content, bool ws)
+void s_HTML_Listener::tagOpen (UT_uint32 tagID, const UT_UTF8String & content,
+							   WhiteSpace ws)
 {
-	if (ws)
+	if (ws & ws_Pre)
 		tagNewIndent ();
 	else
 		m_utf8_0 = "";
@@ -539,7 +536,7 @@ void s_HTML_Listener::tagOpen (UT_uint32 tagID, const UT_UTF8String & content, b
 	m_utf8_0 += content;
 	m_utf8_0 += ">";
 
-	if (ws) m_utf8_0 += "\r\n";
+	if (ws & ws_Post) m_utf8_0 += "\r\n";
 
 	m_pie->write (m_utf8_0.utf8_str ());
 
@@ -547,11 +544,12 @@ void s_HTML_Listener::tagOpen (UT_uint32 tagID, const UT_UTF8String & content, b
 	m_tagStack.push (vptr);
 }
 
-void s_HTML_Listener::tagClose (UT_uint32 tagID, const UT_UTF8String & content, bool ws)
+void s_HTML_Listener::tagClose (UT_uint32 tagID, const UT_UTF8String & content,
+								WhiteSpace ws)
 {
 	tagClose (tagID);
 
-	if (ws)
+	if (ws & ws_Pre)
 		tagNewIndent ();
 	else
 		m_utf8_0 = "";
@@ -560,7 +558,7 @@ void s_HTML_Listener::tagClose (UT_uint32 tagID, const UT_UTF8String & content, 
 	m_utf8_0 += content;
 	m_utf8_0 += ">";
 
-	if (ws) m_utf8_0 += "\r\n";
+	if (ws & ws_Post) m_utf8_0 += "\r\n";
 
 	m_pie->write (m_utf8_0.utf8_str ());
 }
@@ -903,7 +901,7 @@ void s_HTML_Listener::_outputBegin (PT_AttrPropIndex api)
 
 			if (bHaveProp && pAP_style && p_pds->isUsed ())
 				{
-					removeWhiteSpace ((const char *) szStyleName, m_utf8_0); // careful!!
+					s_removeWhiteSpace ((const char *) szStyleName, m_utf8_0); // careful!!
 					const char * myStyleName = m_utf8_0.utf8_str ();
 
 					if (UT_strcmp (myStyleName, "Heading1") == 0)
@@ -1029,18 +1027,59 @@ void s_HTML_Listener::_openSection (PT_AttrPropIndex api)
 {
 	if (m_bFirstWrite) _outputBegin (api);
 
+	if (m_bInSection) _closeSection ();
+
 	m_utf8_1 = "div";
 	tagOpen (TT_DIV, m_utf8_1);
+
+	m_bInSection = true;
 }
 
 void s_HTML_Listener::_closeSection (void)
 {
-	if (m_bInSection)
+	if (m_bInSection && (tagTop () == TT_DIV))
 		{
 			m_utf8_1 = "div";
 			tagClose (TT_DIV, m_utf8_1);
 		}
 	m_bInSection = false;
+}
+
+/*!	This function returns true if the name of the PD_Style which style is based
+	on, without whitespace, is the same as `from`, and otherwise returns false.
+ */
+bool s_HTML_Listener::_inherits (const char * style, const char * from)
+{
+	if ((style == 0) || (from == 0)) return false;
+
+	bool bret = false;
+
+	PD_Style * pStyle = 0;
+	
+	if (m_pDocument->getStyle (style, &pStyle))
+		if (pStyle)
+			{
+				PD_Style * pBasedOn = pStyle->getBasedOn ();
+				if (pBasedOn)
+					{
+						/* The name of the style is stored in the PT_NAME_ATTRIBUTE_NAME
+						 * attribute within the style
+						 */
+						const XML_Char * szName = 0;
+						pBasedOn->getAttribute (PT_NAME_ATTRIBUTE_NAME, szName);
+
+						if (szName)
+							{
+								/* careful!!
+								 */
+								s_removeWhiteSpace ((const char *) szName, m_utf8_0);
+
+								if (m_utf8_0.utf8_str ())
+									bret = (UT_strcmp (from, m_utf8_0.utf8_str ()) == 0);
+							}
+					}
+			}
+	return bret;
 }
 
 void s_HTML_Listener::_appendInheritanceLine (const char * ClassName, UT_UTF8String & utf8str)
@@ -1052,8 +1091,7 @@ void s_HTML_Listener::_appendInheritanceLine (const char * ClassName, UT_UTF8Str
 	if (m_pDocument->getStyle (ClassName, &pStyle))
 		if (pStyle)
 			{
-				PD_Style * pBasedOn = 0;
-				pBasedOn = pStyle->getBasedOn ();
+				PD_Style * pBasedOn = pStyle->getBasedOn ();
 				if (pBasedOn)
 					{
 						/* The name of the style is stored in the PT_NAME_ATTRIBUTE_NAME
@@ -1064,7 +1102,7 @@ void s_HTML_Listener::_appendInheritanceLine (const char * ClassName, UT_UTF8Str
 
 						if (szName)
 							{
-								removeWhiteSpace ((const char *) szName, tmp);
+								s_removeWhiteSpace ((const char *) szName, tmp);
 								_appendInheritanceLine (tmp.utf8_str (), utf8str);
 
 								utf8str += " "; // TODO: should this be ", " or ??
@@ -1072,7 +1110,7 @@ void s_HTML_Listener::_appendInheritanceLine (const char * ClassName, UT_UTF8Str
 					}
 			}
 
-	removeWhiteSpace (ClassName, tmp);
+	s_removeWhiteSpace (ClassName, tmp);
 	utf8str += tmp;
 }
 
@@ -1093,7 +1131,7 @@ void s_HTML_Listener::listPush (UT_uint16 type, const char * ClassName)
 	m_utf8_1 = "li";
 	if (tagTop () == TT_LI)
 		{
-			tagClose (TT_LI, m_utf8_1);
+			tagClose (TT_LI, m_utf8_1, ws_Post);
 		}
 	if ((tagTop () == TT_UL) || (tagTop () == TT_OL))
 		{
@@ -1126,7 +1164,7 @@ void s_HTML_Listener::listPop ()
 	if (tagTop () == TT_LI)
 		{
 			m_utf8_1 = "li";
-			tagClose (TT_LI, m_utf8_1);
+			tagClose (TT_LI, m_utf8_1, ws_Post);
 		}
 
 	void * vptr = 0;
@@ -1146,6 +1184,12 @@ void s_HTML_Listener::listPop ()
 			m_utf8_1 = "ol";
 		}
 	tagClose (tagID, m_utf8_1);
+
+	if (tagTop () == TT_LI)
+		{
+			m_utf8_1 = "li";
+			tagClose (TT_LI, m_utf8_1);
+		}
 }
 
 void s_HTML_Listener::listPopToDepth (UT_uint16 depth)
@@ -1174,7 +1218,7 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api)
 			listPopToDepth (0);
 
 			m_utf8_1 = "p";
-			tagOpen (TT_P, m_utf8_1);
+			tagOpen (TT_P, m_utf8_1, ws_Pre);
 
 			m_iBlockType = BT_NORMAL;
 			m_bInBlock = true;
@@ -1265,7 +1309,7 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api)
 			else if (tagTop () == TT_LI)
 				{
 					m_utf8_1 = "li";
-					tagClose (TT_LI, m_utf8_1);
+					tagClose (TT_LI, m_utf8_1, ws_Post);
 				}
 
 			tagID = TT_LI;
@@ -1504,7 +1548,7 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api)
 			m_utf8_1 += "\"";
 		}
 
-	tagOpen (tagID, m_utf8_1);
+	tagOpen (tagID, m_utf8_1, ws_Pre);
 
 	m_bInBlock = true;
 }
@@ -1520,12 +1564,12 @@ void s_HTML_Listener::_closeTag (void)
 			if (!m_bWroteText) // TODO: is this really ideal?
 				{
 					m_utf8_1 = "br";
-					tagOpenClose (m_utf8_1, m_bIs4);
+					tagOpenClose (m_utf8_1, m_bIs4, ws_None);
 				}
 			if (tagTop () == TT_P)
 				{
 					m_utf8_1 = "p";
-					tagClose (TT_P, m_utf8_1);
+					tagClose (TT_P, m_utf8_1, ws_Post);
 				}
 		}
 	else if (m_iBlockType == BT_HEADING1) 
@@ -1533,7 +1577,7 @@ void s_HTML_Listener::_closeTag (void)
 			if (tagTop () == TT_H1)
 				{
 					m_utf8_1 = "h1";
-					tagClose (TT_H1, m_utf8_1);
+					tagClose (TT_H1, m_utf8_1, ws_Post);
 				}
 		}
 	else if (m_iBlockType == BT_HEADING2)
@@ -1541,7 +1585,7 @@ void s_HTML_Listener::_closeTag (void)
 			if (tagTop () == TT_H2)
 				{
 					m_utf8_1 = "h2";
-					tagClose (TT_H2, m_utf8_1);
+					tagClose (TT_H2, m_utf8_1, ws_Post);
 				}
 		}
 	else if (m_iBlockType == BT_HEADING3)
@@ -1549,7 +1593,7 @@ void s_HTML_Listener::_closeTag (void)
 			if (tagTop () == TT_H3)
 				{
 					m_utf8_1 = "h3";
-					tagClose (TT_H3, m_utf8_1);
+					tagClose (TT_H3, m_utf8_1, ws_Post);
 				}
 		}
 	else if (m_iBlockType == BT_BLOCKTEXT)
@@ -1557,7 +1601,7 @@ void s_HTML_Listener::_closeTag (void)
 			if (tagTop () == TT_BLOCKQUOTE)
 				{
 					m_utf8_1 = "blockquote";
-					tagClose (TT_BLOCKQUOTE, m_utf8_1);
+					tagClose (TT_BLOCKQUOTE, m_utf8_1, ws_Post);
 				}
 		}
 	else if (m_iBlockType == BT_PLAINTEXT)
@@ -1565,7 +1609,7 @@ void s_HTML_Listener::_closeTag (void)
 			if (tagTop () == TT_PRE)
 				{
 					m_utf8_1 = "pre";
-					tagClose (TT_PRE, m_utf8_1);
+					tagClose (TT_PRE, m_utf8_1, ws_Post);
 				}
 		}
 	else if (m_iBlockType == BT_NUMBEREDLIST || m_iBlockType == BT_BULLETLIST)
@@ -1579,7 +1623,7 @@ void s_HTML_Listener::_closeTag (void)
 			if (tagTop () == TT_P)
 				{
 					m_utf8_1 = "p";
-					tagClose (TT_P, m_utf8_1);
+					tagClose (TT_P, m_utf8_1, ws_Post);
 				}
 		}
 	m_bInBlock = false;
@@ -1587,16 +1631,18 @@ void s_HTML_Listener::_closeTag (void)
 
 void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 {
-	if (m_bFirstWrite) _outputBegin(api);
+	if (m_bFirstWrite) _outputBegin (api);
 
 	if (!m_bInBlock) return;
-
-	if (m_bInSpan) _closeSpan ();
 
 	const PP_AttrProp * pAP = 0;
 	bool bHaveProp = m_pDocument->getAttrProp (api, &pAP);
 	
-	if (!bHaveProp || (pAP == 0)) return;
+	if (!bHaveProp || (pAP == 0))
+		{
+			if (m_bInSpan) _closeSpan ();
+			return;
+		}
 
 	const XML_Char * szP_FontWeight = 0;
 	const XML_Char * szP_FontStyle = 0;
@@ -1725,17 +1771,18 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 				first = false;
 			}
 
+	bool bInSpan = false;
+
 	if (first)
 		{
 			/* no style elements specified
 			 */
 			m_utf8_1 = "span";
-			m_bInSpan = false; // this can change...
 		}
 	else
 		{
 			m_utf8_1 += "\"";
-			m_bInSpan = true;
+			bInSpan = true;
 		}
 
 #ifdef BIDI_ENABLED
@@ -1758,11 +1805,22 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 				m_utf8_1 += " dir=\"";
 				m_utf8_1 += szP_DirOverride;
 				m_utf8_1 += "\"";
-				m_bInSpan = true;
+				bInSpan = true;
 			}
 #endif
 
-	if (m_bInSpan) tagOpen (TT_SPAN, m_utf8_1, false);
+	if (bInSpan)
+		{
+			if (m_bInSpan)
+				{
+					if (m_utf8_span == m_utf8_1) return; // this span same as last...
+					_closeSpan ();
+				}
+			tagOpen (TT_SPAN, m_utf8_1, ws_None);
+			m_bInSpan = true;
+			m_utf8_span = m_utf8_1;
+		}
+	else if (m_bInSpan) _closeSpan ();
 }
 
 void s_HTML_Listener::_closeSpan ()
@@ -1770,9 +1828,10 @@ void s_HTML_Listener::_closeSpan ()
 	if (tagTop () == TT_SPAN)
 		{
 			m_utf8_1 = "span";
-			tagClose (TT_SPAN, m_utf8_1, false);
+			tagClose (TT_SPAN, m_utf8_1, ws_None);
 		}
 	m_bInSpan = false;
+	m_utf8_span = "";
 }
 
 void s_HTML_Listener::_outputData (const UT_UCSChar * data, UT_uint32 length)
@@ -1795,7 +1854,7 @@ void s_HTML_Listener::_outputData (const UT_UCSChar * data, UT_uint32 length)
 					 */
 					if (m_utf8_1.byteLength ()) textTrusted (m_utf8_1);
 					m_utf8_1 = "br";
-					tagOpenClose (m_utf8_1, m_bIs4, false);
+					tagOpenClose (m_utf8_1, m_bIs4, ws_None);
 					m_utf8_1 = "";
 					break;
 
@@ -1856,44 +1915,6 @@ void s_HTML_Listener::_outputData (const UT_UCSChar * data, UT_uint32 length)
 	if (m_utf8_1.byteLength ()) textTrusted (m_utf8_1);
 }
 
-
-
-
-/*!	This function returns true if the name of the PD_Style which style is based
-	on, without whitespace, is the same as `from`, and otherwise returns false.
- */
-
-bool s_HTML_Listener::_inherits(const char* style, const char* from)
-{
-	bool bret = false;
-
-	PD_Style* pStyle = NULL;
-	char* szName = NULL;
-	const XML_Char * pName = NULL;
-	
-	if (m_pDocument->getStyle (style, &pStyle)) {
-		
-		if(pStyle && pStyle->getBasedOn())
-		{
-			pStyle = pStyle->getBasedOn();
-//
-// The name of the style is stored in the PT_NAME_ATTRIBUTE_NAME attribute within the
-// style
-//
-			pStyle->getAttribute(PT_NAME_ATTRIBUTE_NAME, 
-								 pName);
-			szName = removeWhiteSpace(pName);
-			
-			if(UT_strcmp(from, szName) == 0)
-				bret = true;
-			
-			FREEP(szName);
-		}
-	}
-
-	return bret;
-}
-
 s_HTML_Listener::s_HTML_Listener (PD_Document * pDocument, IE_Exp_HTML * pie, bool is4) :
 	m_pDocument (pDocument),
 	m_pie(pie),
@@ -1914,371 +1935,441 @@ s_HTML_Listener::s_HTML_Listener (PD_Document * pDocument, IE_Exp_HTML * pie, bo
 
 s_HTML_Listener::~s_HTML_Listener()
 {
-	_closeSpan();
-	_closeTag();
+	_closeTag ();
 
 	listPopToDepth (0);
 
-	_closeSection();
-	_handleDataItems();
+	_closeSection ();
 
 	_outputEnd ();
-
-	UT_VECTOR_FREEALL(char*, m_utvDataIDs);
 }
 
-bool s_HTML_Listener::populate(PL_StruxFmtHandle /*sfh*/,
-									  const PX_ChangeRecord * pcr)
+/* dataid   is the raw string with the data ID
+ * imagedir is the name of the directory in which we'll write the image
+ * filename is the name of the file to which we'll write the image
+ * url      is the URL which we'll use
+ */
+void s_HTML_Listener::_writeImage (const UT_ByteBuf * pByteBuf,
+								   const UT_String & imagedir,
+								   const UT_String & filename)
 {
-	switch (pcr->getType())
-	{
-	case PX_ChangeRecord::PXT_InsertSpan:
+	/* hmm, bit lazy this - attempt to create directory whether or not
+	 * it exists already... if it does, well hey. if this fails to
+	 * create a directory then fopen() will fail as well, so no biggie
+	 */
+	m_pDocument->getApp()->makeDirectory (imagedir.c_str (), 0750);
+
+	UT_String path(imagedir);
+	path += "/";
+	path += filename;
+
+	FILE * out = fopen (path.c_str (), "wb+");
+	if (out)
 		{
-			const PX_ChangeRecord_Span * pcrs = 
-				static_cast<const PX_ChangeRecord_Span *> (pcr);
-
-			PT_AttrPropIndex api = pcr->getIndexAP();
-			if (api)
-			{
-				_openSpan(api);
-			}
-			
-			PT_BufIndex bi = pcrs->getBufIndex();
-			_outputData(m_pDocument->getPointer(bi),pcrs->getLength());
-
-			if (api)
-				_closeSpan();
-			return true;
+			fwrite (pByteBuf->getPointer (0), sizeof (UT_Byte), pByteBuf->getLength (), out);
+			fclose (out);
 		}
-
-	case PX_ChangeRecord::PXT_InsertObject:
-		{
-			m_bWroteText = true;
-			const PX_ChangeRecord_Object * pcro = 
-				static_cast<const PX_ChangeRecord_Object *> (pcr);
-			const XML_Char* szValue;
-			UT_String buf;
-
-			fd_Field* field;
-			PT_AttrPropIndex api = pcr->getIndexAP();
-			const PP_AttrProp * pAP = NULL;
-			bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
-
-			switch (pcro->getObjectType())
-			{
-			case PTO_Image:
-				// TODO: differentiate between SVG and PNG
-				// TODO: we do this in the img saving code
-
-				if(bHaveProp && pAP && pAP->getAttribute("dataid", szValue))
-				{
-					char* dataid = strdup((char*) szValue);
-
-					m_utvDataIDs.push_back(dataid);
-
-					char * temp = _stripSuffix(UT_basename(szValue), '_');
-					char * fstripped = _stripSuffix(temp, '.');
-					FREEP(temp);
-					UT_String_sprintf(buf, "%s.png", fstripped);
-					FREEP(fstripped);
-					
-					m_pie->write("<img alt=\"AbiWord Image ");
-					m_pie->write(buf);
-					m_pie->write("\" src=\"");
-					m_pie->write(UT_basename(m_pie->getFileName()));
-					m_pie->write("_data/");
-					m_pie->write(buf);
-					m_pie->write("\" ");
-					
-					const XML_Char * szWidth = 0;
-					const XML_Char * szHeight = 0;
-
-					if(pAP->getProperty("width", szWidth) &&
-					   pAP->getProperty("height", szHeight))
-					  {
-					    if(szWidth)
-					      {
-						UT_String_sprintf(buf, "%d", (int) UT_convertToDimension(szWidth, DIM_PX));
-						m_pie->write (" width=\"");
-						m_pie->write (buf);
-						m_pie->write ("\" ");
-					      }
-					    if(szHeight)
-					      {
-						UT_String_sprintf(buf, "%d", (int) UT_convertToDimension(szHeight, DIM_PX));
-						m_pie->write (" height=\"");
-						m_pie->write (buf);
-						m_pie->write ("\" ");
-					      }
-					  }
-
-					// close the img tag with "/" only in XHTML
-					if (! m_bIs4) {
-						m_pie->write(" />\r\n");
-					}
-					else {
-						m_pie->write(" >\r\n");
-					}
-				}
-				return true;
-
-			case PTO_Field:
-				if(bHaveProp && pAP && pAP->getAttribute("type", szValue))
-				{
-					field = pcro->getField();
-
-					if(UT_strcmp(szValue, "list_label") != 0)
-					{
-						m_pie->write("<span class=\"ABI_FIELD_");
-						m_pie->write(szValue);
-						m_pie->write("\">");
-						m_pie->write(field->getValue());
-						m_pie->write("</span>");
-					}
-				}
-				return true;
-
-			case PTO_Hyperlink:
-				if(bHaveProp && pAP && pAP->getAttribute("xlink:href", szValue))
-				{
-					m_pie->write("<a href=\"");
-					m_pie->write(szValue);
-					m_pie->write("\">");
-				}
-				else
-				{
-					m_pie->write("</a>");
-				}
-				return true;
-
-			case PTO_Bookmark:
-				if(bHaveProp && pAP && pAP->getAttribute("type", szValue))
-				{
-					if( UT_XML_stricmp(szValue, "start") == 0 )
-					{
-						pAP->getAttribute("name", szValue);
-						m_pie->write("<a name=\"");
-						m_pie->write(szValue);
-						m_pie->write("\">");
-					}
-					else
-					{
-						m_pie->write("</a>");
-					}
-				}
-				return true;
-
-			default:
-				UT_ASSERT(0);
-				return false;
-			}
-		}
-
-	case PX_ChangeRecord::PXT_InsertFmtMark:
-		return true;
-		
-	default:
-		UT_ASSERT(0);
-		return false;
-	}
 }
 
-bool s_HTML_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
-										   const PX_ChangeRecord * pcr,
-										   PL_StruxFmtHandle * psfh)
+/* TODO: is there a better way to do this?
+ */
+static UT_UTF8String s_string_to_url (UT_String & str)
+{
+	UT_UTF8String url;
+
+	static const char hex[16] = {
+		'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'
+	};
+	char buf[4];
+	buf[0] = '%';
+	buf[3] = 0;
+
+	const char * ptr = str.c_str ();
+	while (*ptr)
+		{
+			bool isValidPunctuation = false;
+			switch (*ptr)
+				{
+				case '-': // TODO: any others?
+				case '_':
+				case '.':
+					isValidPunctuation = true;
+					break;
+				default:
+					break;
+				}
+			unsigned char u = (unsigned char) *ptr;
+			if (!isalnum ((int) u) && !isValidPunctuation)
+				{
+					buf[1] = hex[(u >> 4) & 0x0f];
+					buf[2] = hex[ u       & 0x0f];
+					url += buf;
+				}
+			else
+				{
+					buf[2] = (char) *ptr;
+					url += (buf + 2);
+				}
+			ptr++;
+		}
+	return url;
+}
+
+void s_HTML_Listener::_handleImage (PT_AttrPropIndex api)
+{
+	const PP_AttrProp * pAP = 0;
+	bool bHaveProp = m_pDocument->getAttrProp (api, &pAP);
+
+	if (!bHaveProp || (pAP == 0)) return;
+
+	const XML_Char * szDataID = 0;
+	pAP->getAttribute ("dataid", szDataID);
+
+	if (szDataID == 0) return;
+
+ 	const char * szName = 0;
+	const char * szMimeType = 0;
+
+	const UT_ByteBuf * pByteBuf = 0;
+
+	UT_uint32 k = 0;
+	while (m_pDocument->enumDataItems (k, 0, &szName, &pByteBuf, (void**) &szMimeType))
+		{
+			k++;
+			if (szName == 0) continue;
+			if (UT_strcmp (szDataID, szName) == 0) break;
+
+			szName = 0;
+			szMimeType = 0;
+			pByteBuf = 0;
+		}
+	if ((pByteBuf == 0) || (szMimeType == 0)) return; // ??
+
+	if (UT_strcmp (szMimeType, "image/png") != 0)
+		{
+			UT_DEBUGMSG(("Object not of MIME type image/png - ignoring...\n"));
+			return;
+		}
+
+	const char * dataid = UT_basename ((const char *) szDataID);
+
+	const char * suffix = dataid + strlen (dataid);
+	const char * ptr = 0;
+
+	/* Question: What does the DataID look like for images pasted
+	 *           from the clipboard?
+	 */
+	ptr = suffix;
+	while (ptr > dataid)
+		if (*--ptr == '_')
+			{
+				suffix = ptr;
+				break;
+			}
+	ptr = suffix;
+	while (ptr > dataid)
+		if (*--ptr == '.')
+			{
+				suffix = ptr;
+				break;
+			}
+	if (dataid == suffix) return;
+
+	/* hmm; who knows what locale the system uses
+	 */
+	UT_String imagedir = UT_basename (m_pie->getFileName ());
+	imagedir += "_data";
+
+	UT_String filename(dataid,suffix-dataid);
+	filename += ".png";
+
+	UT_UTF8String url;
+
+	url += s_string_to_url (imagedir);
+	url += "/";
+	url += s_string_to_url (filename);
+
+	/* szDataID is the raw string with the data ID
+	 * imagedir is the name of the directory in which we'll write the image
+	 * filename is the name of the file to which we'll write the image
+	 * url      is the URL which we'll use
+	 */
+	_writeImage (pByteBuf, imagedir, filename);
+
+	m_utf8_1 = "img";
+
+	m_utf8_1 += " src=\"";
+	m_utf8_1 += url;
+	m_utf8_1 += "\"";
+
+	const XML_Char * szWidth  = 0;
+	const XML_Char * szHeight = 0;
+
+	pAP->getProperty ("width",  szWidth);
+	pAP->getProperty ("height", szHeight);
+
+	char buf[16];
+
+	if (szWidth)
+		{
+			sprintf (buf, "%d", (int) UT_convertToDimension (szWidth, DIM_PX));
+			m_utf8_1 += " width=\"";
+			m_utf8_1 += buf;
+			m_utf8_1 += "\"";
+		}
+	if(szHeight)
+		{
+			sprintf (buf, "%d", (int) UT_convertToDimension (szHeight, DIM_PX));
+			m_utf8_1 += " height=\"";
+			m_utf8_1 += buf;
+			m_utf8_1 += "\"";
+		}
+
+	tagOpenClose (m_utf8_1, m_bIs4, ws_None);
+}
+
+void s_HTML_Listener::_handleField (const PX_ChangeRecord_Object * pcro,
+									PT_AttrPropIndex api)
+{
+	const PP_AttrProp * pAP = 0;
+	bool bHaveProp = m_pDocument->getAttrProp (api, &pAP);
+
+	if (!bHaveProp || (pAP == 0)) return;
+
+	const XML_Char * szType = 0;
+	pAP->getAttribute ("type", szType);
+
+	if (szType == 0) return;
+
+	fd_Field * field = pcro->getField ();
+
+	if (UT_strcmp (szType, "list_label") != 0)
+		{
+			m_utf8_1 = "span";
+
+			m_utf8_1 += " class=\"ABI_FIELD_";
+			m_utf8_1 += szType;
+			m_utf8_1 += "\"";
+
+			tagOpen (TT_SPAN, m_utf8_1, ws_None);
+
+			textUntrusted (field->getValue ());
+
+			m_utf8_1 = "span";
+			tagClose (TT_SPAN, m_utf8_1, ws_None);
+		}
+}
+
+void s_HTML_Listener::_handleHyperlink (PT_AttrPropIndex api)
+{
+	const PP_AttrProp * pAP = 0;
+	bool bHaveProp = m_pDocument->getAttrProp (api, &pAP);
+
+	if (!bHaveProp || (pAP == 0)) return;
+
+	const XML_Char * szHRef = 0;
+	pAP->getAttribute ("xlink:href", szHRef);
+
+	m_utf8_1 = "a";
+
+	if (tagTop () == TT_A)
+		{
+			tagClose (TT_A, m_utf8_1, ws_None);
+		}
+	if (szHRef) // trust this to be a valid URL??
+		{
+			m_utf8_1 += " href=\"";
+			m_utf8_1 += szHRef;
+			m_utf8_1 += "\"";
+
+			tagOpen (TT_A, m_utf8_1, ws_None);
+		}
+}
+
+void s_HTML_Listener::_handleBookmark (PT_AttrPropIndex api)
+{
+	const PP_AttrProp * pAP = 0;
+	bool bHaveProp = m_pDocument->getAttrProp (api, &pAP);
+
+	if (!bHaveProp || (pAP == 0)) return;
+
+	const XML_Char * szType = 0;
+	pAP->getAttribute ("type", szType);
+
+	if (szType == 0) return; // ??
+
+	m_utf8_1 = "a";
+
+	if (tagTop () == TT_A)
+		{
+			tagClose (TT_A, m_utf8_1, ws_None);
+		}
+	if (UT_XML_stricmp (szType, "start") == 0)
+		{
+			const XML_Char * szName = 0;
+			pAP->getAttribute ("name", szName);
+
+			if (szName)
+				{
+					m_utf8_1 += " name=\"";
+					m_utf8_1 += szName;
+					m_utf8_1 += "\"";
+
+					if (!m_bIs4)
+						{
+							m_utf8_1 += " id=\"";
+							m_utf8_1 += szName;
+							m_utf8_1 += "\"";
+						}
+					tagOpen (TT_A, m_utf8_1, ws_None);
+				}
+		}
+}
+
+bool s_HTML_Listener::populate (PL_StruxFmtHandle /*sfh*/, const PX_ChangeRecord * pcr)
+{
+	switch (pcr->getType ())
+		{
+		case PX_ChangeRecord::PXT_InsertSpan:
+			{
+				const PX_ChangeRecord_Span * pcrs = 0;
+				pcrs = static_cast<const PX_ChangeRecord_Span *>(pcr);
+
+				PT_AttrPropIndex api = pcr->getIndexAP ();
+
+				if (api) _openSpan (api);
+
+				PT_BufIndex bi = pcrs->getBufIndex ();
+				_outputData (m_pDocument->getPointer (bi), pcrs->getLength ());
+
+				// don't _closeSpan (); - leave open in case of identical sequences
+
+				return true;
+			}
+
+		case PX_ChangeRecord::PXT_InsertObject:
+			{
+				if (m_bInSpan) _closeSpan ();
+
+				m_bWroteText = true;
+
+				const PX_ChangeRecord_Object * pcro = 0;
+				pcro = static_cast<const PX_ChangeRecord_Object *>(pcr);
+
+				PT_AttrPropIndex api = pcr->getIndexAP ();
+
+				switch (pcro->getObjectType ())
+					{
+					case PTO_Image:
+						_handleImage (api);
+						return true;
+
+					case PTO_Field:
+						_handleField (pcro, api);
+						return true;
+
+					case PTO_Hyperlink:
+						_handleHyperlink (api);
+						return true;
+
+					case PTO_Bookmark:
+						_handleBookmark (api);
+						return true;
+
+					default:
+						UT_DEBUGMSG(("WARNING: ie_exp_HTML.cpp: unhandled object type!\n"));
+						return false;
+					}
+			}
+
+		case PX_ChangeRecord::PXT_InsertFmtMark:
+			return true;
+		
+		default:
+			UT_DEBUGMSG(("WARNING: ie_exp_HTML.cpp: unhandled record type!\n"));
+			return false;
+		}
+}
+
+bool s_HTML_Listener::populateStrux (PL_StruxDocHandle /*sdh*/,
+									 const PX_ChangeRecord * pcr,
+									 PL_StruxFmtHandle * psfh)
 {
 	UT_ASSERT(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux);
-	const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);
-	*psfh = 0;							// we don't need it.
 
-	switch (pcrx->getStruxType())
-	{
-	case PTX_SectionHdrFtr:
-	case PTX_Section:
-	{
-		_closeSpan();
-		_closeTag();
-		_closeSection();
+	*psfh = 0; // we don't need it.
 
-		PT_AttrPropIndex indexAP = pcr->getIndexAP();
-		const PP_AttrProp* pAP = NULL;
-		if (m_pDocument->getAttrProp(indexAP, &pAP) && pAP)
+	const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *>(pcr);
+
+	PT_AttrPropIndex api = pcr->getIndexAP ();
+
+	switch (pcrx->getStruxType ())
 		{
-			const XML_Char* pszSectionType = NULL;
-			pAP->getAttribute("type", pszSectionType);
-			if (
-				!pszSectionType
-				|| (0 == UT_strcmp(pszSectionType, "doc"))
-				)
+		case PTX_SectionHdrFtr:
+		case PTX_Section:
 			{
-				_openSection(pcr->getIndexAP());
-				m_bInSection = true;
+				if (m_bInBlock) _closeTag (); // possible problem with lists??
+				_openSection (api);
+				return true;
 			}
-			else
+
+		case PTX_Block:
 			{
-#if 1
-			  // export headers & footers
-				m_bInSection = true;
-				_openSection(pcr->getIndexAP());
-#else
-				// don't export headers and footers
-				m_bInSection = false ;
-#endif
+				_openTag (api);
+				return true;
 			}
-		}
-		else
-		{
-			m_bInSection = false;
-		}
-		
-		return true;
-	}
 
-	case PTX_Block:
-	{
-		_closeSpan();
-		_closeTag();
-		_openTag(pcr->getIndexAP());
-		return true;
-	}
-
-	default:
-		UT_ASSERT(0);
-		return false;
-	}
+		default:
+			UT_DEBUGMSG(("WARNING: ie_exp_HTML.cpp: unhandled strux type!\n"));
+			return false;
+		}
 }
 
-bool s_HTML_Listener::change(PL_StruxFmtHandle /*sfh*/,
-									const PX_ChangeRecord * /*pcr*/)
+/*****************************************************************/
+/*****************************************************************/
+
+bool s_HTML_Listener::change (PL_StruxFmtHandle /*sfh*/,
+							  const PX_ChangeRecord * /*pcr*/)
 {
 	UT_ASSERT(0);						// this function is not used.
 	return false;
 }
 
-bool s_HTML_Listener::insertStrux(PL_StruxFmtHandle /*sfh*/,
-									 const PX_ChangeRecord * /*pcr*/,
-									 PL_StruxDocHandle /*sdh*/,
-									 PL_ListenerId /* lid */,
-									 void (* /*pfnBindHandles*/)(PL_StruxDocHandle /* sdhNew */,
-																 PL_ListenerId /* lid */,
-																 PL_StruxFmtHandle /* sfhNew */))
+bool s_HTML_Listener::insertStrux (PL_StruxFmtHandle /*sfh*/,
+								   const PX_ChangeRecord * /*pcr*/,
+								   PL_StruxDocHandle /*sdh*/,
+								   PL_ListenerId /* lid */,
+								   void (* /*pfnBindHandles*/)(PL_StruxDocHandle /* sdhNew */,
+															   PL_ListenerId /* lid */,
+															   PL_StruxFmtHandle /* sfhNew */))
 {
 	UT_ASSERT(0);						// this function is not used.
 	return false;
 }
 
-bool s_HTML_Listener::signal(UT_uint32 /* iSignal */)
+bool s_HTML_Listener::signal (UT_uint32 /* iSignal */)
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	return false;
 }
-
 
 /*****************************************************************/
 /*****************************************************************/
 
 UT_Error IE_Exp_HTML::_writeDocument(void)
 {
-  bool err = true;
-	m_pListener = new s_HTML_Listener(getDoc(),this, m_bIs4);
-	if (!m_pListener)
-		return UT_IE_NOMEMORY;
-	if (getDocRange())
-	  err = getDoc()->tellListenerSubset(static_cast<PL_Listener *>(m_pListener),getDocRange());
-	else 
-	  err = getDoc()->tellListener(static_cast<PL_Listener *>(m_pListener)) ;
+	m_pListener = new s_HTML_Listener(getDoc(),this,m_bIs4);
+	if (m_pListener == 0) return UT_IE_NOMEMORY;
+
+	bool err = true;
+	if (getDocRange ())
+		err = getDoc()->tellListenerSubset (static_cast<PL_Listener *>(m_pListener),
+											getDocRange ());
+	else
+		err = getDoc()->tellListener (static_cast<PL_Listener *>(m_pListener));
+
 	DELETEP(m_pListener);
 	
-	if ( m_error == UT_OK && err == true )
-	  return UT_OK;
+	if ((m_error == UT_OK) && (err == true)) return UT_OK;
 	return UT_IE_COULDNOTWRITE;
-}
-
-/*****************************************************************/
-/*****************************************************************/
-
-/*!
-   removes the suffix from a string by searching backwards for the specified 
-   character delimiter. If the delimiter is not found, a copy of the original 
-   string is returned
-   
-   eg. _stripSuffix("/home/user/file.png, '.') returns "/home/user/file" 
-       _stripSuffix("/home/user/foo_bar, '_') returns /home/user/foo 
-       _stripSuffix("/home/user/file.png, '_') returns /home/user/file.png"
-*/
-char *s_HTML_Listener::_stripSuffix(const char* from, char delimiter)
-{
-    char * fremove_s = (char *)malloc(strlen(from)+1);
-    strcpy(fremove_s, from);   
-
-    char * p = fremove_s + strlen(fremove_s);
-    while ((p >= fremove_s) && (*p != delimiter))
-        p--;
-	
-    if (p >= fremove_s)
-	*p = '\0';
-    
-    return fremove_s;
-}
-
-void s_HTML_Listener::_handleDataItems(void)
-{
- 	const char * szName;
-	const char * szMimeType;
-	const UT_ByteBuf * pByteBuf;
-	
-	for (UT_uint32 k=0; (m_pDocument->enumDataItems(k,NULL,&szName,&pByteBuf,(void**)&szMimeType)); k++)
-	{
-		UT_sint32 loc = -1;
-		for (UT_uint32 i = 0; i < m_utvDataIDs.getItemCount(); i++)
-		{
-			if(UT_strcmp((char*) m_utvDataIDs[i], szName) == 0)
-			{
-				loc = i;
-				break;
-			}
-		}
-		
-		if(loc > -1)
-		{
-			FILE *fp;
-			UT_String fname; // EVIL EVIL bad hardcoded buffer size
-			
-			UT_String_sprintf(fname, "%s_data", m_pie->getFileName());
-			int result = m_pDocument->getApp()->makeDirectory(fname.c_str(), 0750);
-			
-			if (!UT_strcmp(szMimeType, "image/svg-xml"))
-				UT_String_sprintf(fname, "%s/%s_%d.svg", fname.c_str(), szName, loc);
-			if (!UT_strcmp(szMimeType, "text/mathml"))
-				UT_String_sprintf(fname, "%s/%s_%d.mathml", fname.c_str(), szName, loc);
-			else // PNG Image
-			{  
-				char * temp = _stripSuffix(UT_basename(szName), '_');
-				char * fstripped = _stripSuffix(temp, '.');
-				FREEP(temp);
-				UT_String_sprintf(fname, "%s/%s.png", fname.c_str(), fstripped);
-				FREEP(fstripped);
-			}
-			
-			if (!UT_isRegularFile(fname.c_str()))
-			{
-			    fp = fopen (fname.c_str(), "wb+");
-			
-			    if(!fp)
-				    continue;
-			
-			    int cnt = 0, len = pByteBuf->getLength();
-			
-			    while (cnt < len)
-			    {
-				    cnt += fwrite (pByteBuf->getPointer(cnt), 
-							     sizeof(UT_Byte), len-cnt, fp);
-			    }
-			
-			    fclose(fp);
-			}
-		}
-	}
-	
-	return;
 }

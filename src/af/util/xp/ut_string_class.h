@@ -246,4 +246,6 @@ private:
 
 UT_UTF8String operator+(const UT_UTF8String & s1, const UT_UTF8String & s2);
 
+bool operator== (const UT_UTF8String & s1, const UT_UTF8String & s2);
+
 #endif	// UT_STRING_CLASS_H

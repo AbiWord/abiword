@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 // ut_string_class.cpp
 
 // A simple string class for use where templates are not
@@ -868,4 +870,12 @@ UT_UTF8String operator+(const UT_UTF8String & s1, const UT_UTF8String & s2)
 	UT_UTF8String s(s1);
 	s += s2;
 	return s;
+}
+
+bool operator== (const UT_UTF8String & s1, const UT_UTF8String & s2)
+{
+	if (s1.byteLength () == 0) return false;
+	if (s1.byteLength () != s2.byteLength ()) return false;
+
+	return (memcmp (s1.utf8_str (), s2.utf8_str (), s1.byteLength ()) == 0);
 }
