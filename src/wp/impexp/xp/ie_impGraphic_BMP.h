@@ -31,6 +31,7 @@ class IE_ImpGraphic_BMP : public IE_ImpGraphic
 {
 public:
 	static UT_Bool		RecognizeSuffix(const char * szSuffix);
+	static UT_Bool		RecognizeContents(const char * szBuf, UT_uint32 iNumbytes);
 	static UT_Bool		GetDlgLabels(const char ** pszDesc,
 									 const char ** pszSuffixList,
 									 IEGraphicFileType * ft);

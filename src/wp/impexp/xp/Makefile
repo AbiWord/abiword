@@ -40,7 +40,8 @@ CPPSRCS=		ie_exp.cpp				\
 			ie_imp_Text.cpp				\
 			ie_imp_UTF8.cpp				\
 			ie_impGraphic.cpp			\
-			ie_impGraphic_PNG.cpp       \
+			ie_impGraphic_PNG.cpp			\
+			ie_impGraphic_SVG.cpp			\
 			ie_impGraphic_BMP.cpp
 
 LIBRARY_NAME=		AbiImpExp

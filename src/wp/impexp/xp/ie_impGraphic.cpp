@@ -25,7 +25,7 @@
 
 #include "ie_impGraphic_PNG.h"
 #include "ie_impGraphic_BMP.h"
-// #include "ie_impGraphic_SVG.h"
+#include "ie_impGraphic_SVG.h"
 
 /*****************************************************************/
 /*****************************************************************/
@@ -33,6 +33,7 @@
 struct _impGraphic
 {
 	UT_Bool			(*fpRecognizeSuffix)(const char * szSuffix);
+	UT_Bool			(*fpRecognizeContents)(const char * szBuf, UT_uint32 iNumbytes);
 	UT_Bool			(*fpGetDlgLabels)(const char ** szDesc,
 									  const char ** szSuffixList,
 									  IEGraphicFileType * ft);
@@ -40,13 +41,13 @@ struct _impGraphic
         UT_Error		(*fpStaticConstructor)(IE_ImpGraphic **ppieg);
 };
 
-#define DeclareImporter(n)	{ n::RecognizeSuffix, n::GetDlgLabels, n::SupportsFileType, n::StaticConstructor }
+#define DeclareImporter(n)	{ n::RecognizeSuffix, n::RecognizeContents, n::GetDlgLabels, n::SupportsFileType, n::StaticConstructor }
 
 static struct _impGraphic s_impGraphicTable[] =
 {
 	DeclareImporter(IE_ImpGraphic_PNG),
 	DeclareImporter(IE_ImpGraphic_BMP),
-	//	DeclareImporter(IE_ImpGraphic_SVG),
+	DeclareImporter(IE_ImpGraphic_SVG),
 };
 
 /*****************************************************************/
@@ -73,7 +74,34 @@ IEGraphicFileType IE_ImpGraphic::fileTypeForSuffix(const char * szSuffix)
 
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			// Hm... an importer has registered for the given suffix,
-			// bug refuses to support any file type we request.
+			// but refuses to support any file type we request.
+			return IEGFT_Unknown;
+		}
+	}
+
+	// No filter is registered for that extension, try Text for import
+	return IEGFT_Unknown;
+}
+	
+IEGraphicFileType IE_ImpGraphic::fileTypeForContents(const char * szBuf, UT_uint32 iNumbytes)
+{
+	// we have to construct the loop this way because a
+	// given filter could support more than one file type,
+	// so we must query a suffix match for all file types
+	for (UT_uint32 k=0; (k < NrElements(s_impGraphicTable)); k++)
+	{
+		struct _impGraphic * s = &s_impGraphicTable[k];
+		if (s->fpRecognizeContents(szBuf, iNumbytes))
+		{
+			for (UT_uint32 a = 0; a < (int) IEFT_LAST_BOGUS; a++)
+			{
+				if (s->fpSupportsFileType((IEGraphicFileType) a))
+					return (IEGraphicFileType) a;
+			}
+
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			// Hm... an importer recognizes the given data
+			// but refuses to support any file type we request.
 			return IEGFT_Unknown;
 		}
 	}
@@ -83,9 +111,9 @@ IEGraphicFileType IE_ImpGraphic::fileTypeForSuffix(const char * szSuffix)
 }
 	
 UT_Bool IE_ImpGraphic::enumerateDlgLabels(UT_uint32 ndx,
-										  const char ** pszDesc,
-										  const char ** pszSuffixList,
-										  IEGraphicFileType * ft)
+					  const char ** pszDesc,
+					  const char ** pszSuffixList,
+					  IEGraphicFileType * ft)
 {
 	if (ndx < NrElements(s_impGraphicTable))
 		return s_impGraphicTable[ndx].fpGetDlgLabels(pszDesc,pszSuffixList,ft);
@@ -99,8 +127,8 @@ UT_uint32 IE_ImpGraphic::getImporterCount(void)
 }
 
 UT_Error IE_ImpGraphic::constructImporter(const char * szFilename,
-										 IEGraphicFileType ft,
-										 IE_ImpGraphic **ppieg)
+					  IEGraphicFileType ft,
+					  IE_ImpGraphic **ppieg)
 {
 	// construct an importer of the right type.
 	// caller is responsible for deleting the importer object
@@ -108,14 +136,26 @@ UT_Error IE_ImpGraphic::constructImporter(const char * szFilename,
 	UT_ASSERT(ppieg);
 
 	// no filter will support IEGFT_Unknown, so we detect from the
-	// suffix of the filename, the real importer to use and assign
-	// that back to ieft.
+	// suffix of the filename and the contents of the file, the real 
+        // importer to use and assign that back to ieft.
 	if (ft == IEGFT_Unknown)
 	{
 		UT_ASSERT(szFilename && *szFilename);
-		ft = IE_ImpGraphic::fileTypeForSuffix(UT_pathSuffix(szFilename));
+		char szBuf[4096];
+	   	UT_uint32 iNumbytes;
+	   	FILE *f;
+	   	if ( ( f= fopen( szFilename, "rb" ) ) != (FILE *)0 )
+	     	{
+		   	iNumbytes = fread(szBuf, 1, sizeof(szBuf), f);
+		   	fclose(f);
+	   		ft = IE_ImpGraphic::fileTypeForContents(szBuf, iNumbytes);
+		}
 	}
-
+	if (ft == IEGFT_Unknown)
+     	{
+	   	ft = IE_ImpGraphic::fileTypeForSuffix(UT_pathSuffix(szFilename));
+	}
+   
 	// use the importer for the specified file type
 	for (UT_uint32 k=0; (k < NrElements(s_impGraphicTable)); k++)
 	{

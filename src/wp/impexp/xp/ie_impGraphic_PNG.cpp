@@ -17,6 +17,7 @@
  * 02111-1307, USA.
  */
 
+#include <string.h>
 #include "ut_string.h"
 
 #include "ie_impGraphic_PNG.h"
@@ -25,6 +26,14 @@
 UT_Bool IE_ImpGraphic_PNG::RecognizeSuffix(const char * szSuffix)
 {
 	return (UT_stricmp(szSuffix,".png") == 0);
+}
+
+UT_Bool IE_ImpGraphic_PNG::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
+{
+   	char str1[10] = "\211PNG";
+   	char str2[10] = "<89>PNG";
+   
+   	return ( !(strncmp(szBuf, str1, 4)) || !(strncmp(szBuf, str2, 6)) );
 }
 
 UT_Bool IE_ImpGraphic_PNG::GetDlgLabels(const char ** pszDesc,

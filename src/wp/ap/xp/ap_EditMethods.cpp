@@ -969,8 +969,8 @@ static UT_Bool s_AskForPathname(XAP_Frame * pFrame,
 }
 
 static UT_Bool s_AskForGraphicPathname(XAP_Frame * pFrame,
-									   char ** ppPathname,
-									   IEGraphicFileType * iegft)
+				       char ** ppPathname,
+				       IEGraphicFileType * iegft)
 {
 	// raise the file-open dialog for inserting an image.
 	// return a_OK or a_CANCEL depending on which button
@@ -1010,11 +1010,11 @@ static UT_Bool s_AskForGraphicPathname(XAP_Frame * pFrame,
 	UT_uint32 filterCount = IE_ImpGraphic::getImporterCount();
 	
 	const char ** szDescList = (const char **) calloc(filterCount + 1,
-													  sizeof(char *));
-	const char ** szSuffixList = (const char **) calloc(filterCount + 1,
-														sizeof(char *));
+							  sizeof(char *));
+ 	const char ** szSuffixList = (const char **) calloc(filterCount + 1,
+							    sizeof(char *));
 	IEGraphicFileType * nTypeList = (IEGraphicFileType *) 
-							calloc(filterCount + 1,	sizeof(IEGraphicFileType));
+		 calloc(filterCount + 1,	sizeof(IEGraphicFileType));
 	UT_uint32 k = 0;
 
 	while (IE_ImpGraphic::enumerateDlgLabels(k, &szDescList[k], &szSuffixList[k], &nTypeList[k]))
@@ -1717,24 +1717,6 @@ Defun(querySaveAndExit)
 */
 #define ABIWORD_VIEW  	FV_View * pView = static_cast<FV_View *>(pAV_View)
 
-// I dislike the fact that this function is here, but have yet to find a better location
-
-
-UT_sint32 isValidImage(const char * szFileName)
-{
-  FILE * fp = fopen(szFileName, "r");
-  char str[10] = "";
-  char str2[10] = "\211PNG\r\n\032\n";
-  char str3[10] = "<89>PNG";
-  char str4[10] = "BM"; /* Bitmap File */
-  fgets(str, 6, fp);
-  fclose(fp);
-  UT_DEBUGMSG(("header: %s\n", str));
-  return ( !(strncmp(str, str2, 4)) || 
-		   !(strncmp(str, str3, 6)) ||
-		   !(strncmp(str, str4, 2)) );
-}
-
 Defun1(fileInsertGraphic)
 {
 	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
@@ -1756,19 +1738,6 @@ Defun1(fileInsertGraphic)
 	FG_Graphic* pFG;
 
 	UT_Error errorCode;
-
-	// here we see that it is really a png file - this will have to be modified 
-	// as we add support for new graphics types
-
-	UT_Bool tmpVar = isValidImage(pNewFile);
-	
-	if(!tmpVar)
-	  {
-	    errorCode = UT_IE_FAKETYPE;
-	    s_CouldNotLoadFileMessage(pFrame, pNewFile, errorCode);
-	    FREEP(pNewFile);
-	    return UT_FALSE;
-	  }
 
 	errorCode = IE_ImpGraphic::constructImporter(pNewFile, iegft, &pIEG);
 	if(errorCode) 

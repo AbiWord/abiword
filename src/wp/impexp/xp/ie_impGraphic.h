@@ -49,6 +49,7 @@ public:
 	// with it.
 
 	static IEGraphicFileType	fileTypeForSuffix(const char * szSuffix);
+	static IEGraphicFileType	fileTypeForContents(const char * szBuf, UT_uint32 iNumbytes);
 	
 	static UT_Bool		enumerateDlgLabels(UT_uint32 ndx,
 										   const char ** pszDesc,

@@ -38,6 +38,11 @@ UT_Bool IE_ImpGraphic_BMP::RecognizeSuffix(const char * szSuffix)
 	return (UT_stricmp(szSuffix,".bmp") == 0);
 }
 
+UT_Bool IE_ImpGraphic_BMP::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
+{
+	return ( !(strncmp(szBuf, "BM", 2)) );
+}
+
 UT_Bool IE_ImpGraphic_BMP::GetDlgLabels(const char ** pszDesc,
 									   const char ** pszSuffixList,
 									   IEGraphicFileType * ft)
@@ -71,13 +76,13 @@ UT_Error IE_ImpGraphic_BMP::importGraphic(UT_ByteBuf* pBB,
 	InitializePrivateClassData();
 
 	/* Read Header Data */
-	if(err = Read_BMP_Header(pBB)) return err;
-	if(err = Initialize_PNG())     return err;
+	if ((err = Read_BMP_Header(pBB))) return err;
+	if ((err = Initialize_PNG()))     return err;
 
 	/* Read Palette, if no palette set Header accordingly */
 	if(m_iBitsPerPlane < 24) 
 	{
-		if (err = Convert_BMP_Pallet(pBB)) return err;
+		if ((err = Convert_BMP_Pallet(pBB))) return err;
 	}
 	else
 	{
@@ -92,7 +97,7 @@ UT_Error IE_ImpGraphic_BMP::importGraphic(UT_ByteBuf* pBB,
 					   PNG_FILTER_TYPE_DEFAULT );
 
 	}
-	if (err = Convert_BMP(pBB)) return err;
+	if ((err = Convert_BMP(pBB))) return err;
 
 	/* Clean Up Memory Used */
 		

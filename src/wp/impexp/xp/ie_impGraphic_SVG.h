@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2000 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,24 +18,24 @@
  */
 
 
-#ifndef IE_IMPGRAPHIC_PNG_H
-#define IE_IMPGRAPHIC_PNG_H
+#ifndef IE_IMPGRAPHIC_SVG_H
+#define IE_IMPGRAPHIC_SVG_H
 
 #include "ie_impGraphic.h"
 
-class IE_ImpGraphic_PNG : public IE_ImpGraphic
+class IE_ImpGraphic_SVG : public IE_ImpGraphic
 {
 public:
 	static UT_Bool		RecognizeSuffix(const char * szSuffix);
 	static UT_Bool		RecognizeContents(const char * szBuf, UT_uint32 iNumbytes);
-	static UT_Bool		GetDlgLabels(const char ** pszDesc,
-									 const char ** pszSuffixList,
-									 IEGraphicFileType * ft);
+   	static UT_Bool		GetDlgLabels(const char ** pszDesc,
+					     const char ** pszSuffixList,
+					     IEGraphicFileType * ft);
 	static UT_Bool 		SupportsFileType(IEGraphicFileType ft);
 	static UT_Error		StaticConstructor(IE_ImpGraphic **ppieg);
 
         virtual UT_Error	importGraphic(UT_ByteBuf* pBB, 
-									  FG_Graphic ** ppfg);
+					      FG_Graphic ** ppfg);
 };
 
-#endif /* IE_IMPGRAPHIC_PNG_H */
+#endif /* IE_IMPGRAPHIC_SVG_H */
