@@ -413,6 +413,8 @@ LRESULT CALLBACK EV_Win32Toolbar::_ComboWndProc( HWND hWnd, UINT uMessage, WPARA
 								nData  = SendMessage(hWnd, CB_GETITEMDATA, iSelected, 0);								
 
 								UT_UCS4_strcpy_char(ucs_buf, t->m_vecOrgStylesNames.getNthItem(nData)->utf8_str());								
+								dataLength = UT_UCS4_strlen (ucs_buf);
+
 								DELETEP(pControl);
 							}
 							
