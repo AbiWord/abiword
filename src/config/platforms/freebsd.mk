@@ -96,7 +96,12 @@ WARNFLAGS	+= -Wall -ansi -pedantic
 endif
 
 # Includes
-OS_INCLUDES		= -I/usr/local/include
+OS_INCLUDES	=
+ifeq ($(ABI_OPT_PEER_ICONV),1)
+OS_INCLUDES	+= -I$(ABI_ROOT)/../libiconv/include
+endif
+
+OS_INCLUDES		+= -I/usr/local/include
 G++INCLUDES		= -I/usr/include/g++
 
 # Compiler flags
