@@ -61,7 +61,7 @@ public:
 	void					setSavePosition(UT_sint32 savePosition);
 	UT_sint32				getSavePosition(void) const;
 
-	UT_uint32                               getUndoPos(void);
+	UT_uint32                               getUndoPos(void) const;
 
 	bool					getUndo(PX_ChangeRecord ** ppcr) const;
 	bool					getUndo(PX_ChangeRecord ** ppcr, UT_uint32 undoNdx) const;

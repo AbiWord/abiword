@@ -157,6 +157,7 @@ public:
 	virtual bool	notifyListeners(const AV_ChangeMask hint);
 
 	virtual bool	canDo(bool bUndo) const;
+	virtual UT_uint32 undoCount (bool bUndo) const;
 	virtual void	cmdUndo(UT_uint32 count);
 	virtual void	cmdRedo(UT_uint32 count);
 	virtual UT_Error	cmdSave(void);

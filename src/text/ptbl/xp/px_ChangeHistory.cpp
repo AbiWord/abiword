@@ -89,7 +89,7 @@ UT_sint32 px_ChangeHistory::getSavePosition(void) const
 	return m_savePosition;
 }
 
-UT_uint32 px_ChangeHistory::getUndoPos(void)
+UT_uint32 px_ChangeHistory::getUndoPos(void) const
 {
         return m_undoPosition;
 }

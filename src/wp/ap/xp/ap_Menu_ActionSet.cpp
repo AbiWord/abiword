@@ -90,6 +90,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_FILE_RECENT_7,	0,0,0,	"openRecent_7",		NULL,					ap_GetLabel_Recent);
 	_s(AP_MENU_ID_FILE_RECENT_8,	0,0,0,	"openRecent_8",		NULL,					ap_GetLabel_Recent);
 	_s(AP_MENU_ID_FILE_RECENT_9,	0,0,0,	"openRecent_9",		NULL,					ap_GetLabel_Recent);
+	_s(AP_MENU_ID_FILE_REVERT, 0,0,0, "fileRevert", ap_GetState_Changes, NULL);
 	_s(AP_MENU_ID_FILE_EXIT,		0,0,0,	"querySaveAndExit",	NULL,					NULL);
 	_s(AP_MENU_ID_OPEN_TEMPLATE, 0,1,0, "openTemplate", NULL, NULL);
 

@@ -429,6 +429,13 @@ bool pt_PieceTable::canDo(bool bUndo) const
 	return m_history.canDo(bUndo);
 }
 
+UT_uint32 pt_PieceTable::undoCount(bool bUndo) const
+{
+  if(bUndo)
+    return m_history.getUndoPos ();
+  return m_history.getSavePosition ();
+}
+
 bool pt_PieceTable::undoCmd(void)
 {
 	// do a user-atomic undo.

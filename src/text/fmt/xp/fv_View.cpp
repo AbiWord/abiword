@@ -7183,6 +7183,11 @@ bool FV_View::canDo(bool bUndo) const
 	return m_pDoc->canDo(bUndo);
 }
 
+UT_uint32 FV_View::undoCount (bool bUndo) const
+{
+  return m_pDoc->undoCount ( bUndo );
+}
+
 void FV_View::cmdUndo(UT_uint32 count)
 {
 	if (!isSelectionEmpty())

@@ -1203,6 +1203,11 @@ void PD_Document::endUserAtomicGlob(void)
 	m_pPieceTable->endUserAtomicGlob();
 }
 
+UT_uint32 PD_Document::undoCount(bool bUndo) const
+{
+  return m_pPieceTable->undoCount(bUndo);
+}
+
 bool PD_Document::canDo(bool bUndo) const
 {
 	return m_pPieceTable->canDo(bUndo);

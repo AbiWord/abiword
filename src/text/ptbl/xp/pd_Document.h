@@ -70,6 +70,7 @@ public:
 	virtual bool			isDirty(void) const;
 
 	virtual bool			canDo(bool bUndo) const;
+	virtual UT_uint32 undoCount(bool bUndo) const;
 	virtual bool			undoCmd(UT_uint32 repeatCount);
 	virtual bool			redoCmd(UT_uint32 repeatCount);
 

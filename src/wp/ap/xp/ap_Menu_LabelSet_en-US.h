@@ -60,6 +60,7 @@ BeginSet(en,US,true)
 	MenuLabel(AP_MENU_ID_FILE_RECENT_7,		"&7 %s",			"Open this document")
 	MenuLabel(AP_MENU_ID_FILE_RECENT_8,		"&8 %s",			"Open this document")
 	MenuLabel(AP_MENU_ID_FILE_RECENT_9,		"&9 %s",			"Open this document")
+     MenuLabel(AP_MENU_ID_FILE_REVERT, "&Revert", "Revert the document to the last saved state")
 	MenuLabel(AP_MENU_ID_FILE_EXIT,			"E&xit", 			"Close all windows in the application and exit")
 
 	MenuLabel(AP_MENU_ID_EDIT,				"&Edit",			NULL)

@@ -246,6 +246,7 @@ public:
 	// TODO here are a few that i started.
 
 	static EV_EditMethod_Fn fileNew;
+  static EV_EditMethod_Fn fileRevert;
 	static EV_EditMethod_Fn toolbarNew;
 	static EV_EditMethod_Fn fileOpen;
 	static EV_EditMethod_Fn fileSave;
@@ -648,6 +649,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(fileNew),				0,	""),
 	EV_EditMethod(NF(fileOpen),				0,	""),
 	EV_EditMethod(NF(filePreviewWeb), 0, ""),
+	EV_EditMethod(NF(fileRevert), 0, ""),
 	EV_EditMethod(NF(fileSave),				0,	""),
 	EV_EditMethod(NF(fileSaveAs),			0,	""),
 	EV_EditMethod(NF(fileSaveAsWeb),                0, ""),
@@ -2549,6 +2551,14 @@ Defun(querySaveAndExit)
 	the methods within the same file.
 */
 #define ABIWORD_VIEW  	FV_View * pView = static_cast<FV_View *>(pAV_View)
+
+Defun(fileRevert)
+{
+  ABIWORD_VIEW;
+
+  pView->cmdUndo ( pView->undoCount(true) );
+  return true;
+}
 
 Defun1(insertClipart)
 {

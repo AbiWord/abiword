@@ -65,6 +65,7 @@ public:
 	bool					isDirty(void) const;
 	
 	bool					canDo(bool bUndo) const;
+	UT_uint32                               undoCount(bool bUndo) const;
 	bool					undoCmd(void);
 	bool					redoCmd(void);
 
