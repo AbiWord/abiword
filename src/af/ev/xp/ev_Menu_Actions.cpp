@@ -63,12 +63,30 @@ AP_Menu_Id EV_Menu_Action::getMenuId(void) const
 	return m_id;
 }
 
-const char * EV_Menu_Action::getDynamicLabel(AP_App * pApp) const
+UT_Bool EV_Menu_Action::hasDynamicLabel(void) const
+{
+	return (m_pfnGetLabel != NULL);
+}
+
+const char * EV_Menu_Action::getDynamicLabel(AP_App * pApp, const EV_Menu_Label * pLabel) const
 {
 	if (m_pfnGetLabel)
-		return m_pfnGetLabel(pApp,m_id);
+		return m_pfnGetLabel(pApp,pLabel,m_id);
 	else
 		return NULL;
+}
+
+UT_Bool EV_Menu_Action::hasGetStateFunction(void) const
+{
+	return (m_pfnGetState != NULL);
+}
+
+EV_Menu_ItemState EV_Menu_Action::getMenuItemState(FV_View * pView) const
+{
+	if (m_pfnGetState)
+		return m_pfnGetState(pView,m_id);
+	else
+		return EV_MIS_ZERO;
 }
 
 const char * EV_Menu_Action::getMethodName(void) const

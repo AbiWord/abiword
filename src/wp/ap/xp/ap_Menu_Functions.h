@@ -36,4 +36,8 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Selection);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_CharFmt);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_BlockFmt);
 
+
+Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Window);
+Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_WindowMore);
+
 #endif /* AP_MENU_FUNCTIONS_H */

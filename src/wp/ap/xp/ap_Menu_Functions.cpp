@@ -19,12 +19,14 @@
 
 #include <string.h>
 
+#include <stdio.h>
 #include "ut_types.h"
 #include "ut_assert.h"
 #include "ut_string.h"
 #include "ap_Menu_Id.h"
 #include "ap_Menu_Functions.h"
 #include "ev_Menu_Actions.h"
+#include "ev_Menu_Labels.h"
 #include "fv_View.h"
 
 
@@ -193,3 +195,55 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_BlockFmt)
 	return s;
 }
 
+Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Window)
+{
+	// Compute the menu label for _window_1 thru _window_9 on the menu.
+	// We return a pointer to a static string (which will be overwritten
+	// on the next call).
+	
+	UT_ASSERT(pApp);
+	UT_ASSERT(pLabel);
+
+	UT_ASSERT(id >= AP_MENU_ID_WINDOW_1);
+	UT_ASSERT(id <= AP_MENU_ID_WINDOW_9);
+	
+	UT_uint32 index = (id - AP_MENU_ID_WINDOW_1);
+
+	// TODO use the applications window list and compute a menu label
+	// TODO for the window with the computed index.  use the static
+	// TODO menu label as as format string.
+
+	// TODO we currently only allow one window, hard code it
+	// TODO and leave the rest blank....
+
+	if (index == 0)
+	{
+		const char * szFormat = pLabel->getMenuLabel();
+		static char buf[128];
+		sprintf(buf,szFormat,"TODO my window name");	
+		return buf;
+	}
+	
+	// TODO for now, for the other slots, return a null string to tell
+	// TODO the menu code to remove this item from the menu.
+
+	return NULL;
+}
+
+Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_WindowMore)
+{
+	// Compute the menu label for the _window_more ("More Windows...") item.
+	
+	UT_ASSERT(pApp);
+	UT_ASSERT(pLabel);
+	UT_ASSERT(id == AP_MENU_ID_WINDOW_MORE);
+	
+	// TODO if we have more than 9 windows in our window list,
+	// TODO we return the static menu label.  if not, we return
+	// TODO null string to tell the menu code to remove this
+	// TODO item from the menu.
+
+	// return pLabel->getMenuLabel();
+
+	return NULL;
+}

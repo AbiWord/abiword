@@ -198,6 +198,17 @@ public:
 	static EV_EditMethod_Fn middleSpace;
 	static EV_EditMethod_Fn doubleSpace;
 
+	static EV_EditMethod_Fn activateWindow_1;
+	static EV_EditMethod_Fn activateWindow_2;
+	static EV_EditMethod_Fn activateWindow_3;
+	static EV_EditMethod_Fn activateWindow_4;
+	static EV_EditMethod_Fn activateWindow_5;
+	static EV_EditMethod_Fn activateWindow_6;
+	static EV_EditMethod_Fn activateWindow_7;
+	static EV_EditMethod_Fn activateWindow_8;
+	static EV_EditMethod_Fn activateWindow_9;
+	static EV_EditMethod_Fn moreWindowsDlg;
+	
 	static EV_EditMethod_Fn cycleWindows;
 	static EV_EditMethod_Fn cycleWindowsBck;
 	static EV_EditMethod_Fn closeWindow;
@@ -342,6 +353,17 @@ static EV_EditMethod s_arrayEditMethods[] =
 		EV_EditMethod(NF(singleSpace),			0,		""),
 		EV_EditMethod(NF(middleSpace),			0,		""),
 		EV_EditMethod(NF(doubleSpace),			0,		""),
+
+		EV_EditMethod(NF(activateWindow_1),		0,		""),
+		EV_EditMethod(NF(activateWindow_2),		0,		""),
+		EV_EditMethod(NF(activateWindow_3),		0,		""),
+		EV_EditMethod(NF(activateWindow_4),		0,		""),
+		EV_EditMethod(NF(activateWindow_5),		0,		""),
+		EV_EditMethod(NF(activateWindow_6),		0,		""),
+		EV_EditMethod(NF(activateWindow_7),		0,		""),
+		EV_EditMethod(NF(activateWindow_8),		0,		""),
+		EV_EditMethod(NF(activateWindow_9),		0,		""),
+		EV_EditMethod(NF(moreWindowsDlg),		0,		""),
 
 		EV_EditMethod(NF(cycleWindows),			_M_,	""),
 		EV_EditMethod(NF(cycleWindowsBck),		_M_,	""),
@@ -1006,6 +1028,47 @@ Defun0(go)
 }
 
 Defun0(replace)
+{
+	return UT_TRUE;
+}
+
+Defun0(activateWindow_1)
+{
+	return UT_TRUE;
+}
+Defun0(activateWindow_2)
+{
+	return UT_TRUE;
+}
+Defun0(activateWindow_3)
+{
+	return UT_TRUE;
+}
+Defun0(activateWindow_4)
+{
+	return UT_TRUE;
+}
+Defun0(activateWindow_5)
+{
+	return UT_TRUE;
+}
+Defun0(activateWindow_6)
+{
+	return UT_TRUE;
+}
+Defun0(activateWindow_7)
+{
+	return UT_TRUE;
+}
+Defun0(activateWindow_8)
+{
+	return UT_TRUE;
+}
+Defun0(activateWindow_9)
+{
+	return UT_TRUE;
+}
+Defun0(moreWindowsDlg)
 {
 	return UT_TRUE;
 }

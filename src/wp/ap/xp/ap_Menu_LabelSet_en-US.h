@@ -44,6 +44,8 @@ BeginSet(EnUS)
 
 	MenuLabel(AP_MENU_ID__BOGUS1__,		NULL,NULL,NULL)
 
+	//       (id,                       szLabel,            szToolTip,      szStatusMsg)
+
 	MenuLabel(AP_MENU_ID_FILE,			AMPERSAND "File", NULL, NULL)
 	MenuLabel(AP_MENU_ID_FILE_NEW,		AMPERSAND "New", NULL, "Create a new document")	
 	MenuLabel(AP_MENU_ID_FILE_OPEN,		AMPERSAND "Open", NULL, "Open an existing document")
@@ -83,6 +85,18 @@ BeginSet(EnUS)
 	MenuLabel(AP_MENU_ID_HELP,			AMPERSAND "Help", NULL, NULL)
 	MenuLabel(AP_MENU_ID_HELP_READSRC,	"Read the source", NULL, NULL)
 	MenuLabel(AP_MENU_ID_HELP_FIXBUGS,	"Fix bugs", NULL, NULL)
+
+	MenuLabel(AP_MENU_ID_WINDOW,		AMPERSAND "Window",		NULL,	NULL)
+	MenuLabel(AP_MENU_ID_WINDOW_1,		AMPERSAND "1 %s",		NULL,	"Raise this window")
+	MenuLabel(AP_MENU_ID_WINDOW_2,		AMPERSAND "2 %s",		NULL,	"Raise this window")
+	MenuLabel(AP_MENU_ID_WINDOW_3,		AMPERSAND "3 %s",		NULL,	"Raise this window")
+	MenuLabel(AP_MENU_ID_WINDOW_4,		AMPERSAND "4 %s",		NULL,	"Raise this window")
+	MenuLabel(AP_MENU_ID_WINDOW_5,		AMPERSAND "5 %s",		NULL,	"Raise this window")
+	MenuLabel(AP_MENU_ID_WINDOW_6,		AMPERSAND "6 %s",		NULL,	"Raise this window")
+	MenuLabel(AP_MENU_ID_WINDOW_7,		AMPERSAND "7 %s",		NULL,	"Raise this window")
+	MenuLabel(AP_MENU_ID_WINDOW_8,		AMPERSAND "8 %s",		NULL,	"Raise this window")
+	MenuLabel(AP_MENU_ID_WINDOW_9,		AMPERSAND "9 %s",		NULL,	"Raise this window")
+	MenuLabel(AP_MENU_ID_WINDOW_MORE,	AMPERSAND "More Windows",	NULL,	"Show full list of windows")
 
 	// ... add others here ...
 

@@ -37,7 +37,11 @@ public:
 	~EV_Win32Menu(void);
 
 	UT_Bool				synthesize(void);
-	UT_Bool				onCommand(FV_View * pView, HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
+	UT_Bool				onCommand(FV_View * pView, HWND hWnd, WPARAM wParam);
+	UT_Bool				onInitMenu(FV_View * pView, HWND hWnd, HMENU hMenuBar);
+
+	inline AP_Menu_Id	MenuIdFromWmCommand(UINT cmd)		{ return (AP_Menu_Id)(cmd - WM_USER); };
+	inline UINT			WmCommandFromMenuId(AP_Menu_Id id)	{ return (id + WM_USER); };
 
 protected:
 	AP_Win32App *		m_pWin32App;

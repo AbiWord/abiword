@@ -33,6 +33,7 @@
 
 
 #define DELETEP(p)		do { if (p) delete p; } while (0)
+#define NrElements(a)	((sizeof(a) / sizeof(a[0])))
 
 /*****************************************************************/
 
@@ -60,18 +61,13 @@ EV_Win32Menu::~EV_Win32Menu(void)
 }
 
 UT_Bool EV_Win32Menu::onCommand(FV_View * pView,
-					  HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
+								HWND hWnd, WPARAM wParam)
 {
-// TODO: move this logic out a level?
-	WORD cmd = LOWORD(wParam);
-
-	// convert command to menu id
-	WORD wid = cmd - WM_USER;
-	AP_Menu_Id id = (AP_Menu_Id) wid;
-// ==>: then can just pass id like Unix does
-
-	UT_ASSERT(id > AP_MENU_ID__BOGUS1__);
-	UT_ASSERT(id < AP_MENU_ID__BOGUS2__);
+	// map the windows WM_COMMAND command-id into one of our AP_Menu_Id.
+	// we don't need to range check it, getAction() will puke if it's
+	// out of range.
+	
+	AP_Menu_Id id = MenuIdFromWmCommand(LOWORD(wParam));
 
 	// user selected something from the menu.
 	// invoke the appropriate function.
@@ -141,34 +137,47 @@ UT_Bool EV_Win32Menu::synthesize(void)
 
 		// get the name for the menu item
 
-		const char * szLabelName = pAction->getDynamicLabel(m_pWin32App);
-		if (!szLabelName || !*szLabelName)
+		char * buf = NULL;
+		const char * szLabelName = NULL;
+
+		if (pAction->hasDynamicLabel())
+			szLabelName = pAction->getDynamicLabel(m_pWin32App,pLabel);
+		else
 			szLabelName = pLabel->getMenuLabel();
 
-		// append "..." to menu item if it raises a dialog
-		
-		char * buf = NULL;
-		if (pAction->raisesDialog())
+		if (szLabelName && *szLabelName)
 		{
-			buf = new char[strlen(szLabelName) + 4];
-			UT_ASSERT(buf);
-			strcpy(buf,szLabelName);
-			strcat(buf,"...");
-			szLabelName = buf;
+			// append "..." to menu item if it raises a dialog
+		
+			if (pAction->raisesDialog())
+			{
+				buf = new char[strlen(szLabelName) + 4];
+				UT_ASSERT(buf);
+				strcpy(buf,szLabelName);
+				strcat(buf,"...");
+				szLabelName = buf;
+			}
 		}
-
+		
 		switch (pLayoutItem->getMenuLayoutFlags())
 		{
-		case EV_MLF_Normal:
 		case EV_MLF_BeginSubMenu:
+			UT_ASSERT(szLabelName && *szLabelName);
+			// Fall Thru Intended
+		case EV_MLF_Normal:
 			{
 				HMENU m;
 				bResult = stack.viewTop((void **)&m);
 				UT_ASSERT(bResult);
 
-				// TODO: do we disable/check here or elsewhere?
-				UINT flags = MF_STRING | MF_ENABLED;
-				UINT u = id + WM_USER;
+				// set standard flags on the item, we'll update the
+				// state on an onInitMenu().
+				
+				UINT flags = MF_STRING | MF_ENABLED | MF_UNCHECKED;
+
+				// map our AP_Menu_Id into a windows WM_COMMAND id.
+				
+				UINT u = WmCommandFromMenuId(id);
 
 				if (pLayoutItem->getMenuLayoutFlags() == EV_MLF_BeginSubMenu)
 				{
@@ -182,7 +191,8 @@ UT_Bool EV_Win32Menu::synthesize(void)
 					u = (UINT) sub;
 				}
 
-				AppendMenu(m, flags, u, szLabelName);
+				if (szLabelName && *szLabelName)
+					AppendMenu(m, flags, u, szLabelName);
 			}
 			break;
 	
@@ -238,4 +248,146 @@ UT_Bool EV_Win32Menu::synthesize(void)
 	
 	return UT_TRUE;
 }
+
+UT_Bool EV_Win32Menu::onInitMenu(FV_View * pView, HWND hWnd, HMENU hMenuBar)
+{
+	// deal with WM_INITMENU.
+
+	const EV_Menu_ActionSet * pMenuActionSet = m_pWin32App->getMenuActionSet();
+	const EV_Menu_LabelSet * pMenuLabelSet = m_pWin32Frame->getMenuLabelSet();
+	const EV_Menu_Layout * pMenuLayout = m_pWin32Frame->getMenuLayout();
+	UT_uint32 nrLabelItemsInLayout = pMenuLayout->getLayoutItemCount();
+	UT_Bool bNeedToRedrawMenu = UT_FALSE;
+	
+	for (UT_uint32 k=0; (k < nrLabelItemsInLayout); k++)
+	{
+		EV_Menu_LayoutItem * pLayoutItem = pMenuLayout->getLayoutItem(k);
+		AP_Menu_Id id = pLayoutItem->getMenuId();
+		EV_Menu_Action * pAction = pMenuActionSet->getAction(id);
+		EV_Menu_Label * pLabel = pMenuLabelSet->getLabel(id);
+
+		UINT cmd = WmCommandFromMenuId(id);
+
+		switch (pLayoutItem->getMenuLayoutFlags())
+		{
+		case EV_MLF_Normal:
+			{
+				// see if we need to enable/disable and/or check/uncheck it.
+				
+				UINT uEnable = MF_BYCOMMAND | MF_ENABLED;
+				UINT uCheck = MF_BYCOMMAND | MF_UNCHECKED;
+				if (pAction->hasGetStateFunction())
+				{
+					EV_Menu_ItemState mis = pAction->getMenuItemState(pView);
+					if (mis & EV_MIS_Gray)
+						uEnable |= MF_GRAYED;
+					if (mis & EV_MIS_Toggled)
+						uCheck |= MF_CHECKED;
+				}
+
+				if (!pAction->hasDynamicLabel())
+				{
+					// if no dynamic label, all we need to do
+					// is enable/disable and/or check/uncheck it.
+
+					EnableMenuItem(hMenuBar,cmd,uEnable);
+					CheckMenuItem(hMenuBar,cmd,uCheck);
+					break;
+				}
+
+				// get the current menu info for this item.
+				
+				MENUITEMINFO mif;
+				char bufMIF[128];
+				mif.cbSize = sizeof(mif);
+				mif.dwTypeData = bufMIF;
+				mif.cch = NrElements(bufMIF)-1;
+				mif.fMask = MIIM_STATE | MIIM_TYPE | MIIM_ID;
+				BOOL bPresent = GetMenuItemInfo(hMenuBar,cmd,FALSE,&mif);
+
+				// this item has a dynamic label...
+				// compute the value for the label.
+				// if it is blank, we remove the item from the menu.
+				
+				const char * szLabelName = pAction->getDynamicLabel(m_pWin32App,pLabel);
+				BOOL bRemoveIt = (!szLabelName || !*szLabelName);
+
+				if (bRemoveIt)			// we don't want it to be there
+				{
+					if (bPresent)
+					{
+						RemoveMenu(hMenuBar,cmd,MF_BYCOMMAND);
+						bNeedToRedrawMenu = UT_TRUE;
+					}
+					break;
+				}
+
+				// we want it in the menu, complete the construction of the
+				// menu label.  append "..." to menu item if it raises a dialog.
+				
+				char * buf = NULL;		// delete this when done with it.
+				if (pAction->raisesDialog())
+				{
+					buf = new char[strlen(szLabelName) + 4];
+					UT_ASSERT(buf);
+					strcpy(buf,szLabelName);
+					strcat(buf,"...");
+					szLabelName = buf;
+				}
+
+				if (bPresent)			// just update the label on the item.
+				{
+					if (strcmp(szLabelName,mif.dwTypeData)==0)
+					{
+						// dynamic label has not changed, all we need to do
+						// is enable/disable and/or check/uncheck it.
+
+						EnableMenuItem(hMenuBar,cmd,uEnable);
+						CheckMenuItem(hMenuBar,cmd,uCheck);
+					}
+					else
+					{
+						// dynamic label has changed, do the complex modify.
+						
+						mif.fState = uCheck | uEnable;
+						mif.fType = MFT_STRING;
+						mif.dwTypeData = (LPTSTR)szLabelName;
+						SetMenuItemInfo(hMenuBar,cmd,FALSE,&mif);
+						bNeedToRedrawMenu = UT_TRUE;
+					}
+				}
+				else
+				{
+					// insert new item at the correct location
+					// On Win32, we 'insert' before a given id.
+
+					// TODO do this
+				}
+
+				DELETEP(buf);
+			}
+			break;
+	
+		case EV_MLF_BeginSubMenu:
+		case EV_MLF_EndSubMenu:
+		case EV_MLF_Separator:
+			break;
+
+		default:
+			UT_ASSERT(0);
+			break;
+		}
+
+	}
+
+	// TODO some of the documentation refers to a need to call DrawMenuBar(hWnd)
+	// TODO after any change to it.  other parts of the documentation makes no
+	// TODO reference to it.  if you have problems, do something like:
+	// TODO
+	// TODO if (bNeedToRedrawMenu)
+	// TODO 	DrawMenuBar(hWnd);
+		
+	return UT_TRUE;
+}
+
 

@@ -41,7 +41,25 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	// does not necessarily correspond to any actual menu.
 	// Elsewhere we define one or more MenuLayouts using these
 	// verbs....
-
+	//
+	// szMethodName is the name of a "call-by-name" EditMethod that we will
+	//              call when the menu item is selected.  if it is null, the
+	//              menu item doesn't do anything (we set it null for separators
+	//              and the popup name).
+	//
+	// fnGetState   is a function pointer to be called to return the enabled/disabled
+	//              and/or checked/unchecked state of the menu item.  this will be
+	//              called on each item when the menu (bar) is activated (on Win32
+	//              this is in response to an WM_INITMENU message).
+	//
+	// fnGetLabel   is a function pointer to compute a "dynamic menu item name" for
+	//              the item.  it returns a string which will be stuffed into the
+	//              menu as the label for this item.  the returned label will be
+	//              decorated in platform-code to include the usual i-raise-a-dialog "..."
+	//              and any other platform-specific decoration.  if this function returns
+	//              a null string, we temporarily hide/remove this item from the layout.
+	//              (this feature is used by the window list manager.)
+	
 #define _s(id,bHoldsSubMenu,bRaisesDialog,bCheckable,szMethodName,pfnGetState,pfnGetLabel)	\
 	pActionSet->setAction(id,bHoldsSubMenu,bRaisesDialog,bCheckable,szMethodName,pfnGetState,pfnGetLabel)
 
@@ -85,6 +103,18 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_ALIGN_RIGHT,		0,0,1,	"alignRight",		ap_GetState_BlockFmt,	NULL);
 	_s(AP_MENU_ID_ALIGN_JUSTIFY,	0,0,1,	"alignJustify",		ap_GetState_BlockFmt,	NULL);
 
+	_s(AP_MENU_ID_WINDOW,			1,0,0,	NULL,				NULL,					NULL);
+	_s(AP_MENU_ID_WINDOW_1,			0,0,0,	"activateWindow_1",	NULL,					ap_GetLabel_Window);
+	_s(AP_MENU_ID_WINDOW_2,			0,0,0,	"activateWindow_2",	NULL,					ap_GetLabel_Window);
+	_s(AP_MENU_ID_WINDOW_3,			0,0,0,	"activateWindow_3",	NULL,					ap_GetLabel_Window);
+	_s(AP_MENU_ID_WINDOW_4,			0,0,0,	"activateWindow_4",	NULL,					ap_GetLabel_Window);
+	_s(AP_MENU_ID_WINDOW_5,			0,0,0,	"activateWindow_5",	NULL,					ap_GetLabel_Window);
+	_s(AP_MENU_ID_WINDOW_6,			0,0,0,	"activateWindow_6",	NULL,					ap_GetLabel_Window);
+	_s(AP_MENU_ID_WINDOW_7,			0,0,0,	"activateWindow_7",	NULL,					ap_GetLabel_Window);
+	_s(AP_MENU_ID_WINDOW_8,			0,0,0,	"activateWindow_8",	NULL,					ap_GetLabel_Window);
+	_s(AP_MENU_ID_WINDOW_9,			0,0,0,	"activateWindow_9",	NULL,					ap_GetLabel_Window);
+	_s(AP_MENU_ID_WINDOW_MORE,		0,1,0,	"moreWindowsDlg",	NULL,					ap_GetLabel_WindowMore);
+	
 	_s(AP_MENU_ID_HELP,				1,0,0,	NULL,				NULL,					NULL);
 	_s(AP_MENU_ID_HELP_READSRC,		0,0,0,	NULL,				NULL,					NULL);
 	_s(AP_MENU_ID_HELP_FIXBUGS,		0,0,0,	NULL,				NULL,					NULL);

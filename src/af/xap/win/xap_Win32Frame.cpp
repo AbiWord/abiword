@@ -343,10 +343,15 @@ LRESULT CALLBACK AP_Win32Frame::_WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LP
 	return 0;
 
 	case WM_COMMAND:
-		if (f->m_pWin32Menu->onCommand(pView,hwnd,iMsg,wParam,lParam))
+		if (f->m_pWin32Menu->onCommand(pView,hwnd,wParam))
 			return 0;
 		return DefWindowProc(hwnd,iMsg,wParam,lParam);
 
+	case WM_INITMENU:
+		if (f->m_pWin32Menu->onInitMenu(pView,hwnd,(HMENU)wParam))
+			return 0;
+		return DefWindowProc(hwnd,iMsg,wParam,lParam);
+		
 	case WM_SYSKEYDOWN:
 	case WM_KEYDOWN:
 		if (f->m_pWin32Keyboard->onKeyDown(pView,hwnd,iMsg,wParam,lParam))

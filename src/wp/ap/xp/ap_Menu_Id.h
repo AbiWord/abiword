@@ -75,6 +75,18 @@ typedef enum _Ap_Menu_Id
 	AP_MENU_ID_HELP_READSRC,
 	AP_MENU_ID_HELP_FIXBUGS,
 
+	AP_MENU_ID_WINDOW,
+	AP_MENU_ID_WINDOW_1,		// _window_1 thru _window_9 must be contiguous
+	AP_MENU_ID_WINDOW_2,
+	AP_MENU_ID_WINDOW_3,
+	AP_MENU_ID_WINDOW_4,
+	AP_MENU_ID_WINDOW_5,
+	AP_MENU_ID_WINDOW_6,
+	AP_MENU_ID_WINDOW_7,
+	AP_MENU_ID_WINDOW_8,
+	AP_MENU_ID_WINDOW_9,
+	AP_MENU_ID_WINDOW_MORE,
+
 	/* ... add others here ... */
 
 	AP_MENU_ID__BOGUS2__				/* must be last */

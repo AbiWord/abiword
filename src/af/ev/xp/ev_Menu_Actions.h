@@ -42,6 +42,7 @@
 #include "ap_Menu_Id.h"
 class AP_App;
 class FV_View;
+class EV_Menu_Label;
 
 // TODO consider removing bHoldsSubMenu bit from this file.
 
@@ -64,9 +65,9 @@ typedef EV_Menu_ItemState (*EV_GetMenuItemState_pFn)(FV_View * pView, AP_Menu_Id
 // TODO the ap.  but for view-specific things (like toggles where we change the menu
 // TODO item name rather than doing a checkmark), we need the view.
 
-typedef const char * ( EV_GetMenuItemComputedLabel_Fn )(AP_App * pApp, AP_Menu_Id id);
-typedef const char * (*EV_GetMenuItemComputedLabel_pFn)(AP_App * pApp, AP_Menu_Id id);
-#define Defun_EV_GetMenuItemComputedLabel_Fn(fn) const char * fn(AP_App * pApp, AP_Menu_Id id)
+typedef const char * ( EV_GetMenuItemComputedLabel_Fn )(AP_App * pApp, const EV_Menu_Label * pLabel, AP_Menu_Id id);
+typedef const char * (*EV_GetMenuItemComputedLabel_pFn)(AP_App * pApp, const EV_Menu_Label * pLabel, AP_Menu_Id id);
+#define Defun_EV_GetMenuItemComputedLabel_Fn(fn) const char * fn(AP_App * pApp, const EV_Menu_Label * pLabel, AP_Menu_Id id)
 
 /*****************************************************************/
 
@@ -83,8 +84,11 @@ public:
 	~EV_Menu_Action(void);
 
 	AP_Menu_Id						getMenuId(void) const;
-	const char *					getDynamicLabel(AP_App * pApp) const;
+	UT_Bool							hasDynamicLabel(void) const;
+	const char *					getDynamicLabel(AP_App * pApp, const EV_Menu_Label * pLabel) const;
 	const char *					getMethodName(void) const;
+	UT_Bool							hasGetStateFunction(void) const;
+	EV_Menu_ItemState				getMenuItemState(FV_View * pView) const;
 	UT_Bool							raisesDialog(void) const;
 	
 protected:
