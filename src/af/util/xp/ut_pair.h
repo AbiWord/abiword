@@ -23,20 +23,18 @@
 #include <stdlib.h>
 #include "ut_types.h"
 
-typedef void* pair_type;
+typedef const void* pair_type;
 
 #ifndef ABI_OPT_STL
 
 class ABI_EXPORT UT_Pair
 {
 public:
-	UT_Pair(const pair_type first, const pair_type second);
+	UT_Pair(pair_type first, pair_type second);
 	~UT_Pair();
 
-	const pair_type& first() const  { return m_first; }
-	const pair_type& second() const { return m_second; }
-	pair_type& first()  { return m_first; }
-	pair_type& second() { return m_second; }
+	pair_type first() const  { return m_first; }
+	pair_type second() const { return m_second; }
 
 private:
 	pair_type m_first;
@@ -53,15 +51,12 @@ public:
 	UT_Pair(const pair_type first, const pair_type second);
 	~UT_Pair();
 
-	const pair_type& first()  const { m_pair.first; }
-	const pair_type& second() const { m_pair.second; }
-	pair_type& first()  { return m_pair.first; }
-	pair_type& second() { return m_pair.second; }
+	pair_type first()  const { return m_pair.first; }
+	pair_type second() const { return m_pair.second; }
 
 private:
 	std::pair<pair_type, pair_type>	m_pair;
 };
-
 
 #endif /* ABI_OPT_STL */
 

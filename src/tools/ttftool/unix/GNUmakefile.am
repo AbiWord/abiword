@@ -26,3 +26,6 @@ noinst_PROGRAMS = ttftool
 
 ttftool_SOURCES = ttftool.c ps.c parse.c ttfutils.c
 
+install-exec-local:
+	@cp -f ttftool $(DESTDIR)/$(bindir)/ttftool
+

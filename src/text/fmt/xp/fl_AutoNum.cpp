@@ -262,7 +262,7 @@ void    fl_AutoNum::findAndSetParentItem(void)
 }
 
 void    fl_AutoNum::_getLabelstr( UT_UCSChar labelStr[], UT_uint32 * insPoint, 
-								  UT_uint32 depth, PL_StruxDocHandle pLayout)  
+								  UT_uint32 depth, PL_StruxDocHandle pLayout) const
 {
 	// This method recursively calculates a label based on the type of label
 	// of the AutoNum Class. This is output to the label string labelStr.
@@ -334,7 +334,7 @@ void    fl_AutoNum::_getLabelstr( UT_UCSChar labelStr[], UT_uint32 * insPoint,
 		(*insPoint) = 0;
 		return;
 	}
-	place = place + m_iStartValue;
+	place += m_iStartValue;
  
 	//	if (depth == 0 )
 	if( m_List_Type < BULLETED_LIST)
@@ -455,7 +455,7 @@ void    fl_AutoNum::_getLabelstr( UT_UCSChar labelStr[], UT_uint32 * insPoint,
 	return;
 }
 
-const UT_UCSChar * fl_AutoNum::getLabel(PL_StruxDocHandle pItem) 
+const UT_UCSChar * fl_AutoNum::getLabel(PL_StruxDocHandle pItem)  const
 {
 	static UT_UCSChar label[100];
 	UT_uint32  insPoint=0;
@@ -472,7 +472,7 @@ const UT_UCSChar * fl_AutoNum::getLabel(PL_StruxDocHandle pItem)
 	}
 }
 
-UT_uint32 fl_AutoNum::getValue(PL_StruxDocHandle pItem) 
+UT_uint32 fl_AutoNum::getValue(PL_StruxDocHandle pItem) const
 {
 	return getPositionInList(pItem,0) + m_iStartValue;
 }
@@ -483,7 +483,7 @@ void fl_AutoNum::setListType(List_Type lType)
 	m_List_Type = lType;
 }
 
-bool fl_AutoNum::isDirty(void)
+bool fl_AutoNum::isDirty() const
 {
 	return m_bDirty;
 }
@@ -495,13 +495,13 @@ void fl_AutoNum::setDelim(const XML_Char * lDelim)
 	m_bDirty = true;
 }
 
-const XML_Char * fl_AutoNum::getDelim( void)
+const XML_Char * fl_AutoNum::getDelim() const
 {
 	return m_pszDelim;
 }
 
 
-const XML_Char * fl_AutoNum::getDecimal( void)
+const XML_Char * fl_AutoNum::getDecimal() const
 {
 	return m_pszDecimal;
 }
@@ -513,7 +513,7 @@ void fl_AutoNum::setDecimal(const XML_Char * lDecimal)
 	m_bDirty = true;
 }
 
-List_Type fl_AutoNum::getType(void)
+List_Type fl_AutoNum::getType() const
 {
 	return m_List_Type;
 }
@@ -531,7 +531,7 @@ void fl_AutoNum::setAsciiOffset(UT_uint32 new_asciioffset)
 	m_bDirty = true;
 }
 
-UT_uint32 fl_AutoNum::getStartValue32(void)
+UT_uint32 fl_AutoNum::getStartValue32() const
 {
 	return m_iStartValue;
 }
@@ -557,7 +557,7 @@ void fl_AutoNum::insertFirstItem(PL_StruxDocHandle pItem, PL_StruxDocHandle pLas
 		_updateItems(0,NULL);
 }
 
-PL_StruxDocHandle fl_AutoNum::getParentItem(void)
+PL_StruxDocHandle fl_AutoNum::getParentItem() const
 {
 	return m_pParentItem;
 }
@@ -693,12 +693,12 @@ void fl_AutoNum::removeItem(PL_StruxDocHandle pItem)
 	_updateItems(ndx,NULL);
 }
 
-UT_uint32 fl_AutoNum::getNumLabels(void)
+UT_uint32 fl_AutoNum::getNumLabels() const
 {
 	return m_pItems.getItemCount();
 }
 
-UT_sint32 fl_AutoNum::getPositionInList(PL_StruxDocHandle pItem, UT_uint32 depth) 
+UT_sint32 fl_AutoNum::getPositionInList(PL_StruxDocHandle pItem, UT_uint32 depth) const
 {
 	UT_ASSERT(m_pItems.getItemCount() > 0);
 	
@@ -712,7 +712,7 @@ UT_sint32 fl_AutoNum::getPositionInList(PL_StruxDocHandle pItem, UT_uint32 depth
 	{
 		pTmp = (PL_StruxDocHandle) m_pItems.getNthItem(i);
 		//		bOnLevel = (depth == 0);
-		fl_AutoNum * pAuto = getAutoNumFromSdh(pItem);
+		const fl_AutoNum* pAuto = getAutoNumFromSdh(pItem);
 		bOnLevel = (bool)( pAuto == this);
 		bFirstItem = (bool)(pTmp == m_pItems.getFirstItem());
 		if (pTmp == pItem)
@@ -757,9 +757,34 @@ fl_AutoNum * fl_AutoNum::getAutoNumFromSdh(PL_StruxDocHandle sdh)
 	return pAuto;
 }
 
-	   
+const fl_AutoNum* fl_AutoNum::getAutoNumFromSdh(PL_StruxDocHandle sdh) const
+{
+	UT_sint32 i;
+	const fl_AutoNum* pAuto = 0;
 
-const bool fl_AutoNum::isItem(PL_StruxDocHandle pItem) 
+	if (m_pDoc->areListUpdatesAllowed() == false)
+	{
+		if (isItem(sdh) == false)
+			return 0;
+
+		return this;
+	}
+
+	UT_sint32 numLists = m_pDoc->getListsCount();
+	for (i = 0; i < numLists; ++i)
+	{
+		pAuto = m_pDoc->getNthList(i);
+		if (pAuto->isItem(sdh))
+			break;
+	}
+
+	if (i >= numLists)
+		return 0;
+
+	return pAuto;
+}
+
+const bool fl_AutoNum::isItem(PL_StruxDocHandle pItem) const
 {
 	if (m_pItems.findItem((void *)(pItem)) == -1)
 		return false;
@@ -959,7 +984,7 @@ inline UT_uint32 fl_AutoNum::_getLevelValue(fl_AutoNum * pAutoNum)
 	return pAutoNum->getValue(pBlock);
 }
 
-char *  fl_AutoNum::dec2roman(UT_sint32 value, bool lower) 
+char *  fl_AutoNum::dec2roman(UT_sint32 value, bool lower)
 {
 	UT_String roman;
 
@@ -1047,7 +1072,7 @@ char *  fl_AutoNum::dec2roman(UT_sint32 value, bool lower)
 	return rmn;
 }
 
-char * fl_AutoNum::dec2ascii(UT_sint32 value, UT_uint32 offset) 
+char * fl_AutoNum::dec2ascii(UT_sint32 value, UT_uint32 offset)
 {
 	char ascii[30];
 	UT_uint32 ndx, count, i;

@@ -57,24 +57,24 @@ public:
 
 	void						fixHierarchy(PD_Document *);
 		
-	const UT_UCSChar *			getLabel(PL_StruxDocHandle);
+	const UT_UCSChar *			getLabel(PL_StruxDocHandle) const;
 	void						addItem(PL_StruxDocHandle pItem);
-	List_Type					getType(void);
-	UT_uint32					getValue(PL_StruxDocHandle);
-	UT_uint32					getLevel(void) { return m_iLevel; }
-	UT_uint32					getNumLabels(void);
+	List_Type					getType() const;
+	UT_uint32					getValue(PL_StruxDocHandle) const;
+	UT_uint32					getLevel() const { return m_iLevel; }
+	UT_uint32					getNumLabels() const;
 
 	void						setLevel(UT_uint32 level) { m_iLevel = level; }
-	UT_sint32					getPositionInList( PL_StruxDocHandle pItem, UT_uint32 depth);
+	UT_sint32					getPositionInList( PL_StruxDocHandle pItem, UT_uint32 depth) const;
 	void						setListType(List_Type lType);
 	void						setDelim(const XML_Char * pszDelim);
-	const XML_Char *			getDelim(void);
+	const XML_Char *			getDelim() const;
 	void						setDecimal(const XML_Char * pszDecimal);
-	const XML_Char *			getDecimal(void);
-	bool						isDirty(void);
-	UT_uint16					getStartValue(void) { return m_iStartValue; }
+	const XML_Char *			getDecimal() const;
+	bool						isDirty() const;
+	UT_uint16					getStartValue() const { return m_iStartValue; }
 
-	UT_uint32					getStartValue32(void);
+	UT_uint32					getStartValue32() const;
 	void						setStartValue(UT_uint32 start);
 
 	void						insertFirstItem(PL_StruxDocHandle pItem,
@@ -83,13 +83,13 @@ public:
 	void						insertItem(PL_StruxDocHandle pItem, PL_StruxDocHandle pBefore);
 	void						prependItem(PL_StruxDocHandle pItem, PL_StruxDocHandle pAfter);
 	void						removeItem(PL_StruxDocHandle pItem);
-	PL_StruxDocHandle			getParentItem(void);
+	PL_StruxDocHandle			getParentItem() const;
 	void						setParentItem(PL_StruxDocHandle pItem);
 	bool                                 isContainedByList(PL_StruxDocHandle pItem);
 	PL_StruxDocHandle			getNthBlock(UT_uint32 i);
 	PL_StruxDocHandle			getPrevInList(PL_StruxDocHandle pItem);
 
-	const bool				isItem(PL_StruxDocHandle pItem);
+	const bool				isItem(PL_StruxDocHandle pItem) const;
 	bool						doesItemHaveLabel(fl_BlockLayout * pItem);
 	const bool				isEmpty(void);
 	PL_StruxDocHandle			getFirstItem(void);
@@ -97,8 +97,9 @@ public:
 	bool						isLastOnLevel(PL_StruxDocHandle pItem);
 
 	fl_AutoNum *				getParent(void) { return m_pParent; }
-	fl_AutoNum *				getActiveParent(void) ;
+	fl_AutoNum *				getActiveParent(void);
 	fl_AutoNum *				getAutoNumFromSdh(PL_StruxDocHandle sdh);
+	const fl_AutoNum *			getAutoNumFromSdh(PL_StruxDocHandle sdh) const;
 	void						fixListOrder(void);
 	void						markAsDirty(void);
 	void						findAndSetParentItem(void);
@@ -107,10 +108,10 @@ public:
 
 	void						update(UT_uint32 start);
 	bool						isUpdating(void) { return m_bUpdatingItems; }
-	UT_uint32					getID(void)  { return m_iID; }
-	UT_uint32					getParentID(void)  { return m_iParentID; }
-	char *						dec2roman(UT_sint32 value, bool lower) ;
-	char *						dec2ascii(UT_sint32 value, UT_uint32 offset);
+	UT_uint32					getID() const { return m_iID; }
+	UT_uint32					getParentID() const { return m_iParentID; }
+	static char *				dec2roman(UT_sint32 value, bool lower);
+	static char *				dec2ascii(UT_sint32 value, UT_uint32 offset);
 	
 	const char **				getAttributes(void) ;
 	
@@ -120,7 +121,7 @@ protected:
 	void						_getLabelstr(	UT_UCSChar labelStr[],
 												UT_uint32 * insPoint,
 												UT_uint32 depth,
-												PL_StruxDocHandle pLayout);
+												PL_StruxDocHandle pLayout) const;
 	void						_updateItems(UT_uint32 start, PL_StruxDocHandle notMe );
 	UT_uint32					_getLevelValue(fl_AutoNum * pAutoNum); 
 

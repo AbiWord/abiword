@@ -70,7 +70,9 @@ PP_AttrProp::~PP_AttrProp()
 		{
 			if(entry)
 			{
-			        FREEP(entry->first());
+				// hack. don't do it.
+				void* tmp = const_cast<void*> (entry->first());
+				FREEP(tmp);
 				if (entry->second())
 					delete (PP_PropertyType *)entry->second();
 
@@ -287,7 +289,9 @@ bool	PP_AttrProp::setProperty(const XML_Char * szName, const XML_Char * szValue)
 	{
 		UT_Pair* p = (UT_Pair*) pEntry;
 
-		FREEP(p->first());
+		// hack. don't do it.
+		void* tmp = const_cast<void*> (p->first());
+		FREEP(tmp);
 		if (p->second())
 			delete (PP_PropertyType *)p->second();
 

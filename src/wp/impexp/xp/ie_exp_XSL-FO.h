@@ -52,8 +52,9 @@ public:
 protected:
 	virtual UT_Error	_writeDocument();
 	
- private:
+private:
 	s_XSL_FO_Listener *	m_pListener;
+	UT_uint32 m_error;
 };
 
 #endif /* IE_EXP_XSL_FO_H */

@@ -24,7 +24,7 @@
 
 #ifndef ABI_OPT_STL
 
-UT_Pair::UT_Pair(const pair_type first, const pair_type second)
+UT_Pair::UT_Pair(pair_type first, pair_type second)
 :	m_first(first),
 	m_second(second)
 {
@@ -36,7 +36,7 @@ UT_Pair::~UT_Pair()
 
 #else /* ABI_OPT_STL */
 
-UT_Pair::UT_Pair(const pair_type first, const pair_type second)
+UT_Pair::UT_Pair(pair_type first, pair_type second)
 :	m_pair(first, second)
 {
 }

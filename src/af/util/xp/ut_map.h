@@ -41,12 +41,14 @@ public:
 	// (but the default constructor).
 	UT_Map();
 	UT_Map(comparator comp);
+	~UT_Map();
 
-	bool insert(value_t item) { return m_rbtree.insert(item); }
+	bool insert(key_t key, data_t data);
+	void erase(key_t key);
 	void erase(Iterator& c) { m_rbtree.erase(c); }
 
-	Iterator find(key_t item) { return m_rbtree.find(item); }
-	Iterator find_if(key_t item, comparator pred) { return m_rbtree.find_if(item, pred); }
+	Iterator find(key_t item);
+	Iterator find_if(key_t item, comparator pred);
 
 	Iterator begin() { return m_rbtree.begin(); }
 	Iterator end() { return m_rbtree.end(); }

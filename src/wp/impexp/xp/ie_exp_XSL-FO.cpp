@@ -25,6 +25,7 @@
 #include "ut_bytebuf.h"
 #include "ut_base64.h"
 #include "ut_debugmsg.h"
+#include "ut_map.h"
 #include "pt_Types.h"
 #include "ie_exp_XSL-FO.h"
 #include "pd_Document.h"
@@ -43,8 +44,114 @@
 
 #include "ut_string_class.h"
 
+//////////////////////////////////////////////////
+// Some helper functions to prevent the use of static buffers.
+//////////////////////////////////////////////////
+
+UT_String&
+operator<< (UT_String& st, int i)
+{
+	char tmp[16];
+	int nb = sprintf(tmp, "%d", i);
+	UT_ASSERT(nb < 15);
+	return (st += tmp);
+}
+ 
+UT_UCS2String&
+operator<< (UT_UCS2String& st, int i)
+{
+	char tmp[16];
+	UT_UCSChar tmp2[16];
+	int nb = sprintf(tmp, "%d", i);
+	UT_ASSERT(nb < 15);
+	UT_UCS_strcpy_char(tmp2, tmp);
+	return (st += tmp2);
+}
+
+UT_String&
+operator<< (UT_String& st, const UT_String& st2)
+{
+	st += st2;
+	return st;
+}
+
+UT_UCS2String&
+operator<< (UT_UCS2String& st, const UT_UCS2String& st2)
+{
+	st += st2;
+	return st;
+}
+
 /*****************************************************************/
 /*****************************************************************/
+
+// A little class to help export lists
+
+class ListHelper
+{
+public:
+	explicit ListHelper(UT_uint32 id = 0)
+		: m_pan(0),
+		  m_iNextNb(0),
+		  m_iInc(0)
+	{
+		setIdList(id);
+	}
+
+	void setIdList(UT_uint32 id)
+	{
+		XXX_UT_DEBUGMSG(("XXXXXXXXXXXXXXXXXXXXXXXXXXX Setting id list: %d\n", id));
+		UT_Map::Iterator it(lists.find(reinterpret_cast<UT_Map::key_t> (id)));
+
+		if (it.is_valid())
+		{
+			XXX_UT_DEBUGMSG(("XXXXXXXXXXXXXXXXXXXXXXXX Valid iterator\n"));
+			m_pan = static_cast<const fl_AutoNum*> (it.value());
+			UT_ASSERT(m_pan);
+			m_iNextNb = m_pan->getStartValue32();
+
+			if (m_pan->getType() >= BULLETED_LIST)
+				m_iInc = 0;
+			else
+				m_iInc = 1;
+		}
+		XXX_UT_DEBUGMSG(("XXXXXXXXXXXXXXXXXXXXXXXX Non Valid iterator\n"));
+	}
+
+	UT_String getNextLabel()
+	{
+		UT_ASSERT(m_pan);
+		UT_uint32 next_nb = m_iNextNb;
+		m_iNextNb += m_iInc;
+		// TODO: I'm laking pre and post text
+		return int2label(next_nb);
+	}
+	
+	static void addList(fl_AutoNum* pAutoNum)
+	{
+		XXX_UT_DEBUGMSG(("YYYYYYYYYYYYYYYYYYYYYY Adding list id: %d\n", pAutoNum->getID()));
+		lists.insert(reinterpret_cast<void*> (pAutoNum->getID()), pAutoNum);
+	}
+
+private:
+	UT_String int2label(UT_uint32 i)
+	{
+		UT_String retval;
+		retval << i;
+		return retval;
+	}
+
+	const fl_AutoNum* m_pan;
+	UT_uint32 m_iNextNb;
+	UT_uint32 m_iInc;
+
+	static UT_Map lists;
+};
+
+UT_Map ListHelper::lists;
+
+/************************************************************/
+/************************************************************/
 
 class s_XSL_FO_Listener : public PL_Listener
 {
@@ -72,18 +179,20 @@ public:
 															PL_StruxFmtHandle sfhNew));
 
 	virtual bool		signal(UT_uint32 iSignal);
-protected:
 
+protected:
 	void                _handlePageSize(PT_AttrPropIndex api);
-	void				_handleDataItems(void);
+	void				_handleDataItems();
+	void				_handleLists();
+	void				_handleField(PT_AttrPropIndex api);
 	void                _outputData(const UT_UCSChar * data, UT_uint32 length);
 
 	void				_convertFontSize(char* szDest, const char* szFontSize);
 	void                _convertColor(char* szDest, const char* pszColor);
 
-	void				_closeSection(void);
-	void				_closeBlock(void);
-	void				_closeSpan(void);
+	void				_closeSection();
+	void				_closeBlock();
+	void				_closeSpan();
 	void				_openBlock(PT_AttrPropIndex api);
 	void				_openSection(PT_AttrPropIndex api);
 	void				_openSpan(PT_AttrPropIndex api);
@@ -91,12 +200,12 @@ protected:
 private:
 	PD_Document *		m_pDocument;
 	IE_Exp_XSL_FO *	    m_pie;
+	ListHelper			m_List;
 
 	bool				m_bInSection;
 	bool				m_bInBlock;
 	bool				m_bInSpan;
 	bool				m_bFirstWrite;
-
 	int                 m_iImgCnt;
 };
 
@@ -119,13 +228,9 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 {
 
 	if (!m_sniffer)
-	{
 		m_sniffer = new IE_Exp_XSL_FO_Sniffer ();
-	}
 	else
-	{
 		m_sniffer->ref();
-	}
 
 	mi->name = "XSL-FO Exporter";
 	mi->desc = "Export XSL-FO Documents";
@@ -150,9 +255,7 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 
 	IE_Exp::unregisterExporter (m_sniffer);
 	if (!m_sniffer->unref())
-	{
 		m_sniffer = 0;
-	}
 
 	return 1;
 }
@@ -170,9 +273,10 @@ int abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor,
 /*****************************************************************/
 
 IE_Exp_XSL_FO::IE_Exp_XSL_FO(PD_Document * pDocument)
-	: IE_Exp(pDocument), m_pListener(0)
+	: IE_Exp(pDocument),
+	  m_pListener(0),
+	  m_error(UT_OK)
 {
-	m_error = UT_OK;
 }
 
 IE_Exp_XSL_FO::~IE_Exp_XSL_FO()
@@ -184,7 +288,7 @@ IE_Exp_XSL_FO::~IE_Exp_XSL_FO()
 
 bool IE_Exp_XSL_FO_Sniffer::recognizeSuffix(const char * szSuffix)
 {
-	return (!UT_stricmp(szSuffix,".fo"));
+	return (!UT_stricmp(szSuffix, ".fo"));
 }
 
 UT_Error IE_Exp_XSL_FO_Sniffer::constructExporter(PD_Document * pDocument,
@@ -208,7 +312,7 @@ bool IE_Exp_XSL_FO_Sniffer::getDlgLabels(const char ** pszDesc,
 /*****************************************************************/
 /*****************************************************************/
 
-UT_Error IE_Exp_XSL_FO::_writeDocument(void)
+UT_Error IE_Exp_XSL_FO::_writeDocument()
 {
 	m_pListener = new s_XSL_FO_Listener(getDoc(),this);
 	if (!m_pListener)
@@ -227,10 +331,14 @@ UT_Error IE_Exp_XSL_FO::_writeDocument(void)
 
 s_XSL_FO_Listener::s_XSL_FO_Listener(PD_Document * pDocument,
 									 IE_Exp_XSL_FO * pie)
-	: m_pDocument (pDocument), m_pie (pie), 
-	m_bInSection(false), m_bInBlock(false), 
-	m_bInSpan(false), m_bFirstWrite(true),
-	m_iImgCnt(0)
+	: m_pDocument(pDocument),
+	  m_pie (pie),
+	  m_List(),
+	  m_bInSection(false),
+	  m_bInBlock(false),
+	  m_bInSpan(false),
+	  m_bFirstWrite(true),
+	  m_iImgCnt(0)
 {
 	// Be nice to XML apps.  See the notes in _outputData() for more 
 	// details on the charset used in our documents.  By not declaring 
@@ -252,6 +360,8 @@ s_XSL_FO_Listener::s_XSL_FO_Listener(PD_Document * pDocument,
 	m_pie->write("<!-- This document was created by AbiWord -->\n");
 	m_pie->write("<!-- AbiWord is a free, Open Source word processor. -->\n");
 	m_pie->write("<!-- You may obtain more information about AbiWord at www.abisource.com -->\n\n");
+
+	_handleLists();
 }
 
 s_XSL_FO_Listener::~s_XSL_FO_Listener()
@@ -262,6 +372,38 @@ s_XSL_FO_Listener::~s_XSL_FO_Listener()
 	_handleDataItems();
 
 	m_pie->write ("</fo:root>\n");
+}
+
+void s_XSL_FO_Listener::_handleLists()
+{
+	fl_AutoNum* pAutoNum;
+
+	for (UT_uint32 k = 0; m_pDocument->enumLists(k, &pAutoNum); ++k)
+	{	
+		if (pAutoNum->isEmpty() == true)
+			continue;
+
+		ListHelper::addList(pAutoNum);
+	}
+}
+
+void s_XSL_FO_Listener::_handleField(PT_AttrPropIndex api)
+{
+	const PP_AttrProp* pAP = NULL;
+	bool bHaveProp = m_pDocument->getAttrProp(api, &pAP);
+	
+	if (bHaveProp && pAP)
+	{
+		const XML_Char* szValue;
+		if (pAP->getAttribute("list_label", szValue))
+		{
+			m_pie->write("<fo:list-item-label end-indent=\"label-end()\">\n"
+						 "  <fo:block>\n");
+			m_pie->write(m_List.getNextLabel().c_str());
+			m_pie->write("  </fo:block>\n"
+						 "</fo:list-item-label>\n");
+		}
+	}
 }
 
 bool s_XSL_FO_Listener::populate(PL_StruxFmtHandle /*sfh*/,
@@ -293,7 +435,6 @@ bool s_XSL_FO_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 	case PX_ChangeRecord::PXT_InsertObject:
 		{
 			const PX_ChangeRecord_Object * pcro = static_cast<const PX_ChangeRecord_Object *> (pcr);
-			PT_AttrPropIndex api = pcr->getIndexAP();
 
 			switch (pcro->getObjectType())
 			{
@@ -310,6 +451,7 @@ bool s_XSL_FO_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 
 			case PTO_Field:
 			{
+				_handleField(pcr->getIndexAP());
 				return true;
 			}
 
@@ -381,6 +523,15 @@ bool s_XSL_FO_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 	
 	case PTX_SectionHdrFtr:
 	{
+		_closeSpan();
+		_closeBlock();
+		
+//		<fo:static-content flow-name="xsl-region-before">
+//		<fo:block>
+//		</fo:block>
+//		</fo:static-content> 
+
+		
 		// TODO???
 		return true;
 	}
@@ -538,7 +689,7 @@ void s_XSL_FO_Listener::_handlePageSize(PT_AttrPropIndex api)
 	return;
 }
 
-void s_XSL_FO_Listener::_handleDataItems(void)
+void s_XSL_FO_Listener::_handleDataItems()
 {
 	const char * szName;
    	const char * szMimeType;
@@ -585,23 +736,32 @@ void s_XSL_FO_Listener::_openSection(PT_AttrPropIndex api)
 	m_bInSection = true;
 
 	m_pie->write("<fo:page-sequence master-name=\"first\">\n");
-	m_pie->write("<fo:flow flow-name=\"section\">\n");
+	m_pie->write("<fo:flow flow-name=\"xsl-region-body\">\n");
 }
 
-#define USED() do {m_pie->write(" "); if(!used) used = true;} while (0)
+#define USED do { m_pie->write(" "); if(!used) used = true; } while (0)
+#define BLOCK do { if (!used) m_pie->write("<fo:block"); } while (0)
+#define LIST do { if (!used) m_pie->write("<fo:list-block"); } while (0)
+#define PROPERTY(x) \
+	if (pAP->getProperty(x, szValue)) \
+	{ \
+		BLOCK; \
+		USED; \
+		m_pie->write(x"=\""); \
+		m_pie->write((const char *)szValue); \
+		m_pie->write("\""); \
+	}
+
 
 void s_XSL_FO_Listener::_openBlock(PT_AttrPropIndex api)
 {
 	if (!m_bInSection)
-	{
 		return;
-	}
 
 	const PP_AttrProp * pAP = NULL;
 	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
 
 	m_bInBlock = true;
-	m_pie->write("<fo:block");
 
 	// keep track of whether we have we written anything
 	bool used = false;
@@ -614,150 +774,80 @@ void s_XSL_FO_Listener::_openBlock(PT_AttrPropIndex api)
 
 		if (pAP->getProperty("bgcolor", szValue))
 		{
-			USED();
+			BLOCK;
+			USED;
 			m_pie->write("background-color=\"#");
+
+			if (*szValue >= '0' && *szValue <= '9')
+				m_pie->write("#");
+
 			m_pie->write((const char *)szValue);
 			m_pie->write("\"");
 		}
 
 		if (pAP->getProperty("color", szValue))
 		{
-			USED();
-			m_pie->write("color=\"#");
+			BLOCK;
+			USED;
+			m_pie->write("color=\"");
+
+			if (*szValue >= '0' && *szValue <= '9')
+				m_pie->write("#");
+
 			m_pie->write((const char *)szValue);
 			m_pie->write("\"");
 		}
 
 		if (pAP->getProperty("lang", szValue))
 		{
-			USED();
+			BLOCK;
+			USED;
 			m_pie->write("language=\"");
 			m_pie->write((const char *)szValue);
 			m_pie->write("\"");
 		}
-		
+
 		if (pAP->getProperty("font-size", szValue))
 		{
-			USED();
+			BLOCK;
+			USED;
 			m_pie->write("font-size=\"");
-			m_pie->write(purgeSpaces((const char *) szValue).c_str());
-			m_pie->write("\"");
-		}		
-
-		if (pAP->getProperty("font-family", szValue))
-		{
-			USED();
-			m_pie->write("font-family=\"");
-			m_pie->write((const char *)szValue);
+			m_pie->write(purgeSpaces((const char *)szValue).c_str());
 			m_pie->write("\"");
 		}
 
-		if (pAP->getProperty("font-weight", szValue))
+		if (pAP->getProperty("listid", szValue))
 		{
-			USED();
-			m_pie->write("font-weight=\"");
-			m_pie->write((const char *)szValue);
-			m_pie->write("\"");
+			LIST;
+			USED;
+			UT_uint32 id = (UT_uint32) atoi((const char*)szValue);
+			UT_DEBUGMSG(("YYYYYYYYYYYYYYYYYYYYYYYYY Trying to set list id: %d\n", id));
+			m_List.setIdList(id);
 		}
 
-		if (pAP->getProperty("font-style", szValue))
-		{
-			USED();
-			m_pie->write("font-style=\"");
-			m_pie->write((const char *)szValue);
-			m_pie->write("\"");
-		}
-
-		if (pAP->getProperty("font-stretch", szValue))
-		{
-			USED();
-			m_pie->write("font-stretch=\"");
-			m_pie->write((const char *)szValue);
-			m_pie->write("\"");
-		}
-
-		if (pAP->getProperty("keep-together", szValue))
-		{
-			USED();
-			m_pie->write("keep-together=\"");
-			m_pie->write((const char *)szValue);
-			m_pie->write("\"");
-		}
-
-		if (pAP->getProperty("keep-with-next", szValue))
-		{
-			USED();
-			m_pie->write("keep-with-next=\"");
-			m_pie->write((const char *)szValue);
-			m_pie->write("\"");
-		}
-
-		if (pAP->getProperty("line-height", szValue))
-		{
-			USED();
-			m_pie->write("line-height=\"");
-			m_pie->write((const char *)szValue);
-			m_pie->write("\"");
-		}
-
-		if (pAP->getProperty("margin-bottom", szValue))
-		{
-			USED();
-			m_pie->write("margin-bottom=\"");
-			m_pie->write((const char *)szValue);
-			m_pie->write("\"");
-		}
-
-		if (pAP->getProperty("margin-top", szValue))
-		{
-			USED();
-			m_pie->write("margin-top=\"");
-			m_pie->write((const char *)szValue);
-			m_pie->write("\"");
-		}
-
-		if (pAP->getProperty("margin-left", szValue))
-		{
-			USED();
-			m_pie->write("margin-left=\"");
-			m_pie->write((const char *)szValue);
-			m_pie->write("\"");
-		}
-
-		if (pAP->getProperty("margin-right", szValue))
-		{
-			USED();
-			m_pie->write("margin-right=\"");
-			m_pie->write((const char *)szValue);
-			m_pie->write("\"");
-		}
-
-		if (pAP->getProperty("text-align", szValue))
-		{
-			USED();
-			m_pie->write("text-align=\"");
-			m_pie->write((const char *)szValue);
-			m_pie->write("\"");
-		}
-
-		if (pAP->getProperty("widows", szValue))
-		{
-			USED();
-			m_pie->write("widows=\"");
-			m_pie->write((const char *)szValue);
-			m_pie->write("\"");
-		}
+		PROPERTY("font-family");
+		PROPERTY("font-weight");
+		PROPERTY("font-style");
+		PROPERTY("font-stretch");
+		PROPERTY("keep-together");
+		PROPERTY("keep-with-next");
+		PROPERTY("line-height");
+		PROPERTY("margin-bottom");
+		PROPERTY("margin-top");
+		PROPERTY("margin-left");
+		PROPERTY("margin-right");
+		PROPERTY("text-align");
+		PROPERTY("widows");
 	}
 
+	BLOCK;
 	m_pie->write(">\n");
 }
 
 void s_XSL_FO_Listener::_openSpan(PT_AttrPropIndex api)
 {
 	if (!m_bInBlock)
-	{
 		return;
-	}
 
 	m_bInSpan = true;
 
@@ -776,7 +866,7 @@ void s_XSL_FO_Listener::_openSpan(PT_AttrPropIndex api)
 
 		if (pAP->getProperty("bgcolor", szValue))
 		{
-			USED();
+			USED;
 			m_pie->write("background-color=\"");
 
 			if (*szValue >= '0' && *szValue <= '9')
@@ -788,7 +878,7 @@ void s_XSL_FO_Listener::_openSpan(PT_AttrPropIndex api)
 
 		if (pAP->getProperty("color", szValue))
 		{
-			USED();
+			USED;
 			m_pie->write("color=\"");
 
 			if (*szValue >= '0' && *szValue <= '9')
@@ -800,7 +890,7 @@ void s_XSL_FO_Listener::_openSpan(PT_AttrPropIndex api)
 
 		if (pAP->getProperty("lang", szValue))
 		{
-			USED();
+			USED;
 			m_pie->write("language=\"");
 			m_pie->write((const char *)szValue);
 			m_pie->write("\"");
@@ -808,108 +898,53 @@ void s_XSL_FO_Listener::_openSpan(PT_AttrPropIndex api)
 		
 		if (pAP->getProperty("font-size", szValue))
 		{
-			USED();
+			USED;
 			m_pie->write("font-size=\"");
 			m_pie->write(purgeSpaces((const char *)szValue).c_str());
 			m_pie->write("\"");
 		}		
 
-		if (pAP->getProperty("font-family", szValue))
-		{
-			USED();
-			m_pie->write("font-family=\"");
-			m_pie->write((const char *)szValue);
-			m_pie->write("\"");
-		}
-
-		if (pAP->getProperty("font-weight", szValue))
-		{
-			USED();
-			m_pie->write("font-weight=\"");
-			m_pie->write((const char *)szValue);
-			m_pie->write("\"");
-		}
-
-		if (pAP->getProperty("font-style", szValue))
-		{
-			USED();
-			m_pie->write("font-style=\"");
-			m_pie->write((const char *)szValue);
-			m_pie->write("\"");
-		}
-
-		if (pAP->getProperty("font-stretch", szValue))
-		{
-			USED();
-			m_pie->write("font-stretch=\"");
-			m_pie->write((const char *)szValue);
-			m_pie->write("\"");
-		}
-
-		if (pAP->getProperty("keep-together", szValue))
-		{
-			USED();
-			m_pie->write("keep-together=\"");
-			m_pie->write((const char *)szValue);
-			m_pie->write("\"");
-		}
-
-		if (pAP->getProperty("keep-with-next", szValue))
-		{
-			USED();
-			m_pie->write("keep-with-next=\"");
-			m_pie->write((const char *)szValue);
-			m_pie->write("\"");
-		}
-
-		if (pAP->getProperty("text-decoration", szValue))
-		{
-			USED();
-			m_pie->write("text-decoration=\"");
-			m_pie->write((const char *)szValue);
-			m_pie->write("\"");
-		}
-
+		PROPERTY("font-family");
+		PROPERTY("font-weight");
+		PROPERTY("font-style");
+		PROPERTY("font-stretch");
+		PROPERTY("keep-together");
+		PROPERTY("keep-with-next");
+		PROPERTY("text-decoration");
 	}
 
 	m_pie->write(">");
 }
 
+#undef BLOCK
+#undef LIST
 #undef USED
 
-void s_XSL_FO_Listener::_closeBlock(void)
+void s_XSL_FO_Listener::_closeBlock()
 {
 	if (!m_bInBlock)
-	{
 		return;
-	}
 
 	m_bInBlock = false;
 	m_pie->write("\n</fo:block>\n");
 }
 
-void s_XSL_FO_Listener::_closeSection(void)
+void s_XSL_FO_Listener::_closeSection()
 {
 	if (!m_bInSection)
-	{
 		return;
-	}
 	
 	m_bInSection = false;
-
 	m_pie->write("</fo:flow>\n");
 	m_pie->write("</fo:page-sequence>\n");
 }
 
-void s_XSL_FO_Listener::_closeSpan(void)
+void s_XSL_FO_Listener::_closeSpan()
 {
 	if (!m_bInSpan)
-	{
 		return;
-	}
 
 	m_bInSpan = false;
-
 	m_pie->write("</fo:inline>");
 }
 

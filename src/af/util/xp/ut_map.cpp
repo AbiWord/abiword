@@ -23,32 +23,29 @@
 
 bool ut_map_lexico_lesser(UT_RBTree::key_t x, UT_RBTree::key_t y)
 {
-	UT_Map::value_t x_ = static_cast<UT_Map::value_t> (x);
-	UT_Map::value_t y_ = static_cast<UT_Map::value_t> (y);
-	UT_ASSERT(x_);
-	UT_ASSERT(y_);
+	UT_ASSERT(x);
+	UT_ASSERT(y);
 	
-	return ut_lexico_lesser(x_->first(), y_->first());
+	return ut_lexico_lesser(static_cast<UT_Map::value_t> (x)->first(),
+							static_cast<UT_Map::value_t> (y)->first());
 }
 
 bool ut_map_lexico_greater(UT_RBTree::key_t x, UT_RBTree::key_t y)
 {
-	UT_Map::value_t x_ = static_cast<UT_Map::value_t> (x);
-	UT_Map::value_t y_ = static_cast<UT_Map::value_t> (y);
-	UT_ASSERT(x_);
-	UT_ASSERT(y_);
+	UT_ASSERT(x);
+	UT_ASSERT(y);
 	
-	return ut_lexico_greater(x_->first(), y_->first());
+	return ut_lexico_greater(static_cast<UT_Map::value_t> (x)->first(),
+							 static_cast<UT_Map::value_t> (y)->first());
 }
 
 bool ut_map_lexico_equal(UT_RBTree::key_t x, UT_RBTree::key_t y)
 {
-	UT_Map::value_t x_ = static_cast<UT_Map::value_t> (x);
-	UT_Map::value_t y_ = static_cast<UT_Map::value_t> (y);
-	UT_ASSERT(x_);
-	UT_ASSERT(y_);
+	UT_ASSERT(x);
+	UT_ASSERT(y);
 	
-	return ut_lexico_equal(x_->first(), y_->first());
+	return ut_lexico_equal(static_cast<UT_Map::value_t> (x)->first(),
+						   static_cast<UT_Map::value_t> (y)->first());
 }
 
 ///////////////////////////////////////////
@@ -72,4 +69,51 @@ UT_Map::UT_Map()
 UT_Map::UT_Map(comparator comp)
 	: m_rbtree(comp)
 {
+}
+
+UT_Map::~UT_Map()
+{
+	// that needs at least a comment...
+	// The UT_Pair object pointed by each iterator was born as a non
+	// const object, so the const_cast is (if not nice) at least deterministic.
+	// You should not use something like that outside UT_Map unless you know
+	// very well what are you doing.
+	// Any operation on rbtree after that (except the destructor) has indeterminated
+	// effects (with a bit of luck a segfault).
+	Iterator end(m_rbtree.end());
+	for (Iterator it(m_rbtree.begin()); it != end; ++it)
+		delete const_cast<UT_Pair*> (static_cast<const UT_Pair*> (it.value()));
+}
+
+bool
+UT_Map::insert(key_t key, data_t data)
+{
+	return m_rbtree.insert(new UT_Pair(static_cast<pair_type> (key), static_cast<pair_type> (data)));
+}
+
+void
+UT_Map::erase(key_t key)
+{
+	Iterator it(m_rbtree.find(key));
+
+	if (it.is_valid())
+		erase(it);
+}
+
+UT_Map::Iterator
+UT_Map::find(key_t key)
+{
+	UT_Pair* tmp = new UT_Pair(static_cast<pair_type> (key), static_cast<pair_type> (data_t()));
+	Iterator retval(m_rbtree.find(tmp));
+	delete tmp;
+	return retval;
+}
+
+UT_Map::Iterator
+UT_Map::find_if(key_t key, comparator pred)
+{
+	UT_Pair* tmp = new UT_Pair(static_cast<pair_type> (key), static_cast<pair_type> (data_t()));
+	Iterator retval(m_rbtree.find_if(tmp, pred));
+	delete tmp;
+	return retval;
 }
