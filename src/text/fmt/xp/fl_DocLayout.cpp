@@ -1218,7 +1218,7 @@ void FL_DocLayout::_redrawUpdate(UT_Timer * pTimer)
 
 void FL_DocLayout::setPendingSmartQuote(fl_BlockLayout *bl, UT_uint32 of)
 {
-	UT_DEBUGMSG(("FL_DocLayout::setPendingSmartQuote(%x, %d)\n", bl, of));
+	xxx_UT_DEBUGMSG(("FL_DocLayout::setPendingSmartQuote(%x, %d)\n", bl, of));
 	m_pPendingBlockForSmartQuote = bl;
 	m_uOffsetForSmartQuote = of;
 }

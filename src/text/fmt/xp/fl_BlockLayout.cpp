@@ -374,6 +374,18 @@ void buildTabStops(GR_Graphics * pG, const char* pszTabStops, UT_Vector &m_vecTa
 void fl_BlockLayout::_lookupProperties(void)
 {
 	{
+		// The EOP Run is an integral part of the block so also make
+		// sure it does lookup.
+
+		fp_Line* pLine = getLastLine();
+		if (pLine)
+		{
+			fp_Run* pRun = pLine->getLastRun();
+			pRun->lookupProperties();
+		}
+	}
+
+	{
 		const PP_AttrProp * pBlockAP = NULL;
 		getAttrProp(&pBlockAP);
 
@@ -3373,6 +3385,11 @@ bool fl_BlockLayout::doclistener_changeSpan(const PX_ChangeRecord_SpanChange * p
 				pTextRun->split(blockOffset+len);
 			}
 		}
+
+		// FIXME:jskov Here we want to call a changeSpanMember
+		// function in the Run which decides how to behave. That way
+		// we don't forget new Run types as they get added, and
+		// show-paragraphs mode can be handled properly.
 
 		// Make the run update its properties and recalculate width as
 		// necessary.

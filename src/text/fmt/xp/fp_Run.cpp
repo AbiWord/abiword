@@ -1053,7 +1053,45 @@ void fp_EndOfParagraphRun::lookupProperties(void)
 {
 	//UT_DEBUGMSG(("fp_EndOfParagraphRun::lookupProperties\n"));
 	_inheritProperties();
-	m_iWidth = 1;
+
+	FV_View* pView = m_pBL->getDocLayout()->getView();
+	if (pView && pView->getShowPara())
+	{
+		// Find width of Pilcrow
+		UT_UCSChar pEOP[] = { UCS_PILCROW, 0 };
+		UT_uint32 iTextLen = UT_UCS_strlen(pEOP);
+
+		fp_Run* pPropRun = _findPrevPropertyRun();
+		if (pPropRun && (FPRUN_TEXT == pPropRun->getType()))
+		{
+			fp_TextRun* pTextRun = static_cast<fp_TextRun*>(pPropRun);
+			m_pG->setFont(pTextRun->getFont());
+		}
+		else
+		{
+			const PP_AttrProp * pSpanAP = NULL;
+			const PP_AttrProp * pBlockAP = NULL;
+			const PP_AttrProp * pSectionAP = NULL;
+			m_pBL->getSpanAttrProp(m_iOffsetFirst,true,&pSpanAP);
+			m_pBL->getAttrProp(&pBlockAP);
+			// look for fonts in this DocLayout's font cache
+			FL_DocLayout * pLayout = m_pBL->getDocLayout();
+
+			GR_Font* pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, 
+											   FL_DocLayout::FIND_FONT_AT_SCREEN_RESOLUTION);
+			m_pG->setFont(pFont);
+		}
+		m_iWidth  = m_pG->measureString(pEOP, 0, iTextLen, NULL);
+		xxx_UT_DEBUGMSG(("fp_EndOfParagraphRun::lookupProperties: width %d\n", m_iWidth));
+	}
+	else
+	{
+		// FIXME:jskov This should probably be the width of the
+		// document to the right of the pilcrow, see Paul's suggested
+		// selection behaviors. Doesn't matter until we get selection
+		// support though (which requires PT changes).
+		m_iWidth = 1;
+	}
 }
 
 bool fp_EndOfParagraphRun::canBreakAfter(void) const
@@ -1139,6 +1177,10 @@ void fp_EndOfParagraphRun::_clearScreen(bool /* bFullLineHeightRect */)
   \param pDA Draw arguments
   Draws the pilcrow character (reverse P) in show paragraphs mode.
   \fixme Make it use the same typeface as preceding text.
+  \note This _draw function is special in that it does (partly) lookup
+  as well. That's because the pilcrow's typeface is controlled by the
+  preceding character. Eventually, when the PT learns about EOP, it
+  should be possible to just deal with this in the lookup function.
 */
 void fp_EndOfParagraphRun::_draw(dg_DrawArgs* pDA)
 {
@@ -1161,14 +1203,27 @@ void fp_EndOfParagraphRun::_draw(dg_DrawArgs* pDA)
 		}
 		else
 		{
-			m_pG->setFont(m_pG->getGUIFont());
-			iAscent = m_iAscent;
+			const PP_AttrProp * pSpanAP = NULL;
+			const PP_AttrProp * pBlockAP = NULL;
+			const PP_AttrProp * pSectionAP = NULL;
+			m_pBL->getSpanAttrProp(m_iOffsetFirst,true,&pSpanAP);
+			m_pBL->getAttrProp(&pBlockAP);
+			// look for fonts in this DocLayout's font cache
+			FL_DocLayout * pLayout = m_pBL->getDocLayout();
+
+			GR_Font* pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, 
+											   FL_DocLayout::FIND_FONT_AT_SCREEN_RESOLUTION);
+			m_pG->setFont(pFont);
+			iAscent = m_pG->getFontAscent();
 		}
 
 		m_iWidth  = m_pG->measureString(pEOP, 0, iTextLen, NULL);
 		m_iHeight = m_pG->getFontHeight();
 		m_iXoffText = pDA->xoff;
 		m_iYoffText = pDA->yoff - iAscent;
+		xxx_UT_DEBUGMSG(("fp_EndOfParagraphRun::draw: width %d\n", m_iWidth));
+
+
 
         m_pG->fillRect(m_colorHL, m_iXoffText, m_iYoffText, 
 					   m_iWidth, m_iHeight);
