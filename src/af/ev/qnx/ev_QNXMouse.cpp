@@ -239,6 +239,9 @@ void EV_QNXMouse::mouseMotion(AV_View* pView, PtCallbackInfo_t *e)
 
 	if (m_clickState == 0)
 	{
+		//THIS IS A BUG: Don't do stuff if we aren't clicked:
+		return;
+
 		mop = EV_EMO_DRAG;
 		emc = pView->getMouseContext((UT_sint32)mx,
 									 (UT_sint32)my);
