@@ -59,7 +59,7 @@ XAP_Dialog* AP_Win32Dialog_PageSetup::static_constructor(XAP_DialogFactory* pDlg
 AP_Win32Dialog_PageSetup::AP_Win32Dialog_PageSetup(	XAP_DialogFactory* pDlgFactory,
 													XAP_Dialog_Id id)
 :	AP_Dialog_PageSetup (pDlgFactory, id),
-    m_PageSize(fp_PageSize::Letter),
+    m_PageSize(fp_PageSize::psLetter),
 	m_pWin32Frame(NULL)
 {
 }

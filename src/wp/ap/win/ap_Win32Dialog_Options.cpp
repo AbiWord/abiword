@@ -923,7 +923,7 @@ fp_PageSize::Predefined AP_Win32Dialog_Options::_gatherDefaultPageSize(void)
 
 	if( nSel != CB_ERR )
 		return (fp_PageSize::Predefined) nSel;
-	return fp_PageSize::Letter;
+	return fp_PageSize::psLetter;
 }
 
 void AP_Win32Dialog_Options::_initializeTransperentToggle(void)
