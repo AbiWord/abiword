@@ -49,8 +49,6 @@ public:
 #ifdef PT_TEST
 	virtual void			__dump(FILE * fp) const;
 #endif
-
-protected:
 };
 
 #endif /* PF_FRAG_FMTMARK_H */

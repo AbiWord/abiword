@@ -22,6 +22,7 @@
 #include "pt_PieceTable.h"
 #include "px_ChangeRecord.h"
 #include "px_CR_Span.h"
+#include "pd_Iterator.h"
 #include "ut_debugmsg.h"
 
 pf_Frag_Text::pf_Frag_Text(pt_PieceTable * pPT,
@@ -39,6 +40,36 @@ pf_Frag_Text::pf_Frag_Text(pt_PieceTable * pPT,
 pf_Frag_Text::~pf_Frag_Text()
 {
 }
+
+bool pf_Frag_Text::_isEqual(const pf_Frag & f2) const
+{
+	if(!pf_Frag::_isEqual(f2))
+		return false;
+
+	// NB: this makes this function rather useless, but we are asked
+	// to strictly compare 2 frags
+	
+	if(getLength() != f2.getLength())
+		return false;
+
+	pf_Frag * pf2 = const_cast<pf_Frag *>(&f2);
+	
+	PD_DocIterator t1(* (m_pPieceTable->getDocument()), getPos());
+	PD_DocIterator t2(* (pf2->getPieceTable()->getDocument()), f2.getPos());
+
+	UT_uint32 iLen = UT_MIN(getLength(), f2.getLength());
+	UT_uint32 i = 0;
+	
+	while(i < iLen && t1.getStatus() == UTIter_OK && t2.getStatus() == UTIter_OK)
+	{
+		if(t1.getChar() != t2.getChar())
+			return false;
+	}
+
+	return true;
+}
+
+
 
 bool pf_Frag_Text::createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
 												PT_DocPosition dpos,

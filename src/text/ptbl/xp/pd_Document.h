@@ -608,7 +608,9 @@ public:
 
 	bool      areDocumentsRelated (const PD_Document &d) const;
 	bool      areDocumentHistoriesEqual(const PD_Document &d) const;
-	bool      areDocumentContentsEqual(const PD_Document &d, bool bIgnoreFmt = false) const;
+	bool      areDocumentContentsEqual(const PD_Document &d) const;
+	bool      areDocumentFormatsEqual(const PD_Document &d) const;
+	bool      areDocumentStylesheetsEqual(const PD_Document &d) const;
 
 	const PD_DocumentUID * getDocUID()const {return m_pDocUID;}
 	void                   setDocUID(PD_DocumentUID * u);

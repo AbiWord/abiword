@@ -4259,21 +4259,38 @@ void PD_Document::forceDirty()
 	signalListeners(PD_SIGNAL_DOCPROPS_CHANGED_NO_REBUILD);	
 }
 
+/*!
+    Return time in seconds this document has been edit for since it
+    creation
+*/
 UT_uint32 PD_Document::getEditTime()const
 {
 	return m_iEditTime + getTimeSinceSave();
 }
 
+/*!
+    Set the cumulative editing time of this document
+*/
 void PD_Document::setEditTime(UT_uint32 t)
 {
 	m_iEditTime = t;
 }
 
+/*!
+    Set version of this document
+    NB: this is not version of the fmt or AbiWord with which the doc
+    was created, but rather version of the document contents.
+*/
 void PD_Document::setDocVersion(UT_uint32 i)
 {
 	m_iVersion = i;
 }
 
+/*!
+   Adjusts the cumulative edit time and time when the doc was last
+   saved; should only be called inside of save() and saveAs()
+   functions
+*/
 void PD_Document::_adjustEditTimeOnSave()
 {
 	// record this as the last time the document was saved + adjust
@@ -4282,6 +4299,10 @@ void PD_Document::_adjustEditTimeOnSave()
 	m_lastSavedTime = time(NULL);
 }
 
+/*!
+    Update document history and version information; should only be
+    called inside save() and saveAs()
+*/
 void PD_Document::_adjustHistoryOnSave()
 {
 	// record this as the last time the document was saved + adjust
@@ -4305,6 +4326,9 @@ void PD_Document::_adjustHistoryOnSave()
 	}
 }
 
+/*!
+    Add given version data to the document history.
+*/
 void PD_Document::addRecordToHistory(const PD_VersionData &vd)
 {
 	PD_VersionData * v = new PD_VersionData(vd);
@@ -4312,6 +4336,9 @@ void PD_Document::addRecordToHistory(const PD_VersionData &vd)
 	m_vHistory.addItem((void*)v);
 }
 
+/*!
+    Get the version number for n-th record in version history
+*/
 UT_uint32 PD_Document::getHistoryNthId(UT_uint32 i)const
 {
 	if(!m_vHistory.getItemCount())
@@ -4325,6 +4352,9 @@ UT_uint32 PD_Document::getHistoryNthId(UT_uint32 i)const
 	return v->getId();
 }
 
+/*!
+    Get time stamp for n-th record in version history
+*/
 time_t PD_Document::getHistoryNthTime(UT_uint32 i)const
 {
 	if(!m_vHistory.getItemCount())
@@ -4338,6 +4368,12 @@ time_t PD_Document::getHistoryNthTime(UT_uint32 i)const
 	return v->getTime();
 }
 
+/*!
+    Get get cumulative edit time for n-th record in version history
+    NB: this time is cumulative from the creation of document not from
+    the start of given version record. To calculate the latter
+    substract n-1st value from nth value.
+*/
 UT_uint32 PD_Document::getHistoryNthEditTime(UT_uint32 i)const
 {
 	if(!m_vHistory.getItemCount())
@@ -4351,6 +4387,9 @@ UT_uint32 PD_Document::getHistoryNthEditTime(UT_uint32 i)const
 	return v->getEditTime();
 }
 
+/*!
+    Get the UID for n-th record in version history
+*/
 UT_uint32 PD_Document::getHistoryNthUID(UT_uint32 i) const
 {
 	if(!m_vHistory.getItemCount())
@@ -4364,7 +4403,9 @@ UT_uint32 PD_Document::getHistoryNthUID(UT_uint32 i) const
 	return v->getUID();
 }
 
-
+/*!
+    Returns true if both documents are based on the same root document
+*/
 bool PD_Document::areDocumentsRelated(const PD_Document & d) const
 {
 	if((!m_pDocUID && d.getDocUID()) || (m_pDocUID && !d.getDocUID()))
@@ -4373,6 +4414,10 @@ bool PD_Document::areDocumentsRelated(const PD_Document & d) const
 	return (*m_pDocUID == *(d.getDocUID()));
 }
 
+/*!
+    Returns true if both documents are based on the same root document
+    and all version records have identical UID's
+*/
 bool PD_Document::areDocumentHistoriesEqual(const PD_Document & d) const
 {
 	if((!m_pDocUID && d.getDocUID()) || (m_pDocUID && !d.getDocUID()))
@@ -4398,10 +4443,70 @@ bool PD_Document::areDocumentHistoriesEqual(const PD_Document & d) const
 }
 
 /*!
-    parameter d cannot be constant because the PD_DocIterator cleans
-    the fragments
+    Returns true if the stylesheets of both documents are identical
 */
-bool PD_Document::areDocumentContentsEqual(const PD_Document &d, bool bIgnoreFmt) const
+bool PD_Document::areDocumentStylesheetsEqual(const PD_Document &d) const
+{
+	UT_return_val_if_fail(m_pPieceTable || d.m_pPieceTable, false);
+
+	const UT_StringPtrMap & hS1 = m_pPieceTable->getAllStyles();
+	const UT_StringPtrMap & hS2 = d.m_pPieceTable->getAllStyles();
+
+	if(hS1.size() != hS2.size())
+		return false;
+
+	UT_StringPtrMap hFmtMap;
+	UT_StringPtrMap::UT_Cursor c(&hS1);
+
+	const PD_Style * pS1, * pS2;
+	for(pS1 = (const PD_Style*)c.first(); pS1 != NULL; pS1 = (const PD_Style*)c.next())
+	{
+		const UT_String &key = c.key();
+
+		pS2 = (const PD_Style *) hS2.pick(key);
+
+		if(!pS2)
+			return false;
+
+
+		PT_AttrPropIndex ap1 = pS1->getIndexAP();
+		PT_AttrPropIndex ap2 = pS2->getIndexAP();
+
+		// because the indexes are into different piecetables, we
+		// have to expand them
+		const PP_AttrProp * pAP1;
+		const PP_AttrProp * pAP2;
+
+		m_pPieceTable->getAttrProp(ap1, &pAP1);
+		d.m_pPieceTable->getAttrProp(ap2, &pAP2);
+
+		UT_return_val_if_fail(pAP1 && pAP2, false);
+
+		UT_String s;
+		UT_String_sprintf(s,"%d%d", ap1, ap2);
+		bool bAreSame = hFmtMap.contains(s,NULL);
+		
+		if(!bAreSame)
+		{
+			if(!pAP1->isEquivalent(pAP2))
+			{
+				return false;
+			}
+			else
+			{
+				hFmtMap.insert(s,NULL);
+			}
+		}
+	}
+	
+	return true;
+}
+
+
+/*!
+    Returns true if the contents of the two documents are identical
+*/
+bool PD_Document::areDocumentContentsEqual(const PD_Document &d) const
 {
 	UT_return_val_if_fail(m_pPieceTable || d.m_pPieceTable, false);
 
@@ -4432,36 +4537,128 @@ bool PD_Document::areDocumentContentsEqual(const PD_Document &d, bool bIgnoreFmt
 	//  scroll through the documents comparing contents
 	PD_DocIterator t1(*this);
 	PD_DocIterator t2(d);
-		
 
 	while(t1.getStatus() == UTIter_OK && t2.getStatus() == UTIter_OK)
 	{
-		if(t1.getChar() != t2.getChar())
+		const pf_Frag * pf1 = t1.getFrag();
+		const pf_Frag * pf2 = t2.getFrag();
+
+		if(!pf1 || !pf2)
 			return false;
 
-		if(!bIgnoreFmt)
+		if(pf1->getType() != pf2->getType())
+			return false;
+
+		UT_uint32 iFOffset1 = t1.getPosition() - pf1->getPos();
+		UT_uint32 iFOffset2 = t2.getPosition() - pf2->getPos();
+		
+		UT_uint32 iLen1 = pf1->getLength() - iFOffset1;
+		UT_uint32 iLen2 = pf2->getLength() - iFOffset2;
+		UT_uint32 iLen  = UT_MIN(iLen1, iLen2);
+
+		if(iLen1 == iLen2 && iFOffset1 == 0 && iFOffset2 == 0)
 		{
-			// need to cmp contents
-			const pf_Frag * pf1 = t1.getFrag();
-			const pf_Frag * pf2 = t2.getFrag();
-
-			UT_return_val_if_fail(pf1 && pf2, false);
-
-			PT_AttrPropIndex ap1 = pf1->getIndexAP();
-			PT_AttrPropIndex ap2 = pf2->getIndexAP();
-
-			// because the indexes are into different piecetables, we
-			// have to expand them
-			const PP_AttrProp * pAP1;
-			const PP_AttrProp * pAP2;
-
-			m_pPieceTable->getAttrProp(ap1, &pAP1);
-			d.m_pPieceTable->getAttrProp(ap2, &pAP2);
-
-			UT_return_val_if_fail(pAP1 && pAP2, false);
-
-			if(!pAP1->isEquivalent(pAP2))
+			// these two frags overlap exactly, so we can just use the
+			// == operator on them
+			if(!(*pf1 == *pf2))
 				return false;
+		}
+		else if(pf1->getType() != pf_Frag::PFT_Text)
+		{
+			// partially overlapping frags and not text
+			return false;
+		}
+		else
+		{
+			// we have two textual frags that overlap
+			// work our way along the overlap ...
+			for(UT_uint32 i = 0; i < iLen; ++i)
+			{
+				if(t1.getChar() != t2.getChar())
+					return false;
+
+				++t1;
+				++t2;
+			}
+
+			// we are already past the end of the shorter frag
+			continue;
+		}
+
+		// advance both iterators by the processed length
+		t1 += iLen;
+		t2 += iLen;
+	}
+
+	if(   (t1.getStatus() == UTIter_OK && t2.getStatus() != UTIter_OK)
+		  || (t1.getStatus() != UTIter_OK && t2.getStatus() == UTIter_OK))
+	{
+		// documents are of different length ... 
+		return false;
+	}
+
+	return true;
+}
+
+/*!
+    Compare the format of the this document to another document
+
+    NB: If the document contents are known not to be equal, it makes no
+    sense to call this function.
+*/
+bool PD_Document::areDocumentFormatsEqual(const PD_Document &d) const
+{
+	UT_return_val_if_fail(m_pPieceTable || d.m_pPieceTable, false);
+
+	if(m_pPieceTable->getFragments().areFragsDirty())
+		m_pPieceTable->getFragments().cleanFrags();
+	
+	if(d.m_pPieceTable->getFragments().areFragsDirty())
+		d.m_pPieceTable->getFragments().cleanFrags();
+		
+	//  scroll through the documents comparing fmt
+	PD_DocIterator t1(*this);
+	PD_DocIterator t2(d);
+		
+	// in order to avoid repeated comparions of AP, we will store
+	// record of matching AP's
+	UT_StringPtrMap hFmtMap;
+	
+	while(t1.getStatus() == UTIter_OK && t2.getStatus() == UTIter_OK)
+	{
+		// need to cmp contents
+		const pf_Frag * pf1 = t1.getFrag();
+		const pf_Frag * pf2 = t2.getFrag();
+
+		UT_return_val_if_fail(pf1 && pf2, false);
+
+		PT_AttrPropIndex ap1 = pf1->getIndexAP();
+		PT_AttrPropIndex ap2 = pf2->getIndexAP();
+
+		// because the indexes are into different piecetables, we
+		// have to expand them
+		const PP_AttrProp * pAP1;
+		const PP_AttrProp * pAP2;
+
+		m_pPieceTable->getAttrProp(ap1, &pAP1);
+		d.m_pPieceTable->getAttrProp(ap2, &pAP2);
+
+		UT_return_val_if_fail(pAP1 && pAP2, false);
+
+		UT_String s;
+		UT_String_sprintf(s,"%d%d", ap1, ap2);
+		bool bAreSame = hFmtMap.contains(s,NULL);
+		
+		if(!bAreSame)
+		{
+			if(!pAP1->isEquivalent(pAP2))
+			{
+				return false;
+			}
+			else
+			{
+				hFmtMap.insert(s,NULL);
+			}
 		}
 		
 
@@ -4472,14 +4669,16 @@ bool PD_Document::areDocumentContentsEqual(const PD_Document &d, bool bIgnoreFmt
 	if(   (t1.getStatus() == UTIter_OK && t2.getStatus() != UTIter_OK)
 		  || (t1.getStatus() != UTIter_OK && t2.getStatus() == UTIter_OK))
 	{
-		// documents are of different lenght ...
+		// documents are of different length ...
 		return false;
 	}
 
 	return true;
 }
 
-
+/*!
+    Set UID for the present document
+*/
 void PD_Document::setDocUID(PD_DocumentUID * u)
 {
 	if(!m_pPieceTable || m_pPieceTable->getPieceTableState() != PTS_Loading)
@@ -4490,7 +4689,10 @@ void PD_Document::setDocUID(PD_DocumentUID * u)
 	m_pDocUID = u;
 }
 
-
+/*!
+    Get the UID of this document represented as a string (this
+    funciton is primarily for exporters)
+*/
 const char * PD_Document::getDocUIDString() const
 {
 	UT_return_val_if_fail(m_pDocUID, NULL);

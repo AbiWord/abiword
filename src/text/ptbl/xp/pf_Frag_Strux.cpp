@@ -37,6 +37,17 @@ pf_Frag_Strux::~pf_Frag_Strux()
 	// since we did not allocate them.
 }
 
+bool pf_Frag_Strux::_isEqual(const pf_Frag &f2) const
+{
+	if(!pf_Frag::_isEqual(f2))
+		return false;
+
+	if(m_struxType != ((const pf_Frag_Strux &)(f2)).getStruxType())
+		return false;
+
+	return true;
+}
+
 PTStruxType pf_Frag_Strux::getStruxType(void) const
 {
 	return m_struxType;

@@ -405,6 +405,30 @@ pf_Frag_Object::~pf_Frag_Object()
 	m_pField = 0;
 }
 
+bool pf_Frag_Object::_isEqual(const pf_Frag &f2) const
+{
+	if(!pf_Frag::_isEqual(f2))
+		return false;
+	
+	if(getObjectType() != ((const pf_Frag_Object&)(f2)).getObjectType())
+		return false;
+
+	pf_Frag * pf1 = const_cast<pf_Frag_Object*>(this);
+	pf_Frag * pf2 = const_cast<pf_Frag*>(&f2);
+	
+	if(m_pField)
+	{
+		if(!pf2->getField())
+			return false;
+
+		if(pf1->getField()->getFieldType() != pf2->getField()->getFieldType())
+			return false;
+	}
+
+	return true;
+}
+
+
 PTObjectType pf_Frag_Object::getObjectType(void) const
 {
     return m_objectType;

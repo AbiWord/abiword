@@ -38,6 +38,40 @@ pf_Frag::~pf_Frag()
 {
 }
 
+bool pf_Frag::_isEqual(const pf_Frag & f2) const
+{
+	if(getType() != f2.getType())
+		return false;
+	
+	// decide if the two frags have same piecetables
+	if(!m_pPieceTable || !f2.m_pPieceTable)
+		return false;
+
+	if(m_pPieceTable == f2.m_pPieceTable)
+	{
+		if(m_indexAP == f2.m_indexAP)
+			return true;
+		
+		return false;
+	}
+
+	// different PT, do it the hard way ...
+	const PP_AttrProp * pAP1;
+	const PP_AttrProp * pAP2;
+
+	m_pPieceTable->getAttrProp(m_indexAP, &pAP1);
+	f2.m_pPieceTable->getAttrProp(f2.m_indexAP, &pAP2);
+
+	UT_return_val_if_fail(pAP1 && pAP2, false);
+
+	if(!pAP1->isEquivalent(pAP2))
+	{
+		return false;
+	}
+
+	return true;
+}
+
 pf_Frag * pf_Frag::setNext(pf_Frag * pNext)
 {
 	pf_Frag * pOld = m_next;

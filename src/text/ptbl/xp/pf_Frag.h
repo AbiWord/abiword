@@ -70,12 +70,23 @@ public:
 	
 	virtual bool			createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
 													  PT_DocPosition dpos) const;
+
+	operator == (const pf_Frag & f2) const
+	{
+		if(getType() != f2.getType())
+			return false;
+
+		return _isEqual(f2);
+	}
 	
 #ifdef PT_TEST
 	virtual void			__dump(FILE * fp) const;
 #endif
 
 protected:
+
+	virtual bool            _isEqual(const pf_Frag & f2) const;
+	
 	PFType					m_type;
 	UT_uint32				m_length;	/* in PT_DocPosition-space */
 	pf_Frag *				m_next;

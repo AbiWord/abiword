@@ -52,6 +52,8 @@ public:
 #endif
 
 protected:
+	virtual bool            _isEqual(const pf_Frag &f2) const;
+	
 	PTObjectType			m_objectType;
 	void *					m_pObjectSubclass;
 };
