@@ -163,6 +163,27 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 				}
 				case FPRUN_TAB:
 				{
+					/*
+						if this run is not on the current line, we have a problem
+						because the width of the run is dependent on its position
+						on the line and the  postion can only be determined after
+						the run has been added to the line. So we have to take
+						care of this
+					*/
+					
+					fp_Line * pRunsLine = pCurrentRun->getLine();
+					UT_ASSERT(pRunsLine);
+					
+					if(pRunsLine != pLine)
+					{
+						UT_DEBUGMSG(("fb_LineBreaker::breakLine: Tab run (0x%x) belonging to different line\n"
+									 "       pLine 0x%x, pRunsLine 0x%x\n"
+									 ,pCurrentRun, pLine, pRunsLine));
+									
+						pRunsLine->removeRun(pCurrentRun,true);
+						pLine->addRun(pCurrentRun);
+					}
+					
 					FL_WORKING_DIRECTION eWorkingDirection;
 					FL_WHICH_TABSTOP eUseTabStop;
 					
