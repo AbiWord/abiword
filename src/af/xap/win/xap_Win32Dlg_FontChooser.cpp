@@ -293,7 +293,7 @@ BOOL XAP_Win32Dialog_FontChooser::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM
 	XAP_App*              pApp        = pWin32Frame->getApp();
 	const XAP_StringSet*  pSS         = pApp->getStringSet();	
 	
-	SetWindowText(hWnd, pSS->getValue(XAP_STRING_ID_DLG_Zoom_ZoomTitle));
+	SetWindowText(hWnd, pSS->getValue(XAP_STRING_ID_DLG_UFS_FontTitle));
 
 	// localize controls
 	_DS(FONT_CHK_OVERLINE,		DLG_UFS_OverlineCheck);
