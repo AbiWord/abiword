@@ -261,7 +261,7 @@ UT_uint32 GR_QNXGraphics::measureUnRemappedChar(const UT_UCSChar c)
 {
 	PhRect_t rect;
 	const char *font;
-	int 	 len, indices, penpos;
+	int 	 indices, penpos;
 	UT_UCSChar buffer[1];
 
 	buffer[0]=c;
@@ -351,7 +351,7 @@ GR_Font * GR_QNXGraphics::findFont(const char* pszFontFamily,
 		}
 	}
 	UT_DEBUGMSG(("Setting to font name [%s] ", fname));
-
+	PfLoadFont(fname,PHFONT_LOAD_METRICS,0);
 	return(new QNXFont(fname));
 }
 
@@ -390,7 +390,7 @@ void GR_QNXGraphics::setFont(GR_Font * pFont)
 		tmp->prev = NULL;
 		g_pFCache = tmp;	
 
-		PfLoadMetrics(font);
+//		PfLoadMetrics(font);
 	} else if (tmp && tmp->prev) {
 		if ((tmp->prev->next = tmp->next)) {
 			tmp->next->prev = tmp->prev;
@@ -433,7 +433,6 @@ UT_uint32 GR_QNXGraphics::getFontAscent(GR_Font * fnt)
 	UT_ASSERT(pQNXFont);
 		
 	FontQueryInfo info;
-
 	if (PfQueryFontInfo(pQNXFont->getFont(), &info) == -1) {
 		UT_ASSERT(0);
 		return(0);
@@ -448,7 +447,6 @@ UT_uint32 GR_QNXGraphics::getFontDescent(GR_Font * fnt)
 	UT_ASSERT(pQNXFont);
 		
 	FontQueryInfo info;
-
 	if (PfQueryFontInfo(pQNXFont->getFont(), &info) == -1) {
 		UT_ASSERT(0);
 		return(0);
@@ -466,7 +464,6 @@ UT_uint32 GR_QNXGraphics::getFontHeight(GR_Font * fnt)
 	UT_ASSERT(pQNXFont);
 		
 	FontQueryInfo info;
-
 	if (PfQueryFontInfo(pQNXFont->getFont(), &info) == -1) {
 		UT_ASSERT(0);
 		return(0);
