@@ -40,6 +40,7 @@ XAP_Dialog_MessageBox::XAP_Dialog_MessageBox(XAP_DialogFactory * pDlgFactory, XA
 
 XAP_Dialog_MessageBox::~XAP_Dialog_MessageBox(void)
 {
+	FREEP(m_szSecondaryMessage);
 	FREEP(m_szMessage);
 }
 
