@@ -2949,6 +2949,11 @@ UT_Bool fl_BlockLayout::doclistener_changeSpan(const PX_ChangeRecord_SpanChange 
 				pTextRun->recalcWidth();
 			}
 		}
+		else if (pRun->getType() == FPRUN_TAB)
+		{
+			pRun->lookupProperties();
+		}
+		// TODO: do we need to call lookupProperties for other run types.
 
 		UT_ASSERT(runOffset==pRun->getBlockOffset());
 		pRun = pRun->getNext();
