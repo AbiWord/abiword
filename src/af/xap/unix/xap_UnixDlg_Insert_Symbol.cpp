@@ -465,11 +465,11 @@ GtkWidget * XAP_UnixDialog_Insert_Symbol::_constructWindow(void)
 	m_SymbolMap = _previewNew (608, 147);
 	gtk_box_pack_start(GTK_BOX(vboxInsertS), m_SymbolMap, FALSE, FALSE, 0);
 	
-	abiAddStockButton (GTK_DIALOG(m_windowMain), GTK_STOCK_OK, BUTTON_OK) ;
+	abiAddStockButton (GTK_DIALOG(m_windowMain), GTK_STOCK_CANCEL, BUTTON_CANCEL) ;
 	m_areaCurrentSym = _previewNew (60, 45);
 	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(m_windowMain)->action_area),
 					   m_areaCurrentSym, TRUE, FALSE, 0);
-	abiAddStockButton (GTK_DIALOG(m_windowMain), GTK_STOCK_CANCEL, BUTTON_CANCEL) ;
+	abiAddStockButton (GTK_DIALOG(m_windowMain), GTK_STOCK_OK, BUTTON_OK) ;
 	
 	_connectSignals ();
 
