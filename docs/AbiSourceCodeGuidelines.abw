@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <abiword version="unnumbered">
 <!-- =====================================================================  -->
 <!-- This file is an AbiWord document.                                      -->
@@ -9,10 +9,10 @@
 
 <!--         Build_ID          = (none) -->
 <!--         Build_Version     = unnumbered -->
-<!--         Build_Options     = LicensedTrademarks:Off Debug:On Gnome:Off -->
-<!--         Build_Target      = /home/sam/abi/abi-mod/src/Linux_2.3.36_i386_DBG/obj -->
-<!--         Build_CompileTime = 15:49:15 -->
-<!--         Build_CompileDate = May 27 2000 -->
+<!--         Build_Options     = LicensedTrademarks:Off Debug:On Gnome:Off Gnome-XML:Off -->
+<!--         Build_Target      = /home/sam/abi/abi/src/Linux_2.4.0-test5_i386_DBG/obj -->
+<!--         Build_CompileTime = 12:44:54 -->
+<!--         Build_CompileDate = Nov 11 2000 -->
 
 <section column_gap="0.25in" num_columns="1">
 <p props="line-height:1.0; margin-top:0pt">$Id$</p>
@@ -36,7 +36,7 @@
 <p props="line-height:1.0; margin-top:0pt"></p>
 <p props="line-height:1.0; margin-top:0pt">5.  We care about compiler warnings.  Turn on the highest warning level of your compiler which is reasonable and fix everything it complains about.  Our goal is to have a warning-free build.  In practice, we usually come very close to that goal.</p>
 <p props="line-height:1.0; margin-top:0pt"></p>
-<p props="line-height:1.0; margin-top:0pt">6.  We care about memory leaks.  Please be very careful about freeing any memory you allocate.  If you don't, someone will probably make you aware of the error of your ways.</p>
+<p props="line-height:1.0; margin-top:0pt">6.  We care about proper resource allocation and maintenance.  Please be very careful about freeing any resources you allocate.  If you don't, someone will probably make you aware of the error of your ways.</p>
 <p props="line-height:1.0; margin-top:0pt"></p>
 <p props="line-height:1.0; margin-top:0pt">7.  Cross-platform (XP) code is very important to us.  Remember that XP code must compile on a wide variety of platforms.  Don't put platform-specific stuff in XP files.  Don't put platform #ifdefs in XP files.  Don't put any code which could be XP in a platform-specific file.  At the time of this writing, AbiWord is approximately 90% XP code, based on line count.  We'd like to keep it that way.</p>
 <p props="line-height:1.0; margin-top:0pt"></p>
@@ -62,7 +62,7 @@
 <p props="line-height:1.0; margin-top:0pt"></p>
 <p props="line-height:1.0; margin-top:0pt">17.  Don't break the tree.  This is a Big One.  Some Open Source projects seem to be very forgiving about checking in code which doesn't compile or causes instant crashes.  We're not.  Around here, when someone breaks the tree, we require them to buy donuts.</p>
 <p props="line-height:1.0; margin-top:0pt"></p>
-<p props="line-height:1.0; margin-top:0pt">18.  Don't declare variables in the declaration of a 'for' loop of 'if' conditional and expect them to work outside the scope of the block of code.  This seems to be current ANSI/ICO C++ rules.  Metrowerks CodeWarrior is unforgiving about this; such variables are restricted to the scope of the conditional or loop.  For example, CodeWarrior will refuse to compile the following code:</p>
+<p props="line-height:1.0; margin-top:0pt">18.  Don't declare variables in the declaration of a 'for' loop of 'if' conditional and expect them to work outside the scope of the block of code.  This is required by ANSI/ICO C++ rules.  Metrowerks CodeWarrior is unforgiving about this; such variables are restricted to the scope of the conditional or loop.  For example, CodeWarrior will refuse to compile the following code:</p>
 <p props="line-height:1.0; margin-top:0pt"></p>
 <p props="line-height:1.0; margin-top:0pt">for (int i = 0; i &gt; 10; i++)</p>
 <p props="line-height:1.0; margin-top:0pt">{</p>
@@ -78,6 +78,8 @@
 <p props="line-height:1.0; margin-top:0pt">	printf("i is %d \n", i);</p>
 <p props="line-height:1.0; margin-top:0pt">}</p>
 <p props="line-height:1.0; margin-top:0pt">printf("i is now %d \n", i);</p>
+<p props="line-height:1.0; margin-top:0pt"></p>
+<p props="line-height:1.0; margin-top:0pt">This is part of the more general principle of using only ANSI standard C++, and only those parts of it that are portable.  </p>
 <p props="line-height:1.0; margin-top:0pt"></p>
 </section>
 </abiword>
