@@ -314,17 +314,18 @@ void AP_UnixDialog_Styles::runModal(XAP_Frame * pFrame)
 	
 	// main loop for the dialog
 	while(true)
-	  {
+    {
 	    if(abiRunModalDialog(GTK_DIALOG(m_windowMain), false) == BUTTON_APPLY)
-	      {
-		event_Apply();
-	      }
+		{
+			event_Apply();
+		}
 	    else
-	      {
-		event_Close();
+		{
+			event_Close();
+		}
 		break ; // exit the loop
-	      }
-	  }
+	}
+
 
 	DELETEP (m_pParaPreviewWidget);
 	DELETEP (m_pCharPreviewWidget);
@@ -1194,7 +1195,6 @@ void AP_UnixDialog_Styles::event_basedOn(void)
 	const gchar * psz = gtk_entry_get_text( GTK_ENTRY( m_wBasedOnEntry));
 	g_snprintf(static_cast<gchar *>(m_basedonName),40,"%s",psz);
 	addOrReplaceVecAttribs("basedon",getBasedonName());
-	fillVecWithProps(getBasedonName(),false);
 	updateCurrentStyle();
 }
 

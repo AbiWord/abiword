@@ -929,21 +929,42 @@ void AP_Dialog_Styles::updateCurrentStyle(void)
 // Update the description in the Modify Dialog.
 //
 	setModifyDescription (m_curStyleDesc.c_str());
+	const char * szBasedon = getAttsVal("basedon");
+	UT_String fullProps("");
+	PD_Style * pBasedon = NULL;
+	if(szBasedon && m_pDoc->getStyle(szBasedon,&pBasedon))
+	{
+		UT_Vector vecProps;
+		pBasedon->getAllProperties(&vecProps,0);
+		for(i=0; i<vecProps.getItemCount(); i+=2)
+		{
+			UT_String sProp = (const XML_Char *) vecProps.getNthItem(i);
+			UT_String sVal = (const XML_Char *) vecProps.getNthItem(i+1);
+			UT_String_setProperty(fullProps,sProp,sVal);
+		}
+	}
+//
+// Overwrite any basedon props with the current setting of this style
+//
+	UT_String_addPropertyString(fullProps,m_curStyleDesc);
 
+				
 	if( pStyle == NULL)
 	{
 		const XML_Char * attrib[] = {PT_NAME_ATTRIBUTE_NAME,"tmp",
 									 PT_TYPE_ATTRIBUTE_NAME,"P",
 									 "basedon",getAttsVal("basedon"),
-									 "followedby","Normal",
-									 "props",m_curStyleDesc.c_str(),
+									 "followedby",getAttsVal("followedby"),
+									 "props",fullProps.c_str(),
 									 NULL,NULL};
 		
 		getLDoc()->appendStyle(attrib);
 	}
 	else
 	{
-		getLDoc()->addStyleProperties("tmp",props);
+		const XML_Char * atts[3] = {"props",NULL,NULL};
+		atts[1] = fullProps.c_str();
+		getLDoc()->addStyleAttributes("tmp",atts);
 		getLDoc()->updateDocForStyleChange("tmp",true);
 	}
 	getLView()->setPoint(m_posFocus+1);
@@ -1541,15 +1562,14 @@ void AP_Dialog_Styles::_populatePreviews(bool isModify)
 {
 	PD_Style * pStyle = NULL;
 	const char * szStyle = NULL;
-
-	const static XML_Char * paraFields[] = {"text-align", "text-indent", "margin-left", "margin-right",
-											"margin-top", "margin-bottom", "line-height"};
+	const static XML_Char * paraFields[] = {"text-align", "text-indent", "margin-left", "margin-right", "margin-top", "margin-bottom", "line-height","tabstops","start-value","list-delim", "list-style","list-decimal","field-font","field-color", "keep-together","keep-with-next","orphans","widows","dom-dir"};
 	const size_t nParaFlds = sizeof(paraFields)/sizeof(paraFields[0]);
 	const XML_Char * paraValues [nParaFlds];
 
 	const static XML_Char * charFields[] =
 	{"bgcolor","color","font-family","font-size","font-stretch","font-style",
-	 "font-variant", "font-weight","text-decoration"};
+	 "font-variant", "font-weight","text-decoration","lang"};
+
 	const size_t nCharFlds = sizeof(charFields)/sizeof(charFields[0]);
 	const XML_Char * charValues [nCharFlds];
 
@@ -1579,7 +1599,7 @@ void AP_Dialog_Styles::_populatePreviews(bool isModify)
 		{
 			const XML_Char * szName = paraFields[i];
 			const XML_Char * szValue = NULL;
-			
+			pStyle->getProperty(szName,szValue);
 			if (szValue == NULL)
 			{
 				pStyle->getPropertyExpand(szName,szValue);
@@ -1588,13 +1608,19 @@ void AP_Dialog_Styles::_populatePreviews(bool isModify)
 					paraValues[i] = 0;
 					continue;
 				}
+				else
+				{
+					paraValues[i] = szValue;
+				}
 			}
-			m_curStyleDesc += (const char *)szName;
-			m_curStyleDesc += ":";
-			m_curStyleDesc += (const char *)szValue;
-			m_curStyleDesc += "; ";
-
-			paraValues[i] = szValue;
+			else
+			{
+				paraValues[i] = szValue;
+				m_curStyleDesc += (const char *)szName;
+				m_curStyleDesc += ":";
+				m_curStyleDesc += (const char *)szValue;
+				m_curStyleDesc += "; ";
+			}
 		}
 
 // Clear out old contents of the char vector if they exist
@@ -1607,29 +1633,33 @@ void AP_Dialog_Styles::_populatePreviews(bool isModify)
 		{
 			const XML_Char * szName = charFields[i];
 			const XML_Char * szValue = NULL;
-			
+			pStyle->getProperty(szName,szValue);
 			if (szValue == NULL)
 			{
 				pStyle->getPropertyExpand(szName,szValue);
 				if (szValue == NULL)
 				{
-					UT_DEBUGMSG(("Char prop %s unmatched \n",szName));
 					charValues[i] = 0;
 					continue;
 				}
-			}
-			m_curStyleDesc += (const char *)szName;
-			m_curStyleDesc += ":";
-			m_curStyleDesc += (const char *)szValue;
-			m_curStyleDesc += "; ";
+				else
+				{
 
-			charValues[i] = szValue;
+					charValues[i] = szValue;
+				}
+			}
+			else
+			{
+				m_curStyleDesc += (const char *)szName;
+				m_curStyleDesc += ":";
+				m_curStyleDesc += (const char *)szValue;
+				m_curStyleDesc += "; ";
+			}
 //
 // Put them in our property vector for the Character preview
 //
 			m_vecCharProps.addItem((void *) szName);
 			m_vecCharProps.addItem((void *) szValue);
-
 		}
 
 		if (!m_curStyleDesc.empty())
