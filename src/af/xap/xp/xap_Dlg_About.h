@@ -1,5 +1,5 @@
 /* AbiSource Application Framework
- * Copyright (C) 1998, 1999 AbiSource, Inc.
+ * Copyright (C) 1998-2000 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -28,7 +28,7 @@
 
 #define XAP_ABOUT_TITLE "About %s"
 #define XAP_ABOUT_DESCRIPTION "%s is an Open Source application licensed under the GNU GPL.\nYou are free to redistribute this application."
-#define XAP_ABOUT_COPYRIGHT "Copyright 1998, 1999 AbiSource, Inc."
+#define XAP_ABOUT_COPYRIGHT "Copyright 1998-2000 AbiSource, Inc."
 #define XAP_ABOUT_GPL "%s is available for use under the the terms\nof the GNU General Public License"
 #define XAP_ABOUT_VERSION "Version: %s"
 #define XAP_ABOUT_BUILD "Build options: %s"
