@@ -32,7 +32,7 @@ rp_Section::rp_Section(rl_Layout* pLayout) :
 	UT_uint32 iId = static_cast<FV_View*>(pLayout->getDocLayout()->getAvView())->getRevisionLevel();
 	bool bHiddenRevision = false;
 	
-	pLayout->getAttrProp(&pAP, pRevisions, bShowRevisions, iId, bHiddenRevision);
+	pLayout->getAttrProp(&pAP, &pRevisions, bShowRevisions, iId, bHiddenRevision);
 	DELETEP(pRevisions); // we don't need it
 	UT_return_if_fail(pAP);
 

@@ -188,6 +188,7 @@ public:
 
 	UT_Error		cmdInsertGraphic(FG_Graphic*);
 	UT_Error        cmdInsertGraphicAtStrux(FG_Graphic* pFG, PT_DocPosition iPos, PTStruxType iStruxType);
+	bool            cmdInsertMathML(const char * szFileName,PT_DocPosition pos);
 	virtual void	toggleCase(ToggleCase c);
 	virtual void	setPaperColor(const XML_Char * clr);
 

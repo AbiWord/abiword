@@ -31,3 +31,30 @@ rl_Layout::rl_Layout(PTStruxType type, PL_StruxDocHandle sdh, rl_ContainerLayout
 {
 	m_pDoc = pDocLayout->getDocument();
 }
+
+
+/*!
+    ppAP [out] -- the requested AP
+    
+    pRevisions [in/out] -- revisions attribute; can be set to NULL, in
+                       which case an instance will be created; the
+                       caller is responsible for deleting
+
+    bShowRevisions -- indicates if in the current view revisions are
+                      to be shown
+
+    iRevisionId -- the id of revision which is shown in the current view
+    
+    bHiddenRevision [out] indicates if the element associated with
+                          ppAP is hidden or visible
+
+    bDelete [out] -- if set, the caller must delete ppAP when done
+                     with it.
+    
+*/
+bool rl_Layout::getAttrProp(const PP_AttrProp ** ppAP, PP_RevisionAttr ** pRevisions,
+							bool bShowRevisions, UT_uint32 iRevisionId, bool &bHiddenRevision) const
+{
+	UT_return_val_if_fail(m_pDoc, false);
+	return m_pDoc->getAttrProp(m_apIndex, ppAP, pRevisions, bShowRevisions, iRevisionId, bHiddenRevision);
+}

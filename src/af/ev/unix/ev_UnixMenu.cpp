@@ -659,6 +659,10 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 		// using EV_Menu_Action
 		const EV_Menu_Action * pAction = pMenuActionSet->getAction(id);
 		UT_ASSERT(pAction);
+		if(pAction == NULL)
+		{
+			continue;
+		}
 		const EV_Menu_Label * pLabel = m_pMenuLabelSet->getLabel(id);
 		UT_ASSERT(pLabel);
 

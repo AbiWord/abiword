@@ -202,7 +202,10 @@ const char ** EV_Menu::getLabelName(XAP_App * pApp,
 	data[1] = NULL;
 	
 	const char * szLabelName;
-	
+	if(pAction == NULL)
+	{
+		return NULL;
+	}
 	if (pAction->hasDynamicLabel())
 		szLabelName = pAction->getDynamicLabel(pLabel);
 	else

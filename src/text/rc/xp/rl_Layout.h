@@ -48,6 +48,10 @@ public:
 	
 	rl_Layout* getPrev() { return m_pPrev; }
 	rl_Layout* getNext() { return m_pNext; }
+
+	bool				getAttrProp(const PP_AttrProp ** ppAP, PP_RevisionAttr ** pRevisions,
+									bool bShowRevisions, UT_uint32 iRevisionId,
+									bool &bHiddenRevision) const;
 	
 protected:
 	virtual	rp_Object* _createObject() = 0;

@@ -4421,9 +4421,19 @@ bool	fl_BlockLayout::_doInsertTabRun(PT_BlockOffset blockOffset)
 }
 
 
+bool	fl_BlockLayout::_doInsertMathRun(PT_BlockOffset blockOffset)
+{
+	fp_Run * pNewRun = NULL;
+	pNewRun = new fp_MathRun(this,blockOffset);
+	UT_ASSERT(pNewRun); // TODO check for outofmem
+
+	return _doInsertRun(pNewRun);
+}
+
+
 bool	fl_BlockLayout::_doInsertTOCTabRun(PT_BlockOffset blockOffset)
 {
-	fp_Run* pNewRun = new fp_TabRun(this,blockOffset, 1);
+	fp_Run* pNewRun = new fp_TabRun(this,blockOffset,1);
 	UT_ASSERT(pNewRun); // TODO check for outofmem
 	static_cast<fp_TabRun *>(pNewRun)->setTOCTab();
 	return _doInsertRun(pNewRun);

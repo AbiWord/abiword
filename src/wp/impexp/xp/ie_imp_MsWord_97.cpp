@@ -5967,53 +5967,6 @@ bool IE_Imp_MsWord_97::_findNextTextboxSection()
 	return true;
 }
 
-
-///////////////////////////////////////////////////////////////////////
-/*!
- * s_cmp_lids This function is used to sort the textboxPos lids in order
- * of their lid values. This matches the order of the text sort in the
- * in the out-of-stream table.
- * Used by theqsort method on UT_Vector.
-\params const void * P1  - pointer to a textboxPos pointer
-\params const void * P2  - pointer to a textboxPos pointer
-\returns -ve if sz1 < sz2, 0 if sz1 == sz2, +ve if sz1 > sz2
-*/
-static UT_sint32 s_cmp_lids(const void * P1, const void * P2)
-{
-	const textboxPos ** pP1 = (const textboxPos **) P1;
-	const textboxPos ** pP2 = (const textboxPos **) P2;
-	UT_uint32 lid1 = (*pP1)->lid;
-	UT_uint32 lid2 = (*pP2)->lid;
-	return static_cast<UT_sint32>(lid1) - static_cast<UT_sint32>(lid2);
-}
-
-bool IE_Imp_MsWord_97::_findNextTextboxSection()
-{
-	if(m_iNextTextbox == 0)
-	{
-		// move to the start of the doc first
-		m_pTextboxEndSection = NULL;
-		m_vecTextboxPos.qsort(s_cmp_lids);
-		
-	}
-	if(m_iNextTextbox >= m_vecTextboxPos.getItemCount())
-	{
-		UT_DEBUGMSG(("Error: Textbox section not found!!!\n"));
-		return false;
-	}
-
-	textboxPos * pPos = m_vecTextboxPos.getNthItem(m_iNextTextbox);
-	m_pTextboxEndSection = pPos->endFrame;
-
-	if(!m_pTextboxEndSection)
-	{
-		UT_DEBUGMSG(("Error: Textbox section not found!!!\n"));
-		return false;
-	}
-
-	return true;
-}
-
 bool IE_Imp_MsWord_97::_findNextENoteSection()
 {
 	if(!m_iNextENote)
