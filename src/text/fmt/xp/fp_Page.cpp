@@ -1777,7 +1777,10 @@ void fp_Page::mapXYToPosition(bool bNotFrames,UT_sint32 x, UT_sint32 y, PT_DocPo
 	if(!bNotFrames)
 	{
 		UT_sint32 iextra = m_pLayout->getGraphics()->tlu(4);
-		for (i=0; i<static_cast<UT_sint32>(countFrameContainers()); i++)
+		// loop from high z to low z
+		// Because we draw from old to new, the new appears on top
+		// and because the new appears on top, it should be treated as such
+		for (i=(static_cast<UT_sint32>(countFrameContainers()-1)); i>=0; i--)
 		{
 			pFrameC = getNthFrameContainer(i);
 			bool isImage = false;
