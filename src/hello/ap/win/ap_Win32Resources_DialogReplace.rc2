@@ -1,0 +1,70 @@
+// AbiWord
+// Copyright (C) 1998 AbiSource, Inc.
+// 
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+// 02111-1307, USA.
+//////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////
+// THIS FILE IS INCLUDED BY .cpp AND .rc FILES.
+//
+// *** RC.exe IS BRAIN-DAMAGED.  GIVING THIS FILE AN .rc2
+// *** EXTENSION MAKES #INCLUDING THIS FILE FROM Win32Main.rc
+// *** WORK -- IF THE SUFFIX IS .h ONLY THE #DEFINES WORK, THE
+// *** DIALOGS DO NOT GET COMPILED.
+//
+//////////////////////////////////////////////////////////////////
+
+#define AP_RID_DIALOG_REPLACE_BTN_FINDNEXT			1001
+#define AP_RID_DIALOG_REPLACE_BTN_REPLACE			1002
+#define AP_RID_DIALOG_REPLACE_BTN_REPLACEALL		1003
+#define AP_RID_DIALOG_REPLACE_BTN_CLOSE				IDCANCEL
+
+#define AP_RID_DIALOG_REPLACE_EDIT_FIND				1004
+#define AP_RID_DIALOG_REPLACE_EDIT_REPLACE			1005
+#define AP_RID_DIALOG_REPLACE_CHECK_MATCHCASE		1006
+#define AP_RID_DIALOG_REPLACE_TEXT_STATIC			-1
+
+#ifdef RC_INVOKED
+AP_RID_DIALOG_REPLACE DIALOG DISCARDABLE  0, 0, 254, 89
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Replace"
+FONT 8, "MS Sans Serif"
+BEGIN
+    EDITTEXT						AP_RID_DIALOG_REPLACE_EDIT_FIND,		55,7,129,14,ES_AUTOHSCROLL
+    EDITTEXT						AP_RID_DIALOG_REPLACE_EDIT_REPLACE,		55,27,129,14,ES_AUTOHSCROLL
+    DEFPUSHBUTTON	"Find &Next",	AP_RID_DIALOG_REPLACE_BTN_FINDNEXT,		197,7,50,14
+    PUSHBUTTON		"Re&place",		AP_RID_DIALOG_REPLACE_BTN_REPLACE,		197,27,50,14
+    PUSHBUTTON      "Replace &All",	AP_RID_DIALOG_REPLACE_BTN_REPLACEALL,	197,47,50,14
+    PUSHBUTTON      "&Close",		AP_RID_DIALOG_REPLACE_BTN_CLOSE,		197,67,50,14
+    RTEXT           "&Find:",		AP_RID_DIALOG_REPLACE_TEXT_STATIC,		7,7,35,14,SS_CENTERIMAGE
+    RTEXT           "&Replace:",	AP_RID_DIALOG_REPLACE_TEXT_STATIC,		7,27,35,14,SS_CENTERIMAGE
+    CONTROL         "&Match Case",	AP_RID_DIALOG_REPLACE_CHECK_MATCHCASE,
+									"Button",BS_AUTOCHECKBOX | WS_TABSTOP,	7,57,52,10
+END
+
+AP_RID_DIALOG_FIND DIALOG DISCARDABLE  0, 0, 254, 49
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Find"
+FONT 8, "MS Sans Serif"
+BEGIN
+    EDITTEXT						AP_RID_DIALOG_REPLACE_EDIT_FIND,		55,7,129,14,ES_AUTOHSCROLL
+    DEFPUSHBUTTON	"Find &Next",	AP_RID_DIALOG_REPLACE_BTN_FINDNEXT,		197,7,50,14
+    PUSHBUTTON      "&Close",		AP_RID_DIALOG_REPLACE_BTN_CLOSE,		197,27,50,14
+    RTEXT           "&Find:",		AP_RID_DIALOG_REPLACE_TEXT_STATIC,		7,7,35,14,SS_CENTERIMAGE
+    CONTROL         "&Match Case",	AP_RID_DIALOG_REPLACE_CHECK_MATCHCASE,
+									"Button",BS_AUTOCHECKBOX | WS_TABSTOP,	7,31,52,10
+END
+#endif /* RC_INVOKED */
