@@ -323,6 +323,7 @@ void s_LaTeX_Listener::_openParagraph(PT_AttrPropIndex api)
 void s_LaTeX_Listener::_openSection(PT_AttrPropIndex api)
 {
 	const PP_AttrProp* pAP = NULL;
+	static UT_Bool firstSection = UT_TRUE;
 
 	m_bMultiCols = UT_FALSE;
 
@@ -361,7 +362,11 @@ void s_LaTeX_Listener::_openSection(PT_AttrPropIndex api)
 		}
 	}
 
-	m_pie->write ("\n\n\\begin{document}\n");
+	if (firstSection)
+	{
+		m_pie->write ("\n\n\\begin{document}\n");
+		firstSection = UT_FALSE;
+	}
 }
 
 void s_LaTeX_Listener::_convertColor(char* szDest, const char* pszColor)
