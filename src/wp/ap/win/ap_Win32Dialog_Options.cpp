@@ -280,7 +280,7 @@ BOOL AP_Win32Dialog_Options::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPar
 	_populateWindowData();
 	
 	// make sure first tab is selected.
-	ShowWindow(m_vecSubDlgHWnd.getNthItem(0), SW_SHOW);
+	ShowWindow((HWND)m_vecSubDlgHWnd.getNthItem(0), SW_SHOW);
 
 	return 1;							// 1 == we did not call SetFocus()
 }
@@ -518,9 +518,9 @@ void AP_Win32Dialog_Options::_controlEnable( tControl id, UT_Bool value )
 
 #define DEFINE_GET_SET_BOOL(index,button)																	\
 	UT_Bool AP_Win32Dialog_Options::_gather##button(void)													\
-	{ return IsDlgButtonChecked(m_vecSubDlgHWnd.getNthItem(index),AP_RID_DIALOG_OPTIONS_CHK_##button); }	\
+	{ return IsDlgButtonChecked((HWND)m_vecSubDlgHWnd.getNthItem(index),AP_RID_DIALOG_OPTIONS_CHK_##button); }	\
 	void AP_Win32Dialog_Options::_set##button(UT_Bool b)													\
-	{ CheckDlgButton(m_vecSubDlgHWnd.getNthItem(index),AP_RID_DIALOG_OPTIONS_CHK_##button,b); }
+	{ CheckDlgButton((HWND)m_vecSubDlgHWnd.getNthItem(index),AP_RID_DIALOG_OPTIONS_CHK_##button,b); }
 
 DEFINE_GET_SET_BOOL(SPELL_INDEX,SpellCheckAsType);
 DEFINE_GET_SET_BOOL(SPELL_INDEX,SpellHideErrors);
