@@ -95,6 +95,7 @@ class ABI_EXPORT ie_Table
 	void             OpenCell(PT_AttrPropIndex iApi);
 	void             CloseTable(void);
 	void             CloseCell(void);
+    bool             isNewRow(void);
 	UT_sint32        getLeft(void);
 	UT_sint32        getRight(void);
 	UT_sint32        getTop(void);
@@ -116,6 +117,7 @@ class ABI_EXPORT ie_Table
  private:
 	PD_Document *     m_pDoc;
 	UT_Stack          m_sLastTable;
+	bool              m_bNewRow;
 };			
 
 
@@ -336,6 +338,9 @@ public:
     bool               setCaptionOn(void);
 	bool               setCaptionOff(void);
 	bool               tdEnd(void);
+
+	pf_Frag_Strux *	    getInsertionPoint () const { return m_pfsInsertionPoint; }
+
 private:
 
 	/* 1. Need a section on column definitions, allowing for <col> and <colgroup><col>
@@ -380,8 +385,6 @@ private:
 	TableZone			m_tzone;
 	bool                m_bBlockInsertedForCell;
 	PD_Document *	    getDoc () const { return m_pDocument; }
-
-	pf_Frag_Strux *	    getInsertionPoint () const { return m_pfsInsertionPoint; }
 	bool                m_bCaptionOn;
 };
 

@@ -1313,7 +1313,7 @@ void s_HTML_Listener::_outputBegin (PT_AttrPropIndex api)
 	 */
 	m_utf8_1 = "meta http-equiv=\"content-type\" content=\"text/html;charset=UTF-8\"";
 	tagOpenClose (m_utf8_1, get_HTML4 ());
-	
+
 	/* set page's title in browser
 	 */
 	m_utf8_1 = "title";
@@ -3506,7 +3506,7 @@ void s_HTML_Listener::_openCell (PT_AttrPropIndex api)
 		UT_sint32 rowspan = m_TableHelper.getBot ()   - m_TableHelper.getTop ();
 		UT_sint32 colspan = m_TableHelper.getRight () - m_TableHelper.getLeft ();
 
-		if ((tagTop () != TT_TR) || (m_TableHelper.getLeft () == 0)) // beginning of a new row
+		if (m_TableHelper.isNewRow()) // beginning of a new row
 			_openRow (api);
 
 		const char * pszBgColor = m_TableHelper.getCellProp ("bgcolor");
@@ -3863,12 +3863,6 @@ void s_HTML_Listener::_closeCell ()
 	
 	m_utf8_1 = "td";
 	tagClose (TT_TD, m_utf8_1);
-
-	if (m_TableHelper.getNumCols () == m_TableHelper.getRight ()) // logical end of a row
-	{
-		m_utf8_1 = "tr";
-		tagClose (TT_TR, m_utf8_1);
-	} 
 }
 
 #endif /* HTML_TABLES_SUPPORTED */
@@ -4615,6 +4609,8 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 					return true;
 				}
 				_closeTag();
+				m_utf8_1 = "tr";
+				tagClose (TT_TR, m_utf8_1);
 				m_TableHelper.CloseTable();
 				_closeTable();
 				return true;

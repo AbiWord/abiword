@@ -56,6 +56,7 @@ class po_Bookmark;
 class fl_AutoNum;
 class fl_BlockLayout;
 class fp_Run;
+class UT_UTF8String;
 
 #ifdef PT_TEST
 #include "ut_test.h"
@@ -425,6 +426,7 @@ public:
 	bool                    isRedrawHappenning(void) const {return m_bRedrawHappenning;}
 
 	// PageSize functions
+	bool                    convertPercentToInches(const char * szPercent, UT_UTF8String & sInches);
 	fp_PageSize				m_docPageSize;
 	bool					setPageSizeFromFile(const XML_Char ** attributes);
 

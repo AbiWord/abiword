@@ -3989,6 +3989,31 @@ bool  PD_Document::isDoingPaste(void)
          return m_bDoingPaste;
 }
 
+bool PD_Document::convertPercentToInches(const char * szPercent, UT_UTF8String & sInches)
+{
+	double width = m_docPageSize.Width(DIM_IN);
+	PL_StruxDocHandle sdhSec = getLastSectionSDH();
+	const char * szLeftMargin = NULL;
+	const char * szRightMargin = NULL;
+	getPropertyFromSDH(sdhSec,"page-margin-left",&szLeftMargin);
+	getPropertyFromSDH(sdhSec,"page-margin-right",&szRightMargin);
+	if(szLeftMargin == NULL)
+	{
+		szLeftMargin = "0.5in";
+	}
+	if(szRightMargin == NULL)
+	{
+		szRightMargin = "0.5in";
+	}
+	double dLeft = UT_convertToInches(szLeftMargin);
+	double dRight = UT_convertToInches(szRightMargin);
+	width = width - dLeft - dRight;
+	UT_String sVal = szPercent;
+	sInches = UT_convertInchesToDimensionString(DIM_IN,width);
+	return true;
+}
+
+
 bool PD_Document:: setPageSizeFromFile(const XML_Char ** attributes)
 {
 	const XML_Char * szPageSize=NULL, * szOrientation=NULL, * szWidth=NULL, * szHeight=NULL, * szUnits=NULL, * szPageScale=NULL;

@@ -98,10 +98,14 @@ UT_Confidence_t IE_Imp_XHTML_Sniffer::recognizeContents(const char * szBuf,
 	p = szBuf ;
 	while( iLinesToRead-- )
 	{
-		magic = "<html " ;
+		magic = "<html" ;
 		if ( (iNumbytes - iBytesScanned) < strlen(magic) ) return(UT_CONFIDENCE_ZILCH);
 		if ( strncmp(p, magic, strlen(magic)) == 0 ) return(UT_CONFIDENCE_PERFECT);
 		magic = "<!DOCTYPE html" ;
+		if ( (iNumbytes - iBytesScanned) < strlen(magic) ) return(UT_CONFIDENCE_ZILCH);
+		if ( strncmp(p, magic, strlen(magic)) == 0 ) return(UT_CONFIDENCE_PERFECT);
+
+		magic = "<!DOCTYPE HTML" ;
 		if ( (iNumbytes - iBytesScanned) < strlen(magic) ) return(UT_CONFIDENCE_ZILCH);
 		if ( strncmp(p, magic, strlen(magic)) == 0 ) return(UT_CONFIDENCE_PERFECT);
 		/*  Seek to the next newline:  */
@@ -125,8 +129,8 @@ UT_Confidence_t IE_Imp_XHTML_Sniffer::recognizeContents(const char * szBuf,
 
 UT_Confidence_t IE_Imp_XHTML_Sniffer::recognizeSuffix(const char * szSuffix)
 {
-  if (!(UT_stricmp(szSuffix,".html")) || !(UT_stricmp(szSuffix,".xhtml"))
-      || !(UT_stricmp(szSuffix,".htm")))
+  if ((UT_stricmp(szSuffix,".html")==0) || (UT_stricmp(szSuffix,".xhtml")==0)
+      || (UT_stricmp(szSuffix,".htm")==0))
     return UT_CONFIDENCE_PERFECT;
   return UT_CONFIDENCE_ZILCH;    
 }
@@ -1083,6 +1087,8 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 
 		if ( szSrc == 0) break;
 		if (*szSrc == 0) break;
+		UT_UTF8String sWidth;
+		UT_UTF8String sHeight;
 
 		FG_Graphic * pfg = 0;
 
@@ -1098,6 +1104,25 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 
 		char * mimetype = UT_strdup ("image/png");
 		X_CheckError(mimetype);
+		if(szWidth)
+			{
+				UT_Dimension units = UT_determineDimension (szWidth);
+				if(units == DIM_PERCENT)
+					{
+						getDoc()->convertPercentToInches(szWidth,sWidth);
+						szWidth = sWidth.utf8_str();
+					}
+			}
+		if(szHeight)
+			{
+				UT_Dimension units = UT_determineDimension (szHeight);
+				if(units == DIM_PERCENT)
+					{
+						getDoc()->convertPercentToInches(szWidth,sHeight);
+						szHeight = sHeight.utf8_str();
+					}
+			}
+
 
 		UT_UTF8String utf8val;
 		if (szStyle)
@@ -1146,30 +1171,54 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 			}
 		if ((strstr (utf8val.utf8_str (), "width")  == 0) ||
 			(strstr (utf8val.utf8_str (), "height") == 0))
-			{
-				float width  = static_cast<float>(pfg->getWidth ());
-				float height = static_cast<float>(pfg->getHeight ());
-
-				if ((width > 0) && (height > 0))
-					{
-						UT_DEBUGMSG(("missing width or height; reverting to image defaults\n"));
-					}
-				else
-					{
-						UT_DEBUGMSG(("missing width or height; setting these to 100x100\n"));
-						width  = static_cast<float>(100);
-						height = static_cast<float>(100);
-					}
-
-				UT_String tmp;
+		{
+			float width  = static_cast<float>(pfg->getWidth ());
+			float height = static_cast<float>(pfg->getHeight ());
+			if ((width > 0) && (height > 0))
+	   		{
+				UT_DEBUGMSG(("missing width or height; reverting to image defaults\n"));
+#if 0
+				if(strstr (utf8val.utf8_str (), "width")  != 0)
 				{
-					UT_LocaleTransactor(LC_NUMERIC, "C");
-					UT_String_sprintf (tmp, "width:%gin; height:%gin", width, height);
+					float rat = height/width;
+					float fwidth = UT_convertToInches(szWidth);
+					height = rat*fwidth;
+					UT_String tmp;
+					{
+						UT_LocaleTransactor(LC_NUMERIC, "C");
+						UT_String_sprintf (tmp, "%gin", height);
+					}
+					if (utf8val.byteLength ()) 
+						utf8val += "; ";
+					utf8val += "height:";
+					utf8val += tmp.c_str ();
+					goto got_string;
 				}
-
-				utf8val = tmp.c_str ();
+#endif
+			}
+			else
+			{
+				UT_DEBUGMSG(("missing width or height; setting these to 100x100\n"));
+				width  = static_cast<float>(100);
+				height = static_cast<float>(100);
+			}
+			width = width/96.0;
+			height = height/96.0;
+			if(height > 8.0)
+				{
+					float rat = 8.0/height;
+					width = width * rat;
+					height = 8.0;
+				}
+			UT_String tmp;
+			{
+				UT_LocaleTransactor(LC_NUMERIC, "C");
+				UT_String_sprintf (tmp, "width:%gin; height:%gin", width, height);
 			}
 
+			utf8val = tmp.c_str ();
+		}
+		got_string:
 		const XML_Char * api_atts[5];
 
 		UT_String dataid;
@@ -1197,7 +1246,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 			{
 				X_CheckError(requireBlock ());
 			}
-		UT_DEBUGMSG(("inserting `%s' as `%s' [%s]\n",szSrc,dataid.c_str(),utf8val.utf8_str()));
+		xxx_UT_DEBUGMSG(("inserting `%s' as `%s' [%s]\n",szSrc,dataid.c_str(),utf8val.utf8_str()));
 
 		X_CheckError(appendObject (PTO_Image, api_atts));
 		X_CheckError(getDoc()->createDataItem (dataid.c_str(), false, pBB, static_cast<void*>(mimetype), NULL));

@@ -1594,6 +1594,7 @@ void fl_DocSectionLayout::setNeedsSectionBreak(bool bSet, fp_Page * pPage)
 	}
 }
 
+
 void fl_DocSectionLayout::completeBreakSection(void)
 {
 	m_bNeedsSectionBreak = true;

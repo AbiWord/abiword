@@ -4503,7 +4503,14 @@ fl_BlockLayout::_assertRunListIntegrityImpl(void)
 	bool bPastFirst = false;
 	if(m_pFirstRun)
 	{
-		UT_ASSERT(m_pFirstRun->getPrevRun() == NULL);
+		//
+		// Dummy Runs are allowed at the first positions 
+		// of a TOC
+		//
+		if(m_pFirstRun->getPrevRun())
+		{
+			UT_ASSERT(m_pFirstRun->getPrevRun()->getType() == FPRUN_DUMMY);
+		}
 	}
 #if 0
 	//

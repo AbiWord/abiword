@@ -310,7 +310,8 @@ void ie_PartTable::_setRowsCols(void)
 /*--------------------------------------------------------------------------------*/
 
 ie_Table::ie_Table(PD_Document * pDoc) :
-	m_pDoc(pDoc)
+	m_pDoc(pDoc),
+	m_bNewRow(false)
 {
 	m_sLastTable.push(NULL);
 }
@@ -365,8 +366,22 @@ void ie_Table::OpenCell(PT_AttrPropIndex iApi)
 {
 	ie_PartTable * pPT = NULL;
 	m_sLastTable.viewTop(reinterpret_cast<void **>(&pPT));
+	UT_sint32 iOldTop = pPT->getTop();
 	pPT->setCellApi(iApi);
 	pPT->setCellJustOpenned(true);
+	if(pPT->getTop() > iOldTop)
+	{
+		m_bNewRow = true;
+	}
+	else
+	{
+		m_bNewRow = false;
+	}
+}
+
+bool ie_Table::isNewRow(void)
+{
+	return m_bNewRow;
 }
 
 bool ie_Table::isCellJustOpenned(void)
@@ -2000,15 +2015,50 @@ IE_Imp_TableHelper::~IE_Imp_TableHelper ()
 	UT_VECTOR_PURGEALL(CellHelper *, m_tbody);
 }
 
-bool IE_Imp_TableHelper::tableStart ()
+bool IE_Imp_TableHelper::tableStart (void)
 {
-	if (!getDoc()->appendStrux (PTX_SectionTable, 0))
-		return false;
-	m_pfsTableStart = static_cast<pf_Frag_Strux *>(getDoc()->getLastFrag());
-	getDoc()->appendStrux(PTX_EndTable,NULL);
-	m_pfsTableEnd = static_cast<pf_Frag_Strux *>(getDoc()->getLastFrag());
-	m_pfsInsertionPoint = m_pfsTableEnd;
-	m_pfsCellPoint = m_pfsInsertionPoint;
+	if(m_pfsInsertionPoint == NULL)
+	{
+		if(m_style.size() == 0)
+		{
+			if (!getDoc()->appendStrux (PTX_SectionTable, 0))
+				return false;
+		}
+		else
+		{
+			const XML_Char * atts[3] = {NULL,NULL,NULL};
+			atts[0] = "props";
+			atts[1] = m_style.utf8_str();
+			if (!getDoc()->appendStrux (PTX_SectionTable,atts))
+				return false;
+		}
+		m_pfsTableStart = static_cast<pf_Frag_Strux *>(getDoc()->getLastFrag());
+		getDoc()->appendStrux(PTX_EndTable,NULL);
+		m_pfsTableEnd = static_cast<pf_Frag_Strux *>(getDoc()->getLastFrag());
+		m_pfsInsertionPoint = m_pfsTableEnd;
+		m_pfsCellPoint = m_pfsInsertionPoint;
+	}
+	else
+	{
+		pf_Frag * pf = static_cast<pf_Frag *>(m_pfsInsertionPoint);
+		if(m_style.size() == 0)
+		{
+			getDoc()->insertStruxBeforeFrag(pf,PTX_SectionTable,NULL);
+		}
+		else
+		{
+			const XML_Char * atts[3] = {NULL,NULL,NULL};
+			atts[0] = "props";
+			atts[1] = m_style.utf8_str();
+			getDoc()->insertStruxBeforeFrag(pf,PTX_SectionTable,atts);
+		}
+		getDoc()->insertStruxBeforeFrag(pf,PTX_EndTable,NULL);
+		PL_StruxDocHandle sdhEnd = NULL;
+		getDoc()->getPrevStruxOfType(ToSDH(static_cast<pf_Frag_Strux *>(pf)),PTX_EndTable,&sdhEnd);
+		m_pfsTableEnd = ToPFS(sdhEnd);
+		m_pfsInsertionPoint = m_pfsTableEnd;
+		m_pfsCellPoint = m_pfsInsertionPoint;
+	}
 	return tbodyStart ();
 }
 
@@ -2019,7 +2069,9 @@ bool IE_Imp_TableHelper::tableEnd ()
 		return false;
 
 	// TODO: unset frag - & other clean-up?
-
+	m_pfsTableEnd = NULL;
+	m_pfsInsertionPoint = NULL;
+	m_pfsCellPoint = NULL;
 	return true;
 }
 
@@ -2553,7 +2605,13 @@ bool IE_Imp_TableHelperStack::push (const char * style)
 
 	UT_TRY
 		{
-			th = new IE_Imp_TableHelper(m_pDocument,0 /* TODO */,style);
+			IE_Imp_TableHelper * prev = top();
+			pf_Frag_Strux * pfs = NULL;
+			if(prev)
+			{
+				pfs = prev->getInsertionPoint ();
+			}
+			th = new IE_Imp_TableHelper(m_pDocument,pfs,style);
 		}
 	UT_CATCH(...)
 		{
