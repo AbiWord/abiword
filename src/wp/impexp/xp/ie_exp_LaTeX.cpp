@@ -59,7 +59,7 @@ bool IE_Exp_LaTeX_Sniffer::getDlgLabels(const char ** pszDesc,
 										const char ** pszSuffixList,
 										IEFileType * ft)
 {
-	*pszDesc = "LaTeX (.tex)";
+	*pszDesc = "LaTeX (.latex)";
 	*pszSuffixList = "*.tex; *.latex";
 	*ft = getFileType();
 	return true;

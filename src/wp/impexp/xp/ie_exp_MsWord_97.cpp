@@ -308,7 +308,7 @@ bool IE_Exp_MsWord_97_Sniffer::getDlgLabels(const char ** pszDesc,
 									  IEFileType * ft)
 {
 	*pszDesc = "MsWord 2000 (.doc)";
-	*pszSuffixList = "*.doc; *.dot";
+	*pszSuffixList = "*.dot; *.doc";
 	*ft = getFileType();
 	return true;
 }
