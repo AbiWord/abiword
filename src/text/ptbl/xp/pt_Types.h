@@ -17,23 +17,32 @@
  * 02111-1307, USA.
  */
 
-
-
 #ifndef PT_TYPES_H
 #define PT_TYPES_H
 
 #include "ut_types.h"
 
-typedef UT_uint32 PT_BufIndex;			/* index to actual document data */
-typedef UT_uint32 PT_AttrPropIndex;		/* index to Attribute/Property Tables */
+//! index to actual document data
+typedef UT_uint32 PT_BufIndex;
+//! index to Attribute/Property Tables
+typedef UT_uint32 PT_AttrPropIndex;
 
-typedef UT_uint32 PT_DocPosition;		/* absolute document position */
-typedef UT_uint32 PT_BlockOffset;		/* block-relative document position */
+//! absolute document position
+typedef UT_uint32 PT_DocPosition;
+//! block-relative document position
+typedef UT_uint32 PT_BlockOffset;
 
 class PD_Document;
+/*!  
+ PD_DocumentRange identifies a piece of the document, using two
+ PT_DocPosition absolute document positions as limits.
+*/
+
 class PD_DocumentRange
 {
 public:
+	//! Dummy constructure. 
+	//! Resulting range is invalid until it is initialized with set
 	PD_DocumentRange(void)
 		{
 			m_pDoc = NULL;
@@ -41,6 +50,7 @@ public:
 			m_pos2 = 0;
 		}
 	
+	//! Initializing constructor.
 	PD_DocumentRange(PD_Document * pDoc, PT_DocPosition k1, PT_DocPosition k2)
 		{
 			m_pDoc = pDoc;
@@ -48,6 +58,7 @@ public:
 			m_pos2 = k2;
 		}
 
+	//! Set range limits
 	void set(PD_Document * pDoc, PT_DocPosition k1, PT_DocPosition k2)
 		{
 			m_pDoc = pDoc;
@@ -55,23 +66,30 @@ public:
 			m_pos2 = k2;
 		}
 	
+	//! Document this range is in
 	PD_Document *		m_pDoc;
+	//! Lower limit of range
 	PT_DocPosition		m_pos1;
+	//! Upper limit of range
 	PT_DocPosition		m_pos2;
 };
 
-// PTStruxType tells the sub-type of a FragStrux.
-// PTObjectType tells the sub-type of an FragObject.
-
+//! PTStruxType tells the sub-type of a FragStrux.
 typedef enum _PTStruxType { PTX_Section, PTX_Block } PTStruxType;
+//! PTObjectType tells the sub-type of an FragObject.
 typedef enum _PTObjectType { PTO_Image, PTO_Field } PTObjectType;
 
+//! PieceTable states
 typedef enum _PTState { PTS_Create=0, PTS_Loading=1, PTS_Editing=2 } PTState;
+//! ChangeFormat types
 typedef enum _PTChangeFmt { PTC_AddFmt=0, PTC_RemoveFmt=1, PTC_AddStyle=2 } PTChangeFmt;
 
+//! ID of a listener - this is its location in m_vecListeners
 typedef UT_uint32 PL_ListenerId;
-typedef const void * PL_StruxDocHandle;	/* opaque document data */
-typedef const void * PL_StruxFmtHandle;	/* opaque layout data */
+//! opaque document data
+typedef const void * PL_StruxDocHandle;
+//! opaque layout data
+typedef const void * PL_StruxFmtHandle;
 
 #define PT_PROPS_ATTRIBUTE_NAME			((const XML_Char *)"props")
 #define PT_STYLE_ATTRIBUTE_NAME			((const XML_Char *)"style")

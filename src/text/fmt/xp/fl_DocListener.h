@@ -29,7 +29,7 @@ class FL_DocLayout;
 class PD_Document;
 class fl_SectionLayout;
 
-/*
+/*!
 	The fl_DocListener class handles notifications from a PD_Document 
 	to its associated FL_DocLayout. 
 */

@@ -25,13 +25,15 @@
 #include "pt_Types.h"
 #include "pf_Frag.h"
 
-// pf_Frag_FmtMark represents a zero-length place-holder fragment
-// in the document.  it is used to hold a formating information
-// for in anticipation of future text.  that is, we use it when
-// the user does a 'toggle bold' or etc and before any text has
-// been entered.  as soon as text is entered we will remove this
-// marker (we may also remove it if the user moves the cursor
-// away before actually entering any text).
+/*!
+ pf_Frag_FmtMark represents a zero-length place-holder fragment
+ in the document.  It is used to hold a formating information
+ in anticipation of future text.  That is, we use it when
+ the user does a 'toggle bold' or similar and before any text has
+ been entered.  As soon as text is entered we will remove this
+ marker (we may also remove it if the user moves the cursor
+ away before actually entering any text).
+*/
 
 class pf_Frag_FmtMark : public pf_Frag
 {

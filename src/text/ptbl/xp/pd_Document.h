@@ -48,14 +48,14 @@ class fl_AutoNum;
 #include "ut_test.h"
 #endif
 
-//////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////
-// PD_Document is the representation for a document.
-
 enum
 {
 	PD_SIGNAL_UPDATE_LAYOUT
 };
+
+/*!
+ PD_Document is the representation for a document.
+*/
 
 class PD_Document : public AD_Document
 {

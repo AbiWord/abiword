@@ -25,8 +25,10 @@
 #include "pf_Frag.h"
 #include "pf_Frag_Strux.h"
 
-// pf_Frag_Strux_Block represents structure information for a 
-// block (paragraph) in the document.
+/*!
+ pf_Frag_Strux_Block represents structure information for a 
+ block (paragraph) in the document.
+*/
 
 class pf_Frag_Strux_Block : public pf_Frag_Strux
 {

@@ -26,13 +26,16 @@
 #include "pt_Types.h"
 #include "pd_Document.h"
 
-// pf_Frag_Strux represents structure information (such as a
-// paragraph or section) in the document.
-//
-// pf_Frag_Strux is descended from pf_Frag, but is a base
-// class for _Section, etc.
-// We use an enum to remember type, rather than use any of the
-// run-time stuff.
+/*!
+ pf_Frag_Strux represents structure information (such as a
+ paragraph or section) in the document.
+
+ pf_Frag_Strux is descended from pf_Frag, but is a base
+ class for pf_Frag_Strux_Block and pf_Frag_Strux_Section.
+
+ We use an enum to remember type, rather than use any of the
+ run-time stuff.
+*/
 
 class pf_Frag_Strux : public pf_Frag
 {

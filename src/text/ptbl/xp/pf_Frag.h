@@ -28,14 +28,16 @@ class pt_PieceTable;
 class PX_ChangeRecord;
 class fd_Field;
 
+/*!
+ pf_Frag represents a fragment of the document.  This may be text
+ (pf_Frag_Text), an inline object such as an image (pf_Frag_Object),
+ or structure information such as a paragraph or section
+ (pf_Frag_Strux_Block, pf_Frag_Strux_Section).
 
-// pf_Frag represents a fragment of the document.  This may
-// be text, an inline object (such as an image), or structure
-// information (such as a paragraph or section).
-//
-// pf_Frag is an abstract base class.
-// We use an enum to remember type, rather than use any of the
-// run-time stuff.
+ pf_Frag is an abstract base class.
+ We use an enum to remember type, rather than use any of the
+ run-time stuff.
+*/
 
 class pf_Frag
 {

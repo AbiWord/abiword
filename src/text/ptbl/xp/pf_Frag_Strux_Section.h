@@ -26,8 +26,10 @@
 #include "pf_Frag_Strux.h"
 class pt_PieceTable;
 
-// pf_Frag_Strux_Section represents structure information for
-// a section in the document.
+/*!
+ pf_Frag_Strux_Section represents structure information for
+ a section in the document.
+*/
 
 class pf_Frag_Strux_Section : public pf_Frag_Strux
 {

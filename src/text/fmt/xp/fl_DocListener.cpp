@@ -80,10 +80,10 @@ UT_Bool fl_DocListener::populate(PL_StruxFmtHandle sfh,
 			fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
 			if(pBL->getPrev()!= NULL && pBL->getPrev()->getLastLine()==NULL)
 			{
-			        UT_DEBUGMSG(("In DocListner no LastLine in Previous Block Fixing this now \n"));
-			        UT_DEBUGMSG(("getPrev = %d this = %d \n",pBL->getPrev(),pBL));
+				UT_DEBUGMSG(("In DocListner no LastLine in Previous Block Fixing this now \n"));
+				UT_DEBUGMSG(("getPrev = %d this = %d \n",pBL->getPrev(),pBL));
 				if( pBL->getSectionLayout()->getType() != FL_SECTION_HDRFTR)
-				         pBL->getPrev()->format();
+					pBL->getPrev()->format();
 				
 			}
 
@@ -93,10 +93,10 @@ UT_Bool fl_DocListener::populate(PL_StruxFmtHandle sfh,
 			bResult = pBLSL->bl_doclistener_populateSpan(pBL, pcrs, blockOffset, len);
 			if(pBL->getLastLine()==NULL)
 			{
-			        UT_DEBUGMSG(("In  DocListner no LastLine in this block fixing this now \n"));
+				UT_DEBUGMSG(("In  DocListner no LastLine in this block fixing this now \n"));
 				UT_DEBUGMSG(("getPrev = %d this = %d \n",pBL->getPrev(),pBL));
-			        if(pBL->getSectionLayout()->getType() != FL_SECTION_HDRFTR && pBL->getPrev()!= NULL)
-				        pBL->format();
+				if(pBL->getSectionLayout()->getType() != FL_SECTION_HDRFTR && pBL->getPrev()!= NULL)
+					pBL->format();
 				//UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			}
 
@@ -259,21 +259,20 @@ UT_Bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 		// BUGBUG: this is *not* thread-safe, but should work for now
 		if (m_bScreen)
 		{
-		        UT_uint32 reason =  0;
+			UT_uint32 reason =  0;
 			if( m_pLayout->getAutoSpellCheck())
 			{
-			          reason = (UT_uint32) FL_DocLayout::bgcrSpelling;
+				reason = (UT_uint32) FL_DocLayout::bgcrSpelling;
 			}
 			m_pLayout->queueBlockForBackgroundCheck(reason, pBL,UT_TRUE);
 		}
 		*psfh = (PL_StruxFmtHandle)pBL;
-       		if(pBL->getLastLine()==NULL)
+		if(pBL->getLastLine()==NULL)
 		{
-			        UT_DEBUGMSG(("In DocListner no LastLine in block append. Fixing this now \n"));
-			        UT_DEBUGMSG(("getPrev = %d this = %d \n",pBL->getPrev(),pBL));
-				if(pBL->getSectionLayout()->getType() != FL_SECTION_HDRFTR && pBL->getPrev() != NULL)
-				         pBL->format();
-				
+			UT_DEBUGMSG(("In DocListner no LastLine in block append. Fixing this now \n"));
+			UT_DEBUGMSG(("getPrev = %d this = %d \n",pBL->getPrev(),pBL));
+			if(pBL->getSectionLayout()->getType() != FL_SECTION_HDRFTR && pBL->getPrev() != NULL)
+				pBL->format();
 		}
 
 	}
@@ -474,10 +473,10 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 			//
 			if(pszSectionType && UT_strcmp(pszSectionType,"header") == 0)
 			{
-			        //
-			        //  Ok first we need a previous section with a
-			        //  matching ID
-			        //
+				//
+				//  Ok first we need a previous section with a
+				//  matching ID
+				//
 				const XML_Char* pszID = NULL;
 				pAP->getAttribute((XML_Char*)"id", pszID);
 
@@ -501,15 +500,15 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 				
 				pHeadSL->changeStrux(pSL);
 
-			        bResult = UT_TRUE;
-			        goto finish_up;
+				bResult = UT_TRUE;
+				goto finish_up;
 			}
 			else if(pszSectionType && UT_strcmp(pszSectionType,"footer") == 0)
 			{
-			        //
-			        //  Ok first we need a previous section with a
-			        //  matching ID
-			        //
+				//
+				//  Ok first we need a previous section with a
+				//  matching ID
+				//
 				const XML_Char* pszID = NULL;
 				pAP->getAttribute((XML_Char*)"id", pszID);
 
@@ -530,11 +529,10 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 
 				// OK Now clean up the old section and transfer
 				// blocks into this header section.
-				
 				pFootSL->changeStrux(pSL);
 			        
-			        bResult = UT_TRUE;
-			        goto finish_up;
+				bResult = UT_TRUE;
+				goto finish_up;
 			}
 
  			bResult = pSL->doclistener_changeStrux(pcrxc);
@@ -649,8 +647,8 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
 		pBL->m_bStopList = UT_TRUE;
 		pBL->_deleteListLabel();
-                pBL->m_pAutoNum = NULL;
-                pBL->m_bListItem = UT_FALSE;
+		pBL->m_pAutoNum = NULL;
+		pBL->m_bListItem = UT_FALSE;
 		pBL->m_bStopList = UT_FALSE;
 		goto finish_up;
 	}
@@ -780,8 +778,9 @@ UT_Bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 
 UT_Bool fl_DocListener::signal(UT_uint32 iSignal)
 {
-        UT_Bool bCursorErased = UT_FALSE;
-        FV_View* pView = m_pLayout->getView();
+	UT_Bool bCursorErased = UT_FALSE;
+	FV_View* pView = m_pLayout->getView();
+
 	switch (iSignal)
 	{
 	case PD_SIGNAL_UPDATE_LAYOUT:
@@ -790,13 +789,13 @@ UT_Bool fl_DocListener::signal(UT_uint32 iSignal)
 #endif
 		if(pView->isCursorOn()== UT_TRUE)
 		{
-		      pView->eraseInsertionPoint();
-		      bCursorErased = UT_TRUE;
+			pView->eraseInsertionPoint();
+			bCursorErased = UT_TRUE;
 		}
 		pView->updateScreen();
 		if(bCursorErased == UT_TRUE)
 		{
-		      pView->drawInsertionPoint();
+			pView->drawInsertionPoint();
 		}
 
 		break;

@@ -25,10 +25,12 @@
 #include "pt_Types.h"
 #include "pf_Frag.h"
 
-// pf_Frag_Text represents a fragment of text in the document.
-// note that it does not contain a PT_DocPosition -- the fragment
-// does not know where it is in the document; it only knows its
-// buffer position.
+/*!
+ pf_Frag_Text represents a fragment of text in the document.
+ Note that it does not contain a PT_DocPosition -- the fragment
+ does not know where it is in the document; it only knows its
+ buffer position.
+*/
 
 class pf_Frag_Text : public pf_Frag
 {
