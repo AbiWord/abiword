@@ -682,6 +682,10 @@ void FV_View::releaseFrame(UT_sint32 x, UT_sint32 y)
 
 void FV_View::deleteFrame(void)
 {
+	if(!m_FrameEdit.isActive())
+	{
+		m_FrameEdit.mouseLeftPress(m_iMouseX,m_iMouseY);
+	}
 	m_FrameEdit.deleteFrame();
 	XAP_Frame * pFrame = static_cast<XAP_Frame*>(getParentData());
 	if(pFrame)
