@@ -120,6 +120,38 @@ endif
 
 ##################################################################
 ##################################################################
+## Macros which help eliminate our need for a working copy of the
+## INSTALL program...
+
+define MAKE_OBJDIR
+if test ! -d $(@D); then rm -rf $(@D); mkdir -p $(@D); fi
+endef
+
+define VERIFY_DIRECTORY
+if test ! -d xxxx; then rm -rf xxxx; mkdir -p  xxxx; fi
+endef
+
+ifeq ($(OS_NAME), WIN32)
+CYGWIN_ROOT := $(shell cygpath -w / | sed 's|\\|/|g')
+ ifneq (,$(findstring  ,$(shell uname -r)))
+  define TRANSFORM_TO_DOS_PATH
+  sed 's|//[a-zA-Z]/|/|g' | sed 's|/|\\\\|g'
+  endef
+ else
+  ifneq (,$(findstring cygdrive,$(ABI_ROOT)))
+   define TRANSFORM_TO_DOS_PATH
+   sed 's|/cygdrive/\([a-zA-Z]\)/|\1:/|g' | sed 's|/|\\\\|g'
+   endef
+  else
+   define TRANSFORM_TO_DOS_PATH
+   sed 's|/|$(CYGWIN_ROOT)|' | sed 's| /| $(CYGWIN_ROOT)|g' | sed 's|/|\\\\|g'
+   endef
+  endif
+ endif
+endif
+
+##################################################################
+##################################################################
 
 ABICOPY=cp
 
@@ -165,7 +197,7 @@ ABI_PEER_INCS=	/../../expat/xmlparse	\
 
 ABI_ALL_INCS=	$(ABI_XAP_INCS) $(ABI_PEER_INCS) $(ABI_AP_INCS) $(ABI_OTH_INCS) $(ABI_TM_INCS)
 ifeq ($(OS_NAME), WIN32)
-ABI_XX_ROOT:=$(shell echo $(ABI_ROOT) | sed 's|/cygdrive/\([a-zA-Z]\)/|\1:/|g' | sed 's|//[a-zA-Z]/|/|g')
+ABI_XX_ROOT:=$(shell echo $(ABI_ROOT) | $(TRANSFORM_TO_DOS_PATH) | sed 's|\\\\|/|g')
 ABI_INCS=	$(addprefix -I$(ABI_XX_ROOT)/src,$(ABI_ALL_INCS))
 else
 ABI_INCS=	$(addprefix -I$(ABI_ROOT)/src,$(ABI_ALL_INCS))
@@ -278,27 +310,7 @@ fake-target::
 endif
 
 #### End of platform defs
-##################################################################
-##################################################################
-
-##################################################################
-##################################################################
-## Macros which help eliminate our need for a working copy of the
-## INSTALL program...
-
-define MAKE_OBJDIR
-if test ! -d $(@D); then rm -rf $(@D); mkdir -p $(@D); fi
-endef
-
-define VERIFY_DIRECTORY
-if test ! -d xxxx; then rm -rf xxxx; mkdir -p  xxxx; fi
-endef
-
-define TRANSFORM_TO_DOS_PATH
-sed 's|/cygdrive/\([a-zA-Z]\)/|\1:/|g' | sed 's|//[a-zA-Z]/|/|g' | sed 's|/|\\\\|g'
-endef
-
-##################################################################
+#################################################################
 ##################################################################
 ## Directory name pattern and locations of where we put our output.
 ##

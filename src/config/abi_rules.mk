@@ -142,10 +142,7 @@ ifeq ($(OS_NAME),WIN32)
 ####	we build a @file because the command line can overrun the win32 bash
 ####	command line limit (or something which crashes bash)....
 	@echo -NOLOGO -OUT:"$(shell echo $@ | $(TRANSFORM_TO_DOS_PATH))" > linkfile.1
-	@echo $(OBJS)                               > linkfile.4
-	@sed 's|/cygdrive/\([a-zA-Z]\)/|\1:/|g' linkfile.4 > linkfile.5
-	@sed 's|//[a-zA-Z]/|/|g'         linkfile.5 > linkfile.6
-	@sed 's|/|\\|g'                  linkfile.6 > linkfile.2
+	@echo $(OBJS) | $(TRANSFORM_TO_DOS_PATH) | sed 's|\\\\|\\|g'     > linkfile.2
 	@echo $(AR_EXTRA_ARGS)									>linkfile.3
 	@lib @linkfile.1 @linkfile.2 @linkfile.3
 	@rm linkfile.[123456]
