@@ -40,18 +40,19 @@ IEStatus IE_Imp_MsWord_97::importFile(const char * szFilename)
 	UT_GrowBuf gbBlock(1024);
 
 	int result;
-	pps_entry *		stream_tree;
-	U32 			root_stream;
-	U32 			stream;
+//	pps_entry *		stream_tree;
+//	U32 			root_stream;
+//	U32 			stream;
 
-  	result = OLEdecode((char *) szFilename, &stream_tree, &root_stream, 0);
-	if (result != 0)
-	{
-		UT_DEBUGMSG(("Could not open file %s; this file might not be an OLE 2 file.", szFilename));
-		m_iestatus = IES_FileNotFound;
-		goto Cleanup;
-	}
+//  	result = OLEdecode((char *) szFilename, &stream_tree, &root_stream, 0);
+//	if (result != 0)
+//	{
+//		UT_DEBUGMSG(("Could not open file %s; this file might not be an OLE 2 file.", szFilename));
+//		m_iestatus = IES_FileNotFound;
+//		goto Cleanup;
+//	}
 
+#if 0
 #ifdef DEBUG
 	UT_DEBUGMSG(("OLE file stream tree:"));
 	verbosePPSTree(stream_tree, root_stream, 0);
@@ -68,9 +69,10 @@ IEStatus IE_Imp_MsWord_97::importFile(const char * szFilename)
 				UT_DEBUGMSG(("'%s'", stream_tree[stream].name));
     }
 #endif
-
+#endif
+	
 //	decodeStream();
-	result = freeOLEtree(stream_tree);
+//	result = freeOLEtree(stream_tree);
  
 #if 0	
 	// read the File Information Block
