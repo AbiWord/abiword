@@ -1980,6 +1980,17 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 			   bool bResult = pCLSL->bl_doclistener_insertEndCell(pCLSL, pcrx,sdh,lid,pfnBindHandles);
 			   return bResult;
 		   }
+		case PTX_SectionTOC:				// we are inserting a TOC.
+		{
+			   // The immediately prior strux is a Table. This can happen
+			// if were inserting a TOC after an EndTable Strux.
+            // We have write specal code to deal with it.
+
+			   fl_ContainerLayout * pCL = static_cast<fl_SectionLayout *>(pL);
+			   fl_SectionLayout * pCLSL = static_cast<fl_SectionLayout *>(pCL->myContainingLayout());
+			   bool bResult = pCLSL->bl_doclistener_insertSection(pCL, FL_SECTION_TOC, pcrx,sdh,lid,pfnBindHandles);
+			   return bResult;
+		}
 		default:
 		   {
 			   UT_DEBUGMSG(("Illegal strux type after table %d \n",pcrx->getStruxType()));

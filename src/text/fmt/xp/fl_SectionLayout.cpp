@@ -397,7 +397,43 @@ bool fl_SectionLayout::bl_doclistener_insertSection(fl_ContainerLayout* pPrevL,
 		bool bres = static_cast<fl_BlockLayout *>(pPrevL)->doclistener_insertSection(pcrx, iType, sdh, lid, pfnBindHandles);
 		return bres;
 	}
-	else if((pPrevL->getContainerType() == FL_CONTAINER_FRAME) ||(pPrevL->getContainerType() == FL_CONTAINER_TABLE) )
+	else if(iType == FL_SECTION_TOC)
+	{
+		PT_AttrPropIndex indexAP = pcrx->getIndexAP();
+		fl_SectionLayout * pSL = static_cast<fl_SectionLayout *>(insert(sdh,pPrevL,indexAP, FL_CONTAINER_TOC));
+
+		// Must call the bind function to complete the exchange of handles
+		// with the document (piece table) *** before *** anything tries
+		// to call down into the document (like all of the view
+		// listeners).
+
+		PL_StruxFmtHandle sfhNew = static_cast<PL_StruxFmtHandle>(pSL);
+		//
+		// Don't bind to shadows
+		//
+		if(pfnBindHandles)
+		{
+			pfnBindHandles(sdh,lid,sfhNew);
+		}
+		//
+		// That's all we need to do except update the view pointers I guess..
+		//
+		FV_View* pView = m_pLayout->getView();
+		if (pView && (pView->isActive() || pView->isPreview()))
+		{
+			pView->setPoint(pcrx->getPosition() + fl_BLOCK_STRUX_OFFSET);
+		}
+		else if(pView && pView->getPoint() > pcrx->getPosition())
+		{
+			//
+			// For EndTOC
+			//
+			pView->setPoint(pView->getPoint() + fl_BLOCK_STRUX_OFFSET + fl_BLOCK_STRUX_OFFSET);
+		}
+		return true;
+
+	}
+	else if(((pPrevL->getContainerType() == FL_CONTAINER_FRAME) ||(pPrevL->getContainerType() == FL_CONTAINER_TABLE)) && (iType == FL_SECTION_HDRFTR))
 	{
 		fl_SectionLayout * pSL = new fl_HdrFtrSectionLayout(FL_HDRFTR_NONE,m_pLayout,NULL, sdh, pcrx->getIndexAP());
 		fl_HdrFtrSectionLayout * pHFSL = static_cast<fl_HdrFtrSectionLayout *>(pSL);
