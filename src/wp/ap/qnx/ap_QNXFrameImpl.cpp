@@ -25,41 +25,55 @@ XAP_FrameImpl * AP_QNXFrameImpl::createInstance(XAP_Frame *pFrame,XAP_App *pApp)
 
 void AP_QNXFrameImpl::_bindToolbars(AV_View *pView)
 {
-
+	int nrToolbars = m_vecToolbarLayoutNames.getItemCount();
+	for (int k = 0; k < nrToolbars; k++)
+	{
+		// TODO Toolbars are a frame-level item, but a view-listener is
+		// TODO a view-level item.  I've bound the toolbar-view-listeners
+		// TODO to the current view within this frame and have code in the
+		// TODO toolbar to allow the view-listener to be rebound to a different
+		// TODO view.  in the future, when we have support for multiple views
+		// TODO in the frame (think splitter windows), we will need to have
+		// TODO a loop like this to help change the focus when the current
+		// TODO view changes.		
+		EV_QNXToolbar * pQNXToolbar = (EV_QNXToolbar *)m_vecToolbars.getNthItem(k);
+		pQNXToolbar->bindListenerToView(pView);
+	}	
 }
 
 void AP_QNXFrameImpl::_showOrHideToolbars()
 {
-#if 0
- bool *bShowBar = static_cast<AP_FrameData*> (m_pData)->m_bShowBar;
+	XAP_Frame *pFrame = getFrame();
+	AP_FrameData *pData = static_cast<AP_FrameData *>(pFrame->getFrameData());	
+  bool *bShowBar = pData->m_bShowBar;
 
     for (UT_uint32 i = 0; i < m_vecToolbarLayoutNames.getItemCount(); i++)
     {
         // TODO: The two next lines are here to bind the EV_Toolbar to the
         // AP_FrameData, but their correct place are next to the toolbar creation (JCA)
         EV_QNXToolbar * pQNXToolbar = static_cast<EV_QNXToolbar *> (m_vecToolbars.getNthItem(i));
-        static_cast<AP_FrameData*> (m_pData)->m_pToolbar[i] = pQNXToolbar;
-		//It is enabled by default .. only toggle it off
-		if(!bShowBar[i]) {
-	        toggleBar(i, bShowBar[i]);
-		}
+        pData->m_pToolbar[i] = pQNXToolbar;
+	  static_cast<AP_QNXFrame *>(pFrame)->toggleBar(i, bShowBar[i]);
     }
-#endif
 }
 
 void AP_QNXFrameImpl::_refillToolbarsInFrameData()
 {
+	UT_uint32 cnt = m_vecToolbarLayoutNames.getItemCount();
+
+	for (UT_uint32 i = 0; i < cnt; i++)
+	{
+		EV_QNXToolbar * pQNXToolbar = static_cast<EV_QNXToolbar *> (m_vecToolbars.getNthItem(i));
+		static_cast<AP_FrameData*>(getFrame()->getFrameData())->m_pToolbar[i] = pQNXToolbar;
+	}
 }
 
 void AP_QNXFrameImpl::_showOrHideStatusbar()
 {
-#if 0
-    bool bShowStatusBar = static_cast<AP_FrameData*> (m_pData)->m_bShowStatusBar;
-	//It is enabled by default .. only toggle it off
-	if(!bShowStatusBar) {
-    	toggleStatusBar(bShowStatusBar);
-	} 
-#endif
+	XAP_Frame *pFrame = getFrame();
+	AP_FrameData *pData = static_cast<AP_FrameData *>(pFrame->getFrameData());
+  bool bShowStatusBar = pData->m_bShowStatusBar;
+ 	static_cast<AP_QNXFrame *>(pFrame)->toggleStatusBar(bShowStatusBar);
 }
 
 PtWidget_t * AP_QNXFrameImpl::_createDocumentWindow()
@@ -121,10 +135,10 @@ PtWidget_t * AP_QNXFrameImpl::_createDocumentWindow()
 #define _VS_ANCHOR_ (Pt_LEFT_ANCHORED_RIGHT | Pt_RIGHT_ANCHORED_RIGHT | \
 		     Pt_TOP_ANCHORED_TOP | Pt_BOTTOM_ANCHORED_BOTTOM)
 	PtSetArg(&args[n++], Pt_ARG_ANCHOR_FLAGS, _VS_ANCHOR_, _VS_ANCHOR_); 
-	PtSetArg(&args[n++], Pt_ARG_SCROLLBAR_FLAGS, Pt_SCROLLBAR_FOCUSED | 0 /*Vertical*/, 
-									 		     Pt_SCROLLBAR_FOCUSED | 0 /*Vertical*/); 
+	PtSetArg(&args[n++], Pt_ARG_SCROLLBAR_FLAGS, Pt_SCROLLBAR_FOCUSED, 
+									 		     Pt_SCROLLBAR_FOCUSED ); 
 	PtSetArg(&args[n++], Pt_ARG_FLAGS, 0, Pt_GETS_FOCUS);
-	PtSetArg(&args[n++], Pt_ARG_ORIENTATION, 0 /*Vertical*/, 0); 
+	PtSetArg(&args[n++], Pt_ARG_ORIENTATION, Pt_VERTICAL, 0); 
 	m_vScroll = PtCreateWidget(PtScrollbar, getTopLevelWindow(), n, args);
 	PtAddCallback(m_vScroll, Pt_CB_SCROLL_MOVE, _fe::vScrollChanged, this);
 

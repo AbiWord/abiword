@@ -40,10 +40,6 @@
 
 #include "ut_qnxHelper.h"
 
-#if !defined(Pt_ARG_SCROLLBAR_POSITION)
-#define Pt_ARG_SCROLLBAR_POSITION Pt_ARG_SCROLL_POSITION
-#endif
-
 /*****************************************************************/
 
 #define REPLACEP(p,q)	do { if (p) delete p; p = q; } while (0)
@@ -85,19 +81,16 @@ void AP_QNXFrame::setXScrollRange(void)
 
 	n=0;
 	PtSetArg(&args[n++], Pt_ARG_MAXIMUM, newmax, 0); 
-	PtSetArg(&args[n++], Pt_ARG_INCREMENT, 20, 0); 
+//	PtSetArg(&args[n++], Pt_ARG_INCREMENT, 20, 0); 
 	PtSetArg(&args[n++], Pt_ARG_PAGE_INCREMENT, windowWidth, 0); 
-	PtSetArg(&args[n++], Pt_ARG_SCROLLBAR_POSITION, newvalue, 0); 
+	PtSetArg(&args[n++], Pt_ARG_GAUGE_VALUE, newvalue, 0); 
 	PtSetResources(pQNXFrameImpl->m_hScroll, n, args);
 
 	bool bDifferentPosition = true;
-//(newvalue != (int)pQNXFrameImpl->m_pHadj->value);
 	bool bDifferentLimits = true;
-//((width-windowWidth) != ((int)pQNXFrameImpl->m_pHadj->upper - pQNXFrameImpl->m_pHadj->page_size));
 
-#warning 	pQNXFrameImpl->_setScrollRange(apufi_scrollX,newvalue,...);
 	if (m_pView && (bDifferentPosition || bDifferentLimits)) {
-		m_pView->sendHorizontalScrollEvent(_UL(newvalue), _UL((long) width-windowWidth)); //XXX:
+		m_pView->sendHorizontalScrollEvent(_UL(newvalue), _UL((long) width-windowWidth));
 	}
 }
 
@@ -121,9 +114,9 @@ void AP_QNXFrame::setYScrollRange(void)
 	}
 	n =0;
 	PtSetArg(&args[n++], Pt_ARG_MAXIMUM, newmax, 0); 
-	PtSetArg(&args[n++], Pt_ARG_INCREMENT, 20, 0); 
+//	PtSetArg(&args[n++], Pt_ARG_INCREMENT, 20, 0); 
 	PtSetArg(&args[n++], Pt_ARG_PAGE_INCREMENT, windowHeight, 0);
-	PtSetArg(&args[n++], Pt_ARG_SCROLLBAR_POSITION, newvalue, 0);
+	PtSetArg(&args[n++], Pt_ARG_GAUGE_VALUE, newvalue, 0);
 	PtSetResources(pQNXFrameImpl->m_vScroll, n, args);
 
 	/*
@@ -218,7 +211,7 @@ void AP_QNXFrame::_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 /*xrange*
 	AP_QNXFrameImpl	*pQNXFrameImpl = static_cast<AP_QNXFrameImpl *>(pQNXFrame->getFrameImpl());	
 	//Do some range checking ...
 
-	PtSetArg(&args[0], Pt_ARG_SCROLLBAR_POSITION, _UD(xoff), 0);
+	PtSetArg(&args[0], Pt_ARG_GAUGE_VALUE, _UD(xoff), 0);
 	PtSetResources(pQNXFrameImpl->m_hScroll, 1, args);
 
 	pView->setXScrollOffset(xoff);
@@ -235,7 +228,7 @@ void AP_QNXFrame::_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 /*yrange*
 	AP_QNXFrameImpl	*pQNXFrameImpl = static_cast<AP_QNXFrameImpl *>(pQNXFrame->getFrameImpl());		
 	//Do some range checking ...
 
-	PtSetArg(&args[0], Pt_ARG_SCROLLBAR_POSITION, _UD(yoff), 0);
+	PtSetArg(&args[0], Pt_ARG_GAUGE_VALUE, _UD(yoff), 0);
 	PtSetResources(pQNXFrameImpl->m_vScroll, 1, args);
 
 	pView->setYScrollOffset(yoff);
@@ -341,11 +334,16 @@ void AP_QNXFrame::toggleStatusBar(bool bStatusBarOn) {
 
 UT_sint32	AP_QNXFrame::_getDocumentAreaWidth()
 {
-
+	unsigned short *width;
+	PtGetResource(static_cast<AP_QNXFrameImpl *>(getFrameImpl())->m_dArea,Pt_ARG_WIDTH,&width,0);
+	return *width;
 }
 
 UT_sint32	AP_QNXFrame::_getDocumentAreaHeight()
 {
+	unsigned short *height;
+	PtGetResource(static_cast<AP_QNXFrameImpl *>(getFrameImpl())->m_dArea,Pt_ARG_HEIGHT,&height,0);
+	return *height;
 
 }
 
@@ -366,7 +364,7 @@ void AP_QNXFrame::_setViewFocus(AV_View *pView)
 
 void AP_QNXFrame::_bindToolbars(AV_View *pView)
 {
-
+	static_cast<AP_QNXFrameImpl *>(getFrameImpl())->_bindToolbars(pView);
 }
 
 bool AP_QNXFrame::_createScrollBarListeners(AV_View * pView, AV_ScrollObj *& pScrollObj, 
