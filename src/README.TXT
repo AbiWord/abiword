@@ -118,15 +118,25 @@ optionally linking to a descriptive posting on the mailing list.
 work around (assumed) problems in
 fl_BlockLayout::_stuffAllRunsOnALine() and the line breaker code. <a
 href="http://www.abisource.com/mailinglists/abiword-dev/00/December/0540.html">(Martin
-Sevior)</a>
+Sevior)</a></li>
 
 <li> Existing code should be changed to provide view (non-mutating)
 and controller (mutating) accessors to the PieceTable.  <a
 href="http://www.abisource.com/mailinglists/abiword-dev/00/May/0643.html">(Sam
-Th)</a>
+TH)</a></li>
 
 </ul>
 
+<h3>Build System</h3>
+
+<ul>
+
+<li> We should eventually move to an auto(conf, make) style build
+system, at least on platforms that support it.  This will make it
+possible to use features of the OS that we are currently unable to.
+</li> 
+
+</ul>
 
 <h2>AbiWord Doxygen Documentation</h2>
 
