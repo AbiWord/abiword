@@ -429,10 +429,11 @@ void fl_BlockLayout::_lookupProperties(void)
 	{
 		if(pszFntId && *pszFntId)
 		{
-			UT_ASSERT(m_pSectionLayout->getContainerType() == FL_CONTAINER_FOOTNOTE);
+			UT_return_if_fail(m_pSectionLayout->getContainerType() == FL_CONTAINER_FOOTNOTE);
 			fl_FootnoteLayout   * pFL = (fl_FootnoteLayout*) m_pSectionLayout;
 			fl_DocSectionLayout * pDSL=	 pFL->getDocSectionLayout();
-
+			UT_return_if_fail(pDSL);
+			
 			const PP_AttrProp * pSectionAP = NULL;
 			pDSL->getAP(pSectionAP);
 				
@@ -1575,7 +1576,7 @@ void fl_BlockLayout::_stuffAllRunsOnALine(void)
 {
 	UT_ASSERT(getFirstContainer() == NULL);
 	fp_Line* pLine = static_cast<fp_Line *>(getNewContainer());
-	UT_ASSERT(pLine);
+	UT_return_if_fail(pLine);
 	if(pLine->getContainer() == NULL)
 	{
 		fp_VerticalContainer * pContainer = NULL;
@@ -2297,27 +2298,27 @@ fp_Container* fl_BlockLayout::getNewContainer(fp_Container * /* pCon*/)
 		else if (getNext() && getNext()->getFirstContainer())
 		{
 			pContainer = static_cast<fp_VerticalContainer *>(getNext()->getFirstContainer()->getContainer());
-			UT_ASSERT(pContainer);
-			UT_ASSERT(pContainer->getWidth() >0);
+			UT_return_val_if_fail(pContainer, NULL);
+			UT_ASSERT_HARMLESS(pContainer->getWidth() >0);
 		}
 		else if (m_pSectionLayout->getFirstContainer())
 		{
 			// TODO assert something here about what's in that container
 			pContainer = static_cast<fp_VerticalContainer *>(m_pSectionLayout->getFirstContainer());
-			UT_ASSERT(pContainer);
-			UT_ASSERT(pContainer->getWidth() >0);
+			UT_return_val_if_fail(pContainer, NULL);
+			UT_ASSERT_HARMLESS(pContainer->getWidth() >0);
 		}
 		else
 		{
 			pContainer = static_cast<fp_VerticalContainer *>(m_pSectionLayout->getNewContainer());
-			UT_ASSERT(pContainer);
-			UT_ASSERT(pContainer->getWidth() >0);
+			UT_return_val_if_fail(pContainer, NULL);
+			UT_ASSERT_HARMLESS(pContainer->getWidth() >0);
 		}
 		if(pContainer == NULL)
 		{
 			pContainer = static_cast<fp_VerticalContainer *>(m_pSectionLayout->getNewContainer());
-			UT_ASSERT(pContainer);
-			UT_ASSERT(pContainer->getWidth() >0);
+			UT_return_val_if_fail(pContainer, NULL);
+			UT_ASSERT_HARMLESS(pContainer->getWidth() >0);
 		}
 
 		if ((pPrevLine==NULL) && (pPrevTable== NULL) && (pPrevTOC == NULL))
@@ -8381,7 +8382,7 @@ void fl_BlockLayout::_createListLabel(void)
 	}
 #if 1
 	const  XML_Char ** blockatt;
-	pView->getCharFormat(&blockatt,true,getPosition());
+	bool bHaveBlockAtt = pView->getCharFormat(&blockatt,true,getPosition());
 //	pView->setBlockFormat(blockatt);
 //	FREEP(blockatt);
 #endif
@@ -8421,8 +8422,14 @@ void fl_BlockLayout::_createListLabel(void)
 //  		UT_DEBUGMSG(("SEVIOR: Applying blockatt[i] %s at %d %d \n",blockatt[i],getPosition(),getPosition()+diff));
 //  		i++;
 //  	}
-  	m_pDoc->changeSpanFmt(PTC_AddFmt,getPosition(),getPosition()+diff,NULL,static_cast<const char **>(blockatt));
-	FREEP(blockatt);
+
+	// FV_View::getCharFmt() can sometimes return a static temporary 
+	if(bHaveBlockAtt)
+	{
+		m_pDoc->changeSpanFmt(PTC_AddFmt,getPosition(),getPosition()+diff,NULL,static_cast<const char **>(blockatt));
+		FREEP(blockatt);
+	}
+
 
 	if (pView && (pView->isActive() || pView->isPreview()))
 	{
