@@ -137,6 +137,8 @@ public:
 	GR_Graphics *				Graphics();
 	void					setScrollBars(TFScrollBar *h, TFScrollBar *v);
 
+	virtual void				toggleRuler(UT_Bool bRulerOn) = 0;
+
 protected:
 //	virtual GtkWidget *			_createDocumentWindow(void)=0;
 	virtual void				_createTopLevelWindow(void);

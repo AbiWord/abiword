@@ -199,8 +199,12 @@ UT_Bool AP_UnixFrame::_showDocument(UT_uint32 iZoom)
 	// views, like we do for all the other objects.  We also do not
 	// allocate the TopRuler, LeftRuler  here; that is done as the
 	// frame is created.
-	((AP_FrameData*)m_pData)->m_pTopRuler->setView(pView, iZoom);
-	((AP_FrameData*)m_pData)->m_pLeftRuler->setView(pView, iZoom);
+	if ( ((AP_FrameData*)m_pData)->m_bShowRuler )
+	{
+		((AP_FrameData*)m_pData)->m_pTopRuler->setView(pView, iZoom);
+		((AP_FrameData*)m_pData)->m_pLeftRuler->setView(pView, iZoom);
+	}
+
 	((AP_FrameData*)m_pData)->m_pStatusBar->setView(pView);
 	
 	m_pView->setWindowSize(GTK_WIDGET(m_dArea)->allocation.width,
@@ -227,9 +231,16 @@ UT_Bool AP_UnixFrame::_showDocument(UT_uint32 iZoom)
 	*/
 	m_pView->draw();
 #endif	
+	
+	if ( ((AP_FrameData*)m_pData)->m_bShowRuler  ) 
+	{
+		if ( ((AP_FrameData*)m_pData)->m_pTopRuler )
+			((AP_FrameData*)m_pData)->m_pTopRuler->draw(NULL);
 
-	((AP_FrameData*)m_pData)->m_pTopRuler->draw(NULL);
-	((AP_FrameData*)m_pData)->m_pLeftRuler->draw(NULL);
+		if ( ((AP_FrameData*)m_pData)->m_pLeftRuler )
+			((AP_FrameData*)m_pData)->m_pLeftRuler->draw(NULL);
+	}
+
 	((AP_FrameData*)m_pData)->m_pStatusBar->draw();
 	
 	return UT_TRUE;
@@ -506,22 +517,35 @@ GtkWidget * AP_UnixFrame::_createDocumentWindow(void)
 {
 	GtkWidget * wSunkenBox;
 
-	// create the top ruler
-	AP_UnixTopRuler * pUnixTopRuler = new AP_UnixTopRuler(this);
-	UT_ASSERT(pUnixTopRuler);
-	m_topRuler = pUnixTopRuler->createWidget();
-	((AP_FrameData*)m_pData)->m_pTopRuler = pUnixTopRuler;
+	// initialize the show rulers flag
+	UT_Bool bShowRulers;
+	m_pUnixApp->getPrefsValueBool( AP_PREF_KEY_RulerVisible, &bShowRulers); 
+	((AP_FrameData*)m_pData)->m_bShowRuler = bShowRulers;
 
-	// create the left ruler
-	AP_UnixLeftRuler * pUnixLeftRuler = new AP_UnixLeftRuler(this);
-	UT_ASSERT(pUnixLeftRuler);
-	m_leftRuler = pUnixLeftRuler->createWidget();
+	// create the rulers
+	AP_UnixTopRuler * pUnixTopRuler = NULL;
+	AP_UnixLeftRuler * pUnixLeftRuler = NULL;
+	if ( bShowRulers )
+	{
+		pUnixTopRuler = new AP_UnixTopRuler(this);
+		UT_ASSERT(pUnixTopRuler);
+		m_topRuler = pUnixTopRuler->createWidget();
+		
+		pUnixLeftRuler = new AP_UnixLeftRuler(this);
+		UT_ASSERT(pUnixLeftRuler);
+		m_leftRuler = pUnixLeftRuler->createWidget();
+		
+		// get the width from the left ruler and stuff it into the top ruler.
+		pUnixTopRuler->setOffsetLeftRuler(pUnixLeftRuler->getWidth());
+	}
+	else
+	{
+		m_topRuler = NULL;
+		m_leftRuler = NULL;
+	}
+	((AP_FrameData*)m_pData)->m_pTopRuler = pUnixTopRuler;
 	((AP_FrameData*)m_pData)->m_pLeftRuler = pUnixLeftRuler;
 
-	// get the width from the left ruler and stuff it into the top ruler.
-	
-	pUnixTopRuler->setOffsetLeftRuler(pUnixLeftRuler->getWidth());
-	
 	// set up for scroll bars.
 	m_pHadj = (GtkAdjustment*) gtk_adjustment_new(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
 	gtk_object_set_user_data(GTK_OBJECT(m_pHadj),this);
@@ -569,33 +593,62 @@ GtkWidget * AP_UnixFrame::_createDocumentWindow(void)
 
 	// create a table for scroll bars, rulers, and drawing area
 
-	m_table = gtk_table_new(3, 3, FALSE);
+	m_table = gtk_table_new(1, 1, FALSE);
 	gtk_object_set_user_data(GTK_OBJECT(m_table),this);
 
-	// arrange the widgets within our table.
-	
-	gtk_table_attach(GTK_TABLE(m_table), m_topRuler, 0, 2, 0, 1,
-					 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
-					 (GtkAttachOptions)(GTK_FILL),
-					 0,0);
-
-	gtk_table_attach(GTK_TABLE(m_table), m_leftRuler, 0, 1, 1, 2,
-					 (GtkAttachOptions)(GTK_FILL),
-					 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
-					 0,0);
-
-	gtk_table_attach(GTK_TABLE(m_table), m_dArea,   1, 2, 1, 2,
-					 (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-					 (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-					 0, 0); 
-	gtk_table_attach(GTK_TABLE(m_table), m_hScroll, 0, 2, 2, 3,
+	// NOTE:  in order to display w/ and w/o rulers, gtk needs two tables to
+	// work with.  The 2 2x2 tables, (i)nner and (o)uter divide up the 3x3
+	// table as follows.  The inner table is at the 1,1 table.
+	//	+-----+---+
+	//	| i i | o |
+	//	| i i |   |
+	//	+-----+---+
+	//	|  o  | o |
+	//	+-----+---+
+		
+	// scroll bars
+	gtk_table_attach(GTK_TABLE(m_table), m_hScroll, 0, 1, 1, 2,
 					 (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
 					 (GtkAttachOptions) (GTK_FILL),
 					 0, 0);
-	gtk_table_attach(GTK_TABLE(m_table), m_vScroll, 2, 3, 0, 2,
+
+	gtk_table_attach(GTK_TABLE(m_table), m_vScroll, 1, 2, 0, 1,
 					 (GtkAttachOptions) (GTK_FILL),
 					 (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
 					 0, 0);
+
+
+	// arrange the widgets within our inner table.
+	m_innertable = gtk_table_new(2,2,FALSE);
+	gtk_table_attach( GTK_TABLE(m_table), m_innertable, 0, 1, 0, 1,
+						 (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
+						 (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
+						 0, 0); 
+
+	if ( bShowRulers )
+	{
+		gtk_table_attach(GTK_TABLE(m_innertable), m_topRuler, 0, 2, 0, 1,
+						 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
+						 (GtkAttachOptions)(GTK_FILL),
+						 0, 0);
+
+		gtk_table_attach(GTK_TABLE(m_innertable), m_leftRuler, 0, 1, 1, 2,
+						 (GtkAttachOptions)(GTK_FILL),
+						 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
+						 0, 0);
+
+		gtk_table_attach(GTK_TABLE(m_innertable), m_dArea,   1, 2, 1, 2,
+						 (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
+						 (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
+						 0, 0); 
+	}
+	else	// no rulers
+	{
+		gtk_table_attach(GTK_TABLE(m_innertable), m_dArea,   1, 2, 1, 2,
+						 (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
+						 (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
+						 0, 0); 
+	}
 
 	// create a 3d box and put the table in it, so that we
 	// get a sunken in look.
@@ -606,6 +659,7 @@ GtkWidget * AP_UnixFrame::_createDocumentWindow(void)
 	gtk_widget_show(m_hScroll);
 	gtk_widget_show(m_vScroll);
 	gtk_widget_show(m_dArea);
+	gtk_widget_show(m_innertable);
 	gtk_widget_show(m_table);
 
 	return wSunkenBox;
@@ -668,4 +722,71 @@ UT_Bool AP_UnixFrame::_replaceDocument(AD_Document * pDoc)
 	m_pDoc = REFP(pDoc);
 
 	return _showDocument();
+}
+
+void AP_UnixFrame::toggleRuler(UT_Bool bRulerOn)
+{
+	UT_DEBUGMSG(("AP_UnixFrame::toggleRuler %d", bRulerOn));	
+
+	AP_FrameData *pFrameData = (AP_FrameData *)getFrameData();
+	UT_ASSERT(pFrameData);
+		
+	AP_UnixTopRuler * pUnixTopRuler = NULL;
+	AP_UnixLeftRuler * pUnixLeftRuler = NULL;
+		
+
+	if ( bRulerOn )
+	{
+		UT_ASSERT(!pFrameData->m_pTopRuler);
+		UT_ASSERT(!pFrameData->m_pLeftRuler);
+	
+		pUnixTopRuler = new AP_UnixTopRuler(this);
+		UT_ASSERT(pUnixTopRuler);
+		m_topRuler = pUnixTopRuler->createWidget();
+		
+		pUnixLeftRuler = new AP_UnixLeftRuler(this);
+		UT_ASSERT(pUnixLeftRuler);
+		m_leftRuler = pUnixLeftRuler->createWidget();
+		
+		// get the width from the left ruler and stuff it into the top ruler.
+		pUnixTopRuler->setOffsetLeftRuler(pUnixLeftRuler->getWidth());
+	
+		// attach everything	
+		gtk_table_attach(GTK_TABLE(m_innertable), m_topRuler, 0, 2, 0, 1,
+						 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
+						 (GtkAttachOptions)(GTK_FILL),
+						 0,0);
+
+		gtk_table_attach(GTK_TABLE(m_innertable), m_leftRuler, 0, 1, 1, 2,
+						 (GtkAttachOptions)(GTK_FILL),
+						 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
+						 0,0);
+
+		// must remove area before re-attaching
+		//gtk_widget_unparent(GTK_WIDGET(m_dArea));
+
+		//gtk_table_attach(GTK_TABLE(m_table), m_dArea,   1, 2, 1, 2,
+		//				 (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
+		//				 (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
+		//			 0, 0); 
+
+	}
+	else	// turning rulers off
+	{
+		// delete the actual widgets
+		gtk_object_destroy( GTK_OBJECT(m_topRuler) );
+		gtk_object_destroy( GTK_OBJECT(m_leftRuler) );
+
+		m_topRuler = NULL;
+		m_leftRuler = NULL;
+
+		// tell the area to fill everything
+		//gtk_table_attach(GTK_TABLE(m_table), m_dArea,   0, 2, 0, 2,
+		//				 (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
+		//				 (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
+		//			 0, 0); 
+	}
+	
+	((AP_FrameData*)m_pData)->m_pTopRuler = pUnixTopRuler;
+	((AP_FrameData*)m_pData)->m_pLeftRuler = pUnixLeftRuler;
 }

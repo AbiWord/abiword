@@ -47,6 +47,8 @@ public:
 	virtual UT_uint32			getZoomPercentage(void);
 	virtual void				setStatusMessage(const char * szMsg);
 
+	virtual void				toggleRuler(UT_Bool bRulerOn);
+
 protected:
 	virtual GtkWidget *			_createDocumentWindow(void);
 	virtual GtkWidget *			_createStatusBarWindow(void);
@@ -57,13 +59,13 @@ protected:
 	static void					_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 ylimit);
 	UT_Bool						_replaceDocument(AD_Document * pDoc);
 	
-
 	GtkAdjustment *				m_pVadj;
 	GtkAdjustment *				m_pHadj;
 	GtkWidget *					m_hScroll;
 	GtkWidget *					m_vScroll;
 	GtkWidget *					m_dArea;
 	GtkWidget *					m_table;
+	GtkWidget *					m_innertable;
 	GtkWidget *					m_topRuler;
 	GtkWidget *					m_leftRuler;
 };

@@ -31,6 +31,7 @@ AP_FrameData::AP_FrameData()
 {
 	m_pDocLayout = NULL;
 	m_pG = NULL;
+	m_bShowRuler = UT_TRUE;		// TODO : change to Prefs
 	m_pTopRuler = NULL;
 	m_pLeftRuler = NULL;
 	m_pStatusBar = NULL;

@@ -21,6 +21,8 @@
 #ifndef AP_FRAMEDATA_H
 #define AP_FRAMEDATA_H
 
+#include "ut_types.h"
+
 class GR_Graphics;
 class FL_DocLayout;
 class AP_TopRuler;
@@ -42,8 +44,11 @@ public:
 
 	FL_DocLayout *		m_pDocLayout;
 	GR_Graphics *		m_pG;
+
+	UT_Bool				m_bShowRuler;
 	AP_TopRuler *		m_pTopRuler;
 	AP_LeftRuler *		m_pLeftRuler;
+
 	AP_StatusBar *		m_pStatusBar;
 };
 

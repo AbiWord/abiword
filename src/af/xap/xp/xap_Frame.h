@@ -119,6 +119,8 @@ public:
 	virtual UT_uint32			getZoomPercentage(void);
 
 	virtual void				setStatusMessage(const char * szMsg) = 0;
+
+	virtual void				toggleRuler(UT_Bool /*bRulerOn*/) { } //
 	
 protected:
 	XAP_App *					m_app;			/* handle to application-specific data */

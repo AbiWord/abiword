@@ -37,6 +37,7 @@
 #include "xap_Prefs.h"
 #include "ap_Strings.h"
 #include "ap_LoadBindings.h"
+#include "ap_FrameData.h"
 
 #include "ap_Dialog_Id.h"
 #include "ap_Dialog_Replace.h"
@@ -3698,8 +3699,19 @@ Defun1(viewRuler)
 	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
 	UT_ASSERT(pFrame);
 
+	AP_FrameData *pFrameData = (AP_FrameData *)pFrame->getFrameData();
+	UT_ASSERT(pFrameData);
+
+	// toggle the ruler bit
+	pFrameData->m_bShowRuler = ! pFrameData->m_bShowRuler;
+
+	UT_DEBUGMSG(("viewRuler: showruler=%d", pFrameData->m_bShowRuler ));
+
+	pFrame->toggleRuler( pFrameData->m_bShowRuler );
+
+
 	// TODO: synch this implementation with ap_GetState_View
-	s_TellNotImplemented(pFrame, "View ruler", __LINE__);
+	// s_TellNotImplemented(pFrame, "View ruler", __LINE__);
 	return UT_TRUE;
 }
 

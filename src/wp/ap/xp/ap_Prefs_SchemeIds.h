@@ -59,6 +59,10 @@
 #define AP_PREF_KEY_RulerUnits						"RulerUnits"				/* value in UT_dimensionName() */
 #define AP_PREF_DEFAULT_RulerUnits					"in"
 
+#define AP_PREF_KEY_RulerVisible					"RulerVisible"				/* are the rulers visible? */
+#define AP_PREF_DEFAULT_RulerVisible				"1"
+
+
 #define AP_PREF_KEY_SpellCheckWordList				"SpellCheckWordList"		/* name of ispell hash file */
 #define AP_PREF_DEFAULT_SpellCheckWordList			"american.hash"				
 
@@ -96,6 +100,7 @@ dcl(SpellCheckNumbers)
 dcl(SpellCheckInternet)
 dcl(OptionsTabNumber)
 dcl(RulerUnits)
+dcl(RulerVisible)
 dcl(SpellCheckWordList)
 dcl(StringSet)
 dcl(KeyBindings)

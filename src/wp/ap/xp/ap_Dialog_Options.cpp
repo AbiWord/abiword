@@ -103,6 +103,7 @@ void AP_Dialog_Options::_storeWindowData(void)
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_SpellCheckNumbers, _gatherSpellNumbers() );
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_SpellCheckInternet, _gatherSpellInternet() );
 
+	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_RulerVisible, _gatherViewShowRuler() );
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_CursorBlink, _gatherViewCursorBlink() );
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -169,6 +170,9 @@ void AP_Dialog_Options::_populateWindowData(void)
 	if (pPrefs->getPrefsValue(AP_PREF_KEY_RulerUnits,&pszBuffer))
 		_setViewRulerUnits (UT_determineDimension(pszBuffer));
 
+	if (pPrefs->getPrefsValueBool(AP_PREF_KEY_RulerVisible,&b))
+		_setViewShowRuler (b);
+
 	if (pPrefs->getPrefsValueBool(AP_PREF_KEY_CursorBlink,&b))
 		_setViewCursorBlink (b);
 
@@ -219,7 +223,6 @@ void AP_Dialog_Options::_initEnableControls()
 	_controlEnable( id_COMBO_PREFS_SCHEME,			UT_FALSE );
 
 	// view
-	_controlEnable( id_CHECK_VIEW_SHOW_RULER,		UT_FALSE );
 	_controlEnable( id_CHECK_VIEW_SHOW_TOOLBARS,	UT_FALSE );
 	_controlEnable( id_CHECK_VIEW_ALL,				UT_FALSE );
 	_controlEnable( id_CHECK_VIEW_HIDDEN_TEXT,		UT_FALSE );

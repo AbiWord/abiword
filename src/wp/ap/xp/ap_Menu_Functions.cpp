@@ -23,6 +23,7 @@
 #include "ut_types.h"
 #include "ut_assert.h"
 #include "ut_string.h"
+#include "ut_debugmsg.h"
 #include "ap_Strings.h"
 #include "ap_Menu_Id.h"
 #include "ap_Menu_Functions.h"
@@ -34,6 +35,7 @@
 #include "xap_Prefs.h"
 #include "xav_View.h"
 #include "fv_View.h"
+#include "ap_FrameData.h"
 
 #define ABIWORD_VIEW  	FV_View * pView = static_cast<FV_View *>(pAV_View)
 
@@ -508,11 +510,26 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_View)
 	ABIWORD_VIEW;
 	UT_ASSERT(pView);
 
+	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	UT_ASSERT(pFrame);
+
+	AP_FrameData *pFrameData = (AP_FrameData *)pFrame->getFrameData();
+	UT_ASSERT(pFrameData);
+
 	EV_Menu_ItemState s = EV_MIS_ZERO;
+
 
 	switch(id)
 	{
 	case AP_MENU_ID_VIEW_RULER:
+		UT_DEBUGMSG(("ap_GetState_View - AP_MENU_ID_VIEW_RULER %d", pFrameData->m_bShowRuler ));
+
+		if ( pFrameData->m_bShowRuler ) 
+			s = EV_MIS_Toggled;
+		else
+			s = EV_MIS_ZERO;
+		break;
+
 	case AP_MENU_ID_VIEW_SHOWPARA:
 	case AP_MENU_ID_VIEW_HEADFOOT:
 		// TODO: implement view methods to check, toggle state

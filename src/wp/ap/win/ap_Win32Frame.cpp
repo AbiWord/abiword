@@ -1008,3 +1008,13 @@ UT_Bool AP_Win32Frame::_replaceDocument(AD_Document * pDoc)
 
 	return _showDocument();
 }
+
+void AP_Win32Frame::toggleRuler(UT_Bool bRulerOn)
+{
+	UT_DEBUGMSG(("AP_Win32Frame::toggleRuler %d", bRulerOn));	
+
+	AP_FrameData *pFrameData = (AP_FrameData *)getFrameData();
+	UT_ASSERT(pFrameData);
+
+}
+

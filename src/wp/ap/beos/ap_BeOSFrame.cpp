@@ -618,3 +618,12 @@ UT_Bool AP_BeOSFrame::_replaceDocument(AD_Document * pDoc)
 
 	return _showDocument();
 }
+
+void AP_BeOSFrame::toggleRuler(UT_Bool bRulerOn)
+{
+	UT_DEBUGMSG(("AP_BeOSFrame::toggleRuler %d", bRulerOn));	
+ 
+	AP_FrameData *pFrameData = (AP_FrameData *)getFrameData();
+	UT_ASSERT(pFrameData);
+}
+

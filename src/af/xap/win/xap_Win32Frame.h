@@ -78,6 +78,8 @@ public:
 
 	static UT_Bool				RegisterClass(XAP_Win32App * app);
 
+	virtual void				toggleRuler(UT_Bool bRulerOn) = 0;	
+
 protected:
 	virtual HWND				_createDocumentWindow(HWND hwndParent,
 													  UT_uint32 iLeft, UT_uint32 iTop,
