@@ -138,11 +138,14 @@ UT_Error UT_XML::parse (const char * szFilename)
     }
   if (ret == UT_OK)
     if (!m_bStopped)
-      if (xmlParseChunk (ctxt, buffer, 0, 1))
-	{
-	  UT_DEBUGMSG (("Error parsing '%s'\n",szFilename));
-	  ret = UT_IE_IMPORTERROR;
-	}
+      {
+	char null_char[1] = { '\0' };
+	if (xmlParseChunk (ctxt, null_char, 1, 1))
+	  {
+	    UT_DEBUGMSG (("Error parsing '%s'\n",szFilename));
+	    ret = UT_IE_IMPORTERROR;
+	  }
+      }
   if (ret == UT_OK)
     if (!ctxt->wellFormed && !m_bStopped) ret = UT_IE_IMPORTERROR; // How does stopping mid-file affect wellFormed?
 

@@ -178,128 +178,120 @@ void IE_Imp_XML::charData(const XML_Char *s, int len)
 	// TODO as a 'char' not as a 'unsigned char'.
 	// TODO does this cause any problems ??
 
+	if(!s || !len)
+		return;
+
 	X_EatIfAlreadyError();	// xml parser keeps running until buffer consumed
 
 	switch (m_parseState)
-	{
-	default:
-	{
-		xxx_UT_DEBUGMSG(("charData DISCARDED [length %d]\n",len));
-		return;
-	}
-
-	case _PS_Field:
-	{
-		// discard contents of the field - force recalculation
-		// this gives us a higher chance of correcting fields
-		// with the wrong values
-		return;
-	}
-
-	case _PS_Block:
-	case _PS_IgnoredWordsItem:
-	case _PS_Meta:
-	case _PS_Revision:
-	{
-		UT_UCS4String buf(s,static_cast<size_t>(len),!m_bWhiteSignificant);
-
-		// flush out the buffer
-
-		if (buf.size() == 0 )
-		  return;
-
-		switch (m_parseState)
-		  {
-		  case _PS_Block:
-		    X_CheckError(getDoc()->appendSpan(buf.ucs4_str(), buf.size()));
-		    break;
-		  case _PS_IgnoredWordsItem:
-		    if (m_bLoadIgnoredWords)
-		      {
-			X_CheckError(getDoc()->appendIgnore(buf.ucs4_str(), buf.size()));
-		      }
-		    break;
-		  case _PS_Meta:
-		    {
-		      // ugly hack
-		      UT_String data(UT_UTF8String(buf).utf8_str());
-		      getDoc()->setMetaDataProp(m_currentMetaDataName, data);
-		      UT_DEBUGMSG(("Storing metadata: %s=%s\n", m_currentMetaDataName.c_str(), data.c_str()));
-		      break;
-		    }
-		  case _PS_Revision:
+		{
+		case _PS_Block:
+		case _PS_IgnoredWordsItem:
+		case _PS_Meta:
+		case _PS_Revision:
 			{
-				X_CheckError(getDoc()->addRevision(m_currentRevisionId, buf.ucs4_str(), buf.size()));
+				UT_UCS4String buf(s,static_cast<size_t>(len),!m_bWhiteSignificant);
+				
+				// flush out the buffer
+				if (buf.size() == 0)
+					return;
+				
+				switch (m_parseState)
+					{
+					case _PS_Block:
+						X_CheckError(getDoc()->appendSpan(buf.ucs4_str(), buf.size()));
+						return;
+					case _PS_IgnoredWordsItem:
+						if (m_bLoadIgnoredWords)
+							X_CheckError(getDoc()->appendIgnore(buf.ucs4_str(), buf.size()));
+						return;
+					case _PS_Meta:
+						{
+							// ugly hack
+							UT_String data(UT_UTF8String(buf).utf8_str());
+							getDoc()->setMetaDataProp(m_currentMetaDataName, data);
+							return;
+						}
+					case _PS_Revision:
+						X_CheckError(getDoc()->addRevision(m_currentRevisionId, buf.ucs4_str(), buf.size()));
+						return;			
+						
+					default:
+						UT_ASSERT_NOT_REACHED();
+						return;
+					}		
 			}
-			break;
 			
-
-		  default:
-		    UT_ASSERT_NOT_REACHED();
-		    break;
-		  }
-		return;
-	}
-
-	case _PS_DataItem:
-	{
+		case _PS_Field:
+			{
+				// discard contents of the field - force recalculation
+				// this gives us a higher chance of correcting fields
+				// with the wrong values
+				return;
+			}
+			
+		case _PS_DataItem:
+			{
 #ifdef ENABLE_RESOURCE_MANAGER
-		XAP_ResourceManager & RM = getDoc()->resourceManager ();
-		XAP_Resource * resource = RM.current ();
-		if (resource == 0) break;
-		if (!resource->bInternal) break;
-		XAP_InternalResource * ri = dynamic_cast<XAP_InternalResource *>(resource);
-
-		if (m_currentDataItemEncoded) // base64-encoded data
-			{
-				ri->buffer (s, len, true);
-			}
-		else // old file-format keeping MathML & SVG in CDATA section :-(
-			{
-				/* since SVG import was only ever a DEBUG option, and is currently disabled (why?),
-				 * since MathML was never supported except in principle, and since this CDATA stuff
-				 * (unencoded) is pretty unsafe anyway, I'm going to postpone import support
-				 * indefinitely...                                              - fjf Aug. 19th '02
-				 */
-			}
+				XAP_ResourceManager & RM = getDoc()->resourceManager ();
+				XAP_Resource * resource = RM.current ();
+				if (resource == 0) break;
+				if (!resource->bInternal) break;
+				XAP_InternalResource * ri = dynamic_cast<XAP_InternalResource *>(resource);
+				
+				if (m_currentDataItemEncoded) // base64-encoded data
+					{
+						ri->buffer (s, len, true);
+					}
+				else // old file-format keeping MathML & SVG in CDATA section :-(
+					{
+						/* since SVG import was only ever a DEBUG option, and is currently disabled (why?),
+						 * since MathML was never supported except in principle, and since this CDATA stuff
+						 * (unencoded) is pretty unsafe anyway, I'm going to postpone import support
+						 * indefinitely...                                              - fjf Aug. 19th '02
+						 */
+					}
 #else /* ENABLE_RESOURCE_MANAGER */
-
+				
 #define MyIsWhite(c)			(((c)==' ') || ((c)=='\t') || ((c)=='\n') || ((c)=='\r'))
-
-		if (m_currentDataItemEncoded)
-		{
-
-			// DataItem data consists of Base64 encoded data with
-			// white space added for readability.  strip out any
-			// white space and put the rest in the ByteBuf.
-
-			UT_ASSERT((sizeof(XML_Char) == sizeof(UT_Byte)));
-
-			const UT_Byte * ss = (UT_Byte *)s;
-			const UT_Byte * ssEnd = ss + len;
-			while (ss < ssEnd)
-			{
-				while ((ss < ssEnd) && MyIsWhite(*ss))
-					ss++;
-				UT_uint32 k=0;
-				while ((ss+k < ssEnd) && ( ! MyIsWhite(ss[k])))
-					k++;
-				if (k > 0)
-					m_currentDataItem.ins(m_currentDataItem.getLength(),ss,k);
-
-				ss += k;
-			}
-
-			return;
-		}
-		else
-		{
-			m_currentDataItem.append((UT_Byte*)s, len);
-		}
+				
+				if (m_currentDataItemEncoded)
+					{
+						
+						// DataItem data consists of Base64 encoded data with
+						// white space added for readability.  strip out any
+						// white space and put the rest in the ByteBuf.
+						
+						UT_ASSERT((sizeof(XML_Char) == sizeof(UT_Byte)));
+						
+						const UT_Byte * ss = (UT_Byte *)s;
+						const UT_Byte * ssEnd = ss + len;
+						while (ss < ssEnd)
+							{
+								while ((ss < ssEnd) && MyIsWhite(*ss))
+									ss++;
+								UT_uint32 k=0;
+								while ((ss+k < ssEnd) && ( ! MyIsWhite(ss[k])))
+									k++;
+								if (k > 0)
+									m_currentDataItem.ins(m_currentDataItem.getLength(),ss,k);
+								
+								ss += k;
+							}
+						
+						return;
+					}
+				else
+					{
+						m_currentDataItem.append((UT_Byte*)s, len);
+					}
 #undef MyIsWhite
 #endif /* ENABLE_RESOURCE_MANAGER */
-	}
-	}
+			}
+			
+		default:
+			return;
+		}
 }
 
 /*****************************************************************/

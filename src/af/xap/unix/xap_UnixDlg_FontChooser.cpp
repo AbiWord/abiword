@@ -846,10 +846,10 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
 	// update the styles list
 	gtk_clist_freeze(GTK_CLIST(m_styleList));
 	gtk_clist_clear(GTK_CLIST(m_styleList));
-	text[0] = (gchar *) pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_StyleRegular).c_str(); 		gtk_clist_append(GTK_CLIST(m_styleList), text);
-	text[0] = (gchar *) pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_StyleItalic).c_str(); 		gtk_clist_append(GTK_CLIST(m_styleList), text);
-	text[0] = (gchar *) pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_StyleBold).c_str(); 	   	gtk_clist_append(GTK_CLIST(m_styleList), text);
-	text[0] = (gchar *) pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_StyleBoldItalic).c_str();  	gtk_clist_append(GTK_CLIST(m_styleList), text);
+	text[0] = (gchar *) pSS->getValue(XAP_STRING_ID_DLG_UFS_StyleRegular); 		gtk_clist_append(GTK_CLIST(m_styleList), text);
+	text[0] = (gchar *) pSS->getValue(XAP_STRING_ID_DLG_UFS_StyleItalic); 		gtk_clist_append(GTK_CLIST(m_styleList), text);
+	text[0] = (gchar *) pSS->getValue(XAP_STRING_ID_DLG_UFS_StyleBold); 	   	gtk_clist_append(GTK_CLIST(m_styleList), text);
+	text[0] = (gchar *) pSS->getValue(XAP_STRING_ID_DLG_UFS_StyleBoldItalic);  	gtk_clist_append(GTK_CLIST(m_styleList), text);
 	gtk_clist_thaw(GTK_CLIST(m_styleList));
 
 	gtk_clist_freeze(GTK_CLIST(m_sizeList));
