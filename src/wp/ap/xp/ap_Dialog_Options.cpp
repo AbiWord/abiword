@@ -119,9 +119,12 @@ void AP_Dialog_Options::_storeWindowData(void)
 #ifdef BIDI_ENABLED
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_DefaultDirectionRtl, _gatherOtherDirectionRtl() );
 #endif
+
+#if 0
+	// JOAQUIN - fix this: Dom
 	Save_Pref_Bool( pPrefsScheme, XAP_PREF_KEY_AutoSaveFile, _gatherAutoSaveFile() );
 	Save_Pref_Text( pPrefsScheme, XAP_PREF_KEY_AutoSaveFileExt, _gatherAutoSaveFileExt() );
-					
+#endif					
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// If we changed whether the ruler is to be visible
 	// or hidden, then update the current window:
@@ -262,11 +265,14 @@ void AP_Dialog_Options::_populateWindowData(void)
 	if (pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_CursorBlink,&b))
 		_setViewCursorBlink (b);
 
+#if 0
+	// TODO: JOAQUIN FIX THIS
 	if (pPrefs->getPrefsValueBool((XML_Char*)XAP_PREF_KEY_AutoSaveFile,&b))
 		_setAutoSaveFile (b);
 
-//	if (pPrefs->getPrefsValueBool((XML_Char*)XAP_PREF_KEY_AutoSaveFileExt,&b))
-//		_setAutoSaveFileExt (b);
+	if (pPrefs->getPrefsValueBool((XML_Char*)XAP_PREF_KEY_AutoSaveFileExt,&b))
+		_setAutoSaveFileExt (b);
+#endif
 
 	// ------------ the page tab number 
 	if (pPrefs->getPrefsValue((XML_Char*)AP_PREF_KEY_OptionsTabNumber,&pszBuffer))
