@@ -87,7 +87,6 @@ static struct _lt s_ltTable[] =
 ** Put it all together and have a "load LabelSet by Language"
 ******************************************************************
 *****************************************************************/
-
 EV_Menu_LabelSet * AP_CreateMenuLabelSet(const char * szLanguage)
 {
 	if (szLanguage && *szLanguage)

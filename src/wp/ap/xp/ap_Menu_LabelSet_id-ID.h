@@ -71,8 +71,6 @@ BeginSet(IdID,UT_TRUE)
 	MenuLabel(AP_MENU_ID_EDIT_FIND,			"&Cari",			"Menari suatu kata")
 	MenuLabel(AP_MENU_ID_EDIT_REPLACE,		"G&anti",			"Menganti kata tersebut dengan kata lainnya")
 	MenuLabel(AP_MENU_ID_EDIT_GOTO,			"Pin&dah",			"Memindah ke bagian lain")
-	MenuLabel(AP_MENU_ID_EDIT_SPELL,		"&Ejaan",			"Memeriksa ejaan")
-	MenuLabel(AP_MENU_ID_EDIT_OPTIONS,		"P&ilihan",			"Menentukan opsi")
 	
 	MenuLabel(AP_MENU_ID_VIEW,				"&Tampilan",			NULL)
 	MenuLabel(AP_MENU_ID_VIEW_TOOLBARS,		"&Papan simbol perintah",		NULL)
@@ -107,6 +105,9 @@ BeginSet(IdID,UT_TRUE)
 	MenuLabel(AP_MENU_ID_FMT_STRIKE,		"C&oret",			"Mencoret tulisan yang telah diseleksi atau sebaliknya")
 	MenuLabel(AP_MENU_ID_FMT_SUPERSCRIPT,		"Huruf &atas",			"Menaikkan posisi tulisan yang telah diseleksi")
 	MenuLabel(AP_MENU_ID_FMT_SUBSCRIPT,		"Huruf ba&wah",			"Menurunkan posisi tulisan yang telah diseleksi")
+
+	MenuLabel(AP_MENU_ID_TOOLS_SPELL,		"&Ejaan",			"Memeriksa ejaan")
+	MenuLabel(AP_MENU_ID_TOOLS_OPTIONS,		"P&ilihan",			"Menentukan opsi")
 
 	MenuLabel(AP_MENU_ID_ALIGN,				"&Aturan",			NULL)
 	MenuLabel(AP_MENU_ID_ALIGN_LEFT,		"&Kiri",			"Meratakan kiri paragraf")

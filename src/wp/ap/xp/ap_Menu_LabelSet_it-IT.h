@@ -71,8 +71,6 @@ BeginSet(ItIT,UT_TRUE)
 	MenuLabel(AP_MENU_ID_EDIT_FIND,			"&Trova",			"Cerca il testo specificato")
 	MenuLabel(AP_MENU_ID_EDIT_REPLACE,		"Sostit&uisci",		"Sostituisce il testo specificato con un altro")
 	MenuLabel(AP_MENU_ID_EDIT_GOTO,			"&Vai a",			"Sposta il cursore nel punto specificato")
-	MenuLabel(AP_MENU_ID_EDIT_SPELL,		"&Controllo ortografico",		"Controlla l'ortografia del documento")
-	MenuLabel(AP_MENU_ID_EDIT_OPTIONS,		"&Opzioni",			"Setta le opzioni")
 	
 	MenuLabel(AP_MENU_ID_VIEW,				"&Visualizza",			NULL)
 	MenuLabel(AP_MENU_ID_VIEW_TOOLBARS,		"&Barre degli strumenti",		NULL)
@@ -108,6 +106,9 @@ BeginSet(ItIT,UT_TRUE)
         MenuLabel(AP_MENU_ID_FMT_SUPERSCRIPT,   "&Apice",         "Scrive in apice la selezione (reversibile)")                                                    
         MenuLabel(AP_MENU_ID_FMT_SUBSCRIPT,             "P&edice",           "Scrive in pedice la selezione (reversibile)")                                              
 			
+	MenuLabel(AP_MENU_ID_TOOLS_SPELL,		"&Controllo ortografico",		"Controlla l'ortografia del documento")
+	MenuLabel(AP_MENU_ID_TOOLS_OPTIONS,		"&Opzioni",			"Setta le opzioni")
+	
 	MenuLabel(AP_MENU_ID_ALIGN,				"&Allinea",				NULL)
 	MenuLabel(AP_MENU_ID_ALIGN_LEFT,		"&Sinistra",			"Allinea a sinistra il paragrafo")
 	MenuLabel(AP_MENU_ID_ALIGN_CENTER,		"&Centro",				"Allinea al centro il paragrafo")

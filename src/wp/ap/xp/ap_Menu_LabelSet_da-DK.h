@@ -70,8 +70,6 @@ BeginSet(DaDK,UT_TRUE)
 	MenuLabel(AP_MENU_ID_EDIT_FIND,			"&Søg",				"Søg efter en angivet tekst")
 	MenuLabel(AP_MENU_ID_EDIT_REPLACE,		"&Erstat",			"Erstat en angivet tekst med en anden tekst")
 	MenuLabel(AP_MENU_ID_EDIT_GOTO,			"Gå &til",			"Flyt markøren til en angivet placering")
-	MenuLabel(AP_MENU_ID_EDIT_SPELL,		"Sta&vekontrol",	"Kontrollér dokumentet for forkert stavede ord")
-	MenuLabel(AP_MENU_ID_EDIT_OPTIONS,		"&Opsætning",			"Ændr opsætning")
 	
 	MenuLabel(AP_MENU_ID_VIEW,				"&Vis",				NULL)
 	MenuLabel(AP_MENU_ID_VIEW_TOOLBARS,		"&Værktøjslinier",				NULL)
@@ -106,6 +104,9 @@ BeginSet(DaDK,UT_TRUE)
 	MenuLabel(AP_MENU_ID_FMT_STRIKE,		"&Gennemstreg",		"Gennemstreg den markerede tekst")
 	MenuLabel(AP_MENU_ID_FMT_SUPERSCRIPT,		"&Hævet",		"Gør den markerede tekst højere end omgivelserne")
 	MenuLabel(AP_MENU_ID_FMT_SUBSCRIPT,		"Sæ&nket",		"Gør den markerede tekst lavere end omgivelserne")
+
+	MenuLabel(AP_MENU_ID_TOOLS_SPELL,		"Sta&vekontrol",	"Kontrollér dokumentet for forkert stavede ord")
+	MenuLabel(AP_MENU_ID_TOOLS_OPTIONS,		"&Opsætning",			"Ændr opsætning")
 
 	MenuLabel(AP_MENU_ID_ALIGN,				"&Justér",			NULL)
 	MenuLabel(AP_MENU_ID_ALIGN_LEFT,		"&Venstrestillet",		"Venstrestil afsnittet")

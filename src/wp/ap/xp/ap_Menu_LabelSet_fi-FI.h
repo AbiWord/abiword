@@ -69,8 +69,6 @@ BeginSet(FiFI,UT_TRUE)
 	MenuLabel(AP_MENU_ID_EDIT_FIND,			"&Etsi",			"Etsi haluttu teksti")
 	MenuLabel(AP_MENU_ID_EDIT_REPLACE,		"K&orvaa",			"Korvaa haluttu teksti toisella tekstill‰")
 	MenuLabel(AP_MENU_ID_EDIT_GOTO,			"&Mene",			"Siirr‰ osoitin haluttuun kohtaan")
-	MenuLabel(AP_MENU_ID_EDIT_SPELL,		"&Oikoluku",		"Tarkista asiakirja virheellisit‰ sanoista")
-	MenuLabel(AP_MENU_ID_EDIT_OPTIONS,		"&Asetukset",			"Muuta asetuksia")
 	
 	MenuLabel(AP_MENU_ID_VIEW,				"&N‰yt‰",			NULL)
 	MenuLabel(AP_MENU_ID_VIEW_TOOLBARS,		"&Tyˆkalurivit",		NULL)
@@ -105,6 +103,9 @@ BeginSet(FiFI,UT_TRUE)
 	MenuLabel(AP_MENU_ID_FMT_STRIKE,		"&Yliviivattu",			"Muuta valinta yliviivatuksi (p‰‰lle/pois)")
 	MenuLabel(AP_MENU_ID_FMT_SUPERSCRIPT,   	"Yl‰&indeksi",         		"Muuta valinta yl‰indeksiksi (p‰‰lle/pois)")
 	MenuLabel(AP_MENU_ID_FMT_SUBSCRIPT,             "Alai&ndeksi",         		"Muuta valinta alaindeksiksi (p‰‰lle/pois)")
+
+        MenuLabel(AP_MENU_ID_TOOLS_SPELL,		"&Oikoluku",		        "Tarkista asiakirja virheellisit‰ sanoista")
+	MenuLabel(AP_MENU_ID_TOOLS_OPTIONS,		"&Asetukset",			"Muuta asetuksia")
 
 	MenuLabel(AP_MENU_ID_ALIGN,				"&Tasaus",			NULL)
 	MenuLabel(AP_MENU_ID_ALIGN_LEFT,		"&Vasen",			"Vasemmalle tasattu kappale")

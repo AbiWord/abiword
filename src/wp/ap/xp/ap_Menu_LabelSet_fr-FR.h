@@ -69,8 +69,6 @@ BeginSet(FrFR,UT_TRUE)
     MenuLabel(AP_MENU_ID_EDIT_FIND,         "Rec&hercher",      "Recherche le texte spécifié")
     MenuLabel(AP_MENU_ID_EDIT_REPLACE,      "R&emplacer",       "Recherche le teste spécifié et le remplace par un texte différent")
     MenuLabel(AP_MENU_ID_EDIT_GOTO,         "A&tteindre",       "Déplace le point d'insertion à l'endroit spécifié")
-    MenuLabel(AP_MENU_ID_EDIT_SPELL,        "O&rthographe",	"Vérifie l'orthographe du document")
-    MenuLabel(AP_MENU_ID_EDIT_OPTIONS,      "Option&s",         "Configure les différentes options")
     
     MenuLabel(AP_MENU_ID_VIEW,              "&Affichage",       NULL)
     MenuLabel(AP_MENU_ID_VIEW_TOOLBARS,     "&Barre d'outils",  NULL)
@@ -106,6 +104,9 @@ BeginSet(FrFR,UT_TRUE)
     MenuLabel(AP_MENU_ID_FMT_SUPERSCRIPT,   "&Exposant",       "Make the selection superscript (toggle)")
     MenuLabel(AP_MENU_ID_FMT_SUBSCRIPT,     "I&ndice",         "Make the selection subscript (toggle)")
 
+    MenuLabel(AP_MENU_ID_TOOLS_SPELL,        "O&rthographe",	"Vérifie l'orthographe du document")
+    MenuLabel(AP_MENU_ID_TOOLS_OPTIONS,      "Option&s",         "Configure les différentes options")
+    
     MenuLabel(AP_MENU_ID_ALIGN,             "&Alignement",     NULL)
     MenuLabel(AP_MENU_ID_ALIGN_LEFT,        "à &Gauche",       "Aligne le paragraphe à gauche")
     MenuLabel(AP_MENU_ID_ALIGN_CENTER,      "&Centré",         "Centre le paragraphe")

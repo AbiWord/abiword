@@ -97,8 +97,6 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_EDIT_FIND,		0,1,0,	"find",				NULL,					NULL);
 	_s(AP_MENU_ID_EDIT_REPLACE,		0,1,0,	"replace",			NULL,					NULL);
 	_s(AP_MENU_ID_EDIT_GOTO,		0,1,0,	"go",				NULL,					NULL);
-	_s(AP_MENU_ID_EDIT_SPELL,		0,1,0,	"dlgSpell",			NULL,			NULL);
-   	_s(AP_MENU_ID_EDIT_OPTIONS,		0,1,0,	"dlgOptions",		NULL,					NULL);
 
 	_s(AP_MENU_ID_VIEW,				1,0,0,	NULL,				NULL,					NULL);
 	_s(AP_MENU_ID_VIEW_TOOLBARS,	1,0,0,	NULL,				NULL,					NULL);
@@ -139,6 +137,11 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_ALIGN_CENTER,		0,0,1,	"alignCenter",		ap_GetState_BlockFmt,	NULL);
 	_s(AP_MENU_ID_ALIGN_RIGHT,		0,0,1,	"alignRight",		ap_GetState_BlockFmt,	NULL);
 	_s(AP_MENU_ID_ALIGN_JUSTIFY,	0,0,1,	"alignJustify",		ap_GetState_BlockFmt,	NULL);
+
+	_s(AP_MENU_ID_TOOLS,			1,0,0,	NULL,				NULL,					NULL);
+	_s(AP_MENU_ID_TOOLS_WORDCOUNT,		0,1,0,	"dlgWordCount",			NULL,					NULL);
+	_s(AP_MENU_ID_TOOLS_SPELL,	        0,1,0,	"dlgSpell",		NULL,					NULL);
+	_s(AP_MENU_ID_TOOLS_OPTIONS,		0,1,0,	"dlgOptions",		NULL,					NULL);
 
 	_s(AP_MENU_ID_WINDOW,			1,0,0,	NULL,				NULL,					NULL);
 	_s(AP_MENU_ID_WINDOW_NEW,		0,0,0,	"newWindow",		NULL,					NULL);

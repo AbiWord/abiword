@@ -69,8 +69,6 @@ BeginSet(EsES,UT_TRUE)
 	MenuLabel(AP_MENU_ID_EDIT_FIND,			"&Buscar",			"Buscar el texto indicado")
 	MenuLabel(AP_MENU_ID_EDIT_REPLACE,		"R&eemplazar",		"Reemplazar el texto indicado con otro texto")
 	MenuLabel(AP_MENU_ID_EDIT_GOTO,			"&Ir a",			"Mover el punto de inserción a un lugar especifico")
-	MenuLabel(AP_MENU_ID_EDIT_SPELL,		"&Spelling",		"Check the document for incorrect spelling")
-	MenuLabel(AP_MENU_ID_EDIT_OPTIONS,		"&Opciones",		"Configurar las opciones")
 	
 	MenuLabel(AP_MENU_ID_VIEW,				"&Ver",				NULL)
 	MenuLabel(AP_MENU_ID_VIEW_TOOLBARS,		"&Barras de herramientas",	NULL)
@@ -105,6 +103,9 @@ BeginSet(EsES,UT_TRUE)
 	MenuLabel(AP_MENU_ID_FMT_STRIKE,		"Tacha&do",			"Tachar la selección")
 	MenuLabel(AP_MENU_ID_FMT_SUPERSCRIPT,	"Supe&ríndice",		"Make the selection superscript (toggle)")
 	MenuLabel(AP_MENU_ID_FMT_SUBSCRIPT,		"S&ubíndice",		"Make the selection subscript (toggle)")
+
+	MenuLabel(AP_MENU_ID_TOOLS_SPELL,		"&Spelling",		"Check the document for incorrect spelling")
+	MenuLabel(AP_MENU_ID_TOOLS_OPTIONS,		"&Opciones",		"Configurar las opciones")
 
 	MenuLabel(AP_MENU_ID_ALIGN,				"&Alineación",		NULL)
 	MenuLabel(AP_MENU_ID_ALIGN_LEFT,		"&Izquierda",		"Alinear el párrafo a la izquierda")

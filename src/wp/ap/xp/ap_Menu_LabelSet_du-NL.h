@@ -70,8 +70,6 @@ BeginSet(DuNL,UT_TRUE)
 	MenuLabel(AP_MENU_ID_EDIT_FIND,			"&Zoeken",			"Zoek de opgegeven tekst")
 	MenuLabel(AP_MENU_ID_EDIT_REPLACE,		"&Vervang",			"Vervang geselecteerde tekst met de andere tekst")
 	MenuLabel(AP_MENU_ID_EDIT_GOTO,			"&Ga Naar",			"Verplaats invoegplaats naar aangewezen lokatie")
-	MenuLabel(AP_MENU_ID_EDIT_SPELL,		"&Spelling",		"Check the document for incorrect spelling")
-	MenuLabel(AP_MENU_ID_EDIT_OPTIONS,		"&Opties",			"Opties instellen")
 	
 	MenuLabel(AP_MENU_ID_VIEW,			"&Visueel",			NULL)
 	MenuLabel(AP_MENU_ID_VIEW_TOOLBARS,		"&Knoppenbalken",		NULL)
@@ -103,6 +101,9 @@ BeginSet(DuNL,UT_TRUE)
 	MenuLabel(AP_MENU_ID_FMT_ITALIC,		"&Schuingedrukt",		"Maak het geselecteerde schuingedrukt (omschakelen)")
 	MenuLabel(AP_MENU_ID_FMT_UNDERLINE,		"&Onderstrepen",		"Onderstreep het geselecteerde (omschakelen)")
 	MenuLabel(AP_MENU_ID_FMT_STRIKE,		"&Doorhalen",			"Het geselecteerde doorhalen (omschakelen)")
+
+	MenuLabel(AP_MENU_ID_TOOLS_SPELL,		"&Spelling",		"Check the document for incorrect spelling")
+	MenuLabel(AP_MENU_ID_TOOLS_OPTIONS,		"&Opties",			"Opties instellen")
 
 	MenuLabel(AP_MENU_ID_ALIGN,			"&Kantlijn",			NULL)
 	MenuLabel(AP_MENU_ID_ALIGN_LEFT,		"&Links",			"Deze paragraaf links uitlijnen")

@@ -69,8 +69,6 @@ BeginSet(CsCZ,UT_TRUE)
 	MenuLabel(AP_MENU_ID_EDIT_FIND,			"&Najít",			"Nalézt urèitý text")
 	MenuLabel(AP_MENU_ID_EDIT_REPLACE,		"Nah&radit",			"Nahradit urèitý text jiným")
 	MenuLabel(AP_MENU_ID_EDIT_GOTO,			"&Skok na",			"Pøesun kurzoru na po¾adovanou stranu")
-	MenuLabel(AP_MENU_ID_EDIT_SPELL,		"Pravopi&s",			"Zkontrolovat pravopis")
-	MenuLabel(AP_MENU_ID_EDIT_OPTIONS,		"&Mo¾nosti",			"Nastavení mo¾ností")
 	
 	MenuLabel(AP_MENU_ID_VIEW,				"&Zobrazit",			NULL)
 	MenuLabel(AP_MENU_ID_VIEW_TOOLBARS,		"&Nástroje",		NULL)
@@ -102,6 +100,9 @@ BeginSet(CsCZ,UT_TRUE)
 	MenuLabel(AP_MENU_ID_FMT_ITALIC,		"&Kurzíva",			"Nastavení kurzivy pro vybranou oblast")
 	MenuLabel(AP_MENU_ID_FMT_UNDERLINE,		"&Potr¾ení",			"Podtr¾ení písma ve vybrané oblasti")
 	MenuLabel(AP_MENU_ID_FMT_STRIKE,		"Pøe¹k&rknutí",			"Pøe¹krknutí písma ve vybrané oblasti")
+
+	MenuLabel(AP_MENU_ID_TOOLS_SPELL,		"Pravopi&s",			"Zkontrolovat pravopis")
+	MenuLabel(AP_MENU_ID_TOOLS_OPTIONS,		"&Mo¾nosti",			"Nastavení mo¾ností")
 
 	MenuLabel(AP_MENU_ID_ALIGN,				"&Umístìní",			NULL)
 	MenuLabel(AP_MENU_ID_ALIGN_LEFT,		"&Vlevo",			"Zarovnání odstavce vlevo")

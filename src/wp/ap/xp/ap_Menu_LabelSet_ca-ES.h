@@ -71,9 +71,7 @@ BeginSet(CaES,UT_TRUE)
 	MenuLabel(AP_MENU_ID_EDIT_FIND,			"&Cerca",			"Cerca el text especificat")
 	MenuLabel(AP_MENU_ID_EDIT_REPLACE,		"R&eemplaça",			"Reemplaça el text especificat amb un altre")
 	MenuLabel(AP_MENU_ID_EDIT_GOTO,			"&Vés a",			"Mou el punt d'inserció a una ubicació determinada")
-	MenuLabel(AP_MENU_ID_EDIT_SPELL,		"&Ortografia",		"Comprova l'ortografia del document")
-	MenuLabel(AP_MENU_ID_EDIT_OPTIONS,		"&Opcions",			"Estableix les opcions")
-	
+
 	MenuLabel(AP_MENU_ID_VIEW,				"&Visualitza",			NULL)
 	MenuLabel(AP_MENU_ID_VIEW_TOOLBARS,		"&Barres d'eines",		NULL)
 	MenuLabel(AP_MENU_ID_VIEW_TB_STD,		"E&stàndard",		"Mostra o amaga la barra d'eines estàndard")
@@ -105,6 +103,9 @@ BeginSet(CaES,UT_TRUE)
 	MenuLabel(AP_MENU_ID_FMT_UNDERLINE,		"S&ubratllat",		"Subratlla la selecció (commuta)")
 	MenuLabel(AP_MENU_ID_FMT_STRIKE,		"&Barra",			"Barra la selecció (commuta)")
 
+	MenuLabel(AP_MENU_ID_TOOLS_SPELL,		"&Ortografia",		"Comprova l'ortografia del document")
+	MenuLabel(AP_MENU_ID_TOOLS_OPTIONS,		"&Opcions",			"Estableix les opcions")
+	
 	MenuLabel(AP_MENU_ID_ALIGN,				"&Alineació",			NULL)
 	MenuLabel(AP_MENU_ID_ALIGN_LEFT,		"&Esquerra",			"Alinea el paràgraf a l'esquerra")
 	MenuLabel(AP_MENU_ID_ALIGN_CENTER,		"&Centre",			"Centra el paràgraf")

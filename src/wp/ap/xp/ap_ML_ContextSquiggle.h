@@ -41,7 +41,7 @@ BeginLayout(ContextSquiggle,EV_EMC_MISSPELLEDTEXT)
 		MenuItem(AP_MENU_ID_SPELL_IGNOREALL)
 		MenuItem(AP_MENU_ID_SPELL_ADD)
 		Separator()
-		MenuItem(AP_MENU_ID_EDIT_SPELL)
+		MenuItem(AP_MENU_ID_TOOLS_SPELL)
 	EndPopupMenu()
 
 EndLayout()

@@ -229,7 +229,6 @@ public:
 	static EV_EditMethod_Fn findAgain;
 	static EV_EditMethod_Fn go;
 	static EV_EditMethod_Fn replace;
-	static EV_EditMethod_Fn dlgOptions;
 
 	static EV_EditMethod_Fn viewStd;
 	static EV_EditMethod_Fn viewFormat;
@@ -247,7 +246,10 @@ public:
 	static EV_EditMethod_Fn insSymbol;
 
 	static EV_EditMethod_Fn dlgSpell;
-   
+	static EV_EditMethod_Fn dlgWordCount;
+	static EV_EditMethod_Fn dlgOptions;
+  
+
    	static EV_EditMethod_Fn dlgFont;
 	static EV_EditMethod_Fn dlgParagraph;
 	static EV_EditMethod_Fn dlgBullets;
@@ -506,7 +508,6 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(findAgain),			0,	""),	
 	EV_EditMethod(NF(go),					0,	""),
 	EV_EditMethod(NF(replace),				0,	""),
-	EV_EditMethod(NF(dlgOptions),			0,	""),
 
 	EV_EditMethod(NF(viewStd),				0,		""),
 	EV_EditMethod(NF(viewFormat),			0,		""),
@@ -522,14 +523,13 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(insDateTime),			0,		""),
 	EV_EditMethod(NF(insField),				0,		""),
 	EV_EditMethod(NF(insSymbol),			0,		""),
-
-   	EV_EditMethod(NF(dlgSpell),			0,		""),
    
 	EV_EditMethod(NF(dlgFont),				0,		""),
 	EV_EditMethod(NF(dlgParagraph),			0,		""),
 	EV_EditMethod(NF(dlgBullets),			0,		""),
 	EV_EditMethod(NF(dlgBorders),			0,		""),
 	EV_EditMethod(NF(dlgColumns),			0,		""),
+
 	EV_EditMethod(NF(style),				_D_,	""),
 	EV_EditMethod(NF(dlgStyle),				0,		""),
 	EV_EditMethod(NF(dlgTabs),				0,		""),
@@ -543,6 +543,10 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(toggleSuper),			0,		""),
 	EV_EditMethod(NF(toggleSub),			0,		""),
 	EV_EditMethod(NF(togglePlain),			0,		""),
+
+	EV_EditMethod(NF(dlgWordCount),			0,		""),
+   	EV_EditMethod(NF(dlgSpell),			0,		""),
+	EV_EditMethod(NF(dlgOptions),			0,	        ""),
 
 	EV_EditMethod(NF(alignLeft),			0,		""),
 	EV_EditMethod(NF(alignCenter),			0,		""),
@@ -4095,6 +4099,16 @@ Defun0(noop)
 	// this is a no-op, so unbound menus don't assert at trade shows
 	return UT_TRUE;
 }
+
+Defun1(dlgWordCount)
+{
+	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	UT_ASSERT(pFrame);
+
+	s_TellNotImplemented(pFrame, "Word Count dialog", __LINE__);
+	return UT_TRUE;
+}
+
 
 /****************************************************************/
 /****************************************************************/

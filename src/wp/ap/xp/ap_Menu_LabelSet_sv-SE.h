@@ -69,9 +69,7 @@ BeginSet(SvSE,UT_TRUE)
 	MenuLabel(AP_MENU_ID_EDIT_FIND,			"&Sök",				"Söker efter angiven text")
 	MenuLabel(AP_MENU_ID_EDIT_REPLACE,		"&Ersätt",			"Ersätter angiven text med annan text")
 	MenuLabel(AP_MENU_ID_EDIT_GOTO,			"&Gå till",			"Gå till en ny plats i dokumentet")
-	MenuLabel(AP_MENU_ID_EDIT_SPELL,		"S&tavning",		"Kontroller stavningen i dokumentet")
-	MenuLabel(AP_MENU_ID_EDIT_OPTIONS,		"Alternati&v",		"Anger alternativ")
-	
+     
 	MenuLabel(AP_MENU_ID_VIEW,				"&Visa",			NULL)
 	MenuLabel(AP_MENU_ID_VIEW_TOOLBARS,		"&Verktygsfält",	NULL)
 	MenuLabel(AP_MENU_ID_VIEW_TB_STD,		"&Standard",		"Visar eller döljer verktygsfältet Standard")
@@ -105,6 +103,9 @@ BeginSet(SvSE,UT_TRUE)
 	MenuLabel(AP_MENU_ID_FMT_STRIKE,		"&Genomstruken",	"Gör aktuell markering genomstruken (växlande)")
 	MenuLabel(AP_MENU_ID_FMT_SUPERSCRIPT,	"Upp&höjd",			"Gör aktuell markering upphöjd (växlande)")
 	MenuLabel(AP_MENU_ID_FMT_SUBSCRIPT,		"Neds&änkt",		"Gör aktuell markering nedsänkt (växlande)")
+
+     	MenuLabel(AP_MENU_ID_TOOLS_SPELL,		"S&tavning",		"Kontroller stavningen i dokumentet")
+	MenuLabel(AP_MENU_ID_TOOLS_OPTIONS,		"Alternati&v",		"Anger alternativ")
 
 	MenuLabel(AP_MENU_ID_ALIGN,				"&Justering",		NULL)
 	MenuLabel(AP_MENU_ID_ALIGN_LEFT,		"&Vänster",			"Vänsterjustera aktuellt eller markerade stycken")

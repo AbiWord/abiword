@@ -69,8 +69,6 @@ BeginSet(DeDE,UT_TRUE)
 	MenuLabel(AP_MENU_ID_EDIT_FIND,			"&Suchen",			"Text im Dokument suchen")
 	MenuLabel(AP_MENU_ID_EDIT_REPLACE,		"&Ersetzen",		"Text im Dokument ersetzen")
 	MenuLabel(AP_MENU_ID_EDIT_GOTO,			"&Gehe zu",			"Einfügemarke im Dokument bewegen")
-	MenuLabel(AP_MENU_ID_EDIT_SPELL,		"&Spelling",		"Check the document for incorrect spelling")
-	MenuLabel(AP_MENU_ID_EDIT_OPTIONS,		"&Optionen",		"Einstellungen für das Programm ändern")
 	
 	MenuLabel(AP_MENU_ID_VIEW,				"&Ansicht",			NULL)
 	MenuLabel(AP_MENU_ID_VIEW_TOOLBARS,		"&Symbolleisten",	NULL)
@@ -102,6 +100,9 @@ BeginSet(DeDE,UT_TRUE)
 	MenuLabel(AP_MENU_ID_FMT_ITALIC,		"&Kursiv",			"Markierung kursiv (ändern)")
 	MenuLabel(AP_MENU_ID_FMT_UNDERLINE,		"&Unterstrichen",	"Markierung unterstrichen (ändern)")
 	MenuLabel(AP_MENU_ID_FMT_STRIKE,		"&Durchgestrichen",	"Markierung durchgestrichen (ändern)")
+
+	MenuLabel(AP_MENU_ID_TOOLS_SPELL,		"&Spelling",		"Check the document for incorrect spelling")
+	MenuLabel(AP_MENU_ID_TOOLS_OPTIONS,		"&Optionen",		"Einstellungen für das Programm ändern")
 	
 	MenuLabel(AP_MENU_ID_ALIGN,				"&Anordnung",		NULL)
 	MenuLabel(AP_MENU_ID_ALIGN_LEFT,		"&Links",			"Absatz links ausrichten")
