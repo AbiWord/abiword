@@ -3,14 +3,14 @@
 
 <glade-interface>
 
-<widget class="GtkDialog" id="ap_UnixDialog_MailMerge">
+<widget class="GtkDialog" id="mainWindow">
   <property name="visible">True</property>
-  <property name="title" translatable="yes">Mail Merge</property>
+  <property name="title" translatable="yes">More Windows</property>
   <property name="type">GTK_WINDOW_TOPLEVEL</property>
   <property name="window_position">GTK_WIN_POS_NONE</property>
-  <property name="modal">False</property>
-  <property name="default_width">400</property>
-  <property name="default_height">250</property>
+  <property name="modal">True</property>
+  <property name="default_width">350</property>
+  <property name="default_height">210</property>
   <property name="resizable">True</property>
   <property name="destroy_with_parent">False</property>
   <property name="has_separator">True</property>
@@ -31,10 +31,10 @@
 	      <property name="visible">True</property>
 	      <property name="can_default">True</property>
 	      <property name="can_focus">True</property>
-	      <property name="label">gtk-close</property>
+	      <property name="label">gtk-cancel</property>
 	      <property name="use_stock">True</property>
 	      <property name="relief">GTK_RELIEF_NORMAL</property>
-	      <property name="response_id">-7</property>
+	      <property name="response_id">-6</property>
 	    </widget>
 	  </child>
 
@@ -43,7 +43,7 @@
 	      <property name="visible">True</property>
 	      <property name="can_default">True</property>
 	      <property name="can_focus">True</property>
-	      <property name="label">gtk-add</property>
+	      <property name="label">gtk-ok</property>
 	      <property name="use_stock">True</property>
 	      <property name="relief">GTK_RELIEF_NORMAL</property>
 	      <property name="response_id">-5</property>
@@ -63,13 +63,13 @@
 	  <property name="border_width">12</property>
 	  <property name="visible">True</property>
 	  <property name="n_rows">2</property>
-	  <property name="n_columns">2</property>
+	  <property name="n_columns">1</property>
 	  <property name="homogeneous">False</property>
 	  <property name="row_spacing">0</property>
 	  <property name="column_spacing">0</property>
 
 	  <child>
-	    <widget class="GtkLabel" id="mergeLbl">
+	    <widget class="GtkLabel" id="label1">
 	      <property name="visible">True</property>
 	      <property name="label" translatable="yes">&lt;b&gt;%s&lt;/b&gt;</property>
 	      <property name="use_underline">False</property>
@@ -87,7 +87,6 @@
 	      <property name="right_attach">1</property>
 	      <property name="top_attach">0</property>
 	      <property name="bottom_attach">1</property>
-	      <property name="y_padding">3</property>
 	      <property name="x_options">fill</property>
 	      <property name="y_options"></property>
 	    </packing>
@@ -103,35 +102,15 @@
 	      <property name="window_placement">GTK_CORNER_TOP_LEFT</property>
 
 	      <child>
-		<widget class="GtkTreeView" id="tvFields">
+		<widget class="GtkTreeView" id="treeview1">
 		  <property name="visible">True</property>
 		  <property name="can_focus">True</property>
 		  <property name="headers_visible">False</property>
 		  <property name="rules_hint">False</property>
-		  <property name="reorderable">True</property>
+		  <property name="reorderable">False</property>
 		  <property name="enable_search">True</property>
 		</widget>
 	      </child>
-	    </widget>
-	    <packing>
-	      <property name="left_attach">1</property>
-	      <property name="right_attach">2</property>
-	      <property name="top_attach">0</property>
-	      <property name="bottom_attach">1</property>
-	    </packing>
-	  </child>
-
-	  <child>
-	    <widget class="GtkEntry" id="mergeEntry">
-	      <property name="visible">True</property>
-	      <property name="can_focus">True</property>
-	      <property name="editable">True</property>
-	      <property name="visibility">True</property>
-	      <property name="max_length">0</property>
-	      <property name="text" translatable="yes"></property>
-	      <property name="has_frame">True</property>
-	      <property name="invisible_char" translatable="yes">*</property>
-	      <property name="activates_default">False</property>
 	    </widget>
 	    <packing>
 	      <property name="left_attach">0</property>
@@ -140,27 +119,6 @@
 	      <property name="bottom_attach">2</property>
 	      <property name="x_padding">12</property>
 	      <property name="y_padding">6</property>
-	      <property name="x_options">fill</property>
-	      <property name="y_options"></property>
-	    </packing>
-	  </child>
-
-	  <child>
-	    <widget class="GtkButton" id="loadBtn">
-	      <property name="visible">True</property>
-	      <property name="can_focus">True</property>
-	      <property name="label">gtk-open</property>
-	      <property name="use_stock">True</property>
-	      <property name="relief">GTK_RELIEF_NORMAL</property>
-	    </widget>
-	    <packing>
-	      <property name="left_attach">1</property>
-	      <property name="right_attach">2</property>
-	      <property name="top_attach">1</property>
-	      <property name="bottom_attach">2</property>
-	      <property name="y_padding">6</property>
-	      <property name="x_options">fill</property>
-	      <property name="y_options"></property>
 	    </packing>
 	  </child>
 	</widget>

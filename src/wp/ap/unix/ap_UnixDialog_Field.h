@@ -24,7 +24,6 @@
 
 class XAP_UnixFrame;
 
-
 /*****************************************************************/
 
 class AP_UnixDialog_Field: public AP_Dialog_Field

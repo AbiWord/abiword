@@ -20,6 +20,7 @@
 #ifndef XAP_UNIXDIALOG_WINDOWMORE_H
 #define XAP_UNIXDIALOG_WINDOWMORE_H
 
+#include <gtk/gtk.h>
 #include "xap_Dlg_WindowMore.h"
 class XAP_Frame;
 
@@ -37,29 +38,19 @@ public:
 	
 private:
 
-	typedef enum
-	  {
-	    BUTTON_OK,
-	    BUTTON_CANCEL
-	  } ResponseId ;
+	void			event_OK(void);
+	void			event_Cancel(void);
 
-	// callbacks can fire these events
+	static void s_list_dblclicked(GtkTreeView *treeview,
+								  GtkTreePath *arg1,
+								  GtkTreeViewColumn *arg2,
+								  XAP_UnixDialog_WindowMore * me);
 
-	virtual void			event_OK(void);
-	virtual void			event_Cancel(void);
-	virtual void			event_DoubleClick(void);
-
-	static void s_clist_event(GtkWidget * widget,
-				  GdkEventButton * event,
-				  XAP_UnixDialog_WindowMore * dlg) ;
-
-	gint 		_GetFromList(void);
 	GtkWidget * _constructWindow(void);
 	void		_populateWindowData(void);
 	
 	GtkWidget * m_windowMain;
-	GtkWidget * m_clistWindows;
-	
+	GtkWidget * m_listWindows;	
 };
 
 #endif /* XAP_UNIXDIALOG_WINDOWMORE_H */

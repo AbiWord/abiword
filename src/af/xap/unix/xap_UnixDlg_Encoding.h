@@ -20,7 +20,6 @@
 #ifndef XAP_UNIXDIALOG_ENCODING_H
 #define XAP_UNIXDIALOG_ENCODING_H
 
-
 #include "ut_types.h"
 #include "ut_xml.h"
 #include "ut_assert.h"
@@ -42,33 +41,21 @@ public:
 	virtual void			runModal(XAP_Frame * pFrame);
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
-	// callbacks can fire these events
-
- protected:
-
  private:
-
-	typedef enum
-	  {
-	    BUTTON_OK,
-	    BUTTON_CANCEL
-	  } ResponseId ;
-
-	static void s_clist_event(GtkWidget * widget,
-				  GdkEventButton * event,
-				  XAP_UnixDialog_Encoding * dlg) ;
 
 	void event_Ok (void);
 	void event_Cancel (void);
 
-	virtual void	event_DoubleClick(void);
+	static void s_encoding_dblclicked(GtkTreeView *treeview,
+									  GtkTreePath *arg1,
+									  GtkTreeViewColumn *arg2,
+									  XAP_UnixDialog_Encoding * me);
 
 	GtkWidget     * _constructWindow(void);
 	void		_populateWindowData(void);
-	gint 		_getFromList(void);
 	
 	GtkWidget * m_windowMain;
-	GtkWidget * m_clistWindows;
+	GtkWidget * m_listEncodings;
 };
 #endif /* XAP_UNIXDIALOG_ENCODING_H */
 

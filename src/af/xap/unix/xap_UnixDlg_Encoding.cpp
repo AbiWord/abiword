@@ -20,6 +20,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+
 #include "ut_string.h"
 #include "ut_debugmsg.h"
 #include "xap_UnixDialogHelper.h"
@@ -30,7 +31,6 @@
 
 #include "xap_Dialog_Id.h"
 #include "xap_UnixDlg_Encoding.h"
-
 
 XAP_Dialog * XAP_UnixDialog_Encoding::static_constructor(XAP_DialogFactory * pFactory,
 							 XAP_Dialog_Id id)
@@ -48,21 +48,12 @@ XAP_UnixDialog_Encoding::~XAP_UnixDialog_Encoding(void)
 {
 }
 
-/*****************************************************************/
-
-// These are all static callbacks, bound to GTK or GDK events.
-
-void XAP_UnixDialog_Encoding::s_clist_event(GtkWidget * widget,
-					    GdkEventButton * event,
-					    XAP_UnixDialog_Encoding * dlg)
+void XAP_UnixDialog_Encoding::s_encoding_dblclicked(GtkTreeView *treeview,
+													GtkTreePath *arg1,
+													GtkTreeViewColumn *arg2,
+													XAP_UnixDialog_Encoding * me)
 {
-  UT_return_if_fail(widget && event && dlg);
-  
-  // Only respond to double clicks
-  if (event->type == GDK_2BUTTON_PRESS)
-    {
-      dlg->event_DoubleClick();
-    }
+	gtk_dialog_response (GTK_DIALOG(me->m_windowMain), GTK_RESPONSE_OK);
 }
 
 /*****************************************************************/
@@ -71,13 +62,13 @@ void XAP_UnixDialog_Encoding::runModal(XAP_Frame * pFrame)
 {
   // Build the window's widgets and arrange them
   GtkWidget * mainWindow = _constructWindow();
-  
+
   // Populate the window's data items
   _populateWindowData();
   
-  switch ( abiRunModalDialog ( GTK_DIALOG(mainWindow), pFrame, this, BUTTON_CANCEL, false ) )
+  switch ( abiRunModalDialog ( GTK_DIALOG(mainWindow), pFrame, this, GTK_RESPONSE_CANCEL, false ) )
     {
-    case BUTTON_OK:
+    case GTK_RESPONSE_OK:
       event_Ok (); break;
     default:
       event_Cancel (); break;
@@ -87,146 +78,112 @@ void XAP_UnixDialog_Encoding::runModal(XAP_Frame * pFrame)
 
 void XAP_UnixDialog_Encoding::event_Ok(void)
 {
-  // Query the list for its selection.
-  gint row = _getFromList();
+	GtkTreeSelection * selection;
+	GtkTreeIter iter;
+	GtkTreeModel * model;
+
+	gint row = 0;
+
+	selection = gtk_tree_view_get_selection( GTK_TREE_VIEW(m_listEncodings) );
+
+	// if there is no selection, or the selection's data (GtkListItem widget)
+	// is empty, return cancel.  GTK can make this happen.
+	if ( !selection || 
+		 !gtk_tree_selection_get_selected (selection, &model, &iter)
+	   )
+	{
+		_setAnswer (XAP_Dialog_Encoding::a_CANCEL);
+		return;
+	}
+
+	// get the ID of the selected Type
+	gtk_tree_model_get (model, &iter, 1, &row, -1);
   
-  if (row >= 0)
-    _setSelectionIndex(static_cast<UT_uint32>(row));
-  
-  _setEncoding (_getAllEncodings()[row]);
-  _setAnswer (XAP_Dialog_Encoding::a_OK);
+	if (row >= 0) {
+		_setSelectionIndex(static_cast<UT_uint32>(row));
+		_setEncoding (_getAllEncodings()[row]);
+		_setAnswer (XAP_Dialog_Encoding::a_OK);
+	} else {
+		UT_ASSERT_NOT_REACHED();
+		_setAnswer (XAP_Dialog_Encoding::a_CANCEL);
+	}
 }
 
 void XAP_UnixDialog_Encoding::event_Cancel(void)
 {
-  _setAnswer (XAP_Dialog_Encoding::a_CANCEL);
-}
-
-void XAP_UnixDialog_Encoding::event_DoubleClick(void)
-{
-  // Query the list for its selection.	
-  gint row = _getFromList();
-  
-  // If it found something, return with it
-  if (row >= 0)
-    {
-      _setSelectionIndex (static_cast<UT_uint32>(row));
-      gtk_dialog_response ( GTK_DIALOG(m_windowMain), BUTTON_OK ) ;
-    }
+	_setAnswer (XAP_Dialog_Encoding::a_CANCEL);
 }
 
 /*****************************************************************/
 
-gint XAP_UnixDialog_Encoding::_getFromList(void)
-{
-  // Grab the selected index and store it in the member data
-  GList * selectedRow = GTK_CLIST(m_clistWindows)->selection;
-  
-  if (selectedRow)
-    {
-      gint rowNumber = GPOINTER_TO_INT(selectedRow->data);
-      if (rowNumber >= 0)
-	{
-	  // Store the value
-	  return rowNumber;
-	}
-      else
-	{
-	  // We have a selection but no rows in it...
-	  // funny.
-	  UT_ASSERT_NOT_REACHED();
-	  return -1;
-	}
-    }
-  
-  // No selected rows
-  return -1;
-}
-
 GtkWidget * XAP_UnixDialog_Encoding::_constructWindow(void)
 {
-  // This is the top level GTK widget, the window.
-  // It's created with a "dialog" style.
-  GtkWidget *windowMain;
-  
-  // This is the top level organization widget, which packs
-  // things vertically
-  GtkWidget *vboxMain;
-  
-  // The top item in the vbox is a simple label
-  GtkWidget *labelActivate;
-  
-  // The second item in the vbox is a scrollable area
-  GtkWidget *scrollWindows;
-  
-  // The child of the scrollable area is our list of windows
-  GtkWidget *clistWindows;
-  
-  const XAP_StringSet * pSS = m_pApp->getStringSet();
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
+	GtkCellRenderer *renderer;
+	GtkTreeViewColumn *column;
+	
+	// get the path where our glade file is located
+	XAP_UnixApp * pApp = static_cast<XAP_UnixApp*>(m_pApp);
+	UT_String glade_path( pApp->getAbiSuiteAppGladeDir() );
+	glade_path += "/xap_UnixDlg_Encoding.glade";
+	
+	// load the dialog from the glade file
+	GladeXML *xml = abiDialogNewFromXML( glade_path.c_str() );
 
-  windowMain = abiDialogNew ( "encoding dialog", true, pSS->getValueUTF8(XAP_STRING_ID_DLG_UENC_EncTitle).c_str() ) ;
+	// Update our member variables with the important widgets that 
+	// might need to be queried or altered later
+	m_windowMain = glade_xml_get_widget(xml, "windowMain");
+	m_listEncodings = glade_xml_get_widget(xml, "treeview1");
 
-  vboxMain = GTK_DIALOG(windowMain)->vbox ;
+	gtk_window_set_title (GTK_WINDOW(m_windowMain), pSS->getValueUTF8(XAP_STRING_ID_DLG_UENC_EncTitle).c_str());
+	localizeLabelMarkup(glade_xml_get_widget(xml, "label1"), pSS, XAP_STRING_ID_DLG_UENC_EncLabel);
 
-  abiAddStockButton(GTK_DIALOG(windowMain), GTK_STOCK_CANCEL, BUTTON_CANCEL);
-  abiAddStockButton(GTK_DIALOG(windowMain), GTK_STOCK_OK, BUTTON_OK);
-  
-  labelActivate = gtk_label_new (pSS->getValueUTF8(XAP_STRING_ID_DLG_UENC_EncLabel).c_str());
-  gtk_widget_show (labelActivate);
-  gtk_box_pack_start (GTK_BOX (vboxMain), labelActivate, FALSE, TRUE, 0);
-  gtk_label_set_justify (GTK_LABEL (labelActivate), GTK_JUSTIFY_LEFT);
-  gtk_misc_set_alignment (GTK_MISC (labelActivate), 0, 0);
-  gtk_misc_set_padding (GTK_MISC (labelActivate), 10, 5);
-  
-  scrollWindows = gtk_scrolled_window_new(NULL, NULL);
-  gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrollWindows),
-				  GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
-  gtk_widget_show(scrollWindows);
-  gtk_widget_set_usize(scrollWindows, 350, 210);
-  gtk_container_set_border_width(GTK_CONTAINER(scrollWindows), 10);
-  gtk_box_pack_start(GTK_BOX(vboxMain), scrollWindows, TRUE, TRUE, 0);
+	// add a column to our TreeViews
 
-  clistWindows = gtk_clist_new (1);
-  gtk_widget_show (clistWindows);
-  gtk_container_add (GTK_CONTAINER(scrollWindows), clistWindows);
-  gtk_clist_set_column_width (GTK_CLIST (clistWindows), 0, 80);
-  gtk_clist_column_titles_hide (GTK_CLIST (clistWindows));
-
-  /*
-    After we construct our widgets, we attach callbacks to static
-    callback functions so we can respond to their events.  In this
-    dialog, we will want to respond to both buttons (OK and Cancel),
-    double-clicks on the clist, which will be treated like a
-    click on the OK button.
-  */
+	renderer = gtk_cell_renderer_text_new ();
+	column = gtk_tree_view_column_new_with_attributes ("Format",
+													   renderer,
+													   "text", 
+													   0,
+													   NULL);
+	gtk_tree_view_append_column( GTK_TREE_VIEW(m_listEncodings), column);
+	
+	// connect a dbl-clicked signal to the column
+	
+	g_signal_connect_after(G_OBJECT(m_listEncodings),
+						   "row-activated",
+						   G_CALLBACK(s_encoding_dblclicked),
+						   static_cast<gpointer>(this));
   
-  g_signal_connect(G_OBJECT(clistWindows),
-		   "button_press_event",
-		   G_CALLBACK(s_clist_event),
-		   static_cast<gpointer>(this));
-  
-  // Update member variables with the important widgets that
-  // might need to be queried or altered later.
-  
-  m_windowMain   = windowMain;
-  m_clistWindows = clistWindows;
-  
-  return windowMain;
+	return m_windowMain;
 }
 
 void XAP_UnixDialog_Encoding::_populateWindowData(void)
 {
-  // We just do one thing here, which is fill the list with
-  // all the windows.
-  
-  for (UT_uint32 i = 0; i < _getEncodingsCount(); i++)
+	GtkListStore *model;
+	GtkTreeIter iter;
+	
+	model = gtk_list_store_new (2, 
+							    G_TYPE_STRING,
+								G_TYPE_INT);
+	
+	for (UT_uint32 i = 0; i < _getEncodingsCount(); i++)
     {
-      const XML_Char* s = _getAllEncodings()[i];
-      
-      gint row = gtk_clist_append(GTK_CLIST(m_clistWindows), const_cast<gchar **>(&s));
-      gtk_clist_set_row_data(GTK_CLIST(m_clistWindows), row, GINT_TO_POINTER(i));
+		const XML_Char* s = _getAllEncodings()[i];
+		
+		// Add a new row to the model
+		gtk_list_store_append (model, &iter);
+		
+		gtk_list_store_set (model, &iter,
+							0, s,
+							1, i,
+							-1);
     } 
-  
-  // Select the one we're in
-  gtk_clist_select_row(GTK_CLIST(m_clistWindows), _getSelectionIndex(), 0);
+	
+	gtk_tree_view_set_model(GTK_TREE_VIEW(m_listEncodings), reinterpret_cast<GtkTreeModel *>(model));
+	
+	g_object_unref (model);	
+	
+	// now select first item in box
+ 	gtk_widget_grab_focus (m_listEncodings);
 }

@@ -24,7 +24,6 @@
 
 #include "xap_App.h"
 #include "xap_Dlg_Language.h"
-//#include "ut_misc.h"
 
 class XAP_Frame;
 
@@ -40,21 +39,21 @@ public:
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
-protected:
-
-	typedef enum
-	  {
-	    BUTTON_OK,
-	    BUTTON_CANCEL
-	  } ResponseId ;
+private:
 	
-	// these are Glade helper or Glade generated functions
-	GtkWidget * 			get_widget(GtkWidget * widget, gchar * widget_name);
-	virtual GtkWidget *             constructWindow(void);
-	GtkWidget *                     constructWindowContents(GtkWidget *);
+	void event_Ok();
+	void event_Cancel();
 
+	void _populateWindowData();
+
+	static void s_lang_dblclicked(GtkTreeView *treeview,
+								  GtkTreePath *arg1,
+								  GtkTreeViewColumn *arg2,
+								  XAP_UnixDialog_Language * me);
+
+	GtkWidget *             constructWindow();
 	GtkWidget * 			m_pLanguageList;
-
+	GtkWidget *             m_windowMain;
 };
 
 #endif /* XAP_UNIXDIALOG_LANGUAGE_H */

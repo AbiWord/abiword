@@ -1,5 +1,5 @@
 /* AbiSource Application Framework
- * Copyright (C) 1998 -2002 AbiSource, Inc.
+ * Copyright (C) 1998-2002 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -21,6 +21,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <gtk/gtk.h>
+#include <glade/glade.h>
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_string.h"
@@ -31,7 +32,6 @@
 #include "xap_UnixFrameImpl.h"
 #include "gr_UnixGraphics.h"
 
-/*****************************************************************/
 XAP_Dialog * XAP_UnixDialog_Language::static_constructor(XAP_DialogFactory * pFactory,
 							 XAP_Dialog_Id id)
 {
@@ -45,132 +45,167 @@ XAP_UnixDialog_Language::XAP_UnixDialog_Language(XAP_DialogFactory * pDlgFactory
 {
 }
 
+void XAP_UnixDialog_Language::s_lang_dblclicked(GtkTreeView *treeview,
+												GtkTreePath *arg1,
+												GtkTreeViewColumn *arg2,
+												XAP_UnixDialog_Language * me)
+{
+	gtk_dialog_response (GTK_DIALOG(me->m_windowMain), GTK_RESPONSE_OK);
+}
+
 XAP_UnixDialog_Language::~XAP_UnixDialog_Language(void)
 {
 }
 
-GtkWidget * XAP_UnixDialog_Language::constructWindow(void)
+void XAP_UnixDialog_Language::event_Ok()
 {
-  const XAP_StringSet * pSS = m_pApp->getStringSet();
-  GtkWidget *windowLangSelection;
-  GtkWidget *vboxMain;
-  GtkWidget *vboxOuter;
+	GtkTreeSelection * selection;
+	GtkTreeIter iter;
+	GtkTreeModel * model;
+
+	gint row = 0;
+
+	selection = gtk_tree_view_get_selection( GTK_TREE_VIEW(m_pLanguageList) );
+
+	// if there is no selection, or the selection's data (GtkListItem widget)
+	// is empty, return cancel.  GTK can make this happen.
+	if ( !selection || 
+		 !gtk_tree_selection_get_selected (selection, &model, &iter)
+	   )
+	{
+		m_answer = XAP_Dialog_Language::a_CANCEL;
+		return;
+	}
+
+	// get the ID of the selected Type
+	gtk_tree_model_get (model, &iter, 1, &row, -1);
   
-  windowLangSelection = abiDialogNew ( "language dialog", TRUE, pSS->getValueUTF8(XAP_STRING_ID_DLG_ULANG_LangTitle).c_str() ) ;
-  
-  vboxOuter = GTK_DIALOG(windowLangSelection)->vbox ;
-  
-  vboxMain = constructWindowContents(vboxOuter);
-  
-  abiAddStockButton ( GTK_DIALOG(windowLangSelection),
-		      GTK_STOCK_CANCEL, BUTTON_CANCEL ) ;
-  abiAddStockButton ( GTK_DIALOG(windowLangSelection),
-		      GTK_STOCK_OK, BUTTON_OK ) ;
-  return windowLangSelection;
+	if (row >= 0) {
+	  if (!m_pLanguage || UT_stricmp(m_pLanguage, m_ppLanguages[row]))
+	    {
+	      _setLanguage(m_ppLanguages[row]);
+	      m_bChangedLanguage = true;
+		  m_answer = XAP_Dialog_Language::a_OK;
+	    }
+	  else {
+		  m_answer = XAP_Dialog_Language::a_CANCEL;
+	  }
+	} else {
+		UT_ASSERT_NOT_REACHED();
+		m_answer = XAP_Dialog_Language::a_CANCEL;
+	}
 }
 
-// Glade generated dialog, using fixed widgets to closely match
-// the Windows layout, with some changes for color selector
-GtkWidget * XAP_UnixDialog_Language::constructWindowContents(GtkWidget *parent)
+void XAP_UnixDialog_Language::event_Cancel()
 {
-  const XAP_StringSet * pSS = m_pApp->getStringSet();
-  GtkWidget *vboxMain;
-  GtkWidget *frame3;
-  GtkWidget *scrolledwindow1;
-  GtkWidget *viewport1;
-  GtkWidget *langlist;
+	m_answer = XAP_Dialog_Language::a_CANCEL;
+}
 
-  vboxMain = gtk_vbox_new (FALSE, 0);
-  gtk_widget_show (vboxMain);
-  gtk_container_add (GTK_CONTAINER (parent), vboxMain);
+GtkWidget * XAP_UnixDialog_Language::constructWindow(void)
+{
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
+	GtkCellRenderer *renderer;
+	GtkTreeViewColumn *column;
+	
+	// get the path where our glade file is located
+	XAP_UnixApp * pApp = static_cast<XAP_UnixApp*>(m_pApp);
+	UT_String glade_path( pApp->getAbiSuiteAppGladeDir() );
+	glade_path += "/xap_UnixDlg_Language.glade";
+	
+	// load the dialog from the glade file
+	GladeXML *xml = abiDialogNewFromXML( glade_path.c_str() );
 
-  frame3 = gtk_frame_new (pSS->getValueUTF8(XAP_STRING_ID_DLG_ULANG_LangLabel).c_str());
-  gtk_frame_set_shadow_type(GTK_FRAME(frame3), GTK_SHADOW_NONE);
-  gtk_widget_show (frame3);
-  gtk_box_pack_start (GTK_BOX (vboxMain), frame3, TRUE, TRUE, 0);
-  gtk_container_set_border_width (GTK_CONTAINER (frame3), 4);
+	// Update our member variables with the important widgets that 
+	// might need to be queried or altered later
+	m_windowMain = glade_xml_get_widget(xml, "windowMain");
+	m_pLanguageList = glade_xml_get_widget(xml, "treeview1");
 
-  scrolledwindow1 = gtk_scrolled_window_new (NULL, NULL);
-  gtk_widget_show (scrolledwindow1);
-  gtk_container_add (GTK_CONTAINER (frame3), scrolledwindow1);
-  gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolledwindow1), GTK_POLICY_NEVER, GTK_POLICY_ALWAYS);
+	gtk_window_set_title (GTK_WINDOW(m_windowMain), pSS->getValueUTF8(XAP_STRING_ID_DLG_ULANG_LangTitle).c_str());
+	localizeLabelMarkup(glade_xml_get_widget(xml, "label1"), pSS, XAP_STRING_ID_DLG_ULANG_LangLabel);
 
-  viewport1 = gtk_viewport_new (NULL, NULL);
-  gtk_widget_show (viewport1);
-  gtk_container_add (GTK_CONTAINER (scrolledwindow1), viewport1);
+	// add a column to our TreeViews
 
-  langlist = gtk_clist_new (1);
-  gtk_widget_show (langlist);
-  gtk_container_add (GTK_CONTAINER (viewport1), langlist);
-
-  // save out to members for callback and class access
-  m_pLanguageList = langlist;
+	renderer = gtk_cell_renderer_text_new ();
+	column = gtk_tree_view_column_new_with_attributes ("Format",
+													   renderer,
+													   "text", 
+													   0,
+													   NULL);
+	gtk_tree_view_append_column( GTK_TREE_VIEW(m_pLanguageList), column);
+	
+	// connect a dbl-clicked signal to the column
+	
+	g_signal_connect_after(G_OBJECT(m_pLanguageList),
+						   "row-activated",
+						   G_CALLBACK(s_lang_dblclicked),
+						   static_cast<gpointer>(this));
   
-  GTK_WIDGET_SET_FLAGS(langlist, GTK_CAN_FOCUS);
-  
-  return vboxMain;
+	return m_windowMain;
+}
+
+void XAP_UnixDialog_Language::_populateWindowData()
+{
+	GtkListStore *model;
+	GtkTreeIter iter;
+	
+	model = gtk_list_store_new (2, 
+							    G_TYPE_STRING,
+								G_TYPE_INT);
+	
+	for (UT_uint32 i = 0; i < m_iLangCount; i++)
+    {		
+		// Add a new row to the model
+		gtk_list_store_append (model, &iter);
+		
+		gtk_list_store_set (model, &iter,
+							0, m_ppLanguages[i],
+							1, i,
+							-1);
+    } 
+	
+	gtk_tree_view_set_model(GTK_TREE_VIEW(m_pLanguageList), reinterpret_cast<GtkTreeModel *>(model));
+	
+	g_object_unref (model);	
+	
+	// now select first item in box
+ 	gtk_widget_grab_focus (m_pLanguageList);
+	
+	if (m_pLanguage) {
+		gint foundAt = -1;
+		for (UT_uint32 i = 0; i < m_iLangCount; i++)
+		{
+			if (!UT_stricmp(m_pLanguage, m_ppLanguages[i])) {
+				foundAt = i;
+				break;
+			}
+		}  
+		
+		if (foundAt != -1) {
+			GtkTreePath* path = gtk_tree_path_new ();
+			gtk_tree_path_append_index (path, foundAt);
+			
+			gtk_tree_view_set_cursor(GTK_TREE_VIEW(m_pLanguageList),
+									 path, 
+									 gtk_tree_view_get_column (GTK_TREE_VIEW(m_pLanguageList), 0), 
+									 FALSE);
+			
+			gtk_tree_path_free (path);
+		}
+	}
 }
 
 void XAP_UnixDialog_Language::runModal(XAP_Frame * pFrame)
 {
-  // this is used below to grab pointers to
-  // strings inside list elements
-  gchar * text[2] = {NULL, NULL};
-  
   // build the dialog
-  GtkWidget * cf = constructWindow();
-  
-  // make the window big
-  gtk_window_set_default_size(GTK_WINDOW(cf), 300, 400);
+  GtkWidget * cf = constructWindow();    
+  _populateWindowData();  
 
-  // fill the listbox
-  gtk_clist_freeze(GTK_CLIST(m_pLanguageList));
-  gtk_clist_clear(GTK_CLIST(m_pLanguageList));
-
-  for (UT_uint32 k = 0; k < m_iLangCount; k++)
+  switch ( abiRunModalDialog ( GTK_DIALOG(cf), pFrame, this, GTK_RESPONSE_CANCEL, false ) )
     {
-      text[0] = const_cast<gchar *>(m_ppLanguages[k]);
-      gtk_clist_append(GTK_CLIST(m_pLanguageList), text);
-    }
-	
-  gtk_clist_thaw(GTK_CLIST(m_pLanguageList));
-  
-  // Set the defaults in the list boxes according to dialog data
-  gint foundAt = 0;
-  
-  // is this safe with an XML_Char * string?
-  foundAt = searchCList(GTK_CLIST(m_pLanguageList), const_cast<char *>(m_pLanguage));
-  
-  if (foundAt >= 0)
-    {
-      gtk_clist_select_row(GTK_CLIST(m_pLanguageList), foundAt, 0);
-    }
-  
-  switch ( abiRunModalDialog ( GTK_DIALOG(cf), pFrame, this, BUTTON_CANCEL, false ) )
-    {
-    case BUTTON_OK:
-      m_answer = XAP_Dialog_Language::a_OK; break ;
+    case GTK_RESPONSE_OK:
+		event_Ok(); break;
     default:
-      m_answer = XAP_Dialog_Language::a_CANCEL; break ;
-    }
-  
-  if (m_answer == XAP_Dialog_Language::a_OK)
-    {
-      GList * selectedRow = NULL;
-      gint rowNumber = 0;
-      
-      selectedRow = GTK_CLIST(m_pLanguageList)->selection;
-      if (selectedRow)
-	{
-	  rowNumber = GPOINTER_TO_INT(selectedRow->data);
-	  gtk_clist_get_text(GTK_CLIST(m_pLanguageList), rowNumber, 0, text);
-	  UT_ASSERT(text && text[0]);
-	  if (!m_pLanguage || UT_stricmp(m_pLanguage, text[0]))
-	    {
-	      _setLanguage(static_cast<XML_Char*>(text[0]));
-	      m_bChangedLanguage = true;
-	    }
-	}      
+		event_Cancel(); break;
     }
   
   abiDestroyWidget(cf);
