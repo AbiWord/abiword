@@ -765,6 +765,7 @@ void fp_Line::clearScreen(void)
 	{
 		return;
 	}
+	xxx_UT_DEBUGMSG(("fp_Line: Doing clearscreen %x \n",this));
 	UT_sint32 count = m_vecRuns.getItemCount();
 	if(count)
 	{

@@ -2580,11 +2580,12 @@ void FV_View::_drawBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2)
 // See if the whole cell is selected. If so draw it.
 //
 			bCellSelected = pCellLayout->isCellSelected();
+			fp_Container * pNextCon = NULL;
 			if(bCellSelected)
 			{
 				fp_CellContainer * pCellCon = static_cast<fp_CellContainer *>(pCP);
-				fp_Container * pLastCon = pCellCon->drawSelectedCell(pCurRun->getLine());
-				if(pLastCon == NULL)
+				pNextCon = pCellCon->drawSelectedCell(pCurRun->getLine());
+				if(pNextCon == NULL)
 				{
 					fl_BlockLayout * pBlock = pCurRun->getBlock();
 					pBlock = pBlock->getNextBlockInDocument();
@@ -2596,42 +2597,17 @@ void FV_View::_drawBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2)
 					pCurRun = NULL;
 					continue;
 				}
-				fp_Container * pNextCon = pLastCon->getNextContainerInSection();
-				if(pNextCon)
+				if(pNextCon->getContainerType() == FP_CONTAINER_LINE)
 				{
-					if(pNextCon->getContainerType() == FP_CONTAINER_LINE)
-					{
-						pCurRun = static_cast<fp_Line *>(pNextCon)->getFirstRun();
-						continue;
-					}
-					fl_SectionLayout * pSL = pNextCon->getSectionLayout();
-					fl_ContainerLayout * pCL = pSL->getFirstLayout();
-					while(pCL->getContainerType() != FL_CONTAINER_BLOCK)
-					{
-						pCL = pCL->getFirstLayout();
-					}
-					pCurRun = static_cast<fl_BlockLayout *>(pCL)->getFirstRun();
+					pCurRun = static_cast<fp_Line *>(pNextCon)->getFirstRun();
 					continue;
 				}
-				fl_SectionLayout * pSL = pLastCon->getSectionLayout();
-				pSL = static_cast<fl_SectionLayout *>(pSL->getNext());
-				if(pSL == NULL )
+				else
 				{
+					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 					pCurRun = NULL;
 					continue;
 				}
-				if(pSL->getContainerType() == FL_CONTAINER_HDRFTR)
-				{
-					pCurRun = NULL;
-					continue;
-				}
-				fl_ContainerLayout * pCL = pSL->getFirstLayout();
-				while(pCL->getContainerType() != FL_CONTAINER_BLOCK)
-				{
-					pCL = pCL->getFirstLayout();
-				}
-				pCurRun = static_cast<fl_BlockLayout *>(pCL)->getFirstRun();
-				continue;
 			}
 			else
 			{
@@ -3011,7 +2987,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 					UT_sint32 width, UT_sint32 height,
 					bool bDirtyRunsOnly, bool bClip)
 {
-	UT_DEBUGMSG(("FV_View::draw_3 [x %ld][y %ld][w %ld][h %ld][bClip %ld]\n"
+	xxx_UT_DEBUGMSG(("FV_View::draw_3 [x %ld][y %ld][w %ld][h %ld][bClip %ld]\n"
 					 "\t\twith [yScrollOffset %ld][windowHeight %ld]\n",
 					 x,y,width,height,bClip,
 					 m_yScrollOffset,getWindowHeight()));

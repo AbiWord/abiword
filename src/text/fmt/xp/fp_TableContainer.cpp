@@ -183,17 +183,38 @@ void fp_CellContainer::_getBrokenRect(fp_TableContainer * pBroke, fp_Page * &pPa
 				if(pBroke->getMasterTable()->getFirstBrokenTable() == pBroke)
 				{
 					off = pBroke->getMasterTable()->getY();
+					if(iBot > pBroke->getYBottom())
+					{
+						iBot = pBroke->getYBottom();
+					}
 				}
 				else
 				{
 					off = 0;
+					if(iTop < pBroke->getYBreak())
+					{
+						iTop = 0;
+					}
+					else
+					{
+						iTop = iTop - pBroke->getYBreak();
+					}
+					if(iBot > pBroke->getYBottom())
+					{
+						iBot = pBroke->getYBottom() - pBroke->getYBreak();
+					}
+					else
+					{
+						iBot = iBot - pBroke->getYBreak();
+					}
+					xxx_UT_DEBUGMSG(("fp_Tablecontainer:: second broken table col_y %d iTop %d iBot %d m_iTop %d m_iBot %d YBreak %d yBottom %d \n",col_y,iTop,iBot,m_iTopY,m_iBotY,pBroke->getYBreak(),pBroke->getYBottom()));
 				}
 			}
 			else
 			{
 				off = pBroke->getY();
 			}
-			col_y = col_y - pBroke->getYBreak() + off;
+			col_y = col_y + off;
 			if(pBroke->getMasterTable())
 			{
 				off = pBroke->getMasterTable()->getX();
@@ -207,6 +228,11 @@ void fp_CellContainer::_getBrokenRect(fp_TableContainer * pBroke, fp_Page * &pPa
 			iRight += col_x;
 			iTop += col_y;
 			iBot += col_y;
+			xxx_UT_DEBUGMSG(("fp_Tablecontainer:: Final iTop %d iBot %d \n",iTop,iBot));
+		}
+		else
+		{
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		}
 	}
 	else
@@ -244,6 +270,7 @@ void fp_CellContainer::clearScreen(void)
 	{
 		return;
 	}
+	xxx_UT_DEBUGMSG(("Doing cell clearscreen \n"));
 // only clear the embeded containers if no background is set: the background clearing will also these containers
 // FIXME: should work, but doesn't??
 //	if (m_iBgStyle == FS_OFF)
@@ -353,7 +380,7 @@ void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 	UT_Rect bRec;
 	fp_Page * pPage = NULL;
 	_getBrokenRect(pBroke, pPage, bRec);
-	if(bRec.top < 0)
+	if((bRec.top + bRec.height) < 0)
 	{
 		return;
 	}
@@ -421,7 +448,7 @@ void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 //       parent container should be asked to redraw the exposed area
 //		if (background.m_t_background != PP_PropertyMap::background_none)
 		{
-			xxx_UT_DEBUGMSG(("_clear: BRec.top %d \n",bRec.top));
+			xxx_UT_DEBUGMSG(("_clear: BRec.top %d  Brec.height %d \n",bRec.top,bRec.height));
 			getGraphics()->fillRect (page_color,bRec.left,bRec.top,bRec.width,bRec.height);
 		}
 	}
@@ -1141,45 +1168,99 @@ fp_Container * fp_CellContainer::drawSelectedCell(fp_Line * pLine)
 		return NULL;
 	}
 	bool bFound = false;
-
-	while(pBroke && !bFound)
+	bool bEnd = false;
+	UT_sint32 iBroke = 0;
+	while(pBroke && !bEnd)
 	{
-		if(pBroke->isInBrokenTable(this,pLine))
+		if(doesOverlapBrokenTable(pBroke))
 		{
 			bFound = true;
-			break;
+			//
+			// Set the colour to be drawn in the selected cell.
+			//
+			m_cClrSelection = &clrSelBackground;
+			//
+			// Now get a rectangle to calculate draw arguments
+			//
+			UT_Rect bRec;
+			fp_Page * pLinePage;
+			_getBrokenRect(pBroke, pLinePage, bRec);
+			dg_DrawArgs da;
+			da.xoff = bRec.left -getX();
+			if(getY() < pBroke->getYBreak())
+			{
+				//
+				// Have to account for the bit of the cell on the previous page
+				//
+				da.yoff = bRec.top - (pBroke->getYBreak() - getY()) - getY();
+			}
+			else
+			{
+				da.yoff = bRec.top -getY();
+			}
+			da.bDirtyRunsOnly = false;
+			da.pG = pView->getGraphics();
+			drawBroken(&da,pBroke);
+			m_bBgDirty = true;
 		}
+		else if(bFound)
+		{
+			bEnd = true;
+		}
+		iBroke++;
 		pBroke = static_cast<fp_TableContainer *>(pBroke->getNext());
 	}
-	if(!bFound)
+	fp_Container * pLast = NULL;
+	if(getNext())
 	{
-		return NULL;
+		pLast = static_cast<fp_Container *>(static_cast<fp_Container *>(getNext())->getNthCon(0));
+		while(pLast && pLast->getContainerType() !=FP_CONTAINER_LINE)
+		{
+			pLast = static_cast<fp_Container *>(pLast->getNthCon(0));
+		}
 	}
-	fp_Container * pLast = static_cast<fp_Container *>(pLine);
-	while(pLast->getNext() && pBroke->isInBrokenTable(this,pLast))
+	else
 	{
-		pLast = static_cast<fp_Container*>(pLast->getNext());
+		fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(getSectionLayout());
+		pCL = pCL->getNext();
+		if(pCL)
+		{
+			pLast = pCL->getFirstContainer();
+			while(pLast && pLast->getContainerType() !=FP_CONTAINER_LINE)
+			{
+				pLast = static_cast<fp_Container *>(pLast->getNthCon(0));
+			}
+		}
 	}
-	//
-	// Set the colour to be drawn in the selected cell.
-	//
-	m_cClrSelection = &clrSelBackground;
-	//
-	// Now get a rectangle to calculate draw arguments
-	//
-	UT_Rect bRec;
-	fp_Page * pLinePage;
-	_getBrokenRect(pBroke, pLinePage, bRec);
-	dg_DrawArgs da;
-	da.xoff = bRec.left -getX();
-	da.yoff = bRec.top -getY();
-	da.bDirtyRunsOnly = false;
-	da.pG = pView->getGraphics();
-	drawBroken(&da,pBroke);
-	m_bBgDirty = true;
 	return pLast;
 }
 
+/*!
+ * This method returns true if the cell overlaps the supplied broken
+ * table.
+ */
+bool fp_CellContainer::doesOverlapBrokenTable(fp_TableContainer * pBroke)
+{
+	UT_sint32 nextRow = m_iBottomAttach;
+	UT_sint32 yCellBot = 0;
+	if(nextRow <= pBroke->getMasterTable()->getNumRows())
+	{
+		yCellBot = pBroke->getMasterTable()->getYOfRow(nextRow);
+	}
+	else
+	{
+		yCellBot = pBroke->getMasterTable()->getY() + pBroke->getMasterTable()->getHeight();
+	}
+	if((pBroke->getYBreak() <= getY()) && (getY() <= pBroke->getYBottom()))
+	{
+		return true;
+	}
+	if((pBroke->getYBreak() < yCellBot) && (yCellBot <= pBroke->getYBottom()))
+	{
+		return true;
+	}
+	return false;
+}
 
 /*!
  Draw container content visible within the supplied broken table
@@ -1216,19 +1297,19 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 	const UT_Rect * pClipRect = pDA->pG->getClipRect();
 	UT_sint32 ytop,ybot;
 	UT_sint32 i;
-	UT_sint32 imax = static_cast<UT_sint32>((static_cast<UT_uint32>(1<<31)) - 1);
+	UT_sint32 imax = static_cast<UT_sint32>((static_cast<UT_uint32>(1<<29)) - 1);
 	if(pClipRect)
 	{
-		ybot = UT_MAX(pClipRect->height,_getMaxContainerHeight());
+		ybot = UT_MAX(getGraphics()->tlu(pClipRect->height),_getMaxContainerHeight());
 		ytop = pClipRect->top;
-        ybot += ytop + 1;
+		ybot = ybot + ytop + getGraphics()->tlu(1);
 	}
 	else
 	{
 		ytop = 0;
 		ybot = imax;
 	}
-	
+	xxx_UT_DEBUGMSG(("cliprect %x ytop %d ybot %d \n",pClipRect,ytop,ybot));
 	bool bStop = false;
 	bool bStart = false;
 	xxx_UT_DEBUGMSG(("drawBroken: Drawing broken cell %x x %d, y %d width %d height %d ncons %d \n",this,getX(),getY(),getWidth(),getHeight(),count));
@@ -1272,6 +1353,7 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 		UT_Rect bRec;
 		fp_Page * pPage;
 		_getBrokenRect(pBroke, pPage, bRec);
+		xxx_UT_DEBUGMSG(("drawBroke: fill rect: Final top %d bot %d  pBroke %x \n",bRec.top,bRec.top + bRec.height,pBroke));
 		getGraphics()->fillRect(*m_cClrSelection,bRec.left,bRec.top,bRec.width,bRec.height);
 	}
 
@@ -1279,6 +1361,7 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 // Only draw the lines in the clipping region.
 //
 
+	xxx_UT_DEBUGMSG(("number containers %d \n",count));
 	for ( i = 0; (i<count && !bStop); i++)
 	{
 		fp_Container* pContainer = static_cast<fp_Container*>(getNthCon(i));
@@ -1296,6 +1379,7 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 			da.xoff += pContainer->getX() + getX();
 			da.yoff += pContainer->getY() + getY();
 			UT_sint32 ydiff = da.yoff + pContainer->getHeight();
+			xxx_UT_DEBUGMSG(("draw da.yoff %d ytop %d ybot %d \n",da.yoff,ytop,ybot));
 			if((da.yoff >= ytop && da.yoff <= ybot) || (ydiff >= ytop && ydiff <= ybot))
 			{
 //
@@ -1306,22 +1390,23 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 					m_bDrawTop = true;
 				}
 				bStart = true;
+				xxx_UT_DEBUGMSG((" drawBroken drawing line %d da.yoff %d pContainer->getY()  %d \n",i,da.yoff,pContainer->getY()));
 				pContainer->draw(&da);
 			}
 			else if(bStart)
 			{
-				xxx_UT_DEBUGMSG(("SEVIOR: Skipping line: ypos %d height %d ytop %d ybot %d \n",da.yoff,pContainer->getY(),ytop,ybot));
+				xxx_UT_DEBUGMSG(("drawBroken: Skipping line: ypos %d height %d ytop %d ybot %d \n",da.yoff,pContainer->getY(),ytop,ybot));
 				bStop = true;
 			}
 		}
 		else if(bStart)
 		{
-			xxx_UT_DEBUGMSG(("SEVIOR: Skipping line: height %d ytop %d ybot %d \n",pContainer->getY(),ytop,ybot));
+			xxx_UT_DEBUGMSG(("drawBroken: Skipping line: 1 container pos %d ytop %d ybot %d \n",pContainer->getY(),ytop,ybot));
 				bStop = true;
 		}
 		else
 		{
-			xxx_UT_DEBUGMSG(("SEVIOR: Skipping line: height %d ytop %d ybot %d \n",pContainer->getY(),ytop,ybot));
+			xxx_UT_DEBUGMSG(("drawBroken: Skipping line:2  container pos  %d ytop %d ybot %d pBroke %x \n",pContainer->getY(),ytop,ybot,pBroke));
 		}
 	}
 	drawLines(pBroke);
@@ -2603,10 +2688,10 @@ void fp_TableContainer::setY(UT_sint32 i)
 	xxx_UT_DEBUGMSG(("fp_TableContainer: setY set to %d \n",i));
 	if(isThisBroken())
 	{
-		UT_DEBUGMSG(("setY: getMasterTable %x FirstBrokenTable %x this %x \n",getMasterTable(),getMasterTable()->getFirstBrokenTable(),this));
+		xxx_UT_DEBUGMSG(("setY: getMasterTable %x FirstBrokenTable %x this %x \n",getMasterTable(),getMasterTable()->getFirstBrokenTable(),this));
 		if(getMasterTable()->getFirstBrokenTable() != this)
 		{
-			UT_DEBUGMSG(("setY: Later broken table set to %d \n",i));
+			xxx_UT_DEBUGMSG(("setY: Later broken table set to %d \n",i));
 			fp_VerticalContainer::setY(i);
 			return;
 		}
@@ -3320,14 +3405,15 @@ bool fp_TableContainer::isInBrokenTable(fp_CellContainer * pCell, fp_Container *
 	xxx_UT_DEBUGMSG(("Column %x iTop = %d ybreak %d iBot= %d ybottom= %d \n",getColumn(),iTop,iBreak,iBot,iBottom));
 	if(iTop >= iBreak)
 	{
-		if(iBot <= iBottom)
-
+		//		if(iBot <= iBottom)
+		if(iTop < iBottom)
 		{
-			UT_sint32 diff = iBottom - iBot;
-			if(diff >= 0)
-			{
-				return true;
-			}
+			return true;
+			//			UT_sint32 diff = iBottom - iBot;
+			//if(diff >= 0)
+			//{
+			//	return true;
+			//}
 		}
 
 	}

@@ -111,7 +111,7 @@ public:
 	{ m_cClrSelection = NULL; 
 	  m_bLinesDrawn = true;
 	}
-		
+	bool                doesOverlapBrokenTable(fp_TableContainer * pBroke);
 	void		        drawBroken(dg_DrawArgs* pDa, fp_TableContainer * pTab);
 	virtual void		clearScreen(void);
 	void                drawLines(fp_TableContainer * pBroke);
