@@ -44,6 +44,9 @@
 #include "ap_Strings.h"
 #include "xap_EditMethods.h"
 #include "ap_LoadBindings.h"
+#include "xap_DialogFactory.h"
+#include "xap_Dlg_MessageBox.h"
+#include "xap_Dialog_Id.h"
 #include "xap_Menu_ActionSet.h"
 #include "xap_Toolbar_ActionSet.h"
 #include "xav_View.h"
@@ -983,6 +986,64 @@ UT_Bool AP_UnixApp::parseCommandLine(void)
 					// TODO if the user gave us 2 bogus pathnames....
 					kWindowsOpened++;
 					pFirstUnixFrame->loadDocument(NULL, IEFT_Unknown);
+
+					pFirstUnixFrame->raise();
+					
+					XAP_DialogFactory * pDialogFactory
+						= (XAP_DialogFactory *)(pFirstUnixFrame->getDialogFactory());
+					
+					XAP_Dialog_MessageBox * pDialog
+						= (XAP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
+					UT_ASSERT(pDialog);
+					
+					const XAP_StringSet * pSS = pFirstUnixFrame->getApp()->getStringSet();
+					
+					switch (error)
+					{
+					case -301:
+						pDialog->setMessage(pSS->getValue(AP_STRING_ID_MSG_IE_FileNotFound),m_pArgs->m_argv[k]);
+						break;
+						
+					case -302:
+						pDialog->setMessage(pSS->getValue(AP_STRING_ID_MSG_IE_NoMemory),m_pArgs->m_argv[k]);
+						break;
+						
+					case -303:
+						pDialog->setMessage(pSS->getValue(AP_STRING_ID_MSG_IE_UnknownType),m_pArgs->m_argv[k]);
+						break;
+						
+					case -304:
+						pDialog->setMessage(pSS->getValue(AP_STRING_ID_MSG_IE_BogusDocument),m_pArgs->m_argv[k]);
+						break;
+						
+					case -305:
+						pDialog->setMessage(pSS->getValue(AP_STRING_ID_MSG_IE_CouldNotOpen),m_pArgs->m_argv[k]);
+						break;
+							
+					case -306:
+						pDialog->setMessage(pSS->getValue(AP_STRING_ID_MSG_IE_CouldNotWrite),m_pArgs->m_argv[k]);
+						break;
+						
+					case -307:
+						pDialog->setMessage(pSS->getValue(AP_STRING_ID_MSG_IE_FakeType),m_pArgs->m_argv[k]);
+						break;
+						
+					case -311:
+						pDialog->setMessage(pSS->getValue(AP_STRING_ID_MSG_IE_UnsupportedType),m_pArgs->m_argv[k]);
+						break;
+						
+					default:
+						pDialog->setMessage(pSS->getValue(AP_STRING_ID_MSG_ImportError),m_pArgs->m_argv[k]);
+					}
+					pDialog->setButtons(XAP_Dialog_MessageBox::b_O);
+					pDialog->setDefaultAnswer(XAP_Dialog_MessageBox::a_OK);
+					
+					pDialog->runModal(pFirstUnixFrame);
+					
+					XAP_Dialog_MessageBox::tAnswer ans = pDialog->getAnswer();
+					
+					pDialogFactory->releaseDialog(pDialog);
+					
 #else
 					delete pFirstUnixFrame;
 #endif
