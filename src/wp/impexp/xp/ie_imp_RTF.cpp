@@ -295,14 +295,9 @@ UT_Error IE_Imp_RTF::_parseFile(FILE* fp)
 						cNibble = 2;
 						b = 0;
 						m_currentRTFState.m_internalState = RTFStateStore::risNorm;
-						if (ok)  // skip following space if applicable
-						{   
-							unsigned char ch;
-							if (!ReadCharFromFile(&ch))
-								ok = UT_FALSE; 
-							else if (ch != ' ') 
-								SkipBackChar(ch);
-						}   
+                        // actually don't handle the following space since
+                        // this is NOT a delimiter
+						// see bug #886
 					}
 				}
 			}
