@@ -217,7 +217,7 @@ void s_RTF_ListenerWriteDoc::_outputData(const UT_UCSChar * data, UT_uint32 leng
 				// unicode sequence.  when i originally did this, i chose
 				// hex, so i'm not going to change it now.
 				
-				m_pie->_rtf_keyword_hex2("'",*pData);
+				m_pie->_rtf_nonascii_hex2(*pData);
 				pData++;
 			}
 			else

@@ -59,6 +59,7 @@ protected:
 	void				_rtf_close_brace(void);
 	void				_rtf_keyword(const char * szKey);
 	void				_rtf_keyword(const char * szKey, UT_sint32 d);
+	void				_rtf_nonascii_hex2(UT_sint32 d);
 	void				_rtf_keyword_hex2(const char * szKey, UT_sint32 d);
 	void				_rtf_keyword_ifnotdefault(const char * szKey, const char * szValue, UT_sint32 defaultValue);
 	void				_rtf_keyword_ifnotdefault_twips(const char * szKey, const char * szValue, UT_sint32 defaultValue);

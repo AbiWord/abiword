@@ -280,6 +280,17 @@ void IE_Exp_RTF::_rtf_keyword(const char * szKey)
 	m_bLastWasKeyword = UT_TRUE;
 }
 
+/* output a non-ascii char in the RTF stream. */
+void IE_Exp_RTF::_rtf_nonascii_hex2 (UT_sint32 d)
+{
+	write("\\'");
+        char buf[100];
+	sprintf(buf,"%02x",d);
+	write(buf);
+	m_bLastWasKeyword = UT_FALSE;
+}
+
+
 void IE_Exp_RTF::_rtf_keyword(const char * szKey, UT_sint32 d)
 {
 	write("\\");
