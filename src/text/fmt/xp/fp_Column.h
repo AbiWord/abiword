@@ -51,6 +51,7 @@ public:
 	void 				setNext(fp_Column*);
 	void 				setPrev(fp_Column*);
 	void				setPage(fp_Page*);
+	void				setNeedsLayoutUpdate(void);
 	
 	fl_SectionLayout* 	getSectionLayout(void) const;
 	
@@ -100,7 +101,6 @@ public:
 
 protected:
 	UT_uint32 				_getBottomOfLastLine(void) const;
-	void					_setNeedsLayoutUpdate(UT_Bool);
 
 	UT_Bool					m_bNeedsLayout;
 

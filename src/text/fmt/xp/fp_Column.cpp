@@ -185,6 +185,11 @@ void fp_Column::getScreenOffsets(fp_Line* pLine,
 	yoff = my_yoff + pLine->getY();
 }
 
+void fp_Column::setNeedsLayoutUpdate(void)
+{
+	m_bNeedsLayout = UT_TRUE;
+}
+
 void fp_Column::removeLine(fp_Line* pLine)
 {
 	UT_sint32 ndx = m_vecLines.findItem(pLine);

@@ -2088,7 +2088,19 @@ UT_Bool fl_BlockLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChang
 	setAttrPropIndex(pcrxc->getIndexAP());
 
 	// TODO: may want to figure out the specific change and do less work
-	// TODO right, don't reformat anything on a simple align operation.  Just erase, re-align, and draw.
+	fp_Column* pCol = NULL;
+	fp_Line* pLine = m_pFirstLine;
+	while (pLine)
+	{
+		if (pLine->getColumn() != pCol)
+		{
+			pCol = pLine->getColumn();
+			pCol->setNeedsLayoutUpdate();
+		}
+ 
+		pLine = pLine->getNext();
+	}
+	
 	_lookupProperties();
 	format();
 
