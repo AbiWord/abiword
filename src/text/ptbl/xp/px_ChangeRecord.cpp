@@ -1,5 +1,6 @@
 
 #include "ut_types.h"
+#include "ut_debugmsg.h"
 #include "pt_Types.h"
 #include "px_ChangeRecord.h"
 
@@ -22,4 +23,15 @@ PX_ChangeRecord::PX_ChangeRecord(PXType type,
 
 PX_ChangeRecord::~PX_ChangeRecord()
 {
+}
+
+void PX_ChangeRecord::dump(void) const
+{
+#ifdef UT_DEBUG
+	static const char * _a[] = { "insSpan", "delSpan", "insFmt", "delFmt",
+								 "insStrux","delStrux","insObj", "delObj" };
+	
+	UT_DEBUGMSG(("CRec: T[%s] [b %d,%d] [i %d,%d]\n",
+				 (_a[m_type]),m_bMultiStepStart,m_bMultiStepEnd,m_vsIndex,m_indexAP));
+#endif
 }

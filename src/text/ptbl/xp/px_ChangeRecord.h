@@ -24,10 +24,10 @@
 class PX_ChangeRecord
 {
 public:
-	typedef enum _PXType { PXT_InsertSpan, PXT_DeleteSpan,
-						   PXT_InsertFmt, PXT_DeleteFmt,
-						   PXT_InsertStrux, PXT_DeleteStrux,
-						   PXT_InsertObject, PXT_DeleteObject } PXType;
+	typedef enum _PXType { PXT_InsertSpan=0, 	PXT_DeleteSpan=1,
+						   PXT_InsertFmt=2,		PXT_DeleteFmt=3,
+						   PXT_InsertStrux=4,	PXT_DeleteStrux=5,
+						   PXT_InsertObject=6,	PXT_DeleteObject=7 } PXType;
 
 	PX_ChangeRecord(PXType type,
 					UT_Bool bMultiStepStart,
@@ -37,6 +37,8 @@ public:
 					UT_Bool bLeftSide,
 					pt_AttrPropIndex indexAP);
 	virtual ~PX_ChangeRecord();
+
+	virtual void			dump(void) const;
 	
 protected:
 	PXType					m_type;

@@ -24,6 +24,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "px_ChangeRecord.h"
 #include "fl_DocLayout.h"
 #include "fl_SectionLayout.h"
 #include "fp_Page.h"
@@ -229,6 +230,8 @@ UT_Bool FL_DocLayout::populate(PL_StruxFmtHandle sfh,
 							   PX_ChangeRecord * pcr)
 {
 	UT_DEBUGMSG(("FL_DocLayout::populate\n"));
+	pcr->dump();
+
 	return UT_TRUE;
 }
 
@@ -237,6 +240,8 @@ UT_Bool FL_DocLayout::populateStrux(PL_StruxDocHandle sdh,
 									PL_StruxFmtHandle * psfh)
 {
 	UT_DEBUGMSG(("FL_DocLayout::populateStrux\n"));
+	pcr->dump();
+
 	return UT_TRUE;
 }
 
@@ -244,6 +249,8 @@ UT_Bool FL_DocLayout::change(PL_StruxFmtHandle sfh,
 							 PX_ChangeRecord * pcr)
 {
 	UT_DEBUGMSG(("FL_DocLayout::change\n"));
+	pcr->dump();
+
 	return UT_TRUE;
 }
 
@@ -253,6 +260,8 @@ UT_Bool FL_DocLayout::insertStrux(PL_StruxFmtHandle sfh,
 								  PL_StruxFmtHandle * psfh)
 {
 	UT_DEBUGMSG(("FL_DocLayout::insertStrux\n"));
+	pcr->dump();
+
 	return UT_TRUE;
 }
 
