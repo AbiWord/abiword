@@ -1682,6 +1682,16 @@ static UT_Bool s_doPrint(FV_View * pView, UT_Bool bTryToSuppressDialog)
 		UT_uint32 nFromPage, nToPage;
 		(void)pDialog->getDoPrintRange(&nFromPage,&nToPage);
 
+		// TODO is it really okay to clamp the value like this?
+		// TODO we're assuming that the user typed something out of range, and we're silently fixing it.
+
+		if (nToPage > pDocLayout->countPages())
+		{
+			nToPage = pDocLayout->countPages();
+		}
+		
+		UT_ASSERT(nToPage <= pDocLayout->countPages());
+		
 		// TODO add code to handle getDoPrintSelection()
 
 		UT_uint32 nCopies = pDialog->getNrCopies();
