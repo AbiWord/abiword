@@ -23,16 +23,27 @@ echo "Creating aclocal.m4: aclocal -I ac-helpers $ACLOCAL_FLAGS"
 
 aclocal -I ac-helpers $ACLOCAL_FLAGS 2>> autogen.err
 
-echo "Checking for PKG_CHECK_MODULES..."
+if test -f autom4te.cache/requests; then
+    echo "Checking for PKG_CHECK_MODULES in autom4te.cache/requests ..."
+    pkgcheckdef=`grep PKG_CHECK_MODULES autom4te.cache/requests`
+else
+    echo "Checking for PKG_CHECK_MODULES in aclocal.m4 ..."
+    pkgcheckdef=`grep PKG_CHECK_MODULES aclocal.m4 | grep AC_DEFUN`
+fi
 
-pkgcheckdef=`grep PKG_CHECK_MODULES aclocal.m4 | grep AC_DEFUN`
 if test "x$pkgcheckdef" = "x"; then
   echo "Running aclocal -I ac-helpers -I ac-helpers/pkg-config $ACLOCAL_FLAGS"
   (aclocal -I ac-helpers -I ac-helpers/pkg-config $ACLOCAL_FLAGS 2>> autogen.err) || {
     echo "aclocal failed! Unable to continue."
     exit 1
   }
-  pkgcheckdef=`grep PKG_CHECK_MODULES aclocal.m4 | grep AC_DEFUN`
+  if test -f autom4te.cache/requests; then
+      echo "Checking for PKG_CHECK_MODULES in autom4te.cache/requests ..."
+      pkgcheckdef=`grep PKG_CHECK_MODULES autom4te.cache/requests`
+  else
+      echo "Checking for PKG_CHECK_MODULES in aclocal.m4 ..."
+      pkgcheckdef=`grep PKG_CHECK_MODULES aclocal.m4 | grep AC_DEFUN`
+  fi
   if test "x$pkgcheckdef" = "x"; then
     echo ""
     echo "error: PKG_CHECK_MODULES isn't defined"
