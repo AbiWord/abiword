@@ -102,12 +102,12 @@ UT_sint32 UT_HashTable::setEntry(UT_HashTable::UT_HashEntry* pEntry, const char*
 	if (pszRight)
 		pEntry->pszRight = m_pool.addString(pszRight);	// TODO this can fail, right?
 	
-	pEntry->pData = pData;
+	pEntry->pData = pData;				// TODO should someone free this before we overwrite it ??
 
 	return 0;
 }
 
-UT_HashTable::UT_HashEntry* UT_HashTable::findEntry(const char* pszLeft)
+UT_HashTable::UT_HashEntry* UT_HashTable::findEntry(const char* pszLeft) const
 {
 	if (!m_pBuckets)
 	{
@@ -209,7 +209,7 @@ int UT_HashTable::verifySpaceToAddOneEntry()
 	return 0;
 }
 
-UT_uint32 UT_HashTable::hashFunc(const char* p)
+UT_uint32 UT_HashTable::hashFunc(const char* p) const
 {
 	UT_ASSERT(p);
 	unsigned char* q = (unsigned char*) p;

@@ -42,10 +42,10 @@ public:
 	~UT_HashTable();
 	int getEntryCount(void);
 	UT_HashEntry* getNthEntry(int n);
-	UT_HashEntry* findEntry(const char* psLeft);
+	UT_HashEntry* findEntry(const char* psLeft) const;
 
 protected:
-	UT_uint32 hashFunc(const char*);
+	UT_uint32 hashFunc(const char*) const;
 
 	int	verifySpaceToAddOneEntry();
 	int firstAlloc();

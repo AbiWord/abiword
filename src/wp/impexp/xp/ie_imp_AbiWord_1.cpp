@@ -26,6 +26,7 @@
 #include "ut_string.h"
 #include "ie_imp_AbiWord_1.h"
 #include "pd_Document.h"
+#include "ut_bytebuf.h"
 
 /*****************************************************************
 ******************************************************************
@@ -150,13 +151,15 @@ UT_Bool	IE_Imp_AbiWord_1::GetDlgLabels(const char ** pszDesc,
 /*****************************************************************/
 
 #define TT_OTHER		0
-#define TT_DOCUMENT		1
-#define TT_SECTION		2
+#define TT_DOCUMENT		1		// a document <awml>
+#define TT_SECTION		2		// a section <section>
 #define TT_BLOCK		3		// a paragraph <p>
 #define TT_INLINE		4		// inline span of text <c>
 #define TT_IMAGE		5		// an image object <i>
 #define TT_FIELD		6		// a computed field object <f>
 #define TT_BREAK		7		// a forced line-break <br>
+#define TT_DATASECTION	8		// a data section <data>
+#define TT_DATAITEM		9		// a data item <d> within a data section
 
 struct _TokenTable
 {
@@ -172,6 +175,8 @@ static struct _TokenTable s_Tokens[] =
 	{	"i",			TT_IMAGE		},
 	{	"f",			TT_FIELD		},
 	{	"br",			TT_BREAK		},
+	{	"data",			TT_DATASECTION	},
+	{	"d",			TT_DATAITEM		},
 	{	"*",			TT_OTHER		}};	// must be last
 
 #define TokenTableSize	((sizeof(s_Tokens)/sizeof(s_Tokens[0])))
@@ -275,6 +280,23 @@ void IE_Imp_AbiWord_1::_startElement(const XML_Char *name, const XML_Char **atts
 			X_CheckError(m_pDocument->appendSpan(&ucs,1));
 		}
 		return;
+
+	case TT_DATASECTION:
+		X_VerifyParseState(_PS_Doc);
+		m_parseState = _PS_DataSec;
+		// We don't need to notify the piece table of the data section,
+		// it will get the hint when we begin sending data items.
+		return;
+
+	case TT_DATAITEM:
+		X_VerifyParseState(_PS_DataSec);
+		m_parseState = _PS_DataItem;
+		m_currentDataItem.truncate(0);
+		// notify the piece table that we are starting a DataItem.
+		// this is to give it the attrs, we'll send the actual
+		// data after we've seen the end tag.
+		X_CheckError(m_pDocument->createDataItem(atts,&m_currentDataItemHandle));
+		return;
 		
 	case TT_OTHER:
 	default:
@@ -327,6 +349,25 @@ void IE_Imp_AbiWord_1::_endElement(const XML_Char *name)
 		X_VerifyParseState(_PS_Block);
 		return;
 
+	case TT_DATASECTION:
+		X_VerifyParseState(_PS_DataSec);
+		m_parseState = _PS_Doc;
+		return;
+
+	case TT_DATAITEM:
+		X_VerifyParseState(_PS_DataItem);
+		m_parseState = _PS_DataSec;
+		// give the piece table a temporary ByteBuf containing
+		// the DataItem's data.  we assume that this will go
+		// with the last DataItem we started.  It is the piece
+		// table's responsibility to make a copy of this data
+		// if it wants it.
+		//
+		// we set the flag true to indicate that we have Base64
+		// data rather than plain data.
+		X_CheckError(m_pDocument->setDataItemData(m_currentDataItemHandle,UT_TRUE,&m_currentDataItem));
+		return;
+		
 	case TT_OTHER:
 	default:
 		UT_DEBUGMSG(("Unknown end tag [%s]\n",name));
@@ -338,47 +379,81 @@ void IE_Imp_AbiWord_1::_endElement(const XML_Char *name)
 void IE_Imp_AbiWord_1::_charData(const XML_Char *s, int len)
 {
 	X_EatIfAlreadyError();				// xml parser keeps running until buffer consumed
-	
-	if (!X_TestParseState(_PS_Block))
-	{
-		xxx_UT_DEBUGMSG(("charData DISCARDED [length %d]\n",len));
-		return;
-	}
-	
-	// TODO fix this to use proper methods to convert XML_Char to UT_UCSChar
 
-	UT_ASSERT(sizeof(XML_Char) != sizeof(UT_UCSChar));
+	switch (m_parseState)
 	{
-		UT_UCSChar * xx = new UT_UCSChar[len];
-		int iConverted = 0;
-		/*
-		  This code is intended to convert a single EOL to a single space.
-		  */
-		for (int k=0; k<len; k++)
+	default:
 		{
-			if (13 == s[k])			// CR
+			xxx_UT_DEBUGMSG(("charData DISCARDED [length %d]\n",len));
+			return;
+		}
+		
+	case _PS_Block:
+		{
+			// TODO fix this to use proper methods to convert XML_Char to UT_UCSChar
+
+			UT_ASSERT(sizeof(XML_Char) != sizeof(UT_UCSChar));
+
+			UT_UCSChar * xx = new UT_UCSChar[len];
+			int iConverted = 0;
+
+			// This code is intended to convert a single EOL to a single space.
+
+			for (int k=0; k<len; k++)
 			{
-				xx[iConverted++] = 32;	// space
-				if (10 == s[k+1])
+				if (13 == s[k])			// CR
 				{
-					k++;			// skip the LF
+					xx[iConverted++] = 32;	// space
+					if (10 == s[k+1])
+					{
+						k++;			// skip the LF
+					}
+				}
+				else if (10 == s[k])
+				{
+					xx[iConverted++] = 32;	// space
+				}
+				else
+				{
+					xx[iConverted++] = s[k];
 				}
 			}
-			else if (10 == s[k])
-			{
-				xx[iConverted++] = 32;	// space
-			}
-			else
-			{
-				xx[iConverted++] = s[k];
-			}
+			
+			UT_Bool bResult = m_pDocument->appendSpan(xx,iConverted);
+			delete xx;
+			X_CheckError(bResult);
+
+			return;
 		}
 
-		UT_Bool bResult = m_pDocument->appendSpan(xx,iConverted);
-		delete xx;
-		X_CheckError(bResult);
+	case _PS_DataItem:
+		{
+#define MyIsWhite(c)			(((c)==' ') || ((c)=='\t') || ((c)=='\n') || ((c)=='\r'))
+			
+			// DataItem data consists of Base64 encoded data with
+			// white space added for readability.  strip out any
+			// white space and put the rest in the ByteBuf.
+
+			UT_ASSERT((sizeof(XML_Char) == sizeof(UT_Byte)));
+			
+			const UT_Byte * ss = (UT_Byte *)s;
+			const UT_Byte * ssEnd = ss + len;
+			while (ss < ssEnd)
+			{
+				while ((ss < ssEnd) && MyIsWhite(*ss))
+					ss++;
+				UT_uint32 k=0;
+				while ((ss+k < ssEnd) && ( ! MyIsWhite(ss[k])))
+					k++;
+				if (k > 0)
+					m_currentDataItem.ins(m_currentDataItem.getLength(),ss,k);
+
+				ss += k;
+			}
+
+			return;
+		}
 	}
-	return;
 }
 
 /*****************************************************************/

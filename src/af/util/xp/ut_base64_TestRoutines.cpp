@@ -70,8 +70,8 @@ static UT_TestStatus t_test_001(void)
 	if (b3.getLength() != b1.getLength())
 		return UT_Test_Fail;
 
-	UT_Byte * p1 = b1.getPointer(0);
-	UT_Byte * p3 = b3.getPointer(0);
+	const UT_Byte * p1 = b1.getPointer(0);
+	const UT_Byte * p3 = b3.getPointer(0);
 	for (k=0; (k<NrElements(array1)); k++)
 		if (p1[k] != p3[k])
 			return UT_Test_Fail;
@@ -124,8 +124,8 @@ static UT_TestStatus t_test_002(void)
 	if (b3.getLength() != b1.getLength())
 		return UT_Test_Fail;
 
-	UT_Byte * p1 = b1.getPointer(0);
-	UT_Byte * p3 = b3.getPointer(0);
+	const UT_Byte * p1 = b1.getPointer(0);
+	const UT_Byte * p3 = b3.getPointer(0);
 	for (k=0; (k<NrElements(array1)); k++)
 		if (p1[k] != p3[k])
 			return UT_Test_Fail;
@@ -179,8 +179,8 @@ static UT_TestStatus t_test_003(void)
 	if (b3.getLength() != b1.getLength())
 		return UT_Test_Fail;
 
-	UT_Byte * p1 = b1.getPointer(0);
-	UT_Byte * p3 = b3.getPointer(0);
+	const UT_Byte * p1 = b1.getPointer(0);
+	const UT_Byte * p3 = b3.getPointer(0);
 	for (k=0; (k<NrElements(array1)); k++)
 		if (p1[k] != p3[k])
 			return UT_Test_Fail;

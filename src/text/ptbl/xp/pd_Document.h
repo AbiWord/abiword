@@ -26,12 +26,14 @@
 #include <stdio.h>
 #include "ut_types.h"
 #include "ut_vector.h"
+#include "ut_alphahash.h"
 #include "xad_Document.h"
 #include "xmlparse.h"
 #include "pt_Types.h"
 #include "pl_Listener.h"
 #include "ie_types.h"
 
+class UT_ByteBuf;
 class UT_GrowBuf;
 class pt_PieceTable;
 class PP_AttrProp;
@@ -125,6 +127,10 @@ public:
 
 	void					clearTemporarySpanFmt(void);
 
+	UT_Bool					createDataItem(const XML_Char ** attributes, void ** ppHandle);
+	UT_Bool					setDataItemData(void * pHandle, UT_Bool bBase64, const UT_ByteBuf * pByteBuf);
+	UT_Bool					getDataItemDataByName(const char * szName, const UT_ByteBuf ** ppByteBuf) const;
+	
 #ifdef PT_TEST
 	void					__dump(FILE * fp) const;
 #endif
@@ -134,6 +140,8 @@ protected:
 
 	pt_PieceTable *			m_pPieceTable;
 	UT_Vector				m_vecListeners;
+
+	UT_AlphaHashTable		m_hashDataItems;
 };
 
 

@@ -140,7 +140,7 @@ UT_uint32 UT_ByteBuf::getLength(void) const
 	return m_iSize;
 }
 
-UT_Byte * UT_ByteBuf::getPointer(UT_uint32 position) const
+const UT_Byte * UT_ByteBuf::getPointer(UT_uint32 position) const
 {
 	// return a read-only pointer to the buffer
 	

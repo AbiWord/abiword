@@ -62,7 +62,7 @@ UT_Bool UT_Base64Encode(UT_ByteBuf * pDest, const UT_ByteBuf * pSrc)
 		return UT_FALSE;
 
 	UT_uint32 kSrc, kDest;
-	UT_Byte * p = pSrc->getPointer(0);
+	const UT_Byte * p = pSrc->getPointer(0);
 	for (kSrc=0, kDest=0; (kSrc < lenSrc); kSrc+=3, kDest+=4)
 	{
 		// encode each group of 3 bytes in the input into 4 bytes in the output.
@@ -103,7 +103,7 @@ UT_Bool UT_Base64Decode(UT_ByteBuf * pDest, const UT_ByteBuf * pSrc)
 	// compute the destination length and deal with pad bytes
 	
 	UT_uint32 lenDest = ((lenSrc + 3) / 4) * 3;
-	UT_Byte * p = pSrc->getPointer(0);
+	const UT_Byte * p = pSrc->getPointer(0);
 	if (p[lenSrc-1] == s_pad)
 	{
 		lenDest--;

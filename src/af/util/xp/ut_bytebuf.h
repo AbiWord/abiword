@@ -40,7 +40,7 @@ public:
 	UT_Bool				overwrite(UT_uint32 position, UT_Byte * pValue, UT_uint32 length);
 	void				truncate(UT_uint32 position);
 	UT_uint32			getLength(void) const;
-	UT_Byte *			getPointer(UT_uint32 position) const;				/* temporary use only */
+	const UT_Byte *		getPointer(UT_uint32 position) const;				/* temporary use only */
 	
 protected:
 	UT_Bool				_byteBuf(UT_uint32 spaceNeeded);

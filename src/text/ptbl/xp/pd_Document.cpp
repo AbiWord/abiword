@@ -26,6 +26,8 @@
 #include "ut_string.h"
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
+#include "ut_bytebuf.h"
+#include "ut_base64.h"
 #include "pd_Document.h"
 #include "xad_Document.h"
 #include "pt_PieceTable.h"
@@ -35,7 +37,7 @@
 #include "pf_Frag_Strux.h"
 
 PD_Document::PD_Document()
-	: AD_Document()
+	: AD_Document(), m_hashDataItems(11)
 {
 	m_pPieceTable = NULL;
 }
@@ -483,4 +485,86 @@ UT_Bool PD_Document::redoCmd(UT_uint32 repeatCount)
 	return UT_TRUE;
 }
 
+///////////////////////////////////////////////////////////////////
+// DataItems represent opaque (and probably binary) data found in
+// the data-section of the document.  These are used, for example,
+// to store the actual data of an image.  The inline image tag has
+// a reference to a DataItem.
+
+UT_Bool PD_Document::createDataItem(const XML_Char ** attributes, void ** ppHandle)
+{
+	// create space for a new DataItem and return a handle for it.
+	// we will get the actual data for it later.
+
+	UT_ASSERT(sizeof(XML_Char) == sizeof(char));
+	
+	const char * pValue;
+	
+	if (!attributes || !*attributes || (UT_XML_stricmp(attributes[0],"name")!=0))
+		return UT_FALSE;				// no name attribute
+	
+	pValue = attributes[1];
+	if (!pValue || !*pValue || (getDataItemDataByName(pValue,NULL) == UT_TRUE))
+		return UT_FALSE;				// invalid or duplicate name
+
+	if (m_hashDataItems.addEntry(pValue,NULL,NULL) == -1)
+		return UT_FALSE;				// memory problem
+
+	UT_AlphaHashTable::UT_HashEntry * pHashEntry = m_hashDataItems.findEntry(pValue);
+	UT_ASSERT(pHashEntry);
+	
+	*ppHandle = (void *)pHashEntry;
+	return UT_TRUE;
+}
+
+UT_Bool PD_Document::setDataItemData(void * pHandle, UT_Bool bBase64, const UT_ByteBuf * pByteBuf)
+{
+	// set the actual DataItem's data using the contents of the ByteBuf.
+	// we must copy it if we want to keep it.  bBase64 is TRUE if the
+	// data is Base64 encoded.  pHandle is the value we gave the caller
+	// when it called appendDataItem().
+
+	UT_ASSERT(pHandle && pByteBuf);
+
+	UT_AlphaHashTable::UT_HashEntry * pHashEntry = (UT_AlphaHashTable::UT_HashEntry *)pHandle;
+	// we cannot change a DataItem after it has been created (because of UNDO/REDO).
+	// therefore, we can only set this value once.
+	UT_ASSERT(pHashEntry->pData == NULL);
+	
+	UT_ByteBuf * pNew = new UT_ByteBuf();
+	if (!pNew)
+		return UT_FALSE;
+	
+	if (bBase64)
+	{
+		if (!UT_Base64Decode(pNew,pByteBuf))
+			goto Failed;
+	}
+	else
+	{
+		if (!pNew->ins(0,pByteBuf->getPointer(0),pByteBuf->getLength()))
+			goto Failed;
+	}
+
+	return (m_hashDataItems.setEntry(pHashEntry,NULL,(void *)pNew) == 0);
+
+Failed:
+	if (pNew)
+		delete pNew;
+	return UT_FALSE;
+}
+
+UT_Bool PD_Document::getDataItemDataByName(const char * szName, const UT_ByteBuf ** ppByteBuf) const
+{
+	UT_ASSERT(szName && *szName);
+	
+	UT_AlphaHashTable::UT_HashEntry * pHashEntry = m_hashDataItems.findEntry(szName);
+	if (!pHashEntry)
+		return UT_FALSE;
+
+	if (ppByteBuf)
+		*ppByteBuf = (const UT_ByteBuf *)pHashEntry->pData;
+
+	return UT_TRUE;
+}
 

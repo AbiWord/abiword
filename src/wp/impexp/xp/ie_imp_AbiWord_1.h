@@ -26,6 +26,7 @@
 #include "ut_vector.h"
 #include "ut_stack.h"
 #include "ie_imp.h"
+#include "ut_bytebuf.h"
 class PD_Document;
 
 // The importer/reader for AbiWord file format version 1.
@@ -60,13 +61,19 @@ protected:
 	typedef enum _parseState { _PS_Init,
 							   _PS_Doc,
 							   _PS_Sec,
-							   _PS_Block } ParseState;
+							   _PS_Block,
+							   _PS_DataSec,
+							   _PS_DataItem,
+	} ParseState;
 
 	IEStatus			m_iestatus;
 	ParseState			m_parseState;
 
 	UT_Vector			m_vecInlineFmt;
 	UT_Stack			m_stackFmtStartIndex;
+
+	UT_ByteBuf			m_currentDataItem;
+	void *				m_currentDataItemHandle;
 };
 
 #endif /* IE_IMP_ABIWORD_1_H */
