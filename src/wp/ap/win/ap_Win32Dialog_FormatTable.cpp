@@ -146,6 +146,7 @@ BOOL AP_Win32Dialog_FormatTable::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM 
 	int x, y;	
 	UT_uint32 w,h;
 	RECT rect;
+	int nItem;
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	DWORD dwColor = GetSysColor(COLOR_BTNFACE);	
 	UT_RGBColor Color(GetRValue(dwColor),GetGValue(dwColor),GetBValue(dwColor));
@@ -159,11 +160,12 @@ BOOL AP_Win32Dialog_FormatTable::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM 
 	/* Localise controls*/
 	_DSX(FORMATTABLE_BTN_CANCEL,		DLG_Close);
 	_DSX(FORMATTABLE_BTN_APPLY,			DLG_Apply);
-	_DS(FORMATTABLE_TEXT_BACKGROUND,	DLG_FormatTable_Background);
+	_DS(FORMATTABLE_TEXT_BACKGROUND,	DLG_FormatTable_Color);
 	_DS(FORMATTABLE_TEXT_PREVIEW,		DLG_FormatTable_Preview);
-	_DS(FORMATTABLE_TEXT_BORDER,		DLG_FormatTable_Border_Color);
-	_DS(FORMATTABLE_TEXT_BORDERS, 		DLG_FormatTable_Borders);
+	_DS(FORMATTABLE_TEXT_BORDERS,		DLG_FormatTable_Border_Color);
+	_DS(FORMATTABLE_TEXT_BORDER, 		DLG_FormatTable_Color);
 	_DS(FORMATTABLE_TEXT_BACKGROUNDS, 	DLG_FormatTable_Background);
+	_DS(FORMATTABLE_TEXT_APPLYTO,	 	DLG_FormatTable_Apply_To);
 	
 	SetWindowText(hWnd, pSS->getValue(AP_STRING_ID_DLG_FormatTableTitle));	
 	
@@ -193,8 +195,24 @@ BOOL AP_Win32Dialog_FormatTable::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM 
 	CheckDlgButton(m_hwndDlg, AP_RID_DIALOG_FORMATTABLE_BMP_BOTTOM, getBottomToggled() ? BST_CHECKED: BST_UNCHECKED);
 	CheckDlgButton(m_hwndDlg, AP_RID_DIALOG_FORMATTABLE_BMP_RIGHT, getRightToggled() ? BST_CHECKED: BST_UNCHECKED);
 	CheckDlgButton(m_hwndDlg, AP_RID_DIALOG_FORMATTABLE_BMP_LEFT, getLeftToggled() ? BST_CHECKED: BST_UNCHECKED);
-	
+
+	/* Combo Values for Applyto*/
+	HWND hCombo = GetDlgItem(hWnd, AP_RID_DIALOG_FORMATTABLE_COMBO_APPLYTO);
+
+	nItem = SendMessage(hCombo, CB_ADDSTRING, 0, (WPARAM) pSS->getValue(AP_STRING_ID_DLG_FormatTable_Apply_To_Selection));    			
+	SendMessage(hCombo, CB_SETITEMDATA, nItem, FORMAT_TABLE_SELECTION);
+
+	nItem = SendMessage(hCombo, CB_ADDSTRING, 0, (WPARAM) pSS->getValue(AP_STRING_ID_DLG_FormatTable_Apply_To_Row));    			
+	SendMessage(hCombo, CB_SETITEMDATA, nItem, FORMAT_TABLE_ROW);
+
+	nItem = SendMessage(hCombo, CB_ADDSTRING, 0, (WPARAM) pSS->getValue(AP_STRING_ID_DLG_FormatTable_Apply_To_Column));    			
+	SendMessage(hCombo, CB_SETITEMDATA, nItem, FORMAT_TABLE_COLUMN);
+
+	nItem = SendMessage(hCombo, CB_ADDSTRING, 0, (WPARAM) pSS->getValue(AP_STRING_ID_DLG_FormatTable_Apply_To_Table));    			
+	SendMessage(hCombo, CB_SETITEMDATA, nItem, FORMAT_TABLE_TABLE);
 			
+	SendMessage(hCombo, CB_SETCURSEL, 0, 0);    			
+
 	XAP_Win32DialogHelper::s_centerDialog(hWnd);			
 	return 1; 
 }
@@ -294,16 +312,30 @@ BOOL AP_Win32Dialog_FormatTable::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPa
 			}
 
 			return 1;
-		}	
-			
+		}			
+		
 		case AP_RID_DIALOG_FORMATTABLE_BTN_CANCEL:			
 			m_answer = AP_Dialog_FormatTable::a_CLOSE;
 			destroy();
+			EndDialog(hWnd,0);
 			return 1;
 
 		case AP_RID_DIALOG_FORMATTABLE_BTN_APPLY:
+		{
+			int nSelected, nData = FORMAT_TABLE_SELECTION;
+
+			HWND hCombo = GetDlgItem(hWnd, AP_RID_DIALOG_FORMATTABLE_COMBO_APPLYTO);
+
+			nSelected = SendMessage(hCombo, CB_GETCURSEL, 0, 0);					
+
+			if (nSelected!=CB_ERR)			
+				nData  = SendMessage(hCombo, CB_GETITEMDATA, nSelected, 0);
+
+			setApplyFormatTo((_FormatTable) nData);
+
 			m_answer = AP_Dialog_FormatTable::a_OK;
 			applyChanges();			
+		}
 			return 1;			
 			
 		default:							// we did not handle this notification 
