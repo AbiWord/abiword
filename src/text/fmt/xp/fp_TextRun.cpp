@@ -253,6 +253,11 @@ void fp_TextRun::lookupProperties(void)
 		m_iDirection = 0;
 		//m_pLine->orDirectionsUsed(FP_LINE_DIRECTION_USED_LTR);
 	}
+	else if(!UT_stricmp(pszDirection, "ontrl"))
+	{
+		m_iDirection = -3;
+		//m_pLine->orDirectionsUsed(FP_LINE_DIRECTION_USED_LTR);
+	}
 	else
 	{
 		m_iDirection = -1; //whitespace
@@ -1926,21 +1931,8 @@ void fp_TextRun::setDirection(UT_sint32 dir)
 		{
 			UT_UCSChar firstChar;
 			getCharacter(0, firstChar);
-
-			switch (isUCharRTL(firstChar))
-			{
-	    		case 1:
-	        		m_iDirection = 1;
-	        		break;
-	        		
-	    		case 0:
-	        		m_iDirection = 0;
-	        		break;
-	        		
-		    	default:
-		        	m_iDirection = -1;
-  			}
- 			
+			
+			m_iDirection = isUCharRTL(firstChar);
 		}
 		else
 		{

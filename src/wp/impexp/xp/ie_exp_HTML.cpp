@@ -679,8 +679,20 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 				|| pAP->getProperty("margin-top", szValue)
 				|| pAP->getProperty("margin-left", szValue)
 				|| pAP->getProperty("margin-right", szValue)
-				|| pAP->getProperty("text-indent", szValue)) )
+				|| pAP->getProperty("text-indent", szValue) 
+#ifdef BIDI_ENABLED
+				|| pAP->getProperty("dom-dir", szValue)
+#endif
+))
 		{
+#ifdef BIDI_ENABLED
+			if(pAP->getProperty("dom-dir", szValue))
+			{
+				m_pie->write(" dir=\"");
+				m_pie->write((char*)szValue);
+				m_pie->write("\"");
+			}
+#endif
 			bool validProp = false;
 			if(pAP->getProperty("text-align", szValue))
 			{
@@ -863,11 +875,13 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 	
 	bool span = false;
 	bool textD = false;
+#ifdef BIDI_ENABLED
+	bool bDir = false;
+#endif
 	
 	if (bHaveProp && pAP)
 	{
 		const XML_Char * szValue;
-		
 		if (
 			(pAP->getProperty("font-weight", szValue))
 			&& !UT_strcmp(szValue, "bold")
@@ -1162,10 +1176,39 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 		}
 
 		m_bInSpan = true;
+#ifdef BIDI_ENABLED
+/*
+	if the dir-override is set, we will output the dir property; however,
+	this property cannot be within a style sheet, so anything that needs
+	to be added to this code and belongs withing a style property must
+	be above us; further it should be noted that there is a good chance 
+	that the html browser will not handle it correctly. For instance IE 
+	will take dir=rtl as an indication that the span should have rtl 
+	placement on a line, but it will ignore this value when printing the 
+	actual span.
+*/
+		if(!span && pAP->getProperty("dir-override", szValue))
+		{
+		    m_pie->write("<span dir=\"");
+			m_pie->write(szValue);
+			bDir = true;
+			span = true;
+		}
 
+#endif
 		if (span)
 		{
 			m_pie->write("\"");
+#ifdef BIDI_ENABLED
+			if (!bDir && pAP->getProperty("dir-override", szValue))
+			{
+			    m_pie->write(" dir=\"");
+				m_pie->write(szValue);
+				bDir = true;
+				m_pie->write("\"");
+			}
+#endif
+
 			if(szStyle)
 			{
 				m_pie->write(" class=\"");

@@ -504,6 +504,9 @@ void IE_Imp_MsWord_97::_appendChar (UT_UCSChar ch)
 			case -1:
 					props += "dir:ntrl";
 					break;
+			case -3:
+					props += "dir:ontrl";
+					break;
 			default:
 					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		}

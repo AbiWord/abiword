@@ -21,6 +21,7 @@ This is an interface between the FriBiDi library tables and AbiWord */
 #ifndef ABIFRIBIDI_H
 
 #include "ut_types.h"
+#include <stdlib.h>
 
 #define FriBidiChar UT_UCSChar
 
@@ -39,6 +40,7 @@ typedef enum
   FRIBIDI_TYPE_BS  = 0x08000000, /* Block separator */
   FRIBIDI_TYPE_SS  = 0x09000000, /* Segment separator */
   FRIBIDI_TYPE_WS  = 0x0A000000, /* Whitespace */
+  /*FRIBIDI_ABI_TYPE_BR  = 0x0B000000, Brackets, braces, etc. */
   FRIBIDI_TYPE_CTL = 0x10000090, /* Control units */
   FRIBIDI_TYPE_ON  = 0x80000009,  /* Other Neutral */
 
@@ -61,6 +63,38 @@ typedef enum
 
 #undef gint
 
+struct dir_table{
+  FriBidiChar      first, last;
+  FriBidiCharType  char_type;
+} ;
+
+struct mirr_table{
+     FriBidiChar ch, mirrored_ch;
+} ;
+
+static int s_cmpDir(const void * p1, const void *p2)
+{
+	FriBidiChar * f1 = (FriBidiChar *)p1;
+	dir_table   * f2 = (dir_table *)p2;
+	if(f2->first > *f1)
+		return -1;
+	if(f2->last < *f1)
+		return 1;
+		
+	return 0;
+}
+
+static int s_cmpMirr(const void * p1, const void *p2)
+{
+	FriBidiChar * f1 = (FriBidiChar *)p1;
+	mirr_table   * f2 = (mirr_table *)p2;
+	if(f2->ch > *f1)
+		return -1;
+	if(f2->ch < *f1)
+		return 1;
+		
+	return 0;
+}
 
 //if the following line is uncommented a-z will be treated as ltr, A-Z as rtl and
 //space, tab and digits as directionally neutral.
@@ -80,33 +114,45 @@ UT_sint32 isUCharRTL(UT_UCSChar c)
     else
     	return (0);
 #else
-    for (UT_sint32 i = 0; i < nFriBidiPropertyList; i++)
-    {
-      if((c >= FriBidiPropertyList[i].first) && (c <= FriBidiPropertyList[i].last))
-      {
-         switch (FriBidiPropertyList[i].char_type)
-         {
-             case FRIBIDI_TYPE_LTR:
-             case FRIBIDI_TYPE_WL:
-             case FRIBIDI_TYPE_EN:
-                 //UT_DEBUGMSG(("returning %d\n", 0));
-                 return (0);
 
-             case FRIBIDI_TYPE_RTL:
-                  FRIBIDI_TYPE_WR:
-                  FRIBIDI_TYPE_AN:
-                 //UT_DEBUGMSG(("returning %d\n", 1));
-                 return (1);
+	dir_table * d = (dir_table *) bsearch(&c,&FriBidiPropertyList[0],nFriBidiPropertyList,sizeof(dir_table), s_cmpDir);
+	if(d)
+	{
+		switch (d->char_type)
+		{
+			case FRIBIDI_TYPE_LTR:
+  			case FRIBIDI_TYPE_WL:
+	    	case FRIBIDI_TYPE_EN:
+    	 	//UT_DEBUGMSG(("returning %d\n", 0));
+      			return (0);
 
-             default:
-                 //UT_DEBUGMSG(("returning %d\n", -1));
-                 return (-1);
-         }
-      }
-    }
-    UT_ASSERT((UT_SHOULD_NOT_HAPPEN));
-    return (-1);
+	       	case FRIBIDI_TYPE_RTL:
+    	    case FRIBIDI_TYPE_WR:
+        	case FRIBIDI_TYPE_AN:
+	        //UT_DEBUGMSG(("returning %d\n", 1));
+    	    	return (1);
+			
+			case FRIBIDI_TYPE_WS:
+				return (-1);
+   			default:
+     		//UT_DEBUGMSG(("returning %d\n", -1));
+      			return (-3);
+		}
+	}
+	else
+	{
+    	UT_ASSERT((UT_SHOULD_NOT_HAPPEN));
+	    return (-1);
+	}
 #endif
 }
 
+UT_UCSChar getMirrorChar(UT_UCSChar c)
+{
+	mirr_table * m = (mirr_table*) bsearch(&c,&FriBidiMirroredChars[0],nFriBidiMirroredChars, sizeof(mirr_table), s_cmpMirr);
+	if(m)
+		return (UT_UCSChar) m->mirrored_ch;
+	else
+		return (UT_UCSChar) 0;
+}
 #endif

@@ -1878,14 +1878,31 @@ void fp_Line::splitRunsAtSpaces(void)
 }
 
 #ifdef BIDI_ENABLED
-//BIDI specific functions
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+//
+// BIDI specific functions
+//
 
-/* creates a map for conversion from visual to logical position */
+/*
+	Creates a map for conversion from visual to logical position.
+	
+	There are four types of runs with respect to their direction:
+	ltr, rtl, neutral (whitespace), other netural (e.g. brackets)
+	
+	In order to organise the line correctly the latter two types
+	need to be assigned a temporary ltr or rtl direction from their
+	context. This is that hard bit that takes the longest.
+	
+	Once this is done, the visual order of the runs can be
+	calculated.
+*/
 
 UT_sint32 fp_Line::_createMapOfRuns()
 {
 	//UT_DEBUGMSG(("_createMapOfRuns\n"));
 	UT_uint32 i=0;
+	bool bContainsOtherNtrl = false;
 
 	if(!m_iRunsRTLcount)
 	{
@@ -1959,7 +1976,7 @@ UT_sint32 fp_Line::_createMapOfRuns()
 			UT_sint32 RTLdominant = m_pBlock->getDominantDirection();
 			UT_sint32 iRunDirection = ((fp_Run*) m_vecRuns.getNthItem(0))->getDirection();
 			// run 0 is a special case, we will treat it here, to speed up the loop below
-			if(iRunDirection == -1)
+			if(iRunDirection < 0)
 				//if this is the very first run, then set it to the paragraph direction,
 				//this will make things easier in the next step				
 				s_pMapOfRuns[0] = RTLdominant;
@@ -1970,9 +1987,14 @@ UT_sint32 fp_Line::_createMapOfRuns()
 			{
 				fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(i);
 				iRunDirection = pRun->getDirection();
-				if(iRunDirection == -1)
+				if(iRunDirection < 0)
 				{
-					s_pMapOfRuns[i] = -1;
+					s_pMapOfRuns[i] = iRunDirection;
+					if(iRunDirection == -3)
+					{
+						bContainsOtherNtrl = true;
+						//UT_DEBUGMSG(("found other neutral\n"));
+					}
 				}
 				else
 				{
@@ -1987,7 +2009,23 @@ UT_sint32 fp_Line::_createMapOfRuns()
         	// neutral runs into correct direction depending on their context
 
         	//UT_DEBUGMSG(("pre-map0 %d, %d, %d, %d, %d, %d\n", s_pMapOfRuns[0], s_pMapOfRuns[1], s_pMapOfRuns[2], s_pMapOfRuns[3], s_pMapOfRuns[4], s_pMapOfRuns[5]));
-
+        	if(bContainsOtherNtrl)
+        	{
+	        	for (i=1; i < count; i++)
+    	    	{
+        			if(s_pMapOfRuns[i] == -3)
+        			{
+        				if((i == count-1) || (s_pMapOfRuns[i-1] < 0 && s_pMapOfRuns[i+1] < 0))
+        					s_pMapOfRuns[i] = -1;
+	        			else if(s_pMapOfRuns[i-1] >= 0)
+    	    				s_pMapOfRuns[i] = s_pMapOfRuns[i-1];
+        				else
+        					s_pMapOfRuns[i] = s_pMapOfRuns[i+1];
+	        			//UT_DEBUGMSG(("other neutral, dir %d\n", s_pMapOfRuns[i]));
+    	    		}
+				}
+			}
+			
         	UT_uint32 j;
         	for (i=1; i < count; i++)
         	{
@@ -2007,7 +2045,7 @@ UT_sint32 fp_Line::_createMapOfRuns()
                 	else
                 	{
                     	j = i + 1;
-                    	while ((s_pMapOfRuns[j] == -1) && (j < count))
+                    	while ((s_pMapOfRuns[j] < 0) && (j < count))
                         	j++;
                     	/*	last run on the line and the last run before
                     		the formating marker require special treatment.
@@ -2024,6 +2062,7 @@ UT_sint32 fp_Line::_createMapOfRuns()
             	}
         	}
 
+			
         	//UT_DEBUGMSG(("pre-map1 %d, %d, %d, %d, %d, %d\n", s_pMapOfRuns[0], s_pMapOfRuns[1], s_pMapOfRuns[2], s_pMapOfRuns[3], s_pMapOfRuns[4], s_pMapOfRuns[5]));
         	//now we can do the reorganisation
         	for (i=0; i < count; i++)

@@ -3469,13 +3469,16 @@ UT_sint32 fp_Run::getVisDirection()
         return (m_pBL->getDominantDirection());
     }
 
-    if(m_iDirection != -1)
+    if(m_iDirection >= 0)
     {
         //UT_DEBUGMSG(("getVisDirection (non-white): direction = %d, visDirection = %d\n", m_iDirection, m_iDirection));
         return(m_iDirection);
     }
 
     UT_sint32 iBlDirection = (UT_sint32) m_pBL->getDominantDirection();
+
+    if(m_iDirection == -1)
+    {
     fp_Run * r = getPrev();
     UT_sint32 prevDir;
 
@@ -3490,7 +3493,7 @@ UT_sint32 fp_Run::getVisDirection()
             //UT_DEBUGMSG(("getVisDirection (prev): direction = %d, visDirection = %d\n", m_iDirection, iBlDirection));
             return(iBlDirection);
         }
-        if(prevDir != -1) break; //run of foreign direction
+        if(prevDir >= 0) break; //run of foreign direction
     }
 
     // if there are no non-white runs, return direction of the block
@@ -3509,7 +3512,7 @@ UT_sint32 fp_Run::getVisDirection()
     {
         nextDir = r->getDirection();
 
-        if(nextDir != -1)
+        if(nextDir >= 0)
         {
             //UT_DEBUGMSG(("getVisDirection (next): direction = %d, visDirection = %d\n", m_iDirection, nextDir));
             //last run pefore end of paragraph mark will have direction of the run
@@ -3524,6 +3527,37 @@ UT_sint32 fp_Run::getVisDirection()
     // and will have the direciton of the previous run
     //UT_DEBUGMSG(("getVisDirection (last on line): direction = %d, visDirection = %d\n", m_iDirection, prevDir));
     return(prevDir);
+    }
+
+    if(m_iDirection == -3)
+    {
+	    fp_Run * r = getPrev();
+	    UT_sint32 prevDir = -1;
+	    UT_sint32 nextDir = -1;
+	
+	    if(r)
+	    	prevDir = r->getDirection();
+	    	
+	    r = getNext();
+	
+	    if(r)
+	    	nextDir = r->getDirection();
+
+	    if(nextDir < 0 && prevDir < 0)
+	    {
+	    	if(!r)
+	    		r = getPrev();
+	    	if(r)
+	    		return r->getVisDirection();
+	    	
+	    	return iBlDirection;
+	    }
+	    else if(prevDir >= 0)
+	    	return prevDir;
+	    else
+	    	return nextDir;
+		
+    }
 }
 
 /*
@@ -3549,6 +3583,7 @@ void fp_Run::setDirectionProperty(UT_sint32 dir)
 	const XML_Char rtl[] = "rtl";
 	const XML_Char ltr[] = "ltr";
 	const XML_Char neutral[] = "ntrl";
+	const XML_Char bracket[] = "ontrl";
 	
 	prop[0] = (XML_Char*) &direction;
 	
@@ -3557,6 +3592,8 @@ void fp_Run::setDirectionProperty(UT_sint32 dir)
 	case 0:  prop[1] = (XML_Char*) &ltr;     break;
 	case 1:  prop[1] = (XML_Char*) &rtl;     break;
 	case -1: prop[1] = (XML_Char*) &neutral; break;
+	case -3: prop[1] = (XML_Char*) &bracket; break;
+	
 	default: UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	};
 	
