@@ -1371,18 +1371,26 @@ UT_Error IE_Imp_WordPerfect::_appendCurrentTextProperties()
    UT_DEBUGMSG(("WordPerfect: Appending current text properties\n"));
    
    XML_Char* pProps = "props";
-   XML_Char propBuffer[1024];	//TODO is this big enough?  better to make it a member and stop running all over the stack
-   XML_Char tempBuffer[128];
-   propBuffer[0] = 0;
+   UT_String propBuffer;
+   UT_String tempBuffer;
    
    // bold 418
-   strcat(propBuffer, "font-weight:");
-   strcat(propBuffer, m_textAttributes.m_bold ? "bold" : "normal");
+   propBuffer += "font-weight:";
+   if ( m_textAttributes.m_bold )
+     propBuffer += "bold" ;
+   else
+     propBuffer += "normal";
+
    // italic
-   strcat(propBuffer, "; font-style:");
-   strcat(propBuffer, m_textAttributes.m_italics ? "italic" : "normal");
+   propBuffer += "; font-style:";
+
+   if ( m_textAttributes.m_italics )
+     propBuffer += "italic" ;
+   else
+     propBuffer += "normal";
+
    // underline & overline & strike-out
-   strcat(propBuffer, "; text-decoration:");
+   propBuffer += "; text-decoration:";
    static UT_String decors;
    decors.clear();
    if (m_textAttributes.m_underLine)
@@ -1398,15 +1406,15 @@ UT_Error IE_Imp_WordPerfect::_appendCurrentTextProperties()
      {
 	decors = "none";
      }
-   strcat(propBuffer, decors.c_str());
+   propBuffer += decors;
    
-   sprintf(tempBuffer, "; font-size:%spt", std_size_string((float)m_textAttributes.m_fontSize));
-   strcat(propBuffer, tempBuffer);
+   UT_String_sprintf(tempBuffer, "; font-size:%spt", std_size_string((float)m_textAttributes.m_fontSize));
+   propBuffer += tempBuffer;
    
-   UT_DEBUGMSG(("Appending Format: %s\n", propBuffer));
+   UT_DEBUGMSG(("Appending Format: %s\n", propBuffer.c_str()));
    const XML_Char* propsArray[3];
    propsArray[0] = pProps;
-   propsArray[1] = propBuffer;
+   propsArray[1] = propBuffer.c_str();
    propsArray[2] = NULL;
    
    X_CheckDocumentError(getDoc()->appendFmt(propsArray));
@@ -1419,32 +1427,31 @@ UT_Error IE_Imp_WordPerfect::_appendCurrentParagraphProperties()
    UT_DEBUGMSG(("WordPerfect: Appending Paragraph Properties\n"));
 
    XML_Char* pProps = "props";
-   XML_Char propBuffer[1024];	//TODO is this big enough?  better to make it a member and stop running all over the stack
-   propBuffer[0] = 0;
+   UT_String propBuffer;
 
-   strcat( propBuffer, "text-align:");
+   propBuffer += "text-align:";
    switch( m_paragraphProperties.m_justificationMode )
      {
       case WordPerfectParagraphProperties::left:
-	strcat(propBuffer, "left");
+	propBuffer += "left";
 	break;
       case WordPerfectParagraphProperties::right:
-	strcat(propBuffer, "right");
+	propBuffer += "right";
 	break;
       case WordPerfectParagraphProperties::center:
-	strcat(propBuffer, "center");
+	propBuffer += "center";
 	break;
       case WordPerfectParagraphProperties::full:  	// either normal justification or something I don't understand yet. same deal.
       case WordPerfectParagraphProperties::fullAllLines:
       case WordPerfectParagraphProperties::reserved:
-	strcat(propBuffer, "justify");
+	propBuffer += "justify";
 	break;
      }
    
-   UT_DEBUGMSG(("Appending Style: %s\n", propBuffer));
+   UT_DEBUGMSG(("Appending Style: %s\n", propBuffer.c_str()));
    const XML_Char* propsArray[3];
    propsArray[0] = pProps;
-   propsArray[1] = propBuffer;
+   propsArray[1] = propBuffer.c_str();
    propsArray[2] = NULL;
    m_paragraphChanged = false;
    

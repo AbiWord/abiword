@@ -82,8 +82,8 @@ protected:
 	void				_handleDataItems(void);
 	void                _outputData(const UT_UCSChar * data, UT_uint32 length);
 
-	void				_convertFontSize(char* szDest, const char* szFontSize);
-	void                _convertColor(char* szDest, const char* pszColor);
+	void				_convertFontSize(UT_String& szDest, const char* szFontSize);
+	void                _convertColor(UT_String& szDest, const char* pszColor);
 
 	void				_closeSection(void);
 	void				_closeBlock(void);
@@ -1201,15 +1201,15 @@ void s_KWord_1_Listener::_closeSpan(void)
 /*****************************************************************/
 /*****************************************************************/
 
-void s_KWord_1_Listener::_convertColor(char* szDest, const char* pszColor)
+void s_KWord_1_Listener::_convertColor(UT_String& szDest, const char* pszColor)
 {
 	/* FIXME: Convert this to deal with KWord's format for colors. */
-	strcpy(szDest, pszColor);
+	szDest = pszColor;
 }
 
-void s_KWord_1_Listener::_convertFontSize(char* szDest, const char* pszFontSize)
+void s_KWord_1_Listener::_convertFontSize(UT_String& szDest, const char* pszFontSize)
 {
-	strcpy (szDest, pszFontSize);
+	szDest = pszFontSize;
 }
 
 /*****************************************************************/

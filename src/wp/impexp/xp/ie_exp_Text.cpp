@@ -37,6 +37,7 @@
 #include "xap_DialogFactory.h"
 #include "xap_Dlg_Encoding.h"
 #include "ap_Prefs.h"
+#include "ut_string_class.h"
 
 #ifdef WIN32
 #include "ut_Win32OS.h"
@@ -214,14 +215,14 @@ bool IE_Exp_Text::_doEncodingDialog(const char *szEncoding)
 	if (bOK)
 	{
 		const XML_Char * s;
-		static XML_Char szEnc[16];
+		static UT_String szEnc;
 
 		s = pDialog->getEncoding();
 		UT_ASSERT (s);
 
-		strcpy(szEnc,s);
-		_setEncoding(static_cast<const char *>(szEnc));
-		getDoc()->setEncodingName(szEnc);
+		szEnc = s;
+		_setEncoding(szEnc.c_str());
+		getDoc()->setEncodingName(szEnc.c_str());
 	}
 
 	pDialogFactory->releaseDialog(pDialog);
