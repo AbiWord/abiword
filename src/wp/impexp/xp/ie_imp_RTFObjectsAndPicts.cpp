@@ -227,7 +227,8 @@ bool IE_Imp_RTF::InsertImage (const UT_ByteBuf * buf, const char * image_name,
 			break;
 		}
 
-		if (resize) {
+		if (resize) 
+		{
 			UT_LocaleTransactor(LC_NUMERIC, "C");
 			UT_DEBUGMSG (("resizing...\n"));
 			UT_String_sprintf(propBuffer, "width:%fin; height:%fin",
@@ -248,28 +249,38 @@ bool IE_Imp_RTF::InsertImage (const UT_ByteBuf * buf, const char * image_name,
 		{
 			propsArray[2] = NULL;
 		}
-		xxx_UT_DEBUGMSG(("SEVIOR: Appending Object 2 m_bCellBlank %d m_bEndTableOpen %d \n",m_bCellBlank,m_bEndTableOpen));
-		if(m_bCellBlank || m_bEndTableOpen)
+		if(!isStruxImage())
 		{
-			xxx_UT_DEBUGMSG(("Append block 13 \n"));
+			xxx_UT_DEBUGMSG(("SEVIOR: Appending Object 2 m_bCellBlank %d m_bEndTableOpen %d \n",m_bCellBlank,m_bEndTableOpen));
+			if(m_bCellBlank || m_bEndTableOpen)
+			{
+				xxx_UT_DEBUGMSG(("Append block 13 \n"));
 
-			getDoc()->appendStrux(PTX_Block,NULL);
-			m_bCellBlank = false;
-			m_bEndTableOpen = false;
+				getDoc()->appendStrux(PTX_Block,NULL);
+				m_bCellBlank = false;
+				m_bEndTableOpen = false;
+			}
+
+			if (!getDoc()->appendObject(PTO_Image, propsArray))
+			{
+				FREEP(mimetype);
+				return false;
+			}
 		}
-
-		if (!getDoc()->appendObject(PTO_Image, propsArray))
-		{
-			FREEP(mimetype);
-			return false;
-		}
-
 		if (!getDoc()->createDataItem(image_name, false,
 									  buf, static_cast<const void*>(mimetype), NULL))
 		{
 			// taken care of by createDataItem
 			//FREEP(mimetype);
 			return false;
+		}
+		if(isStruxImage())
+		{
+			m_sImageName = image_name;
+		}
+		else
+		{
+			clearImageName();
 		}
 	}
 	else
@@ -356,8 +367,12 @@ bool IE_Imp_RTF::InsertImage (const UT_ByteBuf * buf, const char * image_name,
 		{
 			propsArray[2] = NULL;
 		}
-		getDoc()->insertObject(m_dposPaste, PTO_Image, propsArray, NULL);
-		m_dposPaste++;
+		m_sImageName = szName.c_str();
+		if(!isStruxImage())
+		{
+			getDoc()->insertObject(m_dposPaste, PTO_Image, propsArray, NULL);
+			m_dposPaste++;
+		}
 	}
 	return true;
 }
@@ -402,6 +417,7 @@ bool IE_Imp_RTF::HandlePicture()
 			{
 				UT_DEBUGMSG(("Unexpected EOF during RTF import?\n"));
 			}
+			UT_DEBUGMSG(("Doing standard picture stuff with keyword %s \n",keyword));
 			keywordID = KeywordToID(reinterpret_cast<char *>(keyword));
 			switch (keywordID)
 			{
@@ -509,7 +525,7 @@ bool IE_Imp_RTF::HandlePicture()
 				// if we know how to handle this format, we insert the picture
 				// But we'll skip this if this is a binary data because we found
 				// a \binN keyword a processed the picture.
-
+				UT_DEBUGMSG(("Inserting Image data now \n"));
 				UT_UTF8String image_name;
 				UT_UTF8String_sprintf(image_name,"%d",getDoc()->getUID(UT_UniqueId::Image));
 
@@ -628,11 +644,22 @@ void RTFProps_FrameProps::_setProperty(const PropertyPair *pair)
 	else if(strcmp(propName->utf8_str(),"shapeType")== 0)
 	{
 		ival = atoi(propValue->utf8_str());
+		m_iFrameType = 0; // no others implemented
 		if(ival == 202)
 		{
 			m_iFrameType = 0;
 		}
-		m_iFrameType = 0; // no others implemented
+		else if(ival == 75)
+		{
+			m_iFrameType =1 ; // Image??
+		}
+	}
+	else if(strcmp(propName->utf8_str(),"pib")== 0)
+	{
+//
+// We have a positioned image. This has been processed elsewhere.
+//
+		UT_DEBUGMSG(("Found positioned Image \n"));
 	}
 	else {
 		UT_DEBUGMSG(("unknown property %s with value %s\n", propName->utf8_str(),
@@ -704,6 +731,10 @@ bool IE_Imp_ShpPropParser::tokenKeyword(IE_Imp_RTF * ie, RTF_KEYWORD_ID kwID,
 		m_last_grp = nested();
 		m_last_kwID = kwID;
 		break;
+	case RTF_KW_pict:
+		ie->setStruxImage(true);
+		ie->clearImageName();
+		ie->HandlePicture();
 	default:
 		break;
 	}
@@ -833,20 +864,33 @@ class IE_Imp_ShpGroupParser
 	: public IE_Imp_RTFGroupParser
 {
 public:
-	IE_Imp_ShpGroupParser();
+	IE_Imp_ShpGroupParser(IE_Imp_RTF * ie);
+	virtual ~IE_Imp_ShpGroupParser();
 	virtual bool tokenKeyword(IE_Imp_RTF * ie, RTF_KEYWORD_ID kwID, 
 							  UT_sint32 param, bool paramUsed);
 	
 	RTFProps_FrameProps & frame(void)
 		{ return m_currentFrame; }
 private:
+	IE_Imp_RTF * m_ieRTF;
 	RTFProps_FrameProps m_currentFrame;	
 };
 
 
-IE_Imp_ShpGroupParser::IE_Imp_ShpGroupParser()
+IE_Imp_ShpGroupParser::IE_Imp_ShpGroupParser(IE_Imp_RTF * ie) : m_ieRTF(ie) 
 {
 	m_currentFrame.clear();
+}
+
+
+IE_Imp_ShpGroupParser::~IE_Imp_ShpGroupParser()
+{
+	if(!m_ieRTF->isFrameIn())
+	{
+		m_ieRTF->addFrame(m_currentFrame);
+	}
+	m_ieRTF->setStruxImage(false);
+	m_ieRTF->clearImageName();
 }
 
 
@@ -923,8 +967,11 @@ IE_Imp_ShpGroupParser::tokenKeyword(IE_Imp_RTF * ie, RTF_KEYWORD_ID kwID,
 */
 void IE_Imp_RTF::HandleShape(void)
 {
-	IE_Imp_ShpGroupParser *parser = new IE_Imp_ShpGroupParser();
+	IE_Imp_ShpGroupParser *parser = new IE_Imp_ShpGroupParser(this);
+	m_bFrameStruxIn = false;
 	StandardKeywordParser(parser);
+	delete parser;
+	
 
 	// Formely in HandleEndFrame()
 	UT_DEBUGMSG((">>>>End frame\n"));
@@ -936,33 +983,48 @@ void IE_Imp_RTF::HandleShape(void)
 		insertStrux(PTX_EndFrame);
 		m_newParaFlagged = true;
 	}
-
-	delete parser;
 }
 
-
 /*!
- * Handle the text inside the shape.
+ * Construct all the frame properties and add the frame to the PT
  */
-void IE_Imp_RTF::HandleShapeText(RTFProps_FrameProps & frame)
+void IE_Imp_RTF::addFrame(RTFProps_FrameProps & frame)
 {
-
-// Ok this is the business end of the frame where we actually insert the
-// Strux.
 
 // Flush any stored chars now.
 	FlushStoredChars(true);
 
-	UT_DEBUGMSG(("Doing Handle shptxt \n"));
-
 // OK Assemble the attributes/properties for the Frame
-	const XML_Char * attribs[3] = {"props",NULL,NULL};
+
+	const XML_Char * attribs[5] = {"props",NULL,NULL,NULL,NULL};
+	if(isStruxImage())
+	{
+		attribs[2] = PT_STRUX_IMAGE_DATAID;
+		attribs[3] = m_sImageName.utf8_str();
+	}
 	UT_UTF8String sPropString;
 	UT_UTF8String sP;
 	UT_UTF8String sV;
 	sP = "frame-type";
-	sV = "textbox";
-	UT_UTF8String_setProperty(sPropString,sP,sV); // fixme make other types
+	if(	frame.m_iFrameType == 1)
+	{
+		sV = "image";
+		UT_UTF8String_setProperty(sPropString,sP,sV); 
+		sP = "top-style";
+		sV = "none";
+		UT_UTF8String_setProperty(sPropString,sP,sV); 
+		sP = "right-style";
+		UT_UTF8String_setProperty(sPropString,sP,sV); 
+		sP = "left-style";
+		UT_UTF8String_setProperty(sPropString,sP,sV); 
+		sP = "bot-style";
+		UT_UTF8String_setProperty(sPropString,sP,sV); 
+	}
+	else
+	{
+		sV = "textbox";
+		UT_UTF8String_setProperty(sPropString,sP,sV); // fixme make other types
+	}
 
 	sP = "position-to";
 	if(frame.m_iFramePositionTo == FL_FRAME_POSITIONED_TO_COLUMN)
@@ -1033,12 +1095,10 @@ void IE_Imp_RTF::HandleShapeText(RTFProps_FrameProps & frame)
 	}
 	attribs[1] = sPropString.utf8_str();
 
-
 	UT_DEBUGMSG(("Start Frame\n"));
 	if(!bUseInsertNotAppend())
 	{
 		getDoc()->appendStrux(PTX_SectionFrame,attribs);
-		UT_DEBUGMSG(("Append block in Frame \n"));
 		getDoc()->appendStrux(PTX_Block,NULL);
 	}
 	else
@@ -1048,7 +1108,25 @@ void IE_Imp_RTF::HandleShapeText(RTFProps_FrameProps & frame)
 		markPasteBlock();
 		insertStrux(PTX_Block);
 	}
+	m_bFrameStruxIn = true;
 
+}
+
+/*!
+ * Handle the text inside the shape.
+ */
+void IE_Imp_RTF::HandleShapeText(RTFProps_FrameProps & frame)
+{
+
+// Ok this is the business end of the frame where we actually insert the
+// Strux.
+
+	UT_DEBUGMSG(("Doing Handle shptxt \n"));
+	if(!m_bFrameStruxIn)
+	{
+		addFrame(frame);
+	}
+	setStruxImage(false);
 }
 
 

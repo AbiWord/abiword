@@ -1377,8 +1377,11 @@ IE_Imp_RTF::IE_Imp_RTF(PD_Document * pDocument)
 	m_bFieldRecognized(false),
 	m_iIsInHeaderFooter(0),
 	m_bSectionHasPara(false),
-	m_bStruxInserted(false)
+	m_bStruxInserted(false),
+	m_bStruxImage(false),
+	m_bFrameStruxIn(false)
 {
+	m_sImageName.clear();
 	if (!IE_Imp_RTF::keywordSorted) {
 		_initialKeywordSort();
 	}
@@ -2226,6 +2229,9 @@ UT_Error IE_Imp_RTF::_parseText()
 						ok = true;
 						break;
 					}
+#if 0 //enable to debug
+					return UT_OK; // try to finish the import anyway
+#endif
 				}
 			}
 				break;
@@ -2401,7 +2407,7 @@ bool IE_Imp_RTF::HandleParKeyword()
 	// \par keyword, for example revisions are. This means that we sometimes have to
 	// change fmt of the last block
 
-	if(!m_bSectionHasPara)
+	if(!m_bSectionHasPara || m_newParaFlagged)
 	{
 		if(m_newSectionFlagged)
 			ApplySectionAttributes();
@@ -4451,6 +4457,7 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 		return true;
 	case RTF_KW_pict:
 		// get picture
+		UT_DEBUGMSG(("FOund a pict!!! \n"));
 		return HandlePicture();
 	case RTF_KW_pc:
 		m_mbtowc.setInCharset(XAP_EncodingManager::get_instance()->charsetFromCodepage(437));

@@ -574,6 +574,10 @@ public:
 	bool PushRTFState();
 	bool PopRTFState();
 	bool ParseChar(UT_UCSChar ch,bool no_convert=1);
+	void setStruxImage(bool b)
+		{ m_bStruxImage = b;}
+	bool isStruxImage(void) const
+		{ return m_bStruxImage;}
 private:
 	bool ParseRTFKeyword();
 	bool ReadCharFromFileWithCRLF(unsigned char* pCh);
@@ -603,7 +607,12 @@ private:
 	bool ReadFontTable();
 	bool ReadOneFontFromTable();
 	bool ReadRevisionTable();
+public:
 	bool HandlePicture();
+	void clearImageName(void)
+		{ m_sImageName.clear();}
+
+private:
 	bool HandleObject();
 	bool HandleField();
 	bool HandleStyleDefinition(void);
@@ -718,6 +727,10 @@ private:
 
 public:
 	void           HandleShapeText(RTFProps_FrameProps & frame);
+	void           addFrame(RTFProps_FrameProps & frame);
+	bool           isFrameIn(void)
+		{ return m_bFrameStruxIn;}
+
 private:
 //	void           HandleEndShape(void);
 // Meta data
@@ -862,6 +875,10 @@ private:
 	UT_sint32             m_iIsInHeaderFooter;
 	bool                  m_bSectionHasPara;
 	bool                  m_bStruxInserted;
+	bool		          m_bStruxImage;
+	UT_UTF8String	      m_sImageName;
+	bool                  m_bFrameStruxIn;
+
 };
 
 #endif /* IE_IMP_RTF_H */
