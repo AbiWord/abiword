@@ -1206,9 +1206,9 @@ UT_RGBColor AP_Win32FrameImpl::getColorSelBackground () const
 {
 	DWORD bgcolor = GetSysColor(COLOR_HIGHLIGHT);
 
-	unsigned char red   = (((bgcolor)      ) & 0xff);
-	unsigned char green = (((bgcolor) >> 8 ) & 0xff); 
- 	unsigned char blue  = (((bgcolor) >> 16) & 0xff);
+	unsigned char red   = static_cast<unsigned char>(((bgcolor)      ) & 0xff);
+	unsigned char green = static_cast<unsigned char>(((bgcolor) >> 8 ) & 0xff); 
+ 	unsigned char blue  = static_cast<unsigned char>(((bgcolor) >> 16) & 0xff);
 	
 	if( !bgcolor )
 	{

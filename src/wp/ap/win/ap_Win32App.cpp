@@ -1377,12 +1377,14 @@ bool	AP_Win32App::doesStringSetExists(const char* pLocale)
 {
 	FILE* in;
 	const char * szDirectory = NULL;	
+
+	UT_return_val_if_fail(pLocale, false);
 	
 	getPrefsValueDirectory(true,AP_PREF_KEY_StringSetDirectory,&szDirectory);
-	UT_ASSERT((szDirectory) && (*szDirectory));
+	UT_return_val_if_fail(((szDirectory) && (*szDirectory)), false);
 
 	char * szPathname = (char *)calloc(sizeof(char),strlen(szDirectory)+strlen(pLocale)+100);
-	UT_ASSERT(szPathname);	
+	UT_return_val_if_fail(szPathname, false);
 				
 	sprintf(szPathname,"%s%s%s.strings",
 				szDirectory,
