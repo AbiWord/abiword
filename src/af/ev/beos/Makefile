@@ -26,8 +26,8 @@ CPPSRCS=	ev_$(ABI_FE)Keyboard.cpp		\
 			ev_$(ABI_FE)Menu.cpp			\
 			ev_$(ABI_FE)Mouse.cpp		\
 			ev_$(ABI_FE)Toolbar.cpp		\
-			ev_$(ABI_FE)Toolbar_ViewListener.cpp
-
+			ev_$(ABI_FE)Toolbar_ViewListener.cpp \
+			ev_$(ABI_FE)Tooltip.cpp
 #Alternately
 #CPPSRCS = $(shell ls *.cpp)
 
