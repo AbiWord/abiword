@@ -1914,14 +1914,14 @@ XAP_Dialog_MessageBox * XAP_Frame::createMessageBox(XAP_String_Id id,
 						    XAP_Dialog_MessageBox::tAnswer default_answer,
 						    ...)
 {
-	char * szNewMessage = (char *)malloc(sizeof(char) * 256);
 	const XAP_StringSet * pSS = getApp()->getStringSet();
   
 	va_list args;
 
 	va_start(args, default_answer);
 
-	vsprintf(szNewMessage, (char*)pSS->getValue(id, m_app->getDefaultEncoding()).c_str(), args);
+	const UT_String sFmt = pSS->getValue(id, m_app->getDefaultEncoding());
+	UT_String sNewMessage = UT_String_vprintf(sFmt, args);
 
   	XAP_DialogFactory * pDialogFactory
 		= (XAP_DialogFactory *)(getDialogFactory());
@@ -1930,7 +1930,7 @@ XAP_Dialog_MessageBox * XAP_Frame::createMessageBox(XAP_String_Id id,
 		= (XAP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
 	UT_ASSERT(pDialog);
 
-	pDialog->setMessage(szNewMessage);
+	pDialog->setMessage(sNewMessage.c_str());
 
 	pDialog->setButtons(buttons);
 	pDialog->setDefaultAnswer(default_answer);
@@ -1939,6 +1939,7 @@ XAP_Dialog_MessageBox * XAP_Frame::createMessageBox(XAP_String_Id id,
 	
 	return pDialog;
 }
+
 XAP_Dialog_MessageBox::tAnswer XAP_Frame::showMessageBox(XAP_Dialog_MessageBox * pDialog)
 {
 	raise();
