@@ -633,7 +633,7 @@ void GR_BEOSGraphics::flush(void)
 void GR_BEOSGraphics::setColorSpace(GR_Graphics::ColorSpace c)
 {
 	// TODO:  maybe? 
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	//UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 }
 
 GR_Graphics::ColorSpace GR_BEOSGraphics::getColorSpace(void) const

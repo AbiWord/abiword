@@ -81,7 +81,7 @@ public:
   virtual UT_Bool queryProperties(GR_Graphics::Properties gp) const;
   virtual UT_Bool startPrint(void);
   virtual UT_Bool startPage(const char * szPageLabel, UT_uint32 pageNumber,
-							UT_Bool bPortrait, UT_uint32 iWidth, UT_uint32 iHeight);
+			UT_Bool bPortrait, UT_uint32 iWidth, UT_uint32 iHeight);
   virtual UT_Bool endPrint(void);
 
   virtual void flush(void);
