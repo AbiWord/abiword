@@ -510,6 +510,7 @@ s_AbiWord_1_Listener::s_AbiWord_1_Listener(PD_Document * pDocument,
 s_AbiWord_1_Listener::~s_AbiWord_1_Listener()
 {
 	_closeSpan();
+	_closeField();
 	_closeBlock();
 	_closeSection();
 	_handleDataItems();
