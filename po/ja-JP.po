@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 0.99.2\n"
 "POT-Creation-Date: 2002-02-21 16:14+0900\n"
-"PO-Revision-Date: 2002-02-26 10:08+0900\n"
+"PO-Revision-Date: 2002-02-27 22:33+0900\n"
 "Last-Translator: Masayuki Hatta <mhatta@gnu.org>\n"
 "Language-Team: Japanese <ja@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -32,7 +32,7 @@ msgstr ""
 #. DLG_WordCount_Auto_Update
 #: po/tmp/ap_String_Id.h.h:11
 msgid " Auto Update"
-msgstr ""
+msgstr " 自動更新"
 
 #. DLG_PageSetup_Percent
 #: po/tmp/ap_String_Id.h.h:13
@@ -148,7 +148,7 @@ msgstr "追加(&A)"
 #. DLG_PageSetup_Adjust
 #: po/tmp/ap_String_Id.h.h:49
 msgid "&Adjust to:"
-msgstr "以下に調整(&A):"
+msgstr "以下に合わせる(&A):"
 
 #. MENU_LABEL_ALIGN
 #: po/tmp/ap_String_Id.h.h:51
@@ -198,7 +198,7 @@ msgstr "太字(&B)"
 #. DLG_PageSetup_Bottom
 #: po/tmp/ap_String_Id.h.h:69
 msgid "&Bottom:"
-msgstr "下部(&B):"
+msgstr "下(&B):"
 
 #. MENU_LABEL_INSERT_BREAK
 #: po/tmp/ap_String_Id.h.h:71
@@ -283,7 +283,7 @@ msgstr "章末注(&E)"
 #. DLG_Break_EvenPage
 #: po/tmp/ap_String_Id.h.h:103
 msgid "&Even page"
-msgstr ""
+msgstr "偶数ページ(&E)"
 
 #. MENU_LABEL_VIEW_TB_EXTRA
 #: po/tmp/ap_String_Id.h.h:105
@@ -403,7 +403,7 @@ msgstr "イタリック(&I)"
 #. MENU_LABEL_ALIGN_JUSTIFY
 #: po/tmp/ap_String_Id.h.h:151
 msgid "&Justify"
-msgstr ""
+msgstr "整形(&J)"
 
 #. DLG_Para_PushKeepLinesTogether
 #: po/tmp/ap_String_Id.h.h:153
@@ -413,7 +413,7 @@ msgstr ""
 #. DLG_PageSetup_Landscape
 #: po/tmp/ap_String_Id.h.h:155
 msgid "&Landscape"
-msgstr "ランドスケープ(&L)"
+msgstr "横長(&L)"
 
 #. MENU_LABEL_TOOLS_LANGUAGE
 #: po/tmp/ap_String_Id.h.h:157
@@ -488,7 +488,7 @@ msgstr "開く(&O)"
 #. MENU_LABEL_FMT_OVERLINE
 #: po/tmp/ap_String_Id.h.h:185
 msgid "&Overline"
-msgstr ""
+msgstr "上線(&O)"
 
 #. DLG_Break_PageBreak
 #: po/tmp/ap_String_Id.h.h:187
@@ -513,7 +513,7 @@ msgstr "画像(&P)"
 #. DLG_PageSetup_Portrait
 #: po/tmp/ap_String_Id.h.h:195
 msgid "&Portrait"
-msgstr "ポートレイト(&P)"
+msgstr "縦長(&P)"
 
 #. MENU_LABEL_TOOLS_OPTIONS
 #: po/tmp/ap_String_Id.h.h:197
@@ -548,7 +548,7 @@ msgstr "リセット(&R)"
 #. MENU_LABEL_FILE_REVERT
 #: po/tmp/ap_String_Id.h.h:209
 msgid "&Revert"
-msgstr ""
+msgstr "元に戻す(&R)"
 
 #. MENU_LABEL_ALIGN_RIGHT
 #: po/tmp/ap_String_Id.h.h:211
@@ -633,12 +633,12 @@ msgstr "ツール(&T)"
 #. DLG_PageSetup_Top
 #: po/tmp/ap_String_Id.h.h:243
 msgid "&Top:"
-msgstr ""
+msgstr "上(&T):"
 
 #. DLG_Field_Types
 #: po/tmp/ap_String_Id.h.h:245
 msgid "&Types:"
-msgstr ""
+msgstr "タイプ(&T):"
 
 #. MENU_LABEL_FMT_UNDERLINE
 #: po/tmp/ap_String_Id.h.h:247
@@ -663,7 +663,7 @@ msgstr "ビュー(&V)"
 #. MENU_LABEL_VIEW_WEB
 #: po/tmp/ap_String_Id.h.h:255
 msgid "&Web Layout"
-msgstr "Web レイアウト(&L)"
+msgstr "ウェブレイアウト(&L)"
 
 #. DLG_Para_PushWidowOrphanControl
 #: po/tmp/ap_String_Id.h.h:257
@@ -741,7 +741,7 @@ msgstr ""
 #. DLG_FR_FinishedFind
 #: po/tmp/ap_String_Id.h.h:285
 msgid "AbiWord has finished searching the document."
-msgstr ""
+msgstr "AbiWord は文書の検索を終了しました。"
 
 #. MENU_LABEL_HELP_ABOUT_GNU
 #: po/tmp/ap_String_Id.h.h:287
@@ -781,12 +781,12 @@ msgstr ""
 #. MENU_STATUSLINE_SPELL_ADD
 #: po/tmp/ap_String_Id.h.h:301
 msgid "Add this word to the custom dictionary"
-msgstr ""
+msgstr "この語をカスタム辞書に登録します"
 
 #. DLG_Styles_ModifyTemplate
 #: po/tmp/ap_String_Id.h.h:303
 msgid "Add to template"
-msgstr ""
+msgstr "テンプレートに追加"
 
 #. DLG_Para_LabelAfter
 #: po/tmp/ap_String_Id.h.h:305
@@ -811,17 +811,17 @@ msgstr ""
 #. DLG_Styles_LBL_All
 #: po/tmp/ap_String_Id.h.h:313 po/tmp/xap_String_Id.h.h:43
 msgid "All"
-msgstr ""
+msgstr "すべて"
 
 #. DLG_Options_Label_CheckAllowCustomToolbars
 #: po/tmp/ap_String_Id.h.h:315
 msgid "Allow Custom Toolbars"
-msgstr ""
+msgstr "カスタムツールバーを許可"
 
 #. DLG_Options_Label_CheckWhiteForTransparent
 #: po/tmp/ap_String_Id.h.h:317
 msgid "Allow screen colors other than white"
-msgstr ""
+msgstr "白以外の画面色を許可"
 
 #. FIELD_Application
 #: po/tmp/ap_String_Id.h.h:319
@@ -831,12 +831,12 @@ msgstr ""
 #. DLG_Options_Btn_Apply
 #: po/tmp/ap_String_Id.h.h:321 po/tmp/xap_String_Id.h.h:51
 msgid "Apply"
-msgstr ""
+msgstr "適用"
 
 #. DLG_Lists_Apply_Current
 #: po/tmp/ap_String_Id.h.h:323
 msgid "Apply to Current List"
-msgstr ""
+msgstr "現在のリストに適用"
 
 #. DLG_Lists_Arabic_List
 #: po/tmp/ap_String_Id.h.h:325
@@ -871,17 +871,17 @@ msgstr "自動保存"
 #. DLG_Options_Label_SpellAutoReplace
 #: po/tmp/ap_String_Id.h.h:337
 msgid "Auto replace misspelled words"
-msgstr ""
+msgstr "ミススペルの語を自動的に置換"
 
 #. DLG_Options_Label_CheckAutoLoadPlugins
 #: po/tmp/ap_String_Id.h.h:339
 msgid "Automatically load all plugins found"
-msgstr ""
+msgstr "見つけたプラグインはすべて自動的に読み込む"
 
 #. MENU_STATUSLINE_TOOLS_AUTOSPELL
 #: po/tmp/ap_String_Id.h.h:341
 msgid "Automatically spell-check the document"
-msgstr ""
+msgstr "自動的に文書をスペルチェックする"
 
 #. DLG_Styles_ModifyAutomatic
 #: po/tmp/ap_String_Id.h.h:343
@@ -891,7 +891,7 @@ msgstr "自動的にアップデート"
 #. DLG_Styles_Available
 #: po/tmp/ap_String_Id.h.h:345
 msgid "Available Styles"
-msgstr ""
+msgstr "利用可能なスタイル"
 
 #. DLG_Para_LabelBy
 #: po/tmp/ap_String_Id.h.h:347
@@ -988,12 +988,12 @@ msgstr ""
 #. FIELD_Application_Options
 #: po/tmp/ap_String_Id.h.h:383
 msgid "Build Options"
-msgstr ""
+msgstr "ビルドオプション"
 
 #. FIELD_Application_Target
 #: po/tmp/ap_String_Id.h.h:385
 msgid "Build Target"
-msgstr ""
+msgstr "ビルドターゲット"
 
 #. DLG_Lists_Type_bullet
 #: po/tmp/ap_String_Id.h.h:387
@@ -1013,7 +1013,7 @@ msgstr ""
 #. DLG_Options_Label_Look
 #: po/tmp/ap_String_Id.h.h:393
 msgid "Button Style"
-msgstr ""
+msgstr "ボタンのスタイル"
 
 #. MENU_LABEL_FMT_TOGGLECASE
 #: po/tmp/ap_String_Id.h.h:395
@@ -1023,7 +1023,7 @@ msgstr ""
 #. MENU_LABEL_HELP_CREDITS
 #: po/tmp/ap_String_Id.h.h:397
 msgid "C&redits"
-msgstr ""
+msgstr "謝辞(&C)"
 
 #. AUTOTEXT_EMAIL_4
 #: po/tmp/ap_String_Id.h.h:399
@@ -1048,7 +1048,7 @@ msgstr ""
 #. DLG_Styles_ErrStyleCantDelete
 #: po/tmp/ap_String_Id.h.h:407
 msgid "Cannot delete this style"
-msgstr ""
+msgstr "このスタイルは削除できません"
 
 #. DLG_Styles_ErrStyleBuiltin
 #: po/tmp/ap_String_Id.h.h:409
@@ -1058,12 +1058,12 @@ msgstr ""
 #. DLG_PageNumbers_Center
 #: po/tmp/ap_String_Id.h.h:411
 msgid "Center"
-msgstr ""
+msgstr "中央"
 
 #. TabToggleCenterTab
 #: po/tmp/ap_String_Id.h.h:413
 msgid "Center Tab"
-msgstr ""
+msgstr "中央タブ"
 
 #. MENU_STATUSLINE_ALIGN_CENTER
 #: po/tmp/ap_String_Id.h.h:415
@@ -1073,7 +1073,7 @@ msgstr ""
 #. DLG_Para_AlignCentered
 #: po/tmp/ap_String_Id.h.h:417
 msgid "Centered"
-msgstr ""
+msgstr "中揃え"
 
 #. DLG_Spell_ChangeTo
 #: po/tmp/ap_String_Id.h.h:419
@@ -1088,7 +1088,7 @@ msgstr ""
 #. DLG_Background_Title
 #: po/tmp/ap_String_Id.h.h:423
 msgid "Change Background Color"
-msgstr ""
+msgstr "背景色を変更"
 
 #. DLG_ToggleCase_Title
 #: po/tmp/ap_String_Id.h.h:425
@@ -1105,12 +1105,12 @@ msgstr ""
 #. DLG_Background_TitleHighlight
 #: po/tmp/ap_String_Id.h.h:429
 msgid "Change Highlight Color"
-msgstr ""
+msgstr "ハイライト色を変更"
 
 #. DLG_Background_TitleFore
 #: po/tmp/ap_String_Id.h.h:431
 msgid "Change Text Color"
-msgstr ""
+msgstr "文字色を変更"
 
 #. MENU_STATUSLINE_FMT_TOGGLECASE
 #: po/tmp/ap_String_Id.h.h:433
@@ -1120,27 +1120,27 @@ msgstr ""
 #. MENU_STATUSLINE_FMT_FONT
 #: po/tmp/ap_String_Id.h.h:435
 msgid "Change the font of the selected text"
-msgstr ""
+msgstr "選択された文字のフォントを変更"
 
 #. MENU_STATUSLINE_FMT_PARAGRAPH
 #: po/tmp/ap_String_Id.h.h:437
 msgid "Change the format of the selected paragraph"
-msgstr ""
+msgstr "選択された段落の形式を変更"
 
 #. MENU_STATUSLINE_TOOLS_LANGUAGE
 #: po/tmp/ap_String_Id.h.h:439
 msgid "Change the language of the selected text"
-msgstr ""
+msgstr "選択された文字の言語を変更"
 
 #. MENU_STATUSLINE_FMT_COLUMNS
 #: po/tmp/ap_String_Id.h.h:441
 msgid "Change the number of columns"
-msgstr ""
+msgstr "列数を変更"
 
 #. MENU_STATUSLINE_FILE_PAGESETUP
 #: po/tmp/ap_String_Id.h.h:443
 msgid "Change the printing options"
-msgstr ""
+msgstr "印刷オプションを変更"
 
 #. MENU_STATUSLINE_SPELL_SUGGEST_9
 #: po/tmp/ap_String_Id.h.h:445
@@ -1150,7 +1150,7 @@ msgstr ""
 #. MENU_STATUSLINE_FMT_BACKGROUND
 #: po/tmp/ap_String_Id.h.h:447
 msgid "Change your document's background color"
-msgstr ""
+msgstr "文書の背景色を変更"
 
 #. DLG_Styles_ModifyCharacter
 #: po/tmp/ap_String_Id.h.h:449
@@ -1185,12 +1185,12 @@ msgstr ""
 #. MENU_LABEL_TOOLS_SPELL
 #: po/tmp/ap_String_Id.h.h:461
 msgid "Check &Spelling"
-msgstr ""
+msgstr "スペルをチェック(&S)"
 
 #. MENU_LABEL_HELP_CHECKVER
 #: po/tmp/ap_String_Id.h.h:463
 msgid "Check &Version"
-msgstr ""
+msgstr "バージョンを調べる(&V)"
 
 #. DLG_Options_Label_SpellCheckAsType
 #: po/tmp/ap_String_Id.h.h:465
@@ -1235,42 +1235,42 @@ msgstr ""
 #. MENU_LABEL_EDIT_CLEAR
 #: po/tmp/ap_String_Id.h.h:479
 msgid "Cle&ar"
-msgstr ""
+msgstr "クリア(&A)"
 
 #. DLG_Tab_Button_Clear
 #: po/tmp/ap_String_Id.h.h:481
 msgid "Clear"
-msgstr ""
+msgstr "クリア"
 
 #. DLG_Tab_Button_ClearAll
 #: po/tmp/ap_String_Id.h.h:483
 msgid "Clear &All"
-msgstr ""
+msgstr "すべてクリア(&A)"
 
 #. DLG_Background_ClearClr
 #: po/tmp/ap_String_Id.h.h:485
 msgid "Clear Background Color"
-msgstr ""
+msgstr "背景色をクリア"
 
 #. DLG_Background_ClearHighlight
 #: po/tmp/ap_String_Id.h.h:487
 msgid "Clear Highlight Color"
-msgstr ""
+msgstr "ハイライト色をクリア"
 
 #. MSG_QueryExit
 #: po/tmp/ap_String_Id.h.h:489
 msgid "Close all windows and exit?"
-msgstr ""
+msgstr "すべてのウィンドウを閉じて終了しますか?"
 
 #. MENU_STATUSLINE_FILE_EXIT
 #: po/tmp/ap_String_Id.h.h:491
 msgid "Close all windows in the application and exit"
-msgstr ""
+msgstr "アプリケーション内のすべてのウィンドウを閉じ終了"
 
 #. MENU_STATUSLINE_FILE_CLOSE
 #: po/tmp/ap_String_Id.h.h:493
 msgid "Close the document"
-msgstr ""
+msgstr "文書を閉じる"
 
 #. MENU_LABEL_AUTOTEXT_CLOSING
 #: po/tmp/ap_String_Id.h.h:495
@@ -1323,7 +1323,7 @@ msgstr ""
 #: po/tmp/ap_String_Id.h.h:513
 #, c-format
 msgid "Could not open file %s."
-msgstr ""
+msgstr "ファイル %s を開けません"
 
 #. MSG_IE_CouldNotWrite
 #: po/tmp/ap_String_Id.h.h:515
@@ -1340,27 +1340,27 @@ msgstr ""
 #. MENU_STATUSLINE_TOOLS_WORDCOUNT
 #: po/tmp/ap_String_Id.h.h:519
 msgid "Count the number of words in the document"
-msgstr ""
+msgstr "文書内の語数を数える"
 
 #. DLG_NEW_Tab1_FAX1
 #: po/tmp/ap_String_Id.h.h:521
 msgid "Create a fax"
-msgstr ""
+msgstr "ファックスを作成"
 
 #. DLG_NEW_Tab1_WP1
 #: po/tmp/ap_String_Id.h.h:523
 msgid "Create a new blank document"
-msgstr ""
+msgstr "新規に白紙の文書を作成"
 
 #. MENU_STATUSLINE_FILE_NEW
 #: po/tmp/ap_String_Id.h.h:525
 msgid "Create a new document"
-msgstr ""
+msgstr "新規文書を作成"
 
 #. DLG_NEW_Create
 #: po/tmp/ap_String_Id.h.h:527
 msgid "Create new document from a Template"
-msgstr ""
+msgstr "テンプレートから新規文書を作成"
 
 #. MENU_LABEL_EDIT_CUT
 #: po/tmp/ap_String_Id.h.h:529
@@ -1435,7 +1435,7 @@ msgstr "日付と時間(&T)"
 #. FIELD_Type_Datetime
 #: po/tmp/ap_String_Id.h.h:557
 msgid "Date and Time"
-msgstr ""
+msgstr "日付と時間"
 
 #. FIELD_DateTime_DOY
 #: po/tmp/ap_String_Id.h.h:559
@@ -1445,7 +1445,7 @@ msgstr ""
 #. DLG_Options_Btn_Default
 #: po/tmp/ap_String_Id.h.h:561
 msgid "De&faults"
-msgstr ""
+msgstr "デフォルト(&F)"
 
 #. AUTOTEXT_SALUTATION_1
 #: po/tmp/ap_String_Id.h.h:563
@@ -1460,12 +1460,12 @@ msgstr ""
 #. DLG_Tab_Radio_Decimal
 #: po/tmp/ap_String_Id.h.h:567
 msgid "Decimal"
-msgstr ""
+msgstr "小数点"
 
 #. TabToggleDecimalTab
 #: po/tmp/ap_String_Id.h.h:569
 msgid "Decimal Tab"
-msgstr ""
+msgstr "小数点タブ"
 
 #. FIELD_DateTime_DefaultDateNoTime
 #: po/tmp/ap_String_Id.h.h:571
@@ -1480,7 +1480,7 @@ msgstr ""
 #. DLG_Options_Label_DefaultPageSize
 #: po/tmp/ap_String_Id.h.h:575
 msgid "Default page size"
-msgstr ""
+msgstr "デフォルトページサイズ"
 
 #. DLG_Tab_Label_DefaultTS
 #: po/tmp/ap_String_Id.h.h:577
@@ -1500,12 +1500,12 @@ msgstr ""
 #. DLG_Styles_Delete
 #: po/tmp/ap_String_Id.h.h:583 po/tmp/xap_String_Id.h.h:157
 msgid "Delete"
-msgstr ""
+msgstr "削除"
 
 #. MENU_STATUSLINE_INSERT_DELETE_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:585
 msgid "Delete hyperlink"
-msgstr ""
+msgstr "ハイパーリンクを削除"
 
 #. MENU_STATUSLINE_EDIT_CLEAR
 #: po/tmp/ap_String_Id.h.h:587
@@ -1515,7 +1515,7 @@ msgstr ""
 #. DLG_Styles_ModifyDescription
 #: po/tmp/ap_String_Id.h.h:589 po/tmp/xap_String_Id.h.h:159
 msgid "Description"
-msgstr ""
+msgstr "説明"
 
 #. DLG_Options_Label_UseContextGlyphs
 #: po/tmp/ap_String_Id.h.h:591
@@ -1560,22 +1560,22 @@ msgstr ""
 #. MENU_STATUSLINE_HELP_CREDITS
 #: po/tmp/ap_String_Id.h.h:607
 msgid "Display Credits"
-msgstr ""
+msgstr "謝辞を表示"
 
 #. MENU_STATUSLINE_HELP_CONTENTS
 #: po/tmp/ap_String_Id.h.h:609
 msgid "Display Help Contents"
-msgstr ""
+msgstr "ヘルプ内容を表示"
 
 #. MENU_STATUSLINE_HELP_INDEX
 #: po/tmp/ap_String_Id.h.h:611
 msgid "Display Help Index"
-msgstr ""
+msgstr "ヘルプ目次を表示"
 
 #. MENU_STATUSLINE_HELP_ABOUTOS
 #: po/tmp/ap_String_Id.h.h:613
 msgid "Display information about Open Source"
-msgstr ""
+msgstr "オープンソースについての情報を表示"
 
 #. MENU_STATUSLINE_VIEW_SHOWPARA
 #: po/tmp/ap_String_Id.h.h:615
@@ -1585,12 +1585,12 @@ msgstr ""
 #. MENU_STATUSLINE_HELP_ABOUT
 #: po/tmp/ap_String_Id.h.h:617
 msgid "Display program information, version number, and copyright"
-msgstr ""
+msgstr "プログラムの情報、バージョン番号、著作権情報を表示"
 
 #. MENU_STATUSLINE_HELP_CHECKVER
 #: po/tmp/ap_String_Id.h.h:619
 msgid "Display program version number"
-msgstr ""
+msgstr "プログラムのバージョン番号を表示"
 
 #. DLG_Options_Prompt_IgnoreResetAll
 #: po/tmp/ap_String_Id.h.h:621
@@ -1694,7 +1694,7 @@ msgstr ""
 #. DLG_Options_Label_ViewExtraTB
 #: po/tmp/ap_String_Id.h.h:659
 msgid "Extra Toolbar"
-msgstr ""
+msgstr "特別ツールバー"
 
 #. DLG_Field_Parameters
 #: po/tmp/ap_String_Id.h.h:661
@@ -1709,7 +1709,7 @@ msgstr ""
 #. MENU_LABEL_VIEW_FULLSCREEN
 #: po/tmp/ap_String_Id.h.h:665
 msgid "F&ull Screen"
-msgstr ""
+msgstr "フルスクリーン(&U)"
 
 #. DLG_FR_FindLabel
 #: po/tmp/ap_String_Id.h.h:667
@@ -1791,12 +1791,12 @@ msgstr ""
 #. DLG_Lists_Font
 #: po/tmp/ap_String_Id.h.h:695 po/tmp/xap_String_Id.h.h:205
 msgid "Font:"
-msgstr ""
+msgstr "フォント:"
 
 #. DLG_PageNumbers_Footer
 #: po/tmp/ap_String_Id.h.h:697
 msgid "Footer"
-msgstr ""
+msgstr "フッタ"
 
 #. DLG_HdrFtr_FooterFrame
 #: po/tmp/ap_String_Id.h.h:699
@@ -1827,7 +1827,7 @@ msgstr ""
 #. DLG_Options_Label_ViewFormatTB
 #: po/tmp/ap_String_Id.h.h:709
 msgid "Format Toolbar"
-msgstr ""
+msgstr "フォーマットツールバー"
 
 #. DLG_Lists_Format
 #: po/tmp/ap_String_Id.h.h:711
@@ -1922,7 +1922,7 @@ msgstr ""
 #. DLG_Options_Label_Hide
 #: po/tmp/ap_String_Id.h.h:745
 msgid "Hide"
-msgstr ""
+msgstr "隠す"
 
 #. DLG_Options_Label_SpellHideErrors
 #: po/tmp/ap_String_Id.h.h:747
@@ -1937,17 +1937,17 @@ msgstr ""
 #. InsertModeFieldINS
 #: po/tmp/ap_String_Id.h.h:751
 msgid "INS"
-msgstr ""
+msgstr "挿入"
 
 #. DLG_Options_Label_Icons
 #: po/tmp/ap_String_Id.h.h:753
 msgid "Icons"
-msgstr ""
+msgstr "アイコン"
 
 #. DLG_Options_Label_Ignore
 #: po/tmp/ap_String_Id.h.h:755
 msgid "Ignore"
-msgstr ""
+msgstr "無視"
 
 #. DLG_Options_Label_SpellInternet
 #: po/tmp/ap_String_Id.h.h:757
@@ -2122,12 +2122,12 @@ msgstr ""
 #. DLG_Styles_ModifyLanguage
 #: po/tmp/ap_String_Id.h.h:825 po/tmp/xap_String_Id.h.h:305
 msgid "Language"
-msgstr ""
+msgstr "言語"
 
 #. DLG_Options_Label_Layout
 #: po/tmp/ap_String_Id.h.h:827
 msgid "Layout"
-msgstr ""
+msgstr "レイアウト"
 
 #. DLG_Tab_Label_Leader
 #: po/tmp/ap_String_Id.h.h:829
@@ -2137,7 +2137,7 @@ msgstr ""
 #. DLG_PageNumbers_Left
 #: po/tmp/ap_String_Id.h.h:831
 msgid "Left"
-msgstr ""
+msgstr "左"
 
 #. LeftIndentStatus
 #: po/tmp/ap_String_Id.h.h:833
@@ -2436,7 +2436,7 @@ msgstr ""
 #. InsertModeFieldOVR
 #: po/tmp/ap_String_Id.h.h:947
 msgid "OVR"
-msgstr ""
+msgstr "上書"
 
 #. DLG_Column_One
 #: po/tmp/ap_String_Id.h.h:949
@@ -2446,37 +2446,37 @@ msgstr ""
 #. MENU_LABEL_FILE_IMPORT
 #: po/tmp/ap_String_Id.h.h:951
 msgid "Op&en Copy"
-msgstr ""
+msgstr "コピーを開く(&E)"
 
 #. MENU_LABEL_OPEN_TEMPLATE
 #: po/tmp/ap_String_Id.h.h:953
 msgid "Open Template"
-msgstr ""
+msgstr "テンプレートを開く"
 
 #. MENU_STATUSLINE_FILE_IMPORT
 #: po/tmp/ap_String_Id.h.h:955
 msgid "Open a document by making a copy"
-msgstr ""
+msgstr "コピーを作って文書を開く"
 
 #. MENU_STATUSLINE_FILE_OPEN
 #: po/tmp/ap_String_Id.h.h:957
 msgid "Open an existing document"
-msgstr ""
+msgstr "既存の文書を開く"
 
 #. MENU_STATUSLINE_WINDOW_NEW
 #: po/tmp/ap_String_Id.h.h:959
 msgid "Open another window for the document"
-msgstr ""
+msgstr "別のウィンドウで文書を開く"
 
 #. MENU_STATUSLINE_FILE_RECENT_9
 #: po/tmp/ap_String_Id.h.h:961
 msgid "Open this document"
-msgstr ""
+msgstr "この文書を開く"
 
 #. DLG_PageSetup_Orient
 #: po/tmp/ap_String_Id.h.h:963
 msgid "Orientation..."
-msgstr ""
+msgstr "向き..."
 
 #. DLG_Options_TabLabel_Other
 #: po/tmp/ap_String_Id.h.h:965
@@ -2497,12 +2497,12 @@ msgstr ""
 #. MENU_LABEL_EDIT_PASTE_SPECIAL
 #: po/tmp/ap_String_Id.h.h:971
 msgid "P&aste Unformatted"
-msgstr ""
+msgstr "整形せずに貼り付け(&A)"
 
 #. MENU_LABEL_TOOLS_PLUGINS
 #: po/tmp/ap_String_Id.h.h:973
 msgid "P&lugins"
-msgstr ""
+msgstr "プラグイン(&L)"
 
 #. AUTOTEXT_MAIL_3
 #: po/tmp/ap_String_Id.h.h:975
@@ -2512,7 +2512,7 @@ msgstr ""
 #. DLG_PageSetup_Page
 #: po/tmp/ap_String_Id.h.h:977 po/tmp/xap_String_Id.h.h:337
 msgid "Page"
-msgstr ""
+msgstr "ページ"
 
 #. DLG_Para_PushPageBreakBefore
 #: po/tmp/ap_String_Id.h.h:979
@@ -2553,7 +2553,7 @@ msgstr "ページの設定"
 #: po/tmp/ap_String_Id.h.h:993
 #, c-format
 msgid "Page: %d/%d"
-msgstr ""
+msgstr "ページ: %d/%d"
 
 #. DLG_WordCount_Pages
 #: po/tmp/ap_String_Id.h.h:995
@@ -2628,7 +2628,7 @@ msgstr ""
 #. DLG_Options_OptionsTitle
 #: po/tmp/ap_String_Id.h.h:1023
 msgid "Preferences"
-msgstr ""
+msgstr "設定"
 
 #. DLG_PageNumbers_Preview
 #: po/tmp/ap_String_Id.h.h:1025 po/tmp/xap_String_Id.h.h:353
@@ -2638,12 +2638,12 @@ msgstr ""
 #. MENU_STATUSLINE_WEB_WEBPREVIEW
 #: po/tmp/ap_String_Id.h.h:1027
 msgid "Preview the document as a web page"
-msgstr ""
+msgstr "ウェブページとして文書をプレビュー"
 
 #. MENU_STATUSLINE_FILE_PRINT_PREVIEW
 #: po/tmp/ap_String_Id.h.h:1029
 msgid "Preview the document before printing"
-msgstr ""
+msgstr "印刷の前に文書をプレビュー"
 
 #. DLG_Para_PreviewPrevParagraph
 #: po/tmp/ap_String_Id.h.h:1031
@@ -2665,7 +2665,7 @@ msgstr ""
 #. MENU_LABEL_FILE_PRINT_PREVIEW
 #: po/tmp/ap_String_Id.h.h:1037
 msgid "Print P&review"
-msgstr ""
+msgstr "印刷プレビュー(&R)"
 
 #. MENU_STATUSLINE_FILE_PRINT
 #: po/tmp/ap_String_Id.h.h:1039
@@ -2691,7 +2691,7 @@ msgstr ""
 #. MENU_LABEL_EDIT_REPLACE
 #: po/tmp/ap_String_Id.h.h:1047
 msgid "R&eplace"
-msgstr ""
+msgstr "置換(&E)"
 
 #. AUTOTEXT_REFERENCE_2
 #: po/tmp/ap_String_Id.h.h:1049
@@ -2741,12 +2741,12 @@ msgstr ""
 #. MENU_LABEL_EDIT_REMOVEFOOTER
 #: po/tmp/ap_String_Id.h.h:1067
 msgid "Remove Footer"
-msgstr ""
+msgstr "フッタを削除"
 
 #. MENU_LABEL_EDIT_REMOVEHEADER
 #: po/tmp/ap_String_Id.h.h:1069
 msgid "Remove Header"
-msgstr "ヘッダを除去"
+msgstr "ヘッダを削除"
 
 #. DLG_Styles_RemoveLab
 #: po/tmp/ap_String_Id.h.h:1071
@@ -2821,7 +2821,7 @@ msgstr ""
 #. MSG_RevertFile
 #: po/tmp/ap_String_Id.h.h:1099
 msgid "Revert file to last unsaved state?"
-msgstr ""
+msgstr "ファイルを最後に保存した状態に戻しますか?"
 
 #. MENU_STATUSLINE_FILE_REVERT
 #: po/tmp/ap_String_Id.h.h:1101
@@ -2884,7 +2884,7 @@ msgstr "保存(&V)"
 #. MENU_LABEL_FILE_EXPORT
 #: po/tmp/ap_String_Id.h.h:1123
 msgid "Sa&ve Copy"
-msgstr ""
+msgstr "コピーを保存(&V)"
 
 #. MENU_LABEL_AUTOTEXT_SALUTATION
 #: po/tmp/ap_String_Id.h.h:1125
@@ -2899,13 +2899,13 @@ msgstr "名前を付けて保存(&A)"
 #. MENU_LABEL_WEB_SAVEASWEB
 #: po/tmp/ap_String_Id.h.h:1129
 msgid "Save as &web"
-msgstr "Web として保存(&W)"
+msgstr "ウェブとして保存(&W)"
 
 #. MSG_ConfirmSave
 #: po/tmp/ap_String_Id.h.h:1131
 #, c-format
 msgid "Save changes to %s?"
-msgstr ""
+msgstr "%s への変更を保存しますか?"
 
 #. MENU_STATUSLINE_FILE_SAVE
 #: po/tmp/ap_String_Id.h.h:1133
@@ -2935,7 +2935,7 @@ msgstr ""
 #. DLG_PageSetup_Scale
 #: po/tmp/ap_String_Id.h.h:1143
 msgid "Scale..."
-msgstr ""
+msgstr "倍率..."
 
 #. MENU_STATUSLINE_HELP_SEARCH
 #: po/tmp/ap_String_Id.h.h:1145
@@ -2985,7 +2985,7 @@ msgstr ""
 #. MENU_LABEL_FMT_LANGUAGE
 #: po/tmp/ap_String_Id.h.h:1163
 msgid "Set &Language"
-msgstr ""
+msgstr "言語を設定(&L)"
 
 #. DLG_Lists_SetDefault
 #: po/tmp/ap_String_Id.h.h:1165
@@ -3025,7 +3025,7 @@ msgstr "ショートカットキー"
 #. DLG_Options_Label_Show
 #: po/tmp/ap_String_Id.h.h:1179
 msgid "Show"
-msgstr ""
+msgstr "表示する"
 
 #. MENU_LABEL_VIEW_RULER
 #: po/tmp/ap_String_Id.h.h:1181
@@ -3261,12 +3261,12 @@ msgstr ""
 #. MENU_LABEL_FMT
 #: po/tmp/ap_String_Id.h.h:1273
 msgid "Te&xt Formatting"
-msgstr ""
+msgstr "テキスト整形(&X)"
 
 #. DLG_Options_Label_Text
 #: po/tmp/ap_String_Id.h.h:1275
 msgid "Text"
-msgstr ""
+msgstr "文字"
 
 #. DLG_Lists_Align
 #: po/tmp/ap_String_Id.h.h:1277
@@ -3276,7 +3276,7 @@ msgstr ""
 #. DLG_Options_Label_Both
 #: po/tmp/ap_String_Id.h.h:1279
 msgid "Text and Icon"
-msgstr ""
+msgstr "文字とアイコン"
 
 #. AUTOTEXT_CLOSING_10
 #: po/tmp/ap_String_Id.h.h:1281
@@ -3365,7 +3365,7 @@ msgstr ""
 #. DLG_Options_Label_Toolbars
 #: po/tmp/ap_String_Id.h.h:1311
 msgid "Toolbars"
-msgstr ""
+msgstr "ツールバー"
 
 #. TopMarginStatus
 #: po/tmp/ap_String_Id.h.h:1313
@@ -3456,7 +3456,7 @@ msgstr ""
 #. FIELD_Application_Version
 #: po/tmp/ap_String_Id.h.h:1347 po/tmp/xap_String_Id.h.h:483
 msgid "Version"
-msgstr ""
+msgstr "バージョン"
 
 #. DLG_Options_TabLabel_View
 #: po/tmp/ap_String_Id.h.h:1349
@@ -3471,7 +3471,7 @@ msgstr ""
 #. DLG_Options_Label_ViewTooltips
 #: po/tmp/ap_String_Id.h.h:1353
 msgid "View tooltips"
-msgstr ""
+msgstr "ツールチップを表示"
 
 #. DLG_Options_Label_ViewViewFrame
 #: po/tmp/ap_String_Id.h.h:1355
@@ -3481,7 +3481,7 @@ msgstr ""
 #. DLG_Options_Label_Visible
 #: po/tmp/ap_String_Id.h.h:1357
 msgid "Visible"
-msgstr ""
+msgstr "表示"
 
 #. MSG_HyperlinkNoBookmark
 #: po/tmp/ap_String_Id.h.h:1359
@@ -3693,7 +3693,7 @@ msgstr ""
 #. LANG_0
 #: po/tmp/xap_String_Id.h.h:23
 msgid "(no proofing)"
-msgstr ""
+msgstr "(校正しない)"
 
 #. DLG_NoSaveFile_DirNotExist
 #: po/tmp/xap_String_Id.h.h:25
@@ -3703,7 +3703,7 @@ msgstr ""
 #. DLG_PLUGIN_MANAGER_TITLE
 #: po/tmp/xap_String_Id.h.h:27
 msgid "AbiWord Plugin Manager"
-msgstr ""
+msgstr "AbiWord プラグインマネージャ"
 
 #. MSG_ShowUnixFontWarning
 #: po/tmp/xap_String_Id.h.h:29
@@ -3713,13 +3713,13 @@ msgstr ""
 #. DLG_UP_PrintPreviewTitle
 #: po/tmp/xap_String_Id.h.h:31
 msgid "AbiWord: Print Preview"
-msgstr ""
+msgstr "AbiWord: 印刷プレビュー"
 
 #. DLG_ABOUT_Title
 #: po/tmp/xap_String_Id.h.h:33
 #, c-format
 msgid "About %s"
-msgstr ""
+msgstr "%s について"
 
 #. DLG_MW_MoreWindows
 #: po/tmp/xap_String_Id.h.h:35
@@ -3734,7 +3734,7 @@ msgstr ""
 #. DLG_PLUGIN_MANAGER_ACTIVE
 #: po/tmp/xap_String_Id.h.h:39
 msgid "Active Plugins"
-msgstr ""
+msgstr "有効なプラグイン"
 
 #. LANG_AF_ZA
 #: po/tmp/xap_String_Id.h.h:41
@@ -3899,12 +3899,12 @@ msgstr "中国語 簡体字、HZ"
 #. ENC_CHSI_WIN
 #: po/tmp/xap_String_Id.h.h:111
 msgid "Chinese Simplified, Windows Code Page 936"
-msgstr ""
+msgstr "中国語 簡体字、Windows コードページ 936"
 
 #. ENC_CHTR_BIG5
 #: po/tmp/xap_String_Id.h.h:113
 msgid "Chinese Traditional, BIG5"
-msgstr ""
+msgstr "中国語 繁体字、BIG5"
 
 #. ENC_CHTR_BIG5HKSCS
 #: po/tmp/xap_String_Id.h.h:115
@@ -3919,7 +3919,7 @@ msgstr ""
 #. ENC_CHTR_WIN
 #: po/tmp/xap_String_Id.h.h:119
 msgid "Chinese Traditional, Windows Code Page 950"
-msgstr ""
+msgstr "中国語 繁体字、Windows コードページ 950"
 
 #. DLG_CLIPART_Title
 #: po/tmp/xap_String_Id.h.h:121
@@ -3929,214 +3929,214 @@ msgstr "クリップアート"
 #. DLG_Close
 #: po/tmp/xap_String_Id.h.h:123
 msgid "Close"
-msgstr ""
+msgstr "閉じる"
 
 #. DLG_UP_Collate
 #: po/tmp/xap_String_Id.h.h:125
 msgid "Collate"
-msgstr ""
+msgstr "照合"
 
 #. DLG_UP_Color
 #: po/tmp/xap_String_Id.h.h:127
 msgid "Color"
-msgstr ""
+msgstr "色"
 
 #. DLG_UFS_ColorLabel
 #: po/tmp/xap_String_Id.h.h:129
 msgid "Color:"
-msgstr ""
+msgstr "色:"
 
 #. DLG_UP_Copies
 #: po/tmp/xap_String_Id.h.h:131
 msgid "Copies: "
-msgstr ""
+msgstr "コピー: "
 
 #. DLG_PLUGIN_MANAGER_COULDNT_LOAD
 #: po/tmp/xap_String_Id.h.h:133
 msgid "Could not activate/load plugin"
-msgstr ""
+msgstr "プラグインを有効/読み込むことができませんでした"
 
 #. DLG_PLUGIN_MANAGER_COULDNT_UNLOAD
 #: po/tmp/xap_String_Id.h.h:135
 msgid "Could not deactivate plugin"
-msgstr ""
+msgstr "プラグインを無効にすることができませんでした"
 
 #. DICTIONARY_CANTLOAD
 #: po/tmp/xap_String_Id.h.h:137
 #, c-format
 msgid "Could not load the dictionary for the %s language"
-msgstr ""
+msgstr "言語 %s のための辞書を読み込むことができませんでした"
 
 #. ENC_CROA_MAC
 #: po/tmp/xap_String_Id.h.h:139
 msgid "Croatian, Macintosh"
-msgstr ""
+msgstr "クロアチア語、Macintosh"
 
 #. ENC_CYRL_ISO
 #: po/tmp/xap_String_Id.h.h:141
 msgid "Cyrillic, ISO-8859-5"
-msgstr ""
+msgstr "キリル文字、ISO-8859-5"
 
 #. ENC_CYRL_KOI
 #: po/tmp/xap_String_Id.h.h:143
 msgid "Cyrillic, KOI8-R"
-msgstr ""
+msgstr "キリル文字、KOI8-R"
 
 #. ENC_CYRL_MAC
 #: po/tmp/xap_String_Id.h.h:145
 msgid "Cyrillic, Macintosh"
-msgstr ""
+msgstr "キリル文字、Macintosh"
 
 #. ENC_CYRL_WIN
 #: po/tmp/xap_String_Id.h.h:147
 msgid "Cyrillic, Windows Code Page 1251"
-msgstr ""
+msgstr "キリル文字、Windows コードページ 1251"
 
 #. LANG_CS_CZ
 #: po/tmp/xap_String_Id.h.h:149
 msgid "Czech"
-msgstr ""
+msgstr "チェコ語"
 
 #. LANG_DA_DK
 #: po/tmp/xap_String_Id.h.h:151
 msgid "Danish"
-msgstr ""
+msgstr "デンマーク語"
 
 #. DLG_PLUGIN_MANAGER_DEACTIVATE_ALL
 #: po/tmp/xap_String_Id.h.h:153
 msgid "Deactivate all plugins"
-msgstr ""
+msgstr "すべてのプラグインを無効にする"
 
 #. DLG_PLUGIN_MANAGER_DEACTIVATE
 #: po/tmp/xap_String_Id.h.h:155
 msgid "Deactivate plugin"
-msgstr ""
+msgstr "プラグインを無効にする"
 
 #. DLG_Remove_Icon
 #: po/tmp/xap_String_Id.h.h:161
 msgid "Do you want to remove this icon from the toolbar?"
-msgstr ""
+msgstr "このアイコンをツールバーから削除してもよろしいですか?"
 
 #. LANG_NL_BE
 #: po/tmp/xap_String_Id.h.h:163
 msgid "Dutch (Belgium)"
-msgstr ""
+msgstr "オランダ語(ベルギー)"
 
 #. LANG_NL_NL
 #: po/tmp/xap_String_Id.h.h:165
 msgid "Dutch (Netherlands)"
-msgstr ""
+msgstr "オランダ語(オランダ)"
 
 #. DLG_UFS_EffectsFrameLabel
 #: po/tmp/xap_String_Id.h.h:167
 msgid "Effects"
-msgstr ""
+msgstr "エフェクト"
 
 #. DLG_UP_EmbedFonts
 #: po/tmp/xap_String_Id.h.h:169
 msgid "Embed Fonts"
-msgstr ""
+msgstr "埋め込みフォント"
 
 #. DLG_UENC_EncTitle
 #: po/tmp/xap_String_Id.h.h:171
 msgid "Encoding"
-msgstr ""
+msgstr "エンコーディング"
 
 #. DLG_UFS_EncodingLabel
 #: po/tmp/xap_String_Id.h.h:173
 msgid "Encoding:"
-msgstr ""
+msgstr "エンコーディング:"
 
 #. LANG_EN_AU
 #: po/tmp/xap_String_Id.h.h:175
 msgid "English (Australia)"
-msgstr ""
+msgstr "英語(オーストラリア)"
 
 #. LANG_EN_CA
 #: po/tmp/xap_String_Id.h.h:177
 msgid "English (Canada)"
-msgstr ""
+msgstr "英語(カナダ)"
 
 #. LANG_EN_IE
 #: po/tmp/xap_String_Id.h.h:179
 msgid "English (Ireland)"
-msgstr ""
+msgstr "英語(アイルランド)"
 
 #. LANG_EN_NZ
 #: po/tmp/xap_String_Id.h.h:181
 msgid "English (New Zealand)"
-msgstr ""
+msgstr "英語(ニュージーランド)"
 
 #. LANG_EN_ZA
 #: po/tmp/xap_String_Id.h.h:183
 msgid "English (South Africa)"
-msgstr ""
+msgstr "英語(南アフリカ)"
 
 #. LANG_EN_GB
 #: po/tmp/xap_String_Id.h.h:185
 msgid "English (UK)"
-msgstr ""
+msgstr "英語(イギリス)"
 
 #. LANG_EN_US
 #: po/tmp/xap_String_Id.h.h:187
 msgid "English (US)"
-msgstr ""
+msgstr "英語(アメリカ合衆国)"
 
 #. DLG_Password_Title
 #: po/tmp/xap_String_Id.h.h:189
 msgid "Enter Password"
-msgstr ""
+msgstr "パスワードを入力"
 
 #. LANG_EO
 #: po/tmp/xap_String_Id.h.h:191
 msgid "Esperanto"
-msgstr ""
+msgstr "エスペラント"
 
 #. DLG_FOSA_ExportTitle
 #: po/tmp/xap_String_Id.h.h:193
 msgid "Export File"
-msgstr ""
+msgstr "ファイルをエクスポート"
 
 #. LANG_FA_IR
 #: po/tmp/xap_String_Id.h.h:195
 msgid "Farsi"
-msgstr ""
+msgstr "ペルシア語"
 
 #. DLG_UP_File
 #: po/tmp/xap_String_Id.h.h:197
 msgid "File"
-msgstr ""
+msgstr "ファイル"
 
 #. DLG_OverwriteFile
 #: po/tmp/xap_String_Id.h.h:199
 #, c-format
 msgid "File already exists.  Overwrite file '%s'?"
-msgstr ""
+msgstr "ファイルはすでに存在します。ファイル '%s' を上書きしますか?"
 
 #. LANG_FI_FI
 #: po/tmp/xap_String_Id.h.h:201
 msgid "Finnish"
-msgstr ""
+msgstr "フィンランド語"
 
 #. LANG_FR_BE
 #: po/tmp/xap_String_Id.h.h:207
 msgid "French (Belgium)"
-msgstr ""
+msgstr "フランス語(ベルギー)"
 
 #. LANG_FR_CA
 #: po/tmp/xap_String_Id.h.h:209
 msgid "French (Canada)"
-msgstr ""
+msgstr "フランス語(カナダ)"
 
 #. LANG_FR_FR
 #: po/tmp/xap_String_Id.h.h:211
 msgid "French (France)"
-msgstr ""
+msgstr "フランス語(フランス)"
 
 #. LANG_FR_CH
 #: po/tmp/xap_String_Id.h.h:213
 msgid "French (Switzerland)"
-msgstr ""
+msgstr "フランス語(スイス)"
 
 #. DLG_UP_From
 #: po/tmp/xap_String_Id.h.h:215
@@ -4146,192 +4146,192 @@ msgstr ""
 #. LANG_GL_ES
 #: po/tmp/xap_String_Id.h.h:217
 msgid "Galician"
-msgstr ""
+msgstr "ガリシア語"
 
 #. LANG_KA_GE
 #: po/tmp/xap_String_Id.h.h:219
 msgid "Georgian"
-msgstr ""
+msgstr "グルジア語"
 
 #. ENC_GEOR_ACADEMY
 #: po/tmp/xap_String_Id.h.h:221
 msgid "Georgian, Academy"
-msgstr ""
+msgstr "グルジア語、Academy"
 
 #. ENC_GEOR_PS
 #: po/tmp/xap_String_Id.h.h:223
 msgid "Georgian, PS"
-msgstr ""
+msgstr "グルジア語、PS"
 
 #. LANG_DE_AT
 #: po/tmp/xap_String_Id.h.h:225
 msgid "German (Austria)"
-msgstr ""
+msgstr "ドイツ語(オーストリア)"
 
 #. LANG_DE_DE
 #: po/tmp/xap_String_Id.h.h:227
 msgid "German (Germany)"
-msgstr ""
+msgstr "ドイツ語(ドイツ)"
 
 #. LANG_DE_CH
 #: po/tmp/xap_String_Id.h.h:229
 msgid "German (Switzerland)"
-msgstr ""
+msgstr "ドイツ語(スイス)"
 
 #. DLG_UP_Grayscale
 #: po/tmp/xap_String_Id.h.h:231
 msgid "Grayscale"
-msgstr ""
+msgstr "グレイスケール"
 
 #. LANG_EL_GR
 #: po/tmp/xap_String_Id.h.h:233
 msgid "Greek"
-msgstr ""
+msgstr "ギリシャ語"
 
 #. ENC_GREE_ISO
 #: po/tmp/xap_String_Id.h.h:235
 msgid "Greek, ISO-8859-7"
-msgstr ""
+msgstr "ギリシャ語、ISO-8859-7"
 
 #. ENC_GREE_MAC
 #: po/tmp/xap_String_Id.h.h:237
 msgid "Greek, Macintosh"
-msgstr ""
+msgstr "ギリシャ語、Macintosh"
 
 #. ENC_GREE_WIN
 #: po/tmp/xap_String_Id.h.h:239
 msgid "Greek, Windows Code Page 1253"
-msgstr ""
+msgstr "ギリシャ語、Windows コードページ 1253"
 
 #. LANG_IW_IL
 #: po/tmp/xap_String_Id.h.h:241
 msgid "Hebrew"
-msgstr ""
+msgstr "ヘブライ語"
 
 #. ENC_HEBR_ISO
 #: po/tmp/xap_String_Id.h.h:243
 msgid "Hebrew, ISO-8859-8"
-msgstr ""
+msgstr "ヘブライ語、ISO-8859-8"
 
 #. ENC_HEBR_MAC
 #: po/tmp/xap_String_Id.h.h:245
 msgid "Hebrew, Macintosh"
-msgstr ""
+msgstr "ヘブライ語、Macintosh"
 
 #. ENC_HEBR_WIN
 #: po/tmp/xap_String_Id.h.h:247
 msgid "Hebrew, Windows Code Page 1255"
-msgstr ""
+msgstr "ヘブライ語、Windows コードページ 1255"
 
 #. DLG_Image_Height
 #: po/tmp/xap_String_Id.h.h:249
 msgid "Height in pixels:"
-msgstr ""
+msgstr "高さ(ピクセル):"
 
 #. DLG_IP_Height_Label
 #: po/tmp/xap_String_Id.h.h:251
 msgid "Height: "
-msgstr ""
+msgstr "高さ: "
 
 #. DLG_UFS_BGColorTab
 #: po/tmp/xap_String_Id.h.h:253
 msgid "HighLight Color"
-msgstr ""
+msgstr "ハイライトカラー"
 
 #. LANG_HI_IN
 #: po/tmp/xap_String_Id.h.h:255
 msgid "Hindi"
-msgstr ""
+msgstr "ヒンズー語"
 
 #. LANG_HU_HU
 #: po/tmp/xap_String_Id.h.h:257
 msgid "Hungarian"
-msgstr ""
+msgstr "ハンガリー語"
 
 #. LANG_IS_IS
 #: po/tmp/xap_String_Id.h.h:259
 msgid "Icelandic"
-msgstr ""
+msgstr "アイスランド語"
 
 #. ENC_ICEL_MAC
 #: po/tmp/xap_String_Id.h.h:261
 msgid "Icelandic, Macintosh"
-msgstr ""
+msgstr "アイスランド語、Macintosh"
 
 #. DLG_Image_Title
 #: po/tmp/xap_String_Id.h.h:263
 msgid "Image Properties"
-msgstr ""
+msgstr "画像のプロパティ"
 
 #. DLG_FOSA_ImportTitle
 #: po/tmp/xap_String_Id.h.h:265
 msgid "Import File"
-msgstr ""
+msgstr "ファイルをインポート"
 
 #. MSG_ImportingDoc
 #: po/tmp/xap_String_Id.h.h:267
 msgid "Importing Document.."
-msgstr ""
+msgstr "文書をインポート.."
 
 #. DLG_FOSA_InsertTitle
 #: po/tmp/xap_String_Id.h.h:271
 msgid "Insert File"
-msgstr ""
+msgstr "ファイルを挿入"
 
 #. DLG_IP_Title
 #: po/tmp/xap_String_Id.h.h:273
 msgid "Insert Picture"
-msgstr ""
+msgstr "画像を挿入"
 
 #. DLG_Insert_SymbolTitle
 #: po/tmp/xap_String_Id.h.h:275
 msgid "Insert Symbol"
-msgstr ""
+msgstr "記号を挿入"
 
 #. DLG_PLUGIN_MANAGER_INSTALL
 #: po/tmp/xap_String_Id.h.h:277
 msgid "Install new plugin"
-msgstr ""
+msgstr "新しいプラグインをインストール"
 
 #. DLG_InvalidPathname
 #: po/tmp/xap_String_Id.h.h:279
 msgid "Invalid pathname."
-msgstr ""
+msgstr "不正なパス名です。"
 
 #. LANG_IT_IT
 #: po/tmp/xap_String_Id.h.h:281
 msgid "Italian (Italy)"
-msgstr ""
+msgstr "イタリア語(イタリア)"
 
 #. DLG_UFS_StyleItalic
 #: po/tmp/xap_String_Id.h.h:283
 msgid "Italic"
-msgstr ""
+msgstr "イタリック"
 
 #. LANG_JA_JP
 #: po/tmp/xap_String_Id.h.h:285
 msgid "Japanese"
-msgstr ""
+msgstr "日本語"
 
 #. ENC_JAPN_EUC
 #: po/tmp/xap_String_Id.h.h:287
 msgid "Japanese, EUC-JP"
-msgstr ""
+msgstr "日本語、EUC-JP"
 
 #. ENC_JAPN_ISO
 #: po/tmp/xap_String_Id.h.h:289
 msgid "Japanese, ISO-2022-JP"
-msgstr ""
+msgstr "日本語、ISO-2022-JP"
 
 #. ENC_JAPN_SJIS
 #: po/tmp/xap_String_Id.h.h:291
 msgid "Japanese, Shift-JIS"
-msgstr ""
+msgstr "日本語、Shift-JIS"
 
 #. ENC_JAPN_WIN
 #: po/tmp/xap_String_Id.h.h:293
 msgid "Japanese, Windows Code Page 932"
-msgstr ""
+msgstr "日本語、Windows コードページ 932"
 
 #. LANG_KO_KR
 #: po/tmp/xap_String_Id.h.h:295
@@ -4361,17 +4361,17 @@ msgstr "韓国語、Windows コードページ 949"
 #. LANG_LA_IT
 #: po/tmp/xap_String_Id.h.h:307
 msgid "Latin (Renaissance)"
-msgstr ""
+msgstr "ラテン語(ルネッサンス)"
 
 #. LANG_LV_LV
 #: po/tmp/xap_String_Id.h.h:309
 msgid "Latvian"
-msgstr ""
+msgstr "ラトヴィア語"
 
 #. LANG_LT_LT
 #: po/tmp/xap_String_Id.h.h:311
 msgid "Lithuanian"
-msgstr ""
+msgstr "リトアニア語"
 
 #. DLG_Options_Label_ModifyUnixFontPath
 #: po/tmp/xap_String_Id.h.h:313
@@ -4381,7 +4381,7 @@ msgstr ""
 #. DLG_PLUGIN_MANAGER_NAME
 #: po/tmp/xap_String_Id.h.h:315
 msgid "Name"
-msgstr ""
+msgstr "名前"
 
 #. DLG_QNXMB_No
 #: po/tmp/xap_String_Id.h.h:317
@@ -4391,62 +4391,62 @@ msgstr ""
 #. DLG_IP_No_Picture_Label
 #: po/tmp/xap_String_Id.h.h:319
 msgid "No Picture"
-msgstr ""
+msgstr "画像無し"
 
 #. DLG_PLUGIN_MANAGER_NONE_SELECTED
 #: po/tmp/xap_String_Id.h.h:321
 msgid "No plugin selected"
-msgstr ""
+msgstr "プラグインが一つも選択されていません"
 
 #. LANG_NB_NO
 #: po/tmp/xap_String_Id.h.h:323
 msgid "Norwegian Bokmal"
-msgstr ""
+msgstr "ノルウェー語 ブークモール"
 
 #. LANG_NN_NO
 #: po/tmp/xap_String_Id.h.h:325
 msgid "Norwegian Nynorsk"
-msgstr ""
+msgstr "ノルウェー語 ニーノシク"
 
 #. DLG_OK
 #: po/tmp/xap_String_Id.h.h:327
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
 #. DLG_FOSA_OpenTitle
 #: po/tmp/xap_String_Id.h.h:329
 msgid "Open File"
-msgstr ""
+msgstr "ファイルを開く"
 
 #. DLG_FOSA_FileOpenTypeLabel
 #: po/tmp/xap_String_Id.h.h:331
 msgid "Open file as type:"
-msgstr ""
+msgstr "以下の形式としてファイルを開く:"
 
 #. DLG_UFS_OverlineCheck
 #: po/tmp/xap_String_Id.h.h:333
 msgid "Overline"
-msgstr ""
+msgstr "上線"
 
 #. DLG_Zoom_Percent
 #: po/tmp/xap_String_Id.h.h:335
 msgid "P&ercent:"
-msgstr ""
+msgstr "パーセント(%E):"
 
 #. DLG_UP_PageRanges
 #: po/tmp/xap_String_Id.h.h:339
 msgid "Page ranges:"
-msgstr ""
+msgstr "ページ範囲:"
 
 #. DLG_Password_Password
 #: po/tmp/xap_String_Id.h.h:341
 msgid "Password:"
-msgstr ""
+msgstr "パスワード:"
 
 #. DLG_PLUGIN_MANAGER_DETAILS
 #: po/tmp/xap_String_Id.h.h:343
 msgid "Plugin Details"
-msgstr ""
+msgstr "プラグインの詳細"
 
 #. DLG_PLUGIN_MANAGER_LIST
 #: po/tmp/xap_String_Id.h.h:345
@@ -4481,7 +4481,7 @@ msgstr "印刷"
 #. DLG_FOSA_PrintToFileTitle
 #: po/tmp/xap_String_Id.h.h:359
 msgid "Print To File"
-msgstr ""
+msgstr "ファイルへ印刷"
 
 #. DLG_FOSA_FilePrintTypeLabel
 #: po/tmp/xap_String_Id.h.h:361
@@ -4506,17 +4506,17 @@ msgstr "プリンタ"
 #. DLG_UP_PrinterCommand
 #: po/tmp/xap_String_Id.h.h:369
 msgid "Printer command: "
-msgstr ""
+msgstr "プリンタコマンド: "
 
 #. DLG_UFS_StyleRegular
 #: po/tmp/xap_String_Id.h.h:371
 msgid "Regular"
-msgstr ""
+msgstr "レギュラー"
 
 #. DLG_UFS_Direction
 #: po/tmp/xap_String_Id.h.h:373
 msgid "Right-to-left"
-msgstr ""
+msgstr "右から左"
 
 #. ENC_ROMA_MAC
 #: po/tmp/xap_String_Id.h.h:375
@@ -4531,7 +4531,7 @@ msgstr "ロシア語(ロシア)"
 #. DLG_UFS_SampleFrameLabel
 #: po/tmp/xap_String_Id.h.h:379
 msgid "Sample"
-msgstr ""
+msgstr "サンプル"
 
 #. DLG_FOSA_SaveAsTitle
 #: po/tmp/xap_String_Id.h.h:381
@@ -4541,7 +4541,7 @@ msgstr "名前を付けて保存"
 #. DLG_FOSA_FileSaveTypeLabel
 #: po/tmp/xap_String_Id.h.h:383
 msgid "Save file as type:"
-msgstr ""
+msgstr "ファイルを以下の形式で保存:"
 
 #. DLG_UFS_ScriptLabel
 #: po/tmp/xap_String_Id.h.h:385
@@ -4561,22 +4561,22 @@ msgstr "言語を選択"
 #. DLG_UP_Selection
 #: po/tmp/xap_String_Id.h.h:391
 msgid "Selection"
-msgstr ""
+msgstr "選択"
 
 #. DLG_UFS_TransparencyCheck
 #: po/tmp/xap_String_Id.h.h:393
 msgid "Set no Highlight Color"
-msgstr ""
+msgstr "ハイライトカラーを指定しない"
 
 #. DLG_Options_Label_UnixFontWarning
 #: po/tmp/xap_String_Id.h.h:395
 msgid "Show font warning at start up"
-msgstr ""
+msgstr "起動時にフォント警告を表示"
 
 #. DLG_UFS_SizeLabel
 #: po/tmp/xap_String_Id.h.h:397
 msgid "Size:"
-msgstr ""
+msgstr "サイズ:"
 
 #. LANG_SK_SK
 #: po/tmp/xap_String_Id.h.h:399
@@ -4606,7 +4606,7 @@ msgstr "スペイン語(スペイン)"
 #. DLG_UFS_StrikeoutCheck
 #: po/tmp/xap_String_Id.h.h:409
 msgid "Strikeout"
-msgstr ""
+msgstr "打消線"
 
 #. LANG_SV_SE
 #: po/tmp/xap_String_Id.h.h:413
@@ -4616,7 +4616,7 @@ msgstr "スウェーデン語"
 #. DLG_UFS_ColorTab
 #: po/tmp/xap_String_Id.h.h:415
 msgid "Text Color"
-msgstr ""
+msgstr "文字の色"
 
 #. LANG_TH_TH
 #: po/tmp/xap_String_Id.h.h:417
@@ -4642,7 +4642,7 @@ msgstr "タイ語、Windows コードページ 874"
 #: po/tmp/xap_String_Id.h.h:425
 #, c-format
 msgid "The directory '%s' is write-protected."
-msgstr ""
+msgstr "ディレクトリ '%s' は書き込み保護されています。"
 
 #. MSG_UnixFontSizeWarning
 #: po/tmp/xap_String_Id.h.h:427
@@ -4662,17 +4662,17 @@ msgstr "トルコ語"
 #. ENC_TURK_ISO
 #: po/tmp/xap_String_Id.h.h:435
 msgid "Turkish, ISO-8859-9"
-msgstr ""
+msgstr "トルコ語、ISO-8859-9"
 
 #. ENC_TURK_MAC
 #: po/tmp/xap_String_Id.h.h:437
 msgid "Turkish, Macintosh"
-msgstr ""
+msgstr "トルコ語、Macintosh"
 
 #. ENC_TURK_WIN
 #: po/tmp/xap_String_Id.h.h:439
 msgid "Turkish, Windows Code Page 1254"
-msgstr ""
+msgstr "トルコ語、Windows コードページ 1254"
 
 #. ENC_WEST_ASCII
 #: po/tmp/xap_String_Id.h.h:441
@@ -4682,163 +4682,163 @@ msgstr "US-ASCII"
 #. LANG_UK_UA
 #: po/tmp/xap_String_Id.h.h:443
 msgid "Ukrainian"
-msgstr ""
+msgstr "ウクライナ語"
 
 #. ENC_UKRA_KOI
 #: po/tmp/xap_String_Id.h.h:445
 msgid "Ukrainian, KOI8-U"
-msgstr ""
+msgstr "ウクライナ語、KOI8-U"
 
 #. ENC_UKRA_MAC
 #: po/tmp/xap_String_Id.h.h:447
 msgid "Ukrainian, Macintosh"
-msgstr ""
+msgstr "ウクライナ語、Macintosh"
 
 #. DLG_UFS_UnderlineCheck
 #: po/tmp/xap_String_Id.h.h:449
 msgid "Underline"
-msgstr ""
+msgstr "下線"
 
 #. ENC_UNIC_UCS2
 #: po/tmp/xap_String_Id.h.h:451
 msgid "Unicode UCS-2"
-msgstr ""
+msgstr "Unicode UCS-2"
 
 #. ENC_UNIC_UCS_2BE
 #: po/tmp/xap_String_Id.h.h:453
 msgid "Unicode UCS-2 Big Endian"
-msgstr ""
+msgstr "Unicode UCS-2 ビッグエンディアン"
 
 #. ENC_UNIC_UCS_2LE
 #: po/tmp/xap_String_Id.h.h:455
 msgid "Unicode UCS-2 Little Endian"
-msgstr ""
+msgstr "Unicode UCS-2 リトルエンディアン"
 
 #. ENC_UNIC_UCS4
 #: po/tmp/xap_String_Id.h.h:457
 msgid "Unicode UCS-4"
-msgstr ""
+msgstr "Unicode UCS-4"
 
 #. ENC_UNIC_UCS_4BE
 #: po/tmp/xap_String_Id.h.h:459
 msgid "Unicode UCS-4 Big Endian"
-msgstr ""
+msgstr "Unicode UCS-4 ビッグエンディアン"
 
 #. ENC_UNIC_UCS_4LE
 #: po/tmp/xap_String_Id.h.h:461
 msgid "Unicode UCS-4 Little Endian"
-msgstr ""
+msgstr "Unicode UCS-4 リトルエンディアン"
 
 #. ENC_UNIC_UTF_16
 #: po/tmp/xap_String_Id.h.h:463
 msgid "Unicode UTF-16"
-msgstr ""
+msgstr "Unicode UTF-16"
 
 #. ENC_UNIC_UTF_16BE
 #: po/tmp/xap_String_Id.h.h:465
 msgid "Unicode UTF-16 Big Endian"
-msgstr ""
+msgstr "Unicode UTF-16 ビッグエンディアン"
 
 #. ENC_UNIC_UTF_16LE
 #: po/tmp/xap_String_Id.h.h:467
 msgid "Unicode UTF-16 Little Endian"
-msgstr ""
+msgstr "Unicode UTF-16 リトルエンディアン"
 
 #. ENC_UNIC_UTF_32
 #: po/tmp/xap_String_Id.h.h:469
 msgid "Unicode UTF-32"
-msgstr ""
+msgstr "Unicode UTF-32"
 
 #. ENC_UNIC_UTF_32BE
 #: po/tmp/xap_String_Id.h.h:471
 msgid "Unicode UTF-32 Big Endian"
-msgstr ""
+msgstr "Unicode UTF-32 ビッグエンディアン"
 
 #. ENC_UNIC_UTF_32LE
 #: po/tmp/xap_String_Id.h.h:473
 msgid "Unicode UTF-32 Little Endian"
-msgstr ""
+msgstr "Unicode UTF-32 リトルエンディアン"
 
 #. ENC_UNIC_UTF_7
 #: po/tmp/xap_String_Id.h.h:475
 msgid "Unicode UTF-7"
-msgstr ""
+msgstr "Unicode UTF-7"
 
 #. ENC_UNIC_UTF_8
 #: po/tmp/xap_String_Id.h.h:477
 msgid "Unicode UTF-8"
-msgstr ""
+msgstr "Unicode UTF-8"
 
 #. UntitledDocument
 #: po/tmp/xap_String_Id.h.h:479
 #, c-format
 msgid "Untitled%d"
-msgstr ""
+msgstr "無題%d"
 
 #. DLG_Update
 #: po/tmp/xap_String_Id.h.h:481
 msgid "Update"
-msgstr ""
+msgstr "更新"
 
 #. LANG_VI_VN
 #: po/tmp/xap_String_Id.h.h:485
 msgid "Vietnamese"
-msgstr ""
+msgstr "ヴェトナム語"
 
 #. ENC_VIET_TCVN
 #: po/tmp/xap_String_Id.h.h:487
 msgid "Vietnamese, TCVN"
-msgstr ""
+msgstr "ヴェトナム語、TCVN"
 
 #. ENC_VIET_VISCII
 #: po/tmp/xap_String_Id.h.h:489
 msgid "Vietnamese, VISCII"
-msgstr ""
+msgstr "ヴェトナム語、VISCII"
 
 #. ENC_VIET_WIN
 #: po/tmp/xap_String_Id.h.h:491
 msgid "Vietnamese, Windows Code Page 1258"
-msgstr ""
+msgstr "ヴェトナム語、Windows コードページ 1258"
 
 #. ENC_WEST_HP
 #: po/tmp/xap_String_Id.h.h:493
 msgid "Western European, HP"
-msgstr ""
+msgstr "西欧語派、HP"
 
 #. ENC_WEST_ISO
 #: po/tmp/xap_String_Id.h.h:495
 msgid "Western European, ISO-8859-1"
-msgstr ""
+msgstr "西欧語派、ISO-8859-1"
 
 #. ENC_WEST_MAC
 #: po/tmp/xap_String_Id.h.h:497
 msgid "Western European, Macintosh"
-msgstr ""
+msgstr "西欧語派、Macintosh"
 
 #. ENC_WEST_NXT
 #: po/tmp/xap_String_Id.h.h:499
 msgid "Western European, NeXT"
-msgstr ""
+msgstr "西欧語派、NeXT"
 
 #. ENC_WEST_WIN
 #: po/tmp/xap_String_Id.h.h:501
 msgid "Western European, Windows Code Page 1252"
-msgstr ""
+msgstr "西欧語派、Windows コードページ 1252"
 
 #. TB_Zoom_PageWidth
 #: po/tmp/xap_String_Id.h.h:503
 msgid "Width"
-msgstr ""
+msgstr "幅"
 
 #. DLG_Image_Width
 #: po/tmp/xap_String_Id.h.h:505
 msgid "Width in pixels:"
-msgstr ""
+msgstr "幅(ピクセル):"
 
 #. DLG_IP_Width_Label
 #: po/tmp/xap_String_Id.h.h:507
 msgid "Width:  "
-msgstr ""
+msgstr "幅:"
 
 #. DLG_QNXMB_Yes
 #: po/tmp/xap_String_Id.h.h:509
@@ -4853,7 +4853,7 @@ msgstr "ズーム"
 #. DLG_Zoom_RadioFrameCaption
 #: po/tmp/xap_String_Id.h.h:513
 msgid "Zoom to"
-msgstr ""
+msgstr "ズーム - "
 
 #. DLG_UnixMB_No
 #: po/tmp/xap_String_Id.h.h:515
