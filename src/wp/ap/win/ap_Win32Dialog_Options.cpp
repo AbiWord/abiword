@@ -789,6 +789,16 @@ DEFINE_GET_SET_BOOL(PREF_INDEX,OtherSaveContextGlyphs);
 
 #undef DEFINE_GET_SET_BOOL
 
+// TODO:  Add these item to dialog and impliment
+bool AP_Win32Dialog_Options::_gatherAllowCustomToolbars(void)
+{
+	return false;
+}
+
+void AP_Win32Dialog_Options::_setAllowCustomToolbars(const bool b)
+{
+}
+
 bool AP_Win32Dialog_Options::_gatherAutoSaveFile(void)
 {
 	return (IsDlgButtonChecked((HWND)m_vecSubDlgHWnd.getNthItem(PREF_INDEX),AP_RID_DIALOG_OPTIONS_CHK_AutoSaveFile) == BST_CHECKED);

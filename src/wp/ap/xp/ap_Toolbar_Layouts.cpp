@@ -421,6 +421,10 @@ bool  XAP_Toolbar_Factory::resetToolbarToDefault(const char * szName)
 			bFound = true;
 			break;
 		}
+		else
+		{
+			FREEP( szCurName );
+		}
 	}
 	UT_ASSERT(bFound);
 	if(!bFound)
@@ -439,7 +443,7 @@ bool  XAP_Toolbar_Factory::resetToolbarToDefault(const char * szName)
 			break;
 		}
 	}
-	delete [] szCurName;
+	FREEP(szCurName);
 	UT_ASSERT(bFound);
 	if(!bFound)
 	{
