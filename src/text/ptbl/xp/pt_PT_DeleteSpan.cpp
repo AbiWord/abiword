@@ -263,7 +263,7 @@ bool pt_PieceTable::_deleteSpanWithNotify(PT_DocPosition dpos,
 										  UT_uint32 length,
 										  pf_Frag_Strux * pfs,
 										  pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd,
-										  bool bAddChangeRec = true)
+										  bool bAddChangeRec)
 {
 	// create a change record for this change and put it in the history.
 

@@ -26,7 +26,7 @@ REQUIRE=	_ZLIB_ _LIBPNG_ _LIBICONV_ _LIBWV_ _POPT_ _NSIS_
 ifeq ($(OS_NAME),MINGW32)
     CCSET=
 else
-    CCSET="CC='cl.exe -nologo' CONFIG_SHELL=bash.exe bash"
+    CCSET=CC='cl.exe -nologo' CONFIG_SHELL=bash.exe bash
 endif
 REQUIREREALCLEAN=	realclean_LIBICONV_ realclean_LIBWV_
 ifeq ($(ABI_OPT_CURLHASH),1)
@@ -99,7 +99,6 @@ _LIBWV_:
 
 
 _POPT_:
-
 	@if [ -d $(ABI_ROOT)/../popt ]; then                       	\
 		echo Found popt in peer directory;                      \
 		if [ ! -r $(ABI_ROOT)/../popt/config.h ]; then          \
@@ -107,10 +106,10 @@ _POPT_:
 			$(CCSET) ./configure --enable-static --disable-shared;   \
 		fi;                                                     \
 		$(MAKE) -f Makefile.abi -C $(ABI_ROOT)/../popt;                         \
-	else
+	else										\
 		echo peer popt not found.  You can check it out of cvs by; \
 		cvs -d :pserver:anoncvs:anoncvs@cvs.abisource.com:/cvsroot checkout popt; \
-		exit 1;
+		exit 1;						\
 	fi								
 
 

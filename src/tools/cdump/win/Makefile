@@ -55,7 +55,7 @@ $(PROGRAM): $(OBJS)
 	@echo Linking $(PROGRAM)....
 	@$(CC) $(shell echo $(OBJS) | $(TRANSFORM_TO_DOS_PATH))		\
 		-Fe$(shell echo $@ | $(TRANSFORM_TO_DOS_PATH))		\
-		-link $(LDFLAGS) $(OS_LIBS) $(ABI_LDFLAGS) $(shell echo $(EXTRA_LIBS) | $(TRANSFORM_TO_DOS_PATH))
+		-link $(LDFLAGS) $(OS_LIBS) $(ABI_LDFLAGS)
 endif
 build:: $(TARGETS)
 	@echo cdump built
