@@ -130,6 +130,8 @@ class GR_UnixGraphics : public GR_Graphics
  private:
 	virtual void _drawFT2Bitmap(UT_sint32 x, UT_sint32 y, FT_Bitmap * pBitmap) const;
 #endif
+	virtual void	  saveRectangle(UT_Rect & r);
+	virtual void	  restoreRectangle();
 	
  protected:
 	virtual UT_uint32 	_getResolution(void) const;
@@ -182,6 +184,8 @@ private:
 	bool					m_bLayoutUnits;
 #endif
 	UT_RGBColor				m_curColor;
+	GdkPixbuf *				m_saveBuf;
+	UT_Rect *				m_saveRect;
 };
 
 #endif /* GR_UNIXGRAPHICS_H */

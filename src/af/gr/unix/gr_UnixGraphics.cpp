@@ -87,9 +87,11 @@ GR_UnixGraphics::GR_UnixGraphics(GdkWindow * win, XAP_UnixFontManager * fontMana
 #else
 	GR_UnixGraphics::GR_UnixGraphics(GdkWindow * win, XAP_App * app)
 #endif
+		:
 #ifdef USE_XFT
-		: m_bLayoutUnits(false)
+         m_bLayoutUnits(false),
 #endif
+		 m_saveBuf(NULL), m_saveRect(NULL)
 {
 	m_pApp = app;
 	m_pWin = win;
@@ -1601,3 +1603,25 @@ void GR_Font::s_getGenericFontProperties(const char * /*szFontName*/,
 	*pbTrueType = true;
 }
 #endif
+
+void GR_UnixGraphics::saveRectangle(UT_Rect & r)
+{
+	g_object_unref(m_saveBuf); m_saveBuf = NULL;
+	m_saveBuf = gdk_pixbuf_get_from_drawable(m_saveBuf,
+											 m_pWin,
+											 NULL,
+											 r.left, r.top, 0, 0,
+											 r.width, r.height);
+	m_saveRect = new UT_Rect(r);
+}
+
+void GR_UnixGraphics::restoreRectangle()
+{
+	if (m_saveBuf)
+		gdk_pixbuf_render_to_drawable(m_saveBuf,
+									  m_pWin,
+									  NULL, 
+									  0, 0,
+									  m_saveRect->left, m_saveRect->top,
+									  -1, -1, GDK_RGB_DITHER_NONE, 0, 0);
+}

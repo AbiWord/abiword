@@ -449,6 +449,8 @@ class ABI_EXPORT GR_Graphics
 			m_pCaret = new GR_Caret(this);
 		}
 	GR_Caret *        getCaret() { return m_pCaret; }
+	virtual void	  saveRectangle(UT_Rect & r);
+	virtual void	  restoreRectangle();
 
  protected:
 	virtual UT_uint32 _getResolution(void) const = 0;

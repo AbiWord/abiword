@@ -1188,7 +1188,7 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 //
 // No need to to do background updates for 1 seconds.
 //
-	m_pLayout->setSkipUpdates(2);
+ 	m_pLayout->setSkipUpdates(2);
 	UT_sint32 xOldSticky = m_xPointSticky;
 
 	// first, find the line we are on now
@@ -1400,7 +1400,7 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 	getEditableBounds(false,posBOD);
 	getEditableBounds(true,posEOD);
 
-	UT_DEBUGMSG(("iNewPoint=%d, iOldPoint=%d, xClick=%d, yClick=%d\n",iNewPoint, iOldPoint, xClick, yClick));
+	xxx_UT_DEBUGMSG(("iNewPoint=%d, iOldPoint=%d, xClick=%d, yClick=%d\n",iNewPoint, iOldPoint, xClick, yClick));
 	UT_ASSERT(iNewPoint != iOldPoint);
 	if((iNewPoint >= posBOD) && (iNewPoint <= posEOD) &&
 	   ((bNext && (iNewPoint >= iOldPoint))
@@ -2710,16 +2710,10 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 
 void FV_View::_fixInsertionPointCoords()
 {
-	UT_sint32 x = 0;
 	if( getPoint()  )
 	{
-		_findPositionCoords(getPoint(), m_bPointEOL, x, m_yPoint, m_xPoint2, m_yPoint2, m_iPointHeight, m_bPointDirection, NULL, NULL);
+		_findPositionCoords(getPoint(), m_bPointEOL, m_xPoint, m_yPoint, m_xPoint2, m_yPoint2, m_iPointHeight, m_bPointDirection, NULL, NULL);
 	}
-	if(x == 0)
-	{
-		return;
-	}
-	m_xPoint = x;
 	fp_Page * pPage = getCurrentPage();
 	UT_RGBColor * pClr = NULL;
 	if (pPage)

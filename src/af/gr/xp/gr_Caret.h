@@ -29,8 +29,6 @@ class GR_Graphics;
 
 class GR_Caret
 {
-	// provide access to _hide and _unhide for GR_Graphics.
-	friend class GR_Graphics;
 public:
 	explicit GR_Caret(GR_Graphics * pG);
 	~GR_Caret();
@@ -54,10 +52,6 @@ public:
 				   bool bPointDirection = false, UT_RGBColor * pClr = NULL);
 
 private:
-	// Before doing a draw operation, explicitly hide the cursor.
-// 	void _hide();
-	// After a draw, explicitly show the cursor (setting it to m_CursorIsOn).
-// 	void _show();
 	static void s_work(UT_Worker * w);
 	static void s_enable(UT_Worker * w);
 
@@ -75,7 +69,8 @@ private:
 	GR_Caret(const GR_Caret& rhs);			// no impl.
 	void operator=(const GR_Caret& rhs);	// no impl.
 	
-	void	_blink(bool bExplicit = true, bool bForceClear = false);
+	void	_erase();
+	void	_blink(bool bExplicit);
 	
 	UT_Timer *    m_worker;
 	UT_Timer *	  m_enabler;

@@ -66,8 +66,6 @@ void GR_Caret::s_work(UT_Worker * _w)
 {
 	GR_Caret * c = static_cast<GR_Caret *>(_w->getInstanceData());
 
- 	xxx_UT_DEBUGMSG(("blinking cursor %d\n", c->m_nDisableCount));
-
 	if (c->m_nDisableCount == 0)
 		c->_blink(false);
 }
@@ -79,7 +77,7 @@ void GR_Caret::s_enable(UT_Worker * _w)
 
  	xxx_UT_DEBUGMSG(("enabling cursor %d\n", c->m_nDisableCount));
 
-	c->_blink();
+	c->_blink(false);
 	c->m_worker->start();
 	c->m_enabler->stop();
 }
@@ -95,8 +93,7 @@ void GR_Caret::setCoords(UT_sint32 x, UT_sint32 y, UT_uint32 h,
 						 bool bPointDirection, UT_RGBColor * pClr)
 {
 	// if visible, then hide while we change positions.
- 	if (m_bCursorIsOn)
- 		_blink();
+	_erase();
 
 	m_xPoint = x; m_yPoint = y; m_iPointHeight = h;
 	m_xPoint2 = x2; m_yPoint2 = y2; m_iPointHeight2 = h2;
@@ -105,10 +102,10 @@ void GR_Caret::setCoords(UT_sint32 x, UT_sint32 y, UT_uint32 h,
 
 	// now show the cursor, if it's enabled, and restart the timer.
 	// if we don't do this, the cursor is invisible during cursor motion.
+	// For some reason, we seem to do OK now for that.  I don't get it.
 	if (m_nDisableCount == 0)
 	{
- 		_blink(false);
- 		_blink();
+		m_worker->stop(); m_worker->start();
 	}
 }
 
@@ -121,11 +118,7 @@ void GR_Caret::enable()
   	xxx_UT_DEBUGMSG(("GR_Caret::enable(), this=%p, count = %d\n", this, m_nDisableCount));
 	if (m_nDisableCount == 0)
 	{
-		// If the caret is already enabled, we re-draw the caret
-		// and don't touch m_nDisableCount.
-		if (m_bCursorIsOn)
-			_blink();
-		_blink();
+		// If the caret is already enabled, just return
 		return;
 	}
 
@@ -150,7 +143,7 @@ void GR_Caret::disable(bool bNoMulti)
 
 	m_nDisableCount++;
 	if ((m_nDisableCount == 1) && m_bCursorIsOn)
-		_blink(true, true);
+		_erase();
 
 	m_worker->stop();
 	m_enabler->stop();
@@ -166,35 +159,54 @@ void GR_Caret::setBlink(bool bBlink)
 	m_bCursorBlink = bBlink;
 }
 
-void GR_Caret::_blink(bool bExplicit, bool bForceClear)
+void GR_Caret::_erase()
+{
+	if (m_bCursorIsOn)
+		_blink(true);
+	UT_ASSERT(!m_bCursorIsOn);
+}
+
+void GR_Caret::_blink(bool bExplicit)
 {
 	if (m_bRecursiveDraw || !m_bPositionSet)
 		return;
 
-	// After any blink, we want there to be BLINK_TIME until next autoblink.
+	// After any autoblink, we want there to be BLINK_TIME 
+	// until next autoblink.
 	if (!bExplicit)
 	{ 
 		m_worker->stop(); m_worker->start();
 	}
 
-	UT_ASSERT(m_bCursorBlink);
-	if (m_bCursorBlink || (bForceClear && !m_bCursorIsOn))
+	// Blink if: (a) _blink explicitly called (not autoblink); or
+	//           (b) autoblink and cursor blink enabled; or
+    //           (c) autoblink, cursor blink disabled, cursor is off
+	if (bExplicit || m_bCursorBlink || !m_bCursorIsOn)
 	{
 		m_bRecursiveDraw = true;
 		
 		xxx_UT_DEBUGMSG(("actually blinking at %d %d h=%d; cursorison will be %s\n", m_xPoint, m_yPoint, m_iPointHeight, !m_bCursorIsOn ? "true" : "false"));
-		m_bCursorIsOn = !m_bCursorIsOn;
-
 		UT_RGBColor oldColor; m_pG->getColor(oldColor);
-  		if (m_pClr)
-			m_pG->setColor(*m_pClr);
-		else
-			m_pG->setColor(UT_RGBColor(255,255,255));
 
-		m_pG->xorLine(m_xPoint-1, m_yPoint+1, m_xPoint-1, 
+		if (m_bCursorIsOn)
+		{
+			m_pG->restoreRectangle();
+		}
+		else
+		{
+			// TODO: need bigger rectangle for bidi cursor!
+			UT_Rect r(m_xPoint-1, m_yPoint+1, 2, m_iPointHeight);
+			m_pG->saveRectangle(r);
+
+			m_pG->setColor(UT_RGBColor(0,0,0));
+
+			m_pG->drawLine(m_xPoint-1, m_yPoint+1, m_xPoint-1, 
 					  m_yPoint + m_iPointHeight+1);
-		m_pG->xorLine(m_xPoint, m_yPoint+1, m_xPoint, 
-					  m_yPoint + m_iPointHeight+1);
+			m_pG->drawLine(m_xPoint, m_yPoint+1, m_xPoint, 
+ 					  m_yPoint + m_iPointHeight+1);
+		}
+
+		m_bCursorIsOn = !m_bCursorIsOn;
 
 		if((m_xPoint != m_xPoint2) || (m_yPoint != m_yPoint2))
 		{
@@ -236,7 +248,9 @@ void GR_Caret::_blink(bool bExplicit, bool bForceClear)
 							  m_xPoint2-1, m_yPoint2+2);
 			}
 		}
-		m_pG->setColor(oldColor);
+
+ 		m_pG->setColor(oldColor);
+
 		m_bRecursiveDraw = false;
 	}
 }
