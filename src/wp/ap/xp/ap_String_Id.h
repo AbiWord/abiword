@@ -180,4 +180,5 @@ dcl(DLG_DateTime_DateTimeTitle,			"Date and Time")
 dcl(DLG_DateTime_AvailableFormats,		"&Available formats:")
 
 dcl(DLG_Field_FieldTitle,				"Field")
-dcl(DLG_Field_AvailableFormats,			"&Available fields:")
+dcl(DLG_Field_Types,					"&Types:")
+dcl(DLG_Field_Fields,					"&Fields:")
