@@ -4307,9 +4307,10 @@ Defun1(dlgBullets)
   	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
   	UT_ASSERT(pFrame);
   
-  	s_TellNotImplemented(pFrame, "Bullets and Numbering dialog", __LINE__);
+	s_TellNotImplemented(pFrame, "Bullets and Numbering dialog", __LINE__);
+	return UT_TRUE;
 #else
-        ABIWORD_VIEW;
+	ABIWORD_VIEW;
 	return s_doBullets(pView);
 #endif
 }
