@@ -1263,11 +1263,11 @@ IE_Imp_RTF::IE_Imp_RTF(PD_Document * pDocument)
 	m_pImportFile(NULL),
 	deflangid(0),
 	m_TableControl(pDocument),
-	m_lastBlockSDH(NULL),
 	m_lastCellSDH(NULL),
 	m_bNestTableProps(false),
 	m_bParaWrittenForSection(false),
-	m_bCellBlank(true)
+	m_bCellBlank(true),
+	m_bEndTableOpen(false)
 {
 	m_pPasteBuffer = NULL;
 	m_lenPasteBuffer = 0;
@@ -1437,11 +1437,9 @@ void IE_Imp_RTF::OpenTable(void)
 	getDoc()->appendStrux(PTX_SectionCell,NULL);
 	sdh = getDoc()->getLastStruxOfType(PTX_SectionCell);
 	getCell()->setCellSDH(sdh);
-	getDoc()->appendStrux(PTX_Block,NULL);
 	m_currentRTFState.m_cellProps = RTFProps_CellProps();
 	m_currentRTFState.m_tableProps = RTFProps_TableProps();
 	m_lastCellSDH = NULL; // This is in the table structure and can be deleted from there.
-	m_lastBlockSDH = getDoc()->getLastStruxOfType(PTX_Block);
 	m_bCellBlank = true;
 }
 
@@ -1461,20 +1459,19 @@ void IE_Imp_RTF::CloseTable(void)
 		if(m_lastCellSDH != NULL )
 		{
 			getDoc()->insertStruxNoUpdateBefore(m_lastCellSDH,PTX_EndTable,NULL);
-			if(m_lastBlockSDH == NULL )
-			{
-				getDoc()->insertStruxNoUpdateBefore(m_lastCellSDH,PTX_Block,NULL);
-			}
 			getDoc()->deleteStruxNoUpdate(m_lastCellSDH);
+			if(m_bCellBlank)
+			{
+				m_bEndTableOpen = true;
+			}
 		}
 		m_TableControl.CloseTable();
 		if(m_lastCellSDH == NULL)
 		{
 			getDoc()->appendStrux(PTX_EndTable,NULL);
-			getDoc()->appendStrux(PTX_Block,NULL);
+			m_bEndTableOpen = true;
 		}
 		m_lastCellSDH = NULL;
-		m_lastBlockSDH = NULL;
 	}
 	else if(getTable())
 	{
@@ -1482,11 +1479,6 @@ void IE_Imp_RTF::CloseTable(void)
 		{
 			getDoc()->deleteStruxNoUpdate(m_lastCellSDH);
 			m_lastCellSDH = NULL;
-		}
-		if(m_lastBlockSDH != NULL )
-		{
-			getDoc()->deleteStruxNoUpdate(m_lastBlockSDH);
-			m_lastBlockSDH = NULL;
 		}
 		m_TableControl.CloseTable();
 		UT_DEBUGMSG(("SEVIOR: Table not used. \n"));
@@ -1498,11 +1490,6 @@ void IE_Imp_RTF::CloseTable(void)
 			getDoc()->deleteStruxNoUpdate(m_lastCellSDH);
 			m_lastCellSDH = NULL;
 		}
-		if(m_lastBlockSDH != NULL )
-		{
-			getDoc()->deleteStruxNoUpdate(m_lastBlockSDH);
-			m_lastBlockSDH = NULL;
-		}
 	}
 }
 
@@ -1512,10 +1499,17 @@ void IE_Imp_RTF::HandleCell(void)
 	{
 		return;
 	}
+	if(m_bCellBlank && (m_gbBlock.getLength() == 0))
+	{
+		getDoc()->appendStrux(PTX_Block,NULL);
+	}
+	else
+	{
 //
 // Flush out anything we've been holding
 //	
-	FlushStoredChars();
+		FlushStoredChars();
+	}
 	if(getTable() == NULL)
 	{
 		OpenTable();
@@ -1545,9 +1539,7 @@ void IE_Imp_RTF::HandleCell(void)
 		getDoc()->appendStrux(PTX_EndCell,NULL);
 		getTable()->CloseCell();
 		getDoc()->appendStrux(PTX_SectionCell,NULL);
-		getDoc()->appendStrux(PTX_Block,NULL);
 		m_lastCellSDH = getDoc()->getLastStruxOfType(PTX_SectionCell);
-		m_lastBlockSDH = getDoc()->getLastStruxOfType(PTX_Block);
 	}
 	else
 	{
@@ -1785,9 +1777,8 @@ bool IE_Imp_RTF::FlushStoredChars(bool forceInsertPara)
 		ok = ApplySectionAttributes();
 		m_newSectionFlagged = false;
 	}
-	if (ok  &&  m_newParaFlagged  &&  (forceInsertPara  ||  (m_gbBlock.getLength() > 0)) )
+	if (ok  && m_newParaFlagged  &&  (forceInsertPara  ||  (m_gbBlock.getLength() > 0)) )
 	{
-		m_bCellBlank = false;
 		bool bSave = m_newParaFlagged;
 		m_newParaFlagged = false;
 		ok = ApplyParagraphAttributes();
@@ -1807,6 +1798,17 @@ bool IE_Imp_RTF::FlushStoredChars(bool forceInsertPara)
 
 	if (ok  &&  (m_gbBlock.getLength() > 0))
 	{
+		if(ok && m_bCellBlank && (getTable() != NULL))
+		{
+			getDoc()->appendStrux(PTX_Block,NULL);
+			m_bCellBlank = false;
+			m_bEndTableOpen = false;
+		}
+		else if( ok && m_bEndTableOpen)
+		{
+			getDoc()->appendStrux(PTX_Block,NULL);
+			m_bEndTableOpen = false;
+		}
 		ok = ApplyCharacterAttributes();
 		m_bCellBlank = false;
 	}
@@ -2388,6 +2390,13 @@ bool IE_Imp_RTF::InsertImage (const UT_ByteBuf * buf, const char * image_name,
 		else
 		{
 			propsArray[2] = NULL;
+		}
+		UT_DEBUGMSG(("SEVIOR: Appending Object 2 m_bCellBlank %d m_bEndTableOpen %d \n",m_bCellBlank,m_bEndTableOpen));
+		if(m_bCellBlank || m_bEndTableOpen)
+		{
+			getDoc()->appendStrux(PTX_Block,NULL);
+			m_bCellBlank = false;
+			m_bEndTableOpen = false;
 		}
 
 		if (!getDoc()->appendObject(PTO_Image, propsArray))
@@ -4495,6 +4504,8 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 				while(m_currentRTFState.m_paraProps.m_tableLevel > m_TableControl.getNestDepth())
 				{
 					UT_DEBUGMSG(("SEVIOR: Doing pard OpenTable \n"));
+					m_bCellBlank = false;
+					m_bEndTableOpen = false;
 					OpenTable();
 				}
 				UT_DEBUGMSG(("After Apply Paragraph m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
@@ -4506,6 +4517,10 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 			while(m_currentRTFState.m_paraProps.m_tableLevel < m_TableControl.getNestDepth())
 			{
 				CloseTable();
+				if(m_bCellBlank)
+				{
+					m_bEndTableOpen = true;
+				}
 			}
 			UT_DEBUGMSG(("After Apply Paragraph m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
 		}
@@ -4948,6 +4963,8 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 		if(bAbiList || bWord97List )
 		{
 			bool bret = getDoc()->appendStrux(PTX_Block, attribs);
+			m_bEndTableOpen = false;
+			m_bCellBlank = false;
 			getDoc()->appendFmtMark();
 			//
 			// Insert a list-label field??
@@ -4968,6 +4985,8 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 		{
 			xxx_UT_DEBUGMSG(("SEVIOR: Apply Para's append strux \n"));
 			bool ok = getDoc()->appendStrux(PTX_Block, attribs);
+			m_bEndTableOpen = false;
+			m_bCellBlank = false;
 			return ok;
 		}
 	}
@@ -7267,8 +7286,16 @@ bool IE_Imp_RTF::HandleBookmark (RTFBookmarkType type)
 	props [2] = "name";
 	props [3] = bookmarkName.c_str();
 	props [4] = NULL;
+	UT_DEBUGMSG(("SEVIOR: Appending Object 3 m_bCellBlank %d m_bEndTableOpen %d \n",m_bCellBlank,m_bEndTableOpen));
+	if(m_bCellBlank || m_bEndTableOpen)
+	{
+		getDoc()->appendStrux(PTX_Block,NULL);
+		m_bCellBlank = false;
+		m_bEndTableOpen = false;
+	}
 
-	if ((m_pImportFile != NULL) || (m_parsingHdrFtr)) {
+	if ((m_pImportFile != NULL) || (m_parsingHdrFtr)) 
+	{
 		getDoc()->appendObject(PTO_Bookmark, props);
 	}
 	else {
@@ -7386,6 +7413,13 @@ bool IE_Imp_RTF::_appendField (const XML_Char *xmlField)
 	UT_return_val_if_fail (ok, false);
 	if (m_pImportFile != NULL || m_bAppendAnyway)
 	{
+		UT_DEBUGMSG(("SEVIOR: Appending Object m_bCellBlank %d m_bEndTableOpen %d \n",m_bCellBlank,m_bEndTableOpen));
+		if(m_bCellBlank || m_bEndTableOpen)
+		{
+			getDoc()->appendStrux(PTX_Block,NULL);
+			m_bCellBlank = false;
+			m_bEndTableOpen = false;
+		}
 		getDoc()->appendObject(PTO_Field, propsArray);
 	}
 	else

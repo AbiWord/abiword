@@ -1531,7 +1531,6 @@ bool ie_imp_table_control::NewRow(void)
 //
 // Now create a new table with the old last row and the first new row.
 //
-//	m_pDoc->insertStruxNoUpdateBefore(sdhCell,PTX_Block,NULL);
 	m_pDoc->insertStruxNoUpdateBefore(sdhCell,PTX_SectionTable,NULL);
 	OpenTable();
 	getTable()->setAutoFit(bAuto);
