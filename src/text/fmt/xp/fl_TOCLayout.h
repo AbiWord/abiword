@@ -30,6 +30,8 @@
 #include "pl_Listener.h"
 #include "ut_debugmsg.h"
 
+class PD_Style;
+
 // We have one fl_TOCLayout for each Table of Contents.
 
 class ABI_EXPORT fl_TOCLayout : public fl_SectionLayout
@@ -85,6 +87,7 @@ private:
 	void                     _createTOCContainer(void);
 	void                     _insertTOCContainer(fp_Container * pNewFC);
 	void                     _localCollapse();
+	void                      _addBlockInVec(fl_BlockLayout * pBlock, UT_Vector * pVecBlocks, UT_UTF8String & sStyle);
 	bool                     m_bNeedsRebuild;
 	bool                     m_bNeedsFormat;
 	bool                     m_bIsOnPage;
@@ -103,5 +106,43 @@ private:
 	UT_Vector                m_vecBlock2;
 	UT_Vector                m_vecBlock3;
 	UT_Vector                m_vecBlock4;
+	UT_Vector                m_vecAllBlocks;
 };
+
+
+class ABI_EXPORT fl_TOCListener : public PL_Listener
+{
+public:
+	fl_TOCListener(fl_TOCLayout* pTOCL, fl_BlockLayout * pPrevBL, PD_Style * pStyle);
+	virtual ~fl_TOCListener();
+
+	virtual bool				populate(PL_StruxFmtHandle sfh,
+										 const PX_ChangeRecord * pcr);
+
+	virtual bool				populateStrux(PL_StruxDocHandle sdh,
+											  const PX_ChangeRecord * pcr,
+											  PL_StruxFmtHandle * psfh);
+
+	virtual bool				change(PL_StruxFmtHandle sfh,
+									   const PX_ChangeRecord * pcr);
+
+	virtual bool				insertStrux(PL_StruxFmtHandle sfh,
+											const PX_ChangeRecord * pcr,
+											PL_StruxDocHandle sdh,
+											PL_ListenerId lid,
+											void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+																	PL_ListenerId lid,
+																	PL_StruxFmtHandle sfhNew));
+
+	virtual bool				signal(UT_uint32 iSignal);
+
+private:
+	PD_Document*				m_pDoc;
+	fl_TOCLayout* 			    m_pTOCL;
+	fl_BlockLayout *            m_pPrevBL;
+	bool						m_bListening;
+	fl_ContainerLayout*			m_pCurrentBL;
+	PD_Style *                  m_pStyle;
+};
+
 #endif /* TOCLAYOUT_H */

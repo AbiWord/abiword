@@ -2288,6 +2288,22 @@ const char* fl_BlockLayout::getProperty(const XML_Char * pszName, bool bExpandSt
 	return PP_evalProperty(pszName,pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
 }
 
+/*!
+ * This method returns the length of the Block, including the initial strux.
+ * so if "i" is the position of the block strux, i+getLength() will be the 
+ * position of the strux (whatever it might be), following this block.
+ * The length includes any embedded struxes (like footnotes and endnotes).
+ */
+UT_sint32 fl_BlockLayout::getLength()
+{
+	PT_DocPosition posThis = getPosition(true);
+	PL_StruxDocHandle nextSDH;
+	m_pDoc->getNextStrux(getStruxDocHandle(),& nextSDH);
+	PT_DocPosition posNext = m_pDoc->getStruxPosition(nextSDH);
+	UT_sint32 length = static_cast<UT_sint32>(posNext) - static_cast<UT_sint32>(posThis);
+	return length;
+}
+
 const PP_PropertyType * fl_BlockLayout::getPropertyType(const XML_Char * pszName, tProperty_type Type, bool bExpandStyles) const
 {
 	const PP_AttrProp * pSpanAP = NULL;

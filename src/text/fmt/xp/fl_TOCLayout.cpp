@@ -53,6 +53,7 @@
 #include "ut_assert.h"
 #include "ut_units.h"
 #include "fv_View.h"
+#include "pd_Style.h"
 
 fl_TOCLayout::fl_TOCLayout(FL_DocLayout* pLayout, fl_DocSectionLayout* pDocSL, PL_StruxDocHandle sdh, PT_AttrPropIndex indexAP, fl_ContainerLayout * pMyContainerLayout) 
  	: fl_SectionLayout(pLayout, sdh, indexAP, FL_SECTION_TOC,FL_CONTAINER_TOC,PTX_SectionTOC,pMyContainerLayout),
@@ -86,7 +87,7 @@ fl_TOCLayout::~fl_TOCLayout()
 
 	setFirstContainer(NULL);
 	setLastContainer(NULL);
-//	m_pLayout->removeTOC(this); // Not implemented yet
+	m_pLayout->removeTOC(this);
 }
 	
 /*!
@@ -177,9 +178,116 @@ fl_SectionLayout * fl_TOCLayout::getSectionLayout(void) const
 
 bool fl_TOCLayout::addBlock(fl_BlockLayout * pBlock)
 {
-	return true;
+	UT_UTF8String sStyle;
+	pBlock->getStyle(sStyle);
+	if(sStyle == m_sSourceStyle1)
+	{
+		_addBlockInVec(pBlock,&m_vecBlock1, m_sDestStyle1);
+		return true;
+	}
+	if(sStyle == m_sSourceStyle2)
+	{
+		_addBlockInVec(pBlock,&m_vecBlock2,m_sDestStyle2);
+		return true;
+	}
+	if(sStyle == m_sSourceStyle3)
+	{
+		_addBlockInVec(pBlock,&m_vecBlock3,m_sDestStyle3);
+		return true;
+	}
+	if(sStyle == m_sSourceStyle4)
+	{
+		_addBlockInVec(pBlock,&m_vecBlock4,m_sDestStyle4);
+		return true;
+	}
+	return false;
 }
 
+void fl_TOCLayout::_addBlockInVec(fl_BlockLayout * pBlock, UT_Vector * pVecBlocks, UT_UTF8String & sStyle)
+{
+// First find where to put the block.
+	PT_DocPosition posNew = pBlock->getPosition();
+	fl_BlockLayout * pPrevBL = NULL;
+	UT_sint32 i = 0;
+	bool bFound = false;
+	for(i=0; i< static_cast<UT_sint32>(pVecBlocks->getItemCount()); i++)
+	{
+		pPrevBL = static_cast<fl_BlockLayout *>(pVecBlocks->getNthItem(i));
+		if(pPrevBL->getPosition() > posNew)
+		{
+			bFound = true;
+			break;
+		}
+	}
+	UT_sint32 iThisVec = i;
+	for(i=0; i< static_cast<UT_sint32>(m_vecAllBlocks.getItemCount()); i++)
+	{
+		pPrevBL = static_cast<fl_BlockLayout *>(m_vecAllBlocks.getNthItem(i));
+		if(pPrevBL->getPosition() > posNew)
+		{
+			bFound = true;
+			break;
+		}
+	}
+	if(bFound)
+	{
+		if(i > 0)
+		{
+			pPrevBL =  static_cast<fl_BlockLayout *>(pVecBlocks->getNthItem(i-1));
+		}
+		else
+		{
+			pPrevBL = NULL;
+		}
+	}
+	UT_sint32 iAllBlocks = i;
+	PD_Style * pStyle = NULL;
+	m_pDoc->getStyle(sStyle.utf8_str(),&pStyle);
+	fl_TOCListener * pListen = new fl_TOCListener(this,pPrevBL,pStyle);
+	PT_DocPosition posStart,posEnd;
+	posStart = pBlock->getPosition(true);
+	posEnd = posStart + static_cast<PT_DocPosition>(pBlock->getLength()) -1;
+	PD_DocumentRange * docRange = new PD_DocumentRange(m_pDoc,posStart,posEnd);
+	m_pDoc->tellListenerSubset(pListen, docRange);
+	delete docRange;
+	delete pListen;
+	fl_BlockLayout * pNewBlock;
+	if(pPrevBL)
+	{
+		pNewBlock = static_cast<fl_BlockLayout *>(pPrevBL->getNext());
+	}
+	else
+	{
+		pNewBlock = static_cast<fl_BlockLayout *>(getFirstLayout());
+	}
+//
+// OK Now add the block to out vectors.
+//
+	if(iAllBlocks == 0)
+	{
+		m_vecAllBlocks.insertItemAt(static_cast<void *>(pNewBlock),0);
+	}
+	else if (iAllBlocks < static_cast<UT_sint32>(m_vecAllBlocks.getItemCount()-1))
+	{
+		m_vecAllBlocks.insertItemAt(static_cast<void *>(pNewBlock),iAllBlocks+1);
+	}
+	else
+	{
+		m_vecAllBlocks.addItem(static_cast<void *>(pNewBlock));
+	}
+	if(iThisVec == 0)
+	{
+		pVecBlocks->insertItemAt(static_cast<void *>(pNewBlock),0);
+	}
+	else if (iThisVec < static_cast<UT_sint32>(pVecBlocks->getItemCount()-1))
+	{
+		pVecBlocks->insertItemAt(static_cast<void *>(pNewBlock),iAllBlocks+1);
+	}
+	else
+	{
+		pVecBlocks->addItem(static_cast<void *>(pNewBlock));
+	}
+}
 
 bool fl_TOCLayout::removeBlock(fl_BlockLayout * pBlock)
 {
@@ -189,14 +297,64 @@ bool fl_TOCLayout::removeBlock(fl_BlockLayout * pBlock)
 
 bool fl_TOCLayout::isStyleInTOC(UT_UTF8String & sStyle)
 {
-	return true;
+	if(sStyle == m_sSourceStyle1)
+	{
+		return true;
+	}
+	if(sStyle == m_sSourceStyle2)
+	{
+		return true;
+	}
+	if(sStyle == m_sSourceStyle3)
+	{
+		return true;
+	}
+	if(sStyle == m_sSourceStyle4)
+	{
+		return true;
+	}
+	return false;
 }
 
 
 
 bool fl_TOCLayout::isBlockInTOC(fl_BlockLayout * pBlock)
 {
-	return true;
+	PL_StruxDocHandle sdh = pBlock->getStruxDocHandle();
+	UT_sint32 i = 0;
+	for(i=0; i< static_cast<UT_sint32>(m_vecBlock1.getItemCount()); i++)
+	{
+		fl_BlockLayout *pBL = static_cast<fl_BlockLayout *>(m_vecBlock1.getNthItem(i));
+		if(pBL->getStruxDocHandle() == sdh)
+		{
+			return true;
+		}
+	}
+	for(i=0; i< static_cast<UT_sint32>(m_vecBlock2.getItemCount()); i++)
+	{
+		fl_BlockLayout *pBL = static_cast<fl_BlockLayout *>(m_vecBlock2.getNthItem(i));
+		if(pBL->getStruxDocHandle() == sdh)
+		{
+			return true;
+		}
+	}
+	for(i=0; i< static_cast<UT_sint32>(m_vecBlock3.getItemCount()); i++)
+	{
+		fl_BlockLayout *pBL = static_cast<fl_BlockLayout *>(m_vecBlock3.getNthItem(i));
+		if(pBL->getStruxDocHandle() == sdh)
+		{
+			return true;
+		}
+	}
+	for(i=0; i< static_cast<UT_sint32>(m_vecBlock4.getItemCount()); i++)
+	{
+		fl_BlockLayout *pBL = static_cast<fl_BlockLayout *>(m_vecBlock4.getNthItem(i));
+		if(pBL->getStruxDocHandle() == sdh)
+		{
+			return true;
+		}
+	}
+	return false;
 }
 
 fl_BlockLayout * fl_TOCLayout::getMatchingBlock(fl_BlockLayout * pBlock)
@@ -211,6 +369,9 @@ bool fl_TOCLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange * p
 
 	setAttrPropIndex(pcrxc->getIndexAP());
 	collapse();
+	_purgeLayout();
+	_lookupProperties();
+	_createTOCContainer();
 	return true;
 }
 
@@ -321,6 +482,11 @@ void fl_TOCLayout::_purgeLayout(void)
 		delete pCL;
 		pCL = pNext;
 	}
+	m_vecAllBlocks.clear();
+	m_vecBlock1.clear();
+	m_vecBlock2.clear();
+	m_vecBlock3.clear();
+	m_vecBlock4.clear();
 }
 
 
@@ -346,6 +512,7 @@ void fl_TOCLayout::_createTOCContainer(void)
 	UT_sint32 iWidth = pCon->getPage()->getWidth();
 	iWidth = iWidth - pDSL->getLeftMargin() - pDSL->getRightMargin();
 	pTOCContainer->setWidth(iWidth);
+	m_pLayout->fillTOC(this);
 }
 
 /*!
@@ -484,4 +651,175 @@ void fl_TOCLayout::collapse(void)
 	setFirstContainer(NULL);
 	setLastContainer(NULL);
 }
+
+
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+
+fl_TOCListener::fl_TOCListener(fl_TOCLayout* pTOCL, fl_BlockLayout* pPrevBL, PD_Style * pStyle)
+{
+	UT_ASSERT(pTOCL);
+
+	m_pDoc = pTOCL->getDocLayout()->getDocument();
+	m_pTOCL = pTOCL;
+	m_pPrevBL = pPrevBL;
+	m_bListening = false;
+	m_pCurrentBL = NULL;
+	m_pStyle = pStyle;
+}
+
+fl_TOCListener::~fl_TOCListener()
+{
+}
+
+bool fl_TOCListener::populate(PL_StruxFmtHandle sfh,
+								 const PX_ChangeRecord * pcr)
+{
+	if (!m_bListening)
+	{
+		return true;
+	}
+
+	UT_ASSERT(m_pTOCL);
+	UT_DEBUGMSG(("fl_TOCListener::populate block %x \n",m_pCurrentBL));
+
+	bool bResult = false;
+	FV_View* pView = m_pTOCL->getDocLayout()->getView();
+	PT_DocPosition oldPos = 0;
+	//
+	// We're not printing
+	//
+	if(pView != NULL)
+	{
+		oldPos = pView->getPoint();
+	}
+	switch (pcr->getType())
+	{
+	case PX_ChangeRecord::PXT_InsertSpan:
+	{
+		const PX_ChangeRecord_Span * pcrs = static_cast<const PX_ChangeRecord_Span *> (pcr);
+
+		{
+			const fl_Layout * pL = static_cast<const fl_Layout *>(sfh);
+			UT_ASSERT(pL->getType() == PTX_Block);
+			UT_ASSERT(m_pCurrentBL == (static_cast<const fl_ContainerLayout *>(pL)));
+		}
+		PT_BlockOffset blockOffset = pcrs->getBlockOffset();
+		UT_uint32 len = pcrs->getLength();
+
+
+		bResult = static_cast<fl_BlockLayout *>(m_pCurrentBL)->doclistener_populateSpan(pcrs, blockOffset, len);
+		goto finish_up;
+	}
+
+	case PX_ChangeRecord::PXT_InsertObject:
+	{
+		const PX_ChangeRecord_Object * pcro = static_cast<const PX_ChangeRecord_Object *>(pcr);
+
+		{
+			const fl_Layout * pL = static_cast<const fl_Layout *>(sfh);
+			UT_ASSERT(pL->getType() == PTX_Block);
+			UT_ASSERT(m_pCurrentBL == (static_cast<const fl_ContainerLayout *>(pL)));
+		}
+		PT_BlockOffset blockOffset = pcro->getBlockOffset();
+
+// sterwill -- is this call to getSectionLayout() needed?  pBLSL is not used.
+
+//			fl_SectionLayout* pBLSL = m_pCurrentBL->getSectionLayout();
+		bResult = static_cast<fl_BlockLayout *>(m_pCurrentBL)->doclistener_populateObject(blockOffset,pcro);
+		goto finish_up;
+	}
+	default:
+		UT_DEBUGMSG(("Unknown Change record = %d \n",pcr->getType()));
+		//
+		// We're not printing
+		//
+		if(pView != NULL)
+		{
+			pView->setPoint(oldPos);
+		}
+		return true;
+	}
+
+ finish_up:
+	//
+	// We're not printing
+	//
+	if(pView != NULL)
+	{
+		pView->setPoint(oldPos);
+	}
+	return bResult;
+}
+
+bool fl_TOCListener::populateStrux(PL_StruxDocHandle sdh,
+									  const PX_ChangeRecord * pcr,
+									  PL_StruxFmtHandle * psfh)
+{
+	UT_ASSERT(m_pTOCL);
+	UT_DEBUGMSG(("fl_ShadowListener::populateStrux\n"));
+
+	UT_ASSERT(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux);
+	PT_AttrPropIndex iTOC = m_pStyle->getIndexAP();
+	const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);
+	m_bListening = true;
+	switch (pcrx->getStruxType())
+	{
+	case PTX_Block:
+	{
+		if (m_bListening)
+		{
+			// append a new BlockLayout to that SectionLayout
+			fl_ContainerLayout*	pBL = m_pTOCL->insert(sdh,m_pPrevBL, iTOC,FL_CONTAINER_BLOCK);
+			UT_DEBUGMSG(("New TOC block %x created and set as current \n",pBL));
+			if (!pBL)
+			{
+				UT_DEBUGMSG(("no memory for BlockLayout"));
+				return false;
+			}
+			m_pCurrentBL = pBL;
+			*psfh = static_cast<PL_StruxFmtHandle>(pBL);
+		}
+
+	}
+	break;
+
+	default:
+		UT_ASSERT(0);
+		return false;
+	}
+	//
+	// We're not printing
+	//
+	return true;
+}
+
+bool fl_TOCListener::change(PL_StruxFmtHandle /*sfh*/,
+							   const PX_ChangeRecord * /*pcr*/)
+{
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+
+	return false;
+}
+
+bool fl_TOCListener::insertStrux(PL_StruxFmtHandle /*sfh*/,
+									const PX_ChangeRecord * /*pcr*/,
+									PL_StruxDocHandle /*sdh*/,
+									PL_ListenerId /*lid*/,
+									void (* /*pfnBindHandles*/)(PL_StruxDocHandle sdhNew,
+																PL_ListenerId lid,
+																PL_StruxFmtHandle sfhNew))
+{
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+
+	return false;
+}
+
+bool fl_TOCListener::signal(UT_uint32 /*iSignal*/)
+{
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+
+	return false;
+}
+
 
