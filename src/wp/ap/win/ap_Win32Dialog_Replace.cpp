@@ -414,14 +414,14 @@ BOOL AP_Win32Dialog_Replace::_onBtn_Find(HWND hWnd, tFindType tFindType)
 	{
 		UT_return_val_if_fail ((m_id == AP_DIALOG_ID_REPLACE),0); //should never happen in Find dialog
 		if (!getReverseFind())
-    		findReplace();
+			findReplace();
 		else
 			findReplaceReverse();
 	}
 	else if (tFindType == find_FIND_NEXT)
 	{
 		if (!getReverseFind())
-    		findNext();
+			findNext();
 		else
 			findPrev();
 	}
