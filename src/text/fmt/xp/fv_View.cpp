@@ -941,8 +941,10 @@ bool FV_View::notifyListeners(const AV_ChangeMask hint)
 			return false; // bail out
 		}
 		fl_BlockLayout * pBlock = pRun->getBlock();
-		if(pBlock->getSectionLayout()->getType() ==  FL_SECTION_HDRFTR)
+		if(pBlock->getSectionLayout()->getType() == FL_SECTION_HDRFTR)
 		{
+			// General question for msevior: When is this triggered?
+			// Usually we have an FL_SETION_SHADOW. - PL
 			if(m_bEditHdrFtr)
 			{
 				pContainer = m_pEditShadow->getFirstContainer();
@@ -975,6 +977,12 @@ bool FV_View::notifyListeners(const AV_ChangeMask hint)
 			{
 				mask ^= AV_CHG_COLUMN;
 			}
+		}
+		else if (pContainer->getType() == FP_CONTAINER_SHADOW)
+		{
+			// Hack the kludge:
+			// Clearly you can't change columns while editing a header. -PL
+			mask ^= AV_CHG_COLUMN;
 		}
 	}
 	
