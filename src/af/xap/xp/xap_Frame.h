@@ -241,6 +241,8 @@ public:
 	void                        setFrameLocked(bool bLock) 
 	                            {m_bIsFrameLocked = bLock;}
 
+	UT_RGBColor getColorSelBackground () const;
+
 protected:
 	friend class XAP_FrameImpl;
 

@@ -189,7 +189,6 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_colorShowPara(127,127,127),
 		m_colorSquiggle(255, 0, 0),
 		m_colorMargin(127, 127, 127),
-		m_colorSelBackground(192, 192, 192),
 		m_colorFieldOffset(10, 10, 10),
 		m_colorImage(0, 0, 255),
 		m_colorImageResize(0, 0, 0),
@@ -201,7 +200,8 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_prevMouseContext(EV_EMC_UNKNOWN),
 		m_pTopRuler(NULL),
 		m_pLeftRuler(NULL),
-		m_bInFootnote(false)
+		m_bInFootnote(false),
+		m_bgColorInitted(false)
 {
 	m_colorRevisions[0] = UT_RGBColor(171,4,254);
 	m_colorRevisions[1] = UT_RGBColor(171,20,119);
@@ -229,10 +229,6 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 	if (pApp->getPrefsValue((const XML_Char * ) XAP_PREF_KEY_ColorForMargin, &pszTmpColor))
 	{
 		UT_parseColor(pszTmpColor, m_colorMargin);
-	}
-	if (pApp->getPrefsValue((const XML_Char * ) XAP_PREF_KEY_ColorForSelBackground, &pszTmpColor))
-	{
-		UT_parseColor(pszTmpColor, m_colorSelBackground);
 	}
 	if (pApp->getPrefsValue((const XML_Char * ) XAP_PREF_KEY_ColorForFieldOffset, &pszTmpColor))
 	{
@@ -397,22 +393,22 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 //
 // Update the combo boxes on the frame with this documents info.
 //
-	XAP_Frame * pFrame = static_cast<XAP_Frame*>(getParentData());
 	m_caretListener = NULL;
+	XAP_Frame * pFrame = static_cast<XAP_Frame*>(getParentData());
 	if( pFrame )
 	{
 	    pFrame->repopulateCombos();
 	    m_pG->createCaret();
-		if(m_pG->queryProperties(GR_Graphics::DGP_SCREEN))
-		{
-			AV_ListenerId listID;
-			m_caretListener = new FV_Caret_Listener (pFrame, m_pG);
-			addListener(m_caretListener, &listID);
-		}
-		else
-		{
-			m_caretListener = NULL;
-		}
+	    if(m_pG->queryProperties(GR_Graphics::DGP_SCREEN))
+	      {
+		AV_ListenerId listID;
+		m_caretListener = new FV_Caret_Listener (pFrame, m_pG);
+		addListener(m_caretListener, &listID);
+	      }
+	    else
+	      {
+		m_caretListener = NULL;
+	      }	    
 	}
 }
 
@@ -432,6 +428,27 @@ FV_View::~FV_View()
 	FREEP(m_chg.propsChar);
 	FREEP(m_chg.propsBlock);
 	FREEP(m_chg.propsSection);
+}
+
+UT_RGBColor FV_View::getColorSelBackground ()
+{
+  static UT_RGBColor bgcolor (192, 192, 192);
+
+  XAP_Frame * pFrame = 0;
+  
+  if ((pFrame = static_cast<XAP_Frame*>(getParentData())) != NULL)
+    return pFrame->getColorSelBackground ();
+  
+  if (!m_bgColorInitted) {
+    const XML_Char * pszTmpColor = NULL;
+    if (XAP_App::getApp()->getPrefsValue((const XML_Char * ) XAP_PREF_KEY_ColorForSelBackground, &pszTmpColor))
+      {
+	UT_parseColor(pszTmpColor, bgcolor);
+      }
+    m_bgColorInitted = true;
+  }
+  
+  return bgcolor;
 }
 
 // TODO i18n All of these case functions are too simplistic:

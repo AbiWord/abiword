@@ -496,7 +496,7 @@ public:
 	UT_RGBColor			getColorShowPara(void) const { return m_colorShowPara; }
 	UT_RGBColor			getColorSquiggle(void) const { return m_colorSquiggle; }
 	UT_RGBColor			getColorMargin(void) const { return m_colorMargin; }
-	UT_RGBColor			getColorSelBackground(void) const { return m_colorSelBackground; }
+	UT_RGBColor			getColorSelBackground(void);
 	UT_RGBColor			getColorFieldOffset(void) const { return m_colorFieldOffset; }
 	UT_RGBColor			getColorImage(void) const { return m_colorImage; }
 	UT_RGBColor			getColorImageResize(void) const { return m_colorImageResize; }
@@ -726,7 +726,6 @@ private:
 	UT_RGBColor			m_colorShowPara;
 	UT_RGBColor			m_colorSquiggle;
 	UT_RGBColor			m_colorMargin;
-	UT_RGBColor			m_colorSelBackground;
 	UT_RGBColor			m_colorFieldOffset;
 	UT_RGBColor			m_colorImage;
 	UT_RGBColor			m_colorImageResize;
@@ -743,6 +742,7 @@ private:
 	bool                m_bInFootnote;
 
 	FV_Caret_Listener * m_caretListener;
+	bool m_bgColorInitted;
 };
 
 #endif /* FV_VIEW_H */

@@ -88,6 +88,8 @@ protected:
 	virtual void _nullUpdate () const = 0;
 	virtual void _setCursor(GR_Graphics::Cursor cursor) = 0;
 
+	virtual UT_RGBColor getColorSelBackground () const;
+
 	EV_Mouse * m_pMouse;
 	EV_Keyboard * m_pKeyboard;
 	XAP_FrameMode m_iFrameMode;

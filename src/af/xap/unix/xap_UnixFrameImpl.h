@@ -62,6 +62,8 @@ class XAP_UnixFrameImpl : public XAP_FrameImpl
 	}
 	void resetIMContext ();
 
+	virtual UT_RGBColor getColorSelBackground () const;
+
 private:
 	void _setGeometry ();
 
@@ -153,7 +155,6 @@ protected:
 	GtkWidget *		    m_wVBox;
 	GtkWidget * 		    m_wSunkenBox;
 	GtkWidget *		    m_wStatusBar;
-
 
 	XAP_UnixApp *				m_pUnixApp;
 	EV_UnixMenuBar *			m_pUnixMenu;

@@ -469,6 +469,11 @@ void /* static*/ XAP_FrameImpl::viewAutoUpdater(UT_Worker *wkr)
 	}
 }
 
+UT_RGBColor XAP_Frame::getColorSelBackground () const
+{
+  return m_pFrameImpl->getColorSelBackground ();
+}
+
 EV_EditEventMapper * XAP_Frame::getEditEventMapper(void) const
 {
 	UT_ASSERT(m_pInputModes);

@@ -3921,10 +3921,6 @@ void FV_View::_prefsListener( XAP_App * /*pApp*/, XAP_Prefs *pPrefs, UT_StringPt
 	{
 		UT_parseColor(pszTmpColor, pView->m_colorMargin);
 	}
-	if (pPrefs->getPrefsValue((const XML_Char * ) XAP_PREF_KEY_ColorForSelBackground, &pszTmpColor))
-	{
-		UT_parseColor(pszTmpColor, pView->m_colorSelBackground);
-	}
 	if (pPrefs->getPrefsValue((const XML_Char * ) XAP_PREF_KEY_ColorForFieldOffset, &pszTmpColor))
 	{
 		UT_parseColor(pszTmpColor, pView->m_colorFieldOffset);
@@ -3985,6 +3981,8 @@ void FV_View::_prefsListener( XAP_App * /*pApp*/, XAP_Prefs *pPrefs, UT_StringPt
 	{
 		UT_parseColor(pszTmpColor, pView->m_colorRevisions[9]);
 	}
+	pView->m_bgColorInitted = false; // force refresh/update on next getColorSelBackground () call
+
 	// FIXME:jskov: is it necessary to do something here to cause a full redraw?
 
 	if (!pView->m_bWarnedThatRestartNeeded &&

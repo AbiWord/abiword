@@ -1196,6 +1196,7 @@ UT_uint32  XAP_EncodingManager::getWinCharsetCode() const
 
 void 	XAP_EncodingManager::describe()
 {
+#if 0
 	UT_DEBUGMSG(("EncodingManager reports the following:\n"
 		"	LanguageISOName is %s, LanguageISOTerritory is %s\n"		
 		"	NativeEncodingName is %s, NativeSystemEncodingName is %s,\n"
@@ -1218,6 +1219,7 @@ void 	XAP_EncodingManager::describe()
 		int(cjk_locale()), int(can_break_words()),int(swap_utos),int(swap_stou)
 		));
 	UT_ASSERT( UT_iconv_isValid(iconv_handle_N2U) && UT_iconv_isValid(iconv_handle_U2N) );
+#endif
 };
 
 
