@@ -761,15 +761,7 @@ UT_UCS2String& UT_UCS2String::operator+=(UT_UCS2Char rhs)
 
 UT_UCS2String& UT_UCS2String::operator+=(char rhs)
 {
-	UT_UCS2Char cs[2];
-	char rs[2];
-
-	// TODO: is this nonsense needed?
-	rs[0] = rhs; rs[1] = 0;
-	UT_UCS2_strcpy_char (cs, rs);
-
-	pimpl->append(cs, 1);
-	return *this;
+	return this->operator+=((unsigned char)rhs);
 }
 
 UT_UCS2String& UT_UCS2String::operator+=(unsigned char rhs)
@@ -777,8 +769,7 @@ UT_UCS2String& UT_UCS2String::operator+=(unsigned char rhs)
 	UT_UCS2Char cs[2];
 	char rs[2];
 
-	// TODO: is this nonsense needed?
-	rs[0] = (char)rhs; rs[1] = 0; // TODO: is this loss of 'unsigned' safe? (imo, it is - fjf)
+	rs[0] = (char)rhs; rs[1] = 0;
 	UT_UCS2_strcpy_char (cs, rs);
 
 	pimpl->append(cs, 1);
@@ -791,7 +782,6 @@ void UT_UCS2String::swap(UT_UCS2String& rhs)
 	pimpl = rhs.pimpl;
 	rhs.pimpl = p;
 }
-
 
 //////////////////////////////////////////////////////////////////
 // End of class members, start of free functions
@@ -1195,15 +1185,7 @@ UT_UCS4String& UT_UCS4String::operator+=(UT_UCS4Char rhs)
 
 UT_UCS4String& UT_UCS4String::operator+=(char rhs)
 {
-	UT_UCS4Char cs[2];
-	char rs[2];
-
-	// TODO: is this nonsense needed?
-	rs[0] = rhs; rs[1] = 0;
-	UT_UCS4_strcpy_char (cs, rs);
-
-	pimpl->append(cs, 1);
-	return *this;
+  return this->operator+=((unsigned char)rhs);
 }
 
 UT_UCS4String& UT_UCS4String::operator+=(unsigned char rhs)
@@ -1211,8 +1193,7 @@ UT_UCS4String& UT_UCS4String::operator+=(unsigned char rhs)
 	UT_UCS4Char cs[2];
 	char rs[2];
 
-	// TODO: is this nonsense needed?
-	rs[0] = (char)rhs; rs[1] = 0; // TODO: is this loss of 'unsigned' safe?
+	rs[0] = (char)rhs; rs[1] = 0;
 	UT_UCS4_strcpy_char (cs, rs);
 
 	pimpl->append(cs, 1);

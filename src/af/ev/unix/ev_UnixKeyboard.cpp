@@ -164,7 +164,6 @@ bool ev_UnixKeyboard::keyPressEvent(AV_View* pView, GdkEventKey* e)
 			*/
 			if(XAP_EncodingManager::get_instance()->isUnicodeLocale() || mLength == 0)
 			{
-			  //UT_sint32 u = keysym2ucs(e->keyval);
 			  UT_uint32 u = gdk_keyval_to_unicode (e->keyval);
 
 			  mLength = 1;
@@ -174,7 +173,7 @@ bool ev_UnixKeyboard::keyPressEvent(AV_View* pView, GdkEventKey* e)
 			}
 			else
 			{
-				UT_UCS4_mbtowc m;
+				UT_UCS4_mbtowc m ("UTF-8");
 				ucs=new UT_UCSChar[mLength];
 				for(int i=0;i<mLength;++i)
 			  	{

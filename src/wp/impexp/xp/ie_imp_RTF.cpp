@@ -1277,6 +1277,7 @@ IE_Imp_RTF::IE_Imp_RTF(PD_Document * pDocument)
 	m_cbBin(0),
 	m_pImportFile(NULL),
 	deflangid(0),
+	m_mbtowc (XAP_EncodingManager::get_instance()->getNative8BitEncodingName()),
 	m_TableControl(pDocument),
 	m_lastCellSDH(NULL),
 	m_bNestTableProps(false),
@@ -3958,10 +3959,8 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		}
 		else if (strcmp((char*)pKeyword, "trowd") == 0)
 		{
-			UT_DEBUGMSG(("SEVIOR: handling trowd paraprops %x \n",m_currentRTFState.m_paraProps));
 			if(getTable() == NULL)
 			{
-				UT_DEBUGMSG(("SEVIOR:Open Table trowd1 %x \n"));
 				OpenTable();
 				m_currentRTFState.m_paraProps.m_tableLevel = m_TableControl.getNestDepth();
 			}

@@ -31,15 +31,8 @@
 #include "ut_debugmsg.h"
 #include "ut_growbuf.h"
 #include <fribidi/fribidi.h>
-/*
-    If WITHOUT_MB is defined, UT_Mbtowc and UT_Wctomb won't be used.
-    I don't there there could be reason for defining WITHOUT_MB, since
-    UT_Mbtowc and UT_Wctomb use iconv internally, which works fine everywhere.
-*/
-#ifndef WITHOUT_MB
 #include "ut_mbtowc.h"
 #include "ut_wctomb.h"
-#endif
 
 #include "xap_EncodingManager.h"
 
@@ -695,8 +688,6 @@ UT_UCS2Char * UT_UCS2_strcpy(UT_UCS2Char * dest, const UT_UCS2Char * src)
 	return dest;
 }
 
-// TODO shouldn't all of the 'char *' strings be 'unsigned char *' strings ??
-
 UT_UCS2Char * UT_UCS2_strcpy_char(UT_UCS2Char * dest, const char * src)
 {
 	UT_ASSERT(dest);
@@ -705,19 +696,13 @@ UT_UCS2Char * UT_UCS2_strcpy_char(UT_UCS2Char * dest, const char * src)
 	UT_UCS2Char * d 		= dest;
 	unsigned char * s	= (unsigned char *) src;
 
-#ifndef WITHOUT_MB
-	static UT_UCS2_mbtowc m;
+	static UT_UCS2_mbtowc m(XAP_EncodingManager::get_instance()->getNative8BitEncodingName());
 	UT_UCS2Char wc;
-#endif
 
 	while (*s != 0)
 	  {
-#ifdef WITHOUT_MB
-	    *d++ = *s++;
-#else
 		if(m.mbtowc(wc,*s))*d++=wc;
 		s++;
-#endif
 	  }
 	*d = 0;
 
@@ -729,26 +714,9 @@ char * UT_UCS2_strcpy_to_char(char * dest, const UT_UCS2Char * src)
 	UT_ASSERT(dest);
 	UT_ASSERT(src);
 
-	char * 			d = dest;
-	UT_UCS2Char * 	s = (UT_UCS2Char *) src;
+	UT_ASSERT_NOT_REACHED();
 
-#ifndef WITHOUT_MB
-	UT_Wctomb w;
-#endif
-
-	while (*s != 0)
-	  {
-#ifdef WITHOUT_MB
-	    *d++ = *s++;
-#else
-		int length;
-		w.wctomb_or_fallback(d,length,*s++);
-		d+=length;
-#endif
-	  }
-	*d = 0;
-
-	return dest;
+	return NULL;
 }
 
 bool UT_UCS2_cloneString(UT_UCS2Char ** dest, const UT_UCS2Char * src)
@@ -764,39 +732,8 @@ bool UT_UCS2_cloneString(UT_UCS2Char ** dest, const UT_UCS2Char * src)
 
 bool UT_UCS2_cloneString_char(UT_UCS2Char ** dest, const char * src)
 {
-
-#ifdef WITHOUT_MB
-
-		UT_uint32 length = strlen(src) + 1;
-		*dest = (UT_UCS2Char *)UT_calloc(length,sizeof(UT_UCS2Char));
-		if (!*dest)
-				return false;
-		UT_UCS2_strcpy_char(*dest, src);
-
-		return true;
-#else
-
-		UT_uint32 length = MB_LEN_MAX*strlen(src) + 1;
-		*dest = (UT_UCS2Char *)UT_calloc(length,sizeof(UT_UCS2Char));
-		if (!*dest)
-				return false;
-		UT_UCS2Char * d= *dest;
-		unsigned char * s	= (unsigned char *) src;
-
-		UT_UCS2_mbtowc m;
-		UT_UCS2Char wc;
-
-		while (*s != 0)
-		{
-				if(m.mbtowc(wc,*s))*d++=wc;
-				s++;
-		}
-		*d = 0;
-
-		return true;
-
-#endif
-
+  UT_ASSERT_NOT_REACHED();
+  return false;
 }
 
 // convert each character in a string to ASCII uppercase
@@ -1461,19 +1398,13 @@ UT_UCS4Char * UT_UCS4_strcpy_char(UT_UCS4Char * dest, const char * src)
 	UT_UCS4Char * d 		= dest;
 	unsigned char * s	= (unsigned char *) src;
 
-#ifndef WITHOUT_MB
-	static UT_UCS4_mbtowc m;
+	static UT_UCS4_mbtowc m(XAP_EncodingManager::get_instance()->getNative8BitEncodingName());
 	UT_UCS4Char wc;
-#endif
 
 	while (*s != 0)
 	  {
-#ifdef WITHOUT_MB
-	    *d++ = *s++;
-#else
 		if(m.mbtowc(wc,*s))*d++=wc;
 		s++;
-#endif
 	  }
 	*d = 0;
 
@@ -1488,19 +1419,13 @@ char * UT_UCS4_strcpy_to_char(char * dest, const UT_UCS4Char * src)
 	char * 			d = dest;
 	UT_UCS4Char * 	s = (UT_UCS4Char *) src;
 
-#ifndef WITHOUT_MB
-	UT_Wctomb w;
-#endif
+	UT_Wctomb w(XAP_EncodingManager::get_instance()->getNative8BitEncodingName());
 
 	while (*s != 0)
 	  {
-#ifdef WITHOUT_MB
-	    *d++ = *s++;
-#else
 		int length;
 		w.wctomb_or_fallback(d,length,*s++);
 		d+=length;
-#endif
 	  }
 	*d = 0;
 
@@ -1520,37 +1445,11 @@ bool UT_UCS4_cloneString(UT_UCS4Char ** dest, const UT_UCS4Char * src)
 
 bool UT_UCS4_cloneString_char(UT_UCS4Char ** dest, const char * src)
 {
-
-#ifdef WITHOUT_MB
-
-		UT_uint32 length = strlen(src) + 1;
-		*dest = (UT_UCS4Char *)UT_calloc(length,sizeof(UT_UCS4Char));
-		if (!*dest)
-				return false;
-		UT_UCS4_strcpy_char(*dest, src);
-
-		return true;
-#else
-
-		UT_uint32 length = MB_LEN_MAX*strlen(src) + 1;
-		*dest = (UT_UCS4Char *)UT_calloc(length,sizeof(UT_UCS4Char));
-		if (!*dest)
-				return false;
-		UT_UCS4Char * d= *dest;
-		unsigned char * s	= (unsigned char *) src;
-
-		UT_UCS4_mbtowc m;
-		UT_UCS4Char wc;
-
-		while (*s != 0)
-		{
-				if(m.mbtowc(wc,*s))*d++=wc;
-				s++;
-		}
-		*d = 0;
-
-		return true;
-
-#endif
-
+  UT_uint32 length = strlen(src) + 1;
+  *dest = (UT_UCS4Char *)UT_calloc(length,sizeof(UT_UCS4Char));
+  if (!*dest)
+    return false;
+  UT_UCS4_strcpy_char(*dest, src);
+  
+  return true;
 }

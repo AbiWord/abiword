@@ -42,6 +42,7 @@
   Construct ImportStream
  */
 ImportStream::ImportStream() :
+	m_Mbtowc(XAP_EncodingManager::get_instance()->getNative8BitEncodingName()),
 	m_ucsLookAhead(0),
 	m_bEOF(false),
 	m_bRaw(false)

@@ -15,16 +15,23 @@
 class ABI_EXPORT UT_Wctomb
 {
 public:
+
   void initialize();
-  UT_Wctomb();
   UT_Wctomb(const char* to_charset);
-  UT_Wctomb(const UT_Wctomb& v);
   ~UT_Wctomb();
   int wctomb(char * pC,int &length,UT_UCS4Char wc);
   void wctomb_or_fallback(char * pC,int &length,UT_UCS4Char wc);
 
   void setOutCharset(const char* charset);
+
+  // TODO: make me private
+  UT_Wctomb();
+
  private:
+  // no implementations
+  UT_Wctomb(const UT_Wctomb& v);
+  UT_Wctomb& operator=(const UT_Wctomb &rhs);
+
   UT_iconv_t cd;
 };
 

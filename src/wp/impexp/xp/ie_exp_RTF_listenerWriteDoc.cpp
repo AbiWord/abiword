@@ -325,6 +325,7 @@ void s_RTF_ListenerWriteDoc::_outputData(const UT_UCSChar * data, UT_uint32 leng
 s_RTF_ListenerWriteDoc::s_RTF_ListenerWriteDoc(PD_Document * pDocument,
 											   IE_Exp_RTF * pie,
 											   bool bToClipboard)
+  : m_wctomb(XAP_EncodingManager::get_instance()->getNative8BitEncodingName())
 {
 	// The overall syntax for an RTF file is:
 	//

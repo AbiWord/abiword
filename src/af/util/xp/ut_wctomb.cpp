@@ -1,5 +1,5 @@
 /* AbiSource Program Utilities
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998-2002 AbiSource, Inc.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -25,74 +25,49 @@
 void UT_Wctomb::initialize()
 {
     UT_iconv_reset(cd);
-};
+}
 
 void UT_Wctomb::setOutCharset(const char* charset)
 {
     UT_iconv_close(cd);
     cd = UT_iconv_open(charset,ucs4Internal());
-    //UT_ASSERT(cd!=(iconv_t)-1); //it's better to return "?" instead of crashing
-};
+}
 
 UT_Wctomb::UT_Wctomb(const char* to_charset)
 {
-    cd = UT_iconv_open(to_charset,ucs4Internal());
-    UT_ASSERT(UT_iconv_isValid(cd)); //it's better to return "?" instead of crashing
-};
+    cd = UT_iconv_open(to_charset,UCS_INTERNAL);
+    UT_ASSERT(UT_iconv_isValid(cd)); // it's better to return "?" instead of crashing
+}
 
 UT_Wctomb::UT_Wctomb()
 {
     cd = UT_iconv_open(XAP_EncodingManager::get_instance()->getNative8BitEncodingName(),UCS_INTERNAL);
     UT_ASSERT(UT_iconv_isValid(cd));
-};
-
-UT_Wctomb::UT_Wctomb(const UT_Wctomb& v)
-{
-  // Shouldn't a copy also copy the encoding?
-    cd = UT_iconv_open(XAP_EncodingManager::get_instance()->getNative8BitEncodingName(),UCS_2_INTERNAL);
-    UT_ASSERT(UT_iconv_isValid(cd));
-};
+}
 
 UT_Wctomb::~UT_Wctomb()
 {
     if (UT_iconv_isValid(cd))
 	    UT_iconv_close(cd);
-};
+}
 
 int UT_Wctomb::wctomb(char * pC,int &length,UT_UCS4Char wc)
 {
-#if 0
-	// since iconv was initialized with the internal encoding, we must
-	// not do any swaps
-
-    char buf[sizeof(UT_UCS4Char)];
-#endif
-	char* obuf = pC;
-    const char* ibuf = (const char *) &wc;//buf;
-
-#if 0
-	{
-	int swap = XAP_EncodingManager::swap_utos ? 1 : 0;
-        UT_UCS4Char val = wc;
-	unsigned char b0 = val&0xff, b1 = val>>8, b2 = val>>16, b3 = val >> 24;
-	buf[swap ] = b0;
-	buf[!swap] = b1;
-	buf[swap + 2] = b2;
-	buf[!swap + 2] = b3;
-    }
-#endif
-    size_t inlen = 4, outlen = 100;
-    size_t len = UT_iconv(cd,&ibuf,&inlen,&obuf,&outlen);
-    if (len==(size_t)-1)
-	return 0;
-    length = 100-outlen;
-    return 1;
-};
+  char* obuf = pC;
+  const char* ibuf = (const char *) &wc;
+  
+  size_t inlen = 4, outlen = 100;
+  size_t len = UT_iconv(cd,&ibuf,&inlen,&obuf,&outlen);
+  if (len==(size_t)-1)
+    return 0;
+  length = 100-outlen;
+  return 1;
+}
 
 void UT_Wctomb::wctomb_or_fallback(char * pC,int &length,UT_UCS4Char wc)
 {
-    if (!wctomb(pC,length,wc)) {
-	pC[0]='?';
-	length=1;
-    };
-};
+  if (!wctomb(pC,length,wc)) {
+    pC[0]='?';
+    length=1;
+  }
+}

@@ -269,7 +269,6 @@ protected:
 	UT_Stack		m_utsListType;
 	UT_Vector		m_utvDataIDs;	// list of data ids for image enumeration
         UT_uint16               m_iImgCnt;
-	UT_Wctomb		m_wmctomb;
         bool                    m_bToClipboard;
   ie_Table mTableHelper;
 };

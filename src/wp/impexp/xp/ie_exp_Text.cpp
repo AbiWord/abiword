@@ -481,6 +481,7 @@ Text_Listener::Text_Listener(PD_Document * pDocument,
 							 bool bBigEndian)
 	: m_pDocument(pDocument),
 	  m_pie(pie),
+	  m_wctomb(XAP_EncodingManager::get_instance()->getNative8BitEncodingName()),
 	  // when we are going to the clipboard, we should implicitly
 	  // assume that we are starting in the middle of a block.
 	  // when going to a file we should not.

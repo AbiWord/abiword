@@ -63,7 +63,7 @@
 #define OUR_LINE_LIMIT		220			
 #define LINE_BUFFER_SIZE   OUR_LINE_LIMIT + 30
 
-#if (1 && (!defined(WITH_PANGO) || !defined(USE_XFT)))
+#if (!defined(WITH_PANGO) || !defined(USE_XFT))
 #include <gdk/gdkprivate.h>
 static bool isFontUnicode(GdkFont *font)
 {
@@ -741,7 +741,7 @@ void PS_Graphics::_drawCharsCJK(const UT_UCSChar* pChars, UT_uint32 iCharOffset,
 {
 	UT_DEBUGMSG(("_drawCharsCJK\n"));
 	if (!pWctomb)
-	    pWctomb = new UT_Wctomb;
+	    pWctomb = new UT_Wctomb(XAP_EncodingManager::get_instance()->getNative8BitEncodingName());
 	else
 	    pWctomb->initialize();
 	
@@ -827,7 +827,7 @@ void PS_Graphics::_drawCharsNonCJK(const UT_UCSChar* pChars, UT_uint32 iCharOffs
 {
 	UT_DEBUGMSG(("_drawCharsNonCJK\n"));
 	if (!pWctomb)
-	    pWctomb = new UT_Wctomb;
+	    pWctomb = new UT_Wctomb(XAP_EncodingManager::get_instance()->getNative8BitEncodingName());
 	else
 	    pWctomb->initialize();
 	

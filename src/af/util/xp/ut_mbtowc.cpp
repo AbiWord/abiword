@@ -32,7 +32,6 @@
 #include "errno.h"
 
 UT_UCS2_mbtowc::Converter::Converter (const char * from_charset) :
-  m_count(1),
   m_cd(UT_iconv_open (ucs2Internal (), from_charset))
 {
   // 
@@ -68,16 +67,9 @@ UT_UCS2_mbtowc::UT_UCS2_mbtowc (const char * from_charset) :
   // 
 }
 
-UT_UCS2_mbtowc::UT_UCS2_mbtowc (const UT_UCS2_mbtowc & rhs) :
-  m_converter(rhs.m_converter),
-  m_bufLen(0)
-{
-  m_converter->ref ();
-}
-
 UT_UCS2_mbtowc::~UT_UCS2_mbtowc ()
 {
-  if (!m_converter->unref ()) delete m_converter;
+  delete m_converter;
 }
 
 void UT_UCS2_mbtowc::setInCharset (const char * from_charset)
@@ -85,7 +77,7 @@ void UT_UCS2_mbtowc::setInCharset (const char * from_charset)
   Converter * converter = new Converter(from_charset);
   if (converter)
     {
-      if (!m_converter->unref ()) delete m_converter;
+      delete m_converter;
       m_converter = converter;
     }
 }
@@ -130,7 +122,6 @@ int UT_UCS2_mbtowc::mbtowc (UT_UCS2Char & wc, char mb)
 }
 
 UT_UCS4_mbtowc::Converter::Converter (const char * from_charset) :
-  m_count(1),
   m_cd(UT_iconv_open (UCS_INTERNAL, from_charset))
 {
   // 
@@ -166,16 +157,9 @@ UT_UCS4_mbtowc::UT_UCS4_mbtowc (const char * from_charset) :
   // 
 }
 
-UT_UCS4_mbtowc::UT_UCS4_mbtowc (const UT_UCS4_mbtowc & rhs) :
-  m_converter(rhs.m_converter),
-  m_bufLen(0)
-{
-  m_converter->ref ();
-}
-
 UT_UCS4_mbtowc::~UT_UCS4_mbtowc ()
 {
-  if (!m_converter->unref ()) delete m_converter;
+  delete m_converter;
 }
 
 void UT_UCS4_mbtowc::setInCharset (const char * from_charset)
@@ -183,7 +167,7 @@ void UT_UCS4_mbtowc::setInCharset (const char * from_charset)
   Converter * converter = new Converter(from_charset);
   if (converter)
     {
-      if (!m_converter->unref ()) delete m_converter;
+      delete m_converter;
       m_converter = converter;
     }
 }

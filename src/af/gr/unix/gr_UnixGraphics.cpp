@@ -59,17 +59,17 @@ const char* GR_Graphics::findNearestFont(const char* pszFontFamily,
 #endif
 }
 
-#if (1 && (!defined(WITH_PANGO) || !defined(USE_XFT)))
+#if (!defined(WITH_PANGO) || !defined(USE_XFT))
 #include <gdk/gdkprivate.h>
 static bool isFontUnicode(GdkFont *font)
 {
-	if(!font)
-	{
-		UT_DEBUGMSG(("gr_UnixGraphics: isFontUnicode: font is NULL !!!\n"));
-		return false;
-	}
+       if(!font)
+       {
+               UT_DEBUGMSG(("gr_UnixGraphics: isFontUnicode: font is NULL !!!\n"));
+               return false;
+       }
 
-	return false ;
+       return false ;
 }
 #endif
 
@@ -246,11 +246,6 @@ void GR_UnixGraphics::setLineProperties ( double inWidthPixels,
 }
 
 #if (!defined(WITH_PANGO) || !defined(USE_XFT))
-/* let's cache this, since construction of UT_Wctomb is rather slow */
-static UT_Wctomb* w = NULL;
-static char text[MB_LEN_MAX];
-static int text_length;
-static bool fallback_used;
 
 #define WCTOMB_DECLS \
 	if (!w) {	\
