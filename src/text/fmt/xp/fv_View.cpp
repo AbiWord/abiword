@@ -1233,6 +1233,8 @@ void    FV_View::processSelectedBlocks(List_Type listType)
 	UT_Vector vBlock;
 	getListBlocksInSelection( &vBlock);
   	UT_uint32 i;
+	m_pDoc->beginUserAtomicGlob();
+
 	for(i=0; i< vBlock.getItemCount(); i++)
 	{
 	        fl_BlockLayout * pBlock =  (fl_BlockLayout *) vBlock.getNthItem(i);
@@ -1257,6 +1259,7 @@ void    FV_View::processSelectedBlocks(List_Type listType)
 		      } 
 		}
 	}
+	m_pDoc->endUserAtomicGlob();
 }
 
 
@@ -1882,9 +1885,11 @@ UT_Bool FV_View::setBlockFormat(const XML_Char * properties[])
 
 UT_Bool FV_View::cmdStartList(const XML_Char * style)
 {
-
+	m_pDoc->beginUserAtomicGlob();
         fl_BlockLayout * pBlock = getCurrentBlock();
 	pBlock->StartList( style);
+	m_pDoc->endUserAtomicGlob();
+
 	return UT_TRUE;
 }
 
@@ -1909,8 +1914,11 @@ void    FV_View::changeListStyle( fl_AutoNum * pAuto, XML_Char * style)
 UT_Bool FV_View::cmdStopList(void)
 {
 
-	fl_BlockLayout * pBlock = _findBlockAtPosition(getPoint());
+	m_pDoc->beginUserAtomicGlob();
+	fl_BlockLayout * pBlock = getCurrentBlock();
 	pBlock->StopList();
+	m_pDoc->endUserAtomicGlob();
+
 	return UT_TRUE;
 }
 
@@ -2234,11 +2242,63 @@ UT_UCSChar * FV_View::getSelectionText(void)
 	return NULL;
 }
 
+UT_Bool FV_View::isTabListBehindPoint(void)
+{
+        PT_DocPosition cpos = getPoint();      
+	PT_DocPosition ppos = cpos - 1;
+	PT_DocPosition posBOD;
+	UT_Bool bRes;
+	UT_Bool bEOL = UT_FALSE;
+	UT_sint32 xPoint, yPoint, iPointHeight;
+
+	bRes = m_pDoc->getBounds(UT_FALSE, posBOD);
+	UT_ASSERT(bRes);
+	if(cpos <= posBOD - 1)
+	{
+	         return UT_FALSE;
+	}
+	
+	fl_BlockLayout* pBlock = _findBlockAtPosition(cpos);
+	if (!pBlock)
+		return UT_FALSE;
+	fl_BlockLayout* ppBlock = _findBlockAtPosition(ppos);
+	if (!ppBlock)
+		return UT_FALSE;
+	if(pBlock != ppBlock)
+	        return UT_FALSE;
+	fp_Run* pRun = pBlock->findPointCoords(ppos, bEOL, xPoint, yPoint, iPointHeight);
+	if(pRun->getType() != FPRUN_TAB)
+	        return UT_FALSE;
+	pRun = pRun->getPrev();
+	while((pRun != NULL) && (pRun->getType()== FPRUN_FMTMARK))
+	{
+	        pRun = pRun->getPrev();
+	}
+	if(pRun == NULL)
+	        return UT_FALSE;
+	if(pRun->getType() != FPRUN_FIELD)
+	{
+	        return UT_FALSE;
+	}
+	else
+	{
+	        fp_FieldRun * pFRun = (fp_FieldRun *) pRun;
+		if(pFRun->getFieldType() != FPFIELD_list_label)
+		{
+		         return UT_FALSE;
+		}
+	        else
+		{
+		         return UT_TRUE;
+		}
+	}
+}
+
 void FV_View::cmdCharDelete(UT_Bool bForward, UT_uint32 count)
 {
-  const XML_Char * properties[] = { (XML_Char*)"font-family", NULL, 0};
-  const XML_Char ** props_in = NULL;
-  const XML_Char * currentfont;
+        const XML_Char * properties[] = { (XML_Char*)"font-family", NULL, 0};
+	const XML_Char ** props_in = NULL;
+	const XML_Char * currentfont;
   
 	if (!isSelectionEmpty())
 	{
@@ -2254,6 +2314,14 @@ void FV_View::cmdCharDelete(UT_Bool bForward, UT_uint32 count)
 	}
 	else
 	{
+	  //
+	  // Look to see if there is a tab - list label
+	  //
+	        if((bForward == UT_FALSE) && (count == 1))
+		{
+		      if(isTabListBehindPoint() == UT_TRUE)
+			     count = 2;
+		}
 	  /*
 	    Code to deal with font boundary problem. 
 TODO: This should really be fixed by someone who understands how this code
@@ -2311,7 +2379,7 @@ deleted.
 			  {
 			    setCharFormat(properties);
 			  }
-	}
+		}
 
 		_generalUpdate();
 		free(props_in);

@@ -4230,8 +4230,6 @@ void    fl_BlockLayout::StartList( const XML_Char * style)
 	FV_View* pView = m_pLayout->getView();
 	UT_ASSERT(pView);
 
-	m_pDoc->beginUserAtomicGlob();
-
 	id = rand();
 	sprintf(lid, "%i", id);
         pView->_eraseInsertionPoint();
@@ -4249,7 +4247,6 @@ void    fl_BlockLayout::StartList( const XML_Char * style)
 	pView->_eraseInsertionPoint();
 
 	listUpdate();
-	m_pDoc->endUserAtomicGlob();
 	pView->_generalUpdate();
 	pView->_ensureThatInsertionPointIsOnScreen();
 }
@@ -4264,8 +4261,6 @@ void    fl_BlockLayout::StopList(void)
 	UT_uint32 id;
 	FV_View* pView = m_pLayout->getView();
 	UT_ASSERT(pView);
-
-	m_pDoc->beginUserAtomicGlob();
 
 	UT_uint32 currLevel = getLevel();
 
@@ -4305,7 +4300,6 @@ void    fl_BlockLayout::StopList(void)
 	if(offset > 0 )
                 pView->_setPoint(pView->getPoint()+offset-2);  
 
-	m_pDoc->endUserAtomicGlob();
 	pView->_generalUpdate();
 	if (!pView->_ensureThatInsertionPointIsOnScreen())
 	{
@@ -4357,8 +4351,6 @@ void  fl_BlockLayout::resumeList( fl_BlockLayout * prevList)
         UT_ASSERT(prevList);
 	XML_Char lid[15], buf[5];
 
-	m_pDoc->beginUserAtomicGlob();
-
 	List_Type rType = prevList->getListType();
 	XML_Char * style = getListStyleString(rType);
 	UT_uint32 id = prevList->getAutoNum()->getID();
@@ -4378,7 +4370,6 @@ void  fl_BlockLayout::resumeList( fl_BlockLayout * prevList)
 	m_pDoc->changeStruxFmt(PTC_AddFmt, getPosition(), getPosition(), attribs, NULL, PTX_Block);
         m_bListItem = UT_TRUE;
         listUpdate();
-	m_pDoc->endUserAtomicGlob();
         pView->_generalUpdate();
 }
 

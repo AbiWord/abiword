@@ -157,8 +157,9 @@ public:
 
 	UT_Bool setBlockFormat(const XML_Char * properties[]);
 	UT_Bool getBlockFormat(const XML_Char *** properties,UT_Bool bExpandStyles=UT_TRUE);
-	void    processSelectedBlocks(List_Type listType);
 
+	UT_Bool isTabListBehindPoint(void);
+	void    processSelectedBlocks(List_Type listType);
 	void    getListBlocksInSelection( UT_Vector * vBlock);
 	UT_Bool isPointBeforeListLabel(void);
 	UT_Bool isCurrentListBlockEmpty(void);
