@@ -68,9 +68,9 @@ const EV_Toolbar_LabelSet * EV_Toolbar::getToolbarLabelSet(void) const
 }
 
 bool EV_Toolbar::invokeToolbarMethod(AV_View * pView,
-										EV_EditMethod * pEM,
-										UT_UCSChar * pData,
-										UT_uint32 dataLength)
+									 EV_EditMethod * pEM,
+									 const UT_UCSChar * pData,
+									 UT_uint32 dataLength)
 {
 	UT_ASSERT(pView);
 	UT_ASSERT(pEM);

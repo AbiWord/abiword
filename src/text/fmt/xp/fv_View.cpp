@@ -7242,8 +7242,6 @@ void FV_View::populateThisHdrFtr(HdrFtrType hfType, bool bSkipPTSaves)
 	clearCursorWait();
 }
 
-
-
 /*!
  * This function returns true if there is a header on the current page.
 \returns true if is there a header on the current page.

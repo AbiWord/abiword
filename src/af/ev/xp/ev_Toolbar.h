@@ -46,7 +46,7 @@ public:
 
 	bool invokeToolbarMethod(AV_View * pView,
 							 EV_EditMethod * pEM,
-							 UT_UCS4Char * pData,
+							 const UT_UCS4Char * pData,
 							 UT_uint32 dataLength);
 
 	virtual bool synthesize(void) { return (false); } // Abstract

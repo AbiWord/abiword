@@ -378,12 +378,8 @@ s_color_changed (ColorCombo * combo, GdkColor * color, gboolean custom, gboolean
 	if (!color || !combo || !wd)
 	  return;
 
-	gchar str [7];
-	g_snprintf (str, 7, "%02x%02x%02x", COLOR_NORMALIZE (color->red), COLOR_NORMALIZE (color->green), COLOR_NORMALIZE (color->blue));
-
-	UT_DEBUGMSG(("DOM: the color is '%s'\n", str));
-
-	wd->m_pUnixToolbar->toolbarEvent(wd, static_cast<UT_UCSChar *>(str), strlen (str));
+	UT_UTF8String str = UT_UTF8String_sprintf ("%02x%02x%02x", COLOR_NORMALIZE (color->red), COLOR_NORMALIZE (color->green), COLOR_NORMALIZE (color->blue));
+	wd->m_pUnixToolbar->toolbarEvent(wd, str.ucs4_str().ucs4_str(), str.size());
 }
 
 #undef COLOR_NORMALIZE
@@ -418,8 +414,8 @@ EV_UnixToolbar::~EV_UnixToolbar(void)
 }
 
 bool EV_UnixToolbar::toolbarEvent(_wd * wd,
-									 UT_UCSChar * pData,
-									 UT_uint32 dataLength)
+								  const UT_UCSChar * pData,
+								  UT_uint32 dataLength)
 
 {
 	// user selected something from this toolbar.
@@ -884,11 +880,11 @@ bool EV_UnixToolbar::synthesize(void)
 			    GtkWidget * combo;
 				GdkPixbuf * pixbuf;
 			    if (pAction->getItemType() == EV_TBIT_ColorFore) {
-					pixbuf = gdk_pixbuf_new_from_xpm_data (tb_text_fgcolor_xpm);
+					pixbuf = gdk_pixbuf_new_from_xpm_data (static_cast<const char **>(tb_text_fgcolor_xpm));
 					combo = color_combo_new (pixbuf, szToolTip, &e_black, color_group_fetch("foreground_color", NULL));
 			    }
 				else {
-					pixbuf = gdk_pixbuf_new_from_xpm_data (tb_text_bgcolor_xpm);
+					pixbuf = gdk_pixbuf_new_from_xpm_data (static_cast<const char **>(tb_text_bgcolor_xpm));
 					combo = color_combo_new (pixbuf, szToolTip, NULL, color_group_fetch("background_color", NULL));
 				}
 			    gtk_combo_box_set_title (GTK_COMBO_BOX (combo),

@@ -47,7 +47,7 @@ public:
 	
 	virtual ~EV_UnixToolbar(void);
 
-	bool toolbarEvent(_wd * wd, UT_UCSChar * pData, UT_uint32 dataLength);
+	bool toolbarEvent(_wd * wd, const UT_UCSChar * pData, UT_uint32 dataLength);
 	virtual bool synthesize(void);
 	bool bindListenerToView(AV_View * pView);
 	virtual bool refreshToolbar(AV_View * pView, AV_ChangeMask mask);
