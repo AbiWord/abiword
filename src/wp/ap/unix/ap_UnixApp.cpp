@@ -346,6 +346,7 @@ void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, UT_Bool bUseCl
 
 	static const char * aszFormatsAccepted[] = { AP_CLIPBOARD_RTF,
 												 AP_CLIPBOARD_TEXTPLAIN_8BIT,
+												 AP_CLIPBOARD_STRING,
 												 0 /* must be last */ };
 
 	// TODO currently i have this set so that a ^v or Menu[Edit/Paste] will
@@ -383,7 +384,8 @@ void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, UT_Bool bUseCl
 		return;
 	}
 
-	if (UT_stricmp(szFormatFound,AP_CLIPBOARD_TEXTPLAIN_8BIT) == 0)
+	if (   (UT_stricmp(szFormatFound,AP_CLIPBOARD_TEXTPLAIN_8BIT) == 0)
+	    || (UT_stricmp(szFormatFound,AP_CLIPBOARD_STRING) == 0))
 	{
 		iLen = MyMin(iLen,strlen((const char *)pData));
 		UT_DEBUGMSG(("PasteFromClipboard: pasting %d bytes in format [%s].\n",iLen,szFormatFound));
