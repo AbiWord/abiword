@@ -26,13 +26,6 @@ OBJS=			$(OBJDIR)/cdump.$(OBJ_SUFFIX)
 
 PROGRAM=		$(BINDIR)/cdump$(EXE_SUFFIX)
 
-ABI_APPLIBS=		
-ABI_APPLIBDEP=		
-
-# libdl flags go into the process later
-ABI_LIBS=
-
-# include both dynamic and static binaries
 TARGETS=		$(PROGRAM)
 
 include $(ABI_ROOT)/src/config/abi_rules.mk
@@ -41,15 +34,10 @@ include $(ABI_ROOT)/src/config/abi_rules.mk
 ## everything below here must *FOLLOW* abi_rules
 ##################################################################
 
-# One build gets dynamic libdl flags, the other gets static flags
-DYNAMIC_LDFLAGS=	$(addprefix -l,$(DL_LIBS))
-
-# we override the $(PROGRAM) rule.
-
-$(PROGRAM): $(OBJS) $(EXTRA_LIBDEP)
+$(PROGRAM): $(OBJS)
 	@$(MAKE_OBJDIR)
-	@echo Linking dynamic $(PROGRAM)
-	@$(CCC) -o $@ $(CFLAGS) $(OBJS) $(DYNAMIC_LDFLAGS) -L/usr/local/lib $(LDFLAGS) $(EXTRA_LIBS) $(XLDFLAGS)
+	@echo Linking $(PROGRAM)
+	@$(CCC) -o $@ $(CFLAGS) $(OBJS)
 
 build:: $(TARGETS)
 	@echo cdump built
