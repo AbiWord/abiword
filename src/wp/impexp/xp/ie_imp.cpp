@@ -34,7 +34,9 @@
 #include "ie_imp_UTF8.h"
 #include "ie_imp_WML.h"
 #include "ie_imp_GraphicAsDocument.h"
-
+#ifdef DEBUG
+#include "ie_imp_XHTML.h"
+#endif
 /*****************************************************************/
 /*****************************************************************/
 
@@ -62,6 +64,9 @@ static struct _imp s_impTable[] =
 	DeclareImporter(IE_Imp_UTF8),
 	DeclareImporter(IE_Imp_Text),
 	DeclareImporter(IE_Imp_WML),
+#ifdef DEBUG
+	DeclareImporter(IE_Imp_XHTML),
+#endif
 };
 
 		
