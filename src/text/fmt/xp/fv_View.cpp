@@ -9022,12 +9022,13 @@ void FV_View::getTopRulerInfo(AP_TopRulerInfo * pInfo)
 
 		pInfo->m_mode = AP_TopRulerInfo::TRI_MODE_COLUMNS;
 
-		static char buf[20];
+		UT_String buf;
 		char * old_locale = setlocale(LC_NUMERIC,"C");
-		snprintf(buf, sizeof(buf), "%.4fin", m_pDoc->m_docPageSize.Width(DIM_IN));
+		UT_String_sprintf(buf, "%.4fin", m_pDoc->m_docPageSize.Width(DIM_IN));
 		setlocale(LC_NUMERIC,old_locale); // restore original locale
-
-		pInfo->m_xPaperSize = m_pG->convertDimension(buf);
+		
+		static char *cbuf = buf.c_str();
+		pInfo->m_xPaperSize = m_pG->convertDimension(cbuf);
 		pInfo->m_xPageViewMargin = getPageViewLeftMargin();
 
 		pInfo->m_xrPoint = xCaret - pContainer->getX();
