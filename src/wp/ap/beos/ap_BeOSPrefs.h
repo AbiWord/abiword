@@ -27,8 +27,10 @@ class AP_BeOSPrefs : public AP_Prefs
 public:
 	AP_BeOSPrefs(XAP_App * pApp);
 	
-	virtual const char *	getPrefsPathname(void) const;
 	virtual void			overlayEnvironmentPrefs(void);
+	
+protected:
+	virtual const char *	_getPrefsPathname(void) const;
 };
 
 #endif /* AP_BEOSPREFS_H */

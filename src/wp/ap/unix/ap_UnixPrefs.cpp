@@ -33,7 +33,7 @@ AP_UnixPrefs::AP_UnixPrefs(XAP_App * pApp)
 {
 }
 
-const char * AP_UnixPrefs::getPrefsPathname(void) const
+const char * AP_UnixPrefs::_getPrefsPathname(void) const
 {
 	/* return a pointer to a static buffer */
 	static UT_String buf;

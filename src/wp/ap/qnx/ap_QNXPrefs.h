@@ -27,8 +27,9 @@ class AP_QNXPrefs : public AP_Prefs
 public:
 	AP_QNXPrefs(XAP_App * pApp);
 	
-	virtual const char *	getPrefsPathname(void) const;
 	virtual void			overlayEnvironmentPrefs(void);
+protected:
+	virtual const char *	_getPrefsPathname(void) const;
 };
 
 #endif /* AP_QNXPREFS_H */

@@ -33,7 +33,7 @@ AP_BeOSPrefs::AP_BeOSPrefs(XAP_App * pApp)
 {
 }
 
-const char * AP_BeOSPrefs::getPrefsPathname(void) const
+const char * AP_BeOSPrefs::_getPrefsPathname(void) const
 {
 	/* return a pointer to a static buffer */
 
