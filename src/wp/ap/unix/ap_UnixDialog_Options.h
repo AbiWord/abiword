@@ -55,6 +55,7 @@ public:
  	SET_GATHER			(SpellInternet,		UT_Bool );
  
  	SET_GATHER			(SmartQuotesEnable,	UT_Bool );
+	SET_GATHER			(DefaultPageSize,  fp_PageSize::Predefined);
  
  	SET_GATHER			(PrefsAutoSave,		UT_Bool );
  
@@ -102,6 +103,7 @@ public:
 	GtkWidget * m_buttonSpellIgnoreReset;
 
     GtkWidget * m_checkbuttonSmartQuotesEnable;
+    GtkWidget * m_listDefaultPageSize;
 
     GtkWidget * m_checkbuttonPrefsAutoSave;
 	GtkWidget * m_comboPrefsScheme;

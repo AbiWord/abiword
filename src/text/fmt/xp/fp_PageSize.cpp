@@ -1,7 +1,10 @@
 // fp_PageSize.cpp
+#include "string.h"
+
 #include "fp_PageSize.h"
 #include "ut_units.h"
 #include "ut_assert.h"
+#include "ut_debugmsg.h"
 
 
 // This class stores the pagesize in mm. The resoning behind
@@ -9,33 +12,36 @@
 // If anyone think it's more apropriate to express it in meters,
 // you're free to change the implementation.
 
+const int cMaxSymbolicLength = 7;
+
 struct private_pagesize_sizes
 {
 	double w;
 	double h;
 	fp_PageSize::Unit u;
+	char name[cMaxSymbolicLength];
 };
 
 const private_pagesize_sizes
 	pagesizes[fp_PageSize::_last_predefined_pagesize_dont_use_] =
 {
-	{ 841.0, 1189.0, fp_PageSize::mm	},		// A0
-	{ 594.0,  841.0, fp_PageSize::mm	},		// A1
-	{ 420.0,  594.0, fp_PageSize::mm	},		// A2
-	{ 297.0,  420.0, fp_PageSize::mm	},		// A3
-	{ 210.0,  297.0, fp_PageSize::mm	},		// A4
-	{ 148.0,  210.0, fp_PageSize::mm	},		// A5
-	{ 105.0,  148.0, fp_PageSize::mm	},		// A6
-	{1000.0, 1414.0, fp_PageSize::mm	},		// B0
-	{ 707.0, 1000.0, fp_PageSize::mm	},		// B1
-	{ 500.0,  707.0, fp_PageSize::mm	},		// B2
-	{ 353.0,  500.0, fp_PageSize::mm	},		// B3
-	{ 250.0,  353.0, fp_PageSize::mm	},		// B4
-	{ 176.0,  250.0, fp_PageSize::mm	},		// B5
-	{ 125.0,  176.0, fp_PageSize::mm	},		// B6
-	{   8.5,   14.0, fp_PageSize::inch	},		// Legal
-	{   8.5,   13.0, fp_PageSize::inch	},		// Folio
-	{   8.5,   11.0, fp_PageSize::inch	}	// Letter
+	{ 841.0, 1189.0, fp_PageSize::mm,	"A0"		},
+	{ 594.0,  841.0, fp_PageSize::mm,	"A1"		},
+	{ 420.0,  594.0, fp_PageSize::mm,	"A2"		},
+	{ 297.0,  420.0, fp_PageSize::mm,	"A3"		},
+	{ 210.0,  297.0, fp_PageSize::mm,	"A4"		},
+	{ 148.0,  210.0, fp_PageSize::mm,	"A5"		},
+	{ 105.0,  148.0, fp_PageSize::mm,	"A6"		},
+	{1000.0, 1414.0, fp_PageSize::mm,	"B0"		},
+	{ 707.0, 1000.0, fp_PageSize::mm,	"B1"		},
+	{ 500.0,  707.0, fp_PageSize::mm,	"B2"		},
+	{ 353.0,  500.0, fp_PageSize::mm,	"B3"		},
+	{ 250.0,  353.0, fp_PageSize::mm,	"B4"		},
+	{ 176.0,  250.0, fp_PageSize::mm,	"B5"		},
+	{ 125.0,  176.0, fp_PageSize::mm,	"B6"		},
+	{   8.5,   14.0, fp_PageSize::inch,	"Legal" 	},
+	{   8.5,   13.0, fp_PageSize::inch,	"Folio" 	},
+	{   8.5,   11.0, fp_PageSize::inch,	"Letter"	}
 };
 
 const double ScaleFactors[fp_PageSize::_last_predefined_unit_dont_use_] =
@@ -50,6 +56,11 @@ const double ScaleFactors[fp_PageSize::_last_predefined_unit_dont_use_] =
 fp_PageSize::fp_PageSize(Predefined preDef)
 {
 	Set(preDef);
+}
+
+fp_PageSize::fp_PageSize(const char *name)
+{
+	Set(name);
 }
 
 fp_PageSize::fp_PageSize(double w, double h, Unit u)
@@ -67,8 +78,16 @@ void fp_PageSize::Set(double w, double h, Unit u)
 
 void fp_PageSize::Set(Predefined preDef)
 {
+	UT_ASSERT((preDef >= 0) && (preDef < _last_predefined_pagesize_dont_use_));
+
 	const private_pagesize_sizes& size = pagesizes[preDef];
 	Set(size.w, size.h, size.u);
+}
+
+void fp_PageSize::Set(const char *name)
+{
+	UT_DEBUGMSG(("fp_PageSize::Set(\"%s\")\n", (char*) name));
+	Set(NameToPredefined(name));
 }
 
 double fp_PageSize::Width(Unit u) const
@@ -83,3 +102,30 @@ double fp_PageSize::Height(Unit u) const
 	return m_iHeight / ScaleFactors[u];
 }
 
+fp_PageSize::Predefined fp_PageSize::NameToPredefined(const char *name)
+{
+	Predefined preDef;
+	// determine the predefined layout the name represents
+	for(preDef=static_cast<Predefined>(0);
+	    preDef < _last_predefined_pagesize_dont_use_;
+		static_cast<int>(preDef)++)
+	{
+		if (0 == strcmp(pagesizes[preDef].name, name)) {
+			break;
+		}
+	}
+
+	if ((preDef >= 0) && (preDef < _last_predefined_pagesize_dont_use_)) {
+		return preDef;
+	}
+
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	return fp_PageSize::Letter;
+}
+
+const char * fp_PageSize::PredefinedToName(Predefined preDef)
+{
+	UT_ASSERT((preDef >= 0) && (preDef < _last_predefined_pagesize_dont_use_));
+
+	return pagesizes[preDef].name;
+}

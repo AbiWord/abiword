@@ -71,6 +71,9 @@
 /* append suffixes to saved files */
 #define XAP_PREF_DEFAULT_UseSuffix                  "1"
 
+#define XAP_PREF_KEY_DefaultPageSize                "DefaultPageSize"
+#define XAP_PREF_DEFAULT_DefaultPageSize             "Letter"
+
 #else /* XAP_PREFS_SCHEMEID_H */
 #ifdef dcl
 
@@ -84,5 +87,6 @@ dcl(RemapGlyphsTable)
 
 dcl(SmartQuotesEnable)
 dcl(UseSuffix)
+dcl(DefaultPageSize)
 #endif /* dcl */
 #endif /* XAP_PREFS_SCHEMEID_H */

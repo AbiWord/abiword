@@ -55,6 +55,7 @@ public:
  	SET_GATHER			(SpellInternet,		UT_Bool );
  
 	SET_GATHER			(SmartQuotesEnable, UT_Bool );
+	SET_GATHER			(DefaultPagesize,   fp_PageSize::Predefined);
  	SET_GATHER			(PrefsAutoSave,		UT_Bool );
  
  	SET_GATHER			(ViewShowRuler,		UT_Bool );
@@ -79,6 +80,9 @@ public:
 	
  protected:
 	class OptionsWin  *newwin;
+
+	// FIXME: replace this with *real* gui code */
+	fp_PageSize::Predefined defaultPageSize;
 };
 
 #endif /* AP_BEOSDIALOG_OPTIONS_H */

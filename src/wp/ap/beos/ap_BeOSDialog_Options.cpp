@@ -640,6 +640,20 @@ void    AP_BeOSDialog_Options::_setViewRulerUnits(UT_Dimension dim)
 	units->Menu()->ItemAt(n1)->SetMarked(true);//Select(n1);
 }
 
+fp_PageSize::Predefined AP_BeOSDialog_Options::_gatherDefaultPageSize(void)
+{
+	// FIXME: replace this with *real* gui code
+	return defaultPaperSize;
+}
+
+void	AP_BeOSDialog_Options::_setDefaultPageSize(fp_PageSize::Predefined pre)
+{
+	// FIXME: replace this with *real* gui code
+	defaultPageSize = pre;
+}
+
+void 
+
 int AP_BeOSDialog_Options::_gatherNotebookPageNum(void) 
 {				
 	return 0;

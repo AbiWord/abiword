@@ -196,6 +196,7 @@ dcl(DLG_Options_Btn_IgnoreReset,		"&Reset")
 dcl(DLG_Options_Btn_IgnoreEdit,			"&Edit")
 
 dcl(DLG_Options_Label_SmartQuotesEnable,"Enable smart quotes")
+dcl(DLG_Options_Label_DefaultPageSize, "Default page size")
 
 dcl(DLG_Options_Label_PrefsAutoSave,	"&Automatically save this Scheme")
 dcl(DLG_Options_Label_PrefsCurrentScheme,	"Current Preferences Scheme")

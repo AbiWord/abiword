@@ -94,10 +94,12 @@ Ed Stafford <dysan_2000@hotmail.com>            Ghost cursor fix
 <kstailey@kstailey.tzo.com>                     OpenBSD
 Owen Stenseth <owen@pdaverticals.com>           script to output translation data
 Nigel Stepp <stepp@mithril.res.cmu.edu>         VI keybindings
+Keith Stribley                                  Piece Table Fields
 Jim Studt <jim@federated.com>                   ARM configuration
 Peter Teichman <peter@helixcode.com>		XFree86 4.0 Fix
 Petr Tesarik <tesarik@lupa.cz>                  X11 select and Paste
 Gary Thomas <gdt@linuxppc.org>                  LinuxPPC
+Daniel Thompson <D.Thompson@gmx.net>            Page Size Option.
 Dave Thompson <thompson@pdnt.com>
 Sam Tobin-Hochstadt <sytobinh@uchicago.edu>     Lots of fun stuff
 John Tunison <nosinut@WIND.REM.CMU.EDU>         GNOME dialogs

@@ -60,6 +60,7 @@ public:
  	SET_GATHER			(SpellInternet,		UT_Bool );
  
 	SET_GATHER			(SmartQuotesEnable, UT_Bool );
+ 	SET_GATHER			(DefaultPageSize,	fp_PageSize::Predefined );
  	SET_GATHER			(PrefsAutoSave,		UT_Bool );
 
  	SET_GATHER			(ViewShowRuler,		UT_Bool );
@@ -140,6 +141,9 @@ public:
 	PtWidget_t * m_buttonCancel;
 
 	int			 done;
+
+	// FIXME: replace this with *real* gui code */
+	fp_PageSize::Predefined defaultPageSize;
 };
 
 #endif /* AP_QNXDIALOG_OPTIONS_H */

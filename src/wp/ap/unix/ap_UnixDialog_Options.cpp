@@ -209,6 +209,9 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents ()
 	GtkWidget *tableOther;
 	GtkWidget *checkbuttonSmartQuotesEnable;
 	GtkWidget *labelSmartQuotes;
+	GtkWidget *labelDefaultPageSize;
+	GtkWidget *listDefaultPageSize;
+	GtkWidget *listDefaultPageSize_menu;
 
 	GtkWidget *tablePreferences;
 	GtkWidget *checkbuttonPrefsAutoSave;
@@ -607,7 +610,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents ()
 
 
 	// OTHER STUFF (including SMART QUOTES) //////////////////////////////
-	tableOther = gtk_table_new (2, 3, FALSE);
+	tableOther = gtk_table_new (4, 3, FALSE);
 	gtk_widget_ref (tableOther);
 	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "tableOther", tableOther,
 	                          (GtkDestroyNotify) gtk_widget_unref);
@@ -623,6 +626,129 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents ()
 	gtk_table_attach (GTK_TABLE (tableOther), checkbuttonSmartQuotesEnable, 0, 3, 0, 1,
 	                  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
 	                  (GtkAttachOptions) (0), 0, 0);
+
+	
+	labelDefaultPageSize = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_Options_Label_DefaultPageSize));
+	gtk_widget_ref (labelDefaultPageSize);
+	gtk_object_set_data_full(GTK_OBJECT(windowOptions), "labelDefaultPageSize", labelDefaultPageSize, (GtkDestroyNotify) gtk_widget_unref);
+	// force left align
+	gtk_misc_set_alignment (GTK_MISC(labelDefaultPageSize), 0.0, 0.5);
+	gtk_widget_show(labelDefaultPageSize);
+	gtk_table_attach (GTK_TABLE (tableOther), labelDefaultPageSize, 0, 1, 1, 2, (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), (GtkAttachOptions) (0), 0, 0);
+
+	listDefaultPageSize = gtk_option_menu_new ();
+	gtk_widget_ref (listDefaultPageSize);
+	gtk_object_set_data_full (GTK_OBJECT(windowOptions), "listDefaultPageSize", listDefaultPageSize, (GtkDestroyNotify) gtk_widget_unref);
+	gtk_widget_show (listDefaultPageSize);
+	gtk_table_attach (GTK_TABLE (tableOther), listDefaultPageSize, 1, 2, 1, 2, (GtkAttachOptions) (0), (GtkAttachOptions) (0), 0, 0);
+	//gtk_table_attach (GTK_TABLE (tableOther), listDefaultPageSize, 1, 2, 1, 2, (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), (GtkAttachOptions) (0), 0, 0);
+
+	listDefaultPageSize_menu = gtk_menu_new ();
+// TODO: decide whether page sizes are universal or whether they require translating
+	glade_menuitem = gtk_menu_item_new_with_label (_("A0"));
+ 	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_OPTION_PTR, (gpointer) listDefaultPageSize);
+	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_VALUE_TAG, (gpointer) fp_PageSize::A0);
+	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(glade_menuitem);
+	gtk_widget_show (glade_menuitem);
+	gtk_menu_append (GTK_MENU (listDefaultPageSize_menu), glade_menuitem);
+	glade_menuitem = gtk_menu_item_new_with_label (_("A1"));
+ 	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_OPTION_PTR, (gpointer) listDefaultPageSize);
+	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_VALUE_TAG, (gpointer) fp_PageSize::A1);
+	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(glade_menuitem);
+	gtk_widget_show (glade_menuitem);
+	gtk_menu_append (GTK_MENU (listDefaultPageSize_menu), glade_menuitem);
+	glade_menuitem = gtk_menu_item_new_with_label (_("A2"));
+ 	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_OPTION_PTR, (gpointer) listDefaultPageSize);
+	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_VALUE_TAG, (gpointer) fp_PageSize::A2);
+	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(glade_menuitem);
+	gtk_widget_show (glade_menuitem);
+	gtk_menu_append (GTK_MENU (listDefaultPageSize_menu), glade_menuitem);
+	glade_menuitem = gtk_menu_item_new_with_label (_("A3"));
+ 	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_OPTION_PTR, (gpointer) listDefaultPageSize);
+	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_VALUE_TAG, (gpointer) fp_PageSize::A3);
+	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(glade_menuitem);
+	gtk_widget_show (glade_menuitem);
+	gtk_menu_append (GTK_MENU (listDefaultPageSize_menu), glade_menuitem);
+	glade_menuitem = gtk_menu_item_new_with_label (_("A4"));
+ 	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_OPTION_PTR, (gpointer) listDefaultPageSize);
+	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_VALUE_TAG, (gpointer) fp_PageSize::A4);
+	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(glade_menuitem);
+	gtk_widget_show (glade_menuitem);
+	gtk_menu_append (GTK_MENU (listDefaultPageSize_menu), glade_menuitem);
+	glade_menuitem = gtk_menu_item_new_with_label (_("A5"));
+ 	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_OPTION_PTR, (gpointer) listDefaultPageSize);
+	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_VALUE_TAG, (gpointer) fp_PageSize::A5);
+	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(glade_menuitem);
+	gtk_widget_show (glade_menuitem);
+	gtk_menu_append (GTK_MENU (listDefaultPageSize_menu), glade_menuitem);
+	glade_menuitem = gtk_menu_item_new_with_label (_("A6"));
+ 	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_OPTION_PTR, (gpointer) listDefaultPageSize);
+	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_VALUE_TAG, (gpointer) fp_PageSize::A6);
+	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(glade_menuitem);
+	gtk_widget_show (glade_menuitem);
+	gtk_menu_append (GTK_MENU (listDefaultPageSize_menu), glade_menuitem);
+	glade_menuitem = gtk_menu_item_new_with_label (_("B0"));
+ 	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_OPTION_PTR, (gpointer) listDefaultPageSize);
+	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_VALUE_TAG, (gpointer) fp_PageSize::B0);
+	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(glade_menuitem);
+	gtk_widget_show (glade_menuitem);
+	gtk_menu_append (GTK_MENU (listDefaultPageSize_menu), glade_menuitem);
+	glade_menuitem = gtk_menu_item_new_with_label (_("B1"));
+ 	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_OPTION_PTR, (gpointer) listDefaultPageSize);
+	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_VALUE_TAG, (gpointer) fp_PageSize::B1);
+	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(glade_menuitem);
+	gtk_widget_show (glade_menuitem);
+	gtk_menu_append (GTK_MENU (listDefaultPageSize_menu), glade_menuitem);
+	glade_menuitem = gtk_menu_item_new_with_label (_("B2"));
+ 	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_OPTION_PTR, (gpointer) listDefaultPageSize);
+	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_VALUE_TAG, (gpointer) fp_PageSize::B2);
+	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(glade_menuitem);
+	gtk_widget_show (glade_menuitem);
+	gtk_menu_append (GTK_MENU (listDefaultPageSize_menu), glade_menuitem);
+	glade_menuitem = gtk_menu_item_new_with_label (_("B3"));
+ 	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_OPTION_PTR, (gpointer) listDefaultPageSize);
+	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_VALUE_TAG, (gpointer) fp_PageSize::B3);
+	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(glade_menuitem);
+	gtk_widget_show (glade_menuitem);
+	gtk_menu_append (GTK_MENU (listDefaultPageSize_menu), glade_menuitem);
+	glade_menuitem = gtk_menu_item_new_with_label (_("B4"));
+ 	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_OPTION_PTR, (gpointer) listDefaultPageSize);
+	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_VALUE_TAG, (gpointer) fp_PageSize::B4);
+	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(glade_menuitem);
+	gtk_widget_show (glade_menuitem);
+	gtk_menu_append (GTK_MENU (listDefaultPageSize_menu), glade_menuitem);
+	glade_menuitem = gtk_menu_item_new_with_label (_("B5"));
+ 	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_OPTION_PTR, (gpointer) listDefaultPageSize);
+	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_VALUE_TAG, (gpointer) fp_PageSize::B5);
+	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(glade_menuitem);
+	gtk_widget_show (glade_menuitem);
+	gtk_menu_append (GTK_MENU (listDefaultPageSize_menu), glade_menuitem);
+	glade_menuitem = gtk_menu_item_new_with_label (_("B6"));
+ 	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_OPTION_PTR, (gpointer) listDefaultPageSize);
+	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_VALUE_TAG, (gpointer) fp_PageSize::B6);
+	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(glade_menuitem);
+	gtk_widget_show (glade_menuitem);
+	gtk_menu_append (GTK_MENU (listDefaultPageSize_menu), glade_menuitem);
+	glade_menuitem = gtk_menu_item_new_with_label (_("Folio"));
+ 	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_OPTION_PTR, (gpointer) listDefaultPageSize);
+	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_VALUE_TAG, (gpointer) fp_PageSize::Folio);
+	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(glade_menuitem);
+	gtk_widget_show (glade_menuitem);
+	gtk_menu_append (GTK_MENU (listDefaultPageSize_menu), glade_menuitem);
+	glade_menuitem = gtk_menu_item_new_with_label (_("Legal"));
+ 	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_OPTION_PTR, (gpointer) listDefaultPageSize);
+	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_VALUE_TAG, (gpointer) fp_PageSize::Legal);
+	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(glade_menuitem);
+	gtk_widget_show (glade_menuitem);
+	gtk_menu_append (GTK_MENU (listDefaultPageSize_menu), glade_menuitem);
+	glade_menuitem = gtk_menu_item_new_with_label (_("Letter"));
+ 	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_OPTION_PTR, (gpointer) listDefaultPageSize);
+	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_VALUE_TAG, (gpointer) fp_PageSize::Letter);
+	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(glade_menuitem);
+	gtk_widget_show (glade_menuitem);
+	gtk_menu_append (GTK_MENU (listDefaultPageSize_menu), glade_menuitem);
+	gtk_option_menu_set_menu (GTK_OPTION_MENU (listDefaultPageSize), listDefaultPageSize_menu);
+	gtk_option_menu_set_history (GTK_OPTION_MENU (listDefaultPageSize), 16);
 
 	labelSmartQuotes = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_Options_TabLabel_Other));
 	gtk_widget_ref (labelSmartQuotes);
@@ -649,6 +775,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents ()
 	m_buttonSpellIgnoreReset		= buttonSpellIgnoreReset;
 
     m_checkbuttonSmartQuotesEnable	= checkbuttonSmartQuotesEnable;
+    m_listDefaultPageSize			= listDefaultPageSize;
 
     m_checkbuttonPrefsAutoSave		= checkbuttonPrefsAutoSave;
 	m_comboPrefsScheme				= comboPrefsSchemes;
@@ -893,10 +1020,13 @@ GtkWidget *AP_UnixDialog_Options::_lookupWidget ( tControl id )
 		break;
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-	// smart quotes
+	// other
 	case id_CHECK_SMART_QUOTES_ENABLE:
 		return m_checkbuttonSmartQuotesEnable;
 		break;
+
+	case id_LIST_DEFAULT_PAGE_SIZE:
+		return m_listDefaultPageSize;
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// prefs
@@ -1021,6 +1151,12 @@ UT_Dimension AP_UnixDialog_Options::_gatherViewRulerUnits(void)
 	return (UT_Dimension)((gint)gtk_object_get_data( GTK_OBJECT(m_listViewRulerUnits), WIDGET_MENU_VALUE_TAG )); 
 }			
 
+fp_PageSize::Predefined AP_UnixDialog_Options::_gatherDefaultPageSize(void)
+{
+	UT_ASSERT(m_listDefaultPageSize && GTK_IS_OPTION_MENU(m_listDefaultPageSize));
+	return (fp_PageSize::Predefined) ((gint)gtk_object_get_data( GTK_OBJECT(m_listDefaultPageSize), WIDGET_MENU_VALUE_TAG ));
+}
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 // This function will lookup a option box by the value stored in the 
 //	user data under the key WIDGET_MENU_VALUE_TAG
@@ -1054,6 +1190,9 @@ int option_menu_set_by_key ( GtkWidget *option_menu, gpointer value, gchar *key 
 {
 	UT_ASSERT( option_menu && key && GTK_IS_OPTION_MENU(option_menu));
 
+	// at least make sure the value will be restored by the _gather
+	gtk_object_set_data( GTK_OBJECT(option_menu), key, value);
+
 	// lookup for the key with the value of dim
 	search_data data = { -1, -1, key, value };
 
@@ -1082,6 +1221,14 @@ void    AP_UnixDialog_Options::_setViewRulerUnits(UT_Dimension dim)
 	UT_ASSERT(m_listViewRulerUnits && GTK_IS_OPTION_MENU(m_listViewRulerUnits)); 
 
 	int r = option_menu_set_by_key ( m_listViewRulerUnits, (gpointer)dim, WIDGET_MENU_VALUE_TAG ); 
+	UT_ASSERT( r != -1 );
+}
+
+void AP_UnixDialog_Options::_setDefaultPageSize(fp_PageSize::Predefined pre)
+{
+	UT_ASSERT(m_listDefaultPageSize && GTK_IS_OPTION_MENU(m_listDefaultPageSize));
+
+	int r = option_menu_set_by_key ( m_listDefaultPageSize, (gpointer)pre, WIDGET_MENU_VALUE_TAG );
 	UT_ASSERT( r != -1 );
 }
 
@@ -1193,7 +1340,9 @@ void    AP_UnixDialog_Options::_setNotebookPageNum(int pn)
 
 	gtk_object_set_data( GTK_OBJECT(option_menu), WIDGET_MENU_VALUE_TAG, p );
 
-	UT_DEBUGMSG(("s_menu_item_activate [%d %s]\n", p, UT_dimensionName( (UT_Dimension)((UT_uint32)p)) ) );
+	//TODO: This code is now shared between RulerUnits and DefaultPaperSize
+	//so anyone who wants to resurect this msg. needs to add a conditional
+	//UT_DEBUGMSG(("s_menu_item_activate [%d %s]\n", p, UT_dimensionName( (UT_Dimension)((UT_uint32)p)) ) );
 
 	return TRUE;
 }

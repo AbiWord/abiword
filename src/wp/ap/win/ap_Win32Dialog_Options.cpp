@@ -690,3 +690,16 @@ int AP_Win32Dialog_Options::_gatherNotebookPageNum(void)
 void    AP_Win32Dialog_Options::_setNotebookPageNum(int pn) 
 {
 }
+
+void	AP_Win32Dialog_Options::_setDefaultPageSize(fp_PageSize::Predefined pre)
+{
+	// FIXME: replace this with *real* gui code
+	defaultPageSize = pre;
+}
+
+fp_PageSize::Predefined AP_Win32Dialog_Options::_gatherDefaultPageSize(void)
+{
+	// FIXME: replace this with *real* gui code
+	return defaultPaperSize;
+}
+

@@ -28,13 +28,18 @@ public:
 	};
 
 	fp_PageSize(Predefined preDef);
+	fp_PageSize(const char *name);
 	fp_PageSize(double w, double h, Unit u);
 
 	void Set(Predefined preDef);
+	void Set(const char *name);
 	void Set(double w, double h, Unit u);
 
 	double Width(Unit u) const;
 	double Height(Unit u) const;
+
+	static Predefined NameToPredefined(const char *name);
+	static const char * PredefinedToName(Predefined preDef);
 
 private:
 	double m_iWidth;

@@ -156,6 +156,12 @@ void AP_Dialog_Options::_storeWindowData(void)
 			       (XML_Char*)UT_dimensionName( _gatherViewRulerUnits()) );
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+	// save default paper size
+	UT_ASSERT(sizeof(XML_Char) && sizeof(char));
+	pPrefsScheme->setValue((XML_Char*)XAP_PREF_KEY_DefaultPageSize,
+			       (XML_Char*)fp_PageSize::PredefinedToName( _gatherDefaultPageSize()) );
+
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 	// allow XAP_Prefs to notify all the listeners of changes
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -212,6 +218,11 @@ void AP_Dialog_Options::_populateWindowData(void)
 	// ------------ Smart Quotes
 	if (pPrefs->getPrefsValueBool((XML_Char*)XAP_PREF_KEY_SmartQuotesEnable,&b))
 		_setSmartQuotesEnable (b);
+
+	if (pPrefs->getPrefsValue((XML_Char*)XAP_PREF_KEY_DefaultPageSize, &pszBuffer)) {
+		UT_ASSERT(sizeof(XML_Char) == sizeof(char));
+		_setDefaultPageSize (fp_PageSize::NameToPredefined((char*) pszBuffer));
+	}
 
 	// ------------ Prefs	
 	_setPrefsAutoSave( pPrefs->getAutoSavePrefs() );

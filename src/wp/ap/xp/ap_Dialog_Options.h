@@ -25,6 +25,8 @@
 #include "xav_View.h"
 #include "ut_units.h"
 
+#include "fp_PageSize.h"
+
 class XAP_Frame;
 
 class AP_Dialog_Options : public XAP_Dialog_NonPersistent
@@ -47,7 +49,7 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 				   id_BUTTON_DICTIONARY_EDIT, id_BUTTON_IGNORE_RESET,
 				   id_BUTTON_IGNORE_EDIT,
 
-				   id_CHECK_SMART_QUOTES_ENABLE,
+				   id_CHECK_SMART_QUOTES_ENABLE, id_LIST_DEFAULT_PAGE_SIZE,
 
 				   id_CHECK_PREFS_AUTO_SAVE, id_COMBO_PREFS_SCHEME,
 
@@ -99,6 +101,7 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 	SET_GATHER			(SpellInternet,		UT_Bool);
 
 	SET_GATHER			(SmartQuotesEnable,	UT_Bool);
+	SET_GATHER			(DefaultPageSize,	fp_PageSize::Predefined);
 
 	SET_GATHER			(PrefsAutoSave,		UT_Bool);
 

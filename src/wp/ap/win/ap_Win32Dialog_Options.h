@@ -54,6 +54,7 @@ public:
  	SET_GATHER			(SpellInternet,		UT_Bool );
  
 	SET_GATHER			(SmartQuotesEnable,	UT_Bool ); 
+	SET_GATHER			(DefaultPageSize,  	fp_PageSize::Predefined ); 
 
  	SET_GATHER			(PrefsAutoSave,		UT_Bool );
  
@@ -85,6 +86,9 @@ public:
 
 	int							m_nrSubDlgs;		// number of tabs on tab control
 	UT_Vector					m_vecSubDlgHWnd;	// hwnd to each sub-dialog
+	
+	// FIXME: replace this with *real* gui code */
+	fp_PageSize::Predefined		defaultPageSize;
 	
 };
 

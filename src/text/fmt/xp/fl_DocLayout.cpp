@@ -1085,10 +1085,15 @@ void FL_DocLayout::_redrawUpdate(UT_Timer * pTimer)
 
 fp_PageSize FL_DocLayout::_getDefaultPageSize()
 {
-	// TODO The following page dimensions should NOT be hard-coded.
-	// TODO return PageSize initialized by prefs.
+	XAP_App *pApp = XAP_App::getApp();
+	UT_ASSERT(pApp);
 
-	return fp_PageSize(fp_PageSize::Letter);
+	const XML_Char * szDefaultPageSize = NULL;
+	pApp->getPrefsValue(XAP_PREF_KEY_DefaultPageSize,
+	                      &szDefaultPageSize);
+	UT_ASSERT((szDefaultPageSize) && (*szDefaultPageSize));
+	UT_ASSERT(sizeof(char) == sizeof(XML_Char));
+	return fp_PageSize((char*) szDefaultPageSize);
 }
 
 void FL_DocLayout::setPendingSmartQuote(fl_BlockLayout *bl, UT_uint32 of)
