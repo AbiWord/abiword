@@ -510,6 +510,8 @@ int fl_BlockLayout::minor_reformat()
 		DG_Graphics* pG = m_pLayout->getGraphics();
 
 		m_pFirstRun = new fp_Run(this, pG, 0, 0);
+		UT_ASSERT(m_pFirstRun);	// TODO check for outofmem
+		
 		m_pFirstRun->calcWidths(&m_gbCharWidths);
 
 		// the line just contains the empty run
