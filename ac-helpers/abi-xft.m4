@@ -56,6 +56,8 @@ fi
 if test "x$xft" = "xtrue" ; then
 	XFT_CFLAGS="`xft-config --cflags` -DUSE_XFT=1"
 	XFT_LIBS="`xft-config --libs`"
+
+	AC_CHECK_HEADERS(fontconfig/fontconfig.h)
 fi
 
 AC_SUBST(XFT_CFLAGS)

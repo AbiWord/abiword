@@ -23,7 +23,10 @@
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
 #include <gdk/gdkx.h>
+
+#ifdef HAVE_FONTCONFIG_FONTCONFIG_H
 #include <fontconfig/fontconfig.h>
+#endif
 
 #include "ut_types.h"
 #include "ut_vector.h"
