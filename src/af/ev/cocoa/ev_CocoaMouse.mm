@@ -28,7 +28,7 @@
 #include "ev_EditMethod.h"
 #include "ev_EditBinding.h"
 #include "ev_EditEventMapper.h"
-#include "gr_Graphics.h"
+#include "gr_CocoaGraphics.h"
 #include "xav_View.h"
 
 EV_CocoaMouse::EV_CocoaMouse(EV_EditEventMapper * pEEM)
@@ -71,8 +71,10 @@ void EV_CocoaMouse::mouseUp(AV_View* pView, NSEvent* e, NSView* hitView)
 			UT_ASSERT(pEM);
 			NSPoint pt = [e locationInWindow];
 			pt = [hitView convertPoint:pt fromView:nil];
-			pt.y = [hitView bounds].size.height - pt.y;
-			GR_Graphics* pG = pView->getGraphics();
+			GR_CocoaGraphics* pG = dynamic_cast<GR_CocoaGraphics*>(pView->getGraphics());
+			if (!pG->_isFlipped()) {
+				pt.y = [hitView bounds].size.height - pt.y;
+			}
 			invokeMouseMethod(pView, pEM, static_cast<UT_sint32>(pG->tluD(pt.x)), 
 										static_cast<UT_sint32>(pG->tluD(pt.y)));
 		}
@@ -121,8 +123,10 @@ void EV_CocoaMouse::mouseClick(AV_View* pView, NSEvent* e, NSView *hitView)
 
 	pt = [e locationInWindow];
 	pt = [hitView convertPoint:pt fromView:nil];
-	pt.y = [hitView bounds].size.height - pt.y;
-	GR_Graphics* pG = pView->getGraphics();
+	GR_CocoaGraphics* pG = dynamic_cast<GR_CocoaGraphics*>(pView->getGraphics());
+	if (!pG->_isFlipped()) {
+		pt.y = [hitView bounds].size.height - pt.y;
+	}
 	UT_DEBUGMSG(("Mouse click at x=%f y=%f\n", pt.x, pt.y));
 	emc = pView->getMouseContext(static_cast<UT_sint32>(pG->tluD(pt.x)), 
 										static_cast<UT_sint32>(pG->tluD(pt.y)));
@@ -173,8 +177,10 @@ void EV_CocoaMouse::mouseMotion(AV_View* pView, NSEvent *e, NSView *hitView)
 	// TODO mouse button that we did the capture on.
 	pt = [e locationInWindow];
 	pt = [hitView convertPoint:pt fromView:nil];
-	pt.y = [hitView bounds].size.height - pt.y;
-	GR_Graphics* pG = pView->getGraphics();
+	GR_CocoaGraphics* pG = dynamic_cast<GR_CocoaGraphics*>(pView->getGraphics());
+	if (!pG->_isFlipped()) {
+		pt.y = [hitView bounds].size.height - pt.y;
+	}
 
 	if (m_clickState == 0)
 	{

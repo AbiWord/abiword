@@ -49,20 +49,6 @@ ev_CocoaKeyboard::~ev_CocoaKeyboard(void)
 {
 }
 
-void ev_CocoaKeyboard::tabPressEvent(AV_View * pView)
-{
-	EV_EditMethod * pEM;
-	EV_EditEventMapperResult result;
-
-	UT_DEBUGMSG(("tabPressEvent()\n"));
-	result = m_pEEM->Keystroke((UT_uint32)EV_EKP_PRESS|EV_NVK_TAB,&pEM);
-	if (result == EV_EEMR_COMPLETE) {
-		invokeKeyboardMethod(pView,pEM,0,0); // no char data to offer
-	}
-	else {
-		UT_ASSERT_NOT_REACHED();
-	}
-}
 
 bool ev_CocoaKeyboard::_dispatchKey(AV_View * pView, UT_uint32 charData, EV_EditBits state)
 {
@@ -158,34 +144,13 @@ void ev_CocoaKeyboard::insertTextEvent(AV_View * pView, NSString* s)
 	int uLength = [s length];
 	unichar* buffer = (unichar*)malloc(sizeof(unichar)*uLength);
 
-	UT_DEBUGMSG(("insertTextEvent()\n"));
+	xxx_UT_DEBUGMSG(("insertTextEvent()\n"));
 	[s getCharacters:buffer];
 	for (int ind = 0; ind < uLength; ind++) {
 		UT_uint32 charData = buffer[ind];
 		retval = _dispatchKey(pView, charData, state);
 	}
 	FREEP(buffer);
-}
-
-void ev_CocoaKeyboard::charEvent(AV_View * pView, unichar c)
-{
-	bool retval = false;
-	EV_EditBits state = 0;
-
-	retval = _dispatchKey(pView, c, state);
-}
-
-void ev_CocoaKeyboard::NVKEvent(AV_View * pView, EV_EditBits code)
-{
-	EV_EditMethod * pEM;
-	EV_EditEventMapperResult result;
-	EV_EditBits state = 0;
-	result = m_pEEM->Keystroke((UT_uint32)EV_EKP_PRESS|state|code,&pEM);
-
-	if (result == EV_EEMR_COMPLETE) {
-		UT_ASSERT(pEM);
-		invokeKeyboardMethod(pView,pEM,0,0); // no char data to offer
-	}
 }
 
 

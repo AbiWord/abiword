@@ -36,10 +36,7 @@ public:
 	ev_CocoaKeyboard(EV_EditEventMapper * pEEM);
 	virtual ~ev_CocoaKeyboard(void);
 
-	void tabPressEvent(AV_View * pView);
 	void insertTextEvent(AV_View * pView, NSString* s);
-	void charEvent(AV_View * pView, unichar c);
-	void NVKEvent(AV_View * pView, EV_EditBits code);
 	bool keyPressEvent(AV_View * pView, NSEvent* e);
 private:
 	bool _dispatchKey(AV_View * pView, UT_uint32 charData, EV_EditBits state);
