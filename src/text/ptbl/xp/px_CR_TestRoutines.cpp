@@ -48,7 +48,9 @@ void PX_ChangeRecord::__dump(void) const
 	case PX_ChangeRecord::PXT_InsertFmtMark:			name = "InstFMrk";	break;
 	case PX_ChangeRecord::PXT_DeleteFmtMark:			name = "DeleFMrk";	break;
 	case PX_ChangeRecord::PXT_ChangeFmtMark:			name = "ChngFMrk";	break;
-	case PX_ChangeRecord::PXT_ChangePoint:									break;
+	case PX_ChangeRecord::PXT_ChangePoint:
+	  default:
+	    break;
 	}
 	
 	UT_DEBUGMSG(("CRec: T[%s] [ap %p]\n", name,m_indexAP));

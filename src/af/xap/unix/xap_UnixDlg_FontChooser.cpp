@@ -357,10 +357,8 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkObject *paren
 {
 	GtkWidget *vboxMain;
 	GtkWidget *notebookMain;
-	GtkWidget *fixedFont;
 	GtkWidget *labelFont;
 	GtkWidget *labelStyle;
-	GtkWidget *frameFonts;
 	GtkWidget *listFonts;
 	GtkWidget *labelSize;
 	GtkWidget *frameEffects;
@@ -369,16 +367,21 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkObject *paren
 	GtkWidget *checkbuttonUnderline;
 	GtkWidget *labelEncoding;
 	GtkWidget *comboEncoding;
-	GtkWidget *frameStyle;
 	GtkWidget *listStyles;
-	GtkWidget *frameSize;
 	GtkWidget *listSizes;
-	GtkWidget *fixedColor;
 	GtkWidget *hbox1;
 	GtkWidget *colorSelector;
 	GtkWidget *labelTabFont;
 	GtkWidget *labelTabColor;
 	GtkWidget *frame4;
+
+	/*
+	  GtkWidget *fixedFont;
+	  GtkWidget *frameStyle;
+	  GtkWidget *frameFonts;
+	  GtkWidget *frameSize;
+	  GtkWidget *fixedColor;
+	*/
 
 	// the entry is a special drawing area full of one
 	// of our graphics contexts

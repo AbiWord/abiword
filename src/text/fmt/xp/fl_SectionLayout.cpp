@@ -836,7 +836,16 @@ void fl_DocSectionLayout::_lookupProperties(void)
 		strcpy(defaultMargin, "72.0pt");
 		break;
 
+		// TODO: MM, PX, and PERCENT
+		// let them fall through to the default now
+		// and we don't use them anyway
+#if 0
+	case DIM_MM:
+	case DIM_PX:
+	case DIM_PERCENT:
+#endif
 	case DIM_none:
+	default:
 		strcpy(defaultMargin, "1.0in");	// TODO: what to do with this.
 		break;
 
