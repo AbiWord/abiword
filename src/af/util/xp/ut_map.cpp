@@ -98,7 +98,7 @@ UT_Map::~UT_Map()
 bool
 UT_Map::insert(key_t key, data_t data)
 {
-	return m_rbtree.insert(new UT_Pair(static_cast<pair_type> (key), static_cast<pair_type> (data)));
+	return m_rbtree.insert(new UT_Pair((const pair_type)(key), (const pair_type)(data)));
 }
 
 void
@@ -113,7 +113,7 @@ UT_Map::erase(key_t key)
 UT_Map::Iterator
 UT_Map::find(key_t key)
 {
-	UT_Pair tmp(static_cast<pair_type> (key), static_cast<pair_type> (data_t()));
+	UT_Pair tmp((const pair_type)(key), (const pair_type)(data_t()));
 	Iterator retval(m_rbtree.find_if(&tmp, equal));
 	return retval;
 }
@@ -121,7 +121,7 @@ UT_Map::find(key_t key)
 UT_Map::Iterator
 UT_Map::find_if(key_t key, comparator pred)
 {
-	UT_Pair tmp(static_cast<pair_type> (key), static_cast<pair_type> (data_t()));
+	UT_Pair tmp((const pair_type)(key), (const pair_type)(data_t()));
 	Iterator retval(m_rbtree.find_if(&tmp, pred));
 	return retval;
 }

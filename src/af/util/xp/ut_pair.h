@@ -30,20 +30,20 @@
 #include "ut_types.h"
 #endif
 
-typedef const void* pair_type;
+typedef void* pair_type;
 
 class ABI_EXPORT UT_Pair
 {
 public:
-	UT_Pair(pair_type first, pair_type second);
+	UT_Pair(const pair_type first, const pair_type second);
 	~UT_Pair();
 
-	pair_type first() const  { return m_first; }
-	pair_type second() const { return m_second; }
+	const pair_type first() const  { return m_first; }
+	const pair_type second() const { return m_second; }
 
 private:
-	pair_type m_first;
-	pair_type m_second;
+	const pair_type m_first;
+	const pair_type m_second;
 };
 
 #endif
