@@ -217,8 +217,10 @@ bool pt_PieceTable::_unlinkStrux_Section(pf_Frag_Strux * pfs,
 }
 			
 bool pt_PieceTable::_deleteStruxWithNotify(PT_DocPosition dpos,
-											  pf_Frag_Strux * pfs,
-											  pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd)
+										   pf_Frag_Strux * pfs,
+										   pf_Frag ** ppfEnd, 
+										   UT_uint32 * pfragOffsetEnd,
+										   bool bWithRec)
 {
 	PX_ChangeRecord_Strux * pcrs
 		= new PX_ChangeRecord_Strux(PX_ChangeRecord::PXT_DeleteStrux,
@@ -229,29 +231,8 @@ bool pt_PieceTable::_deleteStruxWithNotify(PT_DocPosition dpos,
 		return false;
 	
 	// add record to history.  we do not attempt to coalesce these.
-	m_history.addChangeRecord(pcrs);
-	m_pDocument->notifyListeners(pfs,pcrs);
-
-	delete pfs;
-
-	return true;
-}
-
-			
-bool pt_PieceTable::_deleteStrux_norec(PT_DocPosition dpos,
-											  pf_Frag_Strux * pfs,
-											  pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd)
-{
-	PX_ChangeRecord_Strux * pcrs
-		= new PX_ChangeRecord_Strux(PX_ChangeRecord::PXT_DeleteStrux,
-									dpos, pfs->getIndexAP(), pfs->getStruxType());
-	UT_ASSERT(pcrs);
-
-	if (!_unlinkStrux(pfs,ppfEnd,pfragOffsetEnd))
-		return false;
-	
-	// No history for field updates..
-	// m_history.addChangeRecord(pcrs);
+	if (bWithRec)
+		m_history.addChangeRecord(pcrs);
 	m_pDocument->notifyListeners(pfs,pcrs);
 
 	delete pfs;

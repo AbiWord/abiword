@@ -1358,8 +1358,9 @@ bool pt_PieceTable::_deleteComplexSpan_norec(PT_DocPosition dpos1,
 		{
 			pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *> (pf_First);
 
-			bool bResult = _deleteStrux_norec(dpos1,pfs,
-											  &pfNewEnd,&fragOffsetNewEnd);
+			bool bResult = _deleteStruxWithNotify(dpos1,pfs,
+												  &pfNewEnd,&fragOffsetNewEnd, 
+												  false);
 			UT_ASSERT(bResult);
 			// we do not update pfsContainer because we just deleted pfs.
 		}

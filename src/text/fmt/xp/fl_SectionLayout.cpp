@@ -1579,11 +1579,11 @@ bool fl_DocSectionLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * 
 	m_pLayout->removeSection(this);
 	pPrevSL->format();
 
-//	FV_View* pView = m_pLayout->getView();
-//      if (pView)
-//  	{
-//  		pView->_setPoint(pcrx->getPosition());
-//  	}
+	FV_View* pView = m_pLayout->getView();
+	if (pView)
+  	{
+  		pView->_setPoint(pcrx->getPosition());
+  	}
 //
 // Update the following sections.
 //

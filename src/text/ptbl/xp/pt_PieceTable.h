@@ -364,11 +364,9 @@ protected:
 
 	bool					_deleteStruxWithNotify(PT_DocPosition dpos,
 												   pf_Frag_Strux * pfs,
-												   pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd);
-
-	bool					_deleteStrux_norec(PT_DocPosition dpos,
-											   pf_Frag_Strux * pfs,
-											   pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd);
+												   pf_Frag ** ppfEnd, 
+												   UT_uint32 * pfragOffsetEnd,
+												   bool bWithRec = true);
 
 	bool                    _deleteHdrFtrsFromSectionStruxIfPresent(pf_Frag_Strux_Section * pfStruxSec);
 

@@ -6975,6 +6975,7 @@ bool FV_View::insertEndnote()
 #endif
 			dp = pBL->getPosition(true);
 			_setPoint(dp,false);
+			dp = getPoint();
 		}
 
 

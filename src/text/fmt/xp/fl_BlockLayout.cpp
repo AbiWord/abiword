@@ -4242,10 +4242,10 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 	fl_DocSectionLayout* pDSL = NULL;
 	if(m_pSectionLayout->getType() == FL_SECTION_DOC)
 		pDSL =	(fl_DocSectionLayout *) m_pSectionLayout;
-		//UT_ASSERT(m_pSectionLayout->getType() == FL_SECTION_DOC);
+
 	xxx_UT_DEBUGMSG(("SectionLayout for block is %x block is %x \n",m_pSectionLayout,this));
 	fl_SectionLayout* pSL = NULL;
-	const XML_Char* pszHFID = NULL;
+	const XML_Char* pszNewID = NULL;
 	switch (iType)
 	{
 	case FL_SECTION_DOC:
@@ -4291,14 +4291,14 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 		const PP_AttrProp* pHFAP = NULL;
 		bool bres = (m_pDoc->getAttrProp(indexAP, &pHFAP) && pHFAP);
 		UT_ASSERT(bres);
-		pHFAP->getAttribute("id", pszHFID);
+		pHFAP->getAttribute("id", pszNewID);
 //
 // pszHFID may not be defined yet. If not we can't do this stuff. If it is defined
 // this step is essential
 //
-		if(pszHFID)
+		if(pszNewID)
 		{
-			fl_DocSectionLayout* pDocSL = m_pLayout->findSectionForHdrFtr((char*)pszHFID);
+			fl_DocSectionLayout* pDocSL = m_pLayout->findSectionForHdrFtr((char*)pszNewID);
 			UT_ASSERT(pDocSL);
 //
 // Determine if this is a header or a footer.
@@ -4356,8 +4356,19 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 		break;
 	}
 	case FL_SECTION_ENDNOTE:
+	{
 		m_pLayout->addEndnoteSection(pSL);
+//
+// Need to find the DocSectionLayout associated with this.
+//
+		PT_AttrPropIndex indexAP = pcrx->getIndexAP();
+		const PP_AttrProp* pAP = NULL;
+		bool bres = (m_pDoc->getAttrProp(indexAP, &pAP) && pAP);
+		UT_ASSERT(bres);
+		pAP->getAttribute("id", pszNewID);
+		fl_DocSectionLayout* pDocSL = m_pLayout->findSectionForHdrFtr((char*)pszNewID);
 		break;
+	}
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		break;
@@ -4428,21 +4439,16 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 // In the case of Header/Footer sections we must now format this stuff to create
 // the shadows.
 //
-	if(iType ==  FL_SECTION_HDRFTR && pszHFID!= NULL)
+	if(iType == FL_SECTION_HDRFTR || iType == FL_SECTION_ENDNOTE)
 	{
-		pSL->format();
-		pSL->redrawUpdate();
+		if(pszNewID)
+		{
+			pSL->format();
+			pSL->redrawUpdate();
+		}
+		else
+			return true;
 	}
-
-	if(iType ==  FL_SECTION_HDRFTR && pszHFID == NULL)
-	{
-		return true;
-	}
-
-	// This can't possibly be right.  Surely we need some analog of
-	// pszHFID.  But I can't figure out what it is, and it seems to work. -PL
-	if (iType == FL_SECTION_ENDNOTE)
-		return true;
 
 	FV_View* pView = m_pLayout->getView();
 	if (pView && (pView->isActive() || pView->isPreview()))
