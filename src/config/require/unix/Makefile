@@ -56,9 +56,9 @@ _GTK_:
 	@echo TODO verify version is greater than 1.1.??
 
 _ZLIB_:
-	@if [    -e /usr/lib/libz.a				\
-	      -o -e /usr/local/lib/libz.a			\
-	      -o -e /usr/X11R6/lib/libz.a			\
+	@if [    -r /usr/lib/libz.a				\
+	      -o -r /usr/local/lib/libz.a			\
+	      -o -r /usr/X11R6/lib/libz.a			\
 	    ]; then						\
 		echo Found zlib in system directories;		\
 	elif [ -d ../../$(ABI_DEPTH)/zlib ]; then		\
@@ -72,9 +72,9 @@ _ZLIB_:
 	fi
 
 _LIBPNG_:
-	@if [    -e /usr/lib/libpng.a				\
-	      -o -e /usr/local/lib/libpng.a			\
-	      -o -e /usr/X11R6/lib/libpng.a			\
+	@if [    -r /usr/lib/libpng.a				\
+	      -o -r /usr/local/lib/libpng.a			\
+	      -o -r /usr/X11R6/lib/libpng.a			\
 	    ]; then						\
 		echo Found libpng in system directories;	\
 	elif [ -d ../../$(ABI_DEPTH)/libpng ]; then		\
@@ -115,9 +115,9 @@ _FONTS_:
 	fi
 
 _COLE_:
-	@if [    -e /usr/lib/libcole.a				\
-	      -o -e /usr/local/lib/libcole.a			\
-	      -o -e /usr/X11R6/lib/libcole.a			\
+	@if [    -r /usr/lib/libcole.a				\
+	      -o -r /usr/local/lib/libcole.a			\
+	      -o -r /usr/X11R6/lib/libcole.a			\
 	    ]; then						\
 		echo Found libcole in system directories;	\
 	elif [ -d ../../$(ABI_DEPTH)/cole-0.2.0 ]; then		\
