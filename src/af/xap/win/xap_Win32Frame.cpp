@@ -22,6 +22,9 @@
 #include <stdio.h>
 #include <limits.h>
 #include "zmouse.h"
+#ifdef __MINGW32__
+#include "winezmouse.h"
+#endif
 
 #include "ut_types.h"
 #include "ut_string_class.h"

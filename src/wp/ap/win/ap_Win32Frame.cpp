@@ -47,6 +47,7 @@
 #include <winuser.h>
 #include <zmouse.h>
 #ifdef __MINGW32__
+#include "winezmouse.h"
 #include <imm.h>
 #endif
 
