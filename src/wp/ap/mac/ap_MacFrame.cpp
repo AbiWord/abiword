@@ -1,3 +1,4 @@
+/* -*- c-basic-offset: 4; tab-width: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 1999 John Brewer DBA Jera Design
@@ -147,6 +148,11 @@ UT_Error AP_MacFrame::loadDocument(const char * szFilename, int ieft)
 	}
 
 	return _showDocument();
+}
+
+UT_Error AP_MacFrame::importDocument(const char * szFilename, int ieft, bool markClean)
+{
+  UT_ASSERT (UT_NOT_IMPLEMENTED);
 }
 
 bool AP_MacFrame::initFrameData(void)

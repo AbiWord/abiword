@@ -1,6 +1,8 @@
+/* -*- c-basic-offset: 4; tab-width: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 1999 John Brewer DBA Jera Design
+ * Copyright (C) 2000 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -83,17 +85,17 @@ void GR_MacGraphics::drawChars(const UT_UCSChar* pChars,
 
 void GR_MacGraphics::setFont(GR_Font* pFont)
 {
-    GR_MacFont * macFont = dynamic_cast<GR_MacFont *>(pFont);
-    UT_ASSERT (macFont != NULL);
+    m_pMacFont = dynamic_cast<GR_MacFont *>(pFont);
+    UT_ASSERT (m_pMacFont != NULL);
 	ATSFontRef	fontRef;
     
     if (m_CGFont) {
         CGFontRelease (m_CGFont);
     }
-	fontRef = macFont->getFontRef();
+	fontRef = m_pMacFont->getFontRef();
     m_CGFont = CGFontCreateWithPlatformFont ((void*)&fontRef);
     ::CGContextSetFont(m_CGContext, m_CGFont);
-	::CGContextSetFontSize (m_CGContext, macFont->getSize());
+	::CGContextSetFontSize (m_CGContext, m_pMacFont->getSize());
 }
 
 
@@ -134,7 +136,7 @@ void GR_MacGraphics::setColor(UT_RGBColor& clr)
 GR_Font* GR_MacGraphics::getGUIFont()
 {
     // TODO: move this to GR_MacFont as it belongs to it.
-    
+    UT_DEBUGMSG (("HUB: GR_MacGraphics::getGUIFont() called\n"));
     OSStatus err;
     Style	fontStyle;
     SInt16 fontSize;
@@ -146,10 +148,12 @@ GR_Font* GR_MacGraphics::getGUIFont()
 		Str255 fontName;
         // FIXME: choose the right script
         err = ::GetThemeFont (kThemeApplicationFont, smRoman, fontName, &fontSize, &fontStyle);
+		UT_ASSERT (err == noErr);
         fontFamily = ::FMGetFontFamilyFromName (fontName);
 		// This one is useful as it convert a QD font to an ATSUI FontID.
 		err = ::ATSUFONDtoFontID(fontFamily, fontStyle, &atsFontId);
 		UT_ASSERT (atsFontId != kATSUInvalidFontID);
+		UT_ASSERT (err == noErr);
 		
 		guiFont = new GR_MacFont (atsFontId);
     }
@@ -165,12 +169,14 @@ GR_Font* GR_MacGraphics::findFont(
 		const char* pszFontStretch, 
 		const char* pszFontSize)
 {
-
+	UT_DEBUGMSG (("HUB: GR_MacGraphics::findFont() called\n"));
 //    CGContextSelectFont (m_CGContext, pszFontFamily, pszFontSize, kCGEncodingFontSpecific);
     // TODO retrieve the atsuiFont
-	ATSUFontID atsuiFont = m_pMacFontManager->findFont (pszFontFamily, pszFontStyle, pszFontVariant, pszFontWeight, pszFontStretch, 
-	            convertDimension(pszFontSize));
+	ATSUFontID atsuiFont = m_pMacFontManager->findFont (pszFontFamily, pszFontStyle, 
+														pszFontVariant, pszFontWeight, pszFontStretch, 
+														convertDimension(pszFontSize));
     m_pMacFont = new GR_MacFont(atsuiFont);
+	UT_ASSERT (m_pMacFont);
     return(m_pMacFont);
 }
 
@@ -241,17 +247,24 @@ void GR_MacGraphics::invertRect(const UT_Rect* pRect)
         
 void GR_MacGraphics::setClipRect(const UT_Rect* pRect)
 {
-    CGRect myRect;
-    
-    myRect.origin.x = pRect->left;
-    myRect.origin.y = pRect->top;
-    myRect.size.width = pRect->width;
-    myRect.size.height = pRect->height;
-    
-    CGContextBeginPath (m_CGContext);
-    CGContextAddRect (m_CGContext, myRect);
-    CGContextClosePath (m_CGContext);
-    CGContextClip (m_CGContext);
+	/*
+	  Assume that doing an empty path will do an emtpy clipping.
+	  Check again later.
+	 */
+	CGContextBeginPath (m_CGContext);
+	if (pRect) 
+	{
+		CGRect myRect;
+	
+		myRect.origin.x = pRect->left;
+		myRect.origin.y = pRect->top;
+		myRect.size.width = pRect->width;
+		myRect.size.height = pRect->height;
+		
+		CGContextAddRect (m_CGContext, myRect);
+	}
+	CGContextClosePath (m_CGContext);
+	CGContextClip (m_CGContext);
 }
 
 void GR_MacGraphics::scroll(UT_sint32, UT_sint32)

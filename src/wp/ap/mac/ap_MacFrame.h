@@ -1,3 +1,4 @@
+/* -*- c-basic-offset: 4; tab-width: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 1999 John Brewer DBA Jera Design
@@ -39,6 +40,7 @@ public:
 	virtual	XAP_Frame *			cloneFrame(void);
 	virtual UT_Error			loadDocument(const char * szFilename, int ieft);
 	virtual UT_Error                        loadDocument(const char * szFilename, int ieft, bool createNew);
+	virtual UT_Error                        importDocument(const char * szFilename, int ieft, bool markClean);
 	virtual bool				initFrameData(void);
 	virtual void				killFrameData(void);
 

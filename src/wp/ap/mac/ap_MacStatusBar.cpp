@@ -1,3 +1,4 @@
+/* -*- c-basic-offset: 4; tab-width: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2001 Hubert Figuiere
@@ -42,6 +43,7 @@ AP_MacStatusBar::AP_MacStatusBar(XAP_Frame * pFrame)
 	: AP_StatusBar(pFrame)
 {
     m_wStatusBar = NULL;
+	m_pG = NULL;
 }
 
 AP_MacStatusBar::~AP_MacStatusBar(void)
@@ -49,11 +51,11 @@ AP_MacStatusBar::~AP_MacStatusBar(void)
     if (m_wStatusBar) {
         DisposeControl (m_wStatusBar);
     }
+	DELETEP (m_pG);
 }
 
 void AP_MacStatusBar::setView(AV_View * pView)
 {
-
 	// We really should allocate m_pG in createWidget(), but
 	// unfortunately, the actual window (m_wStatusBar->window)
 	// is not created until the frame's top-level window is
@@ -63,23 +65,24 @@ void AP_MacStatusBar::setView(AV_View * pView)
 	DELETEP(m_pG);	
 	XAP_MacApp * app = static_cast<XAP_MacApp *>(m_pFrame->getApp());
 	XAP_MacFontManager * fontManager = app->getFontManager();
-    UT_ASSERT (m_wStatusBar);
-    controlPort = ::GetWindowPort (::GetControlOwner (m_wStatusBar));
+
+    UT_ASSERT (m_wStatusBar);    
+	controlPort = ::GetWindowPort (::GetControlOwner (m_wStatusBar));
 	GR_MacGraphics * pG = new GR_MacGraphics(controlPort, fontManager, m_pFrame->getApp());
 	m_pG = pG;
 	UT_ASSERT(m_pG);
-
-//	GtkStyle * style = gtk_widget_get_style((static_cast<XAP_MacFrame *> (m_pFrame))->getTopLevelWindow());
-//	UT_ASSERT(style);
-//	pG->init3dColors(style);
-
+	
+	//	GtkStyle * style = gtk_widget_get_style((static_cast<XAP_MacFrame *> (m_pFrame))->getTopLevelWindow());
+	//	UT_ASSERT(style);
+	//	pG->init3dColors(style);
+	
 	GR_Font * pFont = m_pG->getGUIFont();
 	m_pG->setFont(pFont);
-
+	
 	// Now that we've initialized the graphics context and
 	// installed the GUI font, let the base class do it's
 	// think and layout the fields.
-
+	
 	AP_StatusBar::setView(pView);
 }
 

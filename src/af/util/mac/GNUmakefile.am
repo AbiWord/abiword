@@ -20,7 +20,7 @@
 include $(top_srcdir)/includes.mk
 
 INCLUDES= @MACOSX_CFLAGS@ \
-	$(AF_INCLUDES) $(WP_INCLUDES) $(TEXT_INCLUDES)	
+	$(AF_INCLUDES) $(WP_INCLUDES) $(TEXT_INCLUDES)	-I../unix
 
 noinst_LIBRARIES = libUtil_mac.a
 
