@@ -129,12 +129,13 @@ public:
 
 	// find and replace 
 	void 			findReset();
+	
 	UT_Bool			findSetExtents(PT_DocPosition start, PT_DocPosition end);
 	UT_Bool 		findSetNextString(UT_UCSChar * string);
-	UT_Bool 		findNext(const UT_UCSChar * string, UT_Bool bSelect = UT_TRUE, UT_Bool * bWrapped = NULL);
+	UT_Bool 		findNext(const UT_UCSChar * string, UT_Bool bSelect = UT_TRUE, UT_Bool * bWrappedEnd = NULL);
 	UT_Bool			findAgain(void);
-	UT_Bool			findReplace(const UT_UCSChar * find, const UT_UCSChar * replace, UT_Bool * bWrapped = NULL);
-	UT_Bool			findReplaceAll(const UT_UCSChar * find, const UT_UCSChar * replace, UT_Bool * bWrapped = NULL);	
+	UT_Bool			findReplace(const UT_UCSChar * find, const UT_UCSChar * replace, UT_Bool * bWrappedEnd = NULL);
+	UT_Bool			findReplaceAll(const UT_UCSChar * find, const UT_UCSChar * replace, UT_Bool * bWrappedEnd = NULL);	
 		
 // ----------------------
 

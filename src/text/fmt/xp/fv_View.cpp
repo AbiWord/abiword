@@ -1749,7 +1749,7 @@ UT_Bool FV_View::findSetNextString(UT_UCSChar * string)
   It's a mess, but so is Find UI logic.  
 */
 
-UT_Bool FV_View::findNext(const UT_UCSChar * string, UT_Bool bSelect, UT_Bool * bWrapped)
+UT_Bool FV_View::findNext(const UT_UCSChar * string, UT_Bool bSelect, UT_Bool * bWrappedEnd)
 {
 	UT_ASSERT(string);
 
@@ -1859,7 +1859,7 @@ UT_Bool FV_View::findNext(const UT_UCSChar * string, UT_Bool bSelect, UT_Bool * 
 			else
 			{
 			FetchNextBlock:				
-				block = _findGetNextBlock(bWrapped);
+				block = _findGetNextBlock(bWrappedEnd);
 
 				if (!block)
 				{
@@ -1926,7 +1926,7 @@ UT_Bool FV_View::findAgain(void)
   simply did a search to mimic the behavior of popular find/replace dialogs.
 */
 
-UT_Bool	FV_View::findReplace(const UT_UCSChar * find, const UT_UCSChar * replace, UT_Bool * bWrapped)
+UT_Bool	FV_View::findReplace(const UT_UCSChar * find, const UT_UCSChar * replace, UT_Bool * bWrappedEnd)
 {
 	
 	// if we have done a find, and there is a selection, then replace what's in the
@@ -1936,8 +1936,6 @@ UT_Bool	FV_View::findReplace(const UT_UCSChar * find, const UT_UCSChar * replace
 		// adjust end of region by length of replacement difference so we
 		// won't search off a newly changed end of block
 		m_iFindPosEnd += ((long) UT_UCS_strlen(replace) - (long) UT_UCS_strlen(find));
-
-		_deleteSelection();
 
 		// we return the result of the replacement (the insert), not the
 		// subsequent move
@@ -1951,7 +1949,7 @@ UT_Bool	FV_View::findReplace(const UT_UCSChar * find, const UT_UCSChar * replace
 		m_iFindBufferOffset += (UT_UCS_strlen(replace) - 1);
 
 		// we find the next occurance after our insertion.
-		findNext(find, UT_TRUE, bWrapped);
+		findNext(find, UT_TRUE, bWrappedEnd);
 		
 		return result;
 	}
@@ -1975,20 +1973,37 @@ UT_Bool	FV_View::findReplace(const UT_UCSChar * find, const UT_UCSChar * replace
 	return UT_FALSE;
 }
 
-UT_Bool FV_View::findReplaceAll(const UT_UCSChar * find, const UT_UCSChar * replace, UT_Bool * bWrapped)
+/*
+  This function replaces all occurances of the word until the end of the
+  document, then raises a dialog.  If coaxed into operation again, it
+  procedes until where the last was started.
+
+  It also does globbing of the edits so that they can be undone with
+  a single keystroke.
+*/
+UT_Bool FV_View::findReplaceAll(const UT_UCSChar * find, const UT_UCSChar * replace, UT_Bool * bWrappedEnd)
 {
+	m_pDoc->beginUserAtomicGlob();
+		
 	// prime it with a find
-	if (!findNext(find, UT_TRUE, bWrapped))
+	if (!findNext(find, UT_TRUE, bWrappedEnd))
+	{
+		m_pDoc->endUserAtomicGlob();
 		return UT_FALSE;
+	}
 	
 	// while we've still got buffer
-	while (*bWrapped == UT_FALSE)
+	while (*bWrappedEnd == UT_FALSE)
 	{
 		// if it returns false, it found nothing
-		if (!findReplace(find, replace, bWrapped))
+		if (!findReplace(find, replace, bWrappedEnd))
+		{
+			m_pDoc->endUserAtomicGlob();
 			return UT_FALSE;
+		}
 	}
 
+	m_pDoc->endUserAtomicGlob();
 	return UT_TRUE;
 }
 
@@ -2010,7 +2025,7 @@ fl_BlockLayout * FV_View::_findGetCurrentBlock(void)
   doing that after it gets the new block, if desired.  
 */
 
-fl_BlockLayout * FV_View::_findGetNextBlock(UT_Bool * wrapped)
+fl_BlockLayout * FV_View::_findGetNextBlock(UT_Bool * bWrappedEnd)
 {
 	UT_ASSERT(m_pLayout);
 
@@ -2027,8 +2042,8 @@ fl_BlockLayout * FV_View::_findGetNextBlock(UT_Bool * wrapped)
 			(buffer.getLength() + block->getPosition(UT_FALSE)) >= m_iFindPosEnd)
 		{
 			// set the flag 
-			if (wrapped)
-				*wrapped = UT_TRUE;
+			if (bWrappedEnd)
+				*bWrappedEnd = UT_TRUE;
 			// point to beginning and return that block
 			return m_pLayout->findBlockAtPosition(m_iFindPosStart);
 		}
