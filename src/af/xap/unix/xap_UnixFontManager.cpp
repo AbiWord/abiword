@@ -34,10 +34,74 @@
 #include "xap_EncodingManager.h"
 #include "ut_string_class.h"
 #include <sys/stat.h>
-
-
+#include "xap_Strings.h"
+#include "xap_Prefs.h"
 // TODO get this from some higher-level place
 #define FONTS_DIR_FILE	"/fonts.dir"
+
+static char **	s_oldFontPath = NULL;
+static int		s_oldFontPathCount = 0;
+static int		(*s_oldErrorHandler)(Display *dsp, XErrorEvent *e);
+static int		s_errorDepth = 0;
+
+static int s_xerror_handler(Display *dsp, XErrorEvent *e)
+{
+	
+	if(++s_errorDepth > 1)
+	{
+		// we have been caught in a loop
+		goto unhandled;
+	}
+	
+	if(e->error_code == 86)
+	{
+		// BadFontPath, we handle this ourselves
+		UT_DEBUGMSG(("Caught BadFontPath Error, reverting to old path\n"));
+		
+		if(s_oldFontPath)
+		{
+			XSetFontPath(dsp, s_oldFontPath, s_oldFontPathCount);
+			
+			bool bShowWarning = true;
+			XAP_App * pApp = XAP_App::getApp();
+			UT_ASSERT(pApp);
+			pApp->getPrefsValueBool(XAP_PREF_KEY_ShowUnixFontWarning, &bShowWarning);
+
+#if 0			
+// unfortunately the stringset has not been loaded yet
+			const XML_Char * msg = pApp->getStringSet()->getValue(XAP_STRING_ID_MSG_ShowUnixFontWarning);
+			UT_ASSERT(msg);
+#endif			
+			if(bShowWarning)			
+				messageBoxOK("WARNING: AbiWord could not add its fonts to the X font path.\n"
+				 " See \"Unix Font Warning\" in the FAQ section of AbiWord help.");
+				
+			s_errorDepth--;
+			return (0);
+		}
+		
+		UT_DEBUGMSG(("!!! No Old Path available !!!\n"));
+		
+	}
+
+unhandled:
+	// on everything else we will call the previous handler.
+	UT_DEBUGMSG(("Unhandled X error: %c\n"
+				 "          display %c, serial %ld, request %c:%c, XID %d\n"
+				 "          AbiWord will terminate\n",
+				 e->error_code, e->display, e->serial, e->request_code, e->minor_code, e->resourceid));
+	
+	if(!s_oldErrorHandler)
+	{
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		// we cannot handle this ourselves, nor is there any handler available
+		// what can we do but exit?
+		exit(1);
+	}
+
+	s_errorDepth--;	
+	return s_oldErrorHandler(dsp,e);
+}
 
 XAP_UnixFontManager::XAP_UnixFontManager(void) : m_fontHash(256), m_pExtraXFontPath(0),
 m_iExtraXFontPathCount(0)
@@ -150,12 +214,19 @@ bool XAP_UnixFontManager::scavengeFonts(void)
 		// this should not happen, if it does, we will not be able to restore
 		// font path when we exit
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-	    for(i = 0; i < m_iExtraXFontPathCount; i++)
+		UT_ASSERT(m_iExtraXFontPathCount >= 0);
+		
+	    for(i = 0; i < (UT_uint32)m_iExtraXFontPathCount; i++)
 	    	FREEP(m_pExtraXFontPath[i]);
 	    delete [] m_pExtraXFontPath;
 	}
 		
 	char ** oldFontPath = XGetFontPath(dsp,(int*)&fontPathDirCount);
+	
+	// set stuff for our error handler
+	s_oldFontPath = oldFontPath;
+	s_oldFontPathCount = fontPathDirCount;
+	
 	realFontPathDirCount = fontPathDirCount;
 	m_iExtraXFontPathCount = -fontPathDirCount;
 	
@@ -200,6 +271,7 @@ bool XAP_UnixFontManager::scavengeFonts(void)
 	    			
 	    			if(!bFound)
 	    			{
+	    				//str+= "rubbish"; // to force error while testing
 	    				*newFontPath_ptr++ = UT_strdup(str.c_str());
 		    			UT_DEBUGMSG(("adding \"%s\" to font path\n", str.c_str()));
 		    			realFontPathDirCount++;
@@ -227,9 +299,20 @@ bool XAP_UnixFontManager::scavengeFonts(void)
 			UT_DEBUGMSG(("\tfontpath[%d]: \"%s\"\n", j, newFontPath[j]));
 		UT_DEBUGMSG(("-------------------------------------------------\n\n"));
 #endif
-	
-	XSetFontPath(dsp, newFontPath, (int)realFontPathDirCount);
 
+	s_oldErrorHandler = XSetErrorHandler(s_xerror_handler);
+	// force synchronic behaviour, so that any error is caught
+	// immediately
+	XSynchronize(dsp,1);
+	XSetFontPath(dsp, newFontPath, (int)realFontPathDirCount);
+	
+	// now if we failed, our handler should have been called and if we are
+	// here, we have things under control, co clean up
+	XSynchronize(dsp,0);
+	XSetErrorHandler(s_oldErrorHandler);
+	s_oldErrorHandler = NULL;
+	s_oldFontPath = 0;
+	
 	// now free what we do not need	
 	XFreeFontPath(oldFontPath);
 	XCloseDisplay(dsp);
