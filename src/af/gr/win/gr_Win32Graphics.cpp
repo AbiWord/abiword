@@ -361,14 +361,14 @@ void GR_Win32Graphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
 		char str[sizeof(UT_UCS2Char)];
 
 		int iConverted = WideCharToMultiByte(CP_ACP, NULL,
-			&aChar, 1,
+			(LPCWSTR) &aChar, 1,
 			str, sizeof(str), NULL, NULL);
 		ExtTextOutA(m_hdc, xoff, yoff, 0, NULL, str, iConverted, NULL);
 	}
 	else
 	{
 		// Unicode font and default character set handling for WinNT and Win9x
-		ExtTextOutW(m_hdc, xoff, yoff, 0/*ETO_GLYPH_INDEX*/, NULL, &aChar, 1, NULL);
+		ExtTextOutW(m_hdc, xoff, yoff, 0/*ETO_GLYPH_INDEX*/, NULL, (LPCWSTR) &aChar, 1, NULL);
 	}
 }
 
@@ -405,7 +405,7 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 		// Symbol character handling for Win9x
 		char* str = new char[iLength * sizeof(UT_UCS2Char)];
 		int iConverted = WideCharToMultiByte(CP_ACP, NULL,
-			currentChars, iLength,
+			(LPCWSTR) currentChars, iLength,
 			str, iLength * sizeof(UT_UCSChar), NULL, NULL);
 		ExtTextOutA(m_hdc, xoff, yoff, 0, NULL, str, iConverted, NULL);
 		delete [] str;
@@ -424,14 +424,18 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 			gcpResult.lpOutString = NULL;			// Output string
 			gcpResult.lpOrder = NULL;				// Ordering indices
 			gcpResult.lpDx = s_pCharAdvances;	    // Distances between character cells
-			gcpResult.lpCaretPos = NULL;			// Caret positions
+			gcpResult.lpCaretPos = NULL;			// Caret positions	
 			gcpResult.lpClass = NULL;				// Character classifications
-			gcpResult.lpGlyphs = m_remapIndices;	// Character glyphs
+#ifdef __MINGW32__
+			gcpResult.lpGlyphs = (LPWCSTR) m_remapIndices;	// Character glyphs
+#else			
+			gcpResult.lpGlyphs = (LPWSTR) m_remapIndices;	// Character glyphs
+#endif			
 			gcpResult.nGlyphs = m_remapBufferSize;  // Array size
 
-			if(GetCharacterPlacementW(m_hdc, currentChars, iLength, 0, &gcpResult, GCP_REORDER))
+			if(GetCharacterPlacementW(m_hdc, (LPCWSTR) currentChars, iLength, 0, &gcpResult, GCP_REORDER))
 			{
-				ExtTextOutW(m_hdc, xoff, yoff, ETO_GLYPH_INDEX, NULL, m_remapIndices, gcpResult.nGlyphs, s_pCharAdvances);
+				ExtTextOutW(m_hdc, xoff, yoff, ETO_GLYPH_INDEX, NULL, (LPCWSTR) m_remapIndices, gcpResult.nGlyphs, s_pCharAdvances);
 			}
 			else
 			{
@@ -442,7 +446,7 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 		else
 		{
 simple_exttextout:
-			ExtTextOutW(m_hdc, xoff, yoff, 0, NULL, currentChars, iLength, s_pCharAdvances);
+			ExtTextOutW(m_hdc, xoff, yoff, 0, NULL, (LPCWSTR) currentChars, iLength, s_pCharAdvances);
 		}
 	}
 

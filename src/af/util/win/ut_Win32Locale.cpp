@@ -20,6 +20,7 @@
 
 
 #include <windows.h>
+#include <ctype.h>
 
 #include "ut_assert.h"
 #include "ut_string.h"

@@ -669,7 +669,7 @@ int ev_Win32Keyboard::_scanCodeToChars(UINT nVirtKey, UINT wScanCode, CONST PBYT
 		return (*m_pToUnicodeEx)(nVirtKey,wScanCode,lpKeyState,pwszBuff,cchBuff,0,m_hKeyboardLayout);
 	}
 	else
-		return ToAsciiEx(nVirtKey,wScanCode,lpKeyState,pwszBuff,0,m_hKeyboardLayout);
+		return ToAsciiEx(nVirtKey,wScanCode,lpKeyState,(WORD*)pwszBuff,0,m_hKeyboardLayout);
 };
 
 /*****************************************************************/

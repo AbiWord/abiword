@@ -37,13 +37,12 @@ public:
 	GR_Win32Font(HFONT hFont);
 	~GR_Win32Font();
 
-private:
-	void					setupFontInfo();
 
 	// make GR_Win32Graphics an "aquaintance" of GR_Win32Font
 	class Acq
 	{
 		friend class GR_Win32Graphics;
+	private:
 
 		static inline HFONT		getHFONT(GR_Win32Font& font)
 			{ return font.m_hFont; };
@@ -70,6 +69,8 @@ private:
 	};
 	friend class Acq;
 
+private:
+	void					setupFontInfo();
 	HDC						m_oldHDC;
 	HFONT					m_hFont;
 	UT_uint32				m_defaultCharWidth;

@@ -97,7 +97,11 @@ public:
 		FARPROC pProc = GetProcAddress(m_hMod, symbol_name);
 		if (pProc)
 		{
+			#ifdef __MINGW32__
+			*symbol = (void*)(pProc);
+			#else
 			*symbol = reinterpret_cast<void*>(pProc);
+			#endif
 			m_pszErr = 0;
 			return true;
 		}

@@ -86,7 +86,11 @@ endif
 TARGETS=		$(OBJS)
 
 ifeq ($(ABI_NATIVE),win)
-INCLUDES = -I$(ABI_XX_ROOT)/../libpng -I$(ABI_XX_ROOT)/../zlib -I$(ABI_XX_ROOT)/../libiconv/include -GX
+INCLUDES = -I$(ABI_XX_ROOT)/../libpng -I$(ABI_XX_ROOT)/../zlib -I$(ABI_XX_ROOT)/../libiconv/include
+endif
+
+ifeq ($(OS_NAME),WIN32)
+INCLUDES += -GX
 endif
 
 ifeq ($(ABI_NATIVE), qnx)

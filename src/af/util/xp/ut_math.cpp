@@ -32,7 +32,7 @@ UT_uint32 UT_newNumber ()
   return theNumber++;
 }
 
-#ifdef _WIN32
+#if defined(_WIN32) && !defined(__MINGW32__)
 
 double rint(double x) 
 {

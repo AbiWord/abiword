@@ -71,7 +71,7 @@ ifeq ($(ABI_OPT_CURL),1)
 CPPSRCS +=	xap_HashDownloader.cpp
 endif
 
-ifeq ($(ABI_NATIVE),win)
+ifeq ($(OS_NAME),WIN32)
 INCLUDES += -GX
 endif
 

@@ -111,7 +111,7 @@ void GR_Win32CharWidths::setCharWidthsOfRange(HDC hdc, UT_UCSChar c0, UT_UCSChar
 				SIZE Size;
 				char str[sizeof(UT_UCSChar)];
 				int iConverted = WideCharToMultiByte(CP_ACP, NULL, 
-					(unsigned short*) &k, 1, str, sizeof(str), NULL, NULL);
+					(LPCWSTR) &k, 1, str, sizeof(str), NULL, NULL);
 				GetTextExtentPoint32A(hdc, str, iConverted, &Size);
 				setWidth(k,_UL(Size.cx));
 			}

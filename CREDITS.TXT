@@ -84,6 +84,7 @@ Tomas Frydrych <tomas@frydrych.uklinux.net> 		ttf, utf8 locale, bidi
 Gabriel Gerhardsson <mr.g@home.se>			Abispell work, dictionary downloader
 David Given <dg@tao-group.com>				Human Readable Text
 							Export
+Daniel Glassey <danglassey@ntlworld.com>	msys Win32 build							
 Ashleigh Gordon <gordonac@ocean.com.au> 		English help files
 Peter Haight <peterh@sapros.com>			Fonts location bug fix
 Vlad Harchev <hvv@hippo.ru> 				Support for non latin-1 Languages

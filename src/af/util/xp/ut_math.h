@@ -44,7 +44,7 @@
 #define UT_SQRT2         1.41421356237309504880  /* sqrt(2) */
 #define UT_SQRT1_2       0.70710678118654752440  /* 1/sqrt(2) */
 
-#ifdef _WIN32
+#if defined(_WIN32) && !defined(__MINGW32__)
 #define finite _finite
 ABI_EXPORT double rint(double x);
 #endif /* _WIN32 */

@@ -24,7 +24,9 @@
 #include <stdlib.h>
 #include <windows.h>
 #include <commctrl.h>   // includes the common control header
+#ifndef __MINGW32__
 #include <crtdbg.h>
+#endif
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <stdio.h>

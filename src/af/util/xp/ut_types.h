@@ -74,7 +74,7 @@ typedef UT_uint8 UT_Confidence_t;
 #define UT_CONFIDENCE_POOR     85
 #define UT_CONFIDENCE_ZILCH     0
 
-#ifdef WIN32
+#if defined(WIN32) && !defined(__MINGW32__)
   #define ABI_PLUGIN_EXPORT __declspec(dllexport)
   #ifndef ABI_DLL
      /* we are building AbiWord and wish for its parts to be used by plugins */

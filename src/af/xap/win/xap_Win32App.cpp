@@ -396,12 +396,16 @@ void XAP_Win32App::_setBidiOS(void)
 
 	GCP_RESULTSW gcpResult;
 	gcpResult.lStructSize = sizeof(GCP_RESULTS);
-	gcpResult.lpOutString = outStr;     // Output string
+	gcpResult.lpOutString = (LPWSTR) outStr;     // Output string
 	gcpResult.lpOrder = NULL;			// Ordering indices
 	gcpResult.lpDx = distanceArray;     // Distances between character cells
 	gcpResult.lpCaretPos = NULL;		// Caret positions
 	gcpResult.lpClass = NULL;         // Character classifications
-	gcpResult.lpGlyphs = glyphArray;    // Character glyphs
+#ifdef __MINGW32__
+	gcpResult.lpGlyphs = (UINT *) glyphArray;    // Character glyphs
+#else	
+	gcpResult.lpGlyphs = (unsigned short *) glyphArray;    // Character glyphs
+#endif	
 	gcpResult.nGlyphs = 2;              // Array size
 
 	UT_UCS2Char inStr[] = {araAin, one};
@@ -413,7 +417,7 @@ void XAP_Win32App::_setBidiOS(void)
 		return;
 	}
 
-	if (GetCharacterPlacementW(displayDC, inStr, 2, 0, &gcpResult, GCP_REORDER)
+	if (GetCharacterPlacementW(displayDC, (LPCWSTR)inStr, 2, 0, &gcpResult, GCP_REORDER)
 		&& (inStr[0] == outStr[1]) )
 	{
 		m_bBidiOS = true;
@@ -424,7 +428,7 @@ void XAP_Win32App::_setBidiOS(void)
 		const UT_UCSChar hebAlef = 0x05D0;
 		inStr[0] = hebAlef;
 		inStr[1] = one;
-		if (GetCharacterPlacementW(displayDC, inStr, 2, 0, &gcpResult, GCP_REORDER)
+		if (GetCharacterPlacementW(displayDC, (LPCWSTR)inStr, 2, 0, &gcpResult, GCP_REORDER)
 			&& (inStr[0] == outStr[1]) )
 		{
 			m_bBidiOS = true;
