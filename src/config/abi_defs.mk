@@ -490,6 +490,13 @@ GNOME_LIBS      := $(shell $(GTK_CONFIG) --libs)
 GNOME_LIBS      += $(shell $(GNOME_CONFIG) --libs-only-L)
 GNOME_LIBS      += -lgnomeui -lgnomeprint -lgal -lart_lgpl -lgdk_imlib -lgnome -lgnomesupport -lglade-gnome -lglade -lxml -lunicode -lgnomecanvaspixbuf -lgdk_pixbuf -ltiff -ljpeg 
 
+ifdef ABI_OPT_GNOMEVFS
+GNOME_CFLAGS += $(shell gnome-vfs-config --cflags)
+GNOME_CFLAGS += -DHAVE_GNOMEVFS
+GNOME_LIBS   += $(shell gnome-vfs-config --libs)
+ABI_OPTIONS  +=GnomeVFS:On
+endif
+
 # the bonobo target is known not to work properly yet
 ifdef ABI_OPT_BONOBO
 GNOME_CFLAGS    += $(shell $(GNOME_CONFIG) --cflags oaf bonobo)

@@ -31,6 +31,11 @@ class PD_Document;
 class PD_DocumentRange;
 class UT_ByteBuf;
 
+// conditionally compile in support for VFS
+#ifdef HAVE_GNOMEVFS
+#include "gnome-vfs.h"
+#endif
+
 //////////////////////////////////////////////////////////////////
 // IE_Exp defines the base class for file exporters.
 //////////////////////////////////////////////////////////////////
@@ -85,8 +90,12 @@ public:
 	UT_Bool				m_error;
 
 private:
-	FILE *				m_fp;
 
+#ifdef HAVE_GNOMEVFS
+	GnomeVFSHandle * m_fp;
+#else
+	FILE *				m_fp;
+#endif
 };
 
 

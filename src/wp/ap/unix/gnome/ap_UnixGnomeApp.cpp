@@ -67,6 +67,10 @@
 
 #include "fv_View.h"
 
+#ifdef HAVE_GNOMEVFS
+#include "gnome-vfs.h"
+#endif
+
 /*****************************************************************/
 
 AP_UnixGnomeApp::AP_UnixGnomeApp(XAP_Args * pArgs, const char * szAppName)
@@ -159,6 +163,14 @@ int AP_UnixGnomeApp::main(const char * szAppName, int argc, char ** argv)
 	gtk_set_locale();
 	//	gnome_init(m_szAppName, "0.0", Args.m_argc, Args.m_argv);
 	gtk_init(&Args.m_argc,&Args.m_argv);
+
+#ifdef HAVE_GNOMEVFS
+	if (! gnome_vfs_init ())
+	  {
+	    UT_DEBUGMSG(("DOM: gnome_vfs_init () failed!\n"));
+	    return -1;	    
+	  }
+#endif
 	
 	if (bShowSplash)
 		_showSplash(2000);

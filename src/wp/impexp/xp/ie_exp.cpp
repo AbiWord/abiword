@@ -27,6 +27,7 @@
 #include "ut_types.h"
 #include "ut_misc.h"
 #include "ut_bytebuf.h"
+#include "ut_debugmsg.h"
 #include "ie_exp.h"
 #include "ie_exp_AbiWord_1.h"
 #include "ie_exp_GZipAbiWord.h"
@@ -110,9 +111,29 @@ UT_Bool IE_Exp::_openFile(const char * szFilename)
 	UT_ASSERT(!m_fp);
 
 	// TODO add code to make a backup of the original file, if it exists.
-	
+
+#ifndef HAVE_GNOMEVFS
 	m_fp = fopen(szFilename,"w");
 	return (m_fp != 0);
+#else
+	GnomeVFSResult result;
+	GnomeVFSURI * uri = gnome_vfs_uri_new (szFilename);
+
+	if (!uri)
+	  {
+	    UT_DEBUGMSG(("GnomeVFS could not open the uri: %s\n", szFilename));
+	    return UT_FALSE;
+	  }
+
+	result = gnome_vfs_create_uri (&m_fp, uri, GNOME_VFS_OPEN_WRITE, FALSE, 0644);
+	if (result != GNOME_VFS_OK)
+	  {
+	    UT_DEBUGMSG(("DOM: could not open file for writing!\n"));
+	    UT_DEBUGMSG(("DOM - reason: %s\n", gnome_vfs_result_to_string (result)));
+	    return UT_FALSE;
+	  }
+	return UT_TRUE;
+#endif
 }
 
 UT_uint32 IE_Exp::_writeBytes(const UT_Byte * pBytes, UT_uint32 length)
@@ -120,8 +141,19 @@ UT_uint32 IE_Exp::_writeBytes(const UT_Byte * pBytes, UT_uint32 length)
 	UT_ASSERT(m_fp);
 	UT_ASSERT(pBytes);
 	UT_ASSERT(length);
-	
+
+#ifndef HAVE_GNOMEVFS	
 	return fwrite(pBytes,sizeof(UT_Byte),length,m_fp);
+#else
+	GnomeVFSResult result;
+	GnomeVFSFileSize temp;
+	result = gnome_vfs_write (m_fp, pBytes, length,
+				  &temp);
+
+	if (result != GNOME_VFS_OK)
+	  return 0;
+	return (UT_uint32)temp;
+#endif
 }
 
 UT_Bool IE_Exp::_writeBytes(const UT_Byte * sz)
@@ -136,8 +168,13 @@ UT_Bool IE_Exp::_writeBytes(const UT_Byte * sz)
 
 UT_Bool IE_Exp::_closeFile(void)
 {
+#ifndef HAVE_GNOMEVFS
 	if (m_fp)
 		fclose(m_fp);
+#else
+	if (m_fp)
+	  gnome_vfs_close (m_fp);
+#endif
 	m_fp = 0;
 	return UT_TRUE;
 }
