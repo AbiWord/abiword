@@ -247,5 +247,9 @@ protected:
 const char** localeinfo_combinations(const char* prefix,const char* suffix,const char* sep, bool skip_fallback=0);
 
 /*these one are used by ispell*/
+/* placate win32 compiler */
+extern "C" {
 extern int XAP_EncodingManager__swap_stou,XAP_EncodingManager__swap_utos;
+}
+
 #endif /* XAP_APP_H */
