@@ -888,7 +888,18 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 			case FS_OFF:
 				break;
 			case FS_FILL:
-				getGraphics()->fillRect(m_cBgColor,bRec.left,bRec.top,bRec.width,bRec.height);
+			{
+				UT_sint32 xdiff =0;
+				UT_sint32 ydiff = 0;
+				if(pPage->getDocLayout()->getView() && pPage->getDocLayout()->getView()->getGraphics()->queryProperties(GR_Graphics::DGP_PAPER))
+				{
+//
+// Now correct for printing
+//
+					pPage->getDocLayout()->getView()->getPageScreenOffsets(pPage, xdiff, ydiff);
+				}
+				getGraphics()->fillRect(m_cBgColor,bRec.left,bRec.top - ydiff,bRec.width,bRec.height);
+			}
 				break;
 		}	
 		m_bBgDirty = false;
