@@ -25,5 +25,6 @@
 
 bool UT_getISO639Language(char * szLanguage);
 bool UT_getISO3166Country(char * szCountry);
+const char* UT_getWin32FallBackStringSetLocale(const char* pLocale);
 
 #endif /* UT_Win32LOCALE_H */

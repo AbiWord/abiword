@@ -28,7 +28,7 @@
 #include "ut_debugmsg.h"
 #include "ut_Win32Locale.h"
 #include "ap_Win32Prefs.h"
-
+#include "ap_Win32App.h"
 
 /*****************************************************************/
 
@@ -54,12 +54,31 @@ bool AP_Win32Prefs::loadBuiltinPrefs(void)
 
 	if (UT_getISO639Language(szLocaleInfo))
 	{
+		bool bFallBackLocale = false;
+		
 		if (UT_getISO3166Country(&szLocaleInfo[3]))
 			szLocaleInfo[2] = '-';
 
 		UT_DEBUGMSG(("Prefs: Using LOCALE info from environment [%s]\n", szLocaleInfo));
-
-		m_builtinScheme->setValue( AP_PREF_KEY_StringSet, szLocaleInfo );
+		
+		AP_Win32App * pApp = static_cast<AP_Win32App*>(XAP_App::getApp()); 
+		UT_ASSERT(pApp);
+				
+		/* Do we have a string set for this locale?*/
+		if (!pApp->doesStringSetExists(szLocaleInfo))
+		{
+			const char* pFallBackLocale = UT_getWin32FallBackStringSetLocale(szLocaleInfo);
+			
+			/* If there is no stringset, try the fallback locale*/
+			if (pApp->doesStringSetExists(pFallBackLocale))
+			{
+				m_builtinScheme->setValue( AP_PREF_KEY_StringSet, pFallBackLocale);	
+				bFallBackLocale = true;
+			}			
+		}
+		
+		if (!bFallBackLocale)
+			m_builtinScheme->setValue( AP_PREF_KEY_StringSet, szLocaleInfo );
 	}
 	else
 	{

@@ -82,7 +82,7 @@
 #include "xav_View.h"
 #include "xad_Document.h"
 #include "ap_framedata.h"
-
+#include "ut_Win32Locale.h"
 
 #ifdef HAVE_CURL
 #include "ap_Win32HashDownloader.h"
@@ -230,8 +230,8 @@ bool AP_Win32App::initialize(void)
 			}
 			else
 			{
+				UT_DEBUGMSG(("Unable to load StringSet [%s] -- using builtin strings instead.\n",szPathname));				
 				DELETEP(pDiskStringSet);
-				UT_DEBUGMSG(("Unable to load StringSet [%s] -- using builtin strings instead.\n",szPathname));
 			}
 				
 			free(szPathname);
@@ -1350,7 +1350,9 @@ UT_Vector*	AP_Win32App::getInstalledUILanguages(void)
 	const XML_Char * szStringSet = NULL;
 	UT_Vector* pVec = new UT_Vector();
 	UT_Language lang;
-	FILE* in;
+	char* pStringSet;
+	UT_String str;
+	
 
 	if (!((getPrefsValue(AP_PREF_KEY_StringSet,&szStringSet))
 		&& (szStringSet)
@@ -1358,30 +1360,43 @@ UT_Vector*	AP_Win32App::getInstalledUILanguages(void)
 		&& (UT_stricmp(szStringSet,AP_PREF_DEFAULT_StringSet) != 0)))
 		return pVec;
 			
+	for (UT_uint32 i=0; i< lang.getCount(); i++)
+	{		
+		if (doesStringSetExists((const char*)lang.getNthProperty(i)))		
+			pVec->addItem(strdup((char*)lang.getNthProperty(i)));				
+		
+	}	
+
+	return pVec;
+}
+
+/*
+	Does a stringSet exists in disk
+*/
+bool	AP_Win32App::doesStringSetExists(const char* pLocale)
+{
+	FILE* in;
+	const char * szDirectory = NULL;	
+	
 	getPrefsValueDirectory(true,AP_PREF_KEY_StringSetDirectory,&szDirectory);
 	UT_ASSERT((szDirectory) && (*szDirectory));
 
-	char * szPathname = (char *)calloc(sizeof(char),strlen(szDirectory)+strlen(szStringSet)+100);
+	char * szPathname = (char *)calloc(sizeof(char),strlen(szDirectory)+strlen(pLocale)+100);
 	UT_ASSERT(szPathname);	
-	
-	for (UT_uint32 i=0; i< lang.getCount(); i++)
-	{
-		szStringSet = lang.getNthProperty(i);
-
-		sprintf(szPathname,"%s%s%s.strings",
+				
+	sprintf(szPathname,"%s%s%s.strings",
 				szDirectory,
 				((szDirectory[strlen(szDirectory)-1]=='\\') ? "" : "\\"),
-				szStringSet);				
+				pLocale);				
 	
-		in =  fopen(szPathname, "r");
-		
-		if (in)
-		{
-			fclose(in);
-			pVec->addItem(strdup(szStringSet));
-		}							
-			
-	}	
+	in =  fopen(szPathname, "r");	
 	free (szPathname);
-	return pVec;
+	
+	if (in)
+	{
+		fclose(in);		
+		return true;
+	}			
+	
+	return false;
 }

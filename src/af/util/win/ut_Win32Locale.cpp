@@ -136,3 +136,36 @@ bool UT_getISO3166Country(char *szCountry)
 	return bSuccess;
 }
 
+/*	
+	We build the default Abiword user's locale in the form ISO3166-ISO639 pair
+	(e.g. es-MX) from Windows locale information. For example, If the user's selected 
+	country and language are Argentina and Spanish we will build AR-ES. Unfortunally, 
+	it's likely that we do not have a string set for this variant of Spanish (there are
+	more than 19). What we do is we provide a fallback locale for this situation.
+	26/01/2003 Jordi 
+		
+	See bug 4174 for additional details
+*/
+const char* UT_getWin32FallBackStringSetLocale(const char* pLocale)
+{	
+	char	szLanguage[3];	
+	strncpy (szLanguage, pLocale,2);
+	szLanguage[2]='\0';
+		
+	if (stricmp(szLanguage,"es")==0)
+		return "es-ES";
+	
+	if (stricmp(szLanguage,"de")==0)
+		return "de-DE";
+	
+	if (stricmp(szLanguage,"en")==0)
+		return "en-US";		 	
+	
+	if (stricmp(szLanguage,"fr")==0)
+		return "fr-FR";		 
+	
+	if (stricmp(szLanguage,"nl")==0) 	
+		return "nl-NL";
+	
+	return NULL;
+}
