@@ -371,7 +371,9 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 	if( pFrame )
 	  {
 	    pFrame->repopulateCombos();
-	    m_pG->createCaret();
+	    m_pG->createCaret(pFrame);
+		AV_ListenerId listID;
+		addListener(m_pG->getCaret()->getListener(), & listID);
 	  }
 }
 

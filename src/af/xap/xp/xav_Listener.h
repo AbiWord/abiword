@@ -42,7 +42,8 @@ typedef enum _AV_ListenerType
     AV_LISTENER_TOPRULER,
     AV_LISTENER_SCROLLBAR,
     AV_LISTENER_VIEW,
-    AV_LISTENER_STATUSBAR
+    AV_LISTENER_STATUSBAR,
+	AV_LISTENER_CARET
 } AV_ListenerType;
 
 // TODO how did we fill this mask so fast?
