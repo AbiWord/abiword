@@ -40,12 +40,14 @@
 #include "gr_QNXGraphics.h"
 #include "xav_View.h"
 #include "fv_View.h"
+#include "fl_DocLayout.h"
 #include "xad_Document.h"
 #include "gr_Graphics.h"
 #include "ie_imp.h"
 #include "ap_FrameData.h"
 #include "xap_Frame.h"
 #include "ut_qnxHelper.h"
+#include "xap_Prefs.h"
 
 XAP_QNXFrameImpl::XAP_QNXFrameImpl(XAP_Frame *pFrame,XAP_QNXApp *pApp) : 
 	XAP_FrameImpl(pFrame),
@@ -720,8 +722,7 @@ void XAP_QNXFrameImpl::createTopLevelWindow(void)
 	//Get fall-back defaults from pref
 	UT_uint32 pref_flags, pref_width, pref_height;
 	UT_sint32 pref_x, pref_y;
-	m_pQNXApp->getPrefs()->getGeometry(&pref_x, &pref_y, &pref_width,
-										 &pref_height, &pref_flags);
+	m_pQNXApp->getPrefs()->getGeometry(&pref_x, &pref_y, &pref_width, &pref_height, &pref_flags);
 	if (!(f & XAP_QNXApp::GEOMETRY_FLAG_SIZE)
 	&& (pref_flags & PREF_FLAG_GEOMETRY_SIZE))
 	{
