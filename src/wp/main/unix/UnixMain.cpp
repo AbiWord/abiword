@@ -30,6 +30,11 @@
 
 int main(int argc, char ** argv)
 {
+	/*
+		These printfs are not here permanently.
+		TODO remove them later
+	*/
+
 	printf("Build ID:\t%s\n", gAbi_Build_ID);
 	printf("Version:\t%s\n", gAbi_Build_Version);
 	printf("Compile Date:\t%s\n", gAbi_Build_CompileDate);
