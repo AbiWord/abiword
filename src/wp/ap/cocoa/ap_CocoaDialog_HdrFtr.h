@@ -1,6 +1,6 @@
 /* AbiWord
  * Copyright (C) 2000 AbiSource, Inc.
- * Copyright (C) 2001 Hubert Figuiere
+ * Copyright (C) 2001, 2003 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -25,6 +25,7 @@
 #include "ap_Dialog_HdrFtr.h"
 
 class XAP_CocoaFrame;
+@class AP_CocoaDialog_HdrFtrController;
 
 /*****************************************************************/
 
@@ -40,26 +41,41 @@ public:
 
 	virtual void eventOk(void);
 	virtual void eventCancel(void);
-	void         RestartChanged(void);
-	void         RestartSpinChanged(void);
-	void         CheckChanged(HdrFtr_Control which);
+	void         RestartSpinChanged(UT_sint32 RestartValue);
+	void         CheckChanged(id checkbox);
 
- protected:
-	virtual NSWindow * _constructWindow (void);
-	virtual void _constructWindowContents (NSWindow * parent);
-	virtual void _connectSignals(void);
-
-#if 0
-	GtkWidget * m_wHdrFtrCheck[6];
-	GtkWidget * m_wRestartButton;
-	GtkWidget * m_wRestartLabel;
-	GtkObject * m_oSpinAdj;
-	GtkWidget * m_wSpin;
-	GtkWidget * m_wButtonOK;
-	GtkWidget * m_wButtonCancel;
-	GtkWidget * m_wHdrFtrDialog;
-#endif
+private:
+	AP_CocoaDialog_HdrFtrController*	m_dlg;
 };
+
+
+
+@interface AP_CocoaDialog_HdrFtrController : NSWindowController <XAP_CocoaDialogProtocol>
+{
+    IBOutlet NSButton *cancelBtn;
+    IBOutlet NSBox *footerBox;
+    IBOutlet NSButton *footerFacingBtn;
+    IBOutlet NSButton *footerFirstBtn;
+    IBOutlet NSButton *footerLastBtn;
+    IBOutlet NSBox *headerBox;
+    IBOutlet NSButton *headerFacingBtn;
+    IBOutlet NSButton *headerFirstBtn;
+    IBOutlet NSButton *headerLastBtn;
+    IBOutlet NSButton *okBtn;
+    IBOutlet NSBox *pageNumberBox;
+    IBOutlet NSTextField *restartAtData;
+    IBOutlet NSTextField *restartAtLabel;
+    IBOutlet NSButton *restartPgNumberBtn;
+    IBOutlet NSStepper *restartStepper;
+	AP_CocoaDialog_HdrFtr*	_xap;
+}
+- (IBAction)cancelAction:(id)sender;
+- (IBAction)btnAction:(id)sender;
+- (IBAction)okAction:(id)sender;
+- (IBAction)restartAction:(id)sender;
+- (IBAction)restartBtnAction:(id)sender;
+- (IBAction)restartStepperAction:(id)sender;
+@end
 
 #endif /* AP_COCOADIALOG_HDRFTR_H */
 

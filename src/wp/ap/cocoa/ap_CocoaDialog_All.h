@@ -100,7 +100,7 @@
 
 	DeclareDialog(AP_DIALOG_ID_REPLACE,			AP_CocoaDialog_Replace)
 	DeclareDialog(AP_DIALOG_ID_FIND,			AP_CocoaDialog_Replace)
-//PORT    DeclareDialog(AP_DIALOG_ID_HDRFTR,          AP_CocoaDialog_HdrFtr)
+	DeclareDialog(AP_DIALOG_ID_HDRFTR,          AP_CocoaDialog_HdrFtr)
 //PORT    DeclareDialog(AP_DIALOG_ID_BACKGROUND,      AP_CocoaDialog_Background)
 	DeclareDialog(AP_DIALOG_ID_GOTO,			AP_CocoaDialog_Goto)
 	DeclareDialog(AP_DIALOG_ID_BREAK,			AP_CocoaDialog_Break)

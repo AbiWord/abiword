@@ -22,7 +22,7 @@
 
 // This header defines some functions for Cocoa dialogs,
 // like centering them, measuring them, etc.
-#include "xap_CocoaDialogHelper.h"
+#include "xap_CocoaDialog_Utilities.h"
 
 #include "xap_App.h"
 #include "xap_CocoaApp.h"
@@ -34,87 +34,19 @@
 #include "ut_debugmsg.h"
 
 
-static void s_HdrEven(GtkWidget * btn, AP_CocoaDialog_HdrFtr * dlg)
-{
-	UT_ASSERT(dlg);
-	dlg->CheckChanged( AP_Dialog_HdrFtr::HdrEven);
-}
-
-static void s_HdrFirst(GtkWidget * btn, AP_CocoaDialog_HdrFtr * dlg)
-{
-	UT_ASSERT(dlg);
-	dlg->CheckChanged(AP_Dialog_HdrFtr::HdrFirst);
-}
-
-
-static void s_HdrLast(GtkWidget * btn, AP_CocoaDialog_HdrFtr * dlg)
-{
-	UT_ASSERT(dlg);
-	dlg->CheckChanged(AP_Dialog_HdrFtr::HdrLast);
-}
-
-static void s_FtrEven(GtkWidget * btn, AP_CocoaDialog_HdrFtr * dlg)
-{
-	UT_ASSERT(dlg);
-	dlg->CheckChanged(AP_Dialog_HdrFtr::FtrEven);
-}
-
-static void s_FtrFirst(GtkWidget * btn, AP_CocoaDialog_HdrFtr * dlg)
-{
-	UT_ASSERT(dlg);
-	dlg->CheckChanged(AP_Dialog_HdrFtr::FtrFirst);
-}
-
-static void s_FtrLast(GtkWidget * btn, AP_CocoaDialog_HdrFtr * dlg)
-{
-	UT_ASSERT(dlg);
-	dlg->CheckChanged(AP_Dialog_HdrFtr::FtrLast);
-}
-
-static void s_restart_toggled(GtkWidget * btn, AP_CocoaDialog_HdrFtr * dlg)
-{
-	UT_ASSERT(dlg);
-	dlg->RestartChanged();
-}
-
-static void s_spin_changed(GtkWidget * btn, AP_CocoaDialog_HdrFtr * dlg)
-{
-	UT_ASSERT(dlg);
-	dlg->RestartSpinChanged();
-}
-
-static void s_ok_clicked (GtkWidget * btn, AP_CocoaDialog_HdrFtr * dlg)
-{
-	UT_ASSERT(dlg);
-	dlg->eventOk();
-}
-
-static void s_cancel_clicked (GtkWidget * btn, AP_CocoaDialog_HdrFtr * dlg)
-{
-	UT_ASSERT(dlg);
-	dlg->eventCancel();
-}
-
-static void s_delete_clicked(GtkWidget * /* widget */,
-							 gpointer /* data */,
-							 AP_CocoaDialog_HdrFtr * dlg)
-{
-	UT_ASSERT(dlg);
-	dlg->eventCancel();
-}
 
 /*****************************************************************/
 
 XAP_Dialog * AP_CocoaDialog_HdrFtr::static_constructor(XAP_DialogFactory * pFactory,
-													 XAP_Dialog_Id id)
+													 XAP_Dialog_Id dlgid)
 {
-	AP_CocoaDialog_HdrFtr * p = new AP_CocoaDialog_HdrFtr(pFactory,id);
+	AP_CocoaDialog_HdrFtr * p = new AP_CocoaDialog_HdrFtr(pFactory,dlgid);
 	return (XAP_Dialog *) p;
 }
 
 AP_CocoaDialog_HdrFtr::AP_CocoaDialog_HdrFtr(XAP_DialogFactory * pDlgFactory,
-										 XAP_Dialog_Id id)
-	: AP_Dialog_HdrFtr(pDlgFactory,id)
+										 XAP_Dialog_Id dlgid)
+	: AP_Dialog_HdrFtr(pDlgFactory,dlgid)
 {
 }
 
@@ -124,331 +56,169 @@ AP_CocoaDialog_HdrFtr::~AP_CocoaDialog_HdrFtr(void)
 
 void AP_CocoaDialog_HdrFtr::runModal(XAP_Frame * pFrame)
 {
-	UT_ASSERT(pFrame);
 
-	// Build the window's widgets and arrange them
-	GtkWidget * mainWindow = _constructWindow();
-	UT_ASSERT(mainWindow);
-
-	connectFocus(GTK_WIDGET(mainWindow), pFrame);
+	m_dlg = [[AP_CocoaDialog_HdrFtrController alloc] initFromNib];
 	
-	// To center the dialog, we need the frame of its parent.
-	XAP_CocoaFrame * pCocoaFrame = static_cast<XAP_CocoaFrame *>(pFrame);
-	UT_ASSERT(pCocoaFrame);
-	
-	// Get the GtkWindow of the parent frame
-	GtkWidget * parentWindow = pCocoaFrame->getTopLevelWindow();
-	UT_ASSERT(parentWindow);
-	
-	// Center our new dialog in its parent and make it a transient
-	// so it won't get lost underneath
-	centerDialog(parentWindow, mainWindow);
+	// used similarly to convert between text and numeric arguments
+	[m_dlg setXAPOwner:this];
 
-	// Show the top level dialog,
-	gtk_widget_show(mainWindow);
+	// build the dialog
+	NSWindow * window = [m_dlg window];
+	UT_ASSERT(window);
 
-	// Make it modal, and stick it up top
-	gtk_grab_add(mainWindow);
+	[NSApp runModalForWindow:window];
 
-	// run into the gtk main loop for this window
-	gtk_main();
-
-	if(mainWindow && GTK_IS_WIDGET(mainWindow))
-		gtk_widget_destroy(mainWindow);
+	[m_dlg discardXAP];
+	[m_dlg close];
+	[m_dlg release];
+	m_dlg = nil;
 }
 
 
 void AP_CocoaDialog_HdrFtr::eventOk (void)
 {
 	setAnswer (a_OK);
-	gtk_main_quit();
+	[NSApp stopModal];
 }
 
 void AP_CocoaDialog_HdrFtr::eventCancel (void)
 {
 	setAnswer(a_CANCEL);
-	gtk_main_quit ();
+	[NSApp stopModal];
 }
 
 /*!
  * A check button has controlling a footer type has been changed.
  */
-void AP_CocoaDialog_HdrFtr::CheckChanged(HdrFtr_Control which)
+void AP_CocoaDialog_HdrFtr::CheckChanged(id checkbox)
 {
-	bool value = false;
-	if(GTK_TOGGLE_BUTTON (m_wHdrFtrCheck[which])->active)
-	{
-		value = true;
-	}
-	setValue(which, value, true);
+	int state = [checkbox state];
+	setValue(static_cast<HdrFtr_Control>([checkbox tag]), (state == NSOnState ? true : false), true);
 }
 
 /*!
  * Update the XP values of the spin button.
  */
-void AP_CocoaDialog_HdrFtr::RestartSpinChanged(void)
+void AP_CocoaDialog_HdrFtr::RestartSpinChanged(UT_sint32 RestartValue)
 {
-	UT_sint32 RestartValue = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(m_wSpin));
 	setRestart(true, RestartValue, true);
 }
 
-/*!
- * The Check button controlling whether page numbering should be restarted at
- * section has been changed.
- */
-void AP_CocoaDialog_HdrFtr::RestartChanged(void)
+
+@implementation AP_CocoaDialog_HdrFtrController
+
+- (id)initFromNib
 {
-	UT_sint32 RestartValue = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(m_wSpin));
-	if(GTK_TOGGLE_BUTTON (m_wRestartButton)->active)
-	{
-		gtk_widget_set_sensitive(m_wRestartLabel,TRUE);
-		gtk_widget_set_sensitive(m_wSpin,TRUE);
-		setRestart(true, RestartValue, true);
-	}
-	else
-	{
-		gtk_widget_set_sensitive(m_wRestartLabel,FALSE);
-		gtk_widget_set_sensitive(m_wSpin,FALSE);
-		setRestart(false, RestartValue, true);
-	}
+	self = [super initWithWindowNibName:@"ap_CocoaDialog_HdrFtr"];
+	return self;
 }
 
-/*!
- * construct the dialog window.
- */
-GtkWidget * AP_CocoaDialog_HdrFtr::_constructWindow (void)
+-(void)discardXAP
 {
-	GtkWidget *HdrFtrDialog;
-	GtkWidget *vbox1;
-	GtkWidget *hseparator1;
-	GtkWidget *gnomeButtons;
-	GtkWidget *buttonOK;
-	GtkWidget *buttonCancel;
-
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
-
-	HdrFtrDialog = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-	gtk_window_set_title (GTK_WINDOW (HdrFtrDialog),  pSS->getValue(AP_STRING_ID_DLG_HdrFtr_Title));
-
-	vbox1 = gtk_vbox_new (FALSE, 0);
-	gtk_widget_show (vbox1);
-	gtk_container_add (GTK_CONTAINER (HdrFtrDialog), vbox1);
-
-    _constructWindowContents (vbox1);
-
-
-	hseparator1 = gtk_hseparator_new ();
-	gtk_widget_show (hseparator1);
-	gtk_box_pack_start (GTK_BOX (vbox1), hseparator1, FALSE, TRUE, 0);
-
-	gnomeButtons = gtk_hbox_new (FALSE, 0);
-	gtk_widget_show (gnomeButtons);
-	gtk_box_pack_start (GTK_BOX (vbox1), gnomeButtons, TRUE, TRUE, 0);
-
-	buttonCancel = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Cancel));
-	gtk_widget_show (buttonCancel);
-	gtk_box_pack_end (GTK_BOX (gnomeButtons), buttonCancel, FALSE, FALSE, 6);
-
-	buttonOK = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_OK));
-	gtk_widget_show (buttonOK);
-	gtk_box_pack_end (GTK_BOX (gnomeButtons), buttonOK, FALSE, FALSE, 0);
-
-	m_wButtonOK = buttonOK;
-	m_wButtonCancel = buttonCancel;
-	m_wHdrFtrDialog = HdrFtrDialog;
-
-	_connectSignals();
-  	
-	return HdrFtrDialog;
+	_xap = NULL; 
 }
 
-void AP_CocoaDialog_HdrFtr::_constructWindowContents (GtkWidget * parent)
+-(void)dealloc
 {
-	GtkWidget *HeaderFrame;
-	GtkWidget *vbox2;
-	GtkWidget *HeaderEven;
-	GtkWidget *HeaderFirst;
-	GtkWidget *HeaderLast;
-	GtkWidget *FooterFrame;
-	GtkWidget *vbox3;
-	GtkWidget *FooterEven;
-	GtkWidget *FooterFirst;
-	GtkWidget *FooterLast;
-	GtkWidget *hbox1;
-	GtkWidget *ReStartButton;
-	GtkWidget *restartLabel;
-	GObject *spinbutton1_adj;
-	GtkWidget *spinbutton1;
+	[super dealloc];
+}
 
+- (void)setXAPOwner:(XAP_Dialog *)owner
+{
+	_xap = dynamic_cast<AP_CocoaDialog_HdrFtr*>(owner);
+}
 
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
-
-	HeaderFrame = gtk_frame_new (pSS->getValue(AP_STRING_ID_DLG_HdrFtr_HeaderFrame));
-	gtk_widget_show (HeaderFrame);
-	gtk_box_pack_start (GTK_BOX (parent), HeaderFrame, TRUE, TRUE, 0);
-	gtk_container_set_border_width (GTK_CONTAINER (HeaderFrame), 6);
-	gtk_frame_set_shadow_type (GTK_FRAME (HeaderFrame), GTK_SHADOW_ETCHED_OUT);
-
-	vbox2 = gtk_vbox_new (FALSE, 0);
-	gtk_widget_show (vbox2);
-	gtk_container_add (GTK_CONTAINER (HeaderFrame), vbox2);
-
-	HeaderEven = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_HdrFtr_HeaderEven));
-	gtk_widget_show (HeaderEven);
-	gtk_box_pack_start (GTK_BOX (vbox2), HeaderEven, FALSE, TRUE, 0);
-	gtk_container_set_border_width (GTK_CONTAINER (HeaderEven), 1);
-
-	HeaderFirst = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_HdrFtr_HeaderFirst));
-	gtk_widget_show (HeaderFirst);
-	gtk_box_pack_start (GTK_BOX (vbox2), HeaderFirst, FALSE, TRUE, 0);
-
-	HeaderLast = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_HdrFtr_HeaderLast));
-	gtk_widget_show (HeaderLast);
-	gtk_box_pack_start (GTK_BOX (vbox2), HeaderLast, FALSE, TRUE, 0);
-
-	FooterFrame = gtk_frame_new (pSS->getValue(AP_STRING_ID_DLG_HdrFtr_FooterFrame));
-	gtk_widget_show (FooterFrame);
-	gtk_box_pack_start (GTK_BOX (parent), FooterFrame, TRUE, TRUE, 0);
-	gtk_container_set_border_width (GTK_CONTAINER (FooterFrame), 5);
-	gtk_frame_set_shadow_type (GTK_FRAME (FooterFrame), GTK_SHADOW_ETCHED_OUT);
-
-	vbox3 = gtk_vbox_new (FALSE, 0);
-	gtk_widget_show (vbox3);
-	gtk_container_add (GTK_CONTAINER (FooterFrame), vbox3);
-
-	FooterEven = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_HdrFtr_FooterEven));
-	gtk_widget_show (FooterEven);
-	gtk_box_pack_start (GTK_BOX (vbox3), FooterEven, FALSE, TRUE, 0);
-
-	FooterFirst = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_HdrFtr_FooterFirst));
-	gtk_widget_show (FooterFirst);
-	gtk_box_pack_start (GTK_BOX (vbox3), FooterFirst, FALSE, TRUE, 0);
-
-	FooterLast = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_HdrFtr_FooterLast));
-	gtk_widget_show (FooterLast);
-	gtk_box_pack_start (GTK_BOX (vbox3), FooterLast, FALSE, FALSE, 0);
-
-	hbox1 = gtk_hbox_new (FALSE, 2);
-	gtk_widget_show (hbox1);
-	gtk_box_pack_start (GTK_BOX (parent), hbox1, TRUE, TRUE, 2);
-	gtk_container_set_border_width (GTK_CONTAINER (hbox1), 3);
-
-	ReStartButton = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_HdrFtr_RestartCheck));
-	gtk_widget_show (ReStartButton);
-	gtk_box_pack_start (GTK_BOX (hbox1), ReStartButton, FALSE, FALSE, 0);
-
-	restartLabel = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_HdrFtr_RestartNumbers));
-	gtk_widget_show (restartLabel);
-	gtk_box_pack_start (GTK_BOX (hbox1), restartLabel, TRUE, TRUE, 0);
-	gtk_label_set_justify (GTK_LABEL (restartLabel), GTK_JUSTIFY_RIGHT);
-
-	spinbutton1_adj = gtk_adjustment_new (1, 0, 10000, 1, 10, 10);
-	spinbutton1 = gtk_spin_button_new (GTK_ADJUSTMENT (spinbutton1_adj), 1, 0);
-	gtk_widget_show (spinbutton1);
-	gtk_box_pack_end (GTK_BOX (hbox1), spinbutton1, FALSE, FALSE, 2);
-
-	m_wHdrFtrCheck[HdrEven] = HeaderEven;
-	m_wHdrFtrCheck[HdrFirst] = HeaderFirst;
-	m_wHdrFtrCheck[HdrLast] = HeaderLast;
-	m_wHdrFtrCheck[FtrEven] = FooterEven;
-	m_wHdrFtrCheck[FtrFirst] = FooterFirst;
-	m_wHdrFtrCheck[FtrLast] = FooterLast;
-	m_wRestartButton = ReStartButton;
-	m_wRestartLabel = restartLabel;
-	m_oSpinAdj = spinbutton1_adj;
-	m_wSpin = spinbutton1;
-
-//
-// Now set initial state of the dialog.
-//
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(m_wSpin),(gfloat) getRestartValue());
-	if(isRestart())
-	{
-		gtk_widget_set_sensitive(m_wSpin,TRUE);
-		gtk_widget_set_sensitive(m_wRestartLabel,TRUE);
-		gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON(m_wRestartButton),TRUE);
-	}
-	else
-	{
-		gtk_widget_set_sensitive(m_wSpin,FALSE);
-		gtk_widget_set_sensitive(m_wRestartLabel,FALSE);
-	}
-	UT_sint32 j = (UT_sint32) HdrEven;
-	for(j = (UT_sint32) HdrEven ; j<= (UT_sint32) FtrLast; j++)
-	{
-		bool value = getValue( (HdrFtr_Control) j);
-		if(value)
-		{
-			gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON(m_wHdrFtrCheck[j]),TRUE);
+-(void)windowDidLoad
+{
+	if (_xap) {
+		const XAP_StringSet *pSS = XAP_App::getApp()->getStringSet();
+		LocalizeControl([self window], pSS, AP_STRING_ID_DLG_HdrFtr_Title);
+		LocalizeControl(okBtn, pSS, XAP_STRING_ID_DLG_OK);
+		LocalizeControl(cancelBtn, pSS, XAP_STRING_ID_DLG_Cancel);
+		LocalizeControl(headerBox, pSS, AP_STRING_ID_DLG_HdrFtr_HeaderFrame);
+		LocalizeControl(headerFacingBtn, pSS, AP_STRING_ID_DLG_HdrFtr_HeaderEven);
+		[headerFacingBtn setTag:AP_Dialog_HdrFtr::HdrEven];
+		LocalizeControl(headerFirstBtn, pSS, AP_STRING_ID_DLG_HdrFtr_HeaderFirst);
+		[headerFirstBtn setTag:AP_Dialog_HdrFtr::HdrFirst];
+		LocalizeControl(headerLastBtn, pSS, AP_STRING_ID_DLG_HdrFtr_HeaderLast);
+		[headerLastBtn setTag:AP_Dialog_HdrFtr::HdrLast];
+		LocalizeControl(footerBox, pSS, AP_STRING_ID_DLG_HdrFtr_FooterFrame);
+		LocalizeControl(footerFacingBtn, pSS, AP_STRING_ID_DLG_HdrFtr_FooterEven);
+		[footerFacingBtn setTag:AP_Dialog_HdrFtr::FtrEven];
+		LocalizeControl(footerFirstBtn, pSS, AP_STRING_ID_DLG_HdrFtr_FooterFirst);
+		[footerFirstBtn setTag:AP_Dialog_HdrFtr::FtrFirst];
+		LocalizeControl(footerLastBtn, pSS, AP_STRING_ID_DLG_HdrFtr_FooterLast);
+		[footerLastBtn setTag:AP_Dialog_HdrFtr::FtrLast];
+		LocalizeControl(pageNumberBox, pSS, AP_STRING_ID_DLG_HdrFtr_PageNumberProperties);
+		LocalizeControl(restartPgNumberBtn, pSS, AP_STRING_ID_DLG_HdrFtr_RestartCheck);
+		LocalizeControl(restartAtLabel, pSS, AP_STRING_ID_DLG_HdrFtr_RestartNumbers);
+		
+		
+		[restartStepper setFloatValue:_xap->getRestartValue()];
+		if(_xap->isRestart()) {
+			[restartStepper setEnabled:YES];
+			[restartAtLabel setEnabled:YES];
+			[restartAtData setEnabled:YES];
+			[restartPgNumberBtn setState:NSOnState];
 		}
-		else
-		{
-			gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON(m_wHdrFtrCheck[j]),FALSE);
+		else {
+			[restartStepper setEnabled:NO];
+			[restartAtLabel setEnabled:NO];
+			[restartAtData setEnabled:NO];
+		}
+		UT_sint32 j = static_cast<UT_sint32>(AP_Dialog_HdrFtr::HdrEven);
+		for(j = static_cast<UT_sint32>(AP_Dialog_HdrFtr::HdrEven) ; j<= static_cast<UT_sint32>(AP_Dialog_HdrFtr::FtrLast); j++)	{
+			bool value = _xap->getValue( static_cast<AP_Dialog_HdrFtr::HdrFtr_Control>(j));
+			[[[[self window] contentView] viewWithTag:j] setState:(value ? NSOnState : NSOffState)];
 		}
 	}
 }
 
 
-void AP_CocoaDialog_HdrFtr::_connectSignals(void)
+- (IBAction)cancelAction:(id)sender
 {
-	g_signal_connect (G_OBJECT(m_wHdrFtrCheck[HdrEven]), 
-						"toggled", 
-						G_CALLBACK(s_HdrEven), 
-						(gpointer)this);
-
-	g_signal_connect (G_OBJECT(m_wHdrFtrCheck[HdrFirst]), 
-						"toggled", 
-						G_CALLBACK(s_HdrFirst), 
-						(gpointer)this);
-
-	g_signal_connect (G_OBJECT(m_wHdrFtrCheck[HdrLast]), 
-						"toggled", 
-						G_CALLBACK(s_HdrLast), 
-						(gpointer)this);
-
-	g_signal_connect (G_OBJECT(m_wHdrFtrCheck[FtrEven]), 
-						"toggled", 
-						G_CALLBACK(s_FtrEven), 
-						(gpointer)this);
-
-	g_signal_connect (G_OBJECT(m_wHdrFtrCheck[FtrFirst]), 
-						"toggled", 
-						G_CALLBACK(s_FtrFirst), 
-						(gpointer)this);
-
-	g_signal_connect (G_OBJECT(m_wHdrFtrCheck[FtrLast]), 
-						"toggled", 
-						G_CALLBACK(s_FtrLast), 
-						(gpointer)this);
-
-	g_signal_connect (G_OBJECT(m_wRestartButton), 
-						"toggled", 
-						G_CALLBACK(s_restart_toggled), 
-						(gpointer)this);
-
-	g_signal_connect (G_OBJECT (m_oSpinAdj), "value_changed",
-						G_CALLBACK (s_spin_changed),
-						(gpointer) this);
-
-	g_signal_connect (G_OBJECT(m_wRestartButton), 
-						"toggled", 
-						G_CALLBACK(s_restart_toggled), 
-						(gpointer)this);
-
-	g_signal_connect (G_OBJECT(m_wButtonOK), "clicked", 
-						G_CALLBACK(s_ok_clicked), (gpointer)this);
-
-	g_signal_connect (G_OBJECT(m_wButtonCancel), "clicked", 
-						G_CALLBACK(s_cancel_clicked), (gpointer)this);
-	 
-	g_signal_connect_after(G_OBJECT(m_wHdrFtrDialog),
-							 "destroy",
-							 NULL,
-							 NULL);
-
-	g_signal_connect(G_OBJECT(m_wHdrFtrDialog),
-					   "delete_event",
-					   G_CALLBACK(s_delete_clicked),
-					   (gpointer) this);
-
+	_xap->eventOk();
 }
+
+- (IBAction)btnAction:(id)sender
+{
+	_xap->CheckChanged(sender);
+}
+
+- (IBAction)okAction:(id)sender
+{
+	_xap->eventCancel();
+}
+
+- (IBAction)restartAction:(id)sender
+{
+	[restartStepper setIntValue:[sender intValue]];
+	_xap->RestartSpinChanged([sender intValue]);
+}
+
+- (IBAction)restartBtnAction:(id)sender
+{
+	UT_sint32 RestartValue = [restartAtData intValue];
+	if([restartPgNumberBtn state] == NSOnState)
+	{
+		[restartAtLabel setEnabled:YES];
+		[restartAtData setEnabled:YES];
+		[restartStepper setEnabled:YES];
+		_xap->setRestart(true, RestartValue, true);
+	}
+	else
+	{
+		[restartAtLabel setEnabled:NO];
+		[restartAtData setEnabled:NO];
+		[restartStepper setEnabled:NO];
+		_xap->setRestart(false, RestartValue, true);
+	}
+}
+
+- (IBAction)restartStepperAction:(id)sender
+{	
+	[restartAtData setIntValue:[sender intValue]];
+	_xap->RestartSpinChanged([sender intValue]);
+}
+
+@end
