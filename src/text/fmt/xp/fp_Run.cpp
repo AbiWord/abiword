@@ -102,6 +102,44 @@ void fp_Run::__dump(FILE * fp) const
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
+void fp_Run::insertIntoRunListBeforeThis(fp_Run& newRun)
+{
+	newRun.unlinkFromRunList();
+	newRun.m_pNext = this;
+	if (m_pPrev)
+	{
+		m_pPrev->m_pNext = &newRun;
+	}
+	newRun.m_pPrev = m_pPrev;
+	m_pPrev = &newRun;
+}
+
+void fp_Run::insertIntoRunListAfterThis(fp_Run& newRun)
+{
+	newRun.unlinkFromRunList();
+	newRun.m_pPrev = this;
+	if (m_pNext)
+	{
+		m_pNext->m_pPrev = &newRun;
+	}
+	newRun.m_pNext = m_pNext;
+	m_pNext = &newRun;
+}
+
+void fp_Run::unlinkFromRunList()
+{
+	if (m_pPrev)
+	{
+		m_pPrev->m_pNext = m_pNext;
+	}
+	if (m_pNext)
+	{
+		m_pNext->m_pPrev = m_pPrev;
+		m_pNext = 0;
+	}
+	m_pPrev = 0;
+}
+
 void	fp_Run::setX(UT_sint32 iX)
 {
 	if (iX == m_iX)
@@ -394,6 +432,7 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 	UT_uint32 iRunBase = m_pBL->getPosition() + m_iOffsetFirst;
 
 	if (
+		pView->getFocus()!=AV_FOCUS_NONE &&
 		(iSel1 <= iRunBase)
 		&& (iSel2 > iRunBase)
 		)
@@ -946,6 +985,7 @@ void fp_FieldRun::_draw(dg_DrawArgs* pDA)
 		UT_ASSERT(iSel1 <= iSel2);
 	
 		if (
+			pView->getFocus()!=AV_FOCUS_NONE &&
 			(iSel1 <= iRunBase)
 			&& (iSel2 > iRunBase)
 			)

@@ -90,7 +90,7 @@ class fp_Run
 {
 public:
 	fp_Run(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, unsigned char iType);
-	virtual ~fp_Run();
+	virtual ~fp_Run() = 0;
 
 	inline	unsigned char	getType(void) const 			{ return m_iType; }
 
@@ -110,6 +110,9 @@ public:
 	inline UT_uint32		getDescent(void) const 			{ return m_iDescent; }
 	inline UT_uint32		getAscentInLayoutUnits(void) const 		{ return m_iAscentLayoutUnits; }
 	inline UT_uint32		getDescentInLayoutUnits(void) const 	{ return m_iDescentLayoutUnits; }
+	void					insertIntoRunListBeforeThis(fp_Run& newRun);
+	void					insertIntoRunListAfterThis(fp_Run& newRun);
+	void					unlinkFromRunList();
 	
 	void					setLine(fp_Line*);
 	void					setBlock(fl_BlockLayout *);
