@@ -194,7 +194,11 @@ XAP_UnixFont::XAP_UnixFont(const XAP_UnixFont & copy)
 
 	m_fontKey = NULL;
 
+#ifdef USE_XFT
 	openFileAs(copy.getFontfile(), copy.getMetricfile(), copy.getName(), copy.getXLFD(), copy.getStyle());
+#else
+	openFileAs(copy.getFontfile(), copy.getMetricfile(), copy.getXLFD(), copy.getStyle());
+#endif
 	m_pEncodingTable = NULL;
 	m_iEncodingTableSize = 0;
 	if (copy.getEncodingTable())
