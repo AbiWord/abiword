@@ -18,6 +18,7 @@
  */
 
 #include <string.h>
+#include <signal.h>
 
 #include "ut_assert.h"
 #include "xap_UnixPSGenerate.h"
@@ -27,6 +28,7 @@ ps_Generate::ps_Generate(const char * szFilename)
 	m_szFilename = szFilename;
 	m_fp = 0;
 	m_bIsFile = UT_FALSE;
+	m_pfOldSIGPIPEHandler = NULL;
 }
 
 ps_Generate::~ps_Generate()
@@ -71,10 +73,12 @@ void ps_Generate::closeFile(void)
 {
 	if (m_fp)
 	{
+		doProtectFromPipe();
 		if(m_bIsFile)
 			fclose(m_fp);
 		else
 			pclose(m_fp);
+		undoProtectFromPipe();
 	}
 	m_fp = 0;
 }
@@ -89,7 +93,11 @@ void ps_Generate::abortFile(void)
 
 UT_Bool	ps_Generate::writeByte(UT_Byte byte)
 {
-	return fputc((char) byte, m_fp) != EOF;
+	doProtectFromPipe();
+	UT_Bool bSuccess = fputc((char) byte, m_fp) != EOF;
+	undoProtectFromPipe();
+
+	return bSuccess;
 }
 
 UT_Bool ps_Generate::writeBytes(const char * sz)
@@ -111,7 +119,11 @@ UT_Bool ps_Generate::writeBytes(UT_Byte * pBytes, UT_uint32 length)
 
 	UT_ASSERT(length<256);				// DSC3.0 requirement
 	
-	return (fwrite(pBytes,sizeof(UT_Byte),length,m_fp)==length);
+	doProtectFromPipe();
+	UT_Bool bSuccess = (fwrite(pBytes,sizeof(UT_Byte),length,m_fp)==length);
+	undoProtectFromPipe();
+
+	return bSuccess;
 }
 
 UT_Bool ps_Generate::formatComment(const char * szCommentName)
@@ -208,4 +220,33 @@ UT_Bool ps_Generate::formatComment(const char * szCommentName, const UT_Vector *
 	return UT_TRUE;
 }
 
+void ps_Generate::doProtectFromPipe(void)
+{
+	UT_ASSERT(m_pfOldSIGPIPEHandler == NULL);
+
+	/*  We want to ignore SIGPIPE signals and have fwrite return failure
+		with errno set to EPIPE rather than crashing when we get 
+		a SIGPIPE.  
+
+	    (We would get a SIGPIPE when the child process created with popen
+		has already exited and we are still trying to write to it.  It
+		is an error, but returning failure here is more useful than trying
+		to deal with it in a SIGPIPE handler).  */
+
+	m_pfOldSIGPIPEHandler = signal(SIGPIPE, pipeSignalHandler);
+}
+
+void ps_Generate::undoProtectFromPipe(void)
+{
+	signal(SIGPIPE, m_pfOldSIGPIPEHandler);
+	m_pfOldSIGPIPEHandler = NULL;
+}
 			
+/*  We need a signal handler to ignore SIGPIPE's.  */
+void ps_Generate::pipeSignalHandler(int signum)
+{
+	/*  Each time we get the signal, we need to reset the signal
+		handler for Linux.  Otherwise it will return to the default
+		behavior -- exiting the process.  */
+    signal(signum, pipeSignalHandler);
+}

@@ -43,9 +43,16 @@ public:
 	UT_Bool		formatComment(const char * szCommentName, const UT_Vector * pVec);
 
 protected:
+ 	void 		doProtectFromPipe(void);
+	void 		undoProtectFromPipe(void);
+
 	const char *	m_szFilename;
 	FILE *			m_fp;
 	UT_Bool			m_bIsFile;
+	void			(*m_pfOldSIGPIPEHandler)(int);
+
+private:
+	static void	pipeSignalHandler(int signum);
 };
 
 #endif /* XAP_UNIXPSGENERATE_H */
