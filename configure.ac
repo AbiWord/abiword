@@ -440,6 +440,12 @@ AC_CONFIG_FILES([GNUmakefile
  src/wp/main/cocoa/GNUmakefile
  src/wp/main/cocoa/bundle/GNUmakefile
  src/wp/main/cocoa/bundle/Info.plist
+ src/wp/main/cocoa/AbiWord.app/GNUmakefile
+ src/wp/main/cocoa/AbiWord.app/Contents/GNUmakefile
+ src/wp/main/cocoa/AbiWord.app/Contents/MacOS/GNUmakefile
+ src/wp/main/cocoa/AbiWord.app/Contents/Frameworks/GNUmakefile
+ src/wp/main/cocoa/AbiWord.app/Contents/Resources/GNUmakefile
+ src/wp/main/cocoa/AbiWord.app/Contents/Resources/English.lproj/GNUmakefile
  src/wp/main/mac/GNUmakefile
  src/wp/main/unix/GNUmakefile
  src/wp/main/unix/gnome/GNUmakefile

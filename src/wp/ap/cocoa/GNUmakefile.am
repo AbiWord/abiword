@@ -52,22 +52,8 @@ libWpAp_cocoa_a_SOURCES=\
 	ap_Cocoa_TB_CFactory.mm		\
 	$(CURL_SOURCE_OBJ)
 
-bundledir=$(prefix)/AbiWord.app
-contentsdir=$(bundledir)/Contents
-macosdir=$(contentsdir)/MacOS
-resourcesdir=$(contentsdir)/Resources
-englishdir=$(resourcesdir)/English.lproj
-
-english_NIBS = \
+EXTRA_DIST = \
 	ap_CocoaDialog_Break.nib \
 	ap_CocoaDialog_MetaData.nib \
 	ap_CocoaFrame.nib \
 	ap_CocoaSplash.nib
-
-install-data-local:
-	@echo "Installing nibs in $(DESTDIR)$(englishdir):"; \
-	 for nib in $(english_NIBS); do \
-	   echo "       $$nib"; \
-	   $(mkinstalldirs) $(DESTDIR)$(englishdir)/$$nib && \
-	   (for i in classes.nib info.nib objects.nib; do $(INSTALL_DATA) $(srcdir)/$$nib/$$i $(DESTDIR)$(englishdir)/$$nib/$$i; done); \
-	 done

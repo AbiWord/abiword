@@ -16,9 +16,11 @@
 ## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
 ## 02111-1307, USA.
 
-EXTRA_DIST = \
-	PkgInfo \
-	AbiWord.icns \
-	ABWDocument.icns \
-	ABWPlugin.icns \
-	abiword_48.tif
+include $(top_srcdir)/src/wp/main/cocoa/bundle.mk
+
+CLEANFILES = AbiWord
+
+macos_SCRIPTS = AbiWord
+
+AbiWord:$(mainbuilddir)/AbiWord
+	cp -f $(mainbuilddir)/AbiWord AbiWord

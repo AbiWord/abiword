@@ -16,9 +16,16 @@
 ## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
 ## 02111-1307, USA.
 
-EXTRA_DIST = \
-	PkgInfo \
-	AbiWord.icns \
-	ABWDocument.icns \
-	ABWPlugin.icns \
-	abiword_48.tif
+bundledir = $(prefix)/AbiWord.app
+contentsdir = $(bundledir)/Contents
+macosdir = $(contentsdir)/MacOS
+frameworksdir = $(contentsdir)/Frameworks
+resourcesdir = $(contentsdir)/Resources
+englishdir = $(resourcesdir)/English.lproj
+
+xapsrcdir = $(top_srcdir)/src/af/xap/cocoa
+apsrcdir = $(top_srcdir)/src/wp/ap/cocoa
+mainsrcdir = $(top_srcdir)/src/wp/main/cocoa
+mainbuilddir = $(top_builddir)/src/wp/main/cocoa
+
+englishbuilddir = $(mainbuilddir)/AbiWord.app/Contents/Resources/English.lproj

@@ -18,17 +18,18 @@
 ## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
 ## 02111-1307, USA.
 
-SUBDIRS = bundle
+SUBDIRS = . bundle AbiWord.app
 
 include $(top_srcdir)/includes.mk
 
-bundledir=$(prefix)/AbiWord.app
-contentsdir=$(bundledir)/Contents
-macosdir=$(contentsdir)/MacOS
-resourcesdir=$(contentsdir)/Resources
-englishdir=$(resourcesdir)/English.lproj
+#bundledir=$(prefix)/AbiWord.app
+#contentsdir=$(bundledir)/Contents
+#macosdir=$(contentsdir)/MacOS
+#resourcesdir=$(contentsdir)/Resources
+#englishdir=$(resourcesdir)/English.lproj
 
-macos_PROGRAMS = AbiWord
+#macos_PROGRAMS = AbiWord
+noinst_PROGRAMS = AbiWord
 
 DEFS = @DEFS@ -DABIWORD_APP_NAME="\"$(ABIWORD_APP_NAME)\""
 

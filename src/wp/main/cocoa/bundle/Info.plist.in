@@ -39,6 +39,18 @@
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>Abi</string>
+			</array>
+			<key>CFBundleTypeIconFile</key>
+			<string>ABWPlugin.icns</string>
+			<key>CFBundleTypeName</key>
+			<string>AbiWord Plugin</string>
+			<key>CFBundleTypeRole</key>
+			<string>None</string>
+		</dict>
 	</array>
 	<key>CFBundleExecutable</key>
 	<string>AbiWord</string>

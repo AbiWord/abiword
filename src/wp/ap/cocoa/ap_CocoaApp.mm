@@ -1,6 +1,8 @@
-/* AbiWord
+/* -*-c++-*-
+ * AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
  * Copyright (C) 2001 Hubert Figuiere
+ * Copyright (C) 2002 Francis James Franklin <fjf@alinameridon.com>
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -567,94 +569,169 @@ bool AP_CocoaApp::canPasteFromClipboard(void)
 #endif
 }
 
-/* While I suppose it's possible there's a use for loading shared objects
- * like this, it would make better sense to support only bundle-loading;
- * I think the finder tracks application plugins...? I'm sure there was
- * some note recommending that plugins be given a distinctive suffix,
- * however; if so, for Cocoa perhaps ".abi" is best? e.g. "Aiksaurus.abi"
+/* return > 0 for directory entries ending in ".Abi"
  */
-// return > 0 for directory entries ending in ".so"
-#if defined (__APPLE__) || defined (__FreeBSD__) || defined (__OpenBSD__)
-static int so_only (struct dirent *d)
-#else
-static int so_only (const struct dirent *d)
-#endif
+static int s_Abi_only (struct dirent * d)
 {
   const char * name = d->d_name;
 
-  if ( name )
+  if (name)
     {
-      int len = strlen (name);
+      int length = strlen (name);
 
-      if (len >= 3) // See note above...
-	{
-	  if(!strcmp(name+(len-3), ".so"))
-	    return 1;
-	}
+      if (length >= 4)
+	if (strcmp (name + length - 4, ".Abi") == 0)
+	  return 1;
     }
   return 0;
 }
 
+#ifdef ABIWORD_PROFILE_PATH
+#undef ABIWORD_PROFILE_PATH
+#endif
+#define ABIWORD_PROFILE_PATH "/Contents/Resources/AbiWord.Profile"
+/* return > 0 for *.Abi directories containing file "Contents/Resources/AbiWord.Profile"
+ */
+static int s_Abi_test (const char * bundledir)
+{
+  static const int profile_length = strlen (ABIWORD_PROFILE_PATH);
+
+  if (bundledir == 0) return 0;
+
+  int length = strlen (bundledir);
+  if (length < 4) return 0;
+  if (strcmp (bundledir + length - 4, ".Abi") != 0) return 0;
+
+  struct stat sbuf;
+  if (stat (bundledir, &sbuf) != 0) return 0; // no such file? huh?
+
+  if (((sbuf.st_mode & S_IFMT) != S_IFDIR) && ((sbuf.st_mode & S_IFMT) != S_IFLNK))
+    {
+      // this is neither a directory nor a symbolic link, so don't look further
+      return 0;
+    }
+
+  int profile_exists = 0;
+  char * profile_path = 0;
+  if ((profile_path = (char *) malloc (length + profile_length + 1)) != 0)
+    {
+      strcpy (profile_path, bundledir);
+      strcat (profile_path, ABIWORD_PROFILE_PATH);
+
+      if (stat (profile_path, &sbuf) == 0)
+	if ((sbuf.st_mode & S_IFMT) == S_IFREG) // should we allow symbolic links?
+	  profile_exists = 1;
+
+      free (profile_path);
+    }
+  return profile_exists;
+}
+#undef ABIWORD_PROFILE_PATH
+
+/* return true if dirname exists and is a directory; symlinks probably not counted
+ */
+static bool s_dir_exists (const char * dirname)
+{
+  struct stat sbuf;
+
+  if (stat (dirname, &sbuf) == 0)
+    if ((sbuf.st_mode & S_IFMT) == S_IFDIR)
+      return true;
+
+  return false;
+}
+
+/* MacOSX applications look for plugins in Contents/Plug-ins, and there's probably
+ * no need to jump through scandir hoops identifying these. Third party plugins or
+ * plugins not distributed with AbiWord.app can be found in the system directory
+ * "/Library/Application Support" or in the user's home equivalent - I'm choosing
+ * to make the plug-in directory "/Library/Application Support/AbiWord/Plug-ins".
+ * 
+ * The System Overview recommends that plugins be given a suffix that the
+ * application claims (presumably as a document type) so I'm opting for the suffix
+ * ".Abi" but I am also reinforcing that with the requirement for an
+ * "AbiWord.Profile" in the plug-in/bundle's "Contents/Resources" subdirectory.
+ * 
+ * What I'm thinking about with "AbiWord.Profile" is a system-level (read-only)
+ * preferences file. User preferences will probably be stored in AbiWord's own
+ * user AbiWord.Profile, wherever that is.
+ */
 void AP_CocoaApp::loadAllPlugins ()
 {
-  struct dirent **namelist;
-  int n = 0;
+  /* 1. TODO: Load from AbiWord.app/Contents/Plug-ins
+   */
 
-  UT_String pluginList[2];
-  UT_String pluginDir;
+  /* 2. Load from "/Library/Application Support" and "$HOME/Library/Application Support"
+   */
+  int support_dir_count = 0;
 
-  // the global plugin directory
-  pluginDir = getAbiSuiteLibDir();
-  pluginDir += "/plugins/";
-  pluginList[0] = pluginDir;
+  UT_String support_dir[2];
 
-  // the user-local plugin directory
-  pluginDir = getUserPrivateDirectory ();
-  pluginDir += "/plugins/";
-  pluginList[1] = pluginDir;
+  support_dir[0] = "/Library/Application Support/AbiWord/Plug-ins";
+  if (!s_dir_exists (support_dir[0].c_str()))
+    {
+      UT_DEBUGMSG(("FJF: %s: no such directory\n",support_dir[0].c_str()));
+    }
+  else
+    {
+      UT_DEBUGMSG(("FJF: adding to plug-in search path: %s\n",support_dir[0].c_str()));
+      support_dir_count++;
+    }
 
-  for(int i = 0; i < 2; i++)
-  {
-      pluginDir = pluginList[i];
+  char * homedir = getenv ("HOME");
+  if (homedir == 0)
+    {
+      UT_DEBUGMSG(("FJF: no home directory?\n"));
+    }
+  else if (!s_dir_exists (homedir))
+    {
+      UT_DEBUGMSG(("FJF: invalid home directory?\n"));
+    }
+  else
+    {
+      UT_String plugin_dir(homedir);
+      plugin_dir += "/Library/Application Support/AbiWord/Plug-ins";
+      if (!s_dir_exists (plugin_dir.c_str()))
+	{
+	  UT_DEBUGMSG(("FJF: %s: no such directory\n",plugin_dir.c_str()));
+	}
+      else
+	{
+	  UT_DEBUGMSG(("FJF: adding to plug-in search path: %s\n",plugin_dir.c_str()));
+	  support_dir[support_dir_count++] = plugin_dir;
+	}
+    }
 
-      n = scandir(pluginDir.c_str(), &namelist, so_only, alphasort);
-      UT_DEBUGMSG(("DOM: found %d plugins in %s\n", n, pluginDir.c_str()));
+  for (int i = 0; i < support_dir_count; i++)
+    {
+      struct dirent ** namelist = 0;
+      int n = scandir (support_dir[i].c_str(), &namelist, s_Abi_only, alphasort);
+      UT_DEBUGMSG(("DOM: found %d plug-ins in %s\n", n, support_dir[i].c_str()));
+      if (n == 0) continue;
 
-      if (n > 0)
-	  {
-		  while(n--) 
-		  {
-			  UT_String plugin (pluginDir + namelist[n]->d_name);
+      UT_String plugin_path;
+      while (n--)
+	{
+	  plugin_path  = support_dir[i];
+	  plugin_path += '/';
+	  plugin_path += namelist[n]->d_name;
 
-			  UT_DEBUGMSG(("DOM: loading plugin %s\n", plugin.c_str()));
-
-			  int len = strlen (namelist[n]->d_name);
-			  if (len < 4)
-			  {
-				  UT_DEBUGMSG(("FJF: bad name for a plugin\n"));
-				  free(namelist[n]);
-				  continue;
-			  }
-			  if(strcmp (namelist[n]->d_name+(len-3), ".so") != 0)
-			  {
-				  UT_DEBUGMSG(("FJF: not really a plugin?\n"));
-				  free(namelist[n]);
-				  continue;
-			  }
-
-			  if (XAP_ModuleManager::instance().loadModule (plugin.c_str()))
-			  {
-				  UT_DEBUGMSG(("DOM: loaded plugin: %s\n", namelist[n]->d_name));
-			  }
-			  else
-			  {
-				  UT_DEBUGMSG(("DOM: didn't load plugin: %s\n", namelist[n]->d_name));
-			  }
-			  free(namelist[n]);
-		  }
-		  free(namelist);
-      }
-  }
+	  if (s_Abi_test (plugin_path.c_str()))
+	    {
+	      UT_DEBUGMSG(("DOM: loading plugin %s\n", plugin_path.c_str()));
+	      if (XAP_ModuleManager::instance().loadModule (plugin_path.c_str()))
+		{
+		  UT_DEBUGMSG(("DOM: loaded plug-in: %s\n", namelist[n]->d_name));
+		}
+	      else
+		{
+		  UT_DEBUGMSG(("DOM: didn't load plug-in: %s\n", namelist[n]->d_name));
+		}
+	    }
+	  free (namelist[n]);
+	}
+      free (namelist);
+    }
 
   /* SPI modules don't register automatically on loading, so
    * now that we've loaded the modules we need to register them:

@@ -39,21 +39,7 @@ libXap_cocoa_a_SOURCES=		\
 	xap_CocoaToolbar_Icons.mm	\
 	xap_GenericListChooser_Controller.mm
 
-bundledir=$(prefix)/AbiWord.app
-contentsdir=$(bundledir)/Contents
-macosdir=$(contentsdir)/MacOS
-resourcesdir=$(contentsdir)/Resources
-englishdir=$(resourcesdir)/English.lproj
-
-english_NIBS = \
+EXTRA_DIST = \
 	xap_CocoaDlg_MessageBox.nib \
 	xap_CocoaToolbarWindow.nib \
 	xap_GenericListChooser_Controller.nib
-
-install-data-local:
-	@echo "Installing nibs in $(DESTDIR)$(englishdir):"; \
-	 for nib in $(english_NIBS); do \
-	   echo "       $$nib"; \
-	   $(mkinstalldirs) $(DESTDIR)$(englishdir)/$$nib && \
-	   (for i in classes.nib info.nib objects.nib; do $(INSTALL_DATA) $(srcdir)/$$nib/$$i $(DESTDIR)$(englishdir)/$$nib/$$i; done); \
-	 done
