@@ -2893,8 +2893,10 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 					pBL = vBlock.getNthItem(j);
 					if(j == 0)
 						pBL->resumeList(pBlock);
-					else
+					else if(pBL->getPrev())
+					{
 						pBL->resumeList(static_cast<fl_BlockLayout *>(pBL->getPrev()));
+					}
 				}
 			}
 //
@@ -2911,8 +2913,10 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 					pBL = vBlock.getNthItem(j);
 					if (j == 0)
 						pBL->prependList(pBlock);
-					else
+					else if(pBL->getPrev())
+					{
 						pBL->resumeList(static_cast<fl_BlockLayout *>(pBL->getPrev()));
+					}
 				}
 			}
 		}
