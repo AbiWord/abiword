@@ -567,23 +567,23 @@ void fl_TableLayout::_lookupProperties(void)
 	switch(dim)
 	{
 	case DIM_IN:
-		defaultOffset = "0.1in";
+		defaultOffset = "0.01in";
 		break;
 
 	case DIM_CM:
-		defaultOffset = "0.254cm";
+		defaultOffset = "0.0254cm";
 		break;
 
 	case DIM_PI:
-		defaultOffset = "0.5pi";
+		defaultOffset = "0.05pi";
 		break;
 
 	case DIM_PT:
-		defaultOffset= "6.0pt";
+		defaultOffset= "0.6pt";
 		break;
 
 	case DIM_MM:
-		defaultOffset= "2.54mm";
+		defaultOffset= "0.254mm";
 		break;
 
 		// TODO: PX, and PERCENT
@@ -595,7 +595,7 @@ void fl_TableLayout::_lookupProperties(void)
 #endif
 	case DIM_none:
 	default:
-		defaultOffset = "0.1in";	// TODO: what to do with this.
+		defaultOffset = "0.01in";	// TODO: what to do with this.
 		break;
 
 	}
@@ -698,7 +698,7 @@ void fl_TableLayout::_lookupProperties(void)
 	}
 	else
 	{
-		m_iColSpacing =  UT_convertToLayoutUnits("0.1in");
+		m_iColSpacing =  UT_convertToLayoutUnits("0.05in");
 	}
 	if(pszTableRowSpacing && *pszTableRowSpacing)
 	{
@@ -709,7 +709,7 @@ void fl_TableLayout::_lookupProperties(void)
 	}
 	else
 	{
-		m_iRowSpacing = m_pLayout->getGraphics()->convertDimension("0.1in");
+		m_iRowSpacing = m_pLayout->getGraphics()->convertDimension("0.05in");
 	}
 //
 // Positioned columns controls
