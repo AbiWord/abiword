@@ -53,161 +53,128 @@
 
 <h2>
 Installing AbiWord on Linux / INTEL</h2>
-Welcome to the community of AbiWord users!&nbsp;
-<p>AbiWord should install and run properly
-on any Linux system with INTEL (or INTEL-COMPATIBLE) processor. AbiWord
-has been packaged in several different industry standard distribution formats
-to simplify the installation onto your system:&nbsp;
+
+<p>AbiWord should install and run properly on any Linux system with INTEL (or 
+INTEL-COMPATIBLE) processor. It has been packaged in several different industry 
+standard distribution formats to simplify the installation.
 <ul>
-<li>
-<a href="http://www.abisource.com">DEB</a> -- Debian 2.1 (Slink) or later&nbsp;</li>
-
-<li>
-<a href="">RPM</a> -- RedHat 5.2 or later, SuSE 6.1 or later&nbsp;</li>
-
-<li>
-<a href="">Slp</a> -- Stampede Linux&nbsp;</li>
-
-<li>
-<a href="">TAR</a> -- works anywhere&nbsp;</li>
+  <li><a href="linux_intel.html#rpm">RPM</a> -- RedHat 5.2 or later, SuSE 6.1 or later</li>
+  <li><a href="linux_intel.html#deb">DEB</a> -- Debian 2.1 (Slink) or later</li>
+  <li><a href="linux_intel.html#slp">Slp</a> -- Stampede Linux</li>
+  <li><a href="linux_intel.html#tar">TAR</a> -- works anywhere</li>
 </ul>
-A much more detailed version of these instructions is contained in the
-<a href="">README</a>.&nbsp;
-<br>
-<hr>
-<h3>
-<a NAME="rpm"></a>RPM</h3>
-The RPM&nbsp; installation process is very simple.&nbsp;
+
+A more detailed version of these instructions is contained in the <a href="">README</a> file.
+
+<p><hr></p>
+
+<h3><a NAME="rpm"></a>RPM</h3>
+
 <ol>
-<li>
-Download the distribution files (<a
-href="http://www.abisuite.com">abisuite-0.7.9-1.i386.rpm</a>,
-2.6MB).&nbsp;</li>
+  <li>Download the distribution files (<a href="http://www.abisuite.com">abisuite-0.7.9-1.i386.rpm</a>,
+	2.6MB).</li>
+  <li>Become superuser and enter the command:</li>
 
-<li>
-Become superuser, and enter the command:&nbsp;</li>
+	<p>rpm - Uvh abisuite-0.7.9-1.i386.rpm</p>
+  <li>If you are using KDE, right click on the rpm file, and select kpackage.
+	<p><img SRC="kpack1.gif" height=171 width=135>
+	<p>When kpackage comes up, click on install. If you have any unsatisfied dependencies, 
+		you will have to install those before you can install Abiword.</p>
+	<p><img SRC="kpack2.gif" height=428 width=608></p>
+<br>
 
-<p><br>rpm - Uvh abisuite-0.7.9-1.i386.rpm
-<p><font face="Times New Roman,Times">Or, if you are using KDE, right click
-on the rpm file, and select kpackage.</font>
-<p><img SRC="kpack1.gif" height=171 width=135>
-<p><font face="Times New Roman,Times">When kpackage comes up, click on
-install.</font>
-<p><img SRC="kpack2.gif" height=428 width=608>
-<br><font face="Times New Roman,Times">If you have any unsatisfied dependencies,
-then you will have to install&nbsp;</font>
-<br><font face="Times New Roman,Times">those before you can install
-Abiword.</font> <br>&nbsp;
-<li>
-This will install AbiWord and supporting files to <tt>/usr/share/abisuite</tt>.
+  <li>This will install AbiWord and supporting files to <tt>/usr/share/abisuite</tt>.
 Symbolic links called <tt>AbiWord</tt> and <tt>abiword</tt> will be placed
 in <tt>/usr/bin/X11</tt> but not to the actual executable. Using the -
 Uvh option instead of - will take care of replacing the older version
 of AbiWord for people who are updating.&nbsp;</li>
 
-<li>
-For more information on RPM package dependencies, please see the <a
-href="http://www.abisource.com">README</a>.&nbsp;</li> </ol>
-
-<h3>
-<a NAME="deb"></a>DEB</h3>
-The DEB  installation process is very simple.&nbsp;
-<ol>
-<li>
-Download the distribution files (<a
-href="http://www.abisource.com">abisuite_0.7.9-1_i386.deb</a>,
-2.6MB).&nbsp;</li>
-
-<li>
-Become superuser, enter the command:&nbsp;</li>
-
-<pre>&nbsp; dpkg - I abisuite_0.7.7-1_i386.deb</pre>
-
-<li>
-This will install AbiWord and supporting files to <tt>/usr/share/abisuite</tt>.
-Symbolic links called <tt>AbiWord</tt> and <tt>abiword</tt> will be placed
-in <tt>/usr/bin/X11</tt> but not the actual executable.&nbsp;</li>
-
-<li>
-For more information one DEB package dependencies, please see the <a
-href="http://www.abisource.com">README</a>.&nbsp;</li> </ol>
-
-<h3>
-<a NAME="slp"></a>SLP</h3>
-The SLP installation process would probably have to be as simple as the
-DEB or RPM installation, if only we could try it. We currently don't have
-the Stampede Linux distribution installed and haven't tested our Stampede
-Linux package builds. These files are automatically generated via <a
-href="http://www.abisource.com">Alien</a>.&nbsp; <p>If you try the SLP
-distribution, we encourage you to send a message to the <a
-href="mailto:abiword-dev@abisource.com">AbiWord development mailing list</a>
-with an account of your experiments.&nbsp; <ol>
-<li>
-Download the distribution files (<a
-href="http://www.abisource.com">abisuite-0.7.9.slp</a>, 2.3MB).&nbsp;</li>
-
-<li>
-Install via the Stampede package manager.&nbsp;</li>
-
-<li>
-This will install AbiWord and supporting files to <tt>/usr/share/abisuite</tt>.
-Symbolic links called <tt>AbiWord</tt> and <tt>abiword</tt> will be placed
-in <tt>/usr/bin/X11</tt> but not the actual executable.&nbsp;</li>
-
-<li>
-For more information on SLP package dependencies, please see the <a
-href="http://www.abisource.com">README</a>.&nbsp;</li> </ol>
-
-<h3>
-<a NAME="tar"></a>TAR</h3>
-There are two versions of the Tar files: one is the statically-linked version
-and the other is the dynamically-linked version. The dynamic version is
-smaller (2.6Mb vs 3.3Mb), our goal is to make use of a number of shared
-libraries on your system. If you don't know what this means, select the
-static version.&nbsp;
-<p>The installation process for the static Tar files looks scary, but it
-is actually quite simple.&nbsp;
-<ol>
-<li>
-Download the distribution files (<a
-href="http://www.abisource.com">abisuite-0.7.9-Linux_i386_static.tar.gz</a>,
-3.3MB).&nbsp;</li>
-
-<li>
-Copy the files to a directory that you have permission for and open the
-files:&nbsp;</li>
-
-<pre>&nbsp; gunzip - c abisuite-0.7.9-Linux_i386_static.tar.gz |
-tar xvf -</pre>
-... or, if your tar command supports the ' z' flag:&nbsp;
-<pre>&nbsp; tar xvzf abisuite-0.7.9-Linux_i386_static.tar.gz</pre>
-Both these commands will create the directory <tt>abisuite-0.7.9-Linux_i386_static</tt>.&nbsp;
-<li>
-Change to that directory and become superuser.&nbsp;</li>
-
-<li>
-Run the install script:&nbsp;</li>
-
-<pre>&nbsp; /install.sh</pre>
-
-<li>
-By default, this will install AbiWord and supporting files to the <tt>/usr/local/AbiSuite</tt>
-on your hard drive. You will be given the opportunity to change this if
-you wish.&nbsp;</li>
-
-<li>
-You will also have the option to create links to the executable in a common
-<tt>bin</tt>
-directory. By default, this is <tt>/usr/local/bin</tt>.&nbsp;</li>
-
-<li>
-Please consult the <a href="">README</a>
-file for additional details.&nbsp;</li>
+  <li>For more information on RPM package dependencies, please see the <a
+href="http://www.abisource.com">README</a>.</li> 
 </ol>
-The installation process for the dynamic Tar files (<a href="">abisuite-0.7.9-Linux_i386_dynamic.tar.gz</a>,
-2.6MB) is identical. Simply substitute <tt>_ dynamic</tt> for <tt>_ static</tt>
-in steps 1 and 2 above. If you want to read more about which libraries
-and versions that the dynamic version uses, please consult the <a href="">README</a>.&nbsp;
+
+<p><hr></p>
+
+<h3><a NAME="deb"></a>DEB</h3>
+
+<ol>
+  <li>Download the distribution files (<a href="http://www.abisource.com">
+	abisuite_0.7.9-1_i386.deb</a>, 2.6MB).</li>
+  <li>Become superuser and enter the command</li>
+	<p><pre>dpkg - I abisuite_0.7.7-1_i386.deb</pre></p>
+  <li>This will install AbiWord and supporting files to <tt>/usr/share/abisuite</tt>.
+	Symbolic links called <tt>AbiWord</tt> and <tt>abiword</tt> will be placed
+	in <tt>/usr/bin/X11</tt> but not the actual executable.</li>
+  <li>For more information one DEB package dependencies, please see the 
+	<a href="http://www.abisource.com">README</a>.</li> 
+</ol>
+
+<p><hr></p>
+
+<h3><a NAME="slp"></a>SLP</h3>
+<p>The SLP installation process should be as simple as the
+DEB or RPM installation. However, we currently do not have
+the Stampede Linux distribution installed and have not tested our Stampede
+Linux package builds. These files are automatically generated via <a
+href="http://www.abisource.com">Alien</a>.</p>
+
+<p>If you try the SLP distribution, we encourage you to send a message to the <a
+href="mailto:abiword-dev@abisource.com">AbiWord development mailing list</a>
+with an account of your experiments.</p>
+
+<ol>
+  <li>Download the distribution files (<a href="http://www.abisource.com">
+	abisuite-0.7.9.slp</a>, 2.3MB).</li>
+  <li>Install via the Stampede package manager.</li>
+  <li>This will install AbiWord and supporting files to <tt>/usr/share/abisuite</tt>.
+	Symbolic links called <tt>AbiWord</tt> and <tt>abiword</tt> will be placed
+	in <tt>/usr/bin/X11</tt> but not the actual executable.</li>
+  <li>For more information on SLP package dependencies, please see the 
+	<a href="http://www.abisource.com">README</a>.</li>
+ </ol>
+
+<p><hr></p>
+
+<h3><a NAME="tar">TAR</a></h3>
+
+<p>There are two versions of the Tar files
+	<ul><li>the <a href = "linux_intel.html#static">statically-linked</a> version (3.3Mb)
+		<li>the <a href = "linux_intel.html#dynamic">dynamically-linked</a> version (2.6Mb)
+	</ul>
+
+<p>Our goal is to make use of a number of shared libraries on your system. If you don't know 
+what this means, select the static version.
+<p>
+<li><a name = "static">Static</a> Tar Files
+
+<ol>
+  <li>Download the distribution files (<a href="http://www.abisource.com">
+	abisuite-0.7.9-Linux_i386_static.tar.gz</a>, 3.3MB).</li>
+  <li>Copy the files to a directory that you have permission for and open the
+	files:</li>
+ 	<p><pre>gunzip - c abisuite-0.7.9-Linux_i386_static.tar.gz | tar xvf -</pre></p>
+	<p>... or, if your tar command supports the ' z' flag:</p>
+	<p><pre>tar xvzf abisuite-0.7.9-Linux_i386_static.tar.gz</pre><p>
+	<p>Both these commands will create the directory <tt>abisuite-0.7.9-Linux_i386_static</tt>.</p>
+  <li>Change to that directory and become superuser.</li>
+  <li>Run the install script:</li>
+	<p><pre>/install.sh</pre></p>
+  <li>By default, this will install AbiWord and supporting files to the <tt>/usr/local/AbiSuite</tt>
+	on your hard drive. You will be given the opportunity to change this.</li>
+  <li>You will also have the option to create links to the executable in a common <tt>bin</tt>
+	directory. By default, this is <tt>/usr/local/bin</tt>.&nbsp;</li>
+  <li>Please consult the <a href="">README</a> file for additional details.</li>
+</ol></p>
+<p>
+<li><a name = "dynamic">Dynamic</a> Tar Files
+<ol>
+  <li>The installation process for the dynamic Tar files (<a href="">abisuite-0.7.9-Linux_i386_dynamic.
+	tar.gz</a>, 2.6MB) is identical. Simply substitute <tt>_ dynamic</tt> for <tt>_ static</tt>
+	in steps 1 and 2 above. If you want to read more about which libraries
+	and versions that the dynamic version uses, please consult the <a href="">README</a>.</li></ol></p>
+
+<p><hr></p>
+
 <p><b><font size=+1>Saving under Linux</font></b>
 <p>If you are saving under linux, it is recommended that you save in your
 /home directory, unless you dual boot(see below). If you have a lot of

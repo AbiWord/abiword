@@ -49,53 +49,71 @@
 
 <td valign="top">
 
+<h2><A NAME = "print">Printing</A></h2>
 
-      <h2><A NAME = "print">Printing</A> a document with AbiWord</h2>
-      Once you have entered and formatted your document, it is time to print it.
-      Since AbiWord is WYSIWYG <font size="2">(What You See is What You
-      Get, </font><font size="3">that is, what you see on the screen looks exactly
-      like what will be printed, </font>first make sure that your document looks the
-      way you want it to (you may need to adjust the zoom to see the whole document
-      at once). To print, you have 3 possibilities:
-      <ol type="a">
-        <li>Go to the File menu and click on "Print"; or</li>
-        <li>Click on the icon &quot;Print the document&quot; <img border="0" src="images/print.gif" align="middle" alt="Print the document" width="31" height="30">
-          or</li>
+<p>Since AbiWord is WYSIWYG (What You See is What You
+ Get), make sure 
+the document looks the
+way you want it to (you may need to adjust the 
+<A HREF="saisie.html#zoom">zoom</a> to see the whole document
+at once). 
+
+<p>To print, take one of the following actions:
+<ol>
+<li>Click on the icon "'Print"<img border="0" src="images/print.gif" align="middle" 
+		alt="Print the document" width="31" height="30">. This will send the current 
+		document immediately to the default printer. You can continue to work while
+    		it is printing.</li>
+        <li>Go to the File menu and click on "Print".</li>
+        
         <li>Use the keyboard shortcut by simultaneously pressing the
-           &quot;Ctrl&quot; and &quot;P&quot keys;</li>
-      </ol>
-      <p>In cases b. and c. the current document will immediately be
-      sent to the default printer. You can continue to work while
-      it is printing.</p>
-      <p>In case a. the following dialog box appears:</p>
-      <table border="0" width="100%">
-        <tr>
-          <td width="50%" valign="top">
-            <p align="center"><img border="0" src="images/print.jpg" alt="Print dialog Box with Microsoft Windows" width="311" height="229"></p>
-            <p align="center"><font size="1">La boite de dialogue Impression
-            sous Microsoft Windows</font></td>
-          <td width="50%" valign="top">
-            <p align="center"><img border="0" src="images/print-unix.png" alt="Print dialog Box with Linux" width="284" height="227"></p>
-            <p align="center"><font size="1">La boite de dialogue Impression
-            sous Linux</font></td>
-        </tr>
-      </table>
-      <p align="left">&nbsp;
-      </p>
-      <p align="left">This dialog box contains 3 group boxes:<br>
-      </p>
-      <blockquote>
-        <p align="left">* The Printer group box:
-      </p>
-        <p align="left">You can select the printer you want to print your document
-        on, by clicking on the list box next to "Name:";<br>
+"Ctrl" and "P" keys.</li>
+</ol>
+
+<p>The last two actions will produce a Print Dialog Box.</p>
+
+<br><br>
+<h3>Print Dialog Box</h3>
+<p><b>Windows</b></p>
+
+<p>
+<table border="0" width="100%">
+  <tr><td align="center" valign="top">
+		<p align="center"><img border="0" src="images/print.jpg" 
+		alt="Microsoft Print Dialog Box" width="284" height="227"></p>
+		<p align="center"><font size="2">Windows Print Dialog Box</font></td>
+  </tr>
+</table>
+</p>
+<p>
+<li>Select the printer you want to use by clicking on the list box next to "Name:".
         The property button lets you modify the parameters bound to the printer,
-        such as the paper size used (A4, A5...), its orientation (portrait or landscape) and the
-        print quality.<br>
-        In Unix, you select the printer by changing "lpr" to "lpr -P<em>printer</em>". You can
+        such as the paper size used (A4, A5...), orientation (portrait or landscape) and 
+        print quality.<p>
+<li>Page range:
+	<ul><li>To print the whole document, select the option"All <i>x</i>
+		 pages". 
+		<li>To print only some pages, check the option"Pages" and then complete the
+		 field "From.....to...."</ul>
+      <li>Copies:
+This lets you select how many copies of the
+document to print.
+<p>Once you have selected the options, confirm by clicking on the OK button,
+      or click on the Cancel button to not print.
+ <p><b>Linux</b></p>
+<p><table border="0" width="100%">
+        <tr><td width="50%" valign="top">
+            		<p align="center"><img border="0" src="images/print-unix.png" 
+			alt="Linux Print Dialog Box" width="284" height="227"></p>
+            		<p align="center"><font size="2">Linux Print Dialog Box</font></td>
+        </tr>
+</table>
+</p>
+ <p>    
+<li>Select the printer by changing "lpr" to "lpr -P<em>printer</em>". You can
         select the paper size by configuring your print filter; see /etc/printcap for
         where that is.
-        If the &quot;Print to file&quot; option is checked,
+ If the &quot;Print to file&quot; option is checked,
         the printing will not happen on the selected printer. This option will
         generate a file which you can later print on another machine
         which does not have AbiWord available. You must, however,
@@ -104,25 +122,21 @@
         a PostScript 2.0 file with the extension &quot;.ps&quot;, which
         you can print on any printer that understands PostScript or is
         set up with Ghostscript as the print filter.
-      </p>
-        <p align="left">* The Page ranges box:
-      </p>
-        <p align="left">&nbsp;To print the whole document, you can simply
-        select the option &quot;All x pages&quot;. Or you can
-        print only some pages by checking the option&nbsp;
-        &quot;Pages&quot; and then completing the field &quot;From.....to....&quot;
-      </p>
-        <p align="left">* The Copies box:
-      </p>
-        <p align="left">This lets you set how many copies of the
-        document to print. As to the "Collate" option, it lets you select,
-        if you print several times a document of several pages, whether
-        the pages or the documents will be grouped together.
-      </p>
-      </blockquote>
-      <p>Once you have selected the options you wish, confirm by clicking on the OK button,
-      or click on the Cancel button to not print.</td>
-  </tr>
+<p>
+<li>Page ranges:
+	<ul><li>To print the whole document, select the option"All <i>x</i>
+		 pages". 
+		<li>To print only some pages, check the option"Pages" and then complete the
+		 field "From.....to...."</ul>
+	<li>Collate: Select to have your printed copies collated.<p>
+	<li>Copies:
+This lets you select how many copies of the
+document to print.
+<p>Once you have selected the options, confirm by clicking on the OK button,
+      or click on the Cancel button to not print.
+
+
+ </tr>
 </tbody>
 </table>
 
