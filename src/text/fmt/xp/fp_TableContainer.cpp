@@ -1851,7 +1851,8 @@ fp_Container * fp_CellContainer::drawSelectedCell(fp_Line * pLine)
 			// this table.
 			//
 			pCon = static_cast<fp_Container *>(pBroke);
-			if(pBroke->getY() < -10000)
+			fp_TableContainer * pMaster = pBroke->getMasterTable();
+			if(pMaster->getFirstBrokenTable() == pBroke)
 			{
 				pCon = static_cast<fp_Container *>(pBroke->getMasterTable());
 			}
@@ -1868,7 +1869,7 @@ fp_Container * fp_CellContainer::drawSelectedCell(fp_Line * pLine)
 			}
 			yoff -= pBroke->getYBreak();
 			da.xoff = xoff;
-			da.yoff = yoff;
+   			da.yoff = yoff;
 			da.bDirtyRunsOnly = false;
 			da.pG = pView->getGraphics();
 			drawBroken(&da,pBroke);
