@@ -44,12 +44,18 @@ public:
 										 UT_uint32 width);
 	virtual void			setView(AV_View * pView);
 
+	WNDPROC getOrgWndProc() { return m_pOrgStatusbarWndProc; }
+	int getPrevWidth () { return m_iPrevWidth; }
+	void setPrevWidth (int n) { m_iPrevWidth = n; }
 	
 protected:
 	virtual void			show();
 	virtual void			hide();
 
 	HWND					m_hwndStatusBar;
+	WNDPROC					m_pOrgStatusbarWndProc; 
+	int						m_iPrevWidth;
+
 };
 
 #endif /* AP_WIN32STATUSBAR_H */
