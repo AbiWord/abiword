@@ -967,7 +967,7 @@ UT_sint32 fl_BlockLayout::getEmbeddedOffset(UT_sint32 offset, fl_ContainerLayout
  */
 void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbeddedSize)
 {
-	xxx_UT_DEBUGMSG(("In update Offsets posEmbedded %d EmbeddedSize %d \n",posEmbedded,iEmbeddedSize));
+	UT_DEBUGMSG(("In update Offsets posEmbedded %d EmbeddedSize %d \n",posEmbedded,iEmbeddedSize));
 	fp_Run * pRun = getFirstRun();
 	PT_DocPosition posInBlock = getPosition(true);
 	fp_Run * pPrev = NULL;
@@ -1068,8 +1068,8 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 					UT_ASSERT(bres);
 					pRun = pTRun->getNextRun();
 					pPrev = pTRun;
-					xxx_UT_DEBUGMSG(("New Run %x created offset %d \n",pRun,pRun->getBlockOffset()));
-					xxx_UT_DEBUGMSG(("Old Run %x offset %d length\n",pPrev,pPrev->getBlockOffset(),pPrev->getLength()));
+					UT_DEBUGMSG(("New Run %x created offset %d \n",pRun,pRun->getBlockOffset()));
+					UT_DEBUGMSG(("Old Run %x offset %d length\n",pPrev,pPrev->getBlockOffset(),pPrev->getLength()));
 					iDiff = 0;
 				}
 				else
@@ -1084,6 +1084,30 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 		}
 	}
 	UT_ASSERT(iDiff >= 0);
+	//
+	// Handle corner case of two endnotes in a row and deleting the second
+	//
+	if((iEmbeddedSize == 0))
+	{
+		if(pRun->getPrevRun())
+		{
+			PT_DocPosition posPrevRun = getPosition(true) + pRun->getPrevRun()->getBlockOffset();
+			if(getView())
+			{
+				if(getView()->isInFootnote(posPrevRun+1))
+				{
+					fl_FootnoteLayout * pFL = getView()->getClosestFootnote(posPrevRun+2);
+					iEmbeddedSize = pFL->getLength();
+				}
+				else if(getView()->isInEndnote(posPrevRun+1))
+				{
+					fl_EndnoteLayout * pEL = getView()->getClosestEndnote(posPrevRun+2);
+					iEmbeddedSize = pEL->getLength();
+				}
+			}
+		}
+	}
+
 	UT_DEBUGMSG(("Updating block %x with orig shift %d new shift %d \n",this,iDiff,iEmbeddedSize));
 	if(iDiff != static_cast<UT_sint32>(iEmbeddedSize))
 	{
@@ -1115,6 +1139,7 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 			fp_TextRun * pTRun = static_cast<fp_TextRun *>(pRun);
 			pTRun->printText();
 		}
+		UT_DEBUGMSG(("Run %x offset %d Type %d \n",pRun,pRun->getBlockOffset(),pRun->getType()));
 		pRun = pRun->getNextRun();
 	}
 #endif
