@@ -452,10 +452,33 @@ void AP_BeOSDialog_Options::_controlEnable( tControl id, UT_Bool value )
 		control->SetValue(value);
 		break;
 	
+/*TF: Deprecated with specific toolbar toggling
 	case id_CHECK_VIEW_SHOW_TOOLBARS:
 		FIND_CONTROL(control,"chkToolbarsEnable")
 		control->SetValue(value);
 		break;
+*/
+
+	case id_CHECK_VIEW_SHOW_STANDARD_TOOLBAR:
+		FIND_CONTROL(control,"chkStandardBarEnable")
+		control->SetValue(value);
+		break;
+
+	case id_CHECK_VIEW_SHOW_FORMAT_TOOLBAR:
+		FIND_CONTROL(control,"chkFormatBarEnable")
+		control->SetValue(value);
+		break;
+
+	case id_CHECK_VIEW_SHOW_EXTRA_TOOLBAR:
+		FIND_CONTROL(control,"chkExtraBarEnable")
+		control->SetValue(value);
+		break;
+
+	case id_CHECK_VIEW_SHOW_STATUS_BAR:
+		FIND_CONTROL(control,"chkStatusEnable")
+		control->SetValue(value);
+		break;
+
 
 	case id_CHECK_VIEW_ALL:
 		FIND_CONTROL(control,"chkViewAll")
@@ -560,8 +583,15 @@ DEFINE_GET_SET_BOOL(SpellNumbers , "SpellNumbers");
 DEFINE_GET_SET_BOOL(SpellInternet , "SpellInternet");
 DEFINE_GET_SET_BOOL(PrefsAutoSave , "AutoSavePrefs");
 DEFINE_GET_SET_BOOL	(ViewShowRuler , "RulerEnable");
+
+//TF: Deprecated with specific toolbar toggling
+//DEFINE_GET_SET_BOOL	(ViewShowToolbars , "chkToolbarsEnable");
+DEFINE_GET_SET_BOOL	(ViewShowStandardBar , "chkStandardBarEnable");
+DEFINE_GET_SET_BOOL	(ViewShowFormatBar , "chkFormatBarEnable");
+DEFINE_GET_SET_BOOL	(ViewShowExtraBar , "chkExtraBarEnable");
+DEFINE_GET_SET_BOOL	(ViewShowStatusBar , "chkStatusEnable");
+
 DEFINE_GET_SET_BOOL	(ViewCursorBlink , "chkCursorBlinkEnable");
-DEFINE_GET_SET_BOOL	(ViewShowToolbars , "chkToolbarsEnable");
 DEFINE_GET_SET_BOOL	(ViewAll , "chkViewAll");
 DEFINE_GET_SET_BOOL	(ViewHiddenText , "chkViewHiddenText");
 DEFINE_GET_SET_BOOL	(ViewUnprintable , "chkViewUnprintable" );

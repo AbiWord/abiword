@@ -54,21 +54,26 @@ public:
  	SET_GATHER			(SpellNumbers,		UT_Bool );
  	SET_GATHER			(SpellInternet,		UT_Bool );
  
+	SET_GATHER			(SmartQuotesEnable, UT_Bool );
  	SET_GATHER			(PrefsAutoSave,		UT_Bool );
  
  	SET_GATHER			(ViewShowRuler,		UT_Bool );
+	//TF: Deprecated with specific toolbar toggling
+	//SET_GATHER			(ViewShowToolbars,	UT_Bool );
+	SET_GATHER			(ViewShowStandardBar,	UT_Bool );
+ 	SET_GATHER			(ViewShowFormatBar,	UT_Bool );
+ 	SET_GATHER			(ViewShowExtraBar,	UT_Bool );
+
+ 	SET_GATHER			(ViewShowStatusBar,	UT_Bool );
+ 
 	SET_GATHER			(ViewRulerUnits,	UT_Dimension);		
 	SET_GATHER			(ViewCursorBlink,	UT_Bool);
- 	SET_GATHER			(ViewShowToolbars,	UT_Bool );
  
  	SET_GATHER			(ViewAll,			UT_Bool );
  	SET_GATHER			(ViewHiddenText,	UT_Bool );
  	SET_GATHER			(ViewUnprintable,	UT_Bool );
   
  	SET_GATHER			(NotebookPageNum,	int );
-
-	// Added cjp
-	SET_GATHER			(SmartQuotesEnable,	UT_Bool);
 
 #undef SET_GATHER
 	
