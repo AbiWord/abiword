@@ -20,6 +20,10 @@
 #ifndef EV_MACMENU_H
 #define EV_MACMENU_H
 
+// Mac includes
+#include <Menus.h>
+#include <ToolUtils.h>
+
 #include "ut_types.h"
 #include "xap_Types.h"
 #include "ev_Menu.h"

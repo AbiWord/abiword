@@ -23,6 +23,8 @@
 #ifndef EV_MACMOUSE_H
 #define EV_MACMOUSE_H
 
+#include <MacWindows.h>
+
 #include "ev_Mouse.h"
 #include "ev_EditBits.h"
 

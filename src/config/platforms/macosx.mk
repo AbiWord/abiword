@@ -61,11 +61,11 @@ OBJ_DIR_SFX	= OBJ
 endif
 
 # Includes
-OS_INCLUDES		= -I/usr/local/include
+OS_INCLUDES		= -I/usr/local/include -I/System/Library/Frameworks/Carbon.framework/Versions/A/Headers
 G++INCLUDES		= -I/usr/include/g++
 
 # Compiler flags
-PLATFORM_FLAGS		= -DNO_SYS_ERRLIST
+PLATFORM_FLAGS		= -DNO_SYS_ERRLIST $(OS_INCLUDES)
 #PORT_FLAGS		= -D_POSIX_SOURCE -D_BSD_SOURCE -DHAVE_STRERROR -D_XOPEN_SOURCE -D__USE_XOPEN_EXTENDED
 OS_CFLAGS		= $(DSO_CFLAGS) $(PLATFORM_FLAGS) $(PORT_FLAGS)
 
@@ -84,8 +84,8 @@ endif
 #MKSHLIB		= $(LD) $(DSO_LDOPTS) -soname $(@:$(OBJDIR)/%.so=%.so)
 MKSHLIB			= $(LD) $(DSO_LDOPTS) -soname $(@:$(OBJDIR)/%.so=%.so)
 
-ABI_NATIVE	= macosx
-ABI_FE		= macosx
+ABI_NATIVE	= mac
+ABI_FE		= mac
 
 ##################################################################
 ## ABIPKGDIR defines the directory containing the Makefile to use to

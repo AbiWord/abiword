@@ -20,6 +20,8 @@
 #ifndef EV_MACTOOLBAR_H
 #define EV_MACTOOLBAR_H
 
+#include <MacWindows.h>
+
 #include "ut_types.h"
 #include "ut_vector.h"
 #include "xap_Types.h"

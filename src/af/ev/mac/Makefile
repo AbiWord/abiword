@@ -22,11 +22,11 @@ ABI_ROOT:=$(shell pwd)/../../../..
 
 include $(ABI_ROOT)/src/config/abi_defs.mk
 
-CPPSRCS=		ev_Win32Keyboard.cpp		\
-			ev_Win32Menu.cpp		\
-			ev_Win32Mouse.cpp		\
-			ev_Win32Toolbar.cpp		\
-			ev_Win32Toolbar_ViewListener.cpp
+CPPSRCS=		ev_MacKeyboard.cpp		\
+			ev_MacMenu.cpp			\
+			ev_MacMouse.cpp			\
+			ev_MacToolbar.cpp		\
+			ev_MacTlbr_ViewListener.cpp
 
 TARGETS=		$(OBJS)
 
