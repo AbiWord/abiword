@@ -121,11 +121,15 @@ void AP_Dialog_MergeCells::autoUpdateMC(UT_Worker * pTimer)
 
 	AP_Dialog_MergeCells * pDialog = (AP_Dialog_MergeCells *) pTimer->getInstanceData();
 	// Handshaking code
-
+	FV_View * pView = (FV_View *) pDialog->getApp()->getLastFocussedFrame()->getCurrentView();
+	PD_Document * pDoc = pView->getDocument();
 	if( pDialog->m_bDestroy_says_stopupdating != true)
 	{
 		pDialog->m_bAutoUpdate_happening_now = true;
-		pDialog->setAllSensitivities();
+		if(!pDoc->isPieceTableChanging())
+		{
+			pDialog->setAllSensitivities();
+		}
 		pDialog->m_bAutoUpdate_happening_now = false;
 	}
 }        

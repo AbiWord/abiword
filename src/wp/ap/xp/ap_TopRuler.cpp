@@ -523,7 +523,7 @@ void AP_TopRuler::_getParagraphMarkerXCenters(AP_TopRulerInfo * pInfo,
 		xAbsLeft = _getFirstPixelInColumn(pInfo,pInfo->m_iCurrentColumn);
 		xAbsRight = xAbsLeft + pInfo->u.c.m_xColumnWidth;
 	}
-
+	UT_sint32 i =0;
 	AP_TopRulerTableInfo *pTInfo = NULL;
 	if(pInfo->m_mode == AP_TopRulerInfo::TRI_MODE_TABLE)
 	{
@@ -1373,7 +1373,14 @@ bool AP_TopRuler::isMouseOverTab(UT_uint32 x, UT_uint32 y)
 	// incremental loader segfault protection
 	if (!m_pView)
 		return false;
-
+//
+// Piecetable changes means the document is changing as we look. Bail out until it stablizes.
+//
+	PD_Document * pDoc = static_cast<FV_View *>(m_pView)->getDocument();
+	if(pDoc->isPieceTableChanging())
+	{
+		return false;
+	}
 // Sevior: Look to cache this.
 	// first hit-test against the tab toggle control
 	(static_cast<FV_View *>(m_pView))->getTopRulerInfo(&m_infoCache);
