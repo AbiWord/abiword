@@ -26,6 +26,8 @@
 #include "xap_CocoaApp.h"
 #include "xap_CocoaFrame.h"
 
+#include "xap_CocoaDialog_Utilities.h"
+
 // default GTK message box button width, in GTK screen units (pixels)
 #define DEFAULT_BUTTON_WIDTH	85
 
@@ -93,10 +95,10 @@ void XAP_CocoaDialog_MessageBox::runModal(XAP_Frame * pFrame)
 	XAP_CocoaFrame *pFrame = m_xap->_getFrame ();
 	// we get all our strings from the application string set
 	const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
-	[self setOkBtnLabel:[NSString stringWithCString:pSS->getValue(XAP_STRING_ID_DLG_OK)]];
-	[self setCancelBtnLabel:[NSString stringWithCString:pSS->getValue(XAP_STRING_ID_DLG_Cancel)]];
-	[self setYesBtnLabel:[NSString stringWithCString:pSS->getValue(XAP_STRING_ID_DLG_UnixMB_Yes)]];
-	[self setNoBtnLabel:[NSString stringWithCString:pSS->getValue(XAP_STRING_ID_DLG_UnixMB_No)]];
+	LocalizeControl (m_okBtn, pSS, XAP_STRING_ID_DLG_OK);
+	LocalizeControl (m_cancelBtn, pSS, XAP_STRING_ID_DLG_Cancel);
+	LocalizeControl (m_yesBtn, pSS, XAP_STRING_ID_DLG_UnixMB_Yes);
+	LocalizeControl (m_noBtn, pSS, XAP_STRING_ID_DLG_UnixMB_No);
 
 	switch (m_buttons)
 	{
