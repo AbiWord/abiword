@@ -234,10 +234,13 @@ bool EV_UnixToolbar::toolbarEvent(_wd * wd,
 
 	XAP_Toolbar_Id id = wd->m_id;
 	UT_DEBUGMSG(("SEVIOR: button pressed m_eEvent = %x\n",m_eEvent));
-	
+
+#if 0	
+	// SEGV martin...
 	if(m_eEvent != NULL)
 	{
 		GdkEventButton * bevent = (GdkEventButton *) m_eEvent;
+
 		if(bevent->button == 3)
 		{
 			UT_DEBUGMSG(("SEVIOR: Right button pressed \n"));
@@ -247,6 +250,8 @@ bool EV_UnixToolbar::toolbarEvent(_wd * wd,
 			UT_DEBUGMSG(("SEVIOR: Left button pressed \n"));
 		}
 	}
+#endif
+
 	const EV_Toolbar_ActionSet * pToolbarActionSet = m_pUnixApp->getToolbarActionSet();
 	UT_ASSERT(pToolbarActionSet);
 
