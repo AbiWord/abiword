@@ -357,25 +357,21 @@ DEFINE_CLIST_GET_SET_BOOL(ViewShowExtraBar, 2);
 #define DEFINE_GET_SET_BOOL(button, btnId) \
 bool     AP_CocoaDialog_Options::_gather##button(void) {				\
 	NSButton * btn = [m_dlg _lookupWidget:btnId]; \
-	UT_ASSERT(btn); \
 	return ([btn state] != NSOffState); }\
 void        AP_CocoaDialog_Options::_set##button(bool b) {	\
 	NSButton * btn = [m_dlg _lookupWidget:btnId]; \
-	UT_ASSERT(btn); \
 	[btn setState:(b?NSOnState:NSOffState)]; }
 
 #define DEFINE_GET_SET_TEXT(widget, btnId) \
 char *		AP_CocoaDialog_Options::_gather##widget() {				\
 	NSButton * txt = [m_dlg _lookupWidget:btnId]; \
-	UT_ASSERT(txt); \
 	NSString * str = [txt textValue]; \
-	return [str cString]; }			\
-\
+	return [str UTF8String]; }			\
 void		AP_CocoaDialog_Options::_set##widget(const char *t) {	\
 	NSButton * txt = [m_dlg _lookupWidget:btnId]; \
-	UT_ASSERT(txt); \
-	NSString * str = [NSString stringWithUTF8String:t]; \
+	NSString * str = [[NSString alloc] initWithUTF8String:t]]; \
 	[txt setTextValue:str]; \
+	[str release]; \
 }
 
 DEFINE_GET_SET_BOOL(SpellCheckAsType, id_CHECK_SPELL_CHECK_AS_TYPE);
@@ -402,7 +398,7 @@ void AP_CocoaDialog_Options::_gatherAutoSaveFileExt(UT_String &stRetVal)
 {
 	NSTextField * txt = [m_dlg _lookupWidget:id_TEXT_AUTO_SAVE_FILE_EXT];
 	NSString * str = [txt stringValue];
-	stRetVal = [str cString];
+	stRetVal = [str UTF8String];
 }
 
 void AP_CocoaDialog_Options::_setAutoSaveFileExt(const UT_String &stExt)
@@ -416,37 +412,45 @@ void AP_CocoaDialog_Options::_setAutoSaveFileExt(const UT_String &stExt)
 void AP_CocoaDialog_Options::_gatherAutoSaveFilePeriod(UT_String &stRetVal)
 {
 	NSTextField * txt = [m_dlg _lookupWidget:AP_Dialog_Options::id_TEXT_AUTO_SAVE_FILE_PERIOD];
-	NSNumberFormatter * formatter = [txt formatter];
 	
-//	UT_ASSERT(m_textAutoSaveFilePeriod && GTK_IS_SPIN_BUTTON(m_textAutoSaveFilePeriod));
-//	char nb[12];
-//	int val = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(m_textAutoSaveFilePeriod));
-//	g_snprintf(nb, 12, "%d", val);
-//	stRetVal = nb;
+	stRetVal = [[txt stringValue] UTF8String];
 }
 
 void AP_CocoaDialog_Options::_setAutoSaveFilePeriod(const UT_String &stPeriod)
 {
 	NSTextField * txt = [m_dlg _lookupWidget:AP_Dialog_Options::id_TEXT_AUTO_SAVE_FILE_PERIOD];
-	NSNumberFormatter * formatter = [txt formatter];
-
-//	UT_ASSERT(m_textAutoSaveFilePeriod && GTK_IS_EDITABLE(m_textAutoSaveFilePeriod));
-//	gtk_spin_button_set_value(GTK_SPIN_BUTTON(m_textAutoSaveFilePeriod), atoi(stPeriod.c_str()));
+	NSString* str = [[NSString alloc] initWithUTF8String:stPeriod.c_str()];
+	[txt setStringValue:str];
+	[str release];
 }
 
 
 UT_Dimension AP_CocoaDialog_Options::_gatherViewRulerUnits(void)
 {
 	NSPopUpButton * popup = [m_dlg _lookupWidget:AP_Dialog_Options::id_LIST_VIEW_RULER_UNITS];
-	NSMenuItem * item = [popup itemAtIndex:[popup indexOfSelectedItem]];
-	return (UT_Dimension)[item tag];
+	return static_cast<UT_Dimension>([[popup selectedItem] tag]);
+}
+
+void    AP_CocoaDialog_Options::_setViewRulerUnits(UT_Dimension dim)
+{
+	NSPopUpButton * popup = [m_dlg _lookupWidget:AP_Dialog_Options::id_LIST_VIEW_RULER_UNITS];
+	NSMenu* menu = [popup menu];
+	int idx = [menu indexOfItemWithTag:static_cast<int>(dim)];
+	[popup selectItemAtIndex:idx];
+}
+
+void AP_CocoaDialog_Options::_setDefaultPageSize(fp_PageSize::Predefined pre)
+{
+	NSPopUpButton * popup = [m_dlg _lookupWidget:AP_Dialog_Options::id_LIST_DEFAULT_PAGE_SIZE];
+	NSMenu* menu = [popup menu];
+	int idx = [menu indexOfItemWithTag:static_cast<int>(pre)];
+	[popup selectItemAtIndex:idx];
 }
 
 fp_PageSize::Predefined AP_CocoaDialog_Options::_gatherDefaultPageSize(void)
 {
 	NSPopUpButton * popup = [m_dlg _lookupWidget:AP_Dialog_Options::id_LIST_DEFAULT_PAGE_SIZE];
-	NSMenuItem * item = [popup itemAtIndex:[popup indexOfSelectedItem]];
-	return (fp_PageSize::Predefined)[item tag];
+	return static_cast<fp_PageSize::Predefined>([[popup selectedItem] tag]);
 }
 
 #if 0
@@ -511,25 +515,6 @@ int option_menu_set_by_key ( GtkWidget *option_menu, gpointer value, gchar *key 
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-void    AP_CocoaDialog_Options::_setViewRulerUnits(UT_Dimension dim)
-{
-#if 0
-	UT_ASSERT(m_listViewRulerUnits);
-
-	int r = option_menu_set_by_key ( m_listViewRulerUnits, (gpointer)dim, WIDGET_MENU_VALUE_TAG );
-	UT_ASSERT( r != -1 );
-#endif
-}
-
-void AP_CocoaDialog_Options::_setDefaultPageSize(fp_PageSize::Predefined pre)
-{
-#if 0
-	UT_ASSERT(m_listDefaultPageSize);
-
-	int r = option_menu_set_by_key ( m_listDefaultPageSize, (gpointer)pre, WIDGET_MENU_VALUE_TAG );
-	UT_ASSERT( r != -1 );
-#endif
-}
 
 
 DEFINE_GET_SET_BOOL	(ViewCursorBlink, id_CHECK_VIEW_CURSOR_BLINK);
@@ -662,9 +647,14 @@ void AP_CocoaDialog_Options::_storeWindowData(void)
 	
 	//set Tab label
 	LocalizeControl([m_tab tabViewItemAtIndex:0], pSS, AP_STRING_ID_DLG_Options_Label_Toolbars);
+	LocalizeControl([m_tab tabViewItemAtIndex:1], pSS, AP_STRING_ID_DLG_Options_TabLabel_Spelling);
+	LocalizeControl([m_tab tabViewItemAtIndex:2], pSS, AP_STRING_ID_DLG_Options_Label_Layout);
+	LocalizeControl([m_tab tabViewItemAtIndex:3], pSS, AP_STRING_ID_DLG_Options_TabLabel_Preferences);
 	LocalizeControl(m_tlbTlbBox, pSS, AP_STRING_ID_DLG_Options_Label_Toolbars);
 	// add the items
 	
+	
+	// toolbar tab
 	m_tlbTlbListDataSource = [[XAP_StringListDataSource alloc] init];
 	[m_tlbTlbListDataSource addString:[NSString stringWithUTF8String:pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewStandardTB)]];
 	[m_tlbTlbListDataSource addString:[NSString stringWithUTF8String:pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewFormatTB)]];
@@ -679,6 +669,92 @@ void AP_CocoaDialog_Options::_storeWindowData(void)
 	LocalizeControl([m_tlbBtnStylGroup cellAtRow:1 column:0], pSS, AP_STRING_ID_DLG_Options_Label_Text);
 	LocalizeControl([m_tlbBtnStylGroup cellAtRow:2 column:0], pSS, AP_STRING_ID_DLG_Options_Label_Both);
 	LocalizeControl(m_tlbViewTooltipBtn, pSS, AP_STRING_ID_DLG_Options_Label_ViewTooltips);
+	// spelling tab
+	LocalizeControl(m_spellGeneralBox, pSS, AP_STRING_ID_DLG_Options_Label_General);
+	LocalizeControl(m_spellCheckAsTypeBtn, pSS, AP_STRING_ID_DLG_Options_Label_SpellCheckAsType);
+	LocalizeControl(m_spellHideErrBtn, pSS, AP_STRING_ID_DLG_Options_Label_SpellHideErrors);
+	LocalizeControl(m_spellAlwaysSuggBtn, pSS, AP_STRING_ID_DLG_Options_Label_SpellSuggest);
+	LocalizeControl(m_spellSuggFromMainDictBtn, pSS, AP_STRING_ID_DLG_Options_Label_SpellMainOnly);
+	LocalizeControl(m_spellIgnoreBox, pSS, AP_STRING_ID_DLG_Options_Label_Ignore);
+	LocalizeControl(m_spellIgnoreUppercaseBtn, pSS, AP_STRING_ID_DLG_Options_Label_SpellUppercase);
+	LocalizeControl(m_spellIgnoreWordsWithNumBtn, pSS, AP_STRING_ID_DLG_Options_Label_SpellNumbers);
+	LocalizeControl(m_spellIgnoreFileAddrBtn, pSS, AP_STRING_ID_DLG_Options_Label_SpellInternet);
+	LocalizeControl(m_spellIgnoredWordLabel, pSS, AP_STRING_ID_DLG_Options_Label_SpellIgnoredWord);
+	LocalizeControl(m_spellDictionaryPopup, pSS, AP_STRING_ID_DLG_Options_Label_CustomDict);
+	LocalizeControl(m_spellCustomDictLabel, pSS, AP_STRING_ID_DLG_Options_Label_SpellCustomDict);
+	LocalizeControl(m_spellDictEditBtn, pSS, AP_STRING_ID_DLG_Options_Btn_CustomDict);
+	LocalizeControl(m_spellIgnoreEditBtn, pSS, AP_STRING_ID_DLG_Options_Btn_IgnoreEdit);
+	LocalizeControl(m_spellResetDictBtn, pSS, AP_STRING_ID_DLG_Options_Btn_IgnoreReset);
+	// layout tab
+	LocalizeControl(m_layoutShowHideBox, pSS, AP_STRING_ID_DLG_Options_Label_ViewShowHide);
+	LocalizeControl(m_layoutRulerBtn, pSS, AP_STRING_ID_DLG_Options_Label_ViewRuler);
+	LocalizeControl(m_layoutStatusBarBtn, pSS, AP_STRING_ID_DLG_Options_Label_ViewStatusBar);
+	LocalizeControl(m_layoutCursorBlinkBtn, pSS, AP_STRING_ID_DLG_Options_Label_ViewCursorBlink);
+	LocalizeControl(m_layoutViewBox, pSS, AP_STRING_ID_DLG_Options_Label_ViewViewFrame);
+	LocalizeControl(m_layoutViewAllBtn, pSS, AP_STRING_ID_DLG_Options_Label_ViewAll);
+	LocalizeControl(m_layoutHiddenTextBtn, pSS, AP_STRING_ID_DLG_Options_Label_ViewHiddenText);
+	LocalizeControl(m_layoutInvisbleMarksBtn, pSS, AP_STRING_ID_DLG_Options_Label_ViewUnprintable);
+	// ruler unit menu
+	NSMenuItem* item;
+	NSMenu* menu;
+	[m_layoutUnitsPopup removeAllItems];
+	menu = [m_layoutUnitsPopup menu];
+	item = [[NSMenuItem alloc] initWithTitle:LocalizedString(pSS, XAP_STRING_ID_DLG_Unit_inch)
+									action:nil keyEquivalent:@""];
+	[item setTag:DIM_IN];
+	[menu addItem:item];
+	[item release];
+	item = [[NSMenuItem alloc] initWithTitle:LocalizedString(pSS, XAP_STRING_ID_DLG_Unit_cm)
+									action:nil keyEquivalent:@""];
+	[item setTag:DIM_CM];
+	[menu addItem:item];
+	[item release];
+	item = [[NSMenuItem alloc] initWithTitle:LocalizedString(pSS, XAP_STRING_ID_DLG_Unit_points)
+									action:nil keyEquivalent:@""];
+	[item setTag:DIM_PT];
+	[menu addItem:item];
+	[item release];
+	item = [[NSMenuItem alloc] initWithTitle:LocalizedString(pSS, XAP_STRING_ID_DLG_Unit_pico)
+									action:nil keyEquivalent:@""];
+	[item setTag:DIM_PI];
+	[menu addItem:item];
+	[item release];
+
+	// page size menu
+	[m_layoutDefaultPageSizePopup removeAllItems];		
+	menu = [m_layoutDefaultPageSizePopup menu];
+	for (int i = static_cast<int>(fp_PageSize::_first_predefined_pagesize_);
+			i < static_cast<int>(fp_PageSize::_last_predefined_pagesize_dont_use_); i++) {
+		item = [[NSMenuItem alloc] initWithTitle:[NSString stringWithUTF8String:
+						fp_PageSize::PredefinedToName(static_cast<fp_PageSize::Predefined>(i))
+				]
+				action:nil keyEquivalent:@""];
+		[item setTag:i];
+		[menu addItem:item];
+		[item release];
+	}
+	LocalizeControl(m_layoutDefaultPageSizeLabel, pSS, AP_STRING_ID_DLG_Options_Label_DefaultPageSize);
+	LocalizeControl(m_layoutUnitsLabel, pSS, AP_STRING_ID_DLG_Options_Label_ViewUnits);
+	LocalizeControl(m_layoutEnableSmartQuotesBtn, pSS, AP_STRING_ID_DLG_Options_Label_SmartQuotesEnable);
+	LocalizeControl(m_layoutAllowScreenColorsBtn, pSS, AP_STRING_ID_DLG_Options_Label_CheckWhiteForTransparent);
+	LocalizeControl(m_layoutCustomToolbarBtn, pSS, AP_STRING_ID_DLG_Options_Label_CheckAllowCustomToolbars);
+	
+	// preferences tab
+	LocalizeControl(m_prefsPrefsBox, pSS, AP_STRING_ID_DLG_Options_Label_Schemes);
+	LocalizeControl(m_prefsAutoSaveBox, pSS, AP_STRING_ID_DLG_Options_Label_PrefsAutoSave);
+	LocalizeControl(m_prefsCurrentSetLabel, pSS, AP_STRING_ID_DLG_Options_Label_PrefsCurrentScheme);
+	LocalizeControl(m_prefsBidiBox, pSS, AP_STRING_ID_DLG_Options_Label_BiDiOptions);
+	LocalizeControl(m_prefsDefaultToRTLBtn, pSS, AP_STRING_ID_DLG_Options_Label_DirectionRtl);
+	LocalizeControl(m_prefsOtherUseContextGlyphsBtn, pSS, AP_STRING_ID_DLG_Options_Label_UseContextGlyphs);
+	//LocalizeControl(m_spellResetDictBtn, pSS, AP_STRING_ID_DLG_Options_Label_SaveContextGlyphs);
+	LocalizeControl(m_prefsOtherHebrwContextGlyphBtn, pSS, AP_STRING_ID_DLG_Options_Label_HebrewContextGlyphs);
+	LocalizeControl(m_prefsAutoSaveBox, pSS, AP_STRING_ID_DLG_Options_Label_AutoSave);
+	LocalizeControl(m_prefsAutoSaveCurrentBtn, pSS, AP_STRING_ID_DLG_Options_Label_AutoSaveCurrent);
+	LocalizeControl(m_prefsMinutesLabel, pSS, AP_STRING_ID_DLG_Options_Label_Minutes);
+	LocalizeControl(m_prefsWithExtLabel, pSS, AP_STRING_ID_DLG_Options_Label_WithExtension);
+	LocalizeControl(m_prefsMiscBox, pSS, AP_STRING_ID_DLG_Options_TabLabel_Misc);
+	LocalizeControl(m_prefsShowSplashBtn, pSS, AP_STRING_ID_DLG_Options_Label_ShowSplash);
+	LocalizeControl(m_prefsLoadAllPluginsBtn, pSS, AP_STRING_ID_DLG_Options_Label_CheckAutoLoadPlugins);
 }
 
 - (void)setXAPOwner:(AP_CocoaDialog_Options *)owner
