@@ -431,6 +431,9 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 					pBL->format();
 					pBL->draw(m_pLayout->getGraphics());
 
+					// in case anything else moved
+					m_pLayout->reformat();
+
 					FV_View* pView = m_pLayout->m_pView;
 					if (pView)
 					{
