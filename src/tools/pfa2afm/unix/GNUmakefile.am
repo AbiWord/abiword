@@ -18,4 +18,13 @@
 ## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
 ## 02111-1307, USA.
 
-SUBDIRS = @PLATFORM@
+bin_PROGRAMS = pfa2afm
+
+pfa2afm_LDFLAGS = -lm
+
+pfa2afm_SOURCES = pfa2afm.c          \
+		splineutil.c       \
+		parsepfa.c         \
+		splinesaveafm.c    \
+		psisolatin1names.c \
+		pfautil.c

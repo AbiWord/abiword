@@ -37,7 +37,7 @@ OBJS=			$(OBJDIR)/pfautil.$(OBJ_SUFFIX)          \
 				$(OBJDIR)/parsepfa.$(OBJ_SUFFIX)         \
 				$(OBJDIR)/splinesaveafm.$(OBJ_SUFFIX)    \
 				$(OBJDIR)/psisolatin1names.$(OBJ_SUFFIX)
-				
+
 
 PROGRAM=		$(BINDIR)/pfa2afm$(EXE_SUFFIX)
 
