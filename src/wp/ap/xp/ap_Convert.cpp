@@ -353,6 +353,7 @@ void AP_Convert::convertToPNG ( const char * szSourceFileName )
 	printf ("Conversion to PNG failed\n");
 }
 
+
 void AP_Convert::print(const char * szFile, GR_Graphics * pGraphics)
 {
 	// get the current document
@@ -389,4 +390,30 @@ void AP_Convert::print(const char * szFile, GR_Graphics * pGraphics)
 	}
 
 	UNREFP(pDoc);
+}
+
+
+void AP_Convert::printFirstPage(GR_Graphics * pGraphics,PD_Document * pDoc)
+{
+		// create a new layout and view object for the doc
+
+	FL_DocLayout *pDocLayout = new FL_DocLayout(pDoc,pGraphics);
+	FV_View printView(XAP_App::getApp(),0,pDocLayout);
+	pDocLayout->setView (&printView);
+	pDocLayout->fillLayouts();
+	pDocLayout->formatAll();
+		
+#ifdef XP_UNIX_TARGET_GTK
+	PS_Graphics *psGr = static_cast<PS_Graphics*>(pGraphics);
+	psGr->setColorSpace(GR_Graphics::GR_COLORSPACE_COLOR);
+	psGr->setPageSize(printView.getPageSize().getPredefinedName());
+#endif
+		
+	s_actuallyPrint (pDoc, pGraphics, 
+					 &printView, "pngThumb", 
+					 1, true, 
+					 pDocLayout->getWidth(), pDocLayout->getHeight() / pDocLayout->countPages(), 
+					 1, 1);
+		
+	DELETEP(pDocLayout);
 }

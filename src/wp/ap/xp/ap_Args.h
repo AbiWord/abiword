@@ -59,6 +59,9 @@ public:
 	static const char * m_sTo;
 	static int    m_iToPNG;
 	static const char * m_sPrintTo;
+	static int    m_iToThumb;
+	static const char * m_sThumb;
+	static const char * m_sThumbXY;
 	static int	  m_iVerbose;
 	static int	  m_iShow;
 	static const char * m_sPlugin;
