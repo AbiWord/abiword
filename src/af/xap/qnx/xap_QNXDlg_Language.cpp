@@ -194,16 +194,17 @@ PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, _(XAP,DLG_ULANG_LangTitle), 0);
 				break;
 			}
 		}
+		PtTreeItem_t *titem_old=0;
 	
 		PtTreeItem_t *titem = PtTreeAllocItem(m_pLanguageList,item,img,img);
-		PtTreeAddFirst(m_pLanguageList, titem,NULL);
+		if(!titem_old)	PtTreeAddFirst(m_pLanguageList, titem,NULL);
+		else PtTreeAddAfter(m_pLanguageList,titem,titem_old);
+		if(!UT_stricmp(item,m_pLanguage))
+			PtTreeGoto(m_pLanguageList,titem);
+		titem_old = titem;
+		img = -1;
 	}
-
-/*	if((k = PtListItemPos(m_pLanguageList, (const char *)m_pLanguage))) {
-		PtListGotoPos(m_pLanguageList, k);
-	} else {
-		PtListGotoPos(m_pLanguageList, 1);
-	}*/ 
+	FREEP(pImage);
 	
 	/* Buttons along the bottom */
 	n = 0;
