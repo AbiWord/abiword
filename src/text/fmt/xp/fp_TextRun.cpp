@@ -108,7 +108,7 @@ fp_TextRun::fp_TextRun(fl_BlockLayout* pBL,
 		// set the static buffers to some reasonable value
 		s_pCharAdvance = new UT_sint32 [TEXTRUN_STATIC_BUFFER_SIZE];
 		UT_return_if_fail(s_pCharAdvance);
-		memset (s_pCharAdvance, 0, TEXTRUN_STATIC_BUFFER_SIZE); 
+		memset (s_pCharAdvance, 0, TEXTRUN_STATIC_BUFFER_SIZE * sizeof(UT_sint32)); 
 
 		s_pCharBuff = new UT_UCS4Char [TEXTRUN_STATIC_BUFFER_SIZE];
 		UT_return_if_fail(s_pCharBuff);
