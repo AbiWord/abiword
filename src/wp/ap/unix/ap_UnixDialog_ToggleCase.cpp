@@ -158,7 +158,7 @@ void AP_UnixDialog_ToggleCase::_constructWindowContents (GtkWidget *vbox1)
   GtkWidget *sentenceCase;
   GtkWidget *lowerCase;
   GtkWidget *upperCase;
-  GtkWidget *titleCase;
+  GtkWidget *firstUpperCase;
   GtkWidget *toggleCase;
 
   const XAP_StringSet * pSS = m_pApp->getStringSet();
@@ -181,11 +181,11 @@ void AP_UnixDialog_ToggleCase::_constructWindowContents (GtkWidget *vbox1)
   gtk_widget_show (upperCase);
   gtk_box_pack_start (GTK_BOX (vbox1), upperCase, FALSE, FALSE, 0);
 
-  titleCase = gtk_radio_button_new_with_label (vbox1_group, 
-					       pSS->getValue(AP_STRING_ID_DLG_ToggleCase_TitleCase));
-  vbox1_group = gtk_radio_button_group (GTK_RADIO_BUTTON (titleCase));
-  gtk_widget_show (titleCase);
-  gtk_box_pack_start (GTK_BOX (vbox1), titleCase, FALSE, FALSE, 0);
+  firstUpperCase = gtk_radio_button_new_with_label (vbox1_group,
+					       pSS->getValue(AP_STRING_ID_DLG_ToggleCase_FirstUpperCase));
+  vbox1_group = gtk_radio_button_group (GTK_RADIO_BUTTON (firstUpperCase));
+  gtk_widget_show (firstUpperCase);
+  gtk_box_pack_start (GTK_BOX (vbox1), firstUpperCase, FALSE, FALSE, 0);
 
   toggleCase = gtk_radio_button_new_with_label (vbox1_group, 
 						pSS->getValue(AP_STRING_ID_DLG_ToggleCase_ToggleCase));
@@ -196,7 +196,7 @@ void AP_UnixDialog_ToggleCase::_constructWindowContents (GtkWidget *vbox1)
   gtk_object_set_user_data (GTK_OBJECT(sentenceCase), GINT_TO_POINTER(CASE_SENTENCE));
   gtk_object_set_user_data (GTK_OBJECT(lowerCase), GINT_TO_POINTER(CASE_LOWER));
   gtk_object_set_user_data (GTK_OBJECT(upperCase), GINT_TO_POINTER(CASE_UPPER));
-  gtk_object_set_user_data (GTK_OBJECT(titleCase), GINT_TO_POINTER(CASE_TITLE));
+  gtk_object_set_user_data (GTK_OBJECT(firstUpperCase), GINT_TO_POINTER(CASE_FIRST_CAPITAL));
   gtk_object_set_user_data (GTK_OBJECT(toggleCase), GINT_TO_POINTER(CASE_TOGGLE));
 
   gtk_signal_connect (GTK_OBJECT(sentenceCase), "toggled",
@@ -205,7 +205,7 @@ void AP_UnixDialog_ToggleCase::_constructWindowContents (GtkWidget *vbox1)
 		      GTK_SIGNAL_FUNC(s_toggled), (gpointer)this);
   gtk_signal_connect (GTK_OBJECT(upperCase), "toggled",
 		      GTK_SIGNAL_FUNC(s_toggled), (gpointer)this);
-  gtk_signal_connect (GTK_OBJECT(titleCase), "toggled",
+  gtk_signal_connect (GTK_OBJECT(firstUpperCase), "toggled",
 		      GTK_SIGNAL_FUNC(s_toggled), (gpointer)this);
   gtk_signal_connect (GTK_OBJECT(toggleCase), "toggled",
 		      GTK_SIGNAL_FUNC(s_toggled), (gpointer)this);

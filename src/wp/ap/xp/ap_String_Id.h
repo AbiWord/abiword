@@ -517,6 +517,7 @@ dcl(DLG_ToggleCase_SentenceCase, "Sentence case")
 dcl(DLG_ToggleCase_LowerCase, "lowercase")
 dcl(DLG_ToggleCase_UpperCase, "UPPERCASE")
 dcl(DLG_ToggleCase_TitleCase, "Title Case")
+dcl(DLG_ToggleCase_FirstUpperCase, "First In Word Uppercase, Rest Lowercase")
 dcl(DLG_ToggleCase_ToggleCase, "tOGGLE cASE")
 
 dcl(DLG_Background_Title, "Change Background Color")

@@ -40,7 +40,7 @@ static ToggleCase toggle_entries[] = {
 		CASE_SENTENCE, 
 		CASE_LOWER, 
 		CASE_UPPER, 
-		CASE_TITLE, 
+		CASE_FIRST_CAPITAL,
 		CASE_TOGGLE,
 };
 
@@ -204,9 +204,9 @@ PtWidget_t * AP_QNXDialog_ToggleCase::_constructWindow(void)
 	PtAddCallback(widget, Pt_CB_ACTIVATE, s_toggled, this);
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_ToggleCase_TitleCase), 0);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_ToggleCase_FirstUpperCase), 0);
 	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_TOGGLE_RADIO, 0);
-	PtSetArg(&args[n++], Pt_ARG_POINTER, find_entry(CASE_TITLE), 0);
+	PtSetArg(&args[n++], Pt_ARG_POINTER, find_entry(CASE_FIRST_CAPITAL), 0);
 	widget = PtCreateWidget(PtToggleButton, vboxMain, n, args);
 	PtAddCallback(widget, Pt_CB_ACTIVATE, s_toggled, this);
 

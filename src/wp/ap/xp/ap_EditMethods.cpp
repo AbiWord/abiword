@@ -2141,7 +2141,10 @@ static bool s_doToggleCase(XAP_Frame * pFrame, FV_View * pView, XAP_Dialog_Id id
 	UT_ASSERT(pFrame);
 
 	pFrame->raise();
-
+	
+#if 0
+	// we do not need selection (if there is none, we will try to apply
+	// the case to the word at editing position)
 	if (pView->isSelectionEmpty())
 	  {
 	    pFrame->showMessageBox(AP_STRING_ID_MSG_EmptySelection,
@@ -2149,6 +2152,7 @@ static bool s_doToggleCase(XAP_Frame * pFrame, FV_View * pView, XAP_Dialog_Id id
 				   XAP_Dialog_MessageBox::a_OK); 
 	    return false;
 	  }
+#endif
 
 	XAP_DialogFactory * pDialogFactory
 		= (XAP_DialogFactory *)(pFrame->getDialogFactory());

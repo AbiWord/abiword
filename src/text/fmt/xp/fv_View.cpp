@@ -325,6 +325,12 @@ static void _toggleUpper (const UT_UCSChar * src,
 }
 
 // first character after each space gets capitalized
+// NB the title case algorithm here is too simplistic to
+// produce satisfactory results; basically we would need
+// language-dependent word lists to handle this correctly
+// and I see little need for it; so for now it is going to
+// be turned off
+#if 0
 static void _toggleTitle (const UT_UCSChar * src, 
 			  UT_UCSChar * dest, UT_uint32 len,
                           bool spaceBeforeFirstChar)
@@ -352,8 +358,11 @@ static void _toggleTitle (const UT_UCSChar * src,
 		}
     }
 }
+#endif
 
 // all gets set to its opposite
+// I have my doubts about usufulness of this, but the concensus on
+// the mailing list was to leave it, so it stays.
 static void _toggleToggle (const UT_UCSChar * src, 
 			   UT_UCSChar * dest, UT_uint32 len)
 {
@@ -399,7 +408,7 @@ bool FV_View::_isSpaceBefore(PT_DocPosition pos)
 
 void FV_View::toggleCase (ToggleCase c)
 {
-	// if there is no selection, select the current word	
+	// if there is no selection, apply to the current word	
 	PT_DocPosition origPos = 0;
 	PT_DocPosition low, high;
 	
@@ -422,7 +431,11 @@ void FV_View::toggleCase (ToggleCase c)
 			low  = m_iSelectionAnchor;
 		}
 	}
-	
+
+	// if this is an empty document, gracefully return	
+	if(low == high)
+		return;
+		
 	UT_DEBUGMSG(("fv_View::toggleCase: low %d, high %d\n", low, high));
 	
 	UT_sint32 xPoint, yPoint, xPoint2, yPoint2, iPointHeight;
@@ -578,11 +591,12 @@ void FV_View::toggleCase (ToggleCase c)
 			    	case CASE_UPPER:
 			    		_toggleUpper (pTemp, pTemp, iLen);
 						break;
-
+#if 0
+// see comments before _toggleTitle()
 				    case CASE_TITLE:
 				    	_toggleTitle (pTemp, pTemp, iLen, _isSpaceBefore(low));
 						break;
-
+#endif
 			    	case CASE_TOGGLE:
 			    		_toggleToggle (pTemp, pTemp, iLen);
 						break;

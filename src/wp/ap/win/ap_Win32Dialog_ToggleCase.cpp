@@ -83,7 +83,7 @@ BOOL AP_Win32Dialog_ToggleCase::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM l
 	_DS(TOGGLECASE_RDO_SentenceCase,	DLG_ToggleCase_SentenceCase);
 	_DS(TOGGLECASE_RDO_LowerCase,		DLG_ToggleCase_LowerCase);
 	_DS(TOGGLECASE_RDO_UpperCase,		DLG_ToggleCase_UpperCase);
-	_DS(TOGGLECASE_RDO_TitleCase,		DLG_ToggleCase_TitleCase);
+	_DS(TOGGLECASE_RDO_TitleCase,		DLG_ToggleCase_FirstUpperCase);
 	_DS(TOGGLECASE_RDO_ToggleCase,		DLG_ToggleCase_ToggleCase);
 
 	m_helper.checkButton(AP_RID_DIALOG_TOGGLECASE_RDO_SentenceCase, true);
@@ -123,7 +123,7 @@ BOOL AP_Win32Dialog_ToggleCase::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPar
 		return 1;
 		
 	case AP_RID_DIALOG_TOGGLECASE_RDO_TitleCase:
-		m_iWhichCase = CASE_TITLE;
+		m_iWhichCase = CASE_FIRST_CAPITAL;
 		return 1;
 		
 	case AP_RID_DIALOG_TOGGLECASE_RDO_ToggleCase:
