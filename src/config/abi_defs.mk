@@ -510,7 +510,7 @@ GNOME_CFLAGS	:= $(shell $(GNOME_CONFIG) --cflags gnomeui gal print)
 GNOME_LIBS      := $(shell $(GTK_CONFIG) --libs)
 # These also might be needed: -lSM -lICE
 GNOME_LIBS      += $(shell $(GNOME_CONFIG) --libs-only-L)
-GNOME_LIBS      += -lgnomeui -lgnomeprint -lgal -lart_lgpl -lgdk_imlib -lgnome -lgnomesupport -lglade-gnome -lglade -lxml -lunicode -lgnomecanvaspixbuf -lgdk_pixbuf -ltiff -ljpeg 
+GNOME_LIBS      += -lgnomeui -lgnomeprint -lgal -lart_lgpl -lgdk_imlib -lgnome -lgnomesupport -lxml -lunicode -lgnomecanvaspixbuf -lgdk_pixbuf -ltiff -ljpeg 
 
 ifdef ABI_OPT_GNOMEVFS
 GNOME_CFLAGS += $(shell gnome-vfs-config --cflags)
