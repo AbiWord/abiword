@@ -241,8 +241,10 @@ GR_Font* GR_Win32Graphics::findFont(const char* pszFontFamily,
 
 	// we need to get the size in logpixels for the current DC, which
 	// simply means to divide points by 72 and multiply by device Y resolution
+
+	// See: http://support.microsoft.com/support/kb/articles/Q74/2/99.asp
 	UT_sint32 iHeight = (UT_sint32)UT_convertToPoints(pszFontSize);
-	lf.lfHeight = MulDiv(iHeight, GetDeviceCaps(m_hdc, LOGPIXELSY), 72);		
+	lf.lfHeight = -MulDiv(iHeight, GetDeviceCaps(m_hdc, LOGPIXELSY), 72);		
 
 	// TODO note that we don't support all those other ways of expressing weight.
 	if (0 == UT_stricmp(pszFontWeight, "bold"))
@@ -1280,11 +1282,11 @@ GR_Win32Font::GR_Win32Font(LOGFONT & lf)
 	m_defaultCharWidth(0),
 	m_tm(TEXTMETRIC())
 {
-	lf.lfHeight = abs(lf.lfHeight);
-	m_iHeight = lf.lfHeight;
+	
+	m_iHeight = abs(lf.lfHeight);
 
 	m_layoutFont = CreateFontIndirect(&lf); // this is what we see to start with
-	insertFontInCache (lf.lfHeight, m_layoutFont);
+	insertFontInCache (m_iHeight, m_layoutFont);
 
 	//
 	// TMN: We need to initialize 'this' to _something_, why we use the
@@ -1425,6 +1427,8 @@ void GR_Win32Font::fetchFont(UT_uint32 pixelsize) const
 
 	GetObject(m_layoutFont, sizeof(LOGFONT), &lf);
 	lf.lfHeight = pixelsize;
+
+	if (lf.lfHeight>0) lf.lfHeight = - lf.lfHeight;
 
 	HFONT pFont = CreateFontIndirect(&lf);
 
