@@ -60,13 +60,11 @@ XAP_QNXDialog_Password::XAP_QNXDialog_Password(XAP_DialogFactory * pDlgFactory,
 											   XAP_Dialog_Id id)
 	: XAP_Dialog_Password(pDlgFactory,id)
 {
-m_pass=0;
+m_pass = NULL;
 }
 
 XAP_QNXDialog_Password::~XAP_QNXDialog_Password(void)
 {
-if(m_pass)
-	free(m_pass);
 }
 
 void XAP_QNXDialog_Password::runModal(XAP_Frame * pFrame)
@@ -75,8 +73,8 @@ void XAP_QNXDialog_Password::runModal(XAP_Frame * pFrame)
 	int pwdreturn;
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	char **buttons=(char**)calloc(2,sizeof(char*));
-buttons[0]= (char*) pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel).c_str();
-buttons[1]=(char*)pSS->getValueUTF8(XAP_STRING_ID_DLG_OK).c_str();
+buttons[0]= strdup((char*) pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel).c_str());
+buttons[1]= strdup((char*)pSS->getValueUTF8(XAP_STRING_ID_DLG_OK).c_str());
     
 	XAP_QNXFrameImpl * pQNXFrameImpl = (XAP_QNXFrameImpl*)pFrame->getFrameImpl();
 	PtWidget_t *parentWindow =	pQNXFrameImpl->getTopLevelWindow();	
@@ -96,11 +94,15 @@ pSS->getValueUTF8(XAP_STRING_ID_DLG_Password_Title).c_str(), /* Msg */
 							"*",
 							Pt_CENTER|Pt_BLOCK_ALL);
 	if(pwdreturn == Pt_PWD_CANCEL)
+			FREEP(m_pass);
 		  setAnswer(XAP_Dialog_Password::a_Cancel);
 	if(pwdreturn == Pt_PWD_ACCEPT) {
 		setPassword(m_pass);
 		setAnswer(XAP_Dialog_Password::a_OK);
 	}
-	free(buttons);
+
+	FREEP(buttons[0]);
+	FREEP(buttons[1]);
+	FREEP(buttons);
 }
 
