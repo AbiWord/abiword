@@ -593,7 +593,7 @@ UT_RGBColor * fg_FillType::getColor(void)
 	return &m_color;
 }
 
-void fg_FillType::setWidthHeight(GR_Graphics * pG, UT_sint32 iWidth, UT_sint32 iHeight)
+void fg_FillType::setWidthHeight(GR_Graphics * pG, UT_sint32 iWidth, UT_sint32 iHeight, bool bDoImage)
 {
 	if((m_iWidth == iWidth) && (m_iHeight == iHeight))
 	{
@@ -605,14 +605,14 @@ void fg_FillType::setWidthHeight(GR_Graphics * pG, UT_sint32 iWidth, UT_sint32 i
 	{
 		return;
 	}
-	if(m_pImage)
+	if(m_pImage && bDoImage)
 	{
 		DELETEP(m_pImage);
 		m_pImage = m_pGraphic->regenerateImage(pG);
 		UT_Rect rec(0,0,iWidth,iHeight);
 		m_pImage->scaleImageTo(pG,rec);
 	}
-	if(m_pDocImage && *m_pDocImage)
+	if(m_pDocImage && *m_pDocImage && bDoImage)
 	{
 		DELETEP(*m_pDocImage);
 		*m_pDocImage = (*m_pDocGraphic)->regenerateImage(pG);

@@ -5149,7 +5149,12 @@ PT_DocPosition FV_View::getDocPositionFromXY(UT_sint32 xpos, UT_sint32 ypos, boo
 	bool bBOL = false;
 	bool bEOL = false;
 	bool isTOC = false;
-	pPage->mapXYToPosition(bNotFrames,xClick, yClick, iNewPoint, bBOL, bEOL,isTOC, true,NULL);
+	bool bUseHdrFtr = true;
+	if(bNotFrames)
+	{
+		bUseHdrFtr = false;
+	}
+	pPage->mapXYToPosition(bNotFrames,xClick, yClick, iNewPoint, bBOL, bEOL,isTOC, bUseHdrFtr,NULL);
 	return iNewPoint;
 }
 

@@ -133,7 +133,7 @@ public:
 	void           setTransColor(const char * pszColor);
 	void           setImage(FG_Graphic * pGraphic, GR_Image * pImage,GR_Graphics * pG, UT_sint32 width, UT_sint32 height);
 	void           setTransparent(void);
-	void           setWidthHeight(GR_Graphics * pG, UT_sint32 width, UT_sint32 height);
+	void           setWidthHeight(GR_Graphics * pG, UT_sint32 width, UT_sint32 height, bool doImage = false);
 	void           setWidth(GR_Graphics * pG, UT_sint32 width);
 	void           setHeight(GR_Graphics * pG, UT_sint32 height);
 	void           setDocLayout(FL_DocLayout * pDocLayout);

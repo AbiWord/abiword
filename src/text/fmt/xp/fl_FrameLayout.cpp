@@ -481,7 +481,7 @@ void fl_FrameLayout::miniFormat(void)
 	}
 	fp_FrameContainer * pFrame = static_cast<fp_FrameContainer *>(getFirstContainer());
 	pFrame->layout();
-	pFrame->getFillType()->setWidthHeight(getDocLayout()->getGraphics(),pFrame->getFullWidth(),pFrame->getFullHeight());
+	pFrame->getFillType()->setWidthHeight(getDocLayout()->getGraphics(),pFrame->getFullWidth(),pFrame->getFullHeight(),false);
 	m_bNeedsFormat = false;
 	m_bNeedsReformat = false;
 }
