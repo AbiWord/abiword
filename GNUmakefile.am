@@ -7,6 +7,9 @@ libiconv_peerdir=$(top_builddir)/../libiconv
 libpng_peerdir=@LIBPNG_PEERDIR@
 libpopt_peerdir=$(top_builddir)/../popt
 
+desktop_DATA = abiword.desktop
+desktopdir = $(datadir)/applications
+
 # Hack: make sure that the PEERS stuff is build first
 # We can not use the all target, because on parallel builds there is no
 # guarantee that the peerdirs will be built before the main tree.

@@ -45,7 +45,7 @@
 #include <X11/Xlib.h>
 #include <X11/Xft/Xft.h>
 
-static UT_uint32 adobeDUni[/*202*/][2] =
+static const UT_uint32 adobeDUni[/*202*/][2] =
 	{
 		{0x0020,0x0020},
 		{0x0021,0x2701},
@@ -252,7 +252,7 @@ static UT_uint32 adobeDUni[/*202*/][2] =
 		{255,100000}
 	};
 
-static UT_uint32 adobeSUni[/*185*/][2] =
+static const UT_uint32 adobeSUni[/*185*/][2] =
 	{
 		{32,32},
 		{33,33},
