@@ -32,9 +32,6 @@
 #include "ev_EditEventMapper.h"
 #include "xap_Win32Frame.h"
 
-#define DELETEP(p)		do { if (p) delete p; } while (0)
-#define NrElements(a)	((sizeof(a) / sizeof(a[0])))
-
 /*****************************************************************/
 
 static const char * _ev_GetLabelName(XAP_Win32App * pWin32App,

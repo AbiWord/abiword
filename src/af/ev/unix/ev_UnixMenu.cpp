@@ -39,10 +39,6 @@
 #include "ev_EditEventMapper.h"
 
 
-#define DELETEP(p)		do { if (p) delete p; } while (0)
-#define FREEP(p)		do { if (p) free(p); } while (0)
-#define NrElements(a)	((sizeof(a) / sizeof(a[0])))
-
 /*****************************************************************/
 
 class _wd								// a private little class to help

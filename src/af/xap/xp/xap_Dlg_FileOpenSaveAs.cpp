@@ -25,9 +25,6 @@
 #include "ut_debugmsg.h"
 #include "xap_Dlg_FileOpenSaveAs.h"
 
-#define FREEP(p)	do { if (p) free(p); (p)=NULL; } while (0)
-#define DELETEP(p)	do { if (p) delete(p); (p)=NULL; } while (0)
-
 /*****************************************************************
 ** The file-open and file-save-as dialogs have
 ** app-persistence, but the persistence is

@@ -33,8 +33,6 @@
 #include "fl_DocLayout.h"
 #include "fv_View.h"
 
-#define FREEP(p)	do { if (p) free(p); (p)=NULL; } while (0)
-#define DELETEP(p)	do { if (p) delete(p); (p)=NULL; } while (0)
 
 AP_Dialog_Replace::AP_Dialog_Replace(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id)
 	: AP_Dialog_FramePersistent(pDlgFactory,id)

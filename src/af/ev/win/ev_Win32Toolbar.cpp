@@ -36,8 +36,6 @@
 #include "xmlparse.h"
 #include "xap_Prefs.h"
 
-#define DELETEP(p)	do { if (p) delete p; } while (0)
-
 /*****************************************************************/
 
 EV_Win32Toolbar::EV_Win32Toolbar(XAP_Win32App * pWin32App, XAP_Win32Frame * pWin32Frame,

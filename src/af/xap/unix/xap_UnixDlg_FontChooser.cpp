@@ -34,8 +34,6 @@
 // this is a really nice example of how the tree shouldn't be
 #include "gr_UnixGraphics.h"
 
-#define DELETEP(p)	do { if (p) delete(p); } while (0)
-#define FREEP(p)	do { if (p) free(p); } while (0)
 
 #define SIZE_STRING_SIZE	10
 

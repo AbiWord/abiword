@@ -38,8 +38,6 @@
 #include "pd_Style.h"
 
 
-#define NrElements(a)		(sizeof(a)/sizeof(a[0]))
-
 // TODO: calculate this from pf_FRAG_STRUX_*_LENGTH instead?
 #define pt_BOD_POSITION 2
 

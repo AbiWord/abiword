@@ -39,10 +39,6 @@
 #include "ut_assert.h"
 #include "ut_timer.h"
 
-// TODO why do we define these multiply, in different files? --EWS
-#define DELETEP(p)	do { if (p) delete p; } while (0)
-#define FREEP(p)	do { if (p) free(p); } while (0)
-
 FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG) : m_hashFontCache(19)
 {
 	m_pDoc = doc;

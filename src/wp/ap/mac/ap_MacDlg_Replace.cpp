@@ -33,8 +33,6 @@
 #include "ap_Dialog_Replace.h"
 #include "ap_MacDlg_Replace.h"
 
-#define FREEP(p)	do { if (p) free(p); (p)=NULL; } while (0)
-#define DELETEP(p)	do { if (p) delete p; } while (0)
 
 /*****************************************************************/
 #if 0

@@ -24,8 +24,6 @@
 #include "ut_assert.h"
 #include "ut_string.h"
 
-#define FREEP(p)	do { if (p) free(p); } while (0)
-
 /*****************************************************************/
 
 EV_Toolbar_LayoutItem::EV_Toolbar_LayoutItem(AP_Toolbar_Id id, EV_Toolbar_LayoutFlags flags)

@@ -42,8 +42,6 @@ static struct AP_Toolbar_ControlFactory::_ctl_table s_ctl_table[] = { 0 };
 };
 #endif
 
-#define NrElements(a)	((sizeof(a)/sizeof(a[0])))
-
 /*****************************************************************/
 /*****************************************************************/
   

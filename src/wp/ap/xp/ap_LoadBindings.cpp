@@ -77,8 +77,6 @@ static struct _lb s_lbTable[] =
 	{	"deadtilde",		ap_LoadBindings_DeadTilde,			NULL	},
 };
 
-#define NrElements(a)	((sizeof(a)/sizeof(a[0])))
-
 /****************************************************************/
 /****************************************************************/
 

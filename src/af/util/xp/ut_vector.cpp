@@ -27,7 +27,6 @@
 #include "ut_vector.h"
 #include "ut_assert.h"
 
-#define FREEP(p)	do { if (p) free(p); } while (0)
 
 UT_Vector::UT_Vector()
 {

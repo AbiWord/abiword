@@ -25,8 +25,6 @@
 
 #include "xap_UnixFontXLFD.h"
 
-#define DELETEP(p)	do { if (p) delete(p); (p)=NULL; } while (0)
-#define FREEP(p)	do { if (p) free(p); (p)=NULL; } while (0)
 #define REPLACE_ELSE_BLANK(dest, src)	\
                                         if (src && src[0]) 					\
                                         {									\

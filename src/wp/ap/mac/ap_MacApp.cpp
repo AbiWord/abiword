@@ -33,10 +33,6 @@
 #include "ap_MacApp.h"
 #include "sp_spell.h"
 
-#define NrElements(a)		(sizeof(a) / sizeof(a[0]))
-#define FREEP(p)	do { if (p) free(p); (p)=NULL; } while (0)
-#define DELETEP(p)	do { if (p) delete(p); (p)=NULL; } while (0)
-
 /*****************************************************************/
 
 AP_MacApp::AP_MacApp(AP_Args * pArgs, const char * szAppName)

@@ -357,7 +357,6 @@ static EV_EditBits s_Table_NVK_0xfe[] =		// ISO 9995 Function and Modifier Keys
 	0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,		// 0xfef0 - 0xfeff
 };
 
-#define NrElements(a)	((sizeof(a) / sizeof(a[0])))
 
 static UT_Bool s_isVirtualKeyCode(gint keyval)
 {

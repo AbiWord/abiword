@@ -30,9 +30,6 @@
 #include "xap_Dlg_FileOpenSaveAs.h"
 
 
-#define FREEP(p)	do { if (p) free(p); (p)=NULL; } while (0)
-#define DELETEP(p)	do { if (p) delete(p); (p)=NULL; } while (0)
-
 /******************************************************************/
 
 XAP_Dialog_Print::XAP_Dialog_Print(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id)

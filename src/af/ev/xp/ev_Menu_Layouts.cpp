@@ -24,8 +24,6 @@
 #include "ut_assert.h"
 #include "ut_string.h"
 
-#define FREEP(p)	do { if (p) free(p); } while (0)
-
 /*****************************************************************/
 
 EV_Menu_LayoutItem::EV_Menu_LayoutItem(AP_Menu_Id id, EV_Menu_LayoutFlags flags)

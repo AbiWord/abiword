@@ -33,8 +33,6 @@
 #include "xap_Toolbar_LabelSet.h"
 
 
-#define DELETEP(p)	do { if (p) delete p; } while (0)
-
 /*****************************************************************/
 
 EV_Toolbar::EV_Toolbar(EV_EditMethodContainer * pEMC,

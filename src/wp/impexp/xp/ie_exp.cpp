@@ -53,8 +53,6 @@ static struct _xp s_expTable[] =
 	DeclareExporter(IE_Exp_HTML),
 };
 
-#define NrElements(a)		(sizeof(a) / sizeof(a[0]))
-
 /*****************************************************************/
 /*****************************************************************/
 

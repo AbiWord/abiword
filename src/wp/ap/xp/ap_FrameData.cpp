@@ -25,8 +25,6 @@
 #include "ap_LeftRuler.h"
 #include "ap_StatusBar.h"
 
-#define DELETEP(p)	do { if (p) delete p; } while (0)
-
 /*****************************************************************/
 
 AP_FrameData::AP_FrameData()

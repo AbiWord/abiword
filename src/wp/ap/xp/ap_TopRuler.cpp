@@ -35,10 +35,6 @@
 										// TODO methods that we use to the
 										// TODO the xav_View base class.
 
-#define NrElements(a)	((sizeof(a)/sizeof(a[0])))
-#define MyMax(a,b)		(((a)>(b)) ? (a) : (b))
-#define DELETEP(p)		do { if (p) delete p; p = NULL; } while (0)
-
 // HACK: private copy of constants from fl_BlockLayout.h
 // TODO: find a better way of passing iType for tabs?
 // NOTE: this ordering is convenient for cycling m_iDefaultTabType 

@@ -24,9 +24,6 @@
 #include "ut_debugmsg.h"
 #include "xap_Dlg_MessageBox.h"
 
-#define FREEP(p)	do { if (p) free(p); } while (0)
-#define DELETEP(p)	do { if (p) delete(p); } while (0)
-
 /*****************************************************************/
 
 XAP_Dialog_MessageBox::XAP_Dialog_MessageBox(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id)

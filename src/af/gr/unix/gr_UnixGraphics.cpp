@@ -36,8 +36,6 @@
 #include "ut_string.h"
 #include "ut_dialogHelper.h"
 
-#define DELETEP(p)	do { if (p) delete p; } while (0)
-#define FREEP(p)	do { if (p) free(p); } while (0)
 
 /*****************************************************************/
 #if 0

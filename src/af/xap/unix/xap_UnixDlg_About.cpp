@@ -34,9 +34,6 @@
 #include "xap_Dlg_About.h"
 #include "xap_UnixDlg_About.h"
 
-#define FREEP(p)	do { if (p) free(p); (p)=NULL; } while (0)
-#define DELETEP(p)	do { if (p) delete p; } while (0)
-
 #define DEFAULT_BUTTON_WIDTH 85
 
 /*****************************************************************/

@@ -31,9 +31,6 @@
 #include "pt_Types.h"
 #include "pp_AttrProp.h"
 
-#define DELETEP(p)	do { if (p) delete p; } while (0)
-#define FREEP(p)	do { if (p) free(p); } while (0)
-
 /****************************************************************/
 PP_AttrProp::PP_AttrProp()
 {

@@ -34,10 +34,6 @@
 #include <gtk/gtk.h>
 #include <glib.h>
 
-#define DELETEP(p)	do { if (p) delete(p); (p)=NULL; } while (0)
-#define MyMin(a,b)	(((a)<(b)) ? (a) : (b))
-#define MyMax(a,b)	(((a)>(b)) ? (b) : (a))
-
 /*****************************************************************/
 
 static void _notifyError_OKOnly(XAP_Frame * pFrame, const char * message)

@@ -33,8 +33,6 @@
 #include "xap_Menu_LabelSet.h"
 
 
-#define DELETEP(p)	do { if (p) delete p; } while (0)
-
 /*****************************************************************/
 
 EV_Menu::EV_Menu(EV_EditMethodContainer * pEMC,

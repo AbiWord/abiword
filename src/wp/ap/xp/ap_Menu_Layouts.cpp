@@ -25,8 +25,6 @@
 #include "xap_Menu_Layouts.h"
 #include "ap_Menu_Id.h"
 
-#define NrElements(a)	((sizeof(a)/sizeof(a[0])))
-
 /*****************************************************************
 ******************************************************************
 ** Here we begin a little CPP magic to load the layout for each

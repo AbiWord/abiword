@@ -29,7 +29,6 @@
 #include "xap_MacTlbr_Icons.h"
 #include "xap_MacTlbr_ControlFactory.h"
 
-#define DELETEP(p)	do { if (p) delete p; } while (0)
 
 /*****************************************************************/
 

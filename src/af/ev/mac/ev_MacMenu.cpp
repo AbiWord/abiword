@@ -30,10 +30,6 @@
 #include "ev_Menu_Labels.h"
 #include "ev_EditEventMapper.h"
 
-
-#define DELETEP(p)		do { if (p) delete p; } while (0)
-#define NrElements(a)	((sizeof(a) / sizeof(a[0])))
-
 /*****************************************************************/
 
 static const char * _ev_GetLabelName(XAP_MacApp * pMacApp,

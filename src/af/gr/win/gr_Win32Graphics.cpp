@@ -27,9 +27,6 @@
 #include "ut_assert.h"
 #include "ut_Win32OS.h"
 
-#define DELETEP(p)	do { if (p) delete p; } while (0)
-#define FREEP(p)	do { if (p) free(p); } while (0)
-
 /*****************************************************************/
 
 void GR_Win32Graphics::_constructorCommonCode(HDC hdc)

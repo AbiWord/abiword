@@ -34,8 +34,6 @@
 #include "ap_LoadBindings.h"
 #include "ap_LB_DeadCircumflex.h"
 
-#define NrElements(a)	((sizeof(a)/sizeof(a[0])))
-
 #define _S		| EV_EMS_SHIFT
 #define _C		| EV_EMS_CONTROL
 #define _A		| EV_EMS_ALT

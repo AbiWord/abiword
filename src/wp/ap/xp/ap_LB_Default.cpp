@@ -37,8 +37,6 @@
 
 // NOTE: on Win32 we cannot get ALT-TAB (but we can get ALT-F4 :-)
 
-#define NrElements(a)	((sizeof(a)/sizeof(a[0])))
-
 #define _S		| EV_EMS_SHIFT
 #define _C		| EV_EMS_CONTROL
 #define _A		| EV_EMS_ALT

@@ -25,8 +25,6 @@
 #include "xap_Toolbar_Layouts.h"
 #include "ap_Toolbar_Id.h"
 
-#define NrElements(a)	((sizeof(a)/sizeof(a[0])))
-
 /*****************************************************************
 ******************************************************************
 ** Here we begin a little CPP magic to load the layout for each

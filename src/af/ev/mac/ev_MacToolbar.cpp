@@ -31,8 +31,6 @@
 #include "ev_MacTlbr_ViewListener.h"
 #include "xav_View.h"
 
-#define DELETEP(p)	do { if (p) delete p; } while (0)
-
 /*****************************************************************/
 
 EV_MacToolbar::EV_MacToolbar(XAP_MacApp * pMacApp, XAP_MacFrame * pMacFrame,

@@ -40,7 +40,6 @@
 #include "../../wp/impexp/xp/ie_imp.h"
 #include "../../wp/impexp/xp/ie_exp.h"
 
-#define FREEP(p)	do { if (p) free(p); (p)=NULL; } while (0)
 
 /*****************************************************************/
 AP_Dialog * XAP_UnixDialog_FileOpenSaveAs::static_constructor(AP_DialogFactory * pFactory,

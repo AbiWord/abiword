@@ -34,9 +34,6 @@
 #include "ap_Prefs.h"
 #include "fv_View.h"
 
-#define MyMax(a,b)		(((a)>(b)) ? (a) : (b))
-#define DELETEP(p)		do { if (p) delete p; p = NULL; } while (0)
-
 /*****************************************************************/
 
 AP_LeftRuler::AP_LeftRuler(XAP_Frame * pFrame)

@@ -35,10 +35,6 @@
 #include "config.h"
 #include "mswordview.h"
 
-#define NrElements(a)		(sizeof(a) / sizeof(a[0]))
-#define FREEP(p)	do { if (p) free(p); (p)=NULL; } while (0)
-#define DELETEP(p)	do { if (p) delete(p); (p)=NULL; } while (0)
-
 /*
   WARNING!  This file is a straight copy of the native (AbiWord_1)
   file import filter, with minor tweaks to call libmswordview

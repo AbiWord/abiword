@@ -48,8 +48,6 @@
 #include "xap_Dlg_Print.h"
 #include "xap_Dlg_WindowMore.h"
 
-#define FREEP(p)	do { if (p) free(p); (p)=NULL; } while (0)
-
 /*****************************************************************/
 /*****************************************************************/
 
@@ -501,7 +499,6 @@ static EV_EditMethod s_arrayEditMethods[] =
 #endif
 };
 
-#define NrElements(a)	((sizeof(a)/sizeof(a[0])))
 
 
 EV_EditMethodContainer * AP_GetEditMethods(void)
@@ -3264,7 +3261,7 @@ Defun1(dlgTabs)
 	return UT_TRUE;
 }
 
-Defun1(noop)
+Defun0(noop)
 {
 	// this is a no-op, so unbound menus don't assert at trade shows
 	return UT_TRUE;

@@ -27,8 +27,6 @@
 #include "ap_Toolbar_Id.h"
 #include "xap_Frame.h"
 
-#define FREEP(p)	do { if (p) free(p); (p)=NULL; } while (0)
-
 /*****************************************************************/
 
 EV_Toolbar_Control * AP_Win32Toolbar_FontCombo::static_constructor(EV_Toolbar * pToolbar,

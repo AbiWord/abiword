@@ -32,8 +32,6 @@
 #include "xap_UnixFontManager.h"
 #include "xap_UnixFontXLFD.h"
 
-#define DELETEP(p)	do { if (p) delete(p); (p)=NULL; } while (0)
-#define FREEP(p)	do { if (p) free(p); (p)=NULL; } while (0)
 
 // TODO get this from some higher-level place
 #define FONTS_DIR_FILE	"/fonts.dir"
@@ -278,7 +276,7 @@ XAP_UnixFont * XAP_UnixFontManager::getFont(const char * fontname,
 
 	UT_DEBUGMSG(("Found font [%p] in table.\n", entry));
 	
-	return (entry && entry->pData) ? ((XAP_UnixFont *) entry->pData) : (void *) NULL;
+	return (entry && entry->pData) ? ((XAP_UnixFont *) entry->pData) : NULL;
 }
 
 void XAP_UnixFontManager::_allocateThisFont(const char * line,

@@ -80,8 +80,6 @@ static struct _lt s_ltTable[] =
 	
 };
 
-#define NrElements(a)	((sizeof(a)/sizeof(a[0])))
-
 #undef BeginSet
 #undef ToolbarLabel
 #undef EndSet

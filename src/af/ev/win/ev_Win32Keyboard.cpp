@@ -724,8 +724,6 @@ const static EV_EditBits s_Table_NVK[] =
 	0					/*                   0xFF */
 };
 
-#define NrElements(a)	((sizeof(a) / sizeof(a[0])))
-
 static EV_EditBits s_mapVirtualKeyCodeToNVK(WPARAM nVirtKey)
 {
 	// map the given virtual key into a "named virtual key".

@@ -50,10 +50,6 @@
 #include "ap_TopRuler.h"
 #include "ap_LeftRuler.h"
 
-// TODO why do we define these multiply, in different files? --EWS
-#define DELETEP(p)	do { if (p) delete p; } while (0)
-#define FREEP(p)	do { if (p) free(p); } while (0)
-
 /****************************************************************/
 
 class _fmtPair

@@ -26,9 +26,6 @@
 #include "ut_string.h"
 #include "ev_Toolbar_Labels.h"
 
-#define FREEP(p)	do { if (p) free(p); } while (0)
-#define DELETEP(p)	do { if (p) delete(p); } while (0)
-
 /*****************************************************************/
 
 EV_Toolbar_Label::EV_Toolbar_Label(AP_Toolbar_Id id,

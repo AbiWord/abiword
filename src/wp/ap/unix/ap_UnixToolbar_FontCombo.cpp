@@ -36,7 +36,6 @@
 #include "ev_UnixToolbar.h"
 #include "ev_Toolbar.h"
 
-#define DELETEP(p)	do { if (p) delete p; } while (0)
 
 EV_Toolbar_Control * AP_UnixToolbar_FontCombo::static_constructor(EV_Toolbar * pToolbar,
 														  AP_Toolbar_Id id)

@@ -88,4 +88,16 @@ typedef		UT_sint32			UT_ErrorCode;
 #define UCS_NBSP			((UT_UCSChar)0x00a0)
 
 
+/*
+** Some useful macros that we use throughout
+*/
+
+#define FREEP(p)		do { if (p) free(p); (p)=NULL; } while (0)
+#define DELETEP(p)		do { if (p) delete(p); (p)=NULL; } while (0)
+#define CLONEP(p,q)	do { FREEP(p); if (q && *q) UT_cloneString(p,q); } while (0)
+
+#define NrElements(a)	((sizeof(a)/sizeof(a[0])))
+#define MyMax(a,b)		(((a)>(b)) ? (a) : (b))
+#define MyMin(a,b)		(((a)<(b)) ? (a) : (b))
+
 #endif /* UT_TYPES_H */

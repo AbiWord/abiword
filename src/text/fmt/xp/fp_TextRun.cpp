@@ -37,8 +37,6 @@
 #include "ut_growbuf.h"
 
 
-#define FREEP(p)	do { if (p) free(p); } while (0)
-
 /*****************************************************************/
 
 fp_TextRun::fp_TextRun(fl_BlockLayout* pBL,

@@ -28,9 +28,6 @@
 #include "xap_Win32_TB_CFactory.h"
 #include "xap_Win32Slurp.h"
 
-#define DELETEP(p)	do { if (p) delete p; p=NULL; } while (0)
-#define NrElements(a)		(sizeof(a) / sizeof(a[0]))
-
 /*****************************************************************/
 
 XAP_Win32App::XAP_Win32App(HINSTANCE hInstance, AP_Args * pArgs, const char * szAppName)

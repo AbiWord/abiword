@@ -37,8 +37,6 @@
 #include "xap_Unix_TB_CFactory.h"
 #include "xap_Prefs.h"
 
-#define DELETEP(p)	do { if (p) delete p; } while (0)
-
 /*****************************************************************/
 
 XAP_UnixApp::XAP_UnixApp(AP_Args * pArgs, const char * szAppName)

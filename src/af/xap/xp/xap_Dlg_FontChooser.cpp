@@ -24,10 +24,6 @@
 #include "ut_debugmsg.h"
 #include "xap_Dlg_FontChooser.h"
 
-#define FREEP(p)	do { if (p) free(p); (p) = NULL; } while (0)
-#define DELETEP(p)	do { if (p) delete(p); (p) = NULL; } while (0)
-#define CLONEP(p,q)	do { FREEP(p); if (q && *q) UT_cloneString(p,q); } while (0)
-
 /*****************************************************************/
 
 XAP_Dialog_FontChooser::XAP_Dialog_FontChooser(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id)

@@ -19,10 +19,6 @@
 
 #include "ap_Prefs.h"
 
-#define NrElements(a)		(sizeof(a) / sizeof(a[0]))
-#define FREEP(p)	do { if (p) free(p); (p)=NULL; } while (0)
-#define DELETEP(p)	do { if (p) delete(p); (p)=NULL; } while (0)
-
 /*****************************************************************/
 
 AP_Prefs::AP_Prefs(XAP_App * pApp)

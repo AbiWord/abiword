@@ -38,7 +38,6 @@
 #include "xmlparse.h"
 #include "xap_Prefs.h"
 
-#define DELETEP(p)	do { if (p) delete p; } while (0)
 
 /*****************************************************************/
 #define COMBO_BUF_LEN 256

@@ -26,9 +26,6 @@
 #include "ut_string.h"
 #include "ev_Menu_Labels.h"
 
-#define FREEP(p)	do { if (p) free(p); } while (0)
-#define DELETEP(p)	do { if (p) delete(p); } while (0)
-
 /*****************************************************************/
 
 EV_Menu_Label::EV_Menu_Label(AP_Menu_Id id,

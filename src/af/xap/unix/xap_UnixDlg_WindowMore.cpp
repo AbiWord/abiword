@@ -33,9 +33,6 @@
 #include "xap_Dlg_WindowMore.h"
 #include "xap_UnixDlg_WindowMore.h"
 
-#define FREEP(p)	do { if (p) free(p); (p)=NULL; } while (0)
-#define DELETEP(p)	do { if (p) delete p; } while (0)
-
 /*****************************************************************/
 
 AP_Dialog * XAP_UnixDialog_WindowMore::static_constructor(AP_DialogFactory * pFactory,

@@ -99,7 +99,6 @@ static const char * s_Table[] =
 	// TODO as other items are added to ev_NamedVirtualKey, add items here.
 };
 
-#define NrElements(a)	((sizeof(a))/(sizeof(a[0])))
 
 const char * EV_NamedVirtualKey::getName(EV_EditBits eb)
 {

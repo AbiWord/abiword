@@ -28,10 +28,6 @@
 #include "pd_Document.h"
 #include "ut_bytebuf.h"
 
-#define NrElements(a)		(sizeof(a) / sizeof(a[0]))
-#define FREEP(p)	do { if (p) free(p); (p)=NULL; } while (0)
-#define DELETEP(p)	do { if (p) delete(p); (p)=NULL; } while (0)
-
 ///////////////////////////////////////////////////////////////////
 // TODO Move this UT_ function to src/util/xp
 ///////////////////////////////////////////////////////////////////

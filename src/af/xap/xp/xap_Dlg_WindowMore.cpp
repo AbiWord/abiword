@@ -31,8 +31,6 @@
 #include "xap_DialogFactory.h"
 #include "xap_Dlg_MessageBox.h"
 
-#define FREEP(p)	do { if (p) free(p); (p)=NULL; } while (0)
-#define DELETEP(p)	do { if (p) delete(p); (p)=NULL; } while (0)
 
 XAP_Dialog_WindowMore::XAP_Dialog_WindowMore(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id)
 	: AP_Dialog_NonPersistent(pDlgFactory,id)

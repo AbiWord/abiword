@@ -25,8 +25,6 @@
 
 #include "xap_UnixPSFont.h"
 
-#define NrElements(a)		((sizeof(a)/sizeof(a[0])))
-
 /*
   This class is much like the UnixGraphics class in
   abi/src/wp/gr/unix/gr_UnixGraphics.h.  Why?  Because it's

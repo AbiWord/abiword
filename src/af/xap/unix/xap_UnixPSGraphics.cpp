@@ -622,7 +622,6 @@ void PS_Graphics::_emit_IncludeResource(void)
 	// TODO add any other IncludeResource's here
 }
 
-#define NrElements(a)	(sizeof(a)/sizeof(a[0]))
 
 void PS_Graphics::_emit_PrologMacros(void)
 {

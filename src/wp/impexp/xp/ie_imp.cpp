@@ -52,7 +52,6 @@ static struct _imp s_impTable[] =
 	DeclareImporter(IE_Imp_MsWord_97),
 };
 
-#define NrElements(a)		(sizeof(a) / sizeof(a[0]))
 		
 /*****************************************************************/
 /*****************************************************************/

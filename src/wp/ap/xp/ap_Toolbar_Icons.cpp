@@ -21,8 +21,6 @@
 #include "ut_string.h"
 #include "xap_Toolbar_Icons.h"
 
-#define NrElements(a)	((sizeof(a)/sizeof(a[0])))
-
 /*****************************************************************
 ******************************************************************
 ** Here we begin a little CPP magic to load all of the icons.

@@ -38,9 +38,6 @@
 #include "xap_Menu_ActionSet.h"
 #include "xap_Toolbar_ActionSet.h"
 #include "xap_LoadBindings.h"
-//#include "ap_LoadBindings.h"			// TODO move this out into app-specific code
-
-#define DELETEP(p)	do { if (p) delete p; } while (0)
 
 /*****************************************************************/
 

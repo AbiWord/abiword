@@ -35,9 +35,6 @@
 
 #include "abisource.xpm"
 
-#define FREEP(p)	do { if (p) free(p); (p)=NULL; } while (0)
-#define DELETEP(p)	do { if (p) delete p; } while (0)
-
 
 /*****************************************************************/
 AP_Dialog * XAP_MacDialog_About::static_constructor(AP_DialogFactory * pFactory,

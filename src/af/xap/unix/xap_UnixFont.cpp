@@ -31,8 +31,6 @@
 #include "xap_UnixFont.h"
 #include "xap_UnixFontXLFD.h"
 
-#define DELETEP(p)	do { if (p) delete(p); (p)=NULL; } while (0)
-#define FREEP(p)	do { if (p) free(p); (p)=NULL; } while (0)
 
 #define ASSERT_MEMBERS	do { UT_ASSERT(m_name); UT_ASSERT(m_fontfile); UT_ASSERT(m_metricfile); } while (0)
 

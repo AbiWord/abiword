@@ -41,9 +41,6 @@
 #include "xad_Document.h"
 #include "xap_Scrollbar_ViewListener.h"
 
-#define DELETEP(p)	do { if (p) delete (p); (p)=NULL; } while (0)
-#define FREEP(p)	do { if (p) free((void*)(p)); (p)=NULL; } while (0)
-
 /*****************************************************************/
 
 XAP_Frame::XAP_Frame(XAP_App * app)

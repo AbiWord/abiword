@@ -30,8 +30,6 @@
 #include "pd_Document.h"
 #include "pd_Style.h"
 
-#define NrElements(a)		(sizeof(a) / sizeof(a[0]))
-
 /*****************************************************************/
 
 /*

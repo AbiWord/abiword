@@ -31,8 +31,6 @@
 #include "xap_Win32App.h"
 #include "xap_Win32Slurp.h"
 
-#define FREEP(p)	do { if (p) free(p); (p)=NULL; } while (0)
-#define NrElements(a)		(sizeof(a) / sizeof(a[0]))
 
 //////////////////////////////////////////////////////////////////
 // "Slurp" (aka "Leach") refers to the ability of an application
