@@ -373,48 +373,49 @@ void GR_CocoaGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	}
 	else {
 		LOCK_CONTEXT__;
-		int i;
-		bool bSetAttributes = false;
-		unichar *cBuf = (unichar*)malloc((iLength + 1) * sizeof(unichar));
-		const UT_UCSChar* begin = pChars + iCharOffset;
-		const UT_UCSChar* end;
-		UT_sint32 currentRunLen = 0;
-		for (i = 0; i <= iLength; i++) {
-			end =  pChars + iCharOffset + i;
-			unichar c2 = *end;
-			if ((c2 == ' ') || (c2 == '\t') || (i == iLength)) {
-				const UT_UCSChar* current = begin;
-				unichar* stuff = cBuf;
-				int len = 0;
-				while (current != end) {
-					*stuff =  *current;
-					current++;
-					stuff++;
-					len++;
-				}
-				*stuff = 0;
-				string =  [[NSString alloc] initWithCharacters:cBuf length:len];
-				NSAttributedString* attributedString = [[NSAttributedString alloc] initWithString:string attributes:m_fontProps];
-				[m_fontMetricsTextStorage setAttributedString:attributedString];
-				bSetAttributes = true;
-				[attributedString release];
-				[string release];
-		
-				NSPoint point = NSMakePoint (TDUX(xoff), yoff);
-		
-				[m_fontMetricsLayoutManager drawGlyphsForGlyphRange:NSMakeRange(0, len) atPoint:point];
-				xoff += currentRunLen;	
-				if (i < iLength - 1) {
-					xoff += pCharWidths[iCharOffset+i];
-				}
-				currentRunLen = 0;	
-				begin =  end + 1;
-			}
-			else if (i < iLength - 1) {
-				currentRunLen += pCharWidths[iCharOffset+i];
-			}
+
+		const UT_UCSChar * begin = pChars + iCharOffset;
+		const UT_UCSChar * end = begin + iLength;
+
+		int * endWidth = pCharWidths + iCharOffset + iLength;
+
+		UT_sint32 widthWhiteSpace = 0;
+
+		while (end > begin) {
+			if (!UT_UCS4_isspace(*(end - 1)))
+				break;
+			--end;
+			widthWhiteSpace += *--endWidth;
 		}
-		FREEP(cBuf);
+		iLength = end - begin;
+
+		if (iLength)
+			if (unichar * cBuf = (unichar *) malloc((iLength + 1) * sizeof(unichar))) {
+				bool rtl = false;
+				for (int i = 0; i < iLength; i++) {
+					if (UT_BIDI_IS_RTL(UT_bidiGetCharType(begin[i]))) {
+						rtl = true;
+					}
+					cBuf[i] = (unichar) begin[i];
+				}
+				if (rtl) {
+					xoff += widthWhiteSpace;
+				}
+				cBuf[iLength] = 0;
+
+				if (string = [[NSString alloc] initWithCharacters:cBuf length:iLength]) {
+					if (NSAttributedString * attributedString = [[NSAttributedString alloc] initWithString:string attributes:m_fontProps]) {
+						[m_fontMetricsTextStorage setAttributedString:attributedString];
+						[attributedString release];
+					}
+					[string release];
+
+					NSPoint point = NSMakePoint(TDUX(xoff), yoff);
+		
+					[m_fontMetricsLayoutManager drawGlyphsForGlyphRange:NSMakeRange(0,iLength) atPoint:point];
+				}
+				free(cBuf);
+			}
 	}
 	::CGContextSetShouldAntialias (m_CGContext, false);
 }
