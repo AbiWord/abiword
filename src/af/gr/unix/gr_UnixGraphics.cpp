@@ -471,7 +471,23 @@ void UNIXGraphics::clearArea(UT_sint32 x, UT_sint32 y,
 //	UT_DEBUGMSG(("ClearArea: %d %d %d %d\n", x, y, width, height));
 	if (width > 0)
 	{
+#define TURBOSLOW	0
+
+#if TURBOSLOW
+		gdk_flush();
+		usleep(TURBOSLOW);
+		
+		UT_RGBColor clr(255,0,0);
+		fillRect(clr, x, y, width, height);
+		gdk_flush();
+		usleep(TURBOSLOW);
+#endif
+		
 		gdk_window_clear_area(m_pWin, x, y, width, height);
+#if TURBOSLOW		
+		gdk_flush();
+		usleep(TURBOSLOW);
+#endif		
 	}
 }
 

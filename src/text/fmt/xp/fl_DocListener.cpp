@@ -345,6 +345,8 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 						pBL->minor_reformat();
 					}
 
+					pBL->fixColumns();
+					
 					// in case anything else moved
 					m_pLayout->reformat();
 
@@ -430,6 +432,8 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 
 					pBL->minor_reformat();
 
+					pBL->fixColumns();
+					
 					// in case anything else moved
 					m_pLayout->reformat();
 
@@ -525,6 +529,8 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 						// TODO remove the draw call below when the call above becomes minor_reformat()
 						pBL->draw(m_pLayout->getGraphics());
 
+						pBL->fixColumns();
+						
 						// in case anything else moved
 						m_pLayout->reformat();
 
@@ -715,6 +721,8 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 							pPrevBL->complete_format();
 							pPrevBL->draw(m_pLayout->getGraphics());
 
+							pPrevBL->fixColumns();
+							
 							// in case anything else moved
 							m_pLayout->reformat();
 
@@ -780,6 +788,8 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 					pBL->complete_format();
 					pBL->draw(m_pLayout->getGraphics());
 
+					pBL->fixColumns();
+					
 					// in case anything else moved
 					m_pLayout->reformat();
 
@@ -896,12 +906,15 @@ UT_Bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 
 						// last line of old block is dirty
 						pRun->m_pLine->clearScreen();
-						pRun->m_pLine->m_bDirty = UT_TRUE;
+						pRun->m_pLine->align();
+						// we redraw the line below
 
 						// break run sequence
 						pRun->m_pNext = NULL;
 						if (pFirstNewRun)
+						{
 							pFirstNewRun->m_pPrev = NULL;
+						}
 					}
 					else if (blockOffset == 0)
 					{
@@ -935,14 +948,22 @@ UT_Bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 					}
 
 					// update the display
+
+#if 0
 					// TODO just call align on this block, right?
 					pBL->minor_reformat();
 					pBL->draw(m_pLayout->getGraphics());
+#endif
+					pBL->getLastLine()->draw(m_pLayout->getGraphics());
 
 					// Note that in the case below, we really DO need to call complete_format().
 					pNewBL->complete_format();
-					pNewBL->draw(m_pLayout->getGraphics());
 
+					pBL->fixColumns();
+					pNewBL->fixColumns();
+
+					pNewBL->draw(m_pLayout->getGraphics());
+					
 					// in case anything else moved
 					m_pLayout->reformat();
 

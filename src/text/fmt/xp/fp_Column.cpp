@@ -173,7 +173,7 @@ void fp_Column::removeBlockSlice(fp_BlockSlice* p)
 
 	delete pNode;
 
-	_repositionSlices();
+	_setNeedsReposition(UT_TRUE);
 }
 
 int fp_Column::insertBlockSliceAfter(fp_BlockSlice*	pBS, fp_BlockSlice*	pAfter, int iLineHeight)
@@ -253,7 +253,8 @@ int fp_Column::insertBlockSliceAfter(fp_BlockSlice*	pBS, fp_BlockSlice*	pAfter, 
 	
 	if (pNewNode->pNext)
 	{
-		return _repositionSlices();
+		_setNeedsReposition(UT_TRUE);
+		return 0;
 	}
 	else
 	{
@@ -347,13 +348,24 @@ void fp_Column::reportSliceHeightChanged(fp_BlockSlice* pBS, UT_uint32 /*iNewHei
 	{
 		UT_ASSERT(m_pG->queryProperties(DG_Graphics::DGP_SCREEN));
 
-		// TODO perhaps we should _repositionSlices ONCE after all edits to a paragraph
-		// are done, rather than doing it so often?
-		_repositionSlices();
+		_setNeedsReposition(UT_TRUE);
 	}
 	else
 	{
 		// TODO do we need to do anything here, really?
+	}
+}
+
+void fp_Column::_setNeedsReposition(UT_Bool b)
+{
+	m_bNeedsReposition = b;
+}
+
+void fp_Column::updateSlicePositions(void)
+{
+	if (m_bNeedsReposition)
+	{
+		_repositionSlices();
 	}
 }
 
@@ -363,117 +375,160 @@ int fp_Column::_repositionSlices()
 
 	UT_uint32 iBottom = _getBottomOfLastSlice();
 	
+	fp_BlockSliceInfo* pListNode;
+	
 	/*
 	  This method is called whenever some slice has changed size,
 	  or the number of slices has changed.  The result is that all
 	  of the slices in the column now need to be verified to make
 	  sure that everything is where we want it to be.
 	*/
-	fp_BlockSliceInfo* pListNode = m_pFirstSlice;
+
+	/*
+	  First, we check to see if any slices need to be moved.  If so,
+	  then we clearScreen on all the slices below it.
+	*/
+	UT_Bool bFoundFirst = UT_FALSE;
+	pListNode = m_pFirstSlice;
 	while (pListNode)
 	{
-		/*
-		  First we calculate where this slice SHOULD be.
-		*/
-		UT_uint32 iCalcOffset = _calcSliceOffset(pListNode, 0);
-
-		/*
-		  If the slice's current position is different from where
-		  it should be, then we'll have to move it.
-		*/
-		if (pListNode->yoff != iCalcOffset)
+		if (bFoundFirst)
+		{
+			pListNode->pSlice->clearScreen(m_pG);
+		}
+		else
 		{
 			/*
-			  If the slice is moving, we first need to erase it.
+			  First we calculate where this slice SHOULD be.
 			*/
-			pListNode->pSlice->clearScreen(m_pG);
+			UT_uint32 iCalcOffset = _calcSliceOffset(pListNode, 0);
 
 			/*
-			  If the slice is moving upward, and if it is the last
-			  slice in the column, and if it is NOT the last slice in
-			  its block, then we'll need to reformat this slice's
-			  block, since there may be more room now.
+			  If the slice's current position is different from where
+			  it should be, then we'll have to move it.
 			*/
-			if ((pListNode->yoff > iCalcOffset) && (!(pListNode->pNext)) && (!(pListNode->pSlice->isLastSliceInBlock())))
+			if (pListNode->yoff != iCalcOffset)
 			{
-				pListNode->pSlice->getBlock()->setNeedsCompleteReformat(UT_TRUE);
-			}
-
-			/*
-			  Now, we actually move the slice.
-			*/
-			pListNode->yoff = iCalcOffset;
-			UT_uint32 yCur = iCalcOffset;
-
-			/*
-			  We now need to see if the slice fits at its new location.
-			  We'll be checking every sliver in the slice to be sure
-			  that the column is wide enough at that point to accomodate
-			  the sliver.  This code isn't really necessary for rectangular
-			  columns.
-
-			  First of all, however, we check:  If the block for this slice
-			  already needs a reformat, there is no need to proceed.
-			*/
-			if (!pListNode->pSlice->getBlock()->needsCompleteReformat())
-			{
-				UT_Bool bFits = UT_TRUE;
-				int countSlivers = pListNode->pSlice->countSlivers();
-				for (int i=0; i<countSlivers; i++)
-				{
-					fp_Sliver* pSliver = pListNode->pSlice->getNthSliver(i);
-				
-					UT_uint32 iX;
-					UT_uint32 wid = _getSliverWidth(yCur, pSliver->iHeight, &iX);
-					// TODO shouldn't we also check the iX?
-					if (wid < pSliver->iWidth)
-					{
-						UT_DEBUGMSG(("_repositionSlices:  found a sliver which no longer fits in the column.\n"));
-					
-						// this sliver no longer fits!!
-						bFits = UT_FALSE;
-						pListNode->pSlice->getBlock()->setNeedsCompleteReformat(UT_TRUE);
-						break;
-					}
-				}
-			}
-
-			/*
-			  Finally, if we get through all the checks above and
-			  the block does NOT need a reformat, we assume that
-			  simply moving it was okay, and nothing more needs
-			  to be done.  However, we erased it earlier, so we
-			  now need to redraw it.
-			*/
-			if (!pListNode->pSlice->getBlock()->needsCompleteReformat())
-			{
-				pListNode->pSlice->draw(m_pG);
+				bFoundFirst = UT_TRUE;
+				pListNode->pSlice->clearScreen(m_pG);
 			}
 		}
-
+		
 		pListNode = pListNode->pNext;
 	}
 
-	if (_getBottomOfLastSlice() < iBottom)
+	if (bFoundFirst)
 	{
-		/*
-		  TODO what we really want to force here is that the block
-		  needs to look and see if it can start in the previous
-		  column.  We're currently setting needsCompleteReformat
-		  to accomplish that purpose.
-		*/
-
-		fp_Column* pNextColumn = getNext();
-		if (pNextColumn)
+		pListNode = m_pFirstSlice;
+		while (pListNode)
 		{
-			fp_BlockSliceInfo* pBSI = pNextColumn->m_pFirstSlice;
-			if (pBSI->pSlice->isFirstSliceInBlock())
+			/*
+			  First we calculate where this slice SHOULD be.
+			*/
+			UT_uint32 iCalcOffset = _calcSliceOffset(pListNode, 0);
+
+			/*
+			  If the slice's current position is different from where
+			  it should be, then we'll have to move it.
+			*/
+			if (pListNode->yoff != iCalcOffset)
 			{
-				pBSI->pSlice->getBlock()->setNeedsCompleteReformat(UT_TRUE);
+#if 0
+				/*
+				  If the slice is moving, we first need to erase it.
+				*/
+				pListNode->pSlice->clearScreen(m_pG);
+#endif				
+
+				/*
+				  If the slice is moving upward, and if it is the last
+				  slice in the column, and if it is NOT the last slice in
+				  its block, then we'll need to reformat this slice's
+				  block, since there may be more room now.
+				*/
+				if ((pListNode->yoff > iCalcOffset) && (!(pListNode->pNext)) && (!(pListNode->pSlice->isLastSliceInBlock())))
+				{
+					pListNode->pSlice->getBlock()->setNeedsCompleteReformat(UT_TRUE);
+				}
+
+				/*
+				  Now, we actually move the slice.
+				*/
+				pListNode->yoff = iCalcOffset;
+				UT_uint32 yCur = iCalcOffset;
+
+				/*
+				  We now need to see if the slice fits at its new location.
+				  We'll be checking every sliver in the slice to be sure
+				  that the column is wide enough at that point to accomodate
+				  the sliver.  This code isn't really necessary for rectangular
+				  columns.
+
+				  First of all, however, we check:  If the block for this slice
+				  already needs a reformat, there is no need to proceed.
+				*/
+				if (!pListNode->pSlice->getBlock()->needsCompleteReformat())
+				{
+					UT_Bool bFits = UT_TRUE;
+					int countSlivers = pListNode->pSlice->countSlivers();
+					for (int i=0; i<countSlivers; i++)
+					{
+						fp_Sliver* pSliver = pListNode->pSlice->getNthSliver(i);
+				
+						UT_uint32 iX;
+						UT_uint32 wid = _getSliverWidth(yCur, pSliver->iHeight, &iX);
+						// TODO shouldn't we also check the iX?
+						if (wid < pSliver->iWidth)
+						{
+							UT_DEBUGMSG(("_repositionSlices:  found a sliver which no longer fits in the column.\n"));
+					
+							// this sliver no longer fits!!
+							bFits = UT_FALSE;
+							pListNode->pSlice->getBlock()->setNeedsCompleteReformat(UT_TRUE);
+							break;
+						}
+					}
+				}
+
+				/*
+				  Finally, if we get through all the checks above and
+				  the block does NOT need a reformat, we assume that
+				  simply moving it was okay, and nothing more needs
+				  to be done.  However, we erased it earlier, so we
+				  now need to redraw it.
+				*/
+				if (!pListNode->pSlice->getBlock()->needsCompleteReformat())
+				{
+					pListNode->pSlice->draw(m_pG);
+				}
+			}
+
+			pListNode = pListNode->pNext;
+		}
+
+		if (_getBottomOfLastSlice() < iBottom)
+		{
+			/*
+			  TODO what we really want to force here is that the block
+			  needs to look and see if it can start in the previous
+			  column.  We're currently setting needsCompleteReformat
+			  to accomplish that purpose.
+			*/
+
+			fp_Column* pNextColumn = getNext();
+			if (pNextColumn)
+			{
+				fp_BlockSliceInfo* pBSI = pNextColumn->m_pFirstSlice;
+				if (pBSI->pSlice->isFirstSliceInBlock())
+				{
+					pBSI->pSlice->getBlock()->setNeedsCompleteReformat(UT_TRUE);
+				}
 			}
 		}
 	}
 
+	_setNeedsReposition(UT_FALSE);
+	
 	return 0;
 }
 

@@ -207,6 +207,18 @@ void fl_BlockLayout::_addSlice(fp_BlockSlice* p)
 	m_pCurrentSlice = p;
 }
 
+void fl_BlockLayout::fixColumns(void)
+{
+	int countSlices = m_vecSlices.getItemCount();
+	for (int i=0; i<countSlices; i++)
+	{
+		fp_BlockSlice* pSlice = (fp_BlockSlice*) m_vecSlices.getNthItem(i);
+		UT_ASSERT(pSlice && pSlice->getColumn());
+
+		pSlice->getColumn()->updateSlicePositions();
+	}
+}
+
 void fl_BlockLayout::draw(DG_Graphics* pG)
 {
 	int countSlices = m_vecSlices.getItemCount();

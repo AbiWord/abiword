@@ -112,6 +112,9 @@ public:
 
 	int complete_format();
 	int minor_reformat();
+
+	void fixColumns(void);
+	
 	int	requestLineSpace(int iHeight);
 	int	addLine(fp_Line*);
 

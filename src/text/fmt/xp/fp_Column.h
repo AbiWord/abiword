@@ -93,6 +93,7 @@ public:
 									  UT_uint32* pHeight);
 	UT_Bool				verifySliverFit(fp_BlockSlice* pBS, fp_Sliver* pSliver, UT_sint32 iY);
 	void 				reportSliceHeightChanged(fp_BlockSlice* pBS, UT_uint32 iNewHeight);
+	void				updateSlicePositions(void);
 
 	virtual UT_uint32 	getTopOffset(UT_uint32 iLineHeight) = 0;
 	virtual UT_Bool 	containsPoint(UT_sint32 x, UT_sint32 y) = 0;
@@ -109,9 +110,11 @@ protected:
 	UT_uint32 				_getBottomOfLastSlice(void) const;
 	virtual UT_uint32 		_getSliverWidth(UT_uint32 iY, UT_uint32 iHeight, UT_uint32* pX) = 0;	
 	fp_BlockSliceInfo*		_findSlice(fp_BlockSlice* p);
+	void					_setNeedsReposition(UT_Bool);
 	int 					_repositionSlices();
 	UT_uint32				_calcSliceOffset(fp_BlockSliceInfo*, UT_uint32);
 
+	UT_Bool					m_bNeedsReposition;
 	fp_SectionSlice*		m_pSectionSlice;
 	void*					m_pSectionSliceData;
 	
