@@ -127,8 +127,13 @@ BeginSet(en,US,UT_TRUE)
 	MenuLabel(AP_MENU_ID_WINDOW_9,			"&9 %s",			"Raise this window")
 	MenuLabel(AP_MENU_ID_WINDOW_MORE,		"&More Windows",	"Show full list of windows")
 
-	MenuLabel(AP_MENU_ID_HELP,				"&Help",			NULL)
-	MenuLabel(AP_MENU_ID_HELP_ABOUT,		"&About %s",		"Display program information, version number, and copyright")
+	MenuLabel(AP_MENU_ID_HELP,			"&Help",		NULL)
+	MenuLabel(AP_MENU_ID_HELP_CONTENTS,		"Help &Contents",	"Display Help Contents")
+	MenuLabel(AP_MENU_ID_HELP_INDEX,		"Help &Index",		"Display Help Index")
+	MenuLabel(AP_MENU_ID_HELP_CHECKVER,		"Check &Version",	"Display program version number")
+	MenuLabel(AP_MENU_ID_HELP_SEARCH,		"&Search for Help",	"Display program information, version number, and copyright")
+	MenuLabel(AP_MENU_ID_HELP_ABOUT,		"&About %s",		"Display program information, version number, and copyright") 
+	MenuLabel(AP_MENU_ID_HELP_ABOUTOS,		"About &Open Source",	"Display information about Open Source")
 
 	MenuLabel(AP_MENU_ID_SPELL_SUGGEST_1,	"%s",				"Change to this suggested spelling")
 	MenuLabel(AP_MENU_ID_SPELL_SUGGEST_2,	"%s",				"Change to this suggested spelling")
@@ -143,6 +148,7 @@ BeginSet(en,US,UT_TRUE)
 	MenuLabel(AP_MENU_ID_SPELL_ADD,			"&Add", 			"Add this word to the custom dictionary")
 
 	// ... add others here ...
+
 	MenuLabel(AP_MENU_ID__BOGUS2__,			NULL,				NULL)
 
 EndSet()

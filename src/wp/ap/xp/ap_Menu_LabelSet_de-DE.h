@@ -129,7 +129,14 @@ BeginSet(de,DE,UT_TRUE)
 	MenuLabel(AP_MENU_ID_WINDOW_MORE,		"&Mehr Fenster",        	"Liste aller Fenster zeigen")
 
 	MenuLabel(AP_MENU_ID_HELP,				"&Hilfe",		NULL)
-	MenuLabel(AP_MENU_ID_HELP_ABOUT,		"&Über %s",	        	"Programminformation, Verion und Copyright anzeigen")
+	MenuLabel(AP_MENU_ID_HELP_CONTENTS,		"&Inhalt",	"Inhalt der Hilfe anzeigen (lokal)")
+	MenuLabel(AP_MENU_ID_HELP_INDEX,		"&Benutzerhandbuch",		"Benutzerhandbuch anzeigen (lokal)")
+	MenuLabel(AP_MENU_ID_HELP_CHECKVER,		"&Version",	"Versionsnummer anzeigen (WWW)")
+	MenuLabel(AP_MENU_ID_HELP_SEARCH,		"In der Hilfe &suchen",	"Aufrufen der Suchseite (WWW)")
+	MenuLabel(AP_MENU_ID_HELP_ABOUT,		"&Über %s",	        	"Programminformation, Version und Copyright anzeigen")
+	MenuLabel(AP_MENU_ID_HELP_ABOUTOS,		"Über &Open Source",	"Informationen über Open Source anzeigen (lokal)")
+
+
 
 	MenuLabel(AP_MENU_ID_SPELL_SUGGEST_1,	"%s",				"Ändere in diesen Vorschlag")
 	MenuLabel(AP_MENU_ID_SPELL_SUGGEST_2,	"%s",				"Ändere in diesen Vorschlag")

@@ -32,7 +32,7 @@ public:
 	char* addString(const char*);
 
 protected:
-	int	addBucket();
+	int	addBucket(int);
 
 	struct UT_PoolBucket
 	{

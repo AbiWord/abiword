@@ -100,6 +100,115 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_About)
 	return NULL;
 }
 
+Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Contents)
+{
+	// Compute the menu label for the _help_contents item.
+	
+	UT_ASSERT(pFrame);
+	XAP_App * pApp = pFrame->getApp();
+	UT_ASSERT(pApp);
+	UT_ASSERT(pLabel);
+
+	UT_ASSERT(id == AP_MENU_ID_HELP_CONTENTS);
+	
+	const char * szFormat = pLabel->getMenuLabel();
+	static char buf[128];
+
+	const char * szAppName = pApp->getApplicationName();
+
+	sprintf(buf,szFormat,szAppName);	
+	return buf;
+
+	return NULL;
+}
+
+Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Index)
+{
+	// Compute the menu label for the _help_index item.
+	
+	UT_ASSERT(pFrame);
+	XAP_App * pApp = pFrame->getApp();
+	UT_ASSERT(pApp);
+	UT_ASSERT(pLabel);
+
+	UT_ASSERT(id == AP_MENU_ID_HELP_INDEX);
+	
+	const char * szFormat = pLabel->getMenuLabel();
+	static char buf[128];
+
+	const char * szAppName = pApp->getApplicationName();
+
+	sprintf(buf,szFormat,szAppName);	
+	return buf;
+
+	return NULL;
+}
+
+Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Search)
+{
+	// Compute the menu label for the _help_search item.
+	
+	UT_ASSERT(pFrame);
+	XAP_App * pApp = pFrame->getApp();
+	UT_ASSERT(pApp);
+	UT_ASSERT(pLabel);
+
+	UT_ASSERT(id == AP_MENU_ID_HELP_SEARCH);
+	
+	const char * szFormat = pLabel->getMenuLabel();
+	static char buf[128];
+
+	const char * szAppName = pApp->getApplicationName();
+
+	sprintf(buf,szFormat,szAppName);	
+	return buf;
+
+	return NULL;
+}
+
+Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_AboutOS)
+{
+	// Compute the menu label for the about OS help item.
+	
+	UT_ASSERT(pFrame);
+	XAP_App * pApp = pFrame->getApp();
+	UT_ASSERT(pApp);
+	UT_ASSERT(pLabel);
+
+	UT_ASSERT(id == AP_MENU_ID_HELP_ABOUTOS);
+	
+	const char * szFormat = pLabel->getMenuLabel();
+	static char buf[128];
+
+	const char * szAppName = pApp->getApplicationName();
+
+	sprintf(buf,szFormat,szAppName);	
+	return buf;
+
+	return NULL;
+}
+
+Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Checkver)
+{
+	// Compute the menu label for the about the check version item.
+	
+	UT_ASSERT(pFrame);
+	XAP_App * pApp = pFrame->getApp();
+	UT_ASSERT(pApp);
+	UT_ASSERT(pLabel);
+
+	UT_ASSERT(id == AP_MENU_ID_HELP_CHECKVER);
+	
+	const char * szFormat = pLabel->getMenuLabel();
+	static char buf[128];
+
+	const char * szAppName = pApp->getApplicationName();
+
+	sprintf(buf,szFormat,szAppName);	
+	return buf;
+
+	return NULL;
+}
 /*****************************************************************/
 /*****************************************************************/
 

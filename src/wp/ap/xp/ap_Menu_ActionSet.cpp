@@ -156,7 +156,12 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_WINDOW_MORE,		0,1,0,	"dlgMoreWindows",	NULL,					ap_GetLabel_WindowMore);
 	
 	_s(AP_MENU_ID_HELP,				1,0,0,	NULL,				NULL,					NULL);
+	_s(AP_MENU_ID_HELP_CONTENTS,		0,0,0,	"helpContents",			NULL,					ap_GetLabel_Contents);
+	_s(AP_MENU_ID_HELP_INDEX,		0,0,0,	"helpIndex",			NULL,					ap_GetLabel_Index);
+	_s(AP_MENU_ID_HELP_CHECKVER,		0,0,0,	"helpCheckVer",			NULL,					ap_GetLabel_Checkver);
+	_s(AP_MENU_ID_HELP_SEARCH,		0,0,0,	"helpSearch",			NULL,					ap_GetLabel_Search);
 	_s(AP_MENU_ID_HELP_ABOUT,		0,1,0,	"dlgAbout",			NULL,					ap_GetLabel_About);
+	_s(AP_MENU_ID_HELP_ABOUTOS,		0,0,0,	"helpAboutOS",			NULL,					ap_GetLabel_AboutOS);
 
 	_s(AP_MENU_ID_SPELL_SUGGEST_1,	0,0,0,	"spellSuggest_1",	ap_GetState_Suggest,	ap_GetLabel_Suggest);
 	_s(AP_MENU_ID_SPELL_SUGGEST_2,	0,0,0,	"spellSuggest_2",	ap_GetState_Suggest,	ap_GetLabel_Suggest);

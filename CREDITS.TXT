@@ -71,6 +71,7 @@ Andy Richardson <andy@promethium.chem.ucl.ac.uk>	PostScript image handling
 Duncan Rose <d.rose@salford.ac.uk>
 Bernhard Rosenkraenzer <bero@redhat.de>         gcc 2.96 lint, IA64
 Pierre Sarrazin <ps@cam.org>
+David Schmitter <dls@globalinitiative.org> 	Online Help
 Dan Schreiber <dan@abisource.com>
 Martin Sevior <msevior@physics.unimelb.edu.au>  Symbol dialog, Overline, cursor motion fixes
 Jeremy Sheeley <jeremy@sourcegear.com>

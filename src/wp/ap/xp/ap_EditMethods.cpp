@@ -311,6 +311,11 @@ public:
 	static EV_EditMethod_Fn dlgMoreWindows;
 
 	static EV_EditMethod_Fn dlgAbout;
+	static EV_EditMethod_Fn helpContents;
+	static EV_EditMethod_Fn helpIndex;
+	static EV_EditMethod_Fn helpSearch;
+	static EV_EditMethod_Fn helpCheckVer;
+	static EV_EditMethod_Fn helpAboutOS;
 
 	static EV_EditMethod_Fn newWindow;
 	static EV_EditMethod_Fn cycleWindows;
@@ -592,6 +597,11 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(dlgMoreWindows),		0,		""),
 	
 	EV_EditMethod(NF(dlgAbout),				0,		""),
+	EV_EditMethod(NF(helpContents),				0,		""),
+	EV_EditMethod(NF(helpIndex),				0,		""),
+	EV_EditMethod(NF(helpSearch),				0,		""),
+	EV_EditMethod(NF(helpCheckVer),				0,		""),
+	EV_EditMethod(NF(helpAboutOS),				0,		""),
 
 	EV_EditMethod(NF(newWindow),			0,	""),
 	EV_EditMethod(NF(cycleWindows),			0,	""),
@@ -1541,6 +1551,68 @@ Defun1(dlgAbout)
 	s_doAboutDlg(pFrame, XAP_DIALOG_ID_ABOUT);
 
 	return UT_TRUE;
+}
+
+UT_Bool _helpOpenURL(AV_View* pAV_View, const char* helpURL)
+{
+ 	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	UT_ASSERT(pFrame);
+	pFrame->openURL(helpURL);
+	return UT_TRUE;
+}
+
+UT_Bool _helpLocalizeAndOpenURL(AV_View* pAV_View, UT_Bool bLocal, const char* pathBeforeLang, const char* pathAfterLang)
+{
+ 	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	UT_ASSERT(pFrame);
+	XAP_App * pApp = pFrame->getApp();
+	UT_ASSERT(pApp);
+	XAP_Prefs * pPrefs = pApp->getPrefs();
+	UT_ASSERT(pPrefs);
+
+	const char * abiSuiteLibDir = pApp->getAbiSuiteLibDir();
+	const XML_Char * abiSuiteLocString = NULL;
+	char * helpURL = (char *)malloc(512);
+	pPrefs->getPrefsValue(AP_PREF_KEY_StringSet, &abiSuiteLocString);
+	if (bLocal)
+	{
+		UT_ASSERT(strlen(abiSuiteLibDir) + strlen(pathBeforeLang) + strlen(abiSuiteLocString) + strlen(pathAfterLang) < 509);
+		helpURL = UT_catPathname(UT_catPathname(UT_catPathname(abiSuiteLibDir, pathBeforeLang), abiSuiteLocString), pathAfterLang);
+	}
+	else
+	{
+		UT_ASSERT(strlen(pathBeforeLang) + strlen(abiSuiteLocString) + strlen(pathAfterLang) < 510);
+		helpURL = UT_catPathname(UT_catPathname(pathBeforeLang, abiSuiteLocString), pathAfterLang);
+	}
+
+	UT_Bool bRetBuf = _helpOpenURL(pAV_View, helpURL);
+	FREEP(helpURL);
+	return bRetBuf;
+}
+
+Defun1(helpContents)
+{
+ 	return _helpLocalizeAndOpenURL(pAV_View, UT_TRUE, "AbiWord/help", "contents.html");
+}
+
+Defun1(helpIndex)
+{
+ 	return _helpLocalizeAndOpenURL(pAV_View, UT_TRUE, "AbiWord/help", "index.html");
+}
+
+Defun1(helpCheckVer)
+{
+ 	return _helpOpenURL(pAV_View, "http://www.abisource.com/users/check_version.phtml?"); 	// + version number
+}
+
+Defun1(helpSearch)
+{
+ 	return _helpOpenURL(pAV_View, "http://www.abisource.com/users/search.html");
+}
+
+Defun1(helpAboutOS)
+{
+ 	return _helpLocalizeAndOpenURL(pAV_View, UT_TRUE, "AbiWord/help", "aboutos.html");
 }
 
 Defun1(cycleWindows)

@@ -60,15 +60,26 @@ DLL_SUFFIX	= so
 AR		= ar cr $@
 
 # Compiler flags
+
+ifdef ABI_OPT_PROF
+OPTIMIZER   	= -pg -O2 -Wall -ansi -pedantic
+DEFINES  	= 
+OBJ_DIR_SFX	= PRF
+ABI_OPT_DEBUG 	= 0
+else
+
 ifdef ABI_OPT_DEBUG
 OPTIMIZER	= -g -Wall -ansi -pedantic
 DEFINES		= -DDEBUG -UNDEBUG
 OBJ_DIR_SFX	= DBG
-else
+else 
 OPTIMIZER	= -O2 -Wall -ansi -pedantic
 DEFINES		=
 OBJ_DIR_SFX	= OBJ
 endif
+
+endif
+
 
 # Includes
 OS_INCLUDES		=

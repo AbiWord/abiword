@@ -24,12 +24,12 @@
 
 #include "ut_pool.h"
 
-#define UT_POOL_BUCKET_SIZE		1024
+#define UT_POOL_MIN_BUCKET_SIZE		1024
 
 UT_StringPool::UT_StringPool()
 {
 	m_pFirstBucket = NULL;
-	addBucket();
+	addBucket(UT_POOL_MIN_BUCKET_SIZE);
 }
 
 UT_StringPool::~UT_StringPool()
@@ -57,9 +57,9 @@ UT_StringPool::UT_PoolBucket::~UT_PoolBucket()
 	delete [] pChars;
 }
 
-int UT_StringPool::addBucket()
+int UT_StringPool::addBucket(int n)
 {
-	UT_PoolBucket* pBuck = new UT_PoolBucket(1024);
+	UT_PoolBucket* pBuck = new UT_PoolBucket(n);
 	pBuck->pNext = m_pFirstBucket;
 	m_pFirstBucket = pBuck;
 
@@ -69,10 +69,13 @@ int UT_StringPool::addBucket()
 char* UT_StringPool::addString(const char* p)
 {
 	int len = strlen(p);
+	int	n	= m_pFirstBucket->iCurLen + len + 1;
 
-	if ((m_pFirstBucket->iCurLen + len + 1) > m_pFirstBucket->iSpace)
+	if (n > m_pFirstBucket->iSpace)
 	{
-		if (0 != addBucket())
+		if (n < UT_POOL_MIN_BUCKET_SIZE)
+			n = UT_POOL_MIN_BUCKET_SIZE;
+		if (0 != addBucket(n))
 		{
 			return NULL; // out of mem
 		}

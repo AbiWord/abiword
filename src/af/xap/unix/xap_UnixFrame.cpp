@@ -20,6 +20,7 @@
 #include <gtk/gtk.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/stat.h>
 
 #include "ut_types.h"
 #include "ut_debugmsg.h"
@@ -631,17 +632,23 @@ UT_Bool XAP_UnixFrame::show()
 
 UT_Bool XAP_UnixFrame::openURL(const char * szURL)
 {
-	// TODO : FIX THIS.  Find a better way to search for
-	// TODO : other browsers on your machine.
-
-	// Try to connect to a running Netscape, if not, start new one
-
-	char execstring[4096];
-
-	g_snprintf(execstring, 4096, "netscape -remote openURL\\(%s\\) "
-			   "|| netscape %s &", szURL, szURL);
+  	char execstring[4096];
+	struct stat * statbuf = (struct stat *) malloc(sizeof(struct stat));
+	if (!stat("/opt/gnome/bin/gnome-help-browser", statbuf) || !stat("/usr/local/bin/gnome-help-browser", statbuf) || !stat("/usr/bin/gnome-help-browser", statbuf))
+	{
+		g_snprintf(execstring, 4096, "gnome-help-browser %s &", szURL);
+	}
+	else if (!stat("/opt/kde/bin/kdehelp", statbuf) || !stat("/usr/local/kde/bin/kdehelp", statbuf) || !stat("/usr/local/bin/kdehelp", statbuf) || !stat("/usr/bin/kdehelp", statbuf))
+	{
+		g_snprintf(execstring, 4096, "kdehelp %s &", szURL);
+	}
+	else
+	{
+		// Try to connect to a running Netscape, if not, start new one
+		g_snprintf(execstring, 4096, "netscape -remote openURL\\(%s\\) || netscape %s &", szURL, szURL);
+	}
 	system(execstring);
-	
+	FREEP(statbuf);
 	return UT_FALSE;
 }
 
