@@ -1257,6 +1257,10 @@ void fl_BlockLayout::_recalcPendingWord(UT_uint32 iOffset, UT_sint32 chg)
 
 	const UT_UCSChar* pBlockText = pgb.getPointer(0);
 
+	if (pBlockText == NULL) {
+		return;
+	}
+	
 	UT_uint32 iFirst = iOffset;
 	UT_uint32 iAbs = (UT_uint32) ((chg > 0) ? chg : -chg);
 	UT_uint32 iLen = ((chg > 0) ? iAbs : 0);
