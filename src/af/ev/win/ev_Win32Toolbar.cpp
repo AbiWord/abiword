@@ -1010,7 +1010,6 @@ bool EV_Win32Toolbar::_refreshItem(AV_View * pView, const EV_Toolbar_Action * pA
 					if (strcmp((char *)v->getNthItem(k), szState)==0)
 					{
 						bFound = true;
-						DELETEP(pControl);
 						break;
 					}	
 				}				
