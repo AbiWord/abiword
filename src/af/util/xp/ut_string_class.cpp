@@ -300,11 +300,15 @@ UT_printf_string_upper_bound (const char* format,
   return len;
 }
 
-#ifdef WIN32
-#define VA_COPY(ap1, ap2)	  (*(ap1) = *(ap2))
-#else
-#define VA_COPY(ap1, ap2)	  ((ap1) = (ap2))
-#endif
+#if !defined (VA_COPY)
+#  if defined (__GNUC__) && defined (__PPC__) && (defined (_CALL_SYSV) || defined (_WIN32) || defined(WIN32))
+#  define VA_COPY(ap1, ap2)	  (*(ap1) = *(ap2))
+#  elif defined (VA_COPY_AS_ARRAY)
+#  define VA_COPY(ap1, ap2)	  memmove ((ap1), (ap2), sizeof (va_list))
+#  else /* va_list is a pointer */
+#  define VA_COPY(ap1, ap2)	  ((ap1) = (ap2))
+#  endif /* va_list is a pointer */
+#endif /* !VA_COPY */
 
 void UT_String_vprintf (UT_String & inStr, const char *format,
 			va_list      args1)
