@@ -151,6 +151,11 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_iyResizeOrigin(0),
 		m_bIsResizingImage(false),
 		m_curImageSel(-1,-1,-1,-1),
+		m_bIsDraggingImage(false),
+		m_pDraggedImageRun(NULL),
+		m_dragImageRect(-1,-1,-1,-1),
+		m_ixDragOrigin(0),
+		m_iyDragOrigin(0),
 		m_colorShowPara(127,127,127),
 		m_colorSquiggle(255, 0, 0),
 		m_colorMargin(127, 127, 127),
@@ -8012,4 +8017,87 @@ void FV_View::setCurImageSel(UT_Rect r)
 UT_Rect FV_View::getCurImageSel()
 {
 	return m_curImageSel;
+}
+
+bool FV_View::isDraggingImage()
+{
+	return m_bIsDraggingImage;
+}
+
+void FV_View::setDraggedImage(fp_Run * pRun, UT_sint32 xPos, UT_sint32 yPos)
+{
+	UT_ASSERT(pRun);
+	
+	m_pDraggedImageRun = pRun;
+	
+	UT_sint32 xoff = 0, yoff = 0;
+	pRun->getLine()->getScreenOffsets(pRun, xoff, yoff);
+
+	// Sevior's infamous + 1....
+	yoff += pRun->getLine()->getAscent() - pRun->getAscent() + 1;				
+	
+	// Set the image size in the image selection rect
+	m_dragImageRect = UT_Rect(xoff,yoff,pRun->getWidth(),pRun->getHeight());	
+	
+	m_ixDragOrigin = xPos;
+	m_iyDragOrigin = yPos;
+	
+	m_bIsDraggingImage = true;
+}
+
+void FV_View::stopImageDrag(UT_sint32 xPos, UT_sint32 yPos)
+{
+	m_bIsDraggingImage = false;
+	
+	//
+	// Signal PieceTable Change
+	_saveAndNotifyPieceTableChange();
+
+	// Turn off list updates
+
+	m_pDoc->disableListUpdates();
+
+	// turn off immediate layout of table
+
+	m_pDoc->setDontImmediatelyLayout(true);
+
+	
+	m_pDoc->beginUserAtomicGlob();
+			
+	PT_DocPosition pos = getDocPositionFromXY(xPos, yPos);
+		
+	cmdCut();
+	moveInsPtTo(pos);
+	cmdPaste();
+	
+	m_pDoc->endUserAtomicGlob();
+	
+	// Allow updates
+
+	m_pDoc->setDontImmediatelyLayout(false);
+
+	_generalUpdate();
+
+	// restore updates and clean up dirty lists
+	m_pDoc->enableListUpdates();
+	m_pDoc->updateDirtyLists();
+
+	// Signal PieceTable Changes have finished
+	_restorePieceTableState();
+}
+
+fp_Run * FV_View::getDraggedImage()
+{
+	return m_pDraggedImageRun;
+}
+
+UT_Rect FV_View::getImageDragRect()
+{
+	return m_dragImageRect;
+}
+
+void FV_View::getDragOrigin(UT_sint32 &xOrigin, UT_sint32 &yOrigin)
+{
+	xOrigin = m_ixDragOrigin;
+	yOrigin = m_iyDragOrigin;
 }

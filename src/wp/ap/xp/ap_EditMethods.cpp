@@ -279,6 +279,8 @@ public:
 
 	static EV_EditMethod_Fn resizeImage;
 	static EV_EditMethod_Fn endResizeImage;
+	static EV_EditMethod_Fn dragImage;
+	static EV_EditMethod_Fn dropImage;
 
 	// TODO add functions for all of the standard menu commands.
 	// TODO here are a few that i started.
@@ -686,8 +688,10 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(doBullets),			0,	""),
 	EV_EditMethod(NF(doNumbers),			0,	""),
 	EV_EditMethod(NF(doubleSpace),			0,	""),
+	EV_EditMethod(NF(dragImage),			0,	""),
 	EV_EditMethod(NF(dragToXY), 			0,	""),
 	EV_EditMethod(NF(dragToXYword), 		0,	""),
+	EV_EditMethod(NF(dropImage),			0,	""),
 
 	// e
 	EV_EditMethod(NF(editFooter),			0,	""),
@@ -10349,3 +10353,92 @@ Defun(endResizeImage)
 	return true;
 }
 
+Defun(dragImage)
+{
+	UT_DEBUGMSG(("MARCM: DragImage\n"));
+	
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+
+	// clear status bar of any lingering messages
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
+	pFrame->setStatusMessage(NULL);
+
+	GR_Graphics * pG = pView->getGraphics();
+	if(pG)
+	{
+		fp_Run *  pRun = NULL;
+		
+		if (!pView->isDraggingImage())
+		{
+			UT_sint32 x1,x2,y1,y2,iHeight,iWidth;
+			bool bEOL = false;
+			bool bDir = false;
+			
+			PT_DocPosition pos = pView->getDocPositionFromXY(pCallData->m_xPos, pCallData->m_yPos);
+		
+			fl_BlockLayout * pBlock = pView->getBlockAtPosition(pos);
+			if(pBlock)
+			{
+				pRun = pBlock->findPointCoords(pos,bEOL,x1,y1,x2,y2,iHeight,bDir);
+				while(pRun && pRun->getType() != FPRUN_IMAGE)
+				{
+					pRun = pRun->getNext();
+				}
+				if(pRun && pRun->getType() == FPRUN_IMAGE)
+				{
+					UT_DEBUGMSG(("MARCM: Image run on pos \n"));
+				}
+				else
+				{
+					//UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+					return false;
+				}
+			}
+			pView->cmdSelect(pos,pos+1);
+
+			pView->setDraggedImage(pRun, pCallData->m_xPos, pCallData->m_yPos);
+			UT_Rect saveRect = pView->getImageDragRect();
+			pG->saveRectangle(saveRect);
+		}
+		
+		pRun = pView->getDraggedImage();
+		UT_ASSERT(pRun);
+		
+		GR_Image * pImage = ((fp_ImageRun *)pRun)->getImage();
+		UT_ASSERT(pImage);
+		
+		UT_Rect imgRect = pView->getImageDragRect();
+		UT_sint32 xOrigin; 
+		UT_sint32 yOrigin;
+		pView->getDragOrigin(xOrigin, yOrigin);
+		
+		pG->restoreRectangle();
+		UT_Rect saveRect(pCallData->m_xPos - (xOrigin - imgRect.left), pCallData->m_yPos - (yOrigin - imgRect.top), imgRect.width, imgRect.height);
+		pG->saveRectangle(saveRect);
+		pG->drawImage(pImage, pCallData->m_xPos - (xOrigin - imgRect.left), pCallData->m_yPos - (yOrigin - imgRect.top));
+	}
+	
+	return true;
+}
+
+Defun(dropImage)
+{	
+	UT_DEBUGMSG(("MARCM: DropImage\n"));
+	
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+
+	// clear status bar of any lingering messages
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
+	pFrame->setStatusMessage(NULL);
+
+	GR_Graphics * pG = pView->getGraphics();
+	if(pG)
+	{
+		pG->restoreRectangle();
+		pView->stopImageDrag(pCallData->m_xPos, pCallData->m_yPos);
+	}
+	
+	return true;
+}
