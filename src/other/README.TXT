@@ -8,3 +8,7 @@ incorporate it.
 expat
 	An XML parser by James Clark.  Covered under the Mozilla Public License.
 
+NOTE:  Although the Mozilla Public License is incompatible with
+the GPL, AbiSource has received permission from James Clark to use
+expat in this project.
+
