@@ -196,8 +196,6 @@ void XAP_UnixGnomeFrame::_createTopLevelWindow(void)
 
 	UT_ASSERT(m_pUnixMenu);
 
-
-
 	// create a toolbar instance for each toolbar listed in our base class.
 	// TODO for some reason, the toolbar functions require the TLW to be
 	// TODO realized (they reference m_wTopLevelWindow->window) before we call them.

@@ -44,6 +44,7 @@
 #include "xap_Prefs.h"
 #include "ev_UnixGnomeToolbar.h"
 
+int EV_UnixGnomeToolbar::nbBands = 0;
 
 /*****************************************************************/
 #define COMBO_BUF_LEN 256
@@ -143,7 +144,8 @@ EV_UnixGnomeToolbar::EV_UnixGnomeToolbar(XAP_UnixGnomeApp * pUnixApp, XAP_UnixGn
 										 const char * szToolbarLabelSetName)
 	: EV_UnixToolbar(static_cast<XAP_UnixApp *> (pUnixApp), static_cast<XAP_UnixFrame *> (pUnixFrame),
 					 szToolbarLayoutName,
-					 szToolbarLabelSetName)
+					 szToolbarLabelSetName),
+	  nbToolbarsInBand(0)
 {
 }
 
@@ -154,7 +156,6 @@ EV_UnixGnomeToolbar::~EV_UnixGnomeToolbar(void)
 UT_Bool EV_UnixGnomeToolbar::synthesize(void)
 {
 	// create a GTK toolbar from the info provided.
-
 	const EV_Toolbar_ActionSet * pToolbarActionSet = m_pUnixApp->getToolbarActionSet();
 	UT_ASSERT(pToolbarActionSet);
 
@@ -167,28 +168,7 @@ UT_Bool EV_UnixGnomeToolbar::synthesize(void)
 	GtkWidget * wTLW = m_pUnixFrame->getTopLevelWindow();
 	GtkWidget * wVBox = m_pUnixFrame->getVBoxWidget();
 
-	////////////////////////////////////////////////////////////////
-	// get toolbar button appearance from the preferences
-	////////////////////////////////////////////////////////////////
-	
-	const XML_Char * szValue = NULL;
-	m_pUnixApp->getPrefsValue(XAP_PREF_KEY_ToolbarAppearance,&szValue);
-	UT_ASSERT((szValue) && (*szValue));
-	
-	GtkToolbarStyle style = GTK_TOOLBAR_ICONS;
-	if (UT_XML_stricmp(szValue,"icon")==0)
-		style = GTK_TOOLBAR_ICONS;
-	else if (UT_XML_stricmp(szValue,"text")==0)
-		style = GTK_TOOLBAR_TEXT;
-	else if (UT_XML_stricmp(szValue,"both")==0)
-		style = GTK_TOOLBAR_BOTH;
-	
-	m_wToolbar = gtk_toolbar_new(GTK_ORIENTATION_HORIZONTAL, style);
-	UT_ASSERT(m_wToolbar);
-	
-	gtk_toolbar_set_button_relief(GTK_TOOLBAR(m_wToolbar), GTK_RELIEF_NONE);
-	gtk_toolbar_set_tooltips(GTK_TOOLBAR(m_wToolbar), TRUE);
-	gtk_toolbar_set_space_size(GTK_TOOLBAR(m_wToolbar), 10);
+	m_wToolbar = _makeToolbar ();
 
 	for (UT_uint32 k=0; (k < nrLabelItemsInLayout); k++)
 	{
@@ -306,20 +286,6 @@ UT_Bool EV_UnixGnomeToolbar::synthesize(void)
 								   GTK_SIGNAL_FUNC(_wd::s_combo_hide),
 								   wd);
 
-				// take away the ability to gain focus
-//				gtk_signal_connect(GTK_OBJECT(GTK_COMBO(comboBox)->entry),
-//								   "focus_in_event",
-//								   GTK_SIGNAL_FUNC(_wd::s_combo_focus_in),
-//								   wd);
-//				gtk_signal_connect(GTK_OBJECT(comboBox),
-//								   "key_press_event",
-//								   GTK_SIGNAL_FUNC(_wd::s_combo_key_press),
-//								   wd);
-//				gtk_signal_connect(GTK_OBJECT(GTK_COMBO(comboBox)->entry),
-//								   "key_press_event",
-//								   GTK_SIGNAL_FUNC(_wd::s_combo_key_press),
-//								   wd);
-				
 				// handle changes in content
 				GtkEntry * blah = GTK_ENTRY(GTK_COMBO(comboBox)->entry);
 				GtkEditable * yuck = GTK_EDITABLE(blah);
@@ -391,7 +357,9 @@ UT_Bool EV_UnixGnomeToolbar::synthesize(void)
 			UT_ASSERT(wd);
 			m_vecToolbarWidgets.addItem(wd);
 
-			gtk_toolbar_append_space(GTK_TOOLBAR(m_wToolbar));
+			gtk_widget_show_all(m_wToolbar);
+			_addToolbar(m_wToolbar);
+			m_wToolbar = _makeToolbar();
 			break;
 		}
 		
@@ -403,19 +371,71 @@ UT_Bool EV_UnixGnomeToolbar::synthesize(void)
 	// show the complete thing
 	gtk_widget_show(m_wToolbar);
 
-	// an arbitrary padding to make our document not run into our buttons
-	gtk_container_set_border_width(GTK_CONTAINER(m_wToolbar), 2);
-
-	// pack it in a handle box
-	static int counter = 0;
-	char buf[32];
-	g_snprintf(buf, sizeof(buf), "Toolbar%d", counter++);
-	gnome_app_add_toolbar(GNOME_APP(m_pUnixFrame->getTopLevelWindow()), GTK_TOOLBAR(m_wToolbar), buf,
-						  gnome_preferences_get_toolbar_detachable()?GNOME_DOCK_ITEM_BEH_NORMAL:GNOME_DOCK_ITEM_BEH_LOCKED,
-						  GNOME_DOCK_TOP, counter + 1, 0, 0);
-	
-	// put it in the vbox
-// 	gtk_box_pack_start(GTK_BOX(wVBox), m_wHandleBox, FALSE, FALSE, 0);
+	// add the toolbar to the band
+	_addToolbar(m_wToolbar);
+	nbBands++;
 
 	return UT_TRUE;
+}
+
+UT_Bool EV_UnixGnomeToolbar::_addToolbar (GtkWidget *toolbar)
+{
+	GnomeDockItemBehavior beh;
+	char *buf;
+
+	// an arbitrary padding to make our document not run into our buttons
+	gtk_container_set_border_width(GTK_CONTAINER(toolbar), 2);
+
+	if (gnome_preferences_get_toolbar_detachable())
+		beh = GNOME_DOCK_ITEM_BEH_NORMAL;
+	else
+		beh = GNOME_DOCK_ITEM_BEH_LOCKED;
+
+	// HACK: UGLIEST HACK OF THE CENTURY!!
+	// HACK: I want the GNOME_DOCK_ITEM_NEVER_VERTICAL for all
+	// HACK: the toolbars but the first one...
+	if (nbBands != 0)
+		beh = static_cast<GnomeDockItemBehavior> (beh | GNOME_DOCK_ITEM_BEH_NEVER_VERTICAL);
+
+	buf = g_strdup_printf("Toolbar %d-%d", nbBands, ++nbToolbarsInBand);
+	//	g_print ("Toolbar style = %d\n", static_cast<int> (toolbar->style));
+	gnome_app_add_toolbar(GNOME_APP(m_pUnixFrame->getTopLevelWindow()),
+						  GTK_TOOLBAR (toolbar), buf, beh, GNOME_DOCK_TOP,
+						  nbBands + 1, nbToolbarsInBand, 0);
+	free(buf);
+	return UT_TRUE;
+}
+
+GtkWidget *EV_UnixGnomeToolbar::_makeToolbar(void)
+{
+
+	////////////////////////////////////////////////////////////////
+	// get toolbar button appearance from the preferences
+	////////////////////////////////////////////////////////////////
+	const XML_Char * szValue = NULL;
+	static GtkToolbarStyle style = GTK_TOOLBAR_ICONS;
+	static UT_Bool firstTime = UT_TRUE;
+	GtkWidget *toolbar;
+
+	if (firstTime)
+	{
+		firstTime = UT_FALSE;
+		m_pUnixApp->getPrefsValue(XAP_PREF_KEY_ToolbarAppearance, &szValue);
+		UT_ASSERT((szValue) && (*szValue));
+		
+		if (UT_XML_stricmp(szValue,"icon") == 0)
+			style = GTK_TOOLBAR_ICONS;
+		else if (UT_XML_stricmp(szValue,"text") == 0)
+			style = GTK_TOOLBAR_TEXT;
+		else if (UT_XML_stricmp(szValue,"both") == 0)
+			style = GTK_TOOLBAR_BOTH;
+	}
+		
+	toolbar = gtk_toolbar_new(GTK_ORIENTATION_HORIZONTAL, style);
+	UT_ASSERT(GTK_TOOLBAR (toolbar));
+	gtk_toolbar_set_button_relief(GTK_TOOLBAR (toolbar), GTK_RELIEF_NONE);
+	gtk_toolbar_set_tooltips(GTK_TOOLBAR (toolbar), TRUE);
+	gtk_toolbar_set_space_size(GTK_TOOLBAR (toolbar), 10);
+
+	return toolbar;
 }

@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Program Utilities
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -43,9 +45,6 @@ EV_Toolbar::EV_Toolbar(EV_EditMethodContainer * pEMC,
 
 	m_pEMC = pEMC;
 
-	//UT_DEBUGMSG(("EV_Toolbar: Creating toolbar for [layout %s, language %s]\n",
-	//			 szToolbarLayoutName,szToolbarLabelSetName));
-	
 	m_pToolbarLayout = AP_CreateToolbarLayout(szToolbarLayoutName);
 	UT_ASSERT(m_pToolbarLayout);
 

@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Program Utilities
  * Copyright (C) 1998-2000 AbiSource, Inc.
  * 
@@ -20,7 +22,7 @@
 //extern "C" {
 #include <gnome.h>
 #ifdef HAVE_BONOBO
-  // #include <libgnorba/gnorba.h>
+// #include <libgnorba/gnorba.h>
 #include <bonobo.h>
 #endif
 //}
@@ -152,7 +154,15 @@ EV_UnixGnomeMenu::~EV_UnixGnomeMenu(void)
 
 /**********************************************************************/
 
-void EV_UnixGnomeMenu::s_getStockPixmapFromName (const char *name, char *pixmap_name, int n)
+/**
+ * This function tries to find the "gnome_stock" name of the pixmap
+ * associate to the name of the menu entry.  Usually the name of the
+ * gnome stock pixmap is only Menu_"name", but there are some exceptions
+ * that are listed in the static exceptions var.
+ */
+void EV_UnixGnomeMenu::s_getStockPixmapFromName (const char *name,
+												 char *pixmap_name,
+												 int n)
 {
 	char *true_name;
 	char *tmp;
@@ -195,6 +205,12 @@ void EV_UnixGnomeMenu::s_getStockPixmapFromName (const char *name, char *pixmap_
 	g_free (true_name);
 }
 
+/**
+ * Callback called when the user "selects" a menu item (ie. the mouse pointer
+ * is over this menu item).  It prints the statusbar message in the status bar.
+ * The statusbar message of an item is saved in his associated hash table, with
+ * the key "abi_statusbar_text".
+ */
 void EV_UnixGnomeMenu::s_onMenuItemSelect(GtkWidget * widget, gpointer data)
 {
 	__Aux *aux = (__Aux *) data;
@@ -211,6 +227,10 @@ void EV_UnixGnomeMenu::s_onMenuItemSelect(GtkWidget * widget, gpointer data)
 	pFrame->setStatusMessage(szMsg);
 };
 
+/**
+ * Callback called when the user "deselects" a menu item (ie. the mouse pointer
+ * leaves this menu item).  It erases the menubar.
+ */
 void EV_UnixGnomeMenu::s_onMenuItemDeselect(GtkWidget * widget, gpointer data)
 {
 	__Aux *aux = (__Aux *) data;
@@ -222,6 +242,9 @@ void EV_UnixGnomeMenu::s_onMenuItemDeselect(GtkWidget * widget, gpointer data)
 	pFrame->setStatusMessage(NULL);
 };
 
+/**
+ * Callback called each time the menu is displayed.
+ */
 void EV_UnixGnomeMenu::s_onInitMenu(GtkMenuItem * menuItem, gpointer data)
 {
 	__Aux *aux = (__Aux *) data;
@@ -234,6 +257,9 @@ void EV_UnixGnomeMenu::s_onInitMenu(GtkMenuItem * menuItem, gpointer data)
 	aux->me->refreshMenu(pFrame->getCurrentView ());
 };
 
+/**
+ * Callback called each time that one menu disappears.
+ */
 void EV_UnixGnomeMenu::s_onDestroyMenu(GtkMenuItem * menuItem, gpointer data)
 {
 	__Aux *aux = (__Aux *) data;
@@ -259,23 +285,30 @@ void EV_UnixGnomeMenu::s_onDestroyPopupMenu(GtkMenuItem * menuItem, gpointer cal
 };
 #endif
 
-void EV_UnixGnomeMenu::_convertString2Accel(const char *str, guint &accel_key, GdkModifierType &ac_mods)
+/**
+ * This subroutine calcules the gdk accel_key, ac_mods associated to
+ * a given string (for instance, str = "Ctrl+A" -> accel_key = 'A'
+ * ac_mods = GDK_CONTROL_MASK)
+ */
+void EV_UnixGnomeMenu::_convertString2Accel(const char *str,
+											guint &accel_key,
+											GdkModifierType &ac_mods)
 {
 	if (str == NULL || *str == '\0')
 		return;
 
 	if (strncmp (str, "Ctrl+", 5) == 0) {
-		ac_mods = (GdkModifierType)(ac_mods|GDK_CONTROL_MASK);
+		ac_mods = (GdkModifierType) (ac_mods | GDK_CONTROL_MASK);
 		str += 5;
 	}
 
 	if (strncmp (str, "Alt+", 4) == 0) {
-		ac_mods = (GdkModifierType)(ac_mods|GDK_MOD1_MASK);
+		ac_mods = (GdkModifierType) (ac_mods | GDK_MOD1_MASK);
 		str += 4;
 	}
 
 	if (strncmp (str, "Shift+", 6) == 0) {
-		ac_mods = (GdkModifierType)(ac_mods|GDK_SHIFT_MASK);
+		ac_mods = (GdkModifierType) (ac_mods | GDK_SHIFT_MASK);
 		str += 6;
 	}
 
@@ -292,6 +325,13 @@ void EV_UnixGnomeMenu::_convertString2Accel(const char *str, guint &accel_key, G
 	}
 }
 
+/**
+ * This function does the "hard" work.  It converts the "AbiSource menu" into
+ * a GnomeUIInfo structure (the "gnome format" to code the menus).  The function
+ * starts the conversion in the @pos "item" (an item can be a menu item,
+ * a submenu, etc...) of the menu.  Due to the recursive nature of this function,
+ * the pos variable is passed by reference... <-- TODO: Explain that...
+ */
 GnomeUIInfo * EV_UnixGnomeMenu::_convertMenu2UIInfo (int &pos)
 {
 	const EV_Menu_ActionSet * pMenuActionSet = m_pUnixApp->getMenuActionSet();
@@ -414,6 +454,9 @@ GnomeUIInfo * EV_UnixGnomeMenu::_convertMenu2UIInfo (int &pos)
 	return (retval);
 }
 
+/**
+ * Free the mem associate with the uiinfo structure (in a recursive way).
+ */
 void EV_UnixGnomeMenu::_destroyUIInfo(GnomeUIInfo * uiinfo)
 {
 	g_return_if_fail (uiinfo != NULL);
@@ -464,7 +507,7 @@ UT_Bool EV_UnixGnomeMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 		{
 		case EV_MLF_Normal:
 		{
-			// TODO: Dinamic labels and widgets
+			// TODO: Dynamic labels and widgets
 			// see if we need to enable/disable and/or check/uncheck it.
 			UT_Bool bEnable = UT_TRUE;
 			UT_Bool bCheck = UT_FALSE;

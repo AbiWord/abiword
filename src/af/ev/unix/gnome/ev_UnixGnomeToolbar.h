@@ -20,7 +20,7 @@
 #ifndef EV_UNIXGNOMETOOLBAR_H
 #define EV_UNIXGNOMETOOLBAR_H
 
-#include <gnome.h>
+#include <gtk/gtkwidget.h>
 #include "ut_types.h"
 #include "ut_vector.h"
 #include "xap_Types.h"
@@ -44,6 +44,13 @@ public:
 	virtual ~EV_UnixGnomeToolbar(void);
 
 	virtual UT_Bool synthesize(void);
+
+private:
+	GtkWidget *_makeToolbar(void);
+	UT_Bool _addToolbar (GtkWidget *toolbar);
+
+	static int nbBands;
+	int nbToolbarsInBand;
 };
 
 #endif /* EV_UNIXGNOMETOOLBAR_H */

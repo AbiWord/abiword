@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Program Utilities
  * Copyright (C) 1998-2000 AbiSource, Inc.
  * 
@@ -778,191 +780,47 @@ UT_Bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 		switch (pLayoutItem->getMenuLayoutFlags())
 		{
 		case EV_MLF_Normal:
-			{
-				// Keep track of where we are in this menu; we get cut down
-				// to zero on the creation of each new submenu.
-				nPositionInThisMenu++;
+		{
+			// Keep track of where we are in this menu; we get cut down
+			// to zero on the creation of each new submenu.
+		    nPositionInThisMenu++;
 			
-				// see if we need to enable/disable and/or check/uncheck it.
-				
-				UT_Bool bEnable = UT_TRUE;
-				UT_Bool bCheck = UT_FALSE;
-				
-				if (pAction->hasGetStateFunction())
-				{
-					EV_Menu_ItemState mis = pAction->getMenuItemState(pView);
-					if (mis & EV_MIS_Gray)
-						bEnable = UT_FALSE;
-					if (mis & EV_MIS_Toggled)
-						bCheck = UT_TRUE;
-				}
+			// see if we need to enable/disable and/or check/uncheck it.
+			
+			UT_Bool bEnable = UT_TRUE;
+			UT_Bool bCheck = UT_FALSE;
+			
+			if (pAction->hasGetStateFunction())
+			{
+				EV_Menu_ItemState mis = pAction->getMenuItemState(pView);
+				if (mis & EV_MIS_Gray)
+					bEnable = UT_FALSE;
+				if (mis & EV_MIS_Toggled)
+					bCheck = UT_TRUE;
+			}
 
-				// must have an entry for each and every layout item in the vector
-				UT_ASSERT((k < m_vecMenuWidgets.getItemCount() - 1));
+			// must have an entry for each and every layout item in the vector
+			UT_ASSERT((k < m_vecMenuWidgets.getItemCount() - 1));
 
-				// Get the dynamic label
-				const char ** data = _ev_GetLabelName(m_pUnixApp, m_pUnixFrame, pAction, pLabel);
-				const char * szLabelName = data[0];
+			// Get the dynamic label
+			const char ** data = _ev_GetLabelName(m_pUnixApp, m_pUnixFrame, pAction, pLabel);
+			const char * szLabelName = data[0];
 				
-				// First we check to make sure the item exits.  If it does not,
-				// we create it and continue on.
-				GList * testchildren = gtk_container_children(GTK_CONTAINER(m_vecMenuWidgets.getNthItem(k)));
-				if (!testchildren)
+			// First we check to make sure the item exits.  If it does not,
+			// we create it and continue on.
+			GList * testchildren = gtk_container_children(GTK_CONTAINER(m_vecMenuWidgets.getNthItem(k)));
+			if (!testchildren)
+			{
+				// This should be the only place refreshMenu touches
+				// callback hooks, since this handles the case a widget doesn't
+				// exist for a given layout item
+				if (szLabelName && *szLabelName)
 				{
-					// This should be the only place refreshMenu touches
-					// callback hooks, since this handles the case a widget doesn't
-					// exist for a given layout item
-					if (szLabelName && *szLabelName)
-					{
-						// find parent menu item
-						GtkWidget * wParent;
-						bResult = stack.viewTop((void **)&wParent);
-						UT_ASSERT(bResult);
+					// find parent menu item
+					GtkWidget * wParent;
+					bResult = stack.viewTop((void **)&wParent);
+					UT_ASSERT(bResult);
 											
-						char labelbuf[1024];
-						// convert label into underscored version
-						_ev_convert(labelbuf, szLabelName);
-						// create a label
-						GtkLabel * label = GTK_LABEL(gtk_accel_label_new("SHOULD NOT APPEAR"));
-						UT_ASSERT(label);
-
-						// get a newly padded underscore version
-						char * padString = _ev_skip_first_underscore_pad_rest(labelbuf);
-						UT_ASSERT(padString);
-						gtk_label_parse_uline(GTK_LABEL(label), padString);
-						FREEP(padString);
-
-						// create the item with the underscored label
-						GtkWidget * w = gtk_menu_item_new();
-						UT_ASSERT(w);
-						// show and add the label to our menu item
-						gtk_misc_set_alignment(GTK_MISC(label), 0.0, 0.5);
-						gtk_container_add(GTK_CONTAINER(w), GTK_WIDGET(label));
-						gtk_accel_label_set_accel_widget(GTK_ACCEL_LABEL(label), w);
-						gtk_widget_show(GTK_WIDGET(label));
-						gtk_widget_show(w);
-
-						// set menu data to relate to class
-						gtk_object_set_user_data(GTK_OBJECT(w),this);
-						// create callback info data for action handling
-						_wd * wd = new _wd(this, id);
-						UT_ASSERT(wd);
-
-						// set parent data stuff
-						gtk_object_set_data(GTK_OBJECT(wMenuRoot), szLabelName, w);
-						// bury in parent 
-						gtk_menu_insert(GTK_MENU(GTK_MENU_ITEM(wParent)->submenu), w, nPositionInThisMenu);
-						// connect callbacks
-						gtk_signal_connect(GTK_OBJECT(w), "activate", GTK_SIGNAL_FUNC(_wd::s_onActivate), wd);
-						gtk_signal_connect(GTK_OBJECT(w), "select", GTK_SIGNAL_FUNC(_wd::s_onMenuItemSelect), wd);
-						gtk_signal_connect(GTK_OBJECT(w), "deselect", GTK_SIGNAL_FUNC(_wd::s_onMenuItemDeselect), wd);				
-						
-						// we do NOT ad a new item, we point the existing index at our new widget
-						// (update the pointers)
-						void ** old = NULL;
-						if (m_vecMenuWidgets.setNthItem(k, w, old))
-						{
-							UT_DEBUGMSG(("Could not update dynamic menu widget vector item %s.\n", k));
-							UT_ASSERT(0);
-						}
-						
-						break;
-					}
-					else
-					{
-						// do not create a widget if the label is blank, it should not appear in the
-						// menu
-					}
-				}
-
-				// No dynamic label, check/enable
-				if (!pAction->hasDynamicLabel())
-				{
-					// if no dynamic label, all we need to do
-					// is enable/disable and/or check/uncheck it.
-
-					GtkWidget * item = (GtkWidget *) m_vecMenuWidgets.getNthItem(k);
-					UT_ASSERT(item);
-
-					// check boxes 
-					if (GTK_IS_CHECK_MENU_ITEM(item))
-						// must use this line instead of calling
-						// gtk_check_menu_item_set_active(...) because it
-						// generates an "activate" signal	-- shack / sterwill
-						GTK_CHECK_MENU_ITEM(item)->active = bCheck;
-
-					// all get the gray treatment
-					gtk_widget_set_sensitive(GTK_WIDGET(item), bEnable);
-
-					break;
-				}
-
-				// Get the item
-				GtkWidget * item = (GtkWidget *) m_vecMenuWidgets.getNthItem(k);
-
-				// if item is null, there is no widget for it, so ignore its attributes for
-				// this pass
-				if (!item)
-					break;
-						
-				// Dynamic label, check for remove
-				UT_Bool bRemoveIt = (!szLabelName || !*szLabelName);
-				if (bRemoveIt)
-				{
-					// unbind all accelerators
-					gtk_widget_remove_accelerators(item,
-												   "activate_item",
-												   FALSE);
-					// wipe it out
-					gtk_widget_destroy(item);
-
-					// we must also mark this item in the vector as "removed",
-					// which means setting [k] equal to a fake item as done
-					// on creation of dynamic items.
-					// give it a fake, with no label, to make sure it passes the
-					// test that an empty (to be replaced) item in the vector should
-					// have no children
-					GtkWidget * w = gtk_menu_item_new();
-					UT_ASSERT(w);
-					void ** blah = NULL;
-					if(m_vecMenuWidgets.setNthItem(k, w, blah))
-					{
-						UT_DEBUGMSG(("Could not update dynamic menu widget vector item %s.\n", k));
-						UT_ASSERT(0);
-					}
-					break;
-				}
-
-				// Dynamic label, check for add/change
-				// We always change the labels every time, it's actually cheaper
-				// than doing the test for conditional changes.
-				{
-					// Get a list of children.  If there are any, destroy them
-					GList * children = gtk_container_children(GTK_CONTAINER(item));
-					if (children)
-					{
-						// Get the first item in the list
-						GList * firstItem = g_list_first(children);
-						UT_ASSERT(firstItem);
-					
-						// First item's data should be the label, since we added it first
-						// in construction.
-						GtkWidget * labelChild = GTK_WIDGET(firstItem->data);
-						UT_ASSERT(labelChild);
-
-						// destroy the current label
-						gtk_container_remove(GTK_CONTAINER(item), labelChild);
-
-						// unbind all accelerators
-						gtk_widget_remove_accelerators(item,
-													   "activate_item",
-													   FALSE);
-						
-						//gtk_widget_destroy(labelChild);
-					}
-				
-					// create a new updated label
-
 					char labelbuf[1024];
 					// convert label into underscored version
 					_ev_convert(labelbuf, szLabelName);
@@ -973,35 +831,179 @@ UT_Bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 					// get a newly padded underscore version
 					char * padString = _ev_skip_first_underscore_pad_rest(labelbuf);
 					UT_ASSERT(padString);
-					guint keyCode = gtk_label_parse_uline(label, padString);
+					gtk_label_parse_uline(GTK_LABEL(label), padString);
 					FREEP(padString);
 
+					// create the item with the underscored label
+					GtkWidget * w = gtk_menu_item_new();
+					UT_ASSERT(w);
 					// show and add the label to our menu item
 					gtk_misc_set_alignment(GTK_MISC(label), 0.0, 0.5);
-					gtk_container_add(GTK_CONTAINER(item), GTK_WIDGET(label));
-					gtk_accel_label_set_accel_widget(GTK_ACCEL_LABEL(label), item);
+					gtk_container_add(GTK_CONTAINER(w), GTK_WIDGET(label));
+					gtk_accel_label_set_accel_widget(GTK_ACCEL_LABEL(label), w);
 					gtk_widget_show(GTK_WIDGET(label));
+					gtk_widget_show(w);
 
-					// bind to parent item's accel group
-					if ((keyCode != GDK_VoidSymbol))// && parent_accel_group)
+					// set menu data to relate to class
+					gtk_object_set_user_data(GTK_OBJECT(w),this);
+					// create callback info data for action handling
+					_wd * wd = new _wd(this, id);
+					UT_ASSERT(wd);
+
+					// set parent data stuff
+					gtk_object_set_data(GTK_OBJECT(wMenuRoot), szLabelName, w);
+					// bury in parent 
+					gtk_menu_insert(GTK_MENU(GTK_MENU_ITEM(wParent)->submenu), w, nPositionInThisMenu);
+					// connect callbacks
+					gtk_signal_connect(GTK_OBJECT(w), "activate", GTK_SIGNAL_FUNC(_wd::s_onActivate), wd);
+					gtk_signal_connect(GTK_OBJECT(w), "select", GTK_SIGNAL_FUNC(_wd::s_onMenuItemSelect), wd);
+					gtk_signal_connect(GTK_OBJECT(w), "deselect", GTK_SIGNAL_FUNC(_wd::s_onMenuItemDeselect), wd);				
+						
+					// we do NOT ad a new item, we point the existing index at our new widget
+					// (update the pointers)
+					void ** old = NULL;
+					if (m_vecMenuWidgets.setNthItem(k, w, old))
 					{
-						gtk_widget_add_accelerator(item,
-												   "activate_item",
-												   GTK_MENU(item->parent)->accel_group,
-												   keyCode,
-												   0,
-												   GTK_ACCEL_LOCKED);
+						UT_DEBUGMSG(("Could not update dynamic menu widget vector item %s.\n", k));
+						UT_ASSERT(0);
 					}
+						
+					break;
+				}
+				else
+				{
+					// do not create a widget if the label is blank, it should not appear in the
+					// menu
+				}
+			}
 
-					// finally, enable/disable and/or check/uncheck it.
-					if (GTK_IS_CHECK_MENU_ITEM(item))
-						GTK_CHECK_MENU_ITEM(item)->active = bCheck;
-					gtk_widget_set_sensitive((GtkWidget *) item, bEnable);
+			// No dynamic label, check/enable
+			if (!pAction->hasDynamicLabel())
+			{
+				// if no dynamic label, all we need to do
+				// is enable/disable and/or check/uncheck it.
+
+				GtkWidget * item = (GtkWidget *) m_vecMenuWidgets.getNthItem(k);
+				UT_ASSERT(item);
+
+					// check boxes 
+				if (GTK_IS_CHECK_MENU_ITEM(item))
+					// must use this line instead of calling
+					// gtk_check_menu_item_set_active(...) because it
+					// generates an "activate" signal	-- shack / sterwill
+					GTK_CHECK_MENU_ITEM(item)->active = bCheck;
+
+				// all get the gray treatment
+				gtk_widget_set_sensitive(GTK_WIDGET(item), bEnable);
+
+				break;
+			}
+
+			// Get the item
+			GtkWidget * item = (GtkWidget *) m_vecMenuWidgets.getNthItem(k);
+
+			// if item is null, there is no widget for it, so ignore its attributes for
+			// this pass
+			if (!item)
+				break;
+						
+				// Dynamic label, check for remove
+			UT_Bool bRemoveIt = (!szLabelName || !*szLabelName);
+			if (bRemoveIt)
+			{
+				// unbind all accelerators
+				gtk_widget_remove_accelerators(item,
+											   "activate_item",
+											   FALSE);
+				// wipe it out
+				gtk_widget_destroy(item);
+
+				// we must also mark this item in the vector as "removed",
+				// which means setting [k] equal to a fake item as done
+				// on creation of dynamic items.
+				// give it a fake, with no label, to make sure it passes the
+				// test that an empty (to be replaced) item in the vector should
+				// have no children
+				GtkWidget * w = gtk_menu_item_new();
+				UT_ASSERT(w);
+				void ** blah = NULL;
+				if(m_vecMenuWidgets.setNthItem(k, w, blah))
+				{
+					UT_DEBUGMSG(("Could not update dynamic menu widget vector item %s.\n", k));
+					UT_ASSERT(0);
+				}
+				break;
+			}
+
+			// Dynamic label, check for add/change
+			// We always change the labels every time, it's actually cheaper
+			// than doing the test for conditional changes.
+			{
+				// Get a list of children.  If there are any, destroy them
+				GList * children = gtk_container_children(GTK_CONTAINER(item));
+				if (children)
+				{
+					// Get the first item in the list
+					GList * firstItem = g_list_first(children);
+					UT_ASSERT(firstItem);
+					
+					// First item's data should be the label, since we added it first
+					// in construction.
+					GtkWidget * labelChild = GTK_WIDGET(firstItem->data);
+					UT_ASSERT(labelChild);
+
+					// destroy the current label
+					gtk_container_remove(GTK_CONTAINER(item), labelChild);
+
+					// unbind all accelerators
+					gtk_widget_remove_accelerators(item,
+												   "activate_item",
+												   FALSE);
+						
+					//gtk_widget_destroy(labelChild);
 				}
 				
-				// we are done with this menu item
+				// create a new updated label
+
+				char labelbuf[1024];
+				// convert label into underscored version
+				_ev_convert(labelbuf, szLabelName);
+				// create a label
+				GtkLabel * label = GTK_LABEL(gtk_accel_label_new("SHOULD NOT APPEAR"));
+				UT_ASSERT(label);
+
+				// get a newly padded underscore version
+				char * padString = _ev_skip_first_underscore_pad_rest(labelbuf);
+				UT_ASSERT(padString);
+				guint keyCode = gtk_label_parse_uline(label, padString);
+				FREEP(padString);
+
+				// show and add the label to our menu item
+				gtk_misc_set_alignment(GTK_MISC(label), 0.0, 0.5);
+				gtk_container_add(GTK_CONTAINER(item), GTK_WIDGET(label));
+				gtk_accel_label_set_accel_widget(GTK_ACCEL_LABEL(label), item);
+				gtk_widget_show(GTK_WIDGET(label));
+
+				// bind to parent item's accel group
+				if ((keyCode != GDK_VoidSymbol))// && parent_accel_group)
+				{
+					gtk_widget_add_accelerator(item,
+											   "activate_item",
+											   GTK_MENU(item->parent)->accel_group,
+											   keyCode,
+											   0,
+											   GTK_ACCEL_LOCKED);
+				}
+
+				// finally, enable/disable and/or check/uncheck it.
+				if (GTK_IS_CHECK_MENU_ITEM(item))
+					GTK_CHECK_MENU_ITEM(item)->active = bCheck;
+				gtk_widget_set_sensitive((GtkWidget *) item, bEnable);
 			}
-			break;
+				
+			// we are done with this menu item
+		}
+		break;
 		case EV_MLF_Separator:
 			nPositionInThisMenu++;
 			
@@ -1139,7 +1141,7 @@ UT_Bool EV_UnixMenuPopup::refreshMenu(AV_View * pView)
 	// might not exist... silly to refresh the menu then; it will
 	// happen in due course to its first display
 	if (pView)
-		return _refreshMenu(pView,m_wMenuPopup);
+		return _refreshMenu(pView, m_wMenuPopup);
 
 	return UT_TRUE;
 }
