@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -330,7 +332,7 @@ const char * IE_Imp::descriptionForFileType(IEFileType ieft)
 	return 0;
 }
 
-static UT_Confidence_t s_condfidence_heuristic ( UT_Confidence_t content_confidence, 
+static UT_Confidence_t s_confidence_heuristic ( UT_Confidence_t content_confidence, 
 						 UT_Confidence_t suffix_confidence )
 {
   return (UT_Confidence_t) ( ((double)content_confidence * 0.85) + ((double)suffix_confidence * 0.15) ) ;
@@ -380,10 +382,12 @@ UT_Error IE_Imp::constructImporter(PD_Document * pDocument,
 		}
 
 		UT_Confidence_t   best_confidence = UT_CONFIDENCE_ZILCH;
+		IE_ImpSniffer * best_sniffer = 0;
 
 		for (UT_uint32 k=0; k < nrElements; k++)
 		  {
 		    IE_ImpSniffer * s = (IE_ImpSniffer *)m_sniffers.getNthItem (k);
+
 		    UT_Confidence_t content_confidence = UT_CONFIDENCE_ZILCH;
 		    UT_Confidence_t suffix_confidence = UT_CONFIDENCE_ZILCH;
 
@@ -392,17 +396,25 @@ UT_Error IE_Imp::constructImporter(PD_Document * pDocument,
 		    
 		    const char * suffix = UT_pathSuffix(szFilename) ;
 		    if ( suffix != NULL )
-		      suffix_confidence = s->recognizeSuffix(UT_pathSuffix(szFilename));
+				{
+					suffix_confidence = s->recognizeSuffix(UT_pathSuffix(szFilename));
+				}
 		    
-		    UT_Confidence_t confidence = s_condfidence_heuristic ( content_confidence, 
-									   suffix_confidence ) ;
+		    UT_Confidence_t confidence = s_confidence_heuristic ( content_confidence, 
+																  suffix_confidence ) ;
 		    
 		    if ( confidence != 0 && confidence >= best_confidence )
-		      {
-			best_confidence = confidence;
-			ieft = (IEFileType)(k+1);
-		      }
+				{
+					best_sniffer = s;
+					best_confidence = confidence;
+					ieft = (IEFileType) (k+1);
+				}
 		  }
+		if (best_sniffer)
+			{
+				if (pieft != NULL) *pieft = ieft;
+				return best_sniffer->constructImporter (pDocument, ppie);
+			}
 	}
 
 	if (ieft == IEFT_Unknown)

@@ -87,6 +87,7 @@ void IE_ImpExp_RegisterXP ()
 	IE_Exp::registerExporter(new IE_Exp_Text_Sniffer ());
 	IE_Exp::registerExporter(new IE_Exp_EncodedText_Sniffer ());
 	IE_Exp::registerExporter(new IE_Exp_GZipAbiWord_Sniffer ());
+	IE_Exp::registerExporter(new IE_Exp_PHTML_Sniffer ());
 
 	/* Register platform specific. */
 	IE_ImpExp_RegisterPlatform ();

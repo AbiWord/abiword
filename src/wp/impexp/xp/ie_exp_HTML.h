@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -61,10 +63,26 @@ public:
 										IE_Exp ** ppie);
 };
 
+class ABI_EXPORT IE_Exp_PHTML_Sniffer : public IE_ExpSniffer
+{
+	friend class IE_Exp;
+
+public:
+	IE_Exp_PHTML_Sniffer () {}
+	virtual ~IE_Exp_PHTML_Sniffer () {}
+
+	virtual bool recognizeSuffix (const char * szSuffix);
+	virtual bool getDlgLabels (const char ** szDesc,
+							   const char ** szSuffixList,
+							   IEFileType * ft);
+	virtual UT_Error constructExporter (PD_Document * pDocument,
+										IE_Exp ** ppie);
+};
+
 class ABI_EXPORT IE_Exp_HTML : public IE_Exp
 {
 public:
-	IE_Exp_HTML(PD_Document * pDocument, bool is4 = false);
+	IE_Exp_HTML(PD_Document * pDocument, bool is4 = false, bool isAbiWebDoc = false);
 	virtual ~IE_Exp_HTML();
 	
 protected:
@@ -73,6 +91,7 @@ protected:
  private:	
 	s_HTML_Listener *	m_pListener;
 	bool                    m_bIs4;
+	bool                    m_bIsAbiWebDoc;
 };
 
 #endif /* IE_EXP_HTML_H */

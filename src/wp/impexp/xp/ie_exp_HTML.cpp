@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 2001 AbiSource, Inc.
  *
@@ -107,11 +109,36 @@ bool IE_Exp_HTML4_Sniffer::getDlgLabels(const char ** pszDesc,
 	return true;
 }
 
+// XHTML w/ PHP instructions for AbiWord Web Docs
+
+bool IE_Exp_PHTML_Sniffer::recognizeSuffix(const char * szSuffix)
+{
+	return (!(UT_stricmp (szSuffix, ".phtml")));
+}
+
+UT_Error IE_Exp_PHTML_Sniffer::constructExporter(PD_Document * pDocument,
+													 IE_Exp ** ppie)
+{
+	IE_Exp_HTML * p = new IE_Exp_HTML(pDocument,false,true);
+	*ppie = p;
+	return UT_OK;
+}
+
+bool IE_Exp_PHTML_Sniffer::getDlgLabels(const char ** pszDesc,
+									   const char ** pszSuffixList,
+									   IEFileType * ft)
+{
+	*pszDesc = "AbiWord Web Document (.phtml)";
+	*pszSuffixList = "*.phtml";
+	*ft = getFileType();
+	return true;
+}
+
 /*****************************************************************/
 /*****************************************************************/
 
-IE_Exp_HTML::IE_Exp_HTML(PD_Document * pDocument, bool is4)
-  : IE_Exp(pDocument), m_pListener(0), m_bIs4(is4)
+IE_Exp_HTML::IE_Exp_HTML(PD_Document * pDocument, bool is4, bool isAbiWebDoc)
+	: IE_Exp(pDocument), m_pListener(0), m_bIs4(is4), m_bIsAbiWebDoc(isAbiWebDoc)
 {
 	m_error = UT_OK;
 }
@@ -138,7 +165,7 @@ class s_HTML_Listener : public PL_Listener
 {
 public:
 	s_HTML_Listener(PD_Document * pDocument,
-			IE_Exp_HTML * pie, bool is4, bool toClipboard);
+			IE_Exp_HTML * pie, bool is4, bool isAbiWebDoc, bool toClipboard);
 	virtual ~s_HTML_Listener();
 
 	virtual bool		populate(PL_StruxFmtHandle sfh,
@@ -192,7 +219,10 @@ protected:
 	bool				m_bNextIsSpace;
 	bool				m_bWroteText;
 	bool				m_bFirstWrite;
-        bool                            m_bIs4;
+
+	bool				m_bIs4;
+	bool				m_bIsAbiWebDoc;
+
 	const PP_AttrProp*	m_pAP_Span;
 
 	// Need to look up proper type, and place to stick #defines...
@@ -1234,12 +1264,12 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 			  char * old_locale = setlocale (LC_NUMERIC, "C");
 			  if (!span)
 			    {
-			      m_pie->write(UT_String_sprintf("<span style=\"font-size: %fpt", UT_convertToPoints(pszFontSize)));
+			      m_pie->write(UT_String_sprintf("<span style=\"font-size: %gpt", UT_convertToPoints(pszFontSize)));
 			      span = true;
 			    }
 			  else
 			    {
-			      m_pie->write(UT_String_sprintf("; font-size: %fpt", UT_convertToPoints(pszFontSize)));
+			      m_pie->write(UT_String_sprintf("; font-size: %gpt", UT_convertToPoints(pszFontSize)));
 			    }
 			  setlocale (LC_NUMERIC, old_locale);
 			}
@@ -1604,7 +1634,9 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 	// we always encode as UTF-8
 	if ( !m_bIs4 )
 	{
-	    m_pie->write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n");
+		if (!m_bIsAbiWebDoc) // PHP doesn't like <?xml ... ?> very much - old version?
+			m_pie->write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n");
+
 	    m_pie->write("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\r\n");
 	}
 	else
@@ -1678,202 +1710,211 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 	  m_pie->write(m_pie->getFileName());
 	m_pie->write("</title>\r\n");
 
-	m_pie->write("<style type=\"text/css\">\r\n");
-	if(bHaveProp && pAP)
-	{							// global page styles refer to the <body> tag
-		const XML_Char *szValue;
-		PD_Style *pStyle = NULL;
-		m_pDocument->getStyle("Normal", &pStyle);
+	if (!m_bIsAbiWebDoc)
+		{
+			m_pie->write("<style type=\"text/css\">\r\n");
+			if (bHaveProp && pAP)
+				{							// global page styles refer to the <body> tag
+					const XML_Char *szValue;
+					PD_Style *pStyle = NULL;
+					m_pDocument->getStyle("Normal", &pStyle);
 
-		m_pie->write("body\r\n{\r\n\t");
-		if(pStyle)				// Add normal styles to any descendent of the
+					m_pie->write("body\r\n{\r\n\t");
+					if(pStyle)				// Add normal styles to any descendent of the
 								// body for global effect
-		{
-			const XML_Char *szName;
-			for(UT_uint16 i = 0; i < pStyle->getPropertyCount(); i++)
-			{
-				pStyle->getNthProperty(i, szName, szValue);
-				if(!is_CSS(static_cast<const char*>(szName)) ||
-					strstr(szName, "margin"))	// ... don't include margins
-					continue;
+						{
+							const XML_Char *szName;
+							for(UT_uint16 i = 0; i < pStyle->getPropertyCount(); i++)
+								{
+									pStyle->getNthProperty(i, szName, szValue);
+									if(!is_CSS(static_cast<const char*>(szName)) ||
+									   strstr(szName, "margin"))	// ... don't include margins
+										continue;
 
-				m_pie->write(szName);
-				m_pie->write(": ");
-				if (UT_strcmp(szName, "font-family") == 0 &&
-					(UT_strcmp(szValue, "serif") != 0 ||
-					 UT_strcmp(szValue, "sans-serif") != 0 ||
-					 UT_strcmp(szValue, "cursive") != 0 ||
-					 UT_strcmp(szValue, "fantasy") != 0 ||
-					 UT_strcmp(szValue, "monospace") != 0))
-				{
-					m_pie->write("\"");
+									m_pie->write(szName);
+									m_pie->write(": ");
+									if (UT_strcmp(szName, "font-family") == 0 &&
+										(UT_strcmp(szValue, "serif") != 0 ||
+										 UT_strcmp(szValue, "sans-serif") != 0 ||
+										 UT_strcmp(szValue, "cursive") != 0 ||
+										 UT_strcmp(szValue, "fantasy") != 0 ||
+										 UT_strcmp(szValue, "monospace") != 0))
+										{
+											m_pie->write("\"");
+											m_pie->write(szValue);
+											m_pie->write("\"");
+										} // only quote non-keyword family names
+									else if (!UT_strcmp(szName, "color"))
+										{
+											if (!IS_TRANSPARENT_COLOR(szValue))
+												{
+													m_pie->write("#");
+													m_pie->write(szValue);
+												}
+										}
+									else
+										m_pie->write(szValue);
+									m_pie->write(";\r\n\t");
+								}
+						}
+
+					szValue = PP_evalProperty("background-color",
+											  NULL, NULL, pAP, m_pDocument, true);
+					if(!IS_TRANSPARENT_COLOR(szValue))
+						{
+							m_pie->write("background-color: ");
+							if (*szValue != '#')
+								m_pie->write("#");
+							m_pie->write(szValue);
+						}
+					m_pie->write(";\r\n}\r\n\r\n@media print\r\n{\r\n\tbody\r\n\t{\r\n\t\t");
+
+					szValue = PP_evalProperty("page-margin-top",
+											  NULL, NULL, pAP, m_pDocument, true);
+					m_pie->write("padding-top: ");
 					m_pie->write(szValue);
-					m_pie->write("\"");
-				} // only quote non-keyword family names
-				else if (!UT_strcmp(szName, "color"))
-				  {
-				    if (!IS_TRANSPARENT_COLOR(szValue))
-				      {
-					m_pie->write("#");
+
+					szValue = PP_evalProperty("page-margin-bottom",
+											  NULL, NULL, pAP, m_pDocument, true);
+					m_pie->write("; padding-bottom: ");
 					m_pie->write(szValue);
-				      }
-				  }
-				else
+
+					szValue = PP_evalProperty("page-margin-left",
+											  NULL, NULL, pAP, m_pDocument, true);
+					m_pie->write(";\r\n\t\tpadding-left: ");
 					m_pie->write(szValue);
-				m_pie->write(";\r\n\t");
-			}
-		}
 
-		szValue = PP_evalProperty("background-color",
-								  NULL, NULL, pAP, m_pDocument, true);
-		if(!IS_TRANSPARENT_COLOR(szValue))
-		  {
-		    m_pie->write("background-color: ");
-		    if (*szValue != '#')
-		      m_pie->write("#");
-		    m_pie->write(szValue);
-		  }
-		m_pie->write(";\r\n}\r\n\r\n@media print\r\n{\r\n\tbody\r\n\t{\r\n\t\t");
-
-		szValue = PP_evalProperty("page-margin-top",
-								  NULL, NULL, pAP, m_pDocument, true);
-		m_pie->write("padding-top: ");
-		m_pie->write(szValue);
-
-		szValue = PP_evalProperty("page-margin-bottom",
-								  NULL, NULL, pAP, m_pDocument, true);
-		m_pie->write("; padding-bottom: ");
-		m_pie->write(szValue);
-
-		szValue = PP_evalProperty("page-margin-left",
-								  NULL, NULL, pAP, m_pDocument, true);
-		m_pie->write(";\r\n\t\tpadding-left: ");
-		m_pie->write(szValue);
-
-		szValue = PP_evalProperty("page-margin-right",
-								  NULL, NULL, pAP, m_pDocument, true);
-		m_pie->write("; padding-right: ");
-		m_pie->write(szValue);
-
-		m_pie->write(";\r\n\t}\r\n}\r\n");
-	}
-
-	const PD_Style* p_pds;
-	const XML_Char* szName;
-	const XML_Char* szValue;
-	const PP_AttrProp * pAP_style = NULL;
-
-	const XML_Char * szStyleName = NULL;
-
-	for (size_t nthStyle = 0; m_pDocument->enumStyles (nthStyle, &szStyleName, &p_pds); nthStyle++)
-	{
-		PT_AttrPropIndex api = p_pds->getIndexAP();
-		bool bHaveProp = m_pDocument->getAttrProp(api,&pAP_style);
-
-		if(bHaveProp && pAP_style && p_pds->isUsed())
-		{
-			char * myStyleName = removeWhiteSpace ((const char *)szStyleName);
-
-			if(UT_strcmp(myStyleName, "Heading1") == 0)
-				m_pie->write("h1, ");
-			else if(UT_strcmp(myStyleName, "Heading2") == 0)
-				m_pie->write("h2, ");
-			else if(UT_strcmp(myStyleName, "Heading3") == 0)
-				m_pie->write("h3, ");
-			else if(UT_strcmp(myStyleName, "BlockText") == 0)
-				m_pie->write("blockquote, ");
-			else if(UT_strcmp(myStyleName, "PlainText") == 0)
-				m_pie->write("pre, ");
-			else if(UT_strcmp(myStyleName, "Normal") == 0)
-				m_pie->write("p, ");
-
-			m_pie->write(".");			// generic class qualifier, CSS
-			m_pie->write(myStyleName);
-			m_pie->write("\r\n{");
-
-			UT_uint32 i = 0, j = 0;
-			while(pAP_style->getNthAttribute(i++, szName, szValue))
-			{
-				if(!is_CSS(static_cast<const char*>(szName)))
-					continue;
-				if(strstr(myStyleName, "List") && (
-					strstr(szName, "margin") || UT_strcmp(szName, "text-indent") == 0))
-					continue;
-					// see line 770 of this file for reasoning behind skipping here
-
-				m_pie->write("\r\n\t");
-				m_pie->write(szName);
-				m_pie->write(": ");
-				m_pie->write(szValue);
-
-				m_pie->write(";");
-			}
-			while(pAP_style->getNthProperty(j++, szName, szValue))
-			{
-				if(!is_CSS(static_cast<const char*>(szName)))
-					continue;
-				if(strstr(myStyleName, "List") && (
-					strstr(szName, "margin") || UT_strcmp(szName, "text-indent") == 0))
-					continue;
-					// see line 770 of this file for reasoning behind skipping here
-
-				m_pie->write("\r\n\t");
-				m_pie->write(szName);
-				m_pie->write(": ");
-				if (UT_strcmp(szName, "font-family") == 0 &&
-					(UT_strcmp(szValue, "serif") != 0 ||
-					 UT_strcmp(szValue, "sans-serif") != 0 ||
-					 UT_strcmp(szValue, "cursive") != 0 ||
-					 UT_strcmp(szValue, "fantasy") != 0 ||
-					 UT_strcmp(szValue, "monospace") != 0))
-				{
-					m_pie->write("\"");
+					szValue = PP_evalProperty("page-margin-right",
+											  NULL, NULL, pAP, m_pDocument, true);
+					m_pie->write("; padding-right: ");
 					m_pie->write(szValue);
-					m_pie->write("\"");
-				}						// only quote non-keyword family names
-				else
-				{
-				  if(strstr(szName, "color") && !IS_TRANSPARENT_COLOR(szValue))
-				    {
-				      m_pie->write("#");
-				      m_pie->write(szValue);
-				    }
-				  else
-				    {
-				      m_pie->write(szValue);
-				    }
+
+					m_pie->write(";\r\n\t}\r\n}\r\n");
 				}
 
-				m_pie->write(";");
-			}
-			FREEP(myStyleName);
+			const PD_Style* p_pds;
+			const XML_Char* szName;
+			const XML_Char* szValue;
+			const PP_AttrProp * pAP_style = NULL;
 
-			m_pie->write("\r\n}\r\n");
-		}
-	}
+			const XML_Char * szStyleName = NULL;
 
-	{
-	  m_pie->write("\r\ntable\r\n{\r\n");
-	  m_pie->write("\twidth: 100%;\r\n}");
+			for (size_t nthStyle = 0; m_pDocument->enumStyles (nthStyle, &szStyleName, &p_pds); nthStyle++)
+				{
+					PT_AttrPropIndex api = p_pds->getIndexAP();
+					bool bHaveProp = m_pDocument->getAttrProp(api,&pAP_style);
+
+					if(bHaveProp && pAP_style && p_pds->isUsed())
+						{
+							char * myStyleName = removeWhiteSpace ((const char *)szStyleName);
+
+							if(UT_strcmp(myStyleName, "Heading1") == 0)
+								m_pie->write("h1, ");
+							else if(UT_strcmp(myStyleName, "Heading2") == 0)
+								m_pie->write("h2, ");
+							else if(UT_strcmp(myStyleName, "Heading3") == 0)
+								m_pie->write("h3, ");
+							else if(UT_strcmp(myStyleName, "BlockText") == 0)
+								m_pie->write("blockquote, ");
+							else if(UT_strcmp(myStyleName, "PlainText") == 0)
+								m_pie->write("pre, ");
+							else if(UT_strcmp(myStyleName, "Normal") == 0)
+								m_pie->write("p, ");
+
+							m_pie->write(".");			// generic class qualifier, CSS
+							m_pie->write(myStyleName);
+							m_pie->write("\r\n{");
+
+							UT_uint32 i = 0, j = 0;
+							while(pAP_style->getNthAttribute(i++, szName, szValue))
+								{
+									if(!is_CSS(static_cast<const char*>(szName)))
+										continue;
+									if(strstr(myStyleName, "List") &&
+									   (strstr(szName, "margin") || UT_strcmp(szName, "text-indent") == 0))
+										continue;
+									// see line 770 of this file for reasoning behind skipping here
+
+									m_pie->write("\r\n\t");
+									m_pie->write(szName);
+									m_pie->write(": ");
+									m_pie->write(szValue);
+
+									m_pie->write(";");
+								}
+							while(pAP_style->getNthProperty(j++, szName, szValue))
+								{
+									if(!is_CSS(static_cast<const char*>(szName)))
+										continue;
+									if(strstr(myStyleName, "List") &&
+									   (strstr(szName, "margin") || UT_strcmp(szName, "text-indent") == 0))
+										continue;
+									// see line 770 of this file for reasoning behind skipping here
+
+									m_pie->write("\r\n\t");
+									m_pie->write(szName);
+									m_pie->write(": ");
+									if (UT_strcmp(szName, "font-family") == 0 &&
+										(UT_strcmp(szValue, "serif") != 0 ||
+										 UT_strcmp(szValue, "sans-serif") != 0 ||
+										 UT_strcmp(szValue, "cursive") != 0 ||
+										 UT_strcmp(szValue, "fantasy") != 0 ||
+										 UT_strcmp(szValue, "monospace") != 0))
+										{
+											m_pie->write("\"");
+											m_pie->write(szValue);
+											m_pie->write("\"");
+										}					// only quote non-keyword family names
+									else
+										{
+											if(strstr(szName, "color") &&
+											   !IS_TRANSPARENT_COLOR(szValue))
+												{
+													m_pie->write("#");
+													m_pie->write(szValue);
+												}
+											else
+												{
+													m_pie->write(szValue);
+												}
+										}
+
+									m_pie->write(";");
+								}
+							FREEP(myStyleName);
+
+							m_pie->write("\r\n}\r\n");
+						}
+				}
+
+			m_pie->write("\r\ntable\r\n{\r\n");
+			m_pie->write("\twidth: 100%;\r\n}");
 	  
-	  m_pie->write("\r\n\r\ntd\r\n{\r\n");
-	  m_pie->write("\ttext-align: left;\r\n");
-	  m_pie->write("\tvertical-align: top;\r\n");
-	  m_pie->write("}\r\n\r\n");
-	}
+			m_pie->write("\r\n\r\ntd\r\n{\r\n");
+			m_pie->write("\ttext-align: left;\r\n");
+			m_pie->write("\tvertical-align: top;\r\n");
+			m_pie->write("}\r\n\r\n");
 
-	m_pie->write("</style>\r\n");
+			m_pie->write("</style>\r\n");
+		}
+
+	if (m_bIsAbiWebDoc)
+		m_pie->write("<?php\r\n  include(\"$DOCUMENT_ROOT/x-header.php\");\r\n ?>\r\n");
+
 	m_pie->write("</head>\r\n");
 	m_pie->write("<body>\r\n");
+
+	if (m_bIsAbiWebDoc)
+		m_pie->write("<?php\r\n  include(\"$DOCUMENT_ROOT/x-page-begin.php\");\r\n ?>\r\n");
 
 	m_bFirstWrite = false;
 }
 
 s_HTML_Listener::s_HTML_Listener(PD_Document * pDocument,
-				 IE_Exp_HTML * pie, bool is4, bool toClipboard):
+				 IE_Exp_HTML * pie, bool is4, bool isAbiWebDoc, bool toClipboard):
   m_pDocument (pDocument), m_pie(pie), m_bInSection(false),
   m_bInBlock(false), m_bInSpan(false), m_bNextIsSpace(false),
-  m_bWroteText(false), m_bFirstWrite(true), m_bIs4(is4),
+  m_bWroteText(false), m_bFirstWrite(true), m_bIs4(is4), m_bIsAbiWebDoc(isAbiWebDoc),
   m_pAP_Span(0), m_iBlockType(0), m_iListDepth(0),
   m_iPrevListDepth(0), m_iImgCnt(0), m_bToClipboard ( toClipboard ), mTableHelper(pDocument)
 {
@@ -1901,6 +1942,9 @@ s_HTML_Listener::~s_HTML_Listener()
 	}
 
 	UT_VECTOR_FREEALL(char*, m_utvDataIDs);
+
+	if (m_bIsAbiWebDoc)
+		m_pie->write("<?php\r\n  include(\"$DOCUMENT_ROOT/x-page-end.php\");\r\n ?>\r\n");
 
 	m_pie->write("</body>\r\n");
 	m_pie->write("</html>\r\n");
@@ -1978,14 +2022,14 @@ bool s_HTML_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 					  {
 					    if(szWidth)
 					      {
-						UT_String_sprintf(buf, "%f", (int) UT_convertToDimension(szWidth, DIM_PX));
+						UT_String_sprintf(buf, "%d", (int) UT_convertToDimension(szWidth, DIM_PX));
 						m_pie->write (" width=\"");
 						m_pie->write (buf);
 						m_pie->write ("\" ");
 					      }
 					    if(szHeight)
 					      {
-						UT_String_sprintf(buf, "%f", (int) UT_convertToDimension(szHeight, DIM_PX));
+						UT_String_sprintf(buf, "%d", (int) UT_convertToDimension(szHeight, DIM_PX));
 						m_pie->write (" height=\"");
 						m_pie->write (buf);
 						m_pie->write ("\" ");
@@ -2204,7 +2248,7 @@ bool s_HTML_Listener::signal(UT_uint32 /* iSignal */)
 UT_Error IE_Exp_HTML::_writeDocument(void)
 {
 	bool err = true;
-	m_pListener = new s_HTML_Listener(getDoc(),this, m_bIs4, getDocRange()!=NULL);
+	m_pListener = new s_HTML_Listener(getDoc(),this, m_bIs4, m_bIsAbiWebDoc, getDocRange()!=NULL);
 	if (!m_pListener)
 		return UT_IE_NOMEMORY;
 	if (getDocRange())
