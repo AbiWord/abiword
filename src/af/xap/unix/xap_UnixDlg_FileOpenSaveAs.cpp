@@ -104,6 +104,22 @@ static void s_dialog_response(GtkWidget * /* widget */,
 	}
 }
 
+#if !GTK_CHECK_VERSION(2,4,0)
+static void s_ok_clicked(GtkWidget * /* widget */,
+                                                 XAP_Dialog_FileOpenSaveAs::tAnswer * answer)
+{
+        *answer = XAP_Dialog_FileOpenSaveAs::a_OK;
+        gtk_main_quit();
+}
+
+static void s_cancel_clicked(GtkWidget * /* widget */,
+                                                         XAP_Dialog_FileOpenSaveAs::tAnswer * answer)
+{
+        *answer = XAP_Dialog_FileOpenSaveAs::a_CANCEL;
+        gtk_main_quit();
+}
+#endif
+
 static void s_delete_clicked(GtkWidget * /* widget*/, gpointer /* data */, XAP_Dialog_FileOpenSaveAs::tAnswer * answer)
 {
 	*answer = XAP_Dialog_FileOpenSaveAs::a_CANCEL;
@@ -820,9 +836,10 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 				"response",
 				G_CALLBACK(s_dialog_response), &m_answer);
 #else
-	g_signal_connect (G_OBJECT (m_FS),
-				"response",
-				G_CALLBACK(s_dialog_response), &m_answer);
+        g_signal_connect(G_OBJECT(pFS->ok_button), "clicked",
+                                           G_CALLBACK(s_ok_clicked), &m_answer);
+        g_signal_connect(G_OBJECT(pFS->cancel_button), "clicked",
+                                           G_CALLBACK(s_cancel_clicked), &m_answer);
 #endif
 	
 #if GTK_CHECK_VERSION(2,4,0)
