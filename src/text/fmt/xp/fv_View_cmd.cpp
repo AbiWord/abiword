@@ -1209,6 +1209,15 @@ bool FV_View::cmdDeleteCol(PT_DocPosition posCol)
 
 	UT_sint32 numRows = pTab->getNumRows();
 //
+// If we delete the last column we're actually deleteing the table. So let's
+// do it.
+//
+	if(pTab->getNumCols() ==1)
+	{
+		cmdDeleteTable(posCol);
+		return true;
+	}
+//
 // Got all we need, now set things up to do the delete nicely
 //
 	// Signal PieceTable Change
@@ -1461,6 +1470,15 @@ bool FV_View::cmdDeleteRow(PT_DocPosition posRow)
 
 	UT_sint32 numCols = pTab->getNumCols();
 //
+// If we delete the last row we're actually deleting the table, so do that 
+// instead.
+//
+	if(pTab->getNumRows() == 1)
+	{
+		cmdDeleteTable(posRow);
+		return true;
+	}
+//
 // Got all we need, now set things up to do the delete nicely
 //
 	// Signal PieceTable Change
@@ -1698,6 +1716,10 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const XML
 	// sufficient, it should return bool, and if not, than the
 	// UT_Error & bool operations below are probably not safe
 	UT_Error e;
+	if(numRows == 0 || numCols==0)
+	{
+		return 0; 
+	}
 
 //
 // Do all the stuff we need to make this go smoothly and to undo in a single step.

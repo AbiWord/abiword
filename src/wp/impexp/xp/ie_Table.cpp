@@ -946,7 +946,7 @@ void ie_imp_table::writeTablePropsInDoc(void)
 	UT_String sColSpace = getPropVal("table-col-spacing");
 	if(sColSpace.size() == 0)
 	{
-		sColSpace = "0.05in";
+		sColSpace = "0.02in";
 	}
 	UT_String sLeftPos = getPropVal("table-column-leftpos");
 	if(sLeftPos.size()==0)

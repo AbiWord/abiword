@@ -599,23 +599,23 @@ void fl_TableLayout::_lookupProperties(void)
 	switch(dim)
 	{
 	case DIM_IN:
-		defaultOffset = "0.02in";
+		defaultOffset = "0.0in"; //was 0.02in
 		break;
 
 	case DIM_CM:
-		defaultOffset = "0.0508cm";
+		defaultOffset = "0.0cm";
 		break;
 
 	case DIM_PI:
-		defaultOffset = "0.1pi";
+		defaultOffset = "0.0pi";
 		break;
 
 	case DIM_PT:
-		defaultOffset= "1.2pt";
+		defaultOffset= "0.0pt";
 		break;
 
 	case DIM_MM:
-		defaultOffset= "0.508mm";
+		defaultOffset= "0.0mm"; //was 0.508
 		break;
 
 		// TODO: PX, and PERCENT
@@ -627,11 +627,11 @@ void fl_TableLayout::_lookupProperties(void)
 #endif
 	case DIM_none:
 	default:
-		defaultOffset = "0.01in";	// TODO: what to do with this.
+		defaultOffset = "0.0in";	// TODO: what to do with this. was 0.01in
 		break;
 
 	}
-
+	defaultOffset = "0.005in";	// TODO: what to do with this. was 0.01in
 	if(pszLeftOffset && pszLeftOffset[0])
 	{
 		m_iLeftOffset = m_pLayout->getGraphics()->convertDimension(pszLeftOffset);
@@ -735,9 +735,9 @@ void fl_TableLayout::_lookupProperties(void)
 	else
 	{
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		m_iColSpacing =  UT_convertToLayoutUnits("0.05in");
+		m_iColSpacing =  UT_convertToLayoutUnits("0.02in"); // was 0.05in
 #else
-		m_iColSpacing = m_pLayout->getGraphics()->convertDimension("0.05in");
+		m_iColSpacing = m_pLayout->getGraphics()->convertDimension("0.02in");
 #endif
 	}
 	if(pszTableRowSpacing && *pszTableRowSpacing)
@@ -749,7 +749,7 @@ void fl_TableLayout::_lookupProperties(void)
 	}
 	else
 	{
-		m_iRowSpacing = m_pLayout->getGraphics()->convertDimension("0.05in");
+		m_iRowSpacing = m_pLayout->getGraphics()->convertDimension("0.01in");
 	}
 //
 // Positioned columns controls
@@ -1407,23 +1407,23 @@ void fl_CellLayout::_lookupProperties(void)
 	switch(dim)
 	{
 	case DIM_IN:
-		defaultOffset = "0.05in";
+		defaultOffset = "0.0in"; //was 0.05in
 		break;
 
 	case DIM_CM:
-		defaultOffset = "0.127cm";
+		defaultOffset = "0.0cm";
 		break;
 
 	case DIM_PI:
-		defaultOffset = "0.3pi";
+		defaultOffset = "0.0pi";
 		break;
 
 	case DIM_PT:
-		defaultOffset= "3.6pt";
+		defaultOffset= "0.0pt";
 		break;
 
 	case DIM_MM:
-		defaultOffset= "1.27mm";
+		defaultOffset= "0.0mm"; //was 1.27
 		break;
 
 		// TODO: PX, and PERCENT
@@ -1435,11 +1435,11 @@ void fl_CellLayout::_lookupProperties(void)
 #endif
 	case DIM_none:
 	default:
-		defaultOffset = "0.05in";	// TODO: what to do with this.
+		defaultOffset = "0.0in";	// TODO: what to do with this. was 0.05in
 		break;
 
 	}
-
+	defaultOffset = "0.002in";
 	if(pszLeftOffset && pszLeftOffset[0])
 	{
 		m_iLeftOffset = m_pLayout->getGraphics()->convertDimension(pszLeftOffset);

@@ -268,7 +268,7 @@ public:
 	void                formatAllHdrFtr(void);
 	void                checkAndRemovePages(void);
 	void                addValidPages(void);
-	void                setNeedsSectionBreak(bool bSet) {m_bNeedsSectionBreak =bSet;}
+	void                setNeedsSectionBreak(bool bSet ) {m_bNeedsSectionBreak =bSet;}
 	bool                needsSectionBreak(void) const { return m_bNeedsSectionBreak;}
 
 private:
