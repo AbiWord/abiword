@@ -75,7 +75,7 @@ void AP_UnixDialog_InsertTable::runModal(XAP_Frame * pFrame)
 	_populateWindowData();
 
 	switch ( abiRunModalDialog ( GTK_DIALOG(m_windowMain),
-								 pFrame, this, GTK_RESPONSE_CANCEL, false ) )
+								 pFrame, this, GTK_RESPONSE_OK, false ) )
 	{
 		case GTK_RESPONSE_OK:
 			m_answer = AP_Dialog_InsertTable::a_OK;
@@ -118,11 +118,11 @@ GtkWidget * AP_UnixDialog_InsertTable::_constructWindow(void)
 	
 	// localize the strings in our dialog, and set tags for some widgets
 	
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbTableSize"), pSS, AP_STRING_ID_DLG_InsertTable_TableSize);
+	localizeLabelMarkup(glade_xml_get_widget(xml, "lbTableSize"), pSS, AP_STRING_ID_DLG_InsertTable_TableSize_Capital);
 	localizeLabel(glade_xml_get_widget(xml, "lbNumCols"), pSS, AP_STRING_ID_DLG_InsertTable_NumCols);
 	localizeLabel(glade_xml_get_widget(xml, "lbNumRows"), pSS, AP_STRING_ID_DLG_InsertTable_NumRows);
 	
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbAutoFit"), pSS, AP_STRING_ID_DLG_InsertTable_AutoFit);
+	localizeLabelMarkup(glade_xml_get_widget(xml, "lbAutoFit"), pSS, AP_STRING_ID_DLG_InsertTable_AutoFit_Capital);
 	
 	localizeButton(glade_xml_get_widget(xml, "rbAutoColSize"), pSS, AP_STRING_ID_DLG_InsertTable_AutoColSize);
 	g_object_set_data (G_OBJECT (glade_xml_get_widget(xml, "rbAutoColSize")), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(b_AUTOSIZE));	
