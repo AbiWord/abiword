@@ -2521,6 +2521,11 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		{
 			return _appendField ("page_number");
 		}
+ 		else if (strcmp((char*)pKeyword, "cs") == 0)
+ 		{
+ 			m_currentRTFState.m_paraProps.m_styleNumber = param;
+ 			return true;
+ 		}
 		break;
 
 	case 'd':
