@@ -120,7 +120,8 @@ OBJS=		$(PLATFORM_OBJS)						\
 		$(OBJDIR)/ut_math.$(OBJ_SUFFIX)         \
 		$(OBJDIR)/ut_xml.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ut_spi.$(OBJ_SUFFIX)			\
-		$(OBJDIR)/ut_contextGlyph.$(OBJ_SUFFIX)
+		$(OBJDIR)/ut_contextGlyph.$(OBJ_SUFFIX) 	\
+		$(OBJDIR)/ut_thread.$(OBJ_SUFFIX)
 
 ifeq ($(ABI_OPT_PEER_EXPAT),1)
  OBJS += $(OBJDIR)/ut_xml_expat.$(OBJ_SUFFIX)
@@ -134,10 +135,6 @@ endif
 
 ifeq ($(ABI_OPT_PERL),1)
 OBJS += $(OBJDIR)/ut_PerlBindings.$(OBJ_SUFFIX)
-endif
-
-ifeq ($(ABI_OPT_THREADS),1)
-OBJS +=	$(OBJDIR)/ut_thread.$(OBJ_SUFFIX)
 endif
 
 include $(ABI_ROOT)/src/config/abi_rules.mk

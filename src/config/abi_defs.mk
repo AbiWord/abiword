@@ -540,7 +540,7 @@ ABI_BUILD_VERSION_MICRO= 0
 ABI_BUILD_VERSION	= $(ABI_BUILD_VERSION_MAJOR).$(ABI_BUILD_VERSION_MINOR).$(ABI_BUILD_VERSION_MICRO)
 ABI_BUILD_ID		=
 
-CFLAGS  += -DABI_BUILD_VERSION=\"$(ABI_BUILD_VERSION)\"
+CFLAGS  += -DABI_BUILD_VERSION=\"$(ABI_BUILD_VERSION)\" -DHAVE_THREADS
 
 ##################################################################
 ##################################################################
@@ -736,14 +736,6 @@ CFLAGS += -DHAVE_CURL=1 -DCURLHASH_INSTALL_SYSTEMWIDE
 INCLUDES += -I$(ABI_ROOT)/../libcurl/include -I$(ABI_ROOT)/../zlib
 endif
 endif	##ifeq ($(ABI_OPT_CURL),1)
-
-ifeq ($(ABI_OPT_THREADS),1)
-CFLAGS          +=      -DHAVE_THREADS
-ifeq ($(ABI_NATIVE),unix)
-EXTRA_LIBS      +=      -lpthread
-endif
-## Add libs for your platform here
-endif	##ifeq ($(ABI_OPT_THREADS),1)
 
 ##################################################################
 ##################################################################

@@ -60,7 +60,8 @@ CPPSRCS=	ut_base64.cpp		\
 		ut_OverstrikingChars.cpp \
 		ut_Language.cpp		\
 		ut_Encoding.cpp     \
-		ut_contextGlyph.cpp
+		ut_contextGlyph.cpp	\
+		ut_thread.cpp
 
 ifeq ($(ABI_OPT_PEER_EXPAT),1)
  CPPSRCS += ut_xml_expat.cpp
@@ -76,10 +77,6 @@ endif
 
 ifeq ($(ABI_OPT_PERL),1)
 CPPSRCS += ut_PerlBindings.cpp
-endif
-
-ifeq ($(ABI_OPT_THREADS),1)
-CPPSRCS += ut_thread.cpp
 endif
 
 ### regex is only used by calc.

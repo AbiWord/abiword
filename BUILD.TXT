@@ -73,16 +73,6 @@ There are several ways to build and run AbiWord:
 	At the moment this works on Unix, Win32 and QNX. Also, since we currently
 	only have ispell hashes only those systems will work.
 
-	ABI_OPT_THREADS=1
-	Enables use of threads.
-	Currently this is the file-download dialog (see ABI_OPT_CURL above). When
-	threads are enabled the Download_File dialog will show a simple dialog with
-	a cancel-button, giving the user a way of aborting a download. If threads
-	are not available no dialog will be shown, instead AbiWord will (except	for
-	a progressbar) simply "freeze" while the download is in progress.
-	This is a "temporary" build option that will exist until all our platforms
-	have a thread implementation.
-	
      - gg 17/7/2002
     =================
 
