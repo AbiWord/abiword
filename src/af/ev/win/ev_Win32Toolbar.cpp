@@ -17,11 +17,13 @@
  * 02111-1307, USA.
  */
 
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <commctrl.h>   // includes the common control header
 
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
+#include "ut_vector.h"
 #include "ev_Win32Toolbar.h"
 #include "xap_Win32App.h"
 #include "xap_Win32Frame.h"
@@ -41,6 +43,52 @@
 #endif
 
 /*****************************************************************/
+
+//
+// Janitor class to cleanup bitmap handles at program termination.
+// This one should really be in the anonymous namespace in this translation
+// unit, but since we don't use namespaces...
+//
+class foo_Bitmap_container
+{
+public:	// d'tor needs to be public due to buggy MSVC compilers
+	~foo_Bitmap_container();
+
+	static foo_Bitmap_container& instance();	// singleton
+	void addBitmap(HBITMAP hBm)
+	{
+		UT_ASSERT(hBm);
+		m_bitmaps_vector.addItem(reinterpret_cast<void*>(hBm));
+	}
+
+private:
+	foo_Bitmap_container() : m_bitmaps_vector(50) {}
+	foo_Bitmap_container(const foo_Bitmap_container&);	// no impl
+	void operator=(const foo_Bitmap_container&);		// no impl
+	UT_Vector m_bitmaps_vector;
+};
+
+foo_Bitmap_container& foo_Bitmap_container::instance()
+{
+	static foo_Bitmap_container container;
+	return container;
+}
+
+foo_Bitmap_container::~foo_Bitmap_container()
+{
+	const UT_uint32 nItems = m_bitmaps_vector.getItemCount();
+	for (UT_uint32 iItem = nItems; iItem; --iItem)
+	{
+		void* p = m_bitmaps_vector.getNthItem(iItem - 1);
+		// This is really, *REALLY* bad! The same entity that created this
+		// bitmap should also be responsible to destroy it. Time permitting,
+		// refactor all this code to make it correct.
+		::DeleteObject((HGDIOBJ)p);
+	}
+}
+
+/*****************************************************************/
+
 
 EV_Win32Toolbar::EV_Win32Toolbar(XAP_Win32App * pWin32App, XAP_Win32Frame * pWin32Frame,
 								 const char * szToolbarLayoutName,
@@ -370,8 +418,9 @@ UT_Bool EV_Win32Toolbar::synthesize(void)
 	//
 	// Now bitmaps are cut down to requested size if to large - HB
 	
-#define MY_MAXIMUM_BITMAP_X		21
-#define MY_MAXIMUM_BITMAP_Y		21
+	const WORD MY_MAXIMUM_BITMAP_X = 21;
+	const WORD MY_MAXIMUM_BITMAP_Y = 21;
+
 	if( bIcons )
 		SendMessage(m_hwnd, TB_SETBITMAPSIZE, 0,
 					(LPARAM) MAKELONG(MY_MAXIMUM_BITMAP_X,MY_MAXIMUM_BITMAP_Y));
@@ -459,14 +508,14 @@ UT_Bool EV_Win32Toolbar::synthesize(void)
 						}
 
 						HWND hwndCombo = CreateWindowEx ( 0L,   // No extended styles.
-							"COMBOBOX",                    // Class name.
-							"",                            // Default text.
-							dwStyle,                       // Styles and defaults.
-							0, 2, iWidth, 250,             // Size and position.
-                            m_hwnd,                        // Parent window.
-							(HMENU) u,                     // ID.
-							m_pWin32App->getInstance(),    // Current instance.
-							NULL );                        // No class data.
+							"COMBOBOX",						// Class name.
+							"",								// Default text.
+							dwStyle,						// Styles and defaults.
+							0, 2, iWidth, 250,				// Size and position.
+							m_hwnd,							// Parent window.
+							(HMENU) u,						// ID.
+							m_pWin32App->getInstance(),		// Current instance.
+							NULL );							// No class data.
 
 						UT_ASSERT(hwndCombo);
 						
@@ -500,7 +549,7 @@ UT_Bool EV_Win32Toolbar::synthesize(void)
 						POINT pt;
 						pt.x = 4;
 						pt.y = 4; 
-			            HWND hwndComboEdit = ChildWindowFromPoint(hwndCombo, pt); 
+						HWND hwndComboEdit = ChildWindowFromPoint(hwndCombo, pt); 
 						UT_ASSERT(hwndComboEdit);
 						UT_ASSERT(hwndComboEdit != hwndCombo);
 						s_lpfnDefComboEdit = (WHICHPROC)GetWindowLong(hwndComboEdit, GWL_WNDPROC);
@@ -554,6 +603,14 @@ UT_Bool EV_Win32Toolbar::synthesize(void)
 				if (bButton)
 				{
 					// TODO figure out who destroys hBitmap...
+					//
+					// TMN: 20 Nov 2000 - Tests display that we must hang on to the
+					// bitmap handle for this to work.
+					// Had we been allowed to use C++ I'd say
+					//		std::map<std::string, HBITMAP> icons;
+					// but currently I don't know how to handle this in a clean way.
+					// Would UT_Array help?
+
 					// TODO add code to create these once per application
 					// TODO and reference them in each toolbar instance
 					// TODO rather than create them once for each window....
@@ -569,6 +626,12 @@ UT_Bool EV_Win32Toolbar::synthesize(void)
 																	pLabel->getIconName(),
 																	&hBitmap);
 						UT_ASSERT(bFoundIcon);
+
+						// TMN: I know, this is really, really bad, but it's
+						// currently the only thing we have at our disposal to
+						// release these bitmaps at program termination.
+						foo_Bitmap_container::instance().addBitmap(hBitmap);
+
 						TBADDBITMAP ab;
 						ab.hInst = 0;
 						ab.nID = (LPARAM)hBitmap;
@@ -652,39 +715,9 @@ UT_Bool EV_Win32Toolbar::synthesize(void)
 		}
 	}
 
-	// Get the height of the toolbar.
-	DWORD dwBtnSize = SendMessage(m_hwnd, TB_GETBUTTONSIZE, 0,0);
-
-	// HACK: guess the length of the toolbar
-	RECT r;
 	UT_ASSERT(last_id > 0);
-	SendMessage(m_hwnd, TB_GETRECT, (WPARAM) last_id, (LPARAM)(LPRECT) &r);  
-	UINT iWidth = r.right + 13;
 
-	// add this bar to the rebar
-	REBARBANDINFO  rbbi;
-	ZeroMemory(&rbbi, sizeof(rbbi));
-	// Initialize REBARBANDINFO
-	rbbi.cbSize = sizeof(REBARBANDINFO);
-	rbbi.fMask = RBBIM_COLORS |	// clrFore and clrBack are valid
-		RBBIM_CHILD |				// hwndChild is valid
-		RBBIM_CHILDSIZE |			// cxMinChild and cyMinChild are valid
-		RBBIM_SIZE |				// cx is valid
-		RBBIM_STYLE |				// fStyle is valid
-		0;
-	rbbi.clrFore = GetSysColor(COLOR_BTNTEXT);
-	rbbi.clrBack = GetSysColor(COLOR_BTNFACE);
-	rbbi.fStyle = RBBS_NOVERT |	// do not display in vertical orientation
-		/* RBBS_CHILDEDGE | */  // NOT using RBBS_CHILDEDGE gives us a slimmer look, better with the flat button style
-		RBBS_BREAK |
-		0;
-	rbbi.hwndChild = m_hwnd;
-	rbbi.cxMinChild = LOWORD(dwBtnSize);
-	rbbi.cyMinChild = HIWORD(dwBtnSize);
-	rbbi.cx = iWidth;
-
-	// Add it at the the end
-	SendMessage(hwndParent, RB_INSERTBAND, (WPARAM)-1, (LPARAM)&rbbi);
+	_addToRebar();	// add this bar to the rebar
 
 	return UT_TRUE;
 }
@@ -906,3 +939,89 @@ UT_Bool EV_Win32Toolbar::getToolTip(LPARAM lParam)
 
 	return UT_TRUE;
 }
+
+
+void EV_Win32Toolbar::show()
+{
+	UT_ASSERT(m_pWin32Frame);
+	HWND hRebar = m_pWin32Frame->getToolbarWindow();
+	UT_ASSERT(hRebar);
+	const int iBand = _getBandForHwnd(m_hwnd);
+	UT_ASSERT(iBand < 0);	// It can't already be displayed!
+	_addToRebar();
+}
+
+void EV_Win32Toolbar::hide()
+{
+	UT_ASSERT(m_pWin32Frame);
+	HWND hRebar = m_pWin32Frame->getToolbarWindow();
+	UT_ASSERT(hRebar);
+	const int iBand = _getBandForHwnd(m_hwnd);
+	if (iBand >= 0)
+	{
+		SendMessage(hRebar, RB_DELETEBAND, (WPARAM)iBand, 0);
+	}
+}
+
+//
+// Returns the index of hToolbar in the rebar hRebar.
+// Returns -1 on error or if the toolbar wasn't recognized as a
+// child of the specified rebar control.
+//
+int EV_Win32Toolbar::_getBandForHwnd(HWND hToolbar) const
+{
+	HWND hRebar = m_pWin32Frame->getToolbarWindow();
+
+	// If we ever get more than 20 toolbars I don't wanna be around.
+	REBARBANDINFO rbi = { 0 };
+	rbi.cbSize = sizeof(rbi);
+	rbi.fMask  = RBBIM_CHILD;
+	for (int i = 0; i < 20; ++i)
+	{
+		if (!SendMessage(hRebar, RB_GETBANDINFO, (WPARAM)i, (LPARAM)&rbi))
+		{
+			continue;
+		}
+		if (hToolbar == rbi.hwndChild)
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+
+void EV_Win32Toolbar::_addToRebar()
+{
+	// Get the height of the toolbar.
+	DWORD dwBtnSize = SendMessage(m_hwnd, TB_GETBUTTONSIZE, 0,0);
+
+	RECT rc;
+	GetWindowRect(m_hwnd, &rc);
+//	UINT iWidth = rc.right + 13;
+	UINT iWidth = rc.right - rc.left + 13;
+
+	// add this bar to the rebar
+	REBARBANDINFO  rbbi = { 0 };
+	// Initialize REBARBANDINFO
+	rbbi.cbSize = sizeof(REBARBANDINFO);
+	rbbi.fMask =	RBBIM_COLORS	|	// clrFore and clrBack are valid
+					RBBIM_CHILD		|	// hwndChild is valid
+					RBBIM_CHILDSIZE	|	// cxMinChild and cyMinChild are valid
+					RBBIM_SIZE		|	// cx is valid
+					RBBIM_STYLE;		// fStyle is valid
+	rbbi.clrFore = GetSysColor(COLOR_BTNTEXT);
+	rbbi.clrBack = GetSysColor(COLOR_BTNFACE);
+	// NOT using RBBS_CHILDEDGE for fStyle gives us a slimmer look,
+	// better with the flat button style.
+	rbbi.fStyle =	RBBS_NOVERT			|	// do not display in vertical orientation
+					RBBS_BREAK;
+	rbbi.hwndChild = m_hwnd;
+	rbbi.cxMinChild = LOWORD(dwBtnSize);
+	rbbi.cyMinChild = HIWORD(dwBtnSize);
+	rbbi.cx = iWidth;
+
+	HWND hRebar = m_pWin32Frame->getToolbarWindow();
+	// Add it at the the end
+	SendMessage(hRebar, RB_INSERTBAND, (WPARAM)-1, (LPARAM)&rbbi);
+}
+

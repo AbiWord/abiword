@@ -67,6 +67,9 @@ public:
 	inline UINT				WmCommandFromItemId(XAP_Toolbar_Id id)	{ return (id + WM_USER + _ev_MENU_OFFSET); };
 
 protected:
+	virtual void					show();
+	virtual void					hide();
+
 	void							_releaseListener(void);
 	HWND							_getControlWindow(XAP_Toolbar_Id id);
 
@@ -75,6 +78,9 @@ protected:
 												 const EV_Toolbar_Action * pAction, 
 												 XAP_Toolbar_Id id);
 
+private:
+	int								_getBandForHwnd(HWND hToolbar) const;
+	void							_addToRebar();
 	static LRESULT CALLBACK			_ComboWndProc(HWND, UINT, WPARAM, LPARAM);
 	static LRESULT CALLBACK			_ComboEditWndProc(HWND, UINT, WPARAM, LPARAM);
 
@@ -85,6 +91,7 @@ protected:
 
 	HWND							m_hwnd;
 	UT_Vector						m_vecToolbarWidgets;
+
 };
 
 #endif /* EV_WIN32TOOLBAR_H */
