@@ -1283,7 +1283,7 @@ void AP_UnixDialog_Styles::event_Modify_OK(void)
     {
       // error message!
       const XAP_StringSet * pSS = m_pApp->getStringSet ();
-      const char * msg = pSS->getValue (AP_STRING_ID_DLG_Styles_ErrBlackName);
+      const char * msg = pSS->getValue (AP_STRING_ID_DLG_Styles_ErrBlankName);
 
       getFrame()->showMessageBox ((const char *)msg,
 				  XAP_Dialog_MessageBox::b_O,
