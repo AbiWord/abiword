@@ -166,9 +166,11 @@ They'll get build by the make system.
 
 Prior to build Abiword with the autoconf build system, you need to compile
 and install the following libraries:
--libpng
--libiconv
-Then you need to build the following peer libraries
+-libpng (from the official tarball since abi CVS version will not work)
+	<http://libpng.sourceforge.net/>
+-libiconv (from the official tarball since abi CVS version will not work)
+	<ftp://ftp.ilog.fr/pub/Users/haible/gnu/libiconv-1.6.1.tar.gz>
+Then you need to build the following peer libraries (from abi CVS)
 -wv
 -psiconv
 -expat
