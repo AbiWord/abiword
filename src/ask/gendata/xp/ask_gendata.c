@@ -69,7 +69,7 @@ static void startElement(void *userData, const XML_Char *name, const XML_Char **
 		{
 			fprintf(stderr, "<fileset> tags may not be nested\n");
 
-			return;
+			exit(-1);
 		}
 		
 		while (ppAtt[0])
@@ -99,7 +99,7 @@ static void startElement(void *userData, const XML_Char *name, const XML_Char **
 		{
 			fprintf(stderr, "ERROR:  missing 'name' attribute on <fileset> tag\n");
 
-			return;
+			exit(-1);
 		}
 
 		pCurrentSet = calloc(1, sizeof(*pCurrentSet));
@@ -107,7 +107,7 @@ static void startElement(void *userData, const XML_Char *name, const XML_Char **
 		{
 			fprintf(stderr, "ERROR: calloc failure on calloc(struct fileset)\n");
 
-			return;
+			exit(-1);
 		}
 
 		strcpy(pCurrentSet->szName, pszFileSetName);
@@ -213,14 +213,14 @@ static void startElement(void *userData, const XML_Char *name, const XML_Char **
 		{
 			fprintf(stderr, "ERROR:  <datafile> tag must not appear outside of <fileset>\n");
 
-			goto cleanup;
+			exit(-1);
 		}
 		
 		if (!pszDataFileName)
 		{
 			fprintf(stderr, "ERROR:  missing 'name' attribute on <datafile> tag\n");
 
-			goto cleanup;
+			exit(-1);
 		}
 		
 		iOriginalLength = ASK_getFileLength(pszDataFileName);
@@ -228,7 +228,7 @@ static void startElement(void *userData, const XML_Char *name, const XML_Char **
 		{
 			fprintf(stderr, "Could not determine length of file %s\n", pszDataFileName);
 
-			goto cleanup;
+			exit(-1);
 		}
 		
 		pOriginalBytes = malloc(iOriginalLength);
@@ -236,7 +236,7 @@ static void startElement(void *userData, const XML_Char *name, const XML_Char **
 		{
 			fprintf(stderr, "Could not malloc %ld bytes for data file %s\n", iOriginalLength, pszDataFileName);
 
-			goto cleanup;
+			exit(-1);
 		}
 
 		pCompressedBytes = malloc(iOriginalLength);
@@ -244,14 +244,14 @@ static void startElement(void *userData, const XML_Char *name, const XML_Char **
 		{
 			fprintf(stderr, "Could not malloc %ld bytes for data file %s\n", iOriginalLength, pszDataFileName);
 
-			goto cleanup;
+			exit(-1);
 		}
 		
 		if (iOriginalLength != ASK_readEntireFile(pszDataFileName, pOriginalBytes, iOriginalLength))
 		{
 			fprintf(stderr, "Could not read file %s\n", pszDataFileName);
 
-			goto cleanup;
+			exit(-1);
 		}
 
 		if (bNoCompress)
@@ -266,7 +266,7 @@ static void startElement(void *userData, const XML_Char *name, const XML_Char **
 			{
 				fprintf(stderr, "Failed compress.\n");
 
-				goto cleanup;
+				exit(-1);
 			}
 		}
 
@@ -321,7 +321,6 @@ static void startElement(void *userData, const XML_Char *name, const XML_Char **
 			pCurrentSet->pHead = pNode;
 		}
 
-	cleanup:
 		if (pOriginalBytes)
 		{
 			free(pOriginalBytes);
@@ -361,7 +360,7 @@ void parseInputFile(char* pszInputFile, FILE* fpOut)
 	if (!fp)
 	{
 		fprintf(stderr, "Could not open input file (%s)\n", pszInputFile);
-		goto Cleanup;
+		exit(-1);
 	}
 	
 	parser = XML_ParserCreate(NULL);
@@ -379,15 +378,19 @@ void parseInputFile(char* pszInputFile, FILE* fpOut)
 			fprintf(stderr, "%s at line %d\n",
 						 XML_ErrorString(XML_GetErrorCode(parser)),
 						 XML_GetCurrentLineNumber(parser));
-			goto Cleanup;
+			exit(-1);
 		}
 	} 
 
-Cleanup:
 	if (parser)
+	{
 		XML_ParserFree(parser);
+	}
+	
 	if (fp)
+	{
 		fclose(fp);
+	}
 }
 
 int lib_main(int argc, char** argv)

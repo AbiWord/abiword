@@ -106,7 +106,7 @@ void ASK_dumpHexCBytes(FILE* fp, const unsigned char* pBytes, long iLen)
 			fprintf(fp, "\n");
 		}
 		
-		fprintf(fp, "0x%02x, ", pBytes[i]);
+		fprintf(fp, "0x%02x,", pBytes[i]);
 	}
 
 	fprintf(fp, "\n");
