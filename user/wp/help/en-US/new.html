@@ -52,7 +52,100 @@
 <h2>What's New</h2>
 
 <dl>
- 	<dt><b>Version 0.7.9</b><p>
+ 	 <dt><b>Version 0.7.10</b><p>
+ <ul type=disc>
+        <li> 1.  GNOME builds.<BR>  Due to extensive work by Joaquín Cuenca Abela and many
+others, AbiWord now utilizes the GNOME front end.  This is not so much an
+individual feature or effort, but a cumulative one.  GNOME binaries are now
+available in RPM format for Intel architectures.      <BR>
+
+<li>2.  Editing Improvements.<BR>  Bruce Pearson fixed some of the more visible
+editing problems AbiWord previously had.  For example, now when you erase
+all characters in a paragraph, the font size and format do not reset to the
+default.  This problem manifested itself in a number of ways, such as
+incorrect line spacing on blank paragraphs when the font size was changed,
+and many other small annoyances  General editing around font size and
+format boundaries makes much more sense now.  Also, Jesper Skov provided
+more intelligent cursor motion at line boundaries.     <BR>
+
+<li>3.  Show Paragraphs.<BR>  Alexey Sintutin added the basic framework for this
+feature which allows invisible characters such as tabs, page breaks and
+section breaks to be visible.  Hard paragraph breaks are not yet shown, but
+the current implementation of Show Paragraphs goes a long way.  <BR>
+
+<li>4.  Modeless dialogs.<BR>  Martin Sevior extended his work on the Insert Symbol
+dialog by making it modeless.  To do so, he had to implement an entire
+modeless dialog framework.  This work paves the way for other contributors
+to make other dialogs modeless as well.  Everyone who enjoys leaving
+dialogs active while doing other actions applauds this effort.    <BR>
+
+<li>5.  Word count dialog. <BR> This addition has been simmering for some
+time.  Sam Tobin-Hochstatd created the dialog, and it is now available in
+the UNIX builds.  Traditionally, AbiWord development proceeds with a dialog
+appearing on one OS first, then it is quickly ported to all other operating
+systems, so Windows users should see this dialog added shortly.    <BR>
+
+<li>6.  GoTo dialog. <BR> Joaquín Cuenca Abela was busy this month.  This dialog
+also makes its appearance on UNIX, and should also appear on Windows
+soon.  Now you can GoTo a specific line or page on the fly.      <BR>
+
+<li>7.  Help. <BR> AbiWord now has on-line help.  These help files are included in
+the distribution courtesy of Christophe Caron
+(ChrisDigo@aol.com)  Currently, help is available in French and
+English.  This feature is a great testimony of how individuals can make a
+real difference in an Open Source project.  The English translation of the
+files are still a little rough around the edges, but these will continue to
+improve as we have toward AbiWord 1.0.               <BR>
+
+<li>8.  RTF Improvements. <BR> Hubert Figuiere fixed a number of RTF related
+issues.  For example, now optional hyphens import correctly (#837), RTF
+export no longer produces extra spaces after accented characters (#569),
+and AbiWord now correctly imports accented characters in RTF files created
+by TED (#886).         <BR>
+
+<li>9. Ruler fixes.<BR>  Previously, there were a number of ways to cause problems
+in AbiWord by moving page and paragraph margins in the ruler in ways they
+were not supposed to be moved.  A tag team effort of Alexey Sintutin
+(megabyte@salesexplosion.com) and Aaron Lehmann (aaronl@vitelus.com) has
+done a thorough job of eliminating almost all possible cases. <BR>
+
+<li>10.  Many Bug fixes. <BR>  Better error checking for command line arguments
+was added by Sam Tobin-Hochstatd (#250). Windows and Linux printouts now
+have identical margins, courtesy of Mike Nordell (#274).  Better handling
+of images in multi-column documents from Aaron Lehmann.  The X11-multi key
+no longer causes problems courtesy of  HJ (#435).  Matt Kraai made sure
+that changing justification no longer causes tabs to get lost
+(#443).  Martin Sevior also took time out to fix a crashing bug relating to
+zooming and selections (#596).  Postscript output now handles colored text
+when LC_NUMERIC is set thanks to Kenny MacDonald (#604).  Postscript page
+numbers now work correctly due to Hubert Figuiere (#843).. Cut and Paste
+with gnome terminals now works thanks to Petr Tesarik. The LaTeX exporter
+now exports line height, left and the right margins, and justification
+thanks to Joaquín Cuenca Abela. Finally, Mike Meyer added some code to make
+the AbiWord font reader on UNIX more robust.  <BR>
+
+<li>11.  Code cleanup. <BR> Mike Nordell swept through the AbiWord code base like a
+whirlwind, fixing all sorts of little code oddities.  It is likely that
+this a fixed a number of problems never before identified.     <BR>
+
+<li>12.  Development environment improvements.<BR>  Michael D. Pritchett
+(MPritchett@attglobal.net)
+figured out how to work around the new Cygnus tools while Jesper Skov added
+some internal functions to make it easier for AbiWord developers to peer
+into AbiWord's internal structures. Also, Bernhard Rosenkraenzer fixes some
+issues with newer versions of GCC.  All of these changes mean it will be
+easier for even more contributors to join the AbiSource project.     <BR>
+
+<li>13.  Translations.<BR>  A Galician translation was added by Jesus Bravo Alvarez
+(jba@pobox.com)
+The following translations have been updated: Danish (Birger Langkjer and
+Martin Hansen),  German (Harald Fernengel), Spanish (Joaquín Cuenca Abela),
+and Swedish (Linus G Larsson)     </ul>     <BR>
+        </p>
+        <br>
+
+
+        <dt><b>Version 0.7.9</b><p>
         <dt>User Interface
         <ul type=disc>
                 <li>Insert Symbol dialog (msevior@mccubbin.ph.unimelb.edu.au)
