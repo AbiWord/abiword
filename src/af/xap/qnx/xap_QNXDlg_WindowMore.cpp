@@ -206,6 +206,7 @@ PtWidget_t * XAP_QNXDialog_WindowMore::_constructWindow(void)
 	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, 
 				Pt_GROUP_STRETCH_VERTICAL | Pt_GROUP_STRETCH_HORIZONTAL,
 				Pt_GROUP_STRETCH_VERTICAL | Pt_GROUP_STRETCH_HORIZONTAL);
+	PtSetArg(&args[n++], Pt_ARG_HEIGHT,2 * ABI_DEFAULT_BUTTON_WIDTH,0);
 	vboxGroup = PtCreateWidget(PtGroup, vboxMain, n, args);
 	pretty_group(vboxGroup, pSS->getValue(XAP_STRING_ID_DLG_MW_Activate));
 
