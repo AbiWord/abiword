@@ -464,7 +464,7 @@ void fp_TabRun::_drawArrow(UT_uint32 iLeft,UT_uint32 iTop,UT_uint32 iWidth, UT_u
 
     #define NPOINTS 8
 
-    UT_Point * points[NPOINTS];
+    UT_Point points[NPOINTS];
 
     UT_sint32 cur_linewidth = 1 + (UT_MAX(10,m_iAscent) - 10) / 8;
     UT_uint32 iyAxis = iTop + m_pLine->getAscent() * 2 / 3;
