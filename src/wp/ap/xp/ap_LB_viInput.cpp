@@ -369,7 +369,7 @@ static struct ap_bs_Char s_CharTable[] =
 //	I'm taking the list from /usr/include/X11/keysymdef.h, so I think
 //	that the set is reasonably complete.
 //	
-//	I don't know how to test these on my EnUS system with my EnUS keyboard,
+//	I don't know how to test these on my en-US system with my en-US keyboard,
 //	but I think they will work.
 //
 //	TODO For now I just bound them all to "insertData" which will cause

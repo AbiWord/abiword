@@ -11,7 +11,7 @@
 <!-- catalan translations provided by Softcatalà <info@softcatala.org> -->
 
 
-<AbiStrings app="AbiWord Personal" ver="1.0" language="CaES">
+<AbiStrings app="AbiWord Personal" ver="1.0" language="ca-ES">
 
 <Strings	class="XAP"
 UntitledDocument="Document%d"

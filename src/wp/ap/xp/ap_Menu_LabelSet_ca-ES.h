@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998,1999 AbiSource, Inc.
+ * Copyright (C) 1998-2000 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,10 +32,10 @@
 // If your platform doesn't have a way to do accelerators or uses a different
 // character, remove or change the '&' in your menu constructor code.
 
-// If the second argument is UT_TRUE, then this is the fall-back for
-// this language (named in the first two letters).
+// If the third argument is UT_TRUE, then this is the fall-back for
+// this language (named in the first argument).
 
-BeginSet(CaES,UT_TRUE)
+BeginSet(ca,ES,UT_TRUE)
 
 	MenuLabel(AP_MENU_ID__BOGUS1__,			NULL,				NULL)
 

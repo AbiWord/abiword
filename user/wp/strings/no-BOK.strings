@@ -9,7 +9,8 @@
 
 <!-- Norwegian translations provided by Edouard Lafargue <lafargue@online.no> -->
 <!--                                and Gro Elin Hansen <Gro.Hanse@student.uib.no> -->
-<AbiStrings app="AbiWord Personal" ver="1.0" language="NoNO">
+
+<AbiStrings app="AbiWord Personal" ver="1.0" language="no-BOK">
 
 <Strings	class="XAP"
 UntitledDocument="Untitled%d"

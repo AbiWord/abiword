@@ -28,16 +28,15 @@
 // Include each language file that we want in the build.
 // TODO decide if we want to ifdef these...
 
-#include "ap_TB_LabelSet_EnUS.h"
-#include "ap_TB_LabelSet_CaES.h"
-#include "ap_TB_LabelSet_EsES.h"
-#include "ap_TB_LabelSet_FiFI.h"
-#include "ap_TB_LabelSet_FrFR.h"
-#include "ap_TB_LabelSet_DaDK.h"
-#include "ap_TB_LabelSet_DuNL.h"
-#include "ap_TB_LabelSet_DeDE.h"
-#include "ap_TB_LabelSet_IdID.h"
-#include "ap_TB_LabelSet_ItIT.h"
-#include "ap_TB_LabelSet_NoNO.h"
-#include "ap_TB_LabelSet_SvSE.h"
-
+#include "ap_TB_LabelSet_en-US.h"
+#include "ap_TB_LabelSet_ca-ES.h"
+#include "ap_TB_LabelSet_es-ES.h"
+#include "ap_TB_LabelSet_fi-FI.h"
+#include "ap_TB_LabelSet_fr-FR.h"
+#include "ap_TB_LabelSet_da-DK.h"
+#include "ap_TB_LabelSet_du-NL.h"
+#include "ap_TB_LabelSet_de-DE.h"
+#include "ap_TB_LabelSet_id-ID.h"
+#include "ap_TB_LabelSet_it-IT.h"
+#include "ap_TB_LabelSet_no-BOK.h"
+#include "ap_TB_LabelSet_sv-SE.h"

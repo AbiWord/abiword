@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998-2000 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -77,9 +77,12 @@ UT_Bool AP_Win32Prefs::loadBuiltinPrefs(void)
 	{
 		char  szTmp[64];
 
-		szLocaleInfo[0] = toupper( szLocaleInfo[0] );
+		szLocaleInfo[0] = tolower( szLocaleInfo[0] );
+		szLocaleInfo[1] = tolower( szLocaleInfo[1] );
+		szLocaleInfo[2] = '-';
+
 		if( !strcmp( szLocaleInfo, "Non" ) ) // Special case: Nynorsk in Norway
-			strcpy( &szLocaleInfo[2], "NYNORSK" );
+			strcpy( &szLocaleInfo[3], "NYNORSK" );
 		else if( GetLocaleInfo( LOCALE_USER_DEFAULT, LOCALE_SABBREVCTRYNAME, szTmp, sizeof( szTmp ) / sizeof( szTmp[0] ) ) )
 		{
 			char *psz;
@@ -88,11 +91,11 @@ UT_Bool AP_Win32Prefs::loadBuiltinPrefs(void)
 				if( !strncmp( &psz[2], szTmp, 3 ) )
 					break;
 
-			strncpy( &szLocaleInfo[2], psz, 2 );
-			szLocaleInfo[4] = '\0';
+			strncpy( &szLocaleInfo[3], psz, 2 );
+			szLocaleInfo[5] = '\0';
 		}
 		else
-			szLocaleInfo[2] = '\0';
+			szLocaleInfo[3] = '\0';
 
 		UT_DEBUGMSG(("Prefs: Using LOCALE info from environment [%s]\n", szLocaleInfo));
 

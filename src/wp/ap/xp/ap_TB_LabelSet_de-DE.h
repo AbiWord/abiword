@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998-2000 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -40,10 +40,10 @@
 // Note: if a tool item does not use an icon (like a combo box), use the
 // Note: constant "NoIcon" in that column.
 
-// If the second argument is UT_TRUE, then this is the fall-back for
-// this language (named in the first two letters).
+// If the third argument is UT_TRUE, then this is the fall-back for
+// this language (named in the first argument).
 
-BeginSet(DeDE,UT_TRUE)
+BeginSet(de,DE,UT_TRUE)
 
 	ToolbarLabel(AP_TOOLBAR_ID__BOGUS1__,		NULL,		NoIcon,			NULL,		NULL)
 

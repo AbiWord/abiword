@@ -9,7 +9,7 @@
 
 <!-- Danish translations provided by Martin Willemoes Hansen <mwh@stampede.org> -->
 
-<AbiStrings app="AbiWord Personal" ver="1.0" language="DaDK">
+<AbiStrings app="AbiWord Personal" ver="1.0" language="da-DK">
 
 <Strings	class="XAP"
 UntitledDocument="Unavngivet%d"

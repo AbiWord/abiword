@@ -9,7 +9,7 @@
 <!-- Italian translations provided by Mauro Colorio <macolori@tin.it> -->
 
 
-<AbiStrings app="AbiWord Personal" ver="1.0" language="ItIT">
+<AbiStrings app="AbiWord Personal" ver="1.0" language="it-IT">
 
 <Strings	class="XAP"
 UntitledDocument="Senza Titolo%d"

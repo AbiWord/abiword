@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998-2000 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -67,7 +67,7 @@
 #define AP_PREF_DEFAULT_SpellCheckWordList			"american.hash"				
 
 #define AP_PREF_KEY_StringSet						"StringSet"					/* name of dialog/msgbox strings */
-#define AP_PREF_DEFAULT_StringSet					"EnUS"						
+#define AP_PREF_DEFAULT_StringSet					"en-US"						
 
 #define AP_PREF_KEY_KeyBindings						"KeyBindings"
 #define AP_PREF_DEFAULT_KeyBindings					"default"					/* value in ap_LoadBindings.cpp */
@@ -76,10 +76,10 @@
 #define AP_PREF_DEFAULT_MenuLayout					"Main"						/* value in BeginLayout() */
 
 #define AP_PREF_KEY_MenuLabelSet					"MenuLabelSet"
-#define AP_PREF_DEFAULT_MenuLabelSet				"EnUS"						/* value in BeginSet() */
+#define AP_PREF_DEFAULT_MenuLabelSet				"en-US"						/* value in BeginSet() */
 
 #define AP_PREF_KEY_ToolbarLabelSet					"ToolbarLabelSet"
-#define AP_PREF_DEFAULT_ToolbarLabelSet				"EnUS"						/* value in BeginSet() */
+#define AP_PREF_DEFAULT_ToolbarLabelSet				"en-US"						/* value in BeginSet() */
 
 #define AP_PREF_KEY_ToolbarLayouts					"ToolbarLayouts"
 #define AP_PREF_DEFAULT_ToolbarLayouts				"FileEditOps FormatOps"		/* values in BeginLayout() */

@@ -9,7 +9,7 @@
 <!-- _Language_ translations provided by albi <albi@linuxfan.com> -->
 <!-- with help from several people in nl.comp.os.linux and casema.linux -->
 
-<AbiStrings app="AbiWord Personal" ver="1.0" language="DuNL">
+<AbiStrings app="AbiWord Personal" ver="1.0" language="du-NL">
 
 <Strings	class="XAP"
 UntitledDocument="ZonderNaam%d"

@@ -8,7 +8,8 @@
 <!-- ==============================================================  -->
 
 <!-- Swedish translations provided by Henrik Berg <henrik@lansen.se> -->
-<AbiStrings app="AbiWord Personal" ver="1.0" language="SvSE">
+
+<AbiStrings app="AbiWord Personal" ver="1.0" language="sv-SE">
 
 <Strings	class="XAP"
 UntitledDocument="Dokument%d"

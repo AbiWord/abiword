@@ -9,7 +9,7 @@
 <!-- ==============================================================  -->
 
 <!-- Finnish translations provided by Jarmo Karvonen <jarmo@dawn.joensuu.fi> -->
-<AbiStrings app="AbiWord Personal" ver="1.0" language="FiFI">
+<AbiStrings app="AbiWord Personal" ver="1.0" language="fi-FI">
 
 <Strings	class="XAP"
 UntitledDocument="Asiakirja%d"

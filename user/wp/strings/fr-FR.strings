@@ -11,7 +11,7 @@
 <!-- french translations provided by Philippe Duperron <duperron@mail.dotcom.fr> -->
 
 
-<AbiStrings app="AbiWord Personal" ver="1.0" language="FrFR">
+<AbiStrings app="AbiWord Personal" ver="1.0" language="fr-FR">
 
 <Strings	class="XAP"
 UntitledDocument="Document%d"

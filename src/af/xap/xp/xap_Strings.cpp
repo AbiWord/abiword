@@ -1,5 +1,5 @@
 /* AbiSource Application Framework
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998-2000 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -255,7 +255,7 @@ void XAP_DiskStringSet::_startElement(const XML_Char *name, const XML_Char **att
 	if (UT_XML_stricmp(name, "AbiStrings") == 0)
 	{
 		// we expect something of the form:
-		// <AbiStrings app="AbiWord" ver="1.0" language="EnUS">...</AbiStrings>
+		// <AbiStrings app="AbiWord" ver="1.0" language="en-US">...</AbiStrings>
 
 		const XML_Char ** a = atts;
 		while (*a)

@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998-2000 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -865,7 +865,7 @@ UT_Bool AP_QNXApp::parseCommandLine(void)
 				// dump the string table in english as a template for translators.
 				// see abi/docs/AbiSource_Localization.abw for details.
 				AP_BuiltinStringSet * pBuiltinStringSet = new AP_BuiltinStringSet(this,AP_PREF_DEFAULT_StringSet);
-				pBuiltinStringSet->dumpBuiltinSet("EnUS.strings");
+				pBuiltinStringSet->dumpBuiltinSet("en-US.strings");
 				delete pBuiltinStringSet;
 #endif
 			}

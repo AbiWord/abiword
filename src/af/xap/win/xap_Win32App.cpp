@@ -1,5 +1,5 @@
 /* AbiSource Application Framework
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998-2000 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -221,12 +221,12 @@ void XAP_Win32App::_setAbiSuiteLibDir(void)
 	//
 	// .../AbiSuite/AbiWord/bin/AbiWord.exe
 	//                     /strings/*.strings
-	//                     /help/EnUS/*.html
-	//                     /samples/EnUS/*.abw
+	//                     /help/en-US/*.html
+	//                     /samples/en-US/*.abw
 	//             /AbiShow/bin/AbiShow.exe
 	//                     /strings/*.strings
-	//                     /help/EnUS/*.html
-	//                     /samples/EnUS/*.abw
+	//                     /help/en-US/*.html
+	//                     /samples/en-US/*.abw
 	//             /dictionary/*.hash
 	//
 	// we want to set the library directory to .../AbiSuite

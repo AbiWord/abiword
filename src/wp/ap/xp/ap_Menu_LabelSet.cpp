@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998-2000 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,7 +17,7 @@
  * 02111-1307, USA.
  */
 
-
+#include <string.h>
 #include "ut_types.h"
 #include "ut_string.h"
 #include "ut_assert.h"
@@ -33,10 +33,10 @@
 ******************************************************************
 *****************************************************************/
 
-#define BeginSet(Language,bIsDefaultSetForLanguage)										\
-	static EV_Menu_LabelSet * _ap_CreateLabelSet_##Language(void)						\
+#define BeginSet(Language,Locale,bIsDefaultSetForLanguage)								\
+	static EV_Menu_LabelSet * _ap_CreateLabelSet_##Language##Locale(void)				\
 	{	EV_Menu_LabelSet * pLabelSet =													\
-			new EV_Menu_LabelSet(#Language,AP_MENU_ID__BOGUS1__,AP_MENU_ID__BOGUS2__);	\
+			new EV_Menu_LabelSet(#Language"-"#Locale,AP_MENU_ID__BOGUS1__,AP_MENU_ID__BOGUS2__);	\
 		UT_ASSERT(pLabelSet);
 	
 #define MenuLabel(id,szName,szStatusMsg)			pLabelSet->setLabel((id),(szName),(szStatusMsg));
@@ -67,7 +67,7 @@ struct _lt
 	UT_Bool						m_bIsDefaultSetForLanguage;
 };
 
-#define BeginSet(Language,bIsDefaultSetForLanguage)	{ #Language, _ap_CreateLabelSet_##Language, bIsDefaultSetForLanguage },
+#define BeginSet(Language,Locale,bIsDefaultSetForLanguage)	{ #Language"-"#Locale, _ap_CreateLabelSet_##Language##Locale, bIsDefaultSetForLanguage },
 #define MenuLabel(id,szName,szStatusMsg)			/*nothing*/
 #define EndSet()									/*nothing*/
 
@@ -100,15 +100,18 @@ EV_Menu_LabelSet * AP_CreateMenuLabelSet(const char * szLanguage)
 		// if we didn't find an exact match (Language and Locale),
 		// try finding the default set for this language.
 
+		char * dash = strchr(szLanguage, '-');
+		int len = (dash ? dash - szLanguage : 2);
+
 		for (k=0; k<NrElements(s_ltTable); k++)
-			if (   (UT_strnicmp(szLanguage,s_ltTable[k].m_name,2)==0)
+			if (   (UT_strnicmp(szLanguage,s_ltTable[k].m_name,len)==0)
 				&& (s_ltTable[k].m_bIsDefaultSetForLanguage))
 				return (s_ltTable[k].m_fn)();
 	}
 	
-	// we fall back to EnUS if they didn't give us a valid language name.
+	// we fall back to en-US if they didn't give us a valid language name.
 	
-	return _ap_CreateLabelSet_EnUS();
+	return _ap_CreateLabelSet_enUS();
 }
 
 UT_uint32 AP_GetMenuLabelSetLanguageCount(void)

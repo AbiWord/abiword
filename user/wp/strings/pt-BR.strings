@@ -11,7 +11,7 @@
 <!-- portuguese translations provided by Rui M. Silva <rms@ssi.aaum.pt> -->
 <!-- brazilian portuguese fixes by Giovanni Nunes <giovanni@skydome.net -->
 
-<AbiStrings app="AbiWord Personal" ver="1.0" language="PtBR">
+<AbiStrings app="AbiWord Personal" ver="1.0" language="pt-BR">
 
 <Strings	class="XAP"
 UntitledDocument="Documento%d"

@@ -11,7 +11,7 @@
 <!-- spanish translations provided by Javier Yáñez <javier@cartero.com> -->
 
 
-<AbiStrings app="AbiWord Personal" ver="1.0" language="FrFR">
+<AbiStrings app="AbiWord Personal" ver="1.0" language="es-FR">
 
 <Strings	class="XAP"
 UntitledDocument="Documento%d"

@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998-2000 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -92,21 +92,18 @@ void AP_QNXPrefs::overlayEnvironmentPrefs(void)
 	// how about LC_CTYPE?
 	// (they are probably all the same, anyway)
 	
-	const char * szNewLang = "EnUS"; // default to US English
+	const char * szNewLang = "en-US"; // default to US English
 	char * lc_ctype = UT_strdup(setlocale(LC_CTYPE, NULL));
 
 	// locale categories seem to always look like this:
 	// two letter for language (lowcase) _ two letter country code (upcase)
-        // ie. en_US, es_ES, pt_PT
+	// ie. en_US, es_ES, pt_PT
 	// which goes to the Abiword format:
-	// EnUS, EsES, PtPT
+	// en-US, es-ES, pt-PT
 
 	// we'll try this quick conversion
 	if (lc_ctype != NULL && strlen(lc_ctype) >= 5) {
-	   lc_ctype[0] = toupper(lc_ctype[0]);
-	   lc_ctype[2] = lc_ctype[3];
-	   lc_ctype[3] = lc_ctype[4];
-	   lc_ctype[4] = 0;
+	   lc_ctype[2] = '-';
 	   szNewLang = lc_ctype;
 	}
 

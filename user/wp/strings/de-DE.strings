@@ -11,7 +11,7 @@
 <!-- German translations provided by Christian Terboven <cterboven@gmx.net> -->
 
 
-<AbiStrings app="AbiWord Personal" ver="1.0" language="DeDE">
+<AbiStrings app="AbiWord Personal" ver="1.0" language="de-DE">
 
 <Strings	class="XAP"
 UntitledDocument="Unbenannt%d"
