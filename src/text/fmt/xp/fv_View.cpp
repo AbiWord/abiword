@@ -461,7 +461,6 @@ UT_RGBColor FV_View::getColorSelForeground ()
 }
 
 // TODO i18n All of these case functions are too simplistic:
-// TODO i18n French uppercase letters must not showaccents
 // TODO i18n German single-letter "sharp s" uppercases to double-letter "SS"
 // TODO i18n Turkish "i" uppercases to capital "I" with dot
 // TODO i18n Turkish "I" lowercases to lower "i" without dot

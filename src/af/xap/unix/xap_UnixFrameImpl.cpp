@@ -597,32 +597,21 @@ gint XAP_UnixFrameImpl::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
 // from the m_wTopLevelWindow widget.
 // -- MES
 //
+        GtkWindow * pWin = NULL;
 		if(pFrame->getFrameMode() == XAP_NormalFrame)
-		{
-			GtkWindow * pWin = GTK_WINDOW(pUnixFrameImpl->m_wTopLevelWindow);
-			gint gwidth,gheight;
-			gtk_window_get_size(pWin,&gwidth,&gheight);
-			pApp->setGeometry(e->x,e->y,gwidth,gheight,flags);
+			pWin = GTK_WINDOW(pUnixFrameImpl->m_wTopLevelWindow);
+        else
+            pWin = GTK_WINDOW(pUnixFrameImpl->m_wTopLevelWindow->window);
 
-		// Dynamic Zoom Implimentation
-			if(!pUnixFrameImpl->m_bDoZoomUpdate && (pUnixFrameImpl->m_iZoomUpdateID == 0))
-			{
-				pUnixFrameImpl->m_iZoomUpdateID = g_idle_add((GSourceFunc) do_ZoomUpdate, (gpointer) pUnixFrameImpl);
-			}
-		}
-		else
-		{
-			GdkWindow * pWin = pUnixFrameImpl->m_wTopLevelWindow->window;
-			gint gwidth,gheight;
-			gdk_window_get_size(pWin,&gwidth,&gheight);
-			pApp->setGeometry(e->x,e->y,gwidth,gheight,flags);
+        gint gwidth,gheight;
+        gtk_window_get_size(pWin,&gwidth,&gheight);
+        pApp->setGeometry(e->x,e->y,gwidth,gheight,flags);
 
-		// Dynamic Zoom Implimentation
-			if(!pUnixFrameImpl->m_bDoZoomUpdate && (pUnixFrameImpl->m_iZoomUpdateID == 0))
-			{
-				pUnixFrameImpl->m_iZoomUpdateID = g_idle_add((GSourceFunc) do_ZoomUpdate, (gpointer) pUnixFrameImpl);
-			}
-		}
+		// Dynamic Zoom Implementation
+        if(!pUnixFrameImpl->m_bDoZoomUpdate && (pUnixFrameImpl->m_iZoomUpdateID == 0))
+		{
+            pUnixFrameImpl->m_iZoomUpdateID = g_idle_add((GSourceFunc) do_ZoomUpdate, (gpointer) pUnixFrameImpl);
+        }
 	}
 	return 1;
 }
