@@ -20,7 +20,7 @@ Ithamar R. Adema <ithamar@dds.nl>               BeOS fixes
 Matthew Allen <fret@ozemail.com.au>             MouseWheel fix
 Tim Allen <rita_tim@tpg.com.au>                 Goto Localization, Indonesian Translation
 Peter Arnold <petera@intrinsica.co.uk>          RTF import
-Nils Barth <nils_barth@post.harvard.edu>	LaTeX exporter improvements
+Nils Barth <nils_barth@post.harvard.edu>	LaTeX exporter improvements, cntrl-Q
 Darren Benham <gecko@benham.net>                Debian package, ispell whiz
 Henrik Berg <henrik@lansen.se>                  ispell i18n
 Daniel Berlin <db003g@mail.rochester.edu>       BeOS whiz
@@ -46,9 +46,7 @@ Ryan Dooley <ryan@coe.missouri.edu>             started IRIX port
 Paul Egli <pegli@sourcegear.com>
 Danny Faught <faught@rstcorp.com>
 Harald Fernengel <harry@bnro.de>                RTF compatibility fixes
-Hubert Figuiere <hfiguiere@teaser.fr>           RTF import/export work, MacOS (X) maintainer, 
-                                                MacOS X makefiles and autoconf, JPEG import, 
-						Applix import
+Hubert Figuiere <hfiguiere@teaser.fr>           RTF import/export work, MacOS (X) maintainer, MacOS X makefiles and autoconf, JPEG import, Applix import
 Albert Fluegel <albert.fluegel@hl.siemens.de>   Solaris
 Ben Fowler <bpfowler@hotmail.com>               MacOS 8/9 work
 Tomas Frydrych <tomas@frydrych.uklinux.net>	ttf, utf8 locale, bidi
