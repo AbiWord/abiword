@@ -311,7 +311,7 @@ UT_Bool	IE_Imp_MsWord_97::GetDlgLabels(const char ** pszDesc,
 									   const char ** pszSuffixList,
 									   IEFileType * ft)
 {
-	*pszDesc = "Microsoft Word (wv) (.doc)";
+	*pszDesc = "Microsoft Word (.doc)";
 	*pszSuffixList = "*.doc";
 	*ft = IEFT_MsWord_97;
 	return UT_TRUE;
