@@ -26,6 +26,7 @@
 
 #include "ut_types.h"
 #include "ut_vector.h"
+#include "ut_hash.h"
 #include "pt_Types.h"
 
 class FV_View;
@@ -33,7 +34,9 @@ class fl_DocListener;
 class fl_BlockLayout;
 class fp_Page;
 class PD_Document;
+class PP_AttrProp;
 class DG_Graphics;
+class DG_Font;
 
 // ----------------------------------------------------------------
 /*
@@ -75,6 +78,10 @@ public:
 	PD_Document*	getDocument() const;
 	UT_uint32		getHeight();
 	UT_uint32       getWidth();
+
+	DG_Font*		findFont(const PP_AttrProp * pSpanAP,
+							 const PP_AttrProp * pBlockAP,
+							 const PP_AttrProp * pSectionAP);
 	
 	fp_Page*	addNewPage();
 	fp_Page*	getFirstPage();
@@ -99,6 +106,7 @@ protected:
 
 	UT_Vector		m_vecPages;
 	UT_Vector		m_vecSectionLayouts;
+	UT_HashTable	m_hashFontCache;
 };
 
 #endif /* DOCLAYOUT_H */

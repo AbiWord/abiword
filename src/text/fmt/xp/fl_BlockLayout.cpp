@@ -82,6 +82,11 @@ fl_BlockLayout::~fl_BlockLayout()
 	_purgeLayout(UT_FALSE);
 }
 
+FL_DocLayout* fl_BlockLayout::getLayout()
+{
+	return m_pLayout;
+}
+
 /*
 	_createNewSlice is only called when a new slice is needed to continue a flow
 	which is already in progress.  This routine is not used to create the first

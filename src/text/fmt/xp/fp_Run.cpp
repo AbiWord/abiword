@@ -25,6 +25,7 @@
 #include <string.h>
 
 #include "fp_Run.h"
+#include "fl_DocLayout.h"
 #include "fl_BlockLayout.h"
 #include "fp_Line.h"
 #include "pp_Property.h"
@@ -127,16 +128,10 @@ void fp_Run::lookupProperties(void)
 	
 	m_pBL->getSpanAttrProp(m_iOffsetFirst+fl_BLOCK_STRUX_OFFSET,&pSpanAP);
 	m_pBL->getAttrProp(&pBlockAP);
-	
-	// TODO -- note that we currently assume font-family to be a single name,
-	// TODO -- not a list.  This is broken.
 
-	m_pFont = m_pG->findFont(PP_evalProperty("font-family",pSpanAP,pBlockAP,pSectionAP),
-							 PP_evalProperty("font-style",pSpanAP,pBlockAP,pSectionAP),
-							 PP_evalProperty("font-variant",pSpanAP,pBlockAP,pSectionAP),
-							 PP_evalProperty("font-weight",pSpanAP,pBlockAP,pSectionAP),
-							 PP_evalProperty("font-stretch",pSpanAP,pBlockAP,pSectionAP),
-							 PP_evalProperty("font-size",pSpanAP,pBlockAP,pSectionAP));
+	// look for fonts in this DocLayout's font cache
+	FL_DocLayout * pLayout = m_pBL->getLayout();
+	m_pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP),
 
 	UT_parseColor(PP_evalProperty("color",pSpanAP,pBlockAP,pSectionAP), m_colorFG);
 

@@ -34,6 +34,7 @@
 #include "fl_BlockLayout.h"
 #include "fp_Page.h"
 #include "pd_Document.h"
+#include "pp_Property.h"
 #include "dg_Graphics.h"
 
 #include "ut_debugmsg.h"
@@ -71,6 +72,8 @@ FL_DocLayout::~FL_DocLayout()
 
 	UT_VECTOR_PURGEALL(fp_Page, m_vecPages);
 	UT_VECTOR_PURGEALL(fl_SectionLayout, m_vecSectionLayouts);
+
+	UT_HASH_PURGEDATA(DG_Font, m_hashFontCache);
 
 	if (m_pDoc)
 		delete m_pDoc;
@@ -128,6 +131,45 @@ UT_uint32 FL_DocLayout::getWidth()
 	}
 
 	return iWidth;
+}
+
+DG_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
+								const PP_AttrProp * pBlockAP,
+								const PP_AttrProp * pSectionAP)
+{
+	DG_Font* pFont;
+
+	const char* pszFamily	= PP_evalProperty("font-family",pSpanAP,pBlockAP,pSectionAP);
+	const char* pszStyle	= PP_evalProperty("font-style",pSpanAP,pBlockAP,pSectionAP);
+	const char* pszVariant	= PP_evalProperty("font-variant",pSpanAP,pBlockAP,pSectionAP);
+	const char* pszWeight	= PP_evalProperty("font-weight",pSpanAP,pBlockAP,pSectionAP);
+	const char* pszStretch	= PP_evalProperty("font-stretch",pSpanAP,pBlockAP,pSectionAP);
+	const char* pszSize		= PP_evalProperty("font-size",pSpanAP,pBlockAP,pSectionAP);
+
+	// NOTE: we currently favor a readable hash key to make debugging easier
+	// TODO: speed things up with a smaller key (the three AP pointers?) 
+	char key[500];
+	sprintf(key,"%s;%s;%s;%s;%s;%s",pszFamily, pszStyle, pszVariant, pszWeight, pszStretch, pszSize);
+	
+	UT_HashTable::UT_HashEntry* pEntry = m_hashFontCache.findEntry(key);
+	if (!pEntry)
+	{
+		// TODO -- note that we currently assume font-family to be a single name,
+		// TODO -- not a list.  This is broken.
+
+		pFont = m_pG->findFont(pszFamily, pszStyle, pszVariant, pszWeight, pszStretch, pszSize);
+		UT_ASSERT(pFont);
+
+		// add it to the cache
+		UT_sint32 res = m_hashFontCache.addEntry(key, NULL, pFont);
+		UT_ASSERT(res==0);
+	}
+	else
+	{
+		pFont = (DG_Font*) pEntry->pData;
+	}
+
+	return pFont;
 }
 
 int FL_DocLayout::countPages()

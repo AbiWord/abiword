@@ -126,6 +126,7 @@ public:
 	fp_Line* findNextLineInDocument(fp_Line*);
 	fp_Run* getFirstRun();
 
+	FL_DocLayout * getLayout();
 	UT_GrowBuf * getCharWidths(void);
 
 	PT_DocPosition getPosition(UT_Bool bActualBlockPos=UT_FALSE) const;
