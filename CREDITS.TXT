@@ -32,6 +32,7 @@ Darren Benham <gecko@benham.net>			Debian package,
 							ispell whiz
 Henrik Berg <henrik@lansen.se>				ispell i18n
 Daniel Berlin <db003g@mail.rochester.edu>		BeOS whiz
+Christian Biesinger <cbiesinger@web.de>			StarOffice import
 Bryan Blackburn <blb@pobox.com> 			Solaris / GCC 2.95 make
 Scott Boesch <scott@abisource.com>			artist, trade shows
 Brian Bosse <bhb002@drake.edu>
