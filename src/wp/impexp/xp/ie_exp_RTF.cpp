@@ -74,7 +74,7 @@ IE_Exp_RTF::IE_Exp_RTF(PD_Document * pDocument,UT_Bool atticFormat)
 
 IE_Exp_RTF::~IE_Exp_RTF()
 {
-	UT_VECTOR_PURGEALL(char *,m_vecColors);
+	UT_VECTOR_FREEALL(char *,m_vecColors);
 	UT_VECTOR_PURGEALL(_rtf_font_info *,m_vecFonts);
 }
 

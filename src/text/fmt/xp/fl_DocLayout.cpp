@@ -794,7 +794,7 @@ void FL_DocLayout::setPendingWordForSpell(fl_BlockLayout *pBlock, fl_PartOfBlock
 	}
 
 	// when clobbering prior POB, make sure we don't leak it
-	FREEP(m_pPendingWordForSpell);
+	DELETEP(m_pPendingWordForSpell);
 
 	m_pPendingBlockForSpell = pBlock;
 	m_pPendingWordForSpell = pWord;
