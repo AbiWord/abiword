@@ -25,6 +25,7 @@ include $(ABI_ROOT)/src/config/abi_defs.mk
 CPPSRCS=		ut_BeOSAssert.cpp \
 			ut_BeOSTimer.cpp \
 			ut_BeOSString.cpp \
+			ut_Rehydrate.cpp \
 			ut_Xpm2Bitmap.cpp \
 			ut_debugmsg.cpp
 

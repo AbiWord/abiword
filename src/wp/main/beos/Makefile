@@ -34,7 +34,7 @@ LoadOrder=              AbiGr AbiFmt AbiPTbl AbiImpExp MsWordView AbiXAp AbiWPAp
 ## TODO verify that we still need stdc++ for BeOS since we got rid of c++ iostreams
 
 ABI_APPLIBS=		$(LoadOrder)
-ABI_LIBS=		translation be tracker z png
+ABI_LIBS=		translation be tracker png z
 
 ifeq ($(OS_ARCH), x86)
 ABI_APPLIBS+=		$(LoadOrder) $(LoadOrder)
@@ -63,7 +63,6 @@ $(PROGRAM): $(OBJS) $(EXTRA_LIBDEP)
 	@echo Linking $(PROGRAM)....
 	$(CCC) -o $@ $(CFLAGS) $(OBJS) $(LDFLAGS) $(EXTRA_LIBS) $(XLDFLAGS) 
 	@$(subst xxxx,$(RESOURCES),$(ATTACH_RESOURCE))
-		
 
 build:: $(TARGETS)
 
