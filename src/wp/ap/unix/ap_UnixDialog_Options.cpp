@@ -1542,7 +1542,6 @@ void    AP_UnixDialog_Options::_setViewRulerUnits(UT_Dimension dim)
 	UT_ASSERT(m_listViewRulerUnits && GTK_IS_OPTION_MENU(m_listViewRulerUnits)); 
 
 	int r = option_menu_set_by_key ( m_listViewRulerUnits, (gpointer)dim, WIDGET_MENU_VALUE_TAG ); 
-	UT_ASSERT( r != -1 );
 }
 
 DEFINE_GET_SET_BOOL	(ViewCursorBlink);
