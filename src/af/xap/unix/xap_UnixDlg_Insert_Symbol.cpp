@@ -205,7 +205,7 @@ void XAP_UnixDialog_Insert_Symbol::event_Insert(void)
 #else
 		UT_ASSERT(m_pListener);
 		const char * symfont = gtk_entry_get_text(GTK_ENTRY(GTK_COMBO(m_fontcombo)->entry));
-		m_Inserted_Symbol = CHARMAP(m_SymbolMap)->active_char;
+		m_Inserted_Symbol = charmap_get_chartable (CHARMAP(m_SymbolMap))->active_char;
         m_pListener->setView(getActiveFrame()->getCurrentView());
 		m_pListener->insertSymbol(m_Inserted_Symbol, const_cast<char*>(symfont));
 #endif
@@ -235,7 +235,7 @@ void XAP_UnixDialog_Insert_Symbol::New_Font(void )
 	iDrawSymbol->draw();
 	iDrawSymbol->drawarea(m_CurrentSymbol, m_PreviousSymbol);
 #else
-	charmap_set_font (CHARMAP (m_SymbolMap), const_cast<char *>(buffer));
+	charmap_set_font (CHARMAP (m_SymbolMap), buffer);
 #endif
 }
 
@@ -640,7 +640,7 @@ void XAP_UnixDialog_Insert_Symbol::_connectSignals (void)
 					   GTK_SIGNAL_FUNC(s_Symbolarea_exposed),
 					   static_cast<gpointer>(this));
 #else
-	g_signal_connect (G_OBJECT (m_SymbolMap), "activate",
+	g_signal_connect (G_OBJECT (charmap_get_chartable (CHARMAP (m_SymbolMap))), "activate",
 					  G_CALLBACK(s_charmap_activate), static_cast<gpointer>(this));
 #endif
 
