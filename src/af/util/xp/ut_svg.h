@@ -24,6 +24,7 @@
 
 #include "ut_types.h"
 #include "ut_bytebuf.h"
+#include "ut_xml.h"
 
 #include "gr_Graphics.h"
 
@@ -32,9 +33,15 @@ bool UT_SVG_getDimensions(const UT_ByteBuf* pBB, GR_Graphics* pG,
 			  UT_sint32 & iDisplayWidth, UT_sint32 & iDisplayHeight, 
 			  UT_sint32 & iLayoutWidth,  UT_sint32 & iLayoutHeight);
 
-class ABI_EXPORT UT_svg
+class ABI_EXPORT UT_svg : public UT_XML::Listener
 {
 public:
+	/* UT_XML::Listener implementation:
+	 */
+	void startElement (const XML_Char * name, const XML_Char ** atts);
+	void endElement (const XML_Char * name);
+	void charData (const XML_Char * buffer, int length);
+
 	enum ParseMode
 	{
 		pm_recognizeContent,

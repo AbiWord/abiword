@@ -568,41 +568,6 @@ bool XAP_Prefs::getPrefsValueBool(const XML_Char * szKey, bool * pbValue) const
 	return false;
 }
 
-/*****************************************************************
-******************************************************************
-** C-style callback functions that we register with the XML parser
-******************************************************************
-*****************************************************************/
-
-#ifdef HAVE_LIBXML2
-#define XML_Char xmlChar // HACK
-#endif
-static void startElement(void *userData, const XML_Char *name, const XML_Char **atts)
-{
-	XAP_Prefs * pPrefs = (XAP_Prefs *)userData;
-	pPrefs->_startElement((const char*)name,(const char**)atts);
-}
-
-static void endElement(void *userData, const XML_Char *name)
-{
-	XAP_Prefs * pPrefs = (XAP_Prefs *)userData;
-	pPrefs->_endElement((const char*)name);
-}
-
-static void charData(void* userData, const XML_Char *s, int len)
-{
-	XAP_Prefs * pPrefs = (XAP_Prefs *)userData;
-	pPrefs->_charData((const char*)s,len);
-}
-
-static void startElement_SystemDefaultFile(void *userData, const XML_Char *name, const XML_Char **atts)
-{
-	XAP_Prefs * pPrefs = (XAP_Prefs *)userData;
-	pPrefs->_startElement_SystemDefaultFile((const char*)name,(const char**)atts);
-}
-#ifdef HAVE_LIBXML2
-#undef XML_Char
-#endif
 
 #ifndef __MRC__
 static int n_compare (const char *name, const xmlToIdMapping *id)
@@ -619,8 +584,14 @@ extern "C" static int n_compare (const void *name, const void *id)
 
 /*****************************************************************/
 
-void XAP_Prefs::_startElement(const XML_Char *name, const XML_Char **atts)
+void XAP_Prefs::startElement(const XML_Char *name, const XML_Char **atts)
 {
+	if (m_bLoadSystemDefaultFile) /* redirection - used to happen earlier */
+	{
+		_startElement_SystemDefaultFile (name, atts);
+		return;
+	}
+
 	XAP_PrefsScheme * pNewScheme = NULL; // must be freed
 	
 	if (!m_parserState.m_parserStatus)		// eat if already had an error
@@ -874,13 +845,13 @@ InvalidFileError:
 	return;
 }
 
-void XAP_Prefs::_endElement(const XML_Char * /* name */)
+void XAP_Prefs::endElement(const XML_Char * /* name */)
 {
 	// everything in this file is contained in start-tags
 	return;
 }
 
-void XAP_Prefs::_charData(const XML_Char * /* s */, int /* len */)
+void XAP_Prefs::charData(const XML_Char * /* s */, int /* len */)
 {
 	// everything in this file is contained in start-tags
 	return;
@@ -891,12 +862,6 @@ void XAP_Prefs::_charData(const XML_Char * /* s */, int /* len */)
 
 bool XAP_Prefs::loadPrefsFile(void)
 {
-#ifndef HAVE_LIBXML2 
-	XML_Parser parser = NULL;
-	FILE * fp = NULL;
-	char buf[4096];
-	int done = 0;
-#endif
 	bool bResult = false;			// assume failure
 	const char * szFilename;
 
@@ -907,57 +872,23 @@ bool XAP_Prefs::loadPrefsFile(void)
 	m_parserState.m_bFoundRecent = false;
 	m_parserState.m_bFoundGeometry = false;
 
+	m_bLoadSystemDefaultFile = false;
+
+	UT_XML parser;
+
 	szFilename = getPrefsPathname();
 	if (!szFilename)
 	{
 		UT_DEBUGMSG(("could not get pathname for preferences file.\n"));
 		goto Cleanup;
 	}
-#ifdef HAVE_LIBXML2
-	else
+
+	parser.setListener (this);
+	if ((parser.parse (szFilename) != UT_OK) || (!m_parserState.m_parserStatus))
 	{
-		bResult = _sax (szFilename, false);
-	}
-	if (!bResult)
-		goto Cleanup;
-#else
-	fp = fopen(szFilename, "r");
-	if (!fp)
-	{
-		UT_DEBUGMSG(("could not open preferences file [%s].\n",szFilename));
+		UT_DEBUGMSG(("Problem reading (Preferences) document\n"));
 		goto Cleanup;
 	}
-	
-	parser = XML_ParserCreate(NULL);
-	if (!parser)
-	{
-		UT_DEBUGMSG(("could not create parser for preferences file.\n"));
-		goto Cleanup;
-	}
-	
-	XML_SetUserData(parser, this);
-	XML_SetElementHandler(parser, (XML_StartElementHandler)startElement, (XML_EndElementHandler)endElement);
-	XML_SetCharacterDataHandler(parser, (XML_CharacterDataHandler)charData);
-
-	while (!done)
-	{
-		size_t len = fread(buf, 1, sizeof(buf), fp);
-		done = (len < sizeof(buf));
-
-		if (!XML_Parse(parser, buf, len, done)) 
-		{
-			UT_DEBUGMSG(("%s at line %d\n",
-						XML_ErrorString(XML_GetErrorCode(parser)),
-						XML_GetCurrentLineNumber(parser)));
-			goto Cleanup;
-		}
-
-		if (!m_parserState.m_parserStatus)
-		{
-			UT_DEBUGMSG(("Problem reading document\n"));
-			goto Cleanup;
-		}
-	} 
 
 	// we succeeded in parsing the file,
 	// now check for higher-level consistency.
@@ -982,7 +913,6 @@ bool XAP_Prefs::loadPrefsFile(void)
 		UT_DEBUGMSG(("Did not find <Geometry...>\n"));
 		// Note: it's ok if we didn't find it...
 	}
-#endif
 
 	UT_ASSERT(m_parserState.m_szSelectedSchemeName);
 	if (!setCurrentScheme(m_parserState.m_szSelectedSchemeName))
@@ -995,12 +925,7 @@ bool XAP_Prefs::loadPrefsFile(void)
 	bResult = true;
 Cleanup:
 	FREEP(m_parserState.m_szSelectedSchemeName);
-#ifndef HAVE_LIBXML2
-	if (parser)
-		XML_ParserFree(parser);
-	if (fp)
-		fclose(fp);
-#endif /* HAVE_LIBXML2 */
+
 	return bResult;
 }
 
@@ -1277,61 +1202,21 @@ bool XAP_Prefs::loadSystemDefaultPrefsFile(const char * szSystemDefaultPrefsPath
 	
 	bool bResult = false;			// assume failure
 	m_parserState.m_parserStatus = true;
-#ifdef HAVE_LIBXML2
-	bResult = _sax(szSystemDefaultPrefsPathname, true);
-#else
-	FILE * fp = NULL;
-	int done = 0;
-	char buf[4096];
-	XML_Parser parser = NULL;
-	fp = fopen(szSystemDefaultPrefsPathname, "r");
-	if (!fp)
+
+	m_bLoadSystemDefaultFile = true;
+
+	UT_XML parser;
+	parser.setListener (this);
+	if ((parser.parse (szSystemDefaultPrefsPathname) != UT_OK) || (!m_parserState.m_parserStatus))
 	{
-		UT_DEBUGMSG(("could not open system default preferences file [%s].\n",szSystemDefaultPrefsPathname));
+		UT_DEBUGMSG(("Problem reading (System Default Preferences) document\n"));
 		goto Cleanup;
 	}
-	
-	parser = XML_ParserCreate(NULL);
-	if (!parser)
-	{
-		UT_DEBUGMSG(("could not create parser for system default preferences file.\n"));
-		goto Cleanup;
-	}
-	
-	XML_SetUserData(parser, this);
-	XML_SetElementHandler(parser, (XML_StartElementHandler)startElement_SystemDefaultFile, (XML_EndElementHandler)endElement);
-	XML_SetCharacterDataHandler(parser, (XML_CharacterDataHandler)charData);
-
-	while (!done)
-	{
-		size_t len = fread(buf, 1, sizeof(buf), fp);
-		done = (len < sizeof(buf));
-
-		if (!XML_Parse(parser, buf, len, done)) 
-		{
-			UT_DEBUGMSG(("%s at line %d\n",
-						XML_ErrorString(XML_GetErrorCode(parser)),
-						XML_GetCurrentLineNumber(parser)));
-			goto Cleanup;
-		}
-
-		if (!m_parserState.m_parserStatus)
-		{
-			UT_DEBUGMSG(("Problem reading document\n"));
-			goto Cleanup;
-		}
-	} 
 
 	// we succeeded in parsing the file,
 
 	bResult = true;
-
 Cleanup:
-	if (parser)
-		XML_ParserFree(parser);
-	if (fp)
-		fclose(fp);
-#endif
 	return bResult;
 }
 
@@ -1419,61 +1304,3 @@ void XAP_Prefs::_sendPrefsSignal( UT_StringPtrMap *hash  )
 		(p->m_pFunc)(m_pApp, this, hash, p->m_pData);
 	}
 }
-
-#ifdef HAVE_LIBXML2
-#include <libxml/parserInternals.h>
-
-static xmlEntityPtr _getEntity(void *user_data, const xmlChar *name) {
-      return xmlGetPredefinedEntity(name);
-}
-
-bool XAP_Prefs::_sax (const char *path, bool sys)
-{
-	xmlSAXHandler hdl;
-	hdl.internalSubset = NULL;
-	hdl.isStandalone = NULL;
-	hdl.hasInternalSubset = NULL;
-	hdl.hasExternalSubset = NULL;
-	hdl.resolveEntity = NULL;
-	hdl.getEntity = _getEntity;
-	hdl.entityDecl = NULL;
-	hdl.notationDecl = NULL;
-	hdl.attributeDecl = NULL;
-	hdl.elementDecl = NULL;
-	hdl.unparsedEntityDecl = NULL;
-	hdl.setDocumentLocator = NULL;
-	hdl.startDocument = NULL;
-	hdl.endDocument = NULL;
-	if (sys)	hdl.startElement = startElement_SystemDefaultFile;
-	else		hdl.startElement = startElement;
-	hdl.endElement = endElement;
-	hdl.reference = NULL;
-	hdl.characters = charData;
-	hdl.ignorableWhitespace = NULL;
-	hdl.processingInstruction = NULL;
-	hdl.comment = NULL;
-	hdl.warning = NULL;
-	hdl.error = NULL;
-	hdl.fatalError = NULL;
-
-	int ret = 0;
-	xmlParserCtxtPtr ctxt;
-
-	ctxt = xmlCreateFileParserCtxt(path);
-	if (ctxt == NULL) return false;
-	ctxt->sax = &hdl;
-	ctxt->userData = (void *) this;
-
-	xmlParseDocument(ctxt);
-
-
-	if (ctxt->wellFormed)
-		ret = true;
-	else
-		ret = false;
-	ctxt->sax = NULL;
-	xmlFreeParserCtxt(ctxt);
-	return ret;
-}
-#endif /* HAVE_LIBXML2 */
-

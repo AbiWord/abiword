@@ -51,9 +51,9 @@ public:
 	IE_Imp_XSL_FO(PD_Document * pDocument);
 	virtual ~IE_Imp_XSL_FO();
 
-	void			    _startElement(const XML_Char *name, 
+	void			    startElement(const XML_Char *name, 
 									  const XML_Char **atts);
-	void			    _endElement(const XML_Char *name);
+	void			    endElement(const XML_Char *name);
 };
 
 #endif /* IE_IMP_XSL_FO_H */

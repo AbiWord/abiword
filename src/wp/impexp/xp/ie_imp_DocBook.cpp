@@ -218,7 +218,7 @@ static struct xmlToIdMapping s_Tokens[] =
 /*****************************************************************/
 /*****************************************************************/
 
-void IE_Imp_DocBook::_startElement(const XML_Char *name,
+void IE_Imp_DocBook::startElement(const XML_Char *name,
 				   const XML_Char **atts)
 {
 	UT_DEBUGMSG(("DocBook import: startElement: %s\n", name));
@@ -346,7 +346,7 @@ void IE_Imp_DocBook::_startElement(const XML_Char *name,
 
 }
 
-void IE_Imp_DocBook::_endElement(const XML_Char *name)
+void IE_Imp_DocBook::endElement(const XML_Char *name)
 {
   
         UT_DEBUGMSG(("DocBook import: endElement: %s\n", name));

@@ -46,7 +46,7 @@ struct ABI_EXPORT xmlToIdMapping {
 // XSL-FO
 // KWORD 1 && 2 (soon)
 
-class ABI_EXPORT IE_Imp_XML : public IE_Imp
+class ABI_EXPORT IE_Imp_XML : public IE_Imp, public UT_XML::Listener
 {
 public:
     IE_Imp_XML(PD_Document * pDocument, bool whiteSignificant);
@@ -54,36 +54,37 @@ public:
 
     virtual UT_Error	importFile(const char * szFilename);
 
-    // the following are public only so that the
-    // XML parser callback routines can access them.
+    /* (Partial) Implementation of UT_XML::Listener
+     * 
+     * You (i.e., non-abstract child classes) *must* override these next two methods:
+     * 
+     * virtual void startElement (const XML_Char * name, const XML_Char ** atts) = 0;
+     * virtual void endElement (const XML_Char * name) = 0;
+     *
+     * but you get this one for free:
+     */
+    virtual void charData (const XML_Char * buffer, int length);
 
-    // you *must* override these next two methods
-    virtual void	_startElement(const XML_Char *name, 
-				      const XML_Char **atts) = 0;
-    virtual void        _endElement(const XML_Char *name) = 0;
+    /* If you don't wish the XML parser to use the standard/default file handler, you
+     * can provide your own via an implementation of UT_XML::Reader here:
+     */
+protected:
+    void setReader (UT_XML::Reader * pReader) { m_pReader = pReader; }
+private:
+    UT_XML::Reader * m_pReader;
 
-    // you get this one for free
-    virtual void	_charData(const XML_Char*, int len);
-
-	void			incOperationCount(void) { m_iOperationCount++; }
-	UT_uint32		getOperationCount(void) const { return m_iOperationCount; }
+public:
+    void		incOperationCount(void) { m_iOperationCount++; }
+    UT_uint32		getOperationCount(void) const { return m_iOperationCount; }
 
 protected:
-    virtual bool			_openFile(const char * szFilename);
-    virtual UT_uint32			_readBytes(char * buf, UT_uint32 length);
-    virtual void			_closeFile(void);
-
-	int _mapNameToToken (const char * name, xmlToIdMapping * idlist, int len);
+    int _mapNameToToken (const char * name, xmlToIdMapping * idlist, int len);
 
     const XML_Char *            _getXMLPropValue(const XML_Char *name, const XML_Char **atts);
 
     UT_uint32			_getInlineDepth(void) const;
     bool			_pushInlineFmt(const XML_Char ** atts);
     void			_popInlineFmt(void);
-
-#ifdef HAVE_LIBXML2
-    UT_Error _sax(const char *path);
-#endif	
 
     typedef enum _parseState { _PS_Init,
 			       _PS_Doc,

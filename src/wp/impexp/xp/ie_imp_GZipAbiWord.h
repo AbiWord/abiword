@@ -46,19 +46,20 @@ public:
 
 };
 
-class ABI_EXPORT IE_Imp_GZipAbiWord : public IE_Imp_AbiWord_1
+class ABI_EXPORT IE_Imp_GZipAbiWord : public IE_Imp_AbiWord_1, public UT_XML::Reader
 {
 public:
 	IE_Imp_GZipAbiWord(PD_Document * pDocument);
 	~IE_Imp_GZipAbiWord();
 
-protected:
-    virtual bool			_openFile(const char * szFilename);
-    virtual UT_uint32			_readBytes(char * buf, UT_uint32 length);
-    virtual void			_closeFile(void);
+	/* Implementation of UT_XML::Reader
+	 */
+	bool      openFile (const char * szFilename);
+	UT_uint32 readBytes (char * buffer, UT_uint32 length);
+	void      closeFile (void);
 
- private:
-    gzFile m_gzfp;
+private:
+	gzFile m_gzfp;
 };
 
 #endif /* IE_IMP_GZIPABIWORD_H */

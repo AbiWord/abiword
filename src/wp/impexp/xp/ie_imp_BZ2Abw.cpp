@@ -123,48 +123,46 @@ UT_Error IE_Imp_BZ2AbiWord_Sniffer::constructImporter (PD_Document * pDocument,
 /* Importer */
 /*********************************/
 
-bool IE_Imp_BZ2AbiWord::_openFile(const char * szFilename) 
+bool IE_Imp_BZ2AbiWord::openFile (const char * szFilename) 
 {
+  UT_ASSERT (m_bzin == 0);
+
+  m_fp = fopen (szFilename, "rb");
+  if (!m_fp) return false;
+
   int d_error = 0;
-
-  m_fp = fopen(szFilename, "rb");
-  
-  if (!m_fp)
-    {
-      return false;
-    }
-
-  m_bzin = BZ2_bzReadOpen(&d_error, m_fp, 0, 0, NULL, 0);
-  
-  if (d_error != BZ_OK)
-    {
-      return false;
-    }
-  
+  m_bzin = BZ2_bzReadOpen (&d_error, m_fp, 0, 0, NULL, 0);
+  if (d_error != BZ_OK) return false;
   return (m_bzin != NULL);
 }
 
-UT_uint32 IE_Imp_BZ2AbiWord::_readBytes(char * buf, UT_uint32 length) 
+UT_uint32 IE_Imp_BZ2AbiWord::readBytes (char * buffer, UT_uint32 length) 
 {
+  UT_ASSERT (m_bzin);
+
   int d_error = 0;
-  return BZ2_bzRead(&d_error, m_bzin, buf, length);
+  return BZ2_bzRead (&d_error, m_bzin, buffer, length);
 }
 
-void IE_Imp_BZ2AbiWord::_closeFile(void) 
+void IE_Imp_BZ2AbiWord::closeFile (void)
 {
-  int d_error = 0;
-
   if (m_bzin) {
-    BZ2_bzReadClose(&d_error, m_bzin);
+    int d_error = 0;
+    BZ2_bzReadClose (&d_error, m_bzin); /* Do we need to close m_fp as well? FIXME? Why else have m_fp as a class variable? */
     m_bzin = 0;
   }
 }
 
-IE_Imp_BZ2AbiWord::~IE_Imp_BZ2AbiWord()
+IE_Imp_BZ2AbiWord::~IE_Imp_BZ2AbiWord ()
 {
+  int d_error = 0;
+  if (m_bzin) BZ2_bzReadClose (&d_error, m_bzin); /* Do we need to close m_fp as well? FIXME? */
 }
 
-IE_Imp_BZ2AbiWord::IE_Imp_BZ2AbiWord(PD_Document * pDocument)
-  : IE_Imp_AbiWord_1(pDocument), m_fp(0), m_bzin(0)
+IE_Imp_BZ2AbiWord::IE_Imp_BZ2AbiWord (PD_Document * pDocument)
+  : IE_Imp_AbiWord_1(pDocument),
+    m_fp(0),
+    m_bzin(0)
 {
+  setReader (this); // IE_Imp_BZ2AbiWord derives from UT_XML::Reader
 }

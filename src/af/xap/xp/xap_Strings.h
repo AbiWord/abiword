@@ -86,7 +86,7 @@ private:
 // a sub-class to deal with disk-based string sets (translations)
 //////////////////////////////////////////////////////////////////
 
-class XAP_DiskStringSet : public XAP_StringSet
+class XAP_DiskStringSet : public XAP_StringSet, public UT_XML::Listener
 {
 public:
 	XAP_DiskStringSet(XAP_App * pApp);
@@ -101,12 +101,12 @@ public:
 	void						setFallbackStringSet(XAP_StringSet * pFallback);
 	
 public:
-	void						_startElement(const XML_Char *name, const XML_Char **atts);
-	void						_endElement(const XML_Char *name);
-	void						_charData(const XML_Char *s, int len);
-#ifdef HAVE_LIBXML2
-	void _scannode(xmlDocPtr dok, xmlNodePtr cur, int c);
-#endif
+	/* Implementation of UT_XML::Listener
+	 */
+	void					startElement(const XML_Char *name, const XML_Char **atts);
+	void					endElement(const XML_Char *name);
+	void					charData(const XML_Char *s, int len);
+
 protected:
 	XAP_StringSet *				m_pFallbackStringSet;
 

@@ -21,9 +21,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#ifdef HAVE_LIBXML2
-#include <glib.h>
-#endif
 
 #include "ut_types.h"
 #include "ut_assert.h"
@@ -93,88 +90,21 @@ int IE_Imp_XML::_mapNameToToken (const char * name,
 	return -1;
 }
 
-/*****************************************************************
-******************************************************************
-** C-style callback functions that we register with the XML parser
-******************************************************************
-*****************************************************************/
-
-#ifdef HAVE_LIBXML2
-#define XML_Char xmlChar // HACK
-#endif
-static void startElement(void *userData, const XML_Char *name, const XML_Char **atts)
-{
-	IE_Imp_XML* pDocReader = (IE_Imp_XML*) userData;
-	pDocReader->incOperationCount();
-	pDocReader->_startElement((const char*)name, (const char**)atts);
-}
-
-static void endElement(void *userData, const XML_Char *name)
-{
-	IE_Imp_XML* pDocReader = (IE_Imp_XML*) userData;
-	pDocReader->incOperationCount();
-	pDocReader->_endElement((const char*)name);
-}
-
-static void charData(void* userData, const XML_Char *s, int len)
-{
-	IE_Imp_XML* pDocReader = (IE_Imp_XML*) userData;
-	pDocReader->incOperationCount();
-	pDocReader->_charData((const char*)s, len);
-}
-#ifdef HAVE_LIBXML2
-#undef XML_Char
-#endif
-
 /*****************************************************************/
 /*****************************************************************/
-
-bool IE_Imp_XML::_openFile(const char * szFilename) 
-{
-    m_fp = fopen(szFilename, "r");
-    return (m_fp != NULL);
-}
-
-UT_uint32 IE_Imp_XML::_readBytes(char * buf, UT_uint32 length) 
-{
-    return fread(buf, 1, length, m_fp);
-}
-
-void IE_Imp_XML::_closeFile(void) 
-{
-    if (m_fp) {
-	fclose(m_fp);
-    }
-}
 
 UT_Error IE_Imp_XML::importFile(const char * szFilename)
 {
-#ifdef HAVE_LIBXML2
-	m_error = _sax (szFilename);
-#else
-	XML_Parser parser = NULL;
-	int done = 0;
-	char buf[4096];
-
-	if (!_openFile(szFilename))
+	UT_XML parser;
+	parser.setListener (this);
+	if (m_pReader) parser.setReader (m_pReader);
+	if (parser.parse (szFilename) != UT_OK) m_error = UT_IE_BOGUSDOCUMENT;
+	if (m_error)
 	{
-		UT_DEBUGMSG(("Could not open file %s\n",szFilename));
-		m_error = UT_errnoToUTError ();
+		UT_DEBUGMSG(("Problem reading document\n"));
 		goto Cleanup;
 	}
-	
-	parser = XML_ParserCreate(NULL);
-	XML_SetUserData(parser, this);
-	XML_SetElementHandler(parser, (XML_StartElementHandler)startElement, (XML_EndElementHandler)endElement);
-	XML_SetCharacterDataHandler(parser, (XML_CharacterDataHandler)charData);
-	XML_SetUnknownEncodingHandler(parser,(XML_UnknownEncodingHandler)XAP_EncodingManager::XAP_XML_UnknownEncodingHandler,NULL);
-
-	while (!done)
-	{
-		size_t len = _readBytes(buf, sizeof(buf));
-		done = (len < sizeof(buf));
-
-#if 1
+#if 0
         // TODO - remove this then not needed anymore. In ver 0.7.7 and erlier, AbiWord export inserted 
         // chars below 0x20. Most of these are invalid XML and can't be imported.
         // See bug #762.
@@ -182,30 +112,8 @@ UT_Error IE_Imp_XML::importFile(const char * szFilename)
 	        if( buf[n1] >= 0x00 && buf[n1] < 0x20 && buf[n1] != 0x09 && buf[n1] != 0x0a && buf[n1] != 0x0d )
 		        buf[n1] = 0x0d;
 #endif
-
-		if (!XML_Parse(parser, buf, len, done)) 
-		{
-			UT_DEBUGMSG(("%s at line %d\n",
-						 XML_ErrorString(XML_GetErrorCode(parser)),
-						 XML_GetCurrentLineNumber(parser)));
-			m_error = UT_IE_BOGUSDOCUMENT;
-			goto Cleanup;
-		}
-
-		if (m_error)
-		{
-			UT_DEBUGMSG(("Problem reading document\n"));
-			goto Cleanup;
-		}
-	} 
-	
 	m_error = UT_OK;
-
 Cleanup:
-	if (parser)
-		XML_ParserFree(parser);
-	_closeFile();
-#endif /* HAVE_LIBXML2 */
 	if(m_error ==  UT_IE_BOGUSDOCUMENT)
 	  {
 	    UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -228,7 +136,8 @@ IE_Imp_XML::IE_Imp_XML(PD_Document * pDocument, bool whiteSignificant)
 	  m_lenCharDataSeen(0), m_lenCharDataExpected(0), 
 	  m_iOperationCount(0), m_bSeenCR(false), 
 	  m_bWhiteSignificant(whiteSignificant), m_bWasSpace(false),
-	  m_currentDataItemName(NULL), m_currentDataItemMimeType(NULL)
+	  m_currentDataItemName(NULL), m_currentDataItemMimeType(NULL),
+	  m_pReader(NULL)
 {
 	XAP_App *pApp = getDoc()->getApp();
 	UT_ASSERT(pApp);
@@ -242,7 +151,7 @@ IE_Imp_XML::IE_Imp_XML(PD_Document * pDocument, bool whiteSignificant)
 /*****************************************************************/
 /*****************************************************************/
 
-void IE_Imp_XML::_charData(const XML_Char *s, int len)
+void IE_Imp_XML::charData(const XML_Char *s, int len)
 {
 	// TODO XML_Char is defined in the xml parser
 	// TODO as a 'char' not as a 'unsigned char'.
@@ -497,63 +406,3 @@ const XML_Char * IE_Imp_XML::_getXMLPropValue(const XML_Char *name,
   
   return NULL;
 }
-
-#ifdef HAVE_LIBXML2
-#include <libxml/parserInternals.h>
-
-static xmlEntityPtr _getEntity(void *user_data, const xmlChar *name) {
-      return xmlGetPredefinedEntity(name);
-}
-
-UT_Error IE_Imp_XML::_sax(const char *path)
-{
-	UT_Error ret = UT_OK;
-	xmlSAXHandler hdl;
-	hdl.internalSubset = NULL;
-	hdl.isStandalone = NULL;
-	hdl.hasInternalSubset = NULL;
-	hdl.hasExternalSubset = NULL;
-	hdl.resolveEntity = NULL;
-	hdl.getEntity = _getEntity;
-	hdl.entityDecl = NULL;
-	hdl.notationDecl = NULL;
-	hdl.attributeDecl = NULL;
-	hdl.elementDecl = NULL;
-	hdl.unparsedEntityDecl = NULL;
-	hdl.setDocumentLocator = NULL;
-	hdl.startDocument = NULL;
-	hdl.endDocument = NULL;
-	hdl.startElement = startElement;
-	hdl.endElement = endElement;
-	hdl.reference = NULL;
-	hdl.characters = charData;
-	hdl.ignorableWhitespace = NULL;
-	hdl.processingInstruction = NULL;
-	hdl.comment = NULL;
-	hdl.warning = NULL;
-	hdl.error = NULL;
-	hdl.fatalError = NULL;
-
-	xmlParserCtxtPtr ctxt;
-
-	ctxt = xmlCreateFileParserCtxt(path);
-	if (ctxt == NULL)
-	{
-		UT_DEBUGMSG(("Could not open and parse file %s\n",
-					 path));
-		// by this point we haven't allocated anything so we can just return right here
-		return UT_IE_FILENOTFOUND;
-	}
-	ctxt->sax = &hdl;
-	ctxt->userData = (void *) this;
-
-	xmlParseDocument(ctxt);
-
-
-	if (!ctxt->wellFormed)
-		ret = UT_IE_IMPORTERROR;
-	ctxt->sax = NULL;
-	xmlFreeParserCtxt(ctxt);
-	return ret;
-}
-#endif /* HAVE_LIBXML2 */

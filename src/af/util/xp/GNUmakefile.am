@@ -59,7 +59,8 @@ libUtil_xp_a_SOURCES=\
 	ut_bijection.cpp	\
 	ut_Encoding.cpp		\
 	ut_iconv.cpp		\
-	ut_rand.cpp
+	ut_rand.cpp		\
+	ut_xml.cpp
 else
 libUtil_xp_a_SOURCES=\
 	ut_AdobeEncoding.cpp 	\
@@ -96,6 +97,7 @@ libUtil_xp_a_SOURCES=\
 	ut_bijection.cpp	\
 	ut_Encoding.cpp		\
 	ut_iconv.cpp		\
-	ut_rand.cpp
+	ut_rand.cpp		\
+	ut_xml.cpp
 endif
 

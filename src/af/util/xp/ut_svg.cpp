@@ -24,21 +24,9 @@
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
-#include "ut_bytebuf.h"
-#include "ut_xml.h"
 #include "ut_svg.h"
 
-#include "xap_EncodingManager.h"
-
-#ifdef HAVE_LIBXML2
-#define XML_Char xmlChar // HACK
-#endif
-
 static bool  _recognizeContent(const char* buffer,UT_uint32 buflen,UT_svg* data);
-
-static void  startElement(void *userData, const XML_Char *name, const XML_Char **atts);
-static void  endElement(void *userData, const XML_Char *name);
-static void  characterData (void* userData,const XML_Char* str,int len); // non-terminated string
 
 static void _css_length (const char *str,GR_Graphics* pG,
 			 UT_sint32 *iDisplayLength,UT_sint32 *iLayoutLength);
@@ -143,17 +131,6 @@ bool UT_SVG_recognizeContent(const char* szBuf,UT_uint32 iNumbytes)
 
 static bool _recognizeContent(const char* buffer,UT_uint32 buflen,UT_svg* data)
 {
-#ifdef HAVE_LIBXML2
-	// TODO
-#else
-	XML_Parser parser = XML_ParserCreate(NULL);
-
-	XML_SetUserData(parser, (void*)data);
-	XML_SetElementHandler(parser, (XML_StartElementHandler)startElement, (XML_EndElementHandler)endElement);
-	XML_SetCharacterDataHandler(parser,(XML_CharacterDataHandler)characterData);
-
-	XML_SetUnknownEncodingHandler(parser,(XML_UnknownEncodingHandler)XAP_EncodingManager::XAP_XML_UnknownEncodingHandler,NULL);
-
 	data->m_bSVG = false;
 	data->m_bContinue = true;
 
@@ -161,70 +138,39 @@ static bool _recognizeContent(const char* buffer,UT_uint32 buflen,UT_svg* data)
 	data->m_bIsTSpan = false;
 	data->m_bHasTSpan = false;
 
-	while (data->m_bContinue == true)
-	{
-		int xmllen = (int) ((buflen > 1024) ? 1024 : buflen);
-		int done = (xmllen < 1024) ? 1 : 0;
+	UT_XML parser;
 
-		char* xmlbuf = (char*) XML_GetBuffer (parser,xmllen);
-
-		for (int k = 0; k < xmllen; k++) xmlbuf[k] = buffer[k];
-		buffer += xmllen;
-		buflen -= xmllen;
-
-		if (xmlbuf==0)
-		{
-			UT_DEBUGMSG(("out of memory! while parsing SVG\n"));
-			data->m_bSVG = false;
-			break;
-		}
-
-		if (!XML_ParseBuffer(parser, xmllen, done)) 
-		{
-			UT_DEBUGMSG(("%s at line %d\n",
-						 XML_ErrorString(XML_GetErrorCode(parser)),
-						 XML_GetCurrentLineNumber(parser)));
-			data->m_bSVG = false;
-			break;
-		}
-
-		if (done==1) break;
-	} 
-
-	XML_ParserFree(parser);
-
-#endif /* HAVE_LIBXML2 */
+	parser.setListener (data);
+	if (parser.parse (buffer,buflen) != UT_OK) data->m_bSVG = false;
 
 	return data->m_bSVG;
 }
 
-static void startElement(void *userData, const XML_Char *name, const XML_Char **atts)
+void UT_svg::startElement (const XML_Char * name, const XML_Char ** atts)
 {
-	UT_svg* pSVG = (UT_svg*) userData;
-
-	if (pSVG->m_bContinue == false) return;
-	if (pSVG->m_ePM != UT_svg::pm_parse) pSVG->m_bContinue = false;
+	if (m_bContinue == false) return;
+	if (m_ePM != pm_parse) m_bContinue = false;
 
 	if (UT_strcmp((const char*)name,"svg")==0
 	 || UT_strcmp((const char*)name,"svg:svg")==0)
 	{
-		pSVG->m_bSVG = true;
+		m_bSVG = true;
 		const XML_Char **attr = atts;
-		while (*attr && (pSVG->m_ePM!=UT_svg::pm_recognizeContent))
+		while (*attr && (m_ePM!=pm_recognizeContent))
 		{
 			if (UT_strcmp((const char*)(*attr),"width")==0)
 			{
 				attr++;
-				_css_length((const char*)(*attr),pSVG->m_pG,
-					    &(pSVG->m_iDisplayWidth),&(pSVG->m_iLayoutWidth));
+				_css_length((const char*)(*attr),m_pG,
+					    &(m_iDisplayWidth),&(m_iLayoutWidth));
 				attr++;
 				continue;
 			}
 			if (UT_strcmp((const char*)(*attr),"height")==0)
 			{
 				attr++;
-				_css_length((const char*)(*attr),pSVG->m_pG,
-					    &(pSVG->m_iDisplayHeight),&(pSVG->m_iLayoutHeight));
+				_css_length((const char*)(*attr),m_pG,
+					    &(m_iDisplayHeight),&(m_iLayoutHeight));
 				attr++;
 				continue;
 			}
@@ -233,127 +179,123 @@ static void startElement(void *userData, const XML_Char *name, const XML_Char **
 		}
 	}
 
-	if ((pSVG->m_ePM==UT_svg::pm_parse) && pSVG->cb_start)
-		pSVG->cb_start(pSVG->cb_userdata, (const char *)name, (const char **)atts);
+	if ((m_ePM==pm_parse) && cb_start)
+		cb_start(cb_userdata, (const char *)name, (const char **)atts);
 
 	if (UT_strcmp((const char*)name,"text")==0
 	 || UT_strcmp((const char*)name,"svg:text")==0)
 	{
-		if (pSVG->m_bIsText)
+		if (m_bIsText)
 		{
 			UT_DEBUGMSG(("SVG: parse error: text within text!\n"));
-			pSVG->m_bSVG = false;
-			pSVG->m_bContinue = false;
+			m_bSVG = false;
+			m_bContinue = false;
 			return;
 		}
 		else
 		{
-			pSVG->m_bIsText = true;
-			pSVG->m_bIsTSpan = false;
-			pSVG->m_bHasTSpan = false;
-			pSVG->m_pBB = 0;
+			m_bIsText = true;
+			m_bIsTSpan = false;
+			m_bHasTSpan = false;
+			m_pBB = 0;
 		}
 	}
 	if (UT_strcmp((const char*)name,"tspan")==0
 	 || UT_strcmp((const char*)name,"svg:tspan")==0)
 	{
-		if (pSVG->m_bIsTSpan)
+		if (m_bIsTSpan)
 		{
 			UT_DEBUGMSG(("SVG: parse error: tspan within tspan!\n"));
-			pSVG->m_bSVG = false;
-			pSVG->m_bContinue = false;
+			m_bSVG = false;
+			m_bContinue = false;
 			return;
 		}
 		else
 		{
-			pSVG->m_bIsTSpan = true;
-			pSVG->m_bHasTSpan = true;
-			if (pSVG->m_pBB)
+			m_bIsTSpan = true;
+			m_bHasTSpan = true;
+			if (m_pBB)
 			{
-				delete pSVG->m_pBB;
-				pSVG->m_pBB = 0;
+				delete m_pBB;
+				m_pBB = 0;
 			}
 		}
 	}
 }
 
-static void endElement(void *userData, const XML_Char *name)
+void UT_svg::endElement (const XML_Char * name)
 {
-	UT_svg* pSVG = (UT_svg*) userData;
-
-	if (pSVG->m_bContinue == false) return;
+	if (m_bContinue == false) return;
 
 	if (UT_strcmp((const char*)name,"text")==0
 	 || UT_strcmp((const char*)name,"svg:text")==0)
 	{
-		if (pSVG->m_bIsText && (pSVG->m_bIsTSpan==false))
+		if (m_bIsText && (m_bIsTSpan==false))
 		{
-			pSVG->m_bIsText = false;
-			if (pSVG->m_pBB)
+			m_bIsText = false;
+			if (m_pBB)
 			{
-				if (pSVG->m_bHasTSpan==false)
+				if (m_bHasTSpan==false)
 				{
-					if ((pSVG->m_ePM==UT_svg::pm_parse) && pSVG->cb_text)
-						pSVG->cb_text(pSVG->cb_userdata, pSVG->m_pBB);
+					if ((m_ePM==pm_parse) && cb_text)
+						cb_text(cb_userdata, m_pBB);
 				}
 				else
 				{
-					delete pSVG->m_pBB;
+					delete m_pBB;
 				}
-				pSVG->m_pBB = 0;
+				m_pBB = 0;
 			}
 		}
 		else
 		{
 			UT_DEBUGMSG(("SVG: parse error: <text> </text> mismatch?\n"));
-			pSVG->m_bSVG = false;
-			pSVG->m_bContinue = false;
+			m_bSVG = false;
+			m_bContinue = false;
 			return;
 		}
 	}
 	if (UT_strcmp((const char*)name,"tspan")==0
 	 || UT_strcmp((const char*)name,"svg:tspan")==0)
 	{
-		if (pSVG->m_bIsTSpan)
+		if (m_bIsTSpan)
 		{
-			pSVG->m_bIsTSpan = false;
-			if (pSVG->m_pBB)
+			m_bIsTSpan = false;
+			if (m_pBB)
 			{
-				if ((pSVG->m_ePM==UT_svg::pm_parse) && pSVG->cb_text)
-					pSVG->cb_text(pSVG->cb_userdata, pSVG->m_pBB);
-				pSVG->m_pBB = 0;
+				if ((m_ePM==pm_parse) && cb_text)
+					cb_text(cb_userdata, m_pBB);
+				m_pBB = 0;
 			}
 		}
 		else
 		{
 			UT_DEBUGMSG(("SVG: parse error: <tspan> </tspan> mismatch?\n"));
-			pSVG->m_bSVG = false;
-			pSVG->m_bContinue = false;
+			m_bSVG = false;
+			m_bContinue = false;
 			return;
 		}
 	}
 
-	if ((pSVG->m_ePM==UT_svg::pm_parse) && pSVG->cb_end)
-		pSVG->cb_end(pSVG->cb_userdata, (const char *)name);
+	if ((m_ePM==pm_parse) && cb_end)
+		cb_end(cb_userdata, (const char *)name);
 }
 
-static void characterData (void *userData, const XML_Char *str,int len) // non-terminated string
+void UT_svg::charData (const XML_Char * str, int len) // non-terminated string
 {
-	UT_svg* pSVG = (UT_svg*) userData;
+	if (m_bContinue == false) return;
 
-	if (pSVG->m_bContinue == false) return;
+	if ((m_ePM!=pm_parse) || (cb_text==0)) return;
 
-	if ((pSVG->m_ePM!=UT_svg::pm_parse) || (pSVG->cb_text==0)) return;
-
-	if ((pSVG->m_bIsText && (pSVG->m_bHasTSpan==false)) || pSVG->m_bIsTSpan)
+	if ((m_bIsText && (m_bHasTSpan==false)) || m_bIsTSpan)
 	{
-		if (pSVG->m_pBB == 0) pSVG->m_pBB = new UT_ByteBuf;
+		if (m_pBB == 0) m_pBB = new UT_ByteBuf;
 
-		if (!(pSVG->m_pBB->append((const UT_Byte *)str, (UT_uint32)len)))
+		if (!(m_pBB->append((const UT_Byte *)str, (UT_uint32)len)))
 		{
 			UT_DEBUGMSG(("SVG: parse error: insufficient memory?\n"));
-			pSVG->m_bSVG = false;
-			pSVG->m_bContinue = false;
+			m_bSVG = false;
+			m_bContinue = false;
 		}
 	}
 }

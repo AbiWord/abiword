@@ -227,35 +227,9 @@ bool XAP_DiskStringSet::setValue(const XML_Char * szId, const XML_Char * szStrin
 	return false;
 }
 
-/*****************************************************************
-******************************************************************
-** C-style callback functions that we register with the XML parser
-******************************************************************
-*****************************************************************/
-
-#ifndef HAVE_LIBXML2
-static void startElement(void *userData, const XML_Char *name, const XML_Char **atts)
-{
-	XAP_DiskStringSet * pDisk = (XAP_DiskStringSet *)userData;
-	pDisk->_startElement(name,atts);
-}
-
-static void endElement(void *userData, const XML_Char *name)
-{
-	XAP_DiskStringSet * pDisk = (XAP_DiskStringSet *)userData;
-	pDisk->_endElement(name);
-}
-
-static void charData(void* userData, const XML_Char *s, int len)
-{
-	XAP_DiskStringSet * pDisk = (XAP_DiskStringSet *)userData;
-	pDisk->_charData(s,len);
-}
-#endif /* HAVE_LIBXML2 */
-
 /*****************************************************************/
 
-void XAP_DiskStringSet::_startElement(const XML_Char *name, const XML_Char **atts)
+void XAP_DiskStringSet::startElement(const XML_Char *name, const XML_Char **atts)
 {
 	if (!m_parserState.m_parserStatus)		// eat if already had an error
 		return;
@@ -341,13 +315,13 @@ InvalidFileError:
 	return;
 }
 
-void XAP_DiskStringSet::_endElement(const XML_Char * /* name */)
+void XAP_DiskStringSet::endElement(const XML_Char * /* name */)
 {
 	// everything in this file is contained in start-tags
 	return;
 }
 
-void XAP_DiskStringSet::_charData(const XML_Char * /* s */, int /* len */)
+void XAP_DiskStringSet::charData(const XML_Char * /* s */, int /* len */)
 {
 	// everything in this file is contained in start-tags
 	return;
@@ -357,27 +331,10 @@ void XAP_DiskStringSet::_charData(const XML_Char * /* s */, int /* len */)
 bool XAP_DiskStringSet::loadStringsFromDisk(const char * szFilename)
 {
 	bool bResult = false;			// assume failure
-#ifdef HAVE_LIBXML2
-	xmlDocPtr dok = xmlParseFile(szFilename);
-	if (dok == NULL)
-	  {
-	    UT_DEBUGMSG(("Could not open and parse file %s\n",
-			 szFilename));
-	  }
-	else
-	  {
-	    xmlNodePtr node = xmlDocGetRootElement(dok);
-	    _scannode(dok,node,0);
-	    xmlFreeDoc(dok);
-	    bResult = true;
-	  }
-#else
-	FILE * fp = NULL;
-	XML_Parser parser = NULL;
-	int done = 0;
-	char buf[4096];
 
 	m_parserState.m_parserStatus = true;
+
+	UT_XML parser;
 
 	if (!szFilename || !*szFilename)
 	{
@@ -385,44 +342,12 @@ bool XAP_DiskStringSet::loadStringsFromDisk(const char * szFilename)
 		goto Cleanup;
 	}
 
-	fp = fopen(szFilename, "r");
-	if (!fp)
+	parser.setListener (this);
+	if ((parser.parse (szFilename) != UT_OK) || (!m_parserState.m_parserStatus))
 	{
-		UT_DEBUGMSG(("Could not open Strings file [%s].\n",szFilename));
+		UT_DEBUGMSG(("Problem reading document\n"));
 		goto Cleanup;
 	}
-	
-	parser = XML_ParserCreate(NULL);
-	if (!parser)
-	{
-		UT_DEBUGMSG(("Could not create parser for Strings file [%s].\n",szFilename));
-		goto Cleanup;
-	}
-	
-	XML_SetUserData(parser, this);
-	XML_SetElementHandler(parser, (XML_StartElementHandler)startElement, (XML_EndElementHandler)endElement);
-	XML_SetCharacterDataHandler(parser, (XML_CharacterDataHandler)charData);
-	XML_SetUnknownEncodingHandler(parser,(XML_UnknownEncodingHandler)XAP_EncodingManager::XAP_XML_UnknownEncodingHandler,NULL);
-
-	while (!done)
-	{
-		size_t len = fread(buf, 1, sizeof(buf), fp);
-		done = (len < sizeof(buf));
-
-		if (!XML_Parse(parser, buf, len, done)) 
-		{
-			UT_DEBUGMSG(("%s at line %d\n",
-						XML_ErrorString(XML_GetErrorCode(parser)),
-						XML_GetCurrentLineNumber(parser)));
-			goto Cleanup;
-		}
-
-		if (!m_parserState.m_parserStatus)
-		{
-			UT_DEBUGMSG(("Problem reading document\n"));
-			goto Cleanup;
-		}
-	} 
 
 	// we succeeded in parsing the file,
 	// now check for higher-level consistency.
@@ -446,38 +371,6 @@ bool XAP_DiskStringSet::loadStringsFromDisk(const char * szFilename)
 	bResult = true;
 
 Cleanup:
-	if (parser)
-		XML_ParserFree(parser);
-	if (fp)
-		fclose(fp);
-#endif  /* HAVE_LIBXML2 */
+
 	return bResult;
 }
-
-#ifdef HAVE_LIBXML2
-void XAP_DiskStringSet::_scannode(xmlDocPtr dok, xmlNodePtr cur, int c)
-{
-  while (cur != NULL)
-    {
-      if (strcmp("text", (char*) cur->name) == 0)
-	{
-	  xmlChar* s = cur->content; // xmlNodeListGetString(dok, cur, 1);
-	  _charData((const char*)s, strlen((char*) s));
-	}
-      else
-	{
-	  const xmlChar* props[3] = { NULL, NULL, NULL };
-	  if (cur->properties)
-	    {
-	      props[0] = cur->properties->name;
-	      props[1] = cur->properties->children->content;
-	    }
-	  _startElement((const char*)cur->name, (const char**)props);
-	}
-      _scannode(dok, cur->children, c + 1);
-      if (strcmp("text", (char*) cur->name) != 0)
-	_endElement((const char*)cur->name);
-      cur = cur->next;
-    }
-}
-#endif /* HAVE_LIBXML2 */

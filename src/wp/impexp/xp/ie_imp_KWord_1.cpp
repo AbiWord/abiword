@@ -156,7 +156,7 @@ IE_Imp_KWord_1::IE_Imp_KWord_1(PD_Document *pDocument) : IE_Imp_XML(pDocument, t
 {
 }
 
-void IE_Imp_KWord_1::_charData(const XML_Char *s, int len)
+void IE_Imp_KWord_1::charData(const XML_Char *s, int len)
 {
   X_EatIfAlreadyError();	// xml parser keeps running until buffer consumed
 
@@ -378,7 +378,7 @@ kVertAlignToTextPos ( const char * sz )
 /*****************************************************************/
 /*****************************************************************/
 
-void IE_Imp_KWord_1::_startElement(const XML_Char *name, const XML_Char **atts)
+void IE_Imp_KWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 {
   // xml parser keeps running until buffer consumed
   X_EatIfAlreadyError();
@@ -759,7 +759,7 @@ void IE_Imp_KWord_1::_appendText()
     }
 }
 
-void IE_Imp_KWord_1::_endElement(const XML_Char *name)
+void IE_Imp_KWord_1::endElement(const XML_Char *name)
 {
   X_EatIfAlreadyError();
 

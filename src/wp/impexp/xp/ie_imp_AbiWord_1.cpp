@@ -210,7 +210,7 @@ static struct xmlToIdMapping s_Tokens[] =
 /*****************************************************************/
 /*****************************************************************/
 
-void IE_Imp_AbiWord_1::_startElement(const XML_Char *name, const XML_Char **atts)
+void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 {
 	xxx_UT_DEBUGMSG(("startElement: %s\n", name));
 
@@ -422,7 +422,7 @@ void IE_Imp_AbiWord_1::_startElement(const XML_Char *name, const XML_Char **atts
 	}
 }
 
-void IE_Imp_AbiWord_1::_endElement(const XML_Char *name)
+void IE_Imp_AbiWord_1::endElement(const XML_Char *name)
 {
   	xxx_UT_DEBUGMSG(("endElement %s\n", name));
 

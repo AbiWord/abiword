@@ -135,30 +135,37 @@ bool IE_Imp_GZipAbiWord_Sniffer::getDlgLabels(const char ** pszDesc,
 /*****************************************************************/
 /*****************************************************************/
 
-bool IE_Imp_GZipAbiWord::_openFile(const char * szFilename) 
+bool IE_Imp_GZipAbiWord::openFile (const char * szFilename) 
 {
-    m_gzfp = gzopen(szFilename, "rb");
-    return (m_gzfp != NULL);
+  UT_ASSERT (m_gzfp == 0);
+
+  m_gzfp = gzopen (szFilename, "rb");
+  return (m_gzfp != NULL);
 }
 
-UT_uint32 IE_Imp_GZipAbiWord::_readBytes(char * buf, UT_uint32 length) 
+UT_uint32 IE_Imp_GZipAbiWord::readBytes (char * buffer, UT_uint32 length) 
 {
-    return gzread(m_gzfp, buf, length);
+  UT_ASSERT (m_gzfp);
+
+  return gzread (m_gzfp, buffer, length);
 }
 
-void IE_Imp_GZipAbiWord::_closeFile(void) 
+void IE_Imp_GZipAbiWord::closeFile(void) 
 {
-    if (m_gzfp) {
-	gzclose(m_gzfp);
-    }
+  if (m_gzfp) {
+    gzclose (m_gzfp);
+    m_gzfp = 0;
+  }
 }
 
 IE_Imp_GZipAbiWord::~IE_Imp_GZipAbiWord()
 {
+  if (m_gzfp) gzclose (m_gzfp);
 }
 
 IE_Imp_GZipAbiWord::IE_Imp_GZipAbiWord(PD_Document * pDocument)
-	: IE_Imp_AbiWord_1(pDocument)
+  : IE_Imp_AbiWord_1(pDocument),
+    m_gzfp(0)
 {
+  setReader (this); // IE_Imp_GZipAbiWord derives from UT_XML::Reader
 }
-

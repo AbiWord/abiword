@@ -53,9 +53,9 @@ public:
   IE_Imp_KWord_1(PD_Document * pDocument);
   virtual ~IE_Imp_KWord_1();
 
-  virtual void _startElement(const XML_Char *name, const XML_Char **atts);
-  virtual void _endElement(const XML_Char *name);
-  virtual void _charData(const XML_Char*, int len); 
+  void startElement(const XML_Char *name, const XML_Char **atts);
+  void endElement(const XML_Char *name);
+  void charData(const XML_Char*, int len); 
 
 private:
 

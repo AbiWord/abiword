@@ -52,9 +52,9 @@ public:
 	IE_Imp_WML(PD_Document * pDocument);
 	virtual ~IE_Imp_WML();
 
-	void			_startElement(const XML_Char *name, 
+	void			startElement(const XML_Char *name, 
 					      const XML_Char **atts);
-	void			_endElement(const XML_Char *name);
+	void			endElement(const XML_Char *name);
 };
 
 #endif /* IE_IMP_WML_H */

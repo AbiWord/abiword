@@ -55,8 +55,8 @@ public:
     IE_Imp_AbiWord_1(PD_Document * pDocument);
     virtual ~IE_Imp_AbiWord_1();
 
-    void				_startElement(const XML_Char *name, const XML_Char **atts);
-    void				_endElement(const XML_Char *name);
+    void				startElement(const XML_Char *name, const XML_Char **atts);
+    void				endElement(const XML_Char *name);
 
     virtual UT_Error	importFile(const char * szFilename);
 

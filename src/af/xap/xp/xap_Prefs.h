@@ -89,7 +89,7 @@ protected:
 /*****************************************************************/
 /*****************************************************************/
 
-class ABI_EXPORT XAP_Prefs
+class ABI_EXPORT XAP_Prefs : public UT_XML::Listener
 {
 public:
 	XAP_Prefs(XAP_App * pApp);
@@ -164,15 +164,14 @@ protected:
 	Pref_Geometry				m_geom;
 	
 
-#ifdef HAVE_LIBXML2
-	bool _sax(const char *path, bool sys);
-#endif
-
-public:						/* these are needed by the XML parser interface */
-	void					_startElement(const XML_Char *name, const XML_Char **atts);
-	void					_endElement(const XML_Char *name);
-	void					_charData(const XML_Char *s, int len);
+	/* Implementation of UT_XML::Listener */
+public:
+	void					startElement(const XML_Char *name, const XML_Char **atts);
+	void					endElement(const XML_Char *name);
+	void					charData(const XML_Char *s, int len);
+private:
 	void					_startElement_SystemDefaultFile(const XML_Char *name, const XML_Char **atts);
+	bool					m_bLoadSystemDefaultFile;
 
 private:
 	struct

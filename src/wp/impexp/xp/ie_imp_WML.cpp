@@ -217,7 +217,7 @@ static struct xmlToIdMapping s_Tokens[] =
 /*****************************************************************/
 /*****************************************************************/
 
-void IE_Imp_WML::_startElement(const XML_Char *name,
+void IE_Imp_WML::startElement(const XML_Char *name,
 			       const XML_Char **atts)
 {
 	UT_DEBUGMSG(("WML import: startElement: %s\n", name));
@@ -342,7 +342,7 @@ void IE_Imp_WML::_startElement(const XML_Char *name,
 
 }
 
-void IE_Imp_WML::_endElement(const XML_Char *name)
+void IE_Imp_WML::endElement(const XML_Char *name)
 {
   
         UT_DEBUGMSG(("WML import: endElement: %s\n", name));

@@ -45,16 +45,17 @@ class ABI_EXPORT IE_Imp_BZ2AbiWord_Sniffer : public IE_ImpSniffer
 				      IE_Imp ** ppie);	
 };
 
-class ABI_EXPORT IE_Imp_BZ2AbiWord : public IE_Imp_AbiWord_1
+class ABI_EXPORT IE_Imp_BZ2AbiWord : public IE_Imp_AbiWord_1, public UT_XML::Reader
 {
  public:
   IE_Imp_BZ2AbiWord(PD_Document * pDocument);
   ~IE_Imp_BZ2AbiWord();
 
- protected:
-  virtual bool			_openFile(const char * szFilename);
-  virtual UT_uint32		_readBytes(char * buf, UT_uint32 length);
-  virtual void			_closeFile(void);
+  /* Implementation of UT_XML::Reader
+   */
+  bool      openFile (const char * szFilename);
+  UT_uint32 readBytes (char * buf, UT_uint32 length);
+  void      closeFile (void);
   
  private:
   FILE   *m_fp;

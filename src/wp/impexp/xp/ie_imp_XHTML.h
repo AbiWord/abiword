@@ -52,9 +52,9 @@ public:
     IE_Imp_XHTML(PD_Document * pDocument);
     ~IE_Imp_XHTML();
 
-    void			_startElement(const XML_Char *name, 
+    void			startElement(const XML_Char *name, 
 								  const XML_Char **atts);
-    void			_endElement(const XML_Char *name);
+    void			endElement(const XML_Char *name);
 
 protected:
     

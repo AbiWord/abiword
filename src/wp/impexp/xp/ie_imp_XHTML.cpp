@@ -514,7 +514,7 @@ static void convertColor(char *szDest, const char *szFrom, int dfl = 0x000000)
 /*****************************************************************/
 /*****************************************************************/
 
-void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
+void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 {
 	UT_DEBUGMSG(("startElement: %s, parseState: %u, listType: %u\n", name, m_parseState, m_listType));
 
@@ -717,7 +717,7 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 
 		if(m_parseState != _PS_Sec)
 		{
-			_endElement("li");
+			endElement("li");
 			m_parseState = _PS_Sec;
 			m_bWasSpace = false;
 			/* this sort of tag shuffling can mess up the space tracking */
@@ -898,7 +898,7 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 	}
 }
 
-void IE_Imp_XHTML::_endElement(const XML_Char *name)
+void IE_Imp_XHTML::endElement(const XML_Char *name)
 {
 	UT_DEBUGMSG(("endElement: %s, parseState: %u, listType: %u\n", name, m_parseState, m_listType));
 	X_EatIfAlreadyError();				// xml parser keeps running until buffer consumed

@@ -242,7 +242,7 @@ static struct xmlToIdMapping s_Tokens[] =
 
 #define USED() do {if(used) sBuf+="; "; else used = true;} while (0)
 
-void IE_Imp_XSL_FO::_startElement(const XML_Char *name,
+void IE_Imp_XSL_FO::startElement(const XML_Char *name,
 								  const XML_Char **atts)
 {
 	// xml parser keeps running until buffer consumed
@@ -565,7 +565,7 @@ void IE_Imp_XSL_FO::_startElement(const XML_Char *name,
 
 #undef USED
 
-void IE_Imp_XSL_FO::_endElement(const XML_Char *name)
+void IE_Imp_XSL_FO::endElement(const XML_Char *name)
 {
 	// xml parser keeps running until buffer consumed
 	X_EatIfAlreadyError();
