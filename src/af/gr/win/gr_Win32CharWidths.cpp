@@ -343,6 +343,21 @@ void GR_Win32CharWidths::_retrieveFontInfo(HDC hdc)
 					UT_uint16 iStartChar = pStart[j];
 					for(k = pStart[j]; k <= pEnd[j]; k++)
 					{
+						if(pStart[j] == 0xffff && pEnd[j] == 0xffff)
+						{
+							// pEnd[j] == 0xffff indicates the last
+							// segment; according to the docs this
+							// segment need not, but can, contain any
+							// valid mappings, and the docs do
+							// not. Presumably if the segement
+							// contains more than on character there
+							// are some valid mapings, if not, i.e.,
+							// If pStart[j] == 0xffff, we will
+							// assume that the mapping is not valid
+							// Tomas, Oct 25, 2003
+							break;
+						}
+						
 						if(0 == *(pRangeOffset[j]/2 + (k - pStart[j]) + &pRangeOffset[j]))
 						{
 							// this character is not present, dump
