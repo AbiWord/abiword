@@ -25,6 +25,7 @@
 
 #include <stdio.h>
 #include "ie_imp.h"
+#include "ut_bytebuf.h"
 #include "ut_growbuf.h"
 #include "ut_vector.h"
 #include "ut_stack.h"
@@ -344,6 +345,8 @@ private:
 	PT_DocPosition		m_dposPaste;
 	UT_uint32		deflangid;
 	UT_Mbtowc		m_mbtowc;
+
+	XML_Char *_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField);
 };
 
 #endif /* IE_IMP_RTF_H */

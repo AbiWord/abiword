@@ -875,29 +875,15 @@ bool IE_Imp_RTF::HandleField()
 	// field instruction
 	if (tokenType == RTF_TOKEN_OPEN_BRACE) 
 	{
-		// TODO: handle field instructions
-		// this is quite complex as field instructions are not really document in the RTF specs.
-		// we will guess as much us possible.
-		// thing that complexify is that a field instruction can contain nested block and
-		// DATA blocks. We will try to limit first to the standard fields.
-		
-		// Here are a couple of examples from the spec
-		/*
-		  {\field {\*\fldinst AUTHOR \\*MERGEFORMAT    }{\fldrslt Joe Smith}}\par\pard
-		  {\field{\*\fldinst time \\@ "h:mm AM/PM"}{\fldrslt 8:12 AM}}
-		  {\field{\*\fldinst NOTEREF _RefNumber } {\fldrslt 1}}
-		  {\field{\*\fldinst NOTEREF _RefNumber \fldalt } {\fldrslt I}}
-		*/
-		// Here is an example from StarOffice 5.2 export: an Hyperlink
-		/*
-		  {{\field{\*\fldinst HYPERLINK "http://www.sas.com/techsup/download/misc/cleanwork.c" }
-		  {\fldrslt \*\cs21\cf1\ul http://www.sas.com/techsup/download/misc/cleanwork.c}}}
-		*/
-		// This time it is an image: StarOffice exports images in .jpg as a separate file
-		/*
-		  {{\field\fldpriv{\*\fldinst{\\import sv8968971.jpg}}{\fldrslt }}}
-		*/
+		UT_ByteBuf fldBuf;
+		XML_Char * xmlField = NULL;
+		bool gotStarKW = false;
+		bool gotFldinstKW = false;
+		// bUseResult will to be set to false if we encounter a field
+		// instruction we know about. Otherwise, we use the result by default
 		bUseResult = true;
+		// since we enter a brace group, we push the RTFState.
+		PushRTFState ();
 		nested = 0;
 		do
 		{
@@ -908,17 +894,62 @@ bool IE_Imp_RTF::HandleField()
 				UT_ASSERT (UT_SHOULD_NOT_HAPPEN);
 				return false;
 				break;
+			case RTF_TOKEN_KEYWORD:
+				if (strcmp((const char *)keyword, "*") == 0) 
+				{
+					if (gotStarKW) 
+					{
+						UT_DEBUGMSG (("RTF: was not supposed to get '*' here\n"));
+					}
+					gotStarKW = true;
+				}
+				else if (strcmp((const char *)keyword, "fldinst") == 0) 
+				{
+					if (!gotStarKW)
+					{
+						UT_DEBUGMSG (("Ohoh, we were not supposed to get a 'fldinst' without a '*'. Go ahead.\n"));
+					}
+					gotFldinstKW = true;
+				}
+				else if (strcmp((const char *)keyword, "\\") == 0)
+				{
+					fldBuf.append (keyword, 1);
+				}
+				break;
 			case RTF_TOKEN_OPEN_BRACE:
 				nested++;
+				PushRTFState ();
 				break;
 			case RTF_TOKEN_CLOSE_BRACE:
 				nested--;
+				PopRTFState ();
+				break;
+			case RTF_TOKEN_DATA:
+				// add data to the field
+				fldBuf.append (keyword, 1);
 				break;
 			default:
 				break;
 			}
 		}
 		while ((tokenType != RTF_TOKEN_CLOSE_BRACE) || (nested >= 0));
+		xmlField = _parseFldinstBlock (fldBuf, xmlField);
+		bUseResult = (xmlField == NULL);
+		if (!bUseResult) 
+		{
+			bool ok;
+			const XML_Char* propsArray[3];
+			propsArray [0] = "type";
+			propsArray [1] = xmlField;
+			propsArray [2] = NULL;
+
+			// TODO get text props to apply them to the field
+			ok = FlushStoredChars ();
+			UT_ASSERT (ok);
+			m_pDocument->appendObject (PTO_Field, propsArray);
+		}
+		// we own xmlField, so we delete it after use.
+		FREEP (xmlField);
 	}
 	else 
 	{
@@ -933,6 +964,7 @@ bool IE_Imp_RTF::HandleField()
 		return false;
 	}
 
+#if 0
 	if (bUseResult == false) 
 	{ 
 		while ((tokenType != RTF_TOKEN_CLOSE_BRACE) && (tokenType != RTF_TOKEN_ERROR))
@@ -941,8 +973,9 @@ bool IE_Imp_RTF::HandleField()
 		}
 		return (tokenType != RTF_TOKEN_ERROR);
 	}
-	
+#endif
 	// field result
+	// TODO: push and pop the state as expected.
 	if (tokenType == RTF_TOKEN_OPEN_BRACE) 
 	{
 		tokenType = NextToken (keyword, &parameter, &paramUsed, MAX_KEYWORD_LEN);
@@ -974,9 +1007,12 @@ bool IE_Imp_RTF::HandleField()
 			case  RTF_TOKEN_KEYWORD:
 				if (strcmp ((char *)keyword, "\\"))
 				{
-					ok = ParseChar (keyword [0]);
-					if (!ok)
-						return false;
+					if (bUseResult) 
+					{ 
+						ok = ParseChar (keyword [0]);
+						if (!ok)
+							return false;
+					}
 				}
 				else 
 				{
@@ -991,9 +1027,12 @@ bool IE_Imp_RTF::HandleField()
 				nested--;
 				break;
 			default:
-				ok = ParseChar (*keyword);
-				if (!ok)
-					return false;
+				if (bUseResult) 
+				{ 
+					ok = ParseChar (*keyword);
+					if (!ok)
+						return false;
+				}
 			}
 		} while ((tokenType != RTF_TOKEN_CLOSE_BRACE) || (nested >= 0));
 		// no need to skip back ch because we handled it ourselves
@@ -1007,6 +1046,103 @@ bool IE_Imp_RTF::HandleField()
 	
 	return true;
 }
+
+
+XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField)
+{
+	// TODO: handle field instructions
+	// this is quite complex as field instructions are not really document in the RTF specs.
+	// we will guess as much us possible.
+	// thing that complexify is that a field instruction can contain nested block and
+	// DATA blocks. We will try to limit first to the standard fields.
+	
+	// Here are a couple of examples from the spec
+	/*
+	  {\field {\*\fldinst AUTHOR \\*MERGEFORMAT    }{\fldrslt Joe Smith}}\par\pard
+	  {\field{\*\fldinst time \\@ "h:mm AM/PM"}{\fldrslt 8:12 AM}}
+	  {\field{\*\fldinst NOTEREF _RefNumber } {\fldrslt 1}}
+	  {\field{\*\fldinst NOTEREF _RefNumber \fldalt } {\fldrslt I}}
+	*/
+	// Here is an example from StarOffice 5.2 export: an Hyperlink
+	/*
+	  {\field{\*\fldinst HYPERLINK "http://www.sas.com/techsup/download/misc/cleanwork.c" }
+	  {\fldrslt \*\cs21\cf1\ul http://www.sas.com/techsup/download/misc/cleanwork.c}}
+	*/
+	// This time it is an image: StarOffice exports images in .jpg as a separate file
+	/*
+	  {\field\fldpriv{\*\fldinst{\\import sv8968971.jpg}}{\fldrslt }}
+	*/
+	
+	char *instr;
+	char *newBuf;
+	UT_uint32  len;
+	
+	// buffer is empty, nothing to parse
+	if (buf.getLength() == 0) 
+	{
+		FREEP (xmlField);
+		return NULL;
+	}
+	
+	len = buf.getLength ();
+	const UT_Byte *pBuf = buf.getPointer (0);
+
+	newBuf =  (char *)malloc (sizeof (char) * (len + 1));
+	memcpy (newBuf, pBuf, len);
+	newBuf [len] = 0;
+	instr = strtok (newBuf, " ");
+	if (instr == NULL) 
+	{
+		free (newBuf);
+		FREEP (xmlField);
+		return NULL;
+	}
+	
+	switch (*instr) 
+	{
+	case 'A':
+		if (strcmp (instr, "AUTHOR") == 0)
+		{
+			UT_DEBUGMSG (("RTF: AUTHOR fieldinst not handled yet\n"));
+		}
+		break;
+	case 'H':
+		if (strcmp (instr, "HYPERLINK") == 0)
+		{
+			UT_DEBUGMSG (("RTF: HYPERLINK fieldinst not handled yet\n"));
+		}
+		break;
+	case 'P':
+		if (strcmp (instr, "PAGE") == 0)
+		{ 
+			xmlField = UT_strdup ("page_number");
+			UT_ASSERT (xmlField);
+		}
+		break;
+	case '\\':
+		/* mostly StarOffice RTF fields */
+		
+		if (strcmp (instr, "\\filename") == 0)
+		{
+			xmlField = UT_strdup ("file_name");
+			UT_ASSERT (xmlField);
+		}
+		else if (strcmp (instr, "\\page") == 0)
+		{ 
+			xmlField = UT_strdup ("page_number");
+			UT_ASSERT (xmlField);
+		}
+		break;
+	default:
+		UT_DEBUGMSG (("RTF: unhandled fieldinstr %s\n", instr));
+		break;
+	}
+
+	free (newBuf);
+	return xmlField;
+}
+
+
 
 bool IE_Imp_RTF::HandleHeader()
 {
