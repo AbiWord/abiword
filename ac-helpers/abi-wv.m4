@@ -57,7 +57,7 @@ fi
 # peer dir for abi ]
 
 if test "$abi_found_wv" = "no"; then
-    if test "x$1" != "x" -a "$1"; then
+    if test "x$1" != "x" && test -d "$1"; then
 	abspath=`cd $1; pwd`
 	WV_LIBS="${abspath}/libwv.a"
 	WV_CFLAGS="-I${abspath}/"

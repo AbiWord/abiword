@@ -98,7 +98,7 @@ if test "$abi_found_parser" = "expat"; then
 fi
 
 if test "$abi_found_parser" = "no" ; then
-    if test "x$1" != "x" -a "$1"; then
+    if test "x$1" != "x" && test -d "$1"; then
 	# Use the expat sources given as an argument
         abspath=`cd $1; pwd`
 	XML_LIBS="${abspath}/lib/.libs/libexpat.a"
