@@ -1754,7 +1754,7 @@ void PD_Document::notifyPieceTableChangeStart(void)
 		i++;
 	}
 	if(i>0)
-		UT_DEBUGMSG(("!!!!Waited %d microseconds for redraw to finish \m",i*100));
+		UT_DEBUGMSG(("!!!!Waited %d microseconds for redraw to finish \n",i*100));
 	m_bRedrawHappenning = false;
 	m_bPieceTableChanging = true;
 }

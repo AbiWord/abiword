@@ -29,7 +29,7 @@ class PD_Document;
 class PP_AttrProp;
 class s_RTF_ListenerWriteDoc;
 class s_RTF_ListenerGetProps;
-class _rtf_font_info;
+struct _rtf_font_info;
 
 // The exporter/writer for RTF file format (based upon spec version 1.5).
 

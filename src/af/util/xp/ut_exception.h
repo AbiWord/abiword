@@ -43,6 +43,10 @@
 // -DAL-
 //
 
+#if defined(_MSC_VER) && !(_MSC_VER > 1100)		// MSVC 5 and lower
+#define ABI_DOESNT_SUPPORT_EXCEPTIONS = 1
+#endif
+
 // UT_TRY will begin a 'try' block
 // UT_CATCH will 'catch' a specific exception type
 // UT_END_CATCH evaluates to nothing, basically, but use it
