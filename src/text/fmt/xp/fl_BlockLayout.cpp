@@ -881,6 +881,7 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 		{
 			UT_uint32 iNew = pRun->getBlockOffset() + iDiff;
 			UT_ASSERT(iNew >= 0);
+			UT_DEBUGMSG(("Run %x Old offset %d New Offset %d \n",pRun,pRun->getBlockOffset(),iNew));
 			pRun->setBlockOffset((UT_uint32) iNew);
 			pRun = pRun->getNext();
 		}
@@ -889,6 +890,20 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 //
 		getSquiggles()->updatePOBs(iFirstOffset,iDiff);
 	}
+#if 0
+#if DEBUG
+	pRun = getFirstRun();
+	while(pRun)
+	{
+		if(pRun->getType() == FPRUN_TEXT)
+		{
+			fp_TextRun * pTRun = (fp_TextRun *) pRun;
+			pTRun->printText();
+		}
+		pRun = pRun->getNext();
+	}
+#endif
+#endif
 }
 
 /*!
@@ -2897,7 +2912,6 @@ bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len
 		
 		FriBidiCharType iPrevType, iNextType, iLastStrongType = FRIBIDI_TYPE_UNSET, iType;
 		getSpanPtr((UT_uint32) curOffset, &pSpan, &lenSpan);
-		xxx_UT_DEBUGMSG(("fl_BlockLayout::_doInsertTextSpan lenSpan %d \n",lenSpan));
 		UT_ASSERT(pSpan);
 		if(!pSpan)
 			return false;
@@ -2906,8 +2920,15 @@ bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len
 
 		UT_uint32 trueLen = UT_MIN(lenSpan,len - (curOffset - blockOffset));
 		UT_uint32 i = 1;
-
-		
+#if 0
+		UT_String sTmp;
+		UT_uint32 j =0;
+		for(j=0;j<trueLen;j++)
+		{
+			sTmp += pSpan[j];
+		}
+		UT_DEBUGMSG(("fl_BlockLayout::_doInsertTextSpan lenSpan %d truelen %d text |%s| \n",lenSpan,trueLen,sTmp.c_str()));
+#endif		
 		for(i = 1; i < trueLen; i++)
 		{
 			iPrevType = iType;
@@ -3411,7 +3432,7 @@ bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 {
 	PT_BlockOffset blockOffset = pNewRun->getBlockOffset();
 	UT_uint32 len = pNewRun->getLength();
-
+	xxx_UT_DEBUGMSG(("_doInsertRun: New run has offset %d Length %d \n",blockOffset,len));
 	_assertRunListIntegrity();
 
 	m_gbCharWidths.ins(blockOffset, len);
@@ -3429,18 +3450,27 @@ bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 	{
 		UT_uint32 iRunBlockOffset = pRun->getBlockOffset();
 		UT_uint32 iRunLength = pRun->getLength();
-
+		xxx_UT_DEBUGMSG(("_doInsertRun: Target offset %d CurRun Offset %d Length %d \n",blockOffset,iRunBlockOffset,iRunLength));
 		if ( (iRunBlockOffset + iRunLength) <= blockOffset )
 		{
 			// nothing to do.  the insert occurred AFTER this run
 		}
-		else if (iRunBlockOffset > blockOffset)
+		else if ((iRunBlockOffset > blockOffset) && bInserted)
 		{
-			if(bInserted)
-			{
-				// the insert is occuring BEFORE this run, so we just move the run offset
+
+			// the insert is occuring BEFORE this run, so we just move the run offset
 				pRun->setBlockOffset(iRunBlockOffset + len);
-			}
+		}
+		else if((iRunBlockOffset > blockOffset) && !bInserted)
+//
+// Run should be inserted before this run
+//
+		{
+			pRun->setBlockOffset(iRunBlockOffset + len);
+			pRun->insertIntoRunListBeforeThis(*pNewRun);
+			bInserted = true;
+			if(pRun->getLine())
+				pRun->getLine()->insertRunBefore(pNewRun, pRun);
 		}
 		else if (iRunBlockOffset == blockOffset)
 		{
@@ -3460,6 +3490,10 @@ bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 			if(pRun->getLine())
 				pRun->getLine()->insertRunBefore(pNewRun, pRun);
 		}
+//
+// Here if the run run starts before the target offset and finishes after it.
+// We need to split this run.
+//
 		else
 		{
 			UT_ASSERT(!bInserted);
@@ -3593,10 +3627,10 @@ bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs)
 	{
 		sqlist = new UT_uint32[len];
 	}
-	UT_DEBUGMSG(("fl_BlockLayout::doclistener_insertSpan(), len=%d, pos %d \n", len, getPosition()+blockOffset));
+	xxx_UT_DEBUGMSG(("fl_BlockLayout::doclistener_insertSpan(), len=%d, pos %d \n", len, getPosition()+blockOffset));
 	for (i=0; i<len; i++)
 	{
-		UT_DEBUGMSG(("fl_BlockLayout: char %d %c \n",i,(char) pChars[i]));
+		xxx_UT_DEBUGMSG(("fl_BlockLayout: char %d %c \n",i,(char) pChars[i]));
 		switch (pChars[i])
 		{
 		case UCS_FF:	// form feed, forced page break
@@ -3689,6 +3723,7 @@ bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs)
 
 	if (bNormal && (iNormalBase < i))
 	{
+		xxx_UT_DEBUGMSG(("insertSpan: BlockOffset %d iNormalBase %d i %d \n",blockOffset,iNormalBase,i));
 		_doInsertTextSpan(blockOffset + iNormalBase, i - iNormalBase);
 	}
 
@@ -3733,7 +3768,20 @@ bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs)
 	if (sqlist != _sqlist) delete[] sqlist;
 
 	_assertRunListIntegrity();
-
+#if 0
+#if DEBUG
+	fp_Run * ppRun = getFirstRun();
+	while(ppRun)
+	{
+		if(ppRun->getType() == FPRUN_TEXT)
+		{
+			fp_TextRun * pTRun = (fp_TextRun *) ppRun;
+			pTRun->printText();
+		}
+		ppRun = ppRun->getNext();
+	}
+#endif
+#endif
 	return true;
 }
 

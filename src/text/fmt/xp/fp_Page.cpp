@@ -76,7 +76,11 @@ fp_Page::~fp_Page()
 
 bool fp_Page::isEmpty(void) const
 {
-	return m_vecColumnLeaders.getItemCount() == 0;
+	if((m_vecColumnLeaders.getItemCount() == 0) && (m_vecFootnotes.getItemCount() == 0))
+	{
+		return true;
+	}
+	return false;
 }
 
 UT_sint32 fp_Page::getWidth(void) const

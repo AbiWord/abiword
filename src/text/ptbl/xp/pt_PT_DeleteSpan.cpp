@@ -487,20 +487,29 @@ bool pt_PieceTable::_tweakDeleteSpanOnce(PT_DocPosition & dpos1,
 	case PTX_SectionCell:
 	case PTX_EndTable:
 	case PTX_EndCell:
-	case PTX_SectionFootnote:
 //
 // We've set things up so that deleting table struxes is done very deliberately.//  Don't mess with the end points here
 //
 		return true;
-	case PTX_EndFootnote:	
+	case PTX_SectionFootnote:
 	{
 //
 // Get the actual block strux container for the endnote. 
 //
-		UT_DEBUGMSG(("_deleteSpan 1: orig pfsContainer %x type %d \n",pfsContainer,pfsContainer->getStruxType()));
-		_getStruxFromFragSkip(pfsContainer,&pfsContainer);
-		UT_DEBUGMSG(("_deleteSpan 2: After skip  pfsContainer %x type %d \n",pfsContainer,pfsContainer->getStruxType()));
-		break;
+ 		UT_DEBUGMSG(("_deleteSpan 1: orig pfsContainer %x type %d \n",pfsContainer,pfsContainer->getStruxType()));
+ 		_getStruxFromFragSkip(pfsContainer,&pfsContainer);
+ 		UT_DEBUGMSG(("_deleteSpan 2: After skip  pfsContainer %x type %d \n",pfsContainer,pfsContainer->getStruxType()));
+ 		break;
+	}
+ 	case PTX_EndFootnote:	
+ 	{
+//
+// Get the actual block strux container for the endnote. 
+//
+ 		UT_DEBUGMSG(("_deleteSpan 1: orig pfsContainer %x type %d \n",pfsContainer,pfsContainer->getStruxType()));
+ 		_getStruxFromFragSkip(pfsContainer,&pfsContainer);
+ 		UT_DEBUGMSG(("_deleteSpan 2: After skip  pfsContainer %x type %d \n",pfsContainer,pfsContainer->getStruxType()));
+ 		break;
 	}
 	case PTX_Block:
 		// if the previous container is a block, we're ok.
@@ -662,6 +671,12 @@ bool pt_PieceTable::_deleteFormatting(PT_DocPosition dpos1,
 			PT_BlockOffset fragOffsetNewTemp;
 			pf_Frag_Strux * pfsContainerTemp = NULL;
 			bool bFoundStrux = _getStruxFromPosition(dposTemp,&pfsContainerTemp);
+			if(isEndFootnote(pfsContainerTemp))
+			{
+				UT_DEBUGMSG(("_deleteSpan 5: orig pfsContainer %x type %d \n",pfsContainerTemp,pfsContainerTemp->getStruxType()));
+				_getStruxFromFragSkip(pfsContainerTemp,&pfsContainerTemp);
+				UT_DEBUGMSG(("_deleteSpan 6: After skip  pfsContainer %x type %d \n",pfsContainerTemp,pfsContainerTemp->getStruxType()));
+			}
 			UT_ASSERT(bFoundStrux);
 			bool bResult = _deleteFmtMarkWithNotify(dposTemp,static_cast<pf_Frag_FmtMark *>(pfTemp),
 													pfsContainerTemp,&pfNewTemp,&fragOffsetNewTemp);
@@ -910,6 +925,10 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 // Now we have to update pfsContainer from dpos1
 //
 				bFoundStrux = _getStruxFromPosition(dpos1,&pfsContainer);
+//
+// For the EndFootnote
+//
+				dpos1 -= 1;
 			}
 			UT_ASSERT(bResult);
 			// we do not update pfsContainer because we just deleted pfs.

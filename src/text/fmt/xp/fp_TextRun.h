@@ -69,7 +69,9 @@ public:
 	void					drawSquiggle(UT_uint32, UT_uint32);
 
 	bool					split(UT_uint32 iSplitOffset);
-
+#if DEBUG
+	virtual void            printText(void);
+#endif
 	virtual bool			hasLayoutProperties(void) const;
 	virtual void			fetchCharWidths(fl_CharWidths * pgbCharWidths);
 #ifndef WITH_PANGO

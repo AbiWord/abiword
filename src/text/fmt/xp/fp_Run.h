@@ -157,7 +157,9 @@ public:
 	GR_Graphics*	        getGraphics() const				{ return m_pG; }
 	GR_Graphics*	        getGR() const					{ return m_pG; }
 	fp_HyperlinkRun *       getHyperlink() const 			{ return m_pHyperlink;}
-
+#if DEBUG
+	virtual void            printText(void) {};
+#endif
 	void                    getSpanAP(const PP_AttrProp * &pSpanAP, bool &bDeleteAfter);
 
 	void					insertIntoRunListBeforeThis(fp_Run& newRun);

@@ -730,12 +730,12 @@ void FL_DocLayout::rebuildFromHere( fl_DocSectionLayout * pFirstDSL)
 		}
 	}
 #endif
-	deleteEmptyColumnsAndPages();
 	while (pDSL)
 	{
 		pDSL->collapse();
 		pDSL = pDSL->getNextDocSection();
 	}
+	deleteEmptyColumnsAndPages();
 //
 // Clear out rebuild marks from this collapse
 //

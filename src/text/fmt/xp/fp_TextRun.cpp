@@ -369,7 +369,20 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	xxx_UT_DEBUGMSG(("fp_TextRun::lookupProperties: bChanged %d\n", (UT_uint32) bChanged));
 }
 
-
+#if DEBUG
+void fp_TextRun::printText(void)
+{
+	UT_uint32 offset = getBlockOffset();
+	UT_uint32 len = getLength();
+	UT_uint32 i =0;
+	UT_String sTmp;
+	for(i=0; i< len;i++)
+	{
+		sTmp += (char) m_pSpanBuff[i];
+	}
+	UT_DEBUGMSG(("Run offset %d len %d Text |%s| \n",offset,len,sTmp.c_str()));
+}
+#endif
 bool fp_TextRun::canBreakAfter(void) const
 {
 	const UT_UCSChar* pSpan = NULL;
