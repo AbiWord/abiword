@@ -599,7 +599,14 @@ UT_uint32 GR_Win32Graphics::measureUnRemappedChar(const UT_UCSChar c)
 	#endif
 
 	UT_ASSERT(m_pFont);
-	return (GR_Win32Font::Acq::measureUnRemappedChar(*m_pFont, c) * getResolution() / getDeviceResolution());
+
+	UT_sint32 iWidth = GR_Win32Font::Acq::measureUnRemappedChar(*m_pFont, c);
+
+	if (iWidth==GR_CW_UNKNOWN || iWidth==GR_CW_ABSENT)
+		return iWidth;
+	else 
+		return (iWidth * getResolution() / getDeviceResolution());
+	
 }
 
 UT_uint32 GR_Win32Graphics::getDeviceResolution(void) const
