@@ -78,6 +78,7 @@ protected:
 
 	UT_UCSChar			m_bufUCS[AP_MAX_MESSAGE_FIELD];
 
+public:
 	// a collection of standard colors for drawing
 
 	UT_RGBColor			m_clrWhite;				/* constant used for highlights */
