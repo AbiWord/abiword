@@ -422,7 +422,7 @@ public:
 	bool                        repopulateCombos();
 
 
-	virtual void                rebuildToolbar(UT_uint32 ibar);
+	virtual void                rebuildToolbar(UT_uint32 ibar) {};
 	void                        rebuildAllToolbars(void);
 	virtual void                refillToolbarsInFrameData(void) =0;
 	void                        dragBegin(XAP_Toolbar_Id srcId, 
