@@ -148,21 +148,21 @@ BOOL CALLBACK AP_Win32Dialog_Goto::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LP
 	// This is a static function.
 
 	AP_Win32Dialog_Goto * pThis;
-	
+
 	switch (msg)
 	{
 	case WM_INITDIALOG:
 		pThis = (AP_Win32Dialog_Goto *)lParam;
 		SetWindowLong(hWnd,DWL_USER,lParam);
 		return pThis->_onInitDialog(hWnd,wParam,lParam);
-		
+
 	case WM_COMMAND:
 		pThis = (AP_Win32Dialog_Goto *)GetWindowLong(hWnd,DWL_USER);
 		if (pThis)
 			return pThis->_onCommand(hWnd,wParam,lParam);
 		else
 			return 0;
-		
+
 	default:
 		return 0;
 	}
@@ -226,13 +226,13 @@ BOOL AP_Win32Dialog_Goto::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 
 	UT_uint32 count = getExistingBookmarksCount();
 	for( UT_uint32 i = 0; i < count; i++)
-		SendMessage( GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_LIST_BOOKMARKS), 
-					 LB_ADDSTRING, 
-					 0, 
+		SendMessage( GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_LIST_BOOKMARKS),
+					 LB_ADDSTRING,
+					 0,
 					 (LPARAM)getNthExistingBookmark(i) );
 
 	ShowWindow(GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_LIST_BOOKMARKS), FALSE);
-	
+
 
 	SetFocus( GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_EDIT_NUMBER) );
 
@@ -248,6 +248,10 @@ BOOL AP_Win32Dialog_Goto::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	HWND hWndCtrl = (HWND)lParam;
 	DWORD dwTextLength, dwCounter, dwStart;
 	XAP_Frame * pFrame = getActiveFrame();
+
+	// before doing anything else, make sure that the main window is not entirely
+	// without focus
+	m_pView->focusChange(AV_FOCUS_MODELESS);
 
 	switch (wId)
 	{
@@ -271,7 +275,7 @@ BOOL AP_Win32Dialog_Goto::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 			{
 				ShowWindow(GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_TEXT_INFO),TRUE);
 				ShowWindow(GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_LIST_BOOKMARKS),FALSE);
-				const XAP_StringSet * pSS = m_pApp->getStringSet(); 			
+				const XAP_StringSet * pSS = m_pApp->getStringSet();
 				SetDlgItemText(hWnd,AP_RID_DIALOG_GOTO_TEXT_NUMBER,pSS->getValue(AP_STRING_ID_DLG_Goto_Label_Number));
 			}
 			return 1;

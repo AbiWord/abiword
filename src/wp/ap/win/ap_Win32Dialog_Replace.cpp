@@ -51,11 +51,65 @@ AP_Win32Dialog_Replace::AP_Win32Dialog_Replace(XAP_DialogFactory * pDlgFactory,
 {
 	m_findString = NULL;
 	m_replaceString = NULL;
-    m_matchCase = true;
+	m_matchCase = true;
+	m_hWnd = 0;
 }
 
 AP_Win32Dialog_Replace::~AP_Win32Dialog_Replace(void)
 {
+}
+
+void AP_Win32Dialog_Replace::activate(void)
+{
+	int iResult;
+
+	// Update the caption
+	ConstructWindowName();
+	SetWindowText(m_hWnd, m_WindowName);
+
+	SetFocus( GetDlgItem( m_hWnd,AP_RID_DIALOG_REPLACE_EDIT_FIND) );
+
+	iResult = ShowWindow( m_hWnd, SW_SHOW );
+
+	iResult = BringWindowToTop( m_hWnd );
+
+	UT_ASSERT((iResult != 0));
+}
+
+
+void AP_Win32Dialog_Replace::destroy(void)
+{
+	int iResult = DestroyWindow( m_hWnd );
+
+	UT_ASSERT((iResult != 0));
+
+	modeless_cleanup();
+}
+
+void AP_Win32Dialog_Replace::notifyActiveFrame(XAP_Frame *pFrame)
+{
+	XAP_Win32Frame * pWin32Frame = static_cast<XAP_Win32Frame *>(pFrame);
+	if((HWND)GetWindowLong(m_hWnd, GWL_HWNDPARENT) != pWin32Frame->getTopLevelWindow())
+	{
+		// Update the caption
+		ConstructWindowName();
+		SetWindowText(m_hWnd, m_WindowName);
+
+		SetWindowLong(m_hWnd, GWL_HWNDPARENT, (long)pWin32Frame->getTopLevelWindow());
+		SetWindowPos(m_hWnd, NULL, 0, 0, 0, 0,
+						SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
+	}
+}
+
+void AP_Win32Dialog_Replace::notifyCloseFrame(XAP_Frame *pFrame)
+{
+	XAP_Win32Frame * pWin32Frame = static_cast<XAP_Win32Frame *>(pFrame);
+	if((HWND)GetWindowLong(m_hWnd, GWL_HWNDPARENT) == pWin32Frame->getTopLevelWindow())
+	{
+		SetWindowLong(m_hWnd, GWL_HWNDPARENT, NULL);
+		SetWindowPos(m_hWnd, NULL, 0, 0, 0, 0,
+						SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
+	}
 }
 
 void AP_Win32Dialog_Replace::runModeless(XAP_Frame * pFrame)
@@ -70,16 +124,30 @@ void AP_Win32Dialog_Replace::runModeless(XAP_Frame * pFrame)
 		lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_FIND);
 	else
 	{
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);	
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return;
 	}
 
 	setView(static_cast<FV_View *> (pFrame->getCurrentView()) );
-	
-	int result = DialogBoxParam(pWin32App->getInstance(),lpTemplate,
+
+	int iResult;
+	HWND hResult = CreateDialogParam(pWin32App->getInstance(),lpTemplate,
 								pWin32Frame->getTopLevelWindow(),
 								(DLGPROC)s_dlgProc,(LPARAM)this);
-	UT_ASSERT((result != -1));
+
+	UT_ASSERT((hResult != NULL));
+
+	m_hWnd = hResult;
+
+	// Save dialog the ID number and pointer to the widget
+	UT_sint32 sid =(UT_sint32)	getDialogId();
+	m_pApp->rememberModelessId( sid, (XAP_Dialog_Modeless *) m_pDialog);
+
+	iResult = ShowWindow( m_hWnd, SW_SHOW );
+
+	iResult = BringWindowToTop( m_hWnd );
+	UT_ASSERT((iResult != 0));
+	m_pView->focusChange(AV_FOCUS_MODELESS);
 }
 
 BOOL CALLBACK AP_Win32Dialog_Replace::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
@@ -87,18 +155,18 @@ BOOL CALLBACK AP_Win32Dialog_Replace::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam
 	// This is a static function.
 
 	AP_Win32Dialog_Replace * pThis;
-	
+	xxx_UT_DEBUGMSG(("s_dlgProc: msg 0x%x\n",msg));
 	switch (msg)
 	{
 	case WM_INITDIALOG:
 		pThis = (AP_Win32Dialog_Replace *)lParam;
 		SetWindowLong(hWnd,DWL_USER,lParam);
 		return pThis->_onInitDialog(hWnd,wParam,lParam);
-		
+
 	case WM_COMMAND:
 		pThis = (AP_Win32Dialog_Replace *)GetWindowLong(hWnd,DWL_USER);
 		return pThis->_onCommand(hWnd,wParam,lParam);
-		
+
 	default:
 		return 0;
 	}
@@ -120,7 +188,7 @@ void AP_Win32Dialog_Replace::_initButtons(HWND hWnd)
 		EnableWindow(GetDlgItem(hWnd,AP_RID_DIALOG_REPLACE_BTN_REPLACE),bEnableReplace);
 		EnableWindow(GetDlgItem(hWnd,AP_RID_DIALOG_REPLACE_BTN_REPLACEALL),bEnableReplace);
 	}
-	
+
 	return;
 }
 
@@ -130,7 +198,7 @@ void AP_Win32Dialog_Replace::_initButtons(HWND hWnd)
 BOOL AP_Win32Dialog_Replace::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	
+
 	if (m_id == AP_DIALOG_ID_FIND)
 		SetWindowText(hWnd, pSS->getValue(AP_STRING_ID_DLG_FR_FindTitle));
 	else
@@ -141,7 +209,7 @@ BOOL AP_Win32Dialog_Replace::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPar
 	_DS(REPLACE_TEXT_FIND,			DLG_FR_FindLabel);
 	_DS(REPLACE_CHECK_MATCHCASE,	DLG_FR_MatchCase);
 
-	_DSX(REPLACE_BTN_CLOSE,			DLG_Cancel);
+	_DSX(REPLACE_BTN_CLOSE, 		DLG_Cancel);
 
 	{
 		UT_UCSChar * bufferUnicode = getFindString();
@@ -171,15 +239,18 @@ BOOL AP_Win32Dialog_Replace::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPar
 
 		// localize replace-specific controls
 		_DS(REPLACE_BTN_REPLACE,	DLG_FR_ReplaceButton);
-		_DS(REPLACE_BTN_REPLACEALL,	DLG_FR_ReplaceAllButton);
+		_DS(REPLACE_BTN_REPLACEALL, DLG_FR_ReplaceAllButton);
 		_DS(REPLACE_TEXT_REPLACE,	DLG_FR_ReplaceWithLabel);
 	}
 
 	CheckDlgButton(hWnd,AP_RID_DIALOG_REPLACE_CHECK_MATCHCASE,
 				   ((getMatchCase()) ? BST_CHECKED : BST_UNCHECKED));
-	
+
 	_initButtons(hWnd);
-	return 1;							// 1 == we did not call SetFocus()
+
+	SetFocus( GetDlgItem(hWnd,AP_RID_DIALOG_REPLACE_EDIT_FIND) );
+
+	return 0;							// 0 == we did call SetFocus()
 }
 
 BOOL AP_Win32Dialog_Replace::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
@@ -188,12 +259,18 @@ BOOL AP_Win32Dialog_Replace::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	WORD wId = LOWORD(wParam);
 	HWND hWndCtrl = (HWND)lParam;
 
+	// before doing anything else, make sure that the main window is not entirely
+	// without focus
+	m_pView->focusChange(AV_FOCUS_MODELESS);
+	xxx_UT_DEBUGMSG(("s_dlgProc: wId 0x%x\n",wId));
+
 	switch (wId)
 	{
 	case AP_RID_DIALOG_REPLACE_EDIT_FIND:
 	case AP_RID_DIALOG_REPLACE_EDIT_REPLACE:
+		xxx_UT_DEBUGMSG(("_onCommand: edit control\n"));
 		_initButtons(hWnd);
-		return 1;
+		return 0;
 
 	case AP_RID_DIALOG_REPLACE_CHECK_MATCHCASE:
 		setMatchCase((IsDlgButtonChecked(hWnd,AP_RID_DIALOG_REPLACE_CHECK_MATCHCASE)==BST_CHECKED));

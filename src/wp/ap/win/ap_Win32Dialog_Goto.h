@@ -31,7 +31,7 @@ public:
 	AP_Win32Dialog_Goto(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~AP_Win32Dialog_Goto(void);
 
-	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
+	static XAP_Dialog * 	static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
 	virtual void			runModeless(XAP_Frame * pFrame);
 	virtual void			destroy(void);
@@ -41,16 +41,16 @@ public:
 	static BOOL CALLBACK	s_dlgProc(HWND,UINT,WPARAM,LPARAM);
 	void					GoTo (const char *number);
 	void					setSelectedRow (int row);
-	int						getSelectedRow (void);
+	int 					getSelectedRow (void);
 
-	void *					pGetWindowHandle( void ) { return (void*)m_hWnd; }
+	virtual void *			pGetWindowHandle( void ) { return (void*)m_hWnd; }
 
 protected:
 	BOOL					_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
 	BOOL					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
 
-	int                     m_iRow;
-	HWND                    m_hWnd;
+	int 					m_iRow;
+	HWND					m_hWnd;
 
 	char *					m_pszOldValue;
 };

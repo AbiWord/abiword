@@ -5416,7 +5416,7 @@ book_mark_not_found:
  \return True if string was found, false otherwise
 */
 bool
-FV_View::findNext(const UT_UCSChar* pFind, bool bMatchCase, 
+FV_View::findNext(const UT_UCSChar* pFind, bool bMatchCase,
 				  bool& bDoneEntireDocument)
 {
 	if (!isSelectionEmpty())
@@ -5446,7 +5446,8 @@ FV_View::findNext(const UT_UCSChar* pFind, bool bMatchCase,
 		_drawSelection();
 	}
 
-	// TODO do we need to do a notifyListeners(AV_CHG_MOTION) ??
+	// TODO do we need to do a notifyListeners(AV_CHG_MOTION) -- yes
+	notifyListeners(AV_CHG_MOTION);
 	return bRes;
 }
 
@@ -5806,7 +5807,7 @@ FV_View::findAgain(void)
 */
 bool
 FV_View::_findReplace(const UT_UCSChar* pFind, const UT_UCSChar* pReplace,
-					  UT_uint32* pPrefix, bool bMatchCase, 
+					  UT_uint32* pPrefix, bool bMatchCase,
 					  bool& bDoneEntireDocument)
 {
 	UT_ASSERT(pFind && pReplace);
