@@ -876,8 +876,7 @@ int AP_QNXApp::main(const char * szAppName, int argc, const char ** argv)
 	if (pMyQNXApp->parseCommandLine() && bShowApp)
 	{
 		XAP_QNXFrame *pFrame = static_cast<XAP_QNXFrame*>(XAP_App::getApp()->getLastFocussedFrame());
-		PtRealizeWidget(pFrame->getTopLevelWindow());
-		PtRealizeWidget(pFrame->getTopLevelWindow());
+		PtReRealizeWidget(pFrame->getTopLevelWindow());
 		PtMainLoop();
 	}
 	
