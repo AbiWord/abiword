@@ -28,6 +28,7 @@
 #include "xap_Spider.h"
 #include "xap_ModuleManager.h"
 #include "ut_string_class.h"
+#include "ut_path.h"
 
 // the loader manages instances of one of these target classes
 
@@ -110,6 +111,28 @@ bool XAP_ModuleManager::loadModule (const char * szFilename)
 
 	if ( szFilename == 0) return false;
 	if (*szFilename == 0) return false;
+
+	// check to see if plugin is already loaded
+	XAP_Module* pModuleLoop = 0;
+	const UT_GenericVector<class XAP_Module *> *pVec = enumModules();
+	
+	for (UT_uint32 i = 0; i < pVec->size(); i++)
+	{
+		pModuleLoop = (XAP_Module *)pVec->getNthItem (i);
+
+		char * moduleName = 0;
+		if(pModuleLoop && pModuleLoop->getModuleName(&moduleName))
+		{
+			if (!UT_strcmp(UT_basename(szFilename), UT_basename(moduleName)))
+			{
+				// already loaded, don't attempt to load again and exit quietly
+				FREEP(moduleName);
+				return true;
+			}
+			FREEP(moduleName);
+		}
+	}
+
 
 	XAP_Module * pModule = 0;
 	UT_TRY
