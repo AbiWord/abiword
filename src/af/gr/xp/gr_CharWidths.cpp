@@ -52,7 +52,7 @@ void GR_CharWidths::setWidth(UT_UCSChar cIndex, UT_sint32 width)
 
 	Array256 * pA = NULL;
 	if (m_vecHiByte.getItemCount() > hi)
-		pA = (Array256 *)m_vecHiByte.getNthItem(hi);
+		pA = static_cast<Array256 *>(m_vecHiByte.getNthItem(hi));
 	if (!pA)
 	{
 		pA = new Array256;
@@ -80,7 +80,7 @@ UT_sint32 GR_CharWidths::getWidth(UT_UCSChar cIndex) const
 
 	if (m_vecHiByte.getItemCount() > hi)
 	{
-		Array256 * pA = (Array256 *)m_vecHiByte.getNthItem(hi);
+		Array256 * pA = static_cast<Array256 *>(m_vecHiByte.getNthItem(hi));
 		if (pA)
 			return pA->aCW[lo];
 	}

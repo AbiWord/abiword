@@ -139,7 +139,7 @@ bool GR_VectorImage::render(GR_Graphics* pGR, UT_sint32 xDest, UT_sint32 yDest)
   DELETEP(m_pSVG);
   m_pSVG = new UT_svg(pGR);
 
-  m_pSVG->cb_userdata = (void*) this;
+  m_pSVG->cb_userdata = static_cast<void*>(this);
 
   m_pSVG->cb_start = _startElement;
   m_pSVG->cb_end = _endElement;
@@ -170,7 +170,7 @@ bool GR_VectorImage::render(GR_Graphics* pGR, UT_sint32 xDest, UT_sint32 yDest)
 
 static void _startElement(void* userdata, const char* name, const char** atts)
 {
-  GR_VectorImage* pImage = (GR_VectorImage*) userdata;
+  GR_VectorImage* pImage = static_cast<GR_VectorImage*>(userdata);
 
   UT_svg* pSVG = pImage->getSVG();
 
@@ -181,7 +181,7 @@ static void _startElement(void* userdata, const char* name, const char** atts)
   else
     {
       pImage->m_CurrentMatrix = new UT_SVGMatrix(*(pImage->m_CurrentMatrix));
-      if (pImage->m_SVG_Matrix.push_back((void*)(pImage->m_CurrentMatrix)))
+      if (pImage->m_SVG_Matrix.push_back(static_cast<void*>(pImage->m_CurrentMatrix)))
 	{
 	  UT_DEBUGMSG(("SVG: Matrix stack/vector: Insufficient memory?\n"));
 	  pSVG->m_bSVG = false;
@@ -199,7 +199,7 @@ static void _startElement(void* userdata, const char* name, const char** atts)
 
 static void _endElement(void* userdata, const char* name)
 {
-  GR_VectorImage* pImage = (GR_VectorImage*) userdata;
+  GR_VectorImage* pImage = static_cast<GR_VectorImage*>(userdata);
 
   //UT_svg* pSVG = pImage->getSVG();
 
@@ -211,14 +211,14 @@ static void _endElement(void* userdata, const char* name)
     }
   pImage->m_iTreeLevel--;
   if (pImage->m_iTreeLevel > 0)
-      pImage->m_CurrentMatrix = (UT_SVGMatrix*)(pImage->m_SVG_Matrix.getLastItem());
+      pImage->m_CurrentMatrix = static_cast<UT_SVGMatrix*>(pImage->m_SVG_Matrix.getLastItem());
 
   //
 }
 
 static void _charData(void* userdata, UT_ByteBuf* pBB)
 {
-  //GR_VectorImage* pImage = (GR_VectorImage*) userdata;
+  //GR_VectorImage* pImage = static_cast<GR_VectorImage*>(userdata);
 
   // ByteBuf holds complete text, probably in UTF-8
 
@@ -237,15 +237,15 @@ static void render_init(GR_VectorImage* pImage)
   // pGR->fillRect(col, pImage->getDisplayOx(), pImage->getDisplayOy(), pImage->getDisplayWidth(), pImage->getDisplayHeight());
 
   // Set initial transformation matrix
-  float x_origin = (float) pImage->getDisplayOx();
-  float y_origin = (float) pImage->getDisplayOy();
+  float x_origin = static_cast<float>(pImage->getDisplayOx());
+  float y_origin = static_cast<float>(pImage->getDisplayOy());
 
-  float x_scale = (float) ((double) (pImage->getDisplayWidth())  / (double) (pSVG->m_iDisplayWidth));
-  float y_scale = (float) ((double) (pImage->getDisplayHeight()) / (double) (pSVG->m_iDisplayHeight));
+  float x_scale = static_cast<float>(static_cast<double>(pImage->getDisplayWidth())  / static_cast<double>(pSVG->m_iDisplayWidth));
+  float y_scale = static_cast<float>(static_cast<double>(pImage->getDisplayHeight()) / static_cast<double>(pSVG->m_iDisplayHeight));
 
   while (pImage->m_SVG_Matrix.getItemCount() > 0)
     {
-      UT_SVGMatrix* matrix = (UT_SVGMatrix*) pImage->m_SVG_Matrix.getLastItem();
+      UT_SVGMatrix* matrix = static_cast<UT_SVGMatrix*>(pImage->m_SVG_Matrix.getLastItem());
       if (matrix) delete matrix;
       pImage->m_SVG_Matrix.pop_back();
     }
@@ -255,7 +255,7 @@ static void render_init(GR_VectorImage* pImage)
   matrix = matrix.scaleNonUniform (x_scale,y_scale);
 
   pImage->m_CurrentMatrix = new UT_SVGMatrix(matrix);
-  if (pImage->m_SVG_Matrix.push_back((void*)(pImage->m_CurrentMatrix)))
+  if (pImage->m_SVG_Matrix.push_back(static_cast<void*>(pImage->m_CurrentMatrix)))
     {
       UT_DEBUGMSG(("SVG: Matrix stack/vector: Insufficient memory?\n"));
       pSVG->m_bSVG = false;

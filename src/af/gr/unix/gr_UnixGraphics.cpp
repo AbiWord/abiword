@@ -45,6 +45,7 @@
 #include <X11/Xft/Xft.h>
 #endif
 
+#if 0
 /* XPM */
 static char * cursor_select_vline_xpm[] = {
 "24 24 2 1",
@@ -104,6 +105,7 @@ static char * cursor_select_hline_xpm[] = {
 "                        ",
 "                        ",
 "                        "};
+#endif
 
 
 
@@ -308,7 +310,7 @@ static UT_uint32 adobeToUnicode(UT_uint32 iAdobe)
 	{
 		return iAdobe;
 	}
-	UT_sint32 slow = (UT_sint32) iAdobe - 72;
+	UT_sint32 slow = static_cast<UT_sint32>(iAdobe) - 72;
 	if(slow < 0)
 	{ 
 		slow = 0;
@@ -488,7 +490,7 @@ GR_UnixGraphics::~GR_UnixGraphics()
 	// purge saved pixbufs
 	for (UT_uint32 i = 0; i < m_vSaveRectBuf.size (); i++)
 		{
-			GdkPixbuf * pix = (GdkPixbuf *)m_vSaveRectBuf.getNthItem (i);
+			GdkPixbuf * pix = static_cast<GdkPixbuf *>(m_vSaveRectBuf.getNthItem (i));
 			g_object_unref (G_OBJECT (pix));
 		}
 }
@@ -561,11 +563,11 @@ void GR_UnixGraphics::setLineProperties ( double inWidthPixels,
 										  GR_Graphics::CapStyle inCapStyle,
 										  GR_Graphics::LineStyle inLineStyle )
 {
-	gdk_gc_set_line_attributes ( m_pGC, (gint)inWidthPixels,
+	gdk_gc_set_line_attributes ( m_pGC, static_cast<gint>(inWidthPixels),
 								 mapLineStyle ( m_pGC, inLineStyle ),
 								 mapCapStyle ( inCapStyle ),
 								 mapJoinStyle ( inJoinStyle ) ) ;
-	gdk_gc_set_line_attributes ( m_pXORGC, (gint)inWidthPixels,
+	gdk_gc_set_line_attributes ( m_pXORGC, static_cast<gint>(inWidthPixels),
 								 mapLineStyle ( m_pGC, inLineStyle ),
 								 mapCapStyle ( inCapStyle ),
 								 mapJoinStyle ( inJoinStyle ) ) ;
@@ -578,7 +580,7 @@ void GR_UnixGraphics::setLineProperties ( double inWidthPixels,
 #define CONVERT_TO_MBS(c)	\
     	if (c<=0xff) {	\
 		/* this branch is to allow Lists to function */	\
-		m_text[0] = (unsigned char)c;			\
+		m_text[0] = static_cast<unsigned char>(c);			\
 		m_text_length = 1;				\
 		m_fallback_used = 0;				\
 	} else	{\
@@ -621,13 +623,13 @@ void GR_UnixGraphics::drawGlyph(UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff)
 		if(isFontUnicode(font))
 		{
 			LE2BE16((&Wide_char),(&Wide_char)) //declared in ut_endian.h
-				gdk_draw_text(m_pWin,font,m_pGC,xoff,yoff+font->ascent,(gchar*)&Wide_char,2);
+				gdk_draw_text(m_pWin,font,m_pGC,xoff,yoff+font->ascent,reinterpret_cast<gchar*>(&Wide_char),2);
 		}
 		else
 		{
 			//non-unicode font, Wide char is guaranteed to be <= 0xff
-			gchar gc = (gchar) Wide_char;
-			gdk_draw_text(m_pWin,font,m_pGC,xoff,yoff+font->ascent,(gchar*)&gc,1);
+			gchar gc = static_cast<gchar>(Wide_char);
+			gdk_draw_text(m_pWin,font,m_pGC,xoff,yoff+font->ascent,static_cast<gchar*>(&gc),1);
 		}
 	}
 	else
@@ -662,9 +664,9 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 		{
 			xxx_UT_DEBUGMSG(("Doing draw symbols length %d offset %d \n",iLength,iCharOffset));
 			UT_uint32 * uChars = new UT_uint32[iLength];
-			for(UT_uint32 i = (UT_uint32) iCharOffset; i< (UT_uint32) iLength; i++)
+			for(UT_uint32 i = static_cast<UT_uint32>(iCharOffset); i< static_cast<UT_uint32>(iLength); i++)
 			{
-				uChars[i] = (UT_uint32) pChars[iCharOffset + i];
+				uChars[i] = static_cast<UT_uint32>(pChars[iCharOffset + i]);
 				if(uChars[i] < 255 && uChars[i] >= 32)
 				{
 					uChars[i] = adobeToUnicode(uChars[i]);
@@ -684,29 +686,29 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 		if (iLength > 256)
 			pCharSpec = new XftCharSpec[iLength];
 
-		pCharSpec[0].ucs4 = (FT_UInt) pChars[iCharOffset];
-		UT_uint32 uChar = (UT_uint32) pCharSpec[0].ucs4;
+		pCharSpec[0].ucs4 = static_cast<FT_UInt>(pChars[iCharOffset]);
+		UT_uint32 uChar = static_cast<UT_uint32>(pCharSpec[0].ucs4);
 		pCharSpec[0].x = xoff;
 		pCharSpec[0].y = yoff;
 		if(m_bIsSymbol && uChar < 255 && uChar >=32)
 		{
-			uChar = (UT_uint32) pChars[iCharOffset];
-			pCharSpec[0].ucs4 = (FT_UInt) adobeToUnicode(uChar);
+			uChar = static_cast<UT_uint32>(pChars[iCharOffset]);
+			pCharSpec[0].ucs4 = static_cast<FT_UInt>(adobeToUnicode(uChar));
 			xxx_UT_DEBUGMSG(("DrawGlyph 2 remapped %d to %d \n",uChar,pCharSpec[0].ucs4));
 		}
 		for (int i = 1; i < iLength; ++i)
 		{
-			uChar = (UT_uint32) pChars[i + iCharOffset];
+			uChar = static_cast<UT_uint32>(pChars[i + iCharOffset]);
 			if(m_bIsSymbol && uChar < 255 && uChar >=32)
 			{
-				pCharSpec[i].ucs4 = (FT_UInt) adobeToUnicode(uChar);
+				pCharSpec[i].ucs4 = static_cast<FT_UInt>(adobeToUnicode(uChar));
 				xxx_UT_DEBUGMSG(("DrawGlyph 2 remapped %d to %d \n",uChar,pCharSpec[i].ucs4));
 			}
 			else
 			{
-				pCharSpec[i].ucs4 = (FT_UInt) pChars[i + iCharOffset];
+				pCharSpec[i].ucs4 = static_cast<FT_UInt>(pChars[i + iCharOffset]);
 			}
-			pCharSpec[i].x = (short) (pCharSpec[i - 1].x + pCharWidths[i - 1]);
+			pCharSpec[i].x = static_cast<short>(pCharSpec[i - 1].x + pCharWidths[i - 1]);
 			pCharSpec[i].y = yoff;
 		}
 		
@@ -801,7 +803,7 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 				{
 				case UT_NOT_OVERSTRIKING:
 				default:
-					curWidth = gdk_text_width(font, (gchar*)&beucs, 2);
+					curWidth = gdk_text_width(font, reinterpret_cast<gchar*>(&beucs), 2);
 					curX = x;
 					break;
 				case UT_OVERSTRIKING_RTL:
@@ -814,7 +816,7 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 					break;
 				}
 
-				gdk_draw_text(m_pWin,font,m_pGC,curX,yoff+font->ascent,(gchar*)&beucs,2);
+				gdk_draw_text(m_pWin,font,m_pGC,curX,yoff+font->ascent,reinterpret_cast<gchar*>(&beucs),2);
 				x+=curWidth;
 				prevWidth = curWidth;
 			}
@@ -822,13 +824,13 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 			{
 				// not a unicode font; actual is guaranteed to be <=0xff
 				// (this happens typically when drawing the interface)
-				gchar gc = (gchar) actual;
+				gchar gc = static_cast<gchar>(actual);
 
 				switch(UT_OVERSTRIKING_DIR & UT_isOverstrikingChar(*pC))
 				{
 				case UT_NOT_OVERSTRIKING:
 				default:
-					curWidth = gdk_text_width(font, (gchar*)&gc, 1);
+					curWidth = gdk_text_width(font, static_cast<gchar*>(&gc), 1);
 					curX = x;
 					break;
 				case UT_OVERSTRIKING_RTL:
@@ -841,7 +843,7 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 					break;
 				}
 
-				gdk_draw_text(m_pWin,font,m_pGC,curX,yoff+font->ascent,(gchar*)&gc,1);
+				gdk_draw_text(m_pWin,font,m_pGC,curX,yoff+font->ascent,static_cast<gchar*>(&gc),1);
 				x += curWidth;
 				prevWidth = curWidth;
 			}
@@ -963,8 +965,8 @@ void GR_UnixGraphics::getCoverage(UT_Vector& coverage)
 void GR_UnixGraphics::getCoverage(UT_Vector& coverage)
 {
 	coverage.clear();
-	coverage.push_back((void*) ' ');
-	coverage.push_back((void*) (127 - ' '));
+	coverage.push_back(reinterpret_cast<void*>(' '));
+	coverage.push_back(reinterpret_cast<void*>(127 - ' '));
 }
 #endif
 
@@ -994,9 +996,9 @@ UT_uint32 GR_UnixGraphics::measureUnRemappedChar(const UT_UCSChar c)
 		}
 		else
 		{
-			width = m_pFont->getUnixFont()->measureUnRemappedChar((UT_UCSChar) adobeToUnicode(c), m_pFont->getSize());
+			width = m_pFont->getUnixFont()->measureUnRemappedChar(static_cast<UT_UCSChar>(adobeToUnicode(c)), m_pFont->getSize());
 		}
-		return (UT_uint32) _UL((width + 0.5));
+		return static_cast<UT_uint32>(_UL((width + 0.5)));
 	}
 	else
 	{
@@ -1006,7 +1008,7 @@ UT_uint32 GR_UnixGraphics::measureUnRemappedChar(const UT_UCSChar c)
 		if(m_bIsSymbol)
 		{
 			xxx_UT_DEBUGMSG(("unixGraphics: measureUnremapped char symbol val %d \n",cc));
-			cc = adobeToUnicode((UT_uint32) cc);
+			cc = adobeToUnicode(static_cast<UT_uint32>(cc));
 		}
 		XftTextExtents32(GDK_DISPLAY(), m_pXftFont, static_cast<XftChar32*> (&cc), 1, &extents);
 		return _UL(extents.xOff);
@@ -1039,7 +1041,7 @@ UT_uint32 GR_UnixGraphics::measureUnRemappedChar(const UT_UCSChar c)
 			{
 				//this is a unicode font
 				LE2BE16(&c,&Wide_char)
-					return _UL(gdk_text_width(font, (gchar*) &Wide_char, 2));
+					return _UL(gdk_text_width(font, reinterpret_cast<gchar*>(&Wide_char), 2));
 			}
 			else
 			{
@@ -1048,8 +1050,8 @@ UT_uint32 GR_UnixGraphics::measureUnRemappedChar(const UT_UCSChar c)
 					return 0;
 				else
 				{
-					gchar gc = (gchar) c;
-					return _UL(gdk_text_width(font, (gchar*)&gc, 1));
+					gchar gc = static_cast<gchar>(c);
+					return _UL(gdk_text_width(font, static_cast<gchar*>(&gc), 1));
 				}
 			}
 		}
@@ -1069,7 +1071,7 @@ UT_uint32 GR_UnixGraphics::measureUnRemappedChar(const UT_UCSChar c)
 //
 	else
 	{
-		double dsize = (double) m_pFont->getSize();
+		double dsize = static_cast<double>(m_pFont->getSize());
 		XAP_UnixFont *pEnglishFont;
 		XAP_UnixFont *pChineseFont;
 		m_pFont->explodeUnixFonts(&pEnglishFont,&pChineseFont);
@@ -1077,15 +1079,17 @@ UT_uint32 GR_UnixGraphics::measureUnRemappedChar(const UT_UCSChar c)
 // The metrics are in 1/1000th's of an inch, we need to convert these to
 // pixels.  Try this....
 //
-		double fFactor = (double) 1.0/1000.0;
+		// TODO HIPI: The old C cast just cast the number before the /
+		// TODO HIPI: Check that this is the right thing to do.
+		double fFactor = static_cast<double>(1.0/1000.0);
 		if (XAP_EncodingManager::get_instance()->is_cjk_letter(c))
 		{
-			return (UT_uint32) _UL((fFactor * dsize * (double) pChineseFont->get_CJK_Width()));
+			return static_cast<UT_uint32>(_UL((fFactor * dsize * static_cast<double>(pChineseFont->get_CJK_Width()))));
 		}
 		else
 		{
 			UT_uint32 width;
-			width = (UT_uint32) _UL((fFactor * dsize * (double) pEnglishFont->getCharWidth(c)));
+			width = static_cast<UT_uint32>(_UL((fFactor * dsize * static_cast<double>(pEnglishFont->getCharWidth(c)))));
 			return width;
 		}
 	}
@@ -1201,7 +1205,7 @@ GR_Font * GR_UnixGraphics::getGUIFont(void)
 	{
 		// get the font resource
 		//UT_DEBUGMSG(("GR_UnixGraphics::getGUIFont: getting default font\n"));
-		XAP_UnixFont * font = (XAP_UnixFont *) m_pFontManager->getDefaultFont();
+		XAP_UnixFont * font = static_cast<XAP_UnixFont *>(m_pFontManager->getDefaultFont());
 		UT_ASSERT(font);
 
 		// bury it in a new font handle
@@ -1361,7 +1365,7 @@ UT_uint32 GR_UnixGraphics::getFontAscent(GR_Font * fnt)
 	XAP_UnixFontHandle * hndl = static_cast<XAP_UnixFontHandle *>(fnt);
 	
 #ifdef USE_XFT
-	return (UT_uint32) (hndl->getUnixFont()->getAscender(hndl->getSize()) + 0.5);
+	return static_cast<UT_uint32>(hndl->getUnixFont()->getAscender(hndl->getSize()) + 0.5);
 #else
 //
 // Use GDK at low resolution.
@@ -1397,8 +1401,8 @@ UT_uint32 GR_UnixGraphics::getFontAscent(GR_Font * fnt)
 
 		GlobalFontInfo * gfsi = pSingleByte->getMetricsData()->gfi;
 		UT_ASSERT(gfsi);
-		UT_uint32 ascsingle = (UT_uint32) ( (double) gfsi->fontBBox.ury * (double) hndl->getSize() /1000.);
-		UT_uint32 ascmulti = (UT_uint32) ( (double) pMultiByte->get_CJK_Ascent() * (double) hndl->getSize() /1000.);
+		UT_uint32 ascsingle = static_cast<UT_uint32>(static_cast<double>(gfsi->fontBBox.ury) * static_cast<double>(hndl->getSize()) /1000.);
+		UT_uint32 ascmulti = static_cast<UT_uint32>(static_cast<double>(pMultiByte->get_CJK_Ascent()) * static_cast<double>(hndl->getSize()) /1000.);
 		return MAX(ascsingle,ascmulti);
 	}
 #endif
@@ -1418,7 +1422,7 @@ UT_uint32 GR_UnixGraphics::getFontDescent(GR_Font * fnt)
 
 #ifdef USE_XFT
 	XAP_UnixFont* pFont = hndl->getUnixFont();
-	return (UT_uint32) (pFont->getDescender(hndl->getSize()) + 0.5);
+	return static_cast<UT_uint32>(pFont->getDescender(hndl->getSize()) + 0.5);
 #else
 //
 // Use GDK at low resolution.
@@ -1439,8 +1443,8 @@ UT_uint32 GR_UnixGraphics::getFontDescent(GR_Font * fnt)
 		hndl->explodeUnixFonts(&pSingleByte,&pMultiByte);
 		GlobalFontInfo * gfsi = pSingleByte->getMetricsData()->gfi;
 		UT_ASSERT(gfsi);
-		UT_uint32 dsingle = (UT_uint32) ( -(double) gfsi->fontBBox.lly * (double) hndl->getSize() /1000.);
-		UT_uint32 dmulti = (UT_uint32) ( (double) pMultiByte->get_CJK_Descent() * (double) hndl->getSize() /1000.);
+		UT_uint32 dsingle = static_cast<UT_uint32>(-static_cast<double>(gfsi->fontBBox.lly) * static_cast<double>(hndl->getSize()) /1000.);
+		UT_uint32 dmulti = static_cast<UT_uint32>(static_cast<double>(pMultiByte->get_CJK_Descent()) * static_cast<double>(hndl->getSize()) /1000.);
 		return MAX(dsingle,dmulti);
 	}
 #endif
@@ -1492,7 +1496,7 @@ void GR_UnixGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 
 	// see bug #303 for what this is about
 
-	GdkPoint * points = (GdkPoint *)calloc(nPoints, sizeof(GdkPoint));
+	GdkPoint * points = static_cast<GdkPoint *>(calloc(nPoints, sizeof(GdkPoint)));
 	UT_ASSERT(points);
 
 	for (UT_uint32 i = 0; i < nPoints; i++)
@@ -1823,7 +1827,7 @@ void GR_UnixGraphics::setCursor(GR_Graphics::Cursor c)
 			gdk_color_white	 (m_pColormap,&bg);
 			source	= gdk_pixmap_colormap_create_from_xpm_d(m_pWin,NULL,
 														&mask, NULL,
-														(char ** )cursor_select_hline_xpm);
+														static_cast<char **>(cursor_select_hline_xpm));
 			GDK_IS_PIXMAP(source);
 			GDK_IS_PIXMAP(mask);
 			UT_DEBUGMSG(("setCursor: source = %x \n",source));
@@ -1852,7 +1856,7 @@ void GR_UnixGraphics::setCursor(GR_Graphics::Cursor c)
 			gdk_color_white	 (m_pColormap,&bg);
 			source = gdk_pixmap_colormap_create_from_xpm_d(m_pWin,NULL,
 														&mask, NULL,
-														(char ** )cursor_select_vline_xpm);
+														static_cast<char **>(cursor_select_vline_xpm));
 			GdkCursor* cursor_new = gdk_cursor_new_from_pixmap(source,mask,&fg,
 															   &bg,12,12);
 			gdk_window_set_cursor(m_pWin, cursor_new);
@@ -1988,18 +1992,18 @@ void GR_UnixGraphics::saveRectangle(UT_Rect & r, UT_uint32 iIndx)
 	// static. Tomas, Jan 18, 2003
 	
 	if (m_vSaveRect.getItemCount()>iIndx && m_vSaveRect.getNthItem(iIndx) && 
-		((UT_Rect *)(m_vSaveRect.getNthItem(iIndx)))->left == r.left &&
-		((UT_Rect *)(m_vSaveRect.getNthItem(iIndx)))->top == r.top &&
-		((UT_Rect *)(m_vSaveRect.getNthItem(iIndx)))->width == r.width && 
-		((UT_Rect *)(m_vSaveRect.getNthItem(iIndx)))->height == r.height) {
+		(static_cast<UT_Rect *>(m_vSaveRect.getNthItem(iIndx)))->left == r.left &&
+		(static_cast<UT_Rect *>(m_vSaveRect.getNthItem(iIndx)))->top == r.top &&
+		(static_cast<UT_Rect *>(m_vSaveRect.getNthItem(iIndx)))->width == r.width && 
+		(static_cast<UT_Rect *>(m_vSaveRect.getNthItem(iIndx)))->height == r.height) {
 		return;
 	}
 #endif
 	
 	void * oldR = NULL;
-	m_vSaveRect.setNthItem(iIndx, (void*)new UT_Rect(r),&oldR);
+	m_vSaveRect.setNthItem(iIndx, static_cast<void*>(new UT_Rect(r)),&oldR);
 	if(oldR)
-		delete (UT_Rect*)oldR;
+		delete static_cast<UT_Rect*>(oldR);
 
 	void * oldC = NULL;
 	GdkPixbuf * pix = gdk_pixbuf_get_from_drawable(NULL,
@@ -2007,15 +2011,15 @@ void GR_UnixGraphics::saveRectangle(UT_Rect & r, UT_uint32 iIndx)
 												   NULL,
 												   r.left, r.top, 0, 0,
 												   r.width, r.height);
-	m_vSaveRectBuf.setNthItem(iIndx, (void*)pix, &oldC);
+	m_vSaveRectBuf.setNthItem(iIndx, static_cast<void*>(pix), &oldC);
 	if(oldC)
 		g_object_unref (G_OBJECT (oldC));
 }
 
 void GR_UnixGraphics::restoreRectangle(UT_uint32 iIndx)
 {
-	UT_Rect * r = (UT_Rect*)m_vSaveRect.getNthItem(iIndx);
-	GdkPixbuf *p = (GdkPixbuf *)m_vSaveRectBuf.getNthItem(iIndx);
+	UT_Rect * r = static_cast<UT_Rect*>(m_vSaveRect.getNthItem(iIndx));
+	GdkPixbuf *p = static_cast<GdkPixbuf *>(m_vSaveRectBuf.getNthItem(iIndx));
 
 	if (p && r)
 		gdk_pixbuf_render_to_drawable(p,

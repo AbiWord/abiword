@@ -109,16 +109,16 @@ GR_Graphics::GR_Graphics()
 		const XML_Char *table_utf8, *default_utf8;
 		UT_GrowBuf gb;
 		const UT_UCSChar *tbl;
-		bool bNoErr = p->getPrefsValueBool((XML_Char*)XAP_PREF_KEY_RemapGlyphsMasterSwitch, &m_bRemapGlyphsMasterSwitch);
-		p->getPrefsValueBool((XML_Char*)XAP_PREF_KEY_RemapGlyphsNoMatterWhat, &m_bRemapGlyphsNoMatterWhat);
+		bool bNoErr = p->getPrefsValueBool(static_cast<XML_Char*>(XAP_PREF_KEY_RemapGlyphsMasterSwitch), &m_bRemapGlyphsMasterSwitch);
+		p->getPrefsValueBool(static_cast<XML_Char*>(XAP_PREF_KEY_RemapGlyphsNoMatterWhat), &m_bRemapGlyphsNoMatterWhat);
 
-		bNoErr = p->getPrefsValue((XML_Char*)XAP_PREF_KEY_RemapGlyphsDefault, &default_utf8);
+		bNoErr = p->getPrefsValue(static_cast<XML_Char*>(XAP_PREF_KEY_RemapGlyphsDefault), &default_utf8);
 		UT_ASSERT( bNoErr );
 		
 		UT_decodeUTF8string(default_utf8, UT_XML_strlen(default_utf8), &gb);
 		m_ucRemapGlyphsDefault = *(gb.getPointer(0));  // might be null
 
-		bNoErr = p->getPrefsValue((XML_Char*)XAP_PREF_KEY_RemapGlyphsTable, &table_utf8);
+		bNoErr = p->getPrefsValue(static_cast<XML_Char*>(XAP_PREF_KEY_RemapGlyphsTable), &table_utf8);
 		UT_ASSERT( bNoErr );
 		
 		gb.truncate(0);
@@ -134,7 +134,7 @@ GR_Graphics::GR_Graphics()
 			m_pRemapGlyphsTableSrc = new UT_UCSChar[m_iRemapGlyphsTableLen];
 			m_pRemapGlyphsTableDst = new UT_UCSChar[m_iRemapGlyphsTableLen];
 			
-			tbl = (UT_UCSChar*)gb.getPointer(0);
+			tbl = reinterpret_cast<UT_UCSChar*>(gb.getPointer(0));
 			for (UT_uint32 tdex=0; tdex<m_iRemapGlyphsTableLen; ++tdex)
 			{
 				m_pRemapGlyphsTableSrc[tdex] = tbl[2 * tdex];
@@ -231,7 +231,8 @@ UT_uint32 GR_Graphics::measureString(const UT_UCSChar* s, int iOffset,
 				stringWidth += charWidth;
 		}
 
-		if (pWidths) pWidths[i] = charWidth;
+		if (pWidths)
+			pWidths[i] = charWidth;
     }
 	return stringWidth;
 }
@@ -310,8 +311,8 @@ UT_UCSChar GR_Graphics::remapGlyph(const UT_UCSChar actual_, bool noMatterWhat)
 		m_pPrefsScheme = s;
 		m_uTick = t;
 
-		p->getPrefsValueBool((XML_Char*)XAP_PREF_KEY_RemapGlyphsMasterSwitch, &m_bRemapGlyphsMasterSwitch);
-		p->getPrefsValueBool((XML_Char*)XAP_PREF_KEY_RemapGlyphsNoMatterWhat, &m_bRemapGlyphsNoMatterWhat);
+		p->getPrefsValueBool(static_cast<XML_Char*>(XAP_PREF_KEY_RemapGlyphsMasterSwitch), &m_bRemapGlyphsMasterSwitch);
+		p->getPrefsValueBool(static_cast<XML_Char*>(XAP_PREF_KEY_RemapGlyphsNoMatterWhat), &m_bRemapGlyphsNoMatterWhat);
 
 		// we have no mechanism through which we could change the
 		// tables at runtime, so this is entirely unnecessary.
@@ -319,13 +320,13 @@ UT_UCSChar GR_Graphics::remapGlyph(const UT_UCSChar actual_, bool noMatterWhat)
 		UT_GrowBuf gb;
 		const UT_UCSChar *tbl;
 
-		p->getPrefsValue((XML_Char*)XAP_PREF_KEY_RemapGlyphsDefault, &default_utf8);
-		UT_ASSERT(p->getPrefsValue((XML_Char*)XAP_PREF_KEY_RemapGlyphsDefault, &default_utf8));
+		p->getPrefsValue(static_cast<XML_Char*>(XAP_PREF_KEY_RemapGlyphsDefault), &default_utf8);
+		UT_ASSERT(p->getPrefsValue(static_cast<XML_Char*>(XAP_PREF_KEY_RemapGlyphsDefault), &default_utf8));
 		UT_decodeUTF8string(default_utf8, UT_XML_strlen(default_utf8), &gb);
 		m_ucRemapGlyphsDefault = *(gb.getPointer(0));  // might be null
 
-		p->getPrefsValue((XML_Char*)XAP_PREF_KEY_RemapGlyphsTable, &table_utf8);
-		UT_ASSERT(p->getPrefsValue((XML_Char*)XAP_PREF_KEY_RemapGlyphsTable, &table_utf8));
+		p->getPrefsValue(static_cast<XML_Char*>(XAP_PREF_KEY_RemapGlyphsTable), &table_utf8);
+		UT_ASSERT(p->getPrefsValue(static_cast<XML_Char*>(XAP_PREF_KEY_RemapGlyphsTable), &table_utf8));
 		gb.truncate(0);
 		UT_decodeUTF8string(table_utf8, UT_XML_strlen(table_utf8), &gb);
 
@@ -346,7 +347,7 @@ UT_UCSChar GR_Graphics::remapGlyph(const UT_UCSChar actual_, bool noMatterWhat)
 		
 		if (m_iRemapGlyphsTableLen)
 		{
-			tbl = (UT_UCSChar*)gb.getPointer(0);
+			tbl = static_cast<UT_UCSChar*>(gb.getPointer(0));
 			for (UT_uint32 tdex=0; tdex<m_iRemapGlyphsTableLen; ++tdex)
 			{
 				m_pRemapGlyphsTableSrc[tdex] = tbl[2 * tdex];
@@ -444,7 +445,7 @@ UT_uint32 GR_Graphics::getAppropriateFontSizeFromString(const char * pszFontSize
 		m_bLayoutResolutionModeEnabled = curRes;
 		if( m_bLayoutResolutionModeEnabled)
 		{
-			iSizeLayout = (UT_uint32) ((double ) UT_LAYOUT_UNITS * UT_convertToInches(pszFontSize) +0.05);
+			iSizeLayout = static_cast<UT_uint32>(static_cast<double>(UT_LAYOUT_UNITS) * UT_convertToInches(pszFontSize) +0.05);
 			xxx_UT_DEBUGMSG(("SEVIOR: iSizeLayout in gr_graphics = %d \n",iSizeLayout));
 			return iSizeLayout;
 		}
@@ -457,12 +458,12 @@ UT_uint32 GR_Graphics::getAppropriateFontSizeFromString(const char * pszFontSize
 //
 	else
 	{
-		double dPaperSize = UT_convertToInches(pszFontSize) * (double) getResolution();
-		iSize = (UT_sint32) (dPaperSize + 0.05);
+		double dPaperSize = UT_convertToInches(pszFontSize) * static_cast<double>(getResolution());
+		iSize = static_cast<UT_sint32>(dPaperSize + 0.05);
 #ifdef USE_LAYOUT_UNITS		
 		if( m_bLayoutResolutionModeEnabled)
 		{
-			iSizeLayout = (UT_uint32) ((double ) UT_LAYOUT_UNITS * UT_convertToInches(pszFontSize) +0.05);
+			iSizeLayout = static_cast<UT_uint32>(static_cast<double>(UT_LAYOUT_UNITS) * UT_convertToInches(pszFontSize) +0.05);
 			return iSizeLayout;
 		}
 #endif
@@ -496,7 +497,7 @@ UT_sint32 GR_Graphics::convertDimension(const char * s) const
 	 then we end up getting 11pt back which really kind of licks.
 	 We have to round down to fix bug 1521.
 	*/
-	return (UT_sint32) ((dInches * dResolution) + 0.05);
+	return static_cast<UT_sint32>((dInches * dResolution) + 0.05);
 }
 
 UT_sint32 GR_Graphics::convertDimension(double Value, UT_Dimension dim) const
@@ -519,7 +520,7 @@ UT_sint32 GR_Graphics::convertDimension(double Value, UT_Dimension dim) const
 	 lossy in that when we put a conversion of 12pt in at 72DPI
 	 then we end up getting 11pt back which really kind of licks.
 	*/
-	return (UT_sint32) ((dInches * dResolution) + 0.5);
+	return static_cast<UT_sint32>((dInches * dResolution) + 0.5);
 }
 
 const char * GR_Graphics::invertDimension(UT_Dimension dim, double dValue) const
@@ -913,11 +914,11 @@ void GR_Graphics::drawPangoGlyphString(GList * pGlyphString,
 
 	while (pListItem)
 	{
-		PangoGlyphString * pGString = (PangoGlyphString *) pListItem->data;
+		PangoGlyphString * pGString = static_cast<PangoGlyphString *>(pListItem->data);
 		pango_glyph_string_extents(pGString, m_pPangoFont, &inkRect, NULL);
 
 		// remember the present cumulative width
-		pWidthList = g_list_append(pWidthList, (gpointer)iWidth);
+		pWidthList = g_list_append(pWidthList, static_cast<gpointer>(iWidth));
 
 		iWidth += inkRect.width;
 		iHeight = UT_MAX(iHeight, inkRect.height);
@@ -931,7 +932,7 @@ void GR_Graphics::drawPangoGlyphString(GList * pGlyphString,
 	FTBitmap.pixel_mode = ft_pixel_mode_grays;
 	FTBitmap.num_grays  = 256;
 	FTBitmap.pitch      = 1*FTBitmap.width;
-	FTBitmap.buffer     = (unsigned char*)UT_calloc(FTBitmap.rows * FTBitmap.width, 1);
+	FTBitmap.buffer     = static_cast<unsigned char*>(UT_calloc(FTBitmap.rows * FTBitmap.width, 1));
 
 	// now itterate again, creating composite bitmap
 	pListItem = g_list_first(pGlyphString);
@@ -941,8 +942,8 @@ void GR_Graphics::drawPangoGlyphString(GList * pGlyphString,
 	{
 		UT_ASSERT(pWidthItem);
 
-		PangoGlyphString * pGString = (PangoGlyphString *) pListItem->data;
-		UT_sint32 iCumWidth = (UT_sint32) pWidthItem->data;
+		PangoGlyphString * pGString = static_cast<PangoGlyphString *>(pListItem->data);
+		UT_sint32 iCumWidth = static_cast<UT_sint32>(pWidthItem->data);
 
 		pango_ft2_render(&FTBitmap, m_pPangoFont, pGString, iCumWidth , 0 /*??*/);
 
@@ -976,7 +977,7 @@ void GR_Graphics::drawPangoGlyphString(PangoGlyphString * pGlyphString,
 	FTBitmap.pixel_mode = ft_pixel_mode_grays;
 	FTBitmap.num_grays  = 256;
 	FTBitmap.pitch      = 1*FTBitmap.width;
-	FTBitmap.buffer     = (unsigned char*)UT_calloc(FTBitmap.rows * FTBitmap.width, 1);
+	FTBitmap.buffer     = static_cast<unsigned char*>(UT_calloc(FTBitmap.rows * FTBitmap.width, 1));
 
 	pango_ft2_render(&FTBitmap, m_pPangoFont, pGlyphString, 0 , 0 /*??*/);
 
@@ -1072,8 +1073,8 @@ void  GR_Graphics::_initFontManager()
 
 PangoContext * GR_Graphics::_createPangoContext()
 {
-	double x_dpi = (double)_getResolution();
-	double y_dpi = (double)_getResolution();
+	double x_dpi = static_cast<double>(_getResolution());
+	double y_dpi = static_cast<double>(_getResolution());
 
 	return pango_ft2_get_context(x_dpi, y_dpi);
 }
@@ -1096,9 +1097,9 @@ GList *  GR_Graphics::getPangoGlyphString(const UT_UCS4Char * pChars, UT_uint32 
 
 	while(pListItem)
 	{
-		PangoItem * pItem = (PangoItem*) pListItem->data;
+		PangoItem * pItem = static_cast<PangoItem*>(pListItem->data);
 		PangoGlyphString * pGlyphString = pango_glyph_string_new();
-		pGStringList = g_list_append(pGStringList, (gpointer)pGlyphString);
+		pGStringList = g_list_append(pGStringList, static_cast<gpointer>(pGlyphString));
 
 		pango_shape(text.utf8_str() + pItem->offset,pItem->length, &pItem->analysis, pGlyphString);
 
@@ -1121,7 +1122,7 @@ PangoGlyphString * GR_Graphics::getPangoGlyphString(const UT_UCS4Char iChar) con
 
     // since there is only one char, we can use pItem directly
 
-	PangoItem * pItem = (PangoItem*) pItems->data;
+	PangoItem * pItem = static_cast<PangoItem*>(pItems->data);
 	PangoGlyphString * pGlyphString = pango_glyph_string_new();
 	pango_shape(text.utf8_str(),pItem->length, &pItem->analysis, pGlyphString);
 

@@ -119,7 +119,7 @@ bool  GR_UnixImage::convertToBuffer(UT_ByteBuf** ppBB) const
 		UT_uint32 len = gdk_pixbuf_get_height (m_image) * 
 			gdk_pixbuf_get_rowstride (m_image);
 		pBB = new UT_ByteBuf();		
-		pBB->append((const UT_Byte *)pixels, len);		
+		pBB->append(static_cast<const UT_Byte *>(pixels), len);		
 	}
 
 	*ppBB = pBB;
@@ -135,7 +135,7 @@ bool GR_UnixImage::hasAlpha (void) const
 UT_sint32 GR_UnixImage::rowStride (void) const
 {
 	UT_return_val_if_fail(m_image, 0);
-	return (UT_sint32)gdk_pixbuf_get_rowstride (m_image);
+	return static_cast<UT_sint32>(gdk_pixbuf_get_rowstride (m_image));
 }
 
 void GR_UnixImage::scale (UT_sint32 iDisplayWidth, 
@@ -189,8 +189,8 @@ bool GR_UnixImage::convertFromBuffer(const UT_ByteBuf* pBB,
 		return false;
 	}
 	
-	if ( FALSE== gdk_pixbuf_loader_write (ldr, (const guchar *)pBB->getPointer (0),
-										  (gsize)pBB->getLength (), &err) )
+	if ( FALSE== gdk_pixbuf_loader_write (ldr, static_cast<const guchar *>(pBB->getPointer (0)),
+										  static_cast<gsize>(pBB->getLength ()), &err) )
 	{
 		UT_DEBUGMSG(("DOM: couldn't write to loader: %s\n", err->message));
 		g_error_free(err);

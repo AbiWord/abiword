@@ -59,14 +59,14 @@ void GR_Image::setName ( const UT_String & name )
 
 GR_Image::GRType GR_Image::getBufferType(const UT_ByteBuf * pBB)
 {
-   const char * buf = (const char*)pBB->getPointer(0);
+   const char * buf = reinterpret_cast<const char*>(pBB->getPointer(0));
    UT_uint32 len = pBB->getLength();
 
    if (len < 6) return GR_Image::GRT_Unknown;
 
    char * comp1 = "\211PNG";
    char * comp2 = "<89>PNG";
-   if (!(strncmp((const char*)buf, comp1, 4)) || !(strncmp((const char*)buf, comp2, 6)))
+   if (!(strncmp(static_cast<const char*>(buf), comp1, 4)) || !(strncmp(static_cast<const char*>(buf), comp2, 6)))
      return GR_Image::GRT_Raster;
 
    if (UT_SVG_recognizeContent (buf,len))
