@@ -54,7 +54,7 @@ struct ABI_EXPORT XAP_LangInfo
 };
 
 
-class XAP_EncodingManager
+class ABI_EXPORT XAP_EncodingManager
 {
 public:
     /*
@@ -132,7 +132,7 @@ public:
     
     
     virtual char fallbackChar(UT_UCSChar c) const;
-	ABI_EXPORT static XAP_EncodingManager *get_instance();
+	static XAP_EncodingManager *get_instance();
 	void Delete_instance();
 
     /*  This tries to approximate the character with the string, e.g.
@@ -263,7 +263,8 @@ public:
 		    b0 = outptr_orig[swap_stou],b1 = outptr_orig[!swap_stou];
 		    V = b0 | (b1<<8);		    
 	*/
-	static bool 				swap_utos,swap_stou;
+	static bool swap_utos;
+    static bool swap_stou;
 	
 	/* these are utility functions. Since all fields are strings, 
 	we can use the same routine. Returns NULL if nothing was found. */
@@ -271,9 +272,9 @@ public:
 		XAP_LangInfo::fieldidx column);
 		
 	/*word uses non-ascii names of fonts in .doc*/
-	static UT_Bijection cjk_word_fontname_mapping,
+	static UT_Bijection cjk_word_fontname_mapping;
 		/* CJK users need slightly different set of fontsizes*/
-		fontsizes_mapping;
+	static UT_Bijection fontsizes_mapping;
 protected:
 	void describe();
 	XAP_EncodingManager();
@@ -309,4 +310,4 @@ extern int XAP_EncodingManager__swap_stou,XAP_EncodingManager__swap_utos;
 const char * xap_encoding_manager_get_language_iso_name(void);
 }
 
-#endif /* XAP_APP_H */
+#endif /* XAP_ENCMGR_H */

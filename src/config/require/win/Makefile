@@ -29,7 +29,7 @@ REQUIRE=	_ZLIB_ _LIBPNG_
 ifneq ($(ABI_REQUIRE_PEER_ICONV),0)
 REQUIRE+=	_LIBICONV_
 endif
-REQUIRE+=	_LIBWV_ _POPT_ _NSIS_ _FRIBIDI_
+REQUIRE+=	_LIBWV_ _POPT_ _FRIBIDI_
 #REQUIREREALCLEAN=	realclean_LIBICONV_ realclean_LIBWV_ clean_POPT_
 
 TARGET=		build
@@ -112,17 +112,6 @@ _POPT_:
 		exit 1;						\
 	fi								
 #			$(CCSET) ./configure --enable-static --disable-shared;  
-
-_NSIS_:
-	@if [ -d $(ABI_ROOT)/../nsis ]; then			\
-		echo Found nsis in peer directory;		\
-		$(MAKE) -f Makefile.abi -C $(ABI_ROOT)/../nsis;		\
-	else									\
-		echo nsis not found;						\
-		echo TODO provide a nicer error message;			\
-		echo TODO with instructions for obtaining it;			\
-		exit 1;								\
-	fi
 
 # TODO: update to support building statically or as DLL
 _FRIBIDI_:

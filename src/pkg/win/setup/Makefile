@@ -60,6 +60,17 @@ $(PROGRAM): $(BINDIR)/makensis$(EXE_SUFFIX)
 	 cd $(BINDIR); \
 	 $(BINDIR)/makensis$(EXE_SUFFIX) $(NSIS_OPT) ./AbiWord.nsi
 
+_NSIS_:
+	@if [ -d $(ABI_ROOT)/../nsis ]; then			\
+		echo Found nsis in peer directory;		\
+		$(MAKE) -f Makefile.abi -C $(ABI_ROOT)/../nsis;		\
+	else									\
+		echo nsis not found;						\
+		echo TODO provide a nicer error message;			\
+		echo TODO with instructions for obtaining it;			\
+		exit 1;								\
+	fi
+
 ifeq ($(ABI_OPT_DEBUG),1)
 
 distribution::
@@ -69,7 +80,7 @@ distribution::
 
 else
 
-distribution:: $(TARGETS)
+distribution:: _NSIS_ $(TARGETS)
 	@echo Copying $(PROGRAM) to $(DIST)
 	@$(subst xxxx,$(DIST),$(VERIFY_DIRECTORY))
 	@$(ABICOPY) $(PROGRAM) $(DIST)
