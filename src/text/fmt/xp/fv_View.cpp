@@ -112,7 +112,7 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 	pLayout->setView(this);
 		
 	pLayout->formatAll();
-	
+	//Test_Dump();
 	moveInsPtTo(FV_DOCPOS_BOD);
 	m_iSelectionAnchor = getPoint();
 	_resetSelection();

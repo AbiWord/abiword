@@ -93,8 +93,9 @@ void fp_Run::__dump(FILE * fp) const
 	UT_ASSERT(NrElements(s_names)==(FPRUN__LAST__-FPRUN__FIRST__+1));
 	const char * szName = (((m_iType >= FPRUN__FIRST__) && (m_iType <= FPRUN__LAST__)) ? s_names[m_iType-1] : "Unknown");
 
-	fprintf(fp,"    Run: 0x%p T=%s Off=%d Len=%d D=%c [x %d y %d w %d h %d]\n",
-			this, szName, m_iOffsetFirst, m_iLen, ((m_bDirty) ? 'y' : 'n'),
+	fprintf(fp,"    Run: %p T=%s Off=%d Len=%d D=%c Line=%p [x %d y %d w %d h %d]\n",
+			this, szName, m_iOffsetFirst, m_iLen, 
+			((m_bDirty) ? 'y' : 'n'), m_pLine,
 			m_iX, m_iY, m_iWidth, m_iHeight);
 }
 #endif
