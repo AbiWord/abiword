@@ -5616,7 +5616,7 @@ static bool s_doFontDlg(FV_View * pView)
 			else
 			{
 				props_out[k++] = "display";
-				props_out[k++] ="";
+				props_out[k++] ="inline";
 			}
 		}
 		

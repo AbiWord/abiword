@@ -1,5 +1,7 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998-2003 AbiSource, Inc.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -77,7 +79,7 @@ static PP_Property _props[] =
 
 	{ "default-tab-interval",  "0.5in",           false, NULL, PP_LEVEL_BLOCK},
 	{ "dir-override",          NULL,              true,  NULL, PP_LEVEL_CHAR},  
-	{ "display",               NULL,              true,  NULL, PP_LEVEL_CHAR},
+	{ "display",               "inline",          true,  NULL, PP_LEVEL_CHAR},
 	{ "dom-dir",               def_dom_dir,       true,  NULL, PP_LEVEL_BLOCK | PP_LEVEL_SECT},  
 
 	{ "field-color",           "dcdcdc",          true,  NULL, PP_LEVEL_FIELD},
@@ -101,8 +103,8 @@ static PP_Property _props[] =
 	{ "height",                "0in",             false, NULL, PP_LEVEL_CHAR},
 	{ "homogeneous",           "1",               false, NULL, PP_LEVEL_CHAR},
 
-	{ "keep-together",         "",                false, NULL, PP_LEVEL_BLOCK},
-	{ "keep-with-next",        "",                false, NULL, PP_LEVEL_BLOCK},
+	{ "keep-together",         "no",              false, NULL, PP_LEVEL_BLOCK},
+	{ "keep-with-next",        "no",              false, NULL, PP_LEVEL_BLOCK},
 
 	{ "lang",                  "en-US",           true,  NULL, PP_LEVEL_CHAR},
 	{ "left-color",            "000000",          false, NULL, PP_LEVEL_TABLE},//ArVee
@@ -119,7 +121,7 @@ static PP_Property _props[] =
 	{ "margin-right",          "0in",             false, NULL, PP_LEVEL_BLOCK},
 	{ "margin-top",	           "0in",             false, NULL, PP_LEVEL_BLOCK}, // zero to be consistent with other WPs
 
-	{ "orphans",               "1",               false, NULL, PP_LEVEL_BLOCK},
+	{ "orphans",               "2",               false, NULL, PP_LEVEL_BLOCK}, // 2 to be consistent with widows & CSS
 
 	{ "page-margin-bottom",	   "1in",             false, NULL, PP_LEVEL_SECT},
 	{ "page-margin-footer",    "0.0in",           false, NULL, PP_LEVEL_SECT},
@@ -255,12 +257,40 @@ static PD_Style * _getStyle(const PP_AttrProp * pAttrProp, PD_Document * pDoc)
 	return pStyle;
 }
 
-const XML_Char * PP_evalProperty(const XML_Char *  pszName,
-								 const PP_AttrProp * pSpanAttrProp,
-								 const PP_AttrProp * pBlockAttrProp,
-								 const PP_AttrProp * pSectionAttrProp,
-								 PD_Document * pDoc,
-								 bool bExpandStyles)
+static const XML_Char * s_evalProperty (const PP_Property * pProp,
+										const PP_AttrProp * pAttrProp,
+										PD_Document * pDoc,
+										bool bExpandStyles)
+{
+	const XML_Char * szValue = NULL;
+
+	if (pAttrProp->getProperty (pProp->getName(), szValue))
+		{
+			return szValue;
+		}
+	if (!bExpandStyles) return NULL;
+
+	PD_Style * pStyle = _getStyle (pAttrProp, pDoc);
+
+	int i = 0;
+	while (pStyle && (i < pp_BASEDON_DEPTH_LIMIT))
+		{
+			if (pStyle->getProperty (pProp->getName (), szValue))
+				{
+					return szValue;
+				}
+			pStyle = pStyle->getBasedOn ();
+			i++;
+		}
+	return NULL;
+}
+
+const XML_Char * PP_evalProperty (const XML_Char *  pszName,
+								  const PP_AttrProp * pSpanAttrProp,
+								  const PP_AttrProp * pBlockAttrProp,
+								  const PP_AttrProp * pSectionAttrProp,
+								  PD_Document * pDoc,
+								  bool bExpandStyles)
 {
 	// find the value for the given property
 	// by evaluating it in the contexts given.
@@ -272,7 +302,8 @@ const XML_Char * PP_evalProperty(const XML_Char *  pszName,
 		return NULL;
 	}
 
-	const XML_Char * szValue;
+	if (pDoc == 0) bExpandStyles = false;
+
 	const PP_Property * pProp = PP_lookupProperty(pszName);
 	if (!pProp)
 	{
@@ -280,99 +311,147 @@ const XML_Char * PP_evalProperty(const XML_Char *  pszName,
 		return NULL;
 	}
 
-	PD_Style * pStyle = NULL;
-
-	// TODO: make lookup more efficient by tagging each property with scope (block, char, section)
+	/* Not all properties can have a value of inherit, but we're not validating here.
+	 * This is not to be confused with automatic inheritance - the difference is whether
+	 * to take the default value (for when no value is specified).
+	 */
+	bool bInherit = false;
 
 	// see if the property is on the Span item.
 
+	const XML_Char * szValue = NULL;
+
+	// TODO: ?? make lookup more efficient by tagging each property with scope (block, char, section)
+
 	if (pSpanAttrProp)
-	{
-		if (pSpanAttrProp->getProperty(pProp->getName(),szValue))
-			return szValue;
-
-		if (bExpandStyles)
 		{
-			pStyle = _getStyle(pSpanAttrProp, pDoc);
+			szValue = s_evalProperty (pProp, pSpanAttrProp, pDoc, bExpandStyles);
 
-			int i = 0;
-			while (pStyle && (i < pp_BASEDON_DEPTH_LIMIT))
-			{
-				if (pStyle->getProperty(pProp->getName(), szValue))
-					return szValue;
-
-				pStyle = pStyle->getBasedOn();
-				i++;
-			}
-		}
-	}
-
-	// otherwise, see if we can inherit it from the containing block or the section.
-
-	if (!pSpanAttrProp || pProp->canInherit())
-	{
-		if (pBlockAttrProp)
-		{
-			if (pBlockAttrProp->getProperty(pProp->getName(),szValue))
-				return szValue;
-
-			if (bExpandStyles)
-			{
-				pStyle = _getStyle(pBlockAttrProp, pDoc);
-
-				int i = 0;
-				while (pStyle && (i < pp_BASEDON_DEPTH_LIMIT))
+			if (szValue)
+				if (UT_strcmp (szValue, "inherit") == 0)
+					{
+						szValue = NULL;
+						bInherit = true;
+					}
+			if ((szValue == NULL) && (bInherit || pProp->canInherit ()))
 				{
-					if (pStyle->getProperty(pProp->getName(), szValue))
-						return szValue;
+					bInherit = false;
 
-					pStyle = pStyle->getBasedOn();
-					i++;
+					if (pBlockAttrProp)
+						{
+							szValue = s_evalProperty (pProp, pBlockAttrProp, pDoc, bExpandStyles);
+
+							if (szValue)
+								if (UT_strcmp (szValue, "inherit") == 0)
+									{
+										szValue = NULL;
+										bInherit = true;
+									}
+							if ((szValue == NULL) && (bInherit || pProp->canInherit ()))
+								{
+									bInherit = false;
+
+									if (pSectionAttrProp)
+										{
+											szValue = s_evalProperty (pProp, pSectionAttrProp, pDoc, bExpandStyles);
+
+											if (szValue)
+												if (UT_strcmp (szValue, "inherit") == 0)
+													{
+														szValue = NULL;
+														bInherit = true;
+													}
+											if ((szValue == NULL) && (bInherit || pProp->canInherit ()))
+												{
+													const PP_AttrProp * pDocAP = pDoc->getAttrProp ();
+													if (pDocAP)
+														pDocAP->getProperty (pszName, szValue);
+												}
+										}
+								}
+						}
 				}
-			}
 		}
-
-		if (!pBlockAttrProp || pProp->canInherit())
+	else if (pBlockAttrProp)
 		{
-			if (pSectionAttrProp && pSectionAttrProp->getProperty(pProp->getName(),szValue))
-				return szValue;
+			szValue = s_evalProperty (pProp, pBlockAttrProp, pDoc, bExpandStyles);
+
+			if (szValue)
+				if (UT_strcmp (szValue, "inherit") == 0)
+					{
+						szValue = NULL;
+						bInherit = true;
+					}
+			if ((szValue == NULL) && (bInherit || pProp->canInherit ()))
+				{
+					bInherit = false;
+
+					if (pSectionAttrProp)
+						{
+							szValue = s_evalProperty (pProp, pSectionAttrProp, pDoc, bExpandStyles);
+
+							if (szValue)
+								if (UT_strcmp (szValue, "inherit") == 0)
+									{
+										szValue = NULL;
+										bInherit = true;
+									}
+							if ((szValue == NULL) && (bInherit || pProp->canInherit ()))
+								{
+									const PP_AttrProp * pDocAP = pDoc->getAttrProp ();
+									if (pDocAP)
+										pDocAP->getProperty (pszName, szValue);
+								}
+						}
+				}
 		}
-
-		// see if this prop is found on the document level
-		if(pDoc && pProp->canInherit())
+	else if (pSectionAttrProp)
 		{
-			const PP_AttrProp * pDocAP = pDoc->getAttrProp();
-			if(pDocAP && pDocAP->getProperty(pProp->getName(),szValue))
+			szValue = s_evalProperty (pProp, pSectionAttrProp, pDoc, bExpandStyles);
+
+			if (szValue)
+				if (UT_strcmp (szValue, "inherit") == 0)
+					{
+						szValue = NULL;
+						bInherit = true;
+					}
+			if ((szValue == NULL) && (bInherit || pProp->canInherit ()))
+				{
+					const PP_AttrProp * pDocAP = pDoc->getAttrProp ();
+					if (pDocAP)
+						pDocAP->getProperty (pszName, szValue);
+				}
+		}
+	else
+		{
+			const PP_AttrProp * pDocAP = pDoc->getAttrProp ();
+			if (pDocAP)
+				pDocAP->getProperty (pszName, szValue);
+		}
+	if (szValue)
+		if (UT_strcmp (szValue, "inherit") == 0) // shouldn't happen, but doesn't hurt to check
+			szValue = NULL;
+
+	if (szValue == NULL)
+		if (bExpandStyles)
 			{
-				return szValue;
+				PD_Style * pStyle = 0;
+
+				if (pDoc->getStyle ("Normal", &pStyle))
+					{
+						/* next to last resort -- check for this property in the Normal style
+						 */
+						pStyle->getProperty (pszName, szValue);
+
+						if (szValue)
+							if (UT_strcmp (szValue, "inherit") == 0)
+								szValue = NULL;
+					}
 			}
-		}
-	}
-//
-// If expandstyles is false we stop here
-//
-	if(!bExpandStyles)
-	{
-		//#TF I need to get some value for Section properties even
-		//when I am not to expand styles; we should never return
-		//NULL anyway, since we have hardcoded defaults for all
-		//properties
-		return pProp->getInitial()/*NULL*/;
-	}
+	if (szValue == NULL)
+		szValue = pProp->getInitial (); // which may itself be NULL, but that is a bad thing - FIXME!!
 
-
-	if (pDoc && pDoc->getStyle("Normal", &pStyle))
-	{
-		// next to last resort -- check for this property in the Normal style
-		if (pStyle->getProperty(pProp->getName(), szValue))
-			return szValue;
-	}
-
-	// if no inheritance allowed for it or there is no
-	// value set in containing block or section, we return
-	// the default value for this property.
-
-	return pProp->getInitial();
+	return szValue;
 }
 
 const PP_PropertyType * PP_evalPropertyType(const XML_Char *  pszName,
