@@ -2,7 +2,6 @@
 <!DOCTYPE glade-interface SYSTEM "http://glade.gnome.org/glade-2.0.dtd">
 
 <glade-interface>
-<requires lib="gnome"/>
 
 <widget class="GtkDialog" id="xap_UnixDlg_PluginManager">
   <property name="border_width">5</property>
@@ -369,7 +368,7 @@
 		  </child>
 
 		  <child>
-		    <widget class="GtkLabel" id="lbAuthor">
+		    <widget class="GtkLabel" id="lbPluginAuthor">
 		      <property name="visible">True</property>
 		      <property name="label" translatable="yes">Not available</property>
 		      <property name="use_underline">False</property>
@@ -393,7 +392,7 @@
 		  </child>
 
 		  <child>
-		    <widget class="GtkLabel" id="lbVersion">
+		    <widget class="GtkLabel" id="lbPluginVersion">
 		      <property name="visible">True</property>
 		      <property name="label" translatable="yes">Not available</property>
 		      <property name="use_underline">False</property>
@@ -417,7 +416,7 @@
 		  </child>
 
 		  <child>
-		    <widget class="GtkLabel" id="lbName">
+		    <widget class="GtkLabel" id="lbPluginName">
 		      <property name="visible">True</property>
 		      <property name="label" translatable="yes">Not available</property>
 		      <property name="use_underline">False</property>
@@ -441,7 +440,7 @@
 		  </child>
 
 		  <child>
-		    <widget class="GtkLabel" id="lbDescription">
+		    <widget class="GtkLabel" id="lbPluginDescription">
 		      <property name="width_request">212</property>
 		      <property name="visible">True</property>
 		      <property name="label" translatable="yes">Not available</property>

@@ -225,8 +225,8 @@ ap_sbf_InsertMode::ap_sbf_InsertMode(AP_StatusBar * pSB)
 		     pSB->getFrame()->getApp()->getDefaultEncoding());
     UT_UTF8String s2(pSB->getFrame()->getApp()->getStringSet()->getValue(AP_STRING_ID_InsertModeFieldOVR), 
 		     pSB->getFrame()->getApp()->getDefaultEncoding());
-    m_sInsertMode[0] = s1;
-    m_sInsertMode[1] = s2;
+    m_sInsertMode[0] = s2; // m_bInsertMode == false
+    m_sInsertMode[1] = s1; // m_bInsertMode == true
 
     m_fillMethod = REPRESENTATIVE_STRING;
     m_alignmentMethod = CENTER;

@@ -257,11 +257,13 @@ void XAP_UnixDialog_PluginManager::_refresh ()
 		pModule = 0;
 	
 	// just a blank space, to represent an empty entry
-	const char * name = " ";
-	const char * author = " ";
-	const char * version = " ";
-	const char * desc = " ";
+	const char * name = NULL;
+	const char * author = NULL;
+	const char * version = NULL;
+	const char * desc = NULL;
 	
+	const char * na = m_pApp->getStringSet()->getValue(XAP_STRING_ID_DLG_PLUGIN_MANAGER_NOT_AVAILABLE);
+
 	if (pModule)
 	{
 		const XAP_ModuleInfo * mi = pModule->getModuleInfo ();
@@ -273,13 +275,16 @@ void XAP_UnixDialog_PluginManager::_refresh ()
 			version = mi->version;
 		}
 	}
+
+	if (!name) name = na;
+	if (!author) author = na;
+	if (!version) version = na;
+	if (!desc) desc = na;
 	
-	gtk_entry_set_text (GTK_ENTRY (m_name), name);
-	gtk_entry_set_text (GTK_ENTRY (m_author), author);
-	gtk_entry_set_text (GTK_ENTRY (m_version), version);
-	
-	GtkTextBuffer * buffer = gtk_text_view_get_buffer ( GTK_TEXT_VIEW(m_desc) ) ;
-	gtk_text_buffer_set_text ( buffer, desc, -1 ) ;
+	gtk_label_set_text (GTK_LABEL (m_name), name);
+	gtk_label_set_text (GTK_LABEL (m_author), author);
+	gtk_label_set_text (GTK_LABEL (m_version), version);	
+	gtk_label_set_text (GTK_LABEL (m_desc), desc) ;
 }
 
 /*****************************************************************/
@@ -347,19 +352,19 @@ GtkWidget * XAP_UnixDialog_PluginManager::_constructWindow ()
 	
 	m_windowMain = glade_xml_get_widget(xml, "xap_UnixDlg_PluginManager");
 	m_list = glade_xml_get_widget(xml, "tvPlugins");
-	m_name = glade_xml_get_widget(xml, "enName");
-	m_author = glade_xml_get_widget(xml, "enAuthor");
-	m_version = glade_xml_get_widget(xml, "enVersion");
-	m_desc = glade_xml_get_widget(xml, "tvDescription");
+	m_name = glade_xml_get_widget(xml, "lbPluginName");
+	m_author = glade_xml_get_widget(xml, "lbPluginAuthor");
+	m_version = glade_xml_get_widget(xml, "lbPluginVersion");
+	m_desc = glade_xml_get_widget(xml, "lbPluginDescription");
 
 	gtk_window_set_title(GTK_WINDOW(m_windowMain), pSS->getValue(XAP_STRING_ID_DLG_PLUGIN_MANAGER_TITLE));
 
 	localizeLabelMarkup(glade_xml_get_widget(xml, "lbActivePlugins"), pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_ACTIVE);
 	localizeLabelMarkup(glade_xml_get_widget(xml, "lbPluginDetails"), pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_DETAILS);
-	localizeLabel(glade_xml_get_widget(xml, "lbPluginName"), pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_NAME);
-	localizeLabel(glade_xml_get_widget(xml, "lbPluginDescription"), pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_DESC);
-	localizeLabel(glade_xml_get_widget(xml, "lbPluginAuthor"), pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_AUTHOR);
-	localizeLabel(glade_xml_get_widget(xml, "lbPluginVersion"), pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_VERSION);
+	localizeLabel(glade_xml_get_widget(xml, "lbNameLabel"), pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_NAME);
+	localizeLabel(glade_xml_get_widget(xml, "lbDescriptionLabel"), pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_DESC);
+	localizeLabel(glade_xml_get_widget(xml, "lbAuthorLabel"), pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_AUTHOR);
+	localizeLabel(glade_xml_get_widget(xml, "lbVersionLabel"), pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_VERSION);
 
 	GtkWidget * btDeactivate = glade_xml_get_widget(xml, "btDeactivate");
 	GtkWidget * btDeactivateAll = glade_xml_get_widget(xml, "btDeactivateAll");
