@@ -137,7 +137,7 @@ void fp_FootnoteContainer::setContainer(fp_Container * pContainer)
 		return;
 	}
 
-	if (getContainer())
+	if (getContainer() && (pContainer != NULL))
 	{
 		clearScreen();
 	}
@@ -371,7 +371,7 @@ UT_sint32 fp_EndnoteContainer::getValue(void)
 
 void fp_EndnoteContainer::clearScreen(void)
 {
-	xxx_UT_DEBUGMSG(("Clearscreen on Endnote container, height = %d \n",getHeight()));
+	UT_DEBUGMSG(("Clearscreen on Endnote container %x , height = %d \n",this,getHeight()));
 	fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(getSectionLayout());
 	pCL->setNeedsRedraw();
 	if(!m_bOnPage)
@@ -437,7 +437,7 @@ void fp_EndnoteContainer::setContainer(fp_Container * pContainer)
 		return;
 	}
 
-	if (getContainer())
+	if (getContainer() && (pContainer != NULL))
 	{
 		clearScreen();
 	}

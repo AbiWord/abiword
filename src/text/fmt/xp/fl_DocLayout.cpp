@@ -765,6 +765,7 @@ fl_DocSectionLayout * FL_DocLayout::getDocSecForEndnote(fp_EndnoteContainer * pE
  */
 void FL_DocLayout::removeEndnoteContainer(fp_EndnoteContainer * pECon)
 {
+	UT_DEBUGMSG(("Remove endnote container %x \n",pECon));
 	fl_DocSectionLayout * pDSL = getDocSecForEndnote(pECon);
 	if(pDSL->getFirstEndnoteContainer() == static_cast<fp_Container *>(pECon))
 	{
