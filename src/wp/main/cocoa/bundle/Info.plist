@@ -76,6 +76,7 @@
 			</array>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
+		</dict>
 		<dict>
 			<key>CFBundleTypeExtensions</key>
 			<array>
