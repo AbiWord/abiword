@@ -77,20 +77,22 @@ public:
 
 protected:
 	bool					_realInsertObject(PT_DocPosition dpos,
-										 PTObjectType pto,
-										 const XML_Char ** attributes,
-										 const XML_Char ** properties);
+											  PTObjectType pto,
+											  const XML_Char ** attributes,
+											  const XML_Char ** properties);
 
 	bool					_realInsertObject(PT_DocPosition dpos,
-										 PTObjectType pto,
-										 const XML_Char ** attributes,
-										 const XML_Char ** properties, pf_Frag_Object ** ppfo );
+											  PTObjectType pto,
+											  const XML_Char ** attributes,
+											  const XML_Char ** properties, pf_Frag_Object ** ppfo );
 
 	bool					_realInsertSpan(PT_DocPosition dpos,
-									   const UT_UCSChar * p,
-									   UT_uint32 length,
-									   fd_Field * pField = NULL,
-									   bool bAddChangeRec = true);
+											const UT_UCSChar * p,
+											UT_uint32 length,
+											const XML_Char ** attributes,
+											const XML_Char ** properties,
+											fd_Field * pField = NULL,
+											bool bAddChangeRec = true);
 
 	bool					_realDeleteSpan(PT_DocPosition dpos1,
 											PT_DocPosition dpos2,

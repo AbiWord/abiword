@@ -49,11 +49,6 @@ bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 							   UT_uint32 length, fd_Field * pField,
 							   bool bAddChangeRec)
 {
-	// since span insertion never includes attrs and props, the revsion marking has to be inserted
-	// using a separate call to _realChangeSpanFmt()
-	if(!_realInsertSpan(dpos, p, length, pField, bAddChangeRec))
-		return false;
-
 	if(bAddChangeRec && m_pDocument->isMarkRevisions())
 	{
 		PP_RevisionAttr Revisions(NULL);
@@ -69,7 +64,8 @@ bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 
 		_translateRevisionAttribute(Revisions, indexAP, PP_REVISION_ADDITION, ppRevAttrib, ppRevProps, 0, 0);
 		
-		return _realChangeSpanFmt(PTC_AddFmt, dpos, dpos + length, ppRevAttrib, ppRevProps);
+		//return _realChangeSpanFmt(PTC_AddFmt, dpos, dpos + length, ppRevAttrib, ppRevProps);
+		return _realInsertSpan(dpos, p, length, ppRevAttrib, ppRevProps, pField, bAddChangeRec);
 	}
 	else if(bAddChangeRec)
 	{
@@ -100,21 +96,24 @@ bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 			{
 				// if we have no revision attribute, then everything
 				// is OK
-				return true;
+				return _realInsertSpan(dpos, p, length, NULL, NULL, pField, bAddChangeRec);
 			}
 
-			if(!_realChangeSpanFmt(PTC_RemoveFmt, dpos, dpos+length, ppRevAttrib,NULL))
-				return false;
+			//if(!_realChangeSpanFmt(PTC_RemoveFmt, dpos, dpos+length, ppRevAttrib,NULL))
+			//	return false;
+			return _realInsertSpan(dpos, p, length, ppRevAttrib, NULL, pField, bAddChangeRec);
 		}
 		else
 		{
 			// no AP, this is probably OK
 			UT_DEBUGMSG(("pt_PieceTable::insertSpan: no AP\n"));
-			return true;
+			return _realInsertSpan(dpos, p, length, NULL, NULL, pField, bAddChangeRec);
 		}
 	}
-	
-	return true;
+	else
+	{
+		return _realInsertSpan(dpos, p, length, NULL, NULL, pField, bAddChangeRec);
+	}
 }
 
 
@@ -349,7 +348,10 @@ bool pt_PieceTable::_lastUndoIsThisFmtMark(PT_DocPosition dpos)
 
 bool pt_PieceTable::_realInsertSpan(PT_DocPosition dpos,
 									const UT_UCSChar * p,
-									UT_uint32 length, fd_Field * pField,
+									UT_uint32 length,
+									const XML_Char ** attributes,
+									const XML_Char ** properties,
+									fd_Field * pField,
 									bool bAddChangeRec)
 {
 	// insert character data into the document at the given position.
@@ -542,6 +544,18 @@ bool pt_PieceTable::_realInsertSpan(PT_DocPosition dpos,
 			return false;
 	}
 
+	if(attributes || properties)
+	{
+		// we need to add the attrs and props passed to us ...
+		PT_AttrPropIndex indexNewAP;
+		bool bMerged;
+		bMerged = m_varset.mergeAP(PTC_AddFmt,indexAP,attributes,properties,&indexNewAP,getDocument());
+		UT_ASSERT_HARMLESS( bMerged );
+
+		if(bMerged)
+			indexAP = indexNewAP;
+	}
+	
 	if (!_insertSpan(pf,bi,fragOffset,length,indexAP,pField))
 		goto Finish;
 
