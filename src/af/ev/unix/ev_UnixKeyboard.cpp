@@ -30,7 +30,9 @@
 #include "ev_NamedVirtualKey.h"
 #include "ev_UnixKeyboard.h"
 
-static EV_EditBits s_mapVirtualKeyCodeToNVK(gint nVirtKey);
+static EV_EditBits s_mapVirtualKeyCodeToNVK(gint keyval);
+static UT_Bool s_isVirtualKeyCode(gint keyval);
+
 
 ev_UnixKeyboard::ev_UnixKeyboard(EV_EditEventMapper* pEEM) : EV_Keyboard(pEEM)
 {
@@ -51,10 +53,10 @@ UT_Bool ev_UnixKeyboard::keyPressEvent(FV_View* pView,
 		state |= EV_EMS_CONTROL;
 	if (e->state & GDK_MOD1_MASK)
 		state |= EV_EMS_ALT;
-		
-	if (e->keyval > 0xff00)  // virt key
+
+	if (s_isVirtualKeyCode(e->keyval))
 	{
-		EV_EditBits nvk = s_mapVirtualKeyCodeToNVK(e->keyval - 0xff00);
+		EV_EditBits nvk = s_mapVirtualKeyCodeToNVK(e->keyval);
 		switch (nvk)
 		{
 		case EV_NVK__IGNORE__:
@@ -303,15 +305,28 @@ static EV_EditBits s_Table_NVK[] =
 
 #define NrElements(a)	((sizeof(a) / sizeof(a[0])))
 
-static EV_EditBits s_mapVirtualKeyCodeToNVK(gint nVirtKey)
+static UT_Bool s_isVirtualKeyCode(gint keyval)
+{
+	if (keyval > 0xFF00)				// see the above table
+		return UT_TRUE;
+	if (keyval == 0x0020)				// special handling for ASCII-Space
+		return UT_TRUE;
+	return UT_FALSE;
+}
+
+static EV_EditBits s_mapVirtualKeyCodeToNVK(gint keyval)
 {
 	// map the given virtual key into a "named virtual key".
 	// these are referenced by NVK_ symbol so that the cross
 	// platform code can properly refer to them.
-	
-	UT_ASSERT(nVirtKey <= (gint)NrElements(s_Table_NVK));
 
-	return s_Table_NVK[nVirtKey];
+	if (keyval > 0xFF00)
+		return s_Table_NVK[keyval - 0xFF00];
+	if (keyval == 0x0020)
+		return EV_NVK_SPACE;
+
+	UT_ASSERT(0);
+	return EV_NKV__IGNORE__;
 }
 
 

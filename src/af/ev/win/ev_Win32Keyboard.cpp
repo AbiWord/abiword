@@ -506,7 +506,7 @@ static EV_EditBits s_Table_NVK[] =
 	0,					/*                   0x1D */
 	0,					/*                   0x1E */
 	0,					/*                   0x1F */
-	0,					/* VK_SPACE          0x20 */
+	EV_NVK_SPACE,		/* VK_SPACE          0x20 */
 	EV_NVK_PAGEUP,		/* VK_PRIOR          0x21 */
 	EV_NVK_PAGEDOWN,	/* VK_NEXT           0x22 */
 	EV_NVK_END,			/* VK_END            0x23 */

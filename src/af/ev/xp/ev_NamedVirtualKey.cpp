@@ -32,6 +32,7 @@
 static const char * s_Table[] =
 {	"",				// must be at index zero
 	"backspace",
+	"space",
 	"tab",
 	"return",
 	"escape",

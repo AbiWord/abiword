@@ -110,6 +110,8 @@ static struct _iNVK s_NVKTable[] =
 //  					  _A,					_A_S,				_A_C,			_A_C_S				}},
 	{EV_NVK_BACKSPACE,	{ "delLeft", 			"",					"delBOW",		"",			
 						  "",					"",					"",				""					}},
+	{EV_NVK_SPACE,		{ "insertSpace",		"insertNBSpace",	"",				"",
+						  "",					"",					"",				""					}},
 	{EV_NVK_TAB,		{ "insertTab",			"",					"cycleWindows",	"cycleWindowsBck",
 						  "",					"",					"",				""					}},
 	{EV_NVK_RETURN,		{ "insertParagraphBreak", "insertLineBreak", "insertPageBreak", "insertColumnBreak",
@@ -225,7 +227,6 @@ struct _iChar
 static struct _iChar s_CharTable[] =
 {
 //	{char, /* desc   */ { none,					_C,					_A,				_A_C				}},
-	{0x20, /* space  */ { "insertData",			"",					"",				""					}},
 	{0x21, /* !      */ { "insertData",			"",					"",				""					}},
 	{0x22, /* "      */ { "insertData",			"",					"",				""					}},
 	{0x23, /* #      */ { "insertData",			"",					"",				""					}},

@@ -146,6 +146,9 @@ public:
 	static EV_EditMethod_Fn insertPageBreak;
 	static EV_EditMethod_Fn insertColumnBreak;
 
+	static EV_EditMethod_Fn insertSpace;
+	static EV_EditMethod_Fn insertNBSpace;
+	
 	static EV_EditMethod_Fn insFmtFaceTimes; // TODO we need a better way of doing this
 	static EV_EditMethod_Fn insFmtFaceCourier; // TODO we need a better way of doing this
 	static EV_EditMethod_Fn insFmtFaceArial; // TODO we need a better way of doing this
@@ -282,6 +285,9 @@ static EV_EditMethod s_arrayEditMethods[] =
 		EV_EditMethod(NF(insertLineBreak),		_M_,	""),
 		EV_EditMethod(NF(insertPageBreak),		_M_,	""),
 		EV_EditMethod(NF(insertColumnBreak),	_M_,	""),
+
+		EV_EditMethod(NF(insertSpace),			_M_,	""),
+		EV_EditMethod(NF(insertNBSpace),		_M_,	""),
 
 		EV_EditMethod(NF(insFmtFaceTimes),		_M_,	""),
 		EV_EditMethod(NF(insFmtFaceCourier),	_M_,	""),
@@ -773,6 +779,20 @@ Defun0(insertPageBreak)
 
 Defun0(insertColumnBreak)
 {
+	return UT_TRUE;
+}
+
+Defun1(insertSpace)
+{
+	UT_UCSChar sp = 0x0020;
+	pView->cmdCharInsert(&sp,1);
+	return UT_TRUE;
+}
+
+Defun1(insertNBSpace)
+{
+	UT_UCSChar sp = 0x00a0;				// decimal 160 is NBS
+	pView->cmdCharInsert(&sp,1);
 	return UT_TRUE;
 }
 
