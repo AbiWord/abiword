@@ -1965,7 +1965,10 @@ void fp_ShadowContainer::layout(bool bForceLayout)
 		fl_HdrFtrSectionLayout * pHFSL = getHdrFtrSectionLayout();
 		fl_DocSectionLayout * pDSL = pHFSL->getDocSectionLayout();
 		bool bHdrFtr = (pHFSL->getHFType() <= FL_HDRFTR_HEADER_LAST);
-
+		if(iNewHeight > getPage()->getHeight()/3)
+		{
+			iNewHeight = getPage()->getHeight()/3;
+		}
 		pDSL->setHdrFtrHeightChange(bHdrFtr,iNewHeight+getGraphics()->tlu(3));
 	}
 }
