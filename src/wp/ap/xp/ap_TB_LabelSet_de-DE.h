@@ -67,7 +67,11 @@ BeginSet(de,DE,UT_TRUE)
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_BOLD,		"Fett",		tb_text_bold_xpm,	NULL,	"Fett")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_ITALIC,		"Kursiv",	tb_text_italic_xpm,	NULL,	"Kursiv")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_UNDERLINE,	"Unterstrichen",tb_text_underline_xpm,	NULL,	"Unterstrichen")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_OVERLINE,	"Überstrichen",tb_text_overline_xpm,	NULL, "Überstrichen")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_STRIKE,		"Durchgestrichen", tb_text_strikeout_xpm,	NULL,	"Durchgestrichen")
+
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUPERSCRIPT,	"Höhergestellt",	tb_text_superscript_xpm,	NULL, "Höhergestellt")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUBSCRIPT,	"Tiefergestellt",	tb_text_subscript_xpm,		NULL, "Tiefergestellt")
 
 	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_LEFT,		"Links",	tb_text_align_left_xpm, NULL, "Links ausrichten")
 	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_CENTER,	"Zentriert",tb_text_center_xpm,		NULL, "Zentriert ausrichten")
