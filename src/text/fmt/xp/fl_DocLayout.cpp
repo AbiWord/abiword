@@ -730,7 +730,13 @@ void FL_DocLayout::_backgroundCheck(UT_Timer * pTimer)
 		// (the dialog's message pump releases the timers)
 		return;
 	}
-
+//
+// Don't spell check while printing!
+//
+	if(pDocLayout->m_pG->queryProperties(GR_Graphics::DGP_PAPER))
+	{
+		return;
+	}
 	if(pDocLayout->m_bStopSpellChecking == true || pDocLayout->m_bImSpellCheckingNow == true)
 	{
 		return;
