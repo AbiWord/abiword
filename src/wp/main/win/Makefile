@@ -55,7 +55,7 @@ LoadOrder=	AbiGr AbiFmt AbiXAp AbiWPAp AbiPTbl AbiImpExp \
 			AbiEv AbiUtil AbiGr AbiWordVer AbiSpell 
 ABI_PERIPHLIBS=		Abi_libwv fribidi \
 			Abi_libpopt $(ABIICONV) Abi_libpng Abi_zlib
-ABI_APPLIBS=		$(LoadOrder) $(LoadOrder) $(ABI_PERIPHLIBS)
+ABI_APPLIBS=		$(LoadOrder) $(LoadOrder) $(LoadOrder) $(ABI_PERIPHLIBS)
 ABI_APPLIBDEP=		$(LoadOrder)
 
 SHARED_LDFLAGS =	$(SHARED_FLAGS) -Wl,--dll -Wl,--export-all-symbols -Wl,--enable-auto-import -Wl,--out-implib,libAbiWord.dll.a
