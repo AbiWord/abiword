@@ -1,3 +1,4 @@
+/* Copyright (c) 1997-1998 by Juliusz Chroboczek */
 
 /* These are global variables used outside the main file ttftool.c */
 
