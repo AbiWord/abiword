@@ -668,11 +668,13 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 
 fp_ForcedLineBreakRun::fp_ForcedLineBreakRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_FORCEDLINEBREAK)
 {
+	//UT_DEBUGMSG(("fp_ForcedLineBreakRun constructor\n"));
 	lookupProperties();
 }
 
 void fp_ForcedLineBreakRun::lookupProperties(void)
 {
+	//UT_DEBUGMSG(("fp_ForcedLineBreakRun::lookupProperties\n"));
 	m_pBL->getField(m_iOffsetFirst,m_pField);
 
 	_inheritProperties();
@@ -700,6 +702,7 @@ bool fp_ForcedLineBreakRun::letPointPass(void) const
 
 void fp_ForcedLineBreakRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL)
 {
+	//UT_DEBUGMSG(("fp_ForcedLineBreakRun::mapXYToPosition\n"));
 	pos = m_pBL->getPosition() + m_iOffsetFirst;
 	bBOL = false;
 	bEOL = false;
@@ -707,7 +710,6 @@ void fp_ForcedLineBreakRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, 
 
 void fp_ForcedLineBreakRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection)
 {
-	//UT_DEBUGMSG(("fintPointCoords: ForcedLineBreakRun\n"));	
 	UT_ASSERT(m_iOffsetFirst == iOffset || m_iOffsetFirst+1 == iOffset);
 
 	UT_sint32 xoff, yoff;
@@ -736,10 +738,9 @@ void fp_ForcedLineBreakRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_
 	    }
 	}
 
-#ifdef BIDI_ENABLED
 	x2 = x;
 	y2 = y;
-#endif
+	//UT_DEBUGMSG(("fintPointCoords: ForcedLineBreakRun: x=%d, y=%d, h=%d\n", x,y,height));	
 }
 
 void fp_ForcedLineBreakRun::_clearScreen(bool /* bFullLineHeightRect */)
@@ -925,38 +926,32 @@ void fp_EndOfParagraphRun::findPointCoords(UT_uint32 iOffset,
 	// fjsdkjfklsd<forced-column-break>sdfsdsd move cursor back
 	//	UT_ASSERT(m_iOffsetFirst == iOffset);
 
-	//UT_DEBUGMSG(("fintPointCoords: EndOfParagraphRun\n"));
 	UT_sint32 xoff, yoff;
 
 	fp_Run* pPropRun = _findPrevPropertyRun();
 
 	height = m_iHeight;
 	m_pLine->getOffsets(this, xoff, yoff);
-	x = xoff;
-	y = yoff;
+	x = x2 = xoff;
+	y = y2 = yoff;
 
 	if (pPropRun)
 	{
-#ifdef BIDI_ENABLED
-		pPropRun->findPointCoords(iOffset, x, y, x2, y2, height, bDirection);
-#else		
+		//UT_DEBUGMSG(("fp_EndOfParagraphRun::findPointCoords: prop. run type=%d\n", pPropRun->getType()));
 		height = pPropRun->getHeight();
 		// If property Run is on the same line, get y location from
 		// it (to reflect proper ascent).
 		if (pPropRun->getLine() == m_pLine)
 		{
-			m_pLine->getOffsets(pPropRun, xoff, yoff);
-			y = yoff;
-		}
-#endif
-	}
 #ifdef BIDI_ENABLED
-	else
-	{	
-		x2 = x;
-		y2 = y;
-	}
+			pPropRun->findPointCoords(iOffset, x, y, x2, y2, height, bDirection);
+#else		
+			m_pLine->getOffsets(pPropRun, xoff, y);
 #endif
+		}
+	}
+	//UT_DEBUGMSG(("fintPointCoords: EndOfParagraphRun 0x%x: x,y,x2,y2=[%d,%d,%d,%d]\n", this,x,y,x2,y2));
+	
 }
 
 void fp_EndOfParagraphRun::_clearScreen(bool /* bFullLineHeightRect */)
