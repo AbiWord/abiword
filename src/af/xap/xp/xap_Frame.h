@@ -158,7 +158,7 @@ public:
 
 	virtual void                rebuildToolbar(UT_uint32 ibar);
 	void                        rebuildAllToolbars(void);
-
+	virtual void                refillToolbarsInFrameData(void) =0;
 	void                        dragBegin(XAP_Toolbar_Id srcId, 
 										  EV_Toolbar * pTBsrc);
 	void                        dragDropToIcon(XAP_Toolbar_Id srcId,

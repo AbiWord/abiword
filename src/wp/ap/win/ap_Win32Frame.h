@@ -22,6 +22,7 @@
 
 #include "xap_Win32Frame.h"
 #include "ie_types.h"
+#include "ut_assert.h"
 
 /*****************************************************************/
 
@@ -54,6 +55,7 @@ public:
 	virtual void				toggleRuler(bool bRulerOn);
 	virtual void				toggleTopRuler(bool bRulerOn);
 	virtual void				toggleLeftRuler(bool bRulerOn);
+	virtual void                refillToolbarsInFrameData(void) {UT_ASSERT(0);}
 
 protected:
 	virtual HWND				_createDocumentWindow(HWND hwndParent,

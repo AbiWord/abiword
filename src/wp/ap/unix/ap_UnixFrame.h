@@ -62,6 +62,7 @@ public:
 	virtual void                            toggleLeftRuler(bool bRulerOn);
 	virtual void				toggleBar(UT_uint32 iBarNb, bool bBarOn);
 	virtual void				toggleStatusBar(bool bStatusBarOn);
+	virtual void                refillToolbarsInFrameData(void);
 
 protected:
 	virtual GtkWidget *			_createDocumentWindow(void);

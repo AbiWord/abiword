@@ -24,6 +24,7 @@ class GR_Graphics;
 
 #include "xap_QNXFrame.h"
 #include "ie_types.h"
+#include "ut_assert.h"
 #include <Pt.h>
 
 /*****************************************************************/
@@ -57,6 +58,7 @@ public:
 	virtual void 				toggleBar(UT_uint32 iBarNb, bool bRulerOn);
 	virtual void 				toggleStatusBar(bool bStatusBarOn);
 	virtual void				setDocumentFocus();
+	virtual void                refillToolbarsInFrameData(void) {UT_ASSERT(0);}
 
 protected:
 	virtual PtWidget_t *		_createDocumentWindow(void);

@@ -22,6 +22,7 @@
 
 #include "xap_BeOSFrame.h"
 #include "ie_types.h"
+#include "ut_assert.h"
 
 /*****************************************************************/
 
@@ -53,6 +54,7 @@ public:
 	virtual void 				toggleBar(UT_uint32 iBarNb, bool bToolBarOn);
 	virtual void 				toggleStatusBar(bool bStatusBarOn);
 	virtual void  				translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y);
+	virtual void                refillToolbarsInFrameData(void) {UT_ASSERT(0);}
 
 protected:
 	//virtual GtkWidget *			_createDocumentWindow(void);

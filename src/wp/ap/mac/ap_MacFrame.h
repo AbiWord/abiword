@@ -24,7 +24,7 @@
 #define AP_MACFRAME_H
 
 #include "xap_MacFrame.h"
-
+#include "ut_assert.h"
 #include "ie_types.h"
 
 /*****************************************************************/
@@ -52,6 +52,7 @@ public:
 
 	virtual void 				setStatusMessage(const char * szMsg);
     virtual bool				_macGrow(void);
+	virtual void                refillToolbarsInFrameData(void) {UT_ASSERT(0);}
 protected:
 	virtual void				_createDocumentWindow(void);
 	UT_Error   		    		_showDocument(UT_uint32 iZoom=100);

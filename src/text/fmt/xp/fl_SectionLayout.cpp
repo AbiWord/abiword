@@ -3687,8 +3687,16 @@ void fl_HdrFtrShadow::redrawUpdate(void)
 {
 	FV_View * pView = m_pLayout->getView();
 	fl_BlockLayout*	pBL = m_pFirstBlock;
-	while (pBL)
+	while (pBL && (pView != NULL))
 	{
+		if(pBL->hasUpdatableField())
+		{
+			bool bReformat = pBL->recalculateFields(true);
+			if(bReformat)
+			{
+				pBL->format();
+			}
+		}
 		if(pView && pBL->needsRedraw())
 		{
 			pBL->redrawUpdate();

@@ -932,6 +932,10 @@ void XAP_UnixFrame::rebuildToolbar(UT_uint32 ibar)
 						   (const char *) m_szToolbarLabelSetName);
 	static_cast<EV_UnixToolbar *>(pToolbar)->rebuildToolbar(oldpos);
 	m_vecToolbars.setNthItem(ibar, (void *) pToolbar, NULL);
+//
+// Refill the framedata pointers
+//
+	refillToolbarsInFrameData();
 	repopulateCombos();
 }
 

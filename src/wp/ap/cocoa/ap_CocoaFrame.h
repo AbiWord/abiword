@@ -28,6 +28,7 @@ class GR_Graphics;
 class AP_CocoaFrame;
 
 #include "ie_types.h"
+#include "ut_assert.h"
 
 /*****************************************************************/
 
@@ -75,6 +76,7 @@ public:
 	virtual void				toggleStatusBar(bool bStatusBarOn);
 	virtual NSString *			_getNibName ();
 	virtual XAP_CocoaFrameController *_createController();
+	virtual void                refillToolbarsInFrameData(void) {UT_ASSERT(0);}
 
 protected:
 	virtual void			_createDocumentWindow(void);

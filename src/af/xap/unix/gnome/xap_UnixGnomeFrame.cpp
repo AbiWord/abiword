@@ -585,6 +585,10 @@ void XAP_UnixGnomeFrame::rebuildToolbar(UT_uint32 ibar)
 																 szGtkName);
 	delete [] szGtkName;
 	m_vecToolbars.setNthItem(ibar, (void *) pToolbar, NULL);
+//
+// Refill the framedata pointers
+//
+	refillToolbarsInFrameData();
 	repopulateCombos();
 }
 

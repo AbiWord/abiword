@@ -227,9 +227,9 @@ UT_Error AP_UnixFrame::_showDocument(UT_uint32 iZoom)
 
 	if ( ((AP_FrameData*)m_pData)->m_pStatusBar )
 	  ((AP_FrameData*)m_pData)->m_pStatusBar->setView(pView);
+    ((FV_View *) m_pView)->setShowPara(((AP_FrameData*)m_pData)->m_bShowPara);
 
 	pView->setInsertMode(((AP_FrameData*)m_pData)->m_bInsertMode);
-    ((FV_View *) m_pView)->setShowPara(((AP_FrameData*)m_pData)->m_bShowPara);
 	
 	m_pView->setWindowSize(GTK_WIDGET(m_dArea)->allocation.width,
 						   GTK_WIDGET(m_dArea)->allocation.height);
@@ -423,6 +423,22 @@ void AP_UnixFrame::_showOrHideToolbars()
 		toggleBar(i, bShowBar[i]);
 	}
 }
+
+/*!
+ * Refills the framedata class with pointers to the current toolbars. We 
+ * need to do this after a toolbar icon and been dragged and dropped.
+ */
+void AP_UnixFrame::	refillToolbarsInFrameData(void)
+{
+	UT_uint32 cnt = m_vecToolbarLayoutNames.getItemCount();
+
+	for (UT_uint32 i = 0; i < cnt; i++)
+	{
+		EV_UnixToolbar * pUnixToolbar = static_cast<EV_UnixToolbar *> (m_vecToolbars.getNthItem(i));
+		static_cast<AP_FrameData*> (m_pData)->m_pToolbar[i] = pUnixToolbar;
+	}
+}
+
 
 // Does the initial show/hide of statusbar (based on the user prefs).
 // Idem.
