@@ -411,13 +411,13 @@ XAP_EncodingManager *XAP_EncodingManager::get_instance()
 
 /************************************************************/
 
-static char * NativeEncodingName = 0;
-static const char * NativeSystemEncodingName;
-static const char * Native8BitEncodingName;
-static const char * NativeNonUnicodeEncodingName;
-static const char * NativeUnicodeEncodingName;
-static const char * LanguageISOName;
-static const char * LanguageISOTerritory;
+static UT_UTF8String NativeEncodingName;
+static UT_UTF8String NativeSystemEncodingName;
+static UT_UTF8String Native8BitEncodingName;
+static UT_UTF8String NativeNonUnicodeEncodingName;
+static UT_UTF8String NativeUnicodeEncodingName;
+static UT_UTF8String LanguageISOName;
+static UT_UTF8String LanguageISOTerritory;
 
 XAP_UnixEncodingManager::XAP_UnixEncodingManager() 
 {
@@ -425,42 +425,41 @@ XAP_UnixEncodingManager::XAP_UnixEncodingManager()
 
 XAP_UnixEncodingManager::~XAP_UnixEncodingManager() 
 {
-	FREEP(NativeEncodingName); // allocated in initialize() as 'name' or 'NativeEncodingName'
 }
 
 const char* XAP_UnixEncodingManager::getNativeEncodingName() const
 {     
-  return NativeEncodingName; 
+  return NativeEncodingName.utf8_str(); 
 }
 
 const char* XAP_UnixEncodingManager::getNativeSystemEncodingName() const
 {     
-  return NativeSystemEncodingName; 
+  return NativeSystemEncodingName.utf8_str(); 
 }
 
 const char* XAP_UnixEncodingManager::getNative8BitEncodingName() const
 {     
-  return Native8BitEncodingName;
+  return Native8BitEncodingName.utf8_str();
 }
 
 const char* XAP_UnixEncodingManager::getNativeNonUnicodeEncodingName() const
 {     
-  return NativeNonUnicodeEncodingName;
+  return NativeNonUnicodeEncodingName.utf8_str();
 }
 
 const char* XAP_UnixEncodingManager::getNativeUnicodeEncodingName() const
 {     
-  return NativeUnicodeEncodingName; 
+  return NativeUnicodeEncodingName.utf8_str(); 
 }
 
 const char* XAP_UnixEncodingManager::getLanguageISOName() const
 {
- 	return LanguageISOName; 
+ 	return LanguageISOName.utf8_str(); 
 }
 
 const char* XAP_UnixEncodingManager::getLanguageISOTerritory() const
 { 	
-  return LanguageISOTerritory; 
+  return LanguageISOTerritory.utf8_str(); 
 }
 
 void  XAP_UnixEncodingManager::initialize()
@@ -468,7 +467,7 @@ void  XAP_UnixEncodingManager::initialize()
 	const GList* lst = g_i18n_get_language_list ("LANG");
 	const char* locname = static_cast<char*>(lst->data);
 
-	NativeEncodingName =  UT_strdup ("ISO-8859-1");
+	NativeEncodingName =  "ISO-8859-1";
 	NativeSystemEncodingName =
 	Native8BitEncodingName =
 	NativeNonUnicodeEncodingName = NativeEncodingName;
@@ -529,32 +528,32 @@ void  XAP_UnixEncodingManager::initialize()
 											name[8] = '-';
 										}
 								}
-							FREEP(NativeEncodingName);
 							NativeEncodingName = name;
+							FREEP(name);
 						}
 				}
 			Native8BitEncodingName = NativeSystemEncodingName = NativeEncodingName;
 
 			// need to get non-unicode encoding if encoding is UTF-8
-			if(!UT_stricmp(NativeEncodingName, "UTF-8"))
+			if(!UT_stricmp(NativeEncodingName.utf8_str(), "UTF-8"))
 				{
 					// we want to get the encoding that would be used for the given
 					// language/territory if the UTF-8 encoding was not specified
 					// by LANG
 
-					UT_String OLDLANG (getenv("LANG"));
+					UT_UTF8String OLDLANG (getenv("LANG"));
 #if defined(SETENV_MISSING) 
-					UT_String MYLANG ("LANG=");
+					UT_UTF8String MYLANG ("LANG=");
 
 					MYLANG += LanguageISOName;
 					MYLANG += "_";
 					MYLANG += LanguageISOTerritory;
-					putenv(MYLANG.c_str());
+					putenv(MYLANG.utf8_str());
 #else
-					UT_String MYLANG (LanguageISOName);
+					UT_UTF8String MYLANG (LanguageISOName);
 					MYLANG += "_";
 					MYLANG += LanguageISOTerritory;
-					setenv ("LANG", MYLANG.c_str(), 1);
+					setenv ("LANG", MYLANG.utf8_str(), 1);
 #endif
 					if (mask & COMPONENT_CODESET)
 						{
@@ -562,7 +561,7 @@ void  XAP_UnixEncodingManager::initialize()
 							xxx_UT_DEBUGMSG(("NativeNonUnicodeEncodingName (1) %s\n", NativeNonUnicodeEncodingName));
 							if (!strncmp(cs+1,"ISO8859",strlen("ISO8859")))
 								{
-									static char buf[40];
+									char buf[40];
 									strcpy(buf,"ISO-");
 									strcat(buf,cs+1+3);
 									NativeNonUnicodeEncodingName = buf;
@@ -572,9 +571,9 @@ void  XAP_UnixEncodingManager::initialize()
 #if defined(SETENV_MISSING)
 					MYLANG = "LANG=";
 					MYLANG += OLDLANG;
-					putenv(MYLANG.c_str());
+					putenv(MYLANG.utf8_str());
 #else
-					setenv("LANG", OLDLANG.c_str(), 1);
+					setenv("LANG", OLDLANG.utf8_str(), 1);
 #endif			
 				}
 
