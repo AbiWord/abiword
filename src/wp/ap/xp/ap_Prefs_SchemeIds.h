@@ -82,7 +82,7 @@
 #define AP_PREF_DEFAULT_SpellCheckWordList			"american.hash"				
 
 #define AP_PREF_KEY_StringSet						"StringSet"					/* name of dialog/msgbox strings */
-#define AP_PREF_DEFAULT_StringSet					"en-US"						
+#define AP_PREF_DEFAULT_StringSet					"ja-JP"						
 
 #define AP_PREF_KEY_KeyBindings						"KeyBindings"
 #define AP_PREF_DEFAULT_KeyBindings					"default"					/* value in ap_LoadBindings.cpp */
@@ -100,10 +100,10 @@
 #define AP_PREF_DEFAULT_MenuLayout					"Main"						/* value in BeginLayout() */
 
 #define AP_PREF_KEY_MenuLabelSet					"MenuLabelSet"
-#define AP_PREF_DEFAULT_MenuLabelSet				"en-US"						/* value in BeginSet() */
+#define AP_PREF_DEFAULT_MenuLabelSet				"ja-JP"						/* value in BeginSet() */
 
 #define AP_PREF_KEY_ToolbarLabelSet					"ToolbarLabelSet"
-#define AP_PREF_DEFAULT_ToolbarLabelSet				"en-US"						/* value in BeginSet() */
+#define AP_PREF_DEFAULT_ToolbarLabelSet				"ja-JP"						/* value in BeginSet() */
 
 #define AP_PREF_KEY_ToolbarLayouts					"ToolbarLayouts"
 #define AP_PREF_DEFAULT_ToolbarLayouts				"FileEditOps FormatOps ExtraOps"		/* values in BeginLayout() */

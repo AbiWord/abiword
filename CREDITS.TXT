@@ -151,7 +151,8 @@ Javier Yáñez <javier@cibal.es>                  Spanish
 hj <huangj@citiz.net>                           Chinese (zh-CN)
 John Profic <profic@linux.ru.net>               Russian
 Vadim Frolov <vadim@krug.uch.net>               Ukrainian (uk-UA)
-
+Takeshi Aihana <aihana@muc.biglobe.ne.jp, 
+                aihana@turbolinux.co.jp>        Japanese (jp-JP)
 unsung heroes
 -------------
 Mary Eppich

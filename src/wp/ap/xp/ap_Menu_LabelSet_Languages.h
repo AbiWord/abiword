@@ -50,3 +50,4 @@
 #include "ap_Menu_LabelSet_zh-TW.h"
 #include "ap_Menu_LabelSet_zh-CN.h"
 #include "ap_Menu_LabelSet_uk-UA.h"
+#include "ap_Menu_LabelSet_ja-JP.h"
