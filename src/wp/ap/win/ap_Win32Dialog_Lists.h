@@ -35,9 +35,10 @@ public:
 	AP_Win32Dialog_Lists(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~AP_Win32Dialog_Lists(void);
 
-	virtual void			runModeless(XAP_Frame * pFrame);
-	virtual void			destroy(void);
-	virtual void			activate(void);
+	virtual void			runModal(XAP_Frame* pFrame);
+	virtual void			runModeless(XAP_Frame* pFrame);
+	virtual void			destroy();
+	virtual void			activate();
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 	static void				autoupdateLists(UT_Timer * pTimer);
@@ -58,23 +59,25 @@ private:
 	virtual void*			pGetWindowHandle() { return (void*)m_hThisDlg; }
 
 	// current selection of the drop-list combo boxes
-	UT_sint32				_getTypeComboCurSel() const;
-	UT_sint32				_getStyleComboCurSel() const;
+	int						_getTypeComboCurSel() const;
+	int						_getStyleComboCurSel() const;
 	void					_setTypeComboCurSel(int iSel);
 	void					_setStyleComboCurSel(int iSel);
 
-	bool					_isNewList() const;
+	bool					_isNewListChecked() const;
+	bool					_isApplyToCurrentChecked() const;
+	bool					_isResumeListChecked() const;
 	void					_fillTypeList();
 	void					_fillStyleList(int iType);
 	void					_typeChanged();
 	void					_styleChanged();
-	void					_customChanged();
+	void					_resetCustomValues();
 	void					_enableCustomControls(bool bEnable = true);
 	void					_updateCaption();
 	void					_previewExposed();
-	void					_setData();			// data -> "view"
-	void					_getData();			// "view" -> data
-	List_Type				_getListType() const;
+	void					_setDisplayedData();	// data -> "view"
+	void					_getDisplayedData(UT_sint32 controlId = -1);	// "view" -> data
+	List_Type				_getListTypeFromCombos() const;
 	void					_setListType(List_Type type);
 	void					_selectFont();
 	virtual const XML_Char*	_getDingbatsFontName() const;
@@ -82,7 +85,7 @@ private:
 	UT_Timer*				m_pAutoUpdateLists;
 	XAP_Win32DialogHelper	_win32Dialog;
 	XAP_Win32PreviewWidget*	m_pPreviewWidget;
-	bool					m_bDisplayCustomControls;
+	bool					m_bEnableCustomControls;
 	HWND					m_hThisDlg;
 };
 
