@@ -906,10 +906,10 @@ void s_KWord_1_Listener::_openBlock(PT_AttrPropIndex api)
 	// e.g., <PAGEBREAKING linesTogether="true" keepWithNext="true"/>
 		bool bLinesTogether=false;
 		if (pAP->getProperty("keep-together", szValue))
-			bLinesTogether = (strcasecmp(szValue,"true") == 0);
+			bLinesTogether = (UT_stricmp(szValue,"true") == 0);
 		bool bKeepWithNext=false;
 		if (pAP->getProperty("keep-with-next", szValue))
-			bKeepWithNext = (strcasecmp(szValue,"true") == 0);
+			bKeepWithNext = (UT_stricmp(szValue,"true") == 0);
 	// FIXME: I should probably run this if and only if the above properties
 	// exist (dealing with styles)
 		if (bLinesTogether || bKeepWithNext)
@@ -1089,7 +1089,7 @@ void s_KWord_1_Listener::_openSpan(PT_AttrPropIndex api, PT_BlockOffset pos, UT_
 		if (pAP->getProperty("font-weight", szValue))
 		{
 			m_sFormats += "<WEIGHT value=\"";
-			if (!strcasecmp((char *) szValue, "bold"))
+			if (!UT_stricmp((char *) szValue, "bold"))
 				m_sFormats += "75";
 			else
 				m_sFormats += "50";
@@ -1100,7 +1100,7 @@ void s_KWord_1_Listener::_openSpan(PT_AttrPropIndex api, PT_BlockOffset pos, UT_
 		if (pAP->getProperty("font-style", szValue))
 		{
 			m_sFormats += "<ITALIC value=\"";
-			if (!strcasecmp((char *) szValue, "italic"))
+			if (!UT_stricmp((char *) szValue, "italic"))
 				m_sFormats += "1";
 			else
 				m_sFormats += "0";
@@ -1124,9 +1124,9 @@ void s_KWord_1_Listener::_openSpan(PT_AttrPropIndex api, PT_BlockOffset pos, UT_
 		// <VERTALIGN value="0"/> 0=normal, 1=subscript, 2=superscript
 		if (pAP->getProperty("text-position", szValue))
 		{
-			if (!strcasecmp (szValue, "subscript"))
+			if (!UT_stricmp (szValue, "subscript"))
 				m_sFormats += "<VERTALIGN value=\"1\"/>\n";
-			else if (!strcasecmp (szValue, "superscript"))
+			else if (!UT_stricmp (szValue, "superscript"))
 				m_sFormats += "<VERTALIGN value=\"2\"/>\n";
 			else
 				m_sFormats += "<VERTALIGN value=\"0\"/>\n";
