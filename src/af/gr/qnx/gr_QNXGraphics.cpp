@@ -240,7 +240,6 @@ void GR_QNXGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	PgDrawTextmx(pNChars, ipos, &pos, 0);
 	PgFlush();
 */
-	fprintf(stderr,"Text: %d,%d\n",pos.x,pos.y);
 	PgDrawText(utf8,len , &pos, 0);
 
 
