@@ -2320,8 +2320,15 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 //
 	if(bisListStyle && isHdrFtrEdit())
 	{
+		m_pDoc->enableListUpdates();
+		UT_DEBUGMSG(("restoring PieceTable state (2)\n"));
+		_restorePieceTableState();
 		return false;
 	}
+//
+// Glob piecetable changes together.
+//
+	m_pDoc->beginUserAtomicGlob();
 	UT_Vector vBlock;
 	if(bisListStyle)
 	{
@@ -2336,7 +2343,6 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 //
 // Stop the Lists contained in the current selection.
 //
-		m_pDoc->beginUserAtomicGlob();
 		UT_uint32 i;
 		for(i=0; i< vBlock.getItemCount(); i++)
 		{
@@ -2586,7 +2592,7 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 			{
 //
 // Loop through all the format handles that match our sdh until we find the one
-// in our View. (Not that it really matter I suppose.)
+// in our View. (Not that it really matters I suppose.)
 //
 				sfh = m_pDoc->getNthFmtHandle(sdh, i);
 				if(sfh != NULL)
@@ -2623,6 +2629,7 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 		m_pDoc->enableListUpdates();
 		m_pDoc->updateDirtyLists();
 
+		m_pDoc->endUserAtomicGlob();
 		// Signal piceTable is stable again
 		UT_DEBUGMSG(("restoring PieceTable state (1)\n"));
 		_restorePieceTableState();
@@ -2631,6 +2638,7 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 			_fixInsertionPointCoords();
 			_drawInsertionPoint();
 		}
+		return bRet;
 	}
 	m_pDoc->endUserAtomicGlob();
 	UT_DEBUGMSG(("restoring PieceTable state (2)\n"));
