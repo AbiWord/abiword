@@ -23,8 +23,9 @@ ABI_ROOT:=$(shell pwd)/..
 include $(ABI_ROOT)/src/config/abi_defs.mk
 
 DIRS=		config tools other af text wp ask
+REQUIRECLEAN=		clean_PSICONV_ clean_EXPAT_
 REQUIREREALCLEAN=		clean_ABI_ clean_ZLIB_ clean_LIBPNG_ \
-clean_LIBWV_ clean_LIBICONV_ clean_PSICONV_ clean_EXPAT_
+clean_LIBWV_ clean_LIBICONV_ realclean_PSICONV_ realclean_EXPAT_
 
 
 include $(ABI_ROOT)/src/config/abi_rules.mk
@@ -35,7 +36,7 @@ include $(ABI_ROOT)/src/config/abi_rules.mk
 abiclean::
 	rm -f $(OBJDIR)/*.*
 
-clean::
+clean:: $(REQUIRECLEAN)
 	rm -rf $(OBJDIR)
 
 realclean:: $(REQUIREREALCLEAN)
@@ -177,7 +178,16 @@ distribution:
 	@exit 1
 endif
 
-#################################################################
+##################################################################
+## Targets for cleaning peer libraries. 
+##
+## Note that all peer libraries need an opportunity to realclean, 
+## but any peer library using Makefile.abi doesn't need to clean
+## since all outputs were in our OBJDIR tree already.
+##
+## Thus, for Makefile.abi peers, you'll only see one rule here
+## (which gets included in REQUIREREALCLEAN above).  Peers using
+## their own autoconf magic have two rules.    
 
 clean_ZLIB_:
 	@if [ -d $(ABI_ROOT)/../zlib ]; then		\
@@ -187,6 +197,16 @@ clean_ZLIB_:
 clean_LIBPNG_:
 	@if [ -d $(ABI_ROOT)/../libpng ]; then		\
 		$(MAKE) -C $(ABI_ROOT)/../libpng clean;	\
+	fi
+
+clean_PSICONV_:
+	@if [ -d $(ABI_ROOT)/../libpng ]; then		\
+		$(MAKE) -C $(ABI_ROOT)/../psiconv clean;	\
+	fi
+
+clean_EXPAT_:
+	@if [ -d $(ABI_ROOT)/../libpng ]; then		\
+		$(MAKE) -C $(ABI_ROOT)/../expat clean;	\
 	fi
 
 # we have to make a realclean here so the configure script reruns
@@ -203,12 +223,12 @@ clean_LIBICONV_:
 		$(MAKE) -C $(ABI_ROOT)/../libiconv distclean;	\
 	fi	
 
-clean_PSICONV_:
+realclean_PSICONV_:
 	@if [ -d $(ABI_ROOT)/../psiconv -a -f $(ABI_ROOT)/../psiconv/psiconv/Makefile ]; then	\
 		$(MAKE) -C $(ABI_ROOT)/../psiconv distclean;	\
 	fi	
 
-clean_EXPAT_:
+realclean_EXPAT_:
 	@if [ -d $(ABI_ROOT)/../expat -a -f $(ABI_ROOT)/../expat/lib/Makefile ]; then	\
 		$(MAKE) -C $(ABI_ROOT)/../expat distclean;	\
 	fi	
