@@ -570,7 +570,8 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 			char pszPosition[32];
 			UT_uint32 iPosLen = p1 - pStart;
 			UT_ASSERT(iPosLen < 32);
-			for (UT_uint32 k=0; k<iPosLen; k++)
+			UT_uint32 k;
+			for (k=0; k<iPosLen; k++)
 				pszPosition[k] = pStart[k];
 			pszPosition[k] = 0;
 			// convert position into twips
