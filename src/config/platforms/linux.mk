@@ -84,12 +84,13 @@ ifeq ($(ABI_OPT_OPTIMIZE),1)
 OPTIMIZER	+= -O3 -fomit-frame-pointer -Wall -ansi -pedantic
 OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)OPT_
 ABI_OPTIONS	+= Optimize:On
+ABI_OPT_DEBUG	= 0
 endif
 
 ifeq ($(ABI_OPT_DEBUG),1)
 OPTIMIZER	= -g -Wall -pedantic -Wno-long-long
 DEFINES		+= -DDEBUG -UNDEBUG
-OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)DBG
+OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)DBG_
 ABI_OPT_OPTIMIZE = 0
 endif
 
