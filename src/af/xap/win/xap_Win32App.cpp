@@ -331,7 +331,7 @@ void XAP_Win32App::enableAllTopLevelWindows(bool b)
 	{
 		XAP_Frame * pFrame = (XAP_Frame *) m_vecFrames.getNthItem(ndx);
 
-		static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->enableWindowInput(b);
+		EnableWindow(static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(), b);
 	}
 }
 

@@ -130,8 +130,16 @@ UT_Error AP_Frame::_importDocument(const char * szFilename, int ieft,
 {
 	UT_DEBUGMSG(("DOM: trying to import %s (%d, %d)\n", szFilename, ieft, markClean));
 
+	// are we replacing another document?
+	if (m_pDoc)
+	{
+		// yep.  first make sure it's OK to discard it,
+		// TODO: query user if dirty...
+	}
+
 	// load a document into the current frame.
 	// if no filename, create a new document.
+
 	AD_Document * pNewDoc = new PD_Document(getApp());
 	UT_ASSERT(pNewDoc);
 
@@ -362,6 +370,7 @@ Cleanup:
 
 	// change back to prior document
 	UNREFP(m_pDoc);
+	UT_return_val_if_fail(((AP_FrameData*)m_pData)->m_pDocLayout, UT_IE_ADDLISTENERERROR);
 	m_pDoc = ((AP_FrameData*)m_pData)->m_pDocLayout->getDocument();
 	//static_cast<XAP_FrameImpl *>(m_pFrameImpl)->setShowDocLocked(false);
 	return UT_IE_ADDLISTENERERROR;
@@ -391,6 +400,7 @@ void AP_Frame::_replaceView(GR_Graphics * pG, FL_DocLayout *pDocLayout,
 	REPLACEP(m_pView, pView);
         if(getApp()->getViewSelection())
 	       getApp()->setViewSelection(pView);
+
 	REPLACEP(m_pScrollObj, pScrollObj);
 	REPLACEP(m_pViewListener, pViewListener);
 	m_lid = lid;

@@ -30,14 +30,20 @@ class ABI_EXPORT AP_Win32FrameImpl : public XAP_Win32FrameImpl
 {
  public:
 	AP_Win32FrameImpl(AP_Frame *pFrame); 
+	~AP_Win32FrameImpl(void);
 	virtual XAP_FrameImpl * createInstance(XAP_Frame *pFrame, XAP_App *pApp);
 
  protected:
 	friend class AP_Win32Frame;
 
+	virtual void _initialize(void);
+
 	virtual void _createToolbars();
 	virtual void _refillToolbarsInFrameData();
 	virtual void _rebuildToolbar(UT_uint32 ibar);
+
+	virtual void 				_toggleTopRuler(AP_Win32Frame *pFrame, bool bRulerOn);
+	virtual void 				_toggleLeftRuler(AP_Win32Frame *pFrame, bool bRulerOn);
 
 	void _translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y);
 
@@ -46,12 +52,33 @@ class ABI_EXPORT AP_Win32FrameImpl : public XAP_Win32FrameImpl
 
 	static bool _RegisterClass(XAP_Win32App * app);
 
- private:
-	void						_getRulerSizes(AP_FrameData * pData, int &yTopRulerHeight, int &xLeftRulerWidth);
-	void						_onSize(AP_FrameData * pData, int nWidth, int nHeight);
+
+	HWND						_getHwndContainer(void) {  return m_hwndContainer; }
+	HWND						_getHwndTopRuler(void)  {  return m_hwndTopRuler;  }
+	HWND						_getHwndLeftRuler(void) {  return m_hwndLeftRuler; }
+	HWND						_getHwndDocument(void)  {  return m_hwndDocument;  }
+	HWND						_getHwndHScroll(void)   {  return m_hWndHScroll;   }
+	HWND						_getHwndVScroll(void)   {  return m_hWndVScroll;   }
 
 	void						_setVerticalScrollInfo(const SCROLLINFO * psi);
 	void						_getVerticalScrollInfo(SCROLLINFO * psi);
+
+	void						_createRulers(XAP_Frame *pFrame) {  _createTopRuler(pFrame); _createLeftRuler(pFrame);  }
+
+/* Who calls me / who should call me??? */
+	HWND						_createDocumentWindow(XAP_Frame *pFrame, HWND hwndParent,
+													  UT_uint32 iLeft, UT_uint32 iTop,
+													  UT_uint32 iWidth, UT_uint32 iHeight);
+	HWND						_createStatusBarWindow(XAP_Frame *pFrame, HWND hwndParent,
+													   UT_uint32 iLeft, UT_uint32 iTop,
+													   UT_uint32 iWidth);
+/***************************************/
+
+ private:
+	void						_createTopRuler(XAP_Frame *pFrame);
+	void						_createLeftRuler(XAP_Frame *pFrame);
+	void						_getRulerSizes(AP_FrameData * pData, int &yTopRulerHeight, int &xLeftRulerWidth);
+	void						_onSize(AP_FrameData * pData, int nWidth, int nHeight);
 
 	static int 					_getMouseWheelLines();
 
@@ -63,6 +90,7 @@ class ABI_EXPORT AP_Win32FrameImpl : public XAP_Win32FrameImpl
 	/** window callback functions **/
 	static LRESULT CALLBACK			_ContainerWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
 	static LRESULT CALLBACK			_DocumentWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
+	//static LRESULT CALLBACK		_LeftRulerWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
 
  private:
 	HWND						m_hwndContainer;

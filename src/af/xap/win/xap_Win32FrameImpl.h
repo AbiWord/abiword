@@ -52,11 +52,6 @@ class ABI_EXPORT XAP_Win32FrameImpl : public XAP_FrameImpl
 
 	virtual XAP_FrameImpl * createInstance(XAP_Frame *pFrame, XAP_App *pApp) = 0;
 
-	/** public functions replacing replacing usage of XAP_Win32Frame **/
-	void updateKeyboardFocus(void)			{  SetFocus(_getTopLevelWindow());  }
-	void enableWindowInput(bool bActive)		{  EnableWindow(_getTopLevelWindow(), bActive);  }
-	LRESULT sendMsgToFrame(UINT Msg, WPARAM wParam, LPARAM lParam)	{  return SendMessage(_getTopLevelWindow(), Msg, wParam, lParam);  }
-
 	inline HWND getTopLevelWindow(void) const 	{  return _getTopLevelWindow();  }
 	inline HWND getToolbarWindow(void) const		{  return m_hwndRebar;  }
 
@@ -93,9 +88,21 @@ protected:
 
 	static bool _RegisterClass(XAP_Win32App * app);
 
-/*** Win32 help functions ***/
+	/*** Win32 help functions ***/
 	virtual void				_translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y) = 0;
 	virtual HWND				_getTopLevelWindow(void) const {  return m_hwndFrame;  }
+
+	virtual HWND				_createDocumentWindow(HWND hwndParent,
+								UT_uint32 iLeft, UT_uint32 iTop, UT_uint32 iWidth, UT_uint32 iHeight) { return NULL; } /* = 0; */
+	virtual HWND				_createStatusBarWindow(HWND hwndParent,
+								UT_uint32 iLeft, UT_uint32 iTop, UT_uint32 iWidth) { return NULL; } /* = 0; */
+	void						_createTopLevelWindow(void);
+
+	void						_setHwndStatusBar(HWND hWnd) {  m_hwndStatusBar = hWnd;  }
+	HWND						_getHwndStatusBar(void)      {  return m_hwndStatusBar;  }
+
+	/** window class related functions **/
+	static LRESULT CALLBACK			_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
 
 private:
 	HWND						m_hwndFrame; /* the entire window, menu, toolbar, document, etc. */
@@ -108,8 +115,27 @@ private:
 	EV_Win32MenuBar *				m_pWin32Menu;
 	EV_Win32MenuPopup *			m_pWin32Popup; /* only valid while a context popup is up */
 	UT_uint32					m_iBarHeight;
+	UT_uint32					m_iStatusBarHeight;
 	UT_uint32					m_iRealSizeHeight;
 	UT_uint32					m_iRealSizeWidth;
+
+	UINT						m_mouseWheelMessage;
+	XAP_Win32DropTarget			m_dropTarget;
+
+	/* These 2 variables are used in the frame
+	** to remember the last values we used to set
+	** the size of client area of the frame (on
+	** a resize of the frame window).  That is,
+	** the values we used to calculate the layout
+	** of the various toolbars, view, and anything
+	** else that goes in the frame window.  We do
+	** this because Win32 plays funny games with
+	** window sizes (NonClient vs Client coordinates).
+	** We do this so that we can short-circuit some
+	** of the resizing and the resulting flashing.
+	*/
+	UT_uint32					m_iSizeWidth;
+	UT_uint32					m_iSizeHeight;
 };
 
 #endif /* XAP_WIN32FRAME_H */

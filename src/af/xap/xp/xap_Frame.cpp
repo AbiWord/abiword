@@ -804,6 +804,13 @@ UT_Error XAP_Frame::backup(const char* szExt)
 {
 	if (m_bBackupRunning)
 		return UT_OK;
+
+	if (!m_pDoc)
+	{
+		UT_DEBUGMSG(("File NOT saved! doc is NULL.\n"));
+		return UT_OK;
+	}
+
 	m_bBackupRunning = true;
 
 	UT_String backupName = makeBackupName ( szExt );

@@ -306,7 +306,7 @@ LRESULT CALLBACK EV_Win32Toolbar::_ComboWndProc( HWND hWnd, UINT uMessage, WPARA
 				case VK_TAB:
 				case VK_RETURN:
 				{
-					static_cast<XAP_Win32FrameImpl*>(t->m_pWin32Frame->getFrameImpl())->updateKeyboardFocus();
+					SetFocus(static_cast<XAP_Win32FrameImpl*>(t->m_pWin32Frame->getFrameImpl())->getTopLevelWindow());
 					return 0;
 				}
 			}

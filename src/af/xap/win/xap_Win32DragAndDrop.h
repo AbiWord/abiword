@@ -45,7 +45,7 @@
 ******************************************************************
 *****************************************************************/
 
-interface XAP_Win32DropTarget : public IDropTarget
+interface ABI_EXPORT XAP_Win32DropTarget : public IDropTarget
 {
 
 public:

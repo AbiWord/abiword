@@ -21,11 +21,25 @@
 
 #include "xap_Win32FrameImpl.h"
 
+#include <commctrl.h>
+#include <limits.h>					/* for INT_MAX */
+
+#include "zmouse.h"
+#ifdef __MINGW32__
+#include "winezmouse.h"
+#endif
+
 #include "ut_debugmsg.h"
 #include "xap_ViewListener.h"
 #include "ev_EditMethod.h"
+#include "xav_View.h"
 
-#include <limits.h>					/* for INT_MAX */
+// Where the heck is this function????
+// TODO Fix the following header file. It seems to be incomplete
+// TODO #include <ap_EditMethods.h>
+// TODO In the mean time, define the needed function by hand
+extern XAP_Dialog_MessageBox::tAnswer s_CouldNotLoadFileMessage(XAP_Frame * pFrame, const char * pNewFile, UT_Error errorCode);
+
 
 
 XAP_Win32FrameImpl::XAP_Win32FrameImpl(XAP_Frame *pFrame) :
@@ -38,13 +52,21 @@ XAP_Win32FrameImpl::XAP_Win32FrameImpl(XAP_Frame *pFrame) :
 	m_pWin32Menu(NULL),
 	m_pWin32Popup(NULL),
 	m_iBarHeight(0),
+	m_iStatusBarHeight(0),
 	m_iRealSizeWidth(0),
-	m_iRealSizeHeight(0)
+	m_iRealSizeHeight(0),
+	m_mouseWheelMessage(0),
+	m_iSizeWidth(0),
+	m_iSizeHeight(0)
 {
 }
 
 XAP_Win32FrameImpl::~XAP_Win32FrameImpl(void)
 {
+	// only delete the things we created...
+	
+	DELETEP(m_pWin32Menu);
+	DELETEP(m_pWin32Popup);
 }
 
 
@@ -61,7 +83,7 @@ bool XAP_Win32FrameImpl::_updateTitle(void)
 	UT_return_val_if_fail(pFrame, false);
 
 
-	if (!pFrame->updateTitle())
+	if (!XAP_FrameImpl::_updateTitle())
 	{
 		// no relevant change, so skip it
 		return false;
@@ -78,17 +100,126 @@ bool XAP_Win32FrameImpl::_updateTitle(void)
 
 void XAP_Win32FrameImpl::_initialize(void)
 {
+	// we assume AP_{FE}Frame has already called XAP_Frame::initialize(...);
+
 	// get a handle to our keyboard binding mechanism
 	// and to our mouse binding mechanism.
 	
 	EV_EditEventMapper * pEEM = getFrame()->getEditEventMapper();
-	UT_ASSERT(pEEM);
+	UT_return_if_fail(pEEM);
 
 	m_pKeyboard = new ev_Win32Keyboard(pEEM);
-	UT_ASSERT(m_pKeyboard);
+	UT_return_if_fail(m_pKeyboard);
 	
 	m_pMouse = new EV_Win32Mouse(pEEM);
-	UT_ASSERT(m_pMouse);
+	UT_return_if_fail(m_pMouse);
+}
+
+void XAP_Win32FrameImpl::_createTopLevelWindow(void)
+{
+	RECT r;
+	UT_uint32 iHeight, iWidth;
+
+	// create a top-level window for us.
+	// get the default window size from preferences or something.
+	// TODO should set size for all, but position only on 1st created
+
+	// get window width & height from preferences
+	UT_sint32 t_x,t_y;  // dummy variables
+	UT_uint32 t_flag;
+	if ( !(XAP_App::getApp()->getGeometry(&t_x,&t_y,&iWidth,&iHeight,&t_flag)) ||
+           !((iWidth > 0) && (iHeight > 0)) )
+	{
+		iWidth = CW_USEDEFAULT;
+		iHeight = CW_USEDEFAULT;
+	}
+
+	XAP_Win32App *pWin32App = static_cast<XAP_Win32App *>(XAP_App::getApp());
+
+	m_hwndFrame = CreateWindow(pWin32App->getApplicationName(),
+							   pWin32App->getApplicationTitleForTitleBar(),
+							   WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN,
+							   CW_USEDEFAULT, CW_USEDEFAULT, iWidth, iHeight,
+							   NULL, NULL, pWin32App->getInstance(), NULL);
+	UT_ASSERT(m_hwndFrame);
+
+	// bind this frame to its window
+	SetWindowLong(m_hwndFrame, GWL_USERDATA,(LONG)this);
+
+	m_mouseWheelMessage = RegisterWindowMessage(MSH_MOUSEWHEEL);
+
+	// synthesize a menu from the info in our
+	// base class and install it into the window.
+	m_pWin32Menu = new EV_Win32MenuBar(pWin32App,
+							getFrame()->getEditEventMapper(),
+							m_szMenuLayoutName,
+							m_szMenuLabelSetName);
+	UT_ASSERT(m_pWin32Menu);
+	bool bResult = m_pWin32Menu->synthesizeMenuBar(getFrame());
+	UT_ASSERT(bResult);
+
+	HMENU oldMenu = GetMenu(m_hwndFrame);
+	if (SetMenu(m_hwndFrame, m_pWin32Menu->getMenuHandle()))
+	{
+		DrawMenuBar(m_hwndFrame);
+		if (oldMenu)
+			DestroyMenu(oldMenu);
+	}
+
+	// create a rebar container for all the toolbars
+	m_hwndRebar = CreateWindowEx(0L, REBARCLASSNAME, NULL,
+								 WS_VISIBLE | WS_BORDER | WS_CHILD | WS_CLIPCHILDREN |
+								 WS_CLIPSIBLINGS | CCS_NODIVIDER | CCS_NOPARENTALIGN |
+								 RBS_VARHEIGHT | RBS_BANDBORDERS,
+								 0, 0, 0, 0,
+								 m_hwndFrame, NULL, pWin32App->getInstance(), NULL);
+	UT_ASSERT(m_hwndRebar);
+
+	// create a toolbar instance for each toolbar listed in our base class.
+
+	_createToolbars();
+
+	// figure out how much room is left for the child
+	GetClientRect(m_hwndFrame, &r);
+	iHeight = r.bottom - r.top;
+	iWidth = r.right - r.left;
+
+	m_iSizeWidth = iWidth;
+	m_iSizeHeight = iHeight;
+	
+	// force rebar to resize itself
+	// TODO for some reason, we give REBAR the height of the FRAME
+	// TODO and let it decide how much it actually needs....
+	if( m_hwndRebar != NULL )
+	{
+		MoveWindow(m_hwndRebar, 0, 0, iWidth, iHeight, TRUE);
+
+		GetClientRect(m_hwndRebar, &r);
+		m_iBarHeight = r.bottom - r.top + 6;
+
+		UT_ASSERT(iHeight > m_iBarHeight);
+		iHeight -= m_iBarHeight;
+	}
+	else
+		m_iBarHeight = 0;
+
+	m_hwndContainer = _createDocumentWindow(m_hwndFrame, 0, m_iBarHeight, iWidth, iHeight);
+
+	// Let the app-specific frame code create the status bar
+	// if it wants to.  we will put it below the document
+	// window (a peer with toolbars and the overall sunkenbox)
+	// so that it will appear outside of the scrollbars.
+
+	m_hwndStatusBar = _createStatusBarWindow(m_hwndFrame,0,m_iBarHeight+iHeight,iWidth);
+	GetClientRect(m_hwndStatusBar,&r);
+	m_iStatusBarHeight = r.bottom;
+
+	
+	// Register drag and drop data and files
+	m_dropTarget.setFrame(getFrame());
+	RegisterDragDrop(m_hwndFrame, &m_dropTarget);	
+		
+	return;
 }
 
 bool XAP_Win32FrameImpl::_close(void)
@@ -256,7 +387,7 @@ bool XAP_Win32FrameImpl::_RegisterClass(XAP_Win32App * app)
 	// register class for the frame window
 	wndclass.cbSize			= sizeof(wndclass);
 	wndclass.style			= CS_DBLCLKS;
-//	wndclass.lpfnWndProc		= XAP_Win32FrameImpl::_FrameWndProc;
+	wndclass.lpfnWndProc		= XAP_Win32FrameImpl::_FrameWndProc;
 	wndclass.cbClsExtra		= 0;
 	wndclass.cbWndExtra		= 0;
 	wndclass.hInstance		= app->getInstance();
@@ -275,21 +406,65 @@ bool XAP_Win32FrameImpl::_RegisterClass(XAP_Win32App * app)
 
 /*****************************************************************/
 
-#if 0 // inprogress
-LRESULT CALLBACK XAP_Win32Frame::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
+#ifdef MENU_FT
+HFONT GetAFont(int fnFont) 
+{ 
+    static LOGFONT lf;  // structure for font information  
+ 
+    // Get a handle to the ANSI fixed-pitch font, and copy 
+    // information about the font to a LOGFONT structure. 
+ 
+    GetObject(GetStockObject(ANSI_FIXED_FONT), sizeof(LOGFONT), 
+        &lf); 
+ 
+    // Set the font attributes, as appropriate.  
+ 
+    //if (fnFont == BOLD) 
+    lf.lfWeight = FW_BOLD; 
+    //else 
+    //    lf.lfWeight = FW_NORMAL; 
+ 
+    //lf.lfItalic = (fnFont == ITALIC); 
+    //lf.lfItalic = 0; 
+ 
+    // Create the font, and then return its handle.  
+ 
+    return CreateFont(lf.lfHeight, lf.lfWidth, 
+        lf.lfEscapement, lf.lfOrientation, lf.lfWeight, 
+        lf.lfItalic, lf.lfUnderline, lf.lfStrikeOut, lf.lfCharSet, 
+        lf.lfOutPrecision, lf.lfClipPrecision, lf.lfQuality, 
+        lf.lfPitchAndFamily, lf.lfFaceName); 
+} 
+
+HFONT	gFont = NULL;
+LPMEASUREITEMSTRUCT lpmis;  // pointer to item of data             
+LPDRAWITEMSTRUCT lpdis;  
+SIZE size;                  // menu-item text extents             
+    WORD wCheckX;               // check-mark width                   
+    int nTextX;                 // width of menu item                 
+    int nTextY;                 // height of menu item                
+    int i;                      // loop counter                       
+    HFONT hfontOld;             // handle to old font      
+
+#endif
+
+LRESULT CALLBACK XAP_Win32FrameImpl::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 {
-	XAP_Win32Frame * f = (XAP_Win32Frame*)GetWindowLong(hwnd, GWL_USERDATA);
+	XAP_Frame * f = (XAP_Frame*)GetWindowLong(hwnd, GWL_USERDATA);
 
 	if (!f)
 	{
 		return DefWindowProc(hwnd,iMsg,wParam,lParam);
 	}
 	
+	XAP_Win32FrameImpl * fimpl = static_cast<XAP_Win32FrameImpl *>(f->getFrameImpl());
+	UT_return_val_if_fail(fimpl, DefWindowProc(hwnd,iMsg,wParam,lParam));
+
 	AV_View * pView = NULL;
 
-	pView = f->m_pView;
+	pView = f->getCurrentView();
 
-	if(iMsg == f->m_mouseWheelMessage)
+	if(iMsg == fimpl->m_mouseWheelMessage)
 	{
 		wParam = MAKEWPARAM(0, (short)(int)wParam);
 		return SendMessage(hwnd, WM_MOUSEWHEEL, wParam, lParam);
@@ -302,7 +477,7 @@ LRESULT CALLBACK XAP_Win32Frame::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wPar
 		if (pView)
 		{
 			pView->focusChange(AV_FOCUS_HERE);
-			SetFocus(f->m_hwndContainer);
+			SetFocus(fimpl->m_hwndContainer);
 		}
 		return 0;
 
@@ -318,12 +493,12 @@ LRESULT CALLBACK XAP_Win32Frame::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wPar
 		return 0;
 
 	case WM_COMMAND:
-		if (f->m_pWin32Popup)
+		if (fimpl->m_pWin32Popup)
 		{
-			if (f->m_pWin32Popup->onCommand(pView,hwnd,wParam))
+			if (fimpl->m_pWin32Popup->onCommand(pView,hwnd,wParam))
 				return 0;
 		}
-		else if (f->m_pWin32Menu->onCommand(pView,hwnd,wParam))
+		else if (fimpl->m_pWin32Menu->onCommand(pView,hwnd,wParam))
 		{
 			return 0;
 		}
@@ -331,10 +506,10 @@ LRESULT CALLBACK XAP_Win32Frame::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wPar
 		{
 			// after menu passes on it, give each of the toolbars a chance
 			UT_uint32 nrToolbars, k;
-			nrToolbars = f->m_vecToolbars.getItemCount();
+			nrToolbars = fimpl->m_vecToolbars.getItemCount();
 			for (k=0; k < nrToolbars; k++)
 			{
-				EV_Win32Toolbar * t = (EV_Win32Toolbar *)f->m_vecToolbars.getNthItem(k);
+				EV_Win32Toolbar * t = (EV_Win32Toolbar *)fimpl->m_vecToolbars.getNthItem(k);
 				XAP_Toolbar_Id id = t->ItemIdFromWmCommand(LOWORD(wParam));
 				if (t->toolbarEvent(id))
 					return 0;
@@ -343,23 +518,23 @@ LRESULT CALLBACK XAP_Win32Frame::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wPar
 		return DefWindowProc(hwnd,iMsg,wParam,lParam);
 
 	case WM_INITMENU:
-		if (f->m_pWin32Popup)
+		if (fimpl->m_pWin32Popup)
 		{
-			if (f->m_pWin32Popup->onInitMenu(f,pView,hwnd,(HMENU)wParam))
+			if (fimpl->m_pWin32Popup->onInitMenu(f,pView,hwnd,(HMENU)wParam))
 				return 0;
 		}
-		else if (f->m_pWin32Menu->onInitMenu(f,pView,hwnd,(HMENU)wParam))
+		else if (fimpl->m_pWin32Menu->onInitMenu(f,pView,hwnd,(HMENU)wParam))
 			return 0;
 		return DefWindowProc(hwnd,iMsg,wParam,lParam);
 		
 #ifdef MENU_FT
 	case WM_MENUSELECT:
-		if (f->m_pWin32Popup)
+		if (fimpl->m_pWin32Popup)
 		{
-			if (f->m_pWin32Popup->onMenuSelect(f,pView,hwnd,(HMENU)lParam,wParam))
+			if (fimpl->m_pWin32Popup->onMenuSelect(f,pView,hwnd,(HMENU)lParam,wParam))
 				return 0;
 		}
-		else if (f->m_pWin32Menu->onMenuSelect(f,pView,hwnd,(HMENU)lParam,wParam))
+		else if (fimpl->m_pWin32Menu->onMenuSelect(f,pView,hwnd,(HMENU)lParam,wParam))
 			return 0;
 		return DefWindowProc(hwnd,iMsg,wParam,lParam);
 		
@@ -469,10 +644,10 @@ LRESULT CALLBACK XAP_Win32Frame::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wPar
 		case TTN_NEEDTEXT:
 			{
 				UT_uint32 nrToolbars, k;
-				nrToolbars = f->m_vecToolbars.getItemCount();
+				nrToolbars = fimpl->m_vecToolbars.getItemCount();
 				for (k=0; k < nrToolbars; k++)
 				{
-					EV_Win32Toolbar * t = (EV_Win32Toolbar *)f->m_vecToolbars.getNthItem(k);
+					EV_Win32Toolbar * t = (EV_Win32Toolbar *)fimpl->m_vecToolbars.getNthItem(k);
 					if (t->getToolTip(lParam))
 						break;
 				}
@@ -482,19 +657,19 @@ LRESULT CALLBACK XAP_Win32Frame::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wPar
 		case RBN_HEIGHTCHANGE:
 			{
 				RECT r;
-				GetClientRect(f->m_hwndFrame, &r);
+				GetClientRect(fimpl->m_hwndFrame, &r);
 				int nWidth = r.right - r.left;
 				int nHeight = r.bottom - r.top;
 
-				GetClientRect(f->m_hwndRebar, &r);
-				f->m_iBarHeight = r.bottom - r.top + 6;
+				GetClientRect(fimpl->m_hwndRebar, &r);
+				fimpl->m_iBarHeight = r.bottom - r.top + 6;
 
-				if (f->m_hwndContainer)
+				if (fimpl->m_hwndContainer)
 				{
 					// leave room for the toolbars
-					nHeight -= f->m_iBarHeight;
+					nHeight -= fimpl->m_iBarHeight;
 
-					MoveWindow(f->m_hwndContainer, 0, f->m_iBarHeight, nWidth, nHeight, TRUE);
+					MoveWindow(fimpl->m_hwndContainer, 0, fimpl->m_iBarHeight, nWidth, nHeight, TRUE);
 				}
 								
 				f->queue_resize();
@@ -505,10 +680,10 @@ LRESULT CALLBACK XAP_Win32Frame::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wPar
 			{
 				LPNMCUSTOMDRAW  pNMcd = (LPNMCUSTOMDRAW)lParam;
 				UT_uint32 nrToolbars, k;
-				nrToolbars = f->m_vecToolbars.getItemCount();
+				nrToolbars = fimpl->m_vecToolbars.getItemCount();
 				for (k=0; k < nrToolbars; k++)
 				{
-					EV_Win32Toolbar * t = (EV_Win32Toolbar *)f->m_vecToolbars.getNthItem(k);
+					EV_Win32Toolbar * t = (EV_Win32Toolbar *)fimpl->m_vecToolbars.getNthItem(k);
 					if( pNMcd->hdr.hwndFrom == t->getWindow() )
 					{
 						if( pNMcd->dwDrawStage == CDDS_PREPAINT )
@@ -570,31 +745,31 @@ LRESULT CALLBACK XAP_Win32Frame::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wPar
 		
 		if( pView && !pView->isLayoutFilling() )
 		{
-			f->m_iRealSizeHeight = nHeight;
-			f->m_iRealSizeWidth = nWidth;
+			fimpl->m_iRealSizeHeight = nHeight;
+			fimpl->m_iRealSizeWidth = nWidth;
 			
-			f->_startViewAutoUpdater();
+			fimpl->_startViewAutoUpdater();
 
-			if (nWidth != (int) f->m_iSizeWidth && f->m_hwndRebar != NULL)
+			if (nWidth != (int) fimpl->m_iSizeWidth && fimpl->m_hwndRebar != NULL)
 			{
-				MoveWindow(f->m_hwndRebar, 0, 0, nWidth, f->m_iBarHeight, TRUE); 
+				MoveWindow(fimpl->m_hwndRebar, 0, 0, nWidth, fimpl->m_iBarHeight, TRUE); 
 			}
 
 			// leave room for the toolbars and the status bar
-			nHeight -= f->m_iBarHeight;
+			nHeight -= fimpl->m_iBarHeight;
 
-			if (::IsWindowVisible(f->m_hwndStatusBar))
-				nHeight -= f->m_iStatusBarHeight;							
+			if (::IsWindowVisible(fimpl->m_hwndStatusBar))
+				nHeight -= fimpl->m_iStatusBarHeight;							
 			
 				
-			if (f->m_hwndStatusBar)
-				MoveWindow(f->m_hwndStatusBar, 0, f->m_iBarHeight+nHeight, nWidth, f->m_iStatusBarHeight, TRUE);
+			if (fimpl->m_hwndStatusBar)
+				MoveWindow(fimpl->m_hwndStatusBar, 0, fimpl->m_iBarHeight+nHeight, nWidth, fimpl->m_iStatusBarHeight, TRUE);
 
-			if (f->m_hwndContainer)
-				MoveWindow(f->m_hwndContainer, 0, f->m_iBarHeight, nWidth, nHeight, TRUE);			
+			if (fimpl->m_hwndContainer)
+				MoveWindow(fimpl->m_hwndContainer, 0, fimpl->m_iBarHeight, nWidth, nHeight, TRUE);			
 			
-			f->m_iSizeWidth = nWidth;
-			f->m_iSizeHeight = nHeight;
+			fimpl->m_iSizeWidth = nWidth;
+			fimpl->m_iSizeHeight = nHeight;
 
 			f->updateZoom();
 		}
@@ -629,7 +804,7 @@ LRESULT CALLBACK XAP_Win32Frame::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wPar
 
 		// This will remap the static tables used by all frames.
 		// (see the comment in ev_Win32Keyboard.cpp.)
-		ev_Win32Keyboard *pWin32Keyboard = static_cast<ev_Win32Keyboard *>(f->m_pKeyboard);
+		ev_Win32Keyboard *pWin32Keyboard = static_cast<ev_Win32Keyboard *>(fimpl->m_pKeyboard);
 		pWin32Keyboard->remapKeyboard((HKL)lParam);
 
 		// Do not propagate this message.
@@ -639,14 +814,14 @@ LRESULT CALLBACK XAP_Win32Frame::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wPar
 
 	case WM_MOUSEWHEEL:
 	{
-		return SendMessage(f->m_hwndContainer, iMsg, wParam, lParam);
+		return SendMessage(fimpl->m_hwndContainer, iMsg, wParam, lParam);
 	}
 
 	case WM_SYSCOLORCHANGE:
 	{
-		if (f->m_hwndRebar)
+		if (fimpl->m_hwndRebar)
 		{
-			SendMessage(f->m_hwndRebar,WM_SYSCOLORCHANGE,0,0);
+			SendMessage(fimpl->m_hwndRebar,WM_SYSCOLORCHANGE,0,0);
 
 			REBARBANDINFO rbbi = { 0 };
 			rbbi.cbSize = sizeof(REBARBANDINFO);
@@ -654,15 +829,15 @@ LRESULT CALLBACK XAP_Win32Frame::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wPar
 			rbbi.clrFore = GetSysColor(COLOR_BTNTEXT);
 			rbbi.clrBack = GetSysColor(COLOR_BTNFACE);
 
-			UT_uint32 nrToolbars = f->m_vecToolbars.getItemCount();
+			UT_uint32 nrToolbars = fimpl->m_vecToolbars.getItemCount();
 			for (UT_uint32 k=0; k < nrToolbars; k++)
-				SendMessage(f->m_hwndRebar, RB_SETBANDINFO,k,(LPARAM)&rbbi);
+				SendMessage(fimpl->m_hwndRebar, RB_SETBANDINFO,k,(LPARAM)&rbbi);
 		}
 
-		if (f->m_hwndContainer)
-			SendMessage(f->m_hwndContainer,WM_SYSCOLORCHANGE,0,0);
-		if (f->m_hwndStatusBar)
-			SendMessage(f->m_hwndStatusBar,WM_SYSCOLORCHANGE,0,0);
+		if (fimpl->m_hwndContainer)
+			SendMessage(fimpl->m_hwndContainer,WM_SYSCOLORCHANGE,0,0);
+		if (fimpl->m_hwndStatusBar)
+			SendMessage(fimpl->m_hwndStatusBar,WM_SYSCOLORCHANGE,0,0);
 		return 0;
 	}
 
@@ -728,4 +903,3 @@ LRESULT CALLBACK XAP_Win32Frame::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wPar
 	return DefWindowProc(hwnd, iMsg, wParam, lParam);
 }
 
-#endif // inprogress

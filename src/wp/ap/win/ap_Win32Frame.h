@@ -46,27 +46,47 @@ class ABI_EXPORT AP_Win32Frame : public AP_Frame
 
 	static bool 				RegisterClass(XAP_Win32App * app) {  return AP_Win32FrameImpl::_RegisterClass(app); }
 
-	virtual void				toggleTopRuler(bool bRulerOn);
-	virtual void				toggleLeftRuler(bool bRulerOn);
+	virtual void 				toggleRuler(bool bRulerOn)     {  toggleTopRuler(bRulerOn);  toggleLeftRuler(bRulerOn);  }
+	virtual void				toggleTopRuler(bool bRulerOn)  {  static_cast<AP_Win32FrameImpl*>(getFrameImpl())->_toggleTopRuler(this, bRulerOn);  }
+	virtual void				toggleLeftRuler(bool bRulerOn) {  static_cast<AP_Win32FrameImpl*>(getFrameImpl())->_toggleLeftRuler(this, bRulerOn);  }
 
 	virtual HWND				getTopLevelWindow(void) const {  return static_cast<AP_Win32FrameImpl*>(getFrameImpl())->_getTopLevelWindow();  }
+
+	virtual void				setZoomPercentage(UT_uint32 iZoom);
+	virtual UT_uint32				getZoomPercentage(void);
+
+	void 						toggleBar(UT_uint32 iBarNb, bool bBarOn);
+	void 						toggleStatusBar(bool bStatusBarOn);
 
  protected:
 	// helper methods for _showDocument
 	virtual bool _createViewGraphics(GR_Graphics *& pG, UT_uint32 iZoom);
-	virtual bool _createScrollBarListeners(AV_View * pView, AV_ScrollObj *& pScrollObj, 
-				       ap_ViewListener *& pViewListener, 
-				       ap_Scrollbar_ViewListener *& pScrollbarViewListener,
-				       AV_ListenerId &lid, 
-				       AV_ListenerId &lidScrollbarViewListener);	
-	virtual void _bindToolbars(AV_View *pView);
 	virtual void _setViewFocus(AV_View *pView);
+	virtual bool _createScrollBarListeners(AV_View * pView, AV_ScrollObj *& pScrollObj, 
+				      ap_ViewListener *& pViewListener, 
+				      ap_Scrollbar_ViewListener *& pScrollbarViewListener,
+				      AV_ListenerId &lid, 
+				      AV_ListenerId &lidScrollbarViewListener);	
+	virtual void _bindToolbars(AV_View *pView);
+	virtual void _replaceView(GR_Graphics * pG, FL_DocLayout *pDocLayout,
+			  AV_View *pView, AV_ScrollObj * pScrollObj,
+			  ap_ViewListener *pViewListener, AD_Document *pOldDoc,
+			  ap_Scrollbar_ViewListener *pScrollbarViewListener,
+			  AV_ListenerId lid, AV_ListenerId lidScrollbarViewListener,
+			  UT_uint32 iZoom);
 
 	// helper methods for helper methods for _showDocument (meta-helper-methods?) :-)
 	virtual UT_sint32 _getDocumentAreaWidth();
 	virtual UT_sint32 _getDocumentAreaHeight();
 
  private:
+	UT_Vector					m_vecToolbars;
+	UT_Vector					m_vecToolbarLayoutNames;
+	void						_showOrHideToolbars(void);
+	void						_showOrHideStatusbar(void);
+
+	static void					_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 xlimit);
+	static void					_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 ylimit);
 };
 
 #endif /* AP_WIN32FRAME_H */
