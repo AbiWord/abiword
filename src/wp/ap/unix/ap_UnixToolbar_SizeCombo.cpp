@@ -54,22 +54,22 @@ UT_Bool AP_UnixToolbar_SizeCombo::populate(void)
 	m_vecContents.clear();
 
 	// populate the vector
-	m_vecContents.addItem("8");
-	m_vecContents.addItem("9");
-	m_vecContents.addItem("10");
-	m_vecContents.addItem("11");
-	m_vecContents.addItem("12");
-	m_vecContents.addItem("14");
-	m_vecContents.addItem("16");
-	m_vecContents.addItem("18");
-	m_vecContents.addItem("20");
-	m_vecContents.addItem("22");
-	m_vecContents.addItem("24");
-	m_vecContents.addItem("26");
-	m_vecContents.addItem("28");
-	m_vecContents.addItem("36");
-	m_vecContents.addItem("48");
-	m_vecContents.addItem("72");
+	m_vecContents.addItem((void *) "8");
+	m_vecContents.addItem((void *) "9");
+	m_vecContents.addItem((void *) "10");
+	m_vecContents.addItem((void *) "11");
+	m_vecContents.addItem((void *) "12");
+	m_vecContents.addItem((void *) "14");
+	m_vecContents.addItem((void *) "16");
+	m_vecContents.addItem((void *) "18");
+	m_vecContents.addItem((void *) "20");
+	m_vecContents.addItem((void *) "22");
+	m_vecContents.addItem((void *) "24");
+	m_vecContents.addItem((void *) "26");
+	m_vecContents.addItem((void *) "28");
+	m_vecContents.addItem((void *) "36");
+	m_vecContents.addItem((void *) "48");
+	m_vecContents.addItem((void *) "72");
 
 	// TODO: may want to populate this based on current font instead?
 	return UT_TRUE;

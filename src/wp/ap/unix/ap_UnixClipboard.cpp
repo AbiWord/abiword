@@ -34,14 +34,14 @@
 AP_UnixClipboard::AP_UnixClipboard(void)
 	: XAP_UnixClipboard()
 {
-#define AddFmt(szFormat,cf)	do { m_vecFormat.addItem(szFormat); m_vecCF.addItem((void*)cf); } while (0)
+#define AddFmt(szFormat,cf)	do { m_vecFormat.addItem((void *) szFormat); m_vecCF.addItem((void*)cf); } while (0)
 
-	AddFmt(AP_CLIPBOARD_ABIWORD_1,		gdk_atom_intern("application/abiword", FALSE));
-	AddFmt(AP_CLIPBOARD_TEXTPLAIN_8BIT,	GDK_SELECTION_TYPE_STRING);
-	AddFmt(AP_CLIPBOARD_TEXTPLAIN_UNICODE,	GDK_SELECTION_TYPE_STRING);	// probably NT only
-   	AddFmt(AP_CLIPBOARD_RTF,		gdk_atom_intern("text/rtf", FALSE));
-	AddFmt(AP_CLIPBOARD_IMAGE,		GDK_SELECTION_TYPE_PIXMAP);
-	AddFmt(AP_CLIPBOARD_UNKNOWN,		GDK_NONE);			// must be last
+	AddFmt(AP_CLIPBOARD_ABIWORD_1,			gdk_atom_intern("application/abiword", FALSE));
+	AddFmt(AP_CLIPBOARD_TEXTPLAIN_8BIT,		GDK_SELECTION_TYPE_STRING);
+	AddFmt(AP_CLIPBOARD_TEXTPLAIN_UNICODE,	GDK_SELECTION_TYPE_STRING);				// probably NT only
+   	AddFmt(AP_CLIPBOARD_RTF,				gdk_atom_intern("text/rtf", FALSE));
+	AddFmt(AP_CLIPBOARD_IMAGE,				GDK_SELECTION_TYPE_PIXMAP);
+	AddFmt(AP_CLIPBOARD_UNKNOWN,			GDK_NONE);								// must be last
 
 	// We don't need to free these strings in our destructor
 	// because we did not allocate any of the string pointers.
