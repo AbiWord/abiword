@@ -81,7 +81,7 @@
 #include "fg_Graphic.h"
 #include "xav_View.h"
 #include "xad_Document.h"
-#include "ap_framedata.h"
+#include "ap_FrameData.h"
 #include "ut_Win32Locale.h"
 
 #ifdef HAVE_CURL

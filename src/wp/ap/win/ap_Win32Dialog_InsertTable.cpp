@@ -36,7 +36,7 @@
 #include "ap_Strings.h"
 #include "ap_Dialog_Id.h"
 
-#include "AP_Win32Dialog_InsertTable.h"
+#include "ap_Win32Dialog_InsertTable.h"
 #include "ap_Win32Resources.rc2"
 #include "xap_Win32DialogHelper.h"
 
