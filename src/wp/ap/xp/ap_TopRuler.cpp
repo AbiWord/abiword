@@ -363,7 +363,76 @@ void AP_TopRuler::_drawTicks(AP_TopRulerInfo &info, ap_RulerTicks &tick,
 		}
 	}
 }
+
+void AP_TopRuler::_drawParagraphProperties(AP_TopRulerInfo &info, UT_RGBColor &clr,
+										   UT_sint32 xOrigin)
+{
+	UT_uint32 yTop = s_iFixedHeight/4;
+	UT_uint32 yBar = s_iFixedHeight/2;
+	UT_uint32 yBottom = yTop + yBar;
+
+	UT_sint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
+	UT_sint32 xAbsLeft = xFixed + info.m_xPageViewMargin + xOrigin - m_xScrollOffset;
+	UT_sint32 xAbsRight = xAbsLeft + info.u.c.m_xColumnWidth;
+
+	UT_sint32 hs = 2;					// halfSize
+	UT_sint32 fs = hs * 2 + 1;			// fullSize
+
+	m_pG->fillRect(clr, xAbsLeft  + info.m_xrLeftIndent      -hs, yBottom-fs,     fs, fs);
+	m_pG->fillRect(clr, xAbsLeft  + info.m_xrFirstLineIndent -hs, yBottom-2*fs-1, fs, fs);
+	m_pG->fillRect(clr, xAbsRight - info.m_xrRightIndent     -hs, yBottom-fs,     fs, fs);
+}
+
+void AP_TopRuler::_drawColumnProperties(AP_TopRulerInfo &info, UT_RGBColor &clr,
+										UT_uint32 kCol)
+{
+	UT_uint32 yTop = s_iFixedHeight/4;
+
+	UT_sint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
+	UT_sint32 xrCol = info.u.c.m_xaLeftMargin
+		+ (kCol+1) * (info.u.c.m_xColumnWidth + info.u.c.m_xColumnGap);
+	UT_sint32 xAbsLeft = xFixed + info.m_xPageViewMargin + xrCol - m_xScrollOffset;
+
+	UT_sint32 hs = 2;					// halfSize
+	UT_sint32 fs = hs * 2 + 1;			// fullSize
+
+	m_pG->fillRect(clr, xAbsLeft  -hs, yTop-fs,     fs, fs);
+}
+
+void AP_TopRuler::_drawMarginProperties(AP_TopRulerInfo &info, UT_RGBColor &clr)
+{
+	UT_uint32 yTop = s_iFixedHeight/4;
+
+	UT_sint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
+	UT_sint32 xAbsLeft  = xFixed + info.m_xPageViewMargin
+		+ info.u.c.m_xaLeftMargin  - m_xScrollOffset;
+
+	// we play some games with where the right margin is
+	// drawn.  this compensates for an odd pixel roundoff
+	// due to our (current) restriction that all columns
+	// and gaps are the same size.
+	//
+	// _Actual is where the margin really should be drawn.
+	// _Fake is just past the right edge of the last column.
 	
+	// UT_sint32 xAbsRight_Actual = xFixed + info.m_xPageViewMargin
+	// 	+ info.m_xPaperSize - info.u.c.m_xaRightMargin - m_xScrollOffset;
+
+	UT_sint32 xAbsRight_Fake = xFixed + info.m_xPageViewMargin
+		+ info.u.c.m_xaLeftMargin
+		+ (info.m_iNumColumns * info.u.c.m_xColumnWidth)
+		+ ((info.m_iNumColumns-1) * info.u.c.m_xColumnGap)
+		- m_xScrollOffset;
+
+	UT_sint32 xAbsRight = xAbsRight_Fake;
+
+	UT_sint32 hs = 2;					// halfSize
+	UT_sint32 fs = hs * 2 + 1;			// fullSize
+
+	m_pG->fillRect(clr, xAbsLeft  -hs, yTop-fs,     fs, fs);
+	m_pG->fillRect(clr, xAbsRight -hs, yTop-fs,     fs, fs);
+}
+
 void AP_TopRuler::_draw(void)
 {
 	AP_TopRulerInfo info;
@@ -381,31 +450,37 @@ void AP_TopRuler::_draw(void)
 
 	// TODO for now assume we are in column display mode.
 	UT_ASSERT(info.m_mode==AP_TopRulerInfo::TRI_MODE_COLUMNS);
+
+	// draw the dark-gray and white bar across the
+	// width of the paper.  we adjust the x coords
+	// by 1 to keep a light-gray bar between the
+	// dark-gray bars (margins & gaps) and the white
+	// bars (columns).
 	
 	// draw a dark-gray bar over the left margin
 
-	_drawBar(info,clrDarkGray,0,info.u.c.m_xaLeftMargin);
+	_drawBar(info,clrDarkGray,0+1,info.u.c.m_xaLeftMargin-1);
 	sum=info.u.c.m_xaLeftMargin;
 
 	for (k=0; k<info.m_iNumColumns; k++)
 	{
 		// draw white bar over this column
 		
-		_drawBar(info,clrWhite, sum, info.u.c.m_xColumnWidth);
+		_drawBar(info,clrWhite, sum+1, info.u.c.m_xColumnWidth-1);
 		sum += info.u.c.m_xColumnWidth;
 
 		// if another column after this one, draw dark gray-gap
 		
 		if (k+1 < info.m_iNumColumns)
 		{
-			_drawBar(info,clrDarkGray, sum, info.u.c.m_xColumnGap);
+			_drawBar(info,clrDarkGray, sum+1, info.u.c.m_xColumnGap-1);
 			sum += info.u.c.m_xColumnGap;
 		}
 	}
 
 	// draw dark-gray right margin
 	
-	_drawBar(info,clrDarkGray,sum,info.u.c.m_xaRightMargin);
+	_drawBar(info,clrDarkGray,sum+1,info.u.c.m_xaRightMargin-1);
 
 	// now draw tick marks on the bar, using the selected system of units.
 
@@ -441,7 +516,7 @@ void AP_TopRuler::_draw(void)
 		sum += info.u.c.m_xColumnWidth;
 
 		// if another column after this one, skip over the gap
-		// (we don't actually draw ticks on the gap itself.
+		// (we don't draw ticks on the gap itself).
 
 		if (k+1 < info.m_iNumColumns)
 			sum += info.u.c.m_xColumnGap;
@@ -451,8 +526,16 @@ void AP_TopRuler::_draw(void)
 
 	_drawTicks(info,tick,clrBlack,pFont,xTickOrigin, sum, sum+info.u.c.m_xaRightMargin);
 
-	// TODO draw the various widgets for the margins and the current paragraph properties.
+	// draw the various widgets for the:
+	// 
+	// current section properties {left-margin, right-margin};
+	// the current column properties {column-gap};
+	// and the current paragraph properties {left-indent, right-indent, first-left-indent}.
+
+	_drawMarginProperties(info,clrBlack);
+	for (k=0; (k < info.m_iNumColumns-1); k++)
+		_drawColumnProperties(info,clrBlack,k);
+	_drawParagraphProperties(info,clrBlack, xTickOrigin);
 	
 	return;
 }
-

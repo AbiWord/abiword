@@ -115,6 +115,11 @@ protected:
 	void				_drawTicks(AP_TopRulerInfo &info, ap_RulerTicks &tick,
 								   UT_RGBColor &clr, GR_Font * pFont,
 								   UT_sint32 xOrigin, UT_sint32 xFrom, UT_sint32 xTo);
+	void				_drawParagraphProperties(AP_TopRulerInfo &info, UT_RGBColor &clr,
+												 UT_sint32 xOrigin);
+	void				_drawColumnProperties(AP_TopRulerInfo &info, UT_RGBColor &clr,
+											  UT_uint32 kCol);
+	void				_drawMarginProperties(AP_TopRulerInfo &info, UT_RGBColor &clr);
 	
 	XAP_Frame *			m_pFrame;
 	AV_View *			m_pView;
