@@ -45,6 +45,7 @@
 #include "ap_Strings.h"
 #include "ap_LoadBindings.h"
 #include "xap_EditMethods.h"
+#include "xap_Menu_Layouts.h"
 #include "xap_Menu_ActionSet.h"
 #include "xap_Toolbar_ActionSet.h"
 #include "xap_EncodingManager.h"
@@ -223,6 +224,22 @@ bool AP_Win32App::initialize(void)
 	    UT_DEBUGMSG(("Setting field desc for field %s, desc=%s\n", fp_FieldFmts[i].m_Tag, fp_FieldFmts[i].m_Desc));
 	}
 
+    ///////////////////////////////////////////////////////////////////////
+    /// Build a labelset so the plugins can add themselves to something ///
+    ///////////////////////////////////////////////////////////////////////
+
+	const char * szMenuLabelSetName = NULL;
+	if (getPrefsValue( AP_PREF_KEY_MenuLabelSet, (const XML_Char**)&szMenuLabelSetName)
+		&& (szMenuLabelSetName) && (*szMenuLabelSetName))
+	{
+		;
+	}
+	else
+		szMenuLabelSetName = AP_PREF_DEFAULT_MenuLabelSet ;
+
+	getMenuFactory()->buildMenuLabelSet(szMenuLabelSetName);	
+	
+	
 	//////////////////////////////////////////////////////////////////
 	// load the all Plugins from the correct directory
 	//////////////////////////////////////////////////////////////////
