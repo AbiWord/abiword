@@ -189,6 +189,7 @@ public:
 
 	const char *			getFileName() { return m_szFilename; }
 	UT_uint32				getLastSavedAsType() { return m_lastSavedAsType; }
+	UT_uint32				getLastOpenedType() { return m_lastOpenedType; }
 	XAP_App *				getApp() { return m_pApp; }
 	bool					updateFields(void);
 	bool					getField(PL_StruxDocHandle sdh, 

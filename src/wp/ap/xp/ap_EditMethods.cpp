@@ -906,7 +906,7 @@ bool _helpOpenURL(AV_View* pAV_View, const char* helpURL);
 
 Defun1(toggleAutoSpell)
 {
-        XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 
 	XAP_App * pApp = pFrame->getApp();
@@ -1520,7 +1520,7 @@ Defun1(fileOpen)
 	UT_ASSERT(pFrame);
 
 	char * pNewFile = NULL;
-	IEFileType ieft = IEFT_Bogus;
+	IEFileType ieft = static_cast<PD_Document *>(pFrame->getCurrentDoc())->getLastOpenedType();
 	bool bOK = s_AskForPathname(pFrame,false,NULL,&pNewFile,&ieft);
 
 	if (!bOK || !pNewFile)
@@ -1608,7 +1608,7 @@ Defun1(openTemplate)
 	UT_ASSERT(pFrame);
 
 	char * pNewFile = NULL;
-	IEFileType ieft = IEFT_Bogus;
+	IEFileType ieft = static_cast<PD_Document *>(pFrame->getCurrentDoc())->getLastOpenedType();
 	bool bOK = s_AskForPathname(pFrame,false,NULL,&pNewFile,&ieft);
 
 	if (!bOK || !pNewFile)
@@ -1662,7 +1662,7 @@ s_actuallySaveAs(AV_View * pAV_View, bool overwriteName)
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 
-	IEFileType ieft = IEFT_Bogus;
+	IEFileType ieft = static_cast<PD_Document *>(pFrame->getCurrentDoc())->getLastSavedAsType();
 	char * pNewFile = NULL;
 	bool bOK = s_AskForPathname(pFrame,true,NULL,&pNewFile,&ieft);
 
@@ -1713,7 +1713,7 @@ Defun1(fileImport)
 	UT_ASSERT(pFrame);
 
 	char * pNewFile = NULL;
-	IEFileType ieft = IEFT_Bogus;
+	IEFileType ieft = static_cast<PD_Document *>(pFrame->getCurrentDoc())->getLastOpenedType();
 	bool bOK = s_AskForPathname(pFrame,false,NULL,&pNewFile,&ieft);
 
 	if (!bOK || !pNewFile)
@@ -1779,11 +1779,9 @@ Defun1(filePreviewWeb)
 
   UT_Error errSaved = UT_OK;
 
-  #define IEFT_HTML IE_Exp::fileTypeForSuffix(".html")
-
   // we do this because we don't want to change the default
   // document extension or rename what we're working on
-  errSaved = pAV_View->cmdSaveAs(szTempFileName, IEFT_HTML, false);
+  errSaved = pAV_View->cmdSaveAs(szTempFileName, IE_Exp::fileTypeForSuffix(".html"), false);
 
   if(errSaved != UT_OK)
     {
@@ -5288,7 +5286,7 @@ Defun1(viewStd)
 
 	// don't do anything if fullscreen
 	if (pFrameData->m_bIsFullScreen)
-	  return false;
+		return false;
 
 	// toggle the ruler bit
 	pFrameData->m_bShowBar[0] = ! pFrameData->m_bShowBar[0];

@@ -36,8 +36,6 @@
 #include "xap_Dlg_FileOpenSaveAs.h"
 #include "ie_imp.h"
 
-#define IEFT_AbiWord_1 IE_Imp::fileTypeForSuffix(".abw")
-
 /*************************************************************************/
 
 XAP_Dialog * AP_QNXDialog_New::static_constructor(XAP_DialogFactory * pFactory,
@@ -169,7 +167,7 @@ void AP_QNXDialog_New::event_ToggleOpenExisting ()
 	pDialog->setFileTypeList(szDescList, szSuffixList, 
 							 (const UT_sint32 *) nTypeList);
 
-	pDialog->setDefaultFileType(IEFT_AbiWord_1);
+	pDialog->setDefaultFileType(IE_Imp::fileTypeForSuffix(".abw"));
 
 	pDialog->runModal(m_pFrame);
 

@@ -30,8 +30,6 @@
 #include "ie_imp_GraphicAsDocument.h"
 #include "pd_Document.h"
 
-#define IEFT_Text ((IEFileType)(IE_Imp::fileTypeForSuffix(".txt")))
-
 static UT_Vector m_sniffers (20);
 
 /*****************************************************************/
@@ -272,7 +270,7 @@ UT_Error IE_Imp::constructImporter(PD_Document * pDocument,
 		else
  		{
 	   		// as a last resort, just try importing it as text  :(
-			ieft = IEFT_Text ;
+			ieft = IE_Imp::fileTypeForSuffix(".txt");
 		}
 	}
 

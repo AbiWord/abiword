@@ -36,8 +36,6 @@
 
 #include "pd_Document.h"
 
-#define IEFT_AbiWord_1 IE_Exp::fileTypeForSuffix(".abw")
-
 static UT_Vector m_sniffers(20);
 
 /*****************************************************************/
@@ -291,7 +289,7 @@ void IE_Exp::write(const char * sz, UT_uint32 length)
 IEFileType IE_Exp::fileTypeForSuffix(const char * szSuffix)
 {
 	if (!szSuffix)
-		return IEFT_AbiWord_1;
+		return IE_Exp::fileTypeForSuffix(".abw");
 	
 	// we have to construct the loop this way because a
 	// given filter could support more than one file type,
@@ -313,13 +311,13 @@ IEFileType IE_Exp::fileTypeForSuffix(const char * szSuffix)
 			// Hm... an exporter has registered for the given suffix,
 			// bug refuses to support any file type we request.
 			// Default to native format.
-			return IEFT_AbiWord_1;
+			return IE_Exp::fileTypeForSuffix(".abw");
 		}
 	}
 
 	// No filter is registered for that extension, try native format
 	// for default export.
-	return IEFT_AbiWord_1;
+	return IE_Exp::fileTypeForSuffix(".abw");
 	
 }
 
@@ -412,7 +410,7 @@ UT_Error IE_Exp::constructExporter(PD_Document * pDocument,
 	// if that fails, just give up.
 	*ppie = new IE_Exp_AbiWord_1(pDocument);
 	if (pieft != NULL) 
-		*pieft = IEFT_AbiWord_1;
+		*pieft = IE_Exp::fileTypeForSuffix(".abw");
  	return ((*ppie) ? UT_OK : UT_IE_NOMEMORY);
 }
 
