@@ -439,6 +439,29 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_ColumnsActive)
   return s;
 }
 
+
+Defun_EV_GetMenuItemState_Fn(ap_GetState_TOCOK)
+{
+  ABIWORD_VIEW ;
+  UT_return_val_if_fail (pView, EV_MIS_Gray);
+
+  EV_Menu_ItemState s = EV_MIS_ZERO ;
+
+  if(pView->isHdrFtrEdit())
+  {
+    s = EV_MIS_Gray;
+  }
+  else if(pView->isInTable())
+  {
+    s = EV_MIS_Gray;
+  }
+  else if(pView->isInFrame(pView->getPoint()))
+  {
+    s = EV_MIS_Gray;
+  }
+  return s;
+}
+
 Defun_EV_GetMenuItemState_Fn(ap_GetState_SomethingSelected)
 {
 	ABIWORD_VIEW ;
