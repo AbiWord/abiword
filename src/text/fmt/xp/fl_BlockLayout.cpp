@@ -4673,8 +4673,8 @@ void    fl_BlockLayout::StartList( List_Type lType, UT_uint32 start,const XML_Ch
 	pAutoNum = m_pDoc->getListByID(id);
 	if(pAutoNum != NULL)
 	{
- 	        UT_DEBUGMSG(("SEVIOR: Trying to start an existing list \n"));
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+ 	        UT_DEBUGMSG(("SEVIOR: Starting a sub list \n"));
+		//		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		m_pAutoNum = pAutoNum;
 		m_bListItem = UT_TRUE;
 		listUpdate();
@@ -5202,12 +5202,13 @@ void fl_BlockLayout::_createListLabel(void)
   //
 	if(!m_pFirstRun)
 		return;
-	if (isListLabelInBlock() == UT_TRUE)
+	if (isListLabelInBlock() == UT_TRUE  || m_bListLabelCreated == UT_TRUE)
 	{
 		m_bListLabelCreated = UT_TRUE;
 		return;
 	}
 	UT_ASSERT(m_pAutoNum);
+
 	FV_View* pView = m_pLayout->getView();
 	const  XML_Char ** blockatt;
 	PT_DocPosition offset = pView->getPoint() - getPosition();
@@ -5224,6 +5225,7 @@ void fl_BlockLayout::_createListLabel(void)
 	bResult = m_pDoc->insertSpan(getPosition()+1,&c,1);
 	pView->_setPoint(pView->getPoint()+offset);  
        	pView->_generalUpdate();
+
 	if (!pView->_ensureThatInsertionPointIsOnScreen())
 	{
 		pView->_fixInsertionPointCoords();

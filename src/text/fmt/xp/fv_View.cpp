@@ -1146,9 +1146,38 @@ UT_Bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count, UT_Bool bForc
 			m_pDoc->beginUserAtomicGlob();
 			cmdCharDelete(UT_TRUE,count);
 		}
-		UT_uint32 d = (UT_uint32) text[0];
-		//UT_ASSERT( d != 63);
-		bResult = m_pDoc->insertSpan(getPoint(), text, count);
+		UT_Bool doInsert = UT_TRUE;
+		if(text[0] == UCS_TAB && count == 1)
+		{
+		        //
+		        // Were inserting a TAB. Handle special case of TAB
+		        // right after a list-label combo
+		        //
+		        if((isTabListBehindPoint() == UT_TRUE || isTabListAheadPoint() == UT_TRUE) && getCurrentBlock()->isFirstInList() == UT_FALSE)
+		        {
+			       //
+			       // OK now start a sublist of the same type as the
+			       // current list if the list type is of numbered type
+			       fl_BlockLayout * pBlock = getCurrentBlock();
+			       List_Type curType = pBlock->getListType();
+                               if(IS_NUMBERED_LIST_TYPE(curType) == UT_TRUE)
+			       {
+				       UT_uint32 curlevel = pBlock->getLevel();
+				       UT_uint32 currID = pBlock->getAutoNum()->getID();
+				       curlevel++;
+				       fl_AutoNum * pAuto = pBlock->getAutoNum();
+				       const XML_Char * pszAlign =  pBlock->getProperty((XML_Char*)"margin-left",UT_TRUE);
+				       const XML_Char * pszIndent =  pBlock->getProperty((XML_Char*)"text-indent",UT_TRUE);
+				       float fAlign =  (float)atof(pszAlign);
+				       float fIndent = (float)atof(pszIndent);
+				       fAlign += (float) LIST_DEFAULT_INDENT;
+				       pBlock->StartList(curType,pAuto->getStartValue32(),pAuto->getDelim(),pAuto->getDecimal(),NULL,fAlign,fIndent, currID,curlevel);
+				       doInsert = UT_FALSE;
+			       }
+			}
+		}
+		if(doInsert == UT_TRUE)
+		        bResult = m_pDoc->insertSpan(getPoint(), text, count);
 
 		if (bOverwrite)
 		{
@@ -1375,22 +1404,19 @@ void    FV_View::processSelectedBlocks(List_Type listType)
 	{
 	        fl_BlockLayout * pBlock =  (fl_BlockLayout *) vBlock.getNthItem(i);
 		PL_StruxDocHandle sdh = pBlock->getStruxDocHandle();
-		if(pBlock->getListType() == listType)
+		if(pBlock->isListItem() == UT_TRUE)
 		{
-		  //	              m_pDoc->listUpdate(sdh);
 	              m_pDoc->StopList(sdh);
 		}
 		else
 		{
 	              fl_BlockLayout * pPrev = pBlock->getPrev();
-		      if(pBlock->isListItem()== NULL && pPrev != NULL && pPrev->getListType() == listType)
+		      if(pBlock->isListItem()== NULL && pPrev != NULL && pPrev->isListItem()== UT_TRUE)
 		      {
-			//          m_pDoc->listUpdate(sdh);
 		             pBlock->resumeList(pPrev);
 		      }
 		      else if(pBlock->isListItem()== NULL)
 		      {
-			//         m_pDoc->listUpdate(sdh);
 			     XML_Char* cType = pBlock->getListStyleString(listType);
 		             pBlock->StartList(cType);
 		      } 
@@ -1398,16 +1424,16 @@ void    FV_View::processSelectedBlocks(List_Type listType)
 	}
 	m_pDoc->endUserAtomicGlob();
 
-	// restore updates and clean up dirty lists
-	m_pDoc->enableListUpdates();
-	m_pDoc->updateDirtyLists();
-
 
 	_generalUpdate();
 
 
+	// restore updates and clean up dirty lists
+	m_pDoc->enableListUpdates();
+	m_pDoc->updateDirtyLists();
+
 	// Signal piceTable is stable again
-        m_pDoc->notifyPieceTableChangeEnd();
+	m_pDoc->notifyPieceTableChangeEnd();
 
 }
 
@@ -1495,10 +1521,11 @@ void FV_View::insertParagraphBreak(void)
 	}
 	m_pDoc->endUserAtomicGlob();
 
+	_generalUpdate();
+
 	// restore updates and clean up dirty lists
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
-	_generalUpdate();
 
 	if (!_ensureThatInsertionPointIsOnScreen())
 	{
@@ -1608,11 +1635,12 @@ UT_Bool FV_View::setStyle(const XML_Char * style)
 		bRet = m_pDoc->changeStruxFmt(PTC_AddStyle,posStart,posEnd,attribs,NULL,PTX_Block);
 	}
 
+	_generalUpdate();
+
+
 	// restore updates and clean up dirty lists
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
-
-	_generalUpdate();
 
 	// Signal piceTable is stable again
         m_pDoc->notifyPieceTableChangeEnd();
@@ -2033,9 +2061,6 @@ UT_Bool FV_View::setBlockFormat(const XML_Char * properties[])
         m_pDoc->notifyPieceTableChangeStart();
 
 
-	// Turn off list updates
-	m_pDoc->disableListUpdates();
-
 	_clearIfAtFmtMark(getPoint());
 
 	_eraseInsertionPoint();
@@ -2058,10 +2083,6 @@ UT_Bool FV_View::setBlockFormat(const XML_Char * properties[])
 	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,NULL,properties,PTX_Block);
 
 	_generalUpdate();
-
-	// restore updates and clean up dirty lists
-	m_pDoc->enableListUpdates();
-	m_pDoc->updateDirtyLists();
 
 	// Signal PieceTable Changes have finished
         m_pDoc->notifyPieceTableChangeEnd();
@@ -2122,9 +2143,10 @@ void    FV_View::changeListStyle(	fl_AutoNum* pAuto,
 			m_pDoc->listUpdate(sdh);
 			m_pDoc->StopList(sdh);
 		}
+
+		_generalUpdate();
 		m_pDoc->enableListUpdates();
 		m_pDoc->updateDirtyLists();
-		_generalUpdate();
 
 		// Signal PieceTable Changes have finished
 		m_pDoc->notifyPieceTableChangeEnd();
@@ -2197,9 +2219,10 @@ void    FV_View::changeListStyle(	fl_AutoNum* pAuto,
 		sdh =   (PL_StruxDocHandle) pAuto->getNthBlock(i);
 		_generalUpdate();
 	}
+
+	_generalUpdate();
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
-	_generalUpdate();
 
 	// Signal PieceTable Changes have finished
         m_pDoc->notifyPieceTableChangeEnd();
@@ -2573,6 +2596,8 @@ UT_Bool FV_View::isTabListBehindPoint(void)
 	fl_BlockLayout* pBlock = _findBlockAtPosition(cpos);
 	if (!pBlock)
 		return UT_FALSE;
+	if(pBlock->isListItem() == UT_FALSE)
+		return UT_FALSE;
 	fl_BlockLayout* ppBlock = _findBlockAtPosition(ppos);
 	if (!ppBlock)
 		return UT_FALSE;
@@ -2619,6 +2644,9 @@ UT_Bool FV_View::isTabListAheadPoint(void)
 	fl_BlockLayout* pBlock = _findBlockAtPosition(cpos);
 	if (!pBlock)
 		return UT_FALSE;
+	if(pBlock->isListItem() == UT_FALSE)
+		return UT_FALSE;
+
 	UT_Bool bEOL = UT_FALSE;
 	fp_Run* pRun = pBlock->findPointCoords(cpos, bEOL, xPoint, yPoint, iPointHeight);
 	while((pRun != NULL) && (pRun->getType()== FPRUN_FMTMARK))
@@ -2673,10 +2701,11 @@ void FV_View::cmdCharDelete(UT_Bool bForward, UT_uint32 count)
 
 		_deleteSelection();
 
+		_generalUpdate();
+
 		// restore updates and clean up dirty lists
 		m_pDoc->enableListUpdates();
 		m_pDoc->updateDirtyLists();
-		_generalUpdate();
 
 		if (!_ensureThatInsertionPointIsOnScreen())
 		{
