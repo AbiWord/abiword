@@ -648,17 +648,21 @@ bool AP_CocoaApp::canPasteFromClipboard(void)
  */
 static int s_Abi_only (struct dirent * d)
 {
-  const char * name = d->d_name;
+	const char * name = d->d_name;
 
-  if (name)
-    {
-      int length = strlen (name);
+	if (name)
+		{
+			int length = strlen (name);
 
-      if (length >= 4)
-	if (strcmp (name + length - 4, ".Abi") == 0)
-	  return 1;
-    }
-  return 0;
+			if (length > 4)
+				if (strcmp (name + length - 4, ".Abi") == 0)
+					return 1;
+
+			if (length > 7)
+				if (strcmp (name + length - 7, ".so-abi") == 0)
+					return 1;
+		}
+	return 0;
 }
 
 /* return true if dirname exists and is a directory; symlinks probably not counted
@@ -686,24 +690,24 @@ static bool s_dir_exists (const char * dirname)
  */
 void AP_CocoaApp::loadAllPlugins ()
 {
-	/* 1. TODO: Load from AbiWord.app/Contents/Plug-ins
-	 */
-	NSString * app_path = [[NSBundle mainBundle] bundlePath];
-	if (app_path)
-		{
-			NSString * plugin_path = [app_path stringByAppendingString:@"/Contents/Plug-ins"];
-			UT_DEBUGMSG(("FJF: path to bundle's plug-ins: %s\n",[plugin_path lossyCString]));
-		}
-
-	/* 2. Load from:
-	 *  a. "/Library/Application Support/AbiSuite/Plug-ins"
-	 *  b. "$HOME/Library/Application Support/AbiSuite/Plug-ins"
-	 */
 	int support_dir_count = 0;
 
-	UT_String support_dir[2];
+	UT_UTF8String support_dir[3];
 
-	support_dir[0] = "/Library/Application Support/AbiSuite/Plug-ins";
+	/* Load from:
+	 *  a. "/Library/Application Support/AbiSuite/Plug-ins"
+	 *  b. "/Library/Application Support/AbiSuite/Plug-ins"
+	 *  c. "$HOME/Library/Application Support/AbiSuite/Plug-ins"
+	 */
+
+	NSString * app_path = [[NSBundle mainBundle] bundlePath];
+	if (app_path)
+		if (NSString * plugin_path = [app_path stringByAppendingString:@"/Contents/Plug-ins"])
+			{
+				support_dir[support_dir_count] = [plugin_path UTF8String];
+				UT_DEBUGMSG(("FJF: path to bundle's plug-ins: %s\n",support_dir[support_dir_count].utf8_str()));
+				support_dir_count++;
+			}
 
 	/* create the system plugins directory - if we can...
 	 */
@@ -712,13 +716,15 @@ void AP_CocoaApp::loadAllPlugins ()
 			if (s_createDirectoryIfNecessary ("/Library/Application Support/AbiSuite", true))
 				s_createDirectoryIfNecessary ("/Library/Application Support/AbiSuite/Plug-ins", true);
 
-	if (!s_dir_exists (support_dir[0].c_str()))
+	support_dir[support_dir_count] = "/Library/Application Support/AbiSuite/Plug-ins";
+
+	if (!s_dir_exists (support_dir[support_dir_count].utf8_str()))
 		{
-			UT_DEBUGMSG(("FJF: %s: no such directory\n",support_dir[0].c_str()));
+			UT_DEBUGMSG(("FJF: %s: no such directory\n",support_dir[support_dir_count].utf8_str()));
 		}
 	else
 		{
-			UT_DEBUGMSG(("FJF: adding to plug-in search path: %s\n",support_dir[0].c_str()));
+			UT_DEBUGMSG(("FJF: adding to plug-in search path: %s\n",support_dir[support_dir_count].utf8_str()));
 			support_dir_count++;
 		}
 
@@ -733,15 +739,15 @@ void AP_CocoaApp::loadAllPlugins ()
 		}
 	else
 		{
-			UT_String plugin_dir(homedir);
+			UT_UTF8String plugin_dir(homedir);
 			plugin_dir += "/Plug-ins";
-			if (!s_createDirectoryIfNecessary (plugin_dir.c_str()))
+			if (!s_createDirectoryIfNecessary (plugin_dir.utf8_str()))
 				{
-					UT_DEBUGMSG(("FJF: %s: no such directory\n",plugin_dir.c_str()));
+					UT_DEBUGMSG(("FJF: %s: no such directory\n",plugin_dir.utf8_str()));
 				}
 			else
 				{
-					UT_DEBUGMSG(("FJF: adding to plug-in search path: %s\n",plugin_dir.c_str()));
+					UT_DEBUGMSG(("FJF: adding to plug-in search path: %s\n",plugin_dir.utf8_str()));
 					support_dir[support_dir_count++] = plugin_dir;
 				}
 		}
@@ -749,21 +755,21 @@ void AP_CocoaApp::loadAllPlugins ()
 	for (int i = 0; i < support_dir_count; i++)
 		{
 			struct dirent ** namelist = 0;
-			int n = scandir (support_dir[i].c_str(), &namelist, s_Abi_only, alphasort);
-			UT_DEBUGMSG(("DOM: found %d plug-ins in %s\n", n, support_dir[i].c_str()));
+			int n = scandir (support_dir[i].utf8_str(), &namelist, s_Abi_only, alphasort);
+			UT_DEBUGMSG(("DOM: found %d plug-ins in %s\n", n, support_dir[i].utf8_str()));
 			if (n == 0) {
 				FREEP (namelist);
 				continue;
 			}
-			UT_String plugin_path;
+			UT_UTF8String plugin_path;
 			while (n--)
 				{
 					plugin_path  = support_dir[i];
 					plugin_path += '/';
 					plugin_path += namelist[n]->d_name;
 
-					UT_DEBUGMSG(("DOM: loading plugin %s\n", plugin_path.c_str()));
-					if (XAP_ModuleManager::instance().loadModule (plugin_path.c_str()))
+					UT_DEBUGMSG(("DOM: loading plugin %s\n", plugin_path.utf8_str()));
+					if (XAP_ModuleManager::instance().loadModule (plugin_path.utf8_str()))
 						{
 							UT_DEBUGMSG(("DOM: loaded plug-in: %s\n", namelist[n]->d_name));
 						}

@@ -26,17 +26,6 @@
 
 // WARNING: this file should conform to C++
 
-#ifdef ABI_PLUGIN_BUILTIN
-
-extern "C"
-{
-#define abi_plugin_register abipgn_cocoa_register
-#define abi_plugin_unregister abipgn_cocoa_unregister
-#define abi_plugin_supports_version abipgn_cocoa_supports_version
-}
-#endif
-
-
 #include "ut_bytebuf.h"
 #include "ie_impGraphic.h"
 

@@ -164,6 +164,11 @@ UT_Error IE_ImpGraphic_Cocoa::_convertGraphic (UT_ByteBuf* pBB)
 	return (length != 0 ? UT_OK : UT_ERROR);
 }
 
+#ifdef ABI_PLUGIN_BUILTIN
+
+#define abi_plugin_register abipgn_cocoa_register
+#define abi_plugin_unregister abipgn_cocoa_unregister
+#define abi_plugin_supports_version abipgn_cocoa_supports_version
 
 #include "xap_Module.h"
 
@@ -218,11 +223,13 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 	return 1;
 }
 
-ABI_FAR_CALL int abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor, 
-				 UT_uint32 release)
+ABI_FAR_CALL
+int abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor, UT_uint32 release)
 {
-  return 1;
+		return 1;
 }
+
+#endif
 
 /*******************************************************************/
 /*******************************************************************/
