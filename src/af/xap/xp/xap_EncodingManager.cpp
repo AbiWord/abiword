@@ -2,7 +2,14 @@
 #include "ut_debugmsg.h"
 #include "ut_string.h"
 
+#ifdef __FreeBSD__
+extern "C" {
 #include "iconv.h"
+}
+#else
+#include "iconv.h"
+#endif
+
 #include <stdio.h>
 #include <string.h>
 
