@@ -751,18 +751,21 @@ void fp_TextRun::mapXYToPosition(UT_sint32 x, UT_sint32 y,
 
 			if (iWidth > x)
 			{
-				if (((iWidth - x) <= (RI.m_pWidths[i] / 2)
-					 && (iVisDirection == UT_BIDI_LTR))
-					|| (((iWidth - x) > (RI.m_pWidths[i] / 2)
-						 && (iVisDirection == UT_BIDI_RTL))
-						))
+				if ((iWidth - x) <= (RI.m_pWidths[i] / 2))
 				{
 					i++;
 				}
 
 				// NOTE: this allows inserted text to be coalesced in the PT
 				bEOL = true;
-				pos = getBlock()->getPosition() + getBlockOffset() + i;
+
+				// i is visual,
+				UT_uint32 iLog = i;
+
+				if(iVisDirection == UT_BIDI_RTL)
+					iLog = getLength() - i;
+				
+				pos = getBlock()->getPosition() + getBlockOffset() + iLog;
 				return;
 			}
 		}
