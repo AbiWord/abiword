@@ -434,7 +434,7 @@ void UNIXGraphics::fillRect(UT_RGBColor& c, UT_sint32 x, UT_sint32 y,
 
 	oColor.pixel = gcValues.foreground.pixel;
 
-  // get the new color
+	// get the new color
 	GdkColor nColor;
 
 	nColor.red = c.m_red << 8;
