@@ -22,6 +22,8 @@
 
 #include "ap_Dialog_FormatTable.h"
 #include "xap_Frame.h"
+#include "xap_Win32PreviewWidget.h"
+#include "gr_Win32Graphics.h"
 
 /*****************************************************************/
 
@@ -35,15 +37,26 @@ public:
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 	
-	//virtual void			event_Close(void);
-	//void				event_previewExposed(void);
-	virtual void            	setSensitivity(bool bsens) {return;};
-	virtual void            	destroy(void) {return;};
-	virtual void            	activate(void) {return;};
-	virtual void            	notifyActiveFrame(XAP_Frame * pFrame){return;};
+	virtual void			event_Close(void);
+	void					event_previewExposed(void);
+	virtual void            	setSensitivity(bool bsens);
+	virtual void            	destroy(void);
+	virtual void            	activate(void);
+	virtual void            	notifyActiveFrame(XAP_Frame * pFrame);
 	
+	HBITMAP 				_loadBitmap(HWND hWnd,UINT nId, char* pName, int x, int y, UT_RGBColor Color);
+	virtual BOOL			_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	virtual BOOL 			_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	static BOOL CALLBACK	s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam);
+	
+
 protected:
 	HWND					m_hwndDlg;	//  dialog box Windows
+	HBITMAP					m_hBitmapBottom;
+	HBITMAP					m_hBitmapTop;
+	HBITMAP					m_hBitmapRight;
+	HBITMAP					m_hBitmapLeft;
+	XAP_Win32PreviewWidget*	m_pPreviewWidget;		 
 	
 };
 

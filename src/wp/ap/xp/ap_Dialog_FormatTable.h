@@ -104,6 +104,12 @@ public:
 	void								_createPreviewFromGC(GR_Graphics * gc,
 															 UT_uint32 width,
 															 UT_uint32 height);
+
+	/* We use this in Win32 to know the status of line and to set the push button using this value*/
+	bool								getTopToggled();
+	bool								getBottomToggled();
+	bool								getRightToggled();
+	bool								getLeftToggled();
 				
 	UT_RGBColor							m_borderColor;
 	UT_sint32							m_lineStyle;
@@ -117,6 +123,7 @@ protected:
 	AP_FormatTable_preview_drawer		m_previewDrawer;
 		
 private:
+
 	bool								m_bSettingsChanged;
 
 	UT_Vector                           m_vecPropsAdjRight;

@@ -389,6 +389,66 @@ void AP_Dialog_FormatTable::_createPreviewFromGC(GR_Graphics * gc,
 	m_pFormatTablePreview->setWindowSize(width, height);
 }
 
+bool AP_Dialog_FormatTable::getTopToggled()
+{
+	const XML_Char * pszStyle = NULL;
+	UT_String lineStyleString = UT_String_sprintf("%d", LS_OFF);	
+
+	getVecProp(m_vecProps, "top-style", pszStyle);
+
+	if ((pszStyle && strcmp(pszStyle, lineStyleString.c_str())) || 
+		!pszStyle)
+		return true;
+	else
+		return false;
+}
+
+bool	AP_Dialog_FormatTable::getBottomToggled()
+{
+	const XML_Char * pszStyle = NULL;
+	UT_String lineStyleString = UT_String_sprintf("%d", LS_OFF);	
+
+	getVecProp(m_vecProps, "bot-style", pszStyle);
+
+	if ((pszStyle && strcmp(pszStyle, lineStyleString.c_str())) || 
+		!pszStyle)
+		return true;
+	else
+		return false;
+	
+}
+
+bool	AP_Dialog_FormatTable::getRightToggled()
+{
+	const XML_Char * pszStyle = NULL;
+	UT_String lineStyleString = UT_String_sprintf("%d", LS_OFF);	
+
+	getVecProp(m_vecProps, "right-style", pszStyle);
+
+	if ((pszStyle && strcmp(pszStyle, lineStyleString.c_str())) || 
+		!pszStyle)
+		return true;
+	else
+		return false;
+}
+
+bool	AP_Dialog_FormatTable::getLeftToggled()
+{
+
+	const XML_Char * pszStyle = NULL;
+	UT_String lineStyleString = UT_String_sprintf("%d", LS_OFF);	
+
+	getVecProp(m_vecProps, "left-style", pszStyle);
+
+	if ((pszStyle && strcmp(pszStyle, lineStyleString.c_str())) || 
+		!pszStyle)
+		return true;
+	else
+		return false;
+}
+
+
+
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
@@ -547,4 +607,7 @@ void AP_FormatTable_preview::draw(void)
 					   pageRect.left + pageRect.width - border, pageRect.top + pageRect.height - border);
 	}
 }
+
+
+
 

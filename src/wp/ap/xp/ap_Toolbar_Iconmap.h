@@ -96,6 +96,14 @@ toolbariconmap(MERGELEFT, tb_MergeLeft_xpm)
 toolbariconmap(MERGERIGHT, tb_MergeRight_xpm)
 toolbariconmap(MERGEABOVE, tb_MergeAbove_xpm)
 toolbariconmap(MERGEBELOW, tb_MergeBelow_xpm)
+// Format Table DlgBox
+toolbariconmap(FT_LINEBOTTOM, tb_LineBottom_xpm)
+toolbariconmap(FT_LINETOP, tb_LineTop_xpm)
+toolbariconmap(FT_LINERIGHT, tb_LineRight_xpm)
+toolbariconmap(FT_LINELEFT, tb_LineLeft_xpm)
+
+
+
 // Add new default icons here		
 toolbariconmap(_BOGUS2__,NoIcon)
 		
