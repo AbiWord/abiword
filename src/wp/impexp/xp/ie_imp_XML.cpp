@@ -98,11 +98,18 @@ UT_Error IE_Imp_XML::importFile(const char * szFilename)
 	UT_XML parser;
 	parser.setListener (this);
 	if (m_pReader) parser.setReader (m_pReader);
-	if (parser.parse (szFilename) != UT_OK) m_error = UT_IE_BOGUSDOCUMENT;
+	UT_Error err =parser.parse (szFilename);
+	if ((err != UT_OK) && (err != UT_IE_SKIPINVALID))
+	{
+		m_error = UT_IE_BOGUSDOCUMENT;
+	}
 	if (m_error)
 	{
 		UT_DEBUGMSG(("Problem reading document\n"));
-		goto Cleanup;
+		if(m_error != UT_IE_SKIPINVALID)
+		{
+			goto Cleanup;
+		}
 	}
 #if 0
         // TODO - remove this then not needed anymore. In ver 0.7.7 and erlier, AbiWord export inserted 

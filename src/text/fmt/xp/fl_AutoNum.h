@@ -80,9 +80,10 @@ public:
 
 	void						insertFirstItem(PL_StruxDocHandle pItem,
 												PL_StruxDocHandle pLast,
-												UT_uint32 depth);
-	void						insertItem(PL_StruxDocHandle pItem, PL_StruxDocHandle pBefore);
-	void						prependItem(PL_StruxDocHandle pItem, PL_StruxDocHandle pAfter);
+												UT_uint32 depth, 
+												bool bDoFix=true);
+	void						insertItem(PL_StruxDocHandle pItem, PL_StruxDocHandle pBefore, bool bDoFix = true);
+	void						prependItem(PL_StruxDocHandle pItem, PL_StruxDocHandle pAfter, bool bDoFix = true);
 	void						removeItem(PL_StruxDocHandle pItem);
 	PL_StruxDocHandle			getParentItem() const;
 	void						setParentItem(PL_StruxDocHandle pItem);

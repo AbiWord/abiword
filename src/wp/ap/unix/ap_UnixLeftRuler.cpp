@@ -202,6 +202,15 @@ gint AP_UnixLeftRuler::_fe::button_press_event(GtkWidget * w, GdkEventButton * e
 	AP_UnixLeftRuler * pUnixLeftRuler = (AP_UnixLeftRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
 	xxx_UT_DEBUGMSG(("UnixLeftRuler: [p %p] received button_press_event\n",pUnixLeftRuler));
 
+	FV_View * pView = (FV_View *) pUnixLeftRuler->m_pFrame->getCurrentView();
+	if(pView && pView->getPoint()==0)
+	{
+//
+// Abort
+//
+		return 0;
+	}
+
 	// grab the mouse for the duration of the drag.
 	gtk_grab_add(w);
 	
@@ -236,7 +245,16 @@ gint AP_UnixLeftRuler::_fe::button_release_event(GtkWidget * w, GdkEventButton *
 	xxx_UT_DEBUGMSG(("UnixLeftRuler: [p %p] received button_release_event\n",pUnixLeftRuler));
 	EV_EditModifierState ems;
 	EV_EditMouseButton emb = 0;
-	
+
+	FV_View * pView = (FV_View *) pUnixLeftRuler->m_pFrame->getCurrentView();
+	if(pView && pView->getPoint()==0)
+	{
+//
+// Abort
+//
+		return 0;
+	}
+
 	ems = 0;
 	
 	if (e->state & GDK_SHIFT_MASK)
@@ -289,6 +307,15 @@ gint AP_UnixLeftRuler::_fe::motion_notify_event(GtkWidget* w , GdkEventMotion* e
 	// a static function
 	AP_UnixLeftRuler * pUnixLeftRuler = (AP_UnixLeftRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
 	// UT_DEBUGMSG(("UnixLeftRuler: [p %p] received motion_notify_event\n",pUnixLeftRuler));
+
+	FV_View * pView = (FV_View *) pUnixLeftRuler->m_pFrame->getCurrentView();
+	if(pView && pView->getPoint()==0)
+	{
+//
+// Abort
+//
+		return 0;
+	}
 
 	EV_EditModifierState ems;
 	
@@ -347,7 +374,15 @@ gint AP_UnixLeftRuler::_fe::expose(GtkWidget * w, GdkEventExpose* pExposeEvent)
 	else
 	{
 		UT_DEBUGMSG(("No graphics Context. Doing fallback. \n"));
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+//		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		FV_View * pView = (FV_View *) pUnixLeftRuler->m_pFrame->getCurrentView();
+		if(pView && pView->getPoint()==0)
+		{
+//
+// Abort
+//
+			return 0;
+		}
 		pUnixLeftRuler->draw(&rClip);
 	}
 	return 0;

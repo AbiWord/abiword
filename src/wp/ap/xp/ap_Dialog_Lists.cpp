@@ -582,11 +582,11 @@ void  AP_Dialog_Lists::generateFakeLabels(void)
 	UNREFP(m_pFakeDoc);
 	m_pFakeDoc = new PD_Document(fakeApp);
 	m_pFakeAuto = new fl_AutoNum(m_iID, 0, m_NewListType, m_newStartValue, m_pszDelim, m_pszDecimal, (PD_Document *) m_pFakeDoc);
-	m_pFakeAuto->insertFirstItem(m_pFakeSdh[0], NULL,1);
+	m_pFakeAuto->insertFirstItem(m_pFakeSdh[0], NULL,1,false);
 	m_pFakeLayout[0]->setAutoNum(m_pFakeAuto);
 	for(i=1; i<4; i++)
 	{
-		m_pFakeAuto->insertItem(m_pFakeSdh[i],m_pFakeSdh[i-1]);
+		m_pFakeAuto->insertItem(m_pFakeSdh[i],m_pFakeSdh[i-1],false);
 		m_pFakeLayout[i]->setAutoNum(m_pFakeAuto);
 	}
 }

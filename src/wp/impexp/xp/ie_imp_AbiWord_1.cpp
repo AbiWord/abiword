@@ -256,7 +256,13 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		}
 		else
 		{
-		    X_CheckError(bOK);
+//
+// OK this is a header/footer with an id without a matching section skip the
+// rest but load till here. This will ignore all the header/footers.
+//
+			m_error = UT_IE_SKIPINVALID;
+			UT_DEBUGMSG(("No matching section id for this header/footer - ignore rest of document \n"));
+			X_EatIfAlreadyError();
 		    return;
 		}
 	}

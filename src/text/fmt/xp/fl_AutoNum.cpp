@@ -182,10 +182,10 @@ static int compareListItems(const void* p1, const void* p2)
 	// 
 	//	pf_Frag * pf1 = (pf_Frag *) p1;
 	//	PD_Document * pDoc = pf1->getPieceTable()->getDocument();
-	PL_StruxDocHandle sdh1 = (PL_StruxDocHandle) p1;
-	PL_StruxDocHandle sdh2 = (PL_StruxDocHandle) p2;
-	PT_DocPosition pos1 = pCurDoc->getStruxPosition(sdh1);
-	PT_DocPosition pos2 = pCurDoc->getStruxPosition(sdh2);
+	PL_StruxDocHandle * sdh1 = (PL_StruxDocHandle *) p1;
+	PL_StruxDocHandle * sdh2 = (PL_StruxDocHandle *) p2;
+	PT_DocPosition pos1 = pCurDoc->getStruxPosition(*sdh1);
+	PT_DocPosition pos2 = pCurDoc->getStruxPosition(*sdh2);
 	if(pos1 < pos2)
 	{
 		return -1;
@@ -229,9 +229,10 @@ void    fl_AutoNum::findAndSetParentItem(void)
 		}
 	}
 
-	//	fixListOrder();
-	//	m_pParent->fixListOrder();
-	//	m_pParent->update(0);
+//	pCurDoc = m_pDoc;
+//   	fixListOrder();
+//   	m_pParent->fixListOrder();
+//   	m_pParent->update(0);
 
 	if (m_pItems.getItemCount() == 0)
 	{
@@ -624,7 +625,7 @@ UT_uint32 fl_AutoNum::getStartValue32() const
 	return m_iStartValue;
 }
 
-void fl_AutoNum::insertFirstItem(PL_StruxDocHandle pItem, PL_StruxDocHandle pLast, UT_uint32 depth)
+void fl_AutoNum::insertFirstItem(PL_StruxDocHandle pItem, PL_StruxDocHandle pLast, UT_uint32 depth, bool bDoFix)
 {
 	UT_sint32 i = -1; 
 	if(m_pItems.getItemCount() > 0)
@@ -634,8 +635,10 @@ void fl_AutoNum::insertFirstItem(PL_StruxDocHandle pItem, PL_StruxDocHandle pLas
 		m_pItems.insertItemAt((void *) pItem, 0);
 		m_bDirty = true;
 	}
-
-
+	if(bDoFix)
+	{
+		fixListOrder();
+	}
 	if (m_pParent)
 	{
 		m_pParentItem = pLast;
@@ -657,7 +660,7 @@ void fl_AutoNum::setParentItem(PL_StruxDocHandle pItem)
 	m_bDirty = true;
 }
 
-void fl_AutoNum::insertItem(PL_StruxDocHandle pItem, PL_StruxDocHandle pPrev)
+void fl_AutoNum::insertItem(PL_StruxDocHandle pItem, PL_StruxDocHandle pPrev, bool bDoFix)
 {
 	UT_sint32 ndx,i;
 	UT_ASSERT(pItem);
@@ -667,6 +670,10 @@ void fl_AutoNum::insertItem(PL_StruxDocHandle pItem, PL_StruxDocHandle pPrev)
 	m_bDirty = true;
 	ndx = m_pItems.findItem((void *) pPrev) + 1;
 	m_pItems.insertItemAt((void *) pItem, ndx);
+	if(bDoFix)
+	{
+		fixListOrder();
+	}
 	if(m_pDoc->areListUpdatesAllowed() == false)
 		return;
 
@@ -688,7 +695,7 @@ void fl_AutoNum::insertItem(PL_StruxDocHandle pItem, PL_StruxDocHandle pPrev)
 }
 
 
-void fl_AutoNum::prependItem(PL_StruxDocHandle pItem, PL_StruxDocHandle pNext)
+void fl_AutoNum::prependItem(PL_StruxDocHandle pItem, PL_StruxDocHandle pNext, bool bDoFix)
 {
 	UT_sint32 ndx;
 	UT_sint32 i;
@@ -704,6 +711,8 @@ void fl_AutoNum::prependItem(PL_StruxDocHandle pItem, PL_StruxDocHandle pNext)
 		pPrev = m_pItems.getNthItem(ndx-1);
 	}
 	m_pItems.insertItemAt((void *) pItem, ndx);
+	if(bDoFix)
+		fixListOrder(); // safety!!
 	if(m_pDoc->areListUpdatesAllowed() == false)
 		return;
 	if(pPrev != NULL)
@@ -1014,6 +1023,11 @@ void fl_AutoNum::_updateItems(UT_uint32 start, PL_StruxDocHandle notMe)
 	UT_sint32 j;
 	if(m_pDoc->areListUpdatesAllowed() == true)
 	{
+		//if(start == 0)
+		//	{
+		//	pCurDoc = m_pDoc;
+		//	fixListOrder();
+		//	}
 		UT_sint32 numlists = m_pDoc->getListsCount();
 		m_bUpdatingItems = true;
 		for (UT_uint32 i = start; i < m_pItems.getItemCount(); i++)
