@@ -986,3 +986,17 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_InTable)
 
     return EV_MIS_Gray;
 }
+
+Defun_EV_GetMenuItemState_Fn(ap_GetState_Recent)
+{
+	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, EV_MIS_ZERO);
+
+	XAP_Prefs *pPrefs = XAP_App::getApp()->getPrefs();
+	UT_return_val_if_fail(pPrefs, EV_MIS_ZERO);
+
+	if(pPrefs->getRecentCount() > 0)
+		return EV_MIS_ZERO;
+	
+	return EV_MIS_Gray;
+}

@@ -53,6 +53,7 @@ menuitem(FILE_PAGESETUP)
 menuitem(FILE_PRINT)
 menuitem(FILE_PRINT_PREVIEW)
 menuitem(FILE_PRINT_DIRECTLY)
+menuitem(FILE_RECENT)
 menuitem(FILE_RECENT_1)		// _recent_1 thru _recent_9 must be contiguous
 menuitem(FILE_RECENT_2)
 menuitem(FILE_RECENT_3)

@@ -84,6 +84,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_FILE_PRINT_DIRECTLY,		0,1,0,	"printDirectly",			NULL,					NULL);
 #endif
 	_s(AP_MENU_ID_FILE_PRINT_PREVIEW, 0,1,0, "printPreview", NULL, NULL);
+	_s(AP_MENU_ID_FILE_RECENT,	1,0,0,	NULL, ap_GetState_Recent,NULL);
 	_s(AP_MENU_ID_FILE_RECENT_1,	0,0,0,	"openRecent_1",		NULL,					ap_GetLabel_Recent);
 	_s(AP_MENU_ID_FILE_RECENT_2,	0,0,0,	"openRecent_2",		NULL,					ap_GetLabel_Recent);
 	_s(AP_MENU_ID_FILE_RECENT_3,	0,0,0,	"openRecent_3",		NULL,					ap_GetLabel_Recent);
