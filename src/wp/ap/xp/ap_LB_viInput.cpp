@@ -39,7 +39,7 @@
 #define _C		| EV_EMS_CONTROL
 #define _A		| EV_EMS_ALT
 
-extern const ap_bs_Mouse MouseTable[];
+extern ap_bs_Mouse MouseTable[];
 
 /*****************************************************************
 ******************************************************************
@@ -141,8 +141,8 @@ const ap_bs_NVK viIn_NVKTable[] =
 ******************************************************************
 *****************************************************************/
 
-extern const ap_bs_NVK_Prefix NVKTable_P[];
-extern const ap_bs_Char CharTable[];
+extern ap_bs_NVK_Prefix NVKTable_P[];
+extern ap_bs_Char CharTable[];
 
 #if 0
 /*****************************************************************
