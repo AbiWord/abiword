@@ -38,7 +38,7 @@
 static const char * _ev_GetLabelName(XAP_Win32App * pWin32App,
 									 XAP_Frame * pFrame, 
 									 const EV_EditEventMapper * pEEM,
-									 EV_Menu_Action * pAction,
+									 const EV_Menu_Action * pAction,
 									 EV_Menu_Label * pLabel)
 {
 	const char * szLabelName;
@@ -178,7 +178,7 @@ bool EV_Win32Menu::synthesizeMenu(XAP_Frame * pFrame, HMENU menuRoot)
 		UT_ASSERT(pLayoutItem);
 		
 		XAP_Menu_Id id = pLayoutItem->getMenuId();
-		EV_Menu_Action * pAction = pMenuActionSet->getAction(id);
+		const EV_Menu_Action * pAction = pMenuActionSet->getAction(id);
 		UT_ASSERT(pAction);
 		EV_Menu_Label * pLabel = m_pMenuLabelSet->getLabel(id);
 		UT_ASSERT(pLabel);
@@ -292,7 +292,7 @@ bool EV_Win32Menu::onInitMenu(XAP_Frame * pFrame, AV_View * pView, HWND hWnd, HM
 	{
 		EV_Menu_LayoutItem * pLayoutItem = m_pMenuLayout->getLayoutItem(k);
 		XAP_Menu_Id id = pLayoutItem->getMenuId();
-		EV_Menu_Action * pAction = pMenuActionSet->getAction(id);
+		const EV_Menu_Action * pAction = pMenuActionSet->getAction(id);
 		EV_Menu_Label * pLabel = m_pMenuLabelSet->getLabel(id);
 
 		UINT cmd = WmCommandFromMenuId(id);

@@ -53,7 +53,7 @@ public:
 	inline UINT			WmCommandFromMenuId(XAP_Menu_Id id)	{ return (id + WM_USER); };
 
 private:
-	virtual bool		_doAddMenuItem(XAP_Menu_Id id) { UT_ASSERT(UT_TODO); return false;/* TODO */ }
+	virtual bool		_doAddMenuItem(UT_uint32 id) { UT_ASSERT(UT_TODO); return false;/* TODO */ }
 
 protected:
 	XAP_Win32App *				m_pWin32App;

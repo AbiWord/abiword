@@ -467,7 +467,7 @@ bool EV_Win32Toolbar::synthesize(void)
 				case EV_TBIT_ColorFore:
 				case EV_TBIT_ColorBack:
 					UT_DEBUGMSG(("TODO: Hey Windows needs some tender love and care and a colour selector! \n"));
-					UT_ASSERT(UT_NOT_IMPLEMENTED);
+					// UT_ASSERT(UT_NOT_IMPLEMENTED);
 					UT_DEBUGMSG(("TODO: Handle the colour selector case \n"));
 					/* Fall through and make a push button */	
 
