@@ -27,13 +27,128 @@
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
-	// for an explicit cut/copy operation, application-specific code
-	// actually makes a copy of the current selection and hands us
-	// a buffer in a named format (such as RTF).
-	//
-	// this should not be confused with the X Selection mechanism
-	// (left-mouse select and middle-mouse paste) which
+// This file contains all the *stuff* to deal with the
+// wonderful X11 clipboard and selection mechanism (two
+// related, but different, things).
+//
+// The clipboard is used for explicit cut/copy/paste
+// operations requested by the user.  Application
+// specific code actually makes a copy of the current
+// selection and hands us a buffer in a named format
+// (such as RTF).  We "ASSERT" the "CLIPBOARD" and
+// thereby inform the X server that we "think" we own
+// it.
+//
+// When we (or another application) want to paste,
+// we ask the X server to ask the owning application
+// for a list of formats that it can provide (via the
+// "TARGETS" verb) and if we find something that we
+// like, we ask (the X server to ask) the application
+// for to provide us the data it (in a format it supports
+// or converted to one that we've support (via
+// gtk_selection_convert())).
+//
+// On a paste, we can short-circut the server (both
+// calls), if we were the last one to assert the clipboard.
+//
+// After we've asserted the clipboard, the server will
+// send us a selection_clear when someone else asserts it.
+//
+// All clipboard operations are done on the "CLIPBOARD" atom.
+//
+//////////////////////////////////////////////////////////////////
+//
+// The X selection mechanism is the familiar technique of
+// dragging a selection (usually with the left-mouse) and
+// then pasting with the middle-mouse.  Creating a selection
+// in this manner is an ***implicit*** copy.  We recive a
+// a call from the application indicating that the user has
+// created a selection.  We "ASSERT" the "SELECTION" and
+// thereby inform that X server that we "think" we own it,
+// but *WE DO NOT MAKE A COPY OF THE SELECTION CONTENT AT
+// THIS TIME*.  If the user clears the selection, we inform
+// the X server that we are "RELEASING OUR ASSERT" of the
+// selection.
+//
+// On a Paste, we (or another application) asks the server
+// (just like with the clipboard) for the selection content.
+// On reciving a request for the selection content, we call
+// back up into the application and ask for a copy of the
+// current selection -- that is, we delay the actual construction
+// of the copy buffer until it is actually needed.
 
+// On a paste, we can short-circut the server (both
+// calls), if we were the last one to assert the selection.
+//
+// After we've asserted the selection, the server will
+// send us a selection_clear when someone else asserts it.
+//
+// All selection operations are done on the "PRIMARY" atom.
+//
+//////////////////////////////////////////////////////////////////
+//
+// Commentary:  Having both a SELECTION and CLIPBOARD is a
+// somewhat ill-conceived idea -- in X.
+//
+// There is an explicit conflict between the clipboard and
+// the selection.  An application cannot put something on
+// the clipboard without trashing the selection.  The selection
+// is a very transient thing and should not be relied upon --
+// it's just too easy for it to get clobbered.
+//
+// Currently we have the notion of a Clipboard-Paste (accessed
+// via the menu) and Selection-Paste (assessed via the middle
+// mouse button).  Should we fold the selection onto the clipboard
+// so that the Menu-Paste pastes whichever is more recent.  I've
+// left hooks in for this if someone wants to experiment and/or
+// make it a perferences option.
+//
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+// only one instance of this class is ever created.
+// it is associated with the App class.
+// we do not know about any windows, frames, or views.
+// on a copy to the clipboard, a buffer to the clipped content is
+//   provided on the downcall.
+// on a copy to the selection, no buffer is provided; an upcall
+//   to the app is made upon demand; the app is responsible for
+//   keeping track of the current window/view/frame which last
+//   asserted the selection.
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+// we use the builtin "FakeClipboard" to actually store and index
+// the clipboard buffers.  this file is only concerned with the
+// interaction with the X server.
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+// we create a hidden widget to and register all clipboard and
+// selection events on it.  we are the only one that knows anything
+// about it.
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+// this class should be considered to consist of two parts:
+//
+// [1] top-half -- downcalls from the application in response to
+//                 user interaction
+// [2] bottom-half -- event callbacks from the server in response
+//                    to other events from the XServer (and indirectly
+//                    from other applications).
+//
+// top-half code will either return immediately or will make a 
+// request to the server and spin waiting for an answer.  in this
+// case, the bottom-half will receive the answer and release the
+// spin-loop -- the bottom-half ***MUST*** do this release or else
+// we will lock up.
+//
+// there is an inherent race condition that we must deal with
+// here, since the event callbacks occur in a somewhat asynchronous
+// fashion.  for example, another application can ask us for our
+// selection content after we have asserted it and cleared it,
+// but before the server has processed our clear request.  or
+// another application can clear its selection between the time
+// we ask for it to enumerate formats and the time we ask it to
+// send us the data.
+//
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
@@ -639,6 +754,10 @@ void XAP_UnixClipboard::_selrcv(GtkSelectionData *selectionData, guint32 /*time*
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
+// we implement a list of "named" clipboard formats.
+// these two functions convert between these named formats and
+// X11 Atoms that the XServer knows about.  XP and Application
+// code only knows about the formats by name.
 
 GdkAtom XAP_UnixClipboard::_convertFormatString(const char * format)
 {
