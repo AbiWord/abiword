@@ -33,7 +33,7 @@
 #include "ap_Dialog_MarkRevisions.h"
 #include "ap_Win32Dialog_MarkRevisions.h"
 #include "xap_Win32LabelledSeparator.h"
-
+#include "xap_Win32DialogHelper.h"
 #include "ap_Win32Resources.rc2"
 
 /*****************************************************************/
@@ -161,7 +161,7 @@ BOOL AP_Win32Dialog_MarkRevisions::_onInitDialog(HWND hWnd, WPARAM wParam, LPARA
 	SetDlgItemText(hWnd, AP_RID_DIALOG_MARK_REVISIONS_LABEL2,getComment2Label());
 
 
-
+	XAP_Win32DialogHelper::s_centerDialog(hWnd);	
 
 	return 0;							// 1 == we did not call SetFocus()
 }
