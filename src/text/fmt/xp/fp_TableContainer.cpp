@@ -711,6 +711,10 @@ UT_sint32 fp_CellContainer::tweakBrokenTable(fp_TableContainer * pBroke)
 UT_sint32 fp_CellContainer::getSpannedHeight(void)
 {
 	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(getContainer());
+	if(pTab == NULL)
+	{
+		return 0;
+	}
 	fp_CellContainer * pCell = pTab->getCellAtRowColumn(getBottomAttach(),getLeftAttach());
 	UT_sint32 height = 0;
 	if(pCell)
@@ -1967,6 +1971,17 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 	UT_Rect bRec;
 	fp_Page * pPage;
 	_getBrokenRect(pBroke, pPage, bRec,pG);
+	if(getFillType()->getFillType() == FG_FILL_IMAGE && (getContainer() != NULL))
+	{
+		fl_DocSectionLayout * pDSL = getSectionLayout()->getDocSectionLayout();
+		if(pDSL && (bRec.height < pDSL->getActualColumnHeight()) && (bRec.height > pG->tlu(3)))
+		{
+			getSectionLayout()->setImageHeight(bRec.height);
+			getSectionLayout()->setImageWidth(bRec.width);
+			getFillType()->setWidthHeight(pG,bRec.width,bRec.height,true);
+		}
+	}
+
 	if(pClipRect)
 	{
 		ybot = UT_MAX(pClipRect->height,_getMaxContainerHeight());

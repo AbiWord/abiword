@@ -1912,7 +1912,17 @@ int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 					}
 					else if(fspa->by ==1)
 					{
-						sVal = "column-above-text; "; // should be page-above-text
+						sVal = "page-above-text; "; // should be page-above-text
+					}
+					sProps += sVal;
+					sProps += "wrap-mode:";
+					if(fspa->wr == 3)
+					{
+						sVal = "above-text; ";
+					}
+					else
+					{
+						sVal = "wrapped-both; ";
 					}
 					sProps += sVal;
 					sProps += "xpos:";
@@ -2466,9 +2476,13 @@ int IE_Imp_MsWord_97::_endSect (wvParseStruct * /* ps */ , UT_uint32  /* tag */ 
 	  }
 #endif
 
+	// we never appended a paragraph inside of this section. we're naughty. correct that here.
+	if (!m_bInPara)
+		_appendStrux(PTX_Block, NULL);
+
 	// if there is a pending page break it belongs to the section and
 	// is to be removed, we just need to set the tracker to false
-	m_bPageBreakPending = false;
+	m_bPageBreakPending = false;	
 
 	m_bInSect = false;
 	m_bInPara = false; // reset paragraph status
@@ -6014,7 +6028,11 @@ bool IE_Imp_MsWord_97::_appendStrux(PTStruxType pts, const XML_Char ** attribute
 	{
 		return getDoc()->insertStruxBeforeFrag(m_pTextboxEndSection, pts, attributes);
 	}
-
+	if(pts == PTX_SectionFrame)
+	{
+//		Make sure any pending text is flushed
+		_flush();
+	}
 	return getDoc()->appendStrux(pts, attributes);
 }
 

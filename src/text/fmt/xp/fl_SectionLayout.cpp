@@ -397,7 +397,43 @@ bool fl_SectionLayout::bl_doclistener_insertSection(fl_ContainerLayout* pPrevL,
 		bool bres = static_cast<fl_BlockLayout *>(pPrevL)->doclistener_insertSection(pcrx, iType, sdh, lid, pfnBindHandles);
 		return bres;
 	}
-	else if((pPrevL->getContainerType() == FL_CONTAINER_FRAME) ||(pPrevL->getContainerType() == FL_CONTAINER_TABLE) )
+	else if(iType == FL_SECTION_TOC)
+	{
+		PT_AttrPropIndex indexAP = pcrx->getIndexAP();
+		fl_SectionLayout * pSL = static_cast<fl_SectionLayout *>(insert(sdh,pPrevL,indexAP, FL_CONTAINER_TOC));
+
+		// Must call the bind function to complete the exchange of handles
+		// with the document (piece table) *** before *** anything tries
+		// to call down into the document (like all of the view
+		// listeners).
+
+		PL_StruxFmtHandle sfhNew = static_cast<PL_StruxFmtHandle>(pSL);
+		//
+		// Don't bind to shadows
+		//
+		if(pfnBindHandles)
+		{
+			pfnBindHandles(sdh,lid,sfhNew);
+		}
+		//
+		// That's all we need to do except update the view pointers I guess..
+		//
+		FV_View* pView = m_pLayout->getView();
+		if (pView && (pView->isActive() || pView->isPreview()))
+		{
+			pView->setPoint(pcrx->getPosition() + fl_BLOCK_STRUX_OFFSET);
+		}
+		else if(pView && pView->getPoint() > pcrx->getPosition())
+		{
+			//
+			// For EndTOC
+			//
+			pView->setPoint(pView->getPoint() + fl_BLOCK_STRUX_OFFSET + fl_BLOCK_STRUX_OFFSET);
+		}
+		return true;
+
+	}
+	else if(((pPrevL->getContainerType() == FL_CONTAINER_FRAME) ||(pPrevL->getContainerType() == FL_CONTAINER_TABLE)) && (iType == FL_SECTION_HDRFTR))
 	{
 		fl_SectionLayout * pSL = new fl_HdrFtrSectionLayout(FL_HDRFTR_NONE,m_pLayout,NULL, sdh, pcrx->getIndexAP());
 		fl_HdrFtrSectionLayout * pHFSL = static_cast<fl_HdrFtrSectionLayout *>(pSL);
@@ -875,6 +911,39 @@ fl_FootnoteLayout * fl_DocSectionLayout::getFootnoteLayout(UT_uint32 pid)
 		return pFL;
 	}
 	return NULL;
+}
+
+/*!
+ * Returns the usuable height of the Column in logical units (after subtracting
+ * top and bottom margins)
+ */ 
+UT_sint32 fl_DocSectionLayout::getActualColumnHeight(void)
+{
+	UT_sint32 Height = static_cast<UT_sint32>(getDocument()->m_docPageSize.Height(DIM_IN) * UT_LAYOUT_RESOLUTION /getDocument()->m_docPageSize.getScale());
+	Height -= (getTopMargin() + getBottomMargin());
+	if(m_iMaxSectionColumnHeight > 0)
+	{
+		Height = m_iMaxSectionColumnHeight;
+	}
+	return Height;
+}
+
+
+/*!
+ * Returns the usuable width of the Column in logical units (after subtracting
+ * left and right margins)
+ */ 
+
+UT_sint32 fl_DocSectionLayout::getActualColumnWidth(void)
+{
+	UT_sint32 width = static_cast<UT_sint32>(getDocument()->m_docPageSize.Width(DIM_IN) * UT_LAYOUT_RESOLUTION /getDocument()->m_docPageSize.getScale());
+	width -= (getLeftMargin() + getRightMargin());
+	if(m_iNumColumns > 1)
+	{
+		width -= m_iNumColumns*m_iColumnGap;
+		width = width/m_iNumColumns;
+	}
+	return width;
 }
 			
 UT_sint32 fl_DocSectionLayout::getWidth(void)
@@ -2314,6 +2383,7 @@ bool fl_DocSectionLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * 
 				static_cast<fl_BlockLayout *>(pBCur)->
 					setSectionLayout(pPrevSL);
 			}
+			pPrevSL->setLastLayout(pBCur);
 			pBCur = pBCur->getNext();
 		}
 	}
@@ -3741,10 +3811,6 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_deleteStrux(fl_ContainerLayout* pBL,
 	bool bResult = true;
 	fl_ContainerLayout * pShadowBL = NULL;
 	UT_uint32 iCount = m_vecPages.getItemCount();
-	if(iCount <=0)
-	{
-		UT_ASSERT(0);
-	}
 	m_pDoc->setDontChangeInsPoint();
 	for (UT_uint32 i=0; i<iCount; i++)
 	{

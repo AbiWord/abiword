@@ -32,9 +32,18 @@
 #include "ev_EditBinding.h"
 #include "ev_EditEventMapper.h"
 
-EV_Mouse::EV_Mouse(EV_EditEventMapper * pEEM)
+EV_Mouse::EV_Mouse(EV_EditEventMapper * pEEM):
+	m_clickState(0),
+	m_contextState(EV_EMC_UNKNOWN)
 {
 	setEditEventMap(pEEM);
+}
+
+
+void EV_Mouse::clearMouseContext(void)
+{
+	m_clickState = 0;
+	m_contextState = EV_EMC_UNKNOWN;
 }
 
 void EV_Mouse::setEditEventMap(EV_EditEventMapper * pEEM)

@@ -511,7 +511,6 @@ bool pt_PieceTable::_realInsertSpan(PT_DocPosition dpos,
 
 		indexAP = _chooseIndexAP(pf,fragOffset);
 	}
-
 	PT_BlockOffset blockOffset = _computeBlockOffset(pfs,pf) + fragOffset;
 	PX_ChangeRecord_Span * pcr = NULL;
 

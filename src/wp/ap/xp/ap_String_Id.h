@@ -707,7 +707,7 @@ dcl(DLG_PageSetup_Footer, "&Footer:")
 dcl(DLG_PageSetup_Bottom, "&Bottom:")
 dcl(DLG_PageSetup_Left, "&Left:")
 dcl(DLG_PageSetup_Right, "&Right:")
-dcl(DLG_PageSetup_Margin, "&Margin")
+dcl(DLG_PageSetup_Margin, "Margin")
 dcl(DLG_PageSetup_ErrBigMargins, "The margins selected are too large to fit on the page.")
 
 dcl(MSG_AutoMerge, "Automerge")

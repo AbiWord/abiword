@@ -81,6 +81,21 @@ BOOL AP_Win32Dialog_InsertBookmark::_onInitDialog(HWND hWnd, WPARAM wParam, LPAR
 		addItemToCombo( AP_RID_DIALOG_INSERTBOOKMARK_CBX_BOOKMARK,
 						 getNthExistingBookmark( i ) );
 	}
+
+	UT_UCS4String suggestedBM = getSuggestedBM();
+
+	if (suggestedBM.utf8_str())
+	{
+		setControlText(AP_RID_DIALOG_INSERTBOOKMARK_CBX_BOOKMARK, suggestedBM.utf8_str());
+		enableControl(AP_RID_DIALOG_INSERTBOOKMARK_BTN_OK, true);
+		enableControl(AP_RID_DIALOG_INSERTBOOKMARK_BTN_DELETE, (getComboItemIndex(AP_RID_DIALOG_INSERTBOOKMARK_CBX_BOOKMARK, suggestedBM.utf8_str())!=CB_ERR) ? true : false);
+	}
+	else
+	{
+		enableControl(AP_RID_DIALOG_INSERTBOOKMARK_BTN_OK, false);
+		enableControl(AP_RID_DIALOG_INSERTBOOKMARK_BTN_DELETE, false);
+	}
+
 	centerDialog();	
 	return 1;
 }
@@ -121,6 +136,31 @@ BOOL AP_Win32Dialog_InsertBookmark::_onCommand(HWND hWnd, WPARAM wParam, LPARAM 
 		setAnswer( a_DELETE );
 		EndDialog(hWnd, 0);
 		return 1;
+
+	case AP_RID_DIALOG_INSERTBOOKMARK_CBX_BOOKMARK:
+		switch (wNotifyCode)
+		{
+			case CBN_SELCHANGE:
+			{
+				int sel = getComboSelectedIndex(AP_RID_DIALOG_INSERTBOOKMARK_CBX_BOOKMARK);
+
+				enableControl(AP_RID_DIALOG_INSERTBOOKMARK_BTN_OK, (sel!=CB_ERR) ? true : false);
+				enableControl(AP_RID_DIALOG_INSERTBOOKMARK_BTN_DELETE, (sel!=CB_ERR) ? true : false);
+				return 1;
+			}
+			case CBN_EDITCHANGE:
+			{
+				XML_Char buf[BOOKMARK_SIZE_LIMIT+1];
+				getControlText( AP_RID_DIALOG_INSERTBOOKMARK_CBX_BOOKMARK,
+								buf,
+								BOOKMARK_SIZE_LIMIT );
+
+                enableControl(AP_RID_DIALOG_INSERTBOOKMARK_BTN_OK, (buf && *buf) ? true : false);
+				enableControl(AP_RID_DIALOG_INSERTBOOKMARK_BTN_DELETE, (getComboItemIndex(AP_RID_DIALOG_INSERTBOOKMARK_CBX_BOOKMARK, buf)!=CB_ERR) ? true : false);
+				return 1;
+			}
+		}
+		return 0;
 
 	default:							// we did not handle this notification
 		UT_DEBUGMSG(("WM_Command for id %ld\n",wId));

@@ -28,7 +28,7 @@ PKG_CHECK_MODULES(FRIBIDI,[fribidi >= 0.10.4],[
 ],[	echo ""
 	echo "fribidi sources can be downloaded from SourceForge"
 	echo ""
-	echo "	http://sourceforge.net/projects/fribidi"
+	echo "	http://freedesktop.org/Software/FriBidi"
 	echo ""
 	echo "Note: Don't use the fribidi source which is sometimes"
 	echo "      included with AbiWord since that version is for"

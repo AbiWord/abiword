@@ -350,7 +350,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Bullets)
 
 	EV_Toolbar_ItemState s = EV_TIS_ZERO;
 
-	if(pView->isHdrFtrEdit())
+	if(pView->isHdrFtrEdit()  || pView->isInHdrFtr(pView->getPoint()))
 	{
 		return EV_TIS_Gray;
 	}
@@ -371,7 +371,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Numbers)
 	CHECK_INC_LOAD;
 
 	EV_Toolbar_ItemState s = EV_TIS_ZERO;
-	if(pView->isHdrFtrEdit())
+	if(pView->isHdrFtrEdit()  || pView->isInHdrFtr(pView->getPoint()))
 	{
 		return EV_TIS_Gray;
 	}
@@ -582,7 +582,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_SectionFmt)
 
 	EV_Toolbar_ItemState s = EV_TIS_ZERO;
 
-	if(pView->isHdrFtrEdit())
+	if(pView->isHdrFtrEdit()  || pView->isInHdrFtr(pView->getPoint()))
 	  {
 	    switch(id)
 	      {
@@ -857,7 +857,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_TableOK)
   ABIWORD_VIEW;
   UT_return_val_if_fail (pView, EV_TIS_Gray);
   
-  if(pView->isInTable() && pView->isHdrFtrEdit())
+  if(pView->isInTable() && (pView->isHdrFtrEdit() || pView->isInHdrFtr(pView->getPoint())))
   {
 	  return EV_TIS_Gray;
   }

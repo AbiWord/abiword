@@ -28,10 +28,10 @@ typedef enum _FV_SelectionMode
 {
 	FV_SelectionMode_NONE,
 	FV_SelectionMode_TOC,
+	FV_SelectionMode_TableRow,
 	FV_SelectionMode_Single,
 	FV_SelectionMode_Multiple,
-	FV_SelectionMode_TableColumn,
-	FV_SelectionMode_TableRow
+	FV_SelectionMode_TableColumn
 } FV_SelectionMode;
 
 class UT_ByteBuf;

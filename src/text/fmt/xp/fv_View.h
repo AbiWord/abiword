@@ -168,6 +168,8 @@ public:
 
 	virtual void	draw(const UT_Rect* pRect=static_cast<UT_Rect*>(NULL));
 
+	const PP_AttrProp * getAttrPropForPoint();
+
 	virtual bool	notifyListeners(const AV_ChangeMask hint);
 
 	virtual bool	canDo(bool bUndo) const;
@@ -275,6 +277,7 @@ public:
 	bool    getAttributes(const PP_AttrProp ** ppSpanAP, const PP_AttrProp ** ppBlockAP = NULL, PT_DocPosition posStart = 0);
 
 	bool	setCharFormat(const XML_Char * properties[], const XML_Char * attribs[] = NULL);
+	bool	resetCharFormat(bool bAll);
 	bool	getCharFormat(const XML_Char *** properties,bool bExpandStyles=true);
 	bool	getCharFormat(const XML_Char *** properties,bool bExpandStyles, PT_DocPosition posStart);
 	fl_BlockLayout * getBlockFromSDH(PL_StruxDocHandle sdh);
@@ -370,7 +373,7 @@ public:
 	FV_SelectionMode getPrevSelectionMode(void) const;
 	PD_DocumentRange * getNthSelection(UT_sint32 i);
 	UT_sint32          getNumSelections(void) const;
-
+	void            setSelectionMode(FV_SelectionMode selMode);
 // ----------------------
 // Stuff for spellcheck context menu
 //
@@ -381,6 +384,7 @@ public:
 // ----------------------
 // Stuff for edittable Headers/Footers
 //
+	bool                isInHdrFtr(PT_DocPosition pos);
 	void				setHdrFtrEdit(fl_HdrFtrShadow * pShadow);
 	void				clearHdrFtrEdit(void);
 	bool				isHdrFtrEdit(void);
@@ -462,10 +466,12 @@ public:
 	bool			findReplaceReverse(bool& bDoneEntireDocument);
 
 	bool			_findReplaceReverse(UT_uint32* pPrefix,
-								 bool& bDoneEntireDocument);
+										bool& bDoneEntireDocument,
+										bool bNoUpdate);
 
 	bool			_findReplace(UT_uint32* pPrefix,
-								bool& bDoneEntireDocument);
+								 bool& bDoneEntireDocument,
+								 bool bNoUpdate);
 
 
 	bool			findReplace(bool& bDoneEntireDocument);
@@ -697,7 +703,7 @@ protected:
 	void				_clearSelection(void);
 	void				_resetSelection(void);
 	void				_setSelectionAnchor(void);
-	void				_deleteSelection(PP_AttrProp *p_AttrProp_Before = NULL);
+	void				_deleteSelection(PP_AttrProp *p_AttrProp_Before = NULL, bool bNoUpdate = false);
 	bool				_insertFormatPair(const XML_Char * szName, const XML_Char * properties[]);
 	void				_updateInsertionPoint();
 	void				_fixInsertionPointCoords();
@@ -861,6 +867,7 @@ private:
 
 	FV_BIDI_Order       m_eBidiOrder;
 	UT_uint32           m_iFreePass;
+	bool                m_bDontNotifyListeners;
 };
 
 #endif /* FV_VIEW_H */

@@ -84,7 +84,6 @@ UT_RGBColor XAP_FrameImpl::getColorSelForeground () const
 
 
 
-#define MAX_TITLE_LENGTH 256
 bool XAP_FrameImpl::_updateTitle()
 {
 	/*
@@ -102,7 +101,7 @@ bool XAP_FrameImpl::_updateTitle()
 		m_pFrame->m_sNonDecoratedTitle = m_pFrame->m_sTitle;
 
 		if (m_pFrame->m_pDoc->isDirty())
-			m_pFrame->m_sTitle += " *";
+			m_pFrame->m_sTitle = "*" + m_pFrame->m_sTitle;
 
 		return true;
 	}
@@ -113,7 +112,7 @@ bool XAP_FrameImpl::_updateTitle()
 
 	if (szName && *szName) 
 	{
-		UT_UTF8String sUntruncatedString = szName;
+		UT_UTF8String sUntruncatedString(UT_basename(szName));
 		// WL_FIXME: we probably need a string truncation function, in the ut_utf8string class..
 		UT_UTF8Stringbuf::UTF8Iterator iter = sUntruncatedString.getIterator ();
 		iter = iter.start ();
@@ -143,7 +142,7 @@ bool XAP_FrameImpl::_updateTitle()
 
 	// only for non-untitled documents
 	if (m_pFrame->m_pDoc->isDirty())
-		m_pFrame->m_sTitle += " *";
+		m_pFrame->m_sTitle = "*" + m_pFrame->m_sTitle;
 
 	return true;
 }

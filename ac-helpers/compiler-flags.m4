@@ -36,13 +36,13 @@ AC_DEFUN([GNOME_COMPILE_WARNINGS],[
   if test "x$enable_iso_c" != "xno"; then
     if test "x$GCC" = "xyes"; then
       case " $CFLAGS " in
-      *[\ \	]-ansi[\ \	]*) ;;
-      *) complCFLAGS="$complCFLAGS -ansi" ;;
+      *[\ \	][\ \	]*) ;;
+      *) complCFLAGS="$complCFLAGS " ;;
       esac
 
       case " $CFLAGS " in
-      *[\ \	]-pedantic[\ \	]*) ;;
-      *) complCFLAGS="$complCFLAGS -pedantic" ;;
+      *[\ \	][\ \	]*) ;;
+      *) complCFLAGS="$complCFLAGS " ;;
       esac
     fi
   fi
@@ -90,13 +90,13 @@ AC_DEFUN([GNOME_CXX_WARNINGS],[
    if test "x$enable_iso_cxx" != "xno"; then
      if test "x$GCC" = "xyes"; then
       case " $CXXFLAGS " in
-      *[\ \	]-ansi[\ \	]*) ;;
-      *) complCXXFLAGS="$complCXXFLAGS -ansi" ;;
+      *[\ \	][\ \	]*) ;;
+      *) complCXXFLAGS="$complCXXFLAGS " ;;
       esac
 
       case " $CXXFLAGS " in
-      *[\ \	]-pedantic[\ \	]*) ;;
-      *) complCXXFLAGS="$complCXXFLAGS -pedantic" ;;
+      *[\ \	][\ \	]*) ;;
+      *) complCXXFLAGS="$complCXXFLAGS " ;;
       esac
      fi
    fi

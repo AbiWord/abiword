@@ -343,20 +343,14 @@ public:
 
 	bool key_eq(const UT_String &test, size_t h) const
 		{
-#if 1
 			return m_key.eq(test);
-#else
-			return m_key.hashval() == h;
-#endif
+/*			return m_key.hashval() == h;*/
 		}
 
 	bool key_eq(const char  *test, size_t h) const
 		{
-#if 1
 			return m_key.eq(test);
-#else
-			return m_key.hashval() == h;
-#endif
+/*			return m_key.hashval() == h;*/
 		}
 
 	T	m_value;

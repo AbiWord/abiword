@@ -1534,18 +1534,11 @@ bool XAP_UnixFrameImpl::_updateTitle()
 		return false;
 	}
 
-	char buf[256];
-	buf[0] = 0;
-
-	const char * szAppName = m_pUnixApp->getApplicationTitleForTitleBar();
-
-	int len = 256 - strlen(szAppName) - 4;
-
-	const char * szTitle = getFrame()->getTitle(len);
-
-	sprintf(buf, "%s - %s", szTitle, szAppName);
 	if(getFrame()->getFrameMode() == XAP_NormalFrame)
-		gtk_window_set_title(GTK_WINDOW(m_wTopLevelWindow), buf);
+	{
+		const char * szTitle = getFrame()->getTitle(MAX_TITLE_LENGTH);
+		gtk_window_set_title(GTK_WINDOW(m_wTopLevelWindow), szTitle);
+	}
 	return true;
 }
 

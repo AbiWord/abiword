@@ -224,8 +224,8 @@ Section "The .bzabw Plugin"
 	Goto End
 
 	DoInstall:
-	SetOutPath $INSTDIR\AbiWord\bin
-	File "libbz2.dll" 
+	;SetOutPath $INSTDIR\AbiWord\bin
+	;File "libbz2.dll" 
 	SetOutPath $INSTDIR\AbiWord\plugins
 	File "AbiBZ2Abw.dll"
 
@@ -664,37 +664,37 @@ Section "Download glib 2.4"
 	; iconv
 	${dlFile} "http://www.gimp.org/~tml/gimp/win32/libiconv-1.9.1.bin.woe32.zip" "$TEMP\libiconv-1.9.1.bin.woe32.zip" "ERROR: failed to download http://www.gimp.org/~tml/gimp/win32/libiconv-1.9.1.bin.woe32.zip"
 	StrCmp $0 "success" 0 doCleanup
-	${unzipFile} "$TEMP\libiconv-1.9.1.bin.woe32.zip" "$INSTDIR" "bin\iconv.dll" "ERROR: failed to extract iconv.dll from libiconv-1.9.1.bin.woe32.zip"
+	${unzipFile} "$TEMP\libiconv-1.9.1.bin.woe32.zip" "$INSTDIR\AbiWord" "bin\iconv.dll" "ERROR: failed to extract iconv.dll from libiconv-1.9.1.bin.woe32.zip"
 	StrCmp $0 "success" 0 doCleanup
 
 	;;;;;;
 	; intl
 	${dlFile} "http://www.gimp.org/~tml/gimp/win32/gettext-runtime-0.13.1.zip" "$TEMP\gettext-runtime-0.13.1.zip" "ERROR: failed to download http://www.gimp.org/~tml/gimp/win32/gettext-runtime-0.13.1.zip"
 	StrCmp $0 "success" 0 doCleanup
-	${unzipFile} "$TEMP\gettext-runtime-0.13.1.zip" "$INSTDIR" "bin\intl.dll" "ERROR: failed to extract intl.dll from gettext-runtime-0.13.1.zip"
+	${unzipFile} "$TEMP\gettext-runtime-0.13.1.zip" "$INSTDIR\AbiWord" "bin\intl.dll" "ERROR: failed to extract intl.dll from gettext-runtime-0.13.1.zip"
 	StrCmp $0 "success" 0 doCleanup
 
 	;;;;;;;;;;;;;;;;;;
 	; glib and gobject
 	${dlFile} "http://www.gimp.org/~tml/gimp/win32/glib-2.4.5.zip" "$TEMP\glib-2.4.5.zip" "ERROR: failed to download http://www.gimp.org/~tml/gimp/win32/glib-2.4.5.zip"
 	StrCmp $0 "success" 0 doCleanup
-	${unzipFile} "$TEMP\glib-2.4.5.zip" "$INSTDIR" "bin\libglib-2.0-0.dll" "ERROR: failed to extract libglib-2.0-0.dll from glib-2.4.5.zip"
+	${unzipFile} "$TEMP\glib-2.4.5.zip" "$INSTDIR\AbiWord" "bin\libglib-2.0-0.dll" "ERROR: failed to extract libglib-2.0-0.dll from glib-2.4.5.zip"
 	StrCmp $0 "success" 0 doCleanup
-	${unzipFile} "$TEMP\glib-2.4.5.zip" "$INSTDIR" "bin\libgobject-2.0-0.dll" "ERROR: failed to extract libgobject-2.0-0.dll from glib-2.4.5.zip"
+	${unzipFile} "$TEMP\glib-2.4.5.zip" "$INSTDIR\AbiWord" "bin\libgobject-2.0-0.dll" "ERROR: failed to extract libgobject-2.0-0.dll from glib-2.4.5.zip"
 	StrCmp $0 "success" 0 doCleanup
 
 	;;;;;;;;
 	; libgsf
 	${dlFile} "http://www.gimp.org/~tml/gimp/win32/libgsf-1.8.2-20040121.zip" "$TEMP\libgsf-1.8.2-20040121.zip" "ERROR: failed to download http://www.gimp.org/~tml/gimp/win32/libgsf-1.8.2-20040121.zip"
 	StrCmp $0 "success" 0 doCleanup
-	${unzipFile} "$TEMP\libgsf-1.8.2-20040121.zip" "$INSTDIR" "bin\libgsf-1-1.dll" "ERROR: failed to extract libgsf-1-1.dll from libgsf-1.8.2-20040121.zip"
+	${unzipFile} "$TEMP\libgsf-1.8.2-20040121.zip" "$INSTDIR\AbiWord" "bin\libgsf-1-1.dll" "ERROR: failed to extract libgsf-1-1.dll from libgsf-1.8.2-20040121.zip"
 	StrCmp $0 "success" 0 doCleanup
 
 	;;;;;;;;;
 	; libxml2
 	${dlFile} "http://dl.sourceforge.net/gnuwin32/libxml2-2.4.12-bin.zip" "$TEMP\libxml2-2.4.12-bin.zip" "ERROR: failed to download http://dl.sourceforge.net/gnuwin32/libxml2-2.4.12-bin.zip"
 	StrCmp $0 "success" 0 doCleanup
-	${unzipFile} "$TEMP\libxml2-2.4.12-bin.zip" "$INSTDIR" "bin\libxml2.dll" "ERROR: failed to extract libxml2.dll from libxml2-2.4.12-bin.zip"
+	${unzipFile} "$TEMP\libxml2-2.4.12-bin.zip" "$INSTDIR\AbiWord" "bin\libxml2.dll" "ERROR: failed to extract libxml2.dll from libxml2-2.4.12-bin.zip"
 	StrCmp $0 "success" 0 doCleanup
 
 

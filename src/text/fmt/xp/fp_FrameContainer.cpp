@@ -353,15 +353,62 @@ void fp_FrameContainer::draw(dg_DrawArgs* pDA)
 		getFillType()->Fill(pG,srcX,srcY,x,y,getFullWidth(),getFullHeight());
 	}
 	UT_uint32 count = countCons();
-	for (UT_uint32 i = 0; i<count; i++)
+	const UT_Rect * pPrevRect = pDA->pG->getClipRect();
+	UT_Rect * pRect = getScreenRect();
+	UT_Rect newRect;
+	bool bRemoveRectAfter = false;
+	bool bSetOrigClip = false;
+	bool bSkip = false;
+	if(pPrevRect == NULL)
 	{
-		fp_ContainerObject* pContainer = static_cast<fp_ContainerObject*>(getNthCon(i));
-		da.xoff = pDA->xoff + pContainer->getX();
-		da.yoff = pDA->yoff + pContainer->getY();
-		pContainer->draw(&da);
+		pDA->pG->setClipRect(pRect);
+		xxx_UT_DEBUGMSG(("Clip bottom is %d \n",pRect->top + pRect->height));
+		bRemoveRectAfter = true;
+	}
+	else if(!pRect->intersectsRect(pPrevRect))
+	{
+		bSkip = true;
+		xxx_UT_DEBUGMSG(("External Clip bottom is %d \n",pRect->top + pRect->height));
+	}
+	else if(pPrevRect)
+	{
+		newRect.top = UT_MAX(pPrevRect->top,pRect->top);
+		UT_sint32 iBotPrev = pPrevRect->height + pPrevRect->top;
+		UT_sint32 iBot = pRect->height + pRect->top;
+		newRect.height = UT_MIN(iBotPrev,iBot) - newRect.top;
+		newRect.width = pPrevRect->width;
+		newRect.left = pPrevRect->left;
+		if(newRect.height > 0)
+		{
+			pDA->pG->setClipRect(&newRect);
+			bSetOrigClip = true;
+		}
+		else
+		{
+			bSkip = true;
+		}
+	}
+	if(!bSkip)
+	{
+		for (UT_uint32 i = 0; i<count; i++)
+		{
+			fp_ContainerObject* pContainer = static_cast<fp_ContainerObject*>(getNthCon(i));
+			da.xoff = pDA->xoff + pContainer->getX();
+			da.yoff = pDA->yoff + pContainer->getY();
+			pContainer->draw(&da);
+		}
 	}
 	m_bNeverDrawn = false;
 	m_bOverWrote = false;
+	if(bRemoveRectAfter)
+	{
+		pDA->pG->setClipRect(NULL);
+	}
+	if(bSetOrigClip)
+	{
+		pDA->pG->setClipRect(pPrevRect);
+	}
+	delete pRect;
 	drawBoundaries(pDA);
 }
 

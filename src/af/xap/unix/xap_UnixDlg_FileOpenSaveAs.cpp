@@ -136,6 +136,11 @@ fsel_key_event (GtkWidget *widget, GdkEventKey *event, XAP_Dialog_FileOpenSaveAs
 	return FALSE;
 }
 
+static void s_file_activated(GtkWidget * w, XAP_Dialog_FileOpenSaveAs::tAnswer * answer)
+{
+	s_dialog_response(w, XAP_Dialog_FileOpenSaveAs::a_OK, answer);
+}
+
 static void file_selection_changed  (GtkTreeSelection  *selection,
 				     gpointer           ptr)
 {

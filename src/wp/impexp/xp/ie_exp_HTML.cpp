@@ -42,6 +42,7 @@
 #include "ut_math.h"
 #include "ut_misc.h"
 #include "ut_string_class.h"
+#include "ut_png.h"
 
 #include "xap_App.h"
 #include "xap_EncodingManager.h"
@@ -462,6 +463,8 @@ public:
 	bool	signal (UT_uint32 iSignal);
 };
 
+UT_uint16	m_writePass = 1;
+
 class s_HTML_Listener : public PL_Listener
 {
 public:
@@ -527,6 +530,8 @@ private:
 	void	_handleField (const PX_ChangeRecord_Object * pcro, PT_AttrPropIndex api);
 	void	_handleHyperlink (PT_AttrPropIndex api);
 	void	_handleBookmark (PT_AttrPropIndex api);
+	void 	_handleFootnote (PT_AttrPropIndex api);
+	void	_handleEndnote (PT_AttrPropIndex api);
 
 #ifdef HTML_META_SUPPORTED
 	void    _handleMetaTag (const char * key, UT_UTF8String & value);
@@ -555,8 +560,6 @@ private:
 
 	bool			m_bInSection;
 	bool			m_bInBlock;
-	bool			m_bInTList;
-	bool			m_bInTListItem;
 	bool			m_bInSpan;
 	bool			m_bNextIsSpace;
 	bool			m_bWroteText;
@@ -586,6 +589,8 @@ private:
 	/* low-level; these may use m_utf8_0 but not m_utf8_1
 	 */
 	void			tagRaw (UT_UTF8String & content);
+	UT_uint32		tagIndent ();
+	void			tagNewIndent (UT_UTF8String & utf8, UT_uint32 depth);
 	void			tagNewIndent (UT_uint32 extra = 0);
 	void			tagOpenClose (const UT_UTF8String & content, bool suppress,
 								  WhiteSpace ws = ws_Both);
@@ -605,6 +610,7 @@ private:
 	void			tagCommentOpen ();
 	void			tagCommentClose ();
 	void			styleIndent ();
+	
 public:
 	void			styleOpen (const UT_UTF8String & rule);
 	void			styleClose ();
@@ -619,16 +625,6 @@ private:
 	void			multiField (const char * name, const UT_UTF8String & value);
 	void			multiBreak ();
 
-	/* for emulation of lists using tables:
-	 */
-	fl_AutoNum *	tlistLookup (UT_uint32 listid);
-	void			tlistNumber (fl_AutoNum * list, PL_StruxDocHandle sdh);
-	void			tlistPush ();
-	void			tlistPushItem (const XML_Char * szListID,
-								   const XML_Char * szMarginLeft, PL_StruxDocHandle sdh);
-	void			tlistPop ();
-	void			tlistPopItem ();
-
 	UT_uint32		listDepth ();
 	UT_uint32		listType ();
 	void			listPush (UT_uint32 type, const char * ClassName);
@@ -638,6 +634,7 @@ private:
 	bool			compareStyle (const char * key, const char * value);
 	void            _fillColWidthsVector();
 	void            _setCellWidthInches(void);
+	
 	/* temporary strings; use with extreme caution
 	 */
 	UT_UTF8String	m_utf8_0; // low-level
@@ -660,10 +657,6 @@ private:
 
 	FILE *			m_fdCSS;
 
-	UT_uint32		m_tlistIndent;
-	UT_uint32		m_tlistListID;
-	FL_ListType		m_tlistType;
-
 	UT_GenericStringMap<UT_UTF8String*>	m_SavedURLs;
 
 	bool            m_bIgnoreTillEnd;
@@ -681,6 +674,9 @@ private:
 
 	UT_uint32       m_iOutputLen;
 	bool            m_bCellHasData;
+
+	UT_uint32		m_footnoteNum;
+	UT_uint32		m_endnoteNum;
 };
 
 /*****************************************************************/
@@ -719,19 +715,27 @@ void s_HTML_Listener::tagRaw (UT_UTF8String & content)
 	m_iOutputLen += content.byteLength();
 }
 
+UT_uint32 s_HTML_Listener::tagIndent ()
+{
+	return m_tagStack.getDepth ();
+}
+
+void s_HTML_Listener::tagNewIndent (UT_UTF8String & utf8, UT_uint32 depth)
+{
+	UT_uint32 i;
+
+	for (i = 0; i < (depth >> 3); i++) utf8 += "\t";
+	for (i = 0; i < (depth &  7); i++) utf8 += " ";
+}
+
 void s_HTML_Listener::tagNewIndent (UT_uint32 extra)
 {
 	m_utf8_0 = "";
 
 	if(get_Compact())
 		return;
-	
 
-	UT_uint32 depth = m_tagStack.getDepth () + extra;
-
-	UT_uint32 i;  // MSVC DOES NOT SUPPORT CURRENT for SCOPING RULES!!!
-	for (i = 0; i < (depth >> 3); i++) m_utf8_0 += "\t";
-	for (i = 0; i < (depth &  7); i++) m_utf8_0 += " ";
+	tagNewIndent (m_utf8_0, m_tagStack.getDepth () + extra);
 }
 
 /* NOTE: We terminate each line with a \r\n sequence to make IE think
@@ -1220,6 +1224,8 @@ void s_HTML_Listener::multiBreak ()
 /* intermediate methods
  */
 
+static const char * s_DTD_XHTML_AWML = "!DOCTYPE html PUBLIC \"-//ABISOURCE//DTD XHTML plus AWML 2.2//EN\" \"http://www.abisource.com/2004/xhtml-awml/xhtml-awml.mod\"";
+
 static const char * s_DTD_XHTML = "!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\"";
 
 static const char * s_DTD_HTML4 = "!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\"";
@@ -1265,7 +1271,10 @@ void s_HTML_Listener::_outputBegin (PT_AttrPropIndex api)
 			m_utf8_1 = "version=\"1.0\"";
 			tagPI ("xml", m_utf8_1);
 		}
-		m_utf8_1 = s_DTD_XHTML;
+		if (get_Allow_AWML ())
+			m_utf8_1 = s_DTD_XHTML_AWML;
+		else
+			m_utf8_1 = s_DTD_XHTML;
 		tagOpenClose (m_utf8_1, true);
 	}
 	else
@@ -1280,7 +1289,7 @@ void s_HTML_Listener::_outputBegin (PT_AttrPropIndex api)
 	if (!get_HTML4 ())
 	{
 		m_utf8_1 += " xmlns=\"http://www.w3.org/1999/xhtml\"";
-		if (get_Allow_AWML ()) m_utf8_1 += " xmlns:awml=\"http://www.abisource.com/awml.dtd\"";
+		if (get_Allow_AWML ()) m_utf8_1 += " xmlns:awml=\"http://www.abisource.com/2004/xhtml-awml/\"";
 	}
 	tagOpen (TT_HTML, m_utf8_1);
 	
@@ -1770,255 +1779,6 @@ bool s_HTML_Listener::_inherits (const char * style, const char * from)
 	return bret;
 }
 
-fl_AutoNum * s_HTML_Listener::tlistLookup (UT_uint32 listid)
-{
-	fl_AutoNum * pMatch = 0;
-	fl_AutoNum * pAutoNum = 0;
-
-	for (UT_uint32 k = 0; (m_pDocument->enumLists (k, &pAutoNum)); k++)
-		if (pAutoNum)
-			if (pAutoNum->getID () == listid)
-			{
-				pMatch = pAutoNum;
-				break;
-			}
-	return pMatch;
-}
-
-void s_HTML_Listener::tlistNumber (fl_AutoNum * list, PL_StruxDocHandle sdh)
-{
-	fl_AutoNum * parent = list->getParent ();
-	if (parent)
-	{
-		tlistNumber (parent, list->getParentItem ());
-		textUntrusted (".");
-	}
-	UT_uint32 value = list->getValue (sdh);
-	switch (m_tlistType)
-	{
-		default:
-		case NUMBERED_LIST:
-			{
-				char buf[16];
-				sprintf (buf, "%lu", static_cast<unsigned long>(value));
-				textUntrusted (buf);
-			}
-			break;
-		case LOWERCASE_LIST:
-			textUntrusted (fl_AutoNum::dec2ascii (value - 1, 97));
-			break;
-		case UPPERCASE_LIST:
-			textUntrusted (fl_AutoNum::dec2ascii (value - 1, 65));
-			break;
-		case LOWERROMAN_LIST:
-			textUntrusted (fl_AutoNum::dec2roman (value, true));
-			break;
-		case UPPERROMAN_LIST:
-			textUntrusted (fl_AutoNum::dec2roman (value, false));
-			break;
-	}
-}
-
-void s_HTML_Listener::tlistPush ()
-{
-	if (m_bInTList) tlistPop ();
-
-	/* list item, of any depth, is represented as a table with one
-	 * row and two columns:
-	 */
-	m_utf8_1 = "table cols=\"2\" width=\"100%\"";
-	tagOpen (TT_TABLE, m_utf8_1);
-
-	if (IS_BULLETED_LIST_TYPE (m_tlistType))
-	{
-		m_utf8_1 = "tr";
-		tagOpen (TT_TR, m_utf8_1);
-
-		unsigned long indent = (m_tlistIndent > 18) ? (m_tlistIndent - 9) : 9;
-
-		char buf[16];
-		sprintf (buf, "%lu", indent);
-
-		m_utf8_1  = "td width=\"";
-		m_utf8_1 += buf;
-		m_utf8_1 += "\"";
-		tagOpen (TT_TD, m_utf8_1, ws_Pre);
-
-		m_utf8_1 = "&nbsp;";
-		textTrusted (m_utf8_1);
-
-		m_utf8_1  = "td";
-		tagClose (TT_TD, m_utf8_1, ws_Post);
-		tagOpen (TT_TD, m_utf8_1);
-
-		m_utf8_1 = "ul style=\"list-style-type:";
-		switch (m_tlistType)
-		{
-			case BULLETED_LIST:
-			case TRIANGLE_LIST:
-			case IMPLIES_LIST:
-			case HAND_LIST:
-				m_utf8_1 += "disc";
-				break;
-
-			case DASHED_LIST:
-			case DIAMOND_LIST:
-			case TICK_LIST:
-			case HEART_LIST:
-				m_utf8_1 += "circle";
-				break;
-
-			case SQUARE_LIST:
-			case STAR_LIST:
-			case BOX_LIST:
-			default:
-				m_utf8_1 += "square";
-				break;
-		}
-		m_utf8_1 += "\"";
-		tagOpen (TT_UL, m_utf8_1);
-	}
-	m_bInTList = true;
-}
-
-void s_HTML_Listener::tlistPushItem (const XML_Char * szListID,
-									 const XML_Char * szMarginLeft, PL_StruxDocHandle sdh)
-{
-	if (m_bInTListItem) tlistPopItem ();
-
-	if (szListID == 0) return;
-
-	unsigned long listid;
-	if (sscanf (szListID, "%lu", &listid) != 1) return;
-
-	fl_AutoNum * list = tlistLookup (listid);
-	if (list == 0)
-	{
-		UT_DEBUGMSG(("list lookup failed!\n"));
-		return;
-	}
-
-	unsigned long indent = 18;
-	if (szMarginLeft)
-	{
-		double dpts = UT_convertToPoints (szMarginLeft);
-		if (dpts > 18) indent = static_cast<unsigned long>(dpts);
-	}
-
-	if (m_bInTList)
-		if ((indent != static_cast<unsigned long>(m_tlistIndent)) ||
-			(listid != static_cast<unsigned long>(m_tlistListID)))
-		{
-			/* different list or a change in indentation...
-			 * need to start a new table
-			 */
-			tlistPop ();
-		}
-	if (!m_bInTList)
-	{
-		m_tlistListID = static_cast<UT_uint32>(listid);
-		m_tlistIndent = static_cast<UT_uint32>(indent);
-
-		m_tlistType = list->getType ();
-
-		tlistPush ();
-	}
-
-	m_bInTListItem = true;
-
-	if (IS_BULLETED_LIST_TYPE (m_tlistType))
-	{
-		/* by this point we're sitting in an unordered list;
-		 * new list item will be created on return...
-		 */
-		return;
-	}
-
-	m_utf8_1 = "tr";
-	tagOpen (TT_TR, m_utf8_1);
-
-	char buf[16];
-	sprintf (buf, "%lu", indent);
-
-	m_utf8_1  = "td width=\"";
-	m_utf8_1 += buf;
-	m_utf8_1 += "\" style=\"text-align:right\" align=\"right\" valign=\"top\"";
-
-	/* the left being the number/bullet point...
-	 * (generate text/tags/etc. to represent the number/bullet point)
-	 */
-	tagOpen (TT_TD, m_utf8_1, ws_Pre);
-
-	tlistNumber (list, sdh);
-
-	m_utf8_1 = "td";
-	tagClose (TT_TD, m_utf8_1, ws_Post);
-
-	/* and the right column being the list item text/tags/etc.
-	 * new table column will be created on return...
-	 */
-}
-
-void s_HTML_Listener::tlistPop ()
-{
-	if (!m_bInTList) return;
-
-	if (m_bInTListItem) tlistPopItem ();
-
-	if (IS_BULLETED_LIST_TYPE (m_tlistType))
-	{
-		if (tagTop () == TT_UL)
-		{
-			m_utf8_1 = "ul";
-			tagClose (TT_UL, m_utf8_1);
-		}
-		if (tagTop () == TT_TD)
-		{
-			m_utf8_1 = "td";
-			tagClose (TT_TD, m_utf8_1);
-		}
-		if (tagTop () == TT_TR)
-		{
-			m_utf8_1 = "tr";
-			tagClose (TT_TR, m_utf8_1);
-		}
-	}
-	if (tagTop () == TT_TABLE)
-	{
-		m_utf8_1 = "table";
-		tagClose (TT_TABLE, m_utf8_1);
-	}
-	m_bInTList = false;
-}
-
-void s_HTML_Listener::tlistPopItem ()
-{
-	if (!m_bInTListItem) return;
-
-	if (IS_BULLETED_LIST_TYPE (m_tlistType))
-	{
-		if (tagTop () == TT_LI)
-		{
-			m_utf8_1 = "li";
-			tagClose (TT_LI, m_utf8_1, ws_Post);
-		}
-	}
-	else
-	{
-		if (tagTop () == TT_TD)
-		{
-			m_utf8_1 = "td";
-			tagClose (TT_TD, m_utf8_1, ws_Post);
-		}
-		if (tagTop () == TT_TR)
-		{
-			m_utf8_1 = "tr";
-			tagClose (TT_TR, m_utf8_1);
-		}
-	}
-	m_bInTListItem = false;
-}
-
 UT_uint32 s_HTML_Listener::listDepth ()
 {
 	return static_cast<UT_uint32>(m_utsListType.getDepth ());
@@ -2035,8 +1795,8 @@ void s_HTML_Listener::listPush (UT_uint32 type, const char * ClassName)
 {
 	if (tagTop () == TT_LI)
 	{
-		m_utf8_1 = "li";
-		tagClose (TT_LI, m_utf8_1, ws_Post);
+		m_utf8_1 = MYEOL;
+		tagRaw (m_utf8_1);
 	}
 
 	UT_uint32 tagID;
@@ -2053,7 +1813,7 @@ void s_HTML_Listener::listPush (UT_uint32 type, const char * ClassName)
 	}
 	tagOpen (tagID, m_utf8_1);
 
-	m_utsListType.push (type);
+	m_utsListType.push (static_cast<UT_sint32>(type));
 }
 
 void s_HTML_Listener::listPop ()
@@ -2064,8 +1824,8 @@ void s_HTML_Listener::listPop ()
 		tagClose (TT_LI, m_utf8_1, ws_Post);
 	}
 
-	UT_uint32 type = 0;
-	m_utsListType.pop ((UT_sint32*)&type);
+	UT_sint32 type = 0;
+	m_utsListType.pop (&type);
 
 	UT_uint32 tagID;
 
@@ -2080,6 +1840,13 @@ void s_HTML_Listener::listPop ()
 		m_utf8_1 = "ol";
 	}
 	tagClose (tagID, m_utf8_1);
+
+	if (tagTop () == TT_LI)
+	{
+		m_utf8_1 = "";
+		tagNewIndent (m_utf8_1, tagIndent () - 1);
+		tagRaw (m_utf8_1);
+	}
 }
 
 void s_HTML_Listener::listPopToDepth (UT_uint32 depth)
@@ -2184,7 +1951,7 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 		{
 			m_iBlockType = BT_NUMBEREDLIST;
 		}
-#ifndef HTML_PSEUDO_LISTS
+
 		/* Find out how deeply nested this list item is.
 		 */
 		pAP->getAttribute ("level", szLevel);
@@ -2235,28 +2002,9 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 				
 				m_utf8_1 += "\"";
 			}
-#else
-		const XML_Char * szP_MarginLeft = 0;
-		pAP->getProperty ("margin-left", szP_MarginLeft);
-
-		tlistPushItem (szListID, szP_MarginLeft, sdh);
-
-		if (IS_BULLETED_LIST_TYPE (m_tlistType))
-		{
-			tagID = TT_LI;
-			m_utf8_1 = "li";
-		}
-		else
-		{
-			tagID = TT_TD;
-			m_utf8_1 = "td";
-		}
-		tagPending = true;
-#endif
 	}
 	else if (have_style)
 	{
-		if (m_bInTList) tlistPop ();
 		listPopToDepth (0);
 
 		const s_StyleTree * tree = m_StyleTreeBlock;
@@ -2415,7 +2163,6 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 	}	
 	else // not a list, no style
 	{
-		if (m_bInTList) tlistPop ();
 		listPopToDepth (0);
 
 		m_iBlockType = BT_NORMAL;
@@ -2608,12 +2355,6 @@ void s_HTML_Listener::_closeTag (void)
 			m_utf8_1 = "pre";
 			tagClose (TT_PRE, m_utf8_1, ws_Post);
 		}
-	}
-	else if (m_bInTListItem)
-	{
-		/* we're in a table-list item
-		 */
-		tlistPopItem ();
 	}
 	else if (m_iBlockType == BT_NUMBEREDLIST || m_iBlockType == BT_BULLETLIST)
 	{	
@@ -4037,8 +3778,6 @@ s_HTML_Listener::s_HTML_Listener (PD_Document * pDocument, IE_Exp_HTML * pie, bo
 		m_style_tree(style_tree),
 		m_bInSection(false),
 		m_bInBlock(false),
-		m_bInTList(false),
-		m_bInTListItem(false),
 		m_bInSpan(false),
 		m_bNextIsSpace(false),
 		m_bWroteText(false),
@@ -4056,8 +3795,6 @@ s_HTML_Listener::s_HTML_Listener (PD_Document * pDocument, IE_Exp_HTML * pie, bo
 		m_pAPStyles(0),
 		m_styleIndent(0),
 		m_fdCSS(0),
-		m_tlistIndent(0),
-		m_tlistListID(0),
 		m_bIgnoreTillEnd(false),
 		m_iEmbedStartPos(0),
 		m_dPageWidthInches(0.0),
@@ -4071,10 +3808,13 @@ s_HTML_Listener::s_HTML_Listener (PD_Document * pDocument, IE_Exp_HTML * pie, bo
 							  // to true
 {
 	m_StyleTreeBody = m_style_tree->find ("Normal");
+	m_footnoteNum = 1;
+	m_endnoteNum = 1;
 }
 
 s_HTML_Listener::~s_HTML_Listener()
 {
+	UT_DEBUGMSG(("deleteing lisnter %x \n",this));
 	_closeTag ();
 
 	listPopToDepth (0);
@@ -4082,7 +3822,7 @@ s_HTML_Listener::~s_HTML_Listener()
 	_closeSection ();
 
 	_outputEnd ();
-
+	
 	UT_VECTOR_PURGEALL(double *,m_vecDWidths);
 }
 
@@ -4262,6 +4002,11 @@ void s_HTML_Listener::_handleImage (PT_AttrPropIndex api)
 	}
 	UT_UTF8String tmp;
 	UT_DEBUGMSG(("Width of Image %s \n",szWidth ? szWidth : "(null)"));
+
+	UT_sint32 iImageWidth, iImageHeight;
+	UT_PNG_getDimensions(pByteBuf, iImageWidth, iImageHeight);
+	UT_DEBUGMSG(("Real image dimensions: (%d x %d)\n", iImageWidth, iImageHeight));
+
 	if (szWidth)
 	{
 		m_utf8_1 += " style=\"width:";
@@ -4599,141 +4344,212 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 
 	PT_AttrPropIndex api = pcr->getIndexAP ();
 
-	switch (pcrx->getStruxType ())
+	switch (m_writePass)
 	{
-		case PTX_Section:
+		case 1:
+		{
+			switch (pcrx->getStruxType ())
 			{
-				if(m_bIgnoreTillEnd)
+				case PTX_Section:
+					{
+						if(m_bIgnoreTillEnd)
+						{
+							return true;
+						}
+						if (m_bInBlock) _closeTag (); // possible problem with lists??
+						_openSection (api);
+						return true;
+					}
+		
+				case PTX_Block:
+					{
+						if(m_bIgnoreTillEnd)
+						{
+							return true;
+						}
+						if (m_bFirstWrite && m_bClipBoard) _openSection (0);
+						_openTag (api, sdh);
+						return true;
+					}
+		
+		#ifdef HTML_TABLES_SUPPORTED
+				case PTX_SectionTable:
+					{
+						if(m_bIgnoreTillEnd)
+						{
+							return true;
+						}
+						if (m_bFirstWrite && m_bClipBoard) _openSection (0);
+		
+						m_TableHelper.OpenTable(sdh,pcr->getIndexAP()) ;
+						_closeSpan();
+						_closeTag();
+						_openTable(pcr->getIndexAP());
+						return true;
+					}
+		
+				case PTX_SectionCell:
+					{
+						if(m_bIgnoreTillEnd)
+						{
+							return true;
+						}
+						if(m_TableHelper.getNestDepth() <1)
+						{
+							m_TableHelper.OpenTable(sdh,pcr->getIndexAP()) ;
+							_closeSpan();
+							_closeTag();
+							_openTable(pcr->getIndexAP());
+						}
+						m_TableHelper.OpenCell(pcr->getIndexAP()) ;
+						_closeSpan();
+						_closeTag();
+						_openCell(pcr->getIndexAP());
+						return true;
+					}
+		
+				case PTX_EndTable:
+					{
+						if(m_bIgnoreTillEnd)
+						{
+							return true;
+						}
+						_closeTag();
+						m_utf8_1 = "tr";
+						tagClose (TT_TR, m_utf8_1);
+						m_TableHelper.CloseTable();
+						_closeTable();
+						return true;
+					}
+		
+				case PTX_EndCell:
+					{
+						if(m_bIgnoreTillEnd)
+						{
+							return true;
+						}
+						_closeTag();
+						_closeCell();
+						if(m_TableHelper.getNestDepth() <1)
+						{
+							return true;
+						}
+		
+						m_TableHelper.CloseCell();
+						return true;
+					}
+		#endif /* HTML_TABLES_SUPPORTED */
+				
+			/* Note that one could very well print this in order on a second pass, but
+				we don't do that, yet anyway. */
+				case PTX_SectionFootnote:
+				case PTX_SectionEndnote:
+					{
+						return true;
+					}
+				case PTX_EndFootnote:
+				case PTX_EndEndnote:
+					{
+						return true;
+					}
+		#if 0
+				case PTX_EndFrame:
+				case PTX_EndMarginnote:
+				case PTX_SectionFrame:
+				case PTX_SectionMarginnote:
+		#endif
+					// because headers and footers live at the end of AW
+					// documents, we cannot just oputput them; until we find a
+					// smart way of representing hdr/ftr in html, we will
+					// ignore them --Author unknown
+					// Update: If number of Hdrs/Ftrs > 0, create a css box
+					// at the top/bottom of the page...it's size being some
+					// multiple of some unit percentage of the window in units
+					// of percent, such that both the body and the hdrftr are
+					// reasonably visible even at 640x480, as well as reasonably
+					// well-fitted at 1600x1200.  The contents of the box could be,
+					// like with images, either base64-encoded in the url, or a
+					// separate file, based on preference.  As for developing this,
+					// since AFAIK file-based image export is currently broken, it
+					// might make the most sense to focus on base64enc first.
+				case PTX_SectionHdrFtr:
+		//			m_bIgnoreTillEnd = true;
+					return true;
+					// NB: IgnoreTillEnd DOES NOT WORK!!! Must leave unhandled or other pieces
+					// that we would be able to handle get left out.  Not sure how this code is
+					// supposed to work, but it doesn't. -mg
+				default:
+					UT_DEBUGMSG(("WARNING: ie_exp_HTML.cpp: unhandled strux type!\n"));
+					return false;
+			}
+		}
+
+		case 2:
+		{
+			switch (pcrx->getStruxType ())
+			{
+				case PTX_SectionFootnote:
+				case PTX_SectionEndnote:
 				{
+					PD_DocumentRange * pDocRange = new PD_DocumentRange(m_pDocument, pcrx->getPosition() +1, pcrx->getPosition() +2);
+					startEmbeddedStrux();
+					m_pDocument->tellListenerSubset(this,pDocRange);
+					UT_UTF8String footnoteAnchorString = UT_UTF8String_sprintf(footnoteAnchorString, "[ %d ]", (m_footnoteNum + 1));
+					m_pie->write (footnoteAnchorString.utf8_str (), footnoteAnchorString.byteLength ());
+					m_footnoteNum++;
+					DELETEP(pDocRange);
+					pDocRange = new PD_DocumentRange(m_pDocument, pcrx->getPosition() +2, pcrx->getPosition() +3);
+					m_pDocument->tellListenerSubset(this,pDocRange);
+					DELETEP(pDocRange);
+					tagPop(); //P OR S
+					tagPop(); //D OR P
 					return true;
 				}
-				if (m_bInBlock) _closeTag (); // possible problem with lists??
-				_openSection (api);
-				return true;
-			}
-
-		case PTX_Block:
-			{
-				if(m_bIgnoreTillEnd)
-				{
-					return true;
-				}
-				if (m_bFirstWrite && m_bClipBoard) _openSection (0);
-				_openTag (api, sdh);
-				return true;
-			}
-
-#ifdef HTML_TABLES_SUPPORTED
-		case PTX_SectionTable:
-			{
-				if(m_bIgnoreTillEnd)
-				{
-					return true;
-				}
-				if (m_bFirstWrite && m_bClipBoard) _openSection (0);
-
-				m_TableHelper.OpenTable(sdh,pcr->getIndexAP()) ;
-				_closeSpan();
-				_closeTag();
-				_openTable(pcr->getIndexAP());
-				return true;
-			}
-
-		case PTX_SectionCell:
-			{
-				if(m_bIgnoreTillEnd)
-				{
-					return true;
-				}
-				if(m_TableHelper.getNestDepth() <1)
-				{
-					m_TableHelper.OpenTable(sdh,pcr->getIndexAP()) ;
-					_closeSpan();
-					_closeTag();
-					_openTable(pcr->getIndexAP());
-				}
-				m_TableHelper.OpenCell(pcr->getIndexAP()) ;
-				_closeSpan();
-				_closeTag();
-				_openCell(pcr->getIndexAP());
-				return true;
-			}
-
-		case PTX_EndTable:
-			{
-				if(m_bIgnoreTillEnd)
-				{
-					return true;
-				}
-				_closeTag();
-				m_utf8_1 = "tr";
-				tagClose (TT_TR, m_utf8_1);
-				m_TableHelper.CloseTable();
-				_closeTable();
-				return true;
-			}
-
-		case PTX_EndCell:
-			{
-				if(m_bIgnoreTillEnd)
-				{
-					return true;
-				}
-				_closeTag();
-				_closeCell();
-				if(m_TableHelper.getNestDepth() <1)
-				{
-					return true;
-				}
-
-				m_TableHelper.CloseCell();
-				return true;
-			}
-#endif /* HTML_TABLES_SUPPORTED */
-		case PTX_SectionFootnote:
-		case PTX_SectionEndnote:
-			{
-				m_iEmbedStartPos = pcrx->getPosition() + 1;
-				m_bIgnoreTillEnd = true;
-				return true;
-			}
-		case PTX_EndFootnote:
-		case PTX_EndEndnote:
-			{
-				PD_DocumentRange * pDocRange = new PD_DocumentRange(m_pDocument, m_iEmbedStartPos, pcrx->getPosition() -1);
-				if(pcrx->getStruxType () == PTX_EndFootnote)
-				{
-					m_pie->addFootnote(pDocRange);
-				}
-				else
-				{
-					m_pie->addEndnote(pDocRange);
-				}
-				m_bIgnoreTillEnd = false;
-				return true;
-			}
+				case PTX_EndFootnote:
+				case PTX_EndEndnote:
 #if 0
-		case PTX_EndFrame:
-		case PTX_EndMarginnote:
-		case PTX_EndFootnote:
-		case PTX_SectionFrame:
-		case PTX_SectionMarginnote:
-		case PTX_SectionFootnote:
-		case PTX_EndEndnote:
+				{
+					PD_DocumentRange * pDocRange = new PD_DocumentRange(m_pDocument, m_iEmbedStartPos, pcrx->getPosition() -1);
+					if(pcrx->getStruxType () == PTX_EndFootnote)
+					{
+						addFootnote(pDocRange);
+					}
+					else
+					{
+						addEndnote(pDocRange);
+					}
+					m_bIgnoreTillEnd = false;
+					return true;
+				}
 #endif
-			// because headers and footers live at the end of AW
-			// documents, we cannot just oputput them; until we find a
-			// smart way of representing hdr/ftr in html, we will
-			// ignore them
-		case PTX_SectionHdrFtr:
-			m_bIgnoreTillEnd = true;
-			return true;
-
-		default:
-			UT_DEBUGMSG(("WARNING: ie_exp_HTML.cpp: unhandled strux type!\n"));
-			return false;
+				{
+					return true;
+				}
+				default:
+				{
+					return true;
+				}
+			}
+		}			
 	}
 }
+/*
+void s_HTML_Listener::_handleFootnote (PT_AttrPropIndex api) {
+		PD_DocumentRange * pDocRange = m_vecFootnotes.getNthItem(i);
+		startEmbeddedStrux();
+		UT_UTF8String_sprintf(footnoteNum, "[ %d ]", (i + 1));
+		m_pie->write (footnoteNum.utf8_str (), footnoteNum.byteLength ());
+		m_pDocument->tellListenerSubset(this,pDocRange);
+		tagPop(); //P OR S
+		tagPop(); //D OR P
+}
+
+void s_HTML_Listener::_handleEndnote (PT_AttrPropIndex api) {
+		PD_DocumentRange * pDocRange = m_vecEndnotes.getNthItem(i);
+		startEmbeddedStrux();
+		m_pDocument->tellListenerSubset(this,pDocRange);
+}
+*/
 
 /*****************************************************************/
 /*****************************************************************/
@@ -4920,6 +4736,8 @@ bool s_StyleTree::add (const char * style_name, PD_Style * style)
 		{
 			tree = 0;
 		}
+	UT_END_CATCH
+
 	if (tree == 0) return false;
 
 	m_list[m_count++] = tree;
@@ -5099,6 +4917,9 @@ bool s_StyleTree::populate (PL_StruxFmtHandle /*sfh*/, const PX_ChangeRecord * p
 		case PX_ChangeRecord::PXT_InsertSpan:
 			styleCheck (pcr->getIndexAP ());
 			break;
+		case PX_ChangeRecord::PXT_InsertObject:
+			styleCheck (pcr->getIndexAP ());
+			break;
 		default:
 			break;
 	}
@@ -5118,6 +4939,12 @@ bool s_StyleTree::populateStrux (PL_StruxDocHandle /*sdh*/,
 	switch (pcrx->getStruxType ())
 	{
 		case PTX_Block:
+			styleCheck (pcr->getIndexAP ());
+			break;
+		case PTX_SectionFootnote:
+			styleCheck (pcr->getIndexAP ());
+			break;
+		case PTX_SectionEndnote:
 			styleCheck (pcr->getIndexAP ());
 			break;
 		default:
@@ -5674,9 +5501,6 @@ IE_Exp_HTML::~IE_Exp_HTML ()
 {
 	DELETEP(m_style_tree);
 
-	UT_VECTOR_PURGEALL(PD_DocumentRange *,m_vecFootnotes);
-	UT_VECTOR_PURGEALL(PD_DocumentRange *,m_vecEndnotes);
-	
 	// 
 }
 
@@ -5875,7 +5699,7 @@ UT_Error IE_Exp_HTML::_writeDocument ()
 	UT_UTF8String declaration;
 
 	if (m_exp_opt.bDeclareXML)
-		declaration += "<?xml version=\"1.0\"?>" MYEOL;
+		declaration += "<?xml version=\"1.0\" encoding=\"utf-8\"?>" MYEOL;
 
 	declaration += "<";
 	declaration += s_DTD_XHTML;
@@ -5907,26 +5731,14 @@ UT_Error IE_Exp_HTML::_writeDocument (bool bClipBoard, bool bTemplateBody)
 	{
 		okay = getDoc()->tellListenerSubset (pL, getDocRange ());
 	}
-	else okay = getDoc()->tellListener (pL);
-	UT_sint32 i = 0;
-	//
-	// Output footnotes
-	//
-	for(i=0; i< getNumFootnotes(); i++)
-	{
-		PD_DocumentRange * pDocRange = reinterpret_cast<PD_DocumentRange *>(m_vecFootnotes.getNthItem(i));
-		pListener->startEmbeddedStrux();
-		okay = getDoc()->tellListenerSubset(pL,pDocRange);
+	else {
+		okay = getDoc()->tellListener (pL);
+		if (okay) {
+			m_writePass = 2;
+			okay = getDoc()->tellListener (pL);
+		}
 	}
-	//
-	// Output Endnotes
-	//
-	for(i=0; i< getNumEndnotes(); i++)
-	{
-		PD_DocumentRange * pDocRange = reinterpret_cast<PD_DocumentRange *>(m_vecEndnotes.getNthItem(i));
-		pListener->startEmbeddedStrux();
-		okay = getDoc()->tellListenerSubset(pL,pDocRange);
-	}
+	
 	DELETEP(pListener);
 	
 	if ((m_error == UT_OK) && (okay == true)) return UT_OK;
@@ -5970,25 +5782,4 @@ bool IE_Exp_HTML::_openFile (const char * szFilename)
 	}
 #endif
 	return IE_Exp::_openFile (szFilename);
-}
-
-void IE_Exp_HTML::addFootnote(PD_DocumentRange * pDocRange)
-{
-	m_vecFootnotes.addItem(pDocRange);
-}
-
-void IE_Exp_HTML::addEndnote(PD_DocumentRange * pDocRange)
-{
-	m_vecEndnotes.addItem(pDocRange);
-}
-
-UT_sint32 IE_Exp_HTML::getNumFootnotes(void)
-{
-	return static_cast<UT_sint32>(m_vecFootnotes.getItemCount());
-}
-
-
-UT_sint32 IE_Exp_HTML::getNumEndnotes(void)
-{
-	return static_cast<UT_sint32>(m_vecEndnotes.getItemCount());
 }

@@ -43,6 +43,7 @@
 #include "spell_manager.h"
 #include "ie_mailmerge.h"
 #include "fp_TableContainer.h"
+#include "fl_BlockLayout.h"
 
 #ifdef _WIN32
 #include "ap_Win32App.h" 
@@ -433,7 +434,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_ColumnsActive)
 
   EV_Menu_ItemState s = EV_MIS_ZERO ;
 
-  if(pView->isHdrFtrEdit())
+  if(pView->isHdrFtrEdit()  || pView->isInHdrFtr(pView->getPoint()))
     s = EV_MIS_Gray;
 
   return s;
@@ -477,11 +478,20 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_TOCOK)
 
   EV_Menu_ItemState s = EV_MIS_ZERO ;
 
-  if(pView->isHdrFtrEdit())
+  if(pView->isHdrFtrEdit()  || pView->isInHdrFtr(pView->getPoint()))
   {
     s = EV_MIS_Gray;
   }
+  if(pView->isInHdrFtr(pView->getPoint()))
+  {
+    s = EV_MIS_Gray;
+  }
+
   else if(pView->isInTable()) // isintable includes first
+  {
+    s = EV_MIS_Gray;
+  }
+  else if(pView->isInTable(pView->getSelectionAnchor())) // isintable includes first
   {
     s = EV_MIS_Gray;
   }
@@ -489,11 +499,23 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_TOCOK)
   {
     s = EV_MIS_Gray;
   }
+  else if(pView->isInFrame(pView->getSelectionAnchor()))
+  {
+    s = EV_MIS_Gray;
+  }
   else if(pView->isInFootnote())
   {
     s = EV_MIS_Gray;
   }
+  else if(pView->isInFootnote(pView->getSelectionAnchor()))
+  {
+    s = EV_MIS_Gray;
+  }
   else if(pView->isInEndnote())
+  {
+    s = EV_MIS_Gray;
+  }
+  else if(pView->isInEndnote(pView->getSelectionAnchor()))
   {
     s = EV_MIS_Gray;
   }
@@ -504,6 +526,10 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_TOCOK)
   else if(pView->isInTable()  && (pView->getPoint() > 3) && pView->isInEndnote(pView->getPoint()-2))
   {
     s = EV_MIS_Gray;
+  }
+  else if(pView->getSelectionMode() >= FV_SelectionMode_Multiple)
+  {
+	  return EV_MIS_Gray;
   }
   return s;
 }
@@ -731,17 +757,17 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Changes)
 		break;
 
 	case AP_MENU_ID_TABLE_INSERT:
-		if (pView->isHdrFtrEdit())
+		if (pView->isHdrFtrEdit() || pView->isInHdrFtr(pView->getPoint()))
 			s = EV_MIS_Gray;
 		break;
 
 	case AP_MENU_ID_TABLE_INSERT_TABLE:
-		if (pView->isHdrFtrEdit())
+		if (pView->isHdrFtrEdit() || pView->isInHdrFtr(pView->getPoint()))
 			s = EV_MIS_Gray;
 		break;
 
 	case AP_MENU_ID_TABLE_INSERTTABLE:
-		if (pView->isHdrFtrEdit())
+		if (pView->isHdrFtrEdit()  || pView->isInHdrFtr(pView->getPoint()))
 			s = EV_MIS_Gray;
 		break;
 
@@ -843,6 +869,38 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Prefs)
 	    break;
 	  }
 
+	return s;
+}
+
+Defun_EV_GetMenuItemState_Fn(ap_GetState_FmtHdrFtr)
+{
+	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, EV_MIS_Gray);
+	EV_Menu_ItemState s = EV_MIS_ZERO;
+	if(pView->getPoint() == 0)
+	{
+		return EV_MIS_Gray;
+	}
+	fp_Page * pPage = pView->getCurrentPage();
+	if(pPage == NULL)
+	{
+		return EV_MIS_Gray;
+	}
+	fl_DocSectionLayout * pDSLP = pPage->getOwningSection();
+	if(pDSLP == NULL)
+	{
+		return EV_MIS_Gray;
+	}
+	fl_BlockLayout * pBL = pView->getCurrentBlock();
+	if(pBL == NULL)
+	{
+		return EV_MIS_Gray;
+	}
+	fl_DocSectionLayout	* pDSL = pBL->getDocSectionLayout();
+	if(pDSL != pDSLP)
+	{
+		return EV_MIS_Gray;
+	}
 	return s;
 }
 
@@ -1376,7 +1434,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_TableOK)
 	ABIWORD_VIEW;
 	UT_return_val_if_fail (pView, EV_MIS_Gray);
 
-	if(pView->isInTable() && pView->isHdrFtrEdit())
+	if(pView->isInTable() && (pView->isHdrFtrEdit() || pView->isInHdrFtr(pView->getPoint())))
 	{
 		return EV_MIS_Gray;
 	}
@@ -1421,7 +1479,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_InFootnote)
 	ABIWORD_VIEW;
 	UT_return_val_if_fail (pView, EV_MIS_Gray);
 
-	if(!pView->isInFootnote() && !pView->isHdrFtrEdit() && !pView->isInFrame(pView->getPoint()) 
+	if(!pView->isInFootnote() && !pView->isHdrFtrEdit() && !pView->isInHdrFtr(pView->getPoint()) && !pView->isInFrame(pView->getPoint()) 
 		&& !pView->isTOCSelected())
 	{
 		return EV_MIS_ZERO;
@@ -1464,7 +1522,15 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_BreakOK)
 	{
 		return EV_MIS_Gray;
 	}
+	if(pView->isInFootnote(pView->getSelectionAnchor()))
+	{
+		return EV_MIS_Gray;
+	}
 	if(pView->isInEndnote())
+	{
+		return EV_MIS_Gray;
+	}
+	if(pView->isInEndnote(pView->getSelectionAnchor()))
 	{
 		return EV_MIS_Gray;
 	}
@@ -1472,11 +1538,23 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_BreakOK)
 	{
 		return EV_MIS_Gray;
 	}
+	else if(pView->isInFrame(pView->getSelectionAnchor()))
+	{
+		return EV_MIS_Gray;
+	}
 	else if(pView->isInTable())
 	{
 		return EV_MIS_Gray;
 	}
-	else if(pView->isHdrFtrEdit())
+	else if(pView->isInTable(pView->getSelectionAnchor()))
+	{
+		return EV_MIS_Gray;
+	}
+	else if(pView->isHdrFtrEdit() || pView->isInHdrFtr(pView->getPoint()))
+	{
+		return EV_MIS_Gray;
+	}
+	else if(pView->getSelectionMode() >= FV_SelectionMode_Multiple)
 	{
 		return EV_MIS_Gray;
 	}
@@ -1556,7 +1634,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Lists)
 	ABIWORD_VIEW;
 	UT_return_val_if_fail(pView, EV_MIS_ZERO);
 
-	if(pView->getDocument()->areStylesLocked() || pView->isHdrFtrEdit())
+	if(pView->getDocument()->areStylesLocked() || pView->isHdrFtrEdit()  || pView->isInHdrFtr(pView->getPoint()))
 	{
 		return EV_MIS_Gray;
 	}

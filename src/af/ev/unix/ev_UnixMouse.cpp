@@ -35,8 +35,6 @@
 EV_UnixMouse::EV_UnixMouse(EV_EditEventMapper * pEEM)
 	: EV_Mouse(pEEM)
 {
-	m_clickState = 0;					// no click
-	m_contextState = EV_EMC_UNKNOWN;
 }
 
 void EV_UnixMouse::mouseUp(AV_View* pView, GdkEventButton* e)

@@ -28,6 +28,7 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_growbuf.h"
+#include "ev_Mouse.h"
 #include "ut_misc.h"
 #include "ut_string.h"
 #include "ut_bytebuf.h"
@@ -214,7 +215,8 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_Selection(this),
 		m_bShowRevisions(true),
 		m_eBidiOrder(FV_Order_Visual),
-		m_iFreePass(0)
+		m_iFreePass(0),
+		m_bDontNotifyListeners(false)
 {
 	m_colorRevisions[0] = UT_RGBColor(171,4,254);
 	m_colorRevisions[1] = UT_RGBColor(171,20,119);
@@ -606,7 +608,11 @@ void FV_View::convertInLineToPositioned(PT_DocPosition pos,const XML_Char ** att
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
 	_generalUpdate();
-	setPoint(posFrame+1);
+	setPoint(posFrame+2);
+	if(!isPointLegal())
+	{
+		setPoint(posFrame);
+	}
 	_ensureInsertionPointOnScreen();
 	notifyListeners(AV_CHG_MOTION | AV_CHG_ALL);
 }
@@ -677,6 +683,16 @@ void FV_View::releaseFrame(UT_sint32 x, UT_sint32 y)
 void FV_View::deleteFrame(void)
 {
 	m_FrameEdit.deleteFrame();
+	XAP_Frame * pFrame = static_cast<XAP_Frame*>(getParentData());
+	if(pFrame)
+	{
+		EV_Mouse * pMouse = pFrame->getMouse();
+		if(pMouse)
+		{
+			pMouse->clearMouseContext();
+		}
+	}
+	m_prevMouseContext = EV_EMC_TEXT;
 	setCursorToContext();
 }
 
@@ -975,14 +991,18 @@ void FV_View::toggleCase (ToggleCase c)
 		}
 	}
 
+	if(low < 2)
+	{
+		// the initial block strux / section strux is also selected, for example when
+		// using ctrl+a
+		low = 2;
+	}
+	
 	// if this is an empty document, gracefully return
 	if(low == high)
 		return;
 
 	UT_DEBUGMSG(("fv_View::toggleCase: low %d, high %d\n", low, high));
-
-	UT_sint32 xPoint, yPoint, xPoint2, yPoint2, iPointHeight;
-	bool bDirection;
 
 	fl_BlockLayout * pBL =	m_pLayout->findBlockAtPosition(low);
 	fp_Run * pRun;
@@ -1004,6 +1024,22 @@ void FV_View::toggleCase (ToggleCase c)
 
 		PT_DocPosition offset = low - pBL->getPosition(false);
 
+		if(offset == buffer.getLength())
+		{
+			// this is a special case when the selection starts at the very begining of a
+			// block which is not the first block in the document -- the block that
+			// findBlockAtPosition() returned to us is actually the block _before_ the one
+			// we are interested in
+			pBL = pBL->getNextBlockInDocument();
+			UT_return_if_fail( pBL );
+			buffer.truncate(0);
+			pBL->getBlockBuf(&buffer);
+
+			// move past the block strux
+			++low;
+			offset = 0;
+		}
+		
 		if(c == CASE_ROTATE)
 		{
 			// workout the current case
@@ -1043,11 +1079,9 @@ void FV_View::toggleCase (ToggleCase c)
 		PP_AttrProp * pSpanAPNow = const_cast<PP_AttrProp *>(pSpanAPAfter);
 
 		xxx_UT_DEBUGMSG(("fv_View::toggleCase: pBL 0x%x, offset %d, pSpanAPAfter 0x%x\n", pBL, offset, pSpanAPAfter));
-		//fp_Run * pLastRun = static_cast<fp_Line *>(pBL->getLastContainer())->getLastRun();
-		//PT_DocPosition lastPos = pBL->getPosition(false) + pLastRun->getBlockOffset() + pLastRun->getLength() - 1;
-		pRun = pBL->findPointCoords(low, false, xPoint,
-										   yPoint, xPoint2, yPoint2,
-										   iPointHeight, bDirection);
+
+		pRun = pBL->findRunAtOffset(offset);
+
 		xxx_UT_DEBUGMSG(("fv_View::toggleCase: block offset %d, low %d, high %d, lastPos %%d\n", offset, low, high/*, lastPos*/));
 
 		bool bBlockDone = false;
@@ -1217,6 +1251,12 @@ void FV_View::toggleCase (ToggleCase c)
 				pBL->getSpanAP(offset+iLen,false,pSpanAPAfter);
 				xxx_UT_DEBUGMSG(("fv_View::toggleCase: delete/insert: low %d, iLen %d, pSpanAPAfter 0x%x, pSpanAPNow 0x%x\n", low, iLen,pSpanAPAfter,pSpanAPNow));
 
+#if 0
+				UT_DEBUGMSG(("AP Now\n"));
+				pSpanAPNow->miniDump(getDocument());
+				UT_DEBUGMSG(("---------------------------------- \nAP After\n"));
+				pSpanAPAfter->miniDump(getDocument());
+#endif
 				UT_uint32 iRealDeleteCount;
 				bool bResult = m_pDoc->deleteSpan(low, low + iLen,NULL,iRealDeleteCount);
 				UT_ASSERT(bResult);
@@ -1229,13 +1269,20 @@ void FV_View::toggleCase (ToggleCase c)
 					_charMotion(true,iLen - iRealDeleteCount);
 				}
 				bResult = m_pDoc->insertSpan(low, pTemp, iLen, pSpanAPNow);
-
+				UT_ASSERT_HARMLESS( bResult );
+				bResult &= m_pDoc->changeSpanFmt(PTC_SetFmt,low,low+iLen,
+												 pSpanAPNow->getAttributes(),pSpanAPNow->getProperties());
+				
 				// now remember the props for the next round
 				pSpanAPNow = const_cast<PP_AttrProp*>(pSpanAPAfter);
 
-				UT_ASSERT(bResult);
+				UT_ASSERT_HARMLESS(bResult);
 				low += iLen;
 				offset += iLen;
+
+				// the piecetable operations might have invalidated the pRun pointer,
+				// need to get it afresh
+				pRun = pBL->findRunAtOffset(offset);
 			}
 		}
 		pBL = pBL->getNextBlockInDocument();
@@ -1370,7 +1417,7 @@ bool FV_View::notifyListeners(const AV_ChangeMask hint)
 //
 // No need to update stuff if we're in preview mode
 //
-	if(isPreview())
+	if(isPreview()|| m_bDontNotifyListeners)
 		return true;
 //
 // Sevior check if we need this?
@@ -1992,6 +2039,7 @@ void FV_View::insertSectionBreak(BreakSectionType type)
 	// Signal PieceTable Changes have ended
 	m_pDoc->notifyPieceTableChangeEnd();
 	m_iPieceTableState = 0;
+	notifyListeners(AV_CHG_ALL);
 }
 
 void FV_View::insertSectionBreak(void)
@@ -3519,6 +3567,93 @@ bool FV_View::setCharFormat(const XML_Char * properties[], const XML_Char * attr
 
 	return bRet;
 }
+
+/*!
+    clears props and attribs
+    bAll specifies that everything is to go; if !bAll some selected props will be preserved
+ 
+    Notes: This function is to be called in response to reset fmt command
+    (ctrl+space). The idea is this: we use props and attributes to store things that are
+    not strictly speaking text fmt. For example, spellchecker language is a property, but
+    not strictly text fmt; when pressing ctrl+space, more often than not the user wants to
+    get rid of bold, italics, etc., but not of the langauge markup. So we exercise a
+    degree of discretion.
+*/
+bool FV_View::resetCharFormat(bool bAll)
+{
+	PT_DocPosition posStart = getPoint();
+	PT_DocPosition posEnd = posStart;
+
+	PP_AttrProp AP;
+
+	if(!bAll)
+	{
+		const PP_AttrProp * pAP = getAttrPropForPoint();
+
+		if(pAP)
+		{
+			UT_uint32 i = 0;
+			const XML_Char * szName, *szValue;
+			while(pAP->getNthProperty(i++,szName,szValue))
+			{
+				// add other props as required ...
+				if(!UT_strcmp(szName,"lang"))
+				   AP.setProperty(szName,szValue);
+			}
+			
+		}
+	}
+	
+	m_pDoc->beginUserAtomicGlob();
+
+	// first we reset everything ...
+	// we have to do this, because setCharFormat() calls are cumulative (it uses
+	// PTC_AddFmt)
+	const XML_Char p[] = "props";
+	const XML_Char v[] = "";
+	const XML_Char * props_out[3] = {p,v,NULL};
+	
+	bool bRet = setCharFormat(NULL, props_out);
+
+	// now if we have something to set, we do so ...
+	if(AP.hasAttributes() || AP.hasProperties())
+		bRet &= setCharFormat(AP.getAttributes(), AP.getProperties());
+	
+	m_pDoc->endUserAtomicGlob();
+	return bRet;
+}
+
+const PP_AttrProp * FV_View::getAttrPropForPoint()
+{
+	const fl_BlockLayout * pBL = getCurrentBlock();
+	UT_return_val_if_fail( pBL, NULL);
+
+	UT_uint32 blockOffset = getPoint() - pBL->getPosition();
+	fp_Run * pRun = pBL->findRunAtOffset(blockOffset);
+
+	UT_return_val_if_fail( pRun, NULL );
+	bool bLeftSide = true;
+
+	if(/*(pRun->getType() == FPRUN_TEXT || pRun->getType() == FPRUN_ENDOFPARAGRAPH) &&*/
+	   pRun->getBlockOffset() == blockOffset &&
+	   pRun->getPrevRun()
+	   && pRun->getPrevRun()->getType() == FPRUN_TEXT)
+	{
+		// between two text frags, use the one on the left
+		pRun = pRun->getPrevRun();
+
+		blockOffset = pRun->getBlockOffset();
+		bLeftSide = false;
+	}
+	
+	const PP_AttrProp * pAP = NULL;
+	getDocument()->getSpanAttrProp(pBL->getStruxDocHandle(), blockOffset, bLeftSide, &pAP);
+#if 0
+	if(pAP) pAP->miniDump(getDocument());
+#endif
+	return pAP;
+}
+
 
 bool FV_View::getAttributes(const PP_AttrProp ** ppSpanAP, const PP_AttrProp ** ppBlockAP, PT_DocPosition posStart)
 {
@@ -5389,6 +5524,7 @@ void FV_View::extSelToXY(UT_sint32 xPos, UT_sint32 yPos, bool bDrag)
 	// Pass the click down to that page.
 	UT_sint32 xClick, yClick;
 	fp_Page* pPage = _getPageForXY(xPos, yPos, xClick, yClick);
+	xxx_UT_DEBUGMSG((" Selected to x %d \n",xPos));
 
 	PT_DocPosition iNewPoint;
 	bool bBOL = false;
@@ -5420,7 +5556,6 @@ void FV_View::extSelToXY(UT_sint32 xPos, UT_sint32 yPos, bool bDrag)
 			// remember where mouse is
 			m_xLastMouse = xPos;
 			m_yLastMouse = yPos;
-
 			// offscreen ==> make sure it's set
 			if (!m_pAutoScrollTimer)
 			{
@@ -6016,7 +6151,7 @@ FV_View::findReplaceReverse(bool& bDoneEntireDocument)
 	UT_ASSERT(m_sFind && m_sReplace);
 
 	UT_uint32* pPrefix = _computeFindPrefix(m_sFind);
-	bool bRes = _findReplaceReverse(pPrefix, bDoneEntireDocument);
+	bool bRes = _findReplaceReverse(pPrefix, bDoneEntireDocument, false /* do update */);
 	FREEP(pPrefix);
 
 	updateScreen();
@@ -6049,7 +6184,7 @@ FV_View::findReplace(bool& bDoneEntireDocument)
 	UT_ASSERT(m_sFind && m_sReplace);
 
 	UT_uint32* pPrefix = _computeFindPrefix(m_sFind);
-	bool bRes = _findReplace(pPrefix, bDoneEntireDocument);
+	bool bRes = _findReplace(pPrefix, bDoneEntireDocument, false /* do update */);
 	FREEP(pPrefix);
 
 	updateScreen();
@@ -6087,6 +6222,17 @@ FV_View::findReplaceAll()
 
 	bool bDoneEntireDocument = false;
 
+	// find which part of the document is currently on screen -- we will only redraw and
+	// send messages to listerners within these part of the document
+	PT_DocPosition posVisibleStart = getDocPositionFromXY(0,0);
+	PT_DocPosition posVisibleEnd   = getDocPositionFromXY(getWindowWidth(),getWindowHeight());
+
+	// save point -- we will end where we started
+	PT_DocPosition iPoint = getPoint();
+
+	// this could take long -- show hourglass
+	setCursorWait();
+	
 	// Compute search prefix
 	UT_uint32* pPrefix = _computeFindPrefix(m_sFind);
 
@@ -6097,22 +6243,32 @@ FV_View::findReplaceAll()
 	// Keep replacing until the end of the buffer is hit
 	while (!bDoneEntireDocument)
 	{
-		_findReplace(pPrefix, bDoneEntireDocument);
+		bool bDontUpdate = getPoint() < posVisibleStart || getPoint() > posVisibleEnd;
+		if(bDontUpdate)
+		{
+			m_bDontNotifyListeners = true;
+		}
+		
+		_findReplace(pPrefix, bDoneEntireDocument, bDontUpdate);
 		iReplaced++;
 	}
 
 	m_pDoc->endUserAtomicGlob();
 
-	_generalUpdate();
+	_resetSelection();
+	setPoint(iPoint);
 
-	if (isSelectionEmpty())
+	// restore notifications if we stopped them
+	if(m_bDontNotifyListeners)
 	{
-		_updateInsertionPoint();
+		m_bDontNotifyListeners = false;
+		notifyListeners(AV_CHG_MOTION);
 	}
-	else
-	{
-		_ensureInsertionPointOnScreen();
-	}
+	
+	_updateInsertionPoint();
+	_generalUpdate();
+	draw();
+	setCursorToContext();
 
 	FREEP(pPrefix);
 	return iReplaced;
@@ -6580,6 +6736,11 @@ PD_DocumentRange * FV_View::getNthSelection(UT_sint32 i)
 UT_sint32 FV_View::getNumSelections(void) const
 {
 	return m_Selection.getNumSelections();
+}
+
+void FV_View::setSelectionMode(FV_SelectionMode selMode)
+{
+	m_Selection.setMode(selMode);
 }
 
 void FV_View::getDocumentRangeOfCurrentSelection(PD_DocumentRange * pdr)
@@ -7476,7 +7637,7 @@ void FV_View::getLeftRulerInfo(AP_LeftRulerInfo * pInfo)
 //
 	if(getPoint()== 0)
 	{
-		m_iFreePass = AV_CHG_FMTSECTION | AV_CHG_HDRFTR;
+		m_iFreePass = AV_CHG_COLUMN | AV_CHG_FMTSECTION | AV_CHG_FMTBLOCK | AV_CHG_HDRFTR;
 		return;
 	}
 	getLeftRulerInfo(getPoint(),pInfo);
@@ -7489,7 +7650,7 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 //
 	if(m_pDoc->isPieceTableChanging())
 	{
-		m_iFreePass = AV_CHG_FMTSECTION | AV_CHG_HDRFTR;
+		m_iFreePass = AV_CHG_COLUMN | AV_CHG_FMTSECTION | AV_CHG_FMTBLOCK | AV_CHG_HDRFTR;
 		return;
 	}
 
@@ -9022,6 +9183,19 @@ void FV_View::createThisHdrFtr(HdrFtrType hfType, bool bSkipPTSaves)
 		NULL, NULL
 	};
 	PT_DocPosition oldPos = getPoint();
+	fp_Page * pPage = getCurrentPage();
+	if(pPage == NULL)
+	{
+		clearCursorWait();
+		return;
+	}
+	fl_DocSectionLayout * pDSLP = pPage->getOwningSection();
+	fl_DocSectionLayout * pDSL = getCurrentBlock()->getDocSectionLayout();
+	if(pDSL != pDSLP)
+	{
+		clearCursorWait();
+		return;
+	}
 	if(!bSkipPTSaves)
 	{
 		if(isHdrFtrEdit())
@@ -9077,6 +9251,22 @@ void FV_View::createThisHdrFtr(HdrFtrType hfType, bool bSkipPTSaves)
 void FV_View::populateThisHdrFtr(HdrFtrType hfType, bool bSkipPTSaves)
 {
 //
+// This won't work if we're not allowed to insert a HdrFtr on the current page
+// Detect and abort if so.
+//
+	fp_Page * pPage = getCurrentPage();
+	if(pPage == NULL)
+	{
+		return;
+	}
+	fl_DocSectionLayout * pDSLP = pPage->getOwningSection();
+	fl_DocSectionLayout * pDSL = getCurrentBlock()->getDocSectionLayout();
+	if(pDSL != pDSLP)
+	{
+		return;
+	}
+
+//
 // Fix up the insertion point stuff.
 //
 	setCursorWait();
@@ -9097,17 +9287,41 @@ void FV_View::populateThisHdrFtr(HdrFtrType hfType, bool bSkipPTSaves)
 //
 	PT_DocPosition oldPos = getPoint();
 
-	fl_DocSectionLayout * pDSL = static_cast<fl_DocSectionLayout *>(getCurrentBlock()->getDocSectionLayout());
+	if(pPage)
+	{
+		pDSL = pDSLP;
+	}
+
 	UT_ASSERT(pDSL->getContainerType() == FL_CONTAINER_DOCSECTION);
 	fl_HdrFtrSectionLayout * pHdrFtrSrc = NULL;
 	fl_HdrFtrSectionLayout * pHdrFtrDest = NULL;
-	if(hfType < FL_HDRFTR_FOOTER)
+	if(pDSL && (hfType < FL_HDRFTR_FOOTER))
 	{
 		pHdrFtrSrc = pDSL->getHeader();
 	}
-	else
+	else if(pDSL)
 	{
 		pHdrFtrSrc = pDSL->getFooter();
+	}
+	if(pHdrFtrSrc == NULL)
+	{
+
+	// restore updates and clean up dirty lists
+		if(!bSkipPTSaves)
+		{
+			m_pDoc->enableListUpdates();
+			m_pDoc->updateDirtyLists();
+
+	// Signal PieceTable Changes have Ended
+
+			m_pDoc->notifyPieceTableChangeEnd();
+			m_iPieceTableState = 0;
+			m_pDoc->endUserAtomicGlob(); // End the big undo block
+			_generalUpdate();
+			_updateInsertionPoint();
+		}
+		clearCursorWait();
+		return;
 	}
 //
 // Make sure we have everythimng formatted.
@@ -9642,6 +9856,24 @@ fl_EndnoteLayout * FV_View::getClosestEndnote(PT_DocPosition pos)
 	return pClosest;
 }
 
+bool FV_View::isInHdrFtr(PT_DocPosition pos)
+{
+	fl_BlockLayout * pBL = _findBlockAtPosition(pos);
+	fl_ContainerLayout * pCL = pBL->myContainingLayout();
+	while(pCL && ((pCL->getContainerType() != FL_CONTAINER_DOCSECTION)
+				  && (pCL->getContainerType() != FL_CONTAINER_HDRFTR)
+				  && (pCL->getContainerType() != FL_CONTAINER_SHADOW)))
+	{
+		pCL = pCL->myContainingLayout();
+	}
+	if(pCL && ( (pCL->getContainerType() == FL_CONTAINER_HDRFTR)
+				|| (pCL->getContainerType() == FL_CONTAINER_SHADOW)))
+	{
+		return true;
+	}
+	return false;
+}
+
 /*! 
  * Returns true if the point is located with a block so stuff can be typed
  * or inserted.
@@ -9811,6 +10043,10 @@ bool FV_View::insertFootnote(bool bFootnote)
 			return false;
 		FrefEnd = FrefStart+1;
 		setStyleAtPos("Footnote Reference", FrefStart, FrefEnd,true);
+
+		// setStyleAtPos() creates a selection, clear it before adding an fmt mark
+		_clearSelection();
+
 //
 // Put the character format back to it previous value
 //
@@ -9823,6 +10059,9 @@ bool FV_View::insertFootnote(bool bFootnote)
 			return false;
 		FrefEnd = FrefStart+1;
 		setStyleAtPos("Endnote Reference", FrefStart, FrefEnd,true);
+
+		// setStyleAtPos() creates a selection, clear it before adding an fmt mark
+		_clearSelection();
 //
 // Put the character format back to it previous value
 //
@@ -9845,7 +10084,7 @@ bool FV_View::insertFootnote(bool bFootnote)
 	// start of the next block instead of our own
 	UT_DEBUGMSG(("fv_View::insertFootnote: FanchStart %d\n",FanchStart));
 
-	_clearSelection();
+	_resetSelection();
 	_setPoint(FanchStart);
 	if(bFootnote)
 	{
@@ -10315,6 +10554,7 @@ bool FV_View::isInTableForSure(PT_DocPosition pos)
  */
 bool FV_View::isInTable( PT_DocPosition pos)
 {
+	xxx_UT_DEBUGMSG(("Look in table at pos %d \n",pos));
 	if(m_pDoc->isTableAtPos(pos))
 	{
 		xxx_UT_DEBUGMSG(("As Table pos this char will actuall right before the table %d \n",pos));
@@ -10344,6 +10584,17 @@ bool FV_View::isInTable( PT_DocPosition pos)
 	if(pCL->getContainerType() == FL_CONTAINER_CELL)
 	{
 		xxx_UT_DEBUGMSG(("Inside Table cell pos %d this pos %d \n",pCL->getPosition(),pos));
+		fl_TableLayout * pTL = static_cast<fl_TableLayout *>(pCL->myContainingLayout());
+		PL_StruxDocHandle sdhTable = pTL->getStruxDocHandle();
+		PL_StruxDocHandle sdhEnd = m_pDoc->getEndTableStruxFromTableSDH(sdhTable);
+		if(sdhEnd != NULL)
+		{
+			PT_DocPosition posEnd =  m_pDoc->getStruxPosition(sdhEnd);
+			if(posEnd < pos)
+			{
+				return false;
+			}
+		}
 		return true;
 	}
 	pCL = pBL->getNext();
@@ -10358,12 +10609,11 @@ bool FV_View::isInTable( PT_DocPosition pos)
 		PT_DocPosition posTable = m_pDoc->getStruxPosition(pCL->getStruxDocHandle());
 		if(posTable <= pos) // TODO CHECK THIS very carefully!!
 		{
-			return false;
+			return true;
 		}
 		else
 		{
-			xxx_UT_DEBUGMSG(("IS intable is true \n"));
-			return true;
+			return false;
 		}
 	}
 	pCL = pBL->getPrev();

@@ -79,6 +79,7 @@ fl_EmbedLayout::~fl_EmbedLayout()
 PT_DocPosition fl_EmbedLayout::getDocPosition(void) 
 {
 	PL_StruxDocHandle sdh = getStruxDocHandle();
+	UT_return_val_if_fail( m_pLayout, 0 );
     return 	m_pLayout->getDocument()->getStruxPosition(sdh);
 }
 
@@ -89,6 +90,7 @@ PT_DocPosition fl_EmbedLayout::getDocPosition(void)
  */
 UT_uint32 fl_EmbedLayout::getLength(void)
 {
+	UT_return_val_if_fail( m_pLayout, 0 );
 	PT_DocPosition startPos = getDocPosition();
 	PL_StruxDocHandle sdhEnd = NULL;
 	PL_StruxDocHandle sdhStart = getStruxDocHandle();
@@ -340,6 +342,8 @@ fl_FootnoteLayout::~fl_FootnoteLayout()
 
 	setFirstContainer(NULL);
 	setLastContainer(NULL);
+
+	UT_return_if_fail( m_pLayout );
 	m_pLayout->removeFootnote(this);
 }
 
@@ -744,6 +748,7 @@ fp_Container* fl_EndnoteLayout::getNewContainer(fp_Container *)
 void fl_EndnoteLayout::_insertEndnoteContainer(fp_Container * pNewEC)
 {
 	UT_DEBUGMSG(("inserting endnote container into DocLayout list\n"));
+
 	m_pLayout->insertEndnoteContainer(static_cast<fp_EndnoteContainer *>(pNewEC));
 	m_bIsOnPage = true;
 }

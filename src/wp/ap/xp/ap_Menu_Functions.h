@@ -57,6 +57,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_RevisionPresent);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_RevisionPresentContext);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_RevisionsSelectLevel);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_History);
+Defun_EV_GetMenuItemState_Fn(ap_GetState_FmtHdrFtr);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_BreakOK);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_TOCOK);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_BookmarkOK);

@@ -113,7 +113,8 @@ class GR_Win32USPRenderInfo : public GR_RenderInfo
 		m_iZoom(100),
 		m_eJustification(SCRIPT_JUSTIFY_NONE),
 		m_bRejustify(true),
-		m_bShapingFailed(false)
+		m_bShapingFailed(false),
+		m_bNeedsReshaping(true)
 	{
 		s_iInstanceCount++;
 		if(s_iInstanceCount == 1)
@@ -202,6 +203,7 @@ class GR_Win32USPRenderInfo : public GR_RenderInfo
 
 	bool             m_bRejustify;
 	bool             m_bShapingFailed;
+	bool             m_bNeedsReshaping;
 	
 	
 	static int *     s_pAdvances;            // in device units, used for drawing
@@ -665,6 +667,7 @@ bool GR_Win32USPGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 	}
 
 	RI->m_bShapingFailed = false;
+	RI->m_bNeedsReshaping = true;
 	
 	// we need to make sure that the analysis embeding level is in sync with si.m_iVisDir
 	pItem->m_si.a.fRTL = si.m_iVisDir == UT_BIDI_RTL ? 1 : 0;
@@ -780,7 +783,8 @@ bool GR_Win32USPGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 	RI->m_pItem = si.m_pItem;
 	RI->m_pFont = si.m_pFont;
 	RI->m_iCharCount = si.m_iLength;
-
+	RI->m_bNeedsReshaping = false;
+	
 	// once we implement the GR_Win32USPRenderInfo::append(), etc., we
 	// should enable this; until then we need to treat everything as
 	// complex and have it refreshed on merges, etc.
@@ -1671,6 +1675,8 @@ void GR_Win32USPGraphics::drawChars(const UT_UCSChar* pChars,
 bool GR_Win32USPRenderInfo::append(GR_RenderInfo &ri, bool bReverse)
 {
 	//UT_return_val_if_fail( UT_NOT_IMPLEMENTED, false );
+	m_bNeedsReshaping = true;
+	
 	return false;
 }
 
@@ -1687,6 +1693,12 @@ bool GR_Win32USPRenderInfo::split (GR_RenderInfo *&pri, bool bReverse)
 
 	pri->m_pItem = m_pItem->makeCopy();
 	UT_return_val_if_fail(pri->m_pItem, false);
+
+	if(m_bNeedsReshaping)
+	{
+		// we have not been shaped, so that is all we can do for the caller
+		return false;
+	}
 	
 	GR_Win32USPRenderInfo & RI = (GR_Win32USPRenderInfo &) *pri;
 	RI.m_bShapingFailed = m_bShapingFailed;
@@ -1814,6 +1826,8 @@ bool GR_Win32USPRenderInfo::split (GR_RenderInfo *&pri, bool bReverse)
 bool GR_Win32USPRenderInfo::cut(UT_uint32 offset, UT_uint32 iLen, bool bReverse)
 {
 	//UT_return_val_if_fail( UT_NOT_IMPLEMENTED, false );
+	m_bNeedsReshaping = true;
+	
 	return false;
 }
 

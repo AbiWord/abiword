@@ -105,6 +105,7 @@ public:
 	bool areAnyOfTheseNamesPresent(const XML_Char ** attributes, const XML_Char ** properties) const;
 	bool isExactMatch(const PP_AttrProp * pMatch) const;
 	bool isEquivalent(const PP_AttrProp * pAP2) const;
+	bool isEquivalent(const XML_Char ** attrs, const XML_Char ** props) const;
 
 	PP_AttrProp * cloneWithReplacements(const XML_Char ** attributes,
 										const XML_Char ** properties,
@@ -139,7 +140,8 @@ public:
 
 	void prune();
 	bool explodeStyle(const PD_Document * pDoc, bool bOverwrite = false);
-	
+
+	void miniDump(const PD_Document * pDoc) const;
 	
 protected:
 	void _computeCheckSum(void);

@@ -429,6 +429,7 @@ void  fp_Container::deleteNthCon(UT_sint32 i)
 		pCon->setContainer(NULL);
 	}
 	m_vecContainers.deleteNthItem(i);
+	xxx_UT_DEBUGMSG(("AFter deleting item %d in %x there are %d cons left \n",i,this,countCons()));
 }
 
 bool fp_Container::isOnScreen() const
@@ -500,7 +501,7 @@ void  fg_FillType::setParent(fg_FillType * pParent)
  */
 void fg_FillType::setColor(UT_RGBColor & color)
 {
-	UT_DEBUGMSG(("Fill type set to color class \n"));
+	xxx_UT_DEBUGMSG(("Fill type set to color class \n"));
 	m_FillType = FG_FILL_COLOR;
 	m_color = color;
 	m_bColorSet = true;
@@ -870,6 +871,11 @@ void fg_FillType::Fill(GR_Graphics * pG, UT_sint32 & srcX, UT_sint32 & srcY, UT_
 			 dest.top = y;
 			 dest.width = width;
 			 dest.height = height;
+//
+// Overwrite With white first for alpha blended images
+//
+			 UT_RGBColor white(255,255,255);
+			 painter.fillRect(white,dest);
 			 if(m_pDocImage == NULL)
 			 {
 				 painter.fillRect(m_pImage,src,dest);

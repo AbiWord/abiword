@@ -126,6 +126,10 @@ void FV_View::cmdCharMotion(bool bForward, UT_uint32 count)
 		{
 			_setPoint(iPoint);
 		}
+		while(!isPointLegal() && (getPoint() > 2))
+		{
+			_charMotion(false,1);
+		}
 	}
 	else
 	{
@@ -133,6 +137,14 @@ void FV_View::cmdCharMotion(bool bForward, UT_uint32 count)
 		if ( iPoint1 == iPoint )
 		{
 			if(!_charMotion(bForward, count))
+			{
+				_setPoint(iPoint);
+				_fixInsertionPointCoords();
+				_ensureInsertionPointOnScreen();
+				notifyListeners(AV_CHG_MOTION);
+				return;
+			}
+			if(!isPointLegal())
 			{
 				_setPoint(iPoint);
 				_fixInsertionPointCoords();
@@ -3299,7 +3311,7 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 	_restorePieceTableState();
 	_setPoint(getPoint());
 	notifyListeners(AV_CHG_MOTION | AV_CHG_ALL);
-
+	return bRet;
 }
 
 
@@ -3438,7 +3450,20 @@ void FV_View::cmdSelect(UT_sint32 xPos, UT_sint32 yPos, FV_DocPos dpBeg, FV_DocP
 
 	PT_DocPosition iPosLeft = _getDocPos(dpBeg, false);
 	PT_DocPosition iPosRight = _getDocPos(dpEnd, false);
-
+	if(iPosLeft > iPosRight)
+	{
+		return;
+	}
+	if(!isInFrame(iPosLeft) && isInFrame(iPosRight))
+	{
+		fl_FrameLayout * pFL = getFrameLayout(iPosRight);
+		iPosRight =pFL->getPosition(true)-1;
+	}
+	if(isInFrame(iPosLeft) && !isInFrame(iPosRight))
+	{
+		fl_FrameLayout * pFL = getFrameLayout(iPosLeft);
+		iPosRight =pFL->getPosition(true) + pFL->getLength() -1;
+	}
 	if(iPosLeft == iPosRight) return;
 //
 // Code to select a paragraph break on selectLine if on first line of a Block.
@@ -3574,6 +3599,10 @@ void FV_View::cmdUndo(UT_uint32 count)
 	{
 		_charMotion(true,1);
 	}
+	while(!isPointLegal() && (getPoint() > 2))
+	{
+		_charMotion(false,1);
+	}
 	setCursorToContext();
 
 
@@ -3628,6 +3657,15 @@ void FV_View::cmdRedo(UT_uint32 count)
 	{
 		_charMotion(true,1);
 	}
+	if(getPoint() > posEnd)
+	{
+		setPoint(posEnd);
+	}
+	while(!isPointLegal() && (getPoint() > 2))
+	{
+		_charMotion(false,1);
+	}
+
 	setCursorToContext();
 
 	_updateInsertionPoint();
@@ -4243,6 +4281,30 @@ UT_Error FV_View::cmdInsertTOC(void)
 		insertParagraphBreak();
 		pBL = getCurrentBlock();
 		pos = pBL->getPosition(true);
+	}
+	if(pBL != NULL)
+	{
+		fl_ContainerLayout * pCL = pBL->myContainingLayout();
+		if(pCL->getContainerType() != FL_CONTAINER_DOCSECTION)
+		{
+			m_pDoc->endUserAtomicGlob();
+
+				// Signal piceTable is stable again
+			_restorePieceTableState();
+			_generalUpdate();
+			notifyListeners(AV_CHG_MOTION | AV_CHG_ALL);
+			return bRet;
+		}
+	}
+	else
+	{
+		m_pDoc->endUserAtomicGlob();
+		
+		// Signal piceTable is stable again
+		_restorePieceTableState();
+		_generalUpdate();
+		notifyListeners(AV_CHG_MOTION | AV_CHG_ALL);
+		return bRet;
 	}
 	m_pDoc->insertStrux(pos,PTX_SectionTOC);
 	pos++;

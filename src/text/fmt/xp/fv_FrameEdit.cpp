@@ -415,6 +415,7 @@ void FV_FrameEdit::mouseDrag(UT_sint32 x, UT_sint32 y)
 			expY.height = diffy + iext;
 			expY.left -= iext;
 			expY.width += 2*iext;
+			xxx_UT_DEBUGMSG(("expY.top %d expY.height %d \n",expY.top,expY.height));
 		}
 		if(m_recCurFrame.height < 0)
 		{
@@ -541,11 +542,13 @@ void FV_FrameEdit::mouseDrag(UT_sint32 x, UT_sint32 y)
 		if(expY.height > 0)
 		{
 			getGraphics()->setClipRect(&expY);
+			xxx_UT_DEBUGMSG(("expY.top %d expY.height %d \n",expY.top,expY.height));
 			m_pView->updateScreen(false);
 		}
 		getGraphics()->setClipRect(NULL);
 
 		drawFrame(true);
+		UT_DEBUGMSG(("Draw frame finished \n"));
 	}
 	else if (FV_FrameEdit_DRAG_EXISTING == m_iFrameEditMode)
 	{
@@ -880,7 +883,7 @@ bool FV_FrameEdit::getFrameStrings(UT_sint32 x, UT_sint32 y,
 		UT_sint32 x1,x2,y1,y2;
 		UT_uint32 height;
 		bool bEOL=false;
-		bool bDir;
+		bool bDir=false;
 		m_pView->_findPositionCoords(posAtXY,bEOL,x1,y1,x2,y2,height,bDir,&pBL,&pRun);
 		UT_DEBUGMSG((" Requested y %d frameEdit y1= %d y2= %d \n",y,y1,y2));
 		if((pBL == NULL) || (pRun == NULL))
@@ -929,6 +932,7 @@ bool FV_FrameEdit::getFrameStrings(UT_sint32 x, UT_sint32 y,
 		UT_sint32 yLineOff = 0;
 		fp_VerticalContainer * pVCon = static_cast<fp_VerticalContainer *>(pLine->getContainer());
 		pVCon->getOffsets(pLine,xLineOff,yLineOff);
+		xLineOff -= pLine->getX();
 		UT_DEBUGMSG(("Closest Line yLineoff %d \n",yLineOff));
 
 // OK correct for page offsets
@@ -1602,7 +1606,7 @@ void FV_FrameEdit::drawFrame(bool bWithHandles)
 	da.yoff = yPage + m_pFrameContainer->getY();
 	if((m_pFrameImage == NULL) || (m_iDraggingWhat != FV_FrameEdit_DragWholeFrame) )
 	{
-		m_pFrameContainer->clearScreen();
+//		m_pFrameContainer->clearScreen();
 		m_pFrameContainer->draw(&da);
 		if(bWithHandles)
 		{

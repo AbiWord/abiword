@@ -206,7 +206,7 @@ bool pt_VarSet::mergeAP(PTChangeFmt ptc, PT_AttrPropIndex apiOld,
 		}
 	case PTC_SetFmt:
 		{
-			if (papOld->areAlreadyPresent(attributes,properties))
+			if (papOld->isEquivalent(attributes,properties))
 			{
 				*papiNew = apiOld;
 				return true;

@@ -81,30 +81,30 @@
 // NOTE -- these placeholder strings get overridden at runtime 
 // NOTE -- they're just here to make sizing easier
 
-// The main tab dialog
-AP_RID_DIALOG_PAGE_SETUP DIALOG DISCARDABLE  40, 40, 255, 225
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "Dialog"
-FONT 8, "MS Sans Serif"
-BEGIN
-    CONTROL         "Tab1",
-                    AP_RID_DIALOG_PAGE_SETUP_TAB,
-                    "SysTabControl32", TCS_FOCUSONBUTTONDOWN | WS_TABSTOP,
-                    5,5,245,195, WS_EX_CONTROLPARENT
-    DEFPUSHBUTTON   "OK",
- 					AP_RID_DIALOG_PAGE_SETUP_BTN_OK,
-					146,204,50,14
-    PUSHBUTTON      "Cancel",
-					AP_RID_DIALOG_PAGE_SETUP_BTN_CANCEL,
-					200,204,50,14
-END
+//// The main tab dialog
+//AP_RID_DIALOG_PAGE_SETUP DIALOG DISCARDABLE  40, 40, 255, 225
+//STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+//CAPTION "Dialog"
+//FONT 8, "MS Sans Serif"
+//BEGIN
+//    CONTROL         "Tab1",
+//                    AP_RID_DIALOG_PAGE_SETUP_TAB,
+//                    "SysTabControl32", TCS_FOCUSONBUTTONDOWN | WS_TABSTOP,
+//                    5,5,245,195, WS_EX_CONTROLPARENT
+//    DEFPUSHBUTTON   "OK",
+// 					AP_RID_DIALOG_PAGE_SETUP_BTN_OK,
+//					146,204,50,14
+//    PUSHBUTTON      "Cancel",
+//					AP_RID_DIALOG_PAGE_SETUP_BTN_CANCEL,
+//					200,204,50,14
+//END
 
 // The sub-dialog for the Page tab of the PageSetup dialog
 AP_RID_DIALOG_PAGE_SETUP_PAGE DIALOG DISCARDABLE  0, 0, 240, 180
 STYLE WS_CHILD
 FONT 8, "MS Sans Serif"
 BEGIN
-	GROUPBOX        "Paper...",
+    GROUPBOX        "Paper...",
 					AP_RID_DIALOG_PAGE_SETUP_GBX_PAPER,
 					5,5,132,85
     LTEXT           "Paper Size:",
@@ -143,11 +143,11 @@ BEGIN
 					5,95,131,48
     CONTROL         "Portrait",
 					AP_RID_DIALOG_PAGE_SETUP_RDO_PORTRAIT,
-					"Button",BS_AUTORADIOBUTTON,
+					"Button",BS_AUTORADIOBUTTON | WS_TABSTOP,
 					52,111, 83,10
     CONTROL         "Landscape",
 					AP_RID_DIALOG_PAGE_SETUP_RDO_LANDSCAPE,
-					"Button",BS_AUTORADIOBUTTON,
+					"Button",BS_AUTORADIOBUTTON | WS_TABSTOP,
 					52,122,83,10
     CONTROL         "",
 					AP_RID_DIALOG_PAGE_SETUP_BMP_ORIENTATION,

@@ -188,10 +188,7 @@ public:
 	inline void			set_HTML4 (bool enable = true) { m_exp_opt.bIs4 = enable; }
 	inline void			set_PHTML (bool enable = true) { m_exp_opt.bIsAbiWebDoc = enable; }
 	inline void			set_MHTML (bool enable = true) { m_exp_opt.bMultipart = enable; }
-	void                addFootnote(PD_DocumentRange * pDocRange);         
-	void                addEndnote(PD_DocumentRange * pDocRange);
-	UT_sint32           getNumFootnotes(void);
-	UT_sint32           getNumEndnotes(void);
+
 private:
 	void				_buildStyleTree ();
 protected:
@@ -203,8 +200,6 @@ private:
 	s_StyleTree *		m_style_tree;
 	bool				m_bSuppressDialog;
 	XAP_Exp_HTMLOptions	m_exp_opt;
-	UT_GenericVector<PD_DocumentRange *> m_vecFootnotes;
-	UT_GenericVector<PD_DocumentRange *> m_vecEndnotes;
 	UT_UTF8String       m_sLinkCSS;
 	UT_UTF8String       m_sTitle;
 };

@@ -317,7 +317,7 @@ void FV_View::_setSelectionAnchor(void)
 	m_Selection.setSelectionAnchor(getPoint());
 }
 
-void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before)
+void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before, bool bNoUpdate)
 {
 	// delete the current selection.
 	// NOTE: this must clear the selection.
@@ -388,23 +388,42 @@ void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before)
 	bool bDeleteTables = !isInTable(iLow) && !isInTable(iHigh);
 	if(!bDeleteTables)
 	{
-		if(!isInTable(iLow-1) && isInTable(iHigh+1) && !isInTable(iHigh+2))
+		if(!isInTable(iLow-1) && (isInTable(iHigh+1) && !isInTable(iHigh+2)))
 		{
-			iLow = iLow;
-			iHigh = iHigh + 2;
+			if(isInTable(iLow) && !isInTable(iLow-1))
+			{
+				iLow = iLow-1;
+			}
+			if(isInTable(iHigh+1) && !isInTable(iHigh+2))
+			{
+				iHigh = iHigh+1;
+			}
 			bDeleteTables = true;
 		}
 	}
+	if(!isInFrame(iLow) && isInFrame(iHigh))
+	{
+		fl_FrameLayout * pFL = getFrameLayout(iHigh);
+		iHigh =pFL->getPosition(true)-1;
+	}
+	if(isInFrame(iLow) && !isInFrame(iHigh))
+	{
+		fl_FrameLayout * pFL = getFrameLayout(iLow);
+		iHigh =pFL->getPosition(true) + pFL->getLength() -1;
+	}
+
 	_resetSelection();
-	_clearBetweenPositions(iLow, iHigh, true);
+
+	if(!bNoUpdate)
+		_clearBetweenPositions(iLow, iHigh, true);
 
 	bool bOldDelete = m_pDoc->isDontImmediateLayout();
-	if(bDeleteTables)
+	if(bDeleteTables || bNoUpdate)
 	{
 		m_pDoc->setDontImmediatelyLayout(true);
 	}
 	m_pDoc->deleteSpan(iLow, iHigh, p_AttrProp_Before, iRealDeleteCount, bDeleteTables);
-	if(bDeleteTables)
+	if(bDeleteTables || bNoUpdate)
 	{
 		m_pDoc->setDontImmediatelyLayout(bOldDelete);
 	}
@@ -947,9 +966,19 @@ PT_DocPosition FV_View::_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp,
 	{
 		if (pBlock->getNextBlockInDocument())
 		{
+			fl_BlockLayout * pPrev = pBlock;
 			// BOB for next block
 			pBlock = pBlock->getNextBlockInDocument();
-			iPos = pBlock->getPosition();
+			if((pBlock->myContainingLayout()->getContainerType() == FL_CONTAINER_FRAME) && 
+			   (pPrev->myContainingLayout()->getContainerType() != FL_CONTAINER_FRAME))
+			{
+				fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(pBlock->myContainingLayout());
+				iPos = pFL->getPosition(true) -1;
+			}
+			else
+			{
+				iPos = pBlock->getPosition();
+			}
 		}
 		else
 		{
@@ -2549,36 +2578,96 @@ FV_View::_findGetNextBlockBuffer(fl_BlockLayout** pBlock,
 	// Have we already searched all the text in this buffer?
 	if (*pOffset >= pBuffer.getLength())
 	{
-		// Then return a fresh new block's buffer
-		newBlock = (*pBlock)->getNextBlockInDocument();
-
-		// Are we at the end of the document?
-		if (!newBlock)
+		bool bNeedNewBlock = true;
+		
+		// if pBlock was inside some kind of an embeded section, we need to make sure we
+		// have finished searching the enclosing block
+		if((*pBlock)->isEmbeddedType())
 		{
-			// Then wrap (fetch the first block in the doc)
-			PT_DocPosition startOfDoc;
-			getEditableBounds(false, startOfDoc);
+			
+			fl_ContainerLayout * pCL = (*pBlock)->myContainingLayout();
+			UT_ASSERT((pCL->getContainerType() == FL_CONTAINER_FOOTNOTE) || (pCL->getContainerType() == FL_CONTAINER_ENDNOTE) );
+			fl_EmbedLayout * pFL = static_cast<fl_EmbedLayout *>(pCL);
+			if(pFL->isEndFootnoteIn())
+			{
+				PL_StruxDocHandle sdhStart = pCL->getStruxDocHandle();
+				PL_StruxDocHandle sdhEnd = NULL;
+				if(pCL->getContainerType() == FL_CONTAINER_FOOTNOTE)
+				{
+					getDocument()->getNextStruxOfType(sdhStart,PTX_EndFootnote, &sdhEnd);
+				}
+				else
+				{
+					getDocument()->getNextStruxOfType(sdhStart,PTX_EndEndnote, &sdhEnd);
+				}
 
-			newBlock = m_pLayout->findBlockAtPosition(startOfDoc);
+				if(sdhEnd)
+				{
+					PT_DocPosition posStart = getDocument()->getStruxPosition(sdhStart);
+					PT_DocPosition posEnd = getDocument()->getStruxPosition(sdhEnd);
+					UT_uint32 iSize = posEnd - posStart + 1;
+					PL_StruxFmtHandle  psfh = NULL;
+					getDocument()->getStruxOfTypeFromPosition((*pBlock)->getDocLayout()->getLID(),posStart,PTX_Block, &psfh);
+					newBlock = reinterpret_cast<fl_BlockLayout *>(const_cast<void *>(psfh));
 
-			m_wrappedEnd = true;
+					PT_DocPosition iPos = _BlockOffsetToPos(*pBlock, *pOffset);
+					PT_DocPosition iEncBlockPos = newBlock->getPosition(false);
 
-			UT_ASSERT(newBlock);
+					newOffset = iPos - iEncBlockPos;
+
+					pBuffer.truncate(0);
+					
+					if (!newBlock->getBlockBuf(&pBuffer))
+					{
+						UT_DEBUGMSG(("Block %p (a ->next block) has no buffer.\n",
+									 newBlock));
+						UT_ASSERT(0);
+					}
+
+					if(pBuffer.getLength() > newOffset)
+					{
+						// still stuff left in our containing block
+						bNeedNewBlock = false;
+					}
+					
+				}
+			}
 		}
 
-		// Re-assign the buffer contents for our new block
-		pBuffer.truncate(0);
-		// The offset starts at 0 for a fresh buffer
-		newOffset = 0;
-
-		if (!newBlock->getBlockBuf(&pBuffer))
+		if(bNeedNewBlock)
 		{
-			UT_DEBUGMSG(("Block %p (a ->next block) has no buffer.\n",
-						 newBlock));
-			UT_ASSERT(0);
-		}
+			// Then return a fresh new block's buffer
+			newBlock = (*pBlock)->getNextBlockInDocument();
 
-		// Good to go with a full buffer for our new block
+			// Are we at the end of the document?
+			if (!newBlock)
+			{
+				// Then wrap (fetch the first block in the doc)
+				PT_DocPosition startOfDoc;
+				getEditableBounds(false, startOfDoc);
+
+				newBlock = m_pLayout->findBlockAtPosition(startOfDoc);
+
+				m_wrappedEnd = true;
+
+				UT_ASSERT(newBlock);
+			}
+
+			// Re-assign the buffer contents for our new block
+			pBuffer.truncate(0);
+
+			// The offset starts at 0 for a fresh buffer
+			newOffset = 0;
+			if (!newBlock->getBlockBuf(&pBuffer))
+			{
+				UT_DEBUGMSG(("Block %p (a ->next block) has no buffer.\n",
+							 newBlock));
+				UT_ASSERT(0);
+			}
+
+			// Good to go with a full buffer for our new block
+		}
+		
 	}
 	else
 	{
@@ -2592,9 +2681,11 @@ FV_View::_findGetNextBlockBuffer(fl_BlockLayout** pBlock,
 	// so, we need to size our length accordingly
 	if (m_wrappedEnd && _BlockOffsetToPos(newBlock, newOffset) + pBuffer.getLength() >= m_startPosition)
 	{
-		bufferLength = (m_startPosition - (newBlock)->getPosition(false)) - newOffset;
+		// sanity check
+		if(m_startPosition > (newBlock)->getPosition(false) + newOffset)
+			bufferLength = (m_startPosition - (newBlock)->getPosition(false)) - newOffset;
 	}
-	else
+	else if(pBuffer.getLength() > newOffset)
 	{
 		bufferLength = pBuffer.getLength() - newOffset;
 	}
@@ -2783,7 +2874,7 @@ bool FV_View::_insertField(const char* szName,
 }
  
 bool
-FV_View::_findReplaceReverse(UT_uint32* pPrefix, bool& bDoneEntireDocument)
+FV_View::_findReplaceReverse(UT_uint32* pPrefix, bool& bDoneEntireDocument, bool bNoUpdate)
 {
 	UT_ASSERT(m_sFind && m_sReplace);
 
@@ -2801,7 +2892,7 @@ FV_View::_findReplaceReverse(UT_uint32* pPrefix, bool& bDoneEntireDocument)
 
 		if (!isSelectionEmpty())
 		{
-			_deleteSelection(&AttrProp_Before);
+			_deleteSelection(&AttrProp_Before, bNoUpdate);
 		}
 
 		// If we have a string with length, do an insert, else let it
@@ -2817,7 +2908,8 @@ FV_View::_findReplaceReverse(UT_uint32* pPrefix, bool& bDoneEntireDocument)
 		// Do not increase the insertion point index, since the insert
 		// span will leave us at the correct place.
 
-		_generalUpdate();
+		if(!bNoUpdate)
+			_generalUpdate();
 
 
 		// If we've wrapped around once, and we're doing work before
@@ -2854,7 +2946,7 @@ FV_View::_findReplaceReverse(UT_uint32* pPrefix, bool& bDoneEntireDocument)
  will then do a search for pFind.
 */
 bool
-FV_View::_findReplace(UT_uint32* pPrefix, bool& bDoneEntireDocument)
+FV_View::_findReplace(UT_uint32* pPrefix, bool& bDoneEntireDocument, bool bNoUpdate)
 {
 	UT_ASSERT(m_sFind && m_sReplace);
 
@@ -2872,7 +2964,7 @@ FV_View::_findReplace(UT_uint32* pPrefix, bool& bDoneEntireDocument)
 
 		if (!isSelectionEmpty())
 		{
-			_deleteSelection(&AttrProp_Before);
+			_deleteSelection(&AttrProp_Before, bNoUpdate);
 		}
 
 		// If we have a string with length, do an insert, else let it
@@ -2885,7 +2977,8 @@ FV_View::_findReplace(UT_uint32* pPrefix, bool& bDoneEntireDocument)
 		// Do not increase the insertion point index, since the insert
 		// span will leave us at the correct place.
 
-		_generalUpdate();
+		if(!bNoUpdate)
+			_generalUpdate();
 
 		// If we've wrapped around once, and we're doing work before
 		// we've hit the point at which we started, then we adjust the
@@ -3012,87 +3105,13 @@ void FV_View::_extSel(UT_uint32 iOldPoint)
 	{
 		return;
 	}
-
-	if (iNewPoint < iOldPoint)
+	if(iOldPoint < iNewPoint)
 	{
-		if (iNewPoint < m_Selection.getSelectionAnchor())
-		{
-			if (iOldPoint < m_Selection.getSelectionAnchor())
-			{
-				/*
-				  N O A
-				  The selection got bigger.  Both points are
-				  left of the anchor.
-				*/
-				_drawBetweenPositions(iNewPoint, iOldPoint);
-			}
-			else
-			{
-				/*
-				  N A O
-				  The selection flipped across the anchor to the left.
-				*/
-				bres = _clearBetweenPositions(m_Selection.getSelectionAnchor(), iOldPoint, true);
-				if(bres)
-					_drawBetweenPositions(iNewPoint, iOldPoint);
-			}
-		}
-		else
-		{
-			UT_ASSERT(iOldPoint >= m_Selection.getSelectionAnchor());
-
-			/*
-			  A N O
-			  The selection got smaller.  Both points are to the
-			  right of the anchor
-			*/
-
-			bres = _clearBetweenPositions(iNewPoint, iOldPoint, true);
-			if(bres)
-				_drawBetweenPositions(iNewPoint, iOldPoint);
-		}
+		_drawBetweenPositions(iOldPoint, iNewPoint);
 	}
 	else
 	{
-		UT_ASSERT(iNewPoint > iOldPoint);
-
-		if (iNewPoint < m_Selection.getSelectionAnchor())
-		{
-			UT_ASSERT(iOldPoint <= m_Selection.getSelectionAnchor());
-
-			/*
-			  O N A
-			  The selection got smaller.  Both points are
-			  left of the anchor.
-			*/
-
-			bres =_clearBetweenPositions(iOldPoint, iNewPoint, true);
-			if(bres)
-				_drawBetweenPositions(iOldPoint, iNewPoint);
-		}
-		else
-		{
-			if (iOldPoint < m_Selection.getSelectionAnchor())
-			{
-				/*
-				  O A N
-				  The selection flipped across the anchor to the right.
-				*/
-
-				bres = _clearBetweenPositions(iOldPoint, m_Selection.getSelectionAnchor(), true);
-				if(bres)
-					_drawBetweenPositions(iOldPoint, iNewPoint);
-			}
-			else
-			{
-				/*
-				  A O N
-				  The selection got bigger.  Both points are to the
-				  right of the anchor
-				*/
-				_drawBetweenPositions(iOldPoint, iNewPoint);
-			}
-		}
+		_drawBetweenPositions(iNewPoint,iOldPoint);
 	}
 }
 
@@ -3351,12 +3370,21 @@ bool FV_View::_drawOrClearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition 
 			da.yoff = yoff + pLine->getAscent();
 			if(!bClear)
 			{
+				xxx_UT_DEBUGMSG(("Draw Position Low %d High %d anchor %d point %d \n",iPos1,iPos2,getSelectionAnchor(),getPoint()));
+//				UT_sint32 iLow = getSelectionAnchor();
+//				UT_sint32 iHigh = getPoint();
+//				if(iHigh < iLow
+				pCurRun->setSelectionMode(iPos1-1,iPos2+1);
 				pCurRun->draw(&da);
+				pCurRun->clearSelectionMode();
 			}
 			else
 			{
+				xxx_UT_DEBUGMSG(("Clear Position Low %d High %d anchor %d point %d \n",iPos1,iPos2,getSelectionAnchor(),getPoint()));
+				pCurRun->setSelectionMode(iPos1-4,iPos2+4);
 				pCurRun->Run_ClearScreen(bFullLineHeight);
 				pCurRun->draw(&da);
+				pCurRun->clearSelectionMode();
 			}
 			fp_Page * pPage = pLine->getPage();
 			if((pPage != NULL) && (vecPages.findItem(pPage) <0))
@@ -4608,7 +4636,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars, bool bSkipCannotCo
 		_setPoint(posBOD);
 		bRes = false;
 	}
-	else if (static_cast<UT_sint32>(m_iInsPoint) >= static_cast<UT_sint32>(posEOD))
+	else if (static_cast<UT_sint32>(m_iInsPoint) > static_cast<UT_sint32>(posEOD))
 	{
 		m_bPointEOL = true;
 		_setPoint(posEOD);
@@ -5434,6 +5462,10 @@ void FV_View::_adjustDeletePosition(UT_uint32 &iDocPos, UT_uint32 &iCount)
 	fl_BlockLayout * pBlock = _findBlockAtPosition(iDocPos);
 
 	UT_return_if_fail( pBlock );
+	if(static_cast<UT_uint32>(pBlock->getLength()) <  iDocPos - pBlock->getPosition())
+	{
+		return;
+	}
 	
 	fp_Run * pRun = pBlock->findRunAtOffset(iDocPos - pBlock->getPosition());
 	UT_return_if_fail( pRun );
@@ -5455,6 +5487,10 @@ void FV_View::_adjustDeletePosition(UT_uint32 &iDocPos, UT_uint32 &iCount)
 
 		fl_BlockLayout * pEndBlock = _findBlockAtPosition(iOrigEndOffset);
 		UT_return_if_fail( pEndBlock );
+		if(static_cast<UT_uint32>(pEndBlock->getLength()) <  iOrigEndOffset - pEndBlock->getPosition())
+		{
+			return;
+		}
 		
 		fp_Run * pEndRun = pEndBlock->findRunAtOffset(iOrigEndOffset - pEndBlock->getPosition());
 		UT_return_if_fail( pEndRun );

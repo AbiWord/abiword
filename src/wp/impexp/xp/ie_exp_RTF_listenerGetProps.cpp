@@ -488,19 +488,30 @@ void s_RTF_ListenerGetProps::_compute_span_properties(const PP_AttrProp * pSpanA
 	// write it out now.  so, we build a vector of the stuff we want
 	// to write (and make sure it's unique).
 
-	_rtf_font_info fi(s_RTF_AttrPropAdapter_AP(pSpanAP,pBlockAP,pSectionAP,m_pDocument));
-	UT_sint32 ndxFont = m_pie->_findFont(&fi);
-	if (ndxFont == -1)
-		m_pie->_addFont(&fi);
+	UT_sint32 ndxFont;
+
+	{
+		_rtf_font_info fi;
+
+		if (fi.init(s_RTF_AttrPropAdapter_AP(pSpanAP,pBlockAP,pSectionAP,m_pDocument))) {
+			ndxFont = m_pie->_findFont(&fi);
+			if (ndxFont == -1)
+				m_pie->_addFont(&fi);
+		}
+	}
+
 //
 // Look in field-font too
 //
-	_rtf_font_info fii(s_RTF_AttrPropAdapter_AP(pSpanAP,pBlockAP,pSectionAP,m_pDocument),true);
-	ndxFont = m_pie->_findFont(&fii);
-	if (ndxFont == -1)
-		m_pie->_addFont(&fii);
+	{
+		_rtf_font_info fii;
 
-	return;
+		if (fii.init(s_RTF_AttrPropAdapter_AP(pSpanAP,pBlockAP,pSectionAP,m_pDocument),true)) {
+			ndxFont = m_pie->_findFont(&fii);
+			if (ndxFont == -1)
+				m_pie->_addFont(&fii);
+		}
+	}
 }
 
 

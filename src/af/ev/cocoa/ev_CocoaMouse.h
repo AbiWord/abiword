@@ -43,8 +43,6 @@ static EV_EditMouseButton _convertMouseButton(int btn, bool rightBtn);
 static EV_EditModifierState _convertModifierState(unsigned int modifiers, bool & rightBtn);
 
 protected:
-	UT_uint32				m_clickState;	/* {NoClick,SingleClick,DoubleClick} */
-	EV_EditMouseContext		m_contextState;	/* mouse context of click */
 };
 
 #endif // EV_COCOAMOUSE_H

@@ -58,6 +58,11 @@
 
 #include "ut_sleep.h"
 
+// define this if you want fp_Run::lookupProperties() to dump props and attr belonging to
+// this run. NB this has a very adverse effect on performance, so it should be turned off
+// before committing
+//#define FPRUN_PROPS_MINI_DUMP
+
 #ifdef _MSC_VER
 // MSVC++ warns about using 'this' in initializer list.
 #pragma warning(disable: 4355)
@@ -131,7 +136,10 @@ fp_Run::fp_Run(fl_BlockLayout* pBL,
 	m_iTmpX(0),
 	m_iTmpY(0),
 	m_iTmpWidth(0),
-	m_pTmpLine(NULL)
+	m_pTmpLine(NULL),
+	m_bDrawSelection(false),
+	m_iSelLow(0),
+	m_iSelHigh(0)
 {
 	xxx_UT_DEBUGMSG(("fp_Run %x created!!! \n",this));
 	pBL->setPrevListLabel(false);
@@ -215,6 +223,45 @@ bool fp_Run::isInSelectedTOC(void)
 }
 
 /*!
+ * The following are methods to avoid flickering while changing a selection.
+ * The idea is to generate a cliprect around just the selected text.
+ */
+
+/*!
+ * Set the selection draw mode.
+ */
+void fp_Run::setSelectionMode(PT_DocPosition posLow, PT_DocPosition posHigh)
+{
+	m_bDrawSelection = true;
+	m_iSelLow = posLow;
+	m_iSelHigh = posHigh;
+}
+
+/*!
+ * Clear the selection mode
+ */
+void fp_Run::clearSelectionMode(void)
+{
+	m_bDrawSelection = false;
+	m_iSelLow = 0;
+	m_iSelHigh = 0;
+}
+
+bool fp_Run::isSelectionDraw(void) const
+{
+	return m_bDrawSelection;
+}
+
+PT_DocPosition fp_Run::posSelLow(void) const
+{
+	return m_iSelLow;
+}
+
+PT_DocPosition fp_Run::posSelHigh(void) const
+{
+	return m_iSelHigh;
+}
+/*!
  * This method looks at the values of TmpX and TmpWidth and compares them
  * to the new ones. If they're different we do a clearscreen on them.
  */
@@ -255,7 +302,7 @@ bool fp_Run::clearIfNeeded(void)
 void fp_Run::Fill(GR_Graphics * pG, UT_sint32 x, UT_sint32 y, UT_sint32 width,
 				  UT_sint32 height)
 {
-	xxx_UT_DEBUGMSG(("-------------------Fill called!!!!----\n"));
+	xxx_UT_DEBUGMSG(("-------------------Fill called!!!!---- x %d width %d \n",x,width));
 	if((width < 1) || (height < 1))
 	{
 		return;
@@ -311,6 +358,11 @@ void fp_Run::lookupProperties(GR_Graphics * pG)
 
 	PD_Document * pDoc = m_pBL->getDocument();
 
+#ifdef FPRUN_PROPS_MINI_DUMP
+	UT_DEBUGMSG(("fp_Run::lookupProperties: dumping block AP\n"));
+	if(pBlockAP)
+		pBlockAP->miniDump(pDoc);
+#endif
 	// examining the m_pRevisions contents is too involved, it is
 	// faster to delete it and create a new instance if needed
 	if(m_pRevisions)
@@ -333,6 +385,12 @@ void fp_Run::lookupProperties(GR_Graphics * pG)
 	}
 	xxx_UT_DEBUGMSG(("fp_Run: pSpanAP %x \n",pSpanAP));
 
+#ifdef FPRUN_PROPS_MINI_DUMP
+	UT_DEBUGMSG(("fp_Run::lookupProperties: dumping span AP\n"));
+	if(pSpanAP)
+		pSpanAP->miniDump(pDoc);
+#endif
+	
 	//evaluate the "display" property and superimpose it over anything
 	//we got as the result of revisions
 	const XML_Char *pszDisplay = PP_evalProperty("display",pSpanAP,pBlockAP,
@@ -371,7 +429,7 @@ void fp_Run::lookupProperties(GR_Graphics * pG)
 	// any properties the revision contains.
 
 }
-
+#undef FPRUN_PROPS_MINI_DUMP
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
@@ -736,6 +794,7 @@ bool fp_Run::isFirstVisRunOnLine(void) const
 
 void fp_Run::markAsDirty(void)
 {
+	xxx_UT_DEBUGMSG(("Run %x marked dirty \n"));
 	m_bDirty = true;
 }
 
@@ -856,14 +915,41 @@ void fp_Run::Run_ClearScreen(bool bFullLineHeightRect)
 		// nothing to clear if this run is not currently on a line
 		return;
 	}
-	xxx_UT_DEBUGMSG(("SEVIOR: Doing clear screen in run %x \n",this));
+	xxx_UT_DEBUGMSG(("SEVIOR: Doing Run_ClearScreen in run %x \n",this));
 	if(getLine()->getContainer() != NULL)
 	{
 		if(getLine()->getContainer()->getPage() != 0)
 		{
-
+			UT_Rect clip(0,0,0,0);
+			if(isSelectionDraw())
+			{
+				if(getType() == FPRUN_TEXT)
+				{
+					UT_sint32 xoff,yoff;
+					getLine()->getScreenOffsets(this, xoff, yoff);
+					UT_sint32 xLeft = xoff;
+					UT_sint32 x1,y1,x2,y2,height;
+					bool bDir;
+					if(posSelLow() > getBlock()->getPosition(true) + getBlockOffset())
+					{
+						findPointCoords(posSelLow() - getBlock()->getPosition(true), x1,y1,x2,y2,height,bDir);
+						xLeft = x1 + _getView()->getPageViewLeftMargin();
+					}
+					UT_sint32 xRight = xLeft + getWidth();
+					if(posSelHigh() < getBlock()->getPosition(true) + getBlockOffset() + getLength())
+					{
+						findPointCoords(posSelHigh() - getBlock()->getPosition(true) +1, x1,y1,x2,y2,height,bDir);
+						xRight = x1 + _getView()->getPageViewLeftMargin();;
+					}
+					clip.set(xLeft,yoff,xRight-xLeft,getLine()->getHeight());
+					getGraphics()->setClipRect(&clip);
+				}
+			}
 			_clearScreen(bFullLineHeightRect);
-
+			if(isSelectionDraw())
+			{
+				getGraphics()->setClipRect(NULL);
+			}
 			// make sure we only get erased once
 			_setDirty(true);
 			m_bIsCleared = true;
@@ -981,7 +1067,34 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 		m_pG = pG;
 	}
 	pG->setColor(getFGColor());
+	UT_Rect clip(0,0,0,0);
+	if(isSelectionDraw())
+	{
+		if((getType() == FPRUN_TEXT) && getLine())
+		{
+			UT_sint32 xLeft = pDA->xoff;
+			UT_sint32 x1,y1,x2,y2,height;
+			bool bDir;
+			if(posSelLow() > getBlock()->getPosition(true) + getBlockOffset())
+			{
+				findPointCoords(posSelLow() - getBlock()->getPosition(true), x1,y1,x2,y2,height,bDir);
+				xLeft = x1 + _getView()->getPageViewLeftMargin();
+			}
+			UT_sint32 xRight = xLeft + getWidth();
+			if(posSelHigh() < getBlock()->getPosition(true) + getBlockOffset() + getLength())
+			{
+				findPointCoords(posSelHigh() - getBlock()->getPosition(true) +1, x1,y1,x2,y2,height,bDir);
+				xRight = x1 + _getView()->getPageViewLeftMargin();
+			}
+			clip.set(xLeft,pDA->yoff-getLine()->getAscent(),xRight-xLeft,getLine()->getHeight());
+			pDA->pG->setClipRect(&clip);
+		}
+	}
 	_draw(pDA);
+	if(isSelectionDraw())
+	{
+		pDA->pG->setClipRect(NULL);
+	}
 	FV_View* pView = _getView();
 	UT_return_if_fail(pView);
 	bool bShowRevs = pView->isShowRevisions();
@@ -1049,6 +1162,7 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 		painter.drawLine(pDA->xoff, pDA->yoff, pDA->xoff + m_iWidth, pDA->yoff);
 
 	}
+	m_bIsCleared = false;
 	_setDirty(false);
 	if(pG->queryProperties(GR_Graphics::DGP_PAPER))
 	{
@@ -2341,7 +2455,7 @@ fp_BookmarkRun::fp_BookmarkRun( fl_BlockLayout* pBL,
 	: fp_Run(pBL, iOffsetFirst, iLen, FPRUN_BOOKMARK)
 {
 	m_pBookmark = getBlock()->getBookmark(iOffsetFirst);
-	UT_ASSERT(m_pBookmark);
+	UT_return_if_fail(m_pBookmark);
 
 	_setDirty(true);
 
@@ -3043,10 +3157,37 @@ void fp_ImageRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	{
 		p = pDSL->getDocLayout()->getNthPage(0);
 	}
-	UT_sint32 maxW = p->getWidth() - UT_convertToLogicalUnits("0.1in"); 
-	UT_sint32 maxH = p->getHeight() - UT_convertToLogicalUnits("0.1in");
-	maxW -= pDSL->getLeftMargin() + pDSL->getRightMargin();
-	maxH -= pDSL->getTopMargin() + pDSL->getBottomMargin();
+	UT_sint32 maxW = static_cast<UT_sint32>(static_cast<double>(pDSL->getActualColumnWidth())*0.95);
+	UT_sint32 maxH = static_cast<UT_sint32>(static_cast<double>(pDSL->getActualColumnHeight())*0.95);
+	fl_ContainerLayout * pCL = getBlock()->myContainingLayout();
+	if(pCL && pCL->getContainerType() == FL_CONTAINER_FRAME)
+	{
+		fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(pCL);
+		maxW = pFL->getFrameWidth();
+		maxH = pFL->getFrameHeight();
+	}
+	else if (pCL && pCL->getContainerType() == FL_CONTAINER_CELL)
+	{
+		fl_CellLayout * pCell = static_cast<fl_CellLayout *>(pCL);
+		maxW = static_cast<UT_sint32>(static_cast<double>(maxW)*0.95);
+		maxH = static_cast<UT_sint32>(static_cast<double>(maxH)*0.95);
+		if(pCell->getCellWidth() > pG->tlu(2) && pCell->getCellWidth() < maxW)
+		{
+			maxW = pCell->getCellWidth();
+		}
+		if(pCell->getCellHeight() > pG->tlu(2) && pCell->getCellHeight() < maxH)
+		{
+			maxH = pCell->getCellHeight();
+		}
+	}
+	if(pG->tdu(maxW) < 3)
+	{
+		maxW = pG->tlu(3);
+	}
+	if(pG->tdu(maxH) < 3)
+	{
+		maxH = pG->tlu(3);
+	}
 
 	if((strcmp(m_sCachedWidthProp.c_str(),szWidth) != 0) ||
 	   (strcmp(m_sCachedHeightProp.c_str(),szHeight) != 0) ||
@@ -3534,7 +3675,7 @@ void fp_FieldRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 		_setColorHL(r);
 	}
 
-
+	
 	const XML_Char* pszType = NULL;
 	const XML_Char* pszParam = NULL;
 
@@ -3640,8 +3781,8 @@ void fp_FieldRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 		}
 		q = strtok(NULL, " ");
 	}
-	free(p);
 
+	free(p);
 }
 
 
@@ -5387,3 +5528,6 @@ void fp_Run::updateOnDelete(UT_uint32 offset, UT_uint32 iLenToDelete)
 
 	setLength(m_iLen - iLen, true);
 }
+
+// house keeping
+#undef FPRUN_PROPS_MINI_DUMP

@@ -416,17 +416,8 @@ GtkWidget * AP_UnixDialog_FormatTable::_constructWindow(void)
 
 //	add the buttons for background image to the dialog.
 
-	m_wSelectImageButton = glade_xml_get_widget(xml, "btnSelectImage");
-	m_wNoImageButton = glade_xml_get_widget(xml, "btnNoImageBackground");
-
-	
-	// the toggle buttons created by glade already contain a label, remove that, so we can add a pixmap as a child
-	gtk_container_remove(GTK_CONTAINER(m_wSelectImageButton), gtk_bin_get_child(GTK_BIN(m_wSelectImageButton)));
-	gtk_container_remove(GTK_CONTAINER(m_wNoImageButton), gtk_bin_get_child(GTK_BIN(m_wNoImageButton)));
-
-
-	label_button_with_abi_pixmap(m_wSelectImageButton, "tb_insert_graphic_xpm");
-	label_button_with_abi_pixmap(m_wNoImageButton, "tb_remove_graphic_xpm");
+	m_wSelectImageButton = glade_xml_get_widget(xml, "btSelectImage");
+	m_wNoImageButton = glade_xml_get_widget(xml, "btNoImageBackground");
 	
 	localizeLabel(glade_xml_get_widget(xml, "lbSelectImage"), pSS, AP_STRING_ID_DLG_FormatTable_SelectImage);
 	
@@ -439,14 +430,14 @@ GtkWidget * AP_UnixDialog_FormatTable::_constructWindow(void)
 	// add the custom color picker buttons to the dialog
 	m_wBorderColorButton = gtk_color_picker_new();
 	gtk_widget_show(m_wBorderColorButton);
-	gtk_table_attach(GTK_TABLE (glade_xml_get_widget(xml, "tbBorderContent")), m_wBorderColorButton, 1, 2, 0, 1,
+	gtk_table_attach(GTK_TABLE (glade_xml_get_widget(xml, "tbBorder")), m_wBorderColorButton, 3, 4, 1, 2,
                     (GtkAttachOptions) (GTK_FILL), (GtkAttachOptions) (0), 
 					0, 0);
 					
 	// add the custom color picker buttons to the dialog
 	m_wBackgroundColorButton = gtk_color_picker_new();
 	gtk_widget_show(m_wBackgroundColorButton);
-	gtk_box_pack_start(GTK_BOX (glade_xml_get_widget(xml, "hbBackgroundColor")), m_wBackgroundColorButton, FALSE, TRUE, 0);	
+	gtk_box_pack_start(GTK_BOX (glade_xml_get_widget(xml, "hbBackgroundColor")), m_wBackgroundColorButton, TRUE, TRUE, 0);	
 
 //
 // Now the Border Thickness Option menu

@@ -107,12 +107,14 @@ auto_iconv::auto_iconv(UT_iconv_t iconv)
 auto_iconv::auto_iconv(const char * in_charset, const char *out_charset)
   UT_THROWS((UT_iconv_t))
 {
-  UT_iconv_t cd = UT_iconv_open (out_charset, in_charset);
-  
-  if (!UT_iconv_isValid(cd))
-    UT_THROW(cd);
+	m_h = UT_ICONV_INVALID;
 
-  m_h = cd;
+	UT_iconv_t cd = UT_iconv_open (out_charset, in_charset);
+	
+	if (!UT_iconv_isValid(cd))
+		UT_THROW(cd);
+	
+	m_h = cd;
 }
 
 /*!

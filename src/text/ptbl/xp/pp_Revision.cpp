@@ -507,9 +507,15 @@ void PP_RevisionAttr::pruneForCumulativeResult(PD_Document * pDoc)
     // explode the style if present
 	if(pDoc)
 		r0->explodeStyle(pDoc);
+
+#if 0
+	// I do not think we should do this -- the emptiness indicates that the props and
+	// attributes should be removed from the format; if we remove them, we irreversibly
+	// lose this information
 	
 	// get rid of any empty props and attrs
 	r0->prune();
+#endif
 	
 	// finally, remove the revision attribute if present
 	const XML_Char * v;

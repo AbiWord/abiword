@@ -23,6 +23,7 @@
 #include <commctrl.h>
 #include "ut_vector.h"
 #include "xap_Frame.h"
+#define ID_APPLY	0x3021
 
 /*****************************************************************/
 
@@ -48,15 +49,15 @@ public:
 	void 						createPage(XAP_Win32App* pWin32App, WORD wRscID, XAP_String_Id	nID = 0);	
 	PROPSHEETPAGE*				getStruct(){return &m_page;}
 	XAP_Win32App*				getApp(){return m_pWin32App;}
-	HWND						getHandle(){return m_hWnd;}
-	XAP_Win32PropertySheet*		getParent(){return m_pParent;}
+	HWND						getHandle(){return m_hWnd;}	
 	void						setDialogProc(DLGPROC pfnDlgProc){m_pfnDlgProc=pfnDlgProc;};	
 	virtual	void				_onInitDialog(){};
 	virtual	void				_onKillActive(){}; 	
-	virtual	void				_onOK(){}; 	
+	virtual	void				_onOK(){}; 		
+	virtual	void				_onApply(){}; 
 	virtual void				_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam){};
 	static int CALLBACK			s_pageWndProc(HWND hWnd, UINT msg, WPARAM wParam,LPARAM lParam);
-	
+	void						setChanged (bool bChanged); // Unables or disables apply button
 	
 	
 private:
@@ -78,16 +79,25 @@ public:
 	
 public:
 
-	int							runModal(XAP_Win32App* pWin32App,XAP_Frame*	pFrame, XAP_String_Id	nID = 0);							
+	int							runModal(XAP_Win32App* pWin32App,XAP_Frame*	pFrame, XAP_String_Id	nID = 0);
+	int 						runModeless (XAP_Win32App* pWin32App, XAP_Frame * pFrame, XAP_String_Id nID = 0);
 	void 						addPage(XAP_Win32PropertyPage* pPage);
 	PROPSHEETPAGE* 				_buildPageArray(void);	
 	static int CALLBACK			s_sheetWndProc(HWND hWnd, UINT msg, WPARAM wParam,LPARAM lParam);	
 	virtual	void				_onInitDialog(HWND hwnd){};	
-	void						setDialogProc(DLGPROC pfnDlgProc){m_pfnDlgProc=pfnDlgProc;};	
-	virtual int					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam){return 1;};
-	void						setApplyButton(bool b){m_bApplyButton=b;};	
 	void 						destroy(void);
+	HWND						getHandle(){return m_hWnd;}
+
 	void						setCallBack(PFNPROPSHEETCALLBACK pCallback) {m_pCallback=pCallback;};
+	void						setDialogProc(DLGPROC pfnDlgProc){m_pfnDlgProc=pfnDlgProc;};		
+	void						setApplyButton(bool b){m_bApplyButton=b;};	
+	void						setOkButton(bool b){m_bOkButton=b;};	
+	
+
+	virtual int					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam){return 1;};
+	virtual	void				_onOK(){}; 
+	virtual	void				_onApply(){}; 
+	virtual	void				_onCancel(){}; 
 	
 	int							m_nRslt;
 private:	
@@ -99,6 +109,9 @@ private:
 	DLGPROC						m_pfnDlgProc;
 	WHICHPROC 					m_lpfnDefSheet; 
 	bool						m_bApplyButton;
+	bool						m_bOkButton;
+	PROPSHEETPAGE*				m_pages;
+	bool						m_modeless;
 	
 };
 

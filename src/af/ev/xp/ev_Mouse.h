@@ -24,6 +24,8 @@
 #define EV_MOUSE_H
 
 #include "ut_types.h"
+#include "ev_EditBits.h"
+
 class EV_EditEventMapper;
 class EV_EditMethod;
 class AV_View;
@@ -37,9 +39,11 @@ public:
 							  UT_sint32 xPos,
 							  UT_sint32 yPos);
 	void setEditEventMap(EV_EditEventMapper * pEEM);
-
+	void clearMouseContext(void);
 protected:
 	EV_EditEventMapper *	m_pEEM;
+	UT_uint32			m_clickState;	/* {NoClick,SingleClick,DoubleClick} */
+	EV_EditMouseContext	m_contextState;	/* mouse context of click */
 };
 
 #endif /* EV_MOUSE_H */
