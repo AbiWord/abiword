@@ -315,10 +315,13 @@ BOOL AP_Win32Dialog_Replace::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		if (!m_pView->isSelectionEmpty()) 
 		{
 		// if there's a selection, clear it
-			if (m_pView->getSelectionText() != NULL) 
+			UT_UCS4Char * pSelection;
+			m_pView->getSelectionText(pSelection);
+			
+			if ( pSelection != NULL) 
 			{
 				PT_DocPosition pt = m_pView->getSelectionAnchor();
-				PT_DocPosition ln = UT_UCS4_strlen (m_pView->getSelectionText());
+				PT_DocPosition ln = UT_UCS4_strlen (pSelection);
 				if (currentVal)
 				{
 					m_pView->moveInsPtTo(pt);
@@ -329,6 +332,8 @@ BOOL AP_Win32Dialog_Replace::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 				}
 				m_pView->cmdUnselectSelection();
 			}
+
+			FREEP(pSelection);
 		}
 
 		m_pView->findSetStartAtInsPoint();

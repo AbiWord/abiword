@@ -4800,7 +4800,8 @@ static bool s_doBookmarkDlg(FV_View * pView, bool /*bInsert*/)
 UT_return_val_if_fail(pDialog, false);
 	if (!pView->isSelectionEmpty())
 	{
-		UT_UCSChar * buffer = pView->getSelectionText();
+		UT_UCSChar * buffer;
+		pView->getSelectionText(buffer);
 		pDialog->setSuggestedBM(buffer);
 		FREEP(buffer);
 	}
@@ -6052,7 +6053,8 @@ UT_return_val_if_fail(pDialog, false);
 	// current selection.
 	if (!pView->isSelectionEmpty())
 	{
-		UT_UCSChar * buffer = pView->getSelectionText();
+		UT_UCSChar * buffer;
+		pView->getSelectionText(buffer);
 
 		pDialog->setFindString(buffer);
 
@@ -6260,10 +6262,14 @@ UT_return_val_if_fail(pDialog, false);
 	}
 
 	if(!pView->isSelectionEmpty())
-	  {
+	{
 	    // set the drawable string to the selection text
-	    pDialog->setDrawString(pView->getSelectionText());
-	  }
+		// the pointer return by getSelectionText() must be freed
+		UT_UCS4Char* text;
+		pView->getSelectionText(text);
+		pDialog->setDrawString(text);
+		FREEP(text);
+	}
 
 	// run the dialog
 

@@ -4604,8 +4604,14 @@ void FV_View::delTo(FV_DocPos dp)
 	_restorePieceTableState();
 
 	_fixInsertionPointCoords();
+
 }
 
+UT_uint32 FV_View::getSelectionLength(void) const
+{
+	return static_cast<UT_uint32>(labs(m_iInsPoint - m_Selection.getSelectionAnchor()));
+}
+	
 /*
 	This function is somewhat of a compromise.	It will return a new
 	range of memory (destroy with free()) full of what's in the selection,
@@ -4618,13 +4624,13 @@ void FV_View::delTo(FV_DocPos dp)
 
 	The caller must free the returned pointer !!!
 */
-UT_UCSChar * FV_View::getSelectionText(void)
+void FV_View::getSelectionText(UT_UCS4Char * & pText)
 {
 	UT_ASSERT(!isSelectionEmpty());
 
 	UT_GrowBuf buffer;
 
-	UT_sint32 selLength = static_cast<UT_sint32>(labs(m_iInsPoint - m_Selection.getSelectionAnchor()));
+	UT_sint32 selLength = getSelectionLength();
 
 	PT_DocPosition low;
 	if (m_iInsPoint > m_Selection.getSelectionAnchor())
@@ -4664,13 +4670,20 @@ UT_UCSChar * FV_View::getSelectionText(void)
 		}
 		bufferSegment = static_cast<UT_UCSChar *>(UT_calloc(selLength + 1, sizeof(UT_UCSChar)));
 
+		if(!bufferSegment)
+		{
+			pText = NULL;
+			return;
+		}
+		
 		// copy it out
 		memmove(bufferSegment, buffer.getPointer(offset), selLength * sizeof(UT_UCSChar));
 
-	 return bufferSegment;
+		pText = bufferSegment;
+		return;
 	}
 
-	return NULL;
+	pText = NULL;
 }
 
 /* this function has not been debugged

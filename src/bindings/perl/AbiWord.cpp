@@ -521,11 +521,12 @@ XS(XS_AbiWord__FV_View_getSelectionText); /* prototype to pass -Wmissing-prototy
 XS(XS_AbiWord__FV_View_getSelectionText)
 {
     dXSARGS;
-    if (items != 1)
-	Perl_croak(aTHX_ "Usage: AbiWord::FV_View::getSelectionText(pView)");
+    if (items != 2)
+	Perl_croak(aTHX_ "Usage: AbiWord::FV_View::getSelectionText(pView, pText)");
     {
 	FV_View*	pView;
-	char *	RETVAL;
+	UT_UCS4Char *& pText = (UT_UCS4Char *&)SvPV_nolen(ST(1));;
+	char * RETVAL;
 	dXSTARG;
 
 	if (sv_isobject(ST(0)) && (SvTYPE(SvRV(ST(0))) == SVt_PVMG))
@@ -536,10 +537,11 @@ XS(XS_AbiWord__FV_View_getSelectionText)
 #line 243 "AbiWord.xs"
 		if (!pView->isSelectionEmpty())
 		{
-			UT_UCSChar* text = pView->getSelectionText();
-			UT_uint32 size = UT_UCS4_strlen(text);
+			pView->getSelectionText(pText);
+			UT_uint32 size = UT_UCS4_strlen(pText);
 			RETVAL = (char*) malloc(size);
-			UT_UCS4_strcpy_to_char(RETVAL, text);
+			UT_UCS4_strcpy_to_char(RETVAL, pText);
+			FREEP(text);
 		}
 		else
 		{
@@ -820,7 +822,7 @@ XS(boot_AbiWord)
         newXSproto("AbiWord::FV_View::getPoint", XS_AbiWord__FV_View_getPoint, file, "$");
         newXSproto("AbiWord::FV_View::find", XS_AbiWord__FV_View_find, file, "$$$");
         newXSproto("AbiWord::FV_View::replace", XS_AbiWord__FV_View_replace, file, "$$$$");
-        newXSproto("AbiWord::FV_View::getSelectionText", XS_AbiWord__FV_View_getSelectionText, file, "$");
+        newXSproto("AbiWord::FV_View::getSelectionText", XS_AbiWord__FV_View_getSelectionText, file, "$$");
         cv = newXS("AbiWord::FV_View::print", XS_AbiWord__FV_View_print, file);
         XSANY.any_i32 = 1 ;
         sv_setpv((SV*)cv, "$") ;

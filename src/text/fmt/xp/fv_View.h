@@ -154,6 +154,7 @@ public:
 	
 	virtual inline PT_DocPosition   getPoint(void) const { return m_iInsPoint; }
 	PT_DocPosition	getSelectionAnchor(void) const;
+	UT_uint32       getSelectionLength(void) const;
 
 	virtual void focusChange(AV_Focus focus);
 
@@ -302,7 +303,7 @@ public:
 	bool			cmdCharInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce = false);
 	void			cmdCharDelete(bool bForward, UT_uint32 count);
 	void			delTo(FV_DocPos dp);
-	UT_UCSChar *	getSelectionText(void);
+	void            getSelectionText(UT_UCS4Char *& text);
 
 	UT_UCSChar *	getTextBetweenPos(PT_DocPosition pos1, PT_DocPosition pos2);
 	inline PT_DocPosition  getInsPoint () const { return m_iInsPoint; }
