@@ -231,8 +231,7 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
 			   XAP_App * pApp = m_pFrame->getApp();
 
 			   if (!m_pDoc->isIgnore(m_pWord, m_iWordLength) &&
-				   !pApp->isWordInDict(m_pWord, m_iWordLength) &&
-				   !_spellCheckWord(m_pWord, m_iWordLength)) 
+			       !_spellCheckWord(m_pWord, m_iWordLength)) 
 			   {
 				   // unknown word... prepare list of possibilities
 				   SpellChecker * checker = _getDict();

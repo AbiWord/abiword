@@ -180,6 +180,11 @@ ISpellChecker::checkWord(const UT_UCSChar *word32, size_t length)
     else
       retVal = SpellChecker::LOOKUP_ERROR;
     
+    // Look the word up in the dictionary, return if found
+    if (retVal != SpellChecker::LOOKUP_SUCCEEDED)
+      if (XAP_App::getApp ()->isWordInDict(word32, length))
+	retVal = SpellChecker::LOOKUP_SUCCEEDED;
+
     return retVal; /* 0 - not found, 1 on found, -1 on error */
 }
 

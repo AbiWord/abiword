@@ -2699,10 +2699,6 @@ fl_BlockLayout::_doCheckWord(fl_PartOfBlock* pPOB,
 		if (_spellCheckWord(pWord, iLength, iBlockPos))
 			break;
 
-		// Look the word up in the dictionary, return if found
-		if (pApp->isWordInDict(pWord, iLength))
-			break;
-
 		// Find out if the word is in the document's list of ignored
 		// words
 		PD_Document * pDoc = m_pLayout->getDocument();
