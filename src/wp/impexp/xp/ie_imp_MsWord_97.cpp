@@ -4090,11 +4090,12 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height)
   propsArray[3] = static_cast<const XML_Char *>(propsName.c_str());
   propsArray[4] = 0;
 
-  if(!m_bInPara)
-  {
-	  _appendStrux(PTX_Block, NULL);
-	  m_bInPara = true ;
-  }
+  if (!_ensureInBlock())
+        {
+	  UT_DEBUGMSG (("_ensureInBlock() failed\n"));
+	  error = UT_ERROR;
+	  goto Cleanup;
+	}
 
   if (!_appendObject (PTO_Image, propsArray))
 	{
@@ -6040,6 +6041,34 @@ bool IE_Imp_MsWord_97::_shouldUseInsert() const
 	return ((m_bInFNotes || m_bInENotes) && !m_bInHeaders && !m_bInTextboxes);
 }
 
+bool IE_Imp_MsWord_97::_ensureInBlock()
+{
+
+  bool bret = true;
+
+  pf_Frag * pf = getDoc()->getLastFrag();
+  while(pf && pf->getType() != pf_Frag::PFT_Strux)
+    {
+      pf = pf->getPrev();
+    }
+    if(pf && (pf->getType() == pf_Frag::PFT_Strux) )
+    {
+      pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);
+      if(pfs->getStruxType() != PTX_Block)
+      {
+        bret = _appendStrux(PTX_Block, NULL);
+	if (bret) m_bInPara = true;
+      }
+    }
+    else if( pf == NULL)
+    {
+      bret = _appendStrux(PTX_Block, NULL);
+      if (bret) m_bInPara = true;
+    }
+
+    return bret;
+}
+ 
 bool IE_Imp_MsWord_97::_appendStrux(PTStruxType pts, const XML_Char ** attributes)
 {
 	if(pts == PTX_SectionFrame)
