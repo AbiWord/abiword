@@ -64,7 +64,7 @@ const XML_Char * XAP_StringSet::getLanguageName(void) const
 	return m_szLanguageName;
 }
 
-UT_String XAP_StringSet::getValue(XAP_String_Id id, const char * inEncoding)
+UT_String XAP_StringSet::getValue(XAP_String_Id id, const char * inEncoding) const
 {
   const char * toTranslate = getValue(id);
 
@@ -91,7 +91,7 @@ UT_String XAP_StringSet::getValue(XAP_String_Id id, const char * inEncoding)
   UT_END_CATCH
 }
 
-UT_String XAP_StringSet::getValueUTF8(XAP_String_Id id)
+UT_String XAP_StringSet::getValueUTF8(XAP_String_Id id) const
 {
   // HACK- wildly sub-optimal. TODO: cache a UT_iconv_t cd
   return getValue(id, "UTF-8");
