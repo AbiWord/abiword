@@ -59,7 +59,12 @@ public:
 												  const XML_Char ** attributes,
 												  const XML_Char ** properties,
 												  UT_uint32 * pSubscript);
-	
+
+	UT_Bool					cloneWithElimination(const PP_AttrProp * papOld,
+												 const XML_Char ** attributes,
+												 const XML_Char ** properties,
+												 UT_uint32 * pSubscript);
+ 
 protected:
 	UT_Vector				m_vecTable;
 };

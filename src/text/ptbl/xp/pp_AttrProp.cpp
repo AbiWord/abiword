@@ -284,3 +284,37 @@ UT_Bool PP_AttrProp::areAlreadyPresent(const XML_Char ** attributes, const XML_C
 	return UT_TRUE;						// everything matched
 }
 
+UT_Bool PP_AttrProp::areAnyOfTheseNamesPresent(const XML_Char ** attributes, const XML_Char ** properties) const
+{
+	// return TRUE if any attribute- or property-name is present.
+	// this is like areAlreadyPresent() but we don't care about
+	// the values.
+
+	if (attributes && *attributes)
+	{
+		const XML_Char ** p = attributes;
+		while (*p)
+		{
+			const XML_Char * szValue = NULL;
+			if (getAttribute(p[0],szValue))
+				return UT_TRUE;
+			p += 2;						// skip over value
+		}
+	}
+
+	if (properties && *properties)
+	{
+		const XML_Char ** p = properties;
+		while (*p)
+		{
+			const XML_Char * szValue = NULL;
+			if (getProperty(p[0],szValue))
+				return UT_TRUE;
+			p += 2;						// skip over value
+		}
+	}
+
+	return UT_FALSE;					// didn't find any
+}
+
+	

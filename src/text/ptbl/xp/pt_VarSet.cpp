@@ -212,7 +212,19 @@ UT_Bool pt_VarSet::mergeAP(PTChangeFmt ptc, PT_AttrPropIndex apiOld,
 
 	case PTC_RemoveFmt:
 		{
-			UT_ASSERT(0);				// TODO
+			if (!papOld->areAnyOfTheseNamesPresent(attributes,properties))
+			{
+				// none of the given attributes/properties are present in this set.
+				// the remove has no effect.
+				*papiNew = apiOld;
+				return UT_TRUE;
+			}
+			UT_uint32 subscript = 0;
+			if (m_tableAttrProp[m_currentVarSet].cloneWithElimination(papOld,attributes,properties,&subscript))
+			{
+				*papiNew = _makeAPIndex(m_currentVarSet,subscript);
+				return UT_TRUE;
+			}
 		}
 		return UT_FALSE;
 		

@@ -61,6 +61,7 @@ public:
 	UT_Bool getProperty(const XML_Char * szName, const XML_Char *& szValue) const;
 
 	UT_Bool areAlreadyPresent(const XML_Char ** attributes, const XML_Char ** properties) const;
+	UT_Bool areAnyOfTheseNamesPresent(const XML_Char ** attributes, const XML_Char ** properties) const;
 
 protected:
 	UT_HashTable * m_pAttributes;
