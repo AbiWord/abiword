@@ -4004,6 +4004,18 @@ static UT_Bool s_doBreakDlg(FV_View * pView)
 	return bOK;
 }
 
+static UT_Dimension 
+fp_2_dim (fp_PageSize::Unit u)
+{
+  switch (u)
+    {
+    case fp_PageSize::cm   : return DIM_CM;
+    case fp_PageSize::mm   : return DIM_MM;
+    case fp_PageSize::inch :
+    default :
+      return DIM_IN;
+    }
+}
 
 static UT_Bool s_doPageSetupDlg (FV_View * pView)
 {
@@ -4045,7 +4057,7 @@ static UT_Bool s_doPageSetupDlg (FV_View * pView)
 	orig_scale = pDoc->m_docPageSize.getScale();
 
 	pDialog->setPageUnits(orig_unit);
-	pDialog->setPageScale(100.0*orig_scale);
+	pDialog->setPageScale((int)(100.0*orig_scale));
 
 	//
 	// Set the second page of info
@@ -4193,6 +4205,15 @@ static UT_Bool s_doPageSetupDlg (FV_View * pView)
 		      pFrame->setZoomPercentage(izoom);
 	       }
 	}
+
+	XAP_Prefs * pPrefs = pApp->getPrefs();
+	UT_ASSERT(pPrefs);	
+	XAP_PrefsScheme *pPrefsScheme = pPrefs->getCurrentScheme();
+	UT_ASSERT(pPrefsScheme);
+
+	pPrefsScheme->setValue((XML_Char*)AP_PREF_KEY_RulerUnits,
+			       (XML_Char*)UT_dimensionName(fp_2_dim (final_unit)));
+
 	//
 	// Recover ppView
 	//
