@@ -171,8 +171,7 @@ BOOL CALLBACK XAP_Win32Dialog_Language::s_treeProc(HWND hWnd,UINT msg,WPARAM wPa
 	if (msg==WM_LBUTTONDBLCLK)
 	{
 		pThis = (XAP_Win32Dialog_Language *)GetWindowLong(hWnd,GWL_USERDATA);
-		TVITEM tvi;
-		HTREEITEM hItem;
+		TVITEM tvi;		
 		
 		// Selected item
 		tvi.hItem =  (HTREEITEM)::SendMessage(hWnd, TVM_GETNEXTITEM, TVGN_CARET, 0);
@@ -250,8 +249,7 @@ BOOL XAP_Win32Dialog_Language::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPara
 	WORD wNotifyCode = HIWORD(wParam);
 	WORD wId = LOWORD(wParam);
 	HWND hWndCtrl = (HWND)lParam;
-	HWND hWndList = NULL; 
-	UT_sint32 nItem;	
+	HWND hWndList = NULL; 	
 
 	switch (wId)
 	{
@@ -263,8 +261,7 @@ BOOL XAP_Win32Dialog_Language::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPara
 
 	case IDOK:							// also XAP_RID_DIALOG_LANGUAGE_BTN_OK
 	{
-		TVITEM tvi;
-		HTREEITEM hItem;
+		TVITEM tvi;		
 		HWND hWndTree = GetDlgItem(hWnd, XAP_RID_DIALOG_LANGUAGE_TREE_LANGUAGE);
 		
 		// Selected item
