@@ -156,7 +156,7 @@ BOOL AP_Win32Dialog_Insert_Symbol::_onInitDialog(HWND hWnd, WPARAM wParam, LPARA
 	LOGFONT LogFont;
 	LogFont.lfCharSet = SYMBOL_CHARSET;
 	LogFont.lfFaceName[0] = '\0';
-	EnumFontFamiliesEx(hDCScreen, &LogFont, fontEnumProcedure, (LPARAM)this, 0);
+	EnumFontFamiliesEx(hDCScreen, &LogFont, (FONTENUMPROC)fontEnumProcedure, (LPARAM)this, 0);
 	DeleteDC(hDCScreen);
 
 	// Select the current font.
