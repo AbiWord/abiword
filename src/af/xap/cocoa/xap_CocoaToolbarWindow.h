@@ -33,6 +33,8 @@
 {
 	XAP_CocoaFrameController *	m_current;
 	NSMutableArray *			m_windows;
+	NSString *					m_SummaryID;
+	NSRect						m_bounds;
 
 	BOOL	m_lock;
 }
@@ -51,6 +53,8 @@
 - (void)unlock;
 
 - (void)_showAllToolbars:(XAP_CocoaFrameController *)frame;
+
+- (float)height;
 
 - (void)showToolbarNotification:(NSNotification *)notif;
 - (void)hideToolbarNotification:(NSNotification *)notif;

@@ -85,6 +85,10 @@ static XAP_CocoaToolbarWindow_Controller * s_pSharedToolbar = nil;
 			[self release];
 			self = 0;
 		}
+		m_SummaryID = @"";
+		[m_SummaryID retain];
+
+		m_bounds.size.height = 0;
 	}
 	if (self)
 	{
@@ -104,12 +108,20 @@ static XAP_CocoaToolbarWindow_Controller * s_pSharedToolbar = nil;
 		[m_windows release];
 		m_windows = 0;
 	}
+	[m_SummaryID release];
+
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 	[super dealloc];
 }
 
 - (void)removeAllToolbars
 {
+	[m_SummaryID release];
+	m_SummaryID = @"";
+	[m_SummaryID retain];
+
+	m_bounds.size.height = 0;
+
 	unsigned count = [m_windows count];
 
 	for (unsigned i = 0; i < count; i++)
@@ -137,11 +149,25 @@ static XAP_CocoaToolbarWindow_Controller * s_pSharedToolbar = nil;
 
 - (void)_showAllToolbars:(XAP_CocoaFrameController *)frame
 {
-	[self removeAllToolbars];
-
 	UT_ASSERT(frame);
 	if (!frame)
+	{
+		[self removeAllToolbars];
 		return;
+	}
+
+	NSString * SummaryID = [frame getToolbarSummaryID];
+	if ([m_SummaryID isEqualToString:SummaryID])
+	{
+		XAP_CocoaFrameImpl::setToolbarRect(m_bounds);
+		return;
+	}
+
+	[self removeAllToolbars];
+
+	[m_SummaryID release];
+	m_SummaryID = SummaryID;
+	[m_SummaryID retain];
 
 	NSArray * toolbars = [frame getToolbars];
 
@@ -192,8 +218,16 @@ static XAP_CocoaToolbarWindow_Controller * s_pSharedToolbar = nil;
 		[[window contentView] addSubview:view];
 	}
 	visibleFrame.origin.y = visibleFrame.origin.y + visibleFrame.size.height - offset_y;
+	visibleFrame.size.height = offset_y;
 
-	XAP_CocoaFrameImpl::setToolbarRect(visibleFrame);
+	m_bounds = visibleFrame;
+
+	XAP_CocoaFrameImpl::setToolbarRect(m_bounds);
+}
+
+- (float)height
+{
+	return m_bounds.size.height;
 }
 
 - (void)lock
@@ -219,8 +253,15 @@ static XAP_CocoaToolbarWindow_Controller * s_pSharedToolbar = nil;
 	}
 	m_current = frame;
 
-	[self removeAllToolbars];
-	[self _showAllToolbars:frame];
+	unsigned count = [m_windows count];
+	if (!count)
+		return;
+
+	for (unsigned i = 0; i < count; i++)
+	{
+		NSWindowController * controller = (NSWindowController *) [m_windows objectAtIndex:i];
+		[[controller window] orderFront:self];
+	}
 }
 
 - (void)hideToolbarNotification:(NSNotification*)notif
@@ -230,9 +271,17 @@ static XAP_CocoaToolbarWindow_Controller * s_pSharedToolbar = nil;
 		NSLog(@"attempt to hide toolbar for a different frame.");
 		return;
 	}
-	[self removeAllToolbars];
 	m_current = nil;
-	[[self window] orderOut:self];
+
+	unsigned count = [m_windows count];
+	if (!count)
+		return;
+
+	for (unsigned i = 0; i < count; i++)
+	{
+		NSWindowController * controller = (NSWindowController *) [m_windows objectAtIndex:i];
+		[[controller window] orderFront:self];
+	}
 }
 
 @end

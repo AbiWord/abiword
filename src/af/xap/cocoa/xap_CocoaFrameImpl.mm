@@ -43,6 +43,8 @@
 #import "xap_CocoaFrameImpl.h"
 #import "xap_CocoaTextView.h"
 #import "xap_CocoaTimer.h"
+#import "xap_CocoaToolbarWindow.h"
+#import "xap_CocoaToolPalette.h"
 #import "xap_FrameImpl.h"
 #import "xap_Frame.h"
 
@@ -285,10 +287,36 @@ void XAP_CocoaFrameImpl::_createTopLevelWindow(void)
 	m_pCocoaApp->getGeometry(&x, &y, &width, &height, &f);
 
 	// Set the size if requested
+	NSSize userSize;
+	// userSize.width  = (width  < 300.0f) ? 300.0f : static_cast<float>(width);
+	// userSize.height = (height < 300.0f) ? 300.0f : static_cast<float>(height);
 
 	if (f & XAP_CocoaApp::GEOMETRY_FLAG_SIZE)
 	{
 		NSRect screenFrame = [[NSScreen mainScreen] visibleFrame];
+
+		screenFrame.size.height -= [[XAP_CocoaToolbarWindow_Controller sharedToolbar] height];
+
+		if ([XAP_CocoaToolPalette instantiated])
+		{
+			NSWindow * palettePanel = [[XAP_CocoaToolPalette instance:theWindow] window];
+			if ([palettePanel isVisible])
+			{
+				NSRect paletteFrame = [palettePanel frame];
+				if (paletteFrame.origin.x < screenFrame.origin.x + 10.0f) // panel at left
+				{
+					screenFrame.origin.x   += paletteFrame.size.width;
+					screenFrame.size.width -= paletteFrame.size.width;
+				}
+				else if (paletteFrame.origin.x + paletteFrame.size.width > screenFrame.origin.x + screenFrame.size.width - 10.0f) // panel at right
+				{
+					screenFrame.size.width -= paletteFrame.size.width;
+				}
+			}
+		}
+
+		userSize.height = screenFrame.size.height;
+		userSize.width  = rintf(screenFrame.size.height * 0.9f);
 
 		screenFrame.origin.x    += s_iNewFrameOffsetX;
 		screenFrame.size.height -= s_iNewFrameOffsetY;
@@ -297,10 +325,10 @@ void XAP_CocoaFrameImpl::_createTopLevelWindow(void)
 		s_iNewFrameOffsetY = (s_iNewFrameOffsetY <  128) ? (s_iNewFrameOffsetY + 32) : 0;
 
 		NSRect windowFrame;
-		windowFrame.size.width  = UT_MIN(screenFrame.size.width - 30, 813);
-		windowFrame.size.height = UT_MIN(screenFrame.size.height, 836);
+		windowFrame.size.width  = UT_MIN(screenFrame.size.width,  userSize.width ); // 813);
+		windowFrame.size.height = UT_MIN(screenFrame.size.height, userSize.height); // 836);
 		windowFrame.origin.x = screenFrame.origin.x;
-		windowFrame.origin.y = screenFrame.size.height - windowFrame.size.height;
+		windowFrame.origin.y = screenFrame.origin.y + screenFrame.size.height - windowFrame.size.height;
 
 		[theWindow setFrame:windowFrame display:YES];
 	}
@@ -650,6 +678,28 @@ void XAP_CocoaFrameImpl::setToolbarRect(const NSRect &r)
 		}
 	}
 	return array;
+}
+
+- (NSString *)getToolbarSummaryID
+{
+	UT_UTF8String SummaryID;
+
+	const UT_GenericVector<EV_Toolbar *> & toolbars = m_frame->_getToolbars();
+
+	UT_uint32 count = toolbars.getItemCount();
+
+	for (UT_uint32 i = 0; i < count; i++) {
+		const EV_CocoaToolbar * tlbr = static_cast<const EV_CocoaToolbar *>(toolbars[i]);
+		UT_ASSERT(tlbr);
+
+		if (!tlbr->isHidden()) {
+			SummaryID += "+";
+		}
+		else {
+			SummaryID += "-";
+		}
+	}
+	return [NSString stringWithUTF8String:(SummaryID.utf8_str())];
 }
 
 @end
