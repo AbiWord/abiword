@@ -60,7 +60,8 @@ ie_PartTable::ie_PartTable(PD_Document * pDoc) :
 	m_iRight(-1),
 	m_iTop(-1),
 	m_iBot(-1),
-	m_TableSDH(NULL)
+	m_TableSDH(NULL),
+	m_bIsCellJustOpenned(false)
 {
 }
 
@@ -79,6 +80,7 @@ void ie_PartTable::_clearAllCell(void)
 	m_iRight = -1;
 	m_iTop = -1;
 	m_iBot = -1;
+	m_bIsCellJustOpenned = false;
 }
 
 /*!
@@ -92,6 +94,16 @@ void ie_PartTable::_clearAll(void)
 	m_iNumRows = 0;
 	m_iNumCols = 0;
 	m_TableSDH = NULL;
+}
+
+void ie_PartTable::setCellJustOpenned(bool b)
+{
+	m_bIsCellJustOpenned = b;
+}
+
+bool ie_PartTable::isCellJustOpenned(void)
+{
+	return m_bIsCellJustOpenned;
 }
 
 /*!
@@ -306,8 +318,22 @@ void ie_Table::OpenCell(PT_AttrPropIndex iApi)
 	ie_PartTable * pPT = NULL;
 	m_sLastTable.viewTop(reinterpret_cast<void **>(&pPT));
 	pPT->setCellApi(iApi);
+	pPT->setCellJustOpenned(true);
 }
 
+bool ie_Table::isCellJustOpenned(void)
+{
+	ie_PartTable * pPT = NULL;
+	m_sLastTable.viewTop(reinterpret_cast<void **>(&pPT));
+	return pPT->isCellJustOpenned();
+}
+
+void ie_Table::setCellJustOpenned(bool b)
+{
+	ie_PartTable * pPT = NULL;
+	m_sLastTable.viewTop(reinterpret_cast<void **>(&pPT));
+	pPT->setCellJustOpenned(b);
+}
 
 /*!
  * Return the current table SDH for debugging purposes.

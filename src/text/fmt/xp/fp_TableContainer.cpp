@@ -2621,11 +2621,11 @@ void fp_TableContainer::deleteBrokenTables(bool bClearFirst)
 	if(bClearFirst)
 	{
 		clearScreen();
+		//
+		// Remove broken Table pointers
+		//
+		clearBrokenContainers();
 	}
-	//
-	// Remove broken Table pointers
-	//
-	clearBrokenContainers();
 	fp_TableContainer * pBroke = NULL;
 	fp_TableContainer * pNext = NULL;
 	fp_TableContainer * pLast = NULL;

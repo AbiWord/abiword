@@ -1165,10 +1165,10 @@ void s_RTF_ListenerWriteDoc::_newRow(void)
 // output cellx for each cell
 //
 		double thisX = 0.0;
-		UT_uint32 j =0;
+		UT_sint32 j =0;
 		if(vecColProps.getItemCount() > 0)
 		{
-			for(j= 0; (j< m_Table.getRight()) && (j < vecColProps.getItemCount()); j++)
+			for(j= 0; (j< m_Table.getRight()) && (j < static_cast<UT_sint32>(vecColProps.getItemCount())); j++)
 			{
 				fl_ColProps * pColP = static_cast<fl_ColProps *>(vecColProps.getNthItem(j));
 				double bigWidth = static_cast<double>(pColP->m_iColWidth);
@@ -1936,13 +1936,22 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 	{
 		// begin a new paragraph. The previous
 		// definitions get applied now.
-		if(!m_bOpennedFootnote)
+		bool bJustOpennedCell = false;
+		if(m_Table.getNestDepth() > 0)
+		{
+			bJustOpennedCell = m_Table.isCellJustOpenned();
+		}
+		if(!m_bOpennedFootnote && !bJustOpennedCell)
 		{
 			m_pie->_rtf_keyword("par");
 		}
-		else
+		else if(!m_bOpennedFootnote)
 		{
 			m_bOpennedFootnote = false;
+		}
+		else if(bJustOpennedCell)
+		{
+			m_Table.setCellJustOpenned(false);
 		}
 		if(m_bStartedList)
 		{

@@ -50,6 +50,8 @@ class ABI_EXPORT ie_PartTable
 	UT_sint32        getNumCols(void);
 	PL_StruxDocHandle getTableSDH(void)
 		{ return m_TableSDH;}
+	void             setCellJustOpenned(bool b);
+	bool             isCellJustOpenned(void);
  private:
 	void                  _setRowsCols(void);
 	void                  _clearAll(void);
@@ -66,6 +68,7 @@ class ABI_EXPORT ie_PartTable
 	UT_sint32             m_iTop;
 	UT_sint32             m_iBot;
 	PL_StruxDocHandle     m_TableSDH;
+	bool                  m_bIsCellJustOpenned;
 };			
 
 
@@ -91,6 +94,8 @@ class ABI_EXPORT ie_Table
 	UT_sint32        getNestDepth(void);
 	void             setCellRowCol(UT_sint32 row, UT_sint32 col);
 	PL_StruxDocHandle getTableSDH(void);
+	void             setCellJustOpenned(bool b);
+	bool             isCellJustOpenned(void);
  private:
 	PD_Document *     m_pDoc;
 	UT_Stack          m_sLastTable;
