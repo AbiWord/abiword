@@ -62,10 +62,10 @@ BeginSet(it,IT,true)
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_COPY,		"Copia",		tb_copy_xpm,	NULL, "Copia")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_PASTE,		"Incolla",		tb_paste_xpm,	NULL, "Incolla")
         ToolbarLabel(AP_TOOLBAR_ID_SPELLCHECK, "Controllo ortografico", tb_spellcheck_xpm, NULL, "Controlla l'ortografia del documento")
-	ToolbarLabel(AP_TOOLBAR_ID_IMG, "Inserisci immagine", tb_insert_graphic_xpm, NULL, "Inserisci una immagine nel documento")
+	ToolbarLabel(AP_TOOLBAR_ID_IMG, "Inserisci immagine", tb_insert_graphic_xpm, NULL, "Inserisci un'immagine nel documento")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_STYLE,		"Stile",		NoIcon,			NULL, "Stile")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_FONT,		"Carattere",	NoIcon,			NULL, "Carattere")
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_SIZE,		"Grandezza carattere", NoIcon,		NULL, "Grandezza carattere")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_SIZE,		"Dimensione carattere", NoIcon,		NULL, "Grandezza carattere")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_BOLD,		"Grassetto",	tb_text_bold_G_xpm,		NULL, "Grassetto")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_ITALIC,		"Italico",		tb_text_italic_xpm,		NULL, "Italico")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_UNDERLINE,	"Sottolineato",	tb_text_underline_S_xpm,	NULL, "Sottolineato")
@@ -101,6 +101,10 @@ BeginSet(it,IT,true)
         ToolbarLabel(AP_TOOLBAR_ID_COLOR_BACK,		"Colore dell sfondo",	tb_text_bgcolor_xpm,			NULL, "Cambia il colore dello sfondo")
         ToolbarLabel(AP_TOOLBAR_ID_INDENT, "Aumenta il rientro", tb_text_indent_xpm, NULL, "Aumenta la distanza del rientro dal margine")
         ToolbarLabel(AP_TOOLBAR_ID_UNINDENT, "Diminuisci il rientro", tb_text_unindent_xpm, NULL, "Diminuisci la distanza del rientro dal margine")
+
+#ifdef ABI_OPT_JS
+	ToolbarLabel(AP_TOOLBAR_ID_SCRIPT_PLAY,		"Esegui script",	tb_script_play_xpm,		NULL, "Esegui script")
+#endif
 
 	// ... add others here ...
 #ifdef BIDI_ENABLED
