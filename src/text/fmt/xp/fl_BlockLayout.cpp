@@ -7494,6 +7494,8 @@ fl_BlockLayout::findGrammarSquigglesForRun(fp_Run* pRun)
 			// one.
 			if (iFirst != iLast)
 				iStart = pPOB->getOffset();
+			if(iStart < pTextRun->getBlockOffset())
+				iStart = pTextRun->getBlockOffset();
 			iEnd =	pPOB->getOffset() + pPOB->getLength();
 			if (iEnd > runBlockEnd) iEnd = runBlockEnd;
 			pTextRun->drawSquiggle(iStart, iEnd - iStart,FL_SQUIGGLE_GRAMMAR);

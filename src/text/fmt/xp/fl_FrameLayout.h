@@ -174,7 +174,8 @@ private:
 	UT_sint32               m_iYPage;
 
 	UT_sint32               m_iBoundingSpace;
-    FL_FrameWrapMode        m_iFrameWrapMode;
+        FL_FrameWrapMode        m_iFrameWrapMode;
+	bool                    m_bIsTightWrap;
 };
 
 #endif /* FRAMELAYOUT_H */

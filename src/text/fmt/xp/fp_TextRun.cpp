@@ -2340,7 +2340,10 @@ void fp_TextRun::drawSquiggle(UT_uint32 iOffset, UT_uint32 iLen,FL_SQUIGGLE_TYPE
 	UT_sint32 xoff = 0, yoff = 0;
 	UT_sint32 iAscent = getLine()->getAscent();
 	UT_sint32 iDescent = getLine()->getDescent();
-
+	if(iOffset < getBlockOffset())
+	{
+	  iOffset = getBlockOffset();
+	}
 	// we'd prefer squiggle to leave one pixel below the baseline,
 	// but we need to force all three pixels inside the descent
 	// we cannot afford the 1pixel gap, it leave dirt on screen -- Tomas

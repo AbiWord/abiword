@@ -97,7 +97,8 @@ fl_FrameLayout::fl_FrameLayout(FL_DocLayout* pLayout,
 	  m_iXPage(0),
 	  m_iYPage(0),
 	  m_iBoundingSpace(0),
-	  m_iFrameWrapMode(FL_FRAME_ABOVE_TEXT)
+	  m_iFrameWrapMode(FL_FRAME_ABOVE_TEXT),
+	  m_bIsTightWrap(false)
 {
 	UT_ASSERT(m_pDocSL->getContainerType() == FL_CONTAINER_DOCSECTION);
 }
@@ -153,6 +154,7 @@ void 	fl_FrameLayout::setContainerProperties(void)
 	pFrame->setRightStyle(m_lineRight );
 	pFrame->setXpad(m_iXpad);
 	pFrame->setYpad(m_iYpad);
+	pFrame->setTightWrapping(m_bIsTightWrap);
 //
 // Now do the image for this frame.
 //
@@ -743,6 +745,7 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	const XML_Char * pszBorderWidth = NULL;
 
 	const XML_Char * pszBoundingSpace = NULL;
+	const XML_Char * pszTightWrapped = NULL;
 // Frame Type
 
 	if(!pSectionAP || !pSectionAP->getProperty("frame-type",pszFrameType))
@@ -821,6 +824,21 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 		UT_DEBUGMSG(("Unknown wrap-mode %s \n",pszWrapMode));
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		m_iFrameWrapMode = FL_FRAME_ABOVE_TEXT;
+	}
+	//
+	// Wrap type
+	//
+	if(!pSectionAP || !pSectionAP->getProperty("tight-wrap",pszTightWrapped))
+	{
+		m_bIsTightWrap = false;
+	}
+	else if(strcmp(pszTightWrapped,"1") == 0)
+	{
+		m_bIsTightWrap = true;
+	}
+	else
+	{
+		m_bIsTightWrap = false;
 	}
 
 // Xpos

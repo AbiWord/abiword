@@ -23,6 +23,7 @@
 #include "ut_bytebuf.h"
 #include "ut_svg.h"
 #include "ut_assert.h"
+#include <math.h>
 
 GR_Image::GR_Image()
   : m_szName(""), m_iDisplayWidth(0), m_iDisplayHeight(0)
@@ -79,10 +80,71 @@ void GR_Image::setName ( const char * name )
  *                | |
  *
  * This case would give a -ve distance.
+ * The input yTop is in logical units as measured from the top of the image.
+ * If y is above the image it should be negative.
+ * The returned value is in logical units.
  */
 UT_sint32 GR_Image::GetOffsetFromLeft(GR_Graphics * pG, UT_sint32 pad, UT_sint32 yTop, UT_sint32 height)
 {
-  return pad;
+  if(!hasAlpha())
+  {
+    return pad;
+  }
+  if(!isOutLinePresent())
+  {
+    GenerateOutline();
+  }
+  double minDist = 10000000;
+  double d = 0.0;
+  UT_uint32 i = 0;
+  double ddPad = static_cast<double>(pG->tdu(pad));
+  UT_sint32 diTop = pG->tdu(yTop);
+  UT_sint32 diHeight = pG->tdu(height);
+  double ddTop = static_cast<double>(diTop);
+  double ddHeight = static_cast<double>(diHeight);
+  GR_Image_Point * pPoint = NULL;
+  UT_uint32 nPts = m_vecOutLine.getItemCount()/2;
+  for(i=0; i < nPts;i++)
+  {
+    pPoint = m_vecOutLine.getNthItem(i);
+    if((pPoint->m_iY >= yTop) && (pPoint->m_iY <= (yTop + height)))
+    {
+      d = ddPad - static_cast<double>(pPoint->m_iX);
+    }
+    else
+    {
+      double y = ddTop + ddHeight;
+      if(abs(pPoint->m_iY - diTop) < abs(pPoint->m_iY - (diTop + diHeight)))
+      {
+	//
+	// Calculate from top point.
+	//
+	y = ddTop;
+      }
+      double dYP = static_cast<double>(pPoint->m_iY);
+      double root = ddPad*ddPad - (y - dYP)*(y - dYP);
+      if(root < 0.0)
+      {
+	//
+	// This point doesn't overlap at all
+	//
+	  d = 10000000;
+      }
+      else
+      {
+	d = ddPad - sqrt(root); 
+      }
+    }
+    if(d < minDist)
+    {
+      minDist = d;
+    }
+  }
+  if(minDist == 10000000)
+  {
+    minDist = static_cast<double>(-getDisplayWidth());
+  }
+  return pG->tlu(static_cast<UT_sint32>(minDist));
 }
 
 
@@ -95,13 +157,77 @@ UT_sint32 GR_Image::GetOffsetFromLeft(GR_Graphics * pG, UT_sint32 pad, UT_sint32
  *                |               |
  *                |      *        |
  *                |    *****      |
- *                |     ***       |
- *                |      **       |
- *                |---------------|
+ *                |     ***    ||||||||
+ *                |      **    |  |
+ *                |------------|--|
+ *                             |  |
+ *                             |  |
+ *                This distance is negative
+ * The input yTop is in logical units as measured from the top of the image.
+ * If y is above the image it should be negative.
+ * The returned value is in logical units.
  */
 UT_sint32 GR_Image::GetOffsetFromRight(GR_Graphics * pG, UT_sint32 pad, UT_sint32 yTop, UT_sint32 height)
 {
-  return pad;
+  if(!hasAlpha())
+  {
+    return pad;
+  }
+  if(!isOutLinePresent())
+  {
+    GenerateOutline();
+  }
+  double minDist = 10000000;
+  double d = 0.0;
+  UT_uint32 i = 0;
+  double ddPad = static_cast<double>(pG->tdu(pad));
+  UT_sint32 diTop = pG->tdu(yTop);
+  UT_sint32 diHeight = pG->tdu(height);
+  double ddTop = static_cast<double>(diTop);
+  double ddHeight = static_cast<double>(diHeight);
+  GR_Image_Point * pPoint = NULL;
+  UT_uint32 nPts = m_vecOutLine.getItemCount()/2;
+  for(i=nPts; i < m_vecOutLine.getItemCount();i++)
+  {
+    pPoint = m_vecOutLine.getNthItem(i);
+    if((pPoint->m_iY >= yTop) && (pPoint->m_iY <= (yTop + height)))
+    {
+      d = ddPad - (getDisplayWidth() - pPoint->m_iX);
+    }
+    else
+    {
+      double y = ddTop + ddHeight;
+      if(abs(pPoint->m_iY - diTop) < abs(pPoint->m_iY - (diTop + diHeight)))
+      {
+	//
+	// Calculate from top point.
+	//
+	y = ddTop;
+      }
+      double dYP = static_cast<double>(pPoint->m_iY);
+      double root = ddPad*ddPad - (y - dYP)*(y - dYP);
+      if(root < 0.0)
+      {
+	//
+	// This point doesn't overlap at all
+	//
+	  d = 10000000;
+      }
+      else
+      {
+	d = ddPad - (static_cast<double>(getDisplayWidth()) - sqrt(root)); 
+      }
+    }
+    if(d < minDist)
+    {
+      minDist = d;
+    }
+  }
+  if(minDist == 10000000)
+  {
+    minDist = static_cast<double>(-getDisplayWidth());
+  }
+  return pG->tlu(static_cast<UT_sint32>(minDist));
 }
 
 /*!

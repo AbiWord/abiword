@@ -93,6 +93,11 @@ public:
 		{m_bIsWrapped = bWrapping;}
 	bool                isWrappingSet(void) const
 		{ return m_bIsWrapped;}
+	void                setTightWrapping( bool bTight)
+	        { m_bIsTightWrapped = bTight;}
+	bool                isTightWrapped(void) const
+	        { return m_bIsTightWrapped;}
+
 private:
 	void                   _drawLine (const PP_PropertyMap::Line & style,
 									  UT_sint32 left, UT_sint32 top, 
@@ -112,8 +117,9 @@ private:
 	PP_PropertyMap::Line   m_lineLeft;
 	PP_PropertyMap::Line   m_lineRight;
 	PP_PropertyMap::Line   m_lineTop;
-    bool                   m_bOverWrote;
-    bool                   m_bIsWrapped;
+	bool                   m_bOverWrote;
+	bool                   m_bIsWrapped;
+	bool                   m_bIsTightWrapped;
 };
 
 
