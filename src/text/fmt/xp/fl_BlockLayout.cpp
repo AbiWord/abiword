@@ -4101,8 +4101,10 @@ bool fl_BlockLayout::_delete(PT_BlockOffset blockOffset, UT_uint32 len)
 					}
 					else if(pRun->getType()== FPRUN_TEXT)
 					{
+						// there should always be something left of
+						// this run
 						pTR_del1 = static_cast<fp_TextRun*>(pRun);
-
+						
 						if(pRun->getNext() && pRun->getNext()->getType()== FPRUN_TEXT)
 						{
 							pTR_next = static_cast<fp_TextRun*>(pRun->getNext());
@@ -4140,7 +4142,12 @@ bool fl_BlockLayout::_delete(PT_BlockOffset blockOffset, UT_uint32 len)
 					}
 					else if(pRun->getType()== FPRUN_TEXT)
 					{
-						if(!((iRunBlockOffset == blockOffset) && (iRunLength == len)))
+						// if the block offset is same as the run
+						// offset and deleted length is greater or
+						// equal to the run length, this whole run is
+						// going and we must do no further processing
+						// on it ...
+						if(!((iRunBlockOffset == blockOffset) && (iRunLength <= len)))
 							pTR_del1 = static_cast<fp_TextRun*>(pRun);
 
 						if(pRun->getNext() && pRun->getNext()->getType()== FPRUN_TEXT)
@@ -4219,6 +4226,20 @@ bool fl_BlockLayout::_delete(PT_BlockOffset blockOffset, UT_uint32 len)
 			if ((pRun->getLength() == 0) && (pRun->getType() != FPRUN_FMTMARK))
 			{
 				// Remove Run from line
+				// first, however, make sure that if this is our
+				// pTR_next run, we get the run after it in its place
+				if(pTR_next == pRun)
+				{
+					if(pRun->getNext() && pRun->getNext()->getType() == FPRUN_TEXT)
+					{
+						pTR_next =  static_cast<fp_TextRun*>(pRun->getNext());
+					}
+					else
+					{
+						pTR_next = NULL;
+					}
+				}
+				
 				fp_Line* pLine = pRun->getLine();
 				UT_ASSERT(pLine);
 				if(pLine)
@@ -4233,6 +4254,17 @@ bool fl_BlockLayout::_delete(PT_BlockOffset blockOffset, UT_uint32 len)
 				pRun->unlinkFromRunList();
 				delete pRun;
 
+				// make sure that we do not do any bidi
+				// post-processing on the delete run ...
+				if(pTR_del1 == pRun)
+					pTR_del1 = NULL;
+				
+				if(pTR_del2 == pRun)
+					pTR_del2 = NULL;
+
+				if(pTR_prev == pRun)
+					pTR_prev = NULL;
+				
 				if (!m_pFirstRun)
 				{
 					// When deleting content in a block, the EOP Run
