@@ -42,15 +42,11 @@ MINGRES_INCS=--include-dir=../../ap/win --include-dir=../../../af/xap/win
 CPPSRCS+=		dummy.cpp
 
 ABI_LIBS=	kernel32 user32 gdi32 winspool comdlg32 advapi32 \
-			shell32 uuid comctl32 ole32
+			shell32 uuid comctl32 ole32 version
 
 ifeq ($(ABI_OPT_UNICODE),1)
 ABI_LIBS += unicows
 endif			
-
-ifeq ($(ABI_OPT_DEBUG),1)
-ABI_LIBS += version
-endif
 
 LoadOrder=	AbiGr AbiFmt AbiPTbl AbiImpExp AbiXAp AbiWPAp \
 			AbiEv AbiUtil AbiImpExp AbiWordVer AbiSpell Abi_libwv fribidi \
