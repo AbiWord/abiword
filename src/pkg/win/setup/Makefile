@@ -74,7 +74,7 @@ _NSIS_:
 _BMP_PLUGIN_:
 	@if [ -d $(ABI_ROOT)/../abiword-plugins/wp/impexp/graphics/bmp ]; then	\
 		echo Found BMP graphic file filter plugin;	\
-		echo Building for use with Windows cut&paste support;	\
+		echo Building for use with Windows cut and paste support;	\
 		$(MAKE) -f Makefile -C $(ABI_ROOT)/../abiword-plugins/wp/impexp/graphics/bmp;	\
 	else	\
 		echo BMP graphic file filter plugin NOT found;	\
