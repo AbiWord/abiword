@@ -221,13 +221,13 @@ UT_UTF8Stringbuf::UT_UTF8Stringbuf (const UT_UTF8Stringbuf & rhs) :
 	append (rhs);
 }
 
-UT_UTF8Stringbuf::UT_UTF8Stringbuf (const char * sz) :
+UT_UTF8Stringbuf::UT_UTF8Stringbuf (const char * sz, size_t n /* == 0 => null-termination */) :
 	m_psz(0),
 	m_pEnd(0),
 	m_strlen(0),
 	m_buflen(0)
 {
-	append (sz);
+	append (sz, n);
 }
 
 UT_UTF8Stringbuf::~UT_UTF8Stringbuf ()
@@ -242,11 +242,11 @@ void UT_UTF8Stringbuf::operator=(const UT_UTF8Stringbuf & rhs)
 	append (rhs);
 }
 
-void UT_UTF8Stringbuf::assign (const char * sz)
+void UT_UTF8Stringbuf::assign (const char * sz, size_t n /* == 0 => null-termination */)
 {
 	m_pEnd = m_psz;
 	m_strlen = 0;
-	append (sz);
+	append (sz, n);
 }
 
 // returns 0 if invalid, or if end of string, i.e. 0
@@ -336,7 +336,7 @@ UT_UTF8Stringbuf::UCS4Char UT_UTF8Stringbuf::charCode (const char * str)
 	return ret_code;
 }
 
-void UT_UTF8Stringbuf::append (const char * sz)
+void UT_UTF8Stringbuf::append (const char * sz, size_t n /* == 0 => null-termination */)
 {
 	if (sz == 0) return;
 	if (!grow (strlen (sz) + 1)) return;
@@ -345,8 +345,9 @@ void UT_UTF8Stringbuf::append (const char * sz)
 	char buf[6];
 	int bytesInSequence = 0;
 	int bytesExpectedInSequence = 0;
+	size_t np = 0;
 
-	while (*p)
+	while ((!n && *p) || (np < n))
 	{
 		if ((*p & 0x80) == 0x00) // plain us-ascii part of latin-1
 		{
@@ -357,6 +358,7 @@ void UT_UTF8Stringbuf::append (const char * sz)
 			m_strlen++;
 
 			p++;
+			np++;
 			continue;
 		}
 
@@ -376,6 +378,7 @@ void UT_UTF8Stringbuf::append (const char * sz)
 			}
 
 			p++;
+			np++;
 			continue;
 		}
 
@@ -389,18 +392,21 @@ void UT_UTF8Stringbuf::append (const char * sz)
 		{
 			bytesExpectedInSequence = 6;
 			p++;
+			np++;
 			continue;
 		}
 		if ((*p & 0xfc) == 0xf8) // lead byte in 5-byte sequence
 		{
 			bytesExpectedInSequence = 5;
 			p++;
+			np++;
 			continue;
 		}
 		if ((*p & 0xf8) == 0xf0) // lead byte in 4-byte sequence
 		{
 			bytesExpectedInSequence = 4;
 			p++;
+			np++;
 			continue;
 		}
 
@@ -410,12 +416,14 @@ void UT_UTF8Stringbuf::append (const char * sz)
 		{
 			bytesExpectedInSequence = 3;
 			p++;
+			np++;
 			continue;
 		}
 		if ((*p & 0xe0) == 0xc0) // lead byte in 2-byte sequence
 		{
 			bytesExpectedInSequence = 2;
 			p++;
+			np++;
 			continue;
 		}
 

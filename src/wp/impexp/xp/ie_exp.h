@@ -24,11 +24,9 @@
 
 #include <stdio.h>
 
-#include "ut_types.h"
-#include "ie_types.h"
-
-#include "ut_string_class.h"
+#include "ut_IntStrMap.h"
 #include "ut_AbiObject.h"
+#include "ie_types.h"
 
 class PD_Document;
 class PD_DocumentRange;
@@ -127,9 +125,7 @@ public:
 		return m_fidelity;
 	}
 
-	void setProps (const char * props) {
-		m_props = props;
-	}
+	void setProps (const char * props);
 
 protected:
 	// todo: remove the = 0 for 2.2
@@ -155,6 +151,9 @@ protected:
 	const UT_UTF8String & getProps () {
 		return m_props;
 	}
+	const UT_UTF8String * getProperty (const char * key) {
+		return m_props_map[key];
+	}
 
  private:
 	PD_Document *		m_pDocument;
@@ -165,8 +164,10 @@ protected:
 
 	bool				m_bCancelled;
 
-	UT_UTF8String m_props;
-	UT_Confidence_t m_fidelity;
+	UT_UTF8String		m_props;
+	UT_UTF8Hash			m_props_map;
+
+	UT_Confidence_t		m_fidelity;
 };
 
 

@@ -98,14 +98,14 @@ public:
 
 	UT_UTF8Stringbuf ();
 	UT_UTF8Stringbuf (const UT_UTF8Stringbuf & rhs);
-	UT_UTF8Stringbuf (const char * sz);
+	UT_UTF8Stringbuf (const char * sz, size_t n = 0 /* 0 == null-termination */);
 
 	~UT_UTF8Stringbuf ();
 
 	void		operator=(const UT_UTF8Stringbuf & rhs);
-
-	void		assign (const char * sz);
-	void		append (const char * sz);
+	
+	void		assign (const char * sz, size_t n = 0 /* 0 == null-termination */);
+	void		append (const char * sz, size_t n = 0 /* 0 == null-termination */);
 	void		append (const UT_UTF8Stringbuf & rhs);
 
 	void		appendUCS2 (const UT_UCS2Char * sz, size_t n /* == 0 => null-termination */);

@@ -730,8 +730,8 @@ UT_UTF8String::UT_UTF8String () :
 	// 
 }
 
-UT_UTF8String::UT_UTF8String (const char * sz) :
-	pimpl(new UT_UTF8Stringbuf(sz))
+UT_UTF8String::UT_UTF8String (const char * sz, size_t n /* == 0 => null-termination */) :
+	pimpl(new UT_UTF8Stringbuf(sz,n))
 {
 	// 
 }
@@ -830,7 +830,17 @@ const char * UT_UTF8String::utf8_str () const
 	return pimpl->utf8Length () ? pimpl->data() : pszEmpty;
 }
 
-void UT_UTF8String::appendUCS4 (const UT_UCS4Char * sz, size_t n /* 0 = null-terminated */)
+void UT_UTF8String::assign (const char * sz, size_t n /* == 0 => null-termination */)
+{
+	pimpl->assign (sz, n);
+}
+
+void UT_UTF8String::append (const char * sz, size_t n /* == 0 => null-termination */)
+{
+	pimpl->append (sz, n);
+}
+
+void UT_UTF8String::appendUCS4 (const UT_UCS4Char * sz, size_t n /* == 0 => null-termination */)
 {
 	pimpl->appendUCS4 (sz, n);
 }

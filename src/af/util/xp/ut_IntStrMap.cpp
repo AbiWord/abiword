@@ -22,6 +22,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 #include "ut_exception.h"
 #include "ut_IntStrMap.h"
@@ -29,6 +30,10 @@
 static bool key_lt (const char * key, UT_uint32 key_length, const UT_UTF8String & key2);
 static bool key_gt (const char * key, UT_uint32 key_length, const UT_UTF8String & key2);
 static bool key_eq (const char * key, UT_uint32 key_length, const UT_UTF8String & key2);
+
+static void         s_pass_whitespace (const char *& csstr);
+static const char * s_pass_name (const char *& csstr);
+static const char * s_pass_value (const char *& csstr);
 
 UT_IntStrMap::UT_IntStrMap () :
 	m_pair(0),
@@ -860,4 +865,159 @@ static bool key_eq (const char * key, UT_uint32 key_length, const UT_UTF8String 
 		return true;
 
 	return (memcmp (key, key2.utf8_str (), key_length) == 0);
+}
+
+static void s_pass_whitespace (const char *& csstr)
+{
+	while (*csstr)
+		{
+			unsigned char u = static_cast<unsigned char>(*csstr);
+			if (u & 0x80)
+				{
+					UT_UTF8Stringbuf::UCS4Char ucs4 = UT_UTF8Stringbuf::charCode (csstr);
+
+					if (UT_UCS4_isspace (ucs4))
+						{
+							while (static_cast<unsigned char>(*++csstr) & 0x80) { }
+							continue;
+						}
+				}
+			else if (isspace (static_cast<int>(u)))
+				{
+					csstr++;
+					continue;
+				}
+			break;
+		}
+}
+
+static const char * s_pass_name (const char *& csstr)
+{
+	const char * name_end = csstr;
+
+	while (*csstr)
+		{
+			unsigned char u = static_cast<unsigned char>(*csstr);
+			if (u & 0x80)
+				{
+					UT_UTF8Stringbuf::UCS4Char ucs4 = UT_UTF8Stringbuf::charCode (csstr);
+					if (UT_UCS4_isspace (ucs4))
+						{
+							name_end = csstr;
+							break;
+						}
+					while (static_cast<unsigned char>(*++csstr) & 0x80) { }
+					continue;
+				}
+			else if ((isspace (static_cast<int>(u))) || (*csstr == ':'))
+				{
+					name_end = csstr;
+					break;
+				}
+			csstr++;
+		}
+	return name_end;
+}
+
+static const char * s_pass_value (const char *& csstr)
+{
+	const char * value_end = csstr;
+
+	bool bQuoted = false;
+	while (*csstr)
+		{
+			bool bSpace = false;
+			unsigned char u = static_cast<unsigned char>(*csstr);
+			if (u & 0x80)
+				{
+					UT_UTF8Stringbuf::UCS4Char ucs4 = UT_UTF8Stringbuf::charCode (csstr);
+
+					if (!bQuoted)
+						if (UT_UCS4_isspace (ucs4))
+							{
+								bSpace = true;
+								break;
+							}
+					while (static_cast<unsigned char>(*++csstr) & 0x80) { }
+					if (!bSpace) value_end = csstr;
+					continue;
+				}
+			else if ((*csstr == '\'') || (*csstr == '"'))
+				{
+					bQuoted = (bQuoted ? false : true);
+				}
+			else if (*csstr == ';')
+				{
+					if (!bQuoted)
+						{
+							csstr++;
+							break;
+						}
+				}
+			else if (!bQuoted && isspace (static_cast<int>(u))) bSpace = true;
+
+			csstr++;
+			if (!bSpace) value_end = csstr;
+		}
+	return value_end;
+}
+
+void UT_UTF8Hash::parse_css_string (const char * property_string)
+{
+	if ( property_string == 0) return;
+	if (*property_string == 0) return;
+
+	const char * csstr = property_string;
+
+	UT_UTF8String name;
+	UT_UTF8String value;
+
+	bool bSkip = false;
+
+	while (*csstr)
+		{
+			if (bSkip)
+				{
+					if (*csstr == ';')
+						bSkip = false;
+					++csstr;
+					continue;
+				}
+			s_pass_whitespace (csstr);
+
+			const char * name_start = csstr;
+			const char * name_end   = s_pass_name (csstr);
+
+			if (*csstr == 0) break; // whatever we have, it's not a "name:value;" pair
+			if (name_start == name_end) // ?? stray colon?
+				{
+					bSkip = true;
+					continue;
+				}
+			name.assign (name_start, name_end - name_start);
+
+			s_pass_whitespace (csstr);
+			if (*csstr != ':') // whatever we have, it's not a "name:value;" pair
+				{
+					bSkip = true;
+					continue;
+				}
+
+			csstr++;
+			s_pass_whitespace (csstr);
+
+			if (*csstr == 0) break; // whatever we have, it's not a "name:value;" pair
+
+			const char * value_start = csstr;
+			const char * value_end   = s_pass_value (csstr);
+
+			if (value_start == value_end) // ?? no value...
+				{
+					bSkip = true;
+					continue;
+				}
+			value.assign (value_start, value_end - value_start);
+
+			ins (name, value);
+		}
 }

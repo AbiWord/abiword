@@ -30,14 +30,12 @@
 #include "ut_misc.h"
 #include "ut_bytebuf.h"
 #include "ut_vector.h"
-
 #include "ut_debugmsg.h"
 
 #include "ie_exp.h"
 #include "ie_exp_AbiWord_1.h"
 
 #include "pd_Document.h"
-#include "ut_string_class.h"
 
 static UT_Vector m_sniffers(20);
 
@@ -124,6 +122,14 @@ IE_Exp::~IE_Exp()
 
 /*****************************************************************/
 /*****************************************************************/
+
+void IE_Exp::setProps (const char * props)
+{
+	m_props = props;
+
+	m_props_map.clear ();
+	m_props_map.parse_css_string (props);
+}
 
 bool IE_Exp::_openFile(const char * szFilename)
 {

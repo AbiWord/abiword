@@ -169,7 +169,7 @@ public:
 	virtual const char *	GenericBaseID () const;
 
 	UT_UTF8String ();
-	UT_UTF8String (const char * sz);	
+	UT_UTF8String (const char * sz, size_t n = 0 /* 0 == null-termination */);
 	UT_UTF8String (const char *sz, const char *encoding);
 
 	UT_UTF8String (const UT_UTF8String & rhs);
@@ -199,7 +199,10 @@ public:
 	const char * utf8_str () const;	
 	UT_UCS4String ucs4_str ();
 
-	void appendUCS4 (const UT_UCS4Char * sz, size_t n = 0 /* 0 == zero-terminate */);
+	void		assign (const char * sz, size_t n = 0 /* 0 == null-termination */);
+	void		append (const char * sz, size_t n = 0 /* 0 == null-termination */);
+
+	void		appendUCS4 (const UT_UCS4Char * sz, size_t n = 0 /* 0 == null-termination */);
 
 	const UT_UTF8String & escapeXML ();  // escapes '<', '>' & '&' in the current string
 	const UT_UTF8String & escapeMIME (); // translates the current string to MIME "quoted-printable" format
