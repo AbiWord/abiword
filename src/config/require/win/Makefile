@@ -25,6 +25,7 @@ include $(ABI_ROOT)/src/config/abi_defs.mk
 # If peer iconv is used, it must be built before wv, or at least
 # iconv.h must be generated (or copied from template) before building wv
 
+
 REQUIRE=	_ZLIB_ _LIBPNG_ 
 ifneq ($(ABI_REQUIRE_PEER_ICONV),0)
 REQUIRE+=	_LIBICONV_
@@ -48,13 +49,23 @@ realclean::		$(REQUIREREALCLEAN)
 #################################################################
 
 _ZLIB_:
-	@if [ -d $(ABI_ROOT)/../zlib ]; then					\
-		echo Found zlib in peer directory;				\
-		$(MAKE) -f Makefile.abi ABI_ROOT=$(ABI_ROOT) -C $(ABI_ROOT)/../zlib;		\
-	else									\
-		echo peer zlib not found.  You can check it out of cvs by; \
-		echo cvs -d :pserver:anoncvs:anoncvs@anoncvs.abisource.com:/cvsroot checkout zlib; \
-		exit 1;						\
+	@if [ -d $(ABI_ROOT)/../libs/zlib ]; then	\
+		echo Using precompiled zlib in libs directory;				\
+	else	if [ -d $(ABI_ROOT)/../zlib ]; then					\
+			echo "Found zlib in peer directory";				\
+			echo "Building zlib DLL, NOT for redistribution!" ;	\
+			echo "For redistribution, Please obtain official win32 zlib DLL";	\
+			echo "[zlib121dll.zip] from http://www.gzip.org/zlib/ and unzip into"; \
+			echo "$(ABI_ROOT)/../libs/zlib/ ";	\
+			$(MAKE) ABI_ROOT=$(ABI_ROOT) -C $(ABI_ROOT)/../zlib -fmakefile.abi;		\
+		else									\
+			echo peer zlib not found.  You can check it out of cvs by; \
+			echo cvs -d :pserver:anoncvs:anoncvs@anoncvs.abisource.com:/cvsroot checkout zlib; \
+			echo or preferably, download the precompiled zlib121dll.zip; \
+			echo from http://www.gzip.org/zlib/ and unzip into; \
+			echo $(ABI_ROOT)/../libs/zlib/ ;	\
+			exit 1;						\
+		fi	\
 	fi
 
 _LIBPNG_:
@@ -83,9 +94,13 @@ _LIBWV_:
 	@if [ -d $(ABI_ROOT)/../wv ]; then			\
 		echo Found libwv in peer directory;		\
 		cd $(ABI_ROOT)/../wv; 			\
-		$(ABICOPY) config.h.msvc config.h;	\
-		echo PLEASE verify that VERSION in version.c is correct!!!;	\
-		$(ABICOPY) version.c.win32 version.c;	\
+		if [ ! -r config.h ]; then	\
+			$(ABICOPY) config.h.msvc config.h;	\
+		fi;	\
+		if [ ! -r version.c ]; then 	\
+			echo PLEASE verify that VERSION in version.c is correct!!!;	\
+			$(ABICOPY) version.c.win32 version.c;	\
+		fi;	\
 		$(MAKE) -f Makefile.abi -C $(ABI_ROOT)/../wv;  	\
 	else							\
 		echo peer wv not found.  You can check it out of cvs by; \
