@@ -27,6 +27,7 @@
 #include "ut_assert.h"
 #include "ut_bytebuf.h"
 #include "ut_debugmsg.h"
+#include "ut_string_class.h"
 
 #include "xap_App.h"
 #include "xap_Strings.h"
@@ -68,9 +69,30 @@ XAP_Win32Dialog_FileOpenSaveAs::~XAP_Win32Dialog_FileOpenSaveAs(void)
 
 /*****************************************************************/
 
-void XAP_Win32Dialog_FileOpenSaveAs::_buildFilterList(char * szFilter)
+/*!
+ Check for the presence of a file suffix in a list of suffixes
+
+ \param haystack List of suffixes in the form "*a; *b; *c"
+ \param needle Suffix to check for
+ */
+static bool SuffixInList(const char *haystack, const char *needle)
 {
-	char * p = szFilter;
+	int l = strlen(needle);
+	const char *s;
+	if (s = strstr(haystack, needle))
+		if (s[l] == 0 || s[l] == ';')
+			return true;
+	return false;
+}
+
+/*!
+ Build a Windows filter list from Abi's filetypes
+
+ \param sFilter Build the list in this string
+ */
+void XAP_Win32Dialog_FileOpenSaveAs::_buildFilterList(UT_String& sFilter)
+{
+	UT_String sAllSuffixes;
 
 	UT_ASSERT(UT_pointerArrayLength((void **) m_szSuffixes) ==
 			  UT_pointerArrayLength((void **) m_szDescriptions));
@@ -80,19 +102,48 @@ void XAP_Win32Dialog_FileOpenSaveAs::_buildFilterList(char * szFilter)
 	
 	for (UT_uint32 i = 0; i < end; i++)
 	{
-		strcpy(p,m_szDescriptions[i]);
-		p += strlen(p)+1;				// include the trailing 0
-		strcpy(p,m_szSuffixes[i]);
-		p += strlen(p)+1;				// include the trailing 0
+		sFilter += m_szDescriptions[i];
+		sFilter += '\0';				// include the trailing 0
+		sFilter += m_szSuffixes[i];
+		sFilter += '\0';				// include the trailing 0
+
+		// extract one suffix at a time
+		const char *s1 = m_szSuffixes[i];
+		while (1)
+		{
+			const char *s2 = s1;
+			while (*s2 && *s2 != ';')
+				++s2;
+			UT_String sSuffix(s1, s2-s1);
+			// build a complete list with no repeats
+			if (!SuffixInList(sAllSuffixes.c_str(), sSuffix.c_str()))
+			{
+				if (!sAllSuffixes.empty())
+					sAllSuffixes += "; ";
+				sAllSuffixes += sSuffix;
+			}
+			if (*s2 == 0)
+				break;
+			UT_ASSERT(s2[0] == ';' && s2[1] == ' ');
+			s1 = s2 + 2;
+		}
 	}
 
-	// this will always be an option
-	strcpy(p,"All (*.*)");
-	p += strlen(p)+1;					// include the trailing 0
-	strcpy(p,"*.*");
-	p += strlen(p)+1;					// include the trailing 0
+	// all supported files filter
+	// TODO localize
+	sFilter += m_id == XAP_DIALOG_ID_INSERT_PICTURE ? "All AbiWord Image Files" : "All AbiWord Documents";
+	sFilter += " (" + sAllSuffixes + ")";
+	sFilter += '\0';				// include the trailing 0
+	sFilter += sAllSuffixes;
+	sFilter += '\0';				// include the trailing 0
+
+	// all files filter
+	sFilter += "All (*.*)";
+	sFilter += '\0';				// include the trailing 0
+	sFilter += "*.*";
+	sFilter += '\0';				// include the trailing 0
 	
-	*p = 0;								// double 0 at the end
+	sFilter += '\0';				// double 0 at the end
 }
 
 /*****************************************************************/
@@ -108,19 +159,20 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 
 	char szFile[MAX_DLG_INS_PICT_STRING];   // buffer for filename
 	char szDir[MAX_DLG_INS_PICT_STRING];	// buffer for directory
-	char szFilter[MAX_DLG_INS_PICT_STRING];	// buffer for building suffix list
+	UT_String sFilter;
 	OPENFILENAME ofn;						// common dialog box structure
 
 	ZeroMemory(szFile,sizeof(szFile));
 	ZeroMemory(szDir,sizeof(szDir));
-	ZeroMemory(szFilter,sizeof(szFilter));
 	ZeroMemory(&ofn, sizeof(OPENFILENAME));
+
+	_buildFilterList(sFilter);
 
 	ofn.lStructSize = sizeof(OPENFILENAME);
 	ofn.hwndOwner = hFrame;
 	ofn.lpstrFile = szFile;
 	ofn.nMaxFile = sizeof(szFile);
-	ofn.lpstrFilter = szFilter;
+	ofn.lpstrFilter = sFilter.c_str();
 	ofn.nFilterIndex = 1;
 	ofn.lpstrFileTitle = NULL;
 	ofn.nMaxFileTitle = 0;
@@ -187,8 +239,6 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 
 	BOOL bDialogResult;
 
-	_buildFilterList(szFilter);
-
 	if( m_nDefaultFileType != XAP_DIALOG_FILEOPENSAVEAS_FILE_TYPE_AUTO )
 	{
 		// Find the index of the type we were given
@@ -207,25 +257,32 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	switch (m_id)
 	{
 	case XAP_DIALOG_ID_FILE_OPEN:
+		// TODO shouldn't we put a localized string into ofn.lpstrTitle?
 		ofn.Flags |= OFN_FILEMUSTEXIST;
 		bDialogResult = GetOpenFileName(&ofn);
 		break;
 
 	case XAP_DIALOG_ID_PRINTTOFILE:
+		// TODO localize
 		ofn.lpstrTitle = "Print To File";
 		ofn.Flags |= OFN_OVERWRITEPROMPT;
 		bDialogResult = GetSaveFileName(&ofn);
 		break;
 
 	case XAP_DIALOG_ID_FILE_SAVEAS:
+		// TODO shouldn't we put a localized string into ofn.lpstrTitle?
+		ofn.lpfnHook       = (LPOFNHOOKPROC) s_hookSaveAsProc;
 		ofn.Flags |= OFN_OVERWRITEPROMPT;
+		ofn.Flags |= OFN_EXPLORER;
+		ofn.Flags |= OFN_ENABLEHOOK;
 		bDialogResult = GetSaveFileName(&ofn);
 		break;
 	case XAP_DIALOG_ID_INSERT_PICTURE:
+		// TODO localize
 		ofn.lpstrTitle     = "Insert Picture";
 		ofn.hInstance      = pWin32App->getInstance();
 		ofn.lpTemplateName = MAKEINTRESOURCE(XAP_RID_DIALOG_INSERT_PICTURE);
-		ofn.lpfnHook       = (LPOFNHOOKPROC) s_hookProc;
+		ofn.lpfnHook       = (LPOFNHOOKPROC) s_hookInsertPicProc;
 		ofn.Flags |= OFN_EXPLORER;
 		ofn.Flags |= OFN_ENABLETEMPLATE;
 		ofn.Flags |= OFN_ENABLEHOOK;
@@ -270,11 +327,11 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 
 		m_answer = a_OK;
 
-		// set file type to auto-detect, since the Windows common
-		// dialog doesn't let the user specifically choose to open
-		// or save as a specific type (the type is always tied to
-		// the suffix pattern)
-		m_nFileType = XAP_DIALOG_FILEOPENSAVEAS_FILE_TYPE_AUTO;
+		// Set filetype to auto if a generic filter was set
+		if (ofn.nFilterIndex > UT_pointerArrayLength((void **) m_szSuffixes))
+			m_nFileType = XAP_DIALOG_FILEOPENSAVEAS_FILE_TYPE_AUTO;
+		else
+			m_nFileType = ofn.nFilterIndex;
 	}
 	else
 	{
@@ -286,10 +343,50 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	return;
 }
 
-UINT CALLBACK XAP_Win32Dialog_FileOpenSaveAs::s_hookProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
+/*!
+ Used for SaveAs case of FileOpenSaveAs dialog
+ \param hDlg
+ \param msg
+ \param wParam
+ \param lParam
+
+ Static routine
+ */
+UINT CALLBACK XAP_Win32Dialog_FileOpenSaveAs::s_hookSaveAsProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-	// static routine
-	// Used for Insert Picture Case of FileOpenSaveAs Dialog
+	XAP_Win32Dialog_FileOpenSaveAs* pThis = (XAP_Win32Dialog_FileOpenSaveAs *) GetWindowLong(hDlg,GWL_USERDATA);
+
+	switch(msg)
+	{
+	case WM_NOTIFY:
+		{
+			const OFNOTIFY * pNotify = reinterpret_cast<OFNOTIFY *>(lParam);
+			switch (pNotify->hdr.code)
+			{
+			case CDN_TYPECHANGE:
+				UT_DEBUGMSG(("SaveAs filetype changed to %d\n", pNotify->lpOFN->nFilterIndex));
+				break;
+			}
+		}
+		break;
+
+	default:
+		return false;
+	}
+	return false;
+}
+
+/*!
+ Used for Insert Picture case of FileOpenSaveAs dialog
+ \param hDlg
+ \param msg
+ \param wParam
+ \param lParam
+
+ Static routine
+ */
+UINT CALLBACK XAP_Win32Dialog_FileOpenSaveAs::s_hookInsertPicProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
+{
 	XAP_Win32Dialog_FileOpenSaveAs* pThis = (XAP_Win32Dialog_FileOpenSaveAs *) GetWindowLong(hDlg,GWL_USERDATA);
 	bool bPreviewImage = ( IsDlgButtonChecked( hDlg, XAP_RID_DIALOG_INSERT_PICTURE_CHECK_ACTIVATE_PREVIEW )
 			                  == BST_CHECKED );
