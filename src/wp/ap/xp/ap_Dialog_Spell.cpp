@@ -172,194 +172,214 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
    bool checkCaps = m_pView->getLayout()->getSpellCheckCaps();
 
    // loop until a misspelled word or end of document is hit
-   for (;;) {
+   for (;;) 
+   {
 
-      // do we need to move to the next block?
-      if (m_iWordOffset >= iBlockLength) {
+	   // do we need to move to the next block?
+	   if (m_iWordOffset >= iBlockLength) 
+	   {
 
-	 // since we're done with this current block, put it
-	 // in the block spell queue so squiggles will be updated
+		   // since we're done with this current block, put it
+		   // in the block spell queue so squiggles will be updated
 	
-	 FL_DocLayout * docLayout = m_pSection->getDocLayout();
-
-	 // Makes this honor spelling prefs
-	 XAP_App * pApp = m_pFrame->getApp();
-	 UT_ASSERT(pApp);
-	 XAP_Prefs * pPrefs = pApp->getPrefs();
-	 UT_ASSERT(pPrefs);
+		   FL_DocLayout * docLayout = m_pSection->getDocLayout();
+		   
+		   // Makes this honor spelling prefs
+		   XAP_App * pApp = m_pFrame->getApp();
+		   UT_ASSERT(pApp);
+		   XAP_Prefs * pPrefs = pApp->getPrefs();
+		   UT_ASSERT(pPrefs);
 	 
-	 XAP_PrefsScheme *pPrefsScheme = pPrefs->getCurrentScheme();
-	 UT_ASSERT(pPrefsScheme);
-
-	 bool b = false;
-	 pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_AutoSpellCheck, &b);
-
-	 if (b)
-	   docLayout->queueBlockForBackgroundCheck(FL_DocLayout::bgcrSpelling, m_pBlock);
+		   XAP_PrefsScheme *pPrefsScheme = pPrefs->getCurrentScheme();
+		   UT_ASSERT(pPrefsScheme);
+		   
+		   bool b = false;
+		   pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_AutoSpellCheck, &b);
+		   
+		   if (b)
+		   {
+			   docLayout->queueBlockForBackgroundCheck(FL_DocLayout::bgcrSpelling, m_pBlock);
+		   }
+		   m_pBlock = m_pBlock->getNext();
+		   
+		   // next section, too?
+		   if (m_pBlock == NULL) 
+		   {
 	 
-	 m_pBlock = m_pBlock->getNext();
-
-	 // next section, too?
-	 if (m_pBlock == NULL) {
+			   m_pSection = (fl_DocSectionLayout*) m_pSection->getNext();
+			   if (m_pSection == NULL)
+				   return false; // end of document
+			   m_pBlock = m_pSection->getFirstBlock();
+		   }
 	 
-	    m_pSection = (fl_DocSectionLayout*) m_pSection->getNext();
-	    if (m_pSection == NULL)
-	      return false; // end of document
-	    m_pBlock = m_pSection->getFirstBlock();
-	 }
-	 
-	 // update the buffer with our new block
-	 m_pBlockBuf->truncate(0);
-	 bool bRes = m_pBlock->getBlockBuf(m_pBlockBuf);
-	 UT_ASSERT(bRes);
+		   // update the buffer with our new block
+		   m_pBlockBuf->truncate(0);
+		   bool bRes = m_pBlock->getBlockBuf(m_pBlockBuf);
+		   UT_ASSERT(bRes);
 	     
-	 m_iWordOffset = 0;
-	 m_iSentenceStart = 0;
-	 m_iSentenceEnd = 0;
-	 iBlockLength = m_pBlockBuf->getLength();
-	 pBlockText = m_pBlockBuf->getPointer(0);
+		   m_iWordOffset = 0;
+		   m_iSentenceStart = 0;
+		   m_iSentenceEnd = 0;
+		   iBlockLength = m_pBlockBuf->getLength();
+		   pBlockText = m_pBlockBuf->getPointer(0);
 
-      }
+	   }
 	
-      // scan block for misspelled words
+	   // scan block for misspelled words
 
-      // now start checking
-      bool bFound;
-      bool bAllUpperCase;
+	   // now start checking
+	   bool bFound;
+	   bool bAllUpperCase;
 	
-      while (m_iWordOffset < iBlockLength) {
+	   while (m_iWordOffset < iBlockLength) 
+	   {
 
-	 // skip delimiters...
-	 while (m_iWordOffset < iBlockLength)
-	 {
-		 UT_UCSChar followChar, prevChar;
-		 followChar = ((m_iWordOffset + 1) < iBlockLength)  ?  pBlockText[m_iWordOffset+1]  :  UCS_UNKPUNK;
-		 prevChar = m_iWordOffset > 0 ? pBlockText[m_iWordOffset-1] : UCS_UNKPUNK;
+		   // skip delimiters...
+		   while (m_iWordOffset < iBlockLength)
+		   {
+			   UT_UCSChar followChar, prevChar;
+			   followChar = ((m_iWordOffset + 1) < iBlockLength)  ?  pBlockText[m_iWordOffset+1]  :  UCS_UNKPUNK;
+			   prevChar = m_iWordOffset > 0 ? pBlockText[m_iWordOffset-1] : UCS_UNKPUNK;
 		 
-		 if (!UT_isWordDelimiter( pBlockText[m_iWordOffset], followChar, prevChar)) break;
-		 m_iWordOffset++;
-	 }
+			   if (!UT_isWordDelimiter( pBlockText[m_iWordOffset], followChar, prevChar))
+			   {
+				   break;
+			   }
+			   m_iWordOffset++;
+		   }
 	     
-	 // ignore initial quote
-	 if (pBlockText[m_iWordOffset] == '\'')
-	   m_iWordOffset++;
-	     
-	 if (m_iWordOffset < iBlockLength) {
+		   // ignore initial quote
+		   if (pBlockText[m_iWordOffset] == '\'')
+		   {
+			   m_iWordOffset++;
+		   }
+		   if (m_iWordOffset < iBlockLength) 
+		   {
 	    
-	    // we're at the start of a word. find end of word...
-	    bAllUpperCase = true;
-	    bFound = false;
-	    m_iWordLength = 0;
-	    while ((!bFound) && (m_iWordOffset + m_iWordLength) < iBlockLength) {
+			   // we're at the start of a word. find end of word...
+			   bAllUpperCase = true;
+			   bFound = false;
+			   m_iWordLength = 0;
+			   while ((!bFound) && (m_iWordOffset + m_iWordLength) < iBlockLength) 
+			   {
 
-			UT_UCSChar followChar, prevChar;
-			followChar = ((m_iWordOffset + m_iWordLength + 1) < iBlockLength)  ?  pBlockText[m_iWordOffset + m_iWordLength + 1]  :  UCS_UNKPUNK;
-			prevChar = m_iWordOffset + m_iWordLength > 0 ? pBlockText[m_iWordOffset + m_iWordLength - 1] : UCS_UNKPUNK;
+				   UT_UCSChar followChar, prevChar;
+				   followChar = ((m_iWordOffset + m_iWordLength + 1) < iBlockLength)  ?  pBlockText[m_iWordOffset + m_iWordLength + 1]  :  UCS_UNKPUNK;
+				   prevChar = m_iWordOffset + m_iWordLength > 0 ? pBlockText[m_iWordOffset + m_iWordLength - 1] : UCS_UNKPUNK;
 			
-	       if ( true == UT_isWordDelimiter( pBlockText[m_iWordOffset + m_iWordLength], followChar, prevChar)) {
-
-		  bFound = true;
-
-	       } else {
-
-		  if (bAllUpperCase)
-		    bAllUpperCase = UT_UCS_isupper(pBlockText[m_iWordOffset + m_iWordLength]);
-			    
-		  m_iWordLength++;
-
-	       }
-	    }
+				   if ( true == UT_isWordDelimiter( pBlockText[m_iWordOffset + m_iWordLength], followChar, prevChar)) 
+				   {
+					   bFound = true;
+				   } 
+				   else 
+				   {
+					   if (bAllUpperCase)
+					   {
+						   bAllUpperCase = UT_UCS_isupper(pBlockText[m_iWordOffset + m_iWordLength]);
+					   }
+					   m_iWordLength++;
+				   }
+			   }
 		  
-	    // ignore terminal quote
-	    if (pBlockText[m_iWordOffset + m_iWordLength - 1] == '\'')
-	      m_iWordLength--;
+			   // ignore terminal quote
+			   if (pBlockText[m_iWordOffset + m_iWordLength - 1] == '\'')
+			   {
+				   m_iWordLength--;
+			   }
 		  
-	    // for some reason, the spell checker fails on all 1-char words & really big ones
-	    // -this is a limitation in the underlying default checker ispell --JB
-	    if ((m_iWordLength > 1) &&
-		XAP_EncodingManager::get_instance()->noncjk_letters(pBlockText+m_iWordOffset, m_iWordLength) && 
-		(!checkCaps || !bAllUpperCase) &&             // TODO: iff relevant Option is set
-		(!UT_UCS_isdigit(pBlockText[m_iWordOffset]) &&
-		 (m_iWordLength < INPUTWORDLEN))) {
+			   // for some reason, the spell checker fails on all 1-char words & really big ones
+			   // -this is a limitation in the underlying default checker ispell --JB
+			   if ((m_iWordLength > 1) &&
+				   XAP_EncodingManager::get_instance()->noncjk_letters(pBlockText+m_iWordOffset, m_iWordLength) && 
+				   (!checkCaps || !bAllUpperCase) &&             // TODO: iff relevant Option is set
+				   (!UT_UCS_isdigit(pBlockText[m_iWordOffset]) &&
+					(m_iWordLength < INPUTWORDLEN))) 
+			   {
 	    
-	       // try testing our current change all lists
-		  if (!inChangeAll()) {
+				   // try testing our current change all lists
+				   if (!inChangeAll()) 
+				   {
 		    
-		     // try ignore all list and user dictionaries here, too
-		     XAP_App * pApp = m_pFrame->getApp();
+					   // try ignore all list and user dictionaries here, too
+					   XAP_App * pApp = m_pFrame->getApp();
 
-			 UT_UCSChar theWord[INPUTWORDLEN + 1];
-			 //UT_DEBUGMSG(("char: %s", pBlockText[m_iWordOffset]));
-			 // convert smart quote apostrophe to ASCII single quote to be compatible with ispell
-			 for (int ldex=0; ldex<m_iWordLength; ++ldex)
-			 {
-				 UT_UCSChar currentChar;
-				 currentChar = pBlockText[m_iWordOffset + ldex];
-				 if (currentChar == UCS_RQUOTE) currentChar = '\'';
-				 theWord[ldex] = currentChar;
-			 }
+					   UT_UCSChar theWord[INPUTWORDLEN + 1];
+					   //UT_DEBUGMSG(("char: %s", pBlockText[m_iWordOffset]));
+					   // convert smart quote apostrophe to ASCII single quote to be compatible with ispell
+					   for (int ldex=0; ldex<m_iWordLength; ++ldex)
+					   {
+						   UT_UCSChar currentChar;
+						   currentChar = pBlockText[m_iWordOffset + ldex];
+						   if (currentChar == UCS_RQUOTE) currentChar = '\'';
+						   theWord[ldex] = currentChar;
+					   }
 
-			 makeWordVisible();
+//					   makeWordVisible();
 
-			 if (!m_pDoc->isIgnore(theWord, m_iWordLength) &&
-			     !pApp->isWordInDict(theWord, m_iWordLength) &&
-			     !_spellCheckWord(theWord, m_iWordLength)) {
+					   if (!m_pDoc->isIgnore(theWord, m_iWordLength) &&
+						   !pApp->isWordInDict(theWord, m_iWordLength) &&
+						   !_spellCheckWord(theWord, m_iWordLength)) 
+					   {
 		  
-			// unknown word...
-			// prepare list of possibilities
-			SpellChecker * checker = _getDict();
-			if (!checker)
-			{
-				UT_DEBUGMSG(("No checker returned\n"));
-				return false;
-			}
+						   // unknown word...
+						   // prepare list of possibilities
+						   SpellChecker * checker = _getDict();
+						   if (!checker)
+						   {
+							   UT_DEBUGMSG(("No checker returned\n"));
+							   return false;
+						   }
+						   makeWordVisible(); // display the word now.
 
-			m_Suggestions = checker->suggestWord(theWord, m_iWordLength);
-			if(m_Suggestions)
-			{
-			  pApp->suggestWord(m_Suggestions,theWord,  m_iWordLength);
-			}
-			if (!m_Suggestions)
-			{
-				UT_DEBUGMSG(("DOM: no suggestions returned from main dictionary \n"));
-				m_Suggestions = new UT_Vector();
-				pApp->suggestWord(m_Suggestions,theWord, m_iWordLength);
-				if(m_Suggestions->getItemCount() == 0)
-				{
-				     DELETEP(m_Suggestions);
-				     m_Suggestions = NULL;
-				     return false;
-				}		
-			}
-			    
-			// update sentence boundaries (so we can display
-			// the misspelled word in proper context)
-			if (m_iWordOffset + m_iWordLength > m_iSentenceEnd ||
-			    m_iWordOffset < m_iSentenceStart) {
-			   _updateSentenceBoundaries();
-			}
+						   m_Suggestions = checker->suggestWord(theWord, m_iWordLength);
+						   if(m_Suggestions)
+						   {
+							   pApp->suggestWord(m_Suggestions,theWord,  m_iWordLength);
+						   }
+						   if (!m_Suggestions)
+						   {
+							   UT_DEBUGMSG(("DOM: no suggestions returned from main dictionary \n"));
+							   m_Suggestions = new UT_Vector();
+							   pApp->suggestWord(m_Suggestions,theWord, m_iWordLength);
+							   if(m_Suggestions->getItemCount() == 0)
+							   {
+								   DELETEP(m_Suggestions);
+								   m_Suggestions = NULL;
+								   return false;
+							   }		
+						   }
+						   
+						   // update sentence boundaries (so we can display
+						   // the misspelled word in proper context)
+						   if (m_iWordOffset + m_iWordLength > m_iSentenceEnd ||
+							   m_iWordOffset < m_iSentenceStart) 
+						   {
+							   _updateSentenceBoundaries();
+						   }
 
-			UT_DEBUGMSG(("misspelled word found\n"));
-		     
-			// return to caller
-			return true;
-			// we have all the important state information in class variables,
-			// so the next call to this function will pick up at the same place.
-			// this also means we'll check whatever changes they make to this word.
-		     }
-		  } else {
-		     // we changed the word, and the block buffer has
-		     // been updated, so reload the pointer and length
-		     pBlockText = m_pBlockBuf->getPointer(0);
-		     iBlockLength = m_pBlockBuf->getLength();
-		     // the offset shouldn't change
-		  }
-	    }
+						   UT_DEBUGMSG(("misspelled word found\n"));
+						   
+						   // return to caller
+						   return true;
+						   // we have all the important state information in class variables,
+						   // so the next call to this function will pick up at the same place.
+						   // this also means we'll check whatever changes they make to this word.
+					   }
+				   } 
+				   else 
+				   {
+					   // we changed the word, and the block buffer has
+					   // been updated, so reload the pointer and length
+					   pBlockText = m_pBlockBuf->getPointer(0);
+					   iBlockLength = m_pBlockBuf->getLength();
+					   // the offset shouldn't change
+				   }
+			   }
 		
-	    // correctly spelled, so continue on
-	    m_iWordOffset += (m_iWordLength + 1);
-	 }
-      }
+			   // correctly spelled, so continue on
+			   m_iWordOffset += (m_iWordLength + 1);
+		   }
+	   }
    }
 }
 
