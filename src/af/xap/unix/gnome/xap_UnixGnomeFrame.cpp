@@ -147,7 +147,6 @@ void XAP_UnixGnomeFrame::_dnd_drop_event(GtkWidget        *widget,
 		GnomeVFSResult    result;
 		GnomeVFSHandle   *handle;
 		gchar             buffer[1024];
-		UT_ByteBuf * Bytes = new UT_ByteBuf();
 		GnomeVFSFileSize  bytes_read;
 		GnomeVFSURI 	 *uri;
 		UT_String stripped;
@@ -178,6 +177,7 @@ void XAP_UnixGnomeFrame::_dnd_drop_event(GtkWidget        *widget,
 		if(result==GNOME_VFS_OK)
 		{
 			UT_DEBUGMSG(("SEVIOR:  uri %s read OK \n",stripped.c_str()));
+			UT_ByteBuf * Bytes = new UT_ByteBuf();
 			Bytes->append((UT_Byte *)buffer,(UT_uint32) bytes_read);
 			iegft = IEGFT_Unknown;
 			error = IE_ImpGraphic::constructImporter(Bytes, iegft, &pIEG);
@@ -216,6 +216,12 @@ void XAP_UnixGnomeFrame::_dnd_drop_event(GtkWidget        *widget,
 				DELETEP(pFG);
 				return;
 			}
+			else
+			{
+				delete Bytes;
+			}
+			result = gnome_vfs_close (handle);
+			g_free (uri);
 		}
 			
 #endif
@@ -607,6 +613,39 @@ void  XAP_UnixGnomeFrame::rebuildMenus(void)
 
 bool XAP_UnixGnomeFrame::openURL(const char * szURL)
 {
+#if 0
+	GnomeVFSResult    result;
+	GnomeVFSHandle   *handle;
+	gchar             buffer[1024];
+	GnomeVFSFileSize  bytes_read;
+	GnomeVFSURI 	 *uri;
+
+	uri = gnome_vfs_uri_new (szURL);
+	if (uri == NULL) 
+	{
+		gnome_url_show(szURL);
+		return false;
+	}
+	result = gnome_vfs_open_uri (&handle, uri, GNOME_VFS_OPEN_READ);
+//
+// Read a chunk to determine if this is an image.
+//
+	if(result == GNOME_VFS_OK)
+	{
+		result = gnome_vfs_read (handle, buffer, sizeof buffer - 1,
+									 &bytes_read);
+		if(result==GNOME_VFS_OK)
+		{
+			UT_DEBUGMSG(("SEVIOR:  url %s read OK \n",szURL));
+			UT_ByteBuf * Bytes = new UT_ByteBuf();
+			Bytes->append((UT_Byte *)buffer,(UT_uint32) bytes_read);
+//
+// TODO load document via gnome_vfs
+//
+		}
+	}
+
+#endif
 	gnome_url_show(szURL);
 	return false;
 }

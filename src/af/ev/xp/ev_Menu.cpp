@@ -268,7 +268,7 @@ XAP_Menu_Id EV_searchMenuLabel(const EV_Menu_LabelSet *labels, const UT_String &
 	for (UT_uint32 i = 0; i < size_labels; ++i)
 	{
 		l = const_cast<const EV_Menu_Label *> (static_cast<EV_Menu_Label *> (labels_table->getNthItem(i)));
-		if (l && label == l->getMenuLabel())
+		if (l && label ==l->getMenuLabel())
 		{
 			id = l->getMenuId();
 			break;

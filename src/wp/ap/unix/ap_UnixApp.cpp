@@ -211,7 +211,6 @@ bool AP_UnixApp::initialize(void)
 		AP_BuiltinStringSet * pBuiltinStringSet = new AP_BuiltinStringSet(this,(XML_Char*)AP_PREF_DEFAULT_StringSet);
 		UT_ASSERT(pBuiltinStringSet);
 		m_pStringSet = pBuiltinStringSet;
-	    
 		// see if we should load an alternative set from the disk
 	    
 		const char * szDirectory = NULL;

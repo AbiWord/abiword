@@ -196,11 +196,15 @@ XAP_Menu_Factory::XAP_Menu_Factory(XAP_App * pApp) :
 		_vectt * pVectt = new _vectt(&s_ttTable[k]);
 		m_vecTT.addItem((void *) pVectt);
 	}
+	m_pEnglishLabelSet = NULL;
+	m_pBSS = NULL;
 }
 
 XAP_Menu_Factory::~XAP_Menu_Factory()
 {
     UT_VECTOR_PURGEALL(_vectt *,m_vecTT);
+	DELETEP(m_pEnglishLabelSet);
+	DELETEP(m_pBSS);
 }
 
 XAP_Menu_Id XAP_Menu_Factory::getNewID(void)
@@ -287,6 +291,7 @@ XAP_Menu_Id XAP_Menu_Factory::addNewMenuAfter(const char * szMenu,
 	}
 	if(!bFoundMenu)
 	{
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return 0;
 	}
 	
@@ -298,7 +303,16 @@ XAP_Menu_Id XAP_Menu_Factory::addNewMenuAfter(const char * szMenu,
 	XAP_Menu_Id afterID = EV_searchMenuLabel( m_pLabelSet, After);
 	if(afterID == 0)
 	{
-		return 0;
+		if(m_pEnglishLabelSet == NULL)
+		{
+			buildBuiltInMenuLabelSet( m_pEnglishLabelSet);
+		}
+		afterID = EV_searchMenuLabel( m_pEnglishLabelSet, After);
+		if(afterID == 0)
+		{	
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			return 0;
+		}
 	}
 //
 // OK got the menu ID at last, insert the new id here.
@@ -375,6 +389,30 @@ bool  XAP_Menu_Factory::buildMenuLabelSet(const char * szLanguage_)
 		return true;
 	}
 	return false;
+}
+
+
+/*!
+ * Build a builtin label set in memory that can be used by plugins to find where 
+ to put menu items in non-Enmgish locales.
+ * Do tricky reference to pointer here.... 
+*/
+bool  XAP_Menu_Factory::buildBuiltInMenuLabelSet(EV_Menu_LabelSet *& pLabelSet)
+{
+	if(m_pBSS == NULL)
+	{
+		AP_BuiltinStringSet * pBSS = new AP_BuiltinStringSet(m_pApp,"en-US");
+		m_pBSS = (XAP_StringSet *) pBSS;
+	}
+	pLabelSet = new EV_Menu_LabelSet("en-US",AP_MENU_ID__BOGUS1__,AP_MENU_ID__BOGUS2__);	
+    #define menuitem(id) \
+		pLabelSet->setLabel( (AP_MENU_ID_##id),	\
+		m_pBSS->getValue(AP_STRING_ID_MENU_LABEL_##id), \
+		m_pBSS->getValue(AP_STRING_ID_MENU_STATUSLINE_##id) );
+    #include "ap_Menu_Id_List.h"
+    #undef menuitem
+	return true;
+
 }
 
 EV_Menu_LabelSet *  XAP_Menu_Factory::CreateMenuLabelSet(const char * szLanguage_)

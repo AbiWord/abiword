@@ -26,6 +26,7 @@
 #include "ev_EditBits.h"
 
 class XAP_App;
+class XAP_StringSet;
 
 class ABI_EXPORT XAP_Menu_Factory
 {
@@ -53,6 +54,7 @@ public:
 	const char * GetNthMenuLabelLanguageName(UT_uint32 ndx);
 	EV_Menu_LabelSet *  CreateMenuLabelSet(const char * szLanguage_);
 	bool         buildMenuLabelSet(const char * szLanguage_);
+	bool         buildBuiltInMenuLabelSet(  EV_Menu_LabelSet *& pLabelSet);
 	bool         addNewLabel(const char * szMenu, 
 								  XAP_Menu_Id newID, 
 								  const char * szNewLabel, 
@@ -67,7 +69,9 @@ private:
   mutable UT_Vector m_vecTT;
   XAP_App * m_pApp;
   EV_Menu_LabelSet * m_pLabelSet;
+  EV_Menu_LabelSet * m_pEnglishLabelSet;
   XAP_Menu_Id m_maxID;
+  XAP_StringSet * m_pBSS;
 };
 #endif /* XAP_MENU_LAYOUTS_H */
 
