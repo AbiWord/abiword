@@ -69,6 +69,7 @@
 #       include "xap_UnixGnomeDlg_PrintPreview.h"
 #	include "xap_UnixGnomeDlg_Zoom.h"
 
+#       include "ap_UnixGnomeDialog_Break.h"
 #	include "ap_UnixGnomeDialog_Replace.h"
 #	include "ap_UnixGnomeDialog_Goto.h"
 #       include "ap_UnixGnomeDialog_Insert_DateTime.h"
@@ -106,7 +107,7 @@
 	DeclareDialog(AP_DIALOG_ID_REPLACE,			AP_UnixGnomeDialog_Replace)
 	DeclareDialog(AP_DIALOG_ID_FIND,			AP_UnixGnomeDialog_Replace)
 	DeclareDialog(AP_DIALOG_ID_GOTO,			AP_UnixGnomeDialog_Goto)
-	DeclareDialog(AP_DIALOG_ID_BREAK,			AP_UnixDialog_Break)
+	DeclareDialog(AP_DIALOG_ID_BREAK,			AP_UnixGnomeDialog_Break)
 	DeclareDialog(AP_DIALOG_ID_SPELL,			AP_UnixGnomeDialog_Spell)
 	DeclareDialog(AP_DIALOG_ID_TAB,				AP_UnixGnomeDialog_Tab)
         DeclareDialog(AP_DIALOG_ID_PAGE_NUMBERS,                AP_UnixGnomeDialog_PageNumbers)
