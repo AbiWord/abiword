@@ -273,7 +273,8 @@ bool ABI_EXPORT UT_UTF8_Base64Decode(char *& binptr, size_t & binlen, const char
 	unsigned char byte1;
 	unsigned char byte2;
 
-	while (UT_UCSChar ucs2 = UT_UCS2Stringbuf::UTF8_to_UCS2 (b64ptr, b64len))
+	UT_UCSChar ucs2;
+	while (ucs2 = UT_UCS2Stringbuf::UTF8_to_UCS2 (b64ptr, b64len))
 		{
 			if ((ucs2 & 0x7f) == ucs2)
 				{
