@@ -379,7 +379,7 @@ BOOL AP_Win32Dialog_Paragraph::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lPara
 			_DS(PARA_CHECK_NEXT,		DLG_Para_PushKeepWithNext);
 			_DS(PARA_CHECK_TOGETHER,	DLG_Para_PushKeepLinesTogether);
 			_DS(PARA_CHECK_BREAK,		DLG_Para_PushPageBreakBefore);
-			_DS(PARA_CHECK_SUPPRESS,	DLG_Para_PushSupressLineNumbers);
+			_DS(PARA_CHECK_SUPPRESS,	DLG_Para_PushSuppressLineNumbers);
 			_DS(PARA_CHECK_NOHYPHEN,	DLG_Para_PushNoHyphenate);
 
 			// set initial state
@@ -413,19 +413,19 @@ BOOL AP_Win32Dialog_Paragraph::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPara
 	switch (wId)
 	{
 	case IDCANCEL:						// also AP_RID_DIALOG_PARA_BTN_CANCEL
-		m_paragraphData.m_answer = a_CANCEL;
+		m_answer = a_CANCEL;
 		EndDialog(hWnd,0);
 		return 1;
 
 	case IDOK:							// also AP_RID_DIALOG_PARA_BTN_OK
 		// TODO: update rest of m_paragraphData (here, or per-change)
-		m_paragraphData.m_answer = a_OK;
+		m_answer = a_OK;
 		EndDialog(hWnd,0);
 		return 1;
 
 	case AP_RID_DIALOG_PARA_BTN_TABS:
 		// TODO: shouldn't we update settings, too?
-		m_paragraphData.m_answer = a_TABS;
+		m_answer = a_TABS;
 		EndDialog(hWnd,0);
 		return 1;
 
@@ -434,40 +434,4 @@ BOOL AP_Win32Dialog_Paragraph::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPara
 		return 0;						// return zero to let windows take care of it.
 	}
 }
-
-/*****************************************************************/
-
-// set/gather functions for XP dialog interaction
-
-AP_Dialog_Paragraph::tAlignment AP_Win32Dialog_Paragraph::_gatherAlignmentType(void) {}
-void AP_Win32Dialog_Paragraph::_setAlignmentType(AP_Dialog_Paragraph::tAlignment alignment) {}
-AP_Dialog_Paragraph::tSpecialIndent AP_Win32Dialog_Paragraph::_gatherSpecialIndentType(void) {}
-void AP_Win32Dialog_Paragraph::_setSpecialIndentType(AP_Dialog_Paragraph::tSpecialIndent indent) {}
-AP_Dialog_Paragraph::tLineSpacing AP_Win32Dialog_Paragraph::_gatherLineSpacingType(void) {}
-void AP_Win32Dialog_Paragraph::_setLineSpacingType(AP_Dialog_Paragraph::tLineSpacing spacing) {}
-	
-const XML_Char *	AP_Win32Dialog_Paragraph::_gatherLeftIndent(void) {}
-void				AP_Win32Dialog_Paragraph::_setLeftIndent(const XML_Char * indent) {}
-const XML_Char *	AP_Win32Dialog_Paragraph::_gatherRightIndent(void) {}
-void				AP_Win32Dialog_Paragraph::_setRightIndent(const XML_Char * indent) {}
-const XML_Char *	AP_Win32Dialog_Paragraph::_gatherSpecialIndent(void) {}
-void				AP_Win32Dialog_Paragraph::_setSpecialIndent(const XML_Char * indent) {}
-	
-const XML_Char *	AP_Win32Dialog_Paragraph::_gatherBeforeSpacing(void) {}
-void				AP_Win32Dialog_Paragraph::_setBeforeSpacing(const XML_Char * spacing) {}
-const XML_Char *	AP_Win32Dialog_Paragraph::_gatherAfterSpacing(void) {}
-void				AP_Win32Dialog_Paragraph::_setAfterSpacing(const XML_Char * spacing) {}
-const XML_Char *	AP_Win32Dialog_Paragraph::_gatherSpecialSpacing(void) {}	
-void				AP_Win32Dialog_Paragraph::_setSpecialSpacing(const XML_Char * spacing) {}
-	
-UT_Bool				AP_Win32Dialog_Paragraph::_gatherWidowOrphanControl(void) {}
-void				AP_Win32Dialog_Paragraph::_setWidowOrphanControl(UT_Bool b) {}
-UT_Bool				AP_Win32Dialog_Paragraph::_gatherKeepLinesTogether(void) {}
-void				AP_Win32Dialog_Paragraph::_setKeepLinesTogether(UT_Bool b) {}
-UT_Bool				AP_Win32Dialog_Paragraph::_gatherKeepWithNext(void) {}
-void				AP_Win32Dialog_Paragraph::_setKeepWithNext(UT_Bool b) {}
-UT_Bool				AP_Win32Dialog_Paragraph::_gatherSuppressLineNumbers(void) {}
-void				AP_Win32Dialog_Paragraph::_setSuppressLineNumbers(UT_Bool b) {}
-UT_Bool				AP_Win32Dialog_Paragraph::_gatherNoHyphenate(void) {}
-void				AP_Win32Dialog_Paragraph::_setNoHyphenate(UT_Bool b) {}
 

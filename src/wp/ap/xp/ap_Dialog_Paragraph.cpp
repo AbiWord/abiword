@@ -54,7 +54,7 @@ AP_Dialog_Paragraph::~AP_Dialog_Paragraph(void)
 	FREEP(m_blockProps);
 }
 
-UT_Bool AP_Dialog_Paragraph::setDialogData(const XML_Char ** props)
+UT_Bool AP_Dialog_Paragraph::setDialogData(const XML_Char * props[])
 {
 	UT_ASSERT(props);
 
@@ -65,10 +65,18 @@ UT_Bool AP_Dialog_Paragraph::setDialogData(const XML_Char ** props)
 // it (use the FREEP() macro).  This function does not free any memory pointed to
 // by its argument.
 
-UT_Bool AP_Dialog_Paragraph::getDialogData(XML_Char **& props)
+UT_Bool AP_Dialog_Paragraph::getDialogData(const XML_Char *** props)
 {
 	if (m_blockProps)
-		return UT_XML_cloneList(props, m_blockProps);
+	{
+		// TODO: do we really want these stored internally as a list of props?
+		// TODO: wouldn't an editable vector or alphahash be more convenient?
+
+		// TODO: at minimum, do a better job of fixing the API mismatch
+		XML_Char** pProps = (XML_Char **) *props;
+
+		return UT_XML_cloneList(pProps, (const XML_Char **) m_blockProps);
+	}
 
 	return UT_TRUE;
 }
@@ -129,6 +137,8 @@ const XML_Char * AP_Dialog_Paragraph::_formatAsUnitQuantity(const XML_Char * inp
 
 const XML_Char * AP_Dialog_Paragraph::_formatAsUnitlessQuantity(const XML_Char * input)
 {
+	UT_ASSERT(UT_NOT_IMPLEMENTED);
+	return (XML_Char *) NULL;
 }
 
 /*

@@ -39,8 +39,8 @@ class AP_Dialog_Paragraph : public XAP_Dialog_NonPersistent
 	// answer from dialog
 	typedef enum { a_OK, a_CANCEL, a_TABS } tAnswer;
 
-	UT_Bool setDialogData(const XML_Char ** props);
- 	UT_Bool getDialogData(XML_Char **& props);
+	UT_Bool setDialogData(const XML_Char * props[]);
+ 	UT_Bool getDialogData(const XML_Char *** props);
 
 	AP_Dialog_Paragraph::tAnswer	getAnswer(void) const;
 	
@@ -64,44 +64,9 @@ class AP_Dialog_Paragraph : public XAP_Dialog_NonPersistent
 	// conversion utilities (platform code will probably not need to call these)
 	const XML_Char * _formatAsUnitQuantity(const XML_Char * input);
 	const XML_Char * _formatAsUnitlessQuantity(const XML_Char * input);
-
-	// platform classes implement these functions to gather UI data
-	virtual tAlignment			_gatherAlignmentType(void) = 0;
-	virtual void				_setAlignmentType(tAlignment alignment) = 0;
-	virtual tSpecialIndent 		_gatherSpecialIndentType(void) = 0;
-	virtual void				_setSpecialIndentType(tSpecialIndent indent) = 0;
-	virtual tLineSpacing		_gatherLineSpacingType(void) = 0;
-	virtual void				_setLineSpacingType(tLineSpacing spacing) = 0;
-	
-	virtual const XML_Char *	_gatherLeftIndent(void) = 0;
-	virtual void				_setLeftIndent(const XML_Char * indent) = 0;
-	virtual const XML_Char *	_gatherRightIndent(void) = 0;
-	virtual void				_setRightIndent(const XML_Char * indent) = 0;
-	virtual const XML_Char *	_gatherSpecialIndent(void) = 0;
-	virtual void				_setSpecialIndent(const XML_Char * indent) = 0;
-	
-	virtual const XML_Char *	_gatherBeforeSpacing(void) = 0;
-	virtual void				_setBeforeSpacing(const XML_Char * spacing) = 0;
-	virtual const XML_Char *	_gatherAfterSpacing(void) = 0;
-	virtual void				_setAfterSpacing(const XML_Char * spacing) = 0;
-	virtual const XML_Char *	_gatherSpecialSpacing(void) = 0;	
-	virtual void				_setSpecialSpacing(const XML_Char * spacing) = 0;
-	
-	virtual UT_Bool				_gatherWidowOrphanControl(void) = 0;
-	virtual void				_setWidowOrphanControl(UT_Bool b) = 0;
-	virtual UT_Bool				_gatherKeepLinesTogether(void) = 0;
-	virtual void				_setKeepLinesTogether(UT_Bool b) = 0;
-	virtual UT_Bool				_gatherKeepWithNext(void) = 0;
-	virtual void				_setKeepWithNext(UT_Bool b) = 0;
-	virtual UT_Bool				_gatherSuppressLineNumbers(void) = 0;
-	virtual void				_setSuppressLineNumbers(UT_Bool b) = 0;
-	virtual UT_Bool				_gatherNoHyphenate(void) = 0;
-	virtual void				_setNoHyphenate(UT_Bool b) = 0;
-	
- protected:
 	
 	tAnswer					m_answer;
-	const XML_Char ** 		m_blockProps;
+	XML_Char ** 			m_blockProps;
 	AP_Preview_Paragraph *	m_paragraphPreview;
 	UT_Dimension			m_dim;
 };

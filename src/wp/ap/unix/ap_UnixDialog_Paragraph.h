@@ -70,42 +70,6 @@ public:
 
  protected:
 
-	// we implement these so the XP dialog can set/grab our data
-	
-	virtual tAlignment			_gatherAlignmentType(void);
-	virtual void				_setAlignmentType(tAlignment alignment);
-	virtual tSpecialIndent 		_gatherSpecialIndentType(void);
-	virtual void				_setSpecialIndentType(tSpecialIndent indent);
-	virtual tLineSpacing		_gatherLineSpacingType(void);
-	virtual void				_setLineSpacingType(tLineSpacing spacing);
-	
-	virtual const XML_Char *	_gatherLeftIndent(void);
-	virtual void				_setLeftIndent(const XML_Char * indent);
-	virtual const XML_Char *	_gatherRightIndent(void);
-	virtual void				_setRightIndent(const XML_Char * indent);
-	virtual const XML_Char *	_gatherSpecialIndent(void);
-	virtual void				_setSpecialIndent(const XML_Char * indent);
-	
-	virtual const XML_Char *	_gatherBeforeSpacing(void);
-	virtual void				_setBeforeSpacing(const XML_Char * spacing);
-	virtual const XML_Char *	_gatherAfterSpacing(void);
-	virtual void				_setAfterSpacing(const XML_Char * spacing);
-	virtual const XML_Char *	_gatherSpecialSpacing(void);	
-	virtual void				_setSpecialSpacing(const XML_Char * spacing);
-	
-	virtual UT_Bool				_gatherWidowOrphanControl(void);
-	virtual void				_setWidowOrphanControl(UT_Bool b);
-	virtual UT_Bool				_gatherKeepLinesTogether(void);
-	virtual void				_setKeepLinesTogether(UT_Bool b);
-	virtual UT_Bool				_gatherKeepWithNext(void);
-	virtual void				_setKeepWithNext(UT_Bool b);
-	virtual UT_Bool				_gatherSuppressLineNumbers(void);
-	virtual void				_setSuppressLineNumbers(UT_Bool b);
-	virtual UT_Bool				_gatherNoHyphenate(void);
-	virtual void				_setNoHyphenate(UT_Bool b);
-	
- protected:
-
 	GR_UnixGraphics	* 		m_unixGraphics;
 	
 	// private construction functions

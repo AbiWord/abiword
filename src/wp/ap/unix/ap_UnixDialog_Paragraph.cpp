@@ -319,40 +319,6 @@ void AP_UnixDialog_Paragraph::event_PreviewAreaExposed(void)
 
 /*****************************************************************/
 
-AP_Dialog_Paragraph::tAlignment AP_UnixDialog_Paragraph::_gatherAlignmentType(void) {}
-void AP_UnixDialog_Paragraph::_setAlignmentType(AP_Dialog_Paragraph::tAlignment alignment) {}
-AP_Dialog_Paragraph::tSpecialIndent AP_UnixDialog_Paragraph::_gatherSpecialIndentType(void) {}
-void AP_UnixDialog_Paragraph::_setSpecialIndentType(AP_Dialog_Paragraph::tSpecialIndent indent) {}
-AP_Dialog_Paragraph::tLineSpacing AP_UnixDialog_Paragraph::_gatherLineSpacingType(void) {}
-void AP_UnixDialog_Paragraph::_setLineSpacingType(AP_Dialog_Paragraph::tLineSpacing spacing) {}
-	
-const XML_Char *	AP_UnixDialog_Paragraph::_gatherLeftIndent(void) {}
-void				AP_UnixDialog_Paragraph::_setLeftIndent(const XML_Char * indent) {}
-const XML_Char *	AP_UnixDialog_Paragraph::_gatherRightIndent(void) {}
-void				AP_UnixDialog_Paragraph::_setRightIndent(const XML_Char * indent) {}
-const XML_Char *	AP_UnixDialog_Paragraph::_gatherSpecialIndent(void) {}
-void				AP_UnixDialog_Paragraph::_setSpecialIndent(const XML_Char * indent) {}
-	
-const XML_Char *	AP_UnixDialog_Paragraph::_gatherBeforeSpacing(void) {}
-void				AP_UnixDialog_Paragraph::_setBeforeSpacing(const XML_Char * spacing) {}
-const XML_Char *	AP_UnixDialog_Paragraph::_gatherAfterSpacing(void) {}
-void				AP_UnixDialog_Paragraph::_setAfterSpacing(const XML_Char * spacing) {}
-const XML_Char *	AP_UnixDialog_Paragraph::_gatherSpecialSpacing(void) {}	
-void				AP_UnixDialog_Paragraph::_setSpecialSpacing(const XML_Char * spacing) {}
-	
-UT_Bool				AP_UnixDialog_Paragraph::_gatherWidowOrphanControl(void) {}
-void				AP_UnixDialog_Paragraph::_setWidowOrphanControl(UT_Bool b) {}
-UT_Bool				AP_UnixDialog_Paragraph::_gatherKeepLinesTogether(void) {}
-void				AP_UnixDialog_Paragraph::_setKeepLinesTogether(UT_Bool b) {}
-UT_Bool				AP_UnixDialog_Paragraph::_gatherKeepWithNext(void) {}
-void				AP_UnixDialog_Paragraph::_setKeepWithNext(UT_Bool b) {}
-UT_Bool				AP_UnixDialog_Paragraph::_gatherSuppressLineNumbers(void) {}
-void				AP_UnixDialog_Paragraph::_setSuppressLineNumbers(UT_Bool b) {}
-UT_Bool				AP_UnixDialog_Paragraph::_gatherNoHyphenate(void) {}
-void				AP_UnixDialog_Paragraph::_setNoHyphenate(UT_Bool b) {}
-
-/*****************************************************************/
-
 GtkWidget * AP_UnixDialog_Paragraph::_constructWindow(void)
 {
 	// grab the string set
