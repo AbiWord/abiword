@@ -318,7 +318,7 @@ void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos,
 	UT_ASSERT(pFirstRun);
 
 	bBOL = false;
-	if (x < pFirstRun->getX())
+	if (x <= pFirstRun->getX())
 	{
 		xxx_UT_DEBUGMSG(("fp_Line::mapXYToPosition [0x%x]: x=%d, first run x=%d\n", this, x, pFirstRun->getX()));
 		bBOL = true;

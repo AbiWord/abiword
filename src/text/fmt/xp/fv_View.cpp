@@ -3292,10 +3292,14 @@ bool FV_View::getCharFormat(const XML_Char *** pProps, bool bExpandStyles)
 					f = (_fmtPair *)v.getNthItem(i-1);
 
 					const XML_Char * value = PP_evalProperty(f->m_prop,pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
+#ifndef BIDI_ENABLED
+					// the bidi property dir-override has no default value, so that if its
+					// not explicitely present in the span formatting, we will get a NULL here
 					UT_ASSERT(value);
+#endif			
 
 					// prune anything that doesn't match
-					if (UT_stricmp(f->m_val, value))
+					if (value && UT_stricmp(f->m_val, value))
 					{
 						DELETEP(f);
 						v.deleteNthItem(i-1);
