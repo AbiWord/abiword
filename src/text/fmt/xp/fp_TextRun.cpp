@@ -79,10 +79,10 @@ fp_TextRun::fp_TextRun(fl_BlockLayout* pBL,
     // we will use this as an indication that the direction
     // property has not been yet set normal values are -1,0,1
     // (neutral, ltr, rtl)
-	_setDirection(FRIBIDI_TYPE_UNSET); 
+	_setDirection(FRIBIDI_TYPE_UNSET);
 
     // no override by default
-	m_iDirOverride = FRIBIDI_TYPE_UNSET; 
+	m_iDirOverride = FRIBIDI_TYPE_UNSET;
 
 	if (bLookupProperties)
 	{
@@ -280,7 +280,7 @@ void fp_TextRun::_processProperties(const PP_AttrProp * pSpanAP,
 	m_pLanguage = lls->getPropertyFromProperty(pszLanguage);
 	if(pszOldLanguage && m_pLanguage != pszOldLanguage)
 		getBlock()->getDocLayout()->queueBlockForBackgroundCheck((UT_uint32) FL_DocLayout::bgcrSpelling, getBlock());
-	//UT_DEBUGMSG(("fp_TextRun::lookupProperties: m_pLanguage = %s\n", m_pLanguage));
+	//UT_DEBUGMSG(("fp_TextRun::loo
 	delete lls;
 
 #ifdef SMART_RUN_MERGING
@@ -326,6 +326,27 @@ void fp_TextRun::_processProperties(const PP_AttrProp * pSpanAP,
 	else
 #endif
 		setDirection(FRIBIDI_TYPE_UNSET, iNewOverride);
+
+	PP_RevisionAttr * pRev = getRevisions();
+
+	if(pRev)
+	{
+		FV_View* pView = getBlock()->getDocLayout()->getView();
+		UT_return_if_fail(pView);
+		UT_uint32 iId  = pView->getRevisionLevel();
+
+		if(iId && !pRev->isVisible(iId))
+		{
+			if(isHidden() == FP_HIDDEN_TEXT)
+			{
+				setVisibility(FP_HIDDEN_REVISION_AND_TEXT);
+			}
+			else
+			{
+				setVisibility(FP_HIDDEN_REVISION);
+			}
+		}
+	}
 }
 
 
@@ -817,7 +838,7 @@ void fp_TextRun::mergeWithNext(void)
 	_setField(pNext->getField());
  	_setWidth(getWidth() + pNext->getWidth());
 #ifndef WITH_PANGO
-	_setWidthLayoutUnits(getWidthInLayoutUnits() + 
+	_setWidthLayoutUnits(getWidthInLayoutUnits() +
 						 pNext->getWidthInLayoutUnits());
 #endif
 
@@ -2487,7 +2508,7 @@ void fp_TextRun::resetJustification()
 			{
 				// set width of spaces back to normal.
 
-				_setWidth(getWidth() - 
+				_setWidth(getWidth() -
 						 (pCharWidths[i] - m_iSpaceWidthBeforeJustification));
 				pCharWidths[i] = m_iSpaceWidthBeforeJustification;
 			}

@@ -98,6 +98,14 @@ enum FPRUN_CLEAR_SCREEN
 	FP_CLEARSCREEN_NEVER
 };
 
+typedef enum {FP_VISIBLE = 0,
+			  FP_HIDDEN_TEXT,
+			  FP_HIDDEN_REVISION,
+			  FP_HIDDEN_REVISION_AND_TEXT
+} FPVisibility;
+
+
+
 /*
 	fp_Run represents a contiguous homogenous chunk on a single line.
 	This file also defines the following subclasses:
@@ -255,6 +263,9 @@ public:
 	// getLastRevision() and related functions use internal cache so
 	// they could not be called
 	PP_RevisionAttr *       getRevisions() const {return m_pRevisions;}
+	FPVisibility            isHidden() const {return m_eHidden;}
+	void                    setVisibility(FPVisibility eVis) {m_eHidden = eVis;}
+
 
 #ifdef FMT_TEST
 	virtual void			__dump(FILE * fp) const;
@@ -269,19 +280,19 @@ protected:
 	UT_RGBColor				_getColorPG(void) const { return m_pColorPG; }
 	UT_RGBColor				_getColorFG(void) const { return m_pColorFG; }
 	UT_RGBColor				_getColorHL(void) const { return m_pColorHL; }
-	void					_setColorFG(UT_RGBColor c) 
+	void					_setColorFG(UT_RGBColor c)
 								{ m_pColorFG = c; }
 	void					_setColorHL(UT_RGBColor c)
 								{ m_pColorHL = c; }
 	void					_setLine(fp_Line* pLine) { m_pLine = pLine; }
-	void					_setHeight(UT_sint32 iHeight) 
+	void					_setHeight(UT_sint32 iHeight)
 								{ m_iHeight = iHeight;}
 	void					_setWidth(UT_sint32 iWidth)
                         		{ m_iWidth = iWidth; }
 	void					_setBlock(fl_BlockLayout * pBL) { m_pBL = pBL; }
 	void					_setAscent(int iAscent) { m_iAscent = iAscent; }
 	void					_setDescent(int iDescent) {m_iDescent = iDescent;}
-	void					_setAscentLayoutUnits(int iAscent) 
+	void					_setAscentLayoutUnits(int iAscent)
                                 { m_iAscentLayoutUnits = iAscent; }
 	void					_setDescentLayoutUnits(int iDescent)
 			   					{ m_iDescentLayoutUnits = iDescent; }
@@ -387,6 +398,7 @@ private:
 	// A local cache of the page color. This makes clearscreen() a bit faster
 	UT_RGBColor       		m_pColorPG;
 	UT_RGBColor 			m_pColorFG;
+	FPVisibility            m_eHidden;
 };
 
 class ABI_EXPORT fp_TabRun : public fp_Run

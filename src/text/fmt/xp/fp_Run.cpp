@@ -118,7 +118,8 @@ fp_Run::fp_Run(fl_BlockLayout* pBL,
 		m_iminOverline(0),
 		m_iOverlineXoff(0),
 		m_pHyperlink(0),
-		m_pRevisions(NULL)
+		m_pRevisions(NULL),
+		m_eHidden(FP_VISIBLE)
 {
         // set the default background color and the paper color of the
 	    // section owning the run.
@@ -691,9 +692,9 @@ const UT_RGBColor fp_Run::getFGColor(void) const
 }
 
 const UT_RGBColor fp_Run::getPageColor(void)
-{ 
-	updatePageColor(); 
-	return _getColorPG(); 
+{
+	updatePageColor();
+	return _getColorPG();
 }
 
 void fp_Run::draw(dg_DrawArgs* pDA)
