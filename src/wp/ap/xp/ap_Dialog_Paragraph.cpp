@@ -343,7 +343,7 @@ UT_Bool AP_Dialog_Paragraph::getDialogData(const XML_Char **& pProps)
 		ALLOC_PROP_PAIR(p);
 		UT_XML_cloneString(p->prop, "text-indent");
 
-		tIndentState i = _getMenuItemValue(id_MENU_SPECIAL_INDENT);
+		tIndentState i = (tIndentState) _getMenuItemValue(id_MENU_SPECIAL_INDENT);
 
 		if (i == indent_NONE)
 			UT_XML_cloneString(p->val, UT_convertToDimensionString(m_dim, 0));
@@ -613,7 +613,9 @@ AP_Dialog_Paragraph::tCheckState AP_Dialog_Paragraph::_getCheckItemValue(tContro
 	sControlData * pItem = (sControlData *) m_vecProperties.getNthItem((UT_uint32) item);
 	UT_ASSERT(pItem);
 
-	return (tCheckState) pItem->pData;
+	// stupid casting tricks to keep the compiler happy
+	UT_uint32 tmp = (UT_uint32) pItem->pData;
+	return (tCheckState) tmp;
 }
 
 void AP_Dialog_Paragraph::_setSpinItemValue(tControl item, const XML_Char * value,
