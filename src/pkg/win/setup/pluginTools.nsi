@@ -8,6 +8,14 @@
 !define VERSION_MAJOR "2"
 !endif
 
+!ifndef VERSION_MINOR
+!define VERSION_MINOR "1"
+!endif
+
+!ifndef VERSION_MICRO
+!define VERSION_MICRO "6"
+!endif
+
 ; Do a Cyclic Redundancy Check to make sure the installer 
 ; was not corrupted by the download.  
 CRCCheck on
@@ -22,7 +30,7 @@ UninstallIcon "..\..\pkg\win\setup\setup.ico"
 ;Icon "..\..\pkg\win\setup\setup_tm.ico"
 ;UninstallIcon "..\..\pkg\win\setup\setup_tm.ico"
 
-OutFile "AbiWord_Tools_Plugins.exe"
+OutFile "abiword-plugins-tools-${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_MICRO}.exe"
 
 ; License Information
 LicenseText "This program is Licensed under the GNU General Public License (GPL)."
@@ -72,13 +80,14 @@ SectionEnd
 
 SubSection /e "Dictionary, Thesaurus, etc."
 
+!ifdef 0
 SubSection "AikSaurus (thesaurus) Plugins"
 ; OPTIONAL
 Section "The AikSaurus Plugin"
 	SectionIn 1 2
 
 	; Testing clause to Overwrite Existing Version - if exists
-	IfFileExists "$INSTDIR\AbiWord\plugins\libAikSaurusABI.dll" 0 DoInstall
+	IfFileExists "$INSTDIR\AbiWord\plugins\AikSaurusABI.dll" 0 DoInstall
 	
 	MessageBox MB_YESNO "Overwrite Existing AikSaurus Plugin?" IDYES DoInstall
 	
@@ -86,7 +95,7 @@ Section "The AikSaurus Plugin"
 	Goto End
 
 	DoInstall:
-	File "libAikSaurusABI.dll"
+	File "AikSaurusABI.dll"
 
 	End:
 SectionEnd
@@ -99,7 +108,7 @@ Section "AikSaurus Data Files && Update Registry)"
 	;      prompt if to use existing data files if there.
 
 	; Skip adding registry entries if plugin doesn't exist
-	IfFileExists "$INSTDIR\AbiWord\plugins\libAikSaurusABI.dll" 0 End
+	IfFileExists "$INSTDIR\AbiWord\plugins\AikSaurusABI.dll" 0 End
 
 	; Add data files
 	File "meanings.dat"
@@ -113,13 +122,14 @@ Section "AikSaurus Data Files && Update Registry)"
 SectionEnd
 ; AikSaurus
 SubSectionEnd
+!endif
 
 ; OPTIONAL
 Section "AbiURLDict Plugin"
 	SectionIn 1 2
 
 	; Testing clause to Overwrite Existing Version - if exists
-	IfFileExists "$INSTDIR\AbiWord\plugins\libAbiURLDict.dll" 0 DoInstall
+	IfFileExists "$INSTDIR\AbiWord\plugins\AbiURLDict.dll" 0 DoInstall
 	
 	MessageBox MB_YESNO "Overwrite Existing AbiURLDict Plugin?" IDYES DoInstall
 	
@@ -127,7 +137,7 @@ Section "AbiURLDict Plugin"
 	Goto End
 
 	DoInstall:
-	File "libAbiURLDict.dll"
+	File "AbiURLDict.dll"
 
 	End:
 SectionEnd
@@ -137,7 +147,7 @@ Section "AbiWikipedia Plugin"
 	SectionIn 1 2
 
 	; Testing clause to Overwrite Existing Version - if exists
-	IfFileExists "$INSTDIR\AbiWord\plugins\libAbiWikipedia.dll" 0 DoInstall
+	IfFileExists "$INSTDIR\AbiWord\plugins\AbiWikipedia.dll" 0 DoInstall
 	
 	MessageBox MB_YESNO "Overwrite Existing AbiWikipedia Plugin?" IDYES DoInstall
 	
@@ -145,7 +155,7 @@ Section "AbiWikipedia Plugin"
 	Goto End
 
 	DoInstall:
-	File "libAbiWikipedia.dll"
+	File "AbiWikipedia.dll"
 
 	End:  
 SectionEnd
@@ -155,7 +165,7 @@ Section "AbiGoogle Plugin"
 	SectionIn 1 2
 
 	; Testing clause to Overwrite Existing Version - if exists
-	IfFileExists "$INSTDIR\AbiWord\plugins\libAbiGoogle.dll" 0 DoInstall
+	IfFileExists "$INSTDIR\AbiWord\plugins\AbiGoogle.dll" 0 DoInstall
 	
 	MessageBox MB_YESNO "Overwrite Existing AbiGoogle Plugin?" IDYES DoInstall
 	
@@ -163,7 +173,7 @@ Section "AbiGoogle Plugin"
 	Goto End
 
 	DoInstall:
-	File "libAbiGoogle.dll"
+	File "AbiGoogle.dll"
 
 	End:  
 SectionEnd
@@ -178,7 +188,7 @@ Section "AbiBabelfish Plugin"
 	SectionIn 1 2
 
 	; Testing clause to Overwrite Existing Version - if exists
-	IfFileExists "$INSTDIR\AbiWord\plugins\libAbiBabelfish.dll" 0 DoInstall
+	IfFileExists "$INSTDIR\AbiWord\plugins\AbiBabelfish.dll" 0 DoInstall
 	
 	MessageBox MB_YESNO "Overwrite Existing AbiBabelfish Plugin?" IDYES DoInstall
 	
@@ -186,7 +196,7 @@ Section "AbiBabelfish Plugin"
 	Goto End
 
 	DoInstall:
-	File "libAbiBabelfish.dll"
+	File "AbiBabelfish.dll"
 
 	End:  
 SectionEnd
@@ -198,7 +208,7 @@ Section "AbiFreeTranslation Plugin"
 	SectionIn 1 2
 
 	; Testing clause to Overwrite Existing Version - if exists
-	IfFileExists "$INSTDIR\AbiWord\plugins\libAbiFreeTranslation.dll" 0 DoInstall
+	IfFileExists "$INSTDIR\AbiWord\plugins\AbiFreeTranslation.dll" 0 DoInstall
 	
 	MessageBox MB_YESNO "Overwrite Existing AbiFreeTranslation Plugin?" IDYES DoInstall
 	
@@ -206,7 +216,7 @@ Section "AbiFreeTranslation Plugin"
 	Goto End
 
 	DoInstall:
-	File "libAbiFreeTranslation.dll"
+	File "AbiFreeTranslation.dll"
 
 	End:
 SectionEnd
@@ -221,7 +231,7 @@ SubSection /e "Image Manipulation"
 ;	SectionIn 2
 ;
 ;	; Testing clause to Overwrite Existing Version - if exists
-;	IfFileExists "$INSTDIR\AbiWord\plugins\libAbiGimp.dll" 0 DoInstall
+;	IfFileExists "$INSTDIR\AbiWord\plugins\AbiGimp.dll" 0 DoInstall
 ;	
 ;	MessageBox MB_YESNO "Overwrite Existing AbiGimp Plugin?" IDYES DoInstall
 ;	
@@ -229,7 +239,7 @@ SubSection /e "Image Manipulation"
 ;	Goto End
 ;
 ;	DoInstall:
-;	File "libAbiGimp.dll"
+;	File "AbiGimp.dll"
 ;
 ;	End:  
 ;SectionEnd
@@ -241,7 +251,7 @@ Section "AbiPaint Plugin"
 	SectionIn 1 2
 
 	; Testing clause to Overwrite Existing Version - if exists
-	IfFileExists "$INSTDIR\AbiWord\plugins\libAbiPaint.dll" 0 DoInstall
+	IfFileExists "$INSTDIR\AbiWord\plugins\AbiPaint.dll" 0 DoInstall
 	
 	MessageBox MB_YESNO "Overwrite Existing AbiPaint Plugin?" IDYES DoInstall
 	
@@ -249,20 +259,21 @@ Section "AbiPaint Plugin"
 	Goto End
 
 	DoInstall:
-	File "libAbiPaint.dll"
+	File "AbiPaint.dll"
   
 	End:
 SectionEnd
 
 ;SectionDivider
 SubSectionEnd
+
 SubSection /e "Script Related Plugins"
 
 Section "AbiScriptHappy Plugin"
 	SectionIn 1 2
 
 	; Testing clause to Overwrite Existing Version - if exists
-	IfFileExists "$INSTDIR\AbiWord\plugins\libAbiScriptHappy.dll" 0 DoInstall
+	IfFileExists "$INSTDIR\AbiWord\plugins\AbiScriptHappy.dll" 0 DoInstall
 	
 	MessageBox MB_YESNO "Overwrite Existing AbiScriptHappy Plugin?" IDYES DoInstall
 	
@@ -270,7 +281,7 @@ Section "AbiScriptHappy Plugin"
 	Goto End
 
 	DoInstall:
-	File "libAbiScriptHappy.dll"
+	File "AbiScriptHappy.dll"
   
 	End:
 SectionEnd
@@ -324,32 +335,32 @@ Section "Uninstall"
 
 
 	; AikSaurus
-	Delete "$INSTDIR\libAikSaurusABI.dll"
+	Delete "$INSTDIR\AikSaurusABI.dll"
 	Delete "$INSTDIR\meanings.dat"
 	Delete "$INSTDIR\words.dat"
 	; TODO: this could screw up AikSaurus if installed as a program and not just plugin
 	;DeleteRegKey HKLM SOFTWARE\Aiksaurus
 
 	; AbiBabelfish
-	Delete "$INSTDIR\libAbiBabelfish.dll"
+	Delete "$INSTDIR\AbiBabelfish.dll"
 
 	; AbiFreeTranslation
-;	Delete "$INSTDIR\libAbiFreeTranslation.dll"
+;	Delete "$INSTDIR\AbiFreeTranslation.dll"
 
 	; AbiURLDict
-	Delete "$INSTDIR\libAbiURLDict.dll"
+	Delete "$INSTDIR\AbiURLDict.dll"
 
 	; AbiWikipedia
-	Delete "$INSTDIR\libAbiWikipedia.dll"
+	Delete "$INSTDIR\AbiWikipedia.dll"
 
 	; AbiGimp
-;	Delete "$INSTDIR\libAbiGimp.dll"
+;	Delete "$INSTDIR\AbiGimp.dll"
 
 	; AbiPaint
-	Delete "$INSTDIR\libAbiPaint.dll"
+	Delete "$INSTDIR\AbiPaint.dll"
 
 	; AbiScriptHappy
-	Delete "$INSTDIR\libAbiScriptHappy.dll"
+	Delete "$INSTDIR\AbiScriptHappy.dll"
 
 	; remove uninstaller
 	Delete /REBOOTOK "$INSTDIR\UninstallAbiWordToolsPlugins.exe"
