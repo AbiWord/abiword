@@ -40,22 +40,14 @@ public:
 protected:
 
 	BOOL						_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
-	BOOL						_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);   
-	BOOL						_onNotify(HWND hWnd, LPARAM lParam);
-	
-	static BOOL CALLBACK			s_tabProc(HWND,UINT,WPARAM,LPARAM);
-	BOOL						_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lParam);
-	BOOL						_onCommandTab(HWND hWnd, WPARAM wParam, LPARAM lParam);
-
+	BOOL						_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);   	
 	void						event_Load();
-	void						refresh_Tab1();
+	void 						refreshPluginList();
+	void 						refreshPluginInfo();
+	
 
 	UT_sint32					m_curSelection;
-	HWND						m_hwndDlg;		// parent dialog
-	HWND						m_hwndTab;		// tab control in parent dialog
-
-	int						m_nrSubDlgs;		// number of tabs on tab control
-	UT_Vector					m_vecSubDlgHWnd;	// hwnd to each sub-dialog
+	HWND						m_hwndDlg;		// parent dialog	
 	XAP_Frame*					m_pFrame;
 
 
