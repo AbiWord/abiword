@@ -63,8 +63,8 @@ GtkWidget * XAP_UnixGnomeDialog_PluginManager::_constructWindow(void)
 	GtkWidget *windowPluginManager;
 	GtkWidget *buttonClose;
 
-	windowPluginManager = gnome_dialog_new (pSS->getValue(XAP_STRING_ID_DLG_ULANG_LangTitle),
-						GNOME_STOCK_BUTTON_CLOSE, NULL);
+	windowPluginManager = gnome_dialog_new (pSS->getValue(XAP_STRING_ID_DLG_PLUGIN_MANAGER_TITLE),
+											GNOME_STOCK_BUTTON_CLOSE, NULL);
 
 	buttonClose = GTK_WIDGET (g_list_first (GNOME_DIALOG (windowPluginManager)->buttons)->data);
 	GTK_WIDGET_SET_FLAGS (buttonClose, GTK_CAN_DEFAULT);
