@@ -98,10 +98,17 @@ bool IE_Imp::appendStruxFmt(pf_Frag_Strux * pfs, const XML_Char ** attributes)
 	if (!m_isPaste)
 		return m_pDocument->appendStruxFmt(pfs, attributes);
 	else {
-		bool bRes = m_pDocument->changeStruxFmt(PTC_AddFmt,
-												m_dpos, m_dpos,
-												attributes, NULL,
-												pfs->getStruxType());
+		bool bRes;
+
+		if (true /*!pfs*/) {
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			bRes = false;
+		} else {
+			bRes = m_pDocument->changeStruxFmt(PTC_AddFmt,
+											   m_dpos, m_dpos,
+											   attributes, NULL,
+											   pfs->getStruxType());
+		}
 		return bRes;
 	}
 }
@@ -133,31 +140,40 @@ bool IE_Imp::appendObject (PTObjectType pto, const XML_Char ** attribs,
 
 bool IE_Imp::appendFmt(const XML_Char ** attributes)
 {
-	if (!m_isPaste)
-		return m_pDocument->appendFmt (attributes);
-	else {
-		bool bRes = m_pDocument->changeSpanFmt(PTC_AddFmt,
-											   m_dpos, m_dpos,
-											   attributes, NULL);
+	bool bRes;
 
-		return bRes;
+	if (!m_isPaste) {
+		bRes = m_pDocument->appendFmt (attributes);
+		// m_pDocument->appendFmtMark();
 	}
+	else {
+		bRes = m_pDocument->changeSpanFmt(PTC_AddFmt,
+										  m_dpos, m_dpos,
+										  attributes, NULL);
+	}
+
+	return bRes;
 }
 
 bool IE_Imp::appendFmt(const UT_Vector * pVecAttributes)
 {
-	if (!m_isPaste)
-		return m_pDocument->appendFmt (pVecAttributes);
+	bool bRes;
+
+	if (!m_isPaste) {
+		bRes = m_pDocument->appendFmt (pVecAttributes);
+		// m_pDocument->appendFmtMark();
+	}
 	else {
 		const XML_Char ** attributes;
 
 		attributes = (const XML_Char **)pVecAttributes->getNthItem(0);
 
-		bool bRes = m_pDocument->changeSpanFmt(PTC_AddFmt,
-											   m_dpos, m_dpos,
-											   attributes, NULL);
-		return bRes;
+		bRes = m_pDocument->changeSpanFmt(PTC_AddFmt,
+										  m_dpos, m_dpos,
+										  attributes, NULL);
 	}
+
+	return bRes;
 }
 
 /*****************************************************************/

@@ -635,7 +635,8 @@ IE_Imp_Text::IE_Imp_Text(PD_Document * pDocument, const char * encoding)
     m_bUseBOM(false),
 	m_bBigEndian(false),
 	m_bBlockDirectionPending(true),
-	m_bFirstBlockData(true)
+	m_bFirstBlockData(true),
+	m_pBlock(0)
 {
   m_bIsEncoded = ((encoding != NULL) && (strlen(encoding) > 0));
   
