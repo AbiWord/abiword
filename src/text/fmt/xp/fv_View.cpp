@@ -7549,7 +7549,7 @@ void FV_View::setShowPara(bool bShowPara)
 			draw();
 		}
 	}
-};
+}
 
 
 /*!

@@ -88,7 +88,7 @@ UT_uint32 GR_Font::getCharWidthFromCache (UT_UCSChar c) const
 	}
 
 	return iWidth;
-};
+}
 
 
 bool GR_Font::doesGlyphExist(UT_UCS4Char g)

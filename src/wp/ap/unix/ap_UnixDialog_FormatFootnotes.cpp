@@ -111,7 +111,7 @@ AP_UnixDialog_FormatFootnotes::AP_UnixDialog_FormatFootnotes(XAP_DialogFactory *
 	m_EndRestartSectionID = 0;
 	m_FootStyleID = 0;
 	m_EndStyleID = 0;
-};
+}
 
 
 AP_UnixDialog_FormatFootnotes::~AP_UnixDialog_FormatFootnotes(void)
