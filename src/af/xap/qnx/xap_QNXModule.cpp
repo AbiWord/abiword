@@ -48,7 +48,7 @@ UT_Bool XAP_QNXModule::unload (void)
 	m_module = NULL;
 }
 
-UT_Bool XAP_QNXModule::getModuleName (const char ** dest) const
+UT_Bool XAP_QNXModule::getModuleName (char ** dest) const
 {
 	if (m_szname)
 	  {
@@ -69,7 +69,7 @@ UT_Bool XAP_QNXModule::resolveSymbol (const char * symbol_name, void ** symbol)
 	return (*symbol ? UT_TRUE : UT_FALSE);
 }
 
-UT_Bool XAP_QNXModule::getErrorMsg (const char ** dest) const
+UT_Bool XAP_QNXModule::getErrorMsg (char ** dest) const
 {
   if (m_module)
     {
