@@ -19,25 +19,27 @@ public:
 	UT_Vector();
 	~UT_Vector();
 
-	int		addItem(void*);
-	int		addItem(void* p, UT_uint32 * pIndex);
-	void*	getNthItem(int n) const;
-	void*	getFirstItem() const;
-	void*	getLastItem() const;
-	int		getItemCount() const;
+	UT_sint32	addItem(void*);
+	UT_sint32	addItem(void* p, UT_uint32 * pIndex);
+	void*		getNthItem(UT_uint32 n) const;
+	void*		getFirstItem() const;
+	void*		getLastItem() const;
+	UT_uint32	getItemCount() const;
+	UT_sint32	findItem(void*);
 
-	void	insertItemAt(void*, int ndx);
-	void	deleteNthItem(int n);
-	void	clear();
+	void		insertItemAt(void*, int ndx);
+	void		deleteNthItem(UT_uint32 n);
+	void		clear();
 
 protected:
-	int		calcNewSpace();
-	int		grow();
-	void**	m_pEntries;
-	int		m_iCount;
-	int		m_iSpace;
-	int		m_iCutoffDouble;
-	int		m_iPostCutoffIncrement;
+	int				calcNewSpace();
+	int				grow();
+	
+	void**			m_pEntries;
+	UT_uint32		m_iCount;
+	UT_uint32		m_iSpace;
+	UT_uint32		m_iCutoffDouble;
+	UT_uint32		m_iPostCutoffIncrement;
 };
 
 #endif /* UTVECTOR_H */

@@ -51,7 +51,7 @@ int UT_Vector::calcNewSpace()
 	}
 }
 
-int UT_Vector::getItemCount() const
+UT_uint32 UT_Vector::getItemCount() const
 {
 	return m_iCount;
 }
@@ -82,7 +82,7 @@ int UT_Vector::grow()
 	return 0;
 }
 
-int UT_Vector::addItem(void* p, UT_uint32 * pIndex)
+UT_sint32 UT_Vector::addItem(void* p, UT_uint32 * pIndex)
 {
 	int err = addItem(p);
 	if (!err)
@@ -90,7 +90,7 @@ int UT_Vector::addItem(void* p, UT_uint32 * pIndex)
 	return err;
 }
 
-int UT_Vector::addItem(void* p)
+UT_sint32 UT_Vector::addItem(void* p)
 {
 	if ((m_iCount+1) > m_iSpace)
 	{
@@ -106,17 +106,18 @@ int UT_Vector::addItem(void* p)
 	return 0;
 }
 
-void* UT_Vector::getNthItem(int n) const
+void* UT_Vector::getNthItem(UT_uint32 n) const
 {
 	UT_ASSERT(m_pEntries);
+	UT_ASSERT(m_iCount > 0);
+	UT_ASSERT(n<m_iCount);
 
-	// TODO assert n in range
 	return m_pEntries[n];
 }
 
 void* UT_Vector::getLastItem() const
 {
-	UT_ASSERT(m_iCount);
+	UT_ASSERT(m_iCount > 0);
 
 	return m_pEntries[m_iCount-1];
 }
@@ -129,17 +130,31 @@ void* UT_Vector::getFirstItem() const
 	return m_pEntries[0];
 }
 
-void UT_Vector::deleteNthItem(int n)
+void UT_Vector::deleteNthItem(UT_uint32 n)
 {
-	if ((n < 0) || (n >= m_iCount))
-		return;
+	UT_ASSERT(n < m_iCount);
+	UT_ASSERT(m_iCount > 0);
 
-	for (int k=n; k<m_iCount-1; k++)
+	for (UT_uint32 k=n; k<m_iCount-1; k++)
+	{
 		m_pEntries[k] = m_pEntries[k+1];
+	}
+	
 	m_pEntries[m_iCount-1] = 0;
 	m_iCount--;
 
 	return;
 }
 
+UT_sint32 UT_Vector::findItem(void* p)
+{
+	for (UT_uint32 i=0; i<m_iCount; i++)
+	{
+		if (m_pEntries[i] == p)
+		{
+			return (UT_sint32) i;
+		}
+	}
 
+	return -1;
+}
