@@ -25,6 +25,7 @@
 #include "ut_vector.h"
 #include "pt_Types.h"
 
+class fl_HdrFtrSectionLayout;
 class fl_DocSectionLayout;
 class fl_SectionLayout;
 class fp_Line;
@@ -35,6 +36,7 @@ struct dg_DrawArgs;
 struct fp_Sliver;
 
 #define FP_CONTAINER_COLUMN		1
+#define FP_CONTAINER_HDRFTR		2
 
 class fp_Container
 {
@@ -129,6 +131,20 @@ protected:
 
 	fp_Column*				m_pLeader;
 	fp_Column*				m_pNextFollower;
+};
+
+class fp_HdrFtrContainer : public fp_Container
+{
+public:
+	fp_HdrFtrContainer(fl_SectionLayout* pSL);
+	~fp_HdrFtrContainer();
+
+	fl_HdrFtrSectionLayout*	getHdrFtrSectionLayout(void) const;
+	
+	void				layout(void);
+	
+protected:
+
 };
 
 #endif /* COLUMN_H */

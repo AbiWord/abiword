@@ -53,6 +53,7 @@ fl_DocListener::fl_DocListener(PD_Document* doc, FL_DocLayout *pLayout)
 	m_pLayout = pLayout;
 	m_bScreen = pLayout->getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN);
 	m_iGlobCounter = 0;
+	m_pCurrentSL = NULL;
 }
 
 fl_DocListener::~fl_DocListener()
@@ -78,7 +79,8 @@ UT_Bool fl_DocListener::populate(PL_StruxFmtHandle sfh,
 			fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
 			PT_BlockOffset blockOffset = pcrs->getBlockOffset();
 			UT_uint32 len = pcrs->getLength();
-			bResult = pBL->doclistener_populateSpan(pcrs, blockOffset, len);
+			fl_SectionLayout* pBLSL = pBL->getSectionLayout();
+			bResult = pBLSL->bl_doclistener_populateSpan(pBL, pcrs, blockOffset, len);
 			goto finish_up;
 		}
 
@@ -91,7 +93,8 @@ UT_Bool fl_DocListener::populate(PL_StruxFmtHandle sfh,
 			fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
 			PT_BlockOffset blockOffset = pcro->getBlockOffset();
 
-			bResult = pBL->doclistener_populateObject(blockOffset,pcro);
+			fl_SectionLayout* pBLSL = pBL->getSectionLayout();
+			bResult = pBLSL->bl_doclistener_populateObject(pBL, blockOffset,pcro);
 			goto finish_up;
 		}
 
@@ -148,16 +151,36 @@ UT_Bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 				m_pLayout->addSection(pSL);
 
 				*psfh = (PL_StruxFmtHandle)pSL;
+				
+				m_pCurrentSL = pSL;
 			}
 			else
 			{
 				if (0 == UT_stricmp(pszSectionType, "header"))
 				{
-					return UT_FALSE;
+					UT_ASSERT(UT_TODO);
 				}
 				else if (0 == UT_stricmp(pszSectionType, "footer"))
 				{
-					return UT_FALSE;
+					const XML_Char* pszID = NULL;
+					pAP->getAttribute("id", pszID);
+
+					fl_DocSectionLayout* pDocSL = m_pLayout->findSectionForHdrFtr(pszID);
+					UT_ASSERT(pDocSL);
+			
+					// append a HdrFtrSectionLayout to this DocLayout
+					fl_HdrFtrSectionLayout* pSL = new fl_HdrFtrSectionLayout(m_pLayout, pDocSL, sdh, pcr->getIndexAP());
+					if (!pSL)
+					{
+						UT_DEBUGMSG(("no memory for SectionLayout"));
+						return UT_FALSE;
+					}
+			
+					pDocSL->setHdrFtr(pSL);
+
+					*psfh = (PL_StruxFmtHandle)pSL;
+					
+					m_pCurrentSL = pSL;
 				}
 				else
 				{
@@ -175,12 +198,10 @@ UT_Bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 
 	case PTX_Block:
 	{
-		// locate the last SectionLayout
-		fl_DocSectionLayout* pSL = m_pLayout->getLastSection();
-		UT_ASSERT(pSL);
-
+		UT_ASSERT(m_pCurrentSL);
+		
 		// append a new BlockLayout to that SectionLayout
-		fl_BlockLayout*	pBL = pSL->appendBlock(sdh, pcr->getIndexAP());
+		fl_BlockLayout*	pBL = m_pCurrentSL->appendBlock(sdh, pcr->getIndexAP());
 		if (!pBL)
 		{
 			UT_DEBUGMSG(("no memory for BlockLayout"));
@@ -254,7 +275,8 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		fl_Layout * pL = (fl_Layout *)sfh;
 		UT_ASSERT(pL->getType() == PTX_Block);
 		fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
-		bResult = pBL->doclistener_insertSpan(pcrs);
+		fl_SectionLayout* pBLSL = pBL->getSectionLayout();
+		bResult = pBLSL->bl_doclistener_insertSpan(pBL, pcrs);
 		goto finish_up;
 	}
 
@@ -265,7 +287,8 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		fl_Layout * pL = (fl_Layout *)sfh;
 		UT_ASSERT(pL->getType() == PTX_Block);
 		fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
-		bResult = pBL->doclistener_deleteSpan(pcrs);
+		fl_SectionLayout* pBLSL = pBL->getSectionLayout();
+		bResult = pBLSL->bl_doclistener_deleteSpan(pBL, pcrs);
 		goto finish_up;
 	}
 
@@ -276,7 +299,8 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		fl_Layout * pL = (fl_Layout *)sfh;
 		UT_ASSERT(pL->getType() == PTX_Block);
 		fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
-		bResult = pBL->doclistener_changeSpan(pcrsc);
+		fl_SectionLayout* pBLSL = pBL->getSectionLayout();
+		bResult = pBLSL->bl_doclistener_changeSpan(pBL, pcrsc);
 		goto finish_up;
 	}
 
@@ -344,7 +368,8 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 			fl_Layout * pL = (fl_Layout *)sfh;
 			UT_ASSERT(pL->getType() == PTX_Block);
 			fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
-			bResult = pBL->doclistener_deleteStrux(pcrx);
+			fl_SectionLayout* pBLSL = pBL->getSectionLayout();
+			bResult = pBLSL->bl_doclistener_deleteStrux(pBL, pcrx);
 			goto finish_up;
 		}
 
@@ -379,7 +404,8 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		case PTX_Block:
 		{
 			fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
-			bResult = pBL->doclistener_changeStrux(pcrxc);
+			fl_SectionLayout* pBLSL = pBL->getSectionLayout();
+			bResult = pBLSL->bl_doclistener_changeStrux(pBL, pcrxc);
 			goto finish_up;
 		}
 					
@@ -402,7 +428,8 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		fl_Layout * pL = (fl_Layout *)sfh;
 		UT_ASSERT(pL->getType() == PTX_Block);
 		fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
-		bResult = pBL->doclistener_insertObject(pcro);
+		fl_SectionLayout* pBLSL = pBL->getSectionLayout();
+		bResult = pBLSL->bl_doclistener_insertObject(pBL, pcro);
 		goto finish_up;
 	}
 	case PX_ChangeRecord::PXT_DeleteObject:
@@ -412,7 +439,8 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		fl_Layout * pL = (fl_Layout *)sfh;
 		UT_ASSERT(pL->getType() == PTX_Block);
 		fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
-		bResult = pBL->doclistener_deleteObject(pcro);
+		fl_SectionLayout* pBLSL = pBL->getSectionLayout();
+		bResult = pBLSL->bl_doclistener_deleteObject(pBL, pcro);
 		goto finish_up;
 	}
 
@@ -423,7 +451,8 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		fl_Layout * pL = (fl_Layout *)sfh;
 		UT_ASSERT(pL->getType() == PTX_Block);
 		fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
-		bResult = pBL->doclistener_changeObject(pcroc);
+		fl_SectionLayout* pBLSL = pBL->getSectionLayout();
+		bResult = pBLSL->bl_doclistener_changeObject(pBL, pcroc);
 		goto finish_up;
 	}
 		
@@ -498,7 +527,8 @@ UT_Bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 			// because a section cannot contain content.
 
 			fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
-			UT_Bool bResult = pBL->doclistener_insertSection(pcrx,sdh,lid,pfnBindHandles);
+			fl_SectionLayout* pBLSL = pBL->getSectionLayout();
+			UT_Bool bResult = pBLSL->bl_doclistener_insertSection(pBL, pcrx,sdh,lid,pfnBindHandles);
 			if (0 == m_iGlobCounter)
 			{
 #ifndef UPDATE_LAYOUT_ON_SIGNAL
@@ -514,7 +544,8 @@ UT_Bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 			// the immediately prior strux is also a block.  insert the new
 			// block and split the content between the two blocks.
 			fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
-			UT_Bool bResult = pBL->doclistener_insertBlock(pcrx,sdh,lid,pfnBindHandles);
+			fl_SectionLayout* pBLSL = pBL->getSectionLayout();
+			UT_Bool bResult = pBLSL->bl_doclistener_insertBlock(pBL, pcrx,sdh,lid,pfnBindHandles);
 			if (0 == m_iGlobCounter)
 			{
 #ifndef UPDATE_LAYOUT_ON_SIGNAL

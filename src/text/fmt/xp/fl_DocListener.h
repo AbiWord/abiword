@@ -17,8 +17,6 @@
  * 02111-1307, USA.
  */
 
-
-
 #ifndef FL_DOCLISTENER_H
 #define FL_DOCLISTENER_H
 
@@ -29,6 +27,7 @@
 
 class FL_DocLayout;
 class PD_Document;
+class fl_SectionLayout;
 
 /*
 	The fl_DocListener class handles notifications from a PD_Document 
@@ -66,6 +65,7 @@ protected:
 	FL_DocLayout*		m_pLayout;
 	UT_Bool				m_bScreen;
 	UT_uint32			m_iGlobCounter;
+	fl_SectionLayout*	m_pCurrentSL;
 };
 
 #endif /* FL_DOCLISTENER_H */

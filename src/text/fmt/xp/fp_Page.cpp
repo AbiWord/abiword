@@ -36,7 +36,8 @@
 #include "ut_units.h"
 
 fp_Page::fp_Page(FL_DocLayout* pLayout, FV_View* pView,
-				 UT_uint32 iWidth, UT_uint32 iHeight)
+				 UT_uint32 iWidth, UT_uint32 iHeight,
+				 fl_DocSectionLayout* pOwner)
 {
 	UT_ASSERT(pLayout);
 
@@ -53,10 +54,17 @@ fp_Page::fp_Page(FL_DocLayout* pLayout, FV_View* pView,
 	m_pPrev = NULL;
 
 	m_bNeedsRedraw = UT_TRUE;
+
+	m_pOwner = pOwner;
+
+	m_pOwner->addOwnedPage(this);
 }
 
 fp_Page::~fp_Page()
 {
+	UT_ASSERT(m_pOwner);
+	
+	m_pOwner->deleteOwnedPage(this);
 }
 
 UT_Bool fp_Page::isEmpty(void) const
@@ -85,6 +93,7 @@ UT_sint32 fp_Page::getBottom(void) const
 
 	fp_Column* pFirstColumnLeader = getNthColumnLeader(0);
 	fl_DocSectionLayout* pFirstSectionLayout = pFirstColumnLeader->getDocSectionLayout();
+	UT_ASSERT(m_pOwner == pFirstSectionLayout);
 //	UT_sint32 iTopMargin = pFirstSectionLayout->getTopMargin();
 	UT_sint32 iBottomMargin = pFirstSectionLayout->getBottomMargin();
 	
@@ -181,6 +190,7 @@ void fp_Page::_reformat(void)
 
 	fp_Column* pFirstColumnLeader = getNthColumnLeader(0);
 	fl_DocSectionLayout* pFirstSectionLayout = (pFirstColumnLeader->getDocSectionLayout());
+	UT_ASSERT(m_pOwner == pFirstSectionLayout);
 	UT_sint32 iLeftMargin = pFirstSectionLayout->getLeftMargin();
 	UT_sint32 iRightMargin = pFirstSectionLayout->getRightMargin();
 	UT_sint32 iTopMargin = pFirstSectionLayout->getTopMargin();

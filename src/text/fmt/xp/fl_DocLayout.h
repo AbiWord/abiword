@@ -93,7 +93,7 @@ public:
 							 const PP_AttrProp * pBlockAP,
 							 const PP_AttrProp * pSectionAP);
 	
-	fp_Page*	addNewPage();
+	fp_Page*	addNewPage(fl_DocSectionLayout* pOwner);
 	fp_Page*	getFirstPage();
 	fp_Page*	getLastPage();
 	fp_Page*	getNthPage(int n);
@@ -122,6 +122,8 @@ public:
 	inline		fl_DocSectionLayout* getFirstSection(void) const { return m_pFirstSection; }
 	inline		fl_DocSectionLayout* getLastSection(void) const { return m_pLastSection; }
 
+	fl_DocSectionLayout* 	findSectionForHdrFtr(const char* pszHdrFtrID) const;
+	
 #ifdef FMT_TEST
 	void		__dump(FILE * fp) const;
 #endif

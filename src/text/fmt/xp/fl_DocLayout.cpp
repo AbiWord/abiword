@@ -257,7 +257,7 @@ void FL_DocLayout::deletePage(fp_Page* pPage)
 	}
 }
 
-fp_Page* FL_DocLayout::addNewPage()
+fp_Page* FL_DocLayout::addNewPage(fl_DocSectionLayout* pOwner)
 {
 	fp_Page*		pLastPage;
 
@@ -269,8 +269,11 @@ fp_Page* FL_DocLayout::addNewPage()
 	{
 		pLastPage = NULL;
 	}
-	
-	fp_Page*		pPage = new fp_Page(this, m_pView, 850, 1100);
+
+	/*
+	  TODO the following page dimensions should NOT be hard-coded
+	*/
+	fp_Page*		pPage = new fp_Page(this, m_pView, 850, 1100, pOwner);
 	if (pLastPage)
 	{
 		UT_ASSERT(pLastPage->getNext() == NULL);
@@ -647,5 +650,30 @@ void FL_DocLayout::removeSection(fl_DocSectionLayout * pSL)
 
 	pSL->setNext(NULL);
 	pSL->setPrev(NULL);
+}
+
+fl_DocSectionLayout* FL_DocLayout::findSectionForHdrFtr(const char* pszHdrFtrID) const
+{
+	const char* pszAtt = NULL;
+
+	fl_DocSectionLayout* pDocSL = m_pFirstSection;
+	while (pDocSL)
+	{
+		pszAtt = pDocSL->getAttribute("header");
+		if (0 == UT_stricmp(pszAtt, pszHdrFtrID))
+		{
+			return pDocSL;
+		}
+		
+		pszAtt = pDocSL->getAttribute("footer");
+		if (0 == UT_stricmp(pszAtt, pszHdrFtrID))
+		{
+			return pDocSL;
+		}
+		
+		pDocSL = pDocSL->getNextDocSection();
+	}
+
+	return NULL;
 }
 

@@ -153,36 +153,6 @@ UT_Bool fp_Container::addLine(fp_Line* pNewLine)
 	return UT_TRUE;
 }
 
-void fp_Column::layout(void)
-{
-	UT_sint32 iY = 0;
-
-	UT_uint32 iCountLines = m_vecLines.getItemCount();
-	for (UT_uint32 i=0; i < iCountLines; i++)
-	{
-		fp_Line* pLine = (fp_Line*) m_vecLines.getNthItem(i);
-		
-		UT_sint32 iLineHeight = pLine->getHeight();
-//		UT_sint32 iLineMarginBefore = (i != 0) ? pLine->getMarginBefore() : 0;
-		UT_sint32 iLineMarginAfter = pLine->getMarginAfter();
-
-//		iY += iLineMarginBefore;
-		pLine->setY(iY);
-		iY += iLineHeight;
-		iY += iLineMarginAfter;
-	}
-
-	UT_sint32 iNewHeight = iY;
-	if (m_iHeight == iNewHeight)
-	{
-		return;
-	}
-
-	m_iHeight = iY;
-	
-	m_pPage->columnHeightChanged(this);
-}
-
 UT_Bool fp_Container::insertLineAfter(fp_Line*	pNewLine, fp_Line*	pAfterLine)
 {
 	/*
@@ -196,7 +166,7 @@ UT_Bool fp_Container::insertLineAfter(fp_Line*	pNewLine, fp_Line*	pAfterLine)
 
 	if (
 		(ndx < 0)
-		|| (ndx == (m_vecLines.getItemCount() - 1))
+		|| (ndx == ((UT_sint32) (m_vecLines.getItemCount() - 1)))
 		)
 	{
 		m_vecLines.addItem(pNewLine);
@@ -462,6 +432,36 @@ void fp_Column::setPrev(fp_Column*p)
 	m_pPrev = p;
 }
 
+void fp_Column::layout(void)
+{
+	UT_sint32 iY = 0;
+
+	UT_uint32 iCountLines = m_vecLines.getItemCount();
+	for (UT_uint32 i=0; i < iCountLines; i++)
+	{
+		fp_Line* pLine = (fp_Line*) m_vecLines.getNthItem(i);
+		
+		UT_sint32 iLineHeight = pLine->getHeight();
+//		UT_sint32 iLineMarginBefore = (i != 0) ? pLine->getMarginBefore() : 0;
+		UT_sint32 iLineMarginAfter = pLine->getMarginAfter();
+
+//		iY += iLineMarginBefore;
+		pLine->setY(iY);
+		iY += iLineHeight;
+		iY += iLineMarginAfter;
+	}
+
+	UT_sint32 iNewHeight = iY;
+	if (m_iHeight == iNewHeight)
+	{
+		return;
+	}
+
+	m_iHeight = iY;
+	
+	m_pPage->columnHeightChanged(this);
+}
+
 void fp_Column::bumpLines(fp_Line* pLastLineToKeep)
 {
 	UT_sint32 ndx = m_vecLines.findItem(pLastLineToKeep);
@@ -503,3 +503,49 @@ fl_DocSectionLayout* fp_Column::getDocSectionLayout(void) const
 
 	return (fl_DocSectionLayout*) m_pSectionLayout;
 }
+
+/*
+  TODO hdrftr container needs to be able to multiplex itself as
+  if owned by multiple pages.
+*/
+
+fp_HdrFtrContainer::fp_HdrFtrContainer(fl_SectionLayout* pSectionLayout) : fp_Container(FP_CONTAINER_HDRFTR, pSectionLayout)
+{
+	// TODO fix height and width and position
+}
+
+fp_HdrFtrContainer::~fp_HdrFtrContainer()
+{
+
+}
+
+void fp_HdrFtrContainer::layout(void)
+{
+	UT_sint32 iY = 0;
+
+	UT_uint32 iCountLines = m_vecLines.getItemCount();
+	for (UT_uint32 i=0; i < iCountLines; i++)
+	{
+		fp_Line* pLine = (fp_Line*) m_vecLines.getNthItem(i);
+		
+		UT_sint32 iLineHeight = pLine->getHeight();
+//		UT_sint32 iLineMarginBefore = (i != 0) ? pLine->getMarginBefore() : 0;
+		UT_sint32 iLineMarginAfter = pLine->getMarginAfter();
+
+//		iY += iLineMarginBefore;
+		pLine->setY(iY);
+		iY += iLineHeight;
+		iY += iLineMarginAfter;
+	}
+
+	// note that the height of a HdrFtr container never changes.
+	// TODO deal with overflow of this container.  clip.
+}
+
+fl_HdrFtrSectionLayout* fp_HdrFtrContainer::getHdrFtrSectionLayout(void) const
+{
+	UT_ASSERT(m_pSectionLayout->getType() == FL_SECTION_HDRFTR);
+
+	return (fl_HdrFtrSectionLayout*) m_pSectionLayout;
+}
+

@@ -20,6 +20,7 @@
 #include <stdlib.h>
 
 #include "ut_types.h"
+#include "ut_string.h"
 
 #include "fl_SectionLayout.h"
 #include "fl_Layout.h"
@@ -58,6 +59,25 @@ fl_SectionLayout::fl_SectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh,
 	m_pPrev = NULL;
 
 	setAttrPropIndex(indexAP);
+}
+
+fl_SectionLayout::~fl_SectionLayout()
+{
+	if (m_pLB)
+	{
+		delete m_pLB;
+	}
+}
+
+const char*	fl_SectionLayout::getAttribute(const XML_Char * pszName) const
+{
+	const PP_AttrProp * pAP = NULL;
+	getAttrProp(&pAP);
+	
+	const XML_Char* pszAtt = NULL;
+	pAP->getAttribute(pszName, pszAtt);
+
+	return pszAtt;
 }
 
 void fl_SectionLayout::setNext(fl_SectionLayout* pSL)
@@ -189,105 +209,102 @@ fb_LineBreaker * fl_SectionLayout::_getLineBreaker(void)
 	return m_pLB;
 }
 
+void fl_SectionLayout::_purgeLayout()
+{
+	fl_BlockLayout*	pBL = m_pFirstBlock;
+
+	while (pBL)
+	{
+		fl_BlockLayout* pNuke = pBL;
+
+		pBL = pBL->getNext();
+
+		delete pNuke;
+	}
+
+	return;
+}
+
+UT_Bool fl_SectionLayout::bl_doclistener_populateSpan(fl_BlockLayout* pBL, const PX_ChangeRecord_Span * pcrs, PT_BlockOffset blockOffset, UT_uint32 len)
+{
+	return pBL->doclistener_populateSpan(pcrs, blockOffset, len);
+}
+
+UT_Bool fl_SectionLayout::bl_doclistener_populateObject(fl_BlockLayout* pBL, PT_BlockOffset blockOffset, const PX_ChangeRecord_Object * pcro)
+{
+	return pBL->doclistener_populateObject(blockOffset, pcro);
+}
+	
+UT_Bool fl_SectionLayout::bl_doclistener_insertSpan(fl_BlockLayout* pBL, const PX_ChangeRecord_Span * pcrs)
+{
+	return pBL->doclistener_insertSpan(pcrs);
+}
+
+UT_Bool fl_SectionLayout::bl_doclistener_deleteSpan(fl_BlockLayout* pBL, const PX_ChangeRecord_Span * pcrs)
+{
+	return pBL->doclistener_deleteSpan(pcrs);
+}
+
+UT_Bool fl_SectionLayout::bl_doclistener_changeSpan(fl_BlockLayout* pBL, const PX_ChangeRecord_SpanChange * pcrsc)
+{
+	return pBL->doclistener_changeSpan(pcrsc);
+}
+
+UT_Bool fl_SectionLayout::bl_doclistener_deleteStrux(fl_BlockLayout* pBL, const PX_ChangeRecord_Strux * pcrx)
+{
+	return pBL->doclistener_deleteStrux(pcrx);
+}
+
+UT_Bool fl_SectionLayout::bl_doclistener_changeStrux(fl_BlockLayout* pBL, const PX_ChangeRecord_StruxChange * pcrxc)
+{
+	return pBL->doclistener_changeStrux(pcrxc);
+}
+
+UT_Bool fl_SectionLayout::bl_doclistener_insertBlock(fl_BlockLayout* pBL, const PX_ChangeRecord_Strux * pcrx,
+									PL_StruxDocHandle sdh,
+									PL_ListenerId lid,
+									void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+															PL_ListenerId lid,
+															PL_StruxFmtHandle sfhNew))
+{
+	return pBL->doclistener_insertBlock(pcrx, sdh, lid, pfnBindHandles);
+}
+
+UT_Bool fl_SectionLayout::bl_doclistener_insertSection(fl_BlockLayout* pBL, const PX_ChangeRecord_Strux * pcrx,
+									  PL_StruxDocHandle sdh,
+									  PL_ListenerId lid,
+									  void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+															  PL_ListenerId lid,
+															  PL_StruxFmtHandle sfhNew))
+{
+	return pBL->doclistener_insertSection(pcrx, sdh, lid, pfnBindHandles);
+}
+
+UT_Bool fl_SectionLayout::bl_doclistener_insertObject(fl_BlockLayout* pBL, const PX_ChangeRecord_Object * pcro)
+{
+	return pBL->doclistener_insertObject(pcro);
+}
+
+UT_Bool fl_SectionLayout::bl_doclistener_deleteObject(fl_BlockLayout* pBL, const PX_ChangeRecord_Object * pcro)
+{
+	return pBL->doclistener_deleteObject(pcro);
+}
+
+UT_Bool fl_SectionLayout::bl_doclistener_changeObject(fl_BlockLayout* pBL, const PX_ChangeRecord_ObjectChange * pcroc)
+{
+	return pBL->doclistener_changeObject(pcroc);
+}
+	
 fl_DocSectionLayout::fl_DocSectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_AttrPropIndex indexAP)
 	: fl_SectionLayout(pLayout, sdh, indexAP, FL_SECTION_DOC)
 {
 	m_pFirstColumn = NULL;
 	m_pLastColumn = NULL;
+
+	m_pHeaderSL = NULL;
+	m_pFooterSL = NULL;
 	
 	_lookupProperties();
-}
-
-void fl_DocSectionLayout::_lookupProperties(void)
-{
-	const PP_AttrProp* pSectionAP = NULL;
-	
-	m_pLayout->getDocument()->getAttrProp(m_apIndex, &pSectionAP);
-
-	/*
-	  TODO shouldn't we be using PP_evalProperty like
-	  the blockLayout does?
-
-	  Yes, since PP_evalProperty does a fallback to the
-	  last-chance defaults, whereas the code below is
-	  hard-coding its own defaults.  Bad idea.
-	*/
-	
-	const char* pszNumColumns = NULL;
-	pSectionAP->getProperty("columns", pszNumColumns);
-	if (pszNumColumns && pszNumColumns[0])
-	{
-		m_iNumColumns = atoi(pszNumColumns);
-	}
-	else
-	{
-		m_iNumColumns = 1;
-	}
-
-	const char* pszColumnGap = NULL;
-	pSectionAP->getProperty("column-gap", pszColumnGap);
-	if (pszColumnGap && pszColumnGap[0])
-	{
-		m_iColumnGap = m_pLayout->getGraphics()->convertDimension(pszColumnGap);
-	}
-	else
-	{
-		m_iColumnGap = m_pLayout->getGraphics()->convertDimension("0.25in");
-	}
-
-	const char* pszSpaceAfter = NULL;
-	pSectionAP->getProperty("section-space-after", pszSpaceAfter);
-	if (pszSpaceAfter && pszSpaceAfter[0])
-	{
-		m_iSpaceAfter = m_pLayout->getGraphics()->convertDimension(pszSpaceAfter);
-	}
-	else
-	{
-		m_iSpaceAfter = m_pLayout->getGraphics()->convertDimension("0in");
-	}
-
-	const char* pszLeftMargin = NULL;
-	const char* pszTopMargin = NULL;
-	const char* pszRightMargin = NULL;
-	const char* pszBottomMargin = NULL;
-	pSectionAP->getProperty("page-margin-left", pszLeftMargin);
-	pSectionAP->getProperty("page-margin-top", pszTopMargin);
-	pSectionAP->getProperty("page-margin-right", pszRightMargin);
-	pSectionAP->getProperty("page-margin-bottom", pszBottomMargin);
-
-	if (
-		pszLeftMargin
-		&& pszTopMargin
-		&& pszRightMargin
-		&& pszBottomMargin
-		&& pszLeftMargin[0]
-		&& pszTopMargin[0]
-		&& pszRightMargin[0]
-		&& pszBottomMargin[0]
-		)
-	{
-		m_iLeftMargin = m_pLayout->getGraphics()->convertDimension(pszLeftMargin);
-		m_iTopMargin = m_pLayout->getGraphics()->convertDimension(pszTopMargin);
-		m_iRightMargin = m_pLayout->getGraphics()->convertDimension(pszRightMargin);
-		m_iBottomMargin = m_pLayout->getGraphics()->convertDimension(pszBottomMargin);
-	}
-	else
-	{
-		m_iLeftMargin = UT_docUnitsFromPaperUnits(m_pLayout->getGraphics(), 100);
-		m_iTopMargin = UT_docUnitsFromPaperUnits(m_pLayout->getGraphics(), 100);
-		m_iRightMargin = UT_docUnitsFromPaperUnits(m_pLayout->getGraphics(), 100);
-		m_iBottomMargin = UT_docUnitsFromPaperUnits(m_pLayout->getGraphics(), 100);
-	}
-	
-	m_bForceNewPage = UT_FALSE;
-}
-
-fl_SectionLayout::~fl_SectionLayout()
-{
-	if (m_pLB)
-	{
-		delete m_pLB;
-	}
 }
 
 fl_DocSectionLayout::~fl_DocSectionLayout()
@@ -306,87 +323,32 @@ fl_DocSectionLayout::~fl_DocSectionLayout()
 	}
 }
 
-void fl_DocSectionLayout::deleteEmptyColumns(void)
+void fl_DocSectionLayout::setHdrFtr(fl_HdrFtrSectionLayout* pHFSL)
 {
-	fp_Column* pCol = m_pFirstColumn;
-	while (pCol)
+	const char* pszID = pHFSL->getAttribute("id");
+
+	const char* pszAtt = NULL;
+
+	pszAtt = getAttribute("header");
+	if (0 == UT_stricmp(pszAtt, pszID))
 	{
-		if (pCol->getLeader() == pCol)
-		{
-			fp_Column* pCol2 = pCol;
-			UT_Bool bAllEmpty = UT_TRUE;
-			fp_Column* pLastInGroup = NULL;
-			
-			while (pCol2)
-			{
-				if (!pCol2->isEmpty())
-				{
-					bAllEmpty = UT_FALSE;
-				}
-
-				if (!(pCol2->getFollower()))
-				{
-					pLastInGroup = pCol2;
-				}
-				
-				pCol2 = pCol2->getFollower();
-			}
-
-			if (bAllEmpty)
-			{
-				UT_ASSERT(pLastInGroup);
-
-				pCol->getPage()->removeColumnLeader(pCol);
-
-				if (pCol == m_pFirstColumn)
-				{
-					m_pFirstColumn = pLastInGroup->getNext();
-				}
-
-				if (pLastInGroup == m_pLastColumn)
-				{
-					m_pLastColumn = pCol->getPrev();
-				}
-				
-				if (pCol->getPrev())
-				{
-					pCol->getPrev()->setNext(pLastInGroup->getNext());
-				}
-
-				if (pLastInGroup->getNext())
-				{
-					pLastInGroup->getNext()->setPrev(pCol->getPrev());
-				}
-
-				fp_Column* pCol3 = pCol;
-				pCol = pLastInGroup->getNext();
-				while (pCol3)
-				{
-					fp_Column* pNext = pCol3->getFollower();
-
-					delete pCol3;
-
-					pCol3 = pNext;
-				}
-			}
-			else
-			{
-				pCol = pLastInGroup->getNext();
-			}
-		}
-		else
-		{
-			pCol = pCol->getNext();
-		}
+		m_pHeaderSL = pHFSL;
+		return;
+	}
+	pszAtt = getAttribute("footer");
+	if (0 == UT_stricmp(pszAtt, pszID))
+	{
+		m_pFooterSL = pHFSL;
+		return;
 	}
 }
 
-fp_Container* fl_DocSectionLayout::getFirstContainer() const
+fp_Container* fl_DocSectionLayout::getFirstContainer()
 {
 	return m_pFirstColumn;
 }
 
-fp_Container* fl_DocSectionLayout::getLastContainer() const
+fp_Container* fl_DocSectionLayout::getLastContainer()
 {
 	return m_pLastColumn;
 }
@@ -409,7 +371,7 @@ fp_Container* fl_DocSectionLayout::getNewContainer(void)
 		}
 		else
 		{
-			pPage = m_pLayout->addNewPage();
+			pPage = m_pLayout->addNewPage(this);
 		}
 	}
 	else
@@ -433,7 +395,7 @@ fp_Container* fl_DocSectionLayout::getNewContainer(void)
 				}
 				else
 				{
-					pPage = m_pLayout->addNewPage();
+					pPage = m_pLayout->addNewPage(this);
 				}
 			}
 			else
@@ -450,7 +412,7 @@ fp_Container* fl_DocSectionLayout::getNewContainer(void)
 			}
 			else
 			{
-				pPage = m_pLayout->addNewPage();
+				pPage = m_pLayout->addNewPage(this);
 			}
 		}
 	}
@@ -543,32 +505,6 @@ void fl_DocSectionLayout::updateLayout(void)
 	breakSection();
 }
 
-void fl_SectionLayout::_purgeLayout()
-{
-	fl_BlockLayout*	pBL = m_pFirstBlock;
-
-	while (pBL)
-	{
-		fl_BlockLayout* pNuke = pBL;
-
-		pBL = pBL->getNext();
-
-		delete pNuke;
-	}
-
-	return;
-}
-
-UT_uint32 fl_DocSectionLayout::getNumColumns(void) const
-{
-	return m_iNumColumns;
-}
-
-UT_uint32 fl_DocSectionLayout::getColumnGap(void) const
-{
-	return m_iColumnGap;
-}
-
 UT_Bool fl_DocSectionLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc)
 {
 	UT_ASSERT(pcrxc->getType()==PX_ChangeRecord::PXT_ChangeStrux);
@@ -636,6 +572,175 @@ UT_Bool fl_DocSectionLayout::doclistener_changeStrux(const PX_ChangeRecord_Strux
 	}
 
 	return UT_FALSE;
+}
+
+void fl_DocSectionLayout::_lookupProperties(void)
+{
+	const PP_AttrProp* pSectionAP = NULL;
+	
+	m_pLayout->getDocument()->getAttrProp(m_apIndex, &pSectionAP);
+
+	/*
+	  TODO shouldn't we be using PP_evalProperty like
+	  the blockLayout does?
+
+	  Yes, since PP_evalProperty does a fallback to the
+	  last-chance defaults, whereas the code below is
+	  hard-coding its own defaults.  Bad idea.
+	*/
+	
+	const char* pszNumColumns = NULL;
+	pSectionAP->getProperty("columns", pszNumColumns);
+	if (pszNumColumns && pszNumColumns[0])
+	{
+		m_iNumColumns = atoi(pszNumColumns);
+	}
+	else
+	{
+		m_iNumColumns = 1;
+	}
+
+	const char* pszColumnGap = NULL;
+	pSectionAP->getProperty("column-gap", pszColumnGap);
+	if (pszColumnGap && pszColumnGap[0])
+	{
+		m_iColumnGap = m_pLayout->getGraphics()->convertDimension(pszColumnGap);
+	}
+	else
+	{
+		m_iColumnGap = m_pLayout->getGraphics()->convertDimension("0.25in");
+	}
+
+	const char* pszSpaceAfter = NULL;
+	pSectionAP->getProperty("section-space-after", pszSpaceAfter);
+	if (pszSpaceAfter && pszSpaceAfter[0])
+	{
+		m_iSpaceAfter = m_pLayout->getGraphics()->convertDimension(pszSpaceAfter);
+	}
+	else
+	{
+		m_iSpaceAfter = m_pLayout->getGraphics()->convertDimension("0in");
+	}
+
+	const char* pszLeftMargin = NULL;
+	const char* pszTopMargin = NULL;
+	const char* pszRightMargin = NULL;
+	const char* pszBottomMargin = NULL;
+	pSectionAP->getProperty("page-margin-left", pszLeftMargin);
+	pSectionAP->getProperty("page-margin-top", pszTopMargin);
+	pSectionAP->getProperty("page-margin-right", pszRightMargin);
+	pSectionAP->getProperty("page-margin-bottom", pszBottomMargin);
+
+	if (
+		pszLeftMargin
+		&& pszTopMargin
+		&& pszRightMargin
+		&& pszBottomMargin
+		&& pszLeftMargin[0]
+		&& pszTopMargin[0]
+		&& pszRightMargin[0]
+		&& pszBottomMargin[0]
+		)
+	{
+		m_iLeftMargin = m_pLayout->getGraphics()->convertDimension(pszLeftMargin);
+		m_iTopMargin = m_pLayout->getGraphics()->convertDimension(pszTopMargin);
+		m_iRightMargin = m_pLayout->getGraphics()->convertDimension(pszRightMargin);
+		m_iBottomMargin = m_pLayout->getGraphics()->convertDimension(pszBottomMargin);
+	}
+	else
+	{
+		m_iLeftMargin = UT_docUnitsFromPaperUnits(m_pLayout->getGraphics(), 100);
+		m_iTopMargin = UT_docUnitsFromPaperUnits(m_pLayout->getGraphics(), 100);
+		m_iRightMargin = UT_docUnitsFromPaperUnits(m_pLayout->getGraphics(), 100);
+		m_iBottomMargin = UT_docUnitsFromPaperUnits(m_pLayout->getGraphics(), 100);
+	}
+	
+	m_bForceNewPage = UT_FALSE;
+}
+
+void fl_DocSectionLayout::deleteEmptyColumns(void)
+{
+	fp_Column* pCol = m_pFirstColumn;
+	while (pCol)
+	{
+		if (pCol->getLeader() == pCol)
+		{
+			fp_Column* pCol2 = pCol;
+			UT_Bool bAllEmpty = UT_TRUE;
+			fp_Column* pLastInGroup = NULL;
+			
+			while (pCol2)
+			{
+				if (!pCol2->isEmpty())
+				{
+					bAllEmpty = UT_FALSE;
+				}
+
+				if (!(pCol2->getFollower()))
+				{
+					pLastInGroup = pCol2;
+				}
+				
+				pCol2 = pCol2->getFollower();
+			}
+
+			if (bAllEmpty)
+			{
+				UT_ASSERT(pLastInGroup);
+
+				pCol->getPage()->removeColumnLeader(pCol);
+
+				if (pCol == m_pFirstColumn)
+				{
+					m_pFirstColumn = pLastInGroup->getNext();
+				}
+
+				if (pLastInGroup == m_pLastColumn)
+				{
+					m_pLastColumn = pCol->getPrev();
+				}
+				
+				if (pCol->getPrev())
+				{
+					pCol->getPrev()->setNext(pLastInGroup->getNext());
+				}
+
+				if (pLastInGroup->getNext())
+				{
+					pLastInGroup->getNext()->setPrev(pCol->getPrev());
+				}
+
+				fp_Column* pCol3 = pCol;
+				pCol = pLastInGroup->getNext();
+				while (pCol3)
+				{
+					fp_Column* pNext = pCol3->getFollower();
+
+					delete pCol3;
+
+					pCol3 = pNext;
+				}
+			}
+			else
+			{
+				pCol = pLastInGroup->getNext();
+			}
+		}
+		else
+		{
+			pCol = pCol->getNext();
+		}
+	}
+}
+
+UT_uint32 fl_DocSectionLayout::getNumColumns(void) const
+{
+	return m_iNumColumns;
+}
+
+UT_uint32 fl_DocSectionLayout::getColumnGap(void) const
+{
+	return m_iColumnGap;
 }
 
 fl_DocSectionLayout* fl_DocSectionLayout::getNextDocSection(void) const
@@ -736,6 +841,36 @@ UT_Bool fl_DocSectionLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux
 	delete this;			// TODO whoa!  this construct is VERY dangerous.
 	
 	return UT_TRUE;
+}
+
+void fl_DocSectionLayout::addOwnedPage(fp_Page* pPage)
+{
+	// TODO do we really need the vecOwnedPages member?
+	
+	if (m_pHeaderSL)
+	{
+		m_pHeaderSL->addPage(pPage);
+	}
+
+	if (m_pFooterSL)
+	{
+		m_pFooterSL->addPage(pPage);
+	}
+}
+
+void fl_DocSectionLayout::deleteOwnedPage(fp_Page* pPage)
+{
+	// TODO do we really need the vecOwnedPages member?
+	
+	if (m_pHeaderSL)
+	{
+		m_pHeaderSL->deletePage(pPage);
+	}
+
+	if (m_pFooterSL)
+	{
+		m_pFooterSL->deletePage(pPage);
+	}
 }
 
 UT_sint32 fl_DocSectionLayout::breakSection(void)
@@ -984,3 +1119,391 @@ UT_sint32 fl_DocSectionLayout::breakSection(void)
 
 	return 0; // TODO return code
 }
+
+fl_HdrFtrSectionLayout::fl_HdrFtrSectionLayout(FL_DocLayout* pLayout, fl_DocSectionLayout* pDocSL, PL_StruxDocHandle sdh, PT_AttrPropIndex indexAP)
+	: fl_SectionLayout(pLayout, sdh, indexAP, FL_SECTION_HDRFTR)
+{
+	m_pDocSL = pDocSL;
+}
+
+fl_HdrFtrSectionLayout::~fl_HdrFtrSectionLayout()
+{
+	// TODO
+}
+
+fp_Container* fl_HdrFtrSectionLayout::getFirstContainer()
+{
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+
+	return NULL;
+}
+
+fp_Container* fl_HdrFtrSectionLayout::getLastContainer()
+{
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+
+	return NULL;
+}
+
+fp_Container* fl_HdrFtrSectionLayout::getNewContainer(void)
+{
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+
+	return NULL;
+}
+
+struct _PageHdrFtrShadowPair
+{
+	fp_Page*			pPage;
+	fl_HdrFtrShadow*	pShadow;
+};
+
+UT_sint32 fl_HdrFtrSectionLayout::_findShadow(fp_Page* pPage)
+{
+	UT_uint32 iCount = m_vecPages.getItemCount();
+	for (UT_uint32 i=0; i<iCount; i++)
+	{
+		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
+
+		if (pPair->pPage == pPage)
+		{
+			return iCount;
+		}
+	}
+
+	return -1;
+}
+
+void fl_HdrFtrSectionLayout::addPage(fp_Page* pPage)
+{
+	UT_ASSERT(0 > _findShadow(pPage));
+
+	struct _PageHdrFtrShadowPair* pPair = new _PageHdrFtrShadowPair;
+	// TODO outofmem
+	pPair->pPage = pPage;
+	pPair->pShadow = NULL;
+	
+	// TODO create a Shadow
+
+	m_vecPages.addItem(pPair);
+}
+
+void fl_HdrFtrSectionLayout::deletePage(fp_Page* pPage)
+{
+	UT_sint32 iShadow = _findShadow(pPage);
+	UT_ASSERT(iShadow >= 0);
+
+	struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(iShadow);
+	UT_ASSERT(pPair);
+
+	UT_ASSERT(pPair->pShadow);
+	delete pPair->pShadow;
+
+	m_vecPages.deleteNthItem(iShadow);
+}
+
+void fl_HdrFtrSectionLayout::format(void)
+{
+	UT_uint32 iCount = m_vecPages.getItemCount();
+	for (UT_uint32 i=0; i<iCount; i++)
+	{
+		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
+
+		pPair->pShadow->format();
+	}
+}
+
+void fl_HdrFtrSectionLayout::updateLayout(void)
+{
+	UT_uint32 iCount = m_vecPages.getItemCount();
+	for (UT_uint32 i=0; i<iCount; i++)
+	{
+		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
+
+		pPair->pShadow->updateLayout();
+	}
+}
+
+UT_Bool fl_HdrFtrSectionLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc)
+{
+	UT_ASSERT(pcrxc->getType()==PX_ChangeRecord::PXT_ChangeStrux);
+
+	setAttrPropIndex(pcrxc->getIndexAP());
+
+	// TODO what happens here?
+
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+
+	return UT_FALSE;
+}
+
+void fl_HdrFtrSectionLayout::_lookupProperties(void)
+{
+}
+
+UT_Bool fl_HdrFtrSectionLayout::bl_doclistener_populateSpan(fl_BlockLayout* pBL, const PX_ChangeRecord_Span * pcrs, PT_BlockOffset blockOffset, UT_uint32 len)
+{
+	UT_Bool bResult = UT_TRUE;
+	UT_uint32 iCount = m_vecPages.getItemCount();
+	for (UT_uint32 i=0; i<iCount; i++)
+	{
+		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
+
+		bResult = pPair->pShadow->bl_doclistener_populateSpan(pBL, pcrs, blockOffset, len)
+			&& bResult;
+	}
+
+	return bResult;
+}
+
+UT_Bool fl_HdrFtrSectionLayout::bl_doclistener_populateObject(fl_BlockLayout* pBL, PT_BlockOffset blockOffset, const PX_ChangeRecord_Object * pcro)
+{
+	UT_Bool bResult = UT_TRUE;
+	UT_uint32 iCount = m_vecPages.getItemCount();
+	for (UT_uint32 i=0; i<iCount; i++)
+	{
+		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
+
+		bResult = pPair->pShadow->bl_doclistener_populateObject(pBL, blockOffset, pcro)
+			&& bResult;
+	}
+
+	return bResult;
+}
+	
+UT_Bool fl_HdrFtrSectionLayout::bl_doclistener_insertSpan(fl_BlockLayout* pBL, const PX_ChangeRecord_Span * pcrs)
+{
+	UT_Bool bResult = UT_TRUE;
+	UT_uint32 iCount = m_vecPages.getItemCount();
+	for (UT_uint32 i=0; i<iCount; i++)
+	{
+		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
+
+		bResult = pPair->pShadow->bl_doclistener_insertSpan(pBL, pcrs)
+			&& bResult;
+	}
+
+	return bResult;
+}
+
+UT_Bool fl_HdrFtrSectionLayout::bl_doclistener_deleteSpan(fl_BlockLayout* pBL, const PX_ChangeRecord_Span * pcrs)
+{
+	UT_Bool bResult = UT_TRUE;
+	UT_uint32 iCount = m_vecPages.getItemCount();
+	for (UT_uint32 i=0; i<iCount; i++)
+	{
+		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
+
+		bResult = pPair->pShadow->bl_doclistener_deleteSpan(pBL, pcrs)
+			&& bResult;
+	}
+
+	return bResult;
+}
+
+UT_Bool fl_HdrFtrSectionLayout::bl_doclistener_changeSpan(fl_BlockLayout* pBL, const PX_ChangeRecord_SpanChange * pcrsc)
+{
+	UT_Bool bResult = UT_TRUE;
+	UT_uint32 iCount = m_vecPages.getItemCount();
+	for (UT_uint32 i=0; i<iCount; i++)
+	{
+		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
+
+		bResult = pPair->pShadow->bl_doclistener_changeSpan(pBL, pcrsc)
+			&& bResult;
+	}
+
+	return bResult;
+}
+
+UT_Bool fl_HdrFtrSectionLayout::bl_doclistener_deleteStrux(fl_BlockLayout* pBL, const PX_ChangeRecord_Strux * pcrx)
+{
+	UT_Bool bResult = UT_TRUE;
+	UT_uint32 iCount = m_vecPages.getItemCount();
+	for (UT_uint32 i=0; i<iCount; i++)
+	{
+		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
+
+		bResult = pPair->pShadow->bl_doclistener_deleteStrux(pBL, pcrx)
+			&& bResult;
+	}
+
+	return bResult;
+}
+
+UT_Bool fl_HdrFtrSectionLayout::bl_doclistener_changeStrux(fl_BlockLayout* pBL, const PX_ChangeRecord_StruxChange * pcrxc)
+{
+	UT_Bool bResult = UT_TRUE;
+	UT_uint32 iCount = m_vecPages.getItemCount();
+	for (UT_uint32 i=0; i<iCount; i++)
+	{
+		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
+
+		bResult = pPair->pShadow->bl_doclistener_changeStrux(pBL, pcrxc)
+			&& bResult;
+	}
+
+	return bResult;
+}
+
+UT_Bool fl_HdrFtrSectionLayout::bl_doclistener_insertBlock(fl_BlockLayout* pBL, const PX_ChangeRecord_Strux * pcrx,
+									PL_StruxDocHandle sdh,
+									PL_ListenerId lid,
+									void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+															PL_ListenerId lid,
+															PL_StruxFmtHandle sfhNew))
+{
+	UT_Bool bResult = UT_TRUE;
+	UT_uint32 iCount = m_vecPages.getItemCount();
+	for (UT_uint32 i=0; i<iCount; i++)
+	{
+		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
+
+		bResult = pPair->pShadow->bl_doclistener_insertBlock(pBL, pcrx, sdh, lid, pfnBindHandles)
+			&& bResult;
+	}
+
+	return bResult;
+}
+
+UT_Bool fl_HdrFtrSectionLayout::bl_doclistener_insertSection(fl_BlockLayout* pBL, const PX_ChangeRecord_Strux * pcrx,
+									  PL_StruxDocHandle sdh,
+									  PL_ListenerId lid,
+									  void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+															  PL_ListenerId lid,
+															  PL_StruxFmtHandle sfhNew))
+{
+	// TODO this should NEVER happen, right?
+	
+	UT_Bool bResult = UT_TRUE;
+	UT_uint32 iCount = m_vecPages.getItemCount();
+	for (UT_uint32 i=0; i<iCount; i++)
+	{
+		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
+
+		bResult = pPair->pShadow->bl_doclistener_insertSection(pBL, pcrx, sdh, lid, pfnBindHandles)
+			&& bResult;
+	}
+
+	return bResult;
+}
+
+UT_Bool fl_HdrFtrSectionLayout::bl_doclistener_insertObject(fl_BlockLayout* pBL, const PX_ChangeRecord_Object * pcro)
+{
+	UT_Bool bResult = UT_TRUE;
+	UT_uint32 iCount = m_vecPages.getItemCount();
+	for (UT_uint32 i=0; i<iCount; i++)
+	{
+		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
+
+		bResult = pPair->pShadow->bl_doclistener_insertObject(pBL, pcro)
+			&& bResult;
+	}
+
+	return bResult;
+}
+
+UT_Bool fl_HdrFtrSectionLayout::bl_doclistener_deleteObject(fl_BlockLayout* pBL, const PX_ChangeRecord_Object * pcro)
+{
+	UT_Bool bResult = UT_TRUE;
+	UT_uint32 iCount = m_vecPages.getItemCount();
+	for (UT_uint32 i=0; i<iCount; i++)
+	{
+		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
+
+		bResult = pPair->pShadow->bl_doclistener_deleteObject(pBL, pcro)
+			&& bResult;
+	}
+
+	return bResult;
+}
+
+UT_Bool fl_HdrFtrSectionLayout::bl_doclistener_changeObject(fl_BlockLayout* pBL, const PX_ChangeRecord_ObjectChange * pcroc)
+{
+	UT_Bool bResult = UT_TRUE;
+	UT_uint32 iCount = m_vecPages.getItemCount();
+	for (UT_uint32 i=0; i<iCount; i++)
+	{
+		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
+
+		bResult = pPair->pShadow->bl_doclistener_changeObject(pBL, pcroc)
+			&& bResult;
+	}
+
+	return bResult;
+}
+	
+fl_HdrFtrShadow::fl_HdrFtrShadow(FL_DocLayout* pLayout, fp_Page* pPage, fl_HdrFtrSectionLayout* pHdrFtrSL, PL_StruxDocHandle sdh, PT_AttrPropIndex indexAP)
+	: fl_SectionLayout(pLayout, sdh, indexAP, FL_SECTION_SHADOW)
+{
+	m_pHdrFtrSL = pHdrFtrSL;
+	m_pPage = pPage;
+}
+
+fl_HdrFtrShadow::~fl_HdrFtrShadow()
+{
+	// TODO
+}
+
+fp_Container* fl_HdrFtrShadow::getFirstContainer()
+{
+	UT_ASSERT(UT_TODO);
+
+	return NULL;
+}
+
+fp_Container* fl_HdrFtrShadow::getLastContainer()
+{
+	UT_ASSERT(UT_TODO);
+
+	return NULL;
+}
+
+fp_Container* fl_HdrFtrShadow::getNewContainer(void)
+{
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+
+	return NULL;
+}
+
+void fl_HdrFtrShadow::format(void)
+{
+	fl_BlockLayout*	pBL = m_pFirstBlock;
+	while (pBL)
+	{
+		pBL->format();
+		pBL = pBL->getNext();
+	}
+}
+
+void fl_HdrFtrShadow::updateLayout(void)
+{
+	fl_BlockLayout*	pBL = m_pFirstBlock;
+	while (pBL)
+	{
+		if (pBL->needsReformat())
+		{
+			pBL->format();
+		}
+		
+		pBL = pBL->getNext();
+	}
+}
+
+UT_Bool fl_HdrFtrShadow::doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc)
+{
+	UT_ASSERT(pcrxc->getType()==PX_ChangeRecord::PXT_ChangeStrux);
+
+	setAttrPropIndex(pcrxc->getIndexAP());
+
+	// TODO
+
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+
+	return UT_FALSE;
+}
+
+void fl_HdrFtrShadow::_lookupProperties(void)
+{
+}
+

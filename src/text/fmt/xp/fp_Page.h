@@ -28,7 +28,7 @@
 class FL_DocLayout;
 class fp_Column;
 class fp_Container;
-class fl_SectionLayout;
+class fl_DocSectionLayout;
 class FV_View;
 class GR_Graphics;
 struct dg_DrawArgs;
@@ -40,7 +40,9 @@ class fp_Page
 	fp_Page(FL_DocLayout*,
 			FV_View*,
 			UT_uint32 iWidth,
-			UT_uint32 iHeight);
+			UT_uint32 iHeight,
+			fl_DocSectionLayout* pOwner
+			);
 	~fp_Page();
 
 	UT_sint32		getWidth(void) const;
@@ -53,6 +55,8 @@ class fp_Page
 	
 	FL_DocLayout*	getDocLayout();
 	void            setView(FV_View*);
+
+	inline fl_DocSectionLayout* getOwningSection(void) const { return m_pOwner; }
 
 	void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL);
 	void			getOffsets(fp_Container*, UT_sint32& xoff, UT_sint32& yoff);
@@ -89,6 +93,8 @@ protected:
 	UT_Bool				m_bNeedsRedraw;
 
 	UT_Vector			m_vecColumnLeaders;
+
+	fl_DocSectionLayout*	m_pOwner;
 };
 
 #endif /* PAGE_H */

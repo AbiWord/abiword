@@ -25,17 +25,26 @@
 #include "pt_Types.h"
 #include "fl_Layout.h"
 
+class fp_Page;
 class FL_DocLayout;
 class fl_BlockLayout;
 class fb_LineBreaker;
+class fp_HdrFtrContainer;
 class fp_Column;
 class fp_Container;
 class PD_Document;
 class PP_AttrProp;
-class PX_ChangeRecord_StruxChange;
+class PX_ChangeRecord_Object;
+class PX_ChangeRecord_ObjectChange;
+class PX_ChangeRecord_Span;
+class PX_ChangeRecord_SpanChange;
 class PX_ChangeRecord_Strux;
+class PX_ChangeRecord_StruxChange;
+class fl_HdrFtrSectionLayout;
 
-#define FL_SECTION_DOC		1
+#define FL_SECTION_DOC			1
+#define FL_SECTION_HDRFTR		2
+#define FL_SECTION_SHADOW		3
 
 class fl_SectionLayout : public fl_Layout
 {
@@ -50,8 +59,8 @@ public:
 	FL_DocLayout*		getDocLayout(void) const;
 
 	virtual fp_Container*		getNewContainer() = 0;
-	virtual fp_Container*		getFirstContainer() const = 0;
-	virtual fp_Container*		getLastContainer() const = 0;
+	virtual fp_Container*		getFirstContainer() = 0;
+	virtual fp_Container*		getLastContainer() = 0;
 
 	virtual void		format(void) = 0;
 	virtual void		updateLayout(void) = 0;
@@ -70,6 +79,31 @@ public:
 
 	virtual UT_Bool 	doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc) = 0;
 
+	const char*			getAttribute(const char* pszName) const;
+	
+	virtual UT_Bool bl_doclistener_populateSpan(fl_BlockLayout*, const PX_ChangeRecord_Span * pcrs, PT_BlockOffset blockOffset, UT_uint32 len);
+	virtual UT_Bool bl_doclistener_populateObject(fl_BlockLayout*, PT_BlockOffset blockOffset, const PX_ChangeRecord_Object * pcro);
+	virtual UT_Bool bl_doclistener_insertSpan(fl_BlockLayout*, const PX_ChangeRecord_Span * pcrs);
+	virtual UT_Bool bl_doclistener_deleteSpan(fl_BlockLayout*, const PX_ChangeRecord_Span * pcrs);
+	virtual UT_Bool bl_doclistener_changeSpan(fl_BlockLayout*, const PX_ChangeRecord_SpanChange * pcrsc);
+	virtual UT_Bool bl_doclistener_deleteStrux(fl_BlockLayout*, const PX_ChangeRecord_Strux * pcrx);
+	virtual UT_Bool bl_doclistener_changeStrux(fl_BlockLayout*, const PX_ChangeRecord_StruxChange * pcrxc);
+	virtual UT_Bool bl_doclistener_insertBlock(fl_BlockLayout*, const PX_ChangeRecord_Strux * pcrx,
+									PL_StruxDocHandle sdh,
+									PL_ListenerId lid,
+									void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+															PL_ListenerId lid,
+															PL_StruxFmtHandle sfhNew));
+	virtual UT_Bool bl_doclistener_insertSection(fl_BlockLayout*, const PX_ChangeRecord_Strux * pcrx,
+									  PL_StruxDocHandle sdh,
+									  PL_ListenerId lid,
+									  void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+															  PL_ListenerId lid,
+															  PL_StruxFmtHandle sfhNew));
+	virtual UT_Bool bl_doclistener_insertObject(fl_BlockLayout*, const PX_ChangeRecord_Object * pcro);
+	virtual UT_Bool bl_doclistener_deleteObject(fl_BlockLayout*, const PX_ChangeRecord_Object * pcro);
+	virtual UT_Bool bl_doclistener_changeObject(fl_BlockLayout*, const PX_ChangeRecord_ObjectChange * pcroc);
+	
 protected:
 	virtual void		_lookupProperties(void) = 0;
 	
@@ -104,8 +138,8 @@ public:
 	UT_sint32			breakSection(void);
 	
 	virtual fp_Container*		getNewContainer();
-	virtual fp_Container*		getFirstContainer() const;
-	virtual fp_Container*		getLastContainer() const;
+	virtual fp_Container*		getFirstContainer();
+	virtual fp_Container*		getLastContainer();
 
 	inline UT_sint32			getLeftMargin(void) const { return m_iLeftMargin; }
 	inline UT_sint32			getRightMargin(void) const { return m_iRightMargin; }
@@ -120,8 +154,19 @@ public:
 	virtual UT_Bool 	doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc);
 	UT_Bool				doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx);
 
+	void				setHdrFtr(fl_HdrFtrSectionLayout* pHFSL);
+
+	void				addOwnedPage(fp_Page*);
+	void				deleteOwnedPage(fp_Page*);
+
 protected:
 	virtual void		_lookupProperties(void);
+
+	/*
+	  TODO support special case header/footer for first page of section
+	*/
+	fl_HdrFtrSectionLayout*		m_pHeaderSL;
+	fl_HdrFtrSectionLayout*		m_pFooterSL;
 	
 	UT_uint32			m_iNumColumns;
 	UT_uint32			m_iColumnGap;
@@ -136,6 +181,90 @@ protected:
 
 	fp_Column*			m_pFirstColumn;
 	fp_Column*			m_pLastColumn;
+
+	UT_Vector			m_vecOwnedPages;
+};
+
+class fl_HdrFtrSectionLayout : public fl_SectionLayout
+{
+	friend class fl_DocListener;
+
+public:
+	fl_HdrFtrSectionLayout(FL_DocLayout* pLayout, fl_DocSectionLayout* pDocSL, PL_StruxDocHandle sdh, PT_AttrPropIndex ap);
+	virtual ~fl_HdrFtrSectionLayout();
+	
+	inline fl_DocSectionLayout*	getDocSectionLayout(void) const { return m_pDocSL; }
+
+	virtual void				format(void);
+	virtual void				updateLayout(void);
+	
+	virtual fp_Container*		getNewContainer();
+	virtual fp_Container*		getFirstContainer();
+	virtual fp_Container*		getLastContainer();
+
+	virtual UT_Bool 			doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc);
+
+	void						addPage(fp_Page*);
+	void						deletePage(fp_Page*);
+	
+	virtual UT_Bool bl_doclistener_populateSpan(fl_BlockLayout*, const PX_ChangeRecord_Span * pcrs, PT_BlockOffset blockOffset, UT_uint32 len);
+	virtual UT_Bool bl_doclistener_populateObject(fl_BlockLayout*, PT_BlockOffset blockOffset, const PX_ChangeRecord_Object * pcro);
+	virtual UT_Bool bl_doclistener_insertSpan(fl_BlockLayout*, const PX_ChangeRecord_Span * pcrs);
+	virtual UT_Bool bl_doclistener_deleteSpan(fl_BlockLayout*, const PX_ChangeRecord_Span * pcrs);
+	virtual UT_Bool bl_doclistener_changeSpan(fl_BlockLayout*, const PX_ChangeRecord_SpanChange * pcrsc);
+	virtual UT_Bool bl_doclistener_deleteStrux(fl_BlockLayout*, const PX_ChangeRecord_Strux * pcrx);
+	virtual UT_Bool bl_doclistener_changeStrux(fl_BlockLayout*, const PX_ChangeRecord_StruxChange * pcrxc);
+	virtual UT_Bool bl_doclistener_insertBlock(fl_BlockLayout*, const PX_ChangeRecord_Strux * pcrx,
+									PL_StruxDocHandle sdh,
+									PL_ListenerId lid,
+									void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+															PL_ListenerId lid,
+															PL_StruxFmtHandle sfhNew));
+	virtual UT_Bool bl_doclistener_insertSection(fl_BlockLayout*, const PX_ChangeRecord_Strux * pcrx,
+									  PL_StruxDocHandle sdh,
+									  PL_ListenerId lid,
+									  void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+															  PL_ListenerId lid,
+															  PL_StruxFmtHandle sfhNew));
+	virtual UT_Bool bl_doclistener_insertObject(fl_BlockLayout*, const PX_ChangeRecord_Object * pcro);
+	virtual UT_Bool bl_doclistener_deleteObject(fl_BlockLayout*, const PX_ChangeRecord_Object * pcro);
+	virtual UT_Bool bl_doclistener_changeObject(fl_BlockLayout*, const PX_ChangeRecord_ObjectChange * pcroc);
+	
+protected:
+	UT_sint32					_findShadow(fp_Page* pPage);
+	virtual void				_lookupProperties(void);
+	
+	fl_DocSectionLayout*		m_pDocSL;
+
+	UT_Vector					m_vecPages;
+};
+
+class fl_HdrFtrShadow : public fl_SectionLayout
+{
+	friend class fl_DocListener;
+
+public:
+	fl_HdrFtrShadow(FL_DocLayout* pLayout, fp_Page* pPage, fl_HdrFtrSectionLayout* pDocSL, PL_StruxDocHandle sdh, PT_AttrPropIndex ap);
+	virtual ~fl_HdrFtrShadow();
+	
+	inline fl_HdrFtrSectionLayout*	getHdrFtrSectionLayout(void) const { return m_pHdrFtrSL; }
+
+	virtual void				format(void);
+	virtual void				updateLayout(void);
+	
+	virtual fp_Container*		getNewContainer();
+	virtual fp_Container*		getFirstContainer();
+	virtual fp_Container*		getLastContainer();
+
+	virtual UT_Bool 			doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc);
+
+protected:
+	virtual void				_lookupProperties(void);
+	void						_createContainer(void);
+	
+	fl_HdrFtrSectionLayout*		m_pHdrFtrSL;
+	fp_HdrFtrContainer*			m_pContainer;
+	fp_Page*					m_pPage;
 };
 
 #endif /* SECTIONLAYOUT_H */

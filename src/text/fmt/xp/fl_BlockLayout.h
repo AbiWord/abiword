@@ -17,8 +17,6 @@
  * 02111-1307, USA.
  */
 
-
-
 #ifndef BLOCKLAYOUT_H
 #define BLOCKLAYOUT_H
 
