@@ -164,12 +164,12 @@ UT_uint32 PS_Graphics::measureUnRemappedChar(const UT_UCSChar c)
 	PSFont *pEnglishFont;
 	PSFont *pChineseFont;
 	explodePSFonts(pEnglishFont,pChineseFont);  
-	const UT_uint16 * cwi = pEnglishFont->getUniWidths();
+	
 	if (XAP_EncodingManager::instance->is_cjk_letter(c))
 	    return _scale(pChineseFont->getUnixFont()->get_CJK_Width());
-	else {	
-	    UT_Byte recoded = c <= 0xff ? c : XAP_EncodingManager::instance->try_UToNative(c);
-	    return recoded <= 0xff && recoded!=0  ? _scale(cwi[recoded]) : 0;
+	else
+	{	
+	    return _scale(pEnglishFont->getCharWidth(c));
 	};
 }
 #if 0
@@ -329,7 +329,6 @@ void PS_Graphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
   explodePSFonts(pEnglishFont,pChineseFont);  
   UT_ASSERT(pEnglishFont && pChineseFont);
 
-  const UT_uint16 *cwi = pEnglishFont->getUniWidths();
   const UT_UCSChar *pS;
   const UT_UCSChar *pE=pChars+iCharOffset;
   const UT_UCSChar *pEnd=pChars+iCharOffset+iLength;
@@ -344,7 +343,7 @@ void PS_Graphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 		  drawCharsCJK(pS,0,pE-pS,xS,yoff);
 		}
 	  for(pS=pE,xS=xoff; pE<pEnd && !XAP_EncodingManager::instance->is_cjk_letter(*pE); ++pE)
-	          xoff+=_scale(cwi[XAP_EncodingManager::instance->UToNative(remapGlyph(*pE,*pS > 0xff))]);
+	          xoff += _scale(pEnglishFont->getCharWidth(remapGlyph(*pE,/**pS > 0xff*/0)));
 	  if(pE>pS)
 		{
 		  _emit_SetFont(pEnglishFont);
@@ -363,9 +362,27 @@ void PS_Graphics::drawCharsCJK(const UT_UCSChar* pChars, int iCharOffset,
 	    pWctomb = new UT_Wctomb;
 	else
 	    pWctomb->initialize();
-	    
+	
+	const encoding_pair*  enc = 0;
+	UT_AdobeEncoding* ae = 0;
+	
 	UT_ASSERT(m_pCurrentFont);
 
+	if (XAP_EncodingManager::instance->isUnicodeLocale())
+	{
+		enc = m_pCurrentFont->getUnixFont()->loadEncodingFile();
+		if(enc)
+		{
+			ae = new UT_AdobeEncoding(enc, m_pCurrentFont->getUnixFont()->getEncodingTableSize());
+		}
+		else
+		{
+			UT_DEBUGMSG(("UnixPS_Graphics: no encoding available!\n"));
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		}
+	}
+
+	
 	// The GR classes are expected to take yoff as the upper-left of
 	// each glyph.  PostScript interprets the yoff as the baseline,
 	// which doesn't match this expectation.  Adding the ascent of the
@@ -373,8 +390,8 @@ void PS_Graphics::drawCharsCJK(const UT_UCSChar* pChars, int iCharOffset,
 	yoff += getFontAscent();
 
 	// unsigned buffer holds Latin-1 data to character code 255
-	unsigned char buf[OUR_LINE_LIMIT*2];
-	unsigned char * pD = buf;
+	char buf[OUR_LINE_LIMIT*2];
+	char * pD = buf;
 
 	const UT_UCSChar * pS = pChars+iCharOffset;
 	const UT_UCSChar * pEnd = pS+iLength;
@@ -382,7 +399,11 @@ void PS_Graphics::drawCharsCJK(const UT_UCSChar* pChars, int iCharOffset,
 	char _bytes[30];
 	int _bytes_len;
 
-	*pD++ = '(';
+	//when printing 8-bit chars we enclose them in brackets, but 16-bit
+	//chars must be printed by name without brackets
+	
+	bool open_bracket = false;
+	bool using_names = false;
 	while (pS<pEnd)
 	{
 		if (pD-buf > OUR_LINE_LIMIT)
@@ -395,8 +416,76 @@ void PS_Graphics::drawCharsCJK(const UT_UCSChar* pChars, int iCharOffset,
 		}
 
 		// TODO deal with Unicode issues.
-		if (XAP_EncodingManager::instance->is_cjk_letter(*pS)) 
+		if (XAP_EncodingManager::instance->isUnicodeLocale())
+		{
+			currentChar = remapGlyph(*pS, false);
+			if(currentChar > 255)
+			{
+				if(open_bracket)
+				{
+					open_bracket = false;
+					sprintf((char *) pD,") %d %d MS\n",xoff,yoff);
+					m_ps->writeBytes(buf);
+					pD = buf;
+				}
+				else if(!using_names)
+				{
+					sprintf((char *) pD," %d %d MV ",xoff,yoff);
+					pD = buf + strlen(buf);
+					using_names = true;
+				}
+
+				
+				const char * glyph = ae->ucsToAdobe(currentChar);
+				// ' /glyph GS '
+				if(pD - buf + strlen(glyph) + 6 > OUR_LINE_LIMIT)
+				{
+					*pD++ = '\\';
+					*pD++ = '\n';
+					*pD++ = 0;
+					m_ps->writeBytes(buf);
+					pD = buf;
+				}
+				
+				
+				*pD++ = ' ';
+				*pD++ = '/';
+				strcpy(pD, (const char*)glyph);
+				pD += strlen(glyph);
+				strcpy(pD, " GS ");
+				pD += 4;
+			}
+			else
+			{
+				if(!open_bracket)
+				{
+					*pD++ = '(';
+					open_bracket = true;
+					using_names = false;
+				}
+				
+			    switch (currentChar)
+			    {
+					case 0x08:		*pD++ = '\\';	*pD++ = 'b';	break;
+					case UCS_TAB:	*pD++ = '\\';	*pD++ = 't';	break;
+					case UCS_LF:	*pD++ = '\\';	*pD++ = 'n';	break;
+					case UCS_FF:	*pD++ = '\\';	*pD++ = 'f';	break;
+					case UCS_CR:	*pD++ = '\\';	*pD++ = 'r';	break;
+					case '\\':		*pD++ = '\\';	*pD++ = '\\';	break;
+					case '(':		*pD++ = '\\';	*pD++ = '(';	break;
+					case ')':		*pD++ = '\\';	*pD++ = ')';	break;
+					default:		*pD++ = (char)currentChar; 	break;
+		    	}
+			}
+		}
+		else if (XAP_EncodingManager::instance->is_cjk_letter(*pS))
 		{		
+			if(!open_bracket)
+			{
+				*pD++ = '(';
+				open_bracket = true;
+				using_names = false;
+			}
 			pWctomb->wctomb_or_fallback(_bytes,_bytes_len,*pS);
 			if (pD+_bytes_len-buf > OUR_LINE_LIMIT)
 			{
@@ -413,11 +502,19 @@ void PS_Graphics::drawCharsCJK(const UT_UCSChar* pChars, int iCharOffset,
                                case '\\': *pD++ = '\\'; *pD++ = '\\'; break;
                                case '(' : *pD++ = '\\'; *pD++ = '(';  break;
                                case ')' : *pD++ = '\\'; *pD++ = ')';  break;
-                               default:   *pD++ = (unsigned char)c;     break;
+                               default:   *pD++ = (char)c;     break;
                            }
                        }
 
 		} else 	{
+			
+			if(!open_bracket)
+			{
+				*pD++ = '(';
+				open_bracket = true;
+				using_names = false;
+			}
+		
 		    currentChar = remapGlyph(*pS, *pS >= 256 ? true : false);
 		    currentChar = currentChar <= 0xff ? currentChar : XAP_EncodingManager::instance->UToNative(currentChar);
 		    switch (currentChar)
@@ -430,14 +527,25 @@ void PS_Graphics::drawCharsCJK(const UT_UCSChar* pChars, int iCharOffset,
 			case '\\':		*pD++ = '\\';	*pD++ = '\\';	break;
 			case '(':		*pD++ = '\\';	*pD++ = '(';	break;
 			case ')':		*pD++ = '\\';	*pD++ = ')';	break;
-			default:		*pD++ = (unsigned char)currentChar; 	break;
+			default:		*pD++ = (char)currentChar; 	break;
 		    }
 		}
 		pS++;
 	}
-	*pD++ = ')';
-	sprintf((char *) pD," %d %d MS\n",xoff,yoff);
+	if(open_bracket)
+	{
+		*pD++ = ')';
+		sprintf((char *) pD," %d %d MS\n",xoff,yoff);
+	}
+	else
+	{
+		*pD++ = '\n';
+		*pD++ = 0;
+	}
+			
 	m_ps->writeBytes(buf);
+	if(ae)
+		delete ae;
 }
 
 void PS_Graphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 y2)
@@ -713,7 +821,10 @@ void PS_Graphics::_emit_IncludeResource(void)
 		// into the document.  This looks really slow... perhaps buffer line
 		// by line or in larger chunks the font data.
 		XAP_UnixFont * unixfont = psf->getUnixFont();
-		if(unixfont->is_CJK_font())
+		
+		//under unicode locale we do not want to ouptut the fonts, because they
+		//are huge ...
+		if(unixfont->is_CJK_font() || XAP_EncodingManager::instance->isUnicodeLocale())
 		  continue;
 		int match=0;
 		for(int i=0;i<fontKeyCount;++i)
@@ -785,6 +896,8 @@ void PS_Graphics::_emit_PrologMacros(void)
 	static const char * t[] = {
 		"/FSF {findfont exch scalefont} bind def",			// Find & scale a font. <size> /<fontname> FSD
 		"/MS  {neg moveto show} bind def",					// Move and draw. (<string>) <x> <y> MS
+		"/GS  {glyphshow} bind def",						// show glyph by name
+		"/MV  {neg moveto} bind def",						// Move only
 		"/BP  {gsave 72 exch div dup scale} bind def",		// Begin Page. <res> BP
 		"/SZ  {/HH exch def /WW exch def} bind def",		// Page Size.  <w> <h> SZ
 		"/BPP {BP SZ 0 HH translate} bind def",				// Begin Portrait Page.  <w> <h> <res> BPP

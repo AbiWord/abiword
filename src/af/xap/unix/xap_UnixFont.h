@@ -32,7 +32,14 @@
 
 #include "xap_UnixPSParseAFM.h"
 #include "xap_UnixFontXLFD.h"
-  
+
+#include "ut_AdobeEncoding.h"
+
+struct uniWidth
+{
+	UT_UCSChar ucs;
+	UT_uint16  width;
+};
 
 class XAP_UnixFont
 {
@@ -65,12 +72,16 @@ class XAP_UnixFont
 
 	const char * 			getFontfile(void);
 	const char * 			getMetricfile(void);
+	const encoding_pair*	loadEncodingFile(void);
+	const encoding_pair*	loadEncodingFile(char * file);
+	const encoding_pair*	getEncodingTable(){return m_pEncodingTable;};
+	UT_uint32				getEncodingTableSize(){return m_iEncodingTableSize;};
 
 	void					setXLFD(const char * xlfd);
 	const char * 			getXLFD(void);
 
 	ABIFontInfo *			getMetricsData(void);
-	UT_uint16 *				getUniWidths(void);
+	UT_uint16				getCharWidth(UT_UCSChar c);
 	
 	bool					openPFA(void);
 	char					getPFAChar(void);
@@ -99,7 +110,7 @@ protected:
 	
 	// The next line is the info that is given back to us by parseAFM. The line after that is our own mangled one to follow Unicode.
 	ABIFontInfo *			m_metricsData;
-	UT_uint16 *				m_uniWidths;
+	uniWidth *				m_uniWidths;
 
 	char * 					m_fontfile;
 	char *					m_metricfile;
@@ -109,7 +120,12 @@ protected:
 	bool					m_PFB;
 	UT_ByteBuf				m_buffer;
 	UT_uint32				m_bufpos;
+	
+	encoding_pair * 		m_pEncodingTable;
+	UT_uint32				m_iEncodingTableSize;
 	char					_getPFBChar(void);
+	bool					_getMetricsDataFromX(void);
+	void					_deleteEncodingTable();
 
 	struct CJK_PSFontMetric
 	{

@@ -43,7 +43,8 @@ CPPSRCS=	ut_alphahash.cpp	\
 		ut_wctomb.cpp		\
 		ut_pair.cpp		\
 		ut_string_class.cpp	\
-		ut_stringbuf.cpp
+		ut_stringbuf.cpp  \
+		ut_AdobeEncoding.cpp
 
 ### regex is only used by calc.
 ###CSRCS=		ut_regex.c

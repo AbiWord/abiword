@@ -21,12 +21,7 @@
 #include <string.h>
 #include <stdio.h>
 
-#ifndef __FreeBSD__
-#include <endian.h>
-#else
-#include <machine/endian.h>
-#endif
-
+#include "ut_endian.h"
 #include "xap_UnixApp.h"
 #include "xap_UnixFontManager.h"
 #include "xap_UnixFont.h"
@@ -138,23 +133,6 @@ static bool fallback_used;
 		}	\
 	}	
 
-// when dealing with utf-8 locale we will need to do little-endian to
-// big-endian conversion, since XDrawString16 which is used by GDK
-// interprets its input in BE fashion
-#if __BYTE_ORDER == __LITTLE_ENDIAN		
-// convert single UCS character
-// x,y are pointers to UT_UCSChar
-// we will use a temporary variable, so that x and y
-// can be the same
-#define LE2BE16(x,y)                                  \
-char * lb1;                                           \
-UT_UCSChar tucs;                                      \
-tucs = * ((UT_UCSChar *)(x)); lb1 = (char*) (&tucs);  \
-*((char*)(y)) = *(lb1+1); *(((char*)(y)+1)) = *lb1;
-
-#else
-	#define LE2BE16(x,y)
-#endif  //__BYTE_ORDER == __LITTLE_ENDIAN
 
 // HACK: I need more speed
 void GR_UnixGraphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
@@ -171,7 +149,7 @@ void GR_UnixGraphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
 		*/
 		if(isFontUnicode(font))
 		{
-			LE2BE16((&Wide_char),(&Wide_char))
+			LE2BE16((&Wide_char),(&Wide_char)) //declared in ut_endian.h
 			gdk_draw_text(m_pWin,font,m_pGC,xoff,yoff+font->ascent,(gchar*)&Wide_char,2);
 		}
 		else
@@ -216,7 +194,7 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 				//unicode font
 				//UT_DEBUGMSG(("UnixGraphics::drawChars: utf-8\n"));
 				UT_UCSChar beucs;
-				LE2BE16((pC),(&beucs))
+				LE2BE16((pC),(&beucs))  //declared in ut_endian.h
 				gdk_draw_text(m_pWin,font,m_pGC,x,yoff+font->ascent,(gchar*)&beucs,2);
 				x+=gdk_text_width(font, (gchar*)&beucs, 2);
 			}

@@ -61,8 +61,8 @@ ABIFontInfo * PSFont::getMetricsData(void)
 	return m_hFont->getMetricsData();
 }
 
-UT_uint16 * PSFont::getUniWidths(void)
+UT_uint16 PSFont::getCharWidth(UT_UCSChar c)
 {
 	UT_ASSERT(m_hFont);
-	return m_hFont->getUniWidths();
+	return m_hFont->getCharWidth(c);
 }
