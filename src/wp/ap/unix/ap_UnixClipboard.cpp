@@ -160,12 +160,13 @@ bool AP_UnixClipboard::addRichTextData(T_AllowGet tTo, const void* pData, UT_sin
   return false ;
 }
 
-bool AP_UnixClipboard::addHtmlData(T_AllowGet tTo, const void* pData, UT_sint32 iNumBytes)
+bool AP_UnixClipboard::addHtmlData(T_AllowGet tTo, const void* pData, UT_sint32 iNumBytes, bool xhtml)
 {
-  if ( addData ( tTo, AP_CLIPBOARD_TXT_HTML, pData, iNumBytes ) &&
-       addData ( tTo, AP_CLIPBOARD_APPLICATION_XHTML, pData, iNumBytes ) )
-    return true ;
-  return false ;
+  if (xhtml)
+    {
+      return addData (tTo, AP_CLIPBOARD_APPLICATION_XHTML, pData, iNumBytes) ? true : false;
+    }
+  return addData (tTo, AP_CLIPBOARD_TXT_HTML, pData, iNumBytes) ? true : false;
 }
 
 bool AP_UnixClipboard::addPNGData(T_AllowGet tTo, const void* pData, UT_sint32 iNumBytes)

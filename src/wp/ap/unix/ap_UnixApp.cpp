@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998-2002 AbiSource, Inc.
  * 
@@ -482,7 +484,8 @@ void AP_UnixApp::copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboar
 {
 
     UT_ByteBuf bufRTF;
-    UT_ByteBuf bufHTML;
+    UT_ByteBuf bufHTML4;
+    UT_ByteBuf bufXHTML;
     UT_ByteBuf bufTEXT;
 
     // create RTF buffer to put on the clipboard
@@ -494,15 +497,25 @@ void AP_UnixApp::copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboar
 		DELETEP(pExpRtf);
     }
 
-    // create XHTML buffer to put on the clipboard
+	// create XHTML buffer to put on the clipboard
 
-    IE_Exp_HTML * pExpHtml = new IE_Exp_HTML(pDocRange->m_pDoc);
-    if ( pExpHtml )
-    {
-		pExpHtml->set_HTML4(CLIPBOARD_IS_HTML4);
-        pExpHtml->copyToBuffer(pDocRange, &bufHTML);
-        DELETEP(pExpHtml);
-    }
+	IE_Exp_HTML * pExpHtml = new IE_Exp_HTML(pDocRange->m_pDoc);
+	if (pExpHtml)
+		{
+			pExpHtml->set_HTML4 (false);
+			pExpHtml->copyToBuffer (pDocRange, &bufXHTML);
+			DELETEP(pExpHtml);
+		}
+
+	// create HTML4 buffer to put on the clipboard
+	
+	pExpHtml = new IE_Exp_HTML(pDocRange->m_pDoc);
+	if (pExpHtml)
+		{
+			pExpHtml->set_HTML4 (true);
+			pExpHtml->copyToBuffer(pDocRange, &bufHTML4);
+			DELETEP(pExpHtml);
+		}
 
     // create UTF-8 text buffer to put on the clipboard
 		
@@ -525,27 +538,29 @@ void AP_UnixApp::copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboar
 					    ? XAP_UnixClipboard::TAG_ClipboardOnly
 					    : XAP_UnixClipboard::TAG_PrimaryOnly);
 
-    if (bufRTF.getLength() > 0)
-		m_pClipboard->addRichTextData(target, static_cast<const UT_Byte *>(bufRTF.getPointer(0)),bufRTF.getLength());
-    if (bufHTML.getLength() > 0)
-                m_pClipboard->addHtmlData(target, static_cast<const UT_Byte *>(bufHTML.getPointer(0)), bufHTML.getLength());
-    if (bufTEXT.getLength() > 0)
-		m_pClipboard->addTextData(target, static_cast<const UT_Byte *>(bufTEXT.getPointer(0)),bufTEXT.getLength());
+	if (bufRTF.getLength () > 0)
+		m_pClipboard->addRichTextData (target, bufRTF.getPointer (0), bufRTF.getLength ());
+	if (bufXHTML.getLength () > 0)
+		m_pClipboard->addHtmlData (target, bufXHTML.getPointer (0), bufXHTML.getLength (), true);
+	if (bufHTML4.getLength () > 0)
+		m_pClipboard->addHtmlData (target, bufHTML4.getPointer (0), bufHTML4.getLength (), false);
+	if (bufTEXT.getLength () > 0)
+		m_pClipboard->addTextData (target, bufTEXT.getPointer (0), bufTEXT.getLength ());
 
-    {
-      // TODO: we have to make a good way to tell if the current selection is just an image
-      FV_View * pView = static_cast<FV_View*>(getLastFocussedFrame()->getCurrentView());
-      if (pView && !pView->isSelectionEmpty())
 	{
-	  // don't own, don't free
-	  const UT_ByteBuf * png = 0;
+		// TODO: we have to make a good way to tell if the current selection is just an image
+		FV_View * pView = static_cast<FV_View*>(getLastFocussedFrame()->getCurrentView());
+		if (pView && !pView->isSelectionEmpty())
+			{
+				// don't own, don't free
+				const UT_ByteBuf * png = 0;
 	  
-	  pView->saveSelectedImage (&png);
-	  if (png && png->getLength() > 0)
-	    {
-	      m_pClipboard->addPNGData(target, static_cast<const UT_Byte*>(png->getPointer(0)), png->getLength());
-	    }
-	}
+				pView->saveSelectedImage (&png);
+				if (png && png->getLength() > 0)
+					{
+						m_pClipboard->addPNGData(target, static_cast<const UT_Byte*>(png->getPointer(0)), png->getLength());
+					}
+			}
     }
 
     return;

@@ -599,8 +599,10 @@ private:
 	void			tagClose (UT_uint32 tagID, const UT_UTF8String & content,
 							  WhiteSpace ws = ws_Both);
 	void			tagClose (UT_uint32 tagID);
-	void			tagOpenBroken  (const UT_UTF8String & content);
-	void			tagCloseBroken (const UT_UTF8String & content);
+	void			tagOpenBroken  (const UT_UTF8String & content,
+									WhiteSpace ws = ws_Pre);
+	void			tagCloseBroken (const UT_UTF8String & content, bool suppress,
+									WhiteSpace ws = ws_Post);
 	UT_uint32		tagTop ();
 	void			tagPop ();
 	void			tagPI (const char * target, const UT_UTF8String & content);
@@ -794,6 +796,7 @@ void s_HTML_Listener::tagRaw (UT_UTF8String & content)
 #ifdef HTML_ENABLE_MHTML
 	if (m_bQuotedPrintable) content.escapeMIME ();
 #endif
+// fputs (content.utf8_str (), stdout);
 	m_pie->write (content.utf8_str (), content.byteLength ());
 }
 
@@ -884,11 +887,17 @@ void s_HTML_Listener::tagClose (UT_uint32 tagID)
 
 /* use with *extreme* caution! (this is used by images with data-URLs)
  */
-void s_HTML_Listener::tagOpenBroken (const UT_UTF8String & content)
+void s_HTML_Listener::tagOpenBroken (const UT_UTF8String & content,
+									 WhiteSpace ws)
 {
-	tagNewIndent ();
+	if (ws & ws_Pre)
+		{
+			tagNewIndent ();
+			m_utf8_0 += "<";
+		}
+	else
+		m_utf8_0 = "<";
 
-	m_utf8_0 += "<";
 	m_utf8_0 += content;
 
 	tagRaw (m_utf8_0);
@@ -896,10 +905,18 @@ void s_HTML_Listener::tagOpenBroken (const UT_UTF8String & content)
 
 /* use with *extreme* caution! (this is used by images with data-URLs)
  */
-void s_HTML_Listener::tagCloseBroken (const UT_UTF8String & content)
+void s_HTML_Listener::tagCloseBroken (const UT_UTF8String & content, bool suppress,
+									  WhiteSpace ws)
 {
-	m_utf8_0  = content;
-	m_utf8_0 += " />\r\n";
+	m_utf8_0 = content;
+
+	if (suppress)
+		m_utf8_0 += " >";
+	else
+		m_utf8_0 += " />";
+
+	if (ws & ws_Post)
+		m_utf8_0 += "\r\n";
 
 	tagRaw (m_utf8_0);
 }
@@ -1172,7 +1189,7 @@ void s_HTML_Listener::multiBoundary (bool end)
 		m_utf8_0 += "--\r\n";
 	else
 		m_utf8_0 += "\r\n";
-
+// fputs (m_utf8_0.utf8_str (), stdout);
 	m_pie->write (m_utf8_0.utf8_str (), m_utf8_0.byteLength ());
 }
 
@@ -1182,14 +1199,14 @@ void s_HTML_Listener::multiField (const char * name, const UT_UTF8String & value
 	m_utf8_0 += ": ";
 	m_utf8_0 += value;
 	m_utf8_0 += "\r\n";
-
+// fputs (m_utf8_0.utf8_str (), stdout);
 	m_pie->write (m_utf8_0.utf8_str (), m_utf8_0.byteLength ());
 }
 
 void s_HTML_Listener::multiBreak ()
 {
 	m_utf8_0 = "\r\n";
-
+// fputs (m_utf8_0.utf8_str (), stdout);
 	m_pie->write (m_utf8_0.utf8_str (), m_utf8_0.byteLength ());
 }
 
@@ -2907,7 +2924,7 @@ void s_HTML_Listener::_fillColWidthsVector(void)
 	//
 	else
 	{
-		double total = m_dPageWidthInches - m_dSecLeftMarginInches - m_dSecRightMarginInches;
+		// double total = m_dPageWidthInches - m_dSecLeftMarginInches - m_dSecRightMarginInches;
 		UT_sint32 nCols = m_TableHelper.getNumCols ();
 		double totWidth = m_dPageWidthInches - m_dSecLeftMarginInches - m_dSecRightMarginInches;
 		double colWidth = totWidth/nCols;
@@ -3667,7 +3684,9 @@ void s_HTML_Listener::_handleImage (PT_AttrPropIndex api)
 
 	/* hmm; who knows what locale the system uses
 	 */
-	UT_String imagebasedir = UT_basename (m_pie->getFileName ());
+	UT_String imagebasedir = "clipboard";
+	if (m_pie->getFileName ())
+		imagebasedir = UT_basename (m_pie->getFileName ());
 	imagebasedir += "_data";
 	UT_String imagedir = m_pie->getFileName ();
 	imagedir += "_data";
@@ -3744,12 +3763,12 @@ void s_HTML_Listener::_handleImage (PT_AttrPropIndex api)
 		}
 
 	m_utf8_1 += " src=\"data:image/png;base64,";
-	tagOpenBroken (m_utf8_1);
+	tagOpenBroken (m_utf8_1, ws_None);
 
 	_writeImageBase64 (pByteBuf);
 
 	m_utf8_1 = "\"";
-	tagCloseBroken (m_utf8_1);
+	tagCloseBroken (m_utf8_1, get_HTML4 (), ws_None);
 }
 
 void s_HTML_Listener::_handlePendingImages ()
@@ -3995,7 +4014,6 @@ bool s_HTML_Listener::populate (PL_StruxFmtHandle /*sfh*/, const PX_ChangeRecord
 				switch (pcro->getObjectType ())
 					{
 					case PTO_Image:
-						if (m_bClipBoard) break; // TODO: data-URL??
 						_handleImage (api);
 						return true;
 
@@ -4468,6 +4486,9 @@ const UT_UTF8String * s_StyleTree::lookup (const UT_UTF8String & prop_name)
 UT_Error IE_Exp_HTML::_writeDocument ()
 {
 	bool bClipBoard = (getDocRange () != NULL);
+
+	if (bClipBoard)
+		m_exp_opt.bEmbedImages = true;
 
 	s_HTML_Listener * pListener = new s_HTML_Listener(getDoc(),this,bClipBoard,&m_exp_opt);
 	if (pListener == 0) return UT_IE_NOMEMORY;
