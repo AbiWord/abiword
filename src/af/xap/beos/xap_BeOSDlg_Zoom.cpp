@@ -79,8 +79,8 @@ void XAP_BeOSDialog_Zoom::runModal(XAP_Frame * pFrame)
 
 	*/
 
-	
 	// TODO build the dialog, attach events, etc., etc.
+	m_answer = XAP_Dialog_Zoom::a_CANCEL;
 	UT_ASSERT(UT_NOT_IMPLEMENTED);
 }
 

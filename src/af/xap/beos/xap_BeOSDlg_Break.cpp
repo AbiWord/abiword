@@ -74,8 +74,9 @@ void XAP_BeOSDialog_Break::runModal(XAP_Frame * pFrame)
 	  - Just quit, the data items will be ignored by the caller.
 
 	*/
-	
+
 	// TODO build the dialog, attach events, etc., etc.
+	m_answer = XAP_Dialog_Break::a_CANCEL;
 	UT_ASSERT(UT_NOT_IMPLEMENTED);
 }
 
