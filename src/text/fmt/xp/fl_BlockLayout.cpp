@@ -1466,7 +1466,9 @@ void fl_BlockLayout::checkSpelling(void)
 		*/
 		UT_GrowBuf pgb(1024);
 		UT_Bool bRes = getBlockBuf(&pgb);
-	
+
+		UT_ASSERT(bRes);
+		
 		pPOB = new fl_PartOfBlock();
 		if (!pPOB)
 		{
