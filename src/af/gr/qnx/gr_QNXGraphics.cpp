@@ -1074,7 +1074,12 @@ void GR_QNXGraphics::saveRectangle(UT_Rect &r, UT_uint32 iIndx)
 
   PhRect_t rect;
   short int x,y;
-
+#if 0
+	// had to turn this off -- the fact the the rectangle coordinances
+	// are the same does not guarantee that the bitmap is (e.g., in a
+	// right-aligned paragraph the text moves while the caret remains
+	// static. Tomas, Jan 18, 2003
+  
   if (m_vSaveRect.getItemCount()>iIndx && m_vSaveRect.getNthItem(iIndx) && 
       ((UT_Rect *)(m_vSaveRect.getNthItem(iIndx)))->left == r.left &&
       ((UT_Rect *)(m_vSaveRect.getNthItem(iIndx)))->top == r.top &&
@@ -1082,6 +1087,7 @@ void GR_QNXGraphics::saveRectangle(UT_Rect &r, UT_uint32 iIndx)
       ((UT_Rect *)(m_vSaveRect.getNthItem(iIndx)))->height == r.height) {
     return;
   }
+#endif
 		
   void * oldR = NULL;
   m_vSaveRect.setNthItem(iIndx, (void*)new UT_Rect(r),&oldR);
