@@ -3190,7 +3190,28 @@ bool FV_View::cmdCharInsert(const UT_UCSChar * text, UT_uint32 count, bool bForc
 			}
 		}
 	}
-
+	else if(count == 1 && text[0] == UCS_FF)
+	{
+	       m_pDoc->beginUserAtomicGlob();
+	       bool b = _charInsert(text, count, bForce);
+	       if(b)
+	       {
+		     insertParagraphBreak();
+	       }
+	       m_pDoc->endUserAtomicGlob();
+	       return b;
+	}
+	else if(count == 1 && text[0] == UCS_VTAB)
+	{
+	       m_pDoc->beginUserAtomicGlob();
+	       bool b = _charInsert(text, count, bForce);
+	       if(b)
+	       {
+		     insertParagraphBreak();
+	       }
+	       m_pDoc->endUserAtomicGlob();
+	       return b;
+	}
    normal_insert:
 	return _charInsert(text, count, bForce);
 }

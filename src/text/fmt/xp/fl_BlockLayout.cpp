@@ -4673,6 +4673,18 @@ bool	fl_BlockLayout::_doInsertFieldEndRun(PT_BlockOffset blockOffset)
 	return bResult;
 }
 
+/*!
+ * Returns true if this run is at the last position of the block.
+ */
+bool fl_BlockLayout::isLastRunInBlock(fp_Run * pRun)
+{
+	if((pRun->getBlockOffset()+2) == getLength())
+	{
+		return true;
+	}
+	return false;
+}
+
 bool	fl_BlockLayout::_doInsertForcedPageBreakRun(PT_BlockOffset blockOffset)
 {
 	fp_Run* pNewRun = NULL;
@@ -4693,7 +4705,11 @@ bool	fl_BlockLayout::_doInsertForcedPageBreakRun(PT_BlockOffset blockOffset)
 	}
 
 	bool bResult = _doInsertRun(pNewRun);
-	if (bResult)
+	//
+	// only do this if this run is the last run in the block. Otherwise we terrible UI 
+	// whre the first line of th enext page cannot have it's own style!
+	//
+	if (bResult && !isLastRunInBlock(pNewRun))
 		_breakLineAfterRun(pNewRun);
 
 	return bResult;
@@ -4713,7 +4729,7 @@ bool	fl_BlockLayout::_doInsertForcedColumnBreakRun(PT_BlockOffset blockOffset)
 	UT_ASSERT(pNewRun); // TODO check for outofmem
 
 	bool bResult = _doInsertRun(pNewRun);
-	if (bResult)
+	if (bResult && !isLastRunInBlock(pNewRun) )
 		_breakLineAfterRun(pNewRun);
 
 	return bResult;

@@ -2936,6 +2936,10 @@ bool	fp_Line::containsForcedColumnBreak(void) const
 		{
 			return true;
 		}
+		if(pRun->getPrevRun() && (pRun->getPrevRun()->getType() == FPRUN_FORCEDCOLUMNBREAK))
+		{
+			return true;
+		}
 	}
 
 	return false;
@@ -2947,6 +2951,10 @@ bool fp_Line::containsForcedPageBreak(void) const
 	{
 		fp_Run* pRun = getLastRun();
 		if (pRun->getType() == FPRUN_FORCEDPAGEBREAK)
+		{
+			return true;
+		}
+		if(pRun->getPrevRun() && (pRun->getPrevRun()->getType() == FPRUN_FORCEDPAGEBREAK))
 		{
 			return true;
 		}

@@ -181,11 +181,19 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock,
 				{
 				case FPRUN_FORCEDCOLUMNBREAK:
 				{
+				        if(pCurrentRun->getNextRun() && pCurrentRun->getNextRun()->getType() == FPRUN_ENDOFPARAGRAPH)
+					{
+				               pCurrentRun = pCurrentRun->getNextRun();
+					}
 					m_pLastRunToKeep = pCurrentRun;
 					goto done_with_run_loop;
 				}
 				case FPRUN_FORCEDPAGEBREAK:
 				{
+				        if(pCurrentRun->getNextRun() && pCurrentRun->getNextRun()->getType() == FPRUN_ENDOFPARAGRAPH)
+					{
+				               pCurrentRun = pCurrentRun->getNextRun();
+					}
 					m_pLastRunToKeep = pCurrentRun;
 					goto done_with_run_loop;
 				}

@@ -151,6 +151,7 @@ public:
 	UT_sint32       getLength(void);
 	bool            isEmbeddedType(void);
 	bool            isNotTOCable(void);
+	bool            isLastRunInBlock(fp_Run * pRun);
 	void            updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmebbedSize, UT_sint32 iSuggestedDiff);
 	void            updateEnclosingBlockIfNeeded(void);
 	UT_sint32       getEmbeddedOffset(UT_sint32 startOffset, fl_ContainerLayout *& pEmbedCL);
