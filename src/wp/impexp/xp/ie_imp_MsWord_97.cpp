@@ -937,13 +937,14 @@ int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 		pos = wvStream_tell(ps->data);
 
 #ifdef SUPPORTS_OLD_IMAGES
+		UT_DEBUGMSG(("Pre W97 Image format.\n"));
 		wvStream_goto(ps->data, achp->fcPic_fcObj_lTagObj);
 
 		if (1 == wvGetPICF(wvQuerySupported(&ps->fib, NULL), &picf,
 				   ps->data) && NULL != picf.rgb)
-		  { 
+		  {
 			fil = picf.rgb;
-			
+
 			if (wv0x01(&blip, fil, picf.lcb - picf.cbHeader))
 			  {
 			this->_handleImage(&blip, picf.dxaGoal, picf.dyaGoal);
@@ -955,9 +956,9 @@ int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 #else
 			UT_DEBUGMSG(("DOM: 0x01 graphics support is disabled at the moment\n"));
 #endif
-			
+
 			wvStream_goto(ps->data, pos);
-			
+
 			return 0;
 		  }
 		else
@@ -966,21 +967,21 @@ int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 			return 0;
 		  }
 	case 0x08: // Word 97, 2000, XP image
-		
+
 		if (wvQuerySupported(&ps->fib, NULL) >= WORD8) // sanity check
 		{
 			if (ps->nooffspa > 0)
 			{
-				
+
 				fspa = wvGetFSPAFromCP(ps->currentcp, ps->fspa,
 									   ps->fspapos, ps->nooffspa);
-				
+
 				if(!fspa)
 				{
 					UT_DEBUGMSG(("No fspa! Panic and Insanity Abounds!\n"));
 					return 0;
-				}		 
-				
+				}
+
 				if (wv0x08(&blip, fspa->spid, ps))
 				{
 					this->_handleImage(&blip, fspa->xaRight-fspa->xaLeft,
@@ -1308,7 +1309,7 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 		m_bPrevStrongCharRTL = true;
 	else
 		m_bPrevStrongCharRTL = false;
-	
+
 	// DOM TODO: i think that this is right
 	if (apap->fBidi == 1) {
 		props += "dom-dir:rtl;";
@@ -1332,10 +1333,10 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 	case 3:
 		props += "text-align:justify;";
 		break;
-	case 4: 		
-		/* this type of justification is of unknown purpose and is 
+	case 4:
+		/* this type of justification is of unknown purpose and is
 		 * undocumented , but it shows up in asian documents so someone
-		 * should be able to tell me what it is someday 
+		 * should be able to tell me what it is someday
 		 */
 		props += "text-align:justify;";
 		break;
@@ -1370,10 +1371,10 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 	// line spacing (single-spaced, double-spaced, etc.)
 	if (apap->lspd.fMultLinespace) {
 		sprintf(propBuffer,
-				"line-height:%s;", 
+				"line-height:%s;",
 				UT_convertToDimensionlessString( (((float)apap->lspd.dyaLine) / 240), "1.1"));
 		props += propBuffer;
-	} else { 
+	} else {
 		// TODO: handle exact line heights
 	}
 
@@ -1640,25 +1641,47 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 		myCHPX.istd = 4095; // no style
 
 		/*
-		   IMPORTANT now we have the list formatting sutff retrieved; you should use the
-		   members of the myLVL and myLVLF structs to access all of this info, except
-		   for the iStartAt value, where you should use myStartAt, lsid, where myListId
-		   should be used andthe PAPX/CHPX values which are now stored in myPAPX and myCHPX.
+		   IMPORTANT now we have the list formatting sutff retrieved; it is found in several
+		   different places:
+					 apap->ilvl - the level of this list (0-8)
 
-		   IMPORTANT the myStartAt value IS NOT the number to be applied to this specific
-		   paragraph, rather it is the number to be applied to the first item in this list
-		   Consequently our code implementing the lists will have to keep track of how many
-		   items in the list and level there have been (apap->ilvl, and myListId)
+					 myStartAt	- the value at which the numbering for this listshould start
+								  (i.e., the number of the first item on the list)
 
-		   Also, there are	more list numerical formats than the MS documentation states :-)
-		   so here I will put what I found out (latter we will move it to some better place
-		   enum wordListNumberFormat { WLNF_ARABIC = 0,
+					 myListId	- the id of this list, we need this to know to which list this
+								  paragraph belongs
+
+					 PAPX		- the formatting information that needs to be added to the format
+								  of this list
+
+					 CHPX		- the formatting of the list number
+
+					 myNumberStr - the actual number string to display (XCHAR *); we probably need
+								   this to work out the number separator, since there does not seem
+								   to be any reference to this anywhere
+
+					 myNumberStr_count - length of the number string
+
+					 myLVLF->nfc - number format (see the enum below)
+
+					 myLVLF->jc  - number alignment [0: lft, 1: rght, 2: cntr]
+
+					 myLVLF->ixchFollow - what character stands between the number and the para
+										  [0:= tab, 1: spc, 2: none]
+
+		   Surprise, surprise, there are more list numerical formats than the 5 the
+		   MS documentation states happens to mention, so here I will put what I found out
+		   (latter we will move it to some better place)
+
+		   enum wordListNumberFormat { WLNF_EUROPEAN_ARABIC = 0,
 									   WLNF_UPPER_ROMAN = 1,
 									   WLNF_LOWER_ROMAN = 2,
 									   WLNF_UPPER_LETTER = 3,
 									   WLNF_LOWER_LETTER = 4,
 									   WLNF_ORDINAL = 5,
-									   WLNF_BULLETS = 23  // the actual bullet shape is stored elsewhere
+									   WLNF_BULLETS = 23,  // the actual bullet shape is stored elsewhere
+									   WLNF_HEBREW_NUMBERS = 45,
+									   WLNF_ARABIC_ARABIC = ???
 									 } ;
 		*/
 		UT_DEBUGMSG(("list: id %d \n",myListId));
@@ -1771,7 +1794,7 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 	// not bidi either, we will do nothing, but if the previous segement was
 	// not bidi, we will set the nobidi value
 	
-	UT_DEBUGMSG(("#TF: _beginChar: [0x%x] achp->fBidi %d, m_bPrevStrongCharRTL %d\n",achp,achp->fBidi,m_bPrevStrongCharRTL));
+	xxx_UT_DEBUGMSG(("#TF: _beginChar: [0x%x] achp->fBidi %d, m_bPrevStrongCharRTL %d\n",achp,achp->fBidi,m_bPrevStrongCharRTL));
 	if (!achp->fBidi && m_bPrevStrongCharRTL)
 		props += "dir-override:ltr;";
 	// not entirely sure about this second branch, leave it out for now
@@ -2218,8 +2241,8 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height)
 	  FREEP(mimetype);
 	  goto Cleanup;
 	}
-  
-  error = importer->importGraphic(pictData, &pFG); 
+
+  error = importer->importGraphic(pictData, &pFG);
   if ((error != UT_OK) || !pFG)
 	{
 	  UT_DEBUGMSG(("Could not import graphic\n"));
@@ -2227,7 +2250,7 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height)
 	  FREEP(mimetype);
 	  goto Cleanup;
 	}
-  
+
   // TODO: can we get back a vector graphic?
   buf = static_cast<FG_GraphicRaster *>(pFG)->getRaster_PNG();
 
@@ -2240,31 +2263,31 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height)
 	  error = UT_ERROR;
 	  goto Cleanup;
 	}
-  
+
   //
   // This next bit of code will set up our properties based on the image attributes
   //
-  
+
   XML_Char propBuffer[128];
   propBuffer[0] = 0;
-  
+
   setlocale(LC_NUMERIC, "C");
-  sprintf(propBuffer, "width:%fin; height:%fin", 
-	  (double)width / (double)1440, 
+  sprintf(propBuffer, "width:%fin; height:%fin",
+	  (double)width / (double)1440,
 	  (double)height / (double)1440);
   setlocale(LC_NUMERIC, "");
-  
+
   XML_Char propsName[32];
   propsName[0] = 0;
   sprintf(propsName, "image%d", m_iImageCount++);
-  
+
   const XML_Char* propsArray[5];
   propsArray[0] = (XML_Char *)"props";
   propsArray[1] = (XML_Char *)propBuffer;
   propsArray[2] = (XML_Char *)"dataid";
   propsArray[3] = (XML_Char *)propsName;
   propsArray[4] = 0;
-  
+
   if (!getDoc()->appendObject (PTO_Image, propsArray))
 	{
 	  UT_DEBUGMSG (("Could not create append object\n"));
@@ -2272,7 +2295,7 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height)
 	  FREEP(mimetype);
 	  goto Cleanup;
 	}
-  
+
   if (!getDoc()->createDataItem((char*)propsName, false,
 				buf, (void*)mimetype, NULL))
 	{
@@ -2290,7 +2313,7 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height)
 
   // !!! must not free this; this is used by pd_Document !!!
   //FREEP(mimetype);
-  
+
   //
   // Free any allocated data
   //
