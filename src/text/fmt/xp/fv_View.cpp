@@ -791,29 +791,41 @@ UT_Bool FV_View::getCharFormat(const XML_Char *** pProps)
 	fp_Run* pRun = pBlock->findPointCoords(posStart, UT_FALSE,
 										   xPoint, yPoint, iPointHeight);
 
-	if (!bSelEmpty)
+	if (_isPointAP())
 	{
 		/*
-			NOTE: getSpanAttrProp is optimized for insertions, so it 
-			essentially returns the properties on the left side of the 
-			specified position.  
-			
-			This is exactly what we want at the insertion point. 
-
-			However, to get properties for a selection, we need to 
-			start looking one position to the right.  
+			We have a temporary span format at the insertion point.  
 		*/
-		posStart++;
+		UT_ASSERT(bSelEmpty);
+		m_pDoc->getAttrProp(_getPointAP(), &pSpanAP);
+	}
+	else
+	{
+		if (!bSelEmpty)
+		{
+			/*
+				NOTE: getSpanAttrProp is optimized for insertions, so it 
+				essentially returns the properties on the left side of the 
+				specified position.  
+				
+				This is exactly what we want at the insertion point. 
 
-		/*
-			Likewise, findPointCoords will return the run to the right 
-			of the specified position, so we need to stop looking one 
-			position to the left. 
-		*/
-		posEnd--;
+				However, to get properties for a selection, we need to 
+				start looking one position to the right.  
+			*/
+			posStart++;
+
+			/*
+				Likewise, findPointCoords will return the run to the right 
+				of the specified position, so we need to stop looking one 
+				position to the left. 
+			*/
+			posEnd--;
+		}
+
+		pBlock->getSpanAttrProp(posStart - pBlock->getPosition(),&pSpanAP);
 	}
 
-	pBlock->getSpanAttrProp(posStart - pBlock->getPosition(),&pSpanAP);
 	pBlock->getAttrProp(&pBlockAP);
 
 	v.addItem(new _fmtPair("font-family",pSpanAP,pBlockAP,pSectionAP));
