@@ -156,7 +156,6 @@ void fp_Run::Fill(GR_Graphics * pG, UT_sint32 x, UT_sint32 y, UT_sint32 width,
 	}
 	UT_sint32 srcX = 0;
 	UT_sint32 srcY = 0;
-	UT_ASSERT(x > 0);
 	fp_Line * pLine = getLine();
     
 	if(pLine)

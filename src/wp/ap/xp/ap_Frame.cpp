@@ -58,15 +58,11 @@ void AP_Frame::quickZoom(UT_uint32 iZoom)
 	XAP_Frame::setZoomPercentage(iZoom);
 	if (bChanged) 
 	{
-		GR_Graphics * pG = NULL;
-		_createViewGraphics(pG, iZoom);
 		FV_View * pView = static_cast<FV_View *>(getCurrentView());
 		FL_DocLayout * pDocLayout = pView->getLayout();
+		pDocLayout->incrementGraphicTick();
 		GR_Graphics * pOldGraphics = pView->getGraphics();
-		pView->setGraphics(pG);
-		static_cast<AP_FrameData*>(m_pData)->m_pG = pG;
-		pDocLayout->setGraphics(pG);
-		delete pOldGraphics;
+		pOldGraphics->setZoomPercentage(iZoom);
 		AP_TopRuler * pTop = pView->getTopRuler();
 		if(pTop)
 		{
