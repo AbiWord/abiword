@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998-2000 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -82,7 +82,12 @@
 	// Danish translations
 #   include "tb_text_bold_F.xpm"
 #   include "tb_text_strikeout_G.xpm"
-	
+	// Hungarian translations
+//#	include "tb_text_bold_F.xpm"
+#	include "tb_text_italic_D.xpm"
+//#	include "tb_text_underline_A.xpm"
+#	include "tb_text_overline_F.xpm"
+#	include "tb_text_strikeout_K.xpm"
 	// ... add new icons here (don't forget to add below the #else) ...
 
 #else
@@ -134,6 +139,12 @@
 	// Danish translations
     DefineToolbarIcon(tb_text_bold_F_xpm)	
     DefineToolbarIcon(tb_text_strikeout_G_xpm)
+	// Hungarian translations
+		//DefineToolbarIcon(tb_text_bold_F_xpm)
+	DefineToolbarIcon(tb_text_italic_D_xpm)
+		//DefineToolbarIcon(tb_text_underline_A_xpm)
+	DefineToolbarIcon(tb_text_strikeout_K_xpm)
+	DefineToolbarIcon(tb_text_overline_F_xpm)
 
 	// ... also add new icons here ...
 

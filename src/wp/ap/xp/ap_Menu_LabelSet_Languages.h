@@ -36,6 +36,7 @@
 #include "ap_Menu_LabelSet_da-DK.h"
 #include "ap_Menu_LabelSet_du-NL.h"
 #include "ap_Menu_LabelSet_de-DE.h"
+#include "ap_Menu_LabelSet_hu-HU.h"
 #include "ap_Menu_LabelSet_id-ID.h"
 #include "ap_Menu_LabelSet_it-IT.h"
 #include "ap_Menu_LabelSet_no-BOK.h"

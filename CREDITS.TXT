@@ -13,7 +13,7 @@ contributors
 ------------
 Peter Arnold <petera@intrinsica.co.uk>          RTF import
 Darren Benham <gecko@benham.net>                Debian package, ispell whiz
-Henrik Berg <henrik@lansen.se>          ispell patch for non-English dictionaries
+Henrik Berg <henrik@lansen.se>                  ispell i18n
 Daniel Berlin <db003g@mail.rochester.edu>       BeOS whiz
 Bryan Blackburn <blb@pobox.com>                 Solaris / GCC 2.95 make
 Scott Boesch <scott@abisource.com>              artist, trade shows
@@ -68,10 +68,10 @@ translators
 -----------
 Albi <albi@linuxfan.com> <onderste@casema.net>  Dutch
 Tim & Rita Allen <tim@proximity.com.au>         Indonesian
-I Made Wiryana <made@nakula.rvs.uni-bielefeld.de> Indonesian
 Henrik Berg <henrik@lansen.se>                  Swedish
 Frédéric CELLA <fcella@mahj.org>                French
 Mauro Colorio <macolori@tin.it>                 Italian
+Tamas Decsi <tamas@pressflex.com>               Hungarian
 Philippe Duperron <duperron@mail.dotcom.fr>     French
 Gro Elin Hansen  <Gro.Hansen@student.uib.no>    Norwegian
 Martin Willemoes Hansen <mwh@stampede.org>      Danish
@@ -87,6 +87,7 @@ Rasmus Toftdahl Olesen <rto@post.tele.dk>       Danish
 Eutanazy Sercxemulo <szperacz@free.net.pl>      Polish
 Rui Silva <rms@ssi.aaum.pt>                     Portugese
 Christian Terboven <cterboven@gmx.net>          German
+I Made Wiryana <made@nakula.rvs.uni-bielefeld.de> Indonesian
 Javier Yáñez <javier@cibal.es>                  Spanish
 
 
