@@ -312,18 +312,18 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(insertSpace),			_M_,	""),
 	EV_EditMethod(NF(insertNBSpace),		_M_,	""),
 
-	EV_EditMethod(NF(insertGraveData),		_M_,	""),
-	EV_EditMethod(NF(insertAcuteData),		_M_,	""),
-	EV_EditMethod(NF(insertCircumflexData),	_M_,	""),
-	EV_EditMethod(NF(insertTildeData),		_M_,	""),
-	EV_EditMethod(NF(insertMacronData),		_M_,	""),
-	EV_EditMethod(NF(insertBreveData),		_M_,	""),
-	EV_EditMethod(NF(insertAbovedotData),	_M_,	""),
-	EV_EditMethod(NF(insertDiaeresisData),	_M_,	""),
-	EV_EditMethod(NF(insertDoubleacuteData),_M_,	""),
-	EV_EditMethod(NF(insertCaronData),		_M_,	""),
-	EV_EditMethod(NF(insertCedillaData),	_M_,	""),
-	EV_EditMethod(NF(insertOgonekData),		_M_,	""),
+	EV_EditMethod(NF(insertGraveData),		_DM_,	""),
+	EV_EditMethod(NF(insertAcuteData),		_DM_,	""),
+	EV_EditMethod(NF(insertCircumflexData),	_DM_,	""),
+	EV_EditMethod(NF(insertTildeData),		_DM_,	""),
+	EV_EditMethod(NF(insertMacronData),		_DM_,	""),
+	EV_EditMethod(NF(insertBreveData),		_DM_,	""),
+	EV_EditMethod(NF(insertAbovedotData),	_DM_,	""),
+	EV_EditMethod(NF(insertDiaeresisData),	_DM_,	""),
+	EV_EditMethod(NF(insertDoubleacuteData),_DM_,	""),
+	EV_EditMethod(NF(insertCaronData),		_DM_,	""),
+	EV_EditMethod(NF(insertCedillaData),	_DM_,	""),
+	EV_EditMethod(NF(insertOgonekData),		_DM_,	""),
 
 	EV_EditMethod(NF(fileNew),				_M_,	""),
 	EV_EditMethod(NF(fileOpen),				_M_,	""),
@@ -338,7 +338,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(copy),					_M_,	""),
 	EV_EditMethod(NF(paste),				_M_,	""),
 	EV_EditMethod(NF(find),					_M_,	""),
-	EV_EditMethod(NF(findAgain),				_M_,	""),	
+	EV_EditMethod(NF(findAgain),			_M_,	""),	
 	EV_EditMethod(NF(go),					_M_,	""),
 	EV_EditMethod(NF(replace),				_M_,	""),
 
@@ -1612,9 +1612,9 @@ Defun(insertMacronData)
 	
 	UT_ASSERT(pCallData->m_dataLength==1);
 	UT_UCSChar macronChar = 0x0000;
+#if 0
 	switch (pCallData->m_pData[0])
 	{
-#if 0
 	// TODO add these Latin-4 characters when we
 	// TODO fix the char widths calculations.
 	case 0x45:		macronChar=0x03aa;	break;	// Emacron
@@ -1628,9 +1628,11 @@ Defun(insertMacronData)
 	case 0x69:		macronChar=0x03ef;	break;	// imacron
 	case 0x6f:		macronChar=0x03f2;	break;	// omacron
 	case 0x75:		macronChar=0x03fe;	break;	// umacron
-#endif
 
 	default:
+#else
+	{
+#endif
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return UT_FALSE;
 	}
@@ -1652,9 +1654,9 @@ Defun(insertBreveData)
 	
 	UT_ASSERT(pCallData->m_dataLength==1);
 	UT_UCSChar breveChar = 0x0000;
+#if 0
 	switch (pCallData->m_pData[0])
 	{
-#if 0
 	// TODO add these Latin-[23] characters when we
 	// TODO fix the char widths calculations.
 	case 0x41:		breveChar=0x01c3;	break;	// Abreve
@@ -1664,9 +1666,11 @@ Defun(insertBreveData)
 	case 0x61:		breveChar=0x01e3;	break;	// abreve
 	case 0x67:		breveChar=0x02bb;	break;	// gbreve
 	case 0x75:		breveChar=0x02fd;	break;	// ubreve
-#endif
 
 	default:
+#else
+	{
+#endif
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return UT_FALSE;
 	}
@@ -1688,9 +1692,9 @@ Defun(insertAbovedotData)
 	
 	UT_ASSERT(pCallData->m_dataLength==1);
 	UT_UCSChar abovedotChar = 0x0000;
+#if 0
 	switch (pCallData->m_pData[0])
 	{
-#if 0
 	// TODO add these Latin-[234] characters when we
 	// TODO fix the char widths calculations.
 	case 0x5a:		abovedotChar=0x01af;	break;	// Zabovedot
@@ -1704,9 +1708,11 @@ Defun(insertAbovedotData)
 	case 0x63:		abovedotChar=0x02e5;	break;	// cabovedot
 	case 0x67:		abovedotChar=0x02f5;	break;	// gabovedot
 	case 0x65:		abovedotChar=0x03ec;	break;	// eabovedot
-#endif
 
 	default:
+#else
+	{
+#endif
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return UT_FALSE;
 	}
@@ -1765,9 +1771,9 @@ Defun(insertDoubleacuteData)
 	
 	UT_ASSERT(pCallData->m_dataLength==1);
 	UT_UCSChar doubleacuteChar = 0x0000;
+#if 0
 	switch (pCallData->m_pData[0])
 	{
-#if 0
 	// TODO add these Latin-2 characters when we
 	// TODO fix the char widths calculations.
 	case 0x4f:		doubleacuteChar=0x01d5;	break;	// Odoubleacute
@@ -1775,9 +1781,11 @@ Defun(insertDoubleacuteData)
 
 	case 0x6f:		doubleacuteChar=0x01f5;	break;	// odoubleacute
 	case 0x75:		doubleacuteChar=0x01fb;	break;	// udoubleacute
-#endif
 
 	default:
+#else
+	{
+#endif
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return UT_FALSE;
 	}
@@ -1799,9 +1807,9 @@ Defun(insertCaronData)
 	
 	UT_ASSERT(pCallData->m_dataLength==1);
 	UT_UCSChar caronChar = 0x0000;
+#if 0
 	switch (pCallData->m_pData[0])
 	{
-#if 0
 	// TODO add these Latin-2 characters when we
 	// TODO fix the char widths calculations.
 	case 0x4c:		caronChar=0x01a5;	break;	// Lcaron
@@ -1823,9 +1831,11 @@ Defun(insertCaronData)
 	case 0x64:		caronChar=0x01ef;	break;	// dcaron
 	case 0x6e:		caronChar=0x01f2;	break;	// ncaron
 	case 0x72:		caronChar=0x01f8;	break;	// rcaron
-#endif
 
 	default:
+#else
+	{
+#endif
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return UT_FALSE;
 	}
@@ -1894,9 +1904,9 @@ Defun(insertOgonekData)
 	
 	UT_ASSERT(pCallData->m_dataLength==1);
 	UT_UCSChar ogonekChar = 0x0000;
+#if 0
 	switch (pCallData->m_pData[0])
 	{
-#if 0
 	// TODO add these Latin-[24] characters when we
 	// TODO fix the char widths calculations.
 	case 0x41:		ogonekChar=0x01a1;	break;	// Aogonek
@@ -1908,9 +1918,11 @@ Defun(insertOgonekData)
 	case 0x61:		ogonekChar=0x01ea;	break;	// aogonek
 	case 0x69:		ogonekChar=0x03e7;	break;	// iogonek
 	case 0x75:		ogonekChar=0x03f9;	break;	// uogonek
-#endif
 
 	default:
+#else
+	{
+#endif
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return UT_FALSE;
 	}
