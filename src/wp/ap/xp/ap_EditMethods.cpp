@@ -302,6 +302,8 @@ public:
 	static EV_EditMethod_Fn toggleUline;
 	static EV_EditMethod_Fn toggleOline;
 	static EV_EditMethod_Fn toggleStrike;
+	static EV_EditMethod_Fn toggleTopline;
+	static EV_EditMethod_Fn toggleBottomline;
 	static EV_EditMethod_Fn toggleSuper;
 	static EV_EditMethod_Fn toggleSub;
 	static EV_EditMethod_Fn togglePlain;
@@ -765,6 +767,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	// t
 	EV_EditMethod(NF(toggleAutoSpell), 0, ""),
 	EV_EditMethod(NF(toggleBold),			0,		""),
+	EV_EditMethod(NF(toggleBottomline),		0,		""),
 #ifdef BIDI_ENABLED
 	EV_EditMethod(NF(toggleDirOverrideLTR),		0,		""),
 	EV_EditMethod(NF(toggleDirOverrideRTL),		0,		""),
@@ -778,6 +781,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(toggleStrike),			0,		""),
 	EV_EditMethod(NF(toggleSub),			0,		""),
 	EV_EditMethod(NF(toggleSuper),			0,		""),
+	EV_EditMethod(NF(toggleTopline),   		0,		""),
 	EV_EditMethod(NF(toggleUline),			0,		""),
 	EV_EditMethod(NF(toggleUnIndent), 0, ""),
 	EV_EditMethod(NF(toolbarNew), 0, ""),
@@ -3861,14 +3865,18 @@ static bool s_doFontDlg(FV_View * pView)
 		bool bUnderline = false;
 		bool bOverline = false;
 		bool bStrikeOut = false;
+		bool bTopLine = false;
+		bool bBottomLine = false;
 		const XML_Char * s = UT_getAttribute("text-decoration", props_in);
 		if (s)
 		{
 			bUnderline = (strstr(s, "underline") != NULL);
 			bOverline = (strstr(s, "overline") != NULL);
 			bStrikeOut = (strstr(s, "line-through") != NULL);
+			bTopLine = (strstr(s, "topline") != NULL);
+			bBottomLine = (strstr(s, "bottomline") != NULL);
 		}
-		pDialog->setFontDecoration(bUnderline,bOverline,bStrikeOut);
+		pDialog->setFontDecoration(bUnderline,bOverline,bStrikeOut,bTopLine,bBottomLine);
 /*
 #ifdef BIDI_ENABLED
 		bool bDirection;
@@ -3939,34 +3947,36 @@ static bool s_doFontDlg(FV_View * pView)
 		bool bChangedOverline = pDialog->getChangedOverline(&bOverline);
 		bool bStrikeOut = false;
 		bool bChangedStrikeOut = pDialog->getChangedStrikeOut(&bStrikeOut);
+		bool bTopline = false;
+		bool bChangedTopline = pDialog->getChangedTopline(&bTopline);
+		bool bBottomline = false;
+		bool bChangedBottomline = pDialog->getChangedBottomline(&bBottomline);
 /*
 #ifdef BIDI_ENABLED
 		bool bDirection = false;
 		bool bChangedDirection = pDialog->getChangedDirection(&bDirection);
 #endif
 */
-
-		if (bChangedUnderline || bChangedStrikeOut || bChangedOverline)
+		UT_String decors;
+		static XML_Char sstr[50];
+		if (bChangedUnderline || bChangedStrikeOut || bChangedOverline || bChangedTopline || bChangedBottomline)
 		{
-			if (bUnderline && bStrikeOut && bOverline)
-				s = "underline line-through overline";
-			else if (bUnderline && bOverline)
-				s = "underline overline";
-			else if (bStrikeOut && bOverline)
-				s = "line-through overline";
-			else if (bStrikeOut && bUnderline)
-				s = "line-through underline";
-			else if (bStrikeOut)
-				s = "line-through";
-			else if (bUnderline)
-				s = "underline";
-			else if (bOverline)
-				s = "overline";
-			else
-				s = "none";
-
+			decors.clear();
+			if(bUnderline)
+				decors += "underline ";
+			if(bStrikeOut)
+				decors += "line-through ";
+			if(bOverline)
+				decors += "overline ";
+			if(bTopline)
+				decors += "topline ";
+			if(bBottomline)
+				decors += "bottomline ";
+			if(!bUnderline && !bStrikeOut && !bOverline && !bTopline && !bBottomline)
+				decors = "none";
+			sprintf(sstr,"%s",decors.c_str());
 			props_out[k++] = "text-decoration";
-			props_out[k++] = s;
+			props_out[k++] = (const XML_Char *) sstr;
 		}
 /*
 #ifdef BIDI_ENABLED
@@ -5860,6 +5870,20 @@ Defun1(toggleStrike)
 {
 	ABIWORD_VIEW;
 	return _toggleSpan(pView, "text-decoration", "line-through", "none", true);
+}
+
+
+Defun1(toggleTopline)
+{
+	ABIWORD_VIEW;
+	return _toggleSpan(pView, "text-decoration", "topline", "none", true);
+}
+
+
+Defun1(toggleBottomline)
+{
+	ABIWORD_VIEW;
+	return _toggleSpan(pView, "text-decoration", "bottomline", "none", true);
 }
 
 // MSWord defines this to 1/2 an inch, so we do too

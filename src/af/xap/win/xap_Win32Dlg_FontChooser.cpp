@@ -198,7 +198,7 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 		m_bChangedUnderline = ((lf.lfUnderline == TRUE) != m_bUnderline);
 		m_bChangedStrikeOut = ((lf.lfStrikeOut == TRUE) != m_bStrikeout);
 		if (m_bChangedUnderline || m_bChangedStrikeOut)
-			setFontDecoration( (lf.lfUnderline == TRUE), false, (lf.lfStrikeOut == TRUE) );
+			setFontDecoration( (lf.lfUnderline == TRUE), false, (lf.lfStrikeOut == TRUE), false,false );
 	}
 	
 	UT_DEBUGMSG(("FontChooserEnd: Family[%s%s] Size[%s%s] Weight[%s%s] Style[%s%s] Color[%s%s] Underline[%d%s] StrikeOut[%d%s]\n",

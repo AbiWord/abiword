@@ -23,7 +23,7 @@
 #include "ut_string.h"
 #include "ut_debugmsg.h"
 #include "xap_Dlg_FontChooser.h"
-
+#include "ut_string_class.h"
 /*****************************************************************/
 
 XAP_Dialog_FontChooser::XAP_Dialog_FontChooser(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
@@ -42,6 +42,8 @@ XAP_Dialog_FontChooser::XAP_Dialog_FontChooser(XAP_DialogFactory * pDlgFactory, 
 	m_bUnderline			= false;
 	m_bOverline				= false;
 	m_bStrikeout			= false;
+	m_bTopline		    	= false;
+	m_bBottomline			= false;
 	m_bChangedFontFamily	= false;
 	m_bChangedFontSize		= false;
 	m_bChangedFontWeight	= false;
@@ -51,6 +53,8 @@ XAP_Dialog_FontChooser::XAP_Dialog_FontChooser(XAP_DialogFactory * pDlgFactory, 
 	m_bChangedUnderline		= false;
 	m_bChangedOverline		= false;
 	m_bChangedStrikeOut		= false;
+	m_bChangedTopline		= false;
+	m_bChangedBottomline   	= false;
 	if(m_vecProps.getItemCount() > 0)
 		m_vecProps.clear();
 }
@@ -183,6 +187,8 @@ void XAP_Dialog_FontChooser::setAllPropsFromVec(UT_Vector * vProps)
 	m_bUnderline = (NULL != strstr(s,"underline"));
 	m_bOverline = (NULL != strstr(s,"overline"));
 	m_bStrikeout = (NULL != strstr(s,"line-through"));
+	m_bTopline = (NULL != strstr(s,"topline"));
+	m_bBottomline = (NULL != strstr(s,"bottomline"));
 }
 
 void XAP_Dialog_FontChooser::setFontFamily(const XML_Char * pFontFamily)
@@ -226,29 +232,31 @@ void XAP_Dialog_FontChooser::setBackGroundColor(const XML_Char * pBackground)
 	m_pColorBackground = pBackground;
 }
 
-void XAP_Dialog_FontChooser::setFontDecoration(bool bUnderline, bool bOverline, bool bStrikeOut)
+void XAP_Dialog_FontChooser::setFontDecoration(bool bUnderline, bool bOverline, bool bStrikeOut, bool bTopline, bool bBottomline)
 {
 	m_bUnderline = bUnderline;
 	m_bOverline = bOverline;
 	m_bStrikeout = bStrikeOut;
-	const XML_Char * s = NULL;
-	if (bUnderline && bStrikeOut && bOverline)
-		s = "underline line-through overline";
-	else if (bUnderline && bOverline)
-		s = "underline overline";
-	else if (bStrikeOut && bOverline)
-		s = "line-through overline";
-	else if (bStrikeOut && bUnderline)
-		s = "line-through underline";
-	else if (bStrikeOut)
-		s = "line-through";
-	else if (bUnderline)
-		s = "underline";
-	else if (bOverline)
-		s = "overline";
-	else
-		s = "none";
-	addOrReplaceVecProp("text-decoration",s);
+	m_bTopline = bTopline;
+	m_bBottomline = bBottomline;
+
+	static XML_Char s[50];
+	UT_String decors;
+	decors.clear();
+	if(bUnderline)
+		decors += "underline ";
+	if(bStrikeOut)
+		decors += "line-through ";
+	if(bOverline)
+		decors += "overline ";
+	if(bTopline)
+		decors += "topline ";
+	if(bBottomline)
+		decors += "bottomline ";
+	if(!bUnderline && !bStrikeOut && !bOverline && !bTopline && !bBottomline)
+		decors = "none";
+	sprintf(s,"%s",decors.c_str());
+	addOrReplaceVecProp("text-decoration",(const XML_Char *) s);
 }
 
 XAP_Dialog_FontChooser::tAnswer XAP_Dialog_FontChooser::getAnswer(void) const
@@ -354,6 +362,20 @@ bool XAP_Dialog_FontChooser::getChangedStrikeOut(bool * pbStrikeOut) const
 	if (pbStrikeOut)
 		*pbStrikeOut = m_bStrikeout;
 	return m_bChangedStrikeOut;
+}
+
+bool XAP_Dialog_FontChooser::getChangedTopline(bool * pbTopline) const
+{
+	if (pbTopline)
+		*pbTopline = m_bTopline;
+	return m_bChangedTopline;
+}
+
+bool XAP_Dialog_FontChooser::getChangedBottomline(bool * pbBottomline) const
+{
+	if (pbBottomline)
+		*pbBottomline = m_bBottomline;
+	return m_bChangedBottomline;
 }
 
 /////////////////////////////////////////////////////////////////////////

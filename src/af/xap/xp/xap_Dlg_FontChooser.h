@@ -72,7 +72,7 @@ public:
 	void							setFontStyle(const XML_Char * pFontStyle);
 	void							setColor(const XML_Char * pColor);
 	void							setBGColor(const XML_Char * pBGColor);
-	void							setFontDecoration(bool bUnderline, bool bOverline, bool bStrikeOut);
+	void							setFontDecoration(bool bUnderline, bool bOverline, bool bStrikeOut, bool bTopline, bool bBottomline);
 	void                            setBackGroundColor (const XML_Char * pBackGroundColor);
 
 	
@@ -100,6 +100,8 @@ public:
 	bool							getChangedUnderline(bool * pbUnderline) const;
 	bool							getChangedOverline(bool * pbOverline) const;
 	bool							getChangedStrikeOut(bool * pbStrikeOut) const;
+	bool							getChangedTopline(bool * pbTopline) const;
+	bool							getChangedBottomline(bool * pbBottomline) const;
 /*
 #ifdef BIDI_ENABLED
 	bool                         	getChangedDirection(bool * pbDirection) const;
@@ -129,6 +131,8 @@ protected:
 	bool							m_bUnderline;			/* input/output */
 	bool							m_bOverline;			/* input/output */
 	bool							m_bStrikeout;			/* input/output */
+	bool							m_bTopline;		 	    /* input/output */
+	bool							m_bBottomline;			/* input/output */
 
 	UT_Vector                       m_vecProps; // Holds the current
 /*
@@ -145,8 +149,10 @@ protected:
 	bool							m_bChangedColor;		/* output */
 	bool							m_bChangedBGColor;		/* output */
 	bool							m_bChangedUnderline;	/* output */
-	bool							m_bChangedOverline;	/* output */
+	bool							m_bChangedOverline;	    /* output */
 	bool							m_bChangedStrikeOut;	/* output */
+	bool							m_bChangedTopline;	    /* output */
+	bool							m_bChangedBottomline;	/* output */
 /*
 #ifdef BIDI_ENABLED
 	bool							m_bChangedDirection;

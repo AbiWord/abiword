@@ -117,6 +117,8 @@ BeginSet(en,US,true)
 	MenuLabel(AP_MENU_ID_FMT_UNDERLINE,		"&Underline",		"Underline the selection (toggle)")
 	MenuLabel(AP_MENU_ID_FMT_OVERLINE,		"&Overline",		"Overline the selection (toggle)")
 	MenuLabel(AP_MENU_ID_FMT_STRIKE,		"Stri&ke",			"Strikeout the selection (toggle)")
+	MenuLabel(AP_MENU_ID_FMT_TOPLINE,		"Topline",			"Line above the selection (toggle)")
+	MenuLabel(AP_MENU_ID_FMT_BOTTOMLINE,	"Bottomline",		"Line below the selection (toggle)")
 	MenuLabel(AP_MENU_ID_FMT_SUPERSCRIPT,	"Supe&rscript",		"Make the selection superscript (toggle)")
 	MenuLabel(AP_MENU_ID_FMT_SUBSCRIPT,		"&Subscript",		"Make the selection subscript (toggle)")
 

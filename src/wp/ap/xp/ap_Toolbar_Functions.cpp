@@ -249,6 +249,20 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_CharFmt)
 		bMultiple = true;
 		break;
 
+
+	case AP_TOOLBAR_ID_FMT_TOPLINE:
+		prop = "text-decoration";
+		val  = "topline";
+		bMultiple = true;
+		break;
+
+
+	case AP_TOOLBAR_ID_FMT_BOTTOMLINE:
+		prop = "text-decoration";
+		val  = "bottomline";
+		bMultiple = true;
+		break;
+
 	case AP_TOOLBAR_ID_FMT_SUPERSCRIPT:
 		prop = "text-position";
 		val  = "superscript";

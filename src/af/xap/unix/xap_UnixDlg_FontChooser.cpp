@@ -287,7 +287,7 @@ void XAP_UnixDialog_FontChooser::underlineChanged(void)
 {
 	m_bUnderline = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_checkUnderline));
 	m_bChangedUnderline = !m_bChangedUnderline;
-	setFontDecoration(m_bUnderline,m_bOverline,m_bStrikeout);
+	setFontDecoration(m_bUnderline,m_bOverline,m_bStrikeout,m_bTopline,m_bBottomline);
 	updatePreview();
 }
 
@@ -296,7 +296,7 @@ void XAP_UnixDialog_FontChooser::strikeoutChanged(void)
 {
 	m_bStrikeout = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_checkStrikeOut));
 	m_bChangedStrikeOut = !m_bChangedStrikeOut;
-	setFontDecoration(m_bUnderline,m_bOverline,m_bStrikeout);
+	setFontDecoration(m_bUnderline,m_bOverline,m_bStrikeout,m_bTopline,m_bBottomline);
 	updatePreview();
 }
 
@@ -305,7 +305,7 @@ void XAP_UnixDialog_FontChooser::overlineChanged(void)
 {
 	m_bOverline = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_checkOverline));
 	m_bChangedOverline = !m_bChangedOverline;
-	setFontDecoration(m_bUnderline,m_bOverline,m_bStrikeout);
+	setFontDecoration(m_bUnderline,m_bOverline,m_bStrikeout,m_bTopline,m_bBottomline);
 	updatePreview();
 }
 

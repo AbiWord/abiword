@@ -69,6 +69,8 @@ BeginSet(en,US,true)
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_UNDERLINE,	"Underline",	tb_text_underline_xpm,	NULL, "Underline")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_OVERLINE,	"Overline",		tb_text_overline_xpm,	NULL, "Overline")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_STRIKE,		"Strike",		tb_text_strikeout_xpm,	NULL, "Strikeout")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_TOPLINE,		"Topline",		tb_text_topline_xpm,	NULL, "Topline")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_BOTTOMLINE,		"Bottomline",		tb_text_bottomline_xpm,	NULL, "Bottomline")
 	ToolbarLabel(AP_TOOLBAR_ID_HELP,			"Help",			tb_help_xpm,			NULL, "Help")
 
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUPERSCRIPT,	"Superscript",	tb_text_superscript_xpm,	NULL, "Superscript")

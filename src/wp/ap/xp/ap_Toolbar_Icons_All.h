@@ -47,6 +47,8 @@
 #	include "tb_text_strikeout.xpm"
 #	include "tb_text_underline.xpm"
 #	include "tb_text_overline.xpm"
+#	include "tb_text_topline.xpm"
+#	include "tb_text_bottomline.xpm"
 #	include "tb_text_superscript.xpm"
 #	include "tb_text_subscript.xpm"
 #	include "tb_help.xpm"
@@ -138,6 +140,8 @@
 	DefineToolbarIcon(tb_text_font_xpm)
 	DefineToolbarIcon(tb_text_italic_xpm)
 	DefineToolbarIcon(tb_text_strikeout_xpm)
+	DefineToolbarIcon(tb_text_topline_xpm)
+	DefineToolbarIcon(tb_text_bottomline_xpm)
 	DefineToolbarIcon(tb_text_underline_xpm)
 	DefineToolbarIcon(tb_text_overline_xpm)
 	DefineToolbarIcon(tb_text_superscript_xpm)	

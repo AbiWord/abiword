@@ -29,6 +29,8 @@ BeginLayout(ExtraOps)
 
 	ToolbarItem(AP_TOOLBAR_ID_FMT_OVERLINE)
 	ToolbarItem(AP_TOOLBAR_ID_FMT_STRIKE)
+	ToolbarItem(AP_TOOLBAR_ID_FMT_TOPLINE)
+	ToolbarItem(AP_TOOLBAR_ID_FMT_BOTTOMLINE)
 
 	Spacer()
 	ToolbarItem(AP_TOOLBAR_ID_FMT_SUPERSCRIPT)

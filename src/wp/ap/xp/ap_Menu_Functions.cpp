@@ -631,6 +631,18 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_CharFmt)
 		val  = "line-through";
 		bMultiple = true;
 		break;
+
+	case AP_MENU_ID_FMT_TOPLINE:
+		prop = "text-decoration";
+		val  = "topline";
+		bMultiple = true;
+		break;
+
+	case AP_MENU_ID_FMT_BOTTOMLINE:
+		prop = "text-decoration";
+		val  = "bottomline";
+		bMultiple = true;
+		break;
 	case AP_MENU_ID_FMT_SUPERSCRIPT:
 		prop = "text-position";
 		val  = "superscript";

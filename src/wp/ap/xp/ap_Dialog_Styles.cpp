@@ -348,14 +348,18 @@ void AP_Dialog_Styles::ModifyFont(void)
 	bool bUnderline = false;
 	bool bOverline = false;
 	bool bStrikeOut = false;
+	bool bTopline = false;
+	bool bBottomline = false;
 	const XML_Char * s = getPropsVal("text-decoration");
 	if (s)
 	{
 		bUnderline = (strstr(s, "underline") != NULL);
 		bOverline = (strstr(s, "overline") != NULL);
 		bStrikeOut = (strstr(s, "line-through") != NULL);
+		bTopline = (strstr(s, "topline") != NULL);
+		bBottomline = (strstr(s, "bottomline") != NULL);
 	}
-	pDialog->setFontDecoration(bUnderline,bOverline,bStrikeOut);
+	pDialog->setFontDecoration(bUnderline,bOverline,bStrikeOut,bTopline,bBottomline);
 /*
 #ifdef BIDI_ENABLED
     bool bDirection;
@@ -416,6 +420,10 @@ void AP_Dialog_Styles::ModifyFont(void)
 		bool bChangedOverline = pDialog->getChangedOverline(&bOverline);
 		bool bStrikeOut = false;
 		bool bChangedStrikeOut = pDialog->getChangedStrikeOut(&bStrikeOut);
+		bool bTopline = false;
+		bool bChangedTopline = pDialog->getChangedTopline(&bTopline);
+		bool bBottomline = false;
+		bool bChangedBottomline = pDialog->getChangedBottomline(&bBottomline);
 /*
 #ifdef BIDI_ENABLED
 		bool bDirection = false;
@@ -423,25 +431,24 @@ void AP_Dialog_Styles::ModifyFont(void)
 #endif
 */
 
-		if (bChangedUnderline || bChangedStrikeOut || bChangedOverline)
+		if (bChangedUnderline || bChangedStrikeOut || bChangedOverline || bChangedTopline || bChangedBottomline)
 		{
-			if (bUnderline && bStrikeOut && bOverline)
-				s = "underline line-through overline";
-			else if (bUnderline && bOverline)
-				s = "underline overline";
-			else if (bStrikeOut && bOverline)
-				s = "line-through overline";
-			else if (bStrikeOut && bUnderline)
-				s = "line-through underline";
-			else if (bStrikeOut)
-				s = "line-through";
-			else if (bUnderline)
-				s = "underline";
-			else if (bOverline)
-				s = "overline";
-			else
-				s = "none";
-
+			UT_String decors;
+			static XML_Char s[50];
+			decors.clear();
+			if(bUnderline)
+				decors += "underline ";
+			if(bStrikeOut)
+				decors += "line-through ";
+			if(bOverline)
+				decors += "overline ";
+			if(bTopline)
+				decors += "topline ";
+			if(bBottomline)
+				decors += "bottomline ";
+			if(!bUnderline && !bStrikeOut && !bOverline && !bTopline && !bBottomline)
+				decors = "none";
+			sprintf(s,"%s",decors.c_str());
 			addOrReplaceVecProp("text-decoration", s);
 		}
 /*

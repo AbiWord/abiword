@@ -182,6 +182,8 @@ public:
     bool			        isUnderline(void) const ;
 	bool			        isOverline(void) const ;
 	bool			        isStrikethrough(void) const ;
+	bool			        isTopline(void) const ;
+	bool			        isBottomline(void) const ;
 	void			        setLinethickness(UT_sint32 max_linethickness);
     UT_sint32		        getLinethickness(void) ;
 	void			        setUnderlineXoff(UT_sint32 xoff);
@@ -192,6 +194,7 @@ public:
 	UT_sint32		        getMaxUnderline(void) ;
 	void			        setMinOverline(UT_sint32 xoff) ;
 	UT_sint32		        getMinOverline(void) ;
+	UT_sint32               getToplineThickness(void);
 
 #ifdef BIDI_ENABLED
 	UT_sint32		inline getDirection(){return m_iDirection; };
@@ -250,8 +253,10 @@ protected:
 	enum
 	{
 		TEXT_DECOR_UNDERLINE = 		0x01,
-		TEXT_DECOR_OVERLINE = 		0x10,
-		TEXT_DECOR_LINETHROUGH = 	0x04
+		TEXT_DECOR_OVERLINE = 		0x02,
+		TEXT_DECOR_LINETHROUGH = 	0x04,
+		TEXT_DECOR_TOPLINE = 	    0x08,
+		TEXT_DECOR_BOTTOMLINE = 	0x10
 	};
 
 	unsigned char			                m_fDecorations;

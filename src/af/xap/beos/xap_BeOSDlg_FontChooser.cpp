@@ -222,7 +222,7 @@ void FontWin::MessageReceived(BMessage *msg)
 			m_FontChooser->getChangedOverline(&overline);
 			m_FontChooser->getChangedStrikeOut(&strikeout);
 
-			m_FontChooser->setFontDecoration(!underline,overline,strikeout);
+			m_FontChooser->setFontDecoration(!underline,overline,strikeout,false,false);
 
 			UpdatePreview();
 		}
@@ -240,7 +240,7 @@ void FontWin::MessageReceived(BMessage *msg)
 			m_FontChooser->getChangedOverline(&overline);
 			m_FontChooser->getChangedStrikeOut(&strikeout);
 			
-			m_FontChooser->setFontDecoration(underline,overline,!strikeout);
+			m_FontChooser->setFontDecoration(underline,overline,!strikeout,false,false);
 			
 			UpdatePreview();
 		}

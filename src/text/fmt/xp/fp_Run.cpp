@@ -518,7 +518,7 @@ drawn.
      */
 	
 	if( (m_fDecorations & (TEXT_DECOR_UNDERLINE | TEXT_DECOR_OVERLINE |
-			TEXT_DECOR_LINETHROUGH)) == 0)
+			TEXT_DECOR_LINETHROUGH | TEXT_DECOR_TOPLINE | TEXT_DECOR_BOTTOMLINE)) == 0)
 	{
 		return;
 	}
@@ -531,6 +531,8 @@ drawn.
 	const bool b_Underline = isUnderline();
 	const bool b_Overline = isOverline();
 	const bool b_Strikethrough = isStrikethrough();
+	const bool b_Topline = isTopline();
+	const bool b_Bottomline = isBottomline();
 	const bool b_Firstrun = (P_Run == NULL) || (getLine()->getFirstRun()== this);
 	const bool b_Lastrun = (N_Run == NULL) || (getLine()->getLastRun()== this);
 
@@ -671,6 +673,38 @@ text so we can keep the original code.
 	*/
 	m_iLineWidth = old_LineWidth;
 	m_pG->setLineWidth(m_iLineWidth);
+	if(!b_Topline && !b_Bottomline)
+		return;
+	/*
+	  We always draw Topline right at the top of the line so there is no ambiguity
+	*/
+	UT_sint32 ithick = getToplineThickness();
+
+	UT_RGBColor clrFG;
+	const PP_AttrProp * pSpanAP = NULL;
+	const PP_AttrProp * pBlockAP = NULL;
+	const PP_AttrProp * pSectionAP = NULL;
+
+	PD_Document * pDoc = m_pBL->getDocument();
+	m_pBL->getSpanAttrProp(m_iOffsetFirst,false,&pSpanAP);
+	m_pBL->getAttrProp(&pBlockAP);
+	UT_parseColor(PP_evalProperty("color",pSpanAP,pBlockAP, pSectionAP, pDoc, true), clrFG);
+	// This gives the baseline of the selection.
+	// need to clear full height of line, in case we had a selection
+	UT_sint32 xxoff=0 ,ybase =0;
+	m_pLine->getScreenOffsets(this, xxoff, ybase);
+
+	if ( b_Topline)
+	{
+		m_pG->fillRect(clrFG, xoff, ybase, getWidth(), ithick);
+	}
+	/*
+	  We always draw bottomline right at the bottom so there is no ambiguity
+	*/
+	if ( b_Bottomline)
+	{
+		m_pG->fillRect(clrFG, xoff, ybase+getLine()->getHeight()-ithick, getWidth(), ithick);
+	}
 }
 
 
@@ -688,6 +722,18 @@ inline bool fp_Run::isOverline(void) const
 inline bool fp_Run::isStrikethrough(void) const
 {
 	return ((m_fDecorations & TEXT_DECOR_LINETHROUGH) !=  0);
+}
+
+
+inline bool fp_Run::isTopline(void) const
+{
+	return ((m_fDecorations & TEXT_DECOR_TOPLINE) !=  0);
+}
+
+
+inline bool fp_Run::isBottomline(void) const
+{
+	return ((m_fDecorations & TEXT_DECOR_BOTTOMLINE) !=  0);
 }
 
 void fp_Run::setLinethickness(UT_sint32 max_linethickness)
@@ -740,6 +786,10 @@ UT_sint32 fp_Run::getLinethickness( void)
 	return m_iLinethickness;
 }
 
+UT_sint32 fp_Run::getToplineThickness(void)
+{
+	return m_pG->convertDimension("0.8pt");
+}
 
 /*!
  * This draws a line with some text in the center.   
@@ -828,7 +878,7 @@ void fp_TabRun::lookupProperties(void)
 // Lookup Decoration properties for this run
 //
 	const XML_Char *pszDecor = PP_evalProperty("text-decoration",pSpanAP,pBlockAP,pSectionAP,  m_pBL->getDocument(), true);
-	m_iLineWidth = m_pG->convertDimension("0.8pt");
+	m_iLineWidth = getToplineThickness();
 	m_fDecorations = 0;
 	XML_Char* p;
 	if (!UT_cloneString((char *&)p, pszDecor))
@@ -851,6 +901,14 @@ void fp_TabRun::lookupProperties(void)
 		else if (0 == UT_strcmp(q, "line-through"))
 		{
 			m_fDecorations |= TEXT_DECOR_LINETHROUGH;
+		}
+		else if (0 == UT_strcmp(q, "topline"))
+		{
+			m_fDecorations |= TEXT_DECOR_TOPLINE;
+		}
+		else if (0 == UT_strcmp(q, "bottomline"))
+		{
+			m_fDecorations |= TEXT_DECOR_BOTTOMLINE;
 		}
 		q = strtok(NULL, " ");
 	}
@@ -1143,7 +1201,7 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 //
 // Scale the vertical line thickness for printers
 //
-		UT_sint32 ithick = 1+ (UT_MAX(10,getAscent())-10)/8;
+		UT_sint32 ithick =  getToplineThickness();
 		m_pG->fillRect(clrFG, pDA->xoff+getWidth()-ithick, iFillTop, ithick, iFillHeight);
 	}
 }
@@ -1957,7 +2015,7 @@ void fp_FieldRun::lookupProperties(void)
 // Lookup Decoration properties for this run
 //
 	const XML_Char *pszDecor = PP_evalProperty("text-decoration",pSpanAP,pBlockAP,pSectionAP,  m_pBL->getDocument(), true);
-	m_iLineWidth = m_pG->convertDimension("0.8pt");
+	m_iLineWidth = getToplineThickness();
 	m_fDecorations = 0;
 	XML_Char* p;
 	if (!UT_cloneString((char *&)p, pszDecor))
@@ -1980,6 +2038,14 @@ void fp_FieldRun::lookupProperties(void)
 		else if (0 == UT_strcmp(q, "line-through"))
 		{
 			m_fDecorations |= TEXT_DECOR_LINETHROUGH;
+		}
+		else if (0 == UT_strcmp(q, "topline"))
+		{
+			m_fDecorations |= TEXT_DECOR_TOPLINE;
+		}
+		else if (0 == UT_strcmp(q, "bottomline"))
+		{
+			m_fDecorations |= TEXT_DECOR_BOTTOMLINE;
 		}
 		q = strtok(NULL, " ");
 	}

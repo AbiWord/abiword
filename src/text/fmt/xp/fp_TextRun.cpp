@@ -164,7 +164,14 @@ void fp_TextRun::lookupProperties(void)
 		{
 			m_fDecorations |= TEXT_DECOR_LINETHROUGH;
 		}
-
+		else if (0 == UT_strcmp(q, "topline"))
+		{
+			m_fDecorations |= TEXT_DECOR_TOPLINE;
+		}
+		else if (0 == UT_strcmp(q, "bottomline"))
+		{
+			m_fDecorations |= TEXT_DECOR_BOTTOMLINE;
+		}
 		q = strtok(NULL, " ");
 	}
 
