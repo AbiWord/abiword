@@ -215,7 +215,7 @@ UT_Error IE_Imp_RTF::importFile(const char * szFilename)
 	}
 	
 	UT_Error error = _writeHeader(fp);
-	if (error)
+	if (!error)
 	{
 		error = _parseFile(fp);
 	}
