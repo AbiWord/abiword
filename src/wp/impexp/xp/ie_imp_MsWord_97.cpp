@@ -1027,7 +1027,7 @@ bool	IE_Imp_MsWord_97::GetDlgLabels(const char ** pszDesc,
 				       IEFileType * ft)
 {
 	*pszDesc = "Microsoft Word (.doc, .dot)";
-	*pszSuffixList = "*.doc, *.dot";
+	*pszSuffixList = "*.doc; *.dot";
 	*ft = IEFT_MsWord_97;
 	return true;
 }
