@@ -229,6 +229,14 @@ PtWidget_t *PtButton_cancel;
 
 	//Add existing bookmarks to the list.
  XML_Char ** pBookmarks = (XML_Char **)calloc(getExistingBookmarksCount(),sizeof(XML_Char*));
+	if(getHyperlink())
+	{
+	int start,end;
+	start=0;	
+	end=1000;
+		PtSetResource(mSelectedBookmark,Pt_ARG_TEXT_STRING,getHyperlink(),0);
+		PtTextSetSelection(mSelectedBookmark,&start,&end);
+	}
 	
   for (int i = 0; i < (int)getExistingBookmarksCount(); i++)
    pBookmarks[i] =(XML_Char *) getNthExistingBookmark(i);
