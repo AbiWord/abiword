@@ -105,7 +105,7 @@ UT_Confidence_t IE_Imp_AbiWord_1_Sniffer::recognizeContents (const char * szBuf,
 	p = szBuf ;
 	while( iLinesToRead-- )
 	{
-		magic = "<abiword " ;
+		magic = "<abiword" ;
 		if ( (iNumbytes - iBytesScanned) < strlen(magic) ) return(UT_CONFIDENCE_ZILCH);
 		if ( strncmp(p, magic, strlen(magic)) == 0 ) return(UT_CONFIDENCE_PERFECT);
 
