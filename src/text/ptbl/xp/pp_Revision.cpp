@@ -633,7 +633,9 @@ const PP_Revision * PP_RevisionAttr::getLastRevision()
 		}
 	}
 
-	UT_ASSERT_HARMLESS( m_pLastRevision );
+	// UT_ASSERT_HARMLESS( m_pLastRevision );
+	// it is legal for this to be NULL -- it happens when the revision was pruned for
+	// cumulative effect and the last revision was a deletion.
 	return m_pLastRevision;
 }
 

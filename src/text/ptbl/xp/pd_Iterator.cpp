@@ -91,7 +91,8 @@ bool PD_DocIterator::_findFrag()
 			return true;
 		}
 
-		if(m_frag->getPos() < m_pos)
+		// the equal is here to allow for 0-length frags -- we will skip these over
+		if(m_frag->getPos() <= m_pos)
 		{
 			// keep going from here onwards
 			m_frag = m_frag->getNext();
@@ -145,7 +146,11 @@ bool PD_DocIterator::_findFrag()
 	{
 		// check that the position is not after the end of the
 		// document
-		if(m_frag->getPos() <= m_pos && m_frag->getPos() + m_frag->getLength() > m_pos)
+		// handle 0-length frags (i.e., skip them)
+		while(m_frag && !m_frag->getLength())
+			m_frag = m_frag->getNext();
+		
+		if(m_frag && m_frag->getPos() <= m_pos && m_frag->getPos() + m_frag->getLength() > m_pos)
 		{
 			// we have the correct fragment
 			m_status = UTIter_OK;
