@@ -34,9 +34,13 @@ public:
 	virtual void			runModal(XAP_Frame * pFrame);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
-	
+	static BOOL CALLBACK	s_dlgProc(HWND hWnd,UINT msg, WPARAM wParam, LPARAM lParam);	
 protected:
+	BOOL					_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
 
+private:
+	void					refreshStates(HWND hWnd);
 };
 
 #endif /* XAP_WIN32DIALOG_HTMLOPTIONS_H */

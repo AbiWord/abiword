@@ -39,6 +39,7 @@
 #define	XAP_RID_DIALOG_PLUGIN_MANAGER_DETAILS		109
 #define XAP_RID_DIALOG_PASSWORD						110
 #define XAP_RID_DIALOG_IMAGE						111
+#define XAP_RID_DIALOG_HTMLOPTIONS					112
 
 #include "xap_Win32Res_DlgWindowMore.rc2"
 #include "xap_Win32Res_DlgZoom.rc2"
@@ -50,5 +51,6 @@
 #include "xap_Win32Res_DlgPlugin.rc2"
 #include "xap_Win32Res_DlgPassword.rc2"
 #include "xap_Win32Res_DlgImage.rc2"
+#include "xap_Win32Res_DlgHTMLOptions.rc2"
 
 #include "xap_Win32Res_Cursors.rc2"
