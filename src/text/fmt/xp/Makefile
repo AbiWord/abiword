@@ -38,6 +38,7 @@ CPPSRCS=		fv_View.cpp			\
 			fl_FootnoteLayout.cpp           \
 			fl_AutoNum.cpp			\
 			fl_AutoLists.cpp		\
+			fl_SelectionPreserver.cpp	\
 			fl_TableLayout.cpp              \
 			fl_TestRoutines.cpp		\
 			fp_Column.cpp			\

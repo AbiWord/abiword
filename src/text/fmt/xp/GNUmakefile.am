@@ -41,6 +41,7 @@ libFmt_a_SOURCES= \
 	fl_AutoLists.cpp		\
 	fl_TestRoutines.cpp		\
 	fl_ContainerLayout.cpp		\
+	fl_SelectionPreserver.cpp	\
 	fp_Column.cpp			\
 	fp_Line.cpp			\
 	fp_Page.cpp			\
