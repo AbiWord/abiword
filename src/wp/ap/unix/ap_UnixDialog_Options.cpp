@@ -91,9 +91,12 @@ void AP_UnixDialog_Options::runModal(XAP_Frame * pFrame)
 	_populateWindowData();
 
 	// Don't destroy the dialog if the user pressed defaults or help
-	while (abiRunModalDialog (GTK_DIALOG (mainWindow), pFrame,
-				  this, GTK_RESPONSE_CLOSE, FALSE) != GTK_RESPONSE_CLOSE)
-		;
+	gint response;
+	do
+	{
+		response = abiRunModalDialog (GTK_DIALOG (mainWindow), pFrame,
+										this, GTK_RESPONSE_CLOSE, FALSE);
+	} while (response != GTK_RESPONSE_CLOSE && response != GTK_RESPONSE_DELETE_EVENT);
 
 	abiDestroyWidget (mainWindow);
 }
