@@ -12,16 +12,21 @@ typedef void (*UT_TimerCallback)(UT_Timer* pTimer);
 class UT_Timer
 {
 public:
-	UT_Timer(UT_TimerCallback p, void* pInstanceData);
-	virtual UT_sint32 set(UT_uint32 iMilliseconds) = 0;
-	void* getInstanceData();
+	UT_Timer();
+	
+	void setCallback(UT_TimerCallback p);
 	UT_TimerCallback getCallback();
-	void setIdentifier(UT_uint32);
-	UT_uint32 getIdentifier();
+	
+	void setInstanceData(void*);
+	void* getInstanceData();
+	
+	virtual UT_sint32 set(UT_uint32 iMilliseconds) = 0;
 	void fire();
 	
-	static UT_Timer* findTimer(UT_uint32 iIdentifier);
+	void setIdentifier(UT_uint32);
+	UT_uint32 getIdentifier();
 	
+	static UT_Timer* findTimer(UT_uint32 iIdentifier);
 	
 protected:
 	void* m_pInstanceData;

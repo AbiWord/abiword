@@ -2,13 +2,6 @@
 #include "ut_unixTimer.h"
 #include "ut_assert.h"
 
-/*
-  XtAppAddTimeOut looks like the way to do this.  It will
-  be necessary to add the app_context as an argument to the constructor
-  somehow, perhaps introducing the need for a factory method somewhere
-  so that platform-specific timers can be created from share code.
-*/
-
 UT_sint32 UT_UNIXTimer::set(UT_uint32 iMilliseconds)
 {
 	/*
