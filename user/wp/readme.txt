@@ -92,7 +92,7 @@ this situation have begun.
 
 ---- Legalese
 
-Copyright 1998,1999  AbiSource, Inc.
+Copyright 1998,1999,2000  AbiSource, Inc.
 All Rights Reserved
 
 This program is free software; you can redistribute it and/or
