@@ -121,8 +121,9 @@ InstallDirRegKey HKLM SOFTWARE\${APPSET}\${PRODUCT}\v${VERSION_MAJOR} "Install_D
     !define MUI_STARTMENUPAGE_DEFAULTFOLDER "$(SM_PRODUCT_GROUP)"
     !define MUI_STARTMENUPAGE_REGISTRY_ROOT HKLM
     !define MUI_STARTMENUPAGE_REGISTRY_KEY "Software\${APPSET}\${PRODUCT}\v${VERSION_MAJOR}"
-    !define MUI_STARTMENUPAGE_REGISTRY_VALUENAME "StartMenu Name"
-  !insertmacro MUI_PAGE_STARTMENU
+    !define MUI_STARTMENUPAGE_REGISTRY_VALUENAME "Start Menu Folder"
+    Var STARTMENU_FOLDER
+  !insertmacro MUI_PAGE_STARTMENU "Application" $STARTMENU_FOLDER
   ; allow insertion of our custom pages
   !define MUI_CUSTOMPAGECOMMANDS
   ; query user for download mirror to use (only if dl item was selected though)
@@ -179,9 +180,7 @@ InstallDirRegKey HKLM SOFTWARE\${APPSET}\${PRODUCT}\v${VERSION_MAJOR} "Install_D
 !ifdef RESERVE_PLUGINS
   ; Reserve Files to possibly aid in starting faster
   !insertmacro MUI_RESERVEFILE_LANGDLL
-  !insertmacro MUI_RESERVEFILE_INSTALLOPTIONS
-  !insertmacro MUI_RESERVEFILE_SPECIALINI
-  !insertmacro MUI_RESERVEFILE_SPECIALBITMAP
+  !insertmacro MUI_RESERVEFILE_INSTALLOPTIONS ;InstallOptions plug-in
 
   ; reserve room at start of compressed archive for plugins (not already reserved by Modern UI)
   ; ReserveFile [/nonfatal] [/r] file [file...]
@@ -405,11 +404,11 @@ Section "$(TITLE_section_abi_req)" section_abi_req
   
 	; Write the start menu entry (if user selected to do so)
 	!ifndef CLASSIC_UI
-	  !insertmacro MUI_STARTMENU_WRITE_BEGIN
+	  !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
 		;SetShellVarContext current|all???
-		${lngCreateSMGroup}  "$MUI_STARTMENU_FOLDER"
-		${lngCreateShortCut} "$SMPROGRAMS" "$MUI_STARTMENU_FOLDER" "$(SHORTCUT_NAME)" "$INSTDIR\${MAINPROGRAM}" "" "$INSTDIR\${MAINPROGRAM}" 0
-		${lngCreateShortCut} "$SMPROGRAMS" "$MUI_STARTMENU_FOLDER" "$(SHORTCUT_NAME_UNINSTALL)" "$INSTDIR\Uninstall${PRODUCT}${VERSION_MAJOR}.exe" "" "$INSTDIR\Uninstall${PRODUCT}${VERSION_MAJOR}.exe" 0
+		${lngCreateSMGroup}  "$STARTMENU_FOLDER"
+		${lngCreateShortCut} "$SMPROGRAMS" "$STARTMENU_FOLDER" "$(SHORTCUT_NAME)" "$INSTDIR\${MAINPROGRAM}" "" "$INSTDIR\${MAINPROGRAM}" 0
+		${lngCreateShortCut} "$SMPROGRAMS" "$STARTMENU_FOLDER" "$(SHORTCUT_NAME_UNINSTALL)" "$INSTDIR\Uninstall${PRODUCT}${VERSION_MAJOR}.exe" "" "$INSTDIR\Uninstall${PRODUCT}${VERSION_MAJOR}.exe" 0
 	  !insertmacro MUI_STARTMENU_WRITE_END
 	!endif
 
@@ -765,7 +764,7 @@ Section "Uninstall"
 	; remove start menu shortcuts. (tries to get folder name from registry)
 	;Delete "$SMPROGRAMS\${SM_PRODUCT_GROUP}\*.*"
         !ifndef CLASSIC_UI
-                !insertmacro MUI_STARTMENU_GETFOLDER $0
+                !insertmacro MUI_STARTMENU_GETFOLDER Application $0
                 ;RMDir /r "$0"
         !else
              StrCpy $0 "$(SM_PRODUCT_GROUP)"
