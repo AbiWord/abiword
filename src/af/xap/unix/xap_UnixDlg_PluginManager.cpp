@@ -229,7 +229,9 @@ void XAP_UnixDialog_PluginManager::setPluginList()
 	gtk_tree_view_set_model( GTK_TREE_VIEW(m_list), reinterpret_cast<GtkTreeModel *>(model));
 
 	g_object_unref (model);
-
+	
+	gint pluginCount = gtk_tree_model_iter_n_children(GTK_TREE_MODEL(model), &iter);
+	if(pluginCount)
 	selectFirstEntry(m_list);
 }
 
@@ -246,7 +248,9 @@ void XAP_UnixDialog_PluginManager::_refresh ()
 	if (selection && gtk_tree_selection_get_selected (selection, &model, &iter)) {
 		gtk_tree_model_get (model, &iter, 1, &rowNumber, -1);		
 	} else {
-		selectFirstEntry(m_list);
+	        gint pluginCount = gtk_tree_model_iter_n_children(GTK_TREE_MODEL(model), &iter);
+	        if(pluginCount) 
+	           selectFirstEntry(m_list);
 	}
 	
 	if (rowNumber != -1 && XAP_ModuleManager::instance().enumModules()->size() > 0)
