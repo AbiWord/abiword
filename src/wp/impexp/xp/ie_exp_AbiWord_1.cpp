@@ -31,6 +31,8 @@
 #include "px_CR_Strux.h"
 #include "xap_App.h"
 
+#define MyMin(a,b)		(((a)<(b)) ? (a) : (b))
+
 /*****************************************************************/
 /*****************************************************************/
 
@@ -568,12 +570,19 @@ void s_AbiWord_1_Listener::_handleDataItems(void)
 			m_pie->write(szName);
 			m_pie->write("\">\n");
 
-			// TODO for now just spat the whole thing, later we'll want to
-			// TODO line wrap it for readability -- just like mime.
+			// break up the Base64 blob as a series lines
+			// like MIME does.
 
-			m_pie->write((const char *)bb64.getPointer(0),bb64.getLength());
-			
-			m_pie->write("\n</d>\n");
+			UT_uint32 jLimit = bb64.getLength();
+			UT_uint32 jSize;
+			UT_uint32 j;
+			for (j=0; j<jLimit; j+=72)
+			{
+				jSize = MyMin(72,(jLimit-j));
+				m_pie->write((const char *)bb64.getPointer(j),jSize);
+				m_pie->write("\n");
+			}
+			m_pie->write("</d>\n");
 		}
 	}
 
