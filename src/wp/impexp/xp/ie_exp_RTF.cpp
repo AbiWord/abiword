@@ -2519,8 +2519,8 @@ bool _rtf_font_info::init(const s_RTF_AttrPropAdapter & apa, bool bDoFieldFont)
 			m_szName = szName;
 		}
 	}
-    if (szName == NULL)
-	{
+	if (szName == NULL || UT_strcmp(szName, "NULL") == 0)  // Field-font is "NULL" when there is no special field-font.
+	{                                                      // We don't want it in the \fonttbl
 		return false;
 	}
 
