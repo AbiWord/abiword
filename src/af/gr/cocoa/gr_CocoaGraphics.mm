@@ -344,7 +344,6 @@ void GR_CocoaGraphics::setFont(GR_Font * pFont)
 UT_uint32 GR_CocoaGraphics::getFontHeight(GR_Font * fnt)
 {
 	UT_ASSERT(fnt);
-
 	XAP_CocoaFont * hndl = static_cast<XAP_CocoaFont *>(fnt);
 
 	NSFont* pFont = hndl->getNSFont();
@@ -352,6 +351,7 @@ UT_uint32 GR_CocoaGraphics::getFontHeight(GR_Font * fnt)
 //	printf ("line height %f\n", [pFont defaultLineHeightForFont]);
 //	printf ("font height %f\n", [pFont ascender] + [pFont descender]);
 	return (UT_uint32)[pFont defaultLineHeightForFont]; //([pFont ascender] + [pFont descender]); //;
+//	return (UT_uint32)[pFont boundingRectForFont].size.height;
 }
 
 UT_uint32 GR_CocoaGraphics::getFontHeight()
@@ -486,50 +486,31 @@ GR_Font * GR_CocoaGraphics::findFont(const char* pszFontFamily,
 	NSFontTraitMask s = 0;
 
 	// this is kind of sloppy
-	if (!UT_strcmp(pszFontStyle, "normal") &&
-		!UT_strcmp(pszFontWeight, "normal"))
+	if (UT_strcmp(pszFontStyle, "italic") == 0)
 	{
-		s = 0;
+		s |= NSItalicFontMask;
 	}
-	else if (!UT_strcmp(pszFontStyle, "normal") &&
-			 !UT_strcmp(pszFontWeight, "bold"))
+	if (UT_strcmp(pszFontWeight, "bold") == 0)
 	{
-		s = NSBoldFontMask;
-	}
-	else if (!UT_strcmp(pszFontStyle, "italic") &&
-			 !UT_strcmp(pszFontWeight, "normal"))
-	{
-		s = NSItalicFontMask;
-	}
-	else if (!UT_strcmp(pszFontStyle, "italic") &&
-			 !UT_strcmp(pszFontWeight, "bold"))
-	{
-		s = NSBoldFontMask | NSItalicFontMask;
-	}
-	else
-	{
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		s |= NSBoldFontMask;
 	}
 
-	// Request the appropriate XAP_CocoaFont
-	//
-	// current forget about style.
-	// FIXME
-	// -- Hub May 28 2002.
 	NSFont*		nsfont;
 	UT_uint32 iSize = getAppropriateFontSizeFromString(pszFontSize);
 
-	nsfont = [NSFont fontWithName:[NSString stringWithCString:pszFontFamily] size:(float)iSize];
+	nsfont = [[NSFontManager sharedFontManager] fontWithFamily:[NSString stringWithCString:pszFontFamily] 
+		traits:s weight:5 size:(float)iSize];
 	if (!nsfont)
 	{
 		// Oops!  We don't have that font here.
 		// first try "Times New Roman", which should be sensible, and should
 		// be there unless the user fidled with the installation
-		nsfont = [NSFont fontWithName:@"Times New Roman" size:(float)iSize];
+		NSLog (@"Unable to fint font \"%s\".", pszFontFamily);
+		nsfont = [[NSFontManager sharedFontManager] fontWithFamily:@"Times New Roman" 
+		                traits:s weight:5 size:(float)iSize];
 	}
 
-	[[NSFontManager sharedFontManager] convertFont:nsfont toHaveTrait:s];
-	// bury the pointer to our Cocoa font in a XAP_CocoaFontHandle with the correct size.
+	// bury the pointer to our Cocoa font in a XAP_CocoaFontHandle 
 	XAP_CocoaFont * pFont = new XAP_CocoaFont(nsfont);
 	UT_ASSERT(pFont);
 
@@ -806,7 +787,7 @@ void GR_CocoaGraphics::setCursor(GR_Graphics::Cursor c)
 	switch (c)
 	{
 	default:
-		UT_ASSERT(UT_NOT_IMPLEMENTED);
+		NSLog (@"Using unimplemented cursor");
 		/*FALLTHRU*/
 	case GR_CURSOR_DEFAULT:
 		cursor = [NSCursor arrowCursor];
