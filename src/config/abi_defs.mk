@@ -64,8 +64,9 @@ DISTBASE 	= $(ABI_DEPTH)/../dist
 ##    of these is a directory in our source tree that we should
 ##    reference for header files.
 
-ABI_XAP_INCS=	/ev/xp		/ev/$(ABI_NATIVE)	\
-		/ps/xp					\
+ABI_XAP_INCS=	/config					\
+		/ev/xp		/ev/$(ABI_NATIVE)	\
+		/ps/xp							\
 		/util/xp	/util/$(ABI_NATIVE)	\
 		/ver/xp
 
