@@ -131,18 +131,31 @@ AC_DEFUN([ABI_PSPELL_OPT], [
 	else
 		abi_pspell_opt=required
 	fi
-	AC_ARG_WITH(pspell,[  --with-pspell[=DIR]     Use pspell [in DIR] ],[
-		if [ test "x$withval" = "xno" ]; then
-			if [ test $abi_pspell_opt = required ]; then
+	AC_ARG_ENABLE(pspell,[  --disable-pspell      Use pspell [in DIR] ],[
+		if test "x$enableval" = "xno"; then
+			if test $abi_pspell_opt = required; then
 				AC_MSG_ERROR([* * * pspell is not optional! * * *])
+			else
+				abi_pspell_opt=no
 			fi
-			abi_pspell_opt=no
-		elif [ test "x$withval" = "xyes" ]; then
-			abi_pspell_opt=required
-			abi_pspell_dir=""
 		else
 			abi_pspell_opt=required
-			abi_pspell_dir="$withval"
+		fi
+	])
+	AC_ARG_WITH(pspell,[  --with-pspell[=DIR]     Use pspell [in DIR] ],[
+		if test $abi_pspell_opt != no; then
+			if test "x$withval" = "xno"; then
+				if [ test $abi_pspell_opt = required ]; then
+					AC_MSG_ERROR([* * * pspell is not optional! * * *])
+				fi
+				abi_pspell_opt=no
+			elif test "x$withval" = "xyes"; then
+				abi_pspell_opt=required
+				abi_pspell_dir=""
+			else
+				abi_pspell_opt=required
+				abi_pspell_dir="$withval"
+			fi
 		fi
 	],[	abi_pspell_dir=$3
 	])
