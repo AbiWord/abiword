@@ -505,7 +505,6 @@ IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
 	m_fieldC(NULL),
 	//m_fieldA(NULL),
 	m_bIsLower(false),
-        m_bRevisionDeleted(false),
 	m_bInSect(false),
 	m_bInPara(false),
 	m_bPrevStrongCharRTL(false),
@@ -1006,12 +1005,6 @@ bool IE_Imp_MsWord_97::_insertBookmarkIfAppropriate()
 
 int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U16 lid)
 {
-	// deleted text encountered...
-	if (m_bRevisionDeleted) {
-		return 0;
-		}
-
-
 	_insertBookmarkIfAppropriate();
 
 	// convert incoming character to unicode
@@ -1259,9 +1252,6 @@ int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps, UT_uint32 tag,
 	//
 	// Marshall these off to the correct handlers
 	//
-	CHP * achp = static_cast <CHP *>(props);
-
-	m_bRevisionDeleted = achp->fRMarkDel;
 
 	switch ((wvTag)tag)
 	{
@@ -2350,9 +2340,13 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 
 	if (achp->fRMark)
 	  {
-	    // hack for revisions
 	    propsArray[2] = (XML_Char *)"revision";
 	    propsArray[3] = "1";
+	  }
+	else if (achp->fRMarkDel)
+	  {
+	    propsArray[2] = (XML_Char *)"revision";
+	    propsArray[3] = "-1";
 	  }
 		
 	// woah - major error here
