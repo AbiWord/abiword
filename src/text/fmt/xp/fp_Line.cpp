@@ -375,8 +375,8 @@ void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos,
 			{
 				// Zero-length run. This should only happen with
 				// FmtMrk Runs.
-				
-				UT_ASSERT(FPRUN_FMTMARK == pRun2->getType());
+				// #TF this can also happen legitimately with overstriking text runs
+				//UT_ASSERT(FPRUN_FMTMARK == pRun2->getType());
 
 				pRun2->mapXYToPosition(x - pRun2->getX(), y2, pos, bBOL, bEOL);
 
