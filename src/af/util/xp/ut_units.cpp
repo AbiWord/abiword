@@ -272,6 +272,10 @@ double UT_convertToInches(const char* s)
 		return 0;
 
 	double f = UT_convertDimensionless(s);
+	
+	if (f == 0)
+	    return 0;
+	
 	const char *p = s;
 	while ((*p) && (isdigit(*p) || (*p == '-') || (*p == '.')))
 	{

@@ -74,6 +74,7 @@ BeginSet(id,ID,UT_TRUE)
 
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUPERSCRIPT,	"Huruf dinaikkan",	tb_text_superscript_xpm,	NULL, "Huruf dinaikkan")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUBSCRIPT,	"Huruf diturunkan",	tb_text_subscript_xpm,		NULL, "Huruf diturunkan")
+	ToolbarLabel(AP_TOOLBAR_ID_INSERT_SYMBOL,	"Simbol",	tb_symbol_xpm,		NULL, "Sisipkan simbol")
 
 	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_LEFT,		"Kiri",		tb_text_align_left_xpm,		NULL, "Rata kiri")
 	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_CENTER,	"Tengah",	tb_text_center_xpm,	NULL, "Pusatkan di tengah")
@@ -92,6 +93,8 @@ BeginSet(id,ID,UT_TRUE)
 	ToolbarLabel(AP_TOOLBAR_ID_3COLUMN,		"3 Kolom",		tb_3column_xpm,			NULL, "3 Kolom")
 
 	ToolbarLabel(AP_TOOLBAR_ID_ZOOM,			"Perbesar",		NoIcon,			NULL, "Perbesar")
+	ToolbarLabel(AP_TOOLBAR_ID_LISTS_BULLETS,		"Daftar bundar kitam",		tb_lists_xpm,		NULL,		"Daftar bundar hitam")
+	ToolbarLabel(AP_TOOLBAR_ID_LISTS_NUMBERS,		"Daftar bernomor",		tb_lists_numbers_xpm,		NULL,		"Daftar bernomor")
 	
 	// ... add others here ...
 

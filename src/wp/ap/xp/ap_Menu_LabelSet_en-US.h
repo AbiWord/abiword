@@ -132,7 +132,7 @@ BeginSet(en,US,UT_TRUE)
 	MenuLabel(AP_MENU_ID_HELP_CONTENTS,		"Help &Contents",	"Display Help Contents")
 	MenuLabel(AP_MENU_ID_HELP_INDEX,		"Help &Index",		"Display Help Index")
 	MenuLabel(AP_MENU_ID_HELP_CHECKVER,		"Check &Version",	"Display program version number")
-	MenuLabel(AP_MENU_ID_HELP_SEARCH,		"&Search for Help",	"Display program information, version number, and copyright")
+	MenuLabel(AP_MENU_ID_HELP_SEARCH,		"&Search for Help",	"Search for help about...")
 	MenuLabel(AP_MENU_ID_HELP_ABOUT,		"&About %s",		"Display program information, version number, and copyright") 
 	MenuLabel(AP_MENU_ID_HELP_ABOUTOS,		"About &Open Source",	"Display information about Open Source")
 
