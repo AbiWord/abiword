@@ -36,6 +36,7 @@ PLATFORM_OBJS=	$(OBJDIR)/ap_$(ABI_FE)App.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_Lists.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_Options.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_PageNumbers.$(OBJ_SUFFIX)  \
+		$(OBJDIR)/ap_$(ABI_FE)Dialog_MergeCells.$(OBJ_SUFFIX)  \
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_PageSetup.$(OBJ_SUFFIX)    \
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_Background.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_HdrFtr.$(OBJ_SUFFIX)	\
