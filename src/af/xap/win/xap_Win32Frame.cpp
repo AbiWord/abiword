@@ -75,8 +75,10 @@ UT_Bool XAP_Win32Frame::RegisterClass(XAP_Win32App * app)
 /*****************************************************************/
 
 XAP_Win32Frame::XAP_Win32Frame(XAP_Win32App * app)
-	: XAP_Frame(static_cast<XAP_App *>(app)),
-	  m_dialogFactory(this, static_cast<XAP_App *>(app))
+:	XAP_Frame(app),
+	m_dialogFactory(this, app),
+	m_iBarHeight(0),
+	m_iStatusBarHeight(0)
 {
 	m_pWin32App = app;
 	m_pWin32Menu = NULL;
@@ -231,7 +233,6 @@ void XAP_Win32Frame::_createTopLevelWindow(void)
 	UT_ASSERT(m_hwndRebar);
 
 	// create a toolbar instance for each toolbar listed in our base class.
-	m_iBarHeight = 0;
 
 	_createToolbars();
 
@@ -339,22 +340,49 @@ UT_Bool XAP_Win32Frame::updateTitle()
 LRESULT CALLBACK XAP_Win32Frame::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 {
 	XAP_Win32Frame * f = GWL(hwnd);
+
+	if (!f)
+	{
+		return DefWindowProc(hwnd,iMsg,wParam,lParam);
+	}
+	
 	AV_View * pView = NULL;
 
-	if (f)
+	pView = f->m_pView;
+
+	if(iMsg == f->m_mouseWheelMessage)
 	{
-		pView = f->m_pView;
-
-		if(iMsg == f->m_mouseWheelMessage)
-			{
-			wParam = MAKEWPARAM(0, (short)(int)wParam);
-			return SendMessage(hwnd, WM_MOUSEWHEEL, wParam, lParam);
-			}
-
+		wParam = MAKEWPARAM(0, (short)(int)wParam);
+		return SendMessage(hwnd, WM_MOUSEWHEEL, wParam, lParam);
 	}
 
 	switch (iMsg)
 	{
+#define chSTR(x)           #x
+#define chSTR2(x)        chSTR(x)
+#define chMSG(desc) message(__FILE__ "(" chSTR2(__LINE__) "):" desc)
+#pragma chMSG("TMN Put this in when view is committed!")
+#undef chMSG
+#undef chSTR2
+#undef chSTR
+#if 0
+	case WM_EXITMENULOOP:
+	case WM_SETFOCUS:
+		if (pView)
+		{
+			pView->focusChange(AV_FOCUS_HERE);
+		}
+		return 0;
+
+	case WM_ENTERMENULOOP:
+	case WM_KILLFOCUS:
+		if (pView)
+		{
+			pView->focusChange(AV_FOCUS_NONE);
+		}
+		return 0;
+#endif
+
 	case WM_CREATE:
 		return 0;
 
