@@ -155,7 +155,7 @@ void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_
 
 		UT_sint32 y2 = y - pFirstRun->getY() - m_iAscent + pFirstRun->getAscent();
 		pFirstRun->mapXYToPosition(0, y2, pos, bBOL, bEOL);
-
+	
 		return;
 	}
 
@@ -281,23 +281,23 @@ void fp_Line::recalcHeight()
 	UT_sint32 iMaxAscent = 0;
 	UT_sint32 iMaxDescent = 0;
 
-	for (i=0; i<count; i++)	// TODO merge these two loops into one....
-	{
-		UT_sint32 iAscent;
-
-		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(i);
-
-		iAscent = pRun->getAscent();
-		iMaxAscent = UT_MAX(iMaxAscent, iAscent);
-	}
-
 	for (i=0; i<count; i++)
 	{
+		UT_sint32 iAscent;
 		UT_sint32 iDescent;
 
 		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(i);
 
+		iAscent = pRun->getAscent();
 		iDescent = pRun->getDescent();
+	
+		if (pRun->isSuperscript() || pRun->isSubscript())
+		{
+			iAscent += iAscent * 1/2;
+			iDescent += iDescent;
+		}
+
+		iMaxAscent = UT_MAX(iMaxAscent, iAscent);
 		iMaxDescent = UT_MAX(iMaxDescent, iDescent);
 	}
 

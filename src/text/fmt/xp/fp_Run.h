@@ -139,6 +139,8 @@ public:
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height) = 0;
 	virtual void			lookupProperties(void) = 0;
 	virtual UT_Bool			doesContainNonBlankData(void)	{ return UT_TRUE; }	// Things like text whould return false if it is all spaces.
+	virtual UT_Bool			isSuperscript(void) const { return UT_FALSE; }
+	virtual UT_Bool			isSubscript(void) const { return UT_FALSE; }
 
 #ifdef FMT_TEST
 	virtual void			__dump(FILE * fp) const;
@@ -301,6 +303,8 @@ public:
 	virtual UT_Bool			findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce=UT_FALSE);
 	virtual UT_uint32 		containsOffset(UT_uint32 iOffset);
 	virtual const PP_AttrProp* getAP(void) const;
+	virtual UT_Bool			isSuperscript(void) const { return UT_FALSE; }
+	virtual UT_Bool			isSubscript(void) const { return UT_FALSE; }
 
 protected:
 	virtual void			_draw(dg_DrawArgs*);

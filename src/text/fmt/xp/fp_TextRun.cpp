@@ -400,7 +400,7 @@ void fp_TextRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, 
 	}
 	else if (m_fPosition == TEXT_POSITION_SUBSCRIPT)
 	{
-		yoff += m_iDescent;
+		yoff += m_iDescent /* * 3/2 */;
 	}
 	
 	x = xoff;
@@ -652,14 +652,14 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 
 	UT_sint32 yTopOfRun = pDA->yoff - m_iAscent;
 	UT_sint32 yTopOfSel = yTopOfRun;
-	
+
 	if (m_fPosition == TEXT_POSITION_SUPERSCRIPT)
 	{
 		yTopOfRun -= m_iAscent * 1/2;
 	}
 	else if (m_fPosition == TEXT_POSITION_SUBSCRIPT) 
 	{
-		yTopOfRun += m_iDescent;
+		yTopOfRun += m_iDescent /* * 3/2 */;
 	} 
 	
 	UT_ASSERT(pDA->pG == m_pG);
@@ -1072,6 +1072,16 @@ UT_Bool fp_TextRun::isFirstCharacter(UT_UCSChar Character) const
 UT_Bool	fp_TextRun::doesContainNonBlankData(void) const
 {
 	return (findCharacter(0, UCS_SPACE) >= 0);
+}
+
+UT_Bool fp_TextRun::isSuperscript(void) const
+{
+	return (m_fPosition == TEXT_POSITION_SUPERSCRIPT);
+}
+
+UT_Bool fp_TextRun::isSubscript(void) const
+{
+	return (m_fPosition == TEXT_POSITION_SUBSCRIPT);
 }
 
 UT_sint32 fp_TextRun::findTrailingSpaceDistance(void) const

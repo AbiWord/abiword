@@ -68,8 +68,9 @@ class fp_TextRun : public fp_Run
 	UT_Bool					isFirstCharacter(UT_UCSChar Character) const;
 	UT_Bool					isLastCharacter(UT_UCSChar Character) const;
 	virtual UT_Bool			doesContainNonBlankData(void) const;
+	virtual UT_Bool				isSuperscript(void) const;
+	virtual UT_Bool				isSubscript(void) const;
 	UT_uint32				countTrailingSpaces(void) const;
-
 
 #ifdef FMT_TEST
 	virtual void			__dump(FILE * fp) const;
