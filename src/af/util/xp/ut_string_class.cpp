@@ -139,9 +139,11 @@ UT_String& UT_String::operator=(const UT_String& rhs)
 
 UT_String& UT_String::operator=(const char* rhs)
 {
-	UT_return_val_if_fail(rhs, *this);
-	pimpl->assign(rhs, strlen(rhs));
-	return *this;
+  if (!rhs)
+    pimpl->clear ();
+  else
+    pimpl->assign(rhs, strlen(rhs));
+  return *this;
 }
 
 UT_String& UT_String::operator+=(const UT_String& rhs)
@@ -911,9 +913,13 @@ void UT_UTF8String::clear () const
 
 UT_UTF8String &	UT_UTF8String::operator=(const char * rhs)
 {
-	UT_return_val_if_fail(rhs, *this);
-	pimpl->assign (rhs);
-	return *this;
+  // treat null string assignment as a clear
+  if (!rhs)
+    pimpl->clear();
+  else
+    pimpl->assign (rhs);
+
+  return *this;
 }
 
 UT_UTF8String &	UT_UTF8String::operator=(const UT_UTF8String & rhs)

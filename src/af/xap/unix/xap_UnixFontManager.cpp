@@ -654,7 +654,7 @@ static XAP_UnixFont* buildFont(XAP_UnixFontManager * pFM, FcPattern* fp)
 	if (FcPatternGetString(fp, FC_FILE, 0, &fontFile) != FcResultMatch || !fontFile)
 	{
 		// ok, and now what?  If we can not get the font file of the font, we can not print it!
-		UT_DEBUGMSG(("Unknow font file!!\n"));
+		UT_DEBUGMSG(("Unknown font file!!\n"));
 		return false;
 	}
 	

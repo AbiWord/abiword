@@ -183,6 +183,10 @@ bool pt_VarSet::mergeAP(PTChangeFmt ptc, PT_AttrPropIndex apiOld,
 	// return false only if we had an error.
 
 	const PP_AttrProp * papOld = getAP(apiOld);
+
+	if (!papOld)
+	  return false;
+
 	switch (ptc)
 	{
 	case PTC_AddFmt:
