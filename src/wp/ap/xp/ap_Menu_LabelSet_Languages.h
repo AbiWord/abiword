@@ -39,7 +39,6 @@
 #include "ap_Menu_LabelSet_es-ES.h"
 #include "ap_Menu_LabelSet_fi-FI.h"
 #include "ap_Menu_LabelSet_fr-FR.h"
-#include "ap_Menu_LabelSet_ga-IE.h"
 #include "ap_Menu_LabelSet_gl-ES.h"
 #include "ap_Menu_LabelSet_hu-HU.h"
 #include "ap_Menu_LabelSet_id-ID.h"
