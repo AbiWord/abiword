@@ -23,6 +23,7 @@
 
 #include "ut_debugmsg.h"
 #include "ut_endian.h"
+#include "ut_string.h"
 
 #include "xap_App.h"
 #include "xap_Frame.h"
@@ -91,23 +92,23 @@ XAP_HashDownloader::startElement(const XML_Char* name, const XML_Char **atts)
 	if (xmlParseOk == -1)
 		return;
 	
-	if (!strcasecmp(name, "Dictionarylist") && xmlParseDepth == 0) {
+	if (!UT_stricmp(name, "Dictionarylist") && xmlParseDepth == 0) {
 		for (i = 0; atts[i]; i += 2) {
 		
 			/* Version of dictionary list */
-			if (!strcasecmp(atts[i], "version")) {
+			if (!UT_stricmp(atts[i], "version")) {
 				strncpy(listVersion, atts[i + 1], 16);
 				listVersion[15] = 0;
 			}
 			
 			/* Host to download dictionaries from */
-			if (!strcasecmp(atts[i], "host")) {
+			if (!UT_stricmp(atts[i], "host")) {
 				strncpy(host, atts[i + 1], 255);
 				host[255] = 0;
 			}
 
 			/* Secondary host to download dictionaries from */
-			if (!strcasecmp(atts[i], "host2")) {
+			if (!UT_stricmp(atts[i], "host2")) {
 				strncpy(host2, atts[i + 1], 255);
 				host2[255] = 0;
 			}
@@ -115,7 +116,7 @@ XAP_HashDownloader::startElement(const XML_Char* name, const XML_Char **atts)
 			/* Flag to indicate if we should use this featur.
 			   This allows us to disable the feature later on if we
 			   would find out it causes trouble */
-			if (!strcasecmp(atts[i], "use")) {
+			if (!UT_stricmp(atts[i], "use")) {
 				doUse = strtol(atts[i+1], &endptr, 10);
 				if (endptr == atts[i+1])
 					xmlParseOk = -1;
@@ -125,12 +126,12 @@ XAP_HashDownloader::startElement(const XML_Char* name, const XML_Char **atts)
 		UT_DEBUGMSG(("<DictionaryList v=%s h=%s h2=%s use=%d>\n", listVersion, host, host2, doUse));
 	}
 
-	if (!strcasecmp(name, "Dict") && xmlParseDepth == 1) {
+	if (!UT_stricmp(name, "Dict") && xmlParseDepth == 1) {
 		l = -1;
 		
 		for (i = 0; atts[i]; i += 2)
 			/* Package abbrevation */
-			if (!strcasecmp(atts[i], "name")) {
+			if (!UT_stricmp(atts[i], "name")) {
 				l = getLangNum(atts[i + 1]);
 				break;
 			}
@@ -138,13 +139,13 @@ XAP_HashDownloader::startElement(const XML_Char* name, const XML_Char **atts)
 		if (l != -1) {
 			for (i = 0; atts[i]; i += 2) {
 				/* Version nr of dictionary package */
-				if (!strcasecmp(atts[i], "version")) {
+				if (!UT_stricmp(atts[i], "version")) {
 					strncpy(version[l], atts[i + 1], 16);
 					version[l][15] = 0;
 				}
 				
 				/* Release nr of dictionary package */
-				if (!strcasecmp(atts[i], "release")) {
+				if (!UT_stricmp(atts[i], "release")) {
 					strncpy(release[l], atts[i + 1], 16);
 					release[l][15] = 0;
 				}
@@ -152,7 +153,7 @@ XAP_HashDownloader::startElement(const XML_Char* name, const XML_Char **atts)
 				/* Minimum required date for this dictionary to work
 				   Could for example be a namechange of the hash or
 				   a hash that was newly added to the Abi source */
-				if (!strcasecmp(atts[i], "mrd")) {
+				if (!UT_stricmp(atts[i], "mrd")) {
 					strncpy(mrd[l], atts[i + 1], 10);
 					mrd[l][9] = 0;
 				}
@@ -233,7 +234,10 @@ XAP_HashDownloader::downloadFile(XAP_Frame *pFrame, const char *szFName, fileDat
 	if (show_progress)
 		showProgressStop(pFrame, ch);
 
+	//TODO: figure out why I crash on Windows
+#ifndef _WIN32
 	curl_easy_cleanup(ch);
+#endif
 
 	return ret;
 }

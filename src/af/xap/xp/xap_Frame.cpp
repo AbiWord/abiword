@@ -345,6 +345,10 @@ bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyBind
 	{
 		m_zoomType = z_100;
 	}
+	else if( UT_stricmp( stTmp.c_str(), "75" ) == 0 )
+	{
+		m_zoomType = z_75;
+	}
 	else if( UT_stricmp( stTmp.c_str(), "Width" ) == 0 )
 	{
 		m_zoomType = z_PAGEWIDTH;
@@ -355,6 +359,15 @@ bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyBind
 	}
 	else
 	{
+		UT_uint32 iZoom = atoi( stTmp.c_str() );
+
+		// These limits are defined in xap_Dlg_Zoom.h
+		if ((iZoom <= XAP_DLG_ZOOM_MAXIMUM_ZOOM) && (iZoom >= XAP_DLG_ZOOM_MINIMUM_ZOOM)) 
+		{
+			setZoomType( z_PERCENT );
+			setZoomPercentage( iZoom );
+		}
+		else
 		m_zoomType = z_100;
 	}
 
