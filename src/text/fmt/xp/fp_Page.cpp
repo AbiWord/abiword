@@ -285,6 +285,7 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 // some space where a wrapped object should be
 //
 						bool bFoundOne = false;
+						fp_Line * pPrev = static_cast<fp_Line *>(pLine->getPrev());
 						if(pLine->isWrapped())
 						{
 							if(overlapsWrappedFrame(pLine))
@@ -293,6 +294,12 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 // Wrapped line overlaps a wrapped frame
 //
 								UT_DEBUGMSG(("Found wrapped line %x that overlaps \n",pLine));
+								bFoundOne = true;
+							}
+							else if(pPrev && pLine->isSameYAsPrevious() && (pPrev->getY() != pLine->getY()))
+							{
+								pLine = pPrev;
+								j--;
 								bFoundOne = true;
 							}
 							else

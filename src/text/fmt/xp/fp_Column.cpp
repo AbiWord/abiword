@@ -949,6 +949,14 @@ bool fp_VerticalContainer::validate(void)
 			fp_TOCContainer * pTOC = static_cast<fp_TOCContainer *>(pContainer);
 			iH = pTOC->getHeight();
 		}
+		if(pContainer->getContainerType() == FP_CONTAINER_LINE)
+		{
+			fp_Line * pLine = static_cast<fp_Line *>(pContainer);
+			if(pLine->isSameYAsPrevious())
+			{
+				continue;
+			}
+		}
 		curBot = curTop + iH;                    ;
 		UT_ASSERT(oldBot <= curTop);
 		if(oldBot > curTop)

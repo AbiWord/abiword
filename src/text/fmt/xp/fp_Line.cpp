@@ -876,15 +876,14 @@ void fp_Line::recalcHeight()
 			pPrev->setAscent(iNewAscent);
 			pPrev->setDescent(iNewDescent);
 			pPrev->setScreenHeight(-1);
-			pPrev = static_cast<fp_Line *>(pPrev->getPrev());
-			while(pPrev && pPrev->isSameYAsPrevious())
+			while(pPrev->getPrev() && pPrev->isSameYAsPrevious())
 			{
+				pPrev = static_cast<fp_Line *>(pPrev->getPrev());
 				pPrev->clearScreen();
 				pPrev->setHeight(iNewHeight);
 				pPrev->setAscent(iNewAscent);
 				pPrev->setDescent(iNewDescent);
 				pPrev->setScreenHeight(-1);
-				pPrev = static_cast<fp_Line *>(pPrev->getPrev());
 			}
 			return;
 		}
