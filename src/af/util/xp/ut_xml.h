@@ -54,7 +54,7 @@ class ABI_EXPORT UT_XML
   UT_Error parse (const UT_ByteBuf * pBB);
   UT_Error parse (const char * buffer, UT_uint32 length);
 
-  class Listener
+  class ABI_EXPORT Listener
     {
     public:
       virtual ~Listener () { };
