@@ -143,6 +143,8 @@ public:
 	void		recheckIgnoredWords();
 
 #ifdef FMT_TEST
+	static		FL_DocLayout* m_pDocLayout;
+
 	void		__dump(FILE * fp) const;
 #endif
 	

@@ -73,6 +73,10 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
 	
 	m_pDocListener = new fl_DocListener(doc, this);
 	doc->addListener(static_cast<PL_Listener *>(m_pDocListener),&m_lid);
+
+#ifdef FMT_TEST
+	m_pDocLayout = this;
+#endif
 }
 
 FL_DocLayout::~FL_DocLayout()
@@ -437,6 +441,13 @@ void FL_DocLayout::updateLayout()
 }
 
 #ifdef FMT_TEST
+FL_DocLayout* FL_DocLayout::m_pDocLayout = NULL;
+
+void __dump(void)
+{
+	FL_DocLayout::m_pDocLayout->__dump(stdout);
+}
+
 void FL_DocLayout::__dump(FILE * fp) const
 {
 	int count = m_vecPages.getItemCount();
