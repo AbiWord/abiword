@@ -31,7 +31,6 @@
 #include "ap_Dialog_Lists.h"
 #include "ap_MacDialog_Lists.h"
 
-#include "ut_Rehydrate.h"
 
 
 /*****************************************************************/
@@ -122,7 +121,7 @@ void AP_MacDialog_Lists::runModeless(XAP_Frame * pFrame)
         //------------------------------------------------------------
 }
 
-/*
+#if 0
 //
 // ------------------------------------------------------------------------
 //
@@ -255,7 +254,7 @@ void AP_UnixDialog_Lists::_connectSignals(void)
 //
 // !!!!!!!! END OF HINTS !!!!!!!!!!!!!!!!!!!
 
-*/
+#endif
 
 
 

@@ -20,6 +20,9 @@
 
 #include <stdio.h>
 
+#include <QuickDraw.h>
+#include <MacWindows.h>
+
 #include "ut_types.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
@@ -43,8 +46,8 @@
 XAP_MacFrame::XAP_MacFrame(XAP_MacApp * app)
 	: XAP_Frame(static_cast<XAP_App *>(app))
 {
-	SetRect(&theBounds, 100, 100, 500, 500);
-	theWP = NewWindow(0, &theBounds, "\pUntitled", 0, 0, (GrafPtr) -1, 0, (long) this);
+	m_MacWindow = NULL;
+	MacWindowInit ();
 }
 
 // TODO when cloning a new frame from an existing one
@@ -54,9 +57,24 @@ XAP_MacFrame::XAP_MacFrame(XAP_MacApp * app)
 XAP_MacFrame::XAP_MacFrame(XAP_MacFrame * f)
 	: XAP_Frame(static_cast<XAP_Frame *>(f))
 {
-	SetRect(&theBounds, 100, 100, 500, 500);
-	theWP = NewWindow(0, &theBounds, "\pUntitled", 0, 0, (GrafPtr) -1, 0, (long) this);
+	MacWindowInit ();
 }
+
+void XAP_MacFrame::MacWindowInit ()
+{
+	UT_ASSERT (XAP_MacApp::m_NotInitialized == false);
+	
+	::SetRect(&theBounds, 100, 100, 500, 500);
+	m_MacWindow = ::NewWindow(NULL, &theBounds, "\pUntitled", 0, 0, (WindowPtr) -1, 0, (long) this);
+	UT_ASSERT (m_MacWindow != NULL);
+
+#ifdef XP_MAC_TARGET_CARBON
+	::SetWindowKind (m_MacWindow, XAP_MACFRAME_WINDOW_KIND);
+#else
+	((WindowPeek)m_MacWindow)->windowKind = XAP_MACFRAME_WINDOW_KIND;
+#endif
+}
+
 
 XAP_MacFrame::~XAP_MacFrame(void)
 {
@@ -64,25 +82,30 @@ XAP_MacFrame::~XAP_MacFrame(void)
 
 XAP_Frame *	XAP_MacFrame::cloneFrame(void)
 {
+	UT_ASSERT(UT_NOT_IMPLEMENTED);
+
 	return 0;
 }
 
 UT_Bool	XAP_MacFrame::close(void)
 {
+	::DisposeWindow ((WindowPtr)m_MacWindow);
 	return UT_TRUE;
 }
 
 UT_Bool	XAP_MacFrame::raise(void)
 {
+	::BringToFront ((WindowPtr)m_MacWindow);
 	return UT_TRUE;
 }
 
 UT_Bool	XAP_MacFrame::show(void)
 {
+	::ShowWindow ((WindowPtr)m_MacWindow);
 	return UT_TRUE;
 }
 
-UT_Bool XAP_MacFrame::openURL(const char * szURL)
+UT_Bool XAP_MacFrame::openURL(const char * /*szURL*/)
 {
 	// TODO: use GURL or InternetConfig to open the specified URL
 	UT_ASSERT(UT_NOT_IMPLEMENTED);
@@ -92,20 +115,27 @@ UT_Bool XAP_MacFrame::openURL(const char * szURL)
 
 XAP_DialogFactory *XAP_MacFrame::getDialogFactory(void)
 {
+	UT_ASSERT(UT_NOT_IMPLEMENTED);
+
 	return 0;
 }
 
 void XAP_MacFrame::_createTopLevelWindow(void)
 {
+	UT_ASSERT(UT_NOT_IMPLEMENTED);
 }
+
+
 void XAP_MacFrame::setXScrollRange(void)
 {
+	UT_ASSERT(UT_NOT_IMPLEMENTED);
 }
 
 void XAP_MacFrame::setYScrollRange(void)
 {
+	UT_ASSERT(UT_NOT_IMPLEMENTED);
 }
 
-UT_Bool XAP_MacFrame::runModalContextMenu(AV_View * /* pView */, const char * szMenuName, UT_sint32 x, UT_sint32 y) {
+UT_Bool XAP_MacFrame::runModalContextMenu(AV_View * /* pView */, const char * /*szMenuName*/, UT_sint32 /*x*/, UT_sint32 /*y*/) {
 	return(UT_FALSE);
 }

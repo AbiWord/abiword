@@ -25,17 +25,30 @@ include $(ABI_ROOT)/src/config/abi_defs_wp.mk
 ABI_WP_INCS+=	/wp/ap/xp	/wp/ap/$(ABI_NATIVE)
 
 CPPSRCS=		ap_$(ABI_FE)App.cpp			\
+			ap_$(ABI_FE)Clipboard.cpp		\
 			ap_$(ABI_FE)DialogFactory.cpp		\
-			ap_$(ABI_FE)Dialog_Replace.cpp		\
-			ap_$(ABI_FE)Dialog_Break.cpp		\
+			ap_$(ABI_FE)Dialog_Field.cpp		\
+			ap_$(ABI_FE)Dialog_Goto.cpp		\
+			ap_$(ABI_FE)Dialog_Insert_DateTime.cpp	\
+			ap_$(ABI_FE)Dialog_Options.cpp		\
+			ap_$(ABI_FE)Dialog_Paragraph.cpp	\
+			ap_$(ABI_FE)Dialog_Spell.cpp		\
+			ap_$(ABI_FE)Dialog_Columns.cpp		\
+			ap_$(ABI_FE)Dlg_Replace.cpp		\
+			ap_$(ABI_FE)Dlg_Break.cpp		\
 			ap_$(ABI_FE)Dialog_Lists.cpp		\
+			ap_$(ABI_FE)Dialog_WordCount.cpp	\
 			ap_$(ABI_FE)LeftRuler.cpp		\
 			ap_$(ABI_FE)Frame.cpp			\
 			ap_$(ABI_FE)Prefs.cpp			\
-			ap_$(ABI_FE)Toolbar_FontCombo.cpp	\
-			ap_$(ABI_FE)Toolbar_SizeCombo.cpp	\
-			ap_$(ABI_FE)Toolbar_ControlFactory.cpp	\
-			ap_$(ABI_FE)TopRuler.cpp
+			ap_$(ABI_FE)_TB_CFactory.cpp	\
+			ap_$(ABI_FE)Tlbr_FontCombo.cpp	\
+			ap_$(ABI_FE)Tlbr_SizeCombo.cpp	\
+			ap_$(ABI_FE)Tlbr_ControlFactory.cpp	\
+			ap_$(ABI_FE)Toolbar_StyleCombo.cpp	\
+			ap_$(ABI_FE)Toolbar_ZoomCombo.cpp	\
+			ap_$(ABI_FE)TopRuler.cpp		\
+			ap_$(ABI_FE)StatusBar.cpp
 
 TARGETS=		$(OBJS)
 

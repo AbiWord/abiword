@@ -22,6 +22,8 @@
 #ifndef XAP_MACAPP_H
 #define XAP_MACAPP_H
 
+#include <Events.h>
+
 #include "xap_App.h"
 #include "xap_MacDialogFactory.h"
 #include "xap_MacTlbr_ControlFactory.h"
@@ -48,7 +50,16 @@ public:
 	virtual XAP_Toolbar_ControlFactory *	getControlFactory(void);
 	virtual const char *					getUserPrivateDirectory(void);
 
+
+	static bool m_NotInitialized;
+
 protected:
+	static void InitializeMacToolbox ();
+
+	/* Mac Event handling */
+	void DispatchEvent (const EventRecord & theEvent);
+	void HandleMenus (long menuSelection);
+
 	UT_uint32	_getExeDir(char* pDirBuf, UT_uint32 iBufLen);
 	
 	AP_MacToolbar_Icons *		m_pMacToolbarIcons;

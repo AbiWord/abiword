@@ -22,6 +22,9 @@
 #ifndef XAP_MACFRAME_H
 #define XAP_MACFRAME_H
 
+#include <MacWindows.h>
+#include <MacTypes.h>
+
 #include "xap_Frame.h"
 #include "ut_vector.h"
 #include "xap_MacDialogFactory.h"
@@ -38,6 +41,8 @@ class EV_MacMenu;
 ** document window.
 ******************************************************************
 *****************************************************************/
+
+#define XAP_MACFRAME_WINDOW_KIND 128
 
 class XAP_MacFrame : public XAP_Frame
 {
@@ -59,10 +64,13 @@ public:
 	virtual UT_Bool 			runModalContextMenu(AV_View * pView, const char * szMenuName, UT_sint32 x, UT_sint32 y);
 	virtual void                            setStatusMessage(const char * szMsg) = 0;
 
+	WindowPtr _getMacWindow (void) { UT_ASSERT (m_MacWindow != NULL); return m_MacWindow; } ;
 protected:
 	void						_createTopLevelWindow(void);
-	WindowPtr theWP;
-	Rect theBounds;
+	WindowPtr					m_MacWindow;
+	Rect 						theBounds;
+private:
+	void						MacWindowInit ();
 };
 
 #endif /* XAP_MACFRAME_H */

@@ -29,14 +29,13 @@
 
 #include "xap_Strings.h"
 #include "xap_Dialog_Id.h"
-#include "xap_Dialog_Insert_Symbol.h"
-#include "xap_MacDialog_Insert_Symbol.h"
+#include "xap_Dlg_Insert_Symbol.h"
+#include "xap_MacDlg_Insert_Symbol.h"
 
-#include "xap_MacResources.rc2"
 
 /*****************************************************************/
 
-XAP_Dialog * AP_MacDialog_Insert_Symbol::static_constructor(XAP_DialogFactory * pFactory,
+XAP_Dialog * XAP_MacDialog_Insert_Symbol::static_constructor(XAP_DialogFactory * pFactory,
 													 XAP_Dialog_Id id)
 {
 	XAP_MacDialog_Insert_Symbol * p = new XAP_MacDialog_Insert_Symbol(pFactory,id);
@@ -79,7 +78,7 @@ static void s_Symbolarea_exposed(GtkWidget * widget,...
 static void s_SymbolMap_clicked(GtkWidget * widget,...
 static void s_new_font(GtkWidget * widget,...
 static gboolean s_keypressed(GtkWidget * widget,...
-static void s_delete_clicked(GtkWidget * /* widget */,...
+static void s_delete_clicked(GtkWidget *  widget ,...
 
 I hope their use is obvious from there names. 
 Your platform may need these too.I know nothing but gtk/gnome though.

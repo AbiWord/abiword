@@ -59,7 +59,7 @@
 
 //	DeclareDialog(AP_DIALOG_ID_REPLACE,			AP_MacDialog_Replace)
 //	DeclareDialog(AP_DIALOG_ID_FIND,			AP_MacDialog_Replace)
-//	DeclareDialog(AP_DIALOG_ID_BREAK,			AP_MacDialog_Break)
+	DeclareDialog(AP_DIALOG_ID_BREAK,			AP_MacDialog_Break)
 	
 	// ... also add new dialogs here ...
 

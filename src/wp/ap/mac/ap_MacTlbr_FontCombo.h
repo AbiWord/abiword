@@ -1,6 +1,5 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 1999 John Brewer DBA Jera Design
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -22,10 +21,9 @@
 #define AP_MACTOOLBAR_FONTCOMBO_H
 
 #include "xap_Types.h"
+#include "ev_MacToolbar.h"
 #include "ev_Toolbar_Control.h"
 class EV_Toolbar;
-
-/*****************************************************************/
 
 class AP_MacToolbar_FontCombo : public EV_Toolbar_Control
 {
@@ -33,11 +31,12 @@ public:
 	AP_MacToolbar_FontCombo(EV_Toolbar * pToolbar, XAP_Toolbar_Id id);
 	virtual ~AP_MacToolbar_FontCombo(void);
 
-	virtual UT_Bool		populate(void);
+	static EV_Toolbar_Control * 	static_constructor(EV_Toolbar *, XAP_Toolbar_Id id);
 
-	static EV_Toolbar_Control *		static_constructor(EV_Toolbar *, XAP_Toolbar_Id id);
+	virtual UT_Bool					populate(void);
 
 protected:
+		
 };
 
 #endif /* AP_MACTOOLBAR_FONTCOMBO_H */

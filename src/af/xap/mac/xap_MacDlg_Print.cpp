@@ -51,13 +51,13 @@ GR_Graphics * XAP_MacDialog_Print::getPrinterGraphicsContext(void)
 	return 0;
 }
 
-void XAP_MacDialog_Print::releasePrinterGraphicsContext(GR_Graphics * pGraphics)
+void XAP_MacDialog_Print::releasePrinterGraphicsContext(GR_Graphics * /*pGraphics*/)
 {
 }
 
 /*****************************************************************/
 
-void XAP_MacDialog_Print::runModal(XAP_Frame * pFrame)
+void XAP_MacDialog_Print::runModal(XAP_Frame * /*pFrame*/)
 {
 	m_pMacFrame = NULL;
 	return;

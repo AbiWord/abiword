@@ -18,10 +18,14 @@
  * 02111-1307, USA.
  */
 
+#include <Dialogs.h>
+
 #include "ut_assert.h"
 #include "xap_MacDlg_MessageBox.h"
 #include "xap_MacApp.h"
 #include "xap_MacFrame.h"
+
+#include "ap_Mac_ResID.h"
 
 /*****************************************************************/
 XAP_Dialog * XAP_MacDialog_MessageBox::static_constructor(XAP_DialogFactory * pFactory,
@@ -45,6 +49,9 @@ XAP_MacDialog_MessageBox::~XAP_MacDialog_MessageBox(void)
 
 void XAP_MacDialog_MessageBox::runModal(XAP_Frame * pFrame)
 {
+	short alertID;
+	short item;
+	
 	m_pMacFrame = (XAP_MacFrame *)pFrame;
 	UT_ASSERT(m_pMacFrame);
 	XAP_MacApp * pApp = (XAP_MacApp *)m_pMacFrame->getApp();
@@ -53,7 +60,46 @@ void XAP_MacDialog_MessageBox::runModal(XAP_Frame * pFrame)
 	const char * szCaption = pApp->getApplicationTitleForTitleBar();
 
 	// the caller can get the answer from getAnswer().
+	switch (m_buttons) {
+	case b_O:
+		alertID = RES_ALRT_OK;
+		break;	
+	case b_OC:
+		alertID = RES_ALRT_OKCANCEL;
+		break;
+	case b_YN:
+		alertID = RES_ALRT_YESNO;
+		break;
+	case b_YNC:
+		alertID = RES_ALRT_YESNOCANCEL;
+		break;
+	}
 
+	item = ::Alert (alertID, NULL);
+	if ((m_buttons == b_O) || (m_buttons == b_OC)) { 
+		switch (item) {
+		case 0:
+			m_answer = a_OK;
+			break;
+		case 1:
+			m_answer = a_CANCEL;
+			break;
+		}
+	}
+	else if ((m_buttons == b_YN) || (m_buttons == b_YNC)) { 
+		switch (item) {
+		case 0:
+			m_answer = a_YES;
+			break;
+		case 1:
+			m_answer = a_NO;
+			break;
+		case 2:
+			m_answer = a_CANCEL;
+			break;
+		}
+	}
+	
 	m_pMacFrame = NULL;
 }
 

@@ -118,7 +118,7 @@ UT_Bool AP_MacApp::shutdown(void)
 const char * AP_MacApp::getAbiSuiteAppDir(void) const
 {
 	// we return a static string, use it quickly.
-	
+	// TODO
 	static XML_Char buf[1024] = "";
 	return buf;
 }
@@ -128,11 +128,11 @@ const XAP_StringSet * AP_MacApp::getStringSet(void) const
 	return m_pStringSet;
 }
 
-void AP_MacApp::copyToClipboard(PD_DocumentRange * pDocRange)
+void AP_MacApp::copyToClipboard(PD_DocumentRange * /*pDocRange*/)
 {
 }
 
-void AP_MacApp::pasteFromClipboard(PD_DocumentRange * pDocRange, UT_Bool)
+void AP_MacApp::pasteFromClipboard(PD_DocumentRange * /*pDocRange*/, UT_Bool)
 {
 }
 
@@ -146,6 +146,8 @@ UT_Bool AP_MacApp::canPasteFromClipboard(void)
 int AP_MacApp::MacMain(const char * szAppName, int argc, char **argv)
 {
 	// initialize our application.
+
+	XAP_MacApp::InitializeMacToolbox ();
 
 	XAP_Args Args = XAP_Args(argc,argv);
 	
@@ -161,14 +163,14 @@ int AP_MacApp::MacMain(const char * szAppName, int argc, char **argv)
 	// turn over control to windows
 
 	unsigned short mask = 0;
-	struct EventRecord theEvent;
+	EventRecord theEvent;
 	unsigned long delay = 0;
-	while (WaitNextEvent(mask, &theEvent, delay, NULL))
+	while (::WaitNextEvent(mask, &theEvent, delay, NULL))
 	{
 		// Note: we do not call TranslateMessage() because
 		// Note: the keybinding mechanism is responsible
 		// Note: for deciding if/when to do this.
-
+		pMyMacApp->DispatchEvent (theEvent);
 	}
 
 	// destroy the App.  It should take care of deleting all frames.

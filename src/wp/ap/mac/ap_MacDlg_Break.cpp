@@ -51,7 +51,7 @@ AP_MacDialog_Break::~AP_MacDialog_Break(void)
 
 /*****************************************************************/
 
-void AP_MacDialog_Break::runModal(XAP_Frame * pFrame)
+void AP_MacDialog_Break::runModal(XAP_Frame * /*pFrame*/)
 {
 
 	/*

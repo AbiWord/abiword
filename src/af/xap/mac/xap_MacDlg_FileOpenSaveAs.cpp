@@ -49,8 +49,21 @@ XAP_MacDialog_FileOpenSaveAs::~XAP_MacDialog_FileOpenSaveAs(void)
 /*****************************************************************/
 
 
-void XAP_MacDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
+void XAP_MacDialog_FileOpenSaveAs::runModal(XAP_Frame * /*pFrame*/)
 {
+	UT_ASSERT (UT_NOT_IMPLEMENTED); 
+	switch (m_id) {
+		case XAP_DIALOG_ID_INSERT_PICTURE:
+		case XAP_DIALOG_ID_FILE_OPEN: {
+		}
+		case XAP_DIALOG_ID_FILE_SAVEAS: {
+		}
+		case XAP_DIALOG_ID_PRINTTOFILE: {
+			UT_ASSERT (UT_NOT_IMPLEMENTED);
+		}
+		default:
+			UT_ASSERT (UT_SHOULD_NOT_HAPPEN);
+	}
 	return;
 }
 

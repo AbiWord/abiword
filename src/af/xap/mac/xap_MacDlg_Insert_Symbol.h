@@ -32,9 +32,9 @@ public:
 	virtual ~XAP_MacDialog_Insert_Symbol(void);
 
 	virtual void			runModeless(XAP_Frame * pFrame);
-	virtual void			runModal(XAP_Frame * pFrame){};
-	virtual void			notifyActiveFrame(XAP_Frame *pFrame){};
-	virtual void			notifyCloseFrame(XAP_Frame *pFrame){};
+	virtual void			runModal(XAP_Frame * /*pFrame*/){};
+	virtual void			notifyActiveFrame(XAP_Frame */*pFrame*/){};
+	virtual void			notifyCloseFrame(XAP_Frame */*pFrame*/){};
 	virtual void			destroy(void){};
 	virtual void			activate(void){};
  

@@ -19,8 +19,14 @@
 
 #include "stdlib.h"
 #include "string.h"
+
+#include <MacTypes.h>
+#include <Memory.h>
+#include <Folders.h>
+
 #include "ap_MacPrefs.h"
-#include "FullPath.h"
+
+//#include "FullPath.h"
 
 /*****************************************************************/
 
@@ -42,13 +48,14 @@ const char * AP_MacPrefs::getPrefsPathname(void) const
 	
 	short	foundVRefNum, pathLen;
 	long	foundDirID;
-	OSErr err = FindFolder(kOnSystemDisk, kPreferencesFolderType, kCreateFolder,
+	OSErr err = ::FindFolder(kOnSystemDisk, kPreferencesFolderType, kCreateFolder,
 							&foundVRefNum, &foundDirID);
 	
-	Handle bufHdl = NewHandle(PATH_MAX);
-	GetFullPath(foundVRefNum, foundDirID, NULL, &pathLen, &bufHdl);
+	Handle bufHdl = ::NewHandle(PATH_MAX);
+	// FIXIT
+        //::GetFullPath(foundVRefNum, foundDirID, NULL, &pathLen, &bufHdl);
 	strncpy(buf, *bufHdl, pathLen);
-	DisposeHandle(bufHdl);
+	::DisposeHandle(bufHdl);
 	
 	char * szFile = "AbiWord";
 

@@ -29,7 +29,6 @@ TARGETS=		$(LIBRARY)
 PLATFORM_OBJS=	$(OBJDIR)/ap_$(ABI_FE)App.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ap_$(ABI_FE)Clipboard.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_$(ABI_FE)DialogFactory.$(OBJ_SUFFIX)	\
-		$(OBJDIR)/ap_$(ABI_FE)Dialog_Break.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_WordCount.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_Field.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_Goto.$(OBJ_SUFFIX)		\
@@ -37,7 +36,6 @@ PLATFORM_OBJS=	$(OBJDIR)/ap_$(ABI_FE)App.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_Lists.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_Options.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_Paragraph.$(OBJ_SUFFIX)	\
-		$(OBJDIR)/ap_$(ABI_FE)Dialog_Replace.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_Spell.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_Columns.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_Tab.$(OBJ_SUFFIX)	\
@@ -46,16 +44,25 @@ PLATFORM_OBJS=	$(OBJDIR)/ap_$(ABI_FE)App.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ap_$(ABI_FE)Prefs.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_$(ABI_FE)StatusBar.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_$(ABI_FE)Toolbar_StyleCombo.$(OBJ_SUFFIX)	\
-		$(OBJDIR)/ap_$(ABI_FE)Toolbar_FontCombo.$(OBJ_SUFFIX)	\
-		$(OBJDIR)/ap_$(ABI_FE)Toolbar_SizeCombo.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)Toolbar_ZoomCombo.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)_TB_CFactory.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)TopRuler.$(OBJ_SUFFIX)
 
 
+ifeq ($(ABI_FE), Mac)
+PLATFORM_OBJS += $(OBJDIR)/ap_$(ABI_FE)Dlg_Replace.$(OBJ_SUFFIX)	\
+		$(OBJDIR)/ap_$(ABI_FE)Dlg_Break.$(OBJ_SUFFIX)	\
+		$(OBJDIR)/ap_$(ABI_FE)Tlbr_SizeCombo.$(OBJ_SUFFIX)	\
+		$(OBJDIR)/ap_$(ABI_FE)Tlbr_FontCombo.$(OBJ_SUFFIX)
+else
+PLATFORM_OBJS += $(OBJDIR)/ap_$(ABI_FE)Dialog_Replace.$(OBJ_SUFFIX)	\
+		$(OBJDIR)/ap_$(ABI_FE)Dialog_Break.$(OBJ_SUFFIX)	\
+		$(OBJDIR)/ap_$(ABI_FE)Toolbar_SizeCombo.$(OBJ_SUFFIX)	\
+		$(OBJDIR)/ap_$(ABI_FE)Toolbar_FontCombo.$(OBJ_SUFFIX)
+endif
+
 ifeq ($(ABI_FE), Unix)
 PLATFORM_OBJS += 	$(OBJDIR)/ap_$(ABI_FE)ViewListener.$(OBJ_SUFFIX)
-endif
 
 ifdef ABI_OPT_GNOME
 PLATFORM_OBJS+=	$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)App.$(OBJ_SUFFIX)			\
@@ -69,6 +76,7 @@ PLATFORM_OBJS+=	$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)App.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Lists.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Tab.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Options.$(OBJ_SUFFIX)
+endif
 endif
 
 OBJS=		$(PLATFORM_OBJS)				\

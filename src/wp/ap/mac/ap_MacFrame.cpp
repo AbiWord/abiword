@@ -54,16 +54,19 @@ UT_Bool AP_MacFrame::initialize()
 
 XAP_Frame *	AP_MacFrame::cloneFrame(void)
 {
+	UT_ASSERT (UT_NOT_IMPLEMENTED); 
 	return 0;
 }
 
-void AP_MacFrame::setStatusMessage(const char * szMsg)
+void AP_MacFrame::setStatusMessage(const char * /*szMsg*/)
 {
 	//TODO
+	UT_ASSERT (UT_NOT_IMPLEMENTED); 
 }                                                                        
 
-UT_Error AP_MacFrame::loadDocument(const char * szFilename, int ieft)
+UT_Error AP_MacFrame::loadDocument(const char * /*szFilename*/, int /*ieft*/)
 {
+	UT_ASSERT (UT_NOT_IMPLEMENTED); 
 	return UT_TRUE;
 }
 
@@ -85,28 +88,34 @@ void AP_MacFrame::killFrameData(void)
 
 UT_Bool	AP_MacFrame::close(void)
 {
+	UT_ASSERT (UT_NOT_IMPLEMENTED); 
 	return UT_TRUE;
 }
 
 UT_Bool	AP_MacFrame::raise(void)
 {
+	UT_ASSERT (UT_NOT_IMPLEMENTED); 
 	return UT_TRUE;
 }
 
 UT_Bool	AP_MacFrame::show(void)
 {
+	UT_ASSERT (UT_NOT_IMPLEMENTED); 
 	return UT_TRUE;
 }
 
 XAP_DialogFactory *AP_MacFrame::getDialogFactory(void)
 {
+	UT_ASSERT (UT_NOT_IMPLEMENTED); 
 	return 0;
 }
 
 void AP_MacFrame::setXScrollRange(void)
 {
+	UT_ASSERT (UT_NOT_IMPLEMENTED); 
 }
 
 void AP_MacFrame::setYScrollRange(void)
 {
+	UT_ASSERT (UT_NOT_IMPLEMENTED); 
 }
