@@ -109,7 +109,8 @@ OBJS=		$(PLATFORM_OBJS)						\
 		$(OBJDIR)/ut_AdobeEncoding.$(OBJ_SUFFIX) \
 		$(OBJDIR)/ut_OverstrikingChars.$(OBJ_SUFFIX) \
 		$(OBJDIR)/ut_Language.$(OBJ_SUFFIX)		\
-		$(OBJDIR)/ut_Encoding.$(OBJ_SUFFIX)
+		$(OBJDIR)/ut_Encoding.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/ut_path.$(OBJ_SUFFIX)
 
 
 include $(ABI_ROOT)/src/config/abi_rules.mk

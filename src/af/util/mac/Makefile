@@ -30,7 +30,8 @@ CPPSRCS=		ut_debugmsg.cpp		\
 			ut_MacAssert.cpp	\
 			ut_MacTimer.cpp	\
                         ut_unixAssert.cpp 	\
-			ut_Xpm2Bmp.cpp
+			ut_Xpm2Bmp.cpp		\
+			ut_path.cpp
 
 REZSRCS=		ut_MacAssert.r
 

@@ -18,6 +18,10 @@
  */
 
 
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <fcntl.h>
+#include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
@@ -29,6 +33,7 @@
 #include "ut_hash.h"
 #include "ut_units.h"
 #include "ut_wctomb.h"
+#include "ut_path.h"
 #include "pt_Types.h"
 #include "fd_Field.h"
 #include "ie_exp_HTML.h"
@@ -108,9 +113,9 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 	}
 
 	if(!m_4sniffer->unref())
-	  {
+	{
 	    m_4sniffer = 0;
-	  }
+	}
 
 	return 1;
 }
@@ -262,6 +267,7 @@ protected:
 	UT_uint16		m_iListDepth;	// 0 corresponds to not in a list
 	UT_uint16		m_iPrevListDepth;
 	UT_Stack		m_utsListType;
+	UT_Vector		m_utvDataIDs;	// list of data ids for image enumeration
         UT_uint16               m_iImgCnt;
 	UT_Wctomb		m_wmctomb;
 };
@@ -342,41 +348,47 @@ void s_HTML_Listener::_closeTag(void)
 	{
 		if(!m_bWroteText)
 		{
-		  if (!m_bIs4)
+			if (!m_bIs4)
 		    {
-		      m_pie->write("<br />\r\n");
+				m_pie->write("<br />\r\n");
 		    }
-		  else
+			else
 		    {
-		      m_pie->write("<br>\r\n");
+				m_pie->write("<br>\r\n");
 		    }
-		  m_pie->write("</p>\r\n");
+			m_pie->write("</p>\r\n");
 		}
 	}
-
-	else if(m_iBlockType == BT_HEADING1)
+	else if(m_iBlockType == BT_HEADING1) 
+	{
 		m_pie->write("</h1>\r\n");
-
+	}
 	else if(m_iBlockType == BT_HEADING2)
+	{
 		m_pie->write("</h2>\r\n");
-
+	}
 	else if(m_iBlockType == BT_HEADING3)
+	{
 		m_pie->write("</h3>\r\n");
-
+	}
 	else if(m_iBlockType == BT_BLOCKTEXT)
+	{
 		m_pie->write("</blockquote>\r\n");
-
+	}
 	else if(m_iBlockType == BT_PLAINTEXT)
+	{
 		m_pie->write("</pre>\r\n");
-
+	}
 	else if(m_iBlockType == BT_NUMBEREDLIST || m_iBlockType == BT_BULLETLIST)
-	{	/* do nothing, lists are handled differently, as they have multiple tags */ }
-
-        // Add "catchall" for now
-
-	else
-	  m_pie->write("</p>\r\n");
-
+	{	
+/* do nothing, lists are handled differently, as they have multiple tags */ 
+	}
+	// Add "catchall" for now
+ 	else
+	{
+		m_pie->write("</p>\r\n");
+	}
+	
 	m_bInBlock = false;
 	return;
 }
@@ -409,11 +421,11 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 
 		if (
 		   (pAP->getAttribute("style", szValue) ||
-		    pAP->getAttribute("listid", szListID))
+		   	(pAP->getAttribute("listid", szListID) && 
+			 0 != UT_strcmp(szListID, "0")))
 		   )
 		{
-			if(pAP->getAttribute("listid", szListID) &&
-			   0 != UT_strcmp(szListID, "0"))
+			if(pAP->getAttribute("listid", szListID))
 			{	// we're in a list
 				if(!pAP->getAttribute("style", szValue)) szValue = szDefault;
 				pAP->getAttribute("level", szLevel);
@@ -747,16 +759,17 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 	}
 	else 
 	{
-
+		
 		// <p> with no style attribute, and no properties either
 
-	  m_iBlockType = BT_NORMAL;
-	  m_pie->write("<p");
-	  wasWritten = true;
+		m_iBlockType = BT_NORMAL;
+		m_pie->write("<p");
+		wasWritten = true;
 	}
 	if (wasWritten)
-	  m_pie->write(">");
-
+	{
+		m_pie->write(">");
+	}
 	m_bInBlock = true;
 }
 
@@ -1198,12 +1211,12 @@ void s_HTML_Listener::_closeSpan(void)
 		    || (pAP->getProperty("font-family", szValue))
 			)
 		{
-		  closeSpan = true;
+			closeSpan = true;
 		}
-
+		
 		if (pAP->getProperty("text-position", szValue))
 		{
-		  closeSpan = true;
+			closeSpan = true;
 		}
 
 		if (
@@ -1211,7 +1224,7 @@ void s_HTML_Listener::_closeSpan(void)
 			&& UT_strcmp(szValue, "none")
 			)
 		{
-		  closeSpan = true;
+			closeSpan = true;
 		}
 
 		if (
@@ -1219,7 +1232,7 @@ void s_HTML_Listener::_closeSpan(void)
 			&& !UT_strcmp(szValue, "italic")
 			)
 		{
-		  closeSpan = true;
+			closeSpan = true;
 		}
 		
 		if (
@@ -1227,7 +1240,7 @@ void s_HTML_Listener::_closeSpan(void)
 			&& !UT_strcmp(szValue, "bold")
 			)
 		{
-		  closeSpan = true;
+			closeSpan = true;
 		}
 
 		if(pAP->getAttribute("style", szValue))
@@ -1236,9 +1249,9 @@ void s_HTML_Listener::_closeSpan(void)
 		}
 
 		if (closeSpan)
-		  {
+		{
 		    m_pie->write("</span>");
-		  }
+		}
 
 		m_pAP_Span = NULL;
 	}
@@ -1295,17 +1308,17 @@ void s_HTML_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 		case '\t':
 		  // try to honor multiple spaces
 
-		  if(m_bNextIsSpace)
-		    {
+			if(m_bNextIsSpace)
+			{
 				sBuf += "&nbsp;";
 				pData++;
-		    }
-		  else
-		    {
+			}
+			else
+			{
 				sBuf += *pData;
 				pData++;
-		    }
-		  break;
+			}
+			break;
 
 		case UCS_LF:			// LF -- representing a Forced-Line-Break
 		  if (!m_bIs4)
@@ -1325,6 +1338,32 @@ void s_HTML_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 			break;						// TODO: This handles apostrophes
 										// (smart single right quotes)
 										// what about the other types?
+		case UCS_LQUOTE:
+			sBuf += "\'";
+			pData++;
+			break;
+
+		case UCS_RDBLQUOTE:
+			sBuf += "&rdquo;";
+			pData++;
+			break;
+
+		case UCS_LDBLQUOTE:
+			sBuf += "&ldquo;";
+			pData++;
+			break;
+
+		case UCS_EN_DASH:
+		case UCS_EM_DASH:
+			sBuf += "-";
+			pData++;
+			break;
+
+		case UCS_FF:					// page break, convert to line break
+			sBuf += "<br />";
+			pData++;
+			break;
+		
 		default:
 			if (*pData > 0x007f)
 			{
@@ -1443,43 +1482,43 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 
 	// we always encode as UTF-8
 	if ( !m_bIs4 )
-	  {
+	{
 	    m_pie->write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n");
 	    m_pie->write("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\r\n");
-	  }
+	}
 	else
-	  {
+	{
 	    m_pie->write("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\" \"http://www.w3.org/TR/REC-html40/loose.dtd\">\r\n");
-	  }
-
+	}
+	
 	m_pie->write("<!-- ================================================================================  -->\r\n");
 	m_pie->write("<!-- This HTML file was created by AbiWord.                                            -->\r\n");
 	m_pie->write("<!-- AbiWord is a free, Open Source word processor.                                    -->\r\n");
 	m_pie->write("<!-- You may obtain more information about AbiWord at www.abisource.com                -->\r\n");
 	m_pie->write("<!-- ================================================================================  -->\r\n");
 	m_pie->write("\r\n");
-
+	
 	if ( !m_bIs4 )
-	  {
+	{
 	    m_pie->write("<html xmlns=\"http://www.w3.org/1999/xhtml\">\r\n");
-	  }
+	}
 	else
-	  {
+	{
 	    m_pie->write("<html>\r\n");
-	  }
-
+	}
+	
 	m_pie->write("<head>\r\n");
-
+	
 	// we always encode as UTF-8
 	if ( !m_bIs4 )
-	  {
+	{
 	    m_pie->write("<meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\" />\r\n");
-	  }
+	}
 	else
-	  {
+	{
 	    m_pie->write("<meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\" >\r\n");
-	  }
-
+	}
+	
 	m_pie->write("<title>");
 	m_pie->write(m_pie->getFileName());
 	m_pie->write("</title>\r\n");
@@ -1667,7 +1706,9 @@ s_HTML_Listener::~s_HTML_Listener()
 	{
 		DELETEP(popped);
 	}
-	
+
+	UT_VECTOR_PURGEALL(char*, m_utvDataIDs);
+
 	m_pie->write("</body>\r\n");
 	m_pie->write("</html>\r\n");
 }
@@ -1714,13 +1755,23 @@ bool s_HTML_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 			case PTO_Image:
 				// TODO: differentiate between SVG and PNG
 				// TODO: we do this in the img saving code
-	                        sprintf(buf, "-%d.png", m_iImgCnt++);
-				m_pie->write("<img alt=\"AbiWord Image");
-				m_pie->write(buf);
-				m_pie->write("\" src=\"");
-				m_pie->write(m_pie->getFileName());
-				m_pie->write(buf);
-				m_pie->write("\" />\r\n");
+
+				if(bHaveProp && pAP && pAP->getAttribute("dataid", szValue))
+				{
+					char* dataid = new char[strlen((char*) szValue)];
+					strcpy(dataid, (char*) szValue);
+
+					m_utvDataIDs.push_back(dataid);
+
+					sprintf(buf, "%d.png", m_iImgCnt++);
+					m_pie->write("<img alt=\"AbiWord Image");
+					m_pie->write(buf);
+					m_pie->write("\" src=\"");
+					m_pie->write(basename(m_pie->getFileName()));
+					m_pie->write("_d/");
+					m_pie->write(buf);
+					m_pie->write("\" />\r\n");
+				}
 				return true;
 
 			case PTO_Field:
@@ -1892,37 +1943,53 @@ UT_Error IE_Exp_HTML::_writeDocument(void)
 
 void s_HTML_Listener::_handleDataItems(void)
 {
-	const char * szName;
-   	const char * szMimeType;
+ 	const char * szName;
+	const char * szMimeType;
 	const UT_ByteBuf * pByteBuf;
-
+	
 	for (UT_uint32 k=0; (m_pDocument->enumDataItems(k,NULL,&szName,&pByteBuf,(void**)&szMimeType)); k++)
-	{	  	  
-	  FILE *fp;
-	  char fname [1024]; // EVIL EVIL bad hardcoded buffer size
-	  
-	  if (!UT_strcmp(szMimeType, "image/svg-xml"))
-	      sprintf(fname, "%s-%d.svg", m_pie->getFileName(), k);
-	  if (!UT_strcmp(szMimeType, "text/mathml"))
-	    sprintf(fname, "%s-%d.mathml", m_pie->getFileName(), k);
-	  else // PNG Image
-	    sprintf(fname, "%s-%d.png", m_pie->getFileName(), k);
-	  
-	  fp = fopen (fname, "wb+");
-	  
-	  if(!fp)
-	    continue;
-	  
-	  int cnt = 0, len = pByteBuf->getLength();
-	  
-	  while (cnt < len)
-	    {
-	      cnt += fwrite (pByteBuf->getPointer(cnt), sizeof(UT_Byte), len-cnt, fp);
-	    }
-	  
-	  fclose(fp);
+	{
+		UT_sint32 loc = -1;
+		for (UT_uint32 i = 0; i < m_utvDataIDs.getItemCount(); i++)
+		{
+			if(UT_strcmp((char*) m_utvDataIDs[i], szName) == 0)
+			{
+				loc = i;
+				break;
+			}
+		}
+		
+		if(loc > -1)
+		{
+			FILE *fp;
+			char fname [1024]; // EVIL EVIL bad hardcoded buffer size
+			
+			sprintf(fname, "%s_d", m_pie->getFileName());
+			int result = mkdir(fname, 0750);
+			
+			if (!UT_strcmp(szMimeType, "image/svg-xml"))
+				sprintf(fname, "%s/%d.svg", fname, loc);
+			if (!UT_strcmp(szMimeType, "text/mathml"))
+				sprintf(fname, "%s/%d.mathml", fname, loc);
+			else // PNG Image
+				sprintf(fname, "%s/%d.png", fname, loc);
+			
+			fp = fopen (fname, "wb+");
+			
+			if(!fp)
+				continue;
+			
+			int cnt = 0, len = pByteBuf->getLength();
+			
+			while (cnt < len)
+			{
+				cnt += fwrite (pByteBuf->getPointer(cnt), 
+							   sizeof(UT_Byte), len-cnt, fp);
+			}
+			
+			fclose(fp);
+		}
 	}
 	
 	return;
 }
-

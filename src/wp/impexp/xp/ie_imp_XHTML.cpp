@@ -180,7 +180,7 @@ bool	IE_Imp_XHTML_Sniffer::getDlgLabels(const char ** pszDesc,
     "level", "1",
     "listid", "1",
     "parentid", "0",
-    "props", "list-style:Numbered List; color:000000; font-family:Times New Roman; font-size:12pt; font-style:normal; font-weight:normal; start-value:1; text-decoration:none; text-indent:-0.3in; text-position:normal;",
+    "props", "list-style:Numbered List; color:000000; font-family:Times New Roman; font-size:12pt; font-style:normal; font-weight:normal; start-value:1; text-decoration:none; text-indent:-0.3in; text-position:normal; field-font: NULL;",
 	/* margin-left is purposefully left out of the props.  It is computed
 	   based on the depth of the list, and appended to this list of
 	   attributes. */
@@ -203,7 +203,7 @@ bool	IE_Imp_XHTML_Sniffer::getDlgLabels(const char ** pszDesc,
     "level", "1",
     "listid", "2",
     "parentid", "0",
-    "props", "list-style:Bullet List;color:000000; font-family:Times New Roman; font-size:12pt; font-style:normal; font-weight:normal; start-value:0; text-decoration:none; text-indent:-0.3in; text-position:normal;",
+    "props", "list-style:Bullet List;color:000000; font-family:Times New Roman; font-size:12pt; font-style:normal; font-weight:normal; start-value:0; text-decoration:none; text-indent:-0.3in; text-position:normal; field-font: Symbol;",
 	/* margin-left is purposefully left out of the props.  It is computed
 	   based on the depth of the list, and appended to this list of
 	   attributes. */
@@ -354,73 +354,73 @@ static struct xmlToIdMapping s_Tokens[] =
 
 static void convertFontFace(char *szDest, const char *szFrom)
 {
-  // TODO: make me better
-  // TODO: and handle things like comma lists of font faces
-  char *newFont;
-
-  // default...
-  if(szFrom == NULL)
-    newFont = "Times New Roman";
-  else
-    newFont = (char*)szFrom;
-
-  strcpy(szDest, newFont);
+	// TODO: make me better
+	// TODO: and handle things like comma lists of font faces
+	char *newFont;
+	
+	// default...
+	if(szFrom == NULL)
+		newFont = "Times New Roman";
+	else
+		newFont = (char*)szFrom;
+	
+	strcpy(szDest, newFont);
 }
 
 static void convertFontSize(char *szDest, const char *szFrom)
 {
-  // if it starts with a +
-  // if it starts with a -
-  // if it is a number, clamp it
-
-  int sz = 12;
-
-  if(szFrom == NULL)
+	// if it starts with a +
+	// if it starts with a -
+	// if it is a number, clamp it
+	
+	int sz = 12;
+	
+	if(szFrom == NULL)
     {
-      sz = 12;
+		sz = 12;
     }
-  else if(UT_UCS_isdigit(*szFrom))
+	else if(UT_UCS_isdigit(*szFrom))
     {
-      sz = atoi(szFrom);
+		sz = atoi(szFrom);
     }
-  else if(*szFrom == '+')
+	else if(*szFrom == '+')
     {
-      switch(atoi(szFrom+1))
-	{
-	case 1:
-	  sz = 10; break;
-	case 2:
-	  sz = 12; break;
-	case 3:
-	  sz = 16; break;
-	case 4:
-	  sz = 20; break;
-	case 5:
-	  sz = 24; break;
-	case 6:
-	  sz = 36; break;
-	default:
-	  sz = 12; break;
-	}
+		switch(atoi(szFrom+1))
+		{
+		case 1:
+			sz = 10; break;
+		case 2:
+			sz = 12; break;
+		case 3:
+			sz = 16; break;
+		case 4:
+			sz = 20; break;
+		case 5:
+			sz = 24; break;
+		case 6:
+			sz = 36; break;
+		default:
+			sz = 12; break;
+		}
     }
-  else if(*szFrom == '-')
+	else if(*szFrom == '-')
     {
-      switch(atoi(szFrom+1))
-	{
-	case 1:
-	  sz = 9; break;
-	default:
-	  sz = 8; break;
-	}
+		switch(atoi(szFrom+1))
+		{
+		case 1:
+			sz = 9; break;
+		default:
+			sz = 8; break;
+		}
     }
-
-  // clamp the value
-  if(sz > 36)
-    sz = 36;
-  else if(sz < 8)
-    sz = 8;
-
-  sprintf(szDest, "%2d", sz);
+	
+	// clamp the value
+	if(sz > 36)
+		sz = 36;
+	else if(sz < 8)
+		sz = 8;
+	
+	sprintf(szDest, "%2d", sz);
 }
 
 static void convertFontColor(char *szDest, const char *szFrom)
@@ -430,83 +430,83 @@ static void convertFontColor(char *szDest, const char *szFrom)
   // if it starts with a number, send it through
   // else convert color from values in XHTML DTD
 
-  int col = 0; // black
-
-  if(szFrom == NULL)
+	int col = 0; // black
+	
+	if(szFrom == NULL)
     {
-      col = 0;
+		col = 0;
     }
-  if(*szFrom == '#')
+	if(*szFrom == '#')
     {
-      col = atoi(szFrom+1);
+		col = atoi(szFrom+1);
     }
-  else if(UT_UCS_isdigit(*szFrom))
+	else if(UT_UCS_isdigit(*szFrom))
     {
-      col = atoi(szFrom);
+		col = atoi(szFrom);
     }
-  else if(!UT_XML_stricmp((XML_Char *)szFrom, "green"))
+	else if(!UT_XML_stricmp((XML_Char *)szFrom, "green"))
     {
-      col = 0x008000;
+		col = 0x008000;
     }
-  else if(!UT_XML_stricmp((XML_Char *)szFrom, "silver"))
+	else if(!UT_XML_stricmp((XML_Char *)szFrom, "silver"))
     {
-      col = 0xC0C0C0;
+		col = 0xC0C0C0;
     }
-  else if(!UT_XML_stricmp((XML_Char *)szFrom, "lime"))
+	else if(!UT_XML_stricmp((XML_Char *)szFrom, "lime"))
     {
-      col = 0x00FF00;
+		col = 0x00FF00;
     }
-   else if(!UT_XML_stricmp((XML_Char *)szFrom, "gray"))
+	else if(!UT_XML_stricmp((XML_Char *)szFrom, "gray"))
     {
-      col = 0x808080;
+		col = 0x808080;
     }
-  else if(!UT_XML_stricmp((XML_Char *)szFrom, "olive"))
+	else if(!UT_XML_stricmp((XML_Char *)szFrom, "olive"))
     {
-      col = 0x808000;
+		col = 0x808000;
     }
-  else if(!UT_XML_stricmp((XML_Char *)szFrom, "white"))
+	else if(!UT_XML_stricmp((XML_Char *)szFrom, "white"))
     {
-      col = 0xFFFFFF;
+		col = 0xFFFFFF;
     }
-  else if(!UT_XML_stricmp((XML_Char *)szFrom, "yellow"))
+	else if(!UT_XML_stricmp((XML_Char *)szFrom, "yellow"))
     {
-      col = 0xFFFF00;
+		col = 0xFFFF00;
     }
-  else if(!UT_XML_stricmp((XML_Char *)szFrom, "maroon"))
+	else if(!UT_XML_stricmp((XML_Char *)szFrom, "maroon"))
     {
-      col = 0x800000;
+		col = 0x800000;
     }
-  else if(!UT_XML_stricmp((XML_Char *)szFrom, "navy"))
+	else if(!UT_XML_stricmp((XML_Char *)szFrom, "navy"))
     {
-      col = 0x000080;
+		col = 0x000080;
     }
-  else if(!UT_XML_stricmp((XML_Char *)szFrom, "red"))
+	else if(!UT_XML_stricmp((XML_Char *)szFrom, "red"))
     {
-      col = 0xFF0000;
+		col = 0xFF0000;
     }
-   else if(!UT_XML_stricmp((XML_Char *)szFrom, "blue"))
+	else if(!UT_XML_stricmp((XML_Char *)szFrom, "blue"))
     {
-      col = 0x0000FF;
+		col = 0x0000FF;
     }
-  else if(!UT_XML_stricmp((XML_Char *)szFrom, "purple"))
+	else if(!UT_XML_stricmp((XML_Char *)szFrom, "purple"))
     {
-      col = 0x800080;
+		col = 0x800080;
     }
-  else if(!UT_XML_stricmp((XML_Char *)szFrom, "teal"))
+	else if(!UT_XML_stricmp((XML_Char *)szFrom, "teal"))
     {
-      col = 0x008080;
+		col = 0x008080;
     }
-  else if(!UT_XML_stricmp((XML_Char *)szFrom, "fuchsia"))
+	else if(!UT_XML_stricmp((XML_Char *)szFrom, "fuchsia"))
     {
-      col = 0xFF00FF;
+		col = 0xFF00FF;
     }
-  else if(!UT_XML_stricmp((XML_Char *)szFrom, "aqua"))
+	else if(!UT_XML_stricmp((XML_Char *)szFrom, "aqua"))
     {
-      col = 0x00FFFF;
+		col = 0x00FFFF;
     }
-
-  sprintf(szDest, "%6x", col);
-  UT_DEBUGMSG(("DOM: color: %0xd (%s => %s)\n", col, szFrom, szDest));
+	
+	sprintf(szDest, "%6x", col);
+	UT_DEBUGMSG(("DOM: color: %0xd (%s => %s)\n", col, szFrom, szDest));
 }
 
 /*****************************************************************/
@@ -595,116 +595,117 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 
 	case TT_SUP:
 	case TT_SUB:
-	  //UT_DEBUGMSG(("Super or Subscript\n"));
-	  X_VerifyParseState(_PS_Block);
-	  UT_XML_cloneString(sz, PT_PROPS_ATTRIBUTE_NAME);
-	  new_atts[0]=sz;
-	  sz = NULL;
-	  if(tokenIndex == TT_SUP)    
-	    UT_XML_cloneString(sz, "text-position:superscript");
-	  else
-	    UT_XML_cloneString(sz, "text-position:subscript");
-	  new_atts[1]=sz;
-	  X_CheckError(getDoc()->appendFmt(new_atts));
-	  return;
-
+		//UT_DEBUGMSG(("Super or Subscript\n"));
+		X_VerifyParseState(_PS_Block);
+		UT_XML_cloneString(sz, PT_PROPS_ATTRIBUTE_NAME);
+		new_atts[0]=sz;
+		sz = NULL;
+		if(tokenIndex == TT_SUP)    
+			UT_XML_cloneString(sz, "text-position:superscript");
+		else
+			UT_XML_cloneString(sz, "text-position:subscript");
+		new_atts[1]=sz;
+		X_CheckError(getDoc()->appendFmt(new_atts));
+		return;
+		
 	case TT_S:
 	case TT_STRIKE:
-	  //UT_DEBUGMSG(("Strike\n"));
-	  X_VerifyParseState(_PS_Block);
-	  UT_XML_cloneString(sz, PT_PROPS_ATTRIBUTE_NAME);
-	  new_atts[0]=sz;
-	  sz = NULL;
-	  UT_XML_cloneString(sz, "text-decoration:line-through");
-	  new_atts[1]=sz;
-	  X_CheckError(getDoc()->appendFmt(new_atts));
-	  return;
+		//UT_DEBUGMSG(("Strike\n"));
+		X_VerifyParseState(_PS_Block);
+		UT_XML_cloneString(sz, PT_PROPS_ATTRIBUTE_NAME);
+		new_atts[0]=sz;
+		sz = NULL;
+		UT_XML_cloneString(sz, "text-decoration:line-through");
+		new_atts[1]=sz;
+		X_CheckError(getDoc()->appendFmt(new_atts));
+		return;
   
 	case TT_FONT:
-	  UT_DEBUGMSG(("Font tag encountered\n"));
-	  {
-	    const XML_Char *p_val;
-	    char color[7], size[3], face[64];
-	    XML_Char output[128];
-
-	    p_val = _getXMLPropValue((const XML_Char *)"color", atts);
-	    convertFontColor(color, p_val);
-
-	    p_val = _getXMLPropValue((const XML_Char *)"size", atts);
-	    convertFontSize(size, p_val);
-
-	    p_val = _getXMLPropValue((const XML_Char *)"face", atts);
-	    convertFontFace(face, p_val);
-
-	    sprintf(output, "color:%s; font-family:%s; size:%spt", color, face, size);
-	    UT_DEBUGMSG(("Font properties: %s\n", output));
-
-	    UT_XML_cloneString(sz, PT_PROPS_ATTRIBUTE_NAME);
-	    new_atts[0] = sz;
-	    sz = NULL;
-	    UT_XML_cloneString(sz, output);
-	    new_atts[1] = sz;
-	    X_CheckError(getDoc()->appendFmt(new_atts));
-	  }
-	  return;
+		UT_DEBUGMSG(("Font tag encountered\n"));
+		{
+			const XML_Char *p_val;
+			char color[7], size[3], face[64];
+			XML_Char output[128];
+			
+			p_val = _getXMLPropValue((const XML_Char *)"color", atts);
+			convertFontColor(color, p_val);
+			
+			p_val = _getXMLPropValue((const XML_Char *)"size", atts);
+			convertFontSize(size, p_val);
+			
+			p_val = _getXMLPropValue((const XML_Char *)"face", atts);
+			convertFontFace(face, p_val);
+			
+			sprintf(output, "color:%s; font-family:%s; size:%spt", color, face, size);
+			UT_DEBUGMSG(("Font properties: %s\n", output));
+			
+			UT_XML_cloneString(sz, PT_PROPS_ATTRIBUTE_NAME);
+			new_atts[0] = sz;
+			sz = NULL;
+			UT_XML_cloneString(sz, output);
+			new_atts[1] = sz;
+			X_CheckError(getDoc()->appendFmt(new_atts));
+		}
+		return;
 
 	case TT_BLOCKQUOTE:
 	case TT_H1:
 	case TT_H2:
 	case TT_H3:
-	  {
+	{
 	    //    UT_DEBUGMSG(("B %d\n", m_parseState));
 		X_VerifyParseState(_PS_Sec);
 		m_parseState = _PS_Block;
-
+		
 		const XML_Char *p_val;
-
+		
 		p_val = _getXMLPropValue((const XML_Char *)"align", atts);
 		if(p_val == NULL)
-		  X_CheckError(getDoc()->appendStrux(PTX_Block,NULL));
+			X_CheckError(getDoc()->appendStrux(PTX_Block,NULL));
 		else
-		  {
+		{
 		    sz = NULL;
 		    
 		    if(!UT_XML_strcmp(p_val, "right"))
-		      UT_XML_cloneString(sz, "text-align:right");
+				UT_XML_cloneString(sz, "text-align:right");
 		    else if(!UT_XML_strcmp(p_val, "center"))
-		      UT_XML_cloneString(sz, "text-align:center");
+				UT_XML_cloneString(sz, "text-align:center");
 		    
 		    if(sz != NULL)
-		      {
-			new_atts[1] = sz;
-			UT_XML_cloneString(sz, PT_PROPS_ATTRIBUTE_NAME);
-			new_atts[0] = sz;		      
-		      }
-
+			{
+				new_atts[1] = sz;
+				UT_XML_cloneString(sz, PT_PROPS_ATTRIBUTE_NAME);
+				new_atts[0] = sz;		      
+			}
+			
 		    X_CheckError(getDoc()->appendStrux(PTX_Block,new_atts));
-		  }
-
+		}
+		
 		UT_XML_cloneString(sz, PT_STYLE_ATTRIBUTE_NAME);
 		new_atts[0]=sz;
 		sz = NULL;
-
+		
 		if(tokenIndex == TT_H1)
-		  UT_XML_cloneString(sz, "Heading 1");
+			UT_XML_cloneString(sz, "Heading 1");
 		else if(tokenIndex == TT_H2)
-		  UT_XML_cloneString(sz, "Heading 2");
+			UT_XML_cloneString(sz, "Heading 2");
 		else if(tokenIndex == TT_H3)
-		  UT_XML_cloneString(sz, "Heading 3");
+			UT_XML_cloneString(sz, "Heading 3");
 		else
-		  UT_XML_cloneString(sz, "Block Text");
-
+			UT_XML_cloneString(sz, "Block Text");
+		
 		new_atts[1]=sz;
 		X_CheckError(getDoc()->appendFmt(new_atts));
 		return;
-	  }
+	}
 
 	case TT_OL:	  
 	case TT_UL:
 	{
 		if(tokenIndex == TT_OL)
 	  		m_listType = L_OL;
-	  	else m_listType = L_UL;
+	  	else 
+			m_listType = L_UL;
 
 		if(m_parseState != _PS_Sec)
 		{
@@ -805,11 +806,11 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 	case TT_H4:
 	case TT_H5:
 	case TT_H6:
-	  //UT_DEBUGMSG(("B %d\n", m_parseState));
-	  {
+		//UT_DEBUGMSG(("B %d\n", m_parseState));
+	{
 		X_VerifyParseState(_PS_Sec);
 		m_parseState = _PS_Block;
-
+		
 		if(tokenIndex == TT_PRE)
 		{
 			m_bWhiteSignificant = true;
@@ -819,44 +820,46 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 
 		p_val = _getXMLPropValue((const XML_Char *)"align", atts);
 		if(p_val == NULL)
-		  X_CheckError(getDoc()->appendStrux(PTX_Block,NULL));
+		{
+			X_CheckError(getDoc()->appendStrux(PTX_Block,NULL));
+		}
 		else
-		  {
+		{
 		    sz = NULL;
-
+			
 		    if(!UT_XML_strcmp(p_val, "right"))
-		      UT_XML_cloneString(sz, "text-align:right");
+				UT_XML_cloneString(sz, "text-align:right");
 		    else if(!UT_XML_strcmp(p_val, "center"))
-		      UT_XML_cloneString(sz, "text-align:center");
+				UT_XML_cloneString(sz, "text-align:center");
 		    
 		    if(sz != NULL)
-		      {
-			new_atts[1] = sz;
-			UT_XML_cloneString(sz, PT_PROPS_ATTRIBUTE_NAME);
-			new_atts[0] = sz;
-		      }
-
+			{
+				new_atts[1] = sz;
+				UT_XML_cloneString(sz, PT_PROPS_ATTRIBUTE_NAME);
+				new_atts[0] = sz;
+			}
+			
 		    X_CheckError(getDoc()->appendStrux(PTX_Block,new_atts));
-		  }
+		}
 		return;
-	  }
-
+	}
+	
 	case TT_INLINE:
 	  //UT_DEBUGMSG(("B %d\n", m_parseState));
 		X_VerifyParseState(_PS_Block);
 		const XML_Char *p_val;
-
+		
 		p_val = _getXMLPropValue((const XML_Char *)"style", atts);
 		if(p_val)
-		  {
+		{
 		    UT_XML_cloneString(sz, PT_PROPS_ATTRIBUTE_NAME);
 		    new_atts[0] = sz;
 		    sz = NULL;
-
+			
 		    UT_XML_cloneString(sz, p_val);
 		    new_atts[1] = sz;
-		  }
-
+		}
+		
 		_pushInlineFmt(new_atts);
 		getDoc()->appendFmt(&m_vecInlineFmt);
 		return;
@@ -874,9 +877,9 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 	case TT_TITLE:
 	case TT_META:
 	case TT_STYLE:
-	  // these tags are ignored for the time being
-	  return;
-
+		// these tags are ignored for the time being
+		return;
+		
 	case TT_OTHER:
 	default:
 		UT_DEBUGMSG(("Unknown tag [%s]\n",name));
@@ -891,7 +894,7 @@ void IE_Imp_XHTML::_endElement(const XML_Char *name)
 {
 	UT_DEBUGMSG(("endElement: %s, parseState: %u, listType: %u\n", name, m_parseState, m_listType));
 	X_EatIfAlreadyError();				// xml parser keeps running until buffer consumed
-
+	
 	
 	UT_uint32 tokenIndex = _mapNameToToken (name, s_Tokens, TokenTableSize);
 	//if(!UT_strcmp(name == "html")) UT_DEBUGMSG(("tokenindex : %d\n", tokenIndex));

@@ -27,7 +27,8 @@ CPPSRCS=		ut_BeOSAssert.cpp \
 			ut_BeOSString.cpp \
 			ut_Rehydrate.cpp \
 			ut_Xpm2Bitmap.cpp \
-			ut_debugmsg.cpp
+			ut_debugmsg.cpp		\
+			ut_path.cpp
 
 TARGETS=		$(OBJS)
 

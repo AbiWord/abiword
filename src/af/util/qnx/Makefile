@@ -27,7 +27,8 @@ CPPSRCS=		ut_debugmsg.cpp		\
 			ut_qnxString.cpp	\
 			ut_Xpm2Bitmap.cpp	\
 			ut_qnxHelper.cpp	\
-			ut_qnxTimer.cpp	
+			ut_qnxTimer.cpp		\
+			ut_path.cpp
 
 TARGETS=		$(OBJS)
 

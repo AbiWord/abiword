@@ -30,5 +30,6 @@ libUtil_mac_a_SOURCES=		\
 	ut_unixAssert.cpp	\
 	ut_MacFiles.cpp     \
 	ut_MacTimer.cpp     \
-	ut_debugmsg.cpp
+	ut_debugmsg.cpp		\
+	ut_path.cpp
 
