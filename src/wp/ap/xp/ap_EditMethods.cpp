@@ -70,6 +70,7 @@
 #include "xap_App.h"
 #include "xap_DialogFactory.h"
 #include "xap_Dlg_About.h"
+#include "xap_Dlg_ClipArt.h"
 #include "xap_Dlg_MessageBox.h"
 #include "xap_Dlg_FileOpenSaveAs.h"
 #include "xap_Dlg_FontChooser.h"
@@ -667,7 +668,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(insertCaronData),		_D_,	""),
 	EV_EditMethod(NF(insertCedillaData),	_D_,	""),
 	EV_EditMethod(NF(insertCircumflexData),	_D_,	""),
-	EV_EditMethod(NF(insertClipart), _D_, ""),
+	EV_EditMethod(NF(insertClipart), 0, ""),
 	EV_EditMethod(NF(insertColumnBreak),	0,	""),
 	EV_EditMethod(NF(insertData),			_D_,	""),
 	EV_EditMethod(NF(insertDiaeresisData),	_D_,	""),
@@ -2407,11 +2408,78 @@ Defun(querySaveAndExit)
 
 Defun1(insertClipart)
 {
-	UT_ASSERT(UT_TODO);
+	ABIWORD_VIEW;
 
-	// TODO:
+	UT_DEBUGMSG(("DOM: insert clipart\n"));
 
-	return true;
+	XAP_Frame * pFrame = static_cast<XAP_Frame *>(pView->getParentData());
+	UT_ASSERT(pFrame);
+
+	XAP_App * pApp = pFrame->getApp();
+	UT_ASSERT(pApp);
+
+	pFrame->raise();
+
+	XAP_DialogFactory * pDialogFactory
+		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+
+	XAP_Dialog_ClipArt * pDialog
+		= (XAP_Dialog_ClipArt *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_CLIPART));
+	UT_ASSERT(pDialog);
+
+	// set the initial directory
+	UT_String dir = pApp->getAbiSuiteLibDir ();
+	dir += "/clipart/";
+
+	pDialog->setInitialDir (dir.c_str());
+
+	pDialog->runModal(pFrame);
+	bool bOK = (pDialog->getAnswer() == XAP_Dialog_ClipArt::a_OK);
+	const char * pNewFile = pDialog->getGraphicName ();
+
+	bool ret = false;
+
+	if (bOK && pNewFile)
+	{
+		IEGraphicFileType iegft;
+		IE_ImpGraphic *pIEG;
+		FG_Graphic* pFG;
+		
+		UT_Error errorCode;
+		
+		errorCode = IE_ImpGraphic::constructImporter(pNewFile, iegft, &pIEG);
+		if(errorCode)
+		{
+			s_CouldNotLoadFileMessage(pFrame, pNewFile, errorCode);
+			goto Cleanup;
+		}
+		
+		errorCode = pIEG->importGraphic(pNewFile, &pFG);
+		if(errorCode)
+		{
+			s_CouldNotLoadFileMessage(pFrame, pNewFile, errorCode);
+			DELETEP(pIEG);
+			goto Cleanup;
+		}
+		
+		DELETEP(pIEG);
+		
+		errorCode = pView->cmdInsertGraphic(pFG, pNewFile);
+		if (errorCode)
+		{
+			s_CouldNotLoadFileMessage(pFrame, pNewFile, errorCode);
+			DELETEP(pFG);
+			goto Cleanup;
+		}
+		
+		DELETEP(pFG);		
+		ret = true; // goes to Cleanup
+	}
+
+ Cleanup:
+
+	pDialogFactory->releaseDialog(pDialog);
+	return ret;
 }
 
 Defun1(fileInsertGraphic)
@@ -2431,7 +2499,7 @@ Defun1(fileInsertGraphic)
 	// we own storage for pNewFile and must free it.
 	UT_DEBUGMSG(("fileInsertGraphic: loading [%s]\n",pNewFile));
 
-       	IE_ImpGraphic *pIEG;
+    IE_ImpGraphic *pIEG;
 	FG_Graphic* pFG;
 
 	UT_Error errorCode;

@@ -1,5 +1,5 @@
-/* AbiSource Application Framework
- * Copyright (C) 2001 AbiSource, Inc.
+/* AbiWord
+ * Copyright (C) 2000 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,26 +17,27 @@
  * 02111-1307, USA.
  */
 
-#ifndef XAP_UNIXGNOMEDIALOG_ABOUT_H
-#define XAP_UNIXGNOMEDIALOG_ABOUT_H
+#ifndef XAP_UNIXDIALOG_CLIPART_H
+#define XAP_UNIXDIALOG_CLIPART_H
 
-#include "xap_Dlg_About.h"
+#include "xap_Dlg_ClipArt.h"
+
+class XAP_UnixFrame;
 
 /*****************************************************************/
 
-class XAP_UnixGnomeDialog_About: public XAP_Dialog_About
+class XAP_UnixDialog_ClipArt: public XAP_Dialog_ClipArt
 {
- public:
-	XAP_UnixGnomeDialog_About(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
-	virtual ~XAP_UnixGnomeDialog_About(void);
-
-	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
+public:
+	XAP_UnixDialog_ClipArt(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
+	virtual ~XAP_UnixDialog_ClipArt(void);
 
 	virtual void			runModal(XAP_Frame * pFrame);
 
-	// callbacks can fire these events
-	virtual void			event_WindowDelete(void);
- private:
+	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
+	
+protected:
+
 };
 
-#endif /* XAP_UNIXGNOMEDIALOG_ABOUT_H */
+#endif /* XAP_UNIXDIALOG_CLIPART_H */

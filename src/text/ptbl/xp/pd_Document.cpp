@@ -863,7 +863,7 @@ bool PD_Document::createDataItem(const char * szName, bool bBase64, const UT_Byt
 	pPair->pBuf = pNew;
 	pPair->pToken = pToken;
 	
-	m_hashDataItems.insert((UT_HashTable::HashKeyType)szName, (UT_HashTable::HashValType)pPair);
+	m_hashDataItems.insert((UT_HashTable::HashKeyType)UT_strdup(szName), (UT_HashTable::HashValType)pPair);
 
 	// give them back a handle if they want one
 	
@@ -1010,12 +1010,15 @@ void PD_Document::_destroyDataItemData(void)
 	UT_HashTable::UT_HashCursor c(&m_hashDataItems);
 	UT_HashTable::HashValType val = c.first();
 
-	while (true)
+	while (true && val)
 	{
+		UT_DEBUGMSG(("DOM: deleting\n"));
 		struct _dataItemPair* pPair = (struct _dataItemPair*) val;
-		UT_ASSERT(pPair);
 
-		m_hashDataItems.remove (c.key(), 0);
+		char * key = c.key();
+
+		m_hashDataItems.remove (key, 0);
+		FREEP(key); // free what we allocate
 
 		delete pPair->pBuf;
 		FREEP(pPair->pToken);

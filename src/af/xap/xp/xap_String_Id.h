@@ -161,6 +161,9 @@ dcl(DLG_PLUGIN_MANAGER_NONE_SELECTED,   "No plugin selected")
 dcl(DLG_ULANG_LangLabel,				"Select Language:")
 dcl(DLG_ULANG_LangTitle,				"Language")
 
+/* ClipArt Dialog */
+dcl(DLG_CLIPART_Title, "Clip Art")
+
 /* Language property in different languages; keep sorted by the numerical id's */
 dcl(LANG_0,								"no proofing")
 dcl(LANG_1,								"English (AU)")

@@ -25,6 +25,7 @@ include $(ABI_ROOT)/src/config/abi_defs.mk
 CPPSRCS=		xap_MacApp.cpp			\
 			xap_MacClipboard.cpp		\
 			xap_MacDlg_About.cpp		\
+			xap_MacDlg_ClipArt.cpp		\
 			xap_MacDlg_FileOpenSaveAs.cpp	\
 			xap_MacDlg_FontChooser.cpp	\
 			xap_MacDlg_Language.cpp		\

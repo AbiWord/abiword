@@ -1,4 +1,4 @@
-/* AbiSource Application Framework
+/* AbiWord
  * Copyright (C) 2001 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
@@ -17,26 +17,32 @@
  * 02111-1307, USA.
  */
 
-#ifndef XAP_UNIXGNOMEDIALOG_ABOUT_H
-#define XAP_UNIXGNOMEDIALOG_ABOUT_H
+#include "xap_Dlg_ClipArt.h"
+#include "ut_string.h"
 
-#include "xap_Dlg_About.h"
+XAP_Dialog_ClipArt::XAP_Dialog_ClipArt(XAP_DialogFactory * pDlgFactory, 
+									   XAP_Dialog_Id id)
+	: XAP_Dialog_NonPersistent (pDlgFactory, id), m_answer(a_CANCEL),
+	  m_szGraphicName(0), m_szInitialDir(0)
 
-/*****************************************************************/
-
-class XAP_UnixGnomeDialog_About: public XAP_Dialog_About
 {
- public:
-	XAP_UnixGnomeDialog_About(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
-	virtual ~XAP_UnixGnomeDialog_About(void);
+}
 
-	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
+XAP_Dialog_ClipArt::~XAP_Dialog_ClipArt()
+{
+	FREEP(m_szGraphicName);
+	FREEP(m_szInitialDir);
+}
 
-	virtual void			runModal(XAP_Frame * pFrame);
+void XAP_Dialog_ClipArt::setInitialDir (const char * szInitialDir)
+{
+	FREEP(m_szInitialDir);
+	m_szInitialDir = UT_strdup (szInitialDir);
+}
 
-	// callbacks can fire these events
-	virtual void			event_WindowDelete(void);
- private:
-};
+void XAP_Dialog_ClipArt::setGraphicName (const char * name)
+{
+	FREEP(m_szGraphicName);
+	m_szGraphicName = UT_strdup (name);
+}
 
-#endif /* XAP_UNIXGNOMEDIALOG_ABOUT_H */

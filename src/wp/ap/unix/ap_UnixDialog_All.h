@@ -42,6 +42,7 @@
 #	include "xap_UnixDlg_Insert_Symbol.h"
 #	include "xap_UnixDlg_Language.h"
 #   include "xap_UnixDlg_PluginManager.h"
+#   include "xap_UnixDlg_ClipArt.h"
 
 #	include "ap_UnixDialog_Replace.h"
 #	include "ap_UnixDialog_Break.h"
@@ -65,6 +66,7 @@
 
 #ifdef HAVE_GNOME
 #	include "xap_UnixGnomeDlg_About.h"
+#   include "xap_UnixGnomeDlg_ClipArt.h"
 #	include "xap_UnixGnomeDlg_FontChooser.h"
 #	include "xap_UnixGnomeDlg_Insert_Symbol.h"
 #	include "xap_UnixGnomeDlg_MessageBox.h"
@@ -118,6 +120,7 @@
 	DeclareDialog(XAP_DIALOG_ID_ABOUT,			XAP_UnixGnomeDialog_About)
 	DeclareDialog(XAP_DIALOG_ID_INSERT_SYMBOL,  XAP_UnixGnomeDialog_Insert_Symbol)
 	DeclareDialog(XAP_DIALOG_ID_INSERT_PICTURE,	XAP_UnixDialog_FileOpenSaveAs)
+	DeclareDialog(XAP_DIALOG_ID_CLIPART,        XAP_UnixGnomeDialog_ClipArt)
 
 	DeclareDialog(AP_DIALOG_ID_REPLACE,			AP_UnixGnomeDialog_Replace)
 	DeclareDialog(AP_DIALOG_ID_FIND,			AP_UnixGnomeDialog_Replace)
@@ -179,6 +182,7 @@
 	DeclareDialog(AP_DIALOG_ID_TOGGLECASE,      AP_UnixDialog_ToggleCase)
 	DeclareDialog(AP_DIALOG_ID_FILE_NEW,        AP_UnixDialog_New)
 	DeclareDialog(XAP_DIALOG_ID_PLUGIN_MANAGER, XAP_UnixDialog_PluginManager)
+	DeclareDialog(XAP_DIALOG_ID_CLIPART,        XAP_UnixDialog_ClipArt)
 
 	// ... also add new dialogs here ...
 #   endif

@@ -45,6 +45,7 @@ PLATFORM_OBJS=	$(OBJDIR)/xap_$(ABI_FE)App.$(OBJ_SUFFIX)			\
 # gnome has its own about dialog
 ifndef ABI_OPT_GNOME
 PLATFORM_OBJS += $(OBJDIR)/xap_$(ABI_FE)Dlg_About.$(OBJ_SUFFIX)			\
+		 $(OBJDIR)/xap_$(ABI_FE)Dlg_ClipArt.$(OBJ_SUFFIX)		\
 		 $(OBJDIR)/xap_$(ABI_FE)Dlg_PrintPreview.$(OBJ_SUFFIX)
 endif
 
@@ -87,6 +88,7 @@ endif
 ifdef ABI_OPT_GNOME
 PLATFORM_OBJS +=	$(OBJDIR)/xap_$(ABI_FE)$(ABI_GNOME_PREFIX)App.$(OBJ_SUFFIX)		\
 			$(OBJDIR)/xap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dlg_About.$(OBJ_SUFFIX)	\
+			$(OBJDIR)/xap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dlg_ClipArt.$(OBJ_SUFFIX)	\
 			$(OBJDIR)/xap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dlg_FontChooser.$(OBJ_SUFFIX)	\
 			$(OBJDIR)/xap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dlg_Insert_Symbol.$(OBJ_SUFFIX)	\
 			$(OBJDIR)/xap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dlg_MessageBox.$(OBJ_SUFFIX)	\
@@ -115,6 +117,7 @@ OBJS=		$(PLATFORM_OBJS)						\
 		$(OBJDIR)/xap_DialogFactory.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_Dictionary.$(OBJ_SUFFIX)				\
 		$(OBJDIR)/xap_Dlg_About.$(OBJ_SUFFIX)				\
+		$(OBJDIR)/xap_Dlg_ClipArt.$(OBJ_SUFFIX)				\
 		$(OBJDIR)/xap_Dlg_FileOpenSaveAs.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_Dlg_FontChooser.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_Dlg_MessageBox.$(OBJ_SUFFIX)			\

@@ -34,6 +34,7 @@ libXap_xp_a_SOURCES=\
 	xap_DialogFactory.cpp		\
 	xap_Dictionary.cpp		\
 	xap_Dlg_About.cpp		\
+	xap_Dlg_ClipArt.cpp		\
 	xap_Dlg_FileOpenSaveAs.cpp	\
 	xap_Dlg_FontChooser.cpp		\
 	xap_Dlg_Language.cpp		\

@@ -27,6 +27,7 @@ noinst_LIBRARIES = libXap_Gnome.a
 libXap_Gnome_a_SOURCES=\
 	xap_UnixGnomeApp.cpp               \
 	xap_UnixGnomeDlg_About.cpp         \
+	xap_UnixGnomeDlg_ClipArt.cpp	   \
 	xap_UnixGnomeDlg_FontChooser.cpp   \
 	xap_UnixGnomeDlg_Insert_Symbol.cpp \
 	xap_UnixGnomeDlg_MessageBox.cpp    \

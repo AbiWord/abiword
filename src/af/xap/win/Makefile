@@ -25,6 +25,7 @@ include $(ABI_ROOT)/src/config/abi_defs.mk
 CPPSRCS=		xap_Win32App.cpp			\
 			xap_Win32Clipboard.cpp			\
 			xap_Win32Dlg_About.cpp			\
+			xap_Win32Dlg_ClipArt.cpp		\
 			xap_Win32Dlg_FileOpenSaveAs.cpp		\
 			xap_Win32Dlg_FontChooser.cpp		\
 			xap_Win32Dlg_Language.cpp		\
