@@ -817,6 +817,7 @@ void IE_Imp_MsWord_97::pasteFromBuffer(PD_DocumentRange * pDocRange,
 UT_Error IE_Imp_MsWord_97::_handleImage(Blip * b, long width, long height)
 {
    int data;
+   const char * mimetype = NULL;
    
    UT_ByteBuf * buf = new UT_ByteBuf();
    
@@ -827,6 +828,7 @@ UT_Error IE_Imp_MsWord_97::_handleImage(Blip * b, long width, long height)
 	// but copy the bitstream
 	while (EOF != (data = getc((FILE*)(b->blip.bitmap.m_pvBits))))
 	  buf->append((UT_Byte*)&data, 1);
+	mimetype = "image/png";
 	break;
       case msoblipWMF:
       case msoblipEMF:
@@ -848,7 +850,7 @@ UT_Error IE_Imp_MsWord_97::_handleImage(Blip * b, long width, long height)
    XML_Char propsName[32];
    propsName[0] = 0;
    sprintf(propsName, "image%d", m_iImageCount++);
-   const XML_Char* propsArray[3];
+   const XML_Char* propsArray[5];
 	   
    propsArray[0] = "PROPS";
    propsArray[1] = propBuffer;
@@ -858,7 +860,7 @@ UT_Error IE_Imp_MsWord_97::_handleImage(Blip * b, long width, long height)
 
    X_ReturnNoMemIfError(m_pDocument->appendObject(PTO_Image, propsArray));
    X_CheckError0(m_pDocument->createDataItem(propsName, UT_FALSE,
-					     buf, NULL, NULL));
+					     buf, (void*)mimetype, NULL));
 
    DELETEP(buf);
 
