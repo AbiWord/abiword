@@ -343,6 +343,10 @@ void read_font()
     seek_tab("maxp", TTF_FIXED_SIZE);
     nglyphs = get_ushort();
     mtx_tab = ttf_alloc(nglyphs, mtx_entry);
+    /* set initially to 0, so that we can test whether an entry was used
+       by testing for 0
+    memset(mtx_tab, 0, nglyphs*sizeof(mtx_entry)); */
+
     for (pm = mtx_tab; pm - mtx_tab < nglyphs; pm++) {
         pm->name = 0; /* notdef */
         pm->found = 0;
@@ -448,6 +452,9 @@ void read_font()
         glyphId = ttf_alloc(length, TTF_USHORT);
         for (i = 0; i < length; i++)
             glyphId[i] = get_ushort();
+        /* set uni_map to 0, so that we can test for duplicate usage */
+        for (i = 0; i <= MAX_CHAR_CODE; i++)
+        	uni_map[i] = 0;
 
         /* the following loop translates the unicode value i into the glyph index k*/
         for (i = 0; i <= MAX_CHAR_CODE; i++)
@@ -467,8 +474,17 @@ void read_font()
             }
             else
             	k = 0; /*not found*/
-	
-            uni_map[k] = i;
+#if 0
+            if(i == 0x002c || i == 0x00ad)
+            {
+            	printf("mapping ucs 0x%04x, segment: start 0x%04x, end 0x%04x, k %d\n", i,s->startCode,s->endCode,k);
+            }
+#endif
+			if(uni_map[k] == 0 || k == 0)
+	            uni_map[k] = i;
+	  		else
+	  			printf("warning: duplicate ucs; index %d, ucs 0x%04x, prev. ucs 0x%04x\n", k, i, uni_map[k]);
+	  			
         }
 
         for (i = 0; i < nglyphs; i++)
