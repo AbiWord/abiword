@@ -247,7 +247,14 @@
           <p><b><a name="2.8">How do I enable vi and Emacs key bindings in
           AbiWord?</a></b><a name="2.8"><br>
           For the hardcore computer geeks out there, AbiWord is built with the
-          ability to select arbitrary keybindings. You can switch between these
+          ability to select arbitrary keybindings. First, you must enable this
+		  feature, which is currently awkward. You will need to edit the file
+		  ~/.AbiSuite/AbiWord.Profile. If there is a line in the Select tag
+		  reading <tt>scheme="_builtin_"</tt>, you should change the _builtin_
+		  to _custom_. If the file does not have a Scheme tag with the line
+		  name="_custom_", you should add <tt>&lt;Scheme name="_custom_" /&gt;
+		  </tt> to the file. Now, add a line reading <tt>KeyBindingsCycle="1"
+		  </tt> to this tag before the closing /. You can switch between these
           different modes by pressing F12. The status bar will indicate the
           current keybinding mode is in use. Please note that not all vi or
           emacs keys are implemented, but most are. If there is a particular vi
