@@ -218,6 +218,13 @@ void GR_QNXGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	DRAW_END
 }
 
+void GR_QNXGraphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
+{
+	//TODO: Speed this up by putting it in its own function
+	drawChars(&Char, 0, 1, xoff, yoff);
+}
+
+
 void GR_QNXGraphics::setFont(GR_Font * pFont)
 {
 	/*
@@ -864,8 +871,10 @@ UT_Bool GR_QNXGraphics::startPrint(void) {
 	/* Somehow I need to get the print context here */
 	UT_ASSERT(m_pPrintContext);
 	if (m_pPrintContext) {
+#if 1
 		PpPrintOpen(m_pPrintContext);	
 		PpPrintStart(m_pPrintContext);	
+#endif
 	}
 
  	m_bPrintNextPage = UT_FALSE;    
@@ -875,12 +884,31 @@ UT_Bool GR_QNXGraphics::startPrint(void) {
 UT_Bool GR_QNXGraphics::startPage(const char * szPageLabel, UT_uint32 pageNumber,
 									UT_Bool bPortrait, UT_uint32 iWidth, UT_uint32 iHeight) {
 
+	printf("Portrait %d W/H %d/%d \n", bPortrait, iWidth, iHeight);
+
 	UT_ASSERT(m_pPrintContext);
- 	if (m_pPrintContext && m_bPrintNextPage) {
+	if (m_pPrintContext && !m_bPrintNextPage) {		/* First page do setup */
+		printf("Print first page! \n");
+#if 0
+		PhDim_t 	size;
+
+#define DPI_LEVEL 72
+		/* Adjust for non-printable margins? */
+		size.w = ((iWidth) * DPI_LEVEL) / 1000;
+		size.h = ((iHeight) * DPI_LEVEL) / 1000;
+		UT_DEBUGMSG(("Source size %d/%d \n", size.w, size.h));
+		PpPrintSetPC(m_pPrintContext, INITIAL_PC, 0, Pp_PC_SOURCE_SIZE, &size);
+
+		PpPrintOpen(m_pPrintContext);	
+		PpPrintStart(m_pPrintContext);	
+#endif
+	}
+ 	else if (m_pPrintContext && m_bPrintNextPage) {
+		printf("Print a new page! \n");
 		PpPrintNewPage(m_pPrintContext);
 	}
-	m_bPrintNextPage = UT_TRUE;
 
+	m_bPrintNextPage = UT_TRUE;
 	return UT_TRUE;	
 }
 

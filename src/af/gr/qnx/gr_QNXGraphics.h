@@ -53,6 +53,7 @@ class GR_QNXGraphics : public GR_Graphics
 	GR_QNXGraphics(PtWidget_t * win, PtWidget_t * draw);
 	~GR_QNXGraphics();
 
+	virtual void drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff);
 	virtual void drawChars(const UT_UCSChar* pChars, int iCharOffset,
 						   int iLength, UT_sint32 xoff, UT_sint32 yoff);
 	virtual void setFont(GR_Font* pFont);
