@@ -216,12 +216,15 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_CharFmt)
 	{
 		// get current char properties from pView
 		const XML_Char ** props_in = NULL;
-		const XML_Char * sz;
+		const XML_Char * sz = NULL;
 
 		if (!pView->getCharFormat(&props_in))
 			return s;
 
-		sz = UT_getAttribute(prop, props_in);
+		// NB: maybe *no* properties are consistent across the selection
+		if (props_in && props_in[0])
+			sz = UT_getAttribute(prop, props_in);
+
 		if (sz)
 		{
 			if (bSize)
@@ -291,12 +294,15 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_SectionFmt)
 	{
 		// get current block properties from pView
 		const XML_Char ** props_in = NULL;
-		const XML_Char * sz;
+		const XML_Char * sz = NULL;
 
 		if (!pView->getSectionFormat(&props_in))
 			return s;
 
-		sz = UT_getAttribute(prop, props_in);
+		// NB: maybe *no* properties are consistent across the selection
+		if (props_in && props_in[0])
+			sz = UT_getAttribute(prop, props_in);
+
 		if (sz)
 		{
 			if (0 == UT_stricmp(sz, val))
@@ -376,12 +382,15 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_BlockFmt)
 	{
 		// get current block properties from pView
 		const XML_Char ** props_in = NULL;
-		const XML_Char * sz;
+		const XML_Char * sz = NULL;
 
 		if (!pView->getBlockFormat(&props_in))
 			return s;
 
-		sz = UT_getAttribute(prop, props_in);
+		// NB: maybe *no* properties are consistent across the selection
+		if (props_in && props_in[0])
+			sz = UT_getAttribute(prop, props_in);
+	
 		if (sz)
 		{
 			if (bPoints)
