@@ -255,9 +255,11 @@ public:
 	//! Pointer to last instatiated PD_Document. Used for debugging.
 	static PD_Document*		m_pDoc;
 #endif
-	
-	inline bool areStylesLocked () const { return m_bLockedStyles; }
-	inline void lockStyles(bool b) { m_bLockedStyles = b; }
+
+	// If we're using styles to format a document, prevent accidental use of other formatting
+        // tools.  Disable all explicit formatting tools (font, color, boldness, etc.) 
+	inline bool areStylesLocked () const { return m_bLockedStyles; }    // See also lockStyles
+	inline void lockStyles(bool b) { m_bLockedStyles = b; }             // See also areStylesLocked
 
 protected:
 	~PD_Document();

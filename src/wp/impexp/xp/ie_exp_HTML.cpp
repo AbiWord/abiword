@@ -1900,12 +1900,34 @@ bool s_HTML_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 					m_pie->write(UT_basename(m_pie->getFileName()));
 					m_pie->write("_d/");
 					m_pie->write(buf);
+					m_pie->write("\" ");
+					
+					const XML_Char * szWidth = 0;
+					const XML_Char * szHeight = 0;
+
+					if(pAP->getProperty("width", szWidth) &&
+					   pAP->getProperty("height", szHeight))
+					  {
+					    if(szWidth)
+					      {
+						m_pie->write (" width=\"");
+						m_pie->write (szWidth);
+						m_pie->write ("\" ");
+					      }
+					    if(szHeight)
+					      {
+						m_pie->write (" height=\"");
+						m_pie->write (szHeight);
+						m_pie->write ("\" ");
+					      }
+					  }
+
 					// close the img tag with "/" only in XHTML
 					if (! m_bIs4) {
-						m_pie->write("\" />\r\n");
+						m_pie->write(" />\r\n");
 					}
 					else {
-						m_pie->write("\">\r\n");
+						m_pie->write(" >\r\n");
 					}
 				}
 				return true;

@@ -152,9 +152,9 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_INSERT_GRAPHIC,	0,1,0,	"fileInsertGraphic",NULL,					NULL);
 	_s(AP_MENU_ID_FORMAT,			1,0,0,	NULL,				NULL,					NULL);
 	_s(AP_MENU_ID_FMT_LANGUAGE,			0,1,0,	"dlgLanguage",	NULL,					NULL);
-	_s(AP_MENU_ID_FMT_FONT,			0,1,0,	"dlgFont",			NULL,					NULL);
-	_s(AP_MENU_ID_FMT_PARAGRAPH,	0,1,0,	"dlgParagraph",		NULL,					NULL);
-	_s(AP_MENU_ID_FMT_BULLETS,		0,1,0,	"dlgBullets",		NULL,					NULL);
+	_s(AP_MENU_ID_FMT_FONT,			0,1,0,	"dlgFont",	ap_GetState_StylesLocked,	NULL);
+	_s(AP_MENU_ID_FMT_PARAGRAPH,	0,1,0,	"dlgParagraph",		ap_GetState_StylesLocked,	NULL);
+	_s(AP_MENU_ID_FMT_BULLETS,		0,1,0,	"dlgBullets",	ap_GetState_StylesLocked,	NULL);
 	_s(AP_MENU_ID_FMT_DOCUMENT, 0,1,0, "pageSetup", NULL, NULL);
 	_s(AP_MENU_ID_FMT_BORDERS,		0,1,0,	"dlgBorders",		NULL,					NULL);
 	_s(AP_MENU_ID_FMT_COLUMNS,		0,1,0,	"dlgColumns",		NULL,					NULL);
@@ -174,7 +174,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_FMT_SUBSCRIPT,		0,0,1,	"toggleSub",	ap_GetState_CharFmt,	NULL);
 	_s(AP_MENU_ID_FMT_TOGGLECASE,           0,1,0,  "dlgToggleCase", NULL, NULL);
 
-	_s(AP_MENU_ID_ALIGN,			1,0,0,	NULL,				NULL,					NULL);
+	_s(AP_MENU_ID_ALIGN,			1,0,0,	NULL,				ap_GetState_StylesLocked,	NULL);
 	_s(AP_MENU_ID_ALIGN_LEFT,		0,0,1,	"alignLeft",		ap_GetState_BlockFmt,	NULL);
 	_s(AP_MENU_ID_ALIGN_CENTER,		0,0,1,	"alignCenter",		ap_GetState_BlockFmt,	NULL);
 	_s(AP_MENU_ID_ALIGN_RIGHT,		0,0,1,	"alignRight",		ap_GetState_BlockFmt,	NULL);

@@ -84,7 +84,7 @@ PD_Document::PD_Document(XAP_App *pApp)
 	m_bRedrawHappenning(false),
   m_bLoading(false),
   m_bForcedDirty(false),
-  m_bLockedStyles(false)
+  m_bLockedStyles(false)        // same as lockStyles(false)
 {
 	m_pApp = pApp;
 

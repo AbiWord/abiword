@@ -173,6 +173,7 @@ dcl(DLG_Styles_ErrStyleNot,      "This style does not exist \n so it cannot be m
 dcl(DLG_Styles_ErrStyleBuiltin, "Cannot modify a builtin style")
 dcl(DLG_Styles_ErrStyleCantDelete, "Cannot delete this style")
 dcl(DLG_Styles_ErrBlankName, "Style name cannot be left blank")
+dcl(DLG_Styles_StylesLocked,	"Lock out non-style formatting commands")
 
 
 /* Paragraph dialog */

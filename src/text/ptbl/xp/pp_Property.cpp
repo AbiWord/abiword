@@ -111,7 +111,7 @@ static PP_Property _props[] =
 	{ "header-first","",false,NULL},
 	{ "header-last","",false,NULL},
 
-	{ "height", "",	false, NULL},
+	{ "height", "0in",	false, NULL},
 
 	{ "keep-together", "", false, NULL},
 	{ "keep-with-next", "",	false, NULL},
@@ -155,7 +155,7 @@ static PP_Property _props[] =
 	{ "text-position", "normal", true, NULL},	
 	
 	{ "widows", "2", false, NULL},
-	{ "width", "", false, NULL},
+	{ "width", "0in", false, NULL},
 
 };
 

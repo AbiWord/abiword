@@ -623,6 +623,10 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_CharFmt)
 	const XML_Char * prop = NULL;
 	const XML_Char * val  = NULL;
 
+	if(pView->getDocument()->areStylesLocked()) {
+	    return EV_MIS_Gray;
+	}
+
 	switch(id)
 	{
 	case AP_MENU_ID_FMT_BOLD:
@@ -707,6 +711,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_CharFmt)
 		free(props_in);
 	}
 
+
 	return s;
 }
 
@@ -719,6 +724,10 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_BlockFmt)
 
 	const XML_Char * prop = "text-align";
 	const XML_Char * val  = NULL;
+
+	if(pView->getDocument()->areStylesLocked()) {
+	    return EV_MIS_Gray;
+	}
 
 	switch(id)
 	{
@@ -854,4 +863,16 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_View)
 	}
 
 	return s;
+}
+
+Defun_EV_GetMenuItemState_Fn(ap_GetState_StylesLocked)
+{
+	ABIWORD_VIEW;
+	UT_ASSERT(pView);
+
+        if(pView->getDocument()->areStylesLocked()) {
+            return EV_MIS_Gray;
+        }
+
+        return EV_MIS_ZERO;
 }

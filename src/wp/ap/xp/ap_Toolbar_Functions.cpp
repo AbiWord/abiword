@@ -209,6 +209,9 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Bullets)
 	UT_ASSERT(pView);
 
 	EV_Toolbar_ItemState s = EV_TIS_ZERO;
+        if(pView->getDocument()->areStylesLocked()) {
+            return EV_TIS_Gray;
+        }
 
 	fl_BlockLayout * pBlock = pView->getCurrentBlock();
         UT_ASSERT(pBlock);
@@ -226,6 +229,9 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Numbers)
 	UT_ASSERT(pView);
 
 	EV_Toolbar_ItemState s = EV_TIS_ZERO;
+        if(pView->getDocument()->areStylesLocked()) {
+            return EV_TIS_Gray;
+        }
 
 	fl_BlockLayout * pBlock = pView->getCurrentBlock();
         UT_ASSERT(pBlock);
@@ -244,10 +250,14 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_CharFmt)
 	bool bSize = false;
 	bool bString = false;
 
-	EV_Toolbar_ItemState s = EV_TIS_ZERO;
-
 	const XML_Char * prop = NULL;
 	const XML_Char * val  = NULL;
+
+	EV_Toolbar_ItemState s = EV_TIS_ZERO;
+
+        if(pView->getDocument()->areStylesLocked()) {
+            return EV_TIS_Gray;
+        }
 
 	switch (id)
 	{
@@ -332,12 +342,6 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_CharFmt)
 		break;
 	}
 
-	//if should be disabled return
-	if (s == EV_TIS_Gray)
-	{
-		return s;
-	}
-	
 	if (prop && val)
 	{
 		// get current char properties from pView
@@ -394,10 +398,10 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_SectionFmt)
 	if (pszState)
 		*pszState = NULL;
 
-	EV_Toolbar_ItemState s = EV_TIS_ZERO;
-
 	const XML_Char * prop = "";
 	const XML_Char * val  = NULL;
+
+	EV_Toolbar_ItemState s = EV_TIS_ZERO;
 
 	switch (id)
 	{
@@ -462,11 +466,15 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_BlockFmt)
 
 	bool bPoints = false;
 
-	EV_Toolbar_ItemState s = EV_TIS_ZERO;
-
 	const XML_Char * prop = "text-align";
 	const XML_Char * val  = NULL;
 
+	EV_Toolbar_ItemState s = EV_TIS_ZERO;
+
+        if(pView->getDocument()->areStylesLocked()) {
+	    return EV_TIS_Gray;
+        }
+	
 	switch (id)
 	{
 	case AP_TOOLBAR_ID_ALIGN_LEFT:
@@ -525,12 +533,6 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_BlockFmt)
 		break;
 	}
 	
-	//if should be disabled return
-	if (s == EV_TIS_Gray)
-	{
-		return s;
-	}
-
 	if (prop && val)
 	{
 		// get current block properties from pView
@@ -626,3 +628,16 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_View)
 
 	return s;
 }
+
+Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_StylesLocked)
+{
+        ABIWORD_VIEW;
+        UT_ASSERT(pView);
+
+        if(pView->getDocument()->areStylesLocked()) {
+            return EV_TIS_Gray;
+        }
+
+        return EV_TIS_ZERO;
+}
+
