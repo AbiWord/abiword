@@ -30,8 +30,6 @@ class GR_Graphics;
 
 typedef void (*UT_TimerCallback)(UT_Timer* pTimer);
 
-#define DEFAULT_MSECS 100
-
 /*
 	UT_Timer is an abstract class which encapsulates the platform-specific 
 	details for managing timers.    
@@ -48,7 +46,6 @@ public:
 	void* getInstanceData();
 	
 	virtual UT_sint32 set(UT_uint32 iMilliseconds) = 0;	/* set freq and start */
-	virtual UT_sint32 setAsFastAsPossible() = 0;	/* set idle and start */
 	virtual void stop(void) = 0;		/* suspend events */
 	virtual void start(void) = 0;		/* resume events */
 	void fire();

@@ -55,7 +55,7 @@ public:
 	virtual UT_sint32 set(UT_uint32 iMilliseconds);
 	virtual void stop(void);		//  suspend calling timer task 
 	virtual void start(void);		//  resume calling timer task 
-	virtual void setAsFastAsPossible(void); 
+	
 	// Accessors
 	bool bGetStarted( void ) { return m_bStarted; };
 	UT_sint32 msGetInterval( void ) { return m_iMilliseconds; };

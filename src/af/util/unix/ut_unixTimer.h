@@ -31,14 +31,12 @@ public:
 	virtual ~UT_UNIXTimer();
 
 	virtual UT_sint32 set(UT_uint32 iMilliseconds);
-	virtual UT_sint32 setAsFastAsPossible();
 	virtual void stop();
 	virtual void start();
 	
 private:
 	UT_sint32 m_iMilliseconds;
 	UT_uint32 m_iGtkTimerId;
-	bool m_bDoAsFastAsPossible;
 };
 
 #endif /* UT_UNIXTIMER_H */

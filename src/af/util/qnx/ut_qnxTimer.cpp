@@ -80,17 +80,6 @@ void UT_QNXTimer::resetIfStarted(void)
 		set(m_iMilliseconds);
 }
 
-
-UT_sint32 UT_QNXTimer::setAsFastAsPossible(void)
-{
-  // Just a placeholder until someone implements an idle-queue
-  // mechanism. See ut_unixTimer.cpp for more information.
-  m_iMilliseconds = DEFAULT_MSECS;
-	
-  if (!m_bStarted)
-    set(m_iMilliseconds);
-}
-
 /*
   The goal here is to set this timer to go off after iMilliseconds
  have passed.  This method should not block.  It should call some

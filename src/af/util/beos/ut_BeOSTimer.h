@@ -33,7 +33,6 @@ public:
 	virtual UT_sint32 set(UT_uint32 iMilliseconds);
 	virtual void stop(void);
 	virtual void start(void);
-	virtual void setAsFastAsPossible(void);
 	virtual void resetIfStarted(void);
 	bool m_bMustRestart;
 	UT_sint32 m_iMilliseconds;

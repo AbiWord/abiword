@@ -113,17 +113,6 @@ restartlabel:
 	}
 }
 
-UT_sint32 UT_BeOSTimer::setAsFastAsPossible()
-{
-  // Just a placeholder until someone implements an idle-queue
-  // mechanism. See ut_unixTimer.cpp for more information.
-  m_iMilliseconds = DEFAULT_MSECS;
-	
-  if (!m_bStarted)
-    set(m_iMilliseconds);
-}
-
-
 void UT_BeOSTimer::resetIfStarted(void)
 {
 	/*if (m_bStarted)

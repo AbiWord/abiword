@@ -37,7 +37,7 @@ public:
 	virtual void stop(void);
 	virtual void start(void);
 	virtual void resetIfStarted(void);
-	virtual setAsFastAsPossible(void);
+	
 protected:
 	UT_sint32 m_iMilliseconds;
 	bool m_bStarted;

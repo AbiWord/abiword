@@ -24,7 +24,6 @@
 #include "ut_assert.h"
 #include "gr_Win32Graphics.h"
 
-
 /*****************************************************************/
 	
 UT_Timer* UT_Timer::static_constructor(UT_TimerCallback pCallback, void* pData, GR_Graphics * pG)
@@ -91,16 +90,6 @@ UT_sint32 UT_Win32Timer::set(UT_uint32 iMilliseconds)
 	m_bStarted = true;
 	setIdentifier(idTimer);
 	return 0;
-}
-
-UT_sint32 UT_Win32Timer::setAsFastAsPossible(void)
-{
-  // Just a placeholder until someone implements an idle-queue
-  // mechanism. See ut_unixTimer.cpp for more information.
-  m_iMilliseconds = DEFAULT_MSECS;
-	
-  if (!m_bStarted)
-    set(m_iMilliseconds);
 }
 
 void UT_Win32Timer::stop(void)

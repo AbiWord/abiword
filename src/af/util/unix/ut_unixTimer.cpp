@@ -75,7 +75,6 @@ UT_sint32 UT_UNIXTimer::set(UT_uint32 iMilliseconds)
 	*/
 	stop();
 
-	m_bDoAsFastAsPossible = false;
 	m_iGtkTimerId = gtk_timeout_add(iMilliseconds, _Timer_Proc, this);
 
 	if (getIdentifier() == 0)
@@ -88,31 +87,6 @@ UT_sint32 UT_UNIXTimer::set(UT_uint32 iMilliseconds)
 	return 0;
 }
 
-UT_sint32 UT_UNIXTimer::setAsFastAsPossible()
-{
-  /*
-    The goal here is to put a function in an idle queue.  This method
-    should not block.  It should call some OS routine which provides
-    idle facilities, or use another timing mechanism.  It is assumed
-    that this routine requires a C callback.  That callback, when it
-    is called, must look up the UT_Timer object which corresponds to
-    it, and call its fire() method.  See ut_unixTimer.cpp for an
-    example of how it's done with GTK.  We're hoping that something
-    similar will work for other platforms.
-  */
-  stop();
-
-  m_bDoAsFastAsPossible = true;
-  m_iGtkTimerId = gtk_idle_add(_Timer_Proc, this);
-
-  if (getIdentifier() == 0)
-    setIdentifier(m_iGtkTimerId);
-
-  m_iMilliseconds = 0;
-
-  return 0;
-}
-
 void UT_UNIXTimer::stop()
 {
 	// stop the delivery of timer events.
@@ -120,24 +94,15 @@ void UT_UNIXTimer::stop()
 	if (m_iGtkTimerId != 0)
 	{
 //		UT_DEBUGMSG(("ut_unixTimer.cpp: timer [%d] (with id [%d]) stopped\n", getIdentifier(), m_iGtkTimerId));
-		if (m_bDoAsFastAsPossible)
-		  gtk_idle_remove(m_iGtkTimerId);
-		else
-		  gtk_timeout_remove(m_iGtkTimerId);
+		gtk_timeout_remove(m_iGtkTimerId);
 		m_iGtkTimerId = 0;
 	}
 }
 
 void UT_UNIXTimer::start()
 {
-  if (m_bDoAsFastAsPossible)
-    {
-      setAsFastAsPossible();
-    }
-  else
-    {
-      UT_ASSERT(m_iMilliseconds > 0);
-      set(m_iMilliseconds);
-    }
+	// resume the delivery of events.
+	UT_ASSERT(m_iMilliseconds > 0);
+	set(m_iMilliseconds);
 }
 

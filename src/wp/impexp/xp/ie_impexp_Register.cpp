@@ -74,9 +74,9 @@ void IE_ImpExp_RegisterXP ()
 	IE_Imp::registerImporter(new IE_Imp_XHTML_Sniffer ());
 	IE_Imp::registerImporter(new IE_Imp_ISCII_Sniffer ());
 
-//#ifdef DEBUG
+#ifdef DEBUG
 	IE_Imp::registerImporter(new IE_Imp_KWord_1_Sniffer ());
-//#endif
+#endif
 
 	IE_Imp::registerImporter(new IE_Imp_PalmDoc_Sniffer ());
 	IE_Imp::registerImporter(new IE_Imp_Psion_TextEd_Sniffer ());
