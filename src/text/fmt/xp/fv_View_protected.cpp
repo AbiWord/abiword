@@ -418,7 +418,7 @@ bool FV_View::_restoreCellParams(PT_DocPosition posTable, UT_sint32 iLineType)
 // with a bogus line-type property. We'll restore it later.
 //
 	const char * pszTable[3] = {NULL,NULL,NULL};
-	pszTable[0] = "table-line-type";
+	pszTable[0] = "table-line-ignore";
 	const char * szLineType = NULL;
 	UT_String sLineType;
 	UT_sint32 iLineType;

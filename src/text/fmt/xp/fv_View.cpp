@@ -5157,6 +5157,14 @@ bool FV_View::setCellFormat(const XML_Char * properties[])
 	// Signal PieceTable Change
 	_saveAndNotifyPieceTableChange();
 
+	// Turn off list updates
+
+	m_pDoc->disableListUpdates();
+
+// turn off immediate layout of table. uwog this stops the formatter from prematurely building the table.
+
+	m_pDoc->setDontImmediatelyLayout(true);
+
 	PT_DocPosition posStart = getPoint();
 	PT_DocPosition posEnd = posStart;
 
@@ -5172,9 +5180,34 @@ bool FV_View::setCellFormat(const XML_Char * properties[])
 		}
 	}
 
+//
+// Need this to trigger a table update!
+//
+	PL_StruxDocHandle tableSDH;
+	bRet = m_pDoc->getStruxOfTypeFromPosition(posStart,PTX_SectionTable,&tableSDH);
+	UT_sint32 iLineType = _changeCellParams(posStart, tableSDH);
+//
+// Do the change
+//
 	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,NULL,properties,PTX_SectionCell);
+//
+// restore the line
+//
+// Now trigger a rebuild of the whole table by sending a changeStrux to the table strux
+// with the restored line-type property it has before.
+//
+	iLineType += 1;
+	_restoreCellParams(posStart,iLineType);
+
+// Allow table updates
+
+	m_pDoc->setDontImmediatelyLayout(false);
 
 	_generalUpdate();
+
+	// restore updates and clean up dirty lists
+	m_pDoc->enableListUpdates();
+	m_pDoc->updateDirtyLists();
 
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();

@@ -44,25 +44,24 @@
 
 AP_Dialog_FormatTable::AP_Dialog_FormatTable(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: XAP_Dialog_Modeless(pDlgFactory,id,"interface/dialogwordcount.html"),
-	  m_answer(a_OK),
-	  m_iCellSource(0),
-	  m_iCellDestination(0),
-	  m_lineType(radio_left),
-	  m_iLeftStyle(0),
-	  m_iRightStyle(0),
-	  m_iTopStyle(0),
-	  m_iBottomStyle(0),
-	  m_iNumRows(0),
-	  m_iNumCols(0),
-	  m_pTab(NULL),
+	m_leftColor(NULL),
+	m_rightColor(NULL),
+	m_topColor(NULL),
+	m_bottomColor(NULL),													 
+	m_answer(a_OK),
+	m_pFormatTablePreview(NULL),
+	m_iCellSource(0),
+    m_iCellDestination(0),
+	m_iLeftStyle(0),
+	m_iRightStyle(0),
+	m_iTopStyle(0),
+	m_iBottomStyle(0),
+    m_iNumRows(0),
+    m_iNumCols(0),
+    m_pTab(NULL),
 	  m_pAutoUpdaterMC(NULL),
-      m_bDestroy_says_stopupdating(false),
-      m_bAutoUpdate_happening_now(false),
-	  m_pFormatTablePreview(NULL),
-      m_leftColor(NULL),
-      m_rightColor(NULL),
-      m_topColor(NULL),
-      m_bottomColor(NULL)	
+	m_bDestroy_says_stopupdating(false),
+    m_bAutoUpdate_happening_now(false)
 {
       if(m_vecProps.getItemCount() > 0)
 		  m_vecProps.clear();
@@ -195,10 +194,9 @@ void AP_Dialog_FormatTable::applyChanges()
 		return;
 	
 // 	 Looking for a fix under win32
-#ifndef WIN32
 
     FV_View * pView = (FV_View *) m_pApp->getLastFocussedFrame()->getCurrentView();
-	const XML_Char * propsArray = XML_Char [m_vecProps.getItemCount()+1];
+	const XML_Char ** propsArray  = new const XML_Char * [m_vecProps.getItemCount()+1];
 	propsArray[m_vecProps.getItemCount()] = NULL;
 	
 	UT_sint32 i = m_vecProps.getItemCount();
@@ -210,8 +208,7 @@ void AP_Dialog_FormatTable::applyChanges()
 	}
 
 	pView->setCellFormat(propsArray);
-	
-#endif
+	delete [] propsArray;
 }
 
 void AP_Dialog_FormatTable::finalize(void)
