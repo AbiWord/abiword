@@ -116,6 +116,8 @@
 #include <gnome.h>
 #include <libbonoboui.h>
 #include <libgnomevfs/gnome-vfs.h>
+
+static int mainBonobo(int argc, char ** argv);
 #endif
 
 // quick hack - this is defined in ap_EditMethods.cpp
@@ -1172,13 +1174,6 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
 {
     // This is a static function.
     
-    UT_DEBUGMSG(("Build ID:\t%s\n", XAP_App::s_szBuild_ID));
-    UT_DEBUGMSG(("Version:\t%s\n", XAP_App::s_szBuild_Version));
-    UT_DEBUGMSG(("Build Options: \t%s\n", XAP_App::s_szBuild_Options));
-    UT_DEBUGMSG(("Build Target: \t%s\n", XAP_App::s_szBuild_Target));
-    UT_DEBUGMSG(("Compile Date:\t%s\n", XAP_App::s_szBuild_CompileDate));
-    UT_DEBUGMSG(("Compile Time:\t%s\n", XAP_App::s_szBuild_CompileTime));
-    
     // initialize our application.
     
 	XAP_Args XArgs = XAP_Args(argc,argv);
@@ -1194,23 +1189,44 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
     gboolean have_display = gtk_init_check(&XArgs.m_argc,(char ***)&XArgs.m_argv);
 
     if (have_display || Args.getShowApp()) {
-      // this is just like an abort() but with a useful error messsage
 #ifndef HAVE_GNOME
       gtk_init (&XArgs.m_argc,(char ***)&XArgs.m_argv);
 #else
-	  //gnome_program_init ("AbiWord", ABI_BUILD_VERSION, NULL, XArgs.m_argc, const_cast<char **>(XArgs.m_argv), GNOME_PARAM_APP_DATADIR, "/usr/share", GNOME_PARAM_NONE);
 	  gnome_init ("AbiWord", ABI_BUILD_VERSION, XArgs.m_argc, const_cast<char **>(XArgs.m_argv));
       gnome_vfs_init ();
+	  bonobo_init (&XArgs.m_argc, XArgs.m_argv);
 #endif
     }
 
-    UT_DEBUGMSG(("UnixApp: about to initialize \n"));
     // if the initialize fails, we don't have icons, fonts, etc.
     if (!pMyUnixApp->initialize())
 	{
 		delete pMyUnixApp;
 		return -1;	// make this something standard?
 	}
+
+
+#ifdef HAVE_GNOME
+	//
+	// Check to see if we've been activated as a control by OAF
+	//
+	bool bControlFactory = false;
+  	for (UT_sint32 k = 1; k < XArgs.m_argc; k++)
+		if (*XArgs.m_argv[k] == '-')
+			if (strstr(XArgs.m_argv[k],"GNOME_AbiWord_ControlFactory") != 0)
+			{
+				bControlFactory = true;
+				break;
+			}
+
+	if(bControlFactory)
+	  {
+		  int rtn = mainBonobo(XArgs.m_argc, XArgs.m_argv);
+		  pMyUnixApp->shutdown();
+		  delete pMyUnixApp;
+		  return rtn;
+	  }
+#endif
 
     // do we show the app&splash?
     bool bShowSplash = Args.getShowSplash();
@@ -1760,6 +1776,12 @@ pstream_get_content_types (BonoboPersistStream *ps, void *closure,
 // increment/decrement zoom percentages by this amount
 #define ZOOM_PCTG 10
 
+static float preferred_zoom_levels[] = {
+	1.0 / 4.0, 1.0 / 2.0, 3.0 / 4.0, 1.0, 1.5, 2.0,
+};
+
+static const gint n_zoom_levels = (sizeof (preferred_zoom_levels) / sizeof (float));
+
 static void zoom_level_func(GObject * z, float lvl, gpointer data)
 {
   g_return_if_fail (data != NULL);
@@ -1874,7 +1896,7 @@ AbiControl_add_interfaces (AbiWidget *abiwidget,
 
 	guint n_pspecs = 0;
 	BonoboPropertyBag * pb = bonobo_property_bag_new (NULL, NULL, NULL);
-	GParamSpec ** pspecs = g_object_class_list_properties (G_OBJECT_GET_CLASS (G_OBJECT (abiwidget)), &n_pspecs);
+	const GParamSpec ** pspecs = (const GParamSpec **)g_object_class_list_properties (G_OBJECT_GET_CLASS (G_OBJECT (abiwidget)), &n_pspecs);
 	bonobo_property_bag_map_params (pb, G_OBJECT (abiwidget), pspecs, n_pspecs);
 	bonobo_object_add_interface (BONOBO_OBJECT (to_aggregate), BONOBO_OBJECT (pb));
 
@@ -1929,8 +1951,15 @@ AbiControl_add_interfaces (AbiWidget *abiwidget,
 	  return NULL;
 	}
 
-	bonobo_object_add_interface (BONOBO_OBJECT (to_aggregate),
-								 BONOBO_OBJECT (zoomable));
+	bonobo_zoomable_set_parameters_full
+		(zoomable,
+		 1.0,
+		 0.1,
+		 5.0,
+		 TRUE, TRUE, TRUE,
+		 preferred_zoom_levels,
+		 NULL,
+		 n_zoom_levels);
 
 	g_signal_connect(G_OBJECT(zoomable), "zoom_in",
 			 G_CALLBACK(zoom_in_func), abiwidget);
@@ -1942,6 +1971,9 @@ AbiControl_add_interfaces (AbiWidget *abiwidget,
 			 G_CALLBACK(zoom_to_default_func), abiwidget);
 	g_signal_connect(G_OBJECT(zoomable), "set_zoom_level",
 			 G_CALLBACK(zoom_level_func), abiwidget);
+
+	bonobo_object_add_interface (BONOBO_OBJECT (to_aggregate),
+								 BONOBO_OBJECT (zoomable));
 
 	return to_aggregate;
 }
@@ -1961,7 +1993,9 @@ static BonoboControl * AbiWidget_control_new (AbiWidget * abi)
  *  	'bonobo_generic_factory_new')
  */
 static BonoboObject*
-bonobo_AbiWidget_factory  (BonoboGenericFactory *factory, void *closure)
+bonobo_AbiWidget_factory  (BonoboGenericFactory *factory, 
+						   const char           *oaf_iid,
+						   void *closure)
 {
   /*
    * create a new AbiWidget instance
@@ -1970,13 +2004,21 @@ bonobo_AbiWidget_factory  (BonoboGenericFactory *factory, void *closure)
   GtkWidget  * abi  = abi_widget_new_with_app (pApp);
   gtk_widget_show (abi);
   
+#if 0
+  // TODO: add verbs and such
+  g_signal_connect (G_OBJECT (control), "activate",
+					G_CALLBACK (control_activated_cb), wbc);
+#endif
+
   return BONOBO_OBJECT (AbiWidget_control_new (ABI_WIDGET (abi)));
 }
 
-static int mainBonobo(int argc, char * argv[])
+static int mainBonobo(int argc, char ** argv)
 {
-	UT_ASSERT (UT_TODO);
-	return 0;
+	BONOBO_FACTORY_INIT ("abiword-component", "0.1", &argc, argv);
+
+	return bonobo_generic_factory_main ("OAFIID:GNOME_AbiWord_Factory",
+										bonobo_AbiWidget_factory, NULL);
 }
 
 #endif /* HAVE_GNOME */
