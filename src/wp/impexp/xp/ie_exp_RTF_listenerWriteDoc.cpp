@@ -393,8 +393,13 @@ bool s_RTF_ListenerWriteDoc::populate(PL_StruxFmtHandle /*sfh*/,
 	}
 }
 
-void s_RTF_ListenerWriteDoc::_writeFieldPreamble(void)
+void s_RTF_ListenerWriteDoc::_writeFieldPreamble(const PP_AttrProp * pSpanAP)
 {
+	const PP_AttrProp * pBlockAP = NULL;
+	const PP_AttrProp * pSectionAP = NULL;
+
+	m_pDocument->getAttrProp(m_apiThisSection,&pSectionAP);
+	m_pDocument->getAttrProp(m_apiThisBlock,&pBlockAP);
 	m_pie->_rtf_open_brace();
 	m_pie->_rtf_keyword("field");
 	m_pie->_rtf_open_brace();
@@ -402,6 +407,7 @@ void s_RTF_ListenerWriteDoc::_writeFieldPreamble(void)
 	m_pie->_rtf_keyword("fldinst");
 	m_pie->write(" ");
 	m_pie->_rtf_open_brace();
+	m_pie->_write_charfmt(s_RTF_AttrPropAdapter_AP(pSpanAP, pBlockAP, pSectionAP, m_pDocument));
 	m_pie->write(" ");
 }
 
@@ -421,7 +427,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		 }
 		 else if(UT_XML_strcmp(pszType,"page_number") == 0)
 		 {
-			 _writeFieldPreamble();
+			 _writeFieldPreamble(pSpanAP);
 			 m_pie->write("PAGE  \\");
 			 m_pie->_rtf_keyword("*");
 			 m_pie->write(" MERGEFORMAT ");
@@ -432,7 +438,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		 }
 		 else if(UT_XML_strcmp(pszType,"time") == 0)
 		 {
-			 _writeFieldPreamble();
+			 _writeFieldPreamble(pSpanAP);
 			 m_pie->write("TIME  \\");
 			 m_pie->_rtf_keyword("*");
 			 m_pie->write(" MERGEFORMAT ");
@@ -448,7 +454,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		 }
 		 else if(UT_XML_strcmp(pszType,"page_count") == 0)
 		 {
-			 _writeFieldPreamble();
+			 _writeFieldPreamble(pSpanAP);
 			 m_pie->write("NUMPAGES  \\");
 			 m_pie->_rtf_keyword("*");
 			 m_pie->write(" MERGEFORMAT ");
@@ -460,7 +466,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		 }
 		 else if(UT_XML_strcmp(pszType,"date") == 0)
 		 {
-			 _writeFieldPreamble();
+			 _writeFieldPreamble(pSpanAP);
 			 m_pie->write("DATE  \\");
 			 m_pie->_rtf_keyword("*");
 			 m_pie->write(" MERGEFORMAT ");
@@ -471,7 +477,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		 }
 		 else if(UT_XML_strcmp(pszType,"date_mmddyy") == 0)
 		 {
-			 _writeFieldPreamble();
+			 _writeFieldPreamble(pSpanAP);
 			 m_pie->write("TIME  \\");
 			 m_pie->_rtf_keyword("@");
 			 m_pie->write(" dddd, MMMM dd, yyyy");
@@ -482,7 +488,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		 }
 		 else if(UT_XML_strcmp(pszType,"date_mdy") == 0)
 		 {
-			 _writeFieldPreamble();
+			 _writeFieldPreamble(pSpanAP);
 			 m_pie->write("TIME  \\");
 			 m_pie->_rtf_keyword("@");
 			 m_pie->write(" MMM dd, yyy");
@@ -493,7 +499,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		 }
 		 else if(UT_XML_strcmp(pszType,"date_mthdy") == 0)
 		 {
-			 _writeFieldPreamble();
+			 _writeFieldPreamble(pSpanAP);
 			 m_pie->write("TIME  \\");
 			 m_pie->_rtf_keyword("@");
 			 m_pie->write(" MMMM dd, yy");
@@ -512,7 +518,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		 }
 		 else if(UT_XML_strcmp(pszType,"date_wkday") == 0)
 		 {
-			 _writeFieldPreamble();
+			 _writeFieldPreamble(pSpanAP);
 			 m_pie->write("TIME  \\");
 			 m_pie->_rtf_keyword("@");
 			 m_pie->write(" dddd");
@@ -544,7 +550,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		 }
 		 else if(UT_XML_strcmp(pszType,"word_count") == 0)
 		 {
-			 _writeFieldPreamble();
+			 _writeFieldPreamble(pSpanAP);
 			 m_pie->write("NUMWORDS  \\");
 			 m_pie->_rtf_keyword("*");
 			 m_pie->write(" MERGEFORMAT ");
@@ -560,7 +566,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		 }
 		 else if(UT_XML_strcmp(pszType,"char_count") == 0)
 		 {
-			 _writeFieldPreamble();
+			 _writeFieldPreamble(pSpanAP);
   			 m_pie->write("NUMCHARS  \\");
   			 m_pie->_rtf_keyword("*");
   			 m_pie->write(" MERGEFORMAT ");
