@@ -42,4 +42,8 @@ TARGETS=		$(OBJS)
 
 include $(ABI_ROOT)/src/config/abi_rules.mk
 
+INCLUDES= -I$(ABI_XX_ROOT)/src/text/fmt/xp \
+	  -I$(ABI_XX_ROOT)/src/text/ptbl/xp \
+	  -I$(ABI_XX_ROOT)/src/wp/impexp/xp \
+	  -I$(ABI_XX_ROOT)/src/wp/ap/xp 
 build:: $(TARGETS)

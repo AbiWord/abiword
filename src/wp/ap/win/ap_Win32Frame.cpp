@@ -1065,12 +1065,9 @@ LRESULT CALLBACK AP_Win32Frame::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARAM wP
 
 	case WM_TIMER:
 	{
-		// Timers are handled differently on Win95 and WinNT.
-		// TMN: If so, what are those differences?
 		TIMERPROC * pfn = (TIMERPROC *)lParam;
-		UT_Win32Timer * pTimer = (UT_Win32Timer *)wParam;
 		UT_ASSERT( (void *)(pfn) == (void *)(Global_Win32TimerProc) );
-		Global_Win32TimerProc(hwnd,WM_TIMER, pTimer->getIdentifier(),NULL);
+		Global_Win32TimerProc(hwnd,WM_TIMER,(UINT)wParam,NULL);
 		return 0;
 	}
 	

@@ -587,7 +587,6 @@ UT_Bool pt_PieceTable::_getStruxOfTypeFromPosition(PT_DocPosition dpos,
 {
 	// return the strux fragment of the given type containing
 	// the given absolute document position.
-
 	UT_ASSERT(ppfs);
 	*ppfs = NULL;
 	
@@ -607,6 +606,14 @@ UT_Bool pt_PieceTable::_getStruxOfTypeFromPosition(PT_DocPosition dpos,
 		if (pf->getType() == pf_Frag::PFT_Strux)
 		{
 			pf_Frag_Strux * pfsTemp = static_cast<pf_Frag_Strux *>(pf);
+#ifdef DEBUG
+			pf_Frag_Strux * testpfs = NULL;
+			_getStruxFromPosition(dpos+1,&testpfs);
+			UT_DEBUGMSG(("SAM: StruxType: %d\n", pfsTemp->getStruxType()));
+			UT_DEBUGMSG(("SAM: StruxTypesList \n [Section Block]:\n [%d           %d]\n", PTX_Section, PTX_Block));
+			UT_DEBUGMSG(("SAM: dpos: %d\n", dpos));
+			UT_DEBUGMSG(("SAM: Type of pos 2: %d", (static_cast<pf_Frag_Strux *>(testpfs))->getStruxType()));
+#endif
 			if (pfsTemp->getStruxType() == pts)	// did we find it
 			{
 				*ppfs = pfsTemp;

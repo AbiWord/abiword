@@ -44,6 +44,8 @@ UT_Win32Timer::UT_Win32Timer(UT_TimerCallback pCallback, void* pData, GR_Graphic
 	GR_Win32Graphics * pWinG = static_cast<GR_Win32Graphics *>(pG);
 	
 	m_hWnd = ((pWinG) ? pWinG->getHwnd() : 0);
+
+	setIdentifier(_createIdentifier());
 }
 
 
@@ -69,11 +71,18 @@ UT_sint32 UT_Win32Timer::set(UT_uint32 iMilliseconds)
 {
 	// set the freq and start firing events.
 
-	// NOTE: Win95 does not support TimerProc.  WinNT does support TimerProc.
-	// NOTE: I'm going to pass enough information so that we should be able
-	// NOTE: to get back to our timer callback regardless of the OS.
+	// WinNT support TimerProc. Win95 also use it, but the documentation 
+	// say it also need a message dispatch procedure for WM_TIMER.
+	// I'm going to pass enough information so that we should be able
+	// to get back to our timer callback regardless of the OS.
+	// SetTimer return the timer identifier. When we create a new timer
+	// and the window handle is zero, the function generate an id 
+	// regardless of the one supplied.
+	// Identifier need to be 16 bits because certains printers drivers are
+	// made to work with "Windows 3.1" ! Theses drivers filter out bits
+	// higher than 16.
 	
-	UINT idTimer = SetTimer(m_hWnd, (UINT)this, iMilliseconds, (TIMERPROC) Global_Win32TimerProc);
+	UINT idTimer = SetTimer(m_hWnd, (UINT) getIdentifier(), iMilliseconds, (TIMERPROC) Global_Win32TimerProc);
 	if (idTimer == 0)
 		return -1;
 	
@@ -105,4 +114,47 @@ void UT_Win32Timer::start(void)
 	
 	if (!m_bStarted)
 		set(m_iMilliseconds);
+}
+
+int UT_Win32Timer::_compareIdentifiers(const void* p1, const void* p2)
+{
+	UT_Win32Timer** ppTimer1 = (UT_Win32Timer**) p1;
+	UT_Win32Timer** ppTimer2 = (UT_Win32Timer**) p2;
+
+	if ((*ppTimer1)->getIdentifier() < (*ppTimer2)->getIdentifier())
+	{
+		return -1;
+	}
+	
+	if ((*ppTimer1)->getIdentifier() > (*ppTimer2)->getIdentifier())
+	{
+		return 1;
+	}
+	
+	return 0;
+}
+
+UT_uint32 UT_Win32Timer::_createIdentifier(void)
+{
+	UT_Timer::static_vecTimers.qsort(UT_Win32Timer::_compareIdentifiers);
+
+	// Take the first unused identifier number different from zero
+	UT_uint32 iIdentifier = 0;
+	UT_uint32 count = static_vecTimers.getItemCount();
+	for (UT_uint32 i=0; i<count; i++, iIdentifier++)
+	{
+		UT_Timer* pTimer = (UT_Timer*) static_vecTimers.getNthItem(i);
+		UT_ASSERT(pTimer);
+		
+		UT_uint32 iTimerId = pTimer->getIdentifier();
+		if (iTimerId && iTimerId != iIdentifier)
+		{
+			break;
+		}
+	}
+
+	// Should be 16 bits maximum
+	UT_ASSERT((iIdentifier & 0xFFFF0000) == 0);
+
+	return iIdentifier;
 }
