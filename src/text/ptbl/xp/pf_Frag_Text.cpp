@@ -70,6 +70,30 @@ UT_Bool pf_Frag_Text::createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
 	return UT_TRUE;
 }
 
+UT_Bool pf_Frag_Text::createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
+												PT_DocPosition dpos,
+												PT_BlockOffset blockOffset,
+												PT_BlockOffset startFragOffset,
+												PT_BlockOffset endFragOffset) const
+{
+	UT_ASSERT(ppcr);
+	UT_ASSERT(endFragOffset <= m_length);
+	UT_ASSERT(startFragOffset < endFragOffset);
+	
+	PX_ChangeRecord * pcr
+		= new PX_ChangeRecord_Span(PX_ChangeRecord::PXT_InsertSpan,
+								   dpos+startFragOffset,
+								   m_indexAP,
+								   m_bufIndex+startFragOffset,
+								   (endFragOffset-startFragOffset),
+								   blockOffset+startFragOffset);
+	if (!pcr)
+		return UT_FALSE;
+
+	*ppcr = pcr;
+	return UT_TRUE;
+}
+
 void pf_Frag_Text::changeLength(UT_uint32 newLength)
 {
 	UT_ASSERT(newLength > 0);

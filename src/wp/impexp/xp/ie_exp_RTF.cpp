@@ -115,8 +115,10 @@ IEStatus IE_Exp_RTF::_writeDocument(void)
 	m_pListenerGetProps = new s_RTF_ListenerGetProps(m_pDocument,this);
 	if (!m_pListenerGetProps)
 		return IES_NoMemory;
-	if (!m_pDocument->tellListener(static_cast<PL_Listener *>(m_pListenerGetProps)))
-		return IES_Error;
+	if (m_pDocRange)
+		m_pDocument->tellListenerSubset(static_cast<PL_Listener *>(m_pListenerGetProps),m_pDocRange);
+	else
+		m_pDocument->tellListener(static_cast<PL_Listener *>(m_pListenerGetProps));
 	DELETEP(m_pListenerGetProps);
 
 	// write rtf header
@@ -130,8 +132,10 @@ IEStatus IE_Exp_RTF::_writeDocument(void)
 	m_pListenerWriteDoc = new s_RTF_ListenerWriteDoc(m_pDocument,this);
 	if (!m_pListenerWriteDoc)
 		return IES_NoMemory;
-	if (!m_pDocument->tellListener(static_cast<PL_Listener *>(m_pListenerWriteDoc)))
-		return IES_Error;
+	if (m_pDocRange)
+		m_pDocument->tellListenerSubset(static_cast<PL_Listener *>(m_pListenerWriteDoc),m_pDocRange);
+	else
+		m_pDocument->tellListener(static_cast<PL_Listener *>(m_pListenerWriteDoc));
 	DELETEP(m_pListenerWriteDoc);
 
 	// write any rtf trailer matter

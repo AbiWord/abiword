@@ -164,6 +164,8 @@ void IE_Imp_Text::pasteFromBuffer(PD_DocumentRange * pDocRange,
 
 	UT_GrowBuf gbBlock(1024);
 	UT_Bool bEatLF = UT_FALSE;
+	UT_Bool bSuppressLeadingParagraph = UT_TRUE;
+	UT_Bool bInColumn1 = UT_TRUE;
 	unsigned char * pc;
 
 	PT_DocPosition dpos = pDocRange->m_pos1;
@@ -189,28 +191,33 @@ void IE_Imp_Text::pasteFromBuffer(PD_DocumentRange * pDocRange,
 			
 			// we interprete either CRLF, CR, or LF as a paragraph break.
 			
-			// start a paragraph and emit any text that we
-			// have accumulated.
-			m_pDocument->insertStrux(dpos,PTX_Block);
-			dpos += 1;
-			
 			if (gbBlock.getLength() > 0)
 			{
+				// flush out what we have
 				m_pDocument->insertSpan(dpos, gbBlock.getPointer(0), gbBlock.getLength());
 				dpos += gbBlock.getLength();
 				gbBlock.truncate(0);
 			}
+			bInColumn1 = UT_TRUE;
 			break;
 
 		default:
 			bEatLF = UT_FALSE;
-
+			if (bInColumn1 && !bSuppressLeadingParagraph)
+			{
+				m_pDocument->insertStrux(dpos,PTX_Block);
+				dpos++;
+			}
+			
 			// deal with plain character.
 			// this cast is OK.  we have US-ASCII (actually Latin-1) character
 			// data, so we can do this.
 			
 			UT_UCSChar uc = (UT_UCSChar) c;
 			gbBlock.ins(gbBlock.getLength(),&uc,1);
+
+			bInColumn1 = UT_FALSE;
+			bSuppressLeadingParagraph = UT_FALSE;
 			break;
 		}
 	} 
@@ -218,9 +225,6 @@ void IE_Imp_Text::pasteFromBuffer(PD_DocumentRange * pDocRange,
 	if (gbBlock.getLength() > 0)
 	{
 		// if we have text left over (without final CR/LF),
-		// create a paragraph and emit the text now.
-		m_pDocument->insertStrux(dpos, PTX_Block);
-		dpos += 1;
 		m_pDocument->insertSpan(dpos, gbBlock.getPointer(0), gbBlock.getLength());
 		dpos += gbBlock.getLength();
 	}

@@ -39,7 +39,8 @@ class s_Text_Listener : public PL_Listener
 {
 public:
 	s_Text_Listener(PD_Document * pDocument,
-					IE_Exp_Text * pie);
+					IE_Exp_Text * pie,
+					UT_Bool bToClipboard);
 	virtual ~s_Text_Listener();
 
 	virtual UT_Bool		populate(PL_StruxFmtHandle sfh,
@@ -69,6 +70,7 @@ protected:
 	PD_Document *		m_pDocument;
 	IE_Exp_Text *		m_pie;
 	UT_Bool				m_bInBlock;
+	UT_Bool				m_bToClipboard;
 };
 
 /*****************************************************************/
@@ -122,14 +124,15 @@ UT_Bool IE_Exp_Text::SupportsFileType(IEFileType ft)
 
 IEStatus IE_Exp_Text::_writeDocument(void)
 {
-	m_pListener = new s_Text_Listener(m_pDocument,this);
+	m_pListener = new s_Text_Listener(m_pDocument,this, (m_pDocRange!=NULL));
 	if (!m_pListener)
 		return IES_NoMemory;
-	if (!m_pDocument->tellListener(static_cast<PL_Listener *>(m_pListener)))
-		return IES_Error;
-	delete m_pListener;
 
-	m_pListener = NULL;
+	if (m_pDocRange)
+		m_pDocument->tellListenerSubset(static_cast<PL_Listener *>(m_pListener),m_pDocRange);
+	else
+		m_pDocument->tellListener(static_cast<PL_Listener *>(m_pListener));
+	DELETEP(m_pListener);
 	
 	return ((m_error) ? IES_CouldNotWriteToFile : IES_OK);
 }
@@ -142,6 +145,10 @@ void s_Text_Listener::_closeBlock(void)
 	if (!m_bInBlock)
 		return;
 
+#ifdef WIN32							// we need to generate CRLFs on Win32
+	if (m_bToClipboard)					// when writing to the clipboard.  we
+		m_pie->write("\r");				// use text mode when going to a file
+#endif									// so we don't need to then.
 	m_pie->write("\n");
 	m_bInBlock = UT_FALSE;
 	return;
@@ -168,6 +175,10 @@ void s_Text_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 
 		UT_ASSERT(*pData < 256);
 		// We let any UCS_LF's (forced line breaks) go out as is.
+#ifdef WIN32
+		if (m_bToClipboard && *pData==UCS_LF)
+			*pBuf++ = '\r';
+#endif
 		*pBuf++ = (UT_Byte)*pData++;
 	}
 
@@ -176,11 +187,13 @@ void s_Text_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 }
 
 s_Text_Listener::s_Text_Listener(PD_Document * pDocument,
-								 IE_Exp_Text * pie)
+								 IE_Exp_Text * pie,
+								 UT_Bool bToClipboard)
 {
 	m_pDocument = pDocument;
 	m_pie = pie;
 	m_bInBlock = UT_FALSE;
+	m_bToClipboard = bToClipboard;
 }
 
 s_Text_Listener::~s_Text_Listener()

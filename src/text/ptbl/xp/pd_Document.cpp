@@ -348,6 +348,15 @@ UT_Bool PD_Document::tellListener(PL_Listener* pListener)
 	return m_pPieceTable->tellListener(pListener);
 }
 
+UT_Bool PD_Document::tellListenerSubset(PL_Listener* pListener, PD_DocumentRange * pDocRange)
+{
+	UT_ASSERT(pListener);
+	UT_ASSERT(m_pPieceTable);
+	UT_ASSERT(pDocRange && pDocRange->m_pDoc==this);
+	
+	return m_pPieceTable->tellListenerSubset(pListener,pDocRange);
+}
+
 UT_Bool PD_Document::addListener(PL_Listener * pListener,
 								 PL_ListenerId * pListenerId)
 {

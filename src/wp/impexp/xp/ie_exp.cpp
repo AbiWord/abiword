@@ -156,8 +156,6 @@ IEStatus IE_Exp::copyToBuffer(PD_DocumentRange * pDocRange, UT_ByteBuf * pBuf)
 	m_pDocRange = pDocRange;
 	m_pByteBuf = pBuf;
 
-	// TODO deal with document range...
-	
 	return _writeDocument();
 }
 

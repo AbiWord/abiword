@@ -42,6 +42,11 @@ public:
 	virtual UT_Bool			createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
 													  PT_DocPosition dpos,
 													  PT_BlockOffset blockOffset) const;
+	virtual UT_Bool			createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
+													  PT_DocPosition dpos,
+													  PT_BlockOffset blockOffset,
+													  PT_BlockOffset startFragOffset,
+													  PT_BlockOffset endFragOffset) const;
 	PT_BufIndex				getBufIndex(void) const;
 	PT_AttrPropIndex		getIndexAP(void) const;
 	void					setIndexAP(PT_AttrPropIndex indexNewAP);

@@ -333,6 +333,7 @@ void AP_Win32App::copyToClipboard(PD_DocumentRange * pDocRange)
 			m_pClipboard->addData(AP_CLIPBOARD_TEXTPLAIN_8BIT,(UT_Byte *)buf.getPointer(0),buf.getLength());
 			DELETEP(pExpText);
 			UT_DEBUGMSG(("CopyToClipboard: copying %d bytes in TEXTPLAIN format.\n",buf.getLength()));
+//			UT_DEBUGMSG(("CopyToClipboard: [%s]\n",buf.getPointer(0)));
 		}
 
 		// also put RTF on the clipboard
@@ -345,6 +346,7 @@ void AP_Win32App::copyToClipboard(PD_DocumentRange * pDocRange)
 			m_pClipboard->addData(AP_CLIPBOARD_RTF,(UT_Byte *)buf.getPointer(0),buf.getLength());
 			DELETEP(pExpRtf);
 			UT_DEBUGMSG(("CopyToClipboard: copying %d bytes in RTF format.\n",buf.getLength()));
+//			UT_DEBUGMSG(("CopyToClipboard: [%s]\n",buf.getPointer(0)));
 		}
 
 #if 0
@@ -402,6 +404,7 @@ void AP_Win32App::pasteFromClipboard(PD_DocumentRange * pDocRange)
 			unsigned char * pData = new unsigned char[iLen+1];
 			memset(pData,0,iLen+1);
 			m_pClipboard->getData(AP_CLIPBOARD_RTF,pData);
+//			UT_DEBUGMSG(("PasteFromClipboard: [%s]\n",pData));
 			IE_Imp_RTF * pImpRTF = new IE_Imp_RTF(pDocRange->m_pDoc);
 			pImpRTF->pasteFromBuffer(pDocRange,pData,iLen);
 			DELETEP(pImpRTF);
@@ -416,6 +419,7 @@ void AP_Win32App::pasteFromClipboard(PD_DocumentRange * pDocRange)
 			unsigned char * pData = new unsigned char[iLen+1];
 			memset(pData,0,iLen+1);
 			m_pClipboard->getData(AP_CLIPBOARD_TEXTPLAIN_8BIT,pData);
+//			UT_DEBUGMSG(("PasteFromClipboard: [%s]\n",pData));
 			IE_Imp_Text * pImpText = new IE_Imp_Text(pDocRange->m_pDoc);
 			// NOTE: MS Docs state that the terminating zero on the string buffer is 
 			// NOTE: included in the length for CF_TEXT and CF_OEMTEXT, so we compensate

@@ -150,3 +150,108 @@ UT_Bool pt_PieceTable::_tellAndMaybeAddListener(PL_Listener * pListener,
 	
 	return UT_TRUE;
 }
+
+UT_Bool pt_PieceTable::tellListenerSubset(PL_Listener * pListener,
+										  PD_DocumentRange * pDocRange)
+{
+	// walk the subset of the document in the given range
+	// and send notifications.
+
+	PL_StruxFmtHandle sfh = 0;
+	UT_uint32 blockOffset = 0;
+
+	pf_Frag * pf1 = NULL;
+	PT_BlockOffset fragOffset1 = 0;
+	PT_BlockOffset endOffset = 0;
+	
+	if (!getFragFromPosition(pDocRange->m_pos1, &pf1, &fragOffset1))
+		return UT_TRUE;
+
+	PT_DocPosition sum = pDocRange->m_pos1 - fragOffset1;
+	
+	for (pf_Frag * pf = pf1; (pf); pf=pf->getNext())
+	{
+		switch (pf->getType())
+		{
+		case pf_Frag::PFT_Text:
+			{
+				pf_Frag_Text * pft = static_cast<pf_Frag_Text *> (pf);
+				PX_ChangeRecord * pcr = NULL;
+				if (pDocRange->m_pos2 < sum+pf->getLength())
+					endOffset = (pDocRange->m_pos2 - sum);
+				else
+					endOffset = pf->getLength();
+				UT_Bool bStatus1 = pft->createSpecialChangeRecord(&pcr,sum,blockOffset,fragOffset1,endOffset);
+				UT_ASSERT(bStatus1);
+				UT_Bool bStatus2 = pListener->populate(sfh,pcr);
+				if (pcr)
+					delete pcr;
+				if (!bStatus2)
+					return UT_FALSE;
+				blockOffset += pf->getLength();
+				fragOffset1 = 0;
+			}
+			break;
+			
+		case pf_Frag::PFT_Strux:
+			{
+				pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *> (pf);
+				PL_StruxDocHandle sdh = (PL_StruxDocHandle)pf;
+				sfh = 0;
+				PX_ChangeRecord * pcr = NULL;
+				UT_Bool bStatus1 = pfs->createSpecialChangeRecord(&pcr,sum);
+				UT_ASSERT(bStatus1);
+				UT_Bool bStatus2 = pListener->populateStrux(sdh,pcr,&sfh);
+				if (pcr)
+					delete pcr;
+				if (!bStatus2)
+					return UT_FALSE;
+				blockOffset = 0;
+			}
+			break;
+
+		case pf_Frag::PFT_Object:
+			{
+				pf_Frag_Object * pfo = static_cast<pf_Frag_Object *> (pf);
+				PX_ChangeRecord * pcr = NULL;
+				UT_Bool bStatus1 = pfo->createSpecialChangeRecord(&pcr,sum,blockOffset);
+				UT_ASSERT(bStatus1);
+				UT_Bool bStatus2 = pListener->populate(sfh,pcr);
+				if (pcr)
+					delete pcr;
+				if (!bStatus2)
+					return UT_FALSE;
+				blockOffset += pf->getLength();
+			}
+			break;
+
+		case pf_Frag::PFT_FmtMark:
+			{
+				pf_Frag_FmtMark * pffm = static_cast<pf_Frag_FmtMark *> (pf);
+				PX_ChangeRecord * pcr = NULL;
+				UT_Bool bStatus1 = pffm->createSpecialChangeRecord(&pcr,sum,blockOffset);
+				UT_ASSERT(bStatus1);
+				UT_Bool bStatus2 = pListener->populate(sfh,pcr);
+				DELETEP(pcr);
+				if (!bStatus2)
+					return UT_FALSE;
+				blockOffset += pf->getLength();
+			}
+			break;
+			
+		case pf_Frag::PFT_EndOfDoc:
+			// they don't get to know about this.
+			break;
+			
+		default:
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			return UT_FALSE;
+		}
+
+		sum += pf->getLength();
+		if (sum >= pDocRange->m_pos2)
+			break;
+	}
+
+	return UT_TRUE;
+}
