@@ -51,22 +51,22 @@ UT_Wctomb::~UT_Wctomb()
 	    UT_iconv_close(cd);
 }
 
-int UT_Wctomb::wctomb(char * pC,int &length,UT_UCS4Char wc)
+int UT_Wctomb::wctomb(char * pC,int &length,UT_UCS4Char wc, int max_len /* = 100 */)
 {
   char* obuf = pC;
   const char* ibuf = (const char *) &wc;
   
-  size_t inlen = 4, outlen = 100;
+  size_t inlen = 4, outlen = max_len;
   size_t len = UT_iconv(cd,&ibuf,&inlen,&obuf,&outlen);
   if (len==(size_t)-1)
     return 0;
-  length = 100-outlen;
+  length = max_len-outlen;
   return 1;
 }
 
-void UT_Wctomb::wctomb_or_fallback(char * pC,int &length,UT_UCS4Char wc)
+void UT_Wctomb::wctomb_or_fallback(char * pC,int &length,UT_UCS4Char wc, int max_len /* = 100 */)
 {
-  if (!wctomb(pC,length,wc)) {
+  if (!wctomb(pC,length,wc,max_len)) {
     pC[0]='?';
     length=1;
   }

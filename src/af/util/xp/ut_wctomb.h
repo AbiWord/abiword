@@ -19,8 +19,8 @@ public:
   void initialize();
   UT_Wctomb(const char* to_charset);
   ~UT_Wctomb();
-  int wctomb(char * pC,int &length,UT_UCS4Char wc);
-  void wctomb_or_fallback(char * pC,int &length,UT_UCS4Char wc);
+  int wctomb(char * pC,int &length,UT_UCS4Char wc, int max_len = 100);
+  void wctomb_or_fallback(char * pC,int &length,UT_UCS4Char wc, int max_len = 100);
 
   void setOutCharset(const char* charset);
 

@@ -939,11 +939,13 @@ bool UT_UCS2_isSentenceSeparator(UT_UCS2Char c)
 {
 	switch(c)
 	{
-		case '.':
-			return true;
+	case '?': // fall-through
+	case '!': // fall-through
+	case '.':
+		return true;
 
-		default:
-			return false;
+	default:
+		return false;
 	}
 }
 
@@ -1122,11 +1124,13 @@ bool UT_UCS4_isSentenceSeparator(UT_UCS4Char c)
 {
 	switch(c)
 	{
-		case '.':
-			return true;
+	case '?': // fall-through
+	case '!': // fall-through
+	case '.':
+		return true;
 
-		default:
-			return false;
+	default:
+		return false;
 	}
 }
 /* copies exactly n-chars from src to dest; NB! does not check for 00 i src
@@ -1494,6 +1498,28 @@ char * UT_UCS4_strcpy_to_char(char * dest, const UT_UCS4Char * src)
 		int length;
 		w.wctomb_or_fallback(d,length,*s++);
 		d+=length;
+	  }
+	*d = 0;
+
+	return dest;
+}
+
+char * UT_UCS4_strncpy_to_char(char * dest, const UT_UCS4Char * src, int n)
+{
+	UT_ASSERT(dest);
+	UT_ASSERT(src);
+
+	char * 			d = dest;
+	UT_UCS4Char * 	s = (UT_UCS4Char *) src;
+
+	UT_Wctomb w(XAP_EncodingManager::get_instance()->getNative8BitEncodingName());
+
+	while (*s != 0 && n > 0)
+	  {
+		int length;
+		w.wctomb_or_fallback(d,length,*s++, n);
+		d+=length;
+		n-=length;
 	  }
 	*d = 0;
 
