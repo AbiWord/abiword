@@ -224,6 +224,9 @@ bool  GR_XPRenderInfo::split (GR_RenderInfo *&pri, bool bReverse)
 	pri = new GR_XPRenderInfo(m_eScriptType);
 	UT_return_val_if_fail(pri, false);
 
+	pri->m_pItem = m_pItem->makeCopy();
+	UT_return_val_if_fail(pri->m_pItem,false);
+	
 	GR_XPRenderInfo * pRI = (GR_XPRenderInfo *)pri;
 	
 	UT_uint32 iPart2Len = m_iLength - m_iOffset;

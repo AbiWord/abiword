@@ -928,6 +928,7 @@ bool GR_Graphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& pri)
 
 	pRI->m_iLength = si.m_iLength;
 	pRI->m_eScriptType = si.m_pItem->getType();
+	pRI->m_pItem = si.m_pItem;
 	
 	if(si.m_eShapingRequired == GRSR_None)
 	{

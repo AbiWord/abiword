@@ -1131,10 +1131,9 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 		m_pRenderInfo->split(pNew->m_pRenderInfo, bReverse);
 	}
 
-	if(m_pItem)
-	{
-		pNew->m_pItem = m_pItem->makeCopy();
-	}
+	// the split function created a copy of GR_Item in the render
+	// info; bring the member into sync with it
+	pNew->m_pItem = const_cast<GR_Item *>(pNew->m_pRenderInfo->m_pItem);
 	
 	setLength(iSplitOffset - getBlockOffset(), false);
 

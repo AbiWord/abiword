@@ -572,6 +572,13 @@ bool GR_Win32USPGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 	}
 	
 	int iGlyphCount = 0;
+
+	if(*(pFont->getScriptCache()) == NULL)
+	{
+		// need to make sure that the HDC has the correct font set
+		// so that ScriptShape measures it correctly for the cache
+		setFont(pFont);
+	}
 	
 	HRESULT hRes = ScriptShape(m_hdc, pFont->getScriptCache(), pInChars, si.m_iLength, iGlyphBuffSize,
 							   & pItem->m_si.a, pGlyphs, RI->m_pClust, pVa, &iGlyphCount);
@@ -713,19 +720,43 @@ UT_sint32 GR_Win32USPGraphics::getTextWidth(const GR_RenderInfo & ri) const
 	UT_return_val_if_fail(ri.m_iOffset + ri.m_iLength <= RI.m_iCharCount, 0);
 	
 	UT_sint32 iWidth = 0;
+	GR_Win32USPItem & I = (GR_Win32USPItem &)*ri.m_pItem;
+	bool bReverse = I.m_si.a.fRTL != 0;
+
 	for(UT_uint32 i = ri.m_iOffset; i < ri.m_iLength + ri.m_iOffset; ++i)
 	{
-		UT_uint32 iMax = RI.m_iCharCount;
-		
-		if(i < RI.m_iCharCount - 1)
-			iMax = RI.m_pClust[i+1];
-
-		for(UT_uint32 j = RI.m_pClust[i]; j < iMax; ++j)
+		if(!bReverse)
 		{
-			iWidth += RI.m_pAdvances[j];
+			UT_uint32 iMax = RI.m_iCharCount;
+			
+			if(i < RI.m_iCharCount - 1)
+				iMax = RI.m_pClust[i+1];
 
-			if(RI.m_pJustify)
-				iWidth += RI.m_pJustify[j];
+			for(UT_uint32 j = RI.m_pClust[i]; j < iMax; ++j)
+			{
+				iWidth += RI.m_pAdvances[j];
+
+				if(RI.m_pJustify)
+					iWidth += RI.m_pJustify[j];
+			}
+		}
+		else
+		{
+			UT_sint32 iMin = -1;
+			
+			// clusters are in logical order
+			UT_uint32 k = RI.m_iCharCount - i - 1;
+			
+			if(i < RI.m_iCharCount - 1)
+				iMin = (UT_sint32)RI.m_pClust[k-1];
+
+			for(UT_sint32 j = (UT_sint32)RI.m_pClust[k]; j > iMin; --j)
+			{
+				iWidth += RI.m_pAdvances[j];
+
+				if(RI.m_pJustify)
+					iWidth += RI.m_pJustify[j];
+			}
 		}
 	}
 
@@ -1227,12 +1258,16 @@ bool GR_Win32USPRenderInfo::append(GR_RenderInfo &ri, bool bReverse)
 bool GR_Win32USPRenderInfo::split (GR_RenderInfo *&pri, bool bReverse)
 {
 	UT_return_val_if_fail(m_pGraphics && m_pFont, false);
+
+	UT_ASSERT(!pri);
 	if(!pri)
 	{
 		pri = new GR_Win32USPRenderInfo(m_eScriptType);
+		UT_return_val_if_fail(pri,false);
 	}
-	
-	UT_return_val_if_fail(pri,false);
+
+	pri->m_pItem = m_pItem->makeCopy();
+	UT_return_val_if_fail(pri->m_pItem, false);
 	
 	GR_Win32USPRenderInfo & RI = (GR_Win32USPRenderInfo &) *pri;
 
@@ -1288,7 +1323,6 @@ bool GR_Win32USPRenderInfo::split (GR_RenderInfo *&pri, bool bReverse)
 
 	RI.m_eShapingResult = m_eShapingResult;
 	RI.m_eState = m_eState;
-	RI.m_pItem = m_pItem; // needed for measuring
 
 	GR_Graphics * pG = const_cast<GR_Graphics*>(m_pGraphics);
 	
