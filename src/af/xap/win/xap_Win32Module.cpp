@@ -115,7 +115,7 @@ public:
 			m_pszErr = szErrNoDllLoaded;
 			return false;
 		}
-		if (!dest || IsBadWritePtr(*dest, sizeof(*dest)))
+		if (!dest) // TODO Fix this so it works || IsBadWritePtr(*dest, sizeof(*dest)))
 		{
 			m_pszErr = szErrBadParam;
 			return false;
@@ -131,7 +131,7 @@ public:
 
 	bool getErrorMsg(char** dest) const
 	{
-		if (!dest || IsBadWritePtr(*dest, sizeof(*dest)))
+		if (!dest) // TODO Fix this so it works || IsBadWritePtr(*dest, sizeof(*dest)))
 		{
 			m_pszErr = szErrBadParam;
 			return false;
