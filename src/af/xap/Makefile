@@ -57,8 +57,8 @@ endif
 
 # THESE ARE OBJECTS EXCLUSIVE TO THE UNIX FRONT-END
 ifeq ($(ABI_FE), Unix)
-
-PLATFORM_OBJS += 	$(OBJDIR)/xap_$(ABI_FE)Font.$(OBJ_SUFFIX)		\
+PLATFORM_OBJS += 	$(OBJDIR)/xap_$(ABI_FE)DialogBuilder.$(OBJ_SUFFIX)	\
+			$(OBJDIR)/xap_$(ABI_FE)Font.$(OBJ_SUFFIX)		\
 			$(OBJDIR)/xap_$(ABI_FE)FontManager.$(OBJ_SUFFIX)	\
 			$(OBJDIR)/xap_$(ABI_FE)FontXLFD.$(OBJ_SUFFIX)		\
 			$(OBJDIR)/xap_$(ABI_FE)EncodingManager.$(OBJ_SUFFIX)	\

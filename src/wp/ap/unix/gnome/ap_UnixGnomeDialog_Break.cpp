@@ -85,6 +85,7 @@ static void s_delete_clicked(GtkWidget * /* widget */,
 
 /*****************************************************************/
 
+#if 0
 GtkWidget * AP_UnixGnomeDialog_Break::_constructWindow(void)
 {
 
@@ -249,3 +250,4 @@ GtkWidget * AP_UnixGnomeDialog_Break::_constructWindow(void)
 	
 	return windowBreak;
 }
+#endif

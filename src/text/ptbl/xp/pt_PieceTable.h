@@ -88,7 +88,7 @@ public:
 									   const UT_UCSChar * p,
 									   UT_uint32 length, fd_Field * pField = NULL);
 
-        bool                 deleteFieldFrag(pf_Frag * pf);
+	bool					deleteFieldFrag(pf_Frag * pf);
 	bool					changeSpanFmt(PTChangeFmt ptc,
 										  PT_DocPosition dpos1,
 										  PT_DocPosition dpos2,
@@ -116,7 +116,7 @@ public:
 	// the append- methods are only available while importing
 	// the document.
 
-        PD_Document *                           getDocument(void);
+	PD_Document *			getDocument(void);
 	bool					appendStrux(PTStruxType pts, const XML_Char ** attributes);
 	bool					appendFmt(const XML_Char ** attributes);
 	bool					appendFmt(const UT_Vector * pVecAttributes);

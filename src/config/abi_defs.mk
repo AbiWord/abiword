@@ -506,7 +506,7 @@ endif
 # puny intellect could come up with, at least in the short-term ;^)
 
 ifeq ($(ABI_OPT_GNOME),1)
-GNOME_CFLAGS	:= $(shell $(GNOME_CONFIG) --cflags gnomeui gal print)
+GNOME_CFLAGS	:= $(shell $(GNOME_CONFIG) --cflags gnomeui glade gal print)
 GNOME_LIBS      := $(shell $(GTK_CONFIG) --libs)
 # These also might be needed: -lSM -lICE
 GNOME_LIBS      += $(shell $(GNOME_CONFIG) --libs-only-L)
@@ -541,7 +541,7 @@ ABI_OPT_GNOME=
 GTK_CFLAGS	:=	$(shell $(GTK_CONFIG) --cflags)
 GTK_LIBS	:=	$(shell $(GTK_CONFIG) --libs)
 CFLAGS 		+=	$(GTK_CFLAGS)
-EXTRA_LIBS	+=	$(GTK_LIBS)
+EXTRA_LIBS	+=	$(GTK_LIBS) -lglade
 ABI_OPTIONS+=Gnome:Off
 endif
 

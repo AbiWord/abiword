@@ -1,6 +1,6 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR Free Software Foundation, Inc.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# This is the spanish AbiWord po file.
+# Copyright (C) 2001 Free Software Foundation, Inc.
+# Joaquín Cuenca Abela <cuenca@celium.net>, 2001.
 #
 #, fuzzy
 msgid ""

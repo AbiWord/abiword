@@ -20,6 +20,8 @@
 #ifndef AP_UNIXDIALOG_BREAK_H
 #define AP_UNIXDIALOG_BREAK_H
 
+#include <gtk/gtktogglebutton.h>
+#include <glade/glade.h>
 #include "ap_Dialog_Break.h"
 
 class XAP_UnixFrame;
@@ -37,15 +39,18 @@ public:
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
 	// callbacks can fire these events
-
 	virtual void			event_OK(void);
 	virtual void			event_Cancel(void);
-	virtual void			event_WindowDelete(void);
 
 protected:
+	virtual void			_init(void);
 
 	// private construction functions
-	virtual GtkWidget * _constructWindow(void);
+	const char *			_getGladeName(void);
+	bool					_isActive(const char *widget_name);
+
+	virtual GtkWidget * 	_constructWindow(void);
+
 	void		_populateWindowData(void);
 	void 		_storeWindowData(void);
 
@@ -53,14 +58,20 @@ protected:
 	AP_Dialog_Break::breakType _getActiveRadioItem(void);
 	
 	// pointers to widgets we need to query/set
-	GtkWidget * m_windowMain;
+	GtkWidget * m_wMainWindow;
 
-	// group of radio buttons for easy traversal
-	GSList *	m_radioGroup;
-
-	GtkWidget * m_buttonOK;
-	GtkWidget * m_buttonCancel;
-
+private:
+	GladeXML *  m_pXML;
 };
+
+inline const char *	AP_UnixDialog_Break::_getGladeName(void)
+{
+	return "break.glade";
+}
+
+inline bool AP_UnixDialog_Break::_isActive(const char *widget_name)
+{
+	return gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(m_pXML, widget_name)));
+}
 
 #endif /* AP_UNIXDIALOG_BREAK_H */
