@@ -194,7 +194,7 @@ bool ev_UnixKeyboard::keyPressEvent(AV_View* pView,
 			  	}					
 			 }
 			invokeKeyboardMethod(pView,pEM,ucs,uLength); // no char data to offer
-			delete ucs;
+			delete[] ucs;
  			return true;
 	
 			
