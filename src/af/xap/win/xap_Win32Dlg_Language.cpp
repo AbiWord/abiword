@@ -118,7 +118,14 @@ BOOL XAP_Win32Dialog_Language::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lP
 
             SendMessage(hwndList, LB_ADDSTRING, 0, (LPARAM) s); 
             SendMessage(hwndList, LB_SETITEMDATA, i, (LPARAM) i);  
-        } 
+        }
+		
+		// Initialize data based on m_pLangauge
+		UT_sint32 result = SendMessage( hwndList, LB_FINDSTRING, 0, (LPARAM)  m_pLanguage );
+		if( result != LB_ERR )
+		{
+			SendMessage( hwndList, LB_SETCURSEL, (WPARAM) result, 0 );
+		}
 	}		
 
 	return 1;							// 1 == we did not call SetFocus()
