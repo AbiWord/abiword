@@ -22,7 +22,5 @@ CLEANFILES = libwv.dylib
 
 frameworks_SCRIPTS = libwv.dylib
 
-wv_peerdir = @WV_PEERDIR@
-
-libwv.dylib:$(wv_peerdir)/libwv.dylib
-	cp -f $(wv_peerdir)/libwv.dylib libwv.dylib
+libwv.dylib:	$(top_builddir)/../wv/libwv.dylib
+		cp -f $(top_builddir)/../wv/libwv.dylib libwv.dylib

@@ -64,23 +64,24 @@ else
 
 	AC_MSG_CHECKING(for wv)
 	if test "x$1" != "x" && test -d "$1"; then
-		abspath=`cd $1; pwd`
-		AC_MSG_RESULT($abspath)	
+		_abi_wv_pdir="$1"
+		abi_wv_path=`cd $_abi_wv_pdir; pwd`
+		AC_MSG_RESULT($abi_wv_path)
 	else
 		AC_MSG_ERROR([* * * wv was not found - I looked for it in "$1" * * *])
 	fi
-	WV_CFLAGS="-I${abspath}"
+	WV_CFLAGS="-I$abi_wv_path"
+
 	if test "x$abi_epath" = "xyes"; then
-		WV_LIBS="-L${abspath} -lwv"
+		WV_LIBS="-L\$(top_builddir)/../wv -lwv"
 	else
 		WV_LIBS="\$(top_builddir)/../wv/libwv.a"
 	fi
-	WV_PEERDIR="${abspath}"
 
-	abi_wv_message="supplied wv in ${abspath}"
+	abi_wv_message="supplied wv in $abi_wv_path"
 
-        PEERDIRS="${PEERDIRS} ${WV_PEERDIR}"
-	PEERS="${PEERS} `basename ${abspath}`"
+        PEERDIRS="${PEERDIRS} $_abi_wv_pdir"
+	PEERS="${PEERS} wv"
 fi
 
 AC_DEFINE(HAVE_WV, 1, [ Define if you have wv ])
@@ -91,12 +92,10 @@ else
 abi_sys_wv=irrelevant
 WV_CFLAGS=""
 WV_LIBS=""
-WV_PEERDIR=""
 fi
 
 AM_CONDITIONAL(LOCAL_WV,[test "x$abi_sys_wv" = "xno"])
 AC_SUBST(WV_CFLAGS)
 AC_SUBST(WV_LIBS)
-AC_SUBST(WV_PEERDIR)
 
 ])

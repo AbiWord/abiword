@@ -27,6 +27,11 @@ dnl AC_CONFIG_HEADERS(config.h)
 
 AM_INIT_AUTOMAKE(AbiSuite,1.1.0)
 
+if test "$srcdir" = "."; then
+	abi_rootdir=".."
+else
+	abi_rootdir="`dirname $srcdir`"
+fi
 abs_srcdir="`cd $srcdir && pwd`"
 
 dnl Checks for programs.
@@ -348,7 +353,7 @@ ABI_XML_PARSER
 dnl check for wv
 
 ABI_NEED_WV="yes"
-ABI_WV(${abs_srcdir}/../wv)
+ABI_WV($abi_rootdir/wv)
 
 dnl check for zlib.
 ABI_ZLIB

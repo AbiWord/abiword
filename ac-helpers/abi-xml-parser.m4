@@ -137,14 +137,14 @@ dnl
 if test $abi_xml = peer; then
 	abi_xml=expat
 	AC_MSG_CHECKING(for peer expat)
-	if test -d ../expat; then
-		EXPAT_PEERDIR="`cd ../expat > /dev/null; pwd`"
+	if test -d "$abi_rootdir/expat"; then
+		EXPAT_PEERDIR="$abi_rootdir/expat"
 		AC_MSG_RESULT($EXPAT_PEERDIR)
 	else
 		AC_MSG_ERROR(peer expat not found)
 	fi
-	XML_CFLAGS="-I$EXPAT_PEERDIR/lib"
-	XML_LIBS="$EXPAT_PEERDIR/lib/.libs/libexpat.a"
+	XML_CFLAGS="-I\$(top_builddir)/../expat/lib"
+	XML_LIBS="\$(top_builddir)/../expat/lib/.libs/libexpat.a"
 	abi_xml_parser_message="peer expat"
         PEERDIRS="${PEERDIRS} ${EXPAT_PEERDIR}"
 	PEERS="${PEERS} expat"

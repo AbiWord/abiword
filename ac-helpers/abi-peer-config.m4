@@ -37,6 +37,11 @@ if test "$_abi_peer" = "wv"; then
     config_flags="$config_flags --with-exporter --with-glib=glib2"
     config_flags="$config_flags $abi_wv_xml $abi_wv_iconv $abi_wv_png $abi_wv_zlib"
     (cd $_abi_bdir && CPPFLAGS="$CPPFLAGS $abi_wv_cppflags" $_abi_pdir/configure $config_flags)
+
+elif test "$_abi_peer" = "expat"; then
+    _expat_cppflags="-I`cd $_abi_bdir; pwd`/lib"
+    (cd $_abi_bdir && CPPFLAGS="$CPPFLAGS $_expat_cppflags" $_abi_pdir/configure $config_flags)
+
 else
     if test "$_abi_peer" = "libiconv"; then
 	config_flags="$config_flags --enable-extra-encodings"

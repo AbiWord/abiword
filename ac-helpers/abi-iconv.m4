@@ -85,11 +85,11 @@ else
 	fi
 fi
 
-LIBICONV_PEERDIR="`cd ..; pwd`/libiconv"
+LIBICONV_PEERDIR="$abi_rootdir/libiconv"
 
 if test $abi_iconv = peer; then
 	AC_MSG_CHECKING(for libiconv in peer directory)
-	if test -d ../libiconv; then
+	if test -d $LIBICONV_PEERDIR; then
 		AC_MSG_RESULT(yes)
 	else
 		AC_MSG_RESULT(no)
@@ -97,8 +97,8 @@ if test $abi_iconv = peer; then
 	fi
 
 	abi_iconv_message="peer libiconv"
-	ICONV_INCLUDES='-I$(top_srcdir)/../libiconv/include'
-	ICONV_LIBS='$(top_srcdir)/../libiconv/lib/.libs/libiconv.a'
+	ICONV_INCLUDES='-I$(top_builddir)/../libiconv/include'
+	ICONV_LIBS='$(top_builddir)/../libiconv/lib/.libs/libiconv.a'
 	abi_wv_iconv="--with-peer-iconv=abi"
 
         PEERDIRS="${PEERDIRS} ${LIBICONV_PEERDIR}"

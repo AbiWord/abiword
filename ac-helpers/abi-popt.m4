@@ -62,11 +62,11 @@ else
 	fi
 fi
 
-LIBPOPT_PEERDIR="`cd ..; pwd`/popt"
+LIBPOPT_PEERDIR="$abi_rootdir/popt"
 
 if test $abi_popt = peer; then
 	AC_MSG_CHECKING(for popt in peer directory)
-	if test -d ../popt; then
+	if test -d $LIBPOPT_PEERDIR; then
 		AC_MSG_RESULT(yes)
 	else
 		AC_MSG_RESULT(no)
@@ -75,7 +75,7 @@ if test $abi_popt = peer; then
 
 	abi_libpopt_message="peer popt"
 	LIBPOPT_CFLAGS='-I$(top_srcdir)/../popt'
-	LIBPOPT_LIBS='$(top_srcdir)/../popt/.libs/libpopt.a'
+	LIBPOPT_LIBS='$(top_builddir)/../popt/.libs/libpopt.a'
 
 	PEERDIRS="${PEERDIRS} ${LIBPOPT_PEERDIR}"
 	PEERS="${PEERS} popt"
