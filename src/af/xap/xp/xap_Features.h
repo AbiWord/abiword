@@ -45,6 +45,17 @@
 # define XAP_SINGLE_XAPAPP 0
 #endif
 
+
+/*
+	Tell if we must not ask before exiting AbiWord (quit)
+	
+	On MacOS X, this is true.
+ */
+#ifndef XAP_DONT_CONFIRM_QUIT
+# define XAP_DONT_CONFIRM_QUIT 0
+#endif
+
+
 /*
 	Define to 1 if you don't inline XPMs into code but load them from disk files.
 	MacOS X store them as PNG inside the bundle.

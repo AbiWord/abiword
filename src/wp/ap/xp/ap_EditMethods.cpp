@@ -3286,6 +3286,8 @@ Defun(querySaveAndExit)
 
 	if (pFrame) {
 
+#if XAP_DONT_CONFIRM_QUIT
+#else
 		if (1 < pApp->getFrameCount())
 		{
 			if (!s_AskCloseAllAndExit(pFrame))
@@ -3294,7 +3296,7 @@ Defun(querySaveAndExit)
 				return false;
 			}
 		}
-
+#endif
 
 		UT_uint32 ndx = pApp->getFrameCount();
 
