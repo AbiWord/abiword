@@ -363,8 +363,8 @@ UT_uint32 IE_Imp_XML::_getInlineDepth(void) const
 
 bool IE_Imp_XML::_pushInlineFmt(const XML_Char ** atts)
 {
-	UT_sint32 start = m_vecInlineFmt.getItemCount()+1;
-	UT_sint32 k;
+	UT_uint32 start = m_vecInlineFmt.getItemCount()+1;
+	UT_uint32 k;
 
 	for (k=0; (atts[k]); k++)
 	{
@@ -384,8 +384,8 @@ void IE_Imp_XML::_popInlineFmt(void)
 	UT_sint32 start;
 	if (!m_nstackFmtStartIndex.pop(&start))
 		return;
-	UT_sint32 k;
-	UT_sint32 end = m_vecInlineFmt.getItemCount();
+	UT_uint32 k;
+	UT_uint32 end = m_vecInlineFmt.getItemCount();
 	for (k=end; k>=start; k--)
 	{
 		const XML_Char * p = static_cast<XML_Char *>(m_vecInlineFmt.getNthItem(k-1));
