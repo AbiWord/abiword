@@ -84,7 +84,7 @@ public:
 	inline size_t size() { return m_nSize; }
 
 #ifdef DEBUG
-	void UT_RBTree::print() const;
+	void print() const;
 #endif
 
 private:
