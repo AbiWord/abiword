@@ -393,6 +393,15 @@ void AP_LeftRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 
 	// The X and Y that are passed to this function are x and y on the application, not on the ruler.
 	
 	FV_View * pView = static_cast<FV_View *>(m_pView);
+	if(pView == NULL)
+	{
+		return;
+	}
+	if(m_pG && pView->isLayoutFilling())
+	{
+		m_pG->setCursor( GR_Graphics::GR_CURSOR_WAIT);
+		return;
+	}
 	pView->getLeftRulerInfo(&m_infoCache);
 
 	if (!m_bValidMouseClick)
