@@ -1084,7 +1084,7 @@ void fp_FieldRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y,
 	}
 
         x = xoff;
-	y = yoff;
+	y = yoff-1;
 	height = m_iHeight;
 }
 
@@ -1098,7 +1098,7 @@ void fp_FieldRun::_clearScreen(UT_Bool /* bFullLineHeightRect */)
 	// need to clear full height of line, in case we had a selection
 	m_pLine->getScreenOffsets(this, xoff, yoff);
 	UT_sint32 iLineHeight = m_pLine->getHeight();
-	m_pG->clearArea(xoff, yoff, m_iWidth, iLineHeight);
+	m_pG->clearArea(xoff, yoff-1, m_iWidth, iLineHeight);
 }
 
 void fp_FieldRun::_draw(dg_DrawArgs* pDA)
