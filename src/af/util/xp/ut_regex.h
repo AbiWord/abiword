@@ -1,3 +1,6 @@
+
+#error This file is not being used
+
 /* Definitions for data structures and routines for the regular
    expression library, version 0.12.
 
