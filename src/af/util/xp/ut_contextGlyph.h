@@ -28,6 +28,7 @@
 #include "ut_types.h"
 #endif
 #include "ut_misc.h"
+#include "ut_TextIterator.h"
 
 #include <fribidi.h>
 
@@ -71,22 +72,18 @@ public:
 	UT_contextGlyph(bool bNoInit);
 	void static_destructor();
 	
-	void renderString(const UT_UCSChar * src,
-					  UT_UCSChar       * dest,
-					  UT_uint32          len,
-					  const UT_UCSChar * prev,
-					  const UT_UCSChar * next,
-					  const XML_Char   * pLang,
-					  FriBidiCharType    iDirection,
+	void renderString(UT_TextIterator & text,
+					  UT_UCSChar      * dest,
+					  UT_uint32         len,
+					  const XML_Char  * pLang,
+					  FriBidiCharType   iDirection,
 					  bool (*isGlyphAvailable)(UT_UCS4Char g, void * custom) = NULL,
 					  void * custom_param = NULL) const;
-		
+	
 	const LetterData * smartQuote(UT_UCS4Char      c,
 								  const XML_Char * pLang) const;
 
-	UT_UCS4Char       getSmartQuote(UT_UCS4Char c,
-									UT_UCS4Char *prev,
-									UT_UCS4Char * next,
+	UT_UCS4Char       getSmartQuote(UT_TextIterator &t,
 									const XML_Char   * pLang,
 									bool (*isGlyphAvailable)(UT_UCS4Char g, void * custom)=NULL,
 		                            void * custom_param = NULL) const;
@@ -99,10 +96,8 @@ public:
 	bool  isNotJoiningWithPrev(UT_UCS4Char c, UT_UCS4Char n, UT_UCS4Char p) const;
 		
 private:
-	GlyphContext _evalGlyphContext( const UT_UCSChar * code,
-									const UT_UCSChar * prev,
-									const UT_UCSChar * next) const;
-
+	GlyphContext _evalGlyphContext( UT_TextIterator & text, UT_sint32 offset = 0) const;
+	
 	static void _prefsListener(	XAP_App         * pApp,
 								XAP_Prefs       * pPrefs,
 								UT_StringPtrMap * phChanges,

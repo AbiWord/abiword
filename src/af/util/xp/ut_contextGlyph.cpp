@@ -1126,19 +1126,20 @@ const LetterData * UT_contextGlyph::smartQuote(UT_UCS4Char c, const XML_Char * p
                    the smart quote qlyph is available; if the pointer
 				   is NULL, all glyphs are considered available
 */
-UT_UCS4Char UT_contextGlyph::getSmartQuote(UT_UCS4Char c,
-										   UT_UCS4Char *prev,
-										   UT_UCS4Char * next,
+UT_UCS4Char UT_contextGlyph::getSmartQuote(UT_TextIterator & text,
 										   const XML_Char   * pLang,
 										   bool (*isGlyphAvailable)(UT_UCS4Char g, void * param),
 										   void * fparam) const
 {
+	UT_return_val_if_fail(text.getStatus() == UTIter_OK, UT_IT_ERROR);
+	UT_UCS4Char c = text.getChar();
+	
 	const LetterData   * pLet = smartQuote(c,pLang);
 
 	if(!pLet)
 		return c;
-	
-	GlyphContext context = _evalGlyphContext(&c, prev, next);
+
+	GlyphContext context = _evalGlyphContext(text);
 	UT_UCS4Char glyph;
 
 	switch (context)
@@ -1224,22 +1225,37 @@ void UT_contextGlyph::_fixHebrewLigatures(bool bShape)
 }
 
 
-// This function evaluates the context of a glyph deciding what form
-// the glyph should take; it is inlined for performance reasons
-inline GlyphContext UT_contextGlyph::_evalGlyphContext(const UT_UCSChar* code, const UT_UCSChar * prev, const UT_UCSChar * next) const
+inline GlyphContext UT_contextGlyph::_evalGlyphContext(UT_TextIterator & text, UT_sint32 offset) const
 {
-	xxx_UT_DEBUGMSG(("UT_contextGlyph::_eval: 0x%x, prev 0x%x [*0x%x], next 0x%x [*0x%x]\n",
-					 *code, prev, *prev, next, *next ));
+	UT_ASSERT( text.getStatus() == UTIter_OK );
 
-	if((!next || !*next) && (!prev || !*prev))
+	UT_uint32 pos = text.getPosition();
+	UT_UCS4Char current = text[pos + offset];
+
+	UT_return_val_if_fail(text.getStatus() == UTIter_OK, GC_ISOLATE);
+		
+	UT_UCS4Char next;
+	++text;
+	next = text.getStatus() == UTIter_OK ? text.getChar() : 0;
+	
+	UT_UCS4Char prev;
+	text -= 2;
+	prev = text.getStatus() == UTIter_OK ? text.getChar() : 0;
+
+	if(!next && !prev)
 		return GC_ISOLATE;
 
 	bool bPrevWD;
 	bool bNextWD;
 
-	if((!next || !*next) && prev && *prev)
+	UT_UCS4Char prev2;
+	--text;
+	prev2 = text.getStatus() == UTIter_OK ? text.getChar() : 0;
+	
+	if(!next && prev)
 	{
-		bPrevWD = isNotJoiningWithNext(*prev, *code, *(prev+1));
+		// text is pointing at prev, move one char to the left
+		bPrevWD = isNotJoiningWithNext(prev, current, prev2);
 		
 		if(bPrevWD)
 			return GC_ISOLATE;
@@ -1247,39 +1263,47 @@ inline GlyphContext UT_contextGlyph::_evalGlyphContext(const UT_UCSChar* code, c
 			return GC_FINAL;
 	}
 
-	// no-next has been trapped above, now we can
-	//check if next is not a character that is to be ignored
-	const UT_UCSChar *myNext = next;
-
-	while(   *myNext
-		  && bsearch(static_cast<const void*>(myNext),
+	// no-next has been trapped above, now we can check if next is not
+	// a character that is to be ignored (the indexing operator is
+	// necessary here, to position the iterator for us)
+	UT_UCSChar myNext = text[pos+1];
+	
+	while(text.getStatus() == UTIter_OK
+		  && bsearch(static_cast<void*>(&myNext),
 					 static_cast<void*>(s_ignore),
 					 NrElements(s_ignore),
 					 sizeof(UCSRange),
 					 s_comp_ignore))
 	{
-		myNext++;
+		myNext = (++text).getChar();
 	}
 
-	const UT_UCSChar myNextNext = (*myNext && *(myNext+1)) ?  *(myNext+1) : UCS_SPACE;
+	UT_UCS4Char myNext2 = UCS_SPACE;
+	
+	if(text.getStatus() == UTIter_OK)
+	{
+		++text;
+		if(text.getStatus() == UTIter_OK)
+			myNext2 = text.getChar();
+	}
+	
+	xxx_UT_DEBUGMSG(("UT_contextGlyph::_eval: myNext 0x%x\n", myNext));
 
-	xxx_UT_DEBUGMSG(("UT_contextGlyph::_eval: myNext 0x%x\n", *myNext));
-
-	if((!prev || !*prev) && !*myNext)
+	if(!prev && !myNext)
 		return GC_ISOLATE;
 
-	if((!prev || !*prev) && *myNext)
+	if(!prev && myNext)
 	{
-		bNextWD = isNotJoiningWithPrev(*myNext, myNextNext, UCS_UNKPUNK);
+		bNextWD = isNotJoiningWithPrev(myNext, myNext2, UCS_UNKPUNK);
 		if(bNextWD)
 			return GC_ISOLATE;
 		else
 			return GC_INITIAL;
 	}
 
-	if(*prev && !*myNext)
+	if(prev && !myNext)
 	{
-		bPrevWD = isNotJoiningWithNext(*prev, *code, *(prev+1));
+		bPrevWD = isNotJoiningWithNext(prev, current, prev2);
 		if(bPrevWD)
 			return GC_ISOLATE;
 		else
@@ -1289,8 +1313,8 @@ inline GlyphContext UT_contextGlyph::_evalGlyphContext(const UT_UCSChar* code, c
 	xxx_UT_DEBUGMSG(("UT_contextGlyph::_eval: 0x%x, prev 0x%x, myNext 0x%x, myNextNext 0x%x\n",
 					 *code,*prev, *myNext,myNextNext));
 	
-	bPrevWD = isNotJoiningWithNext(*prev, *code, *(prev+1));
-	bNextWD = isNotJoiningWithPrev(*myNext, myNextNext,UCS_UNKPUNK);
+	bPrevWD = isNotJoiningWithNext(prev, current, prev2);
+	bNextWD = isNotJoiningWithPrev(myNext, myNext2, UCS_UNKPUNK);
 
 	// if both are not , then medial form is needed
 	if(!bPrevWD && !bNextWD)
@@ -1306,35 +1330,31 @@ inline GlyphContext UT_contextGlyph::_evalGlyphContext(const UT_UCSChar* code, c
 
 	// if we got here, both are delimiters, which means stand alone form is needed
 	return GC_ISOLATE;
-
 }
 
 /*!
     render string using glyph and ligature tables
  */
-void UT_contextGlyph::renderString(const UT_UCSChar * src,
+void UT_contextGlyph::renderString(UT_TextIterator & text,
 								   UT_UCSChar *dest,
 								   UT_uint32 len,
-								   const UT_UCSChar * prev,
-								   const UT_UCSChar * next,
 								   const XML_Char   * pLang,
 							       FriBidiCharType    iDirection,
 								   bool (*isGlyphAvailable)(UT_UCS4Char g, void * param),
 								   void * fparam) const
 {
-	UT_ASSERT(src);
+	UT_ASSERT(text.getStatus() == UTIter_OK);
 	UT_ASSERT(dest);
 
-	const UT_UCSChar * src_ptr = src;
-	const UT_UCSChar * next_ptr;
-	const UT_UCSChar * prev_ptr = 0;	// initialize to prevent compiler warning
 	UT_UCSChar       * dst_ptr = dest;
-	UT_UCSChar         prev_tmp[2] = {0,0};
-	UT_UCSChar         next_tmp[CONTEXT_BUFF_SIZE + 1] = {0,0,0,0,0,0};
-	UT_UCSChar         glyph = 0;
-	UT_UCS4Char        glyph2 = 2;
 
-	for(UT_uint32 i = 0; i < len; i++, src_ptr++)
+	UT_uint32 pos = text.getPosition();
+
+	UT_UCS4Char next, prev, current;
+	UT_UCS4Char glyph = 0;
+	UT_UCS4Char glyph2 = 2;
+
+	for(UT_uint32 i = 0; i < len; i++)
 	{
 		LigatureSequence     Lig;
 		const LetterData   * pLet = 0;
@@ -1342,40 +1362,28 @@ void UT_contextGlyph::renderString(const UT_UCSChar * src,
 		bool                 bIsSecond = false;
 		GlyphContext         context = GC_NOT_SET;
 		
+		current = text[pos + i];
+		if(text.getStatus() != UTIter_OK)
+		{
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			return;
+		}
+		
 		//get the current context
-		if(len > CONTEXT_BUFF_SIZE && i < len - CONTEXT_BUFF_SIZE)
-			next_ptr = src_ptr + 1;
-		else
-		{
-			next_ptr = next_tmp;
-			UT_uint32 j;
-			for(j = 0; j < len - i - 1 && j < CONTEXT_BUFF_SIZE; j++)
-				next_tmp[j] = *(src_ptr + 1 + j);
-			for(; j < CONTEXT_BUFF_SIZE; j++)
-				next_tmp[j] = *(next + (j + i + 1 - len));
-		}
-
-		if(i == 0)
-			prev_ptr = prev;
-		else if(i == 1)
-		{
-			prev_tmp[0] = *src;
-			prev_tmp[1] = *prev;
-			prev_ptr = prev_tmp;
-		}
-		else
-		{
-			prev_tmp[0] = *(src_ptr - 1);
-			prev_tmp[1] = *(src_ptr - 2);
-			//no need to set prev_ptr, since this has been done when i == 1
-		}
-
+		next = text[pos + i + 1];
+		if(text.getStatus() != UTIter_OK)
+			next = 0;
+		
+		prev = text[pos + i - 1];
+		if(text.getStatus() != UTIter_OK)
+			prev = 0;
+		
 		// decide if this is a part of a ligature
 		// check for a ligature form
-		if(!isNotFirstInLigature(*src_ptr))
+		if(!isNotFirstInLigature(current))
 		{
-			Lig.next = next_ptr ? *next_ptr : 0;
-			Lig.code = *src_ptr;
+			Lig.next = next;
+			Lig.code = current;
 
 			pLig = static_cast<LigatureData*>(bsearch(static_cast<void*>(&Lig),
 													  static_cast<void*>(s_ligature),
@@ -1388,8 +1396,9 @@ void UT_contextGlyph::renderString(const UT_UCSChar * src,
 		{
 			// we need the context of the whole pair not just of this
 			// character
-			glyph2 = *next_ptr;
-			next_ptr++;
+			glyph2 = next;
+			next = text[pos + i + 2];
+			
 			xxx_UT_DEBUGMSG(("UT_contextGlyph::render: 0x%x, 1st of lig.\n", *code));
 		}
 		else
@@ -1397,10 +1406,10 @@ void UT_contextGlyph::renderString(const UT_UCSChar * src,
 			//we only check that this is not a second part of a ligature for the
 			//first character, the rest we will handle in the previous
 			//cycle of the loop
-			if(i == 0 && !isNotSecondInLigature(*src_ptr))
+			if(i == 0 && !isNotSecondInLigature(current))
 			{
-				Lig.next = prev ? *prev : 0;
-				Lig.code = *src_ptr;
+				Lig.next = prev;
+				Lig.code = current;
 					
 				pLig = static_cast<LigatureData*>(bsearch(static_cast<void*>(&Lig),
 														  static_cast<void*>(s_lig_rev),
@@ -1423,8 +1432,10 @@ void UT_contextGlyph::renderString(const UT_UCSChar * src,
 			// ligature is not context sensitive
 			if(pLig->alone)
 			{
-				context = bIsSecond ? _evalGlyphContext(prev, prev+1, next_ptr)
-					: _evalGlyphContext(src_ptr, prev_ptr, next_ptr);
+				text.setPosition(pos + i);
+				
+				context = bIsSecond ? _evalGlyphContext(text, -1)
+					: _evalGlyphContext(text);
 				
 				switch (context)
 				{
@@ -1470,7 +1481,7 @@ void UT_contextGlyph::renderString(const UT_UCSChar * src,
 							 glyph));
 				// we need to use the original glyphs; glyph2 is
 				// already set
-				glyph = *src_ptr;
+				glyph = current;
 			}
 			else
 			{
@@ -1491,7 +1502,6 @@ void UT_contextGlyph::renderString(const UT_UCSChar * src,
 					if(i < len - 1)
 					{
 						*dst_ptr++ = glyph2; // the ligature placeholder
-						src_ptr++;
 						i++;
 					}
 				}
@@ -1540,10 +1550,10 @@ void UT_contextGlyph::renderString(const UT_UCSChar * src,
 		
 		// if we have no pLig we are dealing with an ordinary
 		// letter
-		if(!isNotContextSensitive(*src_ptr))
+		if(!isNotContextSensitive(current))
 		{
 				
-			pLet = static_cast<LetterData*>(bsearch(static_cast<const void*>(src_ptr),
+			pLet = static_cast<LetterData*>(bsearch(static_cast<const void*>(&current),
 													static_cast<void*>(s_table),
 													s_iGlyphTableSize/sizeof(LetterData),
 													sizeof(LetterData),
@@ -1555,9 +1565,9 @@ void UT_contextGlyph::renderString(const UT_UCSChar * src,
 		if(!pLet)
 		{
 			if(iDirection == FRIBIDI_TYPE_RTL)
-				glyph = s_getMirrorChar(*src_ptr);
+				glyph = s_getMirrorChar(current);
 			else
-				glyph = *src_ptr;
+				glyph = current;
 
 			if(isGlyphAvailable == NULL || isGlyphAvailable(glyph, fparam))
 				*dst_ptr++ = glyph;
@@ -1584,8 +1594,11 @@ void UT_contextGlyph::renderString(const UT_UCSChar * src,
 
 		// if we got this far, we are dealing with a context sensitive character
 		if(context == GC_NOT_SET || bIsSecond)
-			context = _evalGlyphContext(src_ptr, prev_ptr, next_ptr);
-
+		{
+			text.setPosition(pos + i);
+			context = _evalGlyphContext(text);
+		}
+		
 		switch (context)
 		{
 			case GC_INITIAL:
@@ -1608,19 +1621,19 @@ void UT_contextGlyph::renderString(const UT_UCSChar * src,
 		{
 			*dst_ptr++ = glyph;
 		}
-		else if(isGlyphAvailable(*src_ptr, fparam))
+		else if(isGlyphAvailable(current, fparam))
 		{
 			UT_DEBUGMSG(("UT_contextGlyph::render [3a] glyph 0x%x not present in font\n",
 						 glyph));
 			
-			*dst_ptr++ = *src_ptr;
+			*dst_ptr++ = current;
 		}
 		else
 		{
 			UT_DEBUGMSG(("UT_contextGlyph::render [3b] glyph 0x%x not present in font\n",
 						 glyph));
 			UT_DEBUGMSG(("UT_contextGlyph::render [3c] glyph 0x%x not present in font\n",
-						 *src_ptr));
+						 current));
 
 			UT_UCS4Char t = _remapGlyph(glyph);
 			if(isGlyphAvailable != NULL && isGlyphAvailable(t, fparam))
