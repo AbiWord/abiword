@@ -520,7 +520,7 @@ UT_Bool PS_Graphics::_startPage(const char * szPageLabel, UT_uint32 pageNumber,
 	char buf[1024];
 	sprintf(buf,"%d",pageNumber);
 
-	const char * argv[2] = { szPageLabel, buf };
+	const char * argv[2] = { buf, buf };
 	m_ps->formatComment("Page",argv,2);
 
 	// TODO add other page-header comments here
@@ -618,7 +618,7 @@ void PS_Graphics::_emit_IncludeResource(void)
 		if(!unixfont->openPFA())
 		{
 			char message[1024];
-			g_snprintf(message, 2048,
+			g_snprintf(message, sizeof (message),
 					   "Font data file [%s] cannot be opened for reading!\n"
 					   "Did it disappear on us?  AbiWord can't print without\n"
 					   "this file; your PostScript might be missing this resource.",
