@@ -1358,6 +1358,9 @@ void GR_Win32USPGraphics::drawChars(const UT_UCSChar* pChars,
 									UT_sint32 xoff, UT_sint32 yoff,
 									int * /*pCharWidth*/)
 {
+	if(!pChars || ! iLength)
+		return;
+	
 	if(GetBkMode(m_hdc) != TRANSPARENT)
 	{
 		SetBkMode(m_hdc, TRANSPARENT); // this is necessary
@@ -1386,7 +1389,9 @@ void GR_Win32USPGraphics::drawChars(const UT_UCSChar* pChars,
 						-1, flags, 0, NULL, NULL, NULL, NULL, NULL, &SSA);
 
 	fScriptStringOut(SSA, _tduX(xoff), _tduY(yoff), 0, NULL, 0, 0, FALSE);
-	fScriptStringFree(&SSA);
+
+	if(SSA)
+		fScriptStringFree(&SSA);
 
 	if(bDelete)
 		delete [] pwChars;
