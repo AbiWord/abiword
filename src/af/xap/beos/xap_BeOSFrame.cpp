@@ -322,14 +322,29 @@ be_Window::be_Window(XAP_BeOSApp *theApp, XAP_BeOSFrame *theFrame,
  		uint32 flags, uint32 workspace) 
        : BWindow(r, name, look, feel, flags, workspace) {
 	
-	printf("Setting values to %x and %x \n", theApp, theFrame);
 	m_pBeOSFrame = theFrame;
 	m_pBeOSApp = theApp;
-	printf("Set values to %x and %x \n", m_pBeOSFrame, m_pBeOSApp);
 }
 
 bool be_Window::QuitRequested(void) {
 	//I need to tell the framework here ...
+	XAP_App *pApp = m_pBeOSApp;
+        AV_View *pView = m_pBeOSFrame->getCurrentView();
+	UT_ASSERT(pApp);
+	UT_ASSERT(pView);
+
+	const EV_EditMethodContainer * pEMC = pApp->getEditMethodContainer();
+	UT_ASSERT(pEMC);
+
+	// make sure it's bound to something
+	EV_EditMethod * pEM = pEMC->findEditMethodByName("closeWindow");
+	UT_ASSERT(pEM);                                         
+
+	if (pEM) {
+		(*pEM->getFn())(pView,NULL);
+	}
+
+	// let the window be destroyed
 	return(true);
 }
 
@@ -392,6 +407,7 @@ bool be_Window::_createWindow(const char *szMenuLayoutName,
 
 be_DocView::be_DocView(BRect frame, const char *name, uint32 resizeMask, uint32 flags)
 	:BView(frame, name, resizeMask, flags | B_FRAME_EVENTS) {
+	m_pBPicture = NULL;
 }
 
 void be_DocView::FrameResized(float new_width, float new_height) {
@@ -440,6 +456,13 @@ Things to do to speed this up, make it less flashy:
  - Draw everything to an offscreen buffer/picture
  - Don't erase the background by default 
 */
+
+	//This code path is used for printing
+	if (m_pBPicture) {
+		DrawPicture(m_pBPicture, BPoint(0,0));
+		return;
+	}
+
 	AV_View *pView = pBWin->m_pBeOSFrame->getCurrentView();
 	if (pView) {
 		BPicture *mypict;

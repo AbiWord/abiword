@@ -58,7 +58,10 @@ class be_DocView: public BView {
 		be_DocView(BRect frame, const char *name, 
 			   uint32 resizeMask, uint32 flags);
 		virtual	void Draw(BRect updateRect);
+		virtual void SetPrintPicture(BPicture *pic) { m_pBPicture = pic; };
 		virtual	void FrameResized(float new_width, float new_height);
+
+	BPicture *	m_pBPicture;
 };
 
 class be_Window: public BWindow {
