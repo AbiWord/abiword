@@ -595,7 +595,7 @@ void AP_CocoaDialog_FormatFrame::_storeWindowData(void)
 			_xap->setBorderColorTop(rgb);
 			break;
 		default:
-			_xap->setBorderColor(rgb);
+			_xap->setBorderColorAll(rgb);
 			break;
 		}
 	_xap->event_previewExposed();

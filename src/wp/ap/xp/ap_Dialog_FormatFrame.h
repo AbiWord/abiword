@@ -125,6 +125,8 @@ public:
 
 	void					setBorderColor (UT_RGBColor clr);
 
+	void					setBorderColorAll (UT_RGBColor clr);
+
 	void					setBorderColorRight  (const UT_RGBColor & rgb);
 	void					setBorderColorLeft   (const UT_RGBColor & rgb);
 	void					setBorderColorTop    (const UT_RGBColor & rgb);
@@ -154,6 +156,8 @@ public:
 
 	void					setBorderThickness (const UT_UTF8String & sThick);
 
+	void					setBorderThicknessAll (const UT_UTF8String & sThick);
+
 	void					setBorderThicknessRight  (const UT_UTF8String & sThick);
 	void					setBorderThicknessLeft   (const UT_UTF8String & sThick);
 	void					setBorderThicknessTop    (const UT_UTF8String & sThick);
@@ -164,7 +168,7 @@ public:
 	const UT_UTF8String &	getBorderThicknessTop ()    const { return m_sBorderThicknessTop;    }
 	const UT_UTF8String &	getBorderThicknessBottom () const { return m_sBorderThicknessBottom; }
 
-	void					setBorderThickness (float thickness); // border line thickness in pt [0.01pt .. 99.99pt]
+	void					setBorderThicknessAll (float thickness); // border line thickness in pt [0.01pt .. 99.99pt]
 
 	void					setBorderThicknessRight  (float thickness);
 	void					setBorderThicknessLeft   (float thickness);
@@ -206,6 +210,8 @@ private:
 	float					m_borderThicknessLeft;
 	float					m_borderThicknessTop;
 	float					m_borderThicknessBottom;
+
+	UT_UTF8String			m_sBorderThickness;
 
 	UT_UTF8String			m_sBorderThicknessRight;
 	UT_UTF8String			m_sBorderThicknessLeft;
