@@ -37,6 +37,7 @@ Larry Kollar <kollar@stc.net>                   MkLinux
 Tuomas Kuosmanen <tigert@gimp.org>              artist
 Birger Langkjer <birger.langkjer@image.dk>	GNOME icon/menu integration
 James Lefavour <James@albany.net>               Win98/VC6
+Aaron Lehmann <aaronl@vitelus.com>		Ruler placement patch
 Jerry LeVan <levan@eagle.eku.edu>               LinuxPPC
 Brian Marick <marick@rstcorp.com>		
 Lalo Martins <lalo@webcom.com>
