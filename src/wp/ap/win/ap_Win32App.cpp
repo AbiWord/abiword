@@ -1333,7 +1333,7 @@ bool AP_Win32App::doWindowlessArgs(const AP_Args *Args)
 		//
 		// Execute the plugin, then quit
 		//
-		ev_EditMethod_invoke(pInvoke, "Called From App");
+		ev_EditMethod_invoke(pInvoke, UT_String("Called From App"));
 		return false;
 	}
 
