@@ -20,23 +20,23 @@
 // http://helm.cs.unibo.it/mml-widget/, or send a mail to
 // <lpadovan@cs.unibo.it>
 
-#ifndef __Abi_DefaultXpShaper_h__
-#define __Abi_DefaultXpShaper_h__
+#ifndef __Abi_DefaultShaper_h__
+#define __Abi_DefaultShaper_h__
 
 #include <MathView/Shaper.hh>
 
 #include "ut_types.h" // for UT_UCS4Char
 #include "gr_Graphics.h"
 
-class Abi_DefaultXpShaper : public Shaper
+class Abi_DefaultShaper : public Shaper
 {
 protected:
-  Abi_DefaultXpShaper(void);
-  virtual ~Abi_DefaultXpShaper();
+  Abi_DefaultShaper(void);
+  virtual ~Abi_DefaultShaper();
 
 public:
-  static SmartPtr<Abi_DefaultXpShaper> create(void)
-  { return new Abi_DefaultXpShaper(); }
+  static SmartPtr<Abi_DefaultShaper> create(void)
+  { return new Abi_DefaultShaper(); }
 
   virtual void registerShaper(const SmartPtr<class ShaperManager>&, unsigned);
   virtual void unregisterShaper(const SmartPtr<class ShaperManager>&, unsigned);
@@ -50,4 +50,4 @@ protected:
   class GR_Graphics* graphics;
 };
 
-#endif // __Abi_DefaultXpShaper_h__
+#endif // __Abi_DefaultShaper_h__

@@ -31,14 +31,14 @@
 #include "Abi_CharArea.h"
 #include "Abi_DefaultShaper.h"
 
-Abi_DefaultXpShaper::Abi_DefaultXpShaper()
+Abi_DefaultShaper::Abi_DefaultShaper()
 { }
 
-Abi_DefaultXpShaper::~Abi_DefaultXpShaper()
+Abi_DefaultShaper::~Abi_DefaultShaper()
 { }
 
 void
-Abi_DefaultXpShaper::registerShaper(const SmartPtr<class ShaperManager>&, unsigned)
+Abi_DefaultShaper::registerShaper(const SmartPtr<class ShaperManager>&, unsigned)
 {
   // normal characters are not registered because this shaper is supposed to
   // be the default one. It will be called anyway as soon as there's a
@@ -46,13 +46,13 @@ Abi_DefaultXpShaper::registerShaper(const SmartPtr<class ShaperManager>&, unsign
 }
 
 void
-Abi_DefaultXpShaper::unregisterShaper(const SmartPtr<class ShaperManager>&, unsigned)
+Abi_DefaultShaper::unregisterShaper(const SmartPtr<class ShaperManager>&, unsigned)
 {
   // nothing to do
 }
 
 void
-Abi_DefaultXpShaper::shape(const MathFormattingContext& ctxt, ShapingResult& result) const
+Abi_DefaultShaper::shape(const MathFormattingContext& ctxt, ShapingResult& result) const
 {
   const unsigned n = result.chunkSize();
   assert(n > 0);
@@ -69,7 +69,7 @@ Abi_DefaultXpShaper::shape(const MathFormattingContext& ctxt, ShapingResult& res
 
 #if 0
 AreaRef
-Abi_DefaultXpShaper::shapeString(const MathFormattingContext& ctxt, const UT_UCS4Char* buffer, glong n) const
+Abi_DefaultShaper::shapeString(const MathFormattingContext& ctxt, const UT_UCS4Char* buffer, glong n) const
 {
   assert(buffer);
   assert(false);
@@ -77,7 +77,7 @@ Abi_DefaultXpShaper::shapeString(const MathFormattingContext& ctxt, const UT_UCS
 #endif
 
 AreaRef
-Abi_DefaultXpShaper::shapeChar(const MathFormattingContext& ctxt, UT_UCSChar ch) const
+Abi_DefaultShaper::shapeChar(const MathFormattingContext& ctxt, UT_UCSChar ch) const
 {
   return Abi_CharArea::create(graphics, graphics->getGUIFont(), ch);
 }
