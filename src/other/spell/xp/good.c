@@ -48,6 +48,14 @@ static char Rcs_Id[] =
 
 /*
  * $Log$
+ * Revision 1.2  2001/05/12 16:05:42  thomasf
+ * Big pseudo changes to ispell to make it pass around a structure rather
+ * than rely on all sorts of gloabals willy nilly here and there.  Also
+ * fixed our spelling class to work with accepting suggestions once more.
+ * This code is dirty, gross and ugly (not to mention still not supporting
+ * multiple hash sized just yet) but it works on my machine and will no
+ * doubt break other machines.
+ *
  * Revision 1.1  2001/04/15 16:01:24  tomas_f
  * moving to spell/xp
  *
@@ -127,10 +135,10 @@ static char Rcs_Id[] =
 
 #include "ispell.h"
 
-int		good P ((ichar_t * word, int ignoreflagbits, int allhits,
+int		good P ((FIRST_ARG(istate) ichar_t * word, int ignoreflagbits, int allhits,
 		  int pfxopts, int sfxopts));
+
 #ifndef NO_CAPITALIZATION_SUPPORT
-int		cap_ok P ((ichar_t * word, struct success * hit, int len));
 static int	entryhasaffixes P ((struct dent * dent, struct success * hit));
 #endif /* NO_CAPITALIZATION_SUPPORT */
 void		flagpr P ((ichar_t * word, int preflag, int prestrip,
@@ -141,21 +149,25 @@ static ichar_t *	orig_word;
 #endif /* DELETE_ME */
 
 #ifndef NO_CAPITALIZATION_SUPPORT
-int good (w, ignoreflagbits, allhits, pfxopts, sfxopts)
+int good (FIRST_ARG(istate) ichar_t *w, int ignoreflagbits, int allhits, int pfxopts, int sfxopts)
+#if 0
     ichar_t *		w;		/* Word to look up */
     int			ignoreflagbits;	/* NZ to ignore affix flags in dict */
     int			allhits;	/* NZ to ignore case, get every hit */
     int			pfxopts;	/* Options to apply to prefixes */
     int			sfxopts;	/* Options to apply to suffixes */
+#endif
 #else
 /* ARGSUSED */
-int good (w, ignoreflagbits, dummy, pfxopts, sfxopts)
+int good (FIRST_ARG(istate) ichar_t *w, int ignoreflagbits, int dummy, int pfxopts, int sfxopts)
+#if 0
     ichar_t *		w;		/* Word to look up */
     int			ignoreflagbits;	/* NZ to ignore affix flags in dict */
     int			dummy;
 #define allhits	0	/* Never actually need more than one hit */
     int			pfxopts;	/* Options to apply to prefixes */
     int			sfxopts;	/* Options to apply to suffixes */
+#endif
 #endif
     {
     ichar_t		nword[INPUTWORDLEN + MAXAFFIXLEN];
@@ -168,11 +180,11 @@ int good (w, ignoreflagbits, dummy, pfxopts, sfxopts)
     ** Make an uppercase copy of the word we are checking.
     */
     for (p = w, q = nword;  *p;  )
-	*q++ = mytoupper (*p++);
+	*q++ = mytoupper (DEREF_FIRST_ARG(istate) *p++);
     *q = 0;
     n = q - nword;
 
-    numhits = 0;
+    DEREF(istate, numhits) = 0;
 
 #if 0 /* DELETE_ME */
     if (cflag)
@@ -182,16 +194,16 @@ int good (w, ignoreflagbits, dummy, pfxopts, sfxopts)
 	}
     else 
 #endif /* DELETE_ME */
-    if ((dp = ispell_lookup (nword, 1)) != NULL)
+    if ((dp = ispell_lookup (DEREF_FIRST_ARG(istate) nword, 1)) != NULL)
 	{
-	hits[0].dictent = dp;
-	hits[0].prefix = NULL;
-	hits[0].suffix = NULL;
+	DEREF(istate, hits[0].dictent) = dp;
+	DEREF(istate, hits[0].prefix) = NULL;
+	DEREF(istate, hits[0].suffix) = NULL;
 #ifndef NO_CAPITALIZATION_SUPPORT
-	if (allhits  ||  cap_ok (w, &hits[0], n))
-	    numhits = 1;
+	if (allhits  ||  cap_ok (DEREF_FIRST_ARG(istate) w, &DEREF(istate, hits[0]), n))
+	    DEREF(istate, numhits) = 1;
 #else
-	numhits = 1;
+	DEREF(istate, numhits) = 1;
 #endif
 	/*
 	 * If we're looking for compounds, and this root doesn't
@@ -207,7 +219,7 @@ int good (w, ignoreflagbits, dummy, pfxopts, sfxopts)
 #endif /* DELETE_ME */
 	}
 
-    if (numhits  &&  !allhits)
+    if (DEREF(istate, numhits)  &&  !allhits)
 	return 1;
 
     /* try stripping off affixes */
@@ -222,7 +234,7 @@ int good (w, ignoreflagbits, dummy, pfxopts, sfxopts)
 	}
 #endif
 
-    chk_aff (w, nword, n, ignoreflagbits, allhits, pfxopts, sfxopts);
+    chk_aff (DEREF_FIRST_ARG(istate) w, nword, n, ignoreflagbits, allhits, pfxopts, sfxopts);
 
 #if 0 /* DELETE_ME */
     if (cflag)
@@ -230,14 +242,16 @@ int good (w, ignoreflagbits, dummy, pfxopts, sfxopts)
 
 #endif /* DELETE_ME */
 
-    return numhits;
+    return DEREF(istate, numhits);
     }
 
 #ifndef NO_CAPITALIZATION_SUPPORT
-int cap_ok (word, hit, len)
+int cap_ok (FIRST_ARG(istate) ichar_t *word, struct success *hit, int len)
+#if 0
     register ichar_t *		word;
     register struct success *	hit;
     int				len;
+#endif
     {
     register ichar_t *		dword;
     register ichar_t *		w;
@@ -250,7 +264,7 @@ int cap_ok (word, hit, len)
     long			thiscap;
     long			dentcap;
 
-    thiscap = whatcap (word);
+    thiscap = whatcap (DEREF_FIRST_ARG(istate) word);
     /*
     ** All caps is always legal, regardless of affixes.
     */
@@ -299,14 +313,14 @@ int cap_ok (word, hit, len)
 		** possibility of affixes.  Start with
 		** the prefix.
 		*/
-		(void) strtoichar (dentword, dent->word, INPUTWORDLEN, 1);
+		(void) strtoichar (DEREF_FIRST_ARG(istate) dentword, dent->word, INPUTWORDLEN, 1);
 		dword = dentword;
 		limit = word + preadd;
-		if (myupper (dword[prestrip]))
+		if (myupper (DEREF_FIRST_ARG(istate) dword[prestrip]))
 		    {
 		    for (w = word;  w < limit;  w++)
 			{
-			if (mylower (*w))
+			if (mylower (DEREF_FIRST_ARG(istate) *w))
 			    goto doublecontinue;
 			}
 		    }
@@ -314,7 +328,7 @@ int cap_ok (word, hit, len)
 		    {
 		    for (w = word;  w < limit;  w++)
 			{
-			if (myupper (*w))
+			if (myupper (DEREF_FIRST_ARG(istate) *w))
 			    goto doublecontinue;
 			}
 		    }
@@ -328,11 +342,11 @@ int cap_ok (word, hit, len)
 		    }
 		/* Do suffix */
 		dword = limit - 1;
-		if (myupper (*dword))
+		if (myupper (DEREF_FIRST_ARG(istate) *dword))
 		    {
 		    for (  ;  *w;  w++)
 			{
-			if (mylower (*w))
+			if (mylower (DEREF_FIRST_ARG(istate) *w))
 			    goto doublecontinue;
 			}
 		    }
@@ -340,7 +354,7 @@ int cap_ok (word, hit, len)
 		    {
 		    for (  ;  *w;  w++)
 			{
-			if (myupper (*w))
+			if (myupper (DEREF_FIRST_ARG(istate) *w))
 			    goto doublecontinue;
 			}
 		    }

@@ -47,6 +47,14 @@ static char Rcs_Id[] =
 
 /*
  * $Log$
+ * Revision 1.2  2001/05/12 16:05:42  thomasf
+ * Big pseudo changes to ispell to make it pass around a structure rather
+ * than rely on all sorts of gloabals willy nilly here and there.  Also
+ * fixed our spelling class to work with accepting suggestions once more.
+ * This code is dirty, gross and ugly (not to mention still not supporting
+ * multiple hash sized just yet) but it works on my machine and will no
+ * doubt break other machines.
+ *
  * Revision 1.1  2001/04/15 16:01:24  tomas_f
  * moving to spell/xp
  *
@@ -77,8 +85,6 @@ static char Rcs_Id[] =
 
 #include "ispell.h"
 
-int		hash P ((ichar_t * word, int hashtblsize));
-
 /*
  * The following hash algorithm is due to Ian Dall, with slight modifications
  * by Geoff Kuenning to reflect the results of testing with the English
@@ -89,12 +95,14 @@ int		hash P ((ichar_t * word, int hashtblsize));
 #ifdef NO_CAPITALIZATION_SUPPORT
 #define HASHUPPER(c)	c
 #else /* NO_CAPITALIZATION_SUPPORT */
-#define HASHUPPER(c)	mytoupper(c)
+#define HASHUPPER(c)	mytoupper(DEREF_FIRST_ARG(istate) c)
 #endif /* NO_CAPITALIZATION_SUPPORT */
 
-int hash (s, hashtblsize)
+int hash (FIRST_ARG(istate) ichar_t *s, int hashtblsize)
+#if 0
     register ichar_t *	s;
     register int	hashtblsize;
+#endif
     {
     register long	h = 0;
     register int	i;

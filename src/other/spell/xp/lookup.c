@@ -47,6 +47,14 @@ static char Rcs_Id[] =
 
 /*
  * $Log$
+ * Revision 1.2  2001/05/12 16:05:42  thomasf
+ * Big pseudo changes to ispell to make it pass around a structure rather
+ * than rely on all sorts of gloabals willy nilly here and there.  Also
+ * fixed our spelling class to work with accepting suggestions once more.
+ * This code is dirty, gross and ugly (not to mention still not supporting
+ * multiple hash sized just yet) but it works on my machine and will no
+ * doubt break other machines.
+ *
  * Revision 1.1  2001/04/15 16:01:24  tomas_f
  * moving to spell/xp
  *
@@ -125,20 +133,24 @@ static char Rcs_Id[] =
 #include "ispell.h"
 #include "msgs.h"
 
+#if 0
 int		linit P ((char *));
+struct dent *	ispell_lookup P ((FIRST_ARG(istate) ichar_t * word, int dotree));
+#endif
 #ifdef INDEXDUMP
 static void	dumpindex P ((struct flagptr * indexp, int depth));
 #endif /* INDEXDUMP */
-static void	clearindex P ((struct flagptr * indexp));
-struct dent *	ispell_lookup P ((ichar_t * word, int dotree));
-static void     initckch P ((char *));
+static void	clearindex P ((FIRST_ARG(istate) struct flagptr * indexp));
+static void     initckch P ((FIRST_ARG(istate) char *));
 
 int		gnMaskBits = 64;
 
 static	int	inited = 0;
 
-int linit (hashname)
+int linit (FIRST_ARG(istate) char *hashname)
+#if 0
 char *hashname; /* name of the hash file (dictionary) */
+#endif
     {
 		FILE*	fpHash;
 		
@@ -159,41 +171,41 @@ char *hashname; /* name of the hash file (dictionary) */
 	return (-1);
 	}
 
-    hashsize = fread ((char *) &hashheader, 1, sizeof hashheader, fpHash);
-    if (hashsize < (int)sizeof(hashheader))
+    DEREF(istate, hashsize) = fread ((char *) &DEREF(istate, hashheader), 1, sizeof DEREF(istate, hashheader), fpHash);
+    if (DEREF(istate, hashsize) < (int)sizeof(DEREF(istate, hashheader)))
 	{
-	if (hashsize < 0)
+	if (DEREF(istate, hashsize) < 0)
 	    (void) fprintf (stderr, LOOKUP_C_CANT_READ, hashname);
-	else if (hashsize == 0)
+	else if (DEREF(istate, hashsize) == 0)
 	    (void) fprintf (stderr, LOOKUP_C_NULL_HASH, hashname);
 	else
 	    (void) fprintf (stderr,
-	      LOOKUP_C_SHORT_HASH (hashname, hashsize,
-	        (int) sizeof hashheader));
+	      LOOKUP_C_SHORT_HASH (DEREF(istate, hashname), DEREF(istate, hashsize),
+	        (int) sizeof DEREF(istate, hashheader)));
 	return (-1);
 	}
-    else if (hashheader.magic != MAGIC)
+    else if (DEREF(istate, hashheader.magic) != MAGIC)
 	{
 	(void) fprintf (stderr,
 	  LOOKUP_C_BAD_MAGIC (hashname, (unsigned int) MAGIC,
-	    (unsigned int) hashheader.magic));
+	    (unsigned int) DEREF(istate, hashheader.magic)));
 	return (-1);
 	}
-    else if (hashheader.magic2 != MAGIC)
+    else if (DEREF(istate, hashheader.magic2) != MAGIC)
 	{
 	(void) fprintf (stderr,
 	  LOOKUP_C_BAD_MAGIC2 (hashname, (unsigned int) MAGIC,
-	    (unsigned int) hashheader.magic2));
+	    (unsigned int) DEREF(istate, hashheader.magic2)));
 	return (-1);
 	}
 /*    else if (hashheader.compileoptions != COMPILEOPTIONS*/
     else if ( 1 != 1
-      ||  hashheader.maxstringchars != MAXSTRINGCHARS
-      ||  hashheader.maxstringcharlen != MAXSTRINGCHARLEN)
+      ||  DEREF(istate, hashheader.maxstringchars) != MAXSTRINGCHARS
+      ||  DEREF(istate, hashheader.maxstringcharlen) != MAXSTRINGCHARLEN)
 	{
 	(void) fprintf (stderr,
-	  LOOKUP_C_BAD_OPTIONS ((unsigned int) hashheader.compileoptions,
-	    hashheader.maxstringchars, hashheader.maxstringcharlen,
+	  LOOKUP_C_BAD_OPTIONS ((unsigned int) DEREF(istate, hashheader.compileoptions),
+	    DEREF(istate, hashheader.maxstringchars), DEREF(istate, hashheader.maxstringcharlen),
 	    (unsigned int) COMPILEOPTIONS, MAXSTRINGCHARS, MAXSTRINGCHARLEN));
 	return (-1);
 	}
@@ -223,35 +235,35 @@ char *hashname; /* name of the hash file (dictionary) */
     else
 #endif /* DELETE_ME */
 	{
-	hashtbl =
+	DEREF(istate, hashtbl) =
 	 (struct dent *)
-	    calloc ((unsigned) hashheader.tblsize, sizeof (struct dent));
-	hashsize = hashheader.tblsize;
-	hashstrings = (char *) malloc ((unsigned) hashheader.stringsize);
+	    calloc ((unsigned) DEREF(istate, hashheader.tblsize), sizeof (struct dent));
+	DEREF(istate, hashsize) = DEREF(istate, hashheader.tblsize);
+	DEREF(istate, hashstrings) = (char *) malloc ((unsigned) DEREF(istate, hashheader.stringsize));
 	}
-    numsflags = hashheader.stblsize;
-    numpflags = hashheader.ptblsize;
-    sflaglist = (struct flagent *)
-      malloc ((numsflags + numpflags) * sizeof (struct flagent));
-    if (hashtbl == NULL  ||  hashstrings == NULL  ||  sflaglist == NULL)
+    DEREF(istate, numsflags) = DEREF(istate, hashheader.stblsize);
+    DEREF(istate, numpflags) = DEREF(istate, hashheader.ptblsize);
+    DEREF(istate, sflaglist) = (struct flagent *)
+      malloc ((DEREF(istate, numsflags) + DEREF(istate, numpflags)) * sizeof (struct flagent));
+    if (DEREF(istate, hashtbl) == NULL  ||  DEREF(istate, hashstrings) == NULL  ||  DEREF(istate, sflaglist) == NULL)
 	{
 	(void) fprintf (stderr, LOOKUP_C_NO_HASH_SPACE);
 	return (-1);
 	}
-    pflaglist = sflaglist + numsflags;
+    DEREF(istate, pflaglist) = DEREF(istate, sflaglist) + DEREF(istate, numsflags);
 
 	{
-		if( fread ( hashstrings, 1, (unsigned)hashheader.stringsize, fpHash) 
-			!= ((size_t)(hashheader.stringsize)) )
+		if( fread ( DEREF(istate, hashstrings), 1, (unsigned)DEREF(istate, hashheader.stringsize), fpHash) 
+			!= ((size_t)(DEREF(istate, hashheader.stringsize))) )
 	    {
 		    (void) fprintf (stderr, LOOKUP_C_BAD_FORMAT);
 			(void) fprintf (stderr, "stringsize err\n" );
 	    	return (-1);
 	    }
-		if ( hashheader.compileoptions & 0x04 )
+		if ( DEREF(istate, hashheader.compileoptions) & 0x04 )
 		{
-			if(  fread ((char *) hashtbl, 1, (unsigned)hashheader.tblsize * sizeof(struct dent), fpHash)
-		    	!= ((size_t) (hashheader.tblsize * sizeof (struct dent))))
+			if(  fread ((char *) DEREF(istate, hashtbl), 1, (unsigned)DEREF(istate, hashheader.tblsize) * sizeof(struct dent), fpHash)
+		    	!= ((size_t) (DEREF(istate, hashheader.tblsize) * sizeof (struct dent))))
 		    {
 			    (void) fprintf (stderr, LOOKUP_C_BAD_FORMAT);
 		    	return (-1);
@@ -259,9 +271,9 @@ char *hashname; /* name of the hash file (dictionary) */
 		}
 		else
 		{
-			for( x=0; x<hashheader.tblsize; x++ )
+			for( x=0; x<DEREF(istate, hashheader.tblsize); x++ )
 			{
-				if(  fread ( (char*)(hashtbl+x), sizeof( struct dent)-sizeof( MASKTYPE ), 1, fpHash)
+				if(  fread ( (char*)(DEREF(istate, hashtbl)+x), sizeof( struct dent)-sizeof( MASKTYPE ), 1, fpHash)
 			    	!= 1)
 			    {
 				    (void) fprintf (stderr, LOOKUP_C_BAD_FORMAT);
@@ -270,9 +282,9 @@ char *hashname; /* name of the hash file (dictionary) */
 			}	/*for*/
 		}	/*else*/
 	}
-    if (fread ((char *) sflaglist, 1,
-	(unsigned) (numsflags + numpflags) * sizeof (struct flagent), fpHash)
-      != (numsflags + numpflags) * sizeof (struct flagent))
+    if (fread ((char *) DEREF(istate, sflaglist), 1,
+	(unsigned) (DEREF(istate, numsflags) + DEREF(istate, numpflags)) * sizeof (struct flagent), fpHash)
+      != (DEREF(istate, numsflags) + DEREF(istate, numpflags)) * sizeof (struct flagent))
 	{
 	(void) fprintf (stderr, LOOKUP_C_BAD_FORMAT);
 	return (-1);
@@ -283,27 +295,27 @@ char *hashname; /* name of the hash file (dictionary) */
     if (!nodictflag)
 #endif /* DELETE_ME */
 	{
-	for (i = hashsize, dp = hashtbl;  --i >= 0;  dp++)
+	for (i = DEREF(istate, hashsize), dp = DEREF(istate, hashtbl);  --i >= 0;  dp++)
 	    {
 	    if (dp->word == (char *) -1)
 		dp->word = NULL;
 	    else
-		dp->word = &hashstrings [ (int)(dp->word) ];
+		dp->word = &DEREF(istate, hashstrings [ (int)(dp->word) ]);
 	    if (dp->next == (struct dent *) -1)
 		dp->next = NULL;
 	    else
-		dp->next = &hashtbl [ (int)(dp->next) ];
+		dp->next = &DEREF(istate, hashtbl [ (int)(dp->next) ]);
 	    }
 	}
 
-    for (i = numsflags + numpflags, entry = sflaglist; --i >= 0; entry++)
+    for (i = DEREF(istate, numsflags) + DEREF(istate, numpflags), entry = DEREF(istate, sflaglist); --i >= 0; entry++)
 	{
 	if (entry->stripl)
-	    entry->strip = (ichar_t *) &hashstrings[(int) entry->strip];
+	    entry->strip = (ichar_t *) &DEREF(istate, hashstrings[(int) entry->strip]);
 	else
 	    entry->strip = NULL;
 	if (entry->affl)
-	    entry->affix = (ichar_t *) &hashstrings[(int) entry->affix];
+	    entry->affix = (ichar_t *) &DEREF(istate, hashstrings[(int) entry->affix]);
 	else
 	    entry->affix = NULL;
 	}
@@ -312,18 +324,18 @@ char *hashname; /* name of the hash file (dictionary) */
     ** below.  Don't try to optimize it by (e.g.) moving the decrement
     ** of i into the loop condition.
     */
-    for (i = numsflags, entry = sflaglist;  i > 0;  i--, entry++)
+    for (i = DEREF(istate, numsflags), entry = DEREF(istate, sflaglist);  i > 0;  i--, entry++)
 	{
 	if (entry->affl == 0)
 	    {
 	    cp = NULL;
-	    ind = &sflagindex[0];
+	    ind = &DEREF(istate, sflagindex[0]);
 	    viazero = 1;
 	    }
 	else
 	    {
 	    cp = entry->affix + entry->affl - 1;
-	    ind = &sflagindex[*cp];
+	    ind = &DEREF(istate, sflagindex[*cp]);
 	    viazero = 0;
 	    while (ind->numents == 0  &&  ind->pu.fp != NULL)
 		{
@@ -357,10 +369,10 @@ char *hashname; /* name of the hash file (dictionary) */
 	    {
 	    /* Sneaky trick:  back up and reprocess */
 	    entry = ind->pu.ent - 1; /* -1 is for entry++ in loop */
-	    i = numsflags - (entry - sflaglist);
+	    i = DEREF(istate, numsflags) - (entry - DEREF(istate, sflaglist));
 	    ind->pu.fp =
 	      (struct flagptr *)
-		calloc ((unsigned) (SET_SIZE + hashheader.nstrchars),
+		calloc ((unsigned) (SET_SIZE + DEREF(istate, hashheader.nstrchars)),
 		  sizeof (struct flagptr));
 	    if (ind->pu.fp == NULL)
 		{
@@ -375,18 +387,18 @@ char *hashname; /* name of the hash file (dictionary) */
     ** below.  Don't try to optimize it by (e.g.) moving the decrement
     ** of i into the loop condition.
     */
-    for (i = numpflags, entry = pflaglist;  i > 0;  i--, entry++)
+    for (i = DEREF(istate, numpflags), entry = DEREF(istate, pflaglist);  i > 0;  i--, entry++)
 	{
 	if (entry->affl == 0)
 	    {
 	    cp = NULL;
-	    ind = &pflagindex[0];
+	    ind = &DEREF(istate, pflagindex[0]);
 	    viazero = 1;
 	    }
 	else
 	    {
 	    cp = entry->affix;
-	    ind = &pflagindex[*cp++];
+	    ind = &DEREF(istate, pflagindex[*cp++]);
 	    viazero = 0;
 	    while (ind->numents == 0  &&  ind->pu.fp != NULL)
 		{
@@ -420,9 +432,9 @@ char *hashname; /* name of the hash file (dictionary) */
 	    {
 	    /* Sneaky trick:  back up and reprocess */
 	    entry = ind->pu.ent - 1; /* -1 is for entry++ in loop */
-	    i = numpflags - (entry - pflaglist);
+	    i = DEREF(istate, numpflags) - (entry - DEREF(istate, pflaglist));
 	    ind->pu.fp =
-	      (struct flagptr *) calloc (SET_SIZE + hashheader.nstrchars,
+	      (struct flagptr *) calloc (SET_SIZE + DEREF(istate, hashheader.nstrchars),
 	        sizeof (struct flagptr));
 	    if (ind->pu.fp == NULL)
 		{
@@ -434,69 +446,71 @@ char *hashname; /* name of the hash file (dictionary) */
 	}
 #ifdef INDEXDUMP
     (void) fprintf (stderr, "Prefix index table:\n");
-    dumpindex (pflagindex, 0);
+    dumpindex (DEREF(istate, pflagindex), 0);
     (void) fprintf (stderr, "Suffix index table:\n");
-    dumpindex (sflagindex, 0);
+    dumpindex (DEREF(istate, sflagindex), 0);
 #endif
-    if (hashheader.nstrchartype == 0)
-	chartypes = NULL;
+    if (DEREF(istate, hashheader.nstrchartype) == 0)
+	DEREF(istate, chartypes) = NULL;
     else
 	{
-	chartypes = (struct strchartype *)
-	  malloc (hashheader.nstrchartype * sizeof (struct strchartype));
-	if (chartypes == NULL)
+	DEREF(istate, chartypes) = (struct strchartype *)
+	  malloc (DEREF(istate, hashheader.nstrchartype) * sizeof (struct strchartype));
+	if (DEREF(istate, chartypes) == NULL)
 	    {
 	    (void) fprintf (stderr, LOOKUP_C_NO_LANG_SPACE);
 	    return (-1);
 	    }
-	for (i = 0, nextchar = hashheader.strtypestart;
-	  i < hashheader.nstrchartype;
+	for (i = 0, nextchar = DEREF(istate, hashheader.strtypestart);
+	  i < DEREF(istate, hashheader.nstrchartype);
 	  i++)
 	    {
-	    chartypes[i].name = &hashstrings[nextchar];
-	    nextchar += strlen (chartypes[i].name) + 1;
-	    chartypes[i].deformatter = &hashstrings[nextchar];
-	    nextchar += strlen (chartypes[i].deformatter) + 1;
-	    chartypes[i].suffixes = &hashstrings[nextchar];
-	    while (hashstrings[nextchar] != '\0')
-		nextchar += strlen (&hashstrings[nextchar]) + 1;
+	    DEREF(istate, chartypes[i].name) = &DEREF(istate, hashstrings[nextchar]);
+	    nextchar += strlen (DEREF(istate, chartypes[i].name)) + 1;
+	    DEREF(istate, chartypes[i].deformatter) = &DEREF(istate, hashstrings[nextchar]);
+	    nextchar += strlen (DEREF(istate, chartypes[i].deformatter)) + 1;
+	    DEREF(istate, chartypes[i].suffixes) = &DEREF(istate, hashstrings[nextchar]);
+	    while (DEREF(istate, hashstrings[nextchar]) != '\0')
+		nextchar += strlen (&DEREF(istate, hashstrings[nextchar])) + 1;
 	    nextchar++;
 	    }
 	}
     inited = 1;
 
-    initckch(NULL);   
+    initckch(DEREF_FIRST_ARG(istate) NULL);   
        
     return (0);
     }
 
 #define FREEP(p)	do { if (p) free(p); } while (0)
 
-static void initckch (wchars)
+static void initckch (FIRST_ARG(istate) char *wchars)
+#if 0
 char *              wchars;         /* Characters in -w option, if any */
+#endif
 {
    register ichar_t    c;
    char                num[4];
    
-   for (c = 0; c < (ichar_t) (SET_SIZE + hashheader.nstrchars); ++c)
+   for (c = 0; c < (ichar_t) (SET_SIZE + DEREF(istate, hashheader.nstrchars)); ++c)
      {
-	if (iswordch (c))
+	if (iswordch (DEREF_FIRST_ARG(istate) c))
 	  {
-	     if (!mylower (c))
+	     if (!mylower (DEREF_FIRST_ARG(istate) c))
 	       {
-		  Try[Trynum] = c;
-		  ++Trynum;
+		  DEREF(istate, Try[DEREF(istate, Trynum)]) = c;
+		  ++DEREF(istate, Trynum);
 	       }
 	  }
-	else if (isboundarych (c))
+	else if (isboundarych (DEREF_FIRST_ARG(istate) c))
 	  {
-	     Try[Trynum] = c;
-	     ++Trynum;
+	     DEREF(istate, Try[DEREF(istate, Trynum)]) = c;
+	     ++DEREF(istate, Trynum);
 	  }
      }
    if (wchars != NULL)
      {
-	while (Trynum < SET_SIZE  &&  *wchars != '\0')
+	while (DEREF(istate, Trynum) < SET_SIZE  &&  *wchars != '\0')
 	  {
 	     if (*wchars != 'n'  &&  *wchars != '\\')
 	       {
@@ -544,37 +558,39 @@ char *              wchars;         /* Characters in -w option, if any */
 		    }
 	       }
 /*	     c &= NOPARITY;*/
-	     if (!hashheader.wordchars[c])
+	     if (!DEREF(istate, hashheader.wordchars[c]))
 	       {
-		  hashheader.wordchars[c] = 1;
-		  hashheader.sortorder[c] = hashheader.sortval++;
-		  Try[Trynum] = c;
-		  ++Trynum;
+		  DEREF(istate, hashheader.wordchars[c]) = 1;
+		  DEREF(istate, hashheader.sortorder[c]) = DEREF(istate, hashheader.sortval++);
+		  DEREF(istate, Try[DEREF(istate, Trynum)]) = c;
+		  ++DEREF(istate, Trynum);
 	       }
 	  }
      }
 }
 
-void lcleanup(void)
+void lcleanup(ONLY_ARG(istate))
 {
-	clearindex (pflagindex);
-	clearindex (sflagindex);
+	clearindex (DEREF_FIRST_ARG(istate) DEREF(istate, pflagindex));
+	clearindex (DEREF_FIRST_ARG(istate) DEREF(istate, sflagindex));
 
-	FREEP(hashtbl);
-	FREEP(hashstrings);
-	FREEP(sflaglist);
-	FREEP(chartypes);
+	FREEP(DEREF(istate, hashtbl));
+	FREEP(DEREF(istate, hashstrings));
+	FREEP(DEREF(istate, sflaglist));
+	FREEP(DEREF(istate, chartypes));
 }
 
-static void clearindex (indexp)
+static void clearindex (FIRST_ARG(istate) struct flagptr *indexp)
+#if 0
     register struct flagptr *	indexp;
+#endif
 {
     register int		i;
-    for (i = 0;  i < SET_SIZE + hashheader.nstrchars;  i++, indexp++)
+    for (i = 0;  i < SET_SIZE + DEREF(istate, hashheader.nstrchars);  i++, indexp++)
 	{
 		if (indexp->numents == 0 && indexp->pu.fp != NULL)
 		{
-		    clearindex(indexp->pu.fp);
+		    clearindex(DEREF_FIRST_ARG(istate) indexp->pu.fp);
 			free(indexp->pu.fp);
 		}
 	}
@@ -637,16 +653,18 @@ static void dumpindex (indexp, depth)
 #endif
 
 /* n is length of s */
-struct dent * ispell_lookup (s, dotree)
+struct dent * ispell_lookup (FIRST_ARG(istate) ichar_t *s, int dotree)
+#if 0
     register ichar_t *		s;
     int				dotree;
+#endif
     {
     register struct dent *	dp;
     register char *		s1;
     char			schar[INPUTWORDLEN + MAXAFFIXLEN];
 
-    dp = &hashtbl[hash (s, hashsize)];
-    if (ichartostr (schar, s, sizeof schar, 1))
+    dp = &DEREF(istate, hashtbl[hash (DEREF_FIRST_ARG(istate) s, DEREF(istate, hashsize))]);
+    if (ichartostr (DEREF_FIRST_ARG(istate) schar, s, sizeof schar, 1))
 	(void) fprintf (stderr, WORD_TOO_LONG (schar));
     for (  ;  dp != NULL;  dp = dp->next)
 	{
@@ -669,3 +687,18 @@ struct dent * ispell_lookup (s, dotree)
 #endif /* NO PERSONAL DICTIONARY LOOKUP NOW 12/98 */
 	return NULL;
     }
+
+#if defined(DONT_USE_GLOBALS) 
+ispell_state_t *alloc_ispell_struct() {
+	ispell_state_t *ret;
+	ret = (ispell_state_t *)calloc(1, sizeof(ispell_state_t));
+	ret->translate_in = 
+	ret->translate_out = (iconv_t)-1;
+}
+
+void free_ispell_struct(ispell_state_t *istate) {
+	if(istate) {
+		free(istate);
+	}
+}
+#endif

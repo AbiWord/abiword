@@ -49,6 +49,14 @@ static char Rcs_Id[] =
 
 /*
  * $Log$
+ * Revision 1.2  2001/05/12 16:05:42  thomasf
+ * Big pseudo changes to ispell to make it pass around a structure rather
+ * than rely on all sorts of gloabals willy nilly here and there.  Also
+ * fixed our spelling class to work with accepting suggestions once more.
+ * This code is dirty, gross and ugly (not to mention still not supporting
+ * multiple hash sized just yet) but it works on my machine and will no
+ * doubt break other machines.
+ *
  * Revision 1.1  2001/04/15 16:01:24  tomas_f
  * moving to spell/xp
  *
@@ -142,30 +150,34 @@ static char Rcs_Id[] =
 
 #include "ispell.h"
 
+/*
 void		chk_aff P ((ichar_t * word, ichar_t * ucword, int len,
 		  int ignoreflagbits, int allhits, int pfxopts, int sfxopts));
-static void	pfx_list_chk P ((ichar_t * word, ichar_t * ucword,
+*/
+static void	pfx_list_chk P ((FIRST_ARG(istate) ichar_t * word, ichar_t * ucword,
 		  int len, int optflags, int sfxopts, struct flagptr * ind,
 		  int ignoreflagbits, int allhits));
-static void	chk_suf P ((ichar_t * word, ichar_t * ucword, int len,
+static void	chk_suf P ((FIRST_ARG(istate) ichar_t * word, ichar_t * ucword, int len,
 		  int optflags, struct flagent * pfxent, int ignoreflagbits,
 		  int allhits));
-static void	suf_list_chk P ((ichar_t * word, ichar_t * ucword, int len,
+static void	suf_list_chk P ((FIRST_ARG(istate) ichar_t * word, ichar_t * ucword, int len,
 		  struct flagptr * ind, int optflags, struct flagent * pfxent,
 		  int ignoreflagbits, int allhits));
-int		expand_pre P ((char * croot, ichar_t * rootword,
+int		expand_pre P ((FIRST_ARG(istate) char * croot, ichar_t * rootword,
 		  MASKTYPE mask[], int option, char * extra));
-static int	pr_pre_expansion P ((char * croot, ichar_t * rootword,
+static int	pr_pre_expansion P ((FIRST_ARG(istate) char * croot, ichar_t * rootword,
 		  struct flagent * flent, MASKTYPE mask[], int option,
 		  char * extra));
-int		expand_suf P ((char * croot, ichar_t * rootword,
+int		expand_suf P ((FIRST_ARG(istate) char * croot, ichar_t * rootword,
 		  MASKTYPE mask[], int optflags, int option, char * extra));
-static int	pr_suf_expansion P ((char * croot, ichar_t * rootword,
+static int	pr_suf_expansion P ((FIRST_ARG(istate) char * croot, ichar_t * rootword,
 		  struct flagent * flent, int option, char * extra));
-static void	forcelc P ((ichar_t * dst, int len));
+static void	forcelc P ((FIRST_ARG(istate) ichar_t * dst, int len));
 
 /* Check possible affixes */
-void chk_aff (word, ucword, len, ignoreflagbits, allhits, pfxopts, sfxopts)
+void chk_aff (FIRST_ARG(istate) ichar_t *word, ichar_t *ucword, 
+			  int len, int ignoreflagbits, int allhits, int pfxopts, int sfxopts)
+#if 0
     ichar_t *		word;		/* Word to be checked */
     ichar_t *		ucword;		/* Upper-case-only copy of word */
     int			len;		/* The length of word/ucword */
@@ -173,26 +185,27 @@ void chk_aff (word, ucword, len, ignoreflagbits, allhits, pfxopts, sfxopts)
     int			allhits;	/* Keep going after first hit */
     int			pfxopts;	/* Options to apply to prefixes */
     int			sfxopts;	/* Options to apply to suffixes */
+#endif
     {
     register ichar_t *	cp;		/* Pointer to char to index on */
     struct flagptr *	ind;		/* Flag index table to test */
 
-    pfx_list_chk (word, ucword, len, pfxopts, sfxopts, &pflagindex[0],
+    pfx_list_chk (DEREF_FIRST_ARG(istate) word, ucword, len, pfxopts, sfxopts, &DEREF(istate, pflagindex[0]),
       ignoreflagbits, allhits);
     cp = ucword;
 	/* HACK: bail on unrecognized chars */
 	if (*cp >= (SET_SIZE + MAXSTRINGCHARS))
 		return;
-    ind = &pflagindex[*cp++];
+    ind = &DEREF(istate, pflagindex[*cp++]);
     while (ind->numents == 0  &&  ind->pu.fp != NULL)
 	{
 	if (*cp == 0)
 	    return;
 	if (ind->pu.fp[0].numents)
 	    {
-	    pfx_list_chk (word, ucword, len, pfxopts, sfxopts, &ind->pu.fp[0],
+	    pfx_list_chk (DEREF_FIRST_ARG(istate) word, ucword, len, pfxopts, sfxopts, &ind->pu.fp[0],
 	      ignoreflagbits, allhits);
-	    if (numhits  &&  !allhits  &&  /* !cflag  && */  !ignoreflagbits)
+	    if (DEREF(istate, numhits)  &&  !allhits  &&  /* !cflag  && */  !ignoreflagbits)
 		return;
 	    }
 	/* HACK: bail on unrecognized chars */
@@ -200,17 +213,18 @@ void chk_aff (word, ucword, len, ignoreflagbits, allhits, pfxopts, sfxopts)
 		return;
 	ind = &ind->pu.fp[*cp++];
 	}
-    pfx_list_chk (word, ucword, len, pfxopts, sfxopts, ind, ignoreflagbits,
+    pfx_list_chk (DEREF_FIRST_ARG(istate) word, ucword, len, pfxopts, sfxopts, ind, ignoreflagbits,
       allhits);
-    if (numhits  &&  !allhits  &&  /* !cflag  &&*/  !ignoreflagbits)
+    if (DEREF(istate, numhits)  &&  !allhits  &&  /* !cflag  &&*/  !ignoreflagbits)
 	return;
-    chk_suf (word, ucword, len, sfxopts, (struct flagent *) NULL,
+    chk_suf (DEREF_FIRST_ARG(istate) word, ucword, len, sfxopts, (struct flagent *) NULL,
       ignoreflagbits, allhits);
     }
 
 /* Check some prefix flags */
-static void pfx_list_chk (word, ucword, len, optflags, sfxopts, ind,
-  ignoreflagbits, allhits)
+static void pfx_list_chk (FIRST_ARG(istate) ichar_t *word, ichar_t *ucword, int len, int optflags, 
+					int sfxopts, struct flagptr * ind, int ignoreflagbits, int allhits)
+#if 0
     ichar_t *		word;		/* Word to be checked */
     ichar_t *		ucword;		/* Upper-case-only word */
     int			len;		/* The length of ucword */
@@ -219,6 +233,7 @@ static void pfx_list_chk (word, ucword, len, optflags, sfxopts, ind,
     struct flagptr *	ind;		/* Flag index table */
     int			ignoreflagbits;	/* Ignore whether affix is legal */
     int			allhits;	/* Keep going after first hit */
+#endif
     {
     int			cond;		/* Condition number */
     register ichar_t *	cp;		/* Pointer into end of ucword */
@@ -283,7 +298,7 @@ static void pfx_list_chk (word, ucword, len, optflags, sfxopts, ind,
 
 		if (ignoreflagbits)
 		    {
-		    if ((dent = ispell_lookup (tword, 1)) != NULL)
+		    if ((dent = ispell_lookup (DEREF_FIRST_ARG(istate) tword, 1)) != NULL)
 			{
 			cp = tword2;
 			if (flent->affl)
@@ -308,22 +323,22 @@ static void pfx_list_chk (word, ucword, len, optflags, sfxopts, ind,
 #endif /* Capitalizaition handler 12/98 */
 			}
 		    }
-		else if ((dent = ispell_lookup (tword, 1)) != NULL
+		else if ((dent = ispell_lookup (DEREF_FIRST_ARG(istate) tword, 1)) != NULL
 		  &&  TSTMASKBIT (dent->mask, flent->flagbit))
 		    {
-		    if (numhits < MAX_HITS)
+		    if (DEREF(istate, numhits) < MAX_HITS)
 			{
-			hits[numhits].dictent = dent;
-			hits[numhits].prefix = flent;
-			hits[numhits].suffix = NULL;
-			numhits++;
+			DEREF(istate, hits[DEREF(istate, numhits)].dictent) = dent;
+			DEREF(istate, hits[DEREF(istate, numhits)].prefix) = flent;
+			DEREF(istate, hits[DEREF(istate, numhits)].suffix) = NULL;
+			DEREF(istate, numhits)++;
 			}
 		    if (!allhits)
 			{
 #ifndef NO_CAPITALIZATION_SUPPORT
-			if (cap_ok (word, &hits[0], len))
+			if (cap_ok (DEREF_FIRST_ARG(istate) word, &DEREF(istate, hits[0]), len))
 			    return;
-			numhits = 0;
+			DEREF(istate, numhits) = 0;
 #else /* NO_CAPITALIZATION_SUPPORT */
 			return;
 #endif /* NO_CAPITALIZATION_SUPPORT */
@@ -333,7 +348,7 @@ static void pfx_list_chk (word, ucword, len, optflags, sfxopts, ind,
 		 * Handle cross-products.
 		 */
 		if (flent->flagflags & FF_CROSSPRODUCT)
-		    chk_suf (word, tword, tlen, sfxopts | FF_CROSSPRODUCT,
+		    chk_suf (DEREF_FIRST_ARG(istate) word, tword, tlen, sfxopts | FF_CROSSPRODUCT,
 		      flent, ignoreflagbits, allhits);
 		}
 	    }
@@ -341,8 +356,10 @@ static void pfx_list_chk (word, ucword, len, optflags, sfxopts, ind,
     }
 
 /* Check possible suffixes */
-static void chk_suf (word, ucword, len, optflags, pfxent, ignoreflagbits,
-  allhits)
+static void chk_suf (FIRST_ARG(istate) ichar_t *word, ichar_t *ucword, 
+					int len, int optflags, struct flagent *pfxent, 
+					int ignoreflagbits, int allhits)
+#if 0
     ichar_t *		word;		/* Word to be checked */
     ichar_t *		ucword;		/* Upper-case-only word */
     int			len;		/* The length of ucword */
@@ -350,26 +367,27 @@ static void chk_suf (word, ucword, len, optflags, pfxent, ignoreflagbits,
     struct flagent *	pfxent;		/* Prefix flag entry if cross-prod */
     int			ignoreflagbits;	/* Ignore whether affix is legal */
     int			allhits;	/* Keep going after first hit */
+#endif
     {
     register ichar_t *	cp;		/* Pointer to char to index on */
     struct flagptr *	ind;		/* Flag index table to test */
 
-    suf_list_chk (word, ucword, len, &sflagindex[0], optflags, pfxent,
+    suf_list_chk (DEREF_FIRST_ARG(istate) word, ucword, len, &DEREF(istate, sflagindex[0]), optflags, pfxent,
       ignoreflagbits, allhits);
     cp = ucword + len - 1;
 	/* HACK: bail on unrecognized chars */
 	if (*cp >= (SET_SIZE + MAXSTRINGCHARS))
 		return;
-    ind = &sflagindex[*cp];
+    ind = &DEREF(istate, sflagindex[*cp]);
     while (ind->numents == 0  &&  ind->pu.fp != NULL)
 	{
 	if (cp == ucword)
 	    return;
 	if (ind->pu.fp[0].numents)
 	    {
-	    suf_list_chk (word, ucword, len, &ind->pu.fp[0],
+	    suf_list_chk (DEREF_FIRST_ARG(istate) word, ucword, len, &ind->pu.fp[0],
 	      optflags, pfxent, ignoreflagbits, allhits);
-	    if (numhits != 0  &&  !allhits  &&  /* !cflag  && */  !ignoreflagbits)
+	    if (DEREF(istate, numhits) != 0  &&  !allhits  &&  /* !cflag  && */  !ignoreflagbits)
 		return;
 	    }
 	/* HACK: bail on unrecognized chars */
@@ -377,12 +395,14 @@ static void chk_suf (word, ucword, len, optflags, pfxent, ignoreflagbits,
 		return;
 	ind = &ind->pu.fp[*--cp];
 	}
-    suf_list_chk (word, ucword, len, ind, optflags, pfxent,
+    suf_list_chk (DEREF_FIRST_ARG(istate) word, ucword, len, ind, optflags, pfxent,
       ignoreflagbits, allhits);
     }
     
-static void suf_list_chk (word, ucword, len, ind, optflags, pfxent,
-  ignoreflagbits, allhits)
+static void suf_list_chk (FIRST_ARG(istate) ichar_t *word, ichar_t *ucword, 
+						  int len, struct flagptr *ind, int optflags, 
+						  struct flagent *pfxent, int ignoreflagbits, int allhits)
+#if 0
     ichar_t *		word;		/* Word to be checked */
     ichar_t *		ucword;		/* Upper-case-only word */
     int			len;		/* The length of ucword */
@@ -391,6 +411,7 @@ static void suf_list_chk (word, ucword, len, ind, optflags, pfxent,
     struct flagent *	pfxent;		/* Prefix flag entry if crossonly */
     int			ignoreflagbits;	/* Ignore whether affix is legal */
     int			allhits;	/* Keep going after first hit */
+#endif
     {
     register ichar_t *	cp;		/* Pointer into end of ucword */
     int			cond;		/* Condition number */
@@ -463,7 +484,7 @@ static void suf_list_chk (word, ucword, len, ind, optflags, pfxent,
 		 */
 		if (ignoreflagbits)
 		    {
-		    if ((dent = ispell_lookup (tword, 1)) != NULL)
+		    if ((dent = ispell_lookup (DEREF_FIRST_ARG(istate) tword, 1)) != NULL)
 			{
 			cp = tword2;
 			if ((optflags & FF_CROSSPRODUCT)
@@ -504,24 +525,24 @@ static void suf_list_chk (word, ucword, len, ind, optflags, pfxent,
 #endif /* Capitalization handler 12/98 */
 			}
 		    }
-		else if ((dent = ispell_lookup (tword, 1)) != NULL
+		else if ((dent = ispell_lookup (DEREF_FIRST_ARG(istate) tword, 1)) != NULL
 		  &&  TSTMASKBIT (dent->mask, flent->flagbit)
 		  &&  ((optflags & FF_CROSSPRODUCT) == 0
 		    || TSTMASKBIT (dent->mask, pfxent->flagbit)))
 		    {
-		    if (numhits < MAX_HITS)
+		    if (DEREF(istate, numhits) < MAX_HITS)
 			{
-			hits[numhits].dictent = dent;
-			hits[numhits].prefix = pfxent;
-			hits[numhits].suffix = flent;
-			numhits++;
+			DEREF(istate, hits[DEREF(istate, numhits)].dictent) = dent;
+			DEREF(istate, hits[DEREF(istate, numhits)].prefix) = pfxent;
+			DEREF(istate, hits[DEREF(istate, numhits)].suffix) = flent;
+			DEREF(istate, numhits)++;
 			}
 		    if (!allhits)
 			{
 #ifndef NO_CAPITALIZATION_SUPPORT
-			if (cap_ok (word, &hits[0], len))
+			if (cap_ok (DEREF_FIRST_ARG(istate) word, &DEREF(istate, hits[0]), len))
 			    return;
-			numhits = 0;
+			DEREF(istate, numhits) = 0;
 #else /* NO_CAPITALIZATION_SUPPORT */
 			return;
 #endif /* NO_CAPITALIZATION_SUPPORT */
@@ -535,37 +556,44 @@ static void suf_list_chk (word, ucword, len, ind, optflags, pfxent,
 /*
  * Expand a dictionary prefix entry
  */
-int expand_pre (croot, rootword, mask, option, extra)
+int expand_pre (FIRST_ARG(istate) char *croot, ichar_t *rootword, MASKTYPE mask[], 
+				int option, char *extra)
+#if 0
     char *			croot;		/* Char version of rootword */
     ichar_t *			rootword;	/* Root word to expand */
     register MASKTYPE		mask[];		/* Mask bits to expand on */
     int				option;		/* Option, see expandmode */
     char *			extra;		/* Extra info to add to line */
+#endif
     {
     int				entcount;	/* No. of entries to process */
     int				explength;	/* Length of expansions */
     register struct flagent *
 				flent;		/* Current table entry */
 
-    for (flent = pflaglist, entcount = numpflags, explength = 0;
+    for (flent = DEREF(istate, pflaglist), entcount = DEREF(istate, numpflags), explength = 0;
       entcount > 0;
       flent++, entcount--)
 	{
 	if (TSTMASKBIT (mask, flent->flagbit))
 	    explength +=
-	      pr_pre_expansion (croot, rootword, flent, mask, option, extra);
+	      pr_pre_expansion (DEREF_FIRST_ARG(istate) croot, rootword, flent, mask, option, extra);
 	}
     return explength;
     }
 
 /* Print a prefix expansion */
-static int pr_pre_expansion (croot, rootword, flent, mask, option, extra)
+static int pr_pre_expansion (FIRST_ARG(istate)  char *croot, ichar_t *rootword, 
+							struct flagent *flent, MASKTYPE mask[], int option, 
+							char *extra)
+#if 0
     char *			croot;		/* Char version of rootword */
     register ichar_t *		rootword;	/* Root word to expand */
     register struct flagent *	flent;		/* Current table entry */
     MASKTYPE			mask[];		/* Mask bits to expand on */
     int				option;		/* Option, see	expandmode */
     char *			extra;		/* Extra info to add to line */
+#endif
     {
     int				cond;		/* Current condition number */
     register ichar_t *		nextc;		/* Next case choice */
@@ -581,7 +609,7 @@ static int pr_pre_expansion (croot, rootword, flent, mask, option, extra)
     tlen += flent->affl;
     for (cond = 0, nextc = rootword;  cond < flent->numconds;  cond++)
 	{
-	if ((flent->conds[mytoupper (*nextc++)] & (1 << cond)) == 0)
+	if ((flent->conds[mytoupper (DEREF_FIRST_ARG(istate) *nextc++)] & (1 << cond)) == 0)
 	    return 0;
 	}
     /*
@@ -603,12 +631,12 @@ static int pr_pre_expansion (croot, rootword, flent, mask, option, extra)
 	nextc = tword + flent->affl;
 	}
     (void) icharcpy (nextc, rootword + flent->stripl);
-    if (myupper (rootword[0]))
+    if (myupper (DEREF_FIRST_ARG(istate) rootword[0]))
 	{
 	/* We must distinguish followcase from capitalized and all-upper */
 	for (nextc = rootword + 1;  *nextc;  nextc++)
 	    {
-	    if (!myupper (*nextc))
+	    if (!myupper (DEREF_FIRST_ARG(istate) *nextc))
 		break;
 	    }
 	if (*nextc)
@@ -616,35 +644,35 @@ static int pr_pre_expansion (croot, rootword, flent, mask, option, extra)
 	    /* It's a followcase or capitalized word.  Figure out which. */
 	    for (  ;  *nextc;  nextc++)
 		{
-		if (myupper (*nextc))
+		if (myupper (DEREF_FIRST_ARG(istate) *nextc))
 		    break;
 		}
 	    if (*nextc)
 		{
 		/* It's followcase. */
-		if (!myupper (tword[flent->affl]))
-		    forcelc (tword, flent->affl);
+		if (!myupper (DEREF_FIRST_ARG(istate) tword[flent->affl]))
+		    forcelc (DEREF_FIRST_ARG(istate) tword, flent->affl);
 		}
 	    else
 		{
 		/* It's capitalized */
-		forcelc (tword + 1, tlen - 1);
+		forcelc (DEREF_FIRST_ARG(istate) tword + 1, tlen - 1);
 		}
 	    }
 	}
     else
 	{
 	/* Followcase or all-lower, we don't care which */
-	if (!myupper (*nextc))
-	    forcelc (tword, flent->affl);
+	if (!myupper (DEREF_FIRST_ARG(istate) *nextc))
+	    forcelc (DEREF_FIRST_ARG(istate) tword, flent->affl);
 	}
     if (option == 3)
 	(void) printf ("\n%s", croot);
     if (option != 4)
-	(void) printf (" %s%s", ichartosstr (tword, 1), extra);
+	(void) printf (" %s%s", ichartosstr (DEREF_FIRST_ARG(istate) tword, 1), extra);
     if (flent->flagflags & FF_CROSSPRODUCT)
 	return tlen
-	  + expand_suf (croot, tword, mask, FF_CROSSPRODUCT, option, extra);
+	  + expand_suf (DEREF_FIRST_ARG(istate) croot, tword, mask, FF_CROSSPRODUCT, option, extra);
     else
 	return tlen;
     }
@@ -652,20 +680,23 @@ static int pr_pre_expansion (croot, rootword, flent, mask, option, extra)
 /*
  * Expand a dictionary suffix entry
  */
-int expand_suf (croot, rootword, mask, optflags, option, extra)
+int expand_suf (FIRST_ARG(istate) char *croot, ichar_t *rootword, MASKTYPE mask[], 
+				int optflags, int option, char *extra)
+#if 0
     char *			croot;		/* Char version of rootword */
     ichar_t *			rootword;	/* Root word to expand */
     register MASKTYPE		mask[];		/* Mask bits to expand on */
     int				optflags;	/* Affix option flags */
     int				option;		/* Option, see expandmode */
     char *			extra;		/* Extra info to add to line */
+#endif
     {
     int				entcount;	/* No. of entries to process */
     int				explength;	/* Length of expansions */
     register struct flagent *
 				flent;		/* Current table entry */
 
-    for (flent = sflaglist, entcount = numsflags, explength = 0;
+    for (flent = DEREF(istate, sflaglist), entcount = DEREF(istate, numsflags), explength = 0;
       entcount > 0;
       flent++, entcount--)
 	{
@@ -674,19 +705,22 @@ int expand_suf (croot, rootword, mask, optflags, option, extra)
 	    if ((optflags & FF_CROSSPRODUCT) == 0
 	      ||  (flent->flagflags & FF_CROSSPRODUCT))
 		explength +=
-		  pr_suf_expansion (croot, rootword, flent, option, extra);
+		  pr_suf_expansion (DEREF_FIRST_ARG(istate) croot, rootword, flent, option, extra);
 	    }
 	}
     return explength;
     }
 
 /* Print a suffix expansion */
-static int pr_suf_expansion (croot, rootword, flent, option, extra)
+static int pr_suf_expansion (FIRST_ARG(istate) char *croot, ichar_t *rootword, 
+							struct flagent *flent, int option, char *extra)
+#if 0
     char *			croot;		/* Char version of rootword */
     register ichar_t *		rootword;	/* Root word to expand */
     register struct flagent *	flent;		/* Current table entry */
     int				option;		/* Option, see expandmode */
     char *			extra;		/* Extra info to add to line */
+#endif
     {
     int				cond;		/* Current condition number */
     register ichar_t *		nextc;		/* Next case choice */
@@ -701,7 +735,7 @@ static int pr_suf_expansion (croot, rootword, flent, option, extra)
 	return 0;
     for (nextc = rootword + tlen;  --cond >= 0;  )
 	{
-	if ((flent->conds[mytoupper (*--nextc)] & (1 << cond)) == 0)
+	if ((flent->conds[mytoupper (DEREF_FIRST_ARG(istate) *--nextc)] & (1 << cond)) == 0)
 	    return 0;
 	}
     /*
@@ -714,23 +748,25 @@ static int pr_suf_expansion (croot, rootword, flent, option, extra)
     if (flent->affl)
 	{
 	(void) icharcpy (nextc, flent->affix);
-	if (!myupper (nextc[-1]))
-	    forcelc (nextc, flent->affl);
+	if (!myupper (DEREF_FIRST_ARG(istate) nextc[-1]))
+	    forcelc (DEREF_FIRST_ARG(istate) nextc, flent->affl);
 	}
     else
 	*nextc = 0;
     if (option == 3)
 	(void) printf ("\n%s", croot);
     if (option != 4)
-	(void) printf (" %s%s", ichartosstr (tword, 1), extra);
+	(void) printf (" %s%s", ichartosstr (DEREF_FIRST_ARG(istate) tword, 1), extra);
     return tlen + flent->affl - flent->stripl;
     }
 
-static void forcelc (dst, len)			/* Force to lowercase */
+static void forcelc (FIRST_ARG(istate) ichar_t *dst, int len)			/* Force to lowercase */
+#if 0
     register ichar_t *		dst;		/* Destination to modify */
     register int		len;		/* Length to copy */
+#endif
     {
 
     for (  ;  --len >= 0;  dst++)
-	*dst = mytolower (*dst);
+	*dst = mytolower (DEREF_FIRST_ARG(istate) *dst);
     }

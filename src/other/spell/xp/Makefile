@@ -32,7 +32,9 @@ CPPSRCS= spell_manager.cpp
 ifdef ABI_OPT_PSPELL
 	CPPSRCS+= pspell_checker.cpp
 else
-	CSRCS=	newMain.c good.c tgood.c lookup.c makedent.c hash.c \
+# TF CHANGE: Drop newMain
+#	CSRCS=	newMain.c good.c tgood.c lookup.c makedent.c hash.c 
+	CSRCS=	good.c tgood.c lookup.c makedent.c hash.c \
 correct.c 
 	CPPSRCS+= ispell_checker.cpp
 endif

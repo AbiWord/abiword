@@ -1,13 +1,18 @@
+#define  DONT_USE_GLOBALS
+
+#include "ispell.h"
+#include "iconv.h"
+
+#include "sp_spell.h"
 #include "ispell_checker.h"
 #include "ut_vector.h"
 
-#include "ispell.h"
-#include "sp_spell.h"
-#include "iconv.h"
+#	define UCS_2_INTERNAL "UCS-2"
 
 /***************************************************************************/
 /* Reduced Gobals needed by ispell code.                                   */
 /***************************************************************************/
+#ifndef DONT_USE_GLOBALS
        int              numhits;
 struct success          hits[MAX_HITS];
 
@@ -47,19 +52,18 @@ iconv_t  translate_out = (iconv_t)-1;
 int      Trynum;         /* Size of "Try" array */
 ichar_t  Try[SET_SIZE + MAXSTRINGCHARS];
 
-/*this is used for converting form unsigned short to UCS-2*/
-static unsigned short  ucs2[INPUTWORDLEN + MAXAFFIXLEN];
+#endif
 
 extern "C" {
 extern int XAP_EncodingManager__swap_utos, XAP_EncodingManager__swap_stou;
 }
 
 /*this one fills ucs2 with values that iconv will treat as UCS-2. */
-static void toucs2(const unsigned short *word16, int length)
+static void toucs2(const unsigned short *word16, int length, unsigned short *out)
 {
 	int i = 0;
 	const unsigned short* in = word16;
-	unsigned short* out = ucs2;
+/*	unsigned short* out = ucs2; */
 	for(;i<length;++i)
 	{
 		if (XAP_EncodingManager__swap_utos)
@@ -71,10 +75,11 @@ static void toucs2(const unsigned short *word16, int length)
 }
 
 /*this one copies from 'ucs2' to word16 swapping bytes if necessary */
-static void fromucs2(unsigned short *word16, int length)
+static void fromucs2(unsigned short *word16, int length, unsigned short *ucs2)
 {
 	int i = 0;
-	unsigned short* in = ucs2,*out = word16;
+	unsigned short *in = ucs2;
+	unsigned short *out = word16; 
 	for(;i<length;++i)
 	{
 		if (XAP_EncodingManager__swap_stou)
@@ -85,9 +90,7 @@ static void fromucs2(unsigned short *word16, int length)
 	out[i]= 0;
 }
 
-#	define UCS_2_INTERNAL "UCS-2"
-
-static void try_autodetect_charset(char* hashname)
+static void try_autodetect_charset(FIRST_ARG(istate) char* hashname)
 {
 	int len;
 	char buf[3000];
@@ -113,28 +116,42 @@ static void try_autodetect_charset(char* hashname)
 		*p = '\0';
 		if (!*start) /* empty enc */
 			return;
-        	translate_in = iconv_open(start, UCS_2_INTERNAL);
-        	translate_out = iconv_open(UCS_2_INTERNAL, start);
+        	DEREF(istate, translate_in) = iconv_open(start, UCS_2_INTERNAL);
+        	DEREF(istate, translate_out) = iconv_open(UCS_2_INTERNAL, start);
 	}
 	
 }
+
 /***************************************************************************/
 
 static int g_bSuccessfulInit = 0;
 
 ISpellChecker::ISpellChecker()
 {
+#if defined(DONT_USE_GLOBALS)
+	m_pISpellState = NULL;
+#endif
+	deftflag = -1;
+	prefstringchar = -1;  
 }
 
 ISpellChecker::~ISpellChecker()
 {
+#if defined(DONT_USE_GLOBALS)
+    lcleanup(m_pISpellState);
+#else
     lcleanup();
-    if(translate_in != (iconv_t)-1)
-        iconv_close(translate_in);
-    translate_in = (iconv_t)-1;
-    if(translate_out != (iconv_t)-1)
-        iconv_close(translate_out);
-    translate_out = (iconv_t)-1;
+#endif
+    if(DEREF(m_pISpellState, translate_in) != (iconv_t)-1)
+        iconv_close(DEREF(m_pISpellState, translate_in));
+    DEREF(m_pISpellState, translate_in) = (iconv_t)-1;
+    if(DEREF(m_pISpellState, translate_out) != (iconv_t)-1)
+        iconv_close(DEREF(m_pISpellState, translate_out));
+    DEREF(m_pISpellState, translate_out) = (iconv_t)-1;
+
+#if defined(DONT_USE_GLOBALS)
+	//TODO: Free the structure?
+#endif
 }
 
 SpellChecker::SpellCheckResult
@@ -150,7 +167,7 @@ ISpellChecker::checkWord(const UT_UCSChar *word16, size_t length)
     if (!word16 || length >= (INPUTWORDLEN + MAXAFFIXLEN) || length == 0)
         return SpellChecker::LOOKUP_FAILED;
 
-    if(translate_in == (iconv_t)-1)
+    if(DEREF(m_pISpellState, translate_in) == (iconv_t)-1)
     {
         /* copy to 8bit string and null terminate */
         register char *p;
@@ -170,16 +187,16 @@ ISpellChecker::checkWord(const UT_UCSChar *word16, size_t length)
         const char *In = (const char *)ucs2;
         char *Out = word8;
 
-	toucs2(word16,length);
+	toucs2(word16,length, ucs2);
         len_in = length * 2;
         len_out = sizeof( word8 ) - 1;
-        iconv(translate_in, const_cast<ICONV_CONST char **>(&In), &len_in, &Out, &len_out);
+        iconv(DEREF(m_pISpellState, translate_in), const_cast<ICONV_CONST char **>(&In), &len_in, &Out, &len_out);
         *Out = '\0';
     }
     
 /*UT_ASSERT(0);*/
-    if( !strtoichar(iWord, word8, sizeof(iWord), 0) )
-        retVal = (good(iWord, 0, 0, 1, 0) == 1 ? SpellChecker::LOOKUP_SUCCEEDED : SpellChecker::LOOKUP_FAILED);
+    if( !strtoichar(DEREF_FIRST_ARG(m_pISpellState) iWord, word8, sizeof(iWord), 0) )
+        retVal = (good(DEREF_FIRST_ARG(m_pISpellState) iWord, 0, 0, 1, 0) == 1 ? SpellChecker::LOOKUP_SUCCEEDED : SpellChecker::LOOKUP_FAILED);
     else
         retVal = SpellChecker::LOOKUP_ERROR;
 
@@ -189,6 +206,7 @@ ISpellChecker::checkWord(const UT_UCSChar *word16, size_t length)
 UT_Vector *
 ISpellChecker::suggestWord(const UT_UCSChar *word16, size_t length)
 {
+	UT_Vector *sgvec;
 	sp_suggestions *sg = new sp_suggestions;
     ichar_t  iWord[INPUTWORDLEN + MAXAFFIXLEN];
     char  word8[INPUTWORDLEN + MAXAFFIXLEN];
@@ -201,7 +219,7 @@ ISpellChecker::suggestWord(const UT_UCSChar *word16, size_t length)
     if (!sg) 
         return 0;
 
-    if(translate_in == (iconv_t)-1)
+    if(DEREF(m_pISpellState, translate_in) == (iconv_t)-1)
     {
         /* copy to 8bit string and null terminate */
         register char *p;
@@ -222,53 +240,54 @@ ISpellChecker::suggestWord(const UT_UCSChar *word16, size_t length)
         size_t len_in, len_out; 
         const char *In = (const char *)ucs2;
         char *Out = word8;
-		toucs2(word16,length);	
+		toucs2(word16,length, ucs2);	
         len_in = length * 2;
         len_out = sizeof( word8 ) - 1;
-        iconv(translate_in, const_cast<ICONV_CONST char **>(&In), &len_in, &Out, &len_out);
+        iconv(DEREF(m_pISpellState, translate_in), const_cast<ICONV_CONST char **>(&In), &len_in, &Out, &len_out);
         *Out = '\0';
     }
    
-    if( !strtoichar(iWord, word8, sizeof(iWord), 0) )
-        makepossibilities(iWord);
+    if( !strtoichar(DEREF_FIRST_ARG(m_pISpellState) iWord, word8, sizeof(iWord), 0) )
+        makepossibilities(DEREF_FIRST_ARG(m_pISpellState) iWord);
 
-    sg->count = pcount;
+    sg->count = DEREF(m_pISpellState, pcount);
 	/* TF CHANGE: Use the right types
     sg->score = (unsigned short *)malloc(sizeof(unsigned short) * pcount); 
 	*/
-    sg->score = (short *)malloc(sizeof(short) * pcount);
-    sg->word = (unsigned short**)malloc(sizeof(unsigned short**) * pcount);
+    sg->score = (short *)malloc(sizeof(short) * DEREF(m_pISpellState, pcount));
+    sg->word = (unsigned short**)malloc(sizeof(unsigned short**) * DEREF(m_pISpellState, pcount));
     if (sg->score == NULL || sg->word == NULL) 
     {
         sg->count = 0;
+		delete sg;
         return 0;
     }
 
-    for (c = 0; c < pcount; c++) 
+	sgvec = new UT_Vector();
+
+    for (c = 0; c < DEREF(m_pISpellState, pcount); c++) 
     {
         int l;
 
         sg->score[c] = 1000;
-        l = strlen(possibilities[c]);
+        l = strlen(DEREF(m_pISpellState, possibilities[c]));
 
         sg->word[c] = (unsigned short*)malloc(sizeof(unsigned short) * l + 2);
         if (sg->word[c] == NULL) 
         {
             /* out of memory, but return what was copied so far */
             sg->count = c;
-
-			// BUG!!!!
 			delete sg;
-            return new UT_Vector();
+			return sgvec;
         }
 
-        if (translate_out == (iconv_t)-1)
+        if (DEREF(m_pISpellState, translate_out) == (iconv_t)-1)
         {
             /* copy to 16bit string and null terminate */
             register int x;
 
             for (x = 0; x < l; x++)
-                sg->word[c][x] = (unsigned char)possibilities[c][x];
+                sg->word[c][x] = (unsigned char)DEREF(m_pISpellState, possibilities[c][x]);
             sg->word[c][l] = 0;
         }
         else
@@ -278,21 +297,21 @@ ISpellChecker::suggestWord(const UT_UCSChar *word16, size_t length)
 			unsigned int len_in, len_out; 
 			*/
 			size_t len_in, len_out; 
-            const char *In = possibilities[c];
+            const char *In = DEREF(m_pISpellState, possibilities[c]);
             char *Out = (char *)ucs2;
 
             len_in = l;
             len_out = sizeof(unsigned short) * l;
-            iconv(translate_out, const_cast<ICONV_CONST char **>(&In), &len_in, &Out, &len_out);	    
+            iconv(DEREF(m_pISpellState, translate_out), const_cast<ICONV_CONST char **>(&In), &len_in, &Out, &len_out);	    
             *((unsigned short *)Out) = 0;
-			fromucs2(sg->word[c], (unsigned short*)Out-ucs2);
+			fromucs2(sg->word[c], (unsigned short*)Out-ucs2, ucs2);
         }
+
+		sgvec->addItem((void *)sg->word[c]);
     }
 
-//    return sg->count;
-	// TODO
 	delete sg;
-	return new UT_Vector();
+	return sgvec;
 }
 
 bool
@@ -302,7 +321,10 @@ ISpellChecker::requestDictionary(const char *szLang)
 	// by now I just pick american.hash dictionary
 	const char *hashname = "american.hash";
 
-    if (linit(const_cast<char*>(hashname)) < 0)
+#if defined(DONT_USE_GLOBALS)
+	m_pISpellState = alloc_ispell_struct();
+#endif
+    if (linit(DEREF_FIRST_ARG(m_pISpellState) const_cast<char*>(hashname)) < 0)
     {
         /* TODO gripe -- could not load the dictionary */
         return false;
@@ -311,15 +333,15 @@ ISpellChecker::requestDictionary(const char *szLang)
     g_bSuccessfulInit = 1;
 
     /* Test for utf8 first */
-    prefstringchar = findfiletype("utf8", 1, deftflag < 0 ? &deftflag : (int *) NULL);
+    prefstringchar = findfiletype(DEREF_FIRST_ARG(m_pISpellState) "utf8", 1, deftflag < 0 ? &deftflag : (int *) NULL);
     if (prefstringchar >= 0)
     {
-        translate_in = iconv_open("utf-8", UCS_2_INTERNAL);
-        translate_out = iconv_open(UCS_2_INTERNAL, "utf-8");
+        DEREF(m_pISpellState, translate_in) = iconv_open("utf-8", UCS_2_INTERNAL);
+        DEREF(m_pISpellState, translate_out) = iconv_open(UCS_2_INTERNAL, "utf-8");
     }
 
     /* Test for "latinN" */
-    if(translate_in == (iconv_t)-1)
+    if(DEREF(m_pISpellState, translate_in) == (iconv_t)-1)
     {
         char teststring[64];
         int n1;
@@ -328,39 +350,39 @@ ISpellChecker::requestDictionary(const char *szLang)
         for(n1 = 1; n1 <= 9; n1++)
         {
             sprintf(teststring, "latin%u", n1);
-            prefstringchar = findfiletype(teststring, 1, deftflag < 0 ? &deftflag : (int *) NULL);
+            prefstringchar = findfiletype(DEREF_FIRST_ARG(m_pISpellState) teststring, 1, deftflag < 0 ? &deftflag : (int *) NULL);
             if (prefstringchar >= 0)
             {
-                translate_in = iconv_open(teststring, UCS_2_INTERNAL);
-                translate_out = iconv_open(UCS_2_INTERNAL, teststring);
+                DEREF(m_pISpellState, translate_in) = iconv_open(teststring, UCS_2_INTERNAL);
+                DEREF(m_pISpellState, translate_out) = iconv_open(UCS_2_INTERNAL, teststring);
                 break;
             }
         }
     }
-    try_autodetect_charset(const_cast<char*>(hashname));
+    try_autodetect_charset(DEREF_FIRST_ARG(m_pISpellState) const_cast<char*>(hashname));
 
     /* Test for known "hashname"s */
-    if(translate_in == (iconv_t)-1)
+    if(DEREF(m_pISpellState, translate_in) == (iconv_t)-1)
     {
         if( strstr( hashname, "russian.hash" ))
         {
             /* ISO-8859-5, CP1251 or KOI8-R */
-            translate_in = iconv_open("KOI8-R", UCS_2_INTERNAL);
-            translate_out = iconv_open(UCS_2_INTERNAL, "KOI8-R");
+            DEREF(m_pISpellState, translate_in) = iconv_open("KOI8-R", UCS_2_INTERNAL);
+            DEREF(m_pISpellState, translate_out) = iconv_open(UCS_2_INTERNAL, "KOI8-R");
         }
     }
 
     /* If nothing found, use latin1 */
-    if(translate_in == (iconv_t)-1)
+    if(DEREF(m_pISpellState, translate_in) == (iconv_t)-1)
     {
-        translate_in = iconv_open("latin1", UCS_2_INTERNAL);
-        translate_out = iconv_open(UCS_2_INTERNAL, "latin1");
+        DEREF(m_pISpellState, translate_in) = iconv_open("latin1", UCS_2_INTERNAL);
+        DEREF(m_pISpellState, translate_out) = iconv_open(UCS_2_INTERNAL, "latin1");
     }
 
     if (prefstringchar < 0)
-        defdupchar = 0;
+        DEREF(m_pISpellState, defdupchar) = 0;
     else
-        defdupchar = prefstringchar;
+        DEREF(m_pISpellState, defdupchar) = prefstringchar;
 
 	return true;
 }

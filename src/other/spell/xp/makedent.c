@@ -43,6 +43,14 @@ static char Rcs_Id[] =
 
 /*
  * $Log$
+ * Revision 1.2  2001/05/12 16:05:42  thomasf
+ * Big pseudo changes to ispell to make it pass around a structure rather
+ * than rely on all sorts of gloabals willy nilly here and there.  Also
+ * fixed our spelling class to work with accepting suggestions once more.
+ * This code is dirty, gross and ugly (not to mention still not supporting
+ * multiple hash sized just yet) but it works on my machine and will no
+ * doubt break other machines.
+ *
  * Revision 1.1  2001/04/15 16:01:24  tomas_f
  * moving to spell/xp
  *
@@ -108,11 +116,16 @@ static char Rcs_Id[] =
 #include "ispell.h"
 #include "msgs.h"
 
-int		makedent P ((char * lbuf, int lbuflen, struct dent * ent));
+#if 0
+int		findfiletype P ((char * name, int searchnames, int * deformatter));
+char *		ichartosstr P (ichar_t * in, int canonical));
 #ifndef NO_CAPITALIZATION_SUPPORT
-long		whatcap P ((ichar_t * word));
+long		whatcap P ((FIRST_ARG(istate) ichar_t * word));
 #endif
-int		addvheader P ((struct dent * ent));
+#endif
+
+int		makedent P ((char * lbuf, int lbuflen, struct dent * ent));
+int		addvheader P ((FIRST_ARG(istate) struct dent * ent));
 /*int		combinecaps P ((struct dent * hdr, struct dent * newent));
 #ifndef NO_CAPITALIZATION_SUPPORT
 static void	forcevheader P ((struct dent * hdrp, struct dent * oldp,
@@ -122,9 +135,9 @@ static int	combine_two_entries P ((struct dent * hdrp,
 		  struct dent * oldp, struct dent * newp));
 static int	acoversb P ((struct dent * enta, struct dent * entb));
 */
-void		upcase P ((ichar_t * string));
-void		lowcase P ((ichar_t * string));
-void		chupcase P ((char * s));
+void		upcase P ((FIRST_ARG(istate) ichar_t * string));
+void		lowcase P ((FIRST_ARG(istate) ichar_t * string));
+void		chupcase P ((FIRST_ARG(istate) char * s));
 /*static int	issubset P ((struct dent * ent1, struct dent * ent2));
 static void	combineaffixes P ((struct dent * ent1, struct dent * ent2));*/
 
@@ -134,22 +147,15 @@ void		toutent P ((FILE * outfile, struct dent * hent,
 		  struct dent * cent));
 static void	flagout P ((FILE * outfile, int flag));
 */
-int		stringcharlen P ((char * bufp, int canonical));
-int		strtoichar P ((ichar_t * out, char * in, int outlen,
-		  int canonical));
-int		ichartostr P ((char * out, ichar_t * in, int outlen,
-		  int canonical));
-ichar_t *	strtosichar P ((char * in, int canonical));
-char *		ichartosstr P ((ichar_t * in, int canonical));
-char *		printichar P ((int in));
+int		stringcharlen P ((FIRST_ARG(istate) char * bufp, int canonical));
+ichar_t *	strtosichar P ((FIRST_ARG(istate) char * in, int canonical));
+char *		printichar P ((FIRST_ARG(istate) int in));
 #ifndef ICHAR_IS_CHAR
 ichar_t *	icharcpy P ((ichar_t * out, ichar_t * in));
 int		icharlen P ((ichar_t * str));
 int		icharcmp P ((ichar_t * s1, ichar_t * s2));
 int		icharncmp P ((ichar_t * s1, ichar_t * s2, int n));
 #endif /* ICHAR_IS_CHAR */
-int		findfiletype P ((char * name, int searchnames,
-		  int * deformatter));
 
 /*static int  	has_marker;*/
 
@@ -168,14 +174,16 @@ other abi documents
 ** four capitalization codes ANYCASE, ALLCAPS, CAPITALIZED, or FOLLOWCASE.
 */
 
-long whatcap (word)
+long whatcap (FIRST_ARG(istate) ichar_t *word)
+#if 0
     register ichar_t *	word;
+#endif
     {
     register ichar_t *	p;
 
     for (p = word;  *p;  p++)
 	{
-	if (mylower (*p))
+	if (mylower (DEREF_FIRST_ARG(istate) *p))
 	    break;
 	}
     if (*p == '\0')
@@ -184,7 +192,7 @@ long whatcap (word)
 	{
 	for (  ;  *p;  p++)
 	    {
-	    if (myupper (*p))
+	    if (myupper (DEREF_FIRST_ARG(istate) *p))
 		break;
 	    }
 	if (*p == '\0')
@@ -196,11 +204,11 @@ long whatcap (word)
 	    ** it's "capitalize".  If there are no capitals
 	    ** at all, it's ANYCASE.
 	    */
-	    if (myupper (word[0]))
+	    if (myupper (DEREF_FIRST_ARG(istate) word[0]))
 		{
 		for (p = word + 1;  *p != '\0';  p++)
 		    {
-		    if (myupper (*p))
+		    if (myupper (DEREF_FIRST_ARG(istate) *p))
 			return FOLLOWCASE;
 		    }
 		return CAPITALIZED;
@@ -219,8 +227,10 @@ long whatcap (word)
 **
 ** Returns 0 if all was ok, -1 if allocation error.
 */
-int addvheader (dp)
+int addvheader (FIRST_ARG(istate)  struct dent *dp)
+#if 0
     register struct dent *	dp;	/* Entry to update */
+#endif
     {
     register struct dent *	tdent; /* Copy of entry */
 
@@ -249,7 +259,7 @@ int addvheader (dp)
 	    }
 	(void) strcpy (tdent->word, dp->word);
 	}
-    chupcase (dp->word);
+    chupcase (DEREF_FIRST_ARG(istate) dp->word);
     dp->next = tdent;
     dp->flagfield &= ~CAPTYPEMASK;
     dp->flagfield |= (ALLCAPS | MOREVARIANTS);
@@ -329,24 +339,28 @@ static void forcevheader (hdrp, oldp, newp)
 static int combine_two_entries (hdrp, oldp, newp)
 static int acoversb (enta, entb)
 */
-void upcase (s)
+void upcase (FIRST_ARG(istate) ichar_t *s)
+#if 0
     register ichar_t *	s;
+#endif
     {
 
     while (*s)
 	{
-	*s = mytoupper (*s);
+	*s = mytoupper (DEREF_FIRST_ARG(istate) *s);
 	s++;
 	}
     }
 
-void lowcase (s)
+void lowcase (FIRST_ARG(istate) ichar_t *s)
+#if 0
     register ichar_t *	s;
+#endif
     {
 
     while (*s)
 	{
-	*s = mytolower (*s);
+	*s = mytolower (DEREF_FIRST_ARG(istate) *s);
 	s++;
 	}
     }
@@ -355,14 +369,16 @@ void lowcase (s)
  * Upcase variant that works on normal strings.  Note that it is a lot
  * slower than the normal upcase.  The input must be in canonical form.
  */
-void chupcase (s)
+void chupcase (FIRST_ARG(istate) char *s)
+#if 0
     char *	s;
+#endif
     {
     ichar_t *	is;
 
-    is = strtosichar (s, 1);
-    upcase (is);
-    (void) ichartostr (s, is, strlen (s) + 1, 1);
+    is = strtosichar (DEREF_FIRST_ARG(istate) s, 1);
+    upcase (DEREF_FIRST_ARG(istate) is);
+    (void) ichartostr (DEREF_FIRST_ARG(istate) s, is, strlen (s) + 1, 1);
     }
 
 /*
@@ -392,9 +408,11 @@ static void flagout (toutfile, flag)
  * found, or to -1 if none was found.  This can be useful for such things
  * as case conversion.
  */
-int stringcharlen (bufp, canonical)
+int stringcharlen (FIRST_ARG(istate) char *bufp, int canonical)
+#if 0
     char *		bufp;
     int			canonical;	/* NZ if input is in canonical form */
+#endif
     {
 #ifdef SLOWMULTIPLY
     static char *	sp[MAXSTRINGCHARS];
@@ -416,15 +434,15 @@ int stringcharlen (bufp, canonical)
 	}
 #endif /* SLOWMULTIPLY */
     lowstringno = 0;
-    highstringno = hashheader.nstrchars - 1;
-    dupwanted = canonical ? 0 : defdupchar;
+    highstringno = DEREF(istate, hashheader.nstrchars) - 1;
+    dupwanted = canonical ? 0 : DEREF(istate, defdupchar);
     while (lowstringno <= highstringno)
 	{
 	stringno = (lowstringno + highstringno) >> 1;
 #ifdef SLOWMULTIPLY
 	stringcur = sp[stringno];
 #else /* SLOWMULTIPLY */
-	stringcur = &hashheader.stringchars[stringno][0];
+	stringcur = &DEREF(istate, hashheader.stringchars[stringno][0]);
 #endif /* SLOWMULTIPLY */
 	bufcur = bufp;
 	while (*stringcur)
@@ -443,14 +461,14 @@ int stringcharlen (bufp, canonical)
 	    }
 	if (*stringcur == '\0')
 	    {
-	    if (hashheader.dupnos[stringno] == dupwanted)
+	    if (DEREF(istate, hashheader.dupnos[stringno]) == dupwanted)
 		{
 		/* We have a match */
-		laststringch = hashheader.stringdups[stringno];
+		DEREF(istate, laststringch) = DEREF(istate, hashheader.stringdups[stringno]);
 #ifdef SLOWMULTIPLY
 		return stringcur - sp[stringno];
 #else /* SLOWMULTIPLY */
-		return stringcur - &hashheader.stringchars[stringno][0];
+		return stringcur - &DEREF(istate, hashheader.stringchars[stringno][0]);
 #endif /* SLOWMULTIPLY */
 		}
 	    else
@@ -468,14 +486,62 @@ int stringcharlen (bufp, canonical)
 	else if (*bufcur > *stringcur)
 	    lowstringno = stringno + 1;
 #endif /* NO8BIT */
-	else if (dupwanted < hashheader.dupnos[stringno])
+	else if (dupwanted < DEREF(istate, hashheader.dupnos[stringno]))
 	    highstringno = stringno - 1;
 	else
 	    lowstringno = stringno + 1;
 	}
-    laststringch = -1;
+    DEREF(istate, laststringch) = -1;
     return 0;			/* Not a string character */
     }
+
+/* MACROS CONVERTED TO FUNCTIONS
+** These macros are similar to the ones above, but they take into account
+** the possibility of string characters.  Note well that they take a POINTER,
+** not a character.
+**
+** The "l_" versions set "len" to the length of the string character as a
+** handy side effect.  (Note that the global "laststringch" is also set,
+** and sometimes used, by these macros.)
+**
+** The "l1_" versions go one step further and guarantee that the "len"
+** field is valid for *all* characters, being set to 1 even if the macro
+** returns false.  This macro is a great example of how NOT to write
+** readable C.
+*/
+#define isstringch(ptr, canon)	(isstringstart (*(ptr)) \
+				  &&  stringcharlen ((ptr), (canon)) > 0)
+/*
+int isstringch(FIRST_ARG(istate) char *ptr, int canon) {
+	return (isstringstart (*(ptr)) && (len = stringcharlen ((ptr), (canon))) > 0);
+}
+*/
+
+#define l_isstringch(ptr, len, canon)	\
+				(isstringstart (*(ptr)) \
+				  &&  (len = stringcharlen ((ptr), (canon))) \
+				    > 0)
+/*
+int l_isstringch(FIRST_ARG(istate) char *ptr, int len, int canon) {
+	return (isstringstart (*(ptr)) &&  (len = stringcharlen ((ptr), (canon))) > 0);
+}
+*/
+
+#define l1_isstringch(ptr, len, canon)	\
+				(len = 1, \
+				  isstringstart (DEREF_FIRST_ARG(istate) (unsigned char)(*(ptr))) \
+				    &&  ((len = \
+					  stringcharlen (DEREF_FIRST_ARG(istate) (ptr), (canon))) \
+					> 0 \
+				      ? 1 : (len = 1, 0)))
+/*
+int l1_isstringch(FIRST_ARG(istate) char *ptr, int len, int canon) {
+	return (len = 1, isstringstart (DEREF_FIRST_ARG(istate) (unsigned char)(*(ptr))) &&  
+           ((len = stringcharlen (DEREF_FIRST_ARG(istate) (ptr), (canon))) > 0 ? 1 : (len = 1, 0)));
+}
+*/
+
+/*** END MACRO CONVERSION ***/
 
 /*
  * Convert an external string to an ichar_t string.  If necessary, the parity
@@ -483,19 +549,21 @@ int stringcharlen (bufp, canonical)
  *
  * Returns NZ if the output string overflowed.
  */
-int strtoichar (out, in, outlen, canonical)
+int strtoichar (FIRST_ARG(istate) ichar_t *out, char *in, int outlen, int canonical)
+#if 0
     register ichar_t *	out;		/* Where to put result */
     register char *	in;		/* String to convert */
     int			outlen;		/* Size of output buffer, *BYTES* */
     int			canonical;	/* NZ if input is in canonical form */
+#endif
     {
     register int	len;		/* Length of next character */
 
     outlen /= sizeof (ichar_t);		/* Convert to an ichar_t count */
     for (  ;  --outlen > 0  &&  *in != '\0';  in += len)
 	{
-	if (l1_isstringch (in, len, canonical))
-	    *out++ = SET_SIZE + laststringch;
+	if (l1_isstringch (DEREF_FIRST_ARG(istate) in, len, canonical))
+	    *out++ = SET_SIZE + DEREF(istate, laststringch);
 	else
 	    *out++ = (unsigned char)( *in );
 	}
@@ -513,11 +581,13 @@ int strtoichar (out, in, outlen, canonical)
  *
  * Returns NZ if the output string overflowed.
  */
-int ichartostr (out, in, outlen, canonical)
+int ichartostr (FIRST_ARG(istate)  char *out, ichar_t *in, int outlen, int canonical)
+#if 0
     register char *	out;		/* Where to put result */
     register ichar_t *	in;		/* String to convert */
     int			outlen;		/* Size of output buffer, bytes */
     int			canonical;	/* NZ for canonical form */
+#endif
     {
     register int	ch;		/* Next character to store */
     register int	i;		/* Index into duplicates list */
@@ -532,17 +602,17 @@ int ichartostr (out, in, outlen, canonical)
 	    ch -= SET_SIZE;
 	    if (!canonical)
 		{
-		for (i = hashheader.nstrchars;  --i >= 0;  )
+		for (i = DEREF(istate, hashheader.nstrchars);  --i >= 0;  )
 		    {
-		    if (hashheader.dupnos[i] == defdupchar
-		      &&  ((int) (hashheader.stringdups[i])) == ch)
+		    if (DEREF(istate, hashheader.dupnos[i]) == DEREF(istate, defdupchar)
+		      &&  ((int) (DEREF(istate, hashheader.stringdups[i]))) == ch)
 			{
 			ch = i;
 			break;
 			}
 		    }
 		}
-	    scharp = hashheader.stringchars[(unsigned) ch];
+	    scharp = DEREF(istate, hashheader.stringchars[(unsigned) ch]);
 	    while ((*out++ = *scharp++) != '\0')
 		;
 	    out--;
@@ -555,13 +625,15 @@ int ichartostr (out, in, outlen, canonical)
 /*
  * Convert a string to an ichar_t, storing the result in a static area.
  */
-ichar_t * strtosichar (in, canonical)
+ichar_t * strtosichar (FIRST_ARG(istate)  char *in, int canonical)
+#if 0
     char *		in;		/* String to convert */
     int			canonical;	/* NZ if input is in canonical form */
+#endif
     {
     static ichar_t	out[STRTOSICHAR_SIZE / sizeof (ichar_t)];
 
-    if (strtoichar (out, in, sizeof out, canonical))
+    if (strtoichar (DEREF_FIRST_ARG(istate) out, in, sizeof out, canonical))
 	(void) fprintf (stderr, WORD_TOO_LONG (in));
     return out;
     }
@@ -569,13 +641,15 @@ ichar_t * strtosichar (in, canonical)
 /*
  * Convert an ichar_t to a string, storing the result in a static area.
  */
-char * ichartosstr (in, canonical)
+char * ichartosstr (FIRST_ARG(istate) ichar_t *in, int canonical)
+#if 0
     ichar_t *		in;		/* Internal string to convert */
     int			canonical;	/* NZ for canonical conversion */
+#endif
     {
     static char		out[ICHARTOSSTR_SIZE];
 
-    if (ichartostr (out, in, sizeof out, canonical))
+    if (ichartostr (DEREF_FIRST_ARG(istate) out, in, sizeof out, canonical))
 	(void) fprintf (stderr, WORD_TOO_LONG (out));
     return out;
     }
@@ -584,8 +658,10 @@ char * ichartosstr (in, canonical)
  * Convert a single ichar to a printable string, storing the result in
  * a static area.
  */
-char * printichar (in)
+char * printichar (FIRST_ARG(istate) int in)
+#if 0
     int			in;
+#endif
     {
     static char		out[MAXSTRINGCHARLEN + 1];
 
@@ -595,7 +671,7 @@ char * printichar (in)
 	out[1] = '\0';
 	}
     else
-	(void) strcpy (out, hashheader.stringchars[(unsigned) in - SET_SIZE]);
+	(void) strcpy (out, DEREF(istate, hashheader.stringchars[(unsigned) in - SET_SIZE]));
     return out;
     }
 
@@ -666,10 +742,12 @@ int icharncmp (s1, s2, n)
 
 #endif /* ICHAR_IS_CHAR */
 
-int findfiletype (name, searchnames, deformatter)
+int findfiletype (FIRST_ARG(istate) char *name, int searchnames, int *deformatter)
+#if 0
     char *		name;		/* Name to look up in suffix table */
     int			searchnames;	/* NZ to search name field of table */
     int *		deformatter;	/* Where to set deformatter type */
+#endif
     {
     char *		cp;		/* Pointer into suffix list */
     int			cplen;		/* Length of current suffix */
@@ -684,27 +762,27 @@ int findfiletype (name, searchnames, deformatter)
     len = strlen (name);
     if (searchnames)
 	{
-	for (i = 0;  i < hashheader.nstrchartype;  i++)
+	for (i = 0;  i < DEREF(istate, hashheader.nstrchartype);  i++)
 	    {
-	    if (strcmp (name, chartypes[i].name) == 0)
+	    if (strcmp (name, DEREF(istate, chartypes[i].name)) == 0)
 		{
 		if (deformatter != NULL)
 		    *deformatter =
-		      (strcmp (chartypes[i].deformatter, "tex") == 0);
+		      (strcmp (DEREF(istate, chartypes[i].deformatter), "tex") == 0);
 		return i;
 		}
 	    }
 	}
-    for (i = 0;  i < hashheader.nstrchartype;  i++)
+    for (i = 0;  i < DEREF(istate, hashheader.nstrchartype);  i++)
 	{
-	for (cp = chartypes[i].suffixes;  *cp != '\0';  cp += cplen + 1)
+	for (cp = DEREF(istate, chartypes[i].suffixes);  *cp != '\0';  cp += cplen + 1)
 	    {
 	    cplen = strlen (cp);
 	    if (len >= cplen  &&  strcmp (&name[len - cplen], cp) == 0)
 		{
 		if (deformatter != NULL)
 		    *deformatter =
-		      (strcmp (chartypes[i].deformatter, "tex") == 0);
+		      (strcmp (DEREF(istate, chartypes[i].deformatter), "tex") == 0);
 		return i;
 		}
 	    }
@@ -739,18 +817,18 @@ ichar_t mytoupper (ch) unsigned int ch; { return (ichar_t) ch; }
 	TODO: this is just a workaround to keep us from crashing. 
 	more sophisticated logic needed here. 
 */
-char myupper(ichar_t c)
+char myupper(FIRST_ARG(istate) ichar_t c)
 {
 	if (c < (SET_SIZE + MAXSTRINGCHARS))
-		return hashheader.upperchars[c];
+		return DEREF(istate, hashheader.upperchars[c]);
 	else
 		return 0;
 }
 
-char mylower(ichar_t c)
+char mylower(FIRST_ARG(istate) ichar_t c)
 {
 	if (c < (SET_SIZE + MAXSTRINGCHARS))
-		return hashheader.lowerchars[c];
+		return DEREF(istate, hashheader.lowerchars[c]);
 	else
 		return 0;
 }
@@ -760,42 +838,42 @@ int myspace(ichar_t c)
 	return ((c > 0)  &&  (c < 0x80) &&  isspace((unsigned char) c));
 }
 
-char iswordch(ichar_t c)
+char iswordch(FIRST_ARG(istate) ichar_t c)
 {
 	if (c < (SET_SIZE + MAXSTRINGCHARS))
-		return hashheader.wordchars[c];
+		return DEREF(istate, hashheader.wordchars[c]);
 	else
 		return 0;
 }
 
-char isboundarych(ichar_t c)
+char isboundarych(FIRST_ARG(istate) ichar_t c)
 {
 	if (c < (SET_SIZE + MAXSTRINGCHARS))
-		return hashheader.boundarychars[c];
+		return DEREF(istate, hashheader.boundarychars[c]);
 	else
 		return 0;
 }
 
-char isstringstart(ichar_t c)
+char isstringstart(FIRST_ARG(istate) ichar_t c)
 {
 	if (c < (SET_SIZE))
-		return hashheader.stringstarts[(unsigned char) c];
+		return DEREF(istate, hashheader.stringstarts[(unsigned char) c]);
 	else
 		return 0;
 }
 
-ichar_t mytolower(ichar_t c)
+ichar_t mytolower(FIRST_ARG(istate) ichar_t c)
 {
 	if (c < (SET_SIZE + MAXSTRINGCHARS))
-		return hashheader.lowerconv[c];
+		return DEREF(istate, hashheader.lowerconv[c]);
 	else
 		return c;
 }
 
-ichar_t mytoupper (ichar_t c)
+ichar_t mytoupper (FIRST_ARG(istate) ichar_t c)
 {
 	if (c < (SET_SIZE + MAXSTRINGCHARS))
-		return hashheader.upperconv[c];
+		return DEREF(istate, hashheader.upperconv[c]);
 	else
 		return c;
 }

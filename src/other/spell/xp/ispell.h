@@ -1,3 +1,6 @@
+#ifndef ISPELL_H
+#define ISPELL_H
+
 /*
  * $Id$
  */
@@ -42,6 +45,14 @@
 
 /*
  * $Log$
+ * Revision 1.3  2001/05/12 16:05:42  thomasf
+ * Big pseudo changes to ispell to make it pass around a structure rather
+ * than rely on all sorts of gloabals willy nilly here and there.  Also
+ * fixed our spelling class to work with accepting suggestions once more.
+ * This code is dirty, gross and ugly (not to mention still not supporting
+ * multiple hash sized just yet) but it works on my machine and will no
+ * doubt break other machines.
+ *
  * Revision 1.2  2001/04/18 00:59:36  thomasf
  * Removed the duplicate declarations of variables that was causing build
  * to bail.  This new ispell stuff is a total mess.
@@ -159,6 +170,7 @@
 /*  #include "ut_types.h" */
 
 #include "ispell_def.h"
+#include "iconv.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -361,19 +373,6 @@ ichar_t* icharcpy (ichar_t* out, ichar_t* in);
 int icharlen (ichar_t* in);
 int icharcmp (ichar_t* s1, ichar_t* s2);
 int icharncmp (ichar_t* s1, ichar_t* s2, int n);
-int ichartostr (char* out, ichar_t* in, int outlen, int canonical);
-char * ichartosstr (ichar_t* in, int canonical);
-int strtoichar (ichar_t* out, char* in, int outlen, int canonical);
-struct dent * ispell_lookup (ichar_t* s, int dotree);
-int good (ichar_t* w, int ignoreflagbits, int allhits, int pfxopts, int sfxopts);
-int linit(char*);
-void lcleanup(void);
-int cap_ok (ichar_t* word, struct success* hit, int len);
-void chk_aff (ichar_t* word, ichar_t* ucword, int len, int ignoreflagbits, int allhits, int pfxopts, int sfxopts);
-long whatcap (ichar_t* word);
-int hash (ichar_t* s, int hashtblsize);
-void makepossibilities(ichar_t* word);
-int	findfiletype (char * name, int searchnames, int * deformatter);
 
 #endif
 
@@ -619,49 +618,6 @@ struct hashheader
 #define COMPOUND_NEVER		0	/* Compound words are never good */
 #define COMPOUND_ANYTIME	1	/* Accept run-together words */
 #define COMPOUND_CONTROLLED	2	/* Compounds controlled by afx flags */
-
-/*
-** The isXXXX macros normally only check ASCII range, and don't support
-** the character sets of other languages.  These private versions handle
-** whatever character sets have been defined in the affix files.
-*/
-#ifdef lint
-extern int	myupper P ((unsigned int ch));
-extern int	mylower P ((unsigned int ch));
-extern int	myspace P ((unsigned int ch));
-extern int	iswordch P ((unsigned int ch));
-extern int	isboundarych P ((unsigned int ch));
-extern int	isstringstart P ((unsigned int ch));
-extern ichar_t	mytolower P ((unsigned int ch));
-extern ichar_t	mytoupper P ((unsigned int ch));
-#else /* lint */
-#if 0
-#define myupper(X)	(hashheader.upperchars[(X)])
-#define mylower(X)	(hashheader.lowerchars[(X)])
-#define myspace(X)	(((X) > 0)  &&  ((X) < 0x80) \
-			  &&  isspace((unsigned char) (X)))
-#define iswordch(X)	(hashheader.wordchars[(X)])
-#define isboundarych(X) (hashheader.boundarychars[(X)])
-#define isstringstart(X) (hashheader.stringstarts[(unsigned char) (X)])
-#define mytolower(X)	(hashheader.lowerconv[(X)])
-#define mytoupper(X)	(hashheader.upperconv[(X)])
-#else
-/*
-	HACK: macros replaced with function implementations 
-	so we could do a side-effect-free check for unicode
-	characters which aren't in hashheader
-*/
-char myupper(ichar_t c);
-char mylower(ichar_t c);
-int myspace(ichar_t c);
-char iswordch(ichar_t c);
-char isboundarych(ichar_t c);
-char isstringstart(ichar_t c);
-ichar_t mytolower(ichar_t c);
-ichar_t mytoupper(ichar_t c);
-#endif
-#endif /* lint */
-
 /*
 ** These macros are similar to the ones above, but they take into account
 ** the possibility of string characters.  Note well that they take a POINTER,
@@ -676,6 +632,8 @@ ichar_t mytoupper(ichar_t c);
 ** returns false.  This macro is a great example of how NOT to write
 ** readable C.
 */
+/*TF NOTE: This is actually defined in code (makedent) now */
+#if 0 
 #define isstringch(ptr, canon)	(isstringstart (*(ptr)) \
 				  &&  stringcharlen ((ptr), (canon)) > 0)
 #define l_isstringch(ptr, len, canon)	\
@@ -689,6 +647,7 @@ ichar_t mytoupper(ichar_t c);
 					  stringcharlen ((ptr), (canon))) \
 					> 0 \
 				      ? 1 : (len = 1, 0)))
+#endif
 
 /*
  * Sizes of buffers returned by ichartosstr/strtosichar.
@@ -704,6 +663,27 @@ ichar_t mytoupper(ichar_t c);
 # define EXTERN /* nothing */
 #else
 # define EXTERN extern
+#endif
+
+
+/* TF CHANGE: We should fill this as a structure
+              and then use it throughout.
+*/
+#define DONT_USE_GLOBALS
+
+#if defined(DONT_USE_GLOBALS)
+#define ONLY_ARG(var)	ispell_state_t *var
+#define FIRST_ARG(var)	ispell_state_t *var,
+#define DEREF(var, x)	var->x
+#define DEREF_FIRST_ARG(var)	var,
+#undef  EXTERN
+#define EXTERN
+typedef struct _ispell_state {
+#else
+#define ONLY_ARG(var) 	void	
+#define FIRST_ARG(var) 			
+#define DEREF(var, x)	x
+#define DEREF_FIRST_ARG(var)	
 #endif
 
 EXTERN char *	BC;	/* backspace if not ^H */
@@ -798,17 +778,13 @@ EXTERN int	easypossibilities; /* Number of "easy" corrections found */
 EXTERN int	Trynum;		/* Size of "Try" array */
 EXTERN ichar_t	Try[SET_SIZE + MAXSTRINGCHARS];
 
-/*
- * TF NOTE:
- * The following are here so that we can have a clean compile and 
- * declare our variables nicely.
- */
-#include "iconv.h"
-
 EXTERN iconv_t  translate_in; /* Selected translation from/to Unicode */
 EXTERN iconv_t  translate_out;
 
-/** END TF **/
+#if defined(DONT_USE_GLOBALS)
+} ispell_state_t;
+#endif
+
 
 
 /*
@@ -861,6 +837,80 @@ INIT (int math_mode, 0);
  */
 INIT (char LaTeX_Mode, 'P');
 
+int good (FIRST_ARG(istate) ichar_t* w, int ignoreflagbits, int allhits, int pfxopts, int sfxopts);
+void chk_aff (FIRST_ARG(istate) ichar_t* word, ichar_t* ucword, int len, int ignoreflagbits, int allhits, int pfxopts, int sfxopts);
+int linit(FIRST_ARG(istate) char*);
+void lcleanup(ONLY_ARG(istate));
+struct dent * ispell_lookup (FIRST_ARG(istate) ichar_t* s, int dotree);
+int strtoichar (FIRST_ARG(istate) ichar_t* out, char* in, int outlen, int canonical);
+int ichartostr (FIRST_ARG(istate) char* out, ichar_t* in, int outlen, int canonical);
+char * ichartosstr (FIRST_ARG(istate) ichar_t* in, int canonical);
+int	findfiletype (FIRST_ARG(istate) char * name, int searchnames, int * deformatter);
+long whatcap (FIRST_ARG(istate) ichar_t* word);
+
+/*
+** The isXXXX macros normally only check ASCII range, and don't support
+** the character sets of other languages.  These private versions handle
+** whatever character sets have been defined in the affix files.
+*/
+#ifdef lint
+extern int	myupper P ((unsigned int ch));
+extern int	mylower P ((unsigned int ch));
+extern int	myspace P ((unsigned int ch));
+extern int	iswordch P ((unsigned int ch));
+extern int	isboundarych P ((unsigned int ch));
+extern int	isstringstart P ((unsigned int ch));
+extern ichar_t	mytolower P ((unsigned int ch));
+extern ichar_t	mytoupper P ((unsigned int ch));
+#else /* lint */
+#if 0
+#define myupper(X)	(hashheader.upperchars[(X)])
+#define mylower(X)	(hashheader.lowerchars[(X)])
+#define myspace(X)	(((X) > 0)  &&  ((X) < 0x80) \
+			  &&  isspace((unsigned char) (X)))
+#define iswordch(X)	(hashheader.wordchars[(X)])
+#define isboundarych(X) (hashheader.boundarychars[(X)])
+#define isstringstart(X) (hashheader.stringstarts[(unsigned char) (X)])
+#define mytolower(X)	(hashheader.lowerconv[(X)])
+#define mytoupper(X)	(hashheader.upperconv[(X)])
+#else
+/*
+	HACK: macros replaced with function implementations 
+	so we could do a side-effect-free check for unicode
+	characters which aren't in hashheader
+*/
+char myupper(FIRST_ARG(istate) ichar_t c);
+char mylower(FIRST_ARG(istate) ichar_t c);
+int myspace(ichar_t c);
+char iswordch(FIRST_ARG(istate) ichar_t c);
+char isboundarych(FIRST_ARG(istate) ichar_t c);
+char isstringstart(FIRST_ARG(istate) ichar_t c);
+ichar_t mytolower(FIRST_ARG(istate) ichar_t c);
+ichar_t mytoupper(FIRST_ARG(istate) ichar_t c);
+#endif
+#endif /* lint */
+
+void		upcase P ((FIRST_ARG(istate) ichar_t * string));
+void		lowcase P ((FIRST_ARG(istate) ichar_t * string));
+ichar_t *    strtosichar P ((FIRST_ARG(istate) char * in, int canonical));
+
+#ifdef ICHAR_IS_CHAR
+#else
+
+int cap_ok (FIRST_ARG(istate) ichar_t* word, struct success* hit, int len);
+void makepossibilities(FIRST_ARG(istate) ichar_t* word);
+
+int hash (FIRST_ARG(istate) ichar_t* s, int hashtblsize);
+#endif
+
+
+#if defined(DONT_USE_GLOBALS)
+ispell_state_t *alloc_ispell_struct();
+void free_ispell_struct(ispell_state_t *istate);
+#endif
+
 #ifdef __cplusplus
 }
 #endif /* c++ */
+
+#endif /* ISPELL_H */
