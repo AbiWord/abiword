@@ -98,6 +98,9 @@ UT_Bool GR_UnixGraphics::queryProperties(GR_Graphics::Properties gp) const
 void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 							 int iLength, UT_sint32 xoff, UT_sint32 yoff)
 {
+	if (!m_pFontManager)
+		return;
+	
 	GdkWindowPrivate *drawable_private;
 	GdkFontPrivate *font_private;
 	GdkGCPrivate *gc_private;
@@ -139,6 +142,9 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 
 void GR_UnixGraphics::setFont(GR_Font * pFont)
 {
+	if (!m_pFontManager)
+		return;
+
 	UT_ASSERT(pFont);
 
 	XAP_UnixFontHandle * pUFont = static_cast<XAP_UnixFontHandle *> (pFont);
@@ -168,6 +174,9 @@ void GR_UnixGraphics::setFont(GR_Font * pFont)
 
 UT_uint32 GR_UnixGraphics::getFontHeight()
 {
+	if (!m_pFontManager)
+		return NULL;
+
 	UT_ASSERT(m_pFont);
 	UT_ASSERT(m_pGC);
 
@@ -180,6 +189,9 @@ UT_uint32 GR_UnixGraphics::getFontHeight()
 UT_uint32 GR_UnixGraphics::measureString(const UT_UCSChar* s, int iOffset,
 									  int num,  unsigned short* pWidths)
 {
+	if (!m_pFontManager)
+		return NULL;
+
 	UT_ASSERT(m_pFont);
 	UT_ASSERT(m_pGC);
 	UT_ASSERT(s);
@@ -267,6 +279,9 @@ void GR_UnixGraphics::_setColor(GdkColor & c)
 
 GR_Font * GR_UnixGraphics::getGUIFont(void)
 {
+	if (!m_pFontManager)
+		return NULL;
+	
 	if (!m_pFontGUI)
 	{
 		// get the font resource
@@ -288,6 +303,9 @@ GR_Font * GR_UnixGraphics::findFont(const char* pszFontFamily,
 									const char* /*pszFontStretch*/, 
 									const char* pszFontSize)
 {
+	if (!m_pFontManager)
+		return NULL;
+
 	UT_ASSERT(pszFontFamily);
 	UT_ASSERT(pszFontStyle);
 	UT_ASSERT(pszFontWeight);
@@ -355,6 +373,9 @@ GR_Font * GR_UnixGraphics::findFont(const char* pszFontFamily,
 
 UT_uint32 GR_UnixGraphics::getFontAscent()
 {
+	if (!m_pFontManager)
+		return NULL;
+
 	UT_ASSERT(m_pFont);
 	UT_ASSERT(m_pGC);
 
@@ -367,6 +388,9 @@ UT_uint32 GR_UnixGraphics::getFontAscent()
 
 UT_uint32 GR_UnixGraphics::getFontDescent()
 {
+	if (!m_pFontManager)
+		return NULL;
+
 	UT_ASSERT(m_pFont);
 	UT_ASSERT(m_pGC);
 
@@ -611,7 +635,7 @@ void GR_UnixGraphics::flush(void)
 	gdk_flush();
 }
 
-void GR_UnixGraphics::setColorSpace(GR_Graphics::ColorSpace c)
+void GR_UnixGraphics::setColorSpace(GR_Graphics::ColorSpace /* c */)
 {
 	// we only use ONE color space here now (GdkRGB's space)
 	// and we don't let people change that on us.
