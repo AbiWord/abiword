@@ -595,17 +595,14 @@ UT_uint32 GR_Win32Graphics::_getResolution(void) const
 
 void GR_Win32Graphics::setColor(const UT_RGBColor& clr)
 {
+	m_curColor = clr;
 	_setColor(RGB(clr.m_red, clr.m_grn, clr.m_blu));
 }
 
-#if 0
 void GR_Win32Graphics::getColor(UT_RGBColor& clr)
 {
-	clr.m_red = GetRValue(m_clrCurrent);
-	clr.m_grn = GetGValue(m_clrCurrent);
-	clr.m_blu = GetBValue(m_clrCurrent);
+	clr = m_curColor;
 }
-#endif
 
 void GR_Win32Graphics::_setColor(DWORD dwColor)
 {

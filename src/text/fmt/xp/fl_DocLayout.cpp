@@ -798,21 +798,7 @@ void FL_DocLayout::updateColor()
 //
 	if(pView)
 	{
-		// remember the state of the cursor.
-		bool bCursorErased = false;
-		if (pView->isCursorOn() == true)
-		{
-			pView->eraseInsertionPoint();
-			bCursorErased = true;
-		}
 		pView->updateScreen(false);
-//
-// Redraw the cursor if needed
-//
-		if (bCursorErased == true)
-		{
-			pView->drawInsertionPoint();
-		}
 	}
 
 }

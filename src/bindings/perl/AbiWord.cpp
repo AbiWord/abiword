@@ -403,7 +403,6 @@ XS(XS_AbiWord__FV_View_editBody)
 		warn( "AbiWord::FV_View::editBody() -- pView is not a blessed SV reference" );           XSRETURN_UNDEF;
 	};
 #line 192 "AbiWord.xs"
-		pView->eraseInsertionPoint();
 		pView->clearHdrFtrEdit();
 		pView->warpInsPtToXY(0, 0, false);
 #line 410 "AbiWord.c"

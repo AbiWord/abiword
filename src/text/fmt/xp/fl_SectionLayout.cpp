@@ -1030,7 +1030,6 @@ void fl_DocSectionLayout::updateDocSection(void)
 
 //	if (pView)
 //	{
-//		pView->eraseInsertionPoint();
 //		pView->updateScreen(false);
 //		pView->notifyListeners(AV_CHG_TYPING | AV_CHG_FMTSECTION);
 //	}

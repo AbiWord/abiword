@@ -1234,22 +1234,7 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		FV_View * pView = pCL->getDocLayout()->getView();
 		if(pView)
 		{
-		// remember the state of the cursor.
-			bool bCursorErased = false;
-			if (pView->isCursorOn() == true)
-			{
-				pView->eraseInsertionPoint();
-				bCursorErased = true;
-			}
-//			pView->updateScreen(false);
 			pView->notifyListeners(AV_CHG_HDRFTR);
-//
-// Redraw the cursor if needed
-//
-			if (bCursorErased == true)
-			{
-				pView->drawInsertionPoint();
-			}
 		}
 
 		goto finish_up;
@@ -1600,7 +1585,6 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
  */
 bool fl_DocListener::signal(UT_uint32 iSignal)
 {
-	bool bCursorErased = false;
 	FV_View* pView = m_pLayout->getView();
 
 	switch (iSignal)
@@ -1609,30 +1593,10 @@ bool fl_DocListener::signal(UT_uint32 iSignal)
 #ifdef UPDATE_LAYOUT_ON_SIGNAL
 		m_pLayout->updateLayout();
 #endif
-		if(pView->isCursorOn()== true)
-		{
-			pView->eraseInsertionPoint();
-			bCursorErased = true;
-		}
 		pView->updateScreen();
-		if(bCursorErased == true)
-		{
-			pView->drawInsertionPoint();
-		}
-
 		break;
 	case PD_SIGNAL_REFORMAT_LAYOUT:
-		if(pView->isCursorOn()== true)
-		{
-			pView->eraseInsertionPoint();
-			bCursorErased = true;
-		}
 		m_pLayout->formatAll();
-		if(bCursorErased == true)
-		{
-			pView->drawInsertionPoint();
-		}
-
 		break;
 		
 	default:

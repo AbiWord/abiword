@@ -131,7 +131,6 @@ void FV_View::_moveToSelectionEnd(bool bForward)
 	UT_ASSERT(!isSelectionEmpty());
 
 	PT_DocPosition curPos = getPoint();
-	_fixInsertionPointCoords();
 	UT_ASSERT(curPos != m_iSelectionAnchor);
 	bool bForwardSelection = (m_iSelectionAnchor < curPos);
 
@@ -172,6 +171,9 @@ void FV_View::_eraseSelection(void)
 
 void FV_View::_clearSelection(void)
 {
+	UT_return_if_fail(!isSelectionEmpty());
+	m_pG->getCaret()->enable();
+
 	_fixInsertionPointCoords();
 	if (!m_bSelection)
 	{
@@ -200,15 +202,9 @@ void FV_View::_clearSelection(void)
 	_drawBetweenPositions(iPos1, iPos2);
 }
 
-void FV_View::_resetSelection(void)
-{
-	m_bSelection = false;
-	m_iSelectionAnchor = getPoint();
-}
-
 void FV_View::_drawSelection()
 {
-	UT_ASSERT(!isSelectionEmpty());
+	UT_return_if_fail(!isSelectionEmpty());
 //	CHECK_WINDOW_SIZE
 	if (m_iSelectionAnchor < getPoint())
 	{
@@ -218,6 +214,17 @@ void FV_View::_drawSelection()
 	{
 		_drawBetweenPositions(getPoint(), m_iSelectionAnchor);
 	}
+}
+
+// Note that isClearSelection() might change its tune in one of two ways.
+// Way #1 is by calling one of the next few methods.
+//   BUT! this never happens because m_iSelectionAnchor == getPoint by def.
+// Way #2 is if m_bSelection is set and the point is changed so that it
+//          no longer equals m_iSelectionAnchor.
+void FV_View::_resetSelection(void)
+{
+	m_bSelection = false;
+	m_iSelectionAnchor = getPoint();
 }
 
 void FV_View::_setSelectionAnchor(void)
@@ -402,10 +409,6 @@ bool FV_View::_restoreCellParams(PT_DocPosition posTable, UT_sint32 iLineType)
 		PP_AttrProp AttrProp_Before;
 		_deleteSelection(&AttrProp_Before);
 		m_pDoc->endUserAtomicGlob();
-	}
-	else
-	{
-		_eraseInsertionPoint();
 	}
 	m_pDoc->setDontImmediatelyLayout(true);
 //
@@ -1076,10 +1079,6 @@ void FV_View::_insertSectionBreak(void)
 	{
 		_deleteSelection();
 	}
-	else
-	{
-		_eraseInsertionPoint();
-	}
 	//
 	// Get preview DocSectionLayout so we know what header/footers we have
 		// to insert here.
@@ -1095,7 +1094,7 @@ void FV_View::_insertSectionBreak(void)
 	m_pDoc->insertStrux(iPoint, PTX_Section);
 
 	_generalUpdate();
-	_ensureThatInsertionPointIsOnScreen();
+	_ensureInsertionPointOnScreen();
 	UT_uint32 oldPoint = getPoint();
 	fl_DocSectionLayout * pCurDSL = (fl_DocSectionLayout *) getCurrentBlock()->getSectionLayout();
 	//
@@ -1154,7 +1153,7 @@ void FV_View::_insertSectionBreak(void)
 	_setPoint(oldPoint);
 	_generalUpdate();
 
-	_ensureThatInsertionPointIsOnScreen();
+	_ensureInsertionPointOnScreen();
 }
 
 
@@ -1336,7 +1335,6 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 	if (bNOOP)
 	{
 		// cannot move.  should we beep?
-		_drawInsertionPoint();
 		return;
 	}
 
@@ -1392,34 +1390,32 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 		_setPoint(iNewPoint, bEOL);
 	}
 
-	_ensureThatInsertionPointIsOnScreen();
+	_ensureInsertionPointOnScreen();
 
 	// this is the only place where we override changes to m_xPointSticky
 	m_xPointSticky = xOldSticky;
 }
 
-bool FV_View::_ensureThatInsertionPointIsOnScreen(bool bDrawIP)
+/*! Scrolls the screen to make sure that the IP is on-screen.
+ * \return true iff scrolling took place
+ * Q: should this get called if there is a selection?  Does it do
+ * harm?  It may, because point may be the beginning of the selection.
+ */
+bool FV_View::_ensureInsertionPointOnScreen()
 {
-	xxx_UT_DEBUGMSG(("FV_View::_ensureThatInsertionPointIsOnScreen called\n"));
+	xxx_UT_DEBUGMSG(("FV_View::_ensureInsertionPointOnScreen called\n"));
+
+	// Some short circuit tests to avoid doing bad things.
+	if (m_iWindowHeight <= 0)
+		return false;
+
+    // If == 0 no layout information is present. Don't scroll.
+	if(m_iPointHeight == 0)
+		return false;
+
+	xxx_UT_DEBUGMSG(("_ensure: [xp %ld][yp %ld][ph %ld] [w %ld][h %ld]\n",m_xPoint,m_yPoint,m_iPointHeight,m_iWindowWidth,m_iWindowHeight));
 
 	bool bRet = false;
-
-	if (m_iWindowHeight <= 0)
-	{
-		return false;
-	}
-
-	_fixInsertionPointCoords();
-//
-// If ==0 no layout information is present. Don't scroll.
-//
-	if( m_iPointHeight == 0)
-	{
-		return false;
-	}
-
-	//UT_DEBUGMSG(("_ensure: [xp %ld][yp %ld][ph %ld] [w %ld][h %ld]\n",m_xPoint,m_yPoint,m_iPointHeight,m_iWindowWidth,m_iWindowHeight));
-
 	if (m_yPoint < 0)
 	{
 		cmdScroll(AV_SCROLLCMD_LINEUP, (UT_uint32) (-(m_yPoint)));
@@ -1444,13 +1440,22 @@ bool FV_View::_ensureThatInsertionPointIsOnScreen(bool bDrawIP)
 		cmdScroll(AV_SCROLLCMD_LINERIGHT, (UT_uint32)(m_xPoint - m_iWindowWidth + getPageViewLeftMargin()/2));
 		bRet = true;
 	}
-	if(bRet == false && bDrawIP)
-	{
-		_fixInsertionPointCoords();
-		_drawInsertionPoint();
-	}
+
+	// This used to say 'if !bRet', but I think it's cleaner to always fix,
+	// if possibly slower.  If we scroll, perhaps the scroll has already
+	// fixed, and we end up fixing twice.
+	_fixInsertionPointCoords();
 
 	return bRet;
+}
+
+/* It's unclear to me why this is used rather than ensure. -PL */
+void FV_View::_updateInsertionPoint()
+{
+	if (isSelectionEmpty())
+ 	{
+		_ensureInsertionPointOnScreen();
+	}
 }
 
 void FV_View::_moveInsPtNextPrevPage(bool bNext)
@@ -1560,9 +1565,7 @@ void FV_View::_moveInsPtNextPrevScreen(bool bNext)
 
 	if(pLine == pOrigLine)
 	{
-		// need to do this, since the caller might have erased the point and will
-		// expect us to draw in the new place
-		_ensureThatInsertionPointIsOnScreen(true);
+		_ensureInsertionPointOnScreen();
 		return;
 	}
 
@@ -1578,7 +1581,7 @@ void FV_View::_moveInsPtNextPrevScreen(bool bNext)
 		return;
 
 	moveInsPtTo(pBlock->getPosition(false) + pRun->getBlockOffset());
-	_ensureThatInsertionPointIsOnScreen(true);
+	_ensureInsertionPointOnScreen();
 }
 
 
@@ -1636,22 +1639,19 @@ void FV_View::_moveInsPtToPage(fp_Page *page)
 	bool bVScroll = false;
 	if (iPageOffset < 0)
 	{
-		_eraseInsertionPoint();
 		cmdScroll(AV_SCROLLCMD_LINEUP, (UT_uint32) (-iPageOffset));
 		bVScroll = true;
 	}
 	else if (iPageOffset > 0)
 	{
-		_eraseInsertionPoint();
 		cmdScroll(AV_SCROLLCMD_LINEDOWN, (UT_uint32)(iPageOffset));
 		bVScroll = true;
 	}
 
 	// also allow implicit horizontal scroll, if needed
-	if (!_ensureThatInsertionPointIsOnScreen(false) && !bVScroll)
+	if (!_ensureInsertionPointOnScreen() && !bVScroll)
 	{
 		_fixInsertionPointCoords();
-		_drawInsertionPoint();
 	}
 }
 
@@ -1680,10 +1680,7 @@ void FV_View::_autoScroll(UT_Worker * pWorker)
 	if (pView->getPoint() != iOldPoint)
 	{
 		// do the autoscroll
-		if (!pView->_ensureThatInsertionPointIsOnScreen(false))
-		{
-			pView->_fixInsertionPointCoords();
-		}
+		pView->_ensureInsertionPointOnScreen();
 	}
 	else
 	{
@@ -1719,23 +1716,19 @@ void FV_View::_autoScroll(UT_Worker * pWorker)
 
 			if (yPos < 0)
 			{
-				pView->_eraseInsertionPoint();
 				pView->cmdScroll(AV_SCROLLCMD_LINEUP, (UT_uint32) (-(yPos)));
 			}
 			else if (((UT_uint32) (yPos)) >= ((UT_uint32) pView->m_iWindowHeight))
 			{
-				pView->_eraseInsertionPoint();
 				pView->cmdScroll(AV_SCROLLCMD_LINEDOWN, (UT_uint32)(yPos - pView->m_iWindowHeight));
 			}
 
 			if (xPos < 0)
 			{
-				pView->_eraseInsertionPoint();
 				pView->cmdScroll(AV_SCROLLCMD_LINELEFT, (UT_uint32) (-(xPos)));
 			}
 			else if (((UT_uint32) (xPos)) >= ((UT_uint32) pView->m_iWindowWidth))
 			{
-				pView->_eraseInsertionPoint();
 				pView->cmdScroll(AV_SCROLLCMD_LINERIGHT, (UT_uint32)(xPos - pView->m_iWindowWidth));
 			}
 		}
@@ -2099,12 +2092,7 @@ FV_View::_findReplace(const UT_UCSChar* pFind, const UT_UCSChar* pReplace,
 
 		if (!isSelectionEmpty())
 		{
-			_eraseInsertionPoint();
 			_deleteSelection(&AttrProp_Before);
-		}
-		else
-		{
-			_eraseInsertionPoint();
 		}
 
 		// If we have a string with length, do an insert, else let it
@@ -2346,7 +2334,6 @@ void FV_View::_extSelToPos(PT_DocPosition iNewPoint)
 	if (isSelectionEmpty())
 	{
 		_resetSelection();
-		_drawInsertionPoint();
 	}
 
 	notifyListeners(AV_CHG_MOTION);
@@ -2557,10 +2544,10 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 								  fl_BlockLayout** ppBlock,
 								  fp_Run** ppRun) const
 {
-	UT_sint32 xPoint;
-	UT_sint32 yPoint;
-	UT_sint32 xPoint2;
-	UT_sint32 yPoint2;
+	UT_sint32 xPoint = 0;
+	UT_sint32 yPoint = 0;
+	UT_sint32 xPoint2 = 0;
+	UT_sint32 yPoint2 = 0;
 	UT_sint32 iPointHeight;
 
 	// Get the previous block in the document. _findBlockAtPosition
@@ -2694,220 +2681,24 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 
 void FV_View::_fixInsertionPointCoords()
 {
-	_eraseInsertionPoint();
 	if( getPoint() )
 	{
 		_findPositionCoords(getPoint(), m_bPointEOL, m_xPoint, m_yPoint, m_xPoint2, m_yPoint2, m_iPointHeight, m_bPointDirection, NULL, NULL);
 	}
+
+	fp_Page * pPage = getCurrentPage();
+	UT_RGBColor * pClr = NULL;
+	if (pPage)
+		pClr = pPage->getOwningSection()->getPaperColor();
+
+	m_pG->getCaret()->setCoords(m_xPoint, m_yPoint, m_iPointHeight,
+					  m_xPoint2, m_yPoint2, m_iPointHeight, 
+					  m_bPointDirection, pClr);
+
 	xxx_UT_DEBUGMSG(("SEVIOR: m_yPoint = %d m_iPointHeight = %d \n",m_yPoint,m_iPointHeight));
-	_saveCurrentPoint();
 	// hang onto this for _moveInsPtNextPrevLine()
 	m_xPointSticky = m_xPoint + m_xScrollOffset - getPageViewLeftMargin();
 }
-
-void FV_View::_updateInsertionPoint()
-{
-	if (isSelectionEmpty())
- 	{
-		if (!_ensureThatInsertionPointIsOnScreen())
-		{
-			_fixInsertionPointCoords();
-			_drawInsertionPoint();
-		}
-	}
-}
-
-bool FV_View::_hasPointMoved(void)
-{
-	if( m_xPoint == m_oldxPoint && m_yPoint == m_oldyPoint && m_iPointHeight ==  m_oldiPointHeight)
-	{
-		return false;
-	}
-
-	return true;
-}
-
-void  FV_View::_saveCurrentPoint(void)
-{
-	m_oldxPoint = m_xPoint;
-	m_oldyPoint = m_yPoint;
-	m_oldiPointHeight = m_iPointHeight;
-	m_oldxPoint2 = m_xPoint2;
-	m_oldyPoint2 = m_yPoint2;
-}
-
-void  FV_View::_clearOldPoint(void)
-{
-	m_oldxPoint = -1;
-	m_oldyPoint = -1;
-	m_oldiPointHeight = 0;
-	m_oldxPoint2 = -1;
-	m_oldyPoint2 = -1;
-}
-
-void FV_View::_actuallyXorInsertionPoint()
-{
-	m_pG->xorLine(m_xPoint-1, m_yPoint+1, m_xPoint-1, m_yPoint + m_iPointHeight+1);
-	m_pG->xorLine(m_xPoint, m_yPoint+1, m_xPoint, m_yPoint + m_iPointHeight+1);
-}
-
-void FV_View::_xorInsertionPoint()
-{
-	if (NULL == getCurrentPage())
-		return;
-
-	UT_ASSERT(getCurrentPage()->getOwningSection());
-
-	if (m_iPointHeight > 0)
-	{
-		fp_Page * pPage = getCurrentPage();
-
-		if (pPage)
-		{
-			UT_RGBColor * pClr = pPage->getOwningSection()->getPaperColor();
-			m_pG->setColor(*pClr);
-		}
-
-		if (m_bCursorIsOn)
-		{
-			if (!m_pG->restoreCachedImage())
-				_actuallyXorInsertionPoint();
-		}
-		else
-		{
-			UT_Rect r(m_xPoint-1, m_yPoint+1, 1, m_iPointHeight);
-			m_pG->storeCachedImage(&r);
-			_actuallyXorInsertionPoint();
-		}
-		m_bCursorIsOn = !m_bCursorIsOn;
-
-		if((m_xPoint != m_xPoint2) || (m_yPoint != m_yPoint2))
-		{
-			// #TF the caret will have a small flag at the top indicating the direction of
-			// writing
-			if(m_bPointDirection) //rtl flag
-			{
-				m_pG->xorLine(m_xPoint-3, m_yPoint+1, m_xPoint-1, m_yPoint+1);
-				m_pG->xorLine(m_xPoint-2, m_yPoint+2, m_xPoint-1, m_yPoint+2);
-			}
-			else
-			{
-				m_pG->xorLine(m_xPoint+1, m_yPoint+1, m_xPoint+3, m_yPoint+1);
-				m_pG->xorLine(m_xPoint+1, m_yPoint+2, m_xPoint+2, m_yPoint+2);
-			}
-
-
-			//this is the second caret on ltr-rtl boundary
-			m_pG->xorLine(m_xPoint2-1, m_yPoint2+1, m_xPoint2-1, m_yPoint2 + m_iPointHeight + 1);
-			m_pG->xorLine(m_xPoint2, m_yPoint2+1, m_xPoint2, m_yPoint2 + m_iPointHeight + 1);
-			//this is the line that links the two carrets
-			m_pG->xorLine(m_xPoint, m_yPoint + m_iPointHeight + 1, m_xPoint2, m_yPoint2 + m_iPointHeight + 1);
-
-			if(m_bPointDirection)
-			{
-				m_pG->xorLine(m_xPoint2+1, m_yPoint2+1, m_xPoint2+3, m_yPoint2+1);
-				m_pG->xorLine(m_xPoint2+1, m_yPoint2+2, m_xPoint2+2, m_yPoint2+2);
-			}
-			else
-			{
-				m_pG->xorLine(m_xPoint2-3, m_yPoint2+1, m_xPoint2-1, m_yPoint2+1);
-				m_pG->xorLine(m_xPoint2-2, m_yPoint2+2, m_xPoint2-1, m_yPoint2+2);
-			}
-		}
-	}
-	if(_hasPointMoved() == true)
-	{
-		m_bCursorIsOn = true;
-	}
-	_saveCurrentPoint();
-}
-
-
-void FV_View::_eraseInsertionPoint()
-{
-	xxx_UT_DEBUGMSG(("_eraseInsertionPointCalled()\n"));
-	m_bEraseSaysStopBlinking = true;
-	if (_hasPointMoved() == true)
-	{
-		UT_DEBUGMSG(("Insertion Point has moved before erasing \n"));
-		if (m_pAutoCursorTimer)
-			m_pAutoCursorTimer->stop();
-		m_bCursorIsOn = false;
-		_saveCurrentPoint();
-		return;
-	}
-
-	//	if (m_pAutoCursorTimer)
-	//		m_pAutoCursorTimer->stop();
-
-
-	if (m_bCursorIsOn && isSelectionEmpty())
-	{
-		_xorInsertionPoint();
-	}
-	m_bCursorIsOn = false;
-}
-
-void FV_View::_drawInsertionPoint()
-{
-//	CHECK_WINDOW_SIZE
-	xxx_UT_DEBUGMSG(("_drawInsertionPointCalled()\n"));
-
-	if(m_focus==AV_FOCUS_NONE || !shouldScreenUpdateOnGeneralUpdate())
-	{
-		return;
-	}
-	if (m_bCursorBlink && (m_focus==AV_FOCUS_HERE || m_focus==AV_FOCUS_MODELESS || AV_FOCUS_NEARBY))
-	{
-		if (m_pAutoCursorTimer == NULL)
-		{
-			m_pAutoCursorTimer = UT_Timer::static_constructor(_autoDrawPoint, this, m_pG);
-			m_pAutoCursorTimer->set(AUTO_DRAW_POINT);
-			m_bCursorIsOn = false;
-		}
-		m_pAutoCursorTimer->stop();
-		m_pAutoCursorTimer->start();
-	}
-	m_bEraseSaysStopBlinking = false;
-	if (m_iWindowHeight <= 0)
-	{
-		return;
-	}
-
-	if (!isSelectionEmpty())
-	{
-		return;
-	}
-	UT_ASSERT(m_bCursorIsOn == false);
-	if (m_bCursorIsOn == false)
-	{
-		_xorInsertionPoint();
-	}
-}
-
-void FV_View::_autoDrawPoint(UT_Worker * pWorker)
-{
-	UT_ASSERT(pWorker);
-	xxx_UT_DEBUGMSG(("FV_View::_autoDrawPoint()\n"));
-	FV_View * pView = (FV_View *) pWorker->getInstanceData();
-	UT_ASSERT(pView);
-
-	if (pView->m_iWindowHeight <= 0)
-	{
-		return;
-	}
-
-	if (!pView->isSelectionEmpty())
-	{
-		return;
-	}
-	if (pView->m_bEraseSaysStopBlinking == false)
-	{
-		pView->_xorInsertionPoint();
-		xxx_UT_DEBUGMSG(("FV_View::_autoDrawPoint(): erase does not say stop blinking\n"));
-	}
-}
-
 
 void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 					UT_sint32 width, UT_sint32 height,
@@ -3195,16 +2986,29 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 
 void FV_View::_setPoint(PT_DocPosition pt, bool bEOL)
 {
+	bool bWasSelectionEmpty = isSelectionEmpty();
+
 	if (!m_pDoc->getAllowChangeInsPoint())
 	{
 		return;
 	}
 	m_iInsPoint = pt;
 	m_bPointEOL = bEOL;
+	_fixInsertionPointCoords();
 	if(!m_pDoc->isPieceTableChanging())
 	{
 		m_pLayout->considerPendingSmartQuoteCandidate();
 		_checkPendingWordForSpell();
+	}
+
+	// So, if there is a selection now, we should disable the cursor; conversely,
+	// if there is no longer a selection, we should enable the cursor.
+	if (bWasSelectionEmpty != isSelectionEmpty())
+	{
+		if (isSelectionEmpty())
+			m_pG->getCaret()->enable();
+		else
+			m_pG->getCaret()->disable();
 	}
 }
 
@@ -3245,9 +3049,7 @@ FV_View::_checkPendingWordForSpell(void)
 				// recalculated. In other words, make the world a
 				// better place by adding requestUpdateScreen or
 				// similar.
-				_eraseInsertionPoint();
 				updateScreen();
-				_drawInsertionPoint();
 			}
 		}
 	}
@@ -3296,7 +3098,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 	_findPositionCoords(m_iInsPoint, false, xold, yold, x2old,y2old,uheight, bDirection, &pBlock, &pRun);
 	if (bForward)
 	{
-		m_iInsPoint += countChars;
+		_setPoint(m_iInsPoint + countChars);
 		_findPositionCoords(m_iInsPoint-1, false, x, y, x2,y2,uheight, bDirection, &pBlock, &pRun);
 //
 // If we come to a table boundary we have doc positions with no blocks.
@@ -3306,18 +3108,18 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 		while(m_iInsPoint <= posEOD && (pRun == NULL || ((x == xold) && (y == yold) &&
 														 (x2 == x2old) && (y2 == y2old))))
 		{
-			m_iInsPoint++;
+			_setPoint(m_iInsPoint+1);
 			_findPositionCoords(m_iInsPoint-1, false, x, y, x2,y2,uheight, bDirection, &pBlock, &pRun);
 			bExtra = true;
 		}
 		if(bExtra)
 		{
-			m_iInsPoint--;
+			_setPoint(m_iInsPoint-1);
 		}
 #if 0
 		while(pRun != NULL &&  pRun->isField() && m_iInsPoint <= posEOD)
 		{
-			m_iInsPoint++;
+			_setPoint(m_iInsPoint+1);
 			if(m_iInsPoint <= posEOD)
 			{
 				_findPositionCoords(m_iInsPoint, false, x, y, x2,y2,uheight, bDirection, &pBlock, &pRun);
@@ -3327,7 +3129,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 	}
 	else
 	{
-		m_iInsPoint -= countChars;
+		_setPoint(m_iInsPoint - countChars);
 		_findPositionCoords(m_iInsPoint, false, x, y, x2,y2,uheight, bDirection, &pBlock, &pRun);
 //
 // If we come to a table boundary we have doc positions with no blocks.
@@ -3337,20 +3139,20 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 		while( m_iInsPoint >= posBOD && (pRun == NULL || ((x == xold) && (y == yold) &&
 														 (x2 == x2old) && (y2 == y2old))))
 		{
-			m_iInsPoint--;
+			_setPoint(m_iInsPoint-1);
 			_findPositionCoords(m_iInsPoint-1, false, x, y, x2,y2,uheight, bDirection, &pBlock, &pRun);
 			bExtra = true;
 		}
 		if(bExtra)
 		{
-			m_iInsPoint--;
+			_setPoint(m_iInsPoint-1);
 		}
 #if 0
 // Needed for piecetable fields - we don't have these in 1.0
 
 		while(pRun != NULL && pRun->isField() && m_iInsPoint >= posBOD)
 		{
-			m_iInsPoint--;
+			_setPoint(m_iInsPoint-1);
 			_findPositionCoords(m_iInsPoint-1, false, x, y, x2,y2,uheight, bDirection, &pBlock, &pRun);
 		}
 #endif
@@ -3360,7 +3162,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 		if(pRun && pRun->getType() == FPRUN_ENDOFPARAGRAPH
 		   && (pRun->getBlockOffset() + pRun->getBlock()->getPosition()) < m_iInsPoint)
 		{
-			m_iInsPoint--;
+			_setPoint(m_iInsPoint-1);
 		}
 	}
 
@@ -3397,7 +3199,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 			pRun = pRun->getNext();
 		if(pRun)
 		{
-			m_iInsPoint = 1 + pBlock->getPosition(false) + pRun->getBlockOffset();
+			_setPoint(1 + pBlock->getPosition(false) + pRun->getBlockOffset());
 		}
 		else
 		{
@@ -3414,19 +3216,19 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 	// to its end if the position does not fall into that run
 	if(!bForward && (iRunEnd <= m_iInsPoint))
 	{
-		m_iInsPoint = iRunEnd - 1;
+		_setPoint(iRunEnd - 1);
 	}
 
 
 	if ((UT_sint32) m_iInsPoint < (UT_sint32) posBOD)
 	{
-		m_iInsPoint = posBOD;
+		_setPoint(posBOD);
 		bRes = false;
 	}
 	else if ((UT_sint32) m_iInsPoint > (UT_sint32) posEOD)
 	{
 		m_bPointEOL = true;
-		m_iInsPoint = posEOD;
+		_setPoint(posEOD);
 		bRes = false;
 	}
 
@@ -3437,7 +3239,8 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 		_clearIfAtFmtMark(posOld);
 		notifyListeners(AV_CHG_MOTION);
 	}
-	UT_DEBUGMSG(("SEVIOR: Point = %d \n",getPoint()));
+	xxx_UT_DEBUGMSG(("SEVIOR: Point = %d \n",getPoint()));
+	_fixInsertionPointCoords();
 	return bRes;
 }
 
@@ -3448,8 +3251,6 @@ void FV_View::_doPaste(bool bUseClipboard, bool bHonorFormatting)
 
 	if (!isSelectionEmpty())
 		_deleteSelection();
-	else
-		_eraseInsertionPoint();
 
 	_clearIfAtFmtMark(getPoint());
 	PD_DocumentRange dr(m_pDoc,getPoint(),getPoint());
@@ -3808,22 +3609,7 @@ void FV_View::_prefsListener( XAP_App * /*pApp*/, XAP_Prefs *pPrefs, UT_StringPt
 					 pView->m_bCursorIsOn ? "TRUE" : "FALSE"));
 
 		pView->m_bCursorBlink = b;
-
-		if ( pView->m_bCursorBlink )
-		{
-			// start the cursor blinking
-			pView->_eraseInsertionPoint();
-			pView->_drawInsertionPoint();
-		}
-		else
-		{
-			// stop blinking and make sure the cursor is drawn
-			if ( pView->m_pAutoCursorTimer )
-				pView->m_pAutoCursorTimer->stop();
-
-			if ( !pView->m_bCursorIsOn )
-				pView->_drawInsertionPoint();
-		}
+		pView->m_pG->getCaret()->setBlink(b);
 	}
 
 
@@ -4002,6 +3788,39 @@ void FV_View::_removeThisHdrFtr(fl_HdrFtrSectionLayout * pHdrFtr)
 	m_pDoc->changeStruxFmt(PTC_RemoveFmt,posDSL,posDSL,(const XML_Char **) remFmt,NULL,PTX_Section);
 }
 
+void FV_View::_cmdEditHdrFtr(HdrFtrType hfType)
+{
+	if(isHdrFtrEdit())
+		clearHdrFtrEdit();
+	fp_Page * pPage = getCurrentPage();
+//
+// If there is no header/footer, insert it and start to edit it.
+//
+	fl_HdrFtrShadow * pShadow = NULL;
+	fp_ShadowContainer * pHFCon = NULL;
+	pHFCon = pPage->getHdrFtrP(hfType);
+	if(pHFCon == NULL)
+	{
+		insertHeaderFooter(hfType);
+		return;
+	}
+	pShadow = pHFCon->getShadow();
+	UT_ASSERT(pShadow);
+//
+// Put the insertion point at the beginning of the header
+//
+	fl_BlockLayout * pBL = (fl_BlockLayout *) pShadow->getFirstLayout();
+	if (!isSelectionEmpty())
+		_clearSelection();
+
+	_setPoint(pBL->getPosition());
+//
+// Set Header/footer mode and we're done! Easy :-)
+//
+	setHdrFtrEdit(pShadow);
+	_generalUpdate();
+	_updateInsertionPoint();
+}
 
 
 /*	the problem with using bool to store the PT state is that

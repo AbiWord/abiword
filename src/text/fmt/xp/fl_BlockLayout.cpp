@@ -150,7 +150,6 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 	  m_iNeedsReformat(0),
 	  m_bNeedsRedraw(false),
 	  m_bFixCharWidths(false),
-	  m_bCursorErased(false),
 	  m_bIsHdrFtr(bIsHdrFtr),
 	  m_pBreaker(pBreaker),
 	  m_pFirstRun(NULL),
@@ -1188,14 +1187,6 @@ fl_BlockLayout::_insertEndOfParagraphRun(void)
 {
 	UT_ASSERT(!m_pFirstRun);
 
-#if 0 // FIXME: Surely should also insert it again!?
-	FV_View* ppView = getView();
-	if (ppView)
-	{
-		ppView->eraseInsertionPoint();
-	}
-#endif
-
 	GR_Graphics* pG = m_pLayout->getGraphics();
 	fp_EndOfParagraphRun* pEOPRun = new fp_EndOfParagraphRun(this, pG, 0, 0);
 	m_pFirstRun = pEOPRun;
@@ -1360,18 +1351,6 @@ void fl_BlockLayout::format()
 	_assertRunListIntegrity();
 	fp_Run *pRunToStartAt = NULL;
 
-	// Remember state of cursor
-	m_bCursorErased = false;
-
-	FV_View* pView = getView();
-	if (pView)
-	{
-		if (pView->isCursorOn() == true && !isHdrFtr())
-		{
-			pView->eraseInsertionPoint();
-			m_bCursorErased = true;
-		}
-	}
 	// TODO -- is this really needed?
 	// is should not be, since _lookupProperties is explicitely called
 	// by our listeners when the format changes
@@ -1468,13 +1447,6 @@ void fl_BlockLayout::format()
 
 	// Paragraph has been reformatted.
 	m_iNeedsReformat = -1;
-	// Redraw cursor if necessary
-	if (m_bCursorErased == true)
-	{
-		pView->_fixInsertionPointCoords();
-		pView->drawInsertionPoint();
-		m_bCursorErased = false;
-	}
 
 	_assertRunListIntegrity();
 	m_bIsCollapsed = false;
@@ -1502,11 +1474,6 @@ void fl_BlockLayout::redrawUpdate()
 //
 // This can happen from the new deleteStrux code
 //
-
-	m_bCursorErased = false;
-	FV_View* pView = getView();
-	UT_ASSERT (pView);
-
 	bool bFirstLineOn = false;
 	bool bLineOff = false;
 	
@@ -1526,11 +1493,6 @@ void fl_BlockLayout::redrawUpdate()
 	{
 		if (pLine->needsRedraw())
 		{
-			if (pView->isCursorOn()== true)
-			{
-				pView->eraseInsertionPoint();
-				m_bCursorErased = true;
-			}
 			bLineOff = pLine->redrawUpdate();
 			bFirstLineOn |= bLineOff;
 		}
@@ -1547,12 +1509,6 @@ void fl_BlockLayout::redrawUpdate()
 	m_bNeedsRedraw = false;
 
 	//	_lookupProperties();
-
-	if(m_bCursorErased == true)
-	{
-		pView->drawInsertionPoint();
-		m_bCursorErased = false;
-	}
 }
 
 fp_Container* fl_BlockLayout::getNewContainer(fp_Container * /* pCon*/)
@@ -2372,9 +2328,7 @@ fl_BlockLayout::checkSpelling(void)
 	// Finally update screen
 	if (bIsOnScreen && bUpdateScreen && pView)
 	{
-		//pView->_eraseInsertionPoint(); // this is done inside updateScreen()
 		pView->updateScreen();
-		//pView->_drawInsertionPoint();
 	}
 }
 
@@ -2393,16 +2347,7 @@ fl_BlockLayout::_checkMultiWord(const UT_UCSChar* pBlockText,
 {
 	xxx_UT_DEBUGMSG(("fl_BlockLayout::_checkMultiWord\n"));
 
-	bool bEnableIP = false, bScreenUpdated = false;
-	// If asked to toggle the IP, erase it on entry and
-	// only reenable it on exit if there have been no
-	// screen updates
-	FV_View* pView = getView();
-	if (bToggleIP && pView)
-	{
-		pView->_eraseInsertionPoint();
-		bEnableIP = true;
-	}
+	bool bScreenUpdated = false;
 
 	UT_uint32 wordBeginning = iStart;
 	while (wordBeginning < eor)
@@ -2465,12 +2410,6 @@ fl_BlockLayout::_checkMultiWord(const UT_UCSChar* pBlockText,
 
 			wordBeginning += (wordLength + 1);
 		}
-	}
-
-	// Reenable IP if screen wasn't updated
-	if (!bScreenUpdated && bEnableIP)
-	{
-		pView->_drawInsertionPoint();
 	}
 
 	return bScreenUpdated;
@@ -2629,9 +2568,6 @@ bool fl_BlockLayout::doclistener_populateSpan(const PX_ChangeRecord_Span * pcrs,
 {
 	_assertRunListIntegrity();
 
-	FV_View* pView = getView();
-	if(pView)
-		pView->eraseInsertionPoint();
 	PT_BufIndex bi = pcrs->getBufIndex();
 	if(getPrev()!= NULL && getPrev()->getLastContainer()==NULL)
 	{
@@ -2748,15 +2684,10 @@ bool fl_BlockLayout::doclistener_populateSpan(const PX_ChangeRecord_Span * pcrs,
 
 bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len)
 {
-	FV_View* pView = getView();
-	if(pView)
-		pView->eraseInsertionPoint();
-
 	xxx_UT_DEBUGMSG(("_doInsertTextSpan: offset %d, len %d\n", blockOffset, len));
 	PT_BlockOffset curOffset = blockOffset;
 	const UT_UCSChar* pSpan;
 	UT_uint32 lenSpan = 0;
-	UT_uint32 iWhileCount = 0;
 
 	while(len > curOffset - blockOffset)
 	{
@@ -3227,11 +3158,6 @@ bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 	UT_uint32 len = pNewRun->getLength();
 
 	_assertRunListIntegrity();
-
-
-	FV_View* ppView = getView();
-	if(ppView)
-		ppView->eraseInsertionPoint();
 
 	m_gbCharWidths.ins(blockOffset, len);
 	if (pNewRun->getType() == FPRUN_TEXT)
@@ -4069,13 +3995,6 @@ bool fl_BlockLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange *
 
 	UT_ASSERT(pcrxc->getType()==PX_ChangeRecord::PXT_ChangeStrux);
 
-	FV_View* ppView = getView();
-	if(ppView && !isHdrFtr())
-	{
-		ppView->eraseInsertionPoint();
-		m_bCursorErased = true;
-	}
-
 	// erase the old version
 	if(!isHdrFtr())
 	{
@@ -4129,7 +4048,6 @@ bool fl_BlockLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange *
 
 //	This was...
 	setNeedsReformat();
-	m_bCursorErased = false;
 
 	_assertRunListIntegrity();
 
@@ -4171,10 +4089,6 @@ bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
 	UT_ASSERT(pcrx->getType()==PX_ChangeRecord::PXT_InsertStrux);
 	UT_ASSERT(pcrx->getStruxType()==PTX_Block);
 
-	FV_View* ppView = getView();
-	if(ppView)
-		ppView->eraseInsertionPoint();
-
 	fl_SectionLayout* pSL = (fl_SectionLayout *) myContainingLayout();
 	UT_ASSERT(pSL);
 	fl_BlockLayout* pNewBL = (fl_BlockLayout *) pSL->insert(sdh, this, pcrx->getIndexAP(),FL_CONTAINER_BLOCK);
@@ -4191,9 +4105,6 @@ bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
 	// The newly returned block will contain a line and EOP. Delete those
 	// since the code below expects an empty block
 	pNewBL->_purgeEndOfParagraphRun();
-
-	if(ppView)
-		ppView->eraseInsertionPoint();
 
 	// Must call the bind function to complete the exchange
 	// of handles with the document (piece table) *** before ***
@@ -4871,10 +4782,6 @@ bool fl_BlockLayout::doclistener_deleteObject(const PX_ChangeRecord_Object * pcr
 
 	PT_BlockOffset blockOffset = 0;
 
-	FV_View* ppView = getView();
-	if(ppView)
-		ppView->eraseInsertionPoint();
-
 	switch (pcro->getObjectType())
 	{
 		case PTO_Image:
@@ -4942,7 +4849,6 @@ bool fl_BlockLayout::doclistener_changeObject(const PX_ChangeRecord_ObjectChange
 
 	_assertRunListIntegrity();
 
-	FV_View* pView = getView();
 	PT_BlockOffset blockOffset = 0;
 	switch (pcroc->getObjectType())
 	{
@@ -4974,7 +4880,6 @@ bool fl_BlockLayout::doclistener_changeObject(const PX_ChangeRecord_ObjectChange
 				fp_ImageRun* pImageRun = static_cast<fp_ImageRun*>(pRun);
 				if(!isHdrFtr())
 				{
-					pView->_eraseInsertionPoint();
 					pImageRun->clearScreen();
 				}
 				pImageRun->lookupProperties();
@@ -5011,7 +4916,6 @@ bool fl_BlockLayout::doclistener_changeObject(const PX_ChangeRecord_ObjectChange
 				fp_FieldRun* pFieldRun = static_cast<fp_FieldRun*>(pRun);
 				if(!isHdrFtr())
 				{
-					pView->_eraseInsertionPoint();
 					pFieldRun->clearScreen();
 				}
 				pFieldRun->lookupProperties();
@@ -5031,10 +4935,6 @@ bool fl_BlockLayout::doclistener_changeObject(const PX_ChangeRecord_ObjectChange
 
  done:
 	setNeedsReformat(blockOffset);
-	if (pView && (pView->isActive() || pView->isPreview()))
-	{
-		pView->_drawInsertionPoint();
-	}
 
 	_assertRunListIntegrity();
 
@@ -5736,9 +5636,7 @@ fl_BlockLayout::recheckIgnoredWords(void)
 	FV_View* pView = getView();
 	if (bUpdate && pView)
 	{
-		pView->_eraseInsertionPoint();
 		pView->updateScreen();
-		pView->_drawInsertionPoint();
 	}
 }
 
@@ -5839,7 +5737,6 @@ void fl_BlockLayout::remItemFromList(void)
 		currLevel =0; // was currLevel--;
 		sprintf(buf, "%i", currLevel);
 		setStopping(false);
-		pView->_eraseInsertionPoint();
 		fl_BlockLayout * pNext = (fl_BlockLayout *) getNext();
 		if (currLevel == 0)
 		{
@@ -5853,7 +5750,6 @@ void fl_BlockLayout::remItemFromList(void)
 		sprintf(lid, "%i", id);
 
 		setStopping(false);
-		pView->_eraseInsertionPoint();
 		format();
 		//
 		// Set formatiing to match the next paragraph if it exists
@@ -5936,10 +5832,7 @@ void fl_BlockLayout::remItemFromList(void)
 
 		pView->AV_View::notifyListeners(AV_CHG_FMTBLOCK);
 		pView->_fixInsertionPointCoords();
-		//	pView->_generalUpdate();
-		pView->_drawInsertionPoint();
 		FREEP(props);
-
 	}
 }
 
@@ -6184,7 +6077,6 @@ void	fl_BlockLayout::StartList( List_Type lType, UT_uint32 start,const XML_Char 
 
 	FV_View* pView = getView();
 	UT_ASSERT(pView);
-	pView->_eraseInsertionPoint();
 
 	pAutoNum = m_pDoc->getListByID(id);
 	xxx_UT_DEBUGMSG(("SEVIOR: found autonum %x from id %d \n",pAutoNum,id));
@@ -6255,14 +6147,11 @@ void	fl_BlockLayout::StartList( List_Type lType, UT_uint32 start,const XML_Char 
 	props[i] = (XML_Char *) NULL;
 	setStarting( false);
 	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, getPosition(), getPosition(), attribs, props, PTX_Block);
-	//pView->_ensureThatInsertionPointIsOnScreen();
-	//pView->_eraseInsertionPoint();
-
 
 	pView->_generalUpdate();
 	m_pDoc->listUpdate(getStruxDocHandle());
 	pView->_generalUpdate();
-	pView->_ensureThatInsertionPointIsOnScreen();
+	pView->_ensureInsertionPointOnScreen();
 	FREEP(attribs);
 	FREEP(props);
 }
@@ -6302,7 +6191,6 @@ void	fl_BlockLayout::StopListInBlock(void)
 	sprintf(lid, "%i", id);
 
 	setStopping(false);
-	pView->_eraseInsertionPoint();
 	//
 	// Set formatting to match the next paragraph if it exists
 	//
@@ -6515,11 +6403,7 @@ void	fl_BlockLayout::StopListInBlock(void)
 	{
 		pView->_generalUpdate();
 	}
-	if (!pView->_ensureThatInsertionPointIsOnScreen())
-	{
-		pView->_fixInsertionPointCoords();
-		pView->_drawInsertionPoint();
-	}
+	pView->_ensureInsertionPointOnScreen();
 	FREEP(props);
 }
 
@@ -6715,7 +6599,6 @@ void  fl_BlockLayout::prependList( fl_BlockLayout * nextList)
 	m_bStopList = false;
 	FV_View* pView = getView();
 	UT_ASSERT(pView);
-	pView->_eraseInsertionPoint();
 	m_bListLabelCreated = false;
 	m_pDoc->changeStruxFmt(PTC_AddFmt, getPosition(), getPosition(), attribs, props, PTX_Block);
 	m_bListItem = true;
@@ -6760,7 +6643,6 @@ void  fl_BlockLayout::resumeList( fl_BlockLayout * prevList)
 	m_bStopList = false;
 	FV_View* pView = getView();
 	UT_ASSERT(pView);
-	pView->_eraseInsertionPoint();
 	m_bListLabelCreated = false;
 	m_pDoc->changeStruxFmt(PTC_AddFmt, getPosition(), getPosition(), attribs, props, PTX_Block);
 	m_bListItem = true;
@@ -6797,7 +6679,6 @@ void fl_BlockLayout::listUpdate(void)
 		pView->_generalUpdate();
 		pView->_fixInsertionPointCoords();
 		pView->updateScreen();
-		pView->drawInsertionPoint();
 	}
 
 }
@@ -6940,11 +6821,7 @@ void fl_BlockLayout::_createListLabel(void)
 	}
 	pView->_generalUpdate();
 
-	if (!pView->_ensureThatInsertionPointIsOnScreen())
-	{
-		pView->_fixInsertionPointCoords();
-		pView->_drawInsertionPoint();
-	}
+	pView->_ensureInsertionPointOnScreen();
 	m_bListLabelCreated = true;
 }
 
@@ -7154,20 +7031,14 @@ fl_BlockLayout::debugFlashing(void)
 		m_pSquiggles->add(pPOB);
 		m_pSquiggles->clear(pPOB);
 
-		pView->_eraseInsertionPoint();
 		pView->updateScreen();
-		pView->_drawInsertionPoint();
 		UT_usleep(250000);
 
 		//_deleteSquiggles(0, eor);
 
-		pView->_eraseInsertionPoint();
 		pView->updateScreen();
-		pView->_drawInsertionPoint();
 	}
 
-	pView->_eraseInsertionPoint();
 	pView->updateScreen();
-	pView->_drawInsertionPoint();
 #endif
 }

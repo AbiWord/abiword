@@ -58,4 +58,3 @@ libFmt_a_SOURCES= \
 	fg_GraphicVector.cpp		\
 	fb_ColumnBreaker.cpp		
 
-#	fv_Caret.cpp			\

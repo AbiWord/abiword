@@ -36,9 +36,6 @@
 #include "fl_SectionLayout.h"
 #include "pp_Revision.h"
 
-// number of milliseconds between cursor blinks
-const int AUTO_DRAW_POINT = 600;
-
 #define AUTO_SCROLL_MSECS	100
 
 class FL_DocLayout;
@@ -146,6 +143,7 @@ class ABI_EXPORT FV_View : public AV_View
 	friend class fl_BlockLayout;
 	friend class fl_Squiggles;
 	friend class fl_DocSectionLayout;
+	friend class GR_Caret;
 
 public:
 	FV_View(XAP_App*, void*, FL_DocLayout*);
@@ -227,10 +225,6 @@ public:
 	bool	setSectionFormat(const XML_Char * properties[]);
 	bool	getSectionFormat(const XML_Char *** properties);
 
-	bool	isCursorOn(void);
-	void	eraseInsertionPoint(void);
-	void	drawInsertionPoint(void);
-
 	bool	setBlockIndents(bool doLists, double indentChange, double page_size);
 	bool	setBlockFormat(const XML_Char * properties[]);
 	bool	getBlockFormat(const XML_Char *** properties,bool bExpandStyles=true);
@@ -258,8 +252,6 @@ public:
 
 	void	setDontChangeInsPoint(void);
 	void	allowChangeInsPoint(void);
-	bool	isDontChangeInsPoint(void);
-
 
 	bool	setCharFormat(const XML_Char * properties[], const XML_Char * attribs[] = NULL);
 	bool	getCharFormat(const XML_Char *** properties,bool bExpandStyles=true);
@@ -502,7 +494,7 @@ protected:
 	void				_drawBetweenPositions(PT_DocPosition left, PT_DocPosition right);
 	bool				_clearBetweenPositions(PT_DocPosition left, PT_DocPosition right, bool bFullLineHeightRect);
 
-	bool				_ensureThatInsertionPointIsOnScreen(bool bDrawIP = true);
+	bool				_ensureInsertionPointOnScreen();
 	void				_moveInsPtNextPrevPage(bool bNext);
 	void				_moveInsPtNextPrevScreen(bool bNext);
 	void				_moveInsPtNextPrevLine(bool bNext);
@@ -539,15 +531,8 @@ protected:
 	void				_setSelectionAnchor(void);
 	void				_deleteSelection(PP_AttrProp *p_AttrProp_Before = NULL);
 	bool				_insertFormatPair(const XML_Char * szName, const XML_Char * properties[]);
-	void				_eraseInsertionPoint();
-	void				_drawInsertionPoint();
 	void				_updateInsertionPoint();
 	void				_fixInsertionPointCoords();
-	void				_xorInsertionPoint();
-	void 				_actuallyXorInsertionPoint();
-	bool				_hasPointMoved(void);
-	void				_saveCurrentPoint(void);
-	void				_clearOldPoint(void);
 	void				_drawSelection();
 	void				_swapSelectionOrientation(void);
 	void				_extSel(UT_uint32 iOldPoint);
@@ -557,7 +542,6 @@ protected:
 	UT_UCSChar *		_lookupSuggestion(fl_BlockLayout* pBL, fl_PartOfBlock* pPOB, UT_uint32 ndx);
 
 	static void 		_autoScroll(UT_Worker * pTimer);
-	static void 		_autoDrawPoint(UT_Worker * pTimer);
 
 	// localize handling of insertion point logic
 	void				_setPoint(PT_DocPosition pt, bool bEOL = false);
@@ -570,6 +554,7 @@ protected:
 
 	bool				_isSpaceBefore(PT_DocPosition pos);
 	void				_removeThisHdrFtr(fl_HdrFtrSectionLayout * pHdrFtr);
+	void 				_cmdEditHdrFtr(HdrFtrType hfType);
 
 	UT_Error			_deleteBookmark(const char* szName, bool bSignal, PT_DocPosition &i, PT_DocPosition &j);
 	UT_Error			_deleteHyperlink(PT_DocPosition &i, bool bSignal);
@@ -589,15 +574,10 @@ private:
 	//change to the signature of findPointCoords
 	UT_sint32			m_xPoint2;
 	UT_sint32			m_yPoint2;
-	UT_sint32			m_oldxPoint2;
-	UT_sint32			m_oldyPoint2;
 	bool			    m_bPointDirection;
 	bool				m_bDefaultDirectionRtl;
 	bool				m_bUseHebrewContextGlyphs;
 	UT_uint32			m_iPointHeight;
-	UT_sint32			m_oldxPoint;
-	UT_sint32			m_oldyPoint;
-	UT_uint32			m_oldiPointHeight;
 	UT_sint32			m_xPointSticky; 	// used only for _moveInsPtNextPrevLine()
 
 	bool				m_bPointVisible;
@@ -617,7 +597,6 @@ private:
 	UT_sint32			m_xLastMouse;
 	UT_sint32			m_yLastMouse;
 
-	UT_Timer *			m_pAutoCursorTimer;
 	bool				m_bCursorIsOn;
 	bool				m_bEraseSaysStopBlinking;
 	bool				m_bCursorBlink;

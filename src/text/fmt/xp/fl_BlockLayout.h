@@ -457,7 +457,6 @@ protected:
 											  // is need, -1 if not
 	bool					m_bNeedsRedraw;
 	bool					m_bFixCharWidths;
-	bool								 m_bCursorErased;
 	bool								 m_bIsHdrFtr;
 	fl_CharWidths			m_gbCharWidths;
 

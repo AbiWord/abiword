@@ -52,6 +52,7 @@ public:
 	virtual UT_uint32 measureUnRemappedChar(const UT_UCSChar c);
 	virtual UT_uint32 _getResolution(void) const;
 
+	virtual void getColor(UT_RGBColor& clr);
 	virtual void setColor(const UT_RGBColor& clr);
 	virtual void setColor3D(GR_Color3D c);
 
@@ -132,6 +133,8 @@ protected:
  	// Returns a BPoint containing the modified end-point (x2, y2).
  	inline BPoint beosiseLineEnding(UT_sint32 x1, UT_sint32 y1, 
  									UT_sint32 x2, UT_sint32 y2);
+private:
+	UT_RGBColor				m_curColor;
 };
 
 BPoint GR_BeOSGraphics::beosiseLineEnding(UT_sint32 x1, UT_sint32 y1, 

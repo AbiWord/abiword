@@ -1777,10 +1777,6 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	  Upon entry to this function, pDA->yoff is the BASELINE of this run, NOT
 	  the top.
 	*/
-#ifndef NDEBUG
-	FV_View* ppView = getBlock()->getDocLayout()->getView();
-	if(ppView) UT_ASSERT(ppView && ppView->isCursorOn()==false);
-#endif
 
 	_refreshDrawBuffer();
 	xxx_UT_DEBUGMSG(("fp_TextRun::_draw (0x%x): m_iVisDirection %d, _getDirection() %d\n", this, m_iVisDirection, _getDirection()));
@@ -2191,10 +2187,6 @@ void fp_TextRun::_fillRect(UT_RGBColor& clr,
 	  Upon entry to this function, yoff is the TOP of the run,
 	  NOT the baseline.
 	*/
-#ifndef NDEBUG
-	FV_View* ppView = getBlock()->getDocLayout()->getView();
-	if(ppView) UT_ASSERT(ppView && ppView->isCursorOn()==false);
-#endif
 	// we also need to support this in printing
 	// NO! we do not and must not -- this is only used to draw selections
 	// and field background and we do not want to see these printed
@@ -2724,9 +2716,6 @@ void fp_TextRun::_drawInvisibleSpaces(UT_sint32 xoff, UT_sint32 yoff)
 	UT_uint32 iOffset = getBlockOffset();
 
 	FV_View* pView = getBlock()->getDocLayout()->getView();
-#ifndef NDEBUG
-	if(pView) UT_ASSERT(pView && pView->isCursorOn()==false);
-#endif
 	UT_uint32 iy = yoff + getAscent() * 2 / 3;
 
 	UT_sint32 i = getVisDirection() == FRIBIDI_TYPE_LTR ? 0 : iLen - 1;
@@ -2748,15 +2737,10 @@ void fp_TextRun::_drawInvisibleSpaces(UT_sint32 xoff, UT_sint32 yoff)
 
 void fp_TextRun::_drawInvisibles(UT_sint32 xoff, UT_sint32 yoff)
 {
-#ifndef NDEBUG
-	FV_View* ppView = getBlock()->getDocLayout()->getView();
-	if(ppView) UT_ASSERT(ppView && ppView->isCursorOn()==false);
-#endif
+	if (!(getGR()->queryProperties(GR_Graphics::DGP_SCREEN)))
+		return;
 
-		if (!(getGR()->queryProperties(GR_Graphics::DGP_SCREEN))){
-				return;
-		}
-		_drawInvisibleSpaces(xoff,yoff);
+	_drawInvisibleSpaces(xoff,yoff);
 }
 
 void fp_TextRun::_drawSquiggle(UT_sint32 top, UT_sint32 left, UT_sint32 right)

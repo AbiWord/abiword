@@ -306,8 +306,14 @@ void GR_MacGraphics::fillRect(UT_RGBColor& c, UT_sint32 x, UT_sint32 y, UT_sint3
     ::PaintRect ( &r );
 }
 
-void GR_MacGraphics::setColor(UT_RGBColor& clr)
+void GR_MacGraphics::getColor(UT_RGBColor& clr)
 {
+	clr = m_curColor;
+}
+
+void GR_MacGraphics::setColor(const UT_RGBColor& clr)
+{
+	m_curColor = clr;
 	RGBColor rgb;
 	
 	rgb.red = clr.m_red;

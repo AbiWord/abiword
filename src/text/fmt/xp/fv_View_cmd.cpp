@@ -98,7 +98,6 @@ void FV_View::cmdCharMotion(bool bForward, UT_uint32 count)
 	if (!isSelectionEmpty())
 	{
 		_moveToSelectionEnd(bForward);
-		_drawInsertionPoint();
 		return;
 	}
 
@@ -112,7 +111,6 @@ void FV_View::cmdCharMotion(bool bForward, UT_uint32 count)
 //
 			UT_DEBUGMSG(("SEVIOR: Reached end of document \n"));
 			m_bPointEOL = true;
-			_updateInsertionPoint();
 		}
 		else
 		{
@@ -126,18 +124,12 @@ void FV_View::cmdCharMotion(bool bForward, UT_uint32 count)
 		{
 			if(!_charMotion(bForward, count))
 			{
-				_eraseInsertionPoint();
 				_setPoint(iPoint);
 				notifyListeners(AV_CHG_MOTION);
 				return;
 			}
 		}
-		_updateInsertionPoint();
 	}
-//
-// No need to update screen for 1 seconds.
-//
-	m_pLayout->setSkipUpdates(2);
 	notifyListeners(AV_CHG_MOTION);
 
 }
@@ -497,7 +489,7 @@ bool FV_View::cmdMergeCells(PT_DocPosition posSource, PT_DocPosition posDestinat
 	posDestination = findCellPosAt(posTable,dTop,dLeft) +2;
 	setPoint(posDestination);
 //	_charMotion(true,1);
-	_ensureThatInsertionPointIsOnScreen();
+	_ensureInsertionPointOnScreen();
 	return true;
 }
 
@@ -558,10 +550,6 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 		PP_AttrProp AttrProp_Before;
 		_deleteSelection(&AttrProp_Before);
 		m_pDoc->endUserAtomicGlob();
-	}
-	else
-	{
-		_eraseInsertionPoint();
 	}
 	m_pDoc->setDontImmediatelyLayout(true);
 //
@@ -907,7 +895,7 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
 
-	_ensureThatInsertionPointIsOnScreen();
+	_ensureInsertionPointOnScreen();
 	return true;
 }
 
@@ -967,10 +955,6 @@ bool FV_View::cmdInsertRow(PT_DocPosition posRow, bool bBefore)
 		PP_AttrProp AttrProp_Before;
 		_deleteSelection(&AttrProp_Before);
 		m_pDoc->endUserAtomicGlob();
-	}
-	else
-	{
-		_eraseInsertionPoint();
 	}
 	m_pDoc->setDontImmediatelyLayout(true);
   
@@ -1181,7 +1165,7 @@ bool FV_View::cmdInsertRow(PT_DocPosition posRow, bool bBefore)
     // Signal PieceTable Changes have finished
     _restorePieceTableState();
     
-    _ensureThatInsertionPointIsOnScreen();
+    _ensureInsertionPointOnScreen();
     return true;
 }
 
@@ -1240,10 +1224,6 @@ bool FV_View::cmdDeleteCol(PT_DocPosition posCol)
 		PP_AttrProp AttrProp_Before;
 		_deleteSelection(&AttrProp_Before);
 		m_pDoc->endUserAtomicGlob();
-	}
-	else
-	{
-		_eraseInsertionPoint();
 	}
 	m_pDoc->setDontImmediatelyLayout(true);
 //
@@ -1380,7 +1360,7 @@ bool FV_View::cmdDeleteCol(PT_DocPosition posCol)
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
 
-	_ensureThatInsertionPointIsOnScreen();
+	_ensureInsertionPointOnScreen();
 	return true;
 }
 
@@ -1438,10 +1418,6 @@ bool FV_View::cmdDeleteRow(PT_DocPosition posRow)
 		PP_AttrProp AttrProp_Before;
 		_deleteSelection(&AttrProp_Before);
 		m_pDoc->endUserAtomicGlob();
-	}
-	else
-	{
-		_eraseInsertionPoint();
 	}
 	m_pDoc->setDontImmediatelyLayout(true);
 //
@@ -1578,7 +1554,7 @@ bool FV_View::cmdDeleteRow(PT_DocPosition posRow)
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
 
-	_ensureThatInsertionPointIsOnScreen();
+	_ensureInsertionPointOnScreen();
 	return true;
 }
 
@@ -1629,10 +1605,6 @@ bool FV_View::cmdDeleteCell(PT_DocPosition cellPos)
 		_deleteSelection(&AttrProp_Before);
 		m_pDoc->endUserAtomicGlob();
 	}
-	else
-	{
-		_eraseInsertionPoint();
-	}
 	m_pDoc->setDontImmediatelyLayout(true);
 //
 // delete the cell.
@@ -1653,7 +1625,7 @@ bool FV_View::cmdDeleteCell(PT_DocPosition cellPos)
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
 
-	_ensureThatInsertionPointIsOnScreen();
+	_ensureInsertionPointOnScreen();
 	return true;
 #endif
 }
@@ -1685,10 +1657,6 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const XML
 		PP_AttrProp AttrProp_Before;
 		_deleteSelection(&AttrProp_Before);
 		m_pDoc->endUserAtomicGlob();
-	}
-	else
-	{
-		_eraseInsertionPoint();
 	}
 	m_pDoc->setDontImmediatelyLayout(true);
 //
@@ -1750,7 +1718,6 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const XML
 	m_pDoc->setDontImmediatelyLayout(false);
 	_generalUpdate();
 
-
 	// restore updates and clean up dirty lists
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
@@ -1758,13 +1725,18 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const XML
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
 
-	_ensureThatInsertionPointIsOnScreen();
+	_ensureInsertionPointOnScreen();
 	return e;
 }
 
 bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count, bool bForce)
 {
 	bool bResult = true;
+	// So this gets rid of the annoying cursor flash at the beginning
+	// of the line upon character insertion, but it's the wrong thing to
+	// do.  The right thing to do is to either delay calculation, or to
+	// not make the wrong number come up; disabling the caret is wrong. -PL
+ 	// GR_CaretDisabler caretDisabler(m_pG->getCaret());
 
 	// Signal PieceTable Change
 	_saveAndNotifyPieceTableChange();
@@ -1783,8 +1755,6 @@ bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count, bool bForce)
 	}
 	else
 	{
-		_eraseInsertionPoint();
-
 		bool bOverwrite = (!m_bInsertMode && !bForce);
 
 		if (bOverwrite)
@@ -1863,7 +1833,7 @@ bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count, bool bForce)
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
 
-	_ensureThatInsertionPointIsOnScreen();
+	_ensureInsertionPointOnScreen();
 	return bResult;
 }
 
@@ -1922,7 +1892,7 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 		m_pDoc->enableListUpdates();
 		m_pDoc->updateDirtyLists();
 
-		_ensureThatInsertionPointIsOnScreen();
+		_ensureInsertionPointOnScreen();
 	}
 	else
 	{
@@ -1966,7 +1936,6 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 		currentfont = UT_getAttribute("font-family",props_in);
 		properties[1] = currentfont;
 
-		_eraseInsertionPoint();
 		UT_uint32 amt = count;
 		UT_uint32 posCur = getPoint();
 		UT_uint32 nposCur = getPoint();
@@ -2070,7 +2039,7 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 		_generalUpdate();
 		free(props_in);
 
-		_ensureThatInsertionPointIsOnScreen();
+		_ensureInsertionPointOnScreen();
 
 		//special handling is required for delete in revisions mode
 		//where we have to move the insertion point
@@ -2189,7 +2158,6 @@ void FV_View::cmdScroll(AV_ScrollCmd cmd, UT_uint32 iPos)
 	if (bRedrawPoint)
 	{
 		_fixInsertionPointCoords();
-		_drawInsertionPoint();
 	}
 
 
@@ -2199,14 +2167,13 @@ void FV_View::cmdScroll(AV_ScrollCmd cmd, UT_uint32 iPos)
 void FV_View::cmdSelect(PT_DocPosition dpBeg, PT_DocPosition dpEnd)
 {
 
-	_eraseInsertionPoint();
-
 	if (!isSelectionEmpty())
 	{
 		_clearSelection();
 	}
 
-	m_iSelectionAnchor = dpBeg;
+	_setPoint(dpBeg);
+	_setSelectionAnchor();
 	m_iSelectionLeftAnchor = dpBeg;
 	m_iSelectionRightAnchor = dpEnd;
 
@@ -2214,11 +2181,8 @@ void FV_View::cmdSelect(PT_DocPosition dpBeg, PT_DocPosition dpEnd)
 
 	if (dpBeg == dpEnd)
 	{
-		_drawInsertionPoint();
 		return;
 	}
-
-	m_bSelection = true;
 
 	_drawSelection();
 
@@ -2232,8 +2196,6 @@ void FV_View::cmdSelect(UT_sint32 xPos, UT_sint32 yPos, FV_DocPos dpBeg, FV_DocP
 	UT_DEBUGMSG(("Double click on mouse \n"));
 
 	warpInsPtToXY(xPos, yPos,true);
-
-	//_eraseInsertionPoint();
 
 	PT_DocPosition iPosLeft = _getDocPos(dpBeg, false);
 	PT_DocPosition iPosRight = _getDocPos(dpEnd, false);
@@ -2264,7 +2226,6 @@ void FV_View::cmdHyperlinkJump(UT_sint32 xPos, UT_sint32 yPos)
 	_clearSelection();
 	warpInsPtToXY(xPos, yPos,true);
 
-	//_eraseInsertionPoint();
 	fl_BlockLayout * pBlock = getCurrentBlock();
 	PT_DocPosition iRelPos = getPoint() - pBlock->getPosition(false);
 
@@ -2311,8 +2272,6 @@ void FV_View::cmdUndo(UT_uint32 count)
 {
 	if (!isSelectionEmpty())
 		_clearSelection();
-	else
-		_eraseInsertionPoint();
 
 	// Signal PieceTable Change
 	m_pDoc->notifyPieceTableChangeStart();
@@ -2370,8 +2329,6 @@ void FV_View::cmdRedo(UT_uint32 count)
 {
 	if (!isSelectionEmpty())
 		_clearSelection();
-	else
-		_eraseInsertionPoint();
 
 	// Signal PieceTable Change
 	m_pDoc->notifyPieceTableChangeStart();
@@ -2468,7 +2425,6 @@ void FV_View::cmdCut(void)
 
 
 	_fixInsertionPointCoords();
-	_drawInsertionPoint();
 
 	// Signal PieceTable Changes have finished
 	m_pDoc->notifyPieceTableChangeEnd();
@@ -2893,7 +2849,6 @@ UT_Error FV_View::cmdInsertField(const char* szName, const XML_Char ** extra_att
 	}
 	else
 	{
-		_eraseInsertionPoint();
 		bResult = m_pDoc->insertObject(getPoint(), PTO_Field, attributes, extra_props, &pField);
 		if(pField != NULL)
 		{
@@ -2908,7 +2863,7 @@ UT_Error FV_View::cmdInsertField(const char* szName, const XML_Char ** extra_att
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
 
-	if (!_ensureThatInsertionPointIsOnScreen())
+	if (!_ensureInsertionPointOnScreen())
 	{
 //
 // Handle End of Paragraph case
@@ -2920,7 +2875,6 @@ UT_Error FV_View::cmdInsertField(const char* szName, const XML_Char ** extra_att
 			m_bPointEOL = true;
 		}
 		_fixInsertionPointCoords();
-		_drawInsertionPoint();
 	}
 	return bResult;
 }
@@ -2937,10 +2891,6 @@ UT_Error FV_View::cmdInsertGraphic(FG_Graphic* pFG, const char* pszName)
 		bDidGlob = true;
 		m_pDoc->beginUserAtomicGlob();
 		_deleteSelection();
-	}
-	else
-	{
-		_eraseInsertionPoint();
 	}
 
 	/*
@@ -3110,9 +3060,7 @@ void FV_View::cmdRemoveHdrFtr( bool isHeader)
 //
 // Now see if we are in the header to be removed. If so, jump out.
 //
-		if (isSelectionEmpty())
-			_eraseInsertionPoint();
-		else
+		if (!isSelectionEmpty())
 			_clearSelection();
 		if(isHdrFtrEdit())
 		{
@@ -3131,9 +3079,7 @@ void FV_View::cmdRemoveHdrFtr( bool isHeader)
 //
 // Now see if we are in the Footer to be removed. If so, jump out.
 //
-		if (isSelectionEmpty())
-			_eraseInsertionPoint();
-		else
+		if (!isSelectionEmpty())
 			_clearSelection();
 		if(isHdrFtrEdit())
 		{
@@ -3165,7 +3111,6 @@ void FV_View::cmdRemoveHdrFtr( bool isHeader)
 //
 // Repeat this code 4 times to remove all the DocSection Layouts.
 //
-	_eraseInsertionPoint();
 	setCursorWait();
 	if(isHeader)
 	{
@@ -3184,7 +3129,6 @@ void FV_View::cmdRemoveHdrFtr( bool isHeader)
 //
 // After erarsing the cursor, Restore to the point before all this mess started.
 //
-	_eraseInsertionPoint();
 	_setPoint(curPoint);
 
 	_generalUpdate();
@@ -3199,83 +3143,21 @@ void FV_View::cmdRemoveHdrFtr( bool isHeader)
 }
 
 /*!
- * Method start edit header mode. If there is no header one will be inserted.
- * otherwise start editting the header on the current page.
+ * Start edit header mode. If there is no header one will be inserted.
+ * otherwise start editing the header on the current page.
  */
 void FV_View::cmdEditHeader(void)
 {
-	if(isHdrFtrEdit())
-		clearHdrFtrEdit();
-	fp_Page * pPage = getCurrentPage();
-//
-// If there is no header, insert it and start to edit it.
-//
-	fl_HdrFtrShadow * pShadow = NULL;
-	fp_ShadowContainer * pHFCon = NULL;
-	pHFCon = pPage->getHdrFtrP(FL_HDRFTR_HEADER);
-	if(pHFCon == NULL)
-	{
-		insertHeaderFooter(FL_HDRFTR_HEADER);
-		return;
-	}
-	pShadow = pHFCon->getShadow();
-	UT_ASSERT(pShadow);
-//
-// Put the insertion point at the beginning of the header
-//
-	fl_BlockLayout * pBL = (fl_BlockLayout *) pShadow->getFirstLayout();
-	if (isSelectionEmpty())
-		_eraseInsertionPoint();
-	else
-		_clearSelection();
-
-	_setPoint(pBL->getPosition());
-//
-// Set Header/footer mode and we're done! Easy :-)
-//
-	setHdrFtrEdit(pShadow);
-	_generalUpdate();
-	_updateInsertionPoint();
+	_cmdEditHdrFtr(FL_HDRFTR_HEADER);
 }
 
 /*!
- * Method start edit footer mode. If there is no footer one will be inserted.
- * otherwise start editting the footer on the current page.
+ * Start edit footer mode. If there is no footer one will be inserted.
+ * otherwise start editing the footer on the current page.
  */
 void FV_View::cmdEditFooter(void)
 {
-	if(isHdrFtrEdit())
-		clearHdrFtrEdit();
-	fp_Page * pPage = getCurrentPage();
-//
-// If there is no header, insert it and start to edit it.
-//
-	fl_HdrFtrShadow * pShadow = NULL;
-	fp_ShadowContainer * pHFCon = NULL;
-	pHFCon = pPage->getHdrFtrP(FL_HDRFTR_FOOTER);
-	if(pHFCon == NULL)
-	{
-		insertHeaderFooter(FL_HDRFTR_FOOTER);
-		return;
-	}
-	pShadow = pHFCon->getShadow();
-	UT_ASSERT(pShadow);
-//
-// Put the insertion point at the beginning of the header
-//
-	fl_BlockLayout * pBL = (fl_BlockLayout *) pShadow->getFirstLayout();
-	if (isSelectionEmpty())
-		_eraseInsertionPoint();
-	else
-		_clearSelection();
-
-	_setPoint(pBL->getPosition());
-//
-// Set Header/footer mode and we're done! Easy :-)
-//
-	setHdrFtrEdit(pShadow);
-	_generalUpdate();
-	_updateInsertionPoint();
+	_cmdEditHdrFtr(FL_HDRFTR_FOOTER);
 }
 
 void FV_View::cmdAcceptRejectRevision(bool bReject, UT_sint32 xPos, UT_sint32 yPos)

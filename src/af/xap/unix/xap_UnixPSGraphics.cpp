@@ -393,6 +393,11 @@ void PS_Graphics::setColor(const UT_RGBColor& clr)
 	_emit_SetColor();
 }
 
+void PS_Graphics::getColor(UT_RGBColor& clr)
+{
+	return m_currentColor;
+}
+
 GR_Font* PS_Graphics::getGUIFont()
 {
 	// getGUIFont is only used for drawing UI widgets, which does not apply on paper.

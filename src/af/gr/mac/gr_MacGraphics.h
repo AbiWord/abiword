@@ -52,6 +52,7 @@ public:
 	//virtual UT_uint32 measureString(const UT_UCSChar*s, int iOffset, int num, unsigned short* pWidths);
 	virtual UT_uint32 measureUnRemappedChar(const UT_UCSChar c);
 	
+	virtual void getColor(UT_RGBColor& clr);
 	virtual void setColor(const UT_RGBColor& clr);
 	virtual GR_Font* getGUIFont();
 	virtual GR_Font* findFont(
@@ -121,6 +122,7 @@ private:
         
 	UT_RGBColor m_3Dcolors[COUNT_3D_COLORS];
 	XAP_MacFontManager	*m_pMacFontManager;
+	UT_RGBColor	m_curColor;
 };
 
 #endif /* GR_MACGRAPHICS_h */

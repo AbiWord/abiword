@@ -49,7 +49,8 @@ public:
 	virtual UT_uint32 getFontDescent(GR_Font *);
 	virtual UT_uint32 getFontHeight(GR_Font *);
 
-	virtual void setColor(UT_RGBColor& clr);
+	virtual void getColor(UT_RGBColor& clr);
+	virtual void setColor(const UT_RGBColor& clr);
 	virtual GR_Font* getGUIFont();
 	virtual GR_Font* findFont(
 		const char* pszFontFamily, 
@@ -109,7 +110,7 @@ protected:
     GR_MacFont	*m_pMacFont;
 	XAP_MacFontManager	*m_pMacFontManager;
 
-	
+	UT_RGBColor	m_curColor;	
 };
 
 #endif /* GR_MACGRAPHICS_h */

@@ -65,6 +65,7 @@ public:
 	virtual UT_uint32 measureUnRemappedChar(const UT_UCSChar c);
 	
 	virtual void setColor(const UT_RGBColor& clr);
+	virtual void getColor(UT_RGBColor& clr);
 	virtual GR_Font* getGUIFont();
 	virtual GR_Font* findFont(const char* pszFontFamily, 
 							  const char* pszFontStyle, 

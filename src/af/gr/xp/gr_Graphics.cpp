@@ -34,6 +34,7 @@
 #include "ut_debugmsg.h"
 #include "ut_sleep.h"
 #include "ut_OverstrikingChars.h"
+#include "gr_Caret.h"
 #ifdef DEBUG
 #include "ut_sleep.h"
 #endif
@@ -73,6 +74,7 @@ GR_Font::~GR_Font()
 #endif //WITH_PANGO
 
 GR_Graphics::GR_Graphics()
+	: m_pCaret(NULL)
 {
 	m_pApp = 0;
 	m_iZoomPercentage = 100;
@@ -153,8 +155,8 @@ GR_Graphics::GR_Graphics()
 GR_Graphics::~GR_Graphics()
 {
 	// need this so children can clean up
-
 	m_instanceCount--;
+	DELETEP(m_pCaret);
 
 	if(m_instanceCount == 0)
 	{

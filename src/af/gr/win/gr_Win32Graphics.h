@@ -98,9 +98,7 @@ public:
 	//virtual UT_uint32		measureString(const UT_UCSChar*s, int iOffset, int num, unsigned short* pWidths);
 	virtual UT_uint32		measureUnRemappedChar(const UT_UCSChar c);
 	virtual void			setColor(const UT_RGBColor& clr);
-#if 0
 	virtual void            getColor(UT_RGBColor& clr);
-#endif
 	virtual GR_Font*		getGUIFont();
 	virtual GR_Font*		findFont(const char* pszFontFamily,
 									 const char* pszFontStyle,
@@ -210,6 +208,8 @@ private:
 	static UT_uint32        s_iCharAdvancesSize;
 	static UT_uint32        s_iInstanceCount;
 #endif
+
+	UT_RGBColor				m_curColor;
 };
 
 #endif /* GR_WIN32GRAPHICS_H */

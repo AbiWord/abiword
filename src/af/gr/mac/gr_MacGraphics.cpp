@@ -193,9 +193,14 @@ UT_uint32 GR_MacGraphics::measureUnRemappedChar(const UT_UCSChar c)
 	return m_pMacFont->getTextWidth (string);
 }
 
+void GR_MacGraphics::getColor(UT_RGBColor& clr)
+{
+	clr = m_curColor;
+}
 
 void GR_MacGraphics::setColor(const UT_RGBColor& clr)
 {
+	m_curColor = clr;
     ::CGContextSetRGBStrokeColor (m_CGContext, clr.m_red, clr.m_grn, clr.m_blu, 1.0f);
 }
 

@@ -388,11 +388,7 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 
 		pView->setPoint(pView->getSavedPosition());
 
-		{
-			pView->moveInsPtTo(pView->getSavedPosition());
-			pView->eraseInsertionPoint();
-			pView->drawInsertionPoint();
-		}
+		pView->moveInsPtTo(pView->getSavedPosition());
 		pView->clearSavedPosition();
 	}
 //

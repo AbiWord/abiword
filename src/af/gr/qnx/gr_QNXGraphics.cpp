@@ -498,6 +498,11 @@ void GR_Font::s_getGenericFontProperties(const char *szFontName, FontFamilyEnum 
 /***
  Draw Operations
 ***/
+void GR_QNXGraphics::getColor(UT_RGBColor& clr)
+{
+	clr = m_currentColor;
+}
+
 void GR_QNXGraphics::setColor(const UT_RGBColor& clr)
 {
 	//printf("GR: setColor %d %d %d \n", clr.m_red, clr.m_blu, clr.m_grn);

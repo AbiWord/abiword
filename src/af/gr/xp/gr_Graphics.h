@@ -26,6 +26,7 @@
 #include "ut_growbuf.h"
 #include "ut_misc.h"
 #include "gr_Image.h"
+#include "gr_Caret.h"
 
 class UT_RGBColor;
 class XAP_App;
@@ -226,9 +227,7 @@ class ABI_EXPORT GR_Graphics
 	UT_uint32         getAppropriateFontSizeFromString(const char * pszFontSize);
 
 	virtual void      setColor(const UT_RGBColor& clr) = 0;
-#if 0
-	virtual void      getColor(UT_RGBColor &clr) = 0;
-#endif
+	virtual void      getColor(UT_RGBColor& clr) = 0;
 	virtual GR_Font*  getGUIFont() = 0;
 
 	virtual GR_Font*  findFont(const char* pszFontFamily,
@@ -443,7 +442,14 @@ class ABI_EXPORT GR_Graphics
 							 m_Transform = tr;
 							 return true;
 						 }
-	
+
+	void              createCaret()
+		{
+			UT_ASSERT(!m_pCaret);
+			m_pCaret = new GR_Caret(this);
+		}
+	GR_Caret *        getCaret() { return m_pCaret; }
+
  protected:
 	virtual UT_uint32 _getResolution(void) const = 0;
 	void              setStaticScreenResolution(UT_uint32 iRes);
@@ -514,6 +520,7 @@ class ABI_EXPORT GR_Graphics
 	static UT_uint32 m_instanceCount;
 	const UT_Rect *  m_pRect;
  private:
+	GR_Caret *		 m_pCaret;
     bool             _PtInPolygon(UT_Point * pts,UT_uint32 nPoints,UT_sint32 x,UT_sint32 y);
     bool             m_bIsPortrait;
 	bool             m_bSpawnedRedraw;

@@ -530,9 +530,15 @@ UT_uint32 GR_BeOSGraphics::_getResolution() const
 	return 72;
 }
 
+void GR_BeOSGraphics::getColor(UT_RGBColor& clr)
+{
+	clr = m_curColor;
+}
+
 void GR_BeOSGraphics::setColor(const UT_RGBColor& clr)
 {
 	DPRINTF(printf("GR: setColor\n"));
+	m_curColor = clr;
 	if (m_pShadowView->Window()->Lock())
 	{
 		m_pShadowView->SetHighColor(clr.m_red, clr.m_grn, clr.m_blu);

@@ -26,7 +26,8 @@ CPPSRCS=		gr_CharWidths.cpp		\
 			gr_DrawArgs.cpp			\
 			gr_Graphics.cpp			\
 			gr_Image.cpp			\
-			gr_VectorImage.cpp
+			gr_VectorImage.cpp		\
+			gr_Caret.cpp
 
 TARGETS=		$(OBJS)
 

@@ -369,6 +369,8 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	UT_sint32 curWidth;
 
 	const UT_UCSChar *pC;
+	GR_CaretDisabler caretDisabler(getCaret());
+
   	for(pC=pChars+iCharOffset, x=xoff; pC<pChars+iCharOffset+iLength; ++pC)
 	{
 		UT_UCSChar actual = remapGlyph(*pC,false);
@@ -741,6 +743,11 @@ UT_uint32 GR_UnixGraphics::_getResolution(void) const
 	return 96;
 }
 
+void GR_UnixGraphics::getColor(UT_RGBColor& clr)
+{
+	clr = m_curColor;
+}
+
 void GR_UnixGraphics::setColor(const UT_RGBColor& clr)
 {
 	UT_ASSERT(m_pGC);
@@ -750,6 +757,7 @@ void GR_UnixGraphics::setColor(const UT_RGBColor& clr)
 	c.blue = clr.m_blu << 8;
 	c.green = clr.m_grn << 8;
 
+	m_curColor = clr;
 	_setColor(c);
 }
 
@@ -989,7 +997,6 @@ UT_uint32 GR_UnixGraphics::getFontAscent(GR_Font * fnt)
 
 UT_uint32 GR_UnixGraphics::getFontAscent()
 {
-
 	return getFontAscent(m_pFont);
 }
 
@@ -1040,6 +1047,7 @@ UT_uint32 GR_UnixGraphics::getFontDescent()
 void GR_UnixGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,
 							   UT_sint32 x2, UT_sint32 y2)
 {
+	GR_CaretDisabler caretDisabler(getCaret());
 	// TODO set the line width according to m_iLineWidth
 	gdk_draw_line(m_pWin, m_pGC, x1, y1, x2, y2);
 }
@@ -1065,11 +1073,13 @@ void GR_UnixGraphics::setLineWidth(UT_sint32 iLineWidth)
 void GR_UnixGraphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
 			    UT_sint32 y2)
 {
+	GR_CaretDisabler caretDisabler(getCaret());
 	gdk_draw_line(m_pWin, m_pXORGC, x1, y1, x2, y2);
 }
 
 void GR_UnixGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 {
+	GR_CaretDisabler caretDisabler(getCaret());
   // see bug #303 for what this is about
 #if 1
 	GdkPoint * points = (GdkPoint *)calloc(nPoints, sizeof(GdkPoint));
@@ -1098,8 +1108,8 @@ void GR_UnixGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 
 void GR_UnixGraphics::invertRect(const UT_Rect* pRect)
 {
+	GR_CaretDisabler caretDisabler(getCaret());
 	UT_ASSERT(pRect);
-
 	gdk_draw_rectangle(m_pWin, m_pXORGC, 1, pRect->left, pRect->top,
 					   pRect->width, pRect->height);
 }
@@ -1160,6 +1170,7 @@ void GR_UnixGraphics::setClipRect(const UT_Rect* pRect)
 void GR_UnixGraphics::fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y,
 							   UT_sint32 w, UT_sint32 h)
 {
+	GR_CaretDisabler caretDisabler(getCaret());
 	// save away the current color, and restore it after we fill the rect
 	GdkGCValues gcValues;
 	GdkColor oColor;
@@ -1181,13 +1192,15 @@ void GR_UnixGraphics::fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y,
 
 	gdk_gc_set_foreground(m_pGC, &nColor);
 
-	gdk_draw_rectangle(m_pWin, m_pGC, 1, x, y, w, h);
+ 	gdk_draw_rectangle(m_pWin, m_pGC, 1, x, y, w, h);
 
 	gdk_gc_set_foreground(m_pGC, &oColor);
 }
 
 void GR_UnixGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 {
+	GR_CaretDisabler caretDisabler(getCaret());
+
 	UT_sint32 winWidth, winHeight;
 	gdk_drawable_get_size ( GDK_DRAWABLE(m_pWin), &winWidth, &winHeight ) ;
 	UT_Rect exposeArea;
@@ -1287,6 +1300,7 @@ void GR_UnixGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 						  UT_sint32 x_src, UT_sint32 y_src,
 						  UT_sint32 width, UT_sint32 height)
 {
+	GR_CaretDisabler caretDisabler(getCaret());
 	gdk_window_copy_area(m_pWin, m_pGC, x_dest, y_dest,
 						 m_pWin, x_src, y_src, width, height);
 }
@@ -1294,6 +1308,7 @@ void GR_UnixGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 void GR_UnixGraphics::clearArea(UT_sint32 x, UT_sint32 y,
 							 UT_sint32 width, UT_sint32 height)
 {
+	GR_CaretDisabler caretDisabler(getCaret());
   //	UT_DEBUGMSG(("ClearArea: %d %d %d %d\n", x, y, width, height));
 	if (width > 0)
 	{
@@ -1344,7 +1359,6 @@ GR_Image* GR_UnixGraphics::createNewImage(const char* pszName, const UT_ByteBuf*
 {
    	GR_Image* pImg = NULL;
 
-
 	pImg = new GR_UnixImage(pszName,false);
 	pImg->convertFromBuffer(pBB, iDisplayWidth, iDisplayHeight);
    	return pImg;
@@ -1358,6 +1372,7 @@ GR_Image* GR_UnixGraphics::createNewImage(const char* pszName, const UT_ByteBuf*
 
 void GR_UnixGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
 {
+	GR_CaretDisabler caretDisabler(getCaret());
 	UT_ASSERT(pImg);
 
    	GR_UnixImage * pUnixImage = static_cast<GR_UnixImage *>(pImg);
@@ -1525,6 +1540,7 @@ void GR_UnixGraphics::init3dColors(GtkStyle * pStyle)
 
 void GR_UnixGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
 {
+	GR_CaretDisabler caretDisabler(getCaret());
 	UT_ASSERT(c < COUNT_3D_COLORS);
 	gdk_gc_set_foreground(m_pGC, &m_3dColors[c]);
 	gdk_draw_rectangle(m_pWin, m_pGC, 1, x, y, w, h);
@@ -1538,6 +1554,7 @@ void GR_UnixGraphics::fillRect(GR_Color3D c, UT_Rect &r)
 
 void GR_UnixGraphics::polygon(UT_RGBColor& c,UT_Point *pts,UT_uint32 nPoints)
 {
+	GR_CaretDisabler caretDisabler(getCaret());
 	// save away the current color, and restore it after we draw the polygon
 	GdkGCValues gcValues;
 	GdkColor oColor;

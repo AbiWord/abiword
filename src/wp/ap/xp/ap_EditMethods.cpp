@@ -3593,12 +3593,7 @@ Defun1(contextMenu)
 	const char * szContextMenuName = XAP_App::getApp()->getMenuFactory()->FindContextMenu(emc);
 	if (!szContextMenuName)
 		return false;
-	pView->eraseInsertionPoint();
 	bool res =	pFrame->runModalContextMenu(pView,szContextMenuName,xPos,yPos);
-	if(!pView->isCursorOn())
-	{
-		pView->drawInsertionPoint();
-	}
 	return res;
 }
 
@@ -3612,13 +3607,8 @@ static bool s_doContextMenu_no_move( EV_EditMouseContext emc,
 	xxx_UT_DEBUGMSG(("Context Menu Name is........ %s \N",szContextMenuName));
 	if (!szContextMenuName)
 		return false;
-	pView->eraseInsertionPoint();
 	bool res =	pFrame->runModalContextMenu(pView,szContextMenuName,
 									   xPos,yPos);
-	if(!pView->isCursorOn())
-	{
-		pView->drawInsertionPoint();
-	}
 	return res;
 }
 
@@ -6677,7 +6667,6 @@ static bool s_doPageSetupDlg (FV_View * pView)
 				FV_View * pV =	(FV_View *) f->getCurrentView();
 				if(pV->isHdrFtrEdit())
 				{
-					pV->eraseInsertionPoint();
 					pV->clearHdrFtrEdit();
 					pV->warpInsPtToXY(0,0,false);
 				}
@@ -7049,7 +7038,6 @@ Defun(viewNormalLayout)
 	FV_View * pView = static_cast<FV_View *>(pAV_View);
 	if(pView->isHdrFtrEdit())
 	{
-		pView->eraseInsertionPoint();
 		pView->clearHdrFtrEdit();
 		pView->warpInsPtToXY(0,0,false);
 	}
@@ -7998,7 +7986,6 @@ static bool s_doStylesDlg(FV_View * pView)
 		return false;
 	if(pView->isHdrFtrEdit())
 	{
-		pView->eraseInsertionPoint();
 		pView->clearHdrFtrEdit();
 		pView->warpInsPtToXY(0,0,false);
 	}
@@ -9607,7 +9594,6 @@ Defun(dlgHdrFtr)
 //
 	if(pView->isHdrFtrEdit())
 	{
-		pView->eraseInsertionPoint();
 		pView->clearHdrFtrEdit();
 		pView->warpInsPtToXY(0,0,false);
 	}
