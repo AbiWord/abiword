@@ -265,6 +265,7 @@ Masayuki Hatta <mhatta@gnu.org>				Japanese
 Daniel Yacob <locales@geez.org>				Amharic
 Pierre Abbat <phma@webjockey.net>			Lojban
 Alfredo Barrainkua Zallo <alfredobz@euskalnet.net>	Basque
+Mugurel Tudor <mugurelu@go.ro>				Romanian
 unsung heroes
 -------------
 Mary Eppich
