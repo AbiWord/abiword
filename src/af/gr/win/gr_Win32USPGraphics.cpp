@@ -513,7 +513,8 @@ bool GR_Win32USPGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 	}
 
 	GR_Win32USPRenderInfo * RI = (GR_Win32USPRenderInfo *)ri;
-	
+
+		
 	if(RI->m_iClustSize < si.m_iLength)
 	{
 		delete [] RI->m_pClust;
@@ -580,7 +581,9 @@ bool GR_Win32USPGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 		// so that ScriptShape measures it correctly for the cache
 		setFont(pFont);
 	}
-	
+
+	// we need to maker sure that the analysis embeding level is in sync with si.m_iVisDir
+	pItem->m_si.a.fRTL = si.m_iVisDir == FRIBIDI_TYPE_RTL ? 1 : 0;
 	HRESULT hRes = fScriptShape(m_hdc, pFont->getScriptCache(), pInChars, si.m_iLength, iGlyphBuffSize,
 							   & pItem->m_si.a, pGlyphs, RI->m_pClust, pVa, &iGlyphCount);
 
