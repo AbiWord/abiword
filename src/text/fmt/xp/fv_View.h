@@ -220,6 +220,10 @@ protected:
 
 	fl_BlockLayout * 	_findGetCurrentBlock(void);
 	fl_BlockLayout * 	_findGetNextBlock(UT_Bool * wrapped);
+
+	// search routines
+	UT_sint32 			_findBlockSearchDumb(const UT_UCSChar * haystack, const UT_UCSChar * needle);
+	UT_sint32			_findBlockSearchRegexp(const UT_UCSChar * haystack, const UT_UCSChar * needle);
 	
 };
 

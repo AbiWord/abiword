@@ -221,3 +221,38 @@ UT_uint32 UT_UCS_strlen(const UT_UCSChar * string)
 
 	return i;
 }
+
+UT_UCSChar * UT_UCS_strcpy(UT_UCSChar * dest, const UT_UCSChar * src)
+{
+	UT_ASSERT(dest);
+	UT_ASSERT(src);
+	
+	UT_UCSChar * 	d = dest;
+	UT_UCSChar *	s = src;
+	UT_uint32 		i = 0;
+
+	while (*s != NULL)
+		*d++ = *s++;
+	*d = NULL;
+
+	return dest;
+}
+
+// note that dest should be twice the size of src, and zeroed,
+// to accept the proper narrow src values
+UT_UCSChar * UT_UCS_strcpy_char(UT_UCSChar * dest, const char * src)
+{
+	UT_ASSERT(dest);
+	UT_ASSERT(src);
+	
+	UT_UCSChar * 	d = dest;
+	char *			s = src;
+	UT_uint32 		i = 0;
+
+	while (*s != NULL)
+		*d++ = *s++;
+	*d = NULL;
+
+	return dest;
+}
+

@@ -1644,9 +1644,13 @@ UT_Bool FV_View::findNext(const UT_UCSChar * string, UT_Bool bSelect)
 	// one full rotation.  This may have to change; right now
 	// it depends on a document block never starting at 0.  
 	PT_DocPosition cycleBeganAt = 0;	// magic number
-	
-	// search it
-	while (block && cycleBeganAt != block->getPosition(UT_FALSE))
+
+	// magic number, -1 means we didn't find in the block,
+	// since 0 is a valid position
+	UT_sint32 foundAt = -1;
+
+    // search it
+	while (block && (cycleBeganAt != block->getPosition(UT_FALSE)) )
 	{
 		if (!cycleBeganAt)
 			cycleBeganAt = block->getPosition(UT_FALSE);
@@ -1658,21 +1662,22 @@ UT_Bool FV_View::findNext(const UT_UCSChar * string, UT_Bool bSelect)
 		{
 			// TODO: non-case-sensitive searches
 
-			UT_UCSChar * foundAt = NULL;
+			foundAt = -1;
 		   
 			// search starting at last place you stopped, but not if you've exhausted
 			// this buffer, then move to next
 			if (m_iFindBufferOffset < buffer.getLength())
-				foundAt = UT_UCS_strstr((const UT_UCSChar *) buffer.getPointer(m_iFindBufferOffset), string);
+				foundAt = _findBlockSearchDumb(buffer.getPointer(m_iFindBufferOffset), string);
+
 			else
 				// this has gotta go
 				goto FetchNextBlock;
 			
 
-			if (foundAt)
+			if (foundAt >= 0)
 			{
 				// increment by the offset within the buffer block at which the substring was found
-				m_iFindBufferOffset = (foundAt - buffer.getPointer(0));
+				m_iFindBufferOffset += foundAt;
 				
 				UT_DEBUGMSG(("Found substring [%d] chars into buffer.\n", m_iFindBufferOffset));
 
@@ -1813,6 +1818,29 @@ fl_BlockLayout * FV_View::_findGetNextBlock(UT_Bool * wrapped)
 
 	// no blocks at the cursor!
 	return NULL;
+}
+
+/*
+  A simple strstr search of the buffer.
+*/
+UT_sint32 FV_View::_findBlockSearchDumb(const UT_UCSChar * haystack, const UT_UCSChar * needle)
+{
+	UT_ASSERT(haystack);
+	UT_ASSERT(needle);
+		
+	UT_UCSChar * at = UT_UCS_strstr(haystack, needle);
+
+	return (at) ? (at - haystack) : -1;
+}
+
+/*
+  Any takers?
+*/
+UT_sint32 FV_View::_findBlockSearchRegexp(const UT_UCSChar * haystack, const UT_UCSChar * needle)
+{
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+
+	return -1;
 }
 
 // ---------------- end find and replace ---------------

@@ -111,13 +111,8 @@ UT_Bool AP_Dialog_Replace::findNext(char * string)
 	// convert from char * to unicode
 	UT_UCSChar * unicodeString = (UT_UCSChar *) calloc(strlen(string) + 1, sizeof(UT_UCSChar));
 
-	UT_UCSChar * 	d = unicodeString;
-	char * 			s = string;
-	UT_uint32 		i = 0;
-	while (i < strlen(string) && *s != NULL)
-		*d++ = *s++;
-	*++d = NULL;
-
+	UT_UCS_strcpy_char(unicodeString, string);
+	
 	// call view to do the work
 	UT_Bool result = m_pView->findNext(unicodeString, UT_TRUE);
 

@@ -37,7 +37,9 @@ UT_sint32 UT_XML_stricmp(const XML_Char * sz1, const XML_Char * sz2);
 
 UT_UCSChar * UT_UCS_strstr(const UT_UCSChar * phaystack, const UT_UCSChar * pneedle);
 UT_uint32 UT_UCS_strlen(const UT_UCSChar * string);
-
+UT_UCSChar * UT_UCS_strcpy(UT_UCSChar * dest, const UT_UCSChar * source);
+UT_UCSChar * UT_UCS_strcpy_char(UT_UCSChar * dest, const char * src);
+	
 #ifdef WIN32
 #define snprintf _snprintf
 
