@@ -90,15 +90,9 @@ void FV_View::_moveToSelectionEnd(UT_Bool bForward)
 	UT_ASSERT(curPos != m_iSelectionAnchor);
 	UT_Bool bForwardSelection = (m_iSelectionAnchor < curPos);
 	
-	// TODO could we just moveAbsolute on this?
-	// TODO or consider calling _swapSelectionOrientation
-	
 	if (bForward != bForwardSelection)
 	{
-		UT_uint32 b = UT_MIN(curPos,m_iSelectionAnchor);
-		UT_uint32 e = UT_MAX(curPos,m_iSelectionAnchor);
-		UT_uint32 countChars = _getDataCount(b,e);
-		_charMotion(bForward,countChars);
+		_swapSelectionOrientation();
 	}
 
 	_clearSelection();
@@ -472,12 +466,37 @@ void FV_View::cmdCharDelete(UT_Bool bForward, UT_uint32 count)
 	{
 		_eraseInsertionPoint();
 
+		UT_uint32 amt = count;
+		UT_uint32 posCur = _getPoint();
+
 		if (!bForward)
 		{
-			_charMotion(bForward,count);
+
+			if (!_charMotion(bForward,count))
+			{
+				UT_ASSERT(_getPoint() <= posCur);
+				amt = posCur - _getPoint();
+			}
+
+			posCur = _getPoint();
+		}
+		else
+		{
+			PT_DocPosition posEOD;
+			UT_Bool bRes;
+
+			bRes = m_pDoc->getBounds(UT_TRUE, posEOD);
+			UT_ASSERT(bRes);
+			UT_ASSERT(posCur <= posEOD);
+
+			if (posEOD < (posCur+amt))
+			{
+				amt = posEOD - posCur;
+			}
 		}
 
-		m_pDoc->deleteSpan(_getPoint(), _getPoint()+count);
+		if (amt > 0)
+			m_pDoc->deleteSpan(posCur, posCur+amt);
 	}
 
 	_drawSelectionOrInsertionPoint();
