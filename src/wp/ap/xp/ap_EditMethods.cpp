@@ -1298,9 +1298,10 @@ static bool s_AskForPathname(XAP_Frame * pFrame,
 	// try to remember the previous file type
 	static IEFileType dflFileType = IEFT_Bogus;
 
-	if (*ieft != IEFT_Bogus)
+	if (ieft != NULL && *ieft != IEFT_Bogus)
 	  {
 	    // have a pre-existing file format, try to default to that
+	    UT_DEBUGMSG(("DOM: using filetype %d\n", *ieft));
 	    dflFileType = *ieft;
 	  }
 	else if (bSaveAs)
@@ -1309,17 +1310,16 @@ static bool s_AskForPathname(XAP_Frame * pFrame,
 	    UT_ASSERT(pApp);
 	    XAP_Prefs * pPrefs = pApp->getPrefs();
 	    UT_ASSERT(pPrefs);
-
+	    
 	    const XML_Char * ftype = 0;
-
+	    
 	    pPrefs->getPrefsValue ((XML_Char*)AP_PREF_KEY_DefaultSaveFormat, &ftype);
 	    if (!ftype)
 	      ftype = ".abw";
-
-	    UT_DEBUGMSG(("DOM: default file type is %s\n", ftype));
-
+	    
 	    // load the default file format
 	    dflFileType = IE_Exp::fileTypeForSuffix (ftype);
+	    UT_DEBUGMSG(("DOM: reverting to default file type: %s (%d)\n", ftype, dflFileType));
 	  }
 	else
 	  {
@@ -1744,7 +1744,7 @@ Defun1(openTemplate)
 
 Defun(fileSave)
 {
-	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 
 	// can only save without prompting if filename already known

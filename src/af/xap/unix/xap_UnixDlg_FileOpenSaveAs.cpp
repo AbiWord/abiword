@@ -827,10 +827,6 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 #else
 		pImage = new GR_UnixImage(NULL);
 #endif
-		UT_DEBUGMSG(("DOM: %f %f\n", scaled_width, scaled_height));
-		UT_DEBUGMSG(("DOM: '%d' %s\n", static_cast<FG_GraphicRaster*>(pGraphic)->getRaster_PNG()->getLength (),
-			     static_cast<FG_GraphicRaster*>(pGraphic)->getRaster_PNG()->getPointer(0)));
-
 		UT_ByteBuf * png = static_cast<FG_GraphicRaster*>(pGraphic)->getRaster_PNG();
 		UT_PNG_getDimensions (png, iImageWidth, iImageHeight);
 
