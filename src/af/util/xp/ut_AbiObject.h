@@ -18,24 +18,24 @@
  * 02111-1307, USA.
  */
 
-#ifndef XAP_ABIOBJECT_H
-#define XAP_ABIOBJECT_H
+#ifndef UT_ABIOBJECT_H
+#define UT_ABIOBJECT_H
 
 #include <stdlib.h>	// size_t
 
 // uncomment this for memory management (experimental)
 //#define MANAGE_MEMORY 1
 
-class XAP_AbiObject {
+class UT_AbiObject {
 
  public:
 
-  XAP_AbiObject ();
-  virtual ~XAP_AbiObject ();
+  UT_AbiObject ();
+  virtual ~UT_AbiObject ();
 
   virtual size_t hashcode () const;
 
-  virtual bool equals (XAP_AbiObject * other) const;
+  virtual bool equal (UT_AbiObject * other) const;
 
   size_t ref ();
   size_t unref ();
@@ -49,10 +49,10 @@ class XAP_AbiObject {
 
  private:
 
-  XAP_AbiObject (const XAP_AbiObject &);   // no impl
-  void operator=(const XAP_AbiObject &);   // no impl
+  UT_AbiObject (const UT_AbiObject &);   // no impl
+  void operator=(const UT_AbiObject &);   // no impl
 
   size_t m_refs;
 };
 
-#endif /* XAP_ABIOBJECT_H */
+#endif /* UT_ABIOBJECT_H */

@@ -21,13 +21,12 @@
 #define UT_PAIR_H
 
 #include <stdlib.h>
-#include "xap_AbiObject.h"
 
 typedef void* pair_type;
 
 #ifndef ABI_OPT_STL
 
-class UT_Pair : public XAP_AbiObject
+class UT_Pair
 {
 public:
 	UT_Pair(const pair_type first, const pair_type second);

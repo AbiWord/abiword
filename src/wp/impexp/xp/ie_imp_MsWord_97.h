@@ -24,6 +24,7 @@
 // The importer/reader for Microsoft Word Documents
 
 #include "ie_imp.h"
+#include "ut_string_class.h"
 
 //
 // forward decls so that we don't have to #include "wv.h" here
@@ -105,8 +106,7 @@ private:
 
 private:
 
-	UT_UCSChar         *m_pTextRun;
-	UT_uint32           m_iTextRunLength;
+	UT_UCS2String       m_pTextRun;
    	UT_uint32           m_iImageCount;
 	UT_uint32           m_nSections;
 

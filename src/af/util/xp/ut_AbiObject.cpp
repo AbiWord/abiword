@@ -21,7 +21,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "xap_AbiObject.h"
+#include "ut_AbiObject.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 
@@ -35,7 +35,7 @@
  * Hash Codes, and the like. Objects are created with an initial reference
  * Count of 1
  */
-XAP_AbiObject::XAP_AbiObject () 
+UT_AbiObject::UT_AbiObject () 
 	: m_refs (1)
 {
 }
@@ -43,7 +43,7 @@ XAP_AbiObject::XAP_AbiObject ()
 /*!
  * This should only get called when no references to the object exist
  */
-XAP_AbiObject::~XAP_AbiObject ()
+UT_AbiObject::~UT_AbiObject ()
 {
 }
 
@@ -51,7 +51,7 @@ XAP_AbiObject::~XAP_AbiObject ()
  * Increases the reference count of the object
  * /return the current #references
  */
-size_t XAP_AbiObject::ref ()
+size_t UT_AbiObject::ref ()
 {
 	size_t cpy = ++m_refs;
 	return cpy;
@@ -62,7 +62,7 @@ size_t XAP_AbiObject::ref ()
  * If the reference count == 0, deletes the object
  * /return the #references still valid
  */
-size_t XAP_AbiObject::unref ()
+size_t UT_AbiObject::unref ()
 {
 	size_t cpy = --m_refs; // make a copy so that in case we delete 'this'
 	if (!m_refs)
@@ -74,7 +74,7 @@ size_t XAP_AbiObject::unref ()
 /*!
  * /return the #references on the object
  */
-size_t XAP_AbiObject::count ()
+size_t UT_AbiObject::count ()
 {
 	return m_refs;
 }
@@ -84,7 +84,7 @@ size_t XAP_AbiObject::count ()
  * the object so that you can claim ownership by referencing the object
  * or you can just outright delete the object afterwords
  */
-void XAP_AbiObject::sink ()
+void UT_AbiObject::sink ()
 {
 	m_refs = 0;
 }
@@ -92,7 +92,7 @@ void XAP_AbiObject::sink ()
 /*!
  * Simple equality test, returns pointer equality
  */
-bool XAP_AbiObject::equals (XAP_AbiObject * other) const
+bool UT_AbiObject::equal (UT_AbiObject * other) const
 {
 	return (this == other);
 }
@@ -102,7 +102,7 @@ bool XAP_AbiObject::equals (XAP_AbiObject * other) const
  * Should be overridden by subclasses that care or can
  * Generate better hash codes
  */
-size_t XAP_AbiObject::hashcode () const
+size_t UT_AbiObject::hashcode () const
 {
 	// 9987001 is a reasnonably large prime
 	return (size_t) (reinterpret_cast<size_t>(this) * 0x9863b9);
@@ -119,7 +119,7 @@ size_t XAP_AbiObject::hashcode () const
 /*!
  * Allocates memory for one of these objects
  */
-/* static */ void * XAP_AbiObject::operator new (size_t nbytes)
+/* static */ void * UT_AbiObject::operator new (size_t nbytes)
 {
 	UT_DEBUGMSG(("DOM: operator new allocating %d bytes\n", nbytes));
 	UT_ASSERT (nbytes > 0);
@@ -134,16 +134,16 @@ size_t XAP_AbiObject::hashcode () const
 }
 
 /*!
- * Possibly deallocates memory for an XAP_AbiObject
+ * Possibly deallocates memory for an UT_AbiObject
  * if count is 0 or 1, frees the memory
  * if count > 1, decrements the reference count and returns
  */
-/* static */ void XAP_AbiObject::operator delete (void * pbytes, size_t nbytes)
+/* static */ void UT_AbiObject::operator delete (void * pbytes, size_t nbytes)
 {
 	UT_DEBUGMSG(("DOM: operator delete destroying %d bytes\n", nbytes));
 	UT_ASSERT (pbytes && nbytes);
 	
-	XAP_AbiObject * pObj = static_cast <XAP_AbiObject *>(pbytes);
+	UT_AbiObject * pObj = static_cast <UT_AbiObject *>(pbytes);
 	if (pObj->m_refs > 1)
     {
 		pObj->m_refs--; // just lower the reference count, as if they had just called unref()

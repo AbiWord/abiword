@@ -24,7 +24,7 @@
 #include "ut_types.h"
 #include "ie_types.h"
 
-#include "xap_AbiObject.h"
+#include "ut_AbiObject.h"
 #include "ut_vector.h"
 
 class PD_Document;
@@ -34,7 +34,7 @@ class PD_DocumentRange;
 
 class IE_Imp;
 
-class IE_ImpSniffer : public XAP_AbiObject
+class IE_ImpSniffer : public UT_AbiObject
 {
 	friend class IE_Imp;
 	

@@ -25,6 +25,7 @@ noinst_LIBRARIES = libUtil_xp.a
 libUtil_xp_a_SOURCES=\
 	ut_AdobeEncoding.cpp 	\
 	ut_base64.cpp		\
+	ut_AbiObject.cpp	\
 	ut_base64_TestRoutines.cpp	\
 	ut_bytebuf.cpp		\
 	ut_growbuf.cpp		\

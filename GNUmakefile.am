@@ -12,7 +12,7 @@ wv:
 	(cd ../wv; ./configure --enable-shared=no; make); 
 
 psiconv:
-	(cd ../psiconv; ./configure --enable-shared=no; make)
+	(cd ../psiconv; CFLAGS="-O2" ./configure --enable-shared=no; make)
 
 clean: 
 	make -C src clean

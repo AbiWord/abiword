@@ -62,27 +62,28 @@
 void IE_ImpExp_RegisterXP ()
 {
 	IE_Imp::registerImporter(new IE_Imp_AbiWord_1_Sniffer ());
-	IE_Imp::registerImporter(new IE_Imp_GZipAbiWord_Sniffer ());
-	IE_Imp::registerImporter(new IE_Imp_MsWord_97_Sniffer ());
-	IE_Imp::registerImporter(new IE_Imp_RTF_Sniffer ());
-	IE_Imp::registerImporter(new IE_Imp_Text_Sniffer ());
-	IE_Imp::registerImporter(new IE_Imp_EncodedText_Sniffer ());
 	IE_Imp::registerImporter(new IE_Imp_Applix_Sniffer ());
+	IE_Exp::registerExporter(new IE_Exp_AWT_Sniffer ());
 	IE_Imp::registerImporter(new IE_Imp_DocBook_Sniffer ());
+	IE_Imp::registerImporter(new IE_Imp_MsWord_97_Sniffer ());
+	IE_Imp::registerImporter(new IE_Imp_EncodedText_Sniffer ());
 	IE_Imp::registerImporter(new IE_Imp_XSL_FO_Sniffer ());
 	IE_Imp::registerImporter(new IE_Imp_XHTML_Sniffer ());
 	IE_Imp::registerImporter(new IE_Imp_PalmDoc_Sniffer ());
-	IE_Imp::registerImporter(new IE_Imp_WML_Sniffer ());
 	IE_Imp::registerImporter(new IE_Imp_Psion_TextEd_Sniffer ());
 	IE_Imp::registerImporter(new IE_Imp_Psion_Word_Sniffer ());
+	IE_Imp::registerImporter(new IE_Imp_RTF_Sniffer ());
+	IE_Imp::registerImporter(new IE_Imp_Text_Sniffer ());
+	IE_Imp::registerImporter(new IE_Imp_WML_Sniffer ());
+	IE_Imp::registerImporter(new IE_Imp_GZipAbiWord_Sniffer ());
 	
 	IE_Exp::registerExporter(new IE_Exp_AbiWord_1_Sniffer ());
-	IE_Exp::registerExporter(new IE_Exp_AWT_Sniffer ());
 	IE_Exp::registerExporter(new IE_Exp_Applix_Sniffer ());
 	IE_Exp::registerExporter(new IE_Exp_DocBook_Sniffer ());		
 #ifdef DEBUG
 	IE_Exp::registerExporter(new IE_Exp_MsWord_97_Sniffer ());
 #endif	
+	IE_Exp::registerExporter(new IE_Exp_EncodedText_Sniffer ());
 	IE_Exp::registerExporter(new IE_Exp_XSL_FO_Sniffer ());
 	IE_Exp::registerExporter(new IE_Exp_HTML_Sniffer ());
 	IE_Exp::registerExporter(new IE_Exp_LaTeX_Sniffer ());
@@ -93,7 +94,6 @@ void IE_ImpExp_RegisterXP ()
 	IE_Exp::registerExporter(new IE_Exp_RTF_attic_Sniffer ());
 	IE_Exp::registerExporter(new IE_Exp_Text_Sniffer ());
 	IE_Exp::registerExporter(new IE_Exp_HRText_Sniffer ());
-	IE_Exp::registerExporter(new IE_Exp_EncodedText_Sniffer ());
 	IE_Exp::registerExporter(new IE_Exp_WML_Sniffer ());
 	IE_Exp::registerExporter(new IE_Exp_GZipAbiWord_Sniffer ());
 }

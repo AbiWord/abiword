@@ -119,6 +119,7 @@ ABI_FE		= Unix
 ## This is relative to $(ABI_ROOT)/src/pkg
 
 ABIPKGDIR	= freebsd
+PSICONV_PLATFORM_DEFS= CFLAGS='-O2'
 
 __FreeBSD__ = 1 #fix wchar.h stuff
 

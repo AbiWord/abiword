@@ -200,6 +200,7 @@ ABI_FE		= Unix
 ## This is relative to $(ABI_ROOT)/src/pkg
 
 ABIPKGDIR	= linux
+PSICONV_PLATFORM_DEFS= CFLAGS='-O2'
 
 # End of linux defs
 

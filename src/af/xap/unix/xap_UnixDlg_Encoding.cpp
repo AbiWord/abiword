@@ -251,6 +251,8 @@ GtkWidget * XAP_UnixDialog_Encoding::_constructWindow(void)
 	gtk_misc_set_padding (GTK_MISC (labelActivate), 10, 5);
 
 	scrollWindows = gtk_scrolled_window_new(NULL, NULL);
+	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrollWindows),
+					GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
 	gtk_widget_show(scrollWindows);
 	gtk_widget_set_usize(scrollWindows, 350, 210);
 	gtk_container_set_border_width(GTK_CONTAINER(scrollWindows), 10);

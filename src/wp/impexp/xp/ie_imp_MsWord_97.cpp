@@ -351,12 +351,10 @@ bool	IE_Imp_MsWord_97_Sniffer::getDlgLabels (const char ** pszDesc,
 
 IE_Imp_MsWord_97::~IE_Imp_MsWord_97()
 {
-	DELETEPV (m_pTextRun);
 }
 
 IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
-	: IE_Imp (pDocument), m_pTextRun (new UT_UCSChar [DOC_TEXTRUN_SIZE]), 
-	m_iTextRunLength (0), m_iImageCount (0), m_nSections(0)
+	: IE_Imp (pDocument), m_iImageCount (0), m_nSections(0)
 {
 }
 
@@ -396,23 +394,19 @@ void IE_Imp_MsWord_97::pasteFromBuffer (PD_DocumentRange *,
 
 void IE_Imp_MsWord_97::_flush ()
 {
-	if (m_iTextRunLength)
+	if (m_pTextRun.size())
 	{
-		if (!m_pDocument->appendSpan(m_pTextRun, m_iTextRunLength))
+		if (!m_pDocument->appendSpan(m_pTextRun.ucs_str(), m_pTextRun.size()))
 		{
 			UT_DEBUGMSG(("DOM: error appending text run\n"));
 			return;
 		}
-		m_iTextRunLength = 0;
 	}
 }
 
 void IE_Imp_MsWord_97::_appendChar (UT_UCSChar ch)
 {
-	if (m_iTextRunLength == DOC_TEXTRUN_SIZE)
-		_flush ();
-
-    m_pTextRun[m_iTextRunLength++] = ch;
+    m_pTextRun += ch;
 }
 
 /****************************************************************************/
@@ -859,11 +853,11 @@ int IE_Imp_MsWord_97::_endSect (wvParseStruct *ps, UT_uint32 tag,
 	// if we're at the end of a section, we need to check for a section mark
 	// at the end of our character stream and remove it (to prevent page breaks
 	// between sections)
-	if (m_iTextRunLength && 
-		m_pTextRun[m_iTextRunLength-1] == UCS_FF)
-	{
-		m_pTextRun[--m_iTextRunLength] = 0;
-	}
+	if (m_pTextRun.size() && 
+	    m_pTextRun[m_pTextRun.size()-1] == UCS_FF)
+	  {
+		m_pTextRun[m_pTextRun.size()-1] = 0;
+	  }
 	return 0;
 }
 

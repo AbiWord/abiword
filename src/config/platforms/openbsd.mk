@@ -101,5 +101,6 @@ ABI_FE		= Unix
 # End of OpenBSD defs
 
 ABIPKGDIR	= openbsd
+PSICONV_PLATFORM_DEFS= CFLAGS='-O2'
 
 __OpenBSD__ = 1

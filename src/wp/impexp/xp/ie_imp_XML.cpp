@@ -38,6 +38,8 @@
 #include "ap_Prefs.h"
 
 #include "xap_EncodingManager.h"
+#include "ut_string_class.h"
+
 /*****************************************************************/	
 /*****************************************************************/	
 
@@ -279,32 +281,11 @@ void IE_Imp_XML::_charData(const XML_Char *s, int len)
 		// white-space stuff, but it does no harm
 		
 		UT_Byte * ss = (UT_Byte *)s;
-		UT_UCSChar _buf[1024], *buf = _buf;
+		UT_UCS2String buf;
 		UT_Byte currentChar;
-		int bufLen = 0;
 		
 		for (int k=0; k<len; k++)
 		{
-			if (bufLen == NrElements(_buf))		// pump it out in chunks
-			{
-				switch (m_parseState)
-				{
-				case _PS_Block:
-					X_CheckError(m_pDocument->appendSpan(buf,bufLen));
-					break;
-				case _PS_IgnoredWordsItem:
-					if (m_bLoadIgnoredWords)
-					{ 
-						X_CheckError(m_pDocument->appendIgnore(buf,bufLen));
-					}
-					break;
-				default:
-					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-					break;
-				}
-				bufLen = 0;
-			}
-			
 			currentChar = ss[k];
 			
 			if ((ss[k] < 0x80) && (m_lenCharDataSeen > 0))
@@ -318,9 +299,9 @@ void IE_Imp_XML::_charData(const XML_Char *s, int len)
 			if (currentChar == UCS_CR)
 			{
 				if (!m_bWhiteSignificant)
-					buf[bufLen++] = UCS_SPACE;		// substitute a SPACE
+					buf += UCS_SPACE;		// substitute a SPACE
 				else
-					buf[bufLen++] = UCS_LF;
+					buf += UCS_LF;
 				m_bSeenCR = true;
 				continue;
 			}
@@ -336,7 +317,7 @@ void IE_Imp_XML::_charData(const XML_Char *s, int len)
 				{
 					if(!m_bWasSpace)
 					{
-						buf[bufLen++] = UCS_SPACE;
+						buf += UCS_SPACE;
 						m_bWasSpace = true;
 					}
 					continue;
@@ -352,9 +333,9 @@ void IE_Imp_XML::_charData(const XML_Char *s, int len)
 			{
 				if (!m_bSeenCR)		// if not immediately after a CR,
 					if (!m_bWhiteSignificant)
-						buf[bufLen++] = UCS_SPACE;	// substitute a SPACE.  otherwise, eat.
+						buf += UCS_SPACE;	// substitute a SPACE.  otherwise, eat.
 					else
-						buf[bufLen++] = UCS_LF;
+						buf += UCS_LF;
 				m_bSeenCR = false;
 				continue;
 			}
@@ -363,7 +344,7 @@ void IE_Imp_XML::_charData(const XML_Char *s, int len)
 			
 			if (currentChar < 0x80)			// plain us-ascii part of latin-1
 			{
-				buf[bufLen++] = ss[k];		// copy as is.
+				buf += ss[k];		// copy as is.
 			}
 			else if ((currentChar & 0xf0) == 0xf0)	// lead byte in 4-byte surrogate pair
 			{
@@ -392,7 +373,7 @@ void IE_Imp_XML::_charData(const XML_Char *s, int len)
 				m_charDataSeen[m_lenCharDataSeen++] = currentChar;
 				if (m_lenCharDataSeen == m_lenCharDataExpected)
 				{
-					buf[bufLen++] = UT_decodeUTF8char(m_charDataSeen,m_lenCharDataSeen);
+					buf += UT_decodeUTF8char(m_charDataSeen,m_lenCharDataSeen);
 					m_lenCharDataSeen = 0;
 				}
 			}
@@ -400,24 +381,21 @@ void IE_Imp_XML::_charData(const XML_Char *s, int len)
 		
 		// flush out the buffer
 		
-		if (bufLen > 0)
-		{
-			switch (m_parseState)
-			{
-			case _PS_Block:
-				X_CheckError(m_pDocument->appendSpan(buf,bufLen));
-				break;
-			case _PS_IgnoredWordsItem:
-				if (m_bLoadIgnoredWords) 
-				{
-					X_CheckError(m_pDocument->appendIgnore(buf,bufLen));
-				}
-				break;
-			default:
-				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-				break;
-			}
-		}
+		switch (m_parseState)
+		  {
+		  case _PS_Block:
+		    X_CheckError(m_pDocument->appendSpan(buf.ucs_str(), buf.size()));
+		    break;
+		  case _PS_IgnoredWordsItem:
+		    if (m_bLoadIgnoredWords) 
+		      {
+			X_CheckError(m_pDocument->appendIgnore(buf.ucs_str(), buf.size()));
+		      }
+		    break;
+		  default:
+		    UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		    break;
+		  }
 		return;
 	}
 	
