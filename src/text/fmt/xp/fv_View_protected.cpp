@@ -1982,31 +1982,37 @@ void FV_View::_moveInsPtNextPrevScreen(bool bMovingDown)
 	if (bMovingDown)
 	{
 		int delta = pPage->getHeight()/4;
-		while (iNewPoint <= getPoint())
+		while (iNewPoint <= getPoint() && pPage)
 		{
 			if (iYnext+delta > pPage->getHeight())
 			{
 				delta -= pPage->getHeight();
 				pPage = pPage->getNext();
 			}
-			pPage->mapXYToPosition(x, iYnext+delta, 
-								   iNewPoint, bBOL, bEOL,isTOC);
-			delta += pPage->getHeight()/4;
+			if (pPage)
+			{
+				pPage->mapXYToPosition(x, iYnext+delta, 
+									   iNewPoint, bBOL, bEOL,isTOC);
+				delta += pPage->getHeight()/4;
+			}
 		}
 	}
 	else
 	{
 		int delta = pPage->getHeight()/4;
-		while (iNewPoint >= getPoint())
+		while (iNewPoint >= getPoint() && pPage)
 		{
 			if (iYnext+delta < 0)
 			{
 				delta += pPage->getHeight();
 				pPage = pPage->getPrev();
 			}
-			pPage->mapXYToPosition(x, iYnext-delta, 
-								   iNewPoint, bBOL, bEOL,isTOC);
-			delta += pPage->getHeight()/4;
+			if (pPage)
+			{
+				pPage->mapXYToPosition(x, iYnext-delta, 
+									   iNewPoint, bBOL, bEOL,isTOC);
+				delta += pPage->getHeight()/4;
+			}
 		}
 	}
 
@@ -2032,7 +2038,7 @@ void FV_View::_moveInsPtNextPrevScreen(bool bMovingDown)
 	}
 
     // Couldn't advance! Try scanning x across the page at this new iYnext.
-	if(pLine == pNewLine)
+	if(pLine == pNewLine && pPage)
 	{
 		UT_sint32 step = pPage->getWidth()/20 + 1;
 
