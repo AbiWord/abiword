@@ -569,6 +569,8 @@ FIELD_Numbers_CharCount="Caractères"
 FIELD_Numbers_LineCount="Lignes"
 FIELD_Numbers_ParaCount="Paragraphes"
 FIELD_Numbers_NbspCount="Caractères (sans espaces)"
+FIELD_Numbers_EndnoteReference="Référence pour note en fin de document"
+FIELD_Numbers_EndnoteAnchor="Signet pour note en fin de document"
 
 FIELD_PieceTable_Test="Test de Kevin"
 FIELD_PieceTable_MartinTest="Test de Martin"
@@ -700,6 +702,7 @@ DLG_ToggleCase_SentenceCase="Casse de la &amp;phrase"
 DLG_ToggleCase_LowerCase="m&amp;inuscule"
 DLG_ToggleCase_UpperCase="M&amp;AJUSCULE"
 DLG_ToggleCase_TitleCase="Casse De &amp;Titre"
+DLG_ToggleCase_FirstUpperCase="P&amp;remière lettre en majuscule"
 DLG_ToggleCase_ToggleCase="iN&amp;VERSER LA CASSE"
 
 DLG_Background_Title="Changer la couleur de fond"
@@ -729,6 +732,9 @@ DLG_InsertHyperlink_Msg="Sélectionnez un signet dans la liste."
 
 WORD_PassRequired="Mot de passe requis, ceci est un document chiffré"
 WORD_PassInvalid="Mot de passe erronné"
+
+SCRIPT_NOSCRIPTS="Scripts non trouvés"
+SCRIPT_CANTRUN="Ne peut exécuter le script &quot;%s&quot;."
 
 AUTOTEXT_ATTN_1="A l'attention de : "
 AUTOTEXT_ATTN_2="ATTN : "
