@@ -1894,7 +1894,7 @@ bool s_HTML_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 
 					m_utvDataIDs.push_back(dataid);
 
-					sprintf(buf, "%d.png", m_iImgCnt++);
+					sprintf(buf, "%s.png", UT_basename(szValue));
 					m_pie->write("<img alt=\"AbiWord Image");
 					m_pie->write(buf);
 					m_pie->write("\" src=\"");
@@ -2162,7 +2162,7 @@ void s_HTML_Listener::_handleDataItems(void)
 			if (!UT_strcmp(szMimeType, "text/mathml"))
 				sprintf(fname, "%s/%s_%d.mathml", fname, szName, loc);
 			else // PNG Image
-				sprintf(fname, "%s/%s_%d.png", fname, szName, loc);
+				sprintf(fname, "%s/%s.png", fname, UT_basename(szName));
 			
 			fp = fopen (fname, "wb+");
 			
