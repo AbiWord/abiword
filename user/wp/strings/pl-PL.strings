@@ -9,7 +9,7 @@
 
 <!-- First Polish translations provided by Sercxemulo <explo@poczta.wp.pl> and        -->
 <!-- (0.9.6+) by Piotr Banski <bansp@bigfoot.com>. Since February 2002 (0.99.2+)      --> 
-<!-- maintained by Andrzej Pruszynski <abi@rth.coi.waw.pl>. Last update: 05-Jul-2003  -->
+<!-- maintained by Andrzej Pruszynski <abi@rth.coi.waw.pl>. Last update: 06-Jul-2003  -->
 
 <AbiStrings app="AbiWord" ver="1.0" language="pl-PL">
 
@@ -1172,11 +1172,11 @@ MENU_LABEL_TOOLS_SPELLPREFS="&amp;Opcje sprawdzania"
 MENU_LABEL_TOOLS_WORDCOUNT="&amp;Zliczanie s³ów"
 
 MENU_LABEL_VIEW="&amp;Widok"
-MENU_LABEL_VIEW_DEFAULT_TB_LAYOUT="Przywróæ domy¶lne formatowanie"
+MENU_LABEL_VIEW_DEFAULT_TB_LAYOUT="Przywróæ domy¶lne narzêdzia formatowania"
 MENU_LABEL_VIEW_FULLSCREEN="P&amp;e³ny ekran"
 MENU_LABEL_VIEW_HEADFOOT="Nag³ó&amp;wek i stopka"
 MENU_LABEL_VIEW_LOCKSTYLES="Narzêdzia formatowania"
-MENU_LABEL_VIEW_LOCK_TB_LAYOUT="Blokada formatowania"
+MENU_LABEL_VIEW_LOCK_TB_LAYOUT="Blokada narzêdzi formatowania"
 
 MENU_LABEL_VIEW_NORMAL="No&amp;rmalny"
 MENU_LABEL_VIEW_PRINT="&amp;Uk³ad strony"
@@ -1424,8 +1424,8 @@ MENU_STATUSLINE_VIEW=" "
 MENU_STATUSLINE_VIEW_FULLSCREEN="Prze³±cza edycjê do trybu pe³noekranowego."
 MENU_STATUSLINE_VIEW_HEADFOOT="Zmienia tekst w nag³ówku i stopce ka¿dej strony."
 MENU_STATUSLINE_VIEW_LOCKSTYLES="Pozwala na formatowanie tylko przy u¿yciu stylów."
-MENU_STATUSLINE_VIEW_LOCK_TB_LAYOUT="Blokuje paski narzedziowe."
-MENU_STATUSLINE_VIEW_DEFAULT_TB_LAYOUT="Przywraca domy¶lne paski narzêdziowe."
+MENU_STATUSLINE_VIEW_LOCK_TB_LAYOUT="Blokuje narzêdzia formatowania."
+MENU_STATUSLINE_VIEW_DEFAULT_TB_LAYOUT="Przywraca domy¶lne narzêdzia formatowania."
 
 MENU_STATUSLINE_VIEW_NORMAL="Prze³±cza edycjê do trybu normalnego."
 MENU_STATUSLINE_VIEW_PRINT="Prze³±cza edycjê do trybu uk³ad strony."
