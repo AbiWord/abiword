@@ -202,7 +202,7 @@ GtkWidget * AP_UnixDialog_FontChooser::create_windowFontSelection(void)
 	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "vboxMain", vboxMain);
 	gtk_widget_show (vboxMain);
 	gtk_container_add (GTK_CONTAINER (windowFontSelection), vboxMain);
-	gtk_widget_set_usize (vboxMain, 453, -1);
+	gtk_widget_set_usize (vboxMain, 469, -1);
 
 	notebookMain = gtk_notebook_new ();
 	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "notebookMain", notebookMain);
@@ -332,7 +332,7 @@ GtkWidget * AP_UnixDialog_FontChooser::create_windowFontSelection(void)
 	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "frame4", frame4);
 	gtk_widget_show (frame4);
 	gtk_box_pack_start (GTK_BOX (vboxMain), frame4, FALSE, TRUE, 0);
-	gtk_widget_set_usize (frame4, -1, 53);
+	gtk_widget_set_usize (frame4, -1, 69);
 	gtk_container_border_width (GTK_CONTAINER (frame4), 8);
 	gtk_frame_set_shadow_type (GTK_FRAME (frame4), GTK_SHADOW_NONE);
 
@@ -340,7 +340,7 @@ GtkWidget * AP_UnixDialog_FontChooser::create_windowFontSelection(void)
 	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "entryPreview", entryPreview);
 	gtk_widget_show (entryPreview);
 	gtk_container_add (GTK_CONTAINER (frame4), entryPreview);
-	gtk_widget_set_usize (entryPreview, -1, 40);
+	gtk_widget_set_usize (entryPreview, -1, 56);
 	gtk_entry_set_editable (GTK_ENTRY (entryPreview), FALSE);
 	gtk_widget_set_sensitive(entryPreview, FALSE);
 	gtk_entry_set_text (GTK_ENTRY (entryPreview), "ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz");
@@ -472,6 +472,9 @@ void AP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	// build the dialog
 	GtkWidget * cf = create_windowFontSelection();
 	UT_ASSERT(cf);
+
+	// freeze updates of the preview
+	m_blockUpdate = UT_TRUE;
 	
 	// Retrieve all the fonts
 	AP_App * app = m_pUnixFrame->getApp();
@@ -579,6 +582,11 @@ void AP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	gtk_widget_show(GTK_WIDGET(cf));
 	gtk_grab_add(GTK_WIDGET(cf));
 
+	// unfreeze updates of the preview
+	m_blockUpdate = UT_FALSE;
+	// manually trigger an update
+	updatePreview();
+	
 	gtk_main();
 
 	if (m_answer == AP_Dialog_FontChooser::a_OK)
@@ -726,5 +734,102 @@ void AP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 
 void AP_UnixDialog_FontChooser::updatePreview(void)
 {
+	if (m_blockUpdate)
+		return;
+	
+	gchar * fontText[2] = {NULL, NULL};
+	gchar * sizeText[2] = {NULL, NULL};
+	long sizeNumber = 0;
+	AP_UnixFont::style styleNumber;
+
+	GList * selectedRow = NULL;
+	gint rowNumber = 0;
+
+	guint RED = 0;
+	guint GREEN = 1;
+	guint BLUE = 2;
+	gdouble currentColor[3] = { 0, 0, 0 };
+		
+	selectedRow = GTK_CLIST(m_fontList)->selection;
+	if (selectedRow)
+	{
+		rowNumber = GPOINTER_TO_INT(selectedRow->data);
+		gtk_clist_get_text(GTK_CLIST(m_fontList), rowNumber, 0, fontText);
+		UT_ASSERT(fontText && fontText[0]);
+	}
+	else
+	{
+		// if they don't have a font selected, don't do an update
+		return;
+	}
+		
+	selectedRow = GTK_CLIST(m_styleList)->selection;
+	if (selectedRow)
+	{
+		gint style = GPOINTER_TO_INT(selectedRow->data);
+		if (style == LIST_STYLE_NORMAL)
+			styleNumber = AP_UnixFont::STYLE_NORMAL;
+		else if (style == LIST_STYLE_BOLD)
+			styleNumber = AP_UnixFont::STYLE_BOLD;
+		else if (style == LIST_STYLE_ITALIC)
+			styleNumber = AP_UnixFont::STYLE_ITALIC;
+		else if (style == LIST_STYLE_BOLD_ITALIC)
+			styleNumber = AP_UnixFont::STYLE_BOLD_ITALIC;
+		else
+		{
+			UT_ASSERT(0);
+		}
+	}
+	else
+	{
+		styleNumber = AP_UnixFont::STYLE_NORMAL;
+	}
+			
+	selectedRow = GTK_CLIST(m_sizeList)->selection;
+	if (selectedRow)
+	{
+		rowNumber = GPOINTER_TO_INT(selectedRow->data);
+		gtk_clist_get_text(GTK_CLIST(m_sizeList), rowNumber, 0, sizeText);
+		UT_ASSERT(sizeText && sizeText[0]);
+
+		sizeNumber = atol(sizeText[0]);
+	}
+	else
+	{
+		// this should be had from system-wide preferences
+		sizeNumber = 10;
+	}
+	
+		
+	gtk_color_selection_get_color(GTK_COLOR_SELECTION(m_colorSelector), currentColor);
+			
+	char buf_color[6];
+	sprintf(buf_color, "%02x%02x%02x",
+			(unsigned int) (currentColor[RED] 	* (gdouble) 255.0),
+			(unsigned int) (currentColor[GREEN]	* (gdouble) 255.0),
+			(unsigned int) (currentColor[BLUE] 	* (gdouble) 255.0));
+
+	// what will we do with these?
+	UT_Bool bStrikeOut = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_checkStrikeOut));
+	UT_Bool bUnderline = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_checkUnderline));
+
+	AP_UnixFont * tempUnixFont = m_fontManager->getFont((const char *) fontText[0], styleNumber);
+	UT_ASSERT(tempUnixFont);
+	
+	GdkFont * tempGdkFont = tempUnixFont->getGdkFont(sizeNumber);
+	UT_ASSERT(tempGdkFont);
+
+	GtkStyle * style = gtk_style_new();
+	gdk_font_unref(style->font);
+	style->font = tempGdkFont;
+	gdk_font_ref(style->font);
+
+	// this looks kinda dangerous (it makes the text color like normal, even
+	// though it can't be edited).
+	style->fg[GTK_STATE_INSENSITIVE] = style->fg[GTK_STATE_ACTIVE];
+
+	gtk_widget_set_style(m_previewEntry, style);
+	gtk_style_unref(style);
+
 	return;
 }

@@ -50,6 +50,8 @@ public:
 
 protected:
 
+	UT_Bool 			m_blockUpdate;
+	
 	// careful, these must be in the order the
 	// list box will show them (Windows order)
 	typedef enum
