@@ -1023,6 +1023,15 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */, EV_EditMouseButton 
 	
 	(static_cast<FV_View *>(m_pView))->getTopRulerInfo(&m_infoCache);
 
+	// Set this in case we never get a mouse motion event
+        UT_sint32 xAbsLeft = _getFirstPixelInColumn(    &m_infoCache,
+                                                        m_infoCache.m_iCurrentColumn);
+        UT_sint32 xrel = ((UT_sint32)x) - xAbsLeft;
+        ap_RulerTicks tick(m_pG,m_dim);
+        UT_sint32 xgrid = _snapPixelToGrid(xrel,tick);
+        m_draggingCenter = xAbsLeft + xgrid;
+
+
 	// first hit-test against the tab toggle control
 
 	UT_Rect rToggle;
@@ -1143,12 +1152,6 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */, EV_EditMouseButton 
 		m_bBeforeFirstMotion = UT_TRUE;
 
 		// this is a new widget, so it needs more work to get started
-		ap_RulerTicks tick(m_pG,m_dim);
-
-		UT_sint32 xAbsLeft = _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn);
-		UT_sint32 xrel = ((UT_sint32)x) - xAbsLeft;
-		UT_sint32 xgrid = _snapPixelToGrid(xrel,tick);
-
 		m_dragStart = xgrid;
 
 		double dgrid = _scalePixelDistanceToUnits(xrel,tick);
@@ -1164,8 +1167,6 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */, EV_EditMouseButton 
 
 		m_bBeforeFirstMotion = UT_FALSE;
 	}
-
-	return;
 }
 
 /*****************************************************************/
