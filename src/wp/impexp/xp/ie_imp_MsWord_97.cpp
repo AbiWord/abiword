@@ -80,6 +80,177 @@ static int specCharProc (wvParseStruct *ps, U16 eachchar, CHP* achp);
 static int eleProc (wvParseStruct *ps, wvTag tag, void *props, int dirty);
 static int docProc (wvParseStruct *ps, wvTag tag);
 
+/*!
+    Translates MS numerical id's for standard styles into our names
+	The style names that have been commented out are those that do not
+    have currently a localised equivalent in AW
+*/
+static const XML_Char * s_translateStyleId(UT_uint32 id)
+{
+	if(id >= 4094)
+	{
+		return NULL;
+	}
+
+	// The style names that have been commented out are those that do
+	// not currently have a localised equivalent in AW
+	switch(id)
+	{
+		case 0:  return "Normal";
+		case 1:  return "Heading 1";
+		case 2:  return "Heading 2";
+		case 3:  return "Heading 3";
+		case 4:  return NULL /*"Heading 4"*/;
+		case 5:  return NULL /*"Heading 5"*/;
+		case 6:  return NULL /*"Heading 6"*/;
+		case 7:  return NULL /*"Heading 7"*/;
+		case 8:  return NULL /*"Heading 8"*/;
+		case 9:  return NULL /*"Heading 9"*/;
+		case 10: return NULL /*"Index 1"*/;
+		case 11: return NULL /*"Index 2"*/;
+		case 12: return NULL /*"Index 3"*/;
+		case 13: return NULL /*"Index 4"*/;
+		case 14: return NULL /*"Index 5"*/;
+		case 15: return NULL /*"Index 6"*/;
+		case 16: return NULL /*"Index 7"*/;
+		case 17: return NULL /*"Index 8"*/;
+		case 18: return NULL /*"Index 9"*/;
+		case 19: return NULL /*"TOC 1"*/;
+		case 20: return NULL /*"TOC 2"*/;
+		case 21: return NULL /*"TOC 3"*/;
+		case 22: return NULL /*"TOC 4"*/;
+		case 23: return NULL /*"TOC 5"*/;
+		case 24: return NULL /*"TOC 6"*/;
+		case 25: return NULL /*"TOC 7"*/;
+		case 26: return NULL /*"TOC 8"*/;
+		case 27: return NULL /*"TOC 9"*/;
+		case 28: return NULL /*"Normal Indent"*/;
+		case 29: return "Footnote Text";
+		case 30: return NULL /*"Comment Text"*/;
+		case 31: return NULL /*"Header"*/;			
+		case 32: return NULL /*"Footer"*/;
+		case 33: return NULL /*"Index Heading"*/;
+		case 34: return NULL /*"Caption"*/;
+		case 35: return NULL /*"Table of Figures"*/;
+		case 36: return NULL /*"Envelope Address"*/;
+		case 37: return NULL /*"Envelope Return"*/;
+		case 38: return "Footnote Reference";
+		case 39: return NULL /*"Comment Reference"*/;
+		case 40: return NULL /*"Line Number"*/;
+		case 41: return NULL /*"Page Number"*/;
+		case 42: return "Endnote Reference";
+		case 43: return "Endnote Text";
+		case 44: return NULL /*"Index of Authorities"*/;
+		case 45: return NULL /*"Macro Text"*/;
+		case 46: return NULL /*"TOA Heading"*/;
+		case 47: return NULL /*"List"*/;
+		case 48: return "Bulleted List";
+		case 49: return "Numbered List";
+		case 50: return NULL /*"List 2"*/;
+		case 51: return NULL /*"List 3"*/;
+		case 52: return NULL /*"List 4"*/;
+		case 53: return NULL /*"List 5"*/;
+		case 54: return NULL /*"List Bullet 2"*/;
+		case 55: return NULL /*"List Bullet 3"*/;
+		case 56: return NULL /*"List Bullet 4"*/;
+		case 57: return NULL /*"List Bullet 5"*/;
+		case 58: return NULL /*"List Number 2"*/;
+		case 59: return NULL /*"List Number 3"*/;
+		case 60: return NULL /*"List Number 4"*/;
+		case 61: return NULL /*"List Number 5"*/;
+		case 62: return NULL /*"Title"*/;
+		case 63: return NULL /*"Closing"*/;	
+		case 64: return NULL /*"Signature"*/;
+		case 65: return NULL /*"Default Paragraph Font"*/;
+		case 66: return NULL /*"Body Text"*/;
+		case 67: return NULL /*"Body Text Indent"*/;
+		case 68: return NULL /*"List Continue"*/;
+		case 69: return NULL /*"List Continue 2"*/;
+		case 70: return NULL /*"List Continue 3"*/;
+		case 71: return NULL /*"List Continue 4"*/;
+		case 72: return NULL /*"List Continue 5"*/;
+		case 73: return NULL /*"Message Header"*/;
+		case 74: return NULL /*"Subtitle"*/;
+		case 75: return NULL /*"Salutation"*/;
+		case 76: return NULL /*"Date"*/;
+		case 77: return NULL /*"Body Text First Indent"*/;
+		case 78: return NULL /*"Body Text First Indent 2"*/;
+		case 79: return NULL /*"Note Heading"*/;
+		case 80: return NULL /*"Body Text 2"*/;
+		case 81: return NULL /*"Body Text 3"*/;
+		case 82: return NULL /*"Body Text Indent 2"*/;
+		case 83: return NULL /*"Body Text Indent 3"*/;
+		case 84: return "Block Text";
+		case 85: return NULL /*"Hyperlink"*/;
+		case 86: return NULL /*"FollowedHyperlink"*/;
+		case 87: return NULL /*"Strong"*/;
+		case 88: return NULL /*"Emphasis"*/;
+		case 89: return NULL /*"Document Map"*/;
+		case 90: return "Plain Text";
+		case 91: return NULL /*"Email Signature"*/;
+			
+		case 94: return NULL /*"Normal (Web)"*/;
+		case 95: return NULL /*"HTML Acronym"*/;
+		case 96: return NULL /*"HTML Address"*/;
+		case 97: return NULL /*"HTML Cite"*/;
+		case 98: return NULL /*"HTML Code"*/;
+		case 99: return NULL /*"HTML Definition"*/;
+		case 100: return NULL /*"HTML Keyboard"*/;
+		case 101: return NULL /*"HTML Preformatted"*/;
+		case 102: return NULL /*"HTML Sample"*/;
+		case 103: return NULL /*"HTML Typewriter"*/;
+		case 104: return NULL /*"HTML Variable"*/;
+		case 105: return NULL /*"Table Normal"*/;
+
+		case 107: return NULL /*"No List"*/;
+
+		default:
+			UT_DEBUGMSG(("Unknown style Id [%d]; Please submit this document with a bug report!\n", id));
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			return NULL;
+	}
+	return NULL;
+}
+
+/*!
+    Strip characters that would confuse either the xml parser or our
+    property parser; caller is responsible to free the returned pointer
+*/
+static char * s_stripDangerousChars(const char *s)
+{
+	UT_uint32 j, k;
+	if(!s)
+		return NULL;
+	
+	char * t = (char*) malloc(strlen(s)+1);
+	UT_return_val_if_fail(t,NULL);
+	
+	for(j = 0, k = 0; j < strlen(s); )
+	{
+		switch(s[j])
+		{
+			default:
+				t[k++] = s[j++];
+				break;
+
+				// characters that would confuse the
+				// xml parser or our own property parser
+			case '<':
+			case '>':
+			case ':':
+			case ';':
+			case '&':
+			case '\"':
+				j++;
+				break;
+		}
+	}
+	
+	t[k] = 0;
+	
+	return t;
+}
+
 //
 // DOC uses an unsigned int color index
 //
@@ -268,35 +439,53 @@ s_mapDocToAbiListId (MSWordListIdType id)
 }
 
 /*!
- * Map msword list enum back to an abiword list delimiter tag
+ * form AW list deliminator string
  */
-static const char *
-s_mapDocToAbiListDelim (MSWordListIdType id)
+static s_mapDocToAbiListDelim (UT_uint16 * pStr, UT_uint32 iLen, UT_String &sDelim)
 {
-  switch (id)
+	// the Word format string looks like this
+	//    prefix '\0' suffix
+	// and the '\0' represents the location of the list number/bullet
+	UT_uint16 * pPfx = NULL;
+	UT_uint16 * pSfx = NULL;
+
+	if(iLen && *pStr)
+		pPfx = pStr;
+
+	UT_sint32 i;
+	for(i = 0; i < (UT_sint32)iLen - 1; i++)
 	{
-	case WLNF_UPPER_ROMAN: // upper roman
-	  return "%L.";
-
-	case WLNF_LOWER_ROMAN: // lower roman
-	  return "%L.";
-
-	case WLNF_UPPER_LETTER: // upper letter
-	  return "%L)";
-
-	case WLNF_LOWER_LETTER: // lower letter
-	  return "%L)";
-
-	case WLNF_BULLETS: // bullet list
-	  return "%L";
-
-	case WLNF_ORDINAL: // ordinal
-
-	case WLNF_HEBREW_NUMBERS:
-
-	default:
-	  return "%L.";
+		if(pStr[i] == 0)
+		{
+			pSfx = pStr + i + 1;
+			break;
+		}
 	}
+	
+	UT_UTF8String sUtf8Pfx;
+	UT_UTF8String sUtf8Sfx;
+
+	i= 0;
+	while(pPfx && *pPfx && i < (UT_sint32)iLen)
+	{
+		UT_UCS4Char c = *pPfx;
+		sUtf8Pfx.appendUCS4(&c,1);
+		i++;
+		pPfx++;
+	}
+
+	i++; // move past the '\0' divider
+	while(pSfx && *pSfx && i < (UT_sint32)iLen)
+	{
+		UT_UCS4Char c = *pSfx;
+		sUtf8Sfx.appendUCS4(&c,1);
+		i++;
+		pSfx++;
+	}
+
+	sDelim.clear();
+
+	UT_String_sprintf(sDelim, "%s%%L%s",sUtf8Pfx.utf8_str(), sUtf8Sfx.utf8_str());
 }
 
 /*!
@@ -371,44 +560,6 @@ static bool s_isLanguageRTL(short unsigned int lid)
 	return (UTLANG_RTL == l.getOrderFromProperty(s));
 }
 
-/*!
-    Strip characters that would confuse either the xml parser or our
-    property parser; caller is responsible to free the returned pointer
-*/
-static char * s_stripDangerousChars(const char *s)
-{
-	UT_uint32 j, k;
-	if(!s)
-		return NULL;
-	
-	char * t = (char*) malloc(strlen(s)+1);
-	UT_return_val_if_fail(t,NULL);
-	
-	for(j = 0, k = 0; j < strlen(s); )
-	{
-		switch(s[j])
-		{
-			default:
-				t[k++] = s[j++];
-				break;
-
-				// characters that would confuse the
-				// xml parser or our own property parser
-			case '<':
-			case '>':
-			case ':':
-			case ';':
-			case '&':
-			case '\"':
-				j++;
-				break;
-		}
-	}
-	
-	t[k] = 0;
-	
-	return t;
-}
 
 /****************************************************************************/
 /****************************************************************************/
@@ -1198,18 +1349,38 @@ int IE_Imp_MsWord_97::_docProc (wvParseStruct * ps, UT_uint32 tag)
 		// (We are interested in the offset of this in the document,
 		// not in the data stream; therefore, we do not add
 		// ps->fib.fcMin for the simple doc
+		// Tthere are some strange docs around that have invalid
+		// values for the end of endnote section (e.g. the doc from
+		// bug 3283); that's what the if's are about.
 		m_iTextStart      = 0;
 		m_iTextEnd        = ps->fib.ccpText;
+		if(m_iTextEnd == 0xffffffff)
+			m_iTextEnd = m_iTextStart;
+		
 		m_iFootnotesStart = m_iTextEnd;
 		m_iFootnotesEnd   = m_iFootnotesStart + ps->fib.ccpFtn;
+		if(m_iFootnotesEnd == 0xffffffff)
+			m_iFootnotesEnd = m_iFootnotesStart;
+
 		m_iHeadersStart   = m_iFootnotesEnd;
 		m_iHeadersEnd     = m_iHeadersStart + ps->fib.ccpHdr;
+		if(m_iHeadersEnd == 0xffffffff)
+			m_iHeadersEnd = m_iHeadersStart;
+
 		m_iMacrosStart    = m_iHeadersEnd;
 		m_iMacrosEnd      = m_iMacrosStart + ps->fib.ccpMcr;
+		if(m_iMacrosEnd == 0xffffffff)
+			m_iMacrosEnd = m_iMacrosStart;
+
 		m_iAnnotationsStart = m_iMacrosEnd;
 		m_iAnnotationsEnd = m_iAnnotationsStart + ps->fib.ccpAtn;
+		if(m_iAnnotationsEnd == 0xffffffff)
+			m_iAnnotationsEnd = m_iAnnotationsStart;
+
 		m_iEndnotesStart  = m_iAnnotationsEnd;
 		m_iEndnotesEnd    = m_iEndnotesStart + ps->fib.ccpEdn;
+		if(m_iEndnotesEnd == 0xffffffff)
+			m_iEndnotesEnd = m_iEndnotesStart;
 		
 		// now retrieve the note info ...
 		_handleNotes(ps);
@@ -2234,8 +2405,10 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 		list_atts[iOffset++] = szStartValue.c_str();
 
 		// list delimiter
+		UT_String sDelim;
+		s_mapDocToAbiListDelim (apap->linfo.numberstr,apap->linfo.numberstr_size,sDelim);
 		list_atts[iOffset++] = "list-delim";
-		list_atts[iOffset++] = s_mapDocToAbiListDelim (static_cast<MSWordListIdType>(apap->linfo.format));
+		list_atts[iOffset++] = sDelim.c_str();
 
 		list_atts[iOffset++] = "level";
 		UT_String_sprintf(propBuffer, "%d", apap->ilvl + 1); // Word level starts at 0, Abi's at 1
@@ -2360,11 +2533,29 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 	// we need to be able to tell to wv not to do this expansion
 	if(apap->stylename[0])
 	{
-		propsArray[i++] = "style";
-		char * t = s_stripDangerousChars(apap->stylename);
-		m_paraStyle = t;
-		FREEP(t);
-		propsArray[i++] = m_paraStyle.c_str();
+		const STD * pSTD = ps->stsh.std;
+		UT_uint32 iCount = ps->stsh.Stshi.cstd;
+
+		if(apap->istd != istdNil && apap->istd < iCount)
+		{
+			propsArray[i++] = "style";
+			
+			char * t = NULL;
+			const XML_Char * pName = s_translateStyleId(pSTD[apap->istd].sti);
+		
+			if(pName)
+			{
+				m_paraStyle = pName;
+			}
+			else
+			{
+				m_paraStyle = t = s_stripDangerousChars(pSTD[apap->istd].xstzName);
+			}
+
+			FREEP(t);
+			propsArray[i++] = m_paraStyle.c_str();
+		}
+		
 	}
 
 	// NULL
@@ -2547,11 +2738,27 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 	
 	if(achp->stylename[0])
 	{
-	    propsArray[propsOffset++] = static_cast<XML_Char *>("style");
-		char * t = s_stripDangerousChars(achp->stylename);
-		m_charStyle = t;
-		FREEP(t);
-	    propsArray[propsOffset++] = m_charStyle.c_str();
+		const STD * pSTD = ps->stsh.std;
+		UT_uint32 iCount = ps->stsh.Stshi.cstd;
+		
+		if(achp->istd != istdNil && achp->istd < iCount)
+		{
+			propsArray[propsOffset++] = static_cast<XML_Char *>("style");
+			char * t = NULL;
+			const XML_Char * pName = s_translateStyleId(pSTD[achp->istd].sti);
+		
+			if(pName)
+			{
+				m_charStyle = pName;
+			}
+			else
+			{
+				m_charStyle = t = s_stripDangerousChars(pSTD[achp->istd].xstzName);
+			}
+
+			FREEP(t);
+			propsArray[propsOffset++] = m_charStyle.c_str();
+		}
 	}
 
 	// woah - major error here
@@ -3554,137 +3761,6 @@ void IE_Imp_MsWord_97::_generateParaProps(UT_String &s, const PAP * apap, wvPars
 
 }
 
-/*!
-    Translates MS numerical id's for standard styles into our names
-	The style names that have been commented out are those that do not
-    have currently a localised equivalent in AW
-*/
-static const XML_Char * s_translateStyleId(UT_uint32 id)
-{
-	if(id >= 4094)
-	{
-		return NULL;
-	}
-
-	// The style names that have been commented out are those that do
-	// not currently have a localised equivalent in AW
-	switch(id)
-	{
-		case 0:  return "Normal";
-		case 1:  return "Heading 1";
-		case 2:  return "Heading 2";
-		case 3:  return "Heading 3";
-		case 4:  return NULL /*"Heading 4"*/;
-		case 5:  return NULL /*"Heading 5"*/;
-		case 6:  return NULL /*"Heading 6"*/;
-		case 7:  return NULL /*"Heading 7"*/;
-		case 8:  return NULL /*"Heading 8"*/;
-		case 9:  return NULL /*"Heading 9"*/;
-		case 10: return NULL /*"Index 1"*/;
-		case 11: return NULL /*"Index 2"*/;
-		case 12: return NULL /*"Index 3"*/;
-		case 13: return NULL /*"Index 4"*/;
-		case 14: return NULL /*"Index 5"*/;
-		case 15: return NULL /*"Index 6"*/;
-		case 16: return NULL /*"Index 7"*/;
-		case 17: return NULL /*"Index 8"*/;
-		case 18: return NULL /*"Index 9"*/;
-		case 19: return NULL /*"TOC 1"*/;
-		case 20: return NULL /*"TOC 2"*/;
-		case 21: return NULL /*"TOC 3"*/;
-		case 22: return NULL /*"TOC 4"*/;
-		case 23: return NULL /*"TOC 5"*/;
-		case 24: return NULL /*"TOC 6"*/;
-		case 25: return NULL /*"TOC 7"*/;
-		case 26: return NULL /*"TOC 8"*/;
-		case 27: return NULL /*"TOC 9"*/;
-		case 28: return NULL /*"Normal Indent"*/;
-		case 29: return "Footnote Text";
-		case 30: return NULL /*"Comment Text"*/;
-		case 31: return NULL /*"Header"*/;			
-		case 32: return NULL /*"Footer"*/;
-		case 33: return NULL /*"Index Heading"*/;
-		case 34: return NULL /*"Caption"*/;
-		case 35: return NULL /*"Table of Figures"*/;
-		case 36: return NULL /*"Envelope Address"*/;
-		case 37: return NULL /*"Envelope Return"*/;
-		case 38: return "Footnote Reference";
-		case 39: return NULL /*"Comment Reference"*/;
-		case 40: return NULL /*"Line Number"*/;
-		case 41: return NULL /*"Page Number"*/;
-		case 42: return "Endnote Reference";
-		case 43: return "Endnote Text";
-		case 44: return NULL /*"Index of Authorities"*/;
-		case 45: return NULL /*"Macro Text"*/;
-		case 46: return NULL /*"TOA Heading"*/;
-		case 47: return NULL /*"List"*/;
-		case 48: return "Bulleted List";
-		case 49: return "Numbered List";
-		case 50: return NULL /*"List 2"*/;
-		case 51: return NULL /*"List 3"*/;
-		case 52: return NULL /*"List 4"*/;
-		case 53: return NULL /*"List 5"*/;
-		case 54: return NULL /*"List Bullet 2"*/;
-		case 55: return NULL /*"List Bullet 3"*/;
-		case 56: return NULL /*"List Bullet 4"*/;
-		case 57: return NULL /*"List Bullet 5"*/;
-		case 58: return NULL /*"List Number 2"*/;
-		case 59: return NULL /*"List Number 3"*/;
-		case 60: return NULL /*"List Number 4"*/;
-		case 61: return NULL /*"List Number 5"*/;
-		case 62: return NULL /*"Title"*/;
-		case 63: return NULL /*"Closing"*/;	
-		case 64: return NULL /*"Signature"*/;
-		case 65: return NULL /*"Default Paragraph Font"*/;
-		case 66: return NULL /*"Body Text"*/;
-		case 67: return NULL /*"Body Text Indent"*/;
-		case 68: return NULL /*"List Continue"*/;
-		case 69: return NULL /*"List Continue 2"*/;
-		case 70: return NULL /*"List Continue 3"*/;
-		case 71: return NULL /*"List Continue 4"*/;
-		case 72: return NULL /*"List Continue 5"*/;
-		case 73: return NULL /*"Message Header"*/;
-		case 74: return NULL /*"Subtitle"*/;
-		case 75: return NULL /*"Salutation"*/;
-		case 76: return NULL /*"Date"*/;
-		case 77: return NULL /*"Body Text First Indent"*/;
-		case 78: return NULL /*"Body Text First Indent 2"*/;
-		case 79: return NULL /*"Note Heading"*/;
-		case 80: return NULL /*"Body Text 2"*/;
-		case 81: return NULL /*"Body Text 3"*/;
-		case 82: return NULL /*"Body Text Indent 2"*/;
-		case 83: return NULL /*"Body Text Indent 3"*/;
-		case 84: return "Block Text";
-		case 85: return NULL /*"Hyperlink"*/;
-		case 86: return NULL /*"FollowedHyperlink"*/;
-		case 87: return NULL /*"Strong"*/;
-		case 88: return NULL /*"Emphasis"*/;
-		case 89: return NULL /*"Document Map"*/;
-		case 90: return "Plain Text";
-		case 91: return NULL /*"Email Signature"*/;
-			
-		case 94: return NULL /*"Normal (Web)"*/;
-		case 95: return NULL /*"HTML Acronym"*/;
-		case 96: return NULL /*"HTML Address"*/;
-		case 97: return NULL /*"HTML Cite"*/;
-		case 98: return NULL /*"HTML Code"*/;
-		case 99: return NULL /*"HTML Definition"*/;
-		case 100: return NULL /*"HTML Keyboard"*/;
-		case 101: return NULL /*"HTML Preformatted"*/;
-		case 102: return NULL /*"HTML Sample"*/;
-		case 103: return NULL /*"HTML Typewriter"*/;
-		case 104: return NULL /*"HTML Variable"*/;
-		case 105: return NULL /*"Table Normal"*/;
-
-		case 107: return NULL /*"No List"*/;
-
-		default:
-			UT_DEBUGMSG(("Unknown style Id [%d]; Please submit this document with a bug report!\n", id));
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			return NULL;
-	}
-	return NULL;
-}
 
 /*! imports a stylesheet from our document */
 
@@ -3745,16 +3821,20 @@ void IE_Imp_MsWord_97::_handleStyleSheet(const wvParseStruct *ps)
 			if(pSTD->istdNext != istdNil)
 			{
 				attribs[iOffset++] = PT_FOLLOWEDBY_ATTRIBUTE_NAME;
-				f = s_stripDangerousChars((pSTDBase + pSTD->istdNext)->xstzName);
-				attribs[iOffset++] = f;
+				const char * t = s_translateStyleId(pSTD->istdNext);
+				if(!t)
+					t = f = s_stripDangerousChars((pSTDBase + pSTD->istdNext)->xstzName);
+				attribs[iOffset++] = t;
 			}
 		}
 
 		if(pSTD->istdBase != istdNil)
 		{
 			attribs[iOffset++] = PT_BASEDON_ATTRIBUTE_NAME;
-			b = s_stripDangerousChars((pSTDBase + pSTD->istdBase)->xstzName);
-			attribs[iOffset++] = b;
+			const char * t = s_translateStyleId(pSTD->istdBase);
+			if(!t)
+				t = b = s_stripDangerousChars((pSTDBase + pSTD->istdBase)->xstzName);
+			attribs[iOffset++] = t;
 		}
 		
 		// now we want to generate props
