@@ -132,7 +132,7 @@ int AP_UnixGnomeApp::main(const char * szAppName, int argc, const char ** argv)
 	// Check to see if we've been activated as a control by OAF
 	//
 	bool bControlFactory = false;
-  	for (UT_uint32 k = 1; k < XArgs.m_argc; k++)
+  	for (UT_sint32 k = 1; k < XArgs.m_argc; k++)
 	  if (*XArgs.m_argv[k] == '-')
 	    if (strstr(XArgs.m_argv[k],"GNOME_AbiWord_ControlFactory") != 0)
 	      {
@@ -173,7 +173,7 @@ int AP_UnixGnomeApp::main(const char * szAppName, int argc, const char ** argv)
 	//
 
 	bool bNautilusFactory = false;
-  	for (UT_uint32 k = 1; k < XArgs.m_argc; k++)
+  	for (UT_sint32 k = 1; k < XArgs.m_argc; k++)
 	{
 	  if (*XArgs.m_argv[k] == '-')
 	    if (strstr(XArgs.m_argv[k],"nautilus_abiword_view_factory") != 0)
@@ -323,7 +323,7 @@ void AP_UnixGnomeApp::initPopt(AP_Args *Args)
 //-------------------------------------------------------------------
 
 /*****************************************************************/
-/* Implements the Bonobo/PropertyBag:1.0 interface
+/* Implements the Bonobo/PropertyBag:1.0 interface               */
 /*****************************************************************/
 
 /* 

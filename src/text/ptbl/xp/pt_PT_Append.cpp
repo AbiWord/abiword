@@ -141,7 +141,6 @@ bool pt_PieceTable::appendFmt(const UT_Vector * pVecAttributes)
 	if (!m_fragments.getFirst())
 		return false;
 
-	PT_AttrPropIndex indexAP;
 	if (!m_varset.storeAP(pVecAttributes,&loading.m_indexCurrentInlineAP))
 		return false;
 

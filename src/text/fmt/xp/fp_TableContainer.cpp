@@ -1070,11 +1070,11 @@ void fp_CellContainer::setToAllocation(void)
 {
 	m_bBgDirty = true;
 	setWidthInLayoutUnits(m_MyAllocation.width);
-	setWidth(m_MyAllocation.width * SCALE_TO_SCREEN);
+	setWidth((UT_sint32)(m_MyAllocation.width * SCALE_TO_SCREEN));
 	setHeightLayoutUnits(m_MyAllocation.height);
 	setHeight(m_MyAllocation.height);
 	setYInLayoutUnits(m_MyAllocation.y);
-	setX(m_MyAllocation.x * SCALE_TO_SCREEN);
+	setX((UT_sint32)(m_MyAllocation.x * SCALE_TO_SCREEN));
 	UT_DEBUGMSG(("SEVIOR: set to width %d, height %d,y %d,x %d \n", m_MyAllocation.width,m_MyAllocation.height,m_MyAllocation.y,m_MyAllocation.x));
 	setMaxHeight(m_MyAllocation.height);
 	setY(m_MyAllocation.y);
@@ -1992,7 +1992,7 @@ void fp_TableContainer::setToAllocation(void)
 	bool bDeleteBrokenTables = false;
 	setHeightLayoutUnits(iHeightLO);
 	setMaxHeightInLayoutUnits(iHeightLO);
-	setWidth(m_MyAllocation.width * SCALE_TO_SCREEN);
+	setWidth((UT_sint32)(m_MyAllocation.width * SCALE_TO_SCREEN));
 	if(getHeight() != m_MyAllocation.height)
 	{
 		bDeleteBrokenTables = true;
