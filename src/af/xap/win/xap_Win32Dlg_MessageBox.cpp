@@ -84,7 +84,7 @@ void XAP_Win32Dialog_MessageBox::runModal(XAP_Frame * pFrame)
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
 
-	int res = MessageBox(hwnd, m_szMessage, szCaption, flags);
+	int res = MessageBox(hwnd, XAP_Win32App::getWideString(m_szMessage), XAP_Win32App::getWideString(szCaption), flags); //!TODO Using ANSI function - are you sure?
 
 	switch (res)
 	{

@@ -99,7 +99,7 @@ void XAP_Win32Dialog_Insert_Symbol::activate(void)
 
 	// Update the caption
 	ConstructWindowName();
-	SetWindowText(m_hDlg, (AP_Win32App::s_fromUTF8ToAnsi(m_WindowName)).c_str());
+	setDialogTitle(m_WindowName);	
 
 	iResult = ShowWindow( m_hDlg, SW_SHOW );
 
@@ -118,7 +118,7 @@ void XAP_Win32Dialog_Insert_Symbol::notifyActiveFrame(XAP_Frame *pFrame)
 	{
 		// Update the caption
 		ConstructWindowName();
-		SetWindowText(m_hDlg, (AP_Win32App::s_fromUTF8ToAnsi(m_WindowName)).c_str());
+		setDialogTitle(m_WindowName);	
 
 		SetWindowLong(m_hDlg, GWL_HWNDPARENT, (long)frameHWND);
 		SetWindowPos(m_hDlg, NULL, 0, 0, 0, 0,
@@ -140,7 +140,6 @@ void XAP_Win32Dialog_Insert_Symbol::notifyCloseFrame(XAP_Frame *pFrame)
 BOOL XAP_Win32Dialog_Insert_Symbol::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
 	m_hDlg = hWnd;
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	// localize controls
 	localizeControlText(XAP_RID_DIALOG_INSERTSYMBOL_INSERT_BUTTON,XAP_STRING_ID_DLG_Insert);
 	localizeControlText(XAP_RID_DIALOG_INSERTSYMBOL_CLOSE_BUTTON,XAP_STRING_ID_DLG_Close);
@@ -186,10 +185,10 @@ BOOL XAP_Win32Dialog_Insert_Symbol::_onInitDialog(HWND hWnd, WPARAM wParam, LPAR
 
 	// Fill the list box with symbol fonts.
 
-	HDC hDCScreen = CreateDC("DISPLAY", NULL, NULL, NULL);
+	HDC hDCScreen = CreateDC(_T("DISPLAY"), NULL, NULL, NULL);
 
 #if 1
-	EnumFontFamilies(hDCScreen, (const char *)NULL, (FONTENUMPROC)fontEnumProcedure, (LPARAM)this);
+	EnumFontFamilies(hDCScreen, (const TCHAR *)NULL, (FONTENUMPROC)fontEnumProcedure, (LPARAM)this);
 #else
 	LOGFONT LogFont;
 //	LogFont.lfCharSet = SYMBOL_CHARSET; - all fonts enum is more inline with XP nature
@@ -215,7 +214,7 @@ BOOL XAP_Win32Dialog_Insert_Symbol::_onInitDialog(HWND hWnd, WPARAM wParam, LPAR
 
 	// Update the caption
 	ConstructWindowName();
-	setDialogTitle((LPCSTR)(AP_Win32App::s_fromUTF8ToAnsi(m_WindowName)).c_str());
+	setDialogTitle(m_WindowName);	
 	centerDialog();	
 
 	return 1;							// 1 == we did not call SetFocus()

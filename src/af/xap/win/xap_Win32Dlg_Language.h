@@ -21,12 +21,12 @@
 #define XAP_WIN32DIALOG_LANGUAGE_H
 
 #include "xap_Dlg_Language.h"
-#include "xap_Win32DialogHelper.h"
+#include "xap_Win32DialogBase.h"
 #include "xap_Frame.h"
 
 /*****************************************************************/
 
-class XAP_Win32Dialog_Language: public XAP_Dialog_Language
+class XAP_Win32Dialog_Language: public XAP_Dialog_Language, XAP_Win32DialogBase
 {
 public:
 	XAP_Win32Dialog_Language(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

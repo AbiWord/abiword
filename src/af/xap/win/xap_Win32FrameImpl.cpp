@@ -152,11 +152,11 @@ bool XAP_Win32FrameImpl::_updateTitle(void)
 		return false;
 	}
 
-	UT_String sTmp = pFrame->getTitle(INT_MAX);
+	UT_UTF8String sTmp = pFrame->getTitle(INT_MAX);
 	sTmp += " - ";
 	sTmp += XAP_App::getApp()->getApplicationTitleForTitleBar();
 	
-	SetWindowText(m_hwndFrame, (AP_Win32App::s_fromUTF8ToAnsi(sTmp.c_str())).c_str());
+	SetWindowText(m_hwndFrame, (AP_Win32App::getWideString(sTmp.utf8_str())));
 
 	return true;
 }
@@ -216,8 +216,8 @@ void XAP_Win32FrameImpl::_createTopLevelWindow(void)
 
 	XAP_Win32App *pWin32App = static_cast<XAP_Win32App *>(XAP_App::getApp());
 
-	m_hwndFrame = CreateWindow(pWin32App->getApplicationName(),
-							   pWin32App->getApplicationTitleForTitleBar(),
+	m_hwndFrame = CreateWindow(pWin32App->getWideString(pWin32App->getApplicationName()),
+							   pWin32App->getWideString(pWin32App->getApplicationTitleForTitleBar()),
 							   WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN,
 							   iPosX, iPosY, iWidth, iHeight,
 							   NULL, NULL, pWin32App->getInstance(), NULL);
@@ -464,7 +464,7 @@ bool XAP_Win32FrameImpl::_openURL(const char * szURL)
 		if (sURL[i]=='\\')	sURL[i]='/';		
 	
 
-	int res = (int) ShellExecute(m_hwndFrame /*(HWND) top level window */, "open", sURL.c_str(), NULL, NULL, SW_SHOWNORMAL);
+	int res = (int) ShellExecuteA(m_hwndFrame /*(HWND) top level window */, "open", sURL.c_str(), NULL, NULL, SW_SHOWNORMAL); //!TODO Using ANSI function
 
 	// TODO: localized error messages
 	// added more specific error messages as documented in http://msdn.microsoft.com/library/default.asp?url=/library/en-us/debug/base/system_error_codes.asp
@@ -480,7 +480,7 @@ bool XAP_Win32FrameImpl::_openURL(const char * szURL)
 					errMsg += UT_String_sprintf("%d", res);
 					errMsg += ") displaying URL: The system cannot find the file specified.\n";
 					errMsg += " [ ";  errMsg += sURL;  errMsg += " ] ";
-					MessageBox(m_hwndFrame, errMsg.c_str(), "Error displaying URL", MB_OK|MB_ICONEXCLAMATION);
+					MessageBoxA(m_hwndFrame, errMsg.c_str(), "Error displaying URL", MB_OK|MB_ICONEXCLAMATION); //!TODO Using ANSI function
 				}
 				break;
 
@@ -490,7 +490,7 @@ bool XAP_Win32FrameImpl::_openURL(const char * szURL)
 					errMsg += UT_String_sprintf("%d", res);
 					errMsg += ") displaying URL: The system cannot find the path specified.\n";
 					errMsg += " [ ";  errMsg += sURL;  errMsg += " ] ";
-					MessageBox(m_hwndFrame, errMsg.c_str(), "Error displaying URL", MB_OK|MB_ICONEXCLAMATION);
+					MessageBoxA(m_hwndFrame, errMsg.c_str(), "Error displaying URL", MB_OK|MB_ICONEXCLAMATION); //!TODO Using ANSI function
 				}
 				break;
 
@@ -500,7 +500,7 @@ bool XAP_Win32FrameImpl::_openURL(const char * szURL)
 					errMsg += UT_String_sprintf("%d", res);
 					errMsg += ") displaying URL: Access is denied.\n";
 					errMsg += " [ ";  errMsg += sURL;  errMsg += " ] ";
-					MessageBox(m_hwndFrame, errMsg.c_str(), "Error displaying URL", MB_OK|MB_ICONEXCLAMATION);
+					MessageBoxA(m_hwndFrame, errMsg.c_str(), "Error displaying URL", MB_OK|MB_ICONEXCLAMATION); //!TODO Using ANSI function
 				}
 				break;
 
@@ -510,7 +510,7 @@ bool XAP_Win32FrameImpl::_openURL(const char * szURL)
 					errMsg += UT_String_sprintf("%d", res);
 					errMsg += ") displaying URL: \n";
 					errMsg += " [ ";  errMsg += sURL;  errMsg += " ] ";
-					MessageBox(m_hwndFrame, errMsg.c_str(), "Error displaying URL", MB_OK|MB_ICONEXCLAMATION);
+					MessageBoxA(m_hwndFrame, errMsg.c_str(), "Error displaying URL", MB_OK|MB_ICONEXCLAMATION); //!TODO Using ANSI function
 				}
 				break;
 		} /* switch (res) */
@@ -573,7 +573,7 @@ bool XAP_Win32FrameImpl::_RegisterClass(XAP_Win32App * app)
 	wndclass.hCursor			= LoadCursor(NULL, IDC_ARROW);
 	wndclass.hbrBackground		= (HBRUSH)(COLOR_BTNFACE+1);
 	wndclass.lpszMenuName		= NULL;
-	wndclass.lpszClassName		= app->getApplicationName();;
+	wndclass.lpszClassName		= app->getWideString(app->getApplicationName());
 	wndclass.hIconSm			= app->getSmallIcon();
 
 	ATOM a = RegisterClassEx(&wndclass);
@@ -964,7 +964,7 @@ LRESULT CALLBACK XAP_Win32FrameImpl::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM 
 		{
 			HDROP hDrop = (HDROP) wParam; 
 			// How many files were dropped?
-			int count = DragQueryFile(hDrop, 0xFFFFFFFF, NULL, 0);
+			int count = DragQueryFileA(hDrop, 0xFFFFFFFF, NULL, 0); //!TODO Using ANSI function
 			char szFileName[_MAX_PATH];
 			int i,pathlength;
 			for (i=0; i<count; i++)
@@ -972,7 +972,7 @@ LRESULT CALLBACK XAP_Win32FrameImpl::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM 
 				pathlength = DragQueryFile(hDrop, i, NULL, 0);
 				if (pathlength < _MAX_PATH)
 				{
-					DragQueryFile(hDrop, i, szFileName, _MAX_PATH);
+					DragQueryFileA(hDrop, i, szFileName, _MAX_PATH); //!TODO Using ANSI function
 					XAP_App * pApp = f->getApp();
 					UT_ASSERT(pApp);
 					FV_View* pView = (FV_View *) f->getCurrentView();

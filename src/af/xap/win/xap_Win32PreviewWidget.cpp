@@ -37,7 +37,7 @@
 
 ATOM		XAP_Win32PreviewWidget::m_atomPreviewWidgetClass = NULL;
 UT_uint32	XAP_Win32PreviewWidget::m_iInstanceCount = 0;
-char		XAP_Win32PreviewWidget::m_bufClassName[100];
+TCHAR		XAP_Win32PreviewWidget::m_bufClassName[100];
 
 XAP_Win32PreviewWidget::XAP_Win32PreviewWidget(XAP_Win32App * pWin32App, HWND hwndParent, UINT style)
 {
@@ -49,7 +49,7 @@ XAP_Win32PreviewWidget::XAP_Win32PreviewWidget(XAP_Win32App * pWin32App, HWND hw
 
 	if(!m_atomPreviewWidgetClass)
 		{
-		sprintf(m_bufClassName,"PreviewWidget");
+		_stprintf(m_bufClassName,_T("PreviewWidget"));
 
 		WNDCLASS wndclass;
 		wndclass.style         = CS_OWNDC | CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS | style;

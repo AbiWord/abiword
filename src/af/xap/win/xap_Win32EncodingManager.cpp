@@ -81,7 +81,7 @@ void  XAP_Win32EncodingManager::initialize()
 
 	// Encodings
 	// User Encoding (Set via Region/Locale; does not require reboot)
-	if (GetLocaleInfo(LOCALE_USER_DEFAULT,LOCALE_IDEFAULTANSICODEPAGE,szLocaleInfo,sizeof(szLocaleInfo)/sizeof(szLocaleInfo[0])))
+	if (GetLocaleInfoA(LOCALE_USER_DEFAULT,LOCALE_IDEFAULTANSICODEPAGE,szLocaleInfo,sizeof(szLocaleInfo)/sizeof(szLocaleInfo[0]))) //!TODO Using ANSI function
 	{
 		// Windows Unicode locale?
 		if (!strcmp(szLocaleInfo,"0"))
@@ -99,7 +99,7 @@ void  XAP_Win32EncodingManager::initialize()
 		}
 	}
 	// System Encoding (Used by GUI,DOS; Set via Region/Default Language; requires reboot)
-	if (GetLocaleInfo(LOCALE_SYSTEM_DEFAULT,LOCALE_IDEFAULTANSICODEPAGE,szLocaleInfo,sizeof(szLocaleInfo)/sizeof(szLocaleInfo[0])))
+	if (GetLocaleInfoA(LOCALE_SYSTEM_DEFAULT,LOCALE_IDEFAULTANSICODEPAGE,szLocaleInfo,sizeof(szLocaleInfo)/sizeof(szLocaleInfo[0]))) //!TODO Using ANSI function
 	{
 		// Windows Unicode locale?
 		if (!strcmp(szLocaleInfo,"0"))

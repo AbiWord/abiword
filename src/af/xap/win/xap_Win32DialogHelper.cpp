@@ -139,7 +139,7 @@ void XAP_Win32DialogHelper::destroyWindow()
 void XAP_Win32DialogHelper::setDialogTitle(LPCSTR p_str)
 {
 	_assertValidDlgHandle(m_hDlg);
-	SetWindowText(m_hDlg, p_str);
+	SetWindowText(m_hDlg, XAP_Win32App::getWideString(p_str));
 }
 
 int XAP_Win32DialogHelper::showWindow(int Mode )
@@ -254,7 +254,7 @@ void XAP_Win32DialogHelper::getListText(UT_sint32 controlId, int index, char *p_
 void XAP_Win32DialogHelper::setControlText(UT_sint32 controlId, LPCSTR p_str)
 {
 	_assertValidDlgHandle(m_hDlg);
-	SetDlgItemText(m_hDlg, controlId, p_str);
+	SetDlgItemText(m_hDlg, controlId, XAP_Win32App::getWideString(p_str));
 }
 
 void XAP_Win32DialogHelper::setControlInt(UT_sint32 controlId, int value)
@@ -286,7 +286,7 @@ void XAP_Win32DialogHelper::getControlText(	UT_sint32 controlId,
 											UT_sint32 Buffer_length) const
 {
 	_assertValidDlgHandle(m_hDlg);
-	GetDlgItemText(m_hDlg, controlId, p_buffer, Buffer_length);
+	GetDlgItemTextA(m_hDlg, controlId, p_buffer, Buffer_length); //!TODO Using ANSI function
 }
 
 bool XAP_Win32DialogHelper::isControlVisible(UT_sint32 controlId) const

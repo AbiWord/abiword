@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 2002 Jordi Mas i Hernàndez <jmas@softcatala.org>
+ * Copyright (C) 2002 Jordi Mas i Hernï¿½ndez <jmas@softcatala.org>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -29,7 +29,6 @@
 #include "xap_Win32PropertySheet.h"
 #include "xap_Win32DialogHelper.h"
 
-
 /*
 
 	XAP_Win32PropertyPage
@@ -38,10 +37,15 @@
 
 
 
-XAP_Win32PropertyPage::XAP_Win32PropertyPage()
+XAP_Win32PropertyPage::XAP_Win32PropertyPage() : m_pszTitle(0)
 {
 	m_pfnDlgProc = s_pageWndProc;	
 	m_pParent = NULL;
+}
+
+XAP_Win32PropertyPage::~XAP_Win32PropertyPage()
+{
+	delete [] m_pszTitle;
 }
 
 
@@ -58,7 +62,7 @@ int CALLBACK XAP_Win32PropertyPage::s_pageWndProc(HWND hWnd, UINT msg, WPARAM wP
 			XAP_Win32PropertyPage *pThis = (XAP_Win32PropertyPage *)pStruct->lParam;
 			SetWindowLong(hWnd,DWL_USER,pStruct->lParam);
 			pThis->m_hWnd = hWnd;
-			pThis->_onInitDialog();
+			pThis->_onInitDialog(0,0,0);
 			return 0;
 		}		
 		
@@ -93,10 +97,7 @@ void XAP_Win32PropertyPage::createPage(XAP_Win32App* pWin32App, WORD wRscID,
 	XAP_String_Id	nID /* =0 */)
 {	
 	m_pWin32App = pWin32App;
-	LPCTSTR lpTemplate = MAKEINTRESOURCE(wRscID);	
-	const XAP_StringSet * pSS = getApp()->getStringSet();									
-	
-	m_page.pszTitle = pSS->getValue(nID);
+	LPCWSTR lpTemplate = MAKEINTRESOURCE(wRscID);	
 	
 	m_page.dwSize = sizeof(PROPSHEETPAGE);
 	m_page.dwFlags = PSP_DEFAULT;
@@ -109,14 +110,20 @@ void XAP_Win32PropertyPage::createPage(XAP_Win32App* pWin32App, WORD wRscID,
 	m_page.pfnCallback = NULL;
 	m_page.pcRefParent  = NULL;
 	
+	const XAP_StringSet * pSS = getApp()->getStringSet();									
+	
 	if (nID)
 	{
 		m_page.dwFlags = m_page.dwFlags | PSP_USETITLE;
-		m_page.pszTitle = pSS->getValue(nID);
+		UT_DEBUGMSG(("reSetting page title %s", pSS->getValue(nID)));
+		const WCHAR *wTitle =  pWin32App->getWideString(pSS->getValue(nID));
+		m_pszTitle = new WCHAR[wcslen(wTitle)+1];
+		wcscpy(m_pszTitle, wTitle);
+		m_page.pszTitle = m_pszTitle;
+		UT_DEBUGMSG(("reSet page title %S", m_page.pszTitle));
 	}	
 	else
 		m_page.pszTitle = NULL;
-    
 	m_hdle = CreatePropertySheetPage(&m_page);
 	
 }
@@ -128,7 +135,7 @@ void XAP_Win32PropertyPage::createPage(XAP_Win32App* pWin32App, WORD wRscID,
 */
 
 
-XAP_Win32PropertySheet::XAP_Win32PropertySheet()
+XAP_Win32PropertySheet::XAP_Win32PropertySheet()  : m_pszCaption(0)
 {	
 	setApplyButton(false);
 	m_lpfnDefSheet = NULL;
@@ -136,7 +143,10 @@ XAP_Win32PropertySheet::XAP_Win32PropertySheet()
 	m_pCallback = NULL;
 }
 
-
+XAP_Win32PropertySheet::~XAP_Win32PropertySheet()
+{
+	delete[] m_pszCaption;
+}
 
 
 /*
@@ -263,7 +273,14 @@ int XAP_Win32PropertySheet::runModal(XAP_Win32App* pWin32App, XAP_Frame * pFrame
     	m_psh.dwFlags |= PSH_NOAPPLYNOW;
     
 	if (nID)
-		m_psh.pszCaption  = pSS->getValue(nID);    	
+	{
+		//UT_DEBUGMSG(("Setting sheet title %s", pSS->getValue(nID)));
+		const WCHAR *wCaption = pWin32App->getWideString(pSS->getValue(nID));
+		m_pszCaption = new WCHAR[wcslen(wCaption)+1];
+		wcscpy(m_pszCaption, wCaption);
+		m_psh.pszCaption = m_pszCaption;
+		//UT_DEBUGMSG(("Set sheet title %S", m_psh.pszCaption));
+	}
 	else
 		m_psh.pszCaption  = NULL;
 
@@ -279,7 +296,7 @@ int XAP_Win32PropertySheet::runModal(XAP_Win32App* pWin32App, XAP_Frame * pFrame
 	SetWindowLong(m_hWnd, GWL_USERDATA, (LONG)this);	
 	SetWindowLong(m_hWnd, GWL_WNDPROC, (LONG)m_pfnDlgProc);
 		
-	_onInitDialog(m_hWnd);		
+	_onInitDialog(m_hWnd, 0, 0);		
 
 	while (GetMessage(&msg, NULL, 0, 0))
 	{				
@@ -292,7 +309,7 @@ int XAP_Win32PropertySheet::runModal(XAP_Win32App* pWin32App, XAP_Frame * pFrame
 	
 	destroy();	
 		
-	delete pPages;    
+	delete[] pPages;    
 	return m_nRslt;
 }
 

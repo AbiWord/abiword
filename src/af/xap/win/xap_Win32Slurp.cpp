@@ -152,8 +152,8 @@ bool XAP_Win32Slurp::connectSlurper(void)
 	// the "TopicName" must match the value in the key:
 	// HKEY_CLASSES_ROOT\<xxx>\shell\open\ddeexec\topic
 	
-	m_hszServerName = DdeCreateStringHandle(m_idDdeServerInst, m_pApp->getApplicationName(), CP_WINANSI);
-	m_hszTopic = DdeCreateStringHandle(m_idDdeServerInst, MY_DDE_TOPICNAME, CP_WINANSI);
+	m_hszServerName = DdeCreateStringHandle(m_idDdeServerInst, m_pApp->getWideString(m_pApp->getApplicationName()), CP_WINANSI);
+	m_hszTopic = DdeCreateStringHandle(m_idDdeServerInst, m_pApp->getWideString(MY_DDE_TOPICNAME), CP_WINANSI);
 
 	// register the server Name
 	HDDEDATA bRegistered = DdeNameService(m_idDdeServerInst, m_hszServerName, NULL, DNS_REGISTER);
@@ -275,7 +275,7 @@ typedef enum { X_Error, X_CreatedKey, X_ExistingKey } XX_Status;
 static XX_Status _fetchKey(HKEY k1, const char * szSubKey, HKEY * pkNew)
 {
 	DWORD dwDisposition;
-	LONG eResult = RegCreateKeyEx(k1,szSubKey,0,"",
+	LONG eResult = RegCreateKeyEx(k1,XAP_Win32App::getWideString(szSubKey),0,_T(""),
 								  REG_OPTION_NON_VOLATILE,KEY_ALL_ACCESS,NULL, 
 								  pkNew, &dwDisposition);
 	if (eResult != ERROR_SUCCESS)
@@ -423,7 +423,7 @@ void XAP_Win32Slurp::stuffRegistry(const char * szSuffix,
 
 	bUpdateContentType = true;
 	len = NrElements(buf);
-	eResult = RegQueryValueEx(hKeySuffix,CONTENT_TYPE_KEY,NULL,&dType,(LPBYTE)buf,&len);
+	eResult = RegQueryValueEx(hKeySuffix,m_pApp->getWideString(CONTENT_TYPE_KEY),NULL,&dType,(LPBYTE)buf,&len);
 	if ((eResult == ERROR_SUCCESS) && (dType == REG_SZ))
 	{
 		UT_DEBUGMSG(("Registry: Existing ContentType [%s]\n",buf));
@@ -441,7 +441,7 @@ void XAP_Win32Slurp::stuffRegistry(const char * szSuffix,
 		///////////////////////////////////////////////////////////////////
 
 		UT_ASSERT(hKeySuffix);
-		eResult = RegSetValueEx(hKeySuffix,CONTENT_TYPE_KEY,0,REG_SZ,xx(szContentType));
+		eResult = RegSetValueEx(hKeySuffix,m_pApp->getWideString(CONTENT_TYPE_KEY),0,REG_SZ,xx(szContentType));
 
 		UT_DEBUGMSG(("Register: HKEY_CLASSES_ROOT\\%s\\Content Type <-- %s [error %d]\n",
 					 szSuffix,szContentType,eResult));

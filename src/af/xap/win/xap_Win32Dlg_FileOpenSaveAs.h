@@ -20,6 +20,7 @@
 #ifndef XAP_WIN32DIALOG_FILEOPENSAVEAS_H
 #define XAP_WIN32DIALOG_FILEOPENSAVEAS_H
 
+#include "xap_Win32DialogBase.h"
 #include "xap_Dlg_FileOpenSaveAs.h"
 
 class UT_String;
@@ -29,7 +30,7 @@ class UT_String;
 
 /*****************************************************************/
 
-class XAP_Win32Dialog_FileOpenSaveAs : public XAP_Dialog_FileOpenSaveAs
+class XAP_Win32Dialog_FileOpenSaveAs : public XAP_Dialog_FileOpenSaveAs, XAP_Win32DialogBase
 {
 public:
 	XAP_Win32Dialog_FileOpenSaveAs(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
@@ -40,6 +41,10 @@ public:
 	static XAP_Dialog * 	static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 	static UINT CALLBACK	s_hookSaveAsProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 	static UINT CALLBACK	s_hookInsertPicProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+	
+	virtual BOOL _onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam) {return false;};
+	virtual BOOL _onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam) {return false;};
+
 			
 protected:
 	UINT _previewPicture(HWND hwnd);
@@ -74,8 +79,8 @@ private:
 			WORD          nFileExtension; 
 			LPCTSTR       lpstrDefExt; 
 			LPARAM        lCustData; 
-			LPOFNHOOKPROC lpfnHook; 
-			LPCTSTR       lpTemplateName; 
+			LPOFNHOOKPROC lpfnHook; //!TODO Using ANSI function 
+			LPCSTR       lpTemplateName; 
 			
 			//#if (_WIN32_WINNT >= 0x0500)			
 			void *        pvReserved;
@@ -84,7 +89,7 @@ private:
 			//#endif // (_WIN32_WINNT >= 0x0500)		
 	};
 	
-	BOOL GetSaveFileName_Hooked(OPENFILENAME_WIN50* lpofn,  BOOL bSave);
+	BOOL GetSaveFileName_Hooked(OPENFILENAMEA *lpofn,  BOOL bSave); //!TODO Using ANSI function
 	
 };
 

@@ -24,6 +24,7 @@
 #include <windows.h>
 
 #include "xap_Win32Module.h"
+#include "xap_Win32App.h"
 #include "ut_types.h"
 #include "ut_string.h"
 #include "ut_assert.h"
@@ -51,17 +52,17 @@ public:
 			return false;
 		}
 
-		m_hMod = LoadLibrary(name);
+		m_hMod = LoadLibrary(XAP_Win32App::getWideString(name));
 		if (!m_hMod)
 		{
 			m_pszErr = szErrNoDllFound;
 			return false;
 		}
 		m_pszErr = 0;
-		m_pszModuleName = new char[lstrlen(name) + 1];
+		m_pszModuleName = new char[lstrlenA(name) + 1];
 		if (m_pszModuleName)
 		{
-			lstrcpy(m_pszModuleName, name);
+			lstrcpyA(m_pszModuleName, name);
 		}
 		return true;
 	}

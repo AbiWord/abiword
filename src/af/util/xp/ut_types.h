@@ -249,4 +249,8 @@ ABI_EXPORT void * UT_calloc ( UT_uint32 nmemb, UT_uint32 size );
 #define XP_UNIX_TARGET_GTK 1
 #endif
 
+#ifdef WITH_PANGO
+#include "ut_abi-pango.h"
+#endif
+
 #endif /* UT_TYPES_H */

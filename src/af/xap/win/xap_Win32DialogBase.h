@@ -54,7 +54,7 @@ protected:
 	virtual BOOL _onDlgMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 	virtual BOOL _onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam) = 0;
 	virtual BOOL _onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam) = 0;
-	virtual BOOL _onDeltaPos(NM_UPDOWN * pnmud) = 0;
+	virtual BOOL _onDeltaPos(NM_UPDOWN * pnmud);
 	virtual BOOL _callHelp();
 
 
@@ -63,11 +63,13 @@ protected:
 	void enableControl(UT_sint32 controlId, bool bEnabled = true);
 	void destroyWindow();
 	void setDialogTitle(LPCSTR p_str);
+	void setWindowTitle(HWND hWnd, LPCSTR p_str);
 	void localizeDialogTitle(UT_uint32 stringId);
+	void localizeWindowTitle(HWND hWnd, UT_uint32 stringId);
 	int	 showWindow( int Mode );
 	int	 showControl(UT_sint32 controlId, int Mode);
 	int	 bringWindowToTop();
-
+	
 	// Combo boxes.
 
 	int	 addItemToCombo(UT_sint32 controlId, LPCSTR p_str);
@@ -85,7 +87,7 @@ protected:
 	int  setListDataItem(UT_sint32 controlId, int nIndex, DWORD dwData);
 	int  getListDataItem(UT_sint32 controlId, int nIndex);
 	void selectListItem(UT_sint32 controlId, int index);
-	void getListText(UT_sint32 controlId, int index, char *p_str) const;
+	void getListText(UT_sint32 controlId, int index, char *p_str, int Buffer_length) const;
 
 	// Controls
 	void setControlText(UT_sint32 controlId, LPCSTR p_str);
@@ -96,13 +98,14 @@ protected:
 	void selectControlText(UT_sint32 controlId, UT_sint32 start, UT_sint32 end);
 	
 	int  isChecked(UT_sint32 controlId) const;
-	void getControlText(UT_sint32 controlId, LPSTR p_buffer, UT_sint32 Buffer_length) const;
+	UINT getControlText(UT_sint32 controlId, LPSTR p_buffer, UT_sint32 Buffer_length) const;
 
 	bool isControlVisible(UT_sint32	controlId) const;
 
 	void centerDialog();
 	void setHandle(HWND hWnd) { m_hDlg = hWnd; };
 	void setDialog(XAP_Dialog * pDlg) { m_pDlg = pDlg; };
+	void setStringSet(const XAP_StringSet *pSS) { m_pSS = pSS; };
 	bool isDialogValid() const;
 	
 private:

@@ -47,7 +47,6 @@
 
 #include "xap_Win32Resources.rc2"
 
-
 #define MAX_DLG_INS_PICT_STRING 1030
 /*****************************************************************/
 XAP_Dialog * XAP_Win32Dialog_FileOpenSaveAs::static_constructor(XAP_DialogFactory * pFactory,
@@ -187,19 +186,19 @@ void XAP_Win32Dialog_FileOpenSaveAs::_buildFilterList(UT_String& sFilter)
   user does not have a places bar capable common dialog box DLL
   anyway.
 */
-BOOL  XAP_Win32Dialog_FileOpenSaveAs::GetSaveFileName_Hooked(OPENFILENAME_WIN50* lpofn, BOOL bSave)
+BOOL  XAP_Win32Dialog_FileOpenSaveAs::GetSaveFileName_Hooked(OPENFILENAMEA* lpofn, BOOL bSave) //!TODO Using ANSI function
 {
 		BOOL  bRslt;	
 		
-		lpofn->lStructSize = sizeof(OPENFILENAME_WIN50);		// Size of the new structure
-		lpofn->pvReserved = NULL;
-		lpofn->dwReserved = 0;
-		lpofn->FlagsEx = 0;		
+		lpofn->lStructSize = sizeof(OPENFILENAMEA);		// Size of the new structure //!TODO Using ANSI function
+		//lpofn->pvReserved = NULL;	//!TODO Using ANSI function
+		//lpofn->dwReserved = 0;	//!TODO Using ANSI function
+		//lpofn->FlagsEx = 0;		//!TODO Using ANSI function		
 		
 		if (bSave)				
-			bRslt = GetSaveFileName((OPENFILENAME *)lpofn);
+			bRslt = GetSaveFileNameA((OPENFILENAMEA *)lpofn); //!TODO Using ANSI function
 		else
-			bRslt = GetOpenFileName((OPENFILENAME *)lpofn);
+			bRslt = GetOpenFileNameA((OPENFILENAMEA *)lpofn); //!TODO Using ANSI function
 		
 		if (!bRslt) // Error
 		{			
@@ -208,11 +207,11 @@ BOOL  XAP_Win32Dialog_FileOpenSaveAs::GetSaveFileName_Hooked(OPENFILENAME_WIN50*
 			if (dwError==CDERR_STRUCTSIZE)	// This system does not support the place bar
 			{								
 					//  Try with the old one
-					lpofn->lStructSize = sizeof(OPENFILENAME);	
+					lpofn->lStructSize = sizeof(OPENFILENAMEA); //!TODO Using ANSI function	
 					if (bSave)				
-						bRslt = GetSaveFileName((OPENFILENAME *)lpofn);
+						bRslt = GetSaveFileNameA((OPENFILENAMEA *)lpofn); //!TODO Using ANSI function
 					else
-						bRslt = GetOpenFileName((OPENFILENAME *)lpofn);
+						bRslt = GetOpenFileNameA((OPENFILENAMEA *)lpofn); //!TODO Using ANSI function
 				
 			}				
 		}	
@@ -235,15 +234,15 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	char szFile[MAX_DLG_INS_PICT_STRING];	// buffer for filename
 	char szDir[MAX_DLG_INS_PICT_STRING];	// buffer for directory
 	UT_String sFilter;
-	OPENFILENAME_WIN50 ofn;						// common dialog box structure
+	OPENFILENAMEA ofn;		// common dialog box structure //!TODO Using ANSI function
 
 	ZeroMemory(szFile,sizeof(szFile));
 	ZeroMemory(szDir,sizeof(szDir));
-	ZeroMemory(&ofn, sizeof(OPENFILENAME_WIN50));
+	ZeroMemory(&ofn, sizeof(OPENFILENAMEA)); //!TODO Using ANSI function
 
 	_buildFilterList(sFilter);
 
-	ofn.lStructSize = sizeof(OPENFILENAME);		// Old size
+	ofn.lStructSize = sizeof(OPENFILENAMEA);		// Old size //!TODO Using ANSI function
 	ofn.hwndOwner = hFrame;
 	ofn.lpstrFile = szFile;
 	ofn.nMaxFile = sizeof(szFile);
@@ -347,13 +346,13 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		ofn.lpstrTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_OpenTitle);
 		ofn.Flags |= OFN_FILEMUSTEXIST;
 		ofn.nFilterIndex = UT_pointerArrayLength((void **) m_szDescriptions) + 1;
-		bDialogResult = GetOpenFileName((OPENFILENAME *)&ofn);
+		bDialogResult = GetOpenFileNameA((OPENFILENAMEA *)&ofn); //!TODO Using ANSI function
 		break;
 
 	case XAP_DIALOG_ID_PRINTTOFILE:
 		ofn.lpstrTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_PrintToFileTitle);
 		ofn.Flags |= OFN_OVERWRITEPROMPT;
-		bDialogResult = GetSaveFileName((OPENFILENAME *)&ofn);
+		bDialogResult = GetSaveFileNameA((OPENFILENAMEA *)&ofn); //!TODO Using ANSI function
 		break;
 
 	case XAP_DIALOG_ID_FILE_SAVEAS:
@@ -363,26 +362,26 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		ofn.Flags |= OFN_EXPLORER;
 		ofn.Flags |= OFN_ENABLEHOOK;
 				
-		bDialogResult = GetSaveFileName_Hooked(&ofn, TRUE);
+		bDialogResult = GetSaveFileName_Hooked(&ofn, TRUE); // !TODO Using ANSI function
 		break;
 
 	case XAP_DIALOG_ID_INSERT_PICTURE:
 		ofn.lpstrTitle	   = pSS->getValue(XAP_STRING_ID_DLG_IP_Title);
 		ofn.hInstance	   = pWin32App->getInstance();
-		ofn.lpTemplateName = MAKEINTRESOURCE(XAP_RID_DIALOG_INSERT_PICTURE);
+		ofn.lpTemplateName = MAKEINTRESOURCEA(XAP_RID_DIALOG_INSERT_PICTURE);
 		ofn.lpfnHook	   = (LPOFNHOOKPROC) s_hookInsertPicProc;
 		ofn.nFilterIndex   = UT_pointerArrayLength((void **) m_szDescriptions) + 1;
 		ofn.Flags |= OFN_EXPLORER;
 		ofn.Flags |= OFN_ENABLETEMPLATE;
 		ofn.Flags |= OFN_ENABLEHOOK;
-		bDialogResult = GetSaveFileName_Hooked(&ofn, FALSE);
+		bDialogResult = GetSaveFileName_Hooked(&ofn, FALSE); // !TODO Using ANSI function
 		break;
 
 	case XAP_DIALOG_ID_FILE_IMPORT:
 		ofn.lpstrTitle	 = pSS->getValue(XAP_STRING_ID_DLG_FOSA_ImportTitle);
 		ofn.nFilterIndex = UT_pointerArrayLength((void **) m_szDescriptions) + 1;
 		ofn.Flags |= OFN_FILEMUSTEXIST;
-		bDialogResult = GetOpenFileName((OPENFILENAME *)&ofn);
+		bDialogResult = GetOpenFileNameA((OPENFILENAMEA *)&ofn); //!TODO Using ANSI function
 		break;
 
 	case XAP_DIALOG_ID_FILE_EXPORT:
@@ -398,7 +397,7 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		ofn.lpstrTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_InsertTitle);
 		ofn.Flags |= OFN_FILEMUSTEXIST;
 		ofn.nFilterIndex = UT_pointerArrayLength((void **) m_szDescriptions) + 1;
-		bDialogResult = GetOpenFileName((OPENFILENAME *)&ofn);
+		bDialogResult = GetOpenFileNameA((OPENFILENAMEA *)&ofn); //!TODO Using ANSI function
 		break;
 
 	default:
@@ -491,7 +490,7 @@ UINT CALLBACK XAP_Win32Dialog_FileOpenSaveAs::s_hookSaveAsProc(HWND hDlg, UINT m
 							// for some reason the  lpstrFile member of the struct will not be set properly
 							// so we have to retrieve the text directly from the control (I could swear that
 							// this used to work, and have no idea what changed)
-							GetDlgItemText(GetParent(hDlg), edt1, buff, MAX_DLG_INS_PICT_STRING);
+							GetDlgItemTextA(GetParent(hDlg), edt1, buff, MAX_DLG_INS_PICT_STRING); //!TODO Using ANSI function
 							//strcpy(buff,pNotify->lpOFN->lpstrFile);
 							char * dot = strchr(buff, '.');
 							if(dot)
@@ -508,7 +507,7 @@ UINT CALLBACK XAP_Win32Dialog_FileOpenSaveAs::s_hookSaveAsProc(HWND hDlg, UINT m
 
 							if(dot)
 							{
-								UT_ASSERT(strlen(buff) + strlen(pNotify->lpOFN->lpstrDefExt) < MAX_DLG_INS_PICT_STRING);
+								//UT_ASSERT(strlen(buff) + strlen(pNotify->lpOFN->lpstrDefExt) < MAX_DLG_INS_PICT_STRING); //!TODO Using ANSI function
 
 								if(ext)
 									strcat(buff,ext);
@@ -626,7 +625,7 @@ UINT XAP_Win32Dialog_FileOpenSaveAs::_previewPicture(HWND hDlg)
 	char buf[MAX_DLG_INS_PICT_STRING];
 	SendMessage( hFOSADlg, CDM_GETFILEPATH, sizeof(buf), (LPARAM) buf );
 	// If a Directory stop
-	if ( GetFileAttributes( buf ) == FILE_ATTRIBUTE_DIRECTORY )
+	if ( GetFileAttributesA( buf ) == FILE_ATTRIBUTE_DIRECTORY ) //!TODO Using ANSI function
 	{
 		return false;
 	}
@@ -705,17 +704,17 @@ UINT XAP_Win32Dialog_FileOpenSaveAs::_previewPicture(HWND hDlg)
 			 "%s %d",
 			  pSS->getValue(XAP_STRING_ID_DLG_IP_Height_Label), 
 			  iImageHeight );
-	SetDlgItemText( hDlg,
+	SetDlgItemTextA( hDlg,
 					XAP_RID_DIALOG_INSERT_PICTURE_TEXT_HEIGHT,
-					buf );
+					buf ); //!TODO Using ANSI function
 
 	sprintf( buf, 
 			 "%s %d",
 			 pSS->getValue(XAP_STRING_ID_DLG_IP_Width_Label),
 			 iImageWidth );
-	SetDlgItemText( hDlg,
+	SetDlgItemTextA( hDlg,
 					XAP_RID_DIALOG_INSERT_PICTURE_TEXT_WIDTH,
-					buf );
+					buf ); //!TODO Using ANSI function
 
 	// Reset String for Height and Width
 	if (r.right >= iImageWidth && r.bottom >= iImageHeight)
@@ -755,25 +754,21 @@ UINT XAP_Win32Dialog_FileOpenSaveAs::_initPreviewDlg(HWND hDlg)
 	const XAP_StringSet*  pSS		  = XAP_App::getApp()->getStringSet();
 	UT_return_val_if_fail(pSS, false);
 	
-	SetDlgItemText( hDlg,
-					XAP_RID_DIALOG_INSERT_PICTURE_IMAGE_PREVIEW,
-					pSS->getValue(XAP_STRING_ID_DLG_IP_No_Picture_Label) );
+	localizeControlText(XAP_RID_DIALOG_INSERT_PICTURE_IMAGE_PREVIEW,
+					XAP_STRING_ID_DLG_IP_No_Picture_Label);
 
-	SetDlgItemText( hDlg,
-					XAP_RID_DIALOG_INSERT_PICTURE_CHECK_ACTIVATE_PREVIEW,
-					pSS->getValue(XAP_STRING_ID_DLG_IP_Activate_Label) );
+	localizeControlText(XAP_RID_DIALOG_INSERT_PICTURE_CHECK_ACTIVATE_PREVIEW,
+					XAP_STRING_ID_DLG_IP_Activate_Label);
 
-	SetDlgItemText( hDlg,
-					XAP_RID_DIALOG_INSERT_PICTURE_TEXT_HEIGHT,
-					pSS->getValue(XAP_STRING_ID_DLG_IP_Height_Label) );
+	localizeControlText(XAP_RID_DIALOG_INSERT_PICTURE_TEXT_HEIGHT,
+					XAP_STRING_ID_DLG_IP_Height_Label);
 
-	SetDlgItemText( hDlg,
-					XAP_RID_DIALOG_INSERT_PICTURE_TEXT_WIDTH,
-					pSS->getValue(XAP_STRING_ID_DLG_IP_Width_Label) );
+	localizeControlText(XAP_RID_DIALOG_INSERT_PICTURE_TEXT_WIDTH,
+					XAP_STRING_ID_DLG_IP_Width_Label);
 
-	SetDlgItemText( hFOSADlg,
+	SetDlgItemTextA( hFOSADlg,
 					IDOK,
-					pSS->getValue(XAP_STRING_ID_DLG_IP_Button_Label) );
+					pSS->getValue(XAP_STRING_ID_DLG_IP_Button_Label) ); // !TODO Using ANSI function
 
 	return true;
 

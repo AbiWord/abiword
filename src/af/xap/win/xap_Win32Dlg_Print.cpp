@@ -90,8 +90,8 @@ GR_Graphics * XAP_Win32Dialog_Print::getPrinterGraphicsContext(void)
 
 	memset(&m_DocInfo,0,sizeof(m_DocInfo));
 	m_DocInfo.cbSize = sizeof(DOCINFO);
-	m_DocInfo.lpszDocName = m_szDocumentPathname;
-	m_DocInfo.lpszOutput = ((m_bDoPrintToFile) ? m_szPrintToFilePathname : NULL);
+	//m_DocInfo.lpszDocName = m_szDocumentPathname; //!TODO Using ANSI function !!!FIXME!!!
+	//m_DocInfo.lpszOutput = ((m_bDoPrintToFile) ? m_szPrintToFilePathname : NULL); //!TODO Using ANSI function !!!FIXME!!!
 	
 	GR_Win32Graphics * pGraphics = new GR_Win32Graphics(m_pPersistPrintDlg->hDC,&m_DocInfo, m_pApp, m_pPersistPrintDlg->hDevMode);
 	return pGraphics;
@@ -168,7 +168,7 @@ void XAP_Win32Dialog_Print::runModal(XAP_Frame * pFrame)
 			DEVMODE * pDevMode = (DEVMODE *)GlobalLock(m_pPersistPrintDlg->hDevMode);
 			DEVNAMES * pDevNames = (DEVNAMES *)GlobalLock(m_pPersistPrintDlg->hDevNames);
 
-			char * p = (char *)pDevNames;
+			TCHAR * p = (TCHAR *)pDevNames;
 			m_pPersistPrintDlg->hDC = CreateDC(p + pDevNames->wDriverOffset,
 											   p + pDevNames->wDeviceOffset,
 											   NULL,

@@ -45,7 +45,7 @@
 /*!
   Windows control class name to use in the creation function or template.
  */
-static const char s_LabelledSeparatorWndClassName[] = "AbiLabelledSeparator";
+static const WCHAR s_LabelledSeparatorWndClassName[] = L"AbiLabelledSeparator";
 /*!
   Window procedure function of the control base class.
  */
@@ -60,7 +60,7 @@ static WNDPROC s_pfnWndProc;
   \param text the text to be shown by the control
   \param hFont the font handle used to represent text
  */
-static void AdaptSeparatorLength(HWND hwnd, const char* text, HFONT hFont)
+static void AdaptSeparatorLength(HWND hwnd, const WCHAR* text, HFONT hFont)
 {
 	// Provide the right font
 	LOGFONT logFont;
@@ -68,7 +68,7 @@ static void AdaptSeparatorLength(HWND hwnd, const char* text, HFONT hFont)
 	HFONT hCtrlFont = CreateFontIndirect(&logFont);
 
 	// Evaluate text size
-	int length = strlen(text);
+	int length = wcslen(text);
 	SIZE textSize;
 	HFONT hPrevCtrlFont;
 	HDC hdc = GetDC(hwnd);
@@ -112,7 +112,7 @@ static LRESULT CALLBACK _LabelledSeparatorWndProc(HWND hwnd, UINT iMsg, WPARAM w
 	case WM_CREATE:
 		{
 			CREATESTRUCT* lpCreate = (CREATESTRUCT *) lParam;
-			HWND separator = CreateWindow("STATIC", NULL, 
+			HWND separator = CreateWindow(L"STATIC", NULL, 
 				SS_ETCHEDHORZ | WS_CHILD | WS_VISIBLE,
 				0, lpCreate->cy / 2, lpCreate->cx, LINE_HEIGHT,
 				hwnd, (HMENU) IDC_LINE_SEPARATOR, lpCreate->hInstance, NULL);
@@ -124,7 +124,7 @@ static LRESULT CALLBACK _LabelledSeparatorWndProc(HWND hwnd, UINT iMsg, WPARAM w
 			SWL(hwnd, (HFONT) wParam);
 
 			int length = GetWindowTextLength(hwnd);
-			char* text = new char[length + 1];
+			WCHAR* text = new WCHAR[length + 1];
 			length = GetWindowText(hwnd, text, length + 1);
 			AdaptSeparatorLength(hwnd, text, (HFONT) wParam);
 			delete [] text;
@@ -133,7 +133,7 @@ static LRESULT CALLBACK _LabelledSeparatorWndProc(HWND hwnd, UINT iMsg, WPARAM w
 
 	case WM_SETTEXT:
 		{
-			AdaptSeparatorLength(hwnd, (const char*) lParam, (HFONT) GWL(hwnd));
+			AdaptSeparatorLength(hwnd, XAP_Win32App::getWideString((const char *)lParam), (HFONT) GWL(hwnd));
 			break;
 		}
 		
@@ -179,7 +179,7 @@ bool XAP_Win32LabelledSeparator_RegisterClass(XAP_Win32App * app)
 	}
 
 	// get base class information
-	if( ! GetClassInfoEx(NULL, "STATIC", &wndclass))
+	if( ! GetClassInfoEx(NULL, L"STATIC", &wndclass))
 	{
 		return false;
 	}

@@ -1,6 +1,6 @@
 /* AbiWord
  * Copyright (C) 2000 AbiSource, Inc.
- * 			 (c) 2002 Jordi Mas i Hernàndez	
+ * 			 (c) 2002 Jordi Mas i Hernï¿½ndez	
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -44,7 +44,6 @@
 #endif
  
 WHICHPROC gTreeProc;
-#define _DS(c,s)	SetDlgItemText(hWnd,XAP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
 
 
 /*****************************************************************/
@@ -68,23 +67,12 @@ XAP_Win32Dialog_Language::~XAP_Win32Dialog_Language(void)
 
 void XAP_Win32Dialog_Language::runModal(XAP_Frame * pFrame)
 {
-	UT_return_if_fail(pFrame);
-
-	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
-	UT_return_if_fail(pWin32App);
-	
-	LPCTSTR lpTemplate = NULL;
-
+	UT_ASSERT(pFrame);
 	UT_ASSERT(m_id == XAP_DIALOG_ID_LANGUAGE);
-
-	lpTemplate = MAKEINTRESOURCE(XAP_RID_DIALOG_LANGUAGE);
-
-	int result = DialogBoxParam(pWin32App->getInstance(),
-						lpTemplate,
-						static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
-						(DLGPROC)s_dlgProc,
-						(LPARAM)this );
-	UT_ASSERT((result != -1));
+	
+	// raise the dialog
+	setDialog(this);
+	createModal(pFrame, MAKEINTRESOURCE(XAP_RID_DIALOG_LANGUAGE));
 }
 
 /*
@@ -118,7 +106,7 @@ BOOL CALLBACK XAP_Win32Dialog_Language::s_dlgProc(HWND hWnd,UINT msg,WPARAM wPar
 void  XAP_Win32Dialog_Language::_fillTreeview(HWND hTV) 
 {
 	TV_INSERTSTRUCT tvins;
-	TV_ITEM tvi;
+	TV_ITEM tvi;		
 	HTREEITEM hItem;
 	HTREEITEM hSel = NULL;	
 	
@@ -131,6 +119,7 @@ void  XAP_Win32Dialog_Language::_fillTreeview(HWND hTV)
 	for (UT_uint32 i=0; i < m_iLangCount;  i++ )
 	{
 		const XML_Char* sLang = m_ppLanguages[i];
+		const TCHAR *swLang = XAP_Win32App::getWideString(sLang);
 		const UT_uint32 nItems = pVec->getItemCount();	
 		
 		tvi.iImage = 0;    
@@ -147,8 +136,8 @@ void  XAP_Win32Dialog_Language::_fillTreeview(HWND hTV)
 				break;
 			}
 		}		
-		tvi.pszText = (char *)sLang;
-		tvi.cchTextMax = lstrlen(sLang);				
+		tvi.pszText = (TCHAR *)swLang;
+		tvi.cchTextMax = lstrlen(swLang);				
 		tvi.lParam=i;
 		tvins.item = tvi;
 		hItem = TreeView_InsertItem(hTV, &tvins);
@@ -208,12 +197,12 @@ BOOL XAP_Win32Dialog_Language::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lP
 	
 	m_hWnd = hWnd;
 	
-	SetWindowText(hWnd, pSS->getValue(XAP_STRING_ID_DLG_ULANG_LangTitle));
+	localizeDialogTitle(XAP_STRING_ID_DLG_ULANG_LangTitle);
 
 	// localize controls
-	_DS(LANGUAGE_BTN_OK,			DLG_OK);
-	_DS(LANGUAGE_BTN_CANCEL,		DLG_Cancel);
-	_DS(LANGUAGE_FRM_LANGUAGE,      DLG_ULANG_LangLabel);
+	localizeControlText(XAP_RID_DIALOG_LANGUAGE_BTN_OK,		XAP_STRING_ID_DLG_OK);
+	localizeControlText(XAP_RID_DIALOG_LANGUAGE_BTN_CANCEL,		XAP_STRING_ID_DLG_Cancel);
+	localizeControlText(XAP_RID_DIALOG_LANGUAGE_FRM_LANGUAGE,	XAP_STRING_ID_DLG_ULANG_LangLabel);
 		
 	HWND hTree = GetDlgItem(hWnd, XAP_RID_DIALOG_LANGUAGE_TREE_LANGUAGE);  		
 	DWORD dwColor = GetSysColor(COLOR_WINDOW);	

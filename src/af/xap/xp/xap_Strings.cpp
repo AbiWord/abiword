@@ -378,7 +378,8 @@ void XAP_DiskStringSet::startElement(const XML_Char *name, const XML_Char **atts
 		for (a = atts; (*a); a += 2)
 		{
 			// require a value for each attribute keyword except autotexts
-			UT_ASSERT((a[1] && *a[1]) || !strncmp(a[0], "AUTOTEXT", 8));
+			//UT_DEBUGMSG(("StringId [%s] value [%s]\n", a[0], a[1]));
+			//UT_ASSERT((a[1] && *a[1]) || !strncmp(a[0], "AUTOTEXT", 8));
 
 			if (strcmp(const_cast<char*>(a[0]), "class") == 0)
 				continue;
@@ -523,7 +524,7 @@ bool XAP_DiskStringSet::loadStringsFromDisk(const char * szFilename)
 	// we succeeded in parsing the file,
 	// now check for higher-level consistency.
 
-#ifdef DEBUG
+#if 0
 	{
 		// TODO should we promote this test to be production code
 		// TODO and maybe raise a message box ??

@@ -66,6 +66,7 @@ XAP_Win32Dialog_FontChooser::~XAP_Win32Dialog_FontChooser(void)
 void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 {
 	UT_return_if_fail(pFrame);
+	setDialog(this);
 
 	XAP_Win32App * pApp = static_cast<XAP_Win32App *>(pFrame->getApp());
 	UT_return_if_fail(pApp);
@@ -110,7 +111,7 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 	cf.hInstance = pApp->getInstance();
 
 	if (m_pFontFamily && *m_pFontFamily)
-		strcpy(lf.lfFaceName,m_pFontFamily);
+		_tcscpy(lf.lfFaceName,XAP_Win32App::getWideString(m_pFontFamily));
 	else
 		cf.Flags |= CF_NOFACESEL;
 
@@ -165,10 +166,10 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 	{
 		if(m_pFontFamily)
 		{
-			if((UT_stricmp(lf.lfFaceName,m_pFontFamily) != 0))
+			if((UT_stricmp(XAP_Win32App::getUTF8String(lf.lfFaceName),m_pFontFamily) != 0))
 			{
 				m_bChangedFontFamily = true;
-				CLONEP((char *&) m_pFontFamily, lf.lfFaceName);
+				CLONEP((char *&) m_pFontFamily, XAP_Win32App::getUTF8String(lf.lfFaceName));
 			}
 		}
 		else
@@ -176,7 +177,7 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 			if(lf.lfFaceName[0])
 			{
 				m_bChangedFontFamily = true;
-				CLONEP((char *&) m_pFontFamily, lf.lfFaceName);
+				CLONEP((char *&) m_pFontFamily, XAP_Win32App::getUTF8String(lf.lfFaceName));
 			}
 		}
 
@@ -321,26 +322,27 @@ BOOL XAP_Win32Dialog_FontChooser::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM
 	XAP_App*              pApp        = XAP_App::getApp();
 	const XAP_StringSet*  pSS         = pApp->getStringSet();
 
-	SetWindowText(hWnd, pSS->getValue(XAP_STRING_ID_DLG_UFS_FontTitle));
+	localizeDialogTitle(XAP_STRING_ID_DLG_UFS_FontTitle);
 
 	// localize controls
-	_DS(FONT_TEXT_FONT,			DLG_UFS_FontLabel);
-	_DS(FONT_TEXT_FONT_STYLE,	DLG_UFS_StyleLabel);
-	_DS(FONT_TEXT_SIZE,			DLG_UFS_SizeLabel);
-	_DS(FONT_TEXT_EFFECTS,		DLG_UFS_EffectsFrameLabel);
-	_DS(FONT_BTN_STRIKEOUT,		DLG_UFS_StrikeoutCheck);
-	_DS(FONT_BTN_UNDERLINE,		DLG_UFS_UnderlineCheck);
-	_DS(FONT_CHK_OVERLINE,		DLG_UFS_OverlineCheck);
-	_DS(FONT_CHK_TOPLINE,		DLG_UFS_ToplineCheck);
-	_DS(FONT_CHK_BOTTOMLINE,	DLG_UFS_BottomlineCheck);	
-	_DS(FONT_TEXT_COLOR,		DLG_UFS_ColorLabel);
-	_DS(FONT_TEXT_SCRIPT,		DLG_UFS_ScriptLabel);
-	_DS(FONT_TEXT_SAMPLE,		DLG_UFS_SampleFrameLabel);
-	_DS(FONT_BTN_OK,			DLG_OK);
-	_DS(FONT_BTN_CANCEL,		DLG_Cancel);
-	_DS(FONT_CHK_HIDDEN,        DLG_UFS_HiddenCheck);
-	_DS(FONT_CHK_SUPERSCRIPT,	DLG_UFS_SuperScript);
-	_DS(FONT_CHK_SUBSCRIPT,		DLG_UFS_SubScript);
+	localizeControlText(XAP_RID_DIALOG_FONT_TEXT_FONT,		XAP_STRING_ID_DLG_UFS_FontLabel);
+	localizeControlText(XAP_RID_DIALOG_FONT_TEXT_FONT_STYLE,	XAP_STRING_ID_DLG_UFS_StyleLabel);
+	localizeControlText(XAP_RID_DIALOG_FONT_TEXT_SIZE,		XAP_STRING_ID_DLG_UFS_SizeLabel);
+	localizeControlText(XAP_RID_DIALOG_FONT_TEXT_EFFECTS,		XAP_STRING_ID_DLG_UFS_EffectsFrameLabel);
+	localizeControlText(XAP_RID_DIALOG_FONT_BTN_STRIKEOUT,		XAP_STRING_ID_DLG_UFS_StrikeoutCheck);
+	localizeControlText(XAP_RID_DIALOG_FONT_BTN_UNDERLINE,		XAP_STRING_ID_DLG_UFS_UnderlineCheck);
+	localizeControlText(XAP_RID_DIALOG_FONT_CHK_OVERLINE,		XAP_STRING_ID_DLG_UFS_OverlineCheck);
+	localizeControlText(XAP_RID_DIALOG_FONT_CHK_TOPLINE,		XAP_STRING_ID_DLG_UFS_ToplineCheck);
+	localizeControlText(XAP_RID_DIALOG_FONT_CHK_BOTTOMLINE,		XAP_STRING_ID_DLG_UFS_BottomlineCheck);
+	localizeControlText(XAP_RID_DIALOG_FONT_TEXT_COLOR,		XAP_STRING_ID_DLG_UFS_ColorLabel);
+	localizeControlText(XAP_RID_DIALOG_FONT_TEXT_SCRIPT,		XAP_STRING_ID_DLG_UFS_ScriptLabel);
+	localizeControlText(XAP_RID_DIALOG_FONT_TEXT_SAMPLE,		XAP_STRING_ID_DLG_UFS_SampleFrameLabel);
+	localizeControlText(XAP_RID_DIALOG_FONT_BTN_OK,			XAP_STRING_ID_DLG_OK);
+	localizeControlText(XAP_RID_DIALOG_FONT_BTN_CANCEL,		XAP_STRING_ID_DLG_Cancel);
+	localizeControlText(XAP_RID_DIALOG_FONT_CHK_HIDDEN,		XAP_STRING_ID_DLG_UFS_HiddenCheck);
+	localizeControlText(XAP_RID_DIALOG_FONT_CHK_SUPERSCRIPT,	XAP_STRING_ID_DLG_UFS_SuperScript);
+	localizeControlText(XAP_RID_DIALOG_FONT_CHK_SUBSCRIPT,		XAP_STRING_ID_DLG_UFS_SubScript);
+	
 
 	// set initial state
 	if( m_bWin32Overline )

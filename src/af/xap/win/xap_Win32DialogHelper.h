@@ -33,9 +33,10 @@
 /*****************************************************************/
 #include "xap_Frame.h"
 #include "xap_Win32FrameImpl.h"
+#include "xap_Win32DialogBase.h"
 #include "ut_Xpm2Bmp.h"
 
-class XAP_Win32Dialog
+class XAP_Win32Dialog : public XAP_Win32DialogBase
 {
 public:
 	virtual BOOL					_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam) = 0;
@@ -43,7 +44,7 @@ public:
 	virtual BOOL					_onDeltaPos(NM_UPDOWN * pnmud) = 0;
 };
 
-class XAP_Win32DialogHelper
+class XAP_Win32DialogHelper 
 {
 public:
 	XAP_Win32DialogHelper(XAP_Win32Dialog* p_dialog)

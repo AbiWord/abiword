@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 2002 Jordi Mas i Hernàndez <jmas@softcatala.org>
+ * Copyright (C) 2002 Jordi Mas i Hernï¿½ndez <jmas@softcatala.org>
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -22,6 +22,7 @@
 
 #include <commctrl.h>
 #include "ut_vector.h"
+#include "xap_Win32DialogBase.h"
 #include "xap_Frame.h"
 
 /*****************************************************************/
@@ -42,7 +43,8 @@ class XAP_Win32PropertyPage
 {
 public:
 	
-	XAP_Win32PropertyPage();	
+	XAP_Win32PropertyPage();
+	~XAP_Win32PropertyPage();	
 	
 	void 						createPage(XAP_Win32App* pWin32App, WORD wRscID, XAP_String_Id	nID = 0);	
 	PROPSHEETPAGE*				getStruct(){return &m_page;}
@@ -50,10 +52,10 @@ public:
 	HWND						getHandle(){return m_hWnd;}
 	XAP_Win32PropertySheet*		getParent(){return m_pParent;}
 	void						setDialogProc(DLGPROC pfnDlgProc){m_pfnDlgProc=pfnDlgProc;};	
-	virtual	void				_onInitDialog(){};
+	virtual	BOOL				_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam){return false;};
 	virtual	void				_onKillActive(){}; 	
 	virtual	void				_onOK(){}; 	
-	virtual void				_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam){};
+	virtual BOOL				_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam){return false;};
 	static int CALLBACK			s_pageWndProc(HWND hWnd, UINT msg, WPARAM wParam,LPARAM lParam);
 	
 	
@@ -66,6 +68,7 @@ private:
 	XAP_Win32App*				m_pWin32App;
 	XAP_Win32PropertySheet*		m_pParent;
 	DLGPROC						m_pfnDlgProc;
+	WCHAR 						*m_pszTitle;
 		
 };
 
@@ -73,7 +76,8 @@ private:
 class XAP_Win32PropertySheet
 {
 public:
-	XAP_Win32PropertySheet();		
+	XAP_Win32PropertySheet();
+	~XAP_Win32PropertySheet();		
 	
 public:
 
@@ -81,9 +85,9 @@ public:
 	void 						addPage(XAP_Win32PropertyPage* pPage);
 	PROPSHEETPAGE* 				_buildPageArray(void);	
 	static int CALLBACK			s_sheetWndProc(HWND hWnd, UINT msg, WPARAM wParam,LPARAM lParam);	
-	virtual	void				_onInitDialog(HWND hwnd){};	
+	virtual	void				_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam) {};	
 	void						setDialogProc(DLGPROC pfnDlgProc){m_pfnDlgProc=pfnDlgProc;};	
-	virtual int					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam){return 1;};
+	virtual int					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam) {return 1;};
 	void						setApplyButton(bool b){m_bApplyButton=b;};	
 	void 						destroy(void);
 	void						setCallBack(PFNPROPSHEETCALLBACK pCallback) {m_pCallback=pCallback;};
@@ -98,6 +102,7 @@ private:
 	DLGPROC						m_pfnDlgProc;
 	WHICHPROC 					m_lpfnDefSheet; 
 	bool						m_bApplyButton;
+	WCHAR 						*m_pszCaption;
 	
 };
 

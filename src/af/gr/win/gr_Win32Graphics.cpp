@@ -268,12 +268,12 @@ GR_Font* GR_Win32Graphics::_findFont(const char* pszFontFamily,
 	else if (0 == UT_stricmp(pszFontFamily, "monospace"))
 		lf.lfPitchAndFamily = DEFAULT_PITCH | FF_MODERN;
 	else
-		strcpy(lf.lfFaceName, pszFontFamily);
+		_tcscpy(lf.lfFaceName, XAP_Win32App::getWideString(pszFontFamily));
 
 	// Get character set value from the font itself
 	LOGFONT enumlf = { 0 };
 	enumlf.lfCharSet = DEFAULT_CHARSET;
-	strcpy(enumlf.lfFaceName, lf.lfFaceName);
+	_tcscpy(enumlf.lfFaceName, lf.lfFaceName);
 	EnumFontFamiliesEx(GetDC(NULL), &enumlf,
 		(FONTENUMPROC)win32Internal_fontEnumProcedure, (LPARAM)&lf, 0);
 
@@ -291,7 +291,7 @@ void GR_Win32Graphics::drawGlyph(UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff)
 void GR_Win32Graphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
 {
 	#ifdef GR_GRAPHICS_DEBUG
-	UT_DEBUGMSG(("GR_Win32Graphics::drawChar %c %u %u\n", Char, xoff, yoff));	
+	UT_DEBUGMSG(("GR_Win32Graphics::drawChar %S %u %u\n", Char, xoff, yoff));	
 	#endif	
 	
 	xoff = _tduX(xoff);
@@ -376,13 +376,14 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 {
 	UT_ASSERT(pChars);
 
-	#ifdef GR_GRAPHICS_DEBUG
-	UT_DEBUGMSG(("GR_Win32Graphics::drawChars %c %u %u\n", pChars, xoff, yoff));	
-	#endif
+	//#ifdef GR_GRAPHICS_DEBUG
+	UT_DEBUGMSG(("GR_Win32Graphics::drawChars %c %S %u %u\n", pChars, pChars, xoff, yoff));	
+	//#endif
 	
 	xoff = _tduX(xoff);
 	yoff = _tduY(yoff);
 	int *pCharAdvances = NULL;
+	UT_DEBUGMSG(("GR_Win32Graphics::drawChars x(%u) y(%u)\n", xoff, yoff));
 	
 	// iLength can be modified by _remapGlyphs
 	int iLength = iLengthOrig;
@@ -403,6 +404,7 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 	LOGFONT lf;
 	int iRes = GetObject(hFont, sizeof(LOGFONT), &lf);
 	UT_ASSERT(iRes);
+	UT_DEBUGMSG(("GR_Win32Graphics::drawChars font h(%d) wt(%d) %S", lf.lfHeight, lf.lfWeight, lf.lfFaceName));
 
 	if (UT_IsWinNT() == false && lf.lfCharSet == SYMBOL_CHARSET)
 	{
@@ -496,7 +498,21 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 			
 			if(placementResult)
 			{
-				ExtTextOutW(m_hdc, xoff, yoff, ETO_GLYPH_INDEX, NULL, (LPCWSTR) m_remapIndices, gcpResult.nGlyphs, pCharAdvances);
+				if (!ExtTextOutW(m_hdc, xoff, yoff, ETO_GLYPH_INDEX, NULL, (LPCWSTR) m_remapIndices, gcpResult.nGlyphs, pCharAdvances))
+				{
+					LPVOID lpMsgBuf;
+					FormatMessage( 
+						FORMAT_MESSAGE_ALLOCATE_BUFFER | 
+						FORMAT_MESSAGE_FROM_SYSTEM | 
+						FORMAT_MESSAGE_IGNORE_INSERTS,
+						NULL,
+						GetLastError(),
+						MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
+						(LPTSTR) &lpMsgBuf,
+						0,
+						NULL );
+					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+				}
 			}
 			else
 			{
@@ -507,7 +523,21 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 		else
 		{
 simple_exttextout:
-			ExtTextOutW(m_hdc, xoff, yoff, 0, NULL, (LPCWSTR) currentChars, iLength, pCharAdvances);
+			if (!ExtTextOutW(m_hdc, xoff, yoff, 0, NULL, (LPCWSTR) currentChars, iLength, pCharAdvances))
+			{
+				LPVOID lpMsgBuf;
+				FormatMessage( 
+					FORMAT_MESSAGE_ALLOCATE_BUFFER | 
+					FORMAT_MESSAGE_FROM_SYSTEM | 
+					FORMAT_MESSAGE_IGNORE_INSERTS,
+					NULL,
+					GetLastError(),
+					MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
+					(LPTSTR) &lpMsgBuf,
+					0,
+					NULL );
+				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			}
 		}
 
 		if (pCharAdvances && (iLengthOrig > (sizeof(duCharWidths)/sizeof(int))) )
@@ -553,6 +583,8 @@ UT_uint32 GR_Win32Graphics::getFontHeight(GR_Font * fnt)
 
 UT_uint32 GR_Win32Graphics::getFontHeight()
 {
+	UT_DEBUGMSG(("GR_Win32Graphics::getFontHeight Resolution %d Device res %d", getResolution(), getDeviceResolution()));
+	UT_DEBUGMSG(("GR_Win32Graphics::getFontHeight real height %d", GR_Win32Font::Acq::getFontHeight(*m_pFont)));
 	return (UT_uint32)((GR_Win32Font::Acq::getFontHeight(*m_pFont)) * getResolution() / getDeviceResolution());
 }
 
@@ -1254,7 +1286,7 @@ void GR_Font::s_getGenericFontProperties(const char * szFontName,
 	else if (UT_stricmp(szFontName, "monospace") == 0)
 		lf.lfPitchAndFamily = DEFAULT_PITCH | FF_MODERN;
 	else
-		strcpy(lf.lfFaceName, szFontName);
+		_tcscpy(lf.lfFaceName, XAP_Win32App::getWideString(szFontName));
 
 	// let the system create the font with the given name or
 	// properties and then query it and see what was actually
@@ -1262,7 +1294,7 @@ void GR_Font::s_getGenericFontProperties(const char * szFontName,
 	// reflect what is being seen on screen.
 
 	HFONT hFont = CreateFontIndirect(&lf);
-	HDC hdc = CreateDC("DISPLAY",NULL,NULL,NULL);
+	HDC hdc = CreateDC(_T("DISPLAY"),NULL,NULL,NULL);
 	HFONT hFontOld = (HFONT) SelectObject(hdc,hFont);
 	GetTextMetrics(hdc,&tm);
 	SelectObject(hdc,hFontOld);
@@ -1298,6 +1330,7 @@ GR_Win32Font::GR_Win32Font(LOGFONT & lf)
 	m_defaultCharWidth(0),
 	m_tm(TEXTMETRIC()),
 	m_bGUIFont(false)
+	//,m_iHeight(abs(lf.lfHeight))
 {
 	
 	m_iHeight = abs(lf.lfHeight);
@@ -1326,14 +1359,14 @@ GR_Win32Font::GR_Win32Font(LOGFONT & lf)
 		else
 		{
 			// Setting the m_hashKey 
-			char lpFaceName[1000];
-			TEXTMETRIC tm;
+			TCHAR lpFaceName[1000];
+			TEXTMETRIC tm; //!TODO Using ANSI function
 			
 			GetTextFace( hDC, 1000, lpFaceName );
 			GetTextMetrics(hDC,	&tm);
 
 			UT_String_sprintf(m_hashKey, "%s-%d-%d-%d-%d-%d",
-							  lpFaceName,
+							  XAP_Win32App::getUTF8String(lpFaceName),
 							  tm.tmHeight, tm.tmWeight, tm.tmItalic, tm.tmUnderlined,
 							  tm.tmStruckOut);
 
@@ -1396,7 +1429,7 @@ UT_sint32 GR_Win32Font::measureUnremappedCharForCache(UT_UCSChar cChar) const
 	// calculate the limits of the 256-char page
 	UT_UCS4Char base = (cChar & 0xffffff00);
 	UT_UCS4Char limit = (cChar | 0x000000ff);
-	HDC hdc = CreateDC("DISPLAY",NULL,NULL,NULL);
+	HDC hdc = CreateDC(_T("DISPLAY"),NULL,NULL,NULL);
 	SelectObject(hdc,m_layoutFont);
 	_getCharWidths()->setCharWidthsOfRange(hdc, base, limit);
 	DeleteDC(hdc);
@@ -1417,6 +1450,7 @@ HFONT GR_Win32Font::getFontFromCache(UT_uint32 pixelsize, bool /*bIsLayout*/, UT
 	UT_uint32 l = 0;
 	UT_uint32 count = m_allocFonts.getItemCount();
 	allocFont *entry;
+	UT_DEBUGMSG(("GR_Win32Font::getFontFromCache looking for font %d", pixelsize));
 
 	while (l < count)
 	  {
@@ -1436,6 +1470,7 @@ void GR_Win32Font::insertFontInCache(UT_uint32 pixelsize, HFONT pFont) const
 	entry->hFont = pFont;
 
 	m_allocFonts.push_back(static_cast<void *>(entry));
+	UT_DEBUGMSG(("GR_Win32Font::insertFontInCache inserted %d", pixelsize));
 }
 
 void GR_Win32Font::fetchFont(UT_uint32 pixelsize) const
@@ -1448,6 +1483,7 @@ void GR_Win32Font::fetchFont(UT_uint32 pixelsize) const
 	if (lf.lfHeight>0) lf.lfHeight = - lf.lfHeight;
 
 	HFONT pFont = CreateFontIndirect(&lf);
+	UT_DEBUGMSG(("GR_Win32Font::fetchFont made new font size %d", pixelsize));
 
 	insertFontInCache(pixelsize, pFont);
 }
@@ -1459,7 +1495,10 @@ HFONT GR_Win32Font::Acq::getDisplayFont(GR_Win32Font& font, GR_Graphics * pG)
 		
 	HFONT pFont = font.getFontFromCache(pixels, false, zoom);
 	if (pFont)
+	{
+		UT_DEBUGMSG(("GR_Win32Font::Acq::getDisplayFont found font"));
 		return pFont;
+	}
 
 	font.fetchFont(pixels);
 	return font.getFontFromCache(pixels, false, zoom);
@@ -1477,7 +1516,7 @@ void GR_Win32Font::setupFontInfo()
 	UINT d = m_tm.tmDefaultChar;
 
 	UT_return_if_fail(_getCharWidths());
-	HDC hdc = CreateDC("DISPLAY",NULL,NULL,NULL);
+	HDC hdc = CreateDC(_T("DISPLAY"),NULL,NULL,NULL);
 	_getCharWidths()->setCharWidthsOfRange(hdc, d, d);
 	DeleteDC(hdc);
 	m_defaultCharWidth = getCharWidthFromCache(d);
