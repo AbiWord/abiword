@@ -1108,7 +1108,8 @@ void fp_FieldRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& 
 	bEOL = UT_FALSE;
 }
 
-void fp_FieldRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height)
+void fp_FieldRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, 
+                                  UT_sint32& y, UT_sint32& height)
 {
 	UT_sint32 xoff;
 	UT_sint32 yoff;

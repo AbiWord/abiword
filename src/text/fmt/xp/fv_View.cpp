@@ -628,69 +628,69 @@ PT_DocPosition FV_View::_getDocPos(FV_DocPos dp, UT_Bool bKeepLooking)
 
 PT_DocPosition FV_View::_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp, UT_Bool bKeepLooking)
 {
-	UT_sint32 xPoint;
-	UT_sint32 yPoint;
-	UT_sint32 iPointHeight;
+    UT_sint32 xPoint;
+    UT_sint32 yPoint;
+    UT_sint32 iPointHeight;
 
-	PT_DocPosition iPos;
+    PT_DocPosition iPos;
 
-	// this gets called from ctor, so get out quick
-	if (dp == FV_DOCPOS_BOD)
-	{
-		UT_Bool bRes = m_pDoc->getBounds(UT_FALSE, iPos);
-		UT_ASSERT(bRes);
+    // this gets called from ctor, so get out quick
+    if (dp == FV_DOCPOS_BOD)
+    {
+        UT_Bool bRes = m_pDoc->getBounds(UT_FALSE, iPos);
+        UT_ASSERT(bRes);
+        
+        return iPos;
+    }
 
-		return iPos;
-	}
+    // TODO: could cache these to save a lookup if point doesn't change
+    fl_BlockLayout* pBlock = _findBlockAtPosition(iPoint);
+    fp_Run* pRun = pBlock->findPointCoords(iPoint, m_bPointEOL,
+                                           xPoint, yPoint, iPointHeight);
+    fp_Line* pLine = pRun->getLine();
 
-	// TODO: could cache these to save a lookup if point doesn't change
-	fl_BlockLayout* pBlock = _findBlockAtPosition(iPoint);
-	fp_Run* pRun = pBlock->findPointCoords(iPoint, m_bPointEOL,
-										   xPoint, yPoint, iPointHeight);
-	fp_Line* pLine = pRun->getLine();
+    // be pessimistic
+    iPos = iPoint;
 
-	// be pessimistic
-	iPos = iPoint;
+    switch (dp)
+    {
+    case FV_DOCPOS_BOL:
+    {
+        fp_Run* pFirstRun = pLine->getFirstRun();
+        
+        iPos = pFirstRun->getBlockOffset() + pBlock->getPosition();
+    }
+    break;
+    
+    case FV_DOCPOS_EOL:
+    {
+        fp_Run* pLastRun = pLine->getLastRun();
+        
+        while (!pLastRun->isFirstRunOnLine() && pLastRun->isForcedBreak())
+        {
+            pLastRun = pLastRun->getPrev();
+        }
+        
+        if(pLastRun->isForcedBreak())
+        {
+            iPos = pBlock->getPosition() + pLastRun->getBlockOffset();
+        }
+        else
+        {
+            iPos = pBlock->getPosition() + pLastRun->getBlockOffset() + pLastRun->getLength();
+        }
+    }
+    break;
 
-	switch (dp)
-	{
-	case FV_DOCPOS_BOL:
-		{
-			fp_Run* pFirstRun = pLine->getFirstRun();
+    case FV_DOCPOS_EOD:
+    {
+        UT_Bool bRes = m_pDoc->getBounds(UT_TRUE, iPos);
+        UT_ASSERT(bRes);
+    }
+    break;
 
-			iPos = pFirstRun->getBlockOffset() + pBlock->getPosition();
-		}
-		break;
-	
-	case FV_DOCPOS_EOL:
-		{
-			fp_Run* pLastRun = pLine->getLastRun();
-
-			while (!pLastRun->isFirstRunOnLine() && pLastRun->isForcedBreak())
-			{
-				pLastRun = pLastRun->getPrev();
-			}
-
-			if(pLastRun->isForcedBreak())
-			{
-				iPos = pBlock->getPosition() + pLastRun->getBlockOffset();
-			}
-			else
-			{
-				iPos = pBlock->getPosition() + pLastRun->getBlockOffset() + pLastRun->getLength();
-			}
-		}
-		break;
-
-	case FV_DOCPOS_EOD:
-		{
-			UT_Bool bRes = m_pDoc->getBounds(UT_TRUE, iPos);
-			UT_ASSERT(bRes);
-		}
-		break;
-
-	case FV_DOCPOS_BOB:
-		{
+    case FV_DOCPOS_BOB:
+    {
 #if 1
 
 // DOM: This used to be an #if 0. I changed it to #if 1
@@ -710,276 +710,276 @@ PT_DocPosition FV_View::_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp,
 // TODO when at the beginning of paragraph work. this
 // TODO problem is logged as bug #403.
 // TODO
-			// are we already there?
-			if (iPos == pBlock->getPosition())
-			{
-				// yep.  is there a prior block?
-				if (!pBlock->getPrevBlockInDocument())
-					break;
+        // are we already there?
+        if (iPos == pBlock->getPosition())
+        {
+            // yep.  is there a prior block?
+            if (!pBlock->getPrevBlockInDocument())
+                break;
 
-				// yep.  look there instead
-				pBlock = pBlock->getPrevBlockInDocument();
-			}
+            // yep.  look there instead
+            pBlock = pBlock->getPrevBlockInDocument();
+        }
 #endif /* 0 */
 			
-			iPos = pBlock->getPosition();
-		}
-		break;
+        iPos = pBlock->getPosition();
+    }
+    break;
 
-	case FV_DOCPOS_EOB:
-		{
-			if (pBlock->getNextBlockInDocument())
-			{
-				// BOB for next block
-				pBlock = pBlock->getNextBlockInDocument();
-				iPos = pBlock->getPosition();
-			}
-			else
-			{
-				// EOD
-				UT_Bool bRes = m_pDoc->getBounds(UT_TRUE, iPos);
-				UT_ASSERT(bRes);
-			}
-		}
-		break;
+    case FV_DOCPOS_EOB:
+    {
+        if (pBlock->getNextBlockInDocument())
+        {
+            // BOB for next block
+            pBlock = pBlock->getNextBlockInDocument();
+            iPos = pBlock->getPosition();
+        }
+        else
+        {
+            // EOD
+            UT_Bool bRes = m_pDoc->getBounds(UT_TRUE, iPos);
+            UT_ASSERT(bRes);
+        }
+    }
+    break;
+    
+    case FV_DOCPOS_BOW:
+    {
+        UT_GrowBuf pgb(1024);
+        
+        UT_Bool bRes = pBlock->getBlockBuf(&pgb);
+        UT_ASSERT(bRes);
+        
+        const UT_UCSChar* pSpan = pgb.getPointer(0);
+        
+        UT_ASSERT(iPos >= pBlock->getPosition());
+        UT_uint32 offset = iPos - pBlock->getPosition();
+        UT_ASSERT(offset <= pgb.getLength());
+        
+        if (offset == 0)
+        {
+            if (!bKeepLooking)
+                break;
+            
+            // is there a prior block?
+            pBlock = pBlock->getPrevBlockInDocument();
+            
+            if (!pBlock)
+                break;
+            
+            // yep.  look there instead
+            pgb.truncate(0);
+            bRes = pBlock->getBlockBuf(&pgb);
+            UT_ASSERT(bRes);
+            
+            pSpan = pgb.getPointer(0);
+            offset = pgb.getLength();
+            
+            if (offset == 0)
+            {
+                iPos = pBlock->getPosition();
+                break;
+            }
+        }
+        
+        UT_Bool bInWord = !UT_isWordDelimiter(pSpan[bKeepLooking ? offset-1 : offset], UCS_UNKPUNK);
+        
+        for (offset--; offset > 0; offset--)
+        {
+            if (UT_isWordDelimiter(pSpan[offset], UCS_UNKPUNK))
+            {
+                if (bInWord)
+                    break;
+            }
+            else
+                bInWord = UT_TRUE;
+        }
+        
+        if ((offset > 0) && (offset < pgb.getLength()))
+            offset++;
+        
+        iPos = offset + pBlock->getPosition();
+    }
+    break;
+    
+    case FV_DOCPOS_EOW_MOVE:
+    {
+        UT_GrowBuf pgb(1024);
+        
+        UT_Bool bRes = pBlock->getBlockBuf(&pgb);
+        UT_ASSERT(bRes);
+        
+        const UT_UCSChar* pSpan = pgb.getPointer(0);
+        
+        UT_ASSERT(iPos >= pBlock->getPosition());
+        UT_uint32 offset = iPos - pBlock->getPosition();
+        UT_ASSERT(offset <= pgb.getLength());
+                        
+        if (offset == pgb.getLength())
+        {
+            if (!bKeepLooking)
+                break;
+            
+            // is there a next block?
+            pBlock = pBlock->getNextBlockInDocument();
+            
+            if (!pBlock)
+                break;
+            
+            // yep.  look there instead
+            pgb.truncate(0);
+            bRes = pBlock->getBlockBuf(&pgb);
+            UT_ASSERT(bRes);
 
-	case FV_DOCPOS_BOW:
-		{
-			UT_GrowBuf pgb(1024);
+            pSpan = pgb.getPointer(0);
+            offset = 0;
+            
+            if (pgb.getLength() == 0)
+            {
+                iPos = pBlock->getPosition();
+                break;
+            }
+        }
+        
+        UT_Bool bBetween = UT_isWordDelimiter(pSpan[offset], UCS_UNKPUNK);
+        
+        // Needed so ctrl-right arrow will work
+        // This is the code that was causing bug 10
+        // There is still some weird behavior that should be investigated
+        
+        for (; offset < pgb.getLength(); offset++)
+        {
+            UT_UCSChar followChar;
+            followChar = ((offset + 1) < pgb.getLength()) ? pSpan[offset+1] : UCS_UNKPUNK;
+            if (!UT_isWordDelimiter(pSpan[offset], followChar))
+                break;
+        }
+        
+        for (; offset < pgb.getLength(); offset++)
+        {
+            UT_UCSChar followChar;
+            followChar = ((offset + 1) < pgb.getLength()) ? pSpan[offset+1] : UCS_UNKPUNK;
+            if (!UT_isWordDelimiter(pSpan[offset], followChar))
+            {
+                if (bBetween)
+                {
+                    break;
+                }
+            }
+            else if (pSpan[offset] != ' ')
+            {
+                break;
+            }
+            else
+            {
+                bBetween = UT_TRUE;
+            }
+        }
+        
+        iPos = offset + pBlock->getPosition();
+    }
+    break;
+    
+    case FV_DOCPOS_EOW_SELECT:
+    {
+        UT_GrowBuf pgb(1024);
+        
+        UT_Bool bRes = pBlock->getBlockBuf(&pgb);
+        UT_ASSERT(bRes);
+        
+        const UT_UCSChar* pSpan = pgb.getPointer(0);
+        
+        UT_ASSERT(iPos >= pBlock->getPosition());
+        UT_uint32 offset = iPos - pBlock->getPosition();
+        UT_ASSERT(offset <= pgb.getLength());
+        
+        if (offset == pgb.getLength())
+        {
+            if (!bKeepLooking)
+                break;
+            
+            // is there a next block?
+            pBlock = pBlock->getNextBlockInDocument();
+            
+            if (!pBlock)
+                break;
 
-			UT_Bool bRes = pBlock->getBlockBuf(&pgb);
-			UT_ASSERT(bRes);
+            // yep.  look there instead
+            pgb.truncate(0);
+            bRes = pBlock->getBlockBuf(&pgb);
+            UT_ASSERT(bRes);
 
-			const UT_UCSChar* pSpan = pgb.getPointer(0);
+            pSpan = pgb.getPointer(0);
+            offset = 0;
 
-			UT_ASSERT(iPos >= pBlock->getPosition());
-			UT_uint32 offset = iPos - pBlock->getPosition();
-			UT_ASSERT(offset <= pgb.getLength());
+            if (pgb.getLength() == 0)
+            {
+                iPos = pBlock->getPosition();
+                break;
+            }
+        }
 
-			if (offset == 0)
-			{
-				if (!bKeepLooking)
-					break;
-
-				// is there a prior block?
-				pBlock = pBlock->getPrevBlockInDocument();
-
-				if (!pBlock)
-					break;
-
-				// yep.  look there instead
-				pgb.truncate(0);
-				bRes = pBlock->getBlockBuf(&pgb);
-				UT_ASSERT(bRes);
-
-				pSpan = pgb.getPointer(0);
-				offset = pgb.getLength();
-
-				if (offset == 0)
-				{
-					iPos = pBlock->getPosition();
-					break;
-				}
-			}
-
-			UT_Bool bInWord = !UT_isWordDelimiter(pSpan[bKeepLooking ? offset-1 : offset], UCS_UNKPUNK);
-
-			for (offset--; offset > 0; offset--)
-			{
-				if (UT_isWordDelimiter(pSpan[offset], UCS_UNKPUNK))
-				{
-					if (bInWord)
-						break;
-				}
-				else
-					bInWord = UT_TRUE;
-			}
-
-			if ((offset > 0) && (offset < pgb.getLength()))
-				offset++;
-
-			iPos = offset + pBlock->getPosition();
-		}
-		break;
-
-	case FV_DOCPOS_EOW_MOVE:
-		{
-			UT_GrowBuf pgb(1024);
-
-			UT_Bool bRes = pBlock->getBlockBuf(&pgb);
-			UT_ASSERT(bRes);
-
-			const UT_UCSChar* pSpan = pgb.getPointer(0);
-
-			UT_ASSERT(iPos >= pBlock->getPosition());
-			UT_uint32 offset = iPos - pBlock->getPosition();
-			UT_ASSERT(offset <= pgb.getLength());
-
-			if (offset == pgb.getLength())
-			{
-				if (!bKeepLooking)
-					break;
-
-				// is there a next block?
-				pBlock = pBlock->getNextBlockInDocument();
-
-				if (!pBlock)
-					break;
-
-				// yep.  look there instead
-				pgb.truncate(0);
-				bRes = pBlock->getBlockBuf(&pgb);
-				UT_ASSERT(bRes);
-
-				pSpan = pgb.getPointer(0);
-				offset = 0;
-
-				if (pgb.getLength() == 0)
-				{
-					iPos = pBlock->getPosition();
-					break;
-				}
-			}
-
-			UT_Bool bBetween = UT_isWordDelimiter(pSpan[offset], UCS_UNKPUNK);
+        UT_Bool bBetween = UT_isWordDelimiter(pSpan[offset], UCS_UNKPUNK);
 			
-			// Needed so ctrl-right arrow will work
-			// This is the code that was causing bug 10
-			// There is still some weird behavior that should be investigated
+        // Needed so ctrl-right arrow will work
+        // This is the code that was causing bug 10
+        // There is still some weird behavior that should be investigated
+        /*
+          for (; offset < pgb.getLength(); offset++)
+          {
+          if (!UT_isWordDelimiter(pSpan[offset]))
+          break;
+          }
+        */
+        for (; offset < pgb.getLength(); offset++)
+        {
+            UT_UCSChar followChar;
+            followChar = ((offset + 1) < pgb.getLength()) ? pSpan[offset+1] : UCS_UNKPUNK;
+            if (UT_isWordDelimiter(pSpan[offset], followChar))
+            {
+                if (bBetween)
+                    break;
+            }
+            else if (pSpan[offset] == ' ')
+                break;
+            else
+                bBetween = UT_TRUE;
+        }
 
-			for (; offset < pgb.getLength(); offset++)
-			{
-				UT_UCSChar followChar;
-				followChar = ((offset + 1) < pgb.getLength()) ? pSpan[offset+1] : UCS_UNKPUNK;
-				if (!UT_isWordDelimiter(pSpan[offset], followChar))
-				break;
-			}
-			
-			for (; offset < pgb.getLength(); offset++)
-			{
-				UT_UCSChar followChar;
-				followChar = ((offset + 1) < pgb.getLength()) ? pSpan[offset+1] : UCS_UNKPUNK;
-				if (!UT_isWordDelimiter(pSpan[offset], followChar))
-				{
-					if (bBetween)
-					{
-						break;
-					}
-				}
-				else if (pSpan[offset] != ' ')
-				{
-					break;
-				}
-				else
-				{
-					bBetween = UT_TRUE;
-				}
-			}
-
-			iPos = offset + pBlock->getPosition();
-		}
-		break;
-
-	case FV_DOCPOS_EOW_SELECT:
-		{
-			UT_GrowBuf pgb(1024);
-
-			UT_Bool bRes = pBlock->getBlockBuf(&pgb);
-			UT_ASSERT(bRes);
-
-			const UT_UCSChar* pSpan = pgb.getPointer(0);
-
-			UT_ASSERT(iPos >= pBlock->getPosition());
-			UT_uint32 offset = iPos - pBlock->getPosition();
-			UT_ASSERT(offset <= pgb.getLength());
-
-			if (offset == pgb.getLength())
-			{
-				if (!bKeepLooking)
-					break;
-
-				// is there a next block?
-				pBlock = pBlock->getNextBlockInDocument();
-
-				if (!pBlock)
-					break;
-
-				// yep.  look there instead
-				pgb.truncate(0);
-				bRes = pBlock->getBlockBuf(&pgb);
-				UT_ASSERT(bRes);
-
-				pSpan = pgb.getPointer(0);
-				offset = 0;
-
-				if (pgb.getLength() == 0)
-				{
-					iPos = pBlock->getPosition();
-					break;
-				}
-			}
-
-			UT_Bool bBetween = UT_isWordDelimiter(pSpan[offset], UCS_UNKPUNK);
-			
-			// Needed so ctrl-right arrow will work
-			// This is the code that was causing bug 10
-			// There is still some weird behavior that should be investigated
-			/*
-			for (; offset < pgb.getLength(); offset++)
-			{
-				if (!UT_isWordDelimiter(pSpan[offset]))
-					break;
-			}
-			*/
-			for (; offset < pgb.getLength(); offset++)
-			{
-				UT_UCSChar followChar;
-				followChar = ((offset + 1) < pgb.getLength()) ? pSpan[offset+1] : UCS_UNKPUNK;
-				if (UT_isWordDelimiter(pSpan[offset], followChar))
-				{
-					if (bBetween)
-						break;
-				}
-				else if (pSpan[offset] == ' ')
-					break;
-				else
-					bBetween = UT_TRUE;
-			}
-
-			iPos = offset + pBlock->getPosition();
-		}
-		break;
+        iPos = offset + pBlock->getPosition();
+    }
+    break;
 
 
-	case FV_DOCPOS_BOP: 
-		{
-			fp_Container* pContainer = pLine->getContainer();
-			fp_Page* pPage = pContainer->getPage();
+    case FV_DOCPOS_BOP: 
+    {
+        fp_Container* pContainer = pLine->getContainer();
+        fp_Page* pPage = pContainer->getPage();
 
-			iPos = pPage->getFirstLastPos(UT_TRUE);
-		}
-		break;
+        iPos = pPage->getFirstLastPos(UT_TRUE);
+    }
+    break;
 
-	case FV_DOCPOS_EOP:
-		{
-			fp_Container* pContainer = pLine->getContainer();
-			fp_Page* pPage = pContainer->getPage();
+    case FV_DOCPOS_EOP:
+    {
+        fp_Container* pContainer = pLine->getContainer();
+        fp_Page* pPage = pContainer->getPage();
 
-			iPos = pPage->getFirstLastPos(UT_FALSE);
-		}
-		break;
+        iPos = pPage->getFirstLastPos(UT_FALSE);
+    }
+    break;
 
-	case FV_DOCPOS_BOS: 
-	case FV_DOCPOS_EOS:
-		UT_ASSERT(UT_TODO);
-		break;
+    case FV_DOCPOS_BOS: 
+    case FV_DOCPOS_EOS:
+        UT_ASSERT(UT_TODO);
+        break;
 
-	default:
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		break;
-	}
+    default:
+        UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+        break;
+    }
 
-	return iPos;
+    return iPos;
 }
 
 void FV_View::moveInsPtTo(FV_DocPos dp)
