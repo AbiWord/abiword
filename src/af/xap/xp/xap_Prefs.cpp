@@ -132,7 +132,7 @@ bool XAP_PrefsScheme::setValue(const XML_Char * szKey, const XML_Char * szValue)
 
 bool XAP_PrefsScheme::setValueBool(const XML_Char * szKey, bool bValue)
 {
-	return setValue(szKey, static_cast<XML_Char*>((bValue) ? "1" : "0"));
+	return setValue(szKey, reinterpret_cast<const XML_Char*>((bValue) ? "1" : "0"));
 }
 
 bool XAP_PrefsScheme::getValue(const XML_Char * szKey, const XML_Char ** pszValue) const
@@ -202,7 +202,7 @@ bool XAP_PrefsScheme::getNthValue(UT_uint32 k, const XML_Char ** pszKey, const X
 	delete vecD;
 	const char * szKey = NULL;
 	const char * szValue = NULL;
-	szKey = static_cast<const XML_Char *>(vecKeys.getNthItem(k));
+	szKey = reinterpret_cast<XML_Char *>(vecKeys.getNthItem(k));
 	szValue = static_cast<const XML_Char *>(m_hash.pick(szKey));
 	if(szValue && *szValue)
 	{
