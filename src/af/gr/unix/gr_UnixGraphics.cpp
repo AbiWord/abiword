@@ -581,5 +581,6 @@ void GR_UNIXGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest
 					   iDestHeight,
 					   GDK_RGB_DITHER_NORMAL,
 					   image->data,
-					   iDestWidth * 3); // advance one row at a time, skip none
+					   image->width * 3); // This parameter is the total bytes across one row,
+	                                      // which is pixels * 3 (we use 3 bytes per pixel).
 }
