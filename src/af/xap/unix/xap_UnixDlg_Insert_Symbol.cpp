@@ -54,8 +54,10 @@
 
 #define	WIDGET_ID_TAG_KEY "id"
 
+static UT_sint32 xap_UnixDlg_Insert_Symbol_first =0;
+static UT_String xap_Unix_Prev_Font;
+
 #ifndef USE_GUCHARMAP
-static UT_uint32 xap_UnixDlg_Insert_Symbol_first = 0;
 static UT_UCSChar m_CurrentSymbol;
 static UT_UCSChar m_PreviousSymbol;
 #endif
@@ -166,19 +168,24 @@ void XAP_UnixDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 	if ( xap_UnixDlg_Insert_Symbol_first == 0)
 	{
 		iDrawSymbol->setSelectedFont(DEFAULT_UNIX_SYMBOL_FONT);
-		const gchar * buffer = DEFAULT_UNIX_SYMBOL_FONT;
+		const gchar * buffer = UT_strdup(DEFAULT_UNIX_SYMBOL_FONT);
 		gtk_entry_set_text(GTK_ENTRY(GTK_COMBO(m_fontcombo)->entry),buffer);
 		m_CurrentSymbol = ' ';
 		m_PreviousSymbol = ' ';
 		xap_UnixDlg_Insert_Symbol_first = 1;
 	}
-
+	else
+	{
+		iDrawSymbol->setSelectedFont(xap_Unix_Prev_Font.c_str());
+	}
 	// Show the top level dialog
 
 	gtk_widget_show(mainWindow);
 
 	// Put the current font in the entry box
-	const char* iSelectedFont = iDrawSymbol->getSelectedFont();
+	const char* iSelectedFont = UT_strdup(iDrawSymbol->getSelectedFont());
+	xap_Unix_Prev_Font = iSelectedFont;
+	UT_DEBUGMSG(("Selected Font at startup %s \n",iSelectedFont));
 	gtk_entry_set_text(GTK_ENTRY(GTK_COMBO(m_fontcombo)->entry),
 					   iSelectedFont);
 
@@ -214,10 +221,18 @@ void XAP_UnixDialog_Insert_Symbol::event_Insert(void)
 void XAP_UnixDialog_Insert_Symbol::event_WindowDelete(void)
 {
 	m_answer = XAP_Dialog_Insert_Symbol::a_CANCEL;	
+	XAP_Draw_Symbol * iDrawSymbol = _getCurrentSymbolMap();
+//
+// Save last font
+//
+	xap_Unix_Prev_Font = iDrawSymbol->getSelectedFont();
 	g_list_free( m_InsertS_Font_list);
 	
 	for(UT_uint32 i = 0; i < m_Insert_Symbol_no_fonts; i++) 
-		delete [] static_cast<gchar *>(m_fontlist.getNthItem(i));
+	{
+		free(static_cast<gchar *>(m_fontlist.getNthItem(i)));
+	}
+	m_fontlist.clear();
 	modeless_cleanup();
 	gtk_widget_destroy(m_windowMain);
 	m_windowMain = NULL;
@@ -285,23 +300,16 @@ static void s_charmap_activate (Charmap *charmap, gunichar ch, XAP_UnixDialog_In
 
 #else
 
-static gint do_Map_Update(gpointer p)
-{
-	XAP_UnixDialog_Insert_Symbol * dlg = static_cast<XAP_UnixDialog_Insert_Symbol *>(p);
-	dlg->SymbolMap_exposed();
-	return FALSE;
-}
-
 static gboolean s_sym_SymbolMap_exposed(GtkWidget * widget, GdkEvent * e, XAP_UnixDialog_Insert_Symbol * dlg)
 {
-	g_idle_add(static_cast<GSourceFunc>(do_Map_Update), static_cast<gpointer>(dlg));
+	dlg->SymbolMap_exposed();
 	return FALSE;
 }
 
 static gboolean s_Symbolarea_exposed(GtkWidget * widget, GdkEvent * e, XAP_UnixDialog_Insert_Symbol * dlg)
 {
 	dlg->Symbolarea_exposed();
-	return TRUE;
+	return FALSE;
 }
 
 static gboolean  s_SymbolMap_clicked(GtkWidget * widget, GdkEvent * e, XAP_UnixDialog_Insert_Symbol * dlg)
@@ -328,6 +336,7 @@ void XAP_UnixDialog_Insert_Symbol::SymbolMap_exposed(void )
 	XAP_Draw_Symbol * iDrawSymbol = _getCurrentSymbolMap();
 	UT_ASSERT(iDrawSymbol);
 	iDrawSymbol->draw();
+	UT_DEBUGMSG(("main symbol area exposed \n"));
 	/*
 	    Need this to see the blue square after an expose event
 	*/
@@ -439,6 +448,12 @@ GtkWidget *XAP_UnixDialog_Insert_Symbol::_previewNew (int w, int h)
 	
 	// Enable button press events
 	gtk_widget_add_events(pre, GDK_BUTTON_PRESS_MASK);
+	gtk_widget_add_events(pre, GDK_BUTTON_RELEASE_MASK);
+	gtk_widget_add_events(pre, GDK_KEY_PRESS_MASK);
+	gtk_widget_add_events(pre, GDK_KEY_RELEASE_MASK);
+	gtk_widget_add_events(pre, GDK_EXPOSURE_MASK);
+	gtk_widget_add_events(pre, GDK_ENTER_NOTIFY_MASK);
+	gtk_widget_add_events(pre, GDK_LEAVE_NOTIFY_MASK);
 	return pre;
 }
 
@@ -455,7 +470,7 @@ void XAP_UnixDialog_Insert_Symbol::destroy(void)
 {
 	g_list_free( m_InsertS_Font_list);
 	for(UT_uint32 i = 0; i < m_Insert_Symbol_no_fonts; i++) 
-		delete [] static_cast<gchar *>(m_fontlist.getNthItem(i));
+		 free( static_cast<gchar *>(m_fontlist.getNthItem(i)));
 
 	modeless_cleanup();
 	
@@ -480,7 +495,7 @@ GtkWidget * XAP_UnixDialog_Insert_Symbol::_constructWindow(void)
 
 	GtkWidget * hbox = gtk_hbox_new (FALSE, 4);
 	gtk_widget_show (hbox);
-	gtk_container_add (GTK_CONTAINER(vboxInsertS), hbox);
+	gtk_box_pack_start(GTK_BOX(vboxInsertS), hbox, FALSE, FALSE, 0);
 
 	// Finally construct the combo box
 	m_fontcombo = _createComboboxWithFonts ();
@@ -495,7 +510,7 @@ GtkWidget * XAP_UnixDialog_Insert_Symbol::_constructWindow(void)
 	gtk_box_pack_start(GTK_BOX(vboxInsertS), m_SymbolMap, FALSE, FALSE, 0);
 	
 	m_areaCurrentSym = _previewNew (60, 45);
-	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(m_windowMain)->action_area),
+	gtk_box_pack_start(GTK_BOX(hbox),
 					   m_areaCurrentSym, TRUE, FALSE, 0);
 #else
 
