@@ -87,6 +87,8 @@ CPPSRCS=	ap_Convert.cpp			\
 		ap_Toolbar_Icons.cpp		\
 		ap_Toolbar_LabelSet.cpp		\
 		ap_Toolbar_Layouts.cpp		\
+		ap_Frame.cpp			\
+		ap_App.cpp			\
 		ap_TopRuler.cpp
 
 ifeq ($(ABI_OPT_CURLHASH),1)

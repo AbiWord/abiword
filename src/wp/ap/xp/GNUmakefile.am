@@ -89,6 +89,8 @@ libWpAp_xp_a_SOURCES=	ap_Convert.cpp			\
 		ap_Toolbar_LabelSet.cpp		\
 		ap_Toolbar_Layouts.cpp		\
 		ap_TopRuler.cpp			\
+		ap_App.cpp			\
+		ap_Frame.cpp			\
 		ap_wp_splash.cpp		\
 		ap_wp_sidebar.cpp
 
