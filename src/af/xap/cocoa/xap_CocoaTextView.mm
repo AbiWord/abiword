@@ -256,7 +256,7 @@
 
 - (BOOL)hasMarkedText
 {
-	return NO;
+	return m_hasMarkedText;
 }
 
 
@@ -280,17 +280,24 @@
 
 - (NSRange)selectedRange
 {
-	UT_ASSERT_NOT_REACHED();
+	return m_selectedRange;
 }
 
 - (void)setMarkedText:(id)aString selectedRange:(NSRange)selRange
 {
-	UT_ASSERT_NOT_REACHED();
+	m_selectedRange = selRange;
+	m_hasMarkedText = (selRange.length != 0 ? YES : NO);
+	UT_DEBUGMSG(("Hub TODO: handle -[XAP_CocoaTextView setMarkedText:selectedRange:]\n"));
+	/*
+		Steal code from the selection handling code in XP land. We have the AV_View
+		so everything is here.
+	 */
 }
 
 - (void)unmarkText
-{
-	UT_ASSERT_NOT_REACHED();
+{	
+	m_hasMarkedText = NO;
+	UT_DEBUGMSG(("Hub TODO: handle -[XAP_CocoaTextView unmarkText]\n"));
 }
 
 - (NSArray*)validAttributesForMarkedText
