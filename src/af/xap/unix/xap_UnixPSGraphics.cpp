@@ -20,8 +20,11 @@
 #include <stdio.h>
 #include <string.h>
 #include <locale.h>
+
+#ifdef USE_XFT
 #include <freetype/ftsnames.h>
 #include <freetype/ttnameid.h>
+#endif
 
 #include "ut_types.h"
 #include "ut_assert.h"
