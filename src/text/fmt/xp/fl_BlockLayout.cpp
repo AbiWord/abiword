@@ -2139,7 +2139,6 @@ UT_Bool fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pc
 	fl_SectionLayout* pSL = m_pSectionLayout;
 	UT_ASSERT(pSL);
 	pSL->removeBlock(this);
-	//delete this;			// TODO whoa!  we cannot do this.
 
 	// update the display
 	pPrevBL->complete_format();
@@ -2159,6 +2158,8 @@ UT_Bool fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pc
 		pView->notifyListeners(AV_CHG_TYPING | AV_CHG_FMTCHAR | AV_CHG_FMTBLOCK);
 	}
 
+	delete this;			// TODO whoa!  this construct is VERY dangerous.
+	
 	return UT_TRUE;
 }
 
