@@ -3233,10 +3233,20 @@ void FV_View::_clearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2,
 		return;
 	}
 
-	UT_ASSERT(pRun1 && pRun2);
+    // HACK: In certain editing cases only one of these is NULL, which 
+    //       makes locating runs to clear more difficult.  For now, I'm 
+    //       playing it safe and trying to just handle these cases here. 
+    //       The real solution may be to just bail if *either* is NULL, 
+    //       but I'm not sure.  
+    //
+    //       If you're interested in investigating this alternative 
+    //       approach, play with the following asserts.  
+
+//	UT_ASSERT(pRun1 && pRun2);
+	UT_ASSERT(pRun2);
 
 	UT_Bool bDone = UT_FALSE;
-	fp_Run* pCurRun = pRun1;
+	fp_Run* pCurRun = (pRun1 ? pRun1 : pRun2);
 
 
 	while (!bDone)
