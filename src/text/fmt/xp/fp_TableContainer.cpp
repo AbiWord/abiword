@@ -227,10 +227,14 @@ void fp_CellContainer::sizeRequest(fp_Request * pRequest)
 			{
 				width = pReq.width;
 			}
+			height = height + pReq.height;
 		}
 	}
-	pRequest->width = width;
-	pRequest->height = height;
+	if(pRequest)
+	{
+		pRequest->width = width;
+		pRequest->height = height;
+	}
 	m_MyRequest.width = width;
 	m_MyRequest.height = height;
 }
@@ -241,4 +245,729 @@ void fp_CellContainer::sizeAllocate(fp_Allocate * pAllocate)
 	m_MyAllocation.height = pAllocate->height;
 	m_MyAllocation.x = pAllocate->x;
 	m_MyAllocation.y = pAllocate->y;
+}
+
+//---------------------------------------------------------------------
+
+/*!
+  Create Cell container
+  \param iType Container type
+  \param pSectionLayout Section layout type used for this container
+ */
+fp_TableContainer::fp_TableContainer(fl_SectionLayout* pSectionLayout) : fp_Container(FP_CONTAINER_TABLE, pSectionLayout)
+{
+}
+
+/*!
+  Destruct container
+  \note The Containers in vector of the container are not
+        destructed. They are owned by the logical hierarchy (i.e.,
+		the fl_Container classes like fl_BlockLayout), not the physical
+        hierarchy.
+ */
+fp_TableContainer::~fp_TableContainer()
+{
+}
+
+void  fp_TableContainer::_size_request_init(void)
+{
+  UT_sint32 row, col;
+  
+  for (row = 0; row < m_iRows; row++)
+  {
+	  getNthRow(row)->requisition = 0;
+  }
+  for (col = 0; col < m_iCols; col++)
+  {
+	  getNthCol(col)->requisition = 0;
+  }
+
+  fp_CellContainer * pCell = (fp_CellContainer *) getFirstContainer();
+  while (pCell)
+  {
+	  UT_ASSERT(pCell->getContainerType() == FP_CONTAINER_CELL);
+	  pCell->size_request (NULL);
+	  pCell = (fp_CellContainer *) pCell->getNext();
+  }
+}
+
+void  fp_TableContainer::_size_request_pass1(void)
+{
+  UT_sint32 width;
+  UT_sint32 height;
+  
+  fp_CellContainer * child = (fp_CellContainer *) getFirstContainer();
+  while (children)
+  {
+
+	  GtkRequisition child_requisition;
+	  child->size_request(&child_requisition);
+
+	  /* Child spans a single column.
+	   */
+	  if (child->getLeftAttach() == (child->getRightAttach() - 1))
+	  {
+	      width = child_requisition.width + child->getLeftPad() + child->getRightPad();
+	      getNthCol(child->getLeftAttach())->requisition = MAX (getNthCol(child->getLeftAttach)->requisition, width);
+	  }
+	  
+	  /* Child spans a single row.
+	   */
+	  if (child->getTopAttach() == (child->getBottomAttach() - 1))
+	  {
+	      height = child_requisition.height + child->getTopPad() + child->getBotPad();
+	      getNthRow(child->getTopAttach())->requisition = MAX (getNthRow(child->getTopAttach())->requisition, height);
+	  }
+	  child = (fp_CellContainer *) child->getNext();
+  }
+}
+
+//--------------------------------------------------------------
+//-- Automatic chacges made here--------------------------------
+//
+void  fp_TableContainer::_size_request_pass2(void)
+{
+  UT_sint32 max_width;
+  UT_sint32 max_height;
+  UT_sint32 row, col;
+  
+  if (m_bIsHomogeneous)
+  {
+      max_width = 0;
+      max_height = 0;
+      
+      for (col = 0; col < m_iCols; col++)
+	  {
+		  max_width = MAX (max_width, getNthCol(col)->requisition);
+	  }
+	  for (row = 0; row < m_iRows; row++)
+	  {
+		  max_height = MAX (max_height, getNthRow(row)->requisition);
+      }
+      for (col = 0; col < m_iCols; col++)
+	  {
+		  getNthCol(col)->requisition = max_width;
+	  }
+      for (row = 0; row < m_iRows; row++)
+	  {
+		  getNthRow(row)->requisition = max_height;
+	  }
+  }
+}
+
+void  fp_TableContainer::_size_request_pass3(void)
+{
+  fp_CellContainer  *child;
+  UT_sint32 width, height;
+  UT_sint32 row, col;
+  UT_sint32 extra;
+  
+  child = (fp_CellContainer *) getFirstContainer();
+  while (child)
+  {
+	  /* Child spans multiple columns.
+	   */
+	  if (child->getLeftAttach() != (child->right_attach - 1))
+	  {
+	      fp_Requisition child_requisition;
+
+	      child->sizeRequest(&child_requisition);
+	      
+	      /* Check and see if there is already enough space
+	       *  for the child.
+	       */
+	      width = 0;
+	      for (col = child->getLeftAttach(); col < child->getRightAttach(); col++)
+		  {
+			  width += getNthCol(col)->requisition;
+			  if ((col + 1) < child->getRightAttach())
+			  {
+				  width += getNthCol(col)->spacing;
+			  }
+		  }
+	      
+	      /* If we need to request more space for this child to fill
+	       *  its requisition, then divide up the needed space evenly
+	       *  amongst the columns it spans.
+	       */
+	      if (width < child_requisition.width + child->getLeftPad() + child->getRightPad())
+		  {
+			  width = child_requisition.width + child->getLeftPad() + child->getRightPad();
+		  
+			  for (col = child->getLeftAttach(); col < child->getRightAttach(); col++)
+			  {
+				  extra = width / (child->getRightAttach() - col);
+				  getNthCol(col)->requisition += extra;
+				  width -= extra;
+			  }
+		  }
+	  }
+	  
+	  /* Child spans multiple rows.
+	   */
+	  if (child->getTopAttach() != (child->getBottomAttach() - 1))
+	  {
+	      fp_Requistion child_requisition;
+
+	      child->sizeRequest(&child_requisition);
+
+	      /* Check and see if there is already enough space
+	       *  for the child.
+	       */
+	      height = 0;
+	      for (row = child->getTopAttach(); row < child->getBottomAttach(); row++)
+		  {
+			  height += getNthRow(row)->requisition;
+			  if ((row + 1) < child->getBottomAttach())
+				  height += getNthRow(row)->spacing;
+		  }
+	      
+	      /* If we need to request more space for this child to fill
+	       *  its requisition, then divide up the needed space evenly
+	       *  amongst the columns it spans.
+	       */
+	      if (height < child_requisition.height + child->getTopPad() + child->getBotPad())
+		  {
+			  height = child_requisition.height + child->getTopPad() + child->getBotPad() - height;
+		  
+			  for (row = child->getTopAttach(); row < child->getBottomAttach(); row++)
+			  {
+				  extra = height / (child->getBottomAttach() - row);
+				  getNthRow(row)->requisition += extra;
+				  height -= extra;
+			  }
+		  }
+	  }
+	  child = (fp_CellContainer *) child->getNext();
+    }
+}
+
+void  fp_TableContainer::_size_allocate_init(void)
+{
+  fp_CellContainer * child;
+  UT_sint32 row, col;
+  UT_sint32 has_expand;
+  UT_sint32 has_shrink;
+  
+  /* Initialize the rows and cols.
+   *  By default, rows and cols do not expand and do shrink.
+   *  Those values are modified by the children that occupy
+   *  the rows and cols.
+   */
+  for (col = 0; col < m_iCols; col++)
+  {
+      getNthCol(col)->allocation = getNthCol(col)->requisition;
+      getNthCol(col)->need_expand = FALSE;
+      getNthCol(col)->need_shrink = TRUE;
+      getNthCol(col)->expand = FALSE;
+      getNthCol(col)->shrink = TRUE;
+      getNthCol(col)->empty = TRUE;
+  }
+  for (row = 0; row < m_iRows; row++)
+  {
+      getNthRow(row)->allocation = getNthRow(row)->requisition;
+      getNthRow(row)->need_expand = FALSE;
+      getNthRow(row)->need_shrink = TRUE;
+      getNthRow(row)->expand = FALSE;
+      getNthRow(row)->shrink = TRUE;
+      getNthRow(row)->empty = TRUE;
+  }
+  
+  /* Loop over all the children and adjust the row and col values
+   *  based on whether the children want to be allowed to expand
+   *  or shrink. This loop handles children that occupy a single
+   *  row or column.
+   */
+  fp_CellContainer * child = (fp_CellContainer *) getFirstContainer();
+  while (children)
+  {
+      if (GTK_WIDGET_VISIBLE (child->widget))
+	  {
+		  if (child->getLeftAttach() == (child->getRightAttach() - 1))
+		  {
+			  if (child->xexpand)
+			  {
+				  getNthCol(child->getLeftAttach())->expand = TRUE;
+			  }
+			  if (!child->xshrink)
+			  {
+				  getNthCol(child->getLeftAttach())->shrink = FALSE;
+			  }
+			  getNthCol(child->getLeftAttach())->empty = FALSE;
+		  }
+	  
+		  if (child->getTopAttach() == (child->getBottomAttach() - 1))
+		  {
+			  if (child->yexpand)
+			  {
+				  getNthRow(child->getTopAttach())->expand = TRUE;
+			  }
+			  if (!child->yshrink)
+			  {			
+				  getNthRow(child->getTopAttach())->shrink = FALSE;
+			  }
+			  getNthRow(child->getTopAttach())->empty = FALSE;
+		  }
+	  }
+	  child = (fp_CellContainer *) child->getNext();
+  }
+  
+  /* Loop over all the children again and this time handle children
+   *  which span multiple rows or columns.
+   */
+  child = (fp_CellContainer *) getFirstContainer();
+  while (child)
+  {
+      if (GTK_WIDGET_VISIBLE (child->widget))
+	  {
+		  if (child->getLeftAttach() != (child->getRightAttach() - 1))
+		  {
+			  for (col = child->getLeftAttach(); col < child->getRightAttach(); col++)
+			  {
+				  getNthCol(col)->empty = FALSE;
+			  }
+			  if (child->xexpand)
+			  {
+				  has_expand = FALSE;
+				  for (col = child->getLeftAttach(); col < child->getRightAttach(); col++)
+				  {
+					  if (getNthCol(col)->expand)
+					  {
+						  has_expand = TRUE;
+						  break;
+					  }
+				  }
+				  if (!has_expand)
+				  {
+					  for (col = child->getLeftAttach(); col < child->getRightAttach(); col++)
+					  {
+						  getNthCol(col)->need_expand = TRUE;
+					  }
+				  }
+			  }
+			  
+			  if (!child->xshrink)
+			  {
+				  has_shrink = TRUE;
+				  for (col = child->getLeftAttach(); col < child->getRightAttach(); col++)
+				  {
+					  if (!getNthCol(col)->shrink)
+					  {
+						  has_shrink = FALSE;
+						  break;
+					  }
+				  }
+				  if (has_shrink)
+				  {
+					  for (col = child->getLeftAttach(); col < child->getRightAttach(); col++)
+					  {
+						  getNthCol(col)->need_shrink = FALSE;
+					  }
+				  }
+			  }
+		  }
+	  
+		  if (child->getTopAttach() != (child->getBottomAttach() - 1))
+		  {
+			  for (row = child->getTopAttach(); row < child->getBottomAttach(); row++)
+			  {
+				  getNthRow(row)->empty = FALSE;
+			  }
+			  if (child->yexpand)
+			  {
+				  has_expand = FALSE;
+				  for (row = child->getTopAttach(); row < child->getBottomAttach(); row++)
+				  {
+					  if (getNthRow(row)->expand)
+					  {
+						  has_expand = TRUE;
+						  break;
+					  }
+				  }		  
+				  if (!has_expand)
+				  {
+					  for (row = child->getTopAttach(); row < child->getBottomAttach(); row++)
+						{
+							getNthRow(row)->need_expand = TRUE;
+						}
+				  }
+			  }
+	      
+			  if (!child->yshrink)
+			  {
+				  has_shrink = TRUE;
+				  for (row = child->getTopAttach(); row < child->getBottomAttach(); row++)
+					  if (!getNthRow(row)->shrink)
+					  {
+						  has_shrink = FALSE;
+						  break;
+					  }
+		  
+				  if (has_shrink)
+					  for (row = child->getTopAttach(); row < child->getBottomAttach(); row++)
+						  getNthRow(row)->need_shrink = FALSE;
+			  }
+		  }
+	  }
+	  child = (fp_CellContainer *) child->getNext();
+  }
+  
+  /* Loop over the columns and set the expand and shrink values
+   *  if the column can be expanded or shrunk.
+   */
+  for (col = 0; col < m_iCols; col++)
+  {
+      if (getNthCol(col)->empty)
+	  {
+		  getNthCol(col)->expand = FALSE;
+		  getNthCol(col)->shrink = FALSE;
+	  }
+      else
+	  {
+		  if (getNthCol(col)->need_expand)
+			  getNthCol(col)->expand = TRUE;
+		  if (!getNthCol(col)->need_shrink)
+			  getNthCol(col)->shrink = FALSE;
+	  }
+  }
+  
+  /* Loop over the rows and set the expand and shrink values
+   *  if the row can be expanded or shrunk.
+   */
+  for (row = 0; row < m_iRows; row++)
+  {
+      if (getNthRow(row)->empty)
+	  {
+		  getNthRow(row)->expand = FALSE;
+		  getNthRow(row)->shrink = FALSE;
+	  }
+      else
+	  {
+		  if (getNthRow(row)->need_expand)
+			  getNthRow(row)->expand = TRUE;
+		  if (!getNthRow(row)->need_shrink)
+			  getNthRow(row)->shrink = FALSE;
+	  }
+  }
+}
+
+void  fp_TableContainer::_size_allocate_pass1(void)
+{
+
+  UT_sint32 real_width;
+  UT_sint32 real_height;
+  UT_sint32 width, height;
+  UT_sint32 row, col;
+  UT_sint32 nexpand;
+  UT_sint32 nshrink;
+  UT_sint32 extra;
+  
+  /* If we were allocated more space than we requested
+   *  then we have to expand any expandable rows and columns
+   *  to fill in the extra space.
+   */
+  
+  real_width = GTK_WIDGET (table)->allocation.width - GTK_CONTAINER (table)->border_width * 2;
+  real_height = GTK_WIDGET (table)->allocation.height - GTK_CONTAINER (table)->border_width * 2;
+  
+  if (m_bIsHomogeneous)
+    {
+      nexpand = 0;
+      for (col = 0; col < m_iCols; col++)
+	if (getNthCol(col)->expand)
+	  {
+	    nexpand += 1;
+	    break;
+	  }
+      
+      if (nexpand > 0)
+	{
+	  width = real_width;
+	  
+	  for (col = 0; col + 1 < m_iCols; col++)
+	    width -= getNthCol(col)->spacing;
+	  
+	  for (col = 0; col < m_iCols; col++)
+	    {
+	      extra = width / (m_iCols - col);
+	      getNthCol(col)->allocation = MAX (1, extra);
+	      width -= extra;
+	    }
+	}
+    }
+  else
+    {
+      width = 0;
+      nexpand = 0;
+      nshrink = 0;
+      
+      for (col = 0; col < m_iCols; col++)
+	{
+	  width += getNthCol(col)->requisition;
+	  if (getNthCol(col)->expand)
+	    nexpand += 1;
+	  if (getNthCol(col)->shrink)
+	    nshrink += 1;
+	}
+      for (col = 0; col + 1 < m_iCols; col++)
+	width += getNthCol(col)->spacing;
+      
+      /* Check to see if we were allocated more width than we requested.
+       */
+      if ((width < real_width) && (nexpand >= 1))
+	{
+	  width = real_width - width;
+	  
+	  for (col = 0; col < m_iCols; col++)
+	    if (getNthCol(col)->expand)
+	      {
+		extra = width / nexpand;
+		getNthCol(col)->allocation += extra;
+		
+		width -= extra;
+		nexpand -= 1;
+	      }
+	}
+      
+      /* Check to see if we were allocated less width than we requested,
+       * then shrink until we fit the size give.
+       */
+      if (width > real_width)
+	{
+	  UT_sint32 total_nshrink = nshrink;
+
+	  extra = width - real_width;
+	  while (total_nshrink > 0 && extra > 0)
+	    {
+	      nshrink = total_nshrink;
+	      for (col = 0; col < m_iCols; col++)
+		if (getNthCol(col)->shrink)
+		  {
+		    UT_sint32 allocation = getNthCol(col)->allocation;
+
+		    getNthCol(col)->allocation = MAX (1, (UT_sint32) getNthCol(col)->allocation - extra / nshrink);
+		    extra -= allocation - getNthCol(col)->allocation;
+		    nshrink -= 1;
+		    if (getNthCol(col)->allocation < 2)
+		      {
+			total_nshrink -= 1;
+			getNthCol(col)->shrink = FALSE;
+		      }
+		  }
+	    }
+	}
+    }
+  
+  if (m_bIsHomogeneous)
+    {
+      nexpand = 0;
+      for (row = 0; row < m_iRows; row++)
+	if (getNthRow(row)->expand)
+	  {
+	    nexpand += 1;
+	    break;
+	  }
+      
+      if (nexpand > 0)
+	{
+	  height = real_height;
+	  
+	  for (row = 0; row + 1 < m_iRows; row++)
+	    height -= getNthRow(row)->spacing;
+	  
+	  
+	  for (row = 0; row < m_iRows; row++)
+	    {
+	      extra = height / (m_iRows - row);
+	      getNthRow(row)->allocation = MAX (1, extra);
+	      height -= extra;
+	    }
+	}
+    }
+  else
+    {
+      height = 0;
+      nexpand = 0;
+      nshrink = 0;
+      
+      for (row = 0; row < m_iRows; row++)
+	{
+	  height += getNthRow(row)->requisition;
+	  if (getNthRow(row)->expand)
+	    nexpand += 1;
+	  if (getNthRow(row)->shrink)
+	    nshrink += 1;
+	}
+      for (row = 0; row + 1 < m_iRows; row++)
+	height += getNthRow(row)->spacing;
+      
+      /* Check to see if we were allocated more height than we requested.
+       */
+      if ((height < real_height) && (nexpand >= 1))
+	{
+	  height = real_height - height;
+	  
+	  for (row = 0; row < m_iRows; row++)
+	    if (getNthRow(row)->expand)
+	      {
+		extra = height / nexpand;
+		getNthRow(row)->allocation += extra;
+		
+		height -= extra;
+		nexpand -= 1;
+	      }
+	}
+      
+      /* Check to see if we were allocated less height than we requested.
+       * then shrink until we fit the size give.
+       */
+      if (height > real_height)
+	{
+	  UT_sint32 total_nshrink = nshrink;
+	  
+	  extra = height - real_height;
+	  while (total_nshrink > 0 && extra > 0)
+	    {
+	      nshrink = total_nshrink;
+	      for (row = 0; row < m_iRows; row++)
+		if (getNthRow(row)->shrink)
+		  {
+		    UT_sint32 allocation = getNthRow(row)->allocation;
+		    
+		    getNthRow(row)->allocation = MAX (1, (UT_sint32) getNthRow(row)->allocation - extra / nshrink);
+		    extra -= allocation - getNthRow(row)->allocation;
+		    nshrink -= 1;
+		    if (getNthRow(row)->allocation < 2)
+		      {
+			total_nshrink -= 1;
+			getNthRow(row)->shrink = FALSE;
+		      }
+		  }
+	    }
+	}
+    }
+}
+void  fp_TableContainer::_size_allocate_pass2(void)
+{
+  GtkTableChild *child;
+  GList *children;
+  UT_sint32 max_width;
+  UT_sint32 max_height;
+  UT_sint32 x, y;
+  UT_sint32 row, col;
+  GtkAllocation allocation;
+  
+  children = table->children;
+  while (children)
+    {
+      child = children->data;
+      children = children->next;
+      
+      if (GTK_WIDGET_VISIBLE (child->widget))
+	{
+	  GtkRequisition child_requisition;
+	  gtk_widget_get_child_requisition (child->widget, &child_requisition);
+
+	  x = GTK_WIDGET (table)->allocation.x + GTK_CONTAINER (table)->border_width;
+	  y = GTK_WIDGET (table)->allocation.y + GTK_CONTAINER (table)->border_width;
+	  max_width = 0;
+	  max_height = 0;
+	  
+	  for (col = 0; col < child->getLeftAttach(); col++)
+	    {
+	      x += getNthCol(col)->allocation;
+	      x += getNthCol(col)->spacing;
+	    }
+	  
+	  for (col = child->getLeftAttach(); col < child->getRightAttach(); col++)
+	    {
+	      max_width += getNthCol(col)->allocation;
+	      if ((col + 1) < child->getRightAttach())
+		max_width += getNthCol(col)->spacing;
+	    }
+	  
+	  for (row = 0; row < child->getTopAttach(); row++)
+	    {
+	      y += getNthRow(row)->allocation;
+	      y += getNthRow(row)->spacing;
+	    }
+	  
+	  for (row = child->getTopAttach(); row < child->getBottomAttach(); row++)
+	    {
+	      max_height += getNthRow(row)->allocation;
+	      if ((row + 1) < child->getBottomAttach())
+		max_height += getNthRow(row)->spacing;
+	    }
+	  
+	  if (child->xfill)
+	    {
+	      allocation.width = MAX (1, max_width - (UT_sint32)child->xpadding * 2);
+	      allocation.x = x + (max_width - allocation.width) / 2;
+	    }
+	  else
+	    {
+	      allocation.width = child_requisition.width;
+	      allocation.x = x + (max_width - allocation.width) / 2;
+	    }
+	  
+	  if (child->yfill)
+	    {
+	      allocation.height = MAX (1, max_height - (UT_sint32)child->ypadding * 2);
+	      allocation.y = y + (max_height - allocation.height) / 2;
+	    }
+	  else
+	    {
+	      allocation.height = child_requisition.height;
+	      allocation.y = y + (max_height - allocation.height) / 2;
+	    }
+	  
+	  gtk_widget_size_allocate (child->widget, &allocation);
+	}
+    }
+}
+
+fp_TableRowColum * fp_TableContainer::getNthCol(UT_sint32 i)
+{
+	UT_ASSERT(i < m_vecColumns.getItemCount());
+	return (fp_TableRowColumn *) m_vecColumns.getNthItem(i);
+}
+
+fp_TableRowColum * fp_TableContainer::getNthRow(UT_sint32 i)
+{
+	UT_ASSERT(i < m_vecRows.getItemCount());
+	return (fp_TableRowColumn *) m_vecRows.getNthItem(i);
+}
+
+
+void fp_TableContainer::size_request(fp_Requistion * pRequistion)
+{
+  UT_sint32 row, col;
+  
+  pRequesition->width = 0;
+  pRequesition->height = 0;
+  
+  _size_request_init ();
+  _request_pass1 ();
+  _size_request_pass2 ();
+  _size_request_pass3 ();
+  _size_request_pass2 ();
+  
+  for (col = 0; col < m_iCols; col++)
+    pRequesition->width += getNthCol(col)->requesition;
+  for (col = 0; col + 1 < m_iCols; col++)
+    pRequesition->width += getNthCol(col)->spacing;
+  
+  for (row = 0; row < m_iRows; row++)
+    pRequesition->height += getNthRow(row)->requisition;
+  for (row = 0; row + 1 < m_iRows; row++)
+    pRequesition->height += getNthRow->spacing;
+}
+
+void fp_TableContainer::size_allocate(fp_Allocation * pAllocation)
+{
+	m_MyAllocation = *pAllocation;
+  
+	_size_allocate_init ();
+	_size_allocate_pass1 ();
+	_size_allocate_pass2 ();
 }

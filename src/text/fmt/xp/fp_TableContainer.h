@@ -130,6 +130,22 @@ public:
     void                setBottomAttach(UT_uint32 i)
 		{ m_iBottomAttach = i;}
 	void                setToAllocation(void);
+	UT_sint32           getLeftPad(void) const
+		{ return m_iLeftPad;}
+	UT_sint32           getRightPad(void) const
+		{ return m_iRightPad;}
+	UT_sint32           getTopPad(void) const
+		{ return m_iTopPad;}
+	UT_sint32           getBotPad(void) const
+		{ return m_iBotPad;}
+	void                setLeftPad(UT_sint32 i)
+		{ m_iLeftPad = i;}
+	void                setRightPad(UT_sint32 i)
+		{ m_iRightPad = i;}
+	void                setTopPad(UT_sint32 i)
+		{ m_iTopPad = i;}
+	void                setBotPad(UT_sint32 i)
+		{ m_iBotPad = i;}
 private:
 //
 // These variables describe where the cell is attached to the table.
@@ -155,6 +171,15 @@ private:
 
 	fp_Allocation       m_MyAllocation;
 	fp_Request          m_MyRequest;
+//
+// Padding left,right, top and bottom
+//
+	UT_sint32           m_iLeftPad;
+	UT_sint32           m_iRightPad;
+	UT_sint32           m_iTopPad;
+	UT_sint32           m_iBotPad;
+	fp_CellContainer *  m_pNextInTable;
+	fp_CellContainer *  m_pPrevInTable;
 };
 
 class ABI_EXPORT fp_TableContainer : public fp_Container
@@ -162,6 +187,9 @@ class ABI_EXPORT fp_TableContainer : public fp_Container
 public:
 	fp_TableContainer(fl_SectionLayout* pSectionLayout);
 	~fp_TableContainer();
+
+	void                sizeRequest(fp_Request * pRequest);
+	void                sizeAllocate(fp_Allocate * pAllocate);
 
 	void				layout(void);
 	virtual void		draw(dg_DrawArgs*);
@@ -174,13 +202,24 @@ public:
 	virtual fp_ContainerObject * VBreakAt(UT_sint32);
 	virtual fp_ContainerObject * HBreakAt(UT_sint32) {return NULL;}
 	void                setToAllocation(void);
-
+	void                tableAttach(fp_CellContainer * pCell, 
+									UT_sint32 leftAttach,
+									UT_sint32 rightAttach,
+									UT_sint32 topAttach,
+									UT_sint32 bottomAttach,
+									UT_uint32 attachOptions,
+									UT_sint32 leftPad,
+									UT_sint32 rightPad,
+									UT_sint32 topPad,
+									UT_sint32 botPad);
 
 #ifdef FMT_TEST
 	void				__dump(FILE * fp) const;
 #endif
 
 private:
+	fp_TableRowColum *      getNthCol(UT_sint32 i);
+	fp_TableRowColum *      getNthRow(UT_sint32 i);
 	void                    _size_request_init(void);
 	void                    _size_request_pass1(void);
 	void                    _size_request_pass2(void);
@@ -201,7 +240,8 @@ private:
 
 	fp_Allocation           m_MyAllocation;
 	fp_Request              m_MyRequest;
-
+	fp_TableContainer *     m_pFirstInGroup;
+	fp_TableContainer *     m_pLastInGroup;
 };
 
 #endif /* TABLECONTAINER_H */
