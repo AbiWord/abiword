@@ -33,13 +33,29 @@ UT_StringPool::UT_StringPool()
 	addBucket();
 }
 
+UT_StringPool::~UT_StringPool()
+{
+	while (m_pFirstBucket)
+	{
+		UT_PoolBucket* pTmp = m_pFirstBucket->pNext;
+		delete m_pFirstBucket;
+		m_pFirstBucket = pTmp;
+	}
+}
+
+
 UT_StringPool::UT_PoolBucket::UT_PoolBucket(int iSize)
 {
-	// TODO how do we handle contructor failure here?
+	// TODO how do we handle constructor failure here?
 	pChars = new char[iSize];
 	iSpace = iSize;
 	iCurLen = 0;
 	pNext = NULL;
+}
+
+UT_StringPool::UT_PoolBucket::~UT_PoolBucket()
+{
+	delete pChars;
 }
 
 int UT_StringPool::addBucket()

@@ -37,6 +37,24 @@ UT_HashTable::UT_HashTable() : m_pool()
 	m_iEntryCount = 0;
 }
 
+UT_HashTable::~UT_HashTable()
+{
+	for (int i=0; i < NUM_BUCKETS; i++)
+	{
+		UT_HashEntryListNode* pHELN = m_pBuckets[i].pHead;
+
+		while (pHELN)
+		{
+			UT_HashEntryListNode* pTmp = pHELN->pNext;
+			delete pHELN;
+			pHELN = pTmp;
+		}
+	}
+	
+	free(m_pBuckets);
+	free(m_pEntries);
+}
+
 int UT_HashTable::addEntry(const char* pszLeft, const char* pszRight, void* pData)
 {
 	UT_ASSERT(pszLeft);

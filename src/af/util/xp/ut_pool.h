@@ -29,6 +29,7 @@ class UT_StringPool
 {
 public:
 	UT_StringPool();
+	~UT_StringPool();
 	char* addString(const char*);
 
 protected:
@@ -37,6 +38,7 @@ protected:
 	struct UT_PoolBucket
 	{
 		UT_PoolBucket(int iSize);
+		~UT_PoolBucket();
 
 		char*		pChars;
 		int			iCurLen;

@@ -37,6 +37,8 @@ public:
 	};
 
 	UT_HashTable();
+	~UT_HashTable();
+
 	int addEntry(const char* psLeft, const char* psRight, void* pData);
 	int getEntryCount(void);
 	UT_HashEntry* getNthEntry(int n);
