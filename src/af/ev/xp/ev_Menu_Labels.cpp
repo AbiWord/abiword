@@ -23,6 +23,7 @@
 
 #include "ut_types.h"
 #include "ut_assert.h"
+#include "ut_debugmsg.h"
 #include "ut_string.h"
 #include "ev_Menu_Labels.h"
 
@@ -105,6 +106,19 @@ EV_Menu_Label * EV_Menu_LabelSet::getLabel(XAP_Menu_Id id) const
 	UT_uint32 index = (id - m_first);
 	
 	EV_Menu_Label * pLabel = m_labelTable[index];
+
+	// IDEA: some labelsets are sparse because their translation is behind
+	// HACK: if no label, create a fallback JIT so we don't fail downstream
+	// TODO: fall back to English instead like strings do (but not here)
+	if (!pLabel)
+	{
+		UT_DEBUGMSG(("WARNING: %s translation for menu id [%d] not found.\n",m_szLanguage,id));
+		// NOTE: only translators should see the following strings
+		// NOTE: do *not* translate them
+		pLabel = new EV_Menu_Label(id,"TODO","untranslated menu item");
+		m_labelTable[index] = pLabel;
+	}
+
 	UT_ASSERT(pLabel && (pLabel->getMenuId()==id));
 	return pLabel;
 }
