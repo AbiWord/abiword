@@ -20,9 +20,12 @@
 #include <gtk/gtk.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
+#include <unistd.h>
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "xap_Dialog_Id.h"
+#include "xap_Dialog_MessageBox.h"
 #include "xap_UnixDialog_FileOpenSaveAs.h"
 #include "xap_UnixApp.h"
 #include "xap_UnixFrame.h"
@@ -63,6 +66,51 @@ static void s_cancel_clicked(GtkWidget * widget,
 	gtk_main_quit();
 }
 
+UT_Bool AP_UnixDialog_FileOpenSaveAs::askOverwrite_YesNo(AP_Frame * pFrame, const char * fileName)
+{
+	// return UT_TRUE if we should overwrite the file
+	AP_DialogFactory * pDialogFactory
+		= (AP_DialogFactory *)(pFrame->getDialogFactory());
+
+	AP_Dialog_MessageBox * pDialog
+		= (AP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
+	UT_ASSERT(pDialog);
+
+	pDialog->setMessage("File already exists.  Overwrite file '%s'?", fileName);
+	pDialog->setButtons(AP_Dialog_MessageBox::b_YN);
+	pDialog->setDefaultAnswer(AP_Dialog_MessageBox::a_NO);	// should this be YES?
+
+	pDialog->runModal(pFrame);
+
+	AP_Dialog_MessageBox::tAnswer ans = pDialog->getAnswer();
+
+	pDialogFactory->releaseDialog(pDialog);
+
+	return (ans == AP_Dialog_MessageBox::a_YES);
+}
+
+	
+void AP_UnixDialog_FileOpenSaveAs::notifyError_OKOnly(AP_Frame * pFrame, const char * message)
+{
+	AP_DialogFactory * pDialogFactory
+		= (AP_DialogFactory *)(pFrame->getDialogFactory());
+
+	AP_Dialog_MessageBox * pDialog
+		= (AP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
+	UT_ASSERT(pDialog);
+
+	pDialog->setMessage(message);
+	pDialog->setButtons(AP_Dialog_MessageBox::b_O);
+//	pDialog->setDefaultAnswer(AP_Dialog_MessageBox::a_YES);
+
+	pDialog->runModal(pFrame);
+
+//	AP_Dialog_MessageBox::tAnswer ans = pDialog->getAnswer();
+
+	pDialogFactory->releaseDialog(pDialog);
+}
+
+
 /*****************************************************************/
 
 void AP_UnixDialog_FileOpenSaveAs::runModal(AP_Frame * pFrame)
@@ -70,21 +118,32 @@ void AP_UnixDialog_FileOpenSaveAs::runModal(AP_Frame * pFrame)
 	m_pUnixFrame = (AP_UnixFrame *)pFrame;
 	UT_ASSERT(m_pUnixFrame);
 
+	// do we want to let this function handle stating the Unix
+	// directory for writability?  Save/Export operations will want
+	// this, open/import will not.
+	bool bCheckWritePermission;
+	
 	char * szTitle;
 	switch (m_id)
 	{
 	case XAP_DIALOG_ID_FILE_OPEN:
+	{
 		szTitle = "Open File";
+		bCheckWritePermission = false;
 		break;
-
+	}
 	case XAP_DIALOG_ID_FILE_SAVEAS:
+	{
 		szTitle = "Save File As";
+		bCheckWritePermission = true;
 		break;
-
+	}
 	case XAP_DIALOG_ID_PRINTTOFILE:
+	{
 		szTitle = "Print To File";
+		bCheckWritePermission = true;
 		break;
-		
+	}
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		break;
@@ -162,17 +221,144 @@ void AP_UnixDialog_FileOpenSaveAs::runModal(AP_Frame * pFrame)
 	}
 
 	// TODO decide if we should put in a default wildcard suffix...
-	
-	/* Run the dialog */
 
 	gtk_widget_show(GTK_WIDGET(pFS));
 	gtk_grab_add(GTK_WIDGET(pFS));
-	gtk_main();
+	
+	/*
+	  Run the dialog in a loop to catch bad filenames.
+	  The location of this check being in this dialog loop
+	  could be considered temporary.  Doing this matches the Windows
+	  common control behavior (where the dialog checks everything
+	  for the programmer), but lacks flexibility for different
+	  uses of this dialog (file export, print export, directory
+	  (not file) selection).
 
-	if (m_answer == a_OK)
-		UT_cloneString(m_szFinalPathname,
-					   gtk_file_selection_get_filename(pFS));
+	  This check might need to be moved into the ap code which calls
+	  this dialog, and certain interfaces exposed so that the
+	  dialog is displayed throughout the verification.
 
+	  For right now you can signal this check on and off with
+	  bCheckWritePermission.
+	*/
+
+	bool bWriteIt = false;
+	if (bCheckWritePermission)
+	{
+		char * szTestFilename;		
+		struct stat buf;
+		int err;
+		
+		while(1)
+		{
+			gtk_main();
+
+			// The easy way out
+			if (m_answer == a_CANCEL)
+				break;
+
+			// Give us a filename we can mangle
+			UT_cloneString(szTestFilename, gtk_file_selection_get_filename(pFS));
+			UT_ASSERT(szTestFilename);
+
+			err = stat(szTestFilename, &buf);
+			UT_ASSERT(err == 0 || err == -1);
+			
+			// Does the filename already exist?
+			if (err == 0 && S_ISREG(buf.st_mode))
+			{
+				// we have an existing file, ask to overwrite
+				if (askOverwrite_YesNo(pFrame, szTestFilename))
+				{
+					bWriteIt = true;
+					break;
+				}
+				else
+					continue;
+				// we could add a "cancel" here, but as it works,
+				// if the user chickens out and doesn't overwrite,
+				// the cancel button on the save dialog still works
+			}
+			
+			// Check for a directory entered as filename.  When true,
+			// set the filter properly and continue in the selection
+			if (err == 0 && S_ISDIR(buf.st_mode))
+			{
+				GString * s = g_string_new(szTestFilename);
+				if (s->str[s->len - 1] != '/')
+				{
+					g_string_append_c(s, '/');
+				}
+				gtk_file_selection_set_filename(pFS, s->str);
+				g_string_free(s, TRUE);
+				continue;
+			}
+
+			// We have a string that may contain a path, and may have a file
+			// at the end.  First, strip off a file (if it exists), and test
+			// for a matching directory.  We can then proceed with the file
+			// if another stat of that dir passes.
+			
+			// TODO : check that strlen() won't walk into garbage,
+			// and it shouldn't if GTK always returns a terminated string.
+			int i = 0;
+			for (i = strlen(szTestFilename); i > 0; i--)
+				if (szTestFilename[i] == '/')
+					break;
+			szTestFilename[i+1] = NULL;
+			
+			// Stat the directory left over
+			err = stat(szTestFilename, &buf);
+			UT_ASSERT(err == 0 || err == -1);
+
+			// If this directory doesn't exist, we have been feed garbage
+			// at some point.  Throw an error and continue with the selection.
+			if (err == -1)
+			{
+				notifyError_OKOnly(pFrame,
+								   "This file cannot be saved in this directory\n"
+								   "because the directory does not exist.");
+				continue;
+			}
+
+			// Since the stat passed the last test, we will make sure the
+			// directory is suitable for writing, since we know it exists.
+			UT_ASSERT(S_ISDIR(buf.st_mode));
+
+			if (!access(szTestFilename, W_OK))
+			{
+				bWriteIt = true;
+				break;
+			}
+			else
+			{
+				unsigned int length = strlen(szTestFilename);
+				
+				char message[length + 512];
+
+				// lop off ugly trailing slash only if we don't have
+				// the root dir ('/') for a path
+				if (length > 1)
+					szTestFilename[length - 1] = NULL;
+				
+				sprintf(message, "This file cannot be saved here because the directory\n"
+						"'%s' is write-protected.", szTestFilename);
+				
+				notifyError_OKOnly(pFrame, message);
+
+				continue;
+			}
+
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		}
+	}
+	else
+		// with no wrapper
+		gtk_main();
+			
+	if (bWriteIt)
+		UT_cloneString(m_szFinalPathname, gtk_file_selection_get_filename(pFS));		
+			   
 	gtk_widget_destroy (GTK_WIDGET(pFS));
 
 	FREEP(szPersistDirectory);
@@ -180,4 +366,3 @@ void AP_UnixDialog_FileOpenSaveAs::runModal(AP_Frame * pFrame)
 
 	return;
 }
-

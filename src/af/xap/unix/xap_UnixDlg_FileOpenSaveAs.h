@@ -36,6 +36,11 @@ public:
 	static AP_Dialog *		static_constructor(AP_DialogFactory *, AP_Dialog_Id id);
 
 protected:
+
+	// user interaction
+	void 			notifyError_OKOnly(AP_Frame * pFrame, const char * message);
+	UT_Bool 		askOverwrite_YesNo(AP_Frame * pFrame, const char * fileName);
+	
 	AP_UnixFrame *			m_pUnixFrame;
 };
 
