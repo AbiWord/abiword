@@ -728,7 +728,7 @@ void FV_VisualInlineImage::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 	// Sevior's infamous + 1....
 	yoff += pRun->getLine()->getAscent() - pRun->getAscent() + getGraphics()->tlu(1);	// Set the image size in the image selection rect
 	m_recCurFrame = UT_Rect(xoff,yoff,pRun->getWidth(),pRun->getHeight());
-	if(	m_iInlineDragMode != FV_InlineDrag_WAIT_FOR_MOUSE_CLICK)
+	if(	m_iInlineDragMode != FV_InlineDrag_WAIT_FOR_MOUSE_DRAG)
 	{
 	  m_iLastX = x;
 	  m_iLastY = y;
@@ -895,8 +895,8 @@ void FV_VisualInlineImage::setDragType(UT_sint32 x,UT_sint32 y, bool bDrawImage)
 	// OK find the coordinates of the image and generate the image to be
 	// dragged and resized.
 	//
-
 	getImageFromSelection(x, y);
+
 	if( m_iInlineDragMode == FV_InlineDrag_NOT_ACTIVE)
 	{
 	  return;
