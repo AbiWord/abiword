@@ -22,6 +22,10 @@ ABI_ROOT:=$(shell pwd)/../../..
 include $(ABI_ROOT)/src/config/abi_defs_wp.mk
 include $(ABI_ROOT)/src/config/abi_rules.mk
 
+# escape prefix for sed replacement
+# can someone explain me why we should put so much "\" ?
+esc_prefix:=$(shell echo $(prefix) | sed "s/\//\\\\\\\\\\//g")
+
 ##################################################################
 ## This makefile serves two purposes.  It exposes an "install" 
 ## target, wherein it installs AbiSuite applications.  The
@@ -41,24 +45,28 @@ install:
 # then uninstalls.
 pkg: install
 	@echo "Producing Solaris PKG..."
-	@sed "s/__ABI_BUILD_VERSION__/$(ABI_BUILD_VERSION)/" pkg/pkginfo | sed \
-		"s/__ABI_ARCH__/$(OS_ARCH)/" > $(DIST)/pkginfo
+	sed "s/__ABI_BUILD_VERSION__/$(ABI_BUILD_VERSION)/" pkg/pkginfo \
+		| sed "s/__ABI_ARCH__/$(OS_ARCH)/" \
+		| sed "s/__ABI_BUILD_PACKAGER__/$(ABI_BUILD_PACKAGER)/" \
+		| sed "s/__prefix__/$(esc_prefix)/" \
+		> $(DIST)/pkginfo
+	@sed "s/@DISABLE_JPEG@/#/g" pkg/checkinstall > $(DIST)/checkinstall
 	@echo "i pkginfo" > $(DIST)/Prototype
 	@echo "i checkinstall=./checkinstall" >> $(DIST)/Prototype
-	@find /usr/local/AbiSuite /usr/local/bin/AbiWord /usr/local/bin/abiword -print \
-		| pkgproto >> $(DIST)/Prototype
-	@(cd $(DIST); pkgmk -o -r / -d $(DIST) -f Prototype)
+	@(cd $(prefix); find AbiSuite $(prefix)/bin/AbiWord $(prefix)/bin/abiword -print \
+		| pkgproto >> $(DIST)/Prototype)
+	@(cd $(DIST); pkgmk -o -b $(prefix) -d $(DIST) -f Prototype)
 	@rm -f $(DIST)/Prototype
 	@rm -f $(DIST)/pkginfo
 	@rm -f $(DIST)/checkinstall
 	@echo "Compressing pkg into .tar.gz format..."
-	@(cd $(DIST); tar cf - abisuite | gzip -c > \
+	@(cd $(DIST); tar cf - ABIword | gzip -c > \
 		$(DIST)/abisuite.$(ABI_BUILD_VERSION).$(OS_ARCH).SunOS.$(OS_RELEASE).pkg.tar.gz)
-	@rm -rf $(DIST)/abisuite
+	@rm -rf $(DIST)/ABIword
 	@echo "Removing installation..."
-	@rm -rf /usr/local/AbiSuite
-	@rm -f /usr/local/bin/AbiWord
-	@rm -f /usr/local/bin/abiword
+	@rm -rf $(prefix)/AbiSuite
+	@rm -f $(prefix)/bin/AbiWord
+	@rm -f $(prefix)/bin/abiword
 
 ########################################################################
 
