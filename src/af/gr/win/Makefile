@@ -22,7 +22,8 @@ ABI_ROOT:=$(shell pwd)/../../../..
 
 include $(ABI_ROOT)/src/config/abi_defs.mk
 
-CPPSRCS=		gr_Win32Graphics.cpp	\
+CPPSRCS=		gr_Win32CharWidths.cpp	\
+			gr_Win32Graphics.cpp	\
 			gr_Win32Image.cpp
 
 TARGETS=		$(OBJS)
