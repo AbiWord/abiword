@@ -117,44 +117,6 @@
 #	include "tb_transparent.xpm"
 #   include "stock_new-text.xpm"
 
-	// these are specific to one or more translations
-#	include "tb_text_bold_G.xpm"
-#	include "tb_text_strikeout_B.xpm"
-#	include "tb_text_underline_S.xpm"
-#	include "tb_text_italic_K.xpm"
-	// Finnish translations
-#	include "tb_text_bold_L.xpm"
-#	include "tb_text_strikeout_Y.xpm"
-#	include "tb_text_underline_A.xpm"
-	// Polish translations
-#	include "tb_text_bold_P.xpm"
-#	include "tb_text_strikeout_P.xpm"
-#	include "tb_text_underline_P.xpm"
-#	include "tb_text_overline_P.xpm"
-	// Danish translations
-#	include "tb_text_bold_F.xpm"
-#	include "tb_text_strikeout_G.xpm"
-	// Hungarian translations
-//#	include "tb_text_bold_F.xpm"
-#	include "tb_text_italic_D.xpm"
-//#	include "tb_text_underline_A.xpm"
-#	include "tb_text_overline_F.xpm"
-#	include "tb_text_strikeout_K.xpm"
-	// Spanish translations
-#	include "tb_text_bold_N.xpm"
-	// Russian translations
-#	include "tb_text_bold_rus.xpm"
-#	include "tb_text_italic_rus.xpm"
-#	include "tb_text_underline_rus.xpm"
-#	include "tb_text_overline_rus.xpm"
-#	include "tb_text_strikeout_rus.xpm"
-	// Italian translations
-#	include "tb_text_overline_S.xpm"
-#	include "tb_text_topline_it-IT.xpm"
-#	include "tb_text_bottomline_it-IT.xpm"
-	// Portuguese translations
-#	include "tb_text_topline_pt-PT.xpm"
-#	include "tb_text_bottomline_pt-PT.xpm"
 	// ... add new icons here (don't forget to add below the #else) ...
 
 #else
@@ -244,45 +206,6 @@
 	DefineToolbarIcon(tb_transparent_xpm)
 
 	// these are specific to one or more translations
-	DefineToolbarIcon(tb_text_bold_G_xpm)
-	DefineToolbarIcon(tb_text_strikeout_B_xpm)
-	DefineToolbarIcon(tb_text_underline_S_xpm)
-	DefineToolbarIcon(tb_text_italic_K_xpm)
-	// Finnish translations
-	DefineToolbarIcon(tb_text_bold_L_xpm)
-	DefineToolbarIcon(tb_text_strikeout_Y_xpm)
-	DefineToolbarIcon(tb_text_underline_A_xpm)
-	// Polish translations
-	DefineToolbarIcon(tb_text_bold_P_xpm)
-	DefineToolbarIcon(tb_text_strikeout_P_xpm)
-	DefineToolbarIcon(tb_text_underline_P_xpm)
-	DefineToolbarIcon(tb_text_overline_P_xpm)
-	// Danish translations
-	DefineToolbarIcon(tb_text_bold_F_xpm)
-	DefineToolbarIcon(tb_text_strikeout_G_xpm)
-	// Hungarian translations
-	//DefineToolbarIcon(tb_text_bold_F_xpm)
-	DefineToolbarIcon(tb_text_italic_D_xpm)
-	//DefineToolbarIcon(tb_text_underline_A_xpm)
-	DefineToolbarIcon(tb_text_strikeout_K_xpm)
-	DefineToolbarIcon(tb_text_overline_F_xpm)
-	// Spanish translations
-	DefineToolbarIcon(tb_text_bold_N_xpm)
-	// Russian translations
-	DefineToolbarIcon(tb_text_bold_rus_xpm)
-	DefineToolbarIcon(tb_text_italic_rus_xpm)
-	DefineToolbarIcon(tb_text_underline_rus_xpm)
-	DefineToolbarIcon(tb_text_overline_rus_xpm)
-	DefineToolbarIcon(tb_text_strikeout_rus_xpm)
-	// Italian translations
-	DefineToolbarIcon(tb_text_overline_S_xpm)
-	DefineToolbarIcon(tb_text_topline_it_IT_xpm)
-	DefineToolbarIcon(tb_text_bottomline_it_IT_xpm)
-	// Portuguese translations
-	DefineToolbarIcon(tb_text_overline_S_xpm)
-	DefineToolbarIcon(tb_text_topline_pt_PT_xpm)
-	DefineToolbarIcon(tb_text_bottomline_pt_PT_xpm)
-
 
 	// ... also add new icons here ...
 
