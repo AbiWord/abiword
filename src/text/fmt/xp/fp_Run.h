@@ -304,7 +304,7 @@ protected:
 								 }
 	void					_setLength(UT_uint32 l) { m_iLen = l; }
 	void					_setRevisions(PP_RevisionAttr * p) { m_pRevisions = p; }
-	void					_setDirty(bool b) { m_bDirty = b; }
+	void					_setDirty(bool b);
 	void					_setField(fd_Field * fd) { m_pField = fd; }
 	void                    _setHyperlink(fp_HyperlinkRun * pH) { m_pHyperlink = pH; }
 	bool					_getRecalcWidth(void) const { return m_bRecalcWidth; }

@@ -7708,6 +7708,37 @@ fl_EndnoteLayout * FV_View::getClosestEndnote(PT_DocPosition pos)
 	return pClosest;
 }
 
+/*! 
+ * Returns true if the point is located with a block so stuff can be typed
+ * or inserted.
+ */
+bool FV_View::isPointLegal(PT_DocPosition pos)
+{
+	PL_StruxDocHandle prevSDH = NULL;
+	PL_StruxDocHandle nextSDH = NULL;
+	PT_DocPosition nextPos =0;
+	bool bres = m_pDoc->getStruxOfTypeFromPosition(pos,PTX_Block,&prevSDH);
+	if(!bres)
+	{
+		return false;
+	}
+	bres = m_pDoc->getNextStrux(prevSDH,&nextSDH);
+	if(!bres)
+	{
+		return false;
+	}
+	nextPos =  m_pDoc->getStruxPosition(nextSDH);
+	if(pos > nextPos && (m_pDoc->getStruxType(nextSDH) != PTX_Block))
+	{
+		return false;
+	}
+	return true;
+}
+
+bool FV_View::isPointLegal(void)
+{
+	return isPointLegal(getPoint());
+}
 
 /*!
  * Returns true if the current insertion point is inside a footnote.

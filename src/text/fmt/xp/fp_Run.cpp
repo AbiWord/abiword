@@ -739,7 +739,16 @@ void fp_Run::clearScreen(bool bFullLineHeightRect)
 			// make sure we only get erased once
 			_setDirty(true);
 		}
+		else
+		{
+			UT_DEBUGMSG(("fp_Run: Clearscreen on line without page \n"));
+		}
 	}
+	else
+	{
+		UT_DEBUGMSG(("fpRun: Clearscreen on line without container \n"));
+	}
+	xxx_UT_DEBUGMSG(("fp_Run: clearscreen applied \n"));
 }
 
 static UT_RGBColor s_fgColor;
@@ -768,11 +777,19 @@ const UT_RGBColor fp_Run::getPageColor(void)
 	return _getColorPG();
 }
 
+void fp_Run::_setDirty(bool b)
+{
+	xxx_UT_DEBUGMSG(("fp_Run:: run %x  Dirty state set to %d \n",this,b));
+	m_bDirty = b;
+}
+
 void fp_Run::draw(dg_DrawArgs* pDA)
 {
 	if (pDA->bDirtyRunsOnly && !m_bDirty)
+	{
+		xxx_UT_DEBUGMSG(("fp_Run::Run %x not dirty returning \n",this));
 		return;
-
+	}
 	if (getLine())
 		getLine()->setScreenCleared(false);
 

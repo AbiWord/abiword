@@ -272,6 +272,7 @@ public:
 											   PL_StruxDocHandle * nextsdh);
 	bool					getPrevStruxOfType(PL_StruxDocHandle sdh,PTStruxType pts,
 											   PL_StruxDocHandle * prevsdh);
+	bool                    getNextStrux(PL_StruxDocHandle sdh, PL_StruxDocHandle *nextSDH);
 
 	// data items
 

@@ -82,7 +82,10 @@ UT_sint32 fp_FootnoteContainer::getValue(void)
 
 void fp_FootnoteContainer::clearScreen(void)
 {
-
+	if(getPage() == NULL)
+	{
+		return;
+	}
 	UT_sint32 pos = getPage()->findFootnoteContainer(this);
 	if(pos == 0)
 	{
@@ -141,6 +144,10 @@ fl_DocSectionLayout * fp_FootnoteContainer::getDocSectionLayout(void)
  */
 void fp_FootnoteContainer::draw(dg_DrawArgs* pDA)
 {
+	if(getPage() == NULL)
+	{
+		return;
+	}
 	UT_sint32 pos = getPage()->findFootnoteContainer(this);
 	xxx_UT_DEBUGMSG(("fp_Footnote:draw: pos %d \n",pos));
 	if(pos == 0)
@@ -267,7 +274,12 @@ void fp_FootnoteContainer::layout(void)
 	}
 
 	setHeight(iY);
-	getPage()->footnoteHeightChanged();
+	fp_Page * pPage = getPage();
+//	UT_ASSERT(pPage);
+	if(pPage)
+	{
+		pPage->footnoteHeightChanged();
+	}
 }
 
 

@@ -474,6 +474,8 @@ public:
 	UT_uint32           getRevisionLevel()const{return m_iViewRevision;}
 
 	/* Table related functions */
+	bool                isPointLegal(PT_DocPosition pos);
+	bool                isPointLegal(void);
 	bool				isInTable();
 	bool				isInTable(PT_DocPosition pos);
 	bool                cmdAutoSizeCols(void);

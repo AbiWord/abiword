@@ -1006,6 +1006,10 @@ bool PD_Document::isFootnoteAtPos(PT_DocPosition pos)
 	PT_BlockOffset pOffset;
 	pf_Frag * pf = NULL;
 	/*bool bRes = */m_pPieceTable->getFragFromPosition(pos,&pf,&pOffset);
+	while(pf->getLength() == 0)
+	{
+		pf = pf->getPrev();
+	}
 	return m_pPieceTable->isFootnote(pf);
 }
 
@@ -1019,6 +1023,10 @@ bool PD_Document::isEndFootnoteAtPos(PT_DocPosition pos)
 	PT_BlockOffset pOffset;
 	pf_Frag * pf = NULL;
 	/*bool bRes = */m_pPieceTable->getFragFromPosition(pos,&pf,&pOffset);
+	while(pf->getLength() == 0)
+	{
+		pf = pf->getPrev();
+	}
 	return m_pPieceTable->isEndFootnote(pf);
 }
 
@@ -2105,6 +2113,43 @@ bool PD_Document::getPrevStruxOfType(PL_StruxDocHandle sdh,PTStruxType pts,
 			}
 		}
 
+	// did not find it.
+
+	return false;
+}
+
+
+///
+///get the next strux after the strux given. Skip embedded strux's
+///
+bool PD_Document::getNextStrux(PL_StruxDocHandle sdh,
+							   PL_StruxDocHandle * nextsdh)
+{
+	const pf_Frag_Strux * pfs = static_cast<const pf_Frag_Strux *>(sdh);
+	UT_ASSERT(pfs);
+	pfs = static_cast<pf_Frag_Strux *>(pfs->getNext());
+	UT_sint32 iEmbedDepth = 0;
+	for (pf_Frag * pf=pfs; (pf); pf=pf->getNext())
+	{
+		if (pf->getType() == pf_Frag::PFT_Strux)
+		{
+			const pf_Frag_Strux * pfsTemp = static_cast<const pf_Frag_Strux *>(pf);
+			if(iEmbedDepth <= 0 && !m_pPieceTable->isFootnote(pf) &&
+			   !m_pPieceTable->isFootnote(pf))
+			{
+				*nextsdh = pfsTemp;
+				return true;
+			}
+			else if(m_pPieceTable->isFootnote(pf))
+			{
+				iEmbedDepth++;
+			}
+			else if(m_pPieceTable->isEndFootnote(pf))
+			{
+				iEmbedDepth--;
+			}
+		}
+	}
 	// did not find it.
 
 	return false;

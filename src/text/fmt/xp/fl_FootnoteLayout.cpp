@@ -416,9 +416,12 @@ void fl_FootnoteLayout::_insertFootnoteContainer(fp_Container * pNewFC)
 	pNewFC->setContainer(NULL);
 
 	// need to put onto page as well, in the appropriate place.
-	UT_ASSERT(pPage);
-	pPage->insertFootnoteContainer(static_cast<fp_FootnoteContainer*>(pNewFC));
-	m_bIsOnPage = true;
+//	UT_ASSERT(pPage);
+	if(pPage)
+	{
+		pPage->insertFootnoteContainer(static_cast<fp_FootnoteContainer*>(pNewFC));
+		m_bIsOnPage = true;
+	}
 }
 
 
@@ -454,6 +457,7 @@ void fl_FootnoteLayout::format(void)
 	}
 	static_cast<fp_FootnoteContainer *>(getFirstContainer())->layout();
 	m_bNeedsFormat = false;
+	m_bNeedsReformat = false;
 }
 
 void fl_FootnoteLayout::_lookupProperties(void)

@@ -707,7 +707,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 				pOuterContainer =  _getNext(pCurColumn->getLastContainer());
 				bTableTest = true;
 			}
-			pCurColumn->validate();
+//			pCurColumn->validate();
 			pCurColumn = static_cast<fp_Column *>(pCurColumn->getNext());
 			if(pCurColumn == NULL && bTableTest && pOuterContainer != NULL)
 			{

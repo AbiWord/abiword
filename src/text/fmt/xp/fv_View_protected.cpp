@@ -2785,6 +2785,7 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 
 	fp_Run* pRun = pBlock->findPointCoords(pos, bEOL, xPoint, yPoint, xPoint2, yPoint2, iPointHeight, bDirection);
 
+
 	// NOTE prior call will fail if the block isn't currently formatted,
 	// NOTE so we won't be able to figure out more specific geometry
 
@@ -3300,7 +3301,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 	UT_uint32 uheight;
 	m_bPointEOL = false;
 	UT_sint32 iOldDepth = getEmbedDepth(getPoint());
-	UT_DEBUGMSG(("_charMotion: Old Position is %d emebed depth \n",posOld,iOldDepth));
+	UT_DEBUGMSG(("_charMotion: Old Position is %d embed depth \n",posOld,iOldDepth));
 	/*
 	  we don't really care about the coords.  We're calling these
 	  to get the Run pointer
@@ -3323,6 +3324,13 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 	if (bForward)
 	{
 		_setPoint(m_iInsPoint + countChars);
+//
+// Scan past any strux boundaries (like table controls
+//
+		while(getPoint() < posEOD && !isPointLegal())
+		{
+			_setPoint(m_iInsPoint + 1);
+		}
 		_findPositionCoords(m_iInsPoint-1, false, x, y, x2,y2,uheight, bDirection, &pBlock, &pRun);
 //
 // If we come to a table boundary we have doc positions with no blocks.
@@ -3333,11 +3341,13 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 		// boundaries. However, I am not sure whether the whole of the
 		// x,y test is at all desirable here; any idea why it is here?
 		// Tomas, Jan 16, 2003.
+
 		bool bExtra = false;
 		while(m_iInsPoint <= posEOD && (pRun == NULL || ((x == xold) && (y == yold) &&
 														 (x2 == x2old) && (y2 == y2old) &&
 														 (bDirection == bDirectionOld))))
 		{
+			UT_DEBUGMSG(("fv_View_protected: (2) pRun = %x \n",pRun));
 			_setPoint(m_iInsPoint+1);
 			_findPositionCoords(m_iInsPoint-1, false, x, y, x2,y2,uheight, bDirection, &pBlock, &pRun);
 			bExtra = true;
@@ -3360,6 +3370,13 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 	else
 	{
 		_setPoint(m_iInsPoint - countChars);
+//
+// Scan past any strux boundaries (like table controls
+//
+		while(getPoint() > posBOD && !isPointLegal())
+		{
+			_setPoint(m_iInsPoint - 1);
+		}
 		_findPositionCoords(m_iInsPoint, false, x, y, x2,y2,uheight, bDirection, &pBlock, &pRun);
 //
 // If we come to a table boundary we have doc positions with no blocks.
@@ -3465,7 +3482,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 		if(iOldDepth < getEmbedDepth(m_iInsPoint))
 		{
 			bool bSweep = false;
-			while(m_iInsPoint <= posEOD && (iOldDepth < getEmbedDepth(m_iInsPoint)))
+			while(m_iInsPoint <= posEOD && ( (iOldDepth < getEmbedDepth(m_iInsPoint)) || m_pDoc->isEndFootnoteAtPos(getPoint())))
 			{ 
 				bSweep = true;
 				m_iInsPoint++;
@@ -3482,7 +3499,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 		else if((iOldDepth > getEmbedDepth(m_iInsPoint)) )
 		{
 			bool bSweep = false;
-			while((iOldDepth > getEmbedDepth(m_iInsPoint)) )
+			while((iOldDepth > getEmbedDepth(m_iInsPoint)) || m_pDoc->isFootnoteAtPos(getPoint()) )
 			{
 				m_iInsPoint--;
 				bSweep = true;
@@ -3499,7 +3516,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 		if(iOldDepth < getEmbedDepth(m_iInsPoint))
 		{
 			bool bSweep = false;
-			while((iOldDepth < getEmbedDepth(m_iInsPoint)) && m_iInsPoint >= posBOD)
+			while(((iOldDepth < getEmbedDepth(m_iInsPoint)) || m_pDoc->isFootnoteAtPos(getPoint()) ) && (m_iInsPoint >= posBOD))
 			{ 
 				bSweep = true;
 				m_iInsPoint--;
@@ -3516,7 +3533,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 	    else
 		{
 			bool bSweep = false;
-			while(iOldDepth > getEmbedDepth(m_iInsPoint))
+			while((iOldDepth > getEmbedDepth(m_iInsPoint)) || m_pDoc->isEndFootnoteAtPos(getPoint()))
 			{
 				m_iInsPoint++;
 				bSweep = true;

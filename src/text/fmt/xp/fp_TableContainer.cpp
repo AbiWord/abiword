@@ -1441,6 +1441,11 @@ fp_TableContainer::fp_TableContainer(fl_SectionLayout* pSectionLayout)
 	  m_iRowHeightType(FL_ROW_HEIGHT_NOT_DEFINED),
 	  m_iRowHeight(0)
 {
+	if(getSectionLayout())
+	{
+		getSectionLayout()->setNeedsRedraw();
+		getSectionLayout()->markAllRunsDirty();
+	}
 }
 
 
@@ -2744,7 +2749,7 @@ void fp_TableContainer::draw(dg_DrawArgs* pDA)
 //
 // Don't draw if the table is still being constructed.
 //
-	xxx_UT_DEBUGMSG(("TablecONTAINER enter draw \n"));
+	xxx_UT_DEBUGMSG(("TablecONTAINER enter draw table %x \n",this));
 	if(getSectionLayout()->getDocument()->isDontImmediateLayout())
 	{
 		UT_DEBUGMSG(("TablecONTAINER leave draw dont immediately layout \n"));
@@ -2754,8 +2759,8 @@ void fp_TableContainer::draw(dg_DrawArgs* pDA)
 	{
 		if(getSectionLayout() && !getSectionLayout()->needsRedraw())
 		{
-			xxx_UT_DEBUGMSG(("TablecONTAINER leave draw section does not want redraw \n"));
-			return;
+			UT_DEBUGMSG(("TablecONTAINER leave draw section does not want redraw \n"));
+//			return;
 		}
 	}
 	if(isThisBroken())

@@ -1247,6 +1247,12 @@ fl_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos)
 		xxx_UT_DEBUGMSG(("Start footnote found at %d \n",pos));
 		pos+=2;
 	}
+	if(m_pDoc->isFootnoteAtPos(pos-1))
+	{
+		xxx_UT_DEBUGMSG(("Start footnote found at %d \n",pos));
+		pos+=1;
+	}
+
 	bRes = m_pDoc->getStruxOfTypeFromPosition(m_lid, pos, PTX_Block, &sfh);
 	// If block wasn't found at position, try finding it to the right,
 	// limited only by the EOD.

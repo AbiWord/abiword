@@ -1202,6 +1202,7 @@ void fl_BlockLayout::collapse(void)
 		pLine = static_cast<fp_Line *>(getFirstContainer());
 	}
 	m_bIsCollapsed = true;
+	m_iNeedsReformat = 0;
 	UT_ASSERT(getFirstContainer() == NULL);
 	UT_ASSERT(getLastContainer() == NULL);
 }
@@ -1570,6 +1571,13 @@ void fl_BlockLayout::format()
 		UT_DEBUGMSG(("block 0x%08x not on screen\n",this));
 	}
 #endif
+	//
+	// If block hasn't changed don't format it.
+	//
+	if(m_iNeedsReformat == -1)
+	{
+		return;
+	}
 	xxx_UT_DEBUGMSG(("fl_BlockLayout - format \n"));
 	_assertRunListIntegrity();
 	fp_Run *pRunToStartAt = NULL;
@@ -1589,34 +1597,6 @@ void fl_BlockLayout::format()
 	setUpdatableField(false);
 	fl_ContainerLayout * pPrevCL = getPrev();
 	fp_Page * pPrevP = NULL;
-#if 0
-	if(pPrevCL)
-	{
-		UT_DEBUGMSG(("formatBlock 0: pPrevCL Type %d \n",pPrevCL->getContainerType()));
-		if(pPrevCL->myContainingLayout()->getContainerType() == FL_CONTAINER_CELL)
-		{
-			while(pPrevCL && pPrevCL->myContainingLayout()->getContainerType() != FL_CONTAINER_DOCSECTION)
-			{
-				pPrevCL = pPrevCL->myContainingLayout();
-			}
-			if(pPrevCL)
-			{
-				UT_DEBUGMSG(("formatBlock 1: pPrevCL Type %d \n",pPrevCL->getContainerType()));
-				pPrevCL = pPrevCL->getPrev();
-				UT_DEBUGMSG(("formatBlock 2: pPrevCL Type %d \n",pPrevCL->getContainerType()));
-			}
-		}
-		if(pPrevCL)
-		{
-			fp_Container * pPrevCon = pPrevCL->getFirstContainer();
-			if(pPrevCon)
-			{
-				pPrevP = pPrevCon->getPage();
-			}
-		}
-	}
-	UT_DEBUGMSG(("formatBlock 3: pPage%x \n",pPrevP));
-#else
 	if(pPrevCL)
 	{
 		fp_Container * pPrevCon = pPrevCL->getFirstContainer();
@@ -1625,7 +1605,7 @@ void fl_BlockLayout::format()
 			pPrevP = pPrevCon->getPage();
 		}
 	}
-#endif
+	xxx_UT_DEBUGMSG(("formatBlock 3: pPage %x \n",pPrevP));
 	getDocSectionLayout()->setNeedsSectionBreak(true,pPrevP);
 	if (m_pFirstRun)
 	{
@@ -2048,6 +2028,7 @@ fl_BlockLayout::findPointCoords(PT_DocPosition iPos,
 	{
 		pRun = pRun->getNext();
 	}
+
 	// We may have scanned past the last Run in the block. Back up.
 	if (!pRun)
 	{
