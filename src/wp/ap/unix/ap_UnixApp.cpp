@@ -37,7 +37,7 @@
 #include "ap_Convert.h"
 #include "ap_UnixFrame.h"
 #include "ap_UnixApp.h"
-#include "sp_spell.h"
+#include "spell_manager.h"
 #include "ap_Strings.h"
 #include "xap_EditMethods.h"
 #include "ap_LoadBindings.h"
@@ -105,7 +105,7 @@ AP_UnixApp::AP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 */
 AP_UnixApp::~AP_UnixApp(void)
 {
-    SpellCheckCleanup();
+	delete SpellManager::instance();
     
     DELETEP(m_pStringSet);
     DELETEP(m_pClipboard);
@@ -186,38 +186,7 @@ bool AP_UnixApp::initialize(void)
     //////////////////////////////////////////////////////////////////
     
     {
-#ifndef HAVE_PSPELL
-	// we're using ispell
-	const char * szISpellDirectory = NULL;
-	getPrefsValueDirectory(false,
-			       (const XML_Char*)AP_PREF_KEY_SpellDirectory,
-			       (const XML_Char**)&szISpellDirectory);
-	UT_ASSERT((szISpellDirectory) && (*szISpellDirectory));
-	    
-	const char * szSpellCheckWordList = NULL;
-	getPrefsValue(AP_PREF_KEY_SpellCheckWordList,
-		      (const XML_Char**)&szSpellCheckWordList);
-	UT_ASSERT((szSpellCheckWordList) && (*szSpellCheckWordList));
-	
-	UT_String szPathname = szISpellDirectory;
-	if (szISpellDirectory[szPathname.size()-1] != '/')
-	  szPathname += "/";
-	szPathname += szSpellCheckWordList;
-	    
-	UT_DEBUGMSG(("Loading SpellCheckWordList [%s]\n", szPathname.c_str()));
-	// JCA: I don't know if SpellCheckInit really modify the char *
-	// JCA: or if its signature should really be const char *.
-	// JCA: If the latter, please fix the signature of this function,
-	// JCA: and replace these 3 lines by: SpellCheckInit(szPathname.c_str());
-	char *tmp = UT_strdup(szPathname.c_str());
-	SpellCheckInit(tmp);
-	free(tmp);
-#else 
-	// we're using pspell, it's safe to cast to a char * here
-	SpellCheckInit((char *)xap_encoding_manager_get_language_iso_name());
-#endif
-	    
-	// we silently go on if we cannot load it....
+		SpellManager::instance()->requestDictionary(xap_encoding_manager_get_language_iso_name());
     }
 	
     //////////////////////////////////////////////////////////////////

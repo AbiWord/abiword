@@ -43,6 +43,41 @@
 /*****************************************************************/
 /*****************************************************************/
 
+class s_XSL_FO_Listener : public PL_Listener
+{
+public:
+	s_XSL_FO_Listener(PD_Document * pDocument,
+					  IE_Exp_XSL_FO * pie);
+	virtual ~s_XSL_FO_Listener();
+
+	virtual bool		populate(PL_StruxFmtHandle sfh,
+								 const PX_ChangeRecord * pcr);
+
+	virtual bool		populateStrux(PL_StruxDocHandle sdh,
+									  const PX_ChangeRecord * pcr,
+									  PL_StruxFmtHandle * psfh);
+
+	virtual bool		change(PL_StruxFmtHandle sfh,
+							   const PX_ChangeRecord * pcr);
+
+	virtual bool		insertStrux(PL_StruxFmtHandle sfh,
+									const PX_ChangeRecord * pcr,
+									PL_StruxDocHandle sdh,
+									PL_ListenerId lid,
+									void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+															PL_ListenerId lid,
+															PL_StruxFmtHandle sfhNew));
+
+	virtual bool		signal(UT_uint32 iSignal);
+protected:
+	
+	PD_Document *		m_pDocument;
+	IE_Exp_XSL_FO *	    m_pie;
+};
+
+/*****************************************************************/
+/*****************************************************************/
+
 IE_Exp_XSL_FO::IE_Exp_XSL_FO(PD_Document * pDocument)
 	: IE_Exp(pDocument)
 {
@@ -88,55 +123,55 @@ bool IE_Exp_XSL_FO::SupportsFileType(IEFileType ft)
 
 UT_Error IE_Exp_XSL_FO::_writeDocument(void)
 {
-	// todo
-	return UT_OK;
+	m_pListener = new s_XSL_FO_Listener(m_pDocument,this);
+	if (!m_pListener)
+		return UT_IE_NOMEMORY;
+	if (!m_pDocument->tellListener(static_cast<PL_Listener *>(m_pListener)))
+		return UT_ERROR;
+	delete m_pListener;
+
+	m_pListener = NULL;
+	
+	return ((m_error) ? UT_IE_COULDNOTWRITE : UT_OK);
 }  
 
 /*****************************************************************/
 /*****************************************************************/
-
-class s_XSL_FO_Listener : public PL_Listener
-{
-public:
-	s_XSL_FO_Listener(PD_Document * pDocument,
-					  IE_Exp_XSL_FO * pie);
-	virtual ~s_XSL_FO_Listener();
-
-	virtual bool		populate(PL_StruxFmtHandle sfh,
-								 const PX_ChangeRecord * pcr);
-
-	virtual bool		populateStrux(PL_StruxDocHandle sdh,
-									  const PX_ChangeRecord * pcr,
-									  PL_StruxFmtHandle * psfh);
-
-	virtual bool		change(PL_StruxFmtHandle sfh,
-							   const PX_ChangeRecord * pcr);
-
-	virtual bool		insertStrux(PL_StruxFmtHandle sfh,
-									const PX_ChangeRecord * pcr,
-									PL_StruxDocHandle sdh,
-									PL_ListenerId lid,
-									void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
-															PL_ListenerId lid,
-															PL_StruxFmtHandle sfhNew));
-
-	virtual bool		signal(UT_uint32 iSignal);
-protected:
-	
-	PD_Document *		m_pDocument;
-	IE_Exp_XSL_FO *	    m_pie;
-};
 
 s_XSL_FO_Listener::s_XSL_FO_Listener(PD_Document * pDocument,
 									 IE_Exp_XSL_FO * pie)
 {
 	m_pDocument = pDocument;
 	m_pie = pie;
-	// TODO
+
+	// Be nice to XML apps.  See the notes in _outputData() for more 
+	// details on the charset used in our documents.  By not declaring 
+	// any encoding, XML assumes we're using UTF-8.  Note that US-ASCII 
+	// is a strict subset of UTF-8. 
+
+	if (!XAP_EncodingManager::instance->cjk_locale() &&
+	    (XAP_EncodingManager::instance->try_nativeToU(0xa1) != 0xa1)) {
+	    // use utf8 for CJK locales and latin1 locales and unicode locales
+	    m_pie->write("<?xml version=\"1.0\" encoding=\"");
+	    m_pie->write(XAP_EncodingManager::instance->getNativeEncodingName());
+	    m_pie->write("\"?>\n");
+	} else {
+	    m_pie->write("<?xml version=\"1.0\"?>\n");
+	}
+
+	m_pie->write("<fo:root xmlns:fo=\"http://www.w3.org/1999/XSL/Format\">\n");
+
+	m_pie->write("<!-- This document was created by AbiWord -->\n");
+	m_pie->write("<!-- AbiWord is a free, Open Source word processor. -->\n");
+	m_pie->write("<!-- You may obtain more information about AbiWord at www.abisource.com -->\n");
+
+	//_handlePageSize();
 }
 
 s_XSL_FO_Listener::~s_XSL_FO_Listener()
 {
+	
+	m_pie->write ("</fo:root>\n");
 	// TODO
 }
 

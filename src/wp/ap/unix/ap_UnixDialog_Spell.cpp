@@ -425,12 +425,12 @@ void AP_UnixDialog_Spell::_showMisspelledWord(void)
    
    gchar *suggest[2] = {NULL, NULL};
    
-   for (int i = 0; i < m_Suggestions.count; i++) {
-      suggest[0] = (gchar*) _convertToMB((UT_UCSChar*)m_Suggestions.word[i]);
+   for (int i = 0; i < m_Suggestions->getItemCount(); i++) {
+      suggest[0] = (gchar*) _convertToMB((UT_UCSChar*)m_Suggestions->getNthItem(i));
       gtk_clist_append( GTK_CLIST(m_clistSuggestions), suggest);
    }
    
-   if (!m_Suggestions.count) {
+   if (!m_Suggestions->getItemCount()) {
 
       const XAP_StringSet * pSS = m_pApp->getStringSet();
       UT_XML_cloneNoAmpersands(suggest[0], pSS->getValue(AP_STRING_ID_DLG_Spell_NoSuggestions));
@@ -473,7 +473,7 @@ void AP_UnixDialog_Spell::event_Change()
 	UT_DEBUGMSG(("m_iSelectedRow is %i\n", m_iSelectedRow));
 	if (m_iSelectedRow != -1)
 	{
-		replace = (UT_UCSChar*) m_Suggestions.word[m_iSelectedRow];
+		replace = (UT_UCSChar*) m_Suggestions->getNthItem(m_iSelectedRow);
 		UT_DEBUGMSG(("Replacing with %s\n", (char*) replace));
 		//fprintf(stderr, "Replacing with %s\n", replace);
 		changeWordWith(replace);		
@@ -498,7 +498,7 @@ void AP_UnixDialog_Spell::event_ChangeAll()
    UT_UCSChar * replace = NULL;
    if (m_iSelectedRow != -1)
      {
-	replace = (UT_UCSChar*) m_Suggestions.word[m_iSelectedRow];
+	replace = (UT_UCSChar*) m_Suggestions->getNthItem(m_iSelectedRow);
 	addChangeAll(replace);
 	changeWordWith(replace);
      }
@@ -546,7 +546,7 @@ void AP_UnixDialog_Spell::event_Cancel()
 
 void AP_UnixDialog_Spell::event_SuggestionSelected(gint row, gint column)
 {
-   if (!m_Suggestions.count) return;
+   if (!m_Suggestions->getItemCount()) return;
    
    m_iSelectedRow = row;
    

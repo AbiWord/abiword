@@ -44,8 +44,18 @@
 #include "ispell.h"
 #endif
 
+static bool
+SpellCheckWord (const UT_UCSChar * word, UT_uint32 len)
+{
+	SpellChecker * checker = SpellManager::instance()->lastDictionary();
+	UT_ASSERT(checker);
+	if (checker->checkWord (word, len) == SpellChecker::LOOKUP_SUCCEEDED)
+		return true;
+	return false;
+}
+
 AP_Dialog_Spell::AP_Dialog_Spell(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
-  : XAP_Dialog_NonPersistent(pDlgFactory,id)
+	: XAP_Dialog_NonPersistent(pDlgFactory,id), m_Suggestions(0)
 {
    m_iWordOffset = 0;
    m_iWordLength = -1;
@@ -53,10 +63,6 @@ AP_Dialog_Spell::AP_Dialog_Spell(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id 
    m_iSentenceStart = 0;
    m_iSentenceEnd = 0;
    
-   m_Suggestions.count = 0;
-   m_Suggestions.score = NULL;
-   m_Suggestions.word = NULL;
-
    m_pBlockBuf = NULL;
    m_pView = NULL;
    m_pSection = NULL;
@@ -87,12 +93,16 @@ AP_Dialog_Spell::~AP_Dialog_Spell(void)
 
 void AP_Dialog_Spell::_purgeSuggestions(void)
 {
-	for (int i = 0; i < m_Suggestions.count; i++)
-		FREEP(m_Suggestions.word[i]);
+	if (!m_Suggestions) return;
 
-	FREEP(m_Suggestions.word);
-	FREEP(m_Suggestions.score);
-	m_Suggestions.count = 0;
+	for (int i = 0; i < m_Suggestions->getItemCount(); i++)
+	{
+		UT_UCSChar * sug = (UT_UCSChar *)m_Suggestions->getNthItem(i);
+		if (sug)
+			free(sug);
+	}
+
+	DELETEP(m_Suggestions);
 }
 
 void AP_Dialog_Spell::runModal(XAP_Frame * pFrame)
@@ -253,12 +263,18 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
 			 UT_DEBUGMSG(("word: %s\n", theWord));
 			 if (!m_pDoc->isIgnore(theWord, m_iWordLength) &&
 			     !pApp->isWordInDict(theWord, m_iWordLength) &&
-			     !SpellCheckNWord16(theWord, m_iWordLength)) {
+			     !SpellCheckWord(theWord, m_iWordLength)) {
 		  
 			// unknown word...
 			// prepare list of possibilities
-			SpellCheckSuggestNWord16(theWord, m_iWordLength,
-						 &m_Suggestions);
+			SpellChecker * checker = SpellManager::instance()->lastDictionary();
+		    m_Suggestions = checker->suggestWord(theWord, m_iWordLength);
+
+			if (!m_Suggestions)
+			{
+				UT_DEBUGMSG(("DOM: no suggestions returned\n"));
+				return false;
+			}
 			    
 			// update sentence boundaries (so we can display
 			// the misspelled word in proper context)

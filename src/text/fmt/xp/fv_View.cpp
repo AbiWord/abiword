@@ -54,7 +54,7 @@
 #include "ap_LeftRuler.h"
 #include "ap_Prefs.h"
 #include "fd_Field.h"
-#include "sp_spell.h"
+#include "spell_manager.h"
 
 #include "xap_EncodingManager.h"
 
@@ -7497,7 +7497,7 @@ UT_UCSChar * FV_View::_lookupSuggestion(fl_BlockLayout* pBL, fl_PartOfBlock* pPO
 	UT_UCSChar * szSuggest = NULL;
 
 	// lookup suggestions
-	sp_suggestions sg;
+	UT_Vector * sg;
 	memset(&sg, 0, sizeof(sg));
 
 	UT_UCSChar theWord[101];
@@ -7509,23 +7509,33 @@ UT_UCSChar * FV_View::_lookupSuggestion(fl_BlockLayout* pBL, fl_PartOfBlock* pPO
 		if (currentChar == UCS_RQUOTE) currentChar = '\'';
 		theWord[ldex] = currentChar;
 	}
-				
-	SpellCheckSuggestNWord16(theWord, pPOB->iLength, &sg);
+
+	SpellChecker * checker = SpellManager::instance()->lastDictionary();
+	sg = checker->suggestWord (theWord, pPOB->iLength);
+
+	if (!sg)
+	{
+		UT_DEBUGMSG(("DOM: no suggestions returned\n"));
+		DELETEP(sg);
+		return 0;
+	}
 
 	// we currently return all requested suggestions
-	// TODO: prune lower-weighted ones??
-	if ((sg.count) &&
-		((int) ndx <= sg.count))
+	if ((sg->getItemCount()) &&
+		((int) ndx <= sg->getItemCount()))
 	{
-		UT_UCS_cloneString(&szSuggest, (UT_UCSChar *) sg.word[ndx-1]);
+		UT_UCS_cloneString(&szSuggest, (UT_UCSChar *) sg->getNthItem(ndx-1));
 	}
 
 	// clean up
-	for (int i = 0; i < sg.count; i++)
-		FREEP(sg.word[i]);
-	FREEP(sg.word);
-	FREEP(sg.score);
+	for (int i = 0; i < sg->getItemCount(); i++)
+	{
+		UT_UCSChar * sug = (UT_UCSChar *)sg->getNthItem(i);
+		if(sug)
+			free(sug);
+	}
 
+	DELETEP(sg);
 	return szSuggest;
 }
 

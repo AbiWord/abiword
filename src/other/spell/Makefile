@@ -27,9 +27,10 @@ include $(ABI_ROOT)/src/config/abi_defs.mk
 
 #dummy initialization
 CSRCS=
+CPPSRCS= spell_manager.cpp
 
 ifdef ABI_OPT_PSPELL
-	CSRCS=  pspell.c
+	CPPSRCS+= pspell_checker.cpp
 else
 	CSRCS=	newMain.c good.c tgood.c lookup.c makedent.c hash.c correct.c
 endif

@@ -28,7 +28,7 @@
 #include "fl_BlockLayout.h"
 #include "pt_Types.h"
 
-#include "sp_spell.h"
+#include "spell_manager.h"
 
 class XAP_Frame;
 
@@ -93,7 +93,7 @@ class AP_Dialog_Spell : public XAP_Dialog_NonPersistent
    
    // current suggested corrections to the 
    // most recently misspelled word
-   sp_suggestions m_Suggestions;
+   UT_Vector * m_Suggestions;
 
    bool	m_bCancelled;
    short m_iSelectedRow;

@@ -28,26 +28,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <pspell/pspell.h>
 
-#include "sp_spell.h"
+#include "ut_debugmsg.h"
+#include "pspell_checker.h"
 
 #define WORD_SIZE 256 /* or whatever */
 
-/**********************************************************************/
-/*                     Globals we'll need for pspell                  */
-/**********************************************************************/
-static PspellManager *spell_manager = NULL;
-
-/* defined in ut_string.[cpp,h] */
-extern int unichar_to_utf8 (int c, unsigned char *outbuf);
-
 /*
- * Pspell's author tells me that we probably don't need these
- * Two methods because Pspell can detect and handle utf16
- * Character strings, so long as they're *double null terminated*
+ * We should really do away with these functions if at all possible
  */
-static void utf16_to_utf8(const unsigned short *word16, unsigned char * word8,
+static void 
+utf16_to_utf8(const unsigned short *word16, unsigned char * word8,
 			  int length)
 {
   unsigned char *pC = word8;
@@ -59,8 +50,9 @@ static void utf16_to_utf8(const unsigned short *word16, unsigned char * word8,
   *pC++ = 0;
 }
 
-static void utf8_to_utf16(const char *word8, unsigned short *word16, 
-			 int length)
+static void 
+utf8_to_utf16(const char *word8, unsigned short *word16, 
+			  int length)
 {
   unsigned short *p;
   int i;
@@ -71,62 +63,107 @@ static void utf8_to_utf16(const char *word8, unsigned short *word16,
   *p = 0;
 }
 
-/*
- * Should return 1 on success, 0 on failure
+PSpellChecker::PSpellChecker ()
+{
+}
+
+PSpellChecker::~PSpellChecker()
+{
+	/* pspell segfaults for some reason. get this fixed */
+	if(spell_manager)
+		delete_pspell_manager(spell_manager);
+}
+
+/*!
+ * Load the dictionary represented by szLang
+ * szLang takes the form of {"en-US", "en_US", "en"}
+ * 
+ * \param szLang The dictionary to load
+ * \return true if we loaded the dictionary, false if not
  */
-int SpellCheckInit(char *lang)
+bool 
+PSpellChecker::requestDictionary (const char * szLang)
 {
   PspellConfig *spell_config;
   PspellCanHaveError *spell_error;
 
+  // Done: convert the language tag from en-US to en_US form
+  char * lang = UT_strdup (szLang);
+  char * hyphen = strchr (lang, '-');
+  if (hyphen)
+	  *hyphen = '_';
+
   spell_config = new_pspell_config();
   pspell_config_replace(spell_config, "language-tag",
-			lang);
+						lang);
   pspell_config_replace(spell_config, "encoding", "utf-8");
 
   spell_error = new_pspell_manager(spell_config);
   delete_pspell_config(spell_config);
 
+  FREEP(lang);
+
   if(pspell_error_number(spell_error) != 0)
     {
-      fprintf(stderr, "SpellCheckInit: Pspell error: %s\n",
-	      pspell_error_message(spell_error));
-      return 0;
+      UT_DEBUGMSG(("SpellCheckInit: Pspell error: %s\n",
+				   pspell_error_message(spell_error)));
+      return false;
     }
 
   spell_manager = to_pspell_manager(spell_error);
-  return 1;
+  return true;
 }
 
-void SpellCheckCleanup(void)
-{
-  /* pspell segfaults for some reason. get this fixed */
-  if(spell_manager)
-    delete_pspell_manager(spell_manager);
-}
-
-/*
- * These next 2 functions should return 0 if not found,
- * > 1 if found, -1 on error
+/*!
+ * Is szWord in our dictionary? 
+ *
+ * \param szWord The word you'd like to check
+ * \param len The length of szWord
+ *
+ * \return One of SpellChecker::SpellCheckResult
  */
-int SpellCheckNWord16(const unsigned short *word16, int length)
+SpellChecker::SpellCheckResult 
+PSpellChecker::checkWord (const UT_UCSChar * szWord, 
+						  size_t len)
 {
   unsigned char  word8[WORD_SIZE];
+  SpellChecker::SpellCheckResult ret = SpellChecker::LOOKUP_FAILED;
 
   /* pspell segfaults if we don't pass it a valid spell_manager */
   if (spell_manager == NULL)
-      return -1;
+      return SpellChecker::LOOKUP_ERROR;
 
-  /* trying to spell-check a 0 length word will (rightly) cause pspell to segfault */
-  if(word16 == NULL || length == 0)
-      return 0;
+  /* trying to spell-check a 0 length word will (rightly) cause pspell 
+	 to segfault */
+  if(szWord == NULL || len == 0)
+      return SpellChecker::LOOKUP_FAILED;
 
-  utf16_to_utf8(word16, word8, length);
-  return pspell_manager_check(spell_manager, (char*)word8);
+  utf16_to_utf8(szWord, word8, len);
+
+  switch (pspell_manager_check(spell_manager, (char*)word8))
+  {
+  case 0:
+	  ret = SpellChecker::LOOKUP_SUCCEEDED; break;
+  case 1:
+	  ret = SpellChecker::LOOKUP_FAILED; break;
+  default:
+	  ret = SpellChecker::LOOKUP_ERROR; break;
+  }
+
+  return ret;
 }
 
-int SpellCheckSuggestNWord16(const unsigned short *word16, 
-			     int length, sp_suggestions *sg)
+/*!
+ * Suggest replacement words for szWord
+ * \param szWord Non-null word to find suggestions for
+ * \param len Length of szWord
+ *
+ * \return A vector of UT_UCSChar * suggestions. The vector must be
+ *         'delete'd and its UT_UCSChar * suggests must be 'free()'d
+ */
+UT_Vector * 
+PSpellChecker::suggestWord (const UT_UCSChar * szWord, 
+							size_t len)
 {
   PspellStringEmulation *suggestions = NULL;
   const PspellWordList *word_list = NULL;
@@ -135,52 +172,43 @@ int SpellCheckSuggestNWord16(const unsigned short *word16,
   int count = 0, i = 0;
 
   /* pspell segfaults if we don't pass it a valid spell_manager */
-  if (spell_manager == NULL || sg == NULL)
-      return -1;
+  if (spell_manager == NULL)
+      return 0;
 
-  /* trying to spell-check a 0 length word will (rightly) cause pspell to segfault */
-  if(word16 == NULL || length == 0)
+  /* trying to spell-check a 0 length word will (rightly) cause pspell 
+	 to segfault */
+  if(szWord == NULL || len == 0)
     {
-      sg->count = 0;
       return 0;
     }
 
-  utf16_to_utf8(word16, word8, length);
+  utf16_to_utf8(szWord, word8, len);
   word_list   = pspell_manager_suggest(spell_manager, (char*)word8);
   suggestions = pspell_word_list_elements(word_list);
   count       = pspell_word_list_size(word_list);
 
   if(count == 0)
     {
-      sg->count = 0;
       return 0;
     }
 
-  sg->score = (short *)malloc(sizeof(short) * count);
-  sg->word = (unsigned short**)malloc(sizeof(unsigned short**) * count);
-  if (sg->score == NULL || sg->word == NULL) 
-    {
-      sg->count = 0;
-      return 0;
-    }
+  UT_Vector * sg = new UT_Vector ();
 
   while ((new_word = pspell_string_emulation_next(suggestions)) != NULL) 
     {
       int len = strlen(new_word);
 
-      sg->word[i] = (unsigned short*)malloc(sizeof(unsigned short) * len + 2);
-      if (sg->word[i] == NULL) 
+	  UT_UCSChar * word = (UT_UCSChar *)malloc(sizeof(UT_UCSChar) * len + 2);
+      if (word == NULL) 
         {
-	  /* out of memory, but return what was copied so far */
-	  sg->count = i;
-	  return i;
+			// out of memory, but return what was copied so far
+			return sg;
         }
       
-      utf8_to_utf16(new_word, sg->word[i], len);
-      sg->score[i] = 1000;
+      utf8_to_utf16(new_word, word, len);
+	  sg->addItem ((void *)word);
       i++;
     }
 
-  sg->count = count;
-  return count;
+  return sg;
 }

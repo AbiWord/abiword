@@ -41,7 +41,7 @@
 #include "pp_AttrProp.h"
 #include "pt_Types.h"
 #include "gr_Graphics.h"
-#include "sp_spell.h"
+#include "spell_manager.h"
 #include "px_CR_FmtMark.h"
 #include "px_CR_FmtMarkChange.h"
 #include "px_CR_Object.h"
@@ -118,6 +118,15 @@ static const char     * fmt_Lists[] = { fmt_NUMBERED_LIST,
 //////////////////////////////////////////////////////////////////////////
 
 
+static bool 
+SpellCheckWord (const UT_UCSChar * word, UT_uint32 len)
+{
+	SpellChecker * checker = SpellManager::instance()->lastDictionary();
+	UT_ASSERT(checker);
+	if (checker->checkWord (word, len) == SpellChecker::LOOKUP_SUCCEEDED)
+		return true;
+	return false;
+}
 
 
 //////////////////////////////////////////////////////////////////
@@ -2323,8 +2332,8 @@ bool fl_BlockLayout::_checkMultiWord(const UT_UCSChar* pBlockText,
 					if (currentChar == UCS_RQUOTE) currentChar = '\'';
 					theWord[ldex - (wordLength - newLength)] = currentChar;
 				}
-				
-			   	if (!SpellCheckNWord16(theWord, newLength) &&
+
+			   	if (SpellCheckWord(theWord, newLength) &&
 					!pApp->isWordInDict(theWord, newLength))
 				{
 					bool bIsIgnored = pDoc->isIgnore(theWord, newLength);
@@ -2423,8 +2432,8 @@ bool fl_BlockLayout::checkWord(fl_PartOfBlock* pPOB)
 		    theWord[ldex - (wordLength - newLength)] = currentChar;
 		  }
 
-		if (!SpellCheckNWord16(theWord, newLength) &&
-			!pApp->isWordInDict(theWord, wordLength))
+		if (SpellCheckWord(theWord, newLength) &&
+			!pApp->isWordInDict(theWord, newLength))
 		{
 			// squiggle it
 			m_vecSquiggles.addItem(pPOB);
@@ -4788,7 +4797,7 @@ void fl_BlockLayout::recheckIgnoredWords()
 			(!bHasNumeric || !m_pLayout->getSpellCheckNumbers()) &&		// can these two lines be simplified?
 			(newLength < INPUTWORDLEN) &&
 
-			(!SpellCheckNWord16(theWord, newLength)) &&
+			(!SpellCheckWord(theWord, newLength)) &&
 			(!pApp->isWordInDict(theWord, newLength)))
 		{
 			// squiggle it
