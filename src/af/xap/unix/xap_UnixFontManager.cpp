@@ -52,20 +52,6 @@ XAP_UnixFontManager::~XAP_UnixFontManager(void)
 {
 	UT_HASH_PURGEDATA(XAP_UnixFont *, &m_fontHash, delete);
 
-	// remove all the font from our cache
-	UT_DEBUGMSG(("MARCM: Removing %d fonts from cache\n", m_vecFontCache.getItemCount() / 2));
-
-	for (UT_sint32 k = (static_cast<UT_sint32>(m_vecFontCache.getItemCount()))-1; k >= 1; k-=2)
-	{
-		XAP_UnixFont * pFont = static_cast<XAP_UnixFont *>(m_vecFontCache.getNthItem(k));
-		pFont->setFontManager(NULL);
-		DELETEP(pFont);
-		m_vecFontCache.deleteNthItem(k);
-		char * fdescr = static_cast<char *>(m_vecFontCache.getNthItem(k-1));
-		FREEP(fdescr);
-		m_vecFontCache.deleteNthItem(k-1);
-	}
-
 	if (m_pFontSet)
 		FcFontSetDestroy (m_pFontSet);
 
@@ -403,49 +389,33 @@ XAP_UnixFont* XAP_UnixFontManager::findNearestFont(const char* pszFontFamily,
 		st += pszFontWeight;
 	}
 
+	// We use a static buffer because this function gets called a lot.
+	// Doing an allocation is really slow on many machines.
+	static char keyBuffer[512];
+	g_snprintf(keyBuffer, 512, "%s@%d", pszFontFamily, pszFontStyle);
+	UT_upperString(keyBuffer);
+		
+	
 	// check if a font with this description is already in our cache
-	for (UT_sint32 k = 0; k < static_cast<UT_sint32>(m_vecFontCache.getItemCount())-1; k+=2)
-	{
+	/*for (UT_sint32 k = 0; k < static_cast<UT_sint32>(m_vecFontCache.getItemCount())-1; k+=2)
+	{		
 		if (!strcmp(st.c_str(), reinterpret_cast<const char *>(m_vecFontCache.getNthItem(k))))
 		{
 			UT_DEBUGMSG(("MARCM: Yes! We have a font cache HIT for font: %s\n", st.c_str()));
 			return static_cast<XAP_UnixFont *>(m_vecFontCache.getNthItem(k+1));
 		}
-	}
+	}*/
 		
 	// find the font the hard way
 	XAP_UnixFont * pFont = searchFont(st.c_str());
 
 	// add the font to our cache as well
-	char * fontStr = NULL;
-	CLONEP(fontStr, st.c_str());
-	m_vecFontCache.addItem(fontStr);
-	m_vecFontCache.addItem(pFont);
+	char * font_key = NULL;
+	CLONEP(font_key, pFont->getFontKey());
+	//m_vecFontCache.addItem(font_key);
+	//m_vecFontCache.addItem(pFont);
 	
 	return pFont;
-}
-
-void XAP_UnixFontManager::unregisterFont(XAP_UnixFont * pFont)
-{
-	// Check if the font is in our cache. If so, remove it from the cache and free the font description.
-	// Do NOT delete the font. That should be handled by whoever is calling this function
-	while (true)
-	{
-		if(m_vecFontCache.getItemCount() == 0)
-			break;
-		else
-		{
-			UT_sint32 k = m_vecFontCache.findItem(static_cast<void *>(pFont));
-			if(k < 0)
-				break;
-
-			char * fdescr = static_cast<char *>(m_vecFontCache.getNthItem(k-1));
-			UT_DEBUGMSG(("MARCM: Removing font %s from cache\n", fdescr));
-			FREEP(fdescr);
-			m_vecFontCache.deleteNthItem(k);
-			m_vecFontCache.deleteNthItem(k-1);
-		}
-	}
 }
 
 XAP_UnixFont * XAP_UnixFontManager::getFont(const char * fontname,

@@ -58,8 +58,6 @@ public:
 											const char* pszFontStretch,
 											const char* pszFontSize);
 	
-	void					unregisterFont(XAP_UnixFont * pFont);
-	
 	// MARCM: this should point to the only instance of XAP_UnixFontManager, 
 	// so we can reach our Font Manager from a static context. Without having this static
 	// member, font caching can't be implemented without a whole lot of code rewriting
@@ -68,7 +66,6 @@ public:
 private:
 
 	void					_addFont(XAP_UnixFont* font);
-	UT_Vector				m_vecFontCache;
 
 	UT_StringPtrMap 		m_fontHash;
 	FcFontSet*		m_pFontSet;
@@ -76,4 +73,3 @@ private:
 };
 
 #endif /* XAP_UNIXFONTMANAGER_H */
-

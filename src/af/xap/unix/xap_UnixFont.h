@@ -199,7 +199,7 @@ class XAP_UnixFontHandle : public GR_Font
  public:
 
 	XAP_UnixFontHandle(XAP_UnixFont * font, UT_uint32 size);	
-
+ 
 	XftFont * 					getLayoutXftFont(void);
 	XftFont * 					getDeviceXftFont(UT_uint32 zoomPercentage);
 

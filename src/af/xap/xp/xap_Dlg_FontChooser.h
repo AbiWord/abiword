@@ -69,13 +69,6 @@ private:
 	UT_sint32 m_iAscent;
 	UT_sint32 m_iDescent;
 	UT_sint32 m_iHeight;
-	
-	char * m_fontFamily;
-	char * m_fontStyle;
-	char * m_fontVariant;
-	char * m_fontWeight;
-	char * m_fontStretch;
-	char * m_fontSize;
 };
 
 /*****************************************************************/
@@ -190,4 +183,3 @@ protected:
 };
 
 #endif /* XAP_DIALOG_FONTCHOOSER_H */
-

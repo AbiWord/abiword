@@ -478,13 +478,7 @@ XAP_Preview_FontPreview::XAP_Preview_FontPreview(GR_Graphics * gc, const XML_Cha
 		m_pFont(NULL),
 		m_iAscent(0),
 		m_iDescent(0),
-		m_iHeight(0),
-		m_fontFamily(NULL),
-		m_fontStyle(NULL),
-		m_fontVariant(NULL),
-		m_fontWeight(NULL),
-		m_fontStretch(NULL),
-		m_fontSize(NULL)
+		m_iHeight(0)
 #ifdef WITH_PANGO
 		, m_pGlyphString(NULL)
 #endif
@@ -506,12 +500,6 @@ XAP_Preview_FontPreview::~XAP_Preview_FontPreview()
 	}
 #endif
 	delete m_pFont;
-	FREEP(m_fontFamily);
-	FREEP(m_fontStyle);
-	FREEP(m_fontVariant);
-	FREEP(m_fontWeight);
-	FREEP(m_fontStretch);
-	FREEP(m_fontSize);
 }
 
 /*!
@@ -615,41 +603,20 @@ void XAP_Preview_FontPreview::draw(void)
 	if(!pszWeight)
 		pszWeight = "normal";
 
-// In UNIX, we don't really need this font "caching" mechanism, since the XAP_UnixFontManager does
-// it already. However it might be usefull on other platforms, so I'll leave it here for now - MarcM.
-	if (
-		!m_pFont ||
-		
-		UT_stricmp(m_fontFamily, pszFamily) != 0   ||
-		UT_stricmp(m_fontStyle, pszStyle) != 0     ||
-		UT_stricmp(m_fontVariant, pszVariant) != 0 ||
-		UT_stricmp(m_fontWeight, pszWeight) != 0   ||
-		UT_stricmp(m_fontStretch, pszStretch) != 0  ||
-		UT_stricmp(m_fontSize, pszSize) != 0 
-	   )
+	m_pFont = m_gc->findFont(pszFamily, pszStyle, pszVariant, pszWeight, pszStretch, pszSize);
+
+	UT_ASSERT(m_pFont);
+	if(!m_pFont)
 	{
-		m_pFont = m_gc->findFont(pszFamily, pszStyle, pszVariant, pszWeight, pszStretch, pszSize);
-
-		UT_ASSERT(m_pFont);
-		if(!m_pFont)
-		{
-			clearScreen();
-			return;
-		}
-	
-		m_gc->setFont(m_pFont);		
-
-		m_iAscent = m_gc->getFontAscent(m_pFont);
-		m_iDescent = m_gc->getFontDescent(m_pFont);
-		m_iHeight = m_gc->getFontHeight(m_pFont);		
-		
-		UT_replaceString (m_fontFamily, pszFamily);
-		UT_replaceString (m_fontStyle, pszStyle);
-		UT_replaceString (m_fontVariant, pszVariant);
-		UT_replaceString (m_fontWeight, pszWeight);
-		UT_replaceString (m_fontStretch, pszStretch);
-		UT_replaceString (m_fontSize, pszSize);
+		clearScreen();
+		return;
 	}
+
+	m_gc->setFont(m_pFont);		
+
+	m_iAscent = m_gc->getFontAscent(m_pFont);
+	m_iDescent = m_gc->getFontDescent(m_pFont);
+	m_iHeight = m_gc->getFontHeight(m_pFont);
 	
 //
 // Clear the screen!

@@ -198,15 +198,12 @@ XAP_UnixFont::XAP_UnixFont(const XAP_UnixFont & copy)
 
 XAP_UnixFont::~XAP_UnixFont(void)
 {
-	xxx_UT_DEBUGMSG(("deleting font %x \n",this));
+	UT_DEBUGMSG(("~XAP_UnixFont:: HELP! I'm getting deleted! You'd better make sure this is at program shutdown!!\n"));
 	FREEP(m_name);
 	FREEP(m_fontfile);
 	FREEP(m_metricfile);
 	FREEP(m_xlfd);
 	FREEP(m_fontKey);
-
-	if (m_pFontManager)
-		m_pFontManager->unregisterFont(this);
 
 	//      UT_VECTOR_PURGEALL(allocFont *, m_allocFonts);
 	for (UT_uint32 i = 0; i < m_allocFonts.getItemCount(); ++i)
