@@ -2993,6 +2993,13 @@ bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len
 				// potential direction boundary see if we can ignore
 				// it
 				bool bIgnore = false;
+#if 0
+				// this assumption is not true; for instance the in
+				// the sequence ") " the parenthesis and the space can
+				// resolve to different directions
+				// 
+				// I am leaving it here so that I do not add it one
+				// day again (Tomas, Apr 10, 2003)
 				
 				if(FRIBIDI_IS_NEUTRAL(iPrevType) && FRIBIDI_IS_NEUTRAL(iType))
 				{
@@ -3002,7 +3009,9 @@ bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len
 								 pSpan[i]));
 					bIgnore = true;
 				}
-				else if(FRIBIDI_IS_STRONG(iPrevType) && FRIBIDI_IS_NEUTRAL(iType))
+				else
+#endif
+				if(FRIBIDI_IS_STRONG(iPrevType) && FRIBIDI_IS_NEUTRAL(iType))
 				{
 					// we can ignore a neutral character following a
 					// strong one if it is followed by a strong
@@ -3014,6 +3023,8 @@ bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len
 					for(UT_uint32 j = i+1; j < trueLen; j++)
 					{
 						iNextType = fribidi_get_type(static_cast<FriBidiChar>(pSpan[j]));
+						xxx_UT_DEBUGMSG(("fl_BlockLayout::_doInsertTextSpan: iNextType 0x%04x\n",
+									      iNextType));
 						if(iNextType == iPrevType)
 						{
 							bIgnore = true;
@@ -3041,10 +3052,8 @@ bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len
 				}
 				else
 				{
-					// two strong characters -- change cannot be
-					// ignored
+					// in all other cases we will split
 					xxx_UT_DEBUGMSG(("fl_BlockLayout::_doInsertTextSpan: other (c=0x%04x)\n",pSpan[i]));
-					
 				}
 
 				xxx_UT_DEBUGMSG(("fl_BlockLayout::_doInsertTextSpan: bIgnore %d\n",static_cast<UT_uint32>(bIgnore)));
