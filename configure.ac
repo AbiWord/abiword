@@ -47,13 +47,14 @@ ABI_DETECT_PLATFORM
 
 dnl Checks for libraries.
 dnl Define here ABI_FE, ABI_BE, PLATFORM_CFLAGS, PLATFORM_LIBS
+with_unix=false
 with_macosx=false
 with_carbon=false
 with_cocoa=false
 if test "$PLATFORM" = "unix"; then
 	ABI_FE="Unix"
 	ABI_BE="$ABI_FE"
-	AM_CONDITIONAL(WITH_UNIX, true)
+	with_unix=true
 	dnl locate glib and gtk
 	ABI_GLIB_GTK
 elif test "$PLATFORM" = "mac" ; then
@@ -69,6 +70,7 @@ elif test "$PLATFORM" = "cocoa" ; then
 	with_macosx=true
 	with_cocoa=true
 fi
+AM_CONDITIONAL(WITH_UNIX,$with_unix)
 AM_CONDITIONAL(WITH_MACOSX,$with_macosx)
 AM_CONDITIONAL(WITH_CARBON,$with_carbon)
 AM_CONDITIONAL(WITH_COCOA,$with_cocoa)
