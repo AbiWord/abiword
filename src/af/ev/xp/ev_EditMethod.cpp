@@ -18,6 +18,7 @@
  */
  
 #include <string.h>
+#include <stdlib.h>
 
 #include "ev_EditMethod.h"
 #include "ut_assert.h"
@@ -136,16 +137,45 @@ EV_EditMethod * EV_EditMethodContainer::getNthEditMethod(UT_uint32 ndx)
 		return (EV_EditMethod *)m_vecDynamicEditMethods.getNthItem(ndx-m_countStatic);
 }
 
+// for use in a binary search of an EV_EditMethod array
+static int ev_compar (const void * a, const void * b)
+{
+  const char * str = (const char *)a;
+  EV_EditMethod * ev = (EV_EditMethod *)(b);
+
+  return (strcmp (str, ev->getName()));
+}
+
 EV_EditMethod * EV_EditMethodContainer::findEditMethodByName(const char * szName) const
 {
 	if (!szName)
 		return 0;
 
+	EV_EditMethod *mthd = NULL;
+
+	// TODO: make this also use a hashtable + bsearch
+
+	// first, see if it's in our hashtable
+
+
+	// nope, bsearch for it in our private array
+	mthd = (EV_EditMethod *)bsearch(szName, 
+					m_arrayStaticEditMethods, 
+					m_countStatic, 
+					sizeof (EV_EditMethod),
+					ev_compar);
+
+	if (mthd)
+	  {
+	    // found it, insert it into our hash table for quicker lookup
+	    // in the future and return
+	    return mthd;
+	  }
+
+	// else do a linear search through our dynamic method vector
+
 	UT_uint32 k, kLast;
-	for (k=0; k<m_countStatic; k++)
-		if (strcmp(szName,m_arrayStaticEditMethods[k].getName()) == 0)
-			return (EV_EditMethod *)&m_arrayStaticEditMethods[k];
-	
+
 	kLast = m_vecDynamicEditMethods.getItemCount();
 	for (k=0; k<kLast; k++)
 	{
