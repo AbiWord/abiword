@@ -929,7 +929,7 @@ static UT_Bool s_AskForPathname(XAP_Frame * pFrame,
 	// raise the file-open or file-save-as dialog.
 	// return a_OK or a_CANCEL depending on which button
 	// the user hits.
-	// return a pointer a strdup()'d string containing the
+	// return a pointer a UT_strdup()'d string containing the
 	// pathname the user entered -- ownership of this goes
 	// to the caller (so free it when you're done with it).
 
@@ -1045,7 +1045,7 @@ static UT_Bool s_AskForGraphicPathname(XAP_Frame * pFrame,
 	// raise the file-open dialog for inserting an image.
 	// return a_OK or a_CANCEL depending on which button
 	// the user hits.
-	// return a pointer a strdup()'d string containing the
+	// return a pointer a UT_strdup()'d string containing the
 	// pathname the user entered -- ownership of this goes
 	// to the caller (so free it when you're done with it).
 

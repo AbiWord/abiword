@@ -434,7 +434,7 @@ void fix_label_callback( GtkWidget *widget, gpointer _data )
 
 		/* convert the &'s into _'s .  Also handle \& as &'s */
 		accelch = 0;
-		newlbl = g_strdup(str);					UT_ASSERT(newlbl);
+		newlbl = UT_strdup(str);				UT_ASSERT(newlbl);
 		for ( i = 0; newlbl[i] != 0; i++ ) 
 		{
 			if ( newlbl[i] == '&' ) {

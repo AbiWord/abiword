@@ -22,6 +22,7 @@
 #include <string.h>
 #include "ut_types.h"
 #include "ut_stack.h"
+#include "ut_string.h"
 #include "ut_debugmsg.h"
 #include "xap_Types.h"
 #include "ev_Win32Menu.h"

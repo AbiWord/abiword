@@ -298,7 +298,7 @@ void XAP_UnixFontManager::_allocateThisFont(const char * line,
 	  We then do our best shot to allocate this font.
 	*/
 
-	char * linedup = strdup(line);
+	char * linedup = UT_strdup(line);
 
 	// Look for either first space or first tab
 	char * firstspace = index(linedup, ' ');
@@ -335,7 +335,7 @@ void XAP_UnixFontManager::_allocateThisFont(const char * line,
 		return;
 	}
 	// allocate a real buffer for this
-	fontfile = strdup(fontfile);
+	fontfile = UT_strdup(fontfile);
 	// tack on the working directory to get the full path to the font file
 	char * newstuff = (char *) calloc(strlen(workingdir) + 1 + strlen(fontfile) + 1,
 									  sizeof(char));

@@ -22,6 +22,7 @@
 #include "xap_BeOSDlg_MessageBox.h"
 #include "xap_BeOSApp.h"
 #include "xap_BeOSFrame.h"
+#include "ut_string.h"
 #include <string.h>
 
 /*****************************************************************/

@@ -32,6 +32,7 @@
 
 #include "ut_debugmsg.h"
 #include "ut_bytebuf.h"
+#include "ut_string.h"
 #include "xap_Args.h"
 #include "ap_Win32Frame.h"
 #include "ap_Win32App.h"

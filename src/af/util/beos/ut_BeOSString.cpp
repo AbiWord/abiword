@@ -28,21 +28,6 @@
 #include "ut_assert.h"
 #include "ut_string.h"
 
-UT_sint32 UT_strcmp(const char *s1, const char *s2)
-{
-	return strcmp(s1,s2);
-}
-
-UT_sint32 UT_stricmp(const char *s1, const char *s2)
-{
-	return strcasecmp(s1,s2);
-}
-
-UT_sint32 UT_strnicmp(const char *s1, const char *s2, int lenS1)
-{
-	return strncasecmp(s1,s2,lenS1);
-}
-
 char * UT_catPathname(const char * szPath, const char * szFile)
 {
 	UT_ASSERT((szPath) && (*szPath));

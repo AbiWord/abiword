@@ -29,6 +29,7 @@
 
 #include "ut_debugmsg.h"
 #include "ut_types.h"
+#include "ut_string.h"
 #include "xap_App.h"
 #include "xap_Args.h"
 #include "ap_UnixFrame.h"

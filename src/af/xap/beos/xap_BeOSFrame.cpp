@@ -20,6 +20,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "ut_types.h"
+#include "ut_string.h"
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 #include "xap_ViewListener.h"
@@ -243,7 +244,7 @@ UT_Bool XAP_BeOSFrame::show()
 UT_Bool XAP_BeOSFrame::openURL(const char * szURL)
 {
 	char *url;
-	url = (char*)strdup(szURL);
+	url = (char*)UT_strdup(szURL);
 	be_roster->Launch("text/html", 1, &url);
 	free(url);
 	return UT_TRUE;

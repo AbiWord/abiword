@@ -24,6 +24,7 @@
 
 #include "ut_debugmsg.h"
 
+#include "ut_string.h"
 #include "xap_Args.h"
 #include "xap_QNXApp.h"
 #include "xap_FakeClipboard.h"

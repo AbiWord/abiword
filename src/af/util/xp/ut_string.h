@@ -27,9 +27,23 @@ class UT_GrowBuf;
 
 UT_BEGIN_EXTERN_C
 
-UT_sint32 UT_strcmp(const char *s1, const char *s2);
+///////////////////////////////////////////////////////////////////////////////
+// Replacements for common non-ANSI functions
+
+char * UT_strdup(const char * szSource); 
+
+// Below are case-insensitive strcmp-like functions prototypes.  The functions
+// lexographically compare strings, returning <0, 0, >0 as strcmp(...) does.
+// For strings containing characters between 'Z' and 'a' in the ASCII table,
+// the strings /do/ compare differently depending on case.  For example, 
+// "ABCDE" < "ABCD^", but "abcde" > "abcd^".
+// This functionality is comparable with the 'standard' GNU strcasecmp(...)
+// and the Microsoft stricmp functions.
 UT_sint32 UT_stricmp(const char *s1, const char *s2);
-UT_sint32 UT_strnicmp(const char *s1, const char *s2, int lenS1);
+UT_sint32 UT_strnicmp(const char *s1, const char *s2, int ilen);
+
+///////////////////////////////////////////////////////////////////////////////
+
 UT_Bool UT_cloneString(char *& rszDest, const char * szSource);
 UT_Bool UT_replaceString(char *& rszDest, const char * szSource);
 

@@ -29,12 +29,62 @@
 #include "ut_growbuf.h"
 
 //////////////////////////////////////////////////////////////////
-// The following functions defined in ut_string.h are defined
-// in platform code:
-//    UT_strcmp()
-//    UT_stricmp()
-//    UT_strnicmp()
+// char * UT_catPathname(const char * szPath, const char * szFile);
+// is defined in platform-specific code.
 //////////////////////////////////////////////////////////////////
+
+char * UT_strdup(const char * szSource) 
+{ 
+	UT_ASSERT(szSource);
+
+	int len = strlen(szSource)+1;
+	if(char * ret = (char *)calloc(len, sizeof(char)))
+		return((char *)memcpy(ret, szSource, len));
+	else
+		return(NULL);
+}
+
+UT_sint32 UT_stricmp(const char * s1, const char * s2)
+{
+	UT_ASSERT(s1);
+	UT_ASSERT(s2);
+	
+	while(tolower(*s1) == tolower(*s2) && *s1 != '\0' && *s2 != '\0')
+	{
+		s1++;
+		s2++;
+	}
+	
+	if (*s1 == '\0' && *s2 == '\0')
+	{
+		return 0;
+	}
+	else
+	{
+		return ((*s1)-(islower(*s1)?tolower(*s2):(isupper(*s1)?toupper(*s2):*s2)));
+	}
+}
+
+UT_sint32 UT_strnicmp(const char *s1, const char *s2, int ilen)
+{
+	UT_ASSERT(s1);
+	UT_ASSERT(s2);
+
+	while((ilen--)>0 && tolower(*s1) == tolower(*s2) && *s1 != '\0' && *s2 != '\0')
+	{
+		s1++;
+		s2++;
+	}
+	
+	if(ilen==-1 || (*s1 == '\0' && *s2 == '\0'))
+	{
+		return 0;
+	}
+	else
+	{
+		return ((*s1)-(islower(*s1)?tolower(*s2):(isupper(*s1)?toupper(*s2):*s2)));
+	}
+}
 
 UT_Bool UT_cloneString(char *& rszDest, const char * szSource)
 {
@@ -119,7 +169,7 @@ UT_sint32 UT_XML_stricmp(const XML_Char * sz1, const XML_Char * sz2)
 UT_sint32 UT_XML_strcmp(const XML_Char * sz1, const XML_Char * sz2)
 {
 	UT_ASSERT(sizeof(char) == sizeof(XML_Char));
-	return UT_strcmp(sz1,sz2);
+	return strcmp(sz1,sz2);
 }
 
 UT_Bool UT_XML_cloneNoAmpersands(XML_Char *& rszDest, const XML_Char * szSource)

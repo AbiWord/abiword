@@ -210,11 +210,11 @@ UT_Bool AP_Dialog_Paragraph::setDialogData(const XML_Char ** pProps)
 				{
 					if(UT_hasDimensionComponent(sz))
 						_setMenuItemValue(id_MENU_SPECIAL_SPACING, spacing_EXACTLY, op_INIT);
-					else if(UT_strcmp("1.0", sz) == 0)
+					else if(strcmp("1.0", sz) == 0)
 						_setMenuItemValue(id_MENU_SPECIAL_SPACING, spacing_SINGLE, op_INIT);
-					else if(UT_strcmp("1.5", sz) == 0)
+					else if(strcmp("1.5", sz) == 0)
 						_setMenuItemValue(id_MENU_SPECIAL_SPACING, spacing_ONEANDHALF, op_INIT);
-					else if(UT_strcmp("2.0", sz) == 0)
+					else if(strcmp("2.0", sz) == 0)
 						_setMenuItemValue(id_MENU_SPECIAL_SPACING, spacing_DOUBLE, op_INIT);
 					else
 						_setMenuItemValue(id_MENU_SPECIAL_SPACING, spacing_MULTIPLE, op_INIT);

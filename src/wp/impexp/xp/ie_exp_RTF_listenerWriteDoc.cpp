@@ -556,7 +556,7 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 	m_pie->_rtf_keyword_ifnotdefault_twips("sb",szTopMargin,0);
 	m_pie->_rtf_keyword_ifnotdefault_twips("sa",szBottomMargin,0);
 
-	if (UT_strcmp(szLineHeight,"1.0") != 0)
+	if (strcmp(szLineHeight,"1.0") != 0)
 	{
 		double f = UT_convertDimensionless(szLineHeight);
 		if (f != 0.0)					// we get zero on bogus strings....

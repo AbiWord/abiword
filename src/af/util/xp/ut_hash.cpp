@@ -23,6 +23,7 @@
 #include <string.h>
 
 #include "ut_hash.h"
+#include "ut_string.h"
 #include "ut_assert.h"
 
 #define CHUNK_NUM_ENTRIES		8

@@ -21,6 +21,7 @@
 #include <string.h>
 #include "ut_types.h"
 #include "ut_stack.h"
+#include "ut_string.h"
 #include "xap_Types.h"
 #include "ev_MacMenu.h"
 #include "xap_MacApp.h"

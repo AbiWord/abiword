@@ -214,7 +214,7 @@ void XAP_Prefs::addRecent(const char * szRecent)
 	for (UT_uint32 i=0; i<m_vecRecent.getItemCount(); i++)
 	{
 		sz = (const char *)m_vecRecent.getNthItem(i);
-		if ((sz==szRecent) || !UT_strcmp(sz, szRecent))
+		if ((sz==szRecent) || !strcmp(sz, szRecent))
 		{
 			// yep, we're gonna move it up
 			m_vecRecent.deleteNthItem(i);

@@ -32,6 +32,7 @@
 
 #include "ut_debugmsg.h"
 #include "ut_bytebuf.h"
+#include "ut_string.h"
 #include "xap_Args.h"
 #include "ap_BeOSFrame.h"
 #include "ap_BeOSApp.h"

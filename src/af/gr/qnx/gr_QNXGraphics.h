@@ -26,11 +26,13 @@
 #include <string.h>
 #include <Pt.h>
 
+#include <ut_string.h>
+
 class UT_ByteBuf;
 
 class QNXFont : public GR_Font {
         public:
-                QNXFont(const char *aFont)  { m_fontstr = (aFont) ? strdup(aFont) : NULL; };
+                QNXFont(const char *aFont)  { m_fontstr = (aFont) ? UT_strdup(aFont) : NULL; };
                 ~QNXFont()  { if (m_fontstr) { free(m_fontstr); } };
                 const char *getFont(void)   { return(m_fontstr); };
         private:

@@ -26,6 +26,7 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_vector.h"
+#include "ut_string.h"
 #include "xap_App.h"
 #include "xap_Frame.h"
 #include "xap_Prefs.h"

@@ -115,37 +115,37 @@ GR_Font* GR_Win32Graphics::findFont(const char* pszFontFamily,
 	lf.lfHeight = -(iHeight);
 
 	// TODO note that we don't support all those other ways of expressing weight.
-	if (0 == stricmp(pszFontWeight, "bold"))
+	if (0 == UT_stricmp(pszFontWeight, "bold"))
 	{
 		lf.lfWeight = 700;
 	}
 
 	// TODO -- remove this block entirely, since oblique is no longer a valid style
 	// We squash oblique into italic
-	if (0 == stricmp(pszFontStyle, "italic") || 0 == stricmp(pszFontStyle, "oblique"))
+	if (0 == UT_stricmp(pszFontStyle, "italic") || 0 == UT_stricmp(pszFontStyle, "oblique"))
 	{
 		lf.lfItalic = TRUE;
 	}
 
 	// TODO note that we currently think pszFontFamily is a single name, not a list!
 	// TODO why don't these generic family names work?!?
-	if (0 == stricmp(pszFontFamily, "serif"))
+	if (0 == UT_stricmp(pszFontFamily, "serif"))
 	{
 		lf.lfPitchAndFamily = DEFAULT_PITCH | FF_ROMAN;
 	}
-	else if (0 == stricmp(pszFontFamily, "sans-serif"))
+	else if (0 == UT_stricmp(pszFontFamily, "sans-serif"))
 	{
 		lf.lfPitchAndFamily = DEFAULT_PITCH | FF_SWISS;
 	}
-	else if (0 == stricmp(pszFontFamily, "cursive"))
+	else if (0 == UT_stricmp(pszFontFamily, "cursive"))
 	{
 		lf.lfPitchAndFamily = DEFAULT_PITCH | FF_SCRIPT;
 	}
-	else if (0 == stricmp(pszFontFamily, "fantasy"))
+	else if (0 == UT_stricmp(pszFontFamily, "fantasy"))
 	{
 		lf.lfPitchAndFamily = DEFAULT_PITCH | FF_DECORATIVE;
 	}
-	else if (0 == stricmp(pszFontFamily, "monospace"))
+	else if (0 == UT_stricmp(pszFontFamily, "monospace"))
 	{
 		lf.lfPitchAndFamily = DEFAULT_PITCH | FF_MODERN;
 	}

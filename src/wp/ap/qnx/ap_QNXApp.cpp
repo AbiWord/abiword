@@ -33,6 +33,7 @@
 #include <sys/stat.h>
 
 #include "ut_debugmsg.h"
+#include "ut_string.h"
 #include "ut_misc.h"
 
 #include "xap_Args.h"

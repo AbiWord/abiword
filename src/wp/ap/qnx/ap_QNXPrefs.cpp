@@ -21,6 +21,7 @@
 #include "string.h"
 #include "locale.h"
 #include "ctype.h"
+#include "ut_string.h"
 #include "ut_debugmsg.h"
 #include "ap_QNXPrefs.h"
 
@@ -73,7 +74,7 @@ void AP_QNXPrefs::overlayEnvironmentPrefs(void)
 	// TODO (see .../src/wp/ap/xp/ap_*_Languages.h)
 
         // make a copy of the current locale so we can set it back
-	char *old_locale = strdup(setlocale(LC_ALL, NULL));
+	char *old_locale = UT_strdup(setlocale(LC_ALL, NULL));
 
 	// this will set our current locale information
 	// according to the user's env variables
@@ -92,7 +93,7 @@ void AP_QNXPrefs::overlayEnvironmentPrefs(void)
 	// (they are probably all the same, anyway)
 	
 	const char * szNewLang = "EnUS"; // default to US English
-	char * lc_ctype = strdup(setlocale(LC_CTYPE, NULL));
+	char * lc_ctype = UT_strdup(setlocale(LC_CTYPE, NULL));
 
 	// locale categories seem to always look like this:
 	// two letter for language (lowcase) _ two letter country code (upcase)
