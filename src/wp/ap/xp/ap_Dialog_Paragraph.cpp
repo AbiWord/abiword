@@ -427,7 +427,7 @@ UT_Bool AP_Dialog_Paragraph::getDialogData(const XML_Char **& pProps)
 	// TODO : One could make it smarter with a stronger contract with
 	// TODO : the platform interfaces.
 
-	if(_wasChanged(id_MENU_SPECIAL_SPACING))
+	if(_wasChanged(id_MENU_SPECIAL_SPACING) || _wasChanged(id_SPIN_SPECIAL_SPACING))
 	{
 		ALLOC_PROP_PAIR(p);
 		UT_XML_cloneString(p->prop, "line-height");

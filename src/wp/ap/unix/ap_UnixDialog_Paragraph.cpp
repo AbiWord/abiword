@@ -41,10 +41,10 @@
 
 /*****************************************************************/
 
-#define WIDGET_MENU_PARENT_ID_TAG  "parentmenu"
-#define WIDGET_MENU_VALUE_TAG	"menuvalue"
-#define WIDGET_DIALOG_TAG 		"dialog"
-#define WIDGET_ID_TAG			"id"
+#define WIDGET_MENU_PARENT_ID_TAG	"parentmenu"
+#define WIDGET_MENU_VALUE_TAG		"menuvalue"
+#define WIDGET_DIALOG_TAG 			"dialog"
+#define WIDGET_ID_TAG				"id"
 
 /*****************************************************************/
 
@@ -87,8 +87,8 @@ static void s_delete_clicked(GtkWidget * /* widget */,
 { UT_ASSERT(dlg); dlg->event_WindowDelete(); }
 
 static gint s_spin_focus_out(GtkWidget * widget,
-									  GdkEventFocus * /* event */,
-									  AP_UnixDialog_Paragraph * dlg)
+							 GdkEventFocus * /* event */,
+							 AP_UnixDialog_Paragraph * dlg)
 {
 	dlg->event_SpinFocusOut(widget);
 	
@@ -98,7 +98,7 @@ static gint s_spin_focus_out(GtkWidget * widget,
 }
 
 static gint s_spin_changed(GtkWidget * widget,
-									AP_UnixDialog_Paragraph * dlg)
+						   AP_UnixDialog_Paragraph * dlg)
 {
 	// notify the dialog that an edit has changed
 	dlg->event_SpinChanged(widget);
