@@ -112,7 +112,9 @@ bool AP_MacApp::initialize(void)
 	
 	//////////////////////////////////////////////////////////////////
 #endif
+    return true;
 }
+
 
 XAP_Frame * AP_MacApp::newFrame(void)
 {
@@ -120,6 +122,8 @@ XAP_Frame * AP_MacApp::newFrame(void)
 
 	if (pMacFrame)
 		pMacFrame->initialize();
+
+	pMacFrame->loadDocument(NULL, IEFT_Unknown);
 
 	return pMacFrame;
 }
@@ -173,9 +177,9 @@ int AP_MacApp::MacMain(const char * szAppName, int argc, char **argv)
 
 	// create the first window.
 
-	AP_MacFrame * pFirstMacFrame = new AP_MacFrame(pMyMacApp);
-	pFirstMacFrame->initialize();
-//	hwnd = pFirstMacFrame->getTopLevelWindow();
+//	AP_MacFrame * pFirstMacFrame = new AP_MacFrame(pMyMacApp);
+//	pFirstMacFrame->initialize();
+        pMyMacApp->newFrame ();
 
 	// turn over control to windows
 	pMyMacApp->run();
