@@ -191,7 +191,8 @@ pf_Frag * pf_Fragments::getNthFrag(UT_uint32 nthFrag) const
 */
 pf_Frag * pf_Fragments::findFirstFragBeforePos(PT_DocPosition pos) const
 {
-        UT_ASSERT(!areFragsDirty());
+    if(areFragsDirty())
+		cleanFragsConst();
 
 	UT_uint32 numFrags = getNumberOfFrags();
 #ifdef DEBUG

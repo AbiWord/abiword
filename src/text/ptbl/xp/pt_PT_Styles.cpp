@@ -61,7 +61,6 @@ bool pt_PieceTable::_loadBuiltinStyles(void)
 	_s("Heading 1",	"P", "Normal", "Current Settings", "font-family:Arial; font-size:17pt; font-weight:bold; margin-top:22pt; margin-bottom:3pt; keep-with-next:1;  field-font:NULL");
 	_s("Heading 2",	"P", "Normal", "Current Settings", "font-family:Arial; font-size:14pt; font-weight:bold; margin-top:22pt; margin-bottom:3pt; keep-with-next:1; field-font:NULL");
 	_s("Heading 3",	"P", "Normal", "Current Settings", "font-family:Arial; font-size:12pt; font-weight:bold; margin-top:22pt; margin-bottom:3pt; keep-with-next:1;  field-font:NULL");
-
 	_s("Plain Text","P", "Normal", "Current Settings", "font-family:Courier New;  field-font:NULL");
 	_s("Block Text","P", "Normal", "Current Settings", "margin-left:1in; margin-right:1in; margin-bottom:6pt;  field-font:NULL");
 
@@ -268,6 +267,24 @@ size_t pt_PieceTable::getStyleCount (void)
   return (size_t) m_hashStyles.size();
 }
 
+
+///////////////////////////////////////////////////////////////////////
+/*!
+ * compareStyleNames this function is used to compare the char * strings names
+ * of the styles with the qsort method on UT_Vector.
+\params const void * vS1  - pointer to a PD_Style pointer
+\params const void * vS2  - pointer to a PD_Style pointer
+\returns -ve if sz1 < sz2, 0 if sz1 == sz2, +ve if sz1 > sz2
+*/
+static UT_sint32 compareStyleNames(const void * vS1, const void * vS2)
+{
+	const PD_Style ** pS1 = (const PD_Style **) vS1;
+	const PD_Style ** pS2 = (const PD_Style **) vS2;
+	const char * sz1 = (*pS1)->getName();
+	const char * sz2 = (*pS2)->getName();
+	return UT_strcmp(sz1, sz2);
+}
+
 bool pt_PieceTable::enumStyles(UT_uint32 k,
 							   const char ** pszName, 
 							   const PD_Style ** ppStyle) const
@@ -278,16 +295,10 @@ bool pt_PieceTable::enumStyles(UT_uint32 k,
 	if (k >= kLimit)
 		return false;
 	
-	UT_StringPtrMap::UT_Cursor c (&m_hashStyles);
-	const void * val = NULL;
-	UT_uint32 i = 0;
+	UT_Vector * vStyle = m_hashStyles.enumerate() ;
+	vStyle->qsort(compareStyleNames);
 
-	for (i = 0, val = c.first(); (i < k) && c.is_valid(); i++, val = c.next())
-	  {
-	    // noop
-	  }
-
-	PD_Style * pStyle = (PD_Style *)val;
+	PD_Style * pStyle = (PD_Style *) vStyle->getNthItem(k);
 	UT_ASSERT(pStyle);
 	
 	if (ppStyle)

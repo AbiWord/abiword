@@ -219,10 +219,26 @@ bool XAP_UnixFontManager::scavengeFonts(void)
 	return true;
 }
 
+/*!
+ * compareFontNames this function is used to compare the char * strings names
+ * of the Fonts with the qsort method on UT_Vector.
+\params const void * vF1  - Pointer to XAP_UnixFont pointer
+\params const void * vF2  - Pointer to a XAP_UnixFont pointer
+\returns -1 if sz1 < sz2, 0 if sz1 == sz2, +1 if sz1 > sz2
+*/
+static UT_sint32 compareFontNames(const void * vF1, const void * vF2)
+{
+	XAP_UnixFont ** pF1 = (XAP_UnixFont **) const_cast<void *>(vF1);
+	XAP_UnixFont ** pF2 = (XAP_UnixFont **) const_cast<void *>(vF2);
+	return UT_strcmp((*pF1)->getName(), (*pF2)->getName());
+}
+
 UT_Vector * XAP_UnixFontManager::getAllFonts(void)
 {
 	UT_Vector * pVec = m_fontHash.enumerate();
 	UT_ASSERT(pVec);
+	if(pVec->getItemCount()> 1)
+		pVec->qsort(compareFontNames);
 
 	return pVec;
 }
