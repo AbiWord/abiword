@@ -179,7 +179,7 @@ ABI_ZLIB_LIB = $(ABI_ZLIB_ROOT)/lib/zdll
 ABI_LIBS += $(ABI_ZLIB_LIB)
 
 # so <fribidi.h> works
-CXXFLAGS += -I$(ABI_ROOT)/../fribidi	
+OS_INCLUDES += -I$(ABI_ROOT)/../fribidi	
 
 # Compiler flags
 # requires the commctrl.dll from ie4.0 or greater
