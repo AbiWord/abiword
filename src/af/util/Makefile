@@ -124,7 +124,6 @@ OBJS=		$(PLATFORM_OBJS)						\
 		$(OBJDIR)/ut_math.$(OBJ_SUFFIX)         \
 		$(OBJDIR)/ut_xml.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ut_spi.$(OBJ_SUFFIX)			\
-		$(OBJDIR)/ut_contextGlyph.$(OBJ_SUFFIX) 	\
 		$(OBJDIR)/ut_thread.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ut_decompress.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ut_IntStrMap.$(OBJ_SUFFIX) \
