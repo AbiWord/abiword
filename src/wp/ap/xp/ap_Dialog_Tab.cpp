@@ -159,7 +159,9 @@ void AP_Dialog_Tab::_initEnableControls()
 	_controlEnable( id_ALIGN_BAR,			true );
 
 	// buttons
-	_controlEnable( id_BUTTON_SET,			false );
+	// Un-comment this once changes detailed below in something changed are implemented.
+	//_controlEnable( id_BUTTON_SET,			false );
+	_controlEnable( id_BUTTON_SET,			true );
 	_controlEnable( id_BUTTON_CLEAR,		false );
 
 	_controlEnable( id_BUTTON_CLEAR_ALL,	m_tabInfo.getItemCount() == 0 ? false : true );
@@ -455,8 +457,11 @@ void AP_Dialog_Tab::_event_somethingChanged()
 
 			// if everything is the same, disable the set
 			if ( pTabInfo->getType() == _gatherAlignment() &&
-			     pTabInfo->getLeader() == _gatherLeader() )
-				bEnableSet = false;
+			     pTabInfo->getLeader() == _gatherLeader() ){
+      	// Disabled to fix bug 5143 and match behavior in the remainder of the program.  TODO: Cause focus to shift to OK button here,
+				// and beef up the enable/disable routines for the set button.  Then, this can be re-enabled.
+				// bEnableSet = false;
+			}
 
 		}
 	}
