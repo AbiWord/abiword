@@ -6761,7 +6761,7 @@ void fl_BlockLayout::_createListLabel(void)
 	}
 #if 1
 	const  XML_Char ** blockatt;
-	pView->getCharFormat(&blockatt,true,getPosition()+2);
+	pView->getCharFormat(&blockatt,true,getPosition());
 //	pView->setBlockFormat(blockatt);
 //	FREEP(blockatt);
 #endif
@@ -6793,15 +6793,16 @@ void fl_BlockLayout::_createListLabel(void)
 	}
 //
 // I don't think we need this.
+// We definately need this to preserve attributes on new list lines
 //
-
+//
 //	UT_uint32 i =0;
 //  	while(blockatt[i] != NULL)
 //  	{
 //  		UT_DEBUGMSG(("SEVIOR: Applying blockatt[i] %s at %d %d \n",blockatt[i],getPosition(),getPosition()+diff));
 //  		i++;
 //  	}
-//  	m_pDoc->changeSpanFmt(PTC_AddFmt,getPosition(),getPosition()+diff,NULL,(const char **)blockatt);
+  	m_pDoc->changeSpanFmt(PTC_AddFmt,getPosition(),getPosition()+diff,NULL,(const char **)blockatt);
 	FREEP(blockatt);
 
 	if (pView && (pView->isActive() || pView->isPreview()))
