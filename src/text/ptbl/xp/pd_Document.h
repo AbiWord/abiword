@@ -434,6 +434,7 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 	bool                    isEndFrameAtPos(PT_DocPosition pos);
 	bool                    isHdrFtrAtPos(PT_DocPosition pos);
 	bool                    isSectionAtPos(PT_DocPosition pos);
+	bool                    isBlockAtPos(PT_DocPosition pos);
 
 // Table functions
 

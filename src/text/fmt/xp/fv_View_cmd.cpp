@@ -3044,7 +3044,17 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const XML
 //
 	PT_DocPosition pointBreak = getPoint();
 	PT_DocPosition pointTable = 0;
-	e = m_pDoc->insertStrux(getPoint(),PTX_Block);
+	//
+	// Don't do this if there is a block at pointBreak already.
+	//
+	if(!m_pDoc->isBlockAtPos(getPoint()) && !m_pDoc->isTableAtPos(getPoint()) && !(m_pDoc->isEndFrameAtPos(getPoint()) && m_pDoc->isBlockAtPos(getPoint()-1) ))
+	{
+	         e = m_pDoc->insertStrux(getPoint(),PTX_Block);
+	}
+	else
+	{
+	         pointBreak--;
+	}
 //
 // Insert the table strux at the same spot. This will make the table link correctly in the
 // middle of the broken text.

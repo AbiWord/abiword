@@ -1739,7 +1739,7 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 			fl_SectionLayout * pSL = static_cast<fl_SectionLayout *>(pL);
 			return pSL->bl_doclistener_insertBlock(NULL, pcrx,sdh,lid,pfnBindHandles);
 		}
-#if 0
+#if 1
 //
 // FIXME When I get brave I'll see if we can't make a table the first layout
 // in a section.
@@ -1748,7 +1748,7 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 		{
 			UT_DEBUGMSG(("Insert Table immediately after Section \n"));
 			fl_SectionLayout * pSL = static_cast<fl_SectionLayout *>(pL);
-			return pSL->bl_doclistener_insertTable(NULL, pcrx,sdh,lid,pfnBindHandles);
+			return pSL->bl_doclistener_insertTable(FL_SECTION_TABLE, pcrx,sdh,lid,pfnBindHandles);
 		}
 #endif
 		default:						// unknown strux.
@@ -2247,6 +2247,14 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 			   bool bResult = (pCLSL->bl_doclistener_insertFrame(pCL,FL_SECTION_FRAME, pcrx,sdh,lid,pfnBindHandles) != 0);
 			   return bResult;
 		   }
+		case PTX_SectionTable:	  // we are inserting a Table as the first layout into a frame. This is valid
+		  {
+			   // The immediately prior strux is a Frame.  So, this
+			   // will become the first table of the Frame.
+		           fl_SectionLayout * pSL = static_cast<fl_SectionLayout *>(pL);
+			   return pSL->bl_doclistener_insertTable(FL_SECTION_TABLE, pcrx,sdh,lid,pfnBindHandles);
+
+		  }
 		default:
 		   {
 			   UT_DEBUGMSG(("Illegal strux type after frame %d \n",pcrx->getStruxType()));

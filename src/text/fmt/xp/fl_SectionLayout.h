@@ -105,7 +105,7 @@ public:
 	SectionType     	getType(void) const { return m_iType; }
 
 	virtual bool		recalculateFields(UT_uint32 iUpdateCount);
-
+	fl_BlockLayout *        getFirstBlock(void) const; 
 	virtual fp_Container*		getNewContainer(fp_Container * pFirstContainer = NULL) = 0;
     virtual void                updateLayout(void) = 0;
 	virtual FL_DocLayout*		getDocLayout(void) const;
@@ -146,6 +146,13 @@ public:
 																	  PL_StruxFmtHandle sfhNew));
 	virtual fl_SectionLayout * bl_doclistener_insertTable(fl_ContainerLayout*,
 											  SectionType iType,
+											  const PX_ChangeRecord_Strux * pcrx,
+											  PL_StruxDocHandle sdh,
+											  PL_ListenerId lid,
+											  void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+																	  PL_ListenerId lid,
+																	  PL_StruxFmtHandle sfhNew));
+	virtual fl_SectionLayout * bl_doclistener_insertTable(SectionType iType,
 											  const PX_ChangeRecord_Strux * pcrx,
 											  PL_StruxDocHandle sdh,
 											  PL_ListenerId lid,
@@ -425,6 +432,13 @@ public:
 	virtual bool bl_doclistener_changeStrux(fl_ContainerLayout*, const PX_ChangeRecord_StruxChange * pcrxc);
 	virtual fl_SectionLayout * bl_doclistener_insertTable(fl_ContainerLayout*,
 											  SectionType iType,
+											  const PX_ChangeRecord_Strux * pcrx,
+											  PL_StruxDocHandle sdh,
+											  PL_ListenerId lid,
+											  void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+																	  PL_ListenerId lid,
+																	  PL_StruxFmtHandle sfhNew));
+	virtual fl_SectionLayout * bl_doclistener_insertTable(SectionType iType,
 											  const PX_ChangeRecord_Strux * pcrx,
 											  PL_StruxDocHandle sdh,
 											  PL_ListenerId lid,

@@ -420,6 +420,10 @@ void fl_ContainerLayout::add(fl_ContainerLayout* pL)
 fl_BlockLayout* fl_ContainerLayout::getNextBlockInDocument(void) const
 {
 	fl_ContainerLayout * pNext = getNext();
+	if(getContainerType() != FL_CONTAINER_BLOCK)
+	{
+	  pNext = getFirstLayout();
+	}
 	fl_ContainerLayout * pOld = NULL;
 	UT_uint32 depth = 0;
 	next_is_null :
@@ -661,8 +665,24 @@ fl_ContainerLayout * fl_ContainerLayout::insert(PL_StruxDocHandle sdh, fl_Contai
 		break;
 	case FL_CONTAINER_TABLE:
 		pL = static_cast<fl_ContainerLayout *>(new fl_TableLayout(getDocLayout(),sdh, indexAP, this));
-		if (pPrev)
+		if (pPrev && pPrev->getContainerType() == FL_CONTAINER_BLOCK)
+		{
 			pPrev->_insertIntoList(pL);
+		}
+		else if(pPrev && (pPrev == this))
+		{
+		  fl_ContainerLayout * pOldFirst = pPrev->getFirstLayout();
+		  pPrev->setFirstLayout(pL);
+		  pL->setNext(pOldFirst);
+		  if(pOldFirst)
+		  {
+		    pOldFirst->setPrev(pL);
+		  }
+		  if(pPrev->getLastLayout() == NULL)
+		  {
+		    pPrev->setLastLayout(pL);
+		  }
+		}
 //
 // Now put the Physical Container into the vertical container that contains it.
 //

@@ -606,6 +606,70 @@ fl_SectionLayout * fl_SectionLayout::bl_doclistener_insertTable(fl_ContainerLayo
 }
 
 
+
+fl_SectionLayout * fl_SectionLayout::bl_doclistener_insertTable(SectionType iType,
+													const PX_ChangeRecord_Strux * pcrx,
+													PL_StruxDocHandle sdh,
+													PL_ListenerId lid,
+													void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+																			PL_ListenerId lid,
+																			PL_StruxFmtHandle sfhNew))
+{
+	UT_ASSERT(iType == FL_SECTION_TABLE);
+	UT_ASSERT(pcrx);
+	UT_ASSERT(pcrx->getType() == PX_ChangeRecord::PXT_InsertStrux);
+	PT_DocPosition pos1;
+//
+// This is to clean the fragments
+//
+	m_pDoc->getBounds(true,pos1);
+
+	fl_SectionLayout* pSL = NULL;
+
+	pSL = static_cast<fl_SectionLayout *>(static_cast<fl_ContainerLayout *>(this)->insert(sdh,this,pcrx->getIndexAP(), FL_CONTAINER_TABLE));
+
+	PL_StruxFmtHandle sfhNew = static_cast<PL_StruxFmtHandle>(pSL);
+	//
+	// Don't bind to shadows
+	//
+	if(pfnBindHandles)
+	{
+		pfnBindHandles(sdh,lid,sfhNew);
+	}
+
+//
+// increment the insertion point in the view.
+//
+	FV_View* pView = m_pLayout->getView();
+	if (pView && (pView->isActive() || pView->isPreview()))
+	{
+		pView->setPoint(pcrx->getPosition() + fl_BLOCK_STRUX_OFFSET);
+	}
+	else if(pView && pView->getPoint() > pcrx->getPosition())
+	{
+		pView->setPoint(pView->getPoint() + fl_BLOCK_STRUX_OFFSET);
+	}
+//
+// OK that's it!
+//
+	checkAndAdjustCellSize();
+	return pSL;
+}
+
+fl_BlockLayout * fl_SectionLayout::getFirstBlock(void) const
+{
+  fl_ContainerLayout * pCL = getFirstLayout();
+  if(pCL == NULL)
+  {
+    return NULL;
+  }
+  if(pCL->getContainerType() == FL_CONTAINER_BLOCK)
+  {
+    return static_cast<fl_BlockLayout *>(pCL);
+  }
+  return pCL->getNextBlockInDocument();
+}
+
 fl_SectionLayout * fl_SectionLayout::bl_doclistener_insertFrame(fl_ContainerLayout* pBL,
 													SectionType iType,
 													const PX_ChangeRecord_Strux * pcrx,
@@ -4257,6 +4321,67 @@ fl_SectionLayout * fl_HdrFtrSectionLayout::bl_doclistener_insertTable(fl_Contain
 }
 
 /*!
+ * Insert a Table at the start of a HdrFtr
+ */
+fl_SectionLayout * fl_HdrFtrSectionLayout::bl_doclistener_insertTable(SectionType iType,
+													const PX_ChangeRecord_Strux * pcrx,
+													PL_StruxDocHandle sdh,
+													PL_ListenerId lid,
+													void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+																			PL_ListenerId lid,
+																			PL_StruxFmtHandle sfhNew))
+{
+
+	fl_SectionLayout * pSL = static_cast<fl_SectionLayout *>(static_cast<fl_ContainerLayout *>(this)->insert(sdh,this,pcrx->getIndexAP(), FL_CONTAINER_TABLE));
+
+	PL_StruxFmtHandle sfhNew = static_cast<PL_StruxFmtHandle>(pSL);
+	//
+	// Don't bind to shadows
+	//
+	if(pfnBindHandles)
+	{
+		pfnBindHandles(sdh,lid,sfhNew);
+	}
+//
+// increment the insertion point in the view.
+//
+	FV_View* pView = m_pLayout->getView();
+	if (pView && (pView->isActive() || pView->isPreview()))
+	{
+		pView->setPoint(pcrx->getPosition() + fl_BLOCK_STRUX_OFFSET);
+	}
+	else if(pView && pView->getPoint() > pcrx->getPosition())
+	{
+		pView->setPoint(pView->getPoint() + fl_BLOCK_STRUX_OFFSET);
+	}
+
+	fl_SectionLayout::checkAndAdjustCellSize();
+	bool bResult = true;
+//
+// Now insert it into all the shadows.
+//
+	UT_uint32 iCount = m_vecPages.getItemCount();
+	UT_DEBUGMSG(("fl_HdrFtrSectionLayout: insertTable At start \n"));
+	m_pDoc->setDontChangeInsPoint();
+	fl_HdrFtrShadow * pShadowL = NULL;
+	for (UT_uint32 i=0; i<iCount; i++)
+	{
+		_PageHdrFtrShadowPair* pPair = m_vecPages.getNthItem(i);
+
+		pShadowL = pPair->getShadow();
+
+		UT_DEBUGMSG(("fl_HdrFtrSectionLayout: insertTable into start of shadow 1 \n"));
+		if(pShadowL)
+		{
+		     pShadowL->bl_doclistener_insertTable(FL_SECTION_TABLE, pcrx,sdh,lid,NULL);
+		     pShadowL->checkAndAdjustCellSize();
+		}
+	}
+	m_pDoc->allowChangeInsPoint();
+	return pSL;
+}
+
+/*!
  * Insert the first block of the container in HdrFtr. We need to propage this
  * to all the shadows.
  */
@@ -4725,8 +4850,8 @@ fl_ContainerLayout * fl_HdrFtrShadow::findBlockAtPosition(PT_DocPosition pos)
 // Skip through the blocks in this shadow to find the one containing this
 // point.
 //
-    fl_ContainerLayout*	pBL = getFirstLayout();
-	if(pBL == NULL)
+    fl_ContainerLayout*	pBL = getFirstBlock();
+    if(pBL == NULL)
 		return NULL;
 	if(pos < pBL->getPosition(true))
 	{

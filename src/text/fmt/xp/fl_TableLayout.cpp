@@ -251,9 +251,9 @@ void fl_TableLayout::insertTableContainer( fp_TableContainer * pNewTab)
 	fl_ContainerLayout * pPrevL = static_cast<fl_ContainerLayout *>(getPrev());
 	fp_Container * pPrevCon = NULL;
 	fp_Container * pUpCon = NULL;
-	if(pPrevL != NULL)
+	if(pPrevL != NULL )
 	{
-		while(pPrevL && ((pPrevL->getContainerType() == FL_CONTAINER_FOOTNOTE)
+		while(pPrevL && (pPrevL != pUPCL) && ((pPrevL->getContainerType() == FL_CONTAINER_FOOTNOTE)
           || (pPrevL->getContainerType() == FL_CONTAINER_ENDNOTE)||
 		  (pPrevL->getContainerType() == FL_CONTAINER_FRAME) ||
 		  (pPrevL->isHidden() == FP_HIDDEN_FOLDED) ||
@@ -283,6 +283,26 @@ void fl_TableLayout::insertTableContainer( fp_TableContainer * pNewTab)
 					pUpCon = pPrevCon->getContainer();
 				}
 			}
+			else if(pPrevL->getContainerType() == FL_CONTAINER_DOCSECTION)
+			{
+				pUpCon= static_cast<fl_DocSectionLayout *>(pPrevL)->getFirstContainer();
+				pPrevCon = NULL;
+			}
+			else if(pPrevL->getContainerType() == FL_CONTAINER_SHADOW)
+			{
+				pUpCon= static_cast<fl_HdrFtrShadow *>(pPrevL)->getFirstContainer();
+				pPrevCon = NULL;
+			}
+			else if(pPrevL->getContainerType() == FL_CONTAINER_HDRFTR)
+			{
+				pUpCon= static_cast<fl_HdrFtrSectionLayout *>(pPrevL)->getFirstContainer();
+				pPrevCon = NULL;
+			}
+			else if(pPrevL->getContainerType() == FL_CONTAINER_FRAME)
+			{
+				pUpCon= static_cast<fl_FrameLayout *>(pPrevL)->getFirstContainer();
+				pPrevCon = NULL;
+			}
 			else
 			{
 				pPrevCon = pPrevL->getLastContainer();
@@ -302,6 +322,17 @@ void fl_TableLayout::insertTableContainer( fp_TableContainer * pNewTab)
 		}
 		UT_ASSERT(pUpCon);
 	}
+	else if((pUPCL->getContainerType() == FL_CONTAINER_HDRFTR) || (pUPCL->getContainerType() == FL_CONTAINER_SHADOW) || (pUPCL->getContainerType() == FL_CONTAINER_FRAME))
+	{
+		pUpCon = pUPCL->getFirstContainer();
+		if(pUpCon == NULL)
+		{
+			pUpCon = pUPCL->getNewContainer(NULL);
+		}
+		UT_ASSERT(pUpCon);
+		pPrevL = pUPCL;
+		pPrevCon = NULL;
+	} 
 	else
 	{
 		pUpCon = pUPCL->getLastContainer();
@@ -320,21 +351,30 @@ void fl_TableLayout::insertTableContainer( fp_TableContainer * pNewTab)
 	}
 	else
 	{
-		UT_sint32 i = pUpCon->findCon(pPrevCon);
-		xxx_UT_DEBUGMSG(("SEVIOR!!!!!!!!!! New Table %x inserted into %x \n",pNewTab,pUpCon));
-		if(i >= 0 && (i+1) < static_cast<UT_sint32>(pUpCon->countCons()))
+		UT_sint32 i =0;
+		if(pPrevCon == NULL)
 		{
-			pUpCon->insertConAt(pNewTab,i+1);
-			pNewTab->setContainer(pUpCon);
-		}
-		else if( i >=0 &&  (i+ 1) == static_cast<UT_sint32>(pUpCon->countCons()))
-		{
-			pUpCon->addCon(pNewTab);
+			pUpCon->insertConAt(pNewTab,0);
 			pNewTab->setContainer(pUpCon);
 		}
 		else
 		{
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			i = pUpCon->findCon(pPrevCon);
+			xxx_UT_DEBUGMSG(("SEVIOR!!!!!!!!!! New Table %x inserted into %x \n",pNewTab,pUpCon));
+			if(i >= 0 && (i+1) < static_cast<UT_sint32>(pUpCon->countCons()))
+			{
+				pUpCon->insertConAt(pNewTab,i+1);
+				pNewTab->setContainer(pUpCon);
+			}
+			else if( i >=0 &&  (i+ 1) == static_cast<UT_sint32>(pUpCon->countCons()))
+			{
+				pUpCon->addCon(pNewTab);
+				pNewTab->setContainer(pUpCon);
+			}
+			else
+			{
+				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			}
 		}
 	}
 }
