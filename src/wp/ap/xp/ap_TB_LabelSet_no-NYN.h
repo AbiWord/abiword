@@ -72,13 +72,14 @@ BeginSet(no,NYN,UT_TRUE)
 
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUPERSCRIPT,	"Heva skrift",	tb_text_superscript_xpm,	NULL, "Heva skrift")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUBSCRIPT,	"Senka skrift",	tb_text_subscript_xpm,		NULL, "Senka skrift")
+	ToolbarLabel(AP_TOOLBAR_ID_INSERT_SYMBOL,	"Symbol",	tb_symbol_xpm,		NULL, "Sett inn symbol")
 
 	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_LEFT,		"Venstrejuster",		tb_text_align_left_xpm,		NULL, "Venstrejuster")
 	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_CENTER,	"Midtstill",	tb_text_center_xpm,	NULL, "Midtstill")
 	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_RIGHT,		"Høgrejuster",	tb_text_align_right_xpm,	NULL, "Høgrejuster")
 	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_JUSTIFY,	"Blokkjuster",	tb_text_justify_xpm,	NULL, "Blokkjuster")
 
-	ToolbarLabel(AP_TOOLBAR_ID_PARA_0BEFORE,	"Ingen mellom før",		tb_para_0before_xpm,	NULL, "Mellomrom før: Ingen")
+	ToolbarLabel(AP_TOOLBAR_ID_PARA_0BEFORE,	"Ingen mellomrom før",		tb_para_0before_xpm,	NULL, "Mellomrom før: Ingen")
 	ToolbarLabel(AP_TOOLBAR_ID_PARA_12BEFORE,	"12-punkts mellomrom før",		tb_para_12before_xpm,	NULL, "Mellomrom før: 12 pt")
 
 	ToolbarLabel(AP_TOOLBAR_ID_SINGLE_SPACE,	"Enkel linjeavstand",	tb_line_single_space_xpm,	NULL, "Enkel linjeavstand")
@@ -90,7 +91,8 @@ BeginSet(no,NYN,UT_TRUE)
 	ToolbarLabel(AP_TOOLBAR_ID_3COLUMN,			"Tre spalter",		tb_3column_xpm,			NULL, "Tre spalter")
 
 	ToolbarLabel(AP_TOOLBAR_ID_ZOOM,			"Zoom",		NoIcon,			NULL, "Zoom")
-	ToolbarLabel(AP_TOOLBAR_ID_LISTS_BULLETS,		"Lister",		tb_lists_xpm,		NULL,		"Lister og punktmerking")
+	ToolbarLabel(AP_TOOLBAR_ID_LISTS_BULLETS,		"Punktmerkt liste",		tb_lists_bullets_xpm,		NULL,		"Startar/avsluttar punktmerkt liste")
+	ToolbarLabel(AP_TOOLBAR_ID_LISTS_NUMBERS,		"Nummerert liste",		tb_lists_numbers_xpm,		NULL,		"Start/avsluttar nummerert liste")
 	
 	// ... add others here ...
 
