@@ -750,11 +750,7 @@ LRESULT CALLBACK XAP_Win32FrameImpl::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM 
 								hWndChild = FindWindowEx( pNMcd->hdr.hwndFrom, hWndChild, NULL, NULL );
 							}
 
-							if( hBr != NULL )
-							{
-								DeleteObject( hBr );
-								hBr = NULL;
-							}
+							/* Don't delete hBr since it was obtained using GetSysColorBrush, so System owned */
 						}
 						break;
 					}
