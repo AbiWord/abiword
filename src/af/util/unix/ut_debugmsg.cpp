@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Program Utilities
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -24,6 +26,18 @@
 
 #include "ut_debugmsg.h"
 
+static FILE * s_debug = 0;
+
+bool _UT_OutputMessage_Divert (const char * debug_filename)
+{
+	if (s_debug && (s_debug != stderr))
+		fclose (s_debug);
+
+	s_debug = fopen (debug_filename, "w");
+
+	return (s_debug ? true : false);
+}
+
 void _UT_OutputMessage(const char *s, ...)
 {
 	char sBuf[1024];
@@ -33,5 +47,11 @@ void _UT_OutputMessage(const char *s, ...)
 
 	vsprintf(sBuf, s, marker);
 
-	fprintf(stderr,"DEBUG: %s",sBuf);
+	if (!s_debug)
+		s_debug = stderr;
+
+	fprintf(s_debug,"DEBUG: %s",sBuf);
+
+	if (s_debug != stderr)
+		fflush (s_debug);
 }
