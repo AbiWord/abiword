@@ -907,48 +907,12 @@ void IE_Exp_RTF::_selectStyles()
     UT_uint32 nStyleNumber = 0;
     const char * szName;
     const PD_Style * pStyle;
+	UT_Vector vecStyles;
+	getDoc()->getAllUsedStyles(&vecStyles);
     for (i = 0; getDoc()->enumStyles(i, &szName, &pStyle); ++i) 
 	{
-		if (pStyle->isUsed() || pStyle->isUserDefined()) 
+		if (pStyle->isUserDefined() || (vecStyles.findItem((void *) pStyle) >= 0)) 
 		{
-			
-//
-//OK do a recursive search through the basedon heiracy and export those first.
-//
-			PD_Style * pBasedOn = const_cast<PD_Style *>(pStyle)->getBasedOn();
-			UT_uint32 iBased = 0;
-			while(iBased < 20 && pBasedOn != NULL)
-			{
-				const char * pszBasedOn = pBasedOn->getName();
-				NumberedStyle * pns = (NumberedStyle *) m_hashStyles.pick(pszBasedOn);
-				const PD_Style * pcStyle = reinterpret_cast<const PD_Style *>(pBasedOn);
-				if(pns == NULL)
-				{
-					m_hashStyles.insert(szName, new NumberedStyle(pcStyle, ++nStyleNumber));
-					_rtf_font_info fi(static_cast<s_RTF_AttrPropAdapter_Style>(pcStyle));
-					if (_findFont(&fi) == -1)
-						_addFont(&fi);
-				}
-				iBased++;
-				pBasedOn = pBasedOn->getBasedOn();
-			}
-//
-// Now export the followed by style
-//
-			PD_Style * pFollowedBy = const_cast<PD_Style *>(pStyle)->getFollowedBy();
-			if(pFollowedBy != NULL)
-			{
-				const char * pszFollowedBy = pFollowedBy->getName();
-				const PD_Style * pcStyle = reinterpret_cast<const PD_Style *>(pFollowedBy);
-				NumberedStyle * pns = (NumberedStyle *) m_hashStyles.pick(pszFollowedBy);
-				if(pns == NULL)
-				{
-					m_hashStyles.insert(szName, new NumberedStyle(pFollowedBy, ++nStyleNumber));
-					_rtf_font_info fi(static_cast<s_RTF_AttrPropAdapter_Style>(pcStyle));
-					if (_findFont(&fi) == -1)
-						_addFont(&fi);
-				}
-			}
 //
 // Add this style to the hash
 //
