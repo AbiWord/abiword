@@ -140,9 +140,10 @@ bool ev_Win32Keyboard::onKeyDown(AV_View * pView,
 	EV_EditBits nvk = s_mapVirtualKeyCodeToNVK(nVirtKey);
 	
 	/* We are only interested in special keys */
-	if (nvk == EV_NVK__IGNORE__ || nvk ==0)
+	if (nvk ==0 || nvk == EV_NVK__IGNORE__)
 		return true;
-		
+	
+			
 	/* If the user has ALT pressed we ignore then */
 	if (GetKeyState(VK_MENU) & 0x8000)
 		return true;		
@@ -259,15 +260,28 @@ bool ev_Win32Keyboard::onChar(AV_View * pView,
 								 HWND hWnd, UINT iMsg, WPARAM nVirtKey, LPARAM keyData)
 {
 	WCHAR b = nVirtKey;
+	EV_EditModifierState ems = _getModifierState(); 		
 
 	// The user is pressing ALT+x. If x is from a to a is a Hotkey for sure	
-	if (GetKeyState(VK_MENU) & 0x8000)
+	if (GetKeyState(VK_MENU) & 0x8000 && !(GetKeyState(VK_MENU) & 0x8000))
 	{
 		UT_DEBUGMSG(("WM_CHAR discarting char because is a menu accesskey\n"));
 		if (b>='a' && b<='z')
 			return true;		
 	}
 	
+	/* 
+		Windows maps control-a and friends to [0x00 - 0x1f].
+	 	we want control characters to appear as the actual
+	 	character and a control bit set in the ems.
+ 	*/  	
+ 	if (b<0x20 && ems)
+ 	{	 			 		
+		b=b+'a'-1;		
+		_emitChar(pView,hWnd,iMsg,nVirtKey,keyData,b, ems);
+		return true;
+	}
+		
 	// Process the key
 	_emitChar(pView,hWnd,iMsg,nVirtKey,keyData,nVirtKey,0);
 	return true;
