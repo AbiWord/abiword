@@ -55,6 +55,11 @@ Section "Abiword.exe (required)"
 	SetOutPath $INSTDIR\AbiWord\bin
 	File "AbiWord.exe"
 
+	!ifdef MINGW32
+		SetOutPath $INSTDIR\AbiWord\bin
+		File "libAbiWord.dll"
+	!endif
+
 	SetOutPath $INSTDIR\AbiWord
 	File "..\AbiSuite\AbiWord\system.*"
 	File /r "..\AbiSuite\AbiWord\strings"
