@@ -7,6 +7,11 @@
 %define enable_expat 0
 %define enable_optimize __ABI_OPT_OPTIMIZE__
 %define enable_pspell __ABI_OPT_PSPELL__
+%if %{enable_pspell}
+ %define build_pspell yes
+%else
+ %define build_pspell no
+%endif
 
 %define AbiSuite AbiSuite-2.0
 
@@ -194,7 +199,7 @@ This is the clipart portfolio used by AbiWord.
 
 %build
 ./autogen.sh
-./configure %{gnome} %{xft} %{debug} --prefix=$RPM_BUILD_ROOT/%{prefix} --exec-prefix=$RPM_BUILD_ROOT/%{prefix}
+./configure %{gnome} %{xft} %{debug} --prefix=$RPM_BUILD_ROOT/%{prefix} --exec-prefix=$RPM_BUILD_ROOT/%{prefix} --with-pspell=%{build_pspell}
 %__make
 
 %if %{enable_tools} || %{enable_impexp}
@@ -247,21 +252,33 @@ cd ../abi
 %__chmod 644 $RPM_BUILD_ROOT%{ABIPREFIX}/%{AbiSuite}/clipart/*
 %__chmod 644 $RPM_BUILD_ROOT%{ABIPREFIX}/%{AbiSuite}/templates/*
 
+# this files are installed but they already been copied to a better destination
+%__rm -f $RPM_BUILD_ROOT%{ABIPREFIX}/%{AbiSuite}/GNOME_AbiWord_Control_1_0.oaf
+%__rm -f $RPM_BUILD_ROOT%{ABIPREFIX}/%{AbiSuite}/Nautilus_View_AbiWord.oaf
+%__rm -f $RPM_BUILD_ROOT%{ABIPREFIX}/%{AbiSuite}/nautilus-abiword-content-view-ui.xml
+%__rm -f $RPM_BUILD_ROOT%{prefix}/bin/abiword
+
 %clean
 %__rm -rf $RPM_BUILD_ROOT $RPM_BUILD_DIR/file.list.%{name}
 
 %files
+%defattr(755,root,root,755)
+%{prefix}/bin/*-2.0
+%{prefix}/bin/ttfadmin.sh
+%{prefix}/bin/ttftool
+%{ABIPREFIX}/%{AbiSuite}/AbiWord/bin/*
+%{ABIPREFIX}/%{AbiSuite}/AbiWord/scripts/abw2html.pl
 %defattr(644,root,root,755)
-%attr(755,root,root) %{prefix}/bin/*
-%attr(755,root,root) %{ABIPREFIX}/%{AbiSuite}/AbiWord/bin/*
 #%{ABIPREFIX}/%{AbiSuite}/COPYING
-#%{ABIPREFIX}/%{AbiSuite}/readme.txt
+%{ABIPREFIX}/%{AbiSuite}/README
 %{ABIPREFIX}/%{AbiSuite}/AbiWord/readme.txt
 %{ABIPREFIX}/%{AbiSuite}/AbiWord/help/en-US
 %{ABIPREFIX}/%{AbiSuite}/AbiWord/strings
 %{ABIPREFIX}/%{AbiSuite}/AbiWord/system.profile*
 %{ABIPREFIX}/%{AbiSuite}/dictionary/*american*.hash*
+%{ABIPREFIX}/%{AbiSuite}/dictionary/ispell_dictionary_list.xml
 %{ABIPREFIX}/%{AbiSuite}/icons
+%{ABIPREFIX}/%{AbiSuite}/templates
 %{ABIPREFIX}/%{AbiSuite}/templates
 %{prefix}/share/pixmaps/abiword_48.png
 %{prefix}/share/applications/abiword.desktop
@@ -334,6 +351,22 @@ cd ../abi
 %{ABIPREFIX}/%{AbiSuite}/fonts/*.e2u
 %{ABIPREFIX}/%{AbiSuite}/fonts/*.u2g
 
+%post
+if test ! -e %{prefix}/bin/abiword ; then
+  %__ln_s -f %{prefix}/bin/abiword-2.0 %{prefix}/bin/abiword
+fi
+if test ! -e %{prefix}/bin/AbiWord ; then
+  %__ln_s -f %{prefix}/bin/AbiWord-2.0 %{prefix}/bin/AbiWord
+fi
+
+%postun
+if test -h %{prefix}/bin/abiword && ! -e %{prefix}/bin/abiword-2.0 ; then
+  %__rm -f %{prefix}/bin/abiword
+fi
+if test -h %{prefix}/bin/AbiWord && ! -e %{prefix}/bin/AbiWord-2.0 ; then
+  %__rm -f %{prefix}/bin/AbiWord
+fi
+
 #%post fonts
 #if test -z "`grep AbiSuite /etc/X11/fs/config`" ; then
 #  if test -x /usr/sbin/chkfontpath ; then
@@ -349,6 +382,12 @@ cd ../abi
 #fi
 
 %changelog
+* Sun Oct 20 2002 Rui M. Seabra <rms@1407.org>
+- Use pspell conditionally
+- Include some more files that were missing
+- Make abiword be a link to abiword-2.0 if there isn't an older installation
+  of abiword on the same bindir
+
 * Tue Oct 16 2002 Rui M. Seabra <rms@1407.org>
 - oops! Change && to || or you will not get the other type of plugins
   if you disable one type
