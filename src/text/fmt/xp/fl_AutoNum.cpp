@@ -65,7 +65,8 @@ fl_AutoNum::fl_AutoNum(	UT_uint32 id,
 {
 	_setParent(pParent);
 	memset(m_pszDelim, 0, 80);
-	memset(m_pszDecimal, 0, 80);	UT_uint32 i;
+	memset(m_pszDecimal, 0, 80);
+	UT_uint32 i;
 	i =  UT_XML_strncpy( m_pszDelim, 80, lDelim);
 	i =  UT_XML_strncpy( m_pszDecimal, 80, lDecimal);
  	addItem(pFirst);
