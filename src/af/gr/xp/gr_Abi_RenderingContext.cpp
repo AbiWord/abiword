@@ -23,15 +23,16 @@
 #include "gr_Painter.h"
 #include "gr_Abi_RenderingContext.h"
 
+
 GR_Abi_RenderingContext::GR_Abi_RenderingContext(GR_Graphics* pGr)
   : m_pGraphics(pGr), m_pPainter(new GR_Painter(pGr))
 {
-  assert(graphics);
+  UT_ASSERT(m_pGraphics);
 }
 
 GR_Abi_RenderingContext::~GR_Abi_RenderingContext()
 {
-  delete m_pPainter;
+  DELETEP( m_pPainter);
 }
 
 void
