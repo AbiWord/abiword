@@ -2300,6 +2300,12 @@ UT_Bool fl_BlockLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChang
 
 	_lookupProperties();
 
+	/*
+	  TODO this routine doesn't handle margin changes for the block or
+	  text-indent changes.  We need to adjust the constraints of the
+	  lines themselves.
+	*/
+	
 	fp_Column* pCol = NULL;
 	fp_Line* pLine = m_pFirstLine;
 	while (pLine)
@@ -2368,7 +2374,10 @@ UT_Bool fl_BlockLayout::doclistener_insertStrux(const PX_ChangeRecord_Strux * pc
 
 		if (iWhere == FP_RUN_INSIDE)
 		{
-			if ((blockOffset > pRun->getBlockOffset()) || (blockOffset == 0))
+			if (
+				(blockOffset > pRun->getBlockOffset())
+				|| (blockOffset == 0)
+				)
 			{
 				UT_ASSERT(pRun->getType() == FPRUN_TEXT);
 				

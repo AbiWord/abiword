@@ -42,6 +42,7 @@ public:
 	UT_uint32			getLength(void) const;
 	const UT_Byte *		getPointer(UT_uint32 position) const;				/* temporary use only */
 	UT_Bool				writeToFile(const char* pszFileName);
+	UT_Bool				insertFromFile(UT_uint32 iPosition, const char* pszFilename);
 	
 protected:
 	UT_Bool				_byteBuf(UT_uint32 spaceNeeded);

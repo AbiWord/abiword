@@ -59,6 +59,7 @@ OBJS=		$(PLATFORM_OBJS)						\
 		xp/$(OBJDIR)/ut_growbuf.$(OBJ_SUFFIX)		\
 		xp/$(OBJDIR)/ut_hash.$(OBJ_SUFFIX)			\
 		xp/$(OBJDIR)/ut_misc.$(OBJ_SUFFIX)			\
+		xp/$(OBJDIR)/ut_png.$(OBJ_SUFFIX)			\
 		xp/$(OBJDIR)/ut_pool.$(OBJ_SUFFIX)			\
 		xp/$(OBJDIR)/ut_stack.$(OBJ_SUFFIX)			\
 		xp/$(OBJDIR)/ut_string.$(OBJ_SUFFIX)		\

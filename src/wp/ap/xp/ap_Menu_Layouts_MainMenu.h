@@ -52,6 +52,8 @@ BeginLayout(Main)
 		Separator()
 		MenuItem(AP_MENU_ID_EDIT_FIND)
 		MenuItem(AP_MENU_ID_EDIT_REPLACE)
+		Separator()
+		MenuItem(AP_MENU_ID_EDIT_INSERT_IMAGE)
 	EndSubMenu()
 
 	BeginSubMenu(AP_MENU_ID_FORMAT)

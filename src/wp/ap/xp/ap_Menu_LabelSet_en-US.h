@@ -57,6 +57,7 @@ BeginSet(EnUS)
 	MenuLabel(AP_MENU_ID_EDIT_SELECTALL,	"Select A&ll",		NULL, NULL)
 	MenuLabel(AP_MENU_ID_EDIT_FIND,			"&Find",			NULL, NULL)
 	MenuLabel(AP_MENU_ID_EDIT_REPLACE,		"R&eplace",			NULL, NULL)
+	MenuLabel(AP_MENU_ID_EDIT_INSERT_IMAGE,	"&Insert Image",	NULL, NULL)
 
 	MenuLabel(AP_MENU_ID_FORMAT,			"F&ormat",			NULL, NULL)
 	MenuLabel(AP_MENU_ID_FMT_FONT,			"&Font",			NULL, NULL)

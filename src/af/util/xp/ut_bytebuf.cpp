@@ -177,6 +177,50 @@ void UT_ByteBuf::truncate(UT_uint32 position)
 	// TODO consider reallocing down
 }
 
+UT_Bool UT_ByteBuf::insertFromFile(UT_uint32 iPosition, const char* pszFileName)
+{
+	UT_ASSERT(pszFileName && pszFileName[0]);
+	
+	FILE* fp = fopen(pszFileName, "rb");
+	if (!fp)
+	{
+		return UT_FALSE;
+	}
+
+	if (0 != fseek(fp, 0, SEEK_END))
+	{
+		fclose(fp);
+
+		return UT_FALSE;
+	}
+
+	UT_uint32 iLengthOfFile = ftell(fp);
+
+	if (0 != fseek(fp, 0, SEEK_SET))
+	{
+		fclose(fp);
+
+		return UT_FALSE;
+	}
+
+	this->ins(iPosition, iLengthOfFile);
+
+	UT_Byte* pBuf = m_pBuf + iPosition;
+	
+	UT_uint32 iBytesRead = fread(pBuf, 1, iLengthOfFile, fp);
+	
+	if (iBytesRead != iLengthOfFile)
+	{
+		fclose(fp);
+
+		return UT_FALSE;
+	}
+
+	fclose(fp);
+
+	return UT_TRUE;
+}
+
 UT_Bool UT_ByteBuf::writeToFile(const char* pszFileName)
 {
 	UT_ASSERT(pszFileName && pszFileName[0]);

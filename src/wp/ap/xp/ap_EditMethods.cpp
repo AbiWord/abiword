@@ -22,6 +22,7 @@
 #include <string.h>
 #include "ut_debugmsg.h"
 #include "ut_string.h"
+#include "ut_bytebuf.h"
 #include "ev_EditMethod.h"
 #include "xav_View.h"
 #include "fv_View.h"
@@ -170,6 +171,7 @@ public:
 	static EV_EditMethod_Fn fileSaveAs;
 	static EV_EditMethod_Fn print;
 	static EV_EditMethod_Fn printTB;
+	static EV_EditMethod_Fn fileInsertImage;
 
 	static EV_EditMethod_Fn undo;
 	static EV_EditMethod_Fn redo;
@@ -341,6 +343,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(fileSaveAs),			_M_,	""),
 	EV_EditMethod(NF(print),				_M_,	""),
 	EV_EditMethod(NF(printTB),				_M_,	""), // avoid query if possible
+	EV_EditMethod(NF(fileInsertImage),		_M_,	""),
 
 	EV_EditMethod(NF(undo),					_M_,	""),
 	EV_EditMethod(NF(redo),					_M_,	""),
@@ -615,6 +618,17 @@ static UT_Bool s_AskForPathname(XAP_Frame * pFrame,
 	// pathname the user entered -- ownership of this goes
 	// to the caller (so free it when you're done with it).
 
+	/*
+	  TODO -- I think this function needs the ability to specify
+	  which file formats are used for the drop-down list.  For
+	  example, when we import a document file, we'll want to specify
+	  ABW, DOC, TXT, RTF, etc.  When we are inserting an image file,
+	  we'll want to specify PNG and whatever else we can import.
+
+	  Or, perhaps I shouldn't be using this function to ask for
+	  image filenames?  :-)  -EWS
+	*/
+	
 	UT_DEBUGMSG(("s_AskForPathname: frame %p, bSaveAs %ld, suggest=[%s]\n",
 				 pFrame,bSaveAs,((pSuggestedName) ? pSuggestedName : "")));
 
@@ -691,6 +705,57 @@ static AP_Dialog_MessageBox::tAnswer s_CouldNotLoadFileMessage(XAP_Frame * pFram
 	pDialogFactory->releaseDialog(pDialog);
 
 	return (ans);
+}
+
+#define ABIWORD_VIEW  	FV_View * pView = static_cast<FV_View *>(pAV_View)
+
+Defun1(fileInsertImage)
+{
+	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	UT_ASSERT(pFrame);
+	UT_Bool bRes = UT_FALSE;
+
+	char* pNewFile = NULL;
+	UT_Bool bOK = s_AskForPathname(pFrame,UT_FALSE,NULL,&pNewFile);
+
+	if (!bOK || !pNewFile)
+		return UT_FALSE;
+
+	// we own storage for pNewFile and must free it.
+
+	UT_DEBUGMSG(("fileInsertImage: loading [%s]\n",pNewFile));
+
+	UT_ByteBuf* pBB = new UT_ByteBuf();
+
+	bRes = pBB->insertFromFile(0, pNewFile);
+
+	if (!bRes)
+	{
+		free(pNewFile);
+		delete pBB;
+		
+		return UT_FALSE;
+	}
+	
+	ABIWORD_VIEW;
+
+	/*
+	  TODO we will eventually want to support other
+	  image file formats, although PNG will still be
+	  the only format which we consider to be a
+	  "first class citizen", since images saved in ABW
+	  files are encoded as PNG.  Anyway, when we support
+	  other formats, the place to do the conversion would
+	  be somewhere right around here.  The file dialog
+	  above would need to be modified to show a different
+	  set of file formats in the drop-down list, as well.
+	*/
+	
+	pView->cmdInsertPNGImage(pBB, pNewFile);
+
+	free(pNewFile);
+	
+	return UT_TRUE;
 }
 
 Defun1(fileOpen)
@@ -1077,9 +1142,6 @@ Defun(querySaveAndExit)
 
 /*****************************************************************/
 /*****************************************************************/
-
-#define ABIWORD_VIEW  	FV_View * pView = static_cast<FV_View *>(pAV_View)
-
 
 Defun(singleClick)
 {

@@ -87,6 +87,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_EDIT_SELECTALL,	0,0,0,	"selectAll",		NULL,					NULL);
 	_s(AP_MENU_ID_EDIT_FIND,		0,1,0,	"find",				NULL,					NULL);
 	_s(AP_MENU_ID_EDIT_REPLACE,		0,1,0,	"replace",			NULL,					NULL);
+	_s(AP_MENU_ID_EDIT_INSERT_IMAGE,0,1,0,	"fileInsertImage",	NULL,					NULL);
 
 	_s(AP_MENU_ID_FORMAT,			1,0,0,	NULL,				NULL,					NULL);
 	_s(AP_MENU_ID_FMT_FONT,			0,1,0,	"dlgFont",			NULL,					NULL);

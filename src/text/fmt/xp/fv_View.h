@@ -39,6 +39,7 @@ class PD_Document;
 class GR_Graphics;
 class GR_Image;
 class UT_Timer;
+class UT_ByteBuf;
 
 typedef enum _FVDocPos
 {
@@ -94,6 +95,9 @@ public:
 	virtual void	cmdSave(void);
 	virtual void	cmdSaveAs(const char * szFilename);
 
+	void			_insertPNGImage(UT_ByteBuf* pBB, const char* szName, UT_sint32 iImageWidth, UT_sint32 iImageHeight);
+	void			cmdInsertPNGImage(UT_ByteBuf*, const char*);
+	
 	virtual void	cmdCopy(void);
 	virtual void	cmdCut(void);
 	virtual void	cmdPaste(void);

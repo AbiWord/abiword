@@ -29,6 +29,7 @@
 #include "ut_string.h"
 #include "ut_bytebuf.h"
 #include "ut_timer.h"
+#include "ut_png.h"
 
 #include "xav_View.h"
 #include "fv_View.h"
@@ -3821,13 +3822,6 @@ void FV_View::_doInsertImage(GR_Image* pImg)
 	// just the insert, no selection or screen updating needed here
 	
 	/*
-	  1.  create a data item on the doc (give it a unique name)
-	  2.  store the name of that data item in an attribute
-	  3.  setup the properties for this image properly
-	  4.  call to insert it.
-	*/
-
-	/*
 	  First, find a unique name for the data item.
 	*/
 	char szName[GR_IMAGE_MAX_NAME_LEN + 10 + 1];
@@ -3849,37 +3843,10 @@ void FV_View::_doInsertImage(GR_Image* pImg)
 	UT_ByteBuf* pBB = NULL;
 	pImg->getByteBuf(&pBB);
 
-	/*
-	  Create the data item
-	*/
-	m_pDoc->createDataItem(szName, UT_FALSE, pBB, NULL, NULL);
+	UT_sint32	iImageWidth = pImg->getWidth();
+	UT_sint32	iImageHeight = pImg->getHeight();
 
-	delete pBB;
-
-	/*
-	  Insert the object into the document.
-	*/
-	const XML_Char*	attributes[] = {
-		"dataid", szName,
-		NULL, NULL
-	};
-
-	// TODO could get res from img instead of hard-coded to 72
-	
-	char szWidth[32];
-	char szHeight[32];
-	double fWidthInInches = pImg->getWidth() / 72.0;
-	double fHeightInInches = pImg->getHeight() / 72.0;
-
-	sprintf(szWidth, "%3.2f", fWidthInInches);
-	sprintf(szHeight, "%3.2f", fHeightInInches);
-	const XML_Char*	properties[] = {
-		"width", szWidth,
-		"height", szHeight,
-		NULL, NULL
-	};
-	
-	m_pDoc->insertObject(getPoint(), PTO_Image, attributes, properties);
+	_insertPNGImage(pBB, szName, iImageWidth, iImageHeight);
 }
 
 void FV_View::_doPaste(void)
@@ -4086,3 +4053,87 @@ void FV_View::getTopRulerInfo(AP_TopRulerInfo * pInfo)
 
 	return;
 }
+
+void FV_View::_insertPNGImage(UT_ByteBuf* pBB, const char* szName, UT_sint32 iImageWidth, UT_sint32 iImageHeight)
+{
+	UT_ASSERT(iImageWidth > 0);
+	UT_ASSERT(iImageHeight > 0);
+	UT_ASSERT(pBB);
+	UT_ASSERT(szName);
+
+	/*
+	  Create the data item
+	*/
+	m_pDoc->createDataItem(szName, UT_FALSE, pBB, NULL, NULL);
+
+	delete pBB;
+
+	/*
+	  Insert the object into the document.
+	*/
+	const XML_Char*	attributes[] = {
+		"dataid", szName,
+		NULL, NULL
+	};
+
+	// TODO could get res from img instead of hard-coded to 72
+	
+	char szWidth[32];
+	char szHeight[32];
+	double fWidthInInches = iImageWidth / 72.0;
+	double fHeightInInches = iImageHeight / 72.0;
+
+	sprintf(szWidth, "%3.2f", fWidthInInches);
+	sprintf(szHeight, "%3.2f", fHeightInInches);
+	const XML_Char*	properties[] = {
+		"width", szWidth,
+		"height", szHeight,
+		NULL, NULL
+	};
+	
+	m_pDoc->insertObject(getPoint(), PTO_Image, attributes, properties);
+}
+
+void FV_View::cmdInsertPNGImage(UT_ByteBuf* pBB, const char* pszName)
+{
+	if (!isSelectionEmpty())
+	{
+		_deleteSelection();
+	}
+	else
+	{
+		_eraseInsertionPoint();
+	}
+
+	/*
+	  First, find a unique name for the data item.
+	*/
+	char szName[GR_IMAGE_MAX_NAME_LEN + 10 + 1];
+	UT_uint32 ndx = 0;
+	for (;;)
+	{
+		sprintf(szName, "%s_%ld", pszName, ndx);
+		if (!m_pDoc->getDataItemDataByName(szName, NULL, NULL, NULL))
+		{
+			break;
+		}
+		ndx++;
+	}
+
+	UT_sint32 iImageWidth;
+	UT_sint32 iImageHeight;
+
+	UT_Bool bRes = UT_PNG_getDimensions(pBB, iImageWidth, iImageHeight);
+	// TODO check bRes
+	
+	_insertPNGImage(pBB, szName, iImageWidth, iImageHeight);
+	
+	_generalUpdate();
+	
+	if (!_ensureThatInsertionPointIsOnScreen())
+	{
+		_fixInsertionPointCoords();
+		_drawInsertionPoint();
+	}
+}
+
