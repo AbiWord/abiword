@@ -64,7 +64,7 @@ UT_UCSChar  XAP_Dialog_Insert_Symbol::getInsertedSymbol(void)
 char * XAP_Dialog_Insert_Symbol::getInsertedFont(void)
 {
 	UT_ASSERT(m_DrawSymbol);
-	UT_UCS_strcpy_to_char(m_FontName, m_DrawSymbol->getSelectedFont());
+	strcpy(m_FontName, m_DrawSymbol->getSelectedFont());
 
 	return m_FontName;
 }

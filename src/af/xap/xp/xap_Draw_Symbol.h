@@ -35,7 +35,7 @@ public:
 	virtual ~XAP_Draw_Symbol(void);
 				
 	// data twiddlers
-	void			setSelectedFont(UT_UCSChar *font);
+	void			setSelectedFont(char *font);
 	void			setFontString(void);
 	void			setFontStringarea(void);
 	void			setFontToGC(GR_Graphics *p_gc, UT_uint32 MaxWidthAllowable, UT_sint32 PointSize);
@@ -43,7 +43,7 @@ public:
 	void			setWindowSize(UT_uint32 width, UT_uint32 height);
 	void			setAreaSize(UT_uint32 width, UT_uint32 height);
 	void			setAreaGc(GR_Graphics *);
-	UT_UCSChar *	getSelectedFont(void);
+	char *	                getSelectedFont(void);
 
     // where all the Symbol-specific drawing happens
 	

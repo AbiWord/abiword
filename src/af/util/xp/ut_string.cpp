@@ -26,6 +26,7 @@
 #include "ut_misc.h"
 #include "ut_assert.h"
 #include "ut_string.h"
+#include "ut_debugmsg.h"
 #include "ut_growbuf.h"
 
 //////////////////////////////////////////////////////////////////
@@ -590,10 +591,12 @@ char * UT_UCS_strcpy_to_char(char * dest, const UT_UCSChar * src)
 	UT_ASSERT(src);
 
 	char * 			d = dest;
+        char c;
+	UT_UCSChar uc;
 	UT_UCSChar * 	s = (UT_UCSChar *) src;
 
 	while (*s != NULL)
-		*d++ = (char) *s++;
+	    *d++ = *s++;
 	*d = NULL;
 	
 	return dest;

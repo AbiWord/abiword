@@ -193,9 +193,9 @@ void XAP_UnixDialog_Insert_Symbol::runModal(XAP_Frame * pFrame)
         // called. Afterwards it is just whatever was left from the last
         // call.
 
-	if ( xap_UnixDlg_Insert_Symbol_first == 0) //BOGUS: the gcs need a font.
+	if ( xap_UnixDlg_Insert_Symbol_first == 0)
 	{
-		iDrawSymbol->setSelectedFont( (UT_UCSChar *) DEFAULT_UNIX_SYMBOL_FONT);
+		iDrawSymbol->setSelectedFont( (char *) DEFAULT_UNIX_SYMBOL_FONT);
 		m_CurrentSymbol = ' ';
 		m_PreviousSymbol = ' ';
 		xap_UnixDlg_Insert_Symbol_first = 1;
@@ -209,7 +209,7 @@ void XAP_UnixDialog_Insert_Symbol::runModal(XAP_Frame * pFrame)
 	gtk_grab_add(mainWindow);
 
         // Put the current font in the entry box
-	UT_UCSChar* iSelectedFont = iDrawSymbol->getSelectedFont();
+	char* iSelectedFont = iDrawSymbol->getSelectedFont();
         gtk_entry_set_text(GTK_ENTRY(GTK_COMBO(m_fontcombo)->entry),
 					   (gchar *)   iSelectedFont);
 
@@ -227,21 +227,8 @@ void XAP_UnixDialog_Insert_Symbol::runModal(XAP_Frame * pFrame)
 
 void XAP_UnixDialog_Insert_Symbol::event_OK(void)
 {
-	if (m_Insert_Symbol_no_fonts > 0 )
-	{ 
-		m_answer = XAP_Dialog_Insert_Symbol::a_OK;
-		m_Inserted_Symbol = m_CurrentSymbol;
-		g_list_free( m_InsertS_Font_list);
-
-		for (UT_uint32 i = 0; i < m_Insert_Symbol_no_fonts; i++) 
-		{
-			if (m_fontlist[i] != NULL)
-				g_free(m_fontlist[i]);
-		}
-
-		m_Insert_Symbol_no_fonts = 0;
-		gtk_main_quit();
-	}
+        m_Inserted_Symbol = m_CurrentSymbol;
+	_onInsertButton();
 }
 
 void XAP_UnixDialog_Insert_Symbol::event_Cancel(void)
@@ -267,7 +254,10 @@ void XAP_UnixDialog_Insert_Symbol::SymbolMap_exposed(void )
 	XAP_Draw_Symbol * iDrawSymbol = _getCurrentSymbolMap();
 	UT_ASSERT(iDrawSymbol);
 	iDrawSymbol->draw();
-//	iDrawSymbol->drawarea(m_CurrentSymbol, m_PreviousSymbol);
+	/*
+	    Need this to see the blue square after an expose event
+	*/
+	iDrawSymbol->drawarea(m_CurrentSymbol, m_PreviousSymbol);
 }
 
 void XAP_UnixDialog_Insert_Symbol::Symbolarea_exposed(void )
@@ -345,7 +335,7 @@ void XAP_UnixDialog_Insert_Symbol::New_Font(void )
 
 	gchar * buffer = gtk_entry_get_text(GTK_ENTRY(GTK_COMBO(m_fontcombo)->entry));
 
-	iDrawSymbol->setSelectedFont( (UT_UCSChar *) buffer);
+	iDrawSymbol->setSelectedFont( (char *) buffer);
 	iDrawSymbol->draw();
 	iDrawSymbol->drawarea(m_CurrentSymbol, m_PreviousSymbol);
 }
@@ -488,7 +478,10 @@ GtkWidget * XAP_UnixDialog_Insert_Symbol::_constructWindow(void)
 	gtk_widget_show (hboxInsertS);
 	gtk_box_pack_start (GTK_BOX (vboxInsertS), hboxInsertS, TRUE, TRUE, 0);
 
-	buttonOK = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_OK));
+	UT_XML_cloneNoAmpersands(tmp, pSS->getValue(XAP_STRING_ID_DLG_Insert));
+	buttonOK = gtk_button_new_with_label (tmp);
+        FREEP(tmp);
+
 	gtk_object_set_data (GTK_OBJECT (windowInsertS), "buttonOK", buttonOK);
 	gtk_widget_show (buttonOK);
 	gtk_box_pack_start(GTK_BOX(hboxInsertS), buttonOK, TRUE, FALSE, 4);
@@ -504,7 +497,10 @@ GtkWidget * XAP_UnixDialog_Insert_Symbol::_constructWindow(void)
 		gtk_box_pack_start(GTK_BOX(hboxInsertS), areaCurrentSym, TRUE, FALSE, 0);
    	}
 
-	buttonCancel = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Cancel));
+	UT_XML_cloneNoAmpersands(tmp, pSS->getValue(XAP_STRING_ID_DLG_Close));
+	buttonCancel = gtk_button_new_with_label (tmp);
+        FREEP(tmp);
+
 	gtk_object_set_data (GTK_OBJECT (windowInsertS), "buttonCancel", buttonCancel);
 	gtk_widget_show (buttonCancel);
 	gtk_box_pack_start(GTK_BOX(hboxInsertS), buttonCancel, TRUE, FALSE, 4);
