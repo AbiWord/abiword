@@ -509,7 +509,7 @@ OUT			= $(ABI_ROOT)/src
 ## 
 
 ifndef ABI_BUILD_VERSION_MAJOR
-include abi_release_version.mk
+include $(ABI_ROOT)/src/config/abi_release_version.mk
 endif
 
 ifndef ABI_BUILD_VERSION
