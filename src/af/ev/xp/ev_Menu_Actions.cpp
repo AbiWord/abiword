@@ -163,6 +163,7 @@ const EV_Menu_Action * EV_Menu_ActionSet::getAction(XAP_Menu_Id id) const
 
 	UT_uint32 index = (id - m_first);
 	const EV_Menu_Action * pAction = static_cast<const EV_Menu_Action *> (m_actionTable[index]);
+	UT_DEBUGMSG(("RMS: UT_ASSERT(pAction && (pAction->getMenuId() == id)); Menu ID: %d; pAction: %d; pAction->getMenuId(): %d\n", id, pAction, pAction?pAction->getMenuId():-1));
 	UT_ASSERT(pAction && (pAction->getMenuId() == id));
 	return pAction;
 }
