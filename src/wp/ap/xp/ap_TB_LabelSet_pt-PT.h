@@ -115,6 +115,7 @@ BeginSetEnc(pt,PT,true,"iso-8859-1")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_RTL,"Direita para a Esquerda", tb_text_direction_rtl_xpm,	NULL, "Forçar orientação da Direita para a Esquerda")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DOM_DIRECTION,	"Orientação do parágrafo",    tb_text_dom_direction_rtl_xpm,	NULL, "Forçar orientação normal do parágrafo")
 #endif
+
 	// ... add others here ...
 
 	ToolbarLabel(AP_TOOLBAR_ID__BOGUS2__,		NULL,		NoIcon,			NULL,	NULL)
