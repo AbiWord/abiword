@@ -47,9 +47,10 @@ public:
 	AP_UnixFrame * 		getFrame(void);
 
 	// this should go away if/when the GTK menus are fixed
-	UT_Vector * _get_MenuVector(UT_uint32 n);
+//	UT_Vector * _get_MenuVector(UT_uint32 n);
 	
 protected:
+/*
 	void				_append_NormalItem(char * bufMenuPathname,
 										   const char * szLabelName,
 										   AP_Menu_Id id,
@@ -60,9 +61,9 @@ protected:
 	void				_end_SubMenu(char * bufMenuPathname);
 	void				_append_Separator(char * bufMenuPathname,
 										  AP_Menu_Id id);
-
+*/
 	UT_Bool				_refreshMenu(AV_View * pView);
-	const char *		_getItemPath(AP_Menu_Id id) const;
+//	const char *		_getItemPath(AP_Menu_Id id) const;
 	UT_Bool				_isItemPresent(AP_Menu_Id id) const;
 
 	AP_UnixApp *		m_pUnixApp;
@@ -70,10 +71,8 @@ protected:
 
 	GtkWidget *			m_wMenuBar;
 	GtkWidget * 		m_wHandleBox;
-	GtkAccelGroup *		m_wAccelGroup;
-	GtkItemFactory *	m_wMenuBarItemFactory;
-	GtkItemFactoryEntry * m_menuFactoryItems;
-	UT_uint32			m_nrActualFactoryItems;
+
+	// actual GTK menu widgets
 	UT_Vector			m_vecMenuWidgets;
 };
 
