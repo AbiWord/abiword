@@ -1887,16 +1887,22 @@ void fp_TextRun::_drawLastChar(bool bSelection)
 	GR_Painter painter(pG);
 
 	UT_uint32 iPos = iVisDirection == FRIBIDI_TYPE_LTR ? getLength() - 1 : 0;
+	PD_StruxIterator text(getBlock()->getStruxDocHandle(),
+						  getBlockOffset() + fl_BLOCK_STRUX_OFFSET);
+
+	m_pRenderInfo->m_pText = &text;
 
 	if(!s_bBidiOS)
 	{
 		// m_pSpanBuff is in visual order, so we just draw the last char
 		m_pRenderInfo->m_iOffset = getLength() - 1;
+		text.setPosition(getBlockOffset() + fl_BLOCK_STRUX_OFFSET + getLength() - 1);
 	}
 	else
 	{
 		UT_uint32 iPos = iVisDirection == FRIBIDI_TYPE_LTR ? getLength() - 1 : 0;
 		m_pRenderInfo->m_iOffset = iPos;
+		text.setPosition(getBlockOffset() + fl_BLOCK_STRUX_OFFSET + iPos);
 	}
 
 	m_pRenderInfo->m_iLength = 1;
@@ -1933,6 +1939,11 @@ void fp_TextRun::_drawFirstChar(bool bSelection)
 	else
 		pG->setColor(getFGColor());
 
+	PD_StruxIterator text(getBlock()->getStruxDocHandle(),
+						  getBlockOffset() + fl_BLOCK_STRUX_OFFSET);
+
+	m_pRenderInfo->m_pText = &text;
+	
 	if(!s_bBidiOS)
 	{
 		// m_pSpanBuff is in visual order, so we just draw the last char
@@ -1942,6 +1953,7 @@ void fp_TextRun::_drawFirstChar(bool bSelection)
 	{
 		UT_uint32 iPos = getVisDirection() == FRIBIDI_TYPE_RTL ? getLength() - 1 : 0;
 		m_pRenderInfo->m_iOffset = iPos;
+		text.setPosition(getBlockOffset() + fl_BLOCK_STRUX_OFFSET + iPos);
 	}
 
 	m_pRenderInfo->m_iLength = 1;

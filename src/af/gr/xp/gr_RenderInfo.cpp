@@ -484,7 +484,9 @@ void GR_XPRenderInfo::prepareToRenderChars()
 
 void GR_XPRenderInfo::_stripLigaturePlaceHolders()
 {
-	UT_return_if_fail(m_iLength <= m_iBufferSize && m_pText && m_pSegmentOffset);
+	UT_return_if_fail(m_iLength <= m_iBufferSize && m_pText);
+	if(!m_pSegmentOffset)
+		m_iSegmentCount = 0;
 
 	// this is sligthly complicated by having to deal with both
 	// logical and visual coordinances at the same time
