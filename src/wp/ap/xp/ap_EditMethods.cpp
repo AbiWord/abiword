@@ -6210,12 +6210,7 @@ Defun1(dlgStyle)
 	UT_ASSERT(pFrame);
 	ABIWORD_VIEW;
 
-#if defined(DEBUG)
 	return s_doStylesDlg(pView);
-#else
-	s_TellNotImplemented(pFrame, "Styles dialog", __LINE__);
-	return UT_OK;
-#endif
 }
 
 Defun1(dlgTabs)
