@@ -54,6 +54,8 @@ public:
  	SET_GATHER			(SpellNumbers,		UT_Bool );
  	SET_GATHER			(SpellInternet,		UT_Bool );
  
+ 	SET_GATHER			(SmartQuotesEnable,	UT_Bool );
+ 
  	SET_GATHER			(PrefsAutoSave,		UT_Bool );
  
  	SET_GATHER			(ViewShowRuler,		UT_Bool );
@@ -92,6 +94,8 @@ public:
 	GtkWidget * m_buttonSpellDictionary;
 	GtkWidget * m_buttonSpellIgnoreEdit;
 	GtkWidget * m_buttonSpellIgnoreReset;
+
+    GtkWidget * m_checkbuttonSmartQuotesEnable;
 
     GtkWidget * m_checkbuttonPrefsAutoSave;
 	GtkWidget * m_comboPrefsScheme;

@@ -47,6 +47,8 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 				   id_BUTTON_DICTIONARY_EDIT, id_BUTTON_IGNORE_RESET,
 				   id_BUTTON_IGNORE_EDIT,
 
+				   id_CHECK_SMART_QUOTES_ENABLE,
+
 				   id_CHECK_PREFS_AUTO_SAVE, id_COMBO_PREFS_SCHEME,
 
 				   id_CHECK_VIEW_SHOW_RULER, id_LIST_VIEW_RULER_UNITS,
@@ -91,6 +93,8 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 	SET_GATHER			(SpellUppercase,	UT_Bool);
 	SET_GATHER			(SpellNumbers,		UT_Bool);
 	SET_GATHER			(SpellInternet,		UT_Bool);
+
+	SET_GATHER			(SmartQuotesEnable,	UT_Bool);
 
 	SET_GATHER			(PrefsAutoSave,		UT_Bool);
 

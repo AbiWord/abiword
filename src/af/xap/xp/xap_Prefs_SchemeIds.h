@@ -63,6 +63,10 @@
 #define XAP_PREF_DEFAULT_RemapGlyphsTable			"&#x2018;`&#x2019;'&#x201c;&quot;&#x201d;&quot;"
 /* smart quotes */
 
+#define XAP_PREF_KEY_SmartQuotesEnable				"SmartQuotesEnable"
+/* substitute curly smart quotes on the fly */
+#define XAP_PREF_DEFAULT_SmartQuotesEnable			"1"
+
 #else /* XAP_PREFS_SCHEMEID_H */
 #ifdef dcl
 
@@ -73,6 +77,8 @@ dcl(RemapGlyphsMasterSwitch)
 dcl(RemapGlyphsNoMatterWhat)
 dcl(RemapGlyphsDefault)
 dcl(RemapGlyphsTable)
+
+dcl(SmartQuotesEnable)
 
 #endif /* dcl */
 #endif /* XAP_PREFS_SCHEMEID_H */

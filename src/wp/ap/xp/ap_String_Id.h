@@ -164,6 +164,7 @@ dcl(DLG_Para_PreviewFollowParagraph,"Following Paragraph Following Paragraph Fol
 dcl(DLG_Options_OptionsTitle,			"Options")
 
 dcl(DLG_Options_TabLabel_Spelling,		"Spelling")
+dcl(DLG_Options_TabLabel_SmartQuotes,	"Smart Quotes")
 dcl(DLG_Options_TabLabel_Preferences,	"Preference Schemes")
 dcl(DLG_Options_TabLabel_View,			"View")
 
@@ -183,6 +184,8 @@ dcl(DLG_Options_Label_SpellIgnoredWord,	"Ignored words:")
 dcl(DLG_Options_Btn_CustomDict,			"&Dictionary...")
 dcl(DLG_Options_Btn_IgnoreReset,		"&Reset")
 dcl(DLG_Options_Btn_IgnoreEdit,			"&Edit")
+
+dcl(DLG_Options_Label_SmartQuotesEnable,"Enable smart quotes")
 
 dcl(DLG_Options_Label_PrefsAutoSave,	"&Automatically save this Scheme")
 dcl(DLG_Options_Label_PrefsCurrentScheme,	"Current Preferences Scheme")

@@ -101,6 +101,8 @@ void AP_Dialog_Options::_storeWindowData(void)
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_SpellCheckNumbers, _gatherSpellNumbers() );
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_SpellCheckInternet, _gatherSpellInternet() );
 
+	Save_Pref_Bool( pPrefsScheme, XAP_PREF_KEY_SmartQuotesEnable, _gatherSmartQuotesEnable() );
+
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_CursorBlink, _gatherViewCursorBlink() );
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_RulerVisible, _gatherViewShowRuler() );
     Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_ParaVisible, _gatherViewUnprintable() );
@@ -183,6 +185,10 @@ void AP_Dialog_Options::_populateWindowData(void)
 	if (pPrefs->getPrefsValueBool(AP_PREF_KEY_SpellCheckInternet,&b))
 		_setSpellInternet (b);
 	
+	// ------------ Smart Quotes
+	if (pPrefs->getPrefsValueBool(XAP_PREF_KEY_SmartQuotesEnable,&b))
+		_setSmartQuotesEnable (b);
+
 	// ------------ Prefs	
 	_setPrefsAutoSave( pPrefs->getAutoSavePrefs() );
 
