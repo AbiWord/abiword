@@ -385,7 +385,7 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 
 	wToggleOne = gtk_toggle_button_new();
 	gtk_widget_show(wToggleOne );
-        UT_Bool butlab = label_button_with_abi_pixmap(wToggleOne, "tb_1column_xpm");
+        label_button_with_abi_pixmap(wToggleOne, "tb_1column_xpm");
 	gtk_box_pack_start (GTK_BOX (hbox3), wToggleOne, FALSE, FALSE, 0);
 	GTK_WIDGET_SET_FLAGS (wToggleOne, GTK_CAN_DEFAULT);
 

@@ -246,7 +246,7 @@ void AP_Dialog_Tab::_event_Set(void)
 	// Add tab to list.
 
 	int NewOffset = strlen(m_pszTabStops);
-	char *p_temp = new char[strlen(m_pszTabStops) + 1 + strlen(buffer) + 1];
+	char *p_temp = new char[NewOffset + 1 + strlen(buffer) + 1];
 	strcpy(p_temp, m_pszTabStops);
 	if(m_pszTabStops[0] != 0)
 	{

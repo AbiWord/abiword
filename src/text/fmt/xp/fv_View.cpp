@@ -2741,10 +2741,11 @@ UT_Bool FV_View::_ensureThatInsertionPointIsOnScreen(void)
 
 void FV_View::_moveInsPtNextPrevPage(UT_Bool bNext)
 {
+#if 0
 	UT_sint32 xPoint;
 	UT_sint32 yPoint;
 	UT_sint32 iPointHeight;
-
+#endif
 
 	fp_Page* pOldPage = _getCurrentPage();
 
@@ -3335,7 +3336,7 @@ UT_Bool FV_View::gotoTarget(AP_JumpTarget type, UT_UCSChar *data)
 		}
 		else
 		{
-			UT_uint32 line = 0;
+		  //UT_uint32 line = 0;
 			fp_Line *pLine;
 			fp_Line *pOldLine;
 			

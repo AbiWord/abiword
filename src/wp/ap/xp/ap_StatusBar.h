@@ -49,7 +49,7 @@ enum _progress_flags {
 	PROGRESS_RESERVED2	= 0x3,
     PROGRESS_SHOW_MSG	= 0x4,		/* Allow message to be displayed */
 	PROGRESS_SHOW_RAW	= 0x8,		/* Allow raw value to be displayed */
-	PROGRESS_SHOW_PERCENT = 0x10,	/* Allow calculation of percent value */
+	PROGRESS_SHOW_PERCENT = 0x10	/* Allow calculation of percent value */
 };
 
 class AP_StatusBar : public AV_Listener

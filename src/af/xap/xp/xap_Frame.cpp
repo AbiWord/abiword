@@ -365,7 +365,7 @@ const char * XAP_Frame::getViewKey(void) const
 	// Why "+3"?  For the "0x" and the null. 
 	static char buf[(sizeof(void *) * 2) + 3];
 
-	sprintf(buf, "%p", m_pDoc);
+	sprintf(buf, "%p", (void *)m_pDoc);
 
 	return buf;
 }

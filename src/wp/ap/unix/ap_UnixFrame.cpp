@@ -285,7 +285,7 @@ void AP_UnixFrame::setXScrollRange(void)
 		newvalue = newmax;
 
 	UT_Bool bDifferentPosition = (newvalue != (int)m_pHadj->value);
-	UT_Bool bDifferentLimits = ((width-windowWidth) != (m_pHadj->upper-m_pHadj->page_size));
+	UT_Bool bDifferentLimits = ((width-windowWidth) != (int)(m_pHadj->upper-m_pHadj->page_size));
 	
 	m_pHadj->value = newvalue;
 	m_pHadj->lower = 0.0;
@@ -296,7 +296,7 @@ void AP_UnixFrame::setXScrollRange(void)
 	gtk_signal_emit_by_name(GTK_OBJECT(m_pHadj), "changed");
 
 	if (m_pView && (bDifferentPosition || bDifferentLimits))
-		m_pView->sendHorizontalScrollEvent(newvalue, (long) m_pHadj->upper-m_pHadj->page_size);
+		m_pView->sendHorizontalScrollEvent(newvalue, (int)(m_pHadj->upper-m_pHadj->page_size));
 }
 
 void AP_UnixFrame::setYScrollRange(void)
@@ -312,7 +312,7 @@ void AP_UnixFrame::setYScrollRange(void)
 		newvalue = newmax;
 
 	UT_Bool bDifferentPosition = (newvalue != (int)m_pVadj->value);
-	UT_Bool bDifferentLimits ((height-windowHeight) != (m_pVadj->upper-m_pVadj->page_size));
+	UT_Bool bDifferentLimits ((height-windowHeight) != (int)(m_pVadj->upper-m_pVadj->page_size));
 	
 	m_pVadj->value = newvalue;
 	m_pVadj->lower = 0.0;
@@ -323,7 +323,7 @@ void AP_UnixFrame::setYScrollRange(void)
 	gtk_signal_emit_by_name(GTK_OBJECT(m_pVadj), "changed");
 
 	if (m_pView && (bDifferentPosition || bDifferentLimits))
-		m_pView->sendVerticalScrollEvent(newvalue, (long) m_pVadj->upper-m_pVadj->page_size);
+		m_pView->sendVerticalScrollEvent(newvalue, (int)(m_pVadj->upper-m_pVadj->page_size));
 }
 
 
@@ -389,7 +389,7 @@ void AP_UnixFrame::_showOrHideToolbars(void)
 // Idem.
 void AP_UnixFrame::_showOrHideStatusbar(void)
 {
-	UT_Bool bShowStatusBar = static_cast<AP_FrameData*> (m_pData)->m_bShowStatusBar;
+        //UT_Bool bShowStatusBar = static_cast<AP_FrameData*> (m_pData)->m_bShowStatusBar;
 	// I don't know why it doesn't work...
 	//	toggleStatusBar(bShowStatusBar);
 }

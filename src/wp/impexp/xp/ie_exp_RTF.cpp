@@ -607,7 +607,7 @@ void IE_Exp_RTF::_rtf_compute_font_properties(const _rtf_font_info * pfi,
 	
 	*p_sz_font_name = szFontFamily;
 	
-	if ((ff >= 0) && (ff < NrElements(t_ff)))
+	if ((ff >= 0) && (ff < (int)NrElements(t_ff)))
 		*p_sz_rtf_family = t_ff[ff];
 	else
 		*p_sz_rtf_family = t_ff[GR_Font::FF_Unknown];

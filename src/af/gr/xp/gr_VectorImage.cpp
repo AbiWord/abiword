@@ -38,6 +38,7 @@
 
 struct _TokenTable { const char * m_name; int m_type; };
 
+#if 0
 static struct _TokenTable s_Tokens[] = {
      { "svg", TT_SVG },
      { "g", TT_GROUP },
@@ -49,7 +50,7 @@ static struct _TokenTable s_Tokens[] = {
      { "polyline", TT_POLYLINE },
      { "path", TT_PATH },
 };
-   
+#endif   
 
 // basic drawing commands
 struct drawBase {

@@ -528,7 +528,7 @@ void FL_DocLayout::__dump(FILE * fp) const
 {
 	int count = m_vecPages.getItemCount();
 
-	fprintf(fp,"FL_DocLayout::dump(0x%p) contains %d pages.\n", this, m_vecPages.getItemCount());
+	fprintf(fp,"FL_DocLayout::dump(0x%p) contains %d pages.\n", (void*)this, m_vecPages.getItemCount());
 
 	for (int i=0; i<count; i++)
 	{
@@ -536,7 +536,7 @@ void FL_DocLayout::__dump(FILE * fp) const
 		p->__dump(fp);
 	}
 
-	fprintf(fp,"FL_DocLayout::dump(0x%p) sections:\n",this);
+	fprintf(fp,"FL_DocLayout::dump(0x%p) sections:\n",(void*)this);
 	for (fl_SectionLayout * psl=getFirstSection(); (psl); psl=psl->getNext())
 	{
 		psl->__dump(fp);

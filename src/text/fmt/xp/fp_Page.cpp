@@ -251,7 +251,7 @@ UT_Bool fp_Page::needsRedraw(void) const
 #ifdef FMT_TEST
 void fp_Page::__dump(FILE * fp) const
 {
-	fprintf(fp,"\tPage: 0x%p\n",this);
+	fprintf(fp,"\tPage: 0x%p\n",(void*)this);
 }
 #endif
 

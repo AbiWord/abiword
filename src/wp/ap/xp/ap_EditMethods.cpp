@@ -3047,7 +3047,7 @@ static UT_Bool s_doGotoDlg(FV_View * pView, XAP_Dialog_Id id)
 
 	pDialog->runModeless(pFrame);
 	
-	UT_Bool bOK = UT_TRUE;
+	//UT_Bool bOK = UT_TRUE;
 
 	// get result?
 	

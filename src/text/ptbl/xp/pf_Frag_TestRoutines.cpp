@@ -38,30 +38,30 @@ void pf_Frag::__dump(FILE * fp) const
 {
 	fprintf(fp,"        %sFragment %p type[%d]\n",
 			((m_type==PFT_EndOfDoc) ? "EOD" : "Unk"),
-			this,m_type);
+			(void*)this,m_type);
 }
 
 void pf_Frag_FmtMark::__dump(FILE * fp) const
 {
-	fprintf(fp,"        FmtMrkFragment %p api[%08lx]\n",this,(long unsigned int)m_indexAP);
+	fprintf(fp,"        FmtMrkFragment %p api[%08lx]\n",(void*)this,(long unsigned int)m_indexAP);
 }
 
 void pf_Frag_Strux_Block::__dump(FILE * fp) const
 {
 	fprintf(fp,"      Block %p api[%08lx]\n",
-			this,(long)m_indexAP);
+			(void*)this,(long)m_indexAP);
 }
 
 void pf_Frag_Strux_Section::__dump(FILE * fp) const
 {
 	fprintf(fp,"    Section %p api[%08lx]\n",
-			this,(long)m_indexAP);
+			(void*)this,(long)m_indexAP);
 }
 
 void pf_Frag_Text::__dump(FILE * fp) const
 {
 	fprintf(fp,"        TextFragment %p b[%08lx,%ld] api[%08lx]\n",
-			this,(long)m_bufIndex,(long)m_length,(long)m_indexAP);
+			(void*)this,(long)m_bufIndex,(long)m_length,(long)m_indexAP);
 
 	const UT_UCSChar * ptr = m_pPieceTable->getPointer(m_bufIndex);
 	char c;
@@ -97,7 +97,7 @@ void pf_Frag_Object::__dump(FILE * fp) const
 	}
 	
 	fprintf(fp,"        Object %p t[%s] api[%08lx]\n",
-			this,sz,(long)m_indexAP);
+			(void*)this,sz,(long)m_indexAP);
 }
 
 #endif /* PT_TEST */

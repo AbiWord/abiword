@@ -4009,7 +4009,7 @@ void fl_BlockLayout::setSectionLayout(fl_SectionLayout* pSectionLayout)
 #ifdef FMT_TEST
 void fl_BlockLayout::__dump(FILE * fp) const
 {
-	fprintf(fp,"  Block: 0x%p [sdh 0x%p]\n",this,m_sdh);
+	fprintf(fp,"  Block: 0x%p [sdh 0x%p]\n",(void*)this,(void*)m_sdh);
 	for (fp_Run* pRun=m_pFirstRun; (pRun); pRun=pRun->getNext())
 	{
 		pRun->__dump(fp);

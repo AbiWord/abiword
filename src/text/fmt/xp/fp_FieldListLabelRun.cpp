@@ -35,7 +35,7 @@ UT_Bool fp_FieldListLabelRun::calculateValue(void)
 	XML_Char *  listlabel = (XML_Char *) m_pBL->getListLabel();
 	if(listlabel == NULL)
 	{
-		sz_ucs_FieldValue[0] = NULL;
+		sz_ucs_FieldValue[0] = 0;
 	}
 	else
 	{
@@ -48,8 +48,8 @@ UT_Bool fp_FieldListLabelRun::calculateValue(void)
 		{
 		        sz_ucs_FieldValue[i] = (UT_UCSChar) (unsigned char) *listlabel++;
 		}
-		sz_ucs_FieldValue[len] = NULL;
-		m_sFieldValue[0] =  NULL; // Force an update!!!
+		sz_ucs_FieldValue[len] = 0;
+		m_sFieldValue[0] =  0; // Force an update!!!
 	}
 	return _setValue(sz_ucs_FieldValue);
 }

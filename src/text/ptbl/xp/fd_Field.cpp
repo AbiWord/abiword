@@ -103,7 +103,7 @@ UT_Bool fd_Field::update(void)
        {
 
               UT_UCSChar testUCSFieldText[1024];
-              UT_UCSChar * curpos;
+              //UT_UCSChar * curpos;
 	      char lineno[20];
 	      UT_UCS_strcpy_char(testUCSFieldText,
 				 testChars);
