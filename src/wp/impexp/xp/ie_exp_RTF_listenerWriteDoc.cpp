@@ -4916,16 +4916,31 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 	if (strcmp(szLineHeight,"1.0") != 0)
 	{
 		double f = UT_convertDimensionless(szLineHeight);
-		if (f != 0.0)					// we get zero on bogus strings....
-		{
-			// don't ask me to explain the details of this conversion factor,
-			// because i don't know....
-			UT_sint32 dSpacing = (UT_sint32)(f * 240.0);
-			m_pie->_rtf_keyword("sl",dSpacing);
-			m_pie->_rtf_keyword("slmult",1);
+
+
+		if (f > 0.000001) 
+		{                                   // we get zero on bogus strings....
+		        const char * pPlusFound = strrchr(szLineHeight, '+');
+		        if (pPlusFound && *(pPlusFound + 1) == 0)             //  "+" means "at least" line spacing
+			{
+				UT_sint32 dSpacing = (UT_sint32)(f * 20.0);
+				m_pie->_rtf_keyword("sl",dSpacing);
+				m_pie->_rtf_keyword("slmult",0);
+			}
+			else if (UT_hasDimensionComponent(szLineHeight)) //  use exact line spacing
+			{
+			        UT_sint32 dSpacing = (UT_sint32)(f * 20.0);
+			        m_pie->_rtf_keyword("sl",-dSpacing);
+			        m_pie->_rtf_keyword("slmult",0);
+		        }
+			else // multiple line spacing
+			{
+			        UT_sint32 dSpacing = (UT_sint32)(f * 240.0);
+			        m_pie->_rtf_keyword("sl",dSpacing);
+			        m_pie->_rtf_keyword("slmult",1);
+		        }
 		}
 	}
-
 //
 // Output Paragraph Cell nesting level.
 //
