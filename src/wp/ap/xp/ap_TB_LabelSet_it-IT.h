@@ -71,6 +71,8 @@ BeginSet(it,IT,true)
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_UNDERLINE,	"Sottolineato",	tb_text_underline_S_xpm,	NULL, "Sottolineato")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_OVERLINE,	"Sopralineato", tb_text_overline_S_xpm,	NULL, "Mette una linea sopra i caratteri")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_STRIKE,		"Barrato",		tb_text_strikeout_B_xpm,	NULL, "Barrato")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_TOPLINE,		"Linea sopra",		tb_text_topline_xpm,	NULL, "Linea sopra")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_BOTTOMLINE,		"Linea sotto",		tb_text_bottomline_xpm,	NULL, "Linea sotto")
         ToolbarLabel(AP_TOOLBAR_ID_HELP, "Aiuto", tb_help_xpm, NULL, "Aiuto")
 
         ToolbarLabel(AP_TOOLBAR_ID_FMT_SUPERSCRIPT,     "Apice",  	tb_text_superscript_xpm,        NULL, "Apice")
