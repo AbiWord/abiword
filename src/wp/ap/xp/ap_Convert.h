@@ -27,7 +27,7 @@
 
 class GR_Graphics;
 
-class AP_Convert
+class ABI_EXPORT AP_Convert
 {
  public:
 	AP_Convert(XAP_App *pApp);
