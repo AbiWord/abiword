@@ -434,6 +434,11 @@ UT_Bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 
 				// create the item with the underscored label
 				GtkWidget * w = gtk_menu_item_new();
+				if ( !pAction->isCheckable() ) 
+					w = gtk_menu_item_new();
+				else
+					w = gtk_check_menu_item_new();
+		
 				GtkWidget * hbox = gtk_hbox_new(FALSE, 20);
 				gtk_widget_show(hbox);
 				gtk_container_add(GTK_CONTAINER(w), hbox);
@@ -875,7 +880,8 @@ UT_Bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 
 					// check boxes 
 					if (GTK_IS_CHECK_MENU_ITEM(item))
-						GTK_CHECK_MENU_ITEM(item)->active = bCheck;
+						gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(item), bCheck );
+
 					// all get the gray treatment
 					gtk_widget_set_sensitive(GTK_WIDGET(item), bEnable);
 
