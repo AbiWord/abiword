@@ -40,8 +40,12 @@ public:
 	virtual void		setView(AV_View * pView);
 	PtWidget_t *		createWidget(void);
 
+	virtual void 		show();
+	virtual void 		hide();
+
 protected:
 	PtWidget_t *		m_wStatusBar;
+	PtWidget_t *		m_wStatusBarGroup;
 
 	class _fe
 	{

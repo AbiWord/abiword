@@ -89,8 +89,8 @@ PtWidget_t * AP_QNXStatusBar::createWidget(void)
                    		 Pt_TOP_ANCHORED_BOTTOM | Pt_BOTTOM_ANCHORED_BOTTOM)
 	PtSetArg(&args[n++], Pt_ARG_ANCHOR_FLAGS, _SB_ANCHOR_, _SB_ANCHOR_);
 	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, Pt_GROUP_STRETCH_FILL, Pt_GROUP_STRETCH_FILL);
-	PtWidget_t *group= PtCreateWidget(PtGroup, frame->getTopLevelWindow(), n, args);
-	PtAddCallback(group, Pt_CB_RESIZE, &(_fe::resize), this);
+	m_wStatusBarGroup = PtCreateWidget(PtGroup, frame->getTopLevelWindow(), n, args);
+	PtAddCallback(m_wStatusBarGroup, Pt_CB_RESIZE, &(_fe::resize), this);
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_DIM, &area.size, 0); 
@@ -99,12 +99,23 @@ PtWidget_t * AP_QNXStatusBar::createWidget(void)
 	void *data = this;
 	PtSetArg(&args[n++], Pt_ARG_USER_DATA, &data, sizeof(this));
     PtSetArg(&args[n++], Pt_ARG_FLAGS, 0, Pt_GETS_FOCUS); 
-	m_wStatusBar = PtCreateWidget(PtRaw, group, n, args);
+	m_wStatusBar = PtCreateWidget(PtRaw, m_wStatusBarGroup, n, args);
 
 
 	UT_ASSERT(m_wStatusBar);
 	return m_wStatusBar;
 }
+
+void AP_QNXStatusBar::show(void) {
+    UT_ASSERT(m_wStatusBarGroup);
+    PtRealizeWidget(m_wStatusBarGroup);
+}
+
+void AP_QNXStatusBar::hide(void) {
+    UT_ASSERT(m_wStatusBarGroup);
+    PtUnrealizeWidget(m_wStatusBarGroup);
+}
+
 
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
@@ -166,3 +177,5 @@ int AP_QNXStatusBar::_fe::expose(PtWidget_t * w, PhTile_t *damage)
 
 	return Pt_CONTINUE;
 }
+
+

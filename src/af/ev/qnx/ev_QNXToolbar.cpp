@@ -185,10 +185,10 @@ UT_Bool EV_QNXToolbar::synthesize(void)
 		 			 Pt_TOP_ANCHORED_TOP | Pt_BOTTOM_ANCHORED_TOP)
 	PtSetArg(&args[n++], Pt_ARG_ANCHOR_FLAGS, _TB_ANCHOR_, _TB_ANCHOR_); 
 	PtSetArg(&args[n++], Pt_ARG_TG_FLAGS, Pt_TG_COLLAPSIBLE, Pt_TG_COLLAPSIBLE);
-	PtWidget_t *tbGroup = PtCreateWidget(PtToolbarGroup, wTLW, n, args);
+	m_wToolbarGroup = PtCreateWidget(PtToolbarGroup, wTLW, n, args);
 
 	n = 0;
-	m_wToolbar = PtCreateWidget(PtToolbar, tbGroup, n, args);
+	m_wToolbar = PtCreateWidget(PtToolbar, m_wToolbarGroup, n, args);
 	UT_ASSERT(m_wToolbar);
 	
 	memset(&area, 0, sizeof(area));
@@ -408,7 +408,7 @@ UT_Bool EV_QNXToolbar::synthesize(void)
 			area.pos.x += 10;
 #else
 			n = 0;
-			tb = m_wToolbar = PtCreateWidget(PtToolbar, tbGroup, n, args);
+			tb = m_wToolbar = PtCreateWidget(PtToolbar, m_wToolbarGroup, n, args);
 #endif
 
 			if (tb) {
@@ -625,4 +625,14 @@ XAP_QNXApp * EV_QNXToolbar::getApp(void)
 XAP_QNXFrame * EV_QNXToolbar::getFrame(void)
 {
 	return m_pQNXFrame;
+}
+
+void EV_QNXToolbar::show(void) {
+    UT_ASSERT(m_wToolbarGroup);
+    PtRealizeWidget(m_wToolbarGroup);
+}
+
+void EV_QNXToolbar::hide(void) {
+    UT_ASSERT(m_wToolbarGroup);
+    PtUnrealizeWidget(m_wToolbarGroup);
 }

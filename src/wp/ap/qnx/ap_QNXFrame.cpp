@@ -398,10 +398,37 @@ UT_Bool AP_QNXFrame::initialize(void)
 		return UT_FALSE;
 
 	_createTopLevelWindow();
+	_showOrHideToolbars();
+	_showOrHideStatusbar();
 	PtRealizeWidget(m_wTopLevelWindow);
 	PtDamageWidget(m_wTopLevelWindow);
 
 	return UT_TRUE;
+}
+
+// Does the initial show/hide of toolbars (based on the user prefs).
+// This is needed because toggleBar is called only when the user
+// (un)checks the show {Stantandard,Format,Extra} toolbar checkbox,
+// and thus we have to manually call this function at startup.
+void AP_QNXFrame::_showOrHideToolbars(void)
+{
+    UT_Bool *bShowBar = static_cast<AP_FrameData*> (m_pData)->m_bShowBar;
+
+    for (UT_uint32 i = 0; i < m_vecToolbarLayoutNames.getItemCount(); i++)
+    {
+        // TODO: The two next lines are here to bind the EV_Toolbar to the
+        // AP_FrameData, but their correct place are next to the toolbar creation (JCA)
+        EV_QNXToolbar * pQNXToolbar = static_cast<EV_QNXToolbar *> (m_vecToolbars.getNthItem(i));
+        static_cast<AP_FrameData*> (m_pData)->m_pToolbar[i] = pQNXToolbar;
+        toggleBar(i, bShowBar[i]);
+    }
+}
+
+// Does the initial show/hide of toolbars (based on the user prefs).
+void AP_QNXFrame::_showOrHideStatusbar(void)
+{
+    UT_Bool bShowStatusBar = static_cast<AP_FrameData*> (m_pData)->m_bShowStatusBar;
+    //  toggleStatusBar(bShowStatusBar);
 }
 
 /*****************************************************************/
@@ -791,7 +818,15 @@ UT_Error AP_QNXFrame::_replaceDocument(AD_Document * pDoc)
 }
 
 void AP_QNXFrame::toggleBar(UT_uint32 iBarNb, UT_Bool bBarOn) {
-	UT_DEBUGMSG(("TODO: Toggle toolbar %d state %d ", iBarNb, bBarOn));
+    AP_FrameData *pFrameData = static_cast<AP_FrameData *> (getFrameData());
+    UT_ASSERT(pFrameData);
+
+    if (bBarOn) {
+        pFrameData->m_pToolbar[iBarNb]->show();
+    }
+    else {
+        pFrameData->m_pToolbar[iBarNb]->hide();
+    }
 }
 
 void AP_QNXFrame::toggleRuler(UT_Bool bRulerOn) {
@@ -799,5 +834,13 @@ void AP_QNXFrame::toggleRuler(UT_Bool bRulerOn) {
 }
 
 void AP_QNXFrame::toggleStatusBar(UT_Bool bStatusBarOn) {
-	UT_DEBUGMSG(("TODO: Toggle status code "));
+    AP_FrameData *pFrameData = static_cast<AP_FrameData *> (getFrameData());
+    UT_ASSERT(pFrameData);
+
+    if (bStatusBarOn) {
+        pFrameData->m_pStatusBar->show();
+    }
+    else {
+        pFrameData->m_pStatusBar->hide();
+    }
 }

@@ -48,19 +48,22 @@ public:
 
 	XAP_QNXApp *	getApp(void);
 	XAP_QNXFrame * getFrame(void);
+
+	virtual void	show();
+	virtual void	hide();
 	
 protected:
 	void							_releaseListener(void);
 	
 	XAP_QNXApp *				m_pQNXApp;
 	XAP_QNXFrame *				m_pQNXFrame;
-	EV_QNXToolbar_ViewListener *		m_pViewListener;
+	EV_QNXToolbar_ViewListener *m_pViewListener;
 	AV_ListenerId				m_lid;	/* view listener id */
 
 	PtWidget_t *				m_wToolbar;
-	PtWidget_t * 				m_wHandleBox;
-	AP_QNXToolbar_Icons *			m_pQNXToolbarIcons;
-	UT_Vector				m_vecToolbarWidgets;
+	PtWidget_t * 				m_wToolbarGroup;
+	AP_QNXToolbar_Icons *		m_pQNXToolbarIcons;
+	UT_Vector					m_vecToolbarWidgets;
 };
 
 #endif /* EV_QNXTOOLBAR_H */
