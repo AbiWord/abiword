@@ -149,6 +149,43 @@ GR_Image* FG_GraphicRaster::generateImage(GR_Graphics* pG)
 	return pG->createNewImage(m_pszDataID, m_pbbPNG, iDisplayWidth, iDisplayHeight);
 }
 
+//
+//  We need to be able to add a representation of ourselves to an
+//  existing document.  This added representation can be used to 
+//  reconstruct an equivalent FG_GraphicRaster object after this one
+//  is discarded.
+//
+UT_Bool FG_GraphicRaster::insertIntoDocument(PD_Document* pDoc, double fDPI,
+										 UT_uint32 iPos, const char* szName)
+{
+	UT_ASSERT(pDoc);
+	UT_ASSERT(szName);
+
+	/*
+	  Create the data item
+	*/
+	pDoc->createDataItem(szName, UT_FALSE, m_pbbPNG, NULL, NULL);
+
+	/*
+	  Insert the object into the document.
+	*/
+	char szProps[256];
+	
+	sprintf(szProps, "width:%3.2fin; height:%3.2fin", 
+			m_iWidth / fDPI, m_iHeight / fDPI);
+	
+	const XML_Char*	attributes[] = {
+		"dataid", szName,
+		"PROPS", szProps,
+		NULL, NULL
+	};
+
+	pDoc->insertObject(iPos, PTO_Image, attributes, NULL);
+
+	// TODO: better error checking in this function
+	return UT_TRUE;
+}
+
 UT_Bool FG_GraphicRaster::setRaster_PNG(UT_ByteBuf* pBB)
 {
 	if (m_bOwnPNG)

@@ -4477,40 +4477,8 @@ UT_Bool FV_View::_insertGraphic(FG_Graphic* pFG, const char* szName)
 	UT_ASSERT(pFG);
 	UT_ASSERT(szName);
 
-	FGType fgt = pFG->getType();
-	UT_ASSERT(fgt == FGT_Raster);
-	FG_GraphicRaster* pFGR = (FG_GraphicRaster *)pFG;
-
-	UT_ByteBuf* pBB = pFGR->getRaster_PNG();
-
-	/*
-	  Create the data item
-	*/
-	m_pDoc->createDataItem(szName, UT_FALSE, pBB, NULL, NULL);
-
-	/*
-	  Insert the object into the document.
-	*/
-	char szProps[256];
-	
-	// TODO:  Ok, this scale is in here so that I didn't change the behavior
-	// of image insertion, so the size of the image you insert depends on the
-	// zoom factor you are at.  This is wrong.  But what is right?  --  MK
-	double fScale = 72.0 / (double) m_pG->getResolution();
-
-	sprintf(szProps, "width:%3.2fin; height:%3.2fin", 
-			pFG->getWidth() * fScale, pFG->getHeight() * fScale);
-	
-	const XML_Char*	attributes[] = {
-		"dataid", szName,
-		"PROPS", szProps,
-		NULL, NULL
-	};
-
-	m_pDoc->insertObject(getPoint(), PTO_Image, attributes, NULL);
-
-	// TODO: better error checking in this function
-	return UT_TRUE;
+	double fDPI = m_pG->getResolution() * 100 / m_pG->getZoomPercentage(); 
+	return pFG->insertIntoDocument(m_pDoc, fDPI, getPoint(), szName);
 }
 
 UT_Bool FV_View::cmdInsertGraphic(FG_Graphic* pFG, const char* pszName)

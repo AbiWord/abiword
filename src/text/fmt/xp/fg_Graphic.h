@@ -53,6 +53,10 @@ public:
 
 	//  generate an image for display in the specified graphics object
 	virtual GR_Image*	generateImage(GR_Graphics* pG) = 0;
+
+	//  Insert the object at the specified point in a document
+	virtual UT_Bool		insertIntoDocument(PD_Document* pDoc, double fDPI,
+									   UT_uint32 iPos, const char* szName) = 0;
 };
 
 #endif /* FG_GRAPHIC_H */
