@@ -18,8 +18,8 @@
  * 02111-1307, USA.
  */
 
-#define USE_OFFSCREEN 1
-//#undef USE_OFFSCREEN
+//#define USE_OFFSCREEN 1
+#undef USE_OFFSCREEN
 
 #include <stdlib.h>
 #include <string.h>
@@ -376,10 +376,10 @@ void GR_CocoaGraphics::_initMetricsLayouts(void)
  */
 UT_uint32 GR_CocoaGraphics::_measureUnRemappedCharCached(const UT_UCSChar c)
 {
-	UT_uint32 width;
+	float width;
 	width = m_pFont->getCharWidthFromCache(c);
 	width *= ((float)m_pFont->getSize() / (float)GR_CharWidthsCache::CACHE_FONT_SIZE);
-	return width;
+	return static_cast<UT_uint32>(lrintf(width));
 }
 
 /*!
@@ -571,7 +571,10 @@ void GR_CocoaGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,
 	// TODO set the line width according to m_iLineWidth
 	::CGContextMoveToPoint (m_CGContext, tdu(x1), tdu(y1));
 	::CGContextAddLineToPoint (m_CGContext, tdu(x2), tdu(y2));
+	::CGContextSaveGState(m_CGContext);
+	[m_currentColor set];	
 	::CGContextStrokePath (m_CGContext);
+	::CGContextRestoreGState(m_CGContext);
 }
 
 void GR_CocoaGraphics::setLineWidth(UT_sint32 iLineWidth)
@@ -602,7 +605,10 @@ void GR_CocoaGraphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
 		/* since we are in the image coordinate space, we should offset it with the origin */
 		::CGContextMoveToPoint (context, tduD(x1 - x), tduD(y1 - y));
 		::CGContextAddLineToPoint (context, tduD(x2 - x), tduD(y2 - y));
+		::CGContextSaveGState(m_CGContext);
+		[m_currentColor set];	
 		::CGContextStrokePath (context);
+		::CGContextRestoreGState(m_CGContext);
 	}
 	// Should make an NSImage and XOR it onto the real image.
 	LOCK_CONTEXT__;
@@ -626,7 +632,10 @@ void GR_CocoaGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 			::CGContextAddLineToPoint(m_CGContext, tdu(pts[i].x), tdu(pts[i].y));
 		}
 	}
+	::CGContextSaveGState(m_CGContext);
+	[m_currentColor set];	
 	::CGContextStrokePath(m_CGContext);
+	::CGContextRestoreGState(m_CGContext);
 }
 
 void GR_CocoaGraphics::invertRect(const UT_Rect* pRect)
@@ -651,8 +660,7 @@ void GR_CocoaGraphics::setClipRect(const UT_Rect* pRect)
 	::CGContextRestoreGState(m_CGContext);
 	::CGContextSaveGState(m_CGContext);
 	/* restore the graphics settings */
-	[m_currentColor set];
-	::CGContextSetLineWidth (m_CGContext, m_iLineWidth);
+	_resetContext();
 
 	if (pRect) {
 		UT_DEBUGMSG (("ClipRect set\n"));
@@ -672,10 +680,10 @@ void GR_CocoaGraphics::fillRect(const UT_RGBColor& clr, UT_sint32 x, UT_sint32 y
 	NSColor *c = _utRGBColorToNSColor (clr);
 
 	LOCK_CONTEXT__;
-	[NSGraphicsContext saveGraphicsState];
+	::CGContextSaveGState(m_CGContext);
 	[c set];
-	NSRectFill (NSMakeRect (tdu(x), tdu(y), tdu(w), tdu(h)));
-	[NSGraphicsContext restoreGraphicsState];
+	::CGContextFillRect(m_CGContext, ::CGRectMake (tdu(x), tdu(y), tdu(w), tdu(h)));
+	::CGContextRestoreGState(m_CGContext);
 }
 
 void GR_CocoaGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
@@ -684,17 +692,17 @@ void GR_CocoaGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint3
 	UT_DEBUGMSG(("GR_CocoaGraphics::fillRect(GR_Color3D %d, %ld, %ld, %ld, %ld)\n", c, x, y, w, h));
 
 	LOCK_CONTEXT__;
-	[NSGraphicsContext saveGraphicsState];
+	::CGContextSaveGState(m_CGContext);
 	[m_3dColors[c] set];
-	NSRectFill (NSMakeRect (tdu(x), tdu(y), tdu(w), tdu(h)));
-	[NSGraphicsContext restoreGraphicsState];
+	::CGContextFillRect (m_CGContext, ::CGRectMake (tdu(x), tdu(y), tdu(w), tdu(h)));
+	::CGContextRestoreGState(m_CGContext);
 }
 
 void GR_CocoaGraphics::fillRect(GR_Color3D c, UT_Rect &r)
 {
 	UT_DEBUGMSG(("GR_CocoaGraphics::fillRect(GR_Color3D, UT_Rect &)\n"));
 	UT_ASSERT(c < COUNT_3D_COLORS);
-	fillRect(c,r.left,r.top,r.width,r.height);
+	fillRect(c, r.left, r.top, r.width, r.height);
 }
 
 
@@ -739,7 +747,11 @@ void GR_CocoaGraphics::clearArea(UT_sint32 x, UT_sint32 y,
 	if (width > 0)
 	{
 		LOCK_CONTEXT__;
-		NSEraseRect (NSMakeRect(tdu(x), tdu(y), tdu(width), tdu(height)));
+		::CGContextSaveGState(m_CGContext);
+		[[NSColor whiteColor] set];
+		::CGContextFillRect (m_CGContext, ::CGRectMake(tdu(x), tdu(y), 
+														tdu(width), tdu(height)));
+		::CGContextRestoreGState(m_CGContext);
 	}
 }
 
@@ -936,11 +948,11 @@ void GR_CocoaGraphics::setColor3D(GR_Color3D c)
 void GR_CocoaGraphics::init3dColors()
 {
 	m_3dColors[CLR3D_Foreground] = [[NSColor blackColor] copy];
-	m_3dColors[CLR3D_Background] = [[NSColor windowBackgroundColor] copy];
-//	m_3dColors[CLR3D_Background] = [[NSColor controlColor] copy];
+//	m_3dColors[CLR3D_Background] = [[NSColor windowBackgroundColor] copy];
+	m_3dColors[CLR3D_Background] = [[NSColor controlColor] copy];
 //	m_3dColors[CLR3D_Background] = [[NSColor lightGrayColor] copy];
-	m_3dColors[CLR3D_BevelUp] = [[NSColor lightGrayColor] copy];
-	m_3dColors[CLR3D_BevelDown] = [[NSColor grayColor] copy];
+	m_3dColors[CLR3D_BevelUp] = [[NSColor whiteColor] copy];
+	m_3dColors[CLR3D_BevelDown] = [[NSColor darkGrayColor] copy];
 	m_3dColors[CLR3D_Highlight] = [[NSColor controlHighlightColor] copy];
 }
 
@@ -988,19 +1000,7 @@ bool GR_CocoaGraphics::_callUpdateCallback(NSRect * aRect)
 
 void GR_CocoaGraphics::_updateRect(NSView * v, NSRect aRect)
 {
-#if 0
-	[NSGraphicsContext saveGraphicsState];
-	static float r=1.0, g=1.0, b=0.0;
-	if (g == 0.0) { r = 1.0; g = 1.0; b = 0.0; }
-	else if (r == 0.0) { r = 1.0; g = 0.0; b = 1.0; }
-	else if (b == 0.0) { r = 0.0; g = 1.0; b = 1.0; }
-	NSColor *c = [NSColor colorWithDeviceRed:r green:g blue:b alpha:1.0];
-	[c set];
-	NSRectFill ([v bounds]);
-	[NSGraphicsContext restoreGraphicsState];
-#endif	
 # ifdef USE_OFFSCREEN
-
 		NSImage * img = _getOffscreen ();
 		// TODO: only draw what is needed.
 # endif
@@ -1087,13 +1087,18 @@ void GR_CocoaGraphics::saveRectangle(UT_Rect & rect,  UT_uint32 iIndx)
 	NSImage* cache = _makeNewCacheImage();
 	[cache setSize:cacheRect->size];
 	{
+#ifndef USE_OFFSCREEN
+		int gState;
+		gState = [m_pWin gState];
+#endif
 		StNSImageLocker locker(m_pWin, cache);
 		NSRect r = NSMakeRect (0.0, 0.0, tdu(rect.width), tdu(rect.height));
 		NSEraseRect(r);
 #ifdef USE_OFFSCREEN
 		[m_offscreen compositeToPoint:NSMakePoint(0.0, 0.0) fromRect:*cacheRect operation:NSCompositeCopy];
 #else
-		UT_DEBUGMSG(("UT_NOT_IMPLEMENTED"));
+		NSCopyBits(gState, *cacheRect, NSZeroPoint);
+//		UT_DEBUGMSG(("UT_NOT_IMPLEMENTED"));
 #endif
 	}
 	// update cache arrays
