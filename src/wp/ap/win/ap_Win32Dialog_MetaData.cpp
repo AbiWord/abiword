@@ -118,6 +118,7 @@ int CALLBACK AP_Win32Dialog_MetaData_General::s_pageWndProc(HWND hWnd, UINT msg,
 
 		if (pHdr->code==PSN_SETACTIVE)
 			XAP_Win32DialogHelper::s_centerDialog(GetParent(hWnd));			
+		
 	}   	
 	
 	return XAP_Win32PropertyPage::s_pageWndProc(hWnd, msg, wParam,lParam);
@@ -151,6 +152,11 @@ void AP_Win32Dialog_MetaData_General::_onInitDialog()
 		SetDlgItemText(getHandle(), AP_RID_DIALOG_META_GENERAL_EDIT_AUTHOR,			getContainer()->getAuthor().c_str());									
 		SetDlgItemText(getHandle(), AP_RID_DIALOG_META_GENERAL_EDIT_PUBLISHER,		getContainer()->getPublisher().c_str());									
 		SetDlgItemText(getHandle(), AP_RID_DIALOG_META_GENERAL_EDIT_CONTRIBUTOR,	getContainer()->getCoAuthor().c_str());									
+		
+		
+		HWND hParent = GetParent(getHandle());						
+		SetDlgItemText(hParent, IDOK, pSS->getValue(XAP_STRING_ID_DLG_OK));
+		SetDlgItemText(hParent, IDCANCEL, pSS->getValue(XAP_STRING_ID_DLG_Cancel));				
 				
 }
 

@@ -560,7 +560,7 @@ XAP_Win32PropertySheet()
 /*
 	Sheet window procedure
 */
-void AP_Win32Dialog_Options_Sheet::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
+int AP_Win32Dialog_Options_Sheet::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
 	WORD wID = LOWORD(wParam); 
 	
@@ -577,10 +577,11 @@ void AP_Win32Dialog_Options_Sheet::_onCommand(HWND hWnd, WPARAM wParam, LPARAM l
 	if (wID==ID_APPLY_NOW)	// Save default button
 	{
 		AP_Win32Dialog_Options_Sheet * t = (AP_Win32Dialog_Options_Sheet *) GetWindowLong(hWnd, GWL_USERDATA);					
-		t->getParent()->_event_SetDefaults();
-		MessageBox(NULL, "Apply", NULL, NULL);
-		
+		t->getParent()->_event_SetDefaults();				
+		return 1;
 	}
+	
+	return 0;
 }
 
 /*
@@ -848,7 +849,8 @@ void AP_Win32Dialog_Options_Lang::_onInitDialog()
 		const XML_Char *pLang;
 		UT_Language	lang;
 		
-		if (m_pVecUILangs->getItemCount())
+
+		if (m_pVecUILangs->getItemCount())		
 		{
 		
 			/* Fill all up languages names for UI*/

@@ -81,7 +81,7 @@ public:
 	static int CALLBACK 		s_sheetInit(HWND hwnd,  UINT uMsg,  LPARAM lParam);		
 	virtual	void				_onInitDialog(HWND hwnd){};	
 	void						setDialogProc(DLGPROC pfnDlgProc){m_pfnDlgProc=pfnDlgProc;};	
-	virtual void				_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam){};
+	virtual int					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam){return 0;};
 	void						setApplyButton(bool b){m_bApplyButton=b;};
 	
 private:	

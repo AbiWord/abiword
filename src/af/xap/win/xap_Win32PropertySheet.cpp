@@ -163,7 +163,9 @@ int CALLBACK XAP_Win32PropertySheet::s_sheetWndProc(HWND hWnd, UINT msg, WPARAM 
 	{		
 		case WM_COMMAND:
 		{			
-			gpThis->_onCommand(hWnd, wParam, lParam);
+			if (gpThis->_onCommand(hWnd, wParam, lParam))
+				return 0;
+				
 			break;
 		}				
 						

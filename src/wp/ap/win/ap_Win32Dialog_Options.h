@@ -42,7 +42,7 @@ public:
 		
 		void setParent(AP_Win32Dialog_Options*	pData){m_pParent=pData;};
 		AP_Win32Dialog_Options* getParent(){return m_pParent;};
-		void _onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+		int _onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
 		
 private:		
 	
