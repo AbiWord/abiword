@@ -54,6 +54,8 @@ Martin Willemoes Hansen <mwh@stampede.org>      Danish
 Jarmo Karvonen <jarmo@dawn.joensuu.fi>          Finnish
 Christian Terboven <cterboven@gmx.net>          German
 Javier Yáñez <javier@cibal.es>                  Spanish
+Edouard Lafargue <Edouard.Lafargue@bigfoot.com> Norwegian
+Gro Elin Hansen  <Gro.Hansen@student.uib.no>	Norwegian
 
 unsung heroes
 -------------
