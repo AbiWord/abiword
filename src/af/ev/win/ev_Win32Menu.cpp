@@ -507,8 +507,9 @@ bool EV_Win32Menu::onInitMenu(XAP_Frame * pFrame, AV_View * pView, HWND hWnd, HM
 					// is enable/disable and/or check/uncheck it.
 					pos++;
 
-					EnableMenuItem(hMenuBar,cmd,uEnable);
+					// need to check before disabling ...
 					CheckMenuItem(hMenuBar,cmd,uCheck);
+					EnableMenuItem(hMenuBar,cmd,uEnable);
 					break;
 				}
 
