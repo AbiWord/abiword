@@ -13,7 +13,6 @@
 **** ************************************************************************** -->
 
 <SystemDefaults
-    DocumentLocale="en-US"
-    RulerUnits="cm"
-    DefaultPageSize="A4"
+    DocumentLocale="he-IL"
+    DefaultDirectionRtl="1"
 />
