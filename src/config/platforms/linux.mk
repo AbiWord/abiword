@@ -94,7 +94,7 @@ endif
 
 ifeq ($(OS_ARCH), alpha)
 PLATFORM_FLAGS		+= $(ALPHA_ARCH_FLAGS)
-OS_ENDIAN		= BigEndian32
+OS_ENDIAN		= LittleEndian32
 endif
 
 ifeq ($(OS_ARCH), sparc)
