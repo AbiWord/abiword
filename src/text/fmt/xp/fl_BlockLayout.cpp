@@ -1047,8 +1047,10 @@ void fl_BlockLayout::purgeLayout(void)
 //			}
 //			return;
 //	}
+	UT_DEBUGMSG(("SEVIOR: Block %x First line of purge %x \n",this,pLine));
 	while (pLine)
 	{
+		UT_DEBUGMSG(("SEVIOR: purging line %x \n",pLine));
 		_purgeLine(pLine);
 		pLine = (fp_Line *) getFirstContainer();
 	}

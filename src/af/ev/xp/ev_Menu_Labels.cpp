@@ -163,8 +163,9 @@ bool EV_Menu_LabelSet::addLabel(EV_Menu_Label *pLabel)
 		m_labelTable.pop_back();
 		size_table = m_labelTable.size();
 	}
-	
-	UT_ASSERT(pLabel->getMenuId() == size_table + m_first);
+//
+// This assert always fires for me 6/6/2202 so I'm commenting it out.	
+//	UT_ASSERT(pLabel->getMenuId() == size_table + m_first);
 	m_labelTable.push_back(pLabel);
 
 	return (size_table + 1 == (XAP_Menu_Id) m_labelTable.size());

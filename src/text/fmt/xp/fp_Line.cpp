@@ -465,6 +465,12 @@ void fp_Line::getOffsets(fp_Run* pRun, UT_sint32& xoff, UT_sint32& yoff)
 	UT_sint32 my_yoff;
 
 	((fp_VerticalContainer *)getContainer())->getOffsets(this, my_xoff, my_yoff);
+	if(getContainer()->getContainerType() == FP_CONTAINER_CELL)
+	{
+		fp_CellContainer * pCell = (fp_CellContainer *) getContainer();
+		my_xoff += pCell->getX();
+		my_xoff += pCell->getY();
+	}
 
 	xoff = my_xoff + pRun->getX();
 	yoff = my_yoff + pRun->getY() + m_iAscent - pRun->getAscent();
@@ -483,6 +489,12 @@ void fp_Line::getScreenOffsets(fp_Run* pRun,
 	*/
 
 	((fp_VerticalContainer *)getContainer())->getScreenOffsets(this, my_xoff, my_yoff);
+	if(getContainer()->getContainerType() == FP_CONTAINER_CELL)
+	{
+		fp_CellContainer * pCell = (fp_CellContainer *) getContainer();
+		my_xoff += pCell->getX();
+		my_xoff += pCell->getY();
+	}
 
 	xoff = my_xoff + pRun->getX();
 	yoff = my_yoff + pRun->getY();
@@ -735,8 +747,8 @@ void fp_Line::clearScreen(void)
 			if(getContainer()->getContainerType() == FP_CONTAINER_CELL)
 			{
 				fp_CellContainer * pCell = (fp_CellContainer *) getContainer();
-				xoffLine = xoffLine + pCell->getX();
-				yoffLine = yoffLine + pCell->getY();
+				xoffLine += pCell->getX();
+				yoffLine += pCell->getY();
 			}
 
 			// Note: we use getHeight here instead of m_iScreenHeight
