@@ -66,7 +66,7 @@ ToolbarLabel(AP_TOOLBAR_ID_EDIT_HEADER,	 "Golygu'r Pennawd",		tb_edit_editheader
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_FOOTER,	 "Golygu'r Troedyn",		tb_edit_editfooter_xpm,			NULL, "Golygu'r Troedyn")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_REMOVEHEADER, "Tynnu'r Pennawd",		tb_edit_removeheader_xpm,			NULL, "Tynnu'r Pennawd")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_REMOVEFOOTER, "Tynnu'r Troedyn",		tb_edit_removefooter_xpm,			NULL, "Tynnu'r Troedyn")
-	T
+
 ToolbarLabel(AP_TOOLBAR_ID_SPELLCHECK,		"Gwirio'r sillafu",	tb_spellcheck_xpm,		NULL, "Gwirio sillafu'r ddogfen")
 	ToolbarLabel(AP_TOOLBAR_ID_IMG,				"Mewnosod delwedd",	tb_insert_graphic_xpm,	NULL, "Mewnosod delwedd i'r ddogfen")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_STYLE,		"Arddull",		NoIcon,					NULL, "Arddull")
