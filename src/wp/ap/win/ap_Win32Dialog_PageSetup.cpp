@@ -46,7 +46,7 @@
 #define BUFSIZE		128
 #define SIGDIGIT	4
 
-float mScale[] = { 1.0f, 10.0f, 25.4f };
+float mScale[] = { 25.4f, 10.0f, 1.0f };
 
 /*****************************************************************/
 
