@@ -131,7 +131,8 @@ void XAP_Dialog_Zoom::_updatePreviewZoomPercent(UT_uint32 percent)
 		m_zoomPreview->setZoomPercent(percent);
 		m_zoomPreview->draw();
 	}
-	m_pFrame->quickZoom(percent);
+	if (m_pFrame)
+		m_pFrame->quickZoom(percent);
 }
 
 void XAP_Dialog_Zoom::_createPreviewFromGC(GR_Graphics * gc,
