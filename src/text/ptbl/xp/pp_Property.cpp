@@ -132,8 +132,8 @@ static PP_Property _props[] =
 	{ "orphans", "1", false, NULL},
 
 	{ "page-margin-bottom",		"1in",				false, NULL},
-	{ "page-margin-footer",         "0in",                          false, NULL},
-	{ "page-margin-header",         "0in",                          false, NULL},
+	{ "page-margin-footer",         "0.5in",                          false, NULL},
+	{ "page-margin-header",         "0.5in",                          false, NULL},
 	{ "page-margin-left",		"1in",				false, NULL},
 	{ "page-margin-right",		"1in",				false, NULL},
 	{ "page-margin-top",		"1in",				false, NULL},
