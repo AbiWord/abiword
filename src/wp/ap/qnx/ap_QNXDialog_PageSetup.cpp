@@ -378,6 +378,7 @@ PtWidget_t * AP_QNXDialog_PageSetup::_constructWindow (void)
 	n=0;
 	
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_FLAGS,Pt_FALSE,Pt_EDITABLE);
 	m_optionPageSize = PtCreateWidget(PtComboBox, Pt_DEFAULT_PARENT, n, args);
 	for (int i = (int)fp_PageSize::_first_predefined_pagesize_;
 		 i < (int)fp_PageSize::_last_predefined_pagesize_dont_use_; i++)
