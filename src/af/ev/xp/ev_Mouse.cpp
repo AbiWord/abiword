@@ -51,7 +51,7 @@ UT_Bool EV_Mouse::invokeMouseMethod(AV_View * pView,
 	UT_ASSERT(pView);
 	UT_ASSERT(pEM);
 
-	//UT_DEBUGMSG(("invokeMouseMethod: %s at (%d %d)\n",pEM->getName(),xPos,yPos));
+//	UT_DEBUGMSG(("invokeMouseMethod: %s at (%d %d)\n",pEM->getName(),xPos,yPos));
 	
 	EV_EditMethodType t = pEM->getType();
 

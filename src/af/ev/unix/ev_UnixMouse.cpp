@@ -82,12 +82,12 @@ void EV_UnixMouse::mouseUp(AV_View* pView, GdkEventButton* e)
 	emc = m_contextState;
 	
 	result = m_pEEM->Mouse(emc|mop|emb|ems, &pEM);
-	
+
 	switch (result)
 	{
 	case EV_EEMR_COMPLETE:
 		UT_ASSERT(pEM);
-		invokeMouseMethod(pView,pEM,(UT_sint32)e->x,(UT_sint32)e->y);
+		invokeMouseMethod(pView, pEM, (UT_sint32) e->x, (UT_sint32) e->y);
 		return;
 	case EV_EEMR_INCOMPLETE:
 		// I'm not sure this makes any sense, but we allow it.

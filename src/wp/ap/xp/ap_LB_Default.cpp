@@ -59,6 +59,8 @@
 #define _B1		| EV_EMB_BUTTON1
 #define _B2		| EV_EMB_BUTTON2
 #define _B3		| EV_EMB_BUTTON3
+#define _B4		| EV_EMB_BUTTON4
+#define _B5		| EV_EMB_BUTTON5
 
 static struct ap_bs_Mouse s_MouseTable[] =
 {
@@ -127,6 +129,24 @@ static struct ap_bs_Mouse s_MouseTable[] =
 	//{_CZ _B3,	{ "contextImageSize",	"",			"",		"",			"",			""				}},
 	//{_CF _B3,	{ "contextField",		"",			"",		"",			"",			""				}},
 
+//  Button-4, Mouse wheel (Page Up)
+	{_CU _B4,	{ "scrollPageUp",		"",			"",		"",			"",			""				}},
+	{_CT _B4,	{ "scrollPageUp",		"",			"",		"",			"",			""				}},
+	{_CL _B4,	{ "scrollPageUp",		"",			"",		"",			"",			""				}},
+	{_CM _B4,	{ "scrollPageUp",		"",			"",		"",			"",			""				}},
+	{_CI _B4,	{ "scrollPageUp",		"",			"",		"",			"",			""				}},
+	{_CZ _B4,	{ "scrollPageUp",		"",			"",		"",			"",			""				}},
+	{_CF _B4,	{ "scrollPageUp",		"",			"",		"",			"",			""				}},
+
+//  Button-5, Mouse wheel (Page Down)
+	{_CU _B5,	{ "scrollPageDown",		"",			"",		"",			"",			""				}},
+	{_CT _B5,	{ "scrollPageDown",		"",			"",		"",			"",			""				}},
+	{_CL _B5,	{ "scrollPageDown",		"",			"",		"",			"",			""				}},
+	{_CM _B5,	{ "scrollPageDown",		"",			"",		"",			"",			""				}},
+	{_CI _B5,	{ "scrollPageDown",		"",			"",		"",			"",			""				}},
+	{_CZ _B5,	{ "scrollPageDown",		"",			"",		"",			"",			""				}},
+	{_CF _B5,	{ "scrollPageDown",		"",			"",		"",			"",			""				}},
+
 #if defined(PT_TEST) || defined(FMT_TEST) || defined(UT_TEST)
 //  { context		{ click			doubleclick		drag,		dbldrag,	release,	doublerelease	}},
 	{_CU _B3 _A,	{ FN_TEST_DUMP,	"",				"",			"",			"",			""				}},
@@ -139,6 +159,8 @@ static struct ap_bs_Mouse s_MouseTable[] =
 #undef _B1
 #undef _B2
 #undef _B3
+#undef _B4
+#undef _B5
 
 /*****************************************************************
 ******************************************************************
