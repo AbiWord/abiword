@@ -58,12 +58,21 @@ static inline GnomeFontWeight getGnomeFontWeight(XAP_UnixFont::style s)
 
 static const struct {
 	char * abi;
-	char * gnome;
+	char * gp_id;
+	char * gp_name;
 } paperMap[] = {
-	{"Letter", "USLetter"},
-	{"Legal",  "USLegal"},
-	{"Folio",  "Executive"},
-	{NULL,     NULL}
+	{"Letter",          "USLetter",      "US Letter"},
+	{"Legal",           "USLegal",       "US Legal"},
+	{"Folio",           "Executive",     "Executive"},
+	{ "1/3 A4",         "A4_3",          "1/3 A4"},
+	{ "1/4 A4",         "A4_4",          "1/4 A4"},
+	{ "1/8 A4",         "A4_8",          "1/8 A4"},
+	{ "1/4 A3",         "A3_4",          "1/4 A3"},
+	{ "1/3 A5",         "A5_3",          "1/3 A5"},
+	{ "DL Envelope",    "DL",            "DL Envelope"},
+	{ "C6/C5 Envelope", "C6_C5",         "C6/C5 Envelope"},
+	{ "Envelope No10",  "Envelope_No10", "Envelope No10"},
+	{ "Envelope 6x9",   "Envelope_6x9",  "Envelope 6x9"}
 };
 
 const guchar * XAP_UnixGnomePrintGraphics::s_map_page_size (const char * abi)
@@ -73,7 +82,7 @@ const guchar * XAP_UnixGnomePrintGraphics::s_map_page_size (const char * abi)
 	
 	for (gsize i = 0; i < NrElements(paperMap); i++)
 		if (paperMap[i].abi && !g_ascii_strcasecmp (abi, paperMap [i].abi))
-			return (const guchar *)paperMap[i].gnome;
+			return (const guchar *)paperMap[i].gp_id;
 
 	// default to whatever was passed in
 	return (const guchar *)abi;
@@ -84,12 +93,29 @@ GnomePrintConfig * XAP_UnixGnomePrintGraphics::s_setup_config (XAP_Frame * pFram
 	FV_View * pView = static_cast<FV_View*>(pFrame->getCurrentView());
 	GnomePrintConfig * cfg = gnome_print_config_default();
 	
-	// TODO: handle custom page sizes and be smarter, damnit!
+	// TODO: be smarter, damnit!
 
 	gnome_print_config_set (cfg, (guchar *)GNOME_PRINT_KEY_PAPER_SIZE,
 							(guchar *)XAP_UnixGnomePrintGraphics::s_map_page_size (pView->getPageSize().getPredefinedName ()));
 	gnome_print_config_set (cfg, (guchar *)GNOME_PRINT_KEY_PAGE_ORIENTATION ,
 							pView->getPageSize().isPortrait () ? (guchar *)"R0" : (guchar *)"R90");
+
+	if (!strcmp (pView->getPageSize().getPredefinedName (), "Custom")) {
+		const GnomePrintUnit * to  = gnome_print_unit_get_by_abbreviation ((const guchar*)"Pt");
+		const GnomePrintUnit *from = gnome_print_unit_get_by_abbreviation ((const guchar*)"mm");
+		
+		double width, height;
+		width = pView->getPageSize().Width (DIM_MM);
+		width = pView->getPageSize().Height (DIM_MM);
+
+		UT_DEBUGMSG(("DOM: custom config: %f x %f\n", width, height));
+
+		gnome_print_convert_distance (&width, from, to);
+		gnome_print_config_set_length (cfg, (const guchar*)GNOME_PRINT_KEY_PAPER_WIDTH, width, from);
+		
+		gnome_print_convert_distance (&height, from, to);
+		gnome_print_config_set_length (cfg, (const guchar*)GNOME_PRINT_KEY_PAPER_HEIGHT, height, from);
+	}
 
 	return cfg;
 }
@@ -106,7 +132,19 @@ XAP_UnixGnomePrintGraphics::XAP_UnixGnomePrintGraphics(GnomePrintJob *gpm,
 	
 	GnomePrintConfig * cfg = gnome_print_job_get_config (gpm);
 
-	m_paper          = gnome_print_paper_get_by_name(gnome_print_config_get (cfg, (guchar *)GNOME_PRINT_KEY_PAPER_SIZE));
+	double width, height;
+	const GnomePrintUnit *from;
+	const GnomePrintUnit *to = gnome_print_unit_get_by_abbreviation ((const guchar*)"Pt");
+
+	gnome_print_config_get_length (cfg, (const guchar*)GNOME_PRINT_KEY_PAPER_WIDTH, &width, &from);
+	gnome_print_convert_distance (&width, from, to);
+
+	gnome_print_config_get_length (cfg, (const guchar*)GNOME_PRINT_KEY_PAPER_HEIGHT, &height, &from);
+	gnome_print_convert_distance (&height, from, to);
+
+	UT_DEBUGMSG(("DOM: c'tor: %f x %f\n", width, height));
+
+	m_paper          = gnome_print_paper_get_closest_by_size (width, height, FALSE);
 	m_bIsPreview     = isPreview;
 	m_fm             = fontManager;
 	m_bStartPrint    = false;
@@ -700,6 +738,7 @@ UT_sint32 XAP_UnixGnomePrintGraphics::scale_ydir (UT_sint32 in)
 	UT_return_val_if_fail (m_paper, in); // horribly bad error
 
 	UT_sint32 height = (UT_sint32)m_paper->height;
+
 	if (!isPortrait ())
 		height = (UT_sint32)m_paper->width;
 
