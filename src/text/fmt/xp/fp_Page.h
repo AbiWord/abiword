@@ -36,6 +36,7 @@ class fp_FootnoteContainer;
 class fl_DocSectionLayout;
 class fl_HdrFtrSectionLayout;
 class fl_HdrFtrShadow;
+class fl_FootnoteLayout;
 class FV_View;
 class GR_Graphics;
 struct dg_DrawArgs;
@@ -94,13 +95,16 @@ public:
 	bool				insertColumnLeader(fp_Column* pLeader, fp_Column* pAfter);
 	void				removeColumnLeader(fp_Column* pLeader);
 	bool				isEmpty(void) const;
-	void                            removeHdrFtr(HdrFtrType hfType);
-	fp_ShadowContainer*             getHdrFtrP(HdrFtrType hfType);
-	fp_ShadowContainer*	getHeaderContainer(fl_HdrFtrSectionLayout*);
-	fp_ShadowContainer*	getFooterContainer(fl_HdrFtrSectionLayout*);
+
+	// Header/Footer functions.
+	void                removeHdrFtr(HdrFtrType hfType);
+	fp_ShadowContainer* getHdrFtrP(HdrFtrType hfType);
+	fp_ShadowContainer*	getHdrFtrContainer(fl_HdrFtrSectionLayout*);
 	fp_ShadowContainer*	buildHdrFtrContainer(fl_HdrFtrSectionLayout*, 
 											 HdrFtrType hfType);
-	fp_ShadowContainer*	buildFooterContainer(fl_HdrFtrSectionLayout*);
+	// Footnote functions.
+	fp_FootnoteContainer* getFootnoteContainer(fl_FootnoteLayout * pFL); 
+
 
 #ifdef FMT_TEST
 	void				__dump(FILE * fp) const;

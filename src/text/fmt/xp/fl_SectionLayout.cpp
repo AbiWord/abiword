@@ -572,15 +572,15 @@ fp_Container* fl_DocSectionLayout::getNewContainer(fp_Container * pFirstContaine
 	fp_Page* pPage = NULL;
 	fp_Column* pLastColumn = (fp_Column*) getLastContainer();
 	fp_Column* pAfterColumn = NULL;
+	UT_sint32 iNextCtrHeight = 0;
 
 	if (pLastColumn)
 	{
 		fp_Container * prevContainer = NULL;
 		fp_Page* pTmpPage = NULL;
-		UT_sint32 nextContainer = 0;
 		UT_sint32 pageHeight = 0;
 		pTmpPage = pLastColumn->getPage();
-		nextContainer = 0;
+		iNextCtrHeight = 0;
 		if(pFirstContainer != NULL)
 		{
 			prevContainer = (fp_Container *) pFirstContainer->getPrevContainerInSection();
@@ -597,22 +597,22 @@ fp_Container* fl_DocSectionLayout::getNewContainer(fp_Container * pFirstContaine
 		if(pFirstContainer != NULL)
 		{
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-			nextContainer = pFirstContainer->getHeightInLayoutUnits();
+			iNextCtrHeight = pFirstContainer->getHeightInLayoutUnits();
 #else
-			nextContainer = pFirstContainer->getHeight();
+			iNextCtrHeight = pFirstContainer->getHeight();
 #endif
 		}
 		else if( pLastColumn->getLastContainer())
 		{
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-			nextContainer = pLastColumn->getLastContainer()->getHeightInLayoutUnits();
+			iNextCtrHeight = pLastColumn->getLastContainer()->getHeightInLayoutUnits();
 #else
-			nextContainer = pLastColumn->getLastContainer()->getHeight();
+			iNextCtrHeight = pLastColumn->getLastContainer()->getHeight();
 #endif
 		}
 		else
 		{
-			nextContainer =12*14; // approximately one average line
+			iNextCtrHeight =12*14; // approximately one average line
 		}
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 		UT_sint32 avail =  pTmpPage->getAvailableHeightInLayoutUnits();
@@ -620,8 +620,8 @@ fp_Container* fl_DocSectionLayout::getNewContainer(fp_Container * pFirstContaine
 		UT_sint32 avail =  pTmpPage->getAvailableHeight();
 #endif
 
-		UT_sint32 newHeight = pageHeight+ 3*nextContainer;
-		xxx_UT_DEBUGMSG(("SEVIOR: Pageheight =%d nextlineheight =%d newheight = %d availableheight =%d linepos %d \n",pageHeight,nextContainer,newHeight,avail));
+		UT_sint32 newHeight = pageHeight+ 3*iNextCtrHeight;
+		xxx_UT_DEBUGMSG(("SEVIOR: Pageheight =%d nextlineheight =%d newheight = %d availableheight =%d linepos %d \n",pageHeight,iNextCtrHeight,newHeight,avail));
 		if( newHeight  >= avail || pFirstContainer == NULL)
 		{
 			xxx_UT_DEBUGMSG(("SEVIOR: Container on new page \n"));
@@ -666,6 +666,8 @@ fp_Container* fl_DocSectionLayout::getNewContainer(fp_Container * pFirstContaine
 			//
 			// Sevior this code should not be needed!
 			//
+			UT_DEBUGMSG(("code sez: this code should not be needed!\n"));
+			UT_ASSERT(0);
 			fp_Column * pPrevCol = (fp_Column *) pPrevSL->getLastContainer();
 			while(pPrevCol == NULL)
 			{
@@ -675,7 +677,6 @@ fp_Container* fl_DocSectionLayout::getNewContainer(fp_Container * pFirstContaine
 			}
 			fp_Page* pTmpPage = pPrevSL->getLastContainer()->getPage();
 			fp_Container * prevContainer = NULL;
-			UT_sint32 nextContainer = 0;
 			if(pFirstContainer != NULL)
 			{
 				prevContainer = (fp_Container *) pFirstContainer->getPrevContainerInSection();
@@ -689,27 +690,27 @@ fp_Container* fl_DocSectionLayout::getNewContainer(fp_Container * pFirstContaine
 			if(pFirstContainer != NULL)
 			{
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-				nextContainer = pFirstContainer->getHeightInLayoutUnits();
+				iNextCtrHeight = pFirstContainer->getHeightInLayoutUnits();
 #else
-				nextContainer = pFirstContainer->getHeight();
+				iNextCtrHeight = pFirstContainer->getHeight();
 #endif
 			}
 			else if(pPrevCol->getLastContainer())
 			{
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-				nextContainer = pPrevCol->getLastContainer()->getHeightInLayoutUnits();
+				iNextCtrHeight = pPrevCol->getLastContainer()->getHeightInLayoutUnits();
 #else
-				nextContainer = pPrevCol->getLastContainer()->getHeight();
+				iNextCtrHeight = pPrevCol->getLastContainer()->getHeight();
 #endif
 			}
 			else
 			{
-				nextContainer = 12*14; //average height!
+				iNextCtrHeight = 12*14; //average height!
 			}
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-			bool bForce = (pageHeight + 2*nextContainer) >= pTmpPage->getAvailableHeightInLayoutUnits();
+			bool bForce = (pageHeight + 2*iNextCtrHeight) >= pTmpPage->getAvailableHeightInLayoutUnits();
 #else
-			bool bForce = (pageHeight + 2*nextContainer) >= pTmpPage->getAvailableHeight();
+			bool bForce = (pageHeight + 2*iNextCtrHeight) >= pTmpPage->getAvailableHeight();
 #endif
 			if (m_bForceNewPage || bForce)
 			{
@@ -3268,18 +3269,16 @@ bool fl_DocSectionLayout::bl_doclistener_insertFootnote(fl_ContainerLayout* pFoo
 //////////////////////////////////////////////////////////////////
 
 fl_HdrFtrShadow::fl_HdrFtrShadow(FL_DocLayout* pLayout, fp_Page* pPage, fl_HdrFtrSectionLayout* pHdrFtrSL, PL_StruxDocHandle sdh, PT_AttrPropIndex indexAP)
-	: fl_SectionLayout(pLayout, sdh, indexAP, FL_SECTION_SHADOW,FL_CONTAINER_SHADOW,PTX_Section,pHdrFtrSL->getDocSectionLayout())
+	: fl_SectionLayout(pLayout, sdh, indexAP, FL_SECTION_SHADOW,FL_CONTAINER_SHADOW,PTX_Section,pHdrFtrSL->getDocSectionLayout()),
+	  m_pPage(pPage),
+	  m_pHdrFtrSL(pHdrFtrSL)
 {
-	m_pHdrFtrSL = pHdrFtrSL;
-	m_pPage = pPage;
-	if (m_pHdrFtrSL->getHFType() < FL_HDRFTR_FOOTER)
-		m_pContainer = m_pPage->buildHdrFtrContainer(m_pHdrFtrSL, 
-													 FL_HDRFTR_HEADER);
-	else
-		m_pContainer = m_pPage->buildHdrFtrContainer(m_pHdrFtrSL,
-													 FL_HDRFTR_FOOTER);
-	xxx_UT_DEBUGMSG(("SEVIOR: created shadow %x with container %x \n",this,m_pContainer));
-	m_iType = FL_SECTION_SHADOW;
+	// Force creation of the appropriate container object;
+	// throw away return value.
+	m_pPage->getHdrFtrContainer(m_pHdrFtrSL);
+	UT_DEBUGMSG(("check that m_iType is indeed FL_SECTION_SHADOW"));
+	UT_ASSERT(m_iType == FL_SECTION_SHADOW);
+	UT_ASSERT(0);
 	fl_Layout::setType(PTX_Section); // Set the type of this strux
 }
 
@@ -3290,20 +3289,8 @@ fl_HdrFtrShadow::~fl_HdrFtrShadow()
 
 fp_Container* fl_HdrFtrShadow::getFirstContainer() const
 {
-	if (m_pHdrFtrSL->getHFType() < FL_HDRFTR_FOOTER)
-	{
-		return m_pPage->getHeaderContainer(m_pHdrFtrSL);
-	}
-	else
-	{
-		return m_pPage->getFooterContainer(m_pHdrFtrSL);
-	}
-
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-
-	return NULL;
+	return m_pPage->getHdrFtrContainer(m_pHdrFtrSL);
 }
-
 
 fp_Container* fl_HdrFtrShadow::getLastContainer() const
 {
@@ -3429,7 +3416,7 @@ void fl_HdrFtrShadow::updateLayout(void)
 
 		pBL = pBL->getNext();
 	}
-	if(bredraw == true)
+	if(bredraw)
 	{
 		//    clearScreen();
 		m_pContainer->layout();

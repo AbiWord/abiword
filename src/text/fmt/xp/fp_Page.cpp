@@ -1183,6 +1183,10 @@ const fp_PageSize&	fp_Page::getPageSize(void) const
 	return m_pageSize;
 }
 
+// ---------------------------------------------------------------------
+// The rest of the functions in this file deal with page headers &
+// footers.
+
 void fp_Page::removeHdrFtr(HdrFtrType hfType)
 {
 	UT_ASSERT(hfType >= FL_HDRFTR_HEADER && hfType <= FL_HDRFTR_FOOTER_LAST);
@@ -1203,6 +1207,7 @@ void fp_Page::removeHdrFtr(HdrFtrType hfType)
 		m_pFooter = NULL;
 	}
 }
+
 fp_ShadowContainer* fp_Page::getHdrFtrP(HdrFtrType hfType)
 {
 	if(hfType < FL_HDRFTR_FOOTER)
@@ -1295,18 +1300,21 @@ fp_Page::buildHdrFtrContainer(fl_HdrFtrSectionLayout* pHFSL,
 	return *ppHF;
 }
 
-fp_ShadowContainer* fp_Page::getHeaderContainer(fl_HdrFtrSectionLayout* pHFSL)
+/** Return the first container for pHFSL. */
+fp_ShadowContainer* fp_Page::getHdrFtrContainer(fl_HdrFtrSectionLayout* pHFSL)
 {
-	if (m_pHeader)
-		return m_pHeader;
+	if (pHFSL->getHFType() < FL_HDRFTR_FOOTER)
+	{
+		if (m_pHeader)
+			return m_pHeader;
+		else
+			return buildHdrFtrContainer(pHFSL, FL_HDRFTR_HEADER);
+	}
 	else
-		return buildHdrFtrContainer(pHFSL, FL_HDRFTR_HEADER);
-}
-
-fp_ShadowContainer* fp_Page::getFooterContainer(fl_HdrFtrSectionLayout* pHFSL)
-{
-	if (m_pFooter)
-		return m_pFooter;
-	else
-		return buildHdrFtrContainer(pHFSL, FL_HDRFTR_FOOTER);
+	{
+		if (m_pFooter)
+			return m_pFooter;
+		else
+			return buildHdrFtrContainer(pHFSL, FL_HDRFTR_FOOTER);
+	}
 }
