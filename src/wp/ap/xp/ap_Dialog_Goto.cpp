@@ -111,9 +111,14 @@ FV_View * AP_Dialog_Goto::getView(void)
 	return  (FV_View *) pFrame->getCurrentView();
 }
 
+UT_uint32 AP_Dialog_Goto::getExistingBookmarksCount() const
+{
+	UT_ASSERT(m_pView);
+	return m_pView->getDocument()->getBookmarkCount();
+}
 
-
-
-
-
-
+const XML_Char * AP_Dialog_Goto::getNthExistingBookmark(UT_uint32 n) const
+{
+	UT_ASSERT(m_pView);
+	return m_pView->getDocument()->getNthBookmark(n);
+}

@@ -64,6 +64,7 @@
 #   include "ap_QNXDialog_Background.h"
 #   include "ap_QNXDialog_New.h"
 #   include "ap_QNXDialog_HdrFtr.h"
+#	include "ap_QNXDialog_InsertBookmark.h"
 
 	// ... add new dialogs here ...
 
@@ -106,7 +107,7 @@
 	DeclareDialog(AP_DIALOG_ID_FILE_NEW,        AP_QNXDialog_New)
         DeclareDialog(XAP_DIALOG_ID_FILE_IMPORT, XAP_QNXDialog_FileOpenSaveAs)
         DeclareDialog(XAP_DIALOG_ID_FILE_EXPORT, XAP_QNXDialog_FileOpenSaveAs)
-
+ 	DeclareDialog(AP_DIALOG_ID_INSERTBOOKMARK,	AP_QNXDialog_InsertBookmark)
 	// ... also add new dialogs here ...
 
 #endif

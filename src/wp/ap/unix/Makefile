@@ -50,6 +50,7 @@ CPPSRCS=		ap_$(ABI_FE)App.cpp			\
 			ap_$(ABI_FE)Dialog_ToggleCase.cpp	\
 			ap_$(ABI_FE)Dialog_WordCount.cpp	\
 			ap_$(ABI_FE)Dialog_Columns.cpp		\
+			ap_$(ABI_FE)Dialog_InsertBookmark.cpp \
 			ap_$(ABI_FE)Frame.cpp			\
 			ap_$(ABI_FE)LeftRuler.cpp		\
 			ap_$(ABI_FE)Prefs.cpp			\

@@ -68,6 +68,7 @@
 #include "ap_Dialog_Background.h"
 #include "ap_Dialog_New.h"
 #include "ap_Dialog_HdrFtr.h"
+#include "ap_Dialog_InsertBookmark.h"
 
 #include "xap_App.h"
 #include "xap_DialogFactory.h"
@@ -3319,7 +3320,6 @@ Defun(insertData)
 }
 
 /*****************************************************************/
-#include "xap_Dlg_Password.h"
 static bool s_doBookmarkDlg(FV_View * pView, bool bInsert)
 {
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
@@ -3330,24 +3330,25 @@ static bool s_doBookmarkDlg(FV_View * pView, bool bInsert)
 	XAP_DialogFactory * pDialogFactory
 		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
 
-	XAP_Dialog_Password * pDialog
-		= (XAP_Dialog_Password *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_PASSWORD));
+	AP_Dialog_InsertBookmark * pDialog
+		= (AP_Dialog_InsertBookmark *)(pDialogFactory->requestDialog(AP_DIALOG_ID_INSERTBOOKMARK));
 	UT_ASSERT(pDialog);
 	if (!pDialog)
 		return false;
+		
+	pDialog->setDoc(pView);
 
 	pDialog->runModal(pFrame);
 
-	XAP_Dialog_Password::tAnswer ans = pDialog->getAnswer();
-	bool bOK = (ans == XAP_Dialog_Password::a_OK);
+	AP_Dialog_InsertBookmark::tAnswer ans = pDialog->getAnswer();
+	bool bOK = (ans == AP_Dialog_InsertBookmark::a_OK);
 
 	if (bOK)
 	{
-		UT_String str = pDialog->getPassword();
 		if(bInsert)
-			pView->cmdInsertBookmark(str.c_str());
+			pView->cmdInsertBookmark(pDialog->getBookmark());
 		else
-			pView->cmdDeleteBookmark(str.c_str());
+			pView->cmdDeleteBookmark(pDialog->getBookmark());
 
 	}
 
@@ -4049,7 +4050,8 @@ static bool s_doGotoDlg(FV_View * pView, XAP_Dialog_Id id)
 	UT_ASSERT(pDialog);
 	if (!pDialog)
 		return false;
-
+		
+	pDialog->setView(pView);
 	pDialog->runModeless(pFrame);
 	
 	//bool bOK = true;

@@ -42,7 +42,7 @@
 
 #	include "ap_MacDlg_Replace.h"
 #	include "ap_MacDlg_Break.h"
-
+#	include "ap_MacDialog_InsertBookmark.h"
 	// ... add new dialogs here ...
 
 #else
@@ -62,7 +62,7 @@
 //	DeclareDialog(AP_DIALOG_ID_REPLACE,			AP_MacDialog_Replace)
 //	DeclareDialog(AP_DIALOG_ID_FIND,			AP_MacDialog_Replace)
 	DeclareDialog(AP_DIALOG_ID_BREAK,			AP_MacDialog_Break)
-	
+ 	DeclareDialog(AP_DIALOG_ID_INSERTBOOKMARK,	AP_MacDialog_InsertBookmark)	
 	// ... also add new dialogs here ...
 
 #endif

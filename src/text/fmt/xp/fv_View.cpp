@@ -7820,7 +7820,6 @@ UT_Error FV_View::_deleteBookmark(const char* szName, bool bSignal, PT_DocPositi
 {
 	if(!m_pDoc->isBookmarkUnique((const XML_Char *)szName))
 	{
-		m_pDoc->removeBookmark((const XML_Char *)szName);
 		fp_BookmarkRun * pB1;
 		UT_uint32 bmBlockOffset[2];
 		fl_BlockLayout * pBlock[2];

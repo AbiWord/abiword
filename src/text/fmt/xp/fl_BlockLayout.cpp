@@ -3004,13 +3004,18 @@ bool	fl_BlockLayout::_doInsertForcedLineBreakRun(PT_BlockOffset blockOffset)
 
 bool	fl_BlockLayout::_deleteBookmarkRun(PT_BlockOffset blockOffset)
 {
-	UT_DEBUGMSG(("fl_BlockLayout::_deleteBookmarkRun: assert integrity (0)\n"));	
+	UT_DEBUGMSG(("fl_BlockLayout::_deleteBookmarkRun: blockOffset %d\n",blockOffset));	
 	_assertRunListIntegrity();
 	
 	fp_BookmarkRun *pB1;
 	
 	fp_Run* pRun = m_pFirstRun;
-	while (pRun->getNext() && pRun->getBlockOffset() != blockOffset)
+	
+	/*
+		we have to deal with FmtMarks, which are special case since they
+		have width 0 and so can share block offset with our book mark
+	*/
+	while (pRun->getNext() && (pRun->getBlockOffset() != blockOffset || pRun->getType() == FPRUN_FMTMARK))
 	{
 		pRun = pRun->getNext();
 	}
@@ -3020,11 +3025,7 @@ bool	fl_BlockLayout::_deleteBookmarkRun(PT_BlockOffset blockOffset)
     	return false;
     	
 	pB1 = static_cast<fp_BookmarkRun *>(pRun);
-	
-	// only remove the name if this is the second of the two runs
-	if(!pB1->isStartOfBookmark())
-		m_pDoc->removeBookmark(pB1->getName());
-	
+
 	// Remove Run from line
 	fp_Line* pLine = pB1->getLine();
 	UT_ASSERT(pLine);
@@ -3041,7 +3042,9 @@ bool	fl_BlockLayout::_deleteBookmarkRun(PT_BlockOffset blockOffset)
 	pRun = pB1->getNext();
 	pB1->unlinkFromRunList();
 	delete pB1;
-	
+
+	m_gbCharWidths.del(blockOffset, 1);
+		
 	fp_Run * pLastRun = m_pLastLine->getLastRun();
 	while(pRun )
 	{
@@ -3051,7 +3054,7 @@ bool	fl_BlockLayout::_deleteBookmarkRun(PT_BlockOffset blockOffset)
 		pRun = pRun->getNext();
 	}
 
-	UT_DEBUGMSG(("fl_BlockLayout::_deleteBookmarkRun: assert integrity (1)\n"));
+	xxx_UT_DEBUGMSG(("fl_BlockLayout::_deleteBookmarkRun: assert integrity (1)\n"));
 	_assertRunListIntegrity();
 	
 	return true;	
@@ -3064,14 +3067,6 @@ bool	fl_BlockLayout::_doInsertBookmarkRun(PT_BlockOffset blockOffset)
 	bool bResult = _doInsertRun(pNewRun);
 	if (bResult)
 	{
-#if 0		
-		// now we add the bookmark name to Docs cache
-		po_Bookmark * pBO = getBookmark(blockOffset);
-		UT_ASSERT(pBO);
-
-		if(pBO->getBookmarkType() == po_Bookmark::POBOOKMARK_START)
-			m_pDoc->addBookmark(pBO->getName());
-#endif	
 	    _breakLineAfterRun(pNewRun);
 	}
 

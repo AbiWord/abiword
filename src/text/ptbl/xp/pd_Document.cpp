@@ -2274,7 +2274,6 @@ void PD_Document::removeBookmark(const XML_Char * pName)
 			break;
 		}
 	}
-
 }
 
 bool PD_Document::isBookmarkUnique(const XML_Char * pName) const

@@ -50,7 +50,9 @@ public:
 	static void				s_prevClicked (GtkWidget * widget, AP_UnixDialog_Goto * me);
 	static void				s_closeClicked (GtkWidget * widget, AP_UnixDialog_Goto * me);
 	static void				s_deleteClicked (GtkWidget * widget, gpointer /* data */ , AP_UnixDialog_Goto * me);
-
+	static void				s_blist_clicked(GtkWidget *clist, gint row, gint column,
+										  GdkEventButton *event, AP_UnixDialog_Goto *me);
+	
 	/* Widgets members.  Publics to make them accesible to the callbacks */
 	/* TODO: Convert them to private members, and add an inline accesor/mutator per member */
 	GtkWidget *				m_wMainWindow;
@@ -61,6 +63,10 @@ public:
 	GtkWidget *				m_wClose;
 	GtkAccelGroup *			m_accelGroup;
 	int						m_iRow;
+	GtkWidget *				m_swindow;
+	GtkWidget *				m_dlabel;
+	const XML_Char **		m_pBookmarks;
+	
 	
 protected:
 	virtual GtkWidget *		_constructWindow(void);

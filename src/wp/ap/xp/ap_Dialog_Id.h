@@ -49,7 +49,7 @@ enum _AP_Dialog_Id
 	AP_DIALOG_ID_TOGGLECASE, /* change the case of a run of text */
 	AP_DIALOG_ID_BACKGROUND, /* change the doc's bg color */
 	AP_DIALOG_ID_HDRFTR, /* change the doc's bg color */
-	
+	AP_DIALOG_ID_INSERTBOOKMARK,	
 	/* ... add others here ... */
 
 	AP_DIALOG_ID__LAST__				/* must be last */

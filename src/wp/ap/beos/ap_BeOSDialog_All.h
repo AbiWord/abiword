@@ -55,6 +55,7 @@
 #include "ap_BeOSDialog_Tab.h"
 #include "ap_BeOSDialog_Columns.h" 
 #include "ap_BeOSDialog_PageNumbers.h"
+#include "ap_BeOSDialog_InsertBookmark.h"
 
 	// ... add new dialogs here ...
 
@@ -89,6 +90,7 @@
 	DeclareDialog(AP_DIALOG_ID_PAGE_NUMBERS,		AP_BeOSDialog_PageNumbers)
         DeclareDialog(XAP_DIALOG_ID_FILE_IMPORT, XAP_BeOSDialog_FileOpenSaveAs)
         DeclareDialog(XAP_DIALOG_ID_FILE_EXPORT, XAP_BeOSDialog_FileOpenSaveAs)
+ 	DeclareDialog(AP_DIALOG_ID_INSERTBOOKMARK,	AP_BeOSDialog_InsertBookmark)
 	// ... also add new dialogs here ...
 
 #endif

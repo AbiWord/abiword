@@ -530,6 +530,9 @@ dcl(DLG_HdrFtr_RestartNumbers, "Restart numbering at:")
 
 dcl(MSG_EmptySelection, "Current Selection is Empty")
 
+dcl(DLG_InsertBookmark_Title, "Insert Bookmark")
+dcl(DLG_InsertBookmark_Msg, "Type a name for the bookmark, or select existing one from the list.")
+
 dcl(WORD_PassRequired, "Password required, this is an encrypted document")
 dcl(WORD_PassInvalid, "Incorrect Password")
 

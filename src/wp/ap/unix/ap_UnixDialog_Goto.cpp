@@ -49,10 +49,17 @@ AP_UnixDialog_Goto::AP_UnixDialog_Goto(XAP_DialogFactory * pDlgFactory,
 	: AP_Dialog_Goto(pDlgFactory,id)
 {
 	m_wMainWindow = NULL;
+	m_pBookmarks = NULL;
 }
 
 AP_UnixDialog_Goto::~AP_UnixDialog_Goto(void)
 {
+}
+
+void AP_UnixDialog_Goto::s_blist_clicked(GtkWidget *clist, gint row, gint column,
+										  GdkEventButton *event, AP_UnixDialog_Goto *me)
+{
+	gtk_entry_set_text(GTK_ENTRY(me->m_wEntry), (gchar*)me->m_pBookmarks[row]);
 }
 
 char *AP_UnixDialog_Goto::s_convert(const char * st)
@@ -134,6 +141,16 @@ void AP_UnixDialog_Goto::s_dataChanged (GtkWidget *widget, AP_UnixDialog_Goto * 
 void AP_UnixDialog_Goto::setSelectedRow (int row)
 {
 	m_iRow = row;
+	if(row == (int) AP_JUMPTARGET_BOOKMARK)
+	{
+		gtk_widget_hide(m_dlabel);
+		gtk_widget_show(m_swindow);
+	}
+	else
+	{
+		gtk_widget_hide(m_swindow);
+		gtk_widget_show(m_dlabel);
+	}
 }
 
 int AP_UnixDialog_Goto::getSelectedRow (void)
@@ -144,6 +161,7 @@ int AP_UnixDialog_Goto::getSelectedRow (void)
 void AP_UnixDialog_Goto::runModeless (XAP_Frame * pFrame)
 {
 	_constructWindow ();
+
 	UT_ASSERT (m_wMainWindow);
 
 	// Save dialog the ID number and pointer to the widget
@@ -222,6 +240,13 @@ GtkWidget * AP_UnixDialog_Goto::_constructWindow (void)
 	gtk_widget_grab_default (m_wClose);
 
 	gtk_widget_show_all (m_wMainWindow);
+	
+	//initially hide the bookmark list; also we want the bookmark list to be
+	// of same size as the descriptive text, so that when we swap them
+	// the whole window does not get resized
+	gtk_widget_hide(m_swindow);
+	gtk_widget_set_usize(m_swindow,(gint)m_dlabel->allocation.width,(gint)m_dlabel->allocation.height);
+	
 	_connectSignals ();
 
 	return (m_wMainWindow);
@@ -235,8 +260,8 @@ GtkWidget *AP_UnixDialog_Goto::_constructWindowContents (void)
 	GtkWidget *clist;
 	GtkWidget *vbox2;
 	GtkWidget *number_lb;
-	GtkWidget *description_lb;
 	GtkWidget *contents;
+	GtkWidget *blist;
 
 	guint number_lb_key;
 	guint what_lb_key;
@@ -283,12 +308,42 @@ GtkWidget *AP_UnixDialog_Goto::_constructWindowContents (void)
 	m_wEntry = gtk_entry_new ();
 	gtk_box_pack_start (GTK_BOX (vbox2), m_wEntry, FALSE, FALSE, 0);
 
-	description_lb = gtk_label_new (pSS->getValue (AP_STRING_ID_DLG_Goto_Label_Help));
-	gtk_box_pack_start (GTK_BOX (vbox2), description_lb, FALSE, FALSE, 0);
-	gtk_label_set_justify (GTK_LABEL (description_lb), GTK_JUSTIFY_FILL);
-	gtk_label_set_line_wrap (GTK_LABEL (description_lb), TRUE);
-	gtk_misc_set_alignment (GTK_MISC (description_lb), 0, 0.5);
+	m_dlabel = gtk_label_new (pSS->getValue (AP_STRING_ID_DLG_Goto_Label_Help));
+	gtk_box_pack_start (GTK_BOX (vbox2), m_dlabel, FALSE, FALSE, 0);
+	gtk_label_set_justify (GTK_LABEL (m_dlabel), GTK_JUSTIFY_FILL);
+	gtk_label_set_line_wrap (GTK_LABEL (m_dlabel), TRUE);
+	gtk_misc_set_alignment (GTK_MISC (m_dlabel), 0, 0.5);
+	
+	// the bookmark list
+	m_swindow  = gtk_scrolled_window_new(NULL, NULL);
+	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (m_swindow),GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+    gtk_widget_hide(m_swindow);
+    gtk_box_pack_start (GTK_BOX (vbox2), m_swindow, FALSE, FALSE, 0);
+	
+	blist = gtk_clist_new (1);
+	gtk_clist_set_selection_mode(GTK_CLIST(blist), GTK_SELECTION_BROWSE);
+    gtk_clist_column_titles_hide(GTK_CLIST(blist));
+    //gtk_box_pack_start (GTK_BOX (vbox2), m_blist, FALSE, FALSE, 0);
 
+    if(m_pBookmarks)
+    	delete [] m_pBookmarks;
+	m_pBookmarks = new const XML_Char *[getExistingBookmarksCount()];
+	
+    for (int i = 0; i < (int)getExistingBookmarksCount(); i++)
+    	m_pBookmarks[i] = getNthExistingBookmark(i);
+
+    int (*my_cmp)(const void *, const void *) =
+    	(int (*)(const void*, const void*)) UT_XML_strcmp;
+    	
+    qsort(m_pBookmarks, getExistingBookmarksCount(),sizeof(XML_Char*),my_cmp);
+
+    for (int i = 0; i < (int)getExistingBookmarksCount(); i++)
+    	gtk_clist_append (GTK_CLIST (blist), (gchar**) &m_pBookmarks[i]);
+
+	gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(m_swindow),blist);
+	
+
+    //add signal handlers
 	gtk_signal_connect (GTK_OBJECT (clist), "select_row",
 						GTK_SIGNAL_FUNC (s_targetChanged),
 						this);
@@ -296,6 +351,9 @@ GtkWidget *AP_UnixDialog_Goto::_constructWindowContents (void)
 						GTK_SIGNAL_FUNC (s_dataChanged), this);
 	gtk_signal_connect (GTK_OBJECT (m_wEntry), "activate",
 						GTK_SIGNAL_FUNC (s_gotoClicked), this);
+						
+	gtk_signal_connect (GTK_OBJECT (blist), "select_row",
+						GTK_SIGNAL_FUNC (s_blist_clicked), this);
 
 	gtk_widget_add_accelerator (clist, "grab_focus", m_accelGroup,
 								what_lb_key, GDK_MOD1_MASK, (GtkAccelFlags) 0);
