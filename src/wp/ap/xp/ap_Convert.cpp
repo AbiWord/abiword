@@ -31,6 +31,7 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 
+#include "gr_DrawArgs.h"
 #include "gr_Graphics.h"
 #include "fv_View.h"
 #include "fl_BlockLayout.h"
@@ -147,9 +148,9 @@ public:
 			}
 #endif
 				
-			if (m_pGraphics->startPrint())
-				m_bPrintedFirstPage = true;
-			
+			if (!m_bPrintedFirstPage)
+				if (m_pGraphics->startPrint())
+					m_bPrintedFirstPage = true;
 
 			if (m_bPrintedFirstPage) {
 
