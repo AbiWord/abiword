@@ -72,6 +72,9 @@ OBJS		= $(addprefix $(OBJDIR)/,$(CSRCS:.c=.$(OBJ_SUFFIX)))		\
 		  $(addprefix $(OBJDIR)/,$(notdir $(GENCSRCS:.c=.$(OBJ_SUFFIX))))	\
 		  $(addprefix $(OBJDIR)/,$(ASFILES:.s=.$(OBJ_SUFFIX)))
 endif
+ifndef SHORT_OBJS
+SHORT_OBJS     = $(subst $(OBJDIR)/,,$(OBJS))
+endif
 
 #
 # Win32 resource file
@@ -162,7 +165,7 @@ ifeq ($(OS_NAME),WIN32)
 	@lib @linkfile.1 @linkfile.2 @linkfile.3
 	@rm linkfile.[123456]
 else
-	@$(AR) $(OBJS) $(AR_EXTRA_ARGS)
+	@cd $(OBJDIR) && $(AR) $(SHORT_OBJS) $(AR_EXTRA_ARGS)
 endif
 	@$(RANLIB) $@
 
