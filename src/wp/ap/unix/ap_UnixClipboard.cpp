@@ -33,16 +33,18 @@
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-// cut and paste
+// RichText: cut and paste
 #define AP_CLIPBOARD_TXT_RTF 			"text/rtf"
 #define AP_CLIPBOARD_APPLICATION_RTF            "application/rtf"
 
-// cut only
+// HTML: cut only
 #define AP_CLIPBOARD_TXT_HTML                   "text/html"
 #define AP_CLIPBOARD_APPLICATION_XHTML          "application/xhtml+xml"
 
-// paste only
+// Images: cut and paste
 #define AP_CLIPBOARD_IMAGE_PNG                  "image/png"
+
+// Images: paste only
 #define AP_CLIPBOARD_IMAGE_JPEG                 "image/jpeg"
 #define AP_CLIPBOARD_IMAGE_GIF                  "image/gif"
 #define AP_CLIPBOARD_IMAGE_BMP                  "image/bmp"
@@ -54,8 +56,11 @@
 #define AP_CLIPBOARD_IMAGE_PGM                  "image/x-portable-graymap"
 #define AP_CLIPBOARD_IMAGE_PPM                  "image/x-portable-pixmap"
 #define AP_CLIPBOARD_IMAGE_RAS                  "image/x-cmu-raster"
+#define AP_CLIPBOARD_IMAGE_WMF                  "image/x-wmf"
+#define AP_CLIPBOARD_IMAGE_SVG                  "image/svg"
+#define AP_CLIPBOARD_IMAGE_SVG_XML              "image/svg+xml"
 
-// text cut+paste: should handled by GTK+2 at the XAP layer
+// Text: cut and paste
 #define AP_CLIPBOARD_TEXT_UTF8_STRING           "UTF8_STRING"
 #define AP_CLIPBOARD_TEXT                       "TEXT"
 #define AP_CLIPBOARD_TEXT_STRING                "STRING"
@@ -80,6 +85,9 @@ static const char * imgszFormatsAccepted[] = {
   AP_CLIPBOARD_IMAGE_PGM,
   AP_CLIPBOARD_IMAGE_WBMP,
   AP_CLIPBOARD_IMAGE_RAS,
+  AP_CLIPBOARD_IMAGE_WMF,
+  AP_CLIPBOARD_IMAGE_SVG,
+  AP_CLIPBOARD_IMAGE_SVG_XML,
   0 } ;
 
 static const char * txtszFormatsAccepted[] = {
@@ -113,9 +121,19 @@ AP_UnixClipboard::AP_UnixClipboard(AP_UnixApp * pApp)
   // image types
   AddFmt ( AP_CLIPBOARD_IMAGE_PNG ) ;
   AddFmt ( AP_CLIPBOARD_IMAGE_JPEG ) ;
+  AddFmt ( AP_CLIPBOARD_IMAGE_TIFF ) ;
   AddFmt ( AP_CLIPBOARD_IMAGE_GIF ) ;
   AddFmt ( AP_CLIPBOARD_IMAGE_BMP ) ;
-  AddFmt ( AP_CLIPBOARD_IMAGE_TIFF ) ;
+  AddFmt ( AP_CLIPBOARD_IMAGE_XBM ) ;
+  AddFmt ( AP_CLIPBOARD_IMAGE_XPM ) ;
+  AddFmt ( AP_CLIPBOARD_IMAGE_PNM ) ;
+  AddFmt ( AP_CLIPBOARD_IMAGE_PPM ) ;
+  AddFmt ( AP_CLIPBOARD_IMAGE_PGM ) ;
+  AddFmt ( AP_CLIPBOARD_IMAGE_WBMP ) ;
+  AddFmt ( AP_CLIPBOARD_IMAGE_RAS ) ;
+  AddFmt ( AP_CLIPBOARD_IMAGE_WMF ) ;
+  AddFmt ( AP_CLIPBOARD_IMAGE_SVG ) ;
+  AddFmt ( AP_CLIPBOARD_IMAGE_SVG_XML ) ;
 }
 
 bool AP_UnixClipboard::addTextData(T_AllowGet tTo, void* pData, UT_sint32 iNumBytes)
@@ -140,7 +158,7 @@ bool AP_UnixClipboard::addRichTextData(T_AllowGet tTo, void* pData, UT_sint32 iN
 bool AP_UnixClipboard::addHtmlData(T_AllowGet tTo, void* pData, UT_sint32 iNumBytes)
 {
   if ( addData ( tTo, AP_CLIPBOARD_TXT_HTML, pData, iNumBytes ) &&
-        addData ( tTo, AP_CLIPBOARD_APPLICATION_XHTML, pData, iNumBytes ) )
+       addData ( tTo, AP_CLIPBOARD_APPLICATION_XHTML, pData, iNumBytes ) )
     return true ;
   return false ;
 }

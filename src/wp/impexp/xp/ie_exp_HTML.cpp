@@ -20,7 +20,6 @@
  * 02111-1307, USA.
  */
 
-
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <fcntl.h>
@@ -326,6 +325,9 @@ private:
 	void	_handleField (const PX_ChangeRecord_Object * pcro, PT_AttrPropIndex api);
 	void	_handleHyperlink (PT_AttrPropIndex api);
 	void	_handleBookmark (PT_AttrPropIndex api);
+
+	void    _handleMetaTag (const char * key, const char * value);
+	void    _handleMeta ();
 
 	PD_Document *		m_pDocument;
 	IE_Exp_HTML *		m_pie;
@@ -837,8 +839,17 @@ void s_HTML_Listener::_outputBegin (PT_AttrPropIndex api)
 	 */
 	m_utf8_1 = "title";
 	tagOpen (TT_TITLE, m_utf8_1);
-	textUntrusted (m_pie->getFileName ()); // TODO: is there a better title to use?
+
+	UT_String titleProp;
+	if ( m_pDocument->getMetaDataProp (PD_META_KEY_TITLE, titleProp) && titleProp.size () )
+		textUntrusted(titleProp.c_str());
+	else
+		textUntrusted (m_pie->getFileName ());
 	tagClose (TT_TITLE, m_utf8_1);
+
+	/* write out our metadata properties
+	 */
+	_handleMeta ();
 
 	if (!m_bIsAbiWebDoc) // belongs to a different option... [TODO]
 		{
@@ -1002,6 +1013,17 @@ void s_HTML_Listener::_outputStyles (const PP_AttrProp * pAP)
 			styleNameValue ("width", m_utf8_1);
 
 			styleClose (); // end of: table { }
+
+			m_utf8_1 = "td";
+			styleOpen (m_utf8_1);
+
+			m_utf8_1 = "left";
+			styleNameValue ("text-align", m_utf8_1);
+
+			m_utf8_1 = "top";
+			styleNameValue ("vertical-align", m_utf8_1);
+
+			styleClose (); // end of td
 #endif /* HTML_TABLES_SUPPORTED */
 		}
 
@@ -2877,6 +2899,53 @@ void s_HTML_Listener::_handleBookmark (PT_AttrPropIndex api)
 		}
 }
 
+void s_HTML_Listener::_handleMetaTag(const char * key, const char * value)
+{
+	UT_String content;
+
+	if (m_bIs4)
+		content = UT_String_sprintf("<meta name=\"%s\" content=\"%s\" >\r\n", key, value);
+	else
+		content = UT_String_sprintf("<meta name=\"%s\" content=\"%s\" />\r\n", key, value);
+	
+	textTrusted (content.c_str());
+}
+
+void s_HTML_Listener::_handleMeta ()
+{
+	// export metadata - first map some data to common HTML Meta props
+	UT_String metaProp ;
+	
+	if (m_pDocument->getMetaDataProp (PD_META_KEY_TITLE, metaProp) && metaProp.size () )
+	    _handleMetaTag ("Title", metaProp.c_str());
+
+	if (m_pDocument->getMetaDataProp (PD_META_KEY_CREATOR, metaProp) && metaProp.size () )
+		_handleMetaTag ("Author", metaProp.c_str());
+	
+	if (m_pDocument->getMetaDataProp (PD_META_KEY_KEYWORDS, metaProp) && metaProp.size () )
+	    _handleMetaTag("Keywords", metaProp.c_str());
+	
+	if (m_pDocument->getMetaDataProp (PD_META_KEY_SUBJECT, metaProp) && metaProp.size () )
+		_handleMetaTag("Subject", metaProp.c_str());
+
+#if 0
+	// now generically dump all of our data to meta stuff
+	const void * val = NULL ;
+	for ( val = cursor.first(); cursor.is_valid(); val = cursor.next () )
+	    {
+			if ( val )
+				{
+					UT_String *stringval = (UT_String*) val;
+					if(stringval->size () > 0)
+						{
+							_handleMetaTag(cursor.key().c_str(), stringval->c_str()));
+						}
+				}
+		}
+#endif
+
+}
+
 bool s_HTML_Listener::populate (PL_StruxFmtHandle /*sfh*/, const PX_ChangeRecord * pcr)
 {
 	if (m_bFirstWrite && m_bClipBoard)
@@ -2969,6 +3038,7 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 
 	switch (pcrx->getStruxType ())
 		{
+		case PTX_SectionEndnote:
 		case PTX_SectionHdrFtr:
 		case PTX_Section:
 			{
@@ -3092,7 +3162,7 @@ UT_Error IE_Exp_HTML::_writeDocument ()
 	PL_Listener * pL = static_cast<PL_Listener *>(pListener);
 
 	bool okay = true;
-	if (getDocRange ())
+	if (bClipBoard)
 		{
 			okay = getDoc()->tellListenerSubset (pL, getDocRange ());
 		}
