@@ -192,7 +192,7 @@ public:
 	// I jusy can't think of one right now.
 	UT_uint32 m_iRasterPosition;
 
-
+    virtual void polygon(UT_RGBColor& c,UT_Point *pts,UT_uint32 nPoints);
 protected:
 	virtual UT_uint32 _getResolution(void) const = 0;
 	
@@ -209,6 +209,8 @@ protected:
 
 	static XAP_PrefsScheme *m_pPrefsScheme;
 	static UT_uint32 m_uTick;
+private:
+    UT_Bool _PtInPolygon(UT_Point * pts,UT_uint32 nPoints,UT_sint32 x,UT_sint32 y);
 };
 
 #endif /* GR_GRAPHICS_H */

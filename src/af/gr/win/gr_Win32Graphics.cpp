@@ -780,3 +780,30 @@ void GR_Win32Font::selectFontIntoDC(HDC hdc)
 	m_cw.setCharWidthsOfRange(hdc,d,d);
 	m_defaultCharWidth = m_cw.getWidth(d);
 }
+
+void GR_Win32Graphics::polygon(UT_RGBColor& c,UT_Point *pts,UT_uint32 nPoints)
+{
+    HPEN hPen = CreatePen(PS_SOLID,1,RGB(c.m_red,c.m_grn,c.m_blu));
+    HPEN hOldPen = (HPEN)SelectObject(m_hdc,hPen);
+
+    HBRUSH hBrush = CreateSolidBrush(RGB(c.m_red,c.m_grn,c.m_blu));
+    HBRUSH hOldBrush = (HBRUSH)SelectObject(m_hdc,hBrush);
+
+    POINT * points = (POINT *)calloc(nPoints, sizeof(POINT));
+    UT_ASSERT(points);
+
+    for (UT_uint32 i = 0;i < nPoints;i++){
+        points[i].x = pts[i].x;
+        points[i].y = pts[i].y;
+    }
+
+    Polygon(m_hdc,points,nPoints);
+
+    (void) SelectObject(m_hdc,hOldPen);
+    DeleteObject(hPen);
+
+    (void) SelectObject(m_hdc,hOldBrush);
+    DeleteObject(hBrush);
+
+    FREEP(points);
+}

@@ -343,3 +343,37 @@ GR_Image* GR_Graphics::createNewImage(const char* pszName, const UT_ByteBuf* pBB
    
    return vectorImage;
 }
+
+UT_Bool GR_Graphics::_PtInPolygon(UT_Point * pts,UT_uint32 nPoints,UT_sint32 x,UT_sint32 y)
+{
+    UT_uint32 i,j;
+    UT_Bool bResult = UT_FALSE;
+    for (i = 0,j = nPoints - 1;i < nPoints;j = i++){
+        if ((((pts[i].y <= y) && (y < pts[j].y)) || ((pts[j].y <= y) && (y < pts[i].y))) &&
+            (x < (pts[j].x - pts[i].x) * (y - pts[i].y) / (pts[j].y - pts[i].y) + pts[i].x))
+        {
+            bResult = !bResult;
+        }
+    }
+    return (bResult);
+}
+
+void GR_Graphics::polygon(UT_RGBColor& c,UT_Point *pts,UT_uint32 nPoints)
+{
+    UT_sint32 minX,maxX,minY,maxY,x,y;
+    minX = maxX = pts[0].x;
+    minY = maxY = pts[0].y;
+    for(UT_uint32 i = 0;i < nPoints - 1;i++){
+        minX = UT_MIN(minX,pts[i].x);
+        maxX = UT_MAX(maxX,pts[i].x);
+        minY = UT_MIN(minY,pts[i].y);
+        maxY = UT_MAX(maxY,pts[i].y);
+    }
+    for(x = minX;x <= maxX;x++){
+        for(y = minY;y <= maxY;y++){
+            if(_PtInPolygon(pts,nPoints,x,y)){
+                fillRect(c,x,y,1,1);
+            }
+        }
+    }
+ }
