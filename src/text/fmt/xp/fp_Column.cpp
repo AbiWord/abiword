@@ -47,7 +47,8 @@ fp_Container::fp_Container(UT_uint32 iType, fl_SectionLayout* pSectionLayout)
 			m_iMaxHeightLayoutUnits(0),
 			m_iX(0),
 			m_iY(0),
-			m_pSectionLayout(pSectionLayout)
+			m_pSectionLayout(pSectionLayout),
+			m_bIntentionallyEmpty(0)
 {
 	UT_ASSERT(pSectionLayout);
 	m_pG = m_pSectionLayout->getDocLayout()->getGraphics();
@@ -277,6 +278,8 @@ bool fp_Container::isEmpty(void) const
 
 /*!
   Clear container content from screen.
+
+  \fixme Needs to clear outline as well
 */
 void fp_Container::clearScreen(void)
 {
@@ -297,12 +300,13 @@ void fp_Container::_drawBoundaries(dg_DrawArgs* pDA)
 {
     UT_ASSERT(pDA->pG == m_pG);
     if(m_pPage->getDocLayout()->getView()->getShowPara() && m_pG->queryProperties(GR_Graphics::DGP_SCREEN)){
-        UT_RGBColor clrShowPara(127,127,127);
-        m_pG->setColor(clrShowPara);
         UT_sint32 xoffBegin = pDA->xoff - 1;
         UT_sint32 yoffBegin = pDA->yoff - 1;
         UT_sint32 xoffEnd = pDA->xoff + m_iWidth + 2;
         UT_sint32 yoffEnd = pDA->yoff + m_iMaxHeight + 2;
+
+		UT_RGBColor clrShowPara(127,127,127);
+		m_pG->setColor(clrShowPara);
 
         m_pG->drawLine(xoffBegin, yoffBegin, xoffEnd, yoffBegin);
         m_pG->drawLine(xoffBegin, yoffEnd, xoffEnd, yoffEnd);
@@ -329,13 +333,6 @@ void fp_Container::draw(dg_DrawArgs* pDA)
 	}
 
     _drawBoundaries(pDA);
-
-#if 0
-	m_pG->drawLine(pDA->xoff, pDA->yoff, pDA->xoff + m_iWidth, pDA->yoff);
-	m_pG->drawLine(pDA->xoff + m_iWidth, pDA->yoff, pDA->xoff + m_iWidth, pDA->yoff + m_iMaxHeight);
-	m_pG->drawLine(pDA->xoff + m_iWidth, pDA->yoff + m_iMaxHeight, pDA->xoff, pDA->yoff + m_iMaxHeight);
-	m_pG->drawLine(pDA->xoff, pDA->yoff + m_iMaxHeight, pDA->xoff, pDA->yoff);
-#endif	
 }
 
 /*!
@@ -509,6 +506,17 @@ fp_Line* fp_Container::getLastLine(void) const
 	}
 }
 
+/*!
+  Create column
+  \param pSectionLayout Section layout type used for this container
+
+  The section the column is created in specifies the number of column
+  rows. There is always created columns for all rows at the same
+  time. The first (left-most) column is the leader.
+
+  \fixme I suspect BIDI does not work with multiple columns since the
+         leader would then have to be the right-most column.
+*/
 fp_Column::fp_Column(fl_SectionLayout* pSectionLayout) : fp_Container(FP_CONTAINER_COLUMN, pSectionLayout)
 {
 	m_pNext = NULL;
@@ -543,6 +551,48 @@ void fp_Column::setPrev(fp_Column*p)
 	m_pPrev = p;
 }
 
+/*!
+ Draw column outline
+ \param pDA Draw arguments
+
+ This differs from the container function in that it will use draw the
+ outline based on the tallest column in the row. 
+*/
+void fp_Column::_drawBoundaries(dg_DrawArgs* pDA)
+{
+    UT_ASSERT(pDA->pG == m_pG);
+    if(m_pPage->getDocLayout()->getView()->getShowPara() && m_pG->queryProperties(GR_Graphics::DGP_SCREEN)){
+        UT_RGBColor clrShowPara(127,127,127);
+        m_pG->setColor(clrShowPara);
+        UT_sint32 xoffBegin = pDA->xoff - 1;
+        UT_sint32 yoffBegin = pDA->yoff - 1;
+        UT_sint32 xoffEnd = pDA->xoff + m_iWidth + 2;
+
+        UT_sint32 iHeight = 0;
+		fp_Column* pCol = getLeader();
+		if (getPage()->getNthColumnLeader(getPage()->countColumnLeaders()-1) == pCol)
+		{
+			// If there's no column rows after this one on the page, use max height
+			iHeight = m_iMaxHeight;
+		}
+		else
+		{
+			// Find max column height in row
+			while (pCol)
+			{
+				if (pCol->getHeight() > iHeight)
+					iHeight = pCol->getHeight();
+				pCol = pCol->getFollower();
+			}
+		}
+		UT_sint32 yoffEnd = pDA->yoff + iHeight + 2;
+
+        m_pG->drawLine(xoffBegin, yoffBegin, xoffEnd, yoffBegin);
+        m_pG->drawLine(xoffBegin, yoffEnd, xoffEnd, yoffEnd);
+        m_pG->drawLine(xoffBegin, yoffBegin, xoffBegin, yoffEnd);
+        m_pG->drawLine(xoffEnd, yoffBegin, xoffEnd, yoffEnd);
+    }
+}
 
 /*!
   Layout lines in the column
@@ -619,7 +669,7 @@ void fp_Column::layout(void)
 }
 
 /*!
-  Bump lines from this column to the specified column
+  Bump lines from this column to the next
   \param pLastLineToKeep Last line to keep in this column or NULL for none
 */
 void fp_Column::bumpLines(fp_Line* pLastLineToKeep)
@@ -960,7 +1010,3 @@ void fp_VirtualContainer::draw(dg_DrawArgs* pDA)
 {
 
 }
-
-
-
-

@@ -263,7 +263,9 @@ protected:
 
 	bool				m_bForceNewPage;
 
+	//! First column in the section
 	fp_Column*			m_pFirstColumn;
+	//! Last column in the section
 	fp_Column*			m_pLastColumn;
 	fp_Page *                       m_pFirstOwnedPage;
 	UT_RGBColor         m_clrPaper;

@@ -48,7 +48,7 @@ class fp_Container
 {
 public:
 	fp_Container(UT_uint32 iType, fl_SectionLayout* pSectionLayout);
-	~fp_Container();
+	virtual ~fp_Container();
 	/*!
 	  Return container type
 	  \return Type
@@ -133,6 +133,18 @@ public:
 	inline UT_sint32	getColumnGap(void) const
 		{ return m_pPage->getColumnGap(); }
 	
+	/*!
+	  Get container's intentionally empty flag
+	  \return Empty
+	*/
+	inline bool			getIntentionallyEmpty(void) const
+		{ return m_bIntentionallyEmpty; }
+	/*!
+	  Set container's intentionally empty flag
+	*/
+	inline void			setIntentionallyEmpty(bool b)
+		{ m_bIntentionallyEmpty = b; }
+
 	fp_Line*			getFirstLine(void) const;
 	fp_Line*			getLastLine(void) const;
 	
@@ -215,7 +227,17 @@ protected:
 	*/
 	GR_Graphics*			m_pG;
 
-    void                    _drawBoundaries(dg_DrawArgs* pDA);
+	virtual void			_drawBoundaries(dg_DrawArgs* pDA);
+
+	/*!
+	  Set if this container is intentionally left empty
+
+	  The breakSection function that does page layout sometimes
+	  decides to leave sections empty for one reason or another. This
+	  needs to be flagged, or fl_DocSectionLayout::deleteEmptyColumns
+	  will delete the container.
+	 */
+	bool					m_bIntentionallyEmpty;
 };
 
 class fp_Column : public fp_Container
@@ -253,6 +275,7 @@ protected:
 	fp_Column*				m_pLeader;
 	fp_Column*				m_pNextFollower;
 
+	void					_drawBoundaries(dg_DrawArgs* pDA);
 };
 
 class fp_HdrFtrContainer : public fp_Container
