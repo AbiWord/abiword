@@ -190,32 +190,6 @@ UT_Bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyB
 		szMenuLayoutName = szMenuLayoutDefaultValue;
 	UT_cloneString((char *&)m_szMenuLayoutName,szMenuLayoutName);
 	
-	
-	{
-		UT_GrowBuf gb;
-		UT_UCSChar *buf;
-		const XML_Char *table = 0;
-		UT_DEBUGMSG(("==============================\n"));
-		pApp->getPrefsValue((const char *)"RemapGlyphsTable", &table);
-		UT_decodeUTF8string(table, UT_XML_strlen(table), &gb);
-		buf = gb.getPointer(0);
-		for (int i=0; i<gb.getLength(); ++i)
-		{
-			UT_DEBUGMSG(("  table %2d:  0x%04X  %c\n", i, *(buf + i), *(buf + i) < 256 ? *(buf + i) : '-'));
-		}
-		//UT_DEBUGMSG(("table |%s|, sizeof XML_Char %d\n", table, sizeof(XML_Char)));
-		gb.truncate(0);
-		pApp->getPrefsValue((const char *)"RemapGlyphsDefault", &table);
-		UT_decodeUTF8string(table, UT_XML_strlen(table), &gb);
-		buf = gb.getPointer(0);
-		UT_DEBUGMSG(("default %2d:  0x%04X  %c\n", 99, *(buf), *(buf) < 256 ? *(buf) : '-'));
-		for (int tdex=0; tdex<strlen(table); ++tdex)
-		{
-			UT_DEBUGMSG(("utf8 default table[%d]:  %x\n", tdex, table[tdex]));
-		}
-		UT_DEBUGMSG(("==============================\n"));
-	}
-	
 	//////////////////////////////////////////////////////////////////
 	// select language for menu labels
 	//////////////////////////////////////////////////////////////////

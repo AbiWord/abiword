@@ -202,7 +202,7 @@ UT_uint32 GR_UnixGraphics::measureUnRemappedChar(const UT_UCSChar c)
 	GdkWChar cChar = c;
 
 	GdkFont* pFont = m_pFont->getGdkFont();
-	width = gdk_text_width_wc (pFont, &cChar, 1);
+	width = gdk_char_width_wc (pFont, cChar);
 	return width;
 }
 #if 0
@@ -232,11 +232,11 @@ UT_uint32 GR_UnixGraphics::measureString(const UT_UCSChar* s, int iOffset,
     {
 		cChar = s[i + iOffset];
 		
-		width = gdk_text_width_wc (pFont, &cChar, 1);
+		width = gdk_char_width_wc (pFont, cChar);
 		if (width == 0)
 		{
 			cChar = remapGlyph(s[i + iOffset], UT_TRUE);
-			width = gdk_text_width_wc (pFont, &cChar, 1);
+			width = gdk_char_width_wc (pFont, cChar);
 		}
 		
 		charWidth += width;

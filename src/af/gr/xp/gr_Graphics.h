@@ -27,6 +27,7 @@
 
 class UT_RGBColor;
 class XAP_App;
+class XAP_PrefsScheme;
 
 /*
 	GR_Font is a reference to a font.  As it happens, everything about fonts
@@ -57,6 +58,7 @@ public:
 	an attempt at a general purpose portability layer.  Rather, it contains only
 	functions which are needed.
 */
+
 class GR_Graphics
 {
 public:
@@ -198,6 +200,15 @@ protected:
 	UT_uint32	m_iZoomPercentage;
 	UT_Bool		m_bLayoutResolutionModeEnabled;
 	
+	static UT_Bool m_bRemapGlyphsMasterSwitch;
+	static UT_Bool m_bRemapGlyphsNoMatterWhat;
+	static UT_UCSChar m_ucRemapGlyphsDefault;
+	static UT_UCSChar *m_pRemapGlyphsTableSrc;
+	static UT_UCSChar *m_pRemapGlyphsTableDst;
+	static UT_uint32 m_iRemapGlyphsTableLen;
+
+	static XAP_PrefsScheme *m_pPrefsScheme;
+	static UT_uint32 m_uTick;
 };
 
 #endif /* GR_GRAPHICS_H */

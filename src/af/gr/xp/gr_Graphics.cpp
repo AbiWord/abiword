@@ -27,7 +27,19 @@
 #include "ut_assert.h"
 #include "ut_string.h"
 #include "ut_units.h"
+#include "ut_growbuf.h"
 #include "ut_debugmsg.h"
+
+// static class member initializations
+UT_Bool GR_Graphics::m_bRemapGlyphsMasterSwitch = UT_TRUE;
+UT_Bool GR_Graphics::m_bRemapGlyphsNoMatterWhat = UT_FALSE;
+UT_UCSChar GR_Graphics::m_ucRemapGlyphsDefault = 0xB0;
+UT_UCSChar *GR_Graphics::m_pRemapGlyphsTableSrc = 0;
+UT_UCSChar *GR_Graphics::m_pRemapGlyphsTableDst = 0;
+UT_uint32 GR_Graphics::m_iRemapGlyphsTableLen = 0;
+
+XAP_PrefsScheme *GR_Graphics::m_pPrefsScheme = 0;
+UT_uint32 GR_Graphics::m_uTick = 0;
 
 GR_Font::GR_Font() 
 {
@@ -105,35 +117,127 @@ UT_uint32 GR_Graphics::measureString(const UT_UCSChar* s, int iOffset,
 
 UT_UCSChar GR_Graphics::remapGlyph(const UT_UCSChar actual, UT_Bool noMatterWhat)
 {
-	// This routine is for remapping zero-width characters, which
-	// represent undefined glyphs in the font, into something useful
-	// and visible.  This is most useful for the smart quote
-	// characters, which are specially treated.  Other zero-width
-	// characters are mapped to a generic filler character.
+
+	// Here is how the remapGlyph works.
+
+	// * If preference value RemapGlyphsMasterSwitch is not true, no
+	// remapping is done.
+
+	// * RemapGlyphsTable is a list of pairs of characters, with the
+	// first of each pair being the actual character and the second of
+	// each pair being the replacement.  Normally, a character will
+	// not be remapped unless it is zero-width.  If it is listed as an
+	// actual character in RemapGlyphsTable, then the affiliated
+	// replacement character is returned.  If it is not listed in
+	// RemapGlyphsTable, then the value of RemapGlyphsDefault is used,
+	// though if the default value is null, it is not used (it is
+	// tricky to specify null due to XML parsing).
+
+	// * Remapping is not recursive/iterative/whatever.  So, if you
+	// remap from a zero-width character to another zero-width
+	// character, that's what you get.
+
+	// * If this function is called with noMatterWhat true, or if the
+	// preference value RemapGlyphsNoMatterWhat is true, the above algorithm
+	// is changed a bit.  Characters listed as actual characters in the table
+	// are given replacement values even if they are not zero-width, however
+	// the default replacement character is used only if the actual character
+	// really has zero-width.  (The intent of the function parameter is that
+	// the calling function may have already determined that the character is
+	// zero-width, and it may be arbitrarily expensive to check, so a
+	// redundant check can be avoided.)  (The intent of the user preference
+	// value is to just give a way to force the algorithm's hand "just in
+	// case".)
+
+	// * Because we are constantly checking those user preference values
+	// (sometimes it might be 2-3 times per character rendered), we cache
+	// their values as static members of the GR_Graphics class.  The table of
+	// actual and replacement characters is split into two arrays of "src"
+	// and "dst" characters, respectively.  If the table had an odd number of
+	// characters, the extra dangling character is ignored.
+
+	// * Linear searching is done looking for the actual character, so the
+	// implementation is assuming that the RemapGlyphsTable is not too big.
+	// Also, because null-terminated UTF8 and Unicode strings are all over
+	// the place, you can remap a null character nor remap to a null
+	// character.  In office productivity apps, this probably won't be a
+	// problem.
+
+	UT_UCSChar remap = actual;
 	if (!m_pApp)
 	{
-		UT_DEBUGMSG(("m_pApp in GR_Graphics object is null, glyphs not remapped\n"));
+		UT_DEBUGMSG(("GR_Graphics::remapGlyph() has no XAP_App*, glyphs not remapped\n"));
 		return actual;
 	}
-	UT_UCSChar remap = actual;
-	unsigned short w = 1;
-	
-	w = measureUnRemappedChar(actual);
-	if (noMatterWhat  ||  w == 0)
+	XAP_Prefs *p = m_pApp->getPrefs();
+	UT_ASSERT(m_pApp->getPrefs());
+	XAP_PrefsScheme *s = p->getCurrentScheme(UT_FALSE);
+	UT_ASSERT(p->getCurrentScheme(UT_FALSE));
+	UT_uint32 t = s->getTickCount();
+	if (m_pPrefsScheme != s  ||  m_uTick != t)
 	{
-		switch (actual)
+		// refresh cached preference values
+		UT_DEBUGMSG(("GR_Graphics::remapGlyph() refreshing cached values\n"));
+		m_pPrefsScheme = s;
+		m_uTick = t;
+		p->getPrefsValueBool((const char *)"RemapGlyphsMasterSwitch", &m_bRemapGlyphsMasterSwitch);
+		p->getPrefsValueBool((const char *)"RemapGlyphsNoMatterWhat", &m_bRemapGlyphsNoMatterWhat);
+
+		const XML_Char *table_utf8, *default_utf8;
+		UT_GrowBuf gb;
+		const UT_UCSChar *tbl;
+
+		p->getPrefsValue((const char *)"RemapGlyphsDefault", &default_utf8);
+		UT_ASSERT(p->getPrefsValue((const char *)"RemapGlyphsDefault", &default_utf8));
+		UT_decodeUTF8string(default_utf8, UT_XML_strlen(default_utf8), &gb);
+		m_ucRemapGlyphsDefault = *(gb.getPointer(0));  // might be null
+
+		p->getPrefsValue((const char *)"RemapGlyphsTable", &table_utf8);
+		UT_ASSERT(p->getPrefsValue((const char *)"RemapGlyphsTable", &table_utf8));
+		gb.truncate(0);
+		UT_decodeUTF8string(table_utf8, UT_XML_strlen(table_utf8), &gb);
+
+		UT_uint32 doublelength;
+		doublelength = gb.getLength();
+		m_iRemapGlyphsTableLen = doublelength / 2;
+		delete m_pRemapGlyphsTableSrc;
+		delete m_pRemapGlyphsTableDst;
+		m_pRemapGlyphsTableSrc = 0;
+		m_pRemapGlyphsTableDst = 0;
+		if (m_iRemapGlyphsTableLen)
 		{
-		case UCS_LQUOTE:     remap = '`';  break;
-		case UCS_RQUOTE:     remap = '\''; break;
-		case UCS_RDBLQUOTE:  remap = '"'; break;
-		case UCS_LDBLQUOTE:  remap = '"'; break;
-		default:             remap = (w ? actual : 0xB0); break;
+			m_pRemapGlyphsTableSrc = new UT_UCSChar[m_iRemapGlyphsTableLen];
+			m_pRemapGlyphsTableDst = new UT_UCSChar[m_iRemapGlyphsTableLen];
+			tbl = gb.getPointer(0);
+			for (UT_uint32 tdex=0; tdex<m_iRemapGlyphsTableLen; ++tdex)
+			{
+				m_pRemapGlyphsTableSrc[tdex] = tbl[2 * tdex];
+				m_pRemapGlyphsTableDst[tdex] = tbl[2 * tdex + 1];
+				UT_DEBUGMSG(("RemapGlyphsTable[%d]  0x%04x -> 0x%04x\n", tdex, m_pRemapGlyphsTableSrc[tdex], m_pRemapGlyphsTableDst[tdex]));
+			}
 		}
 	}
-	XAP_Prefs *p = m_pApp->getPrefs();
-	XAP_PrefsScheme *s = p->getCurrentScheme(UT_FALSE);
-	UT_uint32 t = s->getTickCount();
-	if (remap != actual) UT_DEBUGMSG(("remapGlyph  0x%04X -> 0x%04X   %d %d  tick: %d [%d]\n", actual, remap, noMatterWhat, w, t, s));
+	if (!m_bRemapGlyphsMasterSwitch) return (actual);
+	UT_uint32 width = 0xFFFF;
+	if (noMatterWhat  ||  m_bRemapGlyphsNoMatterWhat  ||  !(width = measureUnRemappedChar(actual)))
+	{
+		UT_Bool try_default = UT_TRUE;
+		for (UT_uint32 tdex=0; tdex<m_iRemapGlyphsTableLen; ++tdex)
+		{
+			if (actual == m_pRemapGlyphsTableSrc[tdex])
+			{
+				remap = m_pRemapGlyphsTableDst[tdex];
+				try_default = UT_FALSE;
+				break;
+			}
+		}
+		if (try_default  &&  m_ucRemapGlyphsDefault)
+		{
+			if (width == 0xFFFF) width = measureUnRemappedChar(actual);
+			if (!width) remap = m_ucRemapGlyphsDefault;
+		}
+	}
+	if (remap != actual) UT_DEBUGMSG(("GR_Graphics::remapGlyph( 0x%04X ) -> 0x%04X    tick: %d [%d]\n", actual, remap, t, s));
 	return remap;
 }
 
