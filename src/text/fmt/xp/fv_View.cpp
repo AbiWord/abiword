@@ -1685,7 +1685,10 @@ void FV_View::findReset(void)
 /*
   This needs to be far more readable, starting with tossing the
   goto call and reworking the loop to flow better.
+
+  It's a mess, but so is Find UI logic.  
 */
+
 UT_Bool FV_View::findNext(const UT_UCSChar * string, UT_Bool bSelect)
 {
 	UT_ASSERT(string);
@@ -1727,9 +1730,10 @@ UT_Bool FV_View::findNext(const UT_UCSChar * string, UT_Bool bSelect)
 			// this buffer, then move to next
 			if (m_iFindBufferOffset < buffer.getLength())
 			{
-				// this could slow us down on big blocks, but since the buffer's
+				// This could slow us down on big blocks, but since the buffer's
 				// insides are not null terminated, we have to make a copy of the
-				// buffer segment we're searching.
+				// buffer segment we're searching.  If we're looking to optimize
+				// this search, start here with the duplicate buffer.
 				UT_UCSChar * bufferSegment = NULL;
 				
 				bufferSegment = (UT_UCSChar *) calloc(buffer.getLength() - m_iFindBufferOffset,
@@ -1775,13 +1779,13 @@ UT_Bool FV_View::findNext(const UT_UCSChar * string, UT_Bool bSelect)
 				// this could get ugly, and should be optimized out
 				draw();
 
-				// increment the buffer offset by 1 for next round, so we
-				// start at current find + 1... this could be changed
-				// so it increments by strlen(searchstring) so that we
-				// start after the whole substring.
-				// Note that the code that uses this value will have to
-				// be smart with it, so that a search isn't started
-				// at end of buffer, etc.
+				// Here's where Word does performs some tricks with
+				// the cursor.  If we're doing a "Find", then we
+				// increment the counter by 1 position.  But if we're
+				// doing a Replace, then we increment by the length
+				// of the text we just inserted.  Since we don't
+				// know that length here, the caller must do it.  This
+				// is kinda ugly.
 				m_iFindBufferOffset++;
 
 				// wipe the old buffer, since we're done with it
@@ -1803,12 +1807,8 @@ UT_Bool FV_View::findNext(const UT_UCSChar * string, UT_Bool bSelect)
 
 				if (!block)
 				{
-					// TODO - FIX THIS SOON!
-					// The cursor is hosed.  Since things got modified, we need
-					// to restart the search on this block (or something).
-					UT_DEBUGMSG(("This happened because the search algorithm forgot "
-								 "about blocks that change under them!  It will be "
-								 "fixed soon!"));
+					UT_DEBUGMSG(("The Find mechanism lost a block in its DocLayout.  This means something "
+								 "really weird happened."));
 					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 				}
 
@@ -1849,13 +1849,22 @@ UT_Bool	FV_View::findReplace(const UT_UCSChar * find, const UT_UCSChar * replace
 	// selection and move on to next find (batch run, the common case)
 	if (m_bDoneFind == UT_TRUE && isSelectionEmpty() == UT_FALSE)
 	{
+		// If we're doing a replace, we extend or retract the end position
+		// of the search region by the difference of the replacement.
+		m_iFindPosEnd += labs(UT_UCS_strlen(find) - UT_UCS_strlen(replace));
+			
 		_deleteSelection();
 
 		// we return the result of the replacement (the insert), not the
 		// subsequent move
 		UT_Bool result = cmdCharInsert((UT_UCSChar *) replace, UT_UCS_strlen(replace));
 
-		// we find the next occurance
+		// we must move the find cursor past the insertion
+		// we just did, so that we don't get caught in a loop while doing
+		// a replace, but account for the 1 that the find advanced.
+		m_iFindBufferOffset += (UT_UCS_strlen(replace) - 1);
+
+		// we find the next occurance after our insertion.
 		findNext(find, UT_TRUE);
 		
 		return result;

@@ -129,7 +129,7 @@ $(HELPER_PROGRAM): $(OBJS)
 ifeq ($(OS_NAME),WIN32)
 	@$(CC) -nologo $(OBJS) -Fe$@ -link $(LDFLAGS) $(OS_LIBS) $(EXTRA_LIBS)
 else
-	@$(CCC) -o $@ $(CFLAGS) $(OBJS) $(LDFLAGS)
+	@$(CCC) -o $@ $(CFLAGS) $(OBJS) $(LDFLAGS) 
 endif
 endif
 
