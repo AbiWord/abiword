@@ -92,4 +92,11 @@ STATIC_FLAGS		=
 ABI_NATIVE	= unix
 ABI_FE		= Unix
 
+##################################################################
+## ABIPKGDIR defines the directory containing the Makefile to use to
+## build a set of distribution archives (.deb, .rpm, .tgz, .exe, etc)
+## This is relative to $(ABI_DEPTH)/pkg
+
+ABIPKGDIR	= sunos
+
 # End of sunos defs
