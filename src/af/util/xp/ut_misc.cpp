@@ -674,6 +674,15 @@ static ucs_range s_word_delim[] =
 
 static bool s_find_delim(UT_UCSChar c)
 {
+    // This function is called for every character in the document
+    // during spell-checking. So make an effort to return in a hurry,
+    // by checking for the common cases (a-z and the biggest area)
+    // first. (not A-Z since there are more word seperators than
+    // capitals in a sentence!)
+    if ('a' <= c && c <= 'z') return false;
+    if (0x00f8 <= c && c <= 0xfefe) return false;
+
+    // Everything else via the table above...
     for(UT_uint32 i = 0; i < NrElements(s_word_delim); i++)
 	{
 		if(c < s_word_delim[i].low)
