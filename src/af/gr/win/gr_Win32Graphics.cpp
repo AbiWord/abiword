@@ -161,6 +161,7 @@ void GR_Win32Graphics::_constructorCommonCode(HDC hdc)
 
 	m_saveRect = NULL;
 	m_saveRectBuf = NULL;
+	setBrush((HBRUSH) GetStockObject(WHITE_BRUSH));	// Default brush
 }
 
 GR_Win32Graphics::GR_Win32Graphics(HDC hdc, HWND hwnd, XAP_App * app)
@@ -894,14 +895,14 @@ void GR_Win32Graphics::clearArea(UT_sint32 x, UT_sint32 y, UT_sint32 width, UT_s
 	_UUD(width);
 	_UUD(height);
 	
-	HBRUSH hBrush = (HBRUSH) GetStockObject(WHITE_BRUSH);
+	
 	RECT r;
 	r.left = x;
 	r.top = y;
 	r.right = r.left + width;
 	r.bottom = r.top + height;
 
-	FillRect(m_hdc, &r, hBrush);
+	FillRect(m_hdc, &r, m_hClearBrush);
 }
 
 void GR_Win32Graphics::invertRect(const UT_Rect* pRect)

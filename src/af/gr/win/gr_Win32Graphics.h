@@ -164,6 +164,8 @@ public:
 	virtual UT_sint32       getScreenResolution(void){return s_iScreenResolution;};
 	virtual void		  saveRectangle(UT_Rect & r);
 	virtual void		  restoreRectangle();
+	
+	void setBrush(HBRUSH hBrush){ m_hClearBrush = hBrush;};
 
 protected:
 	virtual UT_uint32 		_getResolution(void) const;
@@ -215,6 +217,7 @@ private:
 	UT_RGBColor				m_curColor;
 	UT_Rect *				m_saveRect;
 	COLORREF *				m_saveRectBuf;
+	HBRUSH					m_hClearBrush;
 };
 
 #endif /* GR_WIN32GRAPHICS_H */

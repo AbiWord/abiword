@@ -52,6 +52,7 @@ XAP_Win32Dialog_Insert_Symbol::XAP_Win32Dialog_Insert_Symbol(XAP_DialogFactory *
 {
 	m_pSymbolPreviewWidget = NULL;
 	m_pSamplePreviewWidget = NULL;
+	
 }
 
 XAP_Win32Dialog_Insert_Symbol::~XAP_Win32Dialog_Insert_Symbol(void)
@@ -59,6 +60,8 @@ XAP_Win32Dialog_Insert_Symbol::~XAP_Win32Dialog_Insert_Symbol(void)
 	DELETEP(m_pSymbolPreviewWidget);
 	DELETEP(m_pSamplePreviewWidget);
 	DELETEP(m_DrawSymbolSample);
+	
+	
 }
 
 
@@ -199,6 +202,13 @@ BOOL XAP_Win32Dialog_Insert_Symbol::_onInitDialog(HWND hWnd, WPARAM wParam, LPAR
 	_createSymbolareaFromGC(m_pSamplePreviewWidget->getGraphics(), w, h);
 
 	m_DrawSymbolSample = new XAP_Draw_Symbol_sample(m_DrawSymbol, m_pSamplePreviewWidget->getGraphics()); 
+		
+	// TODO: Colour
+	GR_Win32Graphics* gr = (GR_Win32Graphics*) m_DrawSymbolSample->m_pSymbolDraw->getGraphics();
+	
+	
+	gr->setBrush((HBRUSH)GetSysColorBrush(COLOR_3DFACE));
+	
 	m_pSamplePreviewWidget->setPreview(m_DrawSymbolSample);
 
 

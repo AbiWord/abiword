@@ -50,7 +50,7 @@ public:
 		m_pSymbolDraw->drawarea(m_CurrentSymbol, m_PreviousSymbol);
 		}
 
-protected:
+//protected:
 
 	XAP_Draw_Symbol *m_pSymbolDraw;
 };
