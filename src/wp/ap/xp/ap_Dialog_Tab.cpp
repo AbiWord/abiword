@@ -400,7 +400,7 @@ void AP_Dialog_Tab::clearList()
 }
 
 
-void AP_Dialog_Tab::buildTab( UT_String buffer )
+void AP_Dialog_Tab::buildTab( UT_String &buffer )
 {
 	// get current value from member
 	const XML_Char* szOld = _gatherTabEdit();
