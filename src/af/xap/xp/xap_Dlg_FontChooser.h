@@ -41,7 +41,7 @@ class GR_Graphics;
 class XAP_Preview_FontPreview  : public XAP_Preview
 {
 public:
-	XAP_Preview_FontPreview(GR_Graphics * gc, const XML_Char * pszClrBackgound);
+	explicit XAP_Preview_FontPreview(GR_Graphics * gc, const XML_Char * pszClrBackgound);
 	virtual ~XAP_Preview_FontPreview(void);
 	void setVecProperties( const UT_Vector * vFontProps);
     const XML_Char * getVal(const XML_Char * szProp);
@@ -59,6 +59,11 @@ protected:
 #endif
 	
 private:
+
+	XAP_Preview_FontPreview();
+	XAP_Preview_FontPreview(const XAP_Preview_FontPreview &other);
+	XAP_Preview_FontPreview& operator=(const XAP_Preview_FontPreview & other);
+
 	GR_Font * m_pFont;
 	
 	UT_sint32 m_iAscent;

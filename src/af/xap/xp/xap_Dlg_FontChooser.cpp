@@ -578,7 +578,7 @@ void XAP_Preview_FontPreview::draw(void)
 	const char * pszFGColor = getVal("color");
 	if(pszFGColor)
 		UT_parseColor(getVal("color"),FGcolor);
-	UT_RGBColor BGcolor(m_clrBackground.m_red,m_clrBackground.m_grn,m_clrBackground.m_blu);
+	UT_RGBColor BGcolor(m_clrBackground);
 	const char * pszBGColor = getVal("bgcolor");
 	if(pszBGColor && strcmp(pszBGColor,"transparent") != 0)
 		UT_parseColor(getVal("bgcolor"),BGcolor);
@@ -593,9 +593,8 @@ void XAP_Preview_FontPreview::draw(void)
 	const char* pszStretch	= getVal("font-stretch");
 	const char* pszSize		= getVal("font-size");
 	if(!pszFamily)
-	{
 		pszFamily = "Times New Roman";
-	}
+
 	if(!pszStyle)
 		pszStyle = "normal";
 

@@ -5472,7 +5472,7 @@ static bool s_doFontDlg(FV_View * pView)
 //
 // Set the background color for the preview
 //
-		static XML_Char  background[8];
+		XML_Char  background[8];
 		UT_RGBColor * bgCol = pView->getCurrentPage()->getOwningSection()->getPaperColor();
 		sprintf(background, "%02x%02x%02x",bgCol->m_red,
 				bgCol->m_grn,bgCol->m_blu);
