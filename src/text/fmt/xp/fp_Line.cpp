@@ -589,9 +589,9 @@ void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos,
 		pFirstRun = m_vecRuns.getNthItem(_getRunLogIndx(i++)); //#TF retrieve first visual run
 		UT_ASSERT(pFirstRun);
 
-	}while(pFirstRun->isHidden() && (i < count));
+	}while((i < count) && pFirstRun->isHidden());
 
-	if(pFirstRun->isHidden() && (i < count))
+	if((i < count) && pFirstRun->isHidden())
 	{
 		//all runs on this line are hidden, at the moment just assert
 		UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
@@ -600,7 +600,7 @@ void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos,
 
 
 	bBOL = false;
-	if (x <= pFirstRun->getX())
+	if ( pFirstRun && (x <= pFirstRun->getX()))
 	{
 		xxx_UT_DEBUGMSG(("fp_Line::mapXYToPosition [0x%x]: x=%d, first run x=%d\n", this, x, pFirstRun->getX()));
 		bBOL = true;
