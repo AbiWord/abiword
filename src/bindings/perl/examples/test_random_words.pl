@@ -32,6 +32,7 @@ for ($i = 0; $i < 3001; ++$i) {
 }
 
 close TEXT;
+1;
 
 sub pickoneof
 {

@@ -10,3 +10,4 @@ $view->write("2\n");
 $view->moveCursorRel("line", 1);
 $view->write("4\n");
 
+1;

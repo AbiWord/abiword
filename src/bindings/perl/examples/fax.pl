@@ -37,6 +37,8 @@ $w->vbox->add($table);
 $w->signal_connect('clicked', \&clicked_cb, $fax_number, $company_name, $logo);
 $w->show_all;
 
+1;
+
 sub clicked_cb {
     my ($dialog, $fax_number, $company_name, $logo) = @_;
     my $button_nb = 1;
