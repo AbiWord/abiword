@@ -358,9 +358,11 @@ GdkFont * XAP_UnixFont::getGdkFont(UT_uint32 pixelsize)
 
 	GdkFont * gdkfont = NULL;
 	
-	// GDK/X wants to load fonts with point sizes 2 and up
+	// If the font is really, really small (an EXTREMELY low Zoom can trigger this) some
+	// fonts will be calculated to 0 height.  Bump it up to 2 since the user obviously
+	// doesn't care about readability anyway.  :)
 	if (pixelsize < 2)
-		return NULL;
+		pixelsize = 2;
 
 	// create a real object around that string
 	XAP_UnixFontXLFD myXLFD(m_xlfd);
