@@ -96,7 +96,7 @@ BEGIN
                     UDS_ARROWKEYS | UDS_NOTHOUSANDS,134,101,11,14
     CONTROL         "Endnote Style",
                     AP_RID_DIALOG_FORMATFOOTNOTES_STATIC_ESTYLES1,
-                    "AbiLabelledSeparator",0x0,9,126,234,8
+                    "AbiLabelledSeparator",0x0,9,126,260,8
     LTEXT           "Endnote Sytle",
                     AP_RID_DIALOG_FORMATFOOTNOTES_STATIC_ESTYLES2,16,146,80,
                     8
