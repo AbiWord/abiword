@@ -2137,9 +2137,9 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */,
 	{
 		UT_DEBUGMSG(("hit left margin block\n"));
 		m_bValidMouseClick = true;
-		m_draggingWhat = DW_LEFTMARGIN;
 		m_bBeforeFirstMotion = true;
 		m_pG->setCursor(GR_Graphics::GR_CURSOR_GRAB);
+		m_draggingWhat = DW_LEFTMARGIN;
 		return;
 	}
 	if (rRightMargin.containsPoint(x,y))
@@ -2382,50 +2382,155 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 			xAbsLeft = xFixed + m_infoCache.m_xPageViewMargin - m_xScrollOffset;
 
 			dxrel = tick.scalePixelDistanceToUnits(m_draggingCenter - xAbsLeft);
+			if(m_infoCache.m_mode != AP_TopRulerInfo::TRI_MODE_FRAME)
+			{
+				const XML_Char * properties[3];
+				properties[0] = "page-margin-left";
+				properties[1] = pView->getGraphics()->invertDimension(tick.dimType,dxrel);
+				properties[2] = 0;
+				UT_DEBUGMSG(("TopRuler: page-margin-left [%s]\n",properties[1]));
 
-			const XML_Char * properties[3];
-			properties[0] = "page-margin-left";
-			properties[1] = pView->getGraphics()->invertDimension(tick.dimType,dxrel);
-			properties[2] = 0;
-			UT_DEBUGMSG(("TopRuler: page-margin-left [%s]\n",properties[1]));
-
-			_xorGuide(true);
-			m_draggingWhat = DW_NOTHING;
-            pView->setSectionFormat(properties);
+				_xorGuide(true);
+				m_draggingWhat = DW_NOTHING;
+				pView->setSectionFormat(properties);
+			}
+			else
+			{
+				if(m_pView == NULL)
+				{
+					return;
+				}
+				FV_View * pView = static_cast<FV_View *>(m_pView);
+				fl_FrameLayout * pFrame = pView->getFrameLayout();
+				if(pFrame)
+				{
+					const PP_AttrProp* pSectionAP = NULL;
+					pFrame->getAttrProp(&pSectionAP);
+					const char * pszXpos = NULL;
+					const char * pszWidth = NULL;
+					UT_sint32 iX;
+					UT_sint32 iWidth;
+					if(!pSectionAP || !pSectionAP->getProperty("xpos",pszXpos))
+					{
+						UT_DEBUGMSG(("No xpos defined for Frame !\n"));
+						UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+						return;
+					}
+					else
+					{
+						iX = UT_convertToLogicalUnits(pszXpos);
+					}
+					if(!pSectionAP || !pSectionAP->getProperty("width",pszWidth))
+					{
+						UT_DEBUGMSG(("No Width defined for Frame !\n"));
+						UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+						return;
+					}
+					else
+					{
+						iWidth = UT_convertToLogicalUnits(pszWidth);
+					}
+					UT_sint32 diff = xgrid - m_oldX;
+					iX += diff;
+					iWidth -= diff;
+					if(iWidth < 0)
+					{
+						iWidth = -iWidth;
+					}
+					UT_String sXpos("");
+					UT_String sWidth("");
+					double dX = static_cast<double>(iX)/static_cast<double>(UT_LAYOUT_RESOLUTION);
+					sXpos = UT_formatDimensionedValue(dX,"in", NULL);
+					double dWidth = static_cast<double>(iWidth)/static_cast<double>(UT_LAYOUT_RESOLUTION);
+					sWidth = UT_formatDimensionedValue(dWidth,"in", NULL);
+					const XML_Char * props[6] = {"width",sWidth.c_str(),
+								"xpos",sXpos.c_str(),
+								NULL,NULL};
+					pView->setFrameFormat(props);
+				}
+				else
+				{
+					return;
+				}
+			}
 			notify(pView, AV_CHG_HDRFTR);
 			if(m_pG)
 				m_pG->setCursor(GR_Graphics::GR_CURSOR_LEFTRIGHT);
+			return;
 		}
-		return;
-
 	case DW_RIGHTMARGIN:
 		{
-			UT_sint32 xAbsRight;
+			if(m_infoCache.m_mode != AP_TopRulerInfo::TRI_MODE_FRAME)
+			{
+				UT_sint32 xAbsRight;
+				
+				if(bRTLglobal)
+					xAbsRight = _getFirstPixelInColumn(&m_infoCache, 0)
+						+ m_infoCache.u.c.m_xColumnWidth + m_infoCache.u.c.m_xaRightMargin;
+				else
+					xAbsRight = _getFirstPixelInColumn(&m_infoCache, m_infoCache.m_iNumColumns - 1)
+						+ m_infoCache.u.c.m_xColumnWidth + m_infoCache.u.c.m_xaRightMargin;
 
-			if(bRTLglobal)
-				xAbsRight = _getFirstPixelInColumn(&m_infoCache, 0)
-							+ m_infoCache.u.c.m_xColumnWidth + m_infoCache.u.c.m_xaRightMargin;
+				double dxrel = tick.scalePixelDistanceToUnits(xAbsRight - m_draggingCenter);
+
+				const XML_Char * properties[3];
+				properties[0] = "page-margin-right";
+				properties[1] = pView->getGraphics()->invertDimension(tick.dimType,dxrel);
+				properties[2] = 0;
+				UT_DEBUGMSG(("TopRuler: page-margin-right [%s] (x %d, xAbsRight %d)\n",properties[1], x, xAbsRight));
+				FV_View *pView = static_cast<FV_View *>(m_pView);
+
+				pView->setSectionFormat(properties);
+			}
 			else
-				xAbsRight = _getFirstPixelInColumn(&m_infoCache, m_infoCache.m_iNumColumns - 1)
-									+ m_infoCache.u.c.m_xColumnWidth + m_infoCache.u.c.m_xaRightMargin;
-
-			double dxrel = tick.scalePixelDistanceToUnits(xAbsRight - m_draggingCenter);
-
-			const XML_Char * properties[3];
-			properties[0] = "page-margin-right";
-			properties[1] = pView->getGraphics()->invertDimension(tick.dimType,dxrel);
-			properties[2] = 0;
-			UT_DEBUGMSG(("TopRuler: page-margin-right [%s] (x %d, xAbsRight %d)\n",properties[1], x, xAbsRight));
-
+			{
+				if(m_pView == NULL)
+				{
+					return;
+				}
+				FV_View * pView = static_cast<FV_View *>(m_pView);
+				fl_FrameLayout * pFrame = pView->getFrameLayout();
+				if(pFrame)
+				{
+					const PP_AttrProp* pSectionAP = NULL;
+					pFrame->getAttrProp(&pSectionAP);
+					const char * pszWidth = NULL;
+					UT_sint32 iWidth;
+					if(!pSectionAP || !pSectionAP->getProperty("width",pszWidth))
+					{
+						UT_DEBUGMSG(("No Width defined for Frame !\n"));
+						UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+						return;
+					}
+					else
+					{
+						iWidth = UT_convertToLogicalUnits(pszWidth);
+					}
+					UT_sint32 diff = xgrid - m_oldX;
+					iWidth += diff;
+					if(iWidth < 0)
+					{
+						iWidth = -iWidth;
+					}
+					UT_String sWidth("");
+					double dWidth = static_cast<double>(iWidth)/static_cast<double>(UT_LAYOUT_RESOLUTION);
+					sWidth = UT_formatDimensionedValue(dWidth,"in", NULL);
+					const XML_Char * props[4] = {"width",sWidth.c_str(),
+								NULL,NULL};
+					pView->setFrameFormat(props);
+				}
+				else
+				{
+					return;
+				}
+			}
 			_xorGuide(true);
 			m_draggingWhat = DW_NOTHING;
-            FV_View *pView = static_cast<FV_View *>(m_pView);
-            pView->setSectionFormat(properties);
 			notify(pView, AV_CHG_HDRFTR);
 			if(m_pG)
 				m_pG->setCursor(GR_Graphics::GR_CURSOR_LEFTRIGHT);
+			return;
 		}
-		return;
 
 	case DW_COLUMNGAP:
 	case DW_COLUMNGAPLEFTSIDE:
@@ -3124,8 +3229,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 			else
 				break;
         }
-
-        m_draggingCenter = tick.snapPixelToGrid(x);
+		m_draggingCenter = tick.snapPixelToGrid(x);
 
 		// Position not changing so finish here.
 		if(m_draggingCenter == oldDragCenter)

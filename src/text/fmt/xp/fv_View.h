@@ -378,6 +378,9 @@ public:
 	void            releaseFrame(UT_sint32 x, UT_sint32 y);
 	bool            isInFrame(PT_DocPosition pos);
 	void            deleteFrame(void);
+	fl_FrameLayout * getFrameLayout(void);
+	void            setFrameFormat(const XML_Char ** props);
+
 // ----------------------
 
 	bool			isPosSelected(PT_DocPosition pos) const;

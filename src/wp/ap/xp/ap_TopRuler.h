@@ -64,7 +64,7 @@ public:
 class AP_TopRulerInfo 
 {
 public:
-	typedef enum _mode { TRI_MODE_COLUMNS, TRI_MODE_TABLE } Mode;
+	typedef enum _mode { TRI_MODE_COLUMNS, TRI_MODE_TABLE, TRI_MODE_FRAME } Mode;
 
 	AP_TopRulerInfo(void) :	
 							m_mode(TRI_MODE_COLUMNS),
@@ -364,6 +364,7 @@ private:
 	UT_sint32           m_iCellContainerLeftPos; // position of the left side of the container
                                                  // holding the cell
 	bool                m_bIsHidden;
+	UT_sint32           m_iOrigPosition;
 };
 
 #endif /* AP_TOPRULER_H */

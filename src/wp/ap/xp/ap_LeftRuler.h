@@ -63,7 +63,9 @@ public:
 class AP_LeftRulerInfo
 {
 public:
-	typedef enum _mode { TRI_MODE_COLUMNS, TRI_MODE_TABLE } Mode;
+	typedef enum _mode { TRI_MODE_COLUMNS, 
+						 TRI_MODE_TABLE, 
+						 TRI_MODE_FRAME } Mode;
 
 	AP_LeftRulerInfo(void) : 	m_mode(TRI_MODE_COLUMNS),
 								m_yPageStart(0),

@@ -508,6 +508,51 @@ void FV_View::btn1Frame(UT_sint32 x, UT_sint32 y)
 }
 
 
+void FV_View::setFrameFormat(const XML_Char * properties[])
+{
+	bool bRet;
+	setCursorWait();
+	//
+	// Signal PieceTable Change
+	_saveAndNotifyPieceTableChange();
+	if(isHdrFtrEdit())
+	{
+		clearHdrFtrEdit();
+		warpInsPtToXY(0,0,false);
+	}
+
+	PT_DocPosition posStart = getPoint();
+	PT_DocPosition posEnd = posStart;
+
+	if (!isSelectionEmpty())
+	{
+		if (m_iSelectionAnchor < posStart)
+			posStart = m_iSelectionAnchor;
+		else
+			posEnd = m_iSelectionAnchor;
+		if(posStart < 2)
+		{
+			posStart = 2;
+		}
+	}
+
+	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,NULL,properties,PTX_SectionFrame);
+
+	_generalUpdate();
+
+	// Signal PieceTable Changes have finished
+	_restorePieceTableState();
+
+	_generalUpdate();
+
+	// Signal PieceTable Changes have finished
+	_restorePieceTableState();
+
+	_ensureInsertionPointOnScreen();
+	clearCursorWait();
+	notifyListeners(AV_CHG_MOTION);
+}
+
 void FV_View::dragFrame(UT_sint32 x, UT_sint32 y)
 {
 	m_FrameEdit.mouseDrag(x,y);
@@ -524,6 +569,32 @@ void FV_View::deleteFrame(void)
 	m_FrameEdit.deleteFrame();
 	setCursorToContext();
 }
+
+fl_FrameLayout * FV_View::getFrameLayout(void)
+{
+	fl_BlockLayout* pBlock = _findBlockAtPosition(getPoint());
+
+	if(pBlock)
+	{
+		fl_ContainerLayout * pCL = pBlock->myContainingLayout();
+		while(pCL && (pCL->getContainerType() != FL_CONTAINER_FRAME) && (pCL->getContainerType() != FL_CONTAINER_DOCSECTION))
+		{
+			pCL = pCL->myContainingLayout();
+		}
+		if(pCL == NULL)
+		{
+			return NULL;
+		}
+		if(pCL->getContainerType() != FL_CONTAINER_FRAME)
+		{
+			return NULL;
+		}
+		return static_cast<fl_FrameLayout *>(pCL);
+	}
+	return NULL;
+}
+
+
 /*!
  * Returns true if the supplied Doc Position is inside a frame.
  */
@@ -6193,7 +6264,6 @@ bool FV_View::setCellFormat(const XML_Char * properties[], FormatTable applyTo, 
 					bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posStart,NULL,properties,PTX_SectionCell);
 					if(pFG != NULL)
 					{
-						fl_CellLayout * pCell = reinterpret_cast<fl_CellLayout *>(const_cast<void *>(m_pDoc->getNthFmtHandle(cellSDH,0)));
 						pFG->insertAtStrux(m_pDoc,72,posStart,
 										   PTX_SectionCell,sDataID.c_str());
 					}
@@ -6614,9 +6684,36 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 				pInfo->m_vecFullTable->addItem(static_cast<void *>(pTInfo));
 			}
 		}
-
 	}
-
+	else if(pContainer->getContainerType() == FP_CONTAINER_FRAME)
+	{
+		fp_FrameContainer * pFC = static_cast<fp_FrameContainer *>(pContainer);
+		fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(pSection);
+		pInfo->m_mode = AP_TopRulerInfo::TRI_MODE_FRAME;
+		fl_DocSectionLayout * pDSL = pFL->getDocSectionLayout();
+		if(pDSL == NULL)
+		{
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			return;
+		}
+		pInfo->m_iCurrentColumn = 0;
+		pInfo->m_iNumColumns = 1;
+		fp_Page * pPage = pFC->getPage();
+		if(pPage == NULL)
+		{
+			return;
+		}
+		pInfo->u.c.m_xaLeftMargin = pFC->getFullX();
+		pInfo->u.c.m_xColumnGap = 0;
+		pInfo->u.c.m_xColumnWidth = pFC->getFullWidth();
+		pInfo->u.c.m_xaRightMargin = pPage->getWidth() - pFC->getFullX() - pFC->getFullWidth();
+		
+		pInfo->m_xrPoint = xCaret - pFC->getX();
+		pInfo->m_xrLeftIndent = UT_convertToLogicalUnits(pBlock->getProperty("margin-left"));
+		pInfo->m_xrRightIndent = UT_convertToLogicalUnits(pBlock->getProperty("margin-right"));
+		pInfo->m_xrFirstLineIndent = UT_convertToLogicalUnits(pBlock->getProperty("text-indent"));
+		
+	}
 	else
 	{
 		// fill in the details
@@ -6868,7 +6965,27 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 			}
 			pInfo->m_iNumRows = pInfo->m_vecTableRowInfo->getItemCount();
 		}
+		else if(pContainer->getContainerType() == FP_CONTAINER_FRAME)
+		{
+			fp_FrameContainer * pFC = static_cast<fp_FrameContainer *>(pContainer);
+			fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(pSection);
+			pInfo->m_mode = AP_LeftRulerInfo::TRI_MODE_FRAME;
+			fl_DocSectionLayout * pDSL = pFL->getDocSectionLayout();
+			if(pDSL == NULL)
+			{
+				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+				return;
+			}
+			UT_sint32 yoff = 0;
+			getPageYOffset(pPage, yoff);
+			pInfo->m_yPageStart = static_cast<UT_uint32>(yoff);
+			pInfo->m_yPageSize = pPage->getHeight();
 
+			pInfo->m_yTopMargin = pFC->getFullY();
+			UT_ASSERT(pInfo->m_yTopMargin>= 0);
+
+			pInfo->m_yBottomMargin = pPage->getHeight() - pFC->getFullY() - pFC->getFullHeight();
+		}
 		else
 		{
 		}

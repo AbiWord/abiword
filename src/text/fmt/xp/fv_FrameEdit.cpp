@@ -831,7 +831,7 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 
 	// Signal PieceTable Changes have finished
 		m_pView->_restorePieceTableState();
-		m_pView->notifyListeners(AV_CHG_MOTION);
+		m_pView->notifyListeners(AV_CHG_HDRFTR);
 		m_pView->_fixInsertionPointCoords();
 		m_pView->_ensureInsertionPointOnScreen();
 
@@ -952,7 +952,7 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 
 	// Signal PieceTable Changes have finished
 		m_pView->_restorePieceTableState();
-		m_pView->notifyListeners(AV_CHG_MOTION);
+		m_pView->notifyListeners(AV_CHG_HDRFTR);
 		m_pView->_fixInsertionPointCoords();
 		m_pView->_ensureInsertionPointOnScreen();
 //
@@ -1021,7 +1021,7 @@ void FV_FrameEdit::deleteFrame(void)
 
 	// Signal PieceTable Changes have finished
 	m_pView->_restorePieceTableState();
-	m_pView->notifyListeners(AV_CHG_MOTION);
+	m_pView->notifyListeners(AV_CHG_HDRFTR);
 	m_pView->_fixInsertionPointCoords();
 	m_pView->_ensureInsertionPointOnScreen();
 

@@ -1731,6 +1731,7 @@ void GR_Font::s_getGenericFontProperties(const char * /*szFontName*/,
 	*pbTrueType = true;
 }
 
+
 /*!
  * Take a screenshot of the graphics and convert it to an image.
  */

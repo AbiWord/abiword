@@ -394,43 +394,159 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 		
 	case DW_TOPMARGIN:
 		{
-			dyrel = tick.scalePixelDistanceToUnits(m_draggingCenter - yAbsTop);
-			if (!hdrftr)
-				properties[0] = "page-margin-top";
-			else
+			if(!(m_infoCache.m_mode == AP_LeftRulerInfo::TRI_MODE_FRAME))
 			{
-				if (hdr)
-					properties[0] = "page-margin-header";
+				dyrel = tick.scalePixelDistanceToUnits(m_draggingCenter - yAbsTop);
+				if (!hdrftr)
+					properties[0] = "page-margin-top";
 				else
 				{
-					properties[0] = "page-margin-footer";
-
-					dyrel = tick.scalePixelDistanceToUnits
-						(pShadow->getHdrFtrSectionLayout()->
-						          getDocSectionLayout()->getBottomMargin() + 
-						 (m_draggingCenter + m_yScrollOffset -
-						(m_infoCache.m_yPageStart + m_infoCache.m_yPageSize)));
+					if (hdr)
+						properties[0] = "page-margin-header";
+					else
+					{
+						properties[0] = "page-margin-footer";
+						
+						dyrel = tick.scalePixelDistanceToUnits
+							(pShadow->getHdrFtrSectionLayout()->
+							 getDocSectionLayout()->getBottomMargin() + 
+							 (m_draggingCenter + m_yScrollOffset -
+							  (m_infoCache.m_yPageStart + m_infoCache.m_yPageSize)));
+					}
 				}
 			}
+			else
+			{
+				if(m_pView == NULL)
+				{
+					return;
+				}
+				FV_View * pView = static_cast<FV_View *>(m_pView);
+				fl_FrameLayout * pFrame = pView->getFrameLayout();
+				if(pFrame)
+				{
+					const PP_AttrProp* pSectionAP = NULL;
+					pFrame->getAttrProp(&pSectionAP);
+					const char * pszYpos = NULL;
+					UT_sint32 iYpos;
+					const char * pszHeight = NULL;
+					UT_sint32 iHeight;
+					if(!pSectionAP || !pSectionAP->getProperty("ypos",pszYpos))
+					{
+						UT_DEBUGMSG(("No ypos defined for Frame !\n"));
+						UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+						return;
+					}
+					else
+					{
+						iYpos = UT_convertToLogicalUnits(pszYpos);
+					}
+					if(!pSectionAP || !pSectionAP->getProperty("height",pszHeight))
+					{
+						UT_DEBUGMSG(("No Height defined for Frame !\n"));
+						UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+						return;
+					}
+					else
+					{
+						iHeight = UT_convertToLogicalUnits(pszHeight);
+					}
+					UT_sint32 diff = ygrid - m_oldY;
+					iHeight -= diff;
+					iYpos += diff;
+					if(iHeight < 0)
+					{
+						iHeight = -iHeight;
+					}
+					UT_String sYpos("");
+					double dYpos = static_cast<double>(iYpos)/static_cast<double>(UT_LAYOUT_RESOLUTION);
+					sYpos = UT_formatDimensionedValue(dYpos,"in", NULL);
+					UT_String sHeight("");
+					double dHeight = static_cast<double>(iHeight)/static_cast<double>(UT_LAYOUT_RESOLUTION);
+					sHeight = UT_formatDimensionedValue(dHeight,"in", NULL);
+					const XML_Char * props[6] = {"ypos",sYpos.c_str(),
+						"height",sHeight.c_str(),
+						NULL,NULL};
+					pView->setFrameFormat(props);
+				}
+				else
+				{
+					return;
+				}
+			}
+			_xorGuide(true);
+			m_draggingWhat = DW_NOTHING;
+			notify(pView, AV_CHG_HDRFTR);
+			return;
 		}
 		break;
 
 	case DW_BOTTOMMARGIN:
 		{
-			dyrel = tick.scalePixelDistanceToUnits(yEnd - m_draggingCenter);
-			if (!hdrftr)
-				properties[0] = "page-margin-bottom";
+			if(!(m_infoCache.m_mode == AP_LeftRulerInfo::TRI_MODE_FRAME))
+			{
+
+				dyrel = tick.scalePixelDistanceToUnits(yEnd - m_draggingCenter);
+				if (!hdrftr)
+					properties[0] = "page-margin-bottom";
+				else
+				{
+					if (hdr)
+					{
+						properties[0] = "page-margin-top";
+						dyrel = tick.scalePixelDistanceToUnits
+							(m_draggingCenter - yAbsTop);
+					}
+					else
+						UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+				}
+			}
 			else
 			{
-				if (hdr)
+				if(m_pView == NULL)
 				{
-					properties[0] = "page-margin-top";
-					dyrel = tick.scalePixelDistanceToUnits
-						(m_draggingCenter - yAbsTop);
+					return;
+				}
+				FV_View * pView = static_cast<FV_View *>(m_pView);
+				fl_FrameLayout * pFrame = pView->getFrameLayout();
+				if(pFrame)
+				{
+					const PP_AttrProp* pSectionAP = NULL;
+					pFrame->getAttrProp(&pSectionAP);
+					const char * pszHeight = NULL;
+					UT_sint32 iHeight;
+					if(!pSectionAP || !pSectionAP->getProperty("height",pszHeight))
+					{
+						UT_DEBUGMSG(("No Height defined for Frame !\n"));
+						UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+						return;
+					}
+					else
+					{
+						iHeight = UT_convertToLogicalUnits(pszHeight);
+					}
+					UT_sint32 diff = ygrid - m_oldY;
+					iHeight += diff;
+					if(iHeight < 0)
+					{
+						iHeight = -iHeight;
+					}
+					UT_String sHeight("");
+					double dHeight = static_cast<double>(iHeight)/static_cast<double>(UT_LAYOUT_RESOLUTION);
+					sHeight = UT_formatDimensionedValue(dHeight,"in", NULL);
+					const XML_Char * props[4] = {"height",sHeight.c_str(),
+								NULL,NULL};
+					pView->setFrameFormat(props);
 				}
 				else
-					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+				{
+					return;
+				}
 			}
+			_xorGuide(true);
+			m_draggingWhat = DW_NOTHING;
+			notify(pView, AV_CHG_HDRFTR);
+			return;
 		}
 		break;
 	case DW_CELLMARK:
