@@ -34,6 +34,8 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 
+#define CONV_TO_UCS (UT_UCSChar) (unsigned char)
+
 class pf_Frag;
 
 fl_AutoNum::fl_AutoNum(	UT_uint32 id,
@@ -257,7 +259,7 @@ void    fl_AutoNum::findAndSetParentItem(void)
 		update(0);
 }
 
-void    fl_AutoNum::_getLabelstr( XML_Char labelStr[], UT_uint32 * insPoint, 
+void    fl_AutoNum::_getLabelstr( UT_UCSChar labelStr[], UT_uint32 * insPoint, 
 								  UT_uint32 depth, PL_StruxDocHandle pLayout)  
 {
 	// This method recursively calculates a label based on the type of label
@@ -268,7 +270,7 @@ void    fl_AutoNum::_getLabelstr( XML_Char labelStr[], UT_uint32 * insPoint,
 	// depth is the level of recursion
 	// pLayout is a pointer to the Layout item containing the current list item
 	//
-	XML_Char p[100], leftDelim[10], rightDelim[10];
+    char p[100], leftDelim[10], rightDelim[10];
 	UT_uint32 i,psz;
 	//
 	// Only get the next level if the list type is not bullet or similar
@@ -291,7 +293,7 @@ void    fl_AutoNum::_getLabelstr( XML_Char labelStr[], UT_uint32 * insPoint,
 	UT_uint32 rTmp;
 	
 	i = 0;
-	
+
 	while (p[i] && p[i] != '%' && p[i+1] != 'L')
 	{
 		leftDelim[i] = p[i];
@@ -318,7 +320,7 @@ void    fl_AutoNum::_getLabelstr( XML_Char labelStr[], UT_uint32 * insPoint,
 			psz = UT_XML_strlen(m_pszDecimal);
 			for(i=0; i<=psz;i++)
 			{
-				labelStr[(*insPoint)++] = m_pszDecimal[i];
+				labelStr[(*insPoint)++] = CONV_TO_UCS m_pszDecimal[i];
 			}
 			(*insPoint)--;
 		}	       
@@ -333,14 +335,14 @@ void    fl_AutoNum::_getLabelstr( XML_Char labelStr[], UT_uint32 * insPoint,
 		return;
 	}
 	place = place + m_iStartValue;
-
+ 
 	//	if (depth == 0 )
 	if( m_List_Type < BULLETED_LIST)
 	{
 		psz = UT_XML_strlen(leftDelim);
 		for (i = 0; i < psz; i++)
 		{
-			labelStr[(*insPoint)++] = leftDelim[i];
+			labelStr[(*insPoint)++] = CONV_TO_UCS leftDelim[i];
 		}
 	}
 		
@@ -351,7 +353,7 @@ void    fl_AutoNum::_getLabelstr( XML_Char labelStr[], UT_uint32 * insPoint,
 		psz = UT_XML_strlen( p);
 		for(i=0; i<psz; i++)
 		{
-			labelStr[(*insPoint)++] = p[i];
+			labelStr[(*insPoint)++] =  CONV_TO_UCS p[i];
 		}
 		//labelStr[(*insPoint)] = NULL;
 		break;
@@ -360,7 +362,7 @@ void    fl_AutoNum::_getLabelstr( XML_Char labelStr[], UT_uint32 * insPoint,
 		psz = UT_XML_strlen( p);
 		for(i=0; i<psz; i++)
 		{
-			labelStr[(*insPoint)++] = p[i];
+			labelStr[(*insPoint)++] =  CONV_TO_UCS p[i];
 		}
 		//labelStr[(*insPoint)] = NULL;
 		break;
@@ -369,7 +371,7 @@ void    fl_AutoNum::_getLabelstr( XML_Char labelStr[], UT_uint32 * insPoint,
 		psz = UT_XML_strlen( p);
 		for(i=0; i<psz; i++)
 		{
-			labelStr[(*insPoint)++] = p[i];
+			labelStr[(*insPoint)++] =  CONV_TO_UCS p[i];
 		}
 		//labelStr[(*insPoint)] = NULL;
 		break;
@@ -378,7 +380,7 @@ void    fl_AutoNum::_getLabelstr( XML_Char labelStr[], UT_uint32 * insPoint,
 		psz = UT_XML_strlen( p);
 		for(i=0; i<psz; i++)
 		{
-			labelStr[(*insPoint)++] = p[i];
+			labelStr[(*insPoint)++] =  CONV_TO_UCS p[i];
 		}
 		//labelStr[(*insPoint)] = NULL;
 		break;
@@ -387,52 +389,52 @@ void    fl_AutoNum::_getLabelstr( XML_Char labelStr[], UT_uint32 * insPoint,
 		psz = UT_XML_strlen( p);
 		for(i=0; i<psz; i++)
 		{
-			labelStr[(*insPoint)++] = p[i];
+			labelStr[(*insPoint)++] =  CONV_TO_UCS p[i];
 		}
 		//labelStr[(*insPoint)] = NULL;
 		break;
 	case BULLETED_LIST:
-		labelStr[(*insPoint)++] = (XML_Char) 0xb7;
+		labelStr[(*insPoint)++] =  UCS_BULLET;
 		//labelStr[(*insPoint)] = NULL;
 		break;
 	case DASHED_LIST:
-		labelStr[(*insPoint)++] = (XML_Char) '-';
+		labelStr[(*insPoint)++] =  CONV_TO_UCS '-';
 		//labelStr[(*insPoint)] = NULL;
 		break;
 	case SQUARE_LIST:
-		labelStr[(*insPoint)++] = (XML_Char) 0x6E;
+		labelStr[(*insPoint)++] =  CONV_TO_UCS 0x6E;
 		//labelStr[(*insPoint)] = NULL;
 		break;
 	case TRIANGLE_LIST:
-		labelStr[(*insPoint)++] = (XML_Char) 0x73;
+		labelStr[(*insPoint)++] =  CONV_TO_UCS 0x73;
 		//labelStr[(*insPoint)] = NULL;
 		break;
 	case DIAMOND_LIST:
-		labelStr[(*insPoint)++] = (XML_Char) 0xA9;
+		labelStr[(*insPoint)++] =  CONV_TO_UCS 0xA9;
 		//labelStr[(*insPoint)] = NULL;
 		break;
 	case STAR_LIST:
-		labelStr[(*insPoint)++] = (XML_Char) 0x53;
+		labelStr[(*insPoint)++] =  CONV_TO_UCS 0x53;
 		//labelStr[(*insPoint)] = NULL;
 		break;
 	case IMPLIES_LIST:
-		labelStr[(*insPoint)++] = (XML_Char) 0xDE;
+		labelStr[(*insPoint)++] =  CONV_TO_UCS 0xDE;
 		//labelStr[(*insPoint)] = NULL;
 		break;
 	case TICK_LIST:
-		labelStr[(*insPoint)++] = (XML_Char) 0x33;
+		labelStr[(*insPoint)++] =  CONV_TO_UCS 0x33;
 		//labelStr[(*insPoint)] = NULL;
 		break;
 	case BOX_LIST:
-		labelStr[(*insPoint)++] = (XML_Char) 0x72;
+		labelStr[(*insPoint)++] =  CONV_TO_UCS 0x72;
 		//labelStr[(*insPoint)] = NULL;
 		break;
 	case HAND_LIST:
-		labelStr[(*insPoint)++] = (XML_Char) 0x2B;
+		labelStr[(*insPoint)++] =  CONV_TO_UCS 0x2B;
 		//labelStr[(*insPoint)] = NULL;
 		break;
 	case HEART_LIST:
-		labelStr[(*insPoint)++] = (XML_Char) 0xAA;
+		labelStr[(*insPoint)++] =  CONV_TO_UCS 0xAA;
 		//labelStr[(*insPoint)] = NULL;
 		break;
 	default:
@@ -447,27 +449,27 @@ void    fl_AutoNum::_getLabelstr( XML_Char labelStr[], UT_uint32 * insPoint,
 		psz = UT_XML_strlen(rightDelim);
 		for (i = 0; i < psz; i++)
 		{
-			labelStr[(*insPoint)++] = rightDelim[i];
+			labelStr[(*insPoint)++] =  CONV_TO_UCS rightDelim[i];
 		}
 	}
 	labelStr[(*insPoint)] = NULL;
 	return;
 }
 
-const XML_Char * fl_AutoNum::getLabel(PL_StruxDocHandle pItem) 
+const UT_UCSChar * fl_AutoNum::getLabel(PL_StruxDocHandle pItem) 
 {
-	static XML_Char label[100];
+	static UT_UCSChar label[100];
 	UT_uint32  insPoint=0;
 	UT_uint32 depth;
 	depth = 0;
 	_getLabelstr( label, &insPoint, depth , pItem);
 	if(insPoint == 0 )
 	{
-		return (const XML_Char *) NULL;
+		return (const UT_UCSChar *) NULL;
 	}
 	else
 	{
-		return (const XML_Char *) label;
+		return (const UT_UCSChar *) label;
 	}
 }
 

@@ -103,7 +103,7 @@ public:
 	AV_View *					getAvView(void);
 	void						setActiveFrame(XAP_Frame *pFrame);
 	void						generateFakeLabels(void);
-	XML_Char *					getListLabel(UT_sint32 itemNo);
+	UT_UCSChar *				getListLabel(UT_sint32 itemNo);
 	virtual void 				event_PreviewAreaExposed();
 	virtual void 				_createPreviewFromGC(GR_Graphics * gc, UT_uint32 width, UT_uint32 height);
 
@@ -123,8 +123,8 @@ protected:
 	bool					m_isListAtPoint;
 	bool					m_previousListExistsAtPoint;
 	char					m_curListType[100];
-	char					m_curListLabel[100];
-	char					m_newListLabel[100];
+	UT_UCSChar				m_curListLabel[100];
+	UT_UCSChar				m_newListLabel[100];
 	List_Type				m_newListType;
 	XML_Char				m_pszDelim[80];
 	XML_Char				m_pszDecimal[80];

@@ -214,7 +214,7 @@ public:
 
 	void StopList(void);
 	void deleteListLabel(void);
-	XML_Char * getListLabel(void);
+	UT_UCSChar * getListLabel(void);
 	void transferListFlags(void);
 	UT_uint32 getLevel(void);
 	void setStarting( bool bValue);

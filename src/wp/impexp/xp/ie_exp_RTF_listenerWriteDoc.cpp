@@ -636,8 +636,7 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 	const XML_Char * szLevel=NULL;
 	const XML_Char * szListStyle=NULL;
 
-	if (!pBlockAP || !pBlockAP->getAttribute((const XML_Char*)"listid", szListid))
-		szListid = NULL;
+	if (!pBlockAP || !pBlockAP->getAttribute((const XML_Char*)"listid", szListid))		szListid = NULL;
 	if (!pBlockAP || !pBlockAP->getAttribute((const XML_Char*)"parentid", szParentid))
 		szParentid = NULL;
 	if (!pBlockAP || !pBlockAP->getAttribute((const XML_Char*)"level", szLevel))
@@ -719,11 +718,11 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 	        m_pie->_rtf_keyword("pntext");
 		// if string is "left" use "ql", but that is the default, so we don't need to write it out.
 		if (UT_strcmp(szTextAlign,"right")==0)		// output one of q{lrcj} depending upon paragraph alignment
-		        m_pie->_rtf_keyword("qr");
+			m_pie->_rtf_keyword("qr");
 		else if (UT_strcmp(szTextAlign,"center")==0)
-		        m_pie->_rtf_keyword("qc");
+			m_pie->_rtf_keyword("qc");
 		else if (UT_strcmp(szTextAlign,"justify")==0)
-		        m_pie->_rtf_keyword("qj");
+			m_pie->_rtf_keyword("qj");
 		m_pie->_rtf_keyword_ifnotdefault_twips("fi",(char*)szFirstLineIndent,0);
 		m_pie->_rtf_keyword_ifnotdefault_twips("li",(char*)szLeftIndent,0);
 		m_pie->_rtf_keyword_ifnotdefault_twips("ri",(char*)szRightIndent,0);
@@ -733,20 +732,27 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 		UT_ASSERT(pAuto);
 		if(pAuto->getType()==BULLETED_LIST)
 		{
-		        m_pie->_rtf_keyword("bullet");
+			m_pie->_rtf_keyword("bullet");
 		}
 		else
 		{
-		        const char * lab = pAuto->getLabel(m_sdh);
+			const UT_UCSChar * lab = pAuto->getLabel(m_sdh);
+            //
+			// TODO Handle all our interesting symbols properly
+            // In the meantime convert to char *
+			static char tmp[100];
 			if(lab != NULL)
 			{
-			        UT_uint32 len = strlen(lab);
-			        m_pie->_rtf_chardata(lab,len);
+				UT_uint32 len = UT_MIN(UT_UCS_strlen(lab),100);
+				UT_uint32 i;
+				for(i=0; i<=len; i++)
+					tmp[i] = (char ) *lab++;
+				m_pie->_rtf_chardata(tmp,len);
 			}
 			else
-			  {
+			{
 			    UT_DEBUGMSG(("SEVIOR: We should not be here! id = %d \n",id));
-			  }
+			}
 		}
 		m_pie->_rtf_close_brace();
 	}
@@ -829,29 +835,33 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 		}
 		if(lType < BULLETED_LIST)
 		{
-		        m_pie->_rtf_open_brace();
+			m_pie->_rtf_open_brace();
 			m_pie->_rtf_keyword("pntxtb");
 			m_pie->_rtf_chardata((const char *)leftDelim,strlen((const char *) leftDelim));
-		        m_pie->_rtf_close_brace();
-		        m_pie->_rtf_open_brace();
+			m_pie->_rtf_close_brace();
+			m_pie->_rtf_open_brace();
 			m_pie->_rtf_keyword("pntxta");
 			m_pie->_rtf_chardata((const char *)rightDelim,strlen((const char *) rightDelim));
-		        m_pie->_rtf_close_brace();
+			m_pie->_rtf_close_brace();
 		}
 		else if(lType == BULLETED_LIST)
 		{
-		        m_pie->_rtf_open_brace();
+			m_pie->_rtf_open_brace();
 			m_pie->_rtf_keyword("pntxtb");
 			m_pie->_rtf_keyword("bullet");
-		        m_pie->_rtf_close_brace();
+			m_pie->_rtf_close_brace();
 		}
 		else if(lType > BULLETED_LIST)
 		{
-		        m_pie->_rtf_open_brace();
+			m_pie->_rtf_open_brace();
 			m_pie->_rtf_keyword("pntxtb");
-			sprintf(p, "%s",pAuto->getLabel(m_sdh));
+			const UT_UCSChar * tmp = pAuto->getLabel(m_sdh);
+			UT_uint32 i,len;
+			len = UT_UCS_strlen(tmp);
+			for(i=0;i<=len;i++)
+				p[i] = (char *) *tmp++;
 			m_pie->_rtf_chardata((const char *)p,strlen((const char *) p));
-		        m_pie->_rtf_close_brace();
+			m_pie->_rtf_close_brace();
 		}
 		m_pie->_rtf_close_brace();
 	}

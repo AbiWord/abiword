@@ -32,7 +32,7 @@ bool fp_FieldListLabelRun::calculateValue(void)
 {
 	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
 	UT_uint32 i = 0;
-	XML_Char *  listlabel = (XML_Char *) m_pBL->getListLabel();
+	UT_UCSChar *  listlabel = m_pBL->getListLabel();
 	if(listlabel == NULL)
 	{
 		sz_ucs_FieldValue[0] = 0;
@@ -43,10 +43,10 @@ bool fp_FieldListLabelRun::calculateValue(void)
 		// This code is here because UT_UCS_copy_char is broken
 		//
 		i = 0;
-		UT_uint32 len = UT_MIN(strlen(listlabel),FPFIELD_MAX_LENGTH + 1)  ;
+		UT_uint32 len = UT_MIN( UT_UCS_strlen(listlabel),FPFIELD_MAX_LENGTH + 1)  ;
 		for(i=0; i<=len;i++)
 		{
-			sz_ucs_FieldValue[i] = (UT_UCSChar) (unsigned char) *listlabel++;
+			sz_ucs_FieldValue[i] =  *listlabel++;
 		}
 		sz_ucs_FieldValue[len] = 0;
 		m_sFieldValue[0] =  0; // Force an update!!!

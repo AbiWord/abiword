@@ -5580,14 +5580,14 @@ void fl_BlockLayout::_deleteListLabel(void)
 	}
 }
 
-XML_Char * fl_BlockLayout::getListLabel(void)
+UT_UCSChar * fl_BlockLayout::getListLabel(void)
 {
 	//	UT_ASSERT(m_pAutoNum);
 	//
 	// Return the calculated list label for the block
 	//
 	if(m_pAutoNum != NULL)
-		return const_cast< XML_Char *>(m_pAutoNum->getLabel(getStruxDocHandle()));
+		return const_cast<UT_UCSChar *>(m_pAutoNum->getLabel(getStruxDocHandle()));
 	else
 		return NULL;
 }

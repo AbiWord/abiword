@@ -57,7 +57,7 @@ public:
 
 	void						fixHierarchy(PD_Document *);
 		
-	const XML_Char *			getLabel(PL_StruxDocHandle);
+	const UT_UCSChar *			getLabel(PL_StruxDocHandle);
 	void						addItem(PL_StruxDocHandle pItem);
 	List_Type					getType(void);
 	UT_uint32					getValue(PL_StruxDocHandle);
@@ -117,7 +117,7 @@ public:
 protected:
 
 	void						_calculateLabelStr(UT_uint32 depth);
-	void						_getLabelstr(	XML_Char labelStr[],
+	void						_getLabelstr(	UT_UCSChar labelStr[],
 												UT_uint32 * insPoint,
 												UT_uint32 depth,
 												PL_StruxDocHandle pLayout);

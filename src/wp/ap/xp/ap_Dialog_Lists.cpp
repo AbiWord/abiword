@@ -475,18 +475,20 @@ void  AP_Dialog_Lists::generateFakeLabels(void)
 }
 
 
-XML_Char * AP_Dialog_Lists::getListLabel(UT_sint32 itemNo)
+UT_UCSChar * AP_Dialog_Lists::getListLabel(UT_sint32 itemNo)
 {
 	UT_ASSERT(itemNo < 4);
-	static XML_Char lab[80];
-	const XML_Char * tmp;
-	tmp = m_pFakeAuto->getLabel(m_pFakeSdh[itemNo]);
+	static UT_UCSChar lab[80];
+	const UT_UCSChar * tmp  = m_pFakeAuto->getLabel(m_pFakeSdh[itemNo]);
 	if(tmp == NULL)
 	{
 		return NULL;
 	}
-	UT_XML_strncpy(lab, 80, tmp);
-	return (XML_Char *) lab;
+	UT_sint32 cnt = UT_MIN(UT_UCS_strlen(tmp),80);
+	UT_sint32 i;
+	for(i =0; i<= cnt; i++)
+		lab[i] = *tmp++;
+	return lab;
 }
 
 void AP_Dialog_Lists::fillDialogFromBlock(void)
@@ -622,8 +624,14 @@ void AP_Dialog_Lists::PopulateDialogData(void)
 	}
 	if(m_isListAtPoint == true)
 	{
-		const char * tmp1 = (char *) getBlock()->getListLabel();
-		strcpy( m_curListLabel, tmp1);
+		const UT_UCSChar * tmp1 =  getBlock()->getListLabel();
+		if(tmp1 != NULL)
+		{
+			UT_sint32 cnt = UT_MIN(UT_UCS_strlen(tmp1),80);
+			UT_sint32 i;
+			for(i =0; i<=cnt; i++)
+				m_curListLabel[i] = *tmp1++;
+		}
 		m_curListLevel = getBlock()->getLevel();
 		m_curStartValue = getAutoNum()->getStartValue32();
 		m_iStartValue = getAutoNum()->getStartValue32();
@@ -659,7 +667,7 @@ void AP_Dialog_Lists::PopulateDialogData(void)
 		}
 		else
 		{
-			strcpy(m_curListType,tmp1);
+			strcpy(m_curListType,pSS->getValue(AP_STRING_ID_DLG_Lists_Numbered_List ));
 		}
 	}
 	else
@@ -832,7 +840,7 @@ void AP_Lists_preview::draw(void)
 	maxw = 0;
 	for(i=0; i<4; i++)
 	{
-		XML_Char * lv = getLists()->getListLabel(i);
+		UT_UCSChar * lv = getLists()->getListLabel(i);
 		UT_sint32 len =0;
 
 		if(lv != NULL) 
@@ -840,10 +848,10 @@ void AP_Lists_preview::draw(void)
 			//
 			// This code is here because UT_UCS_copy_char is broken
 			//
-			len = UT_MIN(strlen(lv),51);
+			len = UT_MIN(UT_UCS_strlen(lv),51);
 			for(j=0; j<=len;j++)
 			{
-				ucs_label[j] = (UT_UCSChar) (unsigned char)*lv++;
+				ucs_label[j] = *lv++;
 			}
 			ucs_label[len] = NULL;
 			len = UT_UCS_strlen(ucs_label);
@@ -863,19 +871,19 @@ void AP_Lists_preview::draw(void)
 	
         // UT_sint32 vspace = (iHeight - 2*yoff -iFont)*i/16;
 	z = (float)((fwidth - 2.0*static_cast<float>(xoff)) /(float)pagew);
-        UT_sint32 ialign = static_cast<UT_sint32>( z*m_fAlign);
-        xx = xoff + ialign;
-        xy = xoff + ialign;
-        if(xx < (xoff + maxw + indent))
-	        xy = xoff + maxw + indent + 1;
-        ii = 0;
+	UT_sint32 ialign = static_cast<UT_sint32>( z*m_fAlign);
+	xx = xoff + ialign;
+	xy = xoff + ialign;
+	if(xx < (xoff + maxw + indent))
+		xy = xoff + maxw + indent + 1;
+	ii = 0;
 
 	for(i=0; i<4; i++)
 	{
 		yloc = yoff + iAscent + (iHeight - 2*yoff -iFont)*i/4;
 		for(j=0; j< 2; j++)
 		{
-		        yy = yloc + 5 + j*21;
+			yy = yloc + 5 + j*21;
 			m_iLine_pos[ii++] = yy;
 		}
 	}
@@ -884,49 +892,46 @@ void AP_Lists_preview::draw(void)
 	//
 	for(i=0; i<8; i++)
 	{
-	  //
-	  // First clear the line
-	  //
-	         m_gc->clearArea(0, m_iLine_pos[i], iWidth, iHeight);
-		 if((i & 1) == 0)
-		 {
-		   //
-		   // Draw the text
-		   //
-	                XML_Char * lv = getLists()->getListLabel(i/2);
-		        UT_sint32 len =0;
-		
-		        if(lv != NULL) 
-		        {
-	  //
-	  // This code is here because UT_UCS_copy_char is broken
-	  //
-		                 len = UT_MIN(strlen(lv),51)  ;
-				 for(j=0; j<=len;j++)
-				 {
-		                          ucs_label[j] = (UT_UCSChar) (unsigned char)*lv++;
-				 }
-				 ucs_label[len] = NULL;
-				 len = UT_UCS_strlen(ucs_label);
-				 yloc = yoff + iAscent + (iHeight - 2*yoff -iFont)*i/8;
-			         m_gc->drawChars(ucs_label,0,len,xoff+indent,yloc);
-				 yy = m_iLine_pos[i];
-				 awidth = iWidth - 2*xoff - xy;
-				 m_gc->fillRect(clrGrey,xy,yy,awidth,aheight);
+		//
+		// First clear the line
+		//
+		m_gc->clearArea(0, m_iLine_pos[i], iWidth, iHeight);
+		if((i & 1) == 0)
+		{
+			//
+			// Draw the text
+			//
+			UT_UCSChar * lv = getLists()->getListLabel(i/2);
+			UT_sint32 len =0;
+			
+			if(lv != NULL) 
+			{
+				len = UT_MIN(UT_UCS_strlen(lv),51);
+				for(j=0; j<=len;j++)
+				{
+					ucs_label[j] = *lv++;
+				}
+				ucs_label[len] = NULL;
+				len = UT_UCS_strlen(ucs_label);
+				yloc = yoff + iAscent + (iHeight - 2*yoff -iFont)*i/8;
+				m_gc->drawChars(ucs_label,0,len,xoff+indent,yloc);
+				yy = m_iLine_pos[i];
+				awidth = iWidth - 2*xoff - xy;
+				m_gc->fillRect(clrGrey,xy,yy,awidth,aheight);
 			}
 			else
 			{
-			         yy = m_iLine_pos[i];
-				 awidth = iWidth - 2*xoff - xy;
-				 m_gc->fillRect(clrGrey,xy,yy,awidth,aheight);
+				yy = m_iLine_pos[i];
+				awidth = iWidth - 2*xoff - xy;
+				m_gc->fillRect(clrGrey,xy,yy,awidth,aheight);
 			}
-		 }
-		 else
-		 {
-		        yy = m_iLine_pos[i];
+		}
+		else
+		{
+			yy = m_iLine_pos[i];
 			awidth = iWidth - 2*xoff - xx;
-		        m_gc->fillRect(clrGrey,xx,yy,awidth,aheight);
-		 }
+			m_gc->fillRect(clrGrey,xx,yy,awidth,aheight);
+		}
 	}
 }
 
