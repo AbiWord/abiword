@@ -2322,7 +2322,14 @@ void FV_View::extSelToXYword(UT_sint32 xPos, UT_sint32 yPos, UT_Bool bDrag)
 	pPage->mapXYToPosition(xClick, yClick, iNewPoint, bBOL, bEOL);
 
 	//UT_ASSERT(!isSelectionEmpty());
-	
+
+	if (iNewPoint <= m_iSelectionLeftAnchor) {
+	    m_iSelectionAnchor = m_iSelectionRightAnchor;
+	}
+	else {
+	    m_iSelectionAnchor = m_iSelectionLeftAnchor;
+	}
+	    
 	PT_DocPosition iNewPointWord;
 	if (iNewPoint > m_iSelectionAnchor)
 		iNewPointWord = _getDocPosFromPoint(iNewPoint,FV_DOCPOS_EOW,UT_FALSE);
@@ -3809,6 +3816,9 @@ void FV_View::cmdSelect(UT_sint32 xPos, UT_sint32 yPos, FV_DocPos dpBeg, FV_DocP
 	}
 
 	m_iSelectionAnchor = iPosLeft;
+	m_iSelectionLeftAnchor = iPosLeft;
+	m_iSelectionRightAnchor = iPosRight;
+	
 	_setPoint(iPosRight);
 
 	if (iPosLeft == iPosRight)

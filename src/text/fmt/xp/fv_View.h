@@ -272,7 +272,9 @@ protected:
 	PD_Document*		m_pDoc;
 	GR_Graphics*		m_pG;
 
-	PT_DocPosition		m_iSelectionAnchor;
+    PT_DocPosition		m_iSelectionAnchor;
+    PT_DocPosition		m_iSelectionLeftAnchor;
+    PT_DocPosition		m_iSelectionRightAnchor;
 	UT_Bool				m_bSelection;
 
 	// autoscroll stuff
