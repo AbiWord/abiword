@@ -9250,6 +9250,8 @@ UT_return_val_if_fail(pDialog, false);
 	  }
 	  FREEP(props_in);
 
+//	  WRAPPING_TYPE oldWrapType = WRAP_INLINE;
+//	  POSITION_TO oldPositionTo = POSITION_TO_PARAGRAPH;
 	  pDialog->runModal(pFrame);
 
 	  XAP_Dialog_Image::tAnswer ans = pDialog->getAnswer();
@@ -9257,6 +9259,8 @@ UT_return_val_if_fail(pDialog, false);
 
 	  if (bOK)
 	  {
+		  WRAPPING_TYPE newWrap = pDialog->getWrapping();
+		  if(newWrap == WRAP_INLINE)
 		  // now get them back in inches
 		  width  = pDialog->getWidth () / 72.0;
 		  height = pDialog->getHeight () / 72.0;
@@ -9271,26 +9275,225 @@ UT_return_val_if_fail(pDialog, false);
 			  sprintf(widthBuf, "%fin", width);
 			  sprintf(heightBuf, "%fin", height);
 		  }
+		  if(newWrap == WRAP_INLINE)
+		  {
+			  UT_DEBUGMSG(("DOM: nw:%s nh:%s\n", widthBuf, heightBuf));
+			  
+			  properties[1] = widthBuf;
+			  properties[3] = heightBuf;
 
-		  UT_DEBUGMSG(("DOM: nw:%s nh:%s\n", widthBuf, heightBuf));
+			  UT_UTF8String title (pDialog->getTitle());
+			  UT_UTF8String alt (pDialog->getAlt());
 
-		  properties[1] = widthBuf;
-		  properties[3] = heightBuf;
+			  title.escapeXML();
+			  alt.escapeXML();
 
-		  UT_UTF8String title (pDialog->getTitle());
-		  UT_UTF8String alt (pDialog->getAlt());
+			  const XML_Char * attribs[] = {"title", NULL, "alt", NULL, 0};
+			  attribs[1] = title.utf8_str();
+			  attribs[3] = alt.utf8_str();
 
-		  title.escapeXML();
-		  alt.escapeXML();
+			  pView->setCharFormat(properties, attribs);
+			  pView->updateScreen();
+		  }
 
-		  const XML_Char * attribs[] = {"title", NULL, "alt", NULL, 0};
-		  attribs[1] = title.utf8_str();
-		  attribs[3] = alt.utf8_str();
+//
+// For now assume we just turn inline-images into frames this way. Later
+// we'll look at changing frames to inline.
+//
+		  else
+		  {
 
-		  pView->setCharFormat(properties, attribs);
-		  pView->updateScreen();
-		}
-
+// OK we gotta create a frame with the dimensions of the image and roughly the
+// the location of the image.
+//
+// Get the line of the image. (We have the run and Block)
+//
+			  fp_Line * pLine = pRun->getLine();
+//
+// Get the dataID of the image.
+// FIXME enable these laster
+//			  fp_ImageRun * pImageRun = static_cast<fp_ImageRun *>(pRun);
+//			  const char * dataID = pImageRun->getDataId();
+			  UT_String sFrameProps;
+			  UT_String sProp;
+			  UT_String sVal;
+			  sProp = "frame-type";
+			  sVal = "image";
+			  UT_String_setProperty(sFrameProps,sProp,sVal);
+//
+// Turn off the borders.
+//
+			  sProp = "top-style";
+			  sVal = "none";
+			  UT_String_setProperty(sFrameProps,sProp,sVal);
+			  sProp = "right-style";
+			  UT_String_setProperty(sFrameProps,sProp,sVal);
+			  sProp = "left-style";
+			  UT_String_setProperty(sFrameProps,sProp,sVal);
+			  sProp = "bot-style";
+			  UT_String_setProperty(sFrameProps,sProp,sVal);
+//
+// Set width/Height
+//
+			  sProp = "frame-width";
+			  sVal = widthBuf;
+			  UT_String_setProperty(sFrameProps,sProp,sVal);
+			  sProp = "frame-height";
+			  sVal = heightBuf;
+			  UT_String_setProperty(sFrameProps,sProp,sVal);
+			  double xpos = 0.0;
+			  double ypos= 0.0;
+ 
+			  sProp = "position-to";
+			  if(pDialog->getPositionTo() == POSITION_TO_PARAGRAPH)
+			  {
+				  sVal = "block-above-text";
+				  UT_String_setProperty(sFrameProps,sProp,sVal);
+//
+// Now calculate the Y offset to the paragraph
+//
+				  UT_sint32 xBlockOff,yBlockOff = 0;
+				  bool bValid = false;
+				  bValid = pBlock->getXYOffsetToLine(xBlockOff,yBlockOff,pLine);
+				  ypos = static_cast<double>(yBlockOff)/static_cast<double>(UT_LAYOUT_RESOLUTION);
+				  sProp = "ypos";
+				  sVal = UT_formatDimensionedValue(ypos,"in", NULL);
+				  UT_String_setProperty(sFrameProps,sProp,sVal);
+			  }
+			  else if(pDialog->getPositionTo() == POSITION_TO_COLUMN)
+			  {
+				  sVal = "column-above-text";
+				  UT_String_setProperty(sFrameProps,sProp,sVal);
+//
+// Now calculate the Y offset to the Column
+//
+				  UT_sint32 yLine = pLine->getY();
+				  ypos = static_cast<double>(yLine)/static_cast<double>(UT_LAYOUT_RESOLUTION);
+				  sProp = "frame-col-ypos";
+				  sVal = UT_formatDimensionedValue(ypos,"in", NULL);
+				  UT_String_setProperty(sFrameProps,sProp,sVal);
+			  }
+			  else if(pDialog->getPositionTo() == POSITION_TO_PAGE)
+			  {
+				  sVal = "page-above-text";
+				  UT_String_setProperty(sFrameProps,sProp,sVal);
+//
+// Now calculate the Y offset to the Page
+//
+//
+// Need this for the X/Y calculations to follow.
+//
+				  fp_Container * pCol = pLine->getColumn();
+				  UT_ASSERT(pCol->getContainerType() == FP_CONTAINER_COLUMN);
+				  UT_sint32 yLine = pLine->getY() + pCol->getY();
+				  ypos = static_cast<double>(yLine)/static_cast<double>(UT_LAYOUT_RESOLUTION);
+				  sProp = "frame-page-ypos";
+				  sVal = UT_formatDimensionedValue(ypos,"in", NULL);
+				  UT_String_setProperty(sFrameProps,sProp,sVal);
+			  }
+//
+// Now set the wrapping type and the x-offset
+//
+			  if(pDialog->getWrapping() == WRAP_TEXTRIGHT)
+			  {
+				  sProp = "wrap-mode";
+				  sVal = "wrapped-to-right";
+				  UT_String_setProperty(sFrameProps,sProp,sVal);
+				  UT_sint32 ix = 0;
+				  iWidth = UT_convertToLogicalUnits(widthBuf);
+				  if(pDialog->getPositionTo() == POSITION_TO_PARAGRAPH)
+				  {
+					  fp_Container * pCol = pLine->getColumn();
+					  ix = pCol->getWidth() - pBlock->getRightMargin() - iWidth;
+					  xpos =  static_cast<double>(ix)/static_cast<double>(UT_LAYOUT_RESOLUTION);
+					  sProp = "xpos";
+					  sVal = UT_formatDimensionedValue(xpos,"in", NULL);
+					  UT_String_setProperty(sFrameProps,sProp,sVal);
+				  }
+				  else if(pDialog->getPositionTo() == POSITION_TO_COLUMN)
+				  {
+					  fp_Container * pCol = pLine->getColumn();
+					  ix = pCol->getWidth() -iWidth;
+					  xpos =  static_cast<double>(ix)/static_cast<double>(UT_LAYOUT_RESOLUTION);
+					  sProp = "frame-col-xpos";
+					  sVal = UT_formatDimensionedValue(xpos,"in", NULL);
+					  UT_String_setProperty(sFrameProps,sProp,sVal);
+				  }
+				  else if(pDialog->getPositionTo() == POSITION_TO_PAGE)
+				  {
+					  fp_Page * pPage = pLine->getPage();
+					  ix = pPage->getWidth() - iWidth;
+					  xpos =  static_cast<double>(ix)/static_cast<double>(UT_LAYOUT_RESOLUTION);
+					  sProp = "frame-page-xpos";
+					  sVal = UT_formatDimensionedValue(xpos,"in", NULL);
+					  UT_String_setProperty(sFrameProps,sProp,sVal);
+				  }
+			  }
+			  else if(pDialog->getWrapping() == WRAP_TEXTLEFT)
+			  {
+				  sProp = "wrap-mode";
+				  sVal = "wrapped-to-left";
+				  UT_String_setProperty(sFrameProps,sProp,sVal);
+				  UT_sint32 ix = 0;
+				  if(pDialog->getPositionTo() == POSITION_TO_PARAGRAPH)
+				  {
+					  xpos =  static_cast<double>(ix)/static_cast<double>(UT_LAYOUT_RESOLUTION);
+					  sProp = "xpos";
+					  sVal = UT_formatDimensionedValue(xpos,"in", NULL);
+					  UT_String_setProperty(sFrameProps,sProp,sVal);
+				  }
+				  else if(pDialog->getPositionTo() == POSITION_TO_COLUMN)
+				  {
+					  xpos =  static_cast<double>(ix)/static_cast<double>(UT_LAYOUT_RESOLUTION);
+					  sProp = "frame-col-xpos";
+					  sVal = UT_formatDimensionedValue(xpos,"in", NULL);
+					  UT_String_setProperty(sFrameProps,sProp,sVal);
+				  }
+				  else if(pDialog->getPositionTo() == POSITION_TO_PAGE)
+				  {
+					  xpos =  static_cast<double>(ix)/static_cast<double>(UT_LAYOUT_RESOLUTION);
+					  sProp = "frame-page-xpos";
+					  sVal = UT_formatDimensionedValue(xpos,"in", NULL);
+					  UT_String_setProperty(sFrameProps,sProp,sVal);
+				  }
+			  }
+			  else if(pDialog->getWrapping() == WRAP_TEXTBOTH)
+			  {
+				  sProp = "wrap-mode";
+				  sVal = "wrapped-both";
+				  UT_String_setProperty(sFrameProps,sProp,sVal);
+				  UT_sint32 ix = pRun->getX();
+				  if(pDialog->getPositionTo() == POSITION_TO_PARAGRAPH)
+				  {
+					  ix += pLine->getX();
+					  xpos =  static_cast<double>(ix)/static_cast<double>(UT_LAYOUT_RESOLUTION);
+					  sProp = "xpos";
+					  sVal = UT_formatDimensionedValue(xpos,"in", NULL);
+					  UT_String_setProperty(sFrameProps,sProp,sVal);
+				  }
+				  else if(pDialog->getPositionTo() == POSITION_TO_COLUMN)
+				  {
+					  ix += pLine->getX();
+					  xpos =  static_cast<double>(ix)/static_cast<double>(UT_LAYOUT_RESOLUTION);
+					  sProp = "frame-col-xpos";
+					  sVal = UT_formatDimensionedValue(xpos,"in", NULL);
+					  UT_String_setProperty(sFrameProps,sProp,sVal);
+				  }
+				  else if(pDialog->getPositionTo() == POSITION_TO_PAGE)
+				  {
+					  fp_Column * pCol = static_cast<fp_Column *>(pLine->getColumn());
+					  ix += pLine->getX() + pCol->getX();
+					  xpos =  static_cast<double>(ix)/static_cast<double>(UT_LAYOUT_RESOLUTION);
+					  sProp = "frame-page-xpos";
+					  sVal = UT_formatDimensionedValue(xpos,"in", NULL);
+					  UT_String_setProperty(sFrameProps,sProp,sVal);
+				  }
+			  }
+//
+// Now define the Frame attributes strux
+//
+		  }
+	  }
 	  pDialogFactory->releaseDialog(pDialog);
 	  return true;
 	}

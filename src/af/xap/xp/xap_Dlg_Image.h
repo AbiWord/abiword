@@ -31,6 +31,22 @@
 #include "xap_Frame.h"
 #include "xap_Dialog.h"
 
+typedef enum _WRAPPING_TYPE
+{
+    WRAP_INLINE,
+    WRAP_TEXTRIGHT,
+    WRAP_TEXTLEFT,
+    WRAP_TEXTBOTH
+} WRAPPING_TYPE;
+
+
+typedef enum _POSITION_TO
+{
+    POSITION_TO_PARAGRAPH,
+    POSITION_TO_COLUMN,
+    POSITION_TO_PAGE
+} POSITION_TO;
+
 /* #include "xav_View.h" */
 
 
@@ -44,6 +60,15 @@ public:
 	virtual ~XAP_Dialog_Image(void);
 
 	virtual void  runModal(XAP_Frame * pFrame) = 0;
+
+	void setWrapping(WRAPPING_TYPE iWrap);
+	void setPositionTo(POSITION_TO iPos);
+
+	WRAPPING_TYPE getWrapping(void) const
+		{ return m_iWrappingType;}
+	POSITION_TO getPositionTo(void) const
+		{ return m_iPositionTo;}
+
 
 	double getWidth () const { return m_width; }
 	double getHeight () const { return m_height; }
@@ -115,6 +140,9 @@ public:
 
 	void setWidth (double w, bool checkaspect);
 	void setHeight (double h, bool checkaspect);
+
+	WRAPPING_TYPE m_iWrappingType;
+	POSITION_TO m_iPositionTo;
 };
 
 #endif /* XAP_DIALOG_IMAGE_H */

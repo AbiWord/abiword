@@ -254,13 +254,24 @@ dcl(DLG_CLIPART_Title, "Clip Art")
 /* About Dialog */
 dcl(DLG_ABOUT_Title,					"About %s")
 
-	 /* image size dialog */
-	dcl(DLG_Image_Title, "Image Properties")
-	dcl(DLG_Image_Width, "Width:")
-	dcl(DLG_Image_Height, "Height:")
-	dcl(DLG_Image_Aspect, "Preserve aspect ratio")
-	dcl(DLG_Image_LblTitle, "Title:")
-	dcl(DLG_Image_LblAlt, "Alt:")
+/* image size dialog */
+dcl(DLG_Image_Title, "Image Properties")
+dcl(DLG_Image_Width, "Width:")
+dcl(DLG_Image_Height, "Height:")
+dcl(DLG_Image_Aspect, "Preserve aspect ratio")
+dcl(DLG_Image_LblTitle, "Title:")
+dcl(DLG_Image_LblAlt, "Alt:")
+dcl(DLG_Image_ImageSize, "Set Image Size")
+dcl(DLG_Image_ImageDesc, "Set Image Name")
+dcl(DLG_Image_TextWrapping, "Define Text Wrapping")
+dcl(DLG_Image_Placement, "Define Image Placement")
+dcl(DLG_Image_InLine, "Image placed in-line (no text wrapping)")
+dcl(DLG_Image_WrappedRight, "Text wrapped to the Right of the Image")
+dcl(DLG_Image_WrappedLeft, "Text wrapped to the Left of the Image")
+dcl(DLG_Image_WrappedBoth, "Text wrapped on both sides of the Image")
+dcl(DLG_Image_PlaceParagraph, "Position relative to nearest paragraph")
+dcl(DLG_Image_PlaceColumn, "Position relative to it's Column")
+dcl(DLG_Image_PlacePage, "Position relative to it's Page")
 
 /* ListDocuments Dialog */
 dcl(DLG_LISTDOCS_Title,					"Opened Documents")

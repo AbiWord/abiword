@@ -107,9 +107,11 @@ static PP_Property _props[] =
 	{"frame-col-xpos",         "0.0in",           false, NULL, PP_LEVEL_FRAME},
 	{"frame-col-ypos",         "0.0in",           false, NULL, PP_LEVEL_FRAME},
 	{"frame-height",           "0.0in",           false, NULL, PP_LEVEL_FRAME},
-	{"frame-width",            "0.0in",           false, NULL, PP_LEVEL_FRAME},
+	{"frame-page-xpos",        "0.0in",           false, NULL, PP_LEVEL_FRAME},
+	{"frame-page-ypos",        "0.0in",           false, NULL, PP_LEVEL_FRAME},
 	{"frame-position-to",      "block-above-text",false, NULL, PP_LEVEL_FRAME},
 	{"frame-type",             "textbox",         false, NULL, PP_LEVEL_FRAME},
+	{"frame-width",            "0.0in",           false, NULL, PP_LEVEL_FRAME},
 	{"frame-xpos",             "0.0in",           false, NULL, PP_LEVEL_FRAME},
 	{"frame-ypos",             "0.0in",           false, NULL, PP_LEVEL_FRAME},
 

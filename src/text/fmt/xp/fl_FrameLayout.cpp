@@ -674,6 +674,10 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	{
 		m_iFrameType = FL_FRAME_TEXTBOX_TYPE;
 	}
+	else if(strcmp(pszFrameType,"image") == 0)
+	{
+		m_iFrameType = FL_FRAME_WRAPPER_IMAGE;
+	}
 	else 
 	{
 		UT_DEBUGMSG(("Unknown Frame Type %s \n",pszFrameType));
@@ -694,6 +698,10 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	else if(strcmp(pszPositionTo,"column-above-text") == 0)
 	{
 		m_iFramePositionTo = FL_FRAME_POSITIONED_TO_COLUMN;
+	}
+	else if(strcmp(pszPositionTo,"page-above-text") == 0)
+	{
+		m_iFramePositionTo = FL_FRAME_POSITIONED_TO_PAGE;
 	}
 	else 
 	{

@@ -69,13 +69,65 @@ void XAP_UnixDialog_Image::s_aspect_clicked(GtkWidget * widget, XAP_UnixDialog_I
 	dlg->aspectCheckbox();
 }
 
+void XAP_UnixDialog_Image::s_wrapping_changed(GtkWidget * widget, XAP_UnixDialog_Image * dlg)
+{
+	UT_return_if_fail(widget && dlg);
+	dlg->wrappingChanged();
+}
+
+void XAP_UnixDialog_Image::wrappingChanged(void)
+{
+	if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_wrbInLine)))
+	{
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wrbPlaceParagraph),TRUE);
+		gtk_widget_set_sensitive(m_wPlaceTable,FALSE);
+		gtk_widget_set_sensitive(m_wrbPlaceParagraph,FALSE);
+		gtk_widget_set_sensitive(m_wrbPlaceColumn,FALSE);
+		gtk_widget_set_sensitive(m_wrbPlacePage,FALSE);
+
+		return;
+	}
+	gtk_widget_set_sensitive(m_wPlaceTable,TRUE);
+	gtk_widget_set_sensitive(m_wrbPlaceParagraph,TRUE);
+	gtk_widget_set_sensitive(m_wrbPlaceColumn,TRUE);
+	gtk_widget_set_sensitive(m_wrbPlacePage,TRUE);
+}
+
 void XAP_UnixDialog_Image::event_Ok ()
 {
 	setAnswer(XAP_Dialog_Image::a_OK);
 	setTitle (gtk_entry_get_text (GTK_ENTRY(m_wTitleEntry)));
 	setAlt (gtk_entry_get_text (GTK_ENTRY(m_wAltEntry)));
-}
+	if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_wrbInLine)))
+	{
+		setWrapping(WRAP_INLINE);
+	}
+	else if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_wrbWrappedRight)))
+	{
+		setWrapping(WRAP_TEXTRIGHT);
+	}
+	else if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_wrbWrappedLeft)))
+	{
+		setWrapping(WRAP_TEXTLEFT);
+	}
+	else if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_wrbWrappedBoth)))
+	{
+		setWrapping(WRAP_TEXTBOTH);
+	}
 
+	if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_wrbPlaceParagraph)))
+	{
+		setPositionTo(POSITION_TO_PARAGRAPH);
+	}
+	else if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_wrbPlaceColumn)))
+	{
+		setPositionTo(POSITION_TO_COLUMN);
+	}
+	else if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_wrbPlacePage)))
+	{
+		setPositionTo(POSITION_TO_PAGE);
+	}
+}
 void XAP_UnixDialog_Image::event_Cancel ()
 {  
 	setAnswer(XAP_Dialog_Image::a_Cancel);
@@ -201,6 +253,43 @@ XAP_UnixDialog_Image::~XAP_UnixDialog_Image(void)
 {
 }
 
+void XAP_UnixDialog_Image::setWrappingGUI()
+{
+	if(getWrapping() == WRAP_INLINE)
+	{
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wrbInLine),TRUE);
+	}
+	else if(getWrapping() == WRAP_TEXTRIGHT)
+	{
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wrbWrappedRight),TRUE);
+	}
+	else if(getWrapping() == WRAP_TEXTLEFT)
+	{
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wrbWrappedLeft),TRUE);
+	}
+	else if(getWrapping() == WRAP_TEXTBOTH)
+	{
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wrbWrappedBoth),TRUE);
+	}
+}
+
+
+void XAP_UnixDialog_Image::setPositionToGUI()
+{
+	if(getPositionTo() == POSITION_TO_PARAGRAPH)
+	{
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wrbPlaceParagraph),TRUE);
+	}
+	else if(getPositionTo() == POSITION_TO_COLUMN)
+	{
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wrbPlaceColumn),TRUE);
+	}
+	else if(getPositionTo() == POSITION_TO_PAGE)
+	{
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wrbPlacePage),TRUE);
+	}
+}
+
 void XAP_UnixDialog_Image::runModal(XAP_Frame * pFrame)
 {
 	// build the dialog
@@ -220,6 +309,10 @@ void XAP_UnixDialog_Image::runModal(XAP_Frame * pFrame)
 		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (m_wAspectCheck), FALSE);
 	}	  
 	
+	setWrappingGUI();
+	setPositionToGUI();
+	wrappingChanged();
+
 	switch ( abiRunModalDialog ( GTK_DIALOG(cf), pFrame, this, BUTTON_CANCEL, false ) )
     {
     case GTK_RESPONSE_OK:
@@ -242,10 +335,33 @@ void XAP_UnixDialog_Image::_connectSignals (void)
 								 "changed",
 								 G_CALLBACK(s_HeightEntry_changed),
 								 static_cast<gpointer>(this));
-  
+
   g_signal_connect(G_OBJECT(m_wWidthSpin),
 				   "changed",
 				   G_CALLBACK(s_WidthSpin_changed),
+				   static_cast<gpointer>(this));
+
+  g_signal_connect(G_OBJECT(m_wrbInLine),
+				   "clicked",
+				   G_CALLBACK(s_wrapping_changed),
+				   static_cast<gpointer>(this));
+
+
+  g_signal_connect(G_OBJECT(m_wrbWrappedRight),
+				   "clicked",
+				   G_CALLBACK(s_wrapping_changed),
+				   static_cast<gpointer>(this));
+
+
+  g_signal_connect(G_OBJECT(m_wrbWrappedLeft),
+				   "clicked",
+				   G_CALLBACK(s_wrapping_changed),
+				   static_cast<gpointer>(this));
+
+
+  g_signal_connect(G_OBJECT(m_wrbWrappedBoth),
+				   "clicked",
+				   G_CALLBACK(s_wrapping_changed),
 				   static_cast<gpointer>(this));
   
   m_iWidthID = g_signal_connect(G_OBJECT(m_wWidthEntry),
@@ -297,11 +413,40 @@ GtkWidget * XAP_UnixDialog_Image::_constructWindow ()
 	UT_UTF8String s;
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_Image_Title,s);
 	abiDialogSetTitle(mMainWindow, s.utf8_str());
+
+	localizeLabelMarkup(glade_xml_get_widget(xml, "lblSize"), pSS, XAP_STRING_ID_DLG_Image_ImageSize);
+	localizeLabelMarkup(glade_xml_get_widget(xml, "lblImageDescription"), pSS, XAP_STRING_ID_DLG_Image_ImageDesc);
+	localizeLabelMarkup(glade_xml_get_widget(xml, "lblTextWrapping"), pSS, XAP_STRING_ID_DLG_Image_TextWrapping);
+	localizeLabelMarkup(glade_xml_get_widget(xml, "lblImagePlacement"), pSS, XAP_STRING_ID_DLG_Image_Placement);
 	
 	localizeLabel(glade_xml_get_widget(xml,"lblHeight"), pSS, XAP_STRING_ID_DLG_Image_Height);
 	localizeLabel(glade_xml_get_widget(xml,"lblWidth"), pSS, XAP_STRING_ID_DLG_Image_Width);
 	localizeLabel(glade_xml_get_widget(xml,"lblTitle"), pSS, XAP_STRING_ID_DLG_Image_LblTitle);
 	localizeLabel(glade_xml_get_widget(xml,"lblAlt"), pSS, XAP_STRING_ID_DLG_Image_LblAlt);
+
+	localizeLabel(glade_xml_get_widget(xml,"lblInLine"), pSS, XAP_STRING_ID_DLG_Image_InLine);
+	localizeLabel(glade_xml_get_widget(xml,"lblWrappedRight"), pSS, XAP_STRING_ID_DLG_Image_WrappedRight);
+	localizeLabel(glade_xml_get_widget(xml,"lblWrappedLeft"), pSS, XAP_STRING_ID_DLG_Image_WrappedLeft);
+	localizeLabel(glade_xml_get_widget(xml,"lblWrappedBoth"), pSS, XAP_STRING_ID_DLG_Image_WrappedBoth);
+
+	localizeLabel(glade_xml_get_widget(xml,"lblPlaceParagraph"), pSS, XAP_STRING_ID_DLG_Image_PlaceParagraph);
+	localizeLabel(glade_xml_get_widget(xml,"lblPlaceColumn"), pSS, XAP_STRING_ID_DLG_Image_PlaceColumn);
+	localizeLabel(glade_xml_get_widget(xml,"lblPlacePage"), pSS, XAP_STRING_ID_DLG_Image_PlacePage);
+
+	m_wPlaceTable = glade_xml_get_widget(xml,"tbPlacement");
+	m_wrbInLine = glade_xml_get_widget(xml,"rbInLine");
+	m_wrbWrappedRight = glade_xml_get_widget(xml,"rbWrappedRight");
+	m_wrbWrappedLeft = glade_xml_get_widget(xml,"rbWrappedLeft");
+	m_wrbWrappedBoth = glade_xml_get_widget(xml,"rbWrappedBoth");
+
+	m_wrbPlaceParagraph = glade_xml_get_widget(xml,"rbPlaceParagraph");
+	m_wrbPlaceColumn = glade_xml_get_widget(xml,"rbPlaceColumn");
+	m_wrbPlacePage = glade_xml_get_widget(xml,"rbPlacePage");
+
+// the check button already contains a label. We have to remove this
+// before we can localize it
+
+	gtk_container_remove(GTK_CONTAINER(m_wAspectCheck), gtk_bin_get_child(GTK_BIN(m_wAspectCheck)));
 	pSS->getValueUTF8 (XAP_STRING_ID_DLG_Image_Aspect,s);
 	gtk_button_set_label(GTK_BUTTON(m_wAspectCheck), s.utf8_str());
 
