@@ -232,25 +232,21 @@ Function getDictionary
 	!define DICT_LOCALE $R1
 	!define DICT_ARCH $R2
 
-	SetOutPath $TEMP
-	File unzip.exe
-
 	; Quietly download the file
-	NSISdl::download_quiet "${DICTIONARY_BASE}/abispell-${DICT_LANG}-${DICT_LOCALE}.${DICT_ARCH}.zip" "$TEMP\abispell-${DICT_LANG}-${DICT_LOCALE}.${DICT_ARCH}.zip"
+	NSISdl::download "${DICTIONARY_BASE}/abispell-${DICT_LANG}-${DICT_LOCALE}.${DICT_ARCH}.tar.gz" "$TEMP\abispell-${DICT_LANG}-${DICT_LOCALE}.${DICT_ARCH}.tar.gz"
 	StrCmp $0 "success" doDictInst
 		; Couldn't download the file
 		DetailPrint "Could not download requested dictionary:"
-		DetailPrint "  ${DICTIONARY_BASE}/abispell-${DICT_LANG}-${DICT_LOCALE}.${DICT_ARCH}.zip"
-		MessageBox MB_OK|MB_ICONEXCLAMATION|MB_DEFBUTTON1 "Failed to download ${DICTIONARY_BASE}/abispell-${DICT_LANG}-${DICT_LOCALE}.${DICT_ARCH}.zip"
+		DetailPrint "  ${DICTIONARY_BASE}/abispell-${DICT_LANG}-${DICT_LOCALE}.${DICT_ARCH}.tar.gz"
+		MessageBox MB_OK|MB_ICONEXCLAMATION|MB_DEFBUTTON1 "Failed to download ${DICTIONARY_BASE}/abispell-${DICT_LANG}-${DICT_LOCALE}.${DICT_ARCH}.tar.gz"
 	Goto Finish
 
 	doDictInst:
 		; Unzip dictionary into dictionary subdirecotry
-		ExecWait '"$TEMP\unzip.exe" "$TEMP\abispell-${DICT_LANG}-${DICT_LOCALE}.${DICT_ARCH}.zip" -d "$INSTDIR\dictionary"'
+		untgz::extract "-j" "$TEMP\abispell-${DICT_LANG}-${DICT_LOCALE}.${DICT_ARCH}.tar.gz" "-d" "$INSTDIR\dictionary"
 		
 		; Delete temporary files
-		Delete "$TEMP\unzip.exe"
-		Delete "$TEMP\abispell-${DICT_LANG}-${DICT_LOCALE}.${DICT_ARCH}.zip"
+		Delete "$TEMP\abispell-${DICT_LANG}-${DICT_LOCALE}.${DICT_ARCH}.tar.gz"
 
 	Finish:
 		!undef DICT_LANG
