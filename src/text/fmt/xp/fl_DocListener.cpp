@@ -500,6 +500,10 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 		{
 			if(pCon->getContainerType() != FL_CONTAINER_CELL)
 			{
+#ifdef DEBUG
+			m_pDoc->miniDump(sdh,6);
+#endif
+
 				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 				return false;
 			}
@@ -566,10 +570,10 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 		
 		fl_ContainerLayout * pCon = getTopContainerLayout();
 		fl_ContainerLayout*	pCL = NULL;
+		UT_DEBUGMSG(("!!!!Appending Table \n"));
 		if(pCon == NULL)
 		{
 			pCL = m_pCurrentSL->append(sdh, pcr->getIndexAP(),FL_CONTAINER_TABLE);
-			UT_DEBUGMSG(("SEVIOR: Appending Table: Table layout is %x \n",pCL));
 			if (!pCL)
 			{
 				UT_DEBUGMSG(("no memory for TableLayout"));

@@ -871,7 +871,6 @@ ie_imp_table::~ie_imp_table(void)
 	xxx_UT_DEBUGMSG(("SEVIOR: deleteing table %x table used %d \n",this,m_bTableUsed));
 	if(!m_bTableUsed)
 	{
-		//		UT_ASSERT(0);
 		_removeAllStruxes();
 	}
 	UT_VECTOR_PURGEALL(ie_imp_cell *,m_vecCells);
@@ -1216,17 +1215,35 @@ void ie_imp_table::writeAllCellPropsInDoc(void)
 				//				removeOnThisCellRow(pCell);
 				continue;
 			}
-			xxx_UT_DEBUGMSG(("writeallcellprops: pCell %d row %d left %d right %d top %d bot %d sdh %x \n",i,pCell->getRow(),pCell->getLeft(),pCell->getRight(),pCell->getTop(),pCell->getBot(),pCell->getCellSDH())); 
+			UT_DEBUGMSG(("writeallcellprops: pCell %d row %d left %d right %d top %d bot %d sdh %x \n",i,pCell->getRow(),pCell->getLeft(),pCell->getRight(),pCell->getTop(),pCell->getBot(),pCell->getCellSDH())); 
 		}
 		if(pCell->isMergedAbove() && (pCell->getCellSDH() != NULL))
 		{
 			UT_DEBUGMSG(("BUG!BUG! found a sdh is merged above cell! removing it \n"));
-			m_pDoc->deleteStruxNoUpdate(pCell->getCellSDH());
+			PL_StruxDocHandle cellSDH = pCell->getCellSDH();
+			PL_StruxDocHandle nextSDH = NULL;
+			m_pDoc->getNextStrux(cellSDH,&nextSDH);
+			m_pDoc->deleteStruxNoUpdate(cellSDH);
+			while((nextSDH != NULL) && (m_pDoc->getStruxType(nextSDH) != PTX_SectionCell))
+			{
+				cellSDH = nextSDH;
+				m_pDoc->getNextStrux(cellSDH,&nextSDH);
+				m_pDoc->deleteStruxNoUpdate(cellSDH);
+			}
 		}
 		if(pCell->isMergedLeft() && (pCell->getCellSDH() != NULL))
 		{
 			UT_DEBUGMSG(("BUG!BUG! found a sdh is merged left cell! removing it \n"));
-			m_pDoc->deleteStruxNoUpdate(pCell->getCellSDH());
+			PL_StruxDocHandle cellSDH = pCell->getCellSDH();
+			PL_StruxDocHandle nextSDH = NULL;
+			m_pDoc->getNextStrux(cellSDH,&nextSDH);
+			m_pDoc->deleteStruxNoUpdate(cellSDH);
+			while((nextSDH != NULL) && (m_pDoc->getStruxType(nextSDH) != PTX_SectionCell))
+			{
+				cellSDH = nextSDH;
+				m_pDoc->getNextStrux(cellSDH,&nextSDH);
+				m_pDoc->deleteStruxNoUpdate(cellSDH);
+			}
 		}
 #if DEBUG
 		if(pOldCell)
@@ -1619,7 +1636,7 @@ void ie_imp_table::removeOnThisCellRow(ie_imp_cell * pImpCell)
 	UT_sint32 row = pImpCell->getRow();
 	UT_DEBUGMSG(("Doing a delete on Row %d left %d top %d \n",row,pImpCell->getLeft(),pImpCell->getTop()));
 	deleteRow(row);
-	UT_ASSERT(0);
+	//	UT_ASSERT(0);
 }
 
 /*!

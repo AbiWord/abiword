@@ -1521,6 +1521,13 @@ void IE_Imp_RTF::OpenTable(bool bDontFlush)
 		}
 	}
 	m_TableControl.OpenTable();
+//
+// Need to have a block to append a table to
+//
+	if((m_TableControl.getNestDepth() > 1) && m_bCellBlank)
+	{
+		getDoc()->appendStrux(PTX_Block,NULL);
+	}
 	getDoc()->appendStrux(PTX_SectionTable,NULL);
 	UT_DEBUGMSG(("SEVIOR: Appending Table strux to doc nestdepth %d \n", m_TableControl.getNestDepth()));
 	PL_StruxDocHandle sdh = getDoc()->getLastStruxOfType(PTX_SectionTable);
@@ -1581,10 +1588,7 @@ void IE_Imp_RTF::CloseTable(void)
 //			getDoc()->insertStruxNoUpdateBefore(m_lastCellSDH,PTX_Block,NULL);
 			PL_StruxDocHandle cellSDH = m_lastCellSDH;
 			getDoc()->deleteStruxNoUpdate(cellSDH);
-			if(m_bCellBlank)
-			{
-				m_bEndTableOpen = true;
-			}
+			m_bEndTableOpen = true;
 		}
 		m_TableControl.CloseTable();
 		if(m_lastCellSDH == NULL)
@@ -1691,8 +1695,17 @@ void IE_Imp_RTF::HandleCell(void)
 		getTable()->setPosOnRow(pos);
 		UT_DEBUGMSG(("SEVIOR: created cell %x for posOnRow %d \n",getCell(),getTable()->getPosOnRow()));
 	}
-	UT_DEBUGMSG(("SEVIOR: set cell sdh %x  at pos %d on row %d \n",sdh,getTable()->getPosOnRow(),getTable()->getRow()));
+	UT_DEBUGMSG(("SEVIOR: set cell %x sdh %x  at pos %d on row %d \n",getCell(),sdh,getTable()->getPosOnRow(),getTable()->getRow()));
 	getTable()->setNthCellOnThisRow(getTable()->getPosOnRow());
+	if(getCell()->isMergedAbove())
+	{
+		UT_DEBUGMSG(("Cell %x is merged Above \n"));
+	} 
+	if(getCell()->isMergedLeft())
+	{
+		UT_DEBUGMSG(("Cell %x is merged left \n"));
+	} 
+
 	if(!getCell()->isMergedAbove() && !getCell()->isMergedLeft())
 	{
 		getCell()->setCellSDH(sdh);
@@ -1730,6 +1743,10 @@ void IE_Imp_RTF::FlushCellProps(void)
 	if(m_currentRTFState.m_cellProps.m_bVerticalMerged)
 	{
 		UT_DEBUGMSG(("Set merged above to cell %x \n",getCell()));
+	}
+	if(m_currentRTFState.m_cellProps.m_bHorizontalMerged)
+	{
+		UT_DEBUGMSG(("Set merged left to cell %x \n",getCell()));
 	}
 	getCell()->setMergeAbove( m_currentRTFState.m_cellProps.m_bVerticalMerged );
 	getCell()->setFirstVerticalMerge( m_currentRTFState.m_cellProps.m_bVerticalMergedFirst );

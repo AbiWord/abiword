@@ -92,6 +92,7 @@ fl_TableLayout::fl_TableLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh,
 	  m_iRowHeightType(FL_ROW_HEIGHT_NOT_DEFINED),
 	  m_iRowHeight(0)
 {
+	UT_DEBUGMSG(("Created Table Layout %x \n",this));
 	UT_ASSERT(pLayout);
 	m_vecColProps.clear();
 	m_vecRowProps.clear();
@@ -1786,7 +1787,7 @@ void fl_CellLayout::_lookupProperties(void)
 	pSectionAP->getProperty("right-attach", (const XML_Char *&)pszRightAttach);
 	pSectionAP->getProperty("top-attach", (const XML_Char *&)pszTopAttach);
 	pSectionAP->getProperty("bot-attach", (const XML_Char *&)pszBottomAttach);
-	xxx_UT_DEBUGMSG(("CellLayout _lookupProps top %s bot %s left %s right %s \n",pszTopAttach,pszBottomAttach,pszLeftAttach,pszRightAttach)); 
+	UT_DEBUGMSG(("CellLayout _lookupProps top %s bot %s left %s right %s \n",pszTopAttach,pszBottomAttach,pszLeftAttach,pszRightAttach)); 
 	if(pszLeftAttach && pszLeftAttach[0])
 	{
 		m_iLeftAttach = atoi(pszLeftAttach);

@@ -1688,8 +1688,8 @@ void s_RTF_ListenerWriteDoc::_open_cell(PT_AttrPropIndex api)
 // We don't output these cell's if they're horiztonally merged too.
 //
 				{
-					UT_sint32 iRight = getRightOfCell(m_Table.getCurRow(),m_iRight + i);
-					if(iRight == (m_iRight + i +1))
+					UT_sint32 iRight = getRightOfCell(m_Table.getCurRow(),i);
+					if(iRight == (i +1))
 					{
 						m_pie->_rtf_keyword("cell");
 					}
@@ -1700,8 +1700,8 @@ void s_RTF_ListenerWriteDoc::_open_cell(PT_AttrPropIndex api)
 				for(i = m_iRight; i < m_Table.getLeft(); i++)
 				{
 					UT_DEBUGMSG(("Writing nestcell in wrong spot 2 \n"));
-					UT_sint32 iRight = getRightOfCell(m_Table.getCurRow(),m_iRight + i);
-					if(iRight == (m_iRight + i +1))
+					UT_sint32 iRight = getRightOfCell(m_Table.getCurRow(),i);
+					if(iRight == (i +1))
 					{
 						m_pie->_rtf_keyword("nestcell");
 					}
