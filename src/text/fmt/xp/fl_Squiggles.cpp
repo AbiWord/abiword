@@ -110,6 +110,13 @@ fl_Squiggles::_purge(void)
  \result iIndex Index of POB, or index of last POB+1
  \return True if found, otherwise false
 
+ \note Callers may use the iIndex result even if the search fails:
+       this allows them to look at the last POB on the line which may
+       span the point they are looking for (remember this function
+       finds the squiggle past a given offset, not the one spanning it
+       - there may well be a squiggle spanning a point without there
+       being further squiggles behind it).
+
  \fixme This function should be rewritten using binary search
 */
 bool
@@ -146,6 +153,11 @@ fl_Squiggles::_find(UT_sint32 iOffset) const
 	UT_sint32 iIndex;
 
 	_findFirstAfter(iOffset, iIndex);
+	// Note that the return value is not checked: either there is no
+	// POBs at all, in which case we'll catch it in the statement
+	// below (no previous POB). Otherwise we want to look at the last
+	// POB on the line since it may span past iOffset.
+
 	// If no previous POB, return
 	if (0 == iIndex) return -1;
 
@@ -666,8 +678,15 @@ fl_Squiggles::findRange(UT_sint32 iStart, UT_sint32 iEnd,
 	UT_sint32 s, e;
 	// Look for the first POB.start that is higher than the end offset
 	_findFirstAfter(iEnd, e);
-	// Return with empty set if the first POB's offset is higher than
-	// the region end.
+	// Note that the return value is not checked: either there is no
+	// POBs at all, in which case we'll catch it in the statement
+	// below (first POB's offset past end point). Otherwise we want to
+	// look at the last POB on the line since it may span past
+	// iOffset.
+
+	// Return with empty set if the offset of the first POB on the
+	// line is higher than the region end (i.e. there is no previous
+	// POB that could span the region end).
 	if (0 == e)
 	{
 		UT_ASSERT(getNth(0)->getOffset() > iEnd);
