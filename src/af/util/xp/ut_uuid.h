@@ -3,6 +3,9 @@
  *
  * Based on libuuid
  * Copyright (C) 1996, 1997, 1998 Theodore Ts'o.
+ *
+ * The hash functions use Fowler/Noll/Vo (FNV) public domain algorithm;
+ * see http://www.isthe.com/chongo/tech/comp/fnv/index.html
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -35,7 +38,7 @@
 
 #ifdef WIN32
 #  include <winsock.h> // this is where timeval etc is defined ...
-#  include <rpc.h>   // this is where uuid_t is define
+#  include <rpc.h>     // this is where uuid_t is defined ...
 #else
 #  include <sys/time.h> // this is where timeval should be ...
 #  include <sys/uuid.h> // this is where uuid_t should be ...
@@ -46,11 +49,11 @@ class UT_String;
 /* UUID Variant definitions */
 typedef enum
 {
-		UUID_VARIANT_NCS = 0,
-		UUID_VARIANT_DCE = 1,
-		UUID_VARIANT_MICROSOFT = 2,
-		UUID_VARIANT_OTHER = 3,
-		UUID_VARIANT_ERROR = 0xffffffff
+	UUID_VARIANT_NCS = 0,
+	UUID_VARIANT_DCE = 1,
+	UUID_VARIANT_MICROSOFT = 2,
+	UUID_VARIANT_OTHER = 3,
+	UUID_VARIANT_ERROR = 0xffffffff
 } UT_UUIDVariant;
 
 #if 0
@@ -94,40 +97,52 @@ class ABI_EXPORT UT_UUID
 {
   public:
 	/*
-	   all constructors are protected; instances of UT_UUID will be
-	   created through UT_UUIDGenerator declared below
+	   All constructors are protected; instances of UT_UUID will be
+	   created through UT_UUIDGenerator declared below.
 	*/
 	
-	/* virtual destructor*/
+	/* virtual destructor */
 	virtual ~UT_UUID (){};
 
-	// these generate new UUIDs
-	bool            makeUUID();
-	bool            makeUUID(UT_String & s);
-	bool            makeUUID(uuid_t & u);
+	/*
+	   Various manipulation functions; in general functions that take
+	   some kind of an output parameter (usually named 'out' or 'to'
+	   below) DO NOT modifiy internal state of the class, and return
+	   value of 'true' indicates success.
+	*/
+	
+	/* These generate new UUIDs */
+	bool            makeUUID();                // changes internal state
+	bool            makeUUID(UT_String & out); // does not change internal state !!!
+	bool            makeUUID(uuid_t & out);    // does not change internal state !!!
 
-	// these set m_uuid to given UUID
+	/* these set m_uuid to given UUID, i.e., force internal state change */ 
 	bool            setUUID(const UT_String &s);
 	bool            setUUID(const char *s);
 	bool            setUUID(const uuid_t &uu);
 
-	// get it in standard uuid_t format
-	bool            getUUID(uuid_t &u) const {return _pack(m_uuid,u);}
+	/* get internal state in standard uuid_t format */
+	bool            getUUID(uuid_t &out) const {return _pack(m_uuid,out);}
 	
-	/* convert uuid to and from strings */
-	bool            fromString(const UT_String &from) {return setUUID(from);}
+	/* create uuid from string; do not change internal state !!! */
 	bool            fromString(const UT_String &from, uuid_t &to) const;
 	bool            fromString(const char * from, uuid_t &to) const;
 
+	/* translate uuid into string representation; do not change
+	   internal state */
 	bool            toString(UT_String & to) const;
 	bool            toString(const uuid_t &from, UT_String & to) const;
 
+	/* create FNV hash of the uuid */
 	UT_uint32       hash32() const;
 	UT_uint64       hash64() const;
-	
+
+	/* return a NULL uuid; useful in fuction that return reference to
+	   UT_UUID to indicate failure */
 	static const UT_UUID & getNull() {return s_Null;}
 
-	// these retrieve various information from UUID
+	/* these retrieve various information from UUID; internal and
+	   external variants */
 	time_t          getTime() const;
 	time_t          getTime(const uuid_t & u) const;
 	
@@ -137,7 +152,8 @@ class ABI_EXPORT UT_UUID
 	UT_UUIDVariant  getVariant() const;
 	UT_UUIDVariant  getVariant(const uuid_t &uu) const;
 
-	// NB: these are spatial operators, not temporal ...
+	/* NB: these are operators over the UUID space, not temporal
+	   operators !!! */
 	bool            operator ==(const UT_UUID &u) const;
 	bool            operator !=(const UT_UUID &u) const;
 	bool            operator < (const UT_UUID &u) const;
@@ -145,7 +161,7 @@ class ABI_EXPORT UT_UUID
 
 	UT_UUID &       operator = (const UT_UUID &u);
 	
-	// temporal comparisons
+	/* temporal comparisons */
 	bool            isOlder(const UT_UUID &u) const;
 	bool            isYounger(const UT_UUID &u) const;
 	bool            isOfSameAge(const UT_UUID &u) const;
@@ -153,20 +169,23 @@ class ABI_EXPORT UT_UUID
 	bool            isValid() const {return m_bIsValid;}
 	bool            isNull() const;
 
+	/* reset internal state to NULL uuid */
 	void            clear();
 	
-   protected:
+  protected:
 	friend class UT_UUIDGenerator;
-	/* various protected constructors */
-	UT_UUID(); // constructs NULL uuid; subsequent call to makeUUID() needed
-	UT_UUID(const UT_String &s);
-	UT_UUID(const char *s);
-	UT_UUID(const uuid_t &u);
-	UT_UUID(const UT_UUID &u);
-
 	
-	// can be ovewritten when a better source of randomness than
-	// UT_rand() is available on given platform
+	/* various protected constructors */
+	
+	UT_UUID(); // constructs NULL uuid; subsequent call to makeUUID() needed to initialise
+	UT_UUID(const UT_String &s); // initialises from string
+	UT_UUID(const char *s);      // initialises from string
+	UT_UUID(const uuid_t &u);    // initialises from uuid_t
+	UT_UUID(const UT_UUID &u);   // copy constructor
+
+	/* the following funciton can be ovewritten when a better source
+	   of randomness than UT_rand() is available on given platform
+	   (see ut_Win32Uuid.h/cpp for an example) */
 	virtual bool    _getRandomBytes(void *buf, int nbytes);
 	
   private:
@@ -196,12 +215,12 @@ class ABI_EXPORT UT_UUID
 };
 
 /*
-    This class mediates creation of UT_UUID class.
+    This class mediates creation of UT_UUID instances.
     
     We create an instance of UT_UUIDGeneratr (or derived) class in
     XAP_App() and have XAP_App::getUUIDGenerator() to gain access to
-    it.  This allows us to create platform specific instances of
-    UT_UUID from xp code.
+    it.  This allows us to create platform specific instances in place
+    for generic UT_UUID from xp code.
 */
 class ABI_EXPORT UT_UUIDGenerator
 {

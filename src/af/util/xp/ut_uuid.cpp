@@ -34,7 +34,8 @@ UT_UUID         UT_UUID::s_Null;
 
 /*!
     This constructor is used if the object is only used to generate new UUIDs
-    or if the uuid is to be set subsequently by setUUID()
+    or if the uuid is to be set subsequently by setUUID(); it creates
+    a NULL uuid
 */
 UT_UUID::UT_UUID ()
 	:m_bIsValid(false)
@@ -70,7 +71,7 @@ UT_UUID::UT_UUID(const uuid_t &u)
     _unpack(u, m_uuid);
 }
 
-/* copy constructor */
+/*! copy constructor */
 UT_UUID::UT_UUID(const UT_UUID &u)
 {
 	m_uuid = u.m_uuid;
@@ -78,15 +79,14 @@ UT_UUID::UT_UUID(const UT_UUID &u)
 }
 
 
-
 /*!
-    Converts string represenation of UUID to uuid_t
+    Converts string represenation of UUID to uuid_t; does not modify
+    internal state
 */
 bool UT_UUID::fromString(const UT_String &s, uuid_t &u) const
 {
 	return fromString(s.c_str(), u);
 }
-
 
 bool UT_UUID::fromString(const char * in, uuid_t &u) const
 {
@@ -200,7 +200,7 @@ bool UT_UUID::_toString(const uuid &uu, UT_String & s) const
 }
 
 /*!
-    convert uuid_t to a string
+    convert uuid_t to a string; does not modify internal state
  */
 bool UT_UUID::toString(const uuid_t &uu, UT_String & s) const
 {
@@ -211,6 +211,9 @@ bool UT_UUID::toString(const uuid_t &uu, UT_String & s) const
 	return bRet;
 }
 
+/*!
+    convert internal state to string
+*/
 bool UT_UUID::toString(UT_String & s) const
 {
 	UT_return_val_if_fail(m_bIsValid, false);
@@ -249,7 +252,7 @@ bool UT_UUID::_unpack(const uuid_t &in, uuid &uu) const
 }
 
 /*!
-    Set internal UUID to the given value
+    Set internal state to the given value represented by string
 */
 bool UT_UUID::setUUID(const UT_String &s)
 {
@@ -299,14 +302,14 @@ bool UT_UUID::makeUUID(uuid_t & u)
 }
 
 /*!
-    retrive the time at which the UUID was created
+    retrive the time at which the UUID was created; internal and
+    external variant
 */
 time_t UT_UUID::getTime() const
 {
 	UT_return_val_if_fail(m_bIsValid, 0xffffffff);
 	return _getTime(m_uuid);
 }
-
 
 time_t UT_UUID::getTime(const uuid_t & uu) const
 {
@@ -333,7 +336,7 @@ time_t UT_UUID::_getTime(const struct uuid & uuid) const
 }
 
 /*!
-    get the type of the UUID
+    get the type of the UUID; internal and external variant
 */
 UT_sint32 UT_UUID::getType() const
 {
@@ -357,7 +360,7 @@ UT_sint32 UT_UUID::_getType(const struct uuid &uuid) const
 }
 
 /*!
-    get the variant of the UUID
+    get the variant of the UUID; internal and external version
 */
 UT_UUIDVariant UT_UUID::getVariant() const
 {
@@ -389,8 +392,8 @@ UT_UUIDVariant UT_UUID::_getVariant(const struct uuid &uuid) const
     return UUID_VARIANT_OTHER;
 }
 
-/*
- * Generate a series of random bytes. 
+/*!
+    Generate a series of random bytes. 
  */
 bool UT_UUID::_getRandomBytes(void *buf, UT_sint32 nbytes)
 {
@@ -489,6 +492,9 @@ bool UT_UUID::_makeUUID(uuid &uu)
 	return bRet;
 }
 
+/*!
+    comparison operators working over the UUID space (not temporal !!!)
+*/
 bool UT_UUID::operator ==(const UT_UUID &u) const
 {
 	if(m_uuid.time_low != u.m_uuid.time_low)
@@ -569,6 +575,9 @@ bool UT_UUID::operator >(const UT_UUID &u) const
 	return false;
 }
 
+/*!
+    Assignment operator.
+*/
 UT_UUID & UT_UUID::operator = (const UT_UUID &u)
 {
 	m_uuid = u.m_uuid;
@@ -576,7 +585,9 @@ UT_UUID & UT_UUID::operator = (const UT_UUID &u)
 	return *this;
 }
 
-
+/*!
+    Operators for temporal comparisons.
+*/
 bool UT_UUID::isYounger(const UT_UUID &u) const
 {
 	if((m_uuid.time_high_and_version & 0xFFF) > (u.m_uuid.time_high_and_version & 0xFFF))
@@ -645,34 +656,30 @@ bool UT_UUID::isNull() const
 	return true;
 }
 
+/*!
+    Reset internal state to NULL uuid
+*/
 void UT_UUID::clear()
 {
 	memset(&(this->m_uuid), 0, sizeof(m_uuid));
 	m_bIsValid = false;
 }
 
-/* Fowler/Noll/Vo hashing
- * FNV is a public domain hashing algorithm; see
- * 
- *      http://www.isthe.com/chongo/tech/comp/fnv/index.html
- *
- * perform a 32 bit Fowler/Noll/Vo hash on a buffer
- *
+/* 
+    perform a 32 bit Fowler/Noll/Vo hash on a buffer
  */
 UT_uint32 UT_UUID::hash32() const
 {
 	static UT_uint32 hval = 0x811c9dc5;
     unsigned char *bp = (unsigned char *)&m_uuid;
 
-
 	for(UT_uint32 i = 0; i < sizeof(m_uuid); ++i)
 	{
-		
-	/* multiply by the 32 bit FNV magic prime mod 2^32 */
-	hval *= 0x01000193;
+		/* multiply by the 32 bit FNV magic prime mod 2^32 */
+		hval *= 0x01000193;
 
-	/* xor the bottom with the current octet */
-	hval ^= (UT_uint32)*bp++;
+		/* xor the bottom with the current octet */
+		hval ^= (UT_uint32)*bp++;
     }
 
     /* return our new hash value */
@@ -680,7 +687,7 @@ UT_uint32 UT_UUID::hash32() const
 }
 
 /*!
- * perform a 64 bit Fowler/Noll/Vo hash
+    perform a 64 bit Fowler/Noll/Vo hash
  */
 UT_uint64 UT_UUID::hash64() const
 {
@@ -709,7 +716,7 @@ UT_UUID::__test()
 {
 #if 0
 	// test hashes ...
-	UT_DEBUGMSG(("------------------- Testing 32-bit hash --------------------------------"));
+	UT_DEBUGMSG(("-------------------------- Testing hash --------------------------------"));
 	UT_UUID u;
 	UT_uint64 h;
 #ifdef UT_BIG_ENDIAN
