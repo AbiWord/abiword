@@ -33,8 +33,8 @@ class UT_ByteBuf;
 ABI_EXPORT bool UT_Base64Encode(UT_ByteBuf * pDest, const UT_ByteBuf * pSrc);
 ABI_EXPORT bool UT_Base64Decode(UT_ByteBuf * pDest, const UT_ByteBuf * pSrc);
 
-ABI_EXPORT bool UT_UTF8_Base64Encode(char *& b64ptr, UT_uint32 & b64len, const char *& binptr, UT_uint32 & binlen);
-ABI_EXPORT bool UT_UTF8_Base64Decode(char *& binptr, UT_uint32 & binlen, const char *& b64ptr, UT_uint32 & b64len);
+ABI_EXPORT bool UT_UTF8_Base64Encode(char *& b64ptr, size_t & b64len, const char *& binptr, size_t & binlen);
+ABI_EXPORT bool UT_UTF8_Base64Decode(char *& binptr, size_t & binlen, const char *& b64ptr, size_t & b64len);
 
 #ifdef UT_TEST
 #include "ut_test.h"

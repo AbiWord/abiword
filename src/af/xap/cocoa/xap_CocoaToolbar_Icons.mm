@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2001 Hubert Figuiere
@@ -22,10 +24,12 @@
 
 #include <stdio.h>
 #include <string.h>
-#include "ut_types.h"
+
 #include "ut_misc.h"
 #include "ut_hash.h"
 #include "ut_assert.h"
+#include "ut_string.h"
+
 #include "xap_CocoaToolbar_Icons.h"
 
 AP_CocoaToolbar_Icons::AP_CocoaToolbar_Icons(void)

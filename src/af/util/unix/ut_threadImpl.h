@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Program Utilities
  * Copyright (C) 2002 Dom Lachowicz <cinamod@hotmail.com>
  *
@@ -19,10 +21,11 @@
 #ifndef UT_THREADIMPL_H
 #define UT_THREADIMPL_H
 
+#include <glib.h>
+
 #include "ut_thread.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
-#include <glib.h>
 
 class ABI_EXPORT UT_ThreadImpl
 {
@@ -44,6 +47,8 @@ class ABI_EXPORT UT_ThreadImpl
 	 */
 	void start ()
     {
+		 if (!g_thread_supported ()) g_thread_init (NULL);
+
 		 UT_Thread::Priority pri = mOwner->getPriority () ;
 		 
 		 GError * err = NULL ;

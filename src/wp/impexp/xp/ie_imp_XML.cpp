@@ -28,16 +28,21 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_string.h"
-#include "ie_imp_XML.h"
-#include "ie_types.h"
-#include "pd_Document.h"
 #include "ut_bytebuf.h"
 #include "ut_hash.h"
+#include "ut_string_class.h"
+
+#include "xap_EncodingManager.h"
+#ifdef ENABLE_RESOURCE_MANAGER
+#include "xap_ResourceManager.h"
+#endif
+
+#include "pd_Document.h"
 
 #include "ap_Prefs.h"
 
-#include "xap_EncodingManager.h"
-#include "ut_string_class.h"
+#include "ie_imp_XML.h"
+#include "ie_types.h"
 
 /*****************************************************************/
 /*****************************************************************/
@@ -235,6 +240,7 @@ void IE_Imp_XML::charData(const XML_Char *s, int len)
 	case _PS_DataItem:
 	{
 #ifdef ENABLE_RESOURCE_MANAGER
+		XAP_ResourceManager & RM = getDoc()->resourceManager ();
 		XAP_Resource * resource = RM.current ();
 		if (resource == 0) break;
 		if (!resource->bInternal) break;
@@ -242,7 +248,7 @@ void IE_Imp_XML::charData(const XML_Char *s, int len)
 
 		if (m_currentDataItemEncoded) // base64-encoded data
 			{
-				re->buffer (s, len, true);
+				ri->buffer (s, len, true);
 			}
 		else // old file-format keeping MathML & SVG in CDATA section :-(
 			{

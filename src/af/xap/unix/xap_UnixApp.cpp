@@ -98,7 +98,7 @@ XAP_UnixApp::~XAP_UnixApp()
 
 bool XAP_UnixApp::initialize()
 {
-	g_thread_init(NULL);
+	if (!g_thread_supported ()) g_thread_init (NULL);
 
 	// initialize GTK first.
 	

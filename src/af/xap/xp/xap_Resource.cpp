@@ -93,8 +93,8 @@ const char * XAP_InternalResource::buffer (const char * new_buffer, UT_uint32 ne
 	const char * b64ptr = new_buffer;
 	char * binptr = m_buffer;
 
-	UT_uint32 b64len = new_buffer_length;
-	UT_uint32 binlen = buffer_length;
+	size_t b64len = new_buffer_length;
+	size_t binlen = buffer_length;
 
 	if (UT_UTF8_Base64Decode (binptr, binlen, b64ptr, b64len))
 		{
@@ -118,8 +118,8 @@ UT_Error XAP_InternalResource::write_base64 (void * context, Writer & writer) //
 		{
 			char * b64ptr = b64buf;
 
-			UT_uint32 binlen = 54;
-			UT_uint32 b64len = 72;
+			size_t binlen = 54;
+			size_t b64len = 72;
 
 			if (!UT_UTF8_Base64Encode (b64ptr, b64len, binptr, binlen))
 				{
@@ -139,8 +139,8 @@ UT_Error XAP_InternalResource::write_base64 (void * context, Writer & writer) //
 		{
 			char * b64ptr = b64buf;
 
-			UT_uint32 binlen = buffer_length;
-			UT_uint32 b64len = 72;
+			size_t binlen = buffer_length;
+			size_t b64len = 72;
 
 			if (!UT_UTF8_Base64Encode (b64ptr, b64len, binptr, binlen))
 				{

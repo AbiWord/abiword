@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -19,9 +21,12 @@
 
 #include "ut_assert.h"
 #include "ut_vector.h"
+
+#include "xap_Frame.h"
+#include "xap_App.h"
+
 #include "ap_CocoaToolbar_ZoomCombo.h"
 #include "ap_Toolbar_Id.h"
-#include "xap_Frame.h"
 
 /*****************************************************************/
 EV_Toolbar_Control * AP_CocoaToolbar_ZoomCombo::static_constructor(EV_Toolbar * pToolbar,

@@ -1,5 +1,6 @@
-/* -*-c++-*-
- * AbiWord
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
+/* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
  * Copyright (C) 2001 Hubert Figuiere
  * Copyright (C) 2002 Francis James Franklin <fjf@alinameridon.com>
@@ -140,7 +141,7 @@ AP_CocoaApp::~AP_CocoaApp(void)
   /todo Do domething with error status if the directory couldn't be
 	created? 
 */
-static bool s_createDirectoryIfNecessary(const char * szDir)
+static bool s_createDirectoryIfNecessary(const char * szDir, bool publicdir = false)
 {
     struct stat statbuf;
     
@@ -152,13 +153,16 @@ static bool s_createDirectoryIfNecessary(const char * szDir)
 		UT_DEBUGMSG(("Pathname [%s] is not a directory.\n",szDir));
 		return false;
     }
-    
-    if (mkdir(szDir,0700) == 0)
-		return true;
-    
-    
-    UT_DEBUGMSG(("Could not create Directory [%s].\n",szDir));
-    return false;
+
+	bool success = true;
+    mode_t old_mask = umask (0);
+    if (mkdir (szDir, publicdir ? 0775 : 0700))
+		{   
+			UT_DEBUGMSG(("Could not create Directory [%s].\n",szDir));
+			success = false;
+		}
+	umask (old_mask);
+	return success;
 }	
 
 /*!
@@ -172,7 +176,29 @@ static bool s_createDirectoryIfNecessary(const char * szDir)
 bool AP_CocoaApp::initialize(void)
 {
     const char * szUserPrivateDirectory = getUserPrivateDirectory();
-    bool bVerified = s_createDirectoryIfNecessary(szUserPrivateDirectory);
+
+    bool bVerified = false;
+	if (szUserPrivateDirectory)
+		{
+			static const char * suffix = "/Application Support/AbiSuite";
+			int suffix_length = strlen (suffix);
+			int usrprv_length = strlen (szUserPrivateDirectory);
+			if (usrprv_length > suffix_length)
+				if (strcmp (szUserPrivateDirectory + (usrprv_length - suffix_length), suffix) == 0)
+					{
+						UT_String path(szUserPrivateDirectory, usrprv_length - suffix_length);
+
+						if (s_createDirectoryIfNecessary (path.c_str ()))
+							{
+								path += "/Application Support";
+								if (s_createDirectoryIfNecessary (path.c_str ()))
+									{
+										path += "/AbiSuite";
+										if (s_createDirectoryIfNecessary (path.c_str ())) bVerified = true;
+									}
+							}
+					}
+		}
     UT_ASSERT(bVerified);
 	
     // load the preferences.
@@ -611,91 +637,99 @@ static bool s_dir_exists (const char * dirname)
  */
 void AP_CocoaApp::loadAllPlugins ()
 {
-  /* 1. TODO: Load from AbiWord.app/Contents/Plug-ins
-   */
-  NSString * app_path = [[NSBundle mainBundle] bundlePath];
-  if (app_path)
-    {
-      NSString * plugin_path = [app_path stringByAppendingString:@"/Contents/Plug-ins"];
-      UT_DEBUGMSG(("FJF: path to bundle's plug-ins: %s\n",[plugin_path lossyCString]));
-    }
+	/* 1. TODO: Load from AbiWord.app/Contents/Plug-ins
+	 */
+	NSString * app_path = [[NSBundle mainBundle] bundlePath];
+	if (app_path)
+		{
+			NSString * plugin_path = [app_path stringByAppendingString:@"/Contents/Plug-ins"];
+			UT_DEBUGMSG(("FJF: path to bundle's plug-ins: %s\n",[plugin_path lossyCString]));
+		}
 
-  /* 2. Load from:
-   *  a. "/Library/Application Support/AbiSuite/Plug-ins"
-   *  b. "$HOME/Library/Application Support/AbiSuite/Plug-ins"
-   */
-  int support_dir_count = 0;
+	/* 2. Load from:
+	 *  a. "/Library/Application Support/AbiSuite/Plug-ins"
+	 *  b. "$HOME/Library/Application Support/AbiSuite/Plug-ins"
+	 */
+	int support_dir_count = 0;
 
-  UT_String support_dir[2];
+	UT_String support_dir[2];
 
-  support_dir[0] = "/Library/Application Support/AbiSuite/Plug-ins";
-  if (!s_dir_exists (support_dir[0].c_str()))
-    {
-      UT_DEBUGMSG(("FJF: %s: no such directory\n",support_dir[0].c_str()));
-    }
-  else
-    {
-      UT_DEBUGMSG(("FJF: adding to plug-in search path: %s\n",support_dir[0].c_str()));
-      support_dir_count++;
-    }
+	support_dir[0] = "/Library/Application Support/AbiSuite/Plug-ins";
 
-  const char * homedir = getUserPrivateDirectory ();
-  if (homedir == 0)
-    {
-      UT_DEBUGMSG(("FJF: no home directory?\n"));
-    }
-  else if (!s_dir_exists (homedir))
-    {
-      UT_DEBUGMSG(("FJF: invalid home directory?\n"));
-    }
-  else
-    {
-      UT_String plugin_dir(homedir);
-      plugin_dir += "/Plug-ins";
-      if (!s_dir_exists (plugin_dir.c_str()))
-	{
-	  UT_DEBUGMSG(("FJF: %s: no such directory\n",plugin_dir.c_str()));
-	}
-      else
-	{
-	  UT_DEBUGMSG(("FJF: adding to plug-in search path: %s\n",plugin_dir.c_str()));
-	  support_dir[support_dir_count++] = plugin_dir;
-	}
-    }
+	/* create the system plugins directory - if we can...
+	 */
+	if (s_createDirectoryIfNecessary ("/Library", true))
+		if (s_createDirectoryIfNecessary ("/Library/Application Support", true))
+			if (s_createDirectoryIfNecessary ("/Library/Application Support/AbiSuite", true))
+				s_createDirectoryIfNecessary ("/Library/Application Support/AbiSuite/Plug-ins", true);
 
-  for (int i = 0; i < support_dir_count; i++)
-    {
-      struct dirent ** namelist = 0;
-      int n = scandir (support_dir[i].c_str(), &namelist, s_Abi_only, alphasort);
-      UT_DEBUGMSG(("DOM: found %d plug-ins in %s\n", n, support_dir[i].c_str()));
-      if (n == 0) continue;
+	if (!s_dir_exists (support_dir[0].c_str()))
+		{
+			UT_DEBUGMSG(("FJF: %s: no such directory\n",support_dir[0].c_str()));
+		}
+	else
+		{
+			UT_DEBUGMSG(("FJF: adding to plug-in search path: %s\n",support_dir[0].c_str()));
+			support_dir_count++;
+		}
 
-      UT_String plugin_path;
-      while (n--)
-	{
-	  plugin_path  = support_dir[i];
-	  plugin_path += '/';
-	  plugin_path += namelist[n]->d_name;
+	const char * homedir = getUserPrivateDirectory ();
+	if (homedir == 0)
+		{
+			UT_DEBUGMSG(("FJF: no home directory?\n"));
+		}
+	else if (!s_dir_exists (homedir))
+		{
+			UT_DEBUGMSG(("FJF: invalid home directory?\n"));
+		}
+	else
+		{
+			UT_String plugin_dir(homedir);
+			plugin_dir += "/Plug-ins";
+			if (!s_createDirectoryIfNecessary (plugin_dir.c_str()))
+				{
+					UT_DEBUGMSG(("FJF: %s: no such directory\n",plugin_dir.c_str()));
+				}
+			else
+				{
+					UT_DEBUGMSG(("FJF: adding to plug-in search path: %s\n",plugin_dir.c_str()));
+					support_dir[support_dir_count++] = plugin_dir;
+				}
+		}
 
-	  UT_DEBUGMSG(("DOM: loading plugin %s\n", plugin_path.c_str()));
-	  if (XAP_ModuleManager::instance().loadModule (plugin_path.c_str()))
-	    {
-	      UT_DEBUGMSG(("DOM: loaded plug-in: %s\n", namelist[n]->d_name));
-	    }
-	  else
-	    {
-	      UT_DEBUGMSG(("DOM: didn't load plug-in: %s\n", namelist[n]->d_name));
-	    }
+	for (int i = 0; i < support_dir_count; i++)
+		{
+			struct dirent ** namelist = 0;
+			int n = scandir (support_dir[i].c_str(), &namelist, s_Abi_only, alphasort);
+			UT_DEBUGMSG(("DOM: found %d plug-ins in %s\n", n, support_dir[i].c_str()));
+			if (n == 0) continue;
 
-	  free (namelist[n]);
-	}
-      free (namelist);
-    }
+			UT_String plugin_path;
+			while (n--)
+				{
+					plugin_path  = support_dir[i];
+					plugin_path += '/';
+					plugin_path += namelist[n]->d_name;
 
-  /* SPI modules don't register automatically on loading, so
-   * now that we've loaded the modules we need to register them:
-   */
-  XAP_ModuleManager::instance().registerPending ();
+					UT_DEBUGMSG(("DOM: loading plugin %s\n", plugin_path.c_str()));
+					if (XAP_ModuleManager::instance().loadModule (plugin_path.c_str()))
+						{
+							UT_DEBUGMSG(("DOM: loaded plug-in: %s\n", namelist[n]->d_name));
+						}
+					else
+						{
+							UT_DEBUGMSG(("DOM: didn't load plug-in: %s\n", namelist[n]->d_name));
+						}
+
+					free (namelist[n]);
+				}
+			free (namelist);
+		}
+
+	/* SPI modules don't register automatically on loading, so
+	 * now that we've loaded the modules we need to register them:
+	 */
+	XAP_ModuleManager::instance().registerPending ();
 }
 
 /*****************************************************************/

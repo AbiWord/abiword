@@ -213,7 +213,7 @@ static bool s_UTF8_B64Decode (char c, int & b64)
 	return false;
 }
 
-bool ABI_EXPORT UT_UTF8_Base64Encode(char *& b64ptr, UT_uint32 & b64len, const char *& binptr, UT_uint32 & binlen)
+bool ABI_EXPORT UT_UTF8_Base64Encode(char *& b64ptr, size_t & b64len, const char *& binptr, size_t & binlen)
 {
 	while ((binlen >= 3) && (b64len >= 4))
 		{
@@ -261,7 +261,7 @@ bool ABI_EXPORT UT_UTF8_Base64Encode(char *& b64ptr, UT_uint32 & b64len, const c
 	return true;
 }
 
-bool ABI_EXPORT UT_UTF8_Base64Decode(char *& binptr, UT_uint32 & binlen, const char *& b64ptr, UT_uint32 & b64len)
+bool ABI_EXPORT UT_UTF8_Base64Decode(char *& binptr, size_t & binlen, const char *& b64ptr, size_t & b64len)
 {
 	if (b64len == 0) return true; // ??
 

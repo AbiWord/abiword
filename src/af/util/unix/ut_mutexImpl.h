@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Program Utilities
  * Copyright (C) 2002 Dom Lachowicz <cinamod@hotmail.com>
  *
@@ -33,6 +35,8 @@ public:
 	UT_MutexImpl ()
 		: mMutex ( 0 )
 		{
+			if (!g_thread_supported ()) g_thread_init (NULL);
+
 			mMutex = g_mutex_new () ;
 			UT_ASSERT ( mMutex ) ;
 		}
