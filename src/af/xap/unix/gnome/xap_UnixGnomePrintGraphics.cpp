@@ -59,7 +59,7 @@ typedef struct _fontMapping
 /* The ones with ?? have not been verified. (Chema) */
 static struct _fontMapping fontMappingTable[] = 
 {
-    {"Arial",                  "AvantGarde"}, // ??
+	{"Arial",                  "Helvetica"}, // Arial is a MS name for Helvetica, so I've been told
 	{"Bitstream",              "Palatino"}, // ??
 	{"Bookman",                "ITC Bookman"},
 	{"Courier",                "Courier"},
