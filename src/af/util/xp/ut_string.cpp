@@ -549,7 +549,7 @@ UT_uint32 UT_UCS_strlen(const UT_UCSChar * string)
 {
 	UT_uint32 i;
 
-	for(i = 0; *string != NULL; string++, i++)
+	for(i = 0; *string != 0; string++, i++)
 		;
 
 	return i;
@@ -563,9 +563,9 @@ UT_UCSChar * UT_UCS_strcpy(UT_UCSChar * dest, const UT_UCSChar * src)
 	UT_UCSChar * d = dest;
 	UT_UCSChar * s = (UT_UCSChar *) src;
 
-	while (*s != NULL)
+	while (*s != 0)
 		*d++ = *s++;
-	*d = NULL;
+	*d = 0;
 
 	return dest;
 }
@@ -582,12 +582,12 @@ UT_UCSChar * UT_UCS_strcpy_char(UT_UCSChar * dest, const char * src)
 
 	UT_Mbtowc m;
 	wchar_t wc;
-	while (*s != NULL)
+	while (*s != 0)
 	  {
 		if(m.mbtowc(wc,*s))*d++=wc;
 		s++;
 	  }
-	*d = NULL;
+	*d = 0;
 
 	return dest;
 }
@@ -601,13 +601,13 @@ char * UT_UCS_strcpy_to_char(char * dest, const UT_UCSChar * src)
 	UT_UCSChar * 	s = (UT_UCSChar *) src;
 
 	UT_Wctomb w;
-	while (*s != NULL)
+	while (*s != 0)
 	  {
 		int length;
 		if(w.wctomb(d,length,*s++))
 		  d+=length;
 	  }
-	*d = NULL;
+	*d = 0;
 	
 	return dest;
 }
@@ -635,12 +635,12 @@ UT_Bool UT_UCS_cloneString_char(UT_UCSChar ** dest, const char * src)
   UT_Mbtowc m;
   wchar_t wc;
 
-  while (*s != NULL)
+  while (*s != 0)
 	{
 	  if(m.mbtowc(wc,*s))*d++=wc;
 	  s++;
 	}
-  *d = NULL;  
+  *d = 0;  
   
   return UT_TRUE;
 }
@@ -649,9 +649,9 @@ UT_Bool UT_UCS_cloneString_char(UT_UCSChar ** dest, const char * src)
 char * UT_upperString(char * string)
 {
 	if (!string)
-		return NULL;
+		return 0;
 
-	for (char * ch = string; *ch != NULL; ch++)
+	for (char * ch = string; *ch != 0; ch++)
 		*ch = toupper(*ch);
 
 	return string;
@@ -661,9 +661,9 @@ char * UT_upperString(char * string)
 char * UT_lowerString(char * string)
 {
 	if (!string)
-		return NULL;
+		return 0;
 
-	for (char * ch = string; *ch != NULL; ch++)
+	for (char * ch = string; *ch != 0; ch++)
 		*ch = tolower(*ch);
 
 	return string;
