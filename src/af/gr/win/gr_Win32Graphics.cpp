@@ -161,13 +161,8 @@ void Win32Graphics::drawChars(const UT_UCSChar* pChars, int iCharOffset, int iLe
 
 	SelectObject(m_hdc, m_pFont->getHFONT());
 	SetTextAlign(m_hdc, TA_LEFT | TA_TOP);
+	SetBkMode(m_hdc, TRANSPARENT);		// TODO: remember and reset?
 
-	/*
-	  TODO Paul -- we need to find a way to ensure that text is drawn
-	  transparently.  The new selection code expects to be able to fill
-	  the screen with a background color, and then draw text over it,
-	  without overwriting that background color.
-	*/
 	ExtTextOutW(m_hdc, xoff, yoff, 0, NULL, pChars + iCharOffset, iLength, NULL);
 	//TextOutW(m_hdc, xoff, yoff, pChars + iCharOffset, iLength);
 }
@@ -417,7 +412,7 @@ void Win32Graphics::clearArea(UT_sint32 x, UT_sint32 y, UT_sint32 width, UT_sint
 void Win32Graphics::invertRect(const UT_Rect* pRect)
 {
 	RECT r;
-	// TODO why do we store a rect width width/height instead of right/bottom ?
+	// TODO why do we store a rect with width/height instead of right/bottom ?
 	
 	r.left = pRect->left;
 	r.top = pRect->top;
@@ -427,18 +422,26 @@ void Win32Graphics::invertRect(const UT_Rect* pRect)
 	InvertRect(m_hdc, &r);
 }
 
-/*
-  TODO Paul you'll need to implement the routine below.  Doing
-  so should get rid of a lot of screen dirt.
-*/
 void Win32Graphics::setClipRect(const UT_Rect* pRect)
 {
+	int res;
+
 	if (pRect)
 	{
-		// TODO set the clip rectangle
+		// set the clip rectangle
+		HRGN hrgn = CreateRectRgn(pRect->left,
+								  pRect->top, 
+								  pRect->left + pRect->width,
+								  pRect->top + pRect->height);
+		UT_ASSERT(hrgn);
+
+		res = SelectClipRgn(m_hdc, hrgn);
 	}
 	else
 	{
-		// TODO stop clipping
+		// stop clipping
+		res = SelectClipRgn(m_hdc, NULL);
 	}
+
+	UT_ASSERT(res != ERROR);
 }
