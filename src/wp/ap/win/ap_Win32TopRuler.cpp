@@ -167,11 +167,7 @@ LRESULT CALLBACK AP_Win32TopRuler::_TopRulerWndProc(HWND hwnd, UINT iMsg, WPARAM
 		
 	case WM_MOUSEMOVE:
 		pRuler->mouseMotion(s_GetEMS(wParam),signedLoWord(lParam),signedHiWord(lParam));
-		if (pRuler->isMouseOverTab(signedLoWord(lParam),signedHiWord(lParam)))
-		{
-			GR_Win32Graphics * pG = static_cast<GR_Win32Graphics *>(pRuler->m_pG);
-			pG->handleSetCursorMessage();
-		}
+		pRuler->isMouseOverTab(signedLoWord(lParam),signedHiWord(lParam));
 		return 0;
 
 	case WM_LBUTTONUP:
@@ -215,6 +211,12 @@ LRESULT CALLBACK AP_Win32TopRuler::_TopRulerWndProc(HWND hwnd, UINT iMsg, WPARAM
 			GR_Win32Graphics * pG = static_cast<GR_Win32Graphics *>(pRuler->m_pG);
 			pG->init3dColors();
 			return 0;
+		}
+
+	case WM_SETCURSOR:
+		{
+			GR_Win32Graphics * pG = static_cast<GR_Win32Graphics *>(pRuler->m_pG);
+			pG->handleSetCursorMessage();
 		}
 
 	default:

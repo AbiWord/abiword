@@ -112,6 +112,20 @@ HWND AP_Win32LeftRuler::createWindow(HWND hwndContainer,
 	return m_hwndLeftRuler;
 }
 
+static EV_EditModifierState s_GetEMS(WPARAM fwKeys)
+{
+	EV_EditModifierState ems = 0;
+
+	if (fwKeys & MK_SHIFT)
+		ems |= EV_EMS_SHIFT;
+	if (fwKeys & MK_CONTROL)
+		ems |= EV_EMS_CONTROL;
+	if (GetKeyState(VK_MENU) & 0x8000)
+		ems |= EV_EMS_ALT;
+
+	return ems;
+}
+	
 LRESULT CALLBACK AP_Win32LeftRuler::_LeftRulerWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 {
 	// this is a static member function.
@@ -124,15 +138,54 @@ LRESULT CALLBACK AP_Win32LeftRuler::_LeftRulerWndProc(HWND hwnd, UINT iMsg, WPAR
 	switch (iMsg)
 	{
 	case WM_LBUTTONDOWN:
+		SetCapture(hwnd);
+		pRuler->mousePress(s_GetEMS(wParam),EV_EMB_BUTTON1,LOWORD(lParam),HIWORD(lParam));
+		{
+			GR_Win32Graphics * pG = static_cast<GR_Win32Graphics *>(pRuler->m_pG);
+			pG->handleSetCursorMessage();
+		}
+		return 0;
+		
 	case WM_MBUTTONDOWN:
+		SetCapture(hwnd);
+		pRuler->mousePress(s_GetEMS(wParam),EV_EMB_BUTTON2,LOWORD(lParam),HIWORD(lParam));
+		{
+			GR_Win32Graphics * pG = static_cast<GR_Win32Graphics *>(pRuler->m_pG);
+			pG->handleSetCursorMessage();
+		}
+		return 0;
+		
 	case WM_RBUTTONDOWN:
+		SetCapture(hwnd);
+		pRuler->mousePress(s_GetEMS(wParam),EV_EMB_BUTTON3,LOWORD(lParam),HIWORD(lParam));
+		{
+			GR_Win32Graphics * pG = static_cast<GR_Win32Graphics *>(pRuler->m_pG);
+			pG->handleSetCursorMessage();
+		}
+		return 0;
+		
+	case WM_MOUSEMOVE:
+		pRuler->mouseMotion(s_GetEMS(wParam),signedLoWord(lParam),signedHiWord(lParam));
+		return 0;
+
+	case WM_LBUTTONUP:
+		pRuler->mouseRelease(s_GetEMS(wParam),EV_EMB_BUTTON1,signedLoWord(lParam),signedHiWord(lParam));
+		ReleaseCapture();
+		return 0;
+
+	case WM_MBUTTONUP:
+		pRuler->mouseRelease(s_GetEMS(wParam),EV_EMB_BUTTON2,signedLoWord(lParam),signedHiWord(lParam));
+		ReleaseCapture();
+		return 0;
+		
+	case WM_RBUTTONUP:
+		pRuler->mouseRelease(s_GetEMS(wParam),EV_EMB_BUTTON3,signedLoWord(lParam),signedHiWord(lParam));
+		ReleaseCapture();
+		return 0;
+
 	case WM_LBUTTONDBLCLK:
 	case WM_MBUTTONDBLCLK:
 	case WM_RBUTTONDBLCLK:
-	case WM_MOUSEMOVE:
-	case WM_LBUTTONUP:
-	case WM_MBUTTONUP:
-	case WM_RBUTTONUP:
 		return 0;
 
 	case WM_SIZE:
@@ -163,6 +216,12 @@ LRESULT CALLBACK AP_Win32LeftRuler::_LeftRulerWndProc(HWND hwnd, UINT iMsg, WPAR
 			return 0;
 		}
 
+	case WM_SETCURSOR:
+		{
+			GR_Win32Graphics * pG = static_cast<GR_Win32Graphics *>(pRuler->m_pG);
+			pG->handleSetCursorMessage();
+		}
+		return 0;
 	default:
 		break;
 	}
