@@ -236,7 +236,7 @@ void AP_Win32Dialog_Lists::_onApply()
 			{
 				m_bChangeStartValue = UT_TRUE;
 				m_curStartValue = newStartValue;
-				m_newListType = newListType;
+				m_newListType = (List_Type) newListType;
 			}
 
 		}
