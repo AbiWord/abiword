@@ -628,12 +628,9 @@ void AP_Win32Dialog_Lists::_fillStyleList(int iType)
 		AP_STRING_ID_DLG_Lists_Lower_Case_List,
 		AP_STRING_ID_DLG_Lists_Upper_Case_List,
 		AP_STRING_ID_DLG_Lists_Lower_Roman_List,
-		AP_STRING_ID_DLG_Lists_Upper_Roman_List
-/*
-		,AP_STRING_ID_DLG_Lists_Arabic_List,
-
+		AP_STRING_ID_DLG_Lists_Upper_Roman_List,
+		AP_STRING_ID_DLG_Lists_Arabic_List,
 		AP_STRING_ID_DLG_Lists_Hebrew_List
-*/
 	};
 
 	const XAP_String_Id*	pIDs;
