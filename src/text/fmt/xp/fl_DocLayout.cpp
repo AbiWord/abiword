@@ -473,10 +473,10 @@ void FL_DocLayout::fillLayouts(void)
 	m_pDoc->setDontImmediatelyLayout(true);
 	m_pDocListener->setHoldTableLayout(false);
 	m_pDoc->addListener(static_cast<PL_Listener *>(m_pDocListener),&m_lid);
-//	m_pDocListener->setHoldTableLayout(false);
 	m_pDoc->setDontImmediatelyLayout(false);
 	UT_ASSERT(m_lid != (PL_ListenerId)-1);
-	formatAll();
+	GR_Graphics * pG = getGraphics();
+//	formatAll();
 	if(m_pView)
 	{
 		m_pView->setLayoutIsFilling(false);
@@ -484,9 +484,20 @@ void FL_DocLayout::fillLayouts(void)
 		m_pView->moveInsPtTo(FV_DOCPOS_BOD);
 		m_pView->clearCursorWait();
 		m_pView->updateLayout();
-		m_pView->updateScreen(false);
+		if(!pG->queryProperties(GR_Graphics::DGP_PAPER))
+		{
+			m_pView->updateScreen(false);
+			XAP_Frame * pFrame = static_cast<XAP_Frame *>(m_pView->getParentData());
+			if(pFrame)
+			{
+				pFrame->setYScrollRange();
+			}
+		}
 	}
-
+	if(!m_pView)
+	{
+		updateLayout();
+	}
 	setLayoutIsFilling(false);
 
 	// Layout of any TOC that is built only from a restricted document range is tentative, because
@@ -550,7 +561,15 @@ void FL_DocLayout::fillLayouts(void)
 		if(m_pView)
 		{
 			m_pView->updateLayout();
-			m_pView->updateScreen(false);
+			if(!pG->queryProperties(GR_Graphics::DGP_PAPER))
+			{
+				m_pView->updateScreen(false);
+				XAP_Frame * pFrame = static_cast<XAP_Frame *>(m_pView->getParentData());
+				if(pFrame)
+				{
+					pFrame->setYScrollRange();
+				}
+			}
 		}
 	}
 }
@@ -1340,6 +1359,9 @@ UT_sint32 FL_DocLayout::getHeight()
 	UT_sint32 iHeight = 0;
 	int count = m_vecPages.getItemCount();
 
+//
+// restore when we support different page heights per document.
+//
 	for (int i=0; i<count; i++)
 	{
 		fp_Page* p = m_vecPages.getNthItem(i);
@@ -1370,6 +1392,7 @@ UT_sint32 FL_DocLayout::getHeight()
 	{
 		iHeight = 0;
 	}
+	xxx_UT_DEBUGMSG(("returned height %d \n",iHeight));
 	return iHeight;
 }
 
@@ -1511,7 +1534,7 @@ void FL_DocLayout::deletePage(fp_Page* pPage, bool bDontNotify /* default false 
     //
     // Check for point > 0 to allow multi-threaded loads
     //
-	if (m_pView && !bDontNotify && m_pView->getPoint() > 0)
+	if (m_pView && !bDontNotify && (m_pView->getPoint() > 0) && !m_pDoc->isPieceTableChanging())
 	{
 		m_pView->notifyListeners(AV_CHG_PAGECOUNT);
 	}
@@ -2742,7 +2765,6 @@ fl_DocSectionLayout* FL_DocLayout::findSectionForHdrFtr(const char* pszHdrFtrID)
 // autosave
 
 	UT_String stTmp;
-	bool autosave = true;
 	FV_View * pView = pDocLayout->getView();
 	if(pView)
 	{

@@ -145,7 +145,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 
 	_s(AP_MENU_ID_INSERT,			1,0,0,0,	NULL,				NULL,					NULL);
 	_s(AP_MENU_ID_INSERT_BREAK,		0,1,0,0,	"insBreak",			ap_GetState_BreakOK,					NULL);
-	_s(AP_MENU_ID_INSERT_BOOKMARK,  0,1,0,0,	"insertBookmark",	NULL,					NULL);
+	_s(AP_MENU_ID_INSERT_BOOKMARK,  0,1,0,0,	"insertBookmark",	ap_GetState_BookmarkOK,					NULL);
 	_s(AP_MENU_ID_INSERT_HYPERLINK, 0,1,0,0,	"insertHyperlink",	ap_GetState_HyperlinkOK,					NULL);
 	_s(AP_MENU_ID_INSERT_DELETE_HYPERLINK, 0,0,0,0,	"deleteHyperlink",	NULL,			NULL);
 	_s(AP_MENU_ID_INSERT_PAGENO,	0,1,0,0,	"insPageNo",		NULL,					NULL);
@@ -163,9 +163,8 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 #else
 	_s(AP_MENU_ID_INSERT_PICTURE,   0,1,0,0,  "fileInsertGraphic",NULL,                   NULL);
 #endif
-	_s(AP_MENU_ID_INSERT_INSERTHEADER,		0,0,0,0,	"editHeader",	ap_GetState_Changes,					NULL);
-	_s(AP_MENU_ID_INSERT_INSERTFOOTER,		0,0,0,0,	"editFooter",	ap_GetState_Changes,					NULL);
-	_s(AP_MENU_ID_INSERT_MATHML,   0,1,0,0,  "fileInsertMathML",    NULL,                   NULL);
+	_s(AP_MENU_ID_INSERT_HEADER,		0,0,0,0,	"editHeader",	ap_GetState_Changes,					NULL);
+	_s(AP_MENU_ID_INSERT_FOOTER,		0,0,0,0,	"editFooter",	ap_GetState_Changes,					NULL);
 #ifdef HAVE_GNOME
 	_s(AP_MENU_ID_INSERT_CLIPART,   0,1,0,0,  "insertClipart",    NULL,                   NULL);
 	_s(AP_MENU_ID_INSERT_GRAPHIC,	0,1,0,0,	"fileInsertGraphic",NULL,					NULL);

@@ -143,11 +143,12 @@ public:
 	UT_sint32		        getX() const 					{ return m_iX; }
 	UT_sint32		        getY() const 					{ return m_iY; }
 
-	UT_sint32		        getHeight() const				{ return m_iHeight; }
-	UT_sint32		        getWidth() const		        { return m_iWidth; }
-	UT_uint32		        getAscent() const				{ return m_iAscent; }
-	UT_uint32		        getDescent() const 				{ return m_iDescent; }
-	virtual UT_sint32       getDrawingWidth() const         { return static_cast<UT_sint32>(m_iWidth); }
+	UT_sint32		        getHeight() const;
+	UT_sint32		        getWidth() const;
+	UT_uint32		        getAscent() const;
+	UT_uint32		        getDescent() const;
+	virtual UT_sint32       getDrawingWidth() const;
+	
 	
 	fp_Run* 		        getNextRun() const					{ return m_pNext; }
 	fp_Run*			        getPrevRun() const					{ return m_pPrev; }
@@ -301,6 +302,10 @@ public:
 							 UT_sint32 width, UT_sint32 height);
 	
 	fg_FillType *       getFillType(void);            
+	fp_Line *           getTmpLine(void) const
+	{ return m_pTmpLine;}
+	void                setTmpLine(fp_Line * pLine)
+	{ m_pTmpLine = pLine;}
 	UT_sint32           getTmpX(void) const
 	{ return m_iTmpX;}
 	void                setTmpX(UT_sint32 iX)
@@ -348,6 +353,13 @@ protected:
 							{ m_iHeight = iHeight;}
 	void				_setWidth(UT_sint32 iWidth)
                         	{ m_iWidth = iWidth; }
+
+	// use these with great care -- most of the time we need to use
+	// getWidth() and getHeight() which deal with
+	// visibility/hiddenness issues
+	UT_sint32           _getWidth() {return m_iWidth;}
+	UT_sint32           _getHeight(){return m_iHeight;}
+	
 	void				_setBlock(fl_BlockLayout * pBL) { m_pBL = pBL; }
 	void				_setAscent(int iAscent) { m_iAscent = iAscent; }
 	void				_setDescent(int iDescent) {m_iDescent = iDescent;}
@@ -454,6 +466,7 @@ private:
 	UT_sint32               m_iTmpX;
 	UT_sint32               m_iTmpY;
 	UT_sint32               m_iTmpWidth;
+	fp_Line *               m_pTmpLine;
 };
 
 class ABI_EXPORT fp_TabRun : public fp_Run
@@ -474,6 +487,8 @@ public:
 	void                    setTOCTab(void)
 	{ m_bIsTOC = true;}
 	void                    setTOCTabListLabel(void);
+	bool                    isTOCTabListLabel(void) const
+	{ return m_bIsTOCListLabel;}
 
 protected:
 	virtual void			_drawArrow(UT_uint32 iLeft,UT_uint32 iTop,UT_uint32 iWidth, UT_uint32 iHeight);
@@ -834,7 +849,7 @@ class ABI_EXPORT fp_FieldRun : public fp_Run
 {
 public:
 	fp_FieldRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
-	virtual ~fp_FieldRun() {return;};
+	virtual ~fp_FieldRun();
 
 	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC);
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection);

@@ -1203,25 +1203,12 @@ void GR_UnixGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,
 	GdkGCValues gcV;
 	gdk_gc_get_values(m_pGC, &gcV);
 	
-	// compensate for the last pixel on straight lines that isn't sometimes drawn by gdk (or better: X)
-	// FIXME: did I exclude all the situations where GDK extends the endpoint?
-	if (!(gcV.join_style == GDK_JOIN_MITER && gcV.cap_style == GDK_CAP_BUTT))
-	{
-		if (y1 == y2) 
-		{
-			x2 += (x1 < x2 ? tlu(1) : -tlu(1));
-		}
-		if (x1 == x2)
-		{
-			y2 += (y1 < y2 ? tlu(1) : -tlu(1));
-		}
-	}
-
 	UT_sint32 idx1 = _tduX(x1);
 	UT_sint32 idx2 = _tduX(x2);
 
 	UT_sint32 idy1 = _tduY(y1);
 	UT_sint32 idy2 = _tduY(y2);
+	
 	gdk_draw_line(m_pWin, m_pGC, idx1, idy1, idx2, idy2);
 }
 
@@ -1302,8 +1289,8 @@ void GR_UnixGraphics::setClipRect(const UT_Rect* pRect)
 		GdkRectangle r;
 		UT_sint32 idy = _tduY(pRect->top);
 		UT_sint32 idx = _tduX(pRect->left);
-		UT_sint32 idw = _tduR(pRect->width);
-		UT_sint32 idh = _tduR(pRect->height);
+		//UT_sint32 idw = _tduR(pRect->width);
+		//UT_sint32 idh = _tduR(pRect->height);
 		r.x = idx;
 		r.y = idy;
 		r.width = _tduR(pRect->width);

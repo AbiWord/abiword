@@ -1341,16 +1341,16 @@ void AP_LeftRuler::_getMarginMarkerRects(AP_LeftRulerInfo * pInfo, UT_Rect &rTop
 void AP_LeftRuler::_drawMarginProperties(const UT_Rect * /* pClipRect */,
 										AP_LeftRulerInfo * pInfo, GR_Graphics::GR_Color3D clr)
 {
-	FV_View *pView = static_cast<FV_View *>(m_pView);
-	bool hdrftr = pView->isHdrFtrEdit();
+	//FV_View *pView = static_cast<FV_View *>(m_pView);
+	//bool hdrftr = pView->isHdrFtrEdit();
 	if(m_pG == NULL)
 	{
 		return;
 	}
-	fl_HdrFtrShadow * pShadow = pView->getEditShadow();
+	//fl_HdrFtrShadow * pShadow = pView->getEditShadow();
 
-	bool hdr = (hdrftr && 
-				pShadow->getHdrFtrSectionLayout()->getHFType() < FL_HDRFTR_FOOTER);
+	//bool hdr = (hdrftr && 
+	//			pShadow->getHdrFtrSectionLayout()->getHFType() < FL_HDRFTR_FOOTER);
 
 
 	UT_Rect rTop, rBottom;
@@ -1428,6 +1428,7 @@ void AP_LeftRuler::_getCellMarkerRects(AP_LeftRulerInfo * pInfo, UT_sint32 iCell
 	UT_sint32 yOrigin = pInfo->m_yPageStart - m_yScrollOffset;
 	UT_sint32 pos =0;
 	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pLInfo->m_pCell->getContainer());
+	UT_return_if_fail(pTab);
 	fp_Page * pPage = NULL;
 	if(pBroke == NULL)
 	{

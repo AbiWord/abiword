@@ -652,9 +652,6 @@ public:
 	static EV_EditMethod_Fn hyperlinkJump;
 	static EV_EditMethod_Fn hyperlinkStatusBar;
 
-	static EV_EditMethod_Fn lockGUI;
-	static EV_EditMethod_Fn unlockGUI;
-
 	static EV_EditMethod_Fn textToTable;
 	static EV_EditMethod_Fn toggleMarkRevisions;
 	static EV_EditMethod_Fn toggleAutoRevision;
@@ -1001,7 +998,6 @@ static EV_EditMethod s_arrayEditMethods[] =
 
 	// l
 	EV_EditMethod(NF(language), 		0,	""),
-	EV_EditMethod(NF(lockGUI), 		0,	""),
 	EV_EditMethod(NF(lockToolbarLayout),	0,	""),
 
 	// m
@@ -1142,7 +1138,6 @@ static EV_EditMethod s_arrayEditMethods[] =
 
 	// u
 	EV_EditMethod(NF(undo), 				0,	""),
-	EV_EditMethod(NF(unlockGUI), 		0,	""),
 
 	// v
 	EV_EditMethod(NF(viCmd_5e),		0,	""), //^ 
@@ -1308,7 +1303,7 @@ static bool s_EditMethods_check_frame(void)
 /*!
  * Call this if you want to prevent GUI operations on AbiWord.
  */
-Defun(lockGUI)
+static bool lockGUI(void)
 {
 	s_LockOutGUI = true;
 	return true;
@@ -1318,7 +1313,7 @@ Defun(lockGUI)
 /*!
  * Call this to allow GUI operations on AbiWord.
  */
-Defun(unlockGUI)
+static bool unlockGUI(void)
 {
 	s_LockOutGUI = false;
 	return true;
@@ -3520,7 +3515,7 @@ UT_return_val_if_fail(pDialog, false);
 
 		DELETEP(pIEG);
 
-		errorCode = pView->cmdInsertGraphic(pFG, pNewFile);
+		errorCode = pView->cmdInsertGraphic(pFG);
 		if (errorCode)
 		{
 			s_CouldNotLoadFileMessage(pFrame, pNewFile, errorCode);
@@ -3582,7 +3577,7 @@ Defun1(fileInsertGraphic)
 
 	ABIWORD_VIEW;
 
-	errorCode = pView->cmdInsertGraphic(pFG, pNewFile);
+	errorCode = pView->cmdInsertGraphic(pFG);
 	if (errorCode != UT_OK)
 	{
 		s_CouldNotLoadFileMessage(pFrame, pNewFile, errorCode);
@@ -3699,7 +3694,7 @@ Defun1(fileInsertPageBackgroundGraphic)
 	fl_DocSectionLayout * pDSL = pBlock->getDocSectionLayout();
 	UT_return_val_if_fail( pDSL, false );
 	PT_DocPosition iPos = pDSL->getPosition();
-	errorCode = pView->cmdInsertGraphicAtStrux(pFG, pNewFile, iPos, PTX_Section);
+	errorCode = pView->cmdInsertGraphicAtStrux(pFG, iPos, PTX_Section);
 
 	if (errorCode != UT_OK)
 	{
@@ -3775,6 +3770,13 @@ Defun1(warpInsPtLeft)
 		bRTL = pBL->getDominantDirection() == UT_BIDI_RTL;
 	
 	pView->cmdCharMotion(bRTL,1);
+	if(pView->getGraphics() && pView->getGraphics()->getCaret())
+	{
+//
+// Draw fsking caret for sure!!!
+//
+		pView->getGraphics()->getCaret()->forceDraw();
+	}
 	return true;
 }
 
@@ -3788,6 +3790,13 @@ Defun1(warpInsPtRight)
 		bRTL = pBL->getDominantDirection() == UT_BIDI_RTL;
 	
 	pView->cmdCharMotion(!bRTL,1);
+	if(pView->getGraphics() && pView->getGraphics()->getCaret())
+	{
+//
+// Draw fsking caret for sure!!!
+//
+		pView->getGraphics()->getCaret()->forceDraw();
+	}
 	return true;
 }
 
@@ -3967,6 +3976,13 @@ Defun1(warpInsPtPrevLine)
 		return true;
 	}
 	pView->warpInsPtNextPrevLine(false);
+	if(pView->getGraphics() && pView->getGraphics()->getCaret())
+	{
+//
+// Draw fsking caret for sure!!!
+//
+		pView->getGraphics()->getCaret()->forceDraw();
+	}
 	return true;
 }
 
@@ -3983,6 +3999,13 @@ Defun1(warpInsPtNextLine)
 		return true;
 	}
 	pView->warpInsPtNextPrevLine(true);
+	if(pView->getGraphics() && pView->getGraphics()->getCaret())
+	{
+//
+// Draw fsking caret for sure!!!
+//
+		pView->getGraphics()->getCaret()->forceDraw();
+	}
 	return true;
 }
 
@@ -5163,6 +5186,15 @@ Defun1(insertSectionBreak)
 							   XAP_Dialog_MessageBox::a_OK);
 		return true;
 	}
+	if(pView->isInFrame(pView->getPoint()))
+	{
+		XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
+		UT_return_val_if_fail(pFrame, false);
+		pFrame->showMessageBox(AP_STRING_ID_MSG_NoBreakInsideFrame,
+							   XAP_Dialog_MessageBox::b_O,
+							   XAP_Dialog_MessageBox::a_OK);
+		return true;
+	}
 
 	pView->insertSectionBreak();
 	return true;
@@ -5216,6 +5248,23 @@ Defun1(insertLineBreak)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_UCSChar c = UCS_LF;
+	if(pView->isInTable())
+	{
+		XAP_Frame * pFrame = static_cast<XAP_Frame *> (pAV_View->getParentData());
+		pFrame->showMessageBox(AP_STRING_ID_MSG_NoBreakInsideTable,
+							   XAP_Dialog_MessageBox::b_O,
+							   XAP_Dialog_MessageBox::a_OK);
+		return true;
+	}
+	if(pView->isInFrame(pView->getPoint()))
+	{
+		XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
+		UT_return_val_if_fail(pFrame, false);
+		pFrame->showMessageBox(AP_STRING_ID_MSG_NoBreakInsideFrame,
+							   XAP_Dialog_MessageBox::b_O,
+							   XAP_Dialog_MessageBox::a_OK);
+		return true;
+	}
 	pView->cmdCharInsert(&c,1);
 	return true;
 }
@@ -5234,6 +5283,15 @@ Defun1(insertColumnBreak)
 		XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 		UT_return_val_if_fail(pFrame, false);
 		pFrame->showMessageBox(AP_STRING_ID_MSG_NoBreakInsideTable,
+							   XAP_Dialog_MessageBox::b_O,
+							   XAP_Dialog_MessageBox::a_OK);
+		return true;
+	}
+	if(pView->isInFrame(pView->getPoint()))
+	{
+		XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
+		UT_return_val_if_fail(pFrame, false);
+		pFrame->showMessageBox(AP_STRING_ID_MSG_NoBreakInsideFrame,
 							   XAP_Dialog_MessageBox::b_O,
 							   XAP_Dialog_MessageBox::a_OK);
 		return true;
@@ -5530,6 +5588,15 @@ Defun1(insertPageBreak)
 		XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 		UT_return_val_if_fail(pFrame, false);
 		pFrame->showMessageBox(AP_STRING_ID_MSG_NoBreakInsideTable,
+							   XAP_Dialog_MessageBox::b_O,
+							   XAP_Dialog_MessageBox::a_OK);
+		return true;
+	}
+	if(pView->isInFrame(pView->getPoint()))
+	{
+		XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
+		UT_return_val_if_fail(pFrame, false);
+		pFrame->showMessageBox(AP_STRING_ID_MSG_NoBreakInsideFrame,
 							   XAP_Dialog_MessageBox::b_O,
 							   XAP_Dialog_MessageBox::a_OK);
 		return true;
@@ -6313,10 +6380,15 @@ UT_return_val_if_fail(pDialog, false);
 	{
 		UT_UCSChar * buffer;
 		pView->getSelectionText(buffer);
-
-		pDialog->setFindString(buffer);
-
-		FREEP(buffer);
+		if(buffer != NULL)
+		{
+			pDialog->setFindString(buffer);
+			FREEP(buffer);
+		}
+		else
+		{
+			pView->setPoint(pView->getPoint());
+		}
 	}
 
 	// run the dialog (it should really be modeless if anyone
@@ -7483,7 +7555,6 @@ static bool s_doZoomDlg(FV_View * pView)
 	XAP_PrefsScheme *pPrefsScheme = pPrefs->getCurrentScheme();
 	UT_return_val_if_fail (pPrefsScheme, false);
 
-	bool bNewZoom = false;
 	pFrame->raise();
 
 	XAP_DialogFactory * pDialogFactory
@@ -9289,11 +9360,11 @@ UT_return_val_if_fail(pDialog, false);
 	  const XML_Char* szHeight = UT_getAttribute("height", props_in);
 
 	  const XML_Char* szTitle = 0;
-	  const XML_Char* szAlt = 0;
+	  const XML_Char* szDescription = 0;
 
 	  if (pAP) {
 		  pAP->getAttribute ("title", szTitle);
-		  pAP->getAttribute ("alt", szAlt);
+		  pAP->getAttribute ("alt", szDescription);
 	  }
 
 	  if (szTitle) {
@@ -9301,10 +9372,10 @@ UT_return_val_if_fail(pDialog, false);
 		  pDialog->setTitle (title);
 		  FREEP(title);
 	  }
-	  if (szAlt) {
-		  char * alt = UT_XML_Decode (szAlt);
-		  pDialog->setAlt (alt);
-		  FREEP(alt);
+	  if (szDescription) {
+		  char * description = UT_XML_Decode (szDescription);
+		  pDialog->setDescription (description);
+		  FREEP(description);
 	  }
 
 	  // 72.0 is pixels/inch
@@ -9371,6 +9442,8 @@ UT_return_val_if_fail(pDialog, false);
 	  }
 	  FREEP(props_in);
 
+	  WRAPPING_TYPE oldWrap = WRAP_INLINE;
+	  POSITION_TO oldPositionTo = POSITION_TO_PARAGRAPH;
 	  pDialog->runModal(pFrame);
 
 	  XAP_Dialog_Image::tAnswer ans = pDialog->getAnswer();
@@ -9378,6 +9451,7 @@ UT_return_val_if_fail(pDialog, false);
 
 	  if (bOK)
 	  {
+		  WRAPPING_TYPE newWrap = pDialog->getWrapping();
 		  // now get them back in inches
 		  width  = pDialog->getWidth () / 72.0;
 		  height = pDialog->getHeight () / 72.0;
@@ -9392,26 +9466,250 @@ UT_return_val_if_fail(pDialog, false);
 			  sprintf(widthBuf, "%fin", width);
 			  sprintf(heightBuf, "%fin", height);
 		  }
+		  if((newWrap == WRAP_INLINE) && (oldWrap == WRAP_INLINE))
+		  {
+			  UT_DEBUGMSG(("DOM: nw:%s nh:%s\n", widthBuf, heightBuf));
+			  
+			  properties[1] = widthBuf;
+			  properties[3] = heightBuf;
 
-		  UT_DEBUGMSG(("DOM: nw:%s nh:%s\n", widthBuf, heightBuf));
+			  UT_UTF8String title (pDialog->getTitle());
+			  UT_UTF8String description (pDialog->getDescription());
 
-		  properties[1] = widthBuf;
-		  properties[3] = heightBuf;
+			  title.escapeXML();
+			  description.escapeXML();
 
-		  UT_UTF8String title (pDialog->getTitle());
-		  UT_UTF8String alt (pDialog->getAlt());
+			  const XML_Char * attribs[] = {"title", NULL, "alt", NULL, 0};
+			  attribs[1] = title.utf8_str();
+			  attribs[3] = description.utf8_str();
 
-		  title.escapeXML();
-		  alt.escapeXML();
+			  pView->setCharFormat(properties, attribs);
+			  pView->updateScreen();
+		  }
 
-		  const XML_Char * attribs[] = {"title", NULL, "alt", NULL, 0};
-		  attribs[1] = title.utf8_str();
-		  attribs[3] = alt.utf8_str();
+//
+// This code turns inline-images into frames this way. Later
+// we changes frames to inline and frame types to frame types
+//
+		  else if( (oldWrap == WRAP_INLINE) && (newWrap != WRAP_INLINE))
+		  {
 
-		  pView->setCharFormat(properties, attribs);
-		  pView->updateScreen();
-		}
+// OK we gotta create a frame with the dimensions of the image and roughly the
+// the location of the image.
+//
+// Get the line of the image. (We have the run and Block)
+//
+			  fp_Line * pLine = pRun->getLine();
+//
+// Get the dataID of the image.
 
+			  fp_ImageRun * pImageRun = static_cast<fp_ImageRun *>(pRun);
+			  const char * dataID = pImageRun->getDataId();
+			  UT_String sFrameProps;
+			  UT_String sProp;
+			  UT_String sVal;
+			  sProp = "frame-type";
+			  sVal = "image";
+			  UT_String_setProperty(sFrameProps,sProp,sVal);
+//
+// Turn off the borders.
+//
+			  sProp = "top-style";
+			  sVal = "none";
+			  UT_String_setProperty(sFrameProps,sProp,sVal);
+			  sProp = "right-style";
+			  UT_String_setProperty(sFrameProps,sProp,sVal);
+			  sProp = "left-style";
+			  UT_String_setProperty(sFrameProps,sProp,sVal);
+			  sProp = "bot-style";
+			  UT_String_setProperty(sFrameProps,sProp,sVal);
+//
+// Set width/Height
+//
+			  sProp = "frame-width";
+			  sVal = widthBuf;
+			  UT_String_setProperty(sFrameProps,sProp,sVal);
+			  sProp = "frame-height";
+			  sVal = heightBuf;
+			  UT_String_setProperty(sFrameProps,sProp,sVal);
+			  double xpos = 0.0;
+			  double ypos= 0.0;
+ 
+			  sProp = "position-to";
+			  if(pDialog->getPositionTo() == POSITION_TO_PARAGRAPH)
+			  {
+				  sVal = "block-above-text";
+				  UT_String_setProperty(sFrameProps,sProp,sVal);
+//
+// Now calculate the Y offset to the paragraph
+//
+				  UT_sint32 xBlockOff,yBlockOff = 0;
+				  bool bValid = false;
+				  bValid = pBlock->getXYOffsetToLine(xBlockOff,yBlockOff,pLine);
+				  ypos = static_cast<double>(yBlockOff)/static_cast<double>(UT_LAYOUT_RESOLUTION);
+				  sProp = "ypos";
+				  sVal = UT_formatDimensionedValue(ypos,"in", NULL);
+				  UT_String_setProperty(sFrameProps,sProp,sVal);
+			  }
+			  else if(pDialog->getPositionTo() == POSITION_TO_COLUMN)
+			  {
+				  sVal = "column-above-text";
+				  UT_String_setProperty(sFrameProps,sProp,sVal);
+//
+// Now calculate the Y offset to the Column
+//
+				  UT_sint32 yLine = pLine->getY();
+				  ypos = static_cast<double>(yLine)/static_cast<double>(UT_LAYOUT_RESOLUTION);
+				  sProp = "frame-col-ypos";
+				  sVal = UT_formatDimensionedValue(ypos,"in", NULL);
+				  UT_String_setProperty(sFrameProps,sProp,sVal);
+			  }
+			  else if(pDialog->getPositionTo() == POSITION_TO_PAGE)
+			  {
+				  sVal = "page-above-text";
+				  UT_String_setProperty(sFrameProps,sProp,sVal);
+//
+// Now calculate the Y offset to the Page
+//
+//
+// Need this for the X/Y calculations to follow.
+//
+				  fp_Container * pCol = pLine->getColumn();
+				  UT_ASSERT(pCol->getContainerType() == FP_CONTAINER_COLUMN);
+				  UT_sint32 yLine = pLine->getY() + pCol->getY();
+				  ypos = static_cast<double>(yLine)/static_cast<double>(UT_LAYOUT_RESOLUTION);
+				  sProp = "frame-page-ypos";
+				  sVal = UT_formatDimensionedValue(ypos,"in", NULL);
+				  UT_String_setProperty(sFrameProps,sProp,sVal);
+			  }
+//
+// Now set the wrapping type and the x-offset
+//
+			  if(pDialog->getWrapping() == WRAP_TEXTLEFT)
+			  {
+				  sProp = "wrap-mode";
+				  sVal = "wrapped-to-left";
+				  UT_String_setProperty(sFrameProps,sProp,sVal);
+				  UT_sint32 ix = 0;
+				  iWidth = UT_convertToLogicalUnits(widthBuf);
+				  if(pDialog->getPositionTo() == POSITION_TO_PARAGRAPH)
+				  {
+					  fp_Container * pCol = pLine->getColumn();
+					  ix = pCol->getWidth() - pBlock->getRightMargin() - iWidth;
+					  xpos =  static_cast<double>(ix)/static_cast<double>(UT_LAYOUT_RESOLUTION);
+					  sProp = "xpos";
+					  sVal = UT_formatDimensionedValue(xpos,"in", NULL);
+					  UT_String_setProperty(sFrameProps,sProp,sVal);
+				  }
+				  else if(pDialog->getPositionTo() == POSITION_TO_COLUMN)
+				  {
+					  fp_Container * pCol = pLine->getColumn();
+					  ix = pCol->getWidth() -iWidth;
+					  xpos =  static_cast<double>(ix)/static_cast<double>(UT_LAYOUT_RESOLUTION);
+					  sProp = "frame-col-xpos";
+					  sVal = UT_formatDimensionedValue(xpos,"in", NULL);
+					  UT_String_setProperty(sFrameProps,sProp,sVal);
+				  }
+				  else if(pDialog->getPositionTo() == POSITION_TO_PAGE)
+				  {
+					  fp_Page * pPage = pLine->getPage();
+					  ix = pPage->getWidth() - iWidth;
+					  xpos =  static_cast<double>(ix)/static_cast<double>(UT_LAYOUT_RESOLUTION);
+					  sProp = "frame-page-xpos";
+					  sVal = UT_formatDimensionedValue(xpos,"in", NULL);
+					  UT_String_setProperty(sFrameProps,sProp,sVal);
+				  }
+			  }
+			  else if(pDialog->getWrapping() == WRAP_TEXTRIGHT)
+			  {
+				  sProp = "wrap-mode";
+				  sVal = "wrapped-to-right";
+				  UT_String_setProperty(sFrameProps,sProp,sVal);
+				  UT_sint32 ix = 0;
+				  if(pDialog->getPositionTo() == POSITION_TO_PARAGRAPH)
+				  {
+					  xpos =  static_cast<double>(ix)/static_cast<double>(UT_LAYOUT_RESOLUTION);
+					  sProp = "xpos";
+					  sVal = UT_formatDimensionedValue(xpos,"in", NULL);
+					  UT_String_setProperty(sFrameProps,sProp,sVal);
+				  }
+				  else if(pDialog->getPositionTo() == POSITION_TO_COLUMN)
+				  {
+					  xpos =  static_cast<double>(ix)/static_cast<double>(UT_LAYOUT_RESOLUTION);
+					  sProp = "frame-col-xpos";
+					  sVal = UT_formatDimensionedValue(xpos,"in", NULL);
+					  UT_String_setProperty(sFrameProps,sProp,sVal);
+				  }
+				  else if(pDialog->getPositionTo() == POSITION_TO_PAGE)
+				  {
+					  xpos =  static_cast<double>(ix)/static_cast<double>(UT_LAYOUT_RESOLUTION);
+					  sProp = "frame-page-xpos";
+					  sVal = UT_formatDimensionedValue(xpos,"in", NULL);
+					  UT_String_setProperty(sFrameProps,sProp,sVal);
+				  }
+			  }
+			  else if(pDialog->getWrapping() == WRAP_TEXTBOTH)
+			  {
+				  sProp = "wrap-mode";
+				  sVal = "wrapped-both";
+				  UT_String_setProperty(sFrameProps,sProp,sVal);
+				  UT_sint32 ix = pRun->getX();
+				  if(pDialog->getPositionTo() == POSITION_TO_PARAGRAPH)
+				  {
+					  ix += pLine->getX();
+					  xpos =  static_cast<double>(ix)/static_cast<double>(UT_LAYOUT_RESOLUTION);
+					  sProp = "xpos";
+					  sVal = UT_formatDimensionedValue(xpos,"in", NULL);
+					  UT_String_setProperty(sFrameProps,sProp,sVal);
+				  }
+				  else if(pDialog->getPositionTo() == POSITION_TO_COLUMN)
+				  {
+					  ix += pLine->getX();
+					  xpos =  static_cast<double>(ix)/static_cast<double>(UT_LAYOUT_RESOLUTION);
+					  sProp = "frame-col-xpos";
+					  sVal = UT_formatDimensionedValue(xpos,"in", NULL);
+					  UT_String_setProperty(sFrameProps,sProp,sVal);
+				  }
+				  else if(pDialog->getPositionTo() == POSITION_TO_PAGE)
+				  {
+					  fp_Column * pCol = static_cast<fp_Column *>(pLine->getColumn());
+					  ix += pLine->getX() + pCol->getX();
+					  xpos =  static_cast<double>(ix)/static_cast<double>(UT_LAYOUT_RESOLUTION);
+					  sProp = "frame-page-xpos";
+					  sVal = UT_formatDimensionedValue(xpos,"in", NULL);
+					  UT_String_setProperty(sFrameProps,sProp,sVal);
+				  }
+			  }
+//
+// Now define the Frame attributes strux
+//
+			  const XML_Char * attributes[5] = {PT_STRUX_IMAGE_DATAID,
+												NULL,"props",NULL,NULL};
+			  attributes[1] = dataID;
+			  attributes[3] = sFrameProps.c_str();
+//
+// This deletes the inline image and places a positioned image in it's place
+// It deals with the undo/general update issues.
+//
+			  pView->convertInLineToPositioned(pos,attributes);
+//
+// Done! Now have a positioned image!
+//
+		  }
+//
+// Change properties of a positioned image
+//
+		  else if( (oldWrap != WRAP_INLINE) && (newWrap != WRAP_INLINE))
+		  {
+
+		  }
+//
+// Convert a positioned image to an inline image
+//
+		  else if((oldWrap != WRAP_INLINE) && (newWrap == WRAP_INLINE))
+		  {
+		  }
+	  }
 	  pDialogFactory->releaseDialog(pDialog);
 	  return true;
 	}
@@ -9842,35 +10140,35 @@ UT_return_val_if_fail(pDialog, false);
 Defun1(sortColsAscend)
 {
 	CHECK_FRAME;
-	ABIWORD_VIEW;
+	//ABIWORD_VIEW;
 	return true;
 }
 
 Defun1(sortColsDescend)
 {
 	CHECK_FRAME;
-	ABIWORD_VIEW;
+	//ABIWORD_VIEW;
 	return true;
 }
 
 Defun1(sortRowsAscend)
 {
 	CHECK_FRAME;
-	ABIWORD_VIEW;
+	//ABIWORD_VIEW;
 	return true;
 }
 
 Defun1(sortRowsDescend)
 {
 	CHECK_FRAME;
-	ABIWORD_VIEW;
+	//ABIWORD_VIEW;
 	return true;
 }
 
 Defun1(textToTable)
 {
 	CHECK_FRAME;
-	ABIWORD_VIEW;
+	//ABIWORD_VIEW;
 	return true;
 }
 
@@ -11447,15 +11745,15 @@ UT_return_val_if_fail(pDialog, false);//
 // Get stuff we need from the view
 //
 	if(pView->isHdrFtrEdit())
-{	
+	{	
 		pView->clearHdrFtrEdit();
 		pView->warpInsPtToXY(0,0,false);
 	}
 
 	fl_BlockLayout *pBL = pView->getCurrentBlock();
 	UT_return_val_if_fail( pBL, false );
-	fl_DocSectionLayout * pDSL = static_cast<fl_DocSectionLayout *>(pBL->getSectionLayout());
-
+	fl_DocSectionLayout * pDSL = static_cast<fl_DocSectionLayout *>(pBL->getDocSectionLayout());
+	UT_ASSERT(pDSL->getContainerType() == FL_CONTAINER_DOCSECTION);
 	bool bOldHdr = false;
 	bool bOldHdrEven = false;
 	bool bOldHdrFirst = false;
@@ -11647,6 +11945,7 @@ UT_return_val_if_fail(pDialog, false);//
 			}
 			pView->setSectionFormat(static_cast<const char **>(&props_out[0]));
 		}
+		pView->notifyListeners(AV_CHG_ALL);
 	}
 
 	pDialogFactory->releaseDialog(pDialog);
@@ -11758,6 +12057,7 @@ Defun1(toggleAutoRevision)
 			pFrame->nullUpdate();
 		}
 		pDoc->setAutoRevisioning(bAuto);
+		pView->focusChange(AV_FOCUS_HERE);
 	}
 	return true;
 }
@@ -11828,9 +12128,9 @@ Defun1(toggleShowRevisionsAfter)
 
 	if(bMark)
 	{
-		if(iLevel != 0xffffffff)
+		if(iLevel != PD_MAX_REVISION)
 		{
-			pView->cmdSetRevisionLevel(0xffffffff);
+			pView->cmdSetRevisionLevel(PD_MAX_REVISION);
 		}
 		else
 		{
@@ -11840,13 +12140,13 @@ Defun1(toggleShowRevisionsAfter)
 	else if(bShow)
 	{
 		//we are asked to hide revisions, first set view level to max
-		pView->setRevisionLevel(0xffffffff);
+		pView->setRevisionLevel(PD_MAX_REVISION);
 		pView->toggleShowRevisions();
 	}
-	else if(iLevel != 0xffffffff)
+	else if(iLevel != PD_MAX_REVISION)
 	{
 		// we are asked to change view level
-		pView->cmdSetRevisionLevel(0xffffffff);
+		pView->cmdSetRevisionLevel(PD_MAX_REVISION);
 	}
 	
 	return true;
@@ -12197,7 +12497,7 @@ Defun(resizeImage)
 				UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		}
 		
-		pG->setLineProperties(pG->tlu(1), GR_Graphics::JOIN_MITER, GR_Graphics::CAP_BUTT, GR_Graphics::LINE_DOTTED); // MARCM: setting the line style to DOTTED doesn't seem to work with GTK2
+		pG->setLineProperties(pG->tlu(1), GR_Graphics::JOIN_MITER, GR_Graphics::CAP_PROJECTING, GR_Graphics::LINE_DOTTED); // MARCM: setting the line style to DOTTED doesn't seem to work with GTK2
 #if XAP_DONTUSE_XOR
 		pG->setColor(UT_RGBColor(0, 0, 0));
 #else
@@ -12235,7 +12535,7 @@ Defun(resizeImage)
 		painter.drawLine(right, r.top, right, bot);
 		painter.drawLine(right, bot, r.left, bot);
 		painter.drawLine(r.left, bot, r.left, r.top);
-		pG->setLineProperties(pG->tlu(1), GR_Graphics::JOIN_MITER, GR_Graphics::CAP_BUTT, GR_Graphics::LINE_SOLID);
+		pG->setLineProperties(pG->tlu(1), GR_Graphics::JOIN_MITER, GR_Graphics::CAP_PROJECTING, GR_Graphics::LINE_SOLID);
 #else
 		painter.xorRect(r);
 #endif				
@@ -12287,7 +12587,7 @@ Defun(endResizeImage)
 			newImgBounds.height = pView->getGraphics()->tlu(1);
 		
 		// clear the resizing line
-		pG->setLineProperties(pG->tlu(1), GR_Graphics::JOIN_MITER, GR_Graphics::CAP_BUTT, GR_Graphics::LINE_DOTTED); // MARCM: setting the line style to DOTTED doesn't seem to work with GTK2
+		pG->setLineProperties(pG->tlu(1), GR_Graphics::JOIN_MITER, GR_Graphics::CAP_PROJECTING, GR_Graphics::LINE_DOTTED); // MARCM: setting the line style to DOTTED doesn't seem to work with GTK2
 		pG->setColor(UT_RGBColor(255,255,255));
 
 		GR_Painter painter(pG);
@@ -12304,7 +12604,7 @@ Defun(endResizeImage)
 #else
 		painter.xorRect(pView->getCurImageSel());
 #endif
-		pG->setLineProperties(pG->tlu(1), GR_Graphics::JOIN_MITER, GR_Graphics::CAP_BUTT, GR_Graphics::LINE_SOLID);
+		pG->setLineProperties(pG->tlu(1), GR_Graphics::JOIN_MITER, GR_Graphics::CAP_PROJECTING, GR_Graphics::LINE_SOLID);
 		
 		UT_DEBUGMSG(("MARCM: ap_EditMethods::done resizing image! new size in px (h:%d,w:%d)\n", newImgBounds.width, newImgBounds.height));
 	

@@ -1494,7 +1494,7 @@ int IE_Imp_MsWord_97::_docProc (wvParseStruct * ps, UT_uint32 tag)
 		//       document looks like _after_ the last revision; by
 		//       default we show what it looked _before_ first
 		//       revision; we can show the post-revision state by
-		//       setting the view id to 0xffffffff
+		//       setting the view id to PD_MAX_REVISION
 		//
 		//     * we currently do not handle the fLockRev parameter
 		{
@@ -1504,7 +1504,7 @@ int IE_Imp_MsWord_97::_docProc (wvParseStruct * ps, UT_uint32 tag)
 
 			if(!bShow)
 			{
-				getDoc()->setShowRevisionId(0xffffffff);
+				getDoc()->setShowRevisionId(PD_MAX_REVISION);
 			}
 		
 			getDoc()->setMarkRevisions(ps->dop.fRevMarking == 1);
@@ -2646,6 +2646,7 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 	if (apap->fTtp)
 	  {
 	    m_bInPara = true;
+		xxx_UT_DEBUGMSG(("m_bInPara set true here -1 \n"));
 	    return 0;
 	  }
 
@@ -2955,6 +2956,7 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 		list_field_fmt[1] = "list_label";
 		list_field_fmt[2] = 0;
 		_appendObject(PTO_Field, static_cast<const XML_Char**>(&list_field_fmt[0]));
+		m_bInPara = true;
 
 		// the character following the list label - 0=tab, 1=space, 2=none
 		if(apap->linfo.ixchFollow == 0) // tab
@@ -2969,7 +2971,7 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 		}
 		// else none
 	  }
-	m_bInPara = true;
+
 	return 0;
 }
 
@@ -3083,7 +3085,7 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 		m_bSymbolFont = true;
 	else
 	{
-		UT_DEBUGMSG(("IE_Imp_MsWord_97::_beginChar: unknow font encoding %d\n",
+		xxx_UT_DEBUGMSG(("IE_Imp_MsWord_97::_beginChar: unknow font encoding %d\n",
 					 ps->fonts.ffn[achp->ftcAscii].chs));
 		m_bSymbolFont = false;
 	}
@@ -3515,7 +3517,7 @@ bool IE_Imp_MsWord_97::_insertTOC(field *f)
 		goto finish;
 	}
 
-	if(t = strstr(params, "\\p"))
+	if((t = strstr(params, "\\p")))
 	{
 		// this defines the leader, we parse it first, before we mess up the command
 		t1 = strchr(t, '\"');
@@ -3535,7 +3537,7 @@ bool IE_Imp_MsWord_97::_insertTOC(field *f)
 		}
 	}
 
-	if(t = strstr(params, "\\b"))
+	if((t = strstr(params, "\\b")))
 	{
 		// a bookmark restricts the range from which the TOC is built
 		t1 = strchr(t, '\"');
@@ -3556,7 +3558,7 @@ bool IE_Imp_MsWord_97::_insertTOC(field *f)
 		}
 	}
 
-	if(t = strstr(params, "\\o"))
+	if((t = strstr(params, "\\o")))
 	{
 		// heading-based TOC
 		// \o param specifies a range of headings to use, e.g., \o "2-4"
@@ -3657,7 +3659,7 @@ bool IE_Imp_MsWord_97::_insertTOC(field *f)
 	// the \t and \o switches can be used simultaneously
 	// if both switches define the same level, we are unable to handle that; we will used the style
 	// in the \t switch (it is easier since the parsing of the \t parameter is destructive)
-	if (t = strstr(params, "\\t"))
+	if ((t = strstr(params, "\\t")))
 	{
 		// style-based toc, the params have the format
 		// \t "style,level,style,level ..."
@@ -4147,7 +4149,7 @@ void IE_Imp_MsWord_97::setNumberVector(UT_NumberVector & vec, UT_sint32 i, UT_si
 	{
 		vec.addItem(0);
 	}
-	vec.setNthItem(i,val,NULL);
+	vec.addItem(val); // we are sure that it will be appened at index i
 }
 
 /*!
@@ -4889,6 +4891,7 @@ void IE_Imp_MsWord_97::_generateParaProps(UT_String &s, const PAP * apap, wvPars
 	if (apap->dyaAfter) {
 		UT_String_sprintf(propBuffer,
 						  "margin-bottom:%dpt;", (apap->dyaAfter / 20));
+		s += propBuffer;
 	}
 
 	// tab stops
@@ -5507,7 +5510,7 @@ bool IE_Imp_MsWord_97::_insertNoteIfAppropriate(UT_uint32 iDocPosition, UT_UCS4C
 bool IE_Imp_MsWord_97::_insertFootnote(const footnote * f, UT_UCS4Char c)
 {
 	UT_return_val_if_fail(f, true);
-	UT_DEBUGMSG(("IE_Imp_MsWord_97::_insertFootnote: pos: %d, pid %d\n", f->ref_pos, f->pid));
+	xxx_UT_DEBUGMSG(("IE_Imp_MsWord_97::_insertFootnote: pos: %d, pid %d\n", f->ref_pos, f->pid));
 
 	this->_flush();
 
@@ -5562,7 +5565,7 @@ bool IE_Imp_MsWord_97::_insertFootnote(const footnote * f, UT_UCS4Char c)
 bool IE_Imp_MsWord_97::_insertEndnote(const footnote * f, UT_UCS4Char c)
 {
 	UT_return_val_if_fail(f, true);
-	UT_DEBUGMSG(("IE_Imp_MsWord_97::_insertEndnote: pos: %d, pid %d\n", f->ref_pos, f->pid));
+	xxx_UT_DEBUGMSG(("IE_Imp_MsWord_97::_insertEndnote: pos: %d, pid %d\n", f->ref_pos, f->pid));
 
 	this->_flush();
 
@@ -5645,7 +5648,7 @@ bool IE_Imp_MsWord_97::_handleNotesText(UT_uint32 iDocPosition)
 
 		if(!m_bInFNotes)
 		{
-			UT_DEBUGMSG(("In footnote territory: pos %d\n", iDocPosition));
+			xxx_UT_DEBUGMSG(("In footnote territory: pos %d\n", iDocPosition));
 			m_bInFNotes = true;
 			m_bInHeaders = false;
 			
@@ -5710,12 +5713,12 @@ bool IE_Imp_MsWord_97::_handleNotesText(UT_uint32 iDocPosition)
 		}
 		
 		// do not return !!!
-		UT_DEBUGMSG(("In footnote %d, on pos %d\n", m_iNextFNote, iDocPosition));
+		xxx_UT_DEBUGMSG(("In footnote %d, on pos %d\n", m_iNextFNote, iDocPosition));
 	}
 	else if(m_bInFNotes)
 	{
 		m_bInFNotes = false;
-		UT_DEBUGMSG(("Leaving footnote territory\n"));
+		xxx_UT_DEBUGMSG(("Leaving footnote territory\n"));
 		// move to the end of the do end of the document ...
 
 		// do not return !!!
@@ -5725,7 +5728,7 @@ bool IE_Imp_MsWord_97::_handleNotesText(UT_uint32 iDocPosition)
 	{
 		if(!m_bInENotes)
 		{
-			UT_DEBUGMSG(("In endnote territory: pos %d\n", iDocPosition));
+			xxx_UT_DEBUGMSG(("In endnote territory: pos %d\n", iDocPosition));
 			m_bInENotes = true;
 			m_bInHeaders = false;
 			m_iNextENote = 0;
@@ -5746,7 +5749,7 @@ bool IE_Imp_MsWord_97::_handleNotesText(UT_uint32 iDocPosition)
 				_findNextENoteSection();
 			else
 			{
-				UT_DEBUGMSG(("End of endnotes marker at pos %d\n", iDocPosition));
+				xxx_UT_DEBUGMSG(("End of endnotes marker at pos %d\n", iDocPosition));
 				return false;
 			}
 		}
@@ -5784,13 +5787,13 @@ bool IE_Imp_MsWord_97::_handleNotesText(UT_uint32 iDocPosition)
 			return true;
 		}
 
-		UT_DEBUGMSG(("In endnote %d, on pos %d\n", m_iNextENote, iDocPosition));
+		xxx_UT_DEBUGMSG(("In endnote %d, on pos %d\n", m_iNextENote, iDocPosition));
 		// do not return !!!
 	}
 	else if(m_bInENotes)
 	{
 		m_bInENotes = false;
-		UT_DEBUGMSG(("Leaving endnote territory\n"));
+		xxx_UT_DEBUGMSG(("Leaving endnote territory\n"));
 		// move to the end of the document ...
 
 		// do not return !!!
@@ -5910,7 +5913,54 @@ bool IE_Imp_MsWord_97::_findNextFNoteSection()
 
 	if(!m_pNotesEndSection)
 	{
-		UT_DEBUGMSG(("Error: footnote section not found!!!\n"));
+		xxx_UT_DEBUGMSG(("Error: footnote section not found!!!\n"));
+		return false;
+	}
+
+	return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////
+/*!
+ * s_cmp_lids This function is used to sort the textboxPos lids in order
+ * of their lid values. This matches the order of the text sort in the
+ * in the out-of-stream table.
+ * Used by theqsort method on UT_Vector.
+\params const void * P1  - pointer to a textboxPos pointer
+\params const void * P2  - pointer to a textboxPos pointer
+\returns -ve if sz1 < sz2, 0 if sz1 == sz2, +ve if sz1 > sz2
+*/
+static UT_sint32 s_cmp_lids(const void * P1, const void * P2)
+{
+	const textboxPos ** pP1 = (const textboxPos **) P1;
+	const textboxPos ** pP2 = (const textboxPos **) P2;
+	UT_uint32 lid1 = (*pP1)->lid;
+	UT_uint32 lid2 = (*pP2)->lid;
+	return static_cast<UT_sint32>(lid1) - static_cast<UT_sint32>(lid2);
+}
+
+bool IE_Imp_MsWord_97::_findNextTextboxSection()
+{
+	if(m_iNextTextbox == 0)
+	{
+		// move to the start of the doc first
+		m_pTextboxEndSection = NULL;
+		m_vecTextboxPos.qsort(s_cmp_lids);
+		
+	}
+	if(m_iNextTextbox >= m_vecTextboxPos.getItemCount())
+	{
+		UT_DEBUGMSG(("Error: Textbox section not found!!!\n"));
+		return false;
+	}
+
+	textboxPos * pPos = m_vecTextboxPos.getNthItem(m_iNextTextbox);
+	m_pTextboxEndSection = pPos->endFrame;
+
+	if(!m_pTextboxEndSection)
+	{
+		UT_DEBUGMSG(("Error: Textbox section not found!!!\n"));
 		return false;
 	}
 
@@ -6086,6 +6136,15 @@ bool IE_Imp_MsWord_97::_appendStruxHdrFtr(PTStruxType pts, const XML_Char ** att
 	}
 	
 	bRet &= getDoc()->appendStrux(pts, attributes);
+	if(pts != PTX_Block)
+	{
+		xxx_UT_DEBUGMSG(("m_bInPara set false here -1 \n"));
+		m_bInPara = false;
+	}
+	else
+	{
+		m_bInPara = true;
+	}
 	return bRet;
 }
 
@@ -6099,13 +6158,16 @@ bool IE_Imp_MsWord_97::_appendObjectHdrFtr(PTObjectType pto, const XML_Char ** a
 	{
 		pf_Frag * pF = (pf_Frag*) m_pHeaders[m_iCurrentHeader].d.frag.getNthItem(i);
 		UT_return_val_if_fail(pF,false);
-
+		if(!m_bInPara)
+		{
+			bRet &= getDoc()->insertStruxBeforeFrag(pF, PTX_Block, NULL);
+		}
 		bRet &= getDoc()->insertObjectBeforeFrag(pF, pto, attributes);
 	}
 	if(!m_bInPara)
 	{
-	  _appendStrux(PTX_Block, NULL);
-	  m_bInPara = true;
+		m_bInPara = true;
+		bRet &= getDoc()->appendStrux(PTX_Block, NULL);
 	}	
 	bRet &= getDoc()->appendObject(pto, attributes);
 	return bRet;
@@ -6121,15 +6183,18 @@ bool IE_Imp_MsWord_97::_appendSpanHdrFtr(const UT_UCSChar * p, UT_uint32 length)
 	{
 		pf_Frag * pF = (pf_Frag*) m_pHeaders[m_iCurrentHeader].d.frag.getNthItem(i);
 		UT_return_val_if_fail(pF,false);
+		if(!m_bInPara)
+		{
+			bRet &= getDoc()->insertStruxBeforeFrag(pF, PTX_Block, NULL);
+		}
 
 		bRet &= getDoc()->insertSpanBeforeFrag(pF, p, length);
 	}
 	if(!m_bInPara)
 	{
-	  _appendStrux(PTX_Block, NULL);
-	  m_bInPara = true;
+		m_bInPara = true;
+		bRet &= getDoc()->appendStrux(PTX_Block, NULL);
 	}	
-	
 	bRet &= getDoc()->appendSpan(p, length);
 	return bRet;
 }
@@ -6458,6 +6523,11 @@ bool IE_Imp_MsWord_97::_handleHeadersText(UT_uint32 iDocPosition,bool bDoBlockIn
 					
 					// we use the document methods, not the importer methods intentionally 
 					UT_DEBUGMSG(("Direct Appending HdrFtr in MSWord_import \n"));
+					if(!m_bInPara)
+					{
+						getDoc()->appendStrux(PTX_Block, NULL);
+						m_bInPara = true;
+					}
 					getDoc()->appendStrux(PTX_SectionHdrFtr, attribsS);
 					m_bInSect = true;
 					m_bInHeaders = true;

@@ -601,13 +601,13 @@ UT_Error PD_Document::newDocument(void)
 	return UT_OK;
 }
 
-UT_Error PD_Document::saveAs(const char * szFilename, int ieft,
+UT_Error PD_Document::_saveAs(const char * szFilename, int ieft,
 							 const char * expProps)
 {
-  return saveAs(szFilename, ieft, true, expProps);
+  return _saveAs(szFilename, ieft, true, expProps);
 }
 
-UT_Error PD_Document::saveAs(const char * szFilename, int ieft, bool cpy,
+UT_Error PD_Document::_saveAs(const char * szFilename, int ieft, bool cpy,
 							 const char * expProps)
 {
 	if (!szFilename)
@@ -664,7 +664,7 @@ UT_Error PD_Document::saveAs(const char * szFilename, int ieft, bool cpy,
 	return UT_OK;
 }
 
-UT_Error PD_Document::save(void)
+UT_Error PD_Document::_save(void)
 {
 	if (!getFilename() || !*getFilename())
 		return UT_SAVE_NAMEERROR;
@@ -953,7 +953,44 @@ bool PD_Document::appendStrux(PTStruxType pts, const XML_Char ** attributes, pf_
 	return m_pPieceTable->appendStrux(pts,attributes,ppfs_ret);
 }
 
-bool  PD_Document::appendStruxFmt(pf_Frag_Strux * pfs, const XML_Char ** attributes)
+/*!
+    appends given fmt to the last strux in document
+*/
+bool PD_Document::appendLastStruxFmt(PTStruxType pts, const XML_Char ** attributes, const XML_Char ** props,
+									 bool bSkipEmbededSections)
+{
+	UT_return_val_if_fail (m_pPieceTable, false);
+
+	return m_pPieceTable->appendLastStruxFmt(pts,attributes,props,bSkipEmbededSections);
+}
+
+bool PD_Document::appendLastStruxFmt(PTStruxType pts, const XML_Char ** attributes, const XML_Char * props,
+									 bool bSkipEmbededSections)
+{
+	UT_return_val_if_fail (m_pPieceTable, false);
+
+	return m_pPieceTable->appendLastStruxFmt(pts,attributes,props,bSkipEmbededSections);
+}
+
+bool PD_Document::changeLastStruxFmtNoUndo(PT_DocPosition dpos, PTStruxType pts,
+									 const XML_Char ** attributes, const XML_Char ** props,
+									 bool bSkipEmbededSections)
+{
+	UT_return_val_if_fail (m_pPieceTable, false);
+
+	return m_pPieceTable->changeLastStruxFmtNoUndo(dpos, pts,attributes,props,bSkipEmbededSections);
+}
+
+bool PD_Document::changeLastStruxFmtNoUndo(PT_DocPosition dpos, PTStruxType pts,
+										   const XML_Char ** attributes, const XML_Char * props,
+									 bool bSkipEmbededSections)
+{
+	UT_return_val_if_fail (m_pPieceTable, false);
+
+	return m_pPieceTable->changeLastStruxFmtNoUndo(dpos, pts,attributes,props,bSkipEmbededSections);
+}
+
+bool PD_Document::appendStruxFmt(pf_Frag_Strux * pfs, const XML_Char ** attributes)
 {
 	UT_return_val_if_fail (m_pPieceTable, false);
 
@@ -1093,9 +1130,7 @@ bool PD_Document::getAttributeFromSDH(PL_StruxDocHandle sdh, bool bShowRevisions
 	const XML_Char * pszValue = NULL;
 
 	bool bHiddenRevision = false;
-	PP_RevisionAttr * pRevisions = NULL; // must be NULL
-	getAttrProp(indexAP, &pAP,pRevisions,bShowRevisions,iRevisionLevel,bHiddenRevision);
-	delete pRevisions;
+	getAttrProp(indexAP, &pAP,NULL,bShowRevisions,iRevisionLevel,bHiddenRevision);
 	
 	UT_return_val_if_fail (pAP, false);
 	(pAP)->getAttribute(szAttribute, pszValue);
@@ -1144,11 +1179,8 @@ bool PD_Document::getPropertyFromSDH(PL_StruxDocHandle sdh, bool bShowRevisions,
 	const XML_Char * pszValue = NULL;
 
 	bool bHiddenRevision = false;
-	PP_RevisionAttr * pRevisions = NULL; // must be NULL
 
-	getAttrProp(indexAP, &pAP,pRevisions,bShowRevisions,iRevisionLevel,bHiddenRevision);
-
-	delete pRevisions;
+	getAttrProp(indexAP, &pAP,NULL,bShowRevisions,iRevisionLevel,bHiddenRevision);
 	
 	UT_return_val_if_fail (pAP, false);
 	(pAP)->getProperty(szProperty, pszValue);
@@ -1538,9 +1570,78 @@ bool PD_Document::isEndFootnoteAtPos(PT_DocPosition pos)
 	return b;
 }
 
+
+/*!
+ * This method returns true if there is a frame strux at exactly this 
+ * position.
+ */
+bool PD_Document::isFrameAtPos(PT_DocPosition pos)
+{
+	PT_BlockOffset pOffset;
+	pf_Frag * pf = NULL;
+	/*bool bRes = */m_pPieceTable->getFragFromPosition(pos,&pf,&pOffset);
+	while(pf->getLength() == 0)
+		pf = pf->getPrev();
+	if(pf->getType() == pf_Frag::PFT_Strux)
+	{
+		pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);
+		if(pfs->getStruxType() == PTX_SectionFrame)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
 //============================================================================
 // Table Medthods
 //===========================================================================
+
+/*!
+ * This method returns true if there is a table strux at exactly this 
+ * position.
+ */
+bool PD_Document::isTableAtPos(PT_DocPosition pos)
+{
+	PT_BlockOffset pOffset;
+	pf_Frag * pf = NULL;
+	/*bool bRes = */m_pPieceTable->getFragFromPosition(pos,&pf,&pOffset);
+	while(pf->getLength() == 0)
+		pf = pf->getPrev();
+	if(pf->getType() == pf_Frag::PFT_Strux)
+	{
+		pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);
+		if(pfs->getStruxType() == PTX_SectionTable)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+
+/*!
+ * This method returns true if there is a cell strux at exactly this 
+ * position.
+ */
+bool PD_Document::isCellAtPos(PT_DocPosition pos)
+{
+	PT_BlockOffset pOffset;
+	pf_Frag * pf = NULL;
+	/*bool bRes = */m_pPieceTable->getFragFromPosition(pos,&pf,&pOffset);
+	while(pf->getLength() == 0)
+		pf = pf->getPrev();
+	if(pf->getType() == pf_Frag::PFT_Strux)
+	{
+		pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);
+		if(pfs->getStruxType() == PTX_SectionTable)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
 /*!
  * This method returns the end table strux associated with the table strux tableSDH
  * Returns NULL on failure to find it.
@@ -1765,10 +1866,10 @@ void  PD_Document::miniDump(PL_StruxDocHandle sdh, UT_sint32 nstruxes)
 		const char * szRight=NULL;
 		const char * szTop=NULL;
 		const char * szBot = NULL;
-		getPropertyFromSDH(sdhTemp,true, 0xffffffff,"left-attach",&szLeft);
-		getPropertyFromSDH(sdhTemp,true, 0xffffffff,"right-attach",&szRight);
-		getPropertyFromSDH(sdhTemp,true, 0xffffffff,"top-attach",&szTop);
-		getPropertyFromSDH(sdhTemp,true, 0xffffffff,"bot-attach",&szBot);
+		getPropertyFromSDH(sdhTemp,true, PD_MAX_REVISION,"left-attach",&szLeft);
+		getPropertyFromSDH(sdhTemp,true, PD_MAX_REVISION,"right-attach",&szRight);
+		getPropertyFromSDH(sdhTemp,true, PD_MAX_REVISION,"top-attach",&szTop);
+		getPropertyFromSDH(sdhTemp,true, PD_MAX_REVISION,"bot-attach",&szBot);
 		if(szLeft != NULL)
 		{
 			UT_DEBUGMSG(("left-attach %s right-attach %s top-attach %s bot-attach %s \n",szLeft,szRight,szTop,szBot));
@@ -1797,7 +1898,8 @@ void  PD_Document::miniDump(PL_StruxDocHandle sdh, UT_sint32 nstruxes)
 
 PL_StruxDocHandle PD_Document::getCellSDHFromRowCol(PL_StruxDocHandle tableSDH,
 													bool bShowRevisions, UT_uint32 iRevisionLevel,
-													UT_sint32 row, UT_sint32 col)
+													UT_sint32 row, 
+													UT_sint32 col)
 {
 	UT_sint32 Top,Left,Bot,Right;
 	const char * szLeft = NULL;
@@ -2535,7 +2637,7 @@ const PP_AttrProp * PD_Document::explodeRevisions(PP_RevisionAttr *& pRevisions,
 				{
 					UT_DEBUGMSG(("PD_Document::inflateRevisions: iMinId %d\n", iMinId));
 					
-					if(iMinId == 0xffffffff)
+					if(iMinId == PD_MAX_REVISION)
 					{
 						UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
 						return NULL;
@@ -2563,7 +2665,7 @@ const PP_AttrProp * PD_Document::explodeRevisions(PP_RevisionAttr *& pRevisions,
 		{
 			// revisions not to be shown, but document to be presented
 			// as it looks after the revision iId
-			// UT_ASSERT( bMark || iId == 0xffffffff );
+			// UT_ASSERT( bMark || iId == PD_MAX_REVISION );
 			
 			UT_uint32 iMyMaxId = bMark ? UT_MIN(iId,iMaxId) : iMaxId;
 
@@ -2577,7 +2679,7 @@ const PP_AttrProp * PD_Document::explodeRevisions(PP_RevisionAttr *& pRevisions,
 
 				if(!pRev)
 				{
-					if(iMinId == 0xffffffff)
+					if(iMinId == PD_MAX_REVISION)
 					{
 						UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
 						break;
@@ -2637,7 +2739,7 @@ const PP_AttrProp * PD_Document::explodeRevisions(PP_RevisionAttr *& pRevisions,
 				bHiddenRevision = false;
 			}
 
-			if(!bMark || iId == 0xffffffff)
+			if(!bMark || iId == PD_MAX_REVISION)
 			{
 				if(pNewAP)
 				{
@@ -2689,7 +2791,7 @@ const PP_AttrProp * PD_Document::explodeRevisions(PP_RevisionAttr *& pRevisions,
 
 			if(!pRev)
 			{
-				if(iMinId == 0xffffffff)
+				if(iMinId == PD_MAX_REVISION)
 				{
 					UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
 					break;
@@ -2786,6 +2888,7 @@ bool PD_Document::getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset, bool 
  */
 PTStruxType PD_Document::getStruxType(PL_StruxDocHandle sdh) const
 {
+	UT_return_val_if_fail( sdh,(PTStruxType)0 );
 	const pf_Frag * pf = static_cast<const pf_Frag *>(sdh);
 	UT_return_val_if_fail (pf->getType() == pf_Frag::PFT_Strux,(PTStruxType)0);
 	const pf_Frag_Strux * pfs = static_cast<const pf_Frag_Strux *> (pf);
@@ -4120,8 +4223,8 @@ bool PD_Document::convertPercentToInches(const char * szPercent, UT_UTF8String &
 	const char * szRightMargin = NULL;
 
 	// TODO -- probably needs to get revision settings from some view ...
-	getPropertyFromSDH(sdhSec,true,0xffffffff,"page-margin-left",&szLeftMargin);
-	getPropertyFromSDH(sdhSec,true,0xffffffff,"page-margin-right",&szRightMargin);
+	getPropertyFromSDH(sdhSec,true,PD_MAX_REVISION,"page-margin-left",&szLeftMargin);
+	getPropertyFromSDH(sdhSec,true,PD_MAX_REVISION,"page-margin-right",&szRightMargin);
 	if(szLeftMargin == NULL)
 	{
 		szLeftMargin = "0.5in";
@@ -5076,6 +5179,7 @@ bool PD_Document::_acceptRejectRevision(bool bReject, UT_uint32 iStart, UT_uint3
 					}
 				}
 
+				UT_ASSERT_HARMLESS( ppAttr2 || ppProps );
 
 				if(pf->getType() == pf_Frag::PFT_Strux)
 				{
@@ -5083,7 +5187,7 @@ bool PD_Document::_acceptRejectRevision(bool bReject, UT_uint32 iStart, UT_uint3
 					// the changeStrux function tries to locate the strux which _contains_ the
 					// position we pass into it; however, iStart is the doc position of the actual
 					// strux, so we have to skip over the strux
-					bRet &= changeStruxFmt(PTC_AddFmt,iStart+1,iEnd,ppAttr2,NULL, pfs->getStruxType());
+					bRet &= changeStruxFmt(PTC_AddFmt,iStart+1,iEnd,ppAttr2,ppProps, pfs->getStruxType());
 				}
 				else
 					bRet &= changeSpanFmt(PTC_AddFmt,iStart,iEnd,ppAttr2,ppProps);
@@ -5104,6 +5208,86 @@ bool PD_Document::_acceptRejectRevision(bool bReject, UT_uint32 iStart, UT_uint3
 	return false;
 }
 
+bool PD_Document::acceptAllRevisions()
+{
+	PD_DocIterator t(*this);
+	UT_return_val_if_fail(t.getStatus() == UTIter_OK, false);
+	
+	notifyPieceTableChangeStart();
+	
+	beginUserAtomicGlob();	
+	while(t.getStatus() == UTIter_OK)
+	{
+		pf_Frag * pf = const_cast<pf_Frag *>(t.getFrag());
+
+		if(!pf)
+		{
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+			endUserAtomicGlob();
+			notifyPieceTableChangeEnd();
+			return false;
+		}
+		
+		PT_AttrPropIndex API = pf->getIndexAP();
+
+		const PP_AttrProp * pAP = NULL;
+		m_pPieceTable->getAttrProp(API,&pAP);
+		if(!pAP)
+		{
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+			endUserAtomicGlob();
+			notifyPieceTableChangeEnd();
+			return false;
+		}
+		
+		const XML_Char * pszRevision = NULL;
+		pAP->getAttribute("revision", pszRevision);
+		
+		if(pszRevision == NULL)
+		{
+			// no revisions on this fragment
+			t += pf->getLength();
+			continue;
+		}
+			
+		PP_RevisionAttr RevAttr(pszRevision);
+		RevAttr.pruneForCumulativeResult(this);
+		const PP_Revision * pRev = NULL;
+		if(RevAttr.getRevisionsCount())
+			pRev = RevAttr.getNthRevision(0);
+		
+		if(!pRev)
+		{
+			// no revisions
+			t += pf->getLength();
+			continue;
+		}
+		
+		UT_uint32 iStart = t.getPosition();
+		UT_uint32 iEnd   = iStart + pf->getLength();
+		bool bDeleted = false;
+		
+		_acceptRejectRevision(false /*accept*/, iStart, iEnd, pRev, RevAttr, pf, bDeleted);
+		
+		// advance -- the call to _acceptRejectRevision could have
+		// resulted in deletion and/or merging of fragments; we have
+		// to reset the iterator
+		if(bDeleted)
+			t.reset(iStart, NULL);
+		else
+			t.reset(iEnd, NULL);
+	}
+
+	// _acceptRejectRevison() function unfortunately leaves some unwanted fmt marks in the
+	// document; we will purge all fmt marks
+	purgeFmtMarks();
+	
+	endUserAtomicGlob();
+	notifyPieceTableChangeEnd();
+	signalListeners(PD_SIGNAL_UPDATE_LAYOUT);
+	return true;
+}
+	
 bool PD_Document::rejectAllHigherRevisions(UT_uint32 iLevel)
 {
 	PD_DocIterator t(*this);
@@ -5172,6 +5356,10 @@ bool PD_Document::rejectAllHigherRevisions(UT_uint32 iLevel)
 			t.reset(iEnd, NULL);
 	}
 
+	// _acceptRejectRevison() function unfortunately leaves some unwanted fmt marks in the
+	// document; we will purge all fmt marks
+	purgeFmtMarks();
+	
 	endUserAtomicGlob();
 	notifyPieceTableChangeEnd();
 	signalListeners(PD_SIGNAL_UPDATE_LAYOUT);
@@ -6012,30 +6200,39 @@ bool PD_Document::purgeFmtMarks()
 }
 
 
-bool PD_Document::getAttrProp(PT_AttrPropIndex apIndx, const PP_AttrProp ** ppAP, PP_RevisionAttr *& pRevisions,
+bool PD_Document::getAttrProp(PT_AttrPropIndex apIndx, const PP_AttrProp ** ppAP, PP_RevisionAttr ** pRevisions,
 							  bool bShowRevisions, UT_uint32 iRevisionId, bool &bHiddenRevision) const
 {
+	bool bRevisionAttrNeeded = pRevisions ? true : false;
+	PP_RevisionAttr * pRevAttr = NULL;
 	bHiddenRevision = false;
 
 	const PP_AttrProp * pAP = NULL;
 
-	UT_return_val_if_fail(m_pDoc, false);
-	
 	if(!getAttrProp(apIndx,&pAP))
 		return false;
 
 	if(   pAP->getRevisedIndex() != 0xffffffff
-	   && pAP->getRevisionState().isEqual(iRevisionId, bShowRevisions, m_pDoc->isMarkRevisions()))
+	   && pAP->getRevisionState().isEqual(iRevisionId, bShowRevisions, isMarkRevisions()))
 	{
 		// the revision has a valid index to an inflated AP, so we use it
 		bHiddenRevision = pAP->getRevisionHidden();
+
+		const XML_Char* pRevision = NULL;
+
+		if(bRevisionAttrNeeded && pAP->getAttribute("revision", pRevision))
+		{
+			*pRevisions = new PP_RevisionAttr(pRevision);
+			UT_return_val_if_fail(pRevisions, false);
+		}
+
 		PT_AttrPropIndex revAPI = pAP->getRevisedIndex();
 
 		getAttrProp(revAPI, ppAP);
 		return true;
 	}
 	
-	const PP_AttrProp * pNewAP = explodeRevisions(pRevisions, pAP, bShowRevisions, iRevisionId, bHiddenRevision);
+	const PP_AttrProp * pNewAP = explodeRevisions(pRevAttr, pAP, bShowRevisions, iRevisionId, bHiddenRevision);
 
 	if(pNewAP)
 	{
@@ -6046,33 +6243,60 @@ bool PD_Document::getAttrProp(PT_AttrPropIndex apIndx, const PP_AttrProp ** ppAP
 		*ppAP = pAP;
 	}
 	
+	if(bRevisionAttrNeeded)
+	{
+		*pRevisions = pRevAttr;
+	}
+	else
+	{
+		delete pRevAttr;
+	}
+	
 	return true;
 }
 
 
+/*!
+    retrieves span AP corresponding to revision settings
+
+    pRevisions : [out] the representation of the rev. attribute associated with the AP; if
+    the caller does not need this, the pointer can be set to null
+*/
 bool PD_Document::getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset, bool bLeftSide,
 								  const PP_AttrProp ** ppAP,
-								  PP_RevisionAttr *& pRevisions,
+								  PP_RevisionAttr ** pRevisions,
 								  bool bShowRevisions, UT_uint32 iRevisionId,
 								  bool &bHiddenRevision) const
 {
 	const PP_AttrProp *pAP = NULL;
+	bool bRevisionAttrNeeded = pRevisions ? true : false;
+	PP_RevisionAttr * pRevAttr = NULL;
 	
 	if(!getSpanAttrProp(sdh,offset,bLeftSide,&pAP))
 		return false;
 
 	if(   pAP->getRevisedIndex() != 0xffffffff
-	   && pAP->getRevisionState().isEqual(iRevisionId, bShowRevisions, m_pDoc->isMarkRevisions()))
+	   && pAP->getRevisionState().isEqual(iRevisionId, bShowRevisions, isMarkRevisions()))
 	{
 		// the revision has a valid index to an inflated AP, so we use it
 		bHiddenRevision = pAP->getRevisionHidden();
+
+		const XML_Char* pRevision = NULL;
+
+		// only do this if the pRevisions pointer is set to NULL
+		if(bRevisionAttrNeeded && pAP->getAttribute("revision", pRevision))
+		{
+			*pRevisions = new PP_RevisionAttr(pRevision);
+			UT_return_val_if_fail(pRevisions, false);
+		}
+	
 		PT_AttrPropIndex revAPI = pAP->getRevisedIndex();
 
 		getAttrProp(revAPI, ppAP);
 		return true;
 	}
 	
-	const PP_AttrProp * pNewAP = explodeRevisions(pRevisions, pAP, bShowRevisions, iRevisionId, bHiddenRevision);
+	const PP_AttrProp * pNewAP = explodeRevisions(pRevAttr, pAP, bShowRevisions, iRevisionId, bHiddenRevision);
 
 	if(pNewAP)
 	{
@@ -6082,10 +6306,25 @@ bool PD_Document::getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset, bool 
 	{
 		*ppAP = pAP;
 	}
+
+	if(bRevisionAttrNeeded)
+	{
+		*pRevisions = pRevAttr;
+	}
+	else
+	{
+		delete pRevAttr;
+	}
+	
 	
 	return true;
 }
 
+void PD_Document::_clearUndo()
+{
+	UT_return_if_fail(m_pPieceTable);
+	m_pPieceTable->clearUndo();
+}
 	
 
 #ifdef DEBUG

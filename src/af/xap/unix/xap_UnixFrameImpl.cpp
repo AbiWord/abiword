@@ -78,6 +78,8 @@ static const GtkTargetEntry drag_types[] =
 		{"text/richtext", 0, TARGET_URI_LIST},
 		{"text/rtf", 0, TARGET_URI_LIST},
 		{"application/msword", 0, TARGET_URI_LIST},
+		{"application/vnd.ms-word", 0, TARGET_URI_LIST},
+		{"application/vnd.sun.xml.writer", 0, TARGET_URI_LIST},
 		{"application/x-applix-word", 0, TARGET_URI_LIST},
 		{"application/x-palm-database", 0, TARGET_URI_LIST},
 		{"application/vnd.palm", 0, TARGET_URI_LIST},
@@ -123,14 +125,13 @@ s_mapMimeToUriType (const char * uri)
 }
 
 static bool
-s_ensure_uri_on_disk (const gchar * uri, UT_String & outName)
+s_ensure_uri_on_disk (const gchar * uri, UT_UTF8String & outName)
 {
 	GnomeVFSResult    result = GNOME_VFS_OK;
 	GnomeVFSHandle   *handle = NULL;
 	gchar             buffer[1024];
 	GnomeVFSFileSize  bytes_read;
 	GnomeVFSURI 	 *hndl = NULL;	
-
 	outName = "";
 	hndl = gnome_vfs_uri_new (uri);
 	if (hndl == NULL) 
@@ -143,7 +144,30 @@ s_ensure_uri_on_disk (const gchar * uri, UT_String & outName)
 		char * short_name = gnome_vfs_uri_to_string (hndl, static_cast<GnomeVFSURIHideOptions>(GNOME_VFS_URI_HIDE_USER_NAME | GNOME_VFS_URI_HIDE_PASSWORD |
 													 GNOME_VFS_URI_HIDE_HOST_NAME | GNOME_VFS_URI_HIDE_HOST_PORT |
 													 GNOME_VFS_URI_HIDE_TOPLEVEL_METHOD | GNOME_VFS_URI_HIDE_FRAGMENT_IDENTIFIER));
-		outName = short_name;
+		UT_uint32 i = 0;
+		UT_uint32 len = strlen(short_name);
+		UT_UTF8String left = "";
+		while(i < len)
+		{
+			if(short_name[i] != '%')
+			{
+				left += short_name[i];
+				i += 1;
+			}
+			else if(i+2 < len)
+			{
+				char c = 16*(short_name[i+1] - '0') +  short_name[i+2] - '0';
+				left += c;
+				i += 3;
+			}
+			else
+			{
+				left += short_name[i];
+				i +=1;
+			}
+		}
+		outName = left;
+		UT_DEBUGMSG(("short_name %s szTmp %s \n",short_name,outName.utf8_str()));
 		g_free (short_name);
 		gnome_vfs_uri_unref (hndl);
 		return true;
@@ -156,7 +180,30 @@ s_ensure_uri_on_disk (const gchar * uri, UT_String & outName)
 		gnome_vfs_uri_unref (hndl);
 		return false;
 	}
-	outName = outCName;
+	UT_uint32 i = 0;
+	UT_uint32 len = strlen(outCName);
+	UT_UTF8String left = "";
+	while(i < len)
+	{
+		if(outCName[i] != '%')
+		{
+			left += outCName[i];
+			i += 1;
+		}
+		else if(i+2 < len)
+		{
+			char c = 16*(outCName[i+1] - '0') +  outCName[i+2] - '0';
+			left += c;
+			i += 3;
+		}
+		else
+		{
+			left += outCName[i];
+			i +=1;
+		}
+	}
+	outName = left;
+	UT_DEBUGMSG(("outCName %s szTmp %s \n",outCName,outName.utf8_str()));
 	g_free (outCName);
 
 	FILE * onDisk = fdopen (fd, "r");
@@ -186,51 +233,49 @@ s_ensure_uri_on_disk (const gchar * uri, UT_String & outName)
 }
 
 static void
-s_load_image (const UT_String & file, XAP_Frame * pFrame, FV_View * pView)
+s_load_image (const UT_UTF8String & file, XAP_Frame * pFrame, FV_View * pView)
 {
 	IE_ImpGraphic * pIEG = 0;
 	FG_Graphic    * pFG  = 0;
-
-	UT_Error error = IE_ImpGraphic::constructImporter(file.c_str(), 0, &pIEG);
+	UT_Error error = IE_ImpGraphic::constructImporter(file.utf8_str(), 0, &pIEG);
 	if (error != UT_OK || !pIEG)
 		{
-			xxx_UT_DEBUGMSG(("Couldn't construct importer for %s\n", file.c_str()));
+			UT_DEBUGMSG(("Couldn't construct importer for %s\n", file.utf8_str()));
 			return;
 		}
 
-	error = pIEG->importGraphic(file.c_str(), &pFG);
+	error = pIEG->importGraphic(file.utf8_str(), &pFG);
 
 	DELETEP(pIEG);
 
 	if (error != UT_OK || !pFG)
 		{
-			xxx_UT_DEBUGMSG(("Dom: could not import graphic (%s)\n", file.c_str()));
+			UT_DEBUGMSG(("Dom: could not import graphic (%s)\n", file.utf8_str()));
 			return;
 		}
 
-	pView->cmdInsertGraphic(pFG, file.c_str());
+	pView->cmdInsertGraphic(pFG);
 	DELETEP(pFG);
 }
 
 static void
-s_load_document (const UT_String & file, XAP_Frame * pFrame)
+s_load_document (const UT_UTF8String & file, XAP_Frame * pFrame)
 {
 	XAP_Frame * pNewFrame = 0;
-	
 	if (pFrame->isDirty() || pFrame->getFilename() || 
 		(pFrame->getViewNumber() > 0))
 		pNewFrame = XAP_App::getApp()->newFrame ();
 	else
 		pNewFrame = pFrame;
 
-	UT_Error error = pNewFrame->loadDocument(file.c_str(), 0 /* IEFT_Unknown */);
+	UT_Error error = pNewFrame->loadDocument(file.utf8_str(), 0 /* IEFT_Unknown */);
 	if (error)
 		{
 			// TODO: warn user that we couldn't open that file		 
 			// TODO: we crash if we just delete this without putting something
 			// TODO: in it, so let's go ahead and open an untitled document
 			// TODO: for now.
-			xxx_UT_DEBUGMSG(("DOM: couldn't load document %s\n", file.c_str()));
+			xxx_UT_DEBUGMSG(("DOM: couldn't load document %s\n", file.utf8_str()));
 			pNewFrame->loadDocument(NULL, 0 /* IEFT_Unknown */);
 		}
 }
@@ -253,14 +298,14 @@ s_load_uri (XAP_Frame * pFrame, const char * uri)
 			return;
 		}
 
-	UT_String onDisk;
+	UT_UTF8String onDisk;
 	if (!s_ensure_uri_on_disk (uri, onDisk))
 		{
 			xxx_UT_DEBUGMSG(("DOM: couldn't ensure %s on disk\n", uri));
 			return;
 		}
 
-	xxx_UT_DEBUGMSG(("DOM: %s on disk\n", onDisk.c_str()));
+	xxx_UT_DEBUGMSG(("DOM: %s on disk\n", onDisk.utf8_str()));
 
 	if (type == TARGET_IMAGE)
 		{
@@ -504,7 +549,7 @@ gint XAP_UnixFrameImpl::_fe::button_press_event(GtkWidget * w, GdkEventButton * 
 	pUnixFrameImpl->setTimeOfLastEvent(e->time);
 	AV_View * pView = pFrame->getCurrentView();
 	EV_UnixMouse * pUnixMouse = static_cast<EV_UnixMouse *>(pFrame->getMouse());
-
+ 
 	gtk_grab_add(w);
 
 	pUnixFrameImpl->resetIMContext ();
@@ -704,7 +749,17 @@ gint XAP_UnixFrameImpl::_fe::key_press_event(GtkWidget* w, GdkEventKey* e)
 	// Let IM handle the event first.
 	if (gtk_im_context_filter_keypress(pUnixFrameImpl->getIMContext(), e)) {
 		pUnixFrameImpl->queueIMReset ();
-	    return 0;
+
+		if ((e->state & GDK_MOD1_MASK) ||
+			(e->state & GDK_MOD3_MASK) ||
+			(e->state & GDK_MOD4_MASK))
+			return 0;
+
+		// ... else, stop this signal
+		g_signal_stop_emission (G_OBJECT(w), 
+								g_signal_lookup ("key_press_event", 
+												 G_OBJECT_TYPE (w)), 0);
+		return 1;
 	}
 
 	XAP_Frame* pFrame = pUnixFrameImpl->getFrame();
@@ -1025,7 +1080,6 @@ void XAP_UnixFrameImpl::_setCursor(GR_Graphics::Cursor c)
 
 UT_sint32 XAP_UnixFrameImpl::_setInputMode(const char * szName)
 {
-	XAP_Frame*	pFrame = getFrame();
 	UT_sint32 result = XAP_App::getApp()->setInputMode(szName);
 	if (result == 1)
 	{

@@ -134,14 +134,15 @@ public:
 	virtual void		redrawUpdate();
 	virtual void        updateLayout(void) {}
 	virtual fp_Container * getNewContainer(fp_Container * pCon = NULL);
-	FV_View *		getView(void) const { return m_pLayout->getView(); }
+	FV_View *		getView(void) const { UT_return_val_if_fail( m_pLayout, NULL ); return m_pLayout->getView(); }
 
 	const char* getProperty(const XML_Char * pszName, bool bExpandStyles = true) const;
 	const PP_PropertyType * getPropertyType(const XML_Char * szName, tProperty_type Type, bool bExpandStyles = true) const;
 	void setAlignment(UT_uint32 iAlignCmd);
 	UT_sint32       getLength(void);
 	bool            isEmbeddedType(void);
-	void            updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmebbedSize);
+	bool            isNotTOCable(void);
+	void            updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmebbedSize, UT_sint32 iSuggestedDiff);
 	void            updateEnclosingBlockIfNeeded(void);
 	UT_sint32       getEmbeddedOffset(UT_sint32 startOffset, fl_ContainerLayout *& pEmbedCL);
 	void            shuffleEmbeddedIfNeeded(fl_BlockLayout * pBlock, UT_uint32 blockOffset);
@@ -309,16 +310,21 @@ public:
 	virtual bool 		    needsRedraw(void) const
 		{ return m_bNeedsRedraw; }
 	virtual void			markAllRunsDirty(void);
+	UT_sint32               findLineInBlock(fp_Line * pLine);
 	bool					checkWord(fl_PartOfBlock* pPOB);
 	void					recheckIgnoredWords();
 	void                    setStyleInTOC(bool b)
 	{	m_bStyleInTOC = b;}
-
+	void                    forceSectionBreak(void);
 	bool                    isContainedByTOC(void) const
 	    { return m_bIsTOC;}
 	FootnoteType            getTOCNumType(void);
 	eTabLeader              getTOCTabLeader(UT_sint32 iOff);
 	UT_sint32               getTOCTabPosition(UT_sint32 iOff);
+	void                    setAccumHeight(UT_sint32 i)
+	{ m_iAccumulatedHeight =i;}
+	UT_sint32               getAccumHeight(void) const
+	{ return m_iAccumulatedHeight;}
 	static bool 		s_EnumTabStops(void * myThis, UT_uint32 k, fl_TabStop *pTabInfo);
 
 	inline void 		addBackgroundCheckReason(UT_uint32 reason) {m_uBackgroundCheckReasons |= reason;}
@@ -328,7 +334,8 @@ public:
 	// The following is a set of bit flags giving the reason this block is
 	// queued for background checking.	See specific values in fl_DocLayout.h
 	UT_uint32				m_uBackgroundCheckReasons;
-
+	void                    setPrevListLabel(bool b)
+	{ m_bPrevListLabel = b;}
 #ifdef FMT_TEST
 	void					__dump(FILE * fp) const;
 #endif
@@ -376,7 +383,7 @@ protected:
 	bool                    _doInsertDirectionMarkerRun(PT_BlockOffset blockOffset, UT_UCS4Char iM);
 	bool					_deleteFmtMark(PT_BlockOffset blockOffset);
 
-	void					_lookupProperties(void);
+	virtual void			_lookupProperties(const PP_AttrProp* pAP);
 	void					_removeLine(fp_Line*);
 	void                    _purgeLine(fp_Line*);
 	void					_removeAllEmptyLines(void);
@@ -446,6 +453,8 @@ protected:
 	UT_sint32               m_iAccumulatedHeight;
 	fp_VerticalContainer *  m_pVertContainer;
 	UT_sint32               m_iLinePosInContainer;
+	bool                    m_bForceSectionBreak;
+	bool                    m_bPrevListLabel;
 };
 
 /*

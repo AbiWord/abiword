@@ -31,6 +31,7 @@
 #include "ut_stack.h"
 #include "pt_Types.h"
 #include "pd_Document.h"
+#include "pp_Revision.h"
 #include "ut_mbtowc.h"
 #include "fl_AutoLists.h"
 #include "fl_AutoNum.h"
@@ -94,6 +95,9 @@ public:
 	const char * m_szLang;
 	bool    m_RTL;
 	UT_BidiCharType m_dirOverride;
+	bool    m_Hidden;
+	PP_RevisionType m_eRevision;
+	UT_uint32 m_iCurrentRevisionId;
 };
 
 class ABI_EXPORT RTFProps_bCharProps
@@ -123,6 +127,7 @@ public:
 	bool bm_listTag; // tag for lists to hanfg off
 	bool bm_RTL;
 	bool bm_dirOverride;
+	bool bm_Hidden;
 };
 
 struct ABI_EXPORT _rtfListTable
@@ -218,6 +223,8 @@ struct ABI_EXPORT RTFProps_ParaProps
 	bool            m_RTL;
 	UT_sint32       m_tableLevel; //nesting level of the paragram in a table.
 	bool            m_bInTable; // true if paragraph is in a table
+	PP_RevisionType m_eRevision;
+	UT_uint32 m_iCurrentRevisionId;
 };
 
 // These are set true if changed in list definitions.
@@ -570,6 +577,7 @@ private:
 	bool AddChar(UT_UCSChar ch);
 	bool FlushStoredChars(bool forceInsertPara = false);
 	bool StartNewPara();
+	bool HandleParKeyword();
 	bool StartNewSection();
 	bool PushRTFState();
 	bool PopRTFState();
@@ -579,9 +587,9 @@ private:
 	bool ReadCharFromFile(unsigned char* pCh);
 	UT_UCS4Char ReadHexChar(void);
 	bool SkipBackChar(unsigned char ch);
-	bool ReadKeyword(unsigned char* pKeyword, UT_sint16* pParam, bool* pParamUsed,
+	bool ReadKeyword(unsigned char* pKeyword, UT_sint32* pParam, bool* pParamUsed,
 					 UT_uint32 keywordBuffLen);
-	bool TranslateKeyword(unsigned char* pKeyword, UT_sint16 param, bool fParam);
+	bool TranslateKeyword(unsigned char* pKeyword, UT_sint32 param, bool fParam);
 
 	RTF_KEYWORD_ID KeywordToID(const char * keyword);
 	bool HandleStarKeyword();
@@ -591,6 +599,7 @@ private:
 	bool ReadColourTable();
 	bool ReadFontTable();
 	bool ReadOneFontFromTable();
+	bool ReadRevisionTable();
 	bool HandlePicture();
 	bool HandleObject();
 	bool HandleField();
@@ -613,7 +622,7 @@ private:
 	bool HandleListLevel(RTF_msword97_list * pList, UT_uint32 levelCount  );
 	bool HandleTableList(void);
 	char * getCharsInsideBrace(void);
-	bool ParseCharParaProps( unsigned char * pKeyword, UT_sint16 param, bool fParam, RTFProps_CharProps * pChars, RTFProps_ParaProps * pParas, RTFProps_bCharProps * pbChars, RTFProps_bParaProps * pbParas);
+	bool ParseCharParaProps( unsigned char * pKeyword, UT_sint32 param, bool fParam, RTFProps_CharProps * pChars, RTFProps_ParaProps * pParas, RTFProps_bCharProps * pbChars, RTFProps_bParaProps * pbParas);
 	bool ReadListOverrideTable(void);
 	bool HandleTableListOverride(void);
 
@@ -631,6 +640,7 @@ private:
 	bool HandleDeleted(bool state);
 	bool HandleBold(bool state);
 	bool HandleItalic(bool state);
+	bool HandleHidden(bool state);
 	bool HandleUnderline(bool state);
 	bool HandleOverline(bool state);
 	bool HandleStrikeout(bool state);
@@ -643,6 +653,9 @@ private:
 	bool HandleFontSize(long sizeInHalfPoints);
 	bool HandleBookmark (RTFBookmarkType type);
 	bool HandleListTag(long id);
+
+	bool HandleRevisedText(PP_RevisionType eType, UT_uint32 iId);
+	bool HandleRevisedTextTimestamp(UT_uint32 iDttm);
 
 	// Generic handlers
 	bool HandleFloatCharacterProp(double val, double* pProp);
@@ -713,12 +726,13 @@ private:
 	    RTF_TOKEN_DATA,
 	    RTF_TOKEN_ERROR = -1
 	} RTFTokenType;
-	RTFTokenType NextToken (unsigned char *pKeyword, UT_sint16* pParam,
+	RTFTokenType NextToken (unsigned char *pKeyword, UT_sint32* pParam,
 							bool* pParamUsed, UT_uint32 len, bool bIgnoreWhiteSpace=false);
 
 	UT_Error _isBidiDocument();
 	bool     _appendSpan();
 	bool     _insertSpan();
+	void     _formRevisionAttr(UT_String & s,UT_String & props, const XML_Char * style);
 	
 
 private:
@@ -834,6 +848,7 @@ private:
 	UT_String             m_sPendingShapeProp;
 	RTFProps_FrameProps   m_currentFrame;
 	bool                  m_bEndFrameOpen;
+	bool                  m_bSectionHasPara;
 };
 
 #endif /* IE_IMP_RTF_H */

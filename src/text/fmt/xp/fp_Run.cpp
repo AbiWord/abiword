@@ -130,9 +130,11 @@ fp_Run::fp_Run(fl_BlockLayout* pBL,
 	m_pG(NULL),
 	m_iTmpX(0),
 	m_iTmpY(0),
-	m_iTmpWidth(0)
+	m_iTmpWidth(0),
+	m_pTmpLine(NULL)
 {
 	xxx_UT_DEBUGMSG(("fp_Run %x created!!! \n",this));
+	pBL->setPrevListLabel(false);
 	m_FillType.setDocLayout(m_pBL->getDocLayout());
 }
 
@@ -151,6 +153,47 @@ fp_Run::~fp_Run()
 
 	DELETEP(m_pRevisions);
 }
+
+UT_sint32 fp_Run::getHeight() const
+{
+	if(isHidden() == FP_VISIBLE)
+		return m_iHeight;
+
+	return 0;
+}
+
+UT_sint32 fp_Run::getWidth() const
+{
+	if(isHidden() == FP_VISIBLE)
+		return m_iWidth;
+
+	return 0;
+}
+
+UT_uint32 fp_Run::getAscent() const
+{
+	if(isHidden() == FP_VISIBLE)
+		return m_iAscent;
+
+	return 0;
+}
+
+UT_uint32 fp_Run::getDescent() const
+{
+	if(isHidden() == FP_VISIBLE)
+		return m_iDescent;
+
+	return 0;
+}
+
+UT_sint32 fp_Run::getDrawingWidth() const
+{
+	if(isHidden() == FP_VISIBLE)
+		return static_cast<UT_sint32>(m_iWidth);
+
+	return 0;
+}
+
 
 fg_FillType * fp_Run::getFillType(void)
 {
@@ -178,9 +221,23 @@ bool fp_Run::isInSelectedTOC(void)
 bool fp_Run::clearIfNeeded(void)
 {
 	//	if((getTmpX() == getX()) && (getTmpWidth() == getWidth()) && (getTmpY() == getY()))
-	if((getTmpX() == getX()) && (getTmpY() == getY()))
+	if((getTmpX() == getX()) && (getTmpY() == getY()) && (getTmpLine() == getLine()))
 	{
 		return true;
+	}
+	if(getTmpLine() && (getLine() != getTmpLine()))
+	{
+		fp_Line * pTmpLine = getTmpLine();
+		UT_sint32 i = getBlock()->findLineInBlock(pTmpLine);
+		if(i < 0)
+		{
+			markWidthDirty();
+			return false;
+		}
+		fp_Run * pLastRun = pTmpLine->getLastRun();
+		pTmpLine->clearScreenFromRunToEnd(pLastRun);
+		markWidthDirty();
+		return false;
 	}
 	UT_sint32 iWidth = getWidth();
 	UT_sint32 iX = getX();
@@ -396,7 +453,7 @@ fp_Run::_inheritProperties(void)
 			_setDescent(getGraphics()->getFontDescent(pFont));
 		    _setHeight(getGraphics()->getFontHeight(pFont));
 		}
-		UT_DEBUGMSG(("fp_Run::_inheritProperties: No prev run run height is %d \n",getHeight()));
+		xxx_UT_DEBUGMSG(("fp_Run::_inheritProperties: No prev run run height is %d \n",getHeight()));
 	}
 }
 
@@ -503,11 +560,11 @@ void fp_Run::getSpanAP(const PP_AttrProp * &pSpanAP)
 
 	if(getType() != FPRUN_FMTMARK && getType() != FPRUN_DUMMY && getType() != FPRUN_DIRECTIONMARKER)
 	{
-		getBlock()->getSpanAttrProp(getBlockOffset(),false,&pSpanAP,m_pRevisions,bShow,iId,bHiddenRevision);
+		getBlock()->getSpanAttrProp(getBlockOffset(),false,&pSpanAP,&m_pRevisions,bShow,iId,bHiddenRevision);
 	}
 	else
 	{
-		getBlock()->getSpanAttrProp(getBlockOffset(),true,&pSpanAP,m_pRevisions,bShow,iId,bHiddenRevision);
+		getBlock()->getSpanAttrProp(getBlockOffset(),true,&pSpanAP,&m_pRevisions,bShow,iId,bHiddenRevision);
 	}
 
 	if(bHiddenRevision)
@@ -946,7 +1003,7 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 
 			UT_uint32 iWidth = getDrawingWidth();
 
-			if(r_type == PP_REVISION_ADDITION)
+			if(r_type == PP_REVISION_ADDITION || r_type == PP_REVISION_ADDITION_AND_FMT)
 			{
 				painter.fillRect(s_fgColor,pDA->xoff, pDA->yoff, iWidth, getGraphics()->tlu(1));
 				painter.fillRect(s_fgColor,pDA->xoff, pDA->yoff + getGraphics()->tlu(2),
@@ -975,7 +1032,7 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 		pG->setColor(_getView()->getColorHyperLink());
 		pG->setLineProperties(pG->tluD(1.0),
 								GR_Graphics::JOIN_MITER,
-								GR_Graphics::CAP_BUTT,
+								GR_Graphics::CAP_PROJECTING,
 								GR_Graphics::LINE_SOLID);
 
 		painter.drawLine(pDA->xoff, pDA->yoff, pDA->xoff + m_iWidth, pDA->yoff);
@@ -986,7 +1043,7 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 		pG->setColor(getFGColor());
 		pG->setLineProperties(pG->tluD(1.0),
 								GR_Graphics::JOIN_MITER,
-								GR_Graphics::CAP_BUTT,
+								GR_Graphics::CAP_PROJECTING,
 								GR_Graphics::LINE_DOTTED);
 
 		painter.drawLine(pDA->xoff, pDA->yoff, pDA->xoff + m_iWidth, pDA->yoff);
@@ -3019,12 +3076,14 @@ void fp_ImageRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 		_setHeight(UT_convertToLogicalUnits("0.5in"));
 	}
 
-	UT_ASSERT(getWidth() > 0);
-	UT_ASSERT(getHeight() > 0);
+	// these asserts are no longer valid -- image can be hidden due to
+	//hidden text mark up or revisions
+	//UT_ASSERT(getWidth() > 0);
+	//UT_ASSERT(getHeight() > 0);
 	m_iImageWidth = getWidth();
 	m_iImageHeight = getHeight();
 
-	_setAscent(getHeight());
+	_setAscent(_getHeight());
 	_setDescent(0);
 	const PP_AttrProp * pBlockAP = NULL;
 	const PP_AttrProp * pSectionAP = NULL;
@@ -3125,12 +3184,12 @@ void fp_ImageRun::_drawResizeBox(UT_Rect box)
 	UT_sint32 top = box.top;
 	UT_sint32 right = box.left + box.width - pG->tlu(1);
 	UT_sint32 bottom = box.top + box.height - pG->tlu(1);
-
+	
 	GR_Painter painter(pG);
 	
 	pG->setLineProperties(pG->tluD(1.0),
 								 GR_Graphics::JOIN_MITER,
-								 GR_Graphics::CAP_BUTT,
+								 GR_Graphics::CAP_PROJECTING,
 								 GR_Graphics::LINE_SOLID);	
 	
 	// draw some really fancy box here
@@ -3315,6 +3374,12 @@ fp_FieldRun::fp_FieldRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 
 	}
 	//	UT_ASSERT(gotField);
 	m_sFieldValue[0] = 0;
+}
+
+fp_FieldRun::~fp_FieldRun(void)
+{
+	UT_DEBUGMSG(("FieldRun deleted %x FieldType %d \n",this,getFieldType()));
+	return;
 }
 
 bool fp_FieldRun::_recalcWidth()
@@ -4389,6 +4454,10 @@ bool fp_FieldFootnoteAnchorRun::calculateValue(void)
 	bool bRes = pp->getAttribute("footnote-id", footid);
 
 	UT_ASSERT(bRes);
+	if(footid == NULL)
+	{
+		return false;
+	}
 	UT_uint32 iPID = atoi(footid);
 	FV_View * pView = _getView();
 	UT_sint32 footnoteNo = pView->getLayout()->getFootnoteVal(iPID);
@@ -4425,6 +4494,10 @@ bool fp_FieldEndnoteAnchorRun::calculateValue(void)
 	bool bRes = pp->getAttribute("endnote-id", footid);
 
 	UT_ASSERT(bRes);
+	if(footid == NULL)
+	{
+		return false;
+	}
 	UT_uint32 iPID = atoi(footid);
 	FV_View * pView = _getView();
 	UT_sint32 endnoteNo = pView->getLayout()->getEndnoteVal(iPID);
@@ -4461,6 +4534,10 @@ bool fp_FieldEndnoteRefRun::calculateValue(void)
 	bool bRes = pp->getAttribute("endnote-id", footid);
 
 	UT_ASSERT(bRes);
+	if(footid == NULL)
+	{
+		return false;
+	}
 	UT_uint32 iPID = atoi(footid);
 	FV_View * pView = _getView();
 	UT_sint32 endnoteNo = pView->getLayout()->getEndnoteVal(iPID);

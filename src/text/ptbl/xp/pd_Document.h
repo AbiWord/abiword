@@ -196,10 +196,6 @@ public:
 	virtual bool			undoCmd(UT_uint32 repeatCount);
 	virtual bool			redoCmd(UT_uint32 repeatCount);
 
-	UT_Error				saveAs(const char * szFilename, int ieft, const char * expProps = NULL);
-	UT_Error   				saveAs(const char * szFilename, int ieft, bool cpy, const char * expProps = NULL);
-	UT_Error				save(void);
-
 	void					beginUserAtomicGlob(void);
 	void					endUserAtomicGlob(void);
 
@@ -265,11 +261,23 @@ public:
 										  PT_DocPosition dpos,
 										  PP_AttrProp *p_AttrProp);
 
+	bool                    changeLastStruxFmtNoUndo(PT_DocPosition dpos, PTStruxType pts,
+													 const XML_Char ** attrs, const XML_Char ** props,
+													 bool bSkipEmbededSections);
+	
+	bool                    changeLastStruxFmtNoUndo(PT_DocPosition dpos, PTStruxType pts,
+													 const XML_Char ** attrs, const XML_Char * props,
+													 bool bSkipEmbededSections);
+	
 	// the append- and insertBeforeFrag methods are only available while importing
 	// the document.
 
 	bool					appendStrux(PTStruxType pts, const XML_Char ** attributes, pf_Frag_Strux ** ppfs_ret = 0);
 	bool					appendStruxFmt(pf_Frag_Strux * pfs, const XML_Char ** attributes);
+	bool                    appendLastStruxFmt(PTStruxType pts, const XML_Char ** attrs, const XML_Char ** props,
+											   bool bSkipEmbededSections);
+	bool                    appendLastStruxFmt(PTStruxType pts, const XML_Char ** attrs, const XML_Char * props,
+											   bool bSkipEmbededSections);
 	bool					appendFmt(const XML_Char ** attributes);
 	bool					appendFmt(const UT_GenericVector<XML_Char*> * pVecAttributes);
 	bool					appendSpan(const UT_UCSChar * p, UT_uint32 length);
@@ -309,12 +317,12 @@ public:
 	bool					getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset, bool bLeftSide,
 											const PP_AttrProp ** ppAP) const;
 
-	bool                    getAttrProp(PT_AttrPropIndex apIndx, const PP_AttrProp ** ppAP, PP_RevisionAttr *& pRevisions,
+	bool                    getAttrProp(PT_AttrPropIndex apIndx, const PP_AttrProp ** ppAP, PP_RevisionAttr ** pRevisions,
 										bool bShowRevisions, UT_uint32 iRevisionId, bool &bHiddenRevision) const;
 
 	bool                    getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset, bool bLeftSide,
 											const PP_AttrProp ** ppAP,
-											PP_RevisionAttr *& pRevisions,
+											PP_RevisionAttr ** pRevisions,
 											bool bShowRevisions, UT_uint32 iRevisionId,
 											bool &bHiddenRevision) const;
 	
@@ -415,8 +423,13 @@ public:
 	// TOC functions
 	bool                    isTOCAtPos(PT_DocPosition pos);
 
+	// FRAME function
+	bool                    isFrameAtPos(PT_DocPosition pos);
+
 // Table functions
 
+	bool                    isTableAtPos(PT_DocPosition pos);
+	bool                    isCellAtPos(PT_DocPosition pos);
 	PL_StruxDocHandle       getEndTableStruxFromTableSDH(PL_StruxDocHandle tableSDH);
 	PL_StruxDocHandle       getEndCellStruxFromCellSDH(PL_StruxDocHandle cellSDH);
 	PL_StruxDocHandle       getEndTableStruxFromTablePos(PT_DocPosition posTable);
@@ -425,7 +438,8 @@ public:
 													UT_sint32 * numRows, UT_sint32 * numCols);
 	PL_StruxDocHandle       getCellSDHFromRowCol(PL_StruxDocHandle tableSDH,
 												 bool bShowRevisions, UT_uint32 iRevisionLevel,
-												 UT_sint32 row, UT_sint32 col);
+												 UT_sint32 row, 
+												 UT_sint32 col);
 	void                    miniDump(PL_StruxDocHandle sdh, UT_sint32 nstruxes);
 
 	// List Functions
@@ -476,6 +490,7 @@ public:
 												 UT_uint32 iLevel);
 
 	virtual bool            rejectAllHigherRevisions(UT_uint32 iLevel);
+	virtual bool            acceptAllRevisions();
 
 	const PP_AttrProp *     explodeRevisions(PP_RevisionAttr *& pRevisions, const PP_AttrProp * pAP,
 											 bool bShow, UT_uint32 iId, bool &bHiddenRevision) const;
@@ -594,6 +609,11 @@ public:
 protected:
 	~PD_Document();
 
+	virtual UT_Error		_saveAs(const char * szFilename, int ieft, const char * expProps = NULL);
+	virtual UT_Error   		_saveAs(const char * szFilename, int ieft, bool cpy, const char * expProps = NULL);
+	virtual UT_Error		_save(void);
+	
+	
 	void					_setClean(void);
 	void					_destroyDataItemData(void);
 	bool					_syncFileTypes(bool bReadSaveWriteOpen);
@@ -602,6 +622,9 @@ protected:
 												  const PP_Revision * pRev,
 												  PP_RevisionAttr &RevAttr, pf_Frag * pf,
 												  bool & bDeleted);
+
+	virtual void            _clearUndo();
+	
 	
 public:
 	// these functions allow us to retrieve visual direction at document

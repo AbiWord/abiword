@@ -160,6 +160,7 @@ public:
 	void		                updateTable(void);
 	virtual void                collapse(void);
 	virtual void                markAllRunsDirty(void);
+	virtual bool                needsReformat(void) const;
 	virtual PT_DocPosition      getPosition(bool bActualBlockPosition = false) const;
 	virtual void		        redrawUpdate(void);
 	virtual fp_Container*		getNewContainer(fp_Container * pFirstContainer = NULL);
@@ -207,7 +208,7 @@ UT_sint32                    getBottomOffset(void) const;
 		{ m_bIsEndTableIn = true;}
 
 protected:
-	virtual void		        _lookupProperties(void);
+	virtual void		        _lookupProperties(const PP_AttrProp* pSectionAP);
 	void				        _purgeLayout();
 private:
 	bool                   m_bNeedsRebuild;
@@ -289,6 +290,8 @@ public:
 	virtual void		     format(void);
 	virtual void		     updateLayout(void);
 	virtual void             collapse(void);
+	bool                     isLayedOut(void) const;
+	virtual bool             needsReformat(void) const;
 	virtual void             markAllRunsDirty(void);
 	virtual fl_SectionLayout *  getSectionLayout(void)  const;
 	bool                     recalculateFields(UT_uint32 iUpdateCount);
@@ -305,9 +308,16 @@ UT_sint32                    getBottomOffset(void) const;
 	UT_sint32                getNumNestedTables(void) const;
 	void                     incNumNestedTables(void);
 	void                     decNumNestedTables(void);
-
+	UT_sint32                getLeftAttach(void) const
+		{ return m_iLeftAttach;}
+	UT_sint32                getRightAttach(void) const
+		{ return m_iRightAttach;}
+	UT_sint32                getTopAttach(void) const
+		{ return m_iTopAttach;}
+	UT_sint32                getBottomAttach(void) const
+		{ return m_iBottomAttach;}
 protected:
-	virtual void		     _lookupProperties(void);
+	virtual void		     _lookupProperties(const PP_AttrProp* pAP);
 	virtual void             _purgeLayout(void);
 private:
 	bool                   m_bNeedsRebuild;

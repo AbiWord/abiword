@@ -186,9 +186,8 @@ public:
 	UT_Error		cmdInsertTOC(void);
 	UT_Error		cmdHyperlinkStatusBar(UT_sint32 xPos, UT_sint32 yPos);
 
-	bool            cmdInsertMathML(const char * szFileName, PT_DocPosition pos);
-	UT_Error		cmdInsertGraphic(FG_Graphic*, const char*);
-	UT_Error        cmdInsertGraphicAtStrux(FG_Graphic* pFG, const char* pszName, PT_DocPosition iPos, PTStruxType iStruxType);
+	UT_Error		cmdInsertGraphic(FG_Graphic*);
+	UT_Error        cmdInsertGraphicAtStrux(FG_Graphic* pFG, PT_DocPosition iPos, PTStruxType iStruxType);
 	virtual void	toggleCase(ToggleCase c);
 	virtual void	setPaperColor(const XML_Char * clr);
 
@@ -335,6 +334,7 @@ public:
 
 	fl_BlockLayout* getBlockAtPosition(PT_DocPosition pos) const {return _findBlockAtPosition(pos);};
 	virtual void	updateScreen(bool bDirtyRunsOnly=true);
+	bool            isInDocSection(PT_DocPosition pos = 0);
 
 //---------
 //Visual Drag stuff
@@ -358,7 +358,8 @@ public:
 	fl_FrameLayout * getFrameLayout(void);
 	void            setFrameFormat(const XML_Char ** props);
 	void            setFrameFormat(const XML_Char ** props,FG_Graphic * pFG, UT_String & dataID);
-
+	void            convertInLineToPositioned(PT_DocPosition pos, 
+											const XML_Char ** attribs);
 
 // ----------------------
 
@@ -536,6 +537,7 @@ public:
 	bool				isInTable();
 	fl_TableLayout *    getTableAtPos(PT_DocPosition);
 	bool				isInTable(PT_DocPosition pos);
+	bool				isInTableForSure(PT_DocPosition pos);
 	bool                cmdAutoSizeCols(void);
 	bool                cmdAutoSizeRows(void);
 	bool                cmdAdvanceNextPrevCell(bool bGoNext);
@@ -808,7 +810,7 @@ private:
 
 	// properties for image selection
 	UT_Rect				m_selImageRect;
-	UT_uint32			m_iImageSelBoxSize;
+	UT_uint32			m_iImageSelBoxSize;  // in device units!
 	GR_Graphics::Cursor	m_imageSelCursor;
 	UT_sint32			m_ixResizeOrigin;
 	UT_sint32			m_iyResizeOrigin;

@@ -23,7 +23,8 @@
 #include <ctype.h>
 #include <string.h>
 #include "ut_locale.h"
-
+#include "pf_Frag.h"
+#include "pf_Frag_Strux.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_growbuf.h"
@@ -175,7 +176,7 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_iViewRevision(0),
 		m_bWarnedThatRestartNeeded(false),
 		m_selImageRect(-1,-1,-1,-1),
-		m_iImageSelBoxSize(m_pG->tlu(10)),
+		m_iImageSelBoxSize(10), // in device units!
 		m_imageSelCursor(GR_Graphics::GR_CURSOR_IBEAM),
 		m_ixResizeOrigin(0),
 		m_iyResizeOrigin(0),
@@ -559,6 +560,57 @@ void FV_View::setFrameFormat(const XML_Char * properties[])
 	setFrameFormat(properties,NULL,dataID);
 }
 
+void FV_View::convertInLineToPositioned(PT_DocPosition pos,const XML_Char ** attributes)
+{
+
+	fl_BlockLayout * pBlock = getBlockAtPosition(pos);
+	fp_Run *  pRun = NULL;
+	bool bEOL,bDir;
+	UT_sint32 x1,y1,x2,y2,iHeight;
+	if(pBlock)
+	{
+		pRun = pBlock->findPointCoords(pos,bEOL,x1,y1,x2,y2,iHeight,bDir);
+		while(pRun && pRun->getType() != FPRUN_IMAGE)
+		{
+			pRun = pRun->getNextRun();
+		}
+		if(pRun && pRun->getType() == FPRUN_IMAGE)
+		{
+			UT_DEBUGMSG(("SEVIOR: Image run on pos \n"));
+		}
+		else
+		{
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+			return;
+		}
+	}
+	//
+	// Signal PieceTable Change
+	_saveAndNotifyPieceTableChange();
+	m_pDoc->beginUserAtomicGlob();
+	_deleteSelection();
+	pf_Frag_Strux * pfFrame = NULL;
+//
+// This should place the the frame strux immediately after the block containing
+// position posXY.
+// It returns the Frag_Strux of the new frame.
+//
+	m_pDoc->insertStrux(pos,PTX_SectionFrame,attributes,NULL,&pfFrame);
+	PT_DocPosition posFrame = pfFrame->getPos();
+//	m_pDoc->insertStrux(posFrame+1,PTX_Block); // might need this later!
+	m_pDoc->insertStrux(posFrame+1,PTX_EndFrame);
+
+
+	m_pDoc->endUserAtomicGlob();
+
+	// Signal PieceTable Changes have finished
+	_restorePieceTableState();
+	_generalUpdate();
+	setPoint(posFrame+1);
+	_ensureInsertionPointOnScreen();
+	notifyListeners(AV_CHG_MOTION | AV_CHG_ALL);
+}
+
 void FV_View::setFrameFormat(const XML_Char * properties[], FG_Graphic * pFG,UT_String & sDataID)
 {
 	bool bRet;
@@ -601,15 +653,10 @@ void FV_View::setFrameFormat(const XML_Char * properties[], FG_Graphic * pFG,UT_
 
 	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,NULL,properties,PTX_SectionFrame);
 
-	_generalUpdate();
 
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
-
 	_generalUpdate();
-
-	// Signal PieceTable Changes have finished
-	_restorePieceTableState();
 
 	_ensureInsertionPointOnScreen();
 	clearCursorWait();
@@ -640,6 +687,26 @@ fl_FrameLayout * FV_View::getFrameLayout(void)
 
 fl_FrameLayout * FV_View::getFrameLayout(PT_DocPosition pos)
 {
+	if(m_pDoc->isFrameAtPos(pos))
+	{
+		PL_StruxFmtHandle psfh = NULL;
+		m_pDoc->getStruxOfTypeFromPosition(getLayout()->getLID(),pos+1,
+										   PTX_SectionFrame, &psfh);
+		fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(const_cast<void *>(psfh));
+		UT_ASSERT(pFL->getContainerType() == FL_CONTAINER_FRAME);
+		return pFL;
+	}
+	if(m_pDoc->isFrameAtPos(pos-1))
+	{
+		PL_StruxFmtHandle psfh = NULL;
+		m_pDoc->getStruxOfTypeFromPosition(getLayout()->getLID(),
+											 pos,
+											 PTX_SectionFrame, &psfh);
+		fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(const_cast<void *>(psfh));
+		UT_ASSERT(pFL->getContainerType() == FL_CONTAINER_FRAME);
+		return pFL;
+	}
+
 	fl_BlockLayout* pBlock = _findBlockAtPosition(pos);
 
 	if(pBlock)
@@ -668,6 +735,13 @@ fl_FrameLayout * FV_View::getFrameLayout(PT_DocPosition pos)
  */
 bool FV_View::isInFrame(PT_DocPosition pos)
 {
+//
+// If at exactly the frame return true
+//
+	if(m_pDoc->isFrameAtPos(pos))
+	{
+		return true;
+	}
 	fl_BlockLayout* pBlock = _findBlockAtPosition(pos);
 
 	if(pBlock)
@@ -685,6 +759,28 @@ bool FV_View::isInFrame(PT_DocPosition pos)
 		{
 			return false;
 		}
+		return true;
+	}
+	return false;
+}
+
+/*!
+ * Returns true if the suppiled position is not is a sepecial structure
+ * like a frame or table or whatever.
+ *
+ * pos defaults to 0. Ifpos == 0, I assume you actually what the values of
+ * getPoint()
+ */
+
+bool FV_View::isInDocSection(PT_DocPosition pos)
+{
+	if(pos == 0)
+	{
+		pos = getPoint();
+	}
+	fl_BlockLayout * pBL = _findBlockAtPosition(pos);
+	if(pBL && (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_DOCSECTION))
+	{
 		return true;
 	}
 	return false;
@@ -2492,8 +2588,6 @@ void FV_View::insertParagraphBreak(void)
 		}
 	}
 
-//	_generalUpdate();
-
 
 	m_pDoc->endUserAtomicGlob();
 
@@ -2507,9 +2601,10 @@ void FV_View::insertParagraphBreak(void)
 	// restore updates and clean up dirty lists
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
+	_generalUpdate();
 	_fixInsertionPointCoords();
 	_ensureInsertionPointOnScreen();
-	notifyListeners(AV_CHG_MOTION | AV_CHG_HDRFTR);
+	notifyListeners(AV_CHG_MOTION | AV_CHG_ALL);
 	m_pLayout->considerPendingSmartQuoteCandidate();
 }
 
@@ -2968,29 +3063,22 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 fl_BlockLayout * FV_View::getBlockFromSDH(PL_StruxDocHandle sdh)
 {
 	PL_StruxFmtHandle sfh = NULL;
-	UT_uint32 i;
 	bool bFound = false;
 	fl_BlockLayout * pBlock = NULL;
 //
-// Loop through all the format handles that match our sdh until we find the one
-// in our View. (Not that it really matter I suppose.)
-//
-	for(i = 0; !bFound; ++i)
-	{
-//
 // Cast it into a fl_BlockLayout and we're done!
 //
-		sfh = m_pDoc->getNthFmtHandle(sdh, i);
-		if(sfh != NULL)
+	sfh = m_pDoc->getNthFmtHandle(sdh, m_pLayout->getLID());
+	if(sfh != NULL)
+	{
+		pBlock = const_cast<fl_BlockLayout *>(static_cast<const fl_BlockLayout *>(sfh));
+		if(pBlock->getDocLayout() == m_pLayout)
 		{
-			pBlock = const_cast<fl_BlockLayout *>(static_cast<const fl_BlockLayout *>(sfh));
-			if(pBlock->getDocLayout() == m_pLayout)
-			{
-				bFound = true;
-			}
+			bFound = true;
 		}
 		else
 		{
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			pBlock = NULL;
 			bFound = true;
 		}
@@ -3250,6 +3338,10 @@ bool FV_View::setCharFormat(const XML_Char * properties[], const XML_Char * attr
 		{
 			posEnd = m_Selection.getSelectionAnchor();
 		}
+		if(m_pDoc->isEndFootnoteAtPos(posEnd))
+		{
+			posEnd++;
+		}
 	}
 
 	m_pDoc->beginUserAtomicGlob();
@@ -3276,7 +3368,7 @@ bool FV_View::setCharFormat(const XML_Char * properties[], const XML_Char * attr
 		fp_Run * pLastRun2 = static_cast<fp_Line *>(pBL2->getLastContainer())->getLastRun();
 		PT_DocPosition posBL2 = pBL2->getPosition(false) + pLastRun2->getBlockOffset() + pLastRun2->getLength() - 1;
 
-		if(posBL1 == posStart)
+		if(posBL1 > posStart)
 		{
 			bFormatStart = true;
 		}
@@ -4048,6 +4140,9 @@ bool FV_View::setBlockFormat(const XML_Char * properties[])
 	_restorePieceTableState();
 
 	_generalUpdate();
+	
+	notifyListeners(AV_CHG_MOTION | AV_CHG_ALL);
+
 	_fixInsertionPointCoords();
 
 	return bRet;
@@ -4400,7 +4495,8 @@ bool FV_View::getSectionFormat(const XML_Char ***pProps)
 
 	// 1. assemble complete set at insertion point
 	fl_BlockLayout* pBlock = _findBlockAtPosition(posStart);
-	fl_SectionLayout* pSection = pBlock->getSectionLayout();
+	UT_return_val_if_fail(pBlock,false);
+	fl_DocSectionLayout* pSection = pBlock->getDocSectionLayout();
 	pSection->getAP(pSectionAP);
 
 	UT_uint32 iPropsCount = PP_getPropertyCount();
@@ -4427,14 +4523,14 @@ bool FV_View::getSectionFormat(const XML_Char ***pProps)
 			return false;
 		}
 		
-		fl_SectionLayout *pSectionEnd = pBlockEnd->getSectionLayout();
+		fl_DocSectionLayout *pSectionEnd = pBlockEnd->getDocSectionLayout();
 
 		while (pSection && (pSection != pSectionEnd))
 		{
 			const PP_AttrProp * pAP;
 			bool bCheck = false;
 
-			pSection = static_cast<fl_SectionLayout *>(pSection->getNext());
+			pSection = pSection->getNextDocSection();
 			if (!pSection)				// at EOD, so just bail
 				break;
 
@@ -7246,7 +7342,7 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 		fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pCell->getContainer());
 		UT_sint32 row = pCell->getTopAttach();
 		UT_sint32 numcols = pTab->getNumCols();
-		UT_sint32 numrows = pTab->getNumRows();
+		//UT_sint32 numrows = pTab->getNumRows();
 		UT_sint32 i =0;
 		fp_CellContainer * pCur = NULL;
 		UT_sint32 iCellCount = 0;
@@ -7762,6 +7858,25 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 //
 	if(isInFrame(pos))
 	{
+		//
+// Handle case of an image only as a backdrop to a frame. Then the frame
+// has no content.
+//
+		if(m_pDoc->isFrameAtPos(pos))
+		{
+			PL_StruxFmtHandle psfh = NULL;
+			m_pDoc->getStruxOfTypeFromPosition(m_pLayout->getLID(),pos+1,
+											   PTX_SectionFrame, &psfh);
+			fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(const_cast<void *>(psfh));
+			UT_ASSERT(pFL->getContainerType() == FL_CONTAINER_FRAME);
+			if(pFL->getFrameType() >= FL_FRAME_WRAPPER_IMAGE)
+			{
+				m_prevMouseContext = EV_EMC_FRAME;
+				return EV_EMC_FRAME;
+			}
+		}
+ 
+		   
 		//
 		// OK find the coordinates of the frame.
 		//
@@ -8982,7 +9097,8 @@ void FV_View::populateThisHdrFtr(HdrFtrType hfType, bool bSkipPTSaves)
 //
 	PT_DocPosition oldPos = getPoint();
 
-	fl_DocSectionLayout * pDSL = static_cast<fl_DocSectionLayout *>(getCurrentBlock()->getSectionLayout());
+	fl_DocSectionLayout * pDSL = static_cast<fl_DocSectionLayout *>(getCurrentBlock()->getDocSectionLayout());
+	UT_ASSERT(pDSL->getContainerType() == FL_CONTAINER_DOCSECTION);
 	fl_HdrFtrSectionLayout * pHdrFtrSrc = NULL;
 	fl_HdrFtrSectionLayout * pHdrFtrDest = NULL;
 	if(hfType < FL_HDRFTR_FOOTER)
@@ -9583,6 +9699,10 @@ bool FV_View::isInFootnote(PT_DocPosition pos)
 	{
 		return false;
 	}
+	if(!pFL->isEndFootnoteIn())
+	{
+		return false;
+	}
 	if((pFL->getDocPosition() <= pos) && ((pFL->getDocPosition() + pFL->getLength()) > pos))
 	{
 		return true;
@@ -9605,6 +9725,10 @@ bool FV_View::isInEndnote(PT_DocPosition pos)
 {
 	fl_EndnoteLayout * pFL = getClosestEndnote(pos);
 	if(pFL == NULL)
+	{
+		return false;
+	}
+	if(!pFL->isEndFootnoteIn())
 	{
 		return false;
 	}
@@ -9807,10 +9931,10 @@ bool FV_View::insertFootnote(bool bFootnote)
 	setScreenUpdateOnGeneralUpdate( true);
 	_restorePieceTableState(); // clean up remaining measures
 	_updateInsertionPoint();
-	_ensureInsertionPointOnScreen();
 	_generalUpdate();
 	_fixInsertionPointCoords();
-	notifyListeners(AV_CHG_MOTION);
+	_ensureInsertionPointOnScreen();
+	notifyListeners(AV_CHG_MOTION | AV_CHG_ALL);
 //
 // Lets have a peek at the doc structure, shall we?
 //
@@ -10076,6 +10200,7 @@ void FV_View::toggleShowRevisions()
  */
 void FV_View::setRevisionLevel(UT_uint32 i)
 {
+	UT_return_if_fail( i < PD_MAX_REVISION );
 	m_pDoc->setShowRevisionId(i);
 	m_iViewRevision = i;
 }
@@ -10097,7 +10222,7 @@ UT_uint32 FV_View::getRevisionLevel()const
 		--iRevLevel;
 	
 		if(m_iViewRevision < iRevLevel)
-			return 0xffffffff;
+			return PD_MAX_REVISION;
 	}
 	
 	return m_iViewRevision;
@@ -10148,7 +10273,7 @@ bool FV_View::isInTable()
 	{
 		pos = (m_iInsPoint < m_Selection.getSelectionAnchor() ? m_iInsPoint : m_Selection.getSelectionAnchor());
 	}
-	return isInTable(pos);
+	return isInTableForSure(pos);
 }
 
 fl_TableLayout * FV_View::getTableAtPos(PT_DocPosition pos)
@@ -10179,30 +10304,46 @@ fl_TableLayout * FV_View::getTableAtPos(PT_DocPosition pos)
 	}
 	return NULL;
 }
+
+bool FV_View::isInTableForSure(PT_DocPosition pos)
+{
+	return (isInTable(pos));
+}
 /*!
- * Returns true if the point supplied is inside a Table.
+ * Returns true if the point supplied is inside a Table. Use isInTableForSure
+ * To cover the case if
  */
 bool FV_View::isInTable( PT_DocPosition pos)
 {
-	if(m_pDoc->isEndFootnoteAtPos(pos))
+	if(m_pDoc->isTableAtPos(pos))
 	{
-		xxx_UT_DEBUGMSG(("Found end footnote \n"));
-		pos++;
+		xxx_UT_DEBUGMSG(("As Table pos this char will actuall right before the table %d \n",pos));
+		return false;
+	}
+	if(m_pDoc->isCellAtPos(pos))
+	{
+		xxx_UT_DEBUGMSG(("As cell pos in table pos %d \n",pos));
+		return true;
 	}
 	fl_BlockLayout * pBL =	m_pLayout->findBlockAtPosition(pos);
 	xxx_UT_DEBUGMSG((" Got Bokc at pos %d looking at pos %d \n",pBL->getPosition(true),pos));
 	if(!pBL)
 	{
+		xxx_UT_DEBUGMSG(("Not in table \n"));
 		return false;
 	}
+	UT_ASSERT(pBL->getContainerType() == FL_CONTAINER_BLOCK);
 	fl_ContainerLayout * pCL = pBL->myContainingLayout();
 	if(!pCL)
 	{
+		xxx_UT_DEBUGMSG(("Not in table \n"));
 		return false;
 	}
-	xxx_UT_DEBUGMSG(("Containing Layout is %s \n",pCL->getContainerString()));
+	UT_ASSERT(pCL->getContainerType() != FL_CONTAINER_TABLE);
+	xxx_UT_DEBUGMSG(("Containing Layout is %s  pos %d \n",pCL->getContainerString(),pos));
 	if(pCL->getContainerType() == FL_CONTAINER_CELL)
 	{
+		xxx_UT_DEBUGMSG(("Inside Table cell pos %d this pos %d \n",pCL->getPosition(),pos));
 		return true;
 	}
 	pCL = pBL->getNext();
@@ -10215,8 +10356,13 @@ bool FV_View::isInTable( PT_DocPosition pos)
 	if(pCL->getContainerType() == FL_CONTAINER_TABLE)
 	{
 		PT_DocPosition posTable = m_pDoc->getStruxPosition(pCL->getStruxDocHandle());
-		if(posTable <= pos)
+		if(posTable <= pos) // TODO CHECK THIS very carefully!!
 		{
+			return false;
+		}
+		else
+		{
+			xxx_UT_DEBUGMSG(("IS intable is true \n"));
 			return true;
 		}
 	}
@@ -10234,10 +10380,12 @@ bool FV_View::isInTable( PT_DocPosition pos)
 			PT_DocPosition posEnd =  m_pDoc->getStruxPosition(sdhEnd);
 			if(posEnd == pos)
 			{
+				xxx_UT_DEBUGMSG(("Exactly at end of table \n"));
 				return true;
 			}
 		}
 	}
+	xxx_UT_DEBUGMSG(("Last Not in table \n"));
 	return false;
 }
 
@@ -10252,6 +10400,23 @@ PT_DocPosition FV_View::findCellPosAt(PT_DocPosition posTable, UT_sint32 row, UT
 	if(!bRes)
 	{
 		return 0;
+	}
+	fl_TableLayout * pTL = static_cast<fl_TableLayout *>(const_cast<void *>(m_pDoc->getNthFmtHandle(tableSDH,m_pLayout->getLID())));
+	fp_TableContainer * pTC = static_cast<fp_TableContainer *>(pTL->getFirstContainer());
+//
+// This is MUCH faster than linearly searching through the Piecetable.
+//
+	if(pTC != NULL)
+	{
+		fp_CellContainer * pCell = pTC->getCellAtRowColumn(row,col);
+		if(pCell)
+		{
+			fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(pCell->getSectionLayout());
+			if(pCL)
+			{
+				return pCL->getPosition(true);
+			}
+		}
 	}
 	cellSDH = m_pDoc->getCellSDHFromRowCol(tableSDH, isShowRevisions(), getRevisionLevel(), row,col);
 	if(cellSDH == NULL)
@@ -10390,7 +10555,7 @@ UT_Rect FV_View::getImageSelRect()
 */
 UT_sint32 FV_View::getImageSelInfo()
 {
-	return m_iImageSelBoxSize;
+	return getGraphics()->tlu(m_iImageSelBoxSize);
 }
 
 GR_Graphics::Cursor FV_View::getImageSelCursor()
@@ -10407,49 +10572,49 @@ GR_Graphics::Cursor FV_View::getImageSelCursor()
 */
 bool FV_View::isOverImageResizeBox(GR_Graphics::Cursor &cur, UT_uint32 xPos, UT_uint32 yPos)
 {
-	if (UT_Rect(m_selImageRect.left, m_selImageRect.top, m_iImageSelBoxSize, m_iImageSelBoxSize).containsPoint(xPos, yPos))
+	if (UT_Rect(m_selImageRect.left, m_selImageRect.top, getImageSelInfo(), getImageSelInfo()).containsPoint(xPos, yPos))
 	{
 		cur = GR_Graphics::GR_CURSOR_IMAGESIZE_NW; // North West
 		return true;
 	}
 
-	if (UT_Rect(m_selImageRect.left + (m_selImageRect.width/2) - m_iImageSelBoxSize/2, m_selImageRect.top, m_iImageSelBoxSize, m_iImageSelBoxSize).containsPoint(xPos, yPos))
+	if (UT_Rect(m_selImageRect.left + (m_selImageRect.width/2) - getImageSelInfo()/2, m_selImageRect.top, getImageSelInfo(), getImageSelInfo()).containsPoint(xPos, yPos))
 	{
 		cur  = GR_Graphics::GR_CURSOR_IMAGESIZE_N; // North
 		return true;
 	}
 	
-	if (UT_Rect(m_selImageRect.left + m_selImageRect.width - m_iImageSelBoxSize, m_selImageRect.top, m_iImageSelBoxSize, m_iImageSelBoxSize).containsPoint(xPos, yPos))
+	if (UT_Rect(m_selImageRect.left + m_selImageRect.width - getImageSelInfo(), m_selImageRect.top, getImageSelInfo(), getImageSelInfo()).containsPoint(xPos, yPos))
 	{
 		cur  = GR_Graphics::GR_CURSOR_IMAGESIZE_NE; // North East
 		return true;
 	}
 	
-	if (UT_Rect(m_selImageRect.left + m_selImageRect.width - m_iImageSelBoxSize, m_selImageRect.top + m_selImageRect.height/2 - m_iImageSelBoxSize/2, m_iImageSelBoxSize, m_iImageSelBoxSize).containsPoint(xPos, yPos))
+	if (UT_Rect(m_selImageRect.left + m_selImageRect.width - getImageSelInfo(), m_selImageRect.top + m_selImageRect.height/2 - getImageSelInfo()/2, getImageSelInfo(), getImageSelInfo()).containsPoint(xPos, yPos))
 	{
 		cur  = GR_Graphics::GR_CURSOR_IMAGESIZE_E; // East
 		return true;
 	}
 
-	if (UT_Rect(m_selImageRect.left + m_selImageRect.width - m_iImageSelBoxSize, m_selImageRect.top + m_selImageRect.height - m_iImageSelBoxSize, m_iImageSelBoxSize, m_iImageSelBoxSize).containsPoint(xPos, yPos))
+	if (UT_Rect(m_selImageRect.left + m_selImageRect.width - getImageSelInfo(), m_selImageRect.top + m_selImageRect.height - getImageSelInfo(), getImageSelInfo(), getImageSelInfo()).containsPoint(xPos, yPos))
 	{
 		cur  = GR_Graphics::GR_CURSOR_IMAGESIZE_SE; // South East
 		return true;
 	}
 
-	if (UT_Rect(m_selImageRect.left + (m_selImageRect.width/2) - m_iImageSelBoxSize/2, m_selImageRect.top + m_selImageRect.height - m_iImageSelBoxSize, m_iImageSelBoxSize, m_iImageSelBoxSize).containsPoint(xPos, yPos))
+	if (UT_Rect(m_selImageRect.left + (m_selImageRect.width/2) - getImageSelInfo()/2, m_selImageRect.top + m_selImageRect.height - getImageSelInfo(), getImageSelInfo(), getImageSelInfo()).containsPoint(xPos, yPos))
 	{
 		cur  = GR_Graphics::GR_CURSOR_IMAGESIZE_S; // South
 		return true;
 	}
 
-	if (UT_Rect(m_selImageRect.left, m_selImageRect.top + m_selImageRect.height - m_iImageSelBoxSize, m_iImageSelBoxSize, m_iImageSelBoxSize).containsPoint(xPos, yPos))
+	if (UT_Rect(m_selImageRect.left, m_selImageRect.top + m_selImageRect.height - getImageSelInfo(), getImageSelInfo(), getImageSelInfo()).containsPoint(xPos, yPos))
 	{
 		cur  = GR_Graphics::GR_CURSOR_IMAGESIZE_SW; // South West
 		return true;
 	}
 
-	if (UT_Rect(m_selImageRect.left, m_selImageRect.top + m_selImageRect.height/2 - m_iImageSelBoxSize/2, m_iImageSelBoxSize, m_iImageSelBoxSize).containsPoint(xPos, yPos))
+	if (UT_Rect(m_selImageRect.left, m_selImageRect.top + m_selImageRect.height/2 - getImageSelInfo()/2, getImageSelInfo(), getImageSelInfo()).containsPoint(xPos, yPos))
 	{
 		cur = GR_Graphics::GR_CURSOR_IMAGESIZE_W; // West
 		return true;

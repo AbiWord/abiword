@@ -191,10 +191,10 @@ SectionEnd
 	;Removes this component
 	DetailPrint "*** Removing Main Component..."
 	Delete "$INSTDIR\${MAINPROGRAM}"
-	Delete "$INSTDIR\zlib1.dll"
+	Delete "$INSTDIR\${PRODUCT}\bin\zlib1.dll"
 
 	; only for MinGW builds
-	${IfExists} "$INSTDIR\${PRODUCT}\bin\libAbiWord.dll"
+	${IfExists} "libAbiWord.dll"
 		Delete "$INSTDIR\${PRODUCT}\bin\libAbiWord.dll"
 	${IfExistsEnd}
 

@@ -155,7 +155,12 @@ void PP_Revision::_refreshString()
 
 	for(i = 0; i < iCount; i++)
 	{
-		getNthProperty(i,n,v);
+		if(!getNthProperty(i,n,v))
+		{
+			// UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+			continue;
+		}
+		
 		if(!v || !*v) v = "-/-";
 		
 		m_sXMLProps += n;
@@ -168,7 +173,12 @@ void PP_Revision::_refreshString()
 	iCount = getAttributeCount();
 	for(i = 0; i < iCount; i++)
 	{
-		getNthAttribute(i,n,v);
+		if(!getNthAttribute(i,n,v))
+		{
+			// UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+			continue;
+		}
+		
 		if(!v || !*v) v = "-/-";
 
 		m_sXMLAttrs += n;
@@ -240,6 +250,15 @@ PP_RevisionAttr::PP_RevisionAttr(const XML_Char * r):
 {
 	_init(r);
 }
+
+/*! create class instance from a single revision data */
+PP_RevisionAttr::PP_RevisionAttr(UT_uint32 iId, PP_RevisionType eType,
+								 const XML_Char ** pAttrs, const XML_Char ** pProps)
+{
+	PP_Revision * pRevision = new PP_Revision((UT_uint32)iId, eType, pProps, pAttrs);
+	m_vRev.addItem((void*)pRevision);
+}
+
 
 PP_RevisionAttr::~PP_RevisionAttr()
 {
@@ -329,7 +348,7 @@ void PP_RevisionAttr::_init(const XML_Char *r)
 			{
 				// malformed token, move onto the next one
 				UT_DEBUGMSG(("PP_RevisionAttr::_init: invalid ! token [%s]\n",t));
-				continue;
+				goto skip_this_token;
 			}
 			pProps = NULL;
 			pAttrs = NULL;
@@ -342,7 +361,7 @@ void PP_RevisionAttr::_init(const XML_Char *r)
 			{
 				// malformed token, move onto the next one
 				UT_DEBUGMSG(("PP_RevisionAttr::_init: invalid - token [%s]\n",t));
-				continue;
+				goto skip_this_token;
 			}
 
 			// insert null as needed to be able to parse the id and props
@@ -375,10 +394,13 @@ void PP_RevisionAttr::_init(const XML_Char *r)
 		// now we can retrieve the id
 		iId = atol(t);
 
-		PP_Revision * pRevision = new PP_Revision((UT_uint32)iId, eType, pProps, pAttrs);
+		{
+			PP_Revision * pRevision = new PP_Revision((UT_uint32)iId, eType, pProps, pAttrs);
 
-		m_vRev.addItem((void*)pRevision);
-
+			m_vRev.addItem((void*)pRevision);
+		}
+		
+	skip_this_token:
 		if(next_s < end_s)
 			t = strtok(next_s,",");
 		else
@@ -490,7 +512,9 @@ void PP_RevisionAttr::pruneForCumulativeResult(PD_Document * pDoc)
 	r0->prune();
 	
 	// finally, remove the revision attribute if present
-	r0->setAttribute("revision", NULL);
+	const XML_Char * v;
+	if(r0->getAttribute("revision", v))
+		r0->setAttribute("revision", NULL);
 
 	UT_ASSERT_HARMLESS( m_vRev.getItemCount() == 1 );
 }
@@ -587,7 +611,7 @@ const PP_Revision * PP_RevisionAttr::getLowestGreaterOrEqualRevision(UT_uint32 i
 		return NULL;
 
 	const PP_Revision *r = NULL; // this will be the revision we are looking for
-	UT_uint32 r_id = 0xffffffff;
+	UT_uint32 r_id = PD_MAX_REVISION;
 
 	for(UT_uint32 i = 0; i < m_vRev.getItemCount(); i++)
 	{
@@ -642,11 +666,11 @@ const PP_Revision * PP_RevisionAttr::getLastRevision()
 /*!
    find revision with id == iId; if revision is not found minId
    contains the smallest id in this set greater than iId; if return value is and minId
-   is 0xffffffff then there are revisions preset
+   is PD_MAX_REVISION then there are revisions preset
 */
 const PP_Revision * PP_RevisionAttr::getRevisionWithId(UT_uint32 iId, UT_uint32 &minId)
 {
-	minId = 0xffffffff;
+	minId = PD_MAX_REVISION;
 
 	for(UT_uint32 i = 0; i < m_vRev.getItemCount(); i++)
 	{

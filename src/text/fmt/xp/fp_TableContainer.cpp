@@ -337,6 +337,7 @@ void fp_CellContainer::_getBrokenRect(fp_TableContainer * pBroke, fp_Page * &pPa
 	}
 	UT_sint32 offx = 0;
 	UT_sint32 offy = 0;
+	bool bFrame = false;
 	if(pBroke)
 	{
 		pPage = pBroke->getPage();
@@ -347,8 +348,12 @@ void fp_CellContainer::_getBrokenRect(fp_TableContainer * pBroke, fp_Page * &pPa
 				fp_FrameContainer * pFC = static_cast<fp_FrameContainer *>(pBroke->getContainer())
 ;
 				getView()->getPageScreenOffsets(pPage,col_x,col_y);
+				//
+				// Use col_x, col_y later.
+				//
 				offx = pFC->getX();
 				offy = pFC->getY();
+				bFrame = true;
 			}
 			else
 			{
@@ -359,7 +364,14 @@ void fp_CellContainer::_getBrokenRect(fp_TableContainer * pBroke, fp_Page * &pPa
 			{
 				if(pBroke->getMasterTable()->getFirstBrokenTable() == pBroke)
 				{
-					offy = pBroke->getMasterTable()->getY();
+					if(!bFrame)
+					{
+						offy = pBroke->getMasterTable()->getY();
+					}
+					else
+					{
+						offy += pBroke->getMasterTable()->getY();
+					}
 					if(iBot > pBroke->getYBottom())
 					{
 						iBot = pBroke->getYBottom();
@@ -503,11 +515,8 @@ void fp_CellContainer::_getBrokenRect(fp_TableContainer * pBroke, fp_Page * &pPa
 			{
 				UT_sint32 iTmpX,iTmpY;
 				pPage->getScreenOffsets(pCol,iTmpX,iTmpY);
-				col_x -= iTmpX;
-				col_y -= iTmpY;
-				getView()->getPageScreenOffsets(pPage,iTmpX,iTmpY);
-				col_x += iTmpX;
-				col_y += iTmpY;
+				iLeft -= iTmpX;
+				iTop -= iTmpY;
 			}
 		}
 	}
@@ -757,18 +766,6 @@ void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 	PP_PropertyMap::Line lineRight  = getRightStyle  (pTableLayout);
 	PP_PropertyMap::Line lineTop    = getTopStyle    (pTableLayout);
 
-	if ((lineBottom.m_t_linestyle == PP_PropertyMap::linestyle_none) &&
-		(  lineLeft.m_t_linestyle == PP_PropertyMap::linestyle_none) &&
-		( lineRight.m_t_linestyle == PP_PropertyMap::linestyle_none) &&
-		(   lineTop.m_t_linestyle == PP_PropertyMap::linestyle_none) &&
-		(background.m_t_background == PP_PropertyMap::background_none))
-		{
-			/* nothing to draw
-			 */
-			return;
-		}
-
-
 	fp_Container * pCon = getContainer();
 	if(pCon->getContainer() && !pCon->getContainer()->isColumnType())
 	{
@@ -785,54 +782,37 @@ void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 	if (pPage != NULL)
 	{
 		xxx_UT_DEBUGMSG(("_clear: top %d bot %d cell left %d top %d \n",bRec.top,bRec.top+bRec.height,m_iLeftAttach,m_iTopAttach));
-// only clear the lines if no background is set: the background clearing will also clear the lines
-// FIXME MARCM: this switch SHOULD work but it doesn't... adding it will show clearing errors when moving
-// FIXME MARCM: tables around with cells in it that have their bgcolor set. 
-// FIXME MARCM: When the backgroud is on, it _should_ also clear the lines, but it doesn't
-		//if (m_iBgStyle == FS_OFF)
-		{
-			if (lineLeft.m_t_linestyle != PP_PropertyMap::linestyle_none)
-			{
-				lineLeft.m_t_linestyle = PP_PropertyMap::linestyle_solid;
-				lineLeft.m_color = *getFillType()->getColor();
-				_drawLine (lineLeft, bRec.left, bRec.top, bRec.left,  bRec.top + bRec.height,getGraphics());
-			}
-			if (lineTop.m_t_linestyle != PP_PropertyMap::linestyle_none)
-			{	
-				lineTop.m_t_linestyle = PP_PropertyMap::linestyle_solid;
-				lineTop.m_color =  *getFillType()->getColor();
-				_drawLine (lineTop, bRec.left, bRec.top, bRec.left + bRec.width,  bRec.top,getGraphics()); 
-				if(pBroke && pBroke->getPage() && pBroke->getBrokenTop() > 0)
-				{
-					UT_sint32 col_x,col_y;
-					fp_Column * pCol = static_cast<fp_Column *>(pBroke->getBrokenColumn());
-					pBroke->getPage()->getScreenOffsets(pCol, col_x,col_y);
-					_drawLine (lineTop, bRec.left, col_y, bRec.left + bRec.width,  col_y,getGraphics());
-				}
-			}
-			if (lineRight.m_t_linestyle != PP_PropertyMap::linestyle_none)
-			{	
-				lineRight.m_t_linestyle = PP_PropertyMap::linestyle_solid;
-				lineRight.m_color =  *getFillType()->getColor();
-				_drawLine (lineRight, bRec.left + bRec.width, bRec.top, bRec.left + bRec.width, bRec.top + bRec.height,getGraphics()); 
-			}
-			if (lineBottom.m_t_linestyle != PP_PropertyMap::linestyle_none)
-			{	
-				lineBottom.m_t_linestyle = PP_PropertyMap::linestyle_solid;
-				lineBottom.m_color =  *getFillType()->getColor();
-				_drawLine (lineBottom, bRec.left, bRec.top + bRec.height, bRec.left + bRec.width , bRec.top + bRec.height,getGraphics());
-				xxx_UT_DEBUGMSG(("_Clear: pBroke %x \n",pBroke));
-				if(pBroke && pBroke->getPage() && pBroke->getBrokenBot() >= 0)
-				{
-					UT_sint32 col_x,col_y;
-					fp_Column * pCol = static_cast<fp_Column *>(pBroke->getBrokenColumn());
-					pBroke->getPage()->getScreenOffsets(pCol, col_x,col_y);
-					UT_sint32 bot = col_y + pCol->getHeight();
-					xxx_UT_DEBUGMSG(("_clear: Clear broken bottom %d \n",bot));
-					_drawLine (lineBottom, bRec.left, bot, bRec.left + bRec.width,  bot,getGraphics());
-				}
 
-			}
+		lineLeft.m_t_linestyle = PP_PropertyMap::linestyle_solid;
+		lineLeft.m_color = *getFillType()->getColor();
+		_drawLine (lineLeft, bRec.left, bRec.top, bRec.left,  bRec.top + bRec.height,getGraphics());
+
+		lineTop.m_t_linestyle = PP_PropertyMap::linestyle_solid;
+		lineTop.m_color =  *getFillType()->getColor();
+		_drawLine (lineTop, bRec.left, bRec.top, bRec.left + bRec.width,  bRec.top,getGraphics()); 
+		if(pBroke && pBroke->getPage() && pBroke->getBrokenTop() > 0)
+		{
+			UT_sint32 col_x,col_y;
+			fp_Column * pCol = static_cast<fp_Column *>(pBroke->getBrokenColumn());
+			pBroke->getPage()->getScreenOffsets(pCol, col_x,col_y);
+			_drawLine (lineTop, bRec.left, col_y, bRec.left + bRec.width,  col_y,getGraphics());
+		}
+		lineRight.m_t_linestyle = PP_PropertyMap::linestyle_solid;
+		lineRight.m_color =  *getFillType()->getColor();
+		_drawLine (lineRight, bRec.left + bRec.width, bRec.top, bRec.left + bRec.width, bRec.top + bRec.height,getGraphics()); 
+		
+		lineBottom.m_t_linestyle = PP_PropertyMap::linestyle_solid;
+		lineBottom.m_color =  *getFillType()->getColor();
+		_drawLine (lineBottom, bRec.left, bRec.top + bRec.height, bRec.left + bRec.width , bRec.top + bRec.height,getGraphics());
+		xxx_UT_DEBUGMSG(("_Clear: pBroke %x \n",pBroke));
+		if(pBroke && pBroke->getPage() && pBroke->getBrokenBot() >= 0)
+		{
+			UT_sint32 col_x,col_y;
+			fp_Column * pCol = static_cast<fp_Column *>(pBroke->getBrokenColumn());
+			pBroke->getPage()->getScreenOffsets(pCol, col_x,col_y);
+			UT_sint32 bot = col_y + pCol->getHeight();
+			xxx_UT_DEBUGMSG(("_clear: Clear broken bottom %d \n",bot));
+			_drawLine (lineBottom, bRec.left, bot, bRec.left + bRec.width,  bot,getGraphics());
 		}
 		getGraphics()->setLineWidth(1 );
 		xxx_UT_DEBUGMSG(("_clear: BRec.top %d  Brec.height %d \n",bRec.top,bRec.height));
@@ -942,7 +922,7 @@ void fp_CellContainer::_drawLine (const PP_PropertyMap::Line & style,
 		return; // do not draw the dotted line when printing	
 	
 	GR_Graphics::JoinStyle js = GR_Graphics::JOIN_MITER;
-	GR_Graphics::CapStyle  cs = GR_Graphics::CAP_BUTT;
+	GR_Graphics::CapStyle  cs = GR_Graphics::CAP_PROJECTING;
 
 	switch (style.m_t_linestyle)
 	{
@@ -1479,12 +1459,22 @@ void fp_CellContainer::_drawBoundaries(dg_DrawArgs* pDA, fp_TableContainer * pBr
 	{
 		return;
 	}
-
+	if(pBroke && pBroke->getPage())
+	{
+		if(pDA->pG->queryProperties(GR_Graphics::DGP_SCREEN) && !pBroke->getPage()->isOnScreen())
+		{
+			return;
+		}
+		if(pBroke->getYBreak() > (getY() + getHeight()))
+		{
+			return;
+		}
+	}
     if(getPage()->getDocLayout()->getView()->getShowPara() && getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN)){
         UT_sint32 xoffBegin = pDA->xoff + getX();
         UT_sint32 yoffBegin = pDA->yoff + getY();
-        UT_sint32 xoffEnd = pDA->xoff + getX() + getWidth();
-        UT_sint32 yoffEnd = pDA->yoff + getY() + getHeight();
+        UT_sint32 xoffEnd = pDA->xoff + getX() + getWidth() - getGraphics()->tlu(1);
+        UT_sint32 yoffEnd = pDA->yoff + getY() + getHeight() - getGraphics()->tlu(1);
 
 		UT_RGBColor clrShowPara(127,127,127);
 
@@ -2596,7 +2586,7 @@ void fp_CellContainer::setLineMarkers(void)
 	}
 	else
 	{
-		m_iRight = getX() + getWidth();
+		m_iRight = getX() + getWidth() - getGraphics()->tlu(1);
 		m_iRight += static_cast<UT_sint32> (0.5 * static_cast<double>(pTab->getBorderWidth()));
 	}
 	m_iTopY = pTab->getYOfRow(getTopAttach());
@@ -2640,7 +2630,7 @@ void fp_CellContainer::setLineMarkers(void)
 // table. Otherwise we just get height of the first broken table.
 //
 		fp_VerticalContainer * pVert = static_cast<fp_VerticalContainer *>(pTab);
-		m_iBotY = pTab->getYOfRow(0) + pVert->getHeight();
+		m_iBotY = pTab->getYOfRow(0) + pVert->getHeight() - getGraphics()->tlu(1);
 		m_iBotY -= static_cast<UT_sint32>(2.0 * static_cast<double>(pTab->getBorderWidth()));
 		m_iBotY +=  pTab->getNthRow(pTab->getNumRows()-1)->spacing/2;
 	}
@@ -4381,6 +4371,15 @@ void fp_TableContainer::setToAllocation(void)
 		xxx_UT_DEBUGMSG(("Old table Height %d New allocation %d \n",fp_VerticalContainer::getHeight(),m_MyAllocation.height));
 		bDeleteBrokenTables = true;
 	}
+	//
+	// clear and delete broken tables before their height changes.
+	// Doing this clear at this point makes a table flicker when changing
+	// height but it does remove the last the pixel dirt with tables.
+	// 
+	if(bDeleteBrokenTables)
+	{
+		deleteBrokenTables(true,true);
+	}
 	setHeight(m_MyAllocation.height);
 	setMaxHeight(m_MyAllocation.height);
 	xxx_UT_DEBUGMSG(("SEVIOR: Height is set to %d \n",m_MyAllocation.height));
@@ -4396,10 +4395,6 @@ void fp_TableContainer::setToAllocation(void)
 	{
 		pCon->setLineMarkers();
 		pCon = static_cast<fp_CellContainer *>(pCon->getNext());
-	}
-	if(bDeleteBrokenTables)
-	{
-		deleteBrokenTables(true,true);
 	}
 	setYBottom(m_MyAllocation.height);
 }
@@ -4531,6 +4526,7 @@ void  fp_TableContainer::clearScreen(void)
 	{
 		return;
 	}
+	xxx_UT_DEBUGMSG(("Doing clear screen on %x \n",this));
 	fp_CellContainer * pCell = static_cast<fp_CellContainer *>(getNthCon(0));
 	while(pCell)
 	{
@@ -5006,10 +5002,10 @@ void fp_TableContainer::_drawBrokenBoundaries(dg_DrawArgs* pDA)
 		return;
 	}
     if(getPage()->getDocLayout()->getView()->getShowPara() && getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN)){
-        UT_sint32 xoffBegin = pDA->xoff - 1 + getX();
-        UT_sint32 yoffBegin = pDA->yoff - 1;
-        UT_sint32 xoffEnd = pDA->xoff + getX() + getWidth() + 2;
-        UT_sint32 yoffEnd = pDA->yoff + getHeight() + 2;
+        UT_sint32 xoffBegin = pDA->xoff + getX();
+        UT_sint32 yoffBegin = pDA->yoff;
+        UT_sint32 xoffEnd = pDA->xoff + getX() + getWidth() - getGraphics()->tlu(1);
+        UT_sint32 yoffEnd = pDA->yoff + getHeight() - getGraphics()->tlu(1);
 
 		UT_RGBColor clrShowPara(127,127,127);
 		getGraphics()->setColor(clrShowPara);

@@ -439,6 +439,36 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_ColumnsActive)
   return s;
 }
 
+Defun_EV_GetMenuItemState_Fn(ap_GetState_BookmarkOK)
+{
+  ABIWORD_VIEW ;
+  UT_return_val_if_fail (pView, EV_MIS_Gray);
+
+	EV_Menu_ItemState s = EV_MIS_ZERO ;
+
+	if(pView->isTOCSelected())
+	{
+	    s = EV_MIS_Gray ;
+		return s;
+	}
+	PT_DocPosition posStart = pView->getPoint();
+	PT_DocPosition posEnd = pView->getSelectionAnchor();
+	fl_BlockLayout * pBL1 = pView->getBlockAtPosition(posStart);
+	fl_BlockLayout * pBL2 = pView->getBlockAtPosition(posEnd);
+	if((pBL1 == NULL) || (pBL2 == NULL)) // make sure we get valid blocks from selection beginning and end
+	{
+		s = EV_MIS_Gray;
+		return s;
+	}
+	if(pBL1 != pBL2) // don't allow Insert bookmark if selection spans multiple blocks
+	{
+	    s = EV_MIS_Gray ;
+		return s;
+	}
+
+	return s ;
+}
+
 
 Defun_EV_GetMenuItemState_Fn(ap_GetState_TOCOK)
 {
@@ -451,7 +481,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_TOCOK)
   {
     s = EV_MIS_Gray;
   }
-  else if(pView->isInTable(pView->getPoint()-1) && pView->isInTable()) // isintable includes first
+  else if(pView->isInTable()) // isintable includes first
   {
     s = EV_MIS_Gray;
   }
@@ -680,12 +710,12 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Changes)
 			s = EV_MIS_Gray;
 	  break;
 
-	case AP_MENU_ID_INSERT_INSERTHEADER:
+	case AP_MENU_ID_INSERT_HEADER:
 		if (pView->isHeaderOnPage())
 			s = EV_MIS_Gray;
 	  break;
 
-	case AP_MENU_ID_INSERT_INSERTFOOTER:
+	case AP_MENU_ID_INSERT_FOOTER:
 		if (pView->isFooterOnPage())
 			s = EV_MIS_Gray;
 	  break;
@@ -1227,12 +1257,12 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_ShowRevisionsAfter)
 	
 	if(pView->isMarkRevisions())
 	{
-		if(pView->getRevisionLevel() == 0xffffffff)
+		if(pView->getRevisionLevel() == PD_MAX_REVISION)
 			return EV_MIS_Toggled;
 		else
 			return EV_MIS_ZERO;
 	}
-	else if(!pView->isShowRevisions() && pView->getRevisionLevel() == 0xffffffff)
+	else if(!pView->isShowRevisions() && pView->getRevisionLevel() == PD_MAX_REVISION)
 	{
 		return (EV_Menu_ItemState) (EV_MIS_Toggled | EV_MIS_Gray);
 	}
@@ -1322,7 +1352,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_InTable)
 	ABIWORD_VIEW;
 	UT_return_val_if_fail (pView, EV_MIS_Gray);
 
-	if(pView->isInTable(pView->getPoint()-1) && pView->isInTable())
+	if(pView->isInTable())
 		return EV_MIS_ZERO;
 
     return EV_MIS_Gray;
@@ -1334,7 +1364,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_TableOK)
 	ABIWORD_VIEW;
 	UT_return_val_if_fail (pView, EV_MIS_Gray);
 
-	if(pView->isInTable(pView->getPoint()-1) && pView->isInTable() && pView->isHdrFtrEdit())
+	if(pView->isInTable() && pView->isHdrFtrEdit())
 	{
 		return EV_MIS_Gray;
 	}
@@ -1366,7 +1396,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_InTableMerged)
 	ABIWORD_VIEW;
 	UT_return_val_if_fail (pView, EV_MIS_Gray);
 
-	if(pView->isInTable(pView->getPoint()-1) && pView->isInTable())
+	if(pView->isInTable())
 	{
 		return EV_MIS_ZERO;
 	}
@@ -1379,7 +1409,8 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_InFootnote)
 	ABIWORD_VIEW;
 	UT_return_val_if_fail (pView, EV_MIS_Gray);
 
-	if(!pView->isInFootnote() && !pView->isHdrFtrEdit())
+	if(!pView->isInFootnote() && !pView->isHdrFtrEdit() && !pView->isInFrame(pView->getPoint()) 
+		&& !pView->isTOCSelected())
 	{
 		return EV_MIS_ZERO;
 	}
@@ -1416,7 +1447,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_BreakOK)
 {
 	ABIWORD_VIEW;
 	UT_return_val_if_fail (pView, EV_MIS_Gray);
-
+	
 	if(pView->isInFootnote())
 	{
 		return EV_MIS_Gray;
@@ -1429,7 +1460,11 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_BreakOK)
 	{
 		return EV_MIS_Gray;
 	}
-	else if(pView->isInTable(pView->getPoint()-1) && pView->isInTable())
+	else if(pView->isInTable())
+	{
+		return EV_MIS_Gray;
+	}
+	else if(pView->isHdrFtrEdit())
 	{
 		return EV_MIS_Gray;
 	}

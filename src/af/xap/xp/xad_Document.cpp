@@ -61,7 +61,8 @@ AD_Document::AD_Document() :
 	m_bAutoRevisioning(false),
     m_bForcedDirty(false),
 	m_pUUID(NULL),
-	m_bDoNotAdjustHistory(false)
+	m_bDoNotAdjustHistory(false),
+	m_bAfterFirstSave(false)
 {	// TODO: clear the ignore list
 	
 
@@ -492,13 +493,30 @@ void AD_Document::setDocUUID(const char * s)
 const char * AD_Document::getDocUUIDString() const
 {
 	UT_return_val_if_fail(m_pUUID, NULL);
-	static UT_String s;
+	static UT_UTF8String s;
 	m_pUUID->toString(s);
-	return s.c_str();
+	return s.utf8_str();
 }
 
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
+
+/*!
+    find revision with id iId and return its index in revision table
+    \param iId  -- id of revision we are interested in
+    \return     -- if found index into revision vector if not found < 0
+*/
+UT_sint32 AD_Document::getRevisionIndxFromId(UT_uint32 iId) const
+{
+	for(UT_uint32 i = 0; i < m_vRevisions.getItemCount(); i++)
+	{
+		if(m_vRevisions.getNthItem(i)->getId() == iId)
+			return i;
+	}
+
+	return -1;
+}
+
 
 UT_uint32 AD_Document::getHighestRevisionId() const
 {
@@ -634,32 +652,85 @@ void AD_Document::setAutoRevisioning(bool b)
 {
 	if(b != m_bAutoRevisioning)
 	{
-		// first of all, we will increase the document version
-		// number; this will allow us to match autorevision id to a
-		// document version number
+		// First of all, we will increase the document version number;
+		// this will allow us to match autorevision id to a document
+		// version number. However, do not increase the version number,
+		// etc., if == 0 (we have a new, unsaved document)
 		time_t t = time(NULL);
-		m_iVersion++;
-		AD_VersionData v(m_iVersion, t, b);
-		addRecordToHistory(v);
+		
+		if(m_bAfterFirstSave)
+		{
+			m_iVersion++;
+		
+			AD_VersionData v(m_iVersion, t, b);
+			addRecordToHistory(v);
+		}
 		
 		m_bAutoRevisioning = b;
 
 		if(b)
 		{
 			// now create new revision
-			const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
-			UT_return_if_fail(pSS);
-			UT_UCS4String ucs4(pSS->getValue(XAP_STRING_ID_MSG_AutoRevision));
+			// if we did not adjust version because we have just been
+			// loaded and not saved, we do not want to adjust the
+			// revision number either
+			if(m_bAfterFirstSave)
+			{	
+				const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
+				UT_return_if_fail(pSS);
+				UT_UCS4String ucs4(pSS->getValue(XAP_STRING_ID_MSG_AutoRevision));
 
-			UT_uint32 iId = getRevisionId()+1;
-			setRevisionId(iId);
-			addRevision(iId, ucs4.ucs4_str(),ucs4.length(),t, m_iVersion);
+				UT_uint32 iId = getRevisionId() + 1;
 
+				setRevisionId(iId);
+				addRevision(iId, ucs4.ucs4_str(),ucs4.length(),t, m_iVersion);
+			}
+			else if(getHighestRevisionId() != getRevisionId())
+			{
+				// we have not saved yet, but the revision we are
+				// going to be using is not in the revision table, add it
+				const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
+				UT_return_if_fail(pSS);
+				UT_UCS4String ucs4(pSS->getValue(XAP_STRING_ID_MSG_AutoRevision));
+
+				UT_uint32 iId = getRevisionId();
+				addRevision(iId, ucs4.ucs4_str(),ucs4.length(),t, m_iVersion);
+			}
+			
+				
 			// collapse all revisions ...
-			setShowRevisionId(0xffffffff);
+			setShowRevisionId(PD_MAX_REVISION);
 			setShowRevisions(false);
 		}
+		else
+		{
+			// we have to wipe out all of the revision information
+			// from the document; this is because non-revisioned items
+			// are treated as revision level 0 and so any
+			// revisions in the document would overshadow any
+			// subsequent changes -- see bug 7183
 
+			// step out of revision mode ...
+			_setMarkRevisions(false);
+			m_bAutoRevisioning = false;
+
+			if(acceptAllRevisions())
+			{
+				// we succeeded in restoring the document, so now clear the
+				// history record
+				_purgeRevisionTable();
+				
+				m_bDoNotAdjustHistory = true;
+				save();
+				m_bDoNotAdjustHistory = false;
+			}
+
+			// go back to revisioning mode so that the
+			// setMarkRevisions() below triggers rebuild ...
+			_setMarkRevisions(true);
+
+		}
+		
 		setMarkRevisions(b);
 	}
 }
@@ -839,8 +910,16 @@ bool AD_Document::_restoreVersion(XAP_Frame * pFrame, UT_uint32 iVersion)
 	// step out of revision mode ...
 	_setMarkRevisions(false);
 	m_bAutoRevisioning = false;
+
+	UT_uint32 iRevisionId = findAutoRevisionId(iVersion);
+
+	// the revision id is the id of a revision that has been used to
+	// modify version iVersion of the document. To restore iVersion,
+	// we therefore have to reject all revisions >= iRevisionId
+	UT_return_val_if_fail( iRevisionId > 0, false );
+	iRevisionId--;
 	
-	if(rejectAllHigherRevisions(iVersion))
+	if(rejectAllHigherRevisions(iRevisionId))
 	{
 		// we succeeded in restoring the document, so now clear the
 		// history record
@@ -888,10 +967,11 @@ bool AD_Document::_restoreVersion(XAP_Frame * pFrame, UT_uint32 iVersion)
 		// now save me as I am
 		m_bDoNotAdjustHistory = true;
 		save();
+		_clearUndo();
 		m_bDoNotAdjustHistory = false;
 	}
 
-	return false;
+	return true;
 }
 
 bool AD_Document::showHistory(AV_View * pView)
@@ -1041,6 +1121,31 @@ bool AD_Document::showHistory(AV_View * pView)
 	return bRet;
 }
 
+UT_Error AD_Document::saveAs(const char * szFilename, int ieft, const char * props)
+{
+	UT_Error e = _saveAs(szFilename, ieft, props);
+	
+	m_bAfterFirstSave |= (UT_OK == e);
+	return e;
+}
+
+
+UT_Error AD_Document::saveAs(const char * szFilename, int ieft, bool cpy, const char * props)
+{
+	UT_Error e = _saveAs(szFilename, ieft, cpy, props);
+
+	m_bAfterFirstSave |= (UT_OK == e);
+	return e;
+}
+
+
+UT_Error AD_Document::save(void)
+{
+	UT_Error e = _save();
+
+	m_bAfterFirstSave |= (UT_OK == e);
+	return e;
+}
 
 ///////////////////////////////////////////////////
 // AD_VersionData
@@ -1063,7 +1168,7 @@ AD_VersionData::AD_VersionData(UT_uint32 v, time_t start, bool autorev)
 
 
 // constructors for importers
-AD_VersionData::AD_VersionData(UT_uint32 v, UT_String &uuid, time_t start, bool autorev):
+AD_VersionData::AD_VersionData(UT_uint32 v, UT_UTF8String &uuid, time_t start, bool autorev):
 	m_iId(v),m_pUUID(NULL),m_tStart(start),m_bAutoRevision(autorev)
 {
 	UT_UUIDGenerator * pGen = XAP_App::getApp()->getUUIDGenerator();

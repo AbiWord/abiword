@@ -195,11 +195,13 @@ static GtkBinClass * parent_class = 0;
 
 static void s_abi_widget_map_cb(GObject * w,  GdkEvent *event,gpointer p);
 
+#if 0
 static void s_abi_widget_destroy(GObject * w, gpointer abi);
 
 static void s_abi_widget_delete(GObject * w, gpointer abi);
 
 static void abi_widget_destroy (GObject *object);
+#endif
 
 /**************************************************************************/
 /**************************************************************************/
@@ -546,7 +548,7 @@ abi_widget_load_file(AbiWidget * abi, const char * pszFile)
 //
 //Now load the file
 //
-	bool res= ( UT_OK == pFrame->loadDocument(abi->priv->m_szFilename,IEFT_Unknown ,true));
+	/*bool res=*/ ( UT_OK == pFrame->loadDocument(abi->priv->m_szFilename,IEFT_Unknown ,true));
 	s_StartStopLoadingCursor( false, pFrame);
 	abi->priv->m_bPendingFile = false;
 	abi->priv->m_iNumFileLoads += 1;
@@ -591,6 +593,7 @@ static void s_abi_widget_map_cb(GObject * w,  GdkEvent *event,gpointer p)
 }
 
 
+#if 0
 static void s_abi_widget_destroy(GObject * w, gpointer p)
 {
 
@@ -610,6 +613,7 @@ static void s_abi_widget_delete(GObject * w, gpointer p)
 
   abi_widget_destroy(G_OBJECT(p));
 }
+#endif
 
 //
 // arguments to abiwidget
@@ -1325,6 +1329,7 @@ abi_widget_realize (GtkWidget * widget)
 }
 
 #ifdef HAVE_GNOME
+#if 0
 static void
 abi_widget_finalize(GObject *object)
 {
@@ -1363,9 +1368,10 @@ abi_widget_finalize(GObject *object)
 	BONOBO_CALL_PARENT (G_OBJECT_CLASS, finalize, (object));
 }
 #endif
+#endif
 
 
-
+#if 0
 static void
 abi_widget_destroy (GObject *object)
 {
@@ -1402,6 +1408,7 @@ abi_widget_destroy (GObject *object)
 	fprintf(getlogfile(),"abiwidget destroyed in abi_widget_destroy \n");
 #endif
 }
+#endif
 
 
 static void

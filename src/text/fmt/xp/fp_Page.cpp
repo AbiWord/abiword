@@ -154,12 +154,15 @@ UT_sint32 fp_Page::getColumnGap(void) const
  */
 fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 {
-	if(m_iCountWrapPasses > 100)
+	if(m_iCountWrapPasses > 199)
 	{
 		return NULL;
 	}
 	m_iCountWrapPasses++;
-	UT_DEBUGMSG(("Wrap passes = %d \n",m_iCountWrapPasses));
+#if DEBUG
+	UT_sint32 iPage = getDocLayout()->findPage(this);
+	UT_DEBUGMSG(("Wrap passes = %d page %x page number %d \n",m_iCountWrapPasses,this,iPage ));
+#endif
 	UT_sint32 i= 0;
 	UT_sint32 nWrapped = 0;
 	fp_Container * pFirst = NULL;
@@ -173,10 +176,6 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 			if(pFirst == NULL)
 			{
 				return NULL;
-			}
-			if(pFirst->getContainerType() == FP_CONTAINER_LINE)
-			{
-				pFirstBL = static_cast<fp_Line *>(pFirst)->getBlock();
 			}
 		}
 		while(pCol)
@@ -196,6 +195,7 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 	}
 	if((nWrapped == 0) && (nWrappedObjs == 0))
 	{
+		xxx_UT_DEBUGMSG(("page %x nWrapped %d nWrappedObjs %d does not need updating \n",this,nWrapped,nWrappedObjs));
 		return NULL;
 	}
 	bool bFormatAllWrapped = ((nWrapped > 0) && (nWrappedObjs == 0));
@@ -214,6 +214,84 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 				if(pCon->getContainerType() == FP_CONTAINER_LINE)
 				{
 					fp_Line * pLine = static_cast<fp_Line *>(pCon);
+					UT_Rect recLeft;
+					UT_Rect recRight;
+					pLine->genOverlapRects(recLeft,recRight);
+					if(recLeft.width == 0 && recRight.width == 0)
+					{
+						pLine->setWrapped(false);
+					}
+					else if((recLeft.width < 0) || (recRight.width <0))
+					{
+//
+// SOMETHING HAS GONE HORRIBALLY WRONG. Try to recover by collapsing the
+// content in this column and rebuilding
+//
+						UT_DEBUGMSG(("-ve width here!!!! %x left %d right %d \n",pLine,recLeft.width,recRight.width));
+						UT_VECTOR_PURGEALL(_BL *, vecBL);
+						fl_BlockLayout * pBL = pLine->getBlock();
+						fl_BlockLayout * pFirst = pBL;
+						fp_Column * pCol = static_cast<fp_Column *>(pLine->getColumn());
+						bool bLoop = true;
+						while(bLoop)
+						{
+							if(pBL && pBL->getContainerType() == FL_CONTAINER_BLOCK)
+							{
+								if(pBL->getFirstContainer() && (pBL->getFirstContainer()->getColumn() == pCol))
+								{
+									bLoop = true;
+									pFirst = pBL;
+									pBL = static_cast<fl_BlockLayout *>(pBL->getPrev());
+								}
+							}
+							else
+							{
+								bLoop = false;
+							}
+						}
+						fp_Column * pFirstCol = static_cast<fp_Column *>(pFirst->getFirstContainer()->getColumn());
+						pBL = pFirst;
+						UT_GenericVector<fl_BlockLayout *> vecCollapse;
+						bLoop = true;
+						while(bLoop)
+						{
+							if(pBL && pBL->getContainerType() == FL_CONTAINER_BLOCK)
+							{
+								if(pBL->getFirstContainer() && (pBL->getFirstContainer()->getColumn() == pCol))
+								{
+									bLoop = true;
+									vecCollapse.addItem(pBL);
+									pBL = static_cast<fl_BlockLayout *>(pBL->getNext());
+								}
+							}
+							else
+							{
+								bLoop = false;
+							}
+						}
+						UT_sint32 k = 0;
+						for(k=0; k<static_cast<UT_sint32>(vecCollapse.getItemCount());k++)
+						{
+							pBL = vecCollapse.getNthItem(k);
+							pBL->collapse();
+							pBL->format();
+						}
+						pNextCol = pFirstCol;
+						fp_Container * pNewFirstCon = static_cast<fp_Container *>(pNextCol->getNthCon(0));
+						return pNewFirstCon;
+					}
+					else
+					{
+						pLine->setWrapped(true);
+						if(pLine->getPrev() && !pLine->isSameYAsPrevious())
+						{
+							fp_Line * pPrev = static_cast<fp_Line *>(pLine->getPrev());
+							if(pPrev->getY() == pLine->getY())
+							{
+								pLine->setSameYAsPrevious(true);
+							}
+						}
+					}
 					if(bFormatAllWrapped)
 					{
 						if(pLine->isWrapped())
@@ -262,6 +340,7 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 // some space where a wrapped object should be
 //
 						bool bFoundOne = false;
+						fp_Line * pPrev = static_cast<fp_Line *>(pLine->getPrev());
 						if(pLine->isWrapped())
 						{
 							if(overlapsWrappedFrame(pLine))
@@ -269,24 +348,27 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 //
 // Wrapped line overlaps a wrapped frame
 //
-								UT_DEBUGMSG(("Found wrapped line %x that overlaps \n",pLine));
+								xxx_UT_DEBUGMSG(("Found wrapped line %x that overlaps \n",pLine));
 								bFoundOne = true;
 							}
-							else
+							else if(pPrev && pLine->isSameYAsPrevious() && (pPrev->getY() != pLine->getY()))
+							{
+								pLine = pPrev;
+								j--;
+								bFoundOne = true;
+							}
+							else if(m_iCountWrapPasses < 101)
 							{
 //
 // Look to see if the wrapped line has no white space that overlaps
-// a wrapped object
+// a wrapped object. We don't do this if we've tried more than 100
+// time to layout the page.
 //
-								UT_Rect recLeft;
-								UT_Rect recRight;
-								pLine->genOverlapRects(recLeft,recRight);
 								
-								if((recLeft.width > 0 && recRight.width >0)
-								   && !overlapsWrappedFrame(recLeft) &&
+								if(!overlapsWrappedFrame(recLeft) &&
 								   !overlapsWrappedFrame(recRight))
 								{
-									UT_DEBUGMSG(("Found wrapped line with extra  space %x  \n",pLine));
+									xxx_UT_DEBUGMSG(("Found wrapped line with extra  space %x  \n",pLine));
 									bFoundOne = true;
 								}
 							}
@@ -298,7 +380,7 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 //
 							if(overlapsWrappedFrame(pLine))
 							{
-								UT_DEBUGMSG(("Found unwrapped line %x that overlaps \n",pLine));
+								xxx_UT_DEBUGMSG(("Found unwrapped line %x that overlaps \n",pLine));
 								bFoundOne = true;
 							}
 						}
@@ -350,19 +432,38 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 	{
 		return NULL;
 	}
+	_BL * pBLine = vecBL.getNthItem(0);
+	pFirstBL = pBLine->m_pBL;
 	for(i=0; i<static_cast<UT_sint32>(vecBL.getItemCount()); i++)
 	{
-		_BL * pBLine = vecBL.getNthItem(i);
+		pBLine = vecBL.getNthItem(i);
 		xxx_UT_DEBUGMSG((" Doing line %x \n",pBLine->m_pL));
+#if DEBUG
+		if(m_iCountWrapPasses > 100)
+		{
+			xxx_UT_DEBUGMSG(("Not converging \n"));
+		}
+#endif
+		xxx_UT_DEBUGMSG(("Do regular rebreak \n"));
 		pBLine->m_pBL->formatWrappedFromHere(pBLine->m_pL,this);
 	}
 	UT_VECTOR_PURGEALL(_BL *, vecBL);
-	pNextCol = getNthColumnLeader(0);
-	fp_Container * pNewFirstCon = pFirstBL->getFirstContainer();
+	fp_Container * pNewFirstCon = NULL;
+	if(pFirstBL)
+	{
+		pNewFirstCon = pFirstBL->getFirstContainer();
+		pNextCol = static_cast<fp_Column *>(pNewFirstCon->getColumn());
+	}
+	else
+	{
+		return pNewFirstCon;
+	}
 	while(pNewFirstCon && pNewFirstCon->getPage() != NULL && pNewFirstCon->getPage() != this)
 	{
 		pNewFirstCon = static_cast<fp_Container *>(pNewFirstCon->getNext());
 	}
+	pNextCol = static_cast<fp_Column *>(pNewFirstCon->getColumn());
+	pNewFirstCon = static_cast<fp_Container *>(pNextCol->getNthCon(0));
 	return pNewFirstCon;
 }
 
@@ -398,7 +499,7 @@ bool fp_Page::overlapsWrappedFrame(UT_Rect & rec)
 		}
 		UT_Rect * pMyFrameRec = pFC->getScreenRect();
 		fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(pFC->getSectionLayout());
-		UT_sint32 iextra = pFL->getBoundingSpace();
+		UT_sint32 iextra = pFL->getBoundingSpace() -2;
 		pMyFrameRec->left -= iextra;
 		pMyFrameRec->top -= iextra;
 		pMyFrameRec->width += 2*iextra;
@@ -690,7 +791,7 @@ void fp_Page::_drawCropMarks(dg_DrawArgs* pDA)
 
 		pDA->pG->setLineProperties(pDA->pG->tluD(1.0),
 									 GR_Graphics::JOIN_MITER,
-									 GR_Graphics::CAP_BUTT,
+									 GR_Graphics::CAP_PROJECTING,
 									 GR_Graphics::LINE_SOLID);
 
         painter.drawLine(xoffStart, yoffStart, xoffStart, yoffStart - iTopHeight);
@@ -715,7 +816,7 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool bAlwaysUseWhiteBackground)
 // only call this for printing and honour the option to not fill the paper with
 // color.
 //
-	UT_DEBUGMSG(("Draw wrap passes = %d \n",m_iCountWrapPasses));
+	xxx_UT_DEBUGMSG(("Draw wrap passes = %d \n",m_iCountWrapPasses));
 	m_iCountWrapPasses = 0;
 	int i=0;
 	if(!pDA->pG->queryProperties(GR_Graphics::DGP_SCREEN))
@@ -1650,7 +1751,13 @@ void fp_Page::mapXYToPosition(bool bNotFrames,UT_sint32 x, UT_sint32 y, PT_DocPo
 		for (i=0; i<static_cast<UT_sint32>(countFrameContainers()); i++)
 		{
 			pFrameC = getNthFrameContainer(i);
-			if (pFrameC->getFirstContainer())
+			bool isImage = false;
+			fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(pFrameC->getSectionLayout());
+			if(pFL->getFrameType() >= FL_FRAME_WRAPPER_IMAGE)
+			{
+				isImage = true;
+			}
+			if ((pFrameC->getFirstContainer()) || isImage )
 			{
 				if ((x >= (pFrameC->getFullX()- iextra))
 					&& (x < (pFrameC->getFullX() + pFrameC->getFullWidth()+iextra))
@@ -1658,6 +1765,11 @@ void fp_Page::mapXYToPosition(bool bNotFrames,UT_sint32 x, UT_sint32 y, PT_DocPo
 					&& (y < (pFrameC->getFullY() + pFrameC->getFullHeight() + iextra))
 					)
 				{
+					if(isImage)
+					{
+						pos = pFL->getPosition(true);
+						return;
+					}
 					pFrameC->mapXYToPosition(x - pFrameC->getX(), y - pFrameC->getY(), pos, bBOL, bEOL,isTOC);
 					return;
 				}

@@ -92,6 +92,10 @@ fl_FrameLayout::fl_FrameLayout(FL_DocLayout* pLayout,
 	  m_iYpos(0),
 	  m_iXpad(0),
 	  m_iYpad(0),
+	  m_iXColumn(0),
+	  m_iYColumn(0),
+	  m_iXPage(0),
+	  m_iYPage(0),
 	  m_iBoundingSpace(0),
 	  m_iFrameWrapMode(FL_FRAME_ABOVE_TEXT)
 {
@@ -222,6 +226,54 @@ UT_uint32 fl_FrameLayout::getLength(void)
 }
 
 
+/*!
+ * This code actually inserts a block AFTER the frame in the docsectionlayout
+ * Code copied from tablelayout
+ */
+bool fl_FrameLayout::insertBlockAfter(fl_ContainerLayout* pLBlock,
+											  const PX_ChangeRecord_Strux * pcrx,
+											  PL_StruxDocHandle sdh,
+											  PL_ListenerId lid,
+											  void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+																	  PL_ListenerId lid,
+																	  PL_StruxFmtHandle sfhNew))
+{
+
+	UT_ASSERT(pcrx->getType()==PX_ChangeRecord::PXT_InsertStrux);
+	UT_ASSERT(pcrx->getStruxType()==PTX_Block);
+
+	fl_ContainerLayout * pNewCL = NULL;
+	fl_ContainerLayout * pMyCL = myContainingLayout();
+	pNewCL = pMyCL->insert(sdh,this,pcrx->getIndexAP(), FL_CONTAINER_BLOCK);
+	fl_BlockLayout * pBlock = static_cast<fl_BlockLayout *>(pNewCL);
+//
+// Set the sectionlayout of this frame to that of the block since it is that scope
+//
+	pBlock->setSectionLayout(static_cast<fl_SectionLayout *>(myContainingLayout()));
+	pNewCL->setContainingLayout(myContainingLayout());
+
+		// Must call the bind function to complete the exchange of handles
+		// with the document (piece table) *** before *** anything tries
+		// to call down into the document (like all of the view
+		// listeners).
+		
+	PL_StruxFmtHandle sfhNew = static_cast<PL_StruxFmtHandle>(pNewCL);
+	pfnBindHandles(sdh,lid,sfhNew);
+//
+// increment the insertion point in the view.
+//
+	FV_View* pView = m_pLayout->getView();
+	if (pView && (pView->isActive() || pView->isPreview()))
+	{
+		pView->setPoint(pcrx->getPosition() + fl_BLOCK_STRUX_OFFSET);
+	}
+	else if(pView && pView->getPoint() > pcrx->getPosition())
+	{
+		pView->setPoint(pView->getPoint() +  fl_BLOCK_STRUX_OFFSET);
+	}
+	return true;
+}
+
 bool fl_FrameLayout::bl_doclistener_insertEndFrame(fl_ContainerLayout*,
 											  const PX_ChangeRecord_Strux * pcrx,
 											  PL_StruxDocHandle sdh,
@@ -284,7 +336,7 @@ bool fl_FrameLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange *
 	UT_ASSERT(pcrxc->getType()==PX_ChangeRecord::PXT_ChangeStrux);
 	setAttrPropIndex(pcrxc->getIndexAP());
 	collapse();
-	_lookupProperties();
+	lookupProperties();
 	format();
 	return true;
 }
@@ -427,7 +479,7 @@ void fl_FrameLayout::_purgeLayout(void)
  */
 void fl_FrameLayout::_createFrameContainer(void)
 {	
-	_lookupProperties();
+	lookupProperties();
 	fp_FrameContainer * pFrameContainer = new fp_FrameContainer(static_cast<fl_SectionLayout *>(this));
 	setFirstContainer(pFrameContainer);
 	setLastContainer(pFrameContainer);
@@ -590,16 +642,13 @@ void fl_FrameLayout::format(void)
 	}
 }
 
-void fl_FrameLayout::_lookupProperties(void)
+/*!
+    this function is only to be called by fl_ContainerLayout::lookupProperties()
+    all other code must call lookupProperties() instead
+*/
+void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 {
-
-//  Find the folded Level of the strux
-
-	lookupFoldedLevel();
-
- 	const PP_AttrProp* pSectionAP = NULL;
-
-	getAP(pSectionAP);
+	UT_return_if_fail(pSectionAP);
 
 	const XML_Char *pszFrameType = NULL;
 	const XML_Char *pszPositionTo = NULL;
@@ -608,6 +657,8 @@ void fl_FrameLayout::_lookupProperties(void)
 	const XML_Char *pszYpos = NULL;
 	const XML_Char *pszColXpos = NULL;
 	const XML_Char *pszColYpos = NULL;
+	const XML_Char *pszPageXpos = NULL;
+	const XML_Char *pszPageYpos = NULL;
 	const XML_Char *pszWidth = NULL;
 	const XML_Char *pszHeight = NULL;
 	const XML_Char *pszXpad = NULL;
@@ -629,6 +680,10 @@ void fl_FrameLayout::_lookupProperties(void)
 	{
 		m_iFrameType = FL_FRAME_TEXTBOX_TYPE;
 	}
+	else if(strcmp(pszFrameType,"image") == 0)
+	{
+		m_iFrameType = FL_FRAME_WRAPPER_IMAGE;
+	}
 	else 
 	{
 		UT_DEBUGMSG(("Unknown Frame Type %s \n",pszFrameType));
@@ -649,6 +704,10 @@ void fl_FrameLayout::_lookupProperties(void)
 	else if(strcmp(pszPositionTo,"column-above-text") == 0)
 	{
 		m_iFramePositionTo = FL_FRAME_POSITIONED_TO_COLUMN;
+	}
+	else if(strcmp(pszPositionTo,"page-above-text") == 0)
+	{
+		m_iFramePositionTo = FL_FRAME_POSITIONED_TO_PAGE;
 	}
 	else 
 	{
@@ -736,6 +795,30 @@ void fl_FrameLayout::_lookupProperties(void)
 		m_iYColumn = UT_convertToLogicalUnits(pszColYpos);
 	}
 	UT_DEBUGMSG(("ColYpos for frame is %s units %d \n",pszColYpos,m_iYColumn));
+
+
+// PageXpos
+
+	if(!pSectionAP || !pSectionAP->getProperty("frame-page-xpos",pszPageXpos))
+	{
+		m_iXPage = UT_convertToLogicalUnits("0.0in");
+	}
+	else
+	{
+		m_iXPage = UT_convertToLogicalUnits(pszColXpos);
+	}
+	UT_DEBUGMSG(("PageXpos for frame is %s \n",pszPageXpos));
+// PageYpos
+
+	if(!pSectionAP || !pSectionAP->getProperty("frame-page-ypos",pszPageYpos))
+	{
+		m_iYPage = UT_convertToLogicalUnits("0.0in");
+	}
+	else
+	{
+		m_iYPage = UT_convertToLogicalUnits(pszColYpos);
+	}
+	UT_DEBUGMSG(("PageYpos for frame is %s units %d \n",pszColYpos,m_iYColumn));
 
 // Width
 

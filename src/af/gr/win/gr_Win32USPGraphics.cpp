@@ -1644,13 +1644,13 @@ void GR_Win32USPGraphics::drawChars(const UT_UCSChar* pChars,
 	UT_uint32 i = 0;
 	for(i = 0; i < iLength; ++i)
 	{
-		pwChars[i] = pChars[i];
+		pwChars[i] = pChars[i+iCharOffset];
 	}
 	
 	SCRIPT_STRING_ANALYSIS SSA;
 	UT_uint32 flags = SSA_GLYPHS;
 
-	fScriptStringAnalyse(m_hdc, pwChars + iCharOffset, iLength, iLength*3/2 + 1,
+	fScriptStringAnalyse(m_hdc, pwChars, iLength, iLength*3/2 + 1,
 						-1, flags, 0, NULL, NULL, NULL, NULL, NULL, &SSA);
 
 	fScriptStringOut(SSA, _tduX(xoff), _tduY(yoff), 0, NULL, 0, 0, FALSE);

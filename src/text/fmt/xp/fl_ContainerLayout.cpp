@@ -82,23 +82,68 @@ fl_ContainerLayout::~fl_ContainerLayout()
 #endif
 }
 
-void fl_ContainerLayout::getAP(const PP_AttrProp *& pAP)const
+void fl_ContainerLayout::lookupProperties(void)
+{
+	// first of all, call getAP() which will set default visibility
+	// for us (either visible, or hidden revision)
+	const PP_AttrProp* pAP = NULL;
+	FPVisibility eVisibility = getAP(pAP);
+
+	setVisibility(eVisibility);
+	
+	//  Find the folded Level of the strux
+	lookupFoldedLevel();
+	if(isHidden() == FP_VISIBLE && getFoldedLevel()>0)
+	{
+		xxx_UT_DEBUGMSG(("Table set to hidden folded \n"));
+		setVisibility(FP_HIDDEN_FOLDED);
+	}
+
+	// evaluate "display" property
+	// display property
+	const char* pszDisplay = NULL;
+	pAP->getProperty("display", (const XML_Char *&)pszDisplay);
+	if(isHidden() == FP_VISIBLE && pszDisplay && !UT_strcmp(pszDisplay, "none"))
+	{
+		setVisibility(FP_HIDDEN_TEXT);
+	}
+
+	// other common properties should come here
+
+	// this should only implement class-specific properties ...
+	_lookupProperties(pAP);
+}
+
+
+/*!
+    retrieves AP associated with this layout, corretly processing any
+    revision information;
+
+    /return return value indicates whether the layout is hidden due to
+    current revision settings or not
+*/
+FPVisibility fl_ContainerLayout::getAP(const PP_AttrProp *& pAP)const
 {
 	FL_DocLayout* pDL =	getDocLayout();
-	UT_return_if_fail(pDL);
+	UT_return_val_if_fail(pDL,FP_VISIBLE);
 
 	FV_View* pView = pDL->getView();
-	UT_return_if_fail(pView);
+	UT_return_val_if_fail(pView,FP_VISIBLE);
 
 	UT_uint32 iId  = pView->getRevisionLevel();
 	bool bShow     = pView->isShowRevisions();
 	bool bHiddenRevision = false;
 
-	PP_RevisionAttr * pRevisions = NULL; // must be NULL
+	getAttrProp(&pAP,NULL,bShow,iId,bHiddenRevision);
 
-	getAttrProp(&pAP,pRevisions,bShow,iId,bHiddenRevision);
-
-	delete pRevisions;
+	if(bHiddenRevision)
+	{
+		return FP_HIDDEN_REVISION;
+	}
+	else
+	{
+		return FP_VISIBLE;
+	}
 }
 
 void fl_ContainerLayout::getSpanAP(UT_uint32 blockPos, bool bLeft, const PP_AttrProp * &pSpanAP) const
@@ -114,11 +159,7 @@ void fl_ContainerLayout::getSpanAP(UT_uint32 blockPos, bool bLeft, const PP_Attr
 	bool bShow     = pView->isShowRevisions();
 	bool bHiddenRevision = false;
 
-	PP_RevisionAttr * pRevisions = NULL; // must be NULL
-
-	getSpanAttrProp(blockPos, bLeft, &pSpanAP,pRevisions,bShow,iId,bHiddenRevision);
-
-	delete pRevisions;
+	getSpanAttrProp(blockPos, bLeft, &pSpanAP,NULL,bShow,iId,bHiddenRevision);
 }
 
 

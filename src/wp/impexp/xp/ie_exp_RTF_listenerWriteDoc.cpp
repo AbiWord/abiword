@@ -80,6 +80,9 @@ void s_RTF_ListenerWriteDoc::_closeSection(void)
 
 void s_RTF_ListenerWriteDoc::_closeBlock(PT_AttrPropIndex  nextApi)
 {
+	if(!m_bInBlock)
+		return;
+	
 	// first reset ie's char direciton info
 	m_pie->setCharRTL(UT_BIDI_UNSET);
 //
@@ -89,21 +92,13 @@ void s_RTF_ListenerWriteDoc::_closeBlock(PT_AttrPropIndex  nextApi)
 	const XML_Char * szListid=NULL;
 	const PP_AttrProp * pBlockAP = NULL;
 	xxx_UT_DEBUGMSG(("SEVIOR: Close Block \n"));
-	if(nextApi != 0)
+	
+	if(m_bInSpan)
 	{
-		m_pDocument->getAttrProp(nextApi,&pBlockAP);
-
-		if (!pBlockAP || !pBlockAP->getAttribute(static_cast<const XML_Char*>("listid"), szListid))
-		{
-			szListid = NULL;
-		}
-		if(szListid != NULL)
-		{
-			bInList = false; // was true
-		}
+		_closeSpan();
 	}
 
- 	if(!m_bInSpan && m_sdh && (m_bBlankLine || bInList) && !m_bJustStartingSection && m_pDocument->getStruxType(m_sdh) == PTX_Block )
+	if(m_sdh && m_pDocument->getStruxType(m_sdh) == PTX_Block)
   	{
 //
 // This is a blankline or list item
@@ -115,10 +110,13 @@ void s_RTF_ListenerWriteDoc::_closeBlock(PT_AttrPropIndex  nextApi)
 		xxx_UT_DEBUGMSG(("SEVIOR: Close Block -open span \n"));
 		_openSpan(m_apiThisBlock,pSpanAP);
 	}
-	else
-	{
-		m_bBlankLine = false;
-	}
+
+	m_bBlankLine = false;
+	
+
+	m_pie->_rtf_keyword("par");
+	_closeSpan();
+
 	m_apiThisBlock = 0;
 	m_sdh = NULL;
 	return;
@@ -370,7 +368,6 @@ void s_RTF_ListenerWriteDoc::_writeTOC(PT_AttrPropIndex apiTOC)
 	else
 	{
 	}
-	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 	const XML_Char * pszTOCHEADING = NULL;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-heading",pszTOCHEADING))
 	{
@@ -1395,6 +1392,7 @@ s_RTF_ListenerWriteDoc::s_RTF_ListenerWriteDoc(PD_Document * pDocument,
 	m_pDocument = pDocument;
 	m_pie = pie;
 	m_bInSpan = false;
+	m_bInBlock = false;
 	m_apiLastSpan = 0;
 	m_apiThisSection = 0;
 	m_apiThisBlock = 0;
@@ -1434,6 +1432,7 @@ s_RTF_ListenerWriteDoc::s_RTF_ListenerWriteDoc(PD_Document * pDocument,
 	m_iFirstTop = 0;
 	m_bHyperLinkOpen = false;
 	m_bOpenBlockForSpan = bHasMultiBlock;
+
 	// <section>+ will be handled by the populate code.
 }
 
@@ -1633,6 +1632,7 @@ const UT_UCSChar * s_RTF_ListenerWriteDoc::_getFieldValue(void)
 	}
 	PL_StruxFmtHandle sfh = m_pDocument->getNthFmtHandle(m_sdh,0);
 	fl_Layout * pL = const_cast<fl_Layout *>(reinterpret_cast<const fl_Layout *>(sfh));
+	UT_return_val_if_fail(pL,NULL);
 	if(pL && pL->getType() != PTX_Block)
 	{
 	  UT_return_val_if_fail(0, NULL);
@@ -2041,7 +2041,7 @@ void s_RTF_ListenerWriteDoc::_export_AbiWord_Cell_props(PT_AttrPropIndex api, bo
 		sBot = UT_String_sprintf("%d",iBot);
 		UT_String_setProperty(sCellProps,sBotAttach,sBot);
 	}
-	UT_DEBUGMSG(("Cell props are %s \n",sCellProps.c_str()));
+	xxx_UT_DEBUGMSG(("Cell props are %s \n",sCellProps.c_str()));
 	m_pie->_rtf_open_brace();
 	m_pie->_rtf_keyword("*");
 	m_pie->_rtf_keyword("abicellprops ",sCellProps.c_str());
@@ -2691,14 +2691,14 @@ void s_RTF_ListenerWriteDoc::_open_cell(PT_AttrPropIndex api)
 	UT_sint32 iOldRow = m_iTop;
 	UT_sint32 i =0;
 	UT_sint32 iOldRight = m_iRight;
-	UT_DEBUGMSG(("Setting cell API 1 NOW!!!!!!!!!!!!!!!!! %d \n",api));
+	xxx_UT_DEBUGMSG(("Setting cell API 1 NOW!!!!!!!!!!!!!!!!! %d \n",api));
 	PT_AttrPropIndex prevAPI = api;
 	m_Table.OpenCell(api);
 	bool bNewRow = false;
-	UT_DEBUGMSG(("iOldRow %d newTop %d \n",iOldRow,m_Table.getTop()));
+	xxx_UT_DEBUGMSG(("iOldRow %d newTop %d \n",iOldRow,m_Table.getTop()));
 	if(	(m_Table.getLeft() < iOldRight) || m_bNewTable)
 	{
-		UT_DEBUGMSG(("NEW ROW DETECTED !!!!!!!!!!!!!!!!!\n"));
+		xxx_UT_DEBUGMSG(("NEW ROW DETECTED !!!!!!!!!!!!!!!!!\n"));
 		if(m_bNewTable)
 		{
 			m_pie->_rtf_open_brace();
@@ -2763,7 +2763,7 @@ void s_RTF_ListenerWriteDoc::_open_cell(PT_AttrPropIndex api)
 //
 // reset api. It may have been screwed in _newRow
 //
-	UT_DEBUGMSG(("Setting cell API 1 NOW!!!!!!!!!!!!!!!!! %d \n",api));
+	xxx_UT_DEBUGMSG(("Setting cell API 1 NOW!!!!!!!!!!!!!!!!! %d \n",api));
 	m_Table.OpenCell(api);
 	if(bNewRow)
 	{
@@ -2785,7 +2785,7 @@ void s_RTF_ListenerWriteDoc::_open_cell(PT_AttrPropIndex api)
 		{
 			for(i = 0; i < m_Table.getLeft(); i++)
 			{
-				UT_DEBUGMSG(("Writing nestcell in wrong spot 1 \n"));
+				xxx_UT_DEBUGMSG(("Writing nestcell in wrong spot 1 \n"));
 				m_pie->_rtf_keyword("nestcell");
 			}
 		}
@@ -2815,7 +2815,7 @@ void s_RTF_ListenerWriteDoc::_open_cell(PT_AttrPropIndex api)
 			{
 				for(i = m_iRight; i < m_Table.getLeft(); i++)
 				{
-					UT_DEBUGMSG(("Writing nestcell in wrong spot 2 \n"));
+					xxx_UT_DEBUGMSG(("Writing nestcell in wrong spot 2 \n"));
 					UT_sint32 iRight = getRightOfCell(m_Table.getCurRow(),i);
 					if(iRight == (i +1))
 					{
@@ -2838,13 +2838,13 @@ void s_RTF_ListenerWriteDoc::_open_cell(PT_AttrPropIndex api)
  */
 UT_sint32  s_RTF_ListenerWriteDoc::getRightOfCell(UT_sint32 row,UT_sint32 col)
 {
-	PL_StruxDocHandle sdhCell = m_pDocument->getCellSDHFromRowCol(m_Table.getTableSDH(),true,0xffffffff,row,col);
+	PL_StruxDocHandle sdhCell = m_pDocument->getCellSDHFromRowCol(m_Table.getTableSDH(),true,PD_MAX_REVISION,row,col);
 	if(sdhCell == NULL)
 	{
 		return -1;
 	}
 	const char * szRight;
-	m_pDocument->getPropertyFromSDH(sdhCell,true,0xffffffff,"right-attach",&szRight);
+	m_pDocument->getPropertyFromSDH(sdhCell,true,PD_MAX_REVISION,"right-attach",&szRight);
 	UT_sint32 iRight = atoi(szRight);
 	return iRight;
 }
@@ -2982,10 +2982,11 @@ void s_RTF_ListenerWriteDoc::_newRow(void)
 	for(i=0; i < m_Table.getNumCols(); i = iNext)
 	{
 		m_Table.setCellRowCol(row,i);
-		UT_DEBUGMSG(("SEVIOR: set to row %d i %d left %d right %d \n",row,i,m_Table.getLeft(),m_Table.getRight()));
+		xxx_UT_DEBUGMSG(("SEVIOR: set to row %d i %d left %d right %d \n",row,i,m_Table.getLeft(),m_Table.getRight()));
 		if(m_Table.getRight() <= i)
 		{
-			PL_StruxDocHandle cellSDH = m_pDocument->getCellSDHFromRowCol(m_Table.getTableSDH(),true,0xffffffff,row,i);
+			PL_StruxDocHandle cellSDH = m_pDocument->getCellSDHFromRowCol(m_Table.getTableSDH(),true,PD_MAX_REVISION,
+																		  row,i);
 			UT_ASSERT_HARMLESS(cellSDH);
 			if(cellSDH)
 			{
@@ -3159,7 +3160,7 @@ void s_RTF_ListenerWriteDoc::_export_AbiWord_Table_props(PT_AttrPropIndex api)
 	UT_String sTableProps;
 	sTableProps.clear();
 	_fillTableProps(api,sTableProps);
-	UT_DEBUGMSG(("Table props are %s \n",sTableProps.c_str()));
+	xxx_UT_DEBUGMSG(("Table props are %s \n",sTableProps.c_str()));
 	m_pie->_rtf_keyword("abitableprops ",sTableProps.c_str());
 	m_pie->_rtf_close_brace();
 }
@@ -3471,8 +3472,10 @@ void s_RTF_ListenerWriteDoc::_open_table(PT_AttrPropIndex api,bool bIsCell)
 // Export the AbiWord table Properties as RTF extension
 //
 	_export_AbiWord_Table_props(api);
+#if 1 //#TF
 	m_pie->_rtf_keyword("par");
-
+#endif
+	
 	if(m_Table.getNestDepth() > 1)
 	{
 		m_pie->_rtf_open_brace();
@@ -3643,50 +3646,63 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 
 			if(bHeader)
 			{
+				m_bInBlock = false;
 				m_pie->exportHdrFtr("header",pszHeaderID,"headerl");
 			}
 			if(bHeaderEven)
 			{
+				m_bInBlock = false;
 				m_pie->exportHdrFtr("header-even",pszHeaderEvenID,"headerr");
 			}
 			else if(bHeader)
 			{
+				m_bInBlock = false;
 				m_pie->exportHdrFtr("header",pszHeaderID,"headerr");
 			}
 			if(bHeaderFirst)
 			{
+				m_bInBlock = false;
 				m_pie->exportHdrFtr("header-first",pszHeaderFirstID,"headerf");
 			}
 			if(bFooter)
 			{
+				m_bInBlock = false;
 				m_pie->exportHdrFtr("footer",pszFooterID,"footerl");
 			}
 			if(bFooterEven)
 			{
+				m_bInBlock = false;
 				m_pie->exportHdrFtr("footer-even",pszFooterEvenID,"footerr");
 			}
 			else if(bFooter)
 			{
+				m_bInBlock = false;
 				m_pie->exportHdrFtr("footer",pszFooterID,"footerr");
 			}
 			if(bFooterFirst)
 			{
+				m_bInBlock = false;
 				m_pie->exportHdrFtr("footer-first",pszFooterFirstID,"footerf");
 			}
 			_closeSpan();
+#if 0 // #TF
 			_closeBlock();
+#endif
 			_closeSection();
 			_setTabEaten(false);
 
 			m_sdh = sdh;
 			_rtf_open_section(pcr->getIndexAP());
+			m_bInBlock = false;
 			return true;
 		}
 
 	case PTX_SectionHdrFtr:
 		{
 			_closeSpan();
+#if 0 //#TF
 			_closeBlock();
+#endif
 			_closeSection();
 			_setTabEaten(false);
 			return false;
@@ -3723,31 +3739,36 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 	    {
 			_closeSpan();
 			m_bOpennedFootnote = true;
-			_closeBlock();
+
+			// we set m_bInBlock to false to prevent issue of \par keyword; the block
+			// which gets inserted into the footnote resets this into the normal state, so
+			// that when we exit the footnote section, we will be again in block and the
+			// block that contains the footnote will get closed as normal
+			m_bInBlock = false;
 			m_apiSavedBlock = m_apiThisBlock;
 			m_sdhSavedBlock = m_sdh;
 			_setTabEaten(false);
 			m_sdh = sdh;
 			m_pie->_rtf_open_brace();
 			m_pie->_rtf_keyword("footnote");
-			UT_DEBUGMSG(("_rtf_listenerWriteDoc: Openned Footnote \n"));
+			xxx_UT_DEBUGMSG(("_rtf_listenerWriteDoc: Openned Footnote \n"));
 			return true;
 		}
 	case PTX_EndFootnote:
 	    {
 			_closeSpan();
-			_closeBlock();
 			_setTabEaten(false);
 			m_sdh = m_sdhSavedBlock;
 			m_apiThisBlock = m_apiSavedBlock;
 			m_pie->_rtf_close_brace();
-			UT_DEBUGMSG(("_rtf_listenerWriteDoc: Closed Footnote \n"));
+			xxx_UT_DEBUGMSG(("_rtf_listenerWriteDoc: Closed Footnote \n"));
 			return true;
 		}
 	case PTX_SectionFrame:
 	    {
 			_closeSpan();
-			_closeBlock();
+			// see comments under case PTX_SectionFootnote:
+			m_bInBlock = false;
 			_setTabEaten(false);
 			m_sdh = NULL;
 			_openFrame(pcr->getIndexAP());
@@ -3758,7 +3779,6 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 	    {
 
 			_closeSpan();
-			_closeBlock();
 			_setTabEaten(false);
 			m_sdh = sdh;
 			_closeFrame();
@@ -3767,7 +3787,9 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 	case PTX_SectionTOC:
 	    {
 			_closeSpan();
-			_closeBlock();
+
+			// see comments under case PTX_SectionFootnote:
+			m_bInBlock = false;
 			_setTabEaten(pcr->getIndexAP());
 			m_sdh = sdh;
 			UT_DEBUGMSG(("_rtf_listenerWriteDoc: Found TOC \n"));
@@ -3778,7 +3800,6 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 	    {
 
 			_closeSpan();
-			_closeBlock();
 			_setTabEaten(false);
 			m_sdh = NULL;
 			return true;
@@ -3787,7 +3808,9 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 	    {
 			_closeSpan();
 			m_bOpennedFootnote = true;
-			_closeBlock();
+
+			// see comments under case PTX_SectionFootnote:
+			m_bInBlock = false;
 			m_apiSavedBlock = m_apiThisBlock;
 			m_sdhSavedBlock = m_sdh;
 			_setTabEaten(false);
@@ -3795,34 +3818,37 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 			m_pie->_rtf_open_brace();
 			m_pie->_rtf_keyword("footnote");
 			m_pie->_rtf_keyword("ftnalt");
-			UT_DEBUGMSG(("_rtf_listenerWriteDoc: Openned Endnote \n"));
+			xxx_UT_DEBUGMSG(("_rtf_listenerWriteDoc: Openned Endnote \n"));
 			return true;
 		}
 	case PTX_EndEndnote:
 	    {
 			_closeSpan();
-			_closeBlock();
+
 			_setTabEaten(false);
 			m_sdh = m_sdhSavedBlock;
 			m_apiThisBlock = m_apiSavedBlock;
 			m_pie->_rtf_close_brace();
-			UT_DEBUGMSG(("_rtf_listenerWriteDoc: Closed Endnote \n"));
+			xxx_UT_DEBUGMSG(("_rtf_listenerWriteDoc: Closed Endnote \n"));
 			return true;
 		}
 	case PTX_SectionTable:
 	    {
 			_closeSpan();
-			_closeBlock();
 			_setTabEaten(false);
 			m_sdh = sdh;
 			_open_table(pcr->getIndexAP());
-			UT_DEBUGMSG(("_rtf_listenerWriteDoc: openned table \n"));
+			xxx_UT_DEBUGMSG(("_rtf_listenerWriteDoc: openned table \n"));
 			return true;
 		}
 	case PTX_SectionCell:
 	    {
 			_closeSpan();
-			_closeBlock();
+			// in rtf cell is a block, while in AW cell contains a block
+			// in order to avoid a superfluous paragraph marker we will pretend that we
+			// are not in a block
+			// see comments under case PTX_SectionFootnote:
+			m_bInBlock = false;
 			_setTabEaten(false);
 			m_sdh = sdh;
 			_open_cell(pcr->getIndexAP());
@@ -3831,7 +3857,7 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 	case PTX_EndTable:
 	    {
 			_closeSpan();
-			_closeBlock();
+			m_bInBlock = false;
 			_setTabEaten(false);
 			m_sdh = sdh;
 			_close_table();
@@ -3841,7 +3867,7 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 	    {
 
 			_closeSpan();
-			_closeBlock();
+			m_bInBlock = false;
 			_setTabEaten(false);
 			m_sdh = sdh;
 			_close_cell();
@@ -3855,8 +3881,9 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 			_setTabEaten(false);
 			m_sdh = sdh;
 			_rtf_open_block(pcr->getIndexAP());
+			m_bInBlock = true;
 			m_bBlankLine = true;	
-			UT_DEBUGMSG(("_rtf_listenerWriteDoc: openned block \n"));
+			xxx_UT_DEBUGMSG(("_rtf_listenerWriteDoc: openned block \n"));
 		return true;
 		}
 
@@ -4224,10 +4251,13 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 		if(listid != 0)
 		{
 			fl_AutoNum * pAuto = m_pDocument->getListByID(listid);
-			szAbiListDelim = pAuto->getDelim();
-			szAbiListDecimal = pAuto->getDecimal();
-			UT_String_sprintf(szAbiStartValue,"%i",pAuto->getStartValue32());
-			UT_String_sprintf(szLevel,"%i",pAuto->getLevel());
+			if(pAuto)
+			{
+				szAbiListDelim = pAuto->getDelim();
+				szAbiListDecimal = pAuto->getDecimal();
+				UT_String_sprintf(szAbiStartValue,"%i",pAuto->getStartValue32());
+				UT_String_sprintf(szLevel,"%i",pAuto->getLevel());
+			}
 		}
 	}
 	szListStyle = PP_evalProperty("list-style",pSpanAP,pBlockAP,pSectionAP,m_pDocument,true);
@@ -4235,37 +4265,25 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 
 	m_pie->_rtf_nl();
 
-	if (m_bJustStartingSection)			// 'par' is a delimiter, rather than a plain start.
-		m_bJustStartingSection = false;
-
-	else
+	// 'par' is a delimiter, rather than a plain start.
+	// NO! par is \r and closes a paragraph, not opens it
+	// also, block-level character properties are applied to \par so it really matters
+	// that gets associated with the correct paragraph
+	 
+	m_bJustStartingSection = false;
+	m_bOpennedFootnote = false;
+	
+	if(m_Table.getNestDepth() > 0 && m_Table.isCellJustOpenned())
 	{
-		// begin a new paragraph. The previous
-		// definitions get applied now.
-		bool bJustOpennedCell = false;
-		if(m_Table.getNestDepth() > 0)
-		{
-			bJustOpennedCell = m_Table.isCellJustOpenned();
-		}
-//		if(!m_bOpennedFootnote && (!bJustOpennedCell || (m_Table.getNestDepth()==0)))
-		if(!m_bOpennedFootnote && !bJustOpennedCell && !m_bJustOpennedFrame)
-		{
-			m_pie->_rtf_keyword("par");
-		}
-		else if(m_bOpennedFootnote)
-		{
-			m_bOpennedFootnote = false;
-		}
-		else if(bJustOpennedCell)
-		{
-			m_Table.setCellJustOpenned(false);
-		}
-		if(m_bStartedList && !m_bInFrame)
-		{
-			m_pie->_rtf_close_brace();
-		}
-		m_bStartedList = false;
+		m_Table.setCellJustOpenned(false);
 	}
+	
+	if(m_bStartedList && !m_bInFrame)
+	{
+		m_pie->_rtf_close_brace();
+	}
+	m_bStartedList = false;
+		
 	m_bJustOpennedFrame = false;
 	UT_uint32 id = 0;
 	if(szListid != NULL)
@@ -4401,7 +4419,12 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 	}
 ///
 /// OK we need to output the char props if there is a list here
-///
+	// no, we must not output character properties here, because the properties that are
+	// output here will apply to everyting that will follow in this paragraph: see bug 5693
+	// -- I am really not sure what the rationale for the char props output here was, so
+	// if commenting this out creates some other problem, please let me know. Tomas, Sep
+	// 2, 2004
+#if 0 //#TF
 	if(id != 0)
 	{
 		const PP_AttrProp * pSpanAP = NULL;
@@ -4412,7 +4435,7 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 		m_pDocument->getAttrProp(m_apiThisBlock,&pBlockAP);
 		m_pie->_write_charfmt(s_RTF_AttrPropAdapter_AP(pSpanAP, pBlockAP, pSectionAP, m_pDocument));
 	}
-
+#endif
 	///
 	/// OK if there is list info in this paragraph we encase it inside
 	/// the {\*\abilist..} extension
@@ -4651,6 +4674,8 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 		m_pie->_rtf_keyword("keepn");
 
 	m_pie->_write_tabdef(szTabStops);
+
+	m_pie->_output_revision(s_RTF_AttrPropAdapter_AP(pSpanAP, pBlockAP, pSectionAP, m_pDocument),true);
 }
 
 //////////////////////////////////////////////////////////////////

@@ -230,13 +230,7 @@ void fp_Line::genOverlapRects(UT_Rect & recLeft,UT_Rect & recRight)
 	recRight.top = pRec->top;
 	recLeft.height = pRec->height;
 	recRight.height = pRec->height;
-	if(!isWrapped())
-	{
-		delete pRec;
-		recLeft.width = 0;
-		recRight.width = 0;
-		return;
-	}
+
 	UT_sint32 iLeftX = m_pBlock->getLeftMargin();
 	UT_sint32 iMaxWidth = getContainer()->getWidth();
 	UT_BidiCharType iBlockDir = m_pBlock->getDominantDirection();
@@ -261,19 +255,15 @@ void fp_Line::genOverlapRects(UT_Rect & recLeft,UT_Rect & recRight)
 	fp_Line * pNext = static_cast<fp_Line *>(getNext());
 	if(pNext && pNext->isSameYAsPrevious())
 	{
-		recRight.width = pNext->getX() - getX() - getMaxWidth();
+		recRight.width =  pNext->getX() - (getX() + getMaxWidth());
 	}
 	else
 	{
 		iMaxWidth -= m_pBlock->getRightMargin();
 		recRight.width = iMaxWidth +xdiff - recRight.left;
 	}
-	UT_ASSERT(recLeft.width >= 0);
-	UT_ASSERT(recRight.width >= 0);
-	if((recLeft.width < 3) && (recRight.width < 3))
-	{
-		setWrapped(false);
-	}
+//	UT_ASSERT(recLeft.width >= 0);
+//	UT_ASSERT(recRight.width >= 0);
 	delete pRec;
 }
 
@@ -362,6 +352,13 @@ fp_Page * fp_Line::getPage(void)
 	}
 }
 
+bool fp_Line::canContainPoint() const
+{
+	if(!m_pBlock)
+		return false;
+
+	return m_pBlock->canContainPoint();
+}
 
 /*!
  * Returns true if this is the first line in the block.
@@ -386,6 +383,8 @@ void fp_Line::setMaxWidth(UT_sint32 iMaxWidth)
 		iMaxWidth = 60;
 	}
 	m_iMaxWidth = iMaxWidth;
+	m_iClearToPos = iMaxWidth;
+	m_iClearLeftOffset = getDescent();
 }
 
 void fp_Line::setContainer(fp_Container* pContainer)
@@ -414,7 +413,10 @@ void fp_Line::setContainer(fp_Container* pContainer)
 	{
 		return;
 	}
-	setMaxWidth(pContainer->getWidth());
+	if(m_iMaxWidth  == 0 || (pContainer->getWidth() < m_iMaxWidth))
+	{
+		setMaxWidth(pContainer->getWidth());
+	}
 }
 
 UT_sint32 fp_Line::getWidthToRun(fp_Run * pLastRun)
@@ -783,7 +785,7 @@ void fp_Line::setAssignedScreenHeight(UT_sint32 iHeight)
 
   \see fp_Column::layout, fp_Line::setAssignedScreenHeight
 */
-void fp_Line::recalcHeight()
+void fp_Line::recalcHeight(fp_Run * pLastRun)
 {
 	UT_sint32 count = m_vecRuns.getItemCount();
 	UT_sint32 i;
@@ -793,13 +795,21 @@ void fp_Line::recalcHeight()
 
 	UT_sint32 iMaxImage =0;
 	UT_sint32 iMaxText = 0;
+	fp_Line * pPrev = static_cast<fp_Line *>(getPrev());
+	if(pPrev && isSameYAsPrevious())
+	{
+		iMaxAscent = pPrev->getAscent();
+		iMaxDescent = pPrev->getDescent();
+		iMaxText = pPrev->getHeight();
+	}
 	bool bSetByImage = false;
-	for (i=0; i<count; i++)
+	fp_Run* pRun = m_vecRuns.getNthItem(0);
+	for (i=0; (i<count && (pRun != pLastRun)); i++)
 	{
 		UT_sint32 iAscent;
 		UT_sint32 iDescent;
 
-		fp_Run* pRun = m_vecRuns.getNthItem(i);
+		pRun = m_vecRuns.getNthItem(i);
 
 		iAscent = pRun->getAscent();
 		iDescent = pRun->getDescent();
@@ -866,25 +876,24 @@ void fp_Line::recalcHeight()
 			iNewHeight = UT_MAX(iMaxAscent+static_cast<UT_sint32>(iMaxDescent*dLineSpace + 0.5), static_cast<UT_sint32>(dLineSpace));
 		}
 	}
-	fp_Line * pPrev = static_cast<fp_Line *>(getPrev());
 	if(isSameYAsPrevious() && pPrev)
 	{
 		if(iNewHeight > pPrev->getHeight())
 		{
+			getBlock()->forceSectionBreak();
 			pPrev->clearScreen();
 			pPrev->setHeight(iNewHeight);
 			pPrev->setAscent(iNewAscent);
 			pPrev->setDescent(iNewDescent);
 			pPrev->setScreenHeight(-1);
-			pPrev = static_cast<fp_Line *>(getPrev());
-			while(pPrev && pPrev->isSameYAsPrevious())
+			while(pPrev->getPrev() && pPrev->isSameYAsPrevious())
 			{
+				pPrev = static_cast<fp_Line *>(pPrev->getPrev());
 				pPrev->clearScreen();
 				pPrev->setHeight(iNewHeight);
 				pPrev->setAscent(iNewAscent);
 				pPrev->setDescent(iNewDescent);
 				pPrev->setScreenHeight(-1);
-				pPrev = static_cast<fp_Line *>(getPrev());
 			}
 			return;
 		}
@@ -907,8 +916,8 @@ void fp_Line::recalcHeight()
 		)
 	{
 		clearScreen();
-
-		m_iHeight = iNewHeight;
+		getBlock()->forceSectionBreak();
+		setHeight(iNewHeight);
 		m_iScreenHeight = -1;	// undefine screen height
 		m_iAscent = iNewAscent;
 		m_iDescent = iNewDescent;
@@ -1672,6 +1681,12 @@ inline void fp_Line::_calculateWidthOfRun(	UT_sint32 &iX,
 					iTabType =  FL_TAB_LEFT;
 					iPos =  getBlock()->getTOCTabPosition(10);
 					bRes = true;
+				}
+				else if(pTabRun->isTOCTabListLabel())
+				{
+					iTabLeader = FL_LEADER_NONE;
+					iTabType =  FL_TAB_LEFT;
+					bRes =  findNextTabStop(iX, iPos, iTabType, iTabLeader);
 				}
 
 				// now find the tabstop for this tab, depending on whether we
@@ -2471,17 +2486,26 @@ UT_sint32 fp_Line::getMarginBefore(void) const
 	{
 		fl_ContainerLayout * pPrevC = getBlock()->getPrev();
 		UT_sint32 iBottomMargin = 0;
-		if(pPrevC->getContainerType() == FL_CONTAINER_BLOCK)
+		bool bLoop = true;
+		while(bLoop)
 		{
-			iBottomMargin = static_cast<fl_BlockLayout *>(pPrevC)->getBottomMargin();
-		}
-		else if(pPrevC->getContainerType() == FL_CONTAINER_TABLE)
-		{
-			iBottomMargin = static_cast<fl_TableLayout *>(pPrevC)->getBottomOffset();
-		}
-		else
-		{
-			iBottomMargin = 0;
+			if(pPrevC->getContainerType() == FL_CONTAINER_BLOCK)
+			{
+				bLoop = false;
+				iBottomMargin = static_cast<fl_BlockLayout *>(pPrevC)->getBottomMargin();
+			}
+			else if(pPrevC->getContainerType() == FL_CONTAINER_TABLE)
+			{
+				bLoop = false;
+				iBottomMargin = static_cast<fl_TableLayout *>(pPrevC)->getBottomOffset();
+			}
+			else
+			{
+				if(pPrevC->getPrev())
+				{
+					pPrevC = pPrevC->getPrev();
+				}
+			}
 		}
 		UT_sint32 iNextTopMargin = getBlock()->getTopMargin();
 
@@ -2500,14 +2524,30 @@ UT_sint32 fp_Line::getMarginAfter(void) const
 		fl_ContainerLayout * pNext = getBlock()->getNext();
 		if (!pNext)
 			return 0;
-		if(pNext->getContainerType() != FL_CONTAINER_BLOCK)
-		{
-			return getBlock()->getBottomMargin();
-		}
+
 		UT_sint32 iBottomMargin = getBlock()->getBottomMargin();
 
-		UT_sint32 iNextTopMargin = static_cast<fl_BlockLayout *>(pNext)->getTopMargin();
-
+		UT_sint32 iNextTopMargin = 0;
+		bool bLoop = true;
+		while(bLoop)
+		{
+			if(pNext->getContainerType() == FL_CONTAINER_BLOCK)
+			{
+				iNextTopMargin = static_cast<fl_BlockLayout *>(pNext)->getTopMargin();
+				bLoop = false;
+			}
+			else
+			{
+				if(pNext->getNext())
+				{
+					pNext = pNext->getNext();
+				}
+				else
+				{
+					bLoop = false;
+				}
+			}
+		}
 		UT_sint32 iMargin = UT_MAX(iBottomMargin, iNextTopMargin);
 
 		return iMargin;
@@ -2744,7 +2784,11 @@ void fp_Line::recalcMaxWidth(bool bDontClearIfNeeded)
 	{
 		UT_ASSERT(iMaxWidth <= getPage()->getWidth());
 	}
-	setMaxWidth(iMaxWidth);
+	if(iMaxWidth < 60)
+	{
+		iMaxWidth = 60;
+	}
+	m_iMaxWidth = iMaxWidth;
 }
 
 fp_Container*	fp_Line::getNextContainerInSection(void) const
@@ -3316,9 +3360,8 @@ UT_sint32 fp_Line::_createMapOfRuns()
 			}
 
 			UT_BidiCharType iBlockDir = m_pBlock->getDominantDirection();
-			GR_Graphics * pG = m_pBlock->getDocLayout()->getGraphics();
 
-			bool bRet = UT_bidiMapLog2Vis(s_pPseudoString, count, iBlockDir,
+			/*bool bRet =*/ UT_bidiMapLog2Vis(s_pPseudoString, count, iBlockDir,
 										  s_pMapOfRunsL2V, s_pMapOfRunsV2L, s_pEmbeddingLevels);
 
 			 //the only other thing that remains is to pass the visual

@@ -32,6 +32,7 @@
 #include "ut_bytebuf.h"
 #include "ut_timer.h"
 #include "ut_Language.h"
+#include "ut_uuid.h"
 
 #include "xav_View.h"
 #include "fl_DocLayout.h"
@@ -2951,11 +2952,11 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 	UT_uint32 iRealDeleteCount = 0;
 
 
-	// Signal PieceTable Change
-	_saveAndNotifyPieceTableChange();
-
 	if (!isSelectionEmpty())
 	{
+
+		// Signal PieceTable Change
+		_saveAndNotifyPieceTableChange();
 		m_pDoc->disableListUpdates();
 
 		_deleteSelection();
@@ -3032,28 +3033,57 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 				fl_FootnoteLayout * pFL = getClosestFootnote(getPoint());
 				count += pFL->getLength();
 			}
+			else if(isInFootnote(getPoint()))
+			{
+				if(!isInFootnote(getPoint() - count))
+				{
+					return;
+				}
+				else if(!isInFootnote(getPoint() -2))
+				{
+//
+// Don't delete the paragraph strux in footnote
+//
+					return;
+				}
+				else if(!isInFootnote(getPoint() -3))
+				{
+//
+// Don't delete the paragraph strux in footnote
+//
+					return;
+				}
+			}
 			else if(!isInEndnote() && isInEndnote(getPoint() - count))
 			{
 				fl_EndnoteLayout * pEL = getClosestEndnote(getPoint());
 				count += pEL->getLength();
 			}
+			else if(isInEndnote(getPoint()))
+			{
+				if(!isInEndnote(getPoint() - count))
+				{
+					return;
+				}
+				else if(!isInEndnote(getPoint() -2))
+				{
+//
+// Don't delete the paragraph strux in endnote
+//
+					return;
+				}
+				else if(!isInEndnote(getPoint() -3))
+				{
+//
+// Don't delete the paragraph strux in endnote
+//
+					return;
+				}
+
+			}
 			if(m_pDoc->isTOCAtPos(getPoint()-2))
 			{
 				count +=2;
-			}
-			if(isInFootnote() && !isInFootnote(getPoint() - count))
-			{
-//
-// Can't delete a footnote strux. Bail out.
-//
-				return;
-			}
-			else if(isInEndnote() && !isInEndnote(getPoint() - count))
-			{
-//
-// Can't delete a footnote strux. Bail out.
-//
-				return;
 			}
 		}
 
@@ -3182,6 +3212,9 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 		if(!curBlock)
 			curBlock = _findBlockAtPosition(getPoint());
 
+		// Signal PieceTable Change
+		_saveAndNotifyPieceTableChange();
+
 		if (amt > 0)
 		{
 			m_pDoc->disableListUpdates();
@@ -3208,6 +3241,7 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 				}
 				else if(bisList == true)
 				{
+
 					m_pDoc->deleteSpan(posCur, posCur+amt,NULL, iRealDeleteCount);
 					nBlock->remItemFromList();
 				}
@@ -3253,7 +3287,7 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 		// only if we are deleting forward; if deleting backwards, the
 		// code above already moved the insertion point
 		// Tomas, Oct 28, 2003
-		if(bForward && isMarkRevisions())
+		if(bForward && isMarkRevisions() && iRealDeleteCount)
 		{
 			UT_ASSERT( iRealDeleteCount <= count );
 			_charMotion(bForward,count - iRealDeleteCount);
@@ -3264,7 +3298,7 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
 	_setPoint(getPoint());
-	notifyListeners(AV_CHG_MOTION);
+	notifyListeners(AV_CHG_MOTION | AV_CHG_ALL);
 
 }
 
@@ -3534,6 +3568,12 @@ void FV_View::cmdUndo(UT_uint32 count)
 // Do a complete update coz who knows what happened in the undo!
 //
 	notifyListeners(AV_CHG_ALL);
+	PT_DocPosition posEnd = 0;
+	getEditableBounds(true, posEnd);
+	while(!isPointLegal() && (getPoint() < posEnd))
+	{
+		_charMotion(true,1);
+	}
 	setCursorToContext();
 
 
@@ -3582,10 +3622,16 @@ void FV_View::cmdRedo(UT_uint32 count)
 //
 // Do a complete update coz who knows what happened in the undo!
 //
-	notifyListeners(AV_CHG_ALL);
+	PT_DocPosition posEnd = 0;
+	getEditableBounds(true, posEnd);
+	while(!isPointLegal() && (getPoint() < posEnd))
+	{
+		_charMotion(true,1);
+	}
 	setCursorToContext();
 
 	_updateInsertionPoint();
+	notifyListeners(AV_CHG_ALL);
 }
 
 UT_Error FV_View::cmdSave(void)
@@ -3913,7 +3959,29 @@ UT_Error FV_View::cmdInsertHyperlink(const char * szName)
 	// I see no obvious need for hyperlinks to span more than a single block
 	fl_BlockLayout * pBl1 = _findBlockAtPosition(posStart);
 	fl_BlockLayout * pBl2 = _findBlockAtPosition(posEnd);
-
+//
+// Handle corner case of selection from outside the left column
+//
+	if(isInFootnote(posStart))
+	{
+		if((pBl1 != NULL) && (pBl1->getPosition(true) == posStart))
+		{
+			if(posEnd > posStart+1)
+			{
+				posStart++;
+			}
+		}
+	}
+	if(isInEndnote(posStart))
+	{
+		if((pBl1 != NULL) && (pBl1->getPosition(true) == posStart))
+		{
+			if(posEnd > posStart+1)
+			{
+				posStart++;
+			}
+		}
+	}
 	if(pBl1 != pBl2)
 	{
 		XAP_Frame * pFrame = static_cast<XAP_Frame *>(getParentData());
@@ -3921,6 +3989,31 @@ UT_Error FV_View::cmdInsertHyperlink(const char * szName)
 
 		pFrame->showMessageBox(AP_STRING_ID_MSG_HyperlinkCrossesBoundaries, XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK);
 
+		return false;
+	}
+	if(isTOCSelected())
+	{
+//
+// Fixme place message box here
+//
+		return false;
+
+	}
+	PT_DocPosition posNext = 0;
+	if(pBl1->getNext())
+	{
+		posNext = pBl1->getNext()->getPosition(true);
+	}
+	else
+	{
+		posNext = pBl1->getPosition(true) + pBl1->getLength();
+	}
+	if((posStart <= pBl1->getPosition(true)) || (posEnd > posNext))
+	{
+		XAP_Frame * pFrame = static_cast<XAP_Frame *>(getParentData());
+		UT_ASSERT((pFrame));
+
+		pFrame->showMessageBox(AP_STRING_ID_MSG_HyperlinkCrossesBoundaries, XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK);
 		return false;
 	}
 
@@ -4016,6 +4109,56 @@ UT_Error FV_View::cmdInsertBookmark(const char * szName)
 		posStart = 2;
 	
 	posEnd++;
+
+	fl_BlockLayout * pBL1 =_findBlockAtPosition(posStart);
+	fl_BlockLayout * pBL2 =_findBlockAtPosition(posEnd);
+//
+// Handle corner case of selection from outside the left column
+//
+	if((pBL1!= NULL) && isInFootnote(posStart) && (pBL1->getPosition(true) == posStart))
+	{
+		if(posEnd > posStart+1)
+		{
+			posStart++;
+		}
+	}
+	if((pBL1 != NULL) && isInEndnote(posStart) && (pBL1->getPosition(true) == posStart))
+	{
+		if(posEnd > posStart+1)
+		{
+			posStart++;
+		}
+	}
+	if(pBL1 != pBL2)
+	{
+//
+// Fixme put message boxes here
+//
+		_restorePieceTableState();
+		return false;
+	}
+	if(isTOCSelected())
+	{
+//
+// Fixme put message boxes here
+//
+		_restorePieceTableState();
+		return false;
+	}
+	PT_DocPosition posNext = 0;
+	if(pBL1->getNext())
+	{
+		posNext = pBL1->getNext()->getPosition(true);
+	}
+	else
+	{
+		posNext = pBL1->getPosition(true) + pBL1->getLength();
+	}
+	if((posStart <= pBL1->getPosition(true)) || (posEnd > posNext))
+	{
+		_restorePieceTableState();
+		return false;
+	}
 
 	if(!m_pDoc->isBookmarkUnique(static_cast<const XML_Char*>(szName)))
 	{
@@ -4154,7 +4297,7 @@ UT_Error FV_View::cmdInsertField(const char* szName, const XML_Char ** extra_att
 	return bResult;
 }
 
-UT_Error FV_View::cmdInsertGraphic(FG_Graphic* pFG, const char* pszName)
+UT_Error FV_View::cmdInsertGraphic(FG_Graphic* pFG)
 {
 	bool bDidGlob = false;
 
@@ -4169,21 +4312,14 @@ UT_Error FV_View::cmdInsertGraphic(FG_Graphic* pFG, const char* pszName)
 	}
 
 	/*
-	  First, find a unique name for the data item.
+	  Create a unique identifier for the data item.
 	*/
-	char *szName = new char [strlen (pszName) + 64 + 1];
-	UT_uint32 ndx = 0;
-	for (;;)
-	{
-		sprintf(szName, "%s_%d", pszName, ndx);
-		if (!m_pDoc->getDataItemDataByName(szName, NULL, NULL, NULL))
-		{
-			break;
-		}
-		ndx++;
-	}
-
-	UT_Error errorCode = _insertGraphic(pFG, szName);
+	UT_UUID *uuid = m_pDoc->getNewUUID();
+	UT_return_val_if_fail(uuid != NULL, UT_ERROR);
+	UT_UTF8String s;
+	uuid->toString(s);
+		
+	UT_Error errorCode = _insertGraphic(pFG, s.utf8_str());
 
 	if (bDidGlob)
 		m_pDoc->endUserAtomicGlob();
@@ -4192,8 +4328,6 @@ UT_Error FV_View::cmdInsertGraphic(FG_Graphic* pFG, const char* pszName)
 
 	_generalUpdate();
 	_updateInsertionPoint();
-
-	delete [] szName;
 
 	return errorCode;
 }
@@ -4246,7 +4380,7 @@ bool FV_View::cmdInsertMathML(const char * szFileName,PT_DocPosition pos)
  * point given by ipos.
  * This is useful for speficifying images as backgrounds to pages and cells.
  */
-UT_Error FV_View::cmdInsertGraphicAtStrux(FG_Graphic* pFG, const char* pszName, PT_DocPosition iPos, PTStruxType iStruxType)
+UT_Error FV_View::cmdInsertGraphicAtStrux(FG_Graphic* pFG, PT_DocPosition iPos, PTStruxType iStruxType)
 {
 	bool bDidGlob = false;
 
@@ -4254,24 +4388,17 @@ UT_Error FV_View::cmdInsertGraphicAtStrux(FG_Graphic* pFG, const char* pszName, 
 	_saveAndNotifyPieceTableChange();
 
 	/*
-	  First, find a unique name for the data item.
+	  Create a unique identifier for the data item.
 	*/
-	char *szName = new char [strlen (pszName) + 64 + 1];
-	UT_uint32 ndx = 0;
-	for (;;)
-	{
-		sprintf(szName, "%s_%d", pszName, ndx);
-		if (!m_pDoc->getDataItemDataByName(szName, NULL, NULL, NULL))
-		{
-			break;
-		}
-		ndx++;
-	}
+	UT_UUID *uuid = m_pDoc->getNewUUID();
+	UT_return_val_if_fail(uuid != NULL, UT_ERROR);
+	UT_UTF8String s;
+	uuid->toString(s);
 
 	UT_Error errorCode = pFG->insertAtStrux(m_pDoc, 
 											m_pG->getDeviceResolution(),
 											iPos,
-											iStruxType,szName);
+											iStruxType, s.utf8_str());
 	if (bDidGlob)
 		m_pDoc->endUserAtomicGlob();
 
@@ -4279,8 +4406,6 @@ UT_Error FV_View::cmdInsertGraphicAtStrux(FG_Graphic* pFG, const char* pszName, 
 
 	_generalUpdate();
 	_updateInsertionPoint();
-
-	delete [] szName;
 
 	return errorCode;
 }
@@ -4564,6 +4689,7 @@ void FV_View::cmdAcceptRejectRevision(bool bReject, UT_sint32 xPos, UT_sint32 yP
 
 void FV_View::cmdSetRevisionLevel(UT_uint32 i)
 {
+	UT_return_if_fail( i < PD_MAX_REVISION );
 	// first set the same level in Doc; we do this unconditionally,
 	// this way the doc will always save the level the user last used
 	// NB: the doc id and the view id can be differnt if the user
@@ -4723,4 +4849,3 @@ bool FV_View::cmdFindRevision(bool bNext, UT_sint32 xPos, UT_sint32 yPos)
 	
 	return true;
 }
-

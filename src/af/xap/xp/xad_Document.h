@@ -48,7 +48,7 @@ class AD_VersionData
   public:
 
 	// constructor for importers
-	AD_VersionData(UT_uint32 v, UT_String &uuid, time_t start, bool autorev);
+	AD_VersionData(UT_uint32 v, UT_UTF8String &uuid, time_t start, bool autorev);
 	AD_VersionData(UT_uint32 v, const char * uuid, time_t start, bool autorev);
 	
 	// constructor for new entries
@@ -145,10 +145,12 @@ public:
 	virtual bool			undoCmd(UT_uint32 repeatCount) = 0;
 	virtual bool			redoCmd(UT_uint32 repeatCount) = 0;
 
-	virtual UT_Error		saveAs(const char * szFilename, int ieft, const char * props = NULL) = 0;
-	virtual UT_Error		saveAs(const char * szFilename, int ieft, bool cpy, const char * props = NULL) = 0;
-	virtual UT_Error		save(void) = 0;
-
+	UT_Error		        saveAs(const char * szFilename, int ieft, const char * props = NULL);
+	UT_Error		        saveAs(const char * szFilename, int ieft, bool cpy, const char * props = NULL);
+	UT_Error		        save(void);
+		
+public:
+	
 	/**
 	 * Returns the # of seconds since the last save of this file 
 	 */
@@ -214,6 +216,7 @@ public:
 	const UT_GenericVector<AD_Revision*> &         getRevisions() {return m_vRevisions;}
 	UT_uint32           getHighestRevisionId() const;
 	const AD_Revision*  getHighestRevision() const;
+	UT_sint32           getRevisionIndxFromId(UT_uint32 iId) const;
 
 	bool                isMarkRevisions() const{ return m_bMarkRevisions;}
 	bool                isShowRevisions() const{ return m_bShowRevisions;}
@@ -243,8 +246,17 @@ public:
 											 UT_uint32 iLevel) = 0;
 
 	virtual bool        rejectAllHigherRevisions(UT_uint32 iLevel) = 0;
+
+	virtual bool        acceptAllRevisions() = 0;
+	
 	
 protected:
+
+ protected:	
+	virtual UT_Error	_saveAs(const char * szFilename, int ieft, const char * props = NULL) = 0;
+	virtual UT_Error	_saveAs(const char * szFilename, int ieft, bool cpy, const char * props = NULL) = 0;
+	virtual UT_Error	_save(void) = 0;
+
 	void            _purgeRevisionTable();
 	void            _adjustHistoryOnSave();
 	UT_UUID *       _getDocUUID()const {return m_pUUID;};
@@ -255,6 +267,9 @@ protected:
 	void            _setMarkRevisions(bool bMark) {m_bMarkRevisions = bMark;}
 
     bool            _restoreVersion(XAP_Frame * pFrame, UT_uint32 iVersion);
+
+	virtual void    _clearUndo() = 0;
+	
 	
 	virtual ~AD_Document();		//  Use unref() instead.
 
@@ -285,6 +300,7 @@ private:
 	UT_UUID *       m_pUUID;
 	UT_UUID *       m_pNewUUID;
 	bool            m_bDoNotAdjustHistory;
+	bool            m_bAfterFirstSave;
 };
 
 

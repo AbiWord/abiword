@@ -104,6 +104,7 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 			// first retrive the starting and ending fragments
 			pf_Frag * pf1, * pf2;
 			PT_BlockOffset Offset1, Offset2;
+			bool bTableStrux = false;
 
 			if(!getFragsFromPositions(dpos1,dpos2, &pf1, &Offset1, &pf2, &Offset2))
 				return bRet;
@@ -134,17 +135,21 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 					case PTX_Block:
 						iLen = pf_FRAG_STRUX_BLOCK_LENGTH;
 						break;
-					case PTX_SectionEndnote:
 					case PTX_SectionTable:
 					case PTX_SectionCell:
+						bTableStrux = true;
+						// fall through
+					case PTX_SectionEndnote:
 					case PTX_SectionFootnote:
 					case PTX_SectionFrame:
 						bHasEndStrux = true;
 						// fall through ...
-					case PTX_Section:
-					case PTX_SectionHdrFtr:
 					case PTX_EndCell:
 					case PTX_EndTable:
+						bTableStrux = true;
+						// fall through
+					case PTX_Section:
+					case PTX_SectionHdrFtr:
 				    case PTX_EndFootnote:
 				    case PTX_EndEndnote:
 				    case PTX_EndFrame:
@@ -179,7 +184,14 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 				UT_ASSERT(0); // Dunno what this could be
 				break;
 			}
-					 
+
+			if(bTableStrux && !bDeleteTableStruxes)
+			{
+				// skip over this frag
+				dpos1 += iLen;
+				continue;
+			}
+			
 			if(!pAP->getAttribute(name, pRevision))
 				pRevision = NULL;
 
@@ -280,21 +292,22 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 
 			switch (eType)
 			{
+				case pf_Frag::PFT_Object:
 				case pf_Frag::PFT_Text:
 					if(! _realChangeSpanFmt(PTC_AddFmt, dpos1, dposEnd, ppRevAttrib,NULL))
 						return false;
 					break;
 
 				case pf_Frag::PFT_Strux:
-					if(! _realChangeStruxFmt(PTC_AddFmt, dpos1 + iLen, dpos1 + 2*iLen, ppRevAttrib,NULL,eStruxType))
+					// _realChangeStruxFmt() changes the strux
+					// *containing* the given position, hence we pass
+					// it the position immediately after the strux; we
+					// only want the one strux changed, so we pass
+					// identical position in both parameters
+					if(! _realChangeStruxFmt(PTC_AddFmt, dpos1 + iLen, dpos1 + iLen /*2*iLen*/, ppRevAttrib,NULL,eStruxType))
 						return false;
 					break;
-#if 0
-				case pf_Frag::PFT_Object:
-					if(! _realChangeStruxFmt(PTC_AddFmt, dpos1, dposEnd, ppRevAttrib,NULL))
-						return false;
-					break;
-#endif
+
 				default:;
 			}
 
@@ -1018,18 +1031,19 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition & origPos1,
 // First delete the EndTable Strux
 //
 					stDelayStruxDelete->pop(reinterpret_cast<void **>(&pfs));
+					if(m_fragments.areFragsDirty())
+					{
+						m_fragments.cleanFrags();
+					}
 					PT_DocPosition myPos = pfs->getPos();
 					_deleteFormatting(myPos - pfs->getLength(), myPos);
+					UT_DEBUGMSG(("DELeteing EndTable Strux, pos= %d \n",pfs->getPos()));
 					bResult = _deleteStruxWithNotify(myPos, pfs,
 													  &pfNewEnd,
 													  &fragOffsetNewEnd);
 					while(bResult && iTable > 0)
 					{
 						stDelayStruxDelete->pop(reinterpret_cast<void **>(&pfs));
-						if(m_fragments.areFragsDirty())
-						{
-							m_fragments.cleanFrags();
-						}
 						if(pfs->getStruxType() == PTX_SectionTable)
 						{
 							iTable--;

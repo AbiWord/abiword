@@ -107,7 +107,7 @@ public:
 	fp_Page *                   getPage(void);
 
 	virtual void        setWidth(UT_sint32 ){}
-    virtual void        setHeight(UT_sint32) {}
+    virtual void        setHeight(UT_sint32 i) {m_iHeight =i; }
 	virtual UT_sint32   getWidth(void) const { return m_iWidth;}
 	virtual UT_sint32   getDrawingWidth(void) const;
 	UT_sint32           getWidthToRun(fp_Run * pLastRun);
@@ -170,7 +170,7 @@ public:
 	void		align(void);
 	void		layout(void);
 	bool		recalculateFields(UT_uint32 iUpdateCount);
-	void		recalcHeight();
+	void		recalcHeight(fp_Run * pLast = NULL);
 	void		recalcMaxWidth(bool bDontClearIfNeeded = false);
 	void		coalesceRuns(void);
 
@@ -210,6 +210,7 @@ public:
 		{ return m_bIsSameYAsPrevious;}
 	void        genOverlapRects(UT_Rect & recLeft, UT_Rect & recRight);
 
+	bool        canContainPoint() const;
 #ifdef FMT_TEST
 	void		__dump(FILE * fp) const;
 #endif

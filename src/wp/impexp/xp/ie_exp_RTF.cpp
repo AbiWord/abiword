@@ -24,11 +24,13 @@
 #include "ut_misc.h"
 #include "ut_units.h"
 #include "ut_vector.h"
+#include "ut_endian.h"
 #include "pt_Types.h"
 #include "ie_exp_RTF.h"
 #include "pd_Document.h"
 #include "pp_AttrProp.h"
 #include "pp_Property.h"
+#include "pp_Revision.h"
 #include "px_ChangeRecord.h"
 #include "px_CR_Object.h"
 #include "px_CR_Span.h"
@@ -259,9 +261,11 @@ void IE_Exp_RTF::exportHdrFtr(const char * pszHdrFtr , const char * pszHdrFtrID,
 
 // First find the header/footer section and id in the document.
 	m_pListenerWriteDoc->_closeSpan();
+#if 0 //#TF
 	m_pListenerWriteDoc->_closeBlock();
 	m_pListenerWriteDoc->_closeSpan();
 	m_pListenerWriteDoc->_closeSection();
+#endif
 	m_pListenerWriteDoc->_setTabEaten(false);
 
 	PL_StruxDocHandle hdrSDH = getDoc()->findHdrFtrStrux((const XML_Char *) pszHdrFtr,(const XML_Char * ) pszHdrFtrID);
@@ -305,7 +309,9 @@ void IE_Exp_RTF::exportHdrFtr(const char * pszHdrFtr , const char * pszHdrFtrID,
 // Now pump out the contents of the HdrFtr
 //
 	getDoc()->tellListenerSubset(static_cast<PL_Listener *>(m_pListenerWriteDoc),pExportHdrFtr);
+#if 0 //#TF
 	_rtf_keyword("par");
+#endif
 	delete pExportHdrFtr;
 	_rtf_close_brace();
 }
@@ -539,10 +545,10 @@ void IE_Exp_RTF::_rtf_chardata(const char * pbuf, UT_uint32 buflen)
 	const char * current = pbuf;
 	UT_uint32 count = 0;
 
-	UT_DEBUGMSG(("Buffer length = %d \n",buflen));
+	xxx_UT_DEBUGMSG(("Buffer length = %d \n",buflen));
 	if(buflen < 400)
 	{ 
-		UT_DEBUGMSG(("data = %s\n", pbuf));
+		xxx_UT_DEBUGMSG(("data = %s\n", pbuf));
 	}
 	if (m_bLastWasKeyword)
 	{
@@ -557,7 +563,7 @@ void IE_Exp_RTF::_rtf_chardata(const char * pbuf, UT_uint32 buflen)
 	conv = UT_iconv_open("UCS-4", "utf-8");
 	UT_return_if_fail (conv);
 	while (count < buflen) {
-		if (*current > 127) { 
+		if (*current & 0x80) {  // check for non-ASCII value
 			UT_UCS4Char wc;
 			size_t insz, sz;
 			char * dest = (char*)(&wc);
@@ -603,7 +609,7 @@ bool IE_Exp_RTF::_write_rtf_header(void)
 	if (langcode)
 	{
 		const char* cpgname = wvLIDToCodePageConverter(langcode);
-		UT_DEBUGMSG(("Belcon,after wvLIDToCodePageConverter(%d),cpgname=%s\n",langcode,cpgname));
+		xxx_UT_DEBUGMSG(("Belcon,after wvLIDToCodePageConverter(%d),cpgname=%s\n",langcode,cpgname));
 		if (UT_strnicmp(cpgname,"cp",2)==0 && UT_UCS4_isdigit(cpgname[2]))
 		{
 			int cpg;
@@ -628,7 +634,7 @@ bool IE_Exp_RTF::_write_rtf_header(void)
 					wrote_cpg = 1;
 				}
 			}
-			UT_DEBUGMSG(("Belcon:after XAP_EncodingManager::get_instance()->CodepageFromCharset(%s),codepage=%s\n",cpgname,codepage));
+			xxx_UT_DEBUGMSG(("Belcon:after XAP_EncodingManager::get_instance()->CodepageFromCharset(%s),codepage=%s\n",cpgname,codepage));
 		}
 	};
 	if (!wrote_cpg)
@@ -923,6 +929,63 @@ bool IE_Exp_RTF::_write_rtf_header(void)
 //
 	_rtf_keyword("facingp"); // Allow odd-even headers/footers
 	_rtf_keyword("titlepg"); // Allow first page headers/footers
+
+	// revisions stuff
+	const UT_GenericVector<AD_Revision*> & Revs = getDoc()->getRevisions();
+
+	if(Revs.getItemCount())
+	{
+		_rtf_open_brace();
+		_rtf_keyword("*");
+		_rtf_keyword("revtbl");
+		
+		UT_UTF8String s;
+		UT_UCS4String s4;
+
+		// MS Word assumes that the table always starts with author Unknown and it will
+		// not bother to lookup the 0-th author, so we have to insert that dummy entry
+		_rtf_open_brace();
+		_rtf_chardata("Unknown", 7);
+		_rtf_semi();
+		_rtf_close_brace();
+		
+		for(UT_sint32 i = 0; i < Revs.getItemCount(); ++i)
+		{
+			AD_Revision* pRev = Revs.getNthItem(i);
+			if(!pRev)
+			{
+				UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+				continue;
+			}
+
+			s4 = pRev->getDescription();
+
+			// construct author name from our numerical id and comment
+			// (the id guarantees us uniqueness)
+			UT_UTF8String_sprintf(s, "rev %d (%s)",pRev->getId(),s4.utf8_str());
+			_rtf_open_brace();
+			_rtf_chardata(s.utf8_str(),s.byteLength());
+			_rtf_semi();
+			_rtf_close_brace();
+		}
+		
+		_rtf_close_brace();
+	}
+
+	// underline newly inserted text
+	UT_uint32 iRevMode = 0;
+	if(getDoc()->isShowRevisions())
+	{
+		iRevMode = 3;
+	}
+	
+	_rtf_keyword("revprop", iRevMode);
+	
+	if(getDoc()->isMarkRevisions())
+	{
+		_rtf_keyword("revisions");
+	}
+	
 	return (m_error == 0);
 }
 
@@ -1119,8 +1182,8 @@ const XML_Char * IE_Exp_RTF::_getStyleProp(
  */
 void IE_Exp_RTF::_write_charfmt(const s_RTF_AttrPropAdapter & apa)
 {
-	const XML_Char * szStyle = apa.getAttribute(PT_STYLE_ATTRIBUTE_NAME);
-	UT_sint32 iStyle = -1;
+	//const XML_Char * szStyle = apa.getAttribute(PT_STYLE_ATTRIBUTE_NAME);
+	//UT_sint32 iStyle = -1;
 	s_RTF_AttrPropAdapter_Style * pADStyle = NULL;
 #if 0
 	if(szStyle != NULL)
@@ -1221,7 +1284,7 @@ void IE_Exp_RTF::_write_charfmt(const s_RTF_AttrPropAdapter & apa)
 	const XML_Char * szLang = _getStyleProp(pADStyle,&apa,"lang");
 	if ( szLang )
 	  {
-	    UT_DEBUGMSG(("DOM: lang,lid = %s,%d\n", szLang, wvLangToLIDConverter(szLang)));
+	    xxx_UT_DEBUGMSG(("DOM: lang,lid = %s,%d\n", szLang, wvLangToLIDConverter(szLang)));
 	    _rtf_keyword("lang", wvLangToLIDConverter(szLang));
 	  }
 
@@ -1253,6 +1316,13 @@ void IE_Exp_RTF::_write_charfmt(const s_RTF_AttrPropAdapter & apa)
 			_rtf_keyword ("rtlch");
 	}  */
 
+	const XML_Char * szHidden = _getStyleProp(pADStyle,&apa,"display");
+	if(szHidden && *szHidden && !UT_strcmp(szHidden, "none"))
+	{
+		_rtf_keyword ("v");
+	}
+	
+	
 	const XML_Char * szListTag = apa.getProperty("list-tag");
 	if (szListTag && *szListTag)
 	{
@@ -1267,7 +1337,170 @@ void IE_Exp_RTF::_write_charfmt(const s_RTF_AttrPropAdapter & apa)
 	// TODO do something with our font-stretch and font-variant properties
 	// note: we assume that kerning has been turned off at global scope.
 
+	// MUST BE LAST after all other props have been processed
+	_output_revision(apa, false);
 }
+
+void IE_Exp_RTF::_output_revision(const s_RTF_AttrPropAdapter & apa, bool bPara)
+{
+	const XML_Char *szRevisions = apa.getAttribute("revision");
+	if (szRevisions && *szRevisions)
+	{
+		PP_RevisionAttr RA(szRevisions);
+
+		if(!RA.getRevisionsCount())
+		{
+			UT_return_if_fail( UT_SHOULD_NOT_HAPPEN );
+		}
+
+		// for now, we will just dump the lot; later we need to figure out how to deal
+		// with revision conflicts ...
+		for(UT_uint32 i = 0; i < RA.getRevisionsCount(); ++i)
+		{
+			const PP_Revision * pRev = RA.getNthRevision(i); // a revision found in our attribute
+			if(!pRev)
+			{
+				UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+				continue;
+			}
+
+			UT_uint32 iId = pRev->getId();
+
+			// now we translated the revision id to and index into the revision table of
+			// the document
+			UT_sint32 iIndx = getDoc()->getRevisionIndxFromId(iId);
+			const UT_GenericVector<AD_Revision*> & RevTbl = getDoc()->getRevisions();
+			if(iIndx < 0 || RevTbl.getItemCount() == 0)
+			{
+				UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+				continue;
+			}
+
+			AD_Revision * pRevTblItem = RevTbl.getNthItem(iIndx);
+			if(!pRevTblItem)
+			{
+				UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+				continue;
+			}
+			
+			
+			// the revisions in rtf are marked by a peculiar timestamp, which we now need
+			// to construct
+			time_t t = pRevTblItem->getStartTime();
+			struct tm * pT = gmtime(&t);
+
+			// NB: gmtime counts months 0-11, while dttm 1-12
+
+			UT_uint32 iDttm = pT->tm_min | (pT->tm_hour << 6) | (pT->tm_mday << 11) | ((pT->tm_mon + 1) << 16)
+				| (pT->tm_year << 20) | (pT->tm_wday << 29);
+
+#if 0
+			// according to the docs, we are supposed to emit each of the four bytes of
+			// the dttm int as an ascii char, and if > 127 convert to hex; however, Word
+			// emits this as a normal int and so will we -- the code below is disabled
+			// 
+			// Now that we have the int, we need to convert the 4 bytes to ascii string.
+			// We need to output this in little endian order, I think, since win32 is
+			// inherently LE
+			char Dttm[4];
+			const char * pDttm = (const char *) & iDttm;
+			
+#ifdef UT_LITTLE_ENDIAN
+			Dttm[0] = *pDttm;
+			Dttm[1] = *(pDttm + 1);
+			Dttm[2] = *(pDttm + 2);
+			Dttm[3] = *(pDttm + 3);
+#else
+			Dttm[3] = *pDttm;
+			Dttm[2] = *(pDttm + 1);
+			Dttm[1] = *(pDttm + 2);
+			Dttm[0] = *(pDttm + 3);
+#endif
+			UT_UTF8String s;
+
+			for(UT_uint32 j = 0; j < 4; j++)
+			{
+				if(Dttm[i] <= 127)
+				{
+					s += Dttm[i];
+				}
+				else
+				{
+					UT_String s2;
+					_rtf_nonascii_hex2((UT_sint32)Dttm[i], s2);
+					s += s2.c_str();
+				}
+			}
+#endif
+			if(iIndx < 0)
+			{
+				UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+				continue;
+			}
+
+			bool bRevisedProps = false;
+
+			const char * pAD     = bPara ? "pnrnot": "revised";
+			const char * pADauth = bPara ? "pnrauth" : "revauth";
+			const char * pADdttm = bPara ? "pnrdate" : "revdttm";
+			
+			const char * pDEL     = "deleted";
+			const char * pDELauth = "revauthdel";
+			const char * pDELdttm = "revdttmdel";
+
+			// it seems that block props cannot be changed in rev mode
+			const char * pCHauth = bPara ? NULL : "crauth";
+			const char * pCHdttm = bPara ? NULL : "crdate";
+
+			switch(pRev->getType())
+			{
+				case PP_REVISION_ADDITION_AND_FMT:
+					bRevisedProps = true;
+					// fall through
+				case PP_REVISION_ADDITION:
+					_rtf_keyword(pAD);
+					_rtf_keyword(pADauth, iIndx+1);
+					_rtf_keyword(pADdttm, iDttm);
+					break;
+					
+				case PP_REVISION_DELETION:
+					_rtf_keyword(pDEL);
+					_rtf_keyword(pDELauth, iIndx+1);
+					_rtf_keyword(pDELdttm, iDttm);
+					break;
+					
+				case PP_REVISION_FMT_CHANGE:
+					bRevisedProps = true;
+
+					if(bPara)
+					{
+						break;
+					}
+					
+					_rtf_keyword(pCHauth, iIndx+1);
+					_rtf_keyword(pCHdttm, iDttm);
+					break;
+
+				default:
+					UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+			}
+
+			if(bRevisedProps)
+			{
+				// need to dump the props that belong to our revision ...
+				// NB: this might be a recursive call, since _output_revision()
+				// gets (among others) called by _write_charfmt()
+				const PP_AttrProp * pSpanAP = pRev;
+				const PP_AttrProp * pBlockAP = NULL;
+				const PP_AttrProp * pSectionAP = NULL;
+				
+				_write_charfmt(s_RTF_AttrPropAdapter_AP(pSpanAP, pBlockAP, pSectionAP, getDoc()));
+			}
+		} // for
+		
+	} // if(pRevisions)
+}
+
 
 /*!
  * Write out the formatting group for one style in the RTF header.
@@ -1544,7 +1777,7 @@ void IE_Exp_RTF::_write_listtable(void)
 // Found a child of pList97, it must be a multi-level list.
 //
 				{
-					UT_DEBUGMSG(("SEVIOR: Adding %x to multi-level \n",pAuto));
+					xxx_UT_DEBUGMSG(("SEVIOR: Adding %x to multi-level \n",pAuto));
 					m_vecMultiLevel.addItem((void *) new ie_exp_RTF_MsWord97ListMulti(pAuto));
 					bFoundChild = true;
 					break;
@@ -1552,7 +1785,7 @@ void IE_Exp_RTF::_write_listtable(void)
 			}
 			if(!bFoundChild)
 			{
-				UT_DEBUGMSG(("SEVIOR: Adding %x to simple \n",pAuto));
+				xxx_UT_DEBUGMSG(("SEVIOR: Adding %x to simple \n",pAuto));
 				m_vecSimpleList.addItem((void *) new ie_exp_RTF_MsWord97ListSimple(pAuto));
 			}
 		}
@@ -1581,7 +1814,7 @@ void IE_Exp_RTF::_write_listtable(void)
 			if(!bFoundAtPrevLevel)
 			{
 				ie_exp_RTF_MsWord97List * pCur97 = new ie_exp_RTF_MsWord97List(pList97->getAuto());
-				UT_DEBUGMSG(("SEVIOR: Adding NULL level at depth %d \n",depth));
+				xxx_UT_DEBUGMSG(("SEVIOR: Adding NULL level at depth %d \n",depth));
 				pList97->addLevel(depth, pCur97);
 			}
 			else
@@ -1599,7 +1832,7 @@ void IE_Exp_RTF::_write_listtable(void)
 					{
 						bFoundAtPrevLevel = true;
 						ie_exp_RTF_MsWord97List * pCur97 = new ie_exp_RTF_MsWord97List(pAuto);
-						UT_DEBUGMSG(("SEVIOR: Adding level %x at depth %d \n",pCur97,depth));
+						xxx_UT_DEBUGMSG(("SEVIOR: Adding level %x at depth %d \n",pCur97,depth));
 						pList97->addLevel(depth, pCur97);
 					}
 				}
@@ -1607,7 +1840,7 @@ void IE_Exp_RTF::_write_listtable(void)
 			if(!bFoundAtPrevLevel)
 			{
 				ie_exp_RTF_MsWord97List * pCur97 = new ie_exp_RTF_MsWord97List(pList97->getAuto());
-				UT_DEBUGMSG(("SEVIOR: Adding NULL level at depth %d \n",depth));
+				xxx_UT_DEBUGMSG(("SEVIOR: Adding NULL level at depth %d \n",depth));
 				pList97->addLevel(depth, pCur97);
 			}
 
@@ -1803,7 +2036,7 @@ void IE_Exp_RTF::_output_LevelText(fl_AutoNum * pAuto, UT_uint32 iLevel, UT_UCSC
 		_rtf_nonascii_hex2(lenText,tmp);
 		tmp += LevelText;
 		tmp += ";";
-		UT_DEBUGMSG(("SEVIOR: Final level text string is %s \n",tmp.c_str()));
+		xxx_UT_DEBUGMSG(("SEVIOR: Final level text string is %s \n",tmp.c_str()));
 		write(tmp.c_str());
 		_rtf_close_brace();
 		_rtf_open_brace();
@@ -1832,17 +2065,17 @@ void IE_Exp_RTF::_output_LevelText(fl_AutoNum * pAuto, UT_uint32 iLevel, UT_UCSC
  */
 void IE_Exp_RTF::_generate_level_Text(fl_AutoNum * pAuto,UT_String & LevelText,UT_String &LevelNumbers, UT_uint32 & lenText, UT_uint32 & ifoundLevel)
 {
-	UT_DEBUGMSG(("SEVIOR: pAuto %x \n",pAuto));
+	xxx_UT_DEBUGMSG(("SEVIOR: pAuto %x \n",pAuto));
 	if(pAuto)
 	{
-		UT_DEBUGMSG(("SEVIOR: pAuto-getParent() %x \n",pAuto->getParent()));
+		xxx_UT_DEBUGMSG(("SEVIOR: pAuto-getParent() %x \n",pAuto->getParent()));
 	}
 	if(pAuto && (pAuto->getParent() == NULL))
 	{
 		UT_String LeftSide = pAuto->getDelim();
 		UT_String RightSide;
 		_get_LeftRight_Side(LeftSide,RightSide);
-		UT_DEBUGMSG(("SEVIOR: Top - leftside = %s rightside = %s \n",LeftSide.c_str(),RightSide.c_str()));
+		xxx_UT_DEBUGMSG(("SEVIOR: Top - leftside = %s rightside = %s \n",LeftSide.c_str(),RightSide.c_str()));
 		UT_String place;
 		UT_uint32 locPlace = (UT_uint32) LeftSide.size();
 		_rtf_nonascii_hex2(locPlace+1,place);
@@ -1861,7 +2094,7 @@ void IE_Exp_RTF::_generate_level_Text(fl_AutoNum * pAuto,UT_String & LevelText,U
 			LevelText += RightSide;
 		}
 		lenText = LeftSide.size() + RightSide.size() + 1;
-		UT_DEBUGMSG(("SEVIOR: Level %d LevelText %s  \n",ifoundLevel,LevelText.c_str()));
+		xxx_UT_DEBUGMSG(("SEVIOR: Level %d LevelText %s  \n",ifoundLevel,LevelText.c_str()));
 		return;
 	}
 	else if((pAuto != NULL) && ( pAuto->getParent() != NULL))
@@ -1879,7 +2112,7 @@ void IE_Exp_RTF::_generate_level_Text(fl_AutoNum * pAuto,UT_String & LevelText,U
 		{
 			if(RightSide.size() > 0)
 			{
-				UT_DEBUGMSG(("SEVIOR: RightSide =%s last char = %c \n",RightSide.c_str(),RightSide[RightSide.size()-1]));
+				xxx_UT_DEBUGMSG(("SEVIOR: RightSide =%s last char = %c \n",RightSide.c_str(),RightSide[RightSide.size()-1]));
 			}
 			if(RightSide.size()== 0)
 			{
@@ -1901,7 +2134,7 @@ void IE_Exp_RTF::_generate_level_Text(fl_AutoNum * pAuto,UT_String & LevelText,U
 		LevelText += LeftSide;
 		LevelText += str;
 		LevelText += RightSide;
-		UT_DEBUGMSG(("SEVIOR: Level %d LevelText %s  \n",ifoundLevel,LevelText.c_str()));
+		xxx_UT_DEBUGMSG(("SEVIOR: Level %d LevelText %s  \n",ifoundLevel,LevelText.c_str()));
 		return;
 	}
 	else
@@ -1941,12 +2174,12 @@ void IE_Exp_RTF::_generate_level_Text(fl_AutoNum * pAuto,UT_String & LevelText,U
 void IE_Exp_RTF::_get_LeftRight_Side(UT_String & LeftSide, UT_String & RightSide)
 {
 	const char * psz = strstr(LeftSide.c_str(),"%L");
-	UT_DEBUGMSG(("SEVIOR: Substring = %s Total is %s \n",psz,LeftSide.c_str()));
+	xxx_UT_DEBUGMSG(("SEVIOR: Substring = %s Total is %s \n",psz,LeftSide.c_str()));
 	if(psz != NULL)
 	{
 		UT_uint32 index = (UT_uint32) (psz - LeftSide.c_str());
 		UT_uint32 len = (UT_uint32) strlen(LeftSide.c_str());
-		UT_DEBUGMSG(("SEVIOR: index = %d len =%d \n",index,len));
+		xxx_UT_DEBUGMSG(("SEVIOR: index = %d len =%d \n",index,len));
 		if(index+2 < len)
 		{
 			RightSide = LeftSide.substr(index+2,len);
@@ -2100,16 +2333,16 @@ void IE_Exp_RTF::_output_ListRTF(fl_AutoNum * pAuto, UT_uint32 iLevel)
 		const char * szAlign = NULL;
 		// TODO -- we have a problem here; props and attrs are, due to revisions, view dependent and
 		// we have no access to the view, so we will assume that revisions are showing and will ask
-		// for the cumulative result of all of them (revision level 0xffffffff)
+		// for the cumulative result of all of them (revision level PD_MAX_REVISION)
 		// 
 		if(sdh != NULL)
 		{
-			bool bres = getDoc()->getPropertyFromSDH(sdh,true,0xffffffff,"text-indent",&szIndent);
+			bool bres = getDoc()->getPropertyFromSDH(sdh,true,PD_MAX_REVISION,"text-indent",&szIndent);
 			if(bres)
 			{
 				_rtf_keyword_ifnotdefault_twips("fi",(char*)szIndent,0);
 			}
-			bres = getDoc()->getPropertyFromSDH(sdh,true,0xffffffff,"margin-left",&szAlign);
+			bres = getDoc()->getPropertyFromSDH(sdh,true,PD_MAX_REVISION,"margin-left",&szAlign);
 			if(bres)
 			{
 				_rtf_keyword_ifnotdefault_twips("li",(char*)szAlign,0);

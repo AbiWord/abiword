@@ -29,3 +29,4 @@ echo ""
 ./abi-extract.pl -N bg-BG 
 ./abi-extract.pl -N tr-TR
 ./abi-extract.pl -N ta-IN
+./abi-extract.pl -N qu-BO

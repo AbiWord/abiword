@@ -1052,10 +1052,7 @@ bool EV_Win32Toolbar::_refreshItem(AV_View * pView, const EV_Toolbar_Action * pA
 
 					EV_Toolbar_Control * pControl = pFactory->getControl(t, AP_TOOLBAR_ID_FMT_STYLE);			
 					const UT_GenericVector<const char*> * v = pControl->getContents();				
-						
-					AP_Win32Toolbar_StyleCombo * pStyleC = static_cast<AP_Win32Toolbar_StyleCombo *>(pControl);
-					pStyleC->repopulate();	
-					
+										
 					//
 					// Is this a valid text?
 					//

@@ -85,6 +85,14 @@ public:
 											  void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
 																	  PL_ListenerId lid,
 																	  PL_StruxFmtHandle sfhNew));
+   bool                     insertBlockAfter(fl_ContainerLayout* pCL,
+											  const PX_ChangeRecord_Strux * pcrx,
+											  PL_StruxDocHandle sdh,
+											  PL_ListenerId lid,
+											  void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+																	  PL_ListenerId lid,
+																	  PL_StruxFmtHandle sfhNew));
+
 	void                     miniFormat(void);
 	virtual void		     format(void);
 	virtual void		     updateLayout(void);
@@ -118,14 +126,19 @@ public:
 		{ return m_iXColumn;}
 	UT_sint32                getFrameYColpos(void) const
 		{ return m_iYColumn;}
+	UT_sint32                getFrameXPagepos(void) const
+		{ return m_iXPage;}
+	UT_sint32                getFrameYPagepos(void) const
+		{ return m_iYPage;}
 
 	void                setFrameWidth(UT_sint32 iW) { m_iWidth = iW;}
 	void                setFrameHeight(UT_sint32 iH) { m_iHeight = iH;}
 	void                setFrameXpos(UT_sint32 iX) 	{ m_iXpos = iX;}
 	void                setFrameYpos(UT_sint32 iY) { m_iYpos = iY;}
-
+	bool                isEndFrameIn(void) const
+		{ return m_bHasEndFrame;}
 private:
-	void		             _lookupProperties(void);
+	virtual void		     _lookupProperties(const PP_AttrProp* pAP);
 	void                     _purgeLayout(void);
 	void                     _createFrameContainer(void);
 	void                     _insertFrameContainer(fp_Container * pNewFC);
@@ -156,6 +169,9 @@ private:
 
 	UT_sint32               m_iXColumn;
 	UT_sint32               m_iYColumn;
+
+	UT_sint32               m_iXPage;
+	UT_sint32               m_iYPage;
 
 	UT_sint32               m_iBoundingSpace;
     FL_FrameWrapMode        m_iFrameWrapMode;

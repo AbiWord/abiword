@@ -336,15 +336,55 @@ void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before)
 
 	UT_ASSERT(iPoint != iSelAnchor);
 
-	UT_uint32 iLow = UT_MIN(iPoint,iSelAnchor);
-	UT_uint32 iHigh = UT_MAX(iPoint,iSelAnchor);
+	PT_DocPosition iLow = UT_MIN(iPoint,iSelAnchor);
+	PT_DocPosition iHigh = UT_MAX(iPoint,iSelAnchor);
 
 	// deal with character clusters, such as base char + vowel + tone mark in Thai
 	UT_uint32 iLen = iHigh - iLow;
 	_adjustDeletePosition(iLow, iLen); // modifies both iLow and iLen
 	iHigh = iLow + iLen;
 	
-	
+//
+// OK adjust for deletetions that cross footnote/endnote boundaries.
+//
+	fl_FootnoteLayout * pFHigh = NULL;
+	fl_FootnoteLayout * pFLow = NULL;
+	fl_EndnoteLayout * pEHigh = NULL;
+	fl_EndnoteLayout * pELow = NULL;
+	if(isInFootnote(iHigh))
+	{
+		pFHigh = getClosestFootnote(iHigh);
+		PT_DocPosition j = pFHigh->getPosition()+1; // Leave reference
+		if(j > iLow)
+		{
+			iLow = j;
+		}
+	}
+	else if(isInFootnote(iLow))
+	{
+
+// Here if we're not in footnote at iHigh
+
+		pFLow = getClosestFootnote(iLow);
+		iHigh = pFLow->getPosition(true) + pFLow->getLength() -1;
+	}
+	else if(isInEndnote(iHigh))
+	{
+		pEHigh = getClosestEndnote(iHigh);
+		PT_DocPosition j = pEHigh->getPosition()+1; // Leave reference
+		if(j > iLow)
+		{
+			iLow = j;
+		}
+	}
+	else if(isInEndnote(iLow))
+	{
+
+// Here if we're not in Endnote at iHigh
+
+		pELow = getClosestEndnote(iLow);
+		iHigh = pELow->getPosition(true) + pELow->getLength() -1;
+	}
 	bool bDeleteTables = !isInTable(iLow) && !isInTable(iHigh);
 	if(!bDeleteTables)
 	{
@@ -598,6 +638,15 @@ bool FV_View::_deleteCellAt(PT_DocPosition posTable, UT_sint32 row, UT_sint32 co
 	UT_uint32 iRealDeleteCount;
 
 	m_pDoc->deleteSpan( posCell, posEndCell, NULL,iRealDeleteCount,true);
+
+	// if in revisions mode, we might need to move the insertion point if it was within
+	// the cell that we are deleting (since the cell stays physically in the document) but
+	// the positions within it are now hidden from the user)
+	if(isMarkRevisions() && m_iInsPoint > posCell && m_iInsPoint < posEndCell)
+	{
+		_setPoint(posEndCell);
+	}
+	
 	return true;
 }
 
@@ -950,6 +999,13 @@ PT_DocPosition FV_View::_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp,
 			}
 		}
 
+		if(!pSpan)
+		{
+			// empty block; this should not happen and will trigger one of the asserts
+			// above if(offset == 0)
+			return iPoint;
+		}
+		
 		UT_uint32 iUseOffset = bKeepLooking ? offset-1 : offset;
 
 		bool bInWord = !UT_isWordDelimiter(pSpan[iUseOffset], UCS_UNKPUNK, iUseOffset > 0 ? pSpan[iUseOffset - 1] : UCS_UNKPUNK);
@@ -1009,6 +1065,13 @@ PT_DocPosition FV_View::_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp,
 				iPos = pBlock->getPosition();
 				break;
 			}
+		}
+
+		if(!pSpan)
+		{
+			// empty block; this should not happen and will trigger one of the asserts
+			// above if(offset == 0)
+			return iPoint;
 		}
 
 		bool bBetween = UT_isWordDelimiter(pSpan[offset], UCS_UNKPUNK, offset > 0 ? pSpan[offset - 1] : UCS_UNKPUNK);
@@ -1095,6 +1158,13 @@ PT_DocPosition FV_View::_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp,
 			}
 		}
 
+		if(!pSpan)
+		{
+			// empty block; this should not happen and will trigger one of the asserts
+			// above if(offset == 0)
+			return iPoint;
+		}
+
 		bool bBetween = UT_isWordDelimiter(pSpan[offset], UCS_UNKPUNK, offset > 0 ? pSpan[offset - 1] : UCS_UNKPUNK);
 
 		// Needed so ctrl-right arrow will work
@@ -1173,7 +1243,7 @@ PT_DocPosition FV_View::_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp,
 fl_BlockLayout* FV_View::_findBlockAtPosition(PT_DocPosition pos) const
 {
 	fl_BlockLayout * pBL=NULL;
-	if(m_bEditHdrFtr && m_pEditShadow != NULL)
+	if(m_bEditHdrFtr && (m_pEditShadow != NULL) && (m_FrameEdit.getFrameEditMode() == FV_FrameEdit_NOT_ACTIVE))
 	{
 		pBL = static_cast<fl_BlockLayout *>(m_pEditShadow->findBlockAtPosition(pos));
 		if(pBL != NULL)
@@ -1229,7 +1299,7 @@ void FV_View::_insertSectionBreak(void)
 	// Get preview DocSectionLayout so we know what header/footers we have
 		// to insert here.
 	//
-	fl_DocSectionLayout * pPrevDSL = static_cast<fl_DocSectionLayout *>(getCurrentBlock()->getSectionLayout());
+	fl_DocSectionLayout * pPrevDSL = static_cast<fl_DocSectionLayout *>(getCurrentBlock()->getDocSectionLayout());
 
 	// insert a new paragraph with the same attributes/properties
 	// as the previous (or none if the first paragraph in the section).
@@ -1242,7 +1312,7 @@ void FV_View::_insertSectionBreak(void)
 	_generalUpdate();
 	_ensureInsertionPointOnScreen();
 	UT_uint32 oldPoint = getPoint();
-	fl_DocSectionLayout * pCurDSL = static_cast<fl_DocSectionLayout *>(getCurrentBlock()->getSectionLayout());
+	fl_DocSectionLayout * pCurDSL = static_cast<fl_DocSectionLayout *>(getCurrentBlock()->getDocSectionLayout());
 	//
 	// Duplicate previous header/footers for this section.
 	//
@@ -3945,7 +4015,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			{
 				m_pG->setLineProperties(m_pG->tluD(1.0),
 										GR_Graphics::JOIN_MITER,
-										GR_Graphics::CAP_BUTT,
+										GR_Graphics::CAP_PROJECTING,
 										GR_Graphics::LINE_SOLID);
 
 				painter.drawLine(adjustedLeft, adjustedTop, adjustedRight, adjustedTop);
@@ -3969,7 +4039,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 
 				m_pG->setLineProperties(m_pG->tluD(1.0),
 										GR_Graphics::JOIN_MITER,
-										GR_Graphics::CAP_BUTT,
+										GR_Graphics::CAP_PROJECTING,
 										GR_Graphics::LINE_SOLID);
 
 				painter.drawLine(adjustedLeft, adjustedBottom, getWindowWidth() + m_pG->tlu(1), adjustedBottom);
@@ -4013,7 +4083,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			{
 				m_pG->setLineProperties(m_pG->tluD(1.0),
 										GR_Graphics::JOIN_MITER,
-										GR_Graphics::CAP_BUTT,
+										GR_Graphics::CAP_PROJECTING,
 										GR_Graphics::LINE_SOLID);
 
 				adjustedLeft += m_pG->tlu(3);
@@ -4100,9 +4170,9 @@ void FV_View::_setPoint(PT_DocPosition pt, bool bEOL)
 	m_iInsPoint = pt;
 	xxx_UT_DEBUGMSG(("Point set to %d in View %x \n",pt,this));
 	m_bPointEOL = bEOL;
-	_fixInsertionPointCoords();
 	if(!m_pDoc->isPieceTableChanging())
 	{
+		_fixInsertionPointCoords();
 		m_pLayout->considerPendingSmartQuoteCandidate();
 		_checkPendingWordForSpell();
 	// So, if there is a selection now, we should disable the cursor; conversely,
@@ -4485,7 +4555,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars, bool bSkipCannotCo
 		else if((iOldDepth > getEmbedDepth(m_iInsPoint)) )
 		{
 			bool bSweep = false;
-			while((iOldDepth > getEmbedDepth(m_iInsPoint)) || m_pDoc->isFootnoteAtPos(getPoint()) )
+			while((m_iInsPoint > posBOD) && (iOldDepth > getEmbedDepth(m_iInsPoint)) || m_pDoc->isFootnoteAtPos(getPoint()) )
 			{
 				UT_DEBUGMSG(("_charMotion: Sweep backward -1 %d \n",m_iInsPoint));
 				m_iInsPoint--;
@@ -4521,7 +4591,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars, bool bSkipCannotCo
 	    else
 		{
 			bool bSweep = false;
-			while((iOldDepth > getEmbedDepth(m_iInsPoint)) || m_pDoc->isEndFootnoteAtPos(getPoint()))
+			while((m_iInsPoint < posEOD) &&((iOldDepth > getEmbedDepth(m_iInsPoint)) || m_pDoc->isEndFootnoteAtPos(getPoint())))
 			{
 				UT_DEBUGMSG(("_charMotion: Sweep forward -2 %d \n",m_iInsPoint));
 				m_iInsPoint++;
@@ -5396,7 +5466,7 @@ void FV_View::_adjustDeletePosition(UT_uint32 &iDocPos, UT_uint32 &iCount)
 		UT_ASSERT_HARMLESS( iLen <= pEndRun->getLength());
 			
 		pEndRun->adjustDeletePosition(iEndRunOffset, iLen);
-
+		UT_DEBUGMSG(("iCount adjusted from %d to %d \n",iCount,iEndRunOffset + iLen - pos1));
 		iCount  = iEndRunOffset + iLen - pos1;
 	}
 	else
@@ -5408,4 +5478,3 @@ void FV_View::_adjustDeletePosition(UT_uint32 &iDocPos, UT_uint32 &iCount)
 	// adjust point
 	iDocPos = pos1;
 }
-

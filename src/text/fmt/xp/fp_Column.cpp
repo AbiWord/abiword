@@ -30,11 +30,13 @@
 #include "fp_TableContainer.h"
 #include "fp_FootnoteContainer.h"
 #include "fp_FrameContainer.h"
+#include "fp_Run.h"
 #include "fl_TOCLayout.h"
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 #include "fv_View.h"
 #include "gr_Painter.h"
+
 
 /*!
   Create container
@@ -949,6 +951,14 @@ bool fp_VerticalContainer::validate(void)
 			fp_TOCContainer * pTOC = static_cast<fp_TOCContainer *>(pContainer);
 			iH = pTOC->getHeight();
 		}
+		if(pContainer->getContainerType() == FP_CONTAINER_LINE)
+		{
+			fp_Line * pLine = static_cast<fp_Line *>(pContainer);
+			if(pLine->isSameYAsPrevious())
+			{
+				continue;
+			}
+		}
 		curBot = curTop + iH;                    ;
 		UT_ASSERT(oldBot <= curTop);
 		if(oldBot > curTop)
@@ -1164,6 +1174,25 @@ void fp_VerticalContainer::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosit
 								y - pContainer->getY() , 
 								pos, bBOL, bEOL,isTOC);
 	}
+#if 1
+	else if(pContainer->getContainerType() == FP_CONTAINER_FRAME)
+	{
+		fp_FrameContainer * pFrame = static_cast<fp_FrameContainer *>(pContainer);
+		fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(pFrame->getSectionLayout());
+		if(pFL->getFrameType() == FL_FRAME_WRAPPER_IMAGE)
+		{
+			pos = pFL->getPosition(true);
+			return;
+		}
+		else
+		{
+			pContainer->mapXYToPosition(x - pContainer->getX(),
+										y - pContainer->getY() , 
+										pos, bBOL, bEOL,isTOC);
+		}
+
+	}
+#endif
 	else if(pContainer->getContainerType() == FP_CONTAINER_LINE)
 	{
 //
@@ -1172,18 +1201,17 @@ void fp_VerticalContainer::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosit
 		fp_Line * pLine = static_cast<fp_Line *>(pContainer);
 		if(pLine->isWrapped())
 		{
-			fp_Line * pNext = static_cast<fp_Line *>(getNext());
-			if(pNext && (pNext->getY() == pLine->getY()))
+			fp_Line * pNext = static_cast<fp_Line *>(pLine->getNext());
+			if(pNext && pNext->isSameYAsPrevious())
 			{
-				pNext->setSameYAsPrevious(true);
 				fp_ContainerObject *pBest = pContainer;
 				UT_sint32 xmin = UT_MIN(abs(pNext->getX() - x),abs(pNext->getX()+pNext->getMaxWidth() -x));
 				while(pNext && pNext->isSameYAsPrevious())
 				{
 					if((pNext->getX() < x) && (x < pNext->getX() + pNext->getMaxWidth()))
 					{
-						pNext->mapXYToPosition(x - pContainer->getX(),
-											   y - pContainer->getY() , 
+						pNext->mapXYToPosition(x - pNext->getX(),
+											   y - pNext->getY() , 
 											   pos, bBOL, bEOL,isTOC);
 						return;
 					}
@@ -1194,10 +1222,6 @@ void fp_VerticalContainer::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosit
 						pBest = static_cast<fp_ContainerObject *>(pNext);
 					}
 					pNext = static_cast<fp_Line *>(pNext->getNext());
-					if(pNext->getY() == pLine->getY())
-					{
-						pNext->setSameYAsPrevious(true);
-					}
 				}
 				pBest->mapXYToPosition(x - pContainer->getX(),
 									   y - pContainer->getY() , 
@@ -1211,12 +1235,73 @@ void fp_VerticalContainer::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosit
 											pos, bBOL, bEOL,isTOC);
 			}
 		}
-		else
+		else if(!pLine->canContainPoint())
 		{
-			pContainer->mapXYToPosition(x - pContainer->getX(),
+			// lines that cannot contain point are those that are located in blocks that
+			// cannot contain point (hidden, collapsed, etc. So we need to find the block
+			// that can contain point
+			fl_BlockLayout * pBlock = pLine->getBlock();
+			UT_return_if_fail( pBlock );
+
+			pBlock = pBlock->getNextBlockInDocument();
+			
+			while(pBlock && !pBlock->canContainPoint())
+			{
+				pBlock = pBlock->getNextBlockInDocument();
+			}
+
+			if(!pBlock)
+			{
+				// look the other way (reusing pNext, even though it will be previous)
+				pBlock = pLine->getBlock();
+
+				pBlock = pBlock->getPrevBlockInDocument();
+
+				while(pBlock && !pBlock->canContainPoint())
+				{
+					pBlock = pBlock->getPrevBlockInDocument();
+				}
+				
+			}
+
+			if(!pBlock)
+			{
+				// we are in trouble
+				UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+			}
+			else
+			{
+				fp_Run * pFirstRun = pBlock->getFirstRun();
+
+				if(pFirstRun)
+				{
+					fp_Line * pVisibleLine = pFirstRun->getLine();
+
+					if(pVisibleLine)
+					{
+						// get the container that holds this line, so we deal with wrapped
+						// lines, etc.
+						fp_Container * pVisibleContainer = pVisibleLine->getContainer();
+						
+						pVisibleContainer->mapXYToPosition(x - pContainer->getX(),
+													  y - pContainer->getY() , 
+													  pos, bBOL, bEOL,isTOC);
+
+						return;
+					}
+					
+					UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );;
+				}
+				else
+				{
+					UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+				}
+			}
+		}
+
+		pContainer->mapXYToPosition(x - pContainer->getX(),
 								y - pContainer->getY() , 
 									pos, bBOL, bEOL,isTOC);
-		}
 	}
 	else
 	{
@@ -1438,14 +1523,14 @@ void fp_VerticalContainer::bumpContainers(fp_ContainerObject* pLastContainerToKe
 			pNextContainer->insertContainer(pContainer);
 			if(bTOC)
 			{
-				UT_sint32 iTOC = pNextContainer->findCon(pContainer);
+				//UT_sint32 iTOC = pNextContainer->findCon(pContainer);
 				xxx_UT_DEBUGMSG(("TOC insert at location %d in next Container \n",iTOC));
 			}
 		}
 	}
 	if(pTOC)
 	{
-		UT_sint32 iTOC = pNextContainer->findCon(pTOC);
+		//UT_sint32 iTOC = pNextContainer->findCon(pTOC);
 		xxx_UT_DEBUGMSG(("TOC Final location %d in next Container \n",iTOC));
 	}
 	for (i=static_cast<UT_sint32>(countCons()) - 1; i >= ndx; i--)
@@ -1534,7 +1619,7 @@ void fp_Column::_drawBoundaries(dg_DrawArgs* pDA)
 
 		getGraphics()->setLineProperties(getGraphics()->tlu(1),
 											GR_Graphics::JOIN_MITER,
-											GR_Graphics::CAP_BUTT,
+											GR_Graphics::CAP_PROJECTING,
 											GR_Graphics::LINE_SOLID);
 
        	painter.drawLine(xoffBegin, yoffBegin, xoffEnd, yoffBegin);
@@ -1609,6 +1694,7 @@ void fp_Column::layout(void)
 					pLine->setY(iPrevY);
 				}
 				pPrevContainer = pLine;
+				xxx_UT_DEBUGMSG(("Layout: %x SameY container %d getY %d getX %d width %d \n",pLine,i,pLine->getY(),pLine->getX(),pLine->getMaxWidth()));
 				continue;
 			}
 		}
@@ -1622,7 +1708,6 @@ void fp_Column::layout(void)
 //		UT_ASSERT(iY>=0);
 //		UT_ASSERT(iOldY < iY);
 		pContainer->setY(iY);
-		xxx_UT_DEBUGMSG(("Layout: container %d getY %d \n",i,pContainer->getY()));
 //		UT_ASSERT(iY == pContainer->getY());
 		iOldY = iY;
 		//UT_ASSERT(pContainer->getY() == iY);
@@ -1646,6 +1731,7 @@ void fp_Column::layout(void)
 		else if(pContainer->getContainerType() == FP_CONTAINER_LINE)
 		{
 			pLastLine = static_cast<fp_Line *>(pContainer);
+			iHeight = pLastLine->getHeight();
 			UT_sint32 count = static_cast<UT_sint32>(vecBlocks.getItemCount());
 			if(count == 0)
 			{
@@ -1879,7 +1965,10 @@ void fp_ShadowContainer::layout(bool bForceLayout)
 		fl_HdrFtrSectionLayout * pHFSL = getHdrFtrSectionLayout();
 		fl_DocSectionLayout * pDSL = pHFSL->getDocSectionLayout();
 		bool bHdrFtr = (pHFSL->getHFType() <= FL_HDRFTR_HEADER_LAST);
-
+		if(iNewHeight > getPage()->getHeight()/3)
+		{
+			iNewHeight = getPage()->getHeight()/3;
+		}
 		pDSL->setHdrFtrHeightChange(bHdrFtr,iNewHeight+getGraphics()->tlu(3));
 	}
 }

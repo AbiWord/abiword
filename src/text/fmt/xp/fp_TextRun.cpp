@@ -316,17 +316,19 @@ void fp_TextRun::appendTextToBuf(UT_GrowBuf & buf)
 	}
 	
 	UT_return_if_fail(m_pRenderInfo);
-	
-	getGraphics()->appendRenderedCharsToBuff(*m_pRenderInfo, buf);
+	UT_uint32 len = getLength();
+	GR_XPRenderInfo * pRI =  (GR_XPRenderInfo*) m_pRenderInfo;
+	buf.append(reinterpret_cast<UT_GrowBufElement *>(pRI->m_pChars),len);
 }
 
 
 #if DEBUG
 void fp_TextRun::printText(void)
 {
-	UT_ASSERT(m_pRenderInfo && m_pRenderInfo->getType() == GRRI_XP);
+	// do not assert, the pointer might be legitimately null
+	//UT_ASSERT(m_pRenderInfo);
 	
-	if(!m_pRenderInfo || m_pRenderInfo->getType() == GRRI_XP)
+	if(!m_pRenderInfo || m_pRenderInfo->getType() != GRRI_XP)
 		return;
 
 	UT_uint32 offset = getBlockOffset();
@@ -529,7 +531,7 @@ bool	fp_TextRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitIn
 	text.setUpperLimit(text.getPosition() + getLength() - 1);
 	UT_uint32 iPosStart = text.getPosition();
 	
-	bool bReverse = (getVisDirection() == UT_BIDI_RTL);
+	//bool bReverse = (getVisDirection() == UT_BIDI_RTL);
 	UT_sint32 iNext = -1;
 	
 	for(UT_uint32 i = 0; i < getLength() && text.getStatus() == UTIter_OK; i++, ++text)
@@ -1977,11 +1979,21 @@ bool fp_TextRun::_refreshDrawBuffer()
 */
 void fp_TextRun::_drawLastChar(bool bSelection)
 {
+//
+// We appear to no longer need this code. Symptom would be if the last
+// character in a run is blanked out. Removing this code fixes bug 6113
+// 
+// I'm keeping this code behind an #if 0 in case we need it. If after
+// a few month we don't, this method and calls of it should be removed.
+// MES 28/8/2004
+//
+	return;
+#if 0
 	UT_return_if_fail(m_pRenderInfo);
 	
 	if(!getLength())
 		return;
-
+	return;
 	// have to set font (and colour!), since we were called from a run
 	// using different font
 	GR_Graphics * pG = getGraphics();
@@ -1989,12 +2001,18 @@ void fp_TextRun::_drawLastChar(bool bSelection)
 	
 	pG->setFont(_getFont());
 
+	UT_RGBColor pForeCol(255,255,255);
+	UT_RGBColor cWhite(255,255,255);
+//
+// Draw character in white then foreground to minimize "bolding" the
+// character.
+//
 	if(bSelection)
 	{
-		pG->setColor(_getView()->getColorSelForeground());
+		pForeCol= _getView()->getColorSelForeground();
 	}
 	else
-		pG->setColor(getFGColor());
+	   pForeCol = getFGColor();
 
 	GR_Painter painter(pG);
 
@@ -2015,8 +2033,11 @@ void fp_TextRun::_drawLastChar(bool bSelection)
 	UT_uint32 iVisOffset = iVisDirection == UT_BIDI_LTR ? getLength() - 1 : 0;
 	m_pRenderInfo->m_iOffset = iVisOffset;
 	pG->prepareToRenderChars(*m_pRenderInfo);
+	pG->setColor(cWhite);
 	painter.renderChars(*m_pRenderInfo);
-	
+	pG->setColor(pForeCol);
+	painter.renderChars(*m_pRenderInfo);
+#endif
 }
 
 /*
@@ -2302,8 +2323,8 @@ UT_sint32 fp_TextRun::findTrailingSpaceDistance(void) const
 							  getBlockOffset() + fl_BLOCK_STRUX_OFFSET + getLength() - 1);
 
 		// HACK
-		fp_TextRun * pThis = const_cast<fp_TextRun*>(this);
-		bool bReverse = (pThis->getVisDirection() == UT_BIDI_RTL);
+		//fp_TextRun * pThis = const_cast<fp_TextRun*>(this);
+		//bool bReverse = (pThis->getVisDirection() == UT_BIDI_RTL);
 
 		for (i = getLength() - 1; i >= 0 && text.getStatus() == UTIter_OK; i--, --text)
 		{
@@ -2809,13 +2830,13 @@ void fp_TextRun::updateOnDelete(UT_uint32 offset, UT_uint32 iLenToDelete)
 	UT_return_if_fail(offset < getLength());
 
 	// calculate actual length of deletion in this run
-	UT_uint32 iLen = UT_MIN(iLenToDelete, getLength() - offset);
+	UT_sint32 iLen = UT_MIN(static_cast<UT_sint32>(iLenToDelete), static_cast<UT_sint32>(getLength()) - static_cast<UT_sint32>(offset));
 
 	// do not try to delete nothing ...
 	if(iLen == 0)
 		return;
 
-	UT_uint32 iLenOrig = getLength();
+	UT_sint32 iLenOrig = getLength();
 
 	// construct a text iterator to speed things up
 	PD_StruxIterator text(getBlock()->getStruxDocHandle(),
@@ -2826,14 +2847,14 @@ void fp_TextRun::updateOnDelete(UT_uint32 offset, UT_uint32 iLenToDelete)
 		// this whole run will be deleted ...
 		goto set_length;
 	}
-
+	xxx_UT_DEBUGMSG(("Doing updateOnDelete %x length of run %d amount to delete %d iLen %d \n",this,getLength(),iLenToDelete,iLen));
 	if(m_pRenderInfo)
 	{
 		m_pRenderInfo->m_iLength = iLenOrig;
 		m_pRenderInfo->m_iVisDir = getVisDirection();
 		m_pRenderInfo->m_eState = _getRefreshDrawBuffer();
 		m_pRenderInfo->m_pText = &text;
-		if(!m_pRenderInfo->cut(offset,iLenToDelete))
+		if(!m_pRenderInfo->cut(offset,iLen))
 		{
 			// mark draw buffer dirty ...
 			orDrawBufferDirty(GRSR_Unknown);
@@ -2889,7 +2910,7 @@ void fp_TextRun::updateOnDelete(UT_uint32 offset, UT_uint32 iLenToDelete)
 		}
 	}
 
-	if(offset + iLen == iLenOrig && getNextRun())
+	if((static_cast<UT_sint32>(offset) + iLen == iLenOrig) && getNextRun())
 	{
 		fp_Run * pRun = getNextRun();
 

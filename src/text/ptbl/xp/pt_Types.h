@@ -140,6 +140,8 @@ typedef const void * PL_StruxFmtHandle;
 #define PT_HREF_ATTRIBUTE_NAME            (static_cast<const XML_Char *>("href"))
 #define PT_STRUX_IMAGE_DATAID           (static_cast<const XML_Char *>("strux-image-dataid"))
 
+
+
 #endif /* PT_TYPES_H */
 
 

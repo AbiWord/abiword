@@ -61,6 +61,8 @@ public:
 	virtual UT_sint32   getY() const;
 	virtual UT_sint32   getWidth() const;
 	virtual UT_sint32   getHeight() const;
+	virtual bool        isVBreakable(void)
+		{ return false;}
 	UT_sint32           getFullX() const;
 	UT_sint32           getFullY() const;
 	UT_sint32           getFullWidth() const;
