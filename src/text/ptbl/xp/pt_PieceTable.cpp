@@ -298,7 +298,9 @@ UT_Bool pt_PieceTable::_getStruxFromPosition(PT_DocPosition docPos,
 			pf_Frag_Text * pfText = static_cast<pf_Frag_Text *>(pf);
 			sum += pfText->getLength();
 
-			if (sum >= docPos)
+			// TODO because strux don't have a position (length), we
+			// TODO may want to go a little further (use > rather than >=)
+			if (sum > docPos)
 				goto FoundIt;
 		}
 		else if (pf->getType() == pf_Frag::PFT_Strux)

@@ -10,7 +10,7 @@ PX_ChangeRecord_StruxChange::PX_ChangeRecord_StruxChange(PXType type,
 														 PT_AttrPropIndex indexOldAP,
 														 PT_AttrPropIndex indexNewAP,
 														 PTChangeFmt ptc)
-	: PX_ChangeRecord(type, atomic, position, UT_TRUE, indexNewAP)
+	: PX_ChangeRecord(type, atomic, position, UT_FALSE, indexNewAP)
 {
 	// m_indexAP in base class is set to indexNewAP
 	m_indexOldAP = indexOldAP;

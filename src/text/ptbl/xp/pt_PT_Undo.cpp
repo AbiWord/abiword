@@ -19,6 +19,7 @@
 #include "px_ChangeRecord_Span.h"
 #include "px_ChangeRecord_SpanChange.h"
 #include "px_ChangeRecord_Strux.h"
+#include "px_ChangeRecord_StruxChange.h"
 
 /****************************************************************/
 /****************************************************************/
@@ -163,7 +164,19 @@ UT_Bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr)
 		return UT_TRUE;
 
 	case PX_ChangeRecord::PXT_ChangeStrux:
-		// TODO
+		{
+			// ChangeStrux is it's own inverse.
+
+			const PX_ChangeRecord_StruxChange * pcrs = static_cast<const PX_ChangeRecord_StruxChange *>(pcr);
+			pf_Frag_Strux * pfs;
+			UT_Bool bFound = _getStruxFromPosition(pcrs->getPosition(),&pfs);
+			UT_ASSERT(bFound);
+			UT_Bool bResult = _fmtChangeStrux(pfs,pcrs->getIndexAP());
+			UT_ASSERT(bResult);
+			m_pDocument->notifyListeners(pfs,pcr);
+		}
+		return UT_TRUE;
+		
 	default:
 		UT_ASSERT(0);
 		return UT_FALSE;
