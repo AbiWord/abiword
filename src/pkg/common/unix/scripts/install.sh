@@ -135,7 +135,7 @@ rm -f $BINDIR/abiword ; ln -s $LIBEXECDIR/AbiWord $BINDIR/abiword
 ########################################################################
 
 echo "Installing ttfadmin script [$TARGET/bin]"
-cp $SCRIPTDIR/../../../../tools/scripts/unix/ttfadmin.sh $TARGET/bin/ttfadmin.sh
+cp -f $SCRIPTDIR/../../../../tools/scripts/unix/ttfadmin.sh $TARGET/bin/ttfadmin.sh
 chmod -f 500 $TARGET/bin/ttfadmin.sh
 
 

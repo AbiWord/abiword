@@ -30,6 +30,6 @@ include $(ABI_ROOT)/src/config/abi_rules.mk
 
 # just copy any scripts to the bin directory
 $(TTFADMIN):
-	(cp ttfadmin.sh $(BINDIR)/ttfadmin.sh; chmod -f 500 $(BINDIR)/ttfadmin.sh )
+	(cp -f ttfadmin.sh $(BINDIR)/ttfadmin.sh; chmod -f 500 $(BINDIR)/ttfadmin.sh )
 
 build:: $(TARGETS)
