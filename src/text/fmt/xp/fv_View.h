@@ -24,16 +24,12 @@
 
 #include "ut_misc.h"
 #include "ut_types.h"
-#include "ut_vector.h"
 #include "xav_View.h"
-#include "xav_Listener.h"
 #include "pt_Types.h"
 #include "gr_DrawArgs.h"
-#include "ev_EditBits.h"
-#include "ie_types.h"
-#include "xap_Prefs.h"
 
-#define AUTO_DRAW_POINT 600
+// number of milliseconds between cursor blinks
+const int AUTO_DRAW_POINT = 600;
 
 class FL_DocLayout;
 class fl_DocListener;
@@ -44,9 +40,7 @@ class fp_Run;
 class FG_Graphic;
 class PD_Document;
 class GR_Graphics;
-class GR_Image;
 class UT_Timer;
-class UT_ByteBuf;
 class AP_TopRulerInfo;
 class AP_LeftRulerInfo;
 class XAP_App;
@@ -105,7 +99,7 @@ public:
 	inline GR_Graphics*		getGraphics(void) const { return m_pG; }
 	inline UT_uint32		getPoint(void) const { return m_iInsPoint; }
 	inline UT_uint32		getSelectionAnchor(void) const { return m_bSelection? m_iSelectionAnchor : m_iInsPoint; }
-	
+
 	virtual void focusChange(AV_Focus focus);
 
 	virtual void	setXScrollOffset(UT_sint32);
