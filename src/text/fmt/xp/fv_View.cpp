@@ -1266,11 +1266,7 @@ void FV_View::moveInsPtTo(FV_DocPos dp)
 
 	_setPoint(iPos, (dp == FV_DOCPOS_EOL));
 
-	if (!_ensureThatInsertionPointIsOnScreen())
-	{
-		_fixInsertionPointCoords();
-		_drawInsertionPoint();
-	}
+	_ensureThatInsertionPointIsOnScreen();
 
 	notifyListeners(AV_CHG_MOTION);
 }
@@ -1291,8 +1287,7 @@ void FV_View::moveInsPtTo(PT_DocPosition dp)
 	  cmdScroll(AV_SCROLLCMD_LINERIGHT, (UT_uint32) (m_xPoint - m_iWindowWidth/2));
 	  notifyListeners(AV_CHG_MOTION);
 	*/
-	_ensureThatInsertionPointIsOnScreen();
-	
+	_ensureThatInsertionPointIsOnScreen(false);
 }
 
 
@@ -1490,11 +1485,7 @@ bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count, bool bForce)
 	// Signal PieceTable Changes have finished
 	m_pDoc->notifyPieceTableChangeEnd();
 
-	if (!_ensureThatInsertionPointIsOnScreen())
-	{
-		_fixInsertionPointCoords();
-		_drawInsertionPoint();
-	}
+	_ensureThatInsertionPointIsOnScreen();
 
 	return bResult;
 }
@@ -1592,11 +1583,7 @@ void FV_View::_insertSectionBreak(void)
 
 	_generalUpdate();
 
-	if (!_ensureThatInsertionPointIsOnScreen())
-	{
-		_fixInsertionPointCoords();
-		_drawInsertionPoint();
-	}
+	_ensureThatInsertionPointIsOnScreen();
 }
 
 bool FV_View::isCurrentListBlockEmpty(void)
@@ -1743,11 +1730,7 @@ void FV_View::processSelectedBlocks(List_Type listType)
 	m_pDoc->notifyPieceTableChangeEnd();
 	if (isSelectionEmpty())
 	{
-		if (!_ensureThatInsertionPointIsOnScreen())
-		{
-			_fixInsertionPointCoords();
-			_drawInsertionPoint();
-		}
+		_ensureThatInsertionPointIsOnScreen();
 	}
 
 }
@@ -1848,11 +1831,7 @@ void FV_View::insertParagraphBreak(void)
 	m_pDoc->notifyPieceTableChangeEnd();
 
 	_generalUpdate();
-	if (!_ensureThatInsertionPointIsOnScreen())
-	{
-		_fixInsertionPointCoords();
-		_drawInsertionPoint();
-	}
+	_ensureThatInsertionPointIsOnScreen();
 
 	m_pLayout->considerPendingSmartQuoteCandidate();
 	_checkPendingWordForSpell();
@@ -1883,11 +1862,7 @@ void FV_View::insertParagraphBreaknoListUpdate(void)
 		m_pDoc->endUserAtomicGlob();
 
 	_generalUpdate();
-	if (!_ensureThatInsertionPointIsOnScreen())
-	{
-		_fixInsertionPointCoords();
-		_drawInsertionPoint();
-	}
+	_ensureThatInsertionPointIsOnScreen();
 }
 
 bool FV_View::appendStyle(const XML_Char ** style)
@@ -2949,7 +2924,7 @@ void FV_View::changeListStyle(	fl_AutoNum* pAuto,
 	// Signal PieceTable Changes have finished
 	m_pDoc->notifyPieceTableChangeEnd();
 
-	_ensureThatInsertionPointIsOnScreen();
+	_ensureThatInsertionPointIsOnScreen(false);
 	DELETEP(attribs);
 	DELETEP(props);
 }
@@ -3436,11 +3411,7 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 		m_pDoc->enableListUpdates();
 		m_pDoc->updateDirtyLists();
 
-		if (!_ensureThatInsertionPointIsOnScreen())
-		{
-			_fixInsertionPointCoords();
-			_drawInsertionPoint();
-		}
+		_ensureThatInsertionPointIsOnScreen();
 	}
 	else
 	{
@@ -3581,11 +3552,7 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 		_generalUpdate();
 		free(props_in);
 
-		if (!_ensureThatInsertionPointIsOnScreen())
-		{
-			_fixInsertionPointCoords();
-			_drawInsertionPoint();
-		}
+		_ensureThatInsertionPointIsOnScreen();
 	}
 
 	// Signal PieceTable Changes have finished
@@ -3769,22 +3736,20 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 
 	UT_DEBUGMSG(("iNewPoint=%d, iOldPoint=%d, xClick=%d, yClick=%d\n",iNewPoint, iOldPoint, xClick, yClick));
 	UT_ASSERT(iNewPoint != iOldPoint);
-	 if((iNewPoint >= posBOD) && (iNewPoint <= posEOD) && 
-		((bNext && (iNewPoint >= iOldPoint)) 
-	  || (!bNext && (iNewPoint <= iOldPoint))))
-		_setPoint(iNewPoint, bEOL);
-
-	if (!_ensureThatInsertionPointIsOnScreen())
+	if((iNewPoint >= posBOD) && (iNewPoint <= posEOD) && 
+	   ((bNext && (iNewPoint >= iOldPoint)) 
+		|| (!bNext && (iNewPoint <= iOldPoint))))
 	{
-		_fixInsertionPointCoords();
-		_drawInsertionPoint();
+		_setPoint(iNewPoint, bEOL);
 	}
+
+	_ensureThatInsertionPointIsOnScreen();
 
 	// this is the only place where we override changes to m_xPointSticky
 	m_xPointSticky = xOldSticky;
 }
 
-bool FV_View::_ensureThatInsertionPointIsOnScreen(void)
+bool FV_View::_ensureThatInsertionPointIsOnScreen(bool bDrawIP)
 {
 	bool bRet = false;
 
@@ -3821,7 +3786,7 @@ bool FV_View::_ensureThatInsertionPointIsOnScreen(void)
 		cmdScroll(AV_SCROLLCMD_LINERIGHT, (UT_uint32)(m_xPoint - m_iWindowWidth + getPageViewLeftMargin()/2));
 		bRet = true;
 	}
-	if(bRet == false)
+	if(bRet == false && bDrawIP)
 	{
 		_fixInsertionPointCoords();
 		_drawInsertionPoint();
@@ -3918,7 +3883,7 @@ void FV_View::_moveInsPtToPage(fp_Page *page)
 	}
 
 	// also allow implicit horizontal scroll, if needed
-	if (!_ensureThatInsertionPointIsOnScreen() && !bVScroll)
+	if (!_ensureThatInsertionPointIsOnScreen(false) && !bVScroll)
 	{
 		_fixInsertionPointCoords();
 		_drawInsertionPoint();
@@ -4012,7 +3977,7 @@ void FV_View::extSelHorizontal(bool bForward, UT_uint32 count)
 		_extSel(iOldPoint);
 	}
 	
-	_ensureThatInsertionPointIsOnScreen();
+	_ensureThatInsertionPointIsOnScreen(false);
 
 	// It IS possible for the selection to be empty, even
 	// after extending it.  If the charMotion fails, for example,
@@ -4038,7 +4003,7 @@ void FV_View::extSelTo(FV_DocPos dp)
 
 	_extSelToPos(iPos);
 
-	if (!_ensureThatInsertionPointIsOnScreen())
+	if (!_ensureThatInsertionPointIsOnScreen(false))
 	{
 		if (isSelectionEmpty())
 		{
@@ -4077,10 +4042,9 @@ void FV_View::_autoScroll(UT_Timer * pTimer)
 	if (pView->getPoint() != iOldPoint)
 	{
 		// do the autoscroll
-		if (!pView->_ensureThatInsertionPointIsOnScreen())
+		if (!pView->_ensureThatInsertionPointIsOnScreen(false))
 		{
 			pView->_fixInsertionPointCoords();
-//			pView->_drawInsertionPoint();
 		}
 	}
 	else
@@ -4481,15 +4445,11 @@ bool FV_View::gotoTarget(AP_JumpTarget type, UT_UCSChar *data)
 
 	if (isSelectionEmpty())
 	{
-		if (!_ensureThatInsertionPointIsOnScreen())
-		{
-			_fixInsertionPointCoords();
-			_drawInsertionPoint();
-		}
+		_ensureThatInsertionPointIsOnScreen();
 	}
 	else
 	{
-		_ensureThatInsertionPointIsOnScreen();
+		_ensureThatInsertionPointIsOnScreen(false);
 	}
 
 	return false;

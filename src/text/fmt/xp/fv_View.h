@@ -370,7 +370,7 @@ protected:
 	void				_drawBetweenPositions(PT_DocPosition left, PT_DocPosition right);
 	bool				_clearBetweenPositions(PT_DocPosition left, PT_DocPosition right, bool bFullLineHeightRect);
 	
-	bool				_ensureThatInsertionPointIsOnScreen(void);
+	bool				_ensureThatInsertionPointIsOnScreen(bool bDrawIP = true);
 	void				_moveInsPtNextPrevPage(bool bNext);
 	void				_moveInsPtNextPrevLine(bool bNext);
 	fp_Page *			_getCurrentPage(void);
