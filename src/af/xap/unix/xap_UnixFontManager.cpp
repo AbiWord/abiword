@@ -290,14 +290,11 @@ void AP_UnixFontManager::_allocateThisFont(const char * line,
 		DELETEP(font);
 	}
 
-	// somewhere, one of these strings is getting freed twice,
-	// which isn't good.
-/*	
+	// be careful not to free strings built from strtok()
+	// or pointer math.
 	FREEP(newstuff);
-	FREEP(xlfd);
 	FREEP(metricfile);
 	FREEP(linedup);
-*/
 }
 	  
 void AP_UnixFontManager::_addFont(AP_UnixFont * font)
@@ -306,3 +303,11 @@ void AP_UnixFontManager::_addFont(AP_UnixFont * font)
 
 	m_fontHash.addEntry(font->getFontKey(), NULL, (void *) font);
 }
+
+
+
+
+
+
+
+

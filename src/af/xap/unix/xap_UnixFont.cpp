@@ -38,9 +38,11 @@ AP_UnixFont::AP_UnixFont(void)
 {
 	m_name = NULL;
 	m_style = AP_UnixFont::STYLE_LAST;
-		
+	m_xlfd = NULL;
+	
 	m_fontfile = NULL;
 	m_metricfile = NULL;
+
 	m_metricsData = NULL;
 	
 	m_PFAFile = NULL;
@@ -103,14 +105,18 @@ UT_Bool AP_UnixFont::openFileAs(const char * fontfile,
 	// run past the first field (foundry)
 	strtok(newxlfd, "-");
 	// save the second to a member
+	FREEP(m_name);
 	UT_cloneString(m_name, strtok(NULL, "-"));
 	
 	free(newxlfd);
 	
 	// save to memebers
+	FREEP(m_fontfile);
 	UT_cloneString(m_fontfile, fontfile);
+	FREEP(m_metricfile);
 	UT_cloneString(m_metricfile, metricfile);
 	m_style = s;
+	FREEP(m_xlfd);
 	UT_cloneString(m_xlfd, xlfd);
 
 	// update our key so we can be identified
