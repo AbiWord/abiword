@@ -2268,7 +2268,15 @@ void FV_View::cmdUndo(UT_uint32 count)
 
 	m_pDoc->undoCmd(count);
 
-	_drawInsertionPoint();
+	if (isSelectionEmpty())
+	{
+		_fixInsertionPointCoords();
+		_drawInsertionPoint();
+	}
+	else
+	{
+		_drawSelection();
+	}
 }
 
 void FV_View::cmdRedo(UT_uint32 count)
@@ -2284,7 +2292,15 @@ void FV_View::cmdRedo(UT_uint32 count)
 
 	m_pDoc->redoCmd(count);
 
-	_drawInsertionPoint();
+	if (isSelectionEmpty())
+	{
+		_fixInsertionPointCoords();
+		_drawInsertionPoint();
+	}
+	else
+	{
+		_drawSelection();
+	}
 }
 
 void FV_View::cmdSave(void)
