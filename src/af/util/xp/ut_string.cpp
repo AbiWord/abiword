@@ -198,6 +198,46 @@ UT_Bool UT_XML_cloneNoAmpersands(XML_Char *& rszDest, const XML_Char * szSource)
 	return UT_TRUE;
 }
 
+/* This uses the clone no ampersands but dumps into a static buffer */
+XML_Char *UT_XML_transNoAmpersands(const XML_Char * szSource)
+{
+	static XML_Char *rszDestBuffer = NULL;
+	static int       iDestBufferLength = 0;
+
+	if (szSource == NULL)
+		return NULL;
+
+	UT_uint32 length = UT_XML_strlen(szSource) + 1;
+	if (length > iDestBufferLength) {
+		if (rszDestBuffer && iDestBufferLength) {
+			free(rszDestBuffer);
+		}
+		iDestBufferLength = 0;
+		rszDestBuffer = (XML_Char *) calloc(length, sizeof(XML_Char));
+
+		if (!rszDestBuffer)
+			return NULL;
+
+		iDestBufferLength = length;
+	}
+	memset(rszDestBuffer, 0, iDestBufferLength);
+
+	const XML_Char * o = szSource;
+	XML_Char * n = rszDestBuffer;
+	while (*o != 0)
+	{
+		if (*o != '&')
+		{
+			*n = *o;
+			n++;
+		}
+		o++;
+	}
+
+	return rszDestBuffer;
+}
+
+
 // TODO : put a better strncpy here; resolve to platform version if available
 
 UT_uint32 UT_XML_strncpy(XML_Char * szDest, UT_uint32 nLen, const XML_Char * szSource)

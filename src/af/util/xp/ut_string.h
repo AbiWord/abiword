@@ -57,6 +57,8 @@ UT_uint32 UT_XML_strncpy(XML_Char * szDest, UT_uint32 nLen, const XML_Char * szS
 
 // this function allocates (and returns a pointer to) new memory for the new string
 UT_Bool UT_XML_cloneNoAmpersands(XML_Char *& rszDest, const XML_Char * szSource);
+// This function uses a static buffer to do the translation
+XML_Char *UT_XML_transNoAmpersands(const XML_Char * szSource);
 
 UT_uint32 UT_pointerArrayLength(void ** array);
    
