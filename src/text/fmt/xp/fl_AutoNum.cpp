@@ -52,7 +52,7 @@ fl_AutoNum::fl_AutoNum(UT_uint32 id, UT_uint32 start, const XML_Char * format, f
 	m_pItems.addItem(pFirst);	
 
 	_calculateLabelStr( 0 );
-
+	UT_DEBUGMSG(("SEVIOR: Made a new autonum \n"));
 }
 
 void fl_AutoNum::_calculateLabelStr(UT_uint32 depth)
@@ -61,9 +61,10 @@ void fl_AutoNum::_calculateLabelStr(UT_uint32 depth)
 	
 	UT_uint32 num_fchars, i;
 	num_fchars = 0;
-
+	UT_ASSERT( m_pParent != this);
 	if (m_pParent)
 	{
+	UT_DEBUGMSG(("SEVIOR: Going to depth %d in autonum \n",depth));
 		m_pParent->_calculateLabelStr(depth + 1);
 	}
 
@@ -156,7 +157,7 @@ void fl_AutoNum::_calculateLabelStr(UT_uint32 depth)
 	}
 	
 	UT_XML_cloneString(*&m_pszLabelStr, buf);
-	UT_DEBUGMSG(("[fl_AutoNum::_calculateLabelStr] List Label: %s\n", m_pszLabelStr));
+	UT_DEBUGMSG(("[fl_AutoNum::_calculateLabelStr] List Label: %s depth = %d \n", m_pszLabelStr,depth));
 }
 
 fl_AutoNum::~fl_AutoNum()
@@ -196,6 +197,7 @@ void fl_AutoNum::setFormat(const XML_Char * format)
 {
 	UT_ASSERT(format);
 	m_pszFormat = format;
+	UT_DEBUGMSG(("SEVIOR: Formatting autonum \n"));
 	_calculateLabelStr(0);
 	_updateItems(0);
 }
@@ -327,6 +329,9 @@ void fl_AutoNum::setParent(fl_AutoNum * pParent)
 
 void fl_AutoNum::update(UT_uint32 start)
 {
+	UT_DEBUGMSG(("SEVIOR: in autonum update start =\n",start));
+	if(isUpdating())
+	        return;
 	_calculateLabelStr(0);
 	_updateItems(start);
 	if (m_pParent && !m_pParent->isUpdating())
@@ -341,6 +346,7 @@ inline void fl_AutoNum::_updateItems(UT_uint32 start)
 	m_bUpdatingItems = UT_TRUE;
 	for (UT_uint32 i = start; i < m_pItems.getItemCount(); i++)
 	{
+	UT_DEBUGMSG(("SEVIOR: in autonum calling list update for item %i \n",i));
 		fl_Layout * pTmp = (fl_Layout *)m_pItems.getNthItem(i);
 		pTmp->listUpdate();
 	}

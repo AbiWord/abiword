@@ -174,6 +174,7 @@ public:
 	inline UT_Bool isListItem(void) const { return m_bListItem; }
 	inline fl_AutoNum * getAutoNum(void) const { return m_pAutoNum; }
 
+	char *  getFormatFromListType(List_Type iListType);
 	void remItemFromList(void);
 	virtual void listUpdate(void); 
 	void resumeList( fl_BlockLayout * prevList);
@@ -182,9 +183,11 @@ public:
 	List_Type getListType(void);
 	XML_Char* getListStyleString( List_Type iListType);
 
+	fl_BlockLayout * getNextList(UT_uint32 id);
 	UT_Bool isListLabelInBlock(void); 
 	void StartList( const XML_Char * style);
 	void StopList(void);
+	void deleteListLabel(void);
 	XML_Char * getListLabel(void);
 	void transferListFlags(void);
 	UT_uint32 getLevel(void);
@@ -192,6 +195,7 @@ public:
 	void setStopping( UT_Bool bValue);
         fl_BlockLayout * getPreviousList(UT_uint32 level);
         fl_BlockLayout * getPreviousList(void);
+
 	void findSquigglesForRun(fp_Run* pRun);
 	UT_uint32 canSlurp(fp_Line* pLine) const;
 

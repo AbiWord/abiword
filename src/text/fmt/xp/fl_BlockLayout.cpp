@@ -444,6 +444,7 @@ void fl_BlockLayout::_lookupProperties(void)
 		level = 0;
 
 	fl_BlockLayout * prevBlockInList = NULL;
+	fl_BlockLayout * nextBlockInList = NULL;
 	if(getAutoNum() != NULL)
 	{
 		// This block has a list item.
@@ -457,18 +458,30 @@ void fl_BlockLayout::_lookupProperties(void)
 	}
 	else if(id != 0)
 	{
-		// This block does not have an list item.
+		// This block does not have an list item. But it should.
 
-		// Find the previous block with the same level
+		// Find the previous block with the same id
 
-		prevBlockInList = getPreviousList( level);
+		prevBlockInList = getPreviousList( id);
 		if (prevBlockInList != NULL)
 		{
-			last_id = prevBlockInList->getAutoNum()->getID();
+			last_id = id;
 		}
-		else 
+		else  
 		{ 
-			last_id = 0;
+		  //
+		  // Look if the block has a matching ID later
+		  //
+		        nextBlockInList =  getNextList(id);
+			UT_DEBUGMSG(("SEVIOR for id %d found block %d \n",nextBlockInList));
+			if(nextBlockInList == NULL)
+			{
+			        last_id = 0;
+			}
+			else
+			{
+			        last_id = id;
+			}
 		}
 	}
 	
@@ -478,10 +491,19 @@ void fl_BlockLayout::_lookupProperties(void)
 	{
 		last_level = prevBlockInList->getLevel();
 	}
-	else 
+	else if(nextBlockInList != NULL)
+	{
+	        last_level = nextBlockInList->getLevel();
+	}
+	else
 	{
 		last_level = 0;
 	}
+
+
+	//
+	// OK finally the business end of the set up. Put in autonum stuff, stat/stop lists etc
+	//
 	if(id == 0 && level == 0 &&  m_pAutoNum != NULL)
 	{
 	        _stopList();
@@ -490,15 +512,25 @@ void fl_BlockLayout::_lookupProperties(void)
 	{
 		if ((level > last_level) && !m_bStartList)
 		{
-			if (last_level > 0 && !m_bListItem && !m_bStopList )
+			if (last_level > 0 && !m_bListItem && !m_bStopList && prevBlockInList != NULL)
+			{
 				_addBlockToPrevList(prevBlockInList);
-		
-			if (m_pAutoNum)
+			}
+			else if( last_level > 0 && !m_bListItem && !m_bStopList && nextBlockInList != NULL)
+			{
+			        _prependBlockToPrevList(nextBlockInList);
+			}
+			else if (m_pAutoNum != NULL)
+			{
 				curr_level = m_pAutoNum->getLevel();
-			else curr_level = 0;
-		
+			}
+			else 
+			{
+                                curr_level = 0;
+			}
 			while (curr_level < level)
 			{
+			  UT_DEBUGMSG(("SEVIOR: Calling _startlist, level, curr_level, last_level  \n",level,curr_level,last_level));
 				_startList(id);
 				curr_level++;
 			}
@@ -506,7 +538,6 @@ void fl_BlockLayout::_lookupProperties(void)
 		else if ((level == last_level))
 		{
 			/* For now, stop-list then start list */
-
 			if (!m_bStopList)
 			{
 				if (!m_pAutoNum)
@@ -536,8 +567,15 @@ void fl_BlockLayout::_lookupProperties(void)
 	{
 		// List id is the same so use list from previous block
 		// for this block.
-
-		_addBlockToPrevList(prevBlockInList);
+	  
+		if(prevBlockInList != NULL)
+		{
+		        _addBlockToPrevList(prevBlockInList);
+		}
+		else
+		{
+		        _prependBlockToPrevList(nextBlockInList);
+		}
 		m_bListItem = UT_TRUE;
 	}
 }
@@ -4086,18 +4124,27 @@ void fl_BlockLayout::recheckIgnoredWords()
 
 XML_Char* fl_BlockLayout::getListStyleString( List_Type iListType)
 {
-       XML_Char* style;
+        XML_Char* style;
 
-       // These strings match piece table styles and should not be 
-       // internationalized
-       UT_uint32 nlisttype = (UT_uint32) iListType;
-       if(nlisttype < 0 || nlisttype >= (UT_uint32) NOT_A_LIST)
+	// These strings match piece table styles and should not be 
+	// internationalized
+        UT_uint32 nlisttype = (UT_uint32) iListType;
+	if(nlisttype < 0 || nlisttype >= (UT_uint32) NOT_A_LIST)
 	      style = (XML_Char *) NULL;
-       else
+	else
 	      style = const_cast<XML_Char *>(xml_Lists[nlisttype]);
-       return style;
+	return style;
 }
 
+char *  fl_BlockLayout::getFormatFromListType( List_Type iListType)
+{
+        UT_uint32 nlisttype = (UT_uint32) iListType;
+	char * format = NULL;
+	if(nlisttype < 0 || nlisttype >= (UT_uint32) NOT_A_LIST)
+	      return format;
+	format = const_cast<char *>(fmt_Lists[nlisttype]);
+	return format;
+}
 
 List_Type fl_BlockLayout::decodeListType(char * listformat)
 {
@@ -4315,26 +4362,49 @@ void    fl_BlockLayout::StopList(void)
 	}
 }
 
-fl_BlockLayout * fl_BlockLayout::getPreviousList(UT_uint32 level)
+fl_BlockLayout * fl_BlockLayout::getPreviousList(UT_uint32 id)
 {
   //
-  // Find the most recent list item that matches the level given
+  // Find the most recent list item that matches the id given
   //
 	fl_BlockLayout * pPrev = getPrev();
-	UT_Bool bmatchLevel =  UT_FALSE;
+	UT_Bool bmatchid =  UT_FALSE;
 	if( pPrev != NULL && pPrev->isListItem())
 	{
-	        bmatchLevel = (UT_Bool) (level == pPrev->getLevel());
+	        bmatchid = (UT_Bool) (id == pPrev->getAutoNum()->getID());
 	}
-	while(pPrev != NULL && bmatchLevel == UT_FALSE) 
+	while(pPrev != NULL && bmatchid == UT_FALSE) 
 	{ 
 	        pPrev = pPrev->getPrev() ;
 		if( pPrev != NULL && pPrev->isListItem())
 	        {
-		        bmatchLevel = (UT_Bool) (level == pPrev->getLevel());
+		        bmatchid = (UT_Bool) (id == pPrev->getAutoNum()->getID());
 		}
 	}
         return pPrev;
+}
+
+
+fl_BlockLayout * fl_BlockLayout::getNextList(UT_uint32 id)
+{
+  //
+  // Find the next list  item that matches the id given
+  //
+	fl_BlockLayout * pNext = getNext();
+	UT_Bool bmatchLevel =  UT_FALSE;
+	if( pNext != NULL && pNext->isListItem())
+	{
+	        bmatchLevel = (UT_Bool) (id == pNext->getAutoNum()->getID());
+	}
+	while(pNext != NULL && bmatchLevel == UT_FALSE) 
+	{ 
+	        pNext = pNext->getNext() ;
+		if( pNext != NULL && pNext->isListItem())
+	        {
+		        bmatchLevel = (UT_Bool) (id == pNext->getAutoNum()->getID());
+		}
+	}
+        return pNext;
 }
 
 fl_BlockLayout * fl_BlockLayout::getPreviousList( void)
@@ -4522,6 +4592,12 @@ void fl_BlockLayout::_createListLabel(void)
 	}
 	m_bListLabelCreated = UT_TRUE;
 }
+
+void fl_BlockLayout::deleteListLabel(void)
+{
+        _deleteListLabel();
+}
+ 
 
 void fl_BlockLayout::_deleteListLabel(void)
 {

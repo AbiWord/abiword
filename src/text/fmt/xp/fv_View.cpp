@@ -1322,15 +1322,12 @@ void FV_View::insertParagraphBreak(void)
 	{
 	  //
 	  // Now deal with the case of entering a line before a list label
-	  // We remember the position in the list, stop the list then restore it
-          // after the line break. TODO Doesn't work on the first list  item
+	  // We flag were entering a new line and delete the current list label. After the we
+	  // insert the line break (which automatically write a new list label) we stop the list
+	  // in preceding block.
 	  //
-	         pPrevListBlock =  (fl_BlockLayout *) pBlock->getAutoNum()->getPrevInList(pBlock);
-		 if(pPrevListBlock != NULL && (pPrevListBlock != pBlock))//todo handle this case, ignore for now
-		 {
-	                  pBlock->StopList();
-			  bBefore = UT_TRUE;
-		 }
+	         bBefore = UT_TRUE;
+                 pBlock->deleteListLabel();
 	}
 
 	m_pDoc->insertStrux(getPoint(), PTX_Block);
@@ -1339,8 +1336,9 @@ void FV_View::insertParagraphBreak(void)
 	getCurrentBlock()->listUpdate();
 	if(bBefore == UT_TRUE)
 	{
-	        getCurrentBlock()->resumeList(pPrevListBlock);
-	        getCurrentBlock()->listUpdate();
+	          fl_BlockLayout * pPrev = getCurrentBlock()->getPrev();
+		  pPrev->StopList();
+		  _setPoint(getCurrentBlock()->getPosition());
 	}
 	m_pDoc->endUserAtomicGlob();
 
