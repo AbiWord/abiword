@@ -55,12 +55,13 @@ protected:
 	PtWidget_t * _constructWindow(void);
 	void		_populateWindowData(void);
 	void 		_storeWindowData(void);
+	virtual void		_updateLists();
 
 	// pointers to widgets we need to query/set
 	PtWidget_t * m_windowMain;
 
-	PtWidget_t * m_entryFind;
-	PtWidget_t * m_entryReplace;
+	PtWidget_t * m_comboFind;
+	PtWidget_t * m_comboReplace;
 	PtWidget_t * m_checkbuttonMatchCase;
 
 	PtWidget_t * m_buttonFindNext;
@@ -69,6 +70,8 @@ protected:
 
 	PtWidget_t * m_buttonCancel;
 	int 		 done;
+private:
+	void		_updateList(PtWidget_t *w,UT_Vector *list);
 };
 
 #endif /* AP_QNXDIALOG_REPLACE_H */

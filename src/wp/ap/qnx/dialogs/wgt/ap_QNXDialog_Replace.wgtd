@@ -68,9 +68,9 @@ toggleCase
 lock
 0
 0
-PtText
+PtComboBox
 3
-PtText
+PtComboBox
 1005
 dim
 291,27
@@ -79,7 +79,7 @@ pos
 125,11
 1014
 datas
-textFind
+comboFind
 10004000
 lock
 0
@@ -95,7 +95,7 @@ pos
 3,14
 1005
 dim
-73,21
+75,21
 1014
 datas
 lblFind
@@ -114,7 +114,7 @@ pos
 3,44
 1005
 dim
-92,21
+94,21
 1014
 datas
 lblReplace
@@ -122,9 +122,9 @@ lblReplace
 lock
 0
 0
-PtText
+PtComboBox
 3
-PtText
+PtComboBox
 1005
 dim
 291,27
@@ -133,7 +133,7 @@ pos
 125,42
 1014
 datas
-textReplace
+comboReplace
 10004000
 lock
 0

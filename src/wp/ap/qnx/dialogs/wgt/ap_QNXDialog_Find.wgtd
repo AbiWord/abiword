@@ -60,7 +60,7 @@ pos
 6,15
 1005
 dim
-73,21
+75,21
 1014
 datas
 lblFind
@@ -68,9 +68,9 @@ lblFind
 lock
 0
 0
-PtText
+PtComboBox
 3
-PtText
+PtComboBox
 1005
 dim
 203,27
@@ -79,7 +79,7 @@ pos
 90,12
 1014
 datas
-textFind
+comboFind
 10004000
 lock
 0
