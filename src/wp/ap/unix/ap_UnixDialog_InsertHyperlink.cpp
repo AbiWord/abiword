@@ -196,7 +196,7 @@ GtkWidget*  AP_UnixDialog_InsertHyperlink::_constructWindow(void)
   abiAddStockButton(GTK_DIALOG(m_windowMain), GTK_STOCK_CANCEL, BUTTON_CANCEL);
   abiAddStockButton(GTK_DIALOG(m_windowMain), GTK_STOCK_OK, BUTTON_OK);
 
-  gtk_widget_grab_focus (m_clist);
+  gtk_widget_grab_focus (m_entry);
 
   // connect all the signals
   _connectSignals ();
