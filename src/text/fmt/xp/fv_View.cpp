@@ -2769,6 +2769,9 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 	// Turn off list updates
 	m_pDoc->disableListUpdates();
 	bool bHaveSelect = false;
+//
+// FIXME Handle table columns here
+//
 	if (!isSelectionEmpty())
 	{
 		if (m_Selection.getSelectionAnchor() < posStart)

@@ -9400,10 +9400,34 @@ bool fl_BlockLayout::getNextTableElement(UT_GrowBuf * buf,
 		return false;
 	}
 	begPos = getPosition(false) + offset + i;
+	bool bFoundFootnote = false;
 	for(; i< iMax; i++)
 	{
 		curChar = static_cast<UT_UCS4Char>(*buf->getPointer(offset+i));
+		xxx_UT_DEBUGMSG(("CurChar %d pos %d \n",curChar,offset+i+begPos));
+		if(curChar == 0)
+		{
+			PT_DocPosition pos = offset+i+begPos;
+			if(m_pDoc->isFootnoteAtPos(pos))
+			{
+				bFoundFootnote = true;
+				continue;
+			}
+			if(m_pDoc->isEndFootnoteAtPos(pos))
+			{
+				bFoundFootnote = false;
+				continue;
+			}
+		}
+		if(bFoundFootnote)
+		{
+			continue;
+		}
 		sWord += curChar;
+		if(curChar == 7)
+		{
+			continue; // don't split on fields
+		}
 		if(UT_isWordDelimiter(curChar,UCS_UNKPUNK,UCS_UNKPUNK))
 		{
 			if( bIgnoreSpace && (curChar == UCS_SPACE))
