@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998, 1999 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,6 +18,7 @@
  */
 
 // Danish translations provided by Martin Willemoes Hansen <mwh@stampede.org>
+//                             and Birger Langkjer <birger.langkjer@image.dk>
 
 /*****************************************************************
 ******************************************************************
@@ -55,12 +56,12 @@ BeginSet(DaDK)
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_UNDO,		"Fortryd",	tb_undo_xpm,	NULL, "Fortryd")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_REDO,		"Gentag",	tb_redo_xpm,	NULL, "Gentag")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_CUT,		"Klip",		tb_cut_xpm,	NULL, "Klip")
-	ToolbarLabel(AP_TOOLBAR_ID_EDIT_COPY,		"Kopier",	tb_copy_xpm,	NULL, "Kopier")
+	ToolbarLabel(AP_TOOLBAR_ID_EDIT_COPY,		"Kopiér",	tb_copy_xpm,	NULL, "Kopiér")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_PASTE,		"Indsæt",	tb_paste_xpm,	NULL, "Indsæt")
 
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_STYLE,		"Stil",		NoIcon,			NULL, "Stil")
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_FONT,		"Font",		NoIcon,			NULL, "Font")
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_SIZE,		"Font størelse", 	NoIcon,		NULL, "Font Størelse")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_FONT,		"Skrift",		NoIcon,			NULL, "Skrift")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_SIZE,		"Skriftstørrelse", 	NoIcon,		NULL, "Skriftstørrelse")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_BOLD,		"Fed",		tb_text_bold_F_xpm,	NULL, "Fed")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_ITALIC,		"Kursiv",	tb_text_italic_K_xpm,	NULL, "Kursiv")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_UNDERLINE,	"Understreget",	tb_text_underline_xpm,	NULL, "Understreget")
@@ -69,18 +70,18 @@ BeginSet(DaDK)
 	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_LEFT,		"Venstre",	tb_text_align_left_xpm,	NULL, "Venstrestillet")
 	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_CENTER,	"Centreret",	tb_text_center_xpm,	NULL, "Centreret")
 	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_RIGHT,		"Højre",	tb_text_align_right_xpm,NULL, "Højrestillet")
-	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_JUSTIFY,	"Lige margener",tb_text_justify_xpm,	NULL, "Lige margener")
+	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_JUSTIFY,	"Lige margener",tb_text_justify_xpm,	NULL, "Lige marginer")
 
 	ToolbarLabel(AP_TOOLBAR_ID_PARA_0BEFORE,	"Ingen før",	tb_para_0before_xpm,	NULL, "Mellemrum før: Ingen")
 	ToolbarLabel(AP_TOOLBAR_ID_PARA_12BEFORE,	"12 pt før",	tb_para_12before_xpm,	NULL, "Mellemrum før: 12 pt")
 
-	ToolbarLabel(AP_TOOLBAR_ID_SINGLE_SPACE,	"Enkelt linjeafstand",	tb_line_single_space_xpm,	NULL, "Enkelt linjeafstand")
-	ToolbarLabel(AP_TOOLBAR_ID_MIDDLE_SPACE,	"1.5 linjeafstand",	tb_line_middle_space_xpm,	NULL, "1.5 linjeafstand")
-	ToolbarLabel(AP_TOOLBAR_ID_DOUBLE_SPACE,	"Dobbelt linjeafstand",	tb_line_double_space_xpm,	NULL, "Dobbelt linjeafstand")
+	ToolbarLabel(AP_TOOLBAR_ID_SINGLE_SPACE,	"Enkelt linieafstand",	tb_line_single_space_xpm,	NULL, "Enkelt linieafstand")
+	ToolbarLabel(AP_TOOLBAR_ID_MIDDLE_SPACE,	"1.5 linieafstand",	tb_line_middle_space_xpm,	NULL, "1.5 linieafstand")
+	ToolbarLabel(AP_TOOLBAR_ID_DOUBLE_SPACE,	"Dobbelt linieafstand",	tb_line_double_space_xpm,	NULL, "Dobbelt linieafstand")
 
-	ToolbarLabel(AP_TOOLBAR_ID_1COLUMN,		"1 Kolonne",	tb_1column_xpm,		NULL, "1 Kolonne")
-	ToolbarLabel(AP_TOOLBAR_ID_2COLUMN,		"2 Kolonner",	tb_2column_xpm,		NULL, "2 Kolonner")
-	ToolbarLabel(AP_TOOLBAR_ID_3COLUMN,		"3 Kolonner",	tb_3column_xpm,		NULL, "3 Kolonner")
+	ToolbarLabel(AP_TOOLBAR_ID_1COLUMN,		"1 kolonne",	tb_1column_xpm,		NULL, "1 kolonne")
+	ToolbarLabel(AP_TOOLBAR_ID_2COLUMN,		"2 kolonner",	tb_2column_xpm,		NULL, "2 kolonner")
+	ToolbarLabel(AP_TOOLBAR_ID_3COLUMN,		"3 kolonner",	tb_3column_xpm,		NULL, "3 kolonner")
 
 	ToolbarLabel(AP_TOOLBAR_ID_ZOOM,		"Zoom",		NoIcon,			NULL, "Zoom")
 	
