@@ -360,7 +360,7 @@
           <cell>LeftRuler</cell>
           <cell value="partially"><bug id="1215"/></cell>
           <cell value="yes"/>
-          <cell value="partially"><bug id="694"/>, <bug id="766"/></cell>
+          <cell value="partially"><bug id="694"/></cell>
           <cell value="na"/>
           <cell value="unknown"/>
           <cell value="unknown"/>
