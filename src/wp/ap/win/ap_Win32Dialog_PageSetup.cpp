@@ -499,14 +499,14 @@ BOOL AP_Win32Dialog_PageSetup::_onCommandTab(HWND hWnd, WPARAM wParam, LPARAM lP
 			if( selected != previous )
 			{
 				m_PageSize.Set( (fp_PageSize::Predefined)selected );
-				if( getPageUnits() != m_PageSize.getUnit() )
+				if( getPageUnits() != m_PageSize.getDims() )
 				{
 					SendDlgItemMessage( hWnd,
 								 		AP_RID_DIALOG_PAGE_SETUP_LBX_UNITS,
 								 		CB_SETCURSEL, 
-								 		(WPARAM) m_PageSize.getUnit(),
+								 		(WPARAM) m_PageSize.getDims(),
 							 			(LPARAM) 0);
-					setPageUnits( m_PageSize.getUnit() );
+					setPageUnits( m_PageSize.getDims() );
 				}
 				updateWidth();
 				updateHeight();
