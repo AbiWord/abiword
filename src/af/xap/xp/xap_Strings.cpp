@@ -66,29 +66,8 @@ const XML_Char * XAP_StringSet::getLanguageName(void) const
 
 UT_String XAP_StringSet::getValue(XAP_String_Id id, const char * inEncoding) const
 {
-  const char * toTranslate = getValue(id);
-
-  // bitch and complain if inEncoding is null, but return something anyway
-  UT_return_val_if_fail(inEncoding, UT_String(toTranslate));
-
-  UT_TRY
-    {
-      auto_iconv cd(m_encoding.c_str(), inEncoding);
-      
-      char * translated = UT_convert_cd(toTranslate, -1, cd, NULL, NULL);      
-      UT_ASSERT(translated);
-      
-      UT_String toReturn(translated);
-      free(translated);
-      
-      return toReturn;
-    }
-  UT_CATCH(UT_CATCH_ANY)
-    {
-      // return something anyway
-      return UT_String(toTranslate);
-    }
-  UT_END_CATCH
+	const char * toTranslate = getValue(id);
+	return UT_String(toTranslate);
 }
 
 UT_String XAP_StringSet::getValueUTF8(XAP_String_Id id) const
