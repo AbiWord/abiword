@@ -70,6 +70,7 @@ ABI_EXPORT const char * UT_convertToDimensionlessString(double value, const char
 ABI_EXPORT const char * UT_formatDimensionedValue(double value, const char * szUnits, const char * szPrecision = NULL);
 
 ABI_EXPORT bool UT_hasDimensionComponent(const char * sz);
+ABI_EXPORT bool UT_isValidDimensionString(const char * sz);
 
 
 UT_END_EXTERN_C

@@ -583,3 +583,27 @@ double UT_convertToDimension(const char* s, UT_Dimension dim)
 
 	return d;
 }
+
+bool UT_isValidDimensionString(const char * sz)
+{
+	// Check for validity of the input: the first part (before the dimension specifier)
+	// should only contain the characters '0'..'9' and/or at most one '.'. The last part possibly
+	// containing the dim specifier is not checked.
+	// This is not perfect, but good enough for most purposes. Feel free to improve the test.
+	
+	// FIXME: other locales might want to use another character as a decimal seperator.
+	//        we should be able to handle that too.	
+	UT_LocaleTransactor (LC_NUMERIC, "C");
+	const XML_Char* p = sz;
+	bool valid = true;
+	bool seenDecSep = false;
+	int valChars = 0;
+	while (*p && valid)
+	{
+		valid = isdigit(*p) || ((*p == '.') && seenDecSep == false);
+		if (*p == '.') seenDecSep = true;
+		if (valid) valChars++;
+		p++;
+	}
+	return valChars > 0;
+}

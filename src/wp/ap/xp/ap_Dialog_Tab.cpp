@@ -20,6 +20,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 #include "ut_assert.h"
 #include "ut_string.h"
 #include "ut_units.h"
@@ -206,7 +207,13 @@ void AP_Dialog_Tab::_event_Set(void)
 {
 	UT_String buffer;
 
-	buildTab(buffer);
+	// check the validity of the input
+	bool res = buildTab(buffer);
+	if (!res)
+	{
+		// TODO: add a message box here to inform our user - MARCM
+		return;
+	}
 
 	UT_DEBUGMSG(("DOM: %s\n", buffer.c_str()));
 
@@ -414,14 +421,20 @@ void AP_Dialog_Tab::clearList()
 }
 
 
-void AP_Dialog_Tab::buildTab( UT_String & buffer )
+bool AP_Dialog_Tab::buildTab( UT_String & buffer )
 {
 	// get current value from member
 	const XML_Char* szOld = _gatherTabEdit();
-	const XML_Char* szNew = UT_reformatDimensionString(m_dim, szOld); 
+	bool res = UT_isValidDimensionString(szOld);
+	if (res)
+	{
+		const XML_Char* szNew = UT_reformatDimensionString(m_dim, szOld); 
 
-	UT_String_sprintf( buffer, "%s/%c%c", szNew, AlignmentToChar(_gatherAlignment()),
-		 				(static_cast<char>(_gatherLeader()))+'0');
+		UT_String_sprintf( buffer, "%s/%c%c", szNew, AlignmentToChar(_gatherAlignment()),
+		 					(static_cast<char>(_gatherLeader()))+'0');
+	}
+	
+	return res;
 }
 
 void AP_Dialog_Tab::_event_somethingChanged()
@@ -707,4 +720,3 @@ void AP_Dialog_Tab::_doSpinValue(tControl id, double value)
 
 	_setDefaultTabStop(szNew);
 }
-
