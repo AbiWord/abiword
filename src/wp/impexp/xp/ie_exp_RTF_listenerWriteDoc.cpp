@@ -207,6 +207,13 @@ void s_RTF_ListenerWriteDoc::_outputData(const UT_UCSChar * data, UT_uint32 leng
 				else
 				{
 					for(int i=0;i<mblen;++i) {
+						switch (mbbuf[i]) 
+						{
+							case '\\':
+							case '{':
+							case '}':
+								*pBuf++ = '\\';
+						}
 						*pBuf++ = mbbuf[i];
 					}
 				}
