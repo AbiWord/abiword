@@ -169,54 +169,33 @@ bool AP_UnixApp::initialize(void)
     const char * szUserPrivateDirectory = getUserPrivateDirectory();
     bool bVerified = s_createDirectoryIfNecessary(szUserPrivateDirectory);
     UT_ASSERT(bVerified);
-	
+
     // load the preferences.
     
     m_prefs = new AP_UnixPrefs(this);
     m_prefs->fullInit();
 
-    // now that preferences are established, let the xap init
-		   
-    m_pClipboard = new AP_UnixClipboard(this);
-    UT_ASSERT(m_pClipboard);
-    m_pClipboard->initialize();
-    
-    m_pEMC = AP_GetEditMethods();
-    UT_ASSERT(m_pEMC);
-    
-    m_pBindingSet = new AP_BindingSet(m_pEMC);
-    UT_ASSERT(m_pBindingSet);
-	
-    m_pMenuActionSet = AP_CreateMenuActionSet();
-    UT_ASSERT(m_pMenuActionSet);
-    
-    m_pToolbarActionSet = AP_CreateToolbarActionSet();
-    UT_ASSERT(m_pToolbarActionSet);
-    
-    if (! XAP_UNIXBASEAPP::initialize())
-		return false;
 
-	//////////////////////////////////////////////////////////////////
-	// Initialize the importers/exporters
-	//////////////////////////////////////////////////////////////////
-	IE_ImpExp_RegisterXP ();
-    
     //////////////////////////////////////////////////////////////////
     // load the dialog and message box strings
+    //
+    // (we want to do this as soon as possible so that any errors in
+    // the initialization could be properly localized before being
+    // reported to the user)
     //////////////////////////////////////////////////////////////////
 	
     {
 		// assume we will be using the builtin set (either as the main
 		// set or as the fallback set).
-	    
+	
 		AP_BuiltinStringSet * pBuiltinStringSet = new AP_BuiltinStringSet(this,(XML_Char*)AP_PREF_DEFAULT_StringSet);
 		UT_ASSERT(pBuiltinStringSet);
 		m_pStringSet = pBuiltinStringSet;
 		// see if we should load an alternative set from the disk
-	    
+	
 		const char * szDirectory = NULL;
 		const char * szStringSet = NULL;
-	    
+	
 		if (   (getPrefsValue(AP_PREF_KEY_StringSet,
 							  (const XML_Char**)&szStringSet))
 			   && (szStringSet)
@@ -250,6 +229,32 @@ bool AP_UnixApp::initialize(void)
 			}
 		}
     }
+
+    // now that preferences are established, let the xap init
+		   
+    m_pClipboard = new AP_UnixClipboard(this);
+    UT_ASSERT(m_pClipboard);
+    m_pClipboard->initialize();
+    
+    m_pEMC = AP_GetEditMethods();
+    UT_ASSERT(m_pEMC);
+    
+    m_pBindingSet = new AP_BindingSet(m_pEMC);
+    UT_ASSERT(m_pBindingSet);
+	
+    m_pMenuActionSet = AP_CreateMenuActionSet();
+    UT_ASSERT(m_pMenuActionSet);
+    
+    m_pToolbarActionSet = AP_CreateToolbarActionSet();
+    UT_ASSERT(m_pToolbarActionSet);
+    
+    if (! XAP_UNIXBASEAPP::initialize())
+		return false;
+
+	//////////////////////////////////////////////////////////////////
+	// Initialize the importers/exporters
+	//////////////////////////////////////////////////////////////////
+	IE_ImpExp_RegisterXP ();
 	
     // Now we have the strings loaded we can populate the field names correctly
     int i;
