@@ -198,7 +198,7 @@ BeginLayout(Main,0)
                         MenuItem(AP_MENU_ID_INSERT_GRAPHIC)
                 EndSubMenu()
 #else
-                MenuItem(AP_MENU_ID_INSERT_GRAPHIC)
+                MenuItem(AP_MENU_ID_INSERT_PICTURE)
 #endif
 	EndSubMenu()
 

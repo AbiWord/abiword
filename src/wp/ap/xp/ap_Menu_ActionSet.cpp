@@ -147,7 +147,11 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	// QUACK Un-DEBUG here to activate endnotes!
 	_s(AP_MENU_ID_INSERT_ENDNOTE,	0,0,0,	"insEndnote",		NULL,					NULL);
 #endif
+#ifdef HAVE_GNOME
 	_s(AP_MENU_ID_INSERT_PICTURE,   1,0,0,  NULL, NULL, NULL);
+#else
+	_s(AP_MENU_ID_INSERT_PICTURE,   0,1,0,  "fileInsertGraphic",NULL,                   NULL);
+#endif
 	_s(AP_MENU_ID_INSERT_CLIPART,   0,1,0,  "insertClipart",    NULL,                   NULL);
 	_s(AP_MENU_ID_INSERT_GRAPHIC,	0,1,0,	"fileInsertGraphic",NULL,					NULL);
 	_s(AP_MENU_ID_FORMAT,			1,0,0,	NULL,				NULL,					NULL);
