@@ -37,12 +37,12 @@ AC_DEFUN([GNOME_COMPILE_WARNINGS],[
     if test "x$GCC" = "xyes"; then
       case " $CFLAGS " in
       *[\ \	]-ansi[\ \	]*) ;;
-      *) complCFLAGS="$complCFLAGS -ansi" ;;
+      *) complCFLAGS="-ansi $complCFLAGS" ;;
       esac
 
       case " $CFLAGS " in
       *[\ \	]-pedantic[\ \	]*) ;;
-      *) complCFLAGS="$complCFLAGS -pedantic" ;;
+      *) complCFLAGS="-pedantic $complCFLAGS" ;;
       esac
     fi
   fi
@@ -91,12 +91,12 @@ AC_DEFUN([GNOME_CXX_WARNINGS],[
      if test "x$GCC" = "xyes"; then
       case " $CXXFLAGS " in
       *[\ \	]-ansi[\ \	]*) ;;
-      *) complCXXFLAGS="$complCXXFLAGS -ansi" ;;
+      *) complCXXFLAGS="-ansi $complCXXFLAGS" ;;
       esac
 
       case " $CXXFLAGS " in
       *[\ \	]-pedantic[\ \	]*) ;;
-      *) complCXXFLAGS="$complCXXFLAGS -pedantic" ;;
+      *) complCXXFLAGS="-pedantic $complCXXFLAGS" ;;
       esac
      fi
    fi
