@@ -5,6 +5,7 @@
 #include "spell_manager.h"
 #include "ut_string_class.h"
 #include "ut_vector.h"
+#include "barbarisms.h"		  
 
 struct DictionaryMapping
 {
@@ -52,6 +53,7 @@ private:
 	bool m_bSuccessfulInit;
 
 	ispell_state_t	*m_pISpellState;
+	Barbarisms		m_barbarism;
 
 	static UT_Vector m_mapping; // vector of DictionaryMapping*
 	static UT_uint32 mRefCnt ;
