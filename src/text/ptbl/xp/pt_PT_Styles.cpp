@@ -233,11 +233,11 @@ bool pt_PieceTable::_loadBuiltinStyles(void)
 		"start-value:1; margin-left:0.0in; text-indent:0.0in; "
 		"field-color:transparent; list-delim:%s %%L.; "
 		"field-font:%s; list-decimal:";
-	UT_String_sprintf(stTmp, szFmt, pszFamily, "Chapter");
+	UT_String_sprintf(stTmp, szFmt, "Chapter", pszFamily);
 
     _s("Chapter Heading","P","Numbered Heading 1","Normal", stTmp.c_str());
 
-	UT_String_sprintf(stTmp, szFmt, pszFamily, "Section");
+	UT_String_sprintf(stTmp, szFmt, "Section", pszFamily);
     _s("Section Heading","P","Numbered Heading 1","Normal", stTmp.c_str());
 
 	_s("Endnote Reference","C", "None", "Current Settings", "text-position:superscript; font-size:10pt");
