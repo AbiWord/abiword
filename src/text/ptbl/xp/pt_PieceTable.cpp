@@ -877,7 +877,6 @@ bool pt_PieceTable::_getStruxFromFrag(pf_Frag * pfStart, pf_Frag_Strux ** ppfs) 
 	*ppfs = NULL;
 
 	pf_Frag * pf;
-
 	for (pf=pfStart->getPrev(); (pf && (pf->getType() != pf_Frag::PFT_Strux)); pf=pf->getPrev())
 		;
 	if (!pf)

@@ -3587,6 +3587,10 @@ void FV_View::cmdUndo(UT_uint32 count)
 	{
 		_charMotion(true,1);
 	}
+	while(!isPointLegal() && (getPoint() > 2))
+	{
+		_charMotion(false,1);
+	}
 	setCursorToContext();
 
 
