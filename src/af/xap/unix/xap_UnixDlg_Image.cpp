@@ -100,6 +100,8 @@ void XAP_UnixDialog_Image::doHeightSpin(void)
 {
 	bool bIncrement = true;
 	UT_sint32 val = gtk_spin_button_get_value_as_int( GTK_SPIN_BUTTON(m_wHeightSpin));
+	if (val == m_iHeight)
+		return;
 	if(val < m_iHeight)
 	{
 		bIncrement = false;
@@ -115,6 +117,8 @@ void XAP_UnixDialog_Image::doWidthSpin(void)
 {
 	bool bIncrement = true;
 	UT_sint32 val = gtk_spin_button_get_value_as_int( GTK_SPIN_BUTTON(m_wWidthSpin));
+	if (val == m_iWidth)
+		return;	
 	if(val < m_iWidth)
 	{
 		bIncrement = false;
