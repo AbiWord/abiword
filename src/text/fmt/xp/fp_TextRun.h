@@ -50,6 +50,7 @@ public:
 	virtual bool			findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, bool bForce=false);
 	virtual UT_sint32		findTrailingSpaceDistance(void) const;
 	virtual UT_sint32		findTrailingSpaceDistanceInLayoutUnits(void) const;
+	UT_uint32               countTrailingSpaces(void) const;
 	void					drawSquiggle(UT_uint32, UT_uint32);
 	
 	bool					split(UT_uint32 iSplitOffset);
@@ -57,7 +58,7 @@ public:
 	virtual bool			hasLayoutProperties(void) const;
 	virtual void			fetchCharWidths(fl_CharWidths * pgbCharWidths);
 	virtual bool			recalcWidth(void);
-
+	virtual bool            canContainPoint(void) const;
 	bool					canMergeWithNext(void);
 	void					mergeWithNext(void);
 
@@ -83,21 +84,6 @@ public:
 	virtual bool			doesContainNonBlankData(void) const;
 	inline virtual bool	isSuperscript(void) const;
 	inline virtual bool	isSubscript(void) const;
-	inline virtual bool	isUnderline(void) const;
-	inline virtual bool	isOverline(void) const;
-	inline virtual bool	isStrikethrough(void) const;
-	virtual void			setLinethickness(UT_sint32 max_linethickness);
-	virtual UT_sint32		getLinethickness(void);
-	virtual void			setUnderlineXoff(UT_sint32 xoff);
-	virtual UT_sint32		getUnderlineXoff(void);
-	virtual void			setOverlineXoff(UT_sint32 xoff);
-	virtual UT_sint32		getOverlineXoff(void);
-	virtual void			setMaxUnderline(UT_sint32 xoff);
-	virtual UT_sint32		getMaxUnderline(void);
-	virtual void			setMinOverline(UT_sint32 xoff);
-	virtual UT_sint32		getMinOverline(void);
-	UT_uint32				countTrailingSpaces(void) const;
-    bool                 canContainPoint(void) const;
 	GR_Font*				getFont(void) const
 		{ return m_pScreenFont; }
 	UT_RGBColor				getFGColor(void) const
@@ -129,8 +115,7 @@ protected:
 	void					_fetchCharWidths(GR_Font* pFont, UT_uint16* pCharWidths);
 	virtual void			_draw(dg_DrawArgs*);
 	virtual void       		_clearScreen(bool bFullLineHeightRect);
-	
-	void					_drawDecors(UT_sint32, UT_sint32);
+
     void                    _drawInvisibleSpaces(UT_sint32, UT_sint32);
     void                    _drawInvisibles(UT_sint32, UT_sint32);
 	void					_drawSquiggle(UT_sint32 top, UT_sint32 left, UT_sint32 right);
@@ -155,14 +140,6 @@ protected:
 									  UT_uint32 iLen,
 									  const UT_GrowBuf * pgbCharWidths);
 
-	enum
-	{
-		TEXT_DECOR_UNDERLINE = 		0x01,
-		TEXT_DECOR_OVERLINE = 		0x10,
-		TEXT_DECOR_LINETHROUGH = 	0x04
-	};
-	unsigned char			m_fDecorations;
-	UT_sint32				m_iLineWidth;
 
 	enum
 	{
@@ -190,11 +167,6 @@ protected:
 		JUSTIFICATION_NOT_USED = -1
 	};
 	UT_sint32				m_iSpaceWidthBeforeJustification;
-	UT_sint32                               m_iLinethickness;
-	UT_sint32                               m_iUnderlineXoff;
-	UT_sint32                               m_imaxUnderline;
-	UT_sint32                               m_iminOverline;
-	UT_sint32                               m_iOverlineXoff;
 
 	// !!! the m_pLanguage member cannot be set to an arbitrary string pointer
 	// but only a pointer in the static table of the UT_Language class !!!

@@ -148,7 +148,7 @@ void AP_Dialog_Tab::_populateWindowData(void)
 void AP_Dialog_Tab::_initEnableControls()
 {
 	// alignment
-	_controlEnable( id_ALIGN_BAR,			false );
+	_controlEnable( id_ALIGN_BAR,			true );
 
 	// buttons
 	_controlEnable( id_BUTTON_SET,			false );
@@ -348,7 +348,8 @@ void AP_Dialog_Tab::_event_ClearAll(void)
 		break;
 
 	case FL_TAB_BAR:
-		// fall through
+		ch = 'B';
+		break;
 
 	default:
 		UT_ASSERT(UT_NOT_IMPLEMENTED);
@@ -381,8 +382,8 @@ void AP_Dialog_Tab::_event_ClearAll(void)
 		break;
 
 	case 'B':					// not implemented, fall though
-		//a = FL_TAB_BAR;
-		//break;
+		a = FL_TAB_BAR;
+		break;
 
 	default:
 		UT_ASSERT(UT_NOT_IMPLEMENTED);

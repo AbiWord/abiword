@@ -908,18 +908,6 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		pBL->StopList();
 		goto finish_up;
 	}
-	case PX_ChangeRecord::PXT_DontChangeInsPoint:
-	{
-		FV_View* pView = m_pLayout->getView();
-		pView->setDontChangeInsPoint();
-		goto finish_up;
-	}
-	case PX_ChangeRecord::PXT_AllowChangeInsPoint:
-	{
-		FV_View* pView = m_pLayout->getView();
-		pView->allowChangeInsPoint();
-		goto finish_up;
-	}
 	case PX_ChangeRecord::PXT_UpdateField:
 	{
 		fl_Layout * pL = (fl_Layout *)sfh;
@@ -940,6 +928,35 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		pBL->m_pAutoNum = NULL;
 		pBL->m_bListItem = false;
 		pBL->m_bStopList = false;
+		goto finish_up;
+	}
+	case PX_ChangeRecord::PXT_UpdateLayout:
+	{
+		fl_Layout * pL = (fl_Layout *)sfh;
+		UT_ASSERT(pL->getType() == PTX_Block);
+		fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
+		pBL->getDocLayout()->updateLayout();
+		FV_View * pView = pBL->getDocLayout()->getView();
+		if(pView)
+		{
+		// remember the state of the cursor.
+			bool bCursorErased = false;
+			if (pView->isCursorOn() == true)
+			{
+				pView->eraseInsertionPoint();
+				bCursorErased = true;
+			}
+//			pView->updateScreen(false);
+			pView->notifyListeners(AV_CHG_HDRFTR);
+//
+// Redraw the cursor if needed
+//
+			if (bCursorErased == true)
+			{
+				pView->drawInsertionPoint();
+			}
+		}
+
 		goto finish_up;
 	}
 	default:

@@ -35,6 +35,7 @@
 #include "ap_Dialog_Id.h"
 #include "ap_UnixDialog_Styles.h"
 #include "fl_DocLayout.h"
+#include "fl_BlockLayout.h"
 #include "fv_View.h"
 #include "pd_Style.h"
 #include "ut_string_class.h"

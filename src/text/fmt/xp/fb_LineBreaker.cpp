@@ -191,8 +191,10 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 						switch ( iType ) 
 						{
 						case FL_TAB_BAR:
-							UT_DEBUGMSG(("BAR - not implemented - defaulting to LEFT"));
-							// Fall through!
+							m_iWorkingLineWidth = iPos;
+							break;
+// fl_TAB_Bar are left aligned.
+
 						case FL_TAB_LEFT:
 							m_iWorkingLineWidth = iPos;
 							break;

@@ -1095,6 +1095,21 @@ bool   PD_Document::updateDocForStyleChange(const XML_Char * szStyle,
 	return true;
 }
 
+
+/*!
+ * This method updates all the layouts associated with the document.
+*/
+void  PD_Document::updateAllLayoutsInDoc( PL_StruxDocHandle sdh)
+{
+	pf_Frag_Strux * pfs = (pf_Frag_Strux *) sdh;
+	PT_AttrPropIndex indexAP = pfs->getIndexAP();
+	PT_DocPosition pos = getStruxPosition(sdh);
+	PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_ChangeStrux,
+												pos,indexAP);
+	notifyListeners(pfs, pcr);
+	delete pcr;
+}
+
 //////////////////////////////////////////////////////////////////
 
 void PD_Document::clearIfAtFmtMark (PT_DocPosition dpos)

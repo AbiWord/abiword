@@ -182,7 +182,7 @@ public:
 	bool					setStyleProperties(const XML_Char * szStyleName, const XML_Char ** pProperties);
 	bool					updateDocForStyleChange(const XML_Char * szStyleName,
 													bool isParaStyle);
-
+	void                    updateAllLayoutsInDoc( PL_StruxDocHandle sdh);
 	void					clearIfAtFmtMark(PT_DocPosition dpos);
 
 	const char *			getFileName() { return m_szFilename; }

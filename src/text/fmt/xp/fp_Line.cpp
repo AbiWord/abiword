@@ -864,17 +864,17 @@ void fp_Line::layout(void)
 			int iScanWidthLayoutUnits = 0;
 
 			pTabRun->setLeader(iTabLeader);
-
+			pTabRun->setTabType(iTabType);
 			// for everybody except the left tab, we need to know how much text is to follow
 			switch ( iTabType )
 			{
 			case FL_TAB_LEFT:
-				{
-				iXLayoutUnits = (iPosLayoutUnits + iStartXLayoutUnits);
-				iX = iXLayoutUnits * Screen_resolution / UT_LAYOUT_UNITS;
-				pTabRun->setWidth(iX - pTabRun->getX());
+			    {
+					iXLayoutUnits = (iPosLayoutUnits + iStartXLayoutUnits);
+					iX = iXLayoutUnits * Screen_resolution / UT_LAYOUT_UNITS;
+					pTabRun->setWidth(iX - pTabRun->getX());
 				}
-				break;
+			break;
 
 			case FL_TAB_CENTER:
 				for ( pScanRun = pRun->getNext();
@@ -975,6 +975,12 @@ void fp_Line::layout(void)
 			}
 		
 			case FL_TAB_BAR:
+			    {
+					iXLayoutUnits = (iPosLayoutUnits + iStartXLayoutUnits);
+					iX = iXLayoutUnits * Screen_resolution / UT_LAYOUT_UNITS;
+					pTabRun->setWidth(iX - pTabRun->getX());
+				}
+			break;
 
 			default:
 				UT_ASSERT(UT_NOT_IMPLEMENTED);

@@ -176,21 +176,22 @@ public:
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection) = 0;
 	virtual void			lookupProperties(void) = 0;
 	virtual bool			doesContainNonBlankData(void) const { return true; }	// Things like text whould return false if it is all spaces.
+	void                    drawDecors(UT_sint32 xoff, UT_sint32 yoff);
 	virtual bool			isSuperscript(void) const { return false; }
 	virtual bool			isSubscript(void) const { return false; }
-	virtual bool			isUnderline(void) const { return false; };
-	virtual bool			isOverline(void) const { return false; };
-	virtual bool			isStrikethrough(void) const { return false; };
-	virtual void			setLinethickness(UT_sint32 max_linethickness) { return; };
-	virtual UT_sint32		getLinethickness(void) {return 0; } ;
-	virtual void			setUnderlineXoff(UT_sint32 xoff) { return; };
-	virtual UT_sint32		getUnderlineXoff(void) { return 0; } ;
-	virtual void			setOverlineXoff(UT_sint32 xoff){ return ;};
-	virtual UT_sint32		getOverlineXoff(void) {return 0; };
-	virtual void			setMaxUnderline(UT_sint32 xoff){ return; };
-	virtual UT_sint32		getMaxUnderline(void) {return 0; };
-	virtual void			setMinOverline(UT_sint32 xoff) {return; };
-	virtual UT_sint32		getMinOverline(void) { return 0; };
+    bool			        isUnderline(void) const ;
+	bool			        isOverline(void) const ;
+	bool			        isStrikethrough(void) const ;
+	void			        setLinethickness(UT_sint32 max_linethickness);
+    UT_sint32		        getLinethickness(void) ;
+	void			        setUnderlineXoff(UT_sint32 xoff);
+	UT_sint32		        getUnderlineXoff(void);
+	void			        setOverlineXoff(UT_sint32 xoff) ;
+	UT_sint32		        getOverlineXoff(void) ;
+	void			        setMaxUnderline(UT_sint32 xoff) ;
+	UT_sint32		        getMaxUnderline(void) ;
+	void			        setMinOverline(UT_sint32 xoff) ;
+	UT_sint32		        getMinOverline(void) ;
 
 #ifdef BIDI_ENABLED
 	UT_sint32		inline getDirection(){return m_iDirection; };
@@ -243,6 +244,23 @@ protected:
 
 	GR_Font * m_pScreenFont;
 	GR_Font * m_pLayoutFont;
+//
+// Variables to draw underlines for all runs
+//
+	enum
+	{
+		TEXT_DECOR_UNDERLINE = 		0x01,
+		TEXT_DECOR_OVERLINE = 		0x10,
+		TEXT_DECOR_LINETHROUGH = 	0x04
+	};
+
+	unsigned char			                m_fDecorations;
+	UT_sint32				                m_iLineWidth;
+	UT_sint32                               m_iLinethickness;
+	UT_sint32                               m_iUnderlineXoff;
+	UT_sint32                               m_imaxUnderline;
+	UT_sint32                               m_iminOverline;
+	UT_sint32                               m_iOverlineXoff;
 
 private:
 	fp_Run(const fp_Run&);			// no impl.
@@ -261,16 +279,18 @@ public:
 	virtual bool			canBreakBefore(void) const;
 	virtual bool			letPointPass(void) const;
 	void			       	setWidth(UT_sint32);
-	void			       	setLeader(eTabLeader);
-	eTabLeader			getLeader(void);
-
+	void			       	setLeader(eTabLeader iTabType);
+	eTabLeader			    getLeader(void);
+	void                    setTabType(eTabType iTabType);
+	eTabType                getTabType(void) const;
 protected:
-	UT_RGBColor			m_colorFG;
-	eTabLeader			m_leader;
-
 	virtual void			_drawArrow(UT_uint32 iLeft,UT_uint32 iTop,UT_uint32 iWidth, UT_uint32 iHeight);
 	virtual void			_draw(dg_DrawArgs*);
 	virtual void			_clearScreen(bool bFullLineHeightRect);
+private:
+	UT_RGBColor			    m_colorFG;
+	eTabLeader			    m_leader;
+    eTabType                m_TabType;
 };
 
 class fp_ForcedLineBreakRun : public fp_Run

@@ -104,7 +104,8 @@ fp_Run::fp_Run(fl_BlockLayout* pBL,
 #ifdef BIDI_ENABLED
 	m_iDirection = -1; //by default all runs are whitespace
 #endif
-
+	m_fDecorations = 0;
+	m_iLineWidth = 0;
 }
 
 
@@ -497,6 +498,249 @@ const PP_AttrProp* fp_Run::getAP(void) const
 	return pSpanAP;
 }
 
+
+void fp_Run::drawDecors(UT_sint32 xoff, UT_sint32 yoff)
+{
+	/*
+	  Upon entry to this function, yoff is the TOP of the run,
+	  NOT the baseline.
+	*/
+
+     /*
+	Here is the code to work out the position and thickness of under
+        and overlines for a run of text. This is neccessary because an
+underline or overline could shift position depending on the text size -
+particularly for subscripts and superscripts. We can't work out where to put
+the lines until the end of the lined span. This info is saved in the fp_Run
+class. If a underline or overline is pending (because the next run continues
+ the underline or overline), mark the next run as dirty to make sure it is
+drawn.
+     */
+	
+	if( (m_fDecorations & (TEXT_DECOR_UNDERLINE | TEXT_DECOR_OVERLINE |
+			TEXT_DECOR_LINETHROUGH)) == 0)
+	{
+		return;
+	}
+
+	const UT_sint32 old_LineWidth = m_iLineWidth;
+	UT_sint32 cur_linewidth = 1+ (UT_MAX(10,m_iAscent)-10)/8;
+	UT_sint32 iDrop = 0;
+	fp_Run* P_Run = getPrev();
+	fp_Run* N_Run = getNext();
+	const bool b_Underline = isUnderline();
+	const bool b_Overline = isOverline();
+	const bool b_Strikethrough = isStrikethrough();
+	const bool b_Firstrun = (P_Run == NULL) || (getLine()->getFirstRun()== this);
+	const bool b_Lastrun = (N_Run == NULL) || (getLine()->getLastRun()== this);
+
+	/*
+	  If the previous run is NULL or if this is the first run of a line,
+we are on the first run of the line so set the linethickness, start of the line span and the overline and underline positions from the current measurements.
+	*/
+	if(P_Run == NULL || b_Firstrun )
+	{
+		setLinethickness(cur_linewidth);
+		if(b_Underline)
+		{
+			iDrop = yoff + m_iAscent + m_iDescent/3;
+			setUnderlineXoff( xoff);
+			setMaxUnderline(iDrop);
+		}
+		if(b_Overline)
+		{
+			iDrop = yoff + 1 + (UT_MAX(10,m_iAscent) - 10)/8;
+			setOverlineXoff( xoff);
+			setMinOverline(iDrop);
+		}
+	}
+	/*
+	  Otherwise look to see if the previous run had an underline or
+overline. If it does, merge the information with the present information. Take
+the Maximum of the underline offsets and the minimum of the overline offsets.
+Always take the maximum of the linewidths. If there is no previous underline
+or overline set the underline and overline locations with the current data.
+	*/
+	else
+	{
+		if (!P_Run->isUnderline() && !P_Run->isOverline() &&
+			!P_Run->isStrikethrough())
+		{
+			setLinethickness(cur_linewidth);
+		}
+		else
+		{
+			setLinethickness(UT_MAX(P_Run->getLinethickness(),cur_linewidth));
+		}
+ 	      if (b_Underline)
+	      {
+			  iDrop = yoff + m_iAscent + m_iDescent/3;
+			  if(!P_Run->isUnderline())
+			  {
+				  setUnderlineXoff( xoff);
+				  setMaxUnderline(iDrop);
+			  }
+			  else
+			  {
+				  setUnderlineXoff( P_Run->getUnderlineXoff());
+				  setMaxUnderline(UT_MAX( P_Run->getMaxUnderline(), iDrop));
+			  }
+		}
+ 	      if (b_Overline)
+	      {
+		     iDrop = yoff + 1 + (UT_MAX(10,m_iAscent) - 10)/8;
+		     if(!P_Run->isOverline())
+		     {
+				 setOverlineXoff( xoff);
+				 setMinOverline(iDrop);
+		     }
+		     else
+		     {
+				 setOverlineXoff( P_Run->getOverlineXoff());
+				 setMinOverline(UT_MIN( P_Run->getMinOverline(), iDrop));
+		     }
+		  }
+	}
+	m_iLineWidth = getLinethickness();
+	m_pG->setLineWidth(m_iLineWidth);
+	/*
+	  If the next run returns NULL or if we are on the last run
+ we've reached the of the line of text so the overlines and underlines must
+be drawn.
+	*/
+	if(N_Run == NULL  || b_Lastrun)
+	{
+		if ( b_Underline)
+		{
+			iDrop = UT_MAX( getMaxUnderline(), iDrop);
+			UT_sint32 totx = getUnderlineXoff();
+			m_pG->drawLine(totx, iDrop, xoff+getWidth(), iDrop);
+		}
+		if ( b_Overline)
+		{
+			iDrop = UT_MIN( getMinOverline(), iDrop);
+			UT_sint32 totx = getOverlineXoff();
+			m_pG->drawLine(totx, iDrop, xoff+getWidth(), iDrop);
+		}
+	}
+	/*
+	   Otherwise look to see if the next run has an underline or overline
+if not, draw the line, if does mark the next run as dirty to make sure it
+is drawn later.
+	*/
+	else
+	{
+		if ( b_Underline )
+		{
+		     if(!N_Run->isUnderline())
+		     {
+				 iDrop = UT_MAX( getMaxUnderline(), iDrop);
+				 UT_sint32 totx = getUnderlineXoff();
+				 m_pG->drawLine(totx, iDrop, xoff+getWidth(), iDrop);
+		     }
+		     else
+		     {
+		          N_Run->markAsDirty();
+		     }
+		}
+		if ( b_Overline )
+		{
+			if(!N_Run->isOverline())
+			{
+				iDrop = UT_MIN( getMinOverline(), iDrop);
+				UT_sint32 totx = getOverlineXoff();
+				m_pG->drawLine(totx, iDrop, xoff+getWidth(), iDrop);
+			}
+			else
+			{
+				N_Run->markAsDirty();
+			}
+		}
+	}
+	/*
+	  We always want strikethrough to go right through the middle of the
+text so we can keep the original code.
+	*/
+	if ( b_Strikethrough)
+	{
+		iDrop = yoff + getAscent() * 2 / 3;
+		m_pG->drawLine(xoff, iDrop, xoff+getWidth(), iDrop);
+	}
+	/*
+	   Restore the previous line width.
+	*/
+	m_iLineWidth = old_LineWidth;
+	m_pG->setLineWidth(m_iLineWidth);
+}
+
+
+inline bool fp_Run::isUnderline(void) const
+{
+	return ((m_fDecorations & TEXT_DECOR_UNDERLINE) !=  0);
+}
+
+
+inline bool fp_Run::isOverline(void) const
+{
+	return ((m_fDecorations & TEXT_DECOR_OVERLINE) !=  0);
+}
+
+inline bool fp_Run::isStrikethrough(void) const
+{
+	return ((m_fDecorations & TEXT_DECOR_LINETHROUGH) !=  0);
+}
+
+void fp_Run::setLinethickness(UT_sint32 max_linethickness)
+{
+	m_iLinethickness = max_linethickness;
+}
+
+void fp_Run::setUnderlineXoff(UT_sint32 xoff)
+{
+	m_iUnderlineXoff = xoff;
+}
+
+UT_sint32 fp_Run::getUnderlineXoff(void)
+{
+	return m_iUnderlineXoff;
+}
+
+void fp_Run::setOverlineXoff(UT_sint32 xoff)
+{
+	m_iOverlineXoff = xoff;
+}
+
+UT_sint32 fp_Run::getOverlineXoff(void)
+{
+	return m_iOverlineXoff;
+}
+
+void fp_Run::setMaxUnderline(UT_sint32 maxh)
+{
+	m_imaxUnderline = maxh;
+}
+
+UT_sint32 fp_Run::getMaxUnderline(void)
+{
+	return m_imaxUnderline;
+}
+
+void fp_Run::setMinOverline(UT_sint32 minh)
+{
+	m_iminOverline = minh;
+}
+
+UT_sint32 fp_Run::getMinOverline(void)
+{
+	return m_iminOverline;
+}
+
+UT_sint32 fp_Run::getLinethickness( void)
+{
+	return m_iLinethickness;
+}
+
+
 /*!
  * This draws a line with some text in the center.   
  * \param xOff the x offset of the left end of the line
@@ -561,25 +805,57 @@ void fp_TabRun::lookupProperties(void)
 	getPageColor(); // update Page Color member variable.
 
 	if (pFont != m_pScreenFont)
-	  {
+	{
 	    m_pScreenFont = pFont;
 	    m_iAscent = m_pG->getFontAscent(pFont);	
 	    m_iDescent = m_pG->getFontDescent(pFont);
 	    m_iHeight = m_pG->getFontHeight(pFont);
-	  }
+	}
 
 	pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, FL_DocLayout::FIND_FONT_AT_LAYOUT_RESOLUTION);
 
 	if (pFont != m_pLayoutFont)
-	  {
+	{
 	    m_pLayoutFont = pFont;
 	    m_iAscentLayoutUnits = m_pG->getFontAscent(pFont);	
 	    m_iDescentLayoutUnits = m_pG->getFontDescent(pFont);
 	    m_iHeightLayoutUnits = m_pG->getFontHeight(pFont);
-	  }
+	}
 #ifdef BIDI_ENABLED
 	m_iDirection = -1;
 #endif
+//
+// Lookup Decoration properties for this run
+//
+	const XML_Char *pszDecor = PP_evalProperty("text-decoration",pSpanAP,pBlockAP,pSectionAP,  m_pBL->getDocument(), true);
+	m_iLineWidth = m_pG->convertDimension("0.8pt");
+	m_fDecorations = 0;
+	XML_Char* p;
+	if (!UT_cloneString((char *&)p, pszDecor))
+	{
+		// TODO outofmem
+	}
+	UT_ASSERT(p || !pszDecor);
+	XML_Char*	q = strtok(p, " ");
+
+	while (q)
+	{
+		if (0 == UT_strcmp(q, "underline"))
+		{
+			m_fDecorations |= TEXT_DECOR_UNDERLINE;
+		}
+		else if (0 == UT_strcmp(q, "overline"))
+		{
+			m_fDecorations |= TEXT_DECOR_OVERLINE;
+		}
+		else if (0 == UT_strcmp(q, "line-through"))
+		{
+			m_fDecorations |= TEXT_DECOR_LINETHROUGH;
+		}
+		q = strtok(NULL, " ");
+	}
+	free(p);
+
 }
 
 bool fp_TabRun::canBreakAfter(void) const
@@ -689,6 +965,17 @@ eTabLeader fp_TabRun::getLeader(void)
 }
 
 
+void fp_TabRun::setTabType(eTabType iTabType)
+{
+	m_TabType = iTabType;
+}
+
+eTabType fp_TabRun::getTabType(void) const
+{
+	return m_TabType;
+}
+
+
 void fp_TabRun::_clearScreen(bool /* bFullLineHeightRect */)
 {
 	UT_ASSERT(!m_bDirty);
@@ -746,6 +1033,9 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 
 	UT_RGBColor clrSelBackground(192, 192, 192);
 	UT_RGBColor clrNormalBackground(m_colorHL.m_red,m_colorHL.m_grn,m_colorHL.m_blu);
+	// need to draw to the full height of line to join with line above.
+	UT_sint32 xoff= 0, yoff=0;
+	getLine()->getScreenOffsets(this, xoff, yoff);
 
 	UT_sint32 iFillHeight = m_pLine->getHeight();
 	UT_sint32 iFillTop = pDA->yoff - m_pLine->getAscent();
@@ -765,6 +1055,15 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 	UT_uint32 iRunBase = m_pBL->getPosition() + m_iOffsetFirst;
 #endif
 
+	UT_RGBColor clrFG;
+	const PP_AttrProp * pSpanAP = NULL;
+	const PP_AttrProp * pBlockAP = NULL;
+	const PP_AttrProp * pSectionAP = NULL;
+
+	PD_Document * pDoc = m_pBL->getDocument();
+	m_pBL->getSpanAttrProp(m_iOffsetFirst,false,&pSpanAP);
+	m_pBL->getAttrProp(&pBlockAP);
+	UT_parseColor(PP_evalProperty("color",pSpanAP,pBlockAP, pSectionAP, pDoc, true), clrFG);
 	if (m_leader != FL_LEADER_NONE)
 	{
 		UT_UCSChar tmp[151];
@@ -805,19 +1104,8 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 			cumWidth += wid[i++];
 
 		i = (i>=3) ? i - 2 : 1;
-
-		const PP_AttrProp * pSpanAP = NULL;
-		const PP_AttrProp * pBlockAP = NULL;
-		const PP_AttrProp * pSectionAP = NULL;
-
-		PD_Document * pDoc = m_pBL->getDocument();
-		m_pBL->getSpanAttrProp(m_iOffsetFirst,false,&pSpanAP);
-		m_pBL->getAttrProp(&pBlockAP);
-
-		UT_RGBColor clrFG;
-		UT_parseColor(PP_evalProperty("color",pSpanAP,pBlockAP, pSectionAP, pDoc, true), clrFG);
 		m_pG->setColor(clrFG);
-	        m_pG->drawChars(tmp, 1, i, pDA->xoff, iFillTop);
+		m_pG->drawChars(tmp, 1, i, pDA->xoff, iFillTop);
 	}
 	else
 	if (
@@ -837,6 +1125,26 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
         if(pView->getShowPara()){
             _drawArrow(pDA->xoff, iFillTop, m_iWidth, iFillHeight);
         }
+	}
+//
+// Draw underline/overline/strikethough
+//	
+	UT_sint32 yTopOfRun = pDA->yoff - getAscent()-1; // Hack to remove 
+	                                                 //character dirt
+	drawDecors( xoff, yTopOfRun);
+//
+// Draw bar seperators
+//
+	if(FL_TAB_BAR == getTabType())
+	{
+		// need to draw to the full height of line to join with line above.
+		UT_DEBUGMSG(("SEVIOR: Drawing tab bar \n"));
+		UT_sint32 iFillHeight = getLine()->getHeight();
+//
+// Scale the vertical line thickness for printers
+//
+		UT_sint32 ithick = 1+ (UT_MAX(10,getAscent())-10)/8;
+		m_pG->fillRect(clrFG, pDA->xoff+getWidth()-ithick, iFillTop, ithick, iFillHeight);
 	}
 }
 
@@ -1645,6 +1953,38 @@ void fp_FieldRun::lookupProperties(void)
         // probably new type of field
         //		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
+//
+// Lookup Decoration properties for this run
+//
+	const XML_Char *pszDecor = PP_evalProperty("text-decoration",pSpanAP,pBlockAP,pSectionAP,  m_pBL->getDocument(), true);
+	m_iLineWidth = m_pG->convertDimension("0.8pt");
+	m_fDecorations = 0;
+	XML_Char* p;
+	if (!UT_cloneString((char *&)p, pszDecor))
+	{
+		// TODO outofmem
+	}
+	UT_ASSERT(p || !pszDecor);
+	XML_Char*	q = strtok(p, " ");
+
+	while (q)
+	{
+		if (0 == UT_strcmp(q, "underline"))
+		{
+			m_fDecorations |= TEXT_DECOR_UNDERLINE;
+		}
+		else if (0 == UT_strcmp(q, "overline"))
+		{
+			m_fDecorations |= TEXT_DECOR_OVERLINE;
+		}
+		else if (0 == UT_strcmp(q, "line-through"))
+		{
+			m_fDecorations |= TEXT_DECOR_LINETHROUGH;
+		}
+		q = strtok(NULL, " ");
+	}
+	free(p);
+
 }
 
 
@@ -1787,6 +2127,12 @@ void fp_FieldRun::_defaultDraw(dg_DrawArgs* pDA)
 	UT_ASSERT(pDA->pG == m_pG);
 
 	lookupProperties();
+	UT_sint32 xoff = 0, yoff = 0;
+	
+	// need screen locations of this run
+
+	m_pLine->getScreenOffsets(this, xoff, yoff);
+
 	UT_sint32 iYdraw =  pDA->yoff - getAscent()-1;
 	
 	if (m_fPosition == TEXT_POSITION_SUPERSCRIPT)
@@ -1838,6 +2184,13 @@ void fp_FieldRun::_defaultDraw(dg_DrawArgs* pDA)
 	m_pG->setColor(m_colorFG);
 	
 	m_pG->drawChars(m_sFieldValue, 0, UT_UCS_strlen(m_sFieldValue), pDA->xoff,iYdraw);
+//
+// Draw underline/overline/strikethough
+//	
+	UT_sint32 yTopOfRun = pDA->yoff - getAscent()-1; // Hack to remove 
+	                                                 //character dirt
+	drawDecors( xoff, yTopOfRun);
+
 }
 
 // BEGIN DOM work on some new fields
@@ -1870,16 +2223,16 @@ bool fp_FieldCharCountRun::calculateValue(void)
 
 	FV_View *pView = _getViewFromBlk(m_pBL);
 	if(!pView)
-	  {
+	{
 	    strcpy(szFieldValue, "?");
-	  }
+	}
 	else
-	  {
+	{
 	    FV_DocCount cnt = pView->countWords();	    
 	    sprintf(szFieldValue, "%d", cnt.ch_sp);
-	  }
+	}
 	if (m_pField)
-	  m_pField->setValue((XML_Char*) szFieldValue);
+		m_pField->setValue((XML_Char*) szFieldValue);
 
 	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -1900,17 +2253,17 @@ bool fp_FieldNonBlankCharCountRun::calculateValue(void)
 
 	FV_View *pView = _getViewFromBlk(m_pBL);
 	if(!pView)
-	  {
-	    strcpy(szFieldValue, "?");
-	  }
+	{
+		strcpy(szFieldValue, "?");
+	}
 	else
-	  {
+	{
 	    FV_DocCount cnt = pView->countWords();	    
 	    sprintf(szFieldValue, "%d", cnt.ch_no);
-	  }
+	}
 
 	if (m_pField)
-	  m_pField->setValue((XML_Char*) szFieldValue);
+		m_pField->setValue((XML_Char*) szFieldValue);
 
 	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -1931,17 +2284,17 @@ bool fp_FieldLineCountRun::calculateValue(void)
 
 	FV_View *pView = _getViewFromBlk(m_pBL);
 	if(!pView)
-	  {
+	{
 	    strcpy(szFieldValue, "?");
-	  }
+	}
 	else
-	  {
+	{
 	    FV_DocCount cnt = pView->countWords();	    
 	    sprintf(szFieldValue, "%d", cnt.line);
-	  }
+	}
 
 	if (m_pField)
-	  m_pField->setValue((XML_Char*) szFieldValue);
+		m_pField->setValue((XML_Char*) szFieldValue);
 
 	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -1962,17 +2315,17 @@ bool fp_FieldParaCountRun::calculateValue(void)
 
 	FV_View *pView = _getViewFromBlk(m_pBL);
 	if(!pView)
-	  {
+	{
 	    strcpy(szFieldValue, "?");
-	  }
+	}
 	else
-	  {
+	{
 	    FV_DocCount cnt = pView->countWords();	    
 	    sprintf(szFieldValue, "%d", cnt.para);
-	  }
+	}
 
 	if (m_pField)
-	  m_pField->setValue((XML_Char*) szFieldValue);
+		m_pField->setValue((XML_Char*) szFieldValue);
 
 	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -1993,17 +2346,17 @@ bool fp_FieldWordCountRun::calculateValue(void)
 
 	FV_View *pView = _getViewFromBlk(m_pBL);
 	if(!pView)
-	  {
+	{
 	    strcpy(szFieldValue, "?");
-	  }
+	}
 	else
-	  {
+	{
 	    FV_DocCount cnt = pView->countWords();	    
 	    sprintf(szFieldValue, "%d", cnt.word);
-	  }
+	}
 
 	if (m_pField)
-	  m_pField->setValue((XML_Char*) szFieldValue);
+		m_pField->setValue((XML_Char*) szFieldValue);
 
 	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -2027,7 +2380,7 @@ bool fp_FieldMMDDYYRun::calculateValue(void)
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%m/%d/%y", pTime);
 	if (m_pField)
-	  m_pField->setValue((XML_Char*) szFieldValue);
+		m_pField->setValue((XML_Char*) szFieldValue);
 
 	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -2075,7 +2428,7 @@ bool fp_FieldMonthDayYearRun::calculateValue(void)
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%B %d, %Y", pTime);
 	if (m_pField)
-	  m_pField->setValue((XML_Char*) szFieldValue);
+		m_pField->setValue((XML_Char*) szFieldValue);
 
 	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -2098,7 +2451,7 @@ bool fp_FieldMthDayYearRun::calculateValue(void)
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%b %d, %Y", pTime);
 	if (m_pField)
-	  m_pField->setValue((XML_Char*) szFieldValue);
+		m_pField->setValue((XML_Char*) szFieldValue);
 
 	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -2121,7 +2474,7 @@ bool fp_FieldDefaultDateRun::calculateValue(void)
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%c", pTime);
 	if (m_pField)
-	  m_pField->setValue((XML_Char*) szFieldValue);
+		m_pField->setValue((XML_Char*) szFieldValue);
 
 	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -2144,7 +2497,7 @@ bool fp_FieldDefaultDateNoTimeRun::calculateValue(void)
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%x", pTime);
 	if (m_pField)
-	  m_pField->setValue((XML_Char*) szFieldValue);
+		m_pField->setValue((XML_Char*) szFieldValue);
 
 	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -2167,7 +2520,7 @@ bool fp_FieldWkdayRun::calculateValue(void)
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%A", pTime);
 	if (m_pField)
-	  m_pField->setValue((XML_Char*) UT_strdup(szFieldValue));
+		m_pField->setValue((XML_Char*) UT_strdup(szFieldValue));
 	
 	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -2190,7 +2543,7 @@ bool fp_FieldDOYRun::calculateValue(void)
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%j", pTime);
 	if (m_pField)
-	  m_pField->setValue((XML_Char*) szFieldValue);
+		m_pField->setValue((XML_Char*) szFieldValue);
 
 	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -2213,7 +2566,7 @@ bool fp_FieldMilTimeRun::calculateValue(void)
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%H:%M:%S", pTime);
 	if (m_pField)
-	  m_pField->setValue((XML_Char*) szFieldValue);
+		m_pField->setValue((XML_Char*) szFieldValue);
 
 	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -2236,7 +2589,7 @@ bool fp_FieldAMPMRun::calculateValue(void)
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%p", pTime);
 	if (m_pField)
-	  m_pField->setValue((XML_Char*) szFieldValue);
+		m_pField->setValue((XML_Char*) szFieldValue);
 
 	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -2257,7 +2610,7 @@ bool fp_FieldTimeEpochRun::calculateValue(void)
 	time_t	tim = time(NULL);
 	sprintf(szFieldValue, "%ld", (long)tim);
 	if (m_pField)
-	  m_pField->setValue((XML_Char*) szFieldValue);
+		m_pField->setValue((XML_Char*) szFieldValue);
 
 	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -2280,7 +2633,7 @@ bool fp_FieldTimeZoneRun::calculateValue(void)
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%Z", pTime);
 	if (m_pField)
-	  m_pField->setValue((XML_Char*) szFieldValue);
+		m_pField->setValue((XML_Char*) szFieldValue);
 
 	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -2298,7 +2651,7 @@ bool fp_FieldBuildIdRun::calculateValue(void)
 	
 	UT_UCS_strcpy_char(sz_ucs_FieldValue, XAP_App::s_szBuild_ID);
 	if (m_pField)
-	  m_pField->setValue((XML_Char*) XAP_App::s_szBuild_ID);
+		m_pField->setValue((XML_Char*) XAP_App::s_szBuild_ID);
 	return _setValue(sz_ucs_FieldValue);
 }
 
@@ -2313,7 +2666,7 @@ bool fp_FieldBuildVersionRun::calculateValue(void)
 	
 	UT_UCS_strcpy_char(sz_ucs_FieldValue, XAP_App::s_szBuild_Version);
 	if (m_pField)
-	  m_pField->setValue((XML_Char*) XAP_App::s_szBuild_Version);
+		m_pField->setValue((XML_Char*) XAP_App::s_szBuild_Version);
 	return _setValue(sz_ucs_FieldValue);
 }
 
@@ -2328,7 +2681,7 @@ bool fp_FieldBuildOptionsRun::calculateValue(void)
 	
 	UT_UCS_strcpy_char(sz_ucs_FieldValue, XAP_App::s_szBuild_Options);
 	if (m_pField)
-	  m_pField->setValue((XML_Char*) XAP_App::s_szBuild_Options);
+		m_pField->setValue((XML_Char*) XAP_App::s_szBuild_Options);
 	return _setValue(sz_ucs_FieldValue);
 }
 
@@ -2343,7 +2696,7 @@ bool fp_FieldBuildTargetRun::calculateValue(void)
 	
 	UT_UCS_strcpy_char(sz_ucs_FieldValue, XAP_App::s_szBuild_Target);
 	if (m_pField)
-	  m_pField->setValue((XML_Char*) XAP_App::s_szBuild_Target);
+		m_pField->setValue((XML_Char*) XAP_App::s_szBuild_Target);
 	return _setValue(sz_ucs_FieldValue);
 }
 
@@ -2358,7 +2711,7 @@ bool fp_FieldBuildCompileDateRun::calculateValue(void)
 	
 	UT_UCS_strcpy_char(sz_ucs_FieldValue, XAP_App::s_szBuild_CompileDate);
 	if (m_pField)
-	  m_pField->setValue((XML_Char*) XAP_App::s_szBuild_CompileDate);
+		m_pField->setValue((XML_Char*) XAP_App::s_szBuild_CompileDate);
 	return _setValue(sz_ucs_FieldValue);
 }
 
@@ -2373,7 +2726,7 @@ bool fp_FieldBuildCompileTimeRun::calculateValue(void)
 	
 	UT_UCS_strcpy_char(sz_ucs_FieldValue, XAP_App::s_szBuild_CompileTime);
 	if (m_pField)
-	  m_pField->setValue((XML_Char*) XAP_App::s_szBuild_CompileTime);
+		m_pField->setValue((XML_Char*) XAP_App::s_szBuild_CompileTime);
 	return _setValue(sz_ucs_FieldValue);
 }
 
@@ -2395,7 +2748,7 @@ bool fp_FieldTimeRun::calculateValue(void)
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%I:%M:%S %p", pTime);
 	if (m_pField)
-	  m_pField->setValue((XML_Char*) szFieldValue);
+		m_pField->setValue((XML_Char*) szFieldValue);
 
 	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -2418,7 +2771,7 @@ bool fp_FieldDateRun::calculateValue(void)
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%A %B %d, %Y", pTime);
 	if (m_pField)
-	  m_pField->setValue((XML_Char*) szFieldValue);
+		m_pField->setValue((XML_Char*) szFieldValue);
 
 	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 

@@ -5739,7 +5739,7 @@ static bool s_doStylesDlg(FV_View * pView)
 		XAP_App * pApp = pFrame->getApp();
 		UT_ASSERT(pApp);
 		//
-		// Get all clones of this frame and set the new page dimensions
+		// Get all clones of this frame and set styles combo box
 		//
 		UT_Vector vClones;
 		if(pFrame->getViewNumber() > 0)
@@ -5755,6 +5755,12 @@ static bool s_doStylesDlg(FV_View * pView)
 		{
 			pFrame->repopulateCombos();
 		}
+//
+// Now update all views on the document.
+//
+		PD_Document * pDoc = pView->getLayout()->getDocument();
+		PL_StruxDocHandle sdh = pView->getCurrentBlock()->getStruxDocHandle();
+		pDoc->updateAllLayoutsInDoc(sdh);
 	}
 	return bOK;
 }
