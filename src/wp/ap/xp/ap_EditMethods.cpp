@@ -781,7 +781,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(deleteHyperlink),		0,	""),
 	EV_EditMethod(NF(deleteRows),   		0,	""),
 	EV_EditMethod(NF(deleteTable),   		0,	""),
-	EV_EditMethod(NF(dlgAbout), 			0,	""),
+	EV_EditMethod(NF(dlgAbout), 			_A_, ""),
 	EV_EditMethod(NF(dlgBackground),		0,	""),
 	EV_EditMethod(NF(dlgBorders),			0,	""),
 	EV_EditMethod(NF(dlgBullets),			0,	""),
@@ -2767,12 +2767,14 @@ Defun1(dlgMoreWindows)
 
 static bool s_doAboutDlg(XAP_Frame* pFrame, XAP_Dialog_Id id)
 {
-	UT_return_val_if_fail(pFrame, false);
-
-	pFrame->raise();
+	if (pFrame) {
+		pFrame->raise();
+	}
+	XAP_App * pApp = XAP_App::getApp();
+	UT_return_val_if_fail (pApp, false);
 
 	XAP_DialogFactory * pDialogFactory
-		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
+		= static_cast<XAP_DialogFactory *>(pApp->getDialogFactory());
 
 	XAP_Dialog_About * pDialog
 		= static_cast<XAP_Dialog_About *>(pDialogFactory->requestDialog(id));
@@ -2848,9 +2850,13 @@ Defun1(rotateCase)
 Defun1(dlgAbout)
 {
 	CHECK_FRAME;
-	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
-	UT_return_val_if_fail(pFrame, false);
-
+	XAP_Frame * pFrame = NULL;
+	
+	if (pAV_View) {
+		pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
+		UT_return_val_if_fail(pFrame, false);
+	}
+	
 	s_doAboutDlg(pFrame, XAP_DIALOG_ID_ABOUT);
 
 	return true;
