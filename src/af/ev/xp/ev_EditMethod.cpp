@@ -151,6 +151,17 @@ bool EV_EditMethodContainer::addEditMethod(EV_EditMethod * pem)
 	return (error == 0);
 }
 
+bool EV_EditMethodContainer::removeEditMethod(EV_EditMethod * pem)
+{
+	UT_ASSERT(pem);
+
+	UT_sint32 pos = m_vecDynamicEditMethods.findItem ( pem ) ;
+
+	if ( pos >= 0 )
+	    deleteNthItem(pos);
+	return (pos >= 0) ;
+}
+
 UT_uint32 EV_EditMethodContainer::countEditMethods()
 {
 	return m_countStatic + m_vecDynamicEditMethods.getItemCount();

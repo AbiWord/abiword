@@ -133,6 +133,7 @@ public:
 	~EV_EditMethodContainer();
 
 	bool				addEditMethod(EV_EditMethod * pem);
+	bool removeEditMethod(EV_EditMethod * pem);
 	UT_uint32			countEditMethods();
 	EV_EditMethod *		getNthEditMethod(UT_uint32 ndx);
 	EV_EditMethod *		findEditMethodByName(const char * szName) const;
