@@ -260,7 +260,16 @@ UT_RGBColor * fp_Run::getHighlightColor(void)
 		if(pLine != NULL)
 			pPage = pLine->getContainer()->getPage();
 		if(pPage != NULL)
+		{
+			if (getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))
+				pClr = pPage->getOwningSection()->getPaperColor();
+			else
+			{
+				UT_setColor (m_colorHL, 255, 255, 255);
+				return;
+			}			
 			pClr = pPage->getOwningSection()->getPaperColor();
+		}
 		else if(m_pBL->isHdrFtr())
 		{
 			UT_setColor (m_colorHL, 255, 255, 255);
