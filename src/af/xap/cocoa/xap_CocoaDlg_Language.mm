@@ -50,6 +50,7 @@ public:
 	};
 	virtual void selectAction ()
 	{
+		m_dlg->okAction();
 	};
 private:
 	XAP_CocoaDialog_Language*	m_dlg;
@@ -102,8 +103,8 @@ void XAP_CocoaDialog_Language::runModal(XAP_Frame * pFrame)
 	
 	window = [m_dlg window];
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	[m_dlg setTitle:[NSString stringWithUTF8String:pSS->getValueUTF8(XAP_STRING_ID_DLG_ULANG_LangTitle).c_str()]];
-	[m_dlg setLabel:[NSString stringWithUTF8String:pSS->getValueUTF8(XAP_STRING_ID_DLG_ULANG_LangLabel).c_str()]];
+	[m_dlg setTitle:LocalizedString(pSS, XAP_STRING_ID_DLG_ULANG_LangTitle)];
+	[m_dlg setLabel:LocalizedString(pSS, XAP_STRING_ID_DLG_ULANG_LangLabel)];
 
 	for (UT_uint32 k = 0; k < m_iLangCount; k++)
 	{

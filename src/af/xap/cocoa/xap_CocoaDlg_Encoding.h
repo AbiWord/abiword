@@ -60,7 +60,6 @@ public:
 
 	virtual void			event_OK(void);
 	virtual void			event_Cancel(void);
-	virtual void			event_DoubleClick(void);
 
 private:
 	void		_populateWindowData(void);

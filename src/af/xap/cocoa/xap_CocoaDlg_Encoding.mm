@@ -51,7 +51,7 @@ public:
 	};
 	virtual void selectAction ()
 	{
-		m_dlg->event_DoubleClick();
+		m_dlg->event_OK();
 	};
 private:
 	XAP_CocoaDialog_Encoding*	m_dlg;
@@ -92,8 +92,8 @@ void XAP_CocoaDialog_Encoding::runModal(XAP_Frame * pFrame)
 	
 	window = [m_dlg window];
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	[m_dlg setTitle:[NSString stringWithUTF8String:pSS->getValueUTF8(XAP_STRING_ID_DLG_UENC_EncTitle).c_str()]];
-	[m_dlg setLabel:[NSString stringWithUTF8String:pSS->getValueUTF8(XAP_STRING_ID_DLG_UENC_EncLabel).c_str()]];
+	[m_dlg setTitle:LocalizedString(pSS, XAP_STRING_ID_DLG_UENC_EncTitle)];
+	[m_dlg setLabel:LocalizedString(pSS, XAP_STRING_ID_DLG_UENC_EncLabel)];
 
 	// Populate the window's data items
 	_populateWindowData();
@@ -125,19 +125,6 @@ void XAP_CocoaDialog_Encoding::event_Cancel(void)
 {
 	_setAnswer (XAP_Dialog_Encoding::a_CANCEL);
 	[NSApp stopModal];
-}
-
-void XAP_CocoaDialog_Encoding::event_DoubleClick(void)
-{
-	// Query the list for its selection.	
-	int row = [m_dlg selected];
-
-	// If it found something, return with it
-	if (row >= 0)
-	{
-		_setSelectionIndex ((UT_uint32) row);
-		event_OK();
-	}
 }
 
 /*****************************************************************/

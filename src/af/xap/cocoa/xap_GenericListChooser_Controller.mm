@@ -30,6 +30,11 @@
 	return [dlg autorelease];
 }
 
+- (void)windowDidLoad
+{
+	[m_listTable setDoubleAction:@selector(listClicked:)];
+}
+
 
 - (IBAction)cancelClicked:(id)sender
 {
