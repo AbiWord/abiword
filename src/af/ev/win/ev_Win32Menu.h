@@ -65,6 +65,7 @@ public:
 	void				onDrawItem(HWND hwnd, WPARAM wParam, LPARAM lParam);
 	void				onMeasureItem(HWND hwnd, WPARAM wParam, LPARAM lParam);
 	LPARAM				onMenuChar(HWND hwnd, WPARAM wParam, LPARAM lParam);	
+	void				setTrackMenu(bool bTrack){m_bTrack=bTrack;};
 
 protected:
 
@@ -78,6 +79,7 @@ protected:
 	UINT						m_nBitmapCX, m_nBitmapCY;
 	HFONT						m_hFont;		
 	UT_Vector					m_vecItems;
+	bool						m_bTrack;
 
 };
 
@@ -87,6 +89,7 @@ typedef struct
 	XAP_Menu_Id 	id;					// Menu ID
 	char			szText[256];		// Text	
 	EV_Win32Menu*	pMenu;			
+	bool			bMenuBar;
 } EV_Menu_Item;	
 
 /*****************************************************************/

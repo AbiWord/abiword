@@ -412,8 +412,11 @@ bool XAP_Win32FrameImpl::_runModalContextMenu(AV_View * pView, const char * szMe
 	y = pView->getGraphics()->tdu(y);
 
 	m_pWin32Popup = new EV_Win32MenuPopup(static_cast<XAP_Win32App*>(XAP_App::getApp()),szMenuName,m_szMenuLabelSetName);
+	m_pWin32Popup->setTrackMenu(true);
+
 	if (m_pWin32Popup && m_pWin32Popup->synthesizeMenuPopup(getFrame()))
 	{
+		
 		UT_DEBUGMSG(("ContextMenu: %s at [%d,%d]\n",szMenuName,x,y));
 		
 		_translateDocumentToScreen(x,y);
