@@ -1103,12 +1103,14 @@ void XAP_UnixFrameImpl::createTopLevelWindow(void)
 	gtk_object_set_user_data(GTK_OBJECT(m_wVBox),this);
 	gtk_container_add(GTK_CONTAINER(m_wTopLevelWindow), m_wVBox);
 
-	// synthesize a menu from the info in our base class.
-	m_pUnixMenu = new EV_UnixMenuBar(m_pUnixApp, getFrame(), m_szMenuLayoutName,
-					 m_szMenuLabelSetName);
-	UT_ASSERT(m_pUnixMenu);
-	bResult = m_pUnixMenu->synthesizeMenuBar();
-	UT_ASSERT(bResult);
+	if (m_iFrameMode != XAP_NoMenusWindowLess) {
+		// synthesize a menu from the info in our base class.
+		m_pUnixMenu = new EV_UnixMenuBar(m_pUnixApp, getFrame(), m_szMenuLayoutName,
+										 m_szMenuLabelSetName);
+		UT_ASSERT(m_pUnixMenu);
+		bResult = m_pUnixMenu->synthesizeMenuBar();
+		UT_ASSERT(bResult);
+	}
 
 	// create a toolbar instance for each toolbar listed in our base class.
 	// TODO for some reason, the toolbar functions require the TLW to be

@@ -288,14 +288,9 @@ void AP_UnixFrameImpl::_setWindowIcon()
 {
 	// attach program icon to window
 	GtkWidget * window = getTopLevelWindow();
-	UT_ASSERT(window);
 
-	// create a pixmap from our included data
-	GdkBitmap * mask;
-	GdkPixmap * pixmap = gdk_pixmap_create_from_xpm_d(window->window, &mask, NULL, abiword_48_xpm);
-	UT_ASSERT(pixmap && mask);
-
-	gdk_window_set_icon(window->window, NULL, pixmap, mask);
+	GdkPixbuf * icon = gdk_pixbuf_new_from_xpm_data (abiword_48_xpm);
+	gtk_window_set_icon (GTK_WINDOW (window), icon);
 	gdk_window_set_icon_name(window->window, "AbiWord Application Icon");
 }
 
@@ -322,9 +317,7 @@ GtkWidget * AP_UnixFrameImpl::_createStatusBarWindow()
 
 	((AP_FrameData *)pFrame->getFrameData())->m_pStatusBar = pUnixStatusBar;
 	
-	GtkWidget * w = pUnixStatusBar->createWidget();
-
-	return w;
+	return pUnixStatusBar->createWidget();
 }
 
 void AP_UnixFrameImpl::_setScrollRange(apufi_ScrollType scrollType, int iValue, gfloat fUpperLimit, gfloat fSize)
