@@ -954,7 +954,10 @@ void FV_View::toggleCase (ToggleCase c)
 		xxx_UT_DEBUGMSG(("fv_View::toggleCase: block offset %d, low %d, high %d, lastPos %%d\n", offset, low, high/*, lastPos*/));
 
 		bool bBlockDone = false;
-
+		if(pBL->getContainerType() != FL_CONTAINER_BLOCK)
+		{
+			pBL = static_cast<fl_ContainerLayout *>(pBL)->getNextBlockInDocument();
+		}
 		while(!bBlockDone && (low < high) /*&& (low < lastPos)*/)
 		{
 			UT_uint32 iLenToCopy = UT_MIN(high - low, buffer.getLength() - offset);
@@ -1138,7 +1141,7 @@ void FV_View::toggleCase (ToggleCase c)
 				offset += iLen;
 			}
 		}
-		pBL = static_cast<fl_BlockLayout *>(pBL->getNext());
+		pBL = pBL->getNextBlockInDocument();
 		if ( pBL )
 		  low = pBL->getPosition(false);
 		else
