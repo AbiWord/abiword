@@ -12,6 +12,12 @@
 #endif
 #include "ut_iconv.h"
 
+// UTF-8 can use up to 6 bytes
+#define MY_MB_LEN_MAX 6
+
+// DO NOT USE MB_LEN_MAX -- on win32 it is only 2 bytes!
+const UT_uint32 iMbLenMax = UT_MAX(MY_MB_LEN_MAX, MB_LEN_MAX);
+
 class ABI_EXPORT UT_UCS2_mbtowc
 {
  private:
@@ -49,7 +55,7 @@ class ABI_EXPORT UT_UCS2_mbtowc
   UT_UCS2_mbtowc& operator=(const UT_UCS2_mbtowc &rhs);
 
   int m_bufLen;
-  char m_buf[MB_LEN_MAX];
+  char m_buf[iMbLenMax];
 };
 
 class ABI_EXPORT UT_UCS4_mbtowc
@@ -90,7 +96,7 @@ class ABI_EXPORT UT_UCS4_mbtowc
   UT_UCS4_mbtowc& operator=(const UT_UCS4_mbtowc &rhs);
 
   int m_bufLen;
-  char m_buf[MB_LEN_MAX];
+  char m_buf[iMbLenMax];
 };
 
 #endif // UT_MBTOWC_H

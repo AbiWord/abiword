@@ -25,8 +25,6 @@
 #include "ut_mbtowc.h"
 #include "ut_locale.h"
 
-// UTF-8 can use up to 6 bytes
-#define MY_MB_LEN_MAX 6
 
 UT_UCS2_mbtowc::Converter::Converter (const char * from_charset) :
   m_cd(UT_iconv_open (ucs2Internal (), from_charset))
@@ -81,7 +79,7 @@ void UT_UCS2_mbtowc::setInCharset (const char * from_charset)
 
 int UT_UCS2_mbtowc::mbtowc (UT_UCS2Char & wc, char mb)
 {
-  if(++m_bufLen > MY_MB_LEN_MAX)
+  if(++m_bufLen > iMbLenMax)
     {
       initialize ();
       return 0;
@@ -171,7 +169,7 @@ void UT_UCS4_mbtowc::setInCharset (const char * from_charset)
 
 int UT_UCS4_mbtowc::mbtowc (UT_UCS4Char & wc, char mb)
 {
-  if(++m_bufLen > MY_MB_LEN_MAX)
+  if(++m_bufLen > iMbLenMax)
     {
       initialize ();
       return 0;
