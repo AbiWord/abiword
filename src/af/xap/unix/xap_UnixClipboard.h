@@ -35,81 +35,95 @@
 class XAP_UnixClipboard
 {
 public:
-	typedef enum _T_AllowGet { TAG_ClipboardOnly, TAG_PrimaryOnly, TAG_MostRecent } T_AllowGet;
+	typedef enum _T_AllowGet { TAG_ClipboardOnly, TAG_PrimaryOnly } T_AllowGet;
 
 	XAP_UnixClipboard(XAP_UnixApp * pUnixApp);
 	virtual ~XAP_UnixClipboard();
 
-	void				initialize(void);
+	void				initialize();
+	bool				assertSelection();
 
 	bool				addData(T_AllowGet tTo, const char* format, void* pData, UT_sint32 iNumBytes);
+
 	void				clearData(bool bClipboard, bool bPrimary);
 	bool				getData(T_AllowGet tFrom, const char** formatList,
 						void ** ppData, UT_uint32 * pLen,
 						const char **pszFormatFound);
 
-	bool addTextUTF8(T_AllowGet tTo, void * pData, UT_sint32 iNumBytes);
-	bool getTextUTF8(T_AllowGet tFrom, void ** ppData, UT_uint32 * pLen);
-
-	bool				assertSelection(void);
+ protected:
 	
-	// the following are callbacks
-	
-	void					_selrcv(GtkSelectionData *selectionData, guint32 time, gpointer data);
-	gint					_selclr(GdkEventSelection * event);
-	void					_selsnd(GtkSelectionData * selectionData, guint info, guint32 time, gpointer data);
-
-protected:
-	virtual GdkAtom			_convertFormatString(const char * format);
-	virtual const char *	_convertToFormatString(GdkAtom fmt) const;
-
-	void					_releaseOwnership(GdkAtom atom, guint32 timeOfRelease);
-	bool					_testOwnership(GdkAtom atom) const;
-
-	bool					_getDataFromServerInFormat(GdkAtom atom, GdkAtom atomFormat,
-													   void ** ppData, UT_uint32 * pLen,
-													   const char **pszFormatFound);
-	void					_getFormats(GdkAtom atom);
-	bool					_getDataFromServer(GdkAtom atom, const char** formatList,
-											   void ** ppData, UT_uint32 * pLen,
-											   const char **pszFormatFound);
-	bool					_getDataFromFakeClipboard(const char** formatList,
-													  void ** ppData, UT_uint32 * pLen,
-													  const char **pszFormatFound);
-	guint32					_getTimeFromServer(GdkAtom atom);
-	bool					_getCurrentSelection(const char** formatList,
-												 void ** ppData, UT_uint32 * pLen,
-												 const char **pszFormatFound);
-
-	void AddFmt(const char * fmt);
+	void                            AddFmt(const char * fmt);
 
  private:
 
-	GtkWidget *			m_myWidget;				// private widget to sync selection/clipboard communication with XServer.
-   
-	bool				m_waiting;				// sync flag between top-half and bottom-half (callbacks)
-	bool				m_bOwnClipboard;		// do we own CLIPBOARD property (ie the clipboard)
-	bool				m_bOwnPrimary;			// do we own PRIMARY property (ie the X selection)
-	bool				m_bWaitingForDataFromServer;	// transient used to guard against stray SELRCVs
+	bool				_getDataFromServer(T_AllowGet tFrom, const char** formatList,
+							   void ** ppData, UT_uint32 * pLen,
+							   const char **pszFormatFound);
+	bool				_getDataFromFakeClipboard(T_AllowGet tFrom, const char** formatList,
+								  void ** ppData, UT_uint32 * pLen,
+								  const char **pszFormatFound);
 
-	guint32				m_timeClipboard;		// eventTime when we took ownership of CLIPBOARD property
-	guint32				m_timePrimary;			// eventTime when we took ownership of PRIMARY property
-	guint32				m_timeOnServer;			// transient we use to request server time on a property
+	static void s_primary_get_func(GtkClipboard *clipboard,
+				       GtkSelectionData *selection_data,
+				       guint info,
+				       gpointer ptr)
+	  {
+	    XAP_UnixClipboard * pThis = static_cast<XAP_UnixClipboard*>(ptr);
+	    pThis->primary_get_func(clipboard, selection_data, info);
+	  }
+
+	static void s_primary_clear_func (GtkClipboard *clipboard,
+					  gpointer ptr)
+	  {
+	    XAP_UnixClipboard * pThis = static_cast<XAP_UnixClipboard*>(ptr);
+	    pThis->primary_clear_func(clipboard);
+	  }
+
+	void primary_get_func(GtkClipboard *clipboard,
+			      GtkSelectionData *selection_data,
+			      guint info);
+
+	void primary_clear_func (GtkClipboard *clipboard);
+
+	static void s_clipboard_get_func(GtkClipboard *clipboard,
+					 GtkSelectionData *selection_data,
+					 guint info,
+					 gpointer ptr)
+	  {
+	    XAP_UnixClipboard * pThis = static_cast<XAP_UnixClipboard*>(ptr);
+	    pThis->clipboard_get_func(clipboard, selection_data, info);
+	  }
+
+	static void s_clipboard_clear_func (GtkClipboard *clipboard,
+					  gpointer ptr)
+	  {
+	    XAP_UnixClipboard * pThis = static_cast<XAP_UnixClipboard*>(ptr);
+	    pThis->clipboard_clear_func(clipboard);
+	  }
+
+	void clipboard_get_func(GtkClipboard *clipboard,
+				GtkSelectionData *selection_data,
+				guint info);
+
+	void clipboard_clear_func (GtkClipboard *clipboard);
 	
-	GdkAtom				m_atomClipboard;		// intern("CLIPBOARD")
-	GdkAtom				m_atomPrimary;			// intern("PRIMARY")
-	GdkAtom				m_atomTargets;			// intern("TARGETS")
-	GdkAtom				m_atomTimestamp;		// intern("TIMESTAMP")
-	GdkAtom				m_databuftype;			// transient atom describing current contents of m_databuf
-   
-	UT_Vector			m_vecFormat_AP_Name;	// our internal list of (pseudo-mime types)
-	UT_Vector			m_vecFormat_GdkAtom;	// atoms for ...AP_Name
-	UT_Vector			m_vecFormatsOnServer;	// transient list of atoms from server
-	UT_ByteBuf			m_databuf;				// transient buffer to receive selection data from server
+	void common_get_func(GtkClipboard *clipboard,
+			     GtkSelectionData *selection_data,
+			     guint info, T_AllowGet which);
+
+	bool ownsClipboard(T_AllowGet which);
+
+	UT_Vector  m_vecFormat_AP_Name;
+	UT_Vector  m_vecFormat_GdkAtom;
+
+	UT_ByteBuf m_databuf; // for gets only
 
 	XAP_UnixApp *		m_pUnixApp;
 	XAP_FakeClipboard	m_fakeClipboard;		// internal clipboard to short-circut the XServer.
+
+	XAP_FakeClipboard       m_fakePrimaryClipboard;
+	GtkTargetEntry * m_Targets ;
+	UT_uint32 m_nTargets;
 };
 
 #endif /* XAP_UNIXCLIPBOARD_H */
-

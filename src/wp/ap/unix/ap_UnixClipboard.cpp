@@ -22,12 +22,13 @@
 ** Only one of these is created by the application.
 *****************************************************************/
 
+#include <gdk/gdk.h>
+
 #include "ut_types.h"
+#include "ut_string.h"
 #include "ut_vector.h"
 #include "ap_UnixClipboard.h"
 #include "ap_UnixApp.h"
-
-#include <gdk/gdk.h>
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
@@ -47,7 +48,12 @@
 #define AP_CLIPBOARD_IMAGE_BMP                  "image/bmp"
 #define AP_CLIPBOARD_IMAGE_TIFF                 "image/tiff"
 
-// text cut+paste handled by GTK+2 at the XAP layer
+// text cut+paste: should handled by GTK+2 at the XAP layer
+#define AP_CLIPBOARD_TEXT_UTF8_STRING           "UTF8_STRING"
+#define AP_CLIPBOARD_TEXT                       "TEXT"
+#define AP_CLIPBOARD_TEXT_STRING                "STRING"
+#define AP_CLIPBOARD_TEXT_PLAIN                 "text/plain"
+#define AP_CLIPBOARD_TEXT_COMPOUND              "COMPOUND_TEXT"
 
 static const char * rtfszFormatsAccepted[] = {
   AP_CLIPBOARD_TXT_RTF,
@@ -62,28 +68,51 @@ static const char * imgszFormatsAccepted[] = {
   AP_CLIPBOARD_IMAGE_TIFF,
   0 } ;
 
+static const char * txtszFormatsAccepted[] = {
+  AP_CLIPBOARD_TEXT_UTF8_STRING,
+  AP_CLIPBOARD_TEXT,
+  AP_CLIPBOARD_TEXT_STRING,
+  AP_CLIPBOARD_TEXT_PLAIN,
+  AP_CLIPBOARD_TEXT_COMPOUND,
+  0 } ;
+
 AP_UnixClipboard::AP_UnixClipboard(AP_UnixApp * pApp)
   : XAP_UnixClipboard(pApp)
 {
-        // rich text types
-   	AddFmt(AP_CLIPBOARD_TXT_RTF);
-	AddFmt(AP_CLIPBOARD_APPLICATION_RTF);
+  // DECLARE IN ORDER OF PREFERENCE RECEIVING
 
-	// hypertext types
-	AddFmt ( AP_CLIPBOARD_TXT_HTML ) ; // actually XHTML, but who's counting?
-	AddFmt ( AP_CLIPBOARD_APPLICATION_XHTML ) ;
-
-	// image types
-	AddFmt ( AP_CLIPBOARD_IMAGE_PNG ) ;
-	AddFmt ( AP_CLIPBOARD_IMAGE_JPEG ) ;
-	AddFmt ( AP_CLIPBOARD_IMAGE_GIF ) ;
-	AddFmt ( AP_CLIPBOARD_IMAGE_BMP ) ;
-	AddFmt ( AP_CLIPBOARD_IMAGE_TIFF ) ;
+  // rich text types
+  AddFmt(AP_CLIPBOARD_TXT_RTF);
+  AddFmt(AP_CLIPBOARD_APPLICATION_RTF);
+  
+  // plain text types
+  AddFmt(AP_CLIPBOARD_TEXT_UTF8_STRING);
+  AddFmt(AP_CLIPBOARD_TEXT);
+  AddFmt(AP_CLIPBOARD_TEXT_STRING);
+  AddFmt(AP_CLIPBOARD_TEXT_PLAIN);
+  AddFmt(AP_CLIPBOARD_TEXT_COMPOUND);
+  
+  // hypertext types
+  AddFmt ( AP_CLIPBOARD_TXT_HTML ) ; // actually XHTML, but who's counting?
+  AddFmt ( AP_CLIPBOARD_APPLICATION_XHTML ) ;
+  
+  // image types
+  AddFmt ( AP_CLIPBOARD_IMAGE_PNG ) ;
+  AddFmt ( AP_CLIPBOARD_IMAGE_JPEG ) ;
+  AddFmt ( AP_CLIPBOARD_IMAGE_GIF ) ;
+  AddFmt ( AP_CLIPBOARD_IMAGE_BMP ) ;
+  AddFmt ( AP_CLIPBOARD_IMAGE_TIFF ) ;
 }
 
 bool AP_UnixClipboard::addTextData(T_AllowGet tTo, void* pData, UT_sint32 iNumBytes)
 {
-  return addTextUTF8(tTo, pData, iNumBytes);
+  if ( addData(tTo, AP_CLIPBOARD_TEXT_UTF8_STRING, pData, iNumBytes) &&
+       addData(tTo, AP_CLIPBOARD_TEXT, pData, iNumBytes) &&
+       addData(tTo, AP_CLIPBOARD_TEXT_STRING, pData, iNumBytes) &&
+       addData(tTo, AP_CLIPBOARD_TEXT_PLAIN, pData, iNumBytes) &&
+       addData(tTo, AP_CLIPBOARD_TEXT_COMPOUND,  pData, iNumBytes) )
+    return true;
+  return false;
 }
 
 bool AP_UnixClipboard::addRichTextData(T_AllowGet tTo, void* pData, UT_sint32 iNumBytes)
@@ -121,15 +150,7 @@ bool  AP_UnixClipboard::getTextData(T_AllowGet tFrom,
 				    void ** ppData, UT_uint32 * pLen,
 				    const char **pszFormatFound)
 {
-  bool bRet = getTextUTF8(tFrom, ppData, pLen);
-
-  // GTK+ returns everything in utf8, so let's just fake text-plain and let
-  // things handle themselves :)
-  if (bRet)
-    *pszFormatFound = "text/plain";
-  else
-    *pszFormatFound = "";
-  return bRet;
+  return getData(tFrom, txtszFormatsAccepted, ppData,pLen, pszFormatFound);
 }
 
 bool  AP_UnixClipboard::getRichTextData(T_AllowGet tFrom,
@@ -148,40 +169,44 @@ bool AP_UnixClipboard::getImageData(T_AllowGet tFrom,
 
 bool AP_UnixClipboard::isTextTag ( const char * tag )
 {
-  if ( !tag && !strlen(tag) )
+  if ( !tag || !strlen(tag) )
     return false ;
 
   // getTextData will only return this because it's sort-of a hack
-  if ( !strcmp( tag, "text/plain" ) )
+  if ( !UT_stricmp( tag, AP_CLIPBOARD_TEXT_UTF8_STRING ) ||
+       !UT_stricmp( tag, AP_CLIPBOARD_TEXT ) ||
+       !UT_stricmp( tag, AP_CLIPBOARD_TEXT_STRING ) ||
+       !UT_stricmp( tag, AP_CLIPBOARD_TEXT_PLAIN ) ||
+       !UT_stricmp( tag, AP_CLIPBOARD_TEXT_COMPOUND ) )
     return true ;
   return false ;
 }
 
 bool AP_UnixClipboard::isRichTextTag ( const char * tag )
 {
-  if ( !tag && !strlen(tag) )
+  if ( !tag || !strlen(tag) )
     return false ;
 
-  if ( !strcmp ( tag, AP_CLIPBOARD_TXT_RTF ) ||
-       !strcmp ( tag, AP_CLIPBOARD_APPLICATION_RTF ) )
+  if ( !UT_stricmp ( tag, AP_CLIPBOARD_TXT_RTF ) ||
+       !UT_stricmp ( tag, AP_CLIPBOARD_APPLICATION_RTF ) )
     return true ;
   return false ;
 }
 
 bool AP_UnixClipboard::isHTMLTag ( const char * tag )
 {
-  if ( !tag && !strlen(tag) )
+  if ( !tag || !strlen(tag) )
     return false ;
 
-  if ( !strcmp ( tag, AP_CLIPBOARD_TXT_HTML ) ||
-       !strcmp ( tag, AP_CLIPBOARD_APPLICATION_XHTML ) )
+  if ( !UT_stricmp ( tag, AP_CLIPBOARD_TXT_HTML ) ||
+       !UT_stricmp ( tag, AP_CLIPBOARD_APPLICATION_XHTML ) )
     return true ;
   return false ;
 }
 
 bool AP_UnixClipboard::isImageTag ( const char * tag )
 {
-  if ( !tag && !strlen(tag) )
+  if ( !tag || !strlen(tag) )
     return false ;
 
   if ( !strncmp ( tag, "image/", 6 ) )

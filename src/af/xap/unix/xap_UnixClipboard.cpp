@@ -1,6 +1,6 @@
 /* AbiSource Application Framework
- * Copyright (C) 1998-2002 AbiSource, Inc.
- * Copyright (C) 2002 Dom Lachowicz
+ * Copyright (c) 1998 AbiSource, Inc.
+ * Copyright (c) 2002 Dom Lachowicz
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,190 +19,54 @@
  */
 
 #include <string.h>
-
-#include "ut_debugmsg.h"
-#include "ut_string.h"
-#include "ut_assert.h"
-#include "xap_UnixDialogHelper.h"
-
 #include "xap_UnixClipboard.h"
 #include "xap_Frame.h"
 #include "xav_View.h"
+#include "ut_debugmsg.h"
+#include "ut_assert.h"
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
-// This file contains all the *stuff* to deal with the
-// wonderful X11 clipboard and selection mechanism (two
-// related, but different, things).
-//
-// The clipboard is used for explicit cut/copy/paste
-// operations requested by the user.  Application
-// specific code actually makes a copy of the current
-// selection and hands us a buffer in a named format
-// (such as RTF).  We "ASSERT" the "CLIPBOARD" and
-// thereby inform the X server that we "think" we own
-// it.
-//
-// When we (or another application) want to paste,
-// we ask the X server to ask the owning application
-// for a list of formats that it can provide (via the
-// "TARGETS" verb) and if we find something that we
-// like, we ask (the X server to ask) the application
-// for to provide us the data it (in a format it supports
-// or converted to one that we've support (via
-// gtk_selection_convert())).
-//
-// On a paste, we can short-circut the server (both
-// calls), if we were the last one to assert the clipboard.
-//
-// After we've asserted the clipboard, the server will
-// send us a selection_clear when someone else asserts it.
-//
-// All clipboard operations are done on the "CLIPBOARD" atom.
-//
-//////////////////////////////////////////////////////////////////
-//
-// The X selection mechanism is the familiar technique of
-// dragging a selection (usually with the left-mouse) and
-// then pasting with the middle-mouse.  Creating a selection
-// in this manner is an ***implicit*** copy.  We recive a
-// a call from the application indicating that the user has
-// created a selection.  We "ASSERT" the "SELECTION" and
-// thereby inform that X server that we "think" we own it,
-// but *WE DO NOT MAKE A COPY OF THE SELECTION CONTENT AT
-// THIS TIME*.  If the user clears the selection, we inform
-// the X server that we are "RELEASING OUR ASSERT" of the
-// selection.
-//
-// On a Paste, we (or another application) asks the server
-// (just like with the clipboard) for the selection content.
-// On reciving a request for the selection content, we call
-// back up into the application and ask for a copy of the
-// current selection -- that is, we delay the actual construction
-// of the copy buffer until it is actually needed.
-
-// On a paste, we can short-circut the server (both
-// calls), if we were the last one to assert the selection.
-//
-// After we've asserted the selection, the server will
-// send us a selection_clear when someone else asserts it.
-//
-// All selection operations are done on the "PRIMARY" atom.
-//
-//////////////////////////////////////////////////////////////////
-//
-// Commentary:  Having both a SELECTION and CLIPBOARD is a
-// somewhat ill-conceived idea -- in X.
-//
-// There is an explicit conflict between the clipboard and
-// the selection.  An application cannot put something on
-// the clipboard without trashing the selection.  The selection
-// is a very transient thing and should not be relied upon --
-// it's just too easy for it to get clobbered.
-//
-// Currently we have the notion of a Clipboard-Paste (accessed
-// via the menu) and Selection-Paste (assessed via the middle
-// mouse button).  Should we fold the selection onto the clipboard
-// so that the Menu-Paste pastes whichever is more recent.  I've
-// left hooks in for this if someone wants to experiment and/or
-// make it a perferences option.
-//
-//////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////
-// only one instance of this class is ever created.
-// it is associated with the App class.
-// we do not know about any windows, frames, or views.
-// on a copy to the clipboard, a buffer to the clipped content is
-//   provided on the downcall.
-// on a copy to the selection, no buffer is provided; an upcall
-//   to the app is made upon demand; the app is responsible for
-//   keeping track of the current window/view/frame which last
-//   asserted the selection.
-//////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////
-// we use the builtin "FakeClipboard" to actually store and index
-// the clipboard buffers.  this file is only concerned with the
-// interaction with the X server.
-//////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////
-// we create a hidden widget to and register all clipboard and
-// selection events on it.  we are the only one that knows anything
-// about it.
-//////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////
-// this class should be considered to consist of two parts:
-//
-// [1] top-half -- downcalls from the application in response to
-//                 user interaction
-// [2] bottom-half -- event callbacks from the server in response
-//                    to other events from the XServer (and indirectly
-//                    from other applications).
-//
-// top-half code will either return immediately or will make a 
-// request to the server and spin waiting for an answer.  in this
-// case, the bottom-half will receive the answer and release the
-// spin-loop -- the bottom-half ***MUST*** do this release or else
-// we will lock up.
-//
-// there is an inherent race condition that we must deal with
-// here, since the event callbacks occur in a somewhat asynchronous
-// fashion.  for example, another application can ask us for our
-// selection content after we have asserted it and cleared it,
-// but before the server has processed our clear request.  or
-// another application can clear its selection between the time
-// we ask for it to enumerate formats and the time we ask it to
-// send us the data.
-//
-//////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////
-
-static void s_selsnd(GtkWidget * widget, GtkSelectionData * selectionData, guint info, guint32 time, gpointer data)
-{
-	// callback
-	XAP_UnixClipboard * pThis = (XAP_UnixClipboard *)g_object_get_data(G_OBJECT(widget), "clipboard");
-	pThis->_selsnd(selectionData,info,time,data);
-	return;
-}
-
-static gint s_selclr(GtkWidget * widget, GdkEventSelection * event)
-{
-	// callback
-	XAP_UnixClipboard * pThis = (XAP_UnixClipboard *)g_object_get_data(G_OBJECT(widget), "clipboard");
-	return pThis->_selclr(event);
-}
-
-static void s_selrcv(GtkWidget * widget, GtkSelectionData *selectionData, guint32 time, gpointer data)
-{
-	// callback
-	XAP_UnixClipboard * pThis = (XAP_UnixClipboard *)g_object_get_data(G_OBJECT(widget), "clipboard");
-	pThis->_selrcv(selectionData,time,data);
-   	return;
-}
 
 static GtkClipboard* gtkClipboardForTarget(XAP_UnixClipboard::_T_AllowGet get)
 {
-  static GtkClipboard * sClipboard = 0 ;
-
-  switch( get )
+  switch(get)
     {
     case XAP_UnixClipboard::TAG_ClipboardOnly:
-      sClipboard = gtk_clipboard_get(GDK_SELECTION_CLIPBOARD);
+      return gtk_clipboard_get(GDK_SELECTION_CLIPBOARD);
       break;
 
     case XAP_UnixClipboard::TAG_PrimaryOnly:
-      sClipboard = gtk_clipboard_get(GDK_SELECTION_PRIMARY);
+      return gtk_clipboard_get(GDK_SELECTION_PRIMARY);
       break;
-
-    case XAP_UnixClipboard::TAG_MostRecent:
-    default:
-	break;
     }
 
-  return sClipboard ;
+  return 0;
+}
+
+static AV_View * viewFromApp(XAP_App * pApp)
+{
+  XAP_Frame * pFrame = pApp->getLastFocussedFrame();
+  if ( !pFrame ) 
+    return 0 ;
+
+  return pFrame->getCurrentView () ;
 }
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
+
+XAP_UnixClipboard::XAP_UnixClipboard(XAP_UnixApp * pUnixApp)
+  : m_pUnixApp(pUnixApp), m_Targets(0), m_nTargets(0)
+{
+}
+
+XAP_UnixClipboard::~XAP_UnixClipboard()
+{
+  // TODO: see if clearData is really needed
+  clearData(true,true);  
+  g_free(m_Targets);
+}
 
 void XAP_UnixClipboard::AddFmt(const char * szFormat)
 {
@@ -211,663 +75,226 @@ void XAP_UnixClipboard::AddFmt(const char * szFormat)
   m_vecFormat_GdkAtom.addItem((void *) gdk_atom_intern(szFormat,FALSE));
 }
 
-XAP_UnixClipboard::XAP_UnixClipboard(XAP_UnixApp * pUnixApp)
-{
-	// caller must call initialize()
-
-	m_pUnixApp = pUnixApp;
-}
-
-XAP_UnixClipboard::~XAP_UnixClipboard()
-{
-	UT_DEBUGMSG(("Clipboard: destroying [ownPrimary %d][ownClipboard %d]\n",
-				 m_bOwnPrimary, m_bOwnClipboard));
-
-	if (m_bOwnClipboard || m_bOwnPrimary)
-		clearData(m_bOwnClipboard,m_bOwnPrimary);
-
-	if (m_myWidget)
-		gtk_widget_destroy(m_myWidget);
-}
-
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-void XAP_UnixClipboard::initialize(void)
+void XAP_UnixClipboard::initialize()
 {
-   UT_DEBUGMSG(("Clipboard: initializing\n"));
-
-   m_waiting = false;
-   m_bOwnClipboard = false;
-   m_bOwnPrimary = false;
-   m_timeClipboard = 0;
-   m_timePrimary = 0;
-   m_timeOnServer = 0;
-   m_databuftype = GDK_NONE;
-
-   m_atomClipboard = GDK_SELECTION_CLIPBOARD;
-   UT_DEBUGMSG(("Clipboard: property [%s atom %lu]\n","CLIPBOARD", m_atomClipboard));
-   m_atomPrimary = GDK_SELECTION_PRIMARY;
-   UT_DEBUGMSG(("Clipboard: property [%s atom %lu]\n","PRIMARY", m_atomPrimary));
-
-   m_atomTargets = gdk_atom_intern("TARGETS", FALSE);
-   UT_DEBUGMSG(("Clipboard: target [%s atom %lu]\n","TARGETS",m_atomTargets));
-   m_atomTimestamp = gdk_atom_intern("TIMESTAMP", FALSE);
-   UT_DEBUGMSG(("Clipboard: target [%s atom %lu]\n","TIMESTAMP",m_atomTimestamp));
-   
-   // create hidden/private window to use with the clipboard
-   
-   m_myWidget = gtk_window_new(GTK_WINDOW_POPUP);
-   gtk_widget_realize(m_myWidget);
-   g_object_set_data(G_OBJECT(m_myWidget), "clipboard", (gpointer)this);
-
-   // register static callbacks to listen to selection-related events
-   // on this window.
-   
-   g_signal_connect(G_OBJECT(m_myWidget), "selection_received",    G_CALLBACK(s_selrcv), (gpointer)this);
-   g_signal_connect(G_OBJECT(m_myWidget), "selection_clear_event", G_CALLBACK(s_selclr), (gpointer)this);
-   g_signal_connect(G_OBJECT(m_myWidget), "selection_get",         G_CALLBACK(s_selsnd), (gpointer)this);
-
-   // register targets (formats) for each format that we support
-   // on both the CLIPBOARD property and the PRIMARY property.
-   
-   for (int k=0, kLimit=m_vecFormat_AP_Name.getItemCount(); (k<kLimit); k++)
-   {
-	   gtk_selection_add_target(m_myWidget,m_atomClipboard,(GdkAtom)m_vecFormat_GdkAtom.getNthItem(k), 0);
-	   gtk_selection_add_target(m_myWidget,m_atomPrimary,  (GdkAtom)m_vecFormat_GdkAtom.getNthItem(k), 0);
-   }
-
-   return;
-}
-
-//////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////
-
-bool XAP_UnixClipboard::assertSelection(void)
-{
-	// assert the X-Selection.  user must have started a
-	// mouse click and drag or somehow started a selection.
-	// unlike the CLIPBOARD (which requires an explicit
-	// Cut or Copy), we must assert the X-Selection anytime
-	// that something is selected.  we don't have to record
-	// what it is that is selected, just that there is one.
-
-	UT_ASSERT( (m_bOwnPrimary == _testOwnership(m_atomPrimary)) );
-
-	if (m_bOwnPrimary)					// already asserted it and still own it
-		return true;
-	
-	m_timePrimary = m_pUnixApp->getTimeOfLastEvent();
-
-	UT_DEBUGMSG(("Clipboard: asserting PRIMARY property [timestamp %08lx]\n",m_timePrimary));
-
-	m_bOwnPrimary = gtk_selection_owner_set(m_myWidget,m_atomPrimary,m_timePrimary);
-	UT_DEBUGMSG(("Clipboard: took ownership of PRIMARY property [%s][timestamp %08lx]\n",
-				 ((m_bOwnPrimary) ? "successful" : "failed"),m_timePrimary));
-
-	return m_bOwnPrimary;
-}
-
-bool XAP_UnixClipboard::addTextUTF8(T_AllowGet tTo, 
-				    void * pData, UT_sint32 iNumBytes)
-{
-  GtkClipboard * clipboard = 0 ;
-
-  clipboard = gtkClipboardForTarget ( tTo ) ;
-  gtk_clipboard_set_text ( clipboard, (const gchar *)pData, (gint)iNumBytes ) ;
-
-  return true ;
-}
-
-bool XAP_UnixClipboard::getTextUTF8(T_AllowGet tFrom, void ** ppData, UT_uint32 * pLen)
-{
-  GtkClipboard * clipboard = 0 ;
-
-  clipboard = gtkClipboardForTarget ( tFrom ) ;
-  gchar * text = gtk_clipboard_wait_for_text ( clipboard ) ;
-
-  if ( !text )
+  // now setup the primary stuff
+  m_nTargets = m_vecFormat_AP_Name.getItemCount();
+  m_Targets  = g_new0(GtkTargetEntry, m_nTargets);
+  
+  for (int k = 0, kLimit = m_nTargets; (k < kLimit); k++)
     {
-      *pLen   = 0;
-      *ppData = 0;
-      return false ;
+      GtkTargetEntry * target = &(m_Targets[k]);
+      target->target = (char*)m_vecFormat_AP_Name.getNthItem(k);
+      target->info = k;
     }
-  size_t length = strlen ( text ) ;
-
-  m_databuf.truncate(0);
-  m_databuf.append((UT_Byte *)text, (UT_uint32)length ) ;
-  g_free(text);
-
-  *pLen   = m_databuf.getLength();
-  *ppData = (void *)m_databuf.getPointer(0);
-
-  return true ;
+  
+  // setup clipboard selection, delay primary until assertSelection()
+  gtk_clipboard_set_with_data  (gtkClipboardForTarget(TAG_ClipboardOnly),
+				m_Targets,
+				m_nTargets,
+				s_clipboard_get_func,
+				s_clipboard_clear_func,
+				this); 
 }
-	
+
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+
+void XAP_UnixClipboard::common_get_func(GtkClipboard *clipboard,
+					GtkSelectionData *selection_data,
+					guint info, T_AllowGet which)
+{
+  AV_View * pView = viewFromApp(m_pUnixApp);
+  if (!pView) return; // race condition - have request for data but no view
+
+  XAP_FakeClipboard & which_clip = ( which == TAG_ClipboardOnly ? m_fakeClipboard : m_fakePrimaryClipboard );
+  pView->cmdCopy(which == TAG_ClipboardOnly);
+
+  guint ntargets = m_vecFormat_AP_Name.getItemCount();
+
+  if (info < ntargets)
+    {
+      const gchar * data = 0;
+      UT_uint32 data_len = 0 ;
+      const gchar * format_name = (const gchar*)m_vecFormat_AP_Name.getNthItem(info);
+
+      if(which_clip.hasFormat(format_name))
+	{
+	  which_clip.getClipboardData(format_name,(void**)&data,&data_len);	 
+	  GdkAtom atom = (GdkAtom)m_vecFormat_GdkAtom.getNthItem(info);
+	  gtk_selection_data_set(selection_data,atom,8,(const guchar*)data,data_len);
+	}
+    }
+}
+
+void  XAP_UnixClipboard::primary_clear_func (GtkClipboard *clipboard)
+{
+}
+
+void  XAP_UnixClipboard::clipboard_clear_func (GtkClipboard *clipboard)
+{
+}
+
+void XAP_UnixClipboard::primary_get_func(GtkClipboard *clipboard,
+					 GtkSelectionData *selection_data,
+					 guint info)
+{
+  common_get_func(clipboard, selection_data, info, TAG_PrimaryOnly);
+}
+
+void XAP_UnixClipboard::clipboard_get_func(GtkClipboard *clipboard,
+					   GtkSelectionData *selection_data,
+					   guint info)
+{
+  common_get_func(clipboard, selection_data, info, TAG_ClipboardOnly);
+}
+
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+
+bool XAP_UnixClipboard::assertSelection()
+{
+  // assert the X-Selection for PRIMARY.
+  return ( gtk_clipboard_set_with_data (gtkClipboardForTarget(TAG_PrimaryOnly),
+					m_Targets,
+					m_nTargets,
+					s_primary_get_func,
+					s_primary_clear_func,
+					this) == TRUE ); 
+}
+
 bool XAP_UnixClipboard::addData(T_AllowGet tFrom, const char* format, void* pData, UT_sint32 iNumBytes)
 {
-  // TODO: CLIPBOARD vs. PRIMARY selections
-  if ( tFrom != TAG_ClipboardOnly )
-    return true;
-
-	// This is an EXPLICIT Cut or Copy from the User.
-	// First, we stick a copy of the data onto our internal clipboard.
-	// Then, we assert ownership of the CLIPBOARD property.
-	// NOTE: Do not call this for the PRIMARY property (use assertSelection()).
-	
-	m_timeClipboard = m_pUnixApp->getTimeOfLastEvent();
-	
-	UT_DEBUGMSG(("Clipboard: explicit cut/copy to CLIPBOARD property [format %s][len %d][timestamp %08lx]\n",
-				 format,iNumBytes,m_timeClipboard));
-
-	if (!m_fakeClipboard.addData(format,pData,iNumBytes))
-		return false;
-
-	m_bOwnClipboard = _testOwnership(m_atomClipboard);
-	if (m_bOwnClipboard)
-	{
-		// There's probably a benign race-condition here.
-		UT_DEBUGMSG(("Clipboard: refreshed ownership of CLIPBOARD property at [timestamp %08lx]\n",
-					 m_timeClipboard));
-	}
-	else
-	{
-		m_bOwnClipboard = gtk_selection_owner_set(m_myWidget,m_atomClipboard,m_timeClipboard);
-		UT_DEBUGMSG(("Clipboard: took ownership of CLIPBOARD property [%s][timestamp %08lx]\n",
-					 ((m_bOwnClipboard) ? "successful" : "failed"),m_timeClipboard));
-	}
-
-	return m_bOwnClipboard;
+  // add this data to our data store
+  if( tFrom == TAG_PrimaryOnly )
+    {
+      if(!m_fakePrimaryClipboard.addData(format,pData,iNumBytes))
+	return false;
+      
+      xxx_UT_DEBUGMSG(("Added %d bytes of '%s' data to PRIMARY selection\n", iNumBytes, format));
+      return true;
+    }
+  else 
+    {
+      if(!m_fakeClipboard.addData(format,pData,iNumBytes))
+	return false;
+      
+      xxx_UT_DEBUGMSG(("Added %d bytes of '%s' data to CLIPBOARD selection\n", iNumBytes, format));
+      return true;
+    }
 }
 
 void XAP_UnixClipboard::clearData(bool bClipboard, bool bPrimary)
 {
-	// User requested us to clear the clipboard.
-
-	UT_DEBUGMSG(("Clipboard: explicit clear [CLIPBOARD %d][PRIMARY %d]\n",bClipboard,bPrimary));
-	
-	if (bClipboard)
-	{
-		m_timeClipboard = m_pUnixApp->getTimeOfLastEvent();
-		_releaseOwnership(m_atomClipboard,m_timeClipboard);
-		// TODO decide if we need to call fakeClipboard -- the callback
-		// TODO should have taken care of this.
-		m_fakeClipboard.clearClipboard();
-	}
-	
-	if (bPrimary)
-	{
-		m_timePrimary = m_pUnixApp->getTimeOfLastEvent();
-		_releaseOwnership(m_atomPrimary,m_timePrimary);
-	}
-	
-	return;
+  // User requested us to clear the clipboard
+  if (bClipboard)
+    {
+      gtk_clipboard_clear (gtkClipboardForTarget (TAG_ClipboardOnly));
+      m_fakeClipboard.clearClipboard();
+    }
+  
+  if (bPrimary)
+    {
+      gtk_clipboard_clear(gtkClipboardForTarget (TAG_PrimaryOnly));
+      m_fakePrimaryClipboard.clearClipboard();
+    }
 }
 
 bool XAP_UnixClipboard::getData(T_AllowGet tFrom, const char** formatList,
-								   void ** ppData, UT_uint32 * pLen,
-								   const char **pszFormatFound)
+				void ** ppData, UT_uint32 * pLen,
+				const char **pszFormatFound)
 {
-	// Fetch data from the clipboard (using the allowable source(s))
-	// in one of the prioritized list of formats.  Return pointer
-	// to clipboard's buffer.  
+  // Fetch data from the clipboard (using the allowable source(s)) in one of
+  // the prioritized list of formats.  Return pointe to clipboard's buffer. 
 
-	UT_DEBUGMSG(("Clipboard:: getData called [bOwnClipboard %d][bOwnPrimary %d]\n",m_bOwnClipboard,m_bOwnPrimary));
-
-	// The following asserts are probaby not true in an absolute
-	// sense -- that is, there is a race condition here that
-	// could happen, but I don't really care about.  Right now, I'm
-	// more concerned about the general correctness of the code.
-	
-	UT_ASSERT( (m_bOwnClipboard == _testOwnership(m_atomClipboard)) );
-	UT_ASSERT( (m_bOwnPrimary == _testOwnership(m_atomPrimary)) );
-	
-	if (tFrom == TAG_MostRecent)
-	{
-		guint32 timePrimary = ((m_bOwnPrimary) ? m_timePrimary : _getTimeFromServer(m_atomPrimary));
-		guint32 timeClipboard = ((m_bOwnClipboard) ? m_timeClipboard : _getTimeFromServer(m_atomClipboard));
-		tFrom = ((timePrimary > timeClipboard) ? TAG_PrimaryOnly : TAG_ClipboardOnly);
-
-		UT_DEBUGMSG(("Clipboard::getData: Most recent is [%s]\n",
-					 ((tFrom==TAG_PrimaryOnly) ? gdk_atom_name(m_atomPrimary) : gdk_atom_name(m_atomClipboard))));
-	}
-
-	switch (tFrom)
-	{
-	case TAG_ClipboardOnly:
-		if (m_bOwnClipboard)
-			return _getDataFromFakeClipboard(formatList,ppData,pLen,pszFormatFound);
-		return _getDataFromServer(m_atomClipboard,formatList,ppData,pLen,pszFormatFound);
-		
-	case TAG_PrimaryOnly:
-		if (m_bOwnPrimary)
-			return _getCurrentSelection(formatList,ppData,pLen,pszFormatFound);
-		return _getDataFromServer(m_atomPrimary,formatList,ppData,pLen,pszFormatFound);
-		
-	case TAG_MostRecent:
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		return false;
-		
-	default:
-		UT_ASSERT(UT_NOT_IMPLEMENTED);
-		return false;
-	}
-	/*NOTREACHED*/
+  *pszFormatFound = NULL;
+  *ppData = NULL;
+  *pLen = 0;
+  
+  switch (tFrom)
+    {
+    case TAG_ClipboardOnly:
+      if (ownsClipboard(tFrom))
+	return _getDataFromFakeClipboard(tFrom,formatList,ppData,pLen,pszFormatFound);
+      else
+	return _getDataFromServer(tFrom,formatList,ppData,pLen,pszFormatFound);
+      
+    case TAG_PrimaryOnly:
+      if (ownsClipboard(tFrom))
+	return _getDataFromFakeClipboard(tFrom,formatList,ppData,pLen,pszFormatFound);
+      else
+	return _getDataFromServer(tFrom,formatList,ppData,pLen,pszFormatFound);
+      
+    default:
+      UT_ASSERT_NOT_REACHED();
+      return false;
+    }
 }
 	
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-bool XAP_UnixClipboard::_getDataFromFakeClipboard(const char** formatList,
-													 void ** ppData, UT_uint32 * pLen,
-													 const char **pszFormatFound)
+bool XAP_UnixClipboard::ownsClipboard(T_AllowGet which)
 {
-	// fetch best match from our internal clipboard.
-
-	UT_ASSERT(m_bOwnClipboard);
-	
-	for (int k=0; (formatList[k]); k++)
-		if (m_fakeClipboard.getClipboardData(formatList[k],ppData,pLen))
-		{
-			*pszFormatFound = formatList[k];
-			UT_DEBUGMSG(("Clipboard::_getDataFromFakeClipboard: found format [%s][len %d]\n",formatList[k],*pLen));
-			return true;
-		}
-
-	UT_DEBUGMSG(("Clipboard::_getDataFromFakeClipboard: no matching format found ??\n"));
-	return false;
+  // TODO: Possibly noticable speedups iff we own the clipboard. Determine how to determine this...
+  return false;
 }
 
-bool XAP_UnixClipboard::_getDataFromServer(GdkAtom atom, const char** formatList,
-											  void ** ppData, UT_uint32 * pLen,
-											  const char **pszFormatFound)
+bool XAP_UnixClipboard::_getDataFromFakeClipboard(T_AllowGet tFrom, const char** formatList,
+						  void ** ppData, UT_uint32 * pLen,
+						  const char **pszFormatFound)
 {
-	// Fetch selection data from the named atom from the XServer
-	// in one of the prioritized list of formats.  Return pointer
-	// to clipboard's buffer.
+  XAP_FakeClipboard & which_clip = ( tFrom == TAG_ClipboardOnly ? m_fakeClipboard : m_fakePrimaryClipboard );
 
-	UT_DEBUGMSG(("Clipboard::_getDataFromServer called\n"));
+  for (int k=0; (formatList[k]); k++)
+    if (which_clip.getClipboardData(formatList[k],ppData,pLen))
+      {
+	*pszFormatFound = formatList[k];
+	return true;
+      }
+  
+  // should always happen since this is our internal buffer
+  UT_ASSERT_NOT_REACHED();
+  return false;
+}
 
-	// ask XServer for all formats on this property; fill m_vecFormatsOnServer.
+bool XAP_UnixClipboard::_getDataFromServer(T_AllowGet tFrom, const char** formatList,
+					   void ** ppData, UT_uint32 * pLen,
+					   const char **pszFormatFound)
+{
+  // walk desired formats list and find first one that server also has.
 
-	_getFormats(atom);
-#if 1
-	// TODO This is an experimental hack to try to get a "TEXT" from
-	// TODO the current owner of the clipboard -- if they refused to
-	// TODO respond (or returned a bogus reply) to the "TARGETS" request.
-	// TODO Remove this later.
-	if (m_vecFormatsOnServer.getItemCount() == 0)
-		m_vecFormatsOnServer.addItem((void*)gdk_atom_intern("TEXT",FALSE));
-#endif
+  GtkClipboard * clipboard = gtkClipboardForTarget (tFrom);
 
-	// walk desired formats list and find first one that server also has.
-	
-	int kLimit = m_vecFormatsOnServer.getItemCount();
-	for (int j=0; (formatList[j]); j++)
+  UT_Vector atoms ;
+  for(int atomCounter = 0; formatList[atomCounter]; atomCounter++)
+    {
+      atoms.addItem((void *) gdk_atom_intern(formatList[atomCounter],FALSE));
+    }
+  int len = atoms.size () ;
+
+  for(int i = 0; i < len; i++)
+    {
+      GdkAtom atom = (GdkAtom)atoms.getNthItem(i);
+      GtkSelectionData* selection = gtk_clipboard_wait_for_contents (clipboard, atom);
+      if(selection)
 	{
-		GdkAtom atomJ = _convertFormatString(formatList[j]);
-		for (int k=0; (k<kLimit); k++)
-		{
-			GdkAtom atomK = (GdkAtom)m_vecFormatsOnServer.getNthItem(k);
-			if (atomJ == atomK)
-			{
-				UT_DEBUGMSG(("Clipboard::_getDataFromServer: [property %s] attempting to fetch [format %s]\n",
-							 gdk_atom_name(atom),gdk_atom_name(atomK)));
-				return _getDataFromServerInFormat(atom,atomK,ppData,pLen,pszFormatFound);
-			}
-		}
+	  m_databuf.truncate(0);
+	  m_databuf.append((UT_Byte *)selection->data, (UT_uint32)selection->length );
+	  *pLen = selection->length;
+	  *ppData = (void*)m_databuf.getPointer(0);
+	  *pszFormatFound = formatList[i];
+	  gtk_selection_data_free(selection);
+	  return true;
 	}
+    }
 
-	UT_DEBUGMSG(("Clipboard::_getDataFromServer: [property %s] didn't contain anything in format requested.\n",
-				 gdk_atom_name(atom)));
-	return false;
-}
-
-void XAP_UnixClipboard::_getFormats(GdkAtom atom)
-{
-	// populate m_vecFormatsOnServer with the set of formats
-	// currently set on the named property.
-
-	UT_DEBUGMSG(("Clipboard::_getFormats: requesting formats for [property %s]\n",
-				 gdk_atom_name(atom)));
-
-	m_waiting = true;
-	//gtk_selection_convert(m_myWidget,atom,m_atomTargets,m_pUnixApp->getTimeOfLastEvent());
-	gtk_selection_convert(m_myWidget,atom,m_atomTargets,GDK_CURRENT_TIME);
-	while (m_waiting)
-		gtk_main_iteration();
-
-	return;
-}
-
-guint32 XAP_UnixClipboard::_getTimeFromServer(GdkAtom atom)
-{
-	// populate m_vecFormatsOnServer with the set of formats
-	// currently set on the named property.
-
-	UT_DEBUGMSG(("Clipboard::_getTimeFromServer: requesting timestamp for [property %s]\n",
-				 gdk_atom_name(atom)));
-
-	m_waiting = true;
-	gtk_selection_convert(m_myWidget,atom,m_atomTimestamp,m_pUnixApp->getTimeOfLastEvent());
-	while (m_waiting)
-		gtk_main_iteration();
-
-	return m_timeOnServer;
-}
-
-bool XAP_UnixClipboard::_getDataFromServerInFormat(GdkAtom atom, GdkAtom atomFormat,
-													  void ** ppData, UT_uint32 * pLen,
-													  const char **pszFormatFound)
-{
-	// request contents of selection/clipboard from the server
-	// in the named format.
-
-	UT_DEBUGMSG(("Clipboard::_getDataFromServerInFormat: [property %s][formst %s]\n",
-				 gdk_atom_name(atom),gdk_atom_name(atomFormat)));
-
-	m_bWaitingForDataFromServer = true;	// safety check to guard against stray messages
-	m_waiting = true;
-	gtk_selection_convert(m_myWidget,atom,atomFormat,m_pUnixApp->getTimeOfLastEvent());
-	while (m_waiting)
-		gtk_main_iteration();
-
-	if (m_databuftype==GDK_NONE)
-	{
-		*pszFormatFound = NULL;
-		*ppData = NULL;
-		*pLen = 0;
-		return false;
-	}
-	else
-	{
-		*pszFormatFound = _convertToFormatString(m_databuftype);
-		*ppData = (void *)m_databuf.getPointer(0);
-		*pLen = m_databuf.getLength();
-		return true;
-	}
+  xxx_UT_DEBUGMSG(("Clipboard::_getDataFromServer: didn't contain anything in format requested.\n"));
+  return false;
 }
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
-
-bool XAP_UnixClipboard::_testOwnership(GdkAtom atom) const
-{
-	// return TRUE iff the XServer currently thinks
-	// that we still own the given atom.
-	
-	GdkWindow * w = gdk_selection_owner_get(atom);
-	return (w == m_myWidget->window);
-}
-
-void XAP_UnixClipboard::_releaseOwnership(GdkAtom atom, guint32 timeOfRelease)
-{
-	if (_testOwnership(atom))
-	{
-		// the following call will send a message to the XServer.
-		// upon updating the property, the XServer will send us
-		// a selection_clear.  we spin here until it comes in.
-		// TODO investigate if this is necessary and/or if we
-		// TODO need a timeout on this loop.
-
-		m_waiting = true;
-		gtk_selection_owner_set(NULL,atom,timeOfRelease);
-		while (m_waiting)
-			gtk_main_iteration();
-	}
-}
-
-//////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////
-
-void XAP_UnixClipboard::_selsnd(GtkSelectionData * selectionData, guint /*info*/, guint32 /*time*/, gpointer /*data*/)
-{
-	// callback
-	// someone asked us for the contents of the selection
-	// (CLIPBOARD or PRIMARY) that we asserted.
-	// send them the data.
-	
-	UT_DEBUGMSG(("Clipboard: SELSND: [property %s][target %s]\n",
-				 gdk_atom_name(selectionData->selection),
-				 gdk_atom_name(selectionData->target)));
-
-	UT_ASSERT(!m_waiting);
-
-	const char * szApFormatDesired = _convertToFormatString(selectionData->target);
-	if (!szApFormatDesired)
-	{
-		UT_DEBUGMSG(("Clipboard: SELSND failed -- unknown target format\n"));
-		return;
-	}
-	if (UT_stricmp(szApFormatDesired,"STRING") == 0)
-	{
-		// silently map "STRING" into "TEXT" for lookup purposes
-		szApFormatDesired = "TEXT";
-		UT_DEBUGMSG(("Clipboard: silently folding target STRING onto TEXT\n"));
-	}
-
-	if (selectionData->selection == m_atomClipboard)
-	{
-//		UT_ASSERT(m_bOwnClipboard);
-
-		void * pData = NULL;
-		UT_uint32 iLen = 0;
-		bool bHaveDataInRequestedFormat = m_fakeClipboard.getClipboardData(szApFormatDesired,&pData,&iLen);
-		if (!bHaveDataInRequestedFormat)
-		{
-			UT_DEBUGMSG(("Clipboard: SELSND CLIPBOARD failed -- no data on internal clipboard in requested format [%s]\n",
-						 szApFormatDesired));
-			return;
-		}
-
-		UT_DEBUGMSG(("Clipboard: SELSND CLIPBOARD posting %d bytes [format %s]\n",iLen,szApFormatDesired));
-		gtk_selection_data_set(selectionData,selectionData->target,8,(guchar*)pData,iLen);
-		return;
-	}
-
-	if (selectionData->selection == m_atomPrimary)
-	{
-		UT_ASSERT(m_bOwnPrimary);
-
-		void * pData = NULL;
-		UT_uint32 iLen = 0;
-		const char * aszFormats[2];
-		const char * szApFormatFound = NULL;
-
-		aszFormats[0] = szApFormatDesired;
-		aszFormats[1] = NULL;
-
-		bool bHaveDataInRequestedFormat = _getCurrentSelection(aszFormats,&pData,&iLen,&szApFormatFound);
-		if (!bHaveDataInRequestedFormat)
-		{
-			UT_DEBUGMSG(("Clipboard:: SELSND PRIMARY failed -- no data on current X selection in requested format [%s]\n",
-						 szApFormatDesired));
-			return;
-		}
-		
-		UT_DEBUGMSG(("Clipboard: SELSND PRIMARY posting %d bytes [format %s]\n",iLen,szApFormatFound));
-		gtk_selection_data_set(selectionData,selectionData->target,8,(guchar*)pData,iLen);
-		return;
-	}
-
-	UT_DEBUGMSG(("Clipboard: SELSND failed -- unknown property\n"));
-	return;
-}
-
-gint XAP_UnixClipboard::_selclr(GdkEventSelection * event)
-{
-	// callback
-	// someone else now owns the indicated property.
-	// we should release our resources and probably
-	// unhighlight the selection on screen.
-	
-	UT_DEBUGMSG(("Clipboard: SELCLR: [property %s]\n",
-				 gdk_atom_name(event->selection)));
-
-	// clear the waiting flag in case we are being called
-	// because we did a user-clear and released the
-	// property (set the owner to null).
-	
-	m_waiting = false;
-
-	if (event->selection == m_atomClipboard)
-	{
-		m_fakeClipboard.clearClipboard();
-		// assert that we are not the owner of the CLIPBOARD property.
-		UT_ASSERT( !_testOwnership(m_atomClipboard) );
-		m_bOwnClipboard = false;
-		// TODO consider clearing the highlighted selection on screen
-		return true;
-	}
-
-	if (event->selection == m_atomPrimary)
-	{
-		m_pUnixApp->clearSelection();
-		m_bOwnPrimary = false;
-		return true;
-	}
-
-	UT_DEBUGMSG(("Clipboard: SELCLR failed -- unknown property\n"));
-	return false;
-}
-
-void XAP_UnixClipboard::_selrcv(GtkSelectionData *selectionData, guint32 /*time*/, gpointer /*data*/)
-{
-	// callback
-	// The XServer is telling us the answer to a question
-	// or request that we made.  Our top-half is sitting
-	// in a "while (m_waiting) gtk_main_iteration()" loop.
-	// here we need to collect the answer and let the top-half
-	// proceed.
-
-	UT_DEBUGMSG(("Clipboard: SELRCV: [property %s][format %s][type %s][pData %p][lenData %d]\n",
-				 gdk_atom_name(selectionData->selection),
-				 gdk_atom_name(selectionData->target),
-				 gdk_atom_name(selectionData->type),
-				 selectionData->data,selectionData->length));
-
-	// no matter what we do, we must release the top-half.
-
-	UT_ASSERT(m_waiting);
-	m_waiting = false;
-
-	// our processing depends upon the target.
-	
-	if (selectionData->target == m_atomTargets)
-	{
-		// we are receiving the answer to the TARGETS request (in _getFormats())
-
-		m_vecFormatsOnServer.clear();
-
-		if ((selectionData->length <= 0) || (!selectionData->data))
-			return;
-		if (selectionData->type != GDK_SELECTION_TYPE_ATOM)
-			return;
-
-		GdkAtom * aAtoms = (GdkAtom *)selectionData->data;
-		UT_uint32 count = selectionData->length / sizeof(GdkAtom);
-
-		for (UT_uint32 k=0; k<count; k++)
-		{
-			UT_DEBUGMSG(("Clipboard: SELRCV: [property %s] has [format %s]\n",
-						 gdk_atom_name(selectionData->selection),
-						 gdk_atom_name(aAtoms[k])));
-			m_vecFormatsOnServer.addItem((void *)(aAtoms[k]));
-		}
-
-		return;
-	}
-
-	if (selectionData->target == m_atomTimestamp)
-	{
-		// we are receiving the answer to the TIMESTAMP request (in _getTimeFromServer())
-
-		m_timeOnServer = 0;
-
-		if ((selectionData->length <= 0) || (!selectionData->data))
-			return;
-		if (selectionData->type != GDK_SELECTION_TYPE_INTEGER)
-			return;
-
-		guint32 * p = (guint32 *)selectionData->data;
-		m_timeOnServer = *p;
-
-		UT_DEBUGMSG(("Clipboard: SELRCV: [property %s] has timestamp [%08lx]\n",
-					 gdk_atom_name(selectionData->selection),m_timeOnServer));
-		return;
-	}
-	
-	if (m_bWaitingForDataFromServer)
-	{
-		UT_DEBUGMSG(("Clipboard: SELRCV: assuming data buffer [length %d]\n",selectionData->length));
-
-		m_bWaitingForDataFromServer = false;
-		
-		m_databuf.truncate(0);
-		m_databuftype = GDK_NONE;
-	
-		if ((selectionData->length <= 0) || (!selectionData->data))
-			return;
-		m_databuf.append((UT_Byte *)(selectionData->data),selectionData->length);
-		m_databuftype = selectionData->target;
-
-		return;
-	}
-
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-	
-	return;
-}
-
-//////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////
-// we implement a list of "named" clipboard formats.
-// these two functions convert between these named formats and
-// X11 Atoms that the XServer knows about.  XP and Application
-// code only knows about the formats by name.
-
-GdkAtom XAP_UnixClipboard::_convertFormatString(const char * format)
-{
-   int kLimit = m_vecFormat_AP_Name.getItemCount();
-   int k;
-   
-   for (k = 0; k < kLimit; k++)
-     if (UT_stricmp(format,(const char *)m_vecFormat_AP_Name.getNthItem(k)) == 0)
-       return (GdkAtom)m_vecFormat_GdkAtom.getNthItem(k);
-
-   // no matches, so we'll create this new one for them...
-   // TODO this is probably unnecessary -- jeff
-
-   GdkAtom new_atom = gdk_atom_intern(format, FALSE);
-   m_vecFormat_AP_Name.addItem((void*)format);
-   m_vecFormat_GdkAtom.addItem((void*)new_atom);
-   return new_atom;
-}
-
-const char * XAP_UnixClipboard::_convertToFormatString(GdkAtom fmt) const
-{ 
-   int kLimit = m_vecFormat_GdkAtom.getItemCount();
-   int k;
-   
-   for (k = 0; k < kLimit; k++)
-     if (fmt == (GdkAtom)m_vecFormat_GdkAtom.getNthItem(k))
-       return (const char *)m_vecFormat_AP_Name.getNthItem(k);
-   
-   return NULL;
-}
-
-//////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////
-
-bool XAP_UnixClipboard::_getCurrentSelection(const char** formatList,
-												void ** ppData, UT_uint32 * pLen,
-												const char **pszFormatFound)
-{
-	// get the contents of the current selection from the view.
-	// this implements the copy-on-demand nature of X-Selections.
-
-	UT_DEBUGMSG(("Clipboard::_getCurrentSelection: need current X selection.\n"));
-
-	return m_pUnixApp->getCurrentSelection(formatList,ppData,pLen,pszFormatFound);
-}
-
