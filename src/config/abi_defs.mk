@@ -517,7 +517,7 @@ OUT			= $(ABI_ROOT)/src
 ##			a date stamp in a nightly build system).
 ##
 
-ABI_BUILD_VERSION	= 1.0.0
+ABI_BUILD_VERSION	= 1.1.0
 ABI_BUILD_ID		=
 
 CFLAGS  += -DABI_BUILD_VERSION=\"$(ABI_BUILD_VERSION)\"
