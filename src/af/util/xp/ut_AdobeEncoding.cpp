@@ -40,7 +40,7 @@ static int s_compare (const void * a, const void * b)
 
 UT_AdobeEncoding::UT_AdobeEncoding(const encoding_pair * ep, UT_uint32 esize)
 {
-	m_pLUT = ep;
+	m_pLUT = (encoding_pair*)ep;
 	m_iLutSize = esize;
 }
 
