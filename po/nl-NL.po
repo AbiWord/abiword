@@ -6574,9 +6574,8 @@ msgstr "Normaal"
 
 #. DLG_HTMLOPT_ExpRestore
 #: po/tmp/xap_String_Id.h.h:502
-#, fuzzy
 msgid "Restore Settings"
-msgstr "Huidige Instellingen"
+msgstr "Instellingen terugzetten"
 
 #. LANG_RO_RO
 #: po/tmp/xap_String_Id.h.h:504
