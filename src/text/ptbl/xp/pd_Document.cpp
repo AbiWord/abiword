@@ -229,7 +229,7 @@ UT_UTF8String PD_Document::getMailMergeField(const UT_String & key) const
 
 bool PD_Document::mailMergeFieldExists(const UT_String & key) const
 {
-    void * val = m_metaDataMap.pick ( key ) ;
+    void * val = (void *) m_metaDataMap.pick ( key ) ;
     return (val != NULL);
 }
 
