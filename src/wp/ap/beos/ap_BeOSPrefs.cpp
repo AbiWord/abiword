@@ -19,6 +19,11 @@
 
 #include "stdlib.h"
 #include "string.h"
+#include "locale.h"
+#include "ctype.h"
+#include "ut_string.h"
+#include "ut_debugmsg.h"
+
 #include "ap_BeOSPrefs.h"
 
 /*****************************************************************/
@@ -58,4 +63,66 @@ void AP_BeOSPrefs::overlayEnvironmentPrefs(void)
 {
 	// TODO steal the appropriate code from the unix version
 	// TODO after it is finished.
+	if (!m_bUseEnvLocale)
+		return;							// nothing to do...
+
+#if 1
+	// TODO use various POSIX env variables
+	// TODO (such as LANG and LC_*) to compute
+	// TODO a name in our locale namespace
+	// TODO (see .../src/wp/ap/xp/ap_*_Languages.h)
+
+        // make a copy of the current locale so we can set it back
+	char *old_locale = UT_strdup(setlocale(LC_ALL, NULL));
+
+	// this will set our current locale information
+	// according to the user's env variables
+	setlocale(LC_ALL, "");
+
+	// locale categories:
+	// LC_COLLATE - collation of strings (functions strcoll and strxfrm)
+	// LC_CTYPE - classification and conversion of characters
+	// LC_MONETARY - formatting monetary values
+	// LC_NUMERIC - formatting numeric values that are not monetary
+	// LC_TIME - formatting date and time values
+	// LC_MESSAGES - language of messages and look of affirmative/negative answer
+
+	// now, which of the categories should we use?
+	// we used to use LC_CTYPE, but decided that LC_MESSAGES was a better idea
+	// (most likely, all of LC_* are the same)
+	
+	const char * szNewLang = "en-US"; // default to US English
+	char * lc_ctype = UT_strdup(setlocale(LC_MESSAGES, NULL));
+
+	// locale categories seem to always look like this:
+	// two letter for language (lowcase) _ two letter country code (upcase)
+	// ie. en_US, es_ES, pt_PT
+	// which goes to the Abiword format:
+	// en-US, es-ES, pt-PT
+
+	// we'll try this quick conversion
+	if (lc_ctype != NULL && strlen(lc_ctype) >= 5) {
+	   lc_ctype[2] = '-';
+	   szNewLang = lc_ctype;
+	}
+
+	UT_DEBUGMSG(("Prefs: Using LOCALE info from environment [%s]\n",szNewLang));
+	m_builtinScheme->setValue((XML_Char*)AP_PREF_KEY_MenuLabelSet,
+				  (XML_Char*)szNewLang);
+	m_builtinScheme->setValue((XML_Char*)AP_PREF_KEY_ToolbarLabelSet,
+				  (XML_Char*)szNewLang);
+	m_builtinScheme->setValue((XML_Char*)AP_PREF_KEY_StringSet,
+				  (XML_Char*)szNewLang);
+
+	// free the language id, if it was allocated
+	if (lc_ctype != NULL) free(lc_ctype);
+
+	// change back to the previous locale setting
+	// although, we might want to leave it in the user's preferred locale?
+	if (old_locale != NULL) {
+	   setlocale(LC_ALL, old_locale);
+	   free(old_locale);
+	}
+#endif
+
 }
