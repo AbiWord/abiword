@@ -76,6 +76,38 @@ static int word_colors[][3] = {
    {0xc0, 0xc0, 0xc0}, /* light gray */
 };
 
+/*****************************************************************/
+
+/*
+ * This next bit of code is so we can hopefully import 
+ * At least some of MSWord's fields
+ */
+
+static TokenTable s_Tokens[] =
+{
+	{"TIME",      FC_TIME},
+	{"\\@",       FC_DateTimePicture},
+	{"HYPERLINK", FC_HYPERLINK},
+	{"TOC",       FC_TOC},
+	{"\\o",       FC_TOC_FROM_RANGE},
+	{"PAGEREF",   FC_PAGEREF},
+	{"EMBED",     FC_EMBED},
+	{"EDITTIME",  FC_EDITTIME},
+	{ "*",        FC_OTHER}
+};
+
+static unsigned int s_mapNameToToken(const char* name)
+{
+  unsigned int k;
+  for (k=0; k<FieldCodeTableSize; k++)
+    {
+      if (s_Tokens[k].m_name[0] == '*')
+	return k;
+      else if (!(strcasecmp(s_Tokens[k].m_name,name)))
+	return k;
+    }
+    return 0;
+}
 
 /*****************************************************************/
 
@@ -124,9 +156,9 @@ int CharProc(wvParseStruct *ps,U16 eachchar,U8 chartype,U16 lid)
 	   
 	   // convert incoming character to unicode
 	   if (chartype)
-	     eachchar = XAP_EncodingManager::instance->UToNative(eachchar);
-	     //eachchar = wvHandleCodePage(eachchar, lid);
-
+	     eachchar = wvHandleCodePage(eachchar, lid);
+	     //eachchar = XAP_EncodingManager::instance->UToNative(eachchar);
+	     
 	   xxx_UT_DEBUGMSG(("word 97 char is %c (%d), type is %d\n",eachchar,(int)eachchar,chartype));
 
 	   // take care of any oddities in Microsoft's character "encoding"
@@ -165,25 +197,26 @@ int CharProc(wvParseStruct *ps,U16 eachchar,U8 chartype,U16 lid)
 		xxx_UT_DEBUGMSG(("a field is beginning\n"));
 		ps->fieldstate++;
 		ps->fieldmiddle = 0;
+		pDocReader->_fieldProc(ps, eachchar, chartype, lid);	/* temp */
 		return 0;
 	      case 20: // field separator
 		xxx_UT_DEBUGMSG(("a field separator\n"));
+		pDocReader->_fieldProc(ps, eachchar, chartype, lid);
 		ps->fieldmiddle = 1;
 		return 0;
 	      case 21: // field end
 		xxx_UT_DEBUGMSG(("a field has ended\n"));
 		ps->fieldstate--;
 		ps->fieldmiddle = 0;
+		pDocReader->_fieldProc(ps, eachchar, chartype, lid);	/* temp */
 		return 0;
 	     }
 
-	   // HACK: it seems the text which is displayed by a field is contained
-	   // HACK: after the field separator. since I haven't written real field
-	   // HACK: import support, yet, this will fake it somewhat...
-	   //if (ps->fieldstate && !ps->fieldmiddle) return 0;
+	   // TODO: it seems the text which is displayed by a field is contained
+	   // TODO: after the field separator. since I haven't written real field
+	   // TODO: import support, yet, this will fake it somewhat...
 	   if (ps->fieldstate) {
-	     // TODO: really handle fields (i.e. eachchar == 13, 14, 15)
-	     if(eachchar == 0x13 || eachchar == 0x14)
+	     if(pDocReader->_fieldProc(ps, eachchar, chartype, lid))
 	       return 0;
 	   }
 
@@ -228,6 +261,7 @@ int SpecCharProc(wvParseStruct *ps, U16 eachchar, CHP* achp)
 	xxx_UT_DEBUGMSG(("a field is beginning\n"));
 	ps->fieldstate++;
 	ps->fieldmiddle = 0;
+	pDocReader->_fieldProc(ps, eachchar, 0, 0x400); /* temp */
 	return 0;
       case 20: // field separator
 	if (achp->fOle2)
@@ -236,11 +270,13 @@ int SpecCharProc(wvParseStruct *ps, U16 eachchar, CHP* achp)
 	  }
 	xxx_UT_DEBUGMSG(("a field separator\n"));
 	ps->fieldmiddle = 1;
+	pDocReader->_fieldProc(ps, eachchar, 0, 0x400); /* temp */
 	return 0;
       case 21: // field end
 	xxx_UT_DEBUGMSG(("a field has ended\n"));
 	ps->fieldstate--;
 	ps->fieldmiddle = 0;
+	pDocReader->_fieldProc(ps, eachchar, 0, 0x400); /* temp */
 	return 0;
      }
 
@@ -249,8 +285,7 @@ int SpecCharProc(wvParseStruct *ps, U16 eachchar, CHP* achp)
     * not. this catches special characters in a field
     */
    if (ps->fieldstate) {
-     // TODO: really handle fields (i.e. eachchar == 13, 14, 15)
-     if(eachchar == 0x13 || eachchar == 0x14)
+     if(pDocReader->_fieldProc(ps, eachchar, 0, 0x400))
        return 0;
    }
    
@@ -323,8 +358,7 @@ int SpecCharProc(wvParseStruct *ps, U16 eachchar, CHP* achp)
 	     UT_DEBUGMSG(("pre Word8 0x08 graphic -- unsupported at the moment"));
 	     fdoa = wvGetFDOAFromCP(ps->currentcp, NULL, ps->fdoapos, ps->nooffdoa);
 	     
-	     // TODO: do something with the data in this fdoa someday...
-	     
+	     // TODO: do something with the data in this fdoa someday...	     
 	  }
 	
 	return 0;
@@ -378,6 +412,143 @@ int IE_Imp_MsWord_97::_docProc(wvParseStruct * ps, wvTag tag)
 		}
 	return(0);
 	}
+
+int IE_Imp_MsWord_97::_handleCommandField(char *command)
+{
+      int ret = 0;
+      unsigned int tokenIndex = 0;
+      char *token = NULL;
+
+      xxx_UT_DEBUGMSG(("DOM: handleCommandField\n"));
+
+      const XML_Char* atts[3];
+      atts[2] = NULL;
+
+      if (*command!= 0x13)
+	{
+	  UT_DEBUGMSG(("DOM: field did not begin with 0x13\n"));
+	  return 1;
+	}
+      strtok(command,"\t, ");
+      while((token = strtok(NULL,"\t, ")))
+	{
+	  tokenIndex = s_mapNameToToken(token);
+	  xxx_UT_DEBUGMSG(("DOM: token: %s %d\n", token, tokenIndex));
+	  switch (s_Tokens[tokenIndex].m_type)
+	    {
+	    case FC_TIME:
+	      xxx_UT_DEBUGMSG(("DOM: Field: time token\n"));
+	      ret = 1;
+
+	      atts[0] = "type";
+	      atts[1] = "time";
+
+	      /* 
+	       * Technically we should wait and append a formatted version of the time
+	       * field when we see FC_DateTimePicture, but this should be good enough
+	       */
+	      X_CheckError0(m_pDocument->appendObject(PTO_Field,atts));
+	      break;
+
+	      // TODO: get Abi to support more field types :-)
+
+	    default: 
+	      break;
+	    }
+	}
+
+      return ret;
+}
+
+/*
+ * Caolan had this set to 40000 in wv/field.c
+ * That seemed a bit excessive to me
+ */
+#define FLD_SZ 4096
+static U16 command[FLD_SZ];
+static U16 argumen[FLD_SZ];
+
+int IE_Imp_MsWord_97::_fieldProc(wvParseStruct *ps, U16 eachchar, U8 chartype, U16 lid)
+{
+	xxx_UT_DEBUGMSG(("DOM: fieldProc: %c %x\n", (char)eachchar, (int)eachchar));
+
+	/* 
+	 * The majority of this code has just been ripped out of
+	 * wv/field.c
+	 */
+
+	static U16 *which;
+	static int i,depth;
+	char *a;
+	static char *c = NULL;
+	static int ret;
+
+	if (eachchar == 0x13)
+	  {
+	    a = NULL;
+	    ret = 1;
+	    if (depth == 0)
+	      {
+		which = command;
+		command[0] = 0;
+		argumen[0] = 0;
+		i=0;
+	      }
+	    depth++;
+	  }
+	else if (eachchar == 0x14)
+	  {
+	    if (depth == 1)
+	      {
+		command[i] = 0;
+		c = wvWideStrToMB(command);
+		if (_handleCommandField(c))
+		  ret = 1;
+		else
+		  ret = 0;
+		
+		xxx_UT_DEBUGMSG(("DOM: Field: command %s, ret is %d\n", wvWideStrToMB(command), ret));
+		wvFree(c);
+		which = argumen;
+		i = 0;
+	      }
+	  }
+
+	if (i >= FLD_SZ)
+	  {
+	    UT_DEBUGMSG(("DOM: Something completely absurd in the fields implementation!\n"));
+	    UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	    return 1;
+	  }
+
+	/* DOM: note to self: make sure wv's iconv problem is fixed */
+	if (chartype)
+	  which[i] = wvHandleCodePage(which[i], lid);
+	else
+	  which[i] = eachchar;
+
+	i++;
+
+	if (eachchar == 0x15)
+	  {
+	    depth--;
+	    if (depth == 0)
+	      {
+		which[i] = 0;
+#if 0
+		/* only used for hyperlinks, which abi doesn't support */
+		/* but i'll leave the sample code in here so we don't have */
+		/* to go digging for it later */
+		a = wvWideStrToMB(argumen);
+		c = wvWideStrToMB(command);
+		wvHandleTotalField(c);
+		wvFree(a);
+		wvFree(c);
+#endif
+	      }
+	  }
+	return ret;
+}
 
 int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps, wvTag tag, void *props, int dirty)
 	{
@@ -671,7 +842,7 @@ int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps, wvTag tag, void *props, int di
 		    strcat(propBuffer, fname);
 		    strcat(propBuffer, ";");
 
-			FREEP(fname);
+		    FREEP(fname);
 		   
 		   // font size (hps is half-points)
 		   sprintf(propBuffer + strlen(propBuffer), 

@@ -61,6 +61,7 @@ public:
    	int				_charData(UT_UCSChar *, int);
 	int 				_docProc(wvParseStruct *ps,wvTag tag);
 	int 				_eleProc(wvParseStruct *ps,wvTag tag,void *props,int dirty);
+	int                             _fieldProc(wvParseStruct *ps, U16 eachchar, U8 chartype, U16 lid);
    	UT_Error _handleImage(Blip *, long, long);
    	
 
@@ -69,6 +70,9 @@ public:
    	UT_uint16 m_iTextRunMaxLength;
    
 protected:
+
+	int _handleCommandField(char *command);
+
    	UT_Error			m_error;
    	int m_iImageCount;
 };
