@@ -2577,6 +2577,8 @@ bool	fl_BlockLayout::_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_Chan
 
 	fp_FieldRun* pNewRun;
 
+	UT_DEBUGMSG(("DOM: field type: %s\n", pszType));
+
 	if(UT_strcmp(pszType, "list_label") == 0)
 	{
 		pNewRun = new fp_FieldListLabelRun(this, m_pLayout->getGraphics(), blockOffset, 1);
@@ -2597,6 +2599,82 @@ bool	fl_BlockLayout::_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_Chan
 	{
 	        pNewRun = new fp_FieldDateRun(this, m_pLayout->getGraphics(), blockOffset, 1);
 	}
+	else if(UT_strcmp(pszType, "date_mmddyy") == 0)
+	  {
+	    pNewRun = new fp_FieldMMDDYYRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	  }
+	else if(UT_strcmp(pszType, "date_ddmmyy") == 0)
+	  {
+	    pNewRun = new fp_FieldDDMMYYRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	  }
+	else if(UT_strcmp(pszType, "date_mdy") == 0)
+	  {
+	    pNewRun = new fp_FieldMonthDayYearRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	  }
+	else if(UT_strcmp(pszType, "date_mthdy") == 0)
+	  {
+	    pNewRun = new fp_FieldMthDayYearRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	  }
+	else if(UT_strcmp(pszType, "date_dfl") == 0)
+	  {
+	    pNewRun = new fp_FieldDefaultDateRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	  }
+	else if(UT_strcmp(pszType, "date_ntdfl") == 0)
+	  {
+	    pNewRun = new fp_FieldDefaultDateNoTimeRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	  }
+	else if(UT_strcmp(pszType, "date_wkday") == 0)
+	  {
+	    pNewRun = new fp_FieldWkdayRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	  }
+	else if(UT_strcmp(pszType, "date_doy") == 0)
+	  {
+	    pNewRun = new fp_FieldDOYRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	  }
+	else if(UT_strcmp(pszType, "time_miltime") == 0)
+	  {
+	    pNewRun = new fp_FieldMilTimeRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	  }
+	else if(UT_strcmp(pszType, "time_ampm") == 0)
+	  {
+	    pNewRun = new fp_FieldAMPMRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	  }
+	else if(UT_strcmp(pszType, "time_zone") == 0)
+	  {
+	    pNewRun = new fp_FieldTimeZoneRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	  }
+	else if(UT_strcmp(pszType, "time_epoch") == 0)
+	  {
+	    pNewRun = new fp_FieldTimeEpochRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	  }
+	else if(UT_strcmp(pszType, "word_count") == 0)
+	  {
+	    pNewRun = new fp_FieldWordCountRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	  }
+	else if(UT_strcmp(pszType, "char_count") == 0)
+	  {
+	    pNewRun = new fp_FieldCharCountRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	  }
+	else if(UT_strcmp(pszType, "line_count") == 0)
+	  {
+	    pNewRun = new fp_FieldLineCountRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	  }
+	else if(UT_strcmp(pszType, "para_count") == 0)
+	  {
+	    pNewRun = new fp_FieldParaCountRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	  }
+	else if(UT_strcmp(pszType, "nbsp_count") == 0)
+	  {
+	    pNewRun = new fp_FieldNonBlankCharCountRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	  }
+	else if(UT_strcmp(pszType, "app_ver") == 0)
+	  {
+	    pNewRun = new fp_FieldBuildVersionRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	  }
+	else if(UT_strcmp(pszType, "app_id") == 0)
+	  {
+	    pNewRun = new fp_FieldBuildIdRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	  }
 	else
 	{
 	  //		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);

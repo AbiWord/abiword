@@ -45,7 +45,30 @@ class fd_Field
 		FD_PageCount,
 		FD_ListLabel,
 		FD_FileName,
-		FD_Date
+		FD_Date,
+
+		FD_Date_MMDDYY,
+		FD_Date_DDMMYY,
+		FD_Date_MDY,
+		FD_Date_MthDY,
+		FD_Date_DFL,
+		FD_Date_NTDFL,
+		FD_Date_Wkday,
+		FD_Date_DOY,
+
+		FD_Time_MilTime,
+		FD_Time_AMPM,
+		FD_Time_Zone,
+		FD_Time_Epoch,
+
+		FD_Doc_WordCount,
+		FD_Doc_CharCount,
+		FD_Doc_LineCount,
+		FD_Doc_ParaCount,
+		FD_Doc_NbspCount,
+
+		FD_App_Version,
+		FD_App_ID
 	} FieldType;
     fd_Field(pf_Frag_Object& fO, pt_PieceTable * pt, FieldType fieldType);
     virtual                              ~fd_Field(void);

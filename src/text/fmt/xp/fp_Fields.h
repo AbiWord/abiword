@@ -20,10 +20,35 @@
 _FIELDTYPE(DATETIME, AP_STRING_ID_FIELD_Type_Datetime)
 _FIELD(DATETIME, AP_STRING_ID_FIELD_Datetime_CurrentTime, time)
 _FIELD(DATETIME, AP_STRING_ID_FIELD_Datetime_CurrentDate, date)
+
+_FIELD(DATETIME, AP_STRING_ID_FIELD_DateTime_MMDDYY, date_mmddyy)
+_FIELD(DATETIME, AP_STRING_ID_FIELD_DateTime_DDMMYY, date_ddmmyy)
+_FIELD(DATETIME, AP_STRING_ID_FIELD_DateTime_MonthDayYear, date_mdy)
+_FIELD(DATETIME, AP_STRING_ID_FIELD_DateTime_MthDayYear, date_mthdy)
+_FIELD(DATETIME, AP_STRING_ID_FIELD_DateTime_DefaultDate, date_dfl)
+_FIELD(DATETIME, AP_STRING_ID_FIELD_DateTime_DefaultDateNoTime, date_ntdfl)
+_FIELD(DATETIME, AP_STRING_ID_FIELD_DateTime_Wkday, date_wkday)
+_FIELD(DATETIME, AP_STRING_ID_FIELD_DateTime_DOY, date_doy)
+
+_FIELD(DATETIME, AP_STRING_ID_FIELD_DateTime_MilTime, time_miltime)
+_FIELD(DATETIME, AP_STRING_ID_FIELD_DateTime_AMPM, time_ampm)
+_FIELD(DATETIME, AP_STRING_ID_FIELD_DateTime_TimeZone, time_zone)
+_FIELD(DATETIME, AP_STRING_ID_FIELD_DateTime_Epoch, time_epoch)
+
+_FIELDTYPE(APPLICATION, AP_STRING_ID_FIELD_Application)
+_FIELD(APPLICATION, AP_STRING_ID_FIELD_Application_Version, app_ver)
+_FIELD(APPLICATION, AP_STRING_ID_FIELD_Application_BuildId, app_id)
+
 _FIELDTYPE(NUMBERS, AP_STRING_ID_FIELD_Type_Numbers)
 _FIELD(NUMBERS, AP_STRING_ID_FIELD_Numbers_PageNumber, page_number)
 _FIELD(NUMBERS, AP_STRING_ID_FIELD_Numbers_PagesCount, page_count)
-_FIELD(NUMBERS, AP_STRING_ID_FIELD_Numbers_ListLabel, list_label)
+_FIELD(NUMBERS, AP_STRING_ID_FIELD_Numbers_ListLabel,  list_label)
+_FIELD(NUMBERS, AP_STRING_ID_FIELD_Numbers_WordCount, word_count)
+_FIELD(NUMBERS, AP_STRING_ID_FIELD_Numbers_CharCount, char_count)
+_FIELD(NUMBERS, AP_STRING_ID_FIELD_Numbers_LineCount, line_count)
+_FIELD(NUMBERS, AP_STRING_ID_FIELD_Numbers_ParaCount, para_count)
+_FIELD(NUMBERS, AP_STRING_ID_FIELD_Numbers_NbspCount, nbsp_count)
+
 #ifndef NDEBUG
 _FIELDTYPE(PIECETABLE, AP_STRING_ID_FIELD_Type_PieceTable)
 _FIELD(PIECETABLE, AP_STRING_ID_FIELD_PieceTable_Test, test)

@@ -1357,6 +1357,419 @@ void fp_FieldRun::_defaultDraw(dg_DrawArgs* pDA)
 	m_pG->drawChars(m_sFieldValue, 0, UT_UCS_strlen(m_sFieldValue), pDA->xoff,iYdraw);
 }
 
+// BEGIN DOM work on some new fields
+
+static FV_View *
+_getViewFromBlk(fl_BlockLayout* pBlock)
+{
+	FV_View *pView    = pBlock->getView();	
+	return pView;
+}
+
+static XAP_App *
+_getAppFromBlk(fl_BlockLayout * pBlock)
+{
+	XAP_App *pApp    = pBlock->getView()->getApp();	
+	return pApp;
+}
+
+fp_FieldCharCountRun::fp_FieldCharCountRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+{
+}
+
+bool fp_FieldCharCountRun::calculateValue(void)
+{
+	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
+	sz_ucs_FieldValue[0] = 0;
+	
+	char szFieldValue[FPFIELD_MAX_LENGTH + 1];
+	szFieldValue[0] = 0;
+
+	FV_View *pView = _getViewFromBlk(m_pBL);
+	FV_DocCount cnt = pView->countWords();
+
+	sprintf(szFieldValue, "%d", cnt.ch_sp);
+
+	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
+
+	return _setValue(sz_ucs_FieldValue);
+}
+
+fp_FieldNonBlankCharCountRun::fp_FieldNonBlankCharCountRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+{
+}
+
+bool fp_FieldNonBlankCharCountRun::calculateValue(void)
+{
+	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
+	sz_ucs_FieldValue[0] = 0;
+	
+	char szFieldValue[FPFIELD_MAX_LENGTH + 1];
+	szFieldValue[0] = 0;
+
+	FV_View *pView = _getViewFromBlk(m_pBL);
+	FV_DocCount cnt = pView->countWords();
+
+	sprintf(szFieldValue, "%d", cnt.ch_no);
+
+	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
+
+	return _setValue(sz_ucs_FieldValue);
+}
+
+fp_FieldLineCountRun::fp_FieldLineCountRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+{
+}
+
+bool fp_FieldLineCountRun::calculateValue(void)
+{
+	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
+	sz_ucs_FieldValue[0] = 0;
+	
+	char szFieldValue[FPFIELD_MAX_LENGTH + 1];
+	szFieldValue[0] = 0;
+
+	FV_View *pView = _getViewFromBlk(m_pBL);
+	FV_DocCount cnt = pView->countWords();
+
+	sprintf(szFieldValue, "%d", cnt.line);
+
+	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
+
+	return _setValue(sz_ucs_FieldValue);
+}
+
+fp_FieldParaCountRun::fp_FieldParaCountRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+{
+}
+
+bool fp_FieldParaCountRun::calculateValue(void)
+{
+	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
+	sz_ucs_FieldValue[0] = 0;
+	
+	char szFieldValue[FPFIELD_MAX_LENGTH + 1];
+	szFieldValue[0] = 0;
+
+	FV_View *pView = _getViewFromBlk(m_pBL);
+	FV_DocCount cnt = pView->countWords();
+
+	sprintf(szFieldValue, "%d", cnt.para);
+
+	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
+
+	return _setValue(sz_ucs_FieldValue);
+}
+
+fp_FieldWordCountRun::fp_FieldWordCountRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+{
+}
+
+bool fp_FieldWordCountRun::calculateValue(void)
+{
+	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
+	sz_ucs_FieldValue[0] = 0;
+	
+	char szFieldValue[FPFIELD_MAX_LENGTH + 1];
+	szFieldValue[0] = 0;
+
+	FV_View *pView = _getViewFromBlk(m_pBL);
+	FV_DocCount cnt = pView->countWords();
+
+	sprintf(szFieldValue, "%d", cnt.word);
+
+	UT_DEBUGMSG(("DOM: szFieldValue is %s\n", szFieldValue));
+
+	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
+
+	return _setValue(sz_ucs_FieldValue);
+}
+
+// mm/dd/yy notation
+fp_FieldMMDDYYRun::fp_FieldMMDDYYRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+{
+}
+
+bool fp_FieldMMDDYYRun::calculateValue(void)
+{
+	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
+	sz_ucs_FieldValue[0] = 0;
+	
+	char szFieldValue[FPFIELD_MAX_LENGTH + 1];
+
+	time_t	tim = time(NULL);
+	struct tm *pTime = localtime(&tim);
+
+	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%m/%d/%y", pTime);
+
+	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
+
+	return _setValue(sz_ucs_FieldValue);
+}
+
+// dd/mm/yy time
+fp_FieldDDMMYYRun::fp_FieldDDMMYYRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+{
+}
+
+bool fp_FieldDDMMYYRun::calculateValue(void)
+{
+	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
+	sz_ucs_FieldValue[0] = 0;
+	
+	char szFieldValue[FPFIELD_MAX_LENGTH + 1];
+
+	time_t	tim = time(NULL);
+	struct tm *pTime = localtime(&tim);
+
+	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%d/%m/%y", pTime);
+
+	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
+
+	return _setValue(sz_ucs_FieldValue);
+}
+
+// Month Day, Year
+fp_FieldMonthDayYearRun::fp_FieldMonthDayYearRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+{
+}
+
+bool fp_FieldMonthDayYearRun::calculateValue(void)
+{
+	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
+	sz_ucs_FieldValue[0] = 0;
+	
+	char szFieldValue[FPFIELD_MAX_LENGTH + 1];
+
+	time_t	tim = time(NULL);
+	struct tm *pTime = localtime(&tim);
+
+	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%B %d, %Y", pTime);
+
+	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
+
+	return _setValue(sz_ucs_FieldValue);
+}
+
+fp_FieldMthDayYearRun::fp_FieldMthDayYearRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+{
+}
+
+bool fp_FieldMthDayYearRun::calculateValue(void)
+{
+	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
+	sz_ucs_FieldValue[0] = 0;
+	
+	char szFieldValue[FPFIELD_MAX_LENGTH + 1];
+
+	time_t	tim = time(NULL);
+	struct tm *pTime = localtime(&tim);
+
+	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%b %d, %Y", pTime);
+
+	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
+
+	return _setValue(sz_ucs_FieldValue);
+}
+
+fp_FieldDefaultDateRun::fp_FieldDefaultDateRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+{
+}
+
+bool fp_FieldDefaultDateRun::calculateValue(void)
+{
+	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
+	sz_ucs_FieldValue[0] = 0;
+	
+	char szFieldValue[FPFIELD_MAX_LENGTH + 1];
+
+	time_t	tim = time(NULL);
+	struct tm *pTime = localtime(&tim);
+
+	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%c", pTime);
+
+	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
+
+	return _setValue(sz_ucs_FieldValue);
+}
+
+fp_FieldDefaultDateNoTimeRun::fp_FieldDefaultDateNoTimeRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+{
+}
+
+bool fp_FieldDefaultDateNoTimeRun::calculateValue(void)
+{
+	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
+	sz_ucs_FieldValue[0] = 0;
+	
+	char szFieldValue[FPFIELD_MAX_LENGTH + 1];
+
+	time_t	tim = time(NULL);
+	struct tm *pTime = localtime(&tim);
+
+	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%x", pTime);
+
+	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
+
+	return _setValue(sz_ucs_FieldValue);
+}
+
+fp_FieldWkdayRun::fp_FieldWkdayRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+{
+}
+
+bool fp_FieldWkdayRun::calculateValue(void)
+{
+	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
+	sz_ucs_FieldValue[0] = 0;
+	
+	char szFieldValue[FPFIELD_MAX_LENGTH + 1];
+
+	time_t	tim = time(NULL);
+	struct tm *pTime = localtime(&tim);
+
+	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%A", pTime);
+
+	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
+
+	return _setValue(sz_ucs_FieldValue);
+}
+
+fp_FieldDOYRun::fp_FieldDOYRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+{
+}
+
+bool fp_FieldDOYRun::calculateValue(void)
+{
+	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
+	sz_ucs_FieldValue[0] = 0;
+	
+	char szFieldValue[FPFIELD_MAX_LENGTH + 1];
+
+	time_t	tim = time(NULL);
+	struct tm *pTime = localtime(&tim);
+
+	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%j", pTime);
+
+	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
+
+	return _setValue(sz_ucs_FieldValue);
+}
+
+fp_FieldMilTimeRun::fp_FieldMilTimeRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+{
+}
+
+bool fp_FieldMilTimeRun::calculateValue(void)
+{
+	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
+	sz_ucs_FieldValue[0] = 0;
+	
+	char szFieldValue[FPFIELD_MAX_LENGTH + 1];
+
+	time_t	tim = time(NULL);
+	struct tm *pTime = localtime(&tim);
+
+	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%H:%M:%S", pTime);
+
+	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
+
+	return _setValue(sz_ucs_FieldValue);
+}
+
+fp_FieldAMPMRun::fp_FieldAMPMRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+{
+}
+
+bool fp_FieldAMPMRun::calculateValue(void)
+{
+	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
+	sz_ucs_FieldValue[0] = 0;
+	
+	char szFieldValue[FPFIELD_MAX_LENGTH + 1];
+
+	time_t	tim = time(NULL);
+	struct tm *pTime = localtime(&tim);
+
+	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%p", pTime);
+
+	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
+
+	return _setValue(sz_ucs_FieldValue);
+}
+
+fp_FieldTimeEpochRun::fp_FieldTimeEpochRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+{
+}
+
+bool fp_FieldTimeEpochRun::calculateValue(void)
+{
+	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
+	sz_ucs_FieldValue[0] = 0;
+	
+	char szFieldValue[FPFIELD_MAX_LENGTH + 1];
+
+	time_t	tim = time(NULL);
+	sprintf(szFieldValue, "%ld", (long)tim);
+
+	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
+
+	return _setValue(sz_ucs_FieldValue);
+}
+
+fp_FieldTimeZoneRun::fp_FieldTimeZoneRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+{
+}
+
+bool fp_FieldTimeZoneRun::calculateValue(void)
+{
+	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
+	sz_ucs_FieldValue[0] = 0;
+	
+	char szFieldValue[FPFIELD_MAX_LENGTH + 1];
+
+	time_t	tim = time(NULL);
+	struct tm *pTime = localtime(&tim);
+
+	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%Z", pTime);
+
+	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
+
+	return _setValue(sz_ucs_FieldValue);
+}
+
+fp_FieldBuildIdRun::fp_FieldBuildIdRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+{
+}
+
+bool fp_FieldBuildIdRun::calculateValue(void)
+{
+	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
+	sz_ucs_FieldValue[0] = 0;
+	XAP_App * pApp = _getAppFromBlk(m_pBL);
+	
+	UT_UCS_strcpy_char(sz_ucs_FieldValue, pApp->s_szBuild_ID);
+
+	return _setValue(sz_ucs_FieldValue);
+}
+
+fp_FieldBuildVersionRun::fp_FieldBuildVersionRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+{
+}
+
+bool fp_FieldBuildVersionRun::calculateValue(void)
+{
+	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
+	sz_ucs_FieldValue[0] = 0;
+	XAP_App * pApp = _getAppFromBlk(m_pBL);
+	
+	UT_UCS_strcpy_char(sz_ucs_FieldValue, pApp->s_szBuild_Version);
+
+	return _setValue(sz_ucs_FieldValue);
+}
+
+// END OF DOM NEW FIELDS
+
 fp_FieldTimeRun::fp_FieldTimeRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
 {
 }
