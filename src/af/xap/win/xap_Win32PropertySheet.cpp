@@ -384,6 +384,7 @@ int XAP_Win32PropertySheet::runModeless (XAP_Win32App* pWin32App, XAP_Frame * pF
 		SendMessage (GetDlgItem (m_hWnd, ID_APPLY), WM_SETTEXT, 0,  
 			(LPARAM)(pSS->getValue(XAP_STRING_ID_DLG_Apply)));
 	}
+	SendMessage(GetDlgItem(m_hWnd,IDCANCEL), WM_SETTEXT, 0, (LPARAM) (pSS->getValue(XAP_STRING_ID_DLG_Cancel)));
 
 	/* Subclassing */
 
