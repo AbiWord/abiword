@@ -58,6 +58,7 @@ void ap_usb_TextListener::notify()
 			&uRead, &uWrite);
 	
 	SendMessage(m_hWnd, SB_SETTEXT, m_nID, (LPARAM)  pText);
+	
 }
 
 
@@ -130,7 +131,7 @@ HWND AP_Win32StatusBar::createWindow(HWND hwndFrame,
 		nID++;		
 	}
 	
-	/*	Set the numer of elements in the toolbar and their size*/	
+	/*	Set the numer of elements in the statusbar and their size*/	
     SendMessage(m_hwndStatusBar, SB_SETPARTS, getFields()->getItemCount(), (LPARAM)pArWidths);
 	    
     delete pArWidths;
@@ -141,10 +142,12 @@ HWND AP_Win32StatusBar::createWindow(HWND hwndFrame,
 void AP_Win32StatusBar::show()
 {
 	ShowWindow(m_hwndStatusBar, SW_SHOW);
+	m_pFrame->queue_resize();
 }
 
 void AP_Win32StatusBar::hide()
 {
 	ShowWindow(m_hwndStatusBar, SW_HIDE);
+	m_pFrame->queue_resize();
 }
 

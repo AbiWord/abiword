@@ -72,6 +72,7 @@ public:
 	HWND						getToolbarWindow(void) const;
 	EV_Win32Mouse *				getWin32Mouse(void);
 	virtual EV_Menu*			getMainMenu();
+			void				queue_resize();
 
 	virtual XAP_DialogFactory *	getDialogFactory(void);
 	virtual void				setXScrollRange(void)=0;
@@ -105,6 +106,8 @@ protected:
 	EV_Win32MenuPopup *			m_pWin32Popup; /* only valid while a context popup is up */
 	UT_uint32					m_iBarHeight;
 	UT_uint32					m_iStatusBarHeight;
+	UT_uint32					m_iRealSizeHeight;
+	UT_uint32					m_iRealSizeWidth;
 	
 	HWND						m_hwndFrame; /* the entire window, menu, toolbar, document, etc. */
 	HWND						m_hwndRebar;

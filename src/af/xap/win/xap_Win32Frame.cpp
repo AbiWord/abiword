@@ -94,7 +94,9 @@ XAP_Win32Frame::XAP_Win32Frame(XAP_Win32App * app)
 	m_dialogFactory(this, app),
 	m_mouseWheelMessage(0),
 	m_iSizeWidth(0),
-	m_iSizeHeight(0)
+	m_iSizeHeight(0),
+	m_iRealSizeWidth(0),
+	m_iRealSizeHeight(0)
 {
 }
 
@@ -116,7 +118,9 @@ XAP_Win32Frame::XAP_Win32Frame(XAP_Win32Frame * f)
 	m_dialogFactory(this, f->m_pWin32App),
 	m_mouseWheelMessage(0),
 	m_iSizeWidth(0),
-	m_iSizeHeight(0)
+	m_iSizeHeight(0),
+	m_iRealSizeWidth(0),
+	m_iRealSizeHeight(0)
 {
 }
 
@@ -647,6 +651,8 @@ LRESULT CALLBACK XAP_Win32Frame::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wPar
 
 					MoveWindow(f->m_hwndContainer, 0, f->m_iBarHeight, nWidth, nHeight, TRUE);
 				}
+								
+				f->queue_resize();
 			}
 			break;
 
@@ -711,11 +717,17 @@ LRESULT CALLBACK XAP_Win32Frame::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wPar
 
 	case WM_SIZE:
 	{
+		
 		int nWidth = LOWORD(lParam);
 		int nHeight = HIWORD(lParam);
 
+		UT_DEBUGMSG ((("xap_Win32Frame::WM_SIZE %u - %u\n"), nWidth, nHeight));
+		
 		if( pView && !pView->isLayoutFilling() )
 		{
+			f->m_iRealSizeHeight = nHeight;
+			f->m_iRealSizeWidth = nWidth;
+			
 			f->_startViewAutoUpdater();
 
 			if (nWidth != (int) f->m_iSizeWidth && f->m_hwndRebar != NULL)
@@ -725,13 +737,16 @@ LRESULT CALLBACK XAP_Win32Frame::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wPar
 
 			// leave room for the toolbars and the status bar
 			nHeight -= f->m_iBarHeight;
-			nHeight -= f->m_iStatusBarHeight;
 
-			if (f->m_hwndContainer)
-				MoveWindow(f->m_hwndContainer, 0, f->m_iBarHeight, nWidth, nHeight, TRUE);
-
+			if (::IsWindowVisible(f->m_hwndStatusBar))
+				nHeight -= f->m_iStatusBarHeight;							
+			
+				
 			if (f->m_hwndStatusBar)
 				MoveWindow(f->m_hwndStatusBar, 0, f->m_iBarHeight+nHeight, nWidth, f->m_iStatusBarHeight, TRUE);
+
+			if (f->m_hwndContainer)
+				MoveWindow(f->m_hwndContainer, 0, f->m_iBarHeight, nWidth, nHeight, TRUE);			
 			
 			f->m_iSizeWidth = nWidth;
 			f->m_iSizeHeight = nHeight;
@@ -940,4 +955,10 @@ void XAP_Win32Frame::setCursor(GR_Graphics::Cursor c)
 	// TODO - currently does nothing
 }
 
-
+/*
+	
+*/
+void XAP_Win32Frame::queue_resize()
+{
+	::SendMessage(m_hwndFrame, WM_SIZE, 0, MAKELONG(m_iRealSizeWidth, m_iRealSizeHeight));
+}
