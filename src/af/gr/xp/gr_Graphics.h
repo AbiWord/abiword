@@ -655,7 +655,7 @@ class ABI_EXPORT GR_Graphics
 	virtual void fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y,
 						  UT_sint32 w, UT_sint32 h) = 0;
 
-	virtual void clearArea(UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h) = 0;;
+	virtual void clearArea(UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h) = 0;
 	virtual void drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest);
 	virtual void fillRect(GR_Color3D c, UT_Rect &r) = 0;
 	virtual void fillRect(GR_Color3D c,
