@@ -239,16 +239,22 @@ AM_CONDITIONAL(SCRIPT, test x$script = xtrue)
 case "$script" in
      "true" ) 
 	    SCRIPT_LIBS="`perl -MExtUtils::Embed -e ldopts`"
-	    ABI_PERL_VERSION=`perl -V:version | tr -d "version=" | tr -d "\'" | tr -d "\;" | awk '{printf "%d", [$]1 * 10}'`
-		AC_MSG_CHECKING(for perl xsubpp precompiler)
-		XSUBPPDIR="`(cd $abs_srcdir/src/bindings/perl && perl -MExtUtils::MakeMaker -e 'print ExtUtils::MakeMaker->new({NAME => qw(abi)})->tool_xsubpp') | grep ^XSUBPPDIR | sed -e 's/XSUBPPDIR = //g;'`"
-		if test -n "${XSUBPPDIR}"; then
-			AC_MSG_RESULT(${XSUBPPDIR})
-			if test "$ABI_PERL_VERSION" -le 56; then
+   AC_MSG_CHECKING(for perl)
+   ABI_WHICH_PERL="`which perl 2>&1 | grep -v no\ perl`"
+   dnl I had an actual check, but the error-if-absent part didn't work, and I was/am too drunk to figure out why
+   AC_MSG_RESULT(${ABI_WHICH_PERL})
+   AC_MSG_CHECKING(perl version)
+   ABI_PERL_VERSION=`perl -V:version | tr -d "version=" | tr -d "\'" | tr -d "\;" | tr -d . | awk '{printf "%d", [$]1 * 10}'`
+			if test "$ABI_PERL_VERSION" -le 5699; then
 			    SCRIPT_CFLAGS="-DABI_OPT_PERL `perl -MExtUtils::Embed -e ccopts` -Ubool -DNOT_PERL_5_8"
 			else
 			    SCRIPT_CFLAGS="-DABI_OPT_PERL `perl -MExtUtils::Embed -e ccopts` -Ubool"
 			fi
+   AC_MSG_RESULT($ABI_PERL_VERSION)
+		AC_MSG_CHECKING(for perl xsubpp precompiler)
+		XSUBPPDIR="`(cd $abs_srcdir/src/bindings/perl && perl -MExtUtils::MakeMaker -e 'print ExtUtils::MakeMaker->new({NAME => qw(abi)})->tool_xsubpp') | grep ^XSUBPPDIR | sed -e 's/XSUBPPDIR = //g;'`"
+		if test -n "${XSUBPPDIR}"; then
+			AC_MSG_RESULT(${XSUBPPDIR})
 		else
 			AC_MSG_ERROR(not found)
 		fi
