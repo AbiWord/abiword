@@ -23,6 +23,7 @@
 #define __XAP_MACFONTMANAGER_H__
 
 #include <ATSUnicode.h>
+#include <Appearance.h>
 
 #include "gr_MacFont.h"
 
@@ -41,12 +42,13 @@ public:
 	GR_MacFont **			getAllFonts(void);
 	GR_MacFont *			getDefaultFont(void);
 	GR_MacFont *			getFont(const char * fontname, ATSUStyle s);
-	ATSUFontID				findFont (const char* pszFontFamily, 
+	ATSUStyle			findFont (const char* pszFontFamily, 
 										const char* pszFontStyle, 
 										const char* pszFontVariant, 
 										const char* pszFontWeight, 
 										const char* pszFontStretch, 
 										const float fFontSize);
+	OSStatus _makeThemeATSUIStyle(ThemeFontID themeFontID, ATSUStyle *theStyle);
 protected:
 
 //	void					_allocateThisFont(const char * line,
@@ -58,6 +60,8 @@ protected:
 //	UT_Vector				m_searchPaths;
 
 //	UT_HashTable 			m_fontHash;
+ private:
+
 };
 
 

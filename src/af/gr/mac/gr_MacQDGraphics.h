@@ -95,7 +95,7 @@ public:
 	virtual bool startPage(const char * szPageLabel, UT_uint32 pageNumber,
 							  bool bPortrait, UT_uint32 iWidth, UT_uint32 iHeight);
 	virtual bool endPrint(void);
-	
+	void _syncQDOrigin() {};
 protected:
 	virtual UT_uint32 _getResolution(void) const { return 72; };
 

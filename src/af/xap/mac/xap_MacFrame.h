@@ -1,3 +1,4 @@
+/* -*- c-basic-offset: 4; tab-width: 4; indent-tabs-mode: t -*- */
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 1999 John Brewer DBA Jera Design
@@ -71,7 +72,7 @@ public:
 	virtual bool				show(void);
 	virtual bool				openURL(const char * szURL);
 	virtual bool				updateTitle(void);
-       	virtual UT_sint32			setInputMode(const char * szName);
+	virtual UT_sint32			setInputMode(const char * szName);
 
 
 
@@ -97,13 +98,20 @@ public:
 	WindowPtr					_getMacWindow (void) { UT_ASSERT (m_MacWindow != NULL); return m_MacWindow; } ;
 	GrafPtr						_getMacPort (void) { UT_ASSERT (m_MacWindowPort != NULL); return m_MacWindowPort; } ;
     void						_getStatusBarRect (Rect & rect) { rect = m_placardRect; };
+	ControlHandle               _getRootControl ()
+		{ return m_rootControl; };
+	short                       _getVisibleRgnTop ()
+		{ return m_visibleRgnTop; };
+	void                        _setVisibleRgnTop (short top);
 protected:
 	virtual EV_Toolbar *		_newToolbar(XAP_App *app, XAP_Frame *frame, const char *, const char *);
 
 	void						_createTopLevelWindow(void);
     virtual void				_createStatusBar(void) = 0;
-    void						_calcPlacardRect ();
-	void						_createDocumentWindow(void);
+	void						_calcVertScrollBarRect(Rect & rect);
+	void						_calcHorizScrollBarRect(Rect & rect);
+	void						_calcPlacardRect ();
+	virtual void				_createDocumentWindow(void) = 0;
 	WindowPtr					m_MacWindow;
     GrafPtr						m_MacWindowPort;
 	Rect 						m_winBounds;
@@ -114,15 +122,10 @@ protected:
     EV_MacMouse					*m_pMouse;
 private:
 	void						MacWindowInit ();
-	void						_calcVertScrollBarRect(Rect & rect);
-	void						_calcHorizScrollBarRect(Rect & rect);
-    void						_drawStatusPlacard (void);		// TODO remove me.
 
-
-        ControlHandle					m_HScrollBar;
-        ControlHandle					m_VScrollBar;
-        Rect						m_placardRect;
-        Rect						m_toolbarRect;
+	short                       m_visibleRgnTop;
+	ControlHandle               m_rootControl;
+	Rect						m_placardRect;
 };
 
 #endif /* XAP_MACFRAME_H */

@@ -1,3 +1,4 @@
+/* -*- c-basic-offset: 4; tab-width: 4; indent-tabs-mode: t -*- */
 /* AbiSource Program Utilities
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -55,7 +56,7 @@ EV_MacToolbar::EV_MacToolbar(XAP_MacApp * pMacApp, XAP_MacFrame * pMacFrame,
 EV_MacToolbar::~EV_MacToolbar(void)
 {
     _releaseListener();
-//	UT_VECTOR_PURGEALL(_wd *,m_vecToolbarWidgets);
+	//	UT_VECTOR_PURGEALL(ControlHandle, m_vecToolbarWidgets);
 }
 
 bool EV_MacToolbar::toolbarEvent(XAP_Toolbar_Id id,
@@ -112,11 +113,16 @@ bool EV_MacToolbar::toolbarEvent(XAP_Toolbar_Id id,
 
 bool EV_MacToolbar::synthesize(void)
 {
+	OSErr err;
+	ControlHandle rootControl;
+	ControlHandle toolbarControl;
+
     short btnX = 8;
     WindowPtr owningWin = m_pMacFrame->_getMacWindow ();
     UT_ASSERT (owningWin);
 	// create a toolbar from the info provided.
 
+	xxx_UT_DEBUGMSG(("EV_MacToolbar::synthesize() called !\n"));
 	const EV_Toolbar_ActionSet * pToolbarActionSet = m_pMacApp->getToolbarActionSet();
 	UT_ASSERT(pToolbarActionSet);
 	
@@ -126,23 +132,24 @@ bool EV_MacToolbar::synthesize(void)
 	XAP_Toolbar_ControlFactory * pFactory = m_pMacApp->getControlFactory();
 	UT_ASSERT(pFactory);
     
-    /* TODO Drow the WindowHeader HERE */
-        // TODO: eventually move this to EV_MacToolbar. Probably better.
-    ThemeDrawState			drawState;    
-    CGrafPtr 	savePort;
     Rect btnRect;
-    
-    ::GetPort (&savePort);
-    ::SetPort (::GetWindowPort (m_MacWindow));
-    // Get theme state
-    drawState = ::IsWindowHilited (m_MacWindow) ?
-                    (ThemeDrawState)kThemeStateActive :
-                    (ThemeDrawState)kThemeStateDisabled;
+
+    /* create the toolbar */
+	m_toolbarRect.top = m_pMacFrame->_getVisibleRgnTop();
     _calcToolbarRect ();
-    ::DrawThemeWindowHeader (&m_toolbarRect, drawState);
-
-
-    ::SetPort (savePort);
+	m_pMacFrame->_setVisibleRgnTop (m_toolbarRect.bottom);
+	err = ::GetRootControl(m_MacWindow, &rootControl);
+	UT_ASSERT (err == noErr);
+	if (err) {
+		UT_DEBUGMSG(("GetRootControl failed: %d\n", err));
+	}
+	::CreateWindowHeaderControl (m_MacWindow, &m_toolbarRect, false, &toolbarControl);
+	UT_ASSERT (toolbarControl);
+	err = ::EmbedControl (toolbarControl, rootControl);
+	UT_ASSERT (err == noErr);
+	if (err) {
+		UT_DEBUGMSG(("EmbedControl failed: %d\n", err));
+	}
 
    	////////////////////////////////////////////////////////////////
 	// get toolbar button appearance from the preferences
@@ -190,7 +197,7 @@ bool EV_MacToolbar::synthesize(void)
 			case EV_TBIT_ColorFore:
 			case EV_TBIT_ColorBack:
 				UT_DEBUGMSG(("TODO: Hey Mac needs some tender love and care and a colour selector! \n"));
-				UT_ASSERT(UT_NOT_IMPLEMENTED);
+				//UT_ASSERT(UT_NOT_IMPLEMENTED);
 				UT_DEBUGMSG(("TODO: Handle the colour selector case \n"));
 				break;
 
@@ -198,12 +205,16 @@ bool EV_MacToolbar::synthesize(void)
                 // get pixmap
                 
                 // build control
-                btnRect.top = 8;
+                btnRect.top = m_toolbarRect.top + 8;
                 btnRect.left = btnX;
-                btnRect.bottom = 32;
+                btnRect.bottom = btnRect.top + 24;
                 btnRect.right = btnX + 24;
                 
+				UT_DEBUGMSG (("Toolbar: new push button at %d, %d, %d, %d\n", btnRect.top, btnRect.left, btnRect.bottom, btnRect.right));
                 control = NewControl (owningWin, &btnRect, "\p", true, 0, 0, 1, kControlBevelButtonSmallBevelProc, 0);
+				UT_ASSERT (control);
+				err = ::EmbedControl (control, toolbarControl);
+				UT_ASSERT (err == noErr);
                 btnX += 32;
                 break;
 			case EV_TBIT_ToggleButton:
@@ -211,12 +222,15 @@ bool EV_MacToolbar::synthesize(void)
                 // get pixmap
                 
                 // build control
-                btnRect.top = 8;
+                btnRect.top = m_toolbarRect.top + 8;
                 btnRect.left = btnX;
-                btnRect.bottom = 32;
+                btnRect.bottom = btnRect.top + 24;
                 btnRect.right = btnX + 24;
                 
+				UT_DEBUGMSG (("Toolbar: new group button at %d, %d, %d, %d\n", btnRect.top, btnRect.left, btnRect.bottom, btnRect.right));
                 control = NewControl (owningWin, &btnRect, "\p", true, 0, 0, 1, kControlBevelButtonSmallBevelProc, 0);
+				err = EmbedControl (control, toolbarControl);
+				UT_ASSERT (err == noErr);
                 btnX += 32;
                 break;
 			case EV_TBIT_EditText:
@@ -229,20 +243,24 @@ bool EV_MacToolbar::synthesize(void)
                 //
                 // Really special as Combo Box does NOT exists in MacOS.
                 // Use popup menu instead. This will be the same as combo boxes are not editable in AbiWord
-                btnRect.top = 8;
+                btnRect.top = m_toolbarRect.top + 8;
                 btnRect.left = btnX;
-                btnRect.bottom = 32;
+                btnRect.bottom = btnRect.top + 24;
                 btnRect.right = btnX + 48;
                 
                 // TODO actually use popup.
-                control = NewControl (owningWin, &btnRect, "\p", true, 0, 0, 1, kControlBevelButtonSmallBevelProc, 0);
+                control = ::NewControl (owningWin, &btnRect, "\p", true, 0, 0, 1, kControlBevelButtonSmallBevelProc, 0);
+				err = ::EmbedControl (control, toolbarControl);
+				UT_ASSERT (err == noErr);
                 btnX += 56;
                 break;
             case EV_TBIT_StaticLabel:
 				// TODO do these...
+				
 				break;
 					
 			case EV_TBIT_Spacer:
+				btnX += 8;
 				break;
 					
 			case EV_TBIT_BOGUS:
@@ -469,7 +487,10 @@ void EV_MacToolbar::_calcToolbarRect ()
     rect = macWindowPort->portRect;
 #endif
     // Draw the window header where toolbar reside
+	short top = m_toolbarRect.top;
     m_toolbarRect = rect;
-    ::InsetRect( &m_toolbarRect, -1, -1 );
+    ::InsetRect (&m_toolbarRect, -1, -1 );
+	// get the previous toolbar...
+	m_toolbarRect.top = top;
     m_toolbarRect.bottom = m_toolbarRect.top + 40;
 }

@@ -1,3 +1,4 @@
+/* -*- c-basic-offset: 4; tab-width: 4; indent-tabs-mode: t -*- */
 /* AbiSource Program Utilities
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -43,41 +44,39 @@ class EV_Toolbar_Action;
 
 class EV_MacToolbar : public EV_Toolbar
 {
-public:
+ public:
 	EV_MacToolbar(XAP_MacApp * pMacApp, XAP_MacFrame * pMacFrame,
-				   const char * szToolbarLayoutName,
-				   const char * szToolbarLabelSetName);
+				  const char * szToolbarLayoutName,
+				  const char * szToolbarLabelSetName);
 	
 	virtual ~EV_MacToolbar(void);
-
+  
 	bool toolbarEvent(XAP_Toolbar_Id id,
-						 UT_UCSChar * pData = 0,
-						 UT_uint32 dataLength = 0);
+					  UT_UCSChar * pData = 0,
+					  UT_uint32 dataLength = 0);
 	virtual bool synthesize(void);
 	bool bindListenerToView(AV_View * pView);
 	bool refreshToolbar(AV_View * pView, AV_ChangeMask mask);
 	
 	WindowPtr getWindow(void) const;
 	bool getToolTip(long lParam);
-protected:
+ protected:
     void 	_releaseListener(void);
-private:
-	void							_calcToolbarRect ();
-
-	XAP_MacApp *					m_pMacApp;
-	XAP_MacFrame *				m_pMacFrame;
-	EV_MacToolbar_ViewListener *	m_pViewListener;
-	AV_ListenerId					m_lid;	/* view listener id */
-
-	AP_MacToolbar_Icons *			m_pMacToolbarIcons;
-	UT_Vector						m_vecToolbarWidgets;
+ private:
+    void							_calcToolbarRect ();
+    
+    XAP_MacApp *					m_pMacApp;
+    XAP_MacFrame *                  m_pMacFrame;
+    EV_MacToolbar_ViewListener *	m_pViewListener;
+    AV_ListenerId					m_lid;	/* view listener id */
+    
+    AP_MacToolbar_Icons *			m_pMacToolbarIcons;
+    UT_Vector						m_vecToolbarWidgets;
     WindowPtr						m_MacWindow;
     Rect							m_toolbarRect;
     
-	
-	bool _refreshItem(AV_View * pView, const EV_Toolbar_Action * pAction, UT_uint32 k);
-	bool _refreshID(XAP_Toolbar_Id id);
-
+    bool _refreshItem(AV_View * pView, const EV_Toolbar_Action * pAction, UT_uint32 k);
+    bool _refreshID(XAP_Toolbar_Id id);
 };
 
 #endif /* EV_MACTOOLBAR_H */

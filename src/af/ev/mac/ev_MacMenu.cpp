@@ -1,3 +1,4 @@
+/* -*- c-basic-offset: 4; tab-width: 4; indent-tabs-mode: t -*- */
 /* AbiSource Program Utilities
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -219,6 +220,9 @@ bool EV_MacMenu::synthesize(void)
 	
 	parentMenu = ::GetMenu (RES_MENU_APPLE);
 	UT_ASSERT (parentMenu);
+	if (parentMenu == NULL) {
+		UT_DEBUGMSG(("GetMenu (RES_MENU_APPLE) failed: %d\n", ::ResError()));
+	}
 	::InsertMenu (parentMenu, 0);			
 
 	for (UT_uint32 k=0; (k < nrLabelItemsInLayout); k++) {

@@ -39,25 +39,33 @@ public:
 	virtual bool				initialize(void);
 	virtual	XAP_Frame *			cloneFrame(void);
 	virtual UT_Error			loadDocument(const char * szFilename, int ieft);
-	virtual UT_Error                        loadDocument(const char * szFilename, int ieft, bool createNew);
-	virtual UT_Error                        importDocument(const char * szFilename, int ieft, bool markClean);
+	virtual UT_Error            loadDocument(const char * szFilename, int ieft, bool createNew);
+	virtual UT_Error            importDocument(const char * szFilename, int ieft, bool markClean);
 	virtual bool				initFrameData(void);
 	virtual void				killFrameData(void);
 
 	virtual void				setXScrollRange(void);
 	virtual void				setYScrollRange(void);
 
-	virtual void                            toggleTopRuler(bool bRulerOn);
-	virtual void                            toggleLeftRuler(bool bRulerOn);
+	virtual void                toggleTopRuler(bool bRulerOn);
+	virtual void                toggleLeftRuler(bool bRulerOn);
 
 	virtual void 				setStatusMessage(const char * szMsg);
+    virtual bool				_macGrow(void);
 protected:
-	UT_Error   				_showDocument(UT_uint32 iZoom=100);
-	UT_Error   				_loadDocument(const char * szFilename, IEFileType ieft);
-       	UT_Error				_replaceDocument(AD_Document * pDoc);
-    	static void				_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 xlimit);
-	static void				_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 ylimit);
-    virtual void						_createStatusBar(void);
+	virtual void				_createDocumentWindow(void);
+	UT_Error   		    		_showDocument(UT_uint32 iZoom=100);
+	UT_Error   			    	_loadDocument(const char * szFilename, IEFileType ieft);
+	UT_Error				    _replaceDocument(AD_Document * pDoc);
+	static void				    _scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 xlimit);
+	static void				    _scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 ylimit);
+    virtual void				_createStatusBar(void);
+ private:
+	ControlHandle			    m_HScrollBar;
+	ControlHandle				m_VScrollBar;
+	ControlHandle               m_placard;
 };
 
 #endif /* AP_MACFRAME_H */
+
+

@@ -108,11 +108,14 @@ public:
 	virtual UT_uint32 getFontAscent(GR_Font *);
 	virtual UT_uint32 getFontDescent(GR_Font *);
 	virtual UT_uint32 getFontHeight(GR_Font *);
+
+	void              _syncQDOrigin (short y);
 protected:
 	virtual UT_uint32 _getResolution(void) const { return 72; };
 
 	CGContextRef m_CGContext;
-	CGFontRef	m_CGFont;
+	CGFontRef	 m_CGFont;
+	CGrafPtr     m_qdPort;
 
 	GR_MacFont	*m_pMacFont;
         

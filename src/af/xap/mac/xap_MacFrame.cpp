@@ -1,3 +1,4 @@
+/* -*- c-basic-offset: 4; tab-width: 4; indent-tabs-mode: t -*- */
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 1999 John Brewer DBA Jera Design
@@ -63,11 +64,11 @@ XAP_MacFrame::XAP_MacFrame(XAP_MacApp * app)
           m_dialogFactory(static_cast<XAP_Frame *>(this), static_cast<XAP_App *>(app))
 {
 	m_MacWindow = NULL;
-        m_pKeyboard = NULL;
-        m_pMacMenu = NULL;
-        m_pMouse = NULL;
-        m_HScrollBar = NULL;
-        m_VScrollBar = NULL;
+	m_pKeyboard = NULL;
+	m_pMacMenu = NULL;
+	m_pMouse = NULL;
+	m_rootControl = NULL;
+	m_visibleRgnTop = 0;
 	MacWindowInit ();
 }
 
@@ -79,12 +80,12 @@ XAP_MacFrame::XAP_MacFrame(XAP_MacFrame * f)
 	: XAP_Frame(static_cast<XAP_Frame *>(f)),
           m_dialogFactory(static_cast<XAP_Frame *>(this), static_cast<XAP_App *>(f->m_app))
 {
-        m_MacWindow = NULL;
-        m_pKeyboard = NULL;
-        m_pMacMenu = NULL;
-        m_pMouse = NULL;
-        m_HScrollBar = NULL;
-        m_VScrollBar = NULL;
+	m_MacWindow = NULL;
+	m_pKeyboard = NULL;
+	m_pMacMenu = NULL;
+	m_pMouse = NULL;
+	m_rootControl = NULL;
+	m_visibleRgnTop = 0;
 	MacWindowInit ();
 }
 
@@ -96,12 +97,10 @@ void XAP_MacFrame::MacWindowInit ()
 
 XAP_MacFrame::~XAP_MacFrame(void)
 {
-    if (m_HScrollBar) {
-        ::DisposeControl (m_HScrollBar);
-    }
-    if (m_VScrollBar) {
-        ::DisposeControl (m_VScrollBar);
-    }
+	// TODO: ensure that we really need to dispose all of this stuff
+	if (m_rootControl) {
+		::DisposeControl (m_rootControl);
+	}
 }
 
 bool XAP_MacFrame::initialize(const char * szKeyBindingsKey, 
@@ -213,25 +212,26 @@ bool	XAP_MacFrame::updateTitle(void)
 bool	XAP_MacFrame::_macUpdate(void)
 {
 	ThemeDrawState			drawState;
-       	
-        GrafPtr savePort;
+	
+	GrafPtr savePort;
 	::BeginUpdate (m_MacWindow);
 	
-        ::DrawControls (m_MacWindow);
+	::DrawControls (m_MacWindow);
 	::DrawGrowIcon (m_MacWindow);
-        ::GetPort (&savePort);
-        ::SetPort (m_MacWindowPort);
-        // Get theme state
-        drawState = ::IsWindowHilited (m_MacWindow) ?
-                        (ThemeDrawState)kThemeStateActive :
-                        (ThemeDrawState)kThemeStateDisabled;
-        // Draw the window header where toolbar reside
-        ::DrawThemeWindowHeader (&m_toolbarRect, drawState);
-
+#if 0
+	::GetPort (&savePort);
+	::SetPort (m_MacWindowPort);
+	// Get theme state
+	drawState = ::IsWindowHilited (m_MacWindow) ?
+		(ThemeDrawState)kThemeStateActive :
+		(ThemeDrawState)kThemeStateDisabled;
+	// Draw the window header where toolbar reside
+	//::DrawThemeWindowHeader (&m_toolbarRect, drawState);
+	
 	::DrawThemePlacard( &m_placardRect, drawState );
 
-        ::SetPort (savePort);
-
+	::SetPort (savePort);
+#endif	
 	::EndUpdate (m_MacWindow);
 	return true;
 }
@@ -239,19 +239,11 @@ bool	XAP_MacFrame::_macUpdate(void)
 
 bool XAP_MacFrame::_macGrow (void)
 {
-	Rect newRect; 
-	
-	_calcVertScrollBarRect (newRect);
-	::MoveControl (m_VScrollBar, newRect.left, newRect.top);
-	::SizeControl (m_VScrollBar, newRect.right - newRect.left, newRect.bottom - newRect.top);
-	
-	_calcHorizScrollBarRect (newRect);
-	::MoveControl (m_HScrollBar, newRect.left, newRect.top);
-	::SizeControl (m_HScrollBar, newRect.right - newRect.left, newRect.bottom - newRect.top);
 
 // TODO get all the toolbars and calc for each.	
 //    _calcToolbarRect();
     _calcPlacardRect();
+	
 	return true;
 }
 
@@ -278,9 +270,13 @@ EV_Toolbar * XAP_MacFrame::_newToolbar(XAP_App *app, XAP_Frame *frame, const cha
 
 void XAP_MacFrame::_createTopLevelWindow(void)
 {
+	OSErr err;
+
 	::SetRect(&m_winBounds, 100, 100, 500, 500);
 	m_MacWindow = ::NewCWindow(NULL, &m_winBounds, "\pUntitled", 0, zoomDocProc, (WindowPtr) -1, true, (long) this);
 	UT_ASSERT (m_MacWindow != NULL);
+	err = ::CreateRootControl (m_MacWindow, &m_rootControl);
+	UT_ASSERT (err == noErr);
 #if TARGET_API_MAC_CARBON
 	m_MacWindowPort = ::GetWindowPort (m_MacWindow);
 #else
@@ -306,7 +302,6 @@ void XAP_MacFrame::_createTopLevelWindow(void)
 }
 
 
-
 void XAP_MacFrame::_calcPlacardRect ()
 {
     Rect rect;
@@ -324,46 +319,6 @@ void XAP_MacFrame::_calcPlacardRect ()
 }
 
 
-void XAP_MacFrame::_createDocumentWindow (void)
-{
-	Rect rect;
-        
-    // create HScrollbar
-    _calcVertScrollBarRect (rect);
-#if UNIVERSAL_INTERFACE_VERSION >= 0x0335
-	::CreateScrollBarControl (m_MacWindow, &rect, 0, 0, 100, 0, false, nil, &m_VScrollBar );
-#else
-	m_VScrollBar = ::NewControl (m_MacWindow, &rect, "\p", true, 0, 0, 100, kControlScrollBarProc, 0);
-#endif
-
-    // create VScrollbar
-	_calcHorizScrollBarRect (rect);
-#if UNIVERSAL_INTERFACE_VERSION >= 0x0335
-	::CreateScrollBarControl (m_MacWindow, &rect, 0, 0, 100, 0, false, nil, &m_HScrollBar );
-#else
-	m_HScrollBar = ::NewControl (m_MacWindow, &rect, "\p", true, 0, 0, 100, kControlScrollBarProc, 0);
-#endif
-        
-    // TODO: make the placard OR the status bar. Status bar will be better IMHO.
-    _calcPlacardRect ();
-    _drawStatusPlacard ();
-}
-
-void XAP_MacFrame::_drawStatusPlacard (void)
-{
-	ThemeDrawState drawState;
-    GrafPtr savePort;
-	::GetPort (&savePort);
-	::SetPort (m_MacWindowPort);
-    // Get theme state
-    drawState = ::IsWindowHilited (m_MacWindow) ?
-                    (ThemeDrawState)kThemeStateActive :
-                    (ThemeDrawState)kThemeStateDisabled;
-    ::DrawThemePlacard( &m_placardRect, drawState );
-    ::SetPort (savePort);
-}
-
-
 void XAP_MacFrame::_calcVertScrollBarRect (Rect & rect)
 {
 #if TARGET_API_MAC_CARBON
@@ -374,7 +329,7 @@ void XAP_MacFrame::_calcVertScrollBarRect (Rect & rect)
     rect.right++;
 	rect.left = rect.right - 16;
 	rect.bottom -= 30;
-	rect.top = 38;
+	rect.top = m_visibleRgnTop;
 }
 
 
@@ -409,3 +364,14 @@ bool XAP_MacFrame::runModalContextMenu(AV_View * /* pView */, const char * /*szM
 
 	return(false);
 }
+
+
+
+void XAP_MacFrame::_setVisibleRgnTop (short top)
+{
+	m_visibleRgnTop = top;
+	// Sync the gr_graphics origin. Only needed for CG version, but...
+	
+	
+}
+

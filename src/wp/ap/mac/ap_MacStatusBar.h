@@ -1,3 +1,4 @@
+/* -*- c-basic-offset: 4; tab-width: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -45,7 +46,7 @@ public:
 	virtual void		show(void);
 	virtual void		hide(void);
 
-protected:
+private:
 	ControlHandle			m_wStatusBar;
 };
 

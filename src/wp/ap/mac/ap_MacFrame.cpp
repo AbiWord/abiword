@@ -184,6 +184,59 @@ void AP_MacFrame::setYScrollRange(void)
 }
 
 
+bool AP_MacFrame::_macGrow (void)
+{
+	Rect aRect;
+	
+	_calcVertScrollBarRect (aRect);
+	::MoveControl (m_VScrollBar, aRect.left, aRect.top);
+	::SizeControl (m_VScrollBar, aRect.right - aRect.left, aRect.bottom - aRect.top);
+	
+	_calcHorizScrollBarRect (aRect);
+	::MoveControl (m_HScrollBar, aRect.left, aRect.top);
+	::SizeControl (m_HScrollBar, aRect.right - aRect.left, aRect.bottom - aRect.top);
+
+	// recompute each widget position...
+    _calcPlacardRect ();
+	_getStatusBarRect (aRect);
+	::MoveControl (m_placard, aRect.left, aRect.top);
+	::SizeControl (m_placard, aRect.right - aRect.left, aRect.bottom - aRect.top);
+	
+	return XAP_MacFrame::_macGrow();
+}
+
+
+void AP_MacFrame::_createDocumentWindow (void)
+{
+	OSErr err;
+	Rect rect;
+
+    // create HScrollbar
+    _calcVertScrollBarRect (rect);
+#if UNIVERSAL_INTERFACE_VERSION >= 0x0335
+	::CreateScrollBarControl (m_MacWindow, &rect, 0, 0, 100, 0, false, nil, &m_VScrollBar );
+#else
+	m_VScrollBar = ::NewControl (m_MacWindow, &rect, "\p", true, 0, 0, 100, kControlScrollBarProc, 0);
+#endif
+	err = ::EmbedControl (m_VScrollBar, _getRootControl());
+	UT_ASSERT (err == noErr);
+
+    // create VScrollbar
+	_calcHorizScrollBarRect (rect);
+#if UNIVERSAL_INTERFACE_VERSION >= 0x0335
+	::CreateScrollBarControl (m_MacWindow, &rect, 0, 0, 100, 0, false, nil, &m_HScrollBar );
+#else
+	m_HScrollBar = ::NewControl (m_MacWindow, &rect, "\p", true, 0, 0, 100, kControlScrollBarProc, 0);
+#endif
+	err = ::EmbedControl (m_VScrollBar, _getRootControl());
+	UT_ASSERT (err == noErr);
+        
+    // TODO: make the placard OR the status bar. Status bar will be better IMHO.
+    //_calcPlacardRect ();
+    // _drawStatusPlacard ();
+}
+
+
 UT_Error AP_MacFrame::_showDocument(UT_uint32 iZoom)
 {
 	if (!m_pDoc)
@@ -570,14 +623,18 @@ void AP_MacFrame::toggleLeftRuler(bool bRulerOn)
 
 void AP_MacFrame::_createStatusBar(void)
 {
-    ControlHandle control;
+	OSErr err;
+
+	UT_DEBUGMSG (("AP_MacFrame::_createStatusBar()\n"));
     _calcPlacardRect ();
 	AP_MacStatusBar * pMacStatusBar = new AP_MacStatusBar(this);
 	UT_ASSERT(pMacStatusBar);
 
 	((AP_FrameData *)m_pData)->m_pStatusBar = pMacStatusBar;
     
-    control = pMacStatusBar->createWidget ();
-    // TODO add the control to the window ?
+    m_placard = pMacStatusBar->createWidget ();
+
+	err = ::EmbedControl (m_placard, _getRootControl());
+	UT_ASSERT (err == noErr);
 }
 

@@ -39,6 +39,7 @@ GR_MacGraphics::GR_MacGraphics(CGrafPtr port, XAP_MacFontManager * fontManager, 
 	UT_ASSERT (fontManager);
 
 	m_pMacFontManager = fontManager;
+	m_qdPort = port;
     err = CreateCGContextForPort (port, &m_CGContext );
     UT_ASSERT (err == noErr);
     ::GetPortBounds(port, &rect);
@@ -78,6 +79,16 @@ GR_MacGraphics::~GR_MacGraphics ()
     }
 }
 
+
+
+void GR_MacGraphics::_syncQDOrigin (short y)
+{
+	OSStatus err;
+	//	err = ::SyncCGContextOriginWithPort(m_CGContext, m_qdPort);
+	//	UT_ASSERT (err == noErr);
+	
+	::CGContextTranslateCTM(m_CGContext, 0.f, y);
+}
 
 void GR_MacGraphics::drawChars(const UT_UCSChar* pChars, 
 		int iCharOffset, int iLength, UT_sint32 xoff, UT_sint32 yoff)

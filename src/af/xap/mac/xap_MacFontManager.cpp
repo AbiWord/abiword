@@ -1,3 +1,4 @@
+/* -*- c-basic-offset: 4; tab-width: 4; indent-tabs-mode: t -*- */
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2001 Hubert Figuiere
@@ -23,7 +24,7 @@
 	The aim of this class is to provide abstraction ove ATSUI for simple purpose.
 	TODO: make it part of the XP to be used form XP code for all platforms.
  */
-
+#include "ut_debugmsg.h"
 #include "xap_MacFontManager.h"
 
 XAP_MacFontManager::XAP_MacFontManager(void) 
@@ -70,7 +71,7 @@ GR_MacFont *XAP_MacFontManager::getFont(const char * fontname, ATSUStyle s)
 
 
 
-ATSUFontID	XAP_MacFontManager::findFont (const char* pszFontFamily, 
+ATSUStyle  XAP_MacFontManager::findFont (const char* pszFontFamily, 
 										const char* pszFontStyle, 
 										const char* pszFontVariant, 
 										const char* pszFontWeight, 
@@ -78,11 +79,11 @@ ATSUFontID	XAP_MacFontManager::findFont (const char* pszFontFamily,
 										const float fFontSize)
 {
 	OSStatus	status;
-    ATSUFontID	atsuiFont;
 	ATSUStyle	style;
 	bool		isItalic = false;
 	bool		isBold	= false;
 	
+	UT_DEBUGMSG (("findFont not implemented !!\n"));
 	status = ATSUCreateStyle (&style);
 	UT_ASSERT (status == noErr);
 	
@@ -93,7 +94,100 @@ ATSUFontID	XAP_MacFontManager::findFont (const char* pszFontFamily,
 		isBold = true;
 	}
 	
-	return atsuiFont;
+	return style;
 }
+
+
+
+
+/* MakeThemeATSUIStyle creates a simple ATSUI style record
+    that based on the current theme font ID that can be used in
+    calls to the ATSUI text drawing routines. */ 
+/* see http://developer.apple.com/qa/qa2001/qa1027.html for me reference */
+OSStatus XAP_MacFontManager::_makeThemeATSUIStyle(ThemeFontID themeFontID,
+												  ATSUStyle *theStyle) 
+{
+	OSStatus err;
+	ATSUStyle localStyle;
+	ATSUFontID atsuFont;
+	Fixed atsuSize;
+	short atsuOrientation, fontFamily, fontSize;
+	Str255 fontName;
+	Style fontStyle;
+	Boolean trueV = true, falseV = false;
+    
+	/* Three parrallel arrays for setting up attributes. */
+	ATSUAttributeTag theTags[] = {
+		kATSUFontTag, kATSUSizeTag, kATSUVerticalCharacterTag,
+		kATSUQDBoldfaceTag, kATSUQDItalicTag, kATSUQDUnderlineTag, 
+		kATSUQDCondensedTag, kATSUQDExtendedTag
+	};
+	ByteCount theSizes[] = {
+		sizeof(ATSUFontID), sizeof(Fixed), sizeof(UInt16),
+		sizeof(Boolean), sizeof(Boolean), sizeof(Boolean),
+		sizeof(Boolean), sizeof(Boolean)
+	};
+	ATSUAttributeValuePtr theValues[] = {
+		NULL, NULL, NULL, NULL,
+		NULL, NULL, NULL, NULL
+	};
+	
+	/* set up locals */
+	localStyle = NULL;
+	atsuFont = 0;
+	atsuSize = 0x00080000;
+	atsuOrientation = kATSUStronglyHorizontal;
+	/* or atsuOrientation = kATSUStronglyVertical */
+    
+	/* calculate the theme font parameters */
+	err = GetThemeFont( themeFontID, smSystemScript,
+						fontName,  &fontSize, &fontStyle);
+	if (err != noErr) goto bail;
+	atsuSize = FixRatio(fontSize, 1);
+    
+	/* set the values array to point to our locals */
+	theValues[0] = &atsuFont;
+	theValues[1] = &atsuSize;
+	theValues[2] = &atsuOrientation;
+	theValues[3] = ((fontStyle & bold) != 0 ? &trueV : &falseV);
+	theValues[4] = ((fontStyle & italic) != 0 ? &trueV : &falseV);
+	theValues[5] = ((fontStyle & underline) != 0 ? &trueV : &falseV);
+	theValues[6] = ((fontStyle & condense) != 0 ? &trueV : &falseV);
+	theValues[7] = ((fontStyle & extend) != 0 ? &trueV : &falseV);
+    
+	/* calculate the font ID */
+	GetFNum( fontName, &fontFamily);
+	err = ATSUFONDtoFontID( fontFamily, fontStyle, &atsuFont);
+	if (err != noErr) goto bail;
+    
+	/* find the font ID */
+	err = ATSUFindFontFromName((Ptr)fontName+1, (long)fontName[0],
+							   kFontFullName, kFontMacintoshPlatform,
+							   kFontRomanScript, kFontNoLanguage, &atsuFont);
+	if (err != noErr) 
+		goto bail;
+    
+	/* create a style */
+	err = ATSUCreateStyle(&localStyle);
+	if (err != noErr) goto bail;
+    
+	/* set the style attributes */  
+	err = ATSUSetAttributes( localStyle,
+							 sizeof(theTags)/sizeof(theTags[0]), 
+							 theTags, theSizes, theValues );
+	if (err != noErr) 
+		goto bail;
+    
+	/* store the new style for the caller */    
+	*theStyle = localStyle;
+	return noErr;
+ bail:
+	if (localStyle != NULL) ATSUDisposeStyle(localStyle);
+	return err;
+}
+
+
+
+
 
 

@@ -39,10 +39,10 @@
 #define MAJOR_VERSION			0
 #define MINOR_VERSION			7
 #define RELEASE_KIND 			alpha
-#define PATCH_LEVEL				13
-#define CURRENT_VERSION_TEXT	"0.7.13"
+#define PATCH_LEVEL			14
+#define CURRENT_VERSION_TEXT	"0.7.14"
 
-#define APP_NAME 				"AbiWord"
+#define APP_NAME 				"Abiword"
 
 type APPLICATION_SIGNATURE {
 	pstring;
@@ -55,7 +55,7 @@ resource 'vers' (1) {
 	PATCH_LEVEL,
 	1,
 	APP_NAME" "CURRENT_VERSION_TEXT,
-	APP_NAME" "CURRENT_VERSION_TEXT" - ©1998-2000 AbiSource, Inc. and other contributors."
+	APP_NAME" "CURRENT_VERSION_TEXT" - ©1998-2001 AbiSource, Inc. and other contributors."
 };
 
 
@@ -66,19 +66,19 @@ resource 'vers' (2) {
 	PATCH_LEVEL,
 	1,
 	"",
-	APP_NAME" - ©1998-2000 AbiSource, Inc. and other contributors."
+	APP_NAME" - ©1998-2001 AbiSource, Inc. and other contributors."
 };
 
 
 resource 'STR ' (HFDR_STR_ID) {
 	APP_NAME" "CURRENT_VERSION_TEXT
-	" - ©1998-2000 AbiSource, Inc. and other contributors.\n\n"
+	" - ©1998-2001 AbiSource, Inc. and other contributors.\n\n"
 	"This application is a free word processor."
 };
 
 
 resource APPLICATION_SIGNATURE (128) {
-	APP_NAME" "CURRENT_VERSION_TEXT" - ©1998-2000 AbiSource, Inc. and other contributors."
+	APP_NAME" "CURRENT_VERSION_TEXT" - ©1998-2001 AbiSource, Inc. and other contributors."
 };
 
 resource 'MENU' (RES_MENU_APPLE) {
