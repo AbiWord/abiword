@@ -10325,7 +10325,7 @@ Defun(resizeImage)
 				r.left += xDiff;
 				r.top += (UT_sint32)(xDiff * aRatio);
 				r.width -= xDiff;
-				r.height -= (UT_sint32)xDiff * aRatio;
+				r.height -= (UT_sint32)(xDiff * aRatio);
 				break;
 			case GR_Graphics::GR_CURSOR_IMAGESIZE_N:
 				r.top += yDiff;
