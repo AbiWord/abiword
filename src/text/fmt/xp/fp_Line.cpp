@@ -850,20 +850,12 @@ void fp_Line::draw(GR_Graphics* pG)
 	da.pG = pG;
 
 	int count = m_vecRuns.getItemCount();
-#ifdef BIDI_ENABLED	
-	//UT_uint32 iWidth = 0;
-#endif
 	
 	for (int i=0; i < count; i++)
 	{
-#ifdef BIDI_ENABLED
-		// need to draw in visual order, otherwise the context glyph stuff
-		// does not work
-		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(i));
-		//pRun->setX(iWidth);
-#else
+		// NB !!! In the BiDi build drawing has to be done in the logical
+		// order, otherwise overstriking characters cannot be seen
 		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(i);
-#endif
 
 		FP_RUN_TYPE rType = pRun->getType();
 
@@ -884,9 +876,6 @@ void fp_Line::draw(GR_Graphics* pG)
 
 		da.yoff += pRun->getY();
 		pRun->draw(&da);
-#ifdef BIDI_ENABLED
-		//iWidth += pRun->getWidth();
-#endif
 
 		da.xoff -= pRun->getX();
 		da.yoff -= pRun->getY();
@@ -896,9 +885,6 @@ void fp_Line::draw(GR_Graphics* pG)
 void fp_Line::draw(dg_DrawArgs* pDA)
 {
 	int count = m_vecRuns.getItemCount();
-#ifdef BIDI_ENABLED	
-	//UT_uint32 iWidth = 0;
-#endif
 	
 	xxx_UT_DEBUGMSG(("SEVIOR: Drawing line in line pDA \n"));
 
@@ -906,14 +892,9 @@ void fp_Line::draw(dg_DrawArgs* pDA)
 
 	for (int i=0; i<count; i++)
 	{
-#ifdef BIDI_ENABLED
-		// need to draw in visual order, otherwise the context glyph stuff
-		// does not work
-		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(i));
-		//pRun->setX(iWidth);
-#else
+		// NB !!! In the BiDi build drawing has to be done in the logical
+		// order, otherwise overstriking characters cannot be seen
 		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(i);
-#endif		
 		FP_RUN_TYPE rType = pRun->getType();
 
 		dg_DrawArgs da = *pDA;
@@ -933,9 +914,6 @@ void fp_Line::draw(dg_DrawArgs* pDA)
 		}
 		da.yoff += pRun->getY();
 		pRun->draw(&da);
-#ifdef BIDI_ENABLED
-		//iWidth += pRun->getWidth();
-#endif
 	}
 }
 

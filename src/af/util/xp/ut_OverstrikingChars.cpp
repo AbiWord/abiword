@@ -15,11 +15,20 @@ typedef struct {UT_UCSChar min; UT_UCSChar max; overstr_type dir;} char_bounds;
 // !!! the table MUST be sorted to allow binary search !!!
 char_bounds overstr_lut[]=
 {
+//Greek
+{0x037a,0x037a, UT_OVERSTRIKING_LTR},
 //Hebrew
 {0x0591,0x05bd, UT_OVERSTRIKING_RTL}, //this includes two currently undefined characters 0x05a2 and 0x05ba
 {0x05bf,0x05bf, UT_OVERSTRIKING_RTL},
 {0x05c1,0x05c2, UT_OVERSTRIKING_RTL},
 {0x05c4,0x05c4, UT_OVERSTRIKING_RTL},
+
+//Arabic
+{0x064b,0x0655, UT_OVERSTRIKING_RTL},
+{0x0670,0x0670, UT_OVERSTRIKING_RTL},
+{0x06d6,0x06e4, UT_OVERSTRIKING_RTL},
+{0x04e7,0x06e8, UT_OVERSTRIKING_RTL},
+{0x06ea,0x06ed, UT_OVERSTRIKING_RTL},
 
 //Syriac
 {0x0711,0x0711, UT_OVERSTRIKING_RTL},
