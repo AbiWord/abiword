@@ -246,6 +246,8 @@ void GR_Win32Graphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
 
 	UT_UCSChar currentChar = remapGlyph(Char, false);
 
+	if(currentChar == 0x200B || currentChar == 0xFEFF)
+		return;
 	// Windows NT and Windows 95 support the Unicode Font file. 
 	// All of the Unicode glyphs can be rendered if the glyph is found in
 	// the font file. However, Windows 95 does  not support the Unicode 
@@ -273,11 +275,12 @@ void GR_Win32Graphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
 }
 
 void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
-								 int iCharOffset, int iLength,
+								 int iCharOffset, int iLengthOrig,
 								 UT_sint32 xoff, UT_sint32 yoff)
 {
 	UT_ASSERT(pChars);
-
+	// iLength can be modified by _remapGlyphs
+	int iLength = iLengthOrig;
 	HFONT hFont = GR_Win32Font::Acq::getHFONT(*m_pFont);
 	SelectObject(m_hdc, hFont);
 	SetTextAlign(m_hdc, TA_LEFT | TA_TOP);
@@ -313,7 +316,7 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 
 }
 
-UT_UCSChar*	GR_Win32Graphics::_remapGlyphs(const UT_UCSChar* pChars, int iCharOffset, int iLength)
+UT_UCSChar*	GR_Win32Graphics::_remapGlyphs(const UT_UCSChar* pChars, int iCharOffset, int &iLength)
 {
 
 	if (iLength > (int)m_remapBufferSize)
@@ -323,10 +326,16 @@ UT_UCSChar*	GR_Win32Graphics::_remapGlyphs(const UT_UCSChar* pChars, int iCharOf
 		m_remapBufferSize = iLength;
 	}
 
-	for (int i = 0; i < iLength; ++i)
+    // Need to handle zero-width spaces correctly
+	int i, j;
+	for (i = 0, j = 0; i < iLength; ++i, ++j)
 	{
-		m_remapBuffer[i] = remapGlyph(pChars[iCharOffset + i], false);
+		m_remapBuffer[j] = remapGlyph(pChars[iCharOffset + i], false);
+		if(m_remapBuffer[j] == 0x200B || m_remapBuffer[j] == 0xFEFF)
+			j--;
 	}
+ 
+	iLength -= (i - j);
 
 	return m_remapBuffer;
 }
