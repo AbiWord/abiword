@@ -19,7 +19,7 @@
 
 /* French translations provided by Philippe Duperron <duperron@mail.dotcom.fr> */
 /* modifications by Gilles Saint-Denis <stdenisg@cedep.net> and 
-   Christophe Caron <ChrisDigo@aol.com> Last update 20/02/2001 */
+   Christophe Caron <ChrisDigo@aol.com> Last update 03/03/2001 */
 
 /*****************************************************************
 ******************************************************************
@@ -82,7 +82,7 @@ BeginSet(fr,FR,true)
     MenuLabel(AP_MENU_ID_VIEW_STATUSBAR,    	"Barre d'é&tat",    		"Affiche ou masque la barre d'état")
     MenuLabel(AP_MENU_ID_VIEW_SHOWPARA,     	"&Afficher/Masquer ¶",          "Affiche ou masque les caractères non-imprimables")
     MenuLabel(AP_MENU_ID_VIEW_HEADFOOT,     	"&Entêtes et pieds de page",    "Edite le texte de l'entête et du pied de page")
-    MenuLabel(AP_MENU_ID_VIEW_FULLSCREEN, 	"Plein é&cran", 		"Affiche le document en mode pelin écran")
+    MenuLabel(AP_MENU_ID_VIEW_FULLSCREEN, 	"Plein é&cran", 		"Affiche le document en mode plein écran")
     MenuLabel(AP_MENU_ID_VIEW_ZOOM,         	"&Zoom",            		"Règle le facteur d'agrandissement de l'affichage")
 
     MenuLabel(AP_MENU_ID_INSERT,            	"&Insertion",      		NULL)

@@ -103,7 +103,8 @@ BeginSet(it,IT,true)
 
 	// ... add others here ...
 #ifdef BIDI_ENABLED
-	//ToolbarLabel(AP_TOOLBAR_ID_FMT_DIRECTION,		"Direzione del testo",	tb_text_direction_rtl_xpm,	NULL, "Cambia la direzione del testo")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_LTR,	"Forza il testo da sinistra a destra",	tb_text_direction_ltr_xpm,	NULL, "Forza la direzione del testo da sinistra a destra")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_RTL,	"Forza il testo da destra a sinistra",	tb_text_direction_rtl_xpm,	NULL, "Forza la direzione del testo da destra a sinistra")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DOM_DIRECTION,		"Direzione del paragrafo",	tb_text_dom_direction_rtl_xpm,	NULL, "Cambia la direzione dominante del paragrafo")
 #endif
 
