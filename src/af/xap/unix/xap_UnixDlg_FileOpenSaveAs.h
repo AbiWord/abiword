@@ -19,10 +19,11 @@
 
 #ifndef XAP_UNIXDIALOG_FILEOPENSAVEAS_H
 #define XAP_UNIXDIALOG_FILEOPENSAVEAS_H
-
+#include <gtk/gtk.h>
 #include <gtk/gtkfilesel.h>
 #include "xap_Dlg_FileOpenSaveAs.h"
 #include "xap_Strings.h"
+#include "ut_vector.h"
 class XAP_Frame;
 
 /*****************************************************************/
@@ -37,6 +38,8 @@ public:
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 	gint previewPicture (void);
+
+	void                    fileTypeChanged(GtkWidget * w);
 
 protected:
 
@@ -55,6 +58,9 @@ protected:
 	GtkWidget * m_preview;
 	XAP_Frame *			m_pFrame;
 	char * 					m_szFinalPathnameCandidate;
+private:
+	GtkWidget *         m_wFileTypes_PullDown;
+
 
 };
 

@@ -109,6 +109,12 @@ static gint s_preview_exposed(GtkWidget * /* widget */,
 	return FALSE;
 }
 
+static void s_filetypechanged(GtkWidget * w, gpointer p)
+{
+	XAP_UnixDialog_FileOpenSaveAs * dlg = static_cast<XAP_UnixDialog_FileOpenSaveAs *>(p);
+	dlg->fileTypeChanged(w);
+}
+
 static gint
 fsel_key_event (GtkWidget *widget, GdkEventKey *event, XAP_Dialog_FileOpenSaveAs::tAnswer * answer)
 {
@@ -434,6 +440,57 @@ void XAP_UnixDialog_FileOpenSaveAs::_notifyError_OKOnly(XAP_Frame * pFrame,
 			       sz1);
 }
 
+void XAP_UnixDialog_FileOpenSaveAs::fileTypeChanged(GtkWidget * w)
+{
+	UT_sint32 nFileType = GPOINTER_TO_INT(gtk_object_get_user_data(
+				GTK_OBJECT(w)));
+	UT_DEBUGMSG(("File type widget is %x filetype number is %d \n",w,nFileType));
+	if(nFileType == 0)
+	{
+		return;
+	}
+	UT_String sFileName = 	gtk_file_selection_get_filename(m_FS);
+	UT_String sSuffix = m_szSuffixes[nFileType-1];
+	sSuffix = sSuffix.substr(1,sSuffix.length()-1);
+	UT_uint32 i = 0;
+	bool bFoundComma = false;
+	for(i=0; i< sSuffix.length(); i++)
+	{
+		if(sSuffix[i] == ';')
+		{
+			bFoundComma = true;
+			break;
+		}
+	}
+	if(bFoundComma)
+	{
+		sSuffix = sSuffix.substr(0,i);
+	}
+//
+// Hard code a suffix
+//
+	if(nFileType == 10)
+	{
+		sSuffix = ".zabw";
+	}
+	bool bFoundSuffix = false;
+	for(i= sFileName.length()-1; i> 0; i--)
+	{
+		if(sFileName[i] == '.')
+		{
+			bFoundSuffix = true;
+			break;
+		}
+	}
+	if(!bFoundSuffix)
+	{
+		return;
+	}
+	sFileName = sFileName.substr(0,i);
+	sFileName += sSuffix;
+	gtk_file_selection_set_filename(m_FS,sFileName.c_str());
+}
+
 /*****************************************************************/
 
 void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
@@ -618,9 +675,16 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 					
 					g_snprintf(buffer, 1024, "%s", m_szDescriptions[i]);
 					thismenuitem = gtk_menu_item_new_with_label(buffer);
+
 					gtk_object_set_user_data(GTK_OBJECT(thismenuitem), GINT_TO_POINTER(m_nTypeList[i]));
 					gtk_widget_show(thismenuitem);
 					gtk_menu_append(GTK_MENU(menu), thismenuitem);
+//
+// Attach a callback when it is activated to change the file suffix
+//
+					g_signal_connect(G_OBJECT(thismenuitem), "activate",
+									 G_CALLBACK(s_filetypechanged),	
+									 reinterpret_cast<gpointer>(this));
 				}
 			}
 
@@ -630,7 +694,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 			
 			// add menu to the option menu widget
 			gtk_option_menu_set_menu(GTK_OPTION_MENU(filetypes_pulldown), menu);
-
+			m_wFileTypes_PullDown = filetypes_pulldown;
 			// dialog; open dialog always does auto-detect
 			// TODO: should this also apply to the open dialog?
 			if (m_id == XAP_DIALOG_ID_FILE_SAVEAS)
@@ -654,7 +718,6 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 					   G_CALLBACK(s_ok_clicked), &m_answer);
 	g_signal_connect(G_OBJECT(pFS->cancel_button), "clicked",
 					   G_CALLBACK(s_cancel_clicked), &m_answer);
-
 	if (m_id == XAP_DIALOG_ID_FILE_OPEN || m_id == XAP_DIALOG_ID_INSERT_PICTURE || m_id == XAP_DIALOG_ID_FILE_EXPORT || m_id == XAP_DIALOG_ID_INSERT_FILE) // only hide the buttons if we're opening a file/picture
 	  gtk_file_selection_hide_fileop_buttons(pFS);
 
