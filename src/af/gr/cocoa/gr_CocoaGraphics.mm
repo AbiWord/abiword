@@ -143,12 +143,8 @@ GR_CocoaGraphics::GR_CocoaGraphics(NSView * win, XAP_App * app)
 	m_iLineWidth = 0;
 	s_iInstanceCount++;
 	init3dColors ();
-/*
-	m_cache = [[NSImage alloc] initWithSize:NSMakeSize(0,0)];
-	[m_cache setFlipped:YES];
-*/
+
 	m_cacheArray = [[NSMutableArray alloc] init]; 	
-	//NSMakeRect(0,0,0,0);
 	m_xorCache = [[NSImage alloc] initWithSize:NSMakeSize(0,0)] ;
 	[m_xorCache setFlipped:YES];
 
@@ -1041,12 +1037,17 @@ void GR_CocoaGraphics::saveRectangle(UT_Rect & rect,  UT_uint32 iIndx)
 						  rect.width, rect.height);
 	NSImage* cache = _makeNewCacheImage();
 	[cache setSize:cacheRect->size];
-	StNSImageLocker locker(m_pWin, cache);
-	[m_offscreen compositeToPoint:NSMakePoint(0.0, 0.0) fromRect:*cacheRect operation:NSCompositeCopy];
+	{
+		StNSImageLocker locker(m_pWin, cache);
+		NSRect r = NSMakeRect (0.0, 0.0, rect.width, rect.height);
+		NSEraseRect(r);
+		[m_offscreen compositeToPoint:NSMakePoint(0.0, 0.0) fromRect:*cacheRect operation:NSCompositeCopy];
+	}
 	// update cache arrays
 	[m_cacheArray insertObject:cache atIndex:iIndx];
-	void * oldC = NULL;
-	m_cacheRectArray.setNthItem(iIndx, (void*) cacheRect, &oldC);
+	[cache release];
+	NSRect * oldC = NULL;
+	m_cacheRectArray.setNthItem(iIndx, (void*) cacheRect, &(void *)oldC);
 	if(oldC)
 		DELETEP(oldC);
 }
@@ -1058,8 +1059,6 @@ void GR_CocoaGraphics::restoreRectangle(UT_uint32 iIndx)
 	NSImage* cache = [m_cacheArray objectAtIndex:iIndx];
 	NSPoint pt = cacheRect->origin;
 	pt.y += cacheRect->size.height;
-	NSSize size = [cache size];
-	NSRect srcRect = NSMakeRect(0,0,size.width, size.height);
 	LOCK_CONTEXT__;
 	[cache compositeToPoint:pt operation:NSCompositeCopy];
 	[[m_pWin window] flushWindowIfNeeded];
