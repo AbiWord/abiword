@@ -43,14 +43,16 @@ public:
 protected:
 	virtual GtkWidget *		_constructWindow(void);
 	void _constructWindowContents (GtkWidget * container);
-	void					_connectSignals (void);
 	void					_setList();
 
-	GtkWidget * m_windowMain;
+	enum
+	  {
+	    BUTTON_CANCEL,
+	    BUTTON_OK,
+	    BUTTON_DELETE
+	  } ResponseId ;
 
-	GtkWidget * m_buttonOK;
-	GtkWidget * m_buttonCancel;
-	GtkWidget * m_buttonDelete;
+	GtkWidget * m_windowMain;
 
 	GtkWidget * m_comboEntry;
 	GtkWidget * m_comboBookmark;
