@@ -104,7 +104,6 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
         m_pAutoCursorTimer(0),
         m_bCursorIsOn(UT_FALSE),
         m_bEraseSaysStopBlinking(UT_FALSE),
-        m_bdontSpellCheckRightNow(UT_FALSE),
         m_wrappedEnd(UT_FALSE),
         m_startPosition(0),
         m_doneFind(UT_FALSE),
@@ -1245,11 +1244,6 @@ void FV_View::_insertSectionBreak(void)
 	}
 }
 
-UT_Bool FV_View::dontSpellCheckRightNow(void)
-{
-        return m_bdontSpellCheckRightNow;
-} 
-
 UT_Bool FV_View::isCurrentListBlockEmpty(void)
 {
   // 
@@ -1403,6 +1397,11 @@ void FV_View::insertParagraphBreak(void)
 	UT_Bool bBefore = UT_FALSE;
 	m_pDoc->beginUserAtomicGlob();
 
+	// Prevent access to Piecetable for things like spellchecks until
+        //  paragraphs have stablized
+	//
+	m_pDoc->notifyPieceTableChangeStart();
+
 	if (!isSelectionEmpty())
 	{
 		bDidGlob = UT_TRUE;
@@ -1413,10 +1412,6 @@ void FV_View::insertParagraphBreak(void)
 	{
 		_eraseInsertionPoint();
 	}
-
-	// Hold Spell checks until the paragraphs have stablized
-
-        m_bdontSpellCheckRightNow = UT_TRUE;
 
 	// insert a new paragraph with the same attributes/properties
 	// as the previous (or none if the first paragraph in the section).
@@ -1468,10 +1463,10 @@ void FV_View::insertParagraphBreak(void)
 		_drawInsertionPoint();
 	}
 
-	m_pLayout->considerPendingSmartQuoteCandidate();
-	// Signal Spell checks are safe again
+	// Signal piceTable is stable again
+        m_pDoc->notifyPieceTableChangeEnd();
 
-	m_bdontSpellCheckRightNow = UT_FALSE;
+	m_pLayout->considerPendingSmartQuoteCandidate();
 	_checkPendingWordForSpell();
 }
 
@@ -5466,7 +5461,7 @@ UT_Bool FV_View::isDontChangeInsPoint(void)
 
 void FV_View::_checkPendingWordForSpell(void)
 {
-	if(m_bdontSpellCheckRightNow == UT_TRUE)
+	if(m_pDoc->isPieceTableChanging() == UT_TRUE)
 	{
 		return;
 	}
@@ -5601,8 +5596,8 @@ void FV_View::cmdUndo(UT_uint32 count)
 	else
 		_eraseInsertionPoint();
 
-	// Signal Spell checks are unsafe 
-        m_bdontSpellCheckRightNow = UT_TRUE;
+	// Signal PieceTable Change 
+        m_pDoc->notifyPieceTableChangeStart();
 
 	// Turn off list updates
 	m_pDoc->disableListUpdates();
@@ -5620,8 +5615,8 @@ void FV_View::cmdUndo(UT_uint32 count)
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
 
-	// Signal Spell checks are safe again
-        m_bdontSpellCheckRightNow = UT_FALSE;
+	// Signal PieceTable Changes have finished
+        m_pDoc->notifyPieceTableChangeEnd();
 
 	if (isSelectionEmpty())
 	{
@@ -5640,9 +5635,8 @@ void FV_View::cmdRedo(UT_uint32 count)
 	else
 		_eraseInsertionPoint();
 
-	// Signal Spell checks are unsafe 
-        m_bdontSpellCheckRightNow = UT_TRUE;
-
+	// Signal PieceTable Change 
+        m_pDoc->notifyPieceTableChangeStart();
 
 	// Turn off list updates
 	m_pDoc->disableListUpdates();
@@ -5655,8 +5649,8 @@ void FV_View::cmdRedo(UT_uint32 count)
 
 	_generalUpdate();
 
-	// Signal Spell checks are safe again
-        m_bdontSpellCheckRightNow = UT_FALSE;
+	// Signal PieceTable Changes have finished
+        m_pDoc->notifyPieceTableChangeEnd();
 	
 	if (isSelectionEmpty())
 	{
@@ -5695,6 +5689,9 @@ void FV_View::cmdCut(void)
 		// clipboard does nothing if there is no selection
 		return;
 	}
+	// Signal PieceTable Change 
+        m_pDoc->notifyPieceTableChangeStart();
+
 	//
 	// Disable list updates until after we've finished
 	//
@@ -5707,6 +5704,9 @@ void FV_View::cmdCut(void)
 	m_pDoc->updateDirtyLists();
 
 	_generalUpdate();
+
+	// Signal PieceTable Changes have finished
+        m_pDoc->notifyPieceTableChangeEnd();
 	
 	_fixInsertionPointCoords();
 	_drawInsertionPoint();
@@ -5750,6 +5750,10 @@ void FV_View::cmdPaste(void)
 	// so that undo/redo will treat it as one step.
 	
 	m_pDoc->beginUserAtomicGlob();
+
+	// Signal PieceTable Change 
+        m_pDoc->notifyPieceTableChangeStart();
+
 	//
 	// Disable list updates until after we've finished
 	//
@@ -5760,6 +5764,9 @@ void FV_View::cmdPaste(void)
 	// restore updates and clean up dirty lists
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
+
+	// Signal PieceTable Changes have finished
+        m_pDoc->notifyPieceTableChangeEnd();
 
 	m_pDoc->endUserAtomicGlob();
 }
@@ -5777,11 +5784,19 @@ void FV_View::cmdPasteSelectionAt(UT_sint32 xPos, UT_sint32 yPos)
 	// so that undo/redo will treat it as one step.
 	
 	m_pDoc->beginUserAtomicGlob();
+
+	// Signal PieceTable Change 
+        m_pDoc->notifyPieceTableChangeStart();
+
 	if (!isSelectionEmpty())
 		m_pApp->cacheCurrentSelection(this);
 	warpInsPtToXY(xPos,yPos);
 	_doPaste(UT_FALSE);
 	m_pApp->cacheCurrentSelection(NULL);
+
+	// Signal PieceTable Changes have finished
+        m_pDoc->notifyPieceTableChangeEnd();
+
 	m_pDoc->endUserAtomicGlob();
 }
 
@@ -5811,6 +5826,9 @@ UT_Bool FV_View::setSectionFormat(const XML_Char * properties[])
 {
 	UT_Bool bRet;
 
+	// Signal PieceTable Change 
+        m_pDoc->notifyPieceTableChangeStart();
+
 	_eraseInsertionPoint();
 
 	//	_clearIfAtFmtMark(getPoint()); TODO:	This was giving problems 
@@ -5832,6 +5850,9 @@ UT_Bool FV_View::setSectionFormat(const XML_Char * properties[])
 
 	_generalUpdate();
 	
+	// Signal PieceTable Changes have finished
+        m_pDoc->notifyPieceTableChangeEnd();
+
 	if (isSelectionEmpty())
 	{
 		_fixInsertionPointCoords();
@@ -5977,6 +5998,10 @@ UT_Error FV_View::cmdInsertField(const char* szName)
         currently unused
 	fl_BlockLayout* pBL = _findBlockAtPosition(getPoint());
 */
+
+	// Signal PieceTable Change 
+        m_pDoc->notifyPieceTableChangeStart();
+
 	fd_Field * pField = NULL;
 	if (!isSelectionEmpty())
 	{
@@ -5999,6 +6024,9 @@ UT_Error FV_View::cmdInsertField(const char* szName)
 		}
 	}
 	_generalUpdate();
+
+	// Signal PieceTable Changes have finished
+        m_pDoc->notifyPieceTableChangeEnd();
 
 	if (!_ensureThatInsertionPointIsOnScreen())
 	{
@@ -6716,5 +6744,8 @@ UT_uint32 FV_View::calculateZoomPercentForWholePage()
 	
 
 	
+
+
+
 
 

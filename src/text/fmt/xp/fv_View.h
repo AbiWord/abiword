@@ -189,7 +189,6 @@ public:
 	UT_Bool setStyle(const XML_Char * style);
 	UT_Bool getStyle(const XML_Char ** style);
 
-	UT_Bool dontSpellCheckRightNow(void);
 	UT_uint32               getCurrentPageNumber(void);
 
 	void insertParagraphBreak(void);
