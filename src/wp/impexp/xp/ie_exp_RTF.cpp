@@ -855,6 +855,7 @@ void IE_Exp_RTF::_write_charfmt(const s_RTF_AttrPropAdapter & apa)
 		if (ndxColor != 1) // white background, the default
 		{
 			_rtf_keyword("cb",ndxColor);
+			_rtf_keyword("highlight",ndxColor);
 		}
 	}
 
@@ -892,13 +893,11 @@ void IE_Exp_RTF::_write_charfmt(const s_RTF_AttrPropAdapter & apa)
 			_rtf_keyword("strike");
 		if (strstr(szFontDecoration,"topline") != 0)
 		{
-			_rtf_keyword("*");
-			_rtf_keyword("topline");
+			_rtf_keyword("abitopline"); // abiword extension
 		}
 		if (strstr(szFontDecoration,"bottomline") != 0)
 		{
-			_rtf_keyword("*");
-			_rtf_keyword("botline");
+			_rtf_keyword("abibotline"); // abiword extension
 		}
 	}
 

@@ -2974,6 +2974,14 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 			getDoc()->setEncodingName(szEncoding);
 			return true;
 		}
+		else if (strcmp((char*)pKeyword, "abitopline") == 0) 
+		{
+			return HandleTopline(true);
+		}
+		else if (strcmp((char*)pKeyword, "abibotline") == 0) 
+		{
+			return HandleBotline(true);
+		}
 		else if (strcmp((char*)pKeyword, "ansi") == 0) 
 		{
 			// this is charset Windows-1252
@@ -3147,6 +3155,10 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		{
 			UT_uint32 headerID = 0;
 			return HandleHeaderFooter (RTFHdrFtr::hftHeaderEven, headerID);
+		}
+		else if (strcmp((char*)pKeyword, "highlight") == 0) 
+		{
+			return HandleBackgroundColour(param);
 		}
 		break;
 	case 'i':
