@@ -117,7 +117,8 @@ DG_Font* Win32Graphics::findFont(
 		lf.lfWeight = 700;
 	}
 
-	if (0 == stricmp(pszFontStyle, "italic"))
+	// We squash oblique into italic
+	if (0 == stricmp(pszFontStyle, "italic") || 0 == stricmp(pszFontStyle, "oblique"))
 	{
 		lf.lfItalic = TRUE;
 	}
