@@ -23,13 +23,11 @@ SUBDIRS = xp @PLATFORM@
 noinst_LIBRARIES= libXap.a
 
 if WITH_GNOME
-libXap.a: $(ABI_GNOME_OBJECTS)
-	rm -f libXap.a
-	ar cru libXap.a $(ABI_GNOME_OBJECTS)
-	ranlib libXap.a
+objects = $(ABI_GNOME_OBJECTS)
 else
-libXap.a: $(ABI_OBJECTS)
-	rm -f libXap.a
-	ar cru libXap.a $(ABI_OBJECTS)
-	ranlib libXap.a
+objects = $(ABI_OBJECTS)
 endif
+
+libXap_a_SOURCES = 
+
+libXap_a_LIBADD = $(objects) 

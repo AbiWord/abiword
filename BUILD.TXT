@@ -175,6 +175,8 @@ Then you need to build the following peer libraries (from abi CVS)
 -wv
 -psiconv
 -expat
+If you use code from CVS, you need to get automake 1.4. (version 1.5 has
+bugs that makes it incompatible with our system.
 
 =======================================================================================
 FAQ

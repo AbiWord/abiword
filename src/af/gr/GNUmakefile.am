@@ -22,8 +22,6 @@ SUBDIRS= xp @PLATFORM@
 
 noinst_LIBRARIES= libGr.a
 
-libGr.a: $(ABI_OBJECTS)
-	rm -f libGr.a
-	ar cru libGr.a $(ABI_OBJECTS)
-	ranlib libGr.a
+libGr_a_SOURCES = 
 
+libGr_a_LIBADD = $(ABI_OBJECTS)

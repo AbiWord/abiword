@@ -23,14 +23,11 @@ SUBDIRS = xp @PLATFORM@
 noinst_LIBRARIES= libEv.a
 
 if WITH_GNOME
-libEv.a: $(ABI_GNOME_OBJECTS)
-	rm -f libEv.a
-	ar cru libEv.a $(ABI_GNOME_OBJECTS)
-	ranlib libEv.a
+objects = $(ABI_GNOME_OBJECTS)
 else
-libEv.a: $(ABI_OBJECTS)
-	rm -f libEv.a
-	ar cru libEv.a $(ABI_OBJECTS)
-	ranlib libEv.a
+objects = $(ABI_OBJECTS)
 endif
 
+libEv_a_SOURCES = 
+
+libEv_a_LIBADD = $(objects)
