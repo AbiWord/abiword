@@ -744,8 +744,8 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 		InitCommonControls();
 		MessageBox(NULL,
 			"AbiWord is designed for a newer version of the system file COMCTL32.DLL\n"
-			"then the one currently on your system.\n"
-			"A solution to this problem is explained in the FAQ on AbiSource web site\n"
+			"than the one currently on your system.\n"
+			"A solution to this problem is explained in the FAQ on the AbiSource web site\n"
 			"\n\thttp://www.abisource.com\n\n"
 			"We hope this problem can be solved, until then you can use the program,\n"
 			"but the toolbar will be missing.", NULL, MB_OK);
