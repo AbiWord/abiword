@@ -30,6 +30,7 @@
 #include "xad_Document.h"
 #include "xap_DialogFactory.h"
 #include "xap_Dlg_MessageBox.h"
+#include "xap_Frame.h"
 #include "xap_Prefs.h"
 #include "fv_View.h"
 #include "fl_DocLayout.h"

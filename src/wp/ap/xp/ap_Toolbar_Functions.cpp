@@ -36,6 +36,7 @@
 #include "fv_View.h"
 #include "gr_Graphics.h"
 #include "fl_AutoNum.h"
+#include "fl_BlockLayout.h"
 #include "ap_Prefs_SchemeIds.h"
 #include "ap_FrameData.h"
 

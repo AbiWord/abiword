@@ -20,26 +20,16 @@
 #ifndef AP_DIALOG_GOTO_H
 #define AP_DIALOG_GOTO_H
 
-#include "xap_Frame.h"
 #include "xap_Dialog.h"
-#include "xav_View.h"
-#include "fl_BlockLayout.h"
-#include "pt_Types.h"
 
 class FV_View;
+class XAP_Frame;
 
-typedef enum _AP_JumpTarget
-{
-	AP_JUMPTARGET_PAGE,				// beginning of page
-	AP_JUMPTARGET_LINE,
-	AP_JUMPTARGET_PICTURE // TODO
-} AP_JumpTarget;
-		
 class AP_Dialog_Goto : public XAP_Dialog_Modeless
 {
 public:
 	AP_Dialog_Goto(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
-	virtual ~AP_Dialog_Goto(void);
+	virtual ~AP_Dialog_Goto();
 
 	// these are kinda screwy now, but we never return anything but on
 	// "cancel" or "close"
@@ -47,18 +37,18 @@ public:
 		a_CLOSE
 	} tAnswer;
 
-        AP_Dialog_Goto::tAnswer	 	getAnswer(void) const;
-        void                            ConstructWindowName(void);
+	AP_Dialog_Goto::tAnswer		getAnswer() const;
+	void						ConstructWindowName();
 	// These are called from edit methods or from dialogs
 	// to set or read the variables in the current
 	// instance of the dialog.  These do not read the persistent
 	// values.
   	bool						setView(FV_View * view);
-  	FV_View * 					getView(void);
-	void                                            setActiveFrame(XAP_Frame *pFrame);
-	static char **              getJumpTargets(void); // TODO: Change to UT_UCSChar
- protected:
-	
+  	FV_View * 					getView();
+	void						setActiveFrame(XAP_Frame *pFrame);
+	static char **              getJumpTargets(); // TODO: Change to UT_UCSChar
+
+protected:
 	// These are the "current use" dialog data items,
 	// which are liberally read and set by the
 	// accessor methods above.
@@ -67,8 +57,8 @@ public:
 
 	// is this used in a modeless dialog like this?
 	tAnswer						m_answer;
-	char			    m_WindowName[100];
-	void			    _setupJumpTargets(void);
+	char						m_WindowName[100];
+	void						_setupJumpTargets();
 };
 
 #endif /* AP_DIALOG_GOTO_H */

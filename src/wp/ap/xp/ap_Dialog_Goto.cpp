@@ -32,6 +32,8 @@
 
 #include "fl_DocLayout.h"
 #include "fv_View.h"
+#include "fl_BlockLayout.h"
+#include "xap_Frame.h"
 
 char * AP_Dialog_Goto::s_pJumpTargets[] = {
 	NULL,
@@ -79,17 +81,16 @@ void AP_Dialog_Goto::ConstructWindowName(void)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	XML_Char * tmp = NULL;
-        UT_uint32 title_width = 33;
+	UT_uint32 title_width = 33;
 	UT_XML_cloneNoAmpersands(tmp, pSS->getValue(AP_STRING_ID_DLG_Goto_Title));
-        BuildWindowName((char *) m_WindowName,(char*)tmp,title_width);
-        FREEP(tmp);
-
+	BuildWindowName((char *) m_WindowName,(char*)tmp,title_width);
+	FREEP(tmp);
 }
 
 
 void  AP_Dialog_Goto::setActiveFrame(XAP_Frame *pFrame)
 {
-        setView(getView());
+	setView(getView());
 	notifyActiveFrame(getActiveFrame());
 }
 
@@ -97,14 +98,14 @@ void  AP_Dialog_Goto::setActiveFrame(XAP_Frame *pFrame)
 // --------------------------- Setup Functions -----------------------------
 bool AP_Dialog_Goto::setView(FV_View * view)
 {
-        m_pView =  (FV_View *) getActiveFrame()->getCurrentView();
+	m_pView =  (FV_View *) getActiveFrame()->getCurrentView();
 	return true;
 }
 
 FV_View * AP_Dialog_Goto::getView(void)
 {
-        XAP_Frame * pFrame =  getActiveFrame();
-        return  (FV_View *) pFrame->getCurrentView();
+	XAP_Frame * pFrame =  getActiveFrame();
+	return  (FV_View *) pFrame->getCurrentView();
 }
 
 

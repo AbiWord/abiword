@@ -116,9 +116,9 @@ public:
 	virtual bool 	isSelectionEmpty(void) const = 0;
 	virtual void		cmdUnselectSelection(void) = 0;
 
-   virtual UT_uint32   calculateZoomPercentForPageWidth() = 0;
-   virtual UT_uint32   calculateZoomPercentForPageHeight() = 0;
-   virtual UT_uint32   calculateZoomPercentForWholePage() = 0;
+	virtual UT_uint32   calculateZoomPercentForPageWidth() = 0;
+	virtual UT_uint32   calculateZoomPercentForPageHeight() = 0;
+	virtual UT_uint32   calculateZoomPercentForWholePage() = 0;
 	
 protected:
 	XAP_App *			m_pApp;

@@ -54,6 +54,7 @@ class XAP_Prefs;
 class UT_AlphaHashTable;
 class PP_AttrProp;
 class fl_AutoNum;
+class fp_PageSize;
 
 typedef enum _FVDocPos
 {
@@ -101,6 +102,13 @@ typedef enum
   PREVIEW_CLIPPED_SCROLL
 } PreViewMode;
 
+typedef enum _AP_JumpTarget
+{
+	AP_JUMPTARGET_PAGE,				// beginning of page
+	AP_JUMPTARGET_LINE,
+	AP_JUMPTARGET_PICTURE // TODO
+} AP_JumpTarget;
+		
 struct fv_ChangeState
 {
 	bool				bUndo;

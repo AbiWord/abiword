@@ -27,6 +27,7 @@
 
 #include "xap_Preview.h"
 #include "ap_Preview_Abi.h"
+#include "fl_DocLayout.h"
 
 #include "ap_Strings.h"
 
