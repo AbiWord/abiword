@@ -24,13 +24,14 @@
 
 #ifdef WIN32
 
-	// Win32 assert() is cool, so we use it as is.
+// Win32 assert() is cool, so we use it as is.
 #if !defined(_MSC_VER)
 #	include <assert.h>
 #	define UT_ASSERT assert
 #else
-// TMN: But it's not thread-safe, and to add to the "coolness" factor,
-// and usability, the following is way cooler.
+// TMN: But the Microsoft variant is not thread-safe, and to add to
+// the "coolness" factor, and usability, the following is way cooler.
+#	include <stdlib.h>
 #	include <crtdbg.h>
 #	define UT_ASSERT _ASSERTE
 #endif
