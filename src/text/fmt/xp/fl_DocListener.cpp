@@ -78,6 +78,8 @@ fl_DocListener::fl_DocListener(PD_Document* doc, FL_DocLayout *pLayout)
 // Put a NULL on th stack to signify the top.
 //
 	m_sLastContainerLayout.push(NULL);
+	m_bFootnoteInProgress = false;
+	m_bEndFootnoteProcessedInBlock = false;
 }
 
 /*!
@@ -224,10 +226,18 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 	XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
 	if(pFrame)
 	{
-		if(pcrx->getStruxType() == PTX_Block)
+		if(pcrx->getStruxType() == PTX_Block && !m_bFootnoteInProgress)
 		{
-			pFrame->nullUpdate();
-			xxx_UT_DEBUGMSG(("SEVIOR: Null Update in Populate Strux \n"));
+			if(!m_bEndFootnoteProcessedInBlock)
+			{
+				xxx_UT_DEBUGMSG(("Null Update in Populate Strux \n"));
+				pFrame->nullUpdate();
+			}
+			else
+			{
+				m_bEndFootnoteProcessedInBlock = false;
+				UT_DEBUGMSG(("EndFootnote strux processed Populate Strux \n"));
+			}
 		}
 	}
 //
@@ -342,6 +352,7 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 	{
 		UT_DEBUGMSG(("fl_DocListener::populateStrux for 'SectionFootnote'\n"));
 		UT_ASSERT(m_pCurrentSL);
+		m_bFootnoteInProgress = true;
 	    fl_SectionLayout * pSL = (fl_SectionLayout *) m_pCurrentSL->append(sdh, pcr->getIndexAP(),FL_CONTAINER_FOOTNOTE);
 		*psfh = (PL_StruxFmtHandle)pSL;
 		m_pCurrentSL = (fl_SectionLayout*)pSL;
@@ -356,6 +367,8 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 // container
 //
 		fl_ContainerLayout * pCL = m_pCurrentSL;
+		m_bFootnoteInProgress = false;
+		m_bEndFootnoteProcessedInBlock = true;
 		UT_ASSERT(pCL->getContainerType() == FL_CONTAINER_FOOTNOTE);
 		*psfh = (PL_StruxFmtHandle) pCL;
 		m_pCurrentSL = (fl_SectionLayout *) m_pCurrentSL->myContainingLayout();

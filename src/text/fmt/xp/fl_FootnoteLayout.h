@@ -71,6 +71,7 @@ public:
 	bool                     isEndFootnoteIn(void) const
 		{return m_bHasEndFootnote;}
 	PT_DocPosition           getDocPosition(void);
+	UT_uint32                getLength(void);
 protected:
 	virtual void		     _lookupProperties(void);
 	virtual void             _purgeLayout(void);

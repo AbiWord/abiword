@@ -82,6 +82,8 @@ private:
 	//! related?!?)
 	fl_SectionLayout*	   m_pCurrentSL;
 	UT_Stack               m_sLastContainerLayout;
+	bool                   m_bFootnoteInProgress;
+	bool                   m_bEndFootnoteProcessedInBlock;
 };
 
 #endif /* FL_DOCLISTENER_H */

@@ -3469,7 +3469,12 @@ bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 			pRun->insertIntoRunListBeforeThis(*pNewRun);
 			bInserted = true;
 			if(pRun->getLine())
+			{
 				pRun->getLine()->insertRunBefore(pNewRun, pRun);
+#if DEBUG
+				pRun->getLine()->assertLineListIntegrity();
+#endif
+			}
 		}
 		else if (iRunBlockOffset == blockOffset)
 		{
@@ -3487,7 +3492,12 @@ bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 				m_pFirstRun = pNewRun;
 			}
 			if(pRun->getLine())
+			{
 				pRun->getLine()->insertRunBefore(pNewRun, pRun);
+#if DEBUG
+				pRun->getLine()->assertLineListIntegrity();
+#endif
+			}
 		}
 //
 // Here if the run run starts before the target offset and finishes after it.
@@ -3532,7 +3542,12 @@ bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 
 			pRun->insertIntoRunListBeforeThis(*pNewRun);
 			if(pRun->getLine())
+			{
 				pRun->getLine()->insertRunBefore(pNewRun, pRun);
+#if DEBUG
+				pRun->getLine()->assertLineListIntegrity();
+#endif
+			}
 
 //			pOtherHalfOfSplitRun->recalcWidth();
 		}
@@ -3550,33 +3565,44 @@ bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 			offset += pRun->getLength();
 			pRun = pRun->getNext();
 		}
-#if 0
-//
-// Blocks that contain footnotes will fail here. Remove this code.
-//
-		UT_ASSERT(offset==blockOffset);
-#endif
 		if (pLastRun)
 		{
 			if((pNewRun->getType() !=FPRUN_ENDOFPARAGRAPH) && (pLastRun->getType()== FPRUN_ENDOFPARAGRAPH))
 			{
 				pLastRun->insertIntoRunListBeforeThis(*pNewRun);
 				pLastRun->setBlockOffset(pNewRun->getBlockOffset()+pNewRun->getLength());
+				if(pLastRun->getLine())
+				{
+					pLastRun->getLine()->insertRunBefore(pNewRun, pLastRun);
+#if DEBUG
+					pLastRun->getLine()->assertLineListIntegrity();
+#endif
+				}
 			}
 			else
 			{
 				pLastRun->insertIntoRunListAfterThis(*pNewRun);
+				if (getLastContainer())
+				{
+					static_cast<fp_Line *>(getLastContainer())->addRun(pNewRun);
+#if DEBUG
+					static_cast<fp_Line *>(getLastContainer())->assertLineListIntegrity();
+#endif
+				}
 			}
 		}
 		else
 		{
 			m_pFirstRun = pNewRun;
+			if (getLastContainer())
+			{
+				static_cast<fp_Line *>(getLastContainer())->addRun(pNewRun);
+#if DEBUG
+				static_cast<fp_Line *>(getLastContainer())->assertLineListIntegrity();
+#endif
+			}
 		}
 
-		if (getLastContainer())
-		{
-			static_cast<fp_Line *>(getLastContainer())->addRun(pNewRun);
-		}
 	}
 
 #ifdef SMART_RUN_MERGING

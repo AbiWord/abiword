@@ -103,7 +103,7 @@ public:
 	UT_sint32                   getNumRunsInLine(void) const {return m_vecRuns.getItemCount();}
 	UT_sint32			        getColumnGap(void);
 	void				        setAssignedScreenHeight(UT_sint32);
-
+	bool                        assertLineListIntegrity(void);
 	void				        setMaxWidth(UT_sint32);
 	virtual void				setX(UT_sint32 i, bool bDontClearIfNeeded = false);
 	virtual void				setY(UT_sint32);

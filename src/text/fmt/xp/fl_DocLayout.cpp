@@ -271,6 +271,13 @@ void FL_DocLayout::setView(FV_View* pView)
 }
 
 /*!
+ * This simply returns the number of footnotes in the document.
+ */
+UT_uint32 FL_DocLayout::countFootnotes(void)
+{
+	return m_vecFootnotes.getItemCount();
+}
+/*!
  * Add a footnote layout to the vector remembering them.
  */
 void FL_DocLayout::addFootnote(fl_FootnoteLayout * pFL)

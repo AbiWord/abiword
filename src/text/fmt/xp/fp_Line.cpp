@@ -165,6 +165,37 @@ fp_Line::~fp_Line()
 }
 
 
+#ifndef NDEBUG
+bool fp_Line::assertLineListIntegrity(void)
+{
+	UT_sint32 k =0;
+	fp_Run * pRunBlock = getFirstRun();
+	fp_Run * pRunLine = NULL;
+	for(k=0;k<getNumRunsInLine();k++)
+	{
+		pRunLine = getRunFromIndex(k);
+		if(pRunLine != pRunBlock)
+		{
+			UT_DEBUGMSG(("Whoops! bug in Line at run %d %x offset %d Type %d \n",k,pRunLine,pRunLine->getBlockOffset(),pRunLine->getType()));
+			pRunLine->printText();
+			UT_sint32 i =0;
+			for(i=0;i<getNumRunsInLine();i++)
+			{
+				fp_Run *pRun = getRunFromIndex(i);
+				pRun->printText();
+			}
+			UT_ASSERT(pRunLine == pRunBlock);
+		}
+		pRunBlock = pRunBlock->getNext();
+	}
+	return true;
+}
+#else
+bool fp_Line::assertLineListIntegrity(void)
+{
+	return true;
+}
+#endif
 /*!
  * Return the gap between columns.
  */
@@ -296,14 +327,6 @@ bool fp_Line::removeRun(fp_Run* pRun, bool bTellTheRunAboutIt)
 		pRun->setLine(NULL);
 	}
 
-	// Might have to check for other footnotes on this line.
-	if (pRun->getType() == FPRUN_FIELD)
-	{
-		fp_FieldRun * fr = (fp_FieldRun*) pRun;
-		if (fr->getFieldType() == FPFIELD_endnote_ref)
-			_updateContainsFootnoteRef();
-	}
-
 	UT_sint32 ndx = m_vecRuns.findItem(pRun);
 	UT_ASSERT(ndx >= 0);
 	m_vecRuns.deleteNthItem(ndx);
@@ -340,12 +363,6 @@ void fp_Line::insertRunBefore(fp_Run* pNewRun, fp_Run* pBefore)
 void fp_Line::insertRun(fp_Run* pNewRun)
 {
 	//UT_DEBUGMSG(("insertRun (line 0x%x, run 0x%x, type %d)\n", this, pNewRun, pNewRun->getType()));
-	if (pNewRun->getType() == FPRUN_FIELD)
-	{
-		fp_FieldRun * fr = (fp_FieldRun*) pNewRun;
-		if (fr->getFieldType() == FPFIELD_endnote_ref)
-			m_bContainsFootnoteRef = true;
-	}
 
 	UT_ASSERT(m_vecRuns.findItem(pNewRun) < 0);
 	pNewRun->setLine(this);

@@ -150,12 +150,20 @@ public:
 	fl_DocSectionLayout* 	findSectionForHdrFtr(const char* pszHdrFtrID) const;
 	void 				deleteEmptyColumnsAndPages(void);
 	void 				deleteEmptyPages( bool bDontNotify = false);
+
+// --------------------------------------------------------------------
+// Footnote Methods
+// fl_DocLAyout stores this Vector of footnotes to speed things up and
+// to provide convience routines for other classes and methods
+//
+	UT_uint32           countFootnotes(void);
 	void                addFootnote(fl_FootnoteLayout *);
 	void                removeFootnote(fl_FootnoteLayout *);
 	fl_FootnoteLayout * getNthFootnote(UT_sint32 i);
 	UT_sint32           getFootnoteVal(UT_uint32 footpid);
 	fl_FootnoteLayout * findFootnoteLayout(UT_uint32 footpid);
 
+// --------------------------------------------------------------------
 	bool		getAutoSpellCheck(void) const { return (hasBackgroundCheckReason(bgcrSpelling)); }
 	bool		getSpellCheckCaps(void) const { return m_bSpellCheckCaps; }
 	bool		getSpellCheckNumbers(void) const { return m_bSpellCheckNumbers; }

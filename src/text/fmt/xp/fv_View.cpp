@@ -7470,40 +7470,56 @@ bool FV_View::insertHeaderFooter(const XML_Char ** props, HdrFtrType hfType, fl_
 	return true;
 }
 
+/*!
+ * This method returns the closest footnote before or that contains the 
+ * requested doc position. If the is no footnote before the doc position, NULL
+ * is returned.
+ */
+fl_FootnoteLayout * FV_View::getClosestFootnote(PT_DocPosition pos)
+{
+	fl_FootnoteLayout * pFL = NULL;
+	fl_FootnoteLayout * pClosest = NULL;
+	UT_sint32 i = 0;
+	for(i = 0; i< (UT_sint32) m_pLayout->countFootnotes();i++)
+	{
+		pFL = m_pLayout->getNthFootnote(i);
+		if(pFL->getDocPosition() <= pos)
+		{
+			if(pClosest == NULL)
+			{
+				pClosest = pFL;
+			}
+			else if( pClosest->getDocPosition() < pFL->getDocPosition())
+			{
+				pClosest = pFL;
+			}
+		}
+	}
+	return pClosest;
+}
+/*!
+ * Returns true if the current insertion point is inside a footnote.
+ */
 bool FV_View::isInFootnote(void)
 {
-	if(m_pDoc->isFootnoteAtPos(getPoint()))
+	return isInFootnote(getPoint());
+}
+
+/*!
+ * Returns true if the requested position is inside a footnote.
+ */
+bool FV_View::isInFootnote(PT_DocPosition pos)
+{
+	fl_FootnoteLayout * pFL = getClosestFootnote(pos);
+	if(pFL == NULL)
 	{
-		m_bInFootnote = true;
-		return m_bInFootnote;
+		return false;
 	}
-	if(m_pDoc->isEndFootnoteAtPos(getPoint()))
+	if((pFL->getDocPosition() <= pos) && ((pFL->getDocPosition() + pFL->getLength()) > pos))
 	{
-		m_bInFootnote = true;
-		return m_bInFootnote;
+		return true;
 	}
-	PL_StruxDocHandle  pfsStart = NULL;
-	bool bres = m_pDoc->getStruxOfTypeFromPosition(getPoint(),PTX_SectionFootnote,&pfsStart);
-	if(!bres || pfsStart== NULL)
-	{
-		m_bInFootnote = false;
-		return m_bInFootnote;
-	}
-	if(m_pDoc->getStruxPosition(pfsStart) > getPoint())
-	{
-		m_bInFootnote = false;
-		return m_bInFootnote;
-	}
-		
-	PL_StruxDocHandle pfsEnd = NULL;
-	bres = m_pDoc->getNextStruxOfType(pfsStart,PTX_EndFootnote,&pfsEnd);
-	if(!bres || (pfsEnd==NULL) || (m_pDoc->getStruxPosition(pfsEnd) < getPoint()))
-	{
-		m_bInFootnote = false;
-		return m_bInFootnote;
-	}
-	m_bInFootnote = true;
-	return m_bInFootnote;
+	return false;
 }
 
 bool FV_View::insertFootnote()

@@ -138,6 +138,22 @@ PT_DocPosition fl_FootnoteLayout::getDocPosition(void)
     return 	m_pLayout->getDocument()->getStruxPosition(sdh);
 }
 
+/*!
+ * This method returns the length of the footnote. This is such that 
+ * getDocPosition() + getLength() is one value beyond the the EndFootnote
+ * strux
+ */
+UT_uint32 fl_FootnoteLayout::getLength(void)
+{
+	PT_DocPosition startPos = getDocPosition();
+	PL_StruxDocHandle sdhEnd = NULL;
+	PL_StruxDocHandle sdhStart = getStruxDocHandle();
+	bool bres = m_pLayout->getDocument()->getNextStruxOfType(sdhStart,PTX_EndFootnote,&sdhEnd);
+	UT_ASSERT(bres && sdhEnd);
+	PT_DocPosition endPos = m_pLayout->getDocument()->getStruxPosition(sdhEnd);
+	UT_uint32 length = (UT_uint32) (endPos - startPos + 1); 
+}
+
 bool fl_FootnoteLayout::bl_doclistener_insertEndFootnote(fl_ContainerLayout*,
 											  const PX_ChangeRecord_Strux * pcrx,
 											  PL_StruxDocHandle sdh,

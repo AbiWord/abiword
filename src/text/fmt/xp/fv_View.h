@@ -362,9 +362,11 @@ public:
 // ----------------------
 // Stuff for edittable Footnote/Endnotes
 //
-	bool	insertFootnote();
-	bool	insertFootnoteSection(const XML_Char * enpid);
-	bool    isInFootnote(void);
+	bool	            insertFootnote();
+	bool	            insertFootnoteSection(const XML_Char * enpid);
+	bool                isInFootnote(PT_DocPosition pos);
+	bool                isInFootnote(void);
+	fl_FootnoteLayout * getClosestFootnote(PT_DocPosition pos);
 // ----------------------
 
 	bool		gotoTarget(AP_JumpTarget type, UT_UCSChar * data);

@@ -61,20 +61,24 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock, fp_Line * pLineToStartAt)
 	//	 o If the block bounding box or layout properties change, it
 	//	   should force a full layout.
 	//	 o Also see fix me at end of loop
-
 	fp_Line* pLine = (fp_Line *) pBlock->getFirstContainer();
 	UT_ASSERT(pLine);
-
 	if(pLineToStartAt)
 	{
 		while(pLine && pLine != pLineToStartAt)
 		{
 			pLine = (fp_Line *) pLine->getNext();
+#if DEBUG
+			pLine->assertLineListIntegrity();
+#endif
 		}
 	}
 
 	while (pLine)
 	{
+#if DEBUG
+		pLine->assertLineListIntegrity();
+#endif
 		UT_uint32 iIndx = 0;
 		if (pLine->countRuns() > 0)
 		{
@@ -197,7 +201,7 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock, fp_Line * pLineToStartAt)
 
 					if(pRunsLine != pLine)
 					{
-						UT_DEBUGMSG(("fb_LineBreaker::breakLine: Tab run (0x%x) belonging to different line\n"
+						xxx_UT_DEBUGMSG(("fb_LineBreaker::breakLine: Tab run (0x%x) belonging to different line\n"
 									 "		 pLine 0x%x, pRunsLine 0x%x\n"
 									 ,pCurrentRun, pLine, pRunsLine));
 
@@ -214,6 +218,10 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock, fp_Line * pLineToStartAt)
 									pL->removeRun(pRun,true);
 									pLine->addRun(pRun);
 								}
+#if DEBUG
+								pL->assertLineListIntegrity();
+								pLine->assertLineListIntegrity();
+#endif
 								if(pRun == pCurrentRun)
 									break;
 
@@ -561,7 +569,6 @@ void fb_LineBreaker::_breakTheLineAtLastRunToKeep(fp_Line *pLine,
 	  line.
 	*/
 
-
 	fp_Run *pCurrentRun = m_pFirstRunToKeep;
 	while (pCurrentRun)
 	{
@@ -573,7 +580,6 @@ void fb_LineBreaker::_breakTheLineAtLastRunToKeep(fp_Line *pLine,
 			pOtherLine->removeRun(pCurrentRun, true);
 			pLine->addRun(pCurrentRun);
 		}
-
 		if (pCurrentRun == m_pLastRunToKeep)
 		{
 			break;
@@ -596,29 +602,43 @@ void fb_LineBreaker::_breakTheLineAtLastRunToKeep(fp_Line *pLine,
 		{
 			fp_Line* pNewLine  = (fp_Line *) pBlock->getNewContainer();
 			UT_ASSERT(pNewLine);	// TODO check for outofmem
-
 			pNextLine = pNewLine;
+			xxx_UT_DEBUGMSG(("!!!! Generated a new Line \n"));
 		}
 		else
 		{
+			UT_ASSERT(pNextLine->getContainerType() == FP_CONTAINER_LINE);
 			xxx_UT_DEBUGMSG(("fb_LineBreaker::_breakThe ... pLine 0x%x, pNextLine 0x%x, blocks last 0x%x\n",
-			pLine, pNextLine, pBlock->getLastLine()));
+			pLine, pNextLine, pBlock->getLastContainer()));
 			if(pBlock->getLastContainer() == (fp_Container *) pLine)
 				pBlock->setLastContainer(pNextLine);
 		}
 
 		fp_Run* pRunToBump = pLine->getLastRun();
 		UT_ASSERT(pRunToBump);
-		while (pRunToBump && pLine->getNumRunsInLine() && pLine->getLastRun() != m_pLastRunToKeep)
+		xxx_UT_DEBUGMSG(("!!!RunToBump %x Type %d Offset %d Length %d \n",pRunToBump,pRunToBump->getType(),pRunToBump->getBlockOffset(),pRunToBump->getLength()));
+
+		while (pRunToBump && pLine->getNumRunsInLine() && (pLine->getLastRun() != m_pLastRunToKeep))
 		{
 			UT_ASSERT(pRunToBump->getLine() == pLine);
+			xxx_UT_DEBUGMSG(("RunToBump %x Type %d Offset %d Length %d \n",pRunToBump,pRunToBump->getType(),pRunToBump->getBlockOffset(),pRunToBump->getLength()));
 			pLine->removeRun(pRunToBump);
+			
+			UT_ASSERT(pLine->getLastRun()->getType() != FPRUN_ENDOFPARAGRAPH);
 			pNextLine->insertRun(pRunToBump);
 
 			pRunToBump = pRunToBump->getPrev();
+			xxx_UT_DEBUGMSG(("Next runToBump %x \n",pRunToBump));
 		}
 	}
 
 	UT_ASSERT((!m_pLastRunToKeep) || (pLine->getLastRun() == m_pLastRunToKeep));
+#if DEBUG
+	pLine->assertLineListIntegrity();
+	if(pNextLine)
+	{
+		pNextLine->assertLineListIntegrity();
+	}
+#endif
 }
 
