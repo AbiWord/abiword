@@ -119,6 +119,8 @@ typedef enum {
 	F_TOC,
 	F_DateTimePicture,
 	F_TOC_FROM_RANGE,
+	F_DATEINAME,
+	F_SPEICHERDAT,
 	F_OTHER
 } Doc_Field_t;
 
@@ -141,6 +143,8 @@ static Doc_Field_Mapping_t s_Tokens[] =
 	{"EDITTIME",   F_EDITTIME},
 	{"DATE",	   F_DATE},
 	{"date",	   F_DATE},
+	{"DATEINAME",      F_DATE}, // F_DATEINAME
+	{"SPEICHERDAT",    F_DATE}, // F_SPEICHERDAT
 	{"\\@", 	   F_DateTimePicture},
 
 	{"FILENAME",   F_FILENAME},
@@ -499,14 +503,20 @@ IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
 	//m_fieldA(NULL),
 	m_bIsLower(false),
         m_bRevisionDeleted(false),
-        m_tableNesting(0),
 	m_bInSect(false),
 	m_bInPara(false),
 	m_bPrevStrongCharRTL(false),
 	m_iDocPosition(0),
 	m_pBookmarks(NULL),
 	m_iBookmarksCount(0),
-	m_iMSWordListId(0)
+	m_iMSWordListId(0),
+        m_bInTable(false), 
+	m_iRowsRemaining(0), 
+        m_iCellsRemaining(0),
+        m_iCurrentRow(0),
+        m_iCurrentCell(0),
+        m_bRowOpen(false),
+        m_bCellOpen(false)
 {
   for(UT_uint32 i = 0; i < 9; i++)
 	  m_iListIdIncrement[i] = 0;
@@ -746,6 +756,12 @@ void IE_Imp_MsWord_97::_flush ()
 
 void IE_Imp_MsWord_97::_appendChar (UT_UCSChar ch)
 {
+
+	// eat tab characters
+	if (m_bInTable && ch == 7) {
+		return;	
+		}	
+
 	if ( m_bIsLower )
 	  ch = UT_UCS4_tolower ( ch );
 	m_pTextRun += ch;
@@ -1496,34 +1512,74 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 	PAP *apap = static_cast <PAP *>(prop);
 
 	{
-	  // TABLE related stuff first - HACK
-	  if (apap->fInTable && m_tableNesting==0)
-	    {
-#if DEBUG_ENABLE_TABLES
-	      const XML_Char *cellAtts[3];
-	      cellAtts[0] = "props";
-	      cellAtts[1] = "left-attach:0; right-attach:1; top-attach:0; bot-attach:1";
-	      cellAtts[2] = 0;
-
-	      UT_DEBUGMSG(("DOM: begin table\n"));
-	      m_tableNesting++;
-	      getDoc()->appendStrux(PTX_SectionTable,NULL);
-	      getDoc()->appendStrux(PTX_SectionCell, (const XML_Char **)cellAtts);
-#endif
+	  if (apap->fInTable) {
+	    if (!m_bInTable) {
+	      m_bInTable = true;	    
+	      _table_open(apap);
 	    }
+	    
+	    if (ps->endcell) {
+	      ps->endcell = 0;
+	      _cell_close();
+	      if (m_iCellsRemaining > 0) {
+		m_iCellsRemaining--;
+		if (m_iCellsRemaining == 0) {
+		  _row_close();
+		}
+	      }
+	    }
+	    
+	    _row_open();
+	    
+	    // determine column spans
+	    if (!m_bCellOpen) {
+	      m_vecColumnSpansForCurrentRow.clear();
+	    
+	      for (int column = 1; column < ps->nocellbounds; column++) {
+		int span = 0;	
+		
+		for (int i = column; i < ps->nocellbounds; i++) {
+		  if (ps->cellbounds[i] >= apap->ptap.rgdxaCenter[column]) {
+		    span = (i - column);
+		    if (span) {
+		      span++;
+		    }
+		    break;
+		  }
+		}
+		m_vecColumnSpansForCurrentRow.addItem((void *)span);
+	      }
+	    }
+	    
+	    _cell_open(apap);
+	    
+	    if (m_iCellsRemaining == 0) {
+	      m_iCellsRemaining = apap->ptap.itcMac + 1;
+	    }	
+	    
+	    if (m_iRowsRemaining == 0) {
+	      m_iRowsRemaining = ps->norows;
+	    }
+	    
+	    m_iRowsRemaining--;
+	  }
+	  else if (m_bInTable) {
+	    m_bInTable = false;
+	    _table_close();
+	  }
 	}
-
-	UT_String propBuffer;
-	UT_String props;
-
-	//
-	// TODO: lists, exact line heights (and, eventually, tables)
-	//
 
 	// first, flush any character data in any open runs
 	this->_flush ();
 
-	xxx_UT_DEBUGMSG(("#TF: _beginPara: apap->fBidi %d\n",apap->fBidi));
+	if (apap->fTtp)
+	  {
+	    m_bInPara = true;
+	    return;
+	  }
+
+	UT_String propBuffer;
+	UT_String props;
 
 	if(apap->fBidi == 1)
 		m_bPrevStrongCharRTL = true;
@@ -2092,22 +2148,6 @@ int IE_Imp_MsWord_97::_endPara (wvParseStruct *ps, UT_uint32 tag,
 	// an empty paragraph being inserted
 	this->_flush ();
 	m_bInPara = false;
-
-	{
-	  PAP *apap = static_cast <PAP *>(prop);
-
-	  // TABLE related stuff first - HACK
-	  if (m_tableNesting!=0 && !apap->fInTable)
-	    {
-#if DEBUG_ENABLE_TABLES
-	      UT_DEBUGMSG(("DOM: end table\n"));
-	      m_tableNesting--;
-	      getDoc()->appendStrux(PTX_EndCell, NULL);
-	      getDoc()->appendStrux(PTX_EndTable,NULL);
-#endif
-	    }
-	}
-
 	return 0;
 }
 
@@ -2758,3 +2798,137 @@ static int docProc (wvParseStruct *ps, wvTag tag)
 	IE_Imp_MsWord_97 * pDocReader = static_cast <IE_Imp_MsWord_97 *> (ps->userData);
 	return pDocReader->_docProc (ps, tag);
 }
+
+
+//--------------------------------------------------------------------------/
+//--------------------------------------------------------------------------/
+
+void IE_Imp_MsWord_97::_table_open (PAP *apap) 
+{
+  
+  UT_DEBUGMSG(("\n<TABLE>"));
+  
+  m_iCurrentRow = 0;
+  m_iCurrentCell = 0;
+  
+  getDoc()->appendStrux(
+			PTX_Block, 
+			NULL
+			);
+  getDoc()->appendStrux(
+			PTX_SectionTable, 
+			NULL //pPropsArray
+			);
+  
+  m_bRowOpen = false;
+  m_bCellOpen = false;
+}
+
+//--------------------------------------------------------------------------/
+//--------------------------------------------------------------------------/
+
+void IE_Imp_MsWord_97::_table_close () 
+{
+  
+  _cell_close();
+  _row_close();
+  
+  UT_DEBUGMSG(("\n</TABLE>\n"));
+  
+  getDoc()->appendStrux(
+			PTX_EndTable,
+			NULL
+			);
+}
+
+//--------------------------------------------------------------------------/
+//--------------------------------------------------------------------------/
+
+void IE_Imp_MsWord_97::_row_open () 
+{
+  
+  if (m_bRowOpen) {
+    return;
+  }
+  
+  m_bRowOpen = true;
+  m_iCurrentRow++;
+  m_iCurrentCell = 0;
+  
+  UT_DEBUGMSG(("\n\t<ROW:%d>", m_iCurrentRow));
+}
+
+//--------------------------------------------------------------------------/
+//--------------------------------------------------------------------------/
+
+void IE_Imp_MsWord_97::_row_close () 
+{
+  
+  if (m_bRowOpen) {
+    UT_DEBUGMSG(("\t</ROW>"));
+  }
+  m_bRowOpen = false;
+}
+
+//--------------------------------------------------------------------------/
+//--------------------------------------------------------------------------/
+
+void IE_Imp_MsWord_97::_cell_open (PAP *apap) 
+{
+  
+  if (m_bCellOpen || apap->fTtp) {
+    return;
+  }
+  
+  m_bCellOpen = true;
+  m_iCurrentCell++;
+  
+  UT_DEBUGMSG(("\t<CELL:%d>", m_iCurrentCell));
+  
+  UT_String propBuffer;
+  
+  UT_String_sprintf(
+		    propBuffer, 
+		    "left-attach:%d; right-attach:%d; top-attach:%d; bot-attach:%d", 
+		    m_iCurrentCell - 1, 
+		    m_iCurrentCell + (int)m_vecColumnSpansForCurrentRow.getNthItem(m_iCurrentCell - 1), 
+		    m_iCurrentRow - 1, 
+		    m_iCurrentRow
+		    );
+  
+  XML_Char* pProps = "props";
+  const XML_Char* propsArray[3];
+  propsArray[0] = pProps;
+  propsArray[1] = propBuffer.c_str();
+  propsArray[2] = NULL;
+  
+  getDoc()->appendStrux(
+			PTX_SectionCell, 
+			propsArray
+			);
+  getDoc()->appendStrux(
+			PTX_Block,
+			NULL
+			);
+}
+
+//--------------------------------------------------------------------------/
+//--------------------------------------------------------------------------/
+
+void IE_Imp_MsWord_97::_cell_close () 
+{
+  
+  if (!m_bCellOpen) {
+    return;
+  }
+  
+  m_bCellOpen = false;
+  
+  UT_DEBUGMSG(("</TAB>"));
+  
+  getDoc()->appendStrux(
+			PTX_EndCell, 
+			NULL 
+			);
+}
+

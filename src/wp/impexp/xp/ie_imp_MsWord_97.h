@@ -33,6 +33,7 @@
 typedef struct _wvParseStruct wvParseStruct;
 typedef struct _Blip Blip;
 typedef struct _CHP CHP;
+typedef struct _PAP PAP;
 class PD_Document;
 
 struct bookmark
@@ -119,7 +120,12 @@ private:
 	void	   _appendChar (UT_UCSChar ch);
 	void	   _flush ();
 
-private:
+	void		_table_open(PAP *apap);
+	void		_table_close();
+	void		_row_open();
+	void		_row_close();
+	void		_cell_open(PAP *apap);
+	void		_cell_close();
 
 	UT_UCS4String		m_pTextRun;
 	UT_uint32			m_iImageCount;
@@ -136,7 +142,6 @@ private:
 	bool	   m_bIsLower;
 
 	bool m_bRevisionDeleted;
-	UT_uint32 m_tableNesting;
 
 	bool m_bInSect;
 	bool m_bInPara;
@@ -147,6 +152,17 @@ private:
 	UT_Vector m_vLists;
 	UT_uint32 m_iListIdIncrement[9];
 	UT_uint32 m_iMSWordListId;
+	
+	
+	bool		m_bInTable;						// are we in a table ?
+	int			m_iRowsRemaining;				// number of rows left to process
+	int			m_iCellsRemaining;				// number of cells left to process in the current row
+	int			m_iCurrentRow;					// 
+	int			m_iCurrentCell;					//
+	bool		m_bRowOpen;						// row strux open ?
+	bool		m_bCellOpen;					// cell strux open ?
+	UT_Vector	m_vecColumnSpansForCurrentRow;	// placeholder for horizontal cell spans
+		
 };
 
 #endif /* IE_IMP_MSWORD_H */

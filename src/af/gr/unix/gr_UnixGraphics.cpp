@@ -1606,18 +1606,22 @@ void GR_Font::s_getGenericFontProperties(const char * /*szFontName*/,
 
 void GR_UnixGraphics::saveRectangle(UT_Rect & r)
 {
-	g_object_unref(m_saveBuf); m_saveBuf = NULL;
-	DELETEP(m_saveRect);
+  if (m_saveBuf)
+    {
+      g_object_unref(m_saveBuf); 
+      m_saveBuf = NULL;
+    }
+  DELETEP(m_saveRect);
 
-	if (r.top < 0)
-	  return;
-
-	m_saveBuf = gdk_pixbuf_get_from_drawable(m_saveBuf,
-						 m_pWin,
-						 NULL,
-						 r.left, r.top, 0, 0,
-						 r.width, r.height);
-	m_saveRect = new UT_Rect(r);
+  if (r.top < 0 || r.height <= 0 || r.width <= 0.)
+    return;
+  
+  m_saveBuf = gdk_pixbuf_get_from_drawable(m_saveBuf,
+					   m_pWin,
+					   NULL,
+					   r.left, r.top, 0, 0,
+					   r.width, r.height);
+  m_saveRect = new UT_Rect(r);
 }
 
 void GR_UnixGraphics::restoreRectangle()
