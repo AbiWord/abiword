@@ -2073,10 +2073,10 @@ bool IE_Imp_RTF::InsertImage (const UT_ByteBuf * buf, const char * image_name,
 
 		if (resize) {
 			UT_DEBUGMSG (("resizing...\n"));
-			setlocale(LC_NUMERIC, "C");
+			char * old_locale = setlocale(LC_NUMERIC, "C");
 			UT_String_sprintf(propBuffer, "width:%fin; height:%fin", 
 							  wInch, hInch);
-			setlocale(LC_NUMERIC, "");
+			setlocale(LC_NUMERIC, old_locale);
 			UT_DEBUGMSG (("props are %s\n", propBuffer.c_str()));
 		}
 
@@ -2169,10 +2169,10 @@ bool IE_Imp_RTF::InsertImage (const UT_ByteBuf * buf, const char * image_name,
 		if (resize) 
 		{
 			UT_DEBUGMSG (("resizing...\n"));
-			setlocale(LC_NUMERIC, "C");
+			char * old_locale = setlocale(LC_NUMERIC, "C");
 			UT_String_sprintf(propBuffer, "width:%fin; height:%fin", 
 							  wInch, hInch);
-			setlocale(LC_NUMERIC, "");
+			setlocale(LC_NUMERIC, old_locale);
 			UT_DEBUGMSG (("props are %s\n", propBuffer.c_str()));
 		}
 
@@ -4651,9 +4651,9 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 		propBuffer += "; page-margin-left:";
 		double inch = (double) m_currentRTFState.m_sectionProps.m_leftMargTwips/1440.;
 		UT_String sinch;
-		setlocale(LC_NUMERIC, "C");
+		char * old_locale = setlocale(LC_NUMERIC, "C");
 		UT_String_sprintf(sinch,"%fin",inch);
-		setlocale(LC_NUMERIC, "");
+		setlocale(LC_NUMERIC, old_locale);
 		propBuffer += sinch;
 	}
 	if(true /*m_currentRTFState.m_sectionProps.m_rightMargTwips != 0*/)
@@ -4661,9 +4661,9 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 		propBuffer += "; page-margin-right:";
 		double inch = (double) m_currentRTFState.m_sectionProps.m_rightMargTwips/1440.;
 		UT_String sinch;
-		setlocale(LC_NUMERIC, "C");
+		char * old_locale = setlocale(LC_NUMERIC, "C");
 		UT_String_sprintf(sinch,"%fin",inch);
-		setlocale(LC_NUMERIC, "");
+		setlocale(LC_NUMERIC, old_locale);
 		propBuffer += sinch;
 	}
 	if(true /*m_currentRTFState.m_sectionProps.m_topMargTwips != 0*/)
@@ -4671,9 +4671,9 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 		propBuffer += "; page-margin-top:";
 		double inch = (double) m_currentRTFState.m_sectionProps.m_topMargTwips/1440.;
 		UT_String sinch;
-		setlocale(LC_NUMERIC, "C");
+		char * old_locale = setlocale(LC_NUMERIC, "C");
 		UT_String_sprintf(sinch,"%fin",inch);
-		setlocale(LC_NUMERIC, "");
+		setlocale(LC_NUMERIC, old_locale);
 		propBuffer += sinch;
 	}
 	if(true /*m_currentRTFState.m_sectionProps.m_bottomMargTwips != 0*/)
@@ -4681,9 +4681,9 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 		propBuffer += "; page-margin-bottom:";
 		double inch = (double) m_currentRTFState.m_sectionProps.m_bottomMargTwips/1440.;
 		UT_String sinch;
-		setlocale(LC_NUMERIC, "C");
+		char * old_locale = setlocale(LC_NUMERIC, "C");
 		UT_String_sprintf(sinch,"%fin",inch);
-		setlocale(LC_NUMERIC, "");
+		setlocale(LC_NUMERIC, old_locale);
 		propBuffer += sinch;
 	}
 	if(true /*m_currentRTFState.m_sectionProps.m_colSpaceTwips != 0*/)
@@ -4691,9 +4691,9 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 		propBuffer += "; column-gap:";
 		double inch = (double) m_currentRTFState.m_sectionProps.m_colSpaceTwips/1440.;
 		UT_String sinch;
-		setlocale(LC_NUMERIC, "C");
+		char * old_locale = setlocale(LC_NUMERIC, "C");
 		UT_String_sprintf(sinch,"%fin",inch);
-		setlocale(LC_NUMERIC, "");
+		setlocale(LC_NUMERIC, old_locale);
 		propBuffer += sinch;
 	}
 	if(true /*m_currentRTFState.m_sectionProps.m_headerYTwips != 0*/)
@@ -4716,9 +4716,9 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 		propBuffer += "; page-margin-header:";
 		double inch = (double) sheader/1440.;
 		UT_String sinch;
-		setlocale(LC_NUMERIC, "C");
+		char * old_locale = setlocale(LC_NUMERIC, "C");
 		UT_String_sprintf(sinch,"%fin",inch);
-		setlocale(LC_NUMERIC, "");
+		setlocale(LC_NUMERIC, old_locale);
 		propBuffer += sinch;
 	}
 	if(true /*m_currentRTFState.m_sectionProps.m_footerYTwips != 0*/)
@@ -4741,9 +4741,9 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 		propBuffer += "; page-margin-footer:";
 		double inch = (double) sfooter/1440.;
 		UT_String sinch;
-		setlocale(LC_NUMERIC, "C");
+		char * old_locale = setlocale(LC_NUMERIC, "C");
 		UT_String_sprintf(sinch,"%fin",inch);
-		setlocale(LC_NUMERIC, "");
+		setlocale(LC_NUMERIC, old_locale);
 		propBuffer += sinch;
 	}
 	UT_DEBUGMSG(("SEVIOR: propBuffer = %s \n",propBuffer.c_str()));
