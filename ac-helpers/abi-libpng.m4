@@ -57,14 +57,16 @@ fi
 # peer dir for abi ]
 
 if test "$abi_found_libpng" = "no"; then
-    if test "x$1" != "x" -a -a "$1"; then
-	LIBPNG_LIBS="$1/libpng.a"
-	LIBPNG_CFLAGS="-I$1/"
+    if test "x$1" != "x" -a "$1"; then
+	abspath=`cd $1; pwd`
+	LIBPNG_LIBS="${abspath}/libpng.a"
+	LIBPNG_CFLAGS="-I${abspath}/"
 	AC_MSG_RESULT(using supplied png library)	
 	AC_DEFINE(HAVE_LIBPNG, 1, [ Define if you have libpng ])
-	abi_libpng_message="supplied libpng in $1"
-	local_libpng="true"
-	AM_CONDITIONAL(LOCAL_LIBPNG, test "$local_libpng" = "true")
+	abi_libpng_message="supplied libpng in ${abspath}"
+	LIBPNG_PEERDIR=${abspath}
+        PEERDIRS="${PEERDIRS} ${LIBPNG_PEERDIR}"
+	PEERS="${PEERS} `basename ${abspath}`"
     else
 	AC_MSG_ERROR([ libpng was not found ])
     fi
@@ -73,7 +75,9 @@ fi
 
 fi
 
+AM_CONDITIONAL(LOCAL_LIBPNG, test "$local_libpng" = "true")
 AC_SUBST(LIBPNG_CFLAGS)
 AC_SUBST(LIBPNG_LIBS)
+AC_SUBST(LIBPNG_PEERDIR)
 
 ])

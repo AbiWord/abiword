@@ -58,13 +58,15 @@ fi
 
 if test "$abi_found_psiconv" = "no"; then
     if test "x$1" != "x" -a "$1"; then
-	PSICONV_LIBS="$1/psiconv/.libs/libpsiconv.a"
-	PSICONV_CFLAGS="-I$1/"
+	abspath=`cd $1; pwd`
+	PSICONV_LIBS="${abspath}/psiconv/.libs/libpsiconv.a"
+	PSICONV_CFLAGS="-I${abspath}/"
 	AC_MSG_RESULT(using supplied psiconv library)	
 	AC_DEFINE(HAVE_PSICONV, 1, [ Define if you have psiconv ])
-	abi_psiconv_message="supplied psiconv in $1"
-	local_psiconv="true"
-	AM_CONDITIONAL(LOCAL_PSICONV, test "$local_psiconv" = "true")
+	abi_psiconv_message="supplied psiconv in ${abspath}"
+	PSICONV_PEERDIR=${abspath}
+        PEERDIRS="${PEERDIRS} ${PSICONV_PEERDIR}"
+	PEERS="${PEERS} `basename ${abspath}`"
     else
 	AC_MSG_ERROR([ psiconv was not found ])
     fi
@@ -73,7 +75,9 @@ fi
 
 fi
 
+AM_CONDITIONAL(LOCAL_PSICONV, test "$local_psiconv" = "true")
 AC_SUBST(PSICONV_CFLAGS)
 AC_SUBST(PSICONV_LIBS)
+AC_SUBST(PSICONV_PEERDIR)
 
 ])

@@ -57,14 +57,16 @@ fi
 # peer dir for abi ]
 
 if test "$abi_found_wv" = "no"; then
-    if test "x$1" != "x" -a -a "$1"; then
-	WV_LIBS="$1/libwv.a"
-	WV_CFLAGS="-I$1/"
+    if test "x$1" != "x" -a "$1"; then
+	abspath=`cd $1; pwd`
+	WV_LIBS="${abspath}/libwv.a"
+	WV_CFLAGS="-I${abspath}/"
 	AC_MSG_RESULT(using supplied wv library)	
 	AC_DEFINE(HAVE_WV, 1, [ Define if you have wv ])
-	abi_wv_message="supplied wv in $1"
-	local_wv="true"
-	AM_CONDITIONAL(LOCAL_WV, test "$local_wv" = "true")
+	abi_wv_message="supplied wv in ${abspath}"
+	WV_PEERDIR=${abspath}
+        PEERDIRS="${PEERDIRS} ${WV_PEERDIR}"
+	PEERS="${PEERS} `basename ${abspath}`"
     else
 	AC_MSG_ERROR([ wv was not found ])
     fi
@@ -73,7 +75,9 @@ fi
 
 fi
 
+AM_CONDITIONAL(LOCAL_WV, test "$local_wv" = "true")
 AC_SUBST(WV_CFLAGS)
 AC_SUBST(WV_LIBS)
+AC_SUBST(WV_PEERDIR)
 
 ])

@@ -97,15 +97,17 @@ if test "$abi_found_parser" = "expat"; then
 fi
 
 if test "$abi_found_parser" = "no" ; then
-    if test "x$1" != "x" -a -a "$1"; then
+    if test "x$1" != "x" -a "$1"; then
 	# Use the expat sources given as an argument
-	XML_LIBS="$1/lib/.libs/libexpat.a"
-	XML_CFLAGS="-I $1/lib/"
+        abspath=`cd $1; pwd`
+	XML_LIBS="${abspath}/lib/.libs/libexpat.a"
+	XML_CFLAGS="-I ${abspath}/lib/"
 	AC_MSG_RESULT(using supplied expat XML parser)	
 	AC_DEFINE(HAVE_EXPAT, 1, [Define if you have expat] )
-	abi_xml_parser_message="supplied expat in $1"
-	local_expat="true"
-	AM_CONDITIONAL(LOCAL_EXPAT, test "$local_expat" = "true")
+	abi_xml_parser_message="supplied expat in ${abspath}"
+	EXPAT_PEERDIR=${abspath}
+        PEERDIRS="${PEERDIRS} ${EXPAT_PEERDIR}"
+	PEERS="${PEERS} `basename ${abspath}`"
     else
 	AC_MSG_ERROR([no XML parser was found])
     fi
@@ -116,5 +118,6 @@ fi
 
 AC_SUBST(XML_CFLAGS)
 AC_SUBST(XML_LIBS)
+AC_SUBST(EXPAT_PEERDIR)
 
 ])

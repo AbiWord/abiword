@@ -1,18 +1,24 @@
 
 SUBDIRS = src
 
-MAINTAINERCLEANFILES=GNUmakefile
+expat_peerdir=@EXPAT_PEERDIR@
+wv_peerdir=@WV_PEERDIR@
+psiconv_peerdir=@PSICONV_PEERDIR@
+libpng_peerdir=@LIBPNG_PEERDIR@
 
-#all: expat wv psiconv
+# Hack: make sure that the PEERS stuff is build first
+# We can not use the all target, because on parallel builds there is no
+# guarantee that the peerdirs will be built before the main tree.
+all-recursive: @PEERS@
 
 expat:
-	(cd ../expat; ./configure --enable-shared=no; make)  
-
+	make -C $(expat_peerdir)
 wv:
-	(cd ../wv; ./configure --enable-shared=no; make); 
-
+	make -C $(wv_peerdir)
 psiconv:
-	(cd ../psiconv; CFLAGS="-O2" ./configure --enable-shared=no; make)
+	make -C $(psiconv_peerdir)
+libpng:
+	make -C $(libpng_peerdir)
 
 clean: 
 	make -C src clean

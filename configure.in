@@ -287,6 +287,15 @@ AC_FUNC_ALLOCA
 AC_TYPE_SIGNAL
 AC_CHECK_FUNCS(re_comp regcomp strdup strstr)
 
+dnl other configure scripts
+# AC_CONFIG_SUBDIRS($PEERDIRS) won't work :-(
+for i in $PEERDIRS; do
+  echo "Running configure in ${i}"
+  (cd $i; ./configure --disable-shared)
+done
+AC_SUBST(PEERDIRS)
+AC_SUBST(PEERS)
+
 AC_OUTPUT(
  GNUmakefile
  src/GNUmakefile
