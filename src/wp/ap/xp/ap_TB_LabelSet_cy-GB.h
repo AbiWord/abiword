@@ -86,7 +86,7 @@ BeginSet(cy,GB,true)
 	ToolbarLabel(AP_TOOLBAR_ID_PARA_12BEFORE,	"12 pt cyn",		tb_para_12before_xpm,	NULL, "Bwlch cyn: 12 pt")
 
 	ToolbarLabel(AP_TOOLBAR_ID_SINGLE_SPACE,	"Bylchu sengl",	tb_line_single_space_xpm,	NULL, "Bylchu sengl")
-	ToolbarLabel(AP_TOOLBAR_ID_MIDDLE_SPACE,g	"Bylchu 1.5",		tb_line_middle_space_xpm,	NULL, "Bylchu 1.5")
+	ToolbarLabel(AP_TOOLBAR_ID_MIDDLE_SPACE,	"Bylchu 1.5",		tb_line_middle_space_xpm,	NULL, "Bylchu 1.5")
 	ToolbarLabel(AP_TOOLBAR_ID_DOUBLE_SPACE,	"Bylchu dwbl",	tb_line_double_space_xpm,	NULL, "Bylchu dwbl")
 
 	ToolbarLabel(AP_TOOLBAR_ID_1COLUMN,			"1 Golofn",			tb_1column_xpm,			NULL, "1 Golofn")
