@@ -387,13 +387,13 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 		   (pAP->getAttribute("style", szValue))
 		   )
 		{
-			szValue = removeWhiteSpace((char*) szValue);
+			char * value = removeWhiteSpace((char*) szValue);
 			if(pAP->getAttribute("listid", szListID) &&
 			   0 != UT_strcmp(szListID, "0"))
 			{	// we're in a list
 				if(!m_bInList)
 				{
-					if(0 != UT_strcmp(szValue, "BulletList"))
+					if(0 != UT_strcmp(value, "BulletList"))
 					{
 						m_iBlockType = BT_NUMBEREDLIST;
 						m_pie->write("<ol class=\"");
@@ -403,7 +403,7 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 						m_iBlockType = BT_BULLETLIST;
 						m_pie->write("<ul class=\"");
 					}
-					_outputInheritanceLine((const char*) szValue);
+					_outputInheritanceLine((const char*) value);
 					m_pie->write("\">\n");
 					m_bInList = true;
 				}
@@ -413,6 +413,7 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 				}
 				m_pie->write("<li");
 				wasWritten = true;	
+				DELETEPV(value);			
 			}
 			else 
 			{
@@ -511,7 +512,6 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 					wasWritten = true;
 				}	
 			}
-			DELETEP(szValue);
 		}
 		else 
 		{
@@ -959,10 +959,11 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 		}
 
 		char* szStyle = NULL;
-		pAP->getAttribute("style", (const XML_Char*) szStyle);
+		const XML_Char * pStyle;
+		pAP->getAttribute("style", pStyle);
 		if(szStyle)
 		{
-			szStyle = removeWhiteSpace(szStyle);
+			szStyle = removeWhiteSpace((const char *)pStyle);
 		}
 
 		if (span)
@@ -982,9 +983,8 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 			_outputInheritanceLine(szStyle);
 			m_pie->write("\">");
 		}
-		DELETEP(szStyle);
+		DELETEPV(szStyle);
 		
-
 		m_bInSpan = true;
 		m_pAP_Span = pAP;
 	}
@@ -1200,18 +1200,19 @@ bool s_HTML_Listener::_inherits(const char* style, const char* from)
 	{
 		PD_Style* pStyle = static_cast<PD_Style*>(p_uthe->pData);
 		char* szName = NULL;
+		const XML_Char * pName = NULL;
 
 		if(pStyle && pStyle->getBasedOn())
 		{
 			pStyle = pStyle->getBasedOn();
 			pStyle->getAttribute(PT_NAME_ATTRIBUTE_NAME, 
-				(const XML_Char*) szName);
-			szName = removeWhiteSpace(szName);
+								 pName);
+			szName = removeWhiteSpace(pName);
 
 			if(UT_strcmp(from, szName) == 0)
 				bret = true;
 
-			DELETEP(szName);
+			DELETEPV(szName);
 		}
 	}
 
@@ -1237,9 +1238,9 @@ void s_HTML_Listener::_outputInheritanceLine(const char* ClassName)
 			pBasedOn->getAttribute(PT_NAME_ATTRIBUTE_NAME, szName);
 
 			UT_ASSERT((szName));
-			szName = removeWhiteSpace((char*) szName);
-			_outputInheritanceLine((const char*) szName);
-			DELETEP(szName);
+			char * pName = removeWhiteSpace((const char*) szName);
+			_outputInheritanceLine(pName);
+			DELETEPV(pName);
 			m_pie->write(" ");
 		}
 	}
@@ -1765,9 +1766,9 @@ void s_HTML_Listener::_storeStyles(void)
 	for(int i = 0; m_pDocument->enumStyles(i, &pszName, &pStyle); i++)
 	{
 		pData = reinterpret_cast<void*>(const_cast<PD_Style*>(pStyle));
-		pszName = removeWhiteSpace(const_cast<char*>(pszName));
-		m_pStylesHash->addEntry(pszName, NULL, pData);
-		DELETEP(pszName);
+		char * szName = removeWhiteSpace(pszName);
+		m_pStylesHash->addEntry(szName, NULL, pData);
+		DELETEPV(szName);
 	}
 
 	return;
