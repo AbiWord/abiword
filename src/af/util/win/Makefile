@@ -20,8 +20,9 @@ include $(ABI_DEPTH)/config/abi_rules.mk
 
 ifneq ($(strip $(EXPORT_HEADERS)),)
 export:: $(EXPORT_HEADERS)
-	$(subst xxxx,$(DIST)/include,$(VERIFY_DIRECTORY))
-	$(INSTALL) -m 444 $(EXPORT_HEADERS) $(DIST)/include
+	@echo Exporting headers from `pwd`...
+	@$(subst xxxx,$(DIST)/include,$(VERIFY_DIRECTORY))
+	@$(INSTALL) -m 444 $(EXPORT_HEADERS) $(DIST)/include
 endif
 
 libs:: $(TARGETS)

@@ -11,6 +11,7 @@ NSPR_BEGIN_EXTERN_C
 
 double UT_convertToInches(const char* s);
 UT_sint32 UT_paperUnits(const char * sz);
+UT_sint32 UT_docUnitsFromPaperUnits(DG_Graphics * pG, UT_sint32 iPaperUnits);
 
 NSPR_END_EXTERN_C
 

@@ -58,6 +58,11 @@ double UT_convertToInches(const char* s)
 
 UT_sint32 UT_paperUnits(const char * sz)
 {
+	// convert string in form "8.5in" into "paper" units.
+	// paper units are a relatively low-resolution (say
+	// 1/100 inch) but are suitable for specifying margins,
+	// etc. -- stuff relative to the actual paper.
+
 	if (!sz || !*sz)
 		return 0;
 
@@ -65,4 +70,14 @@ UT_sint32 UT_paperUnits(const char * sz)
 	double dResolution = UT_PAPER_UNITS_PER_INCH;
 
 	return (UT_sint32)(dInches * dResolution);
+}
+
+UT_sint32 UT_docUnitsFromPaperUnits(DG_Graphics * pG, UT_sint32 iPaperUnits)
+{
+	// convert number in paper units (see above) into
+	// "document" units in the given graphics context.
+
+	UT_ASSERT(pG);
+
+	return (pG->getResolution() * iPaperUnits / UT_PAPER_UNITS_PER_INCH);
 }

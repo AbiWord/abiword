@@ -33,8 +33,9 @@ TARGETS=		$(OBJS)
 include $(ABI_DEPTH)/config/abi_rules.mk
 
 export:: $(EXPORT_HEADERS)
-	$(subst xxxx,$(DIST)/include,$(VERIFY_DIRECTORY))
-	$(INSTALL) -m 444 $(EXPORT_HEADERS) $(DIST)/include
+	@echo Exporting headers from `pwd`...
+	@$(subst xxxx,$(DIST)/include,$(VERIFY_DIRECTORY))
+	@$(INSTALL) -m 444 $(EXPORT_HEADERS) $(DIST)/include
 
 libs:: $(TARGETS)
 

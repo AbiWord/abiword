@@ -28,5 +28,6 @@ include $(ABI_DEPTH)/config/abi_rules.mk
 libs:: $(TARGETS)
 
 install:: libs
-	$(subst xxxx,$(DIST)/lib,$(VERIFY_DIRECTORY))
-	$(INSTALL) -m 444 $(TARGETS) $(DIST)/lib
+	@echo Exporting library $(LIBRARY_NAME) from `pwd`...
+	@$(subst xxxx,$(DIST)/lib,$(VERIFY_DIRECTORY))
+	@$(INSTALL) -m 444 $(TARGETS) $(DIST)/lib
