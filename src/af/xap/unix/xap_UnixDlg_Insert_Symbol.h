@@ -37,56 +37,58 @@ public:
 	virtual ~XAP_UnixDialog_Insert_Symbol(void);
 
 	virtual void			runModal(XAP_Frame * pFrame);
-
 	virtual void			runModeless(XAP_Frame * pFrame);
 	virtual void			notifyActiveFrame(XAP_Frame *pFrame);
 	virtual void			notifyCloseFrame(XAP_Frame *pFrame){};
 	virtual void			destroy(void);
 	virtual void			activate(void);
+
+	void			event_Insert(void);
+	void			event_WindowDelete(void);
+	void			New_Font(void);
+
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
-
-	// callbacks can fire these events
-
-	virtual void			event_Insert(void);
-	virtual void			SymbolMap_exposed( void);
-	virtual void			Symbolarea_exposed( void);
-	virtual void			SymbolMap_clicked(GdkEvent * event);
-	virtual void                    CurrentSymbol_clicked(GdkEvent *event);
-	virtual gboolean			Key_Pressed(GdkEventKey * e);
-	virtual void			New_Font( void);
-	virtual void			event_WindowDelete(void);
 
 	typedef enum
 		{
 		  BUTTON_INSERT,
-			BUTTON_CLOSE
+		  BUTTON_CLOSE
 		} ResponseId ;
 	
-protected:
+#ifndef USE_GUCHARMAP
+	// callbacks can fire these events
+	void			SymbolMap_exposed( void);
+	void			Symbolarea_exposed( void);
+	void			SymbolMap_clicked(GdkEvent * event);
+	void            CurrentSymbol_clicked(GdkEvent *event);
+	gboolean		Key_Pressed(GdkEventKey * e);
+#endif
 
-	GR_UnixGraphics	* 		m_unixGraphics;
-	GR_UnixGraphics *       m_unixarea;
+private:
 
-	// private construction functions
-	virtual GtkWidget * _constructWindow(void);
-	GtkWidget * _previewNew(int w, int h);
+	GtkWidget * _constructWindow(void);
 	GList *     _getGlistFonts(void);
 	GtkWidget * _createComboboxWithFonts (void);
 	void        _connectSignals (void);
 
 	// pointers to widgets we need to query/set
 	GtkWidget * m_windowMain;
-
 	GtkWidget * m_SymbolMap;
+	GtkWidget * m_fontcombo;	
+	GList     * m_InsertS_Font_list;
+	UT_Vector   m_fontlist;
+	UT_uint32   m_Insert_Symbol_no_fonts;
+
+#ifndef USE_GUCHARMAP
+	// private construction functions
+	GtkWidget * _previewNew(int w, int h);
 
 	GtkWidget * m_areaCurrentSym;
-	GtkWidget * m_fontcombo;
-	
-	GList * m_InsertS_Font_list;
-	UT_Vector m_fontlist;
-	UT_uint32 m_Insert_Symbol_no_fonts;
+	GR_UnixGraphics	* 		m_unixGraphics;
+	GR_UnixGraphics *       m_unixarea;
 	UT_uint32 m_ix;
 	UT_uint32 m_iy;
+#endif /* USE_GUCHARMAP */
 };
 
 #endif /* XAP_UNIXDIALOG_INSERT_SYMBOL_H */
