@@ -870,10 +870,9 @@ void PP_RevisionAttr::_refreshString()
 			if(r->getAttrsVector()->getItemCount())
 			{
 				m_sXMLstring += "{";
-				m_sXMLstring += r->getPropsString();
+				m_sXMLstring += r->getAttrsString();
 				m_sXMLstring += "}";
 			}
-
 		};
 
 		if(i != iCount - 1)
