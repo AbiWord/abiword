@@ -15,27 +15,22 @@ change default direction at runtime, see below.
 
 Using BiDi
 ----------
-The Bi-Directional extension uses two properties, a character
-property 'dir' (direction) and paragraph property 'dom-dir' 
-(dominant direction).
+The Bi-Directional extension uses three properties, a character
+properties 'dir' (direction) and 'dir-override' and paragraph 
+property 'dom-dir' (dominant direction).
 
-The BiDi works in two modes, Unicode mode and user mode. In
-Unicode mode the 'direction' property is transparent to the user,
-being determined for each character on the basis of its Unicode
-value. In user mode the character property 'direction' behaves
-as any other, i.e., the user has to explicitely format text for
-direction. The Unicode mode is the prefered mode, and mixing the
-two modes in creation of a single document is not advised (the 
-manual mode might be discontinued in the future).
+The BiDi algorithm is Unicode-based, so that text is correctly
+arranged as it is typed in; however the user can force any 
+segement of the text into a particular direction using two 
+toolbar buttons.
 
-The mode is selected on the 'Other' tab of the 'Preferences'
-dialogue, while direction and dominant direction can be
-specified using the 'Font' and 'Paragraph' dialogues or the
-two buttons provided on the formating toolbar.
+The dominant direction of the paragraph can be selected either
+using a third toolbar button, or from the Format->Paragraph
+dialogue.
 
-The 'Other' tab also allows to change the default direction (
-however, this change will only take place when you create a
-new document or restart AbiWord).
+The 'Other' tab of the Preferences dialogue allows to change 
+the default direction (however, this change will only take place 
+when a new document is created or AbiWord restarted).
 
 
 TECHNICAL NOTES
