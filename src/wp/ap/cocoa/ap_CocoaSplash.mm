@@ -104,7 +104,7 @@ AP_CocoaSplash::AP_CocoaSplash (const NSSize & size, NSImage * image) :
 	
 	
 	_show ();
-
+#if AP_COCOASPLASH_STATUSBAR
 	box = NSMakeRect(4.0, 8.0, size.width - 8.0, 12.0);
 	m_statusbar = [[NSText alloc] initWithFrame:box];
 	UT_ASSERT(m_statusbar);
@@ -112,18 +112,21 @@ AP_CocoaSplash::AP_CocoaSplash (const NSSize & size, NSImage * image) :
 	[[m_window contentView] addSubview:m_statusbar];	/* m_statusbar will be released in destructor of this */
 										/* that allow the view to be detached safely */
 	XAP_StatusBar::setStatusBar (this);
+#endif /* AP_COCOASPLASH_STATUSBAR */
 }
 
 AP_CocoaSplash::~AP_CocoaSplash ()
 {
+#if AP_COCOASPLASH_STATUSBAR
 	XAP_StatusBar::unsetStatusBar (this);
+#endif /* AP_COCOASPLASH_STATUSBAR */
 	s_Splash = 0;
 }
 
 void AP_CocoaSplash::statusMessage (const char * utf8str, bool urgent)
 {
 	if (m_statusbar == 0) return;
-
+#if AP_COCOASPLASH_STATUSBAR
 	if (urgent) {
 		[m_statusbar setTextColor:[NSColor redColor]];
 	}
@@ -137,4 +140,5 @@ void AP_CocoaSplash::statusMessage (const char * utf8str, bool urgent)
 		[m_statusbar setString:str];
 		[m_statusbar display];
 	}
+#endif /* AP_COCOASPLASH_STATUSBAR */
 }
