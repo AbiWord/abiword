@@ -307,7 +307,7 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		X_VerifyParseState(_PS_Init);
 		m_parseState = _PS_Doc;
 
-		if(!getLoadStylesOnly())
+		if(!getLoadStylesOnly() || getLoadDocProps())
 		{
 		  X_CheckError(getDoc()->setAttrProp(atts));
 		}

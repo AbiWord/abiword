@@ -397,7 +397,7 @@ UT_Error PD_Document::readFromFile(const char * szFilename, int ieft)
 	return UT_OK;
 }
 
-UT_Error PD_Document::importStyles(const char * szFilename, int ieft)
+UT_Error PD_Document::importStyles(const char * szFilename, int ieft, bool bDocProps)
 {
 	if (!szFilename || !*szFilename)
 	{
@@ -434,6 +434,7 @@ UT_Error PD_Document::importStyles(const char * szFilename, int ieft)
 	}
 	
 	pie->setLoadStylesOnly(true);
+	pie->setLoadDocProps(bDocProps);
 	errorCode = pie->importFile(szFilename);
 	delete pie;
 

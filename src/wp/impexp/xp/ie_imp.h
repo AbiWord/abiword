@@ -138,6 +138,9 @@ public:
 	void setLoadStylesOnly(bool b) {m_bStylesOnly = b;}
 	bool getLoadStylesOnly() const {return m_bStylesOnly;}
 	virtual bool supportsLoadStylesOnly() {return false;}
+
+	void setLoadDocProps(bool b) {m_bDocProps = b;}
+	bool getLoadDocProps() const {return m_bDocProps;}
 	
  protected:
 	IE_Imp(PD_Document * pDocument);
@@ -159,6 +162,7 @@ public:
 	bool m_isPaste;
 	PT_DocPosition m_dpos;
 	bool m_bStylesOnly;
+	bool m_bDocProps;
 };
 
 
