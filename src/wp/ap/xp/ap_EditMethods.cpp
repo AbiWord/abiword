@@ -2459,7 +2459,6 @@ Defun(fileNew)
 	XAP_App * pApp = pFrame->getApp();
 	UT_ASSERT(pApp);
 
-#if 1
 	pFrame->raise();
 
 	XAP_DialogFactory * pDialogFactory
@@ -2497,7 +2496,10 @@ Defun(fileNew)
 		if (str.size())
 		{
 			// we want to create from a template
-			bOK = s_importFile (pFrame, str.c_str(), IEFT_Unknown) == UT_OK;
+		  if ( pDialog->getOpenType() == AP_Dialog_New::open_Existing )
+		    bOK = ::fileOpen(pFrame, str.c_str(), IEFT_Unknown) == UT_OK;
+		  else
+		    bOK = s_importFile (pFrame, str.c_str(), IEFT_Unknown) == UT_OK;
 		}
 		else
 		{
@@ -2518,9 +2520,6 @@ Defun(fileNew)
 
 	pDialogFactory->releaseDialog(pDialog);
 	return bOK;
-#else
-	return EX(toolbarNew);
-#endif
 }
 
 bool _helpOpenURL(AV_View* pAV_View, const char* helpURL)
