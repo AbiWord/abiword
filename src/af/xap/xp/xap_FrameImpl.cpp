@@ -31,7 +31,7 @@
 #include "ev_Mouse.h"
 #include "ev_Toolbar.h"
 
-#if defined(XP_UNIX_TARGET_GTK) || (defined(__APPLE__) && defined(__MACH__)) || defined(WIN32)
+#if defined(XP_UNIX_TARGET_GTK) || (defined(__APPLE__) && defined(__MACH__)) || defined(WIN32) || defined(__QNXNTO__)
 
 /*** Also look at xap_Frame.cpp, half the XAP_FrameImpl seems to be there!!! ***/
 
