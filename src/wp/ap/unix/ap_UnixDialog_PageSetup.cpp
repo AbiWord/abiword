@@ -582,7 +582,7 @@ void AP_UnixDialog_PageSetup::_constructWindowContents (GtkWidget *container)
 
   // create the drop-down menu with all of our supported page sizes
   GList *popdown_items = NULL;
-  for (int i = (int)fp_PageSize::A0; i < (int)fp_PageSize::_last_predefined_pagesize_dont_use_; i++)
+  for (int i = (int)fp_PageSize::4A; i < (int)fp_PageSize::_last_predefined_pagesize_dont_use_; i++)
     {
       popdown_items = g_list_append (popdown_items, (void*)fp_PageSize::PredefinedToName ((fp_PageSize::Predefined)i) );
     }
