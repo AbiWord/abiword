@@ -147,12 +147,12 @@ Section "Templates"
 	File /r "..\AbiSuite\templates"
 SectionEnd
 
-; OPTIONAL Installation of Samples
-Section "Samples"
-	SectionIn 12
-	SetOutPath $INSTDIR\AbiWord
-	File /r "..\AbiSuite\AbiWord\sample"
-SectionEnd
+; OPTIONAL Installation of Samples - REMOVED
+;Section "Samples"
+;	SectionIn 12
+;	SetOutPath $INSTDIR\AbiWord
+;	File /r "..\AbiSuite\AbiWord\sample"
+;SectionEnd
 
 ; OPTIONAL Installation of Clipart
 Section "Clipart"
