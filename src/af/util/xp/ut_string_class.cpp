@@ -33,6 +33,7 @@
 #include "ut_string_class.h"
 #include "ut_stringbuf.h"
 #include "ut_debugmsg.h"		// UT_DEBUGMSG
+#include "ut_iconv.h"
 #include "ut_assert.h"			// UT_ASSERT
 
 //
@@ -732,6 +733,20 @@ UT_UTF8String::UT_UTF8String (const char * sz) :
 {
 	// 
 }
+
+UT_UTF8String::UT_UTF8String (const char *str, const char *encoding)
+{
+	UT_uint32 iRead, iWritten;
+	char *pUTF8Buf = UT_convert(str,
+				    strlen(str),
+				    encoding,
+				    "UTF-8",
+				    &iRead,
+				    &iWritten);
+	pimpl = new UT_UTF8Stringbuf(pUTF8Buf);
+	FREEP(pUTF8Buf);
+}
+
 
 UT_UTF8String::UT_UTF8String (const UT_UTF8String & rhs) :
 	pimpl(new UT_UTF8Stringbuf(*rhs.pimpl))

@@ -45,10 +45,8 @@ void ap_usb_TextListener::notify()
 	UT_ASSERT(m_pLabel);
 
 	AP_StatusBarField_TextInfo * textInfo = ((AP_StatusBarField_TextInfo *)m_pStatusBarField);
-	const UT_UCS4Char * buf = textInfo->getBufUCS();
-	UT_UTF8String utf8 (buf);	
 
-	gtk_label_set_label(GTK_LABEL(m_pLabel), utf8.utf8_str());
+	gtk_label_set_label(GTK_LABEL(m_pLabel), textInfo->getBuf().utf8_str());
 
 	// we conditionally update the size request, if the representative string (or an earlier
 	// size) wasn't large enough, if the element uses the representative string method

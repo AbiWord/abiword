@@ -31,6 +31,7 @@
 #include "ap_Prefs.h"
 #include "ap_Prefs_SchemeIds.h"
 #include "xav_Listener.h"
+#include "ut_string_class.h"
 
 class XAP_Frame;
 class GR_Graphics;
@@ -42,13 +43,13 @@ class GR_Graphics;
 
 #define PROGRESS_CMD_MASK 0x3		/* 0,1,2,3 Operational values */
 enum _progress_flags {
-	PROGRESS_RESERVED1 	= 0x0,	
-	PROGRESS_STARTBAR  	= 0x1,		/* Start using the progress bar */
-	PROGRESS_STOPBAR	= 0x2,		/* Stop using the progress bar */	
-	PROGRESS_RESERVED2	= 0x3,
-	PROGRESS_SHOW_MSG	= 0x4,		/* Allow message to be displayed */
-	PROGRESS_SHOW_RAW	= 0x8,		/* Allow raw value to be displayed */
-	PROGRESS_SHOW_PERCENT = 0x10	/* Allow calculation of percent value */
+    PROGRESS_RESERVED1 	= 0x0,	
+    PROGRESS_STARTBAR  	= 0x1,		/* Start using the progress bar */
+    PROGRESS_STOPBAR	= 0x2,		/* Stop using the progress bar */	
+    PROGRESS_RESERVED2	= 0x3,
+    PROGRESS_SHOW_MSG	= 0x4,		/* Allow message to be displayed */
+    PROGRESS_SHOW_RAW	= 0x8,		/* Allow raw value to be displayed */
+    PROGRESS_SHOW_PERCENT = 0x10	/* Allow calculation of percent value */
 };
 
 #include "ut_timer.h"
@@ -61,37 +62,38 @@ enum _progress_flags {
 class AP_StatusBar : public AV_Listener
 {
 public:
-	AP_StatusBar(XAP_Frame * pFrame);
-	virtual ~AP_StatusBar(void);
+    AP_StatusBar(XAP_Frame * pFrame);
+    virtual ~AP_StatusBar(void);
 
-	XAP_Frame *			getFrame(void) const;
-	virtual void		setView(AV_View * pView);
-	void				setStatusMessage(UT_UCSChar * pbufUCS, int redraw = true);
-	void				setStatusMessage(const char * pbuf, int redraw = true);
-	const UT_UCS4Char *	getStatusMessage(void) const;
+    XAP_Frame *			getFrame(void) const;
+    virtual void		setView(AV_View * pView);
+    void			setStatusMessage(UT_UCSChar * pbufUCS, int redraw = true);
+    void			setStatusMessage(const char * pbuf, int redraw = true);
+    const UT_UTF8String & 	getStatusMessage(void) const;
 
-	void				setStatusProgressType(int start, int end, int flags);
-	void 				setStatusProgressValue(int value);
+    void			setStatusProgressType(int start, int end, int flags);
+    void 			setStatusProgressValue(int value);
 
-	virtual void		show(void) {} // It must be abstract, but I don't want to screw
-	virtual void		hide(void) {} // the platforms that don't implement show/hide
+    virtual void		show(void) {} // It must be abstract, but I don't want to screw
+    virtual void		hide(void) {} // the platforms that don't implement show/hide
 	
-	/* used with AV_Listener */
-	virtual bool		    notify(AV_View * pView, const AV_ChangeMask mask);
-	virtual AV_ListenerType getType(void) { return AV_LISTENER_STATUSBAR;}
+    /* used with AV_Listener */
+    virtual bool		    notify(AV_View * pView, const AV_ChangeMask mask);
+    virtual AV_ListenerType getType(void) { return AV_LISTENER_STATUSBAR;}
 
-	UT_Vector *             getFields() { return &m_vecFields; }
+    UT_Vector *             getFields() { return &m_vecFields; }
 protected:
 
-	XAP_Frame *			m_pFrame;
-	AV_View *			m_pView;
+    XAP_Frame *			m_pFrame;
+    AV_View *			m_pView;
 
-	bool				m_bInitFields;
-	UT_Vector			m_vecFields;			/* vector of 'ap_sb_Field *' */
-	void *				m_pStatusMessageField;	/* actually 'AP_StatusBarField_StatusMessage *' */
-	void *				m_pStatusProgressField;	/* actually 'AP_StatusBarField_ProgressBar *' */
+    bool			m_bInitFields;
+    UT_Vector			m_vecFields;			/* vector of 'ap_sb_Field *' */
+    void *			m_pStatusMessageField;	/* actually 'AP_StatusBarField_StatusMessage *' */
+    void *			m_pStatusProgressField;	/* actually 'AP_StatusBarField_ProgressBar *' */
 
-	UT_UCS4Char			m_bufUCS[AP_MAX_MESSAGE_FIELD];
+    
+    UT_UTF8String		m_sStatusMessage;
 };
 
 // abstract class which "listens" for changes in the status bar fields in the base classes
@@ -100,79 +102,80 @@ class AP_StatusBarField; // fwd decl
 
 class AP_StatusBarFieldListener
 {
- public:
-	AP_StatusBarFieldListener(AP_StatusBarField *pStatusBarField) { m_pStatusBarField = pStatusBarField; }
-	virtual ~AP_StatusBarFieldListener() {}
-	virtual void notify() = 0;
+public:
+    AP_StatusBarFieldListener(AP_StatusBarField *pStatusBarField) { m_pStatusBarField = pStatusBarField; }
+    virtual ~AP_StatusBarFieldListener() {}
+    virtual void notify() = 0;
 
- protected:
-	AP_StatusBarField *m_pStatusBarField;
+protected:
+    AP_StatusBarField *m_pStatusBarField;
 };
 
 // alignment/fill properties for the upper level gui
 enum _statusbar_element_fill_method {
-	REPRESENTATIVE_STRING,
-	MAX_POSSIBLE
+    REPRESENTATIVE_STRING,
+    MAX_POSSIBLE
 };
 
 enum _statusbar_textelement_alignment_method {
-	LEFT,
-	CENTER
+    LEFT,
+    CENTER
 };
 
 // AP_StatusBarField: abstract base class for a status bar field
 class AP_StatusBarField
 {
- public:
-	AP_StatusBarField(AP_StatusBar * pSB);
-	virtual ~AP_StatusBarField(void);
+public:
+    AP_StatusBarField(AP_StatusBar * pSB);
+    virtual ~AP_StatusBarField(void);
 		
-	virtual void		notify(AV_View * pView, const AV_ChangeMask mask) = 0;
-	void setListener(AP_StatusBarFieldListener *pStatusBarFieldListener) { m_pStatusBarFieldListener = pStatusBarFieldListener; }
-	AP_StatusBarFieldListener * getListener() { return m_pStatusBarFieldListener; }
+    virtual void		notify(AV_View * pView, const AV_ChangeMask mask) = 0;
+    void setListener(AP_StatusBarFieldListener *pStatusBarFieldListener) { m_pStatusBarFieldListener = pStatusBarFieldListener; }
+    AP_StatusBarFieldListener * getListener() { return m_pStatusBarFieldListener; }
 
-	_statusbar_element_fill_method getFillMethod() { return m_fillMethod; }
+    _statusbar_element_fill_method getFillMethod() { return m_fillMethod; }
 
- protected:
-	AP_StatusBar *		m_pSB;
-	AP_StatusBarFieldListener *m_pStatusBarFieldListener;
-	_statusbar_element_fill_method m_fillMethod;
+protected:
+    AP_StatusBar *		m_pSB;
+    AP_StatusBarFieldListener *m_pStatusBarFieldListener;
+    _statusbar_element_fill_method m_fillMethod;
 };
 
 class AP_StatusBarField_TextInfo : public AP_StatusBarField
 {
- public:
-	AP_StatusBarField_TextInfo(AP_StatusBar * pSB); 
-	//virtual ~AP_StatusBarField_TextInfo(void) {}
-	const UT_UCS4Char * getBufUCS() { return m_bufUCS; }
-	// getRepresentativeString: give a "guess" as to how long the string will be. it's not a big deal
-	// if it's wrong; we should resize fixed-length status bar elements in platform specific code 
-	// if they're not big enough to show the string correctly
-	const char * getRepresentativeString(void) { return m_sRepresentativeString; }
-	_statusbar_textelement_alignment_method getAlignmentMethod() { return m_alignmentMethod; }
- protected:
-	UT_UCS4Char m_bufUCS[AP_MAX_MESSAGE_FIELD];
-	char m_sRepresentativeString[AP_MAX_MESSAGE_FIELD];
-	_statusbar_textelement_alignment_method m_alignmentMethod;
+public:
+    AP_StatusBarField_TextInfo(AP_StatusBar * pSB); 
+    //virtual ~AP_StatusBarField_TextInfo(void) {}
+    const UT_UTF8String & getBuf() { return m_sBuf; }
+    // getRepresentativeString: give a "guess" as to how long the string will be. it's not a big deal
+    // if it's wrong; we should resize fixed-length status bar elements in platform specific code 
+    // if they're not big enough to show the string correctly
+    const char * getRepresentativeString(void) { return m_sRepresentativeString.utf8_str(); }
+    _statusbar_textelement_alignment_method getAlignmentMethod() { return m_alignmentMethod; }
+
+protected:
+    UT_UTF8String m_sBuf;
+    UT_UTF8String m_sRepresentativeString;
+    _statusbar_textelement_alignment_method m_alignmentMethod;
 };
 
 // PROGRESSBAR. CURRENTLY UNUSED. MAY BE BROKEN. NEEDS TESTING.
 class AP_StatusBarField_ProgressBar : public AP_StatusBarField
 {
- public:
-	AP_StatusBarField_ProgressBar(AP_StatusBar * pSB);
-	virtual ~AP_StatusBarField_ProgressBar(void);
+public:
+    AP_StatusBarField_ProgressBar(AP_StatusBar * pSB);
+    virtual ~AP_StatusBarField_ProgressBar(void);
 
-	virtual void		notify(AV_View * pView, const AV_ChangeMask mask);
-	void setStatusProgressType(int start, int end, int flags);
-	void setStatusProgressValue(int value);
+    virtual void		notify(AV_View * pView, const AV_ChangeMask mask);
+    void setStatusProgressType(int start, int end, int flags);
+    void setStatusProgressValue(int value);
 
- protected:
-	UT_sint32			m_ProgressStart;
-	UT_sint32			m_ProgressEnd;
-	UT_sint32			m_ProgressValue;
-	UT_sint32			m_ProgressStartPoint;
-	UT_uint32			m_ProgressFlags;
-	UT_Timer			*m_ProgressTimer;
+protected:
+    UT_sint32			m_ProgressStart;
+    UT_sint32			m_ProgressEnd;
+    UT_sint32			m_ProgressValue;
+    UT_sint32			m_ProgressStartPoint;
+    UT_uint32			m_ProgressFlags;
+    UT_Timer			*m_ProgressTimer;
 };
 #endif /* AP_STATUSBAR_H */

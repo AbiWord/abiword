@@ -169,7 +169,9 @@ public:
 	virtual const char *	GenericBaseID () const;
 
 	UT_UTF8String ();
-	UT_UTF8String (const char * sz);
+	UT_UTF8String (const char * sz);	
+	UT_UTF8String (const char *sz, const char *encoding);
+
 	UT_UTF8String (const UT_UTF8String & rhs);
 	UT_UTF8String (const UT_UCS4String & rhs);
 	UT_UTF8String (const UT_UCSChar * sz, size_t n = 0 /* 0 == zero-terminate */);
@@ -194,8 +196,7 @@ public:
 	// The returned pointer is valid until the next non-const
 	// operation. You will _always_ get a legal pointer back,
 	// even if to an empty (0) string.
-	const char * utf8_str () const;
-
+	const char * utf8_str () const;	
 	UT_UCS4String ucs4_str ();
 
 	void appendUCS4 (const UT_UCS4Char * sz, size_t n = 0 /* 0 == zero-terminate */);

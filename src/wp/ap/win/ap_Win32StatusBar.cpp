@@ -134,18 +134,12 @@ void ap_usb_TextListener::notify()
 	
 	UT_ASSERT(m_hWnd);
 	AP_StatusBarField_TextInfo * textInfo = ((AP_StatusBarField_TextInfo *)m_pStatusBarField);
-	const UT_UCS4Char * buf = textInfo->getBufUCS();
 
-	char *pText = UT_convert ((char*)buf,
-							  UT_UCS4_strlen(buf)*sizeof(UT_UCS4Char),
-							  ucs4Internal(),
-							  XAP_EncodingManager::get_instance()->getNative8BitEncodingName(),
-							  &uRead, &uWrite);
-
-#ifdef DEBUG
-	if(strlen(pText) > 10)
-	   UT_DEBUGMSG(("ap_usb_TextListener::notify: msg: UCS4 values (1st 10): 0x%04x, 0x%04x, 0x%04x, 0x%04x, 0x%04x, 0x%04x, 0x%04x, 0x%04x, 0x%04x, 0x%04x\nSystemCP=%s\n",*buf, *(buf+1),*(buf+2),*(buf+3),*(buf+4),*(buf+5),*(buf+6),*(buf+7),*(buf+8),*(buf+9),pText));
-#endif
+	char *pText = UT_convert (textInfo->getBuf().utf8_str(),
+				  textInfo->getBuf().length();,
+				  "UTF-8",
+				  XAP_EncodingManager::get_instance()->getNative8BitEncodingName(),
+			  	  &uRead, &uWrite);
 
 	SendMessage(m_hWnd, SB_SETTEXT, m_nID, (LPARAM)  pText);
 	FREEP(pText);	
