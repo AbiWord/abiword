@@ -139,12 +139,15 @@ void AP_CocoaDialog_InsertTable::_storeWindowData(void)
 		LocalizeControl(_cancelBtn, pSS, XAP_STRING_ID_DLG_Cancel);
 		LocalizeControl(_tableSizeBox, pSS, AP_STRING_ID_DLG_InsertTable_TableSize_Capital);
 		LocalizeControl(_numOfColLabel, pSS, AP_STRING_ID_DLG_InsertTable_NumCols);
+		[_numOfColData setIntValue:_xap->getNumCols()];
 		LocalizeControl(_numOfRowLabel, pSS, AP_STRING_ID_DLG_InsertTable_NumRows);
+		[_numOfRowData setIntValue:_xap->getNumRows()];
 		LocalizeControl(_autofitBox, pSS, AP_STRING_ID_DLG_InsertTable_AutoFit_Capital);
 		LocalizeControl(_autoColBtn, pSS, AP_STRING_ID_DLG_InsertTable_AutoColSize);
 		[_autoColBtn setTag:(int)AP_Dialog_InsertTable::b_AUTOSIZE];
 		LocalizeControl(_fixedColSizeBtn, pSS, AP_STRING_ID_DLG_InsertTable_FixedColSize);
 		[_fixedColSizeBtn setTag:(int)AP_Dialog_InsertTable::b_FIXEDSIZE];
+		[_fixedColSizeData setFloatValue:_xap->getColumnWidth()];
 	}
 }
 
