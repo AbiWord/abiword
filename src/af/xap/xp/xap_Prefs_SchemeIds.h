@@ -67,6 +67,10 @@
 /* substitute curly smart quotes on the fly */
 #define XAP_PREF_DEFAULT_SmartQuotesEnable			"1"
 
+#define XAP_PREF_KEY_UseSuffix                      "UseSuffix"
+/* append suffixes to saved files */
+#define XAP_PREF_DEFAULT_UseSuffix                  "1"
+
 #else /* XAP_PREFS_SCHEMEID_H */
 #ifdef dcl
 
@@ -79,6 +83,6 @@ dcl(RemapGlyphsDefault)
 dcl(RemapGlyphsTable)
 
 dcl(SmartQuotesEnable)
-
+dcl(UseSuffix)
 #endif /* dcl */
 #endif /* XAP_PREFS_SCHEMEID_H */
