@@ -5,7 +5,10 @@
 
 #include "../../af/xap/xp/xap_App.h"
 #include "../../af/xap/xp/xap_Frame.h"
+#include "../../af/xap/xp/xad_Document.h"
+#include "../../text/ptbl/xp/pd_Document.h"
 #include "../../text/fmt/xp/fv_View.h"
+#include "../../text/fmt/xp/fp_PageSize.h"
 #include "../../af/util/xp/ut_string.h"
 
 MODULE = abi		PACKAGE = abi::FV_View
@@ -159,6 +162,7 @@ void
 editBody(pView)
 	FV_View *pView
 	CODE:
+		// THIS METHOD DOESN'T WORKS
 		// pView->warpInsPtToXY(300, 300, true);
 		// pView->moveInsPtTo(FV_DOCPOS_EOD);
 		pView->clearHdrFtrEdit();
@@ -224,7 +228,7 @@ getLastFocussed()
 
 XAP_Frame *
 openFile(pszFilename)
-	const char *pszFilename
+	const char* pszFilename
 	CODE:
 		XAP_App* app = XAP_App::getApp();
 		// printf("openFile\n");
@@ -235,12 +239,38 @@ openFile(pszFilename)
 
 FV_View *
 getCurrentView(pFrame)
-	XAP_Frame *pFrame
+	XAP_Frame* pFrame
 	CODE:
 		// printf("getCurrentView\n");
 		RETVAL = (FV_View *) pFrame->getCurrentView();
 	OUTPUT:
 		RETVAL
+
+void
+setPageSize(pFrame, iWidth, iHeight)
+	XAP_Frame* pFrame
+	int iWidth
+	int iHeight
+	CODE:
+		// THIS METHOD DOESN'T WORKS
+		AD_Document* ad_doc = pFrame->getCurrentDoc();
+		PD_Document* doc = dynamic_cast<PD_Document*> (ad_doc);
+		if (doc)
+		{
+			fp_PageSize ps(iWidth, iHeight, fp_PageSize::mm);
+			doc->setPageSize(ps);
+		}
+		
+void
+setPageSizeByName(pFrame, pszName)
+	XAP_Frame* pFrame
+	const char* pszName
+	CODE:
+		// THIS METHOD DOESN'T WORKS
+		AD_Document* ad_doc = pFrame->getCurrentDoc();
+		PD_Document* doc = dynamic_cast<PD_Document*> (ad_doc);
+		if (doc)
+			doc->setPageSize(fp_PageSize(pszName));
 
 void
 close(pFrame)
