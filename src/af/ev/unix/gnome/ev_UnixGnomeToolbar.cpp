@@ -48,7 +48,7 @@
 #include "xap_Prefs.h"
 #include "ev_UnixGnomeToolbar.h"
 
-// hack
+// hack until gal 0.3 comes out with my c++ changes
 extern "C" {
 #include <gal/widgets/gtk-combo-text.h>
 }
@@ -82,7 +82,40 @@ public:									// we create...
 	char 				m_comboEntryBuffer[1024];
 };
 
-static void s_callback(GtkWidget * /* widget */, gpointer user_data)
+/**
+ * toolbar_append_with_eventbox
+ *
+ * Borrowed code from gnumeric (src/gnumeric-util.c)
+ *
+ * @toolbar               toolbar
+ * @widget                widget to insert
+ * @tooltip_text          tooltip text
+ * @tooltip_private_text  longer tooltip text
+ *
+ * Packs widget in an eventbox and adds the eventbox to toolbar.
+ * This lets a windowless widget (e.g. combo box) have tooltips.
+ **/
+static void
+toolbar_append_with_eventbox (GtkToolbar *toolbar, GtkWidget  *widget,
+			      const char *tooltip_text,
+			      const char *tooltip_private_text)
+{
+	GtkWidget *eventbox;
+
+	g_return_if_fail (GTK_IS_TOOLBAR (toolbar));
+	g_return_if_fail (widget != NULL);
+
+	/* An event box to receive events - this is a requirement for having
+           tooltips */
+	eventbox = gtk_event_box_new ();
+	gtk_widget_show (widget);
+	gtk_container_add (GTK_CONTAINER (eventbox), widget);
+	gtk_widget_show (eventbox);
+	gtk_toolbar_append_widget (GTK_TOOLBAR (toolbar), eventbox,
+				   tooltip_text, tooltip_private_text);
+}
+
+static int s_callback(GtkWidget * /* widget */, gpointer user_data)
 {
         // map the user_data into an object and dispatch the event.
   
@@ -301,10 +334,10 @@ UT_Bool EV_UnixGnomeToolbar::synthesize(void)
 								    GTK_SIGNAL_FUNC (s_combo_changed), wd);
 
 				                // stick it in the toolbar
-						gtk_toolbar_append_widget(GTK_TOOLBAR(m_wToolbar),
-									  comboBox,
-									  szToolTip,
-									  (const char *) NULL);
+						toolbar_append_with_eventbox(GTK_TOOLBAR(m_wToolbar),
+									     comboBox,
+									     szToolTip,
+									     (const char *)NULL);
 						wd->m_widget = comboBox;
 					}
 				}
@@ -341,14 +374,7 @@ UT_Bool EV_UnixGnomeToolbar::synthesize(void)
 			_wd * wd = new _wd(this,id);
 			UT_ASSERT(wd);
 			m_vecToolbarWidgets.addItem(wd);
-
-#if 0
-			gtk_widget_show(m_wToolbar);
-			_addToolbar(m_wToolbar);
-			m_wToolbar = _makeToolbar();
-#else
 		        gtk_toolbar_append_space(GTK_TOOLBAR(m_wToolbar));
-#endif
 			break;
 		}
 		
@@ -379,13 +405,6 @@ UT_Bool EV_UnixGnomeToolbar::_addToolbar (GtkWidget *toolbar)
 		beh = GNOME_DOCK_ITEM_BEH_NORMAL;
 	else
 		beh = GNOME_DOCK_ITEM_BEH_LOCKED;
-
-	// HACK: UGLIEST HACK OF THE CENTURY!!
-	// HACK: I want the GNOME_DOCK_ITEM_NEVER_VERTICAL for the first
-	// HACK: toolbar of the second band... (this must to be set in the xp
-	// HACK: toolbar description)
-	if (nbBands == 1 && nbToolbarsInBand == 0)
-		beh = static_cast<GnomeDockItemBehavior> (beh | GNOME_DOCK_ITEM_BEH_NEVER_VERTICAL);
 
 	buf = g_strdup_printf("Toolbar %d-%d", nbBands, ++nbToolbarsInBand);
 	//	g_print ("Toolbar style = %d\n", static_cast<int> (toolbar->style));
@@ -424,6 +443,7 @@ GtkWidget *EV_UnixGnomeToolbar::_makeToolbar(void)
 		
 	toolbar = gtk_toolbar_new(GTK_ORIENTATION_HORIZONTAL, style);
 	UT_ASSERT(GTK_TOOLBAR (toolbar));
+
 	gtk_toolbar_set_button_relief(GTK_TOOLBAR (toolbar), GTK_RELIEF_NONE);
 	gtk_toolbar_set_tooltips(GTK_TOOLBAR (toolbar), TRUE);
 	gtk_toolbar_set_space_size(GTK_TOOLBAR (toolbar), 10);
@@ -434,36 +454,17 @@ GtkWidget *EV_UnixGnomeToolbar::_makeToolbar(void)
 
 void EV_UnixGnomeToolbar::show(void)
 {
-#if 0
-	UT_uint32 nbToolbars = m_vecToolbars.getItemCount();
-	for (UT_uint32 i = 0; i < nbToolbars; i++)
-	{
-		GtkWidget *toolbar = static_cast<GtkWidget *> (m_vecToolbars.getNthItem(i));
-		gtk_widget_show (toolbar->parent);
-	}
-#else
 	if(m_wToolbar)
 	  gtk_widget_show(m_wToolbar->parent);
-#endif
 }
 
 void EV_UnixGnomeToolbar::hide(void)
 {
-#if 0
-	UT_uint32 nbToolbars = m_vecToolbars.getItemCount();
-	for (UT_uint32 i = 0; i < nbToolbars; i++)
-	{
-		GtkWidget *toolbar = static_cast<GtkWidget *> (m_vecToolbars.getNthItem(i));
-		gtk_widget_hide (toolbar->parent);
-		gtk_widget_queue_resize (toolbar->parent->parent);
-	}
-#else
 	if(m_wToolbar)
 	  {
 	    gtk_widget_hide(m_wToolbar->parent);
 	    gtk_widget_queue_resize (m_wToolbar->parent->parent);
 	  }
-#endif
 }
 
 // TODO: Dom, we copy *far* too much code from the GTK version here
