@@ -70,7 +70,6 @@ public:									// we create...
 	// a microclass for combo boxes.
 	static void s_combo_changed(GtkEntry * widget, gpointer user_data) //blah, gpointer user_data)
 	{
-		UT_DEBUGMSG(("Caught combo box change, reformatting!"));
 		_wd * wd = (_wd *) user_data;
 		UT_ASSERT(wd);
 
