@@ -17,7 +17,8 @@
  * 02111-1307, USA.
  */
 
-/* Italian translations provided by Mauro Colorio <macolori@tin.it> */
+/* Original italian translations provided by Mauro Colorio <macolori@tin.it> */
+/* Work continued by Marco Innocenti <dot0037@iperbole.bologna.it> */
 
 
 /*****************************************************************
@@ -70,14 +71,14 @@ BeginSet(ItIT,UT_TRUE)
 	MenuLabel(AP_MENU_ID_EDIT_FIND,			"&Trova",			"Cerca il testo specificato")
 	MenuLabel(AP_MENU_ID_EDIT_REPLACE,		"Sostit&uisci",		"Sostituisce il testo specificato con un altro")
 	MenuLabel(AP_MENU_ID_EDIT_GOTO,			"&Vai a",			"Sposta il cursore nel punto specificato")
-	MenuLabel(AP_MENU_ID_EDIT_SPELL,		"&Spelling",		"Check the document for incorrect spelling")
+	MenuLabel(AP_MENU_ID_EDIT_SPELL,		"&Controllo ortografico",		"Controlla l'ortografia del documento")
 	MenuLabel(AP_MENU_ID_EDIT_OPTIONS,		"&Opzioni",			"Setta le opzioni")
 	
 	MenuLabel(AP_MENU_ID_VIEW,				"&Visualizza",			NULL)
 	MenuLabel(AP_MENU_ID_VIEW_TOOLBARS,		"&Barre degli strumenti",		NULL)
 	MenuLabel(AP_MENU_ID_VIEW_TB_STD,		"&Standard",			"Visualizza o nasconde la barra degli strumenti standard")
 	MenuLabel(AP_MENU_ID_VIEW_TB_FORMAT,	"&Formattazione",		"Visualizza o nasconde la barra degli strumenti di formattazione")
-	MenuLabel(AP_MENU_ID_VIEW_RULER,		"&Regole",				"Visualizza o nasconde la barra degli strumenti delle regole")
+	MenuLabel(AP_MENU_ID_VIEW_RULER,		"&Righelli",				"Visualizza o nasconde i righelli")
 	MenuLabel(AP_MENU_ID_VIEW_STATUSBAR,	"&Barra di stato",		"Visualizza o nasconde la barra di stato")
 	MenuLabel(AP_MENU_ID_VIEW_SHOWPARA,		"Visualizza Para&grafi",	"Visualizza i caratteri che non vengono stampati")
 	MenuLabel(AP_MENU_ID_VIEW_HEADFOOT,		"&Intestazione e piè di pagina",	"Edita il testo nell'intestazione e nel piè di ogni pagina")
@@ -100,8 +101,9 @@ BeginSet(ItIT,UT_TRUE)
 	MenuLabel(AP_MENU_ID_FMT_STYLE,			"St&ile",				"Definisce o applica uno stile alla selezione")
 	MenuLabel(AP_MENU_ID_FMT_TABS,			"&Tabulazione",			"Setta la tabulazione")
 	MenuLabel(AP_MENU_ID_FMT_BOLD,			"&Grassetto",			"Mette in grassetto la selezione")
-	MenuLabel(AP_MENU_ID_FMT_ITALIC,		"&Italico",				"Mette in italico la selezione (reversibile)")
+	MenuLabel(AP_MENU_ID_FMT_ITALIC,		"&Inclinato",				"Inclina la selezione (reversibile)")
 	MenuLabel(AP_MENU_ID_FMT_UNDERLINE,		"&Sottolineato",		"Sottolinea la selezione (reversibile)")
+	MenuLabel(AP_MENU_ID_FMT_OVERLINE,		"&Overline",		"Mette una linea sopra la selezione (reversibile)")
 	MenuLabel(AP_MENU_ID_FMT_STRIKE,		"&Barrato",				"Barra la selezione (reversibile)")
         MenuLabel(AP_MENU_ID_FMT_SUPERSCRIPT,   "&Apice",         "Scrive in apice la selezione (reversibile)")                                                    
         MenuLabel(AP_MENU_ID_FMT_SUBSCRIPT,             "P&edice",           "Scrive in pedice la selezione (reversibile)")                                              

@@ -17,8 +17,8 @@
  * 02111-1307, USA.
  */
 
-/* Italian translations provided by Mauro Colorio <macolori@tin.it> */
-
+/* Original italian translations provided by Mauro Colorio <macolori@tin.it> */
+/* Work continued by Marco Innocenti <dot0037@iperbole.bologna.it> */
 
 /*****************************************************************
 ******************************************************************
@@ -68,6 +68,7 @@ BeginSet(ItIT,UT_TRUE)
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_BOLD,		"Grassetto",	tb_text_bold_G_xpm,		NULL, "Grassetto")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_ITALIC,		"Italico",		tb_text_italic_xpm,		NULL, "Italico")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_UNDERLINE,	"Sottolineato",	tb_text_underline_S_xpm,	NULL, "Sottolineato")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_OVERLINE,	"Overline",tb_text_overline_xpm,	NULL, "Mette una linea sopra i caratteri")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_STRIKE,		"Barrato",		tb_text_strikeout_B_xpm,	NULL, "Barrato")
 
         ToolbarLabel(AP_TOOLBAR_ID_FMT_SUPERSCRIPT,     "Apice",  tb_text_superscript_xpm,        NULL, "Apice")
@@ -81,9 +82,9 @@ BeginSet(ItIT,UT_TRUE)
 	ToolbarLabel(AP_TOOLBAR_ID_PARA_0BEFORE,	"Nessuna",		tb_para_0before_xpm,	NULL, "Spaziatura: Nessuna")
 	ToolbarLabel(AP_TOOLBAR_ID_PARA_12BEFORE,	"12 pt",		tb_para_12before_xpm,	NULL, "Spaziatura: 12 pt")
 
-	ToolbarLabel(AP_TOOLBAR_ID_SINGLE_SPACE,	"Interlinea singolo",	tb_line_single_space_xpm,	NULL, "Interlinea singolo")
+	ToolbarLabel(AP_TOOLBAR_ID_SINGLE_SPACE,	"Interlinea singola",	tb_line_single_space_xpm,	NULL, "Interlinea singola")
 	ToolbarLabel(AP_TOOLBAR_ID_MIDDLE_SPACE,	"Interlinea 1.5",		tb_line_middle_space_xpm,	NULL, "Interlinea 1.5")
-	ToolbarLabel(AP_TOOLBAR_ID_DOUBLE_SPACE,	"Interlinea doppio",	tb_line_double_space_xpm,	NULL, "Interlinea doppio")
+	ToolbarLabel(AP_TOOLBAR_ID_DOUBLE_SPACE,	"Interlinea doppia",	tb_line_double_space_xpm,	NULL, "Interlinea doppia")
 
 	ToolbarLabel(AP_TOOLBAR_ID_1COLUMN,			"1 Colonna",	tb_1column_xpm,			NULL, "1 Colonna")
 	ToolbarLabel(AP_TOOLBAR_ID_2COLUMN,			"2 Colonne",	tb_2column_xpm,			NULL, "2 Colonne")
