@@ -1160,6 +1160,8 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
  */	
 void fl_BlockLayout::updateEnclosingBlockIfNeeded(void)
 {
+	UT_return_if_fail (m_pLayout);
+	
 	if(!isEmbeddedType())
 	{
 		xxx_UT_DEBUGMSG(("Block %x is Not enclosed - returning \n"));
@@ -4120,6 +4122,7 @@ bool fl_BlockLayout::doclistener_populateSpan(const PX_ChangeRecord_Span * pcrs,
 bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len)
 {
 	xxx_UT_DEBUGMSG(("_doInsertTextSpan: Initial offset %d, len %d\n", blockOffset, len));
+	UT_return_val_if_fail( m_pLayout, false );
 	PD_StruxIterator text(getStruxDocHandle(),
 						  blockOffset + fl_BLOCK_STRUX_OFFSET,
 						  blockOffset + fl_BLOCK_STRUX_OFFSET + len - 1);
@@ -5014,6 +5017,8 @@ void fl_BlockLayout::appendTextToBuf(UT_GrowBuf & buf)
 }
 bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs)
 {
+	UT_return_val_if_fail( m_pLayout, false );
+	
 	_assertRunListIntegrity();
 
 	UT_ASSERT(pcrs->getType()==PX_ChangeRecord::PXT_InsertSpan);
@@ -5594,6 +5599,7 @@ bool fl_BlockLayout::_delete(PT_BlockOffset blockOffset, UT_uint32 len)
 
 bool fl_BlockLayout::doclistener_deleteSpan(const PX_ChangeRecord_Span * pcrs)
 {
+	UT_return_val_if_fail( m_pLayout, false );
 	_assertRunListIntegrity();
 
 	UT_ASSERT(pcrs->getType()==PX_ChangeRecord::PXT_DeleteSpan);

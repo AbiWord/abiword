@@ -4457,7 +4457,7 @@ fl_ContainerLayout* fl_HdrFtrShadow::findMatchingContainer(fl_ContainerLayout* p
 	}
 	if(ppBL == NULL)
 	{
-		UT_ASSERT(0);
+		//UT_ASSERT(0);
 		m_pDoc->miniDump(pBL->getStruxDocHandle(),6);
 		if(pBL->getContainerType() == FL_CONTAINER_BLOCK)
 		{

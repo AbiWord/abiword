@@ -134,7 +134,7 @@ public:
 	virtual void		redrawUpdate();
 	virtual void        updateLayout(void) {}
 	virtual fp_Container * getNewContainer(fp_Container * pCon = NULL);
-	FV_View *		getView(void) const { return m_pLayout->getView(); }
+	FV_View *		getView(void) const { UT_return_val_if_fail( m_pLayout, NULL ); return m_pLayout->getView(); }
 
 	const char* getProperty(const XML_Char * pszName, bool bExpandStyles = true) const;
 	const PP_PropertyType * getPropertyType(const XML_Char * szName, tProperty_type Type, bool bExpandStyles = true) const;
