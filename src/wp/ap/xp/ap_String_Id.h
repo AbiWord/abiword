@@ -110,6 +110,15 @@ dcl(DLG_Break_Continuous,		"Con&tinuous")
 dcl(DLG_Break_EvenPage, 		"&Even page")
 dcl(DLG_Break_OddPage,			"&Odd page")
 
+/* Insert Table dialog */
+dcl(DLG_InsertTable_TableTitle,		"Insert Table")
+dcl(DLG_InsertTable_TableSize,		"Table size")
+dcl(DLG_InsertTable_NumCols,		"Number of columns:")
+dcl(DLG_InsertTable_NumRows,		"Number of rows:")
+dcl(DLG_InsertTable_AutoFit,		"AutoFit behavior")
+dcl(DLG_InsertTable_AutoColSize, 	"Automatic column size")
+dcl(DLG_InsertTable_FixedColSize,	"Fixed column size:")
+
 /* Word Count dialog */
 dcl(DLG_WordCount_WordCountTitle,	"Word Count")
 dcl(DLG_WordCount_Statistics,		"Statistics:")

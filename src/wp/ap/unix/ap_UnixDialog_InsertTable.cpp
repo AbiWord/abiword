@@ -103,7 +103,7 @@ GtkWidget * AP_UnixDialog_InsertTable::_constructWindow(void)
 	GtkWidget * windowInsertTable;
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
-	windowInsertTable = abiDialogNew ( true, "Insert Table"/*pSS->getValue(AP_STRING_ID_DLG_InsertTableTitle)*/);
+	windowInsertTable = abiDialogNew ( true, pSS->getValue(AP_STRING_ID_DLG_InsertTable_TableTitle));
 	
 	vboxMain = GTK_DIALOG(windowInsertTable)->vbox ;
 	gtk_container_set_border_width (GTK_CONTAINER (vboxMain), 10);	
@@ -145,7 +145,7 @@ GtkWidget * AP_UnixDialog_InsertTable::_constructWindowContents(void)
 	tableInsert = gtk_table_new (7, 3, FALSE);
 	gtk_widget_show (tableInsert);
 
-	UT_XML_cloneNoAmpersands(unixstr, /*pSS->getValue(AP_STRING_ID_DLG_InsertTable_TableSize)*/"Table size");
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_InsertTable_TableSize));
 	labelInsert = gtk_label_new (unixstr);
 	FREEP(unixstr);
 	gtk_widget_show (labelInsert);
@@ -155,7 +155,7 @@ GtkWidget * AP_UnixDialog_InsertTable::_constructWindowContents(void)
 	gtk_label_set_justify (GTK_LABEL (labelInsert), GTK_JUSTIFY_LEFT);
 	gtk_misc_set_alignment (GTK_MISC (labelInsert), 0, 0.5);
 
-	UT_XML_cloneNoAmpersands(unixstr, /*pSS->getValue(AP_STRING_ID_DLG_InsertTable_NumCols)*/"Number of columns:");
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_InsertTable_NumCols));
 	labelNumCols = gtk_label_new (unixstr);
 	FREEP(unixstr);
 	gtk_widget_show (labelNumCols);
@@ -169,7 +169,7 @@ GtkWidget * AP_UnixDialog_InsertTable::_constructWindowContents(void)
 	gtk_table_attach (GTK_TABLE (tableInsert), spinNumCols, 1, 2, 1, 2,
 					  (GtkAttachOptions) GTK_FILL, (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 0);
 
-	UT_XML_cloneNoAmpersands(unixstr, /*pSS->getValue(AP_STRING_ID_DLG_InsertTable_NumRows)*/"Number of rows:");
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_InsertTable_NumRows));
 	labelNumRows = gtk_label_new (unixstr);
 	FREEP(unixstr);
 	gtk_widget_show (labelNumRows);
@@ -188,7 +188,7 @@ GtkWidget * AP_UnixDialog_InsertTable::_constructWindowContents(void)
 	gtk_table_attach (GTK_TABLE (tableInsert), hseparator1, 0, 3, 3, 4,
 					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 6);
 
-	UT_XML_cloneNoAmpersands(unixstr, /*pSS->getValue(AP_STRING_ID_DLG_InsertTable_AutoFit)*/"AutoFit behavior");
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_InsertTable_AutoFit));
 	labelAutoFit = gtk_label_new (unixstr);
 	FREEP(unixstr);
 	gtk_widget_show (labelAutoFit);
@@ -198,7 +198,7 @@ GtkWidget * AP_UnixDialog_InsertTable::_constructWindowContents(void)
 	gtk_label_set_justify (GTK_LABEL (labelAutoFit), GTK_JUSTIFY_LEFT);
 	gtk_misc_set_alignment (GTK_MISC (labelAutoFit), 0, 0.5);
 
-	UT_XML_cloneNoAmpersands(unixstr, /*pSS->getValue(AP_STRING_ID_DLG_InsertTable_AutoColSize)*/"Automatic column size");
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_InsertTable_AutoColSize));
 	radiobuttonAutoColSize = gtk_radio_button_new_with_label (tableInsert_group, unixstr);
 	FREEP(unixstr);
 	tableInsert_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonAutoColSize));
@@ -207,7 +207,7 @@ GtkWidget * AP_UnixDialog_InsertTable::_constructWindowContents(void)
 	gtk_table_attach (GTK_TABLE (tableInsert), radiobuttonAutoColSize, 0, 1, 5, 6,
 					  (GtkAttachOptions) GTK_FILL, (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 0);
 	
-	UT_XML_cloneNoAmpersands(unixstr, /*pSS->getValue(AP_STRING_ID_DLG_InsertTable_FixedColSize)*/"Fixed column size:");
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_InsertTable_FixedColSize));
 	radiobuttonFixedColSize = gtk_radio_button_new_with_label (tableInsert_group, unixstr);
 	FREEP(unixstr);
 	tableInsert_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonFixedColSize));
