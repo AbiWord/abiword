@@ -19,6 +19,31 @@
  * 02111-1307, USA.
  *
  */
+/* GTK - The GIMP Toolkit
+ * Copyright (C) 1995-1997 Peter Mattis, Spencer Kimball and Josh MacDonald
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Library General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * Library General Public License for more details.
+ *
+ * You should have received a copy of the GNU Library General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
+ */
+
+/*
+ * Modified by the GTK+ Team and others 1997-1999.  See the AUTHORS
+ * file for a list of people on the GTK+ Team.  See the ChangeLog
+ * files for a list of changes.  These files are distributed with
+ * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
+ */
 
 #ifndef TABLECONTAINER_H
 #define TABLECONTAINER_H
@@ -37,6 +62,20 @@
 
 struct fp_Requisition;
 struct fp_Allocation;
+class fp_TableRowColumn
+{
+public:
+	fp_TableRowColumn(void);
+	virtual ~fpTableRowColumn(void);
+	UT_sint32 requisition;
+	UT_sint32 allocation;
+	UT_sint32 spacing;
+	bool need_expand;
+	bool need_shrink;
+	bool expand;
+	bool shrink;
+	bool empty;
+};
 
 class fp_VerticalContainer;
 class fp_Column;
@@ -62,6 +101,7 @@ public:
 
 	virtual void		draw(dg_DrawArgs*);
 	virtual void		draw(GR_Graphics*) {}
+	virtual void        setWidth(UT_sint32 iWidth);
 
 	virtual bool        isVBreakable(void);
 	virtual bool        isHBreakable(void) {return false;}
@@ -70,125 +110,105 @@ public:
 	virtual fp_ContainerObject * VBreakAt(UT_sint32);
 	virtual fp_ContainerObject * HBreakAt(UT_sint32) {return NULL;}
 	void                recalcMaxWidth(bool bDontClearIfNeeded = false) {}
-	virtual UT_sint32   getMarginBefore(void) const;
-	virtual UT_sint32   getMarginAfter(void) const;
-	virtual UT_sint32   getMarginBeforeInLayoutUnits(void) const;
-	virtual UT_sint32   getMarginAfterInLayoutUnits(void) const;
 	virtual void        setAssignedScreenHeight(UT_sint32) {}
 	virtual fp_Container * getNextContainerInSection(void) const;
 	virtual fp_Container * getPrevContainerInSection(void) const;
-
+    UT_uint32           getLeftAttach(void) const
+		{ return m_iLeftAttach;}
+    UT_uint32           getRightAttach(void) const
+		{ return m_iRightAttach;}
+    UT_uint32           getTopAttach(void) const
+		{ return m_iTopAttach;}
+    UT_uint32           getBottomAttach(void) const
+		{ return m_iBottomAttach;}
+    void                setLeftAttach(UT_uint32 i)
+		{ m_iLeftAttach = i;}
+    void                setRightAttach(UT_uint32 i)
+		{ m_iRightAttach = i;}
+    void                setTopAttach(UT_uint32 i)
+		{ m_iTopAttach = i;}
+    void                setBottomAttach(UT_uint32 i)
+		{ m_iBottomAttach = i;}
+	void                setToAllocation(void);
 private:
-	
+//
+// These variables describe where the cell is attached to the table.
+// The first cell in the Table is at (0,0)
+//
+// m_iLeftAttach is the leftmost column containing the cell.
+//  
+	UT_uint32           m_iLeftAttach;
 
+// m_iRightAttach is the first column to the right of the cell.
+
+	UT_uint32           m_iRightAttach;
+
+// m_iTopAttach is the topmost row containing the cell.
+
+	UT_uint32           m_iTopAttach;
+
+// m_iBottomAttach is the row immediately below the cell.
+
+	UT_uint32           m_iBottomAttach;
+
+// Local size request and allocation.
+
+	fp_Allocation       m_MyAllocation;
+	fp_Request          m_MyRequest;
 };
 
-class ABI_EXPORT fp_Column : public fp_VerticalContainer
+class ABI_EXPORT fp_TableContainer : public fp_Container
 {
 public:
-	fp_Column(fl_SectionLayout* pSectionLayout);
-	~fp_Column();
-
-	fl_DocSectionLayout*	getDocSectionLayout(void) const;
-
-	inline void			setLeader(fp_Column* p) { m_pLeader = p; }
-	inline void			setFollower(fp_Column* p) { m_pFollower = p; }
-	inline fp_Column*	getLeader(void) const 			{ return m_pLeader; }
-	inline fp_Column*	getFollower(void) const 		{ return m_pFollower; }
-	/*!
-	  Get page container is located on
-	  \return Page
-	*/
-
-	void				setPage(fp_Page* pPage) {m_pPage = pPage ;}
-	virtual inline fp_Page*		getPage(void) const
-		{ return m_pPage; }
+	fp_TableContainer(fl_SectionLayout* pSectionLayout);
+	~fp_TableContainer();
 
 	void				layout(void);
+	virtual void		draw(dg_DrawArgs*);
+	virtual void		draw(GR_Graphics*) {}
+    virtual void        clearScreen(void);
+	virtual bool        isVBreakable(void);
+	virtual bool        isHBreakable(void) {return false;}
+	virtual UT_sint32   wantVBreakAt(UT_sint32);
+	virtual UT_sint32   wantHBreakAt(UT_sint32) {return 0;}
+	virtual fp_ContainerObject * VBreakAt(UT_sint32);
+	virtual fp_ContainerObject * HBreakAt(UT_sint32) {return NULL;}
+	void                setToAllocation(void);
 
 
 #ifdef FMT_TEST
 	void				__dump(FILE * fp) const;
 #endif
 
-protected:
-	UT_uint32 				_getBottomOfLastContainer(void) const;
+private:
+	void                    _size_request_init(void);
+	void                    _size_request_pass1(void);
+	void                    _size_request_pass2(void);
+	void                    _size_request_pass3(void);
 
+    void                    _size_allocate_init(void);
+    void                    _size_allocate_pass1(void);
+	void                    _size_allocate_pass2(void);
+	UT_uint32 				_getBottomOfLastContainer(void) const;
 	void					_drawBoundaries(dg_DrawArgs* pDA);
 
-private:
+	UT_Vector               m_vecRows;
+	UT_Vector               m_vecColumns;
+	UT_sint32               m_iRows;
+	UT_sint32               m_iCols;
 
-	fp_Column*				m_pLeader;
-	fp_Column*				m_pFollower;
-	fp_Page*				m_pPage;
-};
+// Local size request and allocation.
 
-class ABI_EXPORT fp_ShadowContainer : public fp_VerticalContainer
-{
-public:
-	fp_ShadowContainer(UT_sint32 iX, UT_sint32 iY,
-					   UT_sint32 iWidth, UT_sint32 iHeight,
-					   UT_sint32 iWidthLayout, UT_sint32 iHeightLayout,
-					   fl_SectionLayout* pSL);
-	~fp_ShadowContainer();
-
-	fl_HdrFtrSectionLayout*	getHdrFtrSectionLayout(void) const;
-	fl_HdrFtrShadow *   getShadow();
- 	virtual void		draw(dg_DrawArgs*);
- 	virtual void		draw(GR_Graphics*) {};
-  	virtual void		layout(void);
- 	virtual void		clearScreen(void);
-	void                clearHdrFtrBoundaries(void);
-	void				setPage(fp_Page* pPage) {m_pPage = pPage ;}
-	virtual inline fp_Page*		getPage(void) const
-		{ return m_pPage; }
-protected:
-	void                _drawHdrFtrBoundaries(dg_DrawArgs * pDA);
-private:
-	bool                m_bHdrFtrBoxDrawn;
-	UT_sint32           m_ixoffBegin;
-	UT_sint32           m_iyoffBegin;
-	UT_sint32           m_ixoffEnd;
-	UT_sint32           m_iyoffEnd;
-	fp_Page*			m_pPage;
+	fp_Allocation           m_MyAllocation;
+	fp_Request              m_MyRequest;
 
 };
 
+#endif /* TABLECONTAINER_H */
 
-class ABI_EXPORT fp_HdrFtrContainer : public fp_VerticalContainer
-{
-public:
-	fp_HdrFtrContainer( UT_sint32 iWidth,
-					   UT_sint32 iWidthLayout,
-					   fl_SectionLayout* pSL);
-	~fp_HdrFtrContainer();
 
-	fl_HdrFtrSectionLayout*	getHdrFtrSectionLayout(void) const;
- 	virtual void		draw(dg_DrawArgs*);
-  	virtual void		layout(void);
- 	virtual void		clearScreen(void);
-	void		 		getScreenOffsets(fp_ContainerObject* pContainer, UT_sint32& xoff,
-										 UT_sint32& yoff);
 
-protected:
-};
 
-class fp_EndnoteSectionContainer : public fp_VerticalContainer
-{
-public:
-	fp_EndnoteSectionContainer(fl_SectionLayout* pSectionLayout);
-	~fp_EndnoteSectionContainer();
 
-	fl_EndnoteSectionLayout*	getEndnoteSectionLayout(void) const;
 
- 	virtual void		draw(dg_DrawArgs*);
-  	virtual void		layout(void);
- 	virtual void		clearScreen(void);
-	virtual inline fp_Page*		getPage(void) const
-		{ return m_pPage; }
-protected:
-private:
-	fp_Page*				m_pPage;
-};
 
-#endif /* COLUMN_H */
