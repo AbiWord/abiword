@@ -104,7 +104,7 @@ void XAP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
 							      GTK_STOCK_SAVE, 
 							      GTK_RESPONSE_YES,
 							      NULL);
-			dflResponse = GTK_RESPONSE_CANCEL;
+			dflResponse = GTK_RESPONSE_YES;
 			FREEP(tmp_str);
 			label = gtk_label_new(NULL);
 			if (m_szSecondaryMessage == NULL)
