@@ -380,7 +380,7 @@ void AP_UnixDialog_PageSetup::event_PageSizeChanged (fp_PageSize::Predefined pd)
   m_PageSize = ps;
 
   // change the units in the dialog, too.
-  guint new_units = ps.getUnit();
+  fp_PageSize::Unit new_units = ps.getUnit();
   gtk_option_menu_set_history (GTK_OPTION_MENU (m_optionPageUnits), fp_2_pos (new_units));
 
   float w, h;
