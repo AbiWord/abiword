@@ -22,11 +22,8 @@ ABI_ROOT:=$(shell pwd)/../../../..
 
 include $(ABI_ROOT)/src/config/abi_defs.mk
 
-ifeq ($(ABI_OPT_NSIS_20),1)
+#The setup file name, include version in name.
 PROGRAM=		$(BINDIR)/setup_abiword.${ABI_BUILD_VERSION_MAJOR}-$(ABI_BUILD_VERSION_MINOR)-${ABI_BUILD_VERSION_MICRO}.exe
-else
-PROGRAM=		$(BINDIR)/setup_abiword.exe
-endif
 
 TARGETS=		$(PROGRAM)
 
@@ -40,15 +37,15 @@ include $(ABI_ROOT)/src/config/abi_rules.mk
 # but only sometimes, sometimes it doesn't matter, sometimes using it fails, I'm so confused...
 ifeq ($(OS_NAME),MINGW32)
 NSIS_DEF = "//D"
+NSIS_OPT = $(NSIS_DEF)MINGW32=1
 else
 NSIS_DEF = "/D"
+NSIS_OPT =
 endif
 
 
-ifeq ($(ABI_OPT_NSIS_20),1)
-
 NSIS_SRC =  ./NSISv2/*.ns*
-NSIS_OPT =  $(NSIS_DEF)VERSION=$(ABI_BUILD_VERSION) $(NSIS_DEF)VERSION_MAJOR=$(ABI_BUILD_VERSION_MAJOR)
+NSIS_OPT += $(NSIS_DEF)VERSION=$(ABI_BUILD_VERSION) $(NSIS_DEF)VERSION_MAJOR=$(ABI_BUILD_VERSION_MAJOR)
 NSIS_OPT += $(NSIS_DEF)VERSION_MINOR=$(ABI_BUILD_VERSION_MINOR) $(NSIS_DEF)VERSION_MICRO=$(ABI_BUILD_VERSION_MICRO)
 #e.g. NSIS_CRTL_URL=http://abiword.pchasm.org/microsoft/ NSIS_CRTL_FILENAME=msvcr70.dll
 #or   NSIS_CRTL_LOCAL=\MS\REDIST\ NSIS_CRTL_FILENAME=msvcrt.dll NSIS_CRTL_WIN95ONLY
@@ -57,7 +54,7 @@ ifdef NSIS_CRTL_LOCAL
 NSIS_OPT += $(NSIS_DEF)OPT_CRTL_LOCAL=$(NSIS_CRTL_LOCAL)
 endif
 ifdef NSIS_CRTL_URL
-NSIS_OPT += /DOPT_CRTL_URL=$(NSIS_CRTL_URL)
+NSIS_OPT += $(NSIS_DEF)OPT_CRTL_URL=$(NSIS_CRTL_URL)
 endif
 ifdef NSIS_CRTL_FILENAME
 NSIS_OPT += $(NSIS_DEF)OPT_CRTL_FILENAME=$(NSIS_CRTL_FILENAME)
@@ -68,31 +65,36 @@ ifeq ($(NSIS_CRTL_WIN95ONLY),1)
 NSIS_OPT += $(NSIS_DEF)OPT_CRTL_WIN95ONLY
 endif
 
-else #($(ABI_OPT_NSIS_20),1)
-NSIS_SRC = ./AbiWord.nsi
-NSIS_OPT = 
-endif
 
-ifeq ($(OS_NAME),MINGW32)
-NSIS_OPT += $(NSIS_DEF)MINGW32=1
-endif
-
-$(PROGRAM): $(BINDIR)/makensis$(EXE_SUFFIX)
+$(PROGRAM): 
 	@rm -f $(BINDIR)/*.ns*; \
 	$(ABICOPY) $(NSIS_SRC) $(BINDIR)/; \
 	cd $(BINDIR); \
-	$(BINDIR)/makensis$(EXE_SUFFIX) $(NSIS_OPT) ./AbiWord.nsi
+	$(NSIS_ROOT)/makensis$(EXE_SUFFIX) $(NSIS_OPT) ./AbiWord.nsi
 
 _NSIS_:
-	@if [ -d $(ABI_ROOT)/../nsis ]; then			\
-		echo Found nsis in peer directory;		\
-		$(MAKE) -f Makefile.abi -C $(ABI_ROOT)/../nsis;		\
-	else									\
-		echo nsis not found;						\
-		echo TODO provide a nicer error message;			\
-		echo TODO with instructions for obtaining it;			\
-		exit 1;								\
+	@if [ -d $(NSIS_ROOT) ]; then	\
+		echo Using installed NSIS version found at $(NSIS_ROOT);	\
+	else	if [ -d $(ABI_ROOT)/../nsis ]; then	\
+			echo "Found nsis in peer directory";	\
+			echo "$(ABI_ROOT)/../nsis/ ";	\
+			echo "Building NSIS compiler from source, if you have" ;	\
+			echo "problems building, please try a release build from";	\
+			echo "http://nsis.sourceforge.net instead."; \
+			$(MAKE) -f Makefile.abi -C $(ABI_ROOT)/../nsis;		\
+			NSIS_ROOT = $(BINDIR);	\
+		else									\
+			echo "NSIS not found.  You can check it out of cvs by"; \
+			echo "cvs -d :pserver:anoncvs:anoncvs@anoncvs.abisource.com:/cvsroot checkout nsis"; \
+			echo "or preferably, download from http://nsis.sourceforge.net"; \
+			echo "You will also need the md5sum and untgz NSIS plugins, and"; \
+			echo "basic support for Albanian added to the Language files";	\
+			echo "available in the NSIS archives, Abi's NSIS peer cvs module, or";	\
+			echo "from http://abiword.pchasm.org/source/";	\
+			exit 1;						\
+		fi	\
 	fi
+
 
 _W32NATIVE_PLUGIN_:
 	@if [ -d $(ABI_ROOT)/../abiword-plugins/wp/impexp/graphics/win32native ]; then	\
