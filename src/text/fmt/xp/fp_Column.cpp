@@ -197,7 +197,7 @@ void fp_Column::layout(void)
 		iY += iLineMarginAfter;
 	}
 
-	UT_uint32 iNewHeight = iY;
+	UT_sint32 iNewHeight = iY;
 	if (m_iHeight == iNewHeight)
 	{
 		return;
@@ -448,17 +448,29 @@ void fp_Column::bumpLines(fp_Line* pLastLineToKeep)
 {
 	UT_sint32 ndx = m_vecLines.findItem(pLastLineToKeep);
 	UT_ASSERT(ndx >= 0);
-	UT_uint32 iCount = m_vecLines.getItemCount();
-	UT_uint32 i;
+	UT_sint32 iCount = m_vecLines.getItemCount();
+	UT_sint32 i;
 
 	fp_Column* pNextColumn = getNext();
 	UT_ASSERT(pNextColumn);
-	
-	for (i=ndx + 1; i<iCount; i++)
-	{
-		fp_Line* pLine = (fp_Line*) m_vecLines.getNthItem(i);
 
-		pNextColumn->addLine(pLine);
+	if (pNextColumn->isEmpty())
+	{
+		for (i=ndx + 1; i<iCount; i++)
+		{
+			fp_Line* pLine = (fp_Line*) m_vecLines.getNthItem(i);
+
+			pNextColumn->addLine(pLine);
+		}
+	}
+	else
+	{
+		for (i=iCount - 1; i>=(ndx+1); i--)
+		{
+			fp_Line* pLine = (fp_Line*) m_vecLines.getNthItem(i);
+		
+			pNextColumn->insertLine(pLine);
+		}
 	}
 	
 	for (i=iCount - 1; i > ndx; i--)
