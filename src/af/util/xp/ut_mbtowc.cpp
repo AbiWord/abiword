@@ -71,7 +71,7 @@ UT_Mbtowc::~UT_Mbtowc()
 	    UT_iconv_close(cd);
 };
 
-int UT_Mbtowc::mbtowc(wchar_t &wc,char mb)
+int UT_Mbtowc::mbtowc(UT_UCS4Char &wc,char mb)
 {
     if(++m_bufLen>MY_MB_LEN_MAX) {
       initialize();
@@ -86,7 +86,7 @@ int UT_Mbtowc::mbtowc(wchar_t &wc,char mb)
     if (len!=(size_t)-1) {
 	bool swap = XAP_EncodingManager::swap_stou;
 	unsigned short val = outbuf[swap] | (outbuf[!swap]<<8);
-	wc = (wchar_t )val;
+	wc = (UT_UCS4Char)val;
 	m_bufLen = 0;
 	return 1;
     } else {

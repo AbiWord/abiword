@@ -20,7 +20,7 @@ public:
   UT_Mbtowc(const char* from_charset);
   UT_Mbtowc(const UT_Mbtowc& v);
   ~UT_Mbtowc();  
-  int mbtowc(wchar_t &wc,char mb);
+  int mbtowc(UT_UCS4Char &wc,char mb);
   void setInCharset(const char* charset);
  private:
   char m_buf[MB_LEN_MAX];

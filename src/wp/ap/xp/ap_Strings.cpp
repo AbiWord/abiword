@@ -236,7 +236,7 @@ bool AP_DiskStringSet::setValue(XAP_String_Id id, const XML_Char * szString)
 		int length;
 		for (int k=0; k<kLimit; k++)
 		{
-		    if (wctomb_conv.wctomb(letter_buf,length,(wchar_t)p[k])) {
+		    if (wctomb_conv.wctomb(letter_buf,length,p[k])) {
 			str.append((UT_Byte*)letter_buf,length);
 		    };
 		}

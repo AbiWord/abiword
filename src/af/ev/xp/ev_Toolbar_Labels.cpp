@@ -112,7 +112,7 @@ EV_Toolbar_Label::EV_Toolbar_Label(XAP_Toolbar_Id id,
 				}
 
 				FriBidiCharType fbdDomDir = fribidi_get_type(fbdStr[0]);
-#if 1
+
 // this has been crashing with en-US (but not en-GB), due to some
 // weird memory managment in the fribidi library; so I defined
 // USE_SIMPLE_MALLOC for it, which solved the problem
@@ -125,11 +125,10 @@ EV_Toolbar_Label::EV_Toolbar_Label(XAP_Toolbar_Id id,
 				       NULL,
 				       NULL,
 				       NULL);
-#endif
 
 				for(i = 0; i < j; i++)
 				{
-					if (wctomb_conv.wctomb(letter_buf,length,(wchar_t)fbdStr2[i]))
+					if (wctomb_conv.wctomb(letter_buf,length,fbdStr2[i]))
 					{
 						for(k = 0; k < length; k++)
 							szStr[i++] = letter_buf[k];
