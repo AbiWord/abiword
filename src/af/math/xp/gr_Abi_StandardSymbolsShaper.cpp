@@ -17,7 +17,7 @@
  * 02111-1307, USA.
  */
 
-#include <MathView/ShapingResult.hh>
+#include <MathView/ShapingContext.hh>
 #include <MathView/ShaperManager.hh>
 #include <MathView/MathGraphicDevice.hh>
 #include <MathView/MathMLElement.hh>
@@ -36,8 +36,8 @@ GR_Abi_StandardSymbolsShaper::~GR_Abi_StandardSymbolsShaper()
 { }
 
 AreaRef
-GR_Abi_StandardSymbolsShaper::createGlyphArea(const SmartPtr<AreaFactory>& f,
-					      Char8 index, const scaled& size) const
+GR_Abi_StandardSymbolsShaper::getGlyphArea(const SmartPtr<AreaFactory>& f,
+					   Char8 index, const scaled& size) const
 {
   SmartPtr<GR_Abi_AreaFactory> factory = smart_cast<GR_Abi_AreaFactory>(f);
   assert(factory);

@@ -39,7 +39,7 @@ public:
   class GR_Graphics* getGraphics(void) const { return m_pGraphics; }
 
 protected:
-  virtual AreaRef createGlyphArea(const SmartPtr<class AreaFactory>&, Char8, const scaled&) const;
+  virtual AreaRef getGlyphArea(const SmartPtr<class AreaFactory>&, Char8, const scaled&) const;
    
   struct AbiTextProperties
   {

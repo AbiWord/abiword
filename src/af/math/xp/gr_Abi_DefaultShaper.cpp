@@ -17,7 +17,7 @@
  * 02111-1307, USA.
  */
 
-#include <MathView/ShapingResult.hh>
+#include <MathView/ShapingContext.hh>
 #include <MathView/ShaperManager.hh>
 #include <MathView/MathGraphicDevice.hh>
 #include <MathView/MathMLElement.hh>
@@ -88,29 +88,30 @@ GR_Abi_DefaultShaper::getTextProperties(MathVariant variant)
 }
 
 void
-GR_Abi_DefaultShaper::shape(const MathFormattingContext& ctxt, ShapingResult& result) const
+GR_Abi_DefaultShaper::shape(ShapingContext& context) const
 {
-  const GlyphSpec spec = result.getSpec();
+  const GlyphSpec spec = context.getSpec();
   if (spec.getFontId() == NORMAL_INDEX)
-    result.pushArea(1, shapeChar(NORMAL_VARIANT, ctxt, result.thisChar()));
+    context.pushArea(1, shapeChar(NORMAL_VARIANT, context, context.thisChar()));
   else
-    result.pushArea(1, shapeChar(ctxt.getVariant(), ctxt, spec.getGlyphId()));
+    context.pushArea(1, shapeChar(MathVariant(spec.getFontId() - MAPPED_BASE_INDEX + NORMAL_VARIANT),
+				  context, spec.getGlyphId()));
 }
 
 AreaRef
-GR_Abi_DefaultShaper::shapeChar(MathVariant variant, const MathFormattingContext& ctxt, UT_UCS4Char ch) const
+GR_Abi_DefaultShaper::shapeChar(MathVariant variant, const ShapingContext& context, UT_UCS4Char ch) const
 {
   // the "variant" parameter overrides the variant value in the formatting context
 
   static char fontSize[128];
-  sprintf(fontSize, "%dpt", static_cast<int>(ctxt.getSize().toFloat() + 0.5f));
+  sprintf(fontSize, "%dpt", static_cast<int>(context.getSize().toFloat() + 0.5f));
 
   const AbiTextProperties& props = getTextProperties(variant);
   GR_Font* font = m_pGraphics->findFont(props.family, props.style, 0, props.weight, 0, fontSize);
   UT_ASSERT(font);
 
-  SmartPtr<GR_Abi_AreaFactory> factory = smart_cast<GR_Abi_AreaFactory>(ctxt.getDevice()->getFactory());
-  return factory->charArea(m_pGraphics, font, ctxt.getSize(), ch);
+  SmartPtr<GR_Abi_AreaFactory> factory = smart_cast<GR_Abi_AreaFactory>(context.getFactory());
+  return factory->charArea(m_pGraphics, font, context.getSize(), ch);
 }
 
 void

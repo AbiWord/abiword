@@ -20,6 +20,7 @@
 #ifndef __gr_Abi_DefaultShaper_h__
 #define __gr_Abi_DefaultShaper_h__
 
+#include <MathView/MathVariant.hh>
 #include <MathView/Shaper.hh>
 
 #include "ut_types.h" // for UT_UCS4Char
@@ -37,7 +38,7 @@ public:
 
   virtual void registerShaper(const SmartPtr<class ShaperManager>&, unsigned);
   virtual void unregisterShaper(const SmartPtr<class ShaperManager>&, unsigned);
-  virtual void shape(const class MathFormattingContext&, class ShapingResult&) const;
+  virtual void shape(class ShapingContext&) const;
 
   void setGraphics(class GR_Graphics*);
   class GR_Graphics* getGraphics(void) const { return m_pGraphics; }
@@ -53,7 +54,7 @@ protected:
 
   static const AbiTextProperties& getTextProperties(MathVariant = NORMAL_VARIANT);
 
-  AreaRef shapeChar(MathVariant, const class MathFormattingContext&, UT_UCS4Char) const;
+  AreaRef shapeChar(MathVariant, const class ShapingContext&, UT_UCS4Char) const;
 
   class GR_Graphics* m_pGraphics;
 };
