@@ -355,11 +355,13 @@ bool pt_PieceTable::changeSpanFmt(PTChangeFmt ptc,
 	}
 	if (dpos1 == dpos2) 		// if length of change is zero, then we have a toggle format.
 	{
+		UT_uint32 startUndoPos = m_history.getUndoPos();
 		bool bRes = _insertFmtMarkFragWithNotify(ptc,dpos1,attributes,lProps);
+		UT_uint32 endUndoPos = m_history.getUndoPos();
 		// Won't be a persistant change if it's just a toggle
 		PX_ChangeRecord *pcr=0;
 		m_history.getUndo(&pcr);
-		if (pcr)
+		if (pcr && (startUndoPos != endUndoPos) )
 		{
 			UT_DEBUGMSG(("Setting persistance of change to false\n"));
 			pcr->setPersistance(false);
