@@ -74,7 +74,7 @@ InstallDirRegKey HKLM SOFTWARE\${APPSET}\${PRODUCT}\v${VERSION_MAJOR} "Install_D
 !include "abi_util_startmenu.nsh"
 
 
-; Support 'Modern' UI and multiple languages
+; Support 'Modern' UI
 !include "abi_mui.nsh"
 
 ; support for multiple languages within installer
@@ -195,11 +195,6 @@ Section "$(TITLE_section_abi_req)" section_abi_req
 		${lngCreateSMGroup}  "$STARTMENU_FOLDER"
 		${lngCreateShortCut} "$SMPROGRAMS" "$STARTMENU_FOLDER" "$(SHORTCUT_NAME)" "$INSTDIR\${MAINPROGRAM}" "" "$INSTDIR\${MAINPROGRAM}" 0
 		${lngCreateShortCut} "$SMPROGRAMS" "$STARTMENU_FOLDER" "$(SHORTCUT_NAME_UNINSTALL)" "$INSTDIR\Uninstall${PRODUCT}${VERSION_MAJOR}.exe" "" "$INSTDIR\Uninstall${PRODUCT}${VERSION_MAJOR}.exe" 0
-
-		; if help documents installed, add entry for Help
-		IfFileExists "$INSTDIR\AbiWord\help\en-US\index.html" 0 skipHelpLnk
-			${lngCreateShortCut} "$SMPROGRAMS" "$STARTMENU_FOLDER" "$(SHORTCUT_NAME_HELP)" "$INSTDIR\AbiWord\help\en-US\index.html" "" "" 0
-		skipHelpLnk:
 	!insertmacro MUI_STARTMENU_WRITE_END
 
 SectionEnd
