@@ -1,0 +1,92 @@
+
+Contents
+1. Introduction
+2. pfa / pfb fonts
+3. TTF fonts
+4. Unicode peculiarities
+5. Contact
+
+
+1. Introduction
+---------------
+AbiWord limits the fonts it makes available to the user to those
+located in /usr/local/AbiSuite/fonts directory (unless you chose
+different installation location) and in the locale-specific sub-
+directories of this directory (see the UnixLocale.txt document).
+A standard set of fonts is provided with AbiWord and these are
+located in this directory. If you wish to make an additional font
+available to AbiWord, you need to do the following:
+
+(1) Place the font into the fonts directory (or symlink it there,
+    if it is locate elsewhere on your machine).
+(2) Update the fonts.dir file. 
+
+This is engough, if you do not need to print, otherwise you also
+have to:
+
+(3) Provide afm file
+(4) Provide u2g file, if required (see below).
+
+
+2. pfa / pfb fonts
+------------------
+To update the fonts.dir file, you should add an entry for the new
+font into fonts.scale and then run mkfontdir. If you do not know
+what the entry in the fonts.scale should be, you can generate it
+using the utility ttmkfdir. Similarly, if your font did not come
+with afm file, you can generate it from the pfa font using the
+utility pfa2afm; the afm file needs to be located in, or symlinked
+to, the fonts directory. In the case of pfa / pfb fonts you do not 
+need to provide the u2g file.
+
+3. ttf fonts
+------------
+First of all, your font server must support ttf fonts. Then, just
+as in the case of pfa fonts, you need to add an entry into 
+fonts.scale, and you should use the same programme (ttmkfdir) to
+generate the entry from the font itself. Note that in the case of
+ttf fonts, the utility will generate multiple entries, for a number
+of diferent encodings the font supports, just disregard those you 
+do not need. Once fonts.scale is updated, run mkfontdir.
+
+Next you will need to provide both the afm file and a u2g file 
+for the font, both of which have to be located in the fonts directory,
+and have to have the same name as the pfa file. You can use the 
+utility ttf2uafm available at http:/www.frydrych.uklinux.net/abi/ to
+generate both files from the font. 
+
+The u2g file is needed to map glyph names in the font to UCS-2 values.
+If you are certain that your font uses standard PostScript names for
+its glyphs then you do not need a u2g file, but this is not likely
+to be the case with ttf fonts. However, fonts from a single vendor
+are likely to use the same names, and can, therefore, share a single
+u2g file to which you can create multiple symlinks to reflect the
+names of the different font files. Thus, if you would like to use the
+fonts arial.ttf, times.ttf and courier.ttf that Microsoft supplies with
+Windows, you can just generate u2g file from one of them, say arial.u2g,
+and create symlinks times.u2g and courier.u2g.
+
+
+4. Unicode peculiarities
+------------------------
+If are using a UTF-8 locale, you need to install unicode fonts. To
+make XFree86 to treat a font as a Unicode font, you need to specify
+the encoding in the XLFD (the entry in the fonts.dir/fonts.scale file) as 
+iso10646-1. To see if your font is treated as a Unicode font run 
+`xlsfonts -ll -fn font_name'. This will dump out lot of information
+about your font, and somewhere among it should be values min_byte1 
+and max_byte1; if both of these are 0, then your font is being treated
+as 8-bit only font. In my experience it is not currently possible to 
+use a pfa font under XFree86 4.0.2 as a proper Unicode font; if you 
+know how to make XFree treat a pfa font as a Unicode font, please let
+me know so that I can update this document.
+
+To generate the afm and u2g files from a ttf font, you must use the 
+programme ttf2uafm mentioned earlier; there are other utilities for 
+generating afm files from ttf fonts, but they may only be able to handle
+the first 256 characters in the font; ttf2uafm handles characters up
+to 0xFFFF.
+
+5. Contact
+----------
+This file was created by <tomas@frydrych.uklinux.net>.
