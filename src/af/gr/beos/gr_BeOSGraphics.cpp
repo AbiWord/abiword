@@ -62,16 +62,6 @@ utf8_char_len(uchar byte)
 	return (((0xE5000000 >> ((byte >> 3) & 0x1E)) & 3) + 1); 
 }
 
-const char* GR_Graphics::findNearestFont(const char* pszFontFamily,
-										 const char* pszFontStyle,
-										 const char* pszFontVariant,
-										 const char* pszFontWeight,
-										 const char* pszFontStretch,
-										 const char* pszFontSize)
-{
-	return pszFontFamily;
-}
-
 GR_BeOSGraphics::GR_BeOSGraphics(BView *docview, XAP_App * app) {
 	m_pApp = app;
 	m_pShadowView = NULL;

@@ -394,6 +394,7 @@ bool XAP_App::initialize(const char * szKeyBindingsKey, const char * szKeyBindin
 			}
 		}
 	}
+	
 	return true;
 }
 
@@ -1005,7 +1006,7 @@ void XAP_App::rememberFocussedFrame( void * pJustFocussedFrame)
 	notifyModelessDlgsOfActiveFrame(m_lastFocussedFrame);
 }
 
-UT_sint32 XAP_App::safefindFrame( XAP_Frame * f)
+UT_sint32 XAP_App::safefindFrame( XAP_Frame * f) const
 {
 	long ff = reinterpret_cast<long>(f);
 	UT_sint32 num_frames = m_vecFrames.getItemCount();
@@ -1024,7 +1025,7 @@ void XAP_App::clearLastFocussedFrame()
 	m_lastFocussedFrame = static_cast<XAP_Frame *>(NULL);
 }
 
-XAP_Frame* XAP_App::getLastFocussedFrame() 
+XAP_Frame* XAP_App::getLastFocussedFrame() const
 {
 		if(m_lastFocussedFrame == static_cast<XAP_Frame *>(NULL))
 			return static_cast<XAP_Frame *>(NULL);
@@ -1034,7 +1035,7 @@ XAP_Frame* XAP_App::getLastFocussedFrame()
 	return static_cast<XAP_Frame *>(NULL);
 }
 
-XAP_Frame * XAP_App::findValidFrame()
+XAP_Frame * XAP_App::findValidFrame() const
 {
 	XAP_Frame * validFrame =  getFrame(0);
 	return validFrame;
@@ -1390,6 +1391,34 @@ void XAP_App::setDefaultGraphicsId(UT_uint32 i)
 		
 		pPrefsScheme->setValue(XAP_PREF_KEY_DefaultGraphics, s.c_str());
 	}
+}
+
+/*!
+    Find the nearest matching font based on the provided parameters
+
+    TODO: we should use a more sophisticated description of fonts to allow for better matching
+    
+	NB: This is a convenience function; if you need to test for a number of fonts, you
+	    should use the code from this function to avoid recreating the graphics class. 
+*/
+const char* XAP_App::findNearestFont(const char* pszFontFamily,
+									 const char* pszFontStyle,
+									 const char* pszFontVariant,
+									 const char* pszFontWeight,
+									 const char* pszFontStretch,
+									 const char* pszFontSize)
+{
+	XAP_App * pApp = XAP_App::getApp();
+	UT_return_val_if_fail( pApp, pszFontFamily );
+	
+	GR_Graphics * pG = pApp->newDefaultScreenGraphics();
+	UT_return_val_if_fail( pG, pszFontFamily );
+
+	const char * pf = pG->findNearestFont(pszFontFamily, pszFontStyle, pszFontVariant,
+										   pszFontWeight, pszFontStretch, pszFontSize);
+
+	delete pG;
+	return pf;
 }
 
 #ifdef DEBUG

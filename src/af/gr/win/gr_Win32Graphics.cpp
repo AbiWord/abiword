@@ -62,16 +62,6 @@
 
 /*****************************************************************/
 
-const char* GR_Graphics::findNearestFont(const char* pszFontFamily,
-										 const char* pszFontStyle,
-										 const char* pszFontVariant,
-										 const char* pszFontWeight,
-										 const char* pszFontStretch,
-										 const char* pszFontSize)
-{
-	return pszFontFamily;
-}
-
 // A small helper class
 class private_FontReverter
 {

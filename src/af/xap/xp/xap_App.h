@@ -69,6 +69,7 @@ class XAP_InputModes;
 class AV_Listener;
 class GR_EmbedManager;
 
+
 /*****************************************************************
 ******************************************************************
 ** This file defines the base class for the cross-platform 
@@ -162,10 +163,10 @@ public:
 	virtual bool							canPasteFromClipboard() = 0;
 	virtual void							cacheCurrentSelection(AV_View *) = 0;
 	void									rememberFocussedFrame(void * pJustFocussedFrame);
-	XAP_Frame *								getLastFocussedFrame();
-	XAP_Frame *								findValidFrame();
+	XAP_Frame *								getLastFocussedFrame() const;
+	XAP_Frame *								findValidFrame() const;
 	bool									safeCompare(XAP_Frame * lff, XAP_Frame * f);
-	UT_sint32								safefindFrame(XAP_Frame * f);
+	UT_sint32								safefindFrame(XAP_Frame * f) const;
 	void									clearLastFocussedFrame();
 	void									clearIdTable();
 	bool                                    setDebugBool(void)
@@ -231,6 +232,7 @@ public:
 	GR_Graphics *              newGraphics(GR_AllocInfo &ai) const;
 	                           /*secondary graphics allocator; use only in special cases */
 	GR_Graphics *              newGraphics(UT_uint32 iClassId, GR_AllocInfo &ai) const;
+	virtual GR_Graphics *      newDefaultScreenGraphics() const {UT_ASSERT_HARMLESS( UT_NOT_IMPLEMENTED ); return NULL;}
 	
 	virtual UT_sint32			setInputMode(const char * szName);
 	const char *				getInputMode() const;
@@ -242,6 +244,13 @@ public:
     UT_uint32                   registerEmbeddable(GR_EmbedManager * pEmbed);
     bool                        unRegisterEmbeddable(UT_uint32 uid);
 	GR_EmbedManager *           getEmbeddableManager(GR_Graphics * pG, const char * szObjectType);
+
+	static const char*          findNearestFont(const char* pszFontFamily,
+												const char* pszFontStyle,
+												const char* pszFontVariant,
+												const char* pszFontWeight,
+												const char* pszFontStretch,
+												const char* pszFontSize);
 
 protected:
 	void									_setAbiSuiteLibDir(const char * sz);

@@ -111,16 +111,6 @@ private:
 
 UT_uint32 				GR_CocoaGraphics::s_iInstanceCount = 0;
 
-const char* GR_Graphics::findNearestFont(const char* pszFontFamily,
-										 const char* pszFontStyle,
-										 const char* pszFontVariant,
-										 const char* pszFontWeight,
-										 const char* pszFontStretch,
-										 const char* pszFontSize)
-{
-	return pszFontFamily;
-}
-
 GR_CocoaGraphics::GR_CocoaGraphics(NSView * win, XAP_App * app) :
 	m_updateCallback(NULL),
 	m_updateCBparam (NULL),

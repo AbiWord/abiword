@@ -144,7 +144,7 @@ bool pt_PieceTable::_loadBuiltinStyles(void)
 	const char* szFmt;
 	
 	// findNearestFont will do a fuzzy match, and return the nearest font in the system
-	const char* pszFamily = GR_Graphics::findNearestFont("Times New Roman", "normal", "", "normal", "", "12pt");
+	const char* pszFamily = XAP_App::findNearestFont("Times New Roman", "normal", "", "normal", "", "12pt");
 	UT_String_sprintf(stTmp, "font-family:%s; font-size:12pt; font-weight:normal; "
 					  "font-style:normal; font-stretch:normal; font-variant:normal; "
 					  "margin-top:0pt; margin-bottom:0pt; "
@@ -152,7 +152,7 @@ bool pt_PieceTable::_loadBuiltinStyles(void)
 					  "text-indent:0in; text-position:normal; line-height:1.0; "
 					  "color:000000; bgcolor:transparent; widows:2", pszFamily);
 
-	pszFamily = GR_Graphics::findNearestFont("Arial", "normal", "", "normal", "", "12pt");
+	pszFamily = XAP_App::findNearestFont("Arial", "normal", "", "normal", "", "12pt");
 	
 	stTmp += "; dom-dir:";
 #	ifdef BIDI_RTL_DOMINANT

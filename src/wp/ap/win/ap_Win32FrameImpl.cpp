@@ -39,6 +39,12 @@
 #define SPI_GETWHEELSCROLLLINES   104
 #endif
 
+// I really hate doing this, but this constant is only defined with _WIN32_WINNT >=
+// 0x0501, i.e., winXP, and I do not want to enable the lot
+#ifndef WM_UNICHAR
+#define WM_UNICHAR 0x109
+#endif
+
 #define GWL(hwnd)		reinterpret_cast<AP_Win32Frame *>(GetWindowLong((hwnd), GWL_USERDATA))
 #define SWL(hwnd, f)	reinterpret_cast<AP_Win32Frame *>(SetWindowLong((hwnd), GWL_USERDATA,(LONG)(f)))
 
@@ -1216,6 +1222,15 @@ LRESULT CALLBACK AP_Win32FrameImpl::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARA
 			return DefWindowProc(hwnd,iMsg,wParam,lParam);
 		}
 
+		case WM_UNICHAR:
+		{
+			UT_DEBUGMSG(("WM_CHAR %d  - %d\n",wParam, lParam));
+			ev_Win32Keyboard *pWin32Keyboard = static_cast<ev_Win32Keyboard *>(fImpl->m_pKeyboard);
+	    
+			pWin32Keyboard->onUniChar(pView,hwnd,iMsg,wParam,lParam);		
+			return DefWindowProc(hwnd,iMsg,wParam,lParam);
+		}
+
 		case WM_IME_CHAR:
 		{
 			ev_Win32Keyboard *pWin32Keyboard = static_cast<ev_Win32Keyboard *>(fImpl->m_pKeyboard);
@@ -1362,7 +1377,7 @@ UT_RGBColor AP_Win32FrameImpl::getColorSelBackground () const
 	return UT_RGBColor( red, green, blue );
 }
 
-GR_Win32Graphics *AP_Win32FrameImpl::_createDocWnd_GR_Graphics(void)
+GR_Win32Graphics *AP_Win32FrameImpl::createDocWndGraphics(void)
 {
 	GR_Win32AllocInfo ai(GetDC(getHwndDocument()), getHwndDocument(), XAP_App::getApp());
 	return (GR_Win32Graphics *)XAP_App::getApp()->newGraphics(ai);

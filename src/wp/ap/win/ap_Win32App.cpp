@@ -280,7 +280,7 @@ bool AP_Win32App::initialize(void)
 	// Check for necessary DLLs now that we can do localized error messages
 	//////////////////////////////////////////////////////////////////
 
-#if 0 /* re-enable once we use unicows again */
+#if 1 /* re-enable once we use unicows again */
 	// Ensure that we have Unicows dll
 	if (!UT_IsWinNT())
 	{
@@ -1733,4 +1733,15 @@ UT_UTF8String	AP_Win32App::s_fromWinLocaleToUTF8(const char* szIn)
 	UT_UTF8String sRslt(sUCS4.utf8_str());	
 
 	return sRslt;
+}
+
+GR_Graphics * AP_Win32App::newDefaultScreenGraphics() const
+{
+	XAP_Frame * pFrame = findValidFrame();
+	UT_return_val_if_fail( pFrame, NULL );
+	
+	AP_Win32FrameImpl * pFI = (AP_Win32FrameImpl *) pFrame->getFrameImpl();
+	UT_return_val_if_fail( pFI, NULL );
+
+	return pFI->createDocWndGraphics();
 }

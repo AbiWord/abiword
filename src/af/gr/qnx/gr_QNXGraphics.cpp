@@ -48,15 +48,6 @@
 #define DRAW_START if(DrawSetup() == -1) return; 
 #define DRAW_END   DrawTeardown();
 
-const char* GR_Graphics::findNearestFont(const char* pszFontFamily,
-										 const char* pszFontStyle,
-										 const char* pszFontVariant,
-										 const char* pszFontWeight,
-										 const char* pszFontStretch,
-										 const char* pszFontSize)
-{
-	return pszFontFamily;
-}
 
 bool GR_QNXGraphics::OSCIsValid() {
 #ifdef WITH_OSC

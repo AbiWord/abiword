@@ -81,6 +81,14 @@ class GR_UnixGraphics : public GR_Graphics
 	virtual void		setFont(GR_Font* pFont);
 	virtual void        clearFont(void) {m_pFont = NULL;} 
 	virtual UT_uint32	getFontHeight();
+
+	virtual const char* findNearestFont(const char* pszFontFamily,
+										const char* pszFontStyle,
+										const char* pszFontVariant,
+										const char* pszFontWeight,
+										const char* pszFontStretch,
+										const char* pszFontSize);
+
 	// virtual UT_uint32	measureString(const UT_UCSChar*s, int iOffset, int num, unsigned short* pWidths);
 	virtual UT_sint32 measureUnRemappedChar(const UT_UCSChar c);
 

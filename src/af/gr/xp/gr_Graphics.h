@@ -382,12 +382,14 @@ class ABI_EXPORT GR_Graphics
 					   const char* pszFontWeight,
 					   const char* pszFontStretch,
 					   const char* pszFontSize);
-	static const char* findNearestFont(const char* pszFontFamily,
-									   const char* pszFontStyle,
-									   const char* pszFontVariant,
-									   const char* pszFontWeight,
-									   const char* pszFontStretch,
-									   const char* pszFontSize);
+	
+	virtual const char* findNearestFont(const char* pszFontFamily,
+										const char* pszFontStyle,
+										const char* pszFontVariant,
+										const char* pszFontWeight,
+										const char* pszFontStretch,
+										const char* pszFontSize)
+	                                         {return pszFontFamily;}
 
 	const char *      invertDimension(UT_Dimension, double) const;
 

@@ -508,15 +508,16 @@ extern UT_uint32 adobeDingbatsToUnicode(UT_uint32 iAdobe)
 #endif
 }
 
-const char* GR_Graphics::findNearestFont(const char* pszFontFamily,
-										 const char* pszFontStyle,
-										 const char* pszFontVariant,
-										 const char* pszFontWeight,
-										 const char* pszFontStretch,
-										 const char* pszFontSize)
+const char* GR_UnixGraphics::findNearestFont(const char* pszFontFamily,
+											 const char* pszFontStyle,
+											 const char* pszFontVariant,
+											 const char* pszFontWeight,
+											 const char* pszFontStretch,
+											 const char* pszFontSize)
 {
 	xxx_UT_DEBUGMSG(("Find Font findNearestFont for %s \n",pszFontFamily));
-	XAP_UnixFont* pUnixFont = XAP_UnixFontManager::pFontManager->findNearestFont(pszFontFamily, pszFontStyle, pszFontVariant, pszFontWeight,
+	XAP_UnixFont* pUnixFont = XAP_UnixFontManager::pFontManager->findNearestFont(pszFontFamily, pszFontStyle,
+																				 pszFontVariant, pszFontWeight,
 																				 pszFontStretch, pszFontSize);
 	xxx_UT_DEBUGMSG(("Return Font name %s \n",pUnixFont->getName()));
 	//	UT_ASSERT(0);

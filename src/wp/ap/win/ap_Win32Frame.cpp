@@ -96,7 +96,7 @@ void AP_Win32Frame::toggleStatusBar(bool bStatusBarOn)
 /************** helper methods for _showDocument ************************/
 bool AP_Win32Frame::_createViewGraphics(GR_Graphics *& pG, UT_uint32 iZoom)
 {
-	pG = getAPWin32FrameImpl()->_createDocWnd_GR_Graphics();
+	pG = getAPWin32FrameImpl()->createDocWndGraphics();
 	UT_return_val_if_fail(pG, false);
 
 	pG->setZoomPercentage(iZoom);
