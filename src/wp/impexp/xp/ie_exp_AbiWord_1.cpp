@@ -150,6 +150,7 @@ protected:
 	void				_closeSection(void);
 	void				_closeBlock(void);
 	void				_closeSpan(void);
+	void				_openSpan(PT_AttrPropIndex apiSpan);
 	void				_openTag(const char * szPrefix, const char * szSuffix,
 								 UT_Bool bNewLineAfter, PT_AttrPropIndex api);
 	void				_outputData(const UT_UCSChar * p, UT_uint32 length);
@@ -160,6 +161,7 @@ protected:
 	UT_Bool				m_bInSection;
 	UT_Bool				m_bInBlock;
 	UT_Bool				m_bInSpan;
+	PT_AttrPropIndex	m_apiLastSpan;
 };
 
 void s_AbiWord_1_Listener::_closeSection(void)
@@ -189,6 +191,24 @@ void s_AbiWord_1_Listener::_closeSpan(void)
 
 	m_pie->write("</c>");
 	m_bInSpan = UT_FALSE;
+	return;
+}
+
+void s_AbiWord_1_Listener::_openSpan(PT_AttrPropIndex apiSpan)
+{
+	if (m_bInSpan)
+	{
+		if (m_apiLastSpan == apiSpan)
+			return;
+		_closeSpan();
+	}
+
+	if (!apiSpan)				// don't write tag for empty A/P
+		return;
+	
+	_openTag("c","",UT_FALSE,apiSpan);
+	m_bInSpan = UT_TRUE;
+	m_apiLastSpan = apiSpan;
 	return;
 }
 
@@ -248,9 +268,6 @@ void s_AbiWord_1_Listener::_openTag(const char * szPrefix, const char * szSuffix
 
 void s_AbiWord_1_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 {
-	// TODO deal with unicode.
-	// TODO for now, just squish it into ascii.
-	
 #define MY_BUFFER_SIZE		1024
 #define MY_HIGHWATER_MARK	20
 	char buf[MY_BUFFER_SIZE];
@@ -264,6 +281,8 @@ void s_AbiWord_1_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length
 			m_pie->write(buf,(pBuf-buf));
 			pBuf = buf;
 		}
+
+		// TODO deal with unicode.  for now we assume latin-1.
 
 		UT_ASSERT(*pData < 256);
 		switch (*pData)
@@ -354,13 +373,18 @@ s_AbiWord_1_Listener::s_AbiWord_1_Listener(PD_Document * pDocument,
 	m_bInSection = UT_FALSE;
 	m_bInBlock = UT_FALSE;
 	m_bInSpan = UT_FALSE;
+	m_apiLastSpan = 0;
+
+	// NOTE we output the following preamble in XML comments.
+	// NOTE this information is for human viewing only.
+	// TODO should this preamble have a DTD reference in it ??
 	
-	m_pie->write("<!-- ================================================================================  -->\n");
-	m_pie->write("<!-- This file is an AbiWord document.                                                 -->\n");
-	m_pie->write("<!-- AbiWord is a free, Open Source word processor.                                    -->\n");
-	m_pie->write("<!-- You may obtain more information about AbiWord at www.abisource.com                -->\n");
-	m_pie->write("<!-- You should not edit this file by hand.                                            -->\n");
-	m_pie->write("<!-- ================================================================================  -->\n");
+	m_pie->write("<!-- =====================================================================  -->\n");
+	m_pie->write("<!-- This file is an AbiWord document.                                      -->\n");
+	m_pie->write("<!-- AbiWord is a free, Open Source word processor.                         -->\n");
+	m_pie->write("<!-- You may obtain more information about AbiWord at www.abisource.com     -->\n");
+	m_pie->write("<!-- You should not edit this file by hand.                                 -->\n");
+	m_pie->write("<!-- =====================================================================  -->\n");
 	m_pie->write("\n");
 
 	if (AP_App::s_szBuild_ID && AP_App::s_szBuild_ID[0])
@@ -401,6 +425,12 @@ s_AbiWord_1_Listener::s_AbiWord_1_Listener(PD_Document * pDocument,
 	}
 	
 	m_pie->write("\n");
+
+	// end of preamble.
+	// now we begin the actual document.
+	
+	// TODO add a file-format name/value pair to this tag.
+	// TODO add application name and version name/value pairs to this tag.
 	
 	m_pie->write("<awml>\n");
 }
@@ -425,17 +455,11 @@ UT_Bool s_AbiWord_1_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 			const PX_ChangeRecord_Span * pcrs = static_cast<const PX_ChangeRecord_Span *> (pcr);
 
 			PT_AttrPropIndex api = pcr->getIndexAP();
-			if (api)
-			{
-				_openTag("c","",UT_FALSE,api);
-				m_bInSpan = UT_TRUE;
-			}
+			_openSpan(api);
 			
 			PT_BufIndex bi = pcrs->getBufIndex();
 			_outputData(m_pDocument->getPointer(bi),pcrs->getLength());
 
-			if (api)
-				_closeSpan();
 			return UT_TRUE;
 		}
 
@@ -446,10 +470,12 @@ UT_Bool s_AbiWord_1_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 			switch (pcro->getObjectType())
 			{
 			case PTO_Image:
+				_closeSpan();
 				_openTag("i","/",UT_FALSE,api);
 				return UT_TRUE;
 
 			case PTO_Field:
+				_closeSpan();
 				_openTag("f","/",UT_FALSE,api);
 				return UT_TRUE;
 
