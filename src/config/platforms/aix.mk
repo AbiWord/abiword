@@ -84,7 +84,7 @@ MKSHLIB			=
 # both of these options. (what can IRIX do?  someone
 # with an SGI set the right one and mail a patch)
 UNIX_CAN_BUILD_DYNAMIC=1
-UNIX_CAN_BUILD_STATIC=1
+UNIX_CAN_BUILD_STATIC=0
 
 # Compiler options for static and dynamic linkage
 DL_LIBS			=
@@ -93,5 +93,12 @@ LDFLAGS			= -Wl,-bbigtoc
 
 ABI_NATIVE	= unix
 ABI_FE		= Unix
+
+##################################################################              
+## ABIPKGDIR defines the directory containing the Makefile to use to            
+## build a set of distribution archives (.deb, .rpm, .tgz, .exe, etc)           
+## This is relative to $(ABI_ROOT)/src/pkg                                      
+
+ABIPKGDIR       = aix
 
 # End of AIX defs
