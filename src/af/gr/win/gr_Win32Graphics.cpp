@@ -120,6 +120,7 @@ DG_Font* Win32Graphics::findFont(
 		lf.lfWeight = 700;
 	}
 
+	// TODO -- remove this block entirely, since oblique is no longer a valid style
 	// We squash oblique into italic
 	if (0 == stricmp(pszFontStyle, "italic") || 0 == stricmp(pszFontStyle, "oblique"))
 	{

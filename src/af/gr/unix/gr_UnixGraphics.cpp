@@ -22,6 +22,9 @@
 #include <X11/Xlib.h>
 #include <stdio.h>
 
+#include "xap_UnixApp.h"
+#include "xap_UnixFontManager.h"
+#include "xap_UnixFont.h"
 #include "gr_UnixGraphics.h"
 
 #include <gdk/gdkprivate.h>
@@ -35,22 +38,30 @@
 
 /*****************************************************************/
 
-UNIXFont::UNIXFont(GdkFont* pFont)
+UnixFont::UnixFont(AP_UnixFont * pFont, UT_uint16 size)
 {
 	UT_ASSERT(pFont);
   
 	m_hFont = pFont;
-	m_strFontName = NULL;
+	m_pointSize = size;
 }
 
-GdkFont *UNIXFont::getHFONT()
+AP_UnixFont * UnixFont::getUnixFont(void)
 {
+	UT_ASSERT(m_hFont);
 	return m_hFont;
 }
 
-UNIXGraphics::UNIXGraphics(GdkWindow* win)
+GdkFont * UnixFont::getGdkFont(void)
+{
+	UT_ASSERT(m_hFont);
+	return m_hFont->getGdkFont(m_pointSize);
+}
+
+UNIXGraphics::UNIXGraphics(GdkWindow * win, AP_UnixApp * app)
 {
 	m_pWin = win;
+	m_pApp = app;
 	m_pFont = NULL;
 	m_pGC = gdk_gc_new(m_pWin);
 	m_pXORGC = gdk_gc_new(m_pWin);
@@ -104,7 +115,7 @@ void UNIXGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 		return;
 	}
 	gc_private = (GdkGCPrivate*) m_pGC;
-	font_private = (GdkFontPrivate*) m_pFont->getHFONT();
+	font_private = (GdkFontPrivate*) m_pFont->getGdkFont();
 
 	XFontStruct *xfont = (XFontStruct *) font_private->xfont;
 	XSetFont(drawable_private->xdisplay, gc_private->xgc, xfont->fid);
@@ -133,14 +144,16 @@ void UNIXGraphics::setFont(DG_Font* pFont)
 {
 	UT_ASSERT(pFont);
 
-	UNIXFont* pUFont = static_cast<UNIXFont*> (pFont);
+	UnixFont * pUFont = static_cast<UnixFont*> (pFont);
   
 	if (m_pFont)
     {
-		XFontStruct* pCurFont = (XFontStruct *)((GdkFontPrivate*)m_pFont->getHFONT())->xfont;
-		XFontStruct* pNewFont = (XFontStruct *)((GdkFontPrivate*)pUFont->getHFONT())->xfont;
+		XFontStruct* pCurFont = (XFontStruct *)((GdkFontPrivate*)m_pFont->getGdkFont())->xfont;
+		XFontStruct* pNewFont = (XFontStruct *)((GdkFontPrivate*)pUFont->getGdkFont())->xfont;
 
-		if (pCurFont->fid == pNewFont->fid)
+		UT_ASSERT(pCurFont && pNewFont);
+		
+		if (!pCurFont->fid == pNewFont->fid)
 		{
 			return;
 		}
@@ -148,7 +161,7 @@ void UNIXGraphics::setFont(DG_Font* pFont)
 		     
 	m_pFont = pUFont;
   
-	gdk_gc_set_font(m_pGC, m_pFont->getHFONT());
+	gdk_gc_set_font(m_pGC, m_pFont->getGdkFont());
 	memset(m_aCharWidths, 0, 256 * sizeof(int));
 }
 
@@ -157,7 +170,7 @@ UT_uint32 UNIXGraphics::getFontHeight()
 	UT_ASSERT(m_pFont);
 	UT_ASSERT(m_pGC);
 
-	GdkFontPrivate* prFont = (GdkFontPrivate*) m_pFont->getHFONT();
+	GdkFontPrivate* prFont = (GdkFontPrivate*) m_pFont->getGdkFont();
 	XFontStruct* pXFont = (XFontStruct *)prFont->xfont;
 
 	return pXFont->ascent + pXFont->descent;
@@ -172,7 +185,7 @@ UT_uint32 UNIXGraphics::measureString(const UT_UCSChar* s, int iOffset,
 
 	int charWidth = 0;
 
-	GdkFont* pFont = m_pFont->getHFONT();
+	GdkFont* pFont = m_pFont->getGdkFont();
 
 	// TODO the following assignment looks suspicious...
 	XFontStruct* pXFont = (XFontStruct *)(((GdkFontPrivate*)pFont)->xfont);
@@ -242,16 +255,6 @@ void UNIXGraphics::setColor(UT_RGBColor& clr)
 	XChangeGC(pgc->xdisplay, pgc->xgc, GCForeground | GCFunction, &gcv);
 }
 
-/*
-  This function might work on some X stations.  :)  It does a 3
-  level font matching, where it just does its best to match font
-  family names, but should be re-worked to use lists set outside
-  of this class (perhaps by a font substitution setting).
-
-  This logic will probably only work for Latin-1 text now,
-  or at the most single byte character encodings (8-bit).
-  Unicode fonts aren't considered yet.
-*/
 DG_Font* UNIXGraphics::findFont(const char* pszFontFamily, 
 								const char* pszFontStyle, 
 								const char* /*pszFontVariant*/, 
@@ -259,125 +262,60 @@ DG_Font* UNIXGraphics::findFont(const char* pszFontFamily,
 								const char* /*pszFontStretch*/, 
 								const char* pszFontSize)
 {
-	UNIXFont* pFont = NULL;
-	char xFontName[2048];
-
-	char szFamily[256];
-
-	char szWeight[32];
-	char szWeight2[32];
-	char szWeight3[32]; 	// HACK:  since it's almost always the weight
-	                        // we have trouble matching, we use this for a second shot.
+	UT_ASSERT(pszFontFamily);
+	UT_ASSERT(pszFontStyle);
+	UT_ASSERT(pszFontWeight);
+	UT_ASSERT(pszFontSize);
 	
-	char szSlant[8];
-	char cSpacing = 'p';	// proportional
-	
-	// family copied unless it maches a generic-font type or Windows, then it's cast 
-	if (!UT_stricmp(pszFontFamily, "times new roman") ||	// win font
-		!UT_stricmp(pszFontFamily, "serif") ||				// generic
-		!UT_stricmp(pszFontFamily, ""))						// our default font
+	// convert styles to AP_UnixFont:: formats
+	AP_UnixFont::style s;
+
+	// this is kind of sloppy
+	if (!UT_stricmp(pszFontStyle, "normal") &&
+		!UT_stricmp(pszFontWeight, "normal"))
 	{
-		strcpy(szFamily, "times");
-		cSpacing = 'p';	// proportional
+		s = AP_UnixFont::STYLE_NORMAL;
 	}
-	else if(!UT_stricmp(pszFontFamily, "courier new") ||	// win font
-			!UT_stricmp(pszFontFamily, "monospace"))		// generic
+	else if (!UT_stricmp(pszFontStyle, "normal") &&
+			 !UT_stricmp(pszFontWeight, "bold"))
 	{
-		strcpy(szFamily, "courier");
-		cSpacing = 'm';	// monospace
+		s = AP_UnixFont::STYLE_BOLD;
 	}
-	else if (!UT_stricmp(pszFontFamily, "arial") ||			// win font
-			 !UT_stricmp(pszFontFamily, "sans-serif"))		// generic
-	{	
-		strcpy(szFamily, "helvetica");
-		cSpacing = 'p';	// proportional		
+	else if (!UT_stricmp(pszFontStyle, "italic") &&
+			 !UT_stricmp(pszFontWeight, "normal"))
+	{
+		s = AP_UnixFont::STYLE_ITALIC;
+	}
+	else if (!UT_stricmp(pszFontStyle, "italic") &&
+			 !UT_stricmp(pszFontWeight, "bold"))
+	{
+		s = AP_UnixFont::STYLE_BOLD_ITALIC;
 	}
 	else
 	{
-		// Font "foo" we don't know anything about
-		strcpy(szFamily, pszFontFamily);
-		cSpacing = '*';	// match all
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
 
-	// weight 
-	if (!UT_stricmp(pszFontWeight, "bold"))
+	// Request the appropriate AP_UnixFont::, and bury it in an
+	// instance of a UnixFont:: with the correct size.
+
+	AP_UnixFontManager * fontmgr = m_pApp->getFontManager();
+	UT_ASSERT(fontmgr);
+	
+	AP_UnixFont * unixfont = fontmgr->getFont(pszFontFamily, s);
+	if (!unixfont)
 	{
-		strcpy(szWeight, "bold");
-	}
-	else
-	{
-		// Note that we order them normal, then medium, because fonts
-		// that support both consider medium a heavier weight than
-		// normal.
-
-		strcpy(szWeight, "normal");		// matches most fonts
-		strcpy(szWeight2, "regular");	// matches some odd fonts
-		strcpy(szWeight3, "medium");	// matches other fonts
-	}
-
-	UT_sint32 height = convertDimension(pszFontSize);
-
-	if (!UT_stricmp(pszFontStyle, "italic"))
-	{
-		strcpy(szSlant, "i");
-	}
-	else if (!UT_stricmp(pszFontStyle, "oblique"))
-	{
-		strcpy(szSlant, "o");
-	}
-	else
-	{
-		strcpy(szSlant, "r");
-	}
-
-	// First match try
-	GdkFont * pgFont;
-	{
-		sprintf(xFontName, "-*-%s-%s-%s-normal-*-%ld-0-75-75-%c-0-*-*", szFamily, szWeight, szSlant, height, cSpacing);
-		if (m_pFont && m_pFont->m_strFontName)
-			if (!UT_strnicmp(m_pFont->m_strFontName, xFontName, strlen(m_pFont->m_strFontName)))
-				return m_pFont;
-
-		pgFont = gdk_font_load(xFontName);
-
-		if (!pgFont)
-		{
-			// load failed, try again with compromise attributes (this should be made much more general)
-			sprintf(xFontName, "-*-%s-%s-%s-normal-*-%ld-0-75-75-%c-0-*-*", szFamily, szWeight2, szSlant, height, cSpacing);
-			if (m_pFont && m_pFont->m_strFontName)
-				if (!UT_strnicmp(m_pFont->m_strFontName, xFontName, strlen(m_pFont->m_strFontName)))
-					return m_pFont;
-
-			pgFont = gdk_font_load(xFontName);
-			
-			if (!pgFont)
-			{
-				// TRY AGAIN!
-				// load failed, try again with compromise attributes (this should be made much more general)
-				sprintf(xFontName, "-*-%s-%s-%s-normal-*-%ld-0-75-75-%c-0-*-*", szFamily, szWeight3, szSlant, height, cSpacing);
-				if (m_pFont && m_pFont->m_strFontName)
-					if (!UT_strnicmp(m_pFont->m_strFontName, xFontName, strlen(m_pFont->m_strFontName)))
-						return m_pFont;
-
-				pgFont = gdk_font_load(xFontName);
-
-				// we failed the third lookup!  Render with an ugly fixed font.
-				// Note that we use the misc foundry font, since some workstations
-				// could have other fixed fonts (like a JIS Japanese foundry or
-				// the Sony foundry)
-				if (!pgFont)
-					pgFont = gdk_font_load("-misc-fixed-*-*-*--*-*-*-*-*-*-*-*");
-			}
-		}
+		// Oops!  We don't have that font here.  substitute something
+		// we know we have (get smarter about this later)
+		unixfont = fontmgr->getFont("Times New Roman", s);
+		UT_ASSERT(unixfont);
 	}
 	
-	UT_ASSERT(pgFont);
+	UnixFont * pFont = new UnixFont(unixfont,
+									(UT_uint16) convertDimension(pszFontSize));
 
-	pFont = new UNIXFont(pgFont);
-  
-	pFont->m_strFontName = new char[strlen(xFontName) + 1];
-	strcpy(pFont->m_strFontName, xFontName);
-  
+	UT_ASSERT(pFont);
+
 	return pFont;
 }
 
@@ -386,7 +324,7 @@ UT_uint32 UNIXGraphics::getFontAscent()
 	UT_ASSERT(m_pFont);
 	UT_ASSERT(m_pGC);
 
-	GdkFontPrivate* prFont = (GdkFontPrivate*) m_pFont->getHFONT();
+	GdkFontPrivate* prFont = (GdkFontPrivate*) m_pFont->getGdkFont();
 	// TODO the following assignment looks suspicious...
 	XFontStruct* pXFont = (XFontStruct *)prFont->xfont;
 
@@ -398,7 +336,7 @@ UT_uint32 UNIXGraphics::getFontDescent()
 	UT_ASSERT(m_pFont);
 	UT_ASSERT(m_pGC);
 
-	GdkFontPrivate* prFont = (GdkFontPrivate*) m_pFont->getHFONT();
+	GdkFontPrivate* prFont = (GdkFontPrivate*) m_pFont->getGdkFont();
 	XFontStruct* pXFont = (XFontStruct*) prFont->xfont;
 
 	return pXFont->descent;

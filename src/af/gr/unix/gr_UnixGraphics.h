@@ -20,26 +20,43 @@
 #ifndef GR_UNIXGRAPHICS_H
 #define GR_UNIXGRAPHICS_H
 
+#include "xap_UnixApp.h"
+#include "xap_UnixFont.h"
 #include "gr_Graphics.h"
 #include <gdk/gdk.h>
 
-class UNIXFont : public DG_Font
+// TODO Re-organize these classes.
+// We shouldn't need this class, since it's really just
+// a wrapper around the xap/unix/xap_UnixFont.h class,
+// but if we got rid of it, we'd break the methods that
+// poke and prod this class (XP format code) which
+// expects to use a platform-independent DG_Font *
+// for all its work.  DG_Font is an empty class, it only
+// serves as a typing tool, but it breaks my xap stuff.
+
+class UnixFont : public DG_Font
 {
 public:
-  UNIXFont(GdkFont* hFont);
-  GdkFont* getHFONT();
+  UnixFont(AP_UnixFont * hFont, UT_uint16 size);
 
-public:
-  char *m_strFontName;
-  
+  // this shouldn't need to be called to draw things,
+  // since it has no idea of "size"; it's just
+  // a face that the UnixFontManager:: can verify
+  // it can find if called upon to do so.
+  AP_UnixFont * 		getUnixFont(void);
+
+  // get the proper gdk font out of here
+  GdkFont * 			getGdkFont(void);
+
 protected:
-  GdkFont* m_hFont;
+  AP_UnixFont * 		m_hFont;
+  UT_uint16				m_pointSize;
 };
 
 class UNIXGraphics : public DG_Graphics
 {
 public:
-  UNIXGraphics(GdkWindow*);
+  UNIXGraphics(GdkWindow * win, AP_UnixApp * app);
   virtual void drawChars(const UT_UCSChar* pChars, int iCharOffset,
 			 int iLength, UT_sint32 xoff, UT_sint32 yoff);
   virtual void setFont(DG_Font* pFont);
@@ -76,12 +93,13 @@ public:
   virtual UT_Bool endPrint(void);
   
 protected:
+  AP_UnixApp * 	m_pApp;
   GdkGC*        m_pGC;
   GdkGC*        m_pXORGC;
   GdkWindow*    m_pWin;
-  UNIXFont*     m_pFont;
+  UnixFont*		m_pFont;
   GdkColormap*  m_pColormap;
-  int		m_aCharWidths[256];
+  int			m_aCharWidths[256];
   int           m_iWindowHeight, m_iWindowWidth;
 };
 
