@@ -61,6 +61,7 @@ CPPSRCS=	ap_Convert.cpp			\
 		ap_LB_viEdit_colon.cpp		\
 		ap_LB_viEdit_c.cpp		\
 		ap_LB_viEdit_d.cpp		\
+		ap_LB_viEdit_r.cpp		\
 		ap_LB_viEdit_y.cpp		\
 		ap_LB_viInput.cpp		\
 		ap_Menu_ActionSet.cpp		\

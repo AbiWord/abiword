@@ -121,6 +121,7 @@ OBJS=		$(PLATFORM_OBJS)				\
 		$(OBJDIR)/ap_LB_viEdit_colon.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_LB_viEdit_c.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_LB_viEdit_d.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/ap_LB_viEdit_r.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_LB_viEdit_y.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_LB_viInput.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_Menu_ActionSet.$(OBJ_SUFFIX)	\

@@ -35,6 +35,8 @@
 #include "ap_LoadBindings.h"
 #include "ap_LB_Default.h"
 
+#define DEFLEN(x) UT_uint32 x ## _len = NrElements(x)
+
 // NOTE: on Win32 we cannot get ALT-TAB (but we can get ALT-F4 :-)
 
 #define _S		| EV_EMS_SHIFT
@@ -62,7 +64,7 @@
 #define _B4		| EV_EMB_BUTTON4
 #define _B5		| EV_EMB_BUTTON5
 
-const ap_bs_Mouse s_MouseTable[] =
+ap_bs_Mouse MouseTable[] =
 {
 
 	// TODO some of these bindings are what i think they
@@ -153,6 +155,8 @@ const ap_bs_Mouse s_MouseTable[] =
 #endif
 };
 
+DEFLEN(MouseTable);
+
 #undef _CT
 #undef _CL
 
@@ -168,7 +172,7 @@ const ap_bs_Mouse s_MouseTable[] =
 ******************************************************************
 *****************************************************************/
 
-const ap_bs_NVK s_NVKTable[] =
+ap_bs_NVK NVKTable[] =
 {
 //	{nvk,				{ none,					_S,					_C,				_S_C,		
 //  					  _A,					_A_S,				_A_C,			_A_C_S				}},
@@ -256,13 +260,15 @@ const ap_bs_NVK s_NVKTable[] =
 
 };
 
+DEFLEN(NVKTable);
+
 /*****************************************************************
 ******************************************************************
 ** load top-level prefixed builtin bindings for the NamedVirtualKeys
 ******************************************************************
 *****************************************************************/
 
-const ap_bs_NVK_Prefix s_NVKTable_P[] =
+ap_bs_NVK_Prefix NVKTable_P[] =
 {
 //	{nvk,						{ none,					_S,					_C,				_S_C,		
 //  							  _A,					_A_S,				_A_C,			_A_C_S	}},
@@ -281,6 +287,8 @@ const ap_bs_NVK_Prefix s_NVKTable_P[] =
 	{EV_NVK_DEAD_OGONEK,		{ "deadogonek",			"deadogonek",		"",	"", "",	"",	"",	""	}},
 };
 
+DEFLEN(NVKTable_P);
+
 /*****************************************************************
 ******************************************************************
 ** load top-level (non-prefixed) builtin bindings for the non-nvk
@@ -291,7 +299,7 @@ const ap_bs_NVK_Prefix s_NVKTable_P[] =
 ******************************************************************
 *****************************************************************/
 
-const ap_bs_Char s_CharTable[] =
+ap_bs_Char CharTable[] =
 {
 //	{char, /* desc   */ { none,					_C,					_A,				_A_C				}},
 	{0x21, /* !      */ { "insertData",			"",					"",				""					}},
@@ -500,8 +508,9 @@ const ap_bs_Char s_CharTable[] =
 	{0xfd, /* yacute         */ { "insertData",		"",					"",				""					}},
 	{0xfe, /* thorn          */ { "insertData",		"",					"",				""					}},
 	{0xff, /* ydiaeresis     */ { "insertData",		"",					"",				""					}},
-	
 };
+
+DEFLEN(CharTable);
 
 /*****************************************************************
 ******************************************************************
@@ -511,9 +520,9 @@ const ap_bs_Char s_CharTable[] =
 
 UT_Bool ap_LoadBindings_Default(AP_BindingSet * pThis, EV_EditBindingMap * pebm)
 {
-	pThis->_loadMouse(pebm,s_MouseTable,NrElements(s_MouseTable));
-	pThis->_loadNVK(pebm,s_NVKTable,NrElements(s_NVKTable),s_NVKTable_P,NrElements(s_NVKTable_P));
-	pThis->_loadChar(pebm,s_CharTable,NrElements(s_CharTable),NULL,0);
+	pThis->_loadMouse(pebm,MouseTable,MouseTable_len);
+	pThis->_loadNVK(pebm,NVKTable,NVKTable_len,NVKTable_P,NVKTable_len);
+	pThis->_loadChar(pebm,CharTable,CharTable_len,NULL,0);
 
 	return UT_TRUE;
 }

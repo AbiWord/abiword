@@ -218,6 +218,8 @@ public:
 	static EV_EditMethod_Fn insertCedillaData;
 	static EV_EditMethod_Fn insertOgonekData;
 
+	static EV_EditMethod_Fn replaceChar;
+
 	// TODO add functions for all of the standard menu commands.
 	// TODO here are a few that i started.
 
@@ -520,6 +522,8 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(insertCaronData),		_D_,	""),
 	EV_EditMethod(NF(insertCedillaData),	_D_,	""),
 	EV_EditMethod(NF(insertOgonekData),		_D_,	""),
+
+	EV_EditMethod(NF(replaceChar),			_D_,	""),
 
 	EV_EditMethod(NF(fileNew),				0,	""),
 	EV_EditMethod(NF(fileOpen),				0,	""),
@@ -2443,6 +2447,12 @@ Defun(insertData)
 	return UT_TRUE;
 }
 
+Defun(replaceChar)
+{
+	ABIWORD_VIEW;
+	return ( EX(delRight) && EX(insertData) && EX(setEditVI) );
+}
+
 Defun0(insertSoftBreak)
 {
 	return UT_TRUE;
@@ -3573,15 +3583,16 @@ static UT_Bool _toggleSpanOrBlock(FV_View * pView,
 	const XML_Char * s;
 
 	if (isSpan)
-	  {
-	    if (!pView->getCharFormat(&props_in))
-	      return UT_FALSE;
-	  }
+	{
+		if (!pView->getCharFormat(&props_in))
+		return UT_FALSE;
+	}
 	else // isBlock 
-	  {
-	    if (!pView->getBlockFormat(&props_in))
-	      return UT_FALSE;
-	  }
+	{
+		if (!pView->getBlockFormat(&props_in))
+		return UT_FALSE;
+	}
+
 	props_out[0] = prop;
 	props_out[1] = vOn;		// be optimistic
 

@@ -60,7 +60,7 @@ static struct ap_bs_Char s_CharTable[] =
 	{0x66, /* h      */ { "selectAll",				"",						"",			"" 		}},
 	{0x6b, /* k      */ { "closeWindow",			"", 					"",		    ""      }},
 	{0x73, /* s      */ { "",						"fileSave",				"",			""		}},
-	{0x77, /* s      */ { "",						"fileSaveAs",			"",			""		}},
+	{0x77, /* w      */ { "",						"fileSaveAs",			"",			""		}},
 	{0x75, /* u      */ { "undo",					"",			    		"",			""		}},
 };
 
