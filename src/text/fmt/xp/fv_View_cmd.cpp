@@ -4176,10 +4176,6 @@ void FV_View::cmdPaste(bool bHonorFormatting)
 	m_iPieceTableState = 0;
 	// Move insertion point out of field run if it is in one
 	//
-	if(m_pDoc->isFrameAtPos(getPoint()))
-	{
-	  _setPoint(getPoint()+1);
-	}
 	_charMotion(true, 0);
 
 //
