@@ -113,6 +113,11 @@ protected:
 
 	fp_ShadowContainer* m_pFooter;
 	fp_ShadowContainer* m_pHeader;
+
+private:
+	// don't allow copying
+	fp_Page(const fp_Page&);		// no impl.
+	void operator=(const fp_Page&);	// no impl.
 };
 
 #endif /* PAGE_H */

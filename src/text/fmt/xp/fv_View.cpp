@@ -6259,28 +6259,28 @@ void FV_View::setXScrollOffset(UT_sint32 v)
 	_fixInsertionPointCoords();
 	m_pG->scroll(dx, 0);
 	m_xScrollOffset = v;
+	
+	UT_sint32 x1 = 0;
+	UT_sint32 dx2 = m_iWindowWidth;
+
 	if (dx > 0)
 	{
-		if (dx >= m_iWindowWidth)
+		if (dx < m_iWindowWidth)
 		{
-			_draw(0, 0, m_iWindowWidth, m_iWindowHeight, false, true);
-		}
-		else
-		{
-			_draw(m_iWindowWidth - dx, 0, m_iWindowWidth, m_iWindowHeight, false, true);
+			x1 = m_iWindowWidth - dx;
+			dx2 = dx;
 		}
 	}
 	else
 	{
-		if (dx <= -m_iWindowWidth)
+		if (dx > -m_iWindowWidth)
 		{
-			_draw(0, 0, m_iWindowWidth, m_iWindowHeight, false, true);
-		}
-		else
-		{
-			_draw(0, 0, -dx, m_iWindowHeight, false, true);
+			dx2 = -dx;
 		}
 	}
+
+	_draw(x1, 0, dx2, m_iWindowHeight, false, true);
+
 	_fixInsertionPointCoords();
 	_drawInsertionPoint();
 
@@ -6295,28 +6295,28 @@ void FV_View::setYScrollOffset(UT_sint32 v)
 	_fixInsertionPointCoords();
 	m_pG->scroll(0, dy);
 	m_yScrollOffset = v;
+
+	UT_sint32 y1 = 0;
+	UT_sint32 dy2 = m_iWindowHeight;
+
 	if (dy > 0)
 	{
-		if (dy >= m_iWindowHeight)
+		if (dy < m_iWindowHeight)
 		{
-			_draw(0, 0, m_iWindowWidth, m_iWindowHeight, false, true);
-		}
-		else
-		{
-			_draw(0, m_iWindowHeight - dy, m_iWindowWidth, dy, false, true);
+			y1 = m_iWindowHeight - dy;
+			dy2 = dy;
 		}
 	}
 	else
 	{
-		if (dy <= -m_iWindowHeight)
+		if (dy > -m_iWindowHeight)
 		{
-			_draw(0, 0, m_iWindowWidth, m_iWindowHeight, false, true);
-		}
-		else
-		{
-			_draw(0, 0, m_iWindowWidth, -dy, false, true);
+			dy2 = -dy;
 		}
 	}
+
+	_draw(0, y1, m_iWindowWidth, dy2, false, true);
+
 	_fixInsertionPointCoords();
 	_drawInsertionPoint();
 }
@@ -6378,7 +6378,8 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 	}
 	if (bClip)
 	{
-		UT_Rect r;
+		// TMN: Leave this 'static'! setClipRect only stores the pointer!
+		static UT_Rect r;
 
 		r.left = x;
 		r.top = y;
