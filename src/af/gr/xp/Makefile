@@ -22,7 +22,8 @@ ABI_ROOT:=$(shell pwd)/../../../..
 
 include $(ABI_ROOT)/src/config/abi_defs.mk
 
-CPPSRCS=		gr_DrawArgs.cpp			\
+CPPSRCS=		gr_CharWidths.cpp		\
+			gr_DrawArgs.cpp			\
 			gr_Graphics.cpp			\
 			gr_Image.cpp
 
