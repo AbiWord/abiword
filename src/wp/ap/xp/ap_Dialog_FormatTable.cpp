@@ -464,12 +464,13 @@ AP_FormatTable_preview::~AP_FormatTable_preview()
 
 void AP_FormatTable_preview::draw(void)
 {
-	UT_sint32 iWidth = getWindowWidth();
-	UT_sint32 iHeight = getWindowHeight();
-	UT_Rect pageRect(0, 0, iWidth, iHeight);
-
-	m_gc->clearArea(pageRect.left, pageRect.top, pageRect.width,
-					pageRect.height);
+	UT_sint32 iWidth = m_gc->tlu (getWindowWidth());
+	UT_sint32 iHeight = m_gc->tlu (getWindowHeight());
+	UT_Rect pageRect(m_gc->tlu(7), m_gc->tlu(7), iWidth - m_gc->tlu(14), iHeight - m_gc->tlu(14));	
+	
+	m_gc->fillRect(GR_Graphics::CLR3D_Background, 0, 0, iWidth, iHeight);
+	m_gc->clearArea(pageRect.left, pageRect.top, pageRect.width, pageRect.height);	
+	
 	
 	UT_RGBColor tmpCol;
 	
@@ -492,7 +493,7 @@ void AP_FormatTable_preview::draw(void)
 	if (pszBGCol && *pszBGCol)
 	{
 		UT_parseColor(pszBGCol, tmpCol);
-		m_gc->fillRect(tmpCol, 0 + border, 0 + border, iWidth - 2*border, iHeight - 2*border);
+		m_gc->fillRect(tmpCol, pageRect.left + border, pageRect.top + border, pageRect.width - 2*border, pageRect.height - 2*border);
 	}
 
 //

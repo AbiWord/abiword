@@ -18,6 +18,7 @@
  */
 
 #include <stdlib.h>
+#include <glade/glade.h>
 
 #include "ut_string.h"
 #include "ut_assert.h"
@@ -132,9 +133,8 @@ AP_UnixDialog_FormatTable::AP_UnixDialog_FormatTable(XAP_DialogFactory * pDlgFac
 	: AP_Dialog_FormatTable(pDlgFactory,id)
 {
 	m_windowMain = NULL;
-	m_wpreviewArea = NULL;
+	m_wPreviewArea = NULL;
 	m_pPreviewWidget = NULL;
-	m_wContents = NULL;
 	m_wApplyButton = NULL;
 	m_wBorderColorButton = NULL;
 	m_wLineLeft = NULL;
@@ -150,34 +150,34 @@ AP_UnixDialog_FormatTable::~AP_UnixDialog_FormatTable(void)
 void AP_UnixDialog_FormatTable::runModeless(XAP_Frame * pFrame)
 {
 	// Build the window's widgets and arrange them
-	GtkWidget * mainWindow = _constructWindow();
-	UT_return_if_fail(mainWindow);
+	m_windowMain = _constructWindow();
+	UT_return_if_fail(m_windowMain);
 
 	// Populate the window's data items
 	_populateWindowData();
 	_connectSignals();
-	abiSetupModelessDialog(GTK_DIALOG(mainWindow),pFrame,this,BUTTON_CLOSE);
+	abiSetupModelessDialog(GTK_DIALOG(m_windowMain), pFrame, this, BUTTON_CLOSE);
 	
 	// *** this is how we add the gc for Column Preview ***
 	// attach a new graphics context to the drawing area
 	XAP_UnixApp * unixapp = static_cast<XAP_UnixApp *> (m_pApp);
 
-	UT_return_if_fail(m_wpreviewArea && m_wpreviewArea->window);
+	UT_return_if_fail(m_wPreviewArea && m_wPreviewArea->window);
 
 	// make a new Unix GC
 	DELETEP (m_pPreviewWidget);
-	m_pPreviewWidget = new GR_UnixGraphics(m_wpreviewArea->window, unixapp->getFontManager(), m_pApp);
+	m_pPreviewWidget = new GR_UnixGraphics(m_wPreviewArea->window, unixapp->getFontManager(), m_pApp);
 
 	// Todo: we need a good widget to query with a probable
 	// Todo: non-white (i.e. gray, or a similar bgcolor as our parent widget)
 	// Todo: background. This should be fine
-	m_pPreviewWidget->init3dColors(m_wpreviewArea->style);
+	m_pPreviewWidget->init3dColors(m_wPreviewArea->style);
 
 	// let the widget materialize
 
 	_createPreviewFromGC(m_pPreviewWidget,
-						 (UT_uint32) m_wpreviewArea->allocation.width,
-						 (UT_uint32) m_wpreviewArea->allocation.height);	
+						 (UT_uint32) m_wPreviewArea->allocation.width,
+						 (UT_uint32) m_wPreviewArea->allocation.height);	
 	
 	m_pFormatTablePreview->draw();
 	
@@ -236,214 +236,75 @@ void AP_UnixDialog_FormatTable::notifyActiveFrame(XAP_Frame *pFrame)
 
 GtkWidget * AP_UnixDialog_FormatTable::_constructWindow(void)
 {
-	GtkWidget * vboxMain;
-	GtkWidget * windowFormatTable;
-	ConstructWindowName();
-	windowFormatTable = abiDialogNew ( "format table dialog", TRUE, (char *) m_WindowName);
-	
-	vboxMain = GTK_DIALOG(windowFormatTable)->vbox ;
-	gtk_container_set_border_width (GTK_CONTAINER (vboxMain), 10);	
-	_constructWindowContents();
-	gtk_box_pack_start (GTK_BOX (vboxMain), m_wContents, TRUE, TRUE, 6);
-
-	m_wCloseButton = abiAddStockButton ( GTK_DIALOG(windowFormatTable), GTK_STOCK_CLOSE, BUTTON_CLOSE ) ;
-	m_wApplyButton = abiAddStockButton ( GTK_DIALOG(windowFormatTable), GTK_STOCK_APPLY, BUTTON_APPLY ) ;
-
-	// Update member variables with the important widgets that
-	// might need to be queried or altered later.
-
-	m_windowMain = windowFormatTable;
-
-	return windowFormatTable;
-}
-
-GtkWidget * AP_UnixDialog_FormatTable::_constructWindowContents(void)
-{
-	GtkWidget *wContents;
-	GtkWidget *hboxContents;
-	GtkWidget *borderContents;
-	GtkWidget *backgroundContents;
-	GtkWidget *notebook;
-	
-	GtkWidget *vboxBorderColorStyle;
-	GtkWidget *hboxBorderColorLabel;
-	GtkWidget *labelBorderColor;
-	GtkWidget *borderColorButton;
-	
-	GtkWidget *vboxBackgroundColorStyle;
-	GtkWidget *hboxBackgroundColorLabel;
-	GtkWidget *labelBackgroundColor;
-	GtkWidget *backgroundColorButton;
-	
-	GtkWidget *vboxPreviewApplyTo;
-	GtkWidget *framePreview;
-	GtkWidget *tablePreview;	
-	GtkWidget *wPreviewArea;
-	GtkWidget *wLineTop;
-	GtkWidget *wLineBottom;
-	GtkWidget *wLineLeft;
-	GtkWidget *wLineRight;
-	GtkWidget *hboxApplyTo;
-	GtkWidget *labelApplyTo;
-	GtkWidget *comboApplyTo;	
-	
+	GtkWidget * window;
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-
-	wContents = gtk_vbox_new (FALSE, 0);
-    gtk_widget_show (wContents);
-
-	hboxContents = gtk_hbox_new(FALSE, 0);
-	gtk_widget_show(hboxContents);
-	gtk_container_add(GTK_CONTAINER(wContents), hboxContents);
-
-	borderContents = gtk_hbox_new(TRUE, 0);
-	gtk_widget_show(borderContents);
-
-	backgroundContents = gtk_hbox_new(TRUE, 0);
-	gtk_widget_show(backgroundContents);
-
-	notebook = gtk_notebook_new();
-	gtk_notebook_append_page(GTK_NOTEBOOK(notebook), borderContents, gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTable_Borders).c_str()));
-	gtk_notebook_append_page(GTK_NOTEBOOK(notebook), backgroundContents, gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTable_Background).c_str()));
-	gtk_widget_show(notebook);
-	gtk_container_add(GTK_CONTAINER(hboxContents), notebook);
-
-//
-// construct the border tab
-//
-
-	vboxBorderColorStyle = gtk_vbox_new(FALSE, 0);
-	gtk_widget_show(vboxBorderColorStyle);
-	gtk_box_pack_start (GTK_BOX (borderContents), vboxBorderColorStyle, FALSE, TRUE, 6);
-
-	hboxBorderColorLabel = gtk_hbox_new(FALSE, 0);
-	gtk_widget_show(hboxBorderColorLabel);
-	gtk_box_pack_start (GTK_BOX (vboxBorderColorStyle), hboxBorderColorLabel, FALSE, TRUE, 6);
-
-	labelBorderColor = gtk_label_new(pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTable_Border_Color).c_str());
-	gtk_widget_show(labelBorderColor);
-	gtk_box_pack_start (GTK_BOX (hboxBorderColorLabel), labelBorderColor, FALSE, FALSE, 0);
-
-	borderColorButton = gtk_color_picker_new();
-	gtk_widget_show(borderColorButton);
-	gtk_box_pack_start (GTK_BOX (hboxBorderColorLabel), borderColorButton, TRUE, FALSE, 0);
-
-	vboxPreviewApplyTo = gtk_vbox_new(FALSE, 0);
-	gtk_widget_show(vboxPreviewApplyTo);
-	gtk_box_pack_start (GTK_BOX (hboxContents), vboxPreviewApplyTo, FALSE, FALSE, 6);
-
-	framePreview = gtk_frame_new (pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTable_Preview).c_str());
-	gtk_frame_set_shadow_type(GTK_FRAME(framePreview), GTK_SHADOW_NONE);
-	gtk_widget_show(framePreview);
-	gtk_container_add(GTK_CONTAINER(vboxPreviewApplyTo), framePreview);
 	
-	tablePreview = gtk_table_new(3, 3, FALSE);
-	gtk_widget_show(tablePreview);
-	gtk_container_add(GTK_CONTAINER (framePreview), tablePreview);
-
-	wPreviewArea = createDrawingArea ();
-	gtk_widget_show(wPreviewArea);
-	gtk_widget_set_usize(wPreviewArea, 140, 140);
-	gtk_table_attach (GTK_TABLE (tablePreview), wPreviewArea, 1, 2, 1, 2,
-                    (GtkAttachOptions) (0),
-                    (GtkAttachOptions) (0), 10, 10);
-
-	wLineTop = gtk_toggle_button_new();
-	gtk_toggle_button_set_state(GTK_TOGGLE_BUTTON(wLineTop), true);
-	gtk_widget_show (wLineTop);
-	gtk_widget_set_usize (wLineTop, 25, 25);
-	label_button_with_abi_pixmap(wLineTop, "tb_LineTop_xpm");
-	gtk_table_attach (GTK_TABLE (tablePreview), wLineTop, 1, 2, 0, 1,
-                    (GtkAttachOptions) (0),
-                    (GtkAttachOptions) (0), 3, 0);
+	// get the path where our glade file is located
+	XAP_UnixApp * pApp = static_cast<XAP_UnixApp*>(m_pApp);
+	UT_String glade_path( pApp->getAbiSuiteAppGladeDir() );
+	glade_path += "/ap_UnixDialog_FormatTable.glade";
+	
+	// load the dialog from the glade file
+	GladeXML *xml = abiDialogNewFromXML( glade_path.c_str() );
+	
+	// Update our member variables with the important widgets that 
+	// might need to be queried or altered later
+	window = glade_xml_get_widget(xml, "ap_UnixDialog_FormatTable");
+	m_wLineTop = glade_xml_get_widget(xml, "tbBorderTop");
+	m_wLineLeft = glade_xml_get_widget(xml, "tbBorderLeft");
+	m_wLineRight = glade_xml_get_widget(xml, "tbBorderRight");
+	m_wLineBottom = glade_xml_get_widget(xml, "tbBorderBottom");
+	
+	// the toggle buttons created by glade already contain a label, remove that, so we can add a pixmap as a child
+	gtk_container_remove(GTK_CONTAINER(m_wLineTop), gtk_bin_get_child(GTK_BIN(m_wLineTop)));
+	gtk_container_remove(GTK_CONTAINER(m_wLineLeft), gtk_bin_get_child(GTK_BIN(m_wLineLeft)));
+	gtk_container_remove(GTK_CONTAINER(m_wLineRight), gtk_bin_get_child(GTK_BIN(m_wLineRight)));
+	gtk_container_remove(GTK_CONTAINER(m_wLineBottom), gtk_bin_get_child(GTK_BIN(m_wLineBottom)));
+	
+	// place some nice pixmaps on our border toggle buttons
+	label_button_with_abi_pixmap(m_wLineTop, "tb_LineTop_xpm");
+	label_button_with_abi_pixmap(m_wLineLeft, "tb_LineLeft_xpm");
+	label_button_with_abi_pixmap(m_wLineRight, "tb_LineRight_xpm");
+	label_button_with_abi_pixmap(m_wLineBottom, "tb_LineBottom_xpm");
+	
+	m_wPreviewArea = glade_xml_get_widget(xml, "daPreview");
+	
+	// set the dialog title
+	ConstructWindowName();
+	abiDialogSetTitle(window, m_WindowName);
+	
+	// disable double buffering on our preview
+	gtk_widget_set_double_buffered(m_wPreviewArea, FALSE); 	
+	
+	// localize the strings in our dialog, and set tags for some widgets
+	
+	localizeLabelMarkup(glade_xml_get_widget(xml, "lbBorder"), pSS, AP_STRING_ID_DLG_FormatTable_Borders);
+	localizeLabel(glade_xml_get_widget(xml, "lbBorderColor"), pSS, AP_STRING_ID_DLG_FormatTable_Border_Color);
+	
+	localizeLabelMarkup(glade_xml_get_widget(xml, "lbBackground"), pSS, AP_STRING_ID_DLG_FormatTable_Background);
+	localizeLabel(glade_xml_get_widget(xml, "lbBackgroundColor"), pSS, AP_STRING_ID_DLG_FormatTable_Background_Color);
+	
+	localizeLabelMarkup(glade_xml_get_widget(xml, "lbPreview"), pSS, AP_STRING_ID_DLG_FormatTable_Preview);
+	
+	// add the custom color picker buttons to the dialog
+	m_wBorderColorButton = gtk_color_picker_new();
+	gtk_widget_show(m_wBorderColorButton);
+	gtk_table_attach(GTK_TABLE (glade_xml_get_widget(xml, "tbProperties")), m_wBorderColorButton, 1, 2, 1, 2,
+                    (GtkAttachOptions) (GTK_FILL), (GtkAttachOptions) (0), 
+					0, 6);
 					
-	wLineBottom = gtk_toggle_button_new();
-	gtk_toggle_button_set_state(GTK_TOGGLE_BUTTON(wLineBottom), true);
-	gtk_widget_show (wLineBottom);
-	gtk_widget_set_usize (wLineBottom, 25, 25);
-	label_button_with_abi_pixmap(wLineBottom, "tb_LineBottom_xpm");
-	gtk_table_attach (GTK_TABLE (tablePreview), wLineBottom, 1, 2, 2, 3,
-                    (GtkAttachOptions) (0),
-                    (GtkAttachOptions) (0), 3, 0);
-
-	wLineLeft = gtk_toggle_button_new();
-	gtk_toggle_button_set_state(GTK_TOGGLE_BUTTON(wLineLeft), true);
-	gtk_widget_show (wLineLeft);
-	gtk_widget_set_usize (wLineLeft, 25, 25);
-	label_button_with_abi_pixmap(wLineLeft, "tb_LineLeft_xpm");
-	gtk_table_attach (GTK_TABLE (tablePreview), wLineLeft, 0, 1, 1, 2,
-                    (GtkAttachOptions) (0),
-                    (GtkAttachOptions) (0), 3, 0);
-
-	wLineRight = gtk_toggle_button_new();
-	gtk_toggle_button_set_state(GTK_TOGGLE_BUTTON(wLineRight), true);
-	gtk_widget_show (wLineRight);
-	gtk_widget_set_usize (wLineRight, 25, 25);
-	label_button_with_abi_pixmap(wLineRight, "tb_LineRight_xpm");
-	gtk_table_attach (GTK_TABLE (tablePreview), wLineRight, 2, 3, 1, 2,
-                    (GtkAttachOptions) (0),
-                    (GtkAttachOptions) (0), 3, 0);
-
-	hboxApplyTo = gtk_hbox_new(FALSE, 0);
-	gtk_widget_show(hboxApplyTo);
-	gtk_container_add(GTK_CONTAINER(vboxPreviewApplyTo), hboxApplyTo);
-
-	labelApplyTo = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTable_Apply_To).c_str());
-	gtk_widget_show(labelApplyTo);
-	gtk_misc_set_alignment (GTK_MISC (labelApplyTo), 0, 0.5);
-	gtk_container_add(GTK_CONTAINER(hboxApplyTo), labelApplyTo);
-
-	GList *items = NULL;
-
-	items = g_list_append (items, (void *)"Selection");
-	items = g_list_append (items, (void *)"Cell");
-	items = g_list_append (items, (void *)"Row");
-	items = g_list_append (items, (void *)"Column");
-	items = g_list_append (items, (void *)"Table");
+	// add the custom color picker buttons to the dialog
+	m_wBackgroundColorButton = gtk_color_picker_new();
+	gtk_widget_show(m_wBackgroundColorButton);
+	gtk_table_attach(GTK_TABLE (glade_xml_get_widget(xml, "tbProperties")), m_wBackgroundColorButton, 1, 2, 5, 6,
+                    (GtkAttachOptions) (GTK_FILL), (GtkAttachOptions) (0), 
+					0, 6);
 	
-	comboApplyTo = gtk_combo_new ();
-	gtk_combo_set_popdown_strings (GTK_COMBO (comboApplyTo), items);
-	gtk_widget_show(comboApplyTo);
-	gtk_container_add(GTK_CONTAINER(hboxApplyTo), comboApplyTo);
-	gtk_widget_set_sensitive(comboApplyTo, false); // disable for now, not implemented yet
-
-//
-// construct the background tab
-//
-
-	vboxBackgroundColorStyle = gtk_vbox_new(FALSE, 0);
-	gtk_widget_show(vboxBackgroundColorStyle);
-	gtk_box_pack_start (GTK_BOX (backgroundContents), vboxBackgroundColorStyle, FALSE, TRUE, 6);
-
-	hboxBackgroundColorLabel = gtk_hbox_new(FALSE, 0);
-	gtk_widget_show(hboxBackgroundColorLabel);
-	gtk_box_pack_start (GTK_BOX (vboxBackgroundColorStyle), hboxBackgroundColorLabel, FALSE, TRUE, 6);
-
-	labelBackgroundColor = gtk_label_new(pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTable_Background_Color).c_str());
-	gtk_widget_show(labelBackgroundColor);
-	gtk_box_pack_start (GTK_BOX (hboxBackgroundColorLabel), labelBackgroundColor, FALSE, FALSE, 0);
-
-	backgroundColorButton = gtk_color_picker_new();
-	gtk_widget_show(backgroundColorButton);
-	gtk_box_pack_start (GTK_BOX (hboxBackgroundColorLabel), backgroundColorButton, TRUE, FALSE, 0);
-
-
-	//hboxBackground = gtk_hbox_new(FALSE, 0);
-	//gtk_widget_show(hboxBackground);
-	//gtk_container_add(GTK_CONTAINER(backgroundContents), hboxBackground);
-
-
-	m_wLineTop = wLineTop;
-	m_wLineBottom = wLineBottom;
-	m_wLineLeft = wLineLeft;
-	m_wLineRight = wLineRight;
-
-	m_wBorderColorButton = borderColorButton;
-	m_wBackgroundColorButton = backgroundColorButton;
-	m_wpreviewArea = wPreviewArea;
-	m_wContents = wContents;
+	// add the apply and ok buttons to the dialog
+	m_wCloseButton = abiAddStockButton ( GTK_DIALOG(window), GTK_STOCK_CLOSE, BUTTON_CLOSE ) ;
+	m_wApplyButton = abiAddStockButton ( GTK_DIALOG(window), GTK_STOCK_APPLY, BUTTON_APPLY ) ;	
 	
-	return m_wContents;
+	return window;
 }
 
 static void s_destroy_clicked(GtkWidget * /* widget */,
@@ -511,7 +372,7 @@ void AP_UnixDialog_FormatTable::_connectSignals(void)
 							G_CALLBACK(s_background_color),
 							(gpointer) this);	   
 						   
-	g_signal_connect(G_OBJECT(m_wpreviewArea),
+	g_signal_connect(G_OBJECT(m_wPreviewArea),
 							"expose_event",
 							G_CALLBACK(s_preview_exposed),
 							(gpointer) this);						   

@@ -52,7 +52,6 @@ protected:
 	} ResponseId ;
 		
 	virtual GtkWidget *		_constructWindow(void);
-	virtual GtkWidget *		_constructWindowContents(void);
 	void					_populateWindowData(void);
 	void					_storeWindowData(void);
 	void                     _connectSignals(void);
@@ -61,7 +60,6 @@ protected:
 	
 	// pointers to widgets we need to query/set
 	GtkWidget * m_windowMain;
-	GtkWidget * m_wContents;
 	GtkWidget * m_wApplyButton;
 	GtkWidget * m_wCloseButton;
 
@@ -72,7 +70,7 @@ protected:
 	GtkWidget * m_wLineTop;
 	GtkWidget * m_wLineBottom;
 	
-	GtkWidget * m_wpreviewArea;
+	GtkWidget * m_wPreviewArea;
 };
 
 #endif /* AP_UNIXDIALOG_FORMATTABLE_H */

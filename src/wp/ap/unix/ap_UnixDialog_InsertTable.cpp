@@ -119,9 +119,7 @@ GtkWidget * AP_UnixDialog_InsertTable::_constructWindow(void)
 	// localize the strings in our dialog, and set tags for some widgets
 	
 	localizeLabelMarkup(glade_xml_get_widget(xml, "lbTableSize"), pSS, AP_STRING_ID_DLG_InsertTable_TableSize);
-	
 	localizeLabel(glade_xml_get_widget(xml, "lbNumCols"), pSS, AP_STRING_ID_DLG_InsertTable_NumCols);
-	
 	localizeLabel(glade_xml_get_widget(xml, "lbNumRows"), pSS, AP_STRING_ID_DLG_InsertTable_NumRows);
 	
 	localizeLabelMarkup(glade_xml_get_widget(xml, "lbAutoFit"), pSS, AP_STRING_ID_DLG_InsertTable_AutoFit);
