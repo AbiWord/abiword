@@ -291,7 +291,6 @@ void fp_FootnoteContainer::layout(void)
  */
 fp_EndnoteContainer::fp_EndnoteContainer(fl_SectionLayout* pSectionLayout) 
 	: fp_VerticalContainer(FP_CONTAINER_ENDNOTE, pSectionLayout),
-	  m_pPage(NULL),
 	  m_pLocalNext(NULL),
 	  m_pLocalPrev(NULL)
 {
@@ -307,19 +306,8 @@ fp_EndnoteContainer::fp_EndnoteContainer(fl_SectionLayout* pSectionLayout)
 fp_EndnoteContainer::~fp_EndnoteContainer()
 {
 	UT_DEBUGMSG(("deleting endnote container %x \n",this));
-	m_pPage = NULL;
 	m_pLocalNext = NULL;
 	m_pLocalPrev = NULL;
-}
-
-void fp_EndnoteContainer::setPage(fp_Page * pPage)
-{
-	if(pPage && (m_pPage != NULL) && m_pPage != pPage)
-	{
-		clearScreen();
-		getSectionLayout()->markAllRunsDirty();
-	}
-	m_pPage = pPage;
 }
 
 /*! 
@@ -334,7 +322,25 @@ UT_sint32 fp_EndnoteContainer::getValue(void)
 
 void fp_EndnoteContainer::clearScreen(void)
 {
-	xxx_UT_DEBUGMSG(("Clearscreen on Endnote container \n"));
+	UT_DEBUGMSG(("Clearscreen on Endnote container, height = %d \n",getHeight()));
+	fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(getSectionLayout());
+	pCL->setNeedsRedraw();
+	if(getPage() == NULL)
+	{
+		return;
+	}
+	if(getColumn() && (getHeight() != 0))
+	{
+		fl_DocSectionLayout * pDSL = getPage()->getOwningSection();
+		UT_RGBColor * pBGColor = pDSL->getPaperColor();
+		UT_sint32 iLeftMargin = pDSL->getLeftMargin();
+		UT_sint32 iRightMargin = pDSL->getRightMargin();
+		UT_sint32 iWidth = getPage()->getWidth();
+		iWidth = iWidth - iLeftMargin - iRightMargin;
+		UT_sint32 xoff,yoff;
+		static_cast<fp_Column *>(getColumn())->getScreenOffsets(this,xoff,yoff);
+		getGraphics()->fillRect(*pBGColor,xoff, yoff, iWidth, getHeight());
+	}
 	fp_Container * pCon = NULL;
 	UT_sint32 i = 0;
 	for(i=0; i< static_cast<UT_sint32>(countCons()); i++)
@@ -343,8 +349,6 @@ void fp_EndnoteContainer::clearScreen(void)
 		pCon = static_cast<fp_Container *>(getNthCon(i));
 		pCon->clearScreen();
 	}
-	fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(getSectionLayout());
-	pCL->setNeedsRedraw();
 }
 
 /*!
@@ -445,16 +449,15 @@ void fp_EndnoteContainer::layout(void)
 		pContainer->setY(iY);
 		UT_sint32 iContainerHeight = pContainer->getHeight();
 		UT_sint32 iContainerMarginAfter = pContainer->getMarginAfter();
-
-		iY += iContainerHeight;
-		iY += iContainerMarginAfter;
-
 		if (pPrevContainer)
 		{
 			pPrevContainer->setAssignedScreenHeight(iY - iPrevY);
 		}
-		pPrevContainer = pContainer;
 		iPrevY = iY;
+
+		iY += iContainerHeight;
+		iY += iContainerMarginAfter;
+		pPrevContainer = pContainer;
 	}
 
 	// Correct height position of the last line

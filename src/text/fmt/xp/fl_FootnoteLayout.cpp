@@ -241,6 +241,10 @@ void fl_EmbedLayout::redrawUpdate(void)
 bool fl_EmbedLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)
 {
 	UT_ASSERT(pcrx->getType()==PX_ChangeRecord::PXT_DeleteStrux);
+//
+// Remove all remaining structures
+//
+	collapse();
 //	UT_ASSERT(pcrx->getStruxType()== PTX_SectionFootnote);
 //
 // Find the block that contains this layout.
@@ -255,7 +259,6 @@ bool fl_EmbedLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)
 	fl_ContainerLayout * pPrev = getPrev();
 	fl_ContainerLayout * pNext = getNext();
 
-	collapse();
 	if(pPrev != NULL)
 	{
 		pPrev->setNext(pNext);
@@ -690,6 +693,9 @@ void fl_EndnoteLayout::format(void)
 	{
 		getDocSectionLayout()->completeBreakSection();
 	}
+	fp_EndnoteContainer * pECon = static_cast<fp_EndnoteContainer *>(getFirstContainer());
+	UT_ASSERT(getFirstContainer()->getPage());
+	UT_ASSERT(pECon->getPage());
 }
 
 
