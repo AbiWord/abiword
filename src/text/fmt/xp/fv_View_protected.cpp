@@ -206,6 +206,11 @@ void FV_View::_clearSelection(void)
 	m_iHighDrawPoint = 0;
 
 	_drawBetweenPositions(iPos1, iPos2);
+//
+// fixme: This causes some flicker but it definitely removes all traces 
+// of selection dirt. If some can fix removing selection dirt properly this
+// call can be removed. MES 4/3/2003
+	updateScreen(false);
 }
 
 void FV_View::_drawSelection()

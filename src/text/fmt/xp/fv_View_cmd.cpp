@@ -1852,20 +1852,23 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const XML
 	UT_DEBUGMSG(("SEVIOR: SecPos %d pointBreak %d \n",secPos,pointBreak));
 	if(secPos == (pointBreak-2))
 	{
-		pointBreak++;
+//
+// I don't think we need this code. FIXME remove it after a while MES 4/3/2003
+//		pointBreak++;
 	}
 	secSDH = NULL;
 	bres = m_pDoc->getStruxOfTypeFromPosition(pointBreak,PTX_SectionCell,&secSDH);
 	if(secSDH != NULL)
 	{
 		PT_DocPosition secPos = m_pDoc->getStruxPosition(secSDH);
-		UT_DEBUGMSG(("SEVIOR: Cell Pos %d pointBreak %d \n",secPos,pointBreak));
-		if(secPos == pointBreak -2)
-		{
-			pointBreak++;
-		}
+		UT_DEBUGMSG(("SEVIOR: Cell Pos %d pointBreak %d \n",secPos,pointBreak));//
+// I don't think we need this code. FIXME remove it after a while MES 4/3/2003
+// 		if(secPos == pointBreak -2)
+// 		{
+// 			pointBreak++;
+// 		}
 	}
-	setPoint(pointBreak-1);
+	setPoint(pointBreak);
 	e |= static_cast<UT_sint32>(m_pDoc->insertStrux(getPoint(),PTX_SectionTable,NULL,pPropsArray));
 //
 // stuff for cell insertion.
@@ -1909,6 +1912,7 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const XML
 		}
 	}
 	e |= static_cast<UT_sint32>(m_pDoc->insertStrux(getPoint(),PTX_EndTable));
+
 	m_pDoc->endUserAtomicGlob();
 	m_pDoc->setDontImmediatelyLayout(false);
 

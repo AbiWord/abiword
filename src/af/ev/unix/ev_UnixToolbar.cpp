@@ -377,7 +377,6 @@ s_color_changed (ColorCombo * combo, GdkColor * color, gboolean custom, gboolean
 	// and we don't want to dereference null do we ;)
 	if (!color || !combo || !wd)
 	  return;
-
 	UT_UTF8String str = UT_UTF8String_sprintf ("%02x%02x%02x", COLOR_NORMALIZE (color->red), COLOR_NORMALIZE (color->green), COLOR_NORMALIZE (color->blue));
 	wd->m_pUnixToolbar->toolbarEvent(wd, str.ucs4_str().ucs4_str(), str.size());
 }
