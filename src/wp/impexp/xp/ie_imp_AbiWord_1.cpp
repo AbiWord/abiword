@@ -126,12 +126,12 @@ bool IE_Imp_AbiWord_1::SupportsFileType(IEFileType ft)
 /*****************************************************************/
 
 #define TT_OTHER		0
-#define TT_DOCUMENT		1		// a document <awml>
+#define TT_DOCUMENT		1		// a document <abiword>
 #define TT_SECTION		2		// a section <section>
 #define TT_BLOCK		3		// a paragraph <p>
 #define TT_INLINE		4		// inline span of text <c>
-#define TT_IMAGE		5		// an image object <i>
-#define TT_FIELD		6		// a computed field object <f>
+#define TT_IMAGE		5		// an image object <image>
+#define TT_FIELD		6		// a computed field object <field>
 #define TT_BREAK		7		// a forced line-break <br>
 #define TT_DATASECTION	8		// a data section <data>
 #define TT_DATAITEM		9		// a data item <d> within a data section
