@@ -82,7 +82,7 @@ echo '?package(abisuite):needs=X11 section=Apps/Editors title="AbiWord" command=
     /usr/lib/menu/abisuite
 
 echo "Installing GNOME desktiop icon at [/usr/share/pixmaps/abiword_48.png]..."
-mkdir -p /sur/share/pixmaps
+mkdir -p /usr/share/pixmaps
 cp $SRCDIR/AbiSuite/icons/abiword_48.png /usr/share/pixmaps/abiword_48.png
 
 echo "Installing GNOME desktop hook at [/usr/share/gnome/apps/Applications/abiword.desktop]..."
