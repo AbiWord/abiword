@@ -129,7 +129,7 @@ UT_Worker * UT_WorkerFactory::static_constructor ( UT_WorkerCallback cb,
 #ifdef SUPPORTS_UT_IDLE
   if ( mode & IDLE )
     {
-      tmp = UT_Idle::static_constructor ( cb, mode );
+      tmp = UT_Idle::static_constructor ( cb, data );
       outMode = IDLE;
     } 
   else

@@ -59,6 +59,7 @@
 
 #include "fp_Run.h"
 #include "ut_Win32OS.h"
+#include "ut_Win32Idle.h"
 
 #include "ie_impexp_Register.h"
 
@@ -793,17 +794,33 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 
 	if (bShowApp)
 	{
-		while (GetMessage(&msg, NULL, 0, 0))
+               // Special event loop to support idle functions.
+	  while (1)
+	    {
+	      if (!PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) 
 		{
-			// Note: we do not call TranslateMessage() because
-			// Note: the keybinding mechanism is responsible
-			// Note: for deciding if/when to do this.
+		  while (1) 
+		    {
+		      if (UT_Win32Idle::_isEmpty()) 
+			break;
 
-			if( pMyWin32App->handleModelessDialogMessage( &msg ) )
-				continue;
+		      UT_Win32Idle::_fireall();
 
-			DispatchMessage(&msg);
+		      if (PeekMessage(&msg, NULL, 0, 0, PM_NOREMOVE)) 
+			break;
+		    }
+		  GetMessage(&msg, NULL, 0, 0);
 		}
+	      
+	      if (msg.message == WM_QUIT) 
+		break;
+	      if (pMyWin32App->handleModelessDialogMessage(&msg)) 
+		continue;
+
+	      // TranslateMessage is not called because AbiWord
+	      // has its own way of decoding keyboard accelerators
+	      DispatchMessage(&msg);
+	    }
 	}
 
 	// destroy the App.  It should take care of deleting all frames.
