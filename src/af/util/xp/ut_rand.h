@@ -28,8 +28,8 @@
 #include "ut_types.h"
 #endif
 
-void UT_srandom (UT_uint32 seed);
-UT_sint32 UT_rand ();
+ABI_EXPORT void UT_srandom (UT_uint32 seed);
+ABI_EXPORT UT_sint32 UT_rand ();
 
 #endif /* UT_RAND_H */
 
