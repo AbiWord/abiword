@@ -821,30 +821,3 @@ UT_Bool FP_Run::del(UT_uint32 iOffset, UT_uint32 iCount)
 	
 	return UT_TRUE;
 }
-
-#ifdef BUFFER	// top-down edit operations -- obsolete?
-UT_Bool FP_Run::insertInlineMarker(UT_uint32 newMarkerOffset, UT_uint32 markerSize)
-{
-	if (newMarkerOffset <= m_iOffsetFirst)
-	{
-		// insert occured before (or at the begining of) this run.
-		// we need to update the offset in this run.
-
-		m_iOffsetFirst += markerSize;
-		return UT_TRUE;
-	}
-	else if (m_iOffsetFirst+m_iLen <= newMarkerOffset)
-	{
-		// insert occured after this run, we don't need to bother it.
-		return UT_TRUE;
-	}
-	else
-	{
-		// insert occured inside this run, we need to split it.
-		// we will let our caller update the new marker that we create.
-		split(newMarkerOffset);
-		return UT_TRUE;
-	}
-}
-#endif /* BUFFER */
-

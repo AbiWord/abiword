@@ -132,19 +132,6 @@ public:
 
 	UT_Bool truncateLayout(FP_Run* pTruncRun);
 
-#ifdef BUFFER	// top-down edit operations -- obsolete?
-	UT_Bool		insertData(UT_UCSChar * text, UT_uint32 count);
-	UT_Bool		cmdCharDelete(UT_Bool bForward, UT_uint32 iCount);
-
-	void		mergeWithNextBlock();
-	void		insertParagraphBreak();
-	UT_Bool		insertInlineMarker(const XML_Char * szName,
-								   UT_Bool bStart,
-								   DG_DocMarkerId dmidParent,
-								   UT_Bool bCreateEmptyRun,
-								   DG_DocMarkerId * pdmidNew);
-#endif 
-
 	void draw(DG_Graphics*);
 	void clearScreen(DG_Graphics*);
 

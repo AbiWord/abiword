@@ -109,10 +109,6 @@ class FP_Run
 	UT_Bool 				ins(UT_uint32 iOffset, UT_uint32 iCount, UT_Bool bLeftSide, PT_AttrPropIndex indexAP);
 	UT_Bool 				del(UT_uint32 iOffset, UT_uint32 iCount);
 
-#ifdef BUFFER	// top-down edit operations -- obsolete?
-	UT_Bool					insertInlineMarker(UT_uint32 newMarkerOffset, UT_uint32 markerSize);
-#endif
-
 	void                    clearScreen(void);
 	void					draw(dg_DrawArgs*);
 	void					invert(UT_uint32 iStart, UT_uint32 iLen);
