@@ -6011,6 +6011,26 @@ bool FV_View::isPosSelected(PT_DocPosition pos) const
 	return m_Selection.isPosSelected(pos);
 }
 
+FV_SelectionMode FV_View::getSelectionMode(void) const
+{
+	return m_Selection.getSelectionMode();
+}
+
+FV_SelectionMode FV_View::getPrevSelectionMode(void) const
+{
+	return m_Selection.getPrevSelectionMode();
+}
+
+PD_DocumentRange * FV_View::getNthSelection(UT_sint32 i)
+{
+	return m_Selection.getNthSelection(i);
+}
+
+UT_sint32 FV_View::getNumSelections(void) const
+{
+	return m_Selection.getNumSelections();
+}
+
 void FV_View::getDocumentRangeOfCurrentSelection(PD_DocumentRange * pdr)
 {
 	PT_DocPosition iPos1, iPos2;

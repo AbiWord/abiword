@@ -26,7 +26,8 @@
 #include "fl_BlockLayout.h"
 #include "fp_Line.h"
 #include "fp_Run.h"
-
+#include "fl_TableLayout.h"
+#include "fp_TableContainer.h"
 
 FV_VisualDragText::FV_VisualDragText (FV_View * pView)
 	: m_pView (pView), 
@@ -174,23 +175,88 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 //
 // OK first work out the locations in the document of the anchor and point
 //	
-	PT_DocPosition posLow = m_pView->getSelectionAnchor();
+	PT_DocPosition posLow = 0;
 	PT_DocPosition posHigh = 0;
-	if(posLow < m_pView->getPoint())
-	{
-		posHigh = m_pView->getPoint();
-	}
-	else
-	{
-		posLow = m_pView->getPoint();
-		posHigh = m_pView->getSelectionAnchor();
-	}
 
 	fp_Run * pRunLow = NULL;
 	UT_sint32 xLow, yLow;
 	UT_uint32 heightCaret;
 	UT_sint32 xCaret2, yCaret2;
 	bool bDirection,bEOL;
+	if(m_pView->getSelectionMode() < 	FV_SelectionMode_Multiple)
+	{
+		if(posLow < m_pView->getPoint())
+		{
+			posLow = m_pView->getSelectionAnchor();
+			posHigh = 0;
+			posHigh = m_pView->getPoint();
+		}
+		else
+		{
+			posLow = m_pView->getPoint();
+			posHigh = m_pView->getSelectionAnchor();
+		}
+	}
+	else
+	{
+		UT_sint32 num = m_pView->getNumSelections();
+		PD_DocumentRange * pR = m_pView->getNthSelection(0);
+		posLow = pR->m_pos1;
+		fl_BlockLayout * pBlock = NULL;
+		m_pView->_findPositionCoords(posLow, bEOL, xLow, yLow, xCaret2, yCaret2, heightCaret, bDirection, &pBlock, &pRunLow);
+		while(pBlock->isEmbeddedType())
+		{
+			posLow++;
+			m_pView->_findPositionCoords(posLow, bEOL, xLow, yLow, xCaret2, yCaret2, heightCaret, bDirection, &pBlock, &pRunLow);
+		}
+		fl_ContainerLayout * pCL = pBlock->myContainingLayout();
+		UT_return_if_fail(pCL->getContainerType() != FL_CONTAINER_CELL);
+		fl_CellLayout * pCell = static_cast<fl_CellLayout *>(pCL);
+		fp_CellContainer * pCCon = static_cast<fp_CellContainer *>(pCL->getFirstContainer());
+		UT_return_if_fail(pCCon);
+		UT_Rect * pRect = pCCon->getScreenRect();
+		xLow = pRect->left;
+		yLow = pRect->top;
+		m_recCurFrame.left = xLow;
+		m_recCurFrame.top = yLow;
+		delete pRect;
+//
+// Now the other end of the column
+//
+	    pR = m_pView->getNthSelection(num-1);
+		posHigh = pR->m_pos1;
+		m_pView->_findPositionCoords(posHigh, bEOL, xLow, yLow, xCaret2, yCaret2, heightCaret, bDirection, &pBlock, &pRunLow);
+		while(pBlock->isEmbeddedType())
+		{
+			posHigh++;
+			m_pView->_findPositionCoords(posHigh, bEOL, xLow, yLow, xCaret2, yCaret2, heightCaret, bDirection, &pBlock, &pRunLow);
+		}
+		pCL = pBlock->myContainingLayout();
+		UT_return_if_fail(pCL->getContainerType() != FL_CONTAINER_CELL);
+		pCell = static_cast<fl_CellLayout *>(pCL);
+		pCCon = static_cast<fp_CellContainer *>(pCL->getFirstContainer());
+		UT_return_if_fail(pCCon);
+		pRect = pCCon->getScreenRect();
+		UT_sint32 xHigh = pRect->left+ pRect->width;
+		UT_sint32 yHigh = pRect->top + pRect->height;
+		delete pRect;
+		m_recCurFrame.width = xHigh - xLow;
+		m_recCurFrame.height = yHigh - yLow;
+		m_recOrigLeft.width = 0;
+		m_recOrigLeft.height = 0;
+		m_recOrigLeft.left = 0;
+		m_recOrigLeft.top = 0;
+		m_recOrigRight.width = 0;
+		m_recOrigRight.height = 0;
+		m_recOrigRight.left = 0;
+		m_recOrigRight.top = 0;
+		m_iLastX = x;
+		m_iLastY = y;
+		m_iInitialOffX = x - m_recCurFrame.left;
+		m_iInitialOffY = y - m_recCurFrame.top;
+		m_pDragImage = getGraphics()->genImageFromRectangle(m_recCurFrame);
+		return;
+	}
 	m_pView->_findPositionCoords(posLow, bEOL, xLow, yLow, xCaret2, yCaret2, heightCaret, bDirection, NULL, &pRunLow);
 	fp_Line * pLineLow = pRunLow->getLine();
 	fp_Run * pRunHigh = NULL;

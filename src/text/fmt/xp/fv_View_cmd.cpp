@@ -672,14 +672,13 @@ bool FV_View::cmdSelectColumn(PT_DocPosition posOfColumn)
 	UT_sint32 iLeft,iRight,iTop,iBot;
 	UT_sint32 Left,Right,Top,Bot;
 	bool bEOL;
-	PT_DocPosition posCol = getPoint();
 	if(!isInTable(posOfColumn))
 	{
 		return false;
 	}
-	getCellParams(posCol, &iLeft, &iRight,&iTop,&iBot);
-	bool bRes = m_pDoc->getStruxOfTypeFromPosition(posCol,PTX_SectionCell,&cellSDH);
-	bRes = m_pDoc->getStruxOfTypeFromPosition(posCol,PTX_SectionTable,&tableSDH);
+	getCellParams(posOfColumn, &iLeft, &iRight,&iTop,&iBot);
+	bool bRes = m_pDoc->getStruxOfTypeFromPosition(posOfColumn,PTX_SectionCell,&cellSDH);
+	bRes = m_pDoc->getStruxOfTypeFromPosition(posOfColumn,PTX_SectionTable,&tableSDH);
 	UT_return_val_if_fail(bRes, false);
 
 	posTable = m_pDoc->getStruxPosition(tableSDH) + 1;
@@ -715,23 +714,26 @@ bool FV_View::cmdSelectColumn(PT_DocPosition posOfColumn)
 // Now loop through the column and collect all the cells.
 //
 	UT_sint32 j = 0;
-	UT_sint32 jPrev = 0;
+	UT_sint32 jPrev = -1;
 	for(j=0; j<numRows; j++)
 	{
 		PT_DocPosition posWork = findCellPosAt(posTable,j,iLeft) +1;
 		getCellParams(posWork,&Left,&Right,&Top,&Bot);
+		UT_DEBUGMSG(("Adding cell at left %d right %d top %d bot %d posWork %d \n",Left,Right,Top,Bot,posWork));
 		if(Top == jPrev)
 		{
 			continue;
 		}
-		_findPositionCoords(posWork, bEOL, xCaret, yCaret, xCaret2, yCaret2, heightCaret, bDirection, &pBlock, &pRun);
+		_findPositionCoords(posWork+1, bEOL, xCaret, yCaret, xCaret2, yCaret2, heightCaret, bDirection, &pBlock, &pRun);
 		UT_return_val_if_fail(pBlock,false);
+		UT_DEBUGMSG(("Block pos = %d \n",pBlock->getPosition(false)));
 		fl_ContainerLayout * pCL = pBlock->myContainingLayout();
 		UT_return_val_if_fail((pCL->getContainerType() == FL_CONTAINER_CELL),false);
 		fl_CellLayout * pCell = static_cast<fl_CellLayout *>(pCL);
 		m_Selection.addCellToSelection(pCell);
 		jPrev = j;
 	}
+	_drawSelection();
 	return true;
 }
 

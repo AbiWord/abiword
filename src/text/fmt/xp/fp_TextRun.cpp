@@ -35,6 +35,7 @@
 #include "gr_DrawArgs.h"
 #include "fv_View.h"
 #include "fb_Alignment.h"
+#include "fl_TableLayout.h"
 
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
@@ -1472,7 +1473,32 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 
 	UT_uint32 iSel1 = UT_MIN(iSelAnchor, iPoint);
 	UT_uint32 iSel2 = UT_MAX(iSelAnchor, iPoint);
-
+//
+// Handle fully selected cells
+//
+	if(pView->getSelectionMode() > FV_SelectionMode_Multiple)
+	{
+		fl_ContainerLayout * pCL = getBlock()->myContainingLayout();
+		if(pCL->getContainerType() == FL_CONTAINER_CELL)
+		{
+			fl_CellLayout * pCell = static_cast<fl_CellLayout *>(pCL);
+			if(pCell->isCellSelected())
+			{
+				iSel1 = iRunBase;
+				iSel2 = iRunBase+getLength();
+			}
+			else
+			{
+				iSel1 = iRunBase-1;
+				iSel2 = iSel1;
+			}
+		}
+		else
+		{
+			iSel1 = iRunBase-1;
+			iSel2 = iSel1;
+		}
+	}
 	UT_ASSERT(iSel1 <= iSel2);
 
 	// we shall remember the nature of the selection, so we do not
@@ -1489,7 +1515,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	iSegmentOffset[1] = iSegmentOffset[3] = getLength();
 	bSegmentSelected[0] = false;
 	iSegmentWidth[0] = getWidth();
-
+ 
 	const UT_GrowBuf * pgbCharWidths = getBlock()->getCharWidths()->getCharWidths();
 
 	if (/* pView->getFocus()!=AV_FOCUS_NONE && */ iSel1 != iSel2 && pG->queryProperties(GR_Graphics::DGP_SCREEN))

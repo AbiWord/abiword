@@ -40,6 +40,7 @@
 FV_Selection::FV_Selection (FV_View * pView)
 	: m_pView (pView), 
 	  m_iSelectionMode(FV_SelectionMode_NONE),
+	  m_iPrevSelectionMode(FV_SelectionMode_NONE),
 	  m_iSelectAnchor(0),
 	  m_iSelectLeftAnchor(0),
 	  m_iSelectRightAnchor(0),
@@ -60,8 +61,9 @@ FV_Selection::~FV_Selection()
 
 void FV_Selection::setMode(FV_SelectionMode iSelMode)
 {
+	m_iPrevSelectionMode = m_iSelectionMode;
 	m_iSelectionMode = iSelMode;
-	if((m_iSelectionMode == FV_SelectionMode_NONE) || (m_iSelectionMode == FV_SelectionMode_Single) )
+	if(m_iSelectionMode != FV_SelectionMode_NONE)
 	{
 		m_pTableOfSelectedColumn = NULL;
 		UT_VECTOR_PURGEALL(PD_DocumentRange *,m_vecSelRanges);
@@ -212,6 +214,7 @@ void FV_Selection::addCellToSelection(fl_CellLayout * pCell)
 	FV_SelectionCellProps * pCellProps = new FV_SelectionCellProps;
 	UT_sint32 iLeft,iRight,iTop,iBot;
 	m_pView->getCellParams(posLow,&iLeft,&iRight,&iTop,&iBot);
+	UT_DEBUGMSG(("In Selection left %d right %d top %d bot %d \n",iLeft,iRight,iTop,iBot));
 	pCellProps->m_iLeft = iLeft;
 	pCellProps->m_iRight = iRight;
 	pCellProps->m_iTop = iTop;
@@ -235,7 +238,7 @@ PD_DocumentRange * FV_Selection::getNthSelection(UT_sint32 i)
 /*!
  * Return the number of active selections.
  */
-UT_sint32 FV_Selection::getNumSelections(void)
+UT_sint32 FV_Selection::getNumSelections(void) const
 {
 	return static_cast<UT_sint32>(m_vecSelRanges.getItemCount());
 }

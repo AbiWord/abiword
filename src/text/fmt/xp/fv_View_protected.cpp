@@ -198,7 +198,6 @@ void FV_View::_clearSelection(void)
 			iPos1 = getPoint();
 			iPos2 = m_Selection.getSelectionAnchor();
 		}
-
 		bool bres = _clearBetweenPositions(iPos1, iPos2, true);
 		if(!bres)
 			return;
@@ -212,19 +211,33 @@ void FV_View::_clearSelection(void)
 	else
 	{
 		UT_sint32 i = 0;
+		UT_Vector vecRanges;
+		vecRanges.clear();
 		for(i=0; i<m_Selection.getNumSelections();i++)
 		{
-			PD_DocumentRange * pDocR = m_Selection.getNthSelection(i);
+			PD_DocumentRange * pTmp =m_Selection.getNthSelection(i);
+			PD_DocumentRange * pTmp2 = new PD_DocumentRange(m_pDoc,pTmp->m_pos1,pTmp->m_pos2);
+			vecRanges.addItem(static_cast<void *>(pTmp2));
+		}
+		_resetSelection();
+		for(i=0; i< static_cast<UT_sint32>(vecRanges.getItemCount());i++)
+		{
+			PD_DocumentRange * pDocR = static_cast<PD_DocumentRange *>(vecRanges.getNthItem(i));
 			if(pDocR)
 			{
 				iPos1 = pDocR->m_pos1;
 				iPos2 = pDocR->m_pos2;
+				if(iPos1 == iPos2)
+				{
+					iPos2++;
+				}
 				bool bres = _clearBetweenPositions(iPos1, iPos2, true);
 				if(!bres)
 					return;
 				_drawBetweenPositions(iPos1, iPos2);
 			}
 		}
+		UT_VECTOR_PURGEALL(PD_DocumentRange *,vecRanges);
 	}
 	_resetSelection();
 	m_iLowDrawPoint = 0;
@@ -255,9 +268,16 @@ void FV_View::_drawSelection()
 		for(i=0; i<m_Selection.getNumSelections();i++)
 		{
 			PD_DocumentRange * pDocR = m_Selection.getNthSelection(i);
+			UT_DEBUGMSG(("Drawing between %d and %d \n",pDocR->m_pos1,pDocR->m_pos2));
 			if(pDocR)
 			{
-				_drawBetweenPositions(pDocR->m_pos1, pDocR->m_pos2);
+				PT_DocPosition iPos1 = pDocR->m_pos1;
+				PT_DocPosition iPos2 = pDocR->m_pos2;
+				if(iPos1 == iPos2)
+				{
+					iPos2++;
+				}
+				_drawBetweenPositions(iPos1, iPos2);
 			}
 		}
 		m_iLowDrawPoint = 0;

@@ -66,13 +66,15 @@ public:
     void                  setMode(FV_SelectionMode iSelMode);
 	FV_SelectionMode      getSelectionMode(void) const 
 		{ return m_iSelectionMode;}
+	FV_SelectionMode      getPrevSelectionMode(void) const 
+		{ return m_iPrevSelectionMode;}
 	PT_DocPosition        getSelectionAnchor(void) const;
 	void                  setSelectionAnchor(PT_DocPosition pos);
 	PT_DocPosition        getSelectionLeftAnchor(void) const;
 	void                  setSelectionLeftAnchor(PT_DocPosition pos);
 	PT_DocPosition        getSelectionRightAnchor(void) const;
 	void                  setSelectionRightAnchor(PT_DocPosition pos);
-	UT_sint32             getNumSelections(void);
+	UT_sint32             getNumSelections(void) const;
 	PD_DocumentRange *    getNthSelection(UT_sint32 i);
 	void                  addSelectedRange(PT_DocPosition posLow, PT_DocPosition posHigh, bool bAddData);
 	bool                  isPosSelected(PT_DocPosition pos) const;
@@ -83,6 +85,7 @@ public:
 private:
 	FV_View *             m_pView;
 	FV_SelectionMode      m_iSelectionMode;
+	FV_SelectionMode      m_iPrevSelectionMode;
 	PT_DocPosition        m_iSelectAnchor;
 	PT_DocPosition        m_iSelectLeftAnchor;
 	PT_DocPosition        m_iSelectRightAnchor;

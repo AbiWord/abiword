@@ -389,6 +389,10 @@ public:
 
 	bool			isPosSelected(PT_DocPosition pos) const;
 	bool			isXYSelected(UT_sint32 xPos, UT_sint32 yPos) const;
+	FV_SelectionMode getSelectionMode(void) const;
+	FV_SelectionMode getPrevSelectionMode(void) const;
+	PD_DocumentRange * getNthSelection(UT_sint32 i);
+	UT_sint32          getNumSelections(void) const;
 
 // ----------------------
 // Stuff for spellcheck context menu
