@@ -355,7 +355,7 @@ void XAP_UnixFont::_deleteEncodingTable()
 	if(m_pEncodingTable)
 	{
 		for(UT_uint32 i = 0; i < m_iEncodingTableSize; i++)
-			delete[] m_pEncodingTable[i].adb;
+			FREEP(m_pEncodingTable[i].adb);
 		delete[] m_pEncodingTable;
 		m_pEncodingTable = 0;
 		m_iEncodingTableSize = 0;
@@ -460,7 +460,7 @@ const encoding_pair * XAP_UnixFont::loadEncodingFile(char * encfile)
 		if(!fgets(buff,128,ef))
 		{
 			for(UT_uint32 j = 0; j < i; j++)
-				delete [] m_pEncodingTable[j].adb;
+				FREEP(m_pEncodingTable[j].adb);
 			delete[] m_pEncodingTable;
 			m_pEncodingTable = 0;
 			m_iEncodingTableSize = 0;
@@ -476,7 +476,7 @@ const encoding_pair * XAP_UnixFont::loadEncodingFile(char * encfile)
 			if(!comma)
 			{
 				for(UT_uint32 j = 0; j < i; j++)
-					delete [] m_pEncodingTable[j].adb;
+					FREEP(m_pEncodingTable[j].adb);
 				delete[] m_pEncodingTable;
 				m_pEncodingTable = 0;
 				m_iEncodingTableSize = 0;

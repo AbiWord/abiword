@@ -65,9 +65,9 @@
 #endif
 
 // TODO: get this from some auto-generated place
-static const UT_uint32 major   = 0;
-static const UT_uint32 minor   = 9;
-static const UT_uint32 release = 6;
+static const UT_uint32 major   = 1;
+static const UT_uint32 minor   = 0;
+static const UT_uint32 release = 0;
 
 /*!
  * Protected destructor creates an instance of this module class
