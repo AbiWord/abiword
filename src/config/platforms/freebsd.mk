@@ -59,6 +59,7 @@ PORT_FLAGS		+=
 
 # Shared library flags
 MKSHLIB			= $(LD) $(DSO_LDOPTS) -soname $(@:$(OBJDIR)/%.so=%.so)
+DL_LIBS			= dl
 
 ABI_NATIVE	= unix
 ABI_FE		= Unix

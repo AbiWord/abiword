@@ -162,6 +162,10 @@ ifeq ($(OS_NAME), FreeBSD)
 include $(ABI_DEPTH)/config/platforms/freebsd.mk
 endif
 
+ifeq ($(OS_NAME), OpenBSD)
+include $(ABI_DEPTH)/config/platforms/openbsd.mk
+endif
+
 # TODO: how do we differentiate between old SunOS and new Solaris
 ifeq ($(OS_NAME), SunOS)
 include $(ABI_DEPTH)/config/platforms/sunos.mk

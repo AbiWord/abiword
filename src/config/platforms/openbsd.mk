@@ -19,15 +19,13 @@
 ## 02111-1307, USA.
 
 ##############################################################################
-## SunOS (Solaris for now, too) platform defines
+## OpenBSD platform defines, courtesy of kstailey@kstailey.tzo.com
 ##############################################################################
 
 # Define tools
 CC		= gcc
 CCC		= g++
 RANLIB		= ranlib
-
-# INSTALL		= $(ABI_DEPTH)/util/unix/install-sh -c
 
 # Suffixes
 OBJ_SUFFIX	= o
@@ -38,11 +36,11 @@ AR		= ar cr $@
 # Compiler flags
 # TODO evaluate the full set of compiler options.
 ifdef ABI_OPT_DEBUG
-OPTIMIZER	= -g
+OPTIMIZER	= -g -Wall -Wshadow
 DEFINES		= -DDEBUG -UNDEBUG
 OBJ_DIR_SFX	= DBG
 else
-OPTIMIZER	=
+OPTIMIZER	= -O
 DEFINES		=
 OBJ_DIR_SFX	= OBJ
 endif
@@ -52,18 +50,18 @@ OS_INCLUDES		=
 G++INCLUDES		= -I/usr/include/g++
 
 # Compiler flags
-PLATFORM_FLAGS		= -ansi -Wall -pipe -DSunOS
-PORT_FLAGS		= -D_POSIX_SOURCE -D_BSD_SOURCE -DHAVE_STRERROR -D_XOPEN_SOURCE
+PLATFORM_FLAGS		= -ansi -Wall -pipe -DOPENBSD -DOpenBSD
+PORT_FLAGS		= -DHAVE_STRERROR
 OS_CFLAGS		= $(DSO_CFLAGS) $(PLATFORM_FLAGS) $(PORT_FLAGS)
 
-PLATFORM_FLAGS		+=
+PLATFORM_FLAGS		+= 
 PORT_FLAGS		+= 
 
 # Shared library flags
 MKSHLIB			= $(LD) $(DSO_LDOPTS) -soname $(@:$(OBJDIR)/%.so=%.so)
-DL_LIBS			= dl
+DL_LIBS			= 
 
 ABI_NATIVE	= unix
 ABI_FE		= Unix
 
-# End of sunos defs
+# End of OpenBSD defs
