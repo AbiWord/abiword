@@ -68,15 +68,14 @@ void DLGHandler::MessageReceived(BMessage *msg) {
 	}
 	case 'fsve': {		//Check "name" and "directory"
 		entry_ref ref;
-		char *name = new char[B_FILE_NAME_LENGTH];
+		const char *name;
 		msg->FindRef("directory", &ref);
 		BDirectory  dir(&ref);
 		BPath path(&dir, NULL, false);
-		msg->FindString("name", (const char **) &name);
+		msg->FindString("name", &name);
 		path.Append(name);
 		m_pDlg->SetAnswer(XAP_Dialog_FileOpenSaveAs::a_OK);
 		m_pDlg->SetPathname(path.Path());
-		delete [] name;
 		break;
 	}
 	case B_CANCEL:

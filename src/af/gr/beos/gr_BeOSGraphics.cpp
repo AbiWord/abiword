@@ -441,17 +441,12 @@ UT_uint32 GR_BeOSGraphics::getFontDescent()
 
 UT_uint32 GR_BeOSGraphics::measureUnRemappedChar(const UT_UCSChar c)
 {
-	UT_uint32	size, i;	
-
 	//We need to convert the string from UCS2 to UTF8 before
 	//we use the BeOS string operations on it.
 	char buffer[10];
 
-	//Set the character, then set the length of the character
-	size=0;
-
 	BFont viewFont;
-	BPoint *escapementArray=new BPoint[num];
+	BPoint escapementArray[1];
 
 	m_pShadowView->GetFont(&viewFont);
 	viewFont.SetSpacing(B_BITMAP_SPACING);
@@ -471,9 +466,7 @@ UT_uint32 GR_BeOSGraphics::measureUnRemappedChar(const UT_UCSChar c)
 	viewFont.GetEscapements(buffer,1,&tempdelta,escapementArray);
 	float fontsize=viewFont.Size();
 
-	size+= ceil(escapementArray[i].x *fontsize);
-
-	return(size);
+	return ceil(escapementArray[0].x *fontsize);
 }
 #if 0
 UT_uint32 GR_BeOSGraphics::measureString(const UT_UCSChar* s, int iOffset,
