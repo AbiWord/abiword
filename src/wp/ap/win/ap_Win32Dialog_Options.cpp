@@ -784,7 +784,7 @@ AP_Win32Dialog_Options_Lang::~AP_Win32Dialog_Options_Lang()
 	if (m_pVecUILangs)
 	{		
 		for (UT_uint32 i=0; i < m_pVecUILangs->getItemCount(); i++)
-			free (static_cast<void *>(m_pVecUILangs->getNthItem(i)));
+			free ((void *)m_pVecUILangs->getNthItem(i));
 			
 		delete m_pVecUILangs;		
 	}	

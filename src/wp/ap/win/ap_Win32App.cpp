@@ -1565,7 +1565,7 @@ bool AP_Win32App::doWindowlessArgs(const AP_Args *Args)
 		bool bFound = false;
 		if(Args->m_sPlugin != NULL)
 		{
-			const UT_Vector * pVec = XAP_ModuleManager::instance().enumModules ();
+			const UT_GenericVector<class XAP_Module *> *pVec = XAP_ModuleManager::instance().enumModules ();
 			for (UT_uint32 i = 0; (i < pVec->size()) && !bFound; i++)
 			{
 				pModule = (XAP_Module *)pVec->getNthItem (i);

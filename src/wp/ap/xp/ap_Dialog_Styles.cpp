@@ -110,8 +110,8 @@ void AP_Dialog_Styles::addOrReplaceVecProp(const XML_Char * pszProp,
 	}
 	if(i < iCount)
 	{
-		const char * pSV = m_vecAllProps.getNthItem(i+1);
-		FREEP(const_cast<char*>(pSV));
+		char * pSV = (char*)m_vecAllProps.getNthItem(i+1);
+		FREEP(pSV);
 		pSV = UT_strdup(pszVal);
 		m_vecAllProps.setNthItem(i+1, pSV, NULL);
 	}
@@ -187,8 +187,8 @@ void AP_Dialog_Styles::addOrReplaceVecAttribs(const XML_Char * pszProp,
 	}
 	if(i < iCount)
 	{
-		const char * pSV = m_vecAllAttribs.getNthItem(i+1);
-		FREEP(const_cast<char*>(pSV));
+		char * pSV = (char*)m_vecAllAttribs.getNthItem(i+1);
+		FREEP(pSV);
 		pSV = UT_strdup(pszVal);
 		m_vecAllAttribs.setNthItem(i+1, pSV, NULL);
 	}

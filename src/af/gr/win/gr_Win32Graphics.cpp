@@ -155,7 +155,7 @@ GR_Win32Graphics::~GR_Win32Graphics()
 	HBITMAP hBit;
 	for (UT_uint32 i = 0; i < m_vSaveRectBuf.size (); i++)
 	{
-		hBit = static_cast<HBITMAP>(m_vSaveRectBuf.getNthItem (i));
+		hBit = (HBITMAP)m_vSaveRectBuf.getNthItem (i);
 		DeleteObject(hBit);			
 	}
 
@@ -1381,7 +1381,7 @@ GR_Win32Font::~GR_Win32Font()
 
 	for (UT_uint32 i = 0; i < m_allocFonts.getItemCount(); ++i)
 	  {
-		  allocFont *p = static_cast<allocFont *>(m_allocFonts.getNthItem(i));
+		  allocFont *p = (allocFont *)m_allocFonts.getNthItem(i);
 
 		  if(m_oldHDC) 
 		  {
@@ -1441,7 +1441,7 @@ HFONT GR_Win32Font::getFontFromCache(UT_uint32 pixelsize, bool /*bIsLayout*/, UT
 
 	while (l < count)
 	  {
-		  entry = static_cast<allocFont *>(m_allocFonts.getNthItem(l));
+		  entry = (allocFont *)m_allocFonts.getNthItem(l);
 		  if (entry && entry->pixelSize == pixelsize)
 			  return entry->hFont;
 		  l++;
@@ -1613,7 +1613,7 @@ bool GR_Win32Graphics::_setTransform(const GR_Transform & tr)
 void GR_Win32Graphics::saveRectangle(UT_Rect & r, UT_uint32 iIndx) 
 {		
 	UT_Rect * oldR = NULL;
-	m_vSaveRect.setNthItem(iIndx, (void*)new UT_Rect(r),(void **)&oldR);
+	m_vSaveRect.setNthItem(iIndx, (void*)new UT_Rect(r),(const void **)&oldR);
 	DELETEP(oldR);
 
 	UT_uint32 iWidth = _tduR(r.width);
@@ -1651,7 +1651,7 @@ void GR_Win32Graphics::saveRectangle(UT_Rect & r, UT_uint32 iIndx)
 	hBit =  (HBITMAP)SelectObject(hMemDC, hOld);
 	DeleteDC(hMemDC);
 
-	m_vSaveRectBuf.setNthItem(iIndx, (void*) hBit, (void**)&hOld);
+	m_vSaveRectBuf.setNthItem(iIndx, (void*) hBit, (const void**)&hOld);
 	DeleteObject(hOld);
 }
 

@@ -560,7 +560,7 @@ bool EV_Win32Menu::onInitMenu(XAP_Frame * pFrame, AV_View * pView, HWND hWnd, HM
 					EV_Menu_Item*	item;
 					for(UT_sint32 i = 0; i< m_vecItems.getItemCount(); i++)
 					{
-						item = reinterpret_cast<EV_Menu_Item*>(m_vecItems.getNthItem(i));											
+						item = (EV_Menu_Item*)m_vecItems.getNthItem(i);
 						if (id==item->id)
 						{
 							strcpy (item->szText, szLabelName);					

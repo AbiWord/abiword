@@ -10097,11 +10097,11 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 //
 		for(j=0; j< nAtts; j++)
 		{
-			const XML_Char * sz = pCurStyleVec->getNthItem(j);
+			XML_Char * sz = (XML_Char*)pCurStyleVec->getNthItem(j);
 			if(sz != NULL)
 				// MUST NOT USED delete[] on strings allocated by malloc/calloc !!!
 				// delete [] sz;
-				FREEP(const_cast<XML_Char*>(sz));
+				FREEP(sz);
 		}
 		delete pCurStyleVec;
 

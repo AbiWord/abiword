@@ -81,8 +81,8 @@ PP_AttrProp::~PP_AttrProp()
 			if(entry)
 			{
 				// hack. don't do it.
-				const XML_Char* tmp = entry->first();
-				FREEP(const_cast<XML_Char*>(tmp));
+				XML_Char* tmp = (XML_Char*)entry->first();
+				FREEP(tmp);
 				if (entry->second())
 					delete entry->second();
 				delete entry;
@@ -334,14 +334,14 @@ bool	PP_AttrProp::setProperty(const XML_Char * szName, const XML_Char * szValue)
 		const PropertyPair* p = pEntry;
 
 		// hack. don't do it.
-		const XML_Char* tmp = p->first();
+		XML_Char* tmp = (XML_Char*)p->first();
 		UT_ASSERT(!m_bIsReadOnly);
 		if(strcmp(szName,"line-height") == 0)
 		{
 			UT_DEBUGMSG(("Found line-height, Old value %s new value is %s \n",tmp,szValue));
 		}
 
-		FREEP(const_cast<XML_Char*>(tmp));
+		FREEP(tmp);
 		if (p->second())
 			delete p->second();
 		delete p;

@@ -52,7 +52,7 @@ protected:
 	BOOL					_onBtn_FindNext(HWND hWnd);
 	BOOL					_onBtn_Replace(HWND hWnd);
 	BOOL					_onBtn_ReplaceAll(HWND hWnd);
-	void 					_updateList(HWND hWnd, UT_Vector* vec);
+	void 					_updateList(HWND hWnd, UT_GenericVector<UT_UCS4Char*>* vec);
 	HWND					m_hWnd;
 };
 

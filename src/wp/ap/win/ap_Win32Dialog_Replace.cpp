@@ -505,7 +505,7 @@ void AP_Win32Dialog_Replace::_updateLists()
 	_updateList(GetDlgItem(m_hWnd, AP_RID_DIALOG_REPLACE_COMBO_REPLACE), 	&m_replaceList);	
 }
 
-void AP_Win32Dialog_Replace::_updateList(HWND hWnd, UT_Vector* list)
+void AP_Win32Dialog_Replace::_updateList(HWND hWnd, UT_GenericVector<UT_UCS4Char*> *list)
 {
 	UT_DEBUGMSG(("AP_Win32Dialog_Replace::_updateList\n"));
 	

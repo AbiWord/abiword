@@ -245,7 +245,7 @@ void XAP_Win32Dialog_PluginManager::refreshPluginList()
 
 	// Populate List Box
 	XAP_Module* pModule = 0;
-	const UT_Vector* pVec = XAP_ModuleManager::instance().enumModules();
+	const UT_GenericVector<class XAP_Module *> *pVec = XAP_ModuleManager::instance().enumModules();
 
 	for (UT_uint32 i = 0; i < pVec->size(); i++)
 	{

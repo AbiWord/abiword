@@ -99,7 +99,7 @@ foo_Bitmap_container::~foo_Bitmap_container()
 	const UT_uint32 nItems = m_bitmaps_vector.getItemCount();
 	for (UT_uint32 iItem = nItems; iItem; --iItem)
 	{
-		void* p = m_bitmaps_vector.getNthItem(iItem - 1);
+		void* p = (void*)m_bitmaps_vector.getNthItem(iItem - 1);
 		// This is really, *REALLY* bad! The same entity that created this
 		// bitmap should also be responsible to destroy it. Time permitting,
 		// refactor all this code to make it correct.
@@ -273,7 +273,7 @@ LRESULT CALLBACK EV_Win32Toolbar::_ComboWndProc( HWND hWnd, UINT uMessage, WPARA
 			LOGFONT logfont;
 			SIZE size;
 			HFONT hfontSave;
-			const UT_Vector * v = t->m_pFontCtrl->getContents();
+			const UT_GenericVector<const char*> * v = t->m_pFontCtrl->getContents();
 			const UT_Vector * vcharSet = t->m_pFontCtrl->getFontsCharset();						
 			const char * sz  = (const char *)v->getNthItem(dis->itemData);			
 			const int nCharset = (int)vcharSet->getNthItem(dis->itemData);						
@@ -403,7 +403,7 @@ LRESULT CALLBACK EV_Win32Toolbar::_ComboWndProc( HWND hWnd, UINT uMessage, WPARA
 								// Find the proper non-localised text                                                                             					
 								XAP_Toolbar_ControlFactory * pFactory = t->m_pWin32App->getControlFactory();
 								EV_Toolbar_Control * pControl = pFactory->getControl(t, AP_TOOLBAR_ID_FMT_STYLE);                                                                         
-								const UT_Vector * v = pControl->getContents();                                                                          
+								const UT_GenericVector<const char*> * v = pControl->getContents();                                                                          
 								AP_Win32Toolbar_StyleCombo * pStyleC = static_cast<AP_Win32Toolbar_StyleCombo *>(pControl);
 								pStyleC->repopulate();                                                                                                
 
@@ -668,7 +668,7 @@ bool EV_Win32Toolbar::synthesize(void)
 						{
 							pControl->populate();
 
-							const UT_Vector * v = pControl->getContents();
+							const UT_GenericVector<const char*> * v = pControl->getContents();
 							UT_ASSERT(v);
 
 							SendMessage(hwndCombo, WM_SETREDRAW, FALSE,0);
@@ -1052,7 +1052,7 @@ bool EV_Win32Toolbar::_refreshItem(AV_View * pView, const EV_Toolbar_Action * pA
 				XAP_Toolbar_ControlFactory * pFactory = t->m_pWin32App->getControlFactory();			
 
 				EV_Toolbar_Control * pControl = pFactory->getControl(t, AP_TOOLBAR_ID_FMT_STYLE);			
-				const UT_Vector * v = pControl->getContents();				
+				const UT_GenericVector<const char*> * v = pControl->getContents();				
 					
 				AP_Win32Toolbar_StyleCombo * pStyleC = static_cast<AP_Win32Toolbar_StyleCombo *>(pControl);
 				pStyleC->repopulate();	
@@ -1287,7 +1287,7 @@ bool EV_Win32Toolbar::repopulateStyles(void)
 //
 // Now the combo box has to be refilled from this
 //						
-	const UT_Vector * v = pControl->getContents();
+	const UT_GenericVector<const char*> * v = pControl->getContents();
 	UT_ASSERT(v);
 	
 //

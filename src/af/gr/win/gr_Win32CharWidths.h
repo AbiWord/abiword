@@ -22,8 +22,6 @@
 
 #include "gr_CharWidths.h"
 
-class UT_NumberVector;
-
 //////////////////////////////////////////////////////////////////
 // the only reason that we subclass is because Win32 provides a
 // routine to fetch the widths of a whole font in one call.
