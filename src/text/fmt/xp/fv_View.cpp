@@ -6368,7 +6368,7 @@ void FV_View::cmdSelect(UT_sint32 xPos, UT_sint32 yPos, FV_DocPos dpBeg, FV_DocP
 //
 // No Footer. Look to see if the user has clicked in the footer region.
 //
-		UT_DEBUGMSG(("SEVIOR: ypos = %d pPage->getBottom() = %d pDSL->getBottomMargin() %d \n",ypos,pPage->getBottom(),pDSL->getBottomMargin()));
+		UT_DEBUGMSG(("SEVIOR: ypos = %d pPage->getBottom() = %d pDSL->getBottomMargin() %d \n",yPos,pPage->getBottom(),pDSL->getBottomMargin()));
 		if(xPos >=0 && yPos < (pPage->getBottom() + pDSL->getBottomMargin()) && yPos > pPage->getBottom())
 		{
 //
