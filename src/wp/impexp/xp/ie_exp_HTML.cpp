@@ -4647,7 +4647,9 @@ void s_HTML_Listener::_doFootnotes () {
 	// Output footnotes
 	//
 	UT_uint32 i = 0;
-	startEmbeddedStrux();
+	if(getNumFootnotes() > 0) {
+		startEmbeddedStrux();
+	}
 	for(i = 0; i < getNumFootnotes(); i = i + 1)
 	{
 		PD_DocumentRange * pDocRange = m_vecFootnotes.getNthItem(i);
