@@ -187,7 +187,7 @@ GtkWidget*  AP_UnixDialog_InsertBookmark::_constructWindow(void)
 
   abiAddStockButton(GTK_DIALOG(m_windowMain), GTK_STOCK_CANCEL, BUTTON_CANCEL);
   abiAddStockButton(GTK_DIALOG(m_windowMain), GTK_STOCK_DELETE, BUTTON_DELETE);
-  abiAddStockButton(GTK_DIALOG(m_windowMain), GTK_STOCK_OK, BUTTON_OK);
+  abiAddStockButton(GTK_DIALOG(m_windowMain), GTK_STOCK_ADD, BUTTON_OK);
 
   gtk_widget_grab_focus (m_comboEntry);
   gtk_widget_grab_default (m_comboEntry);
