@@ -210,10 +210,10 @@ UT_Bool AP_Dialog_Replace::findNext()
 	UT_Bool bDoneEntireDocument = UT_FALSE;
 
 	// update the view's automatic "find next" string
-	m_pView->findSetNextString(m_findString);
+	m_pView->findSetNextString(m_findString, m_matchCase);
 	
 	// call view to do the work
-	UT_Bool result = m_pView->findNext(m_findString, &bDoneEntireDocument);
+	UT_Bool result = m_pView->findNext(m_findString, m_matchCase, &bDoneEntireDocument);
 
 	if (bDoneEntireDocument == UT_TRUE)
 		_messageFinishedFind();
@@ -234,10 +234,11 @@ UT_Bool AP_Dialog_Replace::findReplace()
 	UT_Bool bDoneEntireDocument = UT_FALSE;
 	
 	// update the view's automatic "find next" string
-	m_pView->findSetNextString(m_findString);
+	m_pView->findSetNextString(m_findString, m_matchCase);
 	
 	// call view to do the work
-	UT_Bool result = m_pView->findReplace(m_findString, m_replaceString, &bDoneEntireDocument);
+	UT_Bool result = m_pView->findReplace(m_findString, m_replaceString,
+										  m_matchCase, &bDoneEntireDocument);
 
 	if (bDoneEntireDocument == UT_TRUE)
 		_messageFinishedFind();
@@ -258,10 +259,12 @@ UT_Bool AP_Dialog_Replace::findReplaceAll()
 	UT_Bool bDoneEntireDocument = UT_FALSE;
 	
 	// update the view's automatic "find next" string
-	m_pView->findSetNextString(m_findString);
+	m_pView->findSetNextString(m_findString, m_matchCase);
 	
 	// call view to do the work
-	UT_uint32 numReplaced = m_pView->findReplaceAll(m_findString, m_replaceString);
+	UT_uint32 numReplaced = m_pView->findReplaceAll(m_findString,
+													m_replaceString,
+													m_matchCase);
 
 	if (bDoneEntireDocument == UT_TRUE)
 		_messageFinishedReplace(numReplaced);
