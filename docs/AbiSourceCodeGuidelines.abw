@@ -63,7 +63,7 @@
 <p props="line-height:1.0; margin-top:0pt"></p>
 <p props="line-height:1.0; margin-top:0pt">17.  Don't break the tree.  This is a Big One.  Some Open Source projects seem to be very forgiving about checking in code which doesn't compile or causes instant crashes.  We're not.  Around here, when someone breaks the tree, we require them to buy donuts.</p>
 <p props="line-height:1.0; margin-top:0pt"></p>
-<p props="line-height:1.0; margin-top:0pt">18.  Don't declare variables in the declaration of a 'for' loop of 'if' conditional and expect them to work outside the scope of the block of code.  This is required by ANSI/ICO C++ rules.  Metrowerks CodeWarrior is unforgiving about this; such variables are restricted to the scope of the conditional or loop.  For example, CodeWarrior will refuse to compile the following code:</p>
+<p props="line-height:1.0; margin-top:0pt">18.  Don't declare variables in the declaration of a 'for' loop or 'if' conditional and expect them to work outside the scope of the block of code.  This is required by ANSI/ICO C++ rules.  Metrowerks CodeWarrior is unforgiving about this; such variables are restricted to the scope of the conditional or loop.  For example, CodeWarrior will refuse to compile the following code:</p>
 <p props="line-height:1.0; margin-top:0pt"></p>
 <p props="line-height:1.0; margin-top:0pt">for (int i = 0; i &gt; 10; i++)</p>
 <p props="line-height:1.0; margin-top:0pt">{</p>

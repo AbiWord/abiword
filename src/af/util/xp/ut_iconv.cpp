@@ -160,7 +160,7 @@ const char * ucs4Internal ()
 /************************************************************************/
 
 /*!
- * Returns true is the internal handle is valid, false is not
+ * Returns true if the internal handle is valid, false if not
  */
 int UT_iconv_isValid ( UT_iconv_t cd )
 {
