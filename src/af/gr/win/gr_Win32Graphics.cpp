@@ -214,7 +214,7 @@ GR_Font* GR_Win32Graphics::findFont(const char* pszFontFamily,
 	UT_sint32 iHeight = (UT_sint32)UT_convertToPoints(pszFontSize);
 	float fScale = (float)(((float)getZoomPercentage()) / (float)100);			
 	lf.lfHeight = (-MulDiv(/*UT_LOG_UNITS*/iHeight, GetDeviceCaps(m_hdc, LOGPIXELSY), 72));		
-	lf.lfHeight = lf.lfHeight* fScale;	
+	lf.lfHeight = static_cast<LONG>(lf.lfHeight* fScale);	
 
 	// TODO note that we don't support all those other ways of expressing weight.
 	if (0 == UT_stricmp(pszFontWeight, "bold"))
@@ -368,7 +368,7 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 
 		if (pCharWidths)
 		{
-			for (UT_uint32 i = 0; i < iLengthOrig; i++)
+			for (UT_sint32 i = 0; i < iLengthOrig; i++)
 				pCharAdvances[i] = tdu (pCharWidths[i]);
 		}
 		else

@@ -41,6 +41,7 @@ public:
 	class Acq
 	{
 		friend class GR_Win32Graphics;
+		friend class GR_Win32Font;
 	private:
 
 		static inline HFONT		getHFONT(GR_Win32Font& font)
