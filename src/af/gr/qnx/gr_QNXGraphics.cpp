@@ -301,7 +301,7 @@ if(pCharWidths == NULL && iLength > 1) {
 	for(int i=0;i<iLength;i++)
 		ucs2buffer[i] = (UT_UCS2Char)pChars[iCharOffset+i];
 
-	PhPoint_t pos = {tdu(xoff),tdu(getFontAscent()) + tdu(yoff)};
+	PhPoint_t pos = {_tduX(xoff),tdu(getFontAscent()) + _tduY(yoff)};
 	DRAW_START
 	GR_CaretDisabler caretDisabler(getCaret());
 //	PgSetTextColor(m_currentColor);	
@@ -319,7 +319,7 @@ else
 
 void GR_QNXGraphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
 {
-PhPoint_t pos = {tdu(xoff),tdu(yoff)+ tdu(getFontAscent())};
+PhPoint_t pos = {_tduX(xoff),_tduY(yoff)+ tdu(getFontAscent())};
 UT_UCS2Char ucs2buffer[2] = {(UT_UCS2Char)Char,0};
 
 GR_CaretDisabler caretDisabler(getCaret());
@@ -546,10 +546,10 @@ void GR_QNXGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,
 		DRAW_START
 
 
-	x1 = tdu(x1);
-	x2 = tdu(x2);
-	y1 = tdu(y1);
-	y2 = tdu(y2);
+	x1 = _tduX(x1);
+	x2 = _tduX(x2);
+	y1 = _tduY(y1);
+	y2 = _tduY(y2);
 
 //	PgSetFillColor(m_currentColor);
 //	PgSetStrokeColor(m_currentColor);
@@ -589,10 +589,10 @@ void GR_QNXGraphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
 	DRAW_START
 	old = PgSetDrawMode(Pg_DrawModeSRCXOR);
 
-	x1 = tdu(x1);
-	x2 = tdu(x2);
-	y1 = tdu(y1);
- 	y2 = tdu(y2);
+	x1 = _tduX(x1);
+	x2 = _tduX(x2);
+	y1 = _tduY(y1);
+ 	y2 = _tduY(y2);
 	PgSetStrokeXORColor(Pg_WHITE,Pg_BLACK);
 //	PgSetStrokeWidth(m_iLineWidth);
 	PgDrawILine(x1, y1, x2, y2);
@@ -609,8 +609,8 @@ void GR_QNXGraphics::polygon(UT_RGBColor& c,UT_Point *pts,UT_uint32 nPoints)
 	PhPoint_t* points = new PhPoint_t[nPoints];
 	UT_ASSERT(pts);
 	for (UT_uint32 i = 0;i < nPoints;i++){
-		points[i].x = tdu(pts[i].x);
-		points[i].y = tdu(pts[i].y);
+		points[i].x = _tduX(pts[i].x);
+		points[i].y = _tduY(pts[i].y);
 	}
 	newc = PgRGB(c.m_red, c.m_grn, c.m_blu);
 	GR_CaretDisabler caretDisabler(getCaret());
@@ -643,7 +643,7 @@ void GR_QNXGraphics::invertRect(const UT_Rect* pRect)
 
 	old = PgSetDrawMode(Pg_DrawModeSRCXOR);
 	PgSetFillXORColor(Pg_WHITE,m_currentColor);
-	PgDrawIRect(tdu(pRect->left), tdu(pRect->top), tdu(pRect->left)+tdu(pRect->width), tdu(pRect->top)+tdu(pRect->height), Pg_DRAW_FILL);
+	PgDrawIRect(_tduX(pRect->left), _tduY(pRect->top), _tduX(pRect->left)+_tduR(pRect->width), _tduY(pRect->top)+_tduR(pRect->height), Pg_DRAW_FILL);
 	PgSetDrawMode(old);
 
 	DRAW_END
@@ -655,10 +655,10 @@ void GR_QNXGraphics::setClipRect(const UT_Rect* pRect)
 	if (pRect)
 	{
 		PhRect_t r;
-		r.ul.x = tdu(pRect->left);
-		r.ul.y = tdu(pRect->top);
-		r.lr.x = r.ul.x + tdu(pRect->width);
-		r.lr.y = r.ul.y + tdu(pRect->height);
+		r.ul.x = _tduX(pRect->left);
+		r.ul.y = _tduY(pRect->top);
+		r.lr.x = r.ul.x + _tduR(pRect->width);
+		r.lr.y = r.ul.y + _tduR(pRect->height);
 //		UT_ASSERT(!m_pClipList);		//Only one item for now
 	if (m_pClipList || (m_pClipList = PhGetTile())) {
 			m_pClipList->rect = r;
@@ -678,10 +678,10 @@ void GR_QNXGraphics::fillRect(const UT_RGBColor & c, UT_sint32 x, UT_sint32 y,
 			      UT_sint32 w, UT_sint32 h)
 {
 	PgColor_t newc;
-	x = tdu(x);
-	y = tdu(y);
-	w = tdu(w);
-	h = tdu(h);
+	x = _tduX(x);
+	y = _tduY(y);
+	w = _tduR(w);
+	h = _tduR(h);
 
 	newc = PgRGB(c.m_red, c.m_grn, c.m_blu);
 	GR_CaretDisabler caretDisabler(getCaret());
@@ -799,8 +799,8 @@ void GR_QNXGraphics::clearArea(UT_sint32 x, UT_sint32 y,
 ***/
 GR_Image* GR_QNXGraphics::createNewImage(const char* pszName, const UT_ByteBuf* pBBPNG, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight, GR_Image::GRType iType)
 {
-	iDisplayWidth = tdu(iDisplayWidth);
-	iDisplayHeight = tdu(iDisplayHeight);
+	iDisplayWidth = _tduR(iDisplayWidth);
+	iDisplayHeight = _tduR(iDisplayHeight);
 	/* GR_QNXImage* pImg = NULL; */
 	GR_Image* pImg = NULL;
    	if (iType == GR_Image::GRT_Raster)
@@ -816,8 +816,8 @@ void GR_QNXGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
 {
 
 	UT_ASSERT(pImg);
-	xDest = tdu(xDest);
-	yDest = tdu(yDest);
+	xDest = _tduX(xDest);
+	yDest = _tduY(yDest);
 
 
    	if (pImg->getType() != GR_Image::GRT_Raster) {
@@ -980,10 +980,10 @@ void GR_QNXGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 
 {
 	UT_ASSERT(c < COUNT_3D_COLORS);
 
-	x = tdu(x);
-	y = tdu(y);
-	w = tdu(w);
-	h = tdu(h);
+	x = _tduX(x);
+	y = _tduX(y);
+	w = _tduR(w);
+	h = _tduR(h);
 
 	GR_CaretDisabler caretDisabler(getCaret());
 	DRAW_START
@@ -1044,8 +1044,8 @@ bool GR_QNXGraphics::startPage(const char * szPageLabel, UT_uint32 pageNumber,
 		pageNumber, iWidth, iHeight, bPortrait, (szPageLabel) ? szPageLabel : "", m_bPrintNextPage));
 	UT_ASSERT(m_pPrintContext);
 
-	iWidth = tdu(iWidth);
-	iHeight = tdu(iHeight);
+	iWidth = _tduR(iWidth);
+	iHeight = _tduR(iHeight);
 
 	if (!m_pPrintContext) {
 		return false;
@@ -1083,10 +1083,10 @@ GR_Image * GR_QNXGraphics::genImageFromRectangle(const UT_Rect & r) {
 	PhImage_t *pImgshmem,*pImg;
 
 	PtGetAbsPosition(m_pDraw,&x,&y);
-	rect.ul.x=x + tdu(r.left);
-	rect.ul.y=y + tdu(r.top);
-	rect.lr.x= rect.ul.x + tdu(r.width);
-	rect.lr.y= rect.ul.y + tdu(r.height);
+	rect.ul.x=x + _tduX(r.left);
+	rect.ul.y=y + _tduY(r.top);
+	rect.lr.x= rect.ul.x + _tduR(r.width);
+	rect.lr.y= rect.ul.y + _tduR(r.height);
 	pImgshmem =PgReadScreen(&rect,NULL);
 
 	//PgReadScreen is kind of stupid and you need to free that image using PgShmemDestroy, therefor duplicate it so GR_QNXImage won't go nuts.
@@ -1127,10 +1127,10 @@ void GR_QNXGraphics::saveRectangle(UT_Rect &r, UT_uint32 iIndx)
   PhImage_t	*pImg;
 
   PtGetAbsPosition(m_pDraw,&x,&y);
-  rect.ul.x=x + tdu(r.left);
-  rect.ul.y=y + tdu(r.top);
-  rect.lr.x= rect.ul.x + tdu(r.width);
-  rect.lr.y= rect.ul.y + tdu(r.height);
+  rect.ul.x=x + _tduX(r.left);
+  rect.ul.y=y + _tduY(r.top);
+  rect.lr.x= rect.ul.x + _tduR(r.width);
+  rect.lr.y= rect.ul.y + _tduR(r.height);
   pImg =PgReadScreen(&rect,NULL);
 
   void * oldC = NULL;
@@ -1152,8 +1152,8 @@ void GR_QNXGraphics::restoreRectangle(UT_uint32 iIndx)
       
       DRAW_START
 	
-	pos.x=tdu(r->left);
-        pos.y=tdu(r->top);
+	pos.x=_tduX(r->left);
+        pos.y=_tduY(r->top);
       
 	PgDrawPhImage(&pos,pImg,0);
       DRAW_END

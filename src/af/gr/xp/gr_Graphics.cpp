@@ -172,13 +172,50 @@ UT_sint32 GR_Graphics::tdu(UT_sint32 layoutUnits) const
 {
 	double d = ((double)layoutUnits * static_cast<double>(getDeviceResolution())) * static_cast<double>(getZoomPercentage()) / (100. * static_cast<double>(getResolution()));
 	// don't know if we need this line or not -PL
-	if (d > 0) d += .5; else d -= .5;
+//	if (d > 0) d += .5; else d -= .5;
 	return (UT_sint32)d;
+}
+
+/*!
+ * This method converts to device units while taking account of the X-scroll
+ * offset. This will always give the exact same logical location on the screen
+ * no matter what the X-scroll offset is. This fixes off-by-1-pixel bugs in X.
+ */
+UT_sint32 GR_Graphics::_tduX(UT_sint32 layoutUnits) const
+{
+	return tdu(layoutUnits+getPrevXOffset()) - tdu(getPrevXOffset());
+}
+
+
+/*!
+ * This method converts to device units while taking account of the Y-scroll
+ * offset. This will always give the exact same logical location on the screen
+ * no matter what the Y-scroll offset is. This fixes off-by-1-pixel bugs in Y.
+ */
+UT_sint32 GR_Graphics::_tduY(UT_sint32 layoutUnits) const
+{
+	return tdu(layoutUnits+getPrevYOffset()) - tdu(getPrevYOffset());
+}
+
+
+/*!
+ * This method converts rectangle widths and heights to device units while 
+ * taking account rounding down errors.
+ * This fixes off-by-1-pixel-bugs in Rectangle widths and heights.
+ */
+UT_sint32 GR_Graphics::_tduR(UT_sint32 layoutUnits) const
+{
+	UT_sint32 idh = tdu(layoutUnits);
+	if(tlu(idh) < layoutUnits)
+	{
+		idh += 1;
+	}
+	return idh;
 }
 
 UT_sint32 GR_Graphics::tlu(UT_sint32 deviceUnits) const
 {
-	return static_cast<UT_sint32>((static_cast<double>(deviceUnits) * static_cast<double>(getResolution()) / static_cast<double>(getDeviceResolution())) * 100. / static_cast<double>(getZoomPercentage()) + 0.5);
+	return static_cast<UT_sint32>((static_cast<double>(deviceUnits) * static_cast<double>(getResolution()) / static_cast<double>(getDeviceResolution())) * 100. / static_cast<double>(getZoomPercentage()));  //was +0.5
 }
 
 double GR_Graphics::tduD(double layoutUnits) const

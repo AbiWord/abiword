@@ -293,8 +293,8 @@ void GR_Win32Graphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
 	UT_DEBUGMSG(("GR_Win32Graphics::drawChar %c %u %u\n", Char, xoff, yoff));	
 	#endif	
 	
-	xoff = tdu(xoff);
-	yoff = tdu(yoff);
+	xoff = _tduX(xoff);
+	yoff = _tduY(yoff);
 
 	HFONT hFont = GR_Win32Font::Acq::getDisplayFont(*m_pFont, this);
 	SelectObject(m_hdc, hFont);
@@ -379,8 +379,8 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 	UT_DEBUGMSG(("GR_Win32Graphics::drawChars %c %u %u\n", pChars, xoff, yoff));	
 	#endif
 	
-	xoff = tdu(xoff);
-	yoff = tdu(yoff);
+	xoff = _tduX(xoff);
+	yoff = _tduY(yoff);
 	int *pCharAdvances = NULL;
 	
 	// iLength can be modified by _remapGlyphs
@@ -633,15 +633,15 @@ void GR_Win32Graphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sin
 	
 	GR_CaretDisabler caretDisabler(getCaret());	
 
-	x1 = tdu(x1);
-	x2 = tdu(x2);
-	y1 = tdu(y1);
-	y2 = tdu(y2);	
+	x1 = _tduX(x1);
+	x2 = _tduX(x2);
+	y1 = _tduY(y1);
+	y2 = _tduY(y2);	
 
 	int penStyle;
 	HPEN hPen = NULL;
 	bool bCached = false;
-	UT_sint32 iLineWidth = tdu (m_iLineWidth);
+	UT_sint32 iLineWidth = _tduR(m_iLineWidth);
 	
 	switch(m_eLineStyle)
 	{
@@ -738,16 +738,16 @@ void GR_Win32Graphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint
 	  this should always be done to the screen.
 	*/
 
-	x1 = tdu(x1);
-	x2 = tdu(x2);
-	y1 = tdu(y1);
-	y2 = tdu(y2);
+	x1 = _tduX(x1);
+	x2 = _tduX(x2);
+	y1 = _tduY(y1);
+	y2 = _tduY(y2);
 
 	if (m_clrCurrent != m_clrXorPen || !m_hXorPen)
 	{
 		if (m_hXorPen)
 			DeleteObject(m_hXorPen);
-		m_hXorPen = CreatePen(PS_SOLID, tdu(m_iLineWidth), m_clrCurrent);
+		m_hXorPen = CreatePen(PS_SOLID, _tduR(m_iLineWidth), m_clrCurrent);
 		m_clrXorPen = m_clrCurrent;
 	}
 
@@ -769,7 +769,7 @@ void GR_Win32Graphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 	
 	GR_CaretDisabler caretDisabler(getCaret());
 		
-	HPEN hPen = CreatePen(PS_SOLID, tdu(m_iLineWidth), m_clrCurrent);
+	HPEN hPen = CreatePen(PS_SOLID, _tduR(m_iLineWidth), m_clrCurrent);
 	HPEN hOldPen = (HPEN) SelectObject(m_hdc, hPen);
 
 	POINT * points = (POINT *)UT_calloc(nPoints, sizeof(POINT));
@@ -777,8 +777,8 @@ void GR_Win32Graphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 
 	for (UT_uint32 i = 0; i < nPoints; i++)
 	{
-		points[i].x = tdu(pts[i].x);
-		points[i].y = tdu(pts[i].y);
+		points[i].x = _tduX(pts[i].x);
+		points[i].y = _tduY(pts[i].y);
 	}
 
 	Polyline(m_hdc, points, nPoints);
@@ -790,23 +790,21 @@ void GR_Win32Graphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 
 void GR_Win32Graphics::fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
 {
-	x=tdu(x);
-	y=tdu(y);
-	w=tdu(w);
-	h=tdu(h);
+	
+	RECT r;
+	r.left = _tduX(x);
+	r.top = _tduY(y);
+	r.right = _tduX(x + w);
+	r.bottom = _tduY(y + h);
+	w=_tduR(w);
+	h=_tduR(h);
 
 	COLORREF clr = RGB(c.m_red, c.m_grn, c.m_blu);
 	GR_CaretDisabler caretDisabler(getCaret());
 
 	#ifdef GR_GRAPHICS_DEBUG
-	UT_DEBUGMSG(("GR_Win32Graphics::fillRect %x %u %u %u %u\n",  clr, x, y, w, h));	
+	UT_DEBUGMSG(("GR_Win32Graphics::fillRect %x %u %u %u %u\n",  clr, r.left, r.top, w, h));	
 	#endif
-	
-	RECT r;
-	r.left = x;
-	r.top = y;
-	r.right = r.left + w;
-	r.bottom = r.top + h;
 		
 	// This might look wierd (and I think it is), but it's MUCH faster.
 	// CreateSolidBrush is dog slow.
@@ -828,8 +826,8 @@ bool GR_Win32Graphics::startPrint(void)
 bool GR_Win32Graphics::startPage(const char * szPageLabel, UT_uint32 pageNumber,
 									bool bPortrait, UT_uint32 iWidth, UT_uint32 iHeight)
 {
-	iWidth = tdu(iWidth);
-	iHeight = tdu(iHeight);
+	iWidth = _tduR(iWidth);
+	iHeight = _tduR(iHeight);
 	if (m_bStartPage)
 	{
 		EndPage(m_hdc);
@@ -883,10 +881,20 @@ bool GR_Win32Graphics::endPrint(void)
  **/
 void GR_Win32Graphics::scroll(UT_sint32 dx, UT_sint32 dy)
 {
-	dx = tdu(dx);
-	dy = tdu(dy);
+	UT_sint32 oldDY = tdu(getPrevYOffset());
+	UT_sint32 oldDX = tdu(getPrevXOffset());
+	UT_sint32 newY = getPrevYOffset() + dy;
+	UT_sint32 newX = getPrevXOffset() + dx;
+	UT_sint32 ddx = -(tdu(newX) - oldDX);
+	UT_sint32 ddy = -(tdu(newY) - oldDY);
+	setPrevYOffset(newY);
+	setPrevXOffset(newX);
+	if(ddx == 0 && ddy == 0)
+	{
+		return;
+	}
 	GR_CaretDisabler caretDisabler(getCaret());
-	ScrollWindowEx(m_hwnd, -dx, -dy, NULL, NULL, NULL, 0, SW_INVALIDATE);
+	ScrollWindowEx(m_hwnd, ddx, ddy, NULL, NULL, NULL, 0, SW_INVALIDATE);
 }
 
 void GR_Win32Graphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
@@ -919,10 +927,10 @@ void GR_Win32Graphics::clearArea(UT_sint32 x, UT_sint32 y, UT_sint32 width, UT_s
 	
 	GR_CaretDisabler caretDisabler(getCaret());
 	 
-	x = tdu(x);
-	y = tdu(y);
-	width = tdu(width);
-	height = tdu(height);	
+	x = _tduX(x);
+	y = _tduY(y);
+	width = _tduR(width);
+	height = _tduR(height);	
 	
 	RECT r;
 	r.left = x;
@@ -943,10 +951,10 @@ void GR_Win32Graphics::invertRect(const UT_Rect* pRect)
 	
 	RECT r;
 
-	r.left = tdu(pRect->left);
-	r.top = tdu(pRect->top);
-	r.right = tdu(pRect->left + pRect->width);
-	r.bottom = tdu(pRect->top + pRect->height);
+	r.left = _tduX(pRect->left);
+	r.top = _tduY(pRect->top);
+	r.right = _tduX(pRect->left + pRect->width);
+	r.bottom = _tduY(pRect->top + pRect->height);
 
 	InvertRect(m_hdc, &r);
 }
@@ -963,10 +971,10 @@ void GR_Win32Graphics::setClipRect(const UT_Rect* pRect)
 	if (pRect)
 	{
 		// set the clip rectangle
-		HRGN hrgn = CreateRectRgn(tdu(pRect->left),
-								  tdu(pRect->top),
-								  tdu(pRect->left + pRect->width),
-								  tdu(pRect->top + pRect->height));
+		HRGN hrgn = CreateRectRgn(_tduX(pRect->left),
+								  _tduY(pRect->top),
+								  _tduX(pRect->left + pRect->width),
+								  _tduY(pRect->top + pRect->height));
 		UT_ASSERT(hrgn);
 
 		res = SelectClipRgn(m_hdc, hrgn);
@@ -983,8 +991,8 @@ GR_Image* GR_Win32Graphics::createNewImage(const char* pszName, const UT_ByteBuf
 					   UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight,
 					   GR_Image::GRType iType)
 {
-	iDisplayWidth = tdu(iDisplayWidth);
-	iDisplayHeight = tdu(iDisplayHeight);
+	iDisplayWidth = _tduR(iDisplayWidth);
+	iDisplayHeight = _tduR(iDisplayHeight);
 	
 	GR_Image* pImg = NULL;
 	if (iType == GR_Image::GRT_Raster)
@@ -1003,8 +1011,8 @@ void GR_Win32Graphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDes
 	
 	GR_CaretDisabler caretDisabler(getCaret());
 
-	xDest = tdu(xDest);
-	yDest = tdu(yDest);
+	xDest = _tduX(xDest);
+	yDest = _tduY(yDest);
 	
 	if (pImg->getType() != GR_Image::GRT_Raster)
 	{
@@ -1191,10 +1199,10 @@ void GR_Win32Graphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint3
 	GR_CaretDisabler caretDisabler(getCaret());
  
 	RECT r;
-	r.left = tdu(x);
-	r.top = tdu(y);
-	r.right = r.left + tdu(w);
-	r.bottom = r.top + tdu(h);
+	r.left = _tduX(x);
+	r.top = _tduY(y);
+	r.right = _tduX(x + w);
+	r.bottom = _tduY(y + h);
 
 	FillRect(m_hdc, &r, hBrush);
 	DeleteObject(hBrush);
@@ -1494,7 +1502,7 @@ void GR_Win32Graphics::polygon(UT_RGBColor& c,UT_Point *pts,UT_uint32 nPoints)
 {
     GR_CaretDisabler caretDisabler(getCaret());
 	 
-	HPEN hPen = CreatePen(PS_SOLID, tdu(m_iLineWidth), RGB(c.m_red, c.m_grn, c.m_blu));
+	HPEN hPen = CreatePen(PS_SOLID, _tduR(m_iLineWidth), RGB(c.m_red, c.m_grn, c.m_blu));
 	HPEN hOldPen = (HPEN)SelectObject(m_hdc,hPen);
 
 	HBRUSH hBrush = CreateSolidBrush(RGB(c.m_red, c.m_grn, c.m_blu));
@@ -1505,8 +1513,8 @@ void GR_Win32Graphics::polygon(UT_RGBColor& c,UT_Point *pts,UT_uint32 nPoints)
 
 	for (UT_uint32 i = 0; i < nPoints; ++i)
 	{
-		points[i].x = tdu(pts[i].x);
-		points[i].y = tdu(pts[i].y);
+		points[i].x = _tduX(pts[i].x);
+		points[i].y = _tduY(pts[i].y);
 	}
 
 	Polygon(m_hdc, points, nPoints);
@@ -1573,10 +1581,10 @@ void GR_Win32Graphics::saveRectangle(UT_Rect & r, UT_uint32 iIndx)
 	m_vSaveRect.setNthItem(iIndx, (void*)new UT_Rect(r),(void **)&oldR);
 	DELETEP(oldR);
 
-	UT_uint32 iWidth = tdu(r.width);
-	UT_uint32 iHeight = tdu(r.height);
-	UT_sint32 x = tdu(r.left);
-	UT_sint32 y = tdu(r.top);	 
+	UT_uint32 iWidth = _tduR(r.width);
+	UT_uint32 iHeight = _tduR(r.height);
+	UT_sint32 x = _tduX(r.left);
+	UT_sint32 y = _tduY(r.top);	 
 
 	#ifdef GR_GRAPHICS_DEBUG	
 	UT_DEBUGMSG(("GR_Win32Graphics::saveRectangle %u, %u %u %u %u\n", iIndx,
@@ -1620,10 +1628,10 @@ void GR_Win32Graphics::restoreRectangle(UT_uint32 iIndx)
 	UT_ASSERT(r);
 	UT_ASSERT(hBit);
 	
-	UT_uint32 iWidth = tdu(r->width);
-	UT_uint32 iHeight = tdu(r->height);
-	UT_sint32 x = tdu(r->left);
-	UT_sint32 y = tdu(r->top);			
+	UT_uint32 iWidth = _tduR(r->width);
+	UT_uint32 iHeight = _tduR(r->height);
+	UT_sint32 x = _tduX(r->left);
+	UT_sint32 y = _tduY(r->top);			
 
 	#ifdef GR_GRAPHICS_DEBUG
 	UT_DEBUGMSG(("GR_Win32Graphics::restoreRectangle %u, %u %u %u %u\n", iIndx,
