@@ -101,12 +101,7 @@ GR_QNXGraphics::GR_QNXGraphics(PtWidget_t * win, PtWidget_t * draw)
 	m_pClipList = NULL;
 	m_iLineWidth = 1;
 	m_currentColor = Pg_BLACK;
-
-	m_FontCount =  PfQueryFonts(' ', PHFONT_ALL_FONTS, NULL, 0) + 1;
-	m_FontList = (FontDetails *)malloc(m_FontCount * sizeof(*m_FontList));
-	memset(m_FontList, 0, m_FontCount * sizeof(*m_FontList));
-	m_FontCount = PfQueryFonts(' ', PHFONT_ALL_FONTS, m_FontList, m_FontCount);
-
+	m_pPrintContext = NULL;
 
 	m_cs = GR_Graphics::GR_COLORSPACE_COLOR;
 	m_cursor = GR_CURSOR_INVALID;
@@ -117,18 +112,17 @@ GR_QNXGraphics::GR_QNXGraphics(PtWidget_t * win, PtWidget_t * draw)
 GR_QNXGraphics::~GR_QNXGraphics()
 {
 	DELETEP(m_pFontGUI);
-	if (m_FontList) {
-		free(m_FontList);
-	}
 }
 
 UT_Bool GR_QNXGraphics::queryProperties(GR_Graphics::Properties gp) const
 {
+	printf("Querying properties? \n");
 	switch (gp)
 	{
 	case DGP_SCREEN:
 		return UT_TRUE;
 	case DGP_PAPER:
+		return UT_TRUE;
 		return UT_FALSE;
 	default:
 		UT_ASSERT(0);
@@ -146,9 +140,10 @@ void GR_QNXGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 
 	DRAW_START
 
-	PgFlush();		/* Just to clear out any drawing to be done ... */
+//	printf("Drawing with font [%s] \n", m_pFont->getFont());
 	PgSetFont(m_pFont->getFont());
 	PgSetTextColor(m_currentColor);
+	PgFlush();		/* Just to clear out any drawing to be done ... */
 
 #if 0
 	char      *buffer;
@@ -309,7 +304,8 @@ UT_uint32 GR_QNXGraphics::measureString(const UT_UCSChar* s, int iOffset,
 									0,				/* Length of buffer (use strlen) */
 									0, 				/* Number of characters to skip */
 									NULL);			/* Clipping rectangle? */
-		pWidths[i] = penpos;
+		if (pWidths)
+			pWidths[i] = penpos;
 		charWidth += penpos;
 		//printf("Width of %s is %d (%d)\n", &buffer[i], pWidths[i], charWidth);
 	}
@@ -351,40 +347,6 @@ GR_Font * GR_QNXGraphics::getGUIFont(void)
 }
 
 
-#include <ctype.h>
-//We want to get a match of the first n characters
-//here and the longest match will win.
-int GR_QNXGraphics::GetClosestName(const char *pszFontFamily, 
-								   char full_font_name[50], 
-								   char abrv_font_name[50]) {
-	int i, j, longest, closest;
-
-	longest = 0; closest = -1;	
-	for (i=0; i<m_FontCount; i++) {
-		//printf("Comparing [%s] to [%s] ... ", pszFontFamily, m_FontList[i].desc);
-		for (j=0; pszFontFamily[j] && m_FontList[i].desc[j]; j++) {
-			if (tolower(pszFontFamily[j]) != tolower(m_FontList[i].desc[j])) {
-				break;
-			}
-		} 
-		if (j > longest) {
-			longest = j;
-			closest = i;
-		}
-	}
-
-	if (closest >= 0) {
-		strcpy(full_font_name, m_FontList[closest].desc);
-		strcpy(abrv_font_name, m_FontList[closest].stem);
-	}
-	else {
-		UT_DEBUGMSG(("No match found, using default \n"));
-		strcpy(full_font_name, "Times");
-		strcpy(abrv_font_name, "time");
-	}
-}
-
-
 GR_Font * GR_QNXGraphics::findFont(const char* pszFontFamily, 
 									const char* pszFontStyle, 
 									const char* /*pszFontVariant*/, 
@@ -392,59 +354,43 @@ GR_Font * GR_QNXGraphics::findFont(const char* pszFontFamily,
 									const char* /*pszFontStretch*/, 
 									const char* pszFontSize)
 {
-	FontQueryInfo fqinfo;
-	char fname[50], closest[50], temp[50];
-
 	UT_ASSERT(pszFontFamily);
 	UT_ASSERT(pszFontStyle);
 	UT_ASSERT(pszFontWeight);
 	UT_ASSERT(pszFontSize);
 	
-	//printf("GR: findFont [%s] [%s] [%s] [%s] \n", pszFontFamily, pszFontStyle, pszFontWeight, pszFontSize);
+	printf("GR: findFont [%s] [%s] [%s] [%s] \n", 
+			pszFontFamily, pszFontStyle, pszFontWeight, pszFontSize);
 
-	GetClosestName(pszFontFamily, closest, fname);
-	//printf("GR: Closest font is [%s] [%s] \n", closest, fname);
-
-	//The size is in xxpt so just cat it and back up two
-	//strncat(fname, pszFontSize, strlen(pszFontSize) - 2);
-	//OR: keep scaling ... the return from this is inches, convert to points??
+	char fname[MAX_FONT_TAG];
 	int size = convertDimension(pszFontSize);
-	//OR: just do it yourself! We get bit by the resize factor!
-	/*
-	double size = UT_convertToPoints(pszFontSize);
-	size = (size * (double)getZoomPercentage() / 100.0) + 0.5;
-	*/
-	sprintf(temp, "%s%d", fname, (int)size);
-	strcpy(fname, temp);
-	//printf("GR: Font w/ size is [%s] (%s -> %d)  \n", fname, pszFontSize, size);
-	
-	
-	// this is kind of sloppy
-	if (!UT_stricmp(pszFontStyle, "normal") &&
-		!UT_stricmp(pszFontWeight, "normal"))
-	{
+	int style = 0;
+
+	// Only check for bold weight and italic style
+	if (UT_stricmp(pszFontWeight, "bold") == 0) {
+		style |= PF_STYLE_BOLD;
 	}
-	else if (!UT_stricmp(pszFontStyle, "normal") &&
-			 !UT_stricmp(pszFontWeight, "bold"))
-	{
-		strcat(fname, "b");
-	}
-	else if (!UT_stricmp(pszFontStyle, "italic") &&
-			 !UT_stricmp(pszFontWeight, "normal"))
-	{
-		strcat(fname, "i");
-	}
-	else if (!UT_stricmp(pszFontStyle, "italic") &&
-			 !UT_stricmp(pszFontWeight, "bold"))
-	{
-		strcat(fname, "bi");
-	}
-	else
-	{
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	else if (UT_stricmp(pszFontStyle, "italic") == 0) {
+		style |= PF_STYLE_BOLD;
 	}
 
-	//printf("GR: Set font to [%s] \n", fname);
+//	printf("Looking for font [%s]@%d w/0x%x\n", pszFontFamily, size, style); 
+	if (PfGenerateFontName((const uchar_t *)pszFontFamily, 
+							style, size, (uchar_t *)fname) == NULL) {
+		//Punt ... give us another chance with a default font
+		sprintf(fname, "%s%d", "helv", size); 
+		switch (style & (PF_STYLE_BOLD | PF_STYLE_ITALIC)) {
+		case (PF_STYLE_BOLD | PF_STYLE_ITALIC):
+			strcat(fname, "bi"); break;
+		case PF_STYLE_ITALIC:
+			strcat(fname, "i"); break;
+		case PF_STYLE_BOLD:
+			strcat(fname, "b"); break;
+		default:
+			break;
+		}
+	}
+//	printf("Setting to font name [%s] \n", fname);
 
 	return(new QNXFont(fname));
 }
@@ -694,25 +640,6 @@ void GR_QNXGraphics::clearArea(UT_sint32 x, UT_sint32 y,
 	fillRect(clrWhite, x, y, width, height);
 }
 
-UT_Bool GR_QNXGraphics::startPrint(void)
-{
-	UT_ASSERT(0);
-	return UT_FALSE;
-}
-
-UT_Bool GR_QNXGraphics::startPage(const char * /*szPageLabel*/, UT_uint32 /*pageNumber*/,
-								UT_Bool /*bPortrait*/, UT_uint32 /*iWidth*/, UT_uint32 /*iHeight*/)
-{
-	UT_ASSERT(0);
-	return UT_FALSE;
-}
-
-UT_Bool GR_QNXGraphics::endPrint(void)
-{
-	UT_ASSERT(0);
-	return UT_FALSE;
-}
-
 GR_Image* GR_QNXGraphics::createNewImage(const char* pszName, const UT_ByteBuf* pBBPNG, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
 {
 	GR_QNXImage* pImg = new GR_QNXImage(NULL, pszName);
@@ -910,3 +837,49 @@ void GR_Font::s_getGenericFontProperties(const char * /*szFontName*/,
 	*pfp = FP_Variable;
 	*pbTrueType = 0;
 }
+
+/*** Printing functions ***/
+PpPrintContext_t * GR_QNXGraphics::getPrintContext() {
+	return m_pPrintContext;
+}
+
+void GR_QNXGraphics::setPrintContext(PpPrintContext_t *context) {
+	 m_pPrintContext = context;
+}
+
+UT_Bool GR_QNXGraphics::startPrint(void) {
+
+	/* Somehow I need to get the print context here */
+	UT_ASSERT(m_pPrintContext);
+	if (m_pPrintContext) {
+		PpPrintOpen(m_pPrintContext);	
+		PpPrintStart(m_pPrintContext);	
+	}
+
+ 	m_bPrintNextPage = UT_FALSE;    
+	return UT_TRUE;
+}
+
+UT_Bool GR_QNXGraphics::startPage(const char * szPageLabel, UT_uint32 pageNumber,
+									UT_Bool bPortrait, UT_uint32 iWidth, UT_uint32 iHeight) {
+
+	UT_ASSERT(m_pPrintContext);
+ 	if (m_pPrintContext && m_bPrintNextPage) {
+		PpPrintNewPage(m_pPrintContext);
+	}
+	m_bPrintNextPage = UT_TRUE;
+
+	return UT_TRUE;	
+}
+
+UT_Bool GR_QNXGraphics::endPrint(void) {
+
+	UT_ASSERT(m_pPrintContext);
+	if (m_pPrintContext) {
+		PpPrintStop(m_pPrintContext);
+		PpPrintClose(m_pPrintContext);
+	}
+
+	return UT_TRUE;
+}
+

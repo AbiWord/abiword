@@ -54,7 +54,6 @@ class GR_QNXGraphics : public GR_Graphics
 	virtual void setColor(UT_RGBColor& clr);
 
 	virtual GR_Font* getGUIFont();
-	virtual int GR_QNXGraphics::GetClosestName(const char *pszFontFamily, char full[50], char abrv[50]);
 	virtual GR_Font* findFont(
 		const char* pszFontFamily, 
 		const char* pszFontStyle, 
@@ -99,6 +98,9 @@ class GR_QNXGraphics : public GR_Graphics
 	void init3dColors();
 	virtual void fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h);
 	virtual void fillRect(GR_Color3D c, UT_Rect &r);
+
+	PpPrintContext_t * 		getPrintContext();
+	void					setPrintContext(PpPrintContext_t *c);
   
  protected:
 	virtual UT_uint32 	_getResolution(void) const;
@@ -114,8 +116,6 @@ class GR_QNXGraphics : public GR_Graphics
 	QNXFont *			m_pFont;
 	// our "OEM" system font, like a 10 point Helvetica for GUI items
 	QNXFont * 			m_pFontGUI;
-	int					m_FontCount;
-	FontDetails			*m_FontList;
   
 	void*  				m_pColormap;
 	int					m_aCharWidths[256];
@@ -127,6 +127,9 @@ class GR_QNXGraphics : public GR_Graphics
 	
 	PgColor_t			m_currentColor;
 	PgColor_t			m_3dColors[COUNT_3D_COLORS];
+
+ 	UT_Bool             m_bPrintNextPage;    
+	PpPrintContext_t *  m_pPrintContext;
 };
 
 #endif /* GR_QNXGRAPHICS_H */
