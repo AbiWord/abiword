@@ -603,7 +603,7 @@ void fp_VerticalContainer::draw(dg_DrawArgs* pDA)
 
 			UT_sint32 iTableBot = da.yoff + pTab->getHeight();
 			/* we're in the table if iTableBot < ytop, or table top > ybot */
-			bInTable = (iTableBot < ytop || da.yoff > ybot);
+			bInTable = !(iTableBot < ytop || da.yoff > ybot);
 		}
 
 		UT_sint32 sumHeight = pContainer->getHeight() + (ybot-ytop);
