@@ -130,6 +130,7 @@ void AP_UnixLeftRuler::setView(AV_View * pView)
         GR_UnixGraphics * pG = new GR_UnixGraphics(m_wLeftRuler->window, fontManager, m_pFrame->getApp());
 	m_pG = pG;
 	UT_ASSERT(m_pG);
+	m_pG->setZoomPercentage(pView->getGraphics()->getZoomPercentage());
 
 	GtkWidget * ruler = gtk_vruler_new ();
 	pG->init3dColors(get_ensured_style (ruler));
