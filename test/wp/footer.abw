@@ -28,7 +28,7 @@
 </section>
 <section type="footer" id="ftr01">
 <p PROPS="text-align:center">
-(Footer)
+Page <field type="page_number"/> of <field type="page_count"/>
 </p>
 </section>
 </abiword>

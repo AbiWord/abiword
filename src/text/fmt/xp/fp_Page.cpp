@@ -411,6 +411,8 @@ fp_HdrFtrContainer* fp_Page::getHeaderContainer(fl_HdrFtrSectionLayout* pHFSL)
 									   pHFSL);
 	// TODO outofmem
 
+	m_pHeader->setPage(this);
+
 	return m_pHeader;
 }
 
@@ -428,6 +430,8 @@ fp_HdrFtrContainer* fp_Page::getFooterContainer(fl_HdrFtrSectionLayout* pHFSL)
 									   m_pOwner->getBottomMargin(),
 									   pHFSL);
 	// TODO outofmem
+
+	m_pFooter->setPage(this);
 
 	return m_pFooter;
 }

@@ -60,6 +60,8 @@ public:
 
 	inline UT_uint32	getType(void) const { return m_iType; }
 
+	virtual UT_Bool		recalculateFields(void);
+	
 	FL_DocLayout*		getDocLayout(void) const;
 
 	virtual fp_Container*		getNewContainer() = 0;
@@ -200,6 +202,8 @@ public:
 	inline fl_DocSectionLayout*	getDocSectionLayout(void) const { return m_pDocSL; }
 	inline UT_uint32			getHFType(void) const { return m_iHFType; }
 
+	virtual UT_Bool		recalculateFields(void);
+	
 	virtual void				format(void);
 	virtual void				updateLayout(void);
 	

@@ -123,6 +123,8 @@ public:
 	inline		fl_DocSectionLayout* getLastSection(void) const { return m_pLastSection; }
 
 	fl_DocSectionLayout* 	findSectionForHdrFtr(const char* pszHdrFtrID) const;
+	void 				deleteEmptyColumnsAndPages(void);
+	void 				deleteEmptyPages(void);
 	
 #ifdef FMT_TEST
 	void		__dump(FILE * fp) const;
@@ -131,7 +133,6 @@ public:
 protected:
 	static void			_spellCheck(UT_Timer * pTimer);
 	void				_toggleAutoSpell(UT_Bool bSpell);
-	void 				_deleteEmptyColumnsAndPages(void);
 
 	GR_Graphics*		m_pG;
 	PD_Document*		m_pDoc;

@@ -117,6 +117,22 @@ fl_BlockLayout * fl_SectionLayout::getLastBlock(void) const
 	return m_pLastBlock;
 }
 
+UT_Bool fl_SectionLayout::recalculateFields(void)
+{
+	UT_Bool bResult = UT_FALSE;
+	
+	fl_BlockLayout*	pBL = m_pFirstBlock;
+
+	while (pBL)
+	{
+		bResult = pBL->recalculateFields() || bResult;
+
+		pBL = pBL->getNext();
+	}
+
+	return bResult;
+}
+
 fl_BlockLayout * fl_SectionLayout::appendBlock(PL_StruxDocHandle sdh, PT_AttrPropIndex indexAP)
 {
 	return insertBlock(sdh, m_pLastBlock, indexAP);
@@ -540,13 +556,17 @@ void fl_DocSectionLayout::updateLayout(void)
 	
 	breakSection();
 
+	m_pLayout->deleteEmptyColumnsAndPages();
+	
 	if (m_pHeaderSL)
 	{
+		m_pHeaderSL->recalculateFields();
 		m_pHeaderSL->updateLayout();
 	}
 	
 	if (m_pFooterSL)
 	{
+		m_pFooterSL->recalculateFields();
 		m_pFooterSL->updateLayout();
 	}
 }
@@ -1192,6 +1212,17 @@ fl_HdrFtrSectionLayout::~fl_HdrFtrSectionLayout()
 	}
 	
 	UT_VECTOR_PURGEALL(struct _PageHdrFtrShadowPair*, m_vecPages);
+}
+
+UT_Bool fl_HdrFtrSectionLayout::recalculateFields(void)
+{
+	UT_uint32 iCount = m_vecPages.getItemCount();
+	for (UT_uint32 i=0; i<iCount; i++)
+	{
+		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
+
+		pPair->pShadow->recalculateFields();
+	}
 }
 
 fp_Container* fl_HdrFtrSectionLayout::getFirstContainer()

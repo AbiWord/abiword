@@ -230,6 +230,8 @@ protected:
 #define FPFIELD_MAX_LENGTH	63
 
 #define FPFIELD_TIME		1
+#define FPFIELD_PAGE_NUMBER	2
+#define FPFIELD_PAGE_COUNT	3
 
 class fp_FieldRun : public fp_Run
 {

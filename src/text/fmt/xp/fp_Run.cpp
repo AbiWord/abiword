@@ -25,11 +25,14 @@
 #include "fl_DocLayout.h"
 #include "fl_BlockLayout.h"
 #include "fp_Line.h"
+#include "fp_Column.h"
+#include "fp_Page.h"
 #include "pp_Property.h"
 #include "gr_Graphics.h"
 #include "pd_Document.h"
 #include "gr_DrawArgs.h"
 #include "fv_View.h"
+#include "pp_AttrProp.h"
 
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
@@ -590,9 +593,6 @@ fp_FieldRun::fp_FieldRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffset
 	
 	lookupProperties();
 
-	// TODO allow other field types
-	m_iFieldType = FPFIELD_TIME;
-
 	calculateValue();
 }
 
@@ -611,6 +611,60 @@ UT_Bool fp_FieldRun::calculateValue(void)
 		struct tm *pTime = localtime(&tim);
 	
 		strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%I:%M:%S %p", pTime);
+
+		UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
+		break;
+	}
+	case FPFIELD_PAGE_NUMBER:
+	{
+		char szFieldValue[FPFIELD_MAX_LENGTH + 1];
+
+		if (m_pLine && m_pLine->getContainer() && m_pLine->getContainer()->getPage())
+		{
+			fp_Page* pPage = m_pLine->getContainer()->getPage();
+			FL_DocLayout* pDL = pPage->getDocLayout();
+
+			UT_sint32 iPageNum = 0;
+			UT_uint32 iNumPages = pDL->countPages();
+			for (UT_uint32 i=0; i<iNumPages; i++)
+			{
+				fp_Page* pPg = pDL->getNthPage(i);
+
+				if (pPg == pPage)
+				{
+					iPageNum = i + 1;
+					break;
+				}
+			}
+
+			UT_ASSERT(iPageNum > 0);
+
+			sprintf(szFieldValue, "%ld", iPageNum);
+		}
+		else
+		{
+			strcpy(szFieldValue, "?");
+		}
+
+		UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
+		break;
+	}
+	case FPFIELD_PAGE_COUNT:
+	{
+		char szFieldValue[FPFIELD_MAX_LENGTH + 1];
+		
+		if (m_pLine && m_pLine->getContainer() && m_pLine->getContainer()->getPage())
+		{
+
+			fp_Page* pPage = m_pLine->getContainer()->getPage();
+			FL_DocLayout* pDL = pPage->getDocLayout();
+
+			sprintf(szFieldValue, "%ld", pDL->countPages());
+		}
+		else
+		{
+			strcpy(szFieldValue, "?");
+		}
 
 		UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 		break;
@@ -665,6 +719,27 @@ void fp_FieldRun::lookupProperties(void)
 	m_iAscent = m_pG->getFontAscent();	
 	m_iDescent = m_pG->getFontDescent();
 	m_iHeight = m_pG->getFontHeight();
+
+	const XML_Char* pszType = NULL;
+	pSpanAP->getAttribute("type", pszType);
+	UT_ASSERT(pszType);
+
+	if (0 == UT_stricmp(pszType, "time"))
+	{
+		m_iFieldType = FPFIELD_TIME;
+	}
+	else if (0 == UT_stricmp(pszType, "page_number"))
+	{
+		m_iFieldType = FPFIELD_PAGE_NUMBER;
+	}
+	else if (0 == UT_stricmp(pszType, "page_count"))
+	{
+		m_iFieldType = FPFIELD_PAGE_COUNT;
+	}
+	else
+	{
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	}
 }
 
 UT_Bool fp_FieldRun::canBreakAfter(void) const
