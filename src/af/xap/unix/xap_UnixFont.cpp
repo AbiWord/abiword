@@ -1338,8 +1338,13 @@ GdkFont * XAP_UnixFont::getGdkFont(UT_uint32 pixelsize)
 			free(newxlfd);
 			newxlfd = myXLFD.getFallbackXLFD();
 			requested_lfd  = newxlfd;
+			UT_DEBUGMSG(("Failed to load gdkfont.\n"));
+			UT_DEBUGMSG(("Loading gdkfont instead [%s]\n", newxlfd));
 			gdkfont = gdk_font_load(newxlfd);
-			UT_ASSERT(0);
+			if (!gdkfont)
+			{
+				UT_DEBUGMSG(("Failed to load backup font.\n"));
+			}
    		}
    		
 	}
@@ -1398,11 +1403,7 @@ GdkFont * XAP_UnixFont::getGdkFont(UT_uint32 pixelsize)
 		messageBoxOK(message.c_str());
 		
 		// we do not have to quit here, just continue ...
-#if 0		
-		exit(1);
-#else
 		bFontNotFound = true;
-#endif
 	}
 
 	free(newxlfd);
