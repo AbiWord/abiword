@@ -9839,7 +9839,8 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 		return EV_EMC_UNKNOWN;
 	}
 
-	pPage->mapXYToPosition(xClick, yClick, pos, bBOL, bEOL);
+	fl_HdrFtrShadow * pShadow=NULL;
+	pPage->mapXYToPositionClick(xClick, yClick, pos, pShadow, bBOL, bEOL);
 	fl_BlockLayout* pBlock = _findBlockAtPosition(pos);
 	
 	if (isLeftMargin(xPos,yPos))
