@@ -17,10 +17,10 @@
  * 02111-1307, USA.
  */
 
-#ifndef AP_WIN32DIALOG_FORMATFRAME_H
-#define AP_WIN32DIALOG_FORMATFRAME_H
+#ifndef AP_WIN32DIALOG_FORMATTABLE_H
+#define AP_WIN32DIALOG_FORMATTABLE_H
 
-#include "ap_Dialog_FormatFrame.h"
+#include "ap_Dialog_FormatTable.h"
 #include "xap_Frame.h"
 #include "xap_Win32PreviewWidget.h"
 #include "gr_Win32Graphics.h"
@@ -28,11 +28,11 @@
 
 /*****************************************************************/
 
-class AP_Win32Dialog_FormatFrame: public AP_Dialog_FormatFrame
+class AP_Win32Dialog_FormatTable: public AP_Dialog_FormatTable
 {
 public:
-	AP_Win32Dialog_FormatFrame(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
-	virtual ~AP_Win32Dialog_FormatFrame(void);
+	AP_Win32Dialog_FormatTable(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
+	virtual ~AP_Win32Dialog_FormatTable(void);
 
 	virtual void			runModeless(XAP_Frame * pFrame);
 
