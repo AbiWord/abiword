@@ -76,6 +76,9 @@ public:
 	UT_Bool					getAutoSavePrefs(void) const;
 	void					setAutoSavePrefs(UT_Bool bAuto);
 
+	UT_Bool					getUseEnvLocale(void) const;
+	void					setUseEnvLocale(UT_Bool bUse);
+
 	UT_uint32				getMaxRecent(void) const;
 	void					setMaxRecent(UT_uint32 k);
 	UT_uint32				getRecentCount(void) const;
@@ -92,6 +95,7 @@ protected:
 
 	XAP_App *				m_pApp;
 	UT_Bool					m_bAutoSavePrefs; /* save on any changes or only when user asks */
+	UT_Bool					m_bUseEnvLocale; /* use POSIX env vars to set locale */
 
 	UT_Vector				m_vecSchemes;		/* vector of XAP_PrefsScheme */
 	XAP_PrefsScheme *		m_currentScheme;
@@ -121,8 +125,9 @@ private:
 // The following are the default values and limits for various non-scheme-based
 // application-independent preferences.
 
-#define XAP_PREF_DEFAULT_AutoSavePrefs		"1" /* TODO this is true for testing, set it to false later. */
+#define XAP_PREF_DEFAULT_AutoSavePrefs		"0"
 #define XAP_PREF_DEFAULT_MaxRecent			"4"
+#define XAP_PREF_DEFAULT_UseEnvLocale		"1"
 
 #define XAP_PREF_LIMIT_MaxRecent			9
 

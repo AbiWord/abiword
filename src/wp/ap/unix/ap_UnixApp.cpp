@@ -109,14 +109,11 @@ UT_Bool AP_UnixApp::initialize(void)
 	UT_Bool bVerified = s_createDirectoryIfNecessary(szUserPrivateDirectory);
 	UT_ASSERT(bVerified);
 	
-	// load preferences, first the builtin set and then any on disk.
-	
-	m_prefs = new AP_UnixPrefs(this);
-	m_prefs->loadBuiltinPrefs();
-	m_prefs->loadPrefsFile();
+	// load the preferences.
 
-	// TODO overlay command line arguments onto preferences...
-		   
+	m_prefs = new AP_UnixPrefs(this);
+	m_prefs->fullInit();
+	
 	// now that preferences are established, let the xap init
 		   
 	m_pClipboard = new AP_UnixClipboard();

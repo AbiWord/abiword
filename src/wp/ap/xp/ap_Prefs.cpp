@@ -32,6 +32,37 @@ AP_Prefs::~AP_Prefs(void)
 {
 }
 
+/*****************************************************************/
+
+void AP_Prefs::fullInit(void)
+{
+	// do full init from all the various sources.
+	//
+	// first we load the builtin set (from memory) and overlay
+	// any system defaults onto it.
+	//
+	// next we load the user's personal preference file from
+	// disk (in the user's home directory).  this contains
+	// global settings and possibly one or more different sets
+	// of preferences.
+	//
+	// we then optionally overlay the environment prefs
+	// (primarily for locale stuff) onto the builtin set.
+	// we do this last because the UseEnv... directive is
+	// in the <select...> of the user's profile.  note,
+	// we do not do any reinterpretation of the user's
+	// disk settings (that is, we do not overlay the
+	// environment onto explicitly set user preferences).
+	//
+	// TODO overlay command line arguments onto preferences...
+
+	loadBuiltinPrefs();
+	loadPrefsFile();
+	overlayEnvironmentPrefs();
+}
+		   
+/*****************************************************************/
+
 const XML_Char * AP_Prefs::getBuiltinSchemeName(void) const
 {
 	return "_builtin_";

@@ -58,3 +58,9 @@ const char * AP_Win32Prefs::getPrefsPathname(void) const
 	
 	return buf;
 }
+
+void AP_Win32Prefs::overlayEnvironmentPrefs(void)
+{
+	// TODO steal the appropriate code from the unix version
+	// TODO after it is finished.
+}

@@ -28,6 +28,7 @@ public:
 	AP_UnixPrefs(XAP_App * pApp);
 	
 	virtual const char *	getPrefsPathname(void) const;
+	virtual void			overlayEnvironmentPrefs(void);
 };
 
 #endif /* AP_UNIXPREFS_H */

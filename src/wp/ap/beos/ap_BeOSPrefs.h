@@ -28,6 +28,7 @@ public:
 	AP_BeOSPrefs(XAP_App * pApp);
 	
 	virtual const char *	getPrefsPathname(void) const;
+	virtual void			overlayEnvironmentPrefs(void);
 };
 
 #endif /* AP_BEOSPREFS_H */

@@ -19,6 +19,7 @@
 
 #include "stdlib.h"
 #include "string.h"
+#include "ut_debugmsg.h"
 #include "ap_UnixPrefs.h"
 
 /*****************************************************************/
@@ -52,4 +53,31 @@ const char * AP_UnixPrefs::getPrefsPathname(void) const
 	strcat(buf,szFile);
 
 	return buf;
+}
+
+void AP_UnixPrefs::overlayEnvironmentPrefs(void)
+{
+	// modify the "_builtin_" preferences with
+	// using information in the user's environment.
+	// we do not overlay a custom set of preferences.
+
+	if (!m_bUseEnvLocale)
+		return;							// nothing to do...
+
+#if 0
+	// TODO use various POSIX env variables
+	// TODO (such as LANG and LC_*) to compute
+	// TODO a name in our locale namespace
+	// TODO (see .../src/wp/ap/xp/ap_*_Languages.h)
+	// TODO
+	// TODO for testing purposes, force german....
+	
+	const char * szNewLang = "DeDE";
+
+	UT_DEBUGMSG(("Prefs: Using LOCALE info from environment [%s]\n",szNewLang));
+	m_builtinScheme->setValue(AP_PREF_KEY_MenuLabelSet,szNewLang);
+	m_builtinScheme->setValue(AP_PREF_KEY_ToolbarLabelSet,szNewLang);
+	m_builtinScheme->setValue(AP_PREF_KEY_StringSet,szNewLang);
+#endif
+	return;
 }

@@ -100,6 +100,7 @@ UT_Bool XAP_PrefsScheme::getNthValue(UT_uint32 k, const XML_Char ** pszKey, cons
 
 	return UT_TRUE;
 }
+
 /*****************************************************************/
 
 UT_Bool XAP_Prefs::getAutoSavePrefs(void) const
@@ -113,6 +114,18 @@ void XAP_Prefs::setAutoSavePrefs(UT_Bool bAuto)
 
 	// TODO if turning autosave on, we should do a save now....
 	// TODO if was on and turning off, should we save it now ??
+}
+
+/*****************************************************************/
+
+UT_Bool XAP_Prefs::getUseEnvLocale(void) const
+{
+	return m_bUseEnvLocale;
+}
+
+void XAP_Prefs::setUseEnvLocale(UT_Bool bUse)
+{
+	m_bUseEnvLocale = bUse;
 }
 
 /*****************************************************************/
@@ -224,6 +237,7 @@ XAP_Prefs::XAP_Prefs(XAP_App * pApp)
 {
 	m_pApp = pApp;
 	m_bAutoSavePrefs = atoi(XAP_PREF_DEFAULT_AutoSavePrefs);
+	m_bUseEnvLocale = atoi(XAP_PREF_DEFAULT_UseEnvLocale);
 	m_currentScheme = NULL;
 	m_builtinScheme = NULL;
 	m_iMaxRecent = atoi(XAP_PREF_DEFAULT_MaxRecent);
@@ -243,6 +257,8 @@ XAP_Prefs::~XAP_Prefs(void)
 	UT_VECTOR_PURGEALL(XAP_PrefsScheme *, m_vecSchemes);
 	UT_VECTOR_PURGEALL(char *, m_vecRecent);
 }
+
+/*****************************************************************/
 
 XAP_PrefsScheme * XAP_Prefs::getNthScheme(UT_uint32 k) const
 {
@@ -403,7 +419,11 @@ void XAP_Prefs::_startElement(const XML_Char *name, const XML_Char **atts)
 		m_parserState.m_bFoundSelect = UT_TRUE;
 		
 		// we expect something of the form:
-		// <Select scheme="myScheme" autosaveprefs="1" />
+		// <Select
+		//     scheme="myScheme"
+		//     autosaveprefs="1"
+		//     useenvlocale="1"
+		//     />
 
 		const XML_Char ** a = atts;
 		while (*a)
@@ -428,7 +448,11 @@ void XAP_Prefs::_startElement(const XML_Char *name, const XML_Char **atts)
 				
 				m_bAutoSavePrefs = (*a[1] == '1');
 			}
-
+			else if (UT_XML_stricmp(a[0], "useenvlocale") == 0)
+			{
+				m_bUseEnvLocale = (*a[1] == '1');
+			}
+			
 			a += 2;
 		}
 
@@ -734,9 +758,15 @@ UT_Bool XAP_Prefs::savePrefsFile(void)
 			m_pApp->getApplicationName(),
 			"1.0");
 	{
-		fprintf(fp,"\n\t<Select\n\t\tscheme=\"%s\"\n\t\tautosaveprefs=\"%d\" />\n",
+		fprintf(fp,("\n"
+					"\t<Select\n"
+					"\t    scheme=\"%s\"\n"
+					"\t    autosaveprefs=\"%d\"\n"
+					"\t    useenvlocale=\"%d\"\n"
+					"\t/>\n"),
 				m_currentScheme->getSchemeName(),
-				(UT_uint32)m_bAutoSavePrefs);
+				(UT_uint32)m_bAutoSavePrefs,
+				(UT_uint32)m_bUseEnvLocale);
 
 		UT_uint32 kLimit = m_vecSchemes.getItemCount();
 		UT_uint32 k;
@@ -860,7 +890,6 @@ void XAP_Prefs::_startElement_SystemDefaultFile(const XML_Char *name, const XML_
 
 MemoryError:
 	UT_DEBUGMSG(("Memory error parsing preferences file.\n"));
-InvalidFileError:
 	m_parserState.m_parserStatus = UT_FALSE;			// cause parser driver to bail
 	return;
 }

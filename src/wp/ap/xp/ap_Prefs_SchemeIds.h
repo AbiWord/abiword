@@ -54,10 +54,10 @@
 #define AP_PREF_DEFAULT_KeyBindings					"default"					/* value in ap_LoadBindings.cpp */
 
 #define AP_PREF_KEY_MenuLayout						"MenuLayouts"
-#define AP_PREF_DEFAULT_MenuLabelSet				"EnUS"						/* value in BeginLayout() */
+#define AP_PREF_DEFAULT_MenuLayout					"Main"						/* value in BeginLayout() */
 
 #define AP_PREF_KEY_MenuLabelSet					"MenuLabelSet"
-#define AP_PREF_DEFAULT_MenuLayout					"Main"						/* value in BeginSet() */
+#define AP_PREF_DEFAULT_MenuLabelSet				"EnUS"						/* value in BeginSet() */
 
 #define AP_PREF_KEY_ToolbarLabelSet					"ToolbarLabelSet"
 #define AP_PREF_DEFAULT_ToolbarLabelSet				"EnUS"						/* value in BeginSet() */

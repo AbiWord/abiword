@@ -34,7 +34,9 @@ public:
 	virtual UT_Bool				loadBuiltinPrefs(void);
 	virtual const XML_Char *	getBuiltinSchemeName(void) const;
 	virtual const char *		getPrefsPathname(void) const = 0;
-
+	virtual void				overlayEnvironmentPrefs(void) = 0;
+	
+	void						fullInit(void);
 	void						overlaySystemPrefs(void);
 };
 

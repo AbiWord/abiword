@@ -53,3 +53,9 @@ const char * AP_BeOSPrefs::getPrefsPathname(void) const
 
 	return buf;
 }
+
+void AP_BeOSPrefs::overlayEnvironmentPrefs(void)
+{
+	// TODO steal the appropriate code from the unix version
+	// TODO after it is finished.
+}
