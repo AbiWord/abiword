@@ -275,7 +275,7 @@ bool ev_Win32Keyboard::onChar(AV_View * pView,
 	 	we want control characters to appear as the actual
 	 	character and a control bit set in the ems.
  	*/  	
- 	if (b<0x20 && ems)
+ 	if (b<0x20 && ((ems & EV_EMS_CONTROL)==EV_EMS_CONTROL))
  	{	 			 		
 		b=b+'a'-1;		
 		_emitChar(pView,hWnd,iMsg,nVirtKey,keyData,b, ems);
