@@ -852,10 +852,29 @@ void AP_LeftRuler::_getCellMarkerRects(AP_LeftRulerInfo * pInfo, UT_sint32 iCell
 		rCell.set(0,0,0,0);
 		return;
 	}
-	UT_sint32 hs = 2;					// halfSize
-	UT_sint32 fs = hs * 2;			// fullSize
+	
+	UT_sint32 bottomSpacing;
+	UT_sint32 topSpacing;
+	
+	if (iCell == 0)
+	{
+		bottomSpacing = 0;
+	} else
+	{
+		AP_LeftRulerTableInfo * pKInfo = (AP_LeftRulerTableInfo *) pInfo->m_vecTableRowInfo->getNthItem(iCell-1);
+		bottomSpacing = pKInfo->m_iBotSpacing;
+	}
 
-	rCell.set(0, pos  - hs, s_iFixedHeight, fs);
+	if (iCell < pInfo->m_iNumRows)
+	{
+		topSpacing = pLInfo->m_iTopSpacing;
+	} else
+	{
+		topSpacing = 0;
+	}
+	
+	UT_uint32 xLeft = s_iFixedHeight / 4;
+	rCell.set(xLeft, pos - bottomSpacing, xLeft * 2, bottomSpacing + topSpacing); //left/top/width/height
 }
 
 /*!
@@ -876,7 +895,24 @@ void AP_LeftRuler::_drawCellProperties(AP_LeftRulerInfo * pInfo)
 		_getCellMarkerRects(pInfo,i,rCell);
 		if(rCell.width != 0)
 		{
+			UT_Rect tCell;
+			tCell.left = rCell.left;
+			tCell.top = rCell.top;
+			tCell.width = rCell.width;
+			tCell.height = 2;
+
+			UT_Rect bCell;
+			bCell.left = rCell.left;
+			bCell.top = rCell.top + rCell.height - 2;
+			bCell.width = rCell.width;
+			bCell.height = 2;
+
+			rCell.top += 2;
+			rCell.height -= 2;
+			
+			m_pG->fillRect(GR_Graphics::CLR3D_Background, tCell);
 			m_pG->fillRect(GR_Graphics::CLR3D_BevelDown, rCell);
+			m_pG->fillRect(GR_Graphics::CLR3D_Background, bCell);
 		}
 	}
 }
@@ -1010,8 +1046,13 @@ void AP_LeftRuler::draw(const UT_Rect * pClipRect, AP_LeftRulerInfo * lfi)
 			}
 		}
 	}
+
+	// draw the cell properties for a table
+	_drawCellProperties(lfi);
+
+	m_pG->setColor3D(GR_Graphics::CLR3D_Foreground);	
 	
-	// then draw everything below
+	// draw everything below the top margin
 	for (k=1; (k*tick.tickUnit/tick.tickUnitScale < (lfi->m_yPageSize - lfi->m_yTopMargin)); k++)
 	{
 		y = yOrigin + lfi->m_yTopMargin + k*tick.tickUnit/tick.tickUnitScale - m_yScrollOffset;
@@ -1051,9 +1092,6 @@ void AP_LeftRuler::draw(const UT_Rect * pClipRect, AP_LeftRulerInfo * lfi)
 	// current section properties {left-margin, right-margin};
 	_drawMarginProperties(pClipRect, lfi, GR_Graphics::CLR3D_Foreground);
 
-// Cell properties for a table
-
-	_drawCellProperties(lfi);
 	if (pClipRect)
 	{
 		m_pG->setClipRect(NULL);
