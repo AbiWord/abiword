@@ -1633,7 +1633,9 @@ Defun1(helpIndex)
 
 Defun1(helpCheckVer)
 {
- 	return _helpOpenURL(pAV_View, "http://www.abisource.com/users/check_version.phtml?"); 	// + version number
+	char versionURL[90];
+	sprintf(versionURL, "http://www.abisource.com/users/check_version.phtml?version=%s", XAP_App::s_szBuild_Version);
+ 	return _helpOpenURL(pAV_View, versionURL);
 }
 
 Defun1(helpSearch)
