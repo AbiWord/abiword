@@ -26,7 +26,7 @@
 
 /*****************************************************************/
 	
-UT_Timer* UT_Timer::static_constructor(UT_TimerCallback pCallback, void* pData, GR_Graphics * /*pG*/)
+UT_Timer* UT_Timer::static_constructor(UT_WorkerCallback pCallback, void* pData, GR_Graphics * /*pG*/)
 {
 	UT_ASSERT(pCallback);
 	UT_UNIXTimer * p = new UT_UNIXTimer(pCallback, pData);
@@ -34,7 +34,7 @@ UT_Timer* UT_Timer::static_constructor(UT_TimerCallback pCallback, void* pData, 
 	return p;
 }
 
-UT_UNIXTimer::UT_UNIXTimer(UT_TimerCallback pCallback, void* pData)
+UT_UNIXTimer::UT_UNIXTimer(UT_WorkerCallback pCallback, void* pData)
 	: m_iMilliseconds(0), m_iGtkTimerId(0)
 {
 	setCallback(pCallback);

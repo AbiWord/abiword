@@ -46,7 +46,7 @@ UT_Worker::UT_Worker (UT_WorkerCallback cb, void * data)
 /*!
  * Sets the worker's callback function to \param cb
  */
-void UT_Worker::setCallback(UT_WorkerCallback cb)
+void UT_Worker::_setCallback(UT_WorkerCallback cb)
 {
   m_pCallback = cb;
 }
@@ -62,7 +62,7 @@ UT_WorkerCallback UT_Worker::getCallback() const
 /*!
  * Sets the worker's instance data to \param data
  */
-void UT_Worker::setInstanceData(void * data)
+void UT_Worker::_setInstanceData(void * data)
 {
   m_pInstanceData = data;
 }

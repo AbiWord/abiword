@@ -202,7 +202,7 @@ protected:
 	static void _prefsListener( XAP_App *pApp, XAP_Prefs *pPrefs, UT_StringPtrMap *phChanges, void *data );
 
 	// autoscroll stuff
-	static void			_autoScroll(UT_Timer * pTimer);
+	static void			_autoScroll(UT_Worker * pTimer);
 	
 	XAP_Frame *			m_pFrame;
 	GR_Graphics *		m_pG;

@@ -179,7 +179,7 @@ void    AP_UnixDialog_WordCount::setUpdateCounter( void )
 	set_sensitivity();
 }
          
-void    AP_UnixDialog_WordCount::autoupdateWC(UT_Timer * pTimer)
+void    AP_UnixDialog_WordCount::autoupdateWC(UT_Worker * pTimer)
 {
 	UT_ASSERT(pTimer);
 

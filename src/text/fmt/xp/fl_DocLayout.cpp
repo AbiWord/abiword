@@ -811,13 +811,13 @@ void FL_DocLayout::_toggleAutoSmartQuotes(bool bSQ)
 	UT_DEBUGMSG(("FL_DocLayout::_toggleAutoSmartQuotes(%s)\n", bSQ ? "true" : "false" ));
 }
 
-void FL_DocLayout::_backgroundCheck(UT_Timer * pTimer)
+void FL_DocLayout::_backgroundCheck(UT_Worker * pWorker)
 {
-	UT_ASSERT(pTimer);
+	UT_ASSERT(pWorker);
 
 	// this is a static callback method and does not have a 'this' pointer.
 
-	FL_DocLayout * pDocLayout = (FL_DocLayout *) pTimer->getInstanceData();
+	FL_DocLayout * pDocLayout = (FL_DocLayout *) pWorker->getInstanceData();
 	UT_ASSERT(pDocLayout);
 
 	if (!pDocLayout->m_pView)
@@ -1371,13 +1371,13 @@ void FL_DocLayout::recheckIgnoredWords()
 	}
 }
 
-void FL_DocLayout::_redrawUpdate(UT_Timer * pTimer)
+void FL_DocLayout::_redrawUpdate(UT_Worker * pWorker)
 {
-	UT_ASSERT(pTimer);
+	UT_ASSERT(pWorker);
 
 	// this is a static callback method and does not have a 'this' pointer.
 
-	FL_DocLayout * pDocLayout = (FL_DocLayout *) pTimer->getInstanceData();
+	FL_DocLayout * pDocLayout = (FL_DocLayout *) pWorker->getInstanceData();
 	UT_ASSERT(pDocLayout);
 
 	if (!pDocLayout->m_pView)

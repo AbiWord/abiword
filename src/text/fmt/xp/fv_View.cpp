@@ -4447,13 +4447,13 @@ void FV_View::extSelTo(FV_DocPos dp)
 
 #define AUTO_SCROLL_MSECS	100
 
-void FV_View::_autoScroll(UT_Timer * pTimer)
+void FV_View::_autoScroll(UT_Worker * pWorker)
 {
-	UT_ASSERT(pTimer);
+	UT_ASSERT(pWorker);
 	
 	// this is a static callback method and does not have a 'this' pointer.
 
-	FV_View * pView = (FV_View *) pTimer->getInstanceData();
+	FV_View * pView = (FV_View *) pWorker->getInstanceData();
 	UT_ASSERT(pView);
 
 	if(pView->getLayout()->getDocument()->isPieceTableChanging() == true)
@@ -6419,11 +6419,11 @@ void FV_View::_drawInsertionPoint()
 	}
 }
 
-void FV_View::_autoDrawPoint(UT_Timer * pTimer)
+void FV_View::_autoDrawPoint(UT_Worker * pWorker)
 {
-	UT_ASSERT(pTimer);
+	UT_ASSERT(pWorker);
 
-	FV_View * pView = (FV_View *) pTimer->getInstanceData();
+	FV_View * pView = (FV_View *) pWorker->getInstanceData();
 	UT_ASSERT(pView);
 
 	if (pView->m_iWindowHeight <= 0)

@@ -24,26 +24,25 @@
 
 #include "ut_types.h"
 #include "ut_vector.h"
+#include "ut_worker.h"
 
 class UT_Timer;
 class GR_Graphics;
 
-typedef void (*UT_TimerCallback)(UT_Timer* pTimer);
+// simple backwards-compatible definition
+typedef UT_WorkerCallback UT_TimerCallback;
 
 /*
 	UT_Timer is an abstract class which encapsulates the platform-specific 
 	details for managing timers.    
 */
-class UT_Timer
+class UT_Timer : public UT_Worker
 {
 public:
 	virtual ~UT_Timer();
 	
-	virtual void setCallback(UT_TimerCallback p);
-	virtual UT_TimerCallback getCallback();
-	
+	virtual void setCallback(UT_WorkerCallback p);
 	void setInstanceData(void*);
-	void* getInstanceData();
 	
 	virtual UT_sint32 set(UT_uint32 iMilliseconds) = 0;	/* set freq and start */
 	virtual void stop(void) = 0;		/* suspend events */
@@ -60,15 +59,13 @@ public:
 		*platform* code, so that it can instantiate the appropriate 
 		platform-specific subclass.
 	*/
-	static UT_Timer* static_constructor(UT_TimerCallback pCallback, void* pData, GR_Graphics * pG=0);
+	static UT_Timer* static_constructor(UT_WorkerCallback pCallback, void* pData, GR_Graphics * pG=0);
 	
 protected:
 	UT_Timer();		// should only be called from static_constructor()
 	UT_Vector & _getVecTimers () 
 		{ return static_vecTimers; };
  private:
-	void* m_pInstanceData;
-	UT_TimerCallback m_pCallback;
 	UT_uint32 m_iIdentifier;
 
 	static UT_Vector static_vecTimers;

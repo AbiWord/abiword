@@ -287,11 +287,11 @@ void AP_UnixDialog_Lists::runModeless (XAP_Frame * pFrame)
 }
 
          
-void AP_UnixDialog_Lists::autoupdateLists(UT_Timer * pTimer)
+void AP_UnixDialog_Lists::autoupdateLists(UT_Worker * pWorker)
 {
-	UT_ASSERT(pTimer);
+	UT_ASSERT(pWorker);
 	// this is a static callback method and does not have a 'this' pointer.
-	AP_UnixDialog_Lists * pDialog =  (AP_UnixDialog_Lists *) pTimer->getInstanceData();
+	AP_UnixDialog_Lists * pDialog =  (AP_UnixDialog_Lists *) pWorker->getInstanceData();
 	// Handshaking code. Plus only update if something in the document
 	// changed.
 

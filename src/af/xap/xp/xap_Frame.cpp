@@ -327,10 +327,10 @@ bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyBind
 }
 
 extern "C" {
-static void autoSaveCallback(UT_Timer *timer)
+static void autoSaveCallback(UT_Worker *wkr)
 {
 	UT_DEBUGMSG(("Autosaving doc...\n"));
-	XAP_Frame *me = static_cast<XAP_Frame *> (timer->getInstanceData());
+	XAP_Frame *me = static_cast<XAP_Frame *> (wkr->getInstanceData());
 
 	if (me->isDirty())
 	{

@@ -22,9 +22,7 @@
 #include "ut_assert.h"
 
 UT_Timer::UT_Timer()
-	: m_pInstanceData(0),
-	  m_pCallback(0),
-	  m_iIdentifier(0)
+	: m_iIdentifier(0)
 {
 	static_vecTimers.addItem(this);
 }
@@ -55,22 +53,12 @@ UT_uint32 UT_Timer::getIdentifier()
 
 void UT_Timer::setInstanceData(void* p)
 {
-	m_pInstanceData = p;
+  _setInstanceData (p);
 }
 
-void* UT_Timer::getInstanceData()
+void UT_Timer::setCallback(UT_WorkerCallback pCallback)
 {
-	return m_pInstanceData;
-}
-
-void UT_Timer::setCallback(UT_TimerCallback pCallback)
-{
-	m_pCallback = pCallback;
-}
-
-UT_TimerCallback UT_Timer::getCallback()
-{
-	return m_pCallback;
+  _setCallback (pCallback);
 }
 
 UT_Timer* UT_Timer::findTimer(UT_uint32 iIdentifier)
@@ -92,7 +80,8 @@ UT_Timer* UT_Timer::findTimer(UT_uint32 iIdentifier)
 
 void UT_Timer::fire()
 {
-	UT_ASSERT(m_pCallback);
+  UT_WorkerCallback cb = getCallback ();
+  UT_ASSERT(cb);
 	
-	m_pCallback(this);
+  cb(this);
 }

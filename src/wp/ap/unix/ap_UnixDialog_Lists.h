@@ -57,7 +57,7 @@ class AP_UnixDialog_Lists: public AP_Dialog_Lists
 	void					setAllSensitivity(void);
 	void					updateDialog(void);
 	bool                                    dontUpdate(void);
-	static void				autoupdateLists(UT_Timer * pTimer);
+	static void				autoupdateLists(UT_Worker * pTimer);
 
  protected:
 	virtual GtkWidget *		_constructWindow(void);

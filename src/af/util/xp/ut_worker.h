@@ -38,16 +38,16 @@ class UT_Worker
   virtual void stop(void) = 0;		/* suspend events */
   virtual void start(void) = 0;		/* resume events */
 
+  UT_WorkerCallback getCallback() const;
+  void* getInstanceData() const;
+
  protected:
 
   UT_Worker ();
   UT_Worker (UT_WorkerCallback cb, void * data);
 
-  void setCallback(UT_WorkerCallback cb);
-  UT_WorkerCallback getCallback() const;
-
-  void setInstanceData(void * data);
-  void* getInstanceData() const;
+  void _setCallback(UT_WorkerCallback cb);
+  void _setInstanceData(void * data);
 
  private:
   UT_Worker (UT_Worker &); // no impl

@@ -38,6 +38,7 @@ class PP_AttrProp;
 class GR_Graphics;
 class GR_Font;
 class UT_Timer;
+class UT_Worker;
 class fl_PartOfBlock;
 class fl_AutoNum;
 
@@ -187,7 +188,7 @@ public:
 #endif
 	
 protected:
-	static void			_backgroundCheck(UT_Timer * pTimer);
+	static void			_backgroundCheck(UT_Worker * pTimer);
 	void				_toggleAutoSpell(bool bSpell);
 	void				_toggleAutoSmartQuotes(bool bSQ);
 	
@@ -195,7 +196,7 @@ protected:
 									   class UT_StringPtrMap *, void *);
 
 
-	static void			_redrawUpdate(UT_Timer * pTimer);
+	static void			_redrawUpdate(UT_Worker * pTimer);
 
 	GR_Graphics*		m_pG;
 	PD_Document*		m_pDoc;

@@ -379,12 +379,12 @@ void ap_sb_Field_StatusMessage::notify(AV_View * /*pView*/, const AV_ChangeMask 
 	return;
 }
 
-static void updateProgress(UT_Timer * pTimer)
+static void updateProgress(UT_Worker * pWorker)
 {
-    UT_ASSERT(pTimer);
+    UT_ASSERT(pWorker);
 
     ap_sb_Field_StatusMessage *pfsm;
-    pfsm = (ap_sb_Field_StatusMessage *)pTimer->getInstanceData();
+    pfsm = (ap_sb_Field_StatusMessage *)pWorker->getInstanceData();
 	UT_ASSERT(pfsm);
 
 	pfsm->draw();

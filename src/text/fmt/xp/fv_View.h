@@ -46,6 +46,7 @@ class fp_Run;
 class FG_Graphic;
 class PD_Document;
 class GR_Graphics;
+class UT_Worker;
 class UT_Timer;
 class AP_TopRulerInfo;
 class AP_LeftRulerInfo;
@@ -450,8 +451,8 @@ protected:
 
 	UT_UCSChar *		_lookupSuggestion(fl_BlockLayout* pBL, fl_PartOfBlock* pPOB, UT_uint32 ndx);
 
-	static void			_autoScroll(UT_Timer * pTimer);
-	static void			_autoDrawPoint(UT_Timer * pTimer);
+	static void			_autoScroll(UT_Worker * pTimer);
+	static void			_autoDrawPoint(UT_Worker * pTimer);
 
 	// localize handling of insertion point logic
 	void				_setPoint(PT_DocPosition pt, bool bEOL = false);

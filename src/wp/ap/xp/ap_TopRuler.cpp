@@ -3280,10 +3280,10 @@ void AP_TopRuler::_displayStatusMessage(XAP_String_Id messageID, const ap_RulerT
 	pFrameData->m_pStatusBar->setStatusMessage(temp);
 }
 
-/* lambda */ void AP_TopRuler::_autoScroll(UT_Timer * pTimer)
+/* lambda */ void AP_TopRuler::_autoScroll(UT_Worker * pWorker)
 {
 	// this is a static callback method and does not have a 'this' pointer.
-	AP_TopRuler * pRuler = (AP_TopRuler *) pTimer->getInstanceData();
+	AP_TopRuler * pRuler = (AP_TopRuler *) pWorker->getInstanceData();
 	UT_ASSERT(pRuler);
 	
 	pRuler->_xorGuide(true);
