@@ -1214,7 +1214,21 @@ PT_DocPosition fp_Page::getFirstLastPos(bool bFirst) const
 		UT_return_val_if_fail(pColumn, 2);
 		fp_Container* pLastContainer = static_cast<fp_Container *>(pColumn->getLastContainer());
 		UT_return_val_if_fail(pLastContainer, 2);
+		while(pLastContainer && pLastContainer->getContainerType() != FP_CONTAINER_LINE)
+		{
+			if(pLastContainer->getContainerType() == FP_CONTAINER_TABLE)
+			{
+				fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pLastContainer);
+				pLastContainer = static_cast<fp_Container *>(pTab->getLastLineInColumn(pColumn));
+			}
+			else
+			{
+				pLastContainer = static_cast<fp_Container *>(pLastContainer->getNthCon(0));
+			}
+		}
 
+		UT_return_val_if_fail(pLastContainer, 2);
+		
 		fp_Run* pLastRun = static_cast<fp_Line *>(pLastContainer)->getLastRun();
 		fl_BlockLayout* pLastBlock = static_cast<fp_Line *>(pLastContainer)->getBlock();
 		UT_return_val_if_fail(pLastRun && pLastBlock, 2);

@@ -1931,9 +1931,7 @@ fp_Page *FV_View::_getCurrentPage(void)
 	fp_Run* pOldRun;
 	_findPositionCoords(iOldPoint, m_bPointEOL, xPoint, yPoint, xPoint2, yPoint2, iPointHeight, bDirection, &pOldBlock, &pOldRun);
 	fp_Line* pOldLine = pOldRun->getLine();
-	fp_Container* pOldContainer = pOldLine->getContainer();
-	fp_Page* pOldPage = pOldContainer->getPage();
-
+	fp_Page* pOldPage = pOldLine->getPage();
 	return pOldPage;
 }
 
