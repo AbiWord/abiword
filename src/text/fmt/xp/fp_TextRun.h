@@ -115,7 +115,7 @@ public:
 private:
 	bool				_refreshDrawBuffer();
 	void                _measureCharWidths();
-
+	
 private:
 	bool				_addupCharWidths(void);
 	virtual void        _lookupProperties(const PP_AttrProp * pSpanAP,

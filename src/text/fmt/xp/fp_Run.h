@@ -224,7 +224,7 @@ public:
 	virtual void       	_clearScreen(bool bFullLineHeightRect) = 0;
 	virtual bool		canBreakAfter(void) const = 0;
 	virtual bool		canBreakBefore(void) const = 0;
-	virtual bool		letPointPass(void) const;
+	bool		        letPointPass(void) const;
 	virtual bool		isForcedBreak(void) const { return false; }
 	virtual bool		alwaysFits(void) const { return false; }
 	virtual bool		findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si,
@@ -346,6 +346,7 @@ protected:
 										  GR_Graphics * pG = NULL) = 0;
 
 	virtual bool        _canContainPoint(void) const;
+	virtual bool        _letPointPass(void) const;
 
 //
 // Variables to draw underlines for all runs
@@ -419,7 +420,6 @@ public:
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection);
 	virtual bool			canBreakAfter(void) const;
 	virtual bool			canBreakBefore(void) const;
-	virtual bool			letPointPass(void) const;
 	virtual bool 			hasLayoutProperties(void) const;
 	void			       	setTabWidth(UT_sint32);
 	void			       	setLeader(eTabLeader iTabType);
@@ -434,6 +434,9 @@ protected:
 											  const PP_AttrProp * pBlockAP,
 											  const PP_AttrProp * pSectionAP,
 											  GR_Graphics * pG = NULL);
+
+	virtual bool			_letPointPass(void) const;
+
 private:
 	//UT_RGBColor			    m_colorFG;
 private:
@@ -449,7 +452,6 @@ public:
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection);
 	virtual bool			canBreakAfter(void) const;
 	virtual bool			canBreakBefore(void) const;
-	virtual bool			letPointPass(void) const;
 	virtual bool			isForcedBreak(void) const { return true; }
 protected:
 	virtual void			_lookupProperties(const PP_AttrProp * pSpanAP,
@@ -459,6 +461,7 @@ protected:
 
 	virtual void			_draw(dg_DrawArgs*);
 	virtual void			_clearScreen(bool bFullLineHeightRect);
+	virtual bool			_letPointPass(void) const;
 };
 
 class ABI_EXPORT fp_FieldStartRun : public fp_Run
@@ -469,7 +472,6 @@ public:
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection);
 	virtual bool			canBreakAfter(void) const;
 	virtual bool			canBreakBefore(void) const;
-	virtual bool			letPointPass(void) const;
 	virtual bool			isForcedBreak(void) const { return true; }
 protected:
 	virtual void			_lookupProperties(const PP_AttrProp * pSpanAP,
@@ -479,6 +481,7 @@ protected:
 
 	virtual void			_draw(dg_DrawArgs*);
 	virtual void			_clearScreen(bool bFullLineHeightRect);
+	virtual bool			_letPointPass(void) const;
 };
 
 class ABI_EXPORT fp_FieldEndRun : public fp_Run
@@ -489,7 +492,6 @@ public:
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection);
 	virtual bool			canBreakAfter(void) const;
 	virtual bool			canBreakBefore(void) const;
-	virtual bool			letPointPass(void) const;
 	virtual bool			isForcedBreak(void) const { return true; }
 protected:
 	virtual void			_lookupProperties(const PP_AttrProp * pSpanAP,
@@ -499,6 +501,7 @@ protected:
 
 	virtual void			_draw(dg_DrawArgs*);
 	virtual void			_clearScreen(bool bFullLineHeightRect);
+	virtual bool			_letPointPass(void) const;
 };
 
 class ABI_EXPORT fp_ForcedColumnBreakRun : public fp_Run
@@ -510,7 +513,6 @@ public:
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection);
 	virtual bool			canBreakAfter(void) const;
 	virtual bool			canBreakBefore(void) const;
-	virtual bool			letPointPass(void) const;
 	virtual bool			isForcedBreak(void) const { return true; }
 protected:
 	virtual void			_lookupProperties(const PP_AttrProp * pSpanAP,
@@ -520,6 +522,7 @@ protected:
 
 	virtual void			_draw(dg_DrawArgs*);
 	virtual void			_clearScreen(bool bFullLineHeightRect);
+	virtual bool			_letPointPass(void) const;
 };
 
 class ABI_EXPORT fp_ForcedPageBreakRun : public fp_Run
@@ -530,7 +533,6 @@ public:
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection);
 	virtual bool			canBreakAfter(void) const;
 	virtual bool			canBreakBefore(void) const;
-	virtual bool			letPointPass(void) const;
 	virtual bool			isForcedBreak(void) const { return true; }
 
 protected:
@@ -541,6 +543,7 @@ protected:
 
 	virtual void			_draw(dg_DrawArgs*);
 	virtual void			_clearScreen(bool bFullLineHeightRect);
+	virtual bool			_letPointPass(void) const;
 };
 
 class ABI_EXPORT fp_EndOfParagraphRun : public fp_Run
@@ -553,7 +556,6 @@ public:
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection);
 	virtual bool			canBreakAfter(void) const;
 	virtual bool			canBreakBefore(void) const;
-	virtual bool			letPointPass(void) const;
 	virtual UT_sint32       getDrawingWidth() const { return static_cast<UT_sint32>(m_iDrawWidth);}
 
 //
@@ -568,6 +570,7 @@ protected:
 
 	virtual void			_draw(dg_DrawArgs*);
 	virtual void       		_clearScreen(bool bFullLineHeightRect);
+	virtual bool			_letPointPass(void) const;
 
 private:
 	UT_uint32				m_iXoffText;
@@ -587,7 +590,6 @@ public:
 
 	virtual bool canBreakAfter(void) const;
 	virtual bool canBreakBefore(void) const;
-	virtual bool letPointPass(void) const;
 
 	virtual void mapXYToPosition(UT_sint32 x,
 								 UT_sint32 y,
@@ -613,6 +615,7 @@ private:
 
 	virtual void _clearScreen(bool /* bFullLineHeightRect */);
 	virtual void _draw(dg_DrawArgs* /*pDA */);
+	virtual bool _letPointPass(void) const;
 
 	bool m_bIsStart;
 	#define BOOKMARK_NAME_SIZE 30
@@ -630,7 +633,6 @@ public:
 
 	virtual bool canBreakAfter(void) const;
 	virtual bool canBreakBefore(void) const;
-	virtual bool letPointPass(void) const;
 
 	virtual void mapXYToPosition(UT_sint32 x,
 								 UT_sint32 y,
@@ -657,6 +659,7 @@ private:
 
 	virtual void _clearScreen(bool /* bFullLineHeightRect */);
 	virtual void _draw(dg_DrawArgs* /*pDA */);
+	virtual bool _letPointPass(void) const;
 
 	bool m_bIsStart;
 	XML_Char *	  	m_pTarget;
@@ -673,7 +676,6 @@ public:
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection);
 	virtual bool			canBreakAfter(void) const;
 	virtual bool			canBreakBefore(void) const;
-	virtual bool			letPointPass(void) const;
 	const char *            getDataId(void) const;
 	virtual bool 			hasLayoutProperties(void) const;
 	virtual GR_Image * 				getImage();
@@ -687,6 +689,7 @@ protected:
 	virtual void			_draw(dg_DrawArgs*);
 	virtual void			_drawResizeBox(UT_Rect box);
 	virtual void			_clearScreen(bool bFullLineHeightRect);
+	virtual bool			_letPointPass(void) const;
 
 private:
 	FG_Graphic *             m_pFGraphic;
@@ -772,7 +775,6 @@ public:
 	virtual bool			canBreakAfter(void) const;
 	virtual fp_FieldsEnum	getFieldType(void) const;
 	virtual bool			canBreakBefore(void) const;
-	virtual bool			letPointPass(void) const;
 	virtual bool 			hasLayoutProperties(void) const;
 
 	virtual bool			isSuperscript(void) const;
@@ -795,6 +797,7 @@ protected:
 	virtual void			_defaultDraw(dg_DrawArgs*);
 	virtual void			_clearScreen(bool bFullLineHeightRect);
 	const XML_Char *		_getParameter() const { return m_pParameter; }
+	virtual bool			_letPointPass(void) const;
 
 private:
 
@@ -1388,7 +1391,6 @@ public:
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection);
 	virtual bool			canBreakAfter(void) const;
 	virtual bool			canBreakBefore(void) const;
-	virtual bool			letPointPass(void) const;
 	virtual const PP_AttrProp* getAP(void) const;
 	virtual bool			isSuperscript(void) const ;
 	virtual bool			isSubscript(void)  const;
@@ -1402,6 +1404,7 @@ protected:
 
 	virtual void			_draw(dg_DrawArgs*);
 	virtual void			_clearScreen(bool bFullLineHeightRect);
+	virtual bool			_letPointPass(void) const;
 
 private:
 	enum

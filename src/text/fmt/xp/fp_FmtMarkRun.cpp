@@ -114,7 +114,7 @@ bool fp_FmtMarkRun::canBreakBefore(void) const
 	return true;
 }
 
-bool fp_FmtMarkRun::letPointPass(void) const
+bool fp_FmtMarkRun::_letPointPass(void) const
 {
 	return false;
 }

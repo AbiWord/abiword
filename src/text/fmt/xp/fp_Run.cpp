@@ -221,13 +221,16 @@ void fp_Run::lookupProperties(GR_Graphics * pG)
 	}
 	_lookupProperties(pSpanAP, pBlockAP, pSectionAP,pG);
 
+	// revisions stuff ...
 	if(m_pRevisions)
 	{
 		FV_View* pView = _getView();
 		UT_return_if_fail(pView);
-		UT_uint32 iId  = pView->getRevisionLevel();
 
-		if(iId && !m_pRevisions->isVisible(iId))
+		UT_uint32 iId  = pView->getRevisionLevel();
+		bool bShow     = pView->isShowRevisions();
+
+		if(!bShow || (iId && !m_pRevisions->isVisible(iId)))
 		{
 			if(isHidden() == FP_HIDDEN_TEXT)
 			{
@@ -783,7 +786,11 @@ static UT_RGBColor s_fgColor;
 const UT_RGBColor fp_Run::getFGColor(void) const
 {
 	// revision colours
-	if(m_pRevisions)
+	FV_View * pView = _getView();
+	UT_return_val_if_fail(pView, s_fgColor);
+	bool bShow = pView->isShowRevisions();
+	
+	if(m_pRevisions && bShow)
 	{
 		UT_uint32 iId = m_pRevisions->getLastRevision()->getId();
 		s_fgColor = _getView()->getColorRevisions(iId-1);
@@ -812,6 +819,25 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 		xxx_UT_DEBUGMSG(("fp_Run::Run %x not dirty returning \n",this));
 		return;
 	}
+
+	// now revisions handling
+	FV_View * pView = _getView();
+	UT_return_if_fail(pView);
+	bool bShowRevs = pView->isShowRevisions();
+	
+	if(!bShowRevs && m_pRevisions)
+	{
+		const PP_Revision * pRev = m_pRevisions->getLastRevision();
+
+		if( pRev && (pRev->getType() == PP_REVISION_DELETION))
+		{
+			// this text is not on screen
+			UT_DEBUGMSG(("fp_Run::draw(): revision (deletion) not shown/n"));
+			return;
+		}
+	}
+	
+	
 	m_bIsCleared = false;
 	if (getLine())
 		getLine()->setScreenCleared(false);
@@ -833,7 +859,7 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 
 	_draw(pDA);
 
-	if(m_pRevisions)
+	if(m_pRevisions && bShowRevs)
 	{
 		const PP_Revision * r = m_pRevisions->getLastRevision();
 		PP_RevisionType r_type = r->getType();
@@ -899,13 +925,26 @@ bool fp_Run::canContainPoint(void) const
 	FV_View* pView = _getView();
 	bool bShowHidden = pView->getShowPara();
 
-
-	// if this tab is to be hidden, we must treated as if its
+	// if this run is to be hidden, we must treated as if its
 	// width was 0
 	bool bHidden = ((m_eHidden == FP_HIDDEN_TEXT && !bShowHidden)
 	              || m_eHidden == FP_HIDDEN_REVISION
 		          || m_eHidden == FP_HIDDEN_REVISION_AND_TEXT);
 
+	// now revisions handling
+	bool bShowRevs = pView->isShowRevisions();
+
+	if(!bShowRevs && m_pRevisions)
+	{
+		const PP_Revision * pRev = m_pRevisions->getLastRevision();
+
+		if( pRev && (pRev->getType() == PP_REVISION_DELETION))
+		{
+			// this text is not on screen
+			bHidden = false;
+		}
+	}
+	
 	if(bHidden)
 			return false;
 	else
@@ -918,6 +957,23 @@ bool fp_Run::_canContainPoint(void) const
 }
 
 bool fp_Run::letPointPass(void) const
+{
+	FV_View* pView = _getView();
+	bool bShowHidden = pView->getShowPara();
+
+	// if this run is to be hidden, we must treated as if its
+	// width was 0
+	bool bHidden = ((m_eHidden == FP_HIDDEN_TEXT && !bShowHidden)
+	              || m_eHidden == FP_HIDDEN_REVISION
+		          || m_eHidden == FP_HIDDEN_REVISION_AND_TEXT);
+
+	if(bHidden)
+			return true;
+	else
+		return _letPointPass();
+}
+
+bool fp_Run::_letPointPass(void) const
 {
 	return true;
 }
@@ -1384,7 +1440,7 @@ bool fp_TabRun::canBreakBefore(void) const
 	return false;
 }
 
-bool fp_TabRun::letPointPass(void) const
+bool fp_TabRun::_letPointPass(void) const
 {
 	return true;
 }
@@ -1770,7 +1826,7 @@ bool fp_ForcedLineBreakRun::canBreakBefore(void) const
 	return false;
 }
 
-bool fp_ForcedLineBreakRun::letPointPass(void) const
+bool fp_ForcedLineBreakRun::_letPointPass(void) const
 {
 	return false;
 }
@@ -1966,7 +2022,7 @@ bool fp_FieldStartRun::canBreakBefore(void) const
 	return true;
 }
 
-bool fp_FieldStartRun::letPointPass(void) const
+bool fp_FieldStartRun::_letPointPass(void) const
 {
 	return true;
 }
@@ -2026,7 +2082,7 @@ bool fp_FieldEndRun::canBreakBefore(void) const
 	return true;
 }
 
-bool fp_FieldEndRun::letPointPass(void) const
+bool fp_FieldEndRun::_letPointPass(void) const
 {
 	return true;
 }
@@ -2106,7 +2162,7 @@ bool fp_BookmarkRun::canBreakBefore(void) const
 	return true;
 }
 
-bool fp_BookmarkRun::letPointPass(void) const
+bool fp_BookmarkRun::_letPointPass(void) const
 {
 	return true;
 }
@@ -2286,7 +2342,7 @@ bool fp_HyperlinkRun::canBreakBefore(void) const
 	return false;
 }
 
-bool fp_HyperlinkRun::letPointPass(void) const
+bool fp_HyperlinkRun::_letPointPass(void) const
 {
 	return true;
 }
@@ -2419,7 +2475,7 @@ bool fp_EndOfParagraphRun::canBreakBefore(void) const
 	return false;
 }
 
-bool fp_EndOfParagraphRun::letPointPass(void) const
+bool fp_EndOfParagraphRun::_letPointPass(void) const
 {
 	return false;
 }
@@ -2586,7 +2642,7 @@ void fp_EndOfParagraphRun::_draw(dg_DrawArgs* pDA)
 	{
 		// Draw pilcrow
 		// use the hard-coded colour only if not revised
-		if(!getRevisions())
+		if(!getRevisions() || !pView->isShowRevisions())
 			getGraphics()->setColor(pView->getColorShowPara());
         getGraphics()->drawChars(pEOP, 0, iTextLen, m_iXoffText, m_iYoffText);
 	}
@@ -2734,7 +2790,7 @@ bool fp_ImageRun::canBreakBefore(void) const
 	return true;
 }
 
-bool fp_ImageRun::letPointPass(void) const
+bool fp_ImageRun::_letPointPass(void) const
 {
 	return false;
 }
@@ -3289,7 +3345,7 @@ bool fp_FieldRun::canBreakBefore(void) const
 	return true;
 }
 
-bool fp_FieldRun::letPointPass(void) const
+bool fp_FieldRun::_letPointPass(void) const
 {
 	return true;
 }
@@ -4583,7 +4639,7 @@ bool fp_ForcedColumnBreakRun::canBreakBefore(void) const
 	return false;
 }
 
-bool fp_ForcedColumnBreakRun::letPointPass(void) const
+bool fp_ForcedColumnBreakRun::_letPointPass(void) const
 {
 	return false;
 }
@@ -4694,7 +4750,7 @@ bool fp_ForcedPageBreakRun::canBreakBefore(void) const
 	return false;
 }
 
-bool fp_ForcedPageBreakRun::letPointPass(void) const
+bool fp_ForcedPageBreakRun::_letPointPass(void) const
 {
 	return false;
 }
