@@ -27,7 +27,7 @@
 #include "xap_App.h"
 #include "xap_Win32App.h"
 #include "xap_Win32FrameImpl.h"
-#include "xap_Win32Toolbar_Icons.h"
+
 
 #include "xap_Strings.h"
 #include "xap_Dialog_Id.h"
@@ -35,6 +35,7 @@
 #include "xap_Win32Dlg_Language.h"
 #include "xap_Win32DialogHelper.h"
 #include "xap_Win32Resources.rc2"
+#include "xap_Win32Toolbar_Icons.h"
 
 #ifdef STRICT   
 #define WHICHPROC	WNDPROC
@@ -221,8 +222,8 @@ BOOL XAP_Win32Dialog_Language::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lP
 	
 	/* create image lists, fill, attach to Treeviews */
 	HIMAGELIST hNormIml = ImageList_Create(20, 20,  ILC_COLORDDB, 2, 2);    		              	       	
-   	AP_Win32Toolbar_Icons::getBitmapForIcon(hWnd, 20,20, &Color, "tb_spellcheck_xpm",  &hBitmap);       		       	
-   	AP_Win32Toolbar_Icons::getBitmapForIcon(hWnd, 20,20, &Color, "tb_transparent_xpm",  &hBitmapTrans);       		
+   	AP_Win32Toolbar_Icons::getBitmapForIcon(hWnd, 20,20, &Color, "SPELLCHECK",  &hBitmap);       		       	
+   	AP_Win32Toolbar_Icons::getBitmapForIcon(hWnd, 20,20, &Color, "TRANSPARENTLANG",  &hBitmapTrans);       		
 	
 	/* Setup tree images */
 	ImageList_Add(hNormIml,hBitmapTrans, NULL);		
