@@ -65,7 +65,7 @@ GR_CharWidths*	GR_CharWidthsCache::getWidthsForFont(const GR_Font* pFont)
 	pCharWidths = (GR_CharWidths*)(m_pFontHash->pick(pFont->hashKey()));
 	if (!pCharWidths) {
 		addFont(pFont);
-		UT_DEBUGMSG(("added font to cache.\n"));
+		UT_DEBUGMSG(("added font with hashkey '%s' to cache.\n", pFont->hashKey().c_str()));
 		pCharWidths = (GR_CharWidths*)(m_pFontHash->pick(pFont->hashKey()));
 		UT_ASSERT(pCharWidths);
 	}

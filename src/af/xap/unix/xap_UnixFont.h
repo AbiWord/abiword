@@ -51,6 +51,13 @@ struct uniWidth
 
 /*!
   Convert font measurement
+
+  \param iSize the requested size points
+  \param pFace the requested face
+  \param iFontPoints the size in font points to convert
+  \return the font measurement in points
+
+  \todo move that function to a class
  */
 float fontPoints2float(UT_uint32 iSize, FT_Face pFace,
 					   UT_uint32 iFontPoints);
@@ -187,7 +194,6 @@ class XAP_UnixFontHandle : public GR_Font
 {
  public:
 
-	XAP_UnixFontHandle();
 	XAP_UnixFontHandle(XAP_UnixFont * font, UT_uint32 size);	
 
 	XftFont * 					getLayoutXftFont(void);
@@ -199,9 +205,11 @@ class XAP_UnixFontHandle : public GR_Font
 	XAP_UnixFont*				getUnixFont() const { return m_font; }
 	virtual const char*			getFamily() const { return getUnixFont()->getName(); }
  
+	virtual const UT_String & hashKey(void) const;
 	virtual UT_sint32 measureUnremappedCharForCache(UT_UCSChar cChar) const;
 	float measureUnRemappedChar(const UT_UCSChar c, UT_uint32 iSize) const;
-// private:
+private:
+ 	XAP_UnixFontHandle();
 	XAP_UnixFont*				m_font;
 	UT_uint32					m_size;
 };

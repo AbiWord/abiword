@@ -59,12 +59,20 @@ GR_Font::GR_Font()
 {
 	s_iAllocCount++;
 	m_iAllocNo = s_iAllocCount;
-	m_pCharWidths = GR_CharWidthsCache::getCharWidthCache()->getWidthsForFont(this);
 }
 
 GR_Font::~GR_Font()
 {
 	// need this so children can clean up
+}
+
+/*!
+  Return the hash key used by the cache to fetch the font
+  This method may be overridden to compute it in real time if needed
+ */
+const UT_String & GR_Font::hashKey(void) const
+{
+	return m_hashKey;
 }
 
 /*!
@@ -75,6 +83,9 @@ UT_uint32 GR_Font::getCharWidthFromCache (UT_UCSChar c) const
 {
 	UT_sint32	iWidth = GR_CW_UNKNOWN;
 
+	if (m_pCharWidths == NULL) {
+		m_pCharWidths = GR_CharWidthsCache::getCharWidthCache()->getWidthsForFont(this);
+	}
 	iWidth = m_pCharWidths->getWidth(c);
 	if ((iWidth == GR_CW_UNKNOWN) || (iWidth == GR_UNKNOWN_BYTE)) {
 		iWidth = measureUnremappedCharForCache(c);

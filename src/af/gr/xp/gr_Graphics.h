@@ -79,16 +79,16 @@ class ABI_EXPORT GR_Font
 		That means measuring it for a font size of 120
 	 */
 	virtual UT_sint32 measureUnremappedCharForCache(UT_UCSChar cChar) const = 0;
-	const UT_String & hashKey(void) const
-	{
-		return m_hashKey;
-	};
+	virtual const UT_String & hashKey(void) const;
 	UT_uint32 getCharWidthFromCache (UT_UCSChar c) const;
 	virtual GR_CharWidths* newFontWidths(void) const; /*reimplement if you want to instanciate something else */
 
   protected:
-	/*! hash key for font cache. Must be initialized in ctor */
-	UT_String		m_hashKey;
+	/*! 
+	  hash key for font cache. Must be initialized in ctor
+	 otherwise override hashKey() method 
+	*/
+	mutable UT_String		m_hashKey;
   private:
 
 	static UT_uint32 s_iAllocCount;

@@ -126,6 +126,13 @@ float XAP_UnixFontHandle::measureUnRemappedChar(const UT_UCSChar c, UT_uint32 iS
 	return width;
 }
 
+const UT_String & XAP_UnixFontHandle::hashKey(void) const
+{
+	m_hashKey = m_font->getFontKey();
+	return m_hashKey;
+}
+
+
 /*******************************************************************/
 
 XAP_UnixFont::XAP_UnixFont(XAP_UnixFontManager * pFM)

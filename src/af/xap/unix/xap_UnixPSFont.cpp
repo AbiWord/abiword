@@ -60,6 +60,12 @@ XAP_UnixFont * PSFont::getUnixFont(void)
 	return m_hFont;
 }
 
+const UT_String & PSFont::hashKey(void) const
+{
+	m_hashKey = m_hFont->getFontKey();
+	return m_hashKey;
+}
+
 
 UT_sint32 PSFont::measureUnremappedCharForCache(UT_UCSChar cChar) const
 {
