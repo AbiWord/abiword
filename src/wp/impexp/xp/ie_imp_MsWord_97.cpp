@@ -1331,7 +1331,8 @@ XML_Char * IE_Imp_MsWord_97::_getBookmarkName(const wvParseStruct * ps, UT_uint3
 	char buff[200];
 	char *buff_ptr = &buff[0];
 	const char *in_ptr;
-	size_t out_left = 200, in_left;
+	size_t out_left = sizeof(buff);
+	size_t in_left;
 
 	if (!XAP_EncodingManager::get_instance()->cjk_locale()
 	   &&(XAP_EncodingManager::get_instance()->try_nativeToU(0xa1) != 0xa1))
@@ -1341,7 +1342,7 @@ XML_Char * IE_Imp_MsWord_97::_getBookmarkName(const wvParseStruct * ps, UT_uint3
 	else
 	{
 		// use UTF-8
-		ic_handle = UT_iconv_open("UTF-8", "UCS-2LE");
+		ic_handle = UT_iconv_open("UTF-8", "UCS-2");
 	}
 
 	if(ps->Sttbfbkmk.extendedflag == 0xFFFF)
