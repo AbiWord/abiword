@@ -88,6 +88,11 @@
         #elif BYTE_ORDER == BIG_ENDIAN
                 #define UT_BIG_ENDIAN
         #endif
+#elif defined(_WIN32)
+	/* We should probably do some check as the WinAPI could be on other computers */
+	#if !defined(UT_LITTLE_ENDIAN) && !defined(UT_BIG_ENDIAN)
+		#define UT_LITTLE_ENDIAN
+	#endif		
 #else /* this is for Linux */
 	#include <endian.h>
 	#if __BYTE_ORDER == __LITTLE_ENDIAN		
