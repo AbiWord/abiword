@@ -21,6 +21,7 @@
 #define AP_QNXDIALOG_WORDCOUNT_H
 
 #include "ap_Dialog_WordCount.h"
+#include "ut_timer.h"
 
 class XAP_QNXFrame;
 
@@ -32,28 +33,60 @@ public:
 	AP_QNXDialog_WordCount(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~AP_QNXDialog_WordCount(void);
 
+	//DEPRECATED
 	virtual void			runModal(XAP_Frame * pFrame);
 
-	virtual void	                runModeless(XAP_Frame * pFrame){};
-        virtual void                    destroy(void){};
-        virtual void                    activate(void){};
-	virtual void	 notifyActiveFrame(XAP_Frame *pFrame) {};
+	virtual void			runModeless(XAP_Frame * pFrame);
+	virtual void			destroy(void);
+	virtual void			activate(void);
+	virtual void			notifyActiveFrame(XAP_Frame *pFrame);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
+	static void				autoupdateWC(UT_Timer * pTimer);
+
+	virtual void			setUpdateCounter(void);
 
 	virtual void			event_OK(void);
+	virtual void			event_Update(void);
+	virtual void			event_Checkbox(void);
+	virtual void			event_Spin(void);
+
 	virtual void			event_WindowDelete(void);
 	
 protected:
 
 	// private construction functions
 	virtual PtWidget_t * _constructWindow(void);
-	void		_populateWindowData(void);
+	void 				 _updateWindowData(void);       
+
+	//DEPRECATED
+	void				_populateWindowData(void);
 
 	// pointers to widgets we need to query/set
 	PtWidget_t * m_windowMain;
+	//PtWidget_t * m_buttonClose;
+	//PtWidget_t * m_buttonUpdate;
+	//PtWidget_t * m_wContent;
+	//PtWidget_t * m_pTableframe;
+	PtWidget_t * m_pAutospin;
+	PtWidget_t * m_pAutocheck;
+	//PtWidget_t * m_pAutospinlabel;
 
-	PtWidget_t * m_buttonOK;
+	// Labels for the Word Count data
+	PtWidget_t * m_labelWCount;
+	PtWidget_t * m_labelPCount;
+	PtWidget_t * m_labelCCount;
+	PtWidget_t * m_labelCNCount;
+	PtWidget_t * m_labelLCount;	
+	PtWidget_t * m_labelPgCount;	
+	
+	UT_Timer   * m_pAutoUpdateWC;
+	UT_Bool		 m_bAutoWC;
+	int			 m_Update_rate;
+
+	// Handshake variables
+	UT_Bool m_bDestroy_says_stopupdating;
+	UT_Bool m_bAutoUpdate_happening_now;
 
 	int 		done;
 };

@@ -74,7 +74,7 @@ static void s_ok_clicked(GtkWidget * widget, AP_UnixDialog_WordCount * dlg)
 }
 
 
-static void s_Update_clicked(GtkWidget * widget, AP_UnixDialog_WordCount * dlg)
+static void s_update_clicked(GtkWidget * widget, AP_UnixDialog_WordCount * dlg)
 {
 	UT_ASSERT(widget && dlg);
 	dlg->event_Update();
@@ -548,7 +548,7 @@ void AP_UnixDialog_WordCount::_connectSignals(void)
 
 	gtk_signal_connect(GTK_OBJECT(m_buttonUpdate),
 					   "clicked",
-					   GTK_SIGNAL_FUNC(s_Update_clicked),
+					   GTK_SIGNAL_FUNC(s_update_clicked),
 					   (gpointer) this);
 
 	gtk_signal_connect (GTK_OBJECT (m_Spinrange), "value_changed",
