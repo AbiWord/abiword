@@ -58,7 +58,6 @@ protected:
 	UT_sint32			m_iLine_pos[8];
 	UT_sint32			m_iLine_height;
 	bool				m_bFirst;
-	GR_Font *			font;
 };
 		
 class AP_Dialog_Lists : public XAP_Dialog_Modeless

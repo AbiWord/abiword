@@ -1049,7 +1049,7 @@ void AP_Lists_preview::draw(void)
 	UT_sint32 iWidth = m_gc->tlu(getWindowWidth());
 	UT_sint32 iHeight = m_gc->tlu(getWindowHeight());
 	UT_UCSChar ucs_label[50];
-
+	GR_Font * font = NULL;
 	//
 	// we draw at 16 points in this preview
 	//
@@ -1240,5 +1240,5 @@ void AP_Lists_preview::draw(void)
 				m_gc->fillRect(clrGrey,xy,yy,awidth,aheight);
 		}
 	}
-
+   DELETEP(font);
 }
