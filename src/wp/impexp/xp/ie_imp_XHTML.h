@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -20,10 +22,37 @@
 #ifndef IE_IMP_XHTML_1_H
 #define IE_IMP_XHTML_1_H
 
-#include "ie_imp_XML.h"
 #include "ut_stack.h"
+#include "ut_vector.h"
+
+#include "ie_imp_XML.h"
+
+/* NOTE: I'm trying to keep the code similar across versions,
+ *       and therefore features are enabled/disabled here:
+ */
+
+/* Define if the base unicode char is UCS-4
+ */
+/* #undef XHTML_UCS4 */
+
+/* Define if the sniffers need to pass export name to parent
+ */
+/* #undef XHTML_NAMED_CONSTRUCTORS */
+
+/* Define if the tables are supported
+ */
+/* #undef XHTML_TABLES_SUPPORTED */
+
+/* Define if meta information is supported
+ */
+/* #undef XHTML_META_SUPPORTED */
+
+/* Define if meta information is supported
+ */
+/* #undef XHTML_RUBY_SUPPORTED */
 
 class PD_Document;
+class FG_Graphic;
 
 // The importer/reader for XHTML 1.0
 
@@ -32,7 +61,7 @@ class ABI_EXPORT IE_Imp_XHTML_Sniffer : public IE_ImpSniffer
 	friend class IE_Imp;
 
 public:
-	IE_Imp_XHTML_Sniffer() {}
+	IE_Imp_XHTML_Sniffer();
 	virtual ~IE_Imp_XHTML_Sniffer() {}
 
 	virtual UT_Confidence_t recognizeContents (const char * szBuf, 
@@ -49,27 +78,46 @@ public:
 class ABI_EXPORT IE_Imp_XHTML : public IE_Imp_XML
 {
 public:
-    IE_Imp_XHTML(PD_Document * pDocument);
-    ~IE_Imp_XHTML();
+	IE_Imp_XHTML (PD_Document * pDocument);
 
-    virtual UT_Error	importFile(const char * szFilename);
+	virtual ~IE_Imp_XHTML ();
 
-    void			startElement(const XML_Char *name, 
-								  const XML_Char **atts);
-    void			endElement(const XML_Char *name);
+	virtual UT_Error		importFile (const char * szFilename);
 
-    virtual void charData (const XML_Char * buffer, int length);
+	void					startElement (const XML_Char * name, const XML_Char ** atts);
+	void					endElement (const XML_Char * name);
+
+	virtual void			charData (const XML_Char * buffer, int length);
+
+protected:
+	virtual FG_Graphic *	importImage (const XML_Char * szSrc);
 
 private:
+	FG_Graphic *			importDataURLImage (const XML_Char * szData);
+
+	bool					pushInline (const char * props);
+	bool					newBlock (const char * style, const char * css, const char * align);
+	bool					requireBlock ();
+	bool					requireSection ();
+	bool					childOfSection ();
+
 	enum listType {L_NONE = 0, L_OL = 1, L_UL = 2 } m_listType;
 	UT_uint16	m_iListID;
 	bool        m_bFirstDiv;
 	UT_uint16	m_iNewListID;
+	UT_uint16	m_iNewImage;
 
 	UT_Stack	m_utsParents;
 	XML_Char *  m_szBookMarkName;
 
 	bool        m_addedPTXSection;
+
+	UT_uint16	m_iPreCount;
+
+	UT_String	m_dirname;
+
+	UT_Vector	m_divClasses;
+	UT_Vector	m_divStyles;
 };
 
 #endif /* IE_IMP_XHTML_H */

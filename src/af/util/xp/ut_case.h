@@ -1396,7 +1396,10 @@ ucs_range whitespace_table[] =
 	{0x0009, 0x000d},
 	{0x001c, 0x0020},
 	{0x0085, 0x0085},
-	{0x00A0, 0x00A0}, // had to add this by hand, for some reason in Unicode 3.1 it is marked as CS, not WS
+/*	{0x00A0, 0x00A0}, had to add this by hand, for some reason in Unicode 3.1
+	                  it is marked as CS, not WS
+	and properly so, in my opinion - fjf
+ */
 	{0x1680, 0x1680},
 	{0x2000, 0x200a},
 	{0x2028, 0x2029},

@@ -1,14 +1,14 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2001 Free Software Foundation, Inc.
-# Karl Ove Hufthammer <huftis@bigfoot.com>, 2001.
+# Karl Ove Hufthammer <karl@huftis.org>, 2002
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord\n"
 "POT-Creation-Date: 2001-12-03 13:42-0500\n"
 "PO-Revision-Date: 2001-07-18 11:38+0100\n"
-"Last-Translator: Karl Ove Hufthammer <huftis@bigfoot.com>\n"
-"Language-Team: Karl Ove Hufthammer <huftis@bigfoot.com>\n"
+"Last-Translator: Karl Ove Hufthammer <karl@huftis.org>\n"
+"Language-Team: Karl Ove Hufthammer <karl@huftis.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=iso-8859-1\n"
 "Content-Transfer-Encoding: 8bit\n"

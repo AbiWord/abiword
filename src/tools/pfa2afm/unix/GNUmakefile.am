@@ -20,7 +20,7 @@
 
 noinst_PROGRAMS = pfa2afm
 
-pfa2afm_LDFLAGS = -lm
+pfa2afm_LDADD = -lm
 
 pfa2afm_SOURCES = pfa2afm.c          \
 		splineutil.c       \

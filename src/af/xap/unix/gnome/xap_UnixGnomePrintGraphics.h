@@ -53,6 +53,10 @@ class XAP_UnixGnomePrintGraphics : public GR_Graphics
 				   XAP_UnixFontManager * fontManager,
 				   XAP_App *pApp, bool isPreview);
 
+	XAP_UnixGnomePrintGraphics(GnomePrintContext *gpc,
+				   XAP_UnixFontManager * fontManager,
+				   XAP_App *pApp);
+
 	virtual ~XAP_UnixGnomePrintGraphics();
 
 	virtual void drawChars(const UT_UCSChar* pChars, 

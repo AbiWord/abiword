@@ -863,6 +863,7 @@ bool fp_TextRun::canMergeWithNext(void)
 		|| (pNext->m_pLanguage != m_pLanguage)	//this is not a bug
 		|| (pNext->m_colorFG != m_colorFG)
 		|| (pNext->m_colorHL != m_colorHL)
+		|| (pNext->m_fPosition != m_fPosition)
 #ifdef BIDI_ENABLED
 #ifdef SMART_RUN_MERGING
 		|| (pNext->getVisDirection() != getVisDirection())
@@ -898,6 +899,7 @@ void fp_TextRun::mergeWithNext(void)
 	UT_ASSERT(m_iHeight == pNext->m_iHeight);
 	UT_ASSERT(m_iLineWidth == pNext->m_iLineWidth);
 	UT_ASSERT(m_pLanguage == pNext->m_pLanguage); //this is not a bug
+	UT_ASSERT(m_fPosition == pNext->m_fPosition);
 #ifdef BIDI_ENABLED
 #ifndef SMART_RUN_MERGING
 	UT_ASSERT(m_iDirection == pNext->m_iDirection); //#TF
@@ -1043,6 +1045,8 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 #endif
 	// need to set this, so the split run could reset its justification correctly
 	pNew->m_iSpaceWidthBeforeJustification = this->m_iSpaceWidthBeforeJustification;
+
+	pNew->m_pHyperlink = this->getHyperlink();
 
 	pNew->m_pPrev = this;
 	pNew->m_pNext = this->m_pNext;
@@ -2938,7 +2942,7 @@ void fp_TextRun::breakNeighborsAtDirBoundaries()
 	FriBidiCharType iDirection = getDirection();
 
 	fp_TextRun *pNext = NULL, *pPrev = NULL, *pOtherHalf;
-	PT_BlockOffset curOffset;
+	PT_BlockOffset curOffset = 0;
 	const UT_UCSChar* pSpan;
 	UT_uint32 spanOffset = 0;
 	UT_uint32 lenSpan = 0;
@@ -2954,6 +2958,8 @@ void fp_TextRun::breakNeighborsAtDirBoundaries()
 	while(pPrev)
 	{
 		m_pBL->getSpanPtr((UT_uint32) curOffset, &pSpan, &lenSpan);
+		if ( pSpan == (UT_UCSChar *)NULL || !lenSpan )
+			break;
 		iPrevType = fribidi_get_type((FriBidiChar)pSpan[0]);
 
 		while(curOffset > pPrev->getBlockOffset() && !FRIBIDI_IS_STRONG(iType))
@@ -3005,6 +3011,8 @@ void fp_TextRun::breakNeighborsAtDirBoundaries()
 	while(pNext)
 	{
 		m_pBL->getSpanPtr((UT_uint32) curOffset, &pSpan, &lenSpan);
+		if ( pSpan == (UT_UCSChar *)NULL || !lenSpan )
+			break;
 		iPrevType = fribidi_get_type((FriBidiChar)pSpan[0]);
 		bool bDirSet = false;
 		spanOffset = 0;

@@ -429,6 +429,7 @@ fl_DocSectionLayout::fl_DocSectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandl
 	m_pFirstOwnedPage = NULL;
 	m_bNeedsFormat = false;
 	m_bNeedsRebuild = false;
+	m_bNeedsSectionBreak = true;
 	_lookupProperties();
 }
 
@@ -947,7 +948,10 @@ void fl_DocSectionLayout::updateLayout(void)
 		pBL = pBL->getNext();
 	}
 	
+	if(needsSectionBreak())
+	{
 	breakSection();
+	}
 	
 	if(!needsRebuild())
 	{
@@ -977,11 +981,14 @@ void fl_DocSectionLayout::redrawUpdate(void)
 		pBL = pBL->getNext();
 	}
 	
-	breakSection();
-	if(!needsRebuild())
+	if(needsSectionBreak() || needsRebuild())
 	{
+	    breakSection();
+	    if(!needsRebuild())
+	    {
 		checkAndRemovePages();
 		addValidPages();
+	    }
 	}
 }
 
@@ -2600,7 +2607,7 @@ bool fl_HdrFtrSectionLayout::isPageHere(fp_Page * pPage)
 
 fl_HdrFtrShadow *  fl_HdrFtrSectionLayout::findShadow(fp_Page* pPage)
 {
-       UT_uint32 iPage = _findShadow(pPage);
+       UT_sint32 iPage = _findShadow(pPage);
        if(iPage < 0)
 	        return NULL;
        _PageHdrFtrShadowPair* pPair = (_PageHdrFtrShadowPair*) m_vecPages.getNthItem(iPage);
@@ -2768,6 +2775,14 @@ void fl_HdrFtrSectionLayout::addPage(fp_Page* pPage)
 		return;
 	}
 	//
+	// Check if the first Block for this HdrFtr exists yet. This can happen on
+    // some zooms.
+	//
+	if(getFirstBlock() == NULL)
+	{
+		return;
+	}
+	//
 	// see if this page has a shadow attached already. This can happen
     // is a page goes from being odd to even.
 	//
@@ -2779,7 +2794,6 @@ void fl_HdrFtrSectionLayout::addPage(fp_Page* pPage)
 	{
 		pOldShadow->getHdrFtrSectionLayout()->deletePage(pPage);
 	}
-
 	_PageHdrFtrShadowPair* pPair = new _PageHdrFtrShadowPair();
 	// TODO outofmem
 	xxx_UT_DEBUGMSG(("SEVIOR: Add page %x to pair %x \n",pPage,pPair));
@@ -3242,6 +3256,10 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_populateSpan(fl_BlockLayout* pBL, co
 		_PageHdrFtrShadowPair* pPair = (_PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
 		// Find matching block in this shadow.
 		pShadowBL = pPair->getShadow()->findMatchingBlock(pBL);
+		if(pShadowBL == NULL)
+		{
+			return false;
+		}
 		bResult = pShadowBL->doclistener_populateSpan(pcrs,blockOffset,len)
 			&& bResult;
 	}
@@ -3274,6 +3292,10 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_populateObject(fl_BlockLayout* pBL, 
 		_PageHdrFtrShadowPair* pPair = (_PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
 		// Find matching block in this shadow.
 		pShadowBL = pPair->getShadow()->findMatchingBlock(pBL);
+		if(pShadowBL == NULL)
+		{
+			return false;
+		}
 		bResult = pShadowBL->doclistener_populateObject(blockOffset,pcro)
 			&& bResult;
 	}
@@ -3882,7 +3904,7 @@ bool fl_ShadowListener::populate(PL_StruxFmtHandle sfh,
 	}
 	
 	UT_ASSERT(m_pShadow);
-//	UT_DEBUGMSG(("fl_ShadowListener::populate shadow %x \n",m_pShadow));
+	UT_DEBUGMSG(("fl_ShadowListener::populate shadow %x \n",m_pShadow));
 
 	bool bResult = false;
 	FV_View* pView = m_pHFSL->getDocLayout()->getView();
@@ -3973,7 +3995,7 @@ bool fl_ShadowListener::populateStrux(PL_StruxDocHandle sdh,
 									  PL_StruxFmtHandle * psfh)
 {
 	UT_ASSERT(m_pShadow);
-	xxx_UT_DEBUGMSG(("fl_ShadowListener::populateStrux\n"));
+	UT_DEBUGMSG(("fl_ShadowListener::populateStrux\n"));
 
 	UT_ASSERT(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux);
 	const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);

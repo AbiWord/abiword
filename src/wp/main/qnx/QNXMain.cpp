@@ -19,7 +19,7 @@
 
 #include "ap_QNXApp.h"
 
-int main(int argc, char ** argv)
+int main(int argc, const char ** argv)
 {
 	return AP_QNXApp::main(ABIWORD_APP_NAME, argc, argv);
 }

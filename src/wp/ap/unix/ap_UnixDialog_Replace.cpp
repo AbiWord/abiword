@@ -122,6 +122,12 @@ static void s_find_entry_activate(GtkWidget * widget, AP_UnixDialog_Replace * dl
 	dlg->event_Find();
 }
 
+static void s_find_entry_change(GtkWidget * widget, AP_UnixDialog_Replace * dlg)
+{
+	UT_ASSERT(widget && dlg);
+	dlg->event_FindEntryChange();
+}
+
 static void s_replace_entry_activate(GtkWidget * widget, AP_UnixDialog_Replace * dlg)
 {
 	UT_ASSERT(widget && dlg);
@@ -173,9 +179,9 @@ void AP_UnixDialog_Replace::runModeless(XAP_Frame * pFrame)
 
 void AP_UnixDialog_Replace::event_Find(void)
 {
-	char * findEntryText;
-
-	findEntryText = (char *) gtk_entry_get_text(GTK_ENTRY(m_entryFind));
+	char * findEntryText = (char *) gtk_entry_get_text(GTK_ENTRY(m_entryFind));
+	if (strlen(findEntryText) == 0) // do nothing when the find field is empty
+		return;	
 	
 	UT_UCSChar * findString;
 
@@ -187,7 +193,19 @@ void AP_UnixDialog_Replace::event_Find(void)
 
 	FREEP(findString);
 }
-		
+
+void AP_UnixDialog_Replace::event_FindEntryChange(void)
+{
+	const char *input = gtk_entry_get_text(GTK_ENTRY(m_entryFind));
+	bool enable = strlen(input) != 0;
+	gtk_widget_set_sensitive(m_buttonFindNext, enable);
+	if (m_id == AP_DIALOG_ID_REPLACE)
+	{
+		gtk_widget_set_sensitive(m_buttonReplace, enable);
+		gtk_widget_set_sensitive(m_buttonReplaceAll, enable);
+	}
+}
+
 void AP_UnixDialog_Replace::event_Replace(void)
 {
 	char * findEntryText;
@@ -397,6 +415,11 @@ GtkWidget * AP_UnixDialog_Replace::_constructWindow(void)
 	gtk_signal_connect(GTK_OBJECT(entryFind),
 					   "activate",
 					   GTK_SIGNAL_FUNC(s_find_entry_activate),
+					   this);
+
+	gtk_signal_connect(GTK_OBJECT(entryFind),
+					   "changed",
+					   GTK_SIGNAL_FUNC(s_find_entry_change),
 					   this);
 
 	// Buttons

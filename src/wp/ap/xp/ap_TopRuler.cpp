@@ -300,7 +300,10 @@ void AP_TopRuler::draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 {
 	if (!m_pG)
 		return;
-	
+	if(m_pView && (m_pView->getPoint() == 0))
+	{
+		return;
+	}
 	if (pClipRect)
 	{
 		m_pG->setClipRect(pClipRect);
@@ -844,8 +847,7 @@ void AP_TopRuler::_drawTabProperties(const UT_Rect * pClipRect,
 		
 			m_pG->setColor3D(GR_Graphics::CLR3D_BevelDown);
 
-			UT_ASSERT(pInfo->m_iDefaultTabInterval > 0);
-			if (pInfo->m_iDefaultTabInterval > 0)			// prevent infinite loop -- just in case
+			if (pInfo->m_iDefaultTabInterval > 0)			// prevent infinite loop -- get this if we draw while loading
 			{
 				UT_sint32 iPos = xAbsLeft;
 				for (;iPos < xAbsRight; iPos += pInfo->m_iDefaultTabInterval)
@@ -1394,7 +1396,15 @@ bool AP_TopRuler::isMouseOverTab(UT_uint32 x, UT_uint32 y)
 	bool bRTLglobal;	
 	XAP_App::getApp()->getPrefsValueBool((XML_Char*)AP_PREF_KEY_DefaultDirectionRtl, &bRTLglobal);
 	
-	bool bRTLpara = (static_cast<FV_View *>(m_pView))->getCurrentBlock()->getDominantDirection() == FRIBIDI_TYPE_RTL;
+	fl_BlockLayout * pBL = (static_cast<FV_View *>(m_pView))->getCurrentBlock();
+	UT_ASSERT (pBL);
+#if DEBUG
+	if (pBL == NULL) {
+		return false;
+	}
+#endif
+	bool bRTLpara = pBL->getDominantDirection() == FRIBIDI_TYPE_RTL;
+
 	if(bRTLpara)
 		xrel = xAbsRight - anchor;
 	else

@@ -144,7 +144,7 @@ struct ABI_EXPORT _rtfListTable
 	bool prevlist;
 	char textbefore[129];
 	char textafter[129];
-	UT_uint32 iWord97Overide;
+	UT_uint32 iWord97Override;
 	UT_uint32 iWord97Level;
 };
 
@@ -179,8 +179,8 @@ struct ABI_EXPORT RTFProps_ParaProps
 	UT_uint32       m_startValue;         // Start value of the list
 	eTabType        m_curTabType;        // Current Tab type
 	eTabLeader      m_curTabLeader;       // Current Tab Leader
-	UT_uint32       m_iOveride;          // 1's index to overide table
-	UT_uint32       m_iOverideLevel;     // 0's index to the level
+	UT_uint32       m_iOverride;          // 1's index to overide table
+	UT_uint32       m_iOverrideLevel;     // 0's index to the level
 	_rtfListTable   m_rtfListTable; 
 	UT_sint32  m_styleNumber ; //index into the style table
 #ifdef BIDI_ENABLED
@@ -273,12 +273,12 @@ private:
 	IE_Imp_RTF * m_pie_rtf;
 };
 
-// List Header Overide
-class ABI_EXPORT RTF_msword97_listOveride
+// List Header Override
+class ABI_EXPORT RTF_msword97_listOverride
 {
 public:
-	RTF_msword97_listOveride(	IE_Imp_RTF * pie_rtf);
-    ~RTF_msword97_listOveride();
+	RTF_msword97_listOverride(	IE_Imp_RTF * pie_rtf);
+    ~RTF_msword97_listOverride();
 	void buildAbiListProperties( const char ** szListID, 
 								 const char ** szParentID, 
 								 const char ** szLevel,
@@ -291,7 +291,7 @@ public:
 								 const char ** szListStyle,
 								 UT_uint32 iLevel);
 	UT_uint32 m_RTF_listID;
-	UT_uint32 m_OverideCount;
+	UT_uint32 m_OverrideCount;
 	RTFProps_ParaProps * m_pParaProps;
 	RTFProps_CharProps * m_pCharProps;
 	RTFProps_bParaProps * m_pbParaProps;
@@ -358,7 +358,6 @@ struct ABI_EXPORT RTFProps_SectionProps
 	enum EPageNumber {pgDecimal, pgURoman, pgLRoman, pgULtr, pgLLtr};
 
 	RTFProps_SectionProps();
-	RTFProps_SectionProps& operator=(const RTFProps_SectionProps&);
 
 	UT_uint32		m_numCols;
 	bool m_bColumnLine;
@@ -536,8 +535,8 @@ private:
 	bool HandleTableList(void);
 	char * getCharsInsideBrace(void);
 	bool ParseCharParaProps( unsigned char * pKeyword, long param, bool fParam, RTFProps_CharProps * pChars, RTFProps_ParaProps * pParas, RTFProps_bCharProps * pbChars, RTFProps_bParaProps * pbParas);
-	bool ReadListOverideTable(void);
-	bool HandleTableListOveride(void);
+	bool ReadListOverrideTable(void);
+	bool HandleTableListOverride(void);
 	
 	bool buildAllProps( char * propBuffer,  RTFProps_ParaProps * pParas, 
 					   RTFProps_CharProps * pChars, 
@@ -646,6 +645,8 @@ private:
 	UT_Vector m_vecAbiListTable;
 	_rtfAbiListTable * getAbiList( UT_uint32 i) {return (_rtfAbiListTable *) m_vecAbiListTable.getNthItem(i);}
 
+	RTF_msword97_listOverride* _getTableListOverride(UT_uint32 id);
+
 	UT_uint32 m_numLists;
 	bool m_bisAbiList;
 	bool m_bisNOTList; // true if the current stream does not have  abi list extensions
@@ -661,14 +662,15 @@ private:
 	UT_uint32		deflangid;
 	UT_Mbtowc		m_mbtowc;
 	bool                m_parsingHdrFtr;
-	UT_uint32           m_icurOveride;
-	UT_uint32           m_icurOverideLevel;
+	UT_uint32           m_icurOverride;
+	UT_uint32           m_icurOverrideLevel;
 	UT_Vector           m_vecWord97Lists;
-	UT_Vector           m_vecWord97ListOveride;
+	UT_Vector           m_vecWord97ListOverride;
 	void _appendHdrFtr ();
 	bool _appendField (const XML_Char *xmlField);
 	XML_Char *_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField, bool & isXML);
 	bool                m_bAppendAnyway;
+	RTFProps_SectionProps m_sectdProps ;
 };
 
 #endif /* IE_IMP_RTF_H */

@@ -458,12 +458,12 @@ void s_LaTeX_Listener::_convertColor(UT_String& szDest, const char* pszColor)
 		strncpy (colors[i],&pszColor[2*i],2);
 		colors[i][2]=0;
 	}
-	setlocale (LC_NUMERIC, "C");
+	char * old_locale = setlocale (LC_NUMERIC, "C");
 	UT_String_sprintf (szDest, "%.3f,%.3f,%.3f",
 			   strtol (&colors[0][0],NULL,16)/255.,
 			   strtol (&colors[1][0],NULL,16)/255.,
 			   strtol (&colors[2][0],NULL,16)/255.);
-	setlocale (LC_NUMERIC, "");
+	setlocale (LC_NUMERIC, old_locale);
 }
 
 void s_LaTeX_Listener::_convertFontSize(UT_String& szDest, const char* pszFontSize)
@@ -617,7 +617,7 @@ void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 
 		if (pAP->getProperty("font-size", szValue))
 		{
-			if (!UT_strcmp (DEFAULT_SIZE, szValue))
+			if (UT_strcmp (DEFAULT_SIZE, szValue) != 0)
 			{
 				m_pie->write("{\\");
 				UT_String szSize;
@@ -1286,12 +1286,14 @@ static int wvConvertUnicodeToLaTeX(U16 char16,char*& out)
 			return(1);
 		case 30:
 		case 31:
-		case 45:
 		
 		case 12:
 		case 13:
 		case 14:
 		case 7:
+			return(1);
+		case 45:
+			printf("-");
 			return(1);
 		case 34:
 			printf("\"");

@@ -200,7 +200,7 @@ void AP_Dialog_Columns::setViewAndDoc(XAP_Frame * pFrame)
 	{
 		m_dMarginRight = UT_convertToInches(pszMarginRight);
 	}
-	DELETEP(pszSecProps);
+	FREEP(pszSecProps);
 }
 
 /*!

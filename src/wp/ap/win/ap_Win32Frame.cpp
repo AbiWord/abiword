@@ -200,7 +200,7 @@ UT_Error AP_Win32Frame::_showDocument(UT_uint32 iZoom)
 	ENSUREP(pView);
 
 //	pDocLayout->fillLayouts();
-	
+
 
 	// The "AV_ScrollObj pScrollObj" receives
 	// send{Vertical,Horizontal}ScrollEvents
@@ -313,12 +313,16 @@ UT_Error AP_Win32Frame::_showDocument(UT_uint32 iZoom)
 	m_pView->setWindowSize(r.right - r.left, r.bottom - r.top);
 	InvalidateRect(hwnd, NULL, TRUE);
 
-	setXScrollRange();
-	setYScrollRange();
-
 	updateTitle();
 
 	pDocLayout->fillLayouts();
+
+	// we cannot do this before we fill the layout, because if we are
+	// running in default RTL mode, the X scroll needs to be able to
+	// have a valid block for its calculations
+	setXScrollRange();
+	setYScrollRange();
+
 	if (m_pView != NULL)
 	{
 		// we cannot just set the insertion position to that of the previous
@@ -486,6 +490,7 @@ AP_Win32Frame::AP_Win32Frame(AP_Win32Frame * f)
 	m_bMouseActivateReceived(false),
 	m_hWndHScroll(0),
 	m_hWndVScroll(0),
+	m_bFirstAfterFocus(false),
 	m_hWndGripperHack(0)
 {
 	m_hwndContainer = NULL;
@@ -1082,6 +1087,8 @@ void AP_Win32Frame::_onSize(int nWidth, int nHeight)
 			   nHeight - yTopRulerHeight - cyHScroll, TRUE);
 }
 
+
+
 LRESULT CALLBACK AP_Win32Frame::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 {
 	AP_Win32Frame * f = GWL(hwnd);
@@ -1100,13 +1107,18 @@ LRESULT CALLBACK AP_Win32Frame::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARAM wP
 		f->m_bMouseActivateReceived = true;
 		return MA_ACTIVATE;
 
-	case WM_SETFOCUS:
+	case WM_SETFOCUS:			
 		if (pView)
 		{
 			pView->focusChange(AV_FOCUS_HERE);
+			
+			if (GetKeyState(VK_LBUTTON)>0)
+				f->m_bFirstAfterFocus = true;
 
 			if(!f->m_bMouseActivateReceived)
 			{
+				
+				
 				// HACK:	Capture leaving a tool bar combo.
 				// We need to get a mouse down signal.
 				// windows is not activated so send a mouse down if the mouse is pressed.
@@ -1121,7 +1133,7 @@ LRESULT CALLBACK AP_Win32Frame::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARAM wP
 	case WM_KILLFOCUS:
 		if (pView)
 		{
-			pView->focusChange(AV_FOCUS_NONE);
+			pView->focusChange(AV_FOCUS_NONE);			
 		}
 		return 0;
 
@@ -1138,14 +1150,22 @@ LRESULT CALLBACK AP_Win32Frame::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARAM wP
 		return 1;
 
 	case WM_LBUTTONDOWN:
-		if(GetFocus() != hwnd)
+		
+		/* When we get the focus back 					*/
+		if (f->m_bFirstAfterFocus)
+			f->m_bFirstAfterFocus = false;	
+		else
 		{
-			SetFocus(hwnd);
-			pView = f->m_pView;
-			pMouse = (EV_Win32Mouse *) f->m_pMouse;
+			
+			if(GetFocus() != hwnd)
+			{
+				SetFocus(hwnd);
+				pView = f->m_pView;
+				pMouse = (EV_Win32Mouse *) f->m_pMouse;
+			}
+			pMouse->onButtonDown(pView,hwnd,EV_EMB_BUTTON1,wParam,LOWORD(lParam),HIWORD(lParam));
+			f->m_bMouseActivateReceived = false;
 		}
-		pMouse->onButtonDown(pView,hwnd,EV_EMB_BUTTON1,wParam,LOWORD(lParam),HIWORD(lParam));
-		f->m_bMouseActivateReceived = false;
 		return 0;
 	case WM_MBUTTONDOWN:
 		f->_startTracking(LOWORD(lParam), HIWORD(lParam));
@@ -1168,17 +1188,23 @@ LRESULT CALLBACK AP_Win32Frame::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARAM wP
 	case WM_SYSKEYDOWN:
 	case WM_KEYDOWN:
 	{
-	    ev_Win32Keyboard *pWin32Keyboard = static_cast<ev_Win32Keyboard *>(f->m_pKeyboard);
-		if (pWin32Keyboard->onKeyDown(pView,hwnd,iMsg,wParam,lParam))
-			return 0;
-		return DefWindowProc(hwnd,iMsg,wParam,lParam);
+		UT_DEBUGMSG(("WM_KEYDOWN %d  - %d\n",wParam, lParam));
+	    ev_Win32Keyboard *pWin32Keyboard = static_cast<ev_Win32Keyboard *>(f->m_pKeyboard);	    
+	    
+     	if (pWin32Keyboard->onKeyDown(pView,hwnd,iMsg,wParam,lParam))
+     		return DefWindowProc(hwnd,iMsg,wParam,lParam);
+ 		else
+ 			return false;	    				 	     			
+    		
 	}
 	case WM_SYSCHAR:
 	case WM_CHAR:
 	{
+		UT_DEBUGMSG(("WM_CHAR %d  - %d\n",wParam, lParam));
 	    ev_Win32Keyboard *pWin32Keyboard = static_cast<ev_Win32Keyboard *>(f->m_pKeyboard);
-		if (pWin32Keyboard->onChar(pView,hwnd,iMsg,wParam,lParam))
-			return 0;
+	   
+	    
+		pWin32Keyboard->onChar(pView,hwnd,iMsg,wParam,lParam);		
 		return DefWindowProc(hwnd,iMsg,wParam,lParam);
 	}
 	case WM_IME_CHAR:
@@ -1413,7 +1439,7 @@ void AP_Win32Frame::toggleLeftRuler(bool bRulerOn)
 
 	if (bRulerOn)
 	{
-		// 
+		//
 		// If There is an old ruler just return
 		//
 		if(m_hwndLeftRuler)
@@ -1581,7 +1607,7 @@ void AP_Win32Frame::toggleStatusBar(bool bStatusBarOn)
 		pFrameData->m_pStatusBar->hide();
 	}
 
-	UpdateWindow(m_hwndContainer);	
+	UpdateWindow(m_hwndContainer);
 }
 
 void AP_Win32Frame::_showOrHideToolbars(void)

@@ -45,8 +45,7 @@ public:
 				   HWND hWnd, UINT iMsg, WPARAM nVirtKey, LPARAM keyData);
 
 protected:
-	EV_EditBits			_getModifierState(void);
-	void				_translateMessage(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
+	EV_EditBits			_getModifierState(void);	
 	void				_emitChar(AV_View * pView,
 								  HWND hWnd, UINT iMsg, WPARAM nVirtKey, LPARAM keyData,
 								  WCHAR b, EV_EditModifierState ems);

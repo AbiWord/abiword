@@ -18,6 +18,7 @@
  */
 
 #include <stdlib.h>
+#include <locale.h>
 #include "ut_string.h"
 #include "ut_bytebuf.h"
 #include "ut_base64.h"
@@ -257,7 +258,6 @@ void IE_Exp_RTF::exportHdrFtr(const char * pszHdrFtr , const char * pszHdrFtrID)
 		posEnd =  getDoc()->getStruxPosition(nextSDH);
 	}
 	posStart++;
-	posEnd;
 	PD_DocumentRange * pExportHdrFtr = new PD_DocumentRange(getDoc(),posStart,posEnd);
 //
 // Got everything. Now write out an openning brace and HdrFtr type.
@@ -563,7 +563,7 @@ bool IE_Exp_RTF::_write_rtf_header(void)
 	bool wrote_cpg = 0;
 	if (langcode) 
 	{
-		char* cpgname = wvLIDToCodePageConverter(langcode);
+		char* cpgname = const_cast<char *>(wvLIDToCodePageConverter(langcode));
 		UT_DEBUGMSG(("Belcon,after wvLIDToCodePageConverter(%d),cpgname=%s\n",langcode,cpgname));
 		if (UT_strnicmp(cpgname,"cp",2)==0 && UT_UCS_isdigit(cpgname[2])) 
 		{
@@ -1774,8 +1774,10 @@ void IE_Exp_RTF::_output_ListRTF(fl_AutoNum * pAuto, UT_uint32 iLevel)
 		UT_String smarg;
 		UT_String sindent;
 		marg = (((float) iLevel) +1.0) * marg;
+		char *old_locale = setlocale (LC_NUMERIC, "C");
 		UT_String_sprintf(smarg,"%fin",marg);
 		UT_String_sprintf(sindent,"%fin",indent);
+		setlocale (LC_NUMERIC, old_locale);
 		_rtf_keyword_ifnotdefault_twips("li",(char*)smarg.c_str(),0);
 		_rtf_keyword_ifnotdefault_twips("fi",(char*)sindent.c_str(),0);
 	}

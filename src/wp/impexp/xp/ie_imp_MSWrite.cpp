@@ -354,7 +354,7 @@ int IE_Imp_MSWrite::read_pap ()
 			if (header) {
 				UT_DEBUGMSG(("Headers and footers not supported, skipping...\n")); 
             } else {
-				setlocale (LC_NUMERIC, "C");
+				char * old_locale = setlocale (LC_NUMERIC, "C");
 				UT_String_sprintf (propBuffer, "text-align:%s; line-height:%.1f",
 						   text_align[jc], (float)dyaLine / 240.0);
 				propBuffer += tempBuffer;
@@ -388,7 +388,7 @@ int IE_Imp_MSWrite::read_pap ()
 							 (float) dxaRight / 1440.0);
 					propBuffer += tempBuffer;
 				}
-				setlocale (LC_NUMERIC, "");
+				setlocale (LC_NUMERIC, old_locale);
 
 				// end of formatting
 
@@ -474,7 +474,7 @@ int IE_Imp_MSWrite::read_char (int fcFirst2, int fcLim2) {
 			
 			if ((fcLim >= fcFirst2) && (fcFirst <= fcLim2))  {
 				mCharBuf.clear ();
-				setlocale (LC_NUMERIC, "C");
+				char * old_locale = setlocale (LC_NUMERIC, "C");
 				
 				UT_String_sprintf (propBuffer, "font-weight:%s", bold ? "bold" : "normal");
 				if (italic)  {
@@ -501,7 +501,7 @@ int IE_Imp_MSWrite::read_char (int fcFirst2, int fcLim2) {
 					translate_char (*(mTextBuf.getPointer(fcFirst2 - 0x80)), mCharBuf);
 					fcFirst2++;
 				}
-				setlocale (LC_NUMERIC, "");
+				setlocale (LC_NUMERIC, old_locale);
 				
 				const XML_Char* propsArray[3];
 				propsArray[0] = pProps;

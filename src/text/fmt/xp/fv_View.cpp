@@ -74,6 +74,7 @@
 // NB -- irrespective of this size, the piecetable will store
 // at max BOOKMARK_NAME_LIMIT of chars as defined in pf_Frag_Bookmark.h
 #define BOOKMARK_NAME_SIZE 30
+#define CHECK_WINDOW_SIZE if(getWindowHeight() < 20) return;
 
 /****************************************************************/
 
@@ -503,7 +504,7 @@ void FV_View::toggleCase (ToggleCase c)
 
 			xxx_UT_DEBUGMSG(("fv_View::toggleCase: iLenToCopy %d, low %d\n", iLenToCopy, low));
 				
-			if(!pRun || pRun->getType() == FPRUN_ENDOFPARAGRAPH)
+			if(!pRun || pRun->getType() == FPRUN_ENDOFPARAGRAPH || iLenToCopy == 0)
 				break;
 									
 			if(iLenToCopy > iTempLen)
@@ -1166,7 +1167,7 @@ void FV_View::cmdUnselectSelection(void)
 void FV_View::_drawSelection()
 {
 	UT_ASSERT(!isSelectionEmpty());
-
+//	CHECK_WINDOW_SIZE
 	if (m_iSelectionAnchor < getPoint())
 	{
 		_drawBetweenPositions(m_iSelectionAnchor, getPoint());
@@ -1887,7 +1888,7 @@ bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count, bool bForce)
 
 	if (!isSelectionEmpty())
 	{
-	        m_pDoc->beginUserAtomicGlob();
+		m_pDoc->beginUserAtomicGlob();
 		PP_AttrProp AttrProp_Before;
 		_deleteSelection(&AttrProp_Before);
 		bResult = m_pDoc->insertSpan(getPoint(), text, count, &AttrProp_Before);
@@ -3819,7 +3820,61 @@ bool FV_View::setBlockFormat(const XML_Char * properties[])
 	{
 		posStart = 2;
 	}
-		
+	
+
+#ifdef BIDI_ENABLED	
+	// if the format change includes dom-dir, we need to force change
+	// of direction for the last run in the block, the EndOfParagraph
+	// run. (This should really not be necessary, the EndOfParagraph
+	// run should lookup its properties)
+
+	bool bDomDirChange = false;
+	FriBidiCharType iDomDir = FRIBIDI_TYPE_LTR;
+
+	const XML_Char ** p  = properties;
+
+	while(*p)
+	{
+		if(!UT_strcmp(*p,"dom-dir"))
+		{
+			bDomDirChange = true;
+			if(!UT_strcmp(*(p+1), "rtl"))
+			{
+				iDomDir = FRIBIDI_TYPE_RTL;
+			}
+			break;
+		}
+		p += 2;
+	}
+
+	if(bDomDirChange)
+	{
+
+		fl_BlockLayout * pBl = _findBlockAtPosition(posStart);
+		fl_BlockLayout * pBl2 = _findBlockAtPosition(posEnd);
+
+		if(pBl2)
+			pBl2 = static_cast<fl_BlockLayout *>(pBl2->getNext());
+
+		while(pBl)
+		{
+
+			if(iDomDir == FRIBIDI_TYPE_RTL)
+			{
+				static_cast<fp_Line *>(static_cast<fl_BlockLayout *>(pBl)->getLastLine())->getLastRun()->setDirection(FRIBIDI_TYPE_LTR);
+			}
+			else
+			{
+				static_cast<fp_Line *>(static_cast<fl_BlockLayout *>(pBl)->getLastLine())->getLastRun()->setDirection(FRIBIDI_TYPE_RTL);
+			}
+
+			pBl = static_cast<fl_BlockLayout *>(pBl->getNext());
+			if(pBl == pBl2)
+				break;
+		}
+	}
+	
+#endif
 	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,NULL,properties,PTX_Block);
 
 	_generalUpdate();
@@ -4992,6 +5047,7 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 	iLineHeight = pOldLine->getHeight();
 
 	bool bNOOP = false;
+	bool bEOL = false, bBOL = false;
 
 	xxx_UT_DEBUGMSG(("fv_View::_moveInsPtNextPrevLine: old line 0x%x\n", pOldLine));
 	
@@ -5030,6 +5086,10 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 				else
 				{
 					bNOOP = true;
+					if (_getDocPosFromPoint(iOldPoint, FV_DOCPOS_EOL) != iOldPoint)
+					  bEOL = true;
+					if (_getDocPosFromPoint(iOldPoint, FV_DOCPOS_BOL) != iOldPoint)
+					  bBOL = true;
 				}
 			}
 		}
@@ -5090,6 +5150,10 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 
 	if (bNOOP)
 	{
+		if (bBOL)
+			moveInsPtTo(FV_DOCPOS_BOL);
+		else if (bEOL)
+			moveInsPtTo(FV_DOCPOS_EOL);
 		// cannot move.  should we beep?
 		_drawInsertionPoint();
 		return;
@@ -5104,8 +5168,8 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 	fp_Page* pPage = _getPageForXY(xPoint, yPoint, xClick, yClick);
 
 	PT_DocPosition iNewPoint;
-	bool bBOL = false;
-	bool bEOL = false;
+	bBOL = false;
+	bEOL = false;
 	fl_HdrFtrShadow * pShadow=NULL;
 //
 // If we're not in a Header/Footer we can't get off the page with the click
@@ -7212,6 +7276,7 @@ UT_sint32 FV_View::getPageViewTopMargin(void) const
 void FV_View::_drawBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2)
 {
 	UT_ASSERT(iPos1 < iPos2);
+//	CHECK_WINDOW_SIZE
 
 	fp_Run* pRun1;
 	fp_Run* pRun2;
@@ -7524,7 +7589,8 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 void FV_View::_fixInsertionPointCoords()
 {
 	_eraseInsertionPoint();
-	if( getPoint() )
+	
+	if( !isLayoutFilling() )
 	{
 		_findPositionCoords(getPoint(), m_bPointEOL, m_xPoint, m_yPoint, m_xPoint2, m_yPoint2, m_iPointHeight, m_bPointDirection, NULL, NULL);
 	}
@@ -7580,6 +7646,13 @@ void  FV_View::_clearOldPoint(void)
 
 void FV_View::_xorInsertionPoint()
 {
+//
+// For incremental loader
+//
+	if(isLayoutFilling())
+	{
+		return;
+	}
 	if (NULL == getCurrentPage())
 		return;
 
@@ -7682,6 +7755,8 @@ void FV_View::drawInsertionPoint()
 
 void FV_View::_drawInsertionPoint()
 {
+//	CHECK_WINDOW_SIZE
+
 	if(m_focus==AV_FOCUS_NONE || !shouldScreenUpdateOnGeneralUpdate())
 	{
 		return;
@@ -7738,6 +7813,7 @@ void FV_View::_autoDrawPoint(UT_Worker * pWorker)
 
 void FV_View::setXScrollOffset(UT_sint32 v)
 {
+	CHECK_WINDOW_SIZE
 	UT_sint32 dx = v - m_xScrollOffset;
 
 	if (dx == 0)
@@ -7774,6 +7850,7 @@ void FV_View::setXScrollOffset(UT_sint32 v)
 
 void FV_View::setYScrollOffset(UT_sint32 v)
 {
+	CHECK_WINDOW_SIZE
 	UT_sint32 dy = v - m_yScrollOffset;
 
 	if (dy == 0)
@@ -7856,8 +7933,10 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 					 x,y,width,height,bClip,
 					 m_yScrollOffset,m_iWindowHeight));
 
+//	CHECK_WINDOW_SIZE
 	// this can happen when the frame size is decreased and
 	// only the toolbars show...
+
 	if ((m_iWindowWidth <= 0) || (m_iWindowHeight <= 0))
 	{
 		UT_DEBUGMSG(("fv_View::draw() called with zero drawing area.\n"));
@@ -8350,17 +8429,24 @@ void FV_View::cmdHyperlinkJump(UT_sint32 xPos, UT_sint32 yPos)
 
 void FV_View::_setPoint(PT_DocPosition pt, bool bEOL)
 {
-	if (!m_pDoc->getAllowChangeInsPoint())
+	PT_DocPosition posEOD = 0;
+	m_pDoc->getBounds(true,posEOD);
+	bool bDoIt = (posEOD < m_iInsPoint);
+	if (!m_pDoc->getAllowChangeInsPoint() && !bDoIt)
 	{
 		return;
+	}
+	if(posEOD < pt)
+	{
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
 	m_iInsPoint = pt;
 	m_bPointEOL = bEOL;
 	if(!m_pDoc->isPieceTableChanging())
 	{	
 		m_pLayout->considerPendingSmartQuoteCandidate();
+		_checkPendingWordForSpell();
 	}
-	_checkPendingWordForSpell();
 }
 
 void FV_View::setPoint(PT_DocPosition pt)
@@ -8560,7 +8646,7 @@ void FV_View::cmdUndo(UT_uint32 count)
 
 	// Remember the current position, We might need it later.
 	rememberCurrentPosition();
-
+	UT_DEBUGMSG(("SEVIOR: undoing %d operations \n",count));
 	m_pDoc->undoCmd(count);
 	allowChangeInsPoint();
 //
@@ -8899,7 +8985,7 @@ bool FV_View::setSectionFormat(const XML_Char * properties[])
 void FV_View::getTopRulerInfo(AP_TopRulerInfo * pInfo)
 {
 	memset(pInfo,0,sizeof(*pInfo));
-	if(getPoint() == 0)
+	if(isLayoutFilling() || (getPoint() == 0))
 	{
 		return;
 	}
@@ -8960,12 +9046,12 @@ void FV_View::getTopRulerInfo(AP_TopRulerInfo * pInfo)
 
 		pInfo->m_mode = AP_TopRulerInfo::TRI_MODE_COLUMNS;
 
-		static char buf[20];
-		setlocale(LC_NUMERIC,"C");
-		snprintf(buf, sizeof(buf), "%.4fin", m_pDoc->m_docPageSize.Width(DIM_IN));
-		setlocale(LC_NUMERIC,""); // restore original locale
-
-		pInfo->m_xPaperSize = m_pG->convertDimension(buf);
+		UT_String buf;
+		char * old_locale = setlocale(LC_NUMERIC,"C");
+		UT_String_sprintf(buf, "%.4fin", m_pDoc->m_docPageSize.Width(DIM_IN));
+		setlocale(LC_NUMERIC,old_locale); // restore original locale
+		
+		pInfo->m_xPaperSize = m_pG->convertDimension(buf.c_str());
 		pInfo->m_xPageViewMargin = getPageViewLeftMargin();
 
 		pInfo->m_xrPoint = xCaret - pContainer->getX();
@@ -8995,7 +9081,7 @@ void FV_View::getLeftRulerInfo(AP_LeftRulerInfo * pInfo)
 //
 // Can't do this before the layouts are filled.
 //
-	if(getPoint()== 0)
+	if(isLayoutFilling())
 	{
 		return;
 	}
@@ -9098,8 +9184,7 @@ void FV_View::getLeftRulerInfo(AP_LeftRulerInfo * pInfo)
 
 UT_Error FV_View::cmdDeleteBookmark(const char* szName)
 {
-	PT_DocPosition i,j;
-	return _deleteBookmark(szName,true,i,j);
+	return _deleteBookmark(szName, true, NULL, NULL);
 }
 
 UT_Error FV_View::cmdDeleteHyperlink()
@@ -9109,8 +9194,11 @@ UT_Error FV_View::cmdDeleteHyperlink()
 	return _deleteHyperlink(pos,true);
 }
 
-
-UT_Error FV_View::_deleteBookmark(const char* szName, bool bSignal, PT_DocPosition &pos1, PT_DocPosition &pos2)
+/* If we delete a bookmark before posStart or posEnd, then decrement
+ * them as appropriate. */
+UT_Error FV_View::_deleteBookmark(const char* szName, bool bSignal,
+								  PT_DocPosition * posStart, 
+								  PT_DocPosition * posEnd)
 {
 	if(!m_pDoc->isBookmarkUnique((const XML_Char *)szName))
 	{
@@ -9119,6 +9207,8 @@ UT_Error FV_View::_deleteBookmark(const char* szName, bool bSignal, PT_DocPositi
 		// document, so that the caller can adjust any stored doc positions
 		// if necessary
 		
+		PT_DocPosition pos1, pos2;
+
 		fp_BookmarkRun * pB1;
 		UT_uint32 bmBlockOffset[2];
 		fl_BlockLayout * pBlock[2];
@@ -9181,6 +9271,16 @@ UT_Error FV_View::_deleteBookmark(const char* szName, bool bSignal, PT_DocPositi
 					
 		pos1 = pBlock[0]->getPosition(false) + bmBlockOffset[0];
 		pos2 = pBlock[1]->getPosition(false) + bmBlockOffset[1];
+
+		if (posStart && *posStart > pos1)
+			(*posStart)--;
+		if (posStart && *posStart > pos2)
+			(*posStart)--;
+
+		if (posEnd && *posEnd > pos1)
+			(*posEnd)--;
+		if (posEnd && *posEnd > pos1)
+			(*posEnd)--;
 
 		m_pDoc->deleteSpan(pos1,pos1 + 1);
 		
@@ -9346,6 +9446,8 @@ UT_Error FV_View::cmdInsertHyperlink(const char * szName)
 
 	PT_DocPosition posStart = getPoint();
 	PT_DocPosition posEnd = posStart;
+	PT_DocPosition iPointOrig = posStart;
+	PT_DocPosition iAnchorOrig = m_iSelectionAnchor;
 	
 	if (!isSelectionEmpty())
 	{
@@ -9462,6 +9564,16 @@ UT_Error FV_View::cmdInsertHyperlink(const char * szName)
 	{
 		bRet = m_pDoc->insertObject(posStart, PTO_Hyperlink, pAt, NULL);
 	}
+
+	if(bRet)
+	{
+		// because we have inserted two objects around the selection
+		// boundaries the original insetion point and selection anchor
+		// are now shifted, so we need to fix them
+		setPoint(iPointOrig+1);
+		m_iSelectionAnchor = iAnchorOrig + 1;
+	
+	}
 	
 	delete [] target;
 	
@@ -9483,7 +9595,6 @@ UT_Error FV_View::cmdInsertBookmark(const char * szName)
 
 	PT_DocPosition posStart = getPoint();
 	PT_DocPosition posEnd = posStart;
-	PT_DocPosition pos1 = 0xFFFFFFFF,pos2 = 0xFFFFFFFF;
 	
 	if (!isSelectionEmpty())
 	{
@@ -9503,20 +9614,8 @@ UT_Error FV_View::cmdInsertBookmark(const char * szName)
 	{
 		//bookmark already exists -- remove it and then reinsert
 		UT_DEBUGMSG(("fv_View::cmdInsertBookmark: bookmark \"%s\" exists - removing\n", szName));
-		_deleteBookmark((XML_Char*)szName, false,pos1,pos2);
+		_deleteBookmark((XML_Char*)szName, false, &posStart, &posEnd);
 	}
-
-
-	// if the bookmark we just deleted was before the current insertion
-	// position we have to adjust our positions correspondingly
-	if(posStart > pos1)
-		posStart--;
-	if(posStart > pos2)
-		posStart--;
-	if(posEnd > pos1)
-		posEnd--;
-	if(posEnd > pos2)
-		posEnd--;
 	
 	XML_Char * pAttr[6];
 	const XML_Char ** pAt = (const XML_Char **)&pAttr[0];
@@ -9757,7 +9856,7 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 	bool bDirection;
 	m_iMouseX = xPos;
 	m_iMouseY = yPos;
-	if(getPoint() == 0) // We haven't loaded any layouts yet
+	if(isLayoutFilling()) // We haven't loaded any layouts yet
 	{
 		return EV_EMC_UNKNOWN;
 	}
@@ -9777,7 +9876,8 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 		return EV_EMC_UNKNOWN;
 	}
 
-	pPage->mapXYToPosition(xClick, yClick, pos, bBOL, bEOL);
+	fl_HdrFtrShadow * pShadow=NULL;
+	pPage->mapXYToPositionClick(xClick, yClick, pos, pShadow, bBOL, bEOL);
 	fl_BlockLayout* pBlock = _findBlockAtPosition(pos);
 	
 	if (isLeftMargin(xPos,yPos))
@@ -11289,7 +11389,7 @@ void FV_View::markSavedPositionAsNeeded(void)
    \param	posEnd is the value of the doc position at the beginning and end 
 			of the doc
    \param	bOveride if true the EOD is made within the edittable region
-   \return	true if succesful
+   \return	true if successful
    \todo speed this up by finding clever way to cache the size of the 
 		 header/footer region so we can just subtract it off.
 */
@@ -11780,7 +11880,7 @@ bool FV_View::insertEndnote()
 					{
 						fp_FieldRun * pF = static_cast<fp_FieldRun *>(pRun);
 #ifdef DEBUG
-						if(pF->getFieldType() == FPFIELD_endnote_ref)
+//						if(pF->getFieldType() == FPFIELD_endnote_ref)
 #endif
 							enoteCount++;
 					}
