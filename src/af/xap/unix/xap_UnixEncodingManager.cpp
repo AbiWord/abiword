@@ -1,9 +1,11 @@
-#include "xap_UnixEncodingManager.h"
-#include "ut_debugmsg.h"
-#include "ut_string.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <glib.h>
+
+#include "xap_UnixEncodingManager.h"
+#include "ut_debugmsg.h"
+#include "ut_string.h"
+#include "ut_string_class.h"
 
 /* We source this file in order not to replace symbols in gnome-libs.
   (if AW is linked with GNOME).
@@ -471,19 +473,22 @@ void  XAP_UnixEncodingManager::initialize()
 				// we want to get the encoding that would be used for the given
 				// language/territory if the utf-8 encoding was not specified
 				// by LANG
-				char MYLANG[45];
-				char OLDLANG[40];
-				strcpy(OLDLANG,getenv("LANG"));
-				
-				strcpy(MYLANG,"LANG=");
-				strcat(MYLANG,LanguageISOName);
-				strcat(MYLANG,"_");
-				strcat(MYLANG,LanguageISOTerritory);
-				putenv(MYLANG);
-				
-				xxx_UT_DEBUGMSG(("xap_UnixEncodingManager::initialize: prev LANG=%s new LANG=%s\n"
-							 , OLDLANG,getenv("LANG")));
-							
+
+			  UT_String OLDLANG (getenv("LANG"));
+#if !defined(HAVE_SETENV) 
+			  UT_String MYLANG ("LANG=");
+			  
+			  MYLANG += LanguageISOName;
+			  MYLANG += "_";
+			  MYLANG += LanguageISOTerritory;
+			  putenv(MYLANG.c_str());
+#else
+			  UT_String MYLANG (LanguageISOName);
+			  MYLANG += "_";
+			  MYLANG += LanguageISOTerritory;
+			  setenv ("LANG", MYLANG.c_str(), 1);
+#endif
+			
 				const GList* my_lst = g_i18n_get_language_list ("LANG");
 				const char* my_locname = (char*)my_lst->data;
 				
@@ -505,10 +510,13 @@ void  XAP_UnixEncodingManager::initialize()
 				
 				}
 
-				strcpy(MYLANG,"LANG=");
-				strcat(MYLANG,OLDLANG);
-				putenv(MYLANG);
-			
+#if !defined(HAVE_SETENV)
+				MYLANG = "LANG=";
+				MYLANG += OLDLANG;
+				putenv(MYLANG.c_str());
+#else
+				setenv("LANG", OLDLANG.c_str(), 1);
+#endif			
 			}
 		}
 	};	
