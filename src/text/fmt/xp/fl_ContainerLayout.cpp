@@ -675,7 +675,6 @@ fl_ContainerLayout * fl_ContainerLayout::insert(PL_StruxDocHandle sdh, fl_Contai
 					  sdh, indexAP, this));
 		if (pPrev)
 		{
-			pPrev->_insertIntoList(pL);
 			while(pPrev && pPrev->getContainerType() != FL_CONTAINER_BLOCK)
 			{
 				pPrev = pPrev->getPrev();
@@ -685,6 +684,7 @@ fl_ContainerLayout * fl_ContainerLayout::insert(PL_StruxDocHandle sdh, fl_Contai
 //
 			if(pPrev)
 			{
+				pPrev->_insertIntoList(pL);
 				pPrev->addFrame(static_cast<fl_FrameLayout *>(pL));
 			}
 		}
