@@ -41,13 +41,15 @@ XAP_Win32PropertyPage::XAP_Win32PropertyPage() : m_pszTitle(0)
 {
 	m_pfnDlgProc = s_pageWndProc;	
 	m_pParent = NULL;
+	m_hdle = NULL;
 }
 
 XAP_Win32PropertyPage::~XAP_Win32PropertyPage()
 {
 	delete [] m_pszTitle;
+	if (m_hdle)
+		DestroyPropertySheetPage(m_hdle);	
 }
-
 
 int CALLBACK XAP_Win32PropertyPage::s_pageWndProc(HWND hWnd, UINT msg, WPARAM wParam,
    LPARAM lParam)
@@ -124,7 +126,8 @@ void XAP_Win32PropertyPage::createPage(XAP_Win32App* pWin32App, WORD wRscID,
 	}	
 	else
 		m_page.pszTitle = NULL;
-	m_hdle = CreatePropertySheetPage(&m_page);
+    
+	m_hdle = CreatePropertySheetPage(&m_page);	
 	
 }
 
@@ -185,7 +188,7 @@ int CALLBACK XAP_Win32PropertySheet::s_sheetWndProc(HWND hWnd, UINT msg, WPARAM 
 			{
 				
 				XAP_Win32PropertyPage* pPage;	
-				UT_sint32 i= 0;
+				UT_uint32 i= 0;
 				
 				for(i=0; i< pThis->m_vecPages.getItemCount();  i++)
 				{			

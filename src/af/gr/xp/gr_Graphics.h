@@ -52,12 +52,13 @@ class UT_String;
 */
 
 class GR_Graphics;
+class GR_Painter;
+
 class ABI_EXPORT GR_Font
 {
 	friend class GR_Graphics;
 
  public:
-	GR_Font();
 
 	typedef enum { FF_Unknown = 0, FF_Roman, FF_Swiss, FF_Modern,
 				   FF_Script, FF_Decorative, FF_Technical, FF_BiDi, FF_Last } FontFamilyEnum;
@@ -92,10 +93,10 @@ class ABI_EXPORT GR_Font
 		GR_Font * pThis = static_cast<GR_Font*>(instance);
 		return pThis->doesGlyphExist(g);
 	}
-	
-	
-	
+
   protected:
+
+	GR_Font();
 
 	virtual ~GR_Font();
 
@@ -105,13 +106,13 @@ class ABI_EXPORT GR_Font
 	 otherwise override hashKey() method 
 	*/
 	mutable UT_String		m_hashKey;
+
   private:
 
 	static UT_uint32 s_iAllocCount;
 	UT_uint32        m_iAllocNo;
 	mutable GR_CharWidths*	m_pCharWidths;
 };
-
 
 /*
   GR_Graphics is a portable interface to a simple 2-d graphics layer.  It is not
@@ -123,9 +124,9 @@ class ABI_EXPORT GR_Font
 #define GR_OC_MAX_WIDTH    0x3fffffff
 class ABI_EXPORT GR_Graphics
 {
-	friend class GR_Caret;
+	friend class GR_Painter;
+
  public:
-	GR_Graphics();
 	virtual ~GR_Graphics();
 
 	UT_sint32	tdu(UT_sint32 layoutUnits) const;
@@ -138,15 +139,7 @@ class ABI_EXPORT GR_Graphics
 	 */
 	UT_sint32	ftlu(UT_sint32 fontUnits) const;
 	double		ftluD(double fontUnits) const;
-
-	virtual void      drawGlyph(UT_uint32 glyph_idx, UT_sint32 xoff, UT_sint32 yoff) = 0;
-	virtual void      drawChars(const UT_UCSChar* pChars,
-								int iCharOffset,
-								int iLength,
-								UT_sint32 xoff,
-								UT_sint32 yoff,
-								int* pCharWidths = NULL) = 0;
-
+	
 	virtual void      setFont(GR_Font* pFont) = 0;
     virtual void      clearFont(void) = 0;
 	virtual UT_uint32 getFontAscent() = 0;
@@ -193,44 +186,24 @@ class ABI_EXPORT GR_Graphics
 									  UT_sint32 * piLeft,
 									  UT_uint32 * piWidth) const;
 
-	virtual void      drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest);
-
    	virtual GR_Image* createNewImage(const char* pszName,
 									 const UT_ByteBuf* pBB,
 									 UT_sint32 iWidth,
 									 UT_sint32 iHeight,
 									 GR_Image::GRType iType = GR_Image::GRT_Raster);
 
-	/* For drawLine() and xorLine():
-	**   x0,y0 give the starting pixel.
-	**   x1,y1 give the first pixel ***not drawn***.
-	*/
-	virtual void      drawLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32) = 0;
-	virtual void      xorLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32) = 0;
 	virtual void      setLineWidth(UT_sint32) = 0;
-	virtual void      polyLine(UT_Point * pts, UT_uint32 nPoints) = 0;
 
-	virtual void      fillRect(const UT_RGBColor& c,
-							   UT_sint32 x,
-							   UT_sint32 y,
-							   UT_sint32 w,
-							   UT_sint32 h) = 0;
-	virtual void      fillRect(GR_Image *pImg, const UT_Rect &src, const UT_Rect & dest);
-
-	void      fillRect(const UT_RGBColor& c, const UT_Rect &r);
-	virtual void      invertRect(const UT_Rect* pRect) = 0;
 	virtual void      setClipRect(const UT_Rect* pRect) = 0;
 	const UT_Rect *   getClipRect(void) const { return m_pRect;}
 	virtual void      scroll(UT_sint32, UT_sint32) = 0;
 
 	virtual void      scroll(UT_sint32 x_dest,
-				 UT_sint32 y_dest,
-				 UT_sint32 x_src,
-				 UT_sint32 y_src,
-				 UT_sint32 width,
-				 UT_sint32 height) = 0;
-
-	virtual void      clearArea(UT_sint32, UT_sint32, UT_sint32, UT_sint32) = 0;
+							 UT_sint32 y_dest,
+							 UT_sint32 x_src,
+							 UT_sint32 y_src,
+							 UT_sint32 width,
+							 UT_sint32 height) = 0;
 
 	typedef enum { DGP_SCREEN, DGP_PAPER, DGP_OPAQUEOVERLAY } Properties;
 
@@ -331,15 +304,7 @@ class ABI_EXPORT GR_Graphics
 #define COUNT_3D_COLORS 5
 
 	virtual void      setColor3D(GR_Color3D c) = 0;
-	virtual void      fillRect(GR_Color3D c,
-							   UT_sint32 x,
-							   UT_sint32 y,
-							   UT_sint32 w,
-							   UT_sint32 h) = 0;
 
-	virtual void	  fillRect(GR_Color3D c, UT_Rect &r) = 0;
-
-    virtual void      polygon(UT_RGBColor& c,UT_Point *pts,UT_uint32 nPoints);
 	//
 	// Methods to deal with background repainting as used in the Unix FE. These
 	// make redraws really fast and fix bug 119
@@ -382,8 +347,8 @@ class ABI_EXPORT GR_Graphics
 			UT_ASSERT(!m_pCaret);
 			m_pCaret = new GR_Caret(this);
 		}
+
 	GR_Caret *        getCaret() { return m_pCaret; }
-	virtual GR_Image *	  genImageFromRectangle(const UT_Rect & r) = 0;
 	virtual void	  saveRectangle(UT_Rect & r, UT_uint32 iIndx) = 0;
 	virtual void	  restoreRectangle(UT_uint32 iIndx) = 0;
 	virtual UT_uint32 getDeviceResolution(void) const = 0;
@@ -397,27 +362,68 @@ class ABI_EXPORT GR_Graphics
 	void              setPrevYOffset(UT_sint32 y) { m_iPrevYOffset = y;}
 	void              setPrevXOffset(UT_sint32 x) { m_iPrevXOffset = x;}
 
- protected:
 	UT_sint32         _tduX(UT_sint32 layoutUnits) const;
+
+ protected:
+
+	GR_Graphics();
+
+	// todo: make these pure virtual
+	virtual void _beginPaint () {}
+	virtual void _endPaint () {}
+
 	UT_sint32         _tduY(UT_sint32 layoutUnits) const;
 	UT_sint32         _tduR(UT_sint32 layoutUnits) const;
 
 	void _destroyFonts ();
 
-	virtual GR_Font*  _findFont(const char* pszFontFamily,
-								const char* pszFontStyle,
-								const char* pszFontVariant,
-								const char* pszFontWeight,
-								const char* pszFontStretch,
-								const char* pszFontSize) = 0;
+	virtual GR_Font* _findFont(const char* pszFontFamily,
+							   const char* pszFontStyle,
+							   const char* pszFontVariant,
+							   const char* pszFontWeight,
+							   const char* pszFontStretch,
+							   const char* pszFontSize) = 0;
+
+	// only called by GR_Painter
+	virtual void drawLine(UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h) = 0;
+	virtual void xorLine(UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h) = 0;
+	virtual void invertRect(const UT_Rect* pRect) = 0;
+	void xorRect(UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h);
+	void xorRect(const UT_Rect& r);
+
+	virtual void fillRect(GR_Image *pImg, const UT_Rect &src, const UT_Rect & dest);
+	virtual void fillRect(const UT_RGBColor& c, const UT_Rect &r);
+	virtual void fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y,
+						  UT_sint32 w, UT_sint32 h) = 0;
+
+	virtual void clearArea(UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h) = 0;;
+	virtual void drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest);
+	virtual void fillRect(GR_Color3D c, UT_Rect &r) = 0;
+	virtual void fillRect(GR_Color3D c,
+						  UT_sint32 x, UT_sint32 y,
+						  UT_sint32 w, UT_sint32 h) = 0;
+	virtual void polygon(UT_RGBColor& c, UT_Point *pts, UT_uint32 nPoints);
+	virtual void polyLine(UT_Point * pts, UT_uint32 nPoints) = 0;
+	virtual void drawGlyph(UT_uint32 glyph_idx, UT_sint32 xoff, UT_sint32 yoff) = 0;
+	virtual void drawChars(const UT_UCSChar* pChars,
+						   int iCharOffset,
+						   int iLength,
+						   UT_sint32 xoff,
+						   UT_sint32 yoff,
+						   int* pCharWidths = NULL) = 0;
+	virtual GR_Image *	  genImageFromRectangle(const UT_Rect & r) = 0;
 
  private:
-	virtual bool       _setTransform(const GR_Transform & tr)
-		                  {
-							  UT_ASSERT( UT_NOT_IMPLEMENTED );
-							  return false;
-						  }
-	
+	virtual bool _setTransform(const GR_Transform & tr)
+		{
+			UT_ASSERT( UT_NOT_IMPLEMENTED );
+			return false;
+		}
+
+	// only called by GR_Painter
+	void beginPaint ();
+	void endPaint ();
+
  public:
 	// TODO -- this should not be public, create access methods !!!
 	//
@@ -440,6 +446,7 @@ class ABI_EXPORT GR_Graphics
 	static UT_uint32 m_uTick;
 
 	const UT_Rect *  m_pRect;
+
  private:
 	GR_Caret *		 m_pCaret;
     bool             _PtInPolygon(UT_Point * pts,UT_uint32 nPoints,UT_sint32 x,UT_sint32 y);
@@ -460,12 +467,8 @@ class ABI_EXPORT GR_Graphics
 	GR_Transform     m_Transform;
 
 	UT_StringPtrMap	 m_hashFontCache;
-};
 
-void xorRect(GR_Graphics* pG, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h);
-void xorRect(GR_Graphics* pG, const UT_Rect& r);
-#ifdef DEBUG
-void flash(GR_Graphics* pG, const UT_Rect& r, const UT_RGBColor& c);
-#endif
+	UT_uint32 m_paintCount;
+};
 
 #endif /* GR_GRAPHICS_H */

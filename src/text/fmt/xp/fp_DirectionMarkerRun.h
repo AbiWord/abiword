@@ -32,8 +32,6 @@ public:
 						  UT_uint32 iOffsetFirst,
 						  UT_UCS4Char cMarker);
 
-	virtual bool			recalcWidth(void);
-
 	virtual void			mapXYToPosition(UT_sint32 xPos,
 											UT_sint32 yPos,
 											PT_DocPosition& pos,
@@ -50,7 +48,6 @@ public:
 	
 	virtual bool			canBreakAfter(void) const;
 	virtual bool			canBreakBefore(void) const;
-	virtual bool			letPointPass(void) const;
 	virtual UT_sint32       getDrawingWidth() const { return static_cast<UT_sint32>(m_iDrawWidth);}
 
 protected:
@@ -61,6 +58,8 @@ protected:
 
 	virtual void			_draw(dg_DrawArgs*);
 	virtual void       		_clearScreen(bool bFullLineHeightRect);
+	virtual bool			_recalcWidth(void);
+	virtual bool			_letPointPass(void) const;
 
 private:
 	UT_uint32				m_iXoffText;

@@ -20,8 +20,8 @@
 #include "fv_FrameEdit.h"
 #include "fl_DocLayout.h"
 #include "pd_Document.h"
+#include "gr_DrawArgs.h"
 #include "gr_Graphics.h"
-#include "fv_View.h"
 #include "ut_units.h"
 #include "fl_BlockLayout.h"
 #include "fp_Line.h"
@@ -29,6 +29,8 @@
 #include "pf_Frag.h"
 #include "pf_Frag_Strux.h"
 #include "fp_FrameContainer.h"
+#include "fv_View.h"
+#include "gr_Painter.h"
 
 FV_FrameEdit::FV_FrameEdit (FV_View * pView)
 	: m_pView (pView), 
@@ -618,7 +620,7 @@ void FV_FrameEdit::setDragType(UT_sint32 x, UT_sint32 y, bool bDrawFrame)
 			return;
 		}
 	}
-	if(bDrawFrame)
+	if(bDrawFrame && (m_recCurFrame.width > 0) && (m_recCurFrame.height >0))
 	{
 		drawFrame(true);
 	}
@@ -806,8 +808,8 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 									 "position-to","block-above-text",
 									 "xpos",sXpos.c_str(),
 									 "ypos",sYpos.c_str(),
-									 "width",sWidth.c_str(),
-									  "height",sHeight.c_str(),
+									 "frame-width",sWidth.c_str(),
+									  "frame-height",sHeight.c_str(),
 									  NULL,NULL};
 //
 // This should place the the frame strux immediately after the block containing
@@ -935,15 +937,19 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		double dHeight = static_cast<double>(m_recCurFrame.height)/static_cast<double>(UT_LAYOUT_RESOLUTION);
 		sWidth = UT_formatDimensionedValue(dWidth,"in", NULL);
 		sHeight = UT_formatDimensionedValue(dHeight,"in", NULL);
+//
+// m_pFrameLayout will be set to NULL during the changeStrux
+//
+		fl_FrameLayout * pOldLayout = m_pFrameLayout;
 
-		const XML_Char * props[10] = { "width",sWidth.c_str(),
-									  "height",sHeight.c_str(),
+		const XML_Char * props[10] = { "frame-width",sWidth.c_str(),
+									  "frame-height",sHeight.c_str(),
 									  "xpos",sXpos.c_str(),
 									  "ypos",sYpos.c_str(),
 									  NULL,NULL};
 		PT_DocPosition pos = m_pFrameLayout->getPosition()+1;
 		getDoc()->changeStruxFmt(PTC_AddFmt,pos,pos,NULL,props,PTX_SectionFrame);
-
+		m_pFrameLayout = pOldLayout;
 // Finish up with the usual stuff
 		getDoc()->endUserAtomicGlob();
 		getDoc()->setDontImmediatelyLayout(false);
@@ -1077,11 +1083,13 @@ void FV_FrameEdit::drawFrame(bool bWithHandles)
 		}
 		if(m_iDraggingWhat == FV_FrameEdit_DragWholeFrame)
 		{
-			m_pFrameImage = getGraphics()->genImageFromRectangle(m_recCurFrame);
+			GR_Painter painter (getGraphics());
+			m_pFrameImage = painter.genImageFromRectangle(m_recCurFrame);
 		}
 	}
 	else
 	{
-		getGraphics()->drawImage(m_pFrameImage,m_recCurFrame.left,m_recCurFrame.top);
+		GR_Painter painter (getGraphics());
+		painter.drawImage(m_pFrameImage,m_recCurFrame.left,m_recCurFrame.top);
 	}
 }

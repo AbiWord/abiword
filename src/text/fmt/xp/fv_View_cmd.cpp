@@ -31,9 +31,9 @@
 #include "ut_string.h"
 #include "ut_bytebuf.h"
 #include "ut_timer.h"
+#include "ut_Language.h"
 
 #include "xav_View.h"
-#include "fv_View.h"
 #include "fl_DocLayout.h"
 #include "fl_BlockLayout.h"
 #include "fl_Squiggles.h"
@@ -66,6 +66,11 @@
 #include "fp_TableContainer.h"
 #include "fl_FootnoteLayout.h"
 #include "pp_Revision.h"
+
+#include "ap_Dialog_SplitCells.h"
+
+#include "fv_View.h"
+
 #if 1
 // todo: work around to remove the INPUTWORDLEN restriction for pspell
 #include "ispell_def.h"
@@ -138,6 +143,606 @@ void FV_View::cmdCharMotion(bool bForward, UT_uint32 count)
 	_ensureInsertionPointOnScreen();
 	notifyListeners(AV_CHG_MOTION);
 }
+
+
+/*!
+ * Split the merged cells located at the current point in the way specified
+ * by iSplitType
+  */
+bool FV_View::cmdSplitCells(AP_CellSplitType iSplitType)
+{
+	PL_StruxDocHandle cellSDH,tableSDH,curSDH,endTableSDH;
+	PL_StruxDocHandle prevCellSDH1,prevCellSDH2;
+	PT_DocPosition posTable,posCell,posFirstInsert,posEndTable;
+	posFirstInsert = 0;
+	UT_sint32 iLeft,iRight,iTop,iBot;
+	UT_sint32 jLeft,jRight,jTop,jBot;
+	PT_DocPosition posCol = getPoint();
+	if(!isInTable(posCol))
+	{
+		return false;
+	}
+	getCellParams(posCol, &iLeft, &iRight,&iTop,&iBot);
+	UT_String sCellProps;
+	getCellFormat(posCol,sCellProps);
+//
+// Find the Row and column of the cell at the current point. The strategy
+// will be insert a new cell with the same (row/col depending on the split)
+// and to adjust the rest of the table past this point.
+//
+	UT_sint32 rowSpan = iBot - iTop;
+	UT_sint32 colSpan = iRight - iLeft;
+	bool bRes = m_pDoc->getStruxOfTypeFromPosition(posCol,PTX_SectionCell,&cellSDH);
+	bRes = m_pDoc->getStruxOfTypeFromPosition(posCol,PTX_SectionTable,&tableSDH);
+	UT_return_val_if_fail(bRes, false);
+
+	posTable = m_pDoc->getStruxPosition(tableSDH) + 1;
+	posCell = m_pDoc->getStruxPosition(cellSDH);
+	endTableSDH = m_pDoc->getEndTableStruxFromTableSDH(tableSDH);
+	posEndTable = m_pDoc->getStruxPosition(endTableSDH);
+//
+// Got all we need, now set things up to do the insert nicely
+//
+	// Signal PieceTable Change
+	_saveAndNotifyPieceTableChange();
+
+	// Turn off list updates
+
+	m_pDoc->disableListUpdates();
+	m_pDoc->beginUserAtomicGlob();
+	if (!isSelectionEmpty())
+	{
+		_clearSelection();
+	}
+	m_pDoc->setDontImmediatelyLayout(true);
+//
+// Now trigger a rebuild of the whole table by sending a changeStrux to the table strux
+// with a bogus line-type property. We'll restore it later.
+//
+	const char * pszTable[3] = {NULL,NULL,NULL};
+	pszTable[0] = "list-tag";
+	const char * szListTag = NULL;
+	UT_String sListTag;
+	UT_sint32 iListTag;
+	m_pDoc->getPropertyFromSDH(tableSDH,pszTable[0],&szListTag);
+	if(szListTag == NULL || *szListTag == '\0')
+	{
+		iListTag = 0;
+	}
+	else
+	{
+		iListTag = atoi(szListTag);
+		iListTag -= 1;
+	}
+	UT_String_sprintf(sListTag,"%d",iListTag);
+	pszTable[1] = sListTag.c_str();
+	UT_DEBUGMSG(("SEVIOR: Doing Table strux change of %s %s \n",pszTable[0],pszTable[1]));
+	m_pDoc->changeStruxFmt(PTC_AddFmt,posTable,posTable,NULL,pszTable,PTX_SectionTable);
+	UT_sint32 splitLeft,splitRight,splitTop,splitBot;
+	UT_sint32 newLeft,newRight,newTop,newBot;	
+	UT_sint32 numRows = 0;
+	UT_sint32 numCols = 0;
+	bool bDoSplitSolidHori = false;
+	bool bDoSplitSolidVert = false;
+//
+// OK now insert the cell and do the update
+//
+	m_pDoc-> getRowsColsFromTableSDH(tableSDH, &numRows, &numCols);
+
+	if(iSplitType <= hori_right)
+	{
+//
+// This is similar to "insert column"
+//
+		if(iSplitType ==  hori_left)
+		{
+			splitLeft = iLeft;
+			splitRight = iLeft+1;
+		}
+		else if(iSplitType ==  hori_mid)
+		{
+			splitLeft = iLeft;
+			if(colSpan == 1)
+			{
+				bDoSplitSolidHori = true;
+				splitRight = iLeft+1;
+			}
+			else
+			{
+				splitRight = iLeft + colSpan/2;
+			}
+		}
+		else if(iSplitType ==  hori_right)
+		{
+			splitLeft = iLeft;
+			splitRight = iRight -1;
+		}
+		splitTop = iTop;
+		splitBot = iBot;
+		newTop = iTop;
+		newBot = iBot;
+		if(!bDoSplitSolidHori)
+		{
+			newLeft = splitRight;
+			newRight = iRight;
+		}
+		else
+		{
+			newLeft = splitRight;
+			newRight = newLeft+1;
+		}
+
+	}
+	else
+	{
+		if(iSplitType ==  vert_above)
+		{
+			newTop = iTop;
+			newBot = iTop +1;
+		}
+		else if(iSplitType ==  vert_mid)
+		{
+			newTop = iTop;
+			if(rowSpan == 1)
+			{
+				bDoSplitSolidVert = true;
+				newBot = newTop+1;
+			}
+			else
+			{
+				newBot = iTop + rowSpan/2;
+			}
+		}
+		else if(iSplitType ==  vert_below)
+		{
+			newTop = iTop;
+			newBot = iBot -1;
+		}
+//
+// we need to get the location of where to place this cell.
+//
+		splitLeft = iLeft;
+		splitRight = iRight;
+		newLeft = iLeft;
+		newRight = iRight;
+		if(!bDoSplitSolidVert)
+		{
+			splitTop = newBot;
+			splitBot = iBot;
+		}
+		else
+		{
+			newTop = iTop;
+			newBot = newTop+1;
+			splitTop = newBot;
+			splitBot = splitTop+1;
+		}
+//
+// OK now we have to find the place to insert this. It should be the cell
+// immediately after (splitTop,splitLeft)
+//
+//(except if it's a splitSolidVert in which case it should be placed as the
+// next next on the row in the first cell before (splitleft,splittop)
+//
+		if(bDoSplitSolidVert)
+		{
+//
+// OK start with cellSDH and scan until we either reach the end of the table
+// or we find a cell past where splitcell should be. Then we insert the cell
+// at where cell just after splitcell is.
+//
+			bool bStop = false;
+			curSDH = cellSDH;
+			while(!bStop)
+			{
+				posCell = m_pDoc->getStruxPosition(curSDH)+1;
+				bRes = getCellParams(posCell,&jLeft,&jRight,&jTop,&jBot);
+				UT_ASSERT(bRes);
+				if(jTop >= splitTop)
+				{
+//
+// Found it!
+//
+					bStop = true;
+					posCell = m_pDoc->getStruxPosition(curSDH);
+					break;
+				}
+				bRes = m_pDoc->getNextStruxOfType(curSDH,PTX_SectionCell,&curSDH);
+				if(!bRes)
+				{
+					bStop = true;
+					posCell = m_pDoc->getStruxPosition(endTableSDH);
+					break;
+				}
+				posCell = m_pDoc->getStruxPosition(curSDH);
+				if(posCell > posEndTable)
+				{
+					bStop = true;
+					posCell = m_pDoc->getStruxPosition(endTableSDH);
+					break;
+				}
+			}
+		}
+		else
+		{
+			jTop = splitTop;
+			jBot = jTop+1;
+			jLeft = splitRight;
+			if(jLeft >= numCols)
+			{
+				jLeft = 0;
+				jTop += 1;
+				jBot +=1;
+			}	
+			jRight = jLeft+1;
+			if(jTop >= numRows)
+			{
+//
+// Place right before endTable Strux
+//
+				if(endTableSDH == NULL)
+				{
+					//
+					// Disaster! the table structure in the piecetable is screwed.
+					// we're totally stuffed now.
+					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+					return false;
+				}
+				posCell = m_pDoc->getStruxPosition(endTableSDH);
+			}
+			else
+			{
+//
+// now we have to loop until we find a cell precisely at jLeft,jTop
+//
+				bool bFound = false;
+				while(!bFound)
+				{
+					curSDH = m_pDoc-> getCellSDHFromRowCol(tableSDH,jTop,jLeft);
+					if(curSDH == NULL)
+					{
+						endTableSDH = m_pDoc->getEndTableStruxFromTableSDH(tableSDH);
+						if(endTableSDH == NULL)
+						{
+							//
+							// Disaster! the table structure in the piecetable is screwed.
+							// we're totally stuffed now.
+							UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+							return false;
+						}
+						posCell = m_pDoc->getStruxPosition(endTableSDH);
+						bFound = true;
+					}
+					UT_sint32 kLeft,kRight,kTop,kBot;
+					PT_DocPosition posTmp = m_pDoc->getStruxPosition(curSDH)+1;
+					getCellParams(posTmp,&kLeft,&kRight,&kTop,&kBot);
+					if((kLeft == jLeft) && (kTop == jTop))
+					{
+						bFound = true;
+						posCell = m_pDoc->getStruxPosition(curSDH);
+					}
+					else
+					{
+						jLeft++;
+						jRight++;
+						if(jLeft >= numCols)
+						{
+							jLeft = 0;
+							jTop++;
+							jRight =1;
+							jBot++;
+						}
+						if(jTop >= numRows)
+						{
+							endTableSDH = m_pDoc->getEndTableStruxFromTableSDH(tableSDH);
+							if(endTableSDH == NULL)
+							{
+								//
+								// Disaster! the table structure in the piecetable is screwed.
+								// we're totally stuffed now.
+								UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+								return false;
+							}
+							posCell = m_pDoc->getStruxPosition(endTableSDH);
+							bFound = true;
+						}
+					}
+				}
+			}
+		}
+	}
+//
+// OK build the table properties
+//
+	UT_String sRowTop = "top-attach";
+	UT_String sRowBot = "bot-attach";
+	UT_String sColLeft = "left-attach";
+	UT_String sColRight = "right-attach";
+	UT_String sTop,sBot,sLeft,sRight;
+	UT_String_sprintf(sTop,"%d",splitTop);
+	UT_String_sprintf(sBot,"%d",splitBot);
+	UT_String_sprintf(sLeft,"%d",splitLeft);
+	UT_String_sprintf(sRight,"%d",splitRight);
+	UT_String_setProperty(sCellProps,sRowTop,sTop);
+	UT_String_setProperty(sCellProps,sRowBot,sBot);
+	UT_String_setProperty(sCellProps,sColLeft,sLeft);
+	UT_String_setProperty(sCellProps,sColRight,sRight);
+	UT_DEBUGMSG(("Cells props for new cell:\n  %s \n",sCellProps.c_str()));
+//
+// Insert the cell
+//
+	const XML_Char * atts[4] = {"props",NULL,NULL,NULL};
+	atts[1] = sCellProps.c_str();
+	bRes = m_pDoc->insertStrux(posCell,PTX_SectionCell,atts,NULL);
+	bRes = m_pDoc->insertStrux(posCell+1,PTX_Block);
+	posFirstInsert = posCell + 2;
+//
+// Save the cell SDH for later..
+//
+	m_pDoc->getStruxOfTypeFromPosition(posCell+1,PTX_SectionCell,&prevCellSDH1);	
+	
+	bRes = m_pDoc->insertStrux(posCell+2,PTX_EndCell);
+
+// Changes the props of the new cell
+	UT_String_sprintf(sTop,"%d",newTop);
+	UT_String_sprintf(sBot,"%d",newBot);
+	UT_String_sprintf(sLeft,"%d",newLeft);
+	UT_String_sprintf(sRight,"%d",newRight);
+	UT_String_setProperty(sCellProps,sRowTop,sTop);
+	UT_String_setProperty(sCellProps,sRowBot,sBot);
+	UT_String_setProperty(sCellProps,sColLeft,sLeft);
+	UT_String_setProperty(sCellProps,sColRight,sRight);
+	posCell = m_pDoc->getStruxPosition(cellSDH)+1;
+	UT_DEBUGMSG(("New Cells props for old cell:\n  %s \n",sCellProps.c_str()));
+	atts[1] = sCellProps.c_str();
+	bool bres = m_pDoc->changeStruxFmt(PTC_AddFmt,posCell,posCell,atts,NULL,PTX_SectionCell);
+	m_pDoc->getStruxOfTypeFromPosition(posCell,PTX_SectionCell,&prevCellSDH2);		if(bDoSplitSolidHori)
+	{
+//
+// OK now we have to adjust all the cells with left or right >= splitleft
+// If left of a given cell is < splitLeft it is not adjusted but the right
+// of the cell if it's > splitleft is incremented. In this way our new cell
+// span two columns
+//
+		UT_sint32 myleft,myright,mytop,mybot;
+//
+// start at the first cell and scan through the table adjusting each cell.
+//
+		bres = m_pDoc->getStruxOfTypeFromPosition(posTable+1,PTX_SectionCell,&cellSDH);
+		UT_ASSERT(bres);
+		bool bStop= false;
+		while(!bStop)
+		{
+			posCell = m_pDoc->getStruxPosition(cellSDH)+1;
+			bres = getCellParams(posCell,&myleft,&myright,&mytop,&mybot);
+			UT_ASSERT(bres);
+			bool bChange =false;
+			if((cellSDH == prevCellSDH1) || (cellSDH == prevCellSDH2))
+			{
+//
+// Igore me!
+//
+				bChange = false;
+			}
+			else 
+			{
+				if(myright> splitLeft)
+				{
+					myright++;
+					bChange = true;
+				}
+				if(myleft>splitLeft)
+				{
+					myleft++;
+					bChange = true;
+				}
+				if(bChange)
+				{
+// Changes the props of the cell
+					UT_String_sprintf(sTop,"%d",mytop);
+					UT_String_sprintf(sBot,"%d",mybot);
+					UT_String_sprintf(sLeft,"%d",myleft);
+					UT_String_sprintf(sRight,"%d",myright);
+					UT_String_setProperty(sCellProps,sRowTop,sTop);
+					UT_String_setProperty(sCellProps,sRowBot,sBot);
+					UT_String_setProperty(sCellProps,sColLeft,sLeft);
+					UT_String_setProperty(sCellProps,sColRight,sRight);
+					atts[1] = sCellProps.c_str();
+					m_pDoc->changeStruxFmt(PTC_AddFmt,posCell,posCell,atts,NULL,PTX_SectionCell);
+				}
+			}
+			bRes = m_pDoc->getNextStruxOfType(cellSDH,PTX_SectionCell,&cellSDH);
+			if(!bRes)
+			{
+				bStop = true;
+				break;
+			}
+			posCell = m_pDoc->getStruxPosition(cellSDH);
+			if(posCell > posEndTable)
+			{
+				bStop = true;
+				break;
+			}
+		}
+	}
+	if(bDoSplitSolidVert)
+	{
+//
+// OK now we have to adjust all the cells with top or bot >= newTop
+// If top of a given cell is < newTop it is not adjusted but the bot
+// of the cell if it's > newTop is incremented. In this way our new cell
+// spans two rows
+//
+		UT_sint32 myleft,myright,mytop,mybot;
+//
+// start at the first cell and scan through the table adjusting each cell.
+//
+		m_pDoc->getStruxOfTypeFromPosition(posTable+1,PTX_SectionCell,&cellSDH);
+		bool bStop= false;
+		while(!bStop)
+		{
+			posCell = m_pDoc->getStruxPosition(cellSDH) +1;
+			getCellParams(posCell,&myleft,&myright,&mytop,&mybot);
+			bool bChange =false;
+			if((cellSDH == prevCellSDH1) || (cellSDH == prevCellSDH2))
+			{
+//
+// Igore me!
+//
+				bChange = false;
+			}
+			else 
+			{
+				if(mytop>newTop)
+				{
+					mytop++;
+					bChange = true;
+				}
+				if(mybot>newTop)
+				{
+					mybot++;
+					bChange = true;
+				}
+				if(bChange)
+				{
+// Changes the props of the cell
+					UT_String_sprintf(sTop,"%d",mytop);
+					UT_String_sprintf(sBot,"%d",mybot);
+					UT_String_sprintf(sLeft,"%d",myleft);
+					UT_String_sprintf(sRight,"%d",myright);
+					UT_String_setProperty(sCellProps,sRowTop,sTop);
+					UT_String_setProperty(sCellProps,sRowBot,sBot);
+					UT_String_setProperty(sCellProps,sColLeft,sLeft);
+					UT_String_setProperty(sCellProps,sColRight,sRight);
+					atts[1] = sCellProps.c_str();
+					m_pDoc->changeStruxFmt(PTC_AddFmt,posCell,posCell,atts,NULL,PTX_SectionCell);
+				}
+			}
+			bRes = m_pDoc->getNextStruxOfType(cellSDH,PTX_SectionCell,&cellSDH);
+			if(!bRes)
+			{
+				bStop = true;
+				break;
+			}
+			posCell = m_pDoc->getStruxPosition(cellSDH);
+			if(posCell > posEndTable)
+			{
+				bStop = true;
+				break;
+			}
+		}
+	}
+
+//
+// Now trigger a rebuild of the whole table by sending a changeStrux to the table strux
+// with the restored line-type property it has before.
+//
+	iListTag += 1;
+	UT_String_sprintf(sListTag,"%d",iListTag);
+	pszTable[1] = sListTag.c_str();
+	UT_DEBUGMSG(("SEVIOR: Doing Table strux change of %s %s \n",pszTable[0],pszTable[1]));
+	m_pDoc->changeStruxFmt(PTC_AddFmt,posTable,posTable,NULL,pszTable,PTX_SectionTable);
+//
+// OK finish everything off with the various parameters which allow the formatter to
+// be updated.
+//
+	m_pDoc->endUserAtomicGlob();
+	m_pDoc->setDontImmediatelyLayout(false);
+	_generalUpdate();
+
+
+	// restore updates and clean up dirty lists
+	m_pDoc->enableListUpdates();
+	m_pDoc->updateDirtyLists();
+
+	// Signal PieceTable Changes have finished
+	_restorePieceTableState();
+// Put the insertion point in a legal position
+//
+	setPoint(posFirstInsert);
+	notifyListeners(AV_CHG_MOTION);
+	_fixInsertionPointCoords();
+	_ensureInsertionPointOnScreen();
+	return true;
+}
+
+/*!
+ * Select the column of the table  identified by the document position 
+ * posOfColumn
+ */
+bool FV_View::cmdSelectColumn(PT_DocPosition posOfColumn)
+{
+	PL_StruxDocHandle cellSDH,tableSDH;
+	PT_DocPosition posTable,posCell;
+	UT_sint32 iLeft,iRight,iTop,iBot;
+	UT_sint32 Left,Right,Top,Bot;
+	bool bEOL;
+	if(!isInTable(posOfColumn))
+	{
+		return false;
+	}
+	getCellParams(posOfColumn, &iLeft, &iRight,&iTop,&iBot);
+	bool bRes = m_pDoc->getStruxOfTypeFromPosition(posOfColumn,PTX_SectionCell,&cellSDH);
+	bRes = m_pDoc->getStruxOfTypeFromPosition(posOfColumn,PTX_SectionTable,&tableSDH);
+	UT_return_val_if_fail(bRes, false);
+
+	posTable = m_pDoc->getStruxPosition(tableSDH) + 1;
+	posCell = m_pDoc->getStruxPosition(cellSDH);
+
+//
+// Now find the number of rows and columns inthis table. 
+//
+	UT_sint32 numRows = 0;
+	UT_sint32 numCols = 0;
+	m_pDoc->getRowsColsFromTableSDH(tableSDH, &numRows, &numCols);
+//
+// Ok set the selection type to that of a column
+//
+	m_Selection.setMode(FV_SelectionMode_TableColumn);
+
+	fl_BlockLayout * pBlock = NULL;
+	fp_Run * pRun = NULL;
+	UT_sint32 xCaret, yCaret;
+	UT_uint32 heightCaret;
+	UT_sint32 xCaret2, yCaret2;
+	bool bDirection;
+	_findPositionCoords(posOfColumn, bEOL, xCaret, yCaret, xCaret2, yCaret2, heightCaret, bDirection, &pBlock, &pRun);
+	UT_return_val_if_fail(pBlock,false);
+	fl_ContainerLayout * pCL = pBlock->myContainingLayout();
+	UT_return_val_if_fail(pCL,false);
+	pCL = pCL->myContainingLayout();
+	UT_return_val_if_fail(pCL,false);
+	UT_return_val_if_fail((pCL->getContainerType() == FL_CONTAINER_TABLE),false);
+	fl_TableLayout * pTL = static_cast<fl_TableLayout *>(pCL);
+	m_Selection.setTableLayout(pTL);
+//
+// Now loop through the column and collect all the cells.
+//
+	UT_sint32 j = 0;
+	UT_sint32 jPrev = -1;
+	for(j=0; j<numRows; j++)
+	{
+		PT_DocPosition posWork = findCellPosAt(posTable,j,iLeft) +1;
+		getCellParams(posWork,&Left,&Right,&Top,&Bot);
+		UT_DEBUGMSG(("Adding cell at left %d right %d top %d bot %d posWork %d \n",Left,Right,Top,Bot,posWork));
+		if(Top == jPrev)
+		{
+			continue;
+		}
+		_findPositionCoords(posWork+1, bEOL, xCaret, yCaret, xCaret2, yCaret2, heightCaret, bDirection, &pBlock, &pRun);
+		UT_return_val_if_fail(pBlock,false);
+		UT_DEBUGMSG(("Block pos = %d \n",pBlock->getPosition(false)));
+		fl_ContainerLayout * pCL = pBlock->myContainingLayout();
+		UT_return_val_if_fail((pCL->getContainerType() == FL_CONTAINER_CELL),false);
+		fl_CellLayout * pCell = static_cast<fl_CellLayout *>(pCL);
+		m_Selection.addCellToSelection(pCell);
+		jPrev = j;
+	}
+	_drawSelection();
+	notifyListeners(AV_CHG_MOTION);
+	return true;
+}
+
 
 /*!
  * Merge the cells located at posSource with posDestination by copying the data from 
@@ -568,7 +1173,6 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 {
 	PL_StruxDocHandle cellSDH,tableSDH,endTableSDH,endCellSDH,prevCellSDH;
 	PT_DocPosition posTable,posCell,posEndCell,posPrevCell,posFirstInsert;
-
 	UT_sint32 numColsForInsertion = getNumColumnsInSelection();
 	if(numColsForInsertion == 0)
 	{
@@ -655,7 +1259,7 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 	}
 	UT_String_sprintf(sListTag,"%d",iListTag);
 	pszTable[1] = sListTag.c_str();
-	UT_DEBUGMSG(("SEVIOR: Doing Table strux change of %s %s \n",pszTable[0],pszTable[1]));
+	UT_DEBUGMSG((" Doing Table strux change of %s %s \n",pszTable[0],pszTable[1]));
 	m_pDoc->changeStruxFmt(PTC_AddFmt,posTable,posTable,NULL,pszTable,PTX_SectionTable);
 //
 // OK loop through all the rows in this column and insert the entries in the specified
@@ -724,7 +1328,7 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 					bRes = m_pDoc->insertStrux(posCell+1,PTX_Block);
 					if(i == 0)
 					{
-						posFirstInsert = posCell + 1;
+						posFirstInsert = posCell + 2;
 					}
 					bRes = m_pDoc->insertStrux(posCell+2,PTX_EndCell);
 				}
@@ -754,7 +1358,7 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 					bRes = m_pDoc->insertStrux(posCellLeft+1,PTX_Block);
 					if(i == 0)
 					{
-						posFirstInsert = posCellLeft + 1;
+						posFirstInsert = posCellLeft + 2;
 					}
 					
 					bRes = m_pDoc->insertStrux(posCellLeft+2,PTX_EndCell);
@@ -805,7 +1409,7 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 								bRes = m_pDoc->insertStrux(posCell+1,PTX_Block);
 								if(i == 0)
 								{
-									posFirstInsert = posCell + 1;
+									posFirstInsert = posCell + 2;
 								}
 								bRes = m_pDoc->insertStrux(posCell+2,PTX_EndCell);
 							}
@@ -873,7 +1477,7 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 								bRes = m_pDoc->insertStrux(posCellLeft+1,PTX_Block);
 								if(i == 0)
 								{
-									posFirstInsert = posCellLeft + 1;
+									posFirstInsert = posCellLeft + 2;
 								}
 								bRes = m_pDoc->insertStrux(posCellLeft+2,PTX_EndCell);
 							}
@@ -1001,7 +1605,6 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 // OK finish everything off with the various parameters which allow the formatter to
 // be updated.
 //
-	setPoint(posFirstInsert);
 	m_pDoc->endUserAtomicGlob();
 	m_pDoc->setDontImmediatelyLayout(false);
 	_generalUpdate();
@@ -1015,6 +1618,7 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 	_restorePieceTableState();
 // Put the insertion point in a legal position
 //
+	setPoint(posFirstInsert);
 	notifyListeners(AV_CHG_MOTION);
 	_fixInsertionPointCoords();
 	_ensureInsertionPointOnScreen();
@@ -1978,6 +2582,18 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const XML
 
 bool FV_View::cmdCharInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce)
 {
+	// see if prefs specify we should set language based on kbd layout
+	UT_return_val_if_fail(m_pApp, false);
+	bool bSetLang = false;
+	m_pApp->getPrefsValueBool(static_cast<XML_Char*>(XAP_PREF_KEY_ChangeLanguageWithKeyboard),
+							  &bSetLang);
+
+	const UT_LangRecord * pLR = NULL;
+
+	if(bSetLang)
+		pLR = m_pApp->getKbdLanguage();
+
+	
 	bool bResult = true;
 	// So this gets rid of the annoying cursor flash at the beginning
 	// of the line upon character insertion, but it's the wrong thing to
@@ -2003,6 +2619,10 @@ bool FV_View::cmdCharInsert(const UT_UCSChar * text, UT_uint32 count, bool bForc
 //
 			bOK = _charMotion(true,1);
 		}
+
+		if(pLR)
+			AttrProp_Before.setProperty("lang", pLR->m_szLangCode);
+		
 		bResult = m_pDoc->insertSpan(getPoint(), text, count, &AttrProp_Before);
 		m_pDoc->endUserAtomicGlob();
 	}
@@ -2023,13 +2643,14 @@ bool FV_View::cmdCharInsert(const UT_UCSChar * text, UT_uint32 count, bool bForc
 			// Were inserting a TAB. Handle special case of TAB
 			// right after a list-label combo
 			//
-			if((isTabListBehindPoint() == true || isTabListAheadPoint() == true) && getCurrentBlock()->isFirstInList() == false)
+			if((   isTabListBehindPoint() == true || isTabListAheadPoint() == true)
+			    && getCurrentBlock()->isFirstInList() == false)
 			{
 				//
 				// OK now start a sublist of the same type as the
 				// current list if the list type is of numbered type
 				fl_BlockLayout * pBlock = getCurrentBlock();
-				List_Type curType = pBlock->getListType();
+				FL_ListType curType = pBlock->getListType();
 //
 // Now increase list level for bullet lists too
 //
@@ -2056,8 +2677,16 @@ bool FV_View::cmdCharInsert(const UT_UCSChar * text, UT_uint32 count, bool bForc
 				}
 			}
 		}
+		
 		if (doInsert == true)
 		{
+			if(pLR)
+			{
+				PP_AttrProp AP;
+				AP.setProperty("lang", pLR->m_szLangCode);
+				m_pDoc->insertFmtMark(PTC_AddFmt,getPoint(), &AP);
+			}
+
 			bResult = m_pDoc->insertSpan(getPoint(), text, count, NULL);
 
 			if(!bResult)
@@ -2065,7 +2694,9 @@ bool FV_View::cmdCharInsert(const UT_UCSChar * text, UT_uint32 count, bool bForc
 				const fl_BlockLayout * pBL = getCurrentBlock();
 				const PP_AttrProp *pBlockAP = NULL;
 				pBL->getAttrProp(&pBlockAP);
-				bResult = m_pDoc->insertSpan(getPoint(), text, count,const_cast<PP_AttrProp *>(pBlockAP));
+
+				bResult = m_pDoc->insertSpan(getPoint(), text, count,
+											 const_cast<PP_AttrProp *>(pBlockAP));
 				UT_ASSERT(bResult);
 			}
 		}
@@ -2200,7 +2831,7 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 		}
 		else
 		{
-			if(!isInFootnote() && isInFootnote(getPoint() - count))
+			if(!isInFootnote(getPoint()) && isInFootnote(getPoint() - count))
 			{
 				fl_FootnoteLayout * pFL = getClosestFootnote(getPoint());
 				count += pFL->getLength();
@@ -2471,8 +3102,8 @@ void FV_View::cmdSelect(PT_DocPosition dpBeg, PT_DocPosition dpEnd)
 
 	_setPoint(dpBeg);
 	_setSelectionAnchor();
-	m_iSelectionLeftAnchor = dpBeg;
-	m_iSelectionRightAnchor = dpEnd;
+	m_Selection.setSelectionLeftAnchor(dpBeg);
+	m_Selection.setSelectionRightAnchor(dpEnd);
 
 	_setPoint (dpEnd);
 
@@ -2706,6 +3337,22 @@ void FV_View::cmdCut(void)
 		// clipboard does nothing if there is no selection
 		return;
 	}
+	if(m_Selection.getSelectionMode() == FV_SelectionMode_TableColumn)
+	{
+		PD_DocumentRange * pDR = m_Selection.getNthSelection(0);
+		PT_DocPosition pos = pDR->m_pos1 +1;
+		_clearSelection();
+		cmdDeleteCol(pos);
+		return;
+	}
+	if(m_Selection.getSelectionMode() == FV_SelectionMode_TableRow)
+	{
+		PD_DocumentRange * pDR = m_Selection.getNthSelection(0);
+		PT_DocPosition pos = pDR->m_pos1 +1;
+		_clearSelection();
+		cmdDeleteRow(pos);
+		return;
+	}
 	// Signal PieceTable Change
 	m_pDoc->notifyPieceTableChangeStart();
 
@@ -2749,6 +3396,23 @@ void FV_View::cmdCopy(bool bToClipboard)
 
 void FV_View::cmdPaste(bool bHonorFormatting)
 {
+//
+// Look to see if should paste a table column or row
+//
+	if((m_Selection.getPrevSelectionMode() == FV_SelectionMode_TableColumn)
+	   || (m_Selection.getPrevSelectionMode() == 	FV_SelectionMode_TableRow))
+	{
+		if(isInTable())
+		{
+			fl_TableLayout * pTab = getTableAtPos(getPoint());
+			if(pTab && pTab == m_Selection.getTableLayout());
+			{
+				m_Selection.pasteRowOrCol();
+				return;
+			}
+		}
+	}
+
 	// set UAG markers around everything that the actual paste does
 	// so that undo/redo will treat it as one step.
 
@@ -2895,17 +3559,17 @@ UT_Error FV_View::cmdInsertHyperlink(const char * szName)
 	PT_DocPosition posStart = getPoint();
 	PT_DocPosition posEnd = posStart;
 	PT_DocPosition iPointOrig = posStart;
-	PT_DocPosition iAnchorOrig = m_iSelectionAnchor;
+	PT_DocPosition iAnchorOrig = m_Selection.getSelectionAnchor();
 
 	if (!isSelectionEmpty())
 	{
-		if (m_iSelectionAnchor < posStart)
+		if (m_Selection.getSelectionAnchor() < posStart)
 		{
-			posStart = m_iSelectionAnchor;
+			posStart = m_Selection.getSelectionAnchor();
 		}
 		else
 		{
-			posEnd = m_iSelectionAnchor;
+			posEnd = m_Selection.getSelectionAnchor();
 		}
 
 	}
@@ -3006,7 +3670,7 @@ UT_Error FV_View::cmdInsertHyperlink(const char * szName)
 		// boundaries the original insetion point and selection anchor
 		// are now shifted, so we need to fix them
 		setPoint(iPointOrig+1);
-		m_iSelectionAnchor = iAnchorOrig + 1;
+		m_Selection.setSelectionAnchor(iAnchorOrig + 1);
 	}
 
 	delete [] target;
@@ -3032,13 +3696,13 @@ UT_Error FV_View::cmdInsertBookmark(const char * szName)
 
 	if (!isSelectionEmpty())
 	{
-		if (m_iSelectionAnchor < posStart)
+		if (m_Selection.getSelectionAnchor() < posStart)
 		{
-			posStart = m_iSelectionAnchor;
+			posStart = m_Selection.getSelectionAnchor();
 		}
 		else
 		{
-			posEnd = m_iSelectionAnchor;
+			posEnd = m_Selection.getSelectionAnchor();
 		}
 	}
 
@@ -3442,32 +4106,11 @@ void FV_View::cmdRemoveHdrFtr( bool isHeader)
 // Need code here to remove all the header/footers.
 //
 	pHdrFtr = pShadow->getHdrFtrSectionLayout();
-	fl_DocSectionLayout * pDSL = pHdrFtr->getDocSectionLayout();
 //
 // Repeat this code 4 times to remove all the DocSection Layouts.
 //
 	setCursorWait();
 	_removeThisHdrFtr(pHdrFtr);
-#if 0
-	if(isHeader)
-	{
-		UT_DEBUGMSG(("view_cmd: Attempt remove Header First \n"));
-		_removeThisHdrFtr(pDSL->getHeaderFirst());
-		UT_DEBUGMSG(("view_cmd: Attempt remove Header Last \n"));
-		_removeThisHdrFtr(pDSL->getHeaderLast());
-		UT_DEBUGMSG(("view_cmd: Attempt remove Header Even \n"));
-		_removeThisHdrFtr(pDSL->getHeaderEven());
-		UT_DEBUGMSG(("view_cmd: Attempt remove Header \n"));
-		_removeThisHdrFtr(pDSL->getHeader());
-	}
-	else
-	{
-		_removeThisHdrFtr(pDSL->getFooterFirst());
-		_removeThisHdrFtr(pDSL->getFooterLast());
-		_removeThisHdrFtr(pDSL->getFooterEven());
-		_removeThisHdrFtr(pDSL->getFooter());
-	}
-#endif
 //
 // After erarsing the cursor, Restore to the point before all this mess started.
 //
@@ -3579,5 +4222,167 @@ void FV_View::cmdAcceptRejectRevision(bool bReject, UT_sint32 xPos, UT_sint32 yP
 	//m_pDoc->endUserAtomicGlob();
 	_generalUpdate();
 	_restorePieceTableState();
+}
+
+void FV_View::cmdSetRevisionLevel(UT_uint32 i)
+{
+	// first set the same level in Doc; we do this unconditionally,
+	// this way the doc will always save the level the user last used
+	// NB: the doc id and the view id can be differnt if the user
+	// changed it in some other view
+	m_pDoc->setShowRevisionId(i);
+
+	if(m_iViewRevision != i)
+	{
+		m_iViewRevision = i;
+
+		// need to rebuild the doc to reflect the new level ...
+		m_pLayout->rebuildFromHere(static_cast<fl_DocSectionLayout *>(m_pLayout->getFirstSection()));
+	}
+}
+
+/*!
+    finds the next/previous revision and sets selection to it
+    TODO the selection will not cross block boundaries; it probably should
+
+    \param bNext: if true the search is carried out in forward direction
+    \return returns true on succes
+*/
+bool FV_View::cmdFindRevision(bool bNext, UT_sint32 xPos, UT_sint32 yPos)
+{
+	if(xPos || yPos)
+	{
+		// this is the case we were called from context menu ...
+		warpInsPtToXY(xPos, yPos,true);
+	}
+
+	if(!isSelectionEmpty())
+	{
+		_moveToSelectionEnd(bNext);
+	}
+	
+	fl_BlockLayout * pBL =	getCurrentBlock();
+
+	if(!pBL)
+		return false;
+	
+	fl_DocSectionLayout * pSL = pBL->getDocSectionLayout();
+
+	if(!pSL)
+		return false;
+	
+	fp_Run * pRun;
+	UT_sint32 xPoint,yPoint,xPoint2,yPoint2,iPointHeight;
+	bool bDirection;
+
+	pRun = pBL->findPointCoords(getPoint(), false, xPoint,
+								yPoint, xPoint2, yPoint2,
+								iPointHeight, bDirection);
+
+	if(!pRun)
+		return false;
+
+	if(bNext)
+	{
+		pRun = pRun->getNextRun();
+
+		while(pSL)
+		{
+			while(pBL)
+			{
+				while(pRun)
+				{
+					if(pRun->containsRevisions() && !pRun->isHidden())
+					{
+						goto move_point;
+					}
+
+					pRun = pRun->getNextRun();
+				}
+
+				pBL = pBL->getNextBlockInDocument();
+			}
+
+			pSL = pSL->getNextDocSection();
+		}
+	}
+	else
+	{
+		pRun = pRun->getPrevRun();
+
+		while(pSL)
+		{
+			while(pBL)
+			{
+				while(pRun)
+				{
+					if(pRun->containsRevisions() && !pRun->isHidden())
+					{
+						goto move_point;
+					}
+
+					pRun = pRun->getPrevRun();
+				}
+
+				pBL = pBL->getPrevBlockInDocument();
+			}
+
+			pSL = pSL->getPrevDocSection();
+		}
+	}
+
+	return false;
+	
+ move_point:
+	UT_return_val_if_fail(pRun && pBL, false);
+
+	// we want to span the selection not only over this run, but also
+	// all subesequent runs that contain the same revions
+	// TODO: probably should do this across block/section boundaries
+	fp_Run * pRun2 = bNext ? pRun->getNextRun() : pRun->getPrevRun();
+	fp_Run * pOldRun2 = pRun;
+
+	PP_RevisionAttr * pR1 = pRun->getRevisions();
+	
+	while(pRun2)
+	{
+		if(pRun2->containsRevisions() && !pRun2->isHidden())
+		{
+			// test the two runs, if their revions are the same
+			// include this one as well
+			PP_RevisionAttr * pR2 = pRun2->getRevisions();
+
+			if(!(*pR1 == *pR2))
+				break;
+		}
+		else
+		{
+			break;
+		}
+		
+		pOldRun2 = pRun2;
+		pRun2 = bNext ? pRun2->getNextRun() : pRun2->getPrevRun();
+	}
+
+	// backtrack (we want pRun2 to be the last run in the selection
+	pRun2 = pOldRun2;
+	UT_return_val_if_fail(pRun2, false);
+	
+	PT_DocPosition dpos1, dpos2;
+
+	if(bNext)
+	{
+		dpos1 = pBL->getPosition() + pRun->getBlockOffset();
+		dpos2 = pRun2->getBlock()->getPosition() + pRun2->getBlockOffset() + pRun2->getLength();
+	}
+	else
+	{
+		dpos1 = pRun2->getBlock()->getPosition() + pRun2->getBlockOffset();
+		dpos2 = pBL->getPosition() + pRun->getBlockOffset() + pRun->getLength();
+	}
+	
+	cmdSelect(dpos1, dpos2);
+	
+	return true;
 }
 

@@ -36,7 +36,7 @@ public:
 	virtual UT_sint32	getDisplayHeight(void) const;
 	virtual bool		convertToBuffer(UT_ByteBuf** ppBB) const;
 	virtual bool		convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
-
+	bool                saveToPNG(const char * szFile);
 	virtual bool hasAlpha (void) const;
 	virtual UT_sint32  rowStride (void) const;
     virtual GR_Image::GRType getType(void) const;

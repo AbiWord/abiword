@@ -25,9 +25,10 @@
 #include "ut_types.h"
 #include "ev_Mouse.h"
 #include "ev_EditBits.h"
+#include "xap_Frame.h"
 
 #include "xap_BeOSApp.h"
-#include "xap_BeOSFrame.h"
+#include "xap_BeOSFrameImpl.h"
 
 class BMessage;
 
@@ -40,11 +41,11 @@ public:
 	void mouseUp(AV_View* pView, BMessage *msg);
 	void mouseClick(AV_View* pView, BMessage *msg);
 	void mouseMotion(AV_View* pView, BMessage *msg);
-	bool synthesize(XAP_BeOSApp * pBeOSApp, XAP_BeOSFrame * pBeOSFrame);
+	//bool synthesize(XAP_BeOSApp * pBeOSApp, XAP_BeOSFrame * pBeOSFrame);
 private:
-	UT_uint32		m_clickState;   /* {NoClick,SingleClick,DoubleClick} */
-        EV_EditMouseContext	m_contextState; /* mouse context of click */ 
-        bool m_bIsTracking;
+	UT_uint32				m_clickState;   /* {NoClick,SingleClick,DoubleClick} */
+	EV_EditMouseContext		m_contextState; /* mouse context of click */ 
+	bool m_bIsTracking;
 };
 
 #endif // EV_BEOSMOUSE_H

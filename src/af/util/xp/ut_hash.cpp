@@ -175,7 +175,7 @@ const XML_Char ** UT_StringPtrMap::list()
 		if (m_list == 0)
 			return 0;
 
-		UT_uint32 index;
+		UT_uint32 index = 0;
 
 		UT_Cursor c(this);
 

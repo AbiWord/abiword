@@ -39,6 +39,7 @@
 #include "gr_UnixImage.h"
 #include "ut_bytebuf.h"
 #include "ut_png.h"
+#include "gr_Painter.h"
 
 /*****************************************************************/
 
@@ -118,7 +119,9 @@ void XAP_UnixDialog_About::event_URL(void)
 void XAP_UnixDialog_About::event_DrawingAreaExpose(void)
 {
 	UT_return_if_fail(m_gc);
-	m_gc->drawImage(m_pGrImageSidebar, 0, 0);
+
+	GR_Painter painter (m_gc);
+	painter.drawImage(m_pGrImageSidebar, 0, 0);
 }
 
 /*****************************************************************/

@@ -22,12 +22,13 @@
 #define XAP_WIN32DIALOG_LISTDOCUMENTS_H
 
 #include "xap_Dlg_ListDocuments.h"
+#include "xap_Win32DialogBase.h"
 #include "xap_Frame.h"
 
 
 /*****************************************************************/
 
-class XAP_Win32Dialog_ListDocuments: public XAP_Dialog_ListDocuments
+class XAP_Win32Dialog_ListDocuments: public XAP_Dialog_ListDocuments, XAP_Win32DialogBase
 {
 public:
 	XAP_Win32Dialog_ListDocuments(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

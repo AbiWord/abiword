@@ -195,11 +195,21 @@ void XAP_Win32Dialog_Print::_extractResults(XAP_Frame *pFrame)
 {
 	m_bDoPrintRange		= ((m_pPersistPrintDlg->Flags & PD_PAGENUMS) != 0);
 	m_bDoPrintSelection = ((m_pPersistPrintDlg->Flags & PD_SELECTION) != 0);
-	m_bDoPrintToFile	= ((m_pPersistPrintDlg->Flags & PD_PRINTTOFILE) != 0);
-	m_bCollate			= ((m_pPersistPrintDlg->Flags & PD_COLLATE) != 0);
-	m_nCopies			= m_pPersistPrintDlg->nCopies;
+	m_bDoPrintToFile	= ((m_pPersistPrintDlg->Flags & PD_PRINTTOFILE) != 0);	
 	m_nFirstPage		= m_pPersistPrintDlg->nFromPage;
 	m_nLastPage			= m_pPersistPrintDlg->nToPage;
+
+	UT_ASSERT (m_pPersistPrintDlg->hDevMode!=NULL);
+				
+	// Most Win32 printer drivers support multicopies and collating, 
+	//however we want Abi to do both by himself, like in the rest of platforms		
+	DEVMODE *pDevMode=(DEVMODE *)GlobalLock(m_pPersistPrintDlg->hDevMode);
+	m_nCopies = pDevMode->dmCopies;
+	m_bCollate	= ((pDevMode->dmCollate  & DMCOLLATE_TRUE) != 0);		
+	pDevMode->dmCopies = 1;
+	pDevMode->dmCollate = DMCOLLATE_FALSE;
+	ResetDC(m_pPersistPrintDlg->hDC,pDevMode);
+	GlobalUnlock(pDevMode);
 	
 	if (m_bDoPrintToFile)
 	{
@@ -223,3 +233,4 @@ Fail:
 	m_answer = a_CANCEL;
 	return;
 }
+

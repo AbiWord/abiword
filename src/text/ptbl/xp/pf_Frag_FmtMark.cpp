@@ -35,16 +35,6 @@ pf_Frag_FmtMark::~pf_Frag_FmtMark()
 {
 }
 
-PT_AttrPropIndex pf_Frag_FmtMark::getIndexAP(void) const
-{
-	return m_indexAP;
-}
-
-void pf_Frag_FmtMark::setIndexAP(PT_AttrPropIndex indexNewAP)
-{
-	m_indexAP = indexNewAP;
-}
-
 bool pf_Frag_FmtMark::createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
 												   PT_DocPosition dpos,
 												   PT_BlockOffset blockOffset) const

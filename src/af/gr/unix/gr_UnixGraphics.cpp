@@ -598,6 +598,87 @@ GR_UnixGraphics::GR_UnixGraphics(GdkWindow * win, XAP_UnixFontManager * fontMana
 		m_pFallBackFontHandle = NULL;
 }
 
+GR_UnixGraphics::GR_UnixGraphics(GdkPixmap * win, XAP_UnixFontManager * fontManager, XAP_App * app, bool bUseDrawable):m_iLineWidth(tlu(1))
+{
+	m_pApp = app;
+	m_pWin = static_cast<GdkWindow *>(win);
+	m_pFontManager = fontManager;
+	m_pFont = NULL;
+	m_pSingleByteFont = NULL;
+	m_pMultiByteFont = NULL;
+	m_pFontGUI = NULL;
+	s_iInstanceCount++;
+	m_pColormap = gdk_rgb_get_colormap();
+
+
+	//
+	// Martin's attempt to make double buffering work.with xft
+	//
+	m_iXoff = 0;
+	m_iYoff = 0;
+	GdkDrawable * realDraw = static_cast<GdkDrawable *>(win);
+	if(bUseDrawable)
+	{
+		realDraw = static_cast<GdkDrawable *>(win);
+	}
+
+    m_iXoff = tlu(m_iXoff); m_iYoff = tlu(m_iYoff);
+	m_pGC = gdk_gc_new(realDraw);
+	m_pXORGC = gdk_gc_new(realDraw);
+	m_pVisual = GDK_VISUAL_XVISUAL( gdk_drawable_get_visual(realDraw));
+	m_Drawable = gdk_x11_drawable_get_xid(realDraw);
+
+	m_pXftFontL = NULL;
+	m_pXftFontD = NULL;
+	m_Colormap = GDK_COLORMAP_XCOLORMAP(m_pColormap);
+	m_pXftDraw = XftDrawCreate(GDK_DISPLAY(), m_Drawable, m_pVisual, m_Colormap);
+	gdk_gc_set_function(m_pXORGC, GDK_XOR);
+
+ 	GdkColor clrWhite;
+	clrWhite.red = clrWhite.green = clrWhite.blue = 65535;
+	gdk_colormap_alloc_color (m_pColormap, &clrWhite, FALSE, TRUE);
+	gdk_gc_set_foreground(m_pXORGC, &clrWhite);
+
+ 	GdkColor clrBlack;
+	clrBlack.red = clrBlack.green = clrBlack.blue = 0;
+	gdk_colormap_alloc_color (m_pColormap, &clrBlack, FALSE, TRUE);
+	gdk_gc_set_foreground(m_pGC, &clrBlack);
+
+	m_XftColor.color.red = clrBlack.red;
+	m_XftColor.color.green = clrBlack.green;
+	m_XftColor.color.blue = clrBlack.blue;
+	m_XftColor.color.alpha = 0xffff;
+	m_XftColor.pixel = clrBlack.pixel;
+
+	// I only want to set CAP_NOT_LAST, but the call takes all
+	// arguments (and doesn't have a default value).  Set the
+	// line attributes to not draw the last pixel.
+
+	// We force the line width to be zero because the CAP_NOT_LAST
+	// stuff does not seem to work correctly when the width is set
+	// to one.
+
+	gdk_gc_set_line_attributes(m_pGC,   0,GDK_LINE_SOLID,GDK_CAP_NOT_LAST,GDK_JOIN_MITER);
+	gdk_gc_set_line_attributes(m_pXORGC,0,GDK_LINE_SOLID,GDK_CAP_NOT_LAST,GDK_JOIN_MITER);
+
+	// Set GraphicsExposes so that XCopyArea() causes an expose on
+	// obscured regions rather than just tiling in the default background.
+	gdk_gc_set_exposures(m_pGC,1);
+	gdk_gc_set_exposures(m_pXORGC,1);
+
+	m_cs = GR_Graphics::GR_COLORSPACE_COLOR;
+	m_cursor = GR_CURSOR_INVALID;
+	setCursor(GR_CURSOR_DEFAULT);
+	m_bIsSymbol = false;
+	m_bIsDingbat = false;
+
+	if (m_pFontManager)
+		m_pFallBackFontHandle = new XAP_UnixFontHandle(m_pFontManager->getDefaultFont(),
+													   FALLBACK_FONT_SIZE);
+	else
+		m_pFallBackFontHandle = NULL;
+}
+
 GR_UnixGraphics::~GR_UnixGraphics()
 {
 	DELETEP(m_pFontGUI);
@@ -1097,8 +1178,6 @@ UT_uint32 GR_UnixGraphics::getFontDescent()
 void GR_UnixGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,
 							   UT_sint32 x2, UT_sint32 y2)
 {
-	GR_CaretDisabler caretDisabler(getCaret());
-	
 	GdkGCValues gcV;
 	gdk_gc_get_values(m_pGC, &gcV);
 	
@@ -1144,8 +1223,6 @@ void GR_UnixGraphics::setLineWidth(UT_sint32 iLineWidth)
 void GR_UnixGraphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
 							  UT_sint32 y2)
 {
-	GR_CaretDisabler caretDisabler(getCaret());
-
 	UT_sint32 idx1 = _tduX(x1);
 	UT_sint32 idx2 = _tduX(x2);
 
@@ -1157,8 +1234,6 @@ void GR_UnixGraphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
 
 void GR_UnixGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 {
-	GR_CaretDisabler caretDisabler(getCaret());
-
 	// see bug #303 for what this is about
 
 	GdkPoint * points = static_cast<GdkPoint *>(calloc(nPoints, sizeof(GdkPoint)));
@@ -1186,8 +1261,8 @@ void GR_UnixGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 
 void GR_UnixGraphics::invertRect(const UT_Rect* pRect)
 {
-	GR_CaretDisabler caretDisabler(getCaret());
 	UT_ASSERT(pRect);
+
 	UT_sint32 idy = _tduY(pRect->top);
 	UT_sint32 idx = _tduX(pRect->left);
 	UT_sint32 idw = _tduR(pRect->width);
@@ -1250,7 +1325,6 @@ void GR_UnixGraphics::setClipRect(const UT_Rect* pRect)
 void GR_UnixGraphics::fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y,
 							   UT_sint32 w, UT_sint32 h)
 {
-	GR_CaretDisabler caretDisabler(getCaret());
 	// save away the current color, and restore it after we fill the rect
 	GdkGCValues gcValues;
 	GdkColor oColor;
@@ -1328,8 +1402,6 @@ void GR_UnixGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 						  UT_sint32 width, UT_sint32 height)
 {
 	GR_CaretDisabler caretDisabler(getCaret());
-	//	gdk_draw_drawable(m_pWin, m_pGC, m_pWin, tdu(x_dest), tdu(y_dest),
-	//				  tdu(x_src), tdu(y_src), tdu(width), tdu(height));
    	gdk_draw_drawable(m_pWin, m_pGC, m_pWin, tdu(x_src), tdu(y_src),
    				  tdu(x_dest), tdu(y_dest), tdu(width), tdu(height));
 }
@@ -1337,8 +1409,6 @@ void GR_UnixGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 void GR_UnixGraphics::clearArea(UT_sint32 x, UT_sint32 y,
 				UT_sint32 width, UT_sint32 height)
 {
-	GR_CaretDisabler caretDisabler(getCaret());
-
 	if (width > 0)
 	{
 		static const UT_RGBColor clrWhite(255,255,255);
@@ -1392,7 +1462,6 @@ GR_Image* GR_UnixGraphics::createNewImage(const char* pszName, const UT_ByteBuf*
  */
 void GR_UnixGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
 {
-	GR_CaretDisabler caretDisabler(getCaret());
 	UT_ASSERT(pImg);
 
    	GR_UnixImage * pUnixImage = static_cast<GR_UnixImage *>(pImg);
@@ -1581,7 +1650,6 @@ void GR_UnixGraphics::init3dColors(GtkStyle * pStyle)
 
 void GR_UnixGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
 {
-	GR_CaretDisabler caretDisabler(getCaret());
 	UT_ASSERT(c < COUNT_3D_COLORS);
 	gdk_gc_set_foreground(m_pGC, &m_3dColors[c]);
 	gdk_draw_rectangle(m_pWin, m_pGC, 1, tdu(x), tdu(y), tdu(w), tdu(h));
@@ -1595,7 +1663,6 @@ void GR_UnixGraphics::fillRect(GR_Color3D c, UT_Rect &r)
 
 void GR_UnixGraphics::polygon(UT_RGBColor& c,UT_Point *pts,UT_uint32 nPoints)
 {
-	GR_CaretDisabler caretDisabler(getCaret());
 	// save away the current color, and restore it after we draw the polygon
 	GdkGCValues gcValues;
 	GdkColor oColor;
@@ -1717,4 +1784,12 @@ void GR_UnixGraphics::restoreRectangle(UT_uint32 iIndx)
 		gdk_draw_pixbuf (m_pWin, NULL, p, 0, 0,
 						 idx, idy,
 						 -1, -1, GDK_RGB_DITHER_NONE, 0, 0);
+}
+
+void GR_UnixGraphics::_beginPaint ()
+{
+}
+
+void GR_UnixGraphics::_endPaint ()
+{
 }

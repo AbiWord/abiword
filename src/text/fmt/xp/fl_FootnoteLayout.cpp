@@ -48,11 +48,12 @@
 #include "px_CR_Strux.h"
 #include "px_CR_StruxChange.h"
 #include "px_CR_Glob.h"
-#include "fv_View.h"
 #include "fp_Run.h"
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 #include "ut_units.h"
+#include "fp_TableContainer.h"
+#include "fv_View.h"
 
 fl_EmbedLayout::fl_EmbedLayout(FL_DocLayout* pLayout, fl_DocSectionLayout* pDocSL, PL_StruxDocHandle sdh, PT_AttrPropIndex indexAP, fl_ContainerLayout * pMyContainerLayout, SectionType iSecType,fl_ContainerType myType,PTStruxType myStruxType)
  	: fl_SectionLayout(pLayout, sdh, indexAP, iSecType,myType,myStruxType,pMyContainerLayout),

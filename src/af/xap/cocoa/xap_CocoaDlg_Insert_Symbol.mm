@@ -75,44 +75,6 @@ XAP_CocoaDialog_Insert_Symbol::~XAP_CocoaDialog_Insert_Symbol(void)
 
 /*****************************************************************/
 
-#if 0
-static void s_sym_SymbolMap_exposed(GtkWidget * widget, GdkEvent * e, XAP_CocoaDialog_Insert_Symbol * dlg)
-{
-	UT_ASSERT( dlg);
-	dlg->SymbolMap_exposed();
-}
-
-
-static void s_Symbolarea_exposed(GtkWidget * widget, GdkEvent * e, XAP_CocoaDialog_Insert_Symbol * dlg)
-{
-	UT_ASSERT( dlg);
-	dlg->Symbolarea_exposed();
-}
-
-static gboolean  s_SymbolMap_clicked(GtkWidget * widget, GdkEvent * e, XAP_CocoaDialog_Insert_Symbol * dlg)
-{
-	UT_ASSERT(widget && dlg);
-	dlg->SymbolMap_clicked( e );
-        return FALSE; 
-}
-
-static gboolean  s_CurrentSymbol_clicked(GtkWidget * widget, GdkEvent * e, XAP_CocoaDialog_Insert_Symbol * dlg)
-{
-	UT_ASSERT(widget && dlg);
-	dlg->CurrentSymbol_clicked( e );
-        return FALSE; 
-}
-
-#endif
-
-#if 0
-static gboolean s_keypressed(GtkWidget * widget, GdkEventKey * e,  XAP_CocoaDialog_Insert_Symbol * dlg)
-{
-	dlg->Key_Pressed( e );
-	return TRUE;
-}
-
-#endif
 
 
 #if 0
@@ -347,7 +309,7 @@ void XAP_CocoaDialog_Insert_Symbol::SymbolMap_clicked(NSEvent * event)
 	NSPoint pt = [event locationInWindow];
 
 	pt = [hitView convertPoint:pt fromView:nil];
-	pt.y = [hitView bounds].size.height - pt.y;
+//	pt.y = [hitView bounds].size.height - pt.y;
 	
 	XAP_Draw_Symbol * iDrawSymbol = _getCurrentSymbolMap();
 	UT_ASSERT(iDrawSymbol);
@@ -478,12 +440,10 @@ void XAP_CocoaDialog_Insert_Symbol::_fillComboboxWithFonts (NSComboBox* combo)
 
 - (void)mouseDragged:(NSEvent *)theEvent from:(id)sender
 {
-	_xap->SymbolMap_clicked(theEvent);
 }
 
 - (void)mouseUp:(NSEvent *)theEvent from:(id)sender
 {
-	_xap->SymbolMap_clicked(theEvent);
 }
 
 @end
@@ -514,7 +474,7 @@ void XAP_CocoaDialog_Insert_Symbol::_fillComboboxWithFonts (NSComboBox* combo)
 {
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 	LocalizeControl(_addBtn, pSS, XAP_STRING_ID_DLG_Insert);
-	LocalizeControl(_closeBtn, pSS, XAP_STRING_ID_DLG_Close);
+//	LocalizeControl(_closeBtn, pSS, XAP_STRING_ID_DLG_Close);
 
 	CharMapEventDelegate* charMapDelegate;
 	charMapDelegate = [[CharMapEventDelegate alloc] init];
@@ -536,11 +496,6 @@ void XAP_CocoaDialog_Insert_Symbol::_fillComboboxWithFonts (NSComboBox* combo)
 - (IBAction)addAction:(id)sender
 {
 	_xap->event_OK();
-}
-
-- (IBAction)closeAction:(id)sender
-{
-	_xap->event_Cancel();
 }
 
 - (IBAction)fontSelectAction:(id)sender

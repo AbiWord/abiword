@@ -65,19 +65,34 @@ canonical:
 	@for k in $(CANON_SubDirs); do				\
 		$(MAKE) ABI_ROOT=$(ABI_ROOT) -C $$k canonical;	\
 	done
+
+# each installer requires abidistfiles for necessary but fairly constant files, 
+# so we check for those here (TODO : move check somewhere else?)
+	@if [ -d $(ABI_ROOT)/../abidistfiles ]; then		\
+		echo Found abidistfiles in peer directory;		\
+	else							\
+		echo ;						\
+		echo " - abidistfiles not found";			\
+		echo "  'make canonical', 'make install', and 'make distribution' require ";	\
+		echo "  the abidistfiles/ package be available as a peer to the abi/ tree.";	\
+		echo ;						\
+		exit 1;						\
+	fi
+
 # copy the various dictionary hash files, only used in non-pspell builds
 ifeq ($(ABI_OPT_PSPELL),1)
 	echo "Using Pspell build, not installing ispell hash files"
 else
+	# We currently only ship american.hash
 	@$(subst xxxx,$(CANONDIR)/dictionary,$(VERIFY_DIRECTORY))
-	@$(ABICOPY) $(ABI_ROOT)/../abidistfiles/dictionary/$(OS_ENDIAN).*.hash $(CANONDIR)/dictionary
-	@(cd $(CANONDIR)/dictionary; 				\
-		for k in *.hash; do				\
-			cp $$k american.hash;		\
-			rm $$k ;			\
-		done)
-# We currently only ship american.hash, so the above and below aren't logical.
+	@$(ABICOPY) $(ABI_ROOT)/../abidistfiles/dictionary/$(OS_ENDIAN).american.hash $(CANONDIR)/dictionary/american.hash
 	@$(ABICOPY) $(ABI_ROOT)/../abidistfiles/dictionary/*.xml $(CANONDIR)/dictionary	
+endif
+
+ifeq ($(ABI_NATIVE),unix)
+# icons for X window manager use
+	@$(subst xxxx,$(CANONDIR)/icons,$(VERIFY_DIRECTORY))
+	(cd $(ABI_ROOT)/../abidistfiles/icons; cp abi* $(CANONDIR)/icons)
 endif
 
 	@$(subst xxxx,$(CANONDIR)/clipart,$(VERIFY_DIRECTORY))
@@ -85,41 +100,6 @@ endif
 
 	@$(subst xxxx,$(CANONDIR)/templates,$(VERIFY_DIRECTORY))
 	@$(ABICOPY) $(ABI_ROOT)/../abidistfiles/templates/*.awt $(CANONDIR)/templates
-
-#	(cd $(ABI_ROOT)/../abidistfiles; tar cf - dictionary/*.hash) | (cd $(CANONDIR); tar xf -)
-ifeq ($(ABI_NATIVE),unix)
-# each Unix installer requires both unixfonts and abidistfiles, 
-# so we check for those here (TODO : move them somewhere else?)
-# if this target fails things aren't fatal, the user
-# just gets a warning (TODO: add a message to the actual
-# "make install" target to alert)
-	@if [ -d $(ABI_ROOT)/../unixfonts ]; then		\
-		echo Found unixfonts in peer directory;		\
-	else							\
-		echo ;						\
-		echo " - unixfonts not found";			\
-		echo "  'make canonical' and 'make install' require the unixfonts/ package be";	\
-		echo "  available as a peer to the abi/ tree.";			\
-		echo ;						\
-		exit 1;						\
-	fi
-	@if [ -d $(ABI_ROOT)/../abidistfiles ]; then		\
-		echo Found abidistfiles in peer directory;		\
-	else							\
-		echo ;						\
-		echo " - abidistfiles not found";			\
-		echo "  'make canonical' and 'make install' require the abidistfiles/ package be";	\
-		echo "  available as a peer to the abi/ tree.";			\
-		echo ;						\
-		exit 1;						\
-	fi
-# icons for X window manager use
-	@$(subst xxxx,$(CANONDIR)/icons,$(VERIFY_DIRECTORY))
-	(cd $(ABI_ROOT)/../abidistfiles/icons; cp abi* $(CANONDIR)/icons)
-# font stuff for installation
-	@$(subst xxxx,$(CANONDIR)/fonts,$(VERIFY_DIRECTORY))
-	(cd $(ABI_ROOT)/../unixfonts/fonts ; cp *.* $(CANONDIR)/fonts)
-endif
 
 ##################################################################
 ## Targets for installs.  There is a generic install method, for
@@ -222,12 +202,7 @@ clean_PSICONV_:
 	fi
 
 clean_EXPAT_:
-ifeq ($(OS_NAME), WIN32)
-	@if [ -d $(ABI_ROOT)/../expat ]; then		\
-		$(MAKE) -f Makefile.abi -C $(ABI_ROOT)/../expat clean;	\
-	fi
-endif
-ifeq ($(OS_NAME), MINGW32)
+ifeq ($(ABI_FE), Win32)
 	@if [ -d $(ABI_ROOT)/../expat ]; then		\
 		$(MAKE) -f Makefile.abi -C $(ABI_ROOT)/../expat clean;	\
 	fi
@@ -276,7 +251,7 @@ realclean_PSICONV_:
 	fi	
 
 realclean_EXPAT_:
-ifneq ($(OS_NAME),WIN32)
+ifneq ($(ABI_FE),Win32)
 	@if [ -d $(ABI_ROOT)/../expat -a -f $(ABI_ROOT)/../expat/lib/Makefile ]; then	\
 		$(MAKE) -C $(ABI_ROOT)/../expat distclean;	\
 	fi	

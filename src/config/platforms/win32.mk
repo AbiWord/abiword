@@ -185,6 +185,11 @@ ABI_FE		= Win32
 
 ABIPKGDIR	= win/setup
 
+## Default to NSIS v2 based setup, unless explictly told not to
+ifndef ABI_OPT_NSIS_20
+ABI_OPT_NSIS_20=1
+endif
+
 ##################################################################
 ## EXPAT_PLATFORM_DEFS and PSICONV_PLATFORM_DEFS are the flags
 ## that should be passed to configure when building expat and

@@ -33,7 +33,6 @@
 #include "ut_timer.h"
 #include "ut_types.h"
 #include "xav_View.h"
-#include "fv_View.h"
 #include "fl_DocLayout.h"
 #include "fl_BlockLayout.h"
 #include "fl_Squiggles.h"
@@ -64,8 +63,12 @@
 #include "fd_Field.h"
 #include "spell_manager.h"
 #include "ut_rand.h"
-
+#include "fl_FootnoteLayout.h"
 #include "pp_Revision.h"
+#include "gr_Painter.h"
+
+#include "fv_View.h"
+
 #if 1
 // todo: work around to remove the INPUTWORDLEN restriction for pspell
 #include "ispell_def.h"
@@ -112,9 +115,9 @@ void FV_View::_swapSelectionOrientation(void)
 	UT_ASSERT(!isSelectionEmpty());
 	_fixInsertionPointCoords();
 	PT_DocPosition curPos = getPoint();
-	UT_ASSERT(curPos != m_iSelectionAnchor);
-	_setPoint(m_iSelectionAnchor);
-	m_iSelectionAnchor = curPos;
+	UT_ASSERT(curPos != m_Selection.getSelectionAnchor());
+	_setPoint(m_Selection.getSelectionAnchor());
+	m_Selection.setSelectionAnchor(curPos);
 }
 
 /*!
@@ -130,8 +133,8 @@ void FV_View::_moveToSelectionEnd(bool bForward)
 	UT_ASSERT(!isSelectionEmpty());
 
 	PT_DocPosition curPos = getPoint();
-	UT_ASSERT(curPos != m_iSelectionAnchor);
-	bool bForwardSelection = (m_iSelectionAnchor < curPos);
+	UT_ASSERT(curPos != m_Selection.getSelectionAnchor());
+	bool bForwardSelection = (m_Selection.getSelectionAnchor() < curPos);
 
 	if (bForward != bForwardSelection)
 	{
@@ -146,7 +149,7 @@ void FV_View::_moveToSelectionEnd(bool bForward)
 void FV_View::_eraseSelection(void)
 {
 	_fixInsertionPointCoords();
-	if (!m_bSelection)
+	if (!m_Selection.isSelected())
 	{
 		_resetSelection();
 		return;
@@ -154,15 +157,15 @@ void FV_View::_eraseSelection(void)
 
 	UT_uint32 iPos1, iPos2;
 
-	if (m_iSelectionAnchor < getPoint())
+	if (m_Selection.getSelectionAnchor() < getPoint())
 	{
-		iPos1 = m_iSelectionAnchor;
+		iPos1 = m_Selection.getSelectionAnchor();
 		iPos2 = getPoint();
 	}
 	else
 	{
 		iPos1 = getPoint();
-		iPos2 = m_iSelectionAnchor;
+		iPos2 = m_Selection.getSelectionAnchor();
 	}
 	m_iLowDrawPoint = 0;
 	m_iHighDrawPoint = 0;;
@@ -179,85 +182,127 @@ void FV_View::_clearSelection(void)
 	m_pG->getCaret()->enable();
 
 	_fixInsertionPointCoords();
-	if (!m_bSelection)
+	if (!m_Selection.isSelected())
 	{
 		_resetSelection();
 		return;
 	}
 
 	UT_uint32 iPos1, iPos2;
-
-	if (m_iSelectionAnchor < getPoint())
+	if(m_Selection.getSelectionMode() < FV_SelectionMode_Multiple)
 	{
-		iPos1 = m_iSelectionAnchor;
-		iPos2 = getPoint();
+		if (m_Selection.getSelectionAnchor() < getPoint())
+		{
+			iPos1 = m_Selection.getSelectionAnchor();
+			iPos2 = getPoint();
+		}
+		else
+		{
+			iPos1 = getPoint();
+			iPos2 = m_Selection.getSelectionAnchor();
+		}
+		bool bres = _clearBetweenPositions(iPos1, iPos2, true);
+		if(!bres)
+			return;
+	
+		_resetSelection();
+		m_iLowDrawPoint = 0;
+		m_iHighDrawPoint = 0;
+
+ 		_drawBetweenPositions(iPos1, iPos2);
 	}
 	else
 	{
-		iPos1 = getPoint();
-		iPos2 = m_iSelectionAnchor;
+		UT_sint32 i = 0;
+		UT_Vector vecRanges;
+		vecRanges.clear();
+		for(i=0; i<m_Selection.getNumSelections();i++)
+		{
+			PD_DocumentRange * pTmp =m_Selection.getNthSelection(i);
+			PD_DocumentRange * pTmp2 = new PD_DocumentRange(m_pDoc,pTmp->m_pos1,pTmp->m_pos2);
+			vecRanges.addItem(static_cast<void *>(pTmp2));
+		}
+		_resetSelection();
+		for(i=0; i< static_cast<UT_sint32>(vecRanges.getItemCount());i++)
+		{
+			PD_DocumentRange * pDocR = static_cast<PD_DocumentRange *>(vecRanges.getNthItem(i));
+			if(pDocR)
+			{
+				iPos1 = pDocR->m_pos1;
+				iPos2 = pDocR->m_pos2;
+				if(iPos1 == iPos2)
+				{
+					iPos2++;
+				}
+				bool bres = _clearBetweenPositions(iPos1, iPos2, true);
+				if(!bres)
+					return;
+				_drawBetweenPositions(iPos1, iPos2);
+			}
+		}
+		UT_VECTOR_PURGEALL(PD_DocumentRange *,vecRanges);
 	}
-
-	bool bres = _clearBetweenPositions(iPos1, iPos2, true);
-	if(!bres)
-		return;
 	_resetSelection();
 	m_iLowDrawPoint = 0;
 	m_iHighDrawPoint = 0;
-
-	_drawBetweenPositions(iPos1, iPos2);
 }
 
 void FV_View::_drawSelection()
 {
 	UT_return_if_fail(!isSelectionEmpty());
 //	CHECK_WINDOW_SIZE
-	UT_DEBUGMSG(("_drawSelection getPoint() %d m_iSelectionAnchor %d \n",getPoint(),m_iSelectionAnchor));
-//	if(m_iLowDrawPoint == 0 && m_iHighDrawPoint == 0)
+	UT_DEBUGMSG(("_drawSelection getPoint() %d m_Selection.getSelectionAnchor() %d \n",getPoint(),m_Selection.getSelectionAnchor()));
+	if(m_Selection.getSelectionMode() < FV_SelectionMode_Multiple)
 	{
-		if (m_iSelectionAnchor < getPoint())
+		if (m_Selection.getSelectionAnchor() < getPoint())
 		{
-			_drawBetweenPositions(m_iSelectionAnchor, getPoint());
+			_drawBetweenPositions(m_Selection.getSelectionAnchor(), getPoint());
 		}
 		else
 		{
-			_drawBetweenPositions(getPoint(), m_iSelectionAnchor);
+			_drawBetweenPositions(getPoint(), m_Selection.getSelectionAnchor());
 		}
+		m_iLowDrawPoint = UT_MIN(m_Selection.getSelectionAnchor(),getPoint());
+		m_iHighDrawPoint = UT_MAX(m_Selection.getSelectionAnchor(),getPoint());
 	}
-#if 0
 	else
 	{
-		PT_DocPosition iLow = UT_MIN(m_iSelectionAnchor,getPoint());
-		PT_DocPosition iHigh =  UT_MAX(m_iSelectionAnchor,getPoint());
-		if(iLow < m_iLowDrawPoint)
+		UT_sint32 i = 0;
+		for(i=0; i<m_Selection.getNumSelections();i++)
 		{
-			_drawBetweenPositions(iLow, m_iLowDrawPoint);
+			PD_DocumentRange * pDocR = m_Selection.getNthSelection(i);
+			UT_DEBUGMSG(("Drawing between %d and %d \n",pDocR->m_pos1,pDocR->m_pos2));
+			if(pDocR)
+			{
+				PT_DocPosition iPos1 = pDocR->m_pos1;
+				PT_DocPosition iPos2 = pDocR->m_pos2;
+				if(iPos1 == iPos2)
+				{
+					iPos2++;
+				}
+				_drawBetweenPositions(iPos1, iPos2);
+			}
 		}
-		if(iHigh > m_iHighDrawPoint)
-		{
-			_drawBetweenPositions(m_iHighDrawPoint, iHigh);
-		}
+		m_iLowDrawPoint = 0;
+		m_iHighDrawPoint = 0;
 	}
-#endif
-	m_iLowDrawPoint = UT_MIN(m_iSelectionAnchor,getPoint());
-	m_iHighDrawPoint = UT_MAX(m_iSelectionAnchor,getPoint());
 }
 
 // Note that isClearSelection() might change its tune in one of two ways.
 // Way #1 is by calling one of the next few methods.
-//   BUT! this never happens because m_iSelectionAnchor == getPoint by def.
-// Way #2 is if m_bSelection is set and the point is changed so that it
-//          no longer equals m_iSelectionAnchor.
+//   BUT! this never happens because m_Selection.getSelectionAnchor() == getPoint by def.
+// Way #2 is if the Selection is set and the point is changed so that it
+//          no longer equals m_Selection.getSelectionAnchor().
 void FV_View::_resetSelection(void)
 {
-	m_bSelection = false;
-	m_iSelectionAnchor = getPoint();
+	m_Selection.clearSelection();
+	m_Selection.setSelectionAnchor(getPoint());
 }
 
 void FV_View::_setSelectionAnchor(void)
 {
-	m_bSelection = true;
-	m_iSelectionAnchor = getPoint();
+	m_Selection.setMode(FV_SelectionMode_Single);
+	m_Selection.setSelectionAnchor(getPoint());
 }
 
 void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before)
@@ -271,7 +316,7 @@ void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before)
 
 	UT_uint32 iRealDeleteCount;
 
-	UT_uint32 iSelAnchor = m_iSelectionAnchor;
+	UT_uint32 iSelAnchor = m_Selection.getSelectionAnchor();
 	if(iSelAnchor < 2)
 	{
 		iSelAnchor = 2;
@@ -2659,7 +2704,7 @@ void FV_View::_extSel(UT_uint32 iOldPoint)
 	*/
 	bool bres;
 	UT_uint32 iNewPoint = getPoint();
-	xxx_UT_DEBUGMSG(("_extSel: iNewPoint %d ioldPoint %d selectionAnchor %d \n",iNewPoint,iOldPoint,m_iSelectionAnchor));
+	xxx_UT_DEBUGMSG(("_extSel: iNewPoint %d ioldPoint %d selectionAnchor %d \n",iNewPoint,iOldPoint,m_Selection.getSelectionAnchor()));
 	PT_DocPosition posBOD,posEOD,dNewPoint,dOldPoint;
 	dNewPoint = static_cast<PT_DocPosition>(iNewPoint);
 	dOldPoint = static_cast<PT_DocPosition>(iOldPoint);
@@ -2677,9 +2722,9 @@ void FV_View::_extSel(UT_uint32 iOldPoint)
 
 	if (iNewPoint < iOldPoint)
 	{
-		if (iNewPoint < m_iSelectionAnchor)
+		if (iNewPoint < m_Selection.getSelectionAnchor())
 		{
-			if (iOldPoint < m_iSelectionAnchor)
+			if (iOldPoint < m_Selection.getSelectionAnchor())
 			{
 				/*
 				  N O A
@@ -2694,14 +2739,14 @@ void FV_View::_extSel(UT_uint32 iOldPoint)
 				  N A O
 				  The selection flipped across the anchor to the left.
 				*/
-				bres = _clearBetweenPositions(m_iSelectionAnchor, iOldPoint, true);
+				bres = _clearBetweenPositions(m_Selection.getSelectionAnchor(), iOldPoint, true);
 				if(bres)
 					_drawBetweenPositions(iNewPoint, iOldPoint);
 			}
 		}
 		else
 		{
-			UT_ASSERT(iOldPoint >= m_iSelectionAnchor);
+			UT_ASSERT(iOldPoint >= m_Selection.getSelectionAnchor());
 
 			/*
 			  A N O
@@ -2718,9 +2763,9 @@ void FV_View::_extSel(UT_uint32 iOldPoint)
 	{
 		UT_ASSERT(iNewPoint > iOldPoint);
 
-		if (iNewPoint < m_iSelectionAnchor)
+		if (iNewPoint < m_Selection.getSelectionAnchor())
 		{
-			UT_ASSERT(iOldPoint <= m_iSelectionAnchor);
+			UT_ASSERT(iOldPoint <= m_Selection.getSelectionAnchor());
 
 			/*
 			  O N A
@@ -2734,14 +2779,14 @@ void FV_View::_extSel(UT_uint32 iOldPoint)
 		}
 		else
 		{
-			if (iOldPoint < m_iSelectionAnchor)
+			if (iOldPoint < m_Selection.getSelectionAnchor())
 			{
 				/*
 				  O A N
 				  The selection flipped across the anchor to the right.
 				*/
 
-				bres = _clearBetweenPositions(iOldPoint, m_iSelectionAnchor, true);
+				bres = _clearBetweenPositions(iOldPoint, m_Selection.getSelectionAnchor(), true);
 				if(bres)
 					_drawBetweenPositions(iOldPoint, iNewPoint);
 			}
@@ -2781,7 +2826,7 @@ void FV_View::_extSelToPos(PT_DocPosition iNewPoint)
 		_clearIfAtFmtMark(getPoint());
 		_setSelectionAnchor();
 	}
-	m_bSelection = true;	
+	m_Selection.setMode(FV_SelectionMode_Single);
 	_setPoint(iNewPoint);
 	_extSel(iOldPoint);
 
@@ -2976,10 +3021,8 @@ bool FV_View::_drawOrClearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition 
 				}
 			}
 		}
-		FPVisibility eHidden  = pCurRun->isHidden();
-		if(!((eHidden == FP_HIDDEN_TEXT && !bShowHidden)
-		   || eHidden == FP_HIDDEN_REVISION
-		   || eHidden == FP_HIDDEN_REVISION_AND_TEXT))
+
+		if(!pCurRun->isHidden())
 		{
 			if(pLine == NULL || (pLine->getContainer()->getPage()== NULL))
 			{
@@ -3197,8 +3240,22 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 	// will iterate forwards until it actually find a block if there
 	// isn't one previous to pos.
 	// (Removed code duplication. Jesper, 2001.01.25)
-	fl_BlockLayout* pBlock = _findBlockAtPosition(pos);
 
+//
+// Have to deal with special case of point being exactly on a footnote/endnote
+// boundary
+//
+	bool onFootnoteBoundary = false;
+	if(m_pDoc->isFootnoteAtPos(pos))
+	{
+		onFootnoteBoundary = true;
+		pos--;
+	}
+	fl_BlockLayout* pBlock = _findBlockAtPosition(pos);
+	if(onFootnoteBoundary)
+	{
+		pos++;
+	}
 	// probably an empty document, return instead of
 	// dereferencing NULL.	Dom 11.9.00
 	if(!pBlock)
@@ -3375,6 +3432,8 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 					 x,y,width,height,bClip,
 					 m_yScrollOffset,getWindowHeight()));
 	
+	GR_Painter painter(m_pG);
+
 	// CHECK_WINDOW_SIZE
 	// this can happen when the frame size is decreased and
 	// only the toolbars show...
@@ -3424,13 +3483,13 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 		if ((m_xScrollOffset < getPageViewLeftMargin()) && (getViewMode() == VIEW_PRINT))
 		{
 			// fill left margin
-			m_pG->fillRect(clrMargin, 0, 0, getPageViewLeftMargin() - m_xScrollOffset, getWindowHeight());
+			painter.fillRect(clrMargin, 0, 0, getPageViewLeftMargin() - m_xScrollOffset, getWindowHeight());
 		}
 
 		if (m_yScrollOffset < getPageViewTopMargin() && (getViewMode() == VIEW_PRINT))
 		{
 			// fill top margin
-			m_pG->fillRect(clrMargin, 0, 0, getWindowWidth(), getPageViewTopMargin() - m_yScrollOffset);
+			painter.fillRect(clrMargin, 0, 0, getWindowWidth(), getPageViewTopMargin() - m_yScrollOffset);
 		}
 	}
 
@@ -3560,7 +3619,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			if (!bDirtyRunsOnly || pPage->needsRedraw() && (getViewMode() == VIEW_PRINT))
 			{
 			  UT_RGBColor * pClr = pPage->getFillType()->getColor();
-			  m_pG->fillRect(*pClr,adjustedLeft+m_pG->tlu(1),adjustedTop+m_pG->tlu(1),iPageWidth-m_pG->tlu(1),iPageHeight-m_pG->tlu(1));
+			  painter.fillRect(*pClr,adjustedLeft+m_pG->tlu(1),adjustedTop+m_pG->tlu(1),iPageWidth-m_pG->tlu(1),iPageHeight-m_pG->tlu(1));
 //
 // Since we're clearing everything we have to draw every run no matter
 // what.
@@ -3576,15 +3635,15 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			// one pixel border a
 			if(!isPreview() && (getViewMode() == VIEW_PRINT))
 			{
-				m_pG->setLineProperties(1.0,
+				m_pG->setLineProperties(m_pG->tluD(1.0),
 										GR_Graphics::JOIN_MITER,
 										GR_Graphics::CAP_BUTT,
 										GR_Graphics::LINE_SOLID);
 
-				m_pG->drawLine(adjustedLeft, adjustedTop, adjustedRight, adjustedTop);
-				m_pG->drawLine(adjustedRight, adjustedTop, adjustedRight, adjustedBottom);
-				m_pG->drawLine(adjustedRight, adjustedBottom, adjustedLeft, adjustedBottom);
-				m_pG->drawLine(adjustedLeft, adjustedBottom, adjustedLeft, adjustedTop);
+				painter.drawLine(adjustedLeft, adjustedTop, adjustedRight, adjustedTop);
+				painter.drawLine(adjustedRight, adjustedTop, adjustedRight, adjustedBottom);
+				painter.drawLine(adjustedRight, adjustedBottom, adjustedLeft, adjustedBottom);
+				painter.drawLine(adjustedLeft, adjustedBottom, adjustedLeft, adjustedTop);
 			}
 
 //
@@ -3600,12 +3659,12 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 				UT_RGBColor clrPageSep(192,192,192);		// light gray
 				m_pG->setColor(clrPageSep);
 
-				m_pG->setLineProperties(1.0,
+				m_pG->setLineProperties(m_pG->tluD(1.0),
 										GR_Graphics::JOIN_MITER,
 										GR_Graphics::CAP_BUTT,
 										GR_Graphics::LINE_SOLID);
 
-				m_pG->drawLine(adjustedLeft, adjustedBottom, adjustedRight, adjustedBottom);
+				painter.drawLine(adjustedLeft, adjustedBottom, adjustedRight, adjustedBottom);
 				adjustedBottom += 1;
 				m_pG->setColor(clr);
 			}
@@ -3616,13 +3675,13 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 				// white (since the whole screen is white).
 				if(getViewMode() != VIEW_PRINT)
 				{
-					m_pG->fillRect(paperColor, adjustedRight, adjustedTop, getWindowWidth() - (adjustedRight), iPageHeight + 1);
+					painter.fillRect(paperColor, adjustedRight, adjustedTop, getWindowWidth() - (adjustedRight), iPageHeight + 1);
 				}
 				// Otherwise, the right margin is the
 				// margin color (gray).
 				else
 				{
-					m_pG->fillRect(clrMargin, adjustedRight + 1, adjustedTop, getWindowWidth() - (adjustedRight + 1), iPageHeight + 1);
+					painter.fillRect(clrMargin, adjustedRight + 1, adjustedTop, getWindowWidth() - (adjustedRight + 1), iPageHeight + 1);
 				}
 			}
 
@@ -3631,12 +3690,12 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			{
 			        if(pPage->getNext() != NULL)
 				{
-					m_pG->fillRect(clrMargin, adjustedLeft, adjustedBottom + 1, getWindowWidth() - adjustedLeft, getPageViewSep());
+					painter.fillRect(clrMargin, adjustedLeft, adjustedBottom + 1, getWindowWidth() - adjustedLeft, getPageViewSep());
 				}
 				else // found last page
 				{
 				        UT_sint32 botfill = getWindowHeight() - adjustedBottom - 1 ;
-					m_pG->fillRect(clrMargin, adjustedLeft, adjustedBottom + 1, getWindowWidth() - adjustedLeft, botfill);
+					painter.fillRect(clrMargin, adjustedLeft, adjustedBottom + 1, getWindowWidth() - adjustedLeft, botfill);
 				}
 			}
 
@@ -3644,24 +3703,24 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 
 			if(!isPreview() && (getViewMode() == VIEW_PRINT))
 			{
-				m_pG->setLineProperties(1.0,
+				m_pG->setLineProperties(m_pG->tluD(1.0),
 										GR_Graphics::JOIN_MITER,
 										GR_Graphics::CAP_BUTT,
 										GR_Graphics::LINE_SOLID);
 
 				adjustedLeft += 3;
 				adjustedBottom += 1;
-				m_pG->drawLine(adjustedLeft, adjustedBottom, adjustedRight+1, adjustedBottom);
+				painter.drawLine(adjustedLeft, adjustedBottom, adjustedRight+1, adjustedBottom);
 
 				adjustedBottom += 1;
-				m_pG->drawLine(adjustedLeft, adjustedBottom, adjustedRight+1, adjustedBottom);
+				painter.drawLine(adjustedLeft, adjustedBottom, adjustedRight+1, adjustedBottom);
 
 				adjustedTop += 3;
 				adjustedRight += 1;
-				m_pG->drawLine(adjustedRight, adjustedTop, adjustedRight, adjustedBottom);
+				painter.drawLine(adjustedRight, adjustedTop, adjustedRight, adjustedBottom);
 
 				adjustedRight += 1;
-				m_pG->drawLine(adjustedRight, adjustedTop, adjustedRight, adjustedBottom);
+				painter.drawLine(adjustedRight, adjustedTop, adjustedRight, adjustedBottom);
 			}
 		}
 		xxx_UT_DEBUGMSG(("PageHeight %d Page %x \n",iPageHeight,pPage));
@@ -3676,7 +3735,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 		UT_sint32 y = curY - m_yScrollOffset + 1;
 		UT_sint32 h = getWindowHeight() - y;
 		xxx_UT_DEBUGMSG(("Height of grey fill %d window height %d y %d curY %d \n",h,getWindowHeight(),y,curY));
-		m_pG->fillRect(clrMargin, 0, y, getWindowWidth(), h);
+		painter.fillRect(clrMargin, 0, y, getWindowWidth(), h);
 	}
 
 	if (bClip)
@@ -3690,7 +3749,31 @@ void FV_View::_setPoint(PT_DocPosition pt, bool bEOL)
 {
 	if (!m_pDoc->getAllowChangeInsPoint())
 		return;
-
+	if(!m_pDoc->isPieceTableChanging())
+	{
+//
+// Have to deal with special case of point being exactly on a footnote/endnote
+// boundary. Move the point past the footnote so we always have Footnote field
+// followed by footnotestrux in the piecetable
+//
+		fl_FootnoteLayout * pFL = NULL;
+		if(m_pDoc->isFootnoteAtPos(pt))
+		{
+			pFL = getClosestFootnote(pt);
+			if(pFL == NULL)
+			{
+				fl_EndnoteLayout * pEL = getClosestEndnote(pt);
+				if(pEL)
+				{
+					pt += pEL->getLength();
+				}
+			}
+			else
+			{
+				pt += pFL->getLength();
+			}
+		}		
+	}
 	m_iInsPoint = pt;
 	m_bPointEOL = bEOL;
 	_fixInsertionPointCoords();
@@ -3794,7 +3877,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 	UT_uint32 uheight;
 	m_bPointEOL = false;
 	UT_sint32 iOldDepth = getEmbedDepth(getPoint());
-	UT_DEBUGMSG(("_charMotion: Old Position is %d embed depth \n",posOld,iOldDepth));
+	UT_DEBUGMSG(("_charMotion: Old Position is %d embed depth %d \n",posOld,iOldDepth));
 	/*
 	  we don't really care about the coords.  We're calling these
 	  to get the Run pointer
@@ -3966,7 +4049,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 	// run on the left of the requested position, so we just need to move
 	// to its end if the position does not fall into that run
 	xxx_UT_DEBUGMSG(("_charMotion: iRunEnd %d \n",iRunEnd));
-	if(!bForward && (iRunEnd <= m_iInsPoint) && (pRun->getBlockOffset() > 0))
+	if(!bForward && (iRunEnd < m_iInsPoint) && (pRun->getBlockOffset() > 0))
 	{
 		_setPoint(iRunEnd - 1);
 	}
@@ -4700,8 +4783,17 @@ void FV_View::_acceptRejectRevision(bool bReject, PT_DocPosition iStart, PT_DocP
 	UT_uint32 i;
 	UT_uint32 iRealDeleteCount;
 
-	const PP_Revision * pRev = pRevAttr->getGreatestLesserOrEqualRevision(m_iViewRevision);
+	const PP_Revision * pSpecial;
+	const PP_Revision * pRev = pRevAttr->getGreatestLesserOrEqualRevision(m_iViewRevision,
+																		  &pSpecial);
 
+	bool bDeletePRev = false;
+	// pRev == NULL means that the text contains no revision with
+	// id <= m_iViewRevision. In this case, we should not be asked to
+	// accept or reject the revision, hence the assert (I suspect that
+	// this will happen though).
+	UT_return_if_fail(pRev);
+	
 	if(bReject)
 	{
 		switch(pRev->getType())
@@ -4767,7 +4859,7 @@ void FV_View::_acceptRejectRevision(bool bReject, PT_DocPosition iStart, PT_DocP
 					// need to set a new revision attribute
 					// first remove current revision from pRevAttr
 					pRevAttr->removeRevision(pRev);
-					delete pRev;
+					bDeletePRev = true;
 
 					ppAttr2[2*i] = rev;
 					ppAttr2[2*i + 1] = pRevAttr->getXMLstring();
@@ -4806,6 +4898,9 @@ void FV_View::_acceptRejectRevision(bool bReject, PT_DocPosition iStart, PT_DocP
 				delete ppProps;
 				delete ppAttr2;
 
+				if(bDeletePRev)
+					delete pRev;
+				
 				break;
 
 			default:

@@ -20,6 +20,7 @@
 #ifndef XAP_BEOSTOOLBARICONS_H
 #define XAP_BEOSTOOLBARICONS_H
 
+#include <Bitmap.h>
 #include "ut_types.h"
 #include "xap_Toolbar_Icons.h"
 

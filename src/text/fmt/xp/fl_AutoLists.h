@@ -17,44 +17,16 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
-#include "ut_types.h"
-#include "ut_xml.h"
 #ifndef FL_AUTOLISTS_H
 #define FL_AUTOLISTS_H
 
-///////////////////////////////////////////////////////////////////////
-// Lists Definitions
-///////////////////////////////////////////////////////////////////////
-typedef enum
-{
-	NUMBERED_LIST = 0,
-	LOWERCASE_LIST = 1,
-	UPPERCASE_LIST = 2,
-	LOWERROMAN_LIST = 3,
-	UPPERROMAN_LIST = 4,
-	// any new numbered lists should be added below OTHER_NUMBERED_LISTS
-	BULLETED_LIST = 5,
-	DASHED_LIST = 6,
-	SQUARE_LIST = 7,
-	TRIANGLE_LIST = 8,
-	DIAMOND_LIST = 9,
-	STAR_LIST = 10,
-	IMPLIES_LIST = 11,
-	TICK_LIST = 12,
-	BOX_LIST = 13,
-	HAND_LIST = 14,
-	HEART_LIST = 15,
-	// add new bulleted lists here, and increase LAST_BULLETED_LIST accordingly
-	// any new numbered lists should be added below OTHER_NUMBERED_LISTS
+#include "ut_types.h"
+#include "ut_xml.h"
+#include "fp_types.h"
 
-	//could not just add the extra numbered lists above the bulletted one, since that would break compatibility
-	LAST_BULLETED_LIST = 16,
-	OTHER_NUMBERED_LISTS = 0x7f,
-	ARABICNUMBERED_LIST = 0x80,
-	HEBREW_LIST = 0x81,
-	NOT_A_LIST = 0xff
-} List_Type;
-
+///////////////////////////////////////////////////////////////////////
+// Lists Definitions are in fp_types.h
+///////////////////////////////////////////////////////////////////////
 
 class fl_AutoLists
 {

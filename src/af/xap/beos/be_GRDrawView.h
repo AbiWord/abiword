@@ -2,7 +2,7 @@
 #ifndef _GRDRAWVIEW_H_
 #define _GRDRAWVIEW_H_
 
-#include "xap_BeOSFrame.h"
+#include "xap_BeOSFrameImpl.h"
 #include "xav_View.h"
 #include <View.h>
 

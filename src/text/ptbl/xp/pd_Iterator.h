@@ -52,7 +52,7 @@ class pf_Frag;
 class ABI_EXPORT PD_DocIterator : public UT_TextIterator
 {
   public:
-	PD_DocIterator(PD_Document & doc, PT_DocPosition dpos = 0);
+	PD_DocIterator(const PD_Document & doc, PT_DocPosition dpos = 0);
 
 	virtual UT_UCS4Char  getChar(); // return character at present position
 
@@ -61,6 +61,9 @@ class ABI_EXPORT PD_DocIterator : public UT_TextIterator
 
 	virtual UTIterStatus getStatus() const {return m_status;}
 
+	virtual UT_uint32 find(UT_UCS4Char * what, UT_uint32 iLen, bool bForward = true);
+	virtual UT_uint32 find(UT_TextIterator & text, UT_uint32 iLen, bool bForward = true);
+	
 	virtual UT_TextIterator * makeCopy();
 	
 	virtual UT_TextIterator & operator ++ ();
@@ -69,6 +72,8 @@ class ABI_EXPORT PD_DocIterator : public UT_TextIterator
 	virtual UT_TextIterator & operator -=  (UT_sint32 i);
 	
 	virtual UT_UCS4Char   operator [](UT_uint32 dpos);
+
+	const pf_Frag * getFrag() {return m_frag;}
 
   private:
 	// private constructor
@@ -105,6 +110,9 @@ class ABI_EXPORT PD_StruxIterator : public UT_TextIterator
 	virtual void setPosition(UT_uint32 pos);
 
 	virtual UTIterStatus getStatus() const {return m_status;}
+
+	virtual UT_uint32 find(UT_UCS4Char * what, UT_uint32 iLen, bool bForward = true);
+	virtual UT_uint32 find(UT_TextIterator & text, UT_uint32 iLen, bool bForward = true);
 
 	virtual UT_TextIterator * makeCopy();
 

@@ -46,11 +46,12 @@ void EV_CocoaMouse::mouseUp(AV_View* pView, NSEvent* e, NSView* hitView)
 	EV_EditMouseButton emb = 0;
 	EV_EditMouseOp mop;
 	EV_EditMouseContext emc = 0;
+	bool rightBtn = false;
 	
 	xxx_UT_DEBUGMSG (("Received mouse up...\n"));
 	
-	ems = _convertModifierState ([e modifierFlags]);
-	emb = _convertMouseButton ([e buttonNumber]);
+	ems = _convertModifierState ([e modifierFlags], rightBtn);
+	emb = _convertMouseButton ([e buttonNumber], rightBtn);
 
 	// TODO confirm that we report release under the
 	// TODO mouse button that we did the capture on.
@@ -101,10 +102,11 @@ void EV_CocoaMouse::mouseClick(AV_View* pView, NSEvent* e, NSView *hitView)
 	EV_EditMouseOp mop = 0;
 	EV_EditMouseContext emc = 0;
 	NSPoint pt;
+	bool rightBtn = false;
 	
 	xxx_UT_DEBUGMSG (("Received mouse click...\n"));
-	state = _convertModifierState ([e modifierFlags]);
-	emb = _convertMouseButton ([e buttonNumber]);
+	state = _convertModifierState ([e modifierFlags], rightBtn);
+	emb = _convertMouseButton ([e buttonNumber], rightBtn);
 
 	NSEventType evtType = [e type];
 	switch (evtType) {
@@ -172,10 +174,11 @@ void EV_CocoaMouse::mouseMotion(AV_View* pView, NSEvent *e, NSView *hitView)
 	EV_EditMouseOp mop;
 	EV_EditMouseContext emc = 0;
 	NSPoint pt;
+	bool rightBtn = false;
 	
 	xxx_UT_DEBUGMSG (("Received mouse motion...\n"));
-	ems = _convertModifierState ([e modifierFlags]);
-	emb = _convertMouseButton ([e buttonNumber]);
+	ems = _convertModifierState ([e modifierFlags], rightBtn);
+	emb = _convertMouseButton ([e buttonNumber], rightBtn);
 
 	// TODO confirm that we report movements under the
 	// TODO mouse button that we did the capture on.
@@ -233,18 +236,23 @@ void EV_CocoaMouse::mouseMotion(AV_View* pView, NSEvent *e, NSView *hitView)
 }
 
 
-EV_EditMouseButton EV_CocoaMouse::_convertMouseButton(int btn)
+EV_EditMouseButton EV_CocoaMouse::_convertMouseButton(int btn, bool rightBtn)
 {
 	EV_EditMouseButton emb = 0;
 	switch (btn) {
 	case 0:
-		emb = EV_EMB_BUTTON1; // left
+		if (rightBtn) {
+			emb = EV_EMB_BUTTON3; // right 
+		}
+		else {
+			emb = EV_EMB_BUTTON1; // left
+		}
 		break;
 	case 1:
-		emb = EV_EMB_BUTTON2; // right 
+		emb = EV_EMB_BUTTON2; // middle 
 		break;
 	case 2:
-		emb = EV_EMB_BUTTON3; // middle
+		emb = EV_EMB_BUTTON3; // right
 		break;
 	// these are often used for X scrolling mice, 4 is down, 5 is up
 	case 3:
@@ -262,14 +270,16 @@ EV_EditMouseButton EV_CocoaMouse::_convertMouseButton(int btn)
 }
 
 
-EV_EditModifierState EV_CocoaMouse::_convertModifierState(unsigned int modifiers)
+EV_EditModifierState EV_CocoaMouse::_convertModifierState(unsigned int modifiers, bool &rightBtn)
 {
 	EV_EditModifierState ems = 0;
 	if (modifiers & NSShiftKeyMask)
 		ems |= EV_EMS_SHIFT;
-	if (modifiers & NSControlKeyMask)
-		ems |= EV_EMS_CONTROL;
-	if (modifiers & NSAlternateKeyMask)
+	if (modifiers & NSCommandKeyMask)
 		ems |= EV_EMS_ALT;
+	if (modifiers & NSAlternateKeyMask)
+		ems |= EV_EMS_CONTROL;
+	if (modifiers & NSControlKeyMask)
+		rightBtn = true;
 	return ems;
 }

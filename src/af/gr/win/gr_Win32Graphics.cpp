@@ -232,6 +232,7 @@ GR_Font* GR_Win32Graphics::_findFont(const char* pszFontFamily,
 	#endif
 	
 	LOGFONT lf = { 0 };
+	HDC hDC = GetDC(NULL);
 
 	/*
 		TODO we need to fill out the LOGFONT object such that
@@ -273,12 +274,14 @@ GR_Font* GR_Win32Graphics::_findFont(const char* pszFontFamily,
 	// Get character set value from the font itself
 	LOGFONT enumlf = { 0 };
 	enumlf.lfCharSet = DEFAULT_CHARSET;
-	_tcscpy(enumlf.lfFaceName, lf.lfFaceName);
-	EnumFontFamiliesEx(GetDC(NULL), &enumlf,
+	wcscpy(enumlf.lfFaceName, lf.lfFaceName);
+	EnumFontFamiliesEx(hDC, &enumlf,
 		(FONTENUMPROC)win32Internal_fontEnumProcedure, (LPARAM)&lf, 0);
 
 	lf.lfOutPrecision = OUT_TT_ONLY_PRECIS;		// Choose only True Type fonts.
 	lf.lfQuality = PROOF_QUALITY;
+
+	ReleaseDC(NULL, hDC);
 
 	return new GR_Win32Font(lf);
 }
@@ -441,7 +444,10 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 				if(! (pChars[iCharOffset+i] == 0x200B || pChars[iCharOffset+i] == 0xFEFF
 				   /*|| pChars[iCharOffset+i] == UCS_LIGATURE_PLACEHOLDER*/ ) )
 				{
-#if 0
+#if 1
+					// I rather stupidly changed this to the version
+					// below the #else, but this one produces much
+					// smaller rounding errors. Tomas, Dec 6, 2003
 					iwidth += pCharWidths[i];
 					inextAdvance = tdu(iwidth);
 					pCharAdvances[j] = inextAdvance - iadvance;
@@ -633,10 +639,14 @@ UT_sint32 GR_Win32Graphics::measureUnRemappedChar(const UT_UCSChar c)
 
 	UT_ASSERT(m_pFont);
 	UT_sint32 iWidth = GR_Win32Font::Acq::measureUnRemappedChar(*m_pFont, c);
+
+	if (iWidth==GR_CW_UNKNOWN || iWidth==GR_CW_ABSENT)
+		return iWidth;
+	
 	iWidth *= (UT_sint32)getResolution();
 	iWidth /= (UT_sint32)getDeviceResolution();
 	
-	return iWidth;
+	return iWidth;	
 }
 
 UT_uint32 GR_Win32Graphics::getDeviceResolution(void) const
@@ -672,8 +682,6 @@ void GR_Win32Graphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sin
 	UT_DEBUGMSG(("GR_Win32Graphics::drawLine %u %u %u %u\n", x1,  y1, x2,  y2));	
 	#endif			   	
 	
-	GR_CaretDisabler caretDisabler(getCaret());	
-
 	x1 = _tduX(x1);
 	x2 = _tduX(x2);
 	y1 = _tduY(y1);
@@ -757,8 +765,7 @@ void GR_Win32Graphics::setLineProperties(double iLineWidth,
 	m_eJoinStyle = inJoinStyle;
 	m_eCapStyle  = inCapStyle;
 	m_eLineStyle = inLineStyle;
-	//m_iLineWidth = tlu((int)inWidthPixelS);
-	m_iLineWidth = iLineWidth;
+	m_iLineWidth = static_cast<UT_sint32>(iLineWidth);
 }
 
 void GR_Win32Graphics::setLineWidth(UT_sint32 iLineWidth)
@@ -771,8 +778,6 @@ void GR_Win32Graphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint
 	#ifdef GR_GRAPHICS_DEBUG
 	UT_DEBUGMSG(("GR_Win32Graphics::xorLine %u %u %u %u\n", x1,  y1, x2,  y2));	
 	#endif
-	
-	GR_CaretDisabler caretDisabler(getCaret());
 	
 	/*
 	  Note that we always use a pixel width of 1 for xorLine, since
@@ -808,8 +813,6 @@ void GR_Win32Graphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 	UT_DEBUGMSG(("GR_Win32Graphics::polyLine %u\n", nPoints));	
 	#endif
 	
-	GR_CaretDisabler caretDisabler(getCaret());
-		
 	HPEN hPen = CreatePen(PS_SOLID, _tduR(m_iLineWidth), m_clrCurrent);
 	HPEN hOldPen = (HPEN) SelectObject(m_hdc, hPen);
 
@@ -841,7 +844,6 @@ void GR_Win32Graphics::fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y, 
 	h=_tduR(h);
 
 	COLORREF clr = RGB(c.m_red, c.m_grn, c.m_blu);
-	GR_CaretDisabler caretDisabler(getCaret());
 
 	#ifdef GR_GRAPHICS_DEBUG
 	UT_DEBUGMSG(("GR_Win32Graphics::fillRect %x %u %u %u %u\n",  clr, r.left, r.top, w, h));	
@@ -966,8 +968,6 @@ void GR_Win32Graphics::clearArea(UT_sint32 x, UT_sint32 y, UT_sint32 width, UT_s
 	UT_DEBUGMSG(("GR_Win32Graphics::clearArea %u %u %u %u\n",  x, y, width, height));	
 	#endif
 	
-	GR_CaretDisabler caretDisabler(getCaret());
-	 
 	x = _tduX(x);
 	y = _tduY(y);
 	width = _tduR(width);
@@ -987,8 +987,6 @@ void GR_Win32Graphics::invertRect(const UT_Rect* pRect)
 	#ifdef GR_GRAPHICS_DEBUG
 	UT_DEBUGMSG(("GR_Win32Graphics::invertRect\n"));	
 	#endif
-	
-	GR_CaretDisabler caretDisabler(getCaret());
 	
 	RECT r;
 
@@ -1050,8 +1048,6 @@ void GR_Win32Graphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDes
 {
 	UT_ASSERT(pImg);
 	
-	GR_CaretDisabler caretDisabler(getCaret());
-
 	xDest = _tduX(xDest);
 	yDest = _tduY(yDest);
 	
@@ -1073,6 +1069,9 @@ void GR_Win32Graphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDes
 
 	BITMAPINFO* pDIB = pWin32Img->getDIB();
 
+	if (pDIB == NULL)
+		return;
+		
 	UT_uint32 iSizeOfColorData = pDIB->bmiHeader.biClrUsed * sizeof(RGBQUAD);
 	UT_Byte* pBits = ((unsigned char*) pDIB) + pDIB->bmiHeader.biSize + iSizeOfColorData;
 
@@ -1128,6 +1127,10 @@ void GR_Win32Graphics::handleSetCursorMessage(void)
 
 	switch (m_cursor)
 	{
+	case GR_CURSOR_CROSSHAIR:	
+		cursor_name = IDC_CROSS;
+		hinst = NULL;
+		break;
 	default:
 		UT_ASSERT(UT_NOT_IMPLEMENTED);
 		/*FALLTHRU*/
@@ -1208,7 +1211,7 @@ void GR_Win32Graphics::handleSetCursorMessage(void)
 		break;
 	}
 
-	HCURSOR hCursor = LoadCursor(hinst,cursor_name);
+	HCURSOR hCursor = LoadCursor(hinst,cursor_name); //TODO: Leaking resource
 	if (hCursor != NULL)
 		SetCursor(hCursor);
 }
@@ -1237,8 +1240,6 @@ void GR_Win32Graphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint3
 	UT_DEBUGMSG(("GR_Win32Graphics::fillRect GR_Color3D  %x %u %u %u %u\n",  c, x, y, w, h));	
 	#endif
 	
-	GR_CaretDisabler caretDisabler(getCaret());
- 
 	RECT r;
 	r.left = _tduX(x);
 	r.top = _tduY(y);
@@ -1550,8 +1551,6 @@ void GR_Win32Font::Acq::selectFontIntoDC(GR_Win32Font& font, GR_Graphics * pGr, 
 
 void GR_Win32Graphics::polygon(UT_RGBColor& c,UT_Point *pts,UT_uint32 nPoints)
 {
-    GR_CaretDisabler caretDisabler(getCaret());
-	 
 	HPEN hPen = CreatePen(PS_SOLID, _tduR(m_iLineWidth), RGB(c.m_red, c.m_grn, c.m_blu));
 	HPEN hOldPen = (HPEN)SelectObject(m_hdc,hPen);
 
@@ -1625,56 +1624,6 @@ bool GR_Win32Graphics::_setTransform(const GR_Transform & tr)
 #endif
 }
 
-GR_Image * GR_Win32Graphics::genImageFromRectangle(const UT_Rect & r)
-{
-#if 0
-	/*
-	FIXME. THIS IS AN IMPLEMENTATION THAT IS NOT RIGHT IN SOME RESPECTS
-	AND SHOULD BE DEBUGGED. NO CLUE TO WHAT COULD BE WRONG THOUGH - MARCM
-	*/
-
-	UT_uint32 iWidth = _tduR(r.width);
-	UT_uint32 iHeight = _tduR(r.height);
-	UT_sint32 x = _tduX(r.left);
-	UT_sint32 y = _tduY(r.top);	 
-
-	#ifdef GR_GRAPHICS_DEBUG	
-	UT_DEBUGMSG(("GR_Win32Graphics::genImageFromRectangle %u %u %u %u\n", 
-		x,y, iWidth, iHeight));	
-	#endif
-
-	BITMAPINFO * bmi = (BITMAPINFO*)malloc (sizeof (BITMAPINFO));
-	BYTE *imagedata;
-	HDC		hMemDC = CreateCompatibleDC(m_hdc);
-		
-	bmi->bmiHeader.biSize = sizeof(BITMAPINFOHEADER); 	
-	bmi->bmiHeader.biWidth = iWidth;
-	bmi->bmiHeader.biHeight = iHeight;
-	bmi->bmiHeader.biPlanes = 1; 
-	bmi->bmiHeader.biBitCount = 24; // as we want true-color
-	bmi->bmiHeader.biCompression = BI_RGB; // no compression
-	bmi->bmiHeader.biSizeImage = (((iWidth * bmi->bmiHeader.biBitCount + 31) & ~31) >> 3) * iHeight; 
-	bmi->bmiHeader.biXPelsPerMeter = 0;
-	bmi->bmiHeader.biYPelsPerMeter = 0; 
-	bmi->bmiHeader.biClrImportant = 0;
-	bmi->bmiHeader.biClrUsed = 0; // we are not using palette
-		
-	HBITMAP hBit = CreateDIBSection(hMemDC,bmi,DIB_RGB_COLORS,(void**)&imagedata,0,0);
-	GdiFlush();
-
-	HBITMAP hOld = (HBITMAP) SelectObject(hMemDC, hBit);
-	BitBlt(hMemDC, 0, 0, iWidth, iHeight, m_hdc, x, y, SRCCOPY);
-	hBit =  (HBITMAP)SelectObject(hMemDC, hOld);
-	DeleteDC(hMemDC);
-	DeleteObject(hBit);
-
-	GR_Win32Image * pImg = new GR_Win32Image ("Screenshot");
-	pImg->setDIB (bmi);
-	return pImg;
-
-#endif
-	return NULL;
-}
 
 void GR_Win32Graphics::saveRectangle(UT_Rect & r, UT_uint32 iIndx) 
 {		
@@ -1692,34 +1641,37 @@ void GR_Win32Graphics::saveRectangle(UT_Rect & r, UT_uint32 iIndx)
 		x,y, iWidth, iHeight));	
 	#endif
 
-	BITMAPINFO * bmi = (BITMAPINFO*)malloc (sizeof (BITMAPINFO));
+	BITMAPINFO bmi;
 
 	BYTE *imagedata;
 	HDC	hMemDC = CreateCompatibleDC(m_hdc);
 		
-	bmi->bmiHeader.biSize = sizeof(BITMAPINFOHEADER); 	
-	bmi->bmiHeader.biWidth = iWidth;
-	bmi->bmiHeader.biHeight = iHeight;
-	bmi->bmiHeader.biPlanes = 1; 
-	bmi->bmiHeader.biBitCount = 24; // as we want true-color
-	bmi->bmiHeader.biCompression = BI_RGB; // no compression
-	bmi->bmiHeader.biSizeImage = (((iWidth * bmi->bmiHeader.biBitCount + 31) & ~31) >> 3) * iHeight; 
-	bmi->bmiHeader.biXPelsPerMeter = 0;
-	bmi->bmiHeader.biYPelsPerMeter = 0; 
-	bmi->bmiHeader.biClrImportant = 0;
-	bmi->bmiHeader.biClrUsed = 0; // we are not using palette
+	bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER); 	
+	bmi.bmiHeader.biWidth = iWidth;
+	bmi.bmiHeader.biHeight = iHeight;
+	bmi.bmiHeader.biPlanes = 1; 
+	bmi.bmiHeader.biBitCount = 24; // as we want true-color
+	bmi.bmiHeader.biCompression = BI_RGB; // no compression
+	bmi.bmiHeader.biSizeImage = (((iWidth * bmi.bmiHeader.biBitCount + 31) & ~31) >> 3) * iHeight; 
+	bmi.bmiHeader.biXPelsPerMeter = 0;
+	bmi.bmiHeader.biYPelsPerMeter = 0; 
+	bmi.bmiHeader.biClrImportant = 0;
+	bmi.bmiHeader.biClrUsed = 0; // we are not using palette
 		
-	HBITMAP hBit = CreateDIBSection(hMemDC,bmi,DIB_RGB_COLORS,(void**)&imagedata,0,0);
+	HBITMAP hBit = CreateDIBSection(hMemDC,&bmi,DIB_RGB_COLORS,(void**)&imagedata,0,0);
 	GdiFlush();
 
 	HBITMAP hOld = (HBITMAP) SelectObject(hMemDC, hBit);
 	BitBlt(hMemDC, 0, 0, iWidth, iHeight, m_hdc, x, y, SRCCOPY);
 	hBit =  (HBITMAP)SelectObject(hMemDC, hOld);
 	DeleteDC(hMemDC);
+
+	m_vSaveRectBuf.setNthItem(iIndx, (void*) hBit, (void**)&hOld);
+	DeleteObject(hOld);
 }
 
 void GR_Win32Graphics::restoreRectangle(UT_uint32 iIndx) 
-{		
+{
 	UT_Rect * r = (UT_Rect*)m_vSaveRect.getNthItem(iIndx);
 	HBITMAP hBit = (HBITMAP)m_vSaveRectBuf.getNthItem(iIndx);
 	
@@ -1748,3 +1700,164 @@ void GR_Win32Graphics::flush(void)
 {	
 	GdiFlush();	
 }
+
+//--------------------------------------------------------------------------/
+//--------------------------------------------------------------------------/
+
+BITMAPINFO * GR_Win32Graphics::ConvertDDBToDIB(HBITMAP bitmap, HPALETTE hPal, DWORD dwCompression) {
+
+	BITMAP				bm;	
+	BITMAPINFOHEADER	bi;	
+	LPBITMAPINFOHEADER 	lpbi;	
+	DWORD				dwLen;
+	HANDLE				hDIB;	
+	HANDLE				handle;	
+	HDC 				hDC;	
+	
+	if (dwCompression == BI_BITFIELDS)
+		return NULL;
+
+	if (hPal == NULL)
+		hPal = (HPALETTE)GetStockObject(DEFAULT_PALETTE);	
+		
+	// Get bitmap information
+	::GetObject(bitmap, sizeof(bm),(LPSTR)&bm);	
+	
+	// Initialize the bitmapinfoheader
+	bi.biSize			= sizeof(BITMAPINFOHEADER);	
+	bi.biWidth			= bm.bmWidth;
+	bi.biHeight 		= bm.bmHeight;	
+	bi.biPlanes 		= 1;
+	bi.biBitCount		= bm.bmPlanes * bm.bmBitsPixel;
+	bi.biCompression	= dwCompression;	
+	bi.biSizeImage		= 0;	
+	bi.biXPelsPerMeter	= 0;
+	bi.biYPelsPerMeter	= 0;	
+	bi.biClrUsed		= 0;	
+	bi.biClrImportant	= 0;
+	
+	// Compute the size of the  infoheader and the color table
+	int nColors = (1 << bi.biBitCount);	
+	if( nColors > 256 ) 		
+		nColors = 0;
+	dwLen  = bi.biSize + nColors * sizeof(RGBQUAD);
+	
+	// We need a device context to get the DIB from	
+	hDC = CreateCompatibleDC(m_hdc);
+	hPal = SelectPalette(hDC, hPal, TRUE);	
+	RealizePalette(hDC);
+	
+	// Allocate enough memory to hold bitmapinfoheader and color table
+	hDIB = malloc(dwLen);	
+	if (!hDIB){
+		SelectPalette(hDC, hPal, TRUE);		
+		DeleteDC(hDC);
+		return NULL;	
+		}
+	lpbi = (LPBITMAPINFOHEADER)hDIB;	
+	*lpbi = bi;
+	
+	// Call GetDIBits with a NULL lpBits param, so the device driver 
+	// will calculate the biSizeImage field 
+	GetDIBits(
+		hDC, 
+		bitmap, 
+		0L, 
+		(DWORD)bi.biHeight,
+		(LPBYTE)NULL, 
+		(LPBITMAPINFO)lpbi, 
+		(DWORD)DIB_RGB_COLORS
+		);	
+	bi = *lpbi;
+	
+	// If the driver did not fill in the biSizeImage field, then compute it
+	// Each scan line of the image is aligned on a DWORD (32bit) boundary
+	if (bi.biSizeImage == 0) {
+		bi.biSizeImage = ((((bi.biWidth * bi.biBitCount) + 31) & ~31) / 8) * bi.biHeight;
+	
+		// If a compression scheme is used the result may infact be larger
+		// Increase the size to account for this.		
+		if (dwCompression != BI_RGB)
+			bi.biSizeImage = (bi.biSizeImage * 3) / 2;
+		}
+	
+	// Realloc the buffer so that it can hold all the bits	
+	dwLen += bi.biSizeImage;
+	if (handle = realloc(hDIB, dwLen))		
+		hDIB = handle;	
+	else{
+		free(hDIB);		
+		// Reselect the original palette
+		SelectPalette(hDC,hPal,TRUE);		
+		DeleteDC(hDC);
+		return NULL;	
+		}
+	
+	// Get the bitmap bits	
+	lpbi = (LPBITMAPINFOHEADER)hDIB;	
+	
+	// FINALLY get the DIB
+	BOOL bGotBits = GetDIBits( 
+		hDC, 
+		bitmap, 
+		0L,							// Start scan line				
+		(DWORD)bi.biHeight,			// # of scan lines
+		(LPBYTE)lpbi 				// address for bitmap bits
+		+ (bi.biSize + nColors * sizeof(RGBQUAD)),
+		(LPBITMAPINFO)lpbi,			// address of bitmapinfo
+		(DWORD)DIB_RGB_COLORS		// Use RGB for color table
+		);
+	
+	if (!bGotBits)	{
+		free(hDIB);				
+		SelectPalette(hDC,hPal,TRUE);		
+		DeleteDC(hDC);
+		return NULL;	
+		}	
+		
+	SelectPalette(hDC,hPal,TRUE);	
+	DeleteDC(hDC);
+
+	return (BITMAPINFO*)hDIB;
+	}
+
+//--------------------------------------------------------------------------/
+//--------------------------------------------------------------------------/
+
+GR_Image * GR_Win32Graphics::genImageFromRectangle(const UT_Rect & r) {
+
+	UT_uint32 iWidth = tdu(r.width);
+	UT_uint32 iHeight = tdu(r.height);
+	UT_sint32 x = tdu(r.left);
+	UT_sint32 y = tdu(r.top);	 
+
+	BITMAPINFO bmi; 
+	BYTE *imagedata;
+	HDC hMemDC = CreateCompatibleDC(m_hdc);
+		
+	bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER); 	
+	bmi.bmiHeader.biWidth = iWidth;
+	bmi.bmiHeader.biHeight = iHeight;
+	bmi.bmiHeader.biPlanes = 1; 
+	bmi.bmiHeader.biBitCount = 24; // as we want true-color
+	bmi.bmiHeader.biCompression = BI_RGB; // no compression
+	bmi.bmiHeader.biSizeImage = (((iWidth * bmi.bmiHeader.biBitCount + 31) & ~31) >> 3) * iHeight; 
+	bmi.bmiHeader.biXPelsPerMeter = 0;
+	bmi.bmiHeader.biYPelsPerMeter = 0; 
+	bmi.bmiHeader.biClrImportant = 0;
+	bmi.bmiHeader.biClrUsed = 0; // we are not using palette
+		
+	HBITMAP hBit = CreateDIBSection(hMemDC,&bmi,DIB_RGB_COLORS,(void**)&imagedata,0,0);
+	
+	GdiFlush();
+
+	HBITMAP hOld = (HBITMAP) SelectObject(hMemDC, hBit);
+		BitBlt(hMemDC, 0, 0, iWidth, iHeight, m_hdc, x, y, SRCCOPY);
+		hBit =  (HBITMAP)SelectObject(hMemDC, hOld);
+	DeleteDC(hMemDC);
+
+
+	GR_Win32Image *img = new GR_Win32Image("Screenshot");
+	img->setDIB((BITMAPINFO *)ConvertDDBToDIB(hBit, NULL, BI_RGB));
+	return img;
+	}

@@ -17,12 +17,12 @@
  * 02111-1307, USA.
  */
 
-#include "fv_View.h"
 #include "fl_Squiggles.h"
 
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 #include "ut_string.h"
+#include "fv_View.h"
 
 /*! \page squiggle_overview Squiggles
 

@@ -134,6 +134,14 @@ class ABI_EXPORT UT_TextIterator
 	virtual UTIterStatus getStatus() const = 0;
 
 	///////////////////////////////////////////////////////////////////
+	// finds first occurence of given string, looking in direction
+	// indicated by bForward
+	// failure is indicated through getStatus() == UTIter_OutOfBounds;
+	//
+	virtual UT_uint32 find(UT_UCS4Char * what, UT_uint32 iLen, bool bForward = true) = 0;
+	virtual UT_uint32 find(UT_TextIterator & text, UT_uint32 iLen, bool bForward = true) = 0;
+	
+	///////////////////////////////////////////////////////////////////
 	// makes a copy of the iterator in its present state
 	//
 	virtual UT_TextIterator * makeCopy() = 0;

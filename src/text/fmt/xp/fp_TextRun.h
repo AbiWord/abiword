@@ -34,6 +34,7 @@
 */
 #define MAX_SPAN_LEN 250   //initial size for m_pSpanBuff, realocated if needed
 #include "ut_timer.h"
+#include "ut_contextGlyph.h"
 
 class ABI_EXPORT fp_TextRun : public fp_Run
 {
@@ -58,8 +59,6 @@ public:
 	void                    appendTextToBuf(UT_GrowBuf & buf);
 	virtual bool			hasLayoutProperties(void) const;
 	//virtual void			fetchCharWidths(fl_CharWidths * pgbCharWidths);
-	virtual bool			recalcWidth(void);
-	virtual bool			canContainPoint(void) const;
 	bool					canMergeWithNext(void);
 	void					mergeWithNext(void);
 	bool                    findFirstNonBlankSplitPoint(fp_RunSplitInfo & splitInfo);
@@ -95,18 +94,26 @@ public:
 	virtual FriBidiCharType getDirection() const { return m_iDirOverride == FRIBIDI_TYPE_UNSET ? _getDirection() : m_iDirOverride;}
 	FriBidiCharType 		getDirOverride() const { return m_iDirOverride; }
 
-	void					breakNeighborsAtDirBoundaries();
-	void					breakMeAtDirBoundaries(FriBidiCharType iNewOverride);
+	void				breakNeighborsAtDirBoundaries();
+	void				breakMeAtDirBoundaries(FriBidiCharType iNewOverride);
+	void                setShapingRequired(UTShapingResult eR) {m_eShapingRequired = eR;}
+	void                orShapingRequired(UTShapingResult eR)
+	                      {
+							m_eShapingRequired = (UTShapingResult)((UT_uint32)m_eShapingRequired
+																   | (UT_uint32)eR);
+	                      }
 
-
+	virtual void        updateOnDelete(UT_uint32 offset, UT_uint32 iLen);
+	
 	UT_UCSChar *		m_pSpanBuff;
 	UT_uint32			m_iSpanBuffSize;
 	static UT_uint32	s_iClassInstanceCount;
 	FriBidiCharType 	m_iDirOverride;
 	static bool 		s_bBidiOS;
 private:
-	void				_refreshDrawBuffer();
-
+	bool				_refreshDrawBuffer();
+	void                _measureCharWidths();
+	
 private:
 	bool				_addupCharWidths(void);
 	virtual void        _lookupProperties(const PP_AttrProp * pSpanAP,
@@ -120,6 +127,8 @@ public:
 #endif
 
 protected:
+	virtual bool			_recalcWidth(void);
+	virtual bool			_canContainPoint(void) const;
 	virtual void			_draw(dg_DrawArgs*);
 	virtual void			_clearScreen(bool bFullLineHeightRect = true);
 
@@ -203,6 +212,9 @@ private:
 	static UT_uint32        s_iCharAdvanceSize;
 	static UT_UCS4Char *    s_pCharBuff;
 	static UT_sint32 *      s_pWidthBuff;
+
+	UTShapingResult         m_eShapingRequired;
+	bool                    m_bKeepWidths;
 };
 
 #endif /* FP_TEXTRUN_H */

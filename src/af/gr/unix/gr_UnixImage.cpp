@@ -202,6 +202,19 @@ bool  GR_UnixImage::convertToBuffer(UT_ByteBuf** ppBB) const
 	return true;
 }
 
+bool GR_UnixImage::saveToPNG(const char * szFile)
+{
+	GError * error = NULL;
+	gboolean res = gdk_pixbuf_save (m_image, szFile, "png", &error,NULL);
+	if(res != FALSE)
+	{
+		return true;
+	}
+	delete error;
+	return false;
+
+}
+
 bool GR_UnixImage::hasAlpha (void) const
 {
 	UT_return_val_if_fail(m_image, false);

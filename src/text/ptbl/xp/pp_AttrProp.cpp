@@ -34,6 +34,7 @@
 #include "pt_Types.h"
 
 #include "pp_AttrProp.h"
+#include "pp_Revision.h"
 
 /****************************************************************/
 PP_AttrProp::PP_AttrProp()
@@ -317,10 +318,15 @@ bool	PP_AttrProp::setProperty(const XML_Char * szName, const XML_Char * szValue)
 		}
 	}
 
+#if 0
+	// no. we have to set it empty, otherwise the code that changes
+	// properties has no way of knowing that this property is not to
+	// be present
+	// 
 	// if szValue == NULL or *szValue == 0, we want this property
 	// removed
 	bool bRemove = (!szValue || !*szValue);
-	
+#endif
 	const void * pEntry = m_pProperties->pick(szName);
 	if (pEntry)
 	{
@@ -338,12 +344,13 @@ bool	PP_AttrProp::setProperty(const XML_Char * szName, const XML_Char * szValue)
 		if (p->second())
 			delete static_cast<PP_PropertyType *const>(p->second());
 		delete p;
-
+#if 0
 		if(bRemove)
 		{
 			m_pProperties->remove(szName,NULL);
 		}
 		else
+#endif
 		{
 			m_pProperties->set(szName,
 							   static_cast<void *>(new UT_Pair(UT_strdup(szValue), static_cast<void *>(NULL))));
@@ -352,7 +359,9 @@ bool	PP_AttrProp::setProperty(const XML_Char * szName, const XML_Char * szValue)
 	}
 	else
 	{
+#if 0
 		if(!bRemove)
+#endif
 		{
 			m_pProperties->insert(szName,
 								  static_cast<void *>(new UT_Pair(UT_strdup(szValue), static_cast<void *>(NULL))));
@@ -1085,3 +1094,62 @@ void PP_AttrProp::setIndex(UT_uint32 i)
 {
 	m_index = i;
 }
+
+/*!
+    in contrast to is isExactMatch this function will return true if
+    the attrs and props are same even if they are in different order;
+    it is computationally much more involved than isExactMatch()
+*/
+bool PP_AttrProp::isEquivalent(const PP_AttrProp * pAP2) const
+{
+	if(!pAP2)
+		return false;
+	
+	if(   getAttributeCount() != pAP2->getAttributeCount()
+	   || getPropertyCount()  != pAP2->getPropertyCount())
+		return false;
+	
+	UT_uint32 i;
+	const XML_Char * pName, * pValue, * pValue2;
+	
+	for(i =  0; i < getAttributeCount(); ++i)
+	{
+		UT_return_val_if_fail(getNthAttribute(i,pName,pValue),false);
+
+		if(!pAP2->getAttribute(pName,pValue2))
+			return false;
+
+		// ignore property attribute
+		if(0 != UT_strcmp(pValue, PT_PROPS_ATTRIBUTE_NAME))
+			continue;
+
+		// handle revision attribute correctly
+		if(0 != UT_strcmp(pValue, PT_REVISION_ATTRIBUTE_NAME))
+		{
+			// requires special treatment
+			PP_RevisionAttr r1(pValue);
+			PP_RevisionAttr r2 (pValue2);
+
+			if(!(r1 == r2))
+			{
+				return false;
+			}
+		}
+		else if(0 != UT_strcmp(pValue,pValue2))
+			return false;
+	}
+
+	for(i =  0; i < getPropertyCount(); ++i)
+	{
+		UT_return_val_if_fail(getNthProperty(i,pName,pValue),false);
+
+		if(!pAP2->getProperty(pName,pValue2))
+			return false;
+
+		if(0 != UT_strcmp(pValue,pValue2))
+			return false;
+	}
+
+	return true;
+}
+

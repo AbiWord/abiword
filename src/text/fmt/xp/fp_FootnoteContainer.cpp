@@ -26,7 +26,6 @@
 #include "fp_Column.h"
 #include "fp_Page.h"
 #include "fp_Line.h"
-#include "fv_View.h"
 #include "fl_DocLayout.h"
 #include "fl_SectionLayout.h"
 #include "gr_DrawArgs.h"
@@ -35,6 +34,8 @@
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 #include "fl_FootnoteLayout.h"
+#include "fv_View.h"
+#include "gr_Painter.h"
 
 /*!
   Create Footnote container
@@ -101,11 +102,14 @@ void fp_FootnoteContainer::clearScreen(void)
 		UT_RGBColor * pBGColor = getFillType()->getColor();
 		UT_sint32 iLeftMargin = pDSL->getLeftMargin();
 		UT_sint32 iRightMargin = pDSL->getRightMargin();
-		UT_sint32 diff = getPage()->getWidth()/10;
+//		UT_sint32 diff = getPage()->getWidth()/10;
+		UT_sint32 diff = 0; // FIXME make a property
 		UT_sint32 xoff,yoff;
 		getPage()->getScreenOffsets(this,xoff,yoff);
 		UT_sint32 xoffStart = xoff  + diff;
-		UT_sint32 xoffEnd = xoff + getPage()->getWidth() - iLeftMargin -iRightMargin - diff;
+		UT_sint32 width = (getPage()->getWidth() - iLeftMargin -iRightMargin)/3;
+		UT_sint32 xoffEnd = xoff + width;
+
 		getGraphics()->setColor(*pBGColor);
 		UT_sint32 iLineThick = pDSL->getFootnoteLineThickness();
 		getGraphics()->setLineWidth(iLineThick);
@@ -133,7 +137,7 @@ void fp_FootnoteContainer::setContainer(fp_Container * pContainer)
 		return;
 	}
 
-	if (getContainer())
+	if (getContainer() && (pContainer != NULL))
 	{
 		clearScreen();
 	}
@@ -166,12 +170,15 @@ void fp_FootnoteContainer::draw(dg_DrawArgs* pDA)
 		fl_DocSectionLayout * pDSL = getPage()->getOwningSection();
 		UT_sint32 iLeftMargin = pDSL->getLeftMargin();
 		UT_sint32 iRightMargin = pDSL->getRightMargin();
-		UT_sint32 diff = getPage()->getWidth()/10;
+//		UT_sint32 diff = getPage()->getWidth()/10;
+		UT_sint32 diff = 0; // FIXME make a property
 		UT_sint32 xoffStart = pDA->xoff + diff;
-		UT_sint32 xoffEnd = pDA->xoff + getPage()->getWidth() -iLeftMargin - iRightMargin - diff;
+		UT_sint32 width = (getPage()->getWidth() - iLeftMargin -iRightMargin)/3;
+		UT_sint32 xoffEnd = pDA->xoff + width;
+
 		UT_sint32 yline = pDA->yoff;
 		pDA->pG->setColor(black);
-		pDA->pG->setLineProperties(1.0,
+		pDA->pG->setLineProperties(pDA->pG->tlu(1.0),
 									 GR_Graphics::JOIN_MITER,
 									 GR_Graphics::CAP_BUTT,
 									 GR_Graphics::LINE_SOLID);
@@ -181,7 +188,9 @@ void fp_FootnoteContainer::draw(dg_DrawArgs* pDA)
 		pDA->pG->setLineWidth(iLineThick);
 		yline = yline - iLineThick - 3; // FIXME This should not be a magic numer!
 		xxx_UT_DEBUGMSG(("Drawline form (%d,%d) to (%d,%d) \n",xoffStart,yline,xoffEnd,yline));
-		pDA->pG->drawLine(xoffStart, yline, xoffEnd, yline);
+
+		GR_Painter painter (pDA->pG);
+		painter.drawLine(xoffStart, yline, xoffEnd, yline);
 	}
 	xxx_UT_DEBUGMSG(("Footnote: Drawing unbroken footnote %x x %d, y %d width %d height %d \n",this,getX(),getY(),getWidth(),getHeight()));
 
@@ -239,6 +248,11 @@ void fp_FootnoteContainer::layout(void)
 	_setMaxContainerHeight(0);
 	UT_sint32 iY = 0, iPrevY = 0;
 	iY= 0;
+	UT_sint32 iMaxFootHeight = getPage()->getHeight();
+	fl_DocSectionLayout * pDSL = getDocSectionLayout();
+	iMaxFootHeight -= pDSL->getTopMargin();
+	iMaxFootHeight -= pDSL->getBottomMargin();
+	iMaxFootHeight -= getGraphics()->tlu(20)*3;
 	UT_uint32 iCountContainers = countCons();
 	fp_Container *pContainer, *pPrevContainer = NULL;
 	for (UT_uint32 i=0; i < iCountContainers; i++)
@@ -263,10 +277,16 @@ void fp_FootnoteContainer::layout(void)
 		iY += iContainerHeight;
 		iY += iContainerMarginAfter;
 		//iY +=  0.5;
-
-		if (pPrevContainer)
+		if(iY > iMaxFootHeight)
 		{
-			pPrevContainer->setAssignedScreenHeight(iY - iPrevY);
+			iY = iMaxFootHeight;
+		}
+		else
+		{
+			if (pPrevContainer)
+			{
+				pPrevContainer->setAssignedScreenHeight(iY - iPrevY);
+			}
 		}
 		pPrevContainer = pContainer;
 		iPrevY = iY;
@@ -351,7 +371,7 @@ UT_sint32 fp_EndnoteContainer::getValue(void)
 
 void fp_EndnoteContainer::clearScreen(void)
 {
-	xxx_UT_DEBUGMSG(("Clearscreen on Endnote container, height = %d \n",getHeight()));
+	UT_DEBUGMSG(("Clearscreen on Endnote container %x , height = %d \n",this,getHeight()));
 	fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(getSectionLayout());
 	pCL->setNeedsRedraw();
 	if(!m_bOnPage)
@@ -417,7 +437,7 @@ void fp_EndnoteContainer::setContainer(fp_Container * pContainer)
 		return;
 	}
 
-	if (getContainer())
+	if (getContainer() && (pContainer != NULL))
 	{
 		clearScreen();
 	}

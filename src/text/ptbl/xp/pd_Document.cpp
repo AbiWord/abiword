@@ -30,8 +30,10 @@
 #include "ut_bytebuf.h"
 #include "ut_base64.h"
 #include "ut_misc.h"
+#include "ut_rand.h"
 #include "pd_Document.h"
 #include "xad_Document.h"
+#include "xap_Strings.h"
 #include "pt_PieceTable.h"
 #include "pl_Listener.h"
 #include "ie_imp.h"
@@ -45,6 +47,7 @@
 #include "px_CR_SpanChange.h"
 #include "px_CR_Strux.h"
 #include "pf_Frag.h"
+#include "pd_Iterator.h"
 #include "fd_Field.h"
 #include "po_Bookmark.h"
 #include "fl_AutoNum.h"
@@ -97,17 +100,24 @@ PD_Document::PD_Document(XAP_App *pApp)
 	  m_bForcedDirty(false),
 	  m_bLockedStyles(false),        // same as lockStyles(false)
 	  m_bMarkRevisions(false),
+	  m_bShowRevisions(true),
 	  m_iRevisionID(1),
+	  m_iShowRevisionID(0), // show all
+	  m_indexAP(0xffffffff),
 	  m_bDontImmediatelyLayout(false),
 	  m_iLastDirMarker(0),
 	  m_pVDBl(NULL),
 	  m_pVDRun(NULL),
-	  m_iVDLastPos(0xffffffff)
+	  m_iVDLastPos(0xffffffff),
+	  m_iVersion(0),
+	  m_bWasSaved(false),
+	  m_iEditTime(0),
+	  m_pDocUID(NULL)
 {
 	m_pApp = pApp;
 	
 	XAP_App::getApp()->getPrefs()->getPrefsValueBool(AP_PREF_KEY_LockStyles,&m_bLockedStyles);
-	
+
 #ifdef PT_TEST
 	m_pDoc = this;
 #endif
@@ -124,10 +134,14 @@ PD_Document::~PD_Document()
 
 	UT_VECTOR_PURGEALL(fl_AutoNum*, m_vecLists);
 	UT_VECTOR_PURGEALL(PD_Revision*, m_vRevisions);
+	UT_VECTOR_PURGEALL(PD_VersionData*, m_vHistory);
 	// remove the meta data
 	UT_HASH_PURGEDATA(UT_UTF8String*, &m_metaDataMap, delete) ;
 	UT_HASH_PURGEDATA(UT_UTF8String*, &m_mailMergeMap, delete) ;
 
+	if(m_pDocUID)
+		delete m_pDocUID;
+	
 	// we do not purge the contents of m_vecListeners
 	// since these are not owned by us.
 
@@ -169,7 +183,7 @@ const PD_Revision * PD_Document::getHighestRevision() const
 	return r;
 }
 
-bool PD_Document::addRevision(UT_uint32 iId, UT_UCS4Char * pDesc)
+bool PD_Document::addRevision(UT_uint32 iId, UT_UCS4Char * pDesc, time_t tStart)
 {
 	for(UT_uint32 i = 0; i < m_vRevisions.getItemCount(); i++)
 	{
@@ -178,15 +192,18 @@ bool PD_Document::addRevision(UT_uint32 iId, UT_UCS4Char * pDesc)
 			return false;
 	}
 
-	PD_Revision * pRev = new PD_Revision(iId, pDesc);
+	PD_Revision * pRev = new PD_Revision(iId, pDesc, tStart);
 
 	m_vRevisions.addItem(static_cast<void*>(pRev));
-	m_bForcedDirty = true;
+	forceDirty();
 	m_iRevisionID = iId;
 	return true;
 }
 
-bool PD_Document::addRevision(UT_uint32 iId, const UT_UCS4Char * pDesc, UT_uint32 iLen)
+bool PD_Document::addRevision(UT_uint32 iId,
+							  const UT_UCS4Char * pDesc,
+							  UT_uint32 iLen,
+							  time_t tStart)
 {
 	for(UT_uint32 i = 0; i < m_vRevisions.getItemCount(); i++)
 	{
@@ -204,10 +221,10 @@ bool PD_Document::addRevision(UT_uint32 iId, const UT_UCS4Char * pDesc, UT_uint3
 		pD[iLen] = 0;
 	}
 	
-	PD_Revision * pRev = new PD_Revision(iId, pD);
+	PD_Revision * pRev = new PD_Revision(iId, pD, tStart);
 
 	m_vRevisions.addItem(static_cast<void*>(pRev));
-	m_bForcedDirty = true;
+	forceDirty();
 	m_iRevisionID = iId;
 	return true;
 }
@@ -341,7 +358,12 @@ UT_Error PD_Document::importFile(const char * szFilename, int ieft,
 	if (impProps && strlen(impProps))
 		pie->setProps (impProps);
 
-	m_indexAP =  99999999;
+	// set standard document properties and attributes, such as dtd,
+	// lang, dom-dir, etc., which the importer can then overwite this
+	// also initializes m_indexAP
+	m_indexAP = 0xffffffff;
+	setAttrProp(NULL);
+	
 	errorCode = pie->importFile(szFilename);
 	delete pie;
 	m_bLoading = false;
@@ -352,16 +374,29 @@ UT_Error PD_Document::importFile(const char * szFilename, int ieft,
 		DELETEP(m_pPieceTable);
 		return errorCode;
 	}
-	if(m_indexAP ==  99999999)
+
+	// get document-wide settings from the AP
+	const PP_AttrProp * pAP = getAttrProp();
+	
+	if(pAP)
 	{
-		// set standard document properties, such as dtd, lang,
-		// dom-dir, etc. (some of the code that used to be here is
-		// now in the setAttrProp() function, since it is shared
-		// both by new documents and documents being loaded from disk
-		// this also initializes m_indexAP
-		setAttrProp(NULL);
+		const XML_Char * pA = NULL;
+
+		// TODO this should probably be stored as an attribute of the
+		// styles section rather then the whole doc ...
+		if(pAP->getAttribute("styles", pA))
+		{
+			m_bLockedStyles = !(strcmp(pA, "locked"));
+		}
 	}
 
+	if(!m_pDocUID)
+	{
+		UT_DEBUGMSG(("PD_Document::importFile: no doc UID, generating ...\n"));
+		m_pDocUID = new PD_DocumentUID();
+	}
+	
+	
 	m_pPieceTable->setPieceTableState(PTS_Editing);
 	updateFields();
 
@@ -372,6 +407,22 @@ UT_Error PD_Document::importFile(const char * szFilename, int ieft,
 
 	if (strstr(szFilename, "normal.awt") == NULL)
 		XAP_App::getApp()->getPrefs()->addRecent(szFilename);
+
+
+	// show warning if document contains revisions and they are hidden
+	// from view ...
+	XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
+
+	bool bHidden = (isMarkRevisions() && (getHighestRevisionId() <= getShowRevisionId()));
+	bHidden |= (!isMarkRevisions() && !isShowRevisions());
+
+	if(pFrame && bHidden)
+	{
+		pFrame->showMessageBox(AP_STRING_ID_MSG_HiddenRevisions, 
+						       XAP_Dialog_MessageBox::b_O, 
+							   XAP_Dialog_MessageBox::a_OK);
+	}
+	
 	return UT_OK;
 }
 
@@ -424,7 +475,13 @@ UT_Error PD_Document::readFromFile(const char * szFilename, int ieft,
 		pie->setProps (impProps);
 
 	_syncFileTypes(false);
-	m_indexAP = 99999999;
+
+	// set standard document properties and attributes, such as dtd, lang,
+	// dom-dir, etc., which the importer can then overwite
+	// this also initializes m_indexAP
+	m_indexAP = 0xffffffff;
+	setAttrProp(NULL);
+
 	errorCode = pie->importFile(szFilename);
 	delete pie;
 
@@ -440,21 +497,47 @@ UT_Error PD_Document::readFromFile(const char * szFilename, int ieft,
 		UT_DEBUGMSG(("PD_Document::readFromFile -- no memory\n"));
 		return UT_IE_NOMEMORY;
 	}
-	if(m_indexAP ==  99999999)
+
+	// get document-wide settings from the AP
+	const PP_AttrProp * pAP = getAttrProp();
+	
+	if(pAP)
 	{
-		// set standard document properties, such as dtd, lang,
-		// dom-dir, etc. (some of the code that used to be here is
-		// now in the setAttrProp() function, since it is shared
-		// both by new documents and documents being loaded from disk
-		// this also initializes m_indexAP
-		setAttrProp(NULL);
+		const XML_Char * pA = NULL;
+
+		if(pAP->getAttribute("styles", pA))
+		{
+			m_bLockedStyles = !(strcmp(pA, "locked"));
+		}
 	}
+
+	if(!m_pDocUID)
+	{
+		UT_DEBUGMSG(("PD_Document::readFromFile: no doc UID, generating ...\n"));
+		m_pDocUID = new PD_DocumentUID();
+	}
+	
 	m_pPieceTable->setPieceTableState(PTS_Editing);
 	updateFields();
 	_setClean();							// mark the document as not-dirty
 
 	if (strstr(szFilename, "normal.awt") == NULL)
 		XAP_App::getApp()->getPrefs()->addRecent(szFilename);
+
+	// show warning if document contains revisions and they are hidden
+	// from view ...
+	XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
+
+	bool bHidden = (isMarkRevisions() && (getHighestRevisionId() <= getShowRevisionId()));
+	bHidden |= (!isMarkRevisions() && !isShowRevisions());
+
+	if(pFrame && bHidden)
+	{
+		pFrame->showMessageBox(AP_STRING_ID_MSG_HiddenRevisions, 
+						       XAP_Dialog_MessageBox::b_O, 
+							   XAP_Dialog_MessageBox::a_OK);
+	}
+
 	return UT_OK;
 }
 
@@ -554,11 +637,23 @@ UT_Error PD_Document::newDocument(void)
 			// now in the setAttrProp() function, since it is shared
 			// both by new documents and documents being loaded from disk
 			// this also initializes m_indexAP
+			m_indexAP = 0xffffffff;
 			setAttrProp(NULL);
 
 			m_pPieceTable->setPieceTableState(PTS_Editing);
 	}
 
+	setDocVersion(0);
+	setEditTime(0);
+
+	if(m_pDocUID)
+	{
+		UT_DEBUGMSG(("PD_Document::newDocument: doc UID set !!!, deleting ...\n"));
+		delete m_pDocUID;
+	}
+	
+	m_pDocUID = new PD_DocumentUID;
+	
 	// mark the document as not-dirty
 	_setClean();
 
@@ -596,6 +691,13 @@ UT_Error PD_Document::saveAs(const char * szFilename, int ieft, bool cpy,
 		_syncFileTypes(true);
 	}
 
+	// order of these calls matters
+	_adjustHistoryOnSave();
+	_adjustEditTimeOnSave();
+
+	// see if revisions table is still needed ...
+	purgeRevisionTable();
+	
 	errorCode = pie->writeFile(szFilename);
 	delete pie;
 
@@ -616,9 +718,6 @@ UT_Error PD_Document::saveAs(const char * szFilename, int ieft, bool cpy,
 	    m_szFilename = szFilenameCopy;
 	    _setClean(); // only mark as clean if we're saving under a new name
 	}
-
-	// record this as the last time the document was saved
-	m_lastSavedTime = time(NULL);
 
 	//if (strstr(szFilename, "normal.awt") == NULL)
 	XAP_App::getApp()->getPrefs()->addRecent(szFilename);
@@ -644,6 +743,12 @@ UT_Error PD_Document::save(void)
 
 	_syncFileTypes(true);
 
+	_adjustHistoryOnSave();
+	_adjustEditTimeOnSave();
+
+	// see if revisions table is still needed ...
+	purgeRevisionTable();
+	
 	errorCode = pie->writeFile(m_szFilename);
 	delete pie;
 
@@ -1068,6 +1173,10 @@ bool  PD_Document::changeStruxAttsNoUpdate(PL_StruxDocHandle sdh, const char * a
  */
 bool PD_Document::insertStruxNoUpdateBefore(PL_StruxDocHandle sdh, PTStruxType pts,const XML_Char ** attributes )
 {
+#if 0
+	pf_Frag_Strux * pfStrux = const_cast<pf_Frag_Strux *>(static_cast<const pf_Frag_Strux *>(sdh));
+	T_ASSERT(pfStrux->getStruxType() != PTX_Section);
+#endif
 	return m_pPieceTable->insertStruxNoUpdateBefore(sdh, pts, attributes );
 }
 
@@ -3350,7 +3459,7 @@ bool PD_Document::appendList(const XML_Char ** attributes)
 {
 	const XML_Char * szID=NULL, * szPid=NULL, * szType=NULL, * szStart=NULL, * szDelim=NULL, *szDec=NULL;
 	UT_uint32 id, parent_id, start;
-	List_Type type;
+	FL_ListType type;
 
 	for (const XML_Char ** a = attributes; (*a); a++)
 	{
@@ -3392,7 +3501,7 @@ bool PD_Document::appendList(const XML_Char ** attributes)
 	if(i < numlists)
 		return true; // List is already present
 	parent_id = atoi(szPid);
-	type = static_cast<List_Type>(atoi(szType));
+	type = static_cast<FL_ListType>(atoi(szType));
 	start = atoi(szStart);
 
 	fl_AutoNum * pAutoNum = new fl_AutoNum(id, parent_id, type, start, szDelim,szDec,this);
@@ -3631,6 +3740,32 @@ const PP_AttrProp * PD_Document::getAttrProp() const
 	return VARSET.getAP(m_indexAP);
 }
 
+/*!
+    Sets document attributes and properties
+    can only be used while loading documents
+    
+    \param const XML_Char ** ppAttr: array of attribute/value pairs
+
+	    if ppAttr == NULL and m_indexAP == 0xffffffff, the function
+    	creates a new AP and sets it to the default values hardcoded
+    	in it
+
+        if ppAttr == NULL and m_indexAP != 0xffffffff, the function
+        does nothing
+
+        if ppAttr != NULL the function overlays passed attributes over
+        the existing attributes (creating a new AP first if necessary)
+
+    When initialising document attributes and props, we need to set
+    m_indexAP to 0xffffffff and then call setAttributes(NULL).
+
+    Importers should just call setAttributes(NULL) in the
+    initialisation stage, this ensures that default values are set
+    without overwriting existing values if those were set by the
+    caller of the importer.
+
+    Tomas, Dec 6, 2003
+*/
 bool PD_Document::setAttrProp(const XML_Char ** ppAttr)
 {
 	// this method can only be used while loading  ...
@@ -3639,61 +3774,68 @@ bool PD_Document::setAttrProp(const XML_Char ** ppAttr)
 		UT_return_val_if_fail(0,false);
 	}
 
-	bool bRet = VARSET.storeAP(ppAttr, &m_indexAP);
-	UT_DEBUGMSG(( "pd_Document::setAttrProp: document %x storeAP res %d indexAP %d  \n", this,bRet,m_indexAP));
-
-	if(!bRet)
-		return false;
-
-	const XML_Char * attr[21];
-	attr[20] = NULL;
-
-	attr[0] = "xmlns";
-	attr[1] = "http://www.abisource.com/awml.dtd";
-
-	attr[2] = "xml:space";
-	attr[3] = "preserve";
-
-	attr[4] = "xmlns:awml";
-	attr[5] = "http://www.abisource.com/awml.dtd";
-
-	attr[6] = "xmlns:xlink";
-	attr[7] = "http://www.w3.org/1999/xlink";
-
-	attr[8] = "xmlns:svg";
-	attr[9] = "http://www.w3.org/2000/svg";
-
-	attr[10] = "xmlns:fo";
-	attr[11] = "http://www.w3.org/1999/XSL/Format";
-
-	attr[12] = "xmlns:math";
-	attr[13] = "http://www.w3.org/1998/Math/MathML";
-
-	attr[14] = "xmlns:dc";
-	attr[15] = "http://purl.org/dc/elements/1.1/";
-
-	attr[16] = "fileformat";
-	attr[17] = ABIWORD_FILEFORMAT_VERSION;
-
-	if (XAP_App::s_szBuild_Version && XAP_App::s_szBuild_Version[0])
+	bool bRet = true;
+	
+	if(m_indexAP == 0xffffffff)
 	{
-		attr[18] = "version";
-		attr[19] = XAP_App::s_szBuild_Version;
-	}
-	else
-		attr[18] = NULL;
+		// AP not initialised, do so and set standard document attrs
+		// and properties
 
-	bRet =  setAttributes(attr);
-	if(!bRet)
-		return false;
+		// first create an empty AP by passing NULL to storeAP
+		// cast needed to disambiguate function signature
+		bRet = VARSET.storeAP(static_cast<const XML_Char **>(0), &m_indexAP);
 
-	// see if the document has dominant direction set and if not, set
-	// dominant direction from preferences
-	const PP_AttrProp * docAP =  getAttrProp();
-	const XML_Char * doc_dir;
+		if(!bRet)
+			return false;
 
-	if(docAP && !docAP->getProperty("dom-dir", doc_dir))
-	{
+		// now set standard attributes
+		UT_uint32 i = 0;
+		const UT_uint32 iSize = 21;
+		const XML_Char * attr[iSize];
+
+		attr[i++] = "xmlns";
+		attr[i++] = "http://www.abisource.com/awml.dtd";
+
+		attr[i++] = "xml:space";
+		attr[i++] = "preserve";
+
+		attr[i++] = "xmlns:awml";
+		attr[i++] = "http://www.abisource.com/awml.dtd";
+
+		attr[i++] = "xmlns:xlink";
+		attr[i++] = "http://www.w3.org/1999/xlink";
+
+		attr[i++] = "xmlns:svg";
+		attr[i++] = "http://www.w3.org/2000/svg";
+
+		attr[i++] = "xmlns:fo";
+		attr[i++] = "http://www.w3.org/1999/XSL/Format";
+
+		attr[i++] = "xmlns:math";
+		attr[i++] = "http://www.w3.org/1998/Math/MathML";
+
+		attr[i++] = "xmlns:dc";
+		attr[i++] = "http://purl.org/dc/elements/1.1/";
+
+		attr[i++] = "fileformat";
+		attr[i++] = ABIWORD_FILEFORMAT_VERSION;
+
+		if (XAP_App::s_szBuild_Version && XAP_App::s_szBuild_Version[0])
+		{
+			attr[i++] = "version";
+			attr[i++] = XAP_App::s_szBuild_Version;
+		}
+
+		attr[i] = NULL;
+		UT_return_val_if_fail(i < iSize, false);
+
+		bRet =  setAttributes(attr);
+
+		if(!bRet)
+			return false;
+
+		// now set default properties, starting with dominant
+		// direction
 		const XML_Char r[] = "rtl";
 		const XML_Char l[] = "ltr";
 		const XML_Char p[] = "dom-dir";
@@ -3706,25 +3848,12 @@ bool PD_Document::setAttrProp(const XML_Char ** ppAttr)
 			props[1] = r;
 
 		UT_DEBUGMSG(( "pd_Document::setAttrProp: setting dom-dir to %s\n", props[1]));
-
 		bRet = setProperties(props);
-
 
 		if(!bRet)
 			return false;
-	}
-	else
-	{
-		UT_DEBUGMSG(( "pd_Document::setAttrProp: document has default direction %s\n", doc_dir));
-	}
 
-	// see if the document we are loading has a default language;
-	// if not, and there is a default language in the preferences, set
-	// it
-	const XML_Char * doc_lang;
-
-	if(docAP && !docAP->getProperty("lang", doc_lang))
-	{
+		// if there is a default language in the preferences, set it
 		UT_LocaleInfo locale;
 
 		UT_String lang(locale.getLanguage());
@@ -3733,21 +3862,28 @@ bool PD_Document::setAttrProp(const XML_Char ** ppAttr)
 			lang += locale.getTerritory();
 		}
 
-		const XML_Char * props[3];
 		props[0] = "lang";
 		props[1] = lang.c_str();
 		props[2] = 0;
 		bRet = setProperties(props);
+
+		if(!bRet)
+			return false;
+
+		// now overlay the attribs we were passed ...
+		bRet = setAttributes(ppAttr);
+	}
+	else if(ppAttr == NULL)
+	{
+		// we already have an AP, and have nothing to add to it
+		return true;
 	}
 	else
 	{
-		UT_DEBUGMSG(( "pd_Document::setAttrProp: document has default language %s\n", doc_lang));
+		// have an AP and given something to add to it
+		bRet = VARSET.mergeAP(PTC_AddFmt, m_indexAP, ppAttr, NULL, &m_indexAP, this);
 	}
-
-	const XML_Char * style_state;
-	if (ppAttr && (style_state = UT_getAttribute ("styles", ppAttr)) != NULL)
-		m_bLockedStyles = !(strcmp (style_state, "locked"));
-
+	
 	return bRet;
 }
 
@@ -4105,3 +4241,1036 @@ pf_Frag * PD_Document::getLastFrag() const
 	return m_pPieceTable->getFragments().getLast();
 }
 
+void PD_Document::setMarkRevisions(bool bMark)
+{
+	if(m_bMarkRevisions != bMark)
+	{
+		m_bMarkRevisions = bMark;
+		forceDirty();
+	}
+}
+
+void PD_Document::toggleMarkRevisions()
+{
+	setMarkRevisions(!m_bMarkRevisions);
+}
+
+void PD_Document::setShowRevisions(bool bShow)
+{
+	if(m_bShowRevisions != bShow)
+	{
+		m_bShowRevisions = bShow;
+		forceDirty();
+	}
+}
+
+void PD_Document::toggleShowRevisions()
+{
+	setShowRevisions(!m_bShowRevisions);
+}
+
+void PD_Document::setShowRevisionId(UT_uint32 iId)
+{
+	if(iId != m_iShowRevisionID)
+	{
+		m_iShowRevisionID = iId;
+		forceDirty();
+	}
+}
+
+void PD_Document::setRevisionId(UT_uint32 iId)
+{
+	if(iId != m_iRevisionID)
+	{
+		m_iRevisionID  = iId;
+		// not in this case; this value is not persistent between sessions
+		//forceDirty();
+	}
+}
+
+/*!
+    force the document into being dirty and signal this to our listeners
+*/
+void PD_Document::forceDirty()
+{
+	m_bForcedDirty = true;
+
+	// now notify listeners ...
+	// this is necessary so that the save command is available after
+	// operations that only change m_bForcedDirty
+	signalListeners(PD_SIGNAL_DOCPROPS_CHANGED_NO_REBUILD);	
+}
+
+/*!
+    Return time in seconds this document has been edit for since it
+    creation
+*/
+UT_uint32 PD_Document::getEditTime()const
+{
+	return m_iEditTime + getTimeSinceSave();
+}
+
+/*!
+    Set the cumulative editing time of this document
+*/
+void PD_Document::setEditTime(UT_uint32 t)
+{
+	m_iEditTime = t;
+}
+
+/*!
+    Set version of this document
+    NB: this is not version of the fmt or AbiWord with which the doc
+    was created, but rather version of the document contents.
+*/
+void PD_Document::setDocVersion(UT_uint32 i)
+{
+	m_iVersion = i;
+}
+
+/*!
+   Adjusts the cumulative edit time and time when the doc was last
+   saved; should only be called inside of save() and saveAs()
+   functions
+*/
+void PD_Document::_adjustEditTimeOnSave()
+{
+	// record this as the last time the document was saved + adjust
+	// the cumulative edit time
+	m_iEditTime = getEditTime();
+	m_lastSavedTime = time(NULL);
+}
+
+/*!
+    Update document history and version information; should only be
+    called inside save() and saveAs()
+*/
+void PD_Document::_adjustHistoryOnSave()
+{
+	// record this as the last time the document was saved + adjust
+	// the cumulative edit time
+	if(!m_bWasSaved)
+	{
+		m_bWasSaved = true;
+		m_iVersion++;
+		PD_VersionData v(m_iVersion, m_lastSavedTime, getEditTime());
+		addRecordToHistory(v);
+	}
+	else
+	{
+		UT_return_if_fail(m_vHistory.getItemCount() > 0);
+
+		// change the edit time of the last entry
+		PD_VersionData * v = (PD_VersionData*)m_vHistory.getNthItem(m_vHistory.getItemCount()-1);
+
+		UT_return_if_fail(v);
+		v->setEditTime(getEditTime());
+	}
+}
+
+/*!
+    Add given version data to the document history.
+*/
+void PD_Document::addRecordToHistory(const PD_VersionData &vd)
+{
+	PD_VersionData * v = new PD_VersionData(vd);
+	UT_return_if_fail(v);
+	m_vHistory.addItem((void*)v);
+}
+
+/*!
+    Get the version number for n-th record in version history
+*/
+UT_uint32 PD_Document::getHistoryNthId(UT_uint32 i)const
+{
+	if(!m_vHistory.getItemCount())
+		return 0;
+
+	PD_VersionData * v = (PD_VersionData*)m_vHistory.getNthItem(i);
+
+	if(!v)
+		return 0;
+
+	return v->getId();
+}
+
+/*!
+    Get time stamp for n-th record in version history
+*/
+time_t PD_Document::getHistoryNthTime(UT_uint32 i)const
+{
+	if(!m_vHistory.getItemCount())
+		return 0;
+
+	PD_VersionData * v = (PD_VersionData*)m_vHistory.getNthItem(i);
+
+	if(!v)
+		return 0;
+
+	return v->getTime();
+}
+
+/*!
+    Get get cumulative edit time for n-th record in version history
+    NB: this time is cumulative from the creation of document not from
+    the start of given version record. To calculate the latter
+    substract n-1st value from nth value.
+*/
+UT_uint32 PD_Document::getHistoryNthEditTime(UT_uint32 i)const
+{
+	if(!m_vHistory.getItemCount())
+		return 0;
+
+	PD_VersionData * v = (PD_VersionData*)m_vHistory.getNthItem(i);
+
+	if(!v)
+		return 0;
+
+	return v->getEditTime();
+}
+
+/*!
+    Get the UID for n-th record in version history
+*/
+UT_uint32 PD_Document::getHistoryNthUID(UT_uint32 i) const
+{
+	if(!m_vHistory.getItemCount())
+		return 0;
+
+	PD_VersionData * v = (PD_VersionData*)m_vHistory.getNthItem(i);
+
+	if(!v)
+		return 0;
+
+	return v->getUID();
+}
+
+/*!
+    Returns true if both documents are based on the same root document
+*/
+bool PD_Document::areDocumentsRelated(const PD_Document & d) const
+{
+	if((!m_pDocUID && d.getDocUID()) || (m_pDocUID && !d.getDocUID()))
+		return false;
+
+	return (*m_pDocUID == *(d.getDocUID()));
+}
+
+/*!
+    Returns true if both documents are based on the same root document
+    and all version records have identical UID's
+*/
+bool PD_Document::areDocumentHistoriesEqual(const PD_Document & d) const
+{
+	if((!m_pDocUID && d.getDocUID()) || (m_pDocUID && !d.getDocUID()))
+		return false;
+
+	if(!(*m_pDocUID == *(d.getDocUID())))
+		return false;
+
+	UT_uint32 iHCount = getHistoryCount();
+	if(iHCount != d.getHistoryCount())
+		return false;
+
+	for(UT_uint32 i = 0; i < iHCount; ++i)
+	{
+		PD_VersionData * v1 = (PD_VersionData*)m_vHistory.getNthItem(i);
+		PD_VersionData * v2 = (PD_VersionData*)d.m_vHistory.getNthItem(i);
+	
+		if(!(*v1 == *v2))
+			return false;
+	}
+	
+	return true;		
+}
+
+/*!
+    Returns true if the stylesheets of both documents are identical
+*/
+bool PD_Document::areDocumentStylesheetsEqual(const PD_Document &d) const
+{
+	UT_return_val_if_fail(m_pPieceTable || d.m_pPieceTable, false);
+
+	const UT_StringPtrMap & hS1 = m_pPieceTable->getAllStyles();
+	const UT_StringPtrMap & hS2 = d.m_pPieceTable->getAllStyles();
+
+	if(hS1.size() != hS2.size())
+		return false;
+
+	UT_StringPtrMap hFmtMap;
+	UT_StringPtrMap::UT_Cursor c(&hS1);
+
+	const PD_Style * pS1, * pS2;
+	for(pS1 = (const PD_Style*)c.first(); pS1 != NULL; pS1 = (const PD_Style*)c.next())
+	{
+		const UT_String &key = c.key();
+
+		pS2 = (const PD_Style *) hS2.pick(key);
+
+		if(!pS2)
+			return false;
+
+
+		PT_AttrPropIndex ap1 = pS1->getIndexAP();
+		PT_AttrPropIndex ap2 = pS2->getIndexAP();
+
+		// because the indexes are into different piecetables, we
+		// have to expand them
+		const PP_AttrProp * pAP1;
+		const PP_AttrProp * pAP2;
+
+		m_pPieceTable->getAttrProp(ap1, &pAP1);
+		d.m_pPieceTable->getAttrProp(ap2, &pAP2);
+
+		UT_return_val_if_fail(pAP1 && pAP2, false);
+
+		UT_String s;
+		// must print all digits to make this unambigous
+		UT_String_sprintf(s,"%08x%08x", ap1, ap2);
+		bool bAreSame = hFmtMap.contains(s,NULL);
+		
+		if(!bAreSame)
+		{
+			if(!pAP1->isEquivalent(pAP2))
+			{
+				return false;
+			}
+			else
+			{
+				hFmtMap.insert(s,NULL);
+			}
+		}
+	}
+	
+	return true;
+}
+
+/*!
+    Clears out the revisions table if no revisions are left in the document
+*/
+void PD_Document::purgeRevisionTable()
+{
+	if(m_vRevisions.getItemCount() == 0)
+		return;
+
+	UT_String sAPI;
+	UT_StringPtrMap hAPI;
+	
+	PD_DocIterator t(*this);
+
+	// work our way thought the document looking for frags with
+	// revisions attributes ...
+	while(t.getStatus() == UTIter_OK)
+	{
+		const pf_Frag * pf = t.getFrag();
+		UT_return_if_fail(pf);
+
+		PT_AttrPropIndex api = pf->getIndexAP();
+
+		UT_String_sprintf(sAPI, "%08x", api);
+
+		if(!hAPI.contains(sAPI, NULL))
+		{
+			const PP_AttrProp * pAP;
+			UT_return_if_fail(getAttrProp(api, &pAP));
+			UT_return_if_fail(pAP);
+
+			const XML_Char * pVal;
+
+			if(pAP->getAttribute(PT_REVISION_ATTRIBUTE_NAME, pVal))
+				return;
+
+			// cache this api so we do not need to do this again if we
+			// come across it
+			hAPI.insert(sAPI,NULL);
+		}
+
+		t += pf->getLength();
+	}
+	
+
+	// if we got this far, we have not found any revisions in the
+	// whole doc, clear out the table
+	UT_DEBUGMSG(("PD_Document::purgeRevisionTable(): clearing\n"));
+	UT_VECTOR_PURGEALL(PD_Revision*, m_vRevisions);
+	m_vRevisions.clear();
+}
+
+
+void PD_Document::diffIntoRevisions(const PD_Document &d)
+{
+	UT_Vector vDiff;
+	diffDocuments(d, vDiff);
+
+	if(vDiff.getItemCount() == 0)
+		return;
+
+	// bracket undo
+	beginUserAtomicGlob();
+	
+	bool bMark = isMarkRevisions();
+	setMarkRevisions(true);
+
+	// create new revision
+	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
+	UT_return_if_fail(pSS);
+	UT_UCS4String ucs4(pSS->getValue(AP_STRING_ID_MSG_AutoMerge));
+
+	addRevision(getRevisionId()+1, ucs4.ucs4_str(),ucs4.length(),time(NULL));
+
+	for(UT_uint32 i = 0; i < vDiff.getItemCount(); ++i)
+	{
+		PD_DocumentDiff * pDiff = (PD_DocumentDiff *) vDiff.getNthItem(i);
+		if(!pDiff)
+		{
+			UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
+			continue;
+		}
+
+		if(pDiff->m_bDeleted)
+		{
+			// this is the easy bit ...
+			UT_uint32 iRealDeleteCount;
+			deleteSpan(pDiff->m_pos1, pDiff->m_pos1 + pDiff->m_len, NULL, iRealDeleteCount);
+		}
+		else
+		{
+			// we need to get the text from doc2 first
+			PD_DocIterator t2(d, pDiff->m_pos2);
+
+			UT_UCS4Char * pC = new UT_UCS4Char[pDiff->m_len];
+			UT_return_if_fail(pC);
+			
+			UT_uint32 j = 0;
+
+			for(j = 0; j < pDiff->m_len && t2.getStatus() == UTIter_OK; ++j, ++t2)
+				pC[j] = t2.getChar();
+
+			// TODO -- respect fmt
+			insertSpan(pDiff->m_pos1, pC, j, NULL);
+
+			delete [] pC;
+		}
+	}
+	
+	// clean up ...
+	setMarkRevisions(bMark);
+
+	//release undo
+	endUserAtomicGlob();
+	
+	UT_VECTOR_PURGEALL(PD_DocumentDiff*, vDiff);
+}
+
+
+bool PD_Document::diffDocuments(const PD_Document &d, UT_Vector & vDiff) const
+{
+	PT_DocPosition pos1 = 0;
+	UT_sint32 iOffset2 = 0;
+	UT_uint32 iKnownLength = 0;
+
+	PT_DocPosition pos1Diff = 0;
+	UT_sint32 iOffset2Diff = 0;
+	
+	vDiff.clear();
+
+	bool bRet = false;
+
+	// the following loop gets terminated when we do not find a
+	// similarity or we do not find a difference
+	while(true)
+	{
+		bool bDiff = findFirstDifferenceInContent(pos1, iOffset2,d);
+
+		UT_DEBUGMSG(("PD_Document::diffDocuments: difference found? %d\n", bDiff));
+		
+		if(!bDiff)
+			return bRet;
+		else
+			bRet = true;
+	
+		pos1Diff = pos1;
+		iOffset2Diff = iOffset2;
+	
+		bDiff = findWhereSimilarityResumes(pos1Diff, iOffset2Diff, iKnownLength, d);
+
+		UT_DEBUGMSG(("PD_Document::diffDocuments: similarity found? %d\n", bDiff));
+
+		if(!bDiff)
+		{
+			// no further similarities found
+			// deletion if the change in iOffset2 is negative, i.e.,
+			// doc2 is shorter
+			bool bDel = (iOffset2 - iOffset2Diff < 0);
+			UT_uint32 iLen = 0xffffffff; // to the end
+	
+			PD_DocumentDiff * pDiff = new PD_DocumentDiff(bDel, pos1, pos1 + iOffset2, iLen);
+			vDiff.addItem((void*)pDiff);
+#ifdef DEBUG
+			pDiff->_dump();
+#endif
+			return true;
+		}
+
+		// text is deleted if the extra offset from the similarity is
+		// negative, i.e., doc2 is shorter
+		bool bDel = (iOffset2Diff - iOffset2 < 0);
+		UT_uint32 iLen;
+
+		if(bDel)
+		{
+			iLen = pos1 > pos1Diff ? pos1 - pos1Diff : pos1Diff - pos1;
+		}
+		else
+		{
+			// need to use the coords of the second doc for calculations
+			iLen = pos1+iOffset2 > pos1Diff+iOffset2Diff ? pos1+iOffset2-pos1Diff-iOffset2Diff :
+				pos1Diff+iOffset2Diff-pos1-iOffset2;
+		}
+	
+		PD_DocumentDiff * pDiff = new PD_DocumentDiff(bDel, pos1, pos1 + iOffset2, iLen);
+		vDiff.addItem((void*)pDiff);
+
+#ifdef DEBUG
+		pDiff->_dump();
+#endif
+
+		// skip over the known length
+		pos1 = pos1Diff + iKnownLength;
+		iOffset2 = iOffset2Diff;
+	}
+}
+
+
+/*!
+    Starting to search this document at position pos where the two
+    documents are known to become different, attepts to find location
+    at which similarities resume
+
+    \param pos: when called, should contain offset in present document
+                at which the difference starts; on successfult return
+                it will contain offset in present document where
+                similarities resume
+
+    \param iOffset2: when called contains offset to be added to
+                     position pos in order to correctly position start
+                     of the search in document d; on return it
+                     contains offset to be add to pos in order to
+                     obtain correct location of the resumption of
+                     similarites in document d
+
+   \param iKnownLength: on return contains the minium guaranteed length of the similarity
+
+   \param d the document to which this document is to be compared
+
+   \return returns true if it succeeds; if no further similarities are
+           found returns false
+*/
+bool PD_Document::findWhereSimilarityResumes(PT_DocPosition &pos, UT_sint32 &iOffset2,
+											 UT_uint32 & iKnownLength,
+											 const PD_Document &d) const
+{
+	UT_return_val_if_fail(m_pPieceTable || d.m_pPieceTable, true);
+
+	if(m_pPieceTable->getFragments().areFragsDirty())
+		m_pPieceTable->getFragments().cleanFrags();
+	
+	if(d.m_pPieceTable->getFragments().areFragsDirty())
+		d.m_pPieceTable->getFragments().cleanFrags();
+		
+	//  scroll through the documents comparing contents
+	PD_DocIterator t1(*this, pos);
+	PD_DocIterator t2(d, pos + iOffset2);
+
+	// first, let's assume that the difference is an insertion in doc
+	// 2; we will take a few chars from doc 1 and try to locate them
+	// in doc 2
+
+	// this is a similarity threshold, very arbitrary ...  if we match
+	// iTry chars we will be happy if we do not match at least
+	// iMinOverlap we will give up. We will use variable step
+	UT_sint32 iTry = 128; 
+	UT_sint32 iMinOverlap = 3;
+	UT_sint32 iStep = 128;
+	UT_sint32 i = 0;
+
+	UT_uint32 iFoundPos1 = 0;
+	UT_uint32 iFoundPos2 = 0;
+	UT_sint32 iFoundOffset1 = 0;
+	UT_sint32 iFoundOffset2 = 0;
+
+	for(i = iTry; i >= iMinOverlap; i -= iStep)
+	{
+		UT_uint32 pos1 = t1.getPosition();
+		UT_uint32 pos2 = t2.getPosition();
+
+		UT_uint32 iPos = t2.find(t1,i,true);
+
+		if(t2.getStatus() == UTIter_OK)
+		{
+			// we found what we were looking for
+			iFoundPos1 = pos1;
+			iFoundOffset1 = iPos - iFoundPos1;
+			break;
+		}
+		else
+		{
+			// we did not find our text, reset position ...
+			t2.setPosition(pos2);
+			t1.setPosition(pos1);
+			
+			if(iStep > 1)
+				iStep /= 2;
+		}
+	}
+
+	// remember the length we found ...
+	UT_sint32 iLen1 = i >= iMinOverlap ? i : 0;
+
+	if(i == iTry)
+	{
+		// we found the whole iTry chunk, we will stop here ...
+		pos = iFoundPos1;
+		iOffset2 = iFoundOffset1;
+		iKnownLength = iTry;
+		return true;
+	}
+	
+	// now do the same, but assuming our text is deleted from doc 2
+	t2.setPosition(pos);
+	t1.setPosition(pos + iOffset2);
+	iStep = 128;
+	
+	for(i = iTry; i >= iMinOverlap; i -= iStep)
+	{
+		UT_uint32 pos1 = t1.getPosition();
+		UT_uint32 pos2 = t2.getPosition();
+
+		UT_uint32 iPos = t1.find(t2,i,true);
+
+		if(t1.getStatus() == UTIter_OK)
+		{
+			// we found what we were looking for
+			iFoundPos2 = iPos;
+			iFoundOffset2 = pos2 - iFoundPos2;
+			break;
+		}
+		else
+		{
+			// we did not find our text, reset position ...
+			t2.setPosition(pos2);
+			t1.setPosition(pos1);
+
+			if(iStep > 1)
+				iStep /= 2;
+		}
+	}
+
+	UT_sint32 iLen2 = i >= iMinOverlap ? i : 0;
+
+	if( !iLen1 && !iLen2)
+		return false;
+	
+	// now we will go with whatever is longer
+	if(iLen1 >= iLen2)
+	{
+		pos = iFoundPos1;
+		iOffset2 = iFoundOffset1;
+		iKnownLength = iLen1;
+	}
+	else
+	{
+		pos = iFoundPos2;
+		iOffset2 = iFoundOffset2;
+		iKnownLength = iLen2;
+	}
+	
+	return true;
+}
+
+
+/*!
+    finds the position of the first difference in content between this
+    document and document d, starting search at given position
+
+    \param pos when called this variable should contian document
+               offset at which to start searching; on success this
+               variable will contain offset of the difference in
+               present document
+
+    \param iOffset2 when called contains offset to be added to pos to
+                    locate identical position in document d
+
+    \param d   the document to compare with
+
+    \return    returns false if no difference was found, true otherwise
+*/
+bool PD_Document::findFirstDifferenceInContent(PT_DocPosition &pos, UT_sint32 &iOffset2,
+											   const PD_Document &d) const
+{
+	UT_return_val_if_fail(m_pPieceTable || d.m_pPieceTable, true);
+
+	if(m_pPieceTable->getFragments().areFragsDirty())
+		m_pPieceTable->getFragments().cleanFrags();
+	
+	if(d.m_pPieceTable->getFragments().areFragsDirty())
+		d.m_pPieceTable->getFragments().cleanFrags();
+		
+	//  scroll through the documents comparing contents
+	PD_DocIterator t1(*this, pos);
+	PD_DocIterator t2(d, pos + iOffset2);
+
+	while(t1.getStatus() == UTIter_OK && t2.getStatus() == UTIter_OK)
+	{
+		const pf_Frag * pf1 = t1.getFrag();
+		const pf_Frag * pf2 = t2.getFrag();
+
+		if(!pf1 || !pf2)
+		{
+			UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
+			return true;
+		}
+		
+		if(pf1->getType() != pf2->getType())
+		{
+			pos = pf1->getPos();
+			return true;
+		}
+		
+		UT_uint32 iFOffset1 = t1.getPosition() - pf1->getPos();
+		UT_uint32 iFOffset2 = t2.getPosition() - pf2->getPos();
+		
+		UT_uint32 iLen1 = pf1->getLength() - iFOffset1;
+		UT_uint32 iLen2 = pf2->getLength() - iFOffset2;
+		UT_uint32 iLen  = UT_MIN(iLen1, iLen2);
+
+		if(   iLen1 == iLen2 && iFOffset1 == 0 && iFOffset2 == 0
+		   && pf1->getType() != pf_Frag::PFT_Text)
+		{
+			// completely overlapping non-text frags ..
+			if(!(pf1->isContentEqual(*pf2)))
+			{
+				pos = pf1->getPos();
+				return true;
+			}
+		}
+		else if(pf1->getType() != pf_Frag::PFT_Text)
+		{
+			// partially overlapping frags and not text
+			pos = pf1->getPos();
+			return true;
+		}
+		else
+		{
+			// we have two textual frags that overlap
+			// work our way along the overlap ...
+			for(UT_uint32 i = 0; i < iLen; ++i)
+			{
+				if(t1.getChar() != t2.getChar())
+				{
+					pos = t1.getPosition();
+					return true;
+				}
+				
+				++t1;
+				++t2;
+			}
+
+			// we are already past the end of the shorter frag
+			continue;
+		}
+
+		// advance both iterators by the processed length
+		t1 += iLen;
+		t2 += iLen;
+	}
+
+	if(t1.getStatus() == UTIter_OK && t2.getStatus() != UTIter_OK)
+	{
+		// document two is shorter ...
+		pos = t1.getPosition();
+		return true;
+	}
+
+	if(t1.getStatus() != UTIter_OK && t2.getStatus() == UTIter_OK)
+	{
+		// document 1 is shorter
+		pos = t2.getPosition() - iOffset2;
+		return true;
+	}
+
+	// if we got this far, we found no differences at all ...
+	return false;
+}
+
+
+
+/*!
+    Returns true if the contents of the two documents are identical
+*/
+bool PD_Document::areDocumentContentsEqual(const PD_Document &d) const
+{
+	UT_return_val_if_fail(m_pPieceTable || d.m_pPieceTable, false);
+
+	if(m_pPieceTable->getFragments().areFragsDirty())
+		m_pPieceTable->getFragments().cleanFrags();
+	
+	if(d.m_pPieceTable->getFragments().areFragsDirty())
+		d.m_pPieceTable->getFragments().cleanFrags();
+		
+	// test the docs for length
+	UT_uint32 end1, end2;
+
+	pf_Frag * pf = m_pPieceTable->getFragments().getLast();
+
+	UT_return_val_if_fail(pf,false);
+		
+	end1 = pf->getPos() + pf->getLength();
+	
+	pf = d.m_pPieceTable->getFragments().getLast();
+
+	UT_return_val_if_fail(pf,false);
+		
+	end2 = pf->getPos() + pf->getLength();
+
+	if(end1 != end2)
+		return false;
+	
+	//  scroll through the documents comparing contents
+	PD_DocIterator t1(*this);
+	PD_DocIterator t2(d);
+
+	while(t1.getStatus() == UTIter_OK && t2.getStatus() == UTIter_OK)
+	{
+		const pf_Frag * pf1 = t1.getFrag();
+		const pf_Frag * pf2 = t2.getFrag();
+
+		if(!pf1 || !pf2)
+			return false;
+
+		if(pf1->getType() != pf2->getType())
+			return false;
+
+		UT_uint32 iFOffset1 = t1.getPosition() - pf1->getPos();
+		UT_uint32 iFOffset2 = t2.getPosition() - pf2->getPos();
+		
+		UT_uint32 iLen1 = pf1->getLength() - iFOffset1;
+		UT_uint32 iLen2 = pf2->getLength() - iFOffset2;
+		UT_uint32 iLen  = UT_MIN(iLen1, iLen2);
+
+		if(iLen1 == iLen2 && iFOffset1 == 0 && iFOffset2 == 0)
+		{
+			// these two frags overlap exactly, so we can just use the
+			// pf_Frag::isContentEqual() on them
+			if(!(pf1->isContentEqual(*pf2)))
+				return false;
+		}
+		else if(pf1->getType() != pf_Frag::PFT_Text)
+		{
+			// partially overlapping frags and not text
+			return false;
+		}
+		else
+		{
+			// we have two textual frags that overlap
+			// work our way along the overlap ...
+			for(UT_uint32 i = 0; i < iLen; ++i)
+			{
+				if(t1.getChar() != t2.getChar())
+					return false;
+
+				++t1;
+				++t2;
+			}
+
+			// we are already past the end of the shorter frag
+			continue;
+		}
+
+		// advance both iterators by the processed length
+		t1 += iLen;
+		t2 += iLen;
+	}
+
+	if(   (t1.getStatus() == UTIter_OK && t2.getStatus() != UTIter_OK)
+		  || (t1.getStatus() != UTIter_OK && t2.getStatus() == UTIter_OK))
+	{
+		// documents are of different length ... 
+		return false;
+	}
+
+	return true;
+}
+
+/*!
+    Compare the format of the this document to another document
+
+    NB: If the document contents are known not to be equal, it makes no
+    sense to call this function.
+*/
+bool PD_Document::areDocumentFormatsEqual(const PD_Document &d) const
+{
+	UT_return_val_if_fail(m_pPieceTable || d.m_pPieceTable, false);
+
+	if(m_pPieceTable->getFragments().areFragsDirty())
+		m_pPieceTable->getFragments().cleanFrags();
+	
+	if(d.m_pPieceTable->getFragments().areFragsDirty())
+		d.m_pPieceTable->getFragments().cleanFrags();
+		
+	//  scroll through the documents comparing fmt
+	PD_DocIterator t1(*this);
+	PD_DocIterator t2(d);
+		
+	// in order to avoid repeated comparions of AP, we will store
+	// record of matching AP's
+	UT_StringPtrMap hFmtMap;
+	
+	while(t1.getStatus() == UTIter_OK && t2.getStatus() == UTIter_OK)
+	{
+		// need to cmp contents
+		const pf_Frag * pf1 = t1.getFrag();
+		const pf_Frag * pf2 = t2.getFrag();
+
+		UT_return_val_if_fail(pf1 && pf2, false);
+
+		PT_AttrPropIndex ap1 = pf1->getIndexAP();
+		PT_AttrPropIndex ap2 = pf2->getIndexAP();
+
+		// because the indexes are into different piecetables, we
+		// have to expand them
+		const PP_AttrProp * pAP1;
+		const PP_AttrProp * pAP2;
+
+		m_pPieceTable->getAttrProp(ap1, &pAP1);
+		d.m_pPieceTable->getAttrProp(ap2, &pAP2);
+
+		UT_return_val_if_fail(pAP1 && pAP2, false);
+
+		UT_String s;
+		UT_String_sprintf(s,"%08x%08x", ap1, ap2);
+		bool bAreSame = hFmtMap.contains(s,NULL);
+		
+		if(!bAreSame)
+		{
+			if(!pAP1->isEquivalent(pAP2))
+			{
+				return false;
+			}
+			else
+			{
+				hFmtMap.insert(s,NULL);
+			}
+		}
+		
+		UT_uint32 iLen = UT_MIN(pf1->getLength(),pf2->getLength());
+		t1 += iLen;
+		t2 += iLen;
+	}
+
+	if(   (t1.getStatus() == UTIter_OK && t2.getStatus() != UTIter_OK)
+		  || (t1.getStatus() != UTIter_OK && t2.getStatus() == UTIter_OK))
+	{
+		// documents are of different length ...
+		return false;
+	}
+
+	return true;
+}
+
+/*!
+    Set UID for the present document
+*/
+void PD_Document::setDocUID(PD_DocumentUID * u)
+{
+	if(!m_pPieceTable || m_pPieceTable->getPieceTableState() != PTS_Loading)
+	{
+		UT_return_if_fail(0);
+	}
+	
+	m_pDocUID = u;
+}
+
+/*!
+    Get the UID of this document represented as a string (this
+    funciton is primarily for exporters)
+*/
+const char * PD_Document::getDocUIDString() const
+{
+	UT_return_val_if_fail(m_pDocUID, NULL);
+
+	return m_pDocUID->getUIDString();
+}
+
+#ifdef DEBUG
+void PD_DocumentDiff::_dump() const
+{
+	UT_DEBUGMSG(("PD_DocumentDiff: del=%d, p1=%d, p2=%d, len=%d\n",
+				 m_bDeleted, m_pos1, m_pos2, m_len));
+}
+#endif
+
+
+///////////////////////////////////////////////////
+// PD_VersionData
+//
+// constructor for new entries
+PD_VersionData::PD_VersionData(UT_uint32 v, time_t t, UT_uint32 e)
+	:m_iId(v),m_tTime(t), m_iEditTime(e), m_iUID(0)
+{
+	while(!m_iUID)
+		m_iUID = UT_rand();
+}
+
+
+
+//////////////////////////////////////////////////
+// PD_DocumentUID
+
+// constructor for new documents
+PD_DocumentUID::PD_DocumentUID()
+
+{
+	for(UT_uint32 i = 0; i < PD_DOCUID_SIZE; ++i)
+	{
+		m_iUID[i] = 0;
+		
+		while(!m_iUID[i])
+			m_iUID[i] = UT_rand();
+	}
+	
+
+	const char * fmt = "%08x";
+	UT_String no;
+	
+	for(UT_uint32 j = 0; j < PD_DOCUID_SIZE; ++j)
+	{
+		UT_String_sprintf(no, fmt, m_iUID[j]);
+
+		m_sUID += no;
+
+		if(j < PD_DOCUID_SIZE - 1)
+			m_sUID += "-";
+	}
+}
+
+// constructor for importers
+PD_DocumentUID::PD_DocumentUID(const char * uid)
+{
+	UT_return_if_fail(uid);
+	
+	m_sUID = uid;
+	char * u = UT_strdup(uid);
+
+	char * p = strtok(u, "-");
+	UT_uint32 i = 0;
+
+	while(p && i < PD_DOCUID_SIZE)
+	{
+		m_iUID[i] = strtol(p,NULL,16);
+		p = strtok(NULL,"-");
+		i++;
+	}
+
+	UT_ASSERT( i == PD_DOCUID_SIZE);
+}

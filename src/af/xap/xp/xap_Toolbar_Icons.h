@@ -38,6 +38,7 @@ protected:
 	static bool _findIconDataByName(const char * szName,
 									   const char *** pIconData,
 									   UT_uint32 * pSizeofData);
+	static bool _findIconNameForID(const char * szID, const char ** pName);
 };
 
 #endif /* XAP_TOOLBAR_ICONS_H */

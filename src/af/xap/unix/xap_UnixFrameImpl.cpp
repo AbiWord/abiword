@@ -47,6 +47,7 @@
 #include "gr_Graphics.h"
 #include "xap_UnixDialogHelper.h"
 #include "xap_Strings.h"
+#include "xap_Prefs.h"
 
 #include "fv_View.h"
 
@@ -441,13 +442,14 @@ gint XAP_UnixFrameImpl::_fe::focusOut(GtkWidget * /* w*/, GdkEvent * /*e*/,gpoin
 void XAP_UnixFrameImpl::focusIMIn ()
 {
 	need_im_reset = true;
-	gtk_im_context_focus_in(getIMContext()); 
+	gtk_im_context_focus_in(getIMContext());
+	gtk_im_context_reset (getIMContext());
 }
 
 void XAP_UnixFrameImpl::focusIMOut ()
 {
 	need_im_reset = true;
-	gtk_im_context_focus_in(getIMContext());
+	gtk_im_context_focus_out(getIMContext());
 }
 
 void XAP_UnixFrameImpl::resetIMContext()
@@ -505,8 +507,7 @@ gint XAP_UnixFrameImpl::_fe::button_press_event(GtkWidget * w, GdkEventButton * 
 
 	gtk_grab_add(w);
 
-	if (e->state & GDK_SHIFT_MASK)
-		pUnixFrameImpl->resetIMContext ();
+	pUnixFrameImpl->resetIMContext ();
 
 	if (pView)
 		pUnixMouse->mouseClick(pView,e);
@@ -791,10 +792,10 @@ gint XAP_UnixFrameImpl::_fe::expose(GtkWidget * w, GdkEventExpose* pExposeEvent)
 		GR_Graphics * pGr = pView->getGraphics ();
 		UT_Rect rClip;
 		xxx_UT_DEBUGMSG(("Expose area: x %d y %d width %d  height %d \n",pExposeEvent->area.x,pExposeEvent->area.y,pExposeEvent->area.width,pExposeEvent->area.height));
-		rClip.left = pGr->tlu(pExposeEvent->area.x)+1;
-		rClip.top = pGr->tlu(pExposeEvent->area.y)+1;
-		rClip.width = pGr->tlu(pExposeEvent->area.width);
-		rClip.height = pGr->tlu(pExposeEvent->area.height);
+		rClip.left = pGr->tlu(pExposeEvent->area.x);
+		rClip.top = pGr->tlu(pExposeEvent->area.y);
+		rClip.width = pGr->tlu(pExposeEvent->area.width)+1;
+		rClip.height = pGr->tlu(pExposeEvent->area.height)+1;
 
 		pView->draw(&rClip);
 	}
@@ -1242,12 +1243,27 @@ gint XAP_UnixFrameImpl::_imRetrieveSurrounding_cb (GtkIMContext *context, gpoint
 {
 	UT_DEBUGMSG(("Retrieve Surrounding\n"));
 
-#if 0
-  gtk_im_context_set_surrounding (context,
-				  entry->text,
-				  entry->n_bytes,
-				  g_utf8_offset_to_pointer (entry->text, entry->current_pos) - entry->text);
-#endif
+	XAP_UnixFrameImpl * pImpl = static_cast<XAP_UnixFrameImpl*>(data);
+	FV_View * pView = static_cast<FV_View*>(pImpl->getFrame()->getCurrentView ());
+
+	PT_DocPosition begin_p, end_p, here;
+
+	begin_p = pView->mapDocPos (FV_DOCPOS_BOB);
+	end_p = pView->mapDocPos (FV_DOCPOS_EOB);
+	here = pView->getInsPoint ();
+
+	UT_UCSChar * text = pView->getTextBetweenPos (begin_p, end_p);
+
+	if (!text)
+		return TRUE;
+
+	UT_UTF8String utf (text);
+	DELETEPV(text);
+
+	gtk_im_context_set_surrounding (context,
+									utf.utf8_str(),
+									utf.byteLength (),
+									here - begin_p);
 
 	return TRUE;
 }

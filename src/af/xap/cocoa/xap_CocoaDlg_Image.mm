@@ -1,5 +1,6 @@
 /* AbiWord
  * Copyright (C) 2001 Dom Lachowicz
+ * Copyright (C) 2003 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,15 +19,13 @@
  */
 
 #include <stdlib.h>
-#include <time.h>
+#import <Cocoa/Cocoa.h>
 
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 
-// This header defines some functions for Cocoa dialogs,
-// like centering them, measuring them, etc.
-#include "xap_CocoaDialogHelper.h"
+#include "xap_CocoaDialog_Utilities.h"
 
 #include "xap_App.h"
 #include "xap_CocoaApp.h"
@@ -39,45 +38,131 @@
 
 /*****************************************************************/
 
-static void s_ok_clicked(GtkWidget * widget, XAP_CocoaDialog_Image * dlg)
-{
-  UT_ASSERT(widget && dlg);
-  dlg->event_Ok();
-}
-
-static void s_cancel_clicked(GtkWidget * widget, XAP_CocoaDialog_Image * dlg)
-{
-  UT_ASSERT(widget && dlg);
-  dlg->event_Cancel();
-}
-
 void XAP_CocoaDialog_Image::event_Ok ()
 {
-  // TODO: get width & height
-  setWidth (gtk_spin_button_get_value_as_float(GTK_SPIN_BUTTON(width_spin)));
-  setHeight (gtk_spin_button_get_value_as_float(GTK_SPIN_BUTTON(height_spin)));
-  setAnswer(XAP_Dialog_Image::a_OK);
-  gtk_main_quit ();
+	setAnswer(XAP_Dialog_Image::a_OK);
+	setTitle ([[m_dlg titleEntry] UTF8String]);
+	setAlt ([[m_dlg altEntry] UTF8String]);
+	[NSApp stopModal];
 }
 
 void XAP_CocoaDialog_Image::event_Cancel ()
 {  
-  setAnswer(XAP_Dialog_Image::a_Cancel);
-  gtk_main_quit ();
+	setAnswer(XAP_Dialog_Image::a_Cancel);
+	[NSApp stopModal];
+}
+
+void XAP_CocoaDialog_Image::aspectCheckbox()
+{
+	bool bAspect;
+	
+	if([m_dlg preserveRatio] && (m_dHeightWidth > 0.0001)) {
+		bAspect = true;
+	}
+	else {
+		bAspect = false;
+	}
+	setPreserveAspect(bAspect);
+}
+
+void XAP_CocoaDialog_Image::doHeightSpin(void)
+{
+	bool bIncrement = true;
+	UT_sint32 val = [m_dlg heightNum];
+	if (val == m_iHeight) {
+		return;
+	}
+	if(val < m_iHeight) {
+		bIncrement = false;
+	}
+	
+	m_iHeight = val;
+	incrementHeight(bIncrement);
+	adjustWidthForAspect();
+	[m_dlg setHeightEntry:[NSString stringWithUTF8String:getHeightString()]];
+}
+
+
+void XAP_CocoaDialog_Image::doWidthSpin(void)
+{
+	bool bIncrement = true;
+	UT_sint32 val = [m_dlg widthNum];
+	if (val == m_iWidth) {
+		return;	
+	}
+	if(val < m_iWidth) {
+		bIncrement = false;
+	}
+	m_iWidth = val;
+	incrementWidth(bIncrement);
+	adjustHeightForAspect();
+	[m_dlg setWidthEntry:[NSString stringWithUTF8String:getWidthString()]];
+}
+
+void XAP_CocoaDialog_Image::doHeightEntry(void)
+{
+	const char * szHeight = [[m_dlg heightEntry] UTF8String];
+	if(UT_determineDimension(szHeight,DIM_none) != DIM_none)
+	{
+		setHeight(szHeight);
+
+		[m_dlg setHeightEntry:[NSString stringWithUTF8String:getHeightString()]];
+	}
+	adjustWidthForAspect();
+}
+
+void XAP_CocoaDialog_Image::setHeightEntry(void)
+{
+	[m_dlg setHeightEntry:[NSString stringWithUTF8String:getHeightString()]];
+}
+
+void XAP_CocoaDialog_Image::setWidthEntry(void)
+{
+	[m_dlg setWidthEntry:[NSString stringWithUTF8String:getWidthString()]];
+}
+
+void XAP_CocoaDialog_Image::doWidthEntry(void)
+{
+	const char * szWidth = [[m_dlg widthEntry] UTF8String];
+	if(UT_determineDimension(szWidth,DIM_none) != DIM_none)
+	{
+		setWidth(szWidth);
+		[m_dlg setWidthEntry:[NSString stringWithUTF8String:getWidthString()]];
+	}
+	adjustHeightForAspect();
+}
+
+
+void XAP_CocoaDialog_Image::adjustHeightForAspect(void)
+{
+	if(getPreserveAspect()) {
+		setHeightEntry();
+	}
+}
+
+void XAP_CocoaDialog_Image::adjustWidthForAspect(void)
+{
+	if(getPreserveAspect()) {
+		setWidthEntry();
+	}
 }
 
 /***********************************************************************/
 
 XAP_Dialog * XAP_CocoaDialog_Image::static_constructor(XAP_DialogFactory * pFactory,
-						      XAP_Dialog_Id id)
+						      XAP_Dialog_Id dlgid)
 {
-  XAP_CocoaDialog_Image * p = new XAP_CocoaDialog_Image(pFactory,id);
-  return p;
+	XAP_CocoaDialog_Image * p = new XAP_CocoaDialog_Image(pFactory,dlgid);
+	return p;
 }
 
 XAP_CocoaDialog_Image::XAP_CocoaDialog_Image(XAP_DialogFactory * pDlgFactory,
-					   XAP_Dialog_Id id)
-  : XAP_Dialog_Image(pDlgFactory,id)
+					   XAP_Dialog_Id dlgid)
+  : XAP_Dialog_Image(pDlgFactory,dlgid),
+	m_iHeight(0),
+	m_iWidth(0),
+	m_dHeightWidth(0),
+	m_dlg(nil)
 {
 }
 
@@ -87,138 +172,180 @@ XAP_CocoaDialog_Image::~XAP_CocoaDialog_Image(void)
 
 void XAP_CocoaDialog_Image::runModal(XAP_Frame * pFrame)
 {
-  UT_ASSERT(pFrame);
-  
-  // build the dialog
-  GtkWidget * cf = _constructWindow();
-  GdkWindow * window = NULL;
-  UT_ASSERT(cf);
-  connectFocus(GTK_WIDGET(cf),pFrame);
-  
-  // get top level window and its GtkWidget *
-  XAP_CocoaFrame * frame = static_cast<XAP_CocoaFrame *>(pFrame);
-  UT_ASSERT(frame);
-  GtkWidget * parent = frame->getTopLevelWindow();
-  UT_ASSERT(parent);
-  
-  // center it
-  centerDialog(parent, cf);
-  
-  // Run the dialog
-  gtk_widget_show (cf);
-  gtk_main();
+	m_dlg = [[XAP_CocoaDialog_ImageController alloc] initFromNib];
+	
+	[m_dlg setXAPOwner:this];
 
-  if (cf && GTK_IS_WIDGET(cf))
-    gtk_widget_destroy (cf);
+	NSWindow * window = [m_dlg window];
+	UT_ASSERT(window);
+
+	setHeightEntry();
+	setWidthEntry();
+	double height = UT_convertToInches(getHeightString());
+	double width = UT_convertToInches(getWidthString());
+	
+	if((height > 0.0001) && (width > 0.0001)) {
+		m_dHeightWidth = height/width;
+	}
+	else {
+		m_dHeightWidth = 0.0;
+		[m_dlg setPreserveRatio:NO];
+	}	  
+
+	[NSApp runModalForWindow:window];
+
+	[m_dlg discardXAP];
+	[m_dlg close];
+	[m_dlg release];
+	m_dlg = nil;
 }
 
-void XAP_CocoaDialog_Image::_connectSignals (void)
+
+
+@implementation XAP_CocoaDialog_ImageController
+
+- (id)initFromNib
 {
-  // the control buttons
-  g_signal_connect(G_OBJECT(m_buttonOK),
-		     "clicked",
-		     G_CALLBACK(s_ok_clicked),
-		     (gpointer) this);
-  
-  g_signal_connect(G_OBJECT(m_buttonCancel),
-		     "clicked",
-		     G_CALLBACK(s_cancel_clicked),
-		     (gpointer) this);
-  
-  g_signal_connect_after(G_OBJECT(mMainWindow),
-			   "destroy",
-			   NULL,
-			   NULL);
+	self = [super initWithWindowNibName:@"xap_CocoaDlg_Image"];
+	return self;
 }
 
-void XAP_CocoaDialog_Image::_constructWindowContents (GtkWidget * dialog_vbox1)
+-(void)discardXAP
 {
-  GtkWidget *table1;
-  GtkWidget *label1;
-  GtkWidget *label2;
-  GObject *height_spin_adj;
-  GObject *width_spin_adj;
-
-  const XAP_StringSet * pSS = m_pApp->getStringSet();
-
-  table1 = gtk_table_new (2, 2, TRUE);
-  gtk_widget_show (table1);
-  gtk_box_pack_start (GTK_BOX (dialog_vbox1), table1, TRUE, TRUE, 0);
-  gtk_container_set_border_width (GTK_CONTAINER (table1), 5);
-
-  label1 = gtk_label_new (pSS->getValue(XAP_STRING_ID_DLG_Image_Width));
-  gtk_widget_show (label1);
-  gtk_table_attach (GTK_TABLE (table1), label1, 0, 1, 0, 1,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
-  gtk_misc_set_alignment (GTK_MISC (label1), 0, 0.5);
-
-  label2 = gtk_label_new (pSS->getValue(XAP_STRING_ID_DLG_Image_Height));
-  gtk_widget_show (label2);
-  gtk_table_attach (GTK_TABLE (table1), label2, 0, 1, 1, 2,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
-  gtk_misc_set_alignment (GTK_MISC (label2), 0, 0.5);
-
-  height_spin_adj = gtk_adjustment_new (getHeight(), 0, getMaxHeight(), 1, 1, 1);
-  height_spin = gtk_spin_button_new (GTK_ADJUSTMENT (height_spin_adj), 1, 1);
-  gtk_widget_show (height_spin);
-  gtk_table_attach (GTK_TABLE (table1), height_spin, 1, 2, 0, 1,
-                    (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
-  gtk_spin_button_set_numeric (GTK_SPIN_BUTTON (height_spin), TRUE);
-
-  width_spin_adj = gtk_adjustment_new (getWidth(), 0, getMaxWidth(), 1, 1, 1);
-  width_spin = gtk_spin_button_new (GTK_ADJUSTMENT (width_spin_adj), 1, 1);
-  gtk_widget_show (width_spin);
-  gtk_table_attach (GTK_TABLE (table1), width_spin, 1, 2, 1, 2,
-                    (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
-  gtk_spin_button_set_numeric (GTK_SPIN_BUTTON (width_spin), TRUE);
+	_xap = NULL; 
 }
 
-GtkWidget * XAP_CocoaDialog_Image::_constructWindow ()
+-(void)dealloc
 {
-  GtkWidget *dialog1;
-  GtkWidget *dialog_vbox1;
-  GtkWidget *hbuttonbox1;
-  GtkWidget *ok_btn;
-  GtkWidget *cancel_btn;
-  GtkWidget *dialog_action_area1;
-
-  const XAP_StringSet * pSS = m_pApp->getStringSet();
-
-  dialog1 = gtk_dialog_new ();
-  gtk_window_set_title (GTK_WINDOW (dialog1), pSS->getValue(XAP_STRING_ID_DLG_Image_Title));
-  gtk_window_set_policy (GTK_WINDOW (dialog1), TRUE, TRUE, FALSE);
-
-  dialog_vbox1 = GTK_DIALOG (dialog1)->vbox;
-  gtk_widget_show (dialog_vbox1);
-
-  _constructWindowContents ( dialog_vbox1 );
-
-  dialog_action_area1 = GTK_DIALOG (dialog1)->action_area;
-  gtk_widget_show (dialog_action_area1);
-  gtk_container_set_border_width (GTK_CONTAINER (dialog_action_area1), 10);
-
-  hbuttonbox1 = gtk_hbutton_box_new ();
-  gtk_widget_show (hbuttonbox1);
-  gtk_box_pack_start (GTK_BOX (dialog_action_area1), hbuttonbox1, TRUE, TRUE, 0);
-
-  ok_btn = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_OK));
-  gtk_widget_show (ok_btn);
-  gtk_container_add (GTK_CONTAINER (hbuttonbox1), ok_btn);
-  GTK_WIDGET_SET_FLAGS (ok_btn, GTK_CAN_DEFAULT);
-
-  cancel_btn = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Cancel));
-  gtk_widget_show (cancel_btn);
-  gtk_container_add (GTK_CONTAINER (hbuttonbox1), cancel_btn);
-  GTK_WIDGET_SET_FLAGS (cancel_btn, GTK_CAN_DEFAULT);
-
-  m_buttonOK = ok_btn;
-  m_buttonCancel = cancel_btn;
-  mMainWindow = dialog1;
-  _connectSignals ();
-
-  return dialog1;
+	[super dealloc];
 }
+
+- (void)setXAPOwner:(XAP_Dialog *)owner
+{
+	_xap = dynamic_cast<XAP_CocoaDialog_Image*>(owner);
+}
+
+-(void)windowDidLoad
+{
+	if (_xap) {
+		const XAP_StringSet *pSS = XAP_App::getApp()->getStringSet();
+		LocalizeControl([self window], pSS, XAP_STRING_ID_DLG_Image_Title);
+		LocalizeControl(_okBtn, pSS, XAP_STRING_ID_DLG_OK);
+		LocalizeControl(_cancelBtn, pSS, XAP_STRING_ID_DLG_Cancel);
+		LocalizeControl(_heightLabel, pSS, XAP_STRING_ID_DLG_Image_Height);
+		LocalizeControl(_widthLabel, pSS, XAP_STRING_ID_DLG_Image_Width);
+		LocalizeControl(_titleLabel, pSS, XAP_STRING_ID_DLG_Image_LblTitle);
+		LocalizeControl(_altLabel, pSS, XAP_STRING_ID_DLG_Image_LblAlt);
+		LocalizeControl(_preserveAspectBtn, pSS, XAP_STRING_ID_DLG_Image_Aspect);
+		[_preserveAspectBtn setState:(_xap->getPreserveAspect()?NSOnState:NSOffState)];
+		[_titleData setStringValue:[NSString stringWithUTF8String:_xap->getTitle().utf8_str()]];
+		[_altData setStringValue:[NSString stringWithUTF8String:_xap->getAlt().utf8_str()]];
+		/* FIXME: we probably have smarter default values Unix code doesn't.*/
+		[_heightNumStepper setIntValue:1];
+		[_heightNumData setIntValue:1];
+		[_widthNumStepper setIntValue:1];
+		[_widthNumData setIntValue:1];
+	}
+}
+
+
+- (IBAction)cancelAction:(id)sender
+{
+	_xap->event_Cancel();
+}
+
+- (IBAction)heightChanged:(id)sender
+{
+	_xap->doHeightEntry();
+}
+
+- (IBAction)heightNumChanged:(id)sender
+{
+	_xap->doHeightSpin();
+}
+
+- (IBAction)heightNumStepperChanged:(id)sender
+{
+	_xap->doHeightSpin();
+}
+
+- (IBAction)okAction:(id)sender
+{
+	_xap->event_Ok();
+}
+
+- (IBAction)preserveAction:(id)sender
+{
+	_xap->aspectCheckbox();
+}
+
+- (IBAction)widthChanged:(id)sender
+{
+	_xap->doWidthEntry();
+}
+
+- (IBAction)widthNumChanged:(id)sender
+{
+	_xap->doWidthSpin();
+}
+
+- (IBAction)widthNumStepperChanged:(id)sender
+{
+	_xap->doWidthSpin();
+}
+
+
+- (NSString*)titleEntry
+{
+	return [_titleData stringValue];
+}
+
+- (NSString*)altEntry
+{
+	return [_altData stringValue];
+}
+
+
+- (NSString*)widthEntry
+{
+	return [_widthData stringValue];
+}
+
+- (void)setWidthEntry:(NSString*)entry
+{
+	[_widthData setStringValue:entry];
+}
+
+- (int)widthNum
+{
+	return [_widthNumData intValue];
+}
+
+
+- (NSString*)heightEntry
+{
+	return [_heightData stringValue];
+}
+
+- (void)setHeightEntry:(NSString*)entry
+{
+	[_heightData setStringValue:entry];
+}
+
+
+- (int)heightNum
+{
+	return [_heightNumData intValue];
+}
+
+- (BOOL)preserveRatio
+{
+	return ([_preserveAspectBtn state] == NSOnState ? YES : NO);
+}
+
+- (void)setPreserveRatio:(BOOL)val
+{
+	[_preserveAspectBtn setState:(val?NSOnState:NSOffState)];
+}
+
+@end

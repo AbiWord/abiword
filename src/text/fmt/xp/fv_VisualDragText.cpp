@@ -21,12 +21,14 @@
 #include "fl_DocLayout.h"
 #include "pd_Document.h"
 #include "gr_Graphics.h"
-#include "fv_View.h"
 #include "ut_units.h"
 #include "fl_BlockLayout.h"
 #include "fp_Line.h"
 #include "fp_Run.h"
-
+#include "fl_TableLayout.h"
+#include "fp_TableContainer.h"
+#include "fv_View.h"
+#include "gr_Painter.h"
 
 FV_VisualDragText::FV_VisualDragText (FV_View * pView)
 	: m_pView (pView), 
@@ -39,7 +41,10 @@ FV_VisualDragText::FV_VisualDragText (FV_View * pView)
 	  m_iInitialOffY(0),
 	  m_recOrigLeft(0,0,0,0),
 	  m_recOrigRight(0,0,0,0),
-	  m_bTextCut(false)
+	  m_bTextCut(false),
+	  m_pDocUnderCursor(NULL),
+	  m_bCursorDrawn(false),
+	  m_recCursor(0,0,0,0)
 {
 	UT_ASSERT (pView);
 }
@@ -76,6 +81,7 @@ void FV_VisualDragText::mouseDrag(UT_sint32 x, UT_sint32 y)
 		m_bTextCut = true;
 
 	}
+	clearCursor();
 	m_iVisualDragMode = FV_VisualDrag_DRAGGING;	
 	UT_sint32 dx = 0;
 	UT_sint32 dy = 0;
@@ -160,9 +166,49 @@ void FV_VisualDragText::mouseDrag(UT_sint32 x, UT_sint32 y)
 	getGraphics()->setClipRect(NULL);
 	PT_DocPosition posAtXY = getPosFromXY(x,y);
 	m_pView->_setPoint(posAtXY);
-	m_pView->_fixInsertionPointCoords();
+//	m_pView->_fixInsertionPointCoords();
+	drawCursor(posAtXY);
 }
 
+void FV_VisualDragText::clearCursor(void)
+{
+	if(m_bCursorDrawn)
+	{
+		if(m_pDocUnderCursor)
+		{
+			GR_Painter painter(getGraphics());
+			painter.drawImage(m_pDocUnderCursor,m_recCursor.left,m_recCursor.top);
+			m_bCursorDrawn = false;
+			DELETEP(m_pDocUnderCursor);
+		}
+		else
+		{
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		}
+	}
+}
+
+void FV_VisualDragText::drawCursor(PT_DocPosition newPos)
+{
+
+	fp_Run * pRunLow = NULL;
+	fl_BlockLayout * pBlock = NULL;
+	UT_sint32 xLow, yLow;
+	UT_uint32 heightCaret;
+	UT_sint32 xCaret2, yCaret2;
+	bool bDirection,bEOL;
+	m_pView->_findPositionCoords(newPos, bEOL, xLow, yLow, xCaret2, yCaret2, heightCaret, bDirection, &pBlock, &pRunLow);
+	m_recCursor.left = xLow;
+	m_recCursor.top = yLow;
+	m_recCursor.width =  2;
+	m_recCursor.height = heightCaret;
+	UT_ASSERT(m_pDocUnderCursor == NULL);
+	GR_Painter painter(getGraphics());
+	m_pDocUnderCursor = painter.genImageFromRectangle(m_recCursor);
+	UT_RGBColor black(0,0,0);
+	painter.fillRect( black, m_recCursor);
+	m_bCursorDrawn = true;
+}
 
 /*!
  * This method creates an image from the current selection. It sets
@@ -174,27 +220,92 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 //
 // OK first work out the locations in the document of the anchor and point
 //	
-	PT_DocPosition posLow = m_pView->getSelectionAnchor();
+	PT_DocPosition posLow = 0;
 	PT_DocPosition posHigh = 0;
-	if(posLow < m_pView->getPoint())
-	{
-		posHigh = m_pView->getPoint();
-	}
-	else
-	{
-		posLow = m_pView->getPoint();
-		posHigh = m_pView->getSelectionAnchor();
-	}
 
 	fp_Run * pRunLow = NULL;
-	UT_sint32 xLow, yLow;
+	UT_sint32 xLow, yLow,xHigh,yHigh;
 	UT_uint32 heightCaret;
 	UT_sint32 xCaret2, yCaret2;
 	bool bDirection,bEOL;
+	if(m_pView->getSelectionMode() < 	FV_SelectionMode_Multiple)
+	{
+		if(posLow < m_pView->getPoint())
+		{
+			posLow = m_pView->getSelectionAnchor();
+			posHigh = 0;
+			posHigh = m_pView->getPoint();
+		}
+		else
+		{
+			posLow = m_pView->getPoint();
+			posHigh = m_pView->getSelectionAnchor();
+		}
+	}
+	else
+	{
+		UT_sint32 num = m_pView->getNumSelections();
+		PD_DocumentRange * pR = m_pView->getNthSelection(0);
+		posLow = pR->m_pos1+1;
+		fl_BlockLayout * pBlock = NULL;
+		m_pView->_findPositionCoords(posLow, bEOL, xLow, yLow, xCaret2, yCaret2, heightCaret, bDirection, &pBlock, &pRunLow);
+		while(pBlock->isEmbeddedType())
+		{
+			posLow++;
+			m_pView->_findPositionCoords(posLow, bEOL, xLow, yLow, xCaret2, yCaret2, heightCaret, bDirection, &pBlock, &pRunLow);
+		}
+		fl_ContainerLayout * pCL = pBlock->myContainingLayout();
+		UT_return_if_fail(pCL->getContainerType() == FL_CONTAINER_CELL);
+		fl_CellLayout * pCell = static_cast<fl_CellLayout *>(pCL);
+		fp_CellContainer * pCCon = static_cast<fp_CellContainer *>(pCL->getFirstContainer());
+		UT_return_if_fail(pCCon);
+		UT_Rect * pRect = pCCon->getScreenRect();
+		xLow = pRect->left;
+		yLow = pRect->top;
+		m_recCurFrame.left = xLow;
+		m_recCurFrame.top = yLow;
+		delete pRect;
+//
+// Now the other end of the column
+//
+	    pR = m_pView->getNthSelection(num-1);
+		posHigh = pR->m_pos1+1;
+		m_pView->_findPositionCoords(posHigh, bEOL, xHigh, yHigh, xCaret2, yCaret2, heightCaret, bDirection, &pBlock, &pRunLow);
+		while(pBlock->isEmbeddedType())
+		{
+			posHigh++;
+			m_pView->_findPositionCoords(posHigh, bEOL, xHigh, yHigh, xCaret2, yCaret2, heightCaret, bDirection, &pBlock, &pRunLow);
+		}
+		pCL = pBlock->myContainingLayout();
+		UT_return_if_fail(pCL->getContainerType() == FL_CONTAINER_CELL);
+		pCell = static_cast<fl_CellLayout *>(pCL);
+		pCCon = static_cast<fp_CellContainer *>(pCL->getFirstContainer());
+		UT_return_if_fail(pCCon);
+		pRect = pCCon->getScreenRect();
+		xHigh = pRect->left+ pRect->width;
+		yHigh = pRect->top + pRect->height;
+		delete pRect;
+		m_recCurFrame.width = xHigh - xLow;
+		m_recCurFrame.height = yHigh - yLow;
+		m_recOrigLeft.width = 0;
+		m_recOrigLeft.height = 0;
+		m_recOrigLeft.left = 0;
+		m_recOrigLeft.top = 0;
+		m_recOrigRight.width = 0;
+		m_recOrigRight.height = 0;
+		m_recOrigRight.left = 0;
+		m_recOrigRight.top = 0;
+		m_iLastX = x;
+		m_iLastY = y;
+		m_iInitialOffX = x - m_recCurFrame.left;
+		m_iInitialOffY = y - m_recCurFrame.top;
+		GR_Painter painter(getGraphics());
+		m_pDragImage = painter.genImageFromRectangle(m_recCurFrame);
+		return;
+	}
 	m_pView->_findPositionCoords(posLow, bEOL, xLow, yLow, xCaret2, yCaret2, heightCaret, bDirection, NULL, &pRunLow);
 	fp_Line * pLineLow = pRunLow->getLine();
 	fp_Run * pRunHigh = NULL;
-	UT_sint32 xHigh, yHigh;
 	m_pView->_findPositionCoords(posHigh, bEOL, xHigh, yHigh, xCaret2, yCaret2, heightCaret, bDirection, NULL, &pRunHigh);
 	fp_Line * pLineHigh = pRunHigh->getLine();
 //
@@ -287,7 +398,8 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 	m_iLastY = y;
 	m_iInitialOffX = x - m_recCurFrame.left;
 	m_iInitialOffY = y - m_recCurFrame.top;
-	m_pDragImage = getGraphics()->genImageFromRectangle(m_recCurFrame);
+	GR_Painter painter(getGraphics());
+	m_pDragImage = painter.genImageFromRectangle(m_recCurFrame);
 }
 
 void FV_VisualDragText::mouseCut(UT_sint32 x, UT_sint32 y)
@@ -329,6 +441,7 @@ PT_DocPosition FV_VisualDragText::getPosFromXY(UT_sint32 x, UT_sint32 y)
  */
 void FV_VisualDragText::mouseRelease(UT_sint32 x, UT_sint32 y)
 {
+	clearCursor();
 	if(m_iVisualDragMode != FV_VisualDrag_DRAGGING)
 	{
 //
@@ -346,11 +459,22 @@ void FV_VisualDragText::mouseRelease(UT_sint32 x, UT_sint32 y)
 	m_pView->getMouseContext(x,y);
 	m_iInitialOffX = 0;
 	m_iInitialOffY = 0;
+	PT_DocPosition oldPoint = m_pView->getPoint();
+	bool bPasteTableCol = (m_pView->getPrevSelectionMode() == FV_SelectionMode_TableColumn);
 	m_pView->cmdPaste();
+	PT_DocPosition newPoint = m_pView->getPoint();
 	DELETEP(m_pDragImage);
 	if(m_bTextCut)
 	{
 		m_pView->getDocument()->endUserAtomicGlob(); // End the big undo block
+	}
+	if(!bPasteTableCol)
+	{
+		m_pView->cmdSelect(oldPoint,newPoint);
+	}
+	else
+	{
+		m_pView->cmdSelectColumn(newPoint);
 	}
 	m_bTextCut = false;
 }
@@ -362,4 +486,6 @@ void FV_VisualDragText::drawImage(void)
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return;
 	}
-	getGraphics()->drawImage(m_pDragImage,m_recCurFrame.left,m_recCurFrame.top);}
+	GR_Painter painter(getGraphics());
+	painter.drawImage(m_pDragImage,m_recCurFrame.left,m_recCurFrame.top);
+}

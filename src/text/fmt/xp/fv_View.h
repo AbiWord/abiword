@@ -20,114 +20,69 @@
 #ifndef FV_VIEW_H
 #define FV_VIEW_H
 
-#include "ut_misc.h"
+//#include "ut_misc.h"
 #include "ut_types.h"
+
 #include "xav_View.h"
+
 #include "pt_Types.h"
-#include "gr_DrawArgs.h"
-#include "gr_Graphics.h"
-#include "ev_EditBits.h"
 #include "ie_types.h"
-#include "xap_Prefs.h"
-#include "ap_Dialog_Goto.h"
-#include "fl_AutoLists.h"
-#include "fl_SectionLayout.h"
-#include "pp_Revision.h"
-#include "ap_TopRuler.h"
-#include "ap_LeftRuler.h"
+#include "ap_types.h"
+#include "fp_types.h"
+
+#include "ev_EditBits.h"
+
+
+// have to include these as they are instantiated in the FV_View
+// class definition
 #include "fv_FrameEdit.h"
 #include "fv_VisualDragText.h"
+#include "fv_Selection.h"
 
 #define AUTO_SCROLL_MSECS	100
 
 class FL_DocLayout;
+class FV_Caret_Listener;
+
+class fl_DocSectionLayout;
+class fl_HdrFtrSectionLayout;
 class fl_DocListener;
 class fl_BlockLayout;
 class fl_PartOfBlock;
+class fl_AutoNum;
+class fl_EndnoteLayout;
+
+class fp_PageSize;
 class fp_Page;
 class fp_Run;
 class fp_HyperlinkRun;
+class fp_CellContainer;
+
 class FG_Graphic;
+
 class PD_Document;
+class PP_AttrProp;
+class PP_RevisionAttr;
+
 class GR_Graphics;
+struct dg_DrawArgs;
+
 class UT_Worker;
 class UT_Timer;
+class UT_StringPtrMap;
+
 class AP_TopRulerInfo;
 class AP_LeftRulerInfo;
-class XAP_App;
-class XAP_Prefs;
-class UT_StringPtrMap;
-class PP_AttrProp;
-class fl_AutoNum;
-class fp_PageSize;
 class AP_TopRuler;
 class AP_LeftRuler;
+
+class AP_Dialog_SplitCells;
+
+class XAP_App;
+class XAP_Prefs;
+
 class SpellChecker;
-class FV_Caret_Listener;
 
-typedef enum _FVDocPos
-{
-	FV_DOCPOS_BOB, FV_DOCPOS_EOB,	// block
-	FV_DOCPOS_BOD, FV_DOCPOS_EOD,	// document
-	FV_DOCPOS_BOP, FV_DOCPOS_EOP,	// page
-	FV_DOCPOS_BOL, FV_DOCPOS_EOL,	// line
-	FV_DOCPOS_BOS, FV_DOCPOS_EOS,	// sentence
-	FV_DOCPOS_BOW, FV_DOCPOS_EOW_MOVE, FV_DOCPOS_EOW_SELECT // word
-} FV_DocPos;
-
-typedef enum _ToggleCase
-{
-  CASE_SENTENCE,
-  CASE_LOWER,
-  CASE_UPPER,
-  CASE_TITLE,
-  CASE_TOGGLE,
-  CASE_FIRST_CAPITAL,
-  CASE_ROTATE
-} ToggleCase;
-
-typedef enum _FormatTable
-{
-	FORMAT_TABLE_SELECTION,
-	FORMAT_TABLE_ROW,
-	FORMAT_TABLE_COLUMN,
-	FORMAT_TABLE_TABLE
-} FormatTable;
-
-typedef enum
-{
-	BreakSectionContinuous,
-	BreakSectionNextPage,
-	BreakSectionEvenPage,
-	BreakSectionOddPage
-} BreakSectionType;
-
-typedef enum
-{
-  VIEW_PRINT,
-  VIEW_NORMAL,
-  VIEW_WEB,
-  VIEW_PREVIEW
-} ViewMode;
-
-typedef enum
-{
-  PREVIEW_NONE,
-  PREVIEW_ZOOMED,
-  PREVIEW_ADJUSTED_PAGE,
-  PREVIEW_CLIPPED,
-  PREVIEW_ZOOMED_SCROLL,
-  PREVIEW_ADJUSTED_PAGE_SCROLL,
-  PREVIEW_CLIPPED_SCROLL
-} PreViewMode;
-
-typedef enum _AP_JumpTarget
-{
-	AP_JUMPTARGET_PAGE, 			// beginning of page
-	AP_JUMPTARGET_LINE,
-	AP_JUMPTARGET_BOOKMARK,
-	AP_JUMPTARGET_PICTURE // TODO
-} AP_JumpTarget;
 
 struct fv_ChangeState
 {
@@ -179,14 +134,15 @@ class ABI_EXPORT FV_View : public AV_View
 	friend class GR_Caret;
 	friend class FV_FrameEdit;
 	friend class FV_VisualDragText;
+	friend class FV_Selection;
 public:
 	FV_View(XAP_App*, void*, FL_DocLayout*);
 	virtual ~FV_View();
 
 	virtual inline GR_Graphics*    getGraphics(void) const { return m_pG; }
 	void  setGraphics(GR_Graphics *pG);
-	virtual inline UT_uint32	  getPoint(void) const { return m_iInsPoint; }
-	inline UT_uint32		getSelectionAnchor(void) const { return m_bSelection? m_iSelectionAnchor : m_iInsPoint; }
+	virtual inline PT_DocPosition   getPoint(void) const { return m_iInsPoint; }
+	PT_DocPosition	getSelectionAnchor(void) const;
 
 	virtual void focusChange(AV_Focus focus);
 
@@ -278,7 +234,7 @@ public:
 	bool	isTextMisspelled()const ;
 	bool	isTabListBehindPoint(void);
 	bool	isTabListAheadPoint(void);
-	void	processSelectedBlocks(List_Type listType);
+	void	processSelectedBlocks(FL_ListType listType);
 	void	getBlocksInSelection( UT_Vector * vBlock);
 	UT_sint32 getNumColumnsInSelection(void);
 	UT_sint32 getNumRowsInSelection(void);
@@ -288,7 +244,7 @@ public:
 	bool	cmdStartList(const XML_Char * style);
 	bool	cmdStopList(void);
 	void	changeListStyle(fl_AutoNum* pAuto,
-							List_Type lType,
+							FL_ListType lType,
 							UT_uint32 startv,
 							const XML_Char* pszDelim,
 							const XML_Char* pszDecimal,
@@ -330,9 +286,8 @@ public:
 	void			cmdCharDelete(bool bForward, UT_uint32 count);
 	void			delTo(FV_DocPos dp);
 	UT_UCSChar *	getSelectionText(void);
-#if 0
+
 	UT_UCSChar *	getTextBetweenPos(PT_DocPosition pos1, PT_DocPosition pos2);
-#endif
 	inline PT_DocPosition  getInsPoint () const { return m_iInsPoint; }
 	void			warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos, bool bClick);
 	void			moveInsPtTo(FV_DocPos dp, bool bClearSelection = true);
@@ -380,11 +335,17 @@ public:
 	void            deleteFrame(void);
 	fl_FrameLayout * getFrameLayout(void);
 	void            setFrameFormat(const XML_Char ** props);
+	void            setFrameFormat(const XML_Char ** props,FG_Graphic * pFG, UT_String & dataID);
+
 
 // ----------------------
 
 	bool			isPosSelected(PT_DocPosition pos) const;
 	bool			isXYSelected(UT_sint32 xPos, UT_sint32 yPos) const;
+	FV_SelectionMode getSelectionMode(void) const;
+	FV_SelectionMode getPrevSelectionMode(void) const;
+	PD_DocumentRange * getNthSelection(UT_sint32 i);
+	UT_sint32          getNumSelections(void) const;
 
 // ----------------------
 // Stuff for spellcheck context menu
@@ -501,6 +462,7 @@ public:
 
 	bool				insertPageNum(const XML_Char ** props, HdrFtrType hfType);
 	void				setPoint(PT_DocPosition pt);
+	void                ensureInsertionPointOnScreen(void);
 
 // -----------------------
 	void                killBlink(void);
@@ -527,14 +489,24 @@ public:
 	/* Revision related functions */
 	void                toggleMarkRevisions();
 	void                cmdAcceptRejectRevision(bool bReject, UT_sint32 x, UT_sint32 y);
+	// NB: 'mark revisions' state is document-wide
 	bool                isMarkRevisions();
-	void                cmdSetRevisionLevel(UT_uint32 i){m_iViewRevision = i;}
+	// NB: 'show revisions' state is view-specific
+	bool                isShowRevisions() const {return m_bShowRevisions;}
+	void                toggleShowRevisions();
+	void                setShowRevisions(bool bShow);
+	
+	void                cmdSetRevisionLevel(UT_uint32 i);
 	UT_uint32           getRevisionLevel()const{return m_iViewRevision;}
+	void                setRevisionLevel(UT_uint32 i);
 
+	bool                cmdFindRevision(bool bNext, UT_sint32 xPos, UT_sint32 yPos);
+	
 	/* Table related functions */
 	bool                isPointLegal(PT_DocPosition pos);
 	bool                isPointLegal(void);
 	bool				isInTable();
+	fl_TableLayout *    getTableAtPos(PT_DocPosition);
 	bool				isInTable(PT_DocPosition pos);
 	bool                cmdAutoSizeCols(void);
 	bool                cmdAutoSizeRows(void);
@@ -550,6 +522,8 @@ public:
 	bool                cmdDeleteTable(PT_DocPosition pos);
 	bool                cmdInsertRow(PT_DocPosition posTable, bool bBfore);
 	bool                cmdInsertCol(PT_DocPosition posTable, bool bBefore);
+	bool                cmdSplitCells(AP_CellSplitType iSplitType);
+	bool                cmdSelectColumn(PT_DocPosition posOfColumn);
 	bool                cmdMergeCells(PT_DocPosition posSource, PT_DocPosition posDestination);
 	bool                _MergeCells( PT_DocPosition posDestination,PT_DocPosition posSource, bool bBefore);
 	bool                getCellParams(PT_DocPosition posCol, UT_sint32 *iLeft, 
@@ -560,7 +534,8 @@ public:
 	bool				getCellBGColor(XML_Char * &color);
 	bool	            setTableFormat(const XML_Char * properties[]);
 	bool	            setTableFormat(PT_DocPosition pos,const XML_Char * properties[]);
-	
+	bool                getCellFormat(PT_DocPosition pos, UT_String & sCellProps);
+
 	UT_Error            cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, 
 									   const XML_Char * pPropsArray[]);
 	bool                _changeCellTo(PT_DocPosition posTable,UT_sint32 rowOld, 
@@ -734,11 +709,6 @@ private:
 	GR_Graphics*		m_pG;
 	void*				m_pParentData;
 
-	PT_DocPosition		m_iSelectionAnchor;
-	PT_DocPosition		m_iSelectionLeftAnchor;
-	PT_DocPosition		m_iSelectionRightAnchor;
-	bool				m_bSelection;
-
 	// autoscroll stuff
 	UT_Timer *			m_pAutoScrollTimer;
 	UT_sint32			m_xLastMouse;
@@ -840,6 +810,8 @@ private:
 	AV_ListenerId       m_CaretListID;
 	FV_FrameEdit        m_FrameEdit;
 	FV_VisualDragText   m_VisualDragText;
+	FV_Selection        m_Selection;
+	bool                m_bShowRevisions;
 };
 
 #endif /* FV_VIEW_H */

@@ -373,7 +373,14 @@ bool pt_PieceTable::_realChangeSpanFmt(PTChangeFmt ptc,
 
 	UT_ASSERT(m_pts==PTS_Editing);
     _tweakFieldSpan(dpos1,dpos2);
-
+//
+// Deal with case of exactly selecting the endOfFootnote
+//
+	pf_Frag * pfEndDum = m_fragments.findFirstFragBeforePos(dpos2);
+	if(isEndFootnote(pfEndDum))
+	{
+		dpos2--;
+	}
 //
 // Deal with addStyle
 //

@@ -43,12 +43,12 @@ public:
 				fl_AutoNum * pParent,
 				const XML_Char * lDelim,
 				const XML_Char * lDecimal,
-				List_Type lType,
+				FL_ListType lType,
 				PD_Document * pDoc);
 
 	fl_AutoNum(	UT_uint32 id,
 				UT_uint32 parent_id,
-				List_Type lType,
+				FL_ListType lType,
 				UT_uint32 start,
 				const XML_Char * lDelim,
 				const XML_Char * lDecimal,
@@ -60,14 +60,14 @@ public:
 
 	const UT_UCSChar *			getLabel(PL_StruxDocHandle) const;
 	void						addItem(PL_StruxDocHandle pItem);
-	List_Type					getType() const;
+	FL_ListType					getType() const;
 	UT_uint32					getValue(PL_StruxDocHandle) const;
 	UT_uint32					getLevel() const { return m_iLevel; }
 	UT_uint32					getNumLabels() const;
 
 	void						setLevel(UT_uint32 level) { m_iLevel = level; }
 	UT_sint32					getPositionInList( PL_StruxDocHandle pItem, UT_uint32 depth) const;
-	void						setListType(List_Type lType);
+	void						setListType(FL_ListType lType);
 	void						setDelim(const XML_Char * pszDelim);
 	const XML_Char *			getDelim() const;
 	void						setDecimal(const XML_Char * pszDecimal);
@@ -131,7 +131,7 @@ protected:
 
 	UT_Vector					m_pItems;
 	PD_Document *				m_pDoc;
-	List_Type					m_List_Type;
+	FL_ListType					m_List_Type;
 	UT_uint32					m_iID;
 	UT_uint32					m_iParentID;
 	UT_uint32					m_iLevel;

@@ -46,14 +46,16 @@ public:
 	GR_BeOSGraphics(BView *front, XAP_App *app);
 	~GR_BeOSGraphics();
 
+	virtual void drawGlyph(UT_uint32 glyph_idx, UT_sint32 xoff, UT_sint32 yoff);
 	virtual void drawChars(const UT_UCSChar* pChars, int iCharOffset,
 						   int iLength, UT_sint32 xoff, UT_sint32 yoff,
 						   int * pCharWidths = NULL);
 	virtual void setFont(GR_Font* pFont);
-
+	virtual void clearFont(void);
 
 	//virtual UT_uint32 measureString(const UT_UCSChar*s, int iOffset, int num, unsigned short* pWidths);
-	virtual UT_uint32 measureUnRemappedChar(const UT_UCSChar c);
+	virtual UT_sint32 measureUnRemappedChar(const UT_UCSChar c);
+	virtual void getCoverage(UT_Vector& coverage);
 	virtual UT_uint32 _getResolution(void) const;
 
 	virtual void getColor(UT_RGBColor& clr);
@@ -75,7 +77,7 @@ public:
 	virtual void drawLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
 	virtual void polyLine(UT_Point * pts, UT_uint32 nPoints);
 	virtual void xorLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
-	virtual void fillRect(UT_RGBColor& c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h);
+	virtual void fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h);
 	virtual void fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h);
 	virtual void fillRect(GR_Color3D c, UT_Rect &r);
 
@@ -106,6 +108,9 @@ public:
 
 
     virtual GR_Image * genImageFromRectangle(const UT_Rect & r) { return NULL;}
+    virtual void	  saveRectangle(UT_Rect & r, UT_uint32 iIndx);
+	virtual void	  restoreRectangle(UT_uint32 iIndx);
+	virtual UT_uint32 getDeviceResolution(void) const;
 
 	//Added for local updating of the View
 	void			ResizeBitmap(BRect r);
@@ -134,6 +139,13 @@ protected:
 	GR_Graphics::Cursor		m_cursor;
 	rgb_color				m_3dColors[COUNT_3D_COLORS];
  	bool					m_bPrint;  
+
+	virtual GR_Font*  _findFont(const char* pszFontFamily,
+								const char* pszFontStyle,
+								const char* pszFontVariant,
+								const char* pszFontWeight,
+								const char* pszFontStretch,
+								const char* pszFontSize);
  	
  	// Takes a line and modifies it to fit with the BeOS pixel coordinate system.
  	// Returns a BPoint containing the modified end-point (x2, y2).

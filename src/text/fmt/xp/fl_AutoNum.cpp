@@ -47,7 +47,7 @@ fl_AutoNum::fl_AutoNum(	UT_uint32 id,
 						fl_AutoNum * pParent,
 						const XML_Char * lDelim,
 						const XML_Char * lDecimal,
-						List_Type lType,
+						FL_ListType lType,
 						PD_Document * pDoc)
 	:	m_pParent(pParent),
 		m_pDoc(pDoc),
@@ -78,7 +78,7 @@ fl_AutoNum::fl_AutoNum(	UT_uint32 id,
 
 fl_AutoNum::fl_AutoNum(	UT_uint32 id,
 						UT_uint32 parent_id,
-						List_Type lType,
+						FL_ListType lType,
 						UT_uint32 start,
 						const XML_Char * lDelim,
 						const XML_Char * lDecimal,
@@ -579,7 +579,7 @@ UT_uint32 fl_AutoNum::getValue(PL_StruxDocHandle pItem) const
 }
 
 
-void fl_AutoNum::setListType(List_Type lType)
+void fl_AutoNum::setListType(FL_ListType lType)
 {
 	m_List_Type = lType;
 }
@@ -614,7 +614,7 @@ void fl_AutoNum::setDecimal(const XML_Char * lDecimal)
 	m_bDirty = true;
 }
 
-List_Type fl_AutoNum::getType() const
+FL_ListType fl_AutoNum::getType() const
 {
 	return m_List_Type;
 }

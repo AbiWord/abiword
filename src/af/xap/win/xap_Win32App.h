@@ -82,11 +82,20 @@ public:
 	virtual UT_sint32					makeDirectory(const char * szPath, const UT_sint32 mode ) const;
 	virtual UT_sint32 				setupWindowFromPrefs(UT_sint32 iCmdShow, HWND hwndFrame);
     virtual XAP_App::BidiSupportType        theOSHasBidiSupport() const {return m_eBidiOS;}
-	void									getDefaultGeometry(UT_uint32& width, UT_uint32& height, UT_uint32& flags);
+	
+	void									getDefaultGeometry(UT_uint32& width,
+															   UT_uint32& height,
+															   UT_uint32& flags);
+
+	void                                    setHKL(HKL hkl) {m_hkl = hkl;}
+	HKL                                     getHKL()const {return m_hkl;}
+	void                                    setKbdLanguage(HKL hkl);
+	
 protected:
 	UT_uint32								_getExeDir(char* pDirBuf, UT_uint32 iBufLen);
 	void									_setAbiSuiteLibDir(void);
 	void									_setBidiOS(void);
+	virtual const char *                    _getKbdLanguage();
 	
 	HINSTANCE								m_hInstance;
 	AP_Win32DialogFactory					m_dialogFactory;
@@ -99,6 +108,7 @@ protected:
 	#endif
 private:
 	XAP_App::BidiSupportType		        m_eBidiOS;
+	HKL                                     m_hkl; // kbd layout handle
 };
 
 #endif /* XAP_WIN32APP_H */

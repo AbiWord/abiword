@@ -307,7 +307,11 @@ bool pt_PieceTable::_realChangeStruxFmt(PTChangeFmt ptc,
 	bool bFoundEnd;
 	bFoundEnd = _getStruxOfTypeFromPosition(dpos2,pts,&pfs_End);
 	UT_ASSERT(bFoundFirst && bFoundEnd);
-
+	while(pfs_End->getPos() < pfs_First->getPos() && (dpos2 >= dpos1))
+	{
+		dpos2--;
+		bFoundEnd = _getStruxOfTypeFromPosition(dpos2,pts,&pfs_End);
+	}
 	// see if the change is exactly one block.  if so, we have
 	// a simple change.  otherwise, we have a multistep change.
 
@@ -440,7 +444,10 @@ bool pt_PieceTable::_realChangeStruxFmt(PTChangeFmt ptc,
 						bResult = _fmtChangeStruxWithNotify(ptc,pfsContainer,attributes,sProps);
 						UT_ASSERT(bResult);
 					}
-
+					if(!bEndSeen && isEndFootnote(static_cast<pf_Frag *>(pfsContainer)))
+					{
+						_getStruxFromFragSkip(pfNewEnd,&pfsContainer);
+					} 
 					if (pfsContainer == pfs_End)
 						bEndSeen = true;
 					else if (bEndSeen)

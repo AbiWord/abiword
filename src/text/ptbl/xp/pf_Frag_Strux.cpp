@@ -37,6 +37,17 @@ pf_Frag_Strux::~pf_Frag_Strux()
 	// since we did not allocate them.
 }
 
+bool pf_Frag_Strux::_isContentEqual(const pf_Frag &f2) const
+{
+	if(!pf_Frag::_isContentEqual(f2))
+		return false;
+
+	if(m_struxType != ((const pf_Frag_Strux &)(f2)).getStruxType())
+		return false;
+
+	return true;
+}
+
 PTStruxType pf_Frag_Strux::getStruxType(void) const
 {
 	return m_struxType;
@@ -51,16 +62,6 @@ PL_StruxFmtHandle pf_Frag_Strux::getFmtHandle(PL_ListenerId lid) const
 bool pf_Frag_Strux::setFmtHandle(PL_ListenerId lid, PL_StruxFmtHandle sfh)
 {
 	return (m_vecFmtHandle.setNthItem(lid,(void *)sfh,NULL) == 0);
-}
-
-PT_AttrPropIndex pf_Frag_Strux::getIndexAP(void) const
-{
-	return m_indexAP;
-}
-
-void pf_Frag_Strux::setIndexAP(PT_AttrPropIndex indexNewAP)
-{
-	m_indexAP = indexNewAP;
 }
 
 bool pf_Frag_Strux::createSpecialChangeRecord(PX_ChangeRecord ** ppcr,

@@ -147,14 +147,110 @@ enum
 class PD_Revision
 {
   public:
-	PD_Revision(UT_uint32 iId, UT_UCS4Char * pDesc):m_iId(iId),m_pDescription(pDesc){};
-	~PD_Revision(){delete m_pDescription;}
+	PD_Revision(UT_uint32 iId, UT_UCS4Char * pDesc, time_t start)
+		:m_iId(iId),m_pDescription(pDesc), m_tStart(start){};
+	
+	~PD_Revision(){delete [] m_pDescription;}
+	
 	UT_uint32         getId()const{return m_iId;}
 	UT_UCS4Char *     getDescription() const {return m_pDescription;}
 
+	// NB: getStartTime() == 0 should be interpreted as 'unknown'
+	time_t            getStartTime() const {return m_tStart;}
+	void              setStartTime(time_t t) {m_tStart = t;}
+
   private:
-	UT_uint32 m_iId;
+	UT_uint32     m_iId;
 	UT_UCS4Char * m_pDescription;
+	time_t        m_tStart;
+};
+
+// a helper class for history tracking
+class PD_VersionData
+{
+  public:
+
+	// constructor for importers
+	PD_VersionData(UT_uint32 v, time_t t, UT_uint32 e, UT_uint32 uid)
+		:m_iId(v),m_tTime(t), m_iEditTime(e), m_iUID(uid){};
+	
+	// constructor for new entries
+	PD_VersionData(UT_uint32 v, time_t t, UT_uint32 e);
+
+	// copy constructor
+	PD_VersionData(const PD_VersionData & v)
+		:m_iId(v.m_iId),m_tTime(v.m_tTime),m_iEditTime(v.m_iEditTime), m_iUID(v.m_iUID){};
+	
+	PD_VersionData & operator = (const PD_VersionData &v)
+	{
+		m_iId       = v.m_iId;
+		m_tTime     = v.m_tTime;
+		m_iEditTime = v.m_iEditTime;
+		m_iUID      = v.m_iUID;
+		return *this;
+	}
+
+	bool operator == (const PD_VersionData &v)
+	{
+		return (m_iId == v.m_iId && m_tTime == v.m_tTime && m_iUID == v.m_iUID);
+	}
+
+	UT_uint32   getId()const{return m_iId;}
+	time_t      getTime()const {return m_tTime;}
+	UT_uint32   getEditTime()const {return m_iEditTime;}
+	UT_uint32   getUID()const {return m_iUID;}
+	
+	// we only allow modification of edit time ...
+	void        setEditTime(UT_uint32 t) {m_iEditTime = t;}
+	
+  private:
+	UT_uint32   m_iId;
+	time_t      m_tTime;
+	UT_uint32   m_iEditTime;
+	UT_uint32   m_iUID;
+};
+
+// class for managing Documents UID
+#define PD_DOCUID_SIZE 4
+class PD_DocumentUID
+{
+  public:
+	// constructor for new documents
+	PD_DocumentUID();
+
+	// constructor for importers
+	PD_DocumentUID(const char * uid);
+	
+	bool operator == (const PD_DocumentUID & u)
+	{
+		for(UT_uint32 i = 0; i < PD_DOCUID_SIZE; ++i)
+			if (m_iUID[i] != u.m_iUID[i])
+				return false;
+
+		return true;
+	}
+
+	const char * getUIDString() const {return m_sUID.c_str();}
+	
+  private:
+	UT_uint32 m_iUID[PD_DOCUID_SIZE];
+	UT_String m_sUID;
+};
+
+class PD_DocumentDiff
+{
+  public:
+	PD_DocumentDiff(bool bDel, PT_DocPosition p1, PT_DocPosition p2, UT_uint32 len)
+		:m_bDeleted(bDel), m_pos1(p1), m_pos2(p2), m_len(len){};
+
+#ifdef DEBUG
+	void _dump() const;
+#endif
+	
+	bool           m_bDeleted;
+	PT_DocPosition m_pos1;
+	PT_DocPosition m_pos2;
+	UT_uint32      m_len;
 };
 
 
@@ -174,8 +270,10 @@ public:
 	virtual UT_Error		importStyles(const char * szFilename, int ieft, bool bDocProps = false);
 
 	virtual UT_Error		newDocument(void);
-	virtual bool			isDirty(void) const;
 
+	virtual bool			isDirty(void) const;
+	virtual void            forceDirty();
+	
 	virtual bool			canDo(bool bUndo) const;
 	virtual UT_uint32		undoCount(bool bUndo) const;
 	virtual bool			undoCmd(UT_uint32 repeatCount);
@@ -346,7 +444,6 @@ public:
 	void                    updateAllLayoutsInDoc( PL_StruxDocHandle sdh);
 	void					clearIfAtFmtMark(PT_DocPosition dpos);
 
-	const char *			getFileName() { return m_szFilename; }
 	UT_uint32				getLastSavedAsType() { return m_lastSavedAsType; }
 	UT_uint32				getLastOpenedType() { return m_lastOpenedType; }
 	XAP_App *				getApp() { return m_pApp; }
@@ -412,14 +509,27 @@ public:
 	// Functions for dealing with revisions
 	//
 	bool                    isMarkRevisions() const{ return m_bMarkRevisions;}
-	void                    toggleMarkRevisions(){m_bMarkRevisions = m_bMarkRevisions ? false : true;}
+	void                    toggleMarkRevisions();
+	void                    setMarkRevisions(bool bMark);
+	bool                    isShowRevisions() const{ return m_bShowRevisions;}
+	void                    setShowRevisions(bool bShow);
+	void                    toggleShowRevisions();
+	UT_uint32               getShowRevisionId() const {return m_iShowRevisionID;}
+	void                    setShowRevisionId(UT_uint32 iId);
 	UT_uint32               getRevisionId() const{ return m_iRevisionID;}
-	void                    setRevisionId(UT_uint32 iId) {m_iRevisionID  = iId;}
-	bool                    addRevision(UT_uint32 iId, UT_UCS4Char * pDesc);
-	bool                    addRevision(UT_uint32 iId, const UT_UCS4Char * pDesc, UT_uint32 iLen);
+	void                    setRevisionId(UT_uint32 iId);
+
+	bool                    addRevision(UT_uint32 iId, UT_UCS4Char * pDesc,
+										time_t tStart);
+	
+	bool                    addRevision(UT_uint32 iId, const UT_UCS4Char * pDesc, UT_uint32 iLen,
+										time_t tStart);
+	
 	UT_Vector &             getRevisions() {return m_vRevisions;}
 	UT_uint32               getHighestRevisionId() const;
 	const PD_Revision *     getHighestRevision() const;
+	void                    purgeRevisionTable();
+	
 	void					notifyPieceTableChangeStart(void);
 	void					notifyPieceTableChangeEnd(void);
 
@@ -499,10 +609,45 @@ public:
 	UT_uint32 getUID(UT_UniqueId::idType t) {return m_UID.getUID(t);}
 	bool      setMinUID(UT_UniqueId::idType t, UT_uint32 i) {return m_UID.setMinId(t,i);}
 	bool      isIdUnique(UT_UniqueId::idType t, UT_uint32 i) {return m_UID.isIdUnique(t,i);}
+
+	UT_uint32 getEditTime()const;
+	void      setEditTime(UT_uint32 t);
+	
+	void      setDocVersion(UT_uint32 i);
+	UT_uint32 getDocVersion() const {return m_iVersion;}
+
+	void      addRecordToHistory(const PD_VersionData & v);
+	UT_uint32 getHistoryCount()const {return m_vHistory.getItemCount();}
+	UT_uint32 getHistoryNthId(UT_uint32 i)const;
+	time_t    getHistoryNthTime(UT_uint32 i)const;
+	UT_uint32 getHistoryNthEditTime(UT_uint32 i)const;
+	UT_uint32 getHistoryNthUID(UT_uint32 i)const;
+
+	bool      areDocumentsRelated (const PD_Document &d) const;
+	bool      areDocumentHistoriesEqual(const PD_Document &d) const;
+	bool      areDocumentContentsEqual(const PD_Document &d) const;
+	bool      areDocumentFormatsEqual(const PD_Document &d) const;
+	bool      areDocumentStylesheetsEqual(const PD_Document &d) const;
+
+	bool      findFirstDifferenceInContent(PT_DocPosition &pos, UT_sint32 &iOffset2,
+										   const PD_Document &d) const;
+	
+	bool      findWhereSimilarityResumes(PT_DocPosition &pos, UT_sint32 &iOffset2,
+										 UT_uint32 & iKnownLength,
+										 const PD_Document &d) const;
+
+	bool      diffDocuments(const PD_Document &d, UT_Vector & vDiff) const;
+	void      diffIntoRevisions(const PD_Document &d);
+	
+	const PD_DocumentUID * getDocUID()const {return m_pDocUID;}
+	void                   setDocUID(PD_DocumentUID * u);
+	const char *           getDocUIDString()const;
 	
 protected:
 	~PD_Document();
 
+	void                    _adjustEditTimeOnSave();
+	void                    _adjustHistoryOnSave();
 	void					_setClean(void);
 	void					_destroyDataItemData(void);
 	bool					_syncFileTypes(bool bReadSaveWriteOpen);
@@ -540,7 +685,9 @@ private:
 	bool                    m_bLockedStyles;
 	UT_StringPtrMap         m_metaDataMap;
 	bool                    m_bMarkRevisions;
+	bool                    m_bShowRevisions;
 	UT_uint32               m_iRevisionID;
+	UT_uint32               m_iShowRevisionID;
 	UT_Vector               m_vRevisions;
 	PT_AttrPropIndex        m_indexAP;
 	bool                    m_bDontImmediatelyLayout;
@@ -557,6 +704,13 @@ private:
 	fp_Run *                m_pVDRun;
 	PT_DocPosition          m_iVDLastPos;
 	UT_UniqueId             m_UID;
+
+	// these are for tracking versioning
+	UT_uint32               m_iVersion;
+	bool                    m_bWasSaved;
+	UT_uint32               m_iEditTime;
+	UT_Vector               m_vHistory;
+	PD_DocumentUID *        m_pDocUID;
 };
 
 #endif /* PD_DOCUMENT_H */

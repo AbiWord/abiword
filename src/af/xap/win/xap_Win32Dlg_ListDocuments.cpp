@@ -104,19 +104,15 @@ BOOL CALLBACK XAP_Win32Dialog_ListDocuments::s_dlgProc(HWND hWnd,UINT msg,WPARAM
 	}
 }
 
-#define _DSX(c,s) SetDlgItemText(hWnd,XAP_RID_DIALOG_LIST_DOCUMENTS_##c,pSS->getValue(XAP_STRING_ID_##s))
-
-#define _DSXS(c,s) SetDlgItemText(hWnd,XAP_RID_DIALOG_LIST_DOCUMENTS_##c,s)
-
 BOOL XAP_Win32Dialog_ListDocuments::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-	SetWindowText(hWnd, _getTitle());
+	setWindowTitle(hWnd, _getTitle());
 
 	// localize controls
-	_DSXS(BTN_OK,    _getOKButtonText());
-	_DSX(BTN_CANCEL, DLG_Cancel);
+	setControlText(XAP_RID_DIALOG_LIST_DOCUMENTS_BTN_OK,		_getOKButtonText());
+	localizeControlText(XAP_RID_DIALOG_LIST_DOCUMENTS_BTN_CANCEL,	XAP_STRING_ID_DLG_Cancel);
 
 	//SetDlgItemText(hWnd, XAP_RID_DIALOG_LIST_DOCUMENTS_FRAME,getLabel1());
 
@@ -128,7 +124,7 @@ BOOL XAP_Win32Dialog_ListDocuments::_onInitDialog(HWND hWnd, WPARAM wParam, LPAR
 	RECT r;
 	GetWindowRect(h, &r);
 	
-	LVCOLUMN col;
+	LVCOLUMN col;		
 	col.mask = LVCF_SUBITEM | LVCF_WIDTH;
 
 	col.iSubItem = 0;
@@ -138,7 +134,7 @@ BOOL XAP_Win32Dialog_ListDocuments::_onInitDialog(HWND hWnd, WPARAM wParam, LPAR
 	ListView_InsertColumn(h,0,&col);
 
 	ListView_SetItemCount(h, _getDocumentCount());
-	LVITEM item;
+	LVITEMA item; //!TODO Using ANSI function
 	for(UT_uint32 i = 0; i < _getDocumentCount(); i++)
 	{
 		item.pszText = (char *)_getNthDocumentName(i);
@@ -146,7 +142,7 @@ BOOL XAP_Win32Dialog_ListDocuments::_onInitDialog(HWND hWnd, WPARAM wParam, LPAR
 		item.iSubItem = 0;
 		item.lParam = i;
 		item.mask = LVIF_TEXT | LVIF_PARAM;
-		ListView_InsertItem(h, &item);
+		ListView_InsertItem(h, &item); //!TODO Using ANSI function
 	}
 
 	return 1;							// 1 == we did not call SetFocus()

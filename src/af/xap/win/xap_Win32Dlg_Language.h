@@ -44,7 +44,7 @@ protected:
 	void  					_fillTreeview(HWND hTV);
 	BOOL					_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
 	BOOL					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
-		
+	HIMAGELIST				m_hNormIml;
 	HWND					m_hWnd;
 
 };

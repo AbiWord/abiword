@@ -33,7 +33,6 @@
 #include "ut_timer.h"
 
 #include "xav_View.h"
-#include "fv_View.h"
 #include "fl_DocLayout.h"
 #include "fl_BlockLayout.h"
 #include "fl_Squiggles.h"
@@ -71,8 +70,11 @@
 #include "ap_FrameData.h"
 #include "fp_FrameContainer.h"
 #include "xap_EncodingManager.h"
+#include "gr_Painter.h"
 
 #include "pp_Revision.h"
+
+#include "fv_View.h"
 
 // NB -- irrespective of this size, the piecetable will store
 // at max BOOKMARK_NAME_LIMIT of chars as defined in pf_Frag_Bookmark.h
@@ -144,10 +146,6 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_pDoc(pLayout->getDocument()),
 		m_pG(m_pLayout->getGraphics()),
 		m_pParentData(pParentData),
-		m_iSelectionAnchor(0),
-		m_iSelectionLeftAnchor(0),
-		m_iSelectionRightAnchor(0),
-		m_bSelection(false),
 		m_pAutoScrollTimer(0),
 		m_xLastMouse(0),
 		m_yLastMouse(0),
@@ -206,7 +204,9 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_iHighDrawPoint(0),
 		m_CaretListID(0),
 		m_FrameEdit(this),
-		m_VisualDragText(this)
+		m_VisualDragText(this),
+		m_Selection(this),
+		m_bShowRevisions(true)
 {
 	m_colorRevisions[0] = UT_RGBColor(171,4,254);
 	m_colorRevisions[1] = UT_RGBColor(171,20,119);
@@ -364,6 +364,10 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 	const char * pszFamily = pFont->getFamily();
 	if (pszFamily)
 		PP_setDefaultFontFamily(pszFamily);
+
+	// should we display revisions?
+	m_bShowRevisions = m_pDoc->isShowRevisions();
+	m_iViewRevision =  m_pDoc->getShowRevisionId();
 	
 	// initialize change cache
 	m_chg.bUndo = false;
@@ -379,7 +383,7 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 
 	//Test_Dump();
 
-	m_iSelectionAnchor = getPoint();
+	m_Selection.setSelectionAnchor(getPoint());
 	_resetSelection();
 //
 // Update the combo boxes on the frame with this documents info.
@@ -507,8 +511,13 @@ void FV_View::btn1Frame(UT_sint32 x, UT_sint32 y)
 	m_FrameEdit.mouseLeftPress(x,y);
 }
 
-
 void FV_View::setFrameFormat(const XML_Char * properties[])
+{
+	UT_String dataID("");
+	setFrameFormat(properties,NULL,dataID);
+}
+
+void FV_View::setFrameFormat(const XML_Char * properties[], FG_Graphic * pFG,UT_String & sDataID)
 {
 	bool bRet;
 	setCursorWait();
@@ -526,14 +535,26 @@ void FV_View::setFrameFormat(const XML_Char * properties[])
 
 	if (!isSelectionEmpty())
 	{
-		if (m_iSelectionAnchor < posStart)
-			posStart = m_iSelectionAnchor;
+		if (m_Selection.getSelectionAnchor() < posStart)
+			posStart = m_Selection.getSelectionAnchor();
 		else
-			posEnd = m_iSelectionAnchor;
+			posEnd = m_Selection.getSelectionAnchor();
 		if(posStart < 2)
 		{
 			posStart = 2;
 		}
+	}
+	if(pFG != NULL)
+	{
+		pFG->insertAtStrux(m_pDoc,72,posStart,
+						   PTX_SectionFrame,sDataID.c_str());
+	}
+	else
+	{
+		const XML_Char * attributes[3] = {
+			PT_STRUX_IMAGE_DATAID,NULL,NULL};
+		bRet = m_pDoc->changeStruxFmt(PTC_RemoveFmt,posStart,posStart,attributes,NULL,PTX_SectionFrame);	
+						
 	}
 
 	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,NULL,properties,PTX_SectionFrame);
@@ -799,15 +820,15 @@ void FV_View::toggleCase (ToggleCase c)
 	}
 	else
 	{
-		if(m_iInsPoint < m_iSelectionAnchor)
+		if(m_iInsPoint < m_Selection.getSelectionAnchor())
 		{
 			low  = m_iInsPoint;
-			high = m_iSelectionAnchor;
+			high = m_Selection.getSelectionAnchor();
 		}
 		else
 		{
 			high = m_iInsPoint;
-			low  = m_iSelectionAnchor;
+			low  = m_Selection.getSelectionAnchor();
 		}
 	}
 
@@ -1540,7 +1561,7 @@ PT_DocPosition FV_View::getSelectedImage(const char **dataId)
 	// if nothing selected, then an image can't be
 	if (!isSelectionEmpty())
 	{
-		PT_DocPosition pos = m_iSelectionAnchor;
+		PT_DocPosition pos = m_Selection.getSelectionAnchor();
 		fp_Run* pRun = NULL;
 
 		UT_Vector vBlock;
@@ -1551,7 +1572,7 @@ PT_DocPosition FV_View::getSelectedImage(const char **dataId)
 		{
 			if(i==0)
 			{
-				if(getPoint() < m_iSelectionAnchor)
+				if(getPoint() < m_Selection.getSelectionAnchor())
 				{
 					pos = getPoint();
 				}
@@ -1590,15 +1611,24 @@ PT_DocPosition FV_View::getSelectedImage(const char **dataId)
 	return 0;
 }
 
+PT_DocPosition FV_View::getSelectionAnchor(void) const
+{
+	if(m_Selection.isSelected())
+	{
+		return m_Selection.getSelectionAnchor();
+	}
+	return m_iInsPoint;
+}
+
 bool FV_View::isSelectionEmpty(void) const
 {
-	if (!m_bSelection)
+	if (!m_Selection.isSelected())
 	{
 		return true;
 	}
 
 	PT_DocPosition curPos = getPoint();
-	if (curPos == m_iSelectionAnchor)
+	if (curPos == m_Selection.getSelectionAnchor())
 	{
 		return true;
 	}
@@ -1898,7 +1928,7 @@ bool FV_View::isNumberedHeadingHere(fl_BlockLayout * pBlock)
 	return bHasNumberedHeading;
 }
 
-void FV_View::processSelectedBlocks(List_Type listType)
+void FV_View::processSelectedBlocks(FL_ListType listType)
 {
 	//
 	// Update Lists in the selected region
@@ -2080,13 +2110,13 @@ void FV_View::getBlocksInSelection( UT_Vector * vBlock)
 		vBlock->addItem(getCurrentBlock());
 		return;
 	}
-	if (m_iSelectionAnchor > startpos)
+	if (m_Selection.getSelectionAnchor() > startpos)
 	{
-		endpos = m_iSelectionAnchor;
+		endpos = m_Selection.getSelectionAnchor();
 	}
 	else
 	{
-		startpos = m_iSelectionAnchor;
+		startpos = m_Selection.getSelectionAnchor();
 	}
 //
 // tweak the start point of the selection if it is just before the current block
@@ -2301,13 +2331,13 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 	m_pDoc->disableListUpdates();
 	if (!isSelectionEmpty())
 	{
-		if (m_iSelectionAnchor < posStart)
+		if (m_Selection.getSelectionAnchor() < posStart)
 		{
-			posStart = m_iSelectionAnchor;
+			posStart = m_Selection.getSelectionAnchor();
 		}
 		else
 		{
-			posEnd = m_iSelectionAnchor;
+			posEnd = m_Selection.getSelectionAnchor();
 		}
 		if(posStart < 2)
 		{
@@ -2783,10 +2813,10 @@ bool FV_View::getStyle(const XML_Char ** style)
 
 	if (!bSelEmpty)
 	{
-		if (m_iSelectionAnchor < posStart)
-			posStart = m_iSelectionAnchor;
+		if (m_Selection.getSelectionAnchor() < posStart)
+			posStart = m_Selection.getSelectionAnchor();
 		else
-			posEnd = m_iSelectionAnchor;
+			posEnd = m_Selection.getSelectionAnchor();
 	}
 
 	// 1. get block style at insertion point
@@ -2946,13 +2976,13 @@ bool FV_View::setCharFormat(const XML_Char * properties[], const XML_Char * attr
 
 	if (!isSelectionEmpty())
 	{
-		if (m_iSelectionAnchor < posStart)
+		if (m_Selection.getSelectionAnchor() < posStart)
 		{
-			posStart = m_iSelectionAnchor;
+			posStart = m_Selection.getSelectionAnchor();
 		}
 		else
 		{
-			posEnd = m_iSelectionAnchor;
+			posEnd = m_Selection.getSelectionAnchor();
 		}
 	}
 
@@ -3044,10 +3074,10 @@ bool FV_View::getAttributes(const PP_AttrProp ** ppSpanAP, const PP_AttrProp ** 
 
 		if (!bSelEmpty)
 		{
-			if (m_iSelectionAnchor < posStart)
-				posStart = m_iSelectionAnchor;
+			if (m_Selection.getSelectionAnchor() < posStart)
+				posStart = m_Selection.getSelectionAnchor();
 			else
-				posEnd = m_iSelectionAnchor;
+				posEnd = m_Selection.getSelectionAnchor();
 		}
 	}
 	if(posStart < 2)
@@ -3176,10 +3206,10 @@ bool FV_View::getCharFormat(const XML_Char *** pProps, bool bExpandStyles, PT_Do
 
 		if (!bSelEmpty)
 		{
-			if (m_iSelectionAnchor < posStart)
-				posStart = m_iSelectionAnchor;
+			if (m_Selection.getSelectionAnchor() < posStart)
+				posStart = m_Selection.getSelectionAnchor();
 			else
-				posEnd = m_iSelectionAnchor;
+				posEnd = m_Selection.getSelectionAnchor();
 		}
 	}
 	if(posStart < 2)
@@ -3563,13 +3593,13 @@ bool FV_View::setBlockFormat(const XML_Char * properties[])
 	PT_DocPosition posEnd = posStart;
 	if (!isSelectionEmpty())
 	{
-		if (m_iSelectionAnchor < posStart)
+		if (m_Selection.getSelectionAnchor() < posStart)
 		{
-			posStart = m_iSelectionAnchor;
+			posStart = m_Selection.getSelectionAnchor();
 		}
 		else
 		{
-			posEnd = m_iSelectionAnchor;
+			posEnd = m_Selection.getSelectionAnchor();
 		}
 	}
 	if(posStart < 2)
@@ -3789,7 +3819,7 @@ bool FV_View::processPageNumber(HdrFtrType hfType, const XML_Char ** atts)
 
 
 void FV_View::changeListStyle(	fl_AutoNum* pAuto,
-								List_Type lType,
+								FL_ListType lType,
 								UT_uint32 startv,
 								const XML_Char* pszDelim,
 								const XML_Char* pszDecimal,
@@ -3953,10 +3983,10 @@ bool FV_View::getSectionFormat(const XML_Char ***pProps)
 
 	if (!isSelectionEmpty())
 	{
-		if (m_iSelectionAnchor < posStart)
-			posStart = m_iSelectionAnchor;
+		if (m_Selection.getSelectionAnchor() < posStart)
+			posStart = m_Selection.getSelectionAnchor();
 		else
-			posEnd = m_iSelectionAnchor;
+			posEnd = m_Selection.getSelectionAnchor();
 	}
 
 	// 1. assemble complete set at insertion point
@@ -4066,6 +4096,53 @@ bool FV_View::getSectionFormat(const XML_Char ***pProps)
 	return true;
 }
 
+/*!
+ * Set a string with the cell properties of the cell located at position pos
+ */
+bool FV_View::getCellFormat(PT_DocPosition pos, UT_String & sCellProps)
+{
+	sCellProps.clear();
+	if(!isInTable(pos))
+	{
+		return false;
+	}
+	const PP_AttrProp * pCellAP = NULL;
+	fl_BlockLayout * pBL =  _findBlockAtPosition(pos);
+	if(!pBL)
+	{
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return false;
+	}
+	fl_SectionLayout * pCell = static_cast<fl_CellLayout *>(pBL->myContainingLayout());
+	if(!pCell)
+	{
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return false;
+	}
+	pCell->getAttrProp(&pCellAP);
+
+	UT_sint32 iPropsCount = PP_getPropertyCount();
+	UT_sint32 n = 0;
+	UT_String sPropName;
+	UT_String sPropVal;
+	const XML_Char * pszPropVal;
+	for(n = 0; n < iPropsCount; n++)
+	{
+		if((PP_getNthPropertyLevel(n) & PP_LEVEL_TABLE))
+		{
+			sPropName = PP_getNthPropertyName(n);
+			sPropVal.clear();
+			bool bFound = pCellAP->getProperty(sPropName.c_str(),pszPropVal);
+			if(bFound)
+			{
+				sPropVal = pszPropVal;
+				UT_String_setProperty(sCellProps,sPropName,sPropVal);
+			}
+		}
+	}
+	return true;
+}
+
 bool FV_View::getBlockFormat(const XML_Char *** pProps,bool bExpandStyles)
 {
 	const PP_AttrProp * pBlockAP = NULL;
@@ -4105,10 +4182,10 @@ bool FV_View::getBlockFormat(const XML_Char *** pProps,bool bExpandStyles)
 
 	if (!isSelectionEmpty())
 	{
-		if (m_iSelectionAnchor < posStart)
-			posStart = m_iSelectionAnchor;
+		if (m_Selection.getSelectionAnchor() < posStart)
+			posStart = m_Selection.getSelectionAnchor();
 		else
-			posEnd = m_iSelectionAnchor;
+			posEnd = m_Selection.getSelectionAnchor();
 	}
 
 	// 1. assemble complete set at insertion point
@@ -4255,12 +4332,12 @@ UT_UCSChar * FV_View::getSelectionText(void)
 
 	UT_GrowBuf buffer;
 
-	UT_sint32 selLength = static_cast<UT_sint32>(labs(m_iInsPoint - m_iSelectionAnchor));
+	UT_sint32 selLength = static_cast<UT_sint32>(labs(m_iInsPoint - m_Selection.getSelectionAnchor()));
 
 	PT_DocPosition low;
-	if (m_iInsPoint > m_iSelectionAnchor)
+	if (m_iInsPoint > m_Selection.getSelectionAnchor())
 	{
-		low = m_iSelectionAnchor;
+		low = m_Selection.getSelectionAnchor();
 	}
 	else
 	{
@@ -4303,10 +4380,15 @@ UT_UCSChar * FV_View::getSelectionText(void)
 
 	return NULL;
 }
-#if 0
+
 // this function has not been debugged
-UT_UCSChar *	FV_View::getTextBetweenPos(PT_DocPosition pos1, PT_DocPosition pos2)
+UT_UCSChar * FV_View::getTextBetweenPos(PT_DocPosition pos1, PT_DocPosition pos2)
 {
+#if 1
+	UT_DEBUGMSG(("DOM: getTextBetweenPos not fully debugged\n"));
+	UT_return_val_if_fail(UT_TODO, NULL);
+
+#else
 
 	UT_ASSERT(pos2 > pos1);
 
@@ -4333,7 +4415,7 @@ UT_UCSChar *	FV_View::getTextBetweenPos(PT_DocPosition pos1, PT_DocPosition pos2
 		pBlock->getBlockBuf(&buffer);
 
 		PT_DocPosition offset = curPos - pBlock->getPosition(false);
-		UT_uint32 iLenToCopy = MIN(pos2 - curPos, buffer.getLength() - offset);
+		UT_uint32 iLenToCopy = UT_MIN(pos2 - curPos, buffer.getLength() - offset);
 		while(curPos < pos2 && (curPos < pBlock->getPosition(false) + pBlock->getLength()))
 		{
 			memmove(buff_ptr, buffer.getPointer(offset), iLenToCopy * sizeof(UT_UCSChar));
@@ -4347,8 +4429,8 @@ UT_UCSChar *	FV_View::getTextBetweenPos(PT_DocPosition pos1, PT_DocPosition pos2
 
 	UT_ASSERT(curPos == pos2);
 	return bufferRet;
-}
 #endif
+}
 
 bool FV_View::isTabListBehindPoint(void)
 {
@@ -4842,17 +4924,17 @@ void FV_View::extSelToXYword(UT_sint32 xPos, UT_sint32 yPos, bool bDrag)
 
 	//UT_ASSERT(!isSelectionEmpty());
 
-	if (iNewPoint <= m_iSelectionLeftAnchor)
+	if (iNewPoint <= m_Selection.getSelectionLeftAnchor())
 	{
-		m_iSelectionAnchor = m_iSelectionRightAnchor;
+		m_Selection.setSelectionAnchor(m_Selection.getSelectionRightAnchor());
 	}
 	else
 	{
-		m_iSelectionAnchor = m_iSelectionLeftAnchor;
+		m_Selection.setSelectionAnchor(m_Selection.getSelectionLeftAnchor());
 	}
 
 	const FV_DocPos argDocPos =
-		iNewPoint > m_iSelectionAnchor ? FV_DOCPOS_EOW_SELECT : FV_DOCPOS_BOW;
+		iNewPoint > m_Selection.getSelectionAnchor() ? FV_DOCPOS_EOW_SELECT : FV_DOCPOS_BOW;
 	const PT_DocPosition iNewPointWord = _getDocPosFromPoint(iNewPoint, argDocPos,false);
 
 	bool bPostpone = false;
@@ -5896,6 +5978,10 @@ bool FV_View::isLeftMargin(UT_sint32 xPos, UT_sint32 yPos)
 	return bBOL;
 }
 
+void FV_View::ensureInsertionPointOnScreen(void)
+{
+	_ensureInsertionPointOnScreen();
+}
 
 
 void FV_View::setPoint(PT_DocPosition pt)
@@ -5924,19 +6010,46 @@ UT_uint32 FV_View::undoCount (bool bUndo) const
   return m_pDoc->undoCount ( bUndo );
 }
 
+/*!
+ * Returns true of the point presented is within a selection.
+ */
+bool FV_View::isPosSelected(PT_DocPosition pos) const
+{
+	return m_Selection.isPosSelected(pos);
+}
+
+FV_SelectionMode FV_View::getSelectionMode(void) const
+{
+	return m_Selection.getSelectionMode();
+}
+
+FV_SelectionMode FV_View::getPrevSelectionMode(void) const
+{
+	return m_Selection.getPrevSelectionMode();
+}
+
+PD_DocumentRange * FV_View::getNthSelection(UT_sint32 i)
+{
+	return m_Selection.getNthSelection(i);
+}
+
+UT_sint32 FV_View::getNumSelections(void) const
+{
+	return m_Selection.getNumSelections();
+}
 
 void FV_View::getDocumentRangeOfCurrentSelection(PD_DocumentRange * pdr)
 {
 	PT_DocPosition iPos1, iPos2;
-	if (m_iSelectionAnchor < getPoint())
+	if (m_Selection.getSelectionAnchor() < getPoint())
 	{
-		iPos1 = m_iSelectionAnchor;
+		iPos1 = m_Selection.getSelectionAnchor();
 		iPos2 = getPoint();
 	}
 	else
 	{
 		iPos1 = getPoint();
-		iPos2 = m_iSelectionAnchor;
+		iPos2 = m_Selection.getSelectionAnchor();
 	}
 
 	pdr->set(m_pDoc,iPos1,iPos2);
@@ -6082,10 +6195,10 @@ bool FV_View::setCellFormat(const XML_Char * properties[], FormatTable applyTo, 
 	PT_DocPosition posEnd = posStart;
 	if (!isSelectionEmpty())
 	{
-		if (m_iSelectionAnchor < posStart)
-			posStart = m_iSelectionAnchor;
+		if (m_Selection.getSelectionAnchor() < posStart)
+			posStart = m_Selection.getSelectionAnchor();
 		else
-			posEnd = m_iSelectionAnchor;
+			posEnd = m_Selection.getSelectionAnchor();
 		if(posStart < 2)
 		{
 			posStart = 2;
@@ -6320,9 +6433,9 @@ bool FV_View::getCellBGColor(XML_Char * &color)
 	PT_DocPosition posCell = getPoint();
 	if (!isSelectionEmpty())
 	{
-		if (m_iSelectionAnchor < posCell)
+		if (m_Selection.getSelectionAnchor() < posCell)
 		{
-			posCell = m_iSelectionAnchor;
+			posCell = m_Selection.getSelectionAnchor();
 		}
 		if(posCell < 2)
 		{
@@ -6376,10 +6489,10 @@ bool FV_View::setTableFormat(PT_DocPosition pos, const XML_Char * properties[])
 
 	if (!isSelectionEmpty())
 	{
-		if (m_iSelectionAnchor < posStart)
-			posStart = m_iSelectionAnchor;
+		if (m_Selection.getSelectionAnchor() < posStart)
+			posStart = m_Selection.getSelectionAnchor();
 		else
-			posEnd = m_iSelectionAnchor;
+			posEnd = m_Selection.getSelectionAnchor();
 		if(posStart < 2)
 		{
 			posStart = 2;
@@ -6421,10 +6534,10 @@ bool FV_View::setSectionFormat(const XML_Char * properties[])
 
 	if (!isSelectionEmpty())
 	{
-		if (m_iSelectionAnchor < posStart)
-			posStart = m_iSelectionAnchor;
+		if (m_Selection.getSelectionAnchor() < posStart)
+			posStart = m_Selection.getSelectionAnchor();
 		else
-			posEnd = m_iSelectionAnchor;
+			posEnd = m_Selection.getSelectionAnchor();
 		if(posStart < 2)
 		{
 			posStart = 2;
@@ -7046,25 +7159,6 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 }
 
 
-
-bool FV_View::isPosSelected(PT_DocPosition pos) const
-{
-	if (!isSelectionEmpty())
-	{
-		PT_DocPosition posStart = getPoint();
-		PT_DocPosition posEnd = posStart;
-
-		if (m_iSelectionAnchor < posStart)
-			posStart = m_iSelectionAnchor;
-		else
-			posEnd = m_iSelectionAnchor;
-
-		return ((pos >= posStart) && (pos <= posEnd));
-	}
-
-	return false;
-}
-
 bool FV_View::isXYSelected(UT_sint32 xPos, UT_sint32 yPos) const
 {
 	if (isSelectionEmpty())
@@ -7394,23 +7488,10 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 				return EV_EMC_IMAGE;
 			}
 		}
-		PT_DocPosition posLow = m_iSelectionAnchor;
-		PT_DocPosition posHigh = getPoint();
-		if(posLow > posHigh)
+		if(m_Selection.isPosSelected(pos))
 		{
-			if((pos >= posHigh) && (pos <= posLow))
-			{
-				m_prevMouseContext = EV_EMC_VISUALTEXTDRAG;
-				return EV_EMC_VISUALTEXTDRAG;
-			}
-		}
-		else
-		{
-			if((pos >= posLow) && (pos <= posHigh))
-			{
-				m_prevMouseContext = EV_EMC_VISUALTEXTDRAG;
-				return EV_EMC_VISUALTEXTDRAG;
-			}
+			m_prevMouseContext = EV_EMC_VISUALTEXTDRAG;
+			return EV_EMC_VISUALTEXTDRAG;
 		}
 	}
 	
@@ -7933,15 +8014,15 @@ FV_View::countWords(void)
 	}
 	else
 	{
-		if(m_iInsPoint < m_iSelectionAnchor)
+		if(m_iInsPoint < m_Selection.getSelectionAnchor())
 		{
 			low  = m_iInsPoint;
-			high = m_iSelectionAnchor;
+			high = m_Selection.getSelectionAnchor();
 		}
 		else
 		{
 			high = m_iInsPoint;
-			low  = m_iSelectionAnchor;
+			low  = m_Selection.getSelectionAnchor();
 		}
 	}
 
@@ -8850,6 +8931,13 @@ bool FV_View::isPointLegal(PT_DocPosition pos)
 	PL_StruxDocHandle prevSDH = NULL;
 	PL_StruxDocHandle nextSDH = NULL;
 	PT_DocPosition nextPos =0;
+//
+// Special case which would otherwise fail..
+//
+	if(m_pDoc->isEndFootnoteAtPos(pos))
+	{
+		return true;
+	}
 	bool bres = m_pDoc->getStruxOfTypeFromPosition(pos,PTX_Block,&prevSDH);
 	if(!bres)
 	{
@@ -8929,6 +9017,11 @@ bool FV_View::insertFootnote(bool bFootnote)
 	fl_SectionLayout * pSL =  _findBlockAtPosition(getPoint())->getSectionLayout();
 	if ( (pSL->getContainerType() != FL_CONTAINER_DOCSECTION) && (pSL->getContainerType() != FL_CONTAINER_CELL) )
 		return false;
+//
+// Do this first
+//
+	const XML_Char ** props_in = NULL;
+	getCharFormat(&props_in);
 
 	// add field for footnote reference
 	// first, make up an id for this footnote.
@@ -8979,12 +9072,18 @@ bool FV_View::insertFootnote(bool bFootnote)
 	bCreatedFootnoteSL = true;
 	_setPoint(dpBody);
 	FrefStart = dpBody;
+	bool bRet = false;
 	if(bFootnote)
 	{
 		if (cmdInsertField("footnote_ref", attrs)==false)
 			return false;
 		FrefEnd = FrefStart+1;
 		setStyleAtPos("Footnote Reference", FrefStart, FrefEnd,true);
+//
+// Put the character format back to it previous value
+//
+		bRet = m_pDoc->changeSpanFmt(PTC_AddFmt,getPoint(),getPoint(),NULL,props_in);
+		setCharFormat(props_in);
 	}
 	else
 	{
@@ -8992,7 +9091,12 @@ bool FV_View::insertFootnote(bool bFootnote)
 			return false;
 		FrefEnd = FrefStart+1;
 		setStyleAtPos("Endnote Reference", FrefStart, FrefEnd,true);
+//
+// Put the character format back to it previous value
+//
+		bRet = m_pDoc->changeSpanFmt(PTC_AddFmt,getPoint(),getPoint(),NULL,props_in);
 	}
+	free(props_in);
 	fl_BlockLayout * pBL;
 
 //
@@ -9019,6 +9123,16 @@ bool FV_View::insertFootnote(bool bFootnote)
 	{
 		cmdInsertField("endnote_anchor", attrs);
 	}
+//
+// Place a format mark before the field so we can select the field.
+//
+	const XML_Char * propListTag[] = {"list-tag",NULL,NULL};
+	static XML_Char sid[15];
+	UT_uint32 id = m_pDoc->getUID(UT_UniqueId::HeaderFtr);
+	sprintf(sid, "%i", id);
+	propListTag[1] = sid;
+	bRet = m_pDoc->changeSpanFmt(PTC_AddFmt,FanchStart,FanchStart,NULL,propListTag);
+
 	FanchEnd = FanchStart+1;
 	UT_DEBUGMSG(("insertFootnote: Inserting space after anchor field \n"));
 	//insert a space after the anchor
@@ -9028,13 +9142,24 @@ bool FV_View::insertFootnote(bool bFootnote)
 
 	// apply footnote text style to the body of the footnote and the
 	// reference style to the anchor follows it
+	propListTag[0]="text-position";
+	propListTag[1]="superscript";
 	if(bFootnote)
 	{
 		setStyleAtPos("Footnote Text", FanchStart, FanchEnd, true);
+//
+// Superscript the anchor
+//
+		bRet = m_pDoc->changeSpanFmt(PTC_AddFmt,FanchStart,FanchStart+1,NULL,propListTag);
+
 	}
 	else
 	{
 		setStyleAtPos("Endnote Text", FanchStart, FanchEnd, true);
+//
+// Superscript the anchor
+//
+		bRet = m_pDoc->changeSpanFmt(PTC_AddFmt,FanchStart,FanchStart+1,NULL,propListTag);
 	}
 
 	_setPoint(FanchEnd+1);
@@ -9343,13 +9468,50 @@ void FV_View::toggleMarkRevisions()
 
 		bRet = m_pDoc->changeSpanFmt(PTC_RemoveFmt,posStart,posEnd,attr,NULL);
 
-		_generalUpdate();
-
 		// Signal piceTable is stable again
 		_restorePieceTableState();
 
+		// might need to do general update here; leave it off for now
+		// _generalUpdate();
 		_fixInsertionPointCoords();
 	}
+
+	if(isMarkRevisions() && !m_bShowRevisions)
+	{
+		// make sure we see what we are doing ...
+		setShowRevisions(true);
+	}
+}
+
+void FV_View::setShowRevisions(bool bShow)
+{
+	if(m_bShowRevisions != bShow)
+	{
+		m_bShowRevisions = bShow;
+
+		// set the doc value as well, so that on save we preserve the last
+		// used setting
+		m_pDoc->setShowRevisions(bShow);
+
+		// now we have to re-do document layout from bottom up
+		m_pLayout->rebuildFromHere(static_cast<fl_DocSectionLayout *>(m_pLayout->getFirstSection()));
+
+		_fixInsertionPointCoords();
+	}
+}
+
+void FV_View::toggleShowRevisions()
+{
+	setShowRevisions(!m_bShowRevisions);
+}
+
+/*!
+    same as cmdSetRevisionLevel() except without layout rebuild
+ */
+void FV_View::setRevisionLevel(UT_uint32 i)
+{
+	m_pDoc->setShowRevisionId(i);
+	m_iViewRevision = i;
 }
 
 bool FV_View::isMarkRevisions()
@@ -9371,18 +9533,54 @@ bool FV_View::isInTable()
 	}
 	else
 	{
-		pos = (m_iInsPoint < m_iSelectionAnchor ? m_iInsPoint : m_iSelectionAnchor);
+		pos = (m_iInsPoint < m_Selection.getSelectionAnchor() ? m_iInsPoint : m_Selection.getSelectionAnchor());
 	}
 	return isInTable(pos);
 }
 
+fl_TableLayout * FV_View::getTableAtPos(PT_DocPosition pos)
+{
+	fl_BlockLayout * pBL =	m_pLayout->findBlockAtPosition(pos);
+	if(!pBL)
+	{
+		return NULL;
+	}
+	fl_ContainerLayout * pCL = pBL->myContainingLayout();
+	if(!pCL)
+	{
+		return NULL;
+	}
+	if(pCL->getContainerType() == FL_CONTAINER_CELL)
+	{
+		pCL = pCL->myContainingLayout();
+		if(!pCL)
+		{
+			return NULL;
+		}
+		if(pCL->getContainerType() != FL_CONTAINER_TABLE)
+		{
+			return NULL;
+		}
+		fl_TableLayout * pTab = static_cast<fl_TableLayout *>(pCL);
+		return pTab;
+	}
+	return NULL;
+}
 /*!
  * Returns true if the point supplied is inside a Table.
  */
 bool FV_View::isInTable( PT_DocPosition pos)
 {
 	fl_BlockLayout * pBL =	m_pLayout->findBlockAtPosition(pos);
+	if(!pBL)
+	{
+		return false;
+	}
 	fl_ContainerLayout * pCL = pBL->myContainingLayout();
+	if(!pCL)
+	{
+		return false;
+	}
 	if(pCL->getContainerType() == FL_CONTAINER_CELL)
 	{
 		return true;
@@ -9702,6 +9900,8 @@ void FV_View::drawDraggedImage(UT_sint32 xPos, UT_sint32 yPos)
 	GR_Image * pImage = (static_cast<fp_ImageRun *>(m_pDraggedImageRun))->getImage();
 	UT_ASSERT(pImage);
 
+	GR_Painter painter(getGraphics());
+
 	// calculate the new image boundaries
 	UT_Rect bounds = UT_Rect(xPos - (m_ixDragOrigin - m_dragImageRect.left), yPos - (m_iyDragOrigin - m_dragImageRect.top), m_dragImageRect.width, m_dragImageRect.height);
 	
@@ -9747,7 +9947,7 @@ void FV_View::drawDraggedImage(UT_sint32 xPos, UT_sint32 yPos)
 					  );
 	draw(&clipRect);
 	
-	m_pG->drawImage(pImage, bounds.left, bounds.top);
+	painter.drawImage(pImage, bounds.left, bounds.top);
 	m_curImageSel = bounds;
 }
 
@@ -9901,3 +10101,5 @@ void fv_PropCache::clearProps(void)
 	m_iNumProps = 0;
 	xxx_UT_DEBUGMSG(("clearing props numProps %d \n",m_iNumProps));
 }
+
+

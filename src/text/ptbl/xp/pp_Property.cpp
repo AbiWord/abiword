@@ -96,6 +96,13 @@ static PP_Property _props[] =
 	{ "footer-last",           "",                false, NULL, PP_LEVEL_SECT},
 	{ "format",                "%*%d.",           true,  NULL, PP_LEVEL_BLOCK},
 
+	{"frame-height",           "0.0in",           false, NULL, PP_LEVEL_FRAME},
+	{"frame-width",            "0.0in",           false, NULL, PP_LEVEL_FRAME},
+	{"frame-position-to",      "block-above-text",false, NULL, PP_LEVEL_FRAME},
+	{"frame-type",             "textbox",         false, NULL, PP_LEVEL_FRAME},
+	{"frame-xpos",             "0.0in",           false, NULL, PP_LEVEL_FRAME},
+	{"frame-ypos",             "0.0in",           false, NULL, PP_LEVEL_FRAME},
+
 	{ "header",                "",                false, NULL, PP_LEVEL_SECT},
 	{ "header-even",           "",                false, NULL, PP_LEVEL_SECT},
 	{ "header-first",          "",                false, NULL, PP_LEVEL_SECT},

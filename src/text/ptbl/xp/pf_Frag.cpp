@@ -38,6 +38,59 @@ pf_Frag::~pf_Frag()
 {
 }
 
+/*!
+   returns true if both content and fmt of the two frags is identical
+*/
+bool pf_Frag::operator == (const pf_Frag & f2) const
+{
+	if(getType() != f2.getType())
+		return false;
+
+	// decide if the two frags have same piecetables
+	if(!m_pPieceTable || !f2.m_pPieceTable)
+		return false;
+
+	if(m_pPieceTable == f2.m_pPieceTable)
+	{
+		if(m_indexAP != f2.m_indexAP)
+			return false;
+	}
+	else
+	{
+		// different PT, do it the hard way ...
+		const PP_AttrProp * pAP1;
+		const PP_AttrProp * pAP2;
+
+		m_pPieceTable->getAttrProp(m_indexAP, &pAP1);
+		f2.m_pPieceTable->getAttrProp(f2.m_indexAP, &pAP2);
+
+		UT_return_val_if_fail(pAP1 && pAP2, false);
+
+		if(!pAP1->isEquivalent(pAP2))
+		{
+			return false;
+		}
+	}
+	
+	return _isContentEqual(f2);
+}
+
+/*!
+    Returns true if the content of the two fragments is identical, but
+    ignores formatting properies.
+*/ 
+bool pf_Frag::isContentEqual(const pf_Frag & f2) const
+{
+	if(getType() != f2.getType())
+		return false;
+
+	// check we have PT to fidle with ...
+	if(!m_pPieceTable || !f2.m_pPieceTable)
+		return false;
+	
+	return _isContentEqual(f2);
+}
+
 pf_Frag * pf_Frag::setNext(pf_Frag * pNext)
 {
 	pf_Frag * pOld = m_next;

@@ -625,14 +625,8 @@ bool fl_TableLayout::bl_doclistener_insertCell(fl_ContainerLayout* pCell,
 																	  PL_StruxFmtHandle sfhNew))
 {
 	fl_ContainerLayout * pNewCL = NULL;
-	if(pCell == NULL)
-	{
-		pNewCL = append(sdh, pcrx->getIndexAP(),FL_CONTAINER_CELL);
-	}
-	else
-	{
-		pNewCL = insert(sdh,pCell,pcrx->getIndexAP(), FL_CONTAINER_CELL);
-	}
+	pNewCL = insert(sdh,pCell,pcrx->getIndexAP(), FL_CONTAINER_CELL);
+
 	
 		// Must call the bind function to complete the exchange of handles
 		// with the document (piece table) *** before *** anything tries
@@ -1414,16 +1408,9 @@ bool fl_CellLayout::isCellSelected(void)
 	posStartCell = m_pDoc->getStruxPosition(sdhStart) +1;
 	m_pDoc->getNextStruxOfType(sdhStart, PTX_EndCell, &sdhEnd);
 	posEndCell = m_pDoc->getStruxPosition(sdhEnd) -1;
-	PT_DocPosition iAnchor = pView->getSelectionAnchor();
-	PT_DocPosition iPoint = pView->getPoint();
-	if(iAnchor > iPoint)
+	if(pView->isPosSelected(posStartCell) && pView->isPosSelected(posEndCell))
 	{
-		PT_DocPosition swap = iPoint;
-		iPoint = iAnchor;
-		iAnchor = swap;
-	}
-	if(iAnchor <= posStartCell && iPoint >= posEndCell)
-	{
+		xxx_UT_DEBUGMSG(("Cell at top %d left %d selected \n",m_iTopAttach,m_iLeftAttach));
 		return true;
 	}
 	return false;

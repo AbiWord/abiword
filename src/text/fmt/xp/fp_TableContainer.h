@@ -118,8 +118,8 @@ public:
 	void                drawLines(fp_TableContainer * pBroke,GR_Graphics * pG);
 	void                drawLinesAdjacent(void);
 	void                draw(fp_Line * pLine);
-	fp_TableContainer * getBrokenTable(fp_Line * pLine);
-	fp_Column *         getColumn(fp_Line *pLine);
+	fp_TableContainer * getBrokenTable(fp_Container * pCon);
+	fp_Column *         getColumn(fp_Container *pCon);
 	UT_sint32           tweakBrokenTable(fp_TableContainer * pBroke);
 	virtual void		draw(dg_DrawArgs*);
 	virtual void		draw(GR_Graphics*) {}
@@ -339,7 +339,7 @@ public:
     virtual void        mapXYToPosition(UT_sint32 x, UT_sint32 y, 
 										PT_DocPosition& pos,
 										bool& bBOL, bool& bEOL);
-
+	virtual fp_Page *   getPage(void);
 	void				layout(void);
 	virtual void        setY(UT_sint32 iY);
 	virtual UT_sint32   getHeight(void);
@@ -384,6 +384,7 @@ public:
 	void                queueResize(void);
 	UT_sint32           getYOfRow(UT_sint32 row);
 	fp_CellContainer *  getCellAtRowColumn(UT_sint32 row, UT_sint32 column);
+	fp_CellContainer *  getCellAtRowColumnLinear(UT_sint32 row, UT_sint32 column);
 	virtual fp_Container * getNextContainerInSection(void) const;
 	virtual fp_Container * getPrevContainerInSection(void) const;
 	fp_TableContainer * getMasterTable(void) const

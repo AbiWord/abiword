@@ -59,19 +59,51 @@ public:
 	fd_Field *				getField(void);
 	PT_DocPosition          getPos(void) const { return m_docPos;}
 	void                    setPos(PT_DocPosition pos) const { m_docPos = pos;}
+
+	inline PT_AttrPropIndex	getIndexAP(void) const {return m_indexAP;}
+	virtual void			setIndexAP(PT_AttrPropIndex indexNewAP)	{m_indexAP = indexNewAP;}
+
 	// createSpecialChangeRecord() constructs a change
 	// record which describes the fragment itself and
 	// not an actual change (editing) operation.  the
 	// is used to initialize the listeners.
-	
 	virtual bool			createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
 													  PT_DocPosition dpos) const;
+
+	// compare contents of two fragments, ignoring format
+	bool                    isContentEqual(const pf_Frag & f2) const;
+
+	// compare contents and format of two fragments
+	bool operator == (const pf_Frag & f2) const;
 	
 #ifdef PT_TEST
 	virtual void			__dump(FILE * fp) const;
 #endif
 
 protected:
+/*!
+    _isContentEqual() is a helper function for operator==() and
+    isContentEqual().
+    
+    This function compares the contents of the two fragments, but not
+    their formatting properties.
+
+    This function and its descendants in the derived classes assume that
+    the two fragments are of the same type; it is the responsibility
+    of the caller to ensure that !!!
+
+    Implementations in derived classes should first call
+    _isContentEqual() of their immediate base and if it returns false,
+    also return false. If the base function returns true, the function
+    in derived class should carry out any further processing specific
+    to that class; in doing so it must ignore general formating
+    properties. For example, pf_Frag_Text::_isContentEqual() should
+    only examine the characters contained in the fragment, but not
+    font face, font size, etc.
+*/
+	
+	virtual bool            _isContentEqual(const pf_Frag & f2) const {return true;}
+	
 	PFType					m_type;
 	UT_uint32				m_length;	/* in PT_DocPosition-space */
 	pf_Frag *				m_next;
@@ -79,6 +111,7 @@ protected:
 	
     fd_Field *              m_pField;
 	pt_PieceTable *			m_pPieceTable;
+	PT_AttrPropIndex		m_indexAP;
 
 private:
 	mutable PT_DocPosition  m_docPos;

@@ -119,7 +119,8 @@ GR_Graphics::GR_Graphics()
 	  m_bDoMerge(false),
 	  m_iPrevYOffset(0),
 	  m_iPrevXOffset(0),
-	  m_hashFontCache(19)
+	  m_hashFontCache(19),
+	  m_paintCount(0)
 {
 }
 
@@ -168,11 +169,25 @@ void GR_Graphics::_destroyFonts ()
 	m_hashFontCache.clear ();
 }
 
+void GR_Graphics::beginPaint ()
+{
+	if (m_paintCount == 0)
+		_beginPaint ();
+
+	m_paintCount++;
+}
+
+void GR_Graphics::endPaint ()
+{
+	m_paintCount--;
+
+	if (m_paintCount == 0)
+		_endPaint ();
+}
+
 UT_sint32 GR_Graphics::tdu(UT_sint32 layoutUnits) const
 {
 	double d = ((double)layoutUnits * static_cast<double>(getDeviceResolution())) * static_cast<double>(getZoomPercentage()) / (100. * static_cast<double>(getResolution()));
-	// don't know if we need this line or not -PL
-//	if (d > 0) d += .5; else d -= .5;
 	return (UT_sint32)d;
 }
 
@@ -186,7 +201,6 @@ UT_sint32 GR_Graphics::_tduX(UT_sint32 layoutUnits) const
 	return tdu(layoutUnits+getPrevXOffset()) - tdu(getPrevXOffset());
 }
 
-
 /*!
  * This method converts to device units while taking account of the Y-scroll
  * offset. This will always give the exact same logical location on the screen
@@ -196,7 +210,6 @@ UT_sint32 GR_Graphics::_tduY(UT_sint32 layoutUnits) const
 {
 	return tdu(layoutUnits+getPrevYOffset()) - tdu(getPrevYOffset());
 }
-
 
 /*!
  * This method converts rectangle widths and heights to device units while 
@@ -281,7 +294,7 @@ UT_uint32 GR_Graphics::measureString(const UT_UCSChar* s, int iOffset,
 		{
 			charWidth = measureUnRemappedChar(currentChar);
 
-			if(charWidth == GR_CW_UNKNOWN)
+			if(charWidth == GR_CW_UNKNOWN || charWidth ==GR_CW_ABSENT)
 				charWidth = 0;
 			else if(UT_isOverstrikingChar(currentChar) != UT_NOT_OVERSTRIKING && charWidth > 0)
 				charWidth = -charWidth;
@@ -541,7 +554,6 @@ void  GR_Graphics::setDontRedraw(bool bDontRedraw)
 	m_bDontRedraw = bDontRedraw;
 }
 
-
 /*
  * Hand shaking fail safe variable sto make sure we don'tr repaint till
  * we're absolueltely ready.
@@ -550,6 +562,7 @@ bool GR_Graphics::isDontRedraw(void)
 {
 	return m_bDontRedraw;
 }
+
 /*!
  * Alternate method to tell the doRepaint to merge the next expose so that
  * expands of exposed area due to scrolls can be merged without doing a
@@ -658,22 +671,16 @@ void GR_Graphics::fillRect(const UT_RGBColor& c, const UT_Rect &r)
 	fillRect(c, r.left, r.top, r.width, r.height);
 }
 
-void xorRect(GR_Graphics* pG, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
+void GR_Graphics::xorRect(UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
 {
-	pG->xorLine(x,     y,     x + w, y);
-	pG->xorLine(x + w, y,     x + w, y + h);
-	pG->xorLine(x + w, y + h, x,     y + h);
-	pG->xorLine(x,     y + h, x,     y);
+	xorLine(x,     y,     x + w, y);
+	xorLine(x + w, y,     x + w, y + h);
+	xorLine(x + w, y + h, x,     y + h);
+	xorLine(x,     y + h, x,     y);
 }
 
-void xorRect(GR_Graphics* pG, const UT_Rect& r)
+void GR_Graphics::xorRect(const UT_Rect& r)
 {
-	xorRect(pG, r.left, r.top, r.width, r.height);
+	xorRect(r.left, r.top, r.width, r.height);
 }
-
-#ifdef DEBUG // XXX
-void flash(GR_Graphics* pG, const UT_Rect& r, const UT_RGBColor& c)
-{
-}
-#endif
 

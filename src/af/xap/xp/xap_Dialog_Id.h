@@ -65,8 +65,19 @@ enum _XAP_Dialog_Id
 #ifdef HAVE_GNOME_DIRECT_PRINT
 	XAP_DIALOG_ID_PRINT_DIRECTLY,	
 #else
-	XAP_DIALOG_ID_PRINT_DIRECTLY = XAP_DIALOG_ID_PRINT, /* just to reduce # of ifdefs */
-#endif	
+#if 0
+	// CANNOT DO THIS !!!
+	// enums are sequential, so this makes everything that comes after
+	// this start again from _ID_PRINT
+	XAP_DIALOG_ID_PRINT_DIRECTLY = XAP_DIALOG_ID_PRINT,
+#else
+#define XAP_DIALOG_ID_PRINT_DIRECTLY XAP_DIALOG_ID_PRINT
+#endif
+#endif
+	XAP_DIALOG_ID_LISTDOCUMENTS,
+	XAP_DIALOG_ID_COMPAREDOCUMENTS,
+	XAP_DIALOG_ID_MERGEDOCUMENTS,
+	
 	XAP_DIALOG_ID__LAST__				= 1000	/* must be last */
 
 };

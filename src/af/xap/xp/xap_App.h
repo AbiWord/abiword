@@ -32,6 +32,7 @@
 #endif
 #include "ut_vector.h"
 #include "ut_hash.h"
+#include "ut_Language.h"
 
 #define NUM_MODELESSID 39
 
@@ -50,6 +51,7 @@ class XAP_StringSet;
 class XAP_Dictionary;
 class PD_DocumentRange;
 class AV_View;
+class AD_Document;
 class XAP_EncodingManager;
 class UT_String;
 class XAP_Menu_Factory;
@@ -104,6 +106,7 @@ public:
 	UT_sint32						findFrame(XAP_Frame * pFrame);
 	UT_sint32						findFrame(const char * szFilename);
 
+	void                            enumerateDocuments(UT_Vector & v, const AD_Document * pExclude);
 	const char *					getApplicationTitleForTitleBar() const;
 	const char *					getApplicationName() const;
 	
@@ -190,8 +193,13 @@ public:
 	bool                            isBonoboRunning(void) const { return m_bBonoboRunning;}
 	virtual void							getDefaultGeometry(UT_uint32& width, UT_uint32& height, UT_uint32& flags){};
 
+	const UT_LangRecord *                   getKbdLanguage() const {return m_pKbdLang;}
+	void                                    setKbdLanguage(const char * pszLang);
+	
 protected:
 	void									_setAbiSuiteLibDir(const char * sz);
+	virtual const char *                    _getKbdLanguage() {return NULL;}
+
 	XAP_Args *								m_pArgs;
 	const char *							m_szAppName;
 	const char *							m_szAbiSuiteLibDir;
@@ -221,7 +229,10 @@ protected:
 	bool                                    m_bDebugBool;
 	bool                                    m_bBonoboRunning;
 	bool                                    m_bEnableSmoothScrolling;
+
 private:
+	const UT_LangRecord *                   m_pKbdLang;
+	
 	XAP_App(const XAP_App&);				// should not even be called. Just to avoid a warning.
 	void operator=(const XAP_App&);
 #ifdef DEBUG

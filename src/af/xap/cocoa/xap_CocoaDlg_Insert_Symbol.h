@@ -36,14 +36,12 @@ class XAP_CocoaDialog_Insert_Symbol;
 @interface XAP_CocoaDlg_Insert_SymbolController : NSWindowController <XAP_CocoaDialogProtocol>
 {
     IBOutlet NSButton *_addBtn;
-    IBOutlet NSButton *_closeBtn;
     IBOutlet NSComboBox *_fontCombo;
     IBOutlet XAP_CocoaNSView *_grid;
     IBOutlet XAP_CocoaNSView *_preview;
 	XAP_CocoaDialog_Insert_Symbol* _xap;
 }
 - (IBAction)addAction:(id)sender;
-- (IBAction)closeAction:(id)sender;
 - (IBAction)fontSelectAction:(id)sender;
 
 - (XAP_CocoaNSView*)grid;

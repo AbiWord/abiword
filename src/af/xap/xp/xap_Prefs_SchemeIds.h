@@ -63,6 +63,9 @@
 #define XAP_PREF_KEY_UseHebrewContextGlyphs 		 "UseGlyphShapingForHebrew"
 #define XAP_PREF_DEFAULT_UseHebrewContextGlyphs 	 "0"
 
+#define XAP_PREF_KEY_LatinLigatures 		         "LatinLigatures"
+#define XAP_PREF_DEFAULT_LatinLigatures 	         "0"
+
 #define XAP_PREF_KEY_AutoSaveFile					"AutoSaveFile"
 #define XAP_PREF_DEFAULT_AutoSaveFile				"0" 						/* Auto save files by default */
 
@@ -167,6 +170,7 @@ dcl(SmartQuotesEnable)
 dcl(UseSuffix)
 dcl(SaveContextGlyphs)
 dcl(UseHebrewContextGlyphs)
+dcl(LatinLigatures)
 dcl(AutoSaveFile)
 dcl(AutoSaveFilePeriod)
 dcl(AutoSaveFileExt)

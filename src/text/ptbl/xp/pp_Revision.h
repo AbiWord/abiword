@@ -115,16 +115,18 @@ class PP_RevisionAttr
 	void                  removeAllLesserOrEqualIds(UT_uint32 id);
 	void                  removeRevision(const PP_Revision * pRev);
 
-	const PP_Revision *   getGreatestLesserOrEqualRevision(UT_uint32 id);
+	const PP_Revision *   getGreatestLesserOrEqualRevision(UT_uint32 id,
+														   const PP_Revision ** ppR);
+	
 	const PP_Revision *   getLastRevision();
-
+	const PP_Revision *   getRevisionWithId(UT_uint32 iId, UT_uint32 & iMinId);
+	
 	/*! please not that the following are convenience functions; if
 	    you need to make repeated enqueries, it is better to call
 	    getGreatestLesserOrEqualRevision() or getLastRevision() and
 	    querie the returned PP_Revision object.
     */
 	bool                  isVisible(UT_uint32 id);
-	bool                  isVisible();
 	bool                  hasProperty(UT_uint32 iId, const XML_Char * pName, const XML_Char * &pValue);
 	bool                  hasProperty(const XML_Char * pName, const XML_Char * &pValue);
 	PP_RevisionType       getType(UT_uint32 iId);

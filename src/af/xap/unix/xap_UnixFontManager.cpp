@@ -89,7 +89,7 @@ static XAP_UnixFont* buildFont(XAP_UnixFontManager* pFM, FcPattern* fp)
 	bool bold = false;
 	int slant = FC_SLANT_ROMAN;
 	int weight;
-	UT_String metricFile;
+	UT_UTF8String metricFile;
 
 	// is it right to assume that filenames are ASCII??
 	// I though that if the result is FcResultMatch, then we can assert that fontFile is != NULL,
@@ -116,11 +116,11 @@ static XAP_UnixFont* buildFont(XAP_UnixFontManager* pFM, FcPattern* fp)
 
 	// handle '.font'
 	if (fontFile[ffs - 5] == '.')
-		metricFile = metricFile.substr(0, metricFile.size() - 1);
+		metricFile = UT_UTF8String(metricFile.ucs4_str().substr(0, metricFile.size() - 1));
 
-	metricFile[ffs - 3] = 'a';
-	metricFile[ffs - 2] = 'f';
-	metricFile[ffs - 1] = 'm';
+	metricFile.ucs4_str()[ffs - 3] = 'a';
+	metricFile.ucs4_str()[ffs - 2] = 'f';
+	metricFile.ucs4_str()[ffs - 1] = 'm';
 
 	if (weight == FC_WEIGHT_BOLD || weight == FC_WEIGHT_BLACK)
 		bold = true;
@@ -151,8 +151,8 @@ static XAP_UnixFont* buildFont(XAP_UnixFontManager* pFM, FcPattern* fp)
 			
 	XAP_UnixFont* font = new XAP_UnixFont(pFM);
 	/* we try to open the font.  If we fail, we try to open it removing the bold/italic info, if we fail again, we don't try again */
-	if (!font->openFileAs(reinterpret_cast<char*>(fontFile), metricFile.c_str(), reinterpret_cast<char*>(family), xlfd, s) &&
-		!font->openFileAs(reinterpret_cast<char*>(fontFile), metricFile.c_str(), reinterpret_cast<char*>(family), xlfd, XAP_UnixFont::STYLE_NORMAL))
+	if (!font->openFileAs(reinterpret_cast<char*>(fontFile), metricFile.utf8_str(), reinterpret_cast<char*>(family), xlfd, s) &&
+		!font->openFileAs(reinterpret_cast<char*>(fontFile), metricFile.utf8_str(), reinterpret_cast<char*>(family), xlfd, XAP_UnixFont::STYLE_NORMAL))
 	{
 		UT_DEBUGMSG(("Impossible to open font file [%s] [%d]\n.", reinterpret_cast<char*>(fontFile), s));
 		font->setFontManager(NULL); // This font isn't in the FontManager cache (yet), so it doesn't need to unregister itself
@@ -205,27 +205,27 @@ XAP_UnixFont* XAP_UnixFontManager::searchFont(const char* pszXftName)
 	FcResult result;
 
 	UT_DEBUGMSG(("searchFont [%s]\n", pszXftName));
-	UT_String sXftName = pszXftName;
+	UT_UTF8String sXftName = pszXftName;
 	if(strstr(pszXftName,"Symbol") != NULL)
 	{
 		const char * szLocm = strstr(pszXftName,"-");
-		UT_String sLeft("Standard Symbols L");
+		UT_UTF8String sLeft("Standard Symbols L");
 		sLeft += szLocm;
 		sXftName = sLeft;
-		UT_DEBUGMSG(("searchFont:: Symbol replaced with %s \n",sXftName.c_str()));
+		UT_DEBUGMSG(("searchFont:: Symbol replaced with %s \n",sXftName.utf8_str()));
 	}
 
-	fp = FcNameParse(reinterpret_cast<const FcChar8*>(sXftName.c_str()));
+	fp = FcNameParse(reinterpret_cast<const FcChar8*>(sXftName.utf8_str()));
 	FcConfigSubstitute(m_pConfig, fp, FcMatchPattern);
 	result_fp = FcFontSetMatch (m_pConfig, &m_pFontSet, 1, fp, &result);
 	FcPatternDestroy(fp);
 		
 	if (!result_fp)
 	{
-		UT_String message("AbiWord has not been able to find any font.  Please check that\n"
+		UT_UTF8String message("AbiWord has not been able to find any font.  Please check that\n"
 						  "you have configured correctly your font config file (it's usually\n"
 						  "located at /etc/fonts/fonts.conf)");
-		messageBoxOK(message.c_str());
+		messageBoxOK(message.utf8_str());
 		return NULL;
 	}
 
@@ -328,10 +328,10 @@ XAP_UnixFont* XAP_UnixFontManager::getDefaultFont(GR_Font::FontFamilyEnum f)
 
 		if (m_f[f].getFont() == NULL)
 		{
-			UT_String message("AbiWord has not been able to find any font.  Please check that\n"
+			UT_UTF8String message("AbiWord has not been able to find any font.  Please check that\n"
 							  "you have configured correctly your font config file (it's usually\n"
 							  "located at /etc/fonts/fonts.conf)");
-			messageBoxOK(message.c_str());
+			messageBoxOK(message.utf8_str());
 			exit(1);
 		}
 
@@ -342,7 +342,8 @@ XAP_UnixFont* XAP_UnixFontManager::getDefaultFont(GR_Font::FontFamilyEnum f)
 }
 
 // Internal function to force loading of a synthesized font
-static XAP_UnixFont* forceFontSynth(XAP_UnixFontManager* pFontManager,
+XAP_UnixFont*
+XAP_UnixFontManager::forceFontSynth(XAP_UnixFontManager* pFontManager,
 									const char* pszFontFamily,
 									const char* pszFontStyle,
 									const char* /* pszFontVariant */,
@@ -350,9 +351,9 @@ static XAP_UnixFont* forceFontSynth(XAP_UnixFontManager* pFontManager,
 									const char* /* pszFontStretch */,
 									const char* pszFontSize)
 {
-  const char *pszFontSlant = (!UT_stricmp("italic", pszFontStyle)? "100":
-							  !UT_stricmp("oblique", pszFontStyle)? "110":
-							  "0");
+  UT_UTF8String pszFontSlant(!UT_stricmp("italic", pszFontStyle)? "100":
+							 !UT_stricmp("oblique", pszFontStyle)? "110":
+							 "0");
   XAP_UnixFont::style xap_pszFontStyle = XAP_UnixFont::STYLE_NORMAL;
 
   if (!UT_stricmp("italic", pszFontStyle) || !UT_stricmp("oblique", pszFontStyle)) {
@@ -365,35 +366,39 @@ static XAP_UnixFont* forceFontSynth(XAP_UnixFontManager* pFontManager,
   } else if (!UT_stricmp("bold", pszFontWeight)) {
 	  xap_pszFontStyle = XAP_UnixFont::STYLE_BOLD;
   }
-
+  
   UT_DEBUGMSG(("Attempting to cache synth [%s, %s] style for font [%s]\n",
 			   pszFontWeight,pszFontStyle,pszFontFamily));
   XAP_UnixFont* pNewFont = new XAP_UnixFont(*(pFontManager->findNearestFont(pszFontFamily, NULL,
 																			NULL, NULL, NULL,
 																			pszFontSize)));
+  
   if(pNewFont){
-    if(!(pNewFont->getFontfile())){
-      UT_DEBUGMSG(("No font file found!  ABORT ABORT ABORT!"));
-      return NULL;
-    }
-    UT_String pFontFile (pNewFont->getFontfile());
-	UT_String pMetricFile (pNewFont->getMetricfile());
-
-    pNewFont->setStyle(xap_pszFontStyle);
-    UT_String newFontXLFD(pszFontFamily);
-    newFontXLFD += ":slant=";
-    newFontXLFD += pszFontSlant;
-    newFontXLFD += ":weight=";
-    newFontXLFD += pszFontWeight;
-    newFontXLFD += ":size=";
-    newFontXLFD += pszFontSize;
-    UT_DEBUGMSG(("XLFD is [%s]\n",newFontXLFD.c_str()));
-    pNewFont->openFileAs(pFontFile.c_str(), pMetricFile.c_str(),
-						 pszFontFamily, newFontXLFD.c_str(),
-						 xap_pszFontStyle);
-    
+	  if(!(pNewFont->getFontfile())){
+		  UT_DEBUGMSG(("No font file found!  ABORT ABORT ABORT!"));
+		  return NULL;
+	  }
+	  
+	  UT_UTF8String pFontFile (pNewFont->getFontfile());
+	  UT_UTF8String pMetricFile (pNewFont->getMetricfile());
+	  
+	  pNewFont->setStyle(xap_pszFontStyle);
+	  UT_UTF8String newFontXLFD(pszFontFamily);
+	  newFontXLFD += ":slant=";
+	  newFontXLFD += pszFontSlant;
+	  newFontXLFD += ":weight=";
+	  newFontXLFD += pszFontWeight;
+	  newFontXLFD += ":size=";
+	  newFontXLFD += pszFontSize;
+	  UT_DEBUGMSG(("XLFD is [%s]\n",newFontXLFD.utf8_str()));
+	  pNewFont->openFileAs(pFontFile.utf8_str(), pMetricFile.utf8_str(),
+						   pszFontFamily, newFontXLFD.utf8_str(),
+						   xap_pszFontStyle);
+	  
   }	
 
+  _addFont(pNewFont);
+  
   return pNewFont;
 }
 
@@ -410,11 +415,11 @@ XAP_UnixFont* XAP_UnixFontManager::findNearestFont(const char* pszFontFamily,
 												   const char* /* pszFontStretch */,
 												   const char* pszFontSize)
 {
-	UT_String st(pszFontFamily);
+	UT_UTF8String st(pszFontFamily);
 
 	if (pszFontSize && *pszFontSize)
 	{
-		st += '-';
+		st += "-";
 		st += pszFontSize;
 	}
 
@@ -456,7 +461,7 @@ XAP_UnixFont* XAP_UnixFontManager::findNearestFont(const char* pszFontFamily,
 	UT_upperString(keyBuffer);
 		
 	// find the font the hard way
-	XAP_UnixFont *pFont = searchFont(st.c_str());
+	XAP_UnixFont *pFont = searchFont(st.utf8_str());
 
 	// If the font doesn't exist, try to load a synthesized version
 	if(!pFont){

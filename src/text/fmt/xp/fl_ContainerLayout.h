@@ -139,6 +139,7 @@ protected:
 private:
 	virtual bool            _canContainPoint() const {return true;}
 	void	                _insertIntoList(fl_ContainerLayout * pL);
+	void	                _insertFirst(fl_ContainerLayout * pL);
 
 	fl_ContainerType	        m_iConType;
 	fl_ContainerLayout*		    m_pMyLayout;

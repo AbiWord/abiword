@@ -37,7 +37,6 @@
 #include "gr_Graphics.h"
 #include "pd_Document.h"
 #include "gr_DrawArgs.h"
-#include "fv_View.h"
 #include "pp_AttrProp.h"
 #include "fd_Field.h"
 #include "po_Bookmark.h"
@@ -50,9 +49,11 @@
 #include "fl_FootnoteLayout.h"
 #include "fp_FootnoteContainer.h"
 #include "fl_AutoNum.h"
+#include "fv_View.h"
 
 #include "ap_Prefs.h"
 #include "xap_Frame.h"
+#include "gr_Painter.h"
 
 #include "ut_sleep.h"
 
@@ -103,7 +104,7 @@ fp_Run::fp_Run(fl_BlockLayout* pBL,
 	m_pField(0),
 	m_iDirection(FRIBIDI_TYPE_WS), //by default all runs are whitespace
 	m_iVisDirection(FRIBIDI_TYPE_UNSET),
-	m_bRefreshDrawBuffer(true),
+	m_eRefreshDrawBuffer(SR_Unknown), // everything
 	m_pColorHL(255,255,255,true), // set highlight colour to transparent
 	m_pFont(0),
 	m_bRecalcWidth(false),
@@ -116,7 +117,7 @@ fp_Run::fp_Run(fl_BlockLayout* pBL,
 	m_iOverlineXoff(0),
 	m_pHyperlink(0),
 	m_pRevisions(NULL),
-	m_eHidden(FP_VISIBLE),
+	m_eVisibility(FP_VISIBLE),
 	m_bIsCleared(true),
 	m_FillType(NULL,static_cast<fp_ContainerObject *>(this),FG_FILL_TRANSPARENT),
 	m_bPrinting(false),
@@ -192,21 +193,25 @@ void fp_Run::lookupProperties(GR_Graphics * pG)
 		m_pRevisions = NULL;
 	}
 
-	// NB this call will recreate m_pRevisions for us
+	setVisibility(FP_VISIBLE); // set default visibility
+	
+	// NB the call will recreate m_pRevisions for us and it will
+	// change visibility if it is affected by the presence of revisions
 	getSpanAP(pSpanAP,bDelete);
 
 	xxx_UT_DEBUGMSG(("fp_Run: pSpanAP %x \n",pSpanAP));
-	//evaluate the "display" property
 
-	const XML_Char *pszDisplay = PP_evalProperty("display",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
+	//evaluate the "display" property and superimpose it over anything
+	//we got as the result of revisions
+	const XML_Char *pszDisplay = PP_evalProperty("display",pSpanAP,pBlockAP,
+												 pSectionAP, pDoc, true);
 
 	if(pszDisplay && !UT_strcmp(pszDisplay,"none"))
 	{
-		setVisibility(FP_HIDDEN_TEXT);
-	}
-	   else
-	{
-		setVisibility(FP_VISIBLE);
+		if(m_eVisibility == FP_VISIBLE)
+			setVisibility(FP_HIDDEN_TEXT);
+		else
+			setVisibility(FP_HIDDEN_REVISION_AND_TEXT);
 	}
 
 	// here we handle background colour -- we parse the property into
@@ -219,26 +224,13 @@ void fp_Run::lookupProperties(GR_Graphics * pG)
 	{
 		pG = getGraphics();
 	}
+	
 	_lookupProperties(pSpanAP, pBlockAP, pSectionAP,pG);
 
-	if(m_pRevisions)
-	{
-		FV_View* pView = _getView();
-		UT_return_if_fail(pView);
-		UT_uint32 iId  = pView->getRevisionLevel();
-
-		if(iId && !m_pRevisions->isVisible(iId))
-		{
-			if(isHidden() == FP_HIDDEN_TEXT)
-			{
-				setVisibility(FP_HIDDEN_REVISION_AND_TEXT);
-			}
-			else
-			{
-				setVisibility(FP_HIDDEN_REVISION);
-			}
-		}
-	}
+	// here we used to set revision-based visibility, but that has to
+	// be done inside getSpanAP() because we need to know whether the
+	// revision is to be visible or not before we can properly apply
+	// any properties the revision contains.
 
 	//if we are responsible for deleting pSpanAP, then just do so
 	if(bDelete)
@@ -421,7 +413,7 @@ void	fp_Run::setHyperlink(fp_HyperlinkRun * pH)
 */
 void fp_Run::getSpanAP(const PP_AttrProp * &pSpanAP, bool &bDeleteAfter)
 {
-	PP_AttrProp * pMySpanAP;
+	PP_AttrProp * pMySpanAP = NULL;
 	if(getType() != FPRUN_FMTMARK)
 	{
 		getBlock()->getSpanAttrProp(getBlockOffset(),false,&pSpanAP);
@@ -442,32 +434,235 @@ void fp_Run::getSpanAP(const PP_AttrProp * &pSpanAP, bool &bDeleteAfter)
 
 	bDeleteAfter = false;
 
+	const PP_AttrProp * pSpanAPOrig = pSpanAP;
+	
 	const XML_Char* pRevision = NULL;
 	if(pSpanAP && pSpanAP->getAttribute("revision", pRevision))
 	{
 		if(!m_pRevisions)
 			m_pRevisions = new PP_RevisionAttr(pRevision);
 
-		//next step is to parse any properties associated with this
-		//revision
+		UT_return_if_fail(m_pRevisions);
+		
+		//first we need to ascertain if this revision is visible
+		FV_View* pView = _getView();
+		UT_return_if_fail(pView);
 
-		const PP_Revision * pRev = m_pRevisions->getLastRevision();
+		UT_uint32 iId  = pView->getRevisionLevel();
+		bool bShow     = pView->isShowRevisions();
+		bool bMark     = pView->isMarkRevisions();
+		bool bDeleted = false;
 
-		if( pRev &&
-		  ((pRev->getType() == PP_REVISION_FMT_CHANGE)
-		 ||(pRev->getType() == PP_REVISION_ADDITION_AND_FMT)))
+		const PP_Revision * pRev;
+		UT_uint32 i = 0;
+		UT_uint32 iMinId;
+
+		pRev = m_pRevisions->getLastRevision();
+		UT_return_if_fail(pRev);
+		
+		UT_uint32 iMaxId = pRev->getId();
+
+		// set initial visibility ...
+		setVisibility(FP_VISIBLE);
+		
+		if(!bMark && !bShow && iId == 0)
 		{
-			// create copy of span AP and then set all props contained
-			// in our revision;
-			pMySpanAP = new PP_AttrProp;
+			// revisions are not to be shown, and the document to be
+			// shown in the state before the first revision, i.e.,
+			// additions are to be hidden, fmt changes ignored, and
+			// deletions will be visible
 
-			(*pMySpanAP) = *pSpanAP;
-			(*pMySpanAP) = *pRev;
+			// see if the first revision is an addition ...
+			i = 1;
+			do
+			{
+				pRev = m_pRevisions->getRevisionWithId(i, iMinId);
 
-			pSpanAP = pMySpanAP;
-			bDeleteAfter = true;
+				if(!pRev)
+				{
+					UT_DEBUGMSG(("fp_Run::getSpanAP: iMinId %d\n", iMinId));
+					
+					if(iMinId == 0xffffffff)
+					{
+						UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
+						return;
+					}
+
+					// jump directly to the first revision ...
+					i = iMinId;
+				}
+			}
+			while(!pRev && i <= (UT_sint32)iMaxId);
+			
+				
+			if(  (pRev->getType() == PP_REVISION_ADDITION)
+			   ||(pRev->getType() == PP_REVISION_ADDITION_AND_FMT))
+			{
+				setVisibility(FP_HIDDEN_REVISION);
+				return;
+			}
+
+			// if we got this far, we found no additions, i.e., this
+			// text was part of the document before the revisions were
+			// applied all other revisions need to be ingored
+			setVisibility(FP_VISIBLE);
+			return;
 		}
-	}
+		
+		if((bMark || !bShow) && iId != 0)
+		{
+			// revisions not to be shown, but document to be presented
+			// as it looks after the revision iId
+			UT_ASSERT( bMark || iId == 0xffffffff );
+			
+			UT_uint32 iMyMaxId = bMark ? UT_MIN(iId,iMaxId) : iMaxId;
+
+			// we need to loop through subsequent revisions,
+			// working out the their cumulative effect
+			i = 1;
+			
+			for(i = 1; i <= iMyMaxId; i++)
+			{
+				pRev = m_pRevisions->getRevisionWithId(i,iMinId);
+
+				if(!pRev)
+				{
+					if(iMinId == 0xffffffff)
+					{
+						UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
+						break;
+					}
+
+					// advance i so that we do not waste our time, -1
+					// because of i++ in loop
+					i = iMinId - 1;
+					continue;
+				}
+			
+			
+				if(  (pRev->getType() == PP_REVISION_FMT_CHANGE && !bDeleted)
+					 ||(pRev->getType() == PP_REVISION_ADDITION_AND_FMT))
+				{
+					// create copy of span AP and then set all props contained
+					// in our revision;
+					if(!pMySpanAP)
+					{
+						pMySpanAP = new PP_AttrProp;
+						UT_return_if_fail(pMySpanAP);
+				
+						(*pMySpanAP) = *pSpanAP;
+						(*pMySpanAP) = *pRev;
+						pSpanAP = pMySpanAP;
+						bDeleteAfter = true;
+					}
+					else
+					{
+						// add fmt to our AP
+						pMySpanAP->setAttributes(pRev->getAttributes());
+						pMySpanAP->setProperties(pRev->getProperties());
+					}
+				}
+				else if(pRev->getType() == PP_REVISION_DELETION)
+				{
+					// deletion means resetting all previous fmt
+					// changes
+					if(pMySpanAP)
+					{
+						delete pMySpanAP;
+						pMySpanAP = NULL;
+						pSpanAP = pSpanAPOrig;
+						bDeleteAfter = false;
+					}
+
+					bDeleted = true;
+				}
+				else if(pRev->getType() == PP_REVISION_ADDITION)
+				{
+					bDeleted = false;
+				}
+			} // for
+
+			if(bDeleted)
+			{
+				setVisibility(FP_HIDDEN_REVISION);
+			}
+			else
+			{
+				setVisibility(FP_VISIBLE);
+			}
+
+			if(!bMark || iId == 0xffffffff)
+				return;
+
+			// if we are in Mark mode, we need to process the last
+			// revision ... 
+		}
+		else if(!m_pRevisions->isVisible(iId))
+		{
+			// we are to show revisions with id <= iId
+			setVisibility(FP_HIDDEN_REVISION);
+			return;
+		}
+
+		//next step is to find any fmt changes, layering them as
+		//subsequent revisions come
+		if(bMark && iId != 0)
+		{
+			// we are in Mark mode and only interested in the last
+			// revision; the loop below will run only once
+			i = UT_MIN(iId+1,iMaxId);
+		}
+		else
+		{
+			i = 1;
+		}
+		
+
+		for(i = 1; i <= iMaxId; i++)
+		{
+			pRev = m_pRevisions->getRevisionWithId(i,iMinId);
+
+			if(!pRev)
+			{
+				if(iMinId == 0xffffffff)
+				{
+					UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
+					break;
+				}
+
+				// advance i so that we do not waste our time, -1
+				// because of i++ in loop
+				i = iMinId - 1;
+				continue;
+			}
+			
+			
+			if(  (pRev->getType() == PP_REVISION_FMT_CHANGE && !bDeleted)
+				 ||(pRev->getType() == PP_REVISION_ADDITION_AND_FMT))
+			{
+				// create copy of span AP and then set all props contained
+				// in our revision;
+				if(!pMySpanAP)
+				{
+					pMySpanAP = new PP_AttrProp;
+					UT_return_if_fail(pMySpanAP);
+				
+					(*pMySpanAP) = *pSpanAP;
+					(*pMySpanAP) = *pRev;
+					pSpanAP = pMySpanAP;
+					bDeleteAfter = true;
+					bDeleted = false;
+				}
+				else
+				{
+					// add fmt to our AP
+					pMySpanAP->setAttributes(pRev->getAttributes());
+					pMySpanAP->setProperties(pRev->getProperties());
+					bDeleted = false;
+				}
+			}
+		} // for
+	} // if "revision"
 }
 
 void fp_Run::setX(UT_sint32 iX, bool bDontClearIfNeeded)
@@ -559,8 +754,12 @@ void fp_Run::setNextRun(fp_Run* p, bool bRefresh)
 {
 	if(p != m_pNext)
 	{
-		m_bRefreshDrawBuffer |= bRefresh;
-		m_bRecalcWidth |= bRefresh;
+		// change of context, need to refresh draw buffer if context sensitive
+		if(bRefresh)
+			orDrawBufferDirty(SR_ContextSensitive);
+		
+		//m_bRecalcWidth |= bRefresh; -- will be taken care of when
+		//buffer is recalculated
 #if 0
 		// we do not do ligatures across run boundaries any more,
 		// Tomas, Nov 15, 2003
@@ -581,8 +780,12 @@ void fp_Run::setPrevRun(fp_Run* p, bool bRefresh)
 {
 	if(p != m_pPrev)
 	{
-		m_bRefreshDrawBuffer |= bRefresh;
-		m_bRecalcWidth |= bRefresh;
+		// change of context, need to refresh draw buffer if context sensitive
+		if(bRefresh)
+			orDrawBufferDirty(SR_ContextSensitive);
+		
+		// m_bRecalcWidth |= bRefresh;  -- will be taken care of when
+		// buffer is recacluated
 #if 0
 		// we do not do ligatures across run boundaries any more,
 		// Tomas, Nov 15, 2003
@@ -693,7 +896,24 @@ void fp_Run::setLength(UT_uint32 iLen, bool bRefresh)
 	clearScreen();
 
 	m_iLen = iLen;
-	m_bRefreshDrawBuffer |= bRefresh;
+
+	// change of length generally means something got deleted, and
+	// that affects all text in the present run, and shaping in the
+	// runs adjacent
+	if(bRefresh)
+	{
+		orDrawBufferDirty(SR_Unknown);
+
+		if(m_pPrev)
+		{
+			m_pPrev->orDrawBufferDirty(SR_ContextSensitive);
+		}
+
+		if(m_pNext)
+		{
+			m_pNext->orDrawBufferDirty(SR_ContextSensitive);
+		}
+	}
 }
 
 void fp_Run::setBlockOffset(UT_uint32 offset)
@@ -758,9 +978,42 @@ static UT_RGBColor s_fgColor;
 const UT_RGBColor fp_Run::getFGColor(void) const
 {
 	// revision colours
-	if(m_pRevisions)
+	FV_View * pView = _getView();
+	UT_return_val_if_fail(pView, s_fgColor);
+	bool bShow = pView->isShowRevisions();
+	
+	if(m_pRevisions && bShow)
 	{
-		UT_uint32 iId = m_pRevisions->getLastRevision()->getId();
+		bool bMark = pView->isMarkRevisions();
+		const PP_Revision * r = m_pRevisions->getLastRevision();
+		UT_uint32 iId = r->getId();
+		UT_uint32 iShowId = pView->getRevisionLevel();
+
+		bool bRevColor = false;
+
+		if(!bMark)
+		{
+			// this is the case when we are in non-marking mode ...
+			bRevColor = true;
+		}
+		
+		if(bMark && iShowId == 0)
+		{
+			// this is the case where we are in marking mode and are
+			// supposed to reveal all
+			bRevColor = true;
+		}
+		
+		if(bMark && iShowId != 0 && (iId-1 == iShowId))
+		{
+			// this is the case when we are in marking mode, and are
+			// supposed to reveal id > iShowId
+			bRevColor = true;
+		}
+		
+		if(!bRevColor)
+			return _getColorFG();
+
 		s_fgColor = _getView()->getColorRevisions(iId-1);
 	}
 	else if(m_pHyperlink && getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))
@@ -787,6 +1040,13 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 		xxx_UT_DEBUGMSG(("fp_Run::Run %x not dirty returning \n",this));
 		return;
 	}
+
+	if(isHidden())
+	{
+		// this run is marked as hidden, nothing to do
+		return;
+	}
+	
 	m_bIsCleared = false;
 	if (getLine())
 		getLine()->setScreenCleared(false);
@@ -799,6 +1059,8 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 	if (((pDA->yoff < -imax) || (pDA->yoff > imax)) && pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	     return;
 
+	GR_Painter painter(pG);
+
 	if(pG->queryProperties(GR_Graphics::DGP_PAPER))
 	{
 		m_bPrinting = true;
@@ -808,31 +1070,46 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 
 	_draw(pDA);
 
-	if(m_pRevisions)
+	FV_View* pView = _getView();
+	UT_return_if_fail(pView);
+	bool bShowRevs = pView->isShowRevisions();
+	
+	if(m_pRevisions && bShowRevs)
 	{
 		const PP_Revision * r = m_pRevisions->getLastRevision();
 		PP_RevisionType r_type = r->getType();
+		UT_uint32 iId = r->getId();
+		UT_uint32 iShowId = pView->getRevisionLevel();
+		bool bMark = pView->isMarkRevisions();
 
-		pG->setColor(getFGColor());
-
-		UT_uint32 iWidth = getDrawingWidth();
-
-		if(r_type == PP_REVISION_ADDITION)
+		if(bMark && iShowId != 0)
+			iId--;
+		
+		if(!bMark || !iShowId || iId == iShowId)
 		{
-			pG->fillRect(s_fgColor,pDA->xoff, pDA->yoff, iWidth, getGraphics()->tlu(1));
-			pG->fillRect(s_fgColor,pDA->xoff, pDA->yoff + getGraphics()->tlu(2), iWidth, getGraphics()->tlu(1));
+			pG->setColor(getFGColor());
 
-		}
-		else if(r_type == PP_REVISION_FMT_CHANGE)
-		{
-			// draw a thick line underneath
-			pG->fillRect(s_fgColor,pDA->xoff, pDA->yoff, iWidth, getGraphics()->tlu(2));
-		}
-		else
-		{
-			// draw a strike-through line
+			UT_uint32 iWidth = getDrawingWidth();
 
-			pG->fillRect(s_fgColor,pDA->xoff, pDA->yoff - m_iHeight/3, iWidth, getGraphics()->tlu(2));
+			if(r_type == PP_REVISION_ADDITION)
+			{
+				painter.fillRect(s_fgColor,pDA->xoff, pDA->yoff, iWidth, getGraphics()->tlu(1));
+				painter.fillRect(s_fgColor,pDA->xoff, pDA->yoff + getGraphics()->tlu(2),
+							 iWidth, getGraphics()->tlu(1));
+
+			}
+			else if(r_type == PP_REVISION_FMT_CHANGE)
+			{
+				// draw a thick line underneath
+				painter.fillRect(s_fgColor,pDA->xoff, pDA->yoff, iWidth, getGraphics()->tlu(2));
+			}
+			else
+			{
+				// draw a strike-through line
+
+				painter.fillRect(s_fgColor,pDA->xoff, pDA->yoff - m_iHeight/3,
+							 iWidth, getGraphics()->tlu(2));
+			}
 		}
 	}
 
@@ -841,23 +1118,23 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 		// have to set the colour again, since fp_TextRun::_draw can set it to red
 		// for drawing sguiggles
 		pG->setColor(_getView()->getColorHyperLink());
-		pG->setLineProperties(1.0,
+		pG->setLineProperties(pG->tluD(1.0),
 								GR_Graphics::JOIN_MITER,
 								GR_Graphics::CAP_BUTT,
 								GR_Graphics::LINE_SOLID);
 
-		pG->drawLine(pDA->xoff, pDA->yoff, pDA->xoff + m_iWidth, pDA->yoff);
+		painter.drawLine(pDA->xoff, pDA->yoff, pDA->xoff + m_iWidth, pDA->yoff);
 	}
 
-	if(m_eHidden == FP_HIDDEN_TEXT || m_eHidden == FP_HIDDEN_REVISION_AND_TEXT)
+	if(m_eVisibility == FP_HIDDEN_TEXT || m_eVisibility == FP_HIDDEN_REVISION_AND_TEXT)
 	{
 		pG->setColor(getFGColor());
-		pG->setLineProperties(1.0,
+		pG->setLineProperties(pG->tluD(1.0),
 								GR_Graphics::JOIN_MITER,
 								GR_Graphics::CAP_BUTT,
 								GR_Graphics::LINE_DOTTED);
 
-		pG->drawLine(pDA->xoff, pDA->yoff, pDA->xoff + m_iWidth, pDA->yoff);
+		painter.drawLine(pDA->xoff, pDA->yoff, pDA->xoff + m_iWidth, pDA->yoff);
 
 	}
 	_setDirty(false);
@@ -869,20 +1146,80 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 	}
 }
 
-bool fp_Run::canContainPoint(void) const
+/*!
+    Determines if run is currently visible or hidden
+	run is hidden in the following circumstances:
+	
+	 a) it is formatted as hidden and show para is off
+	 
+	 b) it is part of a revision that makes it hidden; several cases
+	    fall into this category, but that is immaterial here (the
+	    decision on this is made in lookupProperties()
+*/
+bool fp_Run::isHidden() const
+{
+	return _wouldBeHidden(m_eVisibility);
+}
+
+/*!
+    Determines if run would be hidden if its visibility was set to the
+    given value eVisibility
+*/
+bool fp_Run::_wouldBeHidden(FPVisibility eVisibility) const
 {
 	FV_View* pView = _getView();
 	bool bShowHidden = pView->getShowPara();
 
+	bool bHidden = ((eVisibility == FP_HIDDEN_TEXT && !bShowHidden)
+	              || eVisibility == FP_HIDDEN_REVISION
+		          || eVisibility == FP_HIDDEN_REVISION_AND_TEXT);
 
-	// if this tab is to be hidden, we must treated as if its
-	// width was 0
-	bool bHidden = ((m_eHidden == FP_HIDDEN_TEXT && !bShowHidden)
-	              || m_eHidden == FP_HIDDEN_REVISION
-		          || m_eHidden == FP_HIDDEN_REVISION_AND_TEXT);
+	return bHidden;
+}
 
-	if(bHidden)
-			return false;
+/*!
+    changes the visibility of the present run; this requires
+    invalidating different things depending on circumstances
+*/
+void fp_Run::setVisibility(FPVisibility eVis)
+{
+	if(m_eVisibility == eVis)
+		return;
+
+	if(    (isHidden() && _wouldBeHidden(eVis))
+	    || (!isHidden() && !_wouldBeHidden(eVis)))
+	{
+		// this run will remain as it is, so we just set visibility to
+		// the new value
+		m_eVisibility = eVis;
+		return;
+	}
+
+	if(_wouldBeHidden(eVis))
+	{
+		// we are going into hiding, so we need to clear screen first
+		clearScreen();
+
+		// we do not need to redraw
+		m_bDirty = false;
+		m_bRecalcWidth = true;
+		m_eVisibility = eVis;
+		return;
+	}
+
+	// we are unhiding: need to mark everything dirty
+	m_bIsCleared = true;
+	m_bDirty = true;
+	m_bRecalcWidth = true;
+	m_eVisibility = eVis;
+	return;
+}
+
+
+bool fp_Run::canContainPoint(void) const
+{
+	if(isHidden())
+		return false;
 	else
 		return _canContainPoint();
 }
@@ -894,15 +1231,34 @@ bool fp_Run::_canContainPoint(void) const
 
 bool fp_Run::letPointPass(void) const
 {
+	if(isHidden())
+			return true;
+	else
+		return _letPointPass();
+}
+
+bool fp_Run::_letPointPass(void) const
+{
 	return true;
 }
 
-void fp_Run::fetchCharWidths(fl_CharWidths * /* pgbCharWidths */)
+bool fp_Run::recalcWidth(void)
 {
-	// do nothing.  subclasses may override this.
+	if(isHidden())
+	{
+		if(m_iWidth != 0)
+		{
+			m_iWidth = 0;
+			return true;
+		}
+		
+		return false;
+	}
+	else
+		return _recalcWidth();
 }
 
-bool fp_Run::recalcWidth(void)
+bool fp_Run::_recalcWidth(void)
 {
 	// do nothing.  subclasses may override this.
 	return false;
@@ -943,6 +1299,8 @@ void fp_Run::drawDecors(UT_sint32 xoff, UT_sint32 yoff, GR_Graphics * pG)
 	{
 		return;
 	}
+
+	GR_Painter painter(pG);
 
 	const UT_sint32 old_LineWidth = m_iLineWidth;
 	UT_sint32 cur_linewidth = pG->tlu(1) + UT_MAX(pG->tlu(10),static_cast<UT_sint32>(getAscent())-pG->tlu(10))/8;
@@ -1047,13 +1405,13 @@ be drawn.
 		{
 			iDrop = UT_MAX( getMaxUnderline(), iDrop);
 			UT_sint32 totx = getUnderlineXoff();
-			pG->drawLine(totx, iDrop, xoff+getWidth(), iDrop);
+			painter.drawLine(totx, iDrop, xoff+getWidth(), iDrop);
 		}
 		if ( b_Overline)
 		{
 			iDrop = UT_MIN( getMinOverline(), iDrop);
 			UT_sint32 totx = getOverlineXoff();
-			pG->drawLine(totx, iDrop, xoff+getWidth(), iDrop);
+			painter.drawLine(totx, iDrop, xoff+getWidth(), iDrop);
 		}
 	}
 	/*
@@ -1069,7 +1427,7 @@ is drawn later.
 		     {
 				 iDrop = UT_MAX( getMaxUnderline(), iDrop);
 				 UT_sint32 totx = getUnderlineXoff();
-				 pG->drawLine(totx, iDrop, xoff+getWidth(), iDrop);
+				 painter.drawLine(totx, iDrop, xoff+getWidth(), iDrop);
 		     }
 		     else
 		     {
@@ -1082,7 +1440,7 @@ is drawn later.
 			{
 				iDrop = UT_MIN( getMinOverline(), iDrop);
 				UT_sint32 totx = getOverlineXoff();
-				pG->drawLine(totx, iDrop, xoff+getWidth(), iDrop);
+				painter.drawLine(totx, iDrop, xoff+getWidth(), iDrop);
 			}
 			else
 			{
@@ -1097,7 +1455,7 @@ text so we can keep the original code.
 	if ( b_Strikethrough)
 	{
 		iDrop = yoff + getAscent() * 2 / 3;
-		pG->drawLine(xoff, iDrop, xoff+getWidth(), iDrop);
+		painter.drawLine(xoff, iDrop, xoff+getWidth(), iDrop);
 	}
 	/*
 	   Restore the previous line width.
@@ -1130,14 +1488,14 @@ text so we can keep the original code.
 	if ( b_Topline)
 	{
 		UT_sint32 ybase = yoff + getAscent() - getLine()->getAscent() + pG->tlu(1);
-		pG->fillRect(clrFG, xoff, ybase, getWidth(), ithick);
+		painter.fillRect(clrFG, xoff, ybase, getWidth(), ithick);
 	}
 	/*
 	  We always draw bottomline right at the bottom so there is no ambiguity
 	*/
 	if ( b_Bottomline)
 	{
-		pG->fillRect(clrFG, xoff, yoff+getLine()->getHeight()-ithick+pG->tlu(1), getWidth(), ithick);
+		painter.fillRect(clrFG, xoff, yoff+getLine()->getHeight()-ithick+pG->tlu(1), getWidth(), ithick);
 	}
 }
 
@@ -1239,8 +1597,9 @@ UT_sint32 fp_Run::getToplineThickness(void)
 */
 void fp_Run::_drawTextLine(UT_sint32 xoff,UT_sint32 yoff,UT_uint32 iWidth,UT_uint32 iHeight,UT_UCSChar *pText)
 {
-
     GR_Font *pFont = getGraphics()->getGUIFont();
+
+	GR_Painter painter(getGraphics());
     getGraphics()->setFont(pFont);
 
     UT_uint32 iTextLen = UT_UCS4_strlen(pText);
@@ -1250,12 +1609,12 @@ void fp_Run::_drawTextLine(UT_sint32 xoff,UT_sint32 yoff,UT_uint32 iWidth,UT_uin
     UT_uint32 xoffText = xoff + (iWidth - iTextWidth) / 2;
     UT_uint32 yoffText = yoff - getGraphics()->getFontAscent(pFont) * 2 / 3;
 
-    getGraphics()->drawLine(xoff,yoff,xoff + iWidth,yoff);
+    painter.drawLine(xoff,yoff,xoff + iWidth,yoff);
 
     if((iTextWidth < iWidth) && (iTextHeight < iHeight))
 	{
 		Fill(getGraphics(),xoffText,yoffText,iTextWidth,iTextHeight);
-        getGraphics()->drawChars(pText,0,iTextLen,xoffText,yoffText);
+        painter.drawChars(pText,0,iTextLen,xoffText,yoffText);
     }
 }
 
@@ -1364,7 +1723,7 @@ bool fp_TabRun::canBreakBefore(void) const
 	return false;
 }
 
-bool fp_TabRun::letPointPass(void) const
+bool fp_TabRun::_letPointPass(void) const
 {
 	return true;
 }
@@ -1542,8 +1901,10 @@ void fp_TabRun::_drawArrow(UT_uint32 iLeft,UT_uint32 iTop,UT_uint32 iWidth, UT_u
     points[5].x = points[0].x;
     points[5].y = points[0].y;
 
+	GR_Painter painter(getGraphics());
+
     UT_RGBColor clrShowPara(_getView()->getColorShowPara());
-    getGraphics()->polygon(clrShowPara,points,NPOINTS);
+    painter.polygon(clrShowPara,points,NPOINTS);
 
     xxx_UT_DEBUGMSG(("fp_TabRun::_drawArrow: iLeft %d, iyAxis %d, cur_linewidth %d, iMaxWidth %d\n",
     			iLeft, iyAxis, cur_linewidth, iMaxWidth));
@@ -1553,11 +1914,11 @@ void fp_TabRun::_drawArrow(UT_uint32 iLeft,UT_uint32 iTop,UT_uint32 iWidth, UT_u
     if(static_cast<UT_sint32>(iMaxWidth - cur_linewidth * 4) > 0)
 	    if(getVisDirection() == FRIBIDI_TYPE_LTR)
 		{
-		    getGraphics()->fillRect(clrShowPara,iLeft + ixGap,iyAxis - cur_linewidth / 2,iMaxWidth - cur_linewidth * 4,cur_linewidth);
+		    painter.fillRect(clrShowPara,iLeft + ixGap,iyAxis - cur_linewidth / 2,iMaxWidth - cur_linewidth * 4,cur_linewidth);
 		}
 		else
 		{
-	    	getGraphics()->fillRect(clrShowPara,iLeft + ixGap + cur_linewidth * 4,iyAxis - cur_linewidth / 2,iMaxWidth - cur_linewidth * 4,cur_linewidth);
+	    	painter.fillRect(clrShowPara,iLeft + ixGap + cur_linewidth * 4,iyAxis - cur_linewidth / 2,iMaxWidth - cur_linewidth * 4,cur_linewidth);
 		}
 #undef NPOINTS
 }
@@ -1598,13 +1959,15 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 	getBlock()->getAttrProp(&pBlockAP);
 	UT_parseColor(PP_evalProperty("color",pSpanAP,pBlockAP, pSectionAP, pDoc, true), clrFG);
 	
+	GR_Painter painter(pG);
+
 	if (
 	    /* pView->getFocus()!=AV_FOCUS_NONE && */
 		(iSel1 <= iRunBase)
 		&& (iSel2 > iRunBase)
 		)
 	{
-		pG->fillRect(_getView()->getColorSelBackground(), /*pDA->xoff*/DA_xoff, iFillTop, getWidth(), iFillHeight);
+		painter.fillRect(_getView()->getColorSelBackground(), /*pDA->xoff*/DA_xoff, iFillTop, getWidth(), iFillHeight);
         if(pView->getShowPara()){
             _drawArrow(/*pDA->xoff*/DA_xoff, iFillTop, getWidth(), iFillHeight);
         }
@@ -1658,7 +2021,7 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 
 		i = (i>=3) ? i - 2 : 1;
 		pG->setColor(clrFG);
-		pG->drawChars(tmp, 1, i, /*pDA->xoff*/DA_xoff, iFillTop);
+		painter.drawChars(tmp, 1, i, /*pDA->xoff*/DA_xoff, iFillTop);
 	}
 //
 // Draw underline/overline/strikethough
@@ -1676,12 +2039,10 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 //
 // Scale the vertical line thickness for printers
 //
-		UT_sint32 ithick =  getToplineThickness();
-		pG->fillRect(clrFG, /*pDA->xoff*/DA_xoff+getWidth()-ithick, iFillTop, ithick, iFillHeight);
+		UT_sint32 ithick = getToplineThickness();
+		painter.fillRect(clrFG, /*pDA->xoff*/DA_xoff+getWidth()-ithick, iFillTop, ithick, iFillHeight);
 	}
 }
-
-
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
@@ -1750,7 +2111,7 @@ bool fp_ForcedLineBreakRun::canBreakBefore(void) const
 	return false;
 }
 
-bool fp_ForcedLineBreakRun::letPointPass(void) const
+bool fp_ForcedLineBreakRun::_letPointPass(void) const
 {
 	return false;
 }
@@ -1829,6 +2190,8 @@ void fp_ForcedLineBreakRun::_draw(dg_DrawArgs* pDA)
     	return;
     }
 
+	GR_Painter painter(getGraphics());
+
 	UT_uint32 iRunBase = getBlock()->getPosition() + getBlockOffset();
 
 	UT_uint32 iSelAnchor = pView->getSelectionAnchor();
@@ -1900,8 +2263,7 @@ void fp_ForcedLineBreakRun::_draw(dg_DrawArgs* pDA)
 
 	if (bIsSelected)
     {
-
-		getGraphics()->fillRect(_getView()->getColorSelBackground(), iXoffText, iYoffText, getWidth(), getLine()->getHeight());
+		painter.fillRect(_getView()->getColorSelBackground(), iXoffText, iYoffText, getWidth(), getLine()->getHeight());
     }
 	else
     {
@@ -1911,11 +2273,10 @@ void fp_ForcedLineBreakRun::_draw(dg_DrawArgs* pDA)
     {
 		// Draw pilcrow
 		getGraphics()->setColor(clrShowPara);
-		getGraphics()->drawChars(pEOP, 0, iTextLen, iXoffText, iYoffText);
+		painter.drawChars(pEOP, 0, iTextLen, iXoffText, iYoffText);
     }
 
 }
-
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
@@ -1946,7 +2307,7 @@ bool fp_FieldStartRun::canBreakBefore(void) const
 	return true;
 }
 
-bool fp_FieldStartRun::letPointPass(void) const
+bool fp_FieldStartRun::_letPointPass(void) const
 {
 	return true;
 }
@@ -2006,7 +2367,7 @@ bool fp_FieldEndRun::canBreakBefore(void) const
 	return true;
 }
 
-bool fp_FieldEndRun::letPointPass(void) const
+bool fp_FieldEndRun::_letPointPass(void) const
 {
 	return true;
 }
@@ -2086,7 +2447,7 @@ bool fp_BookmarkRun::canBreakBefore(void) const
 	return true;
 }
 
-bool fp_BookmarkRun::letPointPass(void) const
+bool fp_BookmarkRun::_letPointPass(void) const
 {
 	return true;
 }
@@ -2184,9 +2545,10 @@ void fp_BookmarkRun::_draw(dg_DrawArgs* pDA)
     points[3].x = points[0].x;
     points[3].y = points[0].y;
 
-
     UT_RGBColor clrShowPara(_getView()->getColorShowPara());
-    pG->polygon(clrShowPara,points,NPOINTS);
+
+	GR_Painter painter(pG);
+    painter.polygon(clrShowPara,points,NPOINTS);
     #undef NPOINTS
 
 }
@@ -2266,7 +2628,7 @@ bool fp_HyperlinkRun::canBreakBefore(void) const
 	return false;
 }
 
-bool fp_HyperlinkRun::letPointPass(void) const
+bool fp_HyperlinkRun::_letPointPass(void) const
 {
 	return true;
 }
@@ -2312,7 +2674,7 @@ fp_EndOfParagraphRun::fp_EndOfParagraphRun(fl_BlockLayout* pBL,
 }
 
 
-bool fp_EndOfParagraphRun::recalcWidth(void)
+bool fp_EndOfParagraphRun::_recalcWidth(void)
 {
 	return false;
 }
@@ -2399,7 +2761,7 @@ bool fp_EndOfParagraphRun::canBreakBefore(void) const
 	return false;
 }
 
-bool fp_EndOfParagraphRun::letPointPass(void) const
+bool fp_EndOfParagraphRun::_letPointPass(void) const
 {
 	return false;
 }
@@ -2502,6 +2864,8 @@ void fp_EndOfParagraphRun::_draw(dg_DrawArgs* pDA)
 	if (/* pView->getFocus()!=AV_FOCUS_NONE && */	(iSel1 <= iRunBase) && (iSel2 > iRunBase))
 		bIsSelected = true;
 
+	GR_Painter painter(getGraphics());
+
 	UT_UCSChar pEOP[] = { UCS_PILCROW, 0 };
 	UT_uint32 iTextLen = UT_UCS4_strlen(pEOP);
 	UT_sint32 iAscent;
@@ -2556,7 +2920,7 @@ void fp_EndOfParagraphRun::_draw(dg_DrawArgs* pDA)
 
 	if (bIsSelected)
 	{
-		getGraphics()->fillRect(_getView()->getColorSelBackground(), m_iXoffText, m_iYoffText, m_iDrawWidth, getLine()->getHeight());
+		painter.fillRect(_getView()->getColorSelBackground(), m_iXoffText, m_iYoffText, m_iDrawWidth, getLine()->getHeight());
 	}
 	else
 	{
@@ -2566,9 +2930,9 @@ void fp_EndOfParagraphRun::_draw(dg_DrawArgs* pDA)
 	{
 		// Draw pilcrow
 		// use the hard-coded colour only if not revised
-		if(!getRevisions())
+		if(!getRevisions() || !pView->isShowRevisions())
 			getGraphics()->setColor(pView->getColorShowPara());
-        getGraphics()->drawChars(pEOP, 0, iTextLen, m_iXoffText, m_iYoffText);
+        painter.drawChars(pEOP, 0, iTextLen, m_iXoffText, m_iYoffText);
 	}
 }
 
@@ -2714,7 +3078,7 @@ bool fp_ImageRun::canBreakBefore(void) const
 	return true;
 }
 
-bool fp_ImageRun::letPointPass(void) const
+bool fp_ImageRun::_letPointPass(void) const
 {
 	return false;
 }
@@ -2781,31 +3145,33 @@ const char * fp_ImageRun::getDataId(void) const
 
 void fp_ImageRun::_drawResizeBox(UT_Rect box)
 {
-
+	GR_Graphics * pG = getGraphics();
 	UT_sint32 left = box.left;
 	UT_sint32 top = box.top;
-	UT_sint32 right = box.left + box.width - getGraphics()->tlu(1);
-	UT_sint32 bottom = box.top + box.height - getGraphics()->tlu(1);
+	UT_sint32 right = box.left + box.width - pG->tlu(1);
+	UT_sint32 bottom = box.top + box.height - pG->tlu(1);
+
+	GR_Painter painter(pG);
 	
-	getGraphics()->setLineProperties(1.0,
+	pG->setLineProperties(pG->tluD(1.0),
 								 GR_Graphics::JOIN_MITER,
 								 GR_Graphics::CAP_BUTT,
 								 GR_Graphics::LINE_SOLID);	
 	
 	// draw some really fancy box here
-	getGraphics()->setColor(UT_RGBColor(98,129,131));
-	getGraphics()->drawLine(left, top, right, top);
-	getGraphics()->drawLine(left, top, left, bottom);
-	getGraphics()->setColor(UT_RGBColor(230,234,238));
-	getGraphics()->drawLine(box.left+getGraphics()->tlu(1), box.top + getGraphics()->tlu(1), right - getGraphics()->tlu(1), top+getGraphics()->tlu(1));
-	getGraphics()->drawLine(box.left+getGraphics()->tlu(1), box.top + getGraphics()->tlu(1), left + getGraphics()->tlu(1), bottom - getGraphics()->tlu(1));
-	getGraphics()->setColor(UT_RGBColor(98,129,131));
-	getGraphics()->drawLine(right - getGraphics()->tlu(1), top + getGraphics()->tlu(1), right - getGraphics()->tlu(1), bottom - getGraphics()->tlu(1));
-	getGraphics()->drawLine(left + getGraphics()->tlu(1), bottom - getGraphics()->tlu(1), right - getGraphics()->tlu(1), bottom - getGraphics()->tlu(1));
-	getGraphics()->setColor(UT_RGBColor(49,85,82));
-	getGraphics()->drawLine(right, top, right, bottom);
-	getGraphics()->drawLine(left, bottom, right, bottom);
-	getGraphics()->fillRect(UT_RGBColor(156,178,180),box.left + getGraphics()->tlu(2), box.top + getGraphics()->tlu(2), box.width - getGraphics()->tlu(4), box.height - getGraphics()->tlu(4));
+	pG->setColor(UT_RGBColor(98,129,131));
+	painter.drawLine(left, top, right, top);
+	painter.drawLine(left, top, left, bottom);
+	pG->setColor(UT_RGBColor(230,234,238));
+	painter.drawLine(box.left+pG->tlu(1), box.top + pG->tlu(1), right - pG->tlu(1), top+pG->tlu(1));
+	painter.drawLine(box.left+pG->tlu(1), box.top + pG->tlu(1), left + pG->tlu(1), bottom - pG->tlu(1));
+	pG->setColor(UT_RGBColor(98,129,131));
+	painter.drawLine(right - pG->tlu(1), top + pG->tlu(1), right - pG->tlu(1), bottom - pG->tlu(1));
+	painter.drawLine(left + pG->tlu(1), bottom - pG->tlu(1), right - pG->tlu(1), bottom - pG->tlu(1));
+	pG->setColor(UT_RGBColor(49,85,82));
+	painter.drawLine(right, top, right, bottom);
+	painter.drawLine(left, bottom, right, bottom);
+	painter.fillRect(UT_RGBColor(156,178,180),box.left + pG->tlu(2), box.top + pG->tlu(2), box.width - pG->tlu(4), box.height - pG->tlu(4));
 }
 
 void fp_ImageRun::_draw(dg_DrawArgs* pDA)
@@ -2854,7 +3220,7 @@ void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 	const UT_Rect * pSavedRect = NULL;
 	if(pG->getClipRect())
 	{
-		pSavedRect = new UT_Rect(pG->getClipRect());
+		pSavedRect = pG->getClipRect();
 	}
 	if(pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
@@ -2862,11 +3228,14 @@ void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 	}
 
 	FV_View* pView = _getView();
+
+	GR_Painter painter(pG);
+
 	if (m_pImage)
 	{
 		// draw the image (always)
 		xxx_UT_DEBUGMSG(("SEVIOR: Drawing image now \n"));
-		pG->drawImage(m_pImage, xoff, yoff);
+		painter.drawImage(m_pImage, xoff, yoff);
 
 		// if we're the selection, draw some pretty selection markers
 		if (pG->queryProperties(GR_Graphics::DGP_SCREEN))
@@ -2910,12 +3279,11 @@ void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 	}
 	else
 	{
-		pG->fillRect(pView->getColorImage(), xoff, yoff, getWidth(), getHeight());
+		painter.fillRect(pView->getColorImage(), xoff, yoff, getWidth(), getHeight());
 	}
 
 	// unf*ck clipping rect
 	pG->setClipRect(pSavedRect);
-
 }
 
 GR_Image * fp_ImageRun::getImage()
@@ -2968,7 +3336,7 @@ fp_FieldRun::fp_FieldRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 
 	m_sFieldValue[0] = 0;
 }
 
-bool fp_FieldRun::recalcWidth()
+bool fp_FieldRun::_recalcWidth()
 {
 	UT_GrowBufElement aCharWidths[FPFIELD_MAX_LENGTH];
 	// TODO -- is this really needed ???
@@ -3269,7 +3637,7 @@ bool fp_FieldRun::canBreakBefore(void) const
 	return true;
 }
 
-bool fp_FieldRun::letPointPass(void) const
+bool fp_FieldRun::_letPointPass(void) const
 {
 	return true;
 }
@@ -3299,7 +3667,14 @@ void fp_FieldRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& 
 		pos = getBlock()->getPosition() + getBlockOffset() + getLength();
 
 	bBOL = false;
-	bEOL = false;
+	if(getNextRun() == NULL)
+	{
+		bEOL = true;
+	}
+	if(getNextRun()->getType() == FPRUN_ENDOFPARAGRAPH)
+	{
+		bEOL = true;
+	}
 }
 
 void fp_FieldRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x,
@@ -3435,6 +3810,8 @@ void fp_FieldRun::_defaultDraw(dg_DrawArgs* pDA)
 	// lookupProperties();
 	UT_sint32 xoff = 0, yoff = 0;
 
+	GR_Painter painter(pG);
+
 	// need screen locations of this run
 
 	getLine()->getScreenOffsets(this, xoff, yoff);
@@ -3477,7 +3854,7 @@ void fp_FieldRun::_defaultDraw(dg_DrawArgs* pDA)
 		{
 			UT_RGBColor color(_getView()->getColorSelBackground());
 			color -= _getView()->getColorFieldOffset();
-			pG->fillRect(color, pDA->xoff, iFillTop, getWidth(), iFillHeight);
+			painter.fillRect(color, pDA->xoff, iFillTop, getWidth(), iFillHeight);
 
 		}
 		else
@@ -3489,7 +3866,7 @@ void fp_FieldRun::_defaultDraw(dg_DrawArgs* pDA)
 	pG->setFont(_getFont());
 	pG->setColor(_getColorFG());
 
-	pG->drawChars(m_sFieldValue, 0, UT_UCS4_strlen(m_sFieldValue), pDA->xoff,iYdraw);
+	painter.drawChars(m_sFieldValue, 0, UT_UCS4_strlen(m_sFieldValue), pDA->xoff,iYdraw);
 //
 // Draw underline/overline/strikethough
 //
@@ -4187,7 +4564,7 @@ bool fp_FieldFileNameRun::calculateValue(void)
 	UT_ASSERT(pDoc);
 
 	//copy in the name or some wierd char instead
-	const char * name = pDoc->getFileName();
+	const char * name = pDoc->getFilename();
 	if (!name)
 		name = "*";
 
@@ -4556,7 +4933,7 @@ bool fp_ForcedColumnBreakRun::canBreakBefore(void) const
 	return false;
 }
 
-bool fp_ForcedColumnBreakRun::letPointPass(void) const
+bool fp_ForcedColumnBreakRun::_letPointPass(void) const
 {
 	return false;
 }
@@ -4667,7 +5044,7 @@ bool fp_ForcedPageBreakRun::canBreakBefore(void) const
 	return false;
 }
 
-bool fp_ForcedPageBreakRun::letPointPass(void) const
+bool fp_ForcedPageBreakRun::_letPointPass(void) const
 {
 	return false;
 }
@@ -4876,8 +5253,15 @@ FriBidiCharType fp_Run::getVisDirection()
 
 void fp_Run::setVisDirection(FriBidiCharType iDir)
 {
-    if(iDir != m_iVisDirection)
-		m_bRefreshDrawBuffer = true;
+    if(   iDir != m_iVisDirection
+	   && m_iVisDirection != FRIBIDI_TYPE_UNSET
+		  /*&& m_eRefreshDrawBuffer == SR_BufferClean*/)
+	{
+		// the text in the buffer is in the wrong order, schedule it
+		// for refresh
+		m_eRefreshDrawBuffer = SR_Unknown;
+	}
+	
 	m_iVisDirection = iDir;
 }
 
@@ -4913,3 +5297,27 @@ void fp_Run::setDirectionProperty(FriBidiCharType dir)
 	UT_DEBUGMSG(("fp_Run::setDirectionProperty: offset=%d, len=%d, dir=\"%s\"\n", offset,getLength(),prop[1]));
 }
 #endif
+
+/*!
+    The following function allows us to respond to deletion of part of
+    a run in a smart way; this is just default implementation, and
+    there is nothing smart about it, derrived classes should provide
+    their own implementation where it makes sense (see fp_TextRun)
+    
+    \param offset: run offset at which deletion starts
+    \param iLen:   length of the deleted section, can reach past the
+                   end of the run
+*/
+void fp_Run::updateOnDelete(UT_uint32 offset, UT_uint32 iLenToDelete)
+{
+	// do not try to delete past the end of the run ...
+	UT_return_if_fail(offset < m_iLen);
+
+	UT_uint32 iLen = UT_MIN(iLenToDelete, m_iLen - offset);
+	
+	// do not try to delete nothing ...
+	if(iLen == 0)
+		return;
+
+	setLength(m_iLen - iLen, true);
+}

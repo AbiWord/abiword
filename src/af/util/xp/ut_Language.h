@@ -35,14 +35,14 @@ enum UT_LANGUAGE_DIR
 	UTLANG_VERTICAL
 };
 
-
-typedef struct
+struct UT_LangRecord
 {
 	XML_Char * m_szLangCode;
 	XML_Char * m_szLangName;
 	UT_uint32  m_nID;
     UT_LANGUAGE_DIR m_eDir;
-} lang_entry;
+};
+
 
 class ABI_EXPORT UT_Language
 {
@@ -54,7 +54,9 @@ public:
 	const XML_Char * 	getNthLangName(UT_uint32 n);
 	const UT_uint32  	getNthId(UT_uint32 n);
 	const XML_Char * 	getCodeFromName(const XML_Char * szName);
-	const XML_Char * 	getCodeFromCode(const XML_Char * szCode); //see the cpp file for explanation
+	const XML_Char * 	getCodeFromCode(const XML_Char * szCode); //
+																  //see the cpp file for explanation
+	const UT_LangRecord* getLangRecordFromCode(const XML_Char * szCode);
 	UT_uint32 	        getIndxFromCode(const XML_Char * szCode);
 	UT_uint32 	        getIdFromCode(const XML_Char * szCode);
 	UT_LANGUAGE_DIR		getDirFromCode(const XML_Char * szCode);

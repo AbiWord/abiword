@@ -53,6 +53,8 @@ static const char * AbiPropertyName[PP_PropertyMap::abi__count] = {
 	"footer-first",
 	"footer-last",
 	"format",
+	"frame-height",
+	"frame-width",
 	"frame-position-to",
 	"frame-type",
 	"frame-xpos",

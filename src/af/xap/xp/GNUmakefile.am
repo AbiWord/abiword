@@ -72,4 +72,5 @@ libXap_xp_a_SOURCES=\
 	xap_ViewListener.cpp		\
 	xav_View.cpp			\
 	$(RESOURCE_MANAGER_OBJ)		\
-	xap_EncodingManager.cpp
+	xap_EncodingManager.cpp \
+	xap_Dlg_ListDocuments.cpp

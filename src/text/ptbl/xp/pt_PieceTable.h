@@ -291,6 +291,7 @@ public:
 	bool					enumStyles(UT_uint32 k,
 									   const char ** pszName, const PD_Style ** ppStyle) const;
 
+	const UT_StringPtrMap & getAllStyles()const {return m_hashStyles;}
 	bool                    isEndFootnote(pf_Frag * pf) const;
 	bool                    isFootnote(pf_Frag * pf) const;
 

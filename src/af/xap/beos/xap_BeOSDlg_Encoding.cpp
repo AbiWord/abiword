@@ -23,7 +23,8 @@
 
 #include "xap_App.h"
 #include "xap_BeOSApp.h"
-#include "xap_BeOSFrame.h"
+#include "xap_Frame.h"
+#include "xap_BeOSFrameImpl.h"
 
 #include "xap_Strings.h"
 #include "xap_Dialog_Id.h"
@@ -167,8 +168,8 @@ void XAP_BeOSDialog_Encoding::runModal(XAP_Frame * pFrame)
 {
 	UT_ASSERT(pFrame);
 
-	XAP_BeOSFrame * pBeOSFrame = static_cast<XAP_BeOSFrame *>(pFrame);
-	BRect parentPosition = pBeOSFrame->getTopLevelWindow()->Frame();
+	XAP_BeOSFrameImpl * pBeOSFrameImpl = static_cast<XAP_BeOSFrameImpl *>(pFrame->getFrameImpl());
+	BRect parentPosition = pBeOSFrameImpl->getTopLevelWindow()->Frame();
 	// Center the dialog according to the parent
 	BRect dialogPosition = parentPosition;
 	// Let us suppose the dialog is 200x300

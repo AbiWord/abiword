@@ -1,6 +1,6 @@
 /* AbiWord
  * Copyright (C) 2001 Dom Lachowicz
- * Copyright (C) 2001 Hubert Figuiere
+ * Copyright (C) 2001, 2003 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -24,36 +24,78 @@
 #include "xap_Dlg_Image.h"
 
 class XAP_CocoaFrame;
+@class XAP_CocoaDialog_ImageController;
 
 /*****************************************************************/
 
 class XAP_CocoaDialog_Image: public XAP_Dialog_Image
 {
  public:
-	XAP_CocoaDialog_Image(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
+	XAP_CocoaDialog_Image(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id dlgid);
 	virtual ~XAP_CocoaDialog_Image(void);
 
 	virtual void			runModal(XAP_Frame * pFrame);
 
-	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
+	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id dlgid);
 	
 	void event_Ok ();
 	void event_Cancel ();
-
- protected:
-#if 0
-	void _constructWindowContents (GtkWidget * container);
-	virtual GtkWidget * _constructWindow ();
-	void _connectSignals ();
-
-	GtkWidget * mMainWindow;
-	GtkWidget * m_buttonOK;
-	GtkWidget * m_buttonCancel;
-
- private:
-	GtkWidget *height_spin;
-	GtkWidget *width_spin;
-#endif
+	void aspectCheckbox();
+	void doHeightSpin(void);
+	void doWidthSpin(void);
+	void doHeightEntry(void);
+	void setHeightEntry(void);
+	void setWidthEntry(void);
+	void doWidthEntry(void);
+	void adjustHeightForAspect(void);
+	void adjustWidthForAspect(void);
+private:
+	UT_sint32 m_iHeight;
+	UT_sint32 m_iWidth;
+	double m_dHeightWidth;
+	XAP_CocoaDialog_ImageController *m_dlg;
 };
+
+
+@interface XAP_CocoaDialog_ImageController : NSWindowController <XAP_CocoaDialogProtocol>
+{
+    IBOutlet NSTextField *_altData;
+    IBOutlet NSTextField *_altLabel;
+    IBOutlet NSButton *_cancelBtn;
+    IBOutlet NSTextField *_heightData;
+    IBOutlet NSTextField *_heightLabel;
+    IBOutlet NSTextField *_heightNumData;
+    IBOutlet NSStepper *_heightNumStepper;
+    IBOutlet NSButton *_okBtn;
+    IBOutlet NSButton *_preserveAspectBtn;
+    IBOutlet NSTextField *_titleData;
+    IBOutlet NSTextField *_titleLabel;
+    IBOutlet NSTextField *_widthData;
+    IBOutlet NSTextField *_widthLabel;
+    IBOutlet NSTextField *_widthNumData;
+    IBOutlet NSStepper *_widthNumStepper;
+	XAP_CocoaDialog_Image *_xap;
+}
+- (IBAction)cancelAction:(id)sender;
+- (IBAction)heightChanged:(id)sender;
+- (IBAction)heightNumChanged:(id)sender;
+- (IBAction)heightNumStepperChanged:(id)sender;
+- (IBAction)okAction:(id)sender;
+- (IBAction)preserveAction:(id)sender;
+- (IBAction)widthChanged:(id)sender;
+- (IBAction)widthNumChanged:(id)sender;
+- (IBAction)widthNumStepperChanged:(id)sender;
+
+- (NSString*)titleEntry;
+- (NSString*)altEntry;
+- (NSString*)widthEntry;
+- (void)setWidthEntry:(NSString*)entry;
+- (int)widthNum;
+- (NSString*)heightEntry;
+- (void)setHeightEntry:(NSString*)entry;
+- (int)heightNum;
+- (BOOL)preserveRatio;
+- (void)setPreserveRatio:(BOOL)val;
+@end
 
 #endif /* XAP_COCOADIALOG_IMAGE_H */
