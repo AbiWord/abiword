@@ -47,10 +47,9 @@ AP_Dialog_FormatTable::AP_Dialog_FormatTable(XAP_DialogFactory * pDlgFactory, XA
 	
 	m_lineStyle(LS_NORMAL),
 	m_bgFillStyle(NULL),
-	m_bSettingsChanged(false),
-	
 	m_answer(a_OK),
 	m_pFormatTablePreview(NULL),
+	m_bSettingsChanged(false),
 
 	m_pAutoUpdaterMC(NULL),
 	m_borderToggled(false),
@@ -408,7 +407,7 @@ void AP_FormatTable_preview::draw(void)
 	UT_RGBColor tmpCol;
 	
 	UT_RGBColor black(0, 0, 0);
-	UT_RGBColor write(0, 0, 0);
+//	UT_RGBColor write(0, 0, 0);
 	m_gc->setLineWidth(1);
 	
 	int whiteBorder = 20;

@@ -24,72 +24,10 @@
 #include "xap_Dialog.h"
 #include "xav_View.h"
 
-/*
-M/d/yy
-dddd, MMMM dd, yyyy
-MMMM d, yyyy
-M/d/yyyy
-yyyy-MM-dd
-d-MMM-yy
-M.d.yy
-MMM. d, yy
-d MMMM, yyyy
-MMMM, yyyy
-MMM-yy
-M/d/yy h:mm
-M/d/yy h:mm:ss
-h:mm
-h:mm:ss
-HH:mm
-HH:mm:ss
-*/
 
 #define CURRENT_DATE_TIME_SIZE 256
 
-#if 0
-#error TF CHANGE: The # key is not POSIX/ANSI
-static const char *InsertDateTimeFmts[] = {
-    "%#m/%#d/%y",
-	"%A, %B %d, %Y",
-	"%B %#d, %Y",
-	"%#m/%#d/%Y",
-	"%Y-%m-%d",
-	"%#d-%b-%y",
-    "%#m.%#d.%y",
-	"%b. %#d, %y",
-	"%#d %B, %Y",
-	"%B, %Y",
-	"%b-%y",
-	"%#m/%#d/%y %#I:%M %p",
-    "%#m/%#d/%y %#I:%M:%S %p",
-	"%#I:%M %p",
-	"%#I:%M:%S %p",
-	"%H:%M",
-	"%H:%M:%S",
-	NULL
-};
-#else
-static const char *InsertDateTimeFmts[] = {
-    "%m/%d/%y",
-	"%A, %B %d, %Y",
-	"%B %d, %Y",
-	"%m/%d/%Y",
-	"%Y-%m-%d",
-	"%d-%b-%y",
-    "%m.%d.%y",
-	"%b. %d, %y",
-	"%d %B, %Y",
-	"%B, %Y",
-	"%b-%y",
-	"%m/%d/%y %I:%M %p",
-    "%m/%d/%y %I:%M:%S %p",
-	"%I:%M %p",
-	"%I:%M:%S %p",
-	"%H:%M",
-	"%H:%M:%S",
-	NULL
-};
-#endif
+extern const char *InsertDateTimeFmts[];
 
 class XAP_Frame;
 

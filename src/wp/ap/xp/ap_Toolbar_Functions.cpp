@@ -86,7 +86,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_ScriptsActive)
 
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Spelling)
 {
-	ABIWORD_VIEW;
+	//ABIWORD_VIEW;
   CHECK_INC_LOAD;
 
   EV_Toolbar_ItemState s = EV_TIS_ZERO;

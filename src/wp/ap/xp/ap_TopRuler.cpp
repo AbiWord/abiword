@@ -2626,7 +2626,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 					pTInfo = (AP_TopRulerTableInfo *) m_infoCache.m_vecFullTable->getNthItem(i);
 					right = pTInfo->m_iLeftCellPos + xAbsLeft + pTInfo->m_iLeftSpacing;
 				}
-				else if(i == m_infoCache.m_vecFullTable->getItemCount() && !bDragRightMost)
+				else if(i == (UT_sint32)m_infoCache.m_vecFullTable->getItemCount() && !bDragRightMost)
 				{
 					pTInfo = (AP_TopRulerTableInfo *) m_infoCache.m_vecFullTable->getNthItem(i-1);
 					right = pTInfo->m_iRightCellPos + xAbsLeft + pTInfo->m_iLeftSpacing;

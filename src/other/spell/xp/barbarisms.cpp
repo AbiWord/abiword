@@ -204,7 +204,7 @@ bool	Barbarisms::suggestWord(const UT_UCSChar *word32, size_t length,	UT_Vector*
 */
 void	Barbarisms::startElement(const XML_Char *name, const XML_Char **atts)
 {	
-	const XML_Char ** a = atts;
+//	const XML_Char ** a = atts;
 	
 	// TODO: find out the correct arguments for UT_getAttribute...
 

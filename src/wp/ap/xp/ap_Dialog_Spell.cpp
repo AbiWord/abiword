@@ -40,7 +40,6 @@
 SpellChecker *
 AP_Dialog_Spell::_getDict (void)
 {
-	const XML_Char ** props_in = NULL;
 	if (m_pView)
 	{
 	  return m_pView->getDictForSelection ();

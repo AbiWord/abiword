@@ -3852,7 +3852,7 @@ Defun(dragSelectionBegin)
   // begin of drag+drop edit
 
   CHECK_FRAME;
-  ABIWORD_VIEW;
+  //ABIWORD_VIEW;
 
   return true;
 }
@@ -7820,7 +7820,7 @@ Defun1(insFootnote)
 Defun1(insEndnote)
 {
 	CHECK_FRAME;
-	ABIWORD_VIEW;
+	//ABIWORD_VIEW;
 
 	return true;
 }
@@ -10553,7 +10553,7 @@ Defun(beginVDrag)
 Defun(beginHDrag)
 {
 	CHECK_FRAME;
-	ABIWORD_VIEW;
+	//ABIWORD_VIEW;
 	return true;
 }
 
@@ -10569,7 +10569,7 @@ Defun(clearSetCols)
 Defun(clearSetRows)
 {
 	CHECK_FRAME;
-	ABIWORD_VIEW;
+	//ABIWORD_VIEW;
 	return true;
 }
 
@@ -10593,7 +10593,7 @@ Defun(dragVline)
 Defun(dragHline)
 {
 	CHECK_FRAME;
-	ABIWORD_VIEW;
+	//ABIWORD_VIEW;
 	return true;
 }
 
@@ -10618,7 +10618,7 @@ Defun(endDragVline)
 Defun(endDragHline)
 {
 	CHECK_FRAME;
-	ABIWORD_VIEW;
+	//ABIWORD_VIEW;
 	return true;
 }
 

@@ -2700,7 +2700,7 @@ fl_BlockLayout::_doCheckWord(fl_PartOfBlock* pPOB,
 
 	do {
 		// Spell check the word, return if correct
-		XAP_App * pApp = XAP_App::getApp();
+		//XAP_App * pApp = XAP_App::getApp();
 		if (_spellCheckWord(pWord, iLength, iBlockPos))
 			break;
 

@@ -1150,11 +1150,11 @@ fl_CellLayout::fl_CellLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_At
 	  m_iRightStyle(LS_NORMAL),
 	  m_iTopStyle(LS_NORMAL),
 	  m_iBottomStyle(LS_NORMAL),
-	  m_iBgStyle(FS_OFF),
 	  m_iLeftLineThickness(-1),
 	  m_iTopLineThickness(-1),
 	  m_iRightLineThickness(-1),
-	  m_iBottomLineThickness(-1)
+	  m_iBottomLineThickness(-1),
+	  m_iBgStyle(FS_OFF)
 {
 	createCellContainer();
 }
