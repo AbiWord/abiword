@@ -89,6 +89,7 @@ class PX_ChangeRecord_Strux;
 class PX_ChangeRecord_StruxChange;
 class fb_ColumnBreaker;
 class fp_EndnoteContainer;
+class fl_TableLayout;
 
 class ABI_EXPORT fl_SectionLayout : public fl_ContainerLayout
 {
@@ -266,6 +267,7 @@ public:
 	void                setLastEndnoteContainer(fp_EndnoteContainer * pECon);
 	fp_Container *      getFirstEndnoteContainer(void);
 	fp_Container *      getLastEndnoteContainer(void);
+	void                deleteBrokenTablesFromHere(fl_TableLayout * pTL);
 private:
 	virtual void		_lookupProperties(void);
 	fb_ColumnBreaker    m_ColumnBreaker;
@@ -319,6 +321,7 @@ private:
 	bool                m_bNeedsSectionBreak;
 	fp_EndnoteContainer * m_pFirstEndnoteContainer;
 	fp_EndnoteContainer * m_pLastEndnoteContainer;
+	bool                m_bDeleteingBrokenContainers;
 };
 
 class ABI_EXPORT fl_HdrFtrSectionLayout : public fl_SectionLayout

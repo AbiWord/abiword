@@ -82,6 +82,7 @@ AP_TopRuler::AP_TopRuler(XAP_Frame * pFrame)
 	// install top_ruler_prefs_listener as this lister for this func
 	pFrame->getApp()->getPrefs()->addListener( AP_TopRuler::_prefsListener, static_cast<void *>(this ));
 	m_iCellContainerLeftPos = 0;
+	m_draggingCell = 0;
 }
 
 AP_TopRuler::~AP_TopRuler(void)

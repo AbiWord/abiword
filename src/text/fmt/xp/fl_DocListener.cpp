@@ -352,16 +352,17 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 	case PTX_SectionEndnote:
 	{
 		bool isFoot = (pcrx->getStruxType() == PTX_SectionFootnote);
-		UT_DEBUGMSG(("fl_DocListener::populateStrux for 'SectionFootnote'\n"));
 		UT_ASSERT(m_pCurrentSL);
 		m_bFootnoteInProgress = true;
 	    fl_SectionLayout * pSL = NULL;
 		if(isFoot)
 		{
+			UT_DEBUGMSG(("fl_DocListener::populateStrux for 'SectionFootnote'\n"));
 			pSL = (fl_SectionLayout *) m_pCurrentSL->append(sdh, pcr->getIndexAP(),FL_CONTAINER_FOOTNOTE);
 		}
 		else
 		{
+			UT_DEBUGMSG(("fl_DocListener::populateStrux for 'SectionEndnote'\n"));
 			pSL = (fl_SectionLayout *) m_pCurrentSL->append(sdh, pcr->getIndexAP(),FL_CONTAINER_ENDNOTE);
 		}
 		*psfh = (PL_StruxFmtHandle)pSL;
@@ -372,7 +373,6 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 	case PTX_EndFootnote:
 	case PTX_EndEndnote:
 	{
-		UT_DEBUGMSG(("fl_DocListener::populateStrux for 'EndFootnote'\n"));
 //
 // CurrentSL is a Footnote. Return this and set the m_pCurrentSL to it's 
 // container
@@ -384,10 +384,12 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 #if DEBUG
 		if(isFoot)
 		{
+			UT_DEBUGMSG(("fl_DocListener::populateStrux for 'EndFootnote'\n"));
 			UT_ASSERT(pCL->getContainerType() == FL_CONTAINER_FOOTNOTE);
 		}
 		else
 		{
+			UT_DEBUGMSG(("fl_DocListener::populateStrux for 'EndEndnote'\n"));
 			UT_ASSERT(pCL->getContainerType() == FL_CONTAINER_ENDNOTE);
 		}
 #endif

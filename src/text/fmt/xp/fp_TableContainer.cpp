@@ -1277,9 +1277,8 @@ void fp_CellContainer::layout(void)
 {
 	_setMaxContainerHeight(0);
 	UT_sint32 iY = 0, iPrevY = 0;
-	UT_uint32 iCountContainers = countCons();
 	fp_Container *pContainer, *pPrevContainer = NULL;
-	for (UT_uint32 i=0; i < iCountContainers; i++)
+	for (UT_uint32 i=0; i < countCons(); i++)
 	{
 		pContainer = static_cast<fp_Container*>(getNthCon(i));
 //
@@ -1568,6 +1567,7 @@ void fp_TableContainer::setFirstBrokenTable(fp_TableContainer * pBroke)
 {
 	if(isThisBroken())
 	{
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		fp_TableContainer * pMaster = getMasterTable();
 		pMaster->setFirstBrokenTable(pBroke);
 		fp_TableContainer * pNext = static_cast<fp_TableContainer *>(pMaster);
@@ -1578,6 +1578,7 @@ void fp_TableContainer::setFirstBrokenTable(fp_TableContainer * pBroke)
 		}
 	}
 	m_pFirstBrokenTable = pBroke;
+
 }
 
 void fp_TableContainer::setLastBrokenTable(fp_TableContainer * pBroke) 
@@ -2003,9 +2004,10 @@ void fp_TableContainer::adjustBrokenTables(void)
 	{
 		return;
 	}
+	return;
 	fp_TableContainer * pBroke = getFirstBrokenTable();
 	fp_VerticalContainer * pVC = static_cast<fp_VerticalContainer *>(getContainer());
-	UT_sint32 iNewHeight = pVC->getMaxHeight() - getY();
+	UT_sint32 iNewHeight = pVC->getMaxHeight() - getY();	
 	UT_sint32 ishift = iNewHeight - pBroke->getYBottom();
 	UT_sint32 iNewBot = pBroke->getYBottom() + ishift;
 	UT_sint32 iTableHeight = fp_VerticalContainer::getHeight();
@@ -2019,6 +2021,8 @@ void fp_TableContainer::adjustBrokenTables(void)
 		iNewBot = iTableHeight;
 	}
 	pBroke->setYBottom(iNewBot);
+	UT_ASSERT(pBroke->getHeight());
+
 	pBroke = static_cast<fp_TableContainer *>(pBroke->getNext());
 	while(pBroke)
 	{
@@ -2028,10 +2032,12 @@ void fp_TableContainer::adjustBrokenTables(void)
 		if(pBroke->getNext())
 		{
 			pBroke->setYBottom(iNewBot+ishift);
+			UT_ASSERT(pBroke->getHeight());
 		}
 		else
 		{
 			pBroke->setYBottom(iTableHeight);
+			UT_ASSERT(pBroke->getHeight());
 		}
 		xxx_UT_DEBUGMSG(("SEVIOR: Broken table %x YBreak adjusted to %d Shift is %d height is %d \n",pBroke,iNewTop+ishift,ishift,pBroke->getHeight()));
 		fp_TableContainer * pPrev = static_cast<fp_TableContainer *>(pBroke->getPrev());
@@ -2062,11 +2068,13 @@ void fp_TableContainer::adjustBrokenTables(void)
 // after adjusting the previous table.
 //
 			pPrev->setYBottom(iTableHeight);
+			UT_ASSERT(pPrev->getHeight());
 			pPrev->setNext( NULL);
 			if(pPrev == getFirstBrokenTable())
 			{
 				setNext(NULL);
 				getFirstBrokenTable()->setYBreakHere(0);
+				UT_ASSERT(getFirstBrokenTable()->getHeight());
 			}
 			setLastBrokenTable(pPrev);
 			xxx_UT_DEBUGMSG(("SEVIOR!!!!!!!!!!! 2 last broken table %x deleting %x Master Table %x  \n",getLastBrokenTable(),pBroke,this));
@@ -2155,6 +2163,12 @@ void fp_TableContainer::deleteBrokenTables(bool bClearFirst)
 	setLastBrokenTable(NULL);
 	setNext(NULL);
 	setPrev(NULL);
+//	if(bClearFirst)
+	{
+		fl_TableLayout * pTL = static_cast<fl_TableLayout *>(getSectionLayout());
+		fl_DocSectionLayout * pDSL = pTL->getDocSectionLayout();
+		pDSL->deleteBrokenTablesFromHere(pTL);
+	}
 }
 
 	
@@ -2193,7 +2207,8 @@ fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
 		pBroke = new fp_TableContainer(getSectionLayout(),this);
 		xxx_UT_DEBUGMSG(("SEVIOR:!!!!!!! Frist broken table %x \n",pBroke));
 		pBroke->setYBreakHere(vpos);
-		pBroke->setYBottom(getHeight());
+		pBroke->setYBottom(fp_VerticalContainer::getHeight());
+		UT_ASSERT(pBroke->getHeight());
 		setFirstBrokenTable(pBroke);
 		setLastBrokenTable(pBroke);
 		pBroke->setContainer(getContainer());
@@ -2211,12 +2226,15 @@ fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
 // height above it.
 //
 	pBroke->setYBreakHere(getYBreak()+vpos);
+
 	xxx_UT_DEBUGMSG(("SEVIOR: Ybreak set to %d \n",getYBreak() + vpos));
 	setYBottom(getYBreak() + vpos -1);
+	UT_ASSERT(getHeight() >0);
 	fp_VerticalContainer * pVCon = static_cast<fp_VerticalContainer *>(getMasterTable());
 	pBroke->setYBottom(pVCon->getHeight());
 	xxx_UT_DEBUGMSG(("SEVIOR????????: YBreak %d YBottom  %d Height of broken table %d \n",pBroke->getYBreak(),pBroke->getYBottom(),pBroke->getHeight()));
 	xxx_UT_DEBUGMSG(("SEVIOR????????: Previous table YBreak %d YBottom  %d Height of broken table %d \n",getYBreak(),getYBottom(),getHeight()));
+	UT_ASSERT(pBroke->getHeight() > 0);
 	UT_sint32 i = 0;
 //
 // The structure of table linked list is as follows.
@@ -2287,18 +2305,26 @@ fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
  */
 void fp_TableContainer::setY(UT_sint32 i)
 {
+	bool bIsFirstBroken = false;
 	if(isThisBroken())
 	{
+		UT_DEBUGMSG(("setY: getMasterTable %x FirstBrokenTable %x this %x \n",getMasterTable(),getMasterTable()->getFirstBrokenTable(),this));
 		return;
+		if(getMasterTable()->getFirstBrokenTable() != this)
+		{
+			return;
+		}
+		bIsFirstBroken = true;
 	}
 //
 // Create an initial broken table if none exists
 //
-	if(getFirstBrokenTable() == NULL)
+	if(!bIsFirstBroken && (getFirstBrokenTable() == NULL))
 	{
 		VBreakAt(0);
 	}
-	if(i == getY())
+	UT_sint32 iOldY = getY();
+	if(i == iOldY)
 	{
 		return;
 	}
@@ -2317,11 +2343,16 @@ void fp_TableContainer::setYBreakHere(UT_sint32 i)
 {
 	xxx_UT_DEBUGMSG(("SEVIOR: Ybreak set to %d \n",i));
 	m_iYBreakHere = i;
+	if(i > 0)
+	{
+		//	UT_ASSERT(getHeight() > 0);
+	}
 }
 
 void fp_TableContainer::setYBottom(UT_sint32 i)
 {
 	m_iYBottom = i;
+	UT_ASSERT(getHeight() > 0);
 }
 
 /*!
@@ -2588,7 +2619,7 @@ void fp_TableContainer::setToAllocation(void)
 	{
 		deleteBrokenTables();
 	}
-	m_iYBottom =  m_MyAllocation.height;
+	setYBottom(m_MyAllocation.height);
 }
 
 void  fp_TableContainer::_size_request_init(void)

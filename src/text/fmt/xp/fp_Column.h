@@ -141,7 +141,7 @@ public:
 		{return NULL;}
 	virtual fp_Container * getPrevContainerInSection(void) const
 		{return NULL;}
-
+	bool                validate(void);
 	FV_View*			getView(void) const
 		{ return getPage()->getDocLayout()->getView(); }
 

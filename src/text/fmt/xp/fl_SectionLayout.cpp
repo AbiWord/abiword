@@ -122,7 +122,7 @@ void fl_SectionLayout::_purgeLayout()
 		fl_ContainerLayout* pNuke = pL;
 
 		pL = pL->getPrev();
-
+		pNuke->setNext(NULL);
 		delete pNuke;
 	}
 
@@ -357,6 +357,7 @@ fl_DocSectionLayout::fl_DocSectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandl
 	m_pFirstEndnoteContainer = NULL;
 	m_pLastEndnoteContainer = NULL;
 	m_pDoc = pLayout->getDocument();
+	m_bDeleteingBrokenContainers = false;
 	_lookupProperties();
 }
 
@@ -1054,7 +1055,6 @@ void fl_DocSectionLayout::updateDocSection(void)
 
 	const XML_Char* pszSectionType = NULL;
 	pAP->getAttribute("type", pszSectionType);
-
 	_lookupProperties();
 
 	// clear all the columns
@@ -1072,7 +1072,7 @@ void fl_DocSectionLayout::updateDocSection(void)
 	{
 		pView->setScreenUpdateOnGeneralUpdate(false);
 	}
-
+	setNeedsSectionBreak(true,NULL);
 	format();
 	updateBackgroundColor();
 	checkAndRemovePages();
@@ -1486,6 +1486,29 @@ UT_uint32 fl_DocSectionLayout::getColumnOrder(void) const
 	return m_iColumnOrder;
 }
 
+void fl_DocSectionLayout::deleteBrokenTablesFromHere(fl_TableLayout * pTL)
+{
+	if(m_bDeleteingBrokenContainers)
+	{
+		return;
+	}
+	m_bDeleteingBrokenContainers = true;
+	fl_ContainerLayout * pCL = pTL->getNext();
+	while(pCL != NULL)
+	{
+		if(pCL->getContainerType() == FL_CONTAINER_TABLE)
+		{
+			fl_TableLayout * pTabL = static_cast<fl_TableLayout *>(pCL);
+			fp_TableContainer * pTabC = static_cast<fp_TableContainer *>(pTabL->getFirstContainer());
+			if(pTabC != NULL)
+			{
+				pTabC->deleteBrokenTables();
+			}
+		}
+		pCL = pCL->getNext();
+	}
+	m_bDeleteingBrokenContainers = false;
+}
 
 fl_DocSectionLayout* fl_DocSectionLayout::getNextDocSection(void) const
 {

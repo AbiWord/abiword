@@ -1827,9 +1827,21 @@ fp_Container* fl_BlockLayout::getNewContainer(fp_Container * /* pCon*/)
 			else
 			{
 				fp_Container * ppPrev = static_cast<fp_Container *>(pPrevCon);
-				while(ppPrev && ((ppPrev->getContainerType() == FP_CONTAINER_FOOTNOTE) || (ppPrev->getContainerType() == FP_CONTAINER_ENDNOTE) ))
+				if(ppPrev && ((ppPrev->getContainerType() == FP_CONTAINER_ENDNOTE) || (ppPrev->getContainerType() == FP_CONTAINER_FOOTNOTE) ))
 				{
-					ppPrev = static_cast<fp_Container *>(ppPrev->getPrev());
+					fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(ppPrev->getSectionLayout());
+					while(pCL && (pCL->getContainerType() == FL_CONTAINER_FOOTNOTE) || (pCL->getContainerType() == FL_CONTAINER_ENDNOTE))
+					{
+						pCL = pCL->getPrev();
+					}
+					if(pCL)
+					{
+						ppPrev = pCL->getLastContainer();
+					}
+					else
+					{
+						ppPrev = NULL;
+					}
 				}
 				if(ppPrev && (ppPrev->getContainerType() == FP_CONTAINER_LINE))
 				{
@@ -6476,7 +6488,7 @@ void	fl_BlockLayout::StartList( List_Type lType, UT_uint32 start,const XML_Char 
 	setStarting( false);
 	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, getPosition(), getPosition(), attribs, props, PTX_Block);
 
-	pView->_generalUpdate();
+	//	pView->_generalUpdate();
 	m_pDoc->listUpdate(getStruxDocHandle());
 	pView->_generalUpdate();
 	pView->_ensureInsertionPointOnScreen();
@@ -7004,7 +7016,7 @@ void fl_BlockLayout::listUpdate(void)
 	FV_View* pView = getView();
 	if (pView)
 	{
-		pView->_generalUpdate();
+		//		pView->_generalUpdate();
 		pView->_fixInsertionPointCoords();
 		pView->updateScreen();
 	}

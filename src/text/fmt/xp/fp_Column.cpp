@@ -539,12 +539,53 @@ void fp_VerticalContainer::_setMaxContainerHeight( UT_sint32 iLineHeight)
 	m_imaxContainerHeight = iLineHeight;
 }
 
+
+bool fp_VerticalContainer::validate(void)
+{
+#if DEBUG
+	UT_sint32 curTop =0;
+	UT_sint32 curBot = 0;
+	UT_sint32 oldTop = -1;
+	UT_sint32 oldBot = -1;
+	UT_uint32 i =0;
+	bool bValid = true;
+	for(i=0; i<countCons();i++)
+	{
+		fp_ContainerObject* pContainer = static_cast<fp_ContainerObject*>(getNthCon(i));
+		curTop = pContainer->getY();
+		UT_sint32 iH = pContainer->getHeight();
+		if(pContainer->getContainerType() == FP_CONTAINER_TABLE)
+		{
+			fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pContainer);
+			iH = pTab->getHeight();
+		}
+		curBot = curTop + iH;                    ;
+		UT_ASSERT(oldBot <= curTop);
+		if(oldBot > curTop)
+		{
+			bValid =false;
+		}
+		UT_ASSERT(curBot >= curTop);
+		UT_ASSERT(curTop >=oldTop);
+		oldBot = curBot;
+		oldTop = curTop;
+	}
+	return bValid;
+#else
+	return true;
+#endif
+}
+
+
 /*!
  Draw container content
  \param pDA Draw arguments
  */
 void fp_VerticalContainer::draw(dg_DrawArgs* pDA)
 {
+#if DEBUG
+//	validate();
+#endif
 	const UT_Rect * pClipRect = pDA->pG->getClipRect();
 	UT_sint32 ytop = 0, ybot = (UT_sint32)(((UT_uint32)(1<<31)) - 1);
 
@@ -867,6 +908,20 @@ void fp_VerticalContainer::bumpContainers(fp_ContainerObject* pLastContainerToKe
 		{
 			fp_Container* pContainer = static_cast<fp_Container*>(getNthCon(i));
 			pContainer->clearScreen();
+//
+// Experimental code: FIXME: Might remove after a while - check 
+// that large tables broken over many pages work fine.
+//
+#if 1
+			if(pContainer->getContainerType() == FP_CONTAINER_TABLE)
+			{
+				fp_TableContainer *pTab = static_cast<fp_TableContainer *>(pContainer);
+				if(!pTab->isThisBroken())
+				{
+					pTab->deleteBrokenTables();
+				}
+			}
+#endif
 			pNextContainer->insertContainer(pContainer);
 		}
 	}
@@ -975,11 +1030,10 @@ void fp_Column::layout(void)
 {
 	_setMaxContainerHeight(0);
 	UT_sint32 iY = 0, iPrevY = 0;
-
-	UT_uint32 iCountContainers = countCons();
+	UT_sint32 iOldY  =-1;
 	fp_Container *pContainer, *pPrevContainer = NULL;
  
-	for (UT_uint32 i=0; i < iCountContainers ; i++)
+	for (UT_uint32 i=0; i < countCons() ; i++)
 	{
 		pContainer = static_cast<fp_Container*>(getNthCon(i));
 
@@ -996,9 +1050,14 @@ void fp_Column::layout(void)
 		{
 			pContainer->clearScreen();
 		}
-		xxx_UT_DEBUGMSG(("Layout: setY %d \n",iY));
+		xxx_UT_DEBUGMSG(("Layout: container %d setY %d \n",i,iY));
+//
+// fxime comeback and re-evaluate this
+//		UT_ASSERT(iY>=0);
+//		UT_ASSERT(iOldY < iY);
 		pContainer->setY(iY);
-
+		iOldY = iY;
+		//UT_ASSERT(pContainer->getY() == iY);
 //
 // This is to speedup redraws.
 //
@@ -1019,7 +1078,7 @@ void fp_Column::layout(void)
 			iContainerHeight = pTab->getHeight();
 		}
 		UT_sint32 iContainerMarginAfter = pContainer->getMarginAfter();
-
+		//	UT_ASSERT(iContainerHeight > 0);
 		iY += iContainerHeight;
 		iY += iContainerMarginAfter;
 		//iY +=  0.5;
@@ -1038,9 +1097,10 @@ void fp_Column::layout(void)
 	// Correct height position of the last line
 	if (pPrevContainer)
 	{
-		pPrevContainer->setAssignedScreenHeight(iY - iPrevY + getGraphics()->tlu(1));
+		UT_ASSERT((iY - iPrevY + getGraphics()->tlu(1)) > 0);
+//		pPrevContainer->setAssignedScreenHeight(iY - iPrevY + getGraphics()->tlu(1));
 	}
-
+//	validate();
 	if (getHeight() == iY)
 	{
 		return;

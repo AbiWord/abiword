@@ -62,7 +62,7 @@ fp_Page::fp_Page(FL_DocLayout* pLayout,
 	UT_ASSERT(pG);
 	m_vecColumnLeaders.clear();
 	m_iResolution = pG->getResolution();
-	UT_DEBUGMSG(("Created Page %x \n",this));
+	UT_DEBUGMSG(("!!!!!!!!!!!!!!!!!!!!!!!!!!Created Page %x \n",this));
 }
 
 fp_Page::~fp_Page()

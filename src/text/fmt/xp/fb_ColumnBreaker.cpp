@@ -66,6 +66,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 	fl_ContainerLayout* pFirstLayout = NULL;
 	fp_Container* pOuterContainer = NULL;
 	fp_Column* pCurColumn = NULL;
+	UT_DEBUGMSG(("Doing ColumnBreak for section %x at page %x \n",pSL,m_pStartPage));
 	UT_ASSERT(pSL->needsSectionBreak());
 	pSL->setNeedsSectionBreak(false,m_pStartPage);
 	pFirstLayout = pSL->getFirstLayout();
@@ -131,6 +132,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 					if (pL->containsForcedPageBreak()
 				&& (pCurColumn->getPage() == pL->getContainer()->getPage()))
 					{
+						pCurColumn->validate();
 						pCurColumn = static_cast<fp_Column *>(pCurColumn->getNext());
 						continue;
 					}
@@ -690,8 +692,8 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 				{
 					pOuterContainer = _getNext(pCon);
 				}
+				pCurColumn->validate();
 				pCurColumn = static_cast<fp_Column *>(pCurColumn->getNext());
-
 					// This is only relevant for the initial column. All
 					// other columns should flush their entire content.
 				pLastContainerToKeep = NULL;
@@ -717,6 +719,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 				pOuterContainer =  _getNext(pCurColumn->getLastContainer());
 				bTableTest = true;
 			}
+			pCurColumn->validate();
 			pCurColumn = static_cast<fp_Column *>(pCurColumn->getNext());
 			if(pCurColumn == NULL && bTableTest && pOuterContainer != NULL)
 			{
@@ -816,7 +819,6 @@ bool fb_ColumnBreaker::_breakTable(fp_Container*& pOffendingContainer,
 //
 // If we don't break the table, the heights of the broken table's
 // will be adjusted at the setY() in the layout stage.
-// PLAM: broken for pango? 
 //
 	fp_TableContainer * pBroke = NULL;
 	UT_sint32 iAvail = iMaxColHeight - iWorkingColHeight - iContainerMarginAfter;
@@ -874,7 +876,7 @@ bool fb_ColumnBreaker::_breakTable(fp_Container*& pOffendingContainer,
 //
 		if(iBreakAt < 30)
 		{
-			pOffendingContainer = pTab;
+			pOffendingContainer = static_cast<fp_Container *>(pTab);
 		}
 		else
 		{
@@ -885,6 +887,9 @@ bool fb_ColumnBreaker::_breakTable(fp_Container*& pOffendingContainer,
 //
 			pOffendingContainer = static_cast<fp_Container *>(pBroke->VBreakAt(iBreakAt));
 		    xxx_UT_DEBUGMSG(("SEVIOR: Created broken table %x \n",pOffendingContainer));
+			fp_TableContainer * pNewTab = static_cast<fp_TableContainer *>(pOffendingContainer);
+			UT_ASSERT(pBroke->getHeight() > 0);
+			UT_ASSERT(pNewTab->getHeight() > 0);
 			pLastContainerToKeep = static_cast<fp_Container *>(pTab);
 			xxx_UT_DEBUGMSG(("SEVIOR: Set lasttokeep 1 %x \n",pLastContainerToKeep));
 		}

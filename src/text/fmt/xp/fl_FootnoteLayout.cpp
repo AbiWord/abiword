@@ -344,12 +344,8 @@ void fl_FootnoteLayout::_createFootnoteContainer(void)
 
 	fp_Container * pCon = pCL->getLastContainer();
 	UT_ASSERT(pCon);
-	UT_sint32 iWidth = pCon->getWidth();
-	if(iWidth == 0)
-	{
-		iWidth = pCon->getPage()->getWidth();
-		pCon->setWidth(iWidth);
-	}
+	UT_sint32 iWidth = pCon->getPage()->getWidth();
+	iWidth = iWidth - pDSL->getLeftMargin() - pDSL->getRightMargin();
 	pFootnoteContainer->setWidth(iWidth);
 }
 
@@ -584,20 +580,9 @@ void fl_EndnoteLayout::_createEndnoteContainer(void)
 	fp_EndnoteContainer * pEndnoteContainer = new fp_EndnoteContainer(static_cast<fl_SectionLayout *>(this));
 	setFirstContainer(pEndnoteContainer);
 	setLastContainer(pEndnoteContainer);
-	fl_ContainerLayout * pCL = myContainingLayout();
-	while(pCL!= NULL && pCL->getContainerType() != FL_CONTAINER_DOCSECTION)
-	{
-		pCL = pCL->myContainingLayout();
-	}
-
-	fp_Container * pCon = pCL->getLastContainer();
-	UT_ASSERT(pCon);
-	UT_sint32 iWidth = pCon->getWidth();
-	if(iWidth == 0)
-	{
-		iWidth = pCon->getPage()->getWidth();
-		pCon->setWidth(iWidth);
-	}
+	fl_DocSectionLayout * pDSL = m_pLayout->getDocSecForEndnote(pEndnoteContainer);
+	UT_sint32 iWidth = m_pLayout->getLastPage()->getWidth();
+	iWidth = iWidth - pDSL->getLeftMargin() - pDSL->getRightMargin();
 	pEndnoteContainer->setWidth(iWidth);
 	m_bNeedsReformat = true;
 	m_bNeedsFormat = true;
