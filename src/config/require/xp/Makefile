@@ -27,7 +27,7 @@ REQUIRE=
 else
 REQUIRE=	_EXPAT_ 
 endif
-REQUIRE+=	_PSICONV_
+#REQUIRE+=	_PSICONV_
 TARGET=		build
 
 include $(ABI_ROOT)/src/config/abi_rules.mk
