@@ -17,9 +17,14 @@
  * 02111-1307, USA.
  */
  
-#ifndef UT_SLEEP_H
-#define UT_SLEEP_H
+#define WIN32_LEAN_AND_MEAN
+#define NOUSER
+#define NOGDI
+#define NOSERVICE
+#include <windows.h>
+#include "ut_sleep.h"
 
-void UT_usleep(unsigned long usec);
-
-#endif
+void UT_usleep(unsigned long usec)
+{
+	Sleep( usec / 1000 );
+}
