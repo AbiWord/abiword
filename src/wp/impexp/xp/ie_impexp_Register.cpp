@@ -35,10 +35,6 @@
 #include "ie_imp_Text.h"
 #include "ie_imp_GraphicAsDocument.h"
 
-#if defined(DEBUG)
-#include "ie_exp_MsWord_97.h"
-#endif
-
 /* graphics */
 #include "ie_impGraphic.h"
 #include "ie_impGraphic_PNG.h"
@@ -74,11 +70,8 @@ void IE_ImpExp_RegisterXP ()
 	IE_Exp::registerExporter(new IE_Exp_AbiWord_1_Sniffer ());
 	IE_Exp::registerExporter(new IE_Exp_AWT_Sniffer());
 
-#ifdef DEBUG
-	IE_Exp::registerExporter(new IE_Exp_MsWord_97_Sniffer ());
-#else
+	// HACK - export RTF and claim it's DOC
 	IE_Exp::registerExporter(new IE_Exp_MsWord_Hack_Sniffer ());
-#endif
 
 #ifdef HTML_ENABLE_HTML4
 	IE_Exp::registerExporter(new IE_Exp_HTML4_Sniffer ());

@@ -82,8 +82,6 @@ public:
 										IE_Exp ** ppie);
 };
 
-#if !defined(DEBUG)
-
 // hack for "msword" export
 
 class ABI_EXPORT IE_Exp_MsWord_Hack_Sniffer : public IE_ExpSniffer
@@ -101,8 +99,6 @@ public:
 	virtual UT_Error constructExporter (PD_Document * pDocument,
 					    IE_Exp ** ppie);
 };
-
-#endif
 
 class ABI_EXPORT IE_Exp_RTF : public IE_Exp
 {

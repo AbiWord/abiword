@@ -154,9 +154,6 @@ bool IE_Exp_RTF_attic_Sniffer::getDlgLabels(const char ** pszDesc,
 	return true;
 }
 
-
-#if !defined(DEBUG)
-
 IE_Exp_MsWord_Hack_Sniffer::IE_Exp_MsWord_Hack_Sniffer ()
 	: IE_ExpSniffer(IE_IMPEXPNAME_RTFMSDOC)
 {
@@ -185,8 +182,6 @@ bool IE_Exp_MsWord_Hack_Sniffer::getDlgLabels(const char ** pszDesc,
 	*ft = getFileType();
 	return true;
 }
-
-#endif
 
 /*****************************************************************/
 /*****************************************************************/

@@ -103,7 +103,7 @@ XAP_Frame::XAP_Frame(XAP_Frame * f)
 	m_iUntitled(f->m_iUntitled),
 	m_pScrollbarViewListener(0),
 	m_lidScrollbarViewListener((AV_ListenerId)-1),
-	m_zoomType(z_PAGEWIDTH),
+	m_zoomType(f->m_zoomType),
 	m_pData(0),
 	m_pInputModes(0),
 	m_iIdAutoSaveTimer(0),
@@ -317,6 +317,10 @@ bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyBind
 	{
 		m_zoomType = z_75;
 	}
+	else if( UT_stricmp( stTmp.c_str(), "200" ) == 0 )
+	{
+		m_zoomType = z_200;
+	}
 	else if( UT_stricmp( stTmp.c_str(), "Width" ) == 0 )
 	{
 		m_zoomType = z_PAGEWIDTH;
@@ -332,11 +336,11 @@ bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyBind
 		// These limits are defined in xap_Dlg_Zoom.h
 		if ((iZoom <= XAP_DLG_ZOOM_MAXIMUM_ZOOM) && (iZoom >= XAP_DLG_ZOOM_MINIMUM_ZOOM)) 
 		{
-			setZoomType( z_PERCENT );
+			m_zoomType = z_PERCENT;
 			setZoomPercentage( iZoom );
 		}
 		else
-		m_zoomType = z_100;
+		  m_zoomType = z_100;
 	}
 
 	
@@ -1357,6 +1361,10 @@ bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyBind
 	{
 		m_zoomType = z_75;
 	}
+	else if( UT_stricmp( stTmp.c_str(), "200" ) == 0 )
+	{
+		m_zoomType = z_200;
+	}
 	else if( UT_stricmp( stTmp.c_str(), "Width" ) == 0 )
 	{
 		m_zoomType = z_PAGEWIDTH;
@@ -1372,11 +1380,11 @@ bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyBind
 		// These limits are defined in xap_Dlg_Zoom.h
 		if ((iZoom <= XAP_DLG_ZOOM_MAXIMUM_ZOOM) && (iZoom >= XAP_DLG_ZOOM_MINIMUM_ZOOM)) 
 		{
-			setZoomType( z_PERCENT );
+			m_zoomType = z_PERCENT;
 			setZoomPercentage( iZoom );
 		}
 		else
-		m_zoomType = z_100;
+		  m_zoomType = z_100;
 	}
 
 	
