@@ -261,12 +261,7 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		m_parseState = _PS_Doc;
 
 		{
-		  const XML_Char * lockedStyles = 0;
-		  lockedStyles = (XML_Char*)_getXMLPropValue("styles", atts);;
-		  if ((lockedStyles != NULL) && (UT_strcmp(lockedStyles, "locked") == 0))
-		    getDoc()->lockStyles(true);
-		  else
-		    getDoc()->lockStyles(false);
+		  X_CheckError(getDoc()->setAttrProp(atts));
 		}
 		return;
 

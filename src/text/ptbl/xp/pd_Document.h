@@ -381,7 +381,7 @@ public:
 	// If we're using styles to format a document, prevent accidental use of other formatting
         // tools.  Disable all explicit formatting tools (font, color, boldness, etc.)
 	inline bool areStylesLocked () const { return m_bLockedStyles; }    // See also lockStyles
-	inline void lockStyles(bool b) { m_bLockedStyles = b; }             // See also areStylesLocked
+	void lockStyles(bool b);
 
 	void setMetaDataProp ( const UT_String & key,
 			       const UT_String & value ) ;
@@ -390,6 +390,13 @@ public:
 			       UT_String & outProp ) const ;
 
 	UT_StringPtrMap & getMetaData () { return m_metaDataMap ; }
+
+	// document-level property handling functions
+	const PP_AttrProp *     getAttrProp() const;
+	PT_AttrPropIndex        getAttrPropIndex() const {return m_indexAP;}
+	bool                    setAttrProp(const XML_Char ** ppAttr);
+	bool                    setAttributes(const XML_Char ** ppAttr);
+	bool                    setProperties(const XML_Char ** ppProps);
 
 
 protected:
@@ -423,6 +430,7 @@ private:
 	bool                    m_bMarkRevisions;
 	UT_uint32               m_iRevisionID;
 	UT_Vector               m_vRevisions;
+	PT_AttrPropIndex        m_indexAP;
 
 };
 

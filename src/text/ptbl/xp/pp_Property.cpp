@@ -307,6 +307,16 @@ const XML_Char * PP_evalProperty(const XML_Char *  pszName,
 			if (pSectionAttrProp && pSectionAttrProp->getProperty(pProp->getName(),szValue))
 				return szValue;
 		}
+
+		// see if this prop is found on the document level
+		if(pDoc && pProp->canInherit())
+		{
+			const PP_AttrProp * pDocAP = pDoc->getAttrProp();
+			if(pDocAP && pDocAP->getProperty(pProp->getName(),szValue))
+			{
+				return szValue;
+			}
+		}
 	}
 //
 // If expandstyles is false we stop here
@@ -320,7 +330,8 @@ const XML_Char * PP_evalProperty(const XML_Char *  pszName,
 		return pProp->getInitial()/*NULL*/;
 	}
 
-	if (pDoc->getStyle("Normal", &pStyle))
+
+	if (pDoc && pDoc->getStyle("Normal", &pStyle))
 	{
 		// next to last resort -- check for this property in the Normal style
 		if (pStyle->getProperty(pProp->getName(), szValue))

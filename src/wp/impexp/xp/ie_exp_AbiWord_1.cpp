@@ -44,8 +44,8 @@
 
 #include "ut_string_class.h"
 
-// our currently used DTD
-#define ABIWORD_FILEFORMAT_VERSION "fileformat=\"1.1\""
+// the fileformat that used to be defined here is now defined at the
+// top of pd_Document.cpp
 
 /*****************************************************************/
 /*****************************************************************/
@@ -468,35 +468,26 @@ s_AbiWord_1_Listener::s_AbiWord_1_Listener(PD_Document * pDocument,
 
 	m_pie->write ("<!DOCTYPE abiword PUBLIC \"-//ABISOURCE//DTD AWML 1.0 Strict//EN\" \"http://www.abisource.com/awml.dtd\">\n");
 
-	// We write this first so that the sniffer can detect AbiWord
-	// documents more easily.
+	/***********************************************************************************
 
-	m_pie->write("<abiword xmlns=\"http://www.abisource.com/awml.dtd\" xml:space=\"preserve\" xmlns:awml=\"http://www.abisource.com/awml.dtd\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:svg=\"http://www.w3.org/2000/svg\" xmlns:fo=\"http://www.w3.org/1999/XSL/Format\" xmlns:math=\"http://www.w3.org/1998/Math/MathML\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\"");
-	m_pie->write(" version=\"");
-	if (XAP_App::s_szBuild_Version && XAP_App::s_szBuild_Version[0])
+        The fixed attributes of the <abiword> token that used to reside
+        here are now found in PD_Document::setAttrProp()
+
+	************************************************************************************/
+
+	if(m_bIsTemplate)
 	{
-		m_pie->write(XAP_App::s_szBuild_Version);
+		const XML_Char *attr[3];
+		const XML_Char n[] = "template";
+		const XML_Char v[] = "true";
+		attr[0] = n;
+		attr[1] = v;
+		attr[2] = NULL;
+
+		pDocument->setAttributes(attr);
 	}
-	m_pie->write("\" ");
-	m_pie->write(ABIWORD_FILEFORMAT_VERSION);
 
-	if (m_bIsTemplate) {
-		m_pie->write (" template=\"true\"");
-	}
-
-	if(pDocument->areStylesLocked())
-	  {
-	    m_pie->write(" styles=\"locked\"");
-	  }
-	else
-	  {
-	    m_pie->write(" styles=\"unlocked\"");
-	  }
-
-	m_pie->write(">\n");
-
-	// TODO add a file-format name/value pair to this tag.
-
+	_openTag("abiword", NULL, true, pDocument->getAttrPropIndex(),false);
 
 	// NOTE we output the following preamble in XML comments.
 	// NOTE this information is for human viewing only.

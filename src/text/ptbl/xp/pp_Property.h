@@ -149,7 +149,7 @@ ABI_EXPORT const XML_Char * PP_evalProperty(const XML_Char * pszName,
 								 const PP_AttrProp * pSpanAttrProp,
 								 const PP_AttrProp * pBlockAttrProp,
 								 const PP_AttrProp * pSectionAttrProp,
-								 PD_Document * pDoc=NULL,
+								 PD_Document * pDoc,
 								 bool bExpandStyles=false);
 
 

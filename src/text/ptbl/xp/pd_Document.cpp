@@ -58,6 +58,9 @@
 #include "ut_sleep.h"
 #include "ut_path.h"
 
+// our currently used DTD
+#define ABIWORD_FILEFORMAT_VERSION "1.1"
+
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
@@ -2816,3 +2819,98 @@ bool PD_Document::isBookmarkRelativeLink(const XML_Char * pName) const
 	UT_ASSERT(sizeof(char) == sizeof(XML_Char));
 	return strchr((char *)pName, '.') != NULL;
 }
+
+//////////////////////////////////////////////////////////////////
+// document-level properties
+
+#define VARSET m_pPieceTable->getVarSet()
+
+const PP_AttrProp * PD_Document::getAttrProp() const
+{
+	return VARSET.getAP(m_indexAP);
+}
+
+bool PD_Document::setAttrProp(const XML_Char ** ppAttr)
+{
+	// this method can only be used while loading ...
+	if(m_pPieceTable->getPieceTableState() != PTS_Loading)
+	{
+		UT_return_val_if_fail(0,false);
+	}
+
+	return VARSET.storeAP(ppAttr, &m_indexAP);
+
+	const XML_Char * attr[21];
+	attr[20] = NULL;
+
+	attr[0] = "xmlns";
+	attr[1] = "http://www.abisource.com/awml.dtd";
+
+	attr[2] = "xml:space";
+	attr[3] = "preserve";
+
+	attr[4] = "xmlns:awml";
+	attr[5] = "http://www.abisource.com/awml.dtd";
+
+	attr[6] = "xmlns:xlink";
+	attr[7] = "http://www.w3.org/1999/xlink";
+
+	attr[8] = "xmlns:svg";
+	attr[9] = "http://www.w3.org/2000/svg";
+
+	attr[10] = "xmlns:fo";
+	attr[11] = "http://www.w3.org/1999/XSL/Format";
+
+	attr[12] = "xmlns:math";
+	attr[13] = "http://www.w3.org/1998/Math/MathML";
+
+	attr[14] = "xmlns:dc";
+	attr[15] = "http://purl.org/dc/elements/1.1/";
+
+	attr[16] = "fileformat";
+	attr[17] = ABIWORD_FILEFORMAT_VERSION;
+
+	if (XAP_App::s_szBuild_Version && XAP_App::s_szBuild_Version[0])
+	{
+		attr[18] = "version";
+		attr[19] = XAP_App::s_szBuild_Version;
+	}
+	else
+		attr[18] = NULL;
+
+	setAttributes(attr);
+}
+
+bool PD_Document::setAttributes(const XML_Char ** ppAttr)
+{
+	return VARSET.mergeAP(PTC_AddFmt, m_indexAP, ppAttr, NULL, &m_indexAP, this);
+}
+
+
+bool PD_Document::setProperties(const XML_Char ** ppProps)
+{
+	return VARSET.mergeAP(PTC_AddFmt, m_indexAP, NULL, ppProps, &m_indexAP, this);
+}
+
+#undef VARSET
+
+void PD_Document::lockStyles(bool b)
+{
+	const XML_Char *attr[3];
+	const XML_Char n[] = "styles";
+	const XML_Char v1[] = "locked";
+	const XML_Char v2[] = "unlocked";
+
+	attr[0] = n;
+	attr[2] = NULL;
+
+	if(b)
+		attr[1] = v1;
+	else
+		attr[1] = v2;
+
+	setAttributes(attr);
+	m_bLockedStyles = b;
+}
+
+
