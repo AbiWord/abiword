@@ -58,6 +58,7 @@ protected:
 
 private:
 	XAP_Win32DialogHelper		_win32Dialog;
+	XAP_Win32DialogHelper		_win32DialogNewModify;
 	StyleType					m_whichType;
 	UT_String					m_selectedStyle;
 

@@ -49,6 +49,8 @@
 #define AP_RID_DIALOG_PAGENUMBERS				219
 #define AP_RID_DIALOG_PAGE_SETUP				220
 #define AP_RID_DIALOG_TOGGLECASE				221
+#define AP_RID_DIALOG_STYLES_TOP				222
+#define AP_RID_DIALOG_STYLES_NEWMODIFY			223
 
 #include "ap_Win32Res_DlgPageSetup.rc2"
 #include "ap_Win32Resources_DialogReplace.rc2"
@@ -67,4 +69,5 @@
 #include "ap_Win32Res_DlgPageNumbers.rc2"
 #include "ap_Win32Res_DlgToggleCase.rc2"
 #include "ap_Win32Res_DlgStylesTop.rc2"
+#include "ap_Win32Res_DlgStylesNewModify.rc2"
 

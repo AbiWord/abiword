@@ -58,6 +58,7 @@ AP_Win32Dialog_Styles::AP_Win32Dialog_Styles(XAP_DialogFactory * pDlgFactory,
 										 XAP_Dialog_Id id)
 :	AP_Dialog_Styles(pDlgFactory,id),
 	_win32Dialog(this),
+	_win32DialogNewModify(this),
 	m_whichType(AP_Win32Dialog_Styles::USED_STYLES)
 {
 }
@@ -103,8 +104,13 @@ BOOL AP_Win32Dialog_Styles::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPara
 {
 	XAP_Win32App * app = static_cast<XAP_Win32App *> (m_pApp);
 	UT_ASSERT(app);
+	
+	char szTemp[20];
+	GetWindowText(hWnd, szTemp, 20 );
 
-//	m_hThisDlg = hWnd;
+	if( strncmp(szTemp, "Styles", 20) == 0 )
+	{
+	// m_hThisDlg = hWnd;
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
 	SetWindowText(hWnd, pSS->getValue(AP_STRING_ID_DLG_Styles_StylesTitle));
@@ -123,8 +129,8 @@ BOOL AP_Win32Dialog_Styles::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPara
 		AP_RID_DIALOG_STYLES_TOP_BUTTON_MODIFY			, AP_STRING_ID_DLG_Styles_Modify,
 		AP_RID_DIALOG_STYLES_TOP_BUTTON_NEW				, AP_STRING_ID_DLG_Styles_New,
 		AP_RID_DIALOG_STYLES_TOP_TEXT_AVAILABLE			, AP_STRING_ID_DLG_Styles_Available,	// "Available Styles" GROUPBOX
-		AP_RID_DIALOG_STYLES_TOP_BUTTON_OK				, XAP_STRING_ID_DLG_OK,
-		AP_RID_DIALOG_STYLES_TOP_BUTTON_CANCEL			, XAP_STRING_ID_DLG_Cancel
+		AP_RID_DIALOG_STYLES_TOP_BUTTON_APPLY			, XAP_STRING_ID_DLG_OK,
+		AP_RID_DIALOG_STYLES_TOP_BUTTON_CLOSE			, XAP_STRING_ID_DLG_Cancel
 	};
 
 	for (int i = 0; i < NrElements(rgMapping); ++i)
@@ -176,7 +182,7 @@ BOOL AP_Win32Dialog_Styles::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPara
 	m_pCharPreviewWidget->setPreview(m_pCharPreview);
 
 	_populateWindowData();
-
+	}
 	return 1;							// 1 == we did not call SetFocus()
 }
 
@@ -242,6 +248,13 @@ BOOL AP_Win32Dialog_Styles::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 
 			// refresh the previews
 			_populatePreviews(false);
+		}
+		return 1;
+
+	case AP_RID_DIALOG_STYLES_TOP_BUTTON_NEW:
+		{
+		XAP_Frame* pFrame = getFrame();
+		_win32DialogNewModify.runModal(pFrame, AP_DIALOG_ID_STYLES, AP_RID_DIALOG_STYLES_NEWMODIFY, this);
 		}
 		return 1;
 
