@@ -1,6 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998,1999 AbiSource, Inc.
- * Copyright (C) 2003 Hubert Figuiere
+ * Copyright (C) 2003-2004 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -361,6 +361,12 @@ void AP_CocoaDialog_Spell::event_ReplacementChanged()
 - (void)setMisspelled:(NSAttributedString*)attr
 {
 	// TODO
+	if (attr) {
+		[_unknownData setString:[attr string]];
+	}
+	else {
+		[_unknownData setString:@""];
+	}
 }
 
 
