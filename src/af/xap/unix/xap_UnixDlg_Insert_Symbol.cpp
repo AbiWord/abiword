@@ -534,7 +534,7 @@ GtkWidget * XAP_UnixDialog_Insert_Symbol::_constructWindow(void)
 	gtk_widget_show_all (hbox);
 
 	abiAddStockButton (GTK_DIALOG(m_windowMain), GTK_STOCK_CLOSE, BUTTON_CLOSE);
-	tmp = abiAddButton (GTK_DIALOG(m_windowMain), "&Insert", BUTTON_INSERT);
+	tmp = abiAddButton (GTK_DIALOG(m_windowMain), "&Insert" /* not used */, BUTTON_INSERT);
 	localizeButtonUnderline (tmp, pSS, XAP_STRING_ID_DLG_Insert);
 	
 	_connectSignals ();
