@@ -34,7 +34,7 @@ zip:
 	rm -rf $(DIST)/tmp
 	$(subst xxxx,$(DIST)/tmp,$(VERIFY_DIRECTORY))
 	(cd $(OUTDIR); tar -cf - AbiSuite) | (cd $(DIST)/tmp;          tar -xf -)
-	(cd $(OUTDIR); tar -cf - bin)      | (cd $(DIST)/tmp/AbiSuite; tar -xf -)
+	(cd $(OUTDIR); tar -cf - bin/Abi*) | (cd $(DIST)/tmp/AbiSuite; tar -xf -)
 	(cd $(DIST)/tmp; mv AbiSuite $(PKGBASENAME))
-	(cd $(DIST)/tmp; zip -r ../$(PKGBASENAME).zip $(PKGBASENAME))
+	(cd $(DIST)/tmp; zip -r ../$(PKGBASENAME)-$(OS_ARCH).zip $(PKGBASENAME))
 	(cd $(DIST); rm -rf tmp)
