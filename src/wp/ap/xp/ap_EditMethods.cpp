@@ -2160,7 +2160,7 @@ Defun1(fileOpen)
 	XAP_Frame * pFrame = NULL;
 	IEFileType ieft = IEFT_Unknown;
 	if (pAV_View) {
-		static_cast<XAP_Frame *> (pAV_View->getParentData());
+		pFrame = static_cast<XAP_Frame *> (pAV_View->getParentData());
 		UT_ASSERT(pFrame);
 		ieft = static_cast<PD_Document *>(pFrame->getCurrentDoc())->getLastOpenedType();
 	}
