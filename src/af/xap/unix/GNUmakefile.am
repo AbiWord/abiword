@@ -27,6 +27,10 @@ INCLUDES= -UVERSION \
 
 noinst_LIBRARIES = libXap_unix.a
 
+gladedir=$(pkgdatadir)/AbiWord/glade
+
+glade_DATA =  ap_UnixDlg_About.glade
+
 libXap_unix_a_SOURCES=\
 	xap_UnixApp.cpp				\
 	xap_UnixClipboard.cpp			\

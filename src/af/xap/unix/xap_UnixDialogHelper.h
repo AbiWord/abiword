@@ -22,8 +22,10 @@
 
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
+#include <glade/glade.h>
 #include "ut_types.h"
 #include "ut_string_class.h"
+#include "xap_Strings.h"
 
 class XAP_Frame;
 class XAP_FrameHelper;
@@ -80,6 +82,13 @@ GtkWidget* abiAddButton(GtkDialog * me, const gchar * btn_id,
 
 GtkWidget * abiDialogNew(const char * role, gboolean resizable = FALSE);
 GtkWidget * abiDialogNew(const char * role, gboolean resizable, const char * title, ...);
+GladeXML * abiDialogNewFromXML(const char * glade_file);
+
+void abiDialogSetTitle(GtkWidget * dlg, const char * title, ...);
+
+void localizeLabel(const XAP_StringSet * pSS, XAP_String_Id id, GtkWidget * widget);
+void localizeLabelMarkup(const XAP_StringSet * pSS, XAP_String_Id id, GtkWidget * widget, const gchar *pattern);
+void localizeButton(const XAP_StringSet * pSS, XAP_String_Id id, GtkWidget * widget);
 
 UT_String abiLocaleToUTF8(const UT_String & inStr);
 UT_String abiLocaleToUTF8(const char * str);

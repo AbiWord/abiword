@@ -18,6 +18,7 @@
  */
 
 #include <stdlib.h>
+#include <glade/glade.h>
 
 #include "ut_string.h"
 #include "ut_assert.h"
@@ -28,6 +29,7 @@
 #include "xap_UnixDialogHelper.h"
 
 #include "xap_App.h"
+#include "ap_UnixApp.h"
 #include "xap_UnixApp.h"
 #include "xap_Frame.h"
 
@@ -69,163 +71,77 @@ void AP_UnixDialog_Break::runModal(XAP_Frame * pFrame)
 	UT_return_if_fail(pFrame);
 	
 	// Build the window's widgets and arrange them
-	GtkWidget * mainWindow = _constructWindow();
-	UT_return_if_fail(mainWindow);
+	m_windowMain = _constructWindow();
+	UT_return_if_fail(m_windowMain);
 
 	_populateWindowData();
 
-	switch ( abiRunModalDialog ( GTK_DIALOG(mainWindow),
-								 pFrame, this, BUTTON_CANCEL, false ) )
+	switch ( abiRunModalDialog ( GTK_DIALOG(m_windowMain),
+								 pFrame, this, GTK_RESPONSE_CANCEL, false ) )
 	{
-		case BUTTON_OK:
-			event_OK () ; break ;
+		case GTK_RESPONSE_OK:
+			m_answer = AP_Dialog_Break::a_OK;
+			break;
 		default:
-			event_Cancel () ; break ;
+			m_answer = AP_Dialog_Break::a_CANCEL;
+			break;
 	}
 
 	_storeWindowData();
-
-	abiDestroyWidget ( mainWindow ) ;
-}
-
-void AP_UnixDialog_Break::event_OK(void)
-{
-	m_answer = AP_Dialog_Break::a_OK;
-}
-
-void AP_UnixDialog_Break::event_Cancel(void)
-{
-	m_answer = AP_Dialog_Break::a_CANCEL;
+	
+	abiDestroyWidget ( m_windowMain ) ;
 }
 
 /*****************************************************************/
-
 GtkWidget * AP_UnixDialog_Break::_constructWindow(void)
 {
-
-	GtkWidget * windowBreak;
-	GtkWidget * vboxMain;
-	GtkWidget * tableInsert;
-	GtkWidget * labelInsert;
-	GSList * tableInsert_group = NULL;
-	GtkWidget * radiobuttonPageBreak;
-	GtkWidget * radiobuttonNextPage;
-	GtkWidget * radiobuttonContinuous;
-	GtkWidget * radiobuttonColumnBreak;
-	GtkWidget * radiobuttonEvenPage;
-	GtkWidget * radiobuttonOddPage;
-	GtkWidget * labelSectionBreaks;
-
+	GtkWidget * window;
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	XML_Char * unixstr = NULL;	// used for conversions
+	
+	// get the path where our glade file is located
+	AP_UnixApp * unixApp = static_cast<AP_UnixApp*>(m_pApp);
+	UT_String glade_path( unixApp->getAbiSuiteAppGladeDir() );
+	glade_path += "/ap_UnixDialog_Break.glade";
+	
+	// load the dialog from the glade file
+	GladeXML *xml = abiDialogNewFromXML( glade_path.c_str() );
+	
+	// Update our member variables with the important widgets that 
+	// might need to be queried or altered later
+	window = glade_xml_get_widget(xml, "ap_UnixDialog_Break");
+	m_radioGroup = gtk_radio_button_group (GTK_RADIO_BUTTON ( glade_xml_get_widget(xml, "rbPageBreak") ));
+	
+	abiDialogSetTitle(window, pSS->getValueUTF8(AP_STRING_ID_DLG_Break_BreakTitle).c_str());
+	
+	// localize the strings in our dialog, and set tags for some widgets
+	
+	localizeLabelMarkup(pSS, AP_STRING_ID_DLG_Break_Insert, glade_xml_get_widget(xml, "lbInsertBreak"), 
+	  gtk_label_get_label (GTK_LABEL(glade_xml_get_widget(xml, "lbInsertBreak")))
+	);
+	
+	localizeButton(pSS, AP_STRING_ID_DLG_Break_PageBreak, glade_xml_get_widget(xml, "rbPageBreak"));
+	g_object_set_data (G_OBJECT (glade_xml_get_widget(xml, "rbPageBreak")), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(b_PAGE));
 
+	localizeButton(pSS, AP_STRING_ID_DLG_Break_ColumnBreak, glade_xml_get_widget(xml, "rbColumnBreak"));
+	g_object_set_data (G_OBJECT (glade_xml_get_widget(xml, "rbColumnBreak")), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(b_COLUMN));
 
-	windowBreak = abiDialogNew ( "break dialog", TRUE, pSS->getValueUTF8(AP_STRING_ID_DLG_Break_BreakTitle).c_str());
+	localizeLabelMarkup(pSS, AP_STRING_ID_DLG_Break_SectionBreaks, glade_xml_get_widget(xml, "lbInsertSectionBreak"),
+	  gtk_label_get_label (GTK_LABEL(glade_xml_get_widget(xml, "lbInsertSectionBreak")))
+	);
 	
-	vboxMain = GTK_DIALOG(windowBreak)->vbox ;
-	gtk_container_set_border_width (GTK_CONTAINER (vboxMain), 10);
+	localizeButton(pSS, AP_STRING_ID_DLG_Break_NextPage, glade_xml_get_widget(xml, "rbNextPage"));
+	g_object_set_data (G_OBJECT (glade_xml_get_widget(xml, "rbNextPage")), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(b_NEXTPAGE));
 
-	tableInsert = gtk_table_new (6, 2, FALSE);
-	gtk_widget_show (tableInsert);
-	gtk_box_pack_start (GTK_BOX (vboxMain), tableInsert, FALSE, FALSE, 0);
+	localizeButton(pSS, AP_STRING_ID_DLG_Break_Continuous, glade_xml_get_widget(xml, "rbContinuous"));
+	g_object_set_data (G_OBJECT (glade_xml_get_widget(xml, "rbContinuous")), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(b_CONTINUOUS));
 
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Break_Insert).c_str());
-	labelInsert = gtk_label_new (unixstr);
-	FREEP(unixstr);
-	gtk_widget_show (labelInsert);
-	gtk_table_attach (GTK_TABLE (tableInsert), labelInsert, 0, 1, 0, 1,
-					  (GtkAttachOptions) (GTK_SHRINK | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 0);
-	gtk_widget_set_usize (labelInsert, 17, -1);
-	gtk_label_set_justify (GTK_LABEL (labelInsert), GTK_JUSTIFY_LEFT);
-	gtk_misc_set_alignment (GTK_MISC (labelInsert), 0, 0.5);
-	
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Break_PageBreak).c_str());	
-	radiobuttonPageBreak = gtk_radio_button_new_with_label (tableInsert_group, unixstr);
-	FREEP(unixstr);
-	tableInsert_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonPageBreak));
-	g_object_set_data (G_OBJECT (radiobuttonPageBreak), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(b_PAGE));
-	gtk_widget_show (radiobuttonPageBreak);
-	gtk_table_attach (GTK_TABLE (tableInsert), radiobuttonPageBreak, 0, 1, 1, 2,
-					  (GtkAttachOptions) GTK_FILL, (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 0);
-	
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Break_NextPage).c_str());	
-	radiobuttonNextPage = gtk_radio_button_new_with_label (tableInsert_group, unixstr);
-	FREEP(unixstr);
-	tableInsert_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonNextPage));
-	g_object_set_data (G_OBJECT (radiobuttonNextPage), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(b_NEXTPAGE));
-	gtk_widget_show (radiobuttonNextPage);
-	gtk_table_attach (GTK_TABLE (tableInsert), radiobuttonNextPage, 0, 1, 4, 5,
-					  (GtkAttachOptions) GTK_FILL, (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 0);
-	
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Break_Continuous).c_str());	
-	radiobuttonContinuous = gtk_radio_button_new_with_label (tableInsert_group, unixstr);
-	FREEP(unixstr);
-	tableInsert_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonContinuous));
-	g_object_set_data (G_OBJECT (radiobuttonContinuous), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(b_CONTINUOUS));
-	gtk_widget_show (radiobuttonContinuous);
-	gtk_table_attach (GTK_TABLE (tableInsert), radiobuttonContinuous, 0, 1, 5, 6,
-					  (GtkAttachOptions) GTK_FILL, (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 0);
-	
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Break_ColumnBreak).c_str());	
-	radiobuttonColumnBreak = gtk_radio_button_new_with_label (tableInsert_group, unixstr);
-	FREEP(unixstr);
-	tableInsert_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonColumnBreak));
-	g_object_set_data (G_OBJECT (radiobuttonColumnBreak), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(b_COLUMN));
-	gtk_widget_show (radiobuttonColumnBreak);
-	gtk_table_attach (GTK_TABLE (tableInsert), radiobuttonColumnBreak, 1, 2, 1, 2,
-					  (GtkAttachOptions) GTK_FILL, (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 0);
-	
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Break_EvenPage).c_str());	
-	radiobuttonEvenPage = gtk_radio_button_new_with_label (tableInsert_group, unixstr);
-	FREEP(unixstr);
-	tableInsert_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonEvenPage));
-	g_object_set_data (G_OBJECT (radiobuttonEvenPage), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(b_EVENPAGE));
-	gtk_widget_show (radiobuttonEvenPage);
-	gtk_table_attach (GTK_TABLE (tableInsert), radiobuttonEvenPage, 1, 2, 4, 5,
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 0);
-	
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Break_OddPage).c_str());	
-	radiobuttonOddPage = gtk_radio_button_new_with_label (tableInsert_group, unixstr);
-	FREEP(unixstr);
-	tableInsert_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonOddPage));
-	g_object_set_data (G_OBJECT (radiobuttonOddPage), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(b_ODDPAGE));
-	gtk_widget_show (radiobuttonOddPage);
-	gtk_table_attach (GTK_TABLE (tableInsert), radiobuttonOddPage, 1, 2, 5, 6,
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 0);
-	
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Break_SectionBreaks).c_str());	
-	labelSectionBreaks = gtk_label_new (unixstr);
-	FREEP(unixstr);
-	gtk_widget_show (labelSectionBreaks);
-	gtk_table_attach (GTK_TABLE (tableInsert), labelSectionBreaks, 0, 1, 3, 4,
-					  (GtkAttachOptions) (GTK_SHRINK | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 4);
-	gtk_widget_set_usize (labelSectionBreaks, 76, -1);
-	gtk_label_set_justify (GTK_LABEL (labelSectionBreaks), GTK_JUSTIFY_LEFT);
-	gtk_misc_set_alignment (GTK_MISC (labelSectionBreaks), 0, 0.5);
+	localizeButton(pSS, AP_STRING_ID_DLG_Break_EvenPage, glade_xml_get_widget(xml, "rbEvenPage"));
+	g_object_set_data (G_OBJECT (glade_xml_get_widget(xml, "rbEvenPage")), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(b_EVENPAGE));
 
-#if 0
-	hseparator9 = gtk_hseparator_new ();
-	gtk_widget_show (hseparator9);
-	gtk_table_attach (GTK_TABLE (tableInsert), hseparator9, 0, 2, 6, 7,
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 6);
-#endif
+	localizeButton(pSS, AP_STRING_ID_DLG_Break_OddPage, glade_xml_get_widget(xml, "rbOddPage"));
+	g_object_set_data (G_OBJECT (glade_xml_get_widget(xml, "rbOddPage")), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(b_ODDPAGE));
 
-	GtkWidget * hseparator10;
-	hseparator10 = gtk_hseparator_new ();
-	gtk_widget_show (hseparator10);
-	gtk_table_attach (GTK_TABLE (tableInsert), hseparator10, 0, 2, 2, 3,
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 6);
-	
-	abiAddStockButton ( GTK_DIALOG(windowBreak), GTK_STOCK_CANCEL, BUTTON_CANCEL ) ;
-	abiAddStockButton ( GTK_DIALOG(windowBreak), GTK_STOCK_OK, BUTTON_OK ) ;
-
-	// Update member variables with the important widgets that
-	// might need to be queried or altered later.
-
-	m_windowMain = windowBreak;
-	m_radioGroup = tableInsert_group;
-	
-	return windowBreak;
+	return window;
 }
 
 void AP_UnixDialog_Break::_populateWindowData(void)
@@ -257,7 +173,6 @@ GtkWidget * AP_UnixDialog_Break::_findRadioByID(AP_Dialog_Break::breakType b)
 	}
 
 	return NULL;
-
 }
 
 AP_Dialog_Break::breakType AP_UnixDialog_Break::_getActiveRadioItem(void)
@@ -276,5 +191,3 @@ AP_Dialog_Break::breakType AP_UnixDialog_Break::_getActiveRadioItem(void)
 
 	return AP_Dialog_Break::b_PAGE;
 }
-
-

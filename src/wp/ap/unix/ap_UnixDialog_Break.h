@@ -36,19 +36,7 @@ public:
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
-	// callbacks can fire these events
-
-	virtual void			event_OK(void);
-	virtual void			event_Cancel(void);
-
 protected:
-
-	typedef enum
-		{
-			BUTTON_OK,
-			BUTTON_CANCEL
-		} ResponseId ;
-	
 	// private construction functions
 	virtual GtkWidget * _constructWindow(void);
 	void		_populateWindowData(void);

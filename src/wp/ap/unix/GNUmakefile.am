@@ -30,6 +30,10 @@ INCLUDES= -DABIWORD_APP_NAME="\"$(ABIWORD_APP_NAME)\"" \
 
 noinst_LIBRARIES = libWpAp_unix.a
 
+gladedir=$(pkgdatadir)/AbiWord/glade
+
+glade_DATA =  ap_UnixDialog_Break.glade
+
 if WITH_CURL
 CURL_SOURCE_OBJ = ap_@ABI_FE@HashDownloader.cpp ap_@ABI_FE@Dialog_Download_File.cpp
 else

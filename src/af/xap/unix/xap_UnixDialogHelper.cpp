@@ -758,6 +758,42 @@ GtkWidget * abiDialogNew(const char * role, gboolean resizable, const char * tit
 }
 
 /*!
+ * Create a new GtkDialog from a glade file
+ */
+GladeXML * abiDialogNewFromXML(const char * glade_file)
+{
+	// load the dialog from the glade file
+	GladeXML *xml = glade_xml_new(glade_file, NULL, NULL);
+	
+	// connect any signal handler functions
+	glade_xml_signal_autoconnect(xml);
+	
+	return xml;
+}
+	
+/*!
+ * Set the title of a gtk dialog
+ */
+void abiDialogSetTitle(GtkWidget * dlg, const char * title, ...)
+{
+  if ( title != NULL && strlen ( title ) )
+  {
+    UT_String titleStr ( "" ) ;
+
+    va_list args;
+    va_start (args, title);
+    UT_String_vprintf (titleStr, title, args);
+    va_end (args);
+
+    // create the title
+    gtk_window_set_title ( GTK_WINDOW(dlg), titleStr.c_str() ) ;
+  }
+
+  return dlg ;
+}
+
+
+/*!
  * Add this stock button to the dialog and make it sensitive
  */
 GtkWidget * abiAddStockButton (GtkDialog * me, const gchar * btn_id,
@@ -798,6 +834,44 @@ void abiDestroyWidget(GtkWidget * me)
 {
   if(me && GTK_IS_WIDGET(me))
     gtk_widget_destroy(me);
+}
+
+/*!
+ * Localizes a label given the string id
+ */
+void localizeLabel(const XAP_StringSet * pSS, XAP_String_Id id, GtkWidget * widget)
+{
+	XML_Char * unixstr = NULL;	// used for conversions
+	
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(id).c_str());
+	gtk_label_set_text (GTK_LABEL(widget), unixstr);
+	FREEP(unixstr);	
+}
+
+/*!
+ * Localizes a label given the string id and a format sting using the Pango markup language
+ * Eg. <span size="larger">%s</span>
+ */
+void localizeLabelMarkup(const XAP_StringSet * pSS, XAP_String_Id id, GtkWidget * widget, const gchar *pattern)
+{
+	XML_Char * unixstr = NULL;	// used for conversions
+	
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(id).c_str());
+	UT_String markupStr = UT_String_sprintf(pattern, unixstr);
+	gtk_label_set_markup (GTK_LABEL(widget), markupStr.c_str());
+	FREEP(unixstr);	
+}
+
+/*!
+ * Localizes a button given the string id
+ */
+void localizeButton(const XAP_StringSet * pSS, XAP_String_Id id, GtkWidget * widget)
+{
+	XML_Char * unixstr = NULL;	// used for conversions
+	
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(id).c_str());
+	gtk_button_set_label (GTK_BUTTON(widget), unixstr);
+	FREEP(unixstr);	
 }
 
 /*!

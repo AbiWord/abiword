@@ -430,6 +430,23 @@ const char * AP_UnixApp::getAbiSuiteAppDir(void) const
 }
 
 /*!
+  This returns the directory that holds the application .glade files.
+  \return A const string containting the directory path
+*/
+const char * AP_UnixApp::getAbiSuiteAppGladeDir(void) const
+{
+    // we return a static string, use it quickly.
+	
+    static XML_Char buf[1024];
+    // FIXME: remove the hardcoded "/glade" location and get it from the makefile
+    UT_ASSERT((strlen(getAbiSuiteLibDir()) + strlen(ABIWORD_APP_LIBDIR) + strlen("/glade") + 3) < sizeof(buf));
+
+    sprintf(buf,"%s/%s/glade",getAbiSuiteLibDir(),ABIWORD_APP_LIBDIR);
+    return buf;
+}
+
+
+/*!
   This returns the current StringSet
   \return A const pointer to the StringSet
   \todo This function should be inilined.  
