@@ -19,7 +19,7 @@
 include $(top_srcdir)/includes.mk
 
 INCLUDES= @GMODULE_CFLAGS@ @GTK_CFLAGS@ \
-	$(AF_INCLUDES) $(AP_INCLUDES) $(ICONV_INCLUDES)
+	$(AF_INCLUDES) $(AP_INCLUDES) $(WP_INCLUDES) $(ICONV_INCLUDES)
 
 
 noinst_LIBRARIES = libXap_xp.a
