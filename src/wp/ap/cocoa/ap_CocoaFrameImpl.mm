@@ -65,6 +65,11 @@ AP_CocoaFrameImpl::AP_CocoaFrameImpl(AP_CocoaFrame *pCocoaFrame, XAP_CocoaApp *p
 {
 }
 
+XAP_FrameImpl * AP_CocoaFrameImpl::createInstance(XAP_Frame *pFrame, XAP_App *pApp)
+{
+	return new AP_CocoaFrameImpl(static_cast<AP_CocoaFrame*>(pFrame), static_cast<XAP_CocoaApp*>(pApp));
+}
+
 void AP_CocoaFrameImpl::_setHScrollValue(UT_sint32 value)
 {
 	if (m_HCurrentScroll != value) {
