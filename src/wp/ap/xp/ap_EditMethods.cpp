@@ -12019,7 +12019,6 @@ Defun(endResizeImage)
 				return false;
 			}
 		}
-		pView->cmdSelect(pos,pos+1);
 	
 		char widthBuf[32];
 		char heightBuf[32];
@@ -12038,6 +12037,9 @@ Defun(endResizeImage)
 		properties[1] = widthBuf;
 		properties[3] = heightBuf;
 		pView->setCharFormat(properties);
+		pView->cmdSelect(pos,pos+1);
+		pView->setPoint(pView->getPoint());
+		UT_ASSERT(!pView->isSelectionEmpty());
 		pView->updateScreen();
 	}
 		

@@ -3044,8 +3044,8 @@ void FV_View::cmdSelect(PT_DocPosition dpBeg, PT_DocPosition dpEnd)
 	_setSelectionAnchor();
 	m_Selection.setSelectionLeftAnchor(dpBeg);
 	m_Selection.setSelectionRightAnchor(dpEnd);
-
 	_setPoint (dpEnd);
+	UT_ASSERT(!isSelectionEmpty());
 
 	if (dpBeg == dpEnd)
 	{
