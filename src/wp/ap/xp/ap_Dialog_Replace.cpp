@@ -22,6 +22,7 @@
 #include <string.h>
 #include "ut_assert.h"
 #include "ut_string.h"
+#include "ut_string_class.h"
 #include "ut_debugmsg.h"
 
 #include "ap_Dialog_Replace.h"
@@ -54,6 +55,8 @@ AP_Dialog_Replace::AP_Dialog_Replace(XAP_DialogFactory * pDlgFactory, XAP_Dialog
 
 	// is this used?
 	m_answer = a_VOID;
+	
+	UT_DEBUGMSG(("FODDEX: creating find/replace dialog\n"));
 }
 
 AP_Dialog_Replace::~AP_Dialog_Replace(void)
@@ -65,6 +68,21 @@ AP_Dialog_Replace::~AP_Dialog_Replace(void)
 
 	FREEP(persist_findString);
 	FREEP(persist_replaceString);
+	
+	// clean up memory
+	UT_uint32 i;
+	for (i=0; i<m_findList.getItemCount(); i++) 
+	{
+		UT_UCS4Char* string = static_cast<UT_UCS4Char*>(m_findList.getNthItem(i));
+		if (string) 
+			FREEP(string);
+	}
+	for (i=0; i<m_replaceList.getItemCount(); i++) 
+	{
+		UT_UCS4Char* string = static_cast<UT_UCS4Char*>(m_replaceList.getNthItem(i));
+		if (string) 
+			FREEP(string);
+	}
 }
 
 void AP_Dialog_Replace::useStart(void)
@@ -241,6 +259,12 @@ bool AP_Dialog_Replace::findNext()
 	UT_ASSERT(m_findString);
 	//UT_ASSERT(m_replaceString);
 	
+	// manage the list of find strings
+	if (_manageList(&m_findList, m_findString))
+	{
+		_updateLists();
+	}
+	
 	// so we save our attributes to persistent storage
 	m_didSomething = true;
 
@@ -265,6 +289,14 @@ bool AP_Dialog_Replace::findReplace()
 	UT_ASSERT(m_findString);
 	UT_ASSERT(m_replaceString);
 	
+	// manage the list of find & replace strings
+	bool var1 = _manageList(&m_findList, m_findString);
+	bool var2 = _manageList(&m_replaceList, m_replaceString);
+	if (var1 || var2)
+	{
+		_updateLists();
+	}
+	
 	// so we save our attributes to persistent storage
 	m_didSomething = true;
 
@@ -288,6 +320,14 @@ bool AP_Dialog_Replace::findReplaceAll()
 
 	UT_ASSERT(m_findString);
 	UT_ASSERT(m_replaceString);
+	
+	// manage the list of find & replace strings
+	bool var1 = _manageList(&m_findList, m_findString);
+	bool var2 = _manageList(&m_replaceList, m_replaceString);
+	if (var1 || var2)
+	{
+		_updateLists();
+	}
 	
 	// so we save our attributes to persistent storage
 	m_didSomething = true;
@@ -322,3 +362,48 @@ void AP_Dialog_Replace::_messageFinishedReplace(UT_uint32 numReplaced)
 	getActiveFrame()->showMessageBox(message);
 }
 
+bool AP_Dialog_Replace::_manageList(UT_Vector* list, UT_UCSChar* string)
+{
+	UT_UCS4String us(string);
+	UT_uint32 i = 0;
+	bool found = false;
+	
+	UT_DEBUGMSG(("FODDEX: AP_Dialog_Replace::_manageList: called\n"));
+
+	// check if the current string is already in the list
+	for (i=0; i<list->getItemCount(); i++) 
+	{
+		if (!UT_UCS4_strcmp(string, static_cast<UT_UCSChar*>(list->getNthItem(i))))
+		{
+			found = true;
+			break;
+		}
+	}
+	
+	UT_UCSChar * clone = NULL;		
+	if (UT_UCS4_cloneString(&clone, string))
+	{
+		if (!found) 
+		{
+			// if not present, just add it to the internal list
+			list->insertItemAt(clone, 0);
+			UT_DEBUGMSG(("FODDEX: adding '%s' to list\n", us.utf8_str()));
+			return true;
+		} else {
+			// free the old string
+			UT_UCSChar* temp = static_cast<UT_UCSChar*>(list->getNthItem(i));
+			if (temp) FREEP(temp);
+			// remove the reference from the list
+			list->deleteNthItem(i);
+			// add it again to the top of the list
+			list->insertItemAt(clone, 0);
+		}
+	} else {
+		UT_DEBUGMSG(("FODDEX: warning, failed to clone UCS4 string: '%s'\n", us.utf8_str()));
+		return false;
+	}
+	
+	// cloning failed or the string already existed, so do nothing
+	UT_DEBUGMSG(("FODDEX: string '%s' already in list\n", us.utf8_str()));
+	return false;
+}

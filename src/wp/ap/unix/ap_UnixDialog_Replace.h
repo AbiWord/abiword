@@ -74,9 +74,14 @@ protected:
 	GtkWidget *	m_buttonFindReplace;
 	GtkWidget *	m_buttonReplaceAll;
 	  
-	GtkWidget * m_entryFind;
-	GtkWidget * m_entryReplace;
+	GtkWidget * m_comboFind;
+	GtkWidget * m_comboReplace;
 	GtkWidget * m_checkbuttonMatchCase;
+	
+	virtual void			_updateLists();
+	  
+private:
+	virtual void			_updateList(GtkWidget* combo, UT_Vector* list);
 };
 
 #endif /* AP_UNIXDIALOG_REPLACE_H */

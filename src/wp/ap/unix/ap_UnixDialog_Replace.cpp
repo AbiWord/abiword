@@ -61,8 +61,8 @@ AP_UnixDialog_Replace::AP_UnixDialog_Replace(XAP_DialogFactory * pDlgFactory,
 {
 	m_windowMain = NULL;
 
-	m_entryFind = NULL;
-	m_entryReplace = NULL;
+	m_comboFind = NULL;
+	m_comboReplace = NULL;
 	m_checkbuttonMatchCase = NULL;
 	m_buttonFind = NULL;
 	m_buttonFindReplace = NULL;
@@ -163,7 +163,7 @@ void AP_UnixDialog_Replace::runModeless(XAP_Frame * pFrame)
 
 void AP_UnixDialog_Replace::event_Find(void)
 {
-	char * findEntryText = (char *) gtk_entry_get_text(GTK_ENTRY(m_entryFind));
+	char * findEntryText = (char *) gtk_entry_get_text(GTK_ENTRY(GTK_COMBO(m_comboFind)->entry));
 	if (strlen(findEntryText) == 0) // do nothing when the find field is empty
 		return;
 	
@@ -180,7 +180,7 @@ void AP_UnixDialog_Replace::event_Find(void)
 
 void AP_UnixDialog_Replace::event_FindEntryChange(void)
 {
-	const char *input = gtk_entry_get_text(GTK_ENTRY(m_entryFind));
+	const char *input = gtk_entry_get_text(GTK_ENTRY(GTK_COMBO(m_comboFind)->entry));
 	bool enable = strlen(input) != 0;
 	gtk_widget_set_sensitive(m_buttonFind, enable);
 	if (m_id == AP_DIALOG_ID_REPLACE)
@@ -195,8 +195,8 @@ void AP_UnixDialog_Replace::event_Replace(void)
 	char * findEntryText;
 	char * replaceEntryText;
 
-	findEntryText = (char *) gtk_entry_get_text(GTK_ENTRY(m_entryFind));
-	replaceEntryText = (char *) gtk_entry_get_text(GTK_ENTRY(m_entryReplace));
+	findEntryText = (char *) gtk_entry_get_text(GTK_ENTRY(GTK_COMBO(m_comboFind)->entry));
+	replaceEntryText = (char *) gtk_entry_get_text(GTK_ENTRY(GTK_COMBO(m_comboReplace)->entry));
 	
 	UT_UCSChar * findString;
 	UT_UCSChar * replaceString;
@@ -218,8 +218,8 @@ void AP_UnixDialog_Replace::event_ReplaceAll(void)
 	char * findEntryText;
 	char * replaceEntryText;
 
-	findEntryText = (char *) gtk_entry_get_text(GTK_ENTRY(m_entryFind));
-	replaceEntryText = (char *) gtk_entry_get_text(GTK_ENTRY(m_entryReplace));
+	findEntryText = (char *) gtk_entry_get_text(GTK_ENTRY(GTK_COMBO(m_comboFind)->entry));
+	replaceEntryText = (char *) gtk_entry_get_text(GTK_ENTRY(GTK_COMBO(m_comboReplace)->entry));
 	
 	UT_UCSChar * findString;
 	UT_UCSChar * replaceString;
@@ -262,8 +262,8 @@ GtkWidget * AP_UnixDialog_Replace::_constructWindow(void)
 	GtkWidget *windowReplace;
 	GtkWidget *vboxReplace;
 	GtkWidget *tableReplace;
-	GtkWidget *entryFind;
-	GtkWidget *entryReplace = 0;
+	GtkWidget *comboFind;
+	GtkWidget *comboReplace = 0;
 	GtkWidget *checkbuttonMatchCase;
 	GtkWidget *labelFind;
 	GtkWidget *labelReplace;
@@ -294,12 +294,13 @@ GtkWidget * AP_UnixDialog_Replace::_constructWindow(void)
 			  GtkAttachOptions(0), 5, 0);
 	gtk_misc_set_alignment (GTK_MISC (labelFind), 0, 0.5);
 
-	// find entry is always here
-	entryFind = gtk_entry_new ();
-	gtk_widget_show (entryFind);
-	gtk_table_attach (GTK_TABLE (tableReplace), entryFind, 1, 2, 0, 1,
+	// find combo is always here
+	comboFind = gtk_combo_new();
+	gtk_widget_show (comboFind);
+	gtk_table_attach (GTK_TABLE (tableReplace), comboFind, 1, 2, 0, 1,
 			  GtkAttachOptions(GTK_EXPAND | GTK_FILL),
 			  GtkAttachOptions(GTK_EXPAND | GTK_FILL), 0, 0);
+	gtk_combo_disable_activate (GTK_COMBO(comboFind)); 
 
 	// match case is always here
 	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_FR_MatchCase).c_str());	
@@ -322,13 +323,13 @@ GtkWidget * AP_UnixDialog_Replace::_constructWindow(void)
 				  GtkAttachOptions(0), GtkAttachOptions(0), 5, 0);
 		gtk_misc_set_alignment (GTK_MISC (labelReplace), 0, 0.5);
 
-		// create replace entry
-		entryReplace = gtk_entry_new ();
-		gtk_widget_show (entryReplace);
-		gtk_table_attach (GTK_TABLE (tableReplace), entryReplace, 1, 2, 2, 3,
+		// create replace combo
+		comboReplace = gtk_combo_new ();
+		gtk_widget_show (comboReplace);
+		gtk_table_attach (GTK_TABLE (tableReplace), comboReplace, 1, 2, 2, 3,
 				  GtkAttachOptions(GTK_EXPAND | GTK_FILL),
 				  GtkAttachOptions(GTK_EXPAND | GTK_FILL), 0, 0);
-
+		gtk_combo_disable_activate (GTK_COMBO(comboReplace));
 	}
 	
 	abiAddStockButton(GTK_DIALOG(windowReplace), GTK_STOCK_CLOSE, BUTTON_CANCEL);
@@ -357,12 +358,12 @@ GtkWidget * AP_UnixDialog_Replace::_constructWindow(void)
 			 this);
 
 	// If the user hits "enter" in the entry field, we launch a find
-	g_signal_connect(G_OBJECT(entryFind),
+	g_signal_connect(G_OBJECT(GTK_COMBO(comboFind)->entry),
 			 "activate",
 			 G_CALLBACK(s_find_entry_activate),
 			 this);
 
-	g_signal_connect(G_OBJECT(entryFind),
+	g_signal_connect(G_OBJECT(GTK_COMBO(comboFind)->entry),
 			 "changed",
 			 G_CALLBACK(s_find_entry_change),
 			 (gpointer) this);
@@ -372,7 +373,7 @@ GtkWidget * AP_UnixDialog_Replace::_constructWindow(void)
 	if (m_id == AP_DIALOG_ID_REPLACE)
 	{
 		// If the user hits "enter" in the entry field, we launch a replace
-		g_signal_connect(G_OBJECT(entryReplace),
+		g_signal_connect(G_OBJECT(GTK_COMBO(comboReplace)->entry),
 				 "activate",
 				 G_CALLBACK(s_replace_entry_activate),
 				 this);
@@ -381,8 +382,8 @@ GtkWidget * AP_UnixDialog_Replace::_constructWindow(void)
 	// save pointers to members
 	m_windowMain = windowReplace;
 
-	m_entryFind = entryFind;
-	m_entryReplace = entryReplace;
+	m_comboFind = comboFind;
+	m_comboReplace = comboReplace;
 	m_checkbuttonMatchCase = checkbuttonMatchCase;
 
 	// the catch-alls
@@ -401,7 +402,7 @@ GtkWidget * AP_UnixDialog_Replace::_constructWindow(void)
 
 void AP_UnixDialog_Replace::_populateWindowData(void)
 {
-	UT_ASSERT(m_entryFind && m_checkbuttonMatchCase);
+	UT_ASSERT(m_comboFind && m_checkbuttonMatchCase);
 
 	// last used find string
 	{
@@ -410,8 +411,8 @@ void AP_UnixDialog_Replace::_populateWindowData(void)
 		UT_UCS4_strcpy_to_char(bufferNormal, bufferUnicode);
 		FREEP(bufferUnicode);
 		
-		gtk_entry_set_text(GTK_ENTRY(m_entryFind), bufferNormal);
-		gtk_entry_select_region(GTK_ENTRY(m_entryFind), 0, -1);
+		gtk_entry_set_text(GTK_ENTRY(GTK_COMBO(m_comboFind)->entry), bufferNormal);
+		gtk_entry_select_region(GTK_ENTRY(GTK_COMBO(m_comboFind)->entry), 0, -1);
 
 		FREEP(bufferNormal);
 	}
@@ -420,23 +421,26 @@ void AP_UnixDialog_Replace::_populateWindowData(void)
 	// last used replace string
 	if (m_id == AP_DIALOG_ID_REPLACE)
 	{
-		UT_ASSERT(m_entryReplace);
+		UT_ASSERT(m_comboReplace);
 		
 		UT_UCSChar * bufferUnicode = getReplaceString();
 		char * bufferNormal = (char *) UT_calloc(UT_UCS4_strlen(bufferUnicode) + 1, sizeof(char));
 		UT_UCS4_strcpy_to_char(bufferNormal, bufferUnicode);
 		FREEP(bufferUnicode);
 		
-		gtk_entry_set_text(GTK_ENTRY(m_entryReplace), bufferNormal);
+		gtk_entry_set_text(GTK_ENTRY(GTK_COMBO(m_comboReplace)->entry), bufferNormal);
 
 		FREEP(bufferNormal);
 	}
+	
+	// update lists
+	_updateLists();
 
 	// match case button
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_checkbuttonMatchCase), getMatchCase());
 
 	// Find entry should have focus, for immediate typing
-	gtk_widget_grab_focus(m_entryFind);	
+	gtk_widget_grab_focus(m_comboFind);	
 }
 
 void AP_UnixDialog_Replace::_storeWindowData(void)
@@ -447,3 +451,35 @@ void AP_UnixDialog_Replace::_storeWindowData(void)
 	// happen (not when the dialog closes).
 }
 
+void AP_UnixDialog_Replace::_updateLists()
+{
+	_updateList(m_comboFind, &m_findList);
+	_updateList(m_comboReplace, &m_replaceList);
+}
+
+void AP_UnixDialog_Replace::_updateList(GtkWidget* combo, UT_Vector* list)
+{
+	if (!combo) return; // no combo? do nothing
+	if (!list) return; // no list? do nothing
+	
+	UT_uint32 i = 0;
+	GList *items = NULL;
+	
+	gtk_list_clear_items(GTK_LIST(GTK_COMBO(combo)->list), 0, -1); 
+	items = NULL;
+	for (i = 0; i<list->getItemCount(); i++)
+	{
+		// leaving the size 0 causes the string class to determine the length itself
+		UT_UCS4String ucs4s((UT_UCS4Char*)list->getNthItem(i), 0); 
+		
+		// clone the string, since we can't use utf8_str()'s result -> ucs4s will disappear from stack
+		char* utf8s;
+		UT_cloneString(utf8s, ucs4s.utf8_str()); 
+		
+		// add it to the list
+		UT_DEBUGMSG(("FODDEX: find/replace list: %d = '%s'\n", i, utf8s));
+    	items = g_list_append (items, static_cast<void*>(utf8s));
+	}
+	if (items)
+		gtk_combo_set_popdown_strings(GTK_COMBO(combo), items);
+}

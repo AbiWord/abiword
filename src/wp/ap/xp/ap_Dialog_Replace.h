@@ -70,47 +70,52 @@ public:
 	// above and call one of these.
 	bool						findNext(void);
 	bool						findReplace(void);
-	bool 					findReplaceAll(void);
+	bool 						findReplaceAll(void);
 	
  protected:
 
 	// These are the persistent dialog data items,
 	// which are carefully read and set by useStart()
 	// and useEnd(), and not by the accessors.
-	UT_UCSChar *			persist_findString; 
-	UT_UCSChar *			persist_replaceString;
-	bool					persist_matchCase;
+	UT_UCSChar *				persist_findString; 
+	UT_UCSChar *				persist_replaceString;
+	bool						persist_matchCase;
 
 	// These are the "current use" dialog data items,
 	// which are liberally read and set by the
 	// accessor methods above.  Note that the buffers
 	// these may point to are destroyed when useEnd()
 	// is done storing them away
-	FV_View * 				m_pView;
-	UT_UCSChar *			m_findString; 
-	UT_UCSChar *			m_replaceString;
-	bool					m_matchCase;
+	FV_View * 					m_pView;
+	UT_UCSChar *				m_findString; 
+	UT_UCSChar *				m_replaceString;
+	bool						m_matchCase;
 
 	// These are also "current use" dialog data item,
 	// but they're not user-settable; they are set
 	// on conditions that action functions or other
 	// non-accessor methods are invoked.
-	bool					m_didSomething;
+	bool						m_didSomething;
 
 	// Message boxes for events during search
-	XAP_Frame *				m_pFrame;
+	XAP_Frame *					m_pFrame;
 
-	void					_messageFinishedFind(void);
-	void					_messageFinishedReplace(UT_uint32 numReplaced = 0);
-	void 					_messageBox(const char * message);
+	void						_messageFinishedFind(void);
+	void						_messageFinishedReplace(UT_uint32 numReplaced = 0);
+	void 						_messageBox(const char * message);
 	
 	// is this used in a modeless dialog like this?
-	tAnswer					m_answer;
-        char                       m_WindowName[100];
+	tAnswer						m_answer;
+	char						m_WindowName[100];
+		
+	// save a list of find a replace texts
+	UT_Vector					m_findList;
+	UT_Vector					m_replaceList;
+	virtual void				_updateLists() = 0; // must be implemented in non-xp code
+	
+ private:
+	// returns true when the internal list was changed
+	bool						_manageList(UT_Vector* list, UT_UCSChar* string);	 	
 };
 
 #endif /* AP_DIALOG_REPLACE_H */
-
-
-
-
