@@ -1293,9 +1293,9 @@ bool PD_Document::verifySectionID(const XML_Char * pszId)
 					 return true;
 
 				 // the id could also be hidden in a revision attribute ...
-				 const XML_Char * pszRevisionAttr;
-				 (pAP)->getAttribute("revision", pszRevisionAttr);
-				 if(pszRevisionAttr)
+				 const XML_Char * pszRevisionAttr = NULL;
+				 
+				 if((pAP)->getAttribute("revision", pszRevisionAttr))
 				 {
 					 PP_RevisionAttr RA(pszRevisionAttr);
 
