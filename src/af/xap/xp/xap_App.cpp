@@ -338,6 +338,7 @@ bool XAP_App::addListener(AV_Listener * pListener,
 	UT_uint32 k;
 
 	// see if we can recycle a cell in the vector.
+	UT_DEBUGMSG(("Asked to register pListener %x \n",pListener));
 	
 	for (k=0; k<kLimit; k++)
 		if (m_vecPluginListeners.getNthItem(k) == 0)
@@ -350,6 +351,7 @@ bool XAP_App::addListener(AV_Listener * pListener,
 	
 	if (m_vecPluginListeners.addItem(pListener,&k) != 0)
 	{
+		UT_DEBUGMSG(("Failed! id %d \n",k));
 		return false;				// could not add item to vector
 	}
 
