@@ -32,63 +32,20 @@
 
 #include "ap_Strings.h"
 #include "ap_Dialog_Id.h"
-#include "ap_UnixDialog_Stylist.h"
+#include "ap_UnixDialog_FormatTOC.h"
 
-static void s_types_clicked(GtkTreeView *treeview,
-                            AP_UnixDialog_Stylist * dlg)
-{
-	UT_ASSERT(treeview && dlg);
 
-	GtkTreeSelection * selection;
-	GtkTreeIter iter;
-	GtkTreeModel * model;
-	UT_sint32 row,col;
-
-	selection = gtk_tree_view_get_selection( GTK_TREE_VIEW(treeview) );
-	if (!selection || !gtk_tree_selection_get_selected (selection, &model, &iter)) {
-		return;
-	}
-
-	// Get the row and col number
-	GValue value = {0,};
-	gtk_tree_model_get_value (model, &iter,1,&value);
-	row = g_value_get_int(&value);
-	gtk_tree_model_get_value (model, &iter,2,&value);
-	col = g_value_get_int(&value);
-	dlg->styleClicked(row,col);
-}
-
-static gboolean
-tree_select_filter (GtkTreeSelection *selection, GtkTreeModel *model,
-								  GtkTreePath *path, gboolean path_selected,
-								  gpointer data)
-{
-	if (gtk_tree_path_get_depth (path) > 1)
-		return TRUE;
-	return FALSE;
-}
-
-static void s_types_dblclicked(GtkTreeView *treeview,
-							   GtkTreePath *arg1,
-							   GtkTreeViewColumn *arg2,
-							   AP_UnixDialog_Stylist * me)
-{
-	// simulate the effects of a single click
-	s_types_clicked (treeview, me);
-	me->event_Apply ();
-}
-
-static void s_delete_clicked(GtkWidget * wid, AP_UnixDialog_Stylist * me )
+static void s_delete_clicked(GtkWidget * wid, AP_UnixDialog_FormatTOC * me )
 {
     abiDestroyWidget( wid ) ;// will emit signals for us
 }
 
-static void s_destroy_clicked(GtkWidget * wid, AP_UnixDialog_Stylist * me )
+static void s_destroy_clicked(GtkWidget * wid, AP_UnixDialog_FormatTOC * me )
 {
    me->event_Close();
 }
 
-static void s_response_triggered(GtkWidget * widget, gint resp, AP_UnixDialog_Stylist * dlg)
+static void s_response_triggered(GtkWidget * widget, gint resp, AP_UnixDialog_FormatTOC * dlg)
 {
 	UT_return_if_fail(widget && dlg);
 	
@@ -98,103 +55,53 @@ static void s_response_triggered(GtkWidget * widget, gint resp, AP_UnixDialog_St
 	  abiDestroyWidget(widget);
 }
 
-XAP_Dialog * AP_UnixDialog_Stylist::static_constructor(XAP_DialogFactory * pFactory,
+XAP_Dialog * AP_UnixDialog_FormatTOC::static_constructor(XAP_DialogFactory * pFactory,
 														  XAP_Dialog_Id id)
 {
-	return new AP_UnixDialog_Stylist(pFactory,id);
+	return new AP_UnixDialog_FormatTOC(pFactory,id);
 }
 
-AP_UnixDialog_Stylist::AP_UnixDialog_Stylist(XAP_DialogFactory * pDlgFactory,
+AP_UnixDialog_FormatTOC::AP_UnixDialog_FormatTOC(XAP_DialogFactory * pDlgFactory,
 												   XAP_Dialog_Id id)
-	: AP_Dialog_Stylist(pDlgFactory,id), 
+	: AP_Dialog_FormatTOC(pDlgFactory,id), 
 	  m_windowMain(NULL),
-	  m_wStyleList(NULL),
 	  m_wApply(NULL),
-	  m_wClose(NULL),
-	  m_wRenderer(NULL),
-	  m_wModel(NULL),
-	  m_wStyleListContainer(NULL)
+	  m_wClose(NULL)
 {
 }
 
-AP_UnixDialog_Stylist::~AP_UnixDialog_Stylist(void)
+AP_UnixDialog_FormatTOC::~AP_UnixDialog_FormatTOC(void)
 {
 }
 
-void AP_UnixDialog_Stylist::event_Close(void)
+void AP_UnixDialog_FormatTOC::event_Close(void)
 {
 	destroy();
 }
 
-void AP_UnixDialog_Stylist::setStyleInGUI(void)
+void AP_UnixDialog_FormatTOC::setTOCPropsInGUI(void)
 {
-	UT_sint32 row,col;
-	UT_UTF8String sCurStyle = *getCurStyle();
-
-	if((getStyleTree() == NULL) || (sCurStyle.size() == 0))
-		updateDialog();
-
-	if(m_wStyleList == NULL)
-		return;
-
-	if(isStyleTreeChanged())
-		_fillTree();
-
-	getStyleTree()->findStyle(sCurStyle,row,col);
-	UT_DEBUGMSG(("After findStyle row %d col %d col \n",row,col));
-	UT_UTF8String sPathFull = UT_UTF8String_sprintf("%d:%d",row,col);
-	UT_UTF8String sPathRow = UT_UTF8String_sprintf("%d",row);
-	UT_DEBUGMSG(("Full Path string is %s \n",sPathFull.utf8_str()));
-	GtkTreePath * gPathRow = gtk_tree_path_new_from_string (sPathRow.utf8_str());
-	GtkTreePath * gPathFull = gtk_tree_path_new_from_string (sPathFull.utf8_str());
-	gtk_tree_view_expand_row( GTK_TREE_VIEW(m_wStyleList),gPathRow,TRUE);
-	gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(m_wStyleList),gPathFull,NULL,TRUE,0.5,0.5);
-	gtk_tree_view_set_cursor(GTK_TREE_VIEW(m_wStyleList),gPathFull,NULL,TRUE);
-	setStyleChanged(false);
-	g_free(gPathRow);
-	g_free(gPathFull);
 }
 
-void AP_UnixDialog_Stylist::destroy(void)
+void AP_UnixDialog_FormatTOC::destroy(void)
 {
 	finalize();
 	gtk_widget_destroy(m_windowMain);
 	m_windowMain = NULL;
-	m_wRenderer = NULL;
-	m_wStyleList = NULL;
 }
 
-void AP_UnixDialog_Stylist::activate(void)
+void AP_UnixDialog_FormatTOC::activate(void)
 {
 	UT_ASSERT (m_windowMain);
 	gdk_window_raise (m_windowMain->window);
 }
 
-void AP_UnixDialog_Stylist::notifyActiveFrame(XAP_Frame *pFrame)
+void AP_UnixDialog_FormatTOC::notifyActiveFrame(XAP_Frame *pFrame)
 {
     UT_ASSERT(m_windowMain);
 }
 
-/*!
- * Set the style in the XP layer from the selection in the GUI.
- */
-void AP_UnixDialog_Stylist::styleClicked(UT_sint32 row, UT_sint32 col)
-{
-	UT_UTF8String sStyle;
-	UT_DEBUGMSG(("row %d col %d clicked \n",row,col));
-
-	if((col == 0) && (getStyleTree()->getNumCols(row) == 1))
-		return;
-	else if(col == 0)
-		getStyleTree()->getStyleAtRowCol(sStyle,row,col);
-	else
-		getStyleTree()->getStyleAtRowCol(sStyle,row,col-1);
-
-	UT_DEBUGMSG(("StyleClicked row %d col %d style %s \n",row,col,sStyle.utf8_str()));
-	setCurStyle(sStyle);
-}
-
-void AP_UnixDialog_Stylist::runModeless(XAP_Frame * pFrame)
+void AP_UnixDialog_FormatTOC::runModeless(XAP_Frame * pFrame)
 {
 	// Build the window's widgets and arrange them
 	GtkWidget * mainWindow = _constructWindow();
@@ -207,12 +114,12 @@ void AP_UnixDialog_Stylist::runModeless(XAP_Frame * pFrame)
 	startUpdater();
 }
 
-GtkWidget * AP_UnixDialog_Stylist::_constructWindow(void)
+GtkWidget * AP_UnixDialog_FormatTOC::_constructWindow(void)
 {
 	// get the path where our glade file is located
 	XAP_UnixApp * pApp = static_cast<XAP_UnixApp*>(m_pApp);
 	UT_String glade_path( pApp->getAbiSuiteAppGladeDir() );
-	glade_path += "/ap_UnixDialog_Stylist.glade";
+	glade_path += "/ap_UnixDialog_FormatTOC.glade";
 
 	// load the dialog from the glade file
 	GladeXML *xml = abiDialogNewFromXML( glade_path.c_str() );
@@ -221,18 +128,78 @@ GtkWidget * AP_UnixDialog_Stylist::_constructWindow(void)
 	
 	const XAP_StringSet * pSS = m_pApp->getStringSet ();
 
-	m_windowMain   = glade_xml_get_widget(xml, "ap_UnixDialog_Stylist");
-	m_wStyleListContainer  = glade_xml_get_widget(xml,"TreeViewContainer");
-	m_wApply = glade_xml_get_widget(xml,"btApply");
-	m_wClose = glade_xml_get_widget(xml,"btClose");
+	m_windowMain   = glade_xml_get_widget(xml, "ap_UnixDialog_FormatTOC");
+	m_wApply = glade_xml_get_widget(xml,"wApply");
+	m_wClose = glade_xml_get_widget(xml,"wClose");
 
 	// set the dialog title
-	abiDialogSetTitle(m_windowMain, pSS->getValueUTF8(AP_STRING_ID_DLG_Stylist_Title).utf8_str());
-	
+	abiDialogSetTitle(m_windowMain, pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTOC_Title).utf8_str());
+
+// Heading settings
+
+	localizeLabelMarkup(glade_xml_get_widget(xml, "lbHeading"), pSS, AP_STRING_ID_DLG_FormatTOC_Heading);
+	localizeLabel(glade_xml_get_widget(xml, "lbHeadingText"), pSS, AP_STRING_ID_DLG_FormatTOC_HeadingText);
+	localizeLabel(glade_xml_get_widget(xml, "lbHeadingStyle"), pSS, AP_STRING_ID_DLG_FormatTOC_HeadingStyle);
+	localizeButton(glade_xml_get_widget(xml, "wHaveHeading"), pSS, AP_STRING_ID_DLG_FormatTOC_HaveHeading);
+	localizeButton(glade_xml_get_widget(xml, "wChangeHeadingstyle"), pSS, AP_STRING_ID_DLG_FormatTOC_ChangeStyle);
+
+// Level 1 Settings
+
+	localizeLabelMarkup(glade_xml_get_widget(xml, "lbLevel1Defs"), pSS, AP_STRING_ID_DLG_FormatTOC_Level1Defs);
+	localizeLabel(glade_xml_get_widget(xml, "lbHaveLabel1"), pSS, AP_STRING_ID_DLG_FormatTOC_HaveLabel);
+	localizeLabel(glade_xml_get_widget(xml, "lbFillStyle1"), pSS, AP_STRING_ID_DLG_FormatTOC_FillStyle);
+	localizeLabel(glade_xml_get_widget(xml, "lbDispStyle1"), pSS, AP_STRING_ID_DLG_FormatTOC_DispStyle);
+	localizeLabel(glade_xml_get_widget(xml, "lbTabLeader1"), pSS, AP_STRING_ID_DLG_FormatTOC_TabLeader);
+	localizeLabel(glade_xml_get_widget(xml, "lbIndent1"), pSS, AP_STRING_ID_DLG_FormatTOC_Indent);
+	localizeButton(glade_xml_get_widget(xml, "wHaveLabel1"), pSS, AP_STRING_ID_DLG_FormatTOC_HaveLabel);	
+	localizeButton(glade_xml_get_widget(xml, "wChangeFill1"), pSS, AP_STRING_ID_DLG_FormatTOC_ChangeStyle);
+	localizeButton(glade_xml_get_widget(xml, "wChangeDisp1"), pSS, AP_STRING_ID_DLG_FormatTOC_ChangeStyle);
+
+
+// Level 2 Settings
+
+	localizeLabelMarkup(glade_xml_get_widget(xml, "lbLevel2Defs"), pSS, AP_STRING_ID_DLG_FormatTOC_Level2Defs);
+	localizeLabel(glade_xml_get_widget(xml, "lbHaveLabel2"), pSS, AP_STRING_ID_DLG_FormatTOC_HaveLabel);
+	localizeLabel(glade_xml_get_widget(xml, "lbFillStyle2"), pSS, AP_STRING_ID_DLG_FormatTOC_FillStyle);
+	localizeLabel(glade_xml_get_widget(xml, "lbDispStyle2"), pSS, AP_STRING_ID_DLG_FormatTOC_DispStyle);
+	localizeLabel(glade_xml_get_widget(xml, "lbTabLeader2"), pSS, AP_STRING_ID_DLG_FormatTOC_TabLeader);
+	localizeLabel(glade_xml_get_widget(xml, "lbIndent2"), pSS, AP_STRING_ID_DLG_FormatTOC_Indent);
+	localizeButton(glade_xml_get_widget(xml, "wHaveLabel2"), pSS, AP_STRING_ID_DLG_FormatTOC_HaveLabel);	
+	localizeButton(glade_xml_get_widget(xml, "wChangeFill2"), pSS, AP_STRING_ID_DLG_FormatTOC_ChangeStyle);
+	localizeButton(glade_xml_get_widget(xml, "wChangeDisp2"), pSS, AP_STRING_ID_DLG_FormatTOC_ChangeStyle);
+
+
+
+// Level 3 Settings
+
+	localizeLabelMarkup(glade_xml_get_widget(xml, "lbLevel3Defs"), pSS, AP_STRING_ID_DLG_FormatTOC_Level3Defs);
+	localizeLabel(glade_xml_get_widget(xml, "lbHaveLabel3"), pSS, AP_STRING_ID_DLG_FormatTOC_HaveLabel);
+	localizeLabel(glade_xml_get_widget(xml, "lbFillStyle3"), pSS, AP_STRING_ID_DLG_FormatTOC_FillStyle);
+	localizeLabel(glade_xml_get_widget(xml, "lbDispStyle3"), pSS, AP_STRING_ID_DLG_FormatTOC_DispStyle);
+	localizeLabel(glade_xml_get_widget(xml, "lbTabLeader3"), pSS, AP_STRING_ID_DLG_FormatTOC_TabLeader);
+	localizeLabel(glade_xml_get_widget(xml, "lbIndent3"), pSS, AP_STRING_ID_DLG_FormatTOC_Indent);
+	localizeButton(glade_xml_get_widget(xml, "wHaveLabel3"), pSS, AP_STRING_ID_DLG_FormatTOC_HaveLabel);	
+	localizeButton(glade_xml_get_widget(xml, "wChangeFill3"), pSS, AP_STRING_ID_DLG_FormatTOC_ChangeStyle);
+	localizeButton(glade_xml_get_widget(xml, "wChangeDisp3"), pSS, AP_STRING_ID_DLG_FormatTOC_ChangeStyle);
+
+
+
+// Level 4 Settings
+
+	localizeLabelMarkup(glade_xml_get_widget(xml, "lbLevel4Defs"), pSS, AP_STRING_ID_DLG_FormatTOC_Level4Defs);
+	localizeLabel(glade_xml_get_widget(xml, "lbHaveLabel4"), pSS, AP_STRING_ID_DLG_FormatTOC_HaveLabel);
+	localizeLabel(glade_xml_get_widget(xml, "lbFillStyle4"), pSS, AP_STRING_ID_DLG_FormatTOC_FillStyle);
+	localizeLabel(glade_xml_get_widget(xml, "lbDispStyle4"), pSS, AP_STRING_ID_DLG_FormatTOC_DispStyle);
+	localizeLabel(glade_xml_get_widget(xml, "lbTabLeader4"), pSS, AP_STRING_ID_DLG_FormatTOC_TabLeader);
+	localizeLabel(glade_xml_get_widget(xml, "lbIndent4"), pSS, AP_STRING_ID_DLG_FormatTOC_Indent);
+	localizeButton(glade_xml_get_widget(xml, "wHaveLabel4"), pSS, AP_STRING_ID_DLG_FormatTOC_HaveLabel);	
+	localizeButton(glade_xml_get_widget(xml, "wChangeFill4"), pSS, AP_STRING_ID_DLG_FormatTOC_ChangeStyle);
+	localizeButton(glade_xml_get_widget(xml, "wChangeDisp4"), pSS, AP_STRING_ID_DLG_FormatTOC_ChangeStyle);
+
 	return m_windowMain;
 }
 
-void  AP_UnixDialog_Stylist::event_Apply(void)
+void  AP_UnixDialog_FormatTOC::event_Apply(void)
 {
 	Apply();
 }
@@ -240,111 +207,17 @@ void  AP_UnixDialog_Stylist::event_Apply(void)
 /*!
  * Fill the GUI tree with the styles as defined in the XP tree.
  */
-void  AP_UnixDialog_Stylist::_fillTree(void)
+void  AP_UnixDialog_FormatTOC::_fillGUI(void)
 {
-	Stylist_tree * pStyleTree = getStyleTree();
-	if(pStyleTree == NULL)
-	{
-		updateDialog();
-		pStyleTree = getStyleTree();
-	}
-	if(pStyleTree->getNumRows() == 0)
-	{
-		updateDialog();
-		pStyleTree = getStyleTree();
-	}
-	UT_DEBUGMSG(("Number of rows of styles in document %d \n",pStyleTree->getNumRows()));
-	if(m_wRenderer)
-	{
-//		g_object_unref (G_OBJECT (m_wRenderer));
-		gtk_widget_destroy (m_wStyleList);
-	}
-
-	GtkTreeIter iter;
-	GtkTreeIter child_iter;
-	GtkTreeSelection *sel;
-	UT_sint32 row,col, page;
-
-	m_wModel = gtk_tree_store_new (3, G_TYPE_STRING, G_TYPE_INT, G_TYPE_INT);
-
-	page = 0;
-	UT_UTF8String sTmp(""); 
-	for(row= 0; row < pStyleTree->getNumRows();row++)
-	{
-		gtk_tree_store_append (m_wModel, &iter, NULL);
-		if(!pStyleTree->getNameOfRow(sTmp,row))
-		{
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			break;
-		}
-		if(pStyleTree->getNumCols(row) > 0)
-		{
-			xxx_UT_DEBUGMSG(("Adding Heading %s at row %d \n",sTmp.utf8_str(),row));
-
-			gtk_tree_store_set (m_wModel, &iter, 0, sTmp.utf8_str(), 1, row,2,0, -1);
-			for(col =0 ; col < pStyleTree->getNumCols(row); col++)
-			{
-				gtk_tree_store_append (m_wModel, &child_iter, &iter);
-				if(!pStyleTree->getStyleAtRowCol(sTmp,row,col))
-				{
-					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-					break;
-				}
-				gtk_tree_store_set (m_wModel, &child_iter, 0, sTmp.utf8_str(), 1, row,2,col+1, -1);
-				xxx_UT_DEBUGMSG(("Adding style %s at row %d col %d \n",sTmp.utf8_str(),row,col+1));
-				page++;
-			}
-		}
-		else
-		{
-			xxx_UT_DEBUGMSG(("Adding style %s at row %d \n",sTmp.utf8_str(),row));
-			gtk_tree_store_set (m_wModel, &iter, 0, sTmp.utf8_str(), 1,row,2,0,-1);
-			page++;
-		}
-	}
-
-	// create a new treeview
-	m_wStyleList = gtk_tree_view_new_with_model (GTK_TREE_MODEL (m_wModel));
-	g_object_unref (G_OBJECT (m_wModel));
-	gtk_tree_view_set_rules_hint (GTK_TREE_VIEW (m_wStyleList), true);
-
-	// get the current selection
-	sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (m_wStyleList));
-	gtk_tree_selection_set_mode (sel, GTK_SELECTION_BROWSE);
-	gtk_tree_selection_set_select_function (sel, tree_select_filter,
-														 NULL, NULL);
-	
-	const XAP_StringSet * pSS = m_pApp->getStringSet ();
-	m_wRenderer = gtk_cell_renderer_text_new ();
-
-	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (m_wStyleList),
-												 -1, 
-												 pSS->getValueUTF8(AP_STRING_ID_DLG_Stylist_Styles).utf8_str(),
-												 m_wRenderer, "text", 0, NULL); 	
-
-	gtk_tree_view_collapse_all (GTK_TREE_VIEW (m_wStyleList));
-	gtk_container_add (GTK_CONTAINER (m_wStyleListContainer), m_wStyleList);
-
-	g_signal_connect_after(G_OBJECT(m_wStyleList),
-						   "cursor-changed",
-						   G_CALLBACK(s_types_clicked),
-						   static_cast<gpointer>(this));
-
-	g_signal_connect_after(G_OBJECT(m_wStyleList),
-						   "row-activated",
-						   G_CALLBACK(s_types_dblclicked),
-						   static_cast<gpointer>(this));
-	gtk_widget_show_all(m_wStyleList);
-	setStyleTreeChanged(false);
 }
 
-void  AP_UnixDialog_Stylist::_populateWindowData(void)
+void  AP_UnixDialog_FormatTOC::_populateWindowData(void)
 {
-	_fillTree();
-	setStyleInGUI();
+	_fillGUI();
+	setTOCPropsInGUI();
 }
 
-void  AP_UnixDialog_Stylist::_connectSignals(void)
+void  AP_UnixDialog_FormatTOC::_connectSignals(void)
 {
 	g_signal_connect(G_OBJECT(m_windowMain), "response", 
 					 G_CALLBACK(s_response_triggered), this);

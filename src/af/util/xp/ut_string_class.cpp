@@ -892,6 +892,259 @@ const UT_UTF8String & UT_UTF8String::lowerCase ()
 	return *this;
 }
 
+
+UT_UTF8String  UT_UTF8String::substr(size_t iStart, size_t nChars) const
+{
+	const size_t nSize = pimpl->utf8Length ();
+
+	if (iStart >= nSize || !nChars) {
+		return UT_UTF8String();
+	}
+
+	const char* p = pimpl->data() + iStart;
+	if (iStart + nChars > nSize) {
+		nChars = nSize - iStart;
+	}
+
+	return UT_UTF8String(p, nChars);
+
+}
+
+///////////////////////////////////////////////////////////////////////////
+//
+// Martin's property string functions for UT_UTF8Strings.....
+//
+///////////////////////////////////////////////////////////////////////////
+
+/*!
+ * Assuming a string of standard abiword properties eg. "fred:nerk; table-width:1.0in; table-height:10.in"
+ * Return the value of the property sProp or NULL if it is not present.
+ * This UT_UTF8String * should be deleted by the calling programming after it is finished with it.
+ */
+UT_UTF8String UT_UTF8String_getPropVal(const UT_UTF8String & sPropertyString, const UT_UTF8String & sProp)
+{
+	UT_UTF8String sWork(sProp);
+	sWork += ":";
+
+	const char * szWork = sWork.utf8_str();
+	const char * szProps = sPropertyString.utf8_str();
+	const char * szLoc = strstr(szProps,szWork);
+	if(szLoc == NULL)
+	{
+		return UT_UTF8String();
+	}
+//
+// Look if this is the last property in the string.
+//
+	const char * szDelim = strchr(szLoc,';');
+	if(szDelim == NULL)
+	{
+//
+// Remove trailing spaces
+//
+		UT_sint32 iSLen = strlen(szProps);
+		while(iSLen > 0 && szProps[iSLen-1] == ' ')
+		{
+			iSLen--;
+		}
+//
+// Calculate the location of the substring
+//
+		UT_sint32 offset = static_cast<UT_sint32>(reinterpret_cast<size_t>(szLoc) - reinterpret_cast<size_t>(szProps));
+		offset += strlen(szWork);
+		return UT_UTF8String(sPropertyString.substr(offset,(iSLen - offset)));
+	}
+	else
+	{
+		szDelim = strchr(szLoc,';');
+		if(szDelim == NULL)
+		{
+//
+// bad property string
+//
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			return UT_UTF8String();
+		}
+//
+// Remove trailing spaces.
+//
+		while(*szDelim == ';' || *szDelim == ' ')
+		{
+			szDelim--;
+		}
+//
+// Calculate the location of the substring
+//
+		UT_sint32 offset = static_cast<UT_sint32>(reinterpret_cast<size_t>(szLoc) - reinterpret_cast<size_t>(szProps));
+		offset += strlen(szWork);
+		UT_sint32 iLen = static_cast<UT_sint32>(reinterpret_cast<size_t>(szDelim) - reinterpret_cast<size_t>(szProps)) + 1;
+		return UT_UTF8String(sPropertyString.substr(offset,(iLen - offset)));
+	}
+}
+/*!
+ * Assuming a string of standard abiword properties eg. "fred:nerk; table-width:1.0in; table-height:10.in"
+ * Add aother propety string, updating previously defined properties with
+ * values in the new string.
+ */
+void UT_UTF8String_addPropertyString(UT_UTF8String & sPropertyString, const UT_UTF8String & sNewProp)
+{
+	UT_sint32 iSize = static_cast<UT_sint32>(sNewProp.size());
+	UT_sint32 iBase  =0;
+	UT_UTF8String sProp;
+	UT_UTF8String sVal;
+	UT_UTF8String sSubStr;
+	const char * szWork = NULL;
+	const char * szLoc = NULL;
+	while(iBase < iSize)
+	{
+		bool bBreakAtEnd = false;
+		sSubStr = sNewProp.substr(iBase, iSize-iBase);
+		szWork = sSubStr.utf8_str();
+		szLoc = strstr(szWork,":");
+		if(szLoc)
+		{
+			sProp = sNewProp.substr(iBase,szLoc - szWork);
+		}
+		else
+		{
+			break;
+		}
+		iBase += szLoc-szWork+1;
+		sSubStr = sNewProp.substr(iBase, iSize-iBase);
+		szWork = sSubStr.utf8_str();
+		szLoc = strstr(szWork,";");
+		if(szLoc)
+		{
+			sVal = sNewProp.substr(iBase,szLoc - szWork);
+			iBase += szLoc-szWork+1;
+		}
+		else
+		{
+			sVal = sNewProp.substr(iBase,iSize-iBase);
+			bBreakAtEnd = true;
+		}
+		if((sProp.size()>0) && (sVal.size() >0))
+		{
+			UT_UTF8String_setProperty(sPropertyString,sProp,sVal);
+		}
+		else
+		{
+			break;
+		}
+		if(bBreakAtEnd)
+		{
+			break;
+		}
+	}
+}
+
+/*!
+ * Assuming a string of standard abiword properties eg. "fred:nerk; table-width:1.0in; table-height:10.in"
+ * Add the property sProp with value sVal to the string of properties. If the property is already present, replace the 
+ * old value with the new value.
+ */
+void UT_UTF8String_setProperty(UT_UTF8String & sPropertyString, const UT_UTF8String & sProp, const UT_UTF8String & sVal)
+{
+//
+// Remove the old value if it exists and tack the new property on the end.
+//
+	UT_UTF8String_removeProperty(sPropertyString, sProp);
+	if(sPropertyString.size() > 0)
+	{
+		sPropertyString += "; ";
+	}
+	sPropertyString += sProp;
+	sPropertyString += ":";
+	sPropertyString += sVal;
+}
+
+/*!
+ * Assuming a string of standard abiword properties eg. "fred:nerk; table-width:1.0in; table-height:10.in"
+ * Remove the property sProp and it's value from the string of properties. 
+ */
+void UT_UTF8String_removeProperty(UT_UTF8String & sPropertyString, const UT_UTF8String & sProp)
+{
+	UT_UTF8String sWork ( sProp );
+	sWork += ":";
+	const char * szWork = sWork.utf8_str();
+	const char * szProps = sPropertyString.utf8_str();
+	const char * szLoc = strstr(szProps,szWork);
+	if(szLoc == NULL)
+	{
+//
+// Not here, do nothing
+		return ;
+	}
+//
+// Found it, Get left part.
+//
+	UT_sint32 locLeft = static_cast<UT_sint32>(reinterpret_cast<size_t>(szLoc) - reinterpret_cast<size_t>(szProps));
+	UT_UTF8String sLeft;
+	if(locLeft == 0)
+	{
+		sLeft.clear();
+	}
+	else
+	{
+		sLeft = sPropertyString.substr(0,locLeft);
+	}
+	locLeft = static_cast<UT_sint32>(sLeft.size());
+	if(locLeft > 0)
+	{
+//
+// If this element is the last item in the properties there is no "; ".
+//
+// Remove trailing ';' and ' '
+//
+		locLeft--;
+		const char * szLeft = sLeft.utf8_str();
+		while(locLeft >= 0 && (szLeft[locLeft] == ';' || szLeft[locLeft] == ' '))
+		{
+			locLeft--;
+		}
+	}
+	UT_UTF8String sNew;
+	if(locLeft > 0)
+	{
+		sNew = sLeft.substr(0,locLeft+1);
+	}
+	else
+	{
+		sNew.clear();
+	}
+//
+// Look for ";" to get right part
+//
+	const char * szDelim = strchr(szLoc,';');
+	if(szDelim == NULL)
+	{
+//
+// No properties after this, just assign and return
+//
+		sPropertyString = sNew;
+	}
+	else
+	{
+//
+// Just slice off the properties and tack them onto the pre-existing sNew
+//
+		while(*szDelim == ';' || *szDelim == ' ')
+		{
+			szDelim++;
+		}
+		UT_sint32 offset = static_cast<UT_sint32>(reinterpret_cast<size_t>(szDelim) - reinterpret_cast<size_t>(szProps));
+		UT_sint32 iLen = sPropertyString.size() - offset;
+		if(sNew.size() > 0)
+		{
+			sNew += "; ";
+		}
+		sNew += sPropertyString.substr(offset,iLen);
+		sPropertyString = sNew;
+	}
+}
+
+/////////////////////////////////////////////////////////////////////////////
+
 UT_UCS4String UT_UTF8String::ucs4_str ()
 {
 	UT_UCS4String ucs4string;

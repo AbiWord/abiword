@@ -88,6 +88,7 @@
 #include "ap_Dialog_FormatTable.h"
 #include "ap_Dialog_FormatFrame.h"
 #include "ap_Dialog_FormatFootnotes.h"
+#include "ap_Dialog_FormatTOC.h"
 #include "ap_Dialog_MailMerge.h"
 #include "fv_FrameEdit.h"
 #include "fl_FootnoteLayout.h"
@@ -5195,8 +5196,26 @@ Defun1(formatTOC)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
-	s_TellNotImplemented(pFrame, "Table of Contents dialog", __LINE__);
 
+	pFrame->raise();
+
+	XAP_DialogFactory * pDialogFactory
+		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
+
+	AP_Dialog_FormatTOC * pDialog
+		= static_cast<AP_Dialog_FormatTOC *>(pDialogFactory->requestDialog(AP_DIALOG_ID_FORMAT_TOC));
+	UT_ASSERT(pDialog);
+	if (!pDialog)
+		return false;
+
+	if(pDialog->isRunning() == true)
+	{
+		pDialog->activate();
+	}
+	else
+	{
+		pDialog->runModeless(pFrame);
+	}
 	return true;
 }
 

@@ -24,7 +24,7 @@
 #include "ut_string.h"
 #include "ut_debugmsg.h"
 
-#include "ap_Dialog_Stylist.h"
+#include "ap_Dialog_FormatTOC.h"
 
 #include "xap_App.h"
 #include "xap_Dialog_Id.h"
@@ -44,30 +44,26 @@
 #include "ut_timer.h"
 #include "pd_Document.h"
 
-AP_Dialog_Stylist::AP_Dialog_Stylist(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
+AP_Dialog_FormatTOC::AP_Dialog_FormatTOC(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: XAP_Dialog_Modeless(pDlgFactory,id),
 	  m_pAutoUpdater(0),
 	  m_iTick(0),
-	  m_sCurStyle(""),
-	  m_pStyleTree(NULL),
-	  m_bStyleTreeChanged(true),
-	  m_bStyleChanged(true)
+	  m_sTOCProps("")
 {
 }
 
-AP_Dialog_Stylist::~AP_Dialog_Stylist(void)
+AP_Dialog_FormatTOC::~AP_Dialog_FormatTOC(void)
 {
 	stopUpdater();
-	DELETEP(m_pStyleTree);
 }
 
-void AP_Dialog_Stylist::setActiveFrame(XAP_Frame *pFrame)
+void AP_Dialog_FormatTOC::setActiveFrame(XAP_Frame *pFrame)
 {
 	updateDialog();
 	notifyActiveFrame(getActiveFrame());
 }
 
-void AP_Dialog_Stylist::startUpdater(void)
+void AP_Dialog_FormatTOC::startUpdater(void)
 {
 	m_pAutoUpdater =  UT_Timer::static_constructor(autoUpdate,this, NULL);
 	m_pAutoUpdater->set(500);
@@ -77,17 +73,18 @@ void AP_Dialog_Stylist::startUpdater(void)
 /*!
  * Apply current style to the current selection in the current view
  */
-void AP_Dialog_Stylist::Apply(void)
+void AP_Dialog_FormatTOC::Apply(void)
 {
 	FV_View * pView = static_cast<FV_View *>(getActiveFrame()->getCurrentView());
 	if(pView->getPoint() == 0)
 	{
 		return;
 	}
-	pView->setStyle(getCurStyle()->utf8_str());
+//
+// Fixme do something useful here.
 }
 
-void AP_Dialog_Stylist::stopUpdater(void)
+void AP_Dialog_FormatTOC::stopUpdater(void)
 {
 	if(m_pAutoUpdater == NULL)
 	{
@@ -98,27 +95,17 @@ void AP_Dialog_Stylist::stopUpdater(void)
 	m_pAutoUpdater = NULL;
 }
 
-UT_sint32 AP_Dialog_Stylist::getNumStyles(void) const
-{
-	if(m_pStyleTree == NULL)
-	{
-		return 0;
-	}
-	return m_pStyleTree->getNumStyles();
-}
-
-
 /*!
  * Autoupdater of the dialog.
  */
-void AP_Dialog_Stylist::autoUpdate(UT_Worker * pTimer)
+void AP_Dialog_FormatTOC::autoUpdate(UT_Worker * pTimer)
 {
 
 	UT_ASSERT(pTimer);
 	
 // this is a static callback method and does not have a 'this' pointer
 
-	AP_Dialog_Stylist * pDialog = static_cast<AP_Dialog_Stylist *>(pTimer->getInstanceData());
+	AP_Dialog_FormatTOC * pDialog = static_cast<AP_Dialog_FormatTOC *>(pTimer->getInstanceData());
 	pDialog->updateDialog();
 }
 
@@ -126,7 +113,7 @@ void AP_Dialog_Stylist::autoUpdate(UT_Worker * pTimer)
  * This method actually updates the dialog, in particular the style Tree and 
  * the current style.
  */
-void AP_Dialog_Stylist::updateDialog(void)
+void AP_Dialog_FormatTOC::updateDialog(void)
 {
 	// Handshaking code
 	FV_View * pView = static_cast<FV_View *>(getActiveFrame()->getCurrentView());
@@ -135,39 +122,14 @@ void AP_Dialog_Stylist::updateDialog(void)
 		return;
 	}
 	PD_Document * pDoc = pView->getDocument();
-	if(m_pStyleTree == NULL)
-	{
-		m_pStyleTree = new Stylist_tree(pDoc);
-	}
 	if((m_iTick != pView->getTick()) || (m_pDoc != pDoc))
 	{
 		m_iTick = pView->getTick();
-		if((pDoc != m_pDoc) || (static_cast<UT_sint32>(pDoc->getStyleCount()) != getNumStyles()))
+		if(pDoc != m_pDoc)
 		{
 			m_pDoc = pDoc;
-			m_pStyleTree->buildStyles(pDoc);
-			const char * pszStyle;
-			pView->getStyle(&pszStyle);
-			m_sCurStyle =  pszStyle;
-			m_bStyleTreeChanged =true;
-			setStyleInGUI();
-			return;
-		}
-		const char * pszStyle;
-		pView->getStyle(&pszStyle);
-		UT_UTF8String sCurViewStyle = pszStyle;
-		if((sCurViewStyle.size ()) > 0 && m_sCurStyle.size() == 0)
-		{
-			m_sCurStyle = sCurViewStyle;
-			m_bStyleChanged =true;
-			setStyleInGUI();
-			return;
-		}
-		if(sCurViewStyle != m_sCurStyle)
-		{
-			m_sCurStyle = sCurViewStyle;
-			m_bStyleChanged =true;
-			setStyleInGUI();
+			fillTOCPropsFromDoc();
+			setTOCPropsInGUI();
 			return;
 		}
 	}
@@ -176,382 +138,27 @@ void AP_Dialog_Stylist::updateDialog(void)
 /*!
  * Finalize the dialog.
  */
-void  AP_Dialog_Stylist::finalize(void)
+void  AP_Dialog_FormatTOC::finalize(void)
 {
 	stopUpdater();
 	modeless_cleanup();
 }
 
-///////////////////////////////////////////////////////////////////////////
-/*!
- * This class holds the current style tree and provides a useful interface
- * to the tree for the GUI.
- */
-Stylist_tree::Stylist_tree(PD_Document *pDoc)
+UT_UTF8String AP_Dialog_FormatTOC::getTOCPropVal(UT_UTF8String & sProp)
 {
-	m_vecAllStyles.clear();
-	m_vecStyleRows.clear();
-	buildStyles(pDoc);
+	return UT_UTF8String_getPropVal(m_sTOCProps,sProp);
 }
 
-Stylist_tree::~Stylist_tree(void)
+void AP_Dialog_FormatTOC::setTOCProperty(UT_UTF8String & sProp, UT_UTF8String & sVal)
 {
-	UT_DEBUGMSG(("Deleteing Stylist_tree %x \n",this));
-	UT_VECTOR_PURGEALL(Stylist_row *, m_vecStyleRows);
-}
-
-/*!
- * This method builds the tree of styles from the Document given.
- */
-void Stylist_tree::buildStyles(PD_Document * pDoc)
-{
-	UT_sint32 numStyles = static_cast<UT_sint32>(pDoc->getStyleCount());
-	UT_sint32 i = 0;
-	m_vecAllStyles.clear();
-	UT_VECTOR_PURGEALL(Stylist_row *, m_vecStyleRows);
-	m_vecStyleRows.clear();
-	UT_Vector vecStyles;
-	const PD_Style * pStyle = NULL;
-	const char * pszStyle = NULL;
-	UT_DEBUGMSG(("In Build styles num styles in doc %d \n",numStyles));
-	for(i=0; i < numStyles; i++)
-	{
-		pDoc->enumStyles(i, &pszStyle, &pStyle);
-		m_vecAllStyles.addItem(static_cast<const void *>(pStyle));
-		vecStyles.addItem(static_cast<const void *>(pStyle));
-	}
-//
-// OK now build the tree of Styles
-//
-// Start with the heading styles.
-//
-	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet ();
-	Stylist_row * pStyleRow = new Stylist_row();
-	UT_UTF8String sTmp = pSS->getValueUTF8(AP_STRING_ID_DLG_Stylist_HeadingStyles);
-	pStyleRow->setRowName(sTmp);
-	m_vecStyleRows.addItem(static_cast<void *>(pStyleRow));
-	for(i=0; i< numStyles; i++)
-	{
-		pStyle = static_cast<PD_Style *>(vecStyles.getNthItem(i));
-		if(isHeading(const_cast<PD_Style *>(pStyle)))
-		{
-			sTmp = pStyle->getName();
-			pStyleRow->addStyle(sTmp);
-			vecStyles.setNthItem(i,NULL,NULL);
-			UT_DEBUGMSG(("Adding heading style %s \n",sTmp.utf8_str()));
-		}
-	}
-//
-// Next the list styles.
-//
-	pStyleRow = new Stylist_row();
-	sTmp = pSS->getValueUTF8(AP_STRING_ID_DLG_Stylist_ListStyles);
-	pStyleRow->setRowName(sTmp);
-	m_vecStyleRows.addItem(static_cast<void *>(pStyleRow));
-	for(i=0; i< numStyles; i++)
-	{
-		pStyle = static_cast<PD_Style *>(vecStyles.getNthItem(i));
-		if(pStyle && isList(const_cast<PD_Style *>(pStyle)))
-		{
-			sTmp = pStyle->getName();
-			pStyleRow->addStyle(sTmp);
-			vecStyles.setNthItem(i,NULL,NULL);
-			UT_DEBUGMSG(("Adding List style %s \n",sTmp.utf8_str()));
-		}
-	}
-//
-// Now the Footnote/Endnote.
-//
-	pStyleRow = new Stylist_row();
-	sTmp = pSS->getValueUTF8(AP_STRING_ID_DLG_Stylist_FootnoteStyles);
-	pStyleRow->setRowName(sTmp);
-	m_vecStyleRows.addItem(static_cast<void *>(pStyleRow));
-	for(i=0; i< numStyles; i++)
-	{
-		pStyle = static_cast<PD_Style *>(vecStyles.getNthItem(i));
-		if(pStyle && isFootnote(const_cast<PD_Style *>(pStyle)))
-		{
-			sTmp = pStyle->getName();
-			pStyleRow->addStyle(sTmp);
-			vecStyles.setNthItem(i,NULL,NULL);
-			UT_DEBUGMSG(("Adding Footnote style %s \n",sTmp.utf8_str()));
-		}
-	}
-//
-// Now the user-defined
-//
-	pStyleRow = new Stylist_row();
-	sTmp = pSS->getValueUTF8(AP_STRING_ID_DLG_Stylist_UserStyles);
-	pStyleRow->setRowName(sTmp);
-	UT_sint32 iCount = 0;
-	for(i=0; i< numStyles; i++)
-	{
-		pStyle = static_cast<PD_Style *>(vecStyles.getNthItem(i));
-		if(pStyle && isUser(const_cast<PD_Style *>(pStyle)))
-		{
-			sTmp = pStyle->getName();
-			pStyleRow->addStyle(sTmp);
-			vecStyles.setNthItem(i,NULL,NULL);
-			iCount++;
-			UT_DEBUGMSG(("Adding User-defined style %s \n",sTmp.utf8_str()));
-		}
-	}
-	if(iCount > 0)
-	{
-		m_vecStyleRows.addItem(static_cast<void *>(pStyleRow));
-	}
-	else
-	{
-		DELETEP(pStyleRow);
-	}
-//
-// Now everything else
-//
-	sTmp = pSS->getValueUTF8(AP_STRING_ID_DLG_Stylist_MiscStyles);
-	pStyleRow = new Stylist_row();
-	pStyleRow->setRowName(sTmp);
-	m_vecStyleRows.addItem(static_cast<void *>(pStyleRow));
-	for(i=0; i< numStyles; i++)
-	{
-		pStyle = static_cast<PD_Style *>(vecStyles.getNthItem(i));
-		if(pStyle)
-		{
-			sTmp = pStyle->getName();
-			pStyleRow->addStyle(sTmp);
-			vecStyles.setNthItem(i,NULL,NULL);
-			UT_DEBUGMSG(("Adding style %s \n",sTmp.utf8_str()));
-		}
-	}
-}
-
-/*!
- * Returns true if the style is withinthe "Heading" type of styles.
- */
-bool Stylist_tree::isHeading(PD_Style * pStyle, UT_sint32 iDepth)
-{
-	if(pStyle == NULL)
-	{
-		return false;
-	}
-	if(strstr(pStyle->getName(),"Heading") != 0)
-	{
-		return true;
-	}
-	PD_Style * pUpStyle = pStyle->getBasedOn();
-	if(pUpStyle != NULL && iDepth > 0)
-	{
-		return isHeading(pUpStyle,iDepth-1);
-	}
-	return false;
+	UT_UTF8String_setProperty(m_sTOCProps,sProp,sVal);
 }
 
 
-/*!
- * Returns true if the style is withinthe "List" type of styles.
- */
-bool Stylist_tree::isList(PD_Style * pStyle, UT_sint32 iDepth)
+void AP_Dialog_FormatTOC::fillTOCPropsFromDoc(void)
 {
-	if(pStyle == NULL)
-	{
-		return false;
-	}
-	if(strstr(pStyle->getName(),"List") != 0)
-	{
-		return true;
-	}
-	PD_Style * pUpStyle = pStyle->getBasedOn();
-	if(pUpStyle != NULL && iDepth > 0)
-	{
-		return isList(pUpStyle,iDepth-1);
-	}
-	return false;
 }
 
-
-/*!
- * Returns true if the style is withinthe "Footnote/Endnote" type of styles.
- */
-bool Stylist_tree::isFootnote(PD_Style * pStyle, UT_sint32 iDepth)
+void AP_Dialog_FormatTOC::applyTOCPropsToDoc(void)
 {
-	if(pStyle == NULL)
-	{
-		return false;
-	}
-	if((strstr(pStyle->getName(),"Footnote") != 0) || (strstr(pStyle->getName(),"Endnote") != 0)) 
-	{
-		return true;
-	}
-	PD_Style * pUpStyle = pStyle->getBasedOn();
-	if(pUpStyle != NULL && iDepth > 0)
-	{
-		return isFootnote(pUpStyle,iDepth-1);
-	}
-	return false;
 }
-
-/*!
- * Returns true if the style is a userdefined style.
- */
-bool Stylist_tree::isUser(PD_Style * pStyle)
-{
-	if(pStyle == NULL)
-	{
-		return false;
-	}
-	return pStyle->isUserDefined();
-}
-
-/*!
- * Return the number of rows in the tree.
- */
-UT_sint32 Stylist_tree::getNumRows(void)
-{
-	return static_cast<UT_sint32>(m_vecStyleRows.getItemCount());
-}
-
-
-/*!
- * Return the row and column address of the style given. If not found return 
- * false.
- */
-bool Stylist_tree::findStyle(UT_UTF8String & sStyleName,UT_sint32 & row, UT_sint32 & col)
-{
-	UT_sint32 i =0;
-	UT_sint32 numRows = getNumRows();
-	bool bFound = false;
-	for(i=0; (i<numRows) && !bFound;i++)
-	{
-		Stylist_row * pStyleRow = static_cast<Stylist_row *>(m_vecStyleRows.getNthItem(i));
-		bFound = pStyleRow->findStyle(sStyleName,col);
-		if(bFound)
-		{
-			row = i;
-			return true;
-		}
-	}
-	row = -1;
-	col = -1;
-	return false;
-}
-
-
-/*!
- * Return the style at the row and column given. If the (row,col) address is
- * valid, return false.
- */
-bool  Stylist_tree::getStyleAtRowCol(UT_UTF8String & sStyle,UT_sint32 row, UT_sint32 col)
-{
-	if(row > getNumRows() || (row < 0))
-	{
-		return false;
-	}
-	Stylist_row * pStyleRow = static_cast<Stylist_row *>(m_vecStyleRows.getNthItem(row));
-	bool bFound = pStyleRow->getStyle(sStyle,col);
-	return bFound;
-}
-
-/*!
- * return the number of columns at the row given.
- * If the row is invalid return 0.  
- */
-UT_sint32 Stylist_tree::getNumCols(UT_sint32 row)
-{
-	if(row > getNumRows() || (row < 0))
-	{
-		return 0;
-	}
-	Stylist_row * pStyleRow = static_cast<Stylist_row *>(m_vecStyleRows.getNthItem(row));
-	return pStyleRow->getNumCols();
-}
-
-/*!
- * Return the total number of styles in the tree.
- */
-UT_sint32 Stylist_tree::getNumStyles(void) const
-{
-	return static_cast<UT_sint32>(m_vecAllStyles.getItemCount());
-}
-
-/*!
- * return the name of the row given. If the row is invalid return false;
- */
-bool Stylist_tree::getNameOfRow(UT_UTF8String &sName, UT_sint32 row)
-{
-	if(row > getNumRows() || (row<0) )
-	{
-		return false;
-	}
-	Stylist_row * pStyleRow = static_cast<Stylist_row *>(m_vecStyleRows.getNthItem(row));
-	pStyleRow->getRowName(sName);
-	return true;
-}
-
-//////////////////////////////////////////////////////////////////////////
-/*!
- * This class holds a row of style names and a useful API to access them.
- */
-Stylist_row::Stylist_row(void):
-	m_sRowName("")
-{
-	m_vecStyles.clear();
-	UT_DEBUGMSG(("Creating Stylist_row %x \n",this));
-}
-
-Stylist_row::~Stylist_row(void)
-{
-	UT_DEBUGMSG(("Deleteing Stylist_row %x num styles %d\n",this,m_vecStyles.getItemCount()));
-	UT_VECTOR_PURGEALL(UT_UTF8String *, m_vecStyles);
-}
-
-void Stylist_row::addStyle(UT_UTF8String & sStyle)
-{
-	UT_UTF8String * psStyle = new UT_UTF8String(sStyle);
-	m_vecStyles.addItem(static_cast<void *>(psStyle));
-}
-
-void Stylist_row::setRowName(UT_UTF8String & sRowName)
-{
-	m_sRowName = sRowName;
-}
-
-void Stylist_row::getRowName(UT_UTF8String & sRowName)
-{
-	sRowName = m_sRowName;
-}
-
-UT_sint32 Stylist_row::getNumCols(void)
-{
-	return static_cast<UT_sint32>(m_vecStyles.getItemCount());
-}
-
-bool Stylist_row::findStyle(UT_UTF8String & sStyleName, UT_sint32 & col)
-{
-	UT_sint32 i = 0;
-	UT_sint32 numCols = getNumCols();
-	bool bFound = false;
-	for(i=0; (i<numCols) && !bFound;i++)
-	{
-		UT_UTF8String * psStyle = static_cast<UT_UTF8String *>(m_vecStyles.getNthItem(i));
-		if(*psStyle == sStyleName)
-		{
-			col = i;
-			bFound = true;
-			return bFound;
-		}
-	}
-	col = -1;
-	return false;
-}
-
-
-bool Stylist_row::getStyle(UT_UTF8String & sStyleName, UT_sint32 col)
-{
-	if((col > getNumCols()) || (col < 0))
-	{
-		return false;
-	}
-	UT_UTF8String * psStyle = static_cast<UT_UTF8String *>(m_vecStyles.getNthItem(col));
-	sStyleName = *psStyle;
-	return true;
-}
-

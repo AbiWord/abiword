@@ -1,6 +1,5 @@
 /* AbiWord
- * Copyright (C) 2003 Dom Lachowicz
- * Copyright (C) 2004 Martin Sevior
+ * Copyright (C) 2000 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,41 +17,29 @@
  * 02111-1307, USA.
  */
 
-#ifndef AP_UNIXDIALOG_FORMATTOC_H
-#define AP_UNIXDIALOG_FORMATOC_H
+#ifndef AP_COCOADIALOG_FORMATTOC_H
+#define AP_COCOADIALOG_FORMATTOC_H
 
 #include "ap_Dialog_FormatTOC.h"
 
-class XAP_UnixFrame;
+class XAP_CocoaFrame;
 
 /*****************************************************************/
 
-class AP_UnixDialog_FormatTOC: public AP_Dialog_FormatTOC
+class AP_CocoaDialog_FormatTOC: public AP_Dialog_FormatTOC
 {
 public:
-	AP_UnixDialog_FormatTOC(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
-	virtual ~AP_UnixDialog_FormatTOC(void);
-
+	AP_CocoaDialog_FormatTOC(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
+	virtual ~AP_CocoaDialog_FormatTOC(void);
 	virtual void			runModeless(XAP_Frame * pFrame);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
-
-	// callbacks can fire these events
-	void			event_Close(void);
-	void            event_Apply(void);
-	virtual void            destroy(void);
-	virtual void            activate(void);
 	virtual void            notifyActiveFrame(XAP_Frame * pFrame);
 	virtual void            setTOCPropsInGUI(void);
-private:
-	GtkWidget *		_constructWindow(void);
-	void			_populateWindowData(void);
-	void            _connectSignals(void);
-	void            _fillGUI(void);
+	virtual void            destroy(void);
+	virtual void            activate(void);	
+protected:
 
-	GtkWidget * m_windowMain;
-	GtkWidget * m_wApply;
-	GtkWidget * m_wClose;
 };
 
-#endif /* AP_UNIXDIALOG_FORMATOC_H */
+#endif /* AP_COCOADIALOG_FORMATOC_H */

@@ -36,6 +36,7 @@ libWpAp_cocoa_a_SOURCES=\
 	ap_CocoaDialog_Field.mm	\
 	ap_CocoaDialog_FormatFrame.mm	\
 	ap_CocoaDialog_FormatFootnotes.mm	\
+	ap_CocoaDialog_FormatTOC.mm	\
 	ap_CocoaDialog_FormatTable.mm	\
 	ap_CocoaDialog_Goto.mm	\
 	ap_CocoaDialog_HdrFtr.mm	\

@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 2003 Dom Lachowicz
+ * Copyright (C) 2004 Martin Sevior
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,8 +17,8 @@
  * 02111-1307, USA.
  */
 
-#ifndef AP_DIALOG_STYLIST_H
-#define AP_DIALOG_STYLIST_H
+#ifndef AP_DIALOG_FORMATTOC_H
+#define AP_DIALOG_FORMATTOC_H
 
 #include "ut_types.h"
 #include "xap_Frame.h"
@@ -32,49 +32,11 @@ class XAP_Frame;
 class PD_Document;
 class PD_Style;
 
-class Stylist_row
+class AP_Dialog_FormatTOC : public XAP_Dialog_Modeless
 {
 public:
-	Stylist_row(void);
-	virtual ~Stylist_row(void);
-	void       addStyle(UT_UTF8String & sStyle);
-	void       setRowName(UT_UTF8String & sRowname);
-	void       getRowName(UT_UTF8String & sRowname);
-	UT_sint32  getNumCols(void);
-	bool       findStyle(UT_UTF8String & sStyleName, UT_sint32 & col);
-	bool       getStyle(UT_UTF8String & sStyleName, UT_sint32 col);
-private:
-	UT_Vector      m_vecStyles;
-	UT_UTF8String  m_sRowName;
-};
-
-class Stylist_tree
-{
-public:
-	Stylist_tree(PD_Document * pDoc);
-	virtual ~Stylist_tree(void);
-	bool             findStyle(UT_UTF8String & sStyleName,UT_sint32 & row, UT_sint32 & col);
-	bool             getStyleAtRowCol(UT_UTF8String & sStyle, UT_sint32 row, UT_sint32 col);
-	UT_sint32        getNumRows(void);
-	UT_sint32        getNumCols(UT_sint32 row);
-	void             buildStyles(PD_Document * pDoc);
-	UT_sint32        getNumStyles(void) const;
-	bool             getNameOfRow(UT_UTF8String &sName, UT_sint32 row);
-	bool             isHeading(PD_Style * pStyle, UT_sint32 iDepth=10);
-	bool             isList(PD_Style * pStyle, UT_sint32 iDepth=10);
-	bool             isFootnote(PD_Style * pStyle,UT_sint32 iDepth=10);
-	bool             isUser(PD_Style *pStyle);
-private:
-	UT_Vector    m_vecAllStyles;
-	UT_Vector    m_vecStyleRows;
-};
-		
-
-class AP_Dialog_Stylist : public XAP_Dialog_Modeless
-{
-public:
-	AP_Dialog_Stylist(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
-	virtual ~AP_Dialog_Stylist(void);
+	AP_Dialog_FormatTOC(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
+	virtual ~AP_Dialog_FormatTOC(void);
 
 	virtual void runModeless(XAP_Frame * pFrame) = 0;
 
@@ -83,34 +45,20 @@ public:
     void              setActiveFrame(XAP_Frame *pFrame);
 	void              event_update(void);
 	void              finalize(void);
-	Stylist_tree *  getStyleTree(void) const
-		{ return m_pStyleTree;}
-	const UT_UTF8String *   getCurStyle(void) const
-		{ return &m_sCurStyle;}
-	void              setCurStyle(UT_UTF8String & sStyle)
-		{ m_sCurStyle = sStyle;}
 	void              Apply(void);
-	virtual void      setStyleInGUI(void) = 0;       
+	virtual void      setTOCPropsInGUI(void) = 0;       
 	static void       autoUpdate(UT_Worker * pTimer);
 	void              updateDialog(void);
-	bool              isStyleChanged(void) const
-		{ return m_bStyleChanged;}
-	bool              isStyleTreeChanged(void) const
-		{ return m_bStyleTreeChanged;}
-	UT_sint32         getNumStyles(void) const;
-	void              setStyleTreeChanged(bool b)
-		{ m_bStyleTreeChanged = b;}
-	void              setStyleChanged(bool b)
-		{ m_bStyleChanged = b;}
- 
+	void              setTOCProperty(UT_UTF8String & sProp, UT_UTF8String & sVal);
+	void              fillTOCPropsFromDoc(void);
+	void              applyTOCPropsToDoc(void);
+    UT_UTF8String     getTOCPropVal(UT_UTF8String & sProp);
+
 private:
 	PD_Document *         m_pDoc;
 	UT_Timer *            m_pAutoUpdater;
 	UT_uint32             m_iTick;
-	UT_UTF8String         m_sCurStyle;
-	Stylist_tree *        m_pStyleTree;
-	bool                  m_bStyleTreeChanged;
-	bool                  m_bStyleChanged;
+	UT_UTF8String         m_sTOCProps;
 };
 
-#endif /* AP_DIALOG_STYLIST_H */
+#endif /* AP_DIALOG_FORMATTOC_H */

@@ -79,6 +79,7 @@
 #include "ap_QNXDialog_FormatTable.h"
 #include "ap_QNXDialog_FormatFrame.h"
 #include "ap_QNXDialog_FormatFootnotes.h"
+#include "ap_QNXDialog_FormatTOC.h"
 	// ... add new dialogs here ...
 
 #else
@@ -136,6 +137,7 @@
 	DeclareDialog(AP_DIALOG_ID_FORMAT_TABLE,	AP_QNXDialog_FormatTable)
 	DeclareDialog(AP_DIALOG_ID_FORMAT_FRAME,	AP_QNXDialog_FormatFrame)
 	DeclareDialog(AP_DIALOG_ID_FORMAT_FOOTNOTES,	AP_QNXDialog_FormatFootnotes)
+	DeclareDialog(AP_DIALOG_ID_FORMAT_TOC,	AP_QNXDialog_FormatTOC)
 #if 0
 	DeclareDialog(AP_DIALOG_ID_DOWNLOAD_FILE,	AP_QNXDialog_Download_File)
 #endif

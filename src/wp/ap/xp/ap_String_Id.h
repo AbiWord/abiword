@@ -155,6 +155,24 @@ dcl(DLG_FormatFootnotes_EndPlaceEndSec,    "Place at end of section")
 dcl(DLG_FormatFootnotes_EndPlacement,      "Placement")
 dcl(DLG_FormatFootnotes_FootnoteRestart,   "Numbering")
 
+/* Format TOC dialog */
+dcl(DLG_FormatTOC_Title,                  "Format Table of Contents")
+dcl(DLG_FormatTOC_Heading,                "Define Heading")
+dcl(DLG_FormatTOC_HeadingText,                "Heading Text")
+dcl(DLG_FormatTOC_HeadingStyle,                  "Heading Style")
+dcl(DLG_FormatTOC_HaveHeading,            "Have Heading")
+dcl(DLG_FormatTOC_ChangeStyle,            "Change Style")
+dcl(DLG_FormatTOC_Level1Defs,             "Define Level 1 Properties")
+dcl(DLG_FormatTOC_HaveLabel,              "Have Label")
+dcl(DLG_FormatTOC_FillStyle,              "Fill with Style")
+dcl(DLG_FormatTOC_DispStyle,              "Display with Style")
+dcl(DLG_FormatTOC_TabLeader,              "Tab Leader")
+dcl(DLG_FormatTOC_Indent,                 "Indent")
+dcl(DLG_FormatTOC_PageNumber,             "Page Number")
+dcl(DLG_FormatTOC_Level2Defs,             "Define Level 2 Properties")
+dcl(DLG_FormatTOC_Level3Defs,             "Define Level 3 Properties")
+dcl(DLG_FormatTOC_Level4Defs,             "Define Level 4 Properties")
+
 
 /* Word Count dialog */
 dcl(DLG_WordCount_WordCountTitle,	"Word Count")

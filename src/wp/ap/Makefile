@@ -50,6 +50,7 @@ PLATFORM_OBJS=	$(OBJDIR)/ap_$(ABI_FE)App.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_Tab.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_InsertBookmark.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_FormatFootnotes.$(OBJ_SUFFIX)	\
+		$(OBJDIR)/ap_$(ABI_FE)Dialog_FormatTOC.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_InsertHyperlink.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_MarkRevisions.$(OBJ_SUFFIX)\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_ListRevisions.$(OBJ_SUFFIX)\
@@ -122,6 +123,7 @@ PLATFORM_OBJS+=	$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)App.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_HdrFtr.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_InsertBookmark.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_FormatFootnotes.$(OBJ_SUFFIX)	\
+		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_FormatTOC.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_InsertHyperlink.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Options.$(OBJ_SUFFIX) \
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_MetaData.$(OBJ_SUFFIX) \
@@ -165,6 +167,7 @@ OBJS=		$(PLATFORM_OBJS)				\
 		$(OBJDIR)/ap_Dialog_Tab.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_Dialog_InsertBookmark.$(OBJ_SUFFIX)\
 		$(OBJDIR)/ap_Dialog_FormatFootnotes.$(OBJ_SUFFIX)\
+		$(OBJDIR)/ap_Dialog_FormatTOC.$(OBJ_SUFFIX)\
 		$(OBJDIR)/ap_Dialog_InsertHyperlink.$(OBJ_SUFFIX)\
 		$(OBJDIR)/ap_Dialog_MailMerge.$(OBJ_SUFFIX)\
 		$(OBJDIR)/ap_Dialog_MarkRevisions.$(OBJ_SUFFIX) \

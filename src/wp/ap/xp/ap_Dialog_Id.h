@@ -61,6 +61,7 @@ enum _AP_Dialog_Id
 	AP_DIALOG_ID_FORMAT_TABLE,
 	AP_DIALOG_ID_FORMAT_FRAME,
 	AP_DIALOG_ID_FORMAT_FOOTNOTES,	
+	AP_DIALOG_ID_FORMAT_TOC,	
 	AP_DIALOG_ID_MAILMERGE,
 #if 0
 	AP_DIALOG_ID_DOWNLOAD_FILE,			/* threaded download of a file, with a cancel-button */	

@@ -186,6 +186,8 @@ public:
 	void		clear () const;
 	size_t		byteLength() const;
 
+	UT_UTF8String	substr(size_t iStart, size_t nChars) const;
+
 	UT_UTF8String &	operator=(const char *          rhs);
 	UT_UTF8String &	operator=(const UT_UTF8String & rhs);
 	UT_UTF8String &	operator=(const UT_UCS4String & rhs);
@@ -261,6 +263,20 @@ ABI_EXPORT bool operator!=(const UT_UTF8String& s1, const char * s2);
 ABI_EXPORT UT_UTF8String operator+(const UT_UTF8String & s1, const UT_UTF8String & s2);
 ABI_EXPORT UT_UTF8String UT_UTF8String_sprintf(const char * inFormat, ...);
 ABI_EXPORT UT_UTF8String & UT_UTF8String_sprintf(UT_UTF8String & inStr, const char * inFormat, ...);
+
+
+/***************************************************************************/
+/*!
+ * Some functions to add/subtract and extract UT_String properties from a UT_String of properties.
+ */
+
+ABI_EXPORT UT_UTF8String UT_UTF8String_getPropVal(const UT_UTF8String & sPropertyString, const UT_UTF8String & sProp);
+
+ABI_EXPORT void UT_UTF8String_removeProperty(UT_UTF8String & sPropertyString, const UT_UTF8String & sProp);
+
+ABI_EXPORT void UT_UTF8String_setProperty(UT_UTF8String & sPropertyString, const UT_UTF8String &sProp, const UT_UTF8String & sVal);
+
+ABI_EXPORT void UT_UTF8String_addPropertyString(UT_UTF8String & sPropertyString, const UT_UTF8String & sNewProp);
 
 ////////////////////////////////////////////////////////////////////////
 //
