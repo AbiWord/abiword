@@ -31,13 +31,17 @@
 #include "gr_Caret.h"
 #include "gr_Transform.h"
 #include "gr_CharWidthsCache.h"
+#include "gr_ContextGlyph.h"
 #include "ut_hash.h"
+#include "ut_vector.h"
 
 class UT_RGBColor;
 class XAP_App;
 class XAP_PrefsScheme;
 class XAP_Frame;
 class UT_String;
+class UT_TextIterator;
+
 
 /*!
   GR_Font is a reference to a font.  As it happens, everything about fonts
@@ -117,6 +121,237 @@ class ABI_EXPORT GR_Font
 };
 
 /*
+    Identifies scripts for the shaping engine; the actual values are
+    shaper specific and of no consequence to the xp layer; the only
+    values that are defined are:
+    
+        Undefined - identifies text that requires no special processing.
+        Void      - indicates the record does not represent real item;
+                    only used with the last (dummy) record in GR_Itemization
+ */
+enum GR_ScriptType
+{
+	GRScriptType_Undefined = 0,
+	GRScriptType_Void = 0xffffffff
+};
+
+/*
+   describes itemization of text
+
+   offset is where an item starts
+   type   is GR_ScriptType for the item
+
+   length of item is calculated as difference of offsets between
+   neighbouring items
+
+   there is always to be one dummy item of type GRScriptType_Void
+   after the last item with offset set so as to alow to calculate
+   length of the last valid item
+
+   getItemCount() returns the count of all items, including the dummy
+   GRScriptType_Void item.
+*/
+class GR_Itemization
+{
+  public:
+	GR_Itemization(){};
+	virtual ~GR_Itemization() {};
+
+	UT_uint32     getItemCount() const {return m_vOffsets.getItemCount();}
+	UT_uint32     getNthOffset(UT_uint32 i) const {return m_vOffsets.getNthItem(i);}
+	GR_ScriptType getNthType(UT_uint32 i) const {return (GR_ScriptType)m_vTypes.getNthItem(i);}
+
+	void addItem(UT_uint32 offset, UT_uint32 type)
+	         { m_vOffsets.addItem(offset); m_vTypes.addItem(type);}
+
+	void insertItem(UT_uint32 indx, UT_uint32 offset, UT_uint32 type)
+	         { m_vOffsets.insertItemAt(offset, indx); m_vTypes.insertItemAt(type,indx);}
+	
+	void clear()
+	         {m_vOffsets.clear(); m_vTypes.clear();} 
+	
+  private:
+	UT_NumberVector m_vOffsets;
+	UT_NumberVector m_vTypes;
+};
+
+/*
+   encapsulates output of GR_Graphics::shape() which is passed as
+   input to GR_Graphics::renderChars().
+
+   This is abstract class and suitable functionality is to be provided
+   by platform code.
+
+   Notes on append(), split() and cut()
+   ------------------------------------
+   These functions allow our fp_TextRun to merge with next or to split
+   into two without having to know about various platform dependent
+   chaches that speed up shaping and drawing; append()
+   joins all such chaches, while split() splits them into two. Before
+   spliting, split() must allocate appropriate GR_FERenderInfo into pri.
+
+   cut() attempts to remove a section of length iLen starting at
+   offset without re-shaping the whole buffer; if it succeeds it
+   returns true; if it fails and the chaches need to be re-calculated
+   it return false (it should not carry out the reshaping per se)
+
+   m_iOffset and m_iLength contain offset and length pertinent to the
+   current operation and their state is undefined: the user should
+   always set them if the function to which GR_RenderInfo is passed is
+   going to use them
+*/
+
+// add as required
+enum GRRI_Type {GRRI_XP, GRRI_WIN32, GRRI_UNIX, GRRI_QNX, GRRI_BEOS, GRRI_COCOA};
+
+class GR_RenderInfo
+{
+  public:
+	GR_RenderInfo(GR_ScriptType type)
+		: m_iOffset(0), m_iLength(0), m_eShapingResult(GRSR_Unknown),
+ 		  m_eState(GRSR_Unknown), m_eScriptType(type),
+		  m_pText(NULL), m_iVisDir(FRIBIDI_TYPE_LTR){};
+	
+	virtual ~GR_RenderInfo() {};
+
+	virtual GRRI_Type getType() const = 0;
+	
+	virtual bool append(GR_RenderInfo &ri, bool bReverse = false) = 0;
+	virtual bool split (GR_RenderInfo *&pri, UT_uint32 offset, bool bReverse = false) = 0;
+	virtual bool cut(UT_uint32 offset, UT_uint32 iLen, bool bReverse = false) = 0;
+
+	virtual bool canAppend(GR_RenderInfo &ri) const
+	              {return (m_eScriptType == ri.m_eScriptType);}
+	
+	UT_uint32           m_iOffset;
+	UT_uint32           m_iLength;
+	GRShapingResult     m_eShapingResult;
+	GRShapingResult     m_eState;
+	GR_ScriptType       m_eScriptType;
+	UT_TextIterator *   m_pText;
+	FriBidiCharType     m_iVisDir;
+
+ private:
+	// never to be implemented (constructor always has to set
+	// m_eScriptType to actual value)
+	GR_RenderInfo() {};
+};
+
+/*
+    This is an xp implementation of GR_RenderInfo for use with the
+    built in UT_contextGlyph class.
+*/
+class GR_XPRenderInfo : public GR_RenderInfo
+{
+  public:
+	GR_XPRenderInfo(GR_ScriptType type)
+		:GR_RenderInfo(type), m_pChars(NULL), m_pAdvances(NULL),m_iBufferSize(0){};
+	
+	GR_XPRenderInfo(UT_UCS4Char *pChar,
+				  UT_sint32 * pAdv,
+				  UT_uint32 offset,
+				  UT_uint32 len,
+				  UT_uint32 iBufferSize,
+				  GR_ScriptType type)
+		:GR_RenderInfo(type), m_pChars(pChar), m_pAdvances(pAdv),m_iBufferSize(iBufferSize)
+	         {m_iOffset = offset; m_iLength = len; m_pText = NULL; };
+	
+	virtual ~GR_XPRenderInfo() {delete [] m_pChars; delete [] m_pAdvances;}
+
+	virtual GRRI_Type getType() const {return GRRI_XP;}
+	
+	virtual bool append(GR_RenderInfo &ri, bool bReverse = false);
+	virtual bool split (GR_RenderInfo *&pri, UT_uint32 offset, bool bReverse = false);
+	virtual bool cut(UT_uint32 offset, UT_uint32 iLen, bool bReverse = false);
+
+	UT_UCS4Char *       m_pChars;
+	UT_sint32 *         m_pAdvances;
+	UT_uint32           m_iBufferSize;
+};
+
+
+/*
+   Encapsulates input to GR_Graphics::shape()
+*/
+class GR_ShapingInfo
+{
+  public:
+	GR_ShapingInfo(UT_TextIterator & text, UT_uint32 iLen,
+				   GR_ScriptType type, const char * pLang,
+				   FriBidiCharType iVisDir,
+				   bool (*isGlyphAvailable)(UT_UCS4Char g, void * custom),
+				   void * param, GRShapingResult eShapingRequired)
+		:m_Text(text), m_Type(type), m_iLength(iLen), m_pLang(pLang), m_iVisDir(iVisDir),
+	     m_isGlyphAvailable(isGlyphAvailable), m_param(param),
+		 m_eShapingRequired(eShapingRequired){};
+	
+	virtual ~GR_ShapingInfo() {};
+
+	UT_TextIterator &   m_Text;
+	GR_ScriptType       m_Type;
+	UT_uint32           m_iLength;
+	const char *        m_pLang;
+	FriBidiCharType     m_iVisDir;
+	bool (*m_isGlyphAvailable)(UT_UCS4Char g, void * custom);
+	void *              m_param;
+	GRShapingResult     m_eShapingRequired;
+	
+};
+
+
+enum GR_GraphicsId
+{
+	/* id's for built-in classes*/
+	GRID_DEFAULT = 0,
+	GRID_BEOS,
+	GRID_COCOA,
+	GRID_QNX,
+	GRID_WIN32,
+	GRID_UNIX,
+	GRID_UNIX_PS,
+	
+	GRID_LAST_BUILT_IN = 0x0000ffff,
+
+	/* id's for plugins should be from between here */
+	
+	GRID_UNKNOWN = 0xffffffff
+};
+
+/*
+   The purpose of GR_GraphicsFactory is to allow us to have parallel
+   graphics implementations. For example, on win32 we could have a
+   graphics class using Uniscribe, graphics class without shaping
+   support and graphics class using SIL Graphite. The user then could
+   specify through preferences which shaping engine s/he wishes to
+   use. The factory provides access to all graphics classes known to
+   the application.
+*/
+class GR_GraphicsFactory
+{
+
+  public:
+	GR_GraphicsFactory(){};
+	virtual ~GR_GraphicsFactory(){};
+
+	UT_uint32     getClassCount() const {return m_vClassIds.getItemCount();}
+
+	bool          registerClass(GR_Graphics * (*allocator)(bool),
+								const char *  (*descriptor)(void),
+								UT_uint32 iClassId);
+	
+	void          unregisterClass(UT_uint32 iClassId);
+	GR_Graphics * newGraphics(UT_uint32 iClassId, bool bPrint=false) const;
+	const char *  getClassDescription(UT_uint32 iClassId) const;
+	
+	
+  private:	
+	UT_Vector       m_vAllocators;
+	UT_Vector       m_vDescriptors;
+	UT_NumberVector m_vClassIds;
+};
+
+
+/*
   GR_Graphics is a portable interface to a simple 2-d graphics layer.  It is not
   an attempt at a general purpose portability layer.  Rather, it contains only
   functions which are needed.
@@ -124,6 +359,7 @@ class ABI_EXPORT GR_Font
 
 #define GR_OC_LEFT_FLUSHED 0x40000000 // flip bit 31
 #define GR_OC_MAX_WIDTH    0x3fffffff
+
 class ABI_EXPORT GR_Graphics
 {
 	friend class GR_Painter;
@@ -131,6 +367,10 @@ class ABI_EXPORT GR_Graphics
  public:
 	virtual ~GR_Graphics();
 
+	static UT_uint32 getClassId() {UT_ASSERT(UT_NOT_IMPLEMENTED); return GRID_UNKNOWN;}
+	static const char *    graphicsDescriptor(){UT_ASSERT(UT_NOT_IMPLEMENTED); return "???";}
+	
+	
 	UT_sint32	tdu(UT_sint32 layoutUnits) const;
 	UT_sint32	tlu(UT_sint32 deviceUnits) const;
 	double	    tduD(double layoutUnits) const;
@@ -367,6 +607,32 @@ class ABI_EXPORT GR_Graphics
 
 	UT_sint32         _tduX(UT_sint32 layoutUnits) const;
 
+
+	///////////////////////////////////////////////////////////////////
+	// complex script processing
+	//
+	virtual bool itemize(UT_TextIterator & text, GR_Itemization & I);
+
+	// translates GR_ShapingInfo into GR_RenderInfo which then can be
+	// passed to renderChars()
+	virtual bool shape(GR_ShapingInfo & si, GR_RenderInfo *& ri);
+	
+	// like drawChars, except uses generic (platform specific) input
+	// the default implementation simply maps to drawChars and needs
+	// to be replaced by platform code
+	virtual void renderChars(GR_RenderInfo & ri,
+							 UT_sint32 xoff,
+							 UT_sint32 yoff)
+		{
+			GR_XPRenderInfo & RI = (GR_XPRenderInfo &)ri;
+			
+			drawChars(RI.m_pChars,RI.m_iOffset,RI.m_iLength,xoff,yoff,RI.m_pAdvances);
+		};
+
+	virtual void appendRenderedCharsToBuff(GR_RenderInfo & ri, UT_GrowBuf & buf) const;
+	virtual void measureRenderedCharWidths(GR_RenderInfo & ri, UT_GrowBufElement* pCharWidths);
+	
+	
  protected:
 
 	GR_Graphics();

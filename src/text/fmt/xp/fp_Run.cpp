@@ -104,7 +104,7 @@ fp_Run::fp_Run(fl_BlockLayout* pBL,
 	m_pField(0),
 	m_iDirection(FRIBIDI_TYPE_WS), //by default all runs are whitespace
 	m_iVisDirection(FRIBIDI_TYPE_UNSET),
-	m_eRefreshDrawBuffer(SR_Unknown), // everything
+	m_eRefreshDrawBuffer(GRSR_Unknown), // everything
 	m_pColorHL(255,255,255,true), // set highlight colour to transparent
 	m_pFont(0),
 	m_bRecalcWidth(false),
@@ -774,7 +774,7 @@ void fp_Run::setNextRun(fp_Run* p, bool bRefresh)
 	{
 		// change of context, need to refresh draw buffer if context sensitive
 		if(bRefresh)
-			orDrawBufferDirty(SR_ContextSensitive);
+			orDrawBufferDirty(GRSR_ContextSensitive);
 		
 		//m_bRecalcWidth |= bRefresh; -- will be taken care of when
 		//buffer is recalculated
@@ -800,7 +800,7 @@ void fp_Run::setPrevRun(fp_Run* p, bool bRefresh)
 	{
 		// change of context, need to refresh draw buffer if context sensitive
 		if(bRefresh)
-			orDrawBufferDirty(SR_ContextSensitive);
+			orDrawBufferDirty(GRSR_ContextSensitive);
 		
 		// m_bRecalcWidth |= bRefresh;  -- will be taken care of when
 		// buffer is recacluated
@@ -920,16 +920,16 @@ void fp_Run::setLength(UT_uint32 iLen, bool bRefresh)
 	// runs adjacent
 	if(bRefresh)
 	{
-		orDrawBufferDirty(SR_Unknown);
+		orDrawBufferDirty(GRSR_Unknown);
 
 		if(m_pPrev)
 		{
-			m_pPrev->orDrawBufferDirty(SR_ContextSensitive);
+			m_pPrev->orDrawBufferDirty(GRSR_ContextSensitive);
 		}
 
 		if(m_pNext)
 		{
-			m_pNext->orDrawBufferDirty(SR_ContextSensitive);
+			m_pNext->orDrawBufferDirty(GRSR_ContextSensitive);
 		}
 	}
 }
@@ -5289,11 +5289,11 @@ void fp_Run::setVisDirection(FriBidiCharType iDir)
 {
     if(   iDir != m_iVisDirection
 	   && m_iVisDirection != FRIBIDI_TYPE_UNSET
-		  /*&& m_eRefreshDrawBuffer == SR_BufferClean*/)
+		  /*&& m_eRefreshDrawBuffer == GRSR_BufferClean*/)
 	{
 		// the text in the buffer is in the wrong order, schedule it
 		// for refresh
-		m_eRefreshDrawBuffer = SR_Unknown;
+		m_eRefreshDrawBuffer = GRSR_Unknown;
 	}
 	
 	m_iVisDirection = iDir;

@@ -33,7 +33,7 @@
 #include "ut_misc.h"
 #include "pt_Types.h"
 #include "ut_assert.h"
-#include "ut_contextGlyph.h"
+#include "gr_ContextGlyph.h"
 #include "ap_Strings.h"
 #include "fl_BlockLayout.h"
 #include <fribidi.h>
@@ -190,10 +190,10 @@ public:
 	bool				isFirstVisRunOnLine(void) const;
 	bool				isLastVisRunOnLine(void) const;
 	void				markDrawBufferDirty()
-	                        {m_eRefreshDrawBuffer = SR_Unknown;}
-	void				orDrawBufferDirty(UTShapingResult eR)
+	                        {m_eRefreshDrawBuffer = GRSR_Unknown;}
+	void				orDrawBufferDirty(GRShapingResult eR)
                         {
-							m_eRefreshDrawBuffer = (UTShapingResult)((UT_uint32)m_eRefreshDrawBuffer
+							m_eRefreshDrawBuffer = (GRShapingResult)((UT_uint32)m_eRefreshDrawBuffer
 																	 |(UT_uint32)eR);
 						}
 	virtual void		draw(dg_DrawArgs*);
@@ -338,8 +338,8 @@ protected:
 	bool				_getRecalcWidth(void) const { return m_bRecalcWidth; }
 	void				_setRecalcWidth(bool b) { m_bRecalcWidth = b; }
 
-	UTShapingResult		_getRefreshDrawBuffer(void) const { return m_eRefreshDrawBuffer; }
-	void				_setRefreshDrawBuffer(UTShapingResult eR)
+	GRShapingResult		_getRefreshDrawBuffer(void) const { return m_eRefreshDrawBuffer; }
+	void				_setRefreshDrawBuffer(GRShapingResult eR)
 	                         { m_eRefreshDrawBuffer = eR; }
 	virtual void	    _lookupProperties(const PP_AttrProp * pSpanAP,
 										  const PP_AttrProp * pBlockAP,
@@ -385,7 +385,7 @@ private:
 	fd_Field*				m_pField;
 	FriBidiCharType			m_iDirection;   //#TF direction of the run 0 for left-to-right, 1 for right-to-left
 	FriBidiCharType			m_iVisDirection;
-	UTShapingResult			m_eRefreshDrawBuffer;
+	GRShapingResult			m_eRefreshDrawBuffer;
 
 	// the run highlight color. If the property is transparent use the page color
 	UT_RGBColor             m_pColorHL;

@@ -61,6 +61,8 @@ class UT_String;
 class XAP_Menu_Factory;
 class XAP_Toolbar_Factory;
 class UT_UUIDGenerator;
+class GR_GraphicsFactory;
+class GR_Graphics;
 class XAP_InputModes;
 
 /*****************************************************************
@@ -215,6 +217,11 @@ public:
 												const char * pathAfterLang, const char * remoteURLbase)
 							{ return m_pImpl->localizeHelpUrl(pathBeforeLang, pathAfterLang, remoteURLbase); }
 
+	GR_GraphicsFactory *       getGraphicsFactory() const {return m_pGraphicsFactory;}
+	void                       setDefaultGraphicsId(UT_uint32 i) {m_iDefaultGraphicsId = i;}
+	GR_Graphics *              newGraphics() const;
+	GR_Graphics *              newGraphics(UT_uint32 iClassId) const;
+	
 	virtual UT_sint32			setInputMode(const char * szName);
 	const char *				getInputMode() const;
 	EV_EditEventMapper *		getEditEventMapper() const;
@@ -258,6 +265,10 @@ protected:
 private:
 	const UT_LangRecord *                   m_pKbdLang;
 	UT_UUIDGenerator *                      m_pUUIDGenerator;
+
+	GR_GraphicsFactory *                    m_pGraphicsFactory;
+	UT_uint32                               m_iDefaultGraphicsId;
+	
 	XAP_InputModes *						m_pInputModes;
 	
 	XAP_App(const XAP_App&);				// should not even be called. Just to avoid a warning.

@@ -106,6 +106,9 @@ public:
 	GR_Win32Graphics(HDC, const DOCINFO *, XAP_App *, HGLOBAL hDevMode = NULL);	/* for printing */
 	~GR_Win32Graphics();
 
+	static UT_uint32 getClassId() {return GRID_WIN32;}
+	static const char *    graphicsDescriptor(){return "Win32";}
+	
 	virtual void			drawGlyph(UT_uint32 glyph_idx, UT_sint32 xoff, UT_sint32 yoff);
 	virtual void			drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff);
 	virtual void			drawChars(const UT_UCSChar* pChars,

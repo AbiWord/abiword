@@ -49,9 +49,9 @@
 #include "xap_Toolbar_Layouts.h"
 #include "xav_View.h"
 #include "ut_rand.h"
-#include "ut_contextGlyph.h"
 #include "ut_map.h"
 #include "gr_CharWidthsCache.h"
+#include "gr_ContextGlyph.h"
 
 UT_Map * abi_ut_map_instance = 0;
 
@@ -82,12 +82,17 @@ XAP_App::XAP_App(XAP_Args * pArgs, const char * szAppName)
 	  m_bEnableSmoothScrolling(true),
 	  m_pKbdLang(NULL), // must not be deleted by destructor !!!
  	  m_pUUIDGenerator(NULL),
+	  m_pGraphicsFactory(NULL),
+	  m_iDefaultGraphicsId(0),
 	  m_pInputModes(NULL),
 	  m_pImpl(NULL)
 {
 #ifdef DEBUG
 	_fundamentalAsserts(); // see the comments in the function itself
 #endif
+
+	m_pGraphicsFactory = new GR_GraphicsFactory;
+	UT_ASSERT( m_pGraphicsFactory );
 	
 	m_pImpl = XAP_AppImpl::static_constructor();
 	
@@ -135,13 +140,14 @@ XAP_App::~XAP_App()
 	// Delete the instance of the Encoding Manager.
 	XAP_EncodingManager::get_instance()->Delete_instance();
 
-	// This is to delete static data allocated by UT_contextGlyph; it
+	// This is to delete static data allocated by Gr_ContextGlyph; it
 	// is strictly speaking not necessary -- this is really to shut up
 	// the debugger complaining about memory leaks
-	UT_contextGlyph::static_destructor();
+	GR_ContextGlyph::static_destructor();
 	GR_CharWidthsCache::destroyCharWidthsCache();
 
 	DELETEP(m_pUUIDGenerator);
+	DELETEP(m_pGraphicsFactory);
 	DELETEP(m_pInputModes);
 	DELETEP(m_pImpl);
 }
@@ -1036,6 +1042,18 @@ UT_sint32 XAP_App::setInputMode(const char * szName)
 const char * XAP_App::getInputMode(void) const
 {
 	return m_pInputModes->getCurrentMapName();
+}
+
+GR_Graphics * XAP_App::newGraphics() const
+{
+	return newGraphics(m_iDefaultGraphicsId);
+}
+
+GR_Graphics * XAP_App::newGraphics(UT_uint32 iClassId) const
+{
+	UT_return_val_if_fail(m_pGraphicsFactory, NULL);
+
+	return m_pGraphicsFactory->newGraphics(iClassId);
 }
 
 
