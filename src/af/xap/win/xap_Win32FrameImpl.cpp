@@ -37,6 +37,7 @@
 #include "fv_View.h"
 #include "ap_Win32App.h"
 #include "fg_Graphic.h"
+#include "gr_Win32Graphics.h"
 
 
 #ifdef _MSC_VER
@@ -494,7 +495,16 @@ void XAP_Win32FrameImpl::_nullUpdate (void) const
 
 void XAP_Win32FrameImpl::_setCursor(GR_Graphics::Cursor cursor)
 {
-	// TODO: currently does nothing
+	FV_View* pView = (FV_View *) getFrame()->getCurrentView();
+
+	// this is legitimate, when we first load, the frame has no view
+	if(!pView)
+		return;
+	
+	GR_Win32Graphics * pG = (GR_Win32Graphics*)pView->getGraphics();
+	UT_return_if_fail( pG );
+
+	pG->handleSetCursorMessage();
 }
 
 UT_RGBColor XAP_Win32FrameImpl::getColorSelBackground () const
