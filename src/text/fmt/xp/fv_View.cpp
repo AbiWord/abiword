@@ -205,8 +205,49 @@ UT_Bool FV_View::notifyListeners(const FV_ChangeMask hint)
 
 	if (mask & FV_CHG_FMTBLOCK)
 	{
-		// TODO: do something smart here, (ie, easier than getBlockFormat)
-		// HYP: if FMTCHAR logic works, just clone it
+		/*
+			The following brute-force solution works, but is atrociously 
+			expensive, so we should avoid using it whenever feasible.  
+		*/
+		const XML_Char ** propsBlock = NULL;
+		getBlockFormat(&propsBlock);
+
+		UT_Bool bMatch = UT_FALSE;
+
+		if (propsBlock && m_chg.propsBlock)
+		{
+			bMatch = UT_TRUE;
+
+			int i=0;
+
+			while (bMatch)
+			{
+				if (!propsBlock[i] || !m_chg.propsBlock[i])
+				{
+					bMatch = (propsBlock[i] == m_chg.propsBlock[i]);
+					break;
+				}
+
+				if (UT_stricmp(propsBlock[i], m_chg.propsBlock[i]))
+				{
+					bMatch = UT_FALSE;
+					break;
+				}
+
+				i++;
+			}
+		}
+
+		if (!bMatch)
+		{
+			FREEP(m_chg.propsBlock);
+			m_chg.propsBlock = propsBlock;
+		}
+		else
+		{
+			FREEP(propsBlock);
+			mask ^= FV_CHG_FMTBLOCK;
+		}
 	}
 
 	if (mask & FV_CHG_FMTCHAR)
@@ -1541,6 +1582,8 @@ void FV_View::warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos)
 	_setPoint(pos, bEOL);
 	_fixInsertionPointCoords();
 	_drawInsertionPoint();
+
+	notifyListeners(FV_CHG_MOTION);
 }
 
 void FV_View::getPageScreenOffsets(fp_Page* pThePage, UT_sint32& xoff,
