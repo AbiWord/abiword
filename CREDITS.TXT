@@ -131,6 +131,7 @@ Marc Maurer <j.m.maurer@student.utwente.nl>
 Vincent McIntyre <Vince.McIntyre@atnf.CSIRO.AU>		autoconf on Solaris 2.6
 Caolan McNamara <Caolan.McNamara@ul.ie> 		Word import
 Anders Melchiorsen <postmaster@and.nospam.kampsax.k-net.dk>  GTK Window Autosize
+Nicolas Mercier <nscreetch@free.fr>			DocBook plugin work; Coquille plugin
 Ben Mesman<b.mesman@snow.nl>				Speed Up Unix spell
 							checking using gtk_idle.
 Mike Meyer <mwm@mired.org>				ParseAFM isspace() fix
