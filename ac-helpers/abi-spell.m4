@@ -49,8 +49,13 @@ if test $abi_spell != ispell; then
 		abi_pspell_libs="-lpspell -lpspell-modules -lltdl"
 	else
 		abi_pspell_cflags=""
-		abi_pspell_libs="-laspell"
-		abi_aspell_libs="-laspell"
+
+		dnl mg: if these were meant to be the same there wouldn't be
+		dnl     a need for both... change the second one if you like,
+		dnl     but leave abi_pspell_libs alone!
+		dnl 
+		abi_pspell_libs="-lpspell -laspell -laspell-common -lltdl"
+		abi_aspell_libs="-lpspell -laspell"
 	fi
 	if test $abi_spell = pspell; then
 		abi_pspell_cflags="-I$abi_pspell_opt/include"
