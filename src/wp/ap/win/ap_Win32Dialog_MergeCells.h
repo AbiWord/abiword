@@ -48,8 +48,9 @@ public:
 	virtual void            notifyActiveFrame(XAP_Frame * pFrame);
 	
 	HBITMAP 				_loadBitmap(HWND hWnd,UINT nId, char* pName, int x, int y, UT_RGBColor Color);
-	
+		
 protected:
+	bool 					getBitmapForIcon(HWND hwnd, UT_uint32 maxWidth, UT_uint32 maxHeight,UT_RGBColor * pColor, const char * szIconName, HBITMAP * pBitmap);
 
 	XAP_Win32Frame *			m_pWin32Frame;		
 	HWND						m_hwndDlg;	//  dialog box Windows
