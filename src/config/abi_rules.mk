@@ -158,10 +158,10 @@ tidy::
 	+$(LOOP_OVER_DIRS)
 
 
-# The directories used for documentation generation are listed in .doxygen.cfg
+# The directories used for documentation generation are listed in Doxyfile
 # in the INPUT variable.
 dox::
-	doxygen .doxygen.cfg
+	doxygen 
 
 ################################################################################
 

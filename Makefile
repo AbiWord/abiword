@@ -67,12 +67,9 @@ bidi_dbg:
 
 ##################################################################
 
-## Generates documentation from the sources
-## This creates docs/dox/html/<HTML files>
-
 dox:
 	@echo Generating documentation
-	$(MAKE) ABI_ROOT=$(ABI_ROOT) -C src dox
+	doxygen
 
 ##################################################################
 
