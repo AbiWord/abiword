@@ -56,13 +56,9 @@ ABISUITE_LIBEXEC=$LIBEXECDIR
 ABISUITE_FONT_HOME=\$ABISUITE_HOME/fonts
 
 # Set run-time font path
-# Check to make sure we don't stomp on anything
-if [ -z \$currentFonts ]
+if [ -d \$ABISUITE_FONT_HOME ]
 then
-    if [ -d \$ABISUITE_FONT_HOME ]
-    then
-	xset fp+ \$ABISUITE_FONT_HOME 1>/dev/null 2>/dev/null
-    fi
+    xset fp+ \$ABISUITE_FONT_HOME 1>/dev/null 2>/dev/null
 fi
 
 # Figure out which binary to run
