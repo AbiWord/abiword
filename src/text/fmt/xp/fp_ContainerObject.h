@@ -124,6 +124,9 @@ public:
 	virtual void		setY(UT_sint32) = 0;
 	virtual UT_sint32	getWidth(void) const = 0;
 
+	// all containers that may wish to draw stuff outwith the normal
+	// drawing region, such as the pilcrow on a line, should overwrite this
+	virtual UT_sint32   getDrawingWidth(void) const {return getWidth();}
 #ifndef WITH_PANGO
 	virtual void		setWidthInLayoutUnits(UT_sint32) =0;
 	virtual void        setHeightLayoutUnits(UT_sint32 ihLayout) =0;
@@ -162,6 +165,7 @@ public:
 	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL) = 0;
 	virtual fp_Container * getNextContainerInSection(void) const = 0;
 	virtual fp_Container * getPrevContainerInSection(void) const = 0;
+
 private:
 	/*!
 	  Container type
@@ -221,6 +225,8 @@ public:
 	virtual UT_uint32 	distanceFromPoint(UT_sint32 x, UT_sint32 y) =0;
 	virtual void        recalcMaxWidth(bool bDontClearIfNeeded = false) = 0;
 	virtual void        setAssignedScreenHeight(UT_sint32 iY) =0;
+	bool                getPageRelativeOffsets(UT_Rect &r) const;
+	bool                isOnScreen() const;
 private:
 	fp_Container*          m_pContainer;
 	fp_ContainerObject *   m_pNext;

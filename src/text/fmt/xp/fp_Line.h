@@ -116,11 +116,13 @@ public:
 
 	virtual void        setWidth(UT_sint32 ){}
     virtual void        setHeight(UT_sint32) {}
-	virtual UT_sint32   getWidth(void) const { return 0;}
+	virtual UT_sint32   getWidth(void) const { return m_iWidth;}
+	virtual UT_sint32   getDrawingWidth(void) const;
+	
 #ifndef WITH_PANGO
 	virtual void        setWidthInLayoutUnits(UT_sint32) {}
     virtual void        setHeightLayoutUnits(UT_sint32) {}
-    virtual UT_sint32   getWidthInLayoutUnits() const {return 0;}
+    virtual UT_sint32   getWidthInLayoutUnits() const {return m_iWidthLayoutUnits;}
 #endif
     virtual bool        isVBreakable(void) { return false;}
     virtual bool        isHBreakable(void) {return true;}

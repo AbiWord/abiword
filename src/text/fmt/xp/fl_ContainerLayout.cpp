@@ -478,3 +478,84 @@ bool fl_ContainerLayout::canContainPoint() const
 		return _canContainPoint();
 }
 
+bool fl_ContainerLayout::isOnScreen() const
+{
+	// we check if any of our containers is on screen
+	// however, we will not call fp_Container::isOnScreen() to avoid
+	// unnecessary overhead
+
+	if(isCollapsed())
+		return false;
+
+	UT_return_val_if_fail(getDocLayout(),false);
+	
+	FV_View *pView = getDocLayout()->getView();
+
+	if(!pView)
+	{
+		return false;
+	}
+
+	bool bShowHidden = pView->getShowPara();
+
+	bool bHidden = ((m_eHidden == FP_HIDDEN_TEXT && !bShowHidden)
+	              || m_eHidden == FP_HIDDEN_REVISION
+		          || m_eHidden == FP_HIDDEN_REVISION_AND_TEXT);
+
+
+	if(bHidden)
+		return false;
+	
+	UT_Vector vRect;
+	UT_Vector vPages;
+
+	pView->getVisibleDocumentPagesAndRectangles(vRect, vPages);
+
+	UT_uint32 iCount = vPages.getItemCount();
+
+	if(!iCount)
+		return false;
+	
+	bool bRet = false;
+	fp_Container * pC = getFirstContainer();
+
+	if(!pC)
+		return false;
+
+	fp_Container *pCEnd = getLastContainer();
+
+	while(pC)
+	{
+		fp_Page * pMyPage = pC->getPage();
+
+		if(pMyPage)
+		{
+			for(UT_uint32 i = 0; i < iCount; i++)
+			{
+				fp_Page * pPage = (fp_Page*)vPages.getNthItem(i);
+
+				if(pPage == pMyPage)
+				{
+					UT_Rect r;
+					UT_Rect *pR = (UT_Rect*)vRect.getNthItem(i);
+
+					if(!pC->getPageRelativeOffsets(r))
+						break;
+				
+					bRet = r.intersectsRect(pR);
+					break;
+				}
+		
+			}
+		}
+
+		if(bRet || pC == pCEnd)
+			break;
+
+		pC = (fp_Container*)pC->getNext();
+	}
+	
+	UT_VECTOR_PURGEALL(UT_Rect*,vRect);
+	return bRet;
+}
+

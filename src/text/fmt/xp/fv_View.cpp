@@ -2816,7 +2816,7 @@ bool FV_View::getCharFormat(const XML_Char *** pProps, bool bExpandStyles, PT_Do
 		v.addItem( (void *) f);
 	else
 		delete f;
-	
+
 #endif
 	// 2. prune 'em as they vary across selection
 	if (!bSelEmpty)
@@ -5069,7 +5069,7 @@ void FV_View::getPageScreenOffsets(fp_Page* pThePage, UT_sint32& xoff,
 	}
 
 	yoff = y - m_yScrollOffset;
-	xoff = getPageViewTopMargin() - m_xScrollOffset;
+	xoff = getPageViewLeftMargin() - m_xScrollOffset;
 }
 
 void FV_View::getPageYOffset(fp_Page* pThePage, UT_sint32& yoff) const
@@ -6231,7 +6231,7 @@ UT_UCSChar * FV_View::getContextSuggest(UT_uint32 ndx)
 	pos = getPoint();
 	pBL = _findBlockAtPosition(pos);
 	UT_ASSERT(pBL);
-	
+
 	PT_DocPosition epos = 0;
 	getDocument()->getBounds(true, epos);
 	UT_DEBUGMSG(("end bound is %d\n", epos));
@@ -7651,7 +7651,7 @@ void FV_View::toggleMarkRevisions()
 		const XML_Char rev[] = "revision";
 		const XML_Char val[] = "";
 		const XML_Char * attr[3] = {rev,val,NULL};
-		
+
 		bRet = m_pDoc->changeSpanFmt(PTC_RemoveFmt,posStart,posEnd,attr,NULL);
 
 		_generalUpdate();
@@ -7812,4 +7812,114 @@ PT_DocPosition FV_View::findCellPosAt(PT_DocPosition posTable, UT_sint32 row, UT
 	return 	m_pDoc->getStruxPosition(cellSDH);
 }
 
+/*! find out which pages in the document are visible on the screen and
+    calculate the rectangles of their view-ports (the rectangles are
+    relative to the top-left corner of the page, not to the screen
+    the caller must use UT_VECTOR_PURGEALL() on vRect to delete the
+    objects allocated by this function, but NOT on vPages
+    \param vRect -- vector where to store UT_Rect* referring to vieports of pages in vPages
+    \param vPage -- vector where to store pointers to currently visible pages
+*/
+void FV_View:: getVisibleDocumentPagesAndRectangles(UT_Vector &vRect, UT_Vector &vPages) const
+{
+	UT_sint32 iDocHeight = m_pLayout->getHeight();
+
+	UT_sint32 curY = getPageViewTopMargin();
+	fp_Page * pPage = m_pLayout->getFirstPage();
+	UT_uint32 iPageIndex = 0;
+
+	while (pPage)
+	{
+		UT_sint32 iPageWidth		= pPage->getWidth();
+		UT_sint32 iPageHeight		= pPage->getHeight();
+		UT_sint32 adjustedTop		= curY - m_yScrollOffset;
+		fl_DocSectionLayout * pDSL = pPage->getOwningSection();
+		if(getViewMode() != VIEW_PRINT)
+		{
+			iPageHeight = iPageHeight - pDSL->getTopMargin() - pDSL->getBottomMargin();
+		}
+
+		UT_sint32 adjustedBottom = adjustedTop + iPageHeight + getPageViewSep();
+
+		if (adjustedTop > m_iWindowHeight)
+		{
+			// the start of this page is past the bottom
+			// of the window, so we don't need to draw it.
+
+			xxx_UT_DEBUGMSG(("page below port: PageHeight=%d curY=%d nPos=%d WindowHeight=%d\n",
+							 iPageHeight,
+							 curY,
+							 m_yScrollOffset,
+							 m_iWindowHeight));
+
+			// since all other pages are below this one, we
+			// don't need to draw them either.	exit loop now.
+			break;
+		}
+		else if (adjustedBottom < 0)
+		{
+			// the end of this page is above the top of
+			// the window, so we don't need to draw it.
+
+			xxx_UT_DEBUGMSG(("page above port: PageHeight=%d curY=%d nPos=%d WindowHeight=%d\n",
+							 iPageHeight,
+							 curY,
+							 m_yScrollOffset,
+							 m_iWindowHeight));
+		}
+		else
+		{
+			// this page is on screen
+			xxx_UT_DEBUGMSG(("page visible: height=%d curY=%d nPos=%d WindowHeight=%d\n",
+						 iPageHeight,
+						 curY,
+						 m_yScrollOffset,
+						 m_iWindowHeight));
+
+
+			vPages.addItem((void*)pPage);
+
+			// now create the rectangle
+			// NB the adjustedTop is relative to the screen, but we
+			// want the rect to be relative to the top left page
+			// corner
+
+			UT_sint32 iLeftGrayWidth = getPageViewLeftMargin() - m_xScrollOffset;
+			UT_uint32 iPortTop       = adjustedTop >= 0 ? 0 : -adjustedTop;
+			UT_uint32 iPortLeft      = iLeftGrayWidth >= 0 ? 0 : -iLeftGrayWidth;
+			UT_uint32 iWindowWidth   = m_iWindowWidth - iLeftGrayWidth > 0 ? m_iWindowWidth - iLeftGrayWidth : 0;
+			UT_uint32 iPortHeight;
+			if( adjustedBottom <= m_iWindowHeight && adjustedTop >=0)
+			{
+				iPortHeight = adjustedBottom - adjustedTop;
+			}
+			else if(adjustedBottom <= m_iWindowHeight && adjustedTop < 0)
+			{
+				iPortHeight = adjustedBottom;
+			}
+			else if(adjustedBottom > m_iWindowHeight && adjustedTop >=0)
+			{
+				iPortHeight = m_iWindowHeight - adjustedTop;
+			}
+			else
+				UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
+			
+			
+			
+			UT_uint32 iPortWidth = UT_MIN((UT_uint32)iPageWidth, iWindowWidth);
+
+			UT_Rect * pRect = new UT_Rect(iPortLeft,
+										  iPortTop,
+										  iPortWidth,
+										  iPortHeight);
+
+			vRect.addItem((void*) pRect);
+		}
+
+		curY += iPageHeight + getPageViewSep();
+
+		pPage = pPage->getNext();
+	}
+
+}
 

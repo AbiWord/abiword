@@ -133,3 +133,80 @@ fp_Page * fp_Container::getPage(void) const
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	return NULL;
 }
+
+bool fp_Container::getPageRelativeOffsets(UT_Rect &r) const
+{
+	// the X offset of a container is relative to page margin, what we
+	// want is offset relative to the page edge
+	fp_Container * pColumnC = getColumn();
+	
+	UT_return_val_if_fail(pColumnC,false);
+
+	fp_Column * pColumn = (fp_Column*) pColumnC;
+	fl_DocSectionLayout * pDSL = pColumn->getDocSectionLayout();
+
+	UT_return_val_if_fail(pDSL,false);
+	r.left   = pDSL->getLeftMargin();
+	r.top    = pDSL->getTopMargin();
+	r.width  = getDrawingWidth();
+	r.height = getHeight();
+
+	const fp_Container * pC = this;
+
+	r.left += getX();
+	r.top  += getY();
+	return true;
+}
+
+
+bool fp_Container::isOnScreen() const
+{
+	UT_return_val_if_fail(getSectionLayout(),false);
+	
+	FV_View *pView = getSectionLayout()->getDocLayout()->getView();
+
+	if(!pView)
+	{
+		return false;
+	}
+	
+	UT_Vector vRect;
+	UT_Vector vPages;
+
+	pView->getVisibleDocumentPagesAndRectangles(vRect, vPages);
+
+	UT_uint32 iCount = vPages.getItemCount();
+	bool bRet = false;
+
+	if(iCount)
+	{
+		fp_Page * pMyPage = getPage();
+
+		if(pMyPage)
+		{
+			for(UT_uint32 i = 0; i < iCount; i++)
+			{
+				fp_Page * pPage = (fp_Page*)vPages.getNthItem(i);
+
+				if(pPage == pMyPage)
+				{
+					UT_Rect r;
+					UT_Rect *pR = (UT_Rect*)vRect.getNthItem(i);
+
+					if(!getPageRelativeOffsets(r))
+						break;
+
+					bRet = r.intersectsRect(pR);
+					break;
+				}
+		
+			}
+		}
+		
+		UT_VECTOR_PURGEALL(UT_Rect*,vRect);
+	}
+	
+	return bRet;
+}
+
+

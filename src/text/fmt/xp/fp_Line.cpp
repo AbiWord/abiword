@@ -386,14 +386,19 @@ void fp_Line::insertRunAfter(fp_Run* pNewRun, fp_Run* pAfter)
 
 void fp_Line::remove(void)
 {
-	if (getNext())
+	// getNext()/getPrev() appear hight in the performance statistics
+	// called from this function so we will cache them
+	fp_ContainerObject * pPrev = getPrev();
+	fp_ContainerObject * pNext = getNext();
+	
+	if (pNext)
 	{
-		getNext()->setPrev(getPrev());
+		pNext->setPrev(pPrev);
 	}
 
-	if (getPrev())
+	if (pPrev)
 	{
-		getPrev()->setNext(getNext());
+		pPrev->setNext(pNext);
 	}
 
 	((fp_VerticalContainer *)getContainer())->removeContainer(this);
@@ -3527,5 +3532,19 @@ void fp_Line::_updateContainsFootnoteRef(void)
 			if (fr->getFieldType() == FPFIELD_endnote_ref)
 				m_bContainsFootnoteRef = true;
 		}
+	}
+}
+
+UT_sint32 fp_Line::getDrawingWidth() const
+{
+	if(isLastLineInBlock())
+	{
+		fp_Run * pRun = getLastRun();
+		UT_return_val_if_fail(pRun && pRun->getType() == FPRUN_ENDOFPARAGRAPH, m_iWidth);
+		return (m_iWidth + ((fp_EndOfParagraphRun*)pRun)->getDrawingWidth());
+	}
+	else
+	{
+		return m_iWidth;
 	}
 }

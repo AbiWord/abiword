@@ -120,6 +120,8 @@ public:
 	bool                    canContainPoint() const;
 	FPVisibility            isHidden() const {return m_eHidden;}
 	void                    setVisibility(FPVisibility eVis) {m_eHidden = eVis;}
+	bool                    isOnScreen() const;
+	
 
 #ifdef FMT_TEST
 	virtual void		__dump(FILE * fp) const;

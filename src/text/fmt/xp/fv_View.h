@@ -491,6 +491,8 @@ public:
 	UT_RGBColor			getColorHdrFtr(void) const { return m_colorHdrFtr; }
 	UT_RGBColor			getColorColumnLine(void) const { return m_colorColumnLine; }
 
+	void                getVisibleDocumentPagesAndRectangles(UT_Vector &vRect, UT_Vector &vPages) const;
+
 protected:
 	void				_saveAndNotifyPieceTableChange(void);
 	void				_restorePieceTableState(void);
