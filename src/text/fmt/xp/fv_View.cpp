@@ -2075,8 +2075,10 @@ void FV_View::draw(UT_sint32 x, UT_sint32 y,
 				 x,y,width,height,bClip,
 				 m_yScrollOffset,m_iWindowHeight));
 
-	UT_ASSERT(m_iWindowWidth > 0);
-	UT_ASSERT(m_iWindowHeight > 0);
+	// this can happen when the frame size is decreased and
+	// only the toolbars show...
+	if ((m_iWindowWidth <= 0) || (m_iWindowHeight <= 0))
+		return;
 
 	if (bClip)
 	{
@@ -2212,16 +2214,19 @@ void FV_View::draw(UT_sint32 x, UT_sint32 y,
 				da.iSelPos1 = da.iSelPos2 = 0;
 			}
 
+			UT_sint32 adjustedLeft  = fl_PAGEVIEW_MARGIN_X - m_xScrollOffset;
+			UT_sint32 adjustedRight = adjustedLeft + iPageWidth;
+
+			adjustedBottom -= fl_PAGEVIEW_PAGE_SEP;
+
+			UT_RGBColor clrPaper(255,255,255);
+			m_pG->fillRect(clrPaper,adjustedLeft+1,adjustedTop+1,iPageWidth-2,iPageHeight-2);
+
 			pPage->draw(&da);
 
 			// draw page decorations
 			UT_RGBColor clr(0,0,0);		// black
 			m_pG->setColor(clr);
-
-			UT_sint32 adjustedLeft  = fl_PAGEVIEW_MARGIN_X - m_xScrollOffset;
-			UT_sint32 adjustedRight = adjustedLeft + iPageWidth;
-
-			adjustedBottom -= fl_PAGEVIEW_PAGE_SEP;
 
 			// one pixel border
 			m_pG->drawLine(adjustedLeft, adjustedTop, adjustedRight, adjustedTop);
@@ -2927,4 +2932,9 @@ void FV_View::_doPaste(void)
 		pClip->close();
 	}
 }
+#if 0
+void FV_View::_drawRuler(void)
+{
 
+}
+#endif

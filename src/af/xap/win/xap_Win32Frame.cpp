@@ -50,7 +50,7 @@ UT_Bool AP_Win32Frame::RegisterClass(AP_Win32App * app)
 
 	// register class for the frame window
 	wndclass.cbSize        = sizeof (wndclass) ;
-	wndclass.style         = CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS ;
+	wndclass.style         = CS_DBLCLKS ;
 	wndclass.lpfnWndProc   = AP_Win32Frame::_WndProc ;
 	wndclass.cbClsExtra    = 0 ;
 	wndclass.cbWndExtra    = 0 ;
@@ -74,14 +74,15 @@ UT_Bool AP_Win32Frame::RegisterClass(AP_Win32App * app)
 
 	memset(&wndclass, 0, sizeof(wndclass));
 	wndclass.cbSize        = sizeof (wndclass) ;
-	wndclass.style         = CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS ;
+	wndclass.style         = CS_DBLCLKS ;
 	wndclass.lpfnWndProc   = AP_Win32Frame::_ChildWndProc ;
 	wndclass.cbClsExtra    = 0 ;
 	wndclass.cbWndExtra    = 0 ;
 	wndclass.hInstance     = app->getInstance() ;
 	wndclass.hIcon         = NULL ;
 	wndclass.hCursor       = LoadCursor (NULL, IDC_ARROW) ;
-	wndclass.hbrBackground = (HBRUSH) GetStockObject (WHITE_BRUSH) ;
+	//wndclass.hbrBackground = (HBRUSH) GetStockObject (WHITE_BRUSH) ;
+	wndclass.hbrBackground = NULL;
 	wndclass.lpszMenuName  = NULL ;
 	wndclass.lpszClassName = CHILDWINCLASS ;
 	wndclass.hIconSm       = NULL ;
@@ -113,6 +114,8 @@ AP_Win32Frame::AP_Win32Frame(AP_Win32App * app)
 	m_hwndFrame = NULL;
 	m_hwndRebar = NULL;
 	m_hwndChild = NULL;
+	m_iSizeWidth = 0;
+	m_iSizeHeight = 0;
 }
 
 // TODO when cloning a new frame from an existing one
@@ -131,6 +134,8 @@ AP_Win32Frame::AP_Win32Frame(AP_Win32Frame * f)
 	m_hwndFrame = NULL;
 	m_hwndRebar = NULL;
 	m_hwndChild = NULL;
+	m_iSizeWidth = 0;
+	m_iSizeHeight = 0;
 }
 
 AP_Win32Frame::~AP_Win32Frame(void)
@@ -310,8 +315,13 @@ void AP_Win32Frame::_createTopLevelWindow(void)
 	iHeight = r.bottom - r.top;
 	iWidth = r.right - r.left;
 
+	m_iSizeWidth = iWidth;
+	m_iSizeHeight = iHeight;
+	
 #ifdef REBAR
 	// force rebar to resize itself
+	// TODO for some reason, we give REBAR the height of the FRAME
+	// TODO and let it decide how much it actually needs....
 	MoveWindow(m_hwndRebar, 0, 0, iWidth, iHeight, TRUE);
 
 	// ask rebar how tall it is
@@ -542,12 +552,10 @@ LRESULT CALLBACK AP_Win32Frame::_WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LP
 		int nHeight = HIWORD(lParam);
 
 #ifdef REBAR
-		MoveWindow(f->m_hwndRebar, 0, 0, LOWORD(lParam), HIWORD(lParam), TRUE); 
-
-		// ask rebar how tall it is
-		RECT r;
-		GetClientRect(f->m_hwndRebar, &r);
-		f->m_iBarHeight = r.bottom - r.top + 6;
+		if (nWidth != f->m_iSizeWidth)
+		{
+			MoveWindow(f->m_hwndRebar, 0, 0, nWidth, f->m_iBarHeight, TRUE); 
+		}
 #else
 		// keep toolbars full width
 		f->m_iBarHeight = 0;
@@ -575,6 +583,9 @@ LRESULT CALLBACK AP_Win32Frame::_WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LP
 			MoveWindow(f->m_hwndChild, 0, f->m_iBarHeight, nWidth, nHeight, TRUE);
 		}
 
+		f->m_iSizeWidth = nWidth;
+		f->m_iSizeHeight = nHeight;
+		
 		return 0;
 	}
 
@@ -789,9 +800,11 @@ LRESULT CALLBACK AP_Win32Frame::_ChildWndProc(HWND hwnd, UINT iMsg, WPARAM wPara
 		hdc = BeginPaint (hwnd, &ps) ;
 
 		UT_DEBUGMSG(("Calling draw()\n"));
-		
-		pView->draw();
-		
+		UT_Rect r(ps.rcPaint.left,ps.rcPaint.top,
+				  ps.rcPaint.right-ps.rcPaint.left,
+				  ps.rcPaint.bottom-ps.rcPaint.top);
+		pView->draw(&r);
+
 		EndPaint (hwnd, &ps) ;
 
 		return 0 ;

@@ -398,8 +398,8 @@ void Win32Graphics::scroll(UT_sint32 dx, UT_sint32 dy)
 	RECT rInvalid;
 	
 	ScrollWindowEx(m_hwnd, -dx, -dy, NULL, NULL, NULL, &rInvalid, 0);
-	HBRUSH hBrush = (HBRUSH) GetStockObject(WHITE_BRUSH);
-	FillRect(m_hdc, &rInvalid, hBrush);
+//	HBRUSH hBrush = (HBRUSH) GetStockObject(WHITE_BRUSH);
+//	FillRect(m_hdc, &rInvalid, hBrush);
 }
 
 void Win32Graphics::clearArea(UT_sint32 x, UT_sint32 y, UT_sint32 width, UT_sint32 height)

@@ -47,7 +47,7 @@ class UT_Rect
 {
 public:
 	UT_Rect();
-	void setValues(int, int, int, int);
+	UT_Rect(int iLeft, int iTop, int iWidth, int iHeight);
 	
 	UT_sint32	left;
 	UT_sint32	top;

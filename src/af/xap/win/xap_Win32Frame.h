@@ -85,6 +85,9 @@ protected:
 	HWND						m_hwndChild;
 
 	AP_Win32DialogFactory		m_dialogFactory;
+
+	UT_uint32					m_iSizeWidth;
+	UT_uint32					m_iSizeHeight;
 };
 
 #endif /* AP_WIN32FRAME_H */

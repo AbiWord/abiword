@@ -34,6 +34,14 @@ UT_Rect::UT_Rect()
 	left = top = height = width = 0;
 }
 
+UT_Rect::UT_Rect(int iLeft, int iTop, int iWidth, int iHeight)
+{
+	left = iLeft;
+	top = iTop;
+	width = iWidth;
+	height = iHeight;
+}
+
 static int x_hexDigit(char c)
 {
 	if ((c>='0') && (c<='9'))
