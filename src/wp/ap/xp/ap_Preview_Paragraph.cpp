@@ -212,10 +212,9 @@ void AP_Preview_Paragraph_Block::setFormat(AP_Dialog_Paragraph::tAlignState alig
 			// we measure from top to top here, and use a minimum of the current
 			// line height
 			if (SCALE_TO_PIXELS(lineSpacing) > m_fontHeight)
-				m_lineSpacing = (UT_uint32) ((UT_convertToInches(lineSpacing)
-											  * (double) DIMENSION_INCH_SCALE_FACTOR) - (double) m_fontHeight);
+				m_lineSpacing = SCALE_TO_PIXELS(lineSpacing) - m_fontHeight;
 			else
-				m_lineSpacing = m_fontHeight;
+				m_lineSpacing = 0;
 			break;
 		case AP_Dialog_Paragraph::spacing_EXACTLY:
 			// for exact, we always give them exactly what they asked for,

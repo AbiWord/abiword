@@ -17,6 +17,7 @@
  * 02111-1307, USA.
  */
 
+#include <stdlib.h>
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
@@ -303,9 +304,13 @@ GtkWidget * XAP_UnixDialog_Zoom::_constructWindow(void)
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
+	XML_Char * tmp = NULL;
+	
 	windowZoom = gtk_window_new (GTK_WINDOW_DIALOG);
 	gtk_object_set_data (GTK_OBJECT (windowZoom), "windowZoom", windowZoom);
-	gtk_window_set_title (GTK_WINDOW (windowZoom), pSS->getValue(XAP_STRING_ID_DLG_Zoom_ZoomTitle));
+	UT_XML_cloneNoAmpersands(tmp, pSS->getValue(XAP_STRING_ID_DLG_Zoom_ZoomTitle));
+	gtk_window_set_title (GTK_WINDOW (windowZoom), tmp);
+	FREEP(tmp);
 	gtk_window_set_policy (GTK_WINDOW (windowZoom), FALSE, FALSE, FALSE);
 
 	vboxZoom = gtk_vbox_new (FALSE, 12);
@@ -319,7 +324,9 @@ GtkWidget * XAP_UnixDialog_Zoom::_constructWindow(void)
 	gtk_widget_show (hboxFrames);
 	gtk_box_pack_start (GTK_BOX (vboxZoom), hboxFrames, FALSE, TRUE, 0);
 
-	frameZoomTo = gtk_frame_new (pSS->getValue(XAP_STRING_ID_DLG_Zoom_RadioFrameCaption));
+	UT_XML_cloneNoAmpersands(tmp, pSS->getValue(XAP_STRING_ID_DLG_Zoom_RadioFrameCaption));
+	frameZoomTo = gtk_frame_new (tmp);
+	FREEP(tmp);
 	gtk_object_set_data (GTK_OBJECT (windowZoom), "frameZoomTo", frameZoomTo);
 	gtk_widget_show (frameZoomTo);
 	gtk_box_pack_start (GTK_BOX (hboxFrames), frameZoomTo, FALSE, TRUE, 0);
@@ -330,42 +337,54 @@ GtkWidget * XAP_UnixDialog_Zoom::_constructWindow(void)
 	gtk_container_add (GTK_CONTAINER (frameZoomTo), vboxZoomTo);
 	gtk_container_border_width (GTK_CONTAINER (vboxZoomTo), 10);
 
-	radiobutton200 = gtk_radio_button_new_with_label (vboxZoomTo_group, pSS->getValue(XAP_STRING_ID_DLG_Zoom_200));
+	UT_XML_cloneNoAmpersands(tmp, pSS->getValue(XAP_STRING_ID_DLG_Zoom_200));
+	radiobutton200 = gtk_radio_button_new_with_label (vboxZoomTo_group, tmp);
+	FREEP(tmp);
 	vboxZoomTo_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobutton200));
 	gtk_object_set_data (GTK_OBJECT (windowZoom), "radiobutton200", radiobutton200);
 	gtk_object_set_data (GTK_OBJECT (radiobutton200), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(z_200));
 	gtk_widget_show (radiobutton200);
 	gtk_box_pack_start (GTK_BOX (vboxZoomTo), radiobutton200, FALSE, TRUE, 0);
 
-	radiobutton100 = gtk_radio_button_new_with_label (vboxZoomTo_group, pSS->getValue(XAP_STRING_ID_DLG_Zoom_100));
+	UT_XML_cloneNoAmpersands(tmp, pSS->getValue(XAP_STRING_ID_DLG_Zoom_100));
+	radiobutton100 = gtk_radio_button_new_with_label (vboxZoomTo_group, tmp);
+	FREEP(tmp);
 	vboxZoomTo_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobutton100));
 	gtk_object_set_data (GTK_OBJECT (windowZoom), "radiobutton100", radiobutton100);
 	gtk_object_set_data (GTK_OBJECT (radiobutton100), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(z_100));
 	gtk_widget_show (radiobutton100);
 	gtk_box_pack_start (GTK_BOX (vboxZoomTo), radiobutton100, FALSE, TRUE, 0);
 
-	radiobutton75 = gtk_radio_button_new_with_label (vboxZoomTo_group, pSS->getValue(XAP_STRING_ID_DLG_Zoom_75));
+	UT_XML_cloneNoAmpersands(tmp, pSS->getValue(XAP_STRING_ID_DLG_Zoom_75));
+	radiobutton75 = gtk_radio_button_new_with_label (vboxZoomTo_group, tmp);
+	FREEP(tmp);
 	vboxZoomTo_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobutton75));
 	gtk_object_set_data (GTK_OBJECT (windowZoom), "radiobutton75", radiobutton75);
 	gtk_object_set_data (GTK_OBJECT (radiobutton75), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(z_75));
 	gtk_widget_show (radiobutton75);
 	gtk_box_pack_start (GTK_BOX (vboxZoomTo), radiobutton75, TRUE, TRUE, 0);
 
-	radiobuttonPageWidth = gtk_radio_button_new_with_label (vboxZoomTo_group, pSS->getValue(XAP_STRING_ID_DLG_Zoom_PageWidth));
+	UT_XML_cloneNoAmpersands(tmp, pSS->getValue(XAP_STRING_ID_DLG_Zoom_PageWidth));
+	radiobuttonPageWidth = gtk_radio_button_new_with_label (vboxZoomTo_group, tmp);
+	FREEP(tmp);
 	vboxZoomTo_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonPageWidth));
 	gtk_object_set_data (GTK_OBJECT (windowZoom), "radiobuttonPageWidth", radiobuttonPageWidth);
 	gtk_object_set_data (GTK_OBJECT (radiobuttonPageWidth), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(z_PAGEWIDTH));
 	gtk_widget_show (radiobuttonPageWidth);
 	gtk_box_pack_start (GTK_BOX (vboxZoomTo), radiobuttonPageWidth, TRUE, TRUE, 0);
 
-	radiobuttonWholePage = gtk_radio_button_new_with_label (vboxZoomTo_group, pSS->getValue(XAP_STRING_ID_DLG_Zoom_WholePage));
+	UT_XML_cloneNoAmpersands(tmp, pSS->getValue(XAP_STRING_ID_DLG_Zoom_WholePage));
+	radiobuttonWholePage = gtk_radio_button_new_with_label (vboxZoomTo_group, tmp);
+	FREEP(tmp);
 	vboxZoomTo_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonWholePage));
 	gtk_object_set_data (GTK_OBJECT (windowZoom), "radiobuttonWholePage", radiobuttonWholePage);
 	gtk_object_set_data (GTK_OBJECT (radiobuttonWholePage), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(z_WHOLEPAGE));
 	gtk_widget_show (radiobuttonWholePage);
 	gtk_box_pack_start (GTK_BOX (vboxZoomTo), radiobuttonWholePage, TRUE, TRUE, 0);
 
-	radiobuttonPercent = gtk_radio_button_new_with_label (vboxZoomTo_group, pSS->getValue(XAP_STRING_ID_DLG_Zoom_Percent));
+	UT_XML_cloneNoAmpersands(tmp, pSS->getValue(XAP_STRING_ID_DLG_Zoom_Percent));
+	radiobuttonPercent = gtk_radio_button_new_with_label (vboxZoomTo_group, tmp);
+	FREEP(tmp);
 	vboxZoomTo_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonPercent));
 	gtk_object_set_data (GTK_OBJECT (windowZoom), "radiobuttonPercent", radiobuttonPercent);
 	gtk_object_set_data (GTK_OBJECT (radiobuttonPercent), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(z_PERCENT));
@@ -379,7 +398,9 @@ GtkWidget * XAP_UnixDialog_Zoom::_constructWindow(void)
 	gtk_box_pack_end (GTK_BOX (vboxZoomTo), spinbuttonPercent, TRUE, TRUE, 0);
 	gtk_spin_button_set_numeric (GTK_SPIN_BUTTON (spinbuttonPercent), TRUE);
 
-	framePreview = gtk_frame_new (pSS->getValue(XAP_STRING_ID_DLG_Zoom_PreviewFrame));
+	UT_XML_cloneNoAmpersands(tmp, pSS->getValue(XAP_STRING_ID_DLG_Zoom_PreviewFrame));
+	framePreview = gtk_frame_new (tmp);
+	FREEP(tmp);
 	gtk_object_set_data (GTK_OBJECT (windowZoom), "framePreview", framePreview);
 	gtk_widget_show (framePreview);
 	gtk_box_pack_start (GTK_BOX (hboxFrames), framePreview, TRUE, TRUE, 0);
