@@ -37,6 +37,12 @@ extern "C" {
 // to compile on *BSD
 #define HAS_BOOL 1
 
+// perl uses some wacky define's for the SvTRUE macro's and the like which 
+// gcc (read: ISO C++) does not allow. Defining PERL_GCC_BRACE_GROUPS_FORBIDDEN 
+// forces 'perl' not these defines and to use another macro definition. See sv.h
+// for more information.
+#define PERL_GCC_BRACE_GROUPS_FORBIDDEN 1
+
 #include <EXTERN.h>
 #include <perl.h>
 
