@@ -279,7 +279,8 @@ PtWidget_t * AP_QNXDialog_PageNumbers::_constructWindow (void)
 	label1 = PtCreateWidget(PtLabel, vgroup_inner, n, args);
 
 	n = 0;
-    PtSetArg(&args[n++], Pt_ARG_WIDTH,  2* ABI_DEFAULT_BUTTON_WIDTH, 0);
+  PtSetArg(&args[n++], Pt_ARG_WIDTH,  2* ABI_DEFAULT_BUTTON_WIDTH, 0);
+	PtSetArg(&args[n++],Pt_ARG_TEXT_FLAGS,Pt_FALSE,Pt_EDITABLE);	
 	combo1 = PtCreateWidget(PtComboBox, vgroup_inner, n, args);
 	const char *add;
 	add = pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Footer); 
@@ -297,7 +298,9 @@ PtWidget_t * AP_QNXDialog_PageNumbers::_constructWindow (void)
 	label2 = PtCreateWidget(PtLabel, vgroup_inner, n, args);
 
 	n = 0;
-    PtSetArg(&args[n++], Pt_ARG_WIDTH,  2* ABI_DEFAULT_BUTTON_WIDTH, 0);
+  PtSetArg(&args[n++], Pt_ARG_WIDTH,  2* ABI_DEFAULT_BUTTON_WIDTH, 0);
+	PtSetArg(&args[n++],Pt_ARG_TEXT_FLAGS,Pt_FALSE,Pt_EDITABLE);	
+	
 	combo2 = PtCreateWidget(PtComboBox, vgroup_inner, n, args);
 	add = pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Right); 
 	PtListAddItems(combo2, &add, 1, 0);
