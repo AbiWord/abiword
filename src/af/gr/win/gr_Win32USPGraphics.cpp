@@ -110,7 +110,8 @@ class GR_Win32USPRenderInfo : public GR_RenderInfo
 		m_pJustify(NULL),
 		m_iZoom(100),
 		m_eJustification(SCRIPT_JUSTIFY_NONE),
-		m_bRejustify(true)
+		m_bRejustify(true),
+		m_bShapingFailed(false)
 	{
 		s_iInstanceCount++;
 		if(s_iInstanceCount == 1)
@@ -198,6 +199,8 @@ class GR_Win32USPRenderInfo : public GR_RenderInfo
 	SCRIPT_JUSTIFY   m_eJustification;
 
 	bool             m_bRejustify;
+	bool             m_bShapingFailed;
+	
 	
 	static int *     s_pAdvances;            // in device units, used for drawing
 	static int *     s_pJustifiedAdvances;   // in logical units, used for mapping x to CP
@@ -630,17 +633,16 @@ bool GR_Win32USPGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 		setFont(pFont);
 	}
 
+	RI->m_bShapingFailed = false;
+	
 	// we need to maker sure that the analysis embeding level is in sync with si.m_iVisDir
 	pItem->m_si.a.fRTL = si.m_iVisDir == FRIBIDI_TYPE_RTL ? 1 : 0;
 	HRESULT hRes = fScriptShape(m_hdc, pFont->getScriptCache(), pInChars, si.m_iLength, iGlyphBuffSize,
 							   & pItem->m_si.a, pGlyphs, RI->m_pClust, pVa, &iGlyphCount);
 
-	if(hRes)
+	if(hRes == E_OUTOFMEMORY)
 	{
 		// glyph buffer too small ...
-		UT_return_val_if_fail(hRes == E_OUTOFMEMORY, false);
-		UT_DEBUGMSG(("GR_Win32USPGraphics::itemize: glyph buffer too small (len %d)\n", iGlyphBuffSize));
-		
 		do
 		{
 			// try twice the buffer size
@@ -670,7 +672,29 @@ bool GR_Win32USPGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 
 		UT_return_val_if_fail(hRes == 0, false);
 	}
+	else if(hRes)
+	{
+		// Some kind of other problem; this happens, for example, when the font cannot be used by
+		// the shaping engine. For example, the Syriac text in World.abw fails unless it is
+		// formatted with a suitable otf font (e.g. Estrangelo Edessa from Bet Marduk)
+		// What we try to do as last resort is to disable shaping, and try
+		// to call the function again. This will result in some or all of the glyphs in the string
+		// being mapped to the missing glyph.
+		
+		UT_DEBUGMSG(("gr_Win32USPGraphics::shape: ScriptShape failed (hRes 0x%04x\n); disabling shaping\n"));
 
+		// we only disable shaping temporarily, because of the font changes later, we need to try again
+		RI->m_bShapingFailed = true;
+		WORD eScript = pItem->m_si.a.eScript;
+		pItem->m_si.a.eScript = GRScriptType_Undefined;
+
+		hRes = fScriptShape(m_hdc, pFont->getScriptCache(), pInChars, si.m_iLength, iGlyphBuffSize,
+						   & pItem->m_si.a, pGlyphs, RI->m_pClust, pVa, &iGlyphCount);
+
+		pItem->m_si.a.eScript = eScript;
+		UT_return_val_if_fail(hRes == 0, false);
+	}
+	
 	if(bDeleteGlyphs && bCopyGlyphs)
 	{
 		// glyphs are in dynamically allocated memory, so we just need
@@ -973,9 +997,16 @@ void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 			*(pFont->getScriptCache()) = NULL;
 		}
 	}
+
+	// need to disapble shaping if call to ScriptShape failed ...
+	WORD eScript = pItem->m_si.a.eScript;
+	if(RI.m_bShapingFailed)
+		pItem->m_si.a.eScript = GRScriptType_Undefined;
 	
 	HRESULT hRes = fScriptPlace(m_hdc, pFont->getScriptCache(), RI.m_pIndices, RI.m_iIndicesCount,
 							   RI.m_pVisAttr, & pItem->m_si.a, RI.m_pAdvances, RI.m_pGoffsets, & RI.m_ABC);
+
+	pItem->m_si.a.eScript = eScript;
 
 	// remember the zoom at which we calculated this ...
 	RI.m_iZoom = iZoom;
@@ -1476,7 +1507,8 @@ bool GR_Win32USPRenderInfo::split (GR_RenderInfo *&pri, bool bReverse)
 	UT_return_val_if_fail(pri->m_pItem, false);
 	
 	GR_Win32USPRenderInfo & RI = (GR_Win32USPRenderInfo &) *pri;
-
+	RI.m_bShapingFailed = m_bShapingFailed;
+	
 	UT_return_val_if_fail( m_iClustSize > m_iOffset, false );
 	
 	UT_uint32 iGlyphOffset = m_pClust[m_iOffset];
