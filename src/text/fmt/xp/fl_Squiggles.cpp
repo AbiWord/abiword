@@ -438,7 +438,6 @@ fl_Squiggles::textInserted(UT_sint32 iOffset, UT_sint32 iLength)
 	if (m_pOwner->getDocLayout()->isPendingWordForSpell())
 	{
 		// If not affected by insert, check it
-#if 0
 		if (!m_pOwner->getDocLayout()->touchesPendingWordForSpell(m_pOwner, iOffset, 0))
 		{
 			fl_PartOfBlock* pPending = m_pOwner->getDocLayout()->getPendingWordForSpell();
@@ -447,13 +446,19 @@ fl_Squiggles::textInserted(UT_sint32 iOffset, UT_sint32 iLength)
 			if (pPending->getOffset() > iOffset)
 				pPending->setOffset(pPending->getOffset() + chg);
 
+#if 0
 			m_pOwner->getDocLayout()->checkPendingWordForSpell();
-		}
-#endif 
+#else
 //
 // Remove the pending word. Trying to spellcheck it is giving us troubles
 //
+
+// What kind of trouble? Please refer a Bug # or symptom when
+// disabling code like this... Also see Bug 4453    jskov 2003.01.05
+
 		m_pOwner->getDocLayout()->setPendingWordForSpell(NULL,NULL);
+#endif 
+		}
 	}
 
 	// Recheck word at boundary
@@ -497,7 +502,6 @@ fl_Squiggles::textDeleted(UT_sint32 iOffset, UT_sint32 iLength)
 	if (m_pOwner->getDocLayout()->isPendingWordForSpell())
 	{
 		// If not affected by delete, check it
-#if 0
 		if (!m_pOwner->getDocLayout()->touchesPendingWordForSpell(m_pOwner, iOffset, chg))
 		{
 			fl_PartOfBlock* pPending = m_pOwner->getDocLayout()->getPendingWordForSpell();
@@ -506,13 +510,17 @@ fl_Squiggles::textDeleted(UT_sint32 iOffset, UT_sint32 iLength)
 			if (pPending->getOffset() > iOffset)
 				pPending->setOffset(pPending->getOffset() + chg);
 
+#if 0
 			m_pOwner->getDocLayout()->checkPendingWordForSpell();
-		}
-#endif
 //
 // Remove the pending word. Trying to spellcheck it is giving us troubles
 //
+
+// What kind of trouble? Please refer a Bug # or symptom when
+// disabling code like this... Also see Bug 4453    jskov 2003.01.05
 		m_pOwner->getDocLayout()->setPendingWordForSpell(NULL,NULL);
+#endif
+		}
 	}
 
 	// Recheck at boundary
@@ -767,10 +775,6 @@ fl_Squiggles::recheckIgnoredWords(const UT_UCSChar* pBlockText)
 
 	UT_sint32 iSquiggles = (UT_sint32) _getCount();
 	UT_sint32 i;
-	if(iSquiggles == 0)
-	{
-		return bUpdate;
-	}
 	for (i = iSquiggles-1; i >= 0; i--)
 	{
 		fl_PartOfBlock*	pPOB = getNth((UT_uint32) i);
