@@ -309,6 +309,7 @@ static int s_load_clicked (PtWidget_t *w, void *data, PtCallbackInfo_t *info)
 
 void XAP_QNXDialog_PluginManager::runModal(XAP_Frame * pFrame)
 {
+#if 0 
 	m_pFrame = pFrame;
 
 	XAP_QNXFrameImpl * pQNXFrameImpl = (XAP_QNXFrameImpl*)pFrame->getFrameImpl();
@@ -342,6 +343,8 @@ void XAP_QNXDialog_PluginManager::runModal(XAP_Frame * pFrame)
 
 	UT_QNXBlockWidget(parentWindow, 0);
 	PtDestroyWidget(mainWindow);
+#endif
+
 }
 
 PtWidget_t * XAP_QNXDialog_PluginManager::_constructWindow ()

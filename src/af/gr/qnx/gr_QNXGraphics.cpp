@@ -21,6 +21,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <math.h>
+#include <errno.h>
 #include <photon/Pf.h>
 #include <photon/PhRender.h>
 
@@ -56,6 +57,26 @@ const char* GR_Graphics::findNearestFont(const char* pszFontFamily,
 {
 	return pszFontFamily;
 }
+
+bool GR_QNXGraphics::OSCIsValid() {
+if(m_pOSC == NULL) 
+	return false;
+
+if(m_pDraw->area.size.w != m_pOSC->dim.w || m_pDraw->area.size.h != m_pOSC->dim.h)
+{
+PhDCSetCurrent(0);
+PhDCRelease(m_pOSC);
+m_pOSC = PdCreateOffscreenContext(0,m_pDraw->area.size.w,m_pDraw->area.size.h,0);
+PtDamageWidget(m_pDraw);
+}
+/*if(PdIsOffscreenValid(m_pOSC) == -1) {
+	PhDCRelease((PhDrawContext_t *)m_pOSC);
+	m_pOSC = NULL;
+	return false;
+}*/
+
+return true;
+}
 /***
  Initialization/Teardown for drawing on a widget outside of the normal
  stream of "damage" events
@@ -69,11 +90,21 @@ int GR_QNXGraphics::DrawSetup() {
 	//sometimes abi is stupid and calls a raw draw function without making sure we want to draw it (ie, Left ruler in normal view mode), therefor we do a simple check if our widget is realized or not...
 	if(PtWidgetIsRealized(m_pDraw) == 0) return -1;
 
-	m_pGC_old=PgSetGC(m_pGC);
 
+	if(OSCIsValid()) {
+		PtFlush();
+		if(PhDCSetCurrent(m_pOSC) == NULL)
+			UT_ASSERT(0); //we don't need a seperate GC as a DC already have one. 
+	} else {
+		UT_ASSERT(0);
+		//TODO: try to create  a new one!
+	}
 	//Set the region and the draw offset
 	PgSetRegion(PtWidgetRid(PtFindDisjoint(m_pDraw)));
 
+//	m_pGC_old=PgSetGC(m_pGC); //m_pOSC has it's own GC??
+
+#if 0 
 	PtWidgetOffset(m_pDraw, &m_OffsetPoint);
 	m_OffsetPoint.y+=m_pDraw->area.pos.y;
 	m_OffsetPoint.x+=m_pDraw->area.pos.x;
@@ -83,7 +114,7 @@ int GR_QNXGraphics::DrawSetup() {
 	trans.x = -m_OffsetPoint.x;
 	trans.y = -m_OffsetPoint.y;
 	PdSetOffscreenTranslation(m_pOSC,&trans);*/
-
+#endif
 	//Always clip to the canvas
 	PhRect_t _rdraw;
 	PtCalcCanvas(m_pDraw, &_rdraw);
@@ -105,7 +136,6 @@ int GR_QNXGraphics::DrawSetup() {
 	PtGetAbsPosition(m_pDraw,&abs.x,&abs.y);
 	PhDeTranslateRect(&_rdraw,&abs);*/
 	PgSetUserClip(&_rdraw);
-
 
 	return 0;
 
@@ -140,31 +170,38 @@ int GR_QNXGraphics::DrawTeardown() {
 
 	PgContextBlit(m_pOSC,&rect,NULL,&rect2); */
 
+#if 0
 	PgSetUserClip(NULL);
 	PgClearTranslation();
-
-	PgSetGC(m_pGC_old);
-//	PhDCSetCurrent(m_pOldDC);
+#endif
+	PhDCSetCurrent(0);
+	PgFlush();
+//	PgSetGC(m_pGC_old);
 
 	return 0;
 }
 
 
 GR_QNXGraphics::GR_QNXGraphics(PtWidget_t * win, PtWidget_t * draw, XAP_App *app)
+:
+	m_pWin(win),
+	m_pDraw(draw),
+	m_pFont(NULL),
+	m_pFontGUI(NULL),
+	m_pClipList(NULL),
+	m_iLineWidth(1),
+	m_currentColor(Pg_BLACK),
+	m_pPrintContext(NULL),
+	m_iAscentCache(-1),
+	m_iDescentCache(-1),
+	m_iHeightCache(-1)	
 {
 	m_pApp = app;
-	m_pWin = win;
-	m_pDraw = draw;
-	m_pGC = PgCreateGC(0);
-	m_pFont = NULL;
-	m_pFontGUI = NULL;
-	m_pClipList = NULL;
-	m_iLineWidth = 1;
-	m_currentColor = Pg_BLACK;
-	m_pPrintContext = NULL;
-	m_iAscentCache = m_iDescentCache = m_iHeightCache -1;
+//	m_pGC = PgCreateGC(0);
+	memset(&m_DamagedArea,0,sizeof(m_DamagedArea));
 
-//	m_pOSC = PdCreateOffscreenContext(0,draw->area.size.w,draw->area.size.h,NULL);
+	m_pOSC = PdCreateOffscreenContext(0,draw->area.size.w,draw->area.size.h,NULL);
+
 	m_pFontCx = PfAttachCx("/dev/phfont",240000);
 	
 	m_cs = GR_Graphics::GR_COLORSPACE_COLOR;
@@ -183,8 +220,10 @@ GR_QNXGraphics::~GR_QNXGraphics()
 	  PhImage_t * pImg = (PhImage_t	*)m_vSaveRectBuf.getNthItem (i);
 	  PgShmemDestroy(pImg);
 	}
-	PgDestroyGC(m_pGC);
-//	PhDCRelease(m_pOSC);
+//	PgDestroyGC(m_pGC);
+	PtFlush();
+	PhDCSetCurrent(0); //JIC
+	PhDCRelease(m_pOSC);
 	PfDetach(m_pFontCx);
 }
 
@@ -303,11 +342,11 @@ if(pCharWidths == NULL && iLength > 1) {
 
 	PhPoint_t pos = {_tduX(xoff),tdu(getFontAscent()) + _tduY(yoff)};
 	DRAW_START
-	GR_CaretDisabler caretDisabler(getCaret());
 //	PgSetTextColor(m_currentColor);	
 //	PgSetFont(m_pFont->getDisplayFont());
 	PgDrawText((const char *)ucs2buffer,iLength*2,&pos,Pg_TEXT_WIDECHAR|Pg_TEXT_LEFT);
 	DRAW_END
+	setDamage(pos.x,pos.y,tdu(getFontHeight()),m_pDraw->area.size.w);
 }
 else
 	for(int i=0;i<iLength;i++) {
@@ -322,16 +361,16 @@ void GR_QNXGraphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
 PhPoint_t pos = {_tduX(xoff),_tduY(yoff)+ tdu(getFontAscent())};
 UT_UCS2Char ucs2buffer[2] = {(UT_UCS2Char)Char,0};
 
-GR_CaretDisabler caretDisabler(getCaret());
 DRAW_START
 
 //PgSetTextColor(m_currentColor);	
 //PgSetFont(m_pFont->getDisplayFont());
 PgDrawText((const char *)&ucs2buffer,2,&pos,Pg_TEXT_WIDECHAR|Pg_TEXT_LEFT);
 DRAW_END
+setDamage(pos.x,pos.y,tdu(getFontHeight()),m_pDraw->area.size.w);
 }
 
-UT_uint32 GR_QNXGraphics::measureUnRemappedChar(const UT_UCSChar c)
+UT_sint32 GR_QNXGraphics::measureUnRemappedChar(const UT_UCSChar c)
 {
 float fWidth;
 //All other platforms do this, so why not..
@@ -542,7 +581,6 @@ void GR_QNXGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,
 			      UT_sint32 x2, UT_sint32 y2)
 {
 	if(getCaret() && getCaret()->isEnabled())
-		GR_CaretDisabler caretDisabler(getCaret());
 		DRAW_START
 
 
@@ -556,6 +594,7 @@ void GR_QNXGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,
 //	PgSetStrokeWidth(m_iLineWidth);
 	PgDrawILine(x1, y1, x2, y2);
 	DRAW_END
+	setDamage(__min(x1,x2),__min(y1,y2),__max(y1,y2),__max(x1,x2)); 
 }
 
 void GR_QNXGraphics::getCoverage(UT_Vector &coverage)
@@ -585,7 +624,6 @@ void GR_QNXGraphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
 {
 	int old;
 
-	GR_CaretDisabler caretDisabler(getCaret());
 	DRAW_START
 	old = PgSetDrawMode(Pg_DrawModeSRCXOR);
 
@@ -599,6 +637,7 @@ void GR_QNXGraphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
 	PgFlush();
 	PgSetDrawMode(old);
 	DRAW_END
+	setDamage(__min(x1,x2),__min(y1,y2),__max(y1,y2),__max(x1,x2)); 
 }
 
 void GR_QNXGraphics::polygon(UT_RGBColor& c,UT_Point *pts,UT_uint32 nPoints)
@@ -613,7 +652,6 @@ void GR_QNXGraphics::polygon(UT_RGBColor& c,UT_Point *pts,UT_uint32 nPoints)
 		points[i].y = _tduY(pts[i].y);
 	}
 	newc = PgRGB(c.m_red, c.m_grn, c.m_blu);
-	GR_CaretDisabler caretDisabler(getCaret());
 	DRAW_START
 	oldc = PgSetFillColor(newc);
 	
@@ -622,11 +660,11 @@ void GR_QNXGraphics::polygon(UT_RGBColor& c,UT_Point *pts,UT_uint32 nPoints)
 
 	PgSetFillColor(oldc);
 	DRAW_END
+	setDamage(0,0,-1,-1);
 }
 
 void GR_QNXGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 {
-	GR_CaretDisabler caretDisabler(getCaret());
 	for (UT_uint32 k=1; k<nPoints; k++)
 	{
 		drawLine(pts[k-1].x,pts[k-1].y, pts[k].x,pts[k].y);
@@ -637,7 +675,6 @@ void GR_QNXGraphics::invertRect(const UT_Rect* pRect)
 {
 	int old;
 	UT_ASSERT(pRect);
-	GR_CaretDisabler caretDisabler(getCaret());
 
 	DRAW_START
 
@@ -647,6 +684,7 @@ void GR_QNXGraphics::invertRect(const UT_Rect* pRect)
 	PgSetDrawMode(old);
 
 	DRAW_END
+	setDamage(tdu(pRect->left),tdu(pRect->top),tdu(pRect->height),tdu(pRect->width));
 }
 
 void GR_QNXGraphics::setClipRect(const UT_Rect* pRect)
@@ -684,13 +722,13 @@ void GR_QNXGraphics::fillRect(const UT_RGBColor & c, UT_sint32 x, UT_sint32 y,
 	h = _tduR(h);
 
 	newc = PgRGB(c.m_red, c.m_grn, c.m_blu);
-	GR_CaretDisabler caretDisabler(getCaret());
 	DRAW_START
 	
 	PgSetFillColor(newc);
 //	printf("fillRect RGB %d,%d %d/%d w/ %08x\n", x, y, w, h, newc);
 	PgDrawIRect(x, y, x+w, y+h, Pg_DRAW_FILL);
 	DRAW_END
+	setDamage(x,y,h,w);
 }
 
 inline void adjust_rect(PhRect_t *rect, PhPoint_t *offset) {
@@ -711,7 +749,6 @@ inline void adjust_rect(PhRect_t *rect, PhPoint_t *offset) {
 	}
 }
 
-//TODO: FIXup this code!
 void GR_QNXGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 {
 	PhRect_t  rect;
@@ -727,6 +764,8 @@ void GR_QNXGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 	{
 		return;
 	}
+
+	//TODO: this + OSC?!??!
 	PtCalcCanvas(m_pDraw, &rect);
 	UT_sint32 iddy = labs(ddy);
 	offset.x = ddx;
@@ -734,6 +773,7 @@ void GR_QNXGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 	bool bEnableSmooth = m_pApp->isSmoothScrollingEnabled();
 	bEnableSmooth = bEnableSmooth && (iddy < 30) && (ddx == 0);
 
+	bEnableSmooth=false; //XXX TEMPORARY!!
 	if(bEnableSmooth) 
 	{
 		if(ddy < 0)
@@ -758,11 +798,19 @@ void GR_QNXGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 		}
 	} else 
 	{
-		PhPoint_t shift;
+/*		PhPoint_t shift;
 		PtWidgetOffset(m_pDraw, &shift);
 		PhTranslateRect(&rect, &shift);	
 		adjust_rect(&rect, &offset);
 		PhBlit(PtWidgetRid(PtFindDisjoint(m_pDraw)), &rect, &offset);
+*/
+		PhRect_t dst_rect;
+		
+		dst_rect.ul.x = rect.ul.x + offset.x; //should be 0... 
+		dst_rect.lr.x = rect.lr.x - offset.x;
+		dst_rect.ul.y = rect.ul.y + offset.y;
+		dst_rect.lr.y = rect.lr.y - offset.y;
+		PgContextBlit(m_pOSC,&rect,m_pOSC,&dst_rect);
 	}
 }
 
@@ -773,24 +821,34 @@ void GR_QNXGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 	GR_CaretDisabler caretDisabler(getCaret());
 	PhPoint_t shift,offset;
 	PhRect_t rect;
+	PhRect_t dst_rect;
 
 	rect.ul.x = tdu(x_src);
 	rect.ul.y = tdu(y_src);
 	rect.lr.x = tdu(width+x_src);
 	rect.lr.y = tdu(height+y_src);
 
+	dst_rect.ul.x = tdu(x_dest);
+	dst_rect.ul.y = tdu(y_dest);
+	dst_rect.lr.x = tdu(width+x_dest);
+	dst_rect.lr.y = tdu(height+y_dest);
+
+/*
 	offset.x = tdu(x_dest - x_src);
 	offset.y = tdu(y_dest - y_src); 
 
 	PtWidgetOffset(m_pDraw, &shift);
 	PhTranslateRect(&rect, &shift);	
 	PhBlit(PtWidgetRid(PtFindDisjoint(m_pDraw)), &rect, &offset);
+*/
+
+	PgContextBlit(m_pOSC,&rect,m_pOSC,&dst_rect);
 }
 
 void GR_QNXGraphics::clearArea(UT_sint32 x, UT_sint32 y,
 				 UT_sint32 width, UT_sint32 height)
 {
-	UT_RGBColor clrWhite(255,255,255);
+	static const UT_RGBColor clrWhite(255,255,255);
 	fillRect(clrWhite, x, y, width, height);
 }
 
@@ -829,12 +887,12 @@ void GR_QNXGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
 	PhImage_t * image = pQNXImage->getData();
 	PhPoint_t pos;
 
-	GR_CaretDisabler caretDisabler(getCaret());
 	DRAW_START
 
 	pos.x = xDest; pos.y = yDest;
 	PgDrawPhImage(&pos,image,NULL);
 	DRAW_END
+	setDamage(pos.x,pos.y,image->size.h,image->size.w);
 }
 
 void GR_QNXGraphics::setColorSpace(GR_Graphics::ColorSpace /* c */)
@@ -959,7 +1017,6 @@ void GR_QNXGraphics::setColor3D(GR_Color3D c)
 	m_currentColor = m_3dColors[c];
 	DRAW_START
 
-	GR_CaretDisabler caretDisabler(getCaret());
 	PgSetStrokeColor(m_currentColor);
 	PgSetFillColor(m_currentColor);
 	PgSetTextColor(m_currentColor); //do we need this?
@@ -985,12 +1042,12 @@ void GR_QNXGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 
 	w = _tduR(w);
 	h = _tduR(h);
 
-	GR_CaretDisabler caretDisabler(getCaret());
 	DRAW_START
 	PgSetFillColor(m_3dColors[c]);
 //	fprintf(stderr,"FillRect 3D %d,%d %d/%d w %08x\n", x, y, x+w, y+w, m_3dColors[c]);
 	PgDrawIRect(x, y, x+w, y+h, Pg_DRAW_FILL);
 	DRAW_END
+	setDamage(x,y,h,w);
 }
 
 void GR_QNXGraphics::fillRect(GR_Color3D c, UT_Rect &r)
@@ -1082,6 +1139,11 @@ GR_Image * GR_QNXGraphics::genImageFromRectangle(const UT_Rect & r) {
 	short int x,y;
 	PhImage_t *pImgshmem,*pImg;
 
+	//since this reads from the visual screen, make sure it's up to date!
+	//XXX:TODO:FIXME!!
+	PgFlush();
+	PgWaitDrawComplete();
+
 	PtGetAbsPosition(m_pDraw,&x,&y);
 	rect.ul.x=x + _tduX(r.left);
 	rect.ul.y=y + _tduY(r.top);
@@ -1118,8 +1180,12 @@ void GR_QNXGraphics::saveRectangle(UT_Rect &r, UT_uint32 iIndx)
     return;
   }
 #endif
-		
-  void * oldR = NULL;
+
+	//this reads from the screen, make sure it's uptodate
+	//XXX:TODO:FIXME!!	
+	PgFlush();
+	PgWaitDrawComplete();
+	void * oldR = NULL;
   m_vSaveRect.setNthItem(iIndx, (void*)new UT_Rect(r),&oldR);
   if(oldR)
     delete (UT_Rect*)oldR;
@@ -1148,19 +1214,82 @@ void GR_QNXGraphics::restoreRectangle(UT_uint32 iIndx)
 
   if((r && pImg))
     {
-      PhPoint_t pos;
-      
-      DRAW_START
-	
+	PhPoint_t pos;
+
+	DRAW_START
 	pos.x=_tduX(r->left);
-        pos.y=_tduY(r->top);
+	pos.y=_tduY(r->top);
       
 	PgDrawPhImage(&pos,pImg,0);
-      DRAW_END
+	setDamage(pos.x,pos.y,pImg->size.h,pImg->size.w);
+	DRAW_END
     }
   return;
 }
 
+void GR_QNXGraphics::_beginPaint() {
+memset(&m_DamagedArea,0,sizeof(m_DamagedArea));
+}
+
+//small helper function for endDraw that isn't encapsulated in DRAW_START/DRAW_END
+void GR_QNXGraphics::blitScreen() {
+
+if(!m_DamagedArea.size.w || !m_DamagedArea.size.h)  //don't blit if nothing changed.
+	return;
+
+if(OSCIsValid()) {
+	PhArea_t screenarea;
+	PhPoint_t pnt;
+	PtWidgetOffset(m_pDraw,&pnt);
+	screenarea.pos.x = pnt.x + m_DamagedArea.pos.x;
+	screenarea.pos.y = pnt.y + m_DamagedArea.pos.y;
+	screenarea.size.w = m_DamagedArea.size.w;
+	screenarea.size.h = m_DamagedArea.size.h;
+	PgFlush();
+	PgContextBlitArea(m_pOSC,&m_DamagedArea,NULL,&screenarea);
+	PgFlush();
+	UT_DEBUGMSG(("Blitted m_pOSC(0x%x) (%d,%d,%d,%d) to (%d,%d,%d,%d)",m_pOSC,m_DamagedArea.pos.x,m_DamagedArea.pos.y,m_DamagedArea.size.w,m_DamagedArea.size.h,screenarea.pos.x,screenarea.pos.y,screenarea.size.w,screenarea.size.h));
+}
+}
+
+void GR_QNXGraphics::_endPaint() {
+//blit to screen...
+//we might need to do some magic here to make sure we don't blit the whole area everytime.. might be slow.. :P
+//in every draw function, have a rect which you extend with the area which is being modified, then we'll reset it after drawing here...
+	DRAW_START
+	blitScreen();
+	DRAW_END
+}
+
+void GR_QNXGraphics::setDamage(int ulx,int uly,int h,int w)  {
+
+	if(ulx < 0 || uly < 0 || h < 0 || w < 0) UT_ASSERT(0);
+
+	UT_DEBUGMSG(("SetDamage input= %d,%d,%d,%d",ulx,uly,h,w));
+	//check clipping.. ?
+	if(ulx >= m_pDraw->area.size.w || uly >= m_pDraw->area.size.h) return;
+
+	int lrx,lry;
+
+	lrx = ulx+w;
+	lry = uly+h;
+
+	if(lrx > m_pDraw->area.size.w) w=m_pDraw->area.size.w - ulx;
+	if(lry > m_pDraw->area.size.h) h=m_pDraw->area.size.h - uly;
+
+	if(w == -1) w = m_pDraw->area.size.w - ulx; 
+	if(h == -1) h = m_pDraw->area.size.h - uly;
+
+	if(m_DamagedArea.size.w < w)
+		m_DamagedArea.size.w = w + ((ulx>m_DamagedArea.pos.x) ? (ulx - m_DamagedArea.pos.x) : 0);
+	if(m_DamagedArea.size.h < h)
+		m_DamagedArea.size.h = h + ((uly>m_DamagedArea.pos.y) ? (uly - m_DamagedArea.pos.y) : 0); 
+	if(m_DamagedArea.pos.x > ulx)
+		m_DamagedArea.pos.x = ulx;
+	if(m_DamagedArea.pos.y > uly)
+		m_DamagedArea.pos.y = uly;
+	xxx_UT_DEBUGMSG(("SetDamage output=%d,%d,%d,%d",m_DamagedArea.pos.x,m_DamagedArea.pos.y,m_DamagedArea.size.h,m_DamagedArea.size.w));
+}
 
 /* FONT ROUTINES */
 
@@ -1237,7 +1366,6 @@ return (rect.lr.x - min(rect.ul.x,0));
 }
 void GR_QNXGraphics::setZoomPercentage(UT_uint32 iZoom)
 {
-	UT_DEBUGMSG(("Set Zoom!!!! deleting: 0x%x",m_pFontGUI));
 	DELETEP (m_pFontGUI);
 	if(m_pFont)
 		m_pFont->deleteDisplayFont();

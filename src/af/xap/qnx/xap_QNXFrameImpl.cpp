@@ -214,7 +214,7 @@ int XAP_QNXFrameImpl::_fe::do_ZoomUpdate(void * /*XAP_QNXFrameImpl * */ p)
 			*/
 			pView->setWindowSize(iNewWidth, iNewHeight);
 			pFrame->quickZoom();
-			PtFlush();
+//			PtFlush();
 		}
 		else
 		{

@@ -25,8 +25,8 @@
 #include "xap_QNXFrameImpl.h"
 #include "gr_QNXGraphics.h"
 #include "ap_QNXTopRuler.h"
-#include <stdio.h>
 #include "fv_View.h"
+#include <stdio.h>
 
 #define REPLACEP(p,q)	do { if (p) delete p; p = q; } while (0)
 #define ENSUREP(p)		do { UT_ASSERT(p); if (!p) goto Cleanup; } while (0)
@@ -233,7 +233,6 @@ int AP_QNXTopRuler::_fe::motion_notify_event(PtWidget_t* w, void *data, PtCallba
 	get_stuff(info, &ems, NULL, &mx, &my);
 
 	pQNXTopRuler->mouseMotion(ems,  pQNXTopRuler->getGraphics()->tlu(mx),  pQNXTopRuler->getGraphics()->tlu(my));
-	PgFlush();
 
 	return Pt_CONTINUE;
 }

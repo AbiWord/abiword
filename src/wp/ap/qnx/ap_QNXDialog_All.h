@@ -74,8 +74,10 @@
 #if 0
 #	include "ap_QNXDialog_Download_File.h"
 #endif
+#include "ap_QNXDialog_SplitCells.h"
 #include "ap_QNXDialog_MergeCells.h"
 #include "ap_QNXDialog_FormatTable.h"
+#include "ap_QNXDialog_FormatFrame.h"
 #include "ap_QNXDialog_FormatFootnotes.h"
 	// ... add new dialogs here ...
 

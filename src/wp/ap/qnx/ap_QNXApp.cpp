@@ -64,6 +64,7 @@
 
 
 #include "gr_Graphics.h"
+#include "gr_Painter.h"
 #include "gr_QNXGraphics.h"
 #include "gr_Image.h"
 #include "ut_bytebuf.h"
@@ -428,7 +429,8 @@ static int s_hideSplash(PtWidget_t *w, void *data, PtCallbackInfo_t *info)
 static int s_drawingarea_expose(PtWidget_t *widget, PhTile_t *damage) {
 
 	if (pQNXGraphics && pSplashImage) {
-		pQNXGraphics->drawImage(pSplashImage, 0, 0);
+		GR_Painter painter(pQNXGraphics);
+		painter.drawImage(pSplashImage, 0, 0);
 
 		// on the first full paint of the image, start a 2 second timer
 		if (!firstExpose) {

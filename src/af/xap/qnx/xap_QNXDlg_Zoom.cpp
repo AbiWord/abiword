@@ -267,7 +267,6 @@ void XAP_QNXDialog_Zoom::runModal(XAP_Frame * pFrame)
 	UT_QNXCenterWindow(parentWindow, mainWindow);
 	UT_QNXBlockWidget(parentWindow, 1);
 	PtRealizeWidget(mainWindow);
-	PgFlush();
 	
 	int count;
 	count = PtModalStart();
