@@ -247,7 +247,7 @@ EXTRA_LIBS=	-L$(DIST)/lib 						\
 		$(addprefix -l,$(addsuffix $(MOD_VERSION),$(ABI_OTHLIBS))) \
 		$(addprefix -l,$(ABI_LIBS))	\
 		`gtk-config --libs`	\
-		-L$(WXLIBDIR) -lwx_gtk
+		-L$(WXLIBDIR) -lwx_gtk -ldl
 
 WXINCLUDE=	-D__WXGTK__ -I$(WXINCDIR)
 endif
