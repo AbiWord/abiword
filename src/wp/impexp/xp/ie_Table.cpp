@@ -663,6 +663,7 @@ void ie_imp_cell::setCellSDH(PL_StruxDocHandle cellSDH)
 void ie_imp_cell::writeCellPropsInDoc(void)
 {
 	UT_return_if_fail(m_cellSDH);
+	xxx_UT_DEBUGMSG(("Cell props are %s \n",m_sCellProps.c_str()));
 	m_pDoc->changeStruxAttsNoUpdate(m_cellSDH,"props",m_sCellProps.c_str());
 }
 
@@ -840,7 +841,7 @@ bool ie_imp_table::getVecOfCellsOnRow(UT_sint32 row, UT_Vector * pVec)
 		else
 		{
 			pVec->addItem(static_cast<void *>(pCell));
-			UT_DEBUGMSG(("SEVIOR: Adding cell %d with cellx %d to row vec \n",i-iFound,pCell->getCellX()));
+			xxx_UT_DEBUGMSG(("SEVIOR: Adding cell %d with cellx %d to row vec \n",i-iFound,pCell->getCellX()));
 		}
 	}
 	return true;
@@ -848,7 +849,7 @@ bool ie_imp_table::getVecOfCellsOnRow(UT_sint32 row, UT_Vector * pVec)
 
 bool ie_imp_table::doCellXMatch(UT_sint32 iCellX1, UT_sint32 iCellX2)
 {
-	UT_sint32 fuz = 50; // CellXs within 50 TWIPS are assumed to be the same
+	UT_sint32 fuz = 100; // CellXs within 100 TWIPS are assumed to be the same
 	if(iCellX1 > iCellX2)
 	{
 		if((iCellX1 - iCellX2) < fuz)
@@ -878,7 +879,7 @@ bool ie_imp_table::doCellXMatch(UT_sint32 iCellX1, UT_sint32 iCellX2)
   */
 UT_sint32 ie_imp_table::NewRow(void)
 {
-	UT_DEBUGMSG(("Doing NewRow in ie_imp_table rowcounter %d \n",m_iRowCounter));
+	xxx_UT_DEBUGMSG(("Doing NewRow in ie_imp_table rowcounter %d \n",m_iRowCounter));
 	if(m_iRowCounter > 0)
 	{
 		ie_imp_cell * pCell = getNthCellOnRow(0);
@@ -931,7 +932,7 @@ UT_sint32 ie_imp_table::NewRow(void)
 				iMatch++;
 			}
 		}
-		UT_DEBUGMSG(("SEVIOR: iMatch = %d \n",iMatch));
+		xxx_UT_DEBUGMSG(("SEVIOR: iMatch = %d \n",iMatch));
 		if(iMatch == 0)
 		{
 			return +1;
@@ -967,7 +968,7 @@ void ie_imp_table::setCellRowNthCell(UT_sint32 row, UT_sint32 col)
 		pCell = static_cast<ie_imp_cell *>(m_vecCells.getNthItem(i));
 		if(pCell->getRow() == row)
 		{
-			UT_DEBUGMSG(("SEVIOR: col %d colcount %d \n",col,ColCount));
+			xxx_UT_DEBUGMSG(("SEVIOR: col %d colcount %d \n",col,ColCount));
 			if(col == ColCount)
 			{
 				bFound = true;
@@ -1009,7 +1010,7 @@ PL_StruxDocHandle ie_imp_table::getTableSDH(void)
 void ie_imp_table::setTableSDH(PL_StruxDocHandle sdh)
 {
 	m_tableSDH = sdh;
-	UT_DEBUGMSG(("SEVIOR: Table sdh set to %x \n",sdh));
+	xxx_UT_DEBUGMSG(("SEVIOR: Table sdh set to %x \n",sdh));
 }
 
 /*!
@@ -1073,7 +1074,7 @@ void ie_imp_table::writeTablePropsInDoc(void)
 		}
 		setProp("table-column-props",sColWidth.c_str());
 	}
-	UT_DEBUGMSG(("SEVIOR: props: %s \n",m_sTableProps.c_str()));
+	xxx_UT_DEBUGMSG(("SEVIOR: props: %s \n",m_sTableProps.c_str()));
 	m_pDoc->changeStruxAttsNoUpdate(m_tableSDH,"props",m_sTableProps.c_str());
 }
 
@@ -1092,7 +1093,7 @@ void ie_imp_table::writeAllCellPropsInDoc(void)
 		pCell = static_cast<ie_imp_cell *>(m_vecCells.getNthItem(i));
 		if(!pCell->isMergedAbove() && !pCell->isMergedRight() && !pCell->isMergedLeft())
 		{
-			UT_DEBUGMSG(("SEVIOR: pCell %d row %d left %d right %d top %d bot %d sdh %x \n",i,pCell->getRow(),pCell->getLeft(),pCell->getRight(),pCell->getTop(),pCell->getBot(),pCell->getCellSDH())); 
+			xxx_UT_DEBUGMSG(("SEVIOR: pCell %d row %d left %d right %d top %d bot %d sdh %x \n",i,pCell->getRow(),pCell->getLeft(),pCell->getRight(),pCell->getTop(),pCell->getBot(),pCell->getCellSDH())); 
 			pCell->writeCellPropsInDoc();
 		}
 		if(pCell->isMergedAbove() && (pCell->getCellSDH() != NULL))
@@ -1250,7 +1251,7 @@ UT_sint32 ie_imp_table::getColNumber(ie_imp_cell * pImpCell)
 	}
 	if(bFound)
 	{
-		UT_DEBUGMSG(("SEVIOR: looking for cellx %d found at %d \n",cellx,i));
+		xxx_UT_DEBUGMSG(("SEVIOR: looking for cellx %d found at %d \n",cellx,i));
 		return iFound+1;
 	}
 	return -1;
@@ -1291,7 +1292,7 @@ void ie_imp_table::buildTableStructure(void)
 // Start by building a vector of cellX's
 //
 	_buildCellXVector();
-	UT_DEBUGMSG(("Building table structure \n"));
+	xxx_UT_DEBUGMSG(("Building table structure \n"));
 //
 // Now construct the table structure.
 //
@@ -1320,7 +1321,7 @@ void ie_imp_table::buildTableStructure(void)
 //
 // This cell is vertically merged. Advance the left pointer to the position after this cell.
 //
-			UT_DEBUGMSG(("SEVIOR: This cell is meregd above!!!!!!!!! cellx %d \n",cellx));
+			xxx_UT_DEBUGMSG(("SEVIOR: This cell is meregd above!!!!!!!!! cellx %d \n",cellx));
 			iLeft = getColNumber(pCell);
 			bSkipThis = true;
 		}
@@ -1329,7 +1330,7 @@ void ie_imp_table::buildTableStructure(void)
 //
 // This cell is Horizontally merged. Advance the left pointer to the position after this cell. Increment iRight
 //
-			UT_DEBUGMSG(("SEVIOR: This cell is meregd Left!!!!!!!!! cellx %d \n",cellx));
+			xxx_UT_DEBUGMSG(("SEVIOR: This cell is meregd Left!!!!!!!!! cellx %d \n",cellx));
 			bSkipThis = true;
 		}
 		else
@@ -1344,10 +1345,10 @@ void ie_imp_table::buildTableStructure(void)
 			//
 			UT_sint32 newRow = curRow+1;
 			ie_imp_cell * pNewCell = getCellAtRowColX(newRow,pCell->getCellX());
-			UT_DEBUGMSG(("SEVIOR: This cell is first vertical mereged cell class %x cellx %d \n",pNewCell,cellx));
+			xxx_UT_DEBUGMSG(("SEVIOR: This cell is first vertical mereged cell class %x cellx %d \n",pNewCell,cellx));
 			if(pNewCell)
 			{
-				UT_DEBUGMSG(("SEVIOR: this cellx %d, found cellx %d, found row %d \n",cellx,pNewCell->getCellX(),pNewCell->getRow()));
+				xxx_UT_DEBUGMSG(("SEVIOR: this cellx %d, found cellx %d, found row %d \n",cellx,pNewCell->getCellX(),pNewCell->getRow()));
 			}
 			while(pNewCell && (pNewCell->isMergedAbove()) )
 			{
@@ -1355,7 +1356,7 @@ void ie_imp_table::buildTableStructure(void)
 				pNewCell = getCellAtRowColX(newRow,pCell->getCellX());
 			}
 			iBot = newRow;
-			UT_DEBUGMSG(("SEVIOR: This cell bottom is %d \n",iBot));
+			xxx_UT_DEBUGMSG(("SEVIOR: This cell bottom is %d \n",iBot));
 		}
 		else
 		{
@@ -1372,7 +1373,7 @@ void ie_imp_table::buildTableStructure(void)
 			pCell->setRight(iRight);
 			pCell->setTop(iTop);
 			pCell->setBot(iBot);
-			UT_DEBUGMSG(("SEVIOR: cellx %d Left %d Right %d top %d bot %d \n",pCell->getCellX(),iLeft,iRight,iTop,iBot));
+			xxx_UT_DEBUGMSG(("SEVIOR: cellx %d Left %d Right %d top %d bot %d \n",pCell->getCellX(),iLeft,iRight,iTop,iBot));
 		}
 //
 // Advance left attach to the right most cell.
@@ -1474,7 +1475,7 @@ bool ie_imp_table::removeRow(UT_sint32 row)
 	i = iFound;
 	while(pCell != NULL && i < static_cast<UT_sint32>(m_vecCells.getItemCount()))
 	{
-		UT_DEBUGMSG(("SEVIOR: Removing cell %x from row %d \n",pCell,row));
+		xxx_UT_DEBUGMSG(("SEVIOR: Removing cell %x from row %d \n",pCell,row));
 		m_vecCells.deleteNthItem(i);
 		if(i<static_cast<UT_sint32>(m_vecCells.getItemCount()))
 		{
@@ -1646,7 +1647,7 @@ bool ie_imp_table_control::NewRow(void)
 	{
 		return bres;
 	}
-	UT_DEBUGMSG(("Number of cells on row %d \n",vecRow.getItemCount()));
+	xxx_UT_DEBUGMSG(("Number of cells on row %d \n",vecRow.getItemCount()));
 //
 // Got last row, now remove it.
 //

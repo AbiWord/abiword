@@ -1509,6 +1509,8 @@ void IE_Imp_RTF::OpenTable(void)
 	UT_DEBUGMSG(("SEVIOR: Table strux sdh is %x \n",sdh));
 	getTable()->setTableSDH(sdh);
 	getTable()->OpenCell();
+	FlushCellProps();
+	ResetCellAttributes();
 	getDoc()->appendStrux(PTX_SectionCell,NULL);
 	sdh = getDoc()->getLastStruxOfType(PTX_SectionCell);
 	getCell()->setCellSDH(sdh);
@@ -1601,6 +1603,8 @@ void IE_Imp_RTF::HandleCell(void)
 		UT_sint32 pos  = getTable()->OpenCell();
 		getTable()->setPosOnRow(pos);
 		UT_DEBUGMSG(("SEVIOR: created cell %x for posOnRow %d \n",getCell(),getTable()->getPosOnRow()));
+		FlushCellProps();
+		ResetCellAttributes();
 
 	}
 	UT_DEBUGMSG(("SEVIOR: set cell sdh %x  at pos %d on row %d \n",sdh,getTable()->getPosOnRow(),getTable()->getRow()));
@@ -1713,9 +1717,9 @@ void IE_Imp_RTF::HandleCellX(UT_sint32 cellx)
 	UT_ASSERT(cellx>1);
 	getTable()->setCellX(cellx);
 	UT_DEBUGMSG(("set cellx for class %x to %d \n",getCell(),cellx));
+	getTable()->incCellXOnRow();
 	FlushCellProps();
 	ResetCellAttributes();
-	getTable()->incCellXOnRow();
 }
 
 void IE_Imp_RTF::HandleRow(void)
@@ -4073,6 +4077,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 			UT_sint32 iCol = static_cast<UT_sint32>(param);
 			UT_uint32 colour = GetNthTableColour(iCol);
 			UT_String_sprintf(sColor, "%06x", colour);
+			UT_DEBUGMSG(("Writing background color %s to properties \n",sColor.c_str()));
 			_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"background-color",sColor.c_str());
 		}
 		break;
@@ -7742,7 +7747,7 @@ bool IE_Imp_RTF::ReadColourTable()
 	bool paramUsed = false;
 	if (!ReadCharFromFile(&ch))
 		return false;
-
+	bool bValidColor = false;
 	while (ch != '}')
 	{
 		UT_uint32 colour = 0;
@@ -7752,7 +7757,7 @@ bool IE_Imp_RTF::ReadColourTable()
 			if (!ReadCharFromFile(&ch))
 				return false;
 		}
-
+		bValidColor = false;
 		// Create a new entry for the colour table
  		if (ch == ';')
 		{
@@ -7768,8 +7773,10 @@ bool IE_Imp_RTF::ReadColourTable()
 				long green = 0;
 				long blue = 0;
 				bool hasRed, hasGreen, hasBlue;
-				hasRed = hasGreen = hasBlue = false;
-
+				hasRed = false;
+				hasGreen = false;
+				hasBlue = false;
+				
 				for (int i = 0; i < 3; i++)
 				{
 					// read Red, Green and Blue values (will be in that order).
@@ -7819,7 +7826,9 @@ bool IE_Imp_RTF::ReadColourTable()
 						tableError = true;
 					}
 				}
-				colour = static_cast<unsigned char>(red << 16 | static_cast<unsigned char>(green << 8 | static_cast<unsigned char>(blue)));
+				colour = static_cast<UT_uint32>(red << 16) | static_cast<UT_uint32>(green << 8) | static_cast<UT_uint32>(blue);
+				UT_DEBUGMSG(("colour %d red %d green %d blue %d \n",colour,red,green,blue)); 
+				bValidColor = true;
 			}
 			else {
 				tableError = true;
@@ -7831,8 +7840,9 @@ bool IE_Imp_RTF::ReadColourTable()
 			UT_DEBUGMSG (("RTF color Table error\n"));
 			return false;
 		}
-		else if(ch!= '}')
+		else if(ch!= '}' || bValidColor)
 		{
+			UT_DEBUGMSG(("Add colour %d to table \n",colour));
 			m_colourTable.addItem(reinterpret_cast<void*>(colour));
 
 			// Read in the next char

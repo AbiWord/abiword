@@ -1432,7 +1432,7 @@ void s_RTF_ListenerWriteDoc::_fillCellProps(PT_AttrPropIndex api, UT_String & sC
 	if (pszBorderWidth && *pszBorderWidth)
 	{
 		sProp = "bot-thickness";
-		sPropVal= pszBorderStyle;
+		sPropVal= pszBorderWidth;
 		UT_String_setProperty(sCellProps,sProp,sPropVal);
 	}
 	pszBorderColor = NULL;
@@ -1458,7 +1458,7 @@ void s_RTF_ListenerWriteDoc::_fillCellProps(PT_AttrPropIndex api, UT_String & sC
 	if (pszBorderWidth && *pszBorderWidth)
 	{
 		sProp = "left-thickness";
-		sPropVal= pszBorderStyle;
+		sPropVal= pszBorderWidth;
 		UT_String_setProperty(sCellProps,sProp,sPropVal);
 	}
 
@@ -1485,7 +1485,7 @@ void s_RTF_ListenerWriteDoc::_fillCellProps(PT_AttrPropIndex api, UT_String & sC
 	if (pszBorderWidth && *pszBorderWidth)
 	{
 		sProp = "right-thickness";
-		sPropVal= pszBorderStyle;
+		sPropVal= pszBorderWidth;
 		UT_String_setProperty(sCellProps,sProp,sPropVal);
 	}
 
@@ -1511,7 +1511,7 @@ void s_RTF_ListenerWriteDoc::_fillCellProps(PT_AttrPropIndex api, UT_String & sC
 	if (pszBorderWidth && *pszBorderWidth)
 	{
 		sProp = "top-thickness";
-		sPropVal= pszBorderStyle;
+		sPropVal= pszBorderWidth;
 		UT_String_setProperty(sCellProps,sProp,sPropVal);
 	}
 
