@@ -1057,7 +1057,17 @@ void GR_Win32Graphics::handleSetCursorMessage(void)
 
 	case GR_CURSOR_LINK:
 	case GR_CURSOR_GRAB:
+#ifndef IDC_HAND
 		cursor_name = MAKEINTRESOURCE(IDC_ABIHAND);
+#else
+		if (UT_IsWin95())
+			cursor_name = MAKEINTRESOURCE(IDC_ABIHAND);
+		else
+		{
+			cursor_name = IDC_HAND;
+			hinst = NULL;
+		}
+#endif
 		break;
 
 	case GR_CURSOR_EXCHANGE:
@@ -1067,11 +1077,10 @@ void GR_Win32Graphics::handleSetCursorMessage(void)
 	case GR_CURSOR_IBEAM:
 		cursor_name = IDC_IBEAM;
 		hinst = NULL;
-		break;
+		break;	
 
 	case GR_CURSOR_RIGHTARROW:
-		cursor_name = IDC_ARROW;		// TODO change this
-		hinst = NULL;
+		cursor_name = MAKEINTRESOURCE(IDC_ABIRIGHTARROW);
 		break;
 
 	case GR_CURSOR_LEFTARROW:

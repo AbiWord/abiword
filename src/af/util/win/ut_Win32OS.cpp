@@ -58,6 +58,15 @@ bool UT_IsWin2K(void)
 		 && UT_GetWinVersion().dwMajorVersion >= 5);
 }
 
+/*!
+ Return true if we're running on Windows 95, false otherwise
+ */
+bool UT_IsWin95(void)
+{
+	return (UT_GetWinVersion().dwPlatformId == VER_PLATFORM_WIN32_WINDOWS
+		 && UT_GetWinVersion().dwMajorVersion == 4 && UT_GetWinVersion().dwMinorVersion == 0);
+}
+
 /*****************************************************************/
 
 /*!
