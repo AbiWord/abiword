@@ -151,7 +151,6 @@ PtWidget_t * AP_QNXDialog_ListRevisions::_constructWindow(void)
 PtWidget_t *mainwindow;
 PtWidget_t *btnOk;
 PtWidget_t *btnCancel;
-PtWidget_t *title;
 PtWidget_t *lstRevisions;
 
 PtWidget_t *grp;
@@ -167,14 +166,18 @@ const XAP_StringSet *pSS = m_pApp->getStringSet();
 
 	PtSetArg(&args[n++],Pt_ARG_GROUP_ORIENTATION,Pt_GROUP_VERTICAL,0);
 	PtSetArg(&args[n++],Pt_ARG_GROUP_ROWS_COLS,2,0);
-	PtSetArg(&args[n++],Pt_ARG_GROUP_FLAGS,Pt_TRUE,Pt_GROUP_EQUAL_SIZE_HORIZONTAL);
 	grp=PtCreateWidget(PtGroup,Pt_DEFAULT_PARENT,n,args);
 	n=0;
 
-	PtSetArg(&args[n++],Pt_ARG_HEIGHT,150,0);
+	PtSetArg(&args[n++],Pt_ARG_HEIGHT,250,0);
 	PtSetArg(&args[n++],Pt_ARG_WIDTH,150,0);
+	PtSetArg(&args[n++],Pt_ARG_RESIZE_FLAGS,Pt_TRUE,Pt_RESIZE_X_AS_REQUIRED);
 	lstRevisions = PtCreateWidget( PtList, Pt_DEFAULT_PARENT, n,args );
 	n=0;
+	
+	PtSetArg(&args[n++],Pt_ARG_ANCHOR_FLAGS,Pt_TRUE,Pt_LEFT_ANCHORED_LEFT|Pt_RIGHT_ANCHORED_RIGHT);
+	PtSetArg(&args[n++],Pt_ARG_RESIZE_FLAGS,Pt_TRUE,Pt_RESIZE_X_AS_REQUIRED);
+	PtSetArg(&args[n++],Pt_ARG_WIDTH,300,0);
 	PtCreateWidget( PtDivider, lstRevisions, n,args);
 	n=0;
 	
@@ -188,6 +191,7 @@ const XAP_StringSet *pSS = m_pApp->getStringSet();
 
 	PtSetArg(&args[n++],Pt_ARG_GROUP_ROWS_COLS,2,0);
 	PtCreateWidget(PtGroup,grp,n,args);
+	n=0;
 
 	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(XAP,DLG_OK),0);
 	btnOk = PtCreateWidget( PtButton, Pt_DEFAULT_PARENT, n,args);

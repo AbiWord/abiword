@@ -119,7 +119,7 @@ void AP_QNXDialog_MarkRevisions::runModal(XAP_Frame * pFrame)
 
 	   ----------------------------------------------------
 	   | Title                                            |
-           ----------------------------------------------------
+     ----------------------------------------------------
 	   |                                                  |
 	   | O Radio1                                         |
 	   |    Comment1 (a label)                            |
@@ -127,9 +127,9 @@ void AP_QNXDialog_MarkRevisions::runModal(XAP_Frame * pFrame)
 	   | O Radio2                                         |
 	   |    Comment2Label                                 |
 	   |    Comment2 (an edit control)                    |
-           |                                                  |
-           |                                                  |
-           |     OK_BUTTON              CANCEL_BUTTON         |
+     |                                                  |
+     |                                                  |
+     |     OK_BUTTON              CANCEL_BUTTON         |
 	   ----------------------------------------------------
 
 	   Where: Title, Comment1 and Comment2Label are labels, Radio1-2
@@ -193,89 +193,44 @@ PtWidget_t *text1;
 PtWidget_t *label1,*label2;
 
 const XAP_StringSet *pSS = m_pApp->getStringSet();
+int n=0;
+PtArg_t args[10];
 
 
-	static const PhDim_t dim = { 277,236 };
-	static const PtArg_t args[] = {
-		Pt_ARG(Pt_ARG_DIM,&dim,0),
-		Pt_ARG(Pt_ARG_WINDOW_TITLE,getTitle(),0),
-		Pt_ARG(Pt_ARG_WINDOW_MANAGED_FLAGS,0,ABI_MODAL_WINDOW_MANAGE_FLAGS),
-		Pt_ARG(Pt_ARG_WINDOW_RENDER_FLAGS,0,ABI_MODAL_WINDOW_RENDER_FLAGS),
-	      };
+	PtSetArg(&args[n++],Pt_ARG_WINDOW_TITLE,getTitle(),0);
+	PtSetArg(&args[n++],Pt_ARG_WINDOW_RENDER_FLAGS,Pt_FALSE,ABI_MODAL_WINDOW_RENDER_FLAGS);    
+	mainwindow = PtCreateWidget( PtWindow,Pt_DEFAULT_PARENT,n, args);
+	n=0;
 
-	static const PhArea_t area1 = { { 201, 205 }, { 70, 27 } };
-	static const PtArg_t args1[] = {
-		Pt_ARG( Pt_ARG_AREA, &area1, 0 ),
-Pt_ARG( Pt_ARG_TEXT_STRING, pSS->getValueUTF8(XAP_STRING_ID_DLG_OK).c_str(), 0 ),
-		};
+	PtSetArg(&args[n++],Pt_ARG_GROUP_ORIENTATION,Pt_GROUP_VERTICAL,0);
+	PtSetArg(&args[n++],Pt_ARG_GROUP_ROWS_COLS,8,0);
+	PtSetArg(&args[n++],Pt_ARG_GROUP_FLAGS,Pt_TRUE,Pt_GROUP_EQUAL_SIZE_HORIZONTAL);
+	PtCreateWidget(PtGroup,Pt_DEFAULT_PARENT,n,args);
+	n=0;
+	toggle1=PtCreateWidget( PtToggleButton, Pt_DEFAULT_PARENT,n,args );
+	n=0;
+	label1 = PtCreateWidget( PtLabel, Pt_DEFAULT_PARENT,n,args);
+	n=0;
+	PtCreateWidget( PtSeparator, Pt_DEFAULT_PARENT,n,args);
+	n=0;
 
-	static const PhArea_t area2 = { { 129, 205 }, { 70, 27 } };
-	static const PtArg_t args2[] = {
-		Pt_ARG( Pt_ARG_AREA, &area2, 0 ),
-Pt_ARG( Pt_ARG_TEXT_STRING, pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel).c_str(), 0 ),
-		};
+	toggle2=PtCreateWidget( PtToggleButton, Pt_DEFAULT_PARENT,n,args );
+	n=0;
+	label2 =PtCreateWidget( PtLabel, Pt_DEFAULT_PARENT,n,args);
+	n=0;
+	text1=PtCreateWidget( PtText, Pt_DEFAULT_PARENT,n,args);
+	n=0;
+	PtCreateWidget( PtSeparator, Pt_DEFAULT_PARENT,n,args);
+	n=0;
 
-	static const PhArea_t area3 = { { 6, 190 }, { 265, 7 } };
-	static const PtArg_t args3[] = {
-		Pt_ARG( Pt_ARG_AREA, &area3, 0 ),
-		};
-
-	static const PhArea_t area4 = { { 3, 66 }, { 268, 7 } };
-	static const PtArg_t args4[] = {
-		Pt_ARG( Pt_ARG_AREA, &area4, 0 ),
-		};
-
-	static const PhArea_t area5 = { { 6, 7 }, { 75, 24 } };
-	static const PtArg_t args5[] = {
-		Pt_ARG( Pt_ARG_AREA, &area5, 0 ),
-		Pt_ARG( Pt_ARG_TEXT_STRING, "", 0 ),
-		Pt_ARG( Pt_ARG_INDICATOR_TYPE, 3, 0 ),
-		};
-
-	static const PhArea_t area6 = { { 6, 84 }, { 75, 24 } };
-	static const PtArg_t args6[] = {
-		Pt_ARG( Pt_ARG_AREA, &area6, 0 ),
-		Pt_ARG( Pt_ARG_TEXT_STRING, "Toggle 2", 0 ),
-		Pt_ARG( Pt_ARG_INDICATOR_TYPE, 3, 0 ),
-		};
-
-	static const PhArea_t area7 = { { 30, 37 }, { 235, 21 } };
-	static const PtArg_t args7[] = {
-		Pt_ARG( Pt_ARG_AREA, &area7, 0 ),
-		Pt_ARG( Pt_ARG_TEXT_STRING, "Label 1", 0 ),
-		};
-
-	static const PhArea_t area8 = { { 30, 117 }, { 236, 21 } };
-	static const PtArg_t args8[] = {
-		Pt_ARG( Pt_ARG_AREA, &area8, 0 ),
-		Pt_ARG( Pt_ARG_TEXT_STRING, "Label 2", 0 ),
-		};
-
-	static const PhArea_t area9 = { { 30, 144 }, { 241, 27 } };
-	static const PtArg_t args9[] = {
-		Pt_ARG( Pt_ARG_AREA, &area9, 0 ),
-		Pt_ARG( Pt_ARG_TEXT_STRING, "", 0 ),
-		};
-      
-	mainwindow = PtCreateWidget( PtWindow,NULL,sizeof(args) / sizeof(PtArg_t), args);
-
-	btnOk=PtCreateWidget( PtButton, NULL, sizeof(args1) / sizeof(PtArg_t), args1 );
-
-	btnCancel=PtCreateWidget( PtButton, NULL, sizeof(args2) / sizeof(PtArg_t), args2 );
-
-	PtCreateWidget( PtSeparator, NULL, sizeof(args3) / sizeof(PtArg_t), args3 );
-
-	PtCreateWidget( PtSeparator, NULL, sizeof(args4) / sizeof(PtArg_t), args4 );
-
-	toggle1=PtCreateWidget( PtToggleButton, NULL, sizeof(args5) / sizeof(PtArg_t), args5 );
-
-	toggle2=PtCreateWidget( PtToggleButton, NULL, sizeof(args6) / sizeof(PtArg_t), args6 );
-
-	label1 = PtCreateWidget( PtLabel, NULL, sizeof(args7) / sizeof(PtArg_t), args7 );
-
-	label2 =PtCreateWidget( PtLabel, NULL, sizeof(args8) / sizeof(PtArg_t), args8 );
-
-	text1=PtCreateWidget( PtText, NULL, sizeof(args9) / sizeof(PtArg_t), args9 );
+	PtSetArg(&args[n++],Pt_ARG_GROUP_ROWS_COLS,2,0);
+	PtCreateWidget(PtGroup,Pt_DEFAULT_PARENT,n,args);
+	n=0;
+		PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(XAP,DLG_OK),0);		
+		btnOk=PtCreateWidget( PtButton, Pt_DEFAULT_PARENT,n,args);
+		n=0;
+		PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(XAP,DLG_Cancel),0);
+		btnCancel=PtCreateWidget( PtButton, Pt_DEFAULT_PARENT,n,args);
 
 	char *pStr = getRadio1Label(); 
 	if(pStr){
