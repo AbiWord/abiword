@@ -4537,6 +4537,20 @@ bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs)
 	}
 #endif
 #endif
+	//
+	// OK Now do the insertSpan for any TOC's that shadow this block.
+	//
+	if(!m_bIsTOC && m_bStyleInTOC)
+	{
+		UT_Vector vecBlocksInTOCs;
+		m_pLayout->getMatchingBlocksFromTOCs(this, &vecBlocksInTOCs);
+		UT_sint32 i = 0;
+		for(i=0; i<static_cast<UT_sint32>(vecBlocksInTOCs.getItemCount());i++)
+		{
+			fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(vecBlocksInTOCs.getNthItem(i));
+			pBL->doclistener_insertSpan(pcrs);
+		}
+	}
 	return true;
 }
 
@@ -4912,6 +4926,20 @@ bool fl_BlockLayout::doclistener_deleteSpan(const PX_ChangeRecord_Span * pcrs)
 	_assertRunListIntegrity();
 	setNeedsReformat(blockOffset);
 	updateEnclosingBlockIfNeeded();
+	//
+	// OK Now do the deleteSpan for any TOC's that shadow this block.
+	//
+	if(!m_bIsTOC && m_bStyleInTOC)
+	{
+		UT_Vector vecBlocksInTOCs;
+		m_pLayout->getMatchingBlocksFromTOCs(this, &vecBlocksInTOCs);
+		UT_sint32 i = 0;
+		for(i=0; i<static_cast<UT_sint32>(vecBlocksInTOCs.getItemCount());i++)
+		{
+			fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(vecBlocksInTOCs.getNthItem(i));
+			pBL->doclistener_deleteSpan(pcrs);
+		}
+	}
 
 	return true;
 }
