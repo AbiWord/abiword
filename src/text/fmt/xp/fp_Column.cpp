@@ -426,6 +426,11 @@ void fp_Column::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, U
 			}
 		}
 
+	    /*
+		  Be careful with the comparisons of signed vs. unsigned
+		  below.  (bug 172 resulted from that kind of problem.)
+		*/
+		
 		if ((i + 1) < count)
 		{
 			if (y >= (pLine->getY() + (UT_sint32) pLine->getHeight()))
