@@ -21,6 +21,8 @@
 #define XAP_UNIXDIALOG_ABOUT_H
 
 #include "xap_Dlg_About.h"
+#include "gr_UnixGraphics.h"
+#include "gr_UnixImage.h"
 
 /*****************************************************************/
 
@@ -34,10 +36,28 @@ public:
 
 	virtual void			runModal(XAP_Frame * pFrame);
 
-	// public so callbacks can access them
+	// callbacks can fire these events
 
- protected:
+	virtual void			event_OK(void);
+	virtual void			event_URL(void);
+	virtual void			event_WindowDelete(void);
+	virtual void			event_DrawingAreaExpose(void);
 	
+ protected:
+
+	GtkWidget * _constructWindow(void);
+	void		_populateWindowData(void);
+	void		_preparePicture(void);
+	
+	GtkWidget * m_windowMain;
+	GtkWidget * m_buttonOK;
+	GtkWidget * m_buttonURL;
+	GtkWidget * m_drawingareaGraphic;
+	
+	GR_UnixGraphics * m_gc;
+
+	GR_UnixImage * m_pGrImageSidebar;
+	XAP_UnixFrame * m_pFrame;
 };
 
 #endif /* XAP_UNIXDIALOG_ABOUT_H */

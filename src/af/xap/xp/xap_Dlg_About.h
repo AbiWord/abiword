@@ -42,6 +42,17 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of \
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the \
 GNU General Public License for more details."
 
+#define XAP_ABOUT_GPL_LONG_LINE_BROKEN "%s is free software; you can redistribute it\n \
+and/or modify it under the terms of the GNU General\n \
+Public License as published by the Free Software\n \
+Foundation; either version 2 of the License, or (at your\n \
+option) any later version.\r\n\r\n \
+This program is distributed in the hope that it will be useful,\n \
+but WITHOUT ANY WARRANTY; without even the\n \
+implied warranty of MERCHANTABILITY or FITNESS\n \
+FOR A PARTICULAR PURPOSE.  See the GNU General\n \
+Public License for more details."
+
 class XAP_Dialog_About : public XAP_Dialog_NonPersistent
 {
  public:

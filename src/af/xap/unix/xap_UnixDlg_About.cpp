@@ -23,7 +23,7 @@
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
-// #include "ut_dialogHelper.h"
+#include "ut_dialogHelper.h"
 
 #include "xap_App.h"
 #include "xap_Dialog_Id.h"
@@ -34,9 +34,18 @@
 #include "xap_Dlg_About.h"
 #include "xap_UnixDlg_About.h"
 
-#define DEFAULT_BUTTON_WIDTH 85
+#include "gr_UnixGraphics.h"
+#include "gr_UnixImage.h"
+#include "ut_bytebuf.h"
+#include "ut_png.h"
 
 /*****************************************************************/
+
+extern unsigned char g_pngSidebar[];		// see ap_wp_sidebar.cpp
+extern unsigned long g_pngSidebar_sizeof;	// see ap_wp_sidebar.cpp
+
+/*****************************************************************/
+
 XAP_Dialog * XAP_UnixDialog_About::static_constructor(XAP_DialogFactory * pFactory,
 													 XAP_Dialog_Id id)
 {
@@ -48,127 +57,276 @@ XAP_UnixDialog_About::XAP_UnixDialog_About(XAP_DialogFactory * pDlgFactory,
 											 XAP_Dialog_Id id)
 	: XAP_Dialog_About(pDlgFactory,id)
 {
+	m_windowMain = NULL;
+	m_buttonOK = NULL;
+	m_buttonURL = NULL;
+	m_drawingareaGraphic = NULL;
+	m_gc = NULL;
+	m_pGrImageSidebar = NULL;
 }
 
 XAP_UnixDialog_About::~XAP_UnixDialog_About(void)
 {
+	DELETEP(m_gc);
+	DELETEP(m_pGrImageSidebar);
 }
 
-static void s_okClicked(GtkWidget * /* widget */, gpointer /* data */, gpointer /* extra */)
+/*****************************************************************/
+
+// These are all static callbacks, bound to GTK or GDK events.
+
+static void s_ok_clicked(GtkWidget * widget,
+						 XAP_UnixDialog_About * dlg)
 {
-	// just quit out of the dialog
-	gtk_main_quit();
+	UT_ASSERT(widget && dlg);
+
+	dlg->event_OK();
 }
+
+static void s_url_clicked(GtkWidget * widget,
+						  XAP_UnixDialog_About * dlg)
+{
+	UT_ASSERT(widget && dlg);
+
+	dlg->event_URL();
+}
+
+static void s_delete_clicked(GtkWidget * /* widget */,
+							 gpointer /* data */,
+							 XAP_UnixDialog_About * dlg)
+{
+	UT_ASSERT(dlg);
+
+	dlg->event_WindowDelete();
+}
+
+static gint s_drawingarea_expose(GtkWidget * /* widget */,
+								 GdkEventExpose * /* pExposeEvent */,
+								 XAP_UnixDialog_About * dlg)
+{
+	UT_ASSERT(dlg);
+
+	dlg->event_DrawingAreaExpose();
+
+	return FALSE;
+}
+
+/*****************************************************************/
 
 void XAP_UnixDialog_About::runModal(XAP_Frame * pFrame)
 {
-	GtkWidget* dialog;
-	GtkWidget* dialog_vbox1;
-	GtkWidget* dialog_action_area1;
-	GtkWidget* vbox1;
-// TODO:  remove?  Unused.	
-//	GtkWidget* hbox1;
-	GtkWidget* label1;
-	GtkWidget* label2;
-	GtkWidget* label3;
-	GtkWidget* label4;
-	GtkWidget* label5;
-	GtkWidget* label6;
-	GtkWidget* okButton;
-	GtkWidget* frame;
-	
-	XAP_App* pApp = pFrame->getApp();
-	
-	char buf[2048];
-	sprintf(buf, XAP_ABOUT_TITLE, pApp->getApplicationName());
-	
-	dialog = gtk_dialog_new ();
-	gtk_object_set_data (GTK_OBJECT (dialog), "About AbiWord", dialog);
-	gtk_window_set_title (GTK_WINDOW (dialog), buf);
-	gtk_window_set_policy (GTK_WINDOW (dialog), TRUE, TRUE, FALSE);
-	gtk_container_set_border_width(GTK_CONTAINER(dialog), 5);
-    gtk_window_set_policy(GTK_WINDOW(dialog), FALSE, FALSE, TRUE);
+	// stash away the frame
+	m_pFrame = static_cast<XAP_UnixFrame *>(pFrame);
 
-	gtk_widget_realize(dialog);
+	// Build the window's widgets and arrange them
+	GtkWidget * mainWindow = _constructWindow();
+	UT_ASSERT(mainWindow);
+
+	// assemble an image
+	_preparePicture();
 	
-	gtk_signal_connect_after(GTK_OBJECT(dialog),
+	// To center the dialog, we need the frame of its parent.
+	XAP_UnixFrame * pUnixFrame = static_cast<XAP_UnixFrame *>(pFrame);
+	UT_ASSERT(pUnixFrame);
+	
+	// Get the GtkWindow of the parent frame
+	GtkWidget * parentWindow = pUnixFrame->getTopLevelWindow();
+	UT_ASSERT(parentWindow);
+	
+	// Center our new dialog in its parent and make it a transient
+	// so it won't get lost underneath
+    centerDialog(parentWindow, mainWindow);
+	gtk_window_set_transient_for(GTK_WINDOW(mainWindow), GTK_WINDOW(parentWindow));
+
+	// Show the top level dialog,
+	gtk_widget_show(mainWindow);
+
+	// Make it modal, and stick it up top
+	gtk_grab_add(mainWindow);
+
+	// attach a new graphics context
+	m_gc = new GR_UnixGraphics(m_drawingareaGraphic->window, NULL);
+	
+	// Run into the GTK event loop for this window.
+	gtk_main();
+
+	gtk_widget_destroy(mainWindow);
+}
+
+void XAP_UnixDialog_About::event_OK(void)
+{
+	gtk_main_quit();
+}
+
+void XAP_UnixDialog_About::event_URL(void)
+{
+	m_pFrame->openURL("http://www.abisource.com/");
+}
+
+void XAP_UnixDialog_About::event_WindowDelete(void)
+{
+	gtk_main_quit();
+}
+
+void XAP_UnixDialog_About::event_DrawingAreaExpose(void)
+{
+	if (!m_gc)
+		return;
+
+	m_gc->drawImage(m_pGrImageSidebar, 0, 0);
+}
+
+/*****************************************************************/
+
+GtkWidget * XAP_UnixDialog_About::_constructWindow(void)
+{
+	GtkWidget *windowAbout;
+	GtkWidget *hboxAbout;
+	GtkWidget *drawingareaGraphic;
+	GtkWidget *vboxInfo;
+	GtkWidget *labelTitle;
+	GtkWidget *labelVersion;
+	GtkWidget *textCopyright;
+	GtkWidget *hbox2;
+	GtkWidget *buttonURL;
+	GtkWidget *buttonOK;
+
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
+	
+	// we use this for all sorts of strings that can't appear in the string sets
+	char buf[4096];
+
+	g_snprintf(buf, 4096, XAP_ABOUT_TITLE, m_pApp->getApplicationName());
+
+	windowAbout = gtk_window_new (GTK_WINDOW_DIALOG);
+	gtk_object_set_data (GTK_OBJECT (windowAbout), "windowAbout", windowAbout);
+	gtk_widget_set_usize (windowAbout, 0, 350);
+	gtk_window_set_title (GTK_WINDOW (windowAbout), buf);
+	gtk_window_set_policy (GTK_WINDOW (windowAbout), FALSE, FALSE, FALSE);
+
+	hboxAbout = gtk_hbox_new (FALSE, 0);
+	gtk_object_set_data (GTK_OBJECT (windowAbout), "hboxAbout", hboxAbout);
+	gtk_widget_show (hboxAbout);
+	gtk_container_add (GTK_CONTAINER (windowAbout), hboxAbout);
+
+	drawingareaGraphic = gtk_drawing_area_new ();
+	gtk_object_set_data (GTK_OBJECT (windowAbout), "drawingareaGraphic", drawingareaGraphic);
+	gtk_widget_set_events(drawingareaGraphic, GDK_EXPOSURE_MASK);
+	gtk_signal_connect (GTK_OBJECT(drawingareaGraphic), "expose_event",
+						GTK_SIGNAL_FUNC(s_drawingarea_expose), (gpointer) this);
+	gtk_widget_show (drawingareaGraphic);
+	gtk_box_pack_start (GTK_BOX (hboxAbout), drawingareaGraphic, TRUE, TRUE, 0);
+	// This size is kinda arbitrary, and will need to be adjusted as the graphics change
+	gtk_widget_set_usize (drawingareaGraphic, 200, 350);
+
+	vboxInfo = gtk_vbox_new (FALSE, 0);
+	gtk_object_set_data (GTK_OBJECT (windowAbout), "vboxInfo", vboxInfo);
+	gtk_widget_show (vboxInfo);
+	gtk_box_pack_start (GTK_BOX (hboxAbout), vboxInfo, TRUE, TRUE, 8);
+
+	labelTitle = gtk_label_new (m_pApp->getApplicationName());
+	gtk_object_set_data (GTK_OBJECT (windowAbout), "labelTitle", labelTitle);
+	gtk_widget_show (labelTitle);
+	gtk_box_pack_start (GTK_BOX (vboxInfo), labelTitle, FALSE, TRUE, 18);
+
+	// make the font really big
+	GtkStyle * bigstyle = gtk_style_copy(gtk_widget_get_style(labelTitle));
+	UT_ASSERT(bigstyle);
+	gdk_font_unref(bigstyle->font);
+	bigstyle->font = gdk_font_load("-*-helvetica-bold-r-*-*-*-240-*-*-*-*-*-*");
+	gtk_widget_set_style(labelTitle, bigstyle);
+	
+	g_snprintf(buf, 4096, XAP_ABOUT_VERSION, XAP_App::s_szBuild_Version);
+	
+	labelVersion = gtk_label_new ("Version: unnumbered");
+	gtk_object_set_data (GTK_OBJECT (windowAbout), "labelVersion", labelVersion);
+	gtk_widget_show (labelVersion);
+	gtk_box_pack_start (GTK_BOX (vboxInfo), labelVersion, FALSE, FALSE, 0);
+
+	char buf2[2048];
+	g_snprintf(buf2, 4096, XAP_ABOUT_GPL_LONG_LINE_BROKEN, m_pApp->getApplicationName());
+	
+	g_snprintf(buf, 4096, "%s\n\n%s", XAP_ABOUT_COPYRIGHT, buf2);
+	
+	textCopyright = gtk_text_new (NULL, NULL);
+	gtk_object_set_data (GTK_OBJECT (windowAbout), "textCopyright", textCopyright);
+	gtk_widget_show (textCopyright);
+	gtk_box_pack_start (GTK_BOX (vboxInfo), textCopyright, TRUE, FALSE, 10);
+	gtk_widget_set_usize (textCopyright, 290, 165); //285
+	gtk_widget_realize (textCopyright);
+	gtk_text_insert (GTK_TEXT (textCopyright), NULL, NULL, NULL, buf, 517);
+
+	// make the font slightly smaller
+	GtkStyle * smallstyle = gtk_style_copy(gtk_widget_get_style(textCopyright));
+	UT_ASSERT(smallstyle);
+	gdk_font_unref(smallstyle->font);
+	smallstyle->font = gdk_font_load("-*-helvetica-medium-r-*-*-*-100-*-*-*-*-*-*");
+	gtk_widget_set_style(textCopyright, smallstyle);
+	
+	hbox2 = gtk_hbox_new (FALSE, 10);
+	gtk_object_set_data (GTK_OBJECT (windowAbout), "hbox2", hbox2);
+	gtk_widget_show (hbox2);
+	gtk_box_pack_start (GTK_BOX (vboxInfo), hbox2, FALSE, TRUE, 10);
+
+	buttonURL = gtk_button_new_with_label ("www.abisource.com");
+	gtk_object_set_data (GTK_OBJECT (windowAbout), "buttonURL", buttonURL);
+	gtk_widget_show (buttonURL);
+	gtk_box_pack_start (GTK_BOX (hbox2), buttonURL, FALSE, TRUE, 0);
+	gtk_widget_set_usize (buttonURL, 140, 24);
+
+	buttonOK = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_OK));
+	gtk_object_set_data (GTK_OBJECT (windowAbout), "buttonOK", buttonOK);
+	gtk_widget_show (buttonOK);
+	gtk_box_pack_end (GTK_BOX (hbox2), buttonOK, FALSE, TRUE, 0);
+	gtk_widget_set_usize (buttonOK, 85, 24);
+
+	// Since we do drawing, we need a graphics context which can
+	// understand PNG data.
+	
+	
+	gtk_signal_connect(GTK_OBJECT(buttonOK),
+					   "clicked",
+					   GTK_SIGNAL_FUNC(s_ok_clicked),
+					   (gpointer) this);
+	
+	gtk_signal_connect(GTK_OBJECT(buttonURL),
+					   "clicked",
+					   GTK_SIGNAL_FUNC(s_url_clicked),
+					   (gpointer) this);
+
+	gtk_signal_connect_after(GTK_OBJECT(windowAbout),
+							 "delete_event",
+							 GTK_SIGNAL_FUNC(s_delete_clicked),
+							 (gpointer) this);
+
+	gtk_signal_connect_after(GTK_OBJECT(windowAbout),
 							 "destroy",
 							 NULL,
 							 NULL);
 
-	gtk_signal_connect_after(GTK_OBJECT(dialog),
-							 "delete_event",
-							 GTK_SIGNAL_FUNC(s_okClicked),
-							 NULL);
-	
-	dialog_vbox1 = GTK_DIALOG (dialog)->vbox;
-	gtk_object_set_data (GTK_OBJECT (dialog), "dialog_vbox1", dialog_vbox1);
-	gtk_widget_show (dialog_vbox1);
+	// Update member variables with the important widgets that
+	// might need to be queried or altered later.
 
-	vbox1 = gtk_vbox_new (FALSE, 0);
-	gtk_widget_show (vbox1);
-	gtk_box_pack_start (GTK_BOX (dialog_vbox1), vbox1, TRUE, TRUE, 0);
+	m_windowMain = windowAbout;
+	m_buttonOK = buttonOK;
+	m_buttonURL = buttonURL;
+	m_drawingareaGraphic = drawingareaGraphic;
 
-	frame = gtk_frame_new(NULL);
-	gtk_widget_show(frame);
-	gtk_box_pack_start(GTK_BOX(vbox1), frame, TRUE, TRUE, 0);
-	
-	sprintf(buf, XAP_ABOUT_DESCRIPTION, pApp->getApplicationName());
-			
-	label5 = gtk_label_new (buf);
-	gtk_widget_show (label5);
-	gtk_container_add(GTK_CONTAINER(frame), label5);
-	
-	label1 = gtk_label_new (XAP_ABOUT_COPYRIGHT);
-	gtk_object_set_data (GTK_OBJECT (dialog), "label1", label1);
-	gtk_widget_show (label1);
-	gtk_box_pack_start (GTK_BOX (vbox1), label1, TRUE, TRUE, 5);
-	
-	sprintf(buf, XAP_ABOUT_GPL, pApp->getApplicationName());
-	
-	label2 = gtk_label_new (buf);
-	gtk_object_set_data (GTK_OBJECT (dialog), "label2", label2);
-	gtk_widget_show (label2);
-	gtk_box_pack_start (GTK_BOX (vbox1), label2, TRUE, TRUE, 5);
-	
-	sprintf(buf, XAP_ABOUT_VERSION, XAP_App::s_szBuild_Version); 
-
-	label3 = gtk_label_new (buf);
-	gtk_object_set_data (GTK_OBJECT (dialog), "label3", label3);
-	gtk_widget_show (label3);
-	gtk_box_pack_start (GTK_BOX (vbox1), label3, TRUE, TRUE, 5);
-	
-	label4 = gtk_label_new (XAP_ABOUT_URL);
-	gtk_object_set_data (GTK_OBJECT (dialog), "label4", label4);
-	gtk_widget_show (label4);
-	gtk_box_pack_start (GTK_BOX (vbox1), label4, TRUE, TRUE, 5);
-
-	sprintf(buf, XAP_ABOUT_BUILD, XAP_App::s_szBuild_Options);
-	
-	label6 = gtk_label_new (buf);
-	gtk_widget_show (label6);
-	gtk_box_pack_start (GTK_BOX (vbox1), label6, TRUE, TRUE, 5);
-
-	dialog_action_area1 = GTK_DIALOG (dialog)->action_area;
-	gtk_object_set_data (GTK_OBJECT (dialog), "dialog_action_area1", dialog_action_area1);
-	gtk_widget_show (dialog_action_area1);
-	gtk_container_set_border_width (GTK_CONTAINER (dialog_action_area1), 10);
-	
-	okButton = gtk_button_new_with_label ("OK");
-	gtk_object_set_data (GTK_OBJECT (dialog), "okButton", okButton);
-	gtk_widget_show (okButton);
-	gtk_widget_set_usize(okButton, DEFAULT_BUTTON_WIDTH, 0);
-	
-	gtk_box_pack_start (GTK_BOX (dialog_action_area1), okButton, FALSE, FALSE, 0);
-
-	gtk_signal_connect(GTK_OBJECT(okButton), "clicked", GTK_SIGNAL_FUNC(s_okClicked), NULL);
-	
-	gtk_widget_show(dialog);
-
-	gtk_grab_add(GTK_WIDGET(dialog));
-	
-	gtk_main();
-
-	gtk_widget_destroy(dialog);
+	return windowAbout;
 }
 
+void XAP_UnixDialog_About::_preparePicture(void)
+{
+	UT_ByteBuf * pBB = new UT_ByteBuf(g_pngSidebar_sizeof);
+	pBB->ins(0,g_pngSidebar,g_pngSidebar_sizeof);
+
+	UT_sint32 iImageWidth;
+	UT_sint32 iImageHeight;
+		
+	UT_PNG_getDimensions(pBB, iImageWidth, iImageHeight);
+	
+	m_pGrImageSidebar = new GR_UnixImage(NULL,NULL);
+	m_pGrImageSidebar->convertFromPNG(pBB, iImageWidth, iImageHeight);
+
+	DELETEP(pBB);
+}

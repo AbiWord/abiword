@@ -31,16 +31,14 @@
 #include "xap_UnixApp.h"
 #include "xap_UnixFrame.h"
 
-// this is a really nice example of how the tree shouldn't be
 #include "gr_UnixGraphics.h"
-
 
 #define SIZE_STRING_SIZE	10
 
 #define PREVIEW_BOX_BORDER_WIDTH_PIXELS 8
 #define PREVIEW_BOX_HEIGHT_PIXELS	80
 
-// your typographers standard nonsense latin font phrase
+// your typographer's standard nonsense latin font phrase
 #define PREVIEW_ENTRY_DEFAULT_STRING	"Lorem ipsum dolor sit amet, consectetaur adipisicing..."
 
 /*****************************************************************/
