@@ -18,7 +18,7 @@
  */
 
 #ifdef USE_GUCHARMAP
-#include <gucharmap/charmap.h>
+#include <gucharmap/gucharmap.h>
 #endif
 
 #include <stdlib.h>
@@ -200,7 +200,7 @@ void XAP_UnixDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 	gtk_entry_set_text(GTK_ENTRY(GTK_COMBO(m_fontcombo)->entry),
 					   DEFAULT_UNIX_SYMBOL_FONT);
 
-	charmap_set_font (CHARMAP (m_SymbolMap), DEFAULT_UNIX_SYMBOL_FONT);
+	gucharmap_charmap_set_font (GUCHARMAP_CHARMAP (m_SymbolMap), DEFAULT_UNIX_SYMBOL_FONT);
 #endif /* USE_GUCHARMAP */
 }
 
@@ -212,7 +212,7 @@ void XAP_UnixDialog_Insert_Symbol::event_Insert(void)
 #else
 		UT_ASSERT(m_pListener);
 		const char * symfont = gtk_entry_get_text(GTK_ENTRY(GTK_COMBO(m_fontcombo)->entry));
-		m_Inserted_Symbol = CHARMAP(m_SymbolMap)->chartable->active_char;
+		m_Inserted_Symbol = GUCHARMAP_CHARMAP(m_SymbolMap)->chartable->active_char;
         m_pListener->setView(getActiveFrame()->getCurrentView());
 		m_pListener->insertSymbol(m_Inserted_Symbol, const_cast<char*>(symfont));
 #endif
@@ -251,7 +251,7 @@ void XAP_UnixDialog_Insert_Symbol::New_Font(void )
 	iDrawSymbol->draw();
 	iDrawSymbol->drawarea(m_CurrentSymbol, m_PreviousSymbol);
 #else
-	charmap_set_font (CHARMAP (m_SymbolMap), buffer);
+	gucharmap_charmap_set_font (GUCHARMAP_CHARMAP (m_SymbolMap), buffer);
 #endif
 }
 
@@ -294,7 +294,7 @@ static void s_new_font(GtkWidget * widget, XAP_UnixDialog_Insert_Symbol * dlg)
 
 #ifdef USE_GUCHARMAP
 
-static void s_charmap_activate (Charmap *charmap, gunichar ch, XAP_UnixDialog_Insert_Symbol * pDlg)
+static void s_charmap_activate (GucharmapCharmap *charmap, gunichar ch, XAP_UnixDialog_Insert_Symbol * pDlg)
 {
 	pDlg->event_Insert ();
 }
@@ -527,7 +527,7 @@ GtkWidget * XAP_UnixDialog_Insert_Symbol::_constructWindow(void)
 	gtk_box_pack_start (GTK_BOX(hbox), button, FALSE, TRUE, 0);
 #endif
 
-	m_SymbolMap = charmap_new ();
+	m_SymbolMap = gucharmap_charmap_new ();
 	gtk_widget_show (m_SymbolMap);
 	gtk_box_pack_start(GTK_BOX(vboxInsertS), m_SymbolMap, TRUE, TRUE, 0);
 
@@ -656,7 +656,7 @@ void XAP_UnixDialog_Insert_Symbol::_connectSignals (void)
 					   GTK_SIGNAL_FUNC(s_Symbolarea_exposed),
 					   static_cast<gpointer>(this));
 #else
-	g_signal_connect (G_OBJECT (charmap_get_chartable (CHARMAP (m_SymbolMap))), "activate",
+	g_signal_connect (G_OBJECT (gucharmap_charmap_get_chartable (GUCHARMAP_CHARMAP (m_SymbolMap))), "activate",
 					  G_CALLBACK(s_charmap_activate), static_cast<gpointer>(this));
 #endif
 
