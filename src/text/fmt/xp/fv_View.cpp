@@ -2214,10 +2214,9 @@ PT_DocPosition FV_View::_BlockOffsetToPos(fl_BlockLayout * block, PT_DocPosition
 UT_UCSChar * FV_View::_findGetNextBlockBuffer(fl_BlockLayout ** block, PT_DocPosition * offset)
 {
 	UT_ASSERT(m_pLayout);
-#if 0
+
 	// this assert doesn't work, since the startPosition CAN legitimately be zero
-	UT_ASSERT(m_startPosition);
-#endif	
+	UT_ASSERT(m_startPosition >= 2);	// the beginning of the first block in any document
 	
 	UT_ASSERT(block);
 	UT_ASSERT(*block);
@@ -2302,7 +2301,8 @@ UT_UCSChar * FV_View::_findGetNextBlockBuffer(fl_BlockLayout ** block, PT_DocPos
 	// remember, the caller gets to free this memory
 	bufferSegment = (UT_UCSChar *) calloc(bufferLength + 1,
 										  sizeof(UT_UCSChar));
-
+	UT_ASSERT(bufferSegment);
+	
 	memmove(bufferSegment, buffer.getPointer(newOffset),
 			(bufferLength) * sizeof(UT_UCSChar));
 
@@ -2344,6 +2344,8 @@ UT_Bool FV_View::findAgain()
 UT_Bool	FV_View::findReplace(const UT_UCSChar * find, const UT_UCSChar * replace,
 							 UT_Bool matchCase, UT_Bool * bDoneEntireDocument)
 {
+	UT_ASSERT(find && replace);
+	
 	UT_Bool bRes = _findReplace(find, replace, matchCase, bDoneEntireDocument);
 
 	updateScreen();
@@ -2367,36 +2369,39 @@ UT_Bool	FV_View::findReplace(const UT_UCSChar * find, const UT_UCSChar * replace
 UT_Bool	FV_View::_findReplace(const UT_UCSChar * find, const UT_UCSChar * replace,
 							  UT_Bool matchCase, UT_Bool * bDoneEntireDocument)
 {
+	UT_ASSERT(find && replace);
+
 	// if we have done a find, and there is a selection, then replace what's in the
 	// selection and move on to next find (batch run, the common case)
 	if ((m_doneFind == UT_TRUE) && (!isSelectionEmpty()))
 	{
-		// if we've wrapped around once, and we're doing work before we've
-		// hit the point at which we started, then we adjust the start
-		// position so that we stop at the right spot.
-		m_startPosition += ((long) UT_UCS_strlen(replace) - (long) UT_UCS_strlen(find));
-
 		UT_Bool result = UT_TRUE;
 
-		if (*replace)
+		if (!isSelectionEmpty())
 		{
-			if (!isSelectionEmpty())
-			{
-				_deleteSelection();
-			}
-			else
-			{
-				_eraseInsertionPoint();
-			}
-
-			result = m_pDoc->insertSpan(getPoint(), replace, UT_UCS_strlen(replace));
+			_deleteSelection();
+		}
+		else
+		{
+			_eraseInsertionPoint();
 		}
 
-		// we must move the find cursor past the insertion
-		// we just did, so that we don't get caught in a loop while doing
-		// a replace, but account for the 1 that the find advanced.
-		m_iInsPoint ++;
+		// if we have a string with length, do an insert, else let it hang
+		// from the delete above
+		if (*replace)
+			result = m_pDoc->insertSpan(getPoint(), replace, UT_UCS_strlen(replace));
 
+			// if we've wrapped around once, and we're doing work before we've
+			// hit the point at which we started, then we adjust the start
+			// position so that we stop at the right spot.
+		if (m_wrappedEnd && !*bDoneEntireDocument)
+			m_startPosition += ((long) UT_UCS_strlen(replace) - (long) UT_UCS_strlen(find));
+
+		UT_ASSERT(m_startPosition >= 2);
+
+		// do not increase the insertion point index, since the insert span will
+		// leave us at the correct place.
+		
 		_findNext(find, matchCase, bDoneEntireDocument);
 		return result;
 	}

@@ -23,6 +23,7 @@
 #include <gtk/gtk.h>
 #include <gdk/gdkx.h>
 
+void messageBoxOK(const char * message);
 GdkWindowPrivate * getRootWindow(GtkWidget * widget);
 void centerDialog(GtkWidget * parent, GtkWidget * child);
 

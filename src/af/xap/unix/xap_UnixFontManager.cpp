@@ -25,6 +25,9 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_string.h"
+#include "ut_dialogHelper.h"
+
+#include "xap_UnixApp.h"
 #include "xap_UnixFontManager.h"
 
 #define DELETEP(p)	do { if (p) delete(p); (p)=NULL; } while (0)
@@ -78,6 +81,9 @@ UT_Bool AP_UnixFontManager::scavengeFonts(void)
 		file = fopen(filename, "r");
 		if (!file)
 		{
+			// silently print this message out, since lots of users will have a "default"
+			// path which will probably contain bogus directories, but there's always
+			// hope later on in the path
 			UT_DEBUGMSG(("Cannot open [%s] to read fonts list.\n", filename));
 		}
 		else
@@ -96,8 +102,10 @@ UT_Bool AP_UnixFontManager::scavengeFonts(void)
 #ifdef DEBUG
 			if (fontcount < 0)
 			{
-				UT_DEBUGMSG(("WARNING: Font directory [%s] declares an invalid number of fonts (%d).\n",
-							 filename, fontcount));
+				char message[512];
+				g_snprintf(message, 512, "WARNING: Font directory file [%s]\ndeclares an invalid number of fonts (%ld).",
+						   filename, fontcount);
+				messageBoxOK(message);
 			}
 			else
 			{
@@ -113,9 +121,11 @@ UT_Bool AP_UnixFontManager::scavengeFonts(void)
 				{
 					// premature EOF (it's always premature if there are more
 					// fonts specified than found)
-					UT_DEBUGMSG(("Premature end of file from directory [%s]; "
-								 "wanted %d fonts, only got [%d]--will continue.\n",
-								 filename, fontcount, line));
+					char message[512];
+					g_snprintf(message, 512, "Premature end of file from directory [%s];\n"
+							   "wanted %ld fonts, only got [%ld] -- will continue, but things might not work correctly.\n",
+							   filename, fontcount, line);
+					messageBoxOK(message);
 					fclose(file);
 					return UT_TRUE;
 				}
@@ -128,7 +138,7 @@ UT_Bool AP_UnixFontManager::scavengeFonts(void)
 			if (line >= 0)
 				totaldirs++;
 		  
-			UT_DEBUGMSG(("Read %d fonts from directory [%s].", line, filename));
+			UT_DEBUGMSG(("Read %ld fonts from directory [%s].", line, filename));
 		}
 		FREEP(filename);
 		if (file)
@@ -140,14 +150,19 @@ UT_Bool AP_UnixFontManager::scavengeFonts(void)
 	{
 		// we have no fonts, just quit
 		// this message should be non-DEBUG
-		UT_DEBUGMSG(("Found a total of 0 fonts, cannot continue.\n"));
+		char message[512];
+		g_snprintf(message, 512, "Found a total of 0 fonts, cannot continue.");
+		messageBoxOK(message);
 		return UT_FALSE;
 	}
 
 	if (totaldirs <= 0)
 	{
 		// this message should be non-DEBUG
-		UT_DEBUGMSG(("Found a total of 0 valid directores in font path, cannot continue.\n"));
+		char message[512];
+		g_snprintf(message, 512, "Found a total of 0 directores in font path containing\n"
+				   "valid font directory files (fonts.dir), cannot continue.");
+		messageBoxOK(message);
 		return UT_FALSE;
 	}
 	
@@ -362,11 +377,3 @@ void AP_UnixFontManager::_addFont(AP_UnixFont * font)
 
 	m_fontHash.addEntry(font->getFontKey(), NULL, (void *) font);
 }
-
-
-
-
-
-
-
-

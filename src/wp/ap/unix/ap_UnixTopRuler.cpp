@@ -135,6 +135,9 @@ void AP_UnixTopRuler::getWidgetPosition(gint * x, gint * y)
 
 GdkWindowPrivate * AP_UnixTopRuler::getRootWindow(void)
 {
+	// TODO move this function somewhere more logical, like
+	// TODO the XAP_Frame level, since that's where the
+	// TODO root window is common to all descendants.
 	if (m_rootWindow)
 		return m_rootWindow;
 

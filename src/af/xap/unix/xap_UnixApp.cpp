@@ -24,6 +24,7 @@
 #include <stdio.h>
 
 #include "ut_debugmsg.h"
+#include "ut_dialogHelper.h"
 
 #include "xap_Args.h"
 #include "xap_UnixApp.h"
@@ -80,7 +81,7 @@ UT_Bool AP_UnixApp::initialize(void)
 	}
 	else
 	{
-		UT_DEBUGMSG(("$ABIWORD_FONTPATH not set, using default font path.\n"));
+		messageBoxOK("$ABIWORD_FONTPATH not set, using default font path.");
 		// change this?
 		m_fontManager->setFontPath("src/wp/lib/unix/fonts;wp/lib/unix/fonts;../../lib/unix/fonts");
 	}
@@ -89,6 +90,7 @@ UT_Bool AP_UnixApp::initialize(void)
 	if (!m_fontManager->scavengeFonts())
 		return UT_FALSE;
 
+	
 #ifdef DEBUG	
 	AP_UnixFont ** fonts = m_fontManager->getAllFonts();
 	UT_DEBUGMSG(("Found Fonts:"));
