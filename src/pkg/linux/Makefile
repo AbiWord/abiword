@@ -168,6 +168,7 @@ rpm: pack_rpm
 	      -e 's/__ABI_OPT_LIBXML2__/$(ABI_OPT_LIBXML2)/' \
 	      -e 's/__ABI_OPT_OPTIMIZE__/$(ABI_OPT_OPTIMIZE)/' \
 	      -e 's/__ABI_OPT_PSPELL__/$(ABI_OPT_PSPELL)/' \
+	      -e 's/__ABI_BUILD_PACKAGER__/$(ABI_BUILD_PACKAGER)/' \
 	  rpm/abiword.spec-template > $(RPM_SOURCE_DIR)/SPECS/abiword-$(ABI_BUILD_VERSION).spec)
 	@echo "Producing RPM..."
 	rpm -ba $(RPM_SOURCE_DIR)/SPECS/abiword-$(ABI_BUILD_VERSION).spec
