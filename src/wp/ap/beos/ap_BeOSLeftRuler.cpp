@@ -140,19 +140,14 @@ void LeftRulerDrawView::FrameResized(float new_width, float new_height) {
 }
 
 void LeftRulerDrawView::Draw(BRect invalid) {
-	BPicture *mypict;
-	BeginPicture(new BPicture);
-/*
+//	BPicture *mypict;
+//	BeginPicture(new BPicture);
 	UT_Rect rect(invalid.left,invalid.top, 
 		     invalid.Width(), invalid.Height());
+	Window()->DisableUpdates();
 	m_pAPRuler->draw(&rect);
-*/
-	m_pAPRuler->draw(NULL);
-
-	if ((mypict = EndPicture())) {
-		DrawPicture(mypict, BPoint(0,0));
-		delete mypict;
-	}
+	Window()->EnableUpdates();
+	Window()->Sync();
 }
 
 /*****************************************************************/
