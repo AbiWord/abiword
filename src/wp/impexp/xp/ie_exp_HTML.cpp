@@ -410,7 +410,7 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 		{
 		  if (!span)
 			  {
-			    m_pie->write("<span style=\"font-style: italic\"");	
+			    m_pie->write("<span style=\"font-style: italic");	
 			    span = UT_TRUE;
 			  }
 			else
