@@ -36,6 +36,17 @@
 #include "ut_string.h"
 #include "ut_Win32OS.h"
 
+#if 0
+#undef _UUL
+#undef _UUD
+#undef _UL
+#undef _UD
+#define _UUL(x)
+#define _UUD(x)
+#define _UD(x) x
+#define _UL(x) x
+#define GR_WIN32_REDEF_UNITS
+#endif
 /*****************************************************************/
 UT_sint32 GR_Win32Graphics::s_iScreenResolution = 0;
 
@@ -117,6 +128,25 @@ void GR_Win32Graphics::_constructorCommonCode(HDC hdc)
 	m_eJoinStyle = JOIN_MITER;
 	m_eCapStyle  = CAP_BUTT;
 	m_eLineStyle = LINE_SOLID;
+#if 0
+#ifndef USE_LAYOUT_UNITS
+	if(UT_IsWinNT())
+	{
+		// enable advanced graphics mode
+		bool res = (SetGraphicsMode(m_hdc, GM_ADVANCED) != 0);
+		UT_ASSERT( res );
+	}
+	else
+	{
+		bool res = (SetMapMode(m_hdc, MM_ISOTROPIC) != 0);
+		UT_ASSERT( res );
+	}
+	
+	
+	// now set world transform for our logical units
+	_setTransform(getTransform());
+#endif
+#endif
 }
 
 GR_Win32Graphics::GR_Win32Graphics(HDC hdc, HWND hwnd, XAP_App * app)
@@ -211,7 +241,7 @@ GR_Font* GR_Win32Graphics::findFont(const char* pszFontFamily,
 	// we need to get the size in logpixels for the current DC, which
 	// simply means to divide points by 72 and multiply by device Y resolution
 	UT_sint32 iHeight = (UT_sint32)UT_convertToPoints(pszFontSize);
-	lf.lfHeight = -MulDiv(iHeight, GetDeviceCaps(m_hdc, LOGPIXELSY), 72);
+	lf.lfHeight = -MulDiv(/*UT_LOG_UNITS*/(iHeight), GetDeviceCaps(m_hdc, LOGPIXELSY), 72);
 #endif
 
 	// TODO note that we don't support all those other ways of expressing weight.
@@ -1331,3 +1361,57 @@ void GR_Win32Graphics::polygon(UT_RGBColor& c,UT_Point *pts,UT_uint32 nPoints)
 	delete[] points;
 }
 
+bool GR_Win32Graphics::_setTransform(const GR_Transform & tr)
+{
+#if 0
+	if(UT_IsWinNT())
+	{
+		XFORM xForm;
+		float fScale = (float)((_UL(1) * getZoomPercentage()) / 100);
+	
+		xForm.eM11 = (float)(tr.getM11() * fScale);
+		xForm.eM12 = (float)tr.getM12();
+		xForm.eM21 = (float)tr.getM21();
+		xForm.eM22 = (float)(tr.getM22() * fScale);
+		xForm.eDx  = (float)(tr.getDx());
+		xForm.eDy  = (float)(tr.getDy());
+
+		bool ret = (SetWorldTransform(m_hdc, & xForm) != 0);
+		UT_ASSERT( ret );
+		return ret;
+	}
+	else
+	{
+		// world tranforms are not supported, fiddle with the view
+		// port, etc
+		UT_sint32 iScale = (_UL(1) * getZoomPercentage())/100;
+		
+		bool res = (SetWindowExtEx(m_hdc, iScale, iScale, NULL) != 0);
+		UT_ASSERT( res );
+
+		if(res)
+		{
+			res = (SetViewportExtEx(m_hdc,
+									GetDeviceCaps(m_hdc, LOGPIXELSX), 
+									GetDeviceCaps(m_hdc, LOGPIXELSY),
+									NULL) != 0);
+			UT_ASSERT( res );
+		}
+		
+		// change of origins is not implemented yet
+		UT_ASSERT(!tr.getDx() && !tr.getDy());
+
+		return res;
+	}
+#else
+	return true;
+#endif
+}
+
+#ifdef GR_WIN32_REDEF_UNITS
+#undef _UUL
+#undef _UUD
+#undef _UL
+#undef _UD
+#undef GR_WIN32_REDEF_UNITS
+#endif

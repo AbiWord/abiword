@@ -26,7 +26,17 @@
 
 //////////////////////////////////////////////////////////////////
 //#define USE_HIGH_RESOLUTION
-
+#if 0
+#undef _UUL
+#undef _UUD
+#undef _UL
+#undef _UD
+#define _UUL(x)
+#define _UUD(x)
+#define _UD(x) x
+#define _UL(x) x
+#define GR_WIN32_CW_REDEF_UNITS
+#endif
 void GR_Win32CharWidths::setCharWidthsOfRange(HDC hdc, UT_UCSChar c0, UT_UCSChar c1)
 {
 	UINT k;
@@ -182,3 +192,10 @@ void GR_Win32CharWidths::setCharWidthsOfRange(HDC hdc, UT_UCSChar c0, UT_UCSChar
 	}
 }
 
+#ifdef GR_WIN32_CW_REDEF_UNITS
+#undef _UUL
+#undef _UUD
+#undef _UL
+#undef _UD
+#undef GR_WIN32_CW_REDEF_UNITS
+#endif

@@ -411,6 +411,9 @@ void GR_Graphics::setZoomPercentage(UT_uint32 iZoom)
 	UT_ASSERT(iZoom > 0);
 
 	m_iZoomPercentage = iZoom;
+#ifndef USE_LAYOUT_UNITS
+	_setTransform(m_Transform);
+#endif
 }
 
 UT_uint32 GR_Graphics::getZoomPercentage(void) const

@@ -191,7 +191,8 @@ protected:
 private:
 	void 					_constructorCommonCode(HDC);
 	UT_uint16*				_remapGlyphs(const UT_UCSChar* pChars, int iCharOffset, int &iLength);
-
+	virtual bool            _setTransform(const GR_Transform & tr);
+	
 	DWORD					m_clrXorPen;
 	HPEN					m_hXorPen;
 

@@ -91,6 +91,57 @@ class ABI_EXPORT GR_Font
 */
 #endif
 
+
+class ABI_EXPORT GR_Transform
+{
+  public:
+	GR_Transform():
+		m_dM11(1.0),
+		m_dM12(0.0),
+		m_dM21(0.0),
+		m_dM22(1.0),
+		m_iDx(0),
+		m_iDy(0)
+	{
+	};
+
+	double getM11() const {return m_dM11;}
+	double getM12() const {return m_dM12;}
+	double getM21() const {return m_dM21;}
+	double getM22() const {return m_dM22;}
+	UT_uint32 getDy() const {return m_iDx;}
+	UT_uint32 getDx() const {return m_iDy;}
+
+	void setM11(double m) { m_dM11 = m;}
+	void setM12(double m) { m_dM12 = m;}
+	void setM21(double m) { m_dM21 = m;}
+	void setM22(double m) { m_dM22 = m;}
+	void setDx(UT_sint32 m) { m_iDx = m;}
+	void setDy(UT_sint32 m) { m_iDy = m;}
+
+	GR_Transform & operator = (const GR_Transform &op2)
+	{
+		m_dM11 = op2.m_dM11;
+		m_dM12 = op2.m_dM12;
+		m_dM21 = op2.m_dM21;
+		m_dM22 = op2.m_dM22;
+		
+		m_iDx = op2.m_iDx;
+		m_iDy = op2.m_iDy;
+		return *this;
+	}
+
+  private:
+	double m_dM11;
+	double m_dM12;
+	double m_dM21;
+	double m_dM22;
+
+	UT_sint32 m_iDx;
+	UT_sint32 m_iDy;
+};
+
+
 /*
   GR_Graphics is a portable interface to a simple 2-d graphics layer.  It is not
   an attempt at a general purpose portability layer.  Rather, it contains only
@@ -381,10 +432,29 @@ class ABI_EXPORT GR_Graphics
 	virtual bool	  storeCachedImage(UT_Rect * pRect) { return false; }
 	virtual bool	  restoreCachedImage() { return false; }
 
+	const GR_Transform & getTransform() const {return m_Transform;}
+
+	/* returns true on success, false on failure */
+	bool              setTransform(const GR_Transform & tr)
+	                     {
+							 bool ret = _setTransform(tr);
+							 if(!ret)
+								 return false;
+							 m_Transform = tr;
+							 return true;
+						 }
+	
  protected:
 	virtual UT_uint32 _getResolution(void) const = 0;
 	void              setStaticScreenResolution(UT_uint32 iRes);
 
+ private:
+	virtual bool       _setTransform(const GR_Transform & tr)
+		                  {
+							  UT_ASSERT( UT_NOT_IMPLEMENTED );
+							  return false;
+						  }
+	
 #ifdef WITH_PANGO
  private:
 	// draws the given FT_Bitmap, translating the grayscale into the current colour.
@@ -462,6 +532,7 @@ class ABI_EXPORT GR_Graphics
 	static PangoContext *   s_pPangoContext;
 	static XAP_PangoFontManager * s_pPangoFontManager;
 #endif
+	GR_Transform     m_Transform;
 };
 
 #ifdef DEBUG
