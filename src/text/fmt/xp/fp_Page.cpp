@@ -159,7 +159,10 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 		return NULL;
 	}
 	m_iCountWrapPasses++;
-	UT_DEBUGMSG(("Wrap passes = %d \n",m_iCountWrapPasses));
+#if DEBUG
+	UT_sint32 iPage = getDocLayout()->findPage(this);
+	UT_DEBUGMSG(("Wrap passes = %d page %x page number %d \n",m_iCountWrapPasses,this,iPage ));
+#endif
 	UT_sint32 i= 0;
 	UT_sint32 nWrapped = 0;
 	fp_Container * pFirst = NULL;
@@ -196,6 +199,7 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 	}
 	if((nWrapped == 0) && (nWrappedObjs == 0))
 	{
+		xxx_UT_DEBUGMSG(("page %x nWrapped %d nWrappedObjs %d does not need updating \n",this,nWrapped,nWrappedObjs));
 		return NULL;
 	}
 	bool bFormatAllWrapped = ((nWrapped > 0) && (nWrappedObjs == 0));

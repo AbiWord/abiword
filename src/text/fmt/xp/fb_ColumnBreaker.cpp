@@ -146,6 +146,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 				}
 			}
 		}
+		pPrevPage = pCurColumn->getPage();
 		fp_Container* pFirstContainerToKeep = pOuterContainer;
 		xxx_UT_DEBUGMSG(("SEVIOR: first to keep 1 %x \n",pFirstContainerToKeep));
 		fp_Container* pLastContainerToKeep = NULL;
