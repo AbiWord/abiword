@@ -110,6 +110,7 @@ AbiWord is a multi-platform word processor with a GTK+ interface on the UNIX pla
 AbiWord is a multi-platform word processor with a GTK+ interface on the UNIX platform. For extended functionality and integration it is also possible to compile AbiWord with GNOME support. Abiword with the GNOME front-end is part of the GNOME Office Suite. AbiWord is made available under the GNU GPL license.
 %endif
 
+%if %{enable_gnome}
 %package embeddable
 Requires: bonobo
 Requires: oaf
@@ -119,7 +120,7 @@ Group: Development/Libraries
 
 %description embeddable
 Files for embedding AbiWord in other bonobo-aware programs.
-
+%endif
 
 %if %{enable_perl}
 %package perl
