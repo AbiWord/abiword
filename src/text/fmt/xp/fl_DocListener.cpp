@@ -371,15 +371,17 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 		m_bEndFootnoteProcessedInBlock = true;
 		UT_ASSERT(pCL->getContainerType() == FL_CONTAINER_FOOTNOTE);
 		*psfh = (PL_StruxFmtHandle) pCL;
-		m_pCurrentSL = (fl_SectionLayout *) m_pCurrentSL->myContainingLayout();
+		m_pCurrentSL = (fl_SectionLayout *) static_cast<fl_FootnoteLayout *>(m_pCurrentSL)->getDocSectionLayout();
 		fl_FootnoteLayout * pFL = (fl_FootnoteLayout *) pCL;
 		pFL->setFootnoteEndIn();
 		fl_BlockLayout * pBL = (fl_BlockLayout *) pFL->getFirstLayout();
+		UT_ASSERT(pBL);
 		if(pBL)
 		{
 			pBL->updateEnclosingBlockIfNeeded();
 		}
 		UT_ASSERT(m_pCurrentSL);
+		UT_ASSERT(m_pCurrentSL->getContainerType() == FL_CONTAINER_DOCSECTION);
 		break;
 	}
 	case PTX_SectionHdrFtr:
@@ -448,7 +450,7 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 //
 		fl_ContainerLayout*	pCL = NULL;
 		fl_ContainerLayout * pCon = getTopContainerLayout();
-		if(pCon)
+		if((pCon != NULL)  && (m_pCurrentSL->getContainerType() != FL_CONTAINER_FOOTNOTE))
 		{
 			if(pCon->getContainerType() != FL_CONTAINER_CELL)
 			{
@@ -550,7 +552,7 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 		fl_ContainerLayout * pCon = getTopContainerLayout();
 		if(pCon->getContainerType() != FL_CONTAINER_TABLE)
 		{
-#ifndef NDEBUG
+#ifdef DEBUG
 			m_pDoc->miniDump(sdh,6);
 #endif
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);

@@ -165,16 +165,12 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 			{
 				fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pCurContainer);
 				iContainerHeight = pTab->getHeightInLayoutUnits();
-				bool bDoFootnoteDeduction = false;
+#if 0
 				if(!pTab->isThisBroken() && pTab->getFirstBrokenTable())
 				{
 					pTab = pTab->getFirstBrokenTable();
-					bDoFootnoteDeduction = true;
 				}
-//
-// only do the footnote height deduction if the table has been broken.
-//
-				if(pTab->containsFootnoteReference() &&	bDoFootnoteDeduction )
+				if(pTab->containsFootnoteReference() )
 				{
 					// Ok.  Now, deduct the proper amount from iMaxColHeight.
 
@@ -198,8 +194,8 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 					}	
 					UT_DEBUGMSG(("got Table footnote section height %d\n", iFootnoteHeight));
 					iWorkingColHeight += iFootnoteHeight;
-
 				}
+#endif
 			}
 			else
 				iContainerHeight = pCurContainer->getHeightInLayoutUnits();
@@ -574,6 +570,9 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 					}
 				}
 			}
+//
+// Do the same for footnotes inside broken tables
+//
 			if(pCurContainer->getContainerType() == FP_CONTAINER_TABLE)
 			{
 				fp_TableContainer * pCurTable = (fp_TableContainer *) pCurContainer;
@@ -583,7 +582,6 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 				}
 				if(pCurTable->isThisBroken())
 				{
-					UT_DEBUGMSG(("About to call containerFootnoteReferenced \n"));
 					if(pCurTable->containsFootnoteReference())
 					{
 						// OK get a vector of the footnote containers in this line.
@@ -597,11 +595,13 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 						UT_sint32 i =0;
 						for(i=0; i< (UT_sint32) vecFootnotes.getItemCount();i++)
 						{
+							UT_DEBUGMSG(("Found reference %d in broken table %x \n",i,pCurTable));
 							fp_FootnoteContainer * pFC = (fp_FootnoteContainer *) vecFootnotes.getNthItem(i);
 							fp_Page * myPage = pFC->getPage();
-							xxx_UT_DEBUGMSG(("Footnote %x is on Page %x \n",pFC,myPage));
+							UT_DEBUGMSG(("Footnote %x is on Page %x \n",pFC,myPage));
 							if(myPage != pCurPage)
 							{
+								UT_DEBUGMSG((" Moving anchor from %x to %x \n",myPage,pCurPage));
 								if(myPage == NULL)
 								{
 									pCurPage->insertFootnoteContainer(pFC);
@@ -805,7 +805,7 @@ bool fb_ColumnBreaker::_breakTable(fp_Container*& pOffendingContainer,
 {
 	bool bDoTableBreak;
 
-    xxx_UT_DEBUGMSG(("SEVIOR: Offending container is table %x \n",pOffendingContainer));
+    UT_DEBUGMSG(("breakTable:!!!!!!!!!!!! Offending container is table %x \n",pOffendingContainer));
 	fp_TableContainer * pTab = (fp_TableContainer *) pOffendingContainer;
 	if(!pTab->isThisBroken())
 	{
@@ -825,20 +825,21 @@ bool fb_ColumnBreaker::_breakTable(fp_Container*& pOffendingContainer,
 //
 // If we don't break the table, the heights of the broken table's
 // will be adjusted at the setY() in the layout stage.
-// PLAM: broken for pango?
+// PLAM: broken for pango? 
 //
 	fp_TableContainer * pBroke = NULL;
 	UT_sint32 iAvail = iMaxColHeight - iWorkingColHeight - iContainerMarginAfter;
 	double scale = ((double) pTab->getGraphics()->getResolution())/UT_LAYOUT_UNITS;
 	iAvail = (UT_sint32)(((double) iAvail)*scale);
 	UT_sint32 iBreakAt = pTab->wantVBreakAt(iAvail-1);
+	UT_DEBUGMSG(("breakTable column: iAvail %d actual break at %d \n",iAvail,iBreakAt));
 //
 // Look to see if the table can be broken. If iBreakAt < 0 we have to bump 
 // the whole table into the next column.
 //
 	if(iBreakAt < 1)
 	{
-		UT_DEBUGMSG(("SEVIOR: Can't break this table %d \n",iBreakAt));
+		UT_DEBUGMSG(("breakTable Col: Can't break this table %d \n",iBreakAt));
 		return false;
 	}
 

@@ -5578,10 +5578,13 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 
 	UT_return_if_fail(pRun);
 
-	fp_Container * pContainer = pRun->getLine()->getContainer();
-	fl_SectionLayout * pSection = pContainer->getSectionLayout();
+	fp_Line * pLine = pRun->getLine();
+	UT_return_if_fail(pLine);
 
+	fp_Container * pContainer = pLine->getContainer();
 	UT_return_if_fail(pContainer);
+
+	fl_SectionLayout * pSection = pContainer->getSectionLayout();
 	UT_return_if_fail(pSection);
 	if(pInfo->m_vecTableColInfo)
 	{
@@ -5621,8 +5624,16 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 		}
 		else
 		{
-			pDSL= pContainer->getPage()->getOwningSection();
-			pColumn = pContainer->getPage()->getNthColumnLeader(0);
+			fp_Page * pPage = pContainer->getPage();
+			if(pPage)
+			{
+				pDSL = pPage->getOwningSection();
+				pColumn = pPage->getNthColumnLeader(0);
+			}
+			else
+			{
+				return;
+			}
 		}
 		UT_uint32 nCol=0;
 		fp_Column * pNthColumn=pColumn->getLeader();

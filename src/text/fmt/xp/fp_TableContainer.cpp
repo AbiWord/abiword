@@ -1088,6 +1088,7 @@ UT_sint32 fp_CellContainer::wantVBreakAt(UT_sint32 vpos)
 	UT_sint32 iYBreak = vpos;
 	fp_Container * pCon;
 	fp_Line * pLine = NULL;
+	UT_sint32 footHeight = 0;
 	for(i=0; i< count; i++)
 	{
 		pCon = (fp_Container *) getNthCon(i);
@@ -1106,6 +1107,10 @@ UT_sint32 fp_CellContainer::wantVBreakAt(UT_sint32 vpos)
 					{
 						fp_FootnoteContainer * pFC = (fp_FootnoteContainer *) vecFC.getNthItem(k);
 						conHeight += pFC->getHeight();
+						if((pFC->getPage() == NULL) || (pFC->getPage() != pLine->getPage()))
+						{
+							footHeight += pFC->getHeight();
+						}
 					}
 				}
 			}
@@ -1132,6 +1137,10 @@ UT_sint32 fp_CellContainer::wantVBreakAt(UT_sint32 vpos)
 			}
 			break;
 		}
+	}
+	if((iYBreak == vpos) && (footHeight > 0))
+	{
+		iYBreak = iYBreak - footHeight;
 	}
 	return iYBreak;
 }
@@ -2683,6 +2692,10 @@ UT_sint32 fp_TableContainer::getHeight(void)
 bool fp_TableContainer::containsFootnoteReference(void)
 {
 	fp_Container * pCon = getFirstContainer();
+	if(isThisBroken())
+	{
+		pCon = getMasterTable()->getFirstContainer();
+	}
 	bool bFound = false;
 	while(pCon && !bFound)
 	{
@@ -2744,6 +2757,10 @@ bool fp_TableContainer::containsFootnoteReference(void)
 bool fp_TableContainer::getFootnoteContainers(UT_Vector * pVecFoots)
 {
 	fp_Container * pCon = getFirstContainer();
+	if(isThisBroken())
+	{
+		pCon = getMasterTable()->getFirstContainer();
+	}
 	bool bFound = false;
 	while(pCon)
 	{
