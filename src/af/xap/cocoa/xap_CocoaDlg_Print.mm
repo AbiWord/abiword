@@ -27,6 +27,7 @@
 #include "ut_debugmsg.h"
 #include "ut_string.h"
 #include "ut_assert.h"
+#include "pd_Document.h"
 #include "gr_CocoaGraphics.h"
 #include "xap_Dialog_Id.h"
 #include "xap_CocoaDlg_Print.h"

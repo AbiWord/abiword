@@ -18,6 +18,9 @@
  */
 
 #include "ut_types.h"
+#include "gr_DrawArgs.h"
+#include "fp_PageSize.h"
+#include "fl_DocLayout.h"
 #include "fv_View.h"
 #include "ap_PrintingDelegate.h"
 
