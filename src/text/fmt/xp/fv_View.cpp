@@ -2564,6 +2564,7 @@ bool FV_View::setCharFormat(const XML_Char * properties[], const XML_Char * attr
 	}
 
 	_generalUpdate();
+	_fixInsertionPointCoords();
 
 	// Signal piceTable is stable again
 	_restorePieceTableState();
