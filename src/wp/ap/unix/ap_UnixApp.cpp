@@ -249,14 +249,15 @@ bool AP_UnixApp::initialize(void)
 	    UT_ASSERT((szDirectory) && (*szDirectory));
 
 	    UT_String szPathname = szDirectory;
-	    if (szDirectory[szPathname.size()-1]=='/')
+	    if (szDirectory[szPathname.size()-1]!='/')
 	      szPathname += "/";
 	    szPathname += szStringSet;
+	    szPathname += ".strings";
 		
 	    AP_DiskStringSet * pDiskStringSet = new AP_DiskStringSet(this);
 	    UT_ASSERT(pDiskStringSet);
 		
-	    if (pDiskStringSet->loadStringsFromDisk(szPathname))
+	    if (pDiskStringSet->loadStringsFromDisk(szPathname.c_str()))
 	    {
 		pDiskStringSet->setFallbackStringSet(m_pStringSet);
 		m_pStringSet = pDiskStringSet;
