@@ -25,6 +25,7 @@
 #include <string.h>
 
 #include "fl_BlockLayout.h"
+#include "fl_Layout.h"
 #include "fl_DocLayout.h"
 #include "fl_SectionLayout.h"
 #include "fb_LineBreaker.h"
@@ -46,8 +47,8 @@ FL_BlockLayout::FL_BlockLayout(PL_StruxDocHandle sdh,
 							   FB_LineBreaker* pBreaker,
 							   FL_BlockLayout* pPrev,
 							   FL_SectionLayout* pSectionLayout)
+	: fl_Layout(PTX_Block, sdh)
 {
-    m_sdh = sdh;
 	m_pSectionLayout = pSectionLayout;
 	m_pBreaker = pBreaker;
 	m_pFirstRun = NULL;

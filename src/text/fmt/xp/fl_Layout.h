@@ -21,48 +21,40 @@
 */
 
 
-#ifndef SECTIONLAYOUT_H
-#define SECTIONLAYOUT_H
+#ifndef FL_LAYOUT_H
+#define FL_LAYOUT_H
 
 #include "ut_types.h"
-#include "ut_vector.h"
 #include "pt_Types.h"
-#include "fl_Layout.h"
 
-class FL_DocLayout;
-class FB_LineBreaker;
-class FP_Column;
-class PD_Document;
-class FL_ColumnSetLayout;
 class PP_AttrProp;
+class PD_Document;
 
 /*
-	A section keeps track of all of its columns, as well as all of its
-	section slices.
+	fl_Layout is the base class for all layout objects which correspond to 
+	logical elements of the PD_Document.  
+
+	We use an enum to remember type, rather than use any of the
+	run-time stuff.
 */
-class FL_SectionLayout : public fl_Layout
+
+class fl_Layout
 {
 public:
-	FL_SectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh);
-	~FL_SectionLayout();
+	fl_Layout(PTStruxType type, PL_StruxDocHandle sdh);
+	~fl_Layout();
 
-	FL_DocLayout *		getLayout();
-	FP_Column *			getNewColumn();
-	int					format();
-	UT_Bool				reformat();
-
-	void				setColumnSetLayout(FL_ColumnSetLayout * pcsl);
-	FL_ColumnSetLayout*	getColumnSetLayout(void) const;
+	PTStruxType			getType(void) const;
+	void				setPTvars(PT_VarSetIndex vsIndex, PT_AttrPropIndex apIndex);
+	UT_Bool				getAttrProp(const PP_AttrProp ** ppAP) const;
 	
 protected:
-	void				_purgeLayout();
+	PTStruxType				m_type;
+	PL_StruxDocHandle		m_sdh;
+	PT_VarSetIndex			m_vsIndex;
+	PT_AttrPropIndex		m_apIndex;
 
-	FL_DocLayout*		m_pLayout;
-	FB_LineBreaker*		m_pLB;
-	FL_ColumnSetLayout*	m_pColumnSetLayout;
-	
-	UT_Vector			m_vecSlices;
-	UT_Vector			m_vecColumns;
+	PD_Document *			m_pDoc;		// set by child
 };
 
-#endif /* SECTIONLAYOUT_H */
+#endif /* FL_LAYOUT_H */

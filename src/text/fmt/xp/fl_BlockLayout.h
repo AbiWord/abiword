@@ -27,6 +27,7 @@
 #include "ut_types.h"
 #include "ut_vector.h"
 #include "pt_Types.h"
+#include "fl_Layout.h"
 
 class FL_DocLayout;
 class FL_SectionLayout;
@@ -95,7 +96,7 @@ class PP_Property;
 
 	If the return value is 0, then there is no room for a line of that height.
 */
-class FL_BlockLayout
+class FL_BlockLayout : public fl_Layout
 {
 public:
 	FL_BlockLayout(PL_StruxDocHandle sdh, FB_LineBreaker*, FL_BlockLayout*, FL_SectionLayout*);
@@ -175,10 +176,7 @@ protected:
 
 	UT_Vector				m_vecSlices;
 
-	PL_StruxDocHandle		m_sdh;
-
 	FL_DocLayout*	       	m_pLayout;
-	PD_Document*	      	m_pDoc;
 	FB_LineBreaker*			m_pBreaker;
 
 	FL_BlockLayout*			m_pPrev;

@@ -26,6 +26,7 @@
 #include "ut_types.h"
 
 #include "fl_SectionLayout.h"
+#include "fl_Layout.h"
 #include "fl_DocLayout.h"
 #include "fl_BlockLayout.h"
 #include "fl_ColumnSetLayout.h"
@@ -39,17 +40,14 @@
 #include "ut_assert.h"
 
 FL_SectionLayout::FL_SectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh)
+	: fl_Layout(PTX_Section, sdh)
 {
 	UT_ASSERT(pLayout);
-	UT_ASSERT(sdh);
 	
 	m_pLayout = pLayout;
-	m_sdh = sdh;
 	m_pDoc = pLayout->getDocument();
 	m_pLB = NULL;
 	m_pColumnSetLayout = NULL;
-	m_vsIndex = 0;
-	m_apIndex = 0;
 }
 
 fp_ColumnInfo::fp_ColumnInfo(FP_Column* _pCol, UT_sint32 _iXoff, UT_sint32 _iYoff)
@@ -315,17 +313,6 @@ void FL_SectionLayout::_purgeLayout()
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 #endif /* BUFFER */
 	return;
-}
-
-void FL_SectionLayout::setPTvars(PT_VarSetIndex vsIndex, PT_AttrPropIndex apIndex)
-{
-	m_vsIndex = vsIndex;
-	m_apIndex = apIndex;
-}
-
-UT_Bool FL_SectionLayout::getAttrProp(const PP_AttrProp ** ppAP) const
-{
-	return m_pDoc->getAttrProp(m_vsIndex,m_apIndex,ppAP);
 }
 
 void FL_SectionLayout::setColumnSetLayout(FL_ColumnSetLayout * pcsl)

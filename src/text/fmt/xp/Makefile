@@ -36,6 +36,7 @@ HEADERS=		$(EXPORT_HEADERS)	\
 			fl_ColumnLayout.h	\
 			fl_ColumnSetLayout.h	\
 			fl_DocListener.h		\
+			fl_Layout.h		\
 			fp_BlockSlice.h		\
 			fp_Line.h		\
 			fp_Page.h		\
@@ -52,6 +53,7 @@ CPPSRCS=		dg_LayoutView.cpp		\
 			fl_ColumnSetLayout.cpp		\
 			fl_DocLayout.cpp		\
 			fl_DocListener.cpp		\
+			fl_Layout.cpp		\
 			fl_SectionLayout.cpp		\
 			fp_BlockSlice.cpp		\
 			fp_Column.cpp			\

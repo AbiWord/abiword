@@ -4,8 +4,9 @@
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "pt_Types.h"
-#include "ut_assert.h"
+
 #include "fl_ColumnSetLayout.h"
+#include "fl_Layout.h"
 #include "fl_ColumnLayout.h"
 #include "pd_Document.h"
 #include "fl_SectionLayout.h"
@@ -15,13 +16,12 @@
 
 
 FL_ColumnLayout::FL_ColumnLayout(FL_ColumnSetLayout * pCSL, PL_StruxDocHandle sdh)
+	: fl_Layout(PTX_Column, sdh)
 {
 	m_pColumnSetLayout = pCSL;
-	m_sdh = sdh;
+	m_pDoc = m_pColumnSetLayout->getSectionLayout()->getLayout()->getDocument();
 	m_prev = NULL;
 	m_next = NULL;
-	m_vsIndex = 0;
-	m_apIndex = 0;
 }
 
 FL_ColumnLayout::~FL_ColumnLayout()
@@ -50,18 +50,6 @@ FL_ColumnLayout * FL_ColumnLayout::getNext(void) const
 FL_ColumnLayout * FL_ColumnLayout::getPrev(void) const
 {
 	return m_prev;
-}
-
-void FL_ColumnLayout::setPTvars(PT_VarSetIndex vsIndex, PT_AttrPropIndex apIndex)
-{
-	m_vsIndex = vsIndex;
-	m_apIndex = apIndex;
-}
-
-UT_Bool FL_ColumnLayout::getAttrProp(const PP_AttrProp ** ppAP) const
-{
-	PD_Document * pDoc = m_pColumnSetLayout->getSectionLayout()->getLayout()->getDocument();
-	return pDoc->getAttrProp(m_vsIndex,m_apIndex,ppAP);
 }
 
 UT_Bool FL_ColumnLayout::getNewColumn(UT_uint32 iWidthGiven, UT_uint32 iHeightGiven,

@@ -4,12 +4,13 @@
 
 #include "ut_types.h"
 #include "pt_Types.h"
+#include "fl_Layout.h"
+
 class FL_ColumnLayout;
 class FL_SectionLayout;
 class PP_AttrProp;
 
-
-class FL_ColumnSetLayout
+class FL_ColumnSetLayout : public fl_Layout
 {
 public:
 	FL_ColumnSetLayout(FL_SectionLayout * pSectionLayout, PL_StruxDocHandle sdh);
@@ -22,16 +23,10 @@ public:
 	void				setColumnSetLayout(FL_ColumnSetLayout * pcsl);
 	FL_ColumnSetLayout*	getColumnSetLayout(void) const;
 
-	void				setPTvars(PT_VarSetIndex vsIndex, PT_AttrPropIndex apIndex);
-	UT_Bool				getAttrProp(const PP_AttrProp ** ppAP) const;
-
 protected:
-	PL_StruxDocHandle	m_sdh;
 	FL_SectionLayout *	m_pSectionLayout;
 	FL_ColumnLayout *	m_pFirstColumnLayout;
 	FL_ColumnLayout *	m_pLastColumnLayout;
-	PT_VarSetIndex		m_vsIndex;
-	PT_AttrPropIndex	m_apIndex;
 };
 
 #endif /* FL_COLUMNSETLAYOUT_H */
