@@ -1505,7 +1505,7 @@ is drawn later.
 	{
 		if ( b_Underline )
 		{
-		     if(!N_Run->isUnderline())
+		     if(!N_Run->isUnderline() || isSelectionDraw())
 		     {
 				 iDrop = UT_MAX( getMaxUnderline(), iDrop);
 				 UT_sint32 totx = getUnderlineXoff();
@@ -1518,7 +1518,7 @@ is drawn later.
 		}
 		if ( b_Overline )
 		{
-			if(!N_Run->isOverline())
+			if(!N_Run->isOverline() || isSelectionDraw())
 			{
 				iDrop = UT_MIN( getMinOverline(), iDrop);
 				UT_sint32 totx = getOverlineXoff();
