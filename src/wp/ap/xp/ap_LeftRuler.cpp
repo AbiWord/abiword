@@ -1736,7 +1736,7 @@ void AP_LeftRuler::draw(const UT_Rect * pCR, AP_LeftRulerInfo * lfi)
 	m_pG->setColor3D(GR_Graphics::CLR3D_Foreground);	
 	
 	// draw everything below the top margin
-	for (k=1; (k*tick.tickUnit/tick.tickUnitScale < (lfi->m_yPageSize - lfi->m_yTopMargin)); k++)
+	for (k=1; (static_cast<UT_sint32>(k*tick.tickUnit/tick.tickUnitScale) < (static_cast<UT_sint32>(lfi->m_yPageSize) - static_cast<UT_sint32>(lfi->m_yTopMargin))); k++)
 	{
 		y = yOrigin + lfi->m_yTopMargin + k*tick.tickUnit/tick.tickUnitScale - m_yScrollOffset;
 		if (y >= 0)
