@@ -772,6 +772,7 @@ void fl_TOCLayout::_addBlockInVec(fl_BlockLayout * pBlock, UT_UTF8String & sStyl
 	{
 		pPrevBL = static_cast<fl_BlockLayout *>(getFirstLayout());
 	}
+#if 0
 	else if(!m_pLayout->isLayoutFilling())
 	{
 		// we have to redo the previous TOC block, if we have stolen some of its contents (i.e., if
@@ -822,7 +823,7 @@ void fl_TOCLayout::_addBlockInVec(fl_BlockLayout * pBlock, UT_UTF8String & sStyl
 			}
 		}
 	}
-
+#endif
 	PT_DocPosition posStart = pBlock->getPosition(true);
 	PT_DocPosition posEnd = posStart + static_cast<PT_DocPosition>(pBlock->getLength());
 	UT_DEBUGMSG(("Block is %d long \n",pBlock->getLength()));
@@ -859,8 +860,17 @@ bool fl_TOCLayout::removeBlock(fl_BlockLayout * pBlock)
 	{
 		return true;
 	}
+	if(m_pLayout && m_pLayout->isLayoutDeleting())
+	{
+		return false;
+	}
 	if(isInVector(pBlock,&m_vecEntries) >= 0)
 	{
+		fp_TOCContainer * pTOC = static_cast<fp_TOCContainer *>(getFirstContainer());
+		if(pTOC)
+		{
+			pTOC->clearScreen();
+		}
 		_removeBlockInVec(pBlock);
 		_calculateLabels();
 		return true;
@@ -920,64 +930,16 @@ void fl_TOCLayout::_removeBlockInVec(fl_BlockLayout * pBlock, bool bDontRecurse)
 	//
 	// Clear it!
 	//
+	UT_DEBUGMSG(("Removing block %x Entry %x \n",pThisBL,pThisEntry));
 	if(!pBlock->isContainedByTOC())
 	{
 		// we only clear if the block passed to us is not one of our TOC blocks (i.e., if we are not
 		// called recursively by this funciton, or by _addBlockInVec())
 		pBlock->clearScreen(m_pLayout->getGraphics());
 	}
-	
 	//
 	// unlink it from the TOCLayout
 	//
-
-	if(!bDontRecurse && !m_pLayout->isLayoutDeleting())
-	{
-		fp_TOCContainer * pTOCC = static_cast<fp_TOCContainer *>(getFirstContainer());
-		pTOCC->clearScreen();
-		// if the heading we are deleting is immediately preceded by another heading, the text of the
-		// old heading shifts into the preceding heading; in that case, we have to redo the previous TOC
-		// entry.
-		fl_BlockLayout * pPrevBL = static_cast<fl_BlockLayout *>(pThisBL->getPrev());
-		fl_BlockLayout * pNextBL = static_cast<fl_BlockLayout *>(pThisBL->getNext());
-		PT_DocPosition posStart1, posEnd1, posStart2;
-	
-		if(pPrevBL)
-		{
-			posStart1 = pPrevBL->getPosition(true);
-			posEnd1   = posStart1 + pPrevBL->getLength();
-		}
-	
-		if(pNextBL)
-		{
-			posStart2 = pNextBL->getPosition(true);
-		}
-		else
-		{
-			posStart2 = posEnd1;
-		}
-
-		if(pPrevBL && posEnd1 == posStart2)
-		{
-			TOCEntry * pEntry = NULL;
-			fl_BlockLayout * pPrevBL2 = static_cast<fl_BlockLayout *>(pPrevBL->getPrev());
-
-			UT_return_if_fail( i > 0 );
-			pEntry = m_vecEntries.getNthItem(i-1);
-			UT_return_if_fail( pEntry );
-			
-			UT_UTF8String sStyle = pEntry->getDispStyle();
-			UT_sint32 iNewLevel = pEntry->getLevel();
-			UT_sint32 iWhere = i - 1;
-			
-			_removeBlockInVec(pPrevBL, true);
-			UT_sint32 iOldLevel = m_iCurrentLevel;
-			m_iCurrentLevel = iNewLevel;
-			_createAndFillTOCEntry(posStart1, posEnd1, pPrevBL2, sStyle.utf8_str(), iWhere);
-			m_iCurrentLevel = iOldLevel;
-		}
-	
-	}
 	
 	if(static_cast<fl_BlockLayout *>(getFirstLayout()) == pThisBL)
 	{
@@ -995,9 +957,11 @@ void fl_TOCLayout::_removeBlockInVec(fl_BlockLayout * pBlock, bool bDontRecurse)
 	{
 		pThisBL->getNext()->setPrev(pThisBL->getPrev());
 	}
-	delete pThisBL;
-	delete pThisEntry;
+//
+// Remove entry
+//
 	UT_sint32 k = m_vecEntries.findItem(pThisEntry);
+	i = k-1;
 	UT_ASSERT(k >= 0);
 	while(k >= 0)
 	{
@@ -1005,6 +969,14 @@ void fl_TOCLayout::_removeBlockInVec(fl_BlockLayout * pBlock, bool bDontRecurse)
 		k = m_vecEntries.findItem(pThisEntry);
 		UT_ASSERT(k== -1);
 	}
+
+	delete pThisBL;
+	delete pThisEntry;
+//
+// Used to have code to remove the previous block if it touched this
+// block. Remove it and rely on fl_blocklayout to handle the case of
+// text from a previous block coming into this block
+//
 	markAllRunsDirty();
 	setNeedsReformat(0);
 	setNeedsRedraw();

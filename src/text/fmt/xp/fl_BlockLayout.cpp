@@ -952,6 +952,10 @@ UT_sint32 fl_BlockLayout::getEmbeddedOffset(UT_sint32 offset, fl_ContainerLayout
 	}
 	if(bFound)
 	{
+		if(pEmbedCL->getContainerType() == FL_CONTAINER_TOC)
+		{
+			return -1;
+		}
 		return iEmbed;
 	}
 	pEmbedCL = NULL;
@@ -5961,6 +5965,13 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 	}
 	// Get rid of everything else about the block
 	purgeLayout();
+	//
+	// Update it's TOC entry
+	//
+	if(m_pLayout->isBlockInTOC(this))
+	{
+		m_pLayout->removeBlockFromTOC(this);
+	}
 	// Unlink this block
 	if(getNext() && getNext()->getNext() &&  getNext()->getNext()->getContainerType() == FL_CONTAINER_TOC)
 		{
