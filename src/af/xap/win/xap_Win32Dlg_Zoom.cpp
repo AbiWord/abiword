@@ -212,7 +212,7 @@ BOOL XAP_Win32Dialog_Zoom::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	WORD wNotifyCode = HIWORD(wParam);
 	WORD wId = LOWORD(wParam);
 	HWND hWndCtrl = (HWND)lParam;
-	int n, newValue;
+	UT_sint32 n, newValue;
 
 	switch (wId)
 	{
@@ -237,13 +237,21 @@ BOOL XAP_Win32Dialog_Zoom::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	case XAP_RID_DIALOG_ZOOM_RADIO_WIDTH:
 		m_bEditPctEnabled = (IsDlgButtonChecked(hWnd,XAP_RID_DIALOG_ZOOM_RADIO_PCT)==BST_CHECKED);
 		EnableWindow(GetDlgItem(hWnd,XAP_RID_DIALOG_ZOOM_EDIT_PCT),m_bEditPctEnabled);
-		// TODO figure out call to XP code...
+		if( m_pFrame )
+		{
+			newValue = m_pFrame->getCurrentView()->calculateZoomPercentForPageWidth();
+			_updatePreviewZoomPercent(newValue);
+		}
 		return 1;
 
 	case XAP_RID_DIALOG_ZOOM_RADIO_WHOLE:
 		m_bEditPctEnabled = (IsDlgButtonChecked(hWnd,XAP_RID_DIALOG_ZOOM_RADIO_PCT)==BST_CHECKED);
 		EnableWindow(GetDlgItem(hWnd,XAP_RID_DIALOG_ZOOM_EDIT_PCT),m_bEditPctEnabled);
-		// TODO figure out call to XP code...
+		if( m_pFrame )
+		{
+			newValue = m_pFrame->getCurrentView()->calculateZoomPercentForWholePage();
+			_updatePreviewZoomPercent(newValue);
+		}
 		return 1;
 
 	case XAP_RID_DIALOG_ZOOM_RADIO_PCT:
