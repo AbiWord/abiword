@@ -403,7 +403,7 @@ void AP_UnixApp::_printUsage(void)
 	// for getopt ?
 	
 	// just print to stdout, not stderr
-	printf("Usage: %s [option]... [file]...\n\n", m_pArgs->m_argv[0]);
+	printf("\nUsage: %s [option]... [file]...\n\n", m_pArgs->m_argv[0]);
 
 #ifdef DEBUG
 	printf("  -d,         --dumpstrings    dump strings strings to file\n");
@@ -480,6 +480,23 @@ struct option longopts[] =
     {0,             0, 					NULL,  0 }
 };
 
+// What a great way to construct a string...
+
+// TODO : move these out somewhere XP
+
+char shortopts[] =
+#ifdef DEBUG
+    "d"
+#endif
+    "h"
+    "l:"
+    "n"
+    "s:"
+#ifdef DEBUG
+    "S:"
+#endif
+    ;
+
 UT_Bool AP_UnixApp::parseCommandLine(void)
 {
 	// parse the command line
@@ -498,17 +515,19 @@ UT_Bool AP_UnixApp::parseCommandLine(void)
 	const char * szSplashFile = NULL;
 
 	// use getopt_long as suggested and contributed by Ming-I Hsieh <mihs@wm28.csie.ncu.edu.tw>
-	while ((k = getopt_long(m_pArgs->m_argc, m_pArgs->m_argv, "s:dhl:nS:", longopts, NULL)) != EOF)
+	while ((k = getopt_long(m_pArgs->m_argc, m_pArgs->m_argv, shortopts, longopts, NULL)) != EOF)
 	{
 		switch (k)
 		{
 		case 'd':
 		{
+#ifdef DEBUG
 			// dump strings out to file; only honored in debug
 			AP_BuiltinStringSet * pBuiltinStringSet =
 				new AP_BuiltinStringSet(this, AP_PREF_DEFAULT_StringSet);
 			pBuiltinStringSet->dumpBuiltinSet("EnUS.strings");
 			delete pBuiltinStringSet;
+#endif
 			break;
 		}
 		case 'h':
@@ -531,15 +550,19 @@ UT_Bool AP_UnixApp::parseCommandLine(void)
 		}
 		case 's':
 		{
+#ifdef DEBUG
 			// execute a script
 			UT_DEBUGMSG(("Scripting is not yet implemented.\n"));
+#endif
 			break;
 		}
 		case 'S':
 		{
+#ifdef DEBUG
 			// user wants a custom splash screen, but only honored in
 			// debug
 			szSplashFile = optarg;
+#endif
 		    break;
 		}
 		default:
