@@ -116,6 +116,7 @@ public:
 	static bool			s_bUseContextGlyphs;
 	static bool			s_bSaveContextGlyphs;
 	static UT_Timer *	s_pPrefsTimer;
+	static bool			s_bBidiOS;
 private:
 	static void			_refreshPrefs(UT_Worker * pTimer);
 	void				_getContext(const UT_UCSChar *pSpan,

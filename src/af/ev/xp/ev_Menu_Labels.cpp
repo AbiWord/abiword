@@ -27,16 +27,105 @@
 #include "ut_string.h"
 #include "ev_Menu_Labels.h"
 #include "ut_vector.h"
+#ifdef BIDI_ENABLED
+#include "fribidi.h"
+#include "xap_App.h"
+#include "xap_EncodingManager.h"
+#endif
 
 /*****************************************************************/
 
 EV_Menu_Label::EV_Menu_Label(XAP_Menu_Id id,
 							 const char * szMenuLabel,
 							 const char * szStatusMsg)
-	: m_id(id),
+	: m_id(id)
+#ifndef BIDI_ENABLED
+,
 	  m_stMenuLabel(szMenuLabel),
 	  m_stStatusMsg(szStatusMsg)
+#endif
 {
+#ifdef BIDI_ENABLED
+
+	if(!XAP_App::getApp()->theOSHasBidiSupport())
+	{
+		UT_uint32 iLabelLen  = strlen(szMenuLabel);
+		UT_uint32 iStatusLen = strlen(szStatusMsg);
+	
+		FriBidiChar * fbdLabel   = new FriBidiChar [iLabelLen + 1];
+		UT_ASSERT(fbdLabel);
+		FriBidiChar * fbdLabel2  = new FriBidiChar [iLabelLen + 1];
+		UT_ASSERT(fbdLabel2);
+		char * szMenuLabel2 = new char [iLabelLen + 1];
+		UT_ASSERT(szMenuLabel2);
+	
+		FriBidiChar * fbdStatus  = new FriBidiChar [iStatusLen + 1];
+		UT_ASSERT(fbdStatus);
+		FriBidiChar * fbdStatus2 = new FriBidiChar [iStatusLen + 1];
+		UT_ASSERT(fbdStatus2);
+		char * szStatusMsg2 = new char [iStatusLen + 1];
+		UT_ASSERT(szStatusMsg2);
+	
+		UT_uint32 i;
+		for(i = 0; i < iLabelLen; i++)
+			fbdLabel[i] = (FriBidiChar) XAP_EncodingManager::get_instance()->nativeToU((UT_UCSChar)szMenuLabel[i]);
+		fbdLabel[i] = 0;
+	
+		for(i = 0; i < iStatusLen; i++)
+			fbdStatus[i] = (FriBidiChar) XAP_EncodingManager::get_instance()->nativeToU((UT_UCSChar)szStatusMsg[i]);
+		fbdStatus[i] = 0;
+
+	
+		FriBidiCharType fbdDomDir = fribidi_get_type(fbdLabel[0]);
+	
+		fribidi_log2vis (		/* input */
+		       fbdLabel,
+		       iLabelLen,
+		       &fbdDomDir,
+		       /* output */
+		       fbdLabel2,
+		       NULL,
+		       NULL,
+		       NULL);	
+
+		fbdDomDir = fribidi_get_type(fbdStatus[0]);
+			
+		fribidi_log2vis (		/* input */
+		       fbdStatus,
+		       iStatusLen,
+		       &fbdDomDir,
+		       /* output */
+		       fbdStatus2,
+		       NULL,
+		       NULL,
+		       NULL);
+		
+	
+		for(i = 0; i < iLabelLen; i++)
+			szMenuLabel2[i] = (char) XAP_EncodingManager::get_instance()->UToNative((UT_UCSChar)fbdLabel2[i]);
+		szMenuLabel2[i] = 0;
+	
+		for(i = 0; i < iStatusLen; i++)
+			szStatusMsg2[i] = (char) XAP_EncodingManager::get_instance()->UToNative((UT_UCSChar)fbdStatus2[i]);
+		szStatusMsg2[i] = 0;
+
+		m_stMenuLabel = szMenuLabel2;
+		m_stStatusMsg = szStatusMsg2;
+		
+		delete[] fbdLabel;
+		delete[] fbdLabel2;
+		delete[] fbdStatus;
+		delete[] fbdStatus2;
+		delete[] szMenuLabel2;
+		delete[] szStatusMsg2;
+	}
+	else
+	{
+		m_stMenuLabel = szMenuLabel;
+		m_stStatusMsg = szStatusMsg;
+	}
+	
+#endif
 }
 
 EV_Menu_Label::~EV_Menu_Label()

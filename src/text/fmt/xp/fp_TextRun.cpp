@@ -60,6 +60,7 @@
 //inicialise the static members of the class
 bool fp_TextRun::s_bUseContextGlyphs = true;
 bool fp_TextRun::s_bSaveContextGlyphs = false;
+bool fp_TextRun::s_bBidiOS = false;
 UT_Timer * fp_TextRun::s_pPrefsTimer = 0;
 UT_uint32    fp_TextRun::s_iClassInstanceCount = 0;
 UT_UCSChar getMirrorChar(UT_UCSChar c);
@@ -115,6 +116,9 @@ fp_TextRun::fp_TextRun(fl_BlockLayout* pBL,
 	m_iSpanBuffSize = m_iLen;
 	UT_ASSERT(m_pSpanBuff);
 	
+	if(!s_iClassInstanceCount)
+		s_bBidiOS = XAP_App::getApp()->theOSHasBidiSupport();
+		
 	s_iClassInstanceCount++;
 #endif
 }
@@ -1603,7 +1607,7 @@ void fp_TextRun::_refreshDrawBuffer()
 
 		} // for(;;)
 
-		if(iVisDir == FRIBIDI_TYPE_RTL)
+		if(iVisDir == FRIBIDI_TYPE_RTL && !s_bBidiOS)
 			UT_UCS_strnrev(m_pSpanBuff, m_iLen);
 			
 	} //if(m_bRefreshDrawBuffer)	
