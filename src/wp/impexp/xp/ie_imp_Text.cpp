@@ -633,7 +633,8 @@ IE_Imp_Text::IE_Imp_Text(PD_Document * pDocument, bool bEncoded)
     m_bUseBOM(false),
 	m_bBigEndian(false),
 	m_bBlockDirectionPending(true),
-	m_bFirstBlockData(true)
+	m_bFirstBlockData(true),
+	m_pBlock(NULL)
 {
 	// Get encoding dialog prefs setting
 	bool bAlwaysPrompt;

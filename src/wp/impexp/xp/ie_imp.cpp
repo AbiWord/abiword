@@ -118,7 +118,7 @@ bool IE_Imp::appendStruxFmt(pf_Frag_Strux * pfs, const XML_Char ** attributes)
 			bRes = m_pDocument->changeStruxFmt(PTC_AddFmt,
 											   m_dpos, m_dpos,
 											   attributes, NULL,
-											   pfs->getStruxType());
+											   PTX_Block);
 		}
 		return bRes;
 	}
