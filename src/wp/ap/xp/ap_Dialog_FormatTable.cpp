@@ -251,8 +251,10 @@ void AP_Dialog_FormatTable::setCurCellProps(void)
 {
 	FV_View * pView = static_cast<FV_View *>(m_pApp->getLastFocussedFrame()->getCurrentView());
 
-	if (m_bSettingsChanged)
+	if (m_bSettingsChanged || 
+		m_iOldPos == pView->getPoint()) // comparing the actual cell pos would be even better; but who cares :)
 		return;
+	
 	m_iOldPos = pView->getPoint();
 
 	XML_Char * bgColor = NULL;
@@ -265,9 +267,8 @@ void AP_Dialog_FormatTable::setCurCellProps(void)
 		removeVecProp (m_vecProps, "background-color");
 	}
 
-	UT_String bstmp = UT_String_sprintf("%d", FS_FILL);                     
-    addOrReplaceVecProp(m_vecProps, "bg-style", bstmp.c_str());             	
-	
+	UT_String bstmp = UT_String_sprintf("%d", FS_FILL);
+    addOrReplaceVecProp(m_vecProps, "bg-style", bstmp.c_str());
 	
 	// draw the preview with the changed properties
 	if(m_pFormatTablePreview)
