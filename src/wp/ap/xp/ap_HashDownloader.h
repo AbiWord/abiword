@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 2002 Gabriel
+ * Copyright (C) 2002 Gabriel Gerhardsson
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -45,9 +45,8 @@ protected:
 	virtual void		showProgressStart(XAP_Frame *pFrame, CURL *ch);
 	virtual	void		showProgressStop(XAP_Frame *pFrame, CURL *ch);
 
-	virtual void showErrorMsg(XAP_Frame *pFrame, const char *errMsg, bool showErrno=false) const = 0;
+	virtual void 		showErrorMsg(XAP_Frame *pFrame, const char *errMsg, bool showErrno=false) const = 0;
 
-	virtual UT_sint32	execCommand(const char *szCommand) = 0;
 	virtual tPkgType	wantedPackageType(XAP_Frame *pFrame) = 0;
 
 	virtual UT_sint32	downloadDictionaryList(XAP_Frame *pFrame, const char *endianess, UT_uint32 forceDownload);
@@ -66,8 +65,8 @@ protected:
 
 #ifdef CURLHASH_INSTALL_SYSTEMWIDE
 	virtual UT_sint32	dlg_askInstallSystemwide(XAP_Frame *pFrame);
-	virtual void setInstallSystemWide(bool isw) { _installSystemwide = isw; }
-	virtual bool getInstallSystemWide(void) { return _installSystemwide; }
+	virtual void 		setInstallSystemWide(bool isw) { _installSystemwide = isw; }
+	virtual bool 		getInstallSystemWide(void) { return _installSystemwide; }
 #endif
 
 private:

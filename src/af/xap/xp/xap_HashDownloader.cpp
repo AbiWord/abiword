@@ -1,5 +1,5 @@
 /* AbiSource Application Framework
- * Copyright (C) 2002 Gabriel
+ * Copyright (C) 2002 Gabriel Gerhardsson
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -39,7 +39,7 @@ extern "C" {
 size_t
 writeCallback(void *ptr, size_t size, size_t nmemb, void *data)
 {
-	XAP_HashDownloader::fileData_t *mem = (XAP_HashDownloader::fileData_t *)data;
+	XAP_HashDownloader::tFileData *mem = (XAP_HashDownloader::tFileData *)data;
 
 	if (!mem->data)
 		mem->data = (char *)malloc(size * nmemb + 1);
@@ -65,6 +65,18 @@ XAP_HashDownloader::XAP_HashDownloader()
 
 XAP_HashDownloader::~XAP_HashDownloader()
 {
+}
+
+void 
+XAP_HashDownloader::showNoteDlg(XAP_Frame *pFrame, XAP_String_Id errMsg)
+{
+	pFrame->showMessageBox(errMsg, XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK, NULL);
+}
+
+void 
+XAP_HashDownloader::showNoteDlg(XAP_Frame *pFrame, const char *szMsg)
+{
+	pFrame->showMessageBox(szMsg, XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK);
 }
 
 UT_sint32
@@ -200,7 +212,7 @@ XAP_HashDownloader::initData()
 }
 
 UT_sint32
-XAP_HashDownloader::downloadFile(XAP_Frame *pFrame, const char *szFName, fileData_t *d, UT_uint32 show_progress)
+XAP_HashDownloader::downloadFile(XAP_Frame *pFrame, const char *szFName, tFileData *d, UT_uint32 show_progress)
 {
 	CURL *ch;
 	UT_sint32 ret = 0;
@@ -341,12 +353,13 @@ XAP_HashDownloader::dlg_askFirstTryFailed(XAP_Frame *pFrame)
 
 
 /*
- * If the option "SpellUseHashDownloader" is == 1 or is nonexistant:
- * Show a messagebox for the user that suggests letting Abiword download
+ * Shows a messagebox for the user that suggests letting Abiword download
  * the wanted dictionary and install it. If user answers Yes, do it.
+ * It aborts imediatly (before any of the above) if the option "SpellUseHashDownloader" is == 0
+ * szLang contains the language code, e.g. "en-US"
  * return:	0  - no, thankyou
- *		1  - ok, done, all OK
- *		<0 - error
+ *			1  - ok, done, all OK
+ *			<0 - error
  */
 UT_sint32
 XAP_HashDownloader::suggestDownload(XAP_Frame *pFrame, const char *szLang)
@@ -355,6 +368,8 @@ XAP_HashDownloader::suggestDownload(XAP_Frame *pFrame, const char *szLang)
 	UT_sint32 i, ret;
 	FILE *fp;
 	tPkgType pkgType;
+
+fprintf(stderr, "XAP_HashDownloader::suggestDownload(): szLang=%s\n", szLang);
 
 #ifdef UT_LITTLE_ENDIAN
 	char endianess[5] = "i386";
@@ -394,17 +409,14 @@ XAP_HashDownloader::suggestDownload(XAP_Frame *pFrame, const char *szLang)
 		   From now on this function will exit at getPref() since
 		   this value is saved as a preference */
 		if (doUse == -1)
-			pFrame->showMessageBox(XAP_STRING_ID_DLG_HashDownloader_FeatureDisabled
-					, XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK, NULL);
+			showNoteDlg(pFrame, XAP_STRING_ID_DLG_HashDownloader_FeatureDisabled);
 		else
-			pFrame->showMessageBox(XAP_STRING_ID_DLG_HashDownloader_FeatureDisabledForThis
-					, XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK, NULL);
+			showNoteDlg(pFrame, XAP_STRING_ID_DLG_HashDownloader_FeatureDisabledForThis);
 		return(0);
 	}
 	
 	if (!version[i]) {
-		pFrame->showMessageBox(XAP_STRING_ID_DLG_HashDownloader_DictNotAvailable
-				, XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK, NULL);
+		showNoteDlg(pFrame, XAP_STRING_ID_DLG_HashDownloader_DictNotAvailable);
 		return(-1);
 	}
 	
@@ -413,8 +425,7 @@ XAP_HashDownloader::suggestDownload(XAP_Frame *pFrame, const char *szLang)
 		if (endptr == mrd[i])
 			return(-1);
 		if (ret > getComparableBuildDate()) {
-			pFrame->showMessageBox(XAP_STRING_ID_DLG_HashDownloader_DictNotForThis
-					, XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK, NULL);
+			showNoteDlg(pFrame, XAP_STRING_ID_DLG_HashDownloader_DictNotForThis);
 			return(-1);
 		}
 	}
@@ -441,8 +452,7 @@ XAP_HashDownloader::suggestDownload(XAP_Frame *pFrame, const char *szLang)
 	if ((ret = downloadFile(pFrame, buff, &fileData, 1)) && (host2[0] != 0 && (ret = downloadFile(pFrame, buff2, &fileData, 1))))
 		if (dlg_askFirstTryFailed(pFrame))
 			if ((ret = downloadFile(pFrame, buff, &fileData, 1)) && (host2[0] != 0 && (ret = downloadFile(pFrame, buff2, &fileData, 1)))) {
-				pFrame->showMessageBox(XAP_STRING_ID_DLG_HashDownloader_DictDLFail
-						, XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK, NULL);
+				showNoteDlg(pFrame, XAP_STRING_ID_DLG_HashDownloader_DictDLFail);
 				return(-1);
 			}
 
@@ -454,8 +464,7 @@ XAP_HashDownloader::suggestDownload(XAP_Frame *pFrame, const char *szLang)
 	// on Win9x buff should contain a valid directory, but on NT docs say it may not exist
 	if (!UT_directoryExists(buff)) 
 	{
-		pFrame->showMessageBox("XAP_HashDownloader:: Error TEMP path refers to nonexistant directory!\n",
-						XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK);
+		showNoteDlg(pFrame, "XAP_HashDownloader:: Error TEMP path refers to nonexistant directory!\n");
 		return (-1);
 	}
 	strcat(buff, "/");	// re-add the slash on end
@@ -473,8 +482,7 @@ XAP_HashDownloader::suggestDownload(XAP_Frame *pFrame, const char *szLang)
 
 	if (installPackage(pFrame, buff, szLang, pkgType, RM_SUCCESS | RM_FAILURE))
 	{
-		pFrame->showMessageBox(XAP_STRING_ID_DLG_HashDownloader_DictInstallFail
-				, XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK, NULL);
+		showNoteDlg(pFrame, XAP_STRING_ID_DLG_HashDownloader_DictInstallFail);
 		return(-2);
 	}
 

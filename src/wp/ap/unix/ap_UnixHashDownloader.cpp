@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 2002 Gabriel
+ * Copyright (C) 2002 Gabriel Gerhardsson
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -131,73 +131,8 @@ AP_UnixHashDownloader::platformInstallPackage(XAP_Frame *pFrame, const char *szF
 	if (pkgType == pkgType_RPM) {
 		sprintf(buff, "rpm -Uvh %s", szFName);
 		ret = execCommand(buff);
-	}
-
-#if 1
-	else
+	} else
 		ret = AP_HashDownloader::platformInstallPackage(pFrame, szFName, szLName, pkgType);
-
-#else
-
-	if (pkgType == pkgType_Tarball) {
-#ifdef CURLHASH_INSTALL_SYSTEMWIDE
-		if (getInstallSystemWide())
-			pName = XAP_App::getApp()->getAbiSuiteLibDir();
-		else
-#endif
-			pName = XAP_App::getApp()->getUserPrivateDirectory();
-
-		pName += "/dictionary/";
-		name = UT_strdup(pName.c_str());
-		
-		if ((ret = getLangNum(szLName)) == -1) {
-			fprintf(stderr, "AP_UnixHashDownloader::installPackage(): No matching hashname to that language\n");
-			return(-1);
-		}
-		hname = m_mapping[ret].dict;
-		
-		ret = UT_rand();
-		sprintf(tmpDir, "/tmp/abiword_abispell-install-%d/", ret);
-		
-		sprintf(buff, "mkdir -p %s", tmpDir);
-		if ((ret = execCommand(buff))) {
-			fprintf(stderr, "AP_UnixHashDownloader::installPackage(): Error while making tmp directory\n");
-			return(ret);
-		}
-		
-		sprintf(buff, "cd %s; gzip -dc %s | tar xf -", tmpDir, szFName);
-		if ((ret = execCommand(buff))) {
-			fprintf(stderr, "AP_UnixHashDownloader::installPackage(): Error while unpacking the tarball\n");
-			return(ret);
-		}
-
-		sprintf(buff, "mkdir -p %s", name);
-		if ((ret = execCommand(buff))) {
-			fprintf(stderr, "AP_UnixHashDownloader::installPackage(): Error while creating dictionary-directory\n");
-			return(ret);
-		}
-		
-		/*
-		 * Handles packages that either have just the files, or that also
-		 * contain the whole path usr/shate/AbiSuite/dictionary/
-		 */
-		sprintf(buff, "cd %susr/share/AbiSuite/dictionary/; mv %s %s-encoding %s", tmpDir, hname, hname, name);
-		if ((ret = execCommand(buff))) {
-			sprintf(buff, "cd %s; mv %s %s-encoding %s", tmpDir, hname, hname, name);
-			if ((ret = execCommand(buff))) {
-				fprintf(stderr, "AP_UnixHashDownloader::installPackage(): Error while moving dictionary into place\n");
-				return(ret);
-			}
-		}
-
-
-		sprintf(buff, "rm -rf %s", tmpDir);
-		if ((ret = execCommand(buff))) {
-			fprintf(stderr, "AP_UnixHashDownloader::installPackage(): Error while removing tmp directory\n");
-			return(ret);
-		}
-	}
-#endif
 
 	return(ret);
 }

@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 2002 Gabriel
+ * Copyright (C) 2002 Gabriel Gerhardsson
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -44,8 +44,9 @@ protected:
 	virtual UT_sint32	execCommand(const char *szCommand);
 	virtual tPkgType	wantedPackageType(XAP_Frame *pFrame);
 
-	virtual UT_sint32 platformInstallPackage(XAP_Frame *pFrame, const char *szFName, const char *szLName, XAP_HashDownloader::tPkgType pkgType);
-	virtual void showErrorMsg(XAP_Frame *pFrame, const char *errMsg, bool showErrno) const;
+	virtual UT_sint32	platformInstallPackage(XAP_Frame *pFrame, const char *szFName, const char *szLName, XAP_HashDownloader::tPkgType pkgType);
+
+	virtual void 		showErrorMsg(XAP_Frame *pFrame, const char *errMsg, bool showErrno) const;
 	
 private:
 };

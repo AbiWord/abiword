@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 2002 Gabriel
+ * Copyright (C) 2002 Gabriel Gerhardsson
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -145,8 +145,7 @@ AP_HashDownloader::downloadDictionaryList(XAP_Frame *pFrame, const char *endiane
 		if ((ret = downloadFile(pFrame, szURL, &fileData, 0))) {
 			if (dlg_askFirstTryFailed(pFrame))
 				if ((ret = downloadFile(pFrame, szURL, &fileData, 0))) {
-					pFrame->showMessageBox(XAP_STRING_ID_DLG_HashDownloader_DictlistDLFail,
-							XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK, NULL);
+					showNoteDlg(pFrame, XAP_STRING_ID_DLG_HashDownloader_DictlistDLFail);
 					return(-1);
 				}
 		}
@@ -210,8 +209,7 @@ AP_HashDownloader::dlg_askInstallSystemwide(XAP_Frame *pFrame)
 UT_sint32
 AP_HashDownloader::installPackageUnsupported(XAP_Frame *pFrame, const char *szFName, const char *szLName, tPkgType pkgType)
 {
-	pFrame->showMessageBox("AP_XXXHashDownloader::installPackage(): package file support not implemented.\n",
-		XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK);
+	showNoteDlg(pFrame, "AP_XXXHashDownloader::installPackage(): package file support not implemented.\n");
 	return (-1);
 }
 
@@ -226,10 +224,7 @@ AP_HashDownloader::installPackage(XAP_Frame *pFrame, const char *szFName, const 
 #ifdef DEBUG
 	// Let the user know we succeeded
 	if (!ret)
-	{
-		pFrame->showMessageBox("Dictionary file successfully installed.\n",
-			XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK);
-	}
+		showNoteDlg(pFrame, "Dictionary file successfully installed.\n");
 #endif
 
 	if (ret && (rm & RM_FAILURE))

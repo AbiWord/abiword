@@ -1,5 +1,5 @@
 /* AbiSource Application Framework
- * Copyright (C) 2002 Gabriel
+ * Copyright (C) 2002 Gabriel Gerhardsson
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -69,34 +69,38 @@ public:
 		pkgType_None
 	} tPkgType;
 
-	typedef struct fileData_t {
+	typedef struct tFileData {
 		char *data;
 		size_t s;
 	};
 
 protected:
-	UT_sint32 	getLangNum(const char *szName);
-	void 		startElement(const XML_Char* name, const XML_Char **atts);
-	void 		endElement(const XML_Char *name);
-	void 		charData(const XML_Char*, int);
-	UT_sint32 	downloadFile(XAP_Frame *pFrame, const char *szFName, fileData_t *d, UT_uint32 show_progress);
-	UT_sint32	getPref(XAP_Frame *pFrame);
-	UT_sint32	setPref(XAP_Frame *pFrame, UT_sint32 newVal);
-	UT_sint32	getComparableBuildDate(void);
-	void 		initData(void);
-	UT_uint32	dlg_askDownload(XAP_Frame *pFrame, const char *szLang);
-	UT_uint32	dlg_askFirstTryFailed(XAP_Frame *pFrame);
+	UT_sint32 			getLangNum(const char *szName);
+	void 				startElement(const XML_Char* name, const XML_Char **atts);
+	void 				endElement(const XML_Char *name);
+	void 				charData(const XML_Char*, int);
+	UT_sint32 			downloadFile(XAP_Frame *pFrame, const char *szFName, tFileData *d, UT_uint32 show_progress);
+	UT_sint32			getPref(XAP_Frame *pFrame);
+	UT_sint32			setPref(XAP_Frame *pFrame, UT_sint32 newVal);
+	UT_sint32			getComparableBuildDate(void);
+	void 				initData(void);
+	UT_uint32			dlg_askDownload(XAP_Frame *pFrame, const char *szLang);
+	UT_uint32			dlg_askFirstTryFailed(XAP_Frame *pFrame);
 	
-	virtual	void	showProgressStart(XAP_Frame *pFrame, CURL *ch) = 0;
-	virtual	void	showProgressStop(XAP_Frame *pFrame, CURL *ch) = 0;
+	virtual void		showNoteDlg(XAP_Frame *pFrame, XAP_String_Id errMsg);
+	virtual void 		showNoteDlg(XAP_Frame *pFrame, const char *szMsg);
+	
+	virtual void		showErrorMsg(XAP_Frame *pFrame, const char *errMsg, bool showErrno=false) const = 0;
 
-	virtual UT_sint32	execCommand(const char *szCommand) = 0;
+	virtual	void		showProgressStart(XAP_Frame *pFrame, CURL *ch) = 0;
+	virtual	void		showProgressStop(XAP_Frame *pFrame, CURL *ch) = 0;
+
 	virtual UT_sint32	downloadDictionaryList(XAP_Frame *pFrame, const char *endianess, UT_uint32 forceDownload) = 0;
 	virtual tPkgType	wantedPackageType(XAP_Frame *pFrame) = 0;
 	virtual UT_sint32	installPackage(XAP_Frame *pFrame, const char *szFName, const char *szLName, tPkgType pkgType, UT_sint32 rm) = 0;
 	
 	time_t		dictionaryListMaxAge;
-	fileData_t 	fileData;
+	tFileData 	fileData;
 	UT_XML 		xmlParser;
 	UT_sint32 	xmlParseOk;
 	UT_sint32 	doUse;
