@@ -566,7 +566,9 @@ IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
 	m_iFootnotesStart(0xffffffff),
 	m_iFootnotesEnd(0xffffffff),
 	m_iEndnotesStart(0xffffffff),
-	m_iEndnotesEnd(0xffffffff)
+	m_iEndnotesEnd(0xffffffff),
+	m_iNextFNote(0),
+	m_iNextENote(0)
 {
   for(UT_uint32 i = 0; i < 9; i++)
 	  m_iListIdIncrement[i] = 0;
@@ -1212,17 +1214,18 @@ bool IE_Imp_MsWord_97::_insertBookmarkIfAppropriate(UT_uint32 iDocPosition)
 
 int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U16 lid)
 {
-	if(ps->currentcp == m_iFootnotesStart)
+	if(ps->currentcp >= m_iFootnotesStart && ps->currentcp < m_iFootnotesEnd)
 	{
-		UT_DEBUGMSG(("Start of footnotes: pos %d, char 0x%02x\n", ps->currentcp, eachchar));
+		UT_DEBUGMSG(("In footnote territory: pos %d, char 0x%02x\n", ps->currentcp, eachchar));
 	}
 	
-	if(ps->currentcp ==  m_iEndnotesStart)
+	if(ps->currentcp >= m_iEndnotesStart && ps->currentcp < m_iEndnotesEnd)
 	{
-		UT_DEBUGMSG(("Start of endnotes: pos %d, char 0x%02x\n", ps->currentcp, eachchar));
+		UT_DEBUGMSG(("In endnote territory: pos %d, char 0x%02x\n", ps->currentcp, eachchar));
 	}
 	
 	_insertBookmarkIfAppropriate(ps->currentcp);
+	_insertNoteIfAppropriate(ps->currentcp);
 
 	// convert incoming character to unicode
 	if (chartype)
@@ -1298,15 +1301,18 @@ int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 	PICF picf;
 #endif
 
-	if(ps->currentcp == m_iFootnotesStart)
+	if(ps->currentcp >= m_iFootnotesStart && ps->currentcp < m_iFootnotesEnd)
 	{
-		UT_DEBUGMSG(("Start of footnotes: pos %d, char 0x%02x\n", ps->currentcp, eachchar));
+		UT_DEBUGMSG(("In footnote territory: pos %d, char 0x%02x\n", ps->currentcp, eachchar));
 	}
 	
-	if(ps->currentcp ==  m_iEndnotesStart)
+	if(ps->currentcp >= m_iEndnotesStart && ps->currentcp < m_iEndnotesEnd)
 	{
-		UT_DEBUGMSG(("Start of endnotes: pos %d, char 0x%02x\n", ps->currentcp, eachchar));
+		UT_DEBUGMSG(("In endnote territory: pos %d, char 0x%02x\n", ps->currentcp, eachchar));
 	}
+
+	_insertBookmarkIfAppropriate(ps->currentcp);
+	_insertNoteIfAppropriate(ps->currentcp);
 	
 	//
 	// This next bit of code is to handle fields
@@ -1435,8 +1441,6 @@ int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 		return 0;
 	}
 
-	// for any character that we did not handle, we need to increase
-	// doc position
 	return 0;
 }
 
@@ -3555,6 +3559,7 @@ void IE_Imp_MsWord_97::_handleNotes(const wvParseStruct *ps)
 				m_pFootnotes[i].txt_len = pPLCF_txt[i+1] - pPLCF_txt[i];
 				UT_uint32 iType = ((UT_uint16*)pPLCF_ref)[2*(m_iFootnotesCount + 1) + i];
 				m_pFootnotes[i].type = iType;
+				m_pFootnotes[i].pid = AUTO_LIST_RESERVED + i;
 				UT_DEBUGMSG(("IE_Imp_MsWord_97::_handleNotes: fnote %d, rpos %d, tpos %d, type %d\n",
 							 i, m_pFootnotes[i].ref_pos, m_pFootnotes[i].txt_pos, iType));
 			}
@@ -3593,6 +3598,7 @@ void IE_Imp_MsWord_97::_handleNotes(const wvParseStruct *ps)
 				m_pEndnotes[i].txt_len = pPLCF_txt[i+1] - pPLCF_txt[i];
 				UT_uint32 iType = ((UT_uint16*)pPLCF_ref)[2*(m_iEndnotesCount + 1) + i];
 				m_pEndnotes[i].type = iType;
+				m_pEndnotes[i].pid = AUTO_LIST_RESERVED + i;
 				UT_DEBUGMSG(("IE_Imp_MsWord_97::_handleNotes: enote %d, rpos %d, tpos %d, type %d\n",
 							 i, m_pEndnotes[i].ref_pos, m_pEndnotes[i].txt_pos, iType));
 			}
@@ -3602,3 +3608,92 @@ void IE_Imp_MsWord_97::_handleNotes(const wvParseStruct *ps)
 		}
 	}
 }
+
+/*
+   we will take advantage of the notes being in document order, so we
+   can just remember the last note we inserted, rather than having to
+   search through the list
+
+   returns true on success
+*/
+bool IE_Imp_MsWord_97::_insertNoteIfAppropriate(UT_uint32 iDocPosition)
+{
+	bool res = true;
+	//now search for position iDocPosition in our footnnote list;
+	if (!m_pFootnotes || m_iFootnotesCount == 0 || m_iNextFNote >= m_iFootnotesCount)
+	{
+		goto endnotes;
+	}
+
+	if(m_pFootnotes[m_iNextFNote].ref_pos == iDocPosition)
+	{
+		res &= _insertFootnote(m_pFootnotes + m_iNextFNote++);
+	}
+	
+ endnotes:
+	if (!m_pEndnotes || m_iEndnotesCount == 0 || m_iNextENote >= m_iEndnotesCount)
+	{
+		goto finish;
+	}
+	
+	if(m_pEndnotes[m_iNextENote].ref_pos == iDocPosition)
+	{
+		res &= _insertEndnote(m_pEndnotes + m_iNextENote++);
+	}
+	
+	
+ finish:	
+	return res;
+}
+
+/* returns true on success */
+bool IE_Imp_MsWord_97::_insertFootnote(const footnote * f)
+{
+	UT_return_val_if_fail(f, true);
+	UT_DEBUGMSG(("IE_Imp_MsWord_97::_insertFootnote: pos: %d, pid %d\n", f->ref_pos, f->pid));
+
+	this->_flush();
+
+	bool res = true;
+	const XML_Char * attribsS[3] ={"footnote-id",NULL,NULL};
+	const XML_Char* attribsR[5] = {"type", "footnote_ref", "footnote-id", NULL, NULL};
+	const XML_Char* attribsA[5] = {"type", "footnote_anchor", "footnote-id", NULL, NULL};
+
+	UT_String footpid;
+	UT_String_sprintf(footpid,"%i",f->pid);
+	attribsS[1] = footpid.c_str();
+	attribsR[3] = footpid.c_str();
+	attribsA[3] = footpid.c_str();
+	
+	res &= getDoc()->appendObject(PTO_Field, attribsR);
+	res &= getDoc()->appendStrux(PTX_SectionFootnote,attribsS);
+	res &= getDoc()->appendStrux(PTX_Block,NULL);
+	res &= getDoc()->appendObject(PTO_Field, attribsA);
+	res &= getDoc()->appendStrux(PTX_EndFootnote,NULL);
+	return res;
+}
+
+bool IE_Imp_MsWord_97::_insertEndnote(const footnote * f)
+{
+	UT_return_val_if_fail(f, true);
+	UT_DEBUGMSG(("IE_Imp_MsWord_97::_insertEndnote: pos: %d\n", f->ref_pos));
+	return true;
+}
+
+
+bool IE_Imp_MsWord_97::_insertNoteTextIfAppropriate(UT_uint32 iDocPosition)
+{
+
+	return true;
+}
+
+bool IE_Imp_MsWord_97::_insertFootnoteText()
+{
+	return true;
+}
+
+bool IE_Imp_MsWord_97::_insertEndnoteText()
+{
+	return true;
+}
+

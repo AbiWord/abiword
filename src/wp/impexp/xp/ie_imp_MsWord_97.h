@@ -50,6 +50,7 @@ struct footnote
 	UT_uint32  ref_pos;
 	UT_uint32  txt_pos;
 	UT_uint32  txt_len;
+	UT_uint32  pid;
 };
 
 
@@ -150,6 +151,12 @@ private:
 	void        _generateParaProps(UT_String &s, const PAP * apap, wvParseStruct *ps);
 	int         _handleBookmarks(const wvParseStruct *ps);
 	void        _handleNotes(const wvParseStruct *ps);
+	bool        _insertNoteIfAppropriate(UT_uint32 iDocPosition);
+	bool        _insertFootnote(const footnote * f);
+	bool        _insertEndnote(const footnote * f);
+	bool        _insertNoteTextIfAppropriate(UT_uint32 iDocPosition);
+	bool        _insertFootnoteText();
+	bool        _insertEndnoteText();
 
 	UT_UCS4String		m_pTextRun;
 	UT_uint32			m_iImageCount;
@@ -200,6 +207,8 @@ private:
 	UT_uint32   m_iFootnotesEnd;
 	UT_uint32   m_iEndnotesStart;
 	UT_uint32   m_iEndnotesEnd;
+	UT_uint32   m_iNextFNote;
+	UT_uint32   m_iNextENote;
 };
 
 #endif /* IE_IMP_MSWORD_H */
