@@ -50,18 +50,17 @@ static EnchantBroker * s_enchant_broker = 0;
 EnchantChecker::EnchantChecker()
 	: m_dict(0)
 {
-	if (s_enchant_broker_count == 0) {
+	if (s_enchant_broker_count == 0)
 		s_enchant_broker = enchant_broker_init ();
-	}
 	s_enchant_broker_count++;
 }
 
 EnchantChecker::~EnchantChecker()
 {
 	UT_return_if_fail (s_enchant_broker);
-	UT_return_if_fail (m_dict);
 
-	enchant_broker_free_dict (s_enchant_broker, m_dict);
+	if (m_dict)
+		enchant_broker_free_dict (s_enchant_broker, m_dict);
 
 	s_enchant_broker_count--;
 	if (s_enchant_broker_count == 0) {
@@ -79,18 +78,22 @@ EnchantChecker::_checkWord (const UT_UCSChar * ucszWord, size_t len)
 
 	UT_UTF8String utf8 (ucszWord, len);
 
-	if (enchant_dict_check (m_dict, utf8.utf8_str(), utf8.byteLength()) == 0)
+	switch (enchant_dict_check (m_dict, utf8.utf8_str(), utf8.byteLength())) 
+	{
+	case -1:
+		return SpellChecker::LOOKUP_ERROR;
+	case 0:
 		return SpellChecker::LOOKUP_SUCCEEDED;
-	else
+	default:
 		return SpellChecker::LOOKUP_FAILED;
+	}
 }
 
 UT_Vector *
 EnchantChecker::_suggestWord (const UT_UCSChar *ucszWord, size_t len)
 {
-	// Check validity
-	UT_return_val_if_fail ( m_dict, 0);
-	UT_return_val_if_fail ( ucszWord && len, 0 );
+	UT_return_val_if_fail (m_dict, 0);
+	UT_return_val_if_fail (ucszWord && len, 0);
 
 	UT_Vector * pvSugg = new UT_Vector ();
 
@@ -118,14 +121,12 @@ bool EnchantChecker::addToCustomDict (const UT_UCSChar *word, size_t len)
 {
 	UT_return_val_if_fail (m_dict, false);
 
-	bool ret = false;
-
 	if (word && len) {
 		UT_UTF8String utf8 (word, len);
 		enchant_dict_add_to_personal (m_dict, utf8.utf8_str(), utf8.byteLength());
-		ret = true;
+		return true;
 	}
-	return ret;
+	return false;
 }
    
 void EnchantChecker::correctWord (const UT_UCSChar *toCorrect, size_t toCorrectLen,
