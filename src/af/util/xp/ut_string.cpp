@@ -21,7 +21,11 @@
 
 #include <stdlib.h>
 #include <string.h>
+
+#ifdef __QNXNTO__
 #include <strings.h>
+#endif
+
 #include <math.h>
 #include <ctype.h>
 
