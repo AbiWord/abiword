@@ -45,13 +45,12 @@
 #include "ap_DialogFactory.h"
 #include "ap_Dialog_MessageBox.h"
 #include "ap_Dialog_FileOpenSaveAs.h"
+#include "ap_Dialog_Print.h"
 
 #define FREEP(p)	do { if (p) free(p); (p)=NULL; } while (0)
 
 #ifdef DLGHACK
-
 UT_Bool _chooseFont(AP_Frame * pFrame, FV_View * pView);
-UT_Bool _printDoc(AP_Frame * pFrame, FV_View * pView);
 #endif /* DLGHACK */
 
 
@@ -164,6 +163,7 @@ public:
 	static EV_EditMethod_Fn fileSave;
 	static EV_EditMethod_Fn fileSaveAs;
 	static EV_EditMethod_Fn print;
+	static EV_EditMethod_Fn printTB;
 
 	static EV_EditMethod_Fn undo;
 	static EV_EditMethod_Fn redo;
@@ -306,6 +306,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(fileSave),				_M_,	""),
 	EV_EditMethod(NF(fileSaveAs),			_M_,	""),
 	EV_EditMethod(NF(print),				_M_,	""),
+	EV_EditMethod(NF(printTB),				_M_,	""), // avoid query if possible
 
 	EV_EditMethod(NF(undo),					_M_,	""),
 	EV_EditMethod(NF(redo),					_M_,	""),
@@ -1498,15 +1499,111 @@ static UT_Bool _toggleSpan(FV_View * pView, const XML_Char * prop, const XML_Cha
 	return UT_TRUE;
 }
 
+/*****************************************************************/
+/*****************************************************************/
+
+static UT_Bool _doPrint(FV_View * pView, UT_Bool bTryToSuppressDialog)
+{
+	AP_Frame * pFrame = (AP_Frame *) pView->getParentData();
+	UT_ASSERT(pFrame);
+
+	pFrame->raise();
+
+	AP_DialogFactory * pDialogFactory
+		= (AP_DialogFactory *)(pFrame->getDialogFactory());
+
+	AP_Dialog_Print * pDialog
+		= (AP_Dialog_Print *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_PRINT));
+	UT_ASSERT(pDialog);
+
+	FL_DocLayout* pLayout = pView->getLayout();
+	PD_Document * doc = pLayout->getDocument();
+	int nPagesInDoc = pLayout->countPages();
+
+	pDialog->setDocumentTitle(pFrame->getTempNameFromTitle());
+	pDialog->setDocumentPathname((doc->getFilename())
+								 ? doc->getFilename()
+								 : pFrame->getTempNameFromTitle());
+	pDialog->setEnablePageRangeButton(UT_TRUE,1,pLayout->countPages());
+	pDialog->setEnablePrintSelection(UT_FALSE);	// TODO change this when we know how to do it.
+	pDialog->setEnablePrintToFile(UT_TRUE);
+	pDialog->setTryToBypassActualDialog(bTryToSuppressDialog);
+
+	pDialog->runModal(pFrame);
+	
+	AP_Dialog_Print::tAnswer ans = pDialog->getAnswer();
+	UT_Bool bOK = (ans == AP_Dialog_Print::a_OK);
+
+	if (bOK)
+	{
+		DG_Graphics * pGraphics = pDialog->getPrinterGraphicsContext();
+		FL_DocLayout * pDocLayout = new FL_DocLayout(doc,pGraphics);
+		pDocLayout->formatAll();
+		FV_View * pPrintView = new FV_View(pFrame,pDocLayout);
+		UT_uint32 nFromPage, nToPage;
+		(void)pDialog->getDoPrintRange(&nFromPage,&nToPage);
+
+		// TODO add code to handle getDoPrintSelection()
+
+		UT_uint32 nCopies = pDialog->getNrCopies();
+		UT_Bool bCollate = pDialog->getCollate();
+
+		dg_DrawArgs da;
+		memset(&da, 0, sizeof(da));
+		da.pG = NULL;
+		da.width = pDocLayout->getWidth();
+		da.height = pDocLayout->getHeight();
+
+		UT_uint32 j,k;
+
+		pGraphics->startPrint();
+		if (bCollate)
+		{
+			for (j=1; (j <= nCopies); j++)
+				for (k=nFromPage; (k <= nToPage); k++)
+				{
+					pGraphics->startPage(doc->getFilename(), k, TRUE, da.width, da.height);
+					pPrintView->draw(k-1, &da);
+				}
+		}
+		else
+		{
+			for (k=nFromPage; (k <= nToPage); k++)
+				for (j=1; (j <= nCopies); j++)
+				{
+					pGraphics->startPage(doc->getFilename(), k, TRUE, da.width, da.height);
+					pPrintView->draw(k-1, &da);
+				}
+		}
+		pGraphics->endPrint();
+
+		delete pDocLayout;
+		delete pPrintView;
+		
+		pDialog->releasePrinterGraphicsContext(pGraphics);
+	}
+
+	pDialogFactory->releaseDialog(pDialog);
+
+	return bOK;
+}
+
+/*****************************************************************/
+/*****************************************************************/
+
 Defun1(print)
 {
 	ABIWORD_VIEW;
-	AP_Frame * pFrame = (AP_Frame *) pView->getParentData();
-	UT_ASSERT(pFrame);
-#ifdef DLGHACK
-	_printDoc(pFrame, pView);
-#endif /* DLGHACK */
-	return UT_TRUE;
+	return _doPrint(pView,UT_FALSE);
+}
+
+Defun1(printTB)
+{
+	// print (intended to be from the tool-bar (where we'd like to
+	// suppress the dialog if possible))
+	
+	ABIWORD_VIEW;
+	return _doPrint(pView,UT_TRUE);
 }
 
 Defun1(toggleBold)
@@ -1823,85 +1920,6 @@ UT_Bool _chooseFont(AP_Frame * pFrame, FV_View * pView)
 	UT_ASSERT(!err);
 
 	return UT_FALSE;
-}
-
-// TODO: figure out what can be shared here and move it up
-UT_Bool _printDoc(AP_Frame * pFrame, FV_View * pView)
-{
-	AP_Win32Frame * pWin32Frame = static_cast<AP_Win32Frame *>(pFrame);
-	HWND hwnd = pWin32Frame->getTopLevelWindow();
-	FL_DocLayout* pLayout = pView->getLayout();
-	PD_Document * doc = pLayout->getDocument();
-	int nPagesInDoc = pLayout->countPages();
-
-	// init print dialog structure
-	PRINTDLG pd;
-	memset(&pd, 0, sizeof(PRINTDLG));
-	pd.lStructSize = sizeof(PRINTDLG);
-	pd.hwndOwner = hwnd;
-	pd.nFromPage = pd.nMinPage = 1;
-	pd.nToPage = pd.nMaxPage = nPagesInDoc;
-	pd.Flags = PD_RETURNDC | PD_NOSELECTION;
-
-	// open dialog
-	if(!PrintDlg(&pd))
-		return UT_FALSE;
-
-	// init doc info struct
-	DOCINFO di;
-	di.cbSize = sizeof(DOCINFO);
-	di.lpszDocName = doc->getFilename();
-	di.lpszOutput = NULL;
-	// create a new graphics using this docinfo
-	Win32Graphics* ppG = new Win32Graphics(pd.hDC, &di);
-
-	// Create a new layout using the printer's graphics and format it
-	FL_DocLayout* pDL = new FL_DocLayout(doc, ppG);
-	pDL->formatAll();
-
-	// Create the new view for the printer
-	FV_View* pV = new FV_View(pWin32Frame, pDL);	// TODO: fix first arg?
-
-	// page range implementation
-	WORD nFromPage, nToPage;
-	if(pd.Flags & PD_PAGENUMS)
-	{
-		nFromPage = pd.nFromPage;
-		nToPage = pd.nToPage;
-		// The dialog takes care of page range bounds issues
-	}
-	else	// print whole document
-	{
-		nFromPage = 1;
-		nToPage = pDL->countPages();
-	}
-
-	// init some dg_DrawArgs for startPage
-	dg_DrawArgs da;
-	da.pG = NULL;
-	da.width = pDL->getWidth();
-	da.height = pDL->getHeight();
-
-	ppG->startPrint();
-	for(int i = nFromPage -1; i < nToPage; i++)	//page numbers are zero based
-	{
-		ppG->startPage(doc->getFilename(), i, TRUE, da.width,da.height);
-		pV->draw(i, &da);
-	}
-	ppG->endPrint();
-
-	// clean up
-	delete pV;
-	delete pDL;
-	delete ppG;
-	DeleteDC(pd.hDC);
-	// free any memory allocated by StartDoc
-	if(pd.hDevMode != NULL)
-		GlobalFree(pd.hDevMode);
-	if(pd.hDevNames != NULL)
-		GlobalFree(pd.hDevNames);
-
-	return UT_TRUE;
 }
 
 #endif /* WIN32 */
@@ -2316,76 +2334,7 @@ UT_Bool _chooseFont(AP_Frame * pFrame, FV_View * pView)
 
 }
 
-UT_Bool _printDoc(AP_Frame * pFrame, FV_View * pView)
-{
-	FL_DocLayout* pLayout = pView->getLayout();
-	PD_Document * doc = pLayout->getDocument();
-
-	const char * pTitle = (char *) doc->getFilename();
-	if (!pTitle)
-		pTitle = pFrame->getTempNameFromTitle();
-	
-	char * pSaveAsFile = (char *) calloc(1, (strlen(pTitle) + 4) * sizeof(char) );
-	if (!pSaveAsFile)
-		return UT_FALSE;
-	
-	strcpy(pSaveAsFile, pTitle);
-	strcat(pSaveAsFile, ".ps");
-
-	char * pNewFile = NULL;
-	UT_Bool bOK = s_AskForPathname(pFrame, UT_TRUE, pSaveAsFile, &pNewFile);
-
-	if (!bOK || !pNewFile)
-	{
-		// User hit cancel
-		FREEP(pSaveAsFile);
-		return UT_FALSE;
-	}
-
-	// create a new graphics for postscript
-
-	const char * pAppName = pFrame->getApp()->getApplicationName();
-	PS_Graphics* ppG = new PS_Graphics(pNewFile, pTitle, pAppName);
-	UT_ASSERT(ppG);
-
-	// Create a new layout using the printer's graphics and format it
-	FL_DocLayout* pDL = new FL_DocLayout(doc, ppG);
-	pDL->formatAll();
-	int nPagesInDoc = pDL->countPages();
-
-	// Create the new view for the printer
-	FV_View* pV = new FV_View(pFrame, pDL);	// TODO: fix first arg?
-
-	dg_DrawArgs da;
-	da.pG = NULL;
-	// TODO: really need actual page width/height for each page.
-	da.xoff = da.yoff = 0;
-	da.width = pDL->getWidth()/nPagesInDoc;
-	da.height = pDL->getHeight()/nPagesInDoc;
-
-	ppG->startPrint();
-	for(int i = 0; i < nPagesInDoc; i++)	//page numbers are zero based
-	{
-		ppG->startPage(pTitle, i, TRUE, da.width, da.height);
-		pV->draw(i, &da);
-	}
-	ppG->endPrint();
-
-	// Clean up
-	free(pNewFile);
-	FREEP(pSaveAsFile);
-	if(pV)
-		delete pV;
-	if(ppG)
-		delete ppG;
-	if(pDL)
-		delete pDL;
-
-	return UT_TRUE;
-}
-
 #endif /* UNIXHACK */
-
 /*****************************************************************/
 /*****************************************************************/
 

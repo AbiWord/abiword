@@ -25,6 +25,7 @@ include $(ABI_DEPTH)/config/abi_defs.mk
 CPPSRCS=		ap_UnixApp.cpp				\
 			ap_UnixDialog_FileOpenSaveAs.cpp	\
 			ap_UnixDialog_MessageBox.cpp		\
+			ap_UnixDialog_Print.cpp			\
 			ap_UnixFrame.cpp			\
 			ap_UnixMain.cpp				\
 			ap_UnixToolbar_Icons.cpp

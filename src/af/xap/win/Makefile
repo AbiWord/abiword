@@ -25,6 +25,7 @@ include $(ABI_DEPTH)/config/abi_defs.mk
 CPPSRCS=		ap_Win32App.cpp				\
 			ap_Win32Dialog_FileOpenSaveAs.cpp	\
 			ap_Win32Dialog_MessageBox.cpp		\
+			ap_Win32Dialog_Print.cpp		\
 			ap_Win32Frame.cpp			\
 			ap_Win32Main.cpp			\
 			ap_Win32Toolbar_Icons.cpp

@@ -17,24 +17,33 @@
  * 02111-1307, USA.
  */
 
+#ifndef AP_WIN32DIALOG_PRINT_H
+#define AP_WIN32DIALOG_PRINT_H
 
-#ifndef AP_DIALOG_ID_H
-#define AP_DIALOG_ID_H
+#include "ap_Dialog_Print.h"
+class AP_Win32Frame;
 
-// see the note in xap_Dialog_Id.h on number space partitioning.
+/*****************************************************************/
 
-#include "xap_Dialog_Id.h"
-
-typedef enum _AP_Dialog_Id
+class AP_Win32Dialog_Print : public AP_Dialog_Print
 {
-	AP_DIALOG_ID__FIRST__			= XAP_DIALOG_ID__LAST__+1,	/* must be first */
+public:
+	AP_Win32Dialog_Print(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
+	virtual ~AP_Win32Dialog_Print(void);
 
-	AP_DIALOG_ID_FILE_PAGESETUP,
+	virtual void			runModal(AP_Frame * pFrame);
+	virtual DG_Graphics *	getPrinterGraphicsContext(void);
+	virtual void			releasePrinterGraphicsContext(DG_Graphics *);
 
-	/* ... add others here ... */
+	static AP_Dialog *		static_constructor(AP_DialogFactory *, AP_Dialog_Id id);
 
-	AP_DIALOG_ID__LAST__				/* must be last */
+protected:
+	void					_extractResults(void);
+	
+	AP_Win32Frame *			m_pWin32Frame;
 
+	PRINTDLG *				m_pPersistPrintDlg;
+	DOCINFO					m_DocInfo;
 };
 
-#endif /* AP_DIALOG_ID_H */
+#endif /* AP_WIN32DIALOG_PRINT_H */

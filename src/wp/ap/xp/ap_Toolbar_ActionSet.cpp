@@ -73,7 +73,7 @@ EV_Toolbar_ActionSet * AP_CreateToolbarActionSet(void)
 	_s(AP_TOOLBAR_ID_FILE_OPEN,		EV_TBIT_PushButton,		"fileOpen",		AV_CHG_NONE,		NULL);
 	_s(AP_TOOLBAR_ID_FILE_SAVE,		EV_TBIT_PushButton,		"fileSave",		AV_CHG_NONE,		NULL);
 	_s(AP_TOOLBAR_ID_FILE_SAVEAS,	EV_TBIT_PushButton,		"fileSaveAs",	AV_CHG_NONE,		NULL);
-	_s(AP_TOOLBAR_ID_FILE_PRINT,	EV_TBIT_PushButton,		"print",		AV_CHG_NONE,		NULL);
+	_s(AP_TOOLBAR_ID_FILE_PRINT,	EV_TBIT_PushButton,		"printTB",		AV_CHG_NONE,		NULL);
 
 	_s(AP_TOOLBAR_ID_EDIT_UNDO,		EV_TBIT_PushButton,		"undo",			AV_CHG_DO,			ap_ToolbarGetState_Changes);
 	_s(AP_TOOLBAR_ID_EDIT_REDO,		EV_TBIT_PushButton,		"redo",			AV_CHG_DO,			ap_ToolbarGetState_Changes);

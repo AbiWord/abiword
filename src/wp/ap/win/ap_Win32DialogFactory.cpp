@@ -19,10 +19,15 @@
 
 /*****************************************************************/
 
-// get the class definitions
-
+#include <windows.h>
 #include "ap_Dialog_Id.h"
 #include "ap_Win32DialogFactory.h"
+
+/*****************************************************************/
+/*****************************************************************/
+
+// get the class definitions
+
 #include "ap_Win32Dialog_All.h"
 
 // fill in the table
@@ -37,6 +42,7 @@ static struct AP_DialogFactory::_dlg_table s_dlg_table[] = {
 
 #define NrElements(a)	((sizeof(a)/sizeof(a[0])))
 
+/*****************************************************************/
 /*****************************************************************/
   
 AP_Win32DialogFactory::AP_Win32DialogFactory(AP_App * pApp)

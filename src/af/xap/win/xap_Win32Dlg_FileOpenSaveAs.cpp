@@ -123,7 +123,7 @@ void AP_Win32Dialog_FileOpenSaveAs::runModal(AP_Frame * pFrame)
 		
 		if (m_bSuggestName)
 		{
-			if (*pLastSlash)
+			if (pLastSlash)
 				strcpy(szFile, m_szInitialPathname + (pLastSlash-szDir+1));
 			else
 				strcpy(szFile, m_szInitialPathname);
@@ -138,10 +138,12 @@ void AP_Win32Dialog_FileOpenSaveAs::runModal(AP_Frame * pFrame)
 	{
 	case XAP_DIALOG_ID_FILE_OPEN:
 		ofn.Flags |= OFN_FILEMUSTEXIST;
-
 		bDialogResult = GetOpenFileName(&ofn);
 		break;
 
+	case XAP_DIALOG_ID_PRINTTOFILE:
+		ofn.lpstrTitle = "Print To File";
+		/*FALLTHRU*/
 	case XAP_DIALOG_ID_FILE_SAVEAS:
 		ofn.Flags |= OFN_OVERWRITEPROMPT;
 		bDialogResult = GetSaveFileName(&ofn);
@@ -163,9 +165,7 @@ void AP_Win32Dialog_FileOpenSaveAs::runModal(AP_Frame * pFrame)
 	else
 	{
 		m_answer = a_CANCEL;
-		DWORD err = CommDlgExtendedError();
-		UT_DEBUGMSG(("Didn't get a file: reason=0x%x\n", err));
-		UT_ASSERT(!err);
+		UT_DEBUGMSG(("Didn't get a file: reason=0x%x\n", CommDlgExtendedError()));
 	}
 	
 	m_pWin32Frame = NULL;

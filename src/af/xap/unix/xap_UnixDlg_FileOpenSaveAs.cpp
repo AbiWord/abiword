@@ -81,6 +81,10 @@ void AP_UnixDialog_FileOpenSaveAs::runModal(AP_Frame * pFrame)
 		szTitle = "Save File As";
 		break;
 
+	case XAP_DIALOG_ID_PRINTTOFILE:
+		szTitle = "Print To File";
+		break;
+		
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		break;
