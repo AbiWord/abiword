@@ -338,7 +338,8 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 	UT_sint32 xLow, yLow,xHigh,yHigh;
 	UT_uint32 heightCaret;
 	UT_sint32 xCaret2, yCaret2;
-	bool bDirection,bEOL;
+	bool bDirection = false;
+	bool bEOL = false;
 	if(m_pView->getSelectionMode() < 	FV_SelectionMode_Multiple)
 	{
 		if(posLow < m_pView->getPoint())
