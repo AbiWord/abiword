@@ -255,7 +255,7 @@ int AP_UnixGnomeApp::main(const char * szAppName, int argc, char ** argv)
 	// not running as a bonobo app
 
 #ifndef ABI_OPT_WIDGET
-	gnome_init_with_popt_table("AbiWord", "1.0.3", argc, argv, options, 0, &poptcon);
+	gnome_init_with_popt_table("AbiWord", "1.0.4", argc, argv, options, 0, &poptcon);
 #endif
 
 	// hack needed to intialize gtk before ::initialize

@@ -4,7 +4,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: AbiWord 1.0.3\n"
+"Project-Id-Version: AbiWord 1.0.4\n"
 "POT-Creation-Date: 2002-05-05 18:09+0900\n"
 "PO-Revision-Date: 2002-05-05 19:26+0900\n"
 "Last-Translator: Masayuki Hatta <mhatta@gnu.org>\n"
