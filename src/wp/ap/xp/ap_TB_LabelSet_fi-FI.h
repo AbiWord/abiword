@@ -17,7 +17,7 @@
  * 02111-1307, USA.
  */
 
-// Finnish translations provided by Jarmo Karvonen <jarmo@dawn.joensuu.fi>
+// Finnish translations provided by Jarmo Karvonen <Jarmo.Karvonen@lpg.fi>
 
 /*****************************************************************
 ******************************************************************
@@ -90,7 +90,8 @@ BeginSet(fi,FI,UT_TRUE)
 	ToolbarLabel(AP_TOOLBAR_ID_3COLUMN,			"3 palstaa",		tb_3column_xpm,			NULL, "3 palstaa")
 
 	ToolbarLabel(AP_TOOLBAR_ID_ZOOM,			"Zoomi",		NoIcon,			NULL, "Zoomi")
-	
+	ToolbarLabel(AP_TOOLBAR_ID_LISTS_BULLETS,               "Luettelo",              tb_lists_xpm,           NULL,           "Luettelo ja listamerkit")
+
 	// ... add others here ...
 
 	ToolbarLabel(AP_TOOLBAR_ID__BOGUS2__,		NULL,		NoIcon,			NULL,NULL)
