@@ -22,7 +22,7 @@
 #define FG_GRAPHIC_H
 
 #include "ut_types.h"
-#include "pt_types.h"
+#include "pt_Types.h"
 
 class fl_ContainerLayout;
 class PX_ChangeRecord_Object;
