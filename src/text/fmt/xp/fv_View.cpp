@@ -1484,7 +1484,7 @@ void FV_View::_moveInsPtNextPrevLine(UT_Bool bNext)
 		if (pOldLine != pOldColumn->getLastLine())
 		{
 			// just move off this line
-			yPoint += iLineHeight + pOldLine->getMarginAfter();
+			yPoint += iPointHeight + pOldLine->getMarginAfter();
 		}
 		else if (pOldSL->getLastColumn()->getLeader() == pOldLeader)
 		{
