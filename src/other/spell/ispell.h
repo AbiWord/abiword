@@ -42,11 +42,15 @@
 
 /*
  * $Log$
- * Revision 1.2  1998/12/29 14:55:33  eric
- * I've doctored the ispell code pretty extensively here.  It is now
- * warning-free on Win32.  It also *works* on Win32 now, since I
- * replaced all the I/O calls with ANSI standard ones.
+ * Revision 1.3  1998/12/29 15:03:54  eric
+ * minor fix to ispell.h to get things to compile on Linux again.
  *
+ *
+ * Revision 1.3  1998/12/29 15:03:54  eric
+ *
+ * minor fix to ispell.h to get things to compile on Linux again.
+ *
+ * Revision 1.2  1998/12/29 14:55:33  eric
  *
  * I've doctored the ispell code pretty extensively here.  It is now
  * warning-free on Win32.  It also *works* on Win32 now, since I
@@ -312,6 +316,17 @@ typedef unsigned char	ichar_t;	/* Internal character */
 #define icharcpy(a, b)	strcpy ((char *) (a), (char *) (b))
 #define icharcmp(a, b)	strcmp ((char *) (a), (char *) (b))
 #define icharncmp(a, b, n) strncmp ((char *) (a), (char *) (b), (n))
+#define chartoichar(x)	((ichar_t) (x))
+#else
+typedef unsigned short	ichar_t;	/* Internal character */
+#define chartoichar(x)	((ichar_t) (unsigned char) (x))
+
+/*
+ * Structure used to record data about successful lookups; these values
+ * are used in the ins_root_cap routine to produce correct capitalizations.
+ */
+struct success
+    {
     struct dent *	dictent;	/* Header of dict entry chain for wd */
     struct flagent *	prefix;		/* Prefix flag used, or NULL */
     struct flagent *	suffix;		/* Suffix flag used, or NULL */
@@ -536,17 +551,6 @@ struct hashheader
 #   define MAGICMASKSET		0x08
 #  else
 #   define MAGICMASKSET		0x0C
-
-/*
- * Structure used to record data about successful lookups; these values
- * are used in the ins_root_cap routine to produce correct capitalizations.
- */
-struct success
-    {
-    struct dent *	dictent;	/* Header of dict entry chain for wd */
-    struct flagent *	prefix;		/* Prefix flag used, or NULL */
-    struct flagent *	suffix;		/* Suffix flag used, or NULL */
-    };
 #  endif
 # endif
 #endif
