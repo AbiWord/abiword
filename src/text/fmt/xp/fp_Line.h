@@ -82,8 +82,11 @@ public:
 
 	inline fl_BlockLayout*		getBlock(void) const 		{ return m_pBlock; }
 	//! Return height of line as it will appear on screen
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	virtual inline UT_sint32	getHeight(void) const 		{ return (m_iScreenHeight != -1) ? m_iScreenHeight : m_iHeight; }
-
+#else
+	virtual inline UT_sint32	getHeight(void) const 		{ return m_iHeight; }
+#endif
 	virtual inline UT_sint32	getX(void) const 			{ return m_iX; }
 	virtual inline UT_sint32	getY(void) const 			{ return m_iY; }
 

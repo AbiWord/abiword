@@ -102,15 +102,15 @@ HWND AP_Win32StatusBar::createWindow(HWND hwndFrame,
 	XAP_Win32App * app = static_cast<XAP_Win32App *>(m_pFrame->getApp());
 	m_hwndStatusBar = CreateWindowEx(0, s_StatusBarWndClassName, NULL,
 									WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN,
-									left, top, width, s_iFixedHeight,
+									left, top, width, _UD(s_iFixedHeight),
 									hwndFrame, NULL, app->getInstance(), NULL);
 	UT_ASSERT(m_hwndStatusBar);
 	SWL(m_hwndStatusBar, this);
 
 	RECT rSize;
 	GetClientRect(m_hwndStatusBar,&rSize);
-	setHeight(rSize.bottom);
-	setWidth(rSize.right);
+	setHeight(_UL(rSize.bottom));
+	setWidth(_UL(rSize.right));
 
 	return m_hwndStatusBar;
 }

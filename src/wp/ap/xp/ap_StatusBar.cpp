@@ -71,7 +71,7 @@ void ap_sb_Field::setLeftOrigin(UT_uint32 left)
 {
 	m_rect3d.left	= left;
 	m_rect3d.width	= getDesiredWidth();
-	m_rect3d.top	= 3;
+	m_rect3d.top	= _UL(3);
 
 	UT_uint32 barHeight = m_pSB->getHeight();
 	m_rect3d.height	= barHeight - 2*m_rect3d.top;
@@ -85,17 +85,17 @@ void ap_sb_Field::_draw3D(void)
 				 m_rect3d.left,m_rect3d.top,
 				 m_rect3d.width,m_rect3d.height);
 
-	UT_uint32 l = m_rect3d.left -1;
-	UT_uint32 r = l + m_rect3d.width +2;
-	UT_uint32 t = m_rect3d.top -1;
-	UT_uint32 b = t + m_rect3d.height +2;
+	UT_uint32 l = m_rect3d.left -_UL(1);
+	UT_uint32 r = l + m_rect3d.width +_UL(2);
+	UT_uint32 t = m_rect3d.top -_UL(1);
+	UT_uint32 b = t + m_rect3d.height +_UL(2);
 	
 	pG->setColor3D(GR_Graphics::CLR3D_BevelDown);
 	pG->drawLine(l,t, l,b);
 	pG->drawLine(l,t, r,t);
 	
 	pG->setColor3D(GR_Graphics::CLR3D_BevelUp);
-	pG->drawLine(l+1,b, r,b);
+	pG->drawLine(l+_UL(1),b, r,b);
 	pG->drawLine(r,b, r,t);
 }
 
@@ -152,7 +152,7 @@ UT_uint32 ap_sb_Field_PageInfo::getDesiredWidth(void)
 		GR_Graphics * pG = m_pSB->getGraphics();
 		UT_uint32 w = pG->measureString(bufUCS,0,len,charWidths);
 		
-		m_iDesiredWidth = w + 6;
+		m_iDesiredWidth = w + _UL(6);
 	}
 	
 	return m_iDesiredWidth;
@@ -167,7 +167,7 @@ void ap_sb_Field_PageInfo::draw(void)
 		GR_Graphics * pG = m_pSB->getGraphics();
 		UT_uint32 iFontHeight = pG->getFontHeight();
 
-		UT_uint32 x = m_rect3d.left + 3;
+		UT_uint32 x = m_rect3d.left + _UL(3);
 		UT_uint32 y = m_rect3d.top + (m_rect3d.height-iFontHeight)/2;
 
 		pG->setColor3D(GR_Graphics::CLR3D_Foreground);
@@ -256,7 +256,7 @@ ap_sb_Field_StatusMessage::~ap_sb_Field_StatusMessage(void)
 
 UT_uint32 ap_sb_Field_StatusMessage::getDesiredWidth(void)
 {
-	return 450;							// TODO define this somewhere
+	return _UL(450);							// TODO define this somewhere
 }
 
 void ap_sb_Field_StatusMessage::draw(void)
@@ -278,11 +278,11 @@ void ap_sb_Field_StatusMessage::draw(void)
 			newrect.top = m_rect3d.top + m_rect3d.height - m_ProgressStartPoint; 
 			newrect.left = m_rect3d.left; 
 			newrect.height = m_rect3d.height;
-			newrect.width = 1;
+			newrect.width = _UL(1);
 
 			m_ProgressStartPoint--;
 			if (m_ProgressStartPoint < 0) {
-				m_ProgressStartPoint = (2 * m_rect3d.height) -1;
+				m_ProgressStartPoint = (2 * m_rect3d.height) -_UL(1);
 			}
 
 			while (newrect.left < m_rect3d.width) { 
@@ -360,7 +360,7 @@ void ap_sb_Field_StatusMessage::draw(void)
 		UT_uint32 iFontHeight = pG->getFontHeight();
 		UT_uint32 iStringWidth = pG->measureString(szMsg, 0, len, NULL);
 
-		UT_uint32 x = m_rect3d.left + 3;
+		UT_uint32 x = m_rect3d.left + _UL(3);
 		UT_uint32 y = m_rect3d.top + (m_rect3d.height-iFontHeight)/2;
 
 		if (centertext) {
@@ -474,7 +474,7 @@ UT_uint32 ap_sb_Field_InputMode::getDesiredWidth(void)
 		GR_Graphics * pG = m_pSB->getGraphics();
 		UT_uint32 w = pG->measureString(bufUCS,0,len,charWidths);
 		
-		m_iDesiredWidth = w + 6;
+		m_iDesiredWidth = w + _UL(6);
 	}
 	
 	return m_iDesiredWidth;
@@ -489,7 +489,7 @@ void ap_sb_Field_InputMode::draw(void)
 		GR_Graphics * pG = m_pSB->getGraphics();
 		UT_uint32 iFontHeight = pG->getFontHeight();
 
-		UT_uint32 x = m_rect3d.left + 3;
+		UT_uint32 x = m_rect3d.left + _UL(3);
 		UT_uint32 y = m_rect3d.top + (m_rect3d.height-iFontHeight)/2;
 
 		pG->setColor3D(GR_Graphics::CLR3D_Foreground);
@@ -554,7 +554,7 @@ UT_uint32 ap_sb_Field_InsertMode::getDesiredWidth(void)
             m_iDesiredWidth = MyMax(m_iDesiredWidth,m_pSB->getGraphics()->measureString(m_InsertMode[i],0,len,charWidths));
         }
         UT_ASSERT(m_iDesiredWidth);
-        m_iDesiredWidth = MyMin(m_iDesiredWidth,300) + 6;
+        m_iDesiredWidth = MyMin(m_iDesiredWidth,_UL(300)) + _UL(6);
     }
     return m_iDesiredWidth;
 }
@@ -573,7 +573,7 @@ void ap_sb_Field_InsertMode::draw(void)
         GR_Graphics * pG = m_pSB->getGraphics();
         UT_uint32 iFontHeight = pG->getFontHeight();
 
-        UT_uint32 x = m_rect3d.left + 3;
+        UT_uint32 x = m_rect3d.left + _UL(3);
         UT_uint32 y = m_rect3d.top + (m_rect3d.height-iFontHeight)/2;
 
         pG->setColor3D(GR_Graphics::CLR3D_Foreground);
@@ -605,7 +605,7 @@ AP_StatusBar::AP_StatusBar(XAP_Frame * pFrame)
         m_pG(0),
         m_iHeight(0),
         m_iWidth(0),
-        s_iFixedHeight(20),
+        s_iFixedHeight(_UL(20)),
         m_bInitFields(false),
         m_pStatusMessageField(0)
 {
@@ -619,7 +619,7 @@ AP_StatusBar::AP_StatusBar(XAP_Frame * pFrame)
         // class declaration, but MSVC5 can't handle it....
         // (GCC can :-)
 
-        s_iFixedHeight = 20;
+        s_iFixedHeight = _UL(20);
 
         m_bufUCS[0] = 0;
 }
@@ -654,8 +654,8 @@ void AP_StatusBar::setView(AV_View * pView)
 
 	if (!m_bInitFields)
 	{
-		UT_uint32 xOrigin = 3;
-		UT_uint32 xGap = 6;
+		UT_uint32 xOrigin = _UL(3);
+		UT_uint32 xGap = _UL(6);
 		
 #define DclField(type,var)								\
 		type * var = new type(this);					\

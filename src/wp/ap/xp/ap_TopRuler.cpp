@@ -1117,7 +1117,7 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
     if(bRTL)
     {
 		sum = xAbsRight;
-		_drawBar(pClipRect,pInfo,GR_Graphics::CLR3D_BevelDown,sum+1,pInfo->u.c.m_xaRightMargin-1);
+		_drawBar(pClipRect,pInfo,GR_Graphics::CLR3D_BevelDown,sum+ _UL(1),pInfo->u.c.m_xaRightMargin- _UL(1));
 		//sum -= pInfo->u.c.m_xColumnWidth;
     }
     else
@@ -1128,7 +1128,7 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 			width -= s_iFixedWidth;
 		}
 
-		_drawBar(pClipRect,pInfo,GR_Graphics::CLR3D_BevelDown,0+1, width-1);
+		_drawBar(pClipRect,pInfo,GR_Graphics::CLR3D_BevelDown, _UL(0+1), width- _UL(1));
 		sum = width;
 	}
 
@@ -1139,7 +1139,7 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 		if(bRTL)
 			sum -= pInfo->u.c.m_xColumnWidth;
 
-		_drawBar(pClipRect,pInfo, GR_Graphics::CLR3D_Highlight, sum+1, pInfo->u.c.m_xColumnWidth-1);
+		_drawBar(pClipRect,pInfo, GR_Graphics::CLR3D_Highlight, sum+ _UL(1), pInfo->u.c.m_xColumnWidth- _UL(1));
 
 		if(!bRTL)
 			sum += pInfo->u.c.m_xColumnWidth;
@@ -1151,7 +1151,7 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 			if(bRTL)
 				sum -= pInfo->u.c.m_xColumnGap;
 
-			_drawBar(pClipRect,pInfo, GR_Graphics::CLR3D_BevelDown, sum+1, pInfo->u.c.m_xColumnGap-1);
+			_drawBar(pClipRect,pInfo, GR_Graphics::CLR3D_BevelDown, sum+ _UL(1), pInfo->u.c.m_xColumnGap- _UL(1));
 
 			if(!bRTL)
 				sum += pInfo->u.c.m_xColumnGap;
@@ -1162,10 +1162,10 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 	if(bRTL)
 	{
 		sum -= pInfo->u.c.m_xaLeftMargin;
-		_drawBar(pClipRect,pInfo, GR_Graphics::CLR3D_BevelDown, sum+1,pInfo->u.c.m_xaLeftMargin-1);
+		_drawBar(pClipRect,pInfo, GR_Graphics::CLR3D_BevelDown, sum+ _UL(1),pInfo->u.c.m_xaLeftMargin- _UL(1));
 	}
 	else
-		_drawBar(pClipRect,pInfo, GR_Graphics::CLR3D_BevelDown, sum+1,pInfo->u.c.m_xaRightMargin-1);
+		_drawBar(pClipRect,pInfo, GR_Graphics::CLR3D_BevelDown, sum+ _UL(1),pInfo->u.c.m_xaRightMargin- _UL(1));
 
 	// now draw tick marks on the bar, using the selected system of units.
 
@@ -3544,27 +3544,27 @@ void AP_TopRuler::_drawLeftIndentMarker(UT_Rect & rect, bool bFilled)
 		// fill in the body
 
 		m_pG->setColor3D(GR_Graphics::CLR3D_Background);
-		m_pG->drawLine( l+1,   t+7,  l+10, t+7 );
-		m_pG->drawLine( l+2,   t+6,  l+10, t+6 );
-		m_pG->drawLine( l+2,   t+5,  l+10, t+5 );
-		m_pG->drawLine( l+3,   t+4,  l+9,  t+4 );
-		m_pG->drawLine( l+4,   t+3,  l+8, t+3 );
-		m_pG->drawLine( l+5,   t+2,  l+7, t+2 );
+		m_pG->drawLine( l+_UL(1),   t+_UL(7),  l+_UL(10), t+_UL(7) );
+		m_pG->drawLine( l+_UL(2),   t+_UL(6),  l+_UL(10), t+_UL(6) );
+		m_pG->drawLine( l+_UL(2),   t+_UL(5),  l+_UL(10), t+_UL(5) );
+		m_pG->drawLine( l+_UL(3),   t+_UL(4),  l+_UL(9),  t+_UL(4) );
+		m_pG->drawLine( l+_UL(4),   t+_UL(3),  l+_UL(8), t+_UL(3) );
+		m_pG->drawLine( l+_UL(5),   t+_UL(2),  l+_UL(7), t+_UL(2) );
 
 		// draw 3d highlights
 
 		m_pG->setColor3D(clr3dBevel);
-		m_pG->drawLine( l+5,   t+1,  l,    t+6 );
-		m_pG->drawLine( l+1,   t+5,  l+1,  t+7 );
+		m_pG->drawLine( l+_UL(5),   t+_UL(1),  l,    t+_UL(6) );
+		m_pG->drawLine( l+_UL(1),   t+_UL(5),  l+_UL(1),  t+_UL(7) );
 
 		// draw border
 
 		m_pG->setColor3D(clr3dBorder);
-		m_pG->drawLine(	l+5,   t,    l+11, t+6 );
-		m_pG->drawLine(	l+5,   t,    l- 1, t+6 );
-		m_pG->drawLine(	l,     t+5,  l,    t+9 );
-		m_pG->drawLine(	l+10,  t+5,  l+10, t+9 );
-		m_pG->drawLine(	l,     t+8,  l+11, t+8 );
+		m_pG->drawLine(	l+_UL(5),   t,    l+_UL(11), t+_UL(6) );
+		m_pG->drawLine(	l+_UL(5),   t,    l- _UL(1), t+_UL(6) );
+		m_pG->drawLine(	l,     t+_UL(5),  l,    t+_UL(9) );
+		m_pG->drawLine(	l+_UL(10),  t+_UL(5),  l+_UL(10), t+_UL(9) );
+		m_pG->drawLine(	l,     t+_UL(8),  l+_UL(11), t+_UL(8) );
 
 	}
 	else
@@ -3572,35 +3572,35 @@ void AP_TopRuler::_drawLeftIndentMarker(UT_Rect & rect, bool bFilled)
 		// fill in the body
 
 		m_pG->setColor3D(GR_Graphics::CLR3D_Background);
-		m_pG->drawLine( l+1,   t+13, l+10, t+13);
-		m_pG->drawLine( l+2,   t+12, l+10, t+12);
-		m_pG->drawLine( l+2,   t+11, l+10, t+11);
-		m_pG->drawLine( l+2,   t+10, l+10, t+10);
-		m_pG->drawLine( l+9,   t+9,  l+10, t+9 );
-		m_pG->drawLine( l+1,   t+7,  l+10, t+7 );
-		m_pG->drawLine( l+2,   t+6,  l+10, t+6 );
-		m_pG->drawLine( l+2,   t+5,  l+10, t+5 );
-		m_pG->drawLine( l+3,   t+4,  l+9,  t+4 );
-		m_pG->drawLine( l+4,   t+3,  l+8, t+3 );
-		m_pG->drawLine( l+5,   t+2,  l+7, t+2 );
+		m_pG->drawLine( l+_UL(1),   t+_UL(13), l+_UL(10), t+_UL(13));
+		m_pG->drawLine( l+_UL(2),   t+_UL(12), l+_UL(10), t+_UL(12));
+		m_pG->drawLine( l+_UL(2),   t+_UL(11), l+_UL(10), t+_UL(11));
+		m_pG->drawLine( l+_UL(2),   t+_UL(10), l+_UL(10), t+_UL(10));
+		m_pG->drawLine( l+_UL(9),   t+_UL(9),  l+_UL(10), t+_UL(9) );
+		m_pG->drawLine( l+_UL(1),   t+_UL(7),  l+_UL(10), t+_UL(7) );
+		m_pG->drawLine( l+_UL(2),   t+_UL(6),  l+_UL(10), t+_UL(6) );
+		m_pG->drawLine( l+_UL(2),   t+_UL(5),  l+_UL(10), t+_UL(5) );
+		m_pG->drawLine( l+_UL(3),   t+_UL(4),  l+_UL(9),  t+_UL(4) );
+		m_pG->drawLine( l+_UL(4),   t+_UL(3),  l+_UL(8), t+_UL(3) );
+		m_pG->drawLine( l+_UL(5),   t+_UL(2),  l+_UL(7), t+_UL(2) );
 
 		// draw 3d highlights
 
 		m_pG->setColor3D(clr3dBevel);
-		m_pG->drawLine( l+5,   t+1,  l,    t+6 );
-		m_pG->drawLine( l+1,   t+5,  l+1,  t+7 );
-		m_pG->drawLine( l+1,   t+9,  l+9,  t+9 );
-		m_pG->drawLine( l+1,   t+9,  l+1,  t+13);
+		m_pG->drawLine( l+_UL(5),   t+_UL(1),  l,    t+_UL(6) );
+		m_pG->drawLine( l+_UL(1),   t+_UL(5),  l+_UL(1),  t+_UL(7) );
+		m_pG->drawLine( l+_UL(1),   t+_UL(9),  l+_UL(9),  t+_UL(9) );
+		m_pG->drawLine( l+_UL(1),   t+_UL(9),  l+_UL(1),  t+_UL(13));
 
 		// draw border
 
 		m_pG->setColor3D(clr3dBorder);
-		m_pG->drawLine(	l+5,   t,    l+11, t+6 );
-		m_pG->drawLine(	l+5,   t,    l- 1, t+6 );
-		m_pG->drawLine(	l,     t+5,  l,    t+15);
-		m_pG->drawLine(	l+10,  t+5,  l+10, t+15);
-		m_pG->drawLine(	l,     t+14, l+11, t+14);
-		m_pG->drawLine(	l,     t+8,  l+11, t+8 );
+		m_pG->drawLine(	l+_UL(5),   t,    l+_UL(11), t+_UL(6) );
+		m_pG->drawLine(	l+_UL(5),   t,    l- _UL(1), t+_UL(6) );
+		m_pG->drawLine(	l,     t+_UL(5),  l,    t+_UL(15));
+		m_pG->drawLine(	l+_UL(10),  t+_UL(5),  l+_UL(10), t+_UL(15));
+		m_pG->drawLine(	l,     t+_UL(14), l+_UL(11), t+_UL(14));
+		m_pG->drawLine(	l,     t+_UL(8),  l+_UL(11), t+_UL(8) );
     }
 }
 
@@ -3619,62 +3619,62 @@ void AP_TopRuler::_drawRightIndentMarker(UT_Rect & rect, bool bFilled)
 		// fill in the body
 
 		m_pG->setColor3D(GR_Graphics::CLR3D_Background);
-		m_pG->drawLine( l+1,   t+13, l+10, t+13);
-		m_pG->drawLine( l+2,   t+12, l+10, t+12);
-		m_pG->drawLine( l+2,   t+11, l+10, t+11);
-		m_pG->drawLine( l+2,   t+10, l+10, t+10);
-		m_pG->drawLine( l+9,   t+9,  l+10, t+9 );
-		m_pG->drawLine( l+1,   t+7,  l+10, t+7 );
-		m_pG->drawLine( l+2,   t+6,  l+10, t+6 );
-		m_pG->drawLine( l+2,   t+5,  l+10, t+5 );
-		m_pG->drawLine( l+3,   t+4,  l+9,  t+4 );
-		m_pG->drawLine( l+4,   t+3,  l+8, t+3 );
-		m_pG->drawLine( l+5,   t+2,  l+7, t+2 );
+		m_pG->drawLine( l+_UL(1),   t+_UL(13), l+_UL(10), t+_UL(13));
+		m_pG->drawLine( l+_UL(2),   t+_UL(12), l+_UL(10), t+_UL(12));
+		m_pG->drawLine( l+_UL(2),   t+_UL(11), l+_UL(10), t+_UL(11));
+		m_pG->drawLine( l+_UL(2),   t+_UL(10), l+_UL(10), t+_UL(10));
+		m_pG->drawLine( l+_UL(9),   t+_UL(9),  l+_UL(10), t+_UL(9) );
+		m_pG->drawLine( l+_UL(1),   t+_UL(7),  l+_UL(10), t+_UL(7) );
+		m_pG->drawLine( l+_UL(2),   t+_UL(6),  l+_UL(10), t+_UL(6) );
+		m_pG->drawLine( l+_UL(2),   t+_UL(5),  l+_UL(10), t+_UL(5) );
+		m_pG->drawLine( l+_UL(3),   t+_UL(4),  l+_UL(9),  t+_UL(4) );
+		m_pG->drawLine( l+_UL(4),   t+_UL(3),  l+_UL(8), t+_UL(3) );
+		m_pG->drawLine( l+_UL(5),   t+_UL(2),  l+_UL(7), t+_UL(2) );
 
 		// draw 3d highlights
 
 		m_pG->setColor3D(clr3dBevel);
-		m_pG->drawLine( l+5,   t+1,  l,    t+6 );
-		m_pG->drawLine( l+1,   t+5,  l+1,  t+7 );
-		m_pG->drawLine( l+1,   t+9,  l+9,  t+9 );
-		m_pG->drawLine( l+1,   t+9,  l+1,  t+13);
+		m_pG->drawLine( l+_UL(5),   t+_UL(1),  l,    t+_UL(6) );
+		m_pG->drawLine( l+_UL(1),   t+_UL(5),  l+_UL(1),  t+_UL(7) );
+		m_pG->drawLine( l+_UL(1),   t+_UL(9),  l+_UL(9),  t+_UL(9) );
+		m_pG->drawLine( l+_UL(1),   t+_UL(9),  l+_UL(1),  t+_UL(13));
 
 		// draw border
 
 		m_pG->setColor3D(clr3dBorder);
-		m_pG->drawLine(	l+5,   t,    l+11, t+6 );
-		m_pG->drawLine(	l+5,   t,    l- 1, t+6 );
-		m_pG->drawLine(	l,     t+5,  l,    t+15);
-		m_pG->drawLine(	l+10,  t+5,  l+10, t+15);
-		m_pG->drawLine(	l,     t+14, l+11, t+14);
-		m_pG->drawLine(	l,     t+8,  l+11, t+8 );
+		m_pG->drawLine(	l+_UL(5),   t,    l+_UL(11), t+_UL(6));
+		m_pG->drawLine(	l+_UL(5),   t,    l- _UL(1), t+_UL(6));
+		m_pG->drawLine(	l,     t+_UL(5),  l,    t+_UL(15));
+		m_pG->drawLine(	l+_UL(10),  t+_UL(5),  l+_UL(10), t+_UL(15));
+		m_pG->drawLine(	l,     t+_UL(14), l+_UL(11), t+_UL(14));
+		m_pG->drawLine(	l,     t+_UL(8),  l+_UL(11), t+_UL(8) );
 	}
 	else
 	{
 		// fill in the body
 
 		m_pG->setColor3D(GR_Graphics::CLR3D_Background);
-		m_pG->drawLine( l+1,   t+7,  l+10, t+7 );
-		m_pG->drawLine( l+2,   t+6,  l+10, t+6 );
-		m_pG->drawLine( l+2,   t+5,  l+10, t+5 );
-		m_pG->drawLine( l+3,   t+4,  l+9,  t+4 );
-		m_pG->drawLine( l+4,   t+3,  l+8, t+3 );
-		m_pG->drawLine( l+5,   t+2,  l+7, t+2 );
+		m_pG->drawLine( l+_UL(1),   t+_UL(7),  l+_UL(10), t+_UL(7) );
+		m_pG->drawLine( l+_UL(2),   t+_UL(6),  l+_UL(10), t+_UL(6) );
+		m_pG->drawLine( l+_UL(2),   t+_UL(5),  l+_UL(10), t+_UL(5) );
+		m_pG->drawLine( l+_UL(3),   t+_UL(4),  l+_UL(9),  t+_UL(4) );
+		m_pG->drawLine( l+_UL(4),   t+_UL(3),  l+_UL(8), t+_UL(3) );
+		m_pG->drawLine( l+_UL(5),   t+_UL(2),  l+_UL(7), t+_UL(2) );
 
 		// draw 3d highlights
 
 		m_pG->setColor3D(clr3dBevel);
-		m_pG->drawLine( l+5,   t+1,  l,    t+6 );
-		m_pG->drawLine( l+1,   t+5,  l+1,  t+7 );
+		m_pG->drawLine( l+_UL(5),   t+_UL(1),  l,    t+_UL(6) );
+		m_pG->drawLine( l+_UL(1),   t+_UL(5),  l+_UL(1),  t+_UL(7) );
 
 		// draw border
 
 		m_pG->setColor3D(clr3dBorder);
-		m_pG->drawLine(	l+5,   t,    l+11, t+6 );
-		m_pG->drawLine(	l+5,   t,    l- 1, t+6 );
-		m_pG->drawLine(	l,     t+5,  l,    t+9 );
-		m_pG->drawLine(	l+10,  t+5,  l+10, t+9 );
-		m_pG->drawLine(	l,     t+8,  l+11, t+8 );
+		m_pG->drawLine(	l+_UL(5),   t,    l+_UL(11), t+_UL(6) );
+		m_pG->drawLine(	l+_UL(5),   t,    l- _UL(1), t+_UL(6) );
+		m_pG->drawLine(	l,     t+_UL(5),  l,    t+_UL(9) );
+		m_pG->drawLine(	l+_UL(10),  t+_UL(5),  l+_UL(10), t+_UL(9) );
+		m_pG->drawLine(	l,     t+_UL(8),  l+_UL(11), t+_UL(8) );
     }
 }
 
@@ -3689,28 +3689,28 @@ void AP_TopRuler::_drawFirstLineIndentMarker(UT_Rect & rect, bool bFilled)
 	// fill in the body
 
 	m_pG->setColor3D(GR_Graphics::CLR3D_Background);
-	m_pG->drawLine( l+9,   t+1,  l+10, t+1 );
-	m_pG->drawLine( l+2,   t+2,  l+10, t+2 );
-	m_pG->drawLine( l+2,   t+3,  l+10, t+3 );
-	m_pG->drawLine( l+3,   t+4,  l+9,  t+4 );
-	m_pG->drawLine( l+4,   t+5,  l+8,  t+5 );
-	m_pG->drawLine( l+5,   t+6,  l+7,  t+6 );
+	m_pG->drawLine( l+_UL(9),   t+_UL(1),  l+_UL(10), t+_UL(1) );
+	m_pG->drawLine( l+_UL(2),   t+_UL(2),  l+_UL(10), t+_UL(2) );
+	m_pG->drawLine( l+_UL(2),   t+_UL(3),  l+_UL(10), t+_UL(3) );
+	m_pG->drawLine( l+_UL(3),   t+_UL(4),  l+_UL(9),  t+_UL(4) );
+	m_pG->drawLine( l+_UL(4),   t+_UL(5),  l+_UL(8),  t+_UL(5) );
+	m_pG->drawLine( l+_UL(5),   t+_UL(6),  l+_UL(7),  t+_UL(6) );
 
 	// draw 3d highlights
 
 	m_pG->setColor3D(clr3dBevel);
-	m_pG->drawLine( l+1,   t+1,  l+9,  t+1 );
-	m_pG->drawLine( l+1,   t+2,  l+1,  t+4 );
-	m_pG->drawLine( l+1,   t+3,  l+6,  t+8 );
+	m_pG->drawLine( l+_UL(1),   t+_UL(1),  l+_UL(9),  t+_UL(1) );
+	m_pG->drawLine( l+_UL(1),   t+_UL(2),  l+_UL(1),  t+_UL(4) );
+	m_pG->drawLine( l+_UL(1),   t+_UL(3),  l+_UL(6),  t+_UL(8) );
 
 	// draw border
 
 	m_pG->setColor3D(clr3dBorder);
-	m_pG->drawLine(	l+10,  t+3,  l+4,  t+9 );
-	m_pG->drawLine(	l,     t+3,  l+6,  t+9 );
-	m_pG->drawLine(	l,     t,    l,    t+4 );
-	m_pG->drawLine(	l+10,  t,    l+10, t+4 );
-	m_pG->drawLine(	l,     t,    l+11, t   );
+	m_pG->drawLine(	l+_UL(10),  t+_UL(3),  l+_UL(4),  t+_UL(9));
+	m_pG->drawLine(	l,     t+_UL(3),  l+_UL(6),  t+_UL(9));
+	m_pG->drawLine(	l,     t,    l,    t+_UL(4));
+	m_pG->drawLine(	l+_UL(10),  t,    l+_UL(10), t+_UL(4));
+	m_pG->drawLine(	l,     t,    l+_UL(11), t);
 
 }
 

@@ -141,16 +141,19 @@ void AP_LeftRuler::_refreshView(void)
 		setView(m_pView);
 }
 
+/*! parameter in device units */
 void AP_LeftRuler::setHeight(UT_uint32 iHeight)
 {
 	m_iHeight = _UL(iHeight);
 }
 
+/*! return value in logical units */
 UT_uint32 AP_LeftRuler::getHeight(void) const
 {
 	return m_iHeight;
 }
 
+/*! parameter in device units */
 void AP_LeftRuler::setWidth(UT_uint32 iWidth)
 {
 	m_iWidth = _UL(iWidth);
@@ -159,6 +162,7 @@ void AP_LeftRuler::setWidth(UT_uint32 iWidth)
 		pFrameData->m_pTopRuler->setOffsetLeftRuler(iWidth); // must be in device units
 }
 
+/*! return value in logical units */
 UT_uint32 AP_LeftRuler::getWidth(void) const
 {
 	// Well, someone did this to ap_TopRuler.cpp, so I assume that this must be
@@ -922,12 +926,21 @@ void AP_LeftRuler::draw(const UT_Rect * pClipRect)
 	draw(pClipRect,&m_tempInfo);
 }
 
-void AP_LeftRuler::draw(const UT_Rect * pClipRect, AP_LeftRulerInfo * lfi)
+void AP_LeftRuler::draw(const UT_Rect * pCR, AP_LeftRulerInfo * lfi)
 {
 	if (!m_pG)
 		return;
-	if (pClipRect)
+
+	UT_Rect r;
+	UT_Rect * pClipRect = NULL;
+	
+	if (pCR)
 	{
+		r.left   = _UL(pCR->left);
+		r.top    = _UL(pCR->top);
+		r.width  = _UL(pCR->width);
+		r.height = _UL(pCR->height);
+		pClipRect = &r;
 		//UT_DEBUGMSG(("LeftRuler:: draw [clip %ld %ld %ld %ld]\n",pClipRect->left,pClipRect->top,pClipRect->width,pClipRect->height));
 		m_pG->setClipRect(pClipRect);
 	}

@@ -1057,10 +1057,10 @@ void GR_Win32Graphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint3
 	HBRUSH hBrush = CreateSolidBrush(m_3dColors[c]);
 
 	RECT r;
-	r.left = x;
-	r.top = y;
-	r.right = r.left + w;
-	r.bottom = r.top + h;
+	r.left = _UD(x);
+	r.top = _UD(y);
+	r.right = r.left + _UD(w);
+	r.bottom = r.top + _UD(h);
 
 	FillRect(m_hdc, &r, hBrush);
 	DeleteObject(hBrush);
