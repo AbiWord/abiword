@@ -1184,7 +1184,7 @@ void fl_TOCLayout::_lookupProperties(void)
 	m_sNumOff3 = "0.5in";
 	m_sNumOff4 = "0.5in";
 	const XML_Char *pszTOCSRC = NULL;
-	if(!pSectionAP || !pSectionAP->getProperty("toc-source-style-1",pszTOCSRC))
+	if(!pSectionAP || !pSectionAP->getProperty("toc-source-style1",pszTOCSRC))
 	{
 		m_sSourceStyle1 = "Heading 1";
 	}
@@ -1193,7 +1193,7 @@ void fl_TOCLayout::_lookupProperties(void)
 		m_sSourceStyle1 = pszTOCSRC;
 	}
 	pszTOCSRC = NULL;
-	if(!pSectionAP || !pSectionAP->getProperty("toc-source-style-2",pszTOCSRC))
+	if(!pSectionAP || !pSectionAP->getProperty("toc-source-style2",pszTOCSRC))
 	{
 		m_sSourceStyle2 = "Heading 2";
 	}
@@ -1202,7 +1202,7 @@ void fl_TOCLayout::_lookupProperties(void)
 		m_sSourceStyle2 = pszTOCSRC;
 	}
 	pszTOCSRC = NULL;
-	if(!pSectionAP || !pSectionAP->getProperty("toc-source-style-3",pszTOCSRC))
+	if(!pSectionAP || !pSectionAP->getProperty("toc-source-style3",pszTOCSRC))
 	{
 		m_sSourceStyle3 = "Heading 3";
 	}
@@ -1211,7 +1211,7 @@ void fl_TOCLayout::_lookupProperties(void)
 		m_sSourceStyle3 = pszTOCSRC;
 	}
 	pszTOCSRC = NULL;
-	if(!pSectionAP || !pSectionAP->getProperty("toc-source-style-4",pszTOCSRC))
+	if(!pSectionAP || !pSectionAP->getProperty("toc-source-style4",pszTOCSRC))
 	{
 		m_sSourceStyle4 = "Heading 4";
 	}
@@ -1220,7 +1220,7 @@ void fl_TOCLayout::_lookupProperties(void)
 		m_sSourceStyle4 = pszTOCSRC;
 	}
 	const XML_Char * pszTOCDEST = NULL;
-	if(!pSectionAP || !pSectionAP->getProperty("toc-dest-style-1",pszTOCDEST))
+	if(!pSectionAP || !pSectionAP->getProperty("toc-dest-style1",pszTOCDEST))
 	{
 		m_sDestStyle1 = "Contents 1";
 	}
@@ -1229,7 +1229,7 @@ void fl_TOCLayout::_lookupProperties(void)
 		m_sDestStyle1 = pszTOCDEST;
 	}
 	pszTOCDEST = NULL;
-	if(!pSectionAP || !pSectionAP->getProperty("toc-dest-style-2",pszTOCDEST))
+	if(!pSectionAP || !pSectionAP->getProperty("toc-dest-style2",pszTOCDEST))
 	{
 		m_sDestStyle2 = "Contents 2";
 	}
@@ -1238,7 +1238,7 @@ void fl_TOCLayout::_lookupProperties(void)
 		m_sDestStyle2 = pszTOCDEST;
 	}
 	pszTOCDEST = NULL;
-	if(!pSectionAP || !pSectionAP->getProperty("toc-dest-style-3",pszTOCDEST))
+	if(!pSectionAP || !pSectionAP->getProperty("toc-dest-style3",pszTOCDEST))
 	{
 		m_sDestStyle3 = "Contents 3";
 	}
@@ -1247,7 +1247,7 @@ void fl_TOCLayout::_lookupProperties(void)
 		m_sDestStyle3 = pszTOCDEST;
 	}
 	pszTOCDEST = NULL;
-	if(!pSectionAP || !pSectionAP->getProperty("toc-dest-style-4",pszTOCDEST))
+	if(!pSectionAP || !pSectionAP->getProperty("toc-dest-style4",pszTOCDEST))
 	{
 		m_sDestStyle4 = "Contents 4";
 	}
@@ -1622,6 +1622,122 @@ void fl_TOCLayout::_lookupProperties(void)
 	{
 		m_iNumType4 = m_pLayout->FootnoteTypeFromString(pszTOCLABELTYPE);
 	}
+//
+// TOC TAB leader
+//
+	const XML_Char * pszTOCTABTYPE = NULL;
+	if(!pSectionAP || !pSectionAP->getProperty("toc-tab-leader1",pszTOCTABTYPE))
+	{
+		m_iTabLeader1 = FL_LEADER_DOT;
+	}
+	else
+	{
+		if(UT_stricmp(pszTOCTABTYPE,"none") == 0)
+		{
+			m_iTabLeader1 = FL_LEADER_NONE;
+		}
+		else if(UT_stricmp(pszTOCTABTYPE,"dot") == 0)
+		{
+			m_iTabLeader1 = FL_LEADER_DOT;
+		}
+		else if(UT_stricmp(pszTOCTABTYPE,"hyphen") == 0)
+		{
+			m_iTabLeader1 = FL_LEADER_HYPHEN;
+		}
+		else if(UT_stricmp(pszTOCTABTYPE,"underline") == 0)
+		{
+			m_iTabLeader1 = FL_LEADER_UNDERLINE;
+		}
+		else
+		{
+			m_iTabLeader1 = FL_LEADER_DOT;
+		}
+	}
+	pszTOCTABTYPE = NULL;
+	if(!pSectionAP || !pSectionAP->getProperty("toc-tab-leader2",pszTOCTABTYPE))
+	{
+		m_iTabLeader2 = FL_LEADER_DOT;
+	}
+	else
+	{
+		if(UT_stricmp(pszTOCTABTYPE,"none") == 0)
+		{
+			m_iTabLeader2 = FL_LEADER_NONE;
+		}
+		else if(UT_stricmp(pszTOCTABTYPE,"dot") == 0)
+		{
+			m_iTabLeader2 = FL_LEADER_DOT;
+		}
+		else if(UT_stricmp(pszTOCTABTYPE,"hyphen") == 0)
+		{
+			m_iTabLeader2 = FL_LEADER_HYPHEN;
+		}
+		else if(UT_stricmp(pszTOCTABTYPE,"underline") == 0)
+		{
+			m_iTabLeader2 = FL_LEADER_UNDERLINE;
+		}
+		else
+		{
+			m_iTabLeader2 = FL_LEADER_DOT;
+		}
+	}
+	pszTOCTABTYPE = NULL;
+	if(!pSectionAP || !pSectionAP->getProperty("toc-tab-leader3",pszTOCTABTYPE))
+	{
+		m_iTabLeader3 = FL_LEADER_DOT;
+	}
+	else
+	{
+		if(UT_stricmp(pszTOCTABTYPE,"none") == 0)
+		{
+			m_iTabLeader3 = FL_LEADER_NONE;
+		}
+		else if(UT_stricmp(pszTOCTABTYPE,"dot") == 0)
+		{
+			m_iTabLeader3 = FL_LEADER_DOT;
+		}
+		else if(UT_stricmp(pszTOCTABTYPE,"hyphen") == 0)
+		{
+			m_iTabLeader3 = FL_LEADER_HYPHEN;
+		}
+		else if(UT_stricmp(pszTOCTABTYPE,"underline") == 0)
+		{
+			m_iTabLeader3 = FL_LEADER_UNDERLINE;
+		}
+		else
+		{
+			m_iTabLeader3 = FL_LEADER_DOT;
+		}
+	}
+	pszTOCTABTYPE = NULL;
+	if(!pSectionAP || !pSectionAP->getProperty("toc-tab-leader4",pszTOCTABTYPE))
+	{
+		m_iTabLeader4 = FL_LEADER_DOT;
+	}
+	else
+	{
+		if(UT_stricmp(pszTOCTABTYPE,"none") == 0)
+		{
+			m_iTabLeader4 = FL_LEADER_NONE;
+		}
+		else if(UT_stricmp(pszTOCTABTYPE,"dot") == 0)
+		{
+			m_iTabLeader4 = FL_LEADER_DOT;
+		}
+		else if(UT_stricmp(pszTOCTABTYPE,"hyphen") == 0)
+		{
+			m_iTabLeader4 = FL_LEADER_HYPHEN;
+		}
+		else if(UT_stricmp(pszTOCTABTYPE,"underline") == 0)
+		{
+			m_iTabLeader4 = FL_LEADER_UNDERLINE;
+		}
+		else
+		{
+			m_iTabLeader4 = FL_LEADER_DOT;
+		}
+	}
+
 }
 
 void fl_TOCLayout::_localCollapse(void)

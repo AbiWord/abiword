@@ -157,9 +157,10 @@ dcl(DLG_FormatFootnotes_FootnoteRestart,   "Numbering")
 
 /* Format TOC dialog */
 dcl(DLG_FormatTOC_Title,                  "Format Table of Contents")
+dcl(DLG_FormatTOC_None,                   "None")
 dcl(DLG_FormatTOC_Heading,                "Define Heading")
-dcl(DLG_FormatTOC_HeadingText,                "Heading Text")
-dcl(DLG_FormatTOC_HeadingStyle,                  "Heading Style")
+dcl(DLG_FormatTOC_HeadingText,            "Heading Text")
+dcl(DLG_FormatTOC_HeadingStyle,           "Heading Style")
 dcl(DLG_FormatTOC_HaveHeading,            "Have Heading")
 dcl(DLG_FormatTOC_ChangeStyle,            "Change Style")
 dcl(DLG_FormatTOC_Level1Defs,             "Define Level 1 Properties")

@@ -42,6 +42,7 @@ public:
 	void            event_Apply(void);
 	virtual void            destroy(void);
 	virtual void            activate(void);
+    virtual void            setSensitivity(bool bSensitive);
 	virtual void            notifyActiveFrame(XAP_Frame * pFrame);
 	virtual void            setTOCPropsInGUI(void);
 private:
@@ -50,6 +51,7 @@ private:
 	void            _connectSignals(void);
 	void            _fillGUI(void);
 	void            _createLabelTypeItems(void);
+	void            _createTABTypeItems(void);
 	GtkWidget *     _getWidget(const char * szNameBase, UT_sint32 level=0);
 
 

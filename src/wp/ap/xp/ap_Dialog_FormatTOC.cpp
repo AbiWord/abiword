@@ -44,12 +44,25 @@
 #include "ut_timer.h"
 #include "pd_Document.h"
 
+
 AP_Dialog_FormatTOC::AP_Dialog_FormatTOC(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: XAP_Dialog_Modeless(pDlgFactory,id),
 	  m_pAutoUpdater(0),
 	  m_iTick(0),
 	  m_sTOCProps("")
 {
+	UT_sint32 i = 0;
+	
+	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet ();
+	static UT_UTF8String sNone = pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTOC_None);
+	m_vecTABLeadersLabel.addItem(const_cast<void *>(static_cast<const void *>(sNone.utf8_str())));
+	m_vecTABLeadersLabel.addItem("....");
+	m_vecTABLeadersLabel.addItem("----");
+	m_vecTABLeadersLabel.addItem("____");
+	m_vecTABLeadersProp.addItem("none");
+	m_vecTABLeadersProp.addItem("dot");
+	m_vecTABLeadersProp.addItem("hyphen");
+	m_vecTABLeadersProp.addItem("underline");
 }
 
 AP_Dialog_FormatTOC::~AP_Dialog_FormatTOC(void)
@@ -121,6 +134,12 @@ void AP_Dialog_FormatTOC::updateDialog(void)
 	{
 		return;
 	}
+	if(!pView->isTOCSelected())
+	{
+		setSensitivity(false);
+		return;
+	}
+	setSensitivity(true);
 	PD_Document * pDoc = pView->getDocument();
 	if((m_iTick != pView->getTick()) || (m_pDoc != pDoc))
 	{

@@ -52,7 +52,13 @@ AP_Win32Dialog_FormatTOC::AP_Win32Dialog_FormatTOC(XAP_DialogFactory * pDlgFacto
 AP_Win32Dialog_FormatTOC::~AP_Win32Dialog_FormatTOC(void)
 {
 }
+
 void AP_Win32Dialog_FormatTOC::setTOCPropsInGUI(void)
+{
+	UT_ASSERT(0);
+}
+
+void AP_Win32Dialog_FormatTOC::setSensitivity(bool bSensitive)
 {
 	UT_ASSERT(0);
 }

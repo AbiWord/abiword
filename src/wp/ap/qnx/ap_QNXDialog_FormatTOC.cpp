@@ -57,6 +57,11 @@ void AP_QNXDialog_FormatTOC::setTOCPropsInGUI(void)
 	UT_ASSERT(0);
 }
 
+void AP_QNXDialog_FormatTOC::setSensitivity(bool bSensitive)
+{
+	UT_ASSERT(0);
+}
+
 void AP_QNXDialog_FormatTOC::destroy(void)
 {
 	UT_ASSERT(0);

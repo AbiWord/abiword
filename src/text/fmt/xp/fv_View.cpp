@@ -1667,6 +1667,11 @@ PT_DocPosition FV_View::getSelectionAnchor(void) const
 	return m_iInsPoint;
 }
 
+bool FV_View::isTOCSelected(void)
+{
+	return (m_Selection.getSelectionMode() == 	FV_SelectionMode_TOC);
+}
+
 bool FV_View::isSelectionEmpty(void) const
 {
 	if (!m_Selection.isSelected())

@@ -95,6 +95,16 @@ void AP_UnixDialog_FormatTOC::setTOCPropsInGUI(void)
 {
 }
 
+void AP_UnixDialog_FormatTOC::setSensitivity(bool bSensitive)
+{
+	gboolean gSensitive = TRUE;
+	if(!bSensitive)
+	{
+		gSensitive = FALSE;
+	}
+	gtk_widget_set_sensitive (m_wApply,gSensitive);
+}
+
 void AP_UnixDialog_FormatTOC::destroy(void)
 {
 	finalize();
@@ -202,6 +212,7 @@ GtkWidget * AP_UnixDialog_FormatTOC::_constructWindow(void)
 
 // Create the itemlists
 	_createLabelTypeItems();
+	_createTABTypeItems();
 	return m_windowMain;
 }
 
@@ -262,6 +273,45 @@ void AP_UnixDialog_FormatTOC::_createLabelTypeItems(void)
 		}
 		gtk_widget_show_all(wM);
 		gtk_option_menu_set_menu(GTK_OPTION_MENU(_getWidget("wPageStyleChoose",i)),wM);
+	}
+			
+}
+
+
+void AP_UnixDialog_FormatTOC::_createTABTypeItems(void)
+{
+	UT_sint32 i =1;
+	UT_Vector * vecLabels = getVecTABLeadersLabel();
+	UT_Vector * vecProps = getVecTABLeadersProp();
+	UT_sint32 nTypes = vecLabels->getItemCount();
+	UT_String * sProp = NULL;
+	UT_String * sVal = NULL;
+	for(i=1;i<=4;i++)
+	{
+		UT_sint32 j = 0;
+		sProp = new UT_String("toc-tab-leader");
+		UT_String sTmp = UT_String_sprintf("%d",i);
+		*sProp += sTmp;
+		GtkWidget * wM = gtk_menu_new();
+		for(j=0; j< nTypes; j++)
+		{
+			m_vecAllPropVals.addItem(static_cast<void *>(sProp));
+			sVal = new UT_String(static_cast<char *>(vecProps->getNthItem(j)));
+			m_vecAllPropVals.addItem(static_cast<void *>(sVal));
+			const gchar * szLab = static_cast<const gchar *>(vecLabels->getNthItem(j));
+			UT_DEBUGMSG(("Got label %s for item %d \n",szLab,j));
+			GtkWidget * pW = gtk_menu_item_new_with_label(szLab);
+			g_object_set_data(G_OBJECT(pW),"toc-prop",(gpointer)(sProp->c_str()));
+			g_object_set_data(G_OBJECT(pW),"toc-val",(gpointer)(sVal->c_str()));
+
+			g_signal_connect(G_OBJECT(pW),
+			   "activate",
+			   G_CALLBACK(s_NumType_changed),
+			   (gpointer) this);
+			gtk_menu_shell_append (GTK_MENU_SHELL (wM),pW);
+		}
+		gtk_widget_show_all(wM);
+		gtk_option_menu_set_menu(GTK_OPTION_MENU(_getWidget("wTabLeaderChoose",i)),wM);
 	}
 			
 }

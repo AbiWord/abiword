@@ -59,6 +59,11 @@ void AP_CocoaDialog_FormatTOC::setTOCPropsInGUI(void)
 	UT_ASSERT(0);
 }
 
+void AP_CocoaDialog_FormatTOC::setSensitivity(bool bSensitive)
+{
+	UT_ASSERT(0);
+}
+
 void AP_CocoaDialog_FormatTOC::destroy(void)
 {
 	UT_ASSERT(0);

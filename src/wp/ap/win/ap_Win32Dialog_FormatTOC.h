@@ -36,7 +36,7 @@ public:
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 	virtual void            notifyActiveFrame(XAP_Frame * pFrame);
 	virtual void            setTOCPropsInGUI(void);	
-
+    virtual void            setSensitivity(bool bSensitive);
 	virtual void            destroy(void);
 	virtual void            activate(void);
 	
