@@ -27,15 +27,14 @@
 
 class AP_App;
 class ap_ViewListener;
-class DG_Graphics;
 class AV_View;
-class FL_DocLayout;
 class AD_Document;
 class EV_EditBindingMap;
 class EV_EditEventMapper;
 class EV_Menu_Layout;
 class EV_Menu_LabelSet;
 class AV_ScrollObj;
+class AP_FrameData;
 
 /*****************************************************************
 ******************************************************************
@@ -62,6 +61,9 @@ public:
 	virtual UT_Bool				show(void)=0;
 	virtual UT_Bool				updateTitle(void);
 
+	UT_Bool						initFrameData(void);
+	void						killFrameData(void);
+
 	const EV_EditEventMapper *	getEditEventMapper(void) const;
 	AP_App *					getApp(void) const;
 	AV_View *					getCurrentView(void) const;
@@ -77,12 +79,10 @@ public:
 protected:
 	AP_App *					m_app;			/* handle to application-specific data */
 	AD_Document *				m_pDoc;			/* to our in-memory representation of a document */
-	FL_DocLayout *				m_pDocLayout;	
 	AV_View *					m_pView;		/* to our view on the document */
 	ap_ViewListener *			m_pViewListener;
 	AV_ListenerId				m_lid;
 	AV_ScrollObj *				m_pScrollObj;	/* to our scroll handler */
-	DG_Graphics *				m_pG;
 	EV_EditBindingMap *			m_pEBM;			/* the key/mouse bindings for this frame */
 	EV_EditEventMapper *		m_pEEM;			/* the event state-machine for this frame */
 	const char *				m_szMenuLayoutName;
@@ -91,6 +91,8 @@ protected:
 	const char *				m_szToolbarLabelSetName;	/* language for toolbars */
 	UT_uint32					m_nView;
 	int							m_iUntitled;
+
+	AP_FrameData *				m_pData;		/* app-specific frame data */
 
 private:
 	char						m_szTitle[512];

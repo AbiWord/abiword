@@ -53,7 +53,7 @@ public:									/* TODO these should be protected */
 	static const char* s_szBuild_CompileDate;
 
 public:
-	AP_App(AP_Args * pArgs);
+	AP_App(AP_Args * pArgs, const char * szAppName);
 	virtual ~AP_App(void);
 
 	virtual UT_Bool					initialize(void);
@@ -79,7 +79,8 @@ public:
 
 protected:
 	AP_Args *						m_pArgs;
-	
+	const char *					m_szAppName;
+
 	EV_EditMethodContainer *		m_pEMC;				/* the set of all possible EditMethods in the app */
 	EV_Menu_ActionSet *				m_pMenuActionSet;	/* the set of all possible menu actions in the app */
 	EV_Toolbar_ActionSet *			m_pToolbarActionSet;

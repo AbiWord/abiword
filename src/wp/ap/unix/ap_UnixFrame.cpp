@@ -21,7 +21,9 @@
 
 #include "ut_types.h"
 #include "ut_debugmsg.h"
+#include "ut_assert.h"
 #include "ap_ViewListener.h"
+#include "../xp/ap_FrameData.h"
 #include "ap_UnixFrame.h"
 #include "ev_UnixToolbar.h"
 #include "av_View.h"
@@ -39,6 +41,18 @@
 
 UT_Bool AP_UnixFrame::_showDocument(void)
 {
+	if (!m_pDoc)
+	{
+		UT_DEBUGMSG(("Can't show a non-existent document\n"));
+		return UT_FALSE;
+	}
+
+	if (!m_pData)
+	{
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return UT_FALSE;
+	}
+
 	UNIXGraphics * pG = NULL;
 	FL_DocLayout * pDocLayout = NULL;
 	AV_View * pView = NULL;
@@ -86,13 +100,13 @@ UT_Bool AP_UnixFrame::_showDocument(void)
 	}
 	
 	// switch to new view, cleaning up previous settings
-	if (m_pDocLayout)
+	if (m_pData->m_pDocLayout)
 	{
-		pOldDoc = m_pDocLayout->getDocument();
+		pOldDoc = m_pData->m_pDocLayout->getDocument();
 	}
 
-	REPLACEP(m_pG, pG);
-	REPLACEP(m_pDocLayout, pDocLayout);
+	REPLACEP(m_pData->m_pG, pG);
+	REPLACEP(m_pData->m_pDocLayout, pDocLayout);
 	DELETEP(pOldDoc);
 	REPLACEP(m_pView, pView);
 	REPLACEP(m_pScrollObj, pScrollObj);
@@ -103,8 +117,8 @@ UT_Bool AP_UnixFrame::_showDocument(void)
 	m_pView->setWindowSize(GTK_WIDGET(m_dArea)->allocation.width,
 						   GTK_WIDGET(m_dArea)->allocation.height);
   
-	height = m_pDocLayout->getHeight();
-	pageLen = height/m_pDocLayout->countPages();
+	height = m_pData->m_pDocLayout->getHeight();
+	pageLen = height/m_pData->m_pDocLayout->countPages();
 
 	m_pVadj->value = 0.0;
 	m_pVadj->lower = 0.0;
@@ -130,7 +144,7 @@ Cleanup:
 
 	// change back to prior document
 	DELETEP(m_pDoc);
-	m_pDoc = m_pDocLayout->getDocument();
+	m_pDoc = m_pData->m_pDocLayout->getDocument();
 
 	return UT_FALSE;
 }

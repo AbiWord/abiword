@@ -16,55 +16,24 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
  * 02111-1307, USA.
  */
+ 
 
-#include <gtk/gtk.h>
-#include "ap_Args.h"
-#include "ap_UnixApp.h"
-#include "ap_UnixFrame.h"
-#include "ap_UnixToolbar_Icons.h"
+#include "ap_FrameData.h"
+#include "gr_Graphics.h"
+#include "fl_DocLayout.h"
 
 #define DELETEP(p)	do { if (p) delete p; } while (0)
 
 /*****************************************************************/
 
-AP_UnixApp::AP_UnixApp(AP_Args * pArgs, const char * szAppName)
-	: AP_App(pArgs, szAppName)
+AP_FrameData::AP_FrameData()
 {
-	m_pUnixToolbarIcons = 0;
+	m_pDocLayout = NULL;
+	m_pG = NULL;
 }
 
-AP_UnixApp::~AP_UnixApp(void)
+AP_FrameData::~AP_FrameData()
 {
-	DELETEP(m_pUnixToolbarIcons);
+	DELETEP(m_pDocLayout);
+	DELETEP(m_pG);
 }
-
-UT_Bool AP_UnixApp::initialize(void)
-{
-	// initialize GTK first.
-	
-	gtk_set_locale();
-	gtk_init(&m_pArgs->m_argc,&m_pArgs->m_argv);
-
-	// let our base class do it's thing.
-	
-	AP_App::initialize();
-
-	// load only one copy of the platform-specific icons.
-	
-	m_pUnixToolbarIcons = new AP_UnixToolbar_Icons();
-	
-	// do any thing we need here...
-	
-	return UT_TRUE;
-}
-
-AP_Frame * AP_UnixApp::newFrame(void)
-{
-	AP_UnixFrame * pUnixFrame = new AP_UnixFrame(this);
-
-	if (pUnixFrame)
-		pUnixFrame->initialize();
-
-	return pUnixFrame;
-}
-

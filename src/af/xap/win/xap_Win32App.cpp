@@ -29,8 +29,8 @@
 
 /*****************************************************************/
 
-AP_Win32App::AP_Win32App(HINSTANCE hInstance, AP_Args * pArgs)
-	: AP_App(pArgs)
+AP_Win32App::AP_Win32App(HINSTANCE hInstance, AP_Args * pArgs, const char * szAppName)
+	: AP_App(pArgs, szAppName)
 {
 	UT_ASSERT(hInstance);
 

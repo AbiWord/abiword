@@ -34,6 +34,7 @@ TARGETS=		$(LIBRARY)
 
 PLATFORM_OBJS=	$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)App.$(OBJ_SUFFIX)		\
 		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)Frame.$(OBJ_SUFFIX)		\
+		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)Main.$(OBJ_SUFFIX)		\
 		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)Toolbar_Icons.$(OBJ_SUFFIX)
 
 OBJS=		$(PLATFORM_OBJS)								\

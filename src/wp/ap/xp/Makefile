@@ -24,6 +24,7 @@ include $(ABI_DEPTH)/config/abi_defs.mk
 
 CPPSRCS=	ap_EditMethods.cpp			\
 			ap_Frame.cpp				\
+			ap_FrameData.cpp			\
 			ap_LoadBindings.cpp			\
 			ap_LoadBindings_Default.cpp	\
 			ap_Menu_ActionSet.cpp		\

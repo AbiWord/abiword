@@ -17,11 +17,24 @@
  * 02111-1307, USA.
  */
 
-#include <windows.h>
-#include "ap_Win32App.h"
 
-int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
-                    PSTR szCmdLine, int iCmdShow)
+#ifndef AP_FRAMEDATA_H
+#define AP_FRAMEDATA_H
+
+
+class DG_Graphics;
+class FL_DocLayout;
+
+// A trivial helper class to hold app-specific frame data
+
+class AP_FrameData
 {
-	return AP_Win32App::WinMain("AbiWord", hInstance, hPrevInstance, szCmdLine, iCmdShow);
-}
+public:
+	AP_FrameData();
+	~AP_FrameData(void);
+
+	FL_DocLayout *		m_pDocLayout;
+	DG_Graphics *		m_pG;
+};
+
+#endif /* AP_FRAMEDATA_H */

@@ -39,13 +39,16 @@ class AP_Win32Toolbar_Icons;
 class AP_Win32App : public AP_App
 {
 public:
-	AP_Win32App(HINSTANCE hInstance, AP_Args * pArgs);
+	AP_Win32App(HINSTANCE hInstance, AP_Args * pArgs, const char * szAppName);
 	virtual ~AP_Win32App(void);
 
 	virtual UT_Bool			initialize(void);
 	virtual AP_Frame * 		newFrame(void);
 
 	virtual HINSTANCE		getInstance() const;
+
+	static int WinMain (const char * szAppName, HINSTANCE hInstance, 
+					HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow);
 
 protected:
 	AP_Win32Toolbar_Icons *	m_pWin32ToolbarIcons;

@@ -41,9 +41,12 @@
 
 /*****************************************************************/
 
-AP_App::AP_App(AP_Args * pArgs) : m_hashClones(5)
+AP_App::AP_App(AP_Args * pArgs, const char * szAppName) : m_hashClones(5)
 {
+	UT_ASSERT(szAppName && *szAppName);
+
 	m_pArgs = pArgs;
+	m_szAppName = szAppName;
 	m_pEMC = NULL;
 	m_pMenuActionSet = NULL;
 	m_pToolbarActionSet = NULL;
@@ -121,7 +124,7 @@ const char * AP_App::getApplicationTitleForTitleBar(void) const
 		the build is debug or not.
 	*/
 
-	sprintf(_title, "AbiWord Personal %s (%s)", s_szBuild_Version, s_szBuild_ID);
+	sprintf(_title, "%s Personal %s (%s)", m_szAppName, s_szBuild_Version, s_szBuild_ID);
 
 	return _title;
 }
@@ -131,9 +134,7 @@ const char * AP_App::getApplicationName(void) const
 	// return a string that the platform-specific code
 	// can use as a class name for various window-manager-like
 	// operations.
-
-	// TODO fix the following...
-	return "AbiWord";
+	return m_szAppName;
 }
 
 EV_EditMethodContainer * AP_App::getEditMethodContainer(void) const

@@ -24,6 +24,7 @@ include $(ABI_DEPTH)/config/abi_defs.mk
 
 CPPSRCS=		ap_UnixApp.cpp			\
 			ap_UnixFrame.cpp		\
+			ap_UnixMain.cpp		\
 			ap_UnixToolbar_Icons.cpp
 
 TARGETS=		$(OBJS)

@@ -18,27 +18,12 @@
  */
  
 
-//#include <string.h>
-//#include <stdio.h>
-
 #include "ut_types.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
-//#include "ut_vector.h"
-//#include "ap_App.h"
+
 #include "ap_Frame.h"
-//#include "ap_ViewListener.h"
-//#include "ev_EditBinding.h"
-//#include "ev_EditEventMapper.h"
-//#include "ev_EditMethod.h"
-//#include "ev_Menu_Layouts.h"
-//#include "ev_Menu_Labels.h"
-//#include "ap_LoadBindings.h"
-//#include "ap_Menu_Layouts.h"
-//#include "ap_Menu_LabelSet.h"
-//#include "gr_Graphics.h"
-//#include "av_View.h"
-//#include "fl_DocLayout.h"
+#include "ap_FrameData.h"
 #include "ad_Document.h"
 #include "pd_Document.h"
 
@@ -46,6 +31,21 @@
 #define DELETEP(p)	do { if (p) delete p; } while (0)
 
 /*****************************************************************/
+
+UT_Bool AP_Frame::initFrameData(void)
+{
+	UT_ASSERT(!m_pData);
+
+	m_pData = new AP_FrameData();
+	
+	return (m_pData ? UT_TRUE : UT_FALSE);
+}
+
+void AP_Frame::killFrameData(void)
+{
+	DELETEP(m_pData);
+	m_pData = NULL;
+}
 
 UT_Bool AP_Frame::loadDocument(const char * szFilename)
 {
@@ -78,7 +78,7 @@ UT_Bool AP_Frame::loadDocument(const char * szFilename)
 	return UT_FALSE;
 
 ReplaceDocument:
-	// NOTE: prior document is bound to m_pDocLayout, which gets discarded by subclass
+	// NOTE: prior document is bound to m_pData->m_pDocLayout, which gets discarded by subclass
 	m_pDoc = pNewDoc;
 	return UT_TRUE;
 }

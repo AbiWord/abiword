@@ -38,11 +38,13 @@ class AP_UnixToolbar_Icons;
 class AP_UnixApp : public AP_App
 {
 public:
-	AP_UnixApp(AP_Args * pArgs);
+	AP_UnixApp(AP_Args * pArgs, const char * szAppName);
 	virtual ~AP_UnixApp(void);
 
 	virtual UT_Bool					initialize(void);
 	virtual AP_Frame * 				newFrame(void);
+
+	static int main (const char * szAppName, int argc, char ** argv);
 
 protected:
 	AP_UnixToolbar_Icons *			m_pUnixToolbarIcons;

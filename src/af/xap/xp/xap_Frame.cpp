@@ -36,9 +36,7 @@
 #include "ap_LoadBindings.h"
 #include "ap_Menu_Layouts.h"
 #include "ap_Menu_LabelSet.h"
-#include "gr_Graphics.h"
 #include "av_View.h"
-#include "fl_DocLayout.h"
 #include "ad_Document.h"
 
 
@@ -50,12 +48,11 @@ AP_Frame::AP_Frame(AP_App * app)
 {
 	m_app = app;
 
+	m_pData = NULL;
 	m_pDoc = NULL;
-	m_pDocLayout = NULL;
 	m_pView = NULL;
 	m_pViewListener = NULL;
 	m_pScrollObj = NULL;
-	m_pG = NULL;
 	m_pEBM = NULL;
 	m_pEEM = NULL;
 	m_szMenuLayoutName = NULL;
@@ -74,11 +71,10 @@ AP_Frame::AP_Frame(AP_Frame * f)
 	m_iUntitled = f->m_iUntitled;
 
 	// everything else gets recreated
-	m_pDocLayout = NULL;
+	m_pData = NULL;
 	m_pView = NULL;
 	m_pViewListener = NULL;
 	m_pScrollObj = NULL;
-	m_pG = NULL;
 	m_pEBM = NULL;
 	m_pEEM = NULL;
 	m_szMenuLayoutName = NULL;
@@ -90,9 +86,6 @@ AP_Frame::AP_Frame(AP_Frame * f)
 
 AP_Frame::~AP_Frame(void)
 {
-	// BUGBUG: commented out to avoid circular nastiness in app destructor
-	//	m_app->forgetFrame(this);
-	
 	// only delete the things that we created...
 
 	if (m_pView)
@@ -100,18 +93,15 @@ AP_Frame::~AP_Frame(void)
 
 	DELETEP(m_pView);
 	DELETEP(m_pViewListener);
-	DELETEP(m_pDocLayout);
+
+	killFrameData();
 
 	if (m_nView==0)
 		DELETEP(m_pDoc);
 
 	DELETEP(m_pScrollObj);
-	DELETEP(m_pG);
 	DELETEP(m_pEBM);
 	DELETEP(m_pEEM);
-
-	// BUGBUG: don't attempt to purge contents -- they're constant strings
-	//	UT_VECTOR_PURGEALL(char *, m_vecToolbarLayoutNames);
 }
 
 // sequence number tracker for untitled documents
@@ -120,6 +110,9 @@ int AP_Frame::s_iUntitled = 0;
 UT_Bool AP_Frame::initialize(void)
 {
 	UT_Bool bResult;
+
+	if (!initFrameData())
+		return UT_FALSE;
 
 	// choose which set of key- and mouse-bindings to load
 	
