@@ -1,6 +1,6 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001 Hubert Figuiere
+ * Copyright (C) 2001-2002 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -21,24 +21,36 @@
 #ifndef XAP_COCOADIALOG_FILEOPENSAVEAS_H
 #define XAP_COCOADIALOG_FILEOPENSAVEAS_H
 
+#import <Cocoa/Cocoa.h>
+
 #include "xap_Dlg_FileOpenSaveAs.h"
 #include "xap_Strings.h"
 class XAP_CocoaFrame;
+
+
+@interface XAP_Cocoa_DelegateSavePanel: NSObject
+{
+
+
+};
+
+@end
 
 /*****************************************************************/
 
 class XAP_CocoaDialog_FileOpenSaveAs : public XAP_Dialog_FileOpenSaveAs
 {
 public:
-	XAP_CocoaDialog_FileOpenSaveAs(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
+	XAP_CocoaDialog_FileOpenSaveAs(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id dlgid);
 	virtual ~XAP_CocoaDialog_FileOpenSaveAs(void);
 
 	virtual void			runModal(XAP_Frame * pFrame);
 
-	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
-//	gint previewPicture (void);
+	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id dlgid);
+	int previewPicture (void);
 
 protected:
+	NSSavePanel	*m_panel;
 #if 0
 	bool					_run_gtk_main(XAP_Frame * pFrame, void * pFSvoid,
 										  bool bCheckWritePermission,
@@ -55,7 +67,7 @@ protected:
 	GtkWidget * m_preview;
 #endif
 	XAP_CocoaFrame *			m_pCocoaFrame;
-	char * 					m_szFinalPathnameCandidate;
+	char * 					removeMe;
 
 };
 

@@ -1,5 +1,6 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2001-2002 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,7 +18,8 @@
  * 02111-1307, USA.
  */
 
-#include <gtk/gtk.h>
+#import <Cocoa/Cocoa.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -27,7 +29,7 @@
 #include <unistd.h>
 #include "ut_string.h"
 #include "ut_assert.h"
-#include "xap_CocoaDialogHelper.h"
+
 #include "xap_Dialog_Id.h"
 #include "xap_Dlg_MessageBox.h"
 #include "xap_CocoaDlg_FileOpenSaveAs.h"
@@ -44,11 +46,7 @@
 #include "fg_Graphic.h"
 #include "fg_GraphicRaster.h"
 
-#if defined(HAVE_GNOME)
-#include "gr_CocoaGnomeImage.h"
-#else
 #include "gr_CocoaImage.h"
-#endif
 
 #include <sys/stat.h>
 
@@ -61,26 +59,24 @@
 
 /*****************************************************************/
 XAP_Dialog * XAP_CocoaDialog_FileOpenSaveAs::static_constructor(XAP_DialogFactory * pFactory,
-															 XAP_Dialog_Id id)
+															 XAP_Dialog_Id dlgid)
 {
-	XAP_CocoaDialog_FileOpenSaveAs * p = new XAP_CocoaDialog_FileOpenSaveAs(pFactory,id);
+	XAP_CocoaDialog_FileOpenSaveAs * p = new XAP_CocoaDialog_FileOpenSaveAs(pFactory,dlgid);
 	return p;
 }
 
 XAP_CocoaDialog_FileOpenSaveAs::XAP_CocoaDialog_FileOpenSaveAs(XAP_DialogFactory * pDlgFactory,
-														   XAP_Dialog_Id id)
-  : XAP_Dialog_FileOpenSaveAs(pDlgFactory,id), m_FS(0), m_preview(0)
+														   XAP_Dialog_Id dlgid)
+  : XAP_Dialog_FileOpenSaveAs(pDlgFactory,dlgid)
 {
-	m_szFinalPathnameCandidate = NULL;
 }
 
 XAP_CocoaDialog_FileOpenSaveAs::~XAP_CocoaDialog_FileOpenSaveAs(void)
 {
-	FREEP(m_szFinalPathnameCandidate);
 }
 
 /*****************************************************************/
-
+#if 0
 static void s_ok_clicked(GtkWidget * /* widget */,
 						 XAP_Dialog_FileOpenSaveAs::tAnswer * answer)
 {
@@ -121,6 +117,7 @@ static gint s_filename_select (GtkCList * w,
   dlg->previewPicture();
   return FALSE;
 }
+
 
 bool XAP_CocoaDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 													 void * pFSvoid,
@@ -418,6 +415,7 @@ void XAP_CocoaDialog_FileOpenSaveAs::_notifyError_OKOnly(XAP_Frame * pFrame,
 							XAP_Dialog_MessageBox::a_OK,
 							sz1);
 }
+#endif
 
 /*****************************************************************/
 
@@ -425,7 +423,7 @@ void XAP_CocoaDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 {
 	m_pCocoaFrame = (XAP_CocoaFrame *)pFrame;
 	UT_ASSERT(m_pCocoaFrame);
-
+	
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
 	// do we want to let this function handle stating the Cocoa
@@ -440,12 +438,14 @@ void XAP_CocoaDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	{
 	case XAP_DIALOG_ID_INSERT_PICTURE:
 	  {
+		m_panel = [NSOpenPanel openPanel];			// don't touch that one. It is garbage collected by the class itself
 	        szTitle = pSS->getValue(XAP_STRING_ID_DLG_IP_Title);
 		szFileTypeLabel = pSS->getValue(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel);
 		bCheckWritePermission = false;    
 	  }
 	case XAP_DIALOG_ID_FILE_OPEN:
 	{
+		m_panel = [NSOpenPanel openPanel];			// don't touch that one. It is garbage collected by the class itself
 		szTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_OpenTitle);
 		szFileTypeLabel = pSS->getValue(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel);
 		bCheckWritePermission = false;
@@ -453,6 +453,7 @@ void XAP_CocoaDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	}
 	case XAP_DIALOG_ID_FILE_SAVEAS:
 	{
+		m_panel = [NSSavePanel savePanel];			// don't touch that one. It is garbage collected by the class itself
 		szTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_SaveAsTitle);
 		szFileTypeLabel = pSS->getValue(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel);
 		bCheckWritePermission = true;
@@ -460,6 +461,7 @@ void XAP_CocoaDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	}
 	case XAP_DIALOG_ID_FILE_IMPORT:
 	  {
+	  	m_panel = [NSOpenPanel openPanel];			// don't touch that one. It is garbage collected by the class itself
 		szTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_ImportTitle);
 		szFileTypeLabel = pSS->getValue(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel);
 		bCheckWritePermission = false;
@@ -467,6 +469,7 @@ void XAP_CocoaDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	  }
 	case XAP_DIALOG_ID_FILE_EXPORT:
 	  {
+		m_panel = [NSSavePanel savePanel];			// don't touch that one. It is garbage collected by the class itself
 		szTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_ExportTitle);
 		szFileTypeLabel = pSS->getValue(XAP_STRING_ID_DLG_FOSA_FileSaveTypeLabel);
 		bCheckWritePermission = true;
@@ -474,6 +477,7 @@ void XAP_CocoaDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	  }
 	case XAP_DIALOG_ID_INSERT_FILE:
 	  {
+		m_panel = [NSOpenPanel openPanel];			// don't touch that one. It is garbage collected by the class itself
 		szTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_InsertTitle);
 		szFileTypeLabel = pSS->getValue(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel);
 		bCheckWritePermission = false;
@@ -481,27 +485,30 @@ void XAP_CocoaDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	  }
 	case XAP_DIALOG_ID_PRINTTOFILE:
 	{
+		m_panel = [NSSavePanel savePanel];			// don't touch that one. It is garbage collected by the class itself
 		szTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_PrintToFileTitle);
 		szFileTypeLabel = pSS->getValue(XAP_STRING_ID_DLG_FOSA_FilePrintTypeLabel);
 		bCheckWritePermission = true;
 		break;
 	}
 	default:
+		m_panel = nil;
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		break;
 	}
 
+	UT_ASSERT (m_panel);
 	// NOTE: we use our string mechanism to localize the dialog's
 	// NOTE: title and the error/confirmation message boxes.  we
-	// NOTE: let GTK take care of the localization of the actual
+	// NOTE: let Cocoa take care of the localization of the actual
 	// NOTE: buttons and labels on the FileSelection dialog.
-	
-	GtkFileSelection *pFS = GTK_FILE_SELECTION(gtk_file_selection_new(szTitle));
-	m_FS = pFS;
-	
-	connectFocus(GTK_WIDGET(pFS),pFrame);
 
-	GtkWidget * filetypes_pulldown = NULL;
+	[m_panel setTitle:[NSString stringWithCString:szTitle]];		// autoreleased string
+
+// TODO	
+//	connectFocus(GTK_WIDGET(pFS),pFrame);
+
+//	GtkWidget * filetypes_pulldown = NULL;
 	
 	/*
 	  To facilitate a file-types selection, we dig around in some
@@ -510,6 +517,8 @@ void XAP_CocoaDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	  for each menu item in the popup, so we can read the type
 	  we need to return.
 	*/
+//	[m_panel setAccessoryView];
+#if 0	// TODO
 	{
 		GtkWidget * main_vbox = pFS->main_vbox;
 		UT_ASSERT(main_vbox);
@@ -630,22 +639,14 @@ void XAP_CocoaDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 			  }
 		}
 	}
-	
-	// connect the signals for OK and CANCEL and the requisite clean-close signals
-	gtk_signal_connect_after(GTK_OBJECT(pFS),
-							 "destroy",
-							 NULL,
-							 NULL);
-	gtk_signal_connect(GTK_OBJECT(pFS),
-							 "delete_event",
-							 GTK_SIGNAL_FUNC(s_delete_clicked),
-							 &m_answer);
+#endif
 
+#if 0
 	gtk_signal_connect(GTK_OBJECT(pFS->ok_button), "clicked",
 					   GTK_SIGNAL_FUNC(s_ok_clicked), &m_answer);
 	gtk_signal_connect(GTK_OBJECT(pFS->cancel_button), "clicked",
 					   GTK_SIGNAL_FUNC(s_cancel_clicked), &m_answer);
-
+#endif
 #if 0
 	if (m_id == XAP_DIALOG_ID_FILE_OPEN || m_id == XAP_DIALOG_ID_INSERT_PICTURE || m_id == XAP_DIALOG_ID_FILE_INSERT || m_id == XAP_DIALOG_ID_INSERT_FILE) // only hide the buttons if we're opening a file/picture
 	  gtk_file_selection_hide_fileop_buttons(pFS);
@@ -654,7 +655,8 @@ void XAP_CocoaDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	// use the persistence info and/or the suggested filename
 	// to properly seed the dialog.
 	
-	char * szPersistDirectory = NULL;	// we must free this
+	NSString * szPersistDirectory = nil;	// will be autoreleased
+	NSString * szPersistFile = nil;
 	
 	if (!m_szInitialPathname || !*m_szInitialPathname)
 	{
@@ -669,11 +671,7 @@ void XAP_CocoaDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 			// extract the directory portion and start
 			// the dialog there (but without a filename).
 
-			UT_cloneString(szPersistDirectory,m_szPersistPathname);
-			char * pLastSlash = strrchr(szPersistDirectory, '/');
-			if (pLastSlash)
-				pLastSlash[1] = 0;
-			gtk_file_selection_set_filename(pFS,szPersistDirectory);
+			szPersistDirectory = [NSString stringWithCString:m_szPersistPathname];	// autoreleased
 		}
 		else
 		{
@@ -693,59 +691,40 @@ void XAP_CocoaDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		if (m_bSuggestName)
 		{
 			// use m_szInitialPathname
-			
-			gtk_file_selection_set_filename(pFS, m_szInitialPathname);
+			szPersistDirectory = [NSString stringWithCString:m_szInitialPathname];
+//			NSURL * url = [NSURL fileURLWithPath:szPersistDirectory];
+			szPersistFile = [NSString string];
 		}
 		else
 		{
 			// use directory(m_szInitialPathname)
-			
-			UT_cloneString(szPersistDirectory,m_szInitialPathname);
-			char * pLastSlash = strrchr(szPersistDirectory, '/');
-			if (pLastSlash)
-				pLastSlash[1] = 0;
-			gtk_file_selection_set_filename(pFS,szPersistDirectory);
+			szPersistDirectory = [NSString stringWithCString:m_szInitialPathname];
+			szPersistFile = [NSString string];
 		}
 	}
 
-	// get top level window and its GtkWidget *
-	XAP_CocoaFrame * frame = static_cast<XAP_CocoaFrame *>(pFrame);
-	UT_ASSERT(frame);
-	GtkWidget * parent = frame->getTopLevelWindow();
-	UT_ASSERT(parent);
-	// center it
-    centerDialog(parent, GTK_WIDGET(pFS));
-	
-	gtk_widget_show(GTK_WIDGET(pFS));
-	gtk_grab_add(GTK_WIDGET(pFS));
 
-	bool bResult = _run_gtk_main(pFrame,pFS,bCheckWritePermission,filetypes_pulldown);
+	int result = [m_panel runModalForDirectory:szPersistDirectory file:szPersistFile];
 	
-	if (bResult)
+	if (result == NSFileHandlingPanelOKButton)
 	{
-		UT_ASSERT(m_szFinalPathnameCandidate);
-		
-		// store final path name and file type
-		UT_cloneString(m_szFinalPathname, m_szFinalPathnameCandidate);
-
-		FREEP(m_szFinalPathnameCandidate);
-		
-		// what a long ugly line of code
-		GtkWidget * activeItem = gtk_menu_get_active(GTK_MENU(gtk_option_menu_get_menu(GTK_OPTION_MENU(filetypes_pulldown))));
-		UT_ASSERT(activeItem);
-		m_nFileType = GPOINTER_TO_INT(gtk_object_get_user_data(GTK_OBJECT(activeItem)));
+		NSString * str = [m_panel filename];	// will be autoreleased.
+		FREEP (m_szFinalPathname);	// free before reassigning
+		m_szFinalPathname = (char *)malloc ([str cStringLength] + 1);
+		UT_ASSERT (m_szFinalPathname);
+		[str getCString:m_szFinalPathname];
+		m_answer = a_OK;
 	}
 			  
-	if(pFS && GTK_IS_WIDGET(pFS))
-	  gtk_widget_destroy (GTK_WIDGET(pFS));
-
 	FREEP(szPersistDirectory);
 	m_pCocoaFrame = NULL;
 
 	return;
 }
 
-gint XAP_CocoaDialog_FileOpenSaveAs::previewPicture (void)
+#if 0
+int 
+XAP_CocoaDialog_FileOpenSaveAs::previewPicture (void)
 {
         UT_ASSERT (m_FS && m_preview);
 
@@ -761,6 +740,7 @@ gint XAP_CocoaDialog_FileOpenSaveAs::previewPicture (void)
 	gchar * buf = gtk_file_selection_get_filename (m_FS);
 
 	GR_Font * fnt = pGr->findFont("Times New Roman", "normal", "", "normal", "", "12pt");
+	UT_ASSERT (fnt);		// not good if we don't have it.
 	pGr->setFont(fnt);
 
 	const XML_Char * str = pSS->getValue(XAP_STRING_ID_DLG_IP_No_Picture_Label);
@@ -822,11 +802,7 @@ gint XAP_CocoaDialog_FileOpenSaveAs::previewPicture (void)
 
 	if ( FGT_Raster == pGraphic->getType () )
 	{
-#if defined(HAVE_GNOME)
-		pImage = new GR_CocoaGnomeImage(NULL,false);
-#else
 		pImage = new GR_CocoaImage(NULL);
-#endif
 		UT_ByteBuf * png = static_cast<FG_GraphicRaster*>(pGraphic)->getRaster_PNG();
 		UT_PNG_getDimensions (png, iImageWidth, iImageHeight);
 
@@ -860,3 +836,5 @@ gint XAP_CocoaDialog_FileOpenSaveAs::previewPicture (void)
 
 	return answer;
 }
+#endif
+
