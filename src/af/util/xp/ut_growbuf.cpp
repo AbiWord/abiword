@@ -27,8 +27,8 @@
 #include "ut_types.h"
 #include "ut_growbuf.h"
 
-#define DEFAULT_CHUNK		256
-#define MIN_CHUNK			10
+#define DEFAULT_CHUNK		1024*10
+#define MIN_CHUNK			256
 
 UT_GrowBuf::UT_GrowBuf(UT_uint32 iChunk)
 {
