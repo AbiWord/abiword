@@ -922,9 +922,8 @@ bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 					
 					_wd * wd = (_wd *) m_vecToolbarWidgets.getNthItem(k);
 					UT_ASSERT(wd);
-					GtkCombo * item = GTK_COMBO(wd->m_widget);
-					UT_ASSERT(item);
-					gtk_widget_set_sensitive(GTK_WIDGET(item), !bGrayed);   // Disable/enable toolbar item
+					UT_ASSERT(wd->m_widget);
+					gtk_widget_set_sensitive(GTK_WIDGET(wd->m_widget), !bGrayed);   // Disable/enable toolbar item
                 }
 				break;
 
