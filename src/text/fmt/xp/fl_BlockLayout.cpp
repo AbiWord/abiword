@@ -1311,7 +1311,7 @@ fl_BlockLayout::_breakLineAfterRun(fp_Run* pRun)
 	}
 
 	// Add a line for the Run if necessary
-	if (getFirstContainer())
+	if (getFirstContainer() == NULL)
 		_stuffAllRunsOnALine();
 
 	// Create the new line
