@@ -81,7 +81,6 @@ UT_Bool AP_Win32Frame::_showDocument(void)
 	AV_ListenerId lid;
 	AV_ListenerId lidScrollbarViewListener;
 	
-	UT_uint32 iWindowHeight, iHeight;
 	UT_uint32 nrToolbars, k;
 	HWND hwnd = m_hwndDocument;
 
@@ -502,7 +501,7 @@ UT_Bool AP_Win32Frame::loadDocument(const char * szFilename)
 	return _showDocument();
 }
 	
-void AP_Win32Frame::_scrollFuncY(void* pData, UT_sint32 xoff, UT_sint32 yoff)
+void AP_Win32Frame::_scrollFuncY(void* pData, UT_sint32 yoff)
 {
 	// this is a static callback function and doesn't have a 'this' pointer.
 
@@ -528,7 +527,7 @@ void AP_Win32Frame::_scrollFuncY(void* pData, UT_sint32 xoff, UT_sint32 yoff)
 	pWin32Frame->m_pView->setYScrollOffset(si.nPos);
 }
 
-void AP_Win32Frame::_scrollFuncX(void* pData, UT_sint32 xoff, UT_sint32 yoff)
+void AP_Win32Frame::_scrollFuncX(void* pData, UT_sint32 xoff)
 {
 	// this is a static callback function and doesn't have a 'this' pointer.
 

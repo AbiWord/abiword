@@ -28,6 +28,7 @@
 #include "ut_types.h"
 #include "ap_TopRuler.h"
 #include "gr_Win32Graphics.h"
+class AP_Win32App;
 class XAP_Frame;
 
 /*****************************************************************/
@@ -38,17 +39,17 @@ public:
 	AP_Win32TopRuler(XAP_Frame * pFrame);
 	virtual ~AP_Win32TopRuler(void);
 
-	HWND				CreateWindow(HWND hwndContainer,
-									 UT_uint32 left, UT_uint32 top,
-									 UT_uint32 width, UT_uint32 height);
-	virtual void		setView(AV_View * pView);
-	void				scrollRuler(UT_sint32 xoff);
+	HWND					createWindow(HWND hwndContainer,
+										 UT_uint32 left, UT_uint32 top,
+										 UT_uint32 width, UT_uint32 height);
+	virtual void			setView(AV_View * pView);
+	void					scrollRuler(UT_sint32 xoff);
 
-	static UT_Bool		RegisterClass(AP_Win32App * app);
-	LRESULT CALLBACK	_TopRulerWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
+	static UT_Bool			RegisterClass(AP_Win32App * app);
+	static LRESULT CALLBACK	_TopRulerWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
 	
 protected:
-	HWND				m_hwndTopRuler;
+	HWND					m_hwndTopRuler;
 };
 
 #endif /* AP_WIN32TOPRULER_H */

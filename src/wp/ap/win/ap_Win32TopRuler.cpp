@@ -17,11 +17,15 @@
  * 02111-1307, USA.
  */
 
+#include <windows.h>
+#include <stdio.h>
 #include "ut_types.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ap_Win32TopRuler.h"
 #include "gr_Win32Graphics.h"
+#include "xap_Win32App.h"
+#include "ap_Win32Frame.h"
 
 /*****************************************************************/
 
@@ -53,7 +57,7 @@ void AP_Win32TopRuler::setView(AV_View * pView)
 	AP_TopRuler::setView(pView);
 
 	DELETEP(m_pG);
-	m_pG = new WIN32Graphics(m_hwndTopRuler);
+	m_pG = new Win32Graphics(GetDC(m_hwndTopRuler), m_hwndTopRuler);
 	UT_ASSERT(m_pG);
 }
 
@@ -77,7 +81,7 @@ UT_Bool AP_Win32TopRuler::RegisterClass(AP_Win32App * app)
 	memset(&wndclass, 0, sizeof(wndclass));
 	wndclass.cbSize        = sizeof(wndclass);
 	wndclass.style         = CS_DBLCLKS;
-	wndclass.lpfnWndProc   = AP_Win32Frame::_TopRulerWndProc;
+	wndclass.lpfnWndProc   = AP_Win32TopRuler::_TopRulerWndProc;
 	wndclass.cbClsExtra    = 0;
 	wndclass.cbWndExtra    = 0;
 	wndclass.hInstance     = app->getInstance();
@@ -98,21 +102,23 @@ UT_Bool AP_Win32TopRuler::RegisterClass(AP_Win32App * app)
 	return UT_TRUE;
 }
 
-HWND AP_Win32TopRuler::CreateWindow(HWND hwndContainer,
+HWND AP_Win32TopRuler::createWindow(HWND hwndContainer,
 									UT_uint32 left, UT_uint32 top,
-									UT_uint32 width, UT_uint32 height);
+									UT_uint32 width, UT_uint32 height)
 {
+	AP_Win32App * app = static_cast<AP_Win32App *>(m_pFrame->getApp());
 	m_hwndTopRuler = CreateWindowEx(0, s_TopRulerWndClassName, NULL,
 									WS_CHILD | WS_VISIBLE,
 									left, top, width, height,
-									hwndContainer, NULL, m_pWin32App->getInstance(), NULL);
+									hwndContainer, NULL, app->getInstance(), NULL);
 	UT_ASSERT(m_hwndTopRuler);
 	SWL(m_hwndTopRuler, this);
 
 	return m_hwndTopRuler;
 }
 
-LRESULT CALLBACK AP_Win32Frame::_TopRulerWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK AP_Win32TopRuler::_TopRulerWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 {
+	UT_DEBUGMSG(("TopRuler: msg 0x%08lx\n",iMsg));
 	return DefWindowProc(hwnd, iMsg, wParam, lParam);
 }
