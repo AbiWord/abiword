@@ -39,15 +39,15 @@
 /*****************************************************************/
 
 XAP_Dialog * AP_CocoaDialog_FormatTOC::static_constructor(XAP_DialogFactory * pFactory,
-													 XAP_Dialog_Id id)
+													 XAP_Dialog_Id dlgid)
 {
-	AP_CocoaDialog_FormatTOC * p = new AP_CocoaDialog_FormatTOC(pFactory,id);
+	AP_CocoaDialog_FormatTOC * p = new AP_CocoaDialog_FormatTOC(pFactory,dlgid);
 	return p;
 }
 
 AP_CocoaDialog_FormatTOC::AP_CocoaDialog_FormatTOC(XAP_DialogFactory * pDlgFactory,
-										 XAP_Dialog_Id id)
-	: AP_Dialog_FormatTOC(pDlgFactory,id)
+										 XAP_Dialog_Id dlgid)
+	: AP_Dialog_FormatTOC(pDlgFactory,dlgid)
 {
 }
 

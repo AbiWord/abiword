@@ -29,11 +29,11 @@ class XAP_CocoaFrame;
 class AP_CocoaDialog_FormatTOC: public AP_Dialog_FormatTOC
 {
 public:
-	AP_CocoaDialog_FormatTOC(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
+	AP_CocoaDialog_FormatTOC(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id dlgid);
 	virtual ~AP_CocoaDialog_FormatTOC(void);
 	virtual void			runModeless(XAP_Frame * pFrame);
 
-	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
+	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id dlgid);
 	virtual void            notifyActiveFrame(XAP_Frame * pFrame);
 	virtual void            setTOCPropsInGUI(void);
 	virtual void            destroy(void);
