@@ -49,6 +49,11 @@ PTStruxType	fl_Layout::getType(void) const
 	return m_type;
 }
 
+PT_AttrPropIndex fl_Layout::getAttrPropIndex(void) const
+{
+	return m_apIndex;
+}
+
 void fl_Layout::setAttrPropIndex(PT_AttrPropIndex apIndex)
 {
 	m_apIndex = apIndex;

@@ -79,7 +79,7 @@ public:
 	void removeScrollListener(void (*pfn)(UT_sint32, UT_sint32));
 	void sendScrollEvent(UT_sint32 xoff, UT_sint32 yoff);
 
-	void cmdAlignBlock(UT_uint32 iAlignCmd);
+	void cmdFormatBlock(const XML_Char * properties[]);
 
 // ----------------------
 	void			cmdSelectWord(UT_sint32 xPos, UT_sint32 yPos);

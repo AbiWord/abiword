@@ -30,6 +30,7 @@
 #include "px_ChangeRecord_Span.h"
 #include "px_ChangeRecord_SpanChange.h"
 #include "px_ChangeRecord_Strux.h"
+#include "px_ChangeRecord_StruxChange.h"
 #include "fv_View.h"
 #include "fl_DocListener.h"
 #include "fl_DocLayout.h"
@@ -358,7 +359,7 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 
 	case PX_ChangeRecord::PXT_ChangeSpan:
 		{
-			const PX_ChangeRecord_SpanChange * pcrs = static_cast<const PX_ChangeRecord_SpanChange *>(pcr);
+			const PX_ChangeRecord_SpanChange * pcrsc = static_cast<const PX_ChangeRecord_SpanChange *>(pcr);
 
 			fl_Layout * pL = (fl_Layout *)sfh;
 			switch (pL->getType())
@@ -368,7 +369,7 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 					FL_BlockLayout * pBL = static_cast<FL_BlockLayout *>(pL);
 					PT_DocPosition docPosBlock = m_pDoc->getStruxPosition(pBL->m_sdh);
 					PT_BlockOffset blockOffset = (pcr->getPosition() - docPosBlock);
-					UT_uint32 len = pcrs->getLength();
+					UT_uint32 len = pcrsc->getLength();
 					UT_ASSERT(len>0);
 
 					/*
@@ -538,6 +539,50 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 					}
 				}
 				break;
+
+			default:
+				UT_ASSERT(0);
+				return UT_FALSE;
+			}
+		}
+		break;
+		
+					
+	case PX_ChangeRecord::PXT_ChangeStrux:
+		{
+			const PX_ChangeRecord_StruxChange * pcrxc = static_cast<const PX_ChangeRecord_StruxChange *> (pcr);
+
+			fl_Layout * pL = (fl_Layout *)sfh;
+
+			UT_ASSERT(pL->getAttrPropIndex() == pcrxc->getOldIndexAP());
+			UT_ASSERT(pL->getAttrPropIndex() != pcr->getIndexAP());
+
+			switch (pL->getType())
+			{
+			case PTX_Section:
+			case PTX_ColumnSet:
+			case PTX_Column:
+				pL->setAttrPropIndex(pcr->getIndexAP());
+				UT_ASSERT(UT_TODO);
+				return UT_FALSE;
+					
+			case PTX_Block:
+				{
+					FL_BlockLayout * pBL = static_cast<FL_BlockLayout *>(pL);
+
+					// erase the old version
+					pBL->clearScreen(m_pLayout->getGraphics());
+
+					pL->setAttrPropIndex(pcr->getIndexAP());
+
+					// TODO: may want to figure out the specific change and do less work
+					pBL->format();
+					pBL->draw(m_pLayout->getGraphics());
+
+					// in case anything else moved
+					m_pLayout->reformat();
+				}
+				return UT_TRUE;
 					
 			default:
 				UT_ASSERT(0);

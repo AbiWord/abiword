@@ -1318,51 +1318,20 @@ void FV_View::cmdSelectWord(UT_sint32 xPos, UT_sint32 yPos)
 #endif /* BUFFER */
 }
 
-void FV_View::cmdAlignBlock(UT_uint32 iAlignCmd)
+void FV_View::cmdFormatBlock(const XML_Char * properties[])
 {
-	PT_DocPosition iPoint = _getPoint();
-	
-	FL_BlockLayout* pBlock1;
-	FL_BlockLayout* pBlock2;
+	PT_DocPosition posStart = _getPoint();
+	PT_DocPosition posEnd = posStart;
 
-	FL_BlockLayout*	pBlockPoint = _findBlockAtPosition(iPoint);
-	
-	if (_isSelectionEmpty())
+	if (!_isSelectionEmpty())
 	{
-		pBlock1 = pBlock2 = pBlockPoint;
-	}
-	else
-	{
-		UT_Bool bForward = (iPoint < m_iSelectionAnchor);
-
-		if (bForward)
-		{
-			pBlock1 = pBlockPoint;
-			pBlock2 = _findBlockAtPosition(m_iSelectionAnchor);
-		}
+		if (m_iSelectionAnchor < posStart)
+			posStart = m_iSelectionAnchor;
 		else
-		{
-			pBlock1 = _findBlockAtPosition(m_iSelectionAnchor);
-			pBlock2 = pBlockPoint;
-		}
+			posEnd = m_iSelectionAnchor;
 	}
 
-	FL_BlockLayout* pCurBlock = pBlock1;
-	for (;;)
-	{
-		pCurBlock->clearScreen(m_pG);
-		pCurBlock->setAlignment(iAlignCmd);
-		pCurBlock->draw(m_pG);
-
-		if (pCurBlock == pBlock2)
-		{
-			break;
-		}
-		else
-		{
-			pCurBlock = pCurBlock->getNext();
-		}
-	}
+	m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,NULL,properties,PTX_Block);
 }
 
 // -------------------------------------------------------------------------
