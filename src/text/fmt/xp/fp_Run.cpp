@@ -4192,7 +4192,7 @@ bool fp_FieldPageReferenceRun::calculateValue(void)
 {
 	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
 	sz_ucs_FieldValue[0] = 0;
-	if(!m_pParameter)
+	if(!_getParameter())
 		return false;
 
 	FV_View * pView = getBlock()->getView();
@@ -4221,7 +4221,7 @@ bool fp_FieldPageReferenceRun::calculateValue(void)
 				if(pRun->getType() == FPRUN_BOOKMARK)
 				{
 					fp_BookmarkRun * pB = static_cast<fp_BookmarkRun*>(pRun);
-					if(pB->isStartOfBookmark() && !UT_strcmp(m_pParameter,pB->getName()))
+					if(pB->isStartOfBookmark() && !UT_strcmp(_getParameter(),pB->getName()))
 					{
 						bFound = true;
 						break;
@@ -4275,7 +4275,7 @@ bool fp_FieldPageReferenceRun::calculateValue(void)
 		char * format = new char[strlen(pMsg1) + strlen(pMsg2) + 5];
 
 		sprintf(format, "{%s: %s}", pMsg1, pMsg2);
-		sprintf(szFieldValue, format, m_pParameter);
+		sprintf(szFieldValue, format, _getParameter());
 
 		delete [] format;
 	}

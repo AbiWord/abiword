@@ -201,7 +201,7 @@ protected:
 									  UT_uint32 iLen,
 									  const UT_GrowBuf * pgbCharWidths);
 
-
+private:
 	enum
 	{
 		TEXT_POSITION_NORMAL,

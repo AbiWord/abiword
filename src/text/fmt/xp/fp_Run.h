@@ -412,6 +412,7 @@ protected:
 	virtual void			_clearScreen(bool bFullLineHeightRect);
 private:
 	//UT_RGBColor			    m_colorFG;
+private:
 	eTabLeader			    m_leader;
     eTabType                m_TabType;
 };
@@ -624,6 +625,7 @@ protected:
 	virtual void			_draw(dg_DrawArgs*);
 	virtual void			_clearScreen(bool bFullLineHeightRect);
 
+private:
 	FG_Graphic *             m_pFGraphic;
 	GR_Image*				m_pImage;
 	UT_sint32               m_iImageWidth;
@@ -722,7 +724,9 @@ protected:
 	virtual void			_draw(dg_DrawArgs*) {};
 	virtual void			_defaultDraw(dg_DrawArgs*);
 	virtual void			_clearScreen(bool bFullLineHeightRect);
+	const XML_Char *		_getParameter() const { return m_pParameter; }
 
+private:
 #ifndef WITH_PANGO
 	GR_Font*				m_pFont;
 	GR_Font*				m_pFontLayout;
@@ -1112,6 +1116,7 @@ public:
 protected:
 	virtual void			_draw(dg_DrawArgs*);
 	virtual void			_clearScreen(bool bFullLineHeightRect);
+private:
 	enum
 	{
 		TEXT_POSITION_NORMAL,
