@@ -125,13 +125,13 @@ bool fp_FrameContainer::overlapsRect(UT_Rect & rec)
 	 }
 	 UT_sint32 pad = pFL->getBoundingSpace();
 	 UT_sint32 iLeft = pFL->getBackgroundImage()->GetOffsetFromLeft(getGraphics(),pad,y,h);
-	 UT_DEBUGMSG(("iLeft projection %d \n",iLeft));
+	 xxx_UT_DEBUGMSG(("iLeft projection %d \n",iLeft));
 	 if(iLeft < -getWidth())
 	 {
 	   //
 	   // Pure transparent.
 	   //
-	   UT_DEBUGMSG(("Overlaps pure transparent line top %d line height %d image top %d \n",rec.top,rec.height,y));
+	   xxx_UT_DEBUGMSG(("Overlaps pure transparent line top %d line height %d image top %d \n",rec.top,rec.height,y));
 	      delete pMyFrameRec;
 	      return false;
 	 }
@@ -139,24 +139,24 @@ bool fp_FrameContainer::overlapsRect(UT_Rect & rec)
 	 if(rec.left < pMyFrameRec->left)
 	 {
               pMyFrameRec->left -= iLeft;
-	      UT_DEBUGMSG(("Moves Image left border by %d to %d \n",-iLeft,pMyFrameRec->left));
+	      xxx_UT_DEBUGMSG(("Moves Image left border by %d to %d \n",-iLeft,pMyFrameRec->left));
 	 }
 	 else
 	 {
 	      UT_sint32 iRight = pFL->getBackgroundImage()->GetOffsetFromRight(getGraphics(),pad,y,h);
               pMyFrameRec->width += iRight;
-	      UT_DEBUGMSG(("Reduce Image width by %d to %d \n",iRight,pMyFrameRec->width));
+	      xxx_UT_DEBUGMSG(("Reduce Image width by %d to %d \n",iRight,pMyFrameRec->width));
 	 }
 	 if(rec.intersectsRect(pMyFrameRec))
 	 {
-	   UT_DEBUGMSG(("Frame Still overlaps \n"));
+	   xxx_UT_DEBUGMSG(("Frame Still overlaps \n"));
 	   delete pMyFrameRec;
 	   return true;
 	 }
-	 UT_DEBUGMSG(("Tight Frame no longer overlaps \n"));
-	 UT_DEBUGMSG(("Line Top %d Height %d left %d width %d \n",rec.top,rec.height,rec.left,rec.width));
-	 UT_DEBUGMSG(("Image Top %d Height %d left %d width %d \n",pMyFrameRec->top,pMyFrameRec->height,pMyFrameRec->left,pMyFrameRec->width));
-	 UT_DEBUGMSG(("Relative Top of line %d \n",y));
+	 xxx_UT_DEBUGMSG(("Tight Frame no longer overlaps \n"));
+	 xxx_UT_DEBUGMSG(("Line Top %d Height %d left %d width %d \n",rec.top,rec.height,rec.left,rec.width));
+	 xxx_UT_DEBUGMSG(("Image Top %d Height %d left %d width %d \n",pMyFrameRec->top,pMyFrameRec->height,pMyFrameRec->left,pMyFrameRec->width));
+	 xxx_UT_DEBUGMSG(("Relative Top of line %d \n",y));
      }
      delete pMyFrameRec;
      return false;
@@ -191,7 +191,7 @@ UT_sint32 fp_FrameContainer::getLeftPad(UT_sint32 y, UT_sint32 height)
     return pad;
   }
   UT_sint32 iLeft = pFL->getBackgroundImage()->GetOffsetFromLeft(getGraphics(),pad,y - yC,height);
-  UT_DEBUGMSG(("Local Y %d iLeft %d width %d \n",y-yC,iLeft,getFullWidth()));  return iLeft;
+  xxx_UT_DEBUGMSG(("Local Y %d iLeft %d width %d \n",y-yC,iLeft,getFullWidth()));  return iLeft;
 }
 
 
@@ -224,7 +224,7 @@ UT_sint32 fp_FrameContainer::getRightPad(UT_sint32 y, UT_sint32 height)
     return pad;
   }
   UT_sint32 iRight = pFL->getBackgroundImage()->GetOffsetFromRight(getGraphics(),pad,y - yC,height);
-  UT_DEBUGMSG(("Local Y %d iRight %d width %d \n",y-yC,iRight,getFullWidth()));
+  xxx_UT_DEBUGMSG(("Local Y %d iRight %d width %d \n",y-yC,iRight,getFullWidth()));
   return iRight;
 }
 

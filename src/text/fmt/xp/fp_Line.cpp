@@ -381,6 +381,8 @@ void fp_Line::setMaxWidth(UT_sint32 iMaxWidth)
 {
 	if(iMaxWidth < 60) // This is hardwired to disallow -ve or too small values
 	{
+	  UT_DEBUGMSG(("Max width set to... %d \n",iMaxWidth));
+	  UT_ASSERT(0);
 		iMaxWidth = 60;
 	}
 	m_iMaxWidth = iMaxWidth;
@@ -2537,7 +2539,7 @@ void fp_Line::setX(UT_sint32 iX, bool bDontClearIfNeeded)
 	{
 		clearScreen();
 	}
-	xxx_UT_DEBUGMSG(("Line %x X %d \n",this,iX));
+	xxx_UT_DEBUGMSG(("SetX Line %x X %d \n",this,iX));
 	m_iX = iX;
 }
 

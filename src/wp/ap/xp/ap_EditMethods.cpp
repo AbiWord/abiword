@@ -4327,7 +4327,7 @@ Defun(contextPosObject)
 	ABIWORD_VIEW;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
-	return s_doContextMenu(EV_EMC_POSOBJECT,pCallData->m_xPos, pCallData->m_yPos,pView,pFrame);
+	return s_doContextMenu_no_move(EV_EMC_POSOBJECT,pCallData->m_xPos, pCallData->m_yPos,pView,pFrame);
 }
 
 Defun(contextHyperlink)
@@ -13397,10 +13397,6 @@ Defun(releaseFrame)
 	UT_sint32 y = pCallData->m_yPos;
 	UT_sint32 x = pCallData->m_xPos;
 	sReleaseFrame = false;
-	if(pView->getFrameEdit()->getFrameEditMode() == FV_FrameEdit_EXISTING_SELECTED)
-	{
-	  return true;
-	}
 	pView->releaseFrame(x,y);
 	return true;
 }

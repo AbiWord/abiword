@@ -217,6 +217,7 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 					UT_Rect recLeft;
 					UT_Rect recRight;
 					pLine->genOverlapRects(recLeft,recRight);
+					bool bFoundOne = false;
 					if(recLeft.width == 0 && recRight.width == 0)
 					{
 						pLine->setWrapped(false);
@@ -283,13 +284,51 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 					else
 					{
 						pLine->setWrapped(true);
-						if(pLine->getPrev() && !pLine->isSameYAsPrevious())
+						fp_Line * pPrev = static_cast<fp_Line *>(pLine->getPrev());
+ 						if(pPrev && !pLine->isSameYAsPrevious())
+ 						{
+ 							if(pPrev->getY() == pLine->getY())
+ 							{
+ 								pLine->setSameYAsPrevious(true);
+ 							}
+ 						}
+						if(pLine->isSameYAsPrevious())
 						{
-							fp_Line * pPrev = static_cast<fp_Line *>(pLine->getPrev());
-							if(pPrev->getY() == pLine->getY())
-							{
-								pLine->setSameYAsPrevious(true);
-							}
+						  //
+						  // Look for a gap between lines.
+						  //
+						  UT_Rect recBetween;
+						  UT_Rect * pPrevRec = pPrev->getScreenRect();
+						  UT_Rect * pCurRec = pLine->getScreenRect();
+						  recBetween.left = pPrevRec->left+pPrevRec->width;
+						  recBetween.width = pCurRec->left - recBetween.left;
+						  if(pPrevRec->height != pCurRec->height)
+						  {
+						         pLine = pPrev;
+							 j--;
+							 bFoundOne = true;
+						  }
+						  else
+						  {
+						         recBetween.height = pPrevRec->height;
+							 recBetween.top = pPrevRec->top;
+							 if(!overlapsWrappedFrame(recBetween))
+							 {
+							      UT_DEBUGMSG(("Found a gap! \n"));
+							      pLine = pPrev;
+							      j--;
+							      bFoundOne = true;
+							 }
+							 else if(recBetween.width < 60)
+							 {
+							      UT_DEBUGMSG(("Found a tiny gap! %d \n",recBetween.width));
+							      pLine = pPrev;
+							      j--;
+							      bFoundOne = true;
+							 }
+						  }
+						  delete pPrevRec;
+						  delete pCurRec;
 						}
 					}
 					if(bFormatAllWrapped)
@@ -339,7 +378,6 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 // OK look to see if this line either overlaps a wrapped object or has
 // some space where a wrapped object should be
 //
-						bool bFoundOne = false;
 						fp_Line * pPrev = static_cast<fp_Line *>(pLine->getPrev());
 						if(pLine->isWrapped())
 						{

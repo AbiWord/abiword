@@ -103,6 +103,7 @@ GR_Graphics * FV_FrameEdit::getGraphics(void) const
 
 void FV_FrameEdit::setMode(FV_FrameEditMode iEditMode)
 {
+        UT_DEBUGMSG(("Frame Edit mode set to %d \n",iEditMode));
 	if(iEditMode == FV_FrameEdit_NOT_ACTIVE)
 	{
 		m_pFrameLayout = NULL;
@@ -890,9 +891,11 @@ void FV_FrameEdit::setDragType(UT_sint32 x, UT_sint32 y, bool bDrawFrame)
 void FV_FrameEdit::mouseLeftPress(UT_sint32 x, UT_sint32 y)
 {
 	m_bFirstDragDone = false;
+	UT_DEBUGMSG(("Mouse Left Press \n"));
 	if(!isActive())
 	{
 		setDragType(x,y,true);
+		UT_DEBUGMSG(("Was not active now %d FrameLayout %x \n",getFrameEditMode(),getFrameLayout()));
 		return;
 	}
 //
@@ -901,11 +904,23 @@ void FV_FrameEdit::mouseLeftPress(UT_sint32 x, UT_sint32 y)
 	if(FV_FrameEdit_EXISTING_SELECTED == m_iFrameEditMode )
 	{
 		setDragType(x,y,true);
+		UT_DEBUGMSG(("Was Existing Selected now %d \n",getFrameEditMode()));
 		if(FV_FrameEdit_DragNothing == m_iDraggingWhat)
 		{
 			m_bFirstDragDone = false;
 			m_iFrameEditMode = FV_FrameEdit_NOT_ACTIVE;
 			drawFrame(false);
+			if(m_pFrameContainer && m_pFrameLayout)
+			{
+			  if(m_pFrameLayout->getFrameType() > FL_FRAME_TEXTBOX_TYPE)
+			  {
+			    if(m_pFrameContainer->isTightWrapped())
+			    {
+			      //			      m_pFrameContainer->clearScreen();
+			      m_pView->updateScreen(false);
+			    }
+			  }
+			} 
 			m_pFrameLayout = NULL;
 			m_pFrameContainer = NULL;
 			DELETEP(m_pFrameImage);
@@ -1171,10 +1186,10 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 //
 // If we've just selected the frame, ignore this event.
 //
-	UT_DEBUGMSG(("Doing mouse release now! \n"));
+	UT_DEBUGMSG(("Doing mouse release now! Mode %d \n", getFrameEditMode()));
 	if(FV_FrameEdit_EXISTING_SELECTED == m_iFrameEditMode)
 	{
-		UT_DEBUGMSG(("Existing Frame selected now released button \n"));
+		UT_DEBUGMSG(("Existing Frame selected now released button isActive() %d \n",isActive()));
 		return;
 	}
 	if(m_pAutoScrollTimer != NULL)

@@ -379,6 +379,9 @@ public:
 	void            dragVisualText(UT_sint32 x, UT_sint32 y);
 	void            pasteVisualText(UT_sint32 x, UT_sint32 y);
 	void            btn0VisualDrag(UT_sint32 x, UT_sint32 y);
+	FV_VisualDragText * getVisualText(void)
+	  { return &m_VisualDragText;}
+
 
 //---------
 //Visual Inline Image Drag stuff
