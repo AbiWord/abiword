@@ -1119,9 +1119,8 @@ RTFProps_ParaProps::RTFProps_ParaProps(void)
 	m_iOverrideLevel = 0;
 	m_styleNumber = -1;
 	m_dom_dir = FRIBIDI_TYPE_UNSET;
-	m_tableLevel = 0; // was 1, but get getNestDepth() returns 0 for
-					  // unnested table -- see ie_Table.cpp (Tomas,
-					  // May 8, 2003)
+	m_tableLevel = 1; // Has to be 1 because the RTF spec has itap defaulting 
+	                  // to this value
 }
 
 RTFProps_ParaProps& RTFProps_ParaProps::operator=(const RTFProps_ParaProps& other)
