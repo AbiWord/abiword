@@ -36,6 +36,10 @@ public:
 	virtual bool		convertToBuffer(UT_ByteBuf** ppBB) const;
 	virtual bool		convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
 
+	virtual void scale (UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
+	virtual bool hasAlpha (void) const;
+	virtual UT_sint32  rowStride (void) const;
+
    	GdkPixbuf *			getData(void) const { return m_image; }
 
 private:

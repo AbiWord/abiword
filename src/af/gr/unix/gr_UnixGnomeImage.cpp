@@ -41,21 +41,26 @@ GR_UnixGnomeImage::GR_UnixGnomeImage(const char* szName)
 
 GR_UnixGnomeImage::~GR_UnixGnomeImage()
 {
+	UT_ASSERT(m_image);
 	gdk_pixbuf_unref (m_image);
 }
 
 UT_sint32	GR_UnixGnomeImage::getDisplayWidth(void) const
 {
+	UT_ASSERT(m_image);
     return gdk_pixbuf_get_width (m_image);
 }
 
 UT_sint32	GR_UnixGnomeImage::getDisplayHeight(void) const
 {
+	UT_ASSERT(m_image);
     return gdk_pixbuf_get_height (m_image);
 }
 
 bool		GR_UnixGnomeImage::convertToBuffer(UT_ByteBuf** ppBB) const
 {
+	UT_ASSERT(m_image);
+
 	const guchar * pixels = gdk_pixbuf_get_pixels(m_image);
 	UT_ByteBuf * pBB = 0;
 
@@ -70,6 +75,39 @@ bool		GR_UnixGnomeImage::convertToBuffer(UT_ByteBuf** ppBB) const
 
 	*ppBB = pBB;
 	return true;
+}
+
+bool GR_UnixGnomeImage::hasAlpha (void) const
+{
+	UT_ASSERT(m_image);
+	return (gdk_pixbuf_get_has_alpha (m_image) ? true : false);
+}
+
+UT_sint32 GR_UnixGnomeImage::rowStride (void) const
+{
+	UT_ASSERT(m_image);
+	return (UT_sint32)gdk_pixbuf_get_rowstride (m_image);
+}
+
+void GR_UnixGnomeImage::scale (UT_sint32 iDisplayWidth, 
+							   UT_sint32 iDisplayHeight)
+{
+	UT_ASSERT(m_image);
+
+	// don't scale if passed -1 for either
+	if (iDisplayWidth < 0 || iDisplayHeight < 0)
+		return;
+
+	if (!m_image)
+		return;
+
+	GdkPixbuf * image = 0;
+
+	image = gdk_pixbuf_scale_simple (m_image, iDisplayWidth, 
+									 iDisplayHeight, GDK_INTERP_NEAREST);
+
+	gdk_pixbuf_unref (m_image);
+	m_image = image;
 }
 
 bool	GR_UnixGnomeImage::convertFromBuffer(const UT_ByteBuf* pBB, 
@@ -95,25 +133,21 @@ bool	GR_UnixGnomeImage::convertFromBuffer(const UT_ByteBuf* pBB,
 							 (gsize)pBB->getLength ());
 #endif
 	
-	GdkPixbuf * image = gdk_pixbuf_loader_get_pixbuf (ldr);
-	UT_ASSERT (image);
-	if (!image)
+	m_image = gdk_pixbuf_loader_get_pixbuf (ldr);
+	UT_ASSERT (m_image);
+	if (!m_image)
 	{
 		UT_DEBUGMSG (("GdkPixbuf: couldn't get image from loader!\n"));
 		return false;
 	}
 
-	m_image = gdk_pixbuf_scale_simple (image, iDisplayWidth, 
-									   iDisplayHeight, GDK_INTERP_NEAREST);
-	UT_ASSERT (m_image);
-	if (!m_image)
-	{
-		UT_DEBUGMSG(("GdkPixbuf: couldn't scale image!\n"));
-		return false;
-	}
-
+#if 0
+	// TODO: is this needed?
 	gdk_pixbuf_ref (m_image);
-	gdk_pixbuf_unref (image);
+#endif
+
+	scale (iDisplayWidth, iDisplayHeight);
+	gdk_pixbuf_ref (m_image);
 
 #ifdef HAVE_GTK_2_0
 	g_error_free (err);
