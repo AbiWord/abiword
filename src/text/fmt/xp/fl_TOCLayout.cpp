@@ -126,6 +126,7 @@ fl_TOCLayout::fl_TOCLayout(FL_DocLayout* pLayout, fl_DocSectionLayout* pDocSL, P
 	  m_bIsOnPage(false),
 	  m_pDocSL(pDocSL),
 	  m_bHasEndTOC(false),
+	  m_bDoingPurge(false),
 	  m_iNumType1(FOOTNOTE_TYPE_NUMERIC),
 	  m_iNumType2(FOOTNOTE_TYPE_NUMERIC),
 	  m_iNumType3(FOOTNOTE_TYPE_NUMERIC),
@@ -394,14 +395,9 @@ void fl_TOCLayout::_addBlockInVec(fl_BlockLayout * pBlock, UT_UTF8String & sStyl
 	}
 	iAllBlocks = i;
 	PD_Style * pStyle = NULL;
-	if(pPrevBL)
+	if(pPrevBL == NULL)
 	{
-		UT_DEBUGMSG(("My block at pos %d Inserted after Block at pos %d \n",posNew,pPrevBL->getPosition()));
-	}
-	else
-	{
-		UT_DEBUGMSG(("New block at pos append to end \n",posNew));
-
+		pPrevBL = static_cast<fl_BlockLayout *>(getFirstLayout());
 	}
 	m_pDoc->getStyle(sStyle.utf8_str(),&pStyle);
 	fl_TOCListener * pListen = new fl_TOCListener(this,pPrevBL,pStyle);
@@ -423,7 +419,7 @@ void fl_TOCLayout::_addBlockInVec(fl_BlockLayout * pBlock, UT_UTF8String & sStyl
 	}
 	UT_DEBUGMSG(("New TOC block in TOCLayout %x \n",pNewBlock));
 //
-// OK Now add the block to out vectors.
+// OK Now add the block to our vector.
 //
 	TOCEntry *pNewEntry = createNewEntry(pNewBlock);
 	if(iAllBlocks == 0)
@@ -481,8 +477,13 @@ UT_sint32 fl_TOCLayout::isInVector(fl_BlockLayout * pBlock,
 	return -1;
 }
 
+
 bool fl_TOCLayout::removeBlock(fl_BlockLayout * pBlock)
 {
+	if(m_bDoingPurge)
+	{
+		return true;
+	}
 	if(isInVector(pBlock,&m_vecEntries) >= 0)
 	{
 		_removeBlockInVec(pBlock);
@@ -537,6 +538,10 @@ void fl_TOCLayout::_removeBlockInVec(fl_BlockLayout * pBlock)
 		return;
 	}
 //
+// Clear it!
+//
+	pBlock->clearScreen(m_pLayout->getGraphics());
+//
 // unlink it from the TOCLayout
 //
 	if(static_cast<fl_BlockLayout *>(getFirstLayout()) == pThisBL)
@@ -590,9 +595,14 @@ void fl_TOCLayout::_calculateLabels(void)
 	TOCEntry * pThisEntry = NULL;
 	TOCEntry * pPrevEntry = NULL;
 	UT_Stack stEntry;
+	UT_sint32 iCount = static_cast<UT_sint32>(m_vecEntries.getItemCount());
+	if(iCount == 0)
+	{
+		return;
+	}
 	pThisEntry = static_cast<TOCEntry *>(m_vecEntries.getNthItem(0));
 	stEntry.push(static_cast<void *>(pThisEntry));
-	for(i=1; i<	static_cast<UT_sint32>(m_vecEntries.getItemCount()); i++)
+	for(i=1; i<	iCount; i++)
 	{
 		if(pPrevEntry == NULL)
 		{
@@ -945,6 +955,7 @@ void fl_TOCLayout::_purgeLayout(void)
 {
 	UT_DEBUGMSG(("TOCLayout: purge \n"));
 	fl_ContainerLayout * pCL = getFirstLayout();
+	m_bDoingPurge = true;
 	while(pCL)
 	{
 		fl_ContainerLayout * pNext = pCL->getNext();
@@ -953,6 +964,7 @@ void fl_TOCLayout::_purgeLayout(void)
 	}
 	UT_VECTOR_PURGEALL(TOCEntry *, m_vecEntries);
 	m_vecEntries.clear();
+	m_bDoingPurge = false;
 	setFirstLayout(NULL);
 	setLastLayout(NULL);
 }
@@ -995,7 +1007,7 @@ void fl_TOCLayout::_createTOCContainer(void)
 			}
 			PT_AttrPropIndex indexAP = pStyle->getIndexAP();
 
-			fl_BlockLayout * pNewBlock = static_cast<fl_BlockLayout *>(insert(pBlock->getStruxDocHandle(),NULL,indexAP,FL_CONTAINER_BLOCK));
+			fl_BlockLayout * pNewBlock = static_cast<fl_BlockLayout *>(insert(getStruxDocHandle(),NULL,indexAP,FL_CONTAINER_BLOCK));
 			pNewBlock->_doInsertTOCHeadingRun(0);
 		}
 	}

@@ -224,7 +224,7 @@ public:
 	bool                addTOC(fl_TOCLayout * pTOC);
 	bool                removeTOC(fl_TOCLayout * pTOC);
 	bool                fillTOC(fl_TOCLayout * pTOC);
-	
+	void                recalculateTOCFields(void);
 // --------------------------------------------------------------------
 	bool		getAutoSpellCheck(void) const { return (hasBackgroundCheckReason(bgcrSpelling)); }
 	bool		getSpellCheckCaps(void) const { return m_bSpellCheckCaps; }

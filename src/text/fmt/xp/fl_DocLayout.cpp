@@ -952,6 +952,17 @@ fl_TOCLayout * FL_DocLayout::getNthTOC(UT_sint32 i)
 	return static_cast<fl_TOCLayout *>(m_vecTOC.getNthItem(i));
 }
 
+void FL_DocLayout::recalculateTOCFields(void)
+{
+	UT_sint32 num = getNumTOCs();
+	UT_sint32 i =0;
+	for (i=0; i<num; i++)
+	{
+		fl_TOCLayout * pTOCL = getNthTOC(i);
+		pTOCL->recalculateFields(i);
+	}
+}
+
 /*!
  * This method scans all the TOC in the document and adds or removes the
  * supplied block if it needs to be either added or removed from a TOC.
@@ -978,6 +989,14 @@ bool FL_DocLayout::addOrRemoveBlockFromTOC(fl_BlockLayout * pBlock)
 			{
 				pTOC->removeBlock(pBlock);
 				inTOC--;
+			}
+			else
+			{
+//
+// Style changed so delete the old shadow of the block and make a new shadow.
+//
+				pTOC->removeBlock(pBlock);
+				pTOC->addBlock(pBlock);
 			}
 		}
 		else

@@ -159,6 +159,7 @@ private:
 	UT_uint32                m_iTOCPID;
 	fl_DocSectionLayout*	 m_pDocSL;
 	bool                     m_bHasEndTOC;
+	bool                     m_bDoingPurge;
 	UT_UTF8String            m_sSourceStyle1;
 	UT_UTF8String            m_sSourceStyle2;
 	UT_UTF8String            m_sSourceStyle3;

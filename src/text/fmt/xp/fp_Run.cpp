@@ -209,8 +209,15 @@ void fp_Run::lookupProperties(GR_Graphics * pG)
 	
 	// NB the call will recreate m_pRevisions for us and it will
 	// change visibility if it is affected by the presence of revisions
-	getSpanAP(pSpanAP,bDelete);
-
+	if(!getBlock()->isContainedByTOC())
+	{
+		getSpanAP(pSpanAP,bDelete);
+	}
+	else
+	{
+		m_pBL->getAttrProp(&pSpanAP);
+		bDelete = false;
+	}
 	xxx_UT_DEBUGMSG(("fp_Run: pSpanAP %x \n",pSpanAP));
 
 	//evaluate the "display" property and superimpose it over anything
@@ -432,6 +439,13 @@ void	fp_Run::setHyperlink(fp_HyperlinkRun * pH)
 void fp_Run::getSpanAP(const PP_AttrProp * &pSpanAP, bool &bDeleteAfter)
 {
 	PP_AttrProp * pMySpanAP = NULL;
+	if(getBlock()->isContainedByTOC())
+	{
+		getBlock()->getAttrProp(&pSpanAP);
+		bDeleteAfter = false;
+		return;
+	}
+		
 	if(getType() != FPRUN_FMTMARK)
 	{
 		getBlock()->getSpanAttrProp(getBlockOffset(),false,&pSpanAP);
@@ -3360,10 +3374,13 @@ fp_FieldRun::fp_FieldRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 
 {
 	fd_Field * fd;
 	lookupProperties();
-	bool gotField = pBL->getField(iOffsetFirst,fd);
-	if(gotField)
+	if(!getBlock()->isContainedByTOC())
 	{
-		_setField(fd);
+		bool gotField = pBL->getField(iOffsetFirst,fd);
+		if(gotField)
+		{
+			_setField(fd);
+		}
 	}
 	//	UT_ASSERT(gotField);
 	m_sFieldValue[0] = 0;
@@ -3505,8 +3522,15 @@ void fp_FieldRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	}
 	PD_Document * pDoc = getBlock()->getDocument();
 	fd_Field * fd = NULL;
-	getBlock()->getField(getBlockOffset()+1,fd); // Next Pos?
-	_setField(fd);
+	if(!getBlock()->isContainedByTOC())
+	{
+		getBlock()->getField(getBlockOffset()+1,fd); // Next Pos?
+		_setField(fd);
+	}
+	else
+	{
+		_setField(NULL);
+	}
 	if(getField() != NULL)
 	{
 		getField()->setBlock(getBlock());

@@ -4163,9 +4163,7 @@ bool	fl_BlockLayout::_doInsertFieldTOCRun(PT_BlockOffset blockOffset)
 {
 	fp_FieldRun* pNewRun;
 	pNewRun = new fp_FieldTOCNumRun(this,   blockOffset, 1);
-	pNewRun->calculateValue();
 	_doInsertRun(pNewRun);
-	recalculateFields(0);
 	return true;
 }
 
@@ -4174,7 +4172,6 @@ bool	fl_BlockLayout::_doInsertTOCListLabelRun(PT_BlockOffset blockOffset)
 {
 	fp_FieldRun* pNewRun;
 	pNewRun = new fp_FieldTOCListLabelRun(this,   blockOffset, 1);
-	pNewRun->calculateValue();
 	fp_Run * pRun = m_pFirstRun;
 	pRun->insertIntoRunListBeforeThis(*pNewRun);
 	m_pFirstRun = pNewRun;
@@ -4183,7 +4180,6 @@ bool	fl_BlockLayout::_doInsertTOCListLabelRun(PT_BlockOffset blockOffset)
 	{
 		pRun->getLine()->insertRunBefore(pNewRun, pRun);
 	}
-	recalculateFields(0);
 	return true;
 }
 
@@ -4192,7 +4188,6 @@ bool	fl_BlockLayout::_doInsertTOCHeadingRun(PT_BlockOffset blockOffset)
 {
 	fp_FieldRun* pNewRun;
 	pNewRun = new fp_FieldTOCHeadingRun(this,   blockOffset, 1);
-	pNewRun->calculateValue();
 	fp_Run * pRun = m_pFirstRun;
 	pRun->insertIntoRunListBeforeThis(*pNewRun);
 	m_pFirstRun = pNewRun;
@@ -4201,7 +4196,6 @@ bool	fl_BlockLayout::_doInsertTOCHeadingRun(PT_BlockOffset blockOffset)
 	{
 		pRun->getLine()->insertRunBefore(pNewRun, pRun);
 	}
-	recalculateFields(0);
 	return true;
 }
 

@@ -7105,7 +7105,7 @@ static bool s_doPrint(FV_View * pView, bool bTryToSuppressDialog,bool bPrintDire
         FV_View * pPrintView = new FV_View(pFrame->getApp(),0,pDocLayout);
 		pPrintView->getLayout()->fillLayouts();
 		pPrintView->getLayout()->formatAll();
-		
+		pPrintView->getLayout()->recalculateTOCFields();
 		UT_uint32 nFromPage, nToPage;
 		static_cast<void>(pDialog->getDoPrintRange(&nFromPage,&nToPage));
 
@@ -7186,6 +7186,7 @@ static bool s_doPrintPreview(FV_View * pView)
 	FV_View * pPrintView = new FV_View(pFrame->getApp(),0,pDocLayout);
 	pPrintView->getLayout()->fillLayouts();
 	pPrintView->getLayout()->formatAll();
+	pPrintView->getLayout()->recalculateTOCFields();
 	
 	
 	UT_uint32 nFromPage = 1, nToPage = pLayout->countPages(), nCopies = 1;
