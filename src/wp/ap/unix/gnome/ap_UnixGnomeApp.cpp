@@ -78,26 +78,24 @@ AP_UnixGnomeApp::~AP_UnixGnomeApp(void)
 
 /*****************************************************************/
 
-//  static UT_Bool s_createDirectoryIfNecessary(const char * szDir)
-//  {
-//  	struct stat statbuf;
+UT_Bool	AP_UnixGnomeApp::initialize(void)
+{
+	static const struct poptOption options[] =
+	{{"geometry", 'g', POPT_ARG_STRING, NULL, 0, "set initial frame geometry", "GEOMETRY"},
+	 {"nosplash", 'n', POPT_ARG_NONE,   NULL, 0, "do not show splash screen", NULL},
+	 {"lib",      'l', POPT_ARG_STRING, NULL, 0, "use DIR for application components", "DIR"},
+#ifdef ABI_OPT_JS
+	 {"script", 's', POPT_ARG_STRING, NULL, 0, "Execute FILE as script", "FILE"},
+#endif
+#ifdef DEBUG
+	 {"dumpstrings", 'd', POPT_ARG_NONE, NULL, 0, "Dump strings to file", NULL},
+#endif
+	 {NULL, '\0', 0, NULL, 0, NULL, NULL} /* end the list */
+	};
+	gnomelib_register_popt_table (options, "Abiword Options");
 	
-//  	if (stat(szDir,&statbuf) == 0)								// if it exists
-//  	{
-//  		if (S_ISDIR(statbuf.st_mode))							// and is a directory
-//  			return UT_TRUE;
-
-//  		UT_DEBUGMSG(("Pathname [%s] is not a directory.\n",szDir));
-//  		return UT_FALSE;
-//  	}
-	
-//  	if (mkdir(szDir,0700) == 0)
-//  		return UT_TRUE;
-	
-
-//  	UT_DEBUGMSG(("Could not create Directory [%s].\n",szDir));
-//  	return UT_FALSE;
-//  }	
+	return AP_UnixApp::initialize();
+}
 
 int AP_UnixGnomeApp::main(const char * szAppName, int argc, char ** argv)
 {
@@ -115,14 +113,14 @@ int AP_UnixGnomeApp::main(const char * szAppName, int argc, char ** argv)
 	XAP_Args Args = XAP_Args(argc,argv);
 
 	// Do a quick and dirty find for "-nosplash"
-	UT_Bool bShowSplash = UT_TRUE;
-	for (int k = 1; k < Args.m_argc; k++)
-		if (*Args.m_argv[k] == '-')
-			if (UT_stricmp(Args.m_argv[k],"-nosplash") == 0)
-			{
-				bShowSplash = UT_FALSE;
-				break;
-			}
+ 	UT_Bool bShowSplash = UT_TRUE;
+ 	for (int k = 1; k < Args.m_argc; k++)
+ 		if (*Args.m_argv[k] == '-')
+ 			if (UT_stricmp(Args.m_argv[k],"--nosplash") == 0)
+ 			{
+ 				bShowSplash = UT_FALSE;
+ 				break;
+ 			}
 
 	// HACK : these calls to gtk reside properly in XAP_UnixApp::initialize(),
 	// HACK : but need to be here to throw the splash screen as
@@ -158,5 +156,120 @@ int AP_UnixGnomeApp::main(const char * szAppName, int argc, char ** argv)
 	delete pMyUnixApp;
 	
 	return 0;
+}
+
+UT_Bool AP_UnixGnomeApp::parseCommandLine(void)
+{
+	// parse the command line
+	// <app> [-script <scriptname>]* [-dumpstrings] [<documentname>]*
+	
+	// TODO when we refactor the App classes, consider moving
+	// TODO this to app-specific, cross-platform.
+	
+	int kWindowsOpened = 0;
+ 	char *script = NULL, *geometry = NULL;
+	char *file = NULL;
+ 	gboolean dumpstrings = FALSE;
+	poptContext poptcon;
+ 	static const struct poptOption options[] =
+ 	{{"geometry", 'g', POPT_ARG_STRING, &geometry, 0, "HACK", "HACK"},
+	 {"nosplash", 'n', POPT_ARG_NONE, NULL, 0, "HACK", "HACK"},
+	 {"lib",      'l', POPT_ARG_STRING, NULL, 0, "HACK", "HACK"},
+#ifdef ABI_OPT_JS
+	 {"script", 's', POPT_ARG_STRING, &script, 0,
+	  N_("Execute the specified script"), N_("SCRIPT")},
+#endif
+#ifdef DEBUG
+	 {"dumpstrings", 'd', POPT_ARG_NONE, &dumpstrings, 0,
+	  N_("Dump strings for translation purposes"), NULL},
+#endif
+	 {NULL, '\0', 0, NULL, 0, NULL, NULL} /* end the list */
+	};
+	
+ 	gnomelib_register_popt_table (options, "Hack");
+	poptcon = gnomelib_parse_args (m_pArgs->m_argc, m_pArgs->m_argv, 0);
+
+#ifdef DEBUG
+	if (dumpstrings)
+	{
+		// dump the string table in english as a template for translators.
+		// see abi/docs/AbiSource_Localization.abw for details.
+		AP_BuiltinStringSet * pBuiltinStringSet = new AP_BuiltinStringSet(this,AP_PREF_DEFAULT_StringSet);
+		pBuiltinStringSet->dumpBuiltinSet("EnUS.strings");
+		delete pBuiltinStringSet;
+	}
+#endif
+
+#ifdef ABI_OPT_JS
+	if (script)
+	{
+		// By now, do nothing (we don't have script support right now)
+	}
+#endif
+
+	if (geometry)
+	{
+		// [--geometry <X geometry string>]
+
+		// TODO : does X have a dummy geometry value reserved for this?
+		gint dummy = 1 << ((sizeof(gint) * 8) - 1);
+		gint x = dummy;
+		gint y = dummy;
+		guint width = 0;
+		guint height = 0;
+		
+		XParseGeometry(geometry, &x, &y, &width, &height);
+		
+		// use both by default
+		XAP_UNIXBASEAPP::windowGeometryFlags f = (XAP_UNIXBASEAPP::windowGeometryFlags)
+			(XAP_UNIXBASEAPP::GEOMETRY_FLAG_SIZE
+			 | XAP_UNIXBASEAPP::GEOMETRY_FLAG_POS);
+		
+		// if pos (x and y) weren't provided just use size
+		if (x == dummy || y == dummy)
+			f = XAP_UNIXBASEAPP::GEOMETRY_FLAG_SIZE;
+		
+		// if size (width and height) weren't provided just use pos
+		if (width == 0 || height == 0)
+			f = XAP_UNIXBASEAPP::GEOMETRY_FLAG_POS;
+		
+		// set the xap-level geometry for future frame use
+		setGeometry(x, y, width, height, f);
+	}
+	
+	while ((file = poptGetArg (poptcon)) != NULL) {
+		AP_UnixFrame * pFirstUnixFrame = new AP_UnixFrame(this);
+		pFirstUnixFrame->initialize();
+		if (pFirstUnixFrame->loadDocument(file, IEFT_Unknown))
+		{
+			kWindowsOpened++;
+		}
+		else
+		{
+			// TODO: warn user that we couldn't open that file
+			
+#if 1
+			// TODO we crash if we just delete this without putting something
+			// TODO in it, so let's go ahead and open an untitled document
+			// TODO for now.  this would cause us to get 2 untitled documents
+			// TODO if the user gave us 2 bogus pathnames....
+			kWindowsOpened++;
+			pFirstUnixFrame->loadDocument(NULL, IEFT_Unknown);
+#else
+			delete pFirstUnixFrame;
+#endif
+		}
+	}
+
+	if (kWindowsOpened == 0)
+	  {
+		// no documents specified or were able to be opened, open an untitled one
+		
+		AP_UnixFrame * pFirstUnixFrame = new AP_UnixFrame(this);
+		pFirstUnixFrame->initialize();
+		pFirstUnixFrame->loadDocument(NULL, IEFT_Unknown);
+	  }
+
+	return UT_TRUE;
 }
 

@@ -61,7 +61,7 @@ public:
 	virtual void					pasteFromClipboard(PD_DocumentRange * pDocRange, UT_Bool bUseClipboard);
 	virtual UT_Bool					canPasteFromClipboard(void);
 	
-	UT_Bool							parseCommandLine(void);
+	virtual UT_Bool					parseCommandLine(void);
 
 	virtual void					setSelectionStatus(AV_View * pView);
 	virtual void					clearSelection(void);

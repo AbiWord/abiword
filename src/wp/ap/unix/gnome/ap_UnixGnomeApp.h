@@ -40,7 +40,9 @@ public:
 	AP_UnixGnomeApp(XAP_Args * pArgs, const char * szAppName);
 	virtual ~AP_UnixGnomeApp(void);
 
+	virtual UT_Bool					initialize(void);
 	static int main (const char * szAppName, int argc, char ** argv);
+	UT_Bool					parseCommandLine(void);
 };
 
 #endif /* AP_UNIXGNOMEAPP_H */
