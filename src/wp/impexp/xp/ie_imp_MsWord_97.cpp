@@ -1149,6 +1149,25 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 		props += wvLIDToLangConverter (achp->lidFE);
 	props += ";";
 
+	// decide best codepage based on the lid (as lang code above)
+	UT_String codepage;
+	if (achp->fBidi)
+		codepage = wvLIDToCodePageConverter (achp->lidBidi);
+	else if (!ps->fib.fFarEast)
+		codepage = wvLIDToCodePageConverter (achp->lidDefault);
+	else
+		codepage = wvLIDToCodePageConverter (achp->lidFE);
+
+	// watch out for codepage 0 = unicode
+	if (codepage == "CP0")
+		codepage = XAP_EncodingManager::get_instance()->getNativeUnicodeEncodingName();
+	// if this is the first codepage we've seen, use it.
+	// if we see more than one different codepage in a document, use unicode.
+	if (!m_pDocument->getEncodingName())
+		m_pDocument->setEncodingName(codepage.c_str());
+	else if (m_pDocument->getEncodingName() != codepage)
+		m_pDocument->setEncodingName(XAP_EncodingManager::get_instance()->getNativeUnicodeEncodingName());
+	
 #ifdef BIDI_ENABLED
 
 	// Our textrun automatically sets "dir" for us. We just need too keep
