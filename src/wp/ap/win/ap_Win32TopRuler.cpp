@@ -29,8 +29,8 @@
 
 /*****************************************************************/
 
-#define GWL(hwnd)		(AP_Win32Frame*)GetWindowLong((hwnd), GWL_USERDATA)
-#define SWL(hwnd, f)	(AP_Win32Frame*)SetWindowLong((hwnd), GWL_USERDATA,(LONG)(f))
+#define GWL(hwnd)		(AP_Win32TopRuler*)GetWindowLong((hwnd), GWL_USERDATA)
+#define SWL(hwnd, f)	(AP_Win32TopRuler*)SetWindowLong((hwnd), GWL_USERDATA,(LONG)(f))
 
 #define DELETEP(p)		do { if (p) delete p; p = NULL; } while (0)
 #define REPLACEP(p,q)	do { if (p) delete p; p = q; } while (0)
@@ -107,6 +107,7 @@ HWND AP_Win32TopRuler::createWindow(HWND hwndContainer,
 									UT_uint32 width, UT_uint32 height)
 {
 	AP_Win32App * app = static_cast<AP_Win32App *>(m_pFrame->getApp());
+	setHeight(height);
 	m_hwndTopRuler = CreateWindowEx(0, s_TopRulerWndClassName, NULL,
 									WS_CHILD | WS_VISIBLE,
 									left, top, width, height,
@@ -119,6 +120,49 @@ HWND AP_Win32TopRuler::createWindow(HWND hwndContainer,
 
 LRESULT CALLBACK AP_Win32TopRuler::_TopRulerWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 {
-	UT_DEBUGMSG(("TopRuler: msg 0x%08lx\n",iMsg));
+	// this is a static member function.
+
+	AP_Win32TopRuler * pRuler = GWL(hwnd);
+
+	if (!pRuler)
+		return DefWindowProc(hwnd, iMsg, wParam, lParam);
+		
+	switch (iMsg)
+	{
+	case WM_LBUTTONDOWN:
+	case WM_MBUTTONDOWN:
+	case WM_RBUTTONDOWN:
+	case WM_LBUTTONDBLCLK:
+	case WM_MBUTTONDBLCLK:
+	case WM_RBUTTONDBLCLK:
+	case WM_MOUSEMOVE:
+	case WM_LBUTTONUP:
+	case WM_MBUTTONUP:
+	case WM_RBUTTONUP:
+		return 0;
+
+	case WM_SIZE:
+		{
+			int nHeight = HIWORD(lParam);
+			pRuler->setHeight(nHeight);
+			return 0;
+		}
+	
+	case WM_PAINT:
+		{
+			PAINTSTRUCT ps;
+			HDC hdc = BeginPaint(hwnd, &ps);
+			UT_Rect r(ps.rcPaint.left,ps.rcPaint.top,
+					  ps.rcPaint.right-ps.rcPaint.left,
+					  ps.rcPaint.bottom-ps.rcPaint.top);
+			pRuler->draw(&r);
+			EndPaint(hwnd,&ps);
+			return 0;
+		}
+
+	default:
+		break;
+	}
+
 	return DefWindowProc(hwnd, iMsg, wParam, lParam);
 }
