@@ -37,7 +37,7 @@
 /*
 	What are we doing here
 	
-	Originally Abiword foxes tried to handle the keyboard their "own 
+	Originally Abiword folks tried to handle the keyboard their "own 
 	way", that included not calling TranslateMessage() and trying to
 	interpret the keyboard thru WM_KEYDOWN ignoring most WM_CHAR. This 
 	caused serval problems, including ALT+XXX not working and other 
@@ -48,11 +48,10 @@
 	- Keep this code as simple as possible
 	
 	- We always call TranslateMessage() and we let Windows do that job,
-	as all the applications do
+	as all the applications do. 
 	
-	- We process all the WM_CHAR messages except the ones that occur when
-	the user has the ALT key activated, and we pass those to Windows because
-	we undertand that they are menu hotkeys.
+	- We process all the WM_CHAR messages except the ones that were Abiword
+	command , and we pass those to Windows 
 	
 	- We process only the special keys thru WM_KEYDOWN message.
 	
@@ -60,6 +59,7 @@
 	
 */
 
+//#define _WIN32KEY_DEBUG 1
 
 static EV_EditBits s_mapVirtualKeyCodeToNVK(WPARAM nVirtKey);
 
@@ -69,6 +69,7 @@ static EV_EditBits s_mapVirtualKeyCodeToNVK(WPARAM nVirtKey);
 ev_Win32Keyboard::ev_Win32Keyboard(EV_EditEventMapper * pEEM)
 	: EV_Keyboard(pEEM),
 	  m_hKeyboardLayout(0),
+	  m_bWasAnAbiCommand(false),
 	  m_iconv(UT_ICONV_INVALID),
 	  m_bIsUnicodeInput(false)
 {
@@ -88,6 +89,7 @@ ev_Win32Keyboard::~ev_Win32Keyboard()
 	if( m_iconv != UT_ICONV_INVALID )
 		UT_iconv_close( m_iconv );
 }
+
 
 void ev_Win32Keyboard::remapKeyboard(HKL hKeyboardLayout)
 {
@@ -116,7 +118,6 @@ void ev_Win32Keyboard::remapKeyboard(HKL hKeyboardLayout)
 
 			UT_DEBUGMSG(("New keyboard codepage: %s\n",szCodePage));
 
-			//m_iconv = UT_iconv_open( "UCS-2-INTERNAL", szCodePage );
 			m_iconv = UT_iconv_open( "UCS-4-INTERNAL", szCodePage );
 		}
 
@@ -132,6 +133,8 @@ void ev_Win32Keyboard::remapKeyboard(HKL hKeyboardLayout)
 bool ev_Win32Keyboard::onKeyDown(AV_View * pView,
 									HWND hWnd, UINT iMsg, WPARAM nVirtKey, LPARAM keyData)
 {
+
+	m_bWasAnAbiCommand = false;
 	
 	EV_EditMethod * pEM;
 
@@ -141,17 +144,26 @@ bool ev_Win32Keyboard::onKeyDown(AV_View * pView,
 	int						charLen;
 	UT_UCSChar				charData[2];
 
-	// ALT key for windows {menus, ... }, but a combination of ALT and CTRL is for abiword 
-	// (what about shift?) 
+	// ALT key for windows {menus, ... }, ALT+XXX for special chars, etc
 	if (((ems & EV_EMS_ALT) != 0) && ((ems & EV_EMS_CONTROL) == 0))
+	{
+		#ifdef  _WIN32KEY_DEBUG
+		UT_DEBUGMSG(("WIN32KEY_DEBUG->onKeyDown return true (EV_EMS_CONTROL)\n"));
+		#endif
 		return true;
+	}
 	
 	// Get abiword keyid
 	nvk = s_mapVirtualKeyCodeToNVK(nVirtKey);
 
 	// If it is not a special key or a CTRL combination, there is nothing to do
-	if (nvk == EV_NVK__IGNORE__ || (nvk == 0 && ((ems & EV_EMS_CONTROL) == 0)))
+	if (nvk == EV_NVK__IGNORE__ || (nvk == 0  && ((ems & EV_EMS_CONTROL) == 0)))
+	{
+		#ifdef  _WIN32KEY_DEBUG
+		UT_DEBUGMSG(("WIN32KEY_DEBUG->onKeyDown return true (IGNORE)\n"));
+		#endif
 		return true;
+	}	  		
 
 	if (nvk != 0)
 	{	// Special key
@@ -177,7 +189,6 @@ bool ev_Win32Keyboard::onKeyDown(AV_View * pView,
 		charData[0]	= UT_UCSChar(char_value [0] & 0x000000FF);		
 		charData[1]	= 0;
 	}
-
 	
 
 	switch (m_pEEM->Keystroke(EV_EKP_PRESS | ems | charData[0], &pEM)) //#define EV_EKP_PRESS			((EV_EditKeyPress)		0x00800000)
@@ -191,6 +202,7 @@ bool ev_Win32Keyboard::onKeyDown(AV_View * pView,
 	case EV_EEMR_COMPLETE:			// a terminal node in state machine			
 		UT_ASSERT(pEM);			
 		invokeKeyboardMethod(pView, pEM, charData, charLen);
+		m_bWasAnAbiCommand = true;
 		return true;
 		
 	default:
@@ -276,7 +288,7 @@ void ev_Win32Keyboard::_emitChar(AV_View * pView,
 	}
 
 	return;
-}
+}											
 
 /*	
 
@@ -288,12 +300,17 @@ bool ev_Win32Keyboard::onChar(AV_View * pView,
 {
 	EV_EditModifierState ems = _getModifierState(); 		
 
-	// If ALT or CTRL is pressed just return; 
-	// either windows should have dealt with it or we have already processed it
-	if (((ems & EV_EMS_ALT) != 0) || ((ems & EV_EMS_CONTROL) != 0))
+	/* 
+		If the key is NOT processed as an Abiword command
+		we follow their path and need to emit the char
+	*/
+	if (m_bWasAnAbiCommand)
 	{
+		#ifdef  _WIN32KEY_DEBUG
+		UT_DEBUGMSG(("WIN32KEY_DEBUG->onChar return\n"));
+		#endif
 		return true;
-	}
+	} 
 	
 	// Process the key
 	_emitChar(pView,hWnd,iMsg,nVirtKey,keyData,nVirtKey,0);

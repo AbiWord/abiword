@@ -58,6 +58,7 @@ protected:
 	HKL					m_hKeyboardLayout;
 	UT_iconv_t			m_iconv; /* Selected translation to Unicode */
 	bool				m_bIsUnicodeInput;
+	bool				m_bWasAnAbiCommand;
 };
 
 #endif /* EV_WIN32KEYBOARD_H */

@@ -1136,6 +1136,12 @@ LRESULT CALLBACK AP_Win32FrameImpl::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARA
 		}
 
 		case WM_SYSCHAR:
+		{
+			UT_DEBUGMSG(("WM_SYSCHAR %d  - %d\n",wParam, lParam));
+			ev_Win32Keyboard *pWin32Keyboard = static_cast<ev_Win32Keyboard *>(fImpl->m_pKeyboard);	    
+			return DefWindowProc(hwnd,iMsg,wParam,lParam);
+		}
+
 		case WM_CHAR:
 		{
 			UT_DEBUGMSG(("WM_CHAR %d  - %d\n",wParam, lParam));
