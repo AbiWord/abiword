@@ -70,13 +70,14 @@ bool AP_App::openCmdLineFiles(AP_Args * args)
 			// I've got other things to do now though.
 			kWindowsOpened++;
 			pFrame->loadDocument(NULL, IEFT_Unknown);
-			if (args->m_sMerge) {
-				PD_Document * pDoc = static_cast<PD_Document*>(pFrame->getCurrentDoc());
-				pDoc->setMailMergeLink(args->m_sMerge);
-			}
 			pFrame->raise();
 
 			errorMsgBadFile (pFrame, file, error);
+		}
+
+		if (args->m_sMerge) {
+			PD_Document * pDoc = static_cast<PD_Document*>(pFrame->getCurrentDoc());
+			pDoc->setMailMergeLink(args->m_sMerge);
 		}
 	}
 
