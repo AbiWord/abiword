@@ -18,7 +18,7 @@
 #include <unistd.h>
 #include <dirent.h>
 
-// HACK to no collide with perl DEBUG
+// HACK to not collide with perl DEBUG
 #ifdef DEBUG
 #	define ABI_DEBUG
 #	undef DEBUG
@@ -71,8 +71,7 @@ extern "C" {
   void xs_init(PerlInterpreter * my_perl)
 #endif
   {
-    char *file = __FILE__;
-    newXS("DynaLoader::boot_DynaLoader", boot_DynaLoader, file);
+    newXS("DynaLoader::boot_DynaLoader", boot_DynaLoader, __FILE__);
     /* we want to link to the module code, but until it's stable
        it's better to have it dynamically loaded...
        newXS("abi::boot_AbiWord", boot_AbiWord, file);*/
@@ -126,26 +125,33 @@ UT_PerlBindings::UT_PerlBindings()
 
 	impl_->pPerlInt = perl_alloc();
 
-	// how can I signal that there is not enough memory without throwing
-	// an exception?
-	if (impl_->pPerlInt == 0)
-		printf("Not enough memory to start a perl interpreter!\n");
+	// how can I signal that there is not enough memory without throwing an exception?
+	if (impl_->pPerlInt == 0) {
+		UT_DEBUGMSG(("Not enough memory to start a perl interpreter!\n"));
+		UT_ASSERT_NOT_REACHED();
+		DELETEP(impl_);
+		return;
+	}
 
 	perl_construct(impl_->pPerlInt);
 	int exitstatus = perl_parse(impl_->pPerlInt, xs_init, sizeof(argv) / sizeof(char*), argv, 0);
 
 	if (exitstatus != 0)
 	{
-		printf("perl_parse failed with error nb: %d", exitstatus);
-		fflush(stdout);
+		UT_DEBUGMSG(("perl_parse failed with error nb: %d", exitstatus));
+		UT_ASSERT_NOT_REACHED();
+		DELETEP(impl_);
+		return;
 	}
 
 	exitstatus = perl_run(impl_->pPerlInt);
 	
 	if (exitstatus != 0)
 	{
-		printf("perl_run failed with error nb: %d", exitstatus);
-		fflush(stdout);
+		UT_DEBUGMSG(("perl_run failed with error nb: %d", exitstatus));
+		UT_ASSERT_NOT_REACHED();
+		DELETEP(impl_);
+		return;
 	}
 
 	// interpreter loaded, now to auto-load plugins... TODO: make this less unix-ish
@@ -217,6 +223,9 @@ UT_PerlBindings::errmsg() const
 bool
 UT_PerlBindings::evalFile(const UT_String& filename)
 {
+        if (0 == impl_)
+	  return false;
+
 #ifndef NOT_PERL_5_8
 	PerlInterpreter * my_perl = impl_->pPerlInt;
 #endif
