@@ -497,12 +497,12 @@ void AP_CocoaApp::copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboa
 
     // create raw 8bit text buffer to put on the clipboard
 		
-    IE_Exp_Text * pExpText = new IE_Exp_Text(pDocRange->m_pDoc);
+    IE_Exp_Text * pExpText = new IE_Exp_Text(pDocRange->m_pDoc, "UTF-8");
     if (pExpText)
     {
 		pExpText->copyToBuffer(pDocRange,&bufTEXT);
 		DELETEP(pExpText);
-		UT_DEBUGMSG(("CopyToClipboard: copying %d bytes in TEXTPLAIN format.\n",bufTEXT.getLength()));
+		UT_DEBUGMSG(("CopyToClipboard: copying %d bytes in TEXTPLAIN (UTF-8) format.\n",bufTEXT.getLength()));
     }
 
     // NOTE: this clearData() will actually release our ownership of
