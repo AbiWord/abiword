@@ -7,7 +7,7 @@
 <!-- This file is covered by the GNU Public License (GPL).           -->
 <!-- ==============================================================  -->
 
-<AbiStrings app="AbiWord" ver="1.0" language="ja-JP">
+<AbiStrings app="AbiWord" ver="1.0" language="ja-JP" encoding="utf-8">
 
 <Strings    class="XAP"
 DICTIONARY_CANTLOAD="言語 %s 用の辞書を読み込むことができませんでした"

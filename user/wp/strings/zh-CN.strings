@@ -16,7 +16,7 @@
 <!--          Updated for AbiWord-0.99.2, March 2002                 -->
 
 
-<AbiStrings app="AbiWord" ver="1.0" language="zh-CN">
+<AbiStrings app="AbiWord" ver="1.0" language="zh-CN" encoding="utf-8">
 
 <Strings	class="XAP"
 MSG_ShowUnixFontWarning="AbiWord 未能把自带的字体加进 X 字体路径。&#xa;不是说您的系统有什么问题，只是您大概要自行修改您的字体路径了。&#xa;如果您想关掉这个警告，请参阅 AbiWord 帮助文件 &#xa;FAQ 常见问题 &quot;Unix Font Path Problem&quot; 一节的详细说明。"

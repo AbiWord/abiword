@@ -29,10 +29,8 @@
 #endif
 #include "ut_xml.h"
 #include "ut_vector.h"
-/* #include "ut_hash.h" */
 #include "ut_string.h"
-
-/* #include "xap_App.h" */
+#include "ut_string_class.h"
 
 class XAP_App;
 
@@ -71,9 +69,18 @@ public:
 
 	virtual const XML_Char *	getValue(XAP_String_Id id) const = 0;
 
+	UT_String getValue(XAP_String_Id id, const char * inEncoding);
+	UT_String getValueUTF8(XAP_String_Id id);
+
+	void setEncoding(const char * inEndcoding);
+	const char * getEncoding() const;
+
 protected:
 	XAP_App *					m_pApp;
 	const XML_Char *			m_szLanguageName;
+
+ private:
+	UT_String m_encoding ;
 };
 
 //////////////////////////////////////////////////////////////////

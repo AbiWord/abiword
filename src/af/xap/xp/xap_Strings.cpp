@@ -1,6 +1,7 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998-2000 AbiSource, Inc.
  * BIDI Copyright (C) 2001,2002 Tomas Frydrych
+ * Copyright (C) 2002 Dom Lachowicz
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -29,6 +30,8 @@
 #include "ut_growbuf.h"
 #include "ut_bytebuf.h"
 #include "ut_wctomb.h"
+#include "ut_iconv.h"
+#include "ut_exception.h"
 
 #include "xap_App.h"
 #include "xap_Strings.h"
@@ -41,6 +44,7 @@
 //////////////////////////////////////////////////////////////////
 
 XAP_StringSet::XAP_StringSet(XAP_App * pApp, const XML_Char * szLanguageName)
+  : m_encoding("UTF-8")
 {
 	m_pApp = pApp;
 
@@ -58,6 +62,50 @@ XAP_StringSet::~XAP_StringSet(void)
 const XML_Char * XAP_StringSet::getLanguageName(void) const
 {
 	return m_szLanguageName;
+}
+
+UT_String XAP_StringSet::getValue(XAP_String_Id id, const char * inEncoding)
+{
+  const char * toTranslate = getValue(id);
+
+  // bitch and complain if inEncoding is null, but return something anyway
+  UT_return_val_if_fail(inEncoding, UT_String(toTranslate));
+
+  UT_TRY
+    {
+      auto_iconv cd(m_encoding.c_str(), inEncoding);
+      
+      char * translated = UT_convert_cd(toTranslate, -1, cd, NULL, NULL);      
+      UT_ASSERT(translated);
+      
+      UT_String toReturn(translated);
+      free(translated);
+      
+      return toReturn;
+    }
+  UT_CATCH(UT_CATCH_ANY)
+    {
+      // return something anyway
+      return UT_String(toTranslate);
+    }
+  UT_END_CATCH
+}
+
+UT_String XAP_StringSet::getValueUTF8(XAP_String_Id id)
+{
+  // HACK- wildly sub-optimal. TODO: cache a UT_iconv_t cd
+  return getValue(id, "UTF-8");
+}
+
+void XAP_StringSet::setEncoding(const XML_Char * inEncoding)
+{
+  UT_return_if_fail(inEncoding != 0);
+  m_encoding = inEncoding;
+}
+
+const char * XAP_StringSet::getEncoding() const
+{
+  return m_encoding.c_str();
 }
 
 //////////////////////////////////////////////////////////////////
@@ -318,6 +366,11 @@ void XAP_DiskStringSet::startElement(const XML_Char *name, const XML_Char **atts
 				if (!setLanguage(a[1]))
 					goto MemoryError;
 			}
+			else if (strcmp((char*)a[0], "encoding") == 0)
+			  {
+			    UT_DEBUGMSG(("String encoding is %s\n", a[1]));
+			    setEncoding(a[1]);
+			  }
 
 			a += 2;
 		}

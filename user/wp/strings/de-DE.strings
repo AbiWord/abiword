@@ -7,7 +7,7 @@
 <!-- This file is covered by the GNU Public License (GPL).           -->
 <!-- ==============================================================  -->
 
-<AbiStrings app="AbiWord" ver="1.0" language="de-DE">
+<AbiStrings app="AbiWord" ver="1.0" language="de-DE" encoding="ISO-8859-1">
 
 <Strings    class="XAP"
 DICTIONARY_CANTLOAD="Das Wörterbuch für die %s Sprache konnte nicht geladen werden."

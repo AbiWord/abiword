@@ -19,7 +19,7 @@
 <!--          Updated for AbiWord-0.99.2, March 2002                 -->
 
 
-<AbiStrings app="AbiWord" ver="1.0" language="zh-TW">
+<AbiStrings app="AbiWord" ver="1.0" language="zh-TW" encoding="utf-8">
 
 <Strings	class="XAP"
 MSG_ShowUnixFontWarning="AbiWord 未能把自帶的字型加進 X 字型路徑。&#xa;不是說您的系統有什麼問題，只是您大概要自行修改您的字型路徑了。&#xa;如果您想關掉這個警告，請參閱 AbiWord 說明檔案 &#xa;FAQ 常見問題 &quot;Unix Font Path Problem&quot; 一節的詳細說明。"

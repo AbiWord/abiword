@@ -11,7 +11,7 @@
 <!-- Hungarian translations provided by Tamas Decsi <tamas@pressflex.com> -->
 
 
-<AbiStrings app="AbiWord" ver="1.0" language="hu-HU">
+<AbiStrings app="AbiWord" ver="1.0" language="hu-HU" encoding="iso-8859-2">
 
 <Strings	class="XAP"
 MSG_ShowUnixFontWarning="Az AbiWord nem tudta a betûtípusait az X karakterkészlet elérési&#10; útjához hozzáadni. Ez nem jelenti azt, hogy&#10; bármi gond lenne az ön rendszerével, de az elérési utat&#10; kézzel kell módosítania. Kérjük nézze meg&#10; az &quot;Unix Font Path Problem&quot; bekezdést az AbiWord súgó&#10; GYIK szekciójában, ahol azt is megtudhatja,&#10; hogyan lehet ezt a figyelmeztetést kikapcsolni."

@@ -11,7 +11,7 @@
 <!-- Original Finnish translations provided by Jarmo Karvonen <Jarmo.Karvonen@lpg.fi> -->
 <!-- Work continued by Ismo Mäkinen <ismtaol@luukku.com> -->
 
-<AbiStrings app="AbiWord" ver="1.0" language="fi-FI">
+<AbiStrings app="AbiWord" ver="1.0" language="fi-FI" encoding="iso-8859-1">
 
 <Strings	class="XAP"
 UntitledDocument="Asiakirja%d"

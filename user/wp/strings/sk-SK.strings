@@ -7,7 +7,7 @@
 <!-- This file is covered by the GNU Public License (GPL).           -->
 <!-- ==============================================================  -->
 
-<AbiStrings app="AbiWord" ver="1.0" language="sk-SK">
+<AbiStrings app="AbiWord" ver="1.0" language="sk-SK" encoding="UTF-8">
 
 <Strings    class="XAP"
 DICTIONARY_CANTLOAD="Nepodarilo sa nahrať slovník pre %s jazyk"

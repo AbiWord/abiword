@@ -9,7 +9,7 @@
 
 <!-- _Galician_ translations provided by _Ramón Flores_ <_fa2ramon@usc.es_> -->
 
-<AbiStrings app="AbiWord" ver="1.0" language="gl-ES">
+<AbiStrings app="AbiWord" ver="1.0" language="gl-ES" encoding="iso-8859-1">
 
 <Strings    class="XAP"
 MSG_ShowUnixFontWarning="AbiWord non pudo engadir as suas fontes ao camiño das fontes (font path) do X. &#10;Isto non significa que o seu sistema estexa mal configurado, mais vai ter que &#10;modificar o seu camiño das fontes a man. Pode obter-se &#10; máis información sobre este tema na sección &quot;Unix Font Path Problem&quot; &#10;do FAQ, incluindo o modo para eliminar esta adverténcia."

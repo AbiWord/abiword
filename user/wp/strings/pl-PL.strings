@@ -12,7 +12,7 @@
 <!-- Since February 2002 (0.99.2+), Andrzej Pruszynski <ap@ignis.pl> joined       -->
 <!-- Last update: 17-apr-2002                                                     -->
 
-<AbiStrings app="AbiWord" ver="1.0" language="pl-PL">
+<AbiStrings app="AbiWord" ver="1.0" language="pl-PL" encoding="iso-8859-2">
 
 <Strings    class="XAP"
 DICTIONARY_CANTLOAD="Nie znaleziono s³ownika dla jêzyka %s."

@@ -10,7 +10,7 @@
 <!-- Norwegian Nynorsk translations provided by
      Karl Ove Hufthammer <karl@huftis.org> -->
 
-<AbiStrings app="AbiWord" ver="1.0" language="nn-NO">
+<AbiStrings app="AbiWord" ver="1.0" language="nn-NO" encoding="iso-8859-1">
 
 <Strings    class="XAP"
 

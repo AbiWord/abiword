@@ -11,7 +11,7 @@
 <!-- Work continued by Marco Innocenti <dot0037@iperbole.bologna.it> -->
 
 
-<AbiStrings app="AbiWord" ver="1.0" language="it-IT">
+<AbiStrings app="AbiWord" ver="1.0" language="it-IT" encoding="iso-8859-1">
 
 <Strings	class="XAP"
 MSG_ShowUnixFontWarning="AbiWord non è stato in grado di aggiungere i suoi fonts al path dei font di X. Guarda &quot;Unix Font Path Problem&quot; nella sezione delle FAQ nel file di help di Abiword."

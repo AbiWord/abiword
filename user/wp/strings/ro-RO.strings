@@ -11,7 +11,7 @@
 <!--  translation provided by Mugurel Tudor <mugurelu@go.ro> -->
 
 
-<AbiStrings app="AbiWord" ver="1.0" language="">
+<AbiStrings app="AbiWord" ver="1.0" language="ro-RO" encoding="iso-8859-2">
 
 <Strings	class="XAP"
 MSG_ShowUnixFontWarning="AbiWord nu a putut sã adauge fonturile sale în calea de fonturi &#x0a; a serverului X. Acest lucru nu înseamnã cã e ceva în neregulã &#x0a; cu sistemul dumneavoastrã, dar va trebui sã modificaþi calea cãtre &#x0a; fonturi manual. Vã rugãm sã citiþi despre &quot;Unix Font Path Problem&quot; &#x0a; în secþiunea de FAQ din fiºierul de help pentru mai multe detalii, ce &#x0a; cuprinde ºi intrucþiuni despre cum puteþi bloca acest mesaj pe viitor."
