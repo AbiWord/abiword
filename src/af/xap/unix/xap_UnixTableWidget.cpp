@@ -41,6 +41,7 @@
 #include "xap_App.h"
 #include "xap_UnixToolbar_Icons.h"
 #include "ut_debugmsg.h"
+
 enum {
 	SELECTED,
 	LAST_SIGNAL
@@ -55,8 +56,8 @@ static GtkObjectClass *abi_table_parent_class;
 const size_t cell_width = 24;
 const size_t cell_height = 24;
 const size_t cell_spacing = 4;
-const size_t init_rows = 2;
-const size_t init_cols = 3;
+const size_t init_rows = 4;
+const size_t init_cols = 5;
 
 static inline void
 cells_to_pixels(size_t cols, size_t rows, size_t* w, size_t* h)
@@ -187,6 +188,8 @@ on_drawing_area_event (GtkWidget *area, GdkEventExpose *ev, gpointer user_data)
 	size_t y;
 	DBG;
 	
+	// TODO: use gtk_paint_box, gtk_paint_line
+
 	gdk_draw_rectangle (area->window,
 			    area->style->bg_gc[GTK_STATE_NORMAL],
 			    TRUE,
@@ -266,13 +269,19 @@ on_motion_notify_event (GtkWidget *window, GdkEventMotion *ev, gpointer user_dat
 	{
 		GdkRectangle update_rect;
 		
+		/* grow or shrink the table widget as necessary */
+		if (selected_rows == table->total_rows)
+			++table->total_rows;
+		else if (selected_rows < table->selected_rows)
+			--table->total_rows;
+
+		if (selected_cols == table->total_cols)
+			++table->total_cols;
+		else if (selected_cols < table->selected_cols)
+			--table->total_cols;
+
 		table->selected_cols = selected_cols;
 		table->selected_rows = selected_rows;
-
-		if (table->selected_rows == table->total_rows)
-			++table->total_rows;
-		if (table->selected_cols == table->total_cols)
-			++table->total_cols;
 
 		abi_table_resize(table);
 		
@@ -296,7 +305,8 @@ restart_widget (AbiTable *table)
 	table->selected_rows = init_rows;
 	table->total_cols = init_cols + 1;
 	table->total_rows = init_rows + 1;
-	gtk_button_released(GTK_BUTTON(table));
+
+	//gtk_button_released(GTK_BUTTON(table));
 
 	gtk_widget_hide(GTK_WIDGET(table->window));
 }
@@ -658,7 +668,13 @@ abi_table_init (AbiTable* table)
 
 	table->window = GTK_WINDOW(gtk_window_new(GTK_WINDOW_POPUP));
 	table->window_vbox = GTK_VBOX(gtk_vbox_new(FALSE, 0));
+
+	gtk_widget_push_visual (gdk_rgb_get_visual ());
+	gtk_widget_push_colormap (gdk_rgb_get_cmap ());
 	table->area = GTK_DRAWING_AREA(gtk_drawing_area_new());
+	gtk_widget_pop_colormap ();
+	gtk_widget_pop_visual ();
+
 	table->window_label = GTK_LABEL(gtk_label_new(text));
 	g_free(text);
 	
@@ -705,10 +721,12 @@ abi_table_init (AbiTable* table)
 			 (GtkSignalFunc) on_drawing_area_event, (gpointer) table);
 	g_signal_connect(G_OBJECT(table->area), "motion_notify_event",
 			   (GtkSignalFunc) on_motion_notify_event, (gpointer) table);
+#if 0
 	g_signal_connect(G_OBJECT(table->area), "button_release_event",
-			   (GtkSignalFunc) on_button_release_event, (gpointer) table);
+			 (GtkSignalFunc) on_button_release_event, (gpointer) table);
+#endif
 	g_signal_connect(G_OBJECT(table->area), "button_press_event",
-			   (GtkSignalFunc) on_button_release_event, (gpointer) table);
+			 (GtkSignalFunc) on_button_release_event, (gpointer) table);
 	g_signal_connect(G_OBJECT(table->area), "leave_notify_event",
 			   (GtkSignalFunc) on_leave_event, (gpointer) table);
 	g_signal_connect(G_OBJECT(table->window), "key_press_event",
