@@ -63,10 +63,10 @@ XAP_FrameHelper::XAP_FrameHelper() :
 	m_iFrameMode(XAP_NormalFrame),
 	m_ViewAutoUpdaterID(0),
 	m_ViewAutoUpdater(NULL),
-	m_szMenuLayoutName(0),
-	m_szMenuLabelSetName(0),
 	m_szToolbarLabelSetName(0),
-	m_szToolbarAppearance(0)
+	m_szToolbarAppearance(0),
+	m_szMenuLayoutName(0),
+	m_szMenuLabelSetName(0)
 {
 }
 
@@ -876,7 +876,7 @@ UT_String XAP_Frame::makeBackupName(const char* szExt)
   if (oldName.empty())
     {
       const XAP_StringSet * pSS = m_pApp->getStringSet();
-	  const UT_String sTmp = pSS->getValue(XAP_STRING_ID_UntitledDocument, m_app->getDefaultEncoding());
+	  const UT_String sTmp = pSS->getValue(XAP_STRING_ID_UntitledDocument, m_pApp->getDefaultEncoding());
 	  UT_String_sprintf(oldName, sTmp.c_str(), m_iUntitled);
 
       UT_DEBUGMSG(("Untitled.  We will give it the name [%s]\n", oldName.c_str()));
