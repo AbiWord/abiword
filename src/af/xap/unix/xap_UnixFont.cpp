@@ -86,6 +86,7 @@ XAP_UnixFont::XAP_UnixFont(void)
 	m_metricfile = NULL;
 
 	m_metricsData = NULL;
+	m_uniWidths = NULL;
 	
 	m_PFAFile = NULL;
 	
@@ -236,6 +237,269 @@ const char * XAP_UnixFont::getXLFD(void)
 	return m_xlfd;
 }
 
+UT_uint16 * XAP_UnixFont::getUniWidths(void)
+{
+	if (!m_uniWidths)
+		getMetricsData();
+	return m_uniWidths;
+}
+
+/* These are just the glyphs in the standard encoding. I need to add
+   the rest of the glyphs, accessible through nonstandard
+   encodings. */
+
+/* This table is adapted very straightforwardly from
+   ftp://ftp.unicode.org/Public/MAPPINGS/VENDORS/ADOBE/stdenc.txt.
+
+   I have reviewed them and compared them against an independently
+   constructed encoding, and believe they are correct.
+  */
+
+struct FontMappingTable {
+	UT_sint32 unicode;
+	char *type1_name;
+};
+
+const FontMappingTable std_enc[] = {
+  { 0x0020, "space" },
+  { 0x0021, "exclam" },
+  { 0x0022, "quotedbl" },
+  { 0x0023, "numbersign" },
+  { 0x0024, "dollar" },
+  { 0x0025, "percent" },
+  { 0x0026, "ampersand" },
+  { 0x0027, "quotesingle" },
+  { 0x0028, "parenleft" },
+  { 0x0029, "parenright" },
+  { 0x002A, "asterisk" },
+  { 0x002B, "plus" },
+  { 0x002C, "comma" },
+  { 0x002D, "hyphen" },
+  { 0x002E, "period" },
+  { 0x002F, "slash" },
+  { 0x0030, "zero" },
+  { 0x0031, "one" },
+  { 0x0032, "two" },
+  { 0x0033, "three" },
+  { 0x0034, "four" },
+  { 0x0035, "five" },
+  { 0x0036, "six" },
+  { 0x0037, "seven" },
+  { 0x0038, "eight" },
+  { 0x0039, "nine" },
+  { 0x003A, "colon" },
+  { 0x003B, "semicolon" },
+  { 0x003C, "less" },
+  { 0x003D, "equal" },
+  { 0x003E, "greater" },
+  { 0x003F, "question" },
+  { 0x0040, "at" },
+  { 0x0041, "A" },
+  { 0x0042, "B" },
+  { 0x0043, "C" },
+  { 0x0044, "D" },
+  { 0x0045, "E" },
+  { 0x0046, "F" },
+  { 0x0047, "G" },
+  { 0x0048, "H" },
+  { 0x0049, "I" },
+  { 0x004A, "J" },
+  { 0x004B, "K" },
+  { 0x004C, "L" },
+  { 0x004D, "M" },
+  { 0x004E, "N" },
+  { 0x004F, "O" },
+  { 0x0050, "P" },
+  { 0x0051, "Q" },
+  { 0x0052, "R" },
+  { 0x0053, "S" },
+  { 0x0054, "T" },
+  { 0x0055, "U" },
+  { 0x0056, "V" },
+  { 0x0057, "W" },
+  { 0x0058, "X" },
+  { 0x0059, "Y" },
+  { 0x005A, "Z" },
+  { 0x005B, "bracketleft" },
+  { 0x005C, "backslash" },
+  { 0x005D, "bracketright" },
+  { 0x005E, "asciicircum" },
+  { 0x005F, "underscore" },
+  { 0x0060, "grave" },
+  { 0x0061, "a" },
+  { 0x0062, "b" },
+  { 0x0063, "c" },
+  { 0x0064, "d" },
+  { 0x0065, "e" },
+  { 0x0066, "f" },
+  { 0x0067, "g" },
+  { 0x0068, "h" },
+  { 0x0069, "i" },
+  { 0x006A, "j" },
+  { 0x006B, "k" },
+  { 0x006C, "l" },
+  { 0x006D, "m" },
+  { 0x006E, "n" },
+  { 0x006F, "o" },
+  { 0x0070, "p" },
+  { 0x0071, "q" },
+  { 0x0072, "r" },
+  { 0x0073, "s" },
+  { 0x0074, "t" },
+  { 0x0075, "u" },
+  { 0x0076, "v" },
+  { 0x0077, "w" },
+  { 0x0078, "x" },
+  { 0x0079, "y" },
+  { 0x007A, "z" },
+  { 0x007B, "braceleft" },
+  { 0x007C, "bar" },
+  { 0x007D, "braceright" },
+  { 0x007E, "asciitilde" },
+  { 0x00A1, "exclamdown" },
+  { 0x00A2, "cent" },
+  { 0x00A3, "sterling" },
+  { 0x00A4, "currency" },
+  { 0x00A5, "yen" },
+  { 0x00A7, "section" },
+  { 0x00A8, "dieresis" },
+  { 0x00AA, "ordfeminine" },
+  { 0x00AB, "guillemotleft" },
+  { 0x00AF, "macron" },
+  { 0x00B4, "acute" },
+  { 0x00B6, "paragraph" },
+  { 0x00B7, "periodcentered" },
+  { 0x00B8, "cedilla" },
+  { 0x00BA, "ordmasculine" },
+  { 0x00BB, "guillemotright" },
+  { 0x00BF, "questiondown" },
+  { 0x00C6, "AE" },
+  { 0x00D8, "Oslash" },
+  { 0x00DF, "germandbls" },
+  { 0x00E6, "ae" },
+  { 0x00F8, "oslash" },
+  /*{ 0x0131, "dotlessi" },
+  { 0x0141, "Lslash" },
+  { 0x0142, "lslash" },
+  { 0x0152, "OE" },
+  { 0x0153, "oe" },
+  { 0x0192, "florin" },
+  { 0x02C6, "circumflex" },
+  { 0x02C7, "caron" },
+  { 0x02D8, "breve" },
+  { 0x02D9, "dotaccent" },
+  { 0x02DA, "ring" },
+  { 0x02DB, "ogonek" },
+  { 0x02DC, "tilde" },
+  { 0x02DD, "hungarumlaut" },
+  { 0x2013, "endash" },
+  { 0x2014, "emdash" },
+  { 0x2018, "quoteleft" },
+  { 0x2019, "quoteright" },
+  { 0x201A, "quotesinglbase" },
+  { 0x201C, "quotedblleft" },
+  { 0x201D, "quotedblright" },
+  { 0x201E, "quotedblbase" },
+  { 0x2020, "dagger" },
+  { 0x2021, "daggerdbl" },
+  { 0x2022, "bullet" },
+  { 0x2026, "ellipsis" },
+  { 0x2030, "perthousand" },
+  { 0x2039, "guilsinglleft" },
+  { 0x203A, "guilsinglright" },
+  { 0x2044, "fraction" },*/
+//  { 0xFB01, "fi" },
+//  { 0xFB02, "fl" },
+
+  // All of the ones you see above were found in gnome-print. The following were added by Aaron Lehmann.
+  // These will be contributed to gnome-print if they end up working.
+  // My references are ftp://ftp.unicode.org/Public/MAPPINGS/ISO8859/8859-1.TXT and a random AFM file.
+
+  { 0x00DD, "Yacute" },
+  { 0x00DB, "Ucircumflex" },
+  { 0x00D9, "Ugrave" },
+  // HELP: What is "Zcaron"?
+  { 0x00FF, "Ydieresis" },
+  { 0x00B3, "threesuperior" },
+  { 0x00DA, "Uacute" },
+  { 0x00B2, "twosuperior" },
+  { 0x00DC, "Udieresis" },
+  { 0x00B7, "middot" },
+  { 0x00B9, "onesuperior" },
+  { 0x00E1, "aacute" },
+  { 0x00E0, "agrave" },
+  { 0x00E2, "acircumflex" },
+  { 0x00DF, "Scaron" },
+  { 0x00D5, "Otilde" },
+  { 0x00AD, "sfthyphen" },
+  { 0x00E3, "atilde" },
+  { 0x00E5, "aring" },
+  { 0x00E4, "adieresis" },
+  { 0x00D2, "Ograve" },
+  { 0x00D4, "Ocurcumflex" },
+  { 0x00D6, "Odieresis" },
+  { 0x00D1, "Ntilde" },
+  { 0x00EB, "edieresis" },
+  { 0x00E9, "eacute" },
+  { 0x00E8, "egrave" },
+  { 0x00CE, "Icircumflex" },
+  { 0x00EA, "ecircumflex" },
+  { 0x00CC, "Igrave" },
+  { 0x00CD, "Iacute" },
+  { 0x00CF, "Idiersis" },
+  { 0x00B0, "degree" },
+  { 0x00CA, "Ecircumflex" },
+  { 0x002D, "minus" },
+  { 0x00D7, "multiply" },
+  { 0x00F7, "divide" },
+  { 0x00C8, "Egrave" },
+  // HELP: What is "trademark"?
+  { 0x00D3, "Oacute" },
+  { 0x00FE, "thorn" },
+  { 0x00F0, "eth" },
+  { 0x00C9, "Eacute" },
+  { 0x00E7, "ccedilla" },
+  { 0x00EF, "idieresis" },
+  { 0x00ED, "iacute" },
+  { 0x00EC, "igrave" },
+  { 0x00B1, "plusminus" },
+  { 0x00BD, "onehalf" },
+  { 0x00BC, "onequarter" },
+  { 0x00BE, "threequarters" },
+  { 0x00EE, "icircumflex" },
+  { 0x00CB, "Edieresis" },
+  { 0x00F1, "ntilde" },
+  { 0x00C5, "Aring" },
+  { 0x00F6, "odieresis" },
+  { 0x00F3, "oacute" },
+  { 0x00F2, "ograve" },
+  { 0x00F4, "ocircumflex" },
+  { 0x00F5, "otilde" },
+  // HELP: What is "scaron"?
+  { 0x00FC, "udieresis" },
+  { 0x00FA, "uacute" },
+  { 0x00F9, "ugrave" },
+  { 0x00FB, "ucircumflex" },
+  { 0x00FD, "yacute" },
+  // HELP: What is "zcaron"?
+  { 0x00FF, "ydieresis" },
+  { 0x00A9, "copyright" },
+  { 0x00AE, "registered" },
+  { 0x00C3, "Atilde" },
+  { 0x00A0, "nbspace" },
+  { 0x00C7, "Ccedilla" },
+  { 0x00C2, "Acircumflex" },
+  { 0x00C0, "Agrave" },
+  { 0x00AC, "logicalnot" },
+  { 0x00C1, "Aacute" },
+  { 0x00D0, "Eth" },
+  { 0x00A6, "brokenbar" },
+  { 0x00DE, "Thorn" },
+  { 0x00C4, "Adieresis" },
+  // HELP: What is "mu"?
+  { 0x0000, NULL }
+};
+
 ABIFontInfo * XAP_UnixFont::getMetricsData(void)
 {
 	if (m_metricsData)
@@ -262,7 +526,7 @@ ABIFontInfo * XAP_UnixFont::getMetricsData(void)
 	}
 
 	// call down to the Adobe code
-	int result = parseFile(fp, &m_metricsData, P_GW);
+	int result = parseFile(fp, &m_metricsData, P_GM);
 	switch (result)
 	{
 	case parseError:
@@ -292,6 +556,27 @@ ABIFontInfo * XAP_UnixFont::getMetricsData(void)
 	default:
 		// everything is peachy
 		break;
+	}
+
+	// Need to mangle the cmi[i].wx variables to work right with Unicode
+	m_uniWidths = (UT_uint16 *) malloc (sizeof (UT_uint16) * 256);
+	memset (m_uniWidths, 0, 256 * sizeof(UT_uint16)); // Clear array - i would hope that sizeof(UT_uint16) == 16
+	for (UT_sint32 i=0; i != m_metricsData->numOfChars; ++i)
+	{
+		UT_sint32 unicode = -1;
+		for (UT_uint32 j = 0; std_enc[j].type1_name != NULL; j++)
+		{
+			if (!strcmp (m_metricsData->cmi[i].name, std_enc[j].type1_name))
+			{
+				unicode = std_enc[j].unicode;
+				break;
+			}
+		}
+		if (unicode >= 0)
+		{
+			UT_ASSERT (unicode < 256); // TODO: support multibyte chars
+			m_uniWidths[unicode] = m_metricsData->cmi[i].wx;
+		}
 	}
 
 	fclose(fp);

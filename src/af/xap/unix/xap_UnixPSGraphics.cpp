@@ -161,7 +161,7 @@ UT_uint32 PS_Graphics::measureString(const UT_UCSChar* s, int iOffset,
 	UT_ASSERT(m_pCurrentFont);
 	UT_ASSERT(s);
 	const UT_UCSChar * p = s+iOffset;
-	const int * cwi = m_pCurrentFont->getMetricsData()->cwi;
+	const UT_uint16 * cwi = m_pCurrentFont->getUniWidths();
 
 	UT_uint32 iCharWidth = 0;
 	for (int k=0; k<num; k++)

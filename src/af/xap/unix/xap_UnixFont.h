@@ -67,6 +67,7 @@ class XAP_UnixFont
 	const char * 			getXLFD(void);
 
 	ABIFontInfo *			getMetricsData(void);
+	UT_uint16 *				getUniWidths(void);
 	
 	UT_Bool					openPFA(void);
 	char					getPFAChar(void);
@@ -92,7 +93,10 @@ protected:
 	char * 					m_name;
 	XAP_UnixFont::style		m_style;
 	char * 					m_xlfd;
+	
+	// The next line is the info that is given back to us by parseAFM. The line after that is our own mangled one to follow Unicode.
 	ABIFontInfo *			m_metricsData;
+	UT_uint16 *				m_uniWidths;
 
 	char * 					m_fontfile;
 	char *					m_metricfile;

@@ -41,6 +41,7 @@ public:
 	UT_uint32			getIndex(void) { return m_index; };	
 	
 	ABIFontInfo *		getMetricsData(void);
+	UT_uint16 *			getUniWidths(void);
 	// perhaps request raw data from PSFont?
  
 protected:
