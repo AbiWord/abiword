@@ -19,7 +19,6 @@ extern struct enc_vector * curr_encoding;
 extern char * cur_file_name;
 extern char * cur_enc_name;
 extern int verbosity;
-extern int broken_cmap;
 
 extern TTF_LONG ItalicAngle;
 extern TTF_LONG IsFixedPitch;

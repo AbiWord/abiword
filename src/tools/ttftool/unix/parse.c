@@ -254,7 +254,7 @@ void read_font()
 	msg(3, "format=%d (should be 4)", format);
 
         /*uni_to_glyph = 1;*/
-        length = get_ushort(); /* length of subtable */
+        length = get_ushort(); /* length of subtable in bytes */
         get_ushort(); /* skip the version number */
         segCount = get_ushort();
         segCount /= 2;
@@ -286,13 +286,15 @@ void read_font()
             msg(4, "segment range offset 0x%04x", s->idRangeOffset);
         }
         length -= 8*TTF_USHORT_SIZE + 4*segCount*TTF_USHORT_SIZE;
+        length /= TTF_USHORT_SIZE; /* conver byte length to number if items */
+
 	msg(3, "should contain %d glyphs", length);
 
         glyphId = ttf_alloc(length, TTF_USHORT);
         for (i = 0; i < length; i++)
         {
         	msg(5, "i=%d", i);
-            glyphId[i] = broken_cmap ? get_byte() : get_ushort();
+            glyphId[i] = get_ushort();
         }
 
 	msg(3, "retrieved glyphs");
