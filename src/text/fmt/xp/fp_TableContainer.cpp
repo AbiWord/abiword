@@ -2849,7 +2849,7 @@ fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
 		setFirstBrokenTable(pBroke);
 		setLastBrokenTable(pBroke);
 		pBroke->setContainer(getContainer());
-		UT_sint32 iTweak = tweakBrokenTable(pBroke);
+		/*UT_sint32 iTweak =*/ tweakBrokenTable(pBroke);
 		return pBroke;
 	}
 //

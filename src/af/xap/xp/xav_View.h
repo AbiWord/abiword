@@ -151,7 +151,7 @@ public:
 	virtual UT_uint32   calculateZoomPercentForWholePage() = 0;
 	void   setLayoutIsFilling(bool bFill) { m_bIsLayoutFilling = bFill;}
 	bool   isLayoutFilling(void)  const {return  m_bIsLayoutFilling;}
-	virtual inline UT_uint32	  getPoint(void) const =0;
+	virtual UT_uint32	  getPoint(void) const =0;
 	virtual void setCursorWait(void) = 0;
 	virtual void clearCursorWait(void) = 0;
 protected:

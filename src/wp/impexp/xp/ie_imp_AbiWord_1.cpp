@@ -321,7 +321,7 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		bool bOK = true;
 		if(pszId)
 		{
-			UT_uint32 id = atoi(pszId);
+			//UT_uint32 id = atoi(pszId);
 		    bOK = getDoc()->verifySectionID(pszId);
 		}
 		if(bOK)
@@ -441,7 +441,7 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 #ifdef ENABLE_RESOURCE_MANAGER
 		X_CheckError(_handleImage (atts));
 #else
-		const XML_Char * pszId = _getXMLPropValue("dataid", atts);
+		//const XML_Char * pszId = _getXMLPropValue("dataid", atts);
 
 		//
 		// Remove this assert because the image object MUST have already

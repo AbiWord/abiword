@@ -868,6 +868,7 @@ static UT_UTF8String _getPassword (XAP_Frame * pFrame)
   return password;
 }
 
+#if 0
 static void _errorMessage (XAP_Frame * pFrame, int id)
 {
   UT_return_if_fail(pFrame);
@@ -879,6 +880,7 @@ static void _errorMessage (XAP_Frame * pFrame, int id)
   pFrame->showMessageBox (text, XAP_Dialog_MessageBox::b_O,
 						  XAP_Dialog_MessageBox::a_OK);
 }
+#endif
 
 UT_Error IE_Imp_MsWord_97::importFile(const char * szFilename)
 {

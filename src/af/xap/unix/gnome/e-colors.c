@@ -25,6 +25,7 @@
  * place before things are realized.
  */
 
+#include <gdk/gdkrgb.h>
 #include <gtk/gtkwidget.h>
 #include "e-colors.h"
 
