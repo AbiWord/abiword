@@ -154,13 +154,13 @@ rpm: pack_rpm
 deb: rpm
 	@echo "Producing DEB..."
 	@$(subst xxxx,$(DIST),$(VERIFY_DIRECTORY))	
-	(cd $(DIST); fakeroot alien --to-deb -c -k abisuite-$(ABI_BUILD_VERSION)-$(ABI_RELEASE_NUMBER).$(OS_ARCH).rpm)
+	(cd $(DIST); alien --to-deb -c -k abisuite-$(ABI_BUILD_VERSION)-$(ABI_RELEASE_NUMBER).$(OS_ARCH).rpm)
 
 # We're using alien to convert from RPM to SLP package
 slp: rpm
 	@echo "Producing SLP..."
 	@$(subst xxxx,$(DIST),$(VERIFY_DIRECTORY))	
-	(cd $(DIST); fakeroot alien --to-slp -c -k abisuite-$(ABI_BUILD_VERSION)-$(ABI_RELEASE_NUMBER).$(OS_ARCH).rpm)
+	(cd $(DIST); alien --to-slp -c -k abisuite-$(ABI_BUILD_VERSION)-$(ABI_RELEASE_NUMBER).$(OS_ARCH).rpm)
 
 # tgz target is provided by a common Unix makefile
 include $(ABI_ROOT)/src/pkg/common/unix/tgz.mk
