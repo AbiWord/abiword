@@ -67,6 +67,7 @@ fp_TextRun::fp_TextRun(fl_BlockLayout* pBL,
 	m_pLanguage(NULL),
 	m_bIsOverhanging(false),
 	m_bKeepWidths(false),
+	m_pItem(NULL),
 	m_pRenderInfo(NULL),
 	m_eScriptType(GRScriptType_Undefined)
 {
@@ -99,6 +100,7 @@ fp_TextRun::fp_TextRun(fl_BlockLayout* pBL,
 fp_TextRun::~fp_TextRun()
 {
 	delete m_pRenderInfo;
+	delete m_pItem;
 }
 
 bool fp_TextRun::hasLayoutProperties(void) const

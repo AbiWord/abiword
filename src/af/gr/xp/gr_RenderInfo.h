@@ -57,6 +57,8 @@ class GR_Item
   public:
 	virtual ~GR_Item(){};
 	virtual GR_ScriptType getType() = 0;
+	virtual GR_Item * makeCopy() = 0; // make a copy of this item
+	
 
   protected:
 	GR_Item(){};
@@ -71,13 +73,14 @@ class GR_XPItem : public GR_Item
 	virtual ~GR_XPItem(){};
 	
 	virtual GR_ScriptType getType() {return m_eType;}
+	virtual GR_Item * makeCopy() {return new GR_XPItem(m_eType);}
 
   protected:
 	GR_XPItem():
 	   m_eType(GRScriptType_Undefined){};
 	GR_XPItem(GR_ScriptType t):
 	   m_eType(t){};
-	
+
 	GR_ScriptType m_eType;
 };
 
@@ -114,6 +117,8 @@ class GR_Itemization
 						  UT_return_val_if_fail(i < m_vOffsets.getItemCount()-1, 0);
 						  return m_vOffsets.getNthItem(i+1) - m_vOffsets.getNthItem(i);
 					  }
+	
+	GR_Item *     getNthItem(UT_uint32 i) const {return (GR_Item *)m_vItems.getNthItem(i);}
 	
 	void addItem(UT_uint32 offset, const GR_Item *item)
 	         { m_vOffsets.addItem(offset); m_vItems.addItem(item);}

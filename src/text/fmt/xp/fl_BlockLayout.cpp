@@ -3528,10 +3528,13 @@ bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len
 											 blockOffset + I.getNthOffset(i),
 											 I.getNthLength(i));
 		
-		UT_ASSERT(pNewRun);
-		UT_ASSERT(pNewRun->getType() == FPRUN_TEXT);
+		UT_return_val_if_fail(pNewRun && pNewRun->getType() == FPRUN_TEXT, false);
 		pNewRun->setDirOverride(m_iDirOverride);
 
+		GR_Item * pItem = I.getNthItem(i)->makeCopy();
+		UT_ASSERT( pItem );
+		pNewRun->setItem(pItem);
+		
 		if(!_doInsertRun(pNewRun))
 			return false;
 
