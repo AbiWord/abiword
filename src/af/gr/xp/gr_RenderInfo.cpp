@@ -437,7 +437,7 @@ bool GR_XPRenderInfo::cut(UT_uint32 offset, UT_uint32 iLen, bool bReverse)
 	{
 		// if we got here, we just need to cut out a bit of the draw
 		// buffer
-		UT_uint32 iLenToCopy = m_iLength - offset - iLen;
+		UT_sint32 iLenToCopy = static_cast<UT_sint32>(m_iLength) - static_cast<UT_sint32>(offset) - static_cast<UT_sint32>(iLen);
 
 		if(iLenToCopy)
 		{

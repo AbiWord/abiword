@@ -3916,8 +3916,8 @@ void s_HTML_Listener::_closeCell ()
 		// have its borders
 		// this is not necessary; the same effect can be achieved by
 		// setting "border-collapse:collapse;empty-cells:show"
-		// UT_UTF8String s = "&nbsp;";
-		//tagRaw(s);
+		UT_UTF8String s = "&nbsp;";
+		tagRaw(s);
 	}
 	
 	m_utf8_1 = "td";
