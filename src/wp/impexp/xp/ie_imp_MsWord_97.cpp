@@ -372,13 +372,14 @@ static bool s_isLanguageRTL(short unsigned int lid)
 */
 static char * s_stripDangerousChars(const char *s)
 {
+	UT_uint32 j, k;
 	if(!s)
 		return NULL;
 	
 	char * t = (char*) malloc(strlen(s)+1);
 	UT_return_val_if_fail(t,NULL);
 	
-	for(UT_uint32 j = 0, k = 0; j < strlen(s); )
+	for(j = 0, k = 0; j < strlen(s); )
 	{
 		switch(s[j])
 		{
@@ -3348,7 +3349,7 @@ static const XML_Char * s_translateStyleId(UT_uint32 id)
 void IE_Imp_MsWord_97::_handleStyleSheet(const wvParseStruct *ps)
 {
 	UT_uint32 iCount = ps->stsh.Stshi.cstd;
-	UT_uint16 iBase  = ps->stsh.Stshi.cbSTDBaseInFile;
+//	UT_uint16 iBase  = ps->stsh.Stshi.cbSTDBaseInFile;
 
 	const XML_Char * attribs[PT_MAX_ATTRIBUTES*2 + 1];
 	UT_uint32 iOffset = 0;
