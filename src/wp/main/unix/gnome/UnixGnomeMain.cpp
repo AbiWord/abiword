@@ -19,11 +19,11 @@
 
 #ifndef ABI_OPT_WIDGET
 
-#include "ap_UnixGnomeApp.h"
+#include "ap_UnixApp.h"
 
 int main(int argc, const char ** argv)
 {
-	return AP_UnixGnomeApp::main(ABIWORD_APP_NAME, argc, argv);
+	return AP_UnixApp::main(ABIWORD_APP_NAME, argc, argv);
 }
 
 #endif
