@@ -2422,6 +2422,16 @@ bool FV_View::getCharFormat(const XML_Char *** pProps, bool bExpandStyles)
 				pRun = pBlock->getFirstRun();
 			}
 
+			// FIXME: Don't look in EOP Runs. This is because they are
+			// not represented in the PT, so when the PT is asked for
+			// the properties of the EOP's position, it returns the
+			// default properties. What it should return is the
+			// properties of the previous Run. But just skipping the
+			// check altogether is easier (and faster).
+			if (pRun->getType() == FPRUN_ENDOFPARAGRAPH)
+				continue;
+
+
 			// did span format change?
 
 			pAP = NULL;
