@@ -6853,40 +6853,43 @@ void FV_View::cmdSelect(PT_DocPosition dpBeg, PT_DocPosition dpEnd)
 
 void FV_View::cmdSelect(UT_sint32 xPos, UT_sint32 yPos, FV_DocPos dpBeg, FV_DocPos dpEnd)
 {
-	UT_DEBUGMSG(("SEVIOR: Double click on mouse \n"));
+	UT_DEBUGMSG(("Double click on mouse \n"));
 //
 // Code to handle footer/header insertion 
 //
-	fp_Page * pPage = getCurrentPage();
-	fl_DocSectionLayout * pDSL = pPage->getOwningSection();
-	if(pPage->getHeaderP() == NULL && !IS_SELECTALL(dpBeg, dpEnd))
-	{
+// TODO: Consider whether we want to create a header/footer on a double click. Leave this
+// code commented out until; we decide. Wwe can fix the left click biz by
 //
-// No header. Look to see if the user has clicked in the header region.
-//
-		if(xPos >=0 && yPos >=0 && yPos < pDSL->getTopMargin())
-		{
-//
-// Yes so insert a header put the cursor there and return
-//
-			insertHeaderFooter(FL_HDRFTR_HEADER);
-			return;
-		}
-	}
-	if(pPage->getFooterP() == NULL && !IS_SELECTALL(dpBeg, dpEnd))
-	{
-//
-// No Footer. Look to see if the user has clicked in the footer region.
-//
-		if(xPos >=0 && yPos < (pPage->getBottom() + pDSL->getBottomMargin()) && yPos > pPage->getBottom())
-		{
-//
-// Yes so insert a footer put the cursor there and return
-//
-			insertHeaderFooter(FL_HDRFTR_FOOTER);
-			return;
-		}
-	}
+//  	fp_Page * pPage = getCurrentPage();
+//  	fl_DocSectionLayout * pDSL = pPage->getOwningSection();
+//  	if(pPage->getHeaderP() == NULL && !IS_SELECTALL(dpBeg, dpEnd))
+//  	{
+//  //
+//  // No header. Look to see if the user has clicked in the header region.
+//  //
+//  		if(xPos >=0 && yPos >=0 && yPos < pDSL->getTopMargin())
+//  		{
+//  //
+//  // Yes so insert a header put the cursor there and return
+//  //
+//  			insertHeaderFooter(FL_HDRFTR_HEADER);
+//  			return;
+//  		}
+//  	}
+//  	if(pPage->getFooterP() == NULL && !IS_SELECTALL(dpBeg, dpEnd))
+//  	{
+//  //
+//  // No Footer. Look to see if the user has clicked in the footer region.
+//  //
+//  		if(xPos >=0 && yPos < (pPage->getBottom() + pDSL->getBottomMargin()) && yPos > pPage->getBottom())
+//  		{
+//  //
+//  // Yes so insert a footer put the cursor there and return
+//  //
+//  			insertHeaderFooter(FL_HDRFTR_FOOTER);
+//  			return;
+//  		}
+//  	}
 
 	warpInsPtToXY(xPos, yPos,true);
 
