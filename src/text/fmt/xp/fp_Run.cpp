@@ -1678,7 +1678,7 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 
 		i = (i>=3) ? i - 2 : 1;
 		getGR()->setColor(clrFG);
-		getGR()->drawChars(tmp, 1, i, /*pDA->xoff*/DA_xoff, iFillTop);
+		getGR()->drawChars(tmp, 1, i, /*pDA->xoff*/DA_xoff, iFillTop, wid);
 	}
 	else
 	if (
