@@ -3,7 +3,6 @@ SUBDIRS = src
 
 expat_peerdir=@EXPAT_PEERDIR@
 wv_peerdir=@WV_PEERDIR@
-psiconv_peerdir=@PSICONV_PEERDIR@
 libiconv_peerdir=@LIBICONV_PEERDIR@
 libpng_peerdir=@LIBPNG_PEERDIR@
 
@@ -16,8 +15,6 @@ expat:
 	$(MAKE) -C $(expat_peerdir)
 wv:
 	$(MAKE) -C $(wv_peerdir) BUILD_FOR_ABIWORD=1
-psiconv:
-	$(MAKE) -C $(psiconv_peerdir)
 libiconv:
 	$(MAKE) -C $(libiconv_peerdir)
 # libpng:
@@ -34,7 +31,7 @@ distclean-stop:
 	@exit 1
 
 clean-local:
-	for i in . $(expat_peerdir)  $(wv_peerdir) $(psiconv_peerdir) \
+	for i in . $(expat_peerdir)  $(wv_peerdir) \
                  $(libpng_peerdir); do \
 	  if test $$i != . ; then \
 	    $(MAKE) -C $$i clean || true; \
@@ -42,7 +39,7 @@ clean-local:
 	done
 
 realclean: clean
-	for i in . $(expat_peerdir)  $(wv_peerdir) $(psiconv_peerdir) \
+	for i in . $(expat_peerdir)  $(wv_peerdir) \
                  $(libpng_peerdir); do \
 	  if test $$i != . ; then \
 	    $(MAKE) -C $$i distclean || true; \

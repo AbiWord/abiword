@@ -356,11 +356,6 @@ dnl check for an xml parser
 ABI_NEED_XML_PARSER="yes"
 ABI_XML_PARSER(${abs_srcdir}/../expat)
 
-dnl check for psiconv
-
-ABI_NEED_PSICONV="yes"
-ABI_PSICONV(${abs_srcdir}/../psiconv)
-
 dnl check for wv
 
 ABI_NEED_WV="yes"
@@ -527,7 +522,6 @@ cat <<EOF
   XML Parser:      ${abi_xml_parser_message}
   zlib:            ${abi_zlib_message}
   PNG Library:     ${abi_libpng_message}
-  Psiconv Library: ${abi_psiconv_message}
   WV Library:      ${abi_wv_message}
   iconv:           ${abi_iconv_message}
 
