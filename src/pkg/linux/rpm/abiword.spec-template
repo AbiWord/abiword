@@ -40,16 +40,16 @@
 %endif
 
 %if %{enable_tools}
-%define plugin_tools --enable-abicommand --enable-abigimp --enable-aiksaurus --enable-babelfish --enable-freetranslation --enable-gdict --enable-referee --enable-urldict --enable-wikipedia --disable-magick --enable-shell
+%define plugin_tools --enable-abicommand --enable-abigimp --enable-aiksaurus --enable-babelfish --enable-freetranslation --enable-gdict --enable-referee --enable-urldict --enable-wikipedia --disable-magick --enable-shell %{?_with_ots:--enable-ots} %{!?_with_ots:--disable-ots}
 %else
-%define plugin_tools --disable-abicommand --disable-abigimp --disable-aiksaurus --disable-babelfish --disable-freetranslation --disable-gdict --disable-referee --disable-urldict --disable-wikipedia --disable-magick --disable-shell
+%define plugin_tools --disable-abicommand --disable-abigimp --disable-aiksaurus --disable-babelfish --disable-freetranslation --disable-gdict --disable-referee --disable-urldict --disable-wikipedia --disable-magick --disable-shell --disable-ots
 %endif
 
 %if %{enable_impexp}
-#%define plugin_impexp --enable-gdkpixbuf --enable-bmp --enable-jpeg --enable-wmf --enable-applix --enable-bz2abw --enable-clarisworks --enable-docbook --enable-eml --enable-hancom --enable-hrtext --enable-html --enable-iscii-text --enable-kword --enable-latex --enable-mif --enable-mswrite --enable-nroff --enable-OpenWriter --enable-pdb --enable-psion --enable-pw --enable-sdw --enable-t602 --enable-wml --enable-wordperfect --enable-xhtml --enable-xsl-fo
-%define plugin_impexp --enable-gdkpixbuf --enable-bmp --enable-jpeg --enable-wmf --enable-applix --enable-bz2abw --enable-clarisworks --enable-eml --enable-hancom --enable-hrtext --enable-html --enable-iscii-text --enable-kword --enable-latex --enable-mif --enable-mswrite --enable-nroff --enable-OpenWriter --enable-pdb --enable-psion --enable-pw --enable-sdw --enable-t602 --enable-wml --enable-wordperfect --enable-xhtml --enable-xsl-fo --enable-librsvg --enable-docbook
+%define plugin_impexp --enable-gdkpixbuf --enable-bmp --enable-jpeg --enable-wmf --enable-applix --enable-bz2abw --enable-clarisworks --enable-eml --enable-hancom --enable-hrtext --enable-html --enable-iscii-text --enable-kword --enable-latex --enable-mif --enable-mswrite --enable-nroff --enable-pdb --enable-psion --enable-pw --enable-t602 --enable-wml --enable-xhtml --enable-xsl-fo --enable-librsvg --enable-docbook %{?_with_libgsf:--enable-OpenWriter --enable-sdw} %{!?_with_libgsf:--disable-OpenWriter --disable-sdw} %{?_with_libwpd:--enable-wordperfect} %{!?_with_libwpd:--disable-wordperfect}
 %else
-%define plugin_impexp --disable-gdkpixbuf --disable-bmp --disable-jpeg --disable-wmf --disable-applix --disable-bz2abw --disable-clarisworks --disable-docbook --disable-eml --disable-hancom --disable-hrtext --disable-html --disable-iscii-text --disable-kword --disable-latex --disable-mif --disable-mswrite --disable-nroff --disable-OpenWriter --disable-pdb --disable-psion --disable-pw --disable-sdw --disable-t602 --disable-wml --disable-wordperfect --disable-xhtml --disable-xsl-fo
+%define plugin_impexp --disable-gdkpixbuf --disable-bmp --disable-jpeg --disable-wmf --disable-applix --disable-bz2abw --disable-clarisworks --disable-docbook
+--disable-eml --disable-hancom --disable-hrtext --disable-html --disable-iscii-text --disable-kword --disable-latex --disable-mif --disable-mswrite --disable-nroff --disable-pdb --disable-psion --disable-pw --disable-t602 --disable-wml --disable-xhtml --disable-xsl-fo --disable-OpenWriter --disable-sdw --disable-wordperfect
 %endif
 
 
@@ -149,6 +149,7 @@ This is a set of plugins for AbiWord.  It includes
   aiksaurus: Use the Aiksaurus thesaurus in AbiWord.
   babelfish: Translate text online using Babelfish.
 ScriptHappy: Run other programs in a shell and direct the output to AbiWord.
+%{?_with_ots:        Ots: Summarize documents}
 
 %endif
 
@@ -157,9 +158,12 @@ ScriptHappy: Run other programs in a shell and direct the output to AbiWord.
 Summary: Plugins to import and export otherwise unsupported formats.
 Group: Applications/Productivity
 Requires: abiword
+BuildRequires: bzip2-devel, librsvg-devel
+%{?_with_libgsf:Requires: libgsf}
+%{?_with_libgsf:BuildRequires: libgsf-devel}
 %{?_with_libwpd:Requires: libwpd}
-BuildRequires: bzip2-devel, libgsf-devel, librsvg-devel
 %{?_with_libwpd:BuildRequires: libwpd-devel}
+
 
 %description plugins-impexp
 This is a set of plugins for AbiWord.  It includes support for OpenWriter,
@@ -181,13 +185,18 @@ This is the clipart portfolio used by AbiWord.
 
 %build
 ./autogen.sh
-./configure %{gnome} --enable-xft %{debug} --prefix=%{_prefix} --exec-prefix=%{_prefix} --with-pspell=%{build_pspell}
+./configure %{gnome} --enable-xft %{debug} \
+       --prefix=%{_prefix} --exec-prefix=%{_prefix} \
+       --with-pspell=%{build_pspell}
+
 %__make
 
 %if %{enable_tools} || %{enable_impexp}
 cd ../abiword-plugins
 ./nextgen.sh
-%configure --prefix=%{_prefix} --disable-nroff --disable-eg %{plugin_tools} %{plugin_impexp}
+%configure --prefix=%{_prefix} --disable-eg \
+	%{plugin_tools} %{plugin_impexp}
+
 %__make
 
 cd ../abi
@@ -309,11 +318,11 @@ cd ../abi
 %{_libdir}/%{AbiWord}/plugins/libAbiMIF.so
 %{_libdir}/%{AbiWord}/plugins/libAbiMSWrite.so
 %{_libdir}/%{AbiWord}/plugins/libAbiNroff.so
-%{_libdir}/%{AbiWord}/plugins/libAbiOpenWriter.so
+%{?_with_libgsf:%{_libdir}/%{AbiWord}/plugins/libAbiOpenWriter.so}
 #%{_libdir}/%{AbiWord}/plugins/libAbiPW.so
 %{_libdir}/%{AbiWord}/plugins/libAbiPalmDoc.so
 %{_libdir}/%{AbiWord}/plugins/libAbiRSVG.so
-%{_libdir}/%{AbiWord}/plugins/libAbiSDW.so
+%{?_with_libgsf:%{_libdir}/%{AbiWord}/plugins/libAbiSDW.so}
 %{_libdir}/%{AbiWord}/plugins/libAbiT602.so
 %{_libdir}/%{AbiWord}/plugins/libAbiWML.so
 #%{_libdir}/%{AbiWord}/plugins/libAbiWordPerfect.so
