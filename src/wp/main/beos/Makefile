@@ -28,8 +28,8 @@ PROGRAM=		$(BINDIR)/AbiWord
 #TF As of R4 we don't need zlib or libpng any more
 #LoadOrder=              AbiGr AbiFmt AbiPTbl AbiImpExp MsWordView AbiXAp AbiWPAp \
 #			AbiEv AbiUtil AbiWordVer AbiSpell Abi_expat Abi_libpng Abi_zlib
-LoadOrder=              AbiGr AbiFmt AbiPTbl AbiImpExp MsWordView AbiXAp AbiWPAp \
-			AbiEv AbiUtil AbiWordVer AbiSpell Abi_expat
+LoadOrder=              AbiGr AbiFmt AbiPTbl AbiImpExp AbiXAp AbiWPAp \
+			AbiEv AbiUtil AbiWordVer AbiSpell Abi_expat Abi_libwv
 
 ## TODO verify that we still need stdc++ for BeOS since we got rid of c++ iostreams
 

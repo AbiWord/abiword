@@ -22,8 +22,8 @@ ABI_ROOT:=$(shell pwd)/../../../..
 
 include $(ABI_ROOT)/src/config/abi_defs.mk
 
-REQUIRE=		_GCC_ _GLIB_ _GTK_ _ZLIB_ _LIBPNG_ _UNIXFONTS_ _ABIDISTFILES_
-REQUIRECLEAN=		clean_ZLIB_ clean_LIBPNG_
+REQUIRE=		_GCC_ _GLIB_ _GTK_ _ZLIB_ _LIBPNG_ _LIBWV_ _UNIXFONTS_ _ABIDISTFILES_
+REQUIRECLEAN=		clean_ZLIB_ clean_LIBPNG_ clean_LIBWV_
 REQUIREREALCLEAN=	$(REQUIRECLEAN) 
 
 TARGET=		build
@@ -94,6 +94,26 @@ _LIBPNG_:
 		exit 1;						\
 	fi
 
+_LIBWV_:
+	@if [    -r /lib/libwv.a				\
+	      -o -r /usr/lib/libwv.a				\
+	      -o -r /usr/local/lib/libwv.a			\
+	    ]; then						\
+		echo Found libwv in system directories;		\
+	elif [ -r $(ABI_ROOT)/../wv ]; then			\
+		echo Found libwv in peer directory;		\
+		if [ ! -r $(ABI_ROOT)/../wv/config.h ]; then	\
+			cd $(ABI_ROOT)/../wv; 			\
+			./configure;				\
+		fi;						\
+		$(MAKE) -f Makefile.abi -C $(ABI_ROOT)/../wv;  	\
+	else							\
+		echo wv not found;				\
+		echo TODO provide a nicer error message;	\
+		echo TODO with instructions for obtaining it;	\
+		exit 1;						\
+	fi
+
 # if this target fails things aren't fatal, the user
 # just gets a warning
 _UNIXFONTS_:
@@ -133,4 +153,8 @@ clean_LIBPNG_:
 	@if [ -d $(ABI_ROOT)/../libpng ]; then		\
 		$(MAKE) -C $(ABI_ROOT)/../libpng clean;	\
 	fi
+
+clean_LIBWV_:
+	@if [ -d $(ABI_ROOT)/../wv ]; then		\
+		$(MAKE) -C $(ABI_ROOT)/../wv clean;	\
 

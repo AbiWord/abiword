@@ -24,7 +24,8 @@ include $(ABI_ROOT)/src/config/abi_defs.mk
 
 #TF These aren't required any more.  As of R4 they ship w/ the OS
 #REQUIRE=	_ZLIB_ _LIBPNG_
-REQUIRE=
+
+REQUIRE=	_LIBWV_
 TARGET=		build
 
 include $(ABI_ROOT)/src/config/abi_rules.mk
@@ -52,6 +53,21 @@ _LIBPNG_:
 		$(MAKE) -C $(ABI_ROOT)/../libpng;		\
 	else							\
 		echo libpng not found;				\
+		echo TODO provide a nicer error message;	\
+		echo TODO with instructions for obtaining it;	\
+		exit 1;						\
+	fi
+
+_LIBWV_:
+	@if [ -d $(ABI_ROOT)/../wv ]; then			\
+		echo Found libwv in peer directory;		\
+		if [ ! -r $(ABI_ROOT)/../wv/config.h ]; then	\
+			cd $(ABI_ROOT)/../wv; 			\
+			./configure;				\
+		fi;						\
+		$(MAKE) -f Makefile.abi -C $(ABI_ROOT)/../wv;  	\
+	else							\
+		echo wv not found;				\
 		echo TODO provide a nicer error message;	\
 		echo TODO with instructions for obtaining it;	\
 		exit 1;						\

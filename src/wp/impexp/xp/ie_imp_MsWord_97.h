@@ -18,10 +18,12 @@
  */
 
 
-#ifndef IE_IMP_MSWORD_97_H
-#define IE_IMP_MSWORD_97_H
+#ifndef IE_IMP_WV_H
+#define IE_IMP_WV_H
 
+#include <stdlib.h>
 #include <stdio.h>
+#include "wv.h"
 #include "xmlparse.h"
 #include "ut_vector.h"
 #include "ut_stack.h"
@@ -29,7 +31,7 @@
 #include "ut_bytebuf.h"
 class PD_Document;
 
-// The importer/reader for Microsoft Word version 8 ("Word 97") file format.
+// The importer/reader for Microsoft Word 97
 
 class IE_Imp_MsWord_97 : public IE_Imp
 {
@@ -38,14 +40,6 @@ public:
 	~IE_Imp_MsWord_97();
 
 	IEStatus			importFile(const char * szFilename);
-
-	// the following are public only so that the
-	// XML parser callback routines can access them.
-	
-	void				_startElement(const XML_Char *name, const XML_Char **atts);
-	void				_endElement(const XML_Char *name);
-	void				_charData(const XML_Char*, int);
-
 	static UT_Bool		RecognizeSuffix(const char * szSuffix);
 	static IEStatus		StaticConstructor(PD_Document * pDocument,
 										  IE_Imp ** ppie);
@@ -53,33 +47,11 @@ public:
 									 const char ** pszSuffixList,
 									 IEFileType * ft);
 	static UT_Bool 		SupportsFileType(IEFileType ft);
-	
+	int					_charData(U16 *, int);
+	int 				_docProc(wvParseStruct *ps,wvTag tag);
+	int 				_eleProc(wvParseStruct *ps,wvTag tag,void *props);
 protected:
-	UT_uint32			_getInlineDepth(void) const;
-	UT_Bool				_pushInlineFmt(const XML_Char ** atts);
-	void				_popInlineFmt(void);
-	const XML_Char *	_getDataItemName(const XML_Char ** atts);
-	
-	typedef enum _parseState { _PS_Init,
-							   _PS_Doc,
-							   _PS_Sec,
-							   _PS_Block,
-							   _PS_DataSec,
-							   _PS_DataItem
-	} ParseState;
-
 	IEStatus			m_iestatus;
-	ParseState			m_parseState;
-	XML_Char			m_charDataSeen[4];
-	UT_uint32			m_lenCharDataSeen;
-	UT_uint32			m_lenCharDataExpected;
-	UT_Bool				m_bSeenCR;
-	
-	UT_Vector			m_vecInlineFmt;
-	UT_Stack			m_stackFmtStartIndex;
-
-	UT_ByteBuf			m_currentDataItem;
-	XML_Char *			m_currentDataItemName;
 };
 
-#endif /* IE_IMP_MSWORD_97_H */
+#endif /* IE_IMP_WV_H */
