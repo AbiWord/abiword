@@ -147,7 +147,7 @@ SpellChecker::SpellCheckResult
 ISpellChecker::checkWord(const UT_UCSChar *word32, size_t length)
 {
     SpellChecker::SpellCheckResult retVal;
-    ichar_t  iWord[INPUTWORDLEN + MAXAFFIXLEN];
+    ichar_t iWord[INPUTWORDLEN + MAXAFFIXLEN];
     char  word8[INPUTWORDLEN + MAXAFFIXLEN];
 
     if (!m_bSuccessfulInit)
@@ -186,9 +186,8 @@ ISpellChecker::checkWord(const UT_UCSChar *word32, size_t length)
 UT_Vector *
 ISpellChecker::suggestWord(const UT_UCSChar *word32, size_t length)
 {
-    UT_Vector *sgvec = NULL;
     ichar_t  iWord[INPUTWORDLEN + MAXAFFIXLEN];
-    char  word8[INPUTWORDLEN + MAXAFFIXLEN];
+    char word8[INPUTWORDLEN + MAXAFFIXLEN];
     int  c;
 
 	if (!m_bSuccessfulInit)
@@ -213,17 +212,17 @@ ISpellChecker::suggestWord(const UT_UCSChar *word32, size_t length)
 
 	if(!strtoichar(m_pISpellState, iWord, word8, sizeof(iWord), 0))
 		makepossibilities(m_pISpellState, iWord);
+	else
+	  return NULL;
 		 			
-	sgvec = new UT_Vector();
+	UT_Vector * sgvec = new UT_Vector();
 
  	// Add suggestions if the word is a barbarism
  	m_barbarism.suggestWord(word32, length, sgvec);    	 	
 
 	for (c = 0; c < m_pISpellState->pcount; c++)
 	  {
-	    int l;
-	    
-	    l = strlen(m_pISpellState->possibilities[c]);
+	    int l = strlen(m_pISpellState->possibilities[c]);
 	    
 	    UT_UCS4Char *theWord = (UT_UCS4Char*)malloc(sizeof(UT_UCS4Char) * (l + 1));
 	    if (theWord == NULL)
@@ -234,7 +233,7 @@ ISpellChecker::suggestWord(const UT_UCSChar *word32, size_t length)
 	    
 	    if (m_pISpellState->translate_out == (iconv_t)-1)
 	      {
-		/* copy to 16bit string and null terminate */
+		/* copy to 32bit string and null terminate */
 		register int x;
 		
 		for (x = 0; x < l; x++)
@@ -243,7 +242,7 @@ ISpellChecker::suggestWord(const UT_UCSChar *word32, size_t length)
 	      }
 	    else
 	      {
-		/* convert to 16bit string and null terminate */
+		/* convert to 32bit string and null terminate */
 
 		size_t len_in, len_out;
 		const char *In = m_pISpellState->possibilities[c];
@@ -402,6 +401,9 @@ ISpellChecker::setDictionaryEncoding  ( const char * hashname, const char * enco
    */
   s_try_autodetect_charset(m_pISpellState, encoding);
 
+  if(UT_iconv_isValid(m_pISpellState->translate_in) && UT_iconv_isValid(m_pISpellState->translate_out))
+    return; /* success */
+
   /* Test for utf8 first */
   prefstringchar = findfiletype(m_pISpellState, "utf8", 1, deftflag < 0 ? &deftflag : (int *) NULL);
   if (prefstringchar >= 0)
@@ -410,6 +412,9 @@ ISpellChecker::setDictionaryEncoding  ( const char * hashname, const char * enco
       m_pISpellState->translate_out = UT_iconv_open(UCS_INTERNAL, "utf-8");      
     }
   
+  if(UT_iconv_isValid(m_pISpellState->translate_in) && UT_iconv_isValid(m_pISpellState->translate_out))
+    return; /* success */
+
   /* Test for "latinN" */
   if(!UT_iconv_isValid(m_pISpellState->translate_in))
     {
@@ -426,17 +431,6 @@ ISpellChecker::setDictionaryEncoding  ( const char * hashname, const char * enco
 	      m_pISpellState->translate_out = UT_iconv_open(UCS_INTERNAL, teststring.c_str());
 	      break;
 	    }
-	}
-    }
-  
-  /* Test for known "hashname"s */
-  if(!UT_iconv_isValid(m_pISpellState->translate_in))
-    {
-      if( strstr( hashname, "russian.hash" ))
-	{
-	  /* ISO-8859-5, CP1251 or KOI8-R */
-	  m_pISpellState->translate_in = UT_iconv_open("KOI8-R", UCS_INTERNAL);
-	  m_pISpellState->translate_out = UT_iconv_open(UCS_INTERNAL, "KOI8-R");
 	}
     }
   

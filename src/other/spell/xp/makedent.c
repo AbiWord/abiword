@@ -38,7 +38,11 @@
 
 /*
  * $Log$
+ * Revision 1.7  2003/01/04 19:09:04  dom
+ * some tidying... bug pissing me off...
+ *
  * Revision 1.6  2002/09/19 05:31:18  hippietrail
+ *
  * More Ispell cleanup.  Conditional globals and DEREF macros are removed.
  * K&R function declarations removed, converted to Doxygen style comments
  * where possible.  No code has been changed (I hope).  Compiles for me but
@@ -579,7 +583,7 @@ int l1_isstringch(ispell_state_t *istate, char *ptr, int len, int canon) {
 int
 strtoichar (ispell_state_t *istate, ichar_t *out, char *in, int outlen, int canonical)
 {
-    register int	len;		/* Length of next character */
+    register int len = 1;		/* Length of next character */
 
     outlen /= sizeof (ichar_t);		/* Convert to an ichar_t count */
     for (  ;  --outlen > 0  &&  *in != '\0';  in += len)
