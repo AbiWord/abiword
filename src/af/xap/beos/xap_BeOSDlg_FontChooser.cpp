@@ -445,7 +445,7 @@ bool FontWin::QuitRequested()
 
 	// We need to activate the first tab so we can find the view children.
 	BTabView* pTabView = (BTabView *)FindView("fonttab");
-	pTabView->Select(0);
+	pTabView->Select((long int)0);
 	
 	BListView *FontList=(BListView *)FindView("fontlist");
 	
