@@ -251,7 +251,7 @@ void AP_BeOSDialog_Goto::runModeless(XAP_Frame * pFrame)
 void AP_BeOSDialog_Goto::GoTo (const char *number)
 {
 	UT_UCSChar *ucsnumber = (UT_UCSChar *) malloc (sizeof (UT_UCSChar) * (strlen(number) + 1));
-	UT_UCS_strcpy_char (ucsnumber, number);
+	UT_UCS4_strcpy_char (ucsnumber, number);
 	int target = m_iRow;
 	this->getView()->gotoTarget ((AP_JumpTarget) target, ucsnumber);
 	free (ucsnumber);

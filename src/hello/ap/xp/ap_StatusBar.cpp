@@ -326,7 +326,7 @@ void AP_StatusBar::setStatusMessage(const char * pBuf)
 	UT_UCSChar bufUCS[AP_MAX_MESSAGE_FIELD];
 
 	if (len)
-		UT_UCS_strcpy_char(bufUCS,pBuf);
+		UT_UCS4_strcpy_char(bufUCS,pBuf);
 	else
 		memset(bufUCS,0,sizeof(bufUCS));
 

@@ -604,7 +604,7 @@ UT_UCSChar * AP_CocoaDialog_Spell::_convertFromMB(char *word)
 	UT_UCS_cloneString_char ( &wword, word );
 #else
 	UT_UCSChar *wword = (UT_UCSChar *) malloc (strlen(word)*2);
-	UT_UCS_strcpy_char(wword,word);
+	UT_UCS4_strcpy_char(wword,word);
 #endif
 	return wword;
 }

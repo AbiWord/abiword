@@ -87,7 +87,7 @@ char *AP_CocoaDialog_Goto::s_convert(const char * st)
 void AP_CocoaDialog_Goto::s_goto (const char *number, AP_CocoaDialog_Goto * me)
 {
 	UT_UCSChar *ucsnumber = (UT_UCSChar *) malloc (sizeof (UT_UCSChar) * (strlen(number) + 1));
-	UT_UCS_strcpy_char (ucsnumber, number);
+	UT_UCS4_strcpy_char (ucsnumber, number);
 	int target = me->getSelectedRow ();
 	me->getView()->gotoTarget ((AP_JumpTarget) target, ucsnumber);
 	free (ucsnumber);

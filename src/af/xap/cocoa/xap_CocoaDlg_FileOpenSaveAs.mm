@@ -746,7 +746,7 @@ XAP_CocoaDialog_FileOpenSaveAs::previewPicture (void)
 	const XML_Char * str = pSS->getValue(XAP_STRING_ID_DLG_IP_No_Picture_Label);
 	int len = strlen (str);
 	UT_UCSChar * ucstext = new UT_UCSChar [len + 1]; 
-	UT_UCS_strcpy_char (ucstext, str);
+	UT_UCS4_strcpy_char (ucstext, str);
 
 	int answer = 0;
 
