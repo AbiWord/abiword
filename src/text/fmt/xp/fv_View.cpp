@@ -652,17 +652,9 @@ void FV_View::copyTextToClipboard(const UT_UCS4String sIncoming, bool useClipboa
  */
 void FV_View::btn0InlineImage(UT_sint32 x, UT_sint32 y)
 {
-	xxx_UT_DEBUGMSG(("btn0 called InlineImage mode %d \n",m_InlineImage.getFrameEditMode()));
-	if(!m_InlineImage.isActive())
-	{
-		getGraphics()->setCursor(GR_Graphics::GR_CURSOR_GRAB);
-		return;
-	}
-	else
-	{
-		m_FrameEdit.setDragType(x,y,false);
-		setCursorToContext();
-	}
+	xxx_UT_DEBUGMSG(("btn0 called InlineImage mode %d \n",m_InlineImage.getInlineDragMode()));
+	m_InlineImage.setDragType(x,y,false);
+	setCursorToContext();
 }
 
 /*!
@@ -8811,6 +8803,11 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 		}
 		return EV_EMC_FRAME;
 	}
+	if(m_InlineImage.isActive())
+	{
+			m_prevMouseContext = EV_EMC_IMAGESIZE;
+			return EV_EMC_IMAGESIZE;
+	}
 	UT_sint32 ires = 40;
 	pPage->mapXYToPosition(xClick, yClick, pos, bBOL, bEOL,isTOC, true);
 	fl_BlockLayout* pBlock;
@@ -9070,17 +9067,9 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 				// Set the image size in the image selection rect
 				m_selImageRect = UT_Rect(xoff,yoff,pRun->getWidth(),pRun->getHeight());
 			}
-		
-			if (isOverImageResizeBox(m_imageSelCursor, xPos, yPos))
-			{
-				m_prevMouseContext = EV_EMC_IMAGESIZE;
-				return EV_EMC_IMAGESIZE;
-			}
-			else
-			{
-				m_prevMouseContext = EV_EMC_IMAGE;
-				return EV_EMC_IMAGE;
-			}
+			m_prevMouseContext = EV_EMC_IMAGESIZE;
+			//			m_InlineImage.mouseLeftPress(xPos, yPos);
+			return EV_EMC_IMAGESIZE;
 		}
 		if(m_Selection.isPosSelected(pos))
 		{
@@ -9270,8 +9259,48 @@ void FV_View::setCursorToContext()
 		cursor = GR_Graphics::GR_CURSOR_IMAGE;
 		break;
 	case EV_EMC_IMAGESIZE:
-		cursor = m_imageSelCursor;
-		break;	
+		xxx_UT_DEBUGMSG(("Imagesize context \n"));
+		if(m_InlineImage.getInlineDragWhat() == FV_Inline_DragTopLeftCorner)
+		{
+			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_NW;
+		}
+		else if(m_InlineImage.getInlineDragWhat() ==FV_Inline_DragTopRightCorner)
+		{
+			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_NE;
+		}
+		else if(m_InlineImage.getInlineDragWhat() ==FV_Inline_DragBotLeftCorner)
+		{
+			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_SW;
+		}
+		else if(m_InlineImage.getInlineDragWhat() ==FV_Inline_DragBotRightCorner)
+		{
+			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_SE;
+		}
+		else if(m_InlineImage.getInlineDragWhat() ==FV_Inline_DragLeftEdge)
+		{
+			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_W;
+		}
+		else if(m_InlineImage.getInlineDragWhat() ==FV_Inline_DragTopEdge)
+		{
+			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_N;
+		}
+		else if(m_InlineImage.getInlineDragWhat() ==FV_Inline_DragRightEdge)
+		{
+			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_E;
+		}
+		else if(m_InlineImage.getInlineDragWhat() ==FV_Inline_DragBotEdge)
+		{
+			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_S;
+		}
+		else if(!m_InlineImage.isActive())
+		{
+			cursor = GR_Graphics::GR_CURSOR_IMAGE;
+		}
+		else
+		{
+			cursor = GR_Graphics::GR_CURSOR_GRAB;
+		}
+		break;
 	case EV_EMC_FIELD:
 		cursor = GR_Graphics::GR_CURSOR_DEFAULT;
 		break;
@@ -9301,6 +9330,7 @@ void FV_View::setCursorToContext()
 	case EV_EMC_VISUALTEXTDRAG:
 		cursor = GR_Graphics::GR_CURSOR_IMAGE;
 		break;
+
 	case EV_EMC_FRAME:
 	case EV_EMC_POSOBJECT:
 		if(m_FrameEdit.getFrameEditMode() == FV_FrameEdit_WAIT_FOR_FIRST_CLICK_INSERT)
@@ -9504,15 +9534,7 @@ EV_EditMouseContext FV_View::getInsertionPointContext(UT_sint32 * pxPos, UT_sint
 				// Set the image size in the image selection rect
 				m_selImageRect = UT_Rect(xoff,yoff,pRun->getWidth(),pRun->getHeight());
 			}
-		
-			if (isOverImageResizeBox(m_imageSelCursor, m_xPoint, m_yPoint + m_iPointHeight))
-			{
-				return EV_EMC_IMAGESIZE;
-			}
-			else
-			{
-				return EV_EMC_IMAGE;
-			}
+			return EV_EMC_IMAGE;
 		}			
 	case FPRUN_TAB:
 	case FPRUN_FORCEDLINEBREAK:

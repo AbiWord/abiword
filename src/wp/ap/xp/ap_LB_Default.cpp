@@ -93,7 +93,7 @@ ap_bs_Mouse MouseTable[] =
 	{_CL _B0,	{ "",	"",			"cursorRightArrow",	"",			"",			""				}},
 	{_CM _B0,	{ "",	"",			"cursorIBeam",		"",			"",			""				}},
 	{_CI _B0,	{ "",	"",			"cursorImage",		"",			"",			""				}},
-	{_CZ _B0,	{ "",	"",			"cursorImageSize",	"",			"",			""				}},
+	{_CZ _B0,	{ "",	"",			"btn0InlineImage",	"",			"",			""				}},
 	{_CF _B0,	{ "",	"",			"cursorDefault",	"",			"",			""				}},
 	{_CR _B0,	{ "",	"",			"cursorDefault",	"",			"",			""				}},
 	{_CH _B0,	{ "",	"",			"hyperlinkStatusBar",	"",			"",			"",				}},
@@ -121,7 +121,7 @@ ap_bs_Mouse MouseTable[] =
 //	Button-1, Image-context
 //  { context	{ click				doubleclick		drag,		dbldrag,		release,	doublerelease }},
 	{_CI _B1,	{ "selectObject",	"selectObject",	"",			"",				"",			""	}},
-	{_CI _B1 _C,{ "",				"",				"dragImage","",				"dropImage",""	}},
+	{_CI _B1 _C,{ "copyInlineImage",	"copyInlineImage",				"dragInlineImage","dragInlineImage",				"releaseInlineImage","releaseInlineImage"	}},
 	{_CF _B1,	{ "warpInsPtToXY",	"selectObject",	"",			"",				"",			""	}},
 	{_CF _B1,	{ "warpInsPtToXY",	"selectObject",	"",			"",				"",			""	}},
 	
@@ -151,7 +151,8 @@ ap_bs_Mouse MouseTable[] =
 
 //	Button-1, Image-context
 //  { context	{ click				doubleclick		drag,		dbldrag,	release,		doublerelease	}},
-	{_CZ _B1,	{ "",				"",				"resizeImage",	"",		"endResizeImage",	""				}},
+	{_CZ _B1,	{ "btn1InlineImage",				"dlgFmtPosImage",				"dragInlineImage",	"",		"releaseInlineImage",	"releaseInlineImage"				}},
+	{_CZ _B1 _C,{ "copyInlineImage",	"copyInlineImage",				"dragInlineImage","dragInlineImage",				"releaseInlineImage","releaseInlineImage"	}},
 //	{_CI _B1,	{ "selectImage",	"editImage",	"moveImage","",			"endImageMove",	""				}},
 
 //	Button-1, Math-context
@@ -192,6 +193,7 @@ ap_bs_Mouse MouseTable[] =
 	//{_CL _B3,	{ "contextLeftOfText",	"",			"",		"",			"",			""				}},
 	{_CM _B3,	{ "contextMisspellText","",			"",		"",			"",			""				}},
 	{_CI _B3,	{ "contextImage",		"",			"",		"",			"",			""				}},
+	{_CZ _B3,	{ "contextImage",		"",			"",		"",			"",			""				}},
 	{_CTF _B3,	{ "contextFrame",		"",			"",		"",			"",			""				}},
 	{_CPO _B3,	{ "contextPosObject",		"",			"",		"",			"",			""				}},
 	//{_CZ _B3,	{ "contextImageSize",	"",			"",		"",			"",			""				}},

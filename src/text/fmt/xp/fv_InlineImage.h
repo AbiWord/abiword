@@ -22,6 +22,8 @@
 
 #include "pt_Types.h"
 #include "fl_FrameLayout.h"
+#include "ut_string_class.h"
+
 
 typedef enum _FV_InlineDragMode
 {
@@ -50,6 +52,7 @@ typedef enum _FV_InlineDragWhat
 class GR_Graphics;
 class GR_Image;
 class FV_View;
+class PP_AttrProp;
 
 class ABI_EXPORT FV_VisualInlineImage
 {
@@ -66,6 +69,8 @@ public:
     void                      setMode(FV_InlineDragMode iInlineDragMode);
 	FV_InlineDragMode     getInlineDragMode(void) const 
 		{ return m_iInlineDragMode;}
+	FV_InlineDragWhat     getInlineDragWhat(void) const 
+		{ return       m_iDraggingWhat;;}
 	void                  setDragType(UT_sint32 x,UT_sint32 y, bool bDrawImage);
 	FV_InlineDragWhat     mouseMotion(UT_sint32 x, UT_sint32 y);
 	void                  mouseLeftPress(UT_sint32 x, UT_sint32 y);
@@ -82,6 +87,7 @@ public:
 	UT_sint32             getGlobCount(void);
 	void                  _beginGlob();
 	void                  _endGlob();
+	void                  cleanUP(void);
 private:
 	FV_View *             m_pView;
 	FV_InlineDragMode     m_iInlineDragMode;
@@ -91,6 +97,8 @@ private:
 	UT_Rect               m_recCurFrame;
 	UT_sint32             m_iInitialOffX;
 	UT_sint32             m_iInitialOffY;
+	UT_sint32             m_iFirstEverX;
+	UT_sint32             m_iFirstEverY;
 	bool                  m_bTextCut;
 	GR_Image *            m_pDocUnderCursor;
 	bool                  m_bCursorDrawn;
@@ -100,9 +108,14 @@ private:
 	UT_Timer *			  m_pAutoScrollTimer;
 	UT_sint32			  m_xLastMouse;
 	UT_sint32			  m_yLastMouse;
+
 	bool                  m_bDoingCopy;
 	FV_InlineDragWhat     m_iDraggingWhat;
 	UT_sint32             m_iGlobCount;
+	PP_AttrProp *         m_pImageAP;
+	GR_Image *            m_screenCache;
+	bool                  m_bFirstDragDone;
+	UT_UTF8String         m_sCopyName;
 };
 
 #endif /* FV_VISUALINLINEIMAGE_H */

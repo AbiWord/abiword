@@ -335,6 +335,7 @@ public:
 
 	static EV_EditMethod_Fn btn1InlineImage;
 	static EV_EditMethod_Fn btn0InlineImage;
+	static EV_EditMethod_Fn copyInlineImage;
 	static EV_EditMethod_Fn dragInlineImage;
 	static EV_EditMethod_Fn releaseInlineImage;
 
@@ -762,6 +763,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(contextText),			0,	""),
 	EV_EditMethod(NF(copy), 				0,	""),
 	EV_EditMethod(NF(copyFrame), 				0,	""),
+	EV_EditMethod(NF(copyInlineImage), 				0,	""),
 	EV_EditMethod(NF(copyVisualText),		0,	""),
 	EV_EditMethod(NF(cursorDefault),		0,	""),
 	EV_EditMethod(NF(cursorHline),      	0,	""),
@@ -3700,6 +3702,8 @@ Defun(selectObject)
 		{
 			// we've found an image: do not move the view, just select the image and exit
 			pView->cmdSelect(pos,pos+1);
+			// Set the cursor context to image selected.
+			pView->getMouseContext(pCallData->m_xPos, pCallData->m_yPos);
 			return true;
 		}
 		else
@@ -13392,10 +13396,10 @@ Defun(btn0InlineImage)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-	xxx_UT_DEBUGMSG(("Hover on Frame \n"));
+	xxx_UT_DEBUGMSG(("Hover on Inline Image \n"));
 	UT_sint32 y = pCallData->m_yPos;
 	UT_sint32 x = pCallData->m_xPos;
-	pView->btn0Frame(x,y);
+	pView->btn0InlineImage(x,y);
 	return true;
 }
 
@@ -13409,6 +13413,19 @@ Defun(btn1InlineImage)
 	UT_sint32 x = pCallData->m_xPos;
 	pView->getGraphics()->setCursor(GR_Graphics::GR_CURSOR_GRAB);
 	pView->btn1InlineImage(x,y);
+	return true;
+}
+
+
+Defun(copyInlineImage)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_DEBUGMSG(("Copy InlineImage \n"));
+	UT_sint32 y = pCallData->m_yPos;
+	UT_sint32 x = pCallData->m_xPos;
+	pView->getGraphics()->setCursor(GR_Graphics::GR_CURSOR_GRAB);
+	pView->btn1CopyImage(x,y);
 	return true;
 }
 
@@ -13432,7 +13449,7 @@ Defun(dragInlineImage)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-	xxx_UT_DEBUGMSG(("Drag Frame \n"));
+	xxx_UT_DEBUGMSG(("Drag Inline Image \n"));
 //
 // Do this operation in an idle loop so when can reject queued events
 //
