@@ -438,6 +438,7 @@ bool IE_Imp_RTF::HandlePicture()
 			}
 			UT_DEBUGMSG(("Doing standard picture stuff with keyword %s \n",keyword));
 			keywordID = KeywordToID(reinterpret_cast<char *>(keyword));
+			UT_ASSERT(RTF_KW_cell  != keywordID);
 			switch (keywordID)
 			{
 			case RTF_KW_pngblip:
@@ -688,7 +689,8 @@ void RTFProps_FrameProps::_setProperty(const PropertyPair *pair)
 //
 		UT_DEBUGMSG(("Found positioned Image \n"));
 	}
-	else {
+	else if( propName && propValue)
+	{
 		UT_DEBUGMSG(("unknown property %s with value %s\n", propName->utf8_str(),
 					 propValue->utf8_str() ));
 	}
@@ -843,7 +845,7 @@ bool IE_Imp_TextParaPropParser::tokenKeyword(IE_Imp_RTF * ie,
 										   RTF_KEYWORD_ID kwID, 
 										   UT_sint32 param, bool paramUsed)
 {
-	UT_DEBUGMSG(("IE_Imp_TextParPropParser::tokenKeyword()\n"));
+	xxx_UT_DEBUGMSG(("IE_Imp_TextParPropParser::tokenKeyword()\n"));
 	return ie->TranslateKeywordID(kwID, param, paramUsed);
 }
 
@@ -1156,17 +1158,12 @@ void IE_Imp_RTF::addFrame(RTFProps_FrameProps & frame)
 	if(!bUseInsertNotAppend())
 	{
 		getDoc()->appendStrux(PTX_SectionFrame,attribs);
-		getDoc()->appendStrux(PTX_Block,NULL);
 	}
 	else
 	{
 		insertStrux(PTX_SectionFrame,attribs,NULL);
-		UT_DEBUGMSG((" Insert Block at Frame \n"));
-		markPasteBlock();
-		insertStrux(PTX_Block);
 	}
 	m_bFrameStruxIn = true;
-
 }
 
 /*!
@@ -1211,6 +1208,7 @@ void IE_Imp_RTF::HandleShapePict()
 		case RTF_TOKEN_KEYWORD:
 		{
 			keywordID = KeywordToID(reinterpret_cast<char *>(keyword));
+			UT_ASSERT(RTF_KW_cell  != keywordID);
 			switch (keywordID)
 			{
 			case RTF_KW_pict:
@@ -1274,6 +1272,7 @@ bool IE_Imp_RTF::HandleObject()
 		case RTF_TOKEN_KEYWORD:
 		{
 			keywordID = KeywordToID(reinterpret_cast<char *>(keyword));
+			UT_ASSERT(RTF_KW_cell  != keywordID);
 			switch (keywordID)
 			{
 			case RTF_KW_rsltrtf:

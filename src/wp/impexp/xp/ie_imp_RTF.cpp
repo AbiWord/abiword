@@ -1559,7 +1559,8 @@ void IE_Imp_RTF::OpenTable(bool bDontFlush)
 	{
 		if(!bDontFlush)
 		{
-			FlushStoredChars(true);
+			m_newParaFlagged = false;
+			FlushStoredChars(true); // MES 30/3/2005
 		}
 	}
 	else
@@ -1575,14 +1576,17 @@ void IE_Imp_RTF::OpenTable(bool bDontFlush)
 //
 	if((m_TableControl.getNestDepth() > 1) && m_bCellBlank)
 	{
-			xxx_UT_DEBUGMSG(("Append block 6 \n"));
+			UT_DEBUGMSG(("Append block 6 \n"));
 
-		getDoc()->appendStrux(PTX_Block,NULL);
+			getDoc()->appendStrux(PTX_Block,NULL);
 	}
 	getDoc()->appendStrux(PTX_SectionTable,NULL);
-	xxx_UT_DEBUGMSG(("SEVIOR: Appending Table strux to doc nestdepth %d \n", m_TableControl.getNestDepth()));
+	UT_DEBUGMSG(("SEVIOR: Appending Table strux to doc nestdepth %d \n", m_TableControl.getNestDepth()));
+	UT_ASSERT( m_TableControl.getNestDepth() < 2);
+	PT_DocPosition posEnd=0;
+	getDoc()->getBounds(true,posEnd); // clean frags!
 	PL_StruxDocHandle sdh = getDoc()->getLastStruxOfType(PTX_SectionTable);
-	xxx_UT_DEBUGMSG(("SEVIOR: Table strux sdh is %x \n",sdh));
+	UT_DEBUGMSG(("SEVIOR: Table strux sdh is %x \n",sdh));
 	getTable()->setTableSDH(sdh);
 	getTable()->OpenCell();
 	if(!bDontFlush)
@@ -1591,6 +1595,7 @@ void IE_Imp_RTF::OpenTable(bool bDontFlush)
 		ResetCellAttributes();
 	}
 	getDoc()->appendStrux(PTX_SectionCell,NULL);
+	getDoc()->getBounds(true,posEnd); // clean frags!
 	sdh = getDoc()->getLastStruxOfType(PTX_SectionCell);
 	getCell()->setCellSDH(sdh);
 	m_currentRTFState.m_cellProps = RTFProps_CellProps();
@@ -1677,7 +1682,7 @@ void IE_Imp_RTF::closePastedTableIfNeeded(void)
 				{
 					insertStrux(PTX_EndTable);
 					
-//					insertStrux(PTX_Block); // we don't need this now
+					insertStrux(PTX_Block); 
 				}
 			}
 			else
@@ -1774,7 +1779,7 @@ void IE_Imp_RTF::CloseTable(bool bForce /* = false */)
 //
 // Need this one for dp_Instructions. Sevior
 //
-//			getDoc()->insertStruxNoUpdateBefore(m_lastCellSDH,PTX_Block,NULL);
+			getDoc()->insertStruxNoUpdateBefore(m_lastCellSDH,PTX_Block,NULL);
 			PL_StruxDocHandle cellSDH = m_lastCellSDH;
 			getDoc()->deleteStruxNoUpdate(cellSDH);
 			m_bEndTableOpen = true;
@@ -1816,6 +1821,7 @@ void IE_Imp_RTF::HandleCell(void)
 // Look if the has been some text output before this with an open row. If
 // so, close the table and make copy of the last cells.
 //
+	UT_DEBUGMSG(("Handle Cell \n"));
 	if(m_bRowJustPassed && m_bDoCloseTable && (getTable()!= NULL))
 	{
 		UT_GenericVector<ie_imp_cell *> vecOldCells;
@@ -1853,6 +1859,7 @@ void IE_Imp_RTF::HandleCell(void)
 	m_bCellHandled = true;
 	m_bDoCloseTable = false;
 	m_iNoCellsSinceLastRow++;
+	UT_DEBUGMSG(("Num Cell on row %d \n",m_iNoCellsSinceLastRow));
 	if(bUseInsertNotAppend())
 	{
 		return;
@@ -2458,11 +2465,10 @@ bool IE_Imp_RTF::HandleParKeyword()
 
 		ApplyParagraphAttributes();
 		
-		//getDoc()->appendStrux(PTX_Block,NULL);
+		//getDoc()->appendStrux(PTX_Block,NULL); // FIXME 28/3/2005!
 		m_newParaFlagged = false;
 		m_bSectionHasPara = true;
 	}
-	
 	UT_String sProps;
 	const XML_Char * attrs[3] = {NULL, NULL, NULL};
 	const XML_Char * props = NULL;
@@ -2510,7 +2516,7 @@ bool IE_Imp_RTF::HandleParKeyword()
 //
 bool IE_Imp_RTF::StartNewPara()
 {
-	// force this, if new para is flagged (so we import empty paragraphs)
+	// force this, if new para is flagge:d (so we import empty paragraphs)
 	// if it is not, then we do not flagged, then we do not want new block appended (it
 	// has already been done somewhere else
 	bool ok = FlushStoredChars(m_newParaFlagged);
@@ -2775,7 +2781,7 @@ bool IE_Imp_RTF::ParseRTFKeyword()
 	bool parameterUsed = false;
 	if (ReadKeyword(keyword, &parameter, &parameterUsed, MAX_KEYWORD_LEN))
 	{
-		UT_DEBUGMSG(("SEVIOR: keyword = %s  par= %d \n",keyword,parameter));
+		xxx_UT_DEBUGMSG(("SEVIOR: keyword = %s  par= %d \n",keyword,parameter));
 		bool bres = TranslateKeyword(keyword, parameter, parameterUsed);
 		if(!bres)
 		{
@@ -4056,7 +4062,7 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 		m_currentRTFState.m_charProps.m_styleNumber = param;
 		return true;
 	case RTF_KW_cell:
-		xxx_UT_DEBUGMSG(("SEVIOR: Processing cell \n"));
+		UT_DEBUGMSG(("SEVIOR: Processing cell \n"));
 		HandleCell();
 		return true;
 	case RTF_KW_cellx:
@@ -4318,6 +4324,10 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 		return true;
 	case RTF_KW_itap:
 		if(bUseInsertNotAppend())
+		{
+			return true;
+		}
+		if(m_bInFootnote)
 		{
 			return true;
 		}
@@ -4710,75 +4720,79 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 		m_currentRTFState.m_paraProps.m_curTabLeader = FL_LEADER_EQUALSIGN;
 		return true;
 	case RTF_KW_trowd:
-		m_bRowJustPassed = false;
-		m_bDoCloseTable = false;
-		if(getTable() == NULL)
 		{
-			OpenTable();
-			m_currentRTFState.m_paraProps.m_tableLevel = m_TableControl.getNestDepth();
-		}
+			m_bRowJustPassed = false;
+			m_bDoCloseTable = false;
+			UT_DEBUGMSG(("Doing trowd \n"));
+			if(getTable() == NULL)
+			{
+				OpenTable();
+				m_currentRTFState.m_paraProps.m_tableLevel = m_TableControl.getNestDepth();
+			}
 //
 // Look to see if the nesting level of our tables has changed.
 //
-		if(m_currentRTFState.m_paraProps.m_tableLevel > m_TableControl.getNestDepth())
-		{
-			xxx_UT_DEBUGMSG(("At trowd m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
-			while(m_currentRTFState.m_paraProps.m_tableLevel > m_TableControl.getNestDepth())
+			if(m_currentRTFState.m_paraProps.m_tableLevel > m_TableControl.getNestDepth())
 			{
-				xxx_UT_DEBUGMSG(("SEVIOR: Doing pard OpenTable \n"));
-				OpenTable();
+				xxx_UT_DEBUGMSG(("At trowd m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
+				while(m_currentRTFState.m_paraProps.m_tableLevel > m_TableControl.getNestDepth())
+				{
+					xxx_UT_DEBUGMSG(("SEVIOR: Doing pard OpenTable \n"));
+					OpenTable();
+				}
+				xxx_UT_DEBUGMSG(("After trowd m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
 			}
-			xxx_UT_DEBUGMSG(("After trowd m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
-		}
-		else if((m_currentRTFState.m_paraProps.m_tableLevel >= 0) && m_currentRTFState.m_paraProps.m_tableLevel < m_TableControl.getNestDepth())
-		{
-			xxx_UT_DEBUGMSG(("At trowd m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
-			while(m_currentRTFState.m_paraProps.m_tableLevel < m_TableControl.getNestDepth())
+			else if((m_currentRTFState.m_paraProps.m_tableLevel >= 0) && m_currentRTFState.m_paraProps.m_tableLevel < m_TableControl.getNestDepth())
 			{
-				xxx_UT_DEBUGMSG(("SEVIOR:Close Table trowd1  \n"));
-				CloseTable();
-				m_bCellBlank = true;
+				xxx_UT_DEBUGMSG(("At trowd m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
+				while(m_currentRTFState.m_paraProps.m_tableLevel < m_TableControl.getNestDepth())
+				{
+					xxx_UT_DEBUGMSG(("SEVIOR:Close Table trowd1  \n"));
+					CloseTable();
+					m_bCellBlank = true;
+				}
+				xxx_UT_DEBUGMSG(("After trowd m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
 			}
-			xxx_UT_DEBUGMSG(("After trowd m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
-		}
 //
 // Look to see if m_bNestTableProps is true for nested tables.
 //
 // To all RTF hackers, getting these 0's and 1's is extremely important.
 // Don't change them unless you can verify that a huge range of RTF docs with
 // tables (nested and unnested) get imported corectly. Martin 10/5/2003
-		else if((m_TableControl.getNestDepth() > 0) && !m_bNestTableProps)
-		{
-			while(m_TableControl.getNestDepth() > 1)
+			else if((m_TableControl.getNestDepth() > 0) && !m_bNestTableProps)
 			{
-				xxx_UT_DEBUGMSG(("SEVIOR:Close Table trowd2 \n"));
-				CloseTable();
-				m_bCellBlank = true;
+				while(m_TableControl.getNestDepth() > 1)
+				{
+					xxx_UT_DEBUGMSG(("SEVIOR:Close Table trowd2 \n"));
+					CloseTable();
+					m_bCellBlank = true;
+				}
+				m_currentRTFState.m_paraProps.m_tableLevel = 1; 
 			}
-			m_currentRTFState.m_paraProps.m_tableLevel = 1; 
-		}
-//
-// If a trowd appears without  a preceding \cell we close the previous table
-//
-		if(!m_bCellBlank && !m_bNestTableProps)
-		{
-			xxx_UT_DEBUGMSG(("After trowd closing table coz no cell detected -1\n"));
-			CloseTable();
-		}
-//
+
+			//If a trowd appears without  a preceding \cell we close the previous table
+
+			if(!m_bCellBlank && !m_bNestTableProps)
+			{
+				xxx_UT_DEBUGMSG(("After trowd closing table coz no cell detected -1\n"));
+				CloseTable();
+			}
+
+
 // Another way of detecting if a trowd appears without a preceding \cell.
 // Close the previous table. This should always work.
 		
-		else if(!m_bCellHandled && m_bContentFlushed)
-		{
-			xxx_UT_DEBUGMSG(("After trowd closing table coz no cell detected - 2\n"));
-			CloseTable();
+			else if(!m_bCellHandled && m_bContentFlushed)
+			{
+				UT_DEBUGMSG(("After trowd closing table coz no cell detected - 2\n"));
+				CloseTable(); 
+			}
+			//   			m_bContentFlushed = false;
+			m_bNestTableProps = false;
+			ResetCellAttributes();
+			ResetTableAttributes();
+			break;
 		}
-		m_bContentFlushed = false;
-		m_bNestTableProps = false;
-		ResetCellAttributes();
-		ResetTableAttributes();
-		break;
 
 	case RTF_KW_ul:
 	case RTF_KW_uld:
@@ -4872,7 +4886,7 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 		return StartNewPara();
 		break;
 	default:
-		UT_DEBUGMSG(("Unhandled keyword in dispatcher: %d\n", keywordID));
+		xxx_UT_DEBUGMSG(("Unhandled keyword in dispatcher: %d\n", keywordID));
 	}
 	return true;
 }
@@ -5504,7 +5518,13 @@ bool IE_Imp_RTF::_appendSpan()
 		p = reinterpret_cast<UT_UCS4Char*>(m_gbBlock.getPointer(0));
 		if(!getDoc()->appendFmt(propsArray))
 			return false;
-					
+#if DEBUG
+#if 0
+		UT_UTF8String sDebug;
+		sDebug.appendUCS4(p,iLen);
+		UT_DEBUGMSG(("Appending Span |%s| \n",sDebug.utf8_str()));
+#endif
+#endif
 		if(!getDoc()->appendSpan(p, iLen))
 			return false;
 		
@@ -5945,7 +5965,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 			if(m_bParaWrittenForSection)
 			{
 				xxx_UT_DEBUGMSG(("At Apply Paragraph m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
-				while(m_currentRTFState.m_paraProps.m_tableLevel > m_TableControl.getNestDepth())
+				while((m_currentRTFState.m_paraProps.m_tableLevel > m_TableControl.getNestDepth()) && (m_currentRTFState.m_paraProps.m_tableLevel > 1))
 				{
 					xxx_UT_DEBUGMSG(("SEVIOR: Doing pard OpenTable \n"));
 					m_bCellBlank = false;
@@ -8668,9 +8688,18 @@ bool IE_Imp_RTF::HandleAbiTable(void)
 	{
 		attrs[1] = sProps.c_str();
 //
-// insert a block to terminate the text before this.
+// insert a block to terminate the text before this if needed,
 //
-		FlushStoredChars(true);	
+		if(getDoc()->isBlockAtPos(m_dposPaste) || getDoc()->isTableAtPos(m_dposPaste) || getDoc()->isEndFrameAtPos(m_dposPaste) ||getDoc()->isFrameAtPos(m_dposPaste) || getDoc()->isHdrFtrAtPos(m_dposPaste))
+		{
+			FlushStoredChars(false);
+		}
+		else
+		{
+			m_newParaFlagged = true;
+			FlushStoredChars(true);
+			m_dposPaste--;
+		}
 //
 // Insert the table strux at the same spot. This will make the table link correctly in the
 // middle of the broken text.
@@ -8933,10 +8962,10 @@ bool IE_Imp_RTF::insertStrux(PTStruxType pts , const XML_Char ** attrs, const XM
 	}
 	if(bDoExtraBlock && (pts == PTX_SectionTable))
 	{
-		getDoc()->insertStrux(m_dposPaste,PTX_Block);
+		//		getDoc()->insertStrux(m_dposPaste,PTX_Block);
 		if(bInHyperlink)
 		{
-			m_dposPaste++;
+			//	m_dposPaste++;
 			bInHyperlink = false;
 		}
 	}
@@ -10774,7 +10803,7 @@ bool IE_Imp_RTF::HandlePCData(UT_UTF8String & str)
 	unsigned char keyword[MAX_KEYWORD_LEN];
 	UT_sint32 parameter = 0;
 	bool paramUsed = false;	
-
+	bool bStop = false;
 	UT_ByteBuf buf;
 	
 	do {
@@ -10788,6 +10817,10 @@ bool IE_Imp_RTF::HandlePCData(UT_UTF8String & str)
 				// here we assume that the read char fit on ONE byte. Should be correct.
 				ch = static_cast<UT_Byte>(wc);
 				buf.append(&ch, 1);
+			}
+			else
+			{
+				bStop = true; // regular keyword stop reading data and handle it
 			}
 			break;
 		case RTF_TOKEN_DATA:
@@ -10805,9 +10838,24 @@ bool IE_Imp_RTF::HandlePCData(UT_UTF8String & str)
 			break;
 		}
 	}
-	while (tokenType != RTF_TOKEN_CLOSE_BRACE);
+	while ((tokenType != RTF_TOKEN_CLOSE_BRACE) && !bStop);
 
 	str.appendBuf(buf, m_mbtowc);
+	if(bStop)
+	{
+		//
+		// Have to insert the data before we process the keyword
+		//
+		const char * sz = str.utf8_str();
+		while(*sz)
+		{
+			ParseChar(*sz);
+			sz++;
+		}
+		RTF_KEYWORD_ID keywordID = KeywordToID(reinterpret_cast<char *>(keyword));
+		TranslateKeywordID(keywordID, parameter, paramUsed);
+		str.clear();
+	}
 
 	return true;
 }

@@ -642,7 +642,6 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 		UT_ASSERT(m_pCurrentSL);
 		
 		// Append a new TableLayout to the SectionLayout or CellLayout
-		
 		fl_ContainerLayout * pCon = getTopContainerLayout();
 		fl_ContainerLayout*	pCL = NULL;
 		UT_DEBUGMSG(("!!!!Appending Table \n"));

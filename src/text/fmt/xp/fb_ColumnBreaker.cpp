@@ -861,20 +861,29 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 			while (pCurColumn != NULL && pCurColumn != pNextColumn)
 			{
 				xxx_UT_DEBUGMSG(("Start of bump loop pNextColumn %x \n",pNextColumn));
+				bool isTOCTABLE = ((pOuterContainer->getContainerType() == FP_CONTAINER_TABLE) || (pOuterContainer->getContainerType() == FP_CONTAINER_TABLE));
 				pCurColumn->bumpContainers(pLastContainerToKeep);
+
 				pCurColumn->layout();
 //
 // Layout might delete a broken table or TOC. Check for this.
 //
 				fp_Container * pCon = pCurColumn->getLastContainer();
+				bool bDoneTabTOC = false;
 				if(pCon && pCon->getContainerType() == FP_CONTAINER_TABLE)
 				{
+				        bDoneTabTOC = true;
 					pOuterContainer = _getNext(pCon);
 				}
 				if(pCon && pCon->getContainerType() == FP_CONTAINER_TOC)
 				{
 					xxx_UT_DEBUGMSG(("Last Con was TOC \n"));
+				        bDoneTabTOC = true;
 					pOuterContainer = _getNext(pCon);
+				}
+				if(!bDoneTabTOC && isTOCTABLE)
+				{
+				        pOuterContainer = _getNext(pCon);
 				}
 //				pCurColumn->validate();
 				pPrevColumn = pCurColumn;

@@ -3577,8 +3577,19 @@ void fp_TableContainer::deleteBrokenTables(bool bClearFirst, bool bRecurseUp)
 	while(pBroke )
 	{
 		pNext = static_cast<fp_TableContainer *>(pBroke->getNext());
+		//
+		// Remove from list
+		//
+		if(pBroke->getPrev())
+		{
+			pBroke->getPrev()->setNext(pBroke->getNext());
+		}
+		if(pBroke->getNext())
+		{
+			pBroke->getNext()->setPrev(pBroke->getPrev());
+		}
 		pLast = pBroke;
-		if(!bFirst)
+		if(pBroke->getContainer())
 		{
 			UT_sint32 i = pBroke->getContainer()->findCon(pBroke);
 //
@@ -3589,10 +3600,42 @@ void fp_TableContainer::deleteBrokenTables(bool bClearFirst, bool bRecurseUp)
 				fp_Container * pCon = pBroke->getContainer();
 				pBroke->setContainer(NULL);
 				pCon->deleteNthCon(i);
+				UT_DEBUGMSG(("Delete %x from column %x \n",pBroke,pCon));
+				//
+				// Search before and after. This should not happen!
+				// FIXME put in some code to detect this in breakSection
+				//
+				fp_Container * pPrevCon = static_cast<fp_Container *>(pCon->getPrev());
+				while(pPrevCon && i >=0)
+				{
+					i = pPrevCon->findCon(pBroke);
+					UT_sint32 j = i;
+					while(j >= 0)
+					{
+						UT_DEBUGMSG(("Also remove table %x from column %x \n",pBroke,pPrevCon)); 
+						pPrevCon->deleteNthCon(j);
+						j = pPrevCon->findCon(pBroke);
+					}
+					pPrevCon = static_cast<fp_Container *>(pPrevCon->getPrev());
+				}
+				fp_Container * pNextCon = static_cast<fp_Container *>(pCon->getNext());
+				i = 0;
+				while(pNextCon && (i>=0))
+				{
+					i = pNextCon->findCon(pBroke);
+					UT_sint32 j = i;
+					while(j >= 0)
+					{
+						UT_DEBUGMSG(("Also remove table %x from column %x \n",pBroke,pNextCon)); 
+						pNextCon->deleteNthCon(j);
+						j = pNextCon->findCon(pBroke);
+					}
+					pNextCon = static_cast<fp_Container *>(pNextCon->getNext());
+				}
 			}
 		}
 		bFirst = false;
-		xxx_UT_DEBUGMSG(("SEVIOR: Deleting broken table %x \n",pBroke));
+		UT_DEBUGMSG(("SEVIOR: table %x  Deleting broken table %x \n",this,pBroke));
 		delete pBroke;
 		if(pBroke == getLastBrokenTable())
 		{

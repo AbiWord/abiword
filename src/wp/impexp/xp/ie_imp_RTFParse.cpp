@@ -165,7 +165,7 @@ IE_Imp_RTF::StandardKeywordParser(IE_Imp_RTFGroupParser *parser)
 			break;
 		case RTF_TOKEN_KEYWORD:
 		{
-			UT_DEBUGMSG(("IE_Imp_RTF::StandardKeywordParser() %s\n", keyword));
+			xxx_UT_DEBUGMSG(("IE_Imp_RTF::StandardKeywordParser() %s\n", keyword));
 			keywordID = KeywordToID(reinterpret_cast<char *>(keyword));
 			parser->tokenKeyword(this, keywordID, parameter, paramUsed);
 			break;

@@ -1436,14 +1436,21 @@ PL_StruxDocHandle  PD_Document::getLastStruxOfType(PTStruxType pts )
 	pf_Frag_Strux * pfSecLast = NULL;
 	bool bFound = false;
 	UT_sint32 nest = 0;
+	pf_Frag_Strux * pfSec = NULL;
 	if(pts == PTX_SectionTable)
 		nest = 1;
+	if(currentFrag->getType()  == pf_Frag::PFT_Strux)
+	{
+		pfSec = static_cast<pf_Frag_Strux *>(currentFrag);
+		if(pfSec->getStruxType() == PTX_EndTable)
+			nest--;
+	}
 	while (!bFound && currentFrag!=m_pPieceTable->getFragments().getFirst())
 	{
 		UT_return_val_if_fail (currentFrag,0);
 		if(currentFrag->getType()  == pf_Frag::PFT_Strux)
 		{
-		     pf_Frag_Strux * pfSec = static_cast<pf_Frag_Strux *>(currentFrag);
+		     pfSec = static_cast<pf_Frag_Strux *>(currentFrag);
 			 if(pts != PTX_EndTable)
 			 { 
 				 if(pfSec->getStruxType() == PTX_EndTable)

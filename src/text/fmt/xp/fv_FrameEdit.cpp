@@ -1652,12 +1652,14 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		}
 		PT_DocPosition posStart = m_pFrameLayout->getPosition(true);
 		PT_DocPosition posEnd = posStart + m_pFrameLayout->getLength();
+		bool bHasContent = false;
 		if(isTextBox)
 		{
 			PD_DocumentRange dr_oldFrame;
-			dr_oldFrame.set(getDoc(),posStart+2,posEnd-1);
+			dr_oldFrame.set(getDoc(),posStart+1,posEnd-1);
 			UT_DEBUGMSG(("SEVIOR: Copy to local changing frame \n"));
-			m_pView->copyToLocal(posStart+2,posEnd-1);
+			m_pView->copyToLocal(posStart+1,posEnd-1);
+			bHasContent = true;
 		}
 // Delete the frame
 
@@ -1701,9 +1703,17 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		PT_DocPosition posFrame = pfFrame->getPos();
 		if(isTextBox)
 		{
-			getDoc()->insertStrux(posFrame+1,PTX_Block);
-			getDoc()->insertStrux(posFrame+2,PTX_EndFrame);
-			m_pView->insertParaBreakIfNeededAtPos(posFrame+3);
+			if(!bHasContent)
+			{
+			     getDoc()->insertStrux(posFrame+1,PTX_Block);
+			     getDoc()->insertStrux(posFrame+2,PTX_EndFrame);
+			     m_pView->insertParaBreakIfNeededAtPos(posFrame+3);
+			}
+			else
+			{
+			     getDoc()->insertStrux(posFrame+1,PTX_EndFrame);
+			     m_pView->insertParaBreakIfNeededAtPos(posFrame+2);
+			}
 		}
 		else
 		{
@@ -1717,7 +1727,14 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		if(isTextBox)
 		{
 			UT_DEBUGMSG(("SEVIOR: Pasting from clipboard Frame changed \n"));
-			m_pView->_pasteFromLocalTo(posFrame+2);
+			if(!bHasContent)
+			{
+			     m_pView->_pasteFromLocalTo(posFrame+2);
+			}
+			else
+			{
+			     m_pView->_pasteFromLocalTo(posFrame+1);
+			}
 		}
 // Finish up with the usual stuff
 		getDoc()->setDontImmediatelyLayout(false);

@@ -1152,9 +1152,21 @@ fl_FrameLayout * FV_View::getFrameLayout(PT_DocPosition pos)
 	}
 
 	fl_BlockLayout* pBlock = _findBlockAtPosition(pos);
-
+	
 	if(pBlock)
 	{
+		if((pBlock->getPosition(true) < pos) && (pBlock->getPosition(true) + pBlock->getLength() + 1 < pos))
+		{
+			pBlock = pBlock->getNextBlockInDocument();
+		}
+		if(pBlock == NULL)
+		{
+			return NULL;
+		}
+		if((pBlock->getPosition(true) < pos) && (pBlock->getPosition(true) + pBlock->getLength() +1 < pos))
+		{
+			return NULL;
+		}
 		fl_ContainerLayout * pCL = pBlock->myContainingLayout();
 		while(pCL && (pCL->getContainerType() != FL_CONTAINER_FRAME) && (pCL->getContainerType() != FL_CONTAINER_DOCSECTION))
 		{
