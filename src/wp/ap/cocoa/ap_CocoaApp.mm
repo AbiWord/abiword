@@ -1122,7 +1122,9 @@ int AP_CocoaApp::main(const char * szAppName, int argc, const char ** argv)
     // continue out the door.
 	// We used to check for bShowApp here.  It shouldn't be needed
 	// anymore, because doWindowlessArgs was supposed to bail already. -PL
-    if (pMyCocoaApp->openCmdLineFiles(&Args))
+    // if (pMyCocoaApp->openCmdLineFiles(&Args))
+
+	if (true) // really don't want to be opening files atm anyway
     {
 		[pool release];
 		pool = nil;

@@ -26,9 +26,25 @@
 	IBOutlet NSMenuItem* m_aboutMenuItem;
 	IBOutlet NSMenuItem* m_prefMenuItem;
 	IBOutlet NSMenuItem* m_quitMenuItem;
-	
+
+	BOOL m_bFileOpenedDuringLaunch;
+	BOOL m_bApplicationLaunching;
 }
 + (XAP_CocoaAppController*)sharedAppController;
+
+- (id)init;
+
+- (BOOL)application:(NSApplication *)sender delegateHandlesKey:(NSString *)key;
+
+- (void)applicationDidFinishLaunching:(NSNotification *)aNotification;
+
+- (BOOL)application:(NSApplication *)theApplication openFile:(NSString *)filename;
+- (BOOL)application:(NSApplication *)theApplication openTempFile:(NSString *)filename;
+- (BOOL)application:(NSApplication *)theApplication printFile:(NSString *)filename;
+- (BOOL)applicationOpenUntitledFile:(NSApplication *)theApplication;
+
+- (NSMenu *)applicationDockMenu:(NSApplication *)sender;
+
 - (NSMenu *)getMenuBar;
 - (NSMenuItem *)_aboutMenu;
 - (NSMenuItem *)_preferenceMenu;

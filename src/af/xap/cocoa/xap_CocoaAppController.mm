@@ -41,6 +41,8 @@ XAP_CocoaAppController* XAP_AppController_Instance = nil;
 	if (self) {
 		XAP_AppController_Instance = self;
 		[[NSApplication sharedApplication] setDelegate:self];
+		m_bFileOpenedDuringLaunch = NO;
+		m_bApplicationLaunching = YES;
 	}
 	return self;
 }
@@ -58,20 +60,39 @@ XAP_CocoaAppController* XAP_AppController_Instance = nil;
 	return [key isEqualToString:@"orderedDocuments"];
 }
 
+- (void)applicationDidFinishLaunching:(NSNotification *)aNotification
+{
+	UT_DEBUGMSG(("[XAP_CocoaAppController -applicationDidFinishLaunching:]\n"));
+	m_bApplicationLaunching = NO;
+
+	if (m_bFileOpenedDuringLaunch == NO)
+	{
+		UT_DEBUGMSG(("No file opened during launch, so opening untitled document:\n"));
+		[self applicationOpenUntitledFile:NSApp];
+	}
+}
 
 - (BOOL)application:(NSApplication *)theApplication openFile:(NSString *)filename
 {
-	bool result;
 	UT_DEBUGMSG(("Requested to open %s\n", [filename UTF8String]));
 	XAP_App * pApp = XAP_App::getApp();
 	XAP_Frame * pNewFrame = pApp->newFrame();
 
-	result = pNewFrame->loadDocument([filename UTF8String], IEFT_Unknown);
-	/*
-		TODO: check what we should really do now
-	*/
-	pNewFrame->show();
-	return result;
+	bool result = (UT_OK == pNewFrame->loadDocument([filename UTF8String], IEFT_Unknown));
+	if (result)
+	{
+		/*
+		 * TODO: check what we should really do now
+		 */
+	}
+	if (result)
+	{
+		pNewFrame->show();
+
+		if (m_bApplicationLaunching == YES)
+			m_bFileOpenedDuringLaunch = YES;
+	}
+	return (result ? YES : NO);
 }
 
 - (BOOL)application:(NSApplication *)theApplication openTempFile:(NSString *)filename
@@ -94,12 +115,21 @@ XAP_CocoaAppController* XAP_AppController_Instance = nil;
 
 - (BOOL)applicationOpenUntitledFile:(NSApplication *)theApplication
 {
-	UT_DEBUGMSG(("Requested a new file\n"));
+	UT_DEBUGMSG(("[XAP_CocoaAppController -applicationOpenUntitledFile:]\n"));
 	XAP_App * pApp = XAP_App::getApp();
 	XAP_Frame * pNewFrame = pApp->newFrame();
-	/*UT_Error error = */pNewFrame->loadDocument(NULL, IEFT_Unknown);
-	pNewFrame->show();
-	return YES;
+
+	bool result = (UT_OK == pNewFrame->loadDocument(NULL, IEFT_Unknown));
+	if (result)
+	{
+		/*
+		 * TODO: check what we should really do now
+		 */
+	}
+	if (result)
+		pNewFrame->show();
+
+	return (result ? YES : NO);
 }
 
 - (NSMenu *)applicationDockMenu:(NSApplication *)sender
