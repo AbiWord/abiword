@@ -4760,6 +4760,28 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, UT_sint16 param, bool
 		break;
 	case RTF_KW_footnote:
 		// can be both footnote and endnote ...
+// No pasting footnotes/endnotes in HdrFtrs
+		if(bUseInsertNotAppend())
+		{
+			XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
+			if(pFrame == NULL)
+			{
+				m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
+				return true;
+			}
+			FV_View * pView = static_cast<FV_View*>(pFrame->getCurrentView());
+			if(pView == NULL)
+			{
+				m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
+				return true;
+			}
+			if(pView->isHdrFtrEdit())
+			{
+				m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
+				return true;
+			}
+		}
+
 		m_bFootnotePending = true;
 		return true;
 	case RTF_KW_ftnalt:
@@ -5587,8 +5609,28 @@ bool IE_Imp_RTF::HandleStarKeyword()
 // Fixme I need to be able to handle footnotes inside tables in RTF
 //
 				case RTF_KW_footnote:
-						
+					if(bUseInsertNotAppend())
+					{
+						XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
+						if(pFrame == NULL)
+						{
+							m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
+							return true;
+						}
+						FV_View * pView = static_cast<FV_View*>(pFrame->getCurrentView());
+						if(pView == NULL)
+						{
+							m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
+							return true;
+						}
+						if(pView->isHdrFtrEdit())
+						{
+							m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
+							return true;
+						}
+					}
 					//HandleFootnote();
+
 					m_bFootnotePending = true;
 					return true;
 					break;
