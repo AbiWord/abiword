@@ -96,11 +96,13 @@ ABIWORD_APP_LIBDIR="AbiWord"
 AC_SUBST(ABIWORD_APP_LIBDIR)
 
 dnl ./configure command line arguments
-dnl curretnly, we have:
+dnl currently, we have:
 dnl   --enable-gnome
 dnl   --enable-debug
 dnl   --enable-extra-optimization
 dnl   --enable-profile
+dnl   --enable-bidi
+dnl   --enable-peer-config
 dnl   --with-pspell
 dnl   --with-libxml2
 dnl The defined values are used mostly in includes.mk, but also in
@@ -160,6 +162,17 @@ AC_ARG_ENABLE(bidi,
        no)  BIDI_CFLAGS="" ;; 
        *) AC_MSG_ERROR(bad value ${enableval} for --enable-bidi) ;;
      esac],[BIDI_CFLAGS=""])
+
+# by default, configure in the abi directory runs the same configure command
+# in the peer directories (wv, expat, etc...).  this provides a way to
+# disable that behavior.
+AC_ARG_ENABLE(peer-config,
+    [  --enable-peer-config  Enable automatic configuration of peer directories (on by default) ],
+     [case "${enableval}" in
+       yes) peerconfig=true ;;
+       no)  peerconfig=false ;;
+       *) AC_MSG_ERROR(bad value ${enableval} for --enable-peer-config) ;;
+      esac],[peerconfig=true])
 
 AC_ARG_ENABLE(scripting,
     [  --enable-scripting   Enable the perl scripting interface ],
@@ -302,18 +315,21 @@ AC_FUNC_ALLOCA
 AC_TYPE_SIGNAL
 AC_CHECK_FUNCS(re_comp regcomp strdup strstr)
 
-dnl other configure scripts
-# AC_CONFIG_SUBDIRS($PEERDIRS) won't work :-(
-for i in . $PEERDIRS; do
-  if test $i != . ; then
-    echo "Running configure in ${i}"
-    config_flags='--disable-shared --enable-static'
-    if test `basename "$i"` = wv; then
-      config_flags="$config_flags --with-exporter"
-    fi
-    (cd $i; ./configure $config_flags)
-  fi
-done
+if test $peerconfig = "true"; then
+	dnl other configure scripts
+	# AC_CONFIG_SUBDIRS($PEERDIRS) won't work :-(
+	for i in . $PEERDIRS; do
+		if test $i != . ; then
+			echo "Running configure in ${i}"
+			config_flags='--disable-shared --enable-static'
+			if test `basename "$i"` = wv; then
+				config_flags="$config_flags --with-exporter"
+			fi
+			(cd $i; ./configure $config_flags)
+		fi
+	done
+fi
+
 AC_SUBST(PEERDIRS)
 AC_SUBST(PEERS)
 

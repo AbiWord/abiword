@@ -46,9 +46,11 @@ Ryan Dooley <ryan@coe.missouri.edu>             started IRIX port
 Paul Egli <pegli@sourcegear.com>
 Danny Faught <faught@rstcorp.com>
 Harald Fernengel <harry@bnro.de>                RTF compatibility fixes
-Hubert Figuiere <hfiguiere@teaser.fr>           RTF import/export work, MacOS (X) port, MacOS X makefiles
-                                                and autoconf, JPEG import, Applix import
+Hubert Figuiere <hfiguiere@teaser.fr>           RTF import/export work, MacOS (X) maintainer, 
+                                                MacOS X makefiles and autoconf, JPEG import, 
+						Applix import
 Albert Fluegel <albert.fluegel@hl.siemens.de>   Solaris
+Ben Fowler <bpfowler@hotmail.com>               MacOS 8/9 work
 Tomas Frydrych <tomas@frydrych.uklinux.net>	ttf, utf8 locale, bidi
 David Given <dg@tao-group.com>			Human Readable Text Export
 Ashleigh Gordon <gordonac@ocean.com.au>         English help files
@@ -130,6 +132,7 @@ Göran Thyni <goran@kirra.net>                   libxml support, some autoconf wo
 Kevin Vajk <kvajk@ricochet.net>                 File import/export detection, hpux
 Martin Vermeer <martin.vermeer@fgi.fi>          Unicode Latex export
 Robert G. Werner <rwerner@lx1.microbsys.com>    VI keybindings
+Alec Wolman <wolman@cs.washington.edu>          Various autoconf fixes
 John Wood <jyonw@asu.edu>                       NetBSD
 Alan Young <ayoung@teleport.com>                Alpha/NT
 Belcon Zhao <rainfall@yeah.net>                 Testing/fixing CJK support
