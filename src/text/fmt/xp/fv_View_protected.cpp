@@ -3672,7 +3672,8 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 				else // found last page
 				{
 				        UT_sint32 botfill = getWindowHeight() - adjustedBottom - 1 ;
-					m_pG->fillRect(clrMargin, adjustedLeft, adjustedBottom + 1, getWindowWidth() - adjustedLeft, botfill);
++ 					m_pG->fillRect(clrMargin, adjustedLeft, adjustedBottom + m_pG->tlu(1), getWindowWidth() - adjustedLeft + m_pG->tlu(1), botfill + m_pG->tlu(1));
+
 				}
 			}
 
