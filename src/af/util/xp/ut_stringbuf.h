@@ -47,6 +47,7 @@ public:
 	size_t				size()		const { return m_pEnd - m_psz; }
 	size_t				capacity()	const { return m_size; }
 	const char_type*	data()		const { return m_psz; }
+	char_type*			data() 			  { return m_psz; }
 
 private:
 	void	grow_nocopy(size_t n);

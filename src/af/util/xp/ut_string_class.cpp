@@ -226,8 +226,5 @@ char UT_String::operator[](size_t iPos) const
 char& UT_String::operator[](size_t iPos)
 {
 	UT_ASSERT(iPos <= size());
-	static char ch; // hack, evil, why does this function exist?
-
-	ch = pimpl->data()[iPos];
-	return ch;
+	return pimpl->data()[iPos];
 }
