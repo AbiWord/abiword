@@ -6,13 +6,13 @@
 <!-- =====================================================================  -->
 
 <!--         Build_ID          = (none) -->
-<!--         Build_Version     = 0.7.3 -->
-<!--         Build_Options     = LicensedTrademarks:Off Debug:Off -->
-<!--         Build_Target      = /home/larry/src/abi/src/Linux_2.0.37-osfmach3_ppc_OBJ/obj -->
-<!--         Build_CompileTime = 21:47:04 -->
-<!--         Build_CompileDate = Jul 15 1999 -->
+<!--         Build_Version     = 0.7.7 -->
+<!--         Build_Options     = LicensedTrademarks:On Debug:Off -->
+<!--         Build_Target      = /Builds/AbiBldSvr/0944798123/tmp/abi-0.7.7/src/WIN32_4.0_i386_OBJ/obj -->
+<!--         Build_CompileTime = 22:19:48 -->
+<!--         Build_CompileDate = Dec  9 1999 -->
 
-<abiword version="0.7.3">
+<abiword version="0.7.7">
 <section>
 <p style="Heading 1" props="text-align:center">Abiword Unix Administrator's Guide</p>
 <p style="Normal" props="text-align:center">v. 0.1.1</p>
@@ -108,6 +108,9 @@
 <p style="Normal"></p>
 <p style="Normal">UNIX_CAN_BUILD_DYNAMIC=[1,0]</p>
 <p style="Normal" props="margin-left:0.5000in; text-indent:-0.5000in">	If set to 0, make will not try to build a dynamic version of the AbiSuite binaries.  The default value is determined by your platform configuration makefile.</p>
+<p style="Normal" props="margin-left:0.5000in; text-indent:-0.5000in"></p>
+<p style="Normal" props="margin-left:0.5000in; text-indent:-0.5000in">ABI_OPT_GNOME=[1,0]</p>
+<p style="Normal" props="margin-left:0.5000in; text-indent:-0.5000in">	If set to 1, make will compile AbiWord for use with the GNOME desktop.  As of 0.7.7, this option is not set by default since we would like people to try out the GNOME support and let us know when it is complete.  </p>
 <p style="Normal">	</p>
 <p style="Normal">XCFLAGS=[...]</p>
 <p style="Normal" props="margin-left:0.5000in; text-indent:-0.5000in">	The value of this variable is included in the compiler options for each target that produces an object file.  The default value is empty.  Usually this will not be needed.</p>
