@@ -259,7 +259,7 @@ ISpellChecker::suggestWord(const UT_UCSChar *word32, size_t length)
 		makepossibilities(m_pISpellState, iWord);
 		 		
  	// Add suggestions if the word is a barbarism
- 	m_barbarism.suggestWord(word32, length, sgvec, m_pISpellState);    	 	
+ 	m_barbarism.suggestWord(word32, length, sgvec);    	 	
 
 	for (c = 0; c < m_pISpellState->pcount; c++)
     {

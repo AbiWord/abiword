@@ -19,8 +19,6 @@
 
 #include "ut_vector.h"
 #include "ut_xml.h"
-#include "ut_iconv.h"
-#include "ispell.h"
 #include "ut_hash.h"
 
 #define MAX_PATHNM 512
@@ -33,8 +31,7 @@ public:
 		
 		bool 			load(const char *szHash);		
 		
-		bool		 	suggestWord(const UT_UCSChar *word32, size_t length,
-						UT_Vector* pVecsugg, ispell_state_t* state);
+		bool		 	suggestWord(const UT_UCSChar *word32, size_t length, UT_Vector* pVecsugg);
 		
 		
 		
@@ -47,7 +44,7 @@ public:
 
 private:
 
-		bool			suggestExactWord(const UT_UCSChar *word32, size_t length,	UT_Vector* pVecsugg, ispell_state_t* state);			
+		bool			suggestExactWord(const UT_UCSChar *word32, size_t length,	UT_Vector* pVecsugg);			
 		
 		UT_StringPtrMap	m_map;
 		UT_Vector*		m_pCurVector;	

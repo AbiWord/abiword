@@ -19,13 +19,11 @@
 
 #include "barbarisms.h"
 #include "ut_debugmsg.h"
-#include "ispell.h"
-#include <string.h>
 #include "ut_hash.h"
 #include "ut_string.h"
 #include "ut_stringbuf.h"
 #include "ut_string_class.h"
-
+#include <string.h>
 
 Barbarisms::Barbarisms()
 {
@@ -71,17 +69,17 @@ bool Barbarisms::load(const char *szHash)
 /*
 	Looks for a exact case maching of the suggestion
 */
-bool	Barbarisms::suggestExactWord(const UT_UCSChar *word32, size_t length,	UT_Vector* pVecsugg, ispell_state_t* state)
-{	
-	size_t len_in, len_out;
+bool	Barbarisms::suggestExactWord(const UT_UCSChar *word32, size_t length,	UT_Vector* pVecsugg)
+{		
+	const char* pUTF8;
 	const UT_UCS4Char *pWord;	
 	UT_UTF8String stUTF8;
 	UT_UCS4Char *suggest32;
 	int nSize;
-	 
+			 
 	stUTF8.appendUCS4(word32, length);
 	
-	const char* pUTF8 =  stUTF8.utf8_str();
+	pUTF8 =  stUTF8.utf8_str();
 
 	UT_Vector* vec  =(UT_Vector*) m_map.pick(pUTF8);	
 	if (!vec) return false;
@@ -96,8 +94,7 @@ bool	Barbarisms::suggestExactWord(const UT_UCSChar *word32, size_t length,	UT_Ve
 		nSize = sizeof(UT_UCS4Char) * (UT_UCS4_strlen(pWord) + 1);
 		suggest32 = (UT_UCS4Char*) malloc(nSize);		
 		memcpy (suggest32, pWord, nSize);
-		pVecsugg->addItem((void *)suggest32);			
-		
+		pVecsugg->addItem((void *)suggest32);					
 	}			
 
 	return true;
@@ -111,97 +108,80 @@ bool	Barbarisms::suggestExactWord(const UT_UCSChar *word32, size_t length,	UT_Ve
 	- If it's upper case, we look for the exact mach and lower case // not implemented yet
 				
 */
-bool	Barbarisms::suggestWord(const UT_UCSChar *word32, size_t length,	UT_Vector* pVecsugg, ispell_state_t* state)
-{		
-	
-	ichar_t  word16[INPUTWORDLEN + MAXAFFIXLEN];
-	char  word8[INPUTWORDLEN + MAXAFFIXLEN];
-	ichar_t* pStr16 = word16;	
+bool	Barbarisms::suggestWord(const UT_UCSChar *word32, size_t length,	UT_Vector* pVecsugg)
+{			
 	bool bIsLower = true;
 	bool bIsUpperLower = false;	
-	
-	/* word 32 to word 8*/
-	size_t len_in, len_out;
-	const char *In = (const char *)word32;
-	char *Out = word8;
-	len_in = length * sizeof(UT_UCSChar);
-	len_out = sizeof( word8 ) - 1;
-	UT_iconv(state->translate_in, &In, &len_in, &Out, &len_out);
-	*Out = '\0';
+	size_t len;
+	UT_UCSChar* pStr;
+
+	if (!length) return false;	
 	
 	/* The vector should be empty because we want our suggestions first */
 	UT_ASSERT (pVecsugg->getItemCount()==0);
 	
 	/*	
 		If the word is lower case we just look the lower case 		
-	*/		
-	strtoichar(state, word16, word8, sizeof(word16), 0);
-	
-	for (;*pStr16;pStr16++)
+	*/	
+	len=length;	
+	pStr = (UT_UCSChar *) word32;
+	for (; len; pStr++, len--)
 	{
-		if (!mylower(state, *pStr16))
+		if (!UT_UCS4_islower(*pStr))
 		{
 			bIsLower=false;
 			break;
 		}		
 	}	
 	if (bIsLower)
-		return suggestExactWord(word32,  length, pVecsugg, state);
+		return suggestExactWord(word32, length, pVecsugg);
 	
 	/*	
 		If the word has the first char upper case and the rest lower case		
 	*/				
-	if (myupper(state, *word16))
+	if (UT_UCS4_isupper(*word32))
 	{
-		pStr16 = word16;
-		pStr16++;
+		UT_UCSChar* pStr = (UT_UCSChar *)word32;
+		pStr++;
+		len=length;	
+		if (len) len--;
 		/* After the first character, the rest should be lower case*/	
-		for (;*pStr16;pStr16++)
+		for (;len;pStr++, len--)
 		{
-			if (!mylower(state, *pStr16))
+			if (!UT_UCS4_islower(*pStr))
 				break;		
 		}				
-		if (!*pStr16)
+		if (!len)
 			bIsUpperLower = true;
 	}
 	
 	if (bIsUpperLower)
 	{
-		ichar_t 	word16lwr[INPUTWORDLEN + MAXAFFIXLEN];
-		char		word8lwr[INPUTWORDLEN + MAXAFFIXLEN];
-		UT_UCS4Char	word32[INPUTWORDLEN + MAXAFFIXLEN];
+		UT_UCS4Char*	wordsearch;
+		
+		UT_UCS4_cloneString(&wordsearch, word32);
 		
 		/* Convert word into lowercase (only need the first char) */
-		strtoichar(state, word16lwr, word8, sizeof(word16lwr), 0);
-		word16lwr[0] = mytolower(state, word16lwr[0]);
-		ichartostr (state, word8lwr, word16lwr, INPUTWORDLEN + MAXAFFIXLEN, INPUTWORDLEN + MAXAFFIXLEN);
-		
-		/* Convert to word8 to word 32*/
-		size_t len_in, len_out;
-		const char *In = word8lwr;
-		char *Out = (char *)word32;
-
-		len_in = strlen(word8lwr);
-		len_out = sizeof(UT_UCS4Char) * (len_in+1);
-		UT_iconv(state->translate_out, &In, &len_in, &Out, &len_out);
-		*((UT_UCS4Char *)Out) = 0;
-		
-		if (suggestExactWord(word32,  length, pVecsugg, state))
+		wordsearch[0] = UT_UCS4_tolower(wordsearch[0]);		
+				
+		if (suggestExactWord(wordsearch,  length, pVecsugg))
 		{
 			const UT_uint32 nItems = pVecsugg->getItemCount();				
-			char*	pSug;
+			UT_UCSChar*	pSug;
 			
 			/*	Make the first letter of all the results uppercase	*/
 			for (UT_uint32 iItem = nItems; iItem; --iItem)
 			{
-				pSug = (char *) pVecsugg->getNthItem(iItem - 1);		
-				strtoichar(state, word16lwr, pSug, sizeof(word16lwr), 0);
-				word16lwr[0] = mytoupper(state, word16lwr[0]);
-				ichartostr (state, pSug, word16lwr, INPUTWORDLEN + MAXAFFIXLEN, INPUTWORDLEN + MAXAFFIXLEN);
+				pSug =  (UT_UCSChar *)pVecsugg->getNthItem(iItem - 1);						
+				*pSug = UT_UCS4_toupper(*pSug);						
 			}				
 		}
+		
+		if (wordsearch) free(wordsearch);
 	}
 	
+	
+			
 	return 0;
 }
 
