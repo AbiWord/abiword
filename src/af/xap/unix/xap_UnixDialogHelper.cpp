@@ -56,9 +56,6 @@ static gboolean focus_in_event(GtkWidget *widget,GdkEvent */*event*/,gpointer /*
 
 static gboolean destroy_event(GtkWidget *widget,GdkEvent */*event*/,gpointer /*user_data*/)
 {
-      XAP_Frame *pFrame=(XAP_Frame *)g_object_get_data(G_OBJECT(widget), "frame");
-      if(pFrame == NULL) return FALSE;
-      
       return FALSE;
 }
 
@@ -592,18 +589,7 @@ void centerDialog(GtkWidget * parent, GtkWidget * child)
 #endif
 }
 
-/*!
- * Runs the dialog \me as a modal dialog
- * 1) Connect focus to toplevel frame
- * 2) Centers dialog over toplevel window
- * 3) Connects F1 to help system
- * 4) Makes dialog modal
- * 5) Sets the default button to dfl_response, sets ESC to close
- * 6) Returns value of gtk_dialog_run(me)
- * 7) If \destroyDialog is true, destroys the dialog, else you have to call abiDestroyWidget()
- */
-gint abiRunModalDialog(GtkDialog * me, XAP_Frame * pFrame, XAP_Dialog * pDlg,
-					   gint dfl_response, bool destroyDialog )
+void abiSetupModalDialog(GtkDialog * me, XAP_Frame * pFrame, XAP_Dialog * pDlg, gint dfl_response)
 {
 	// To center the dialog, we need the frame of its parent.
 	XAP_UnixFrame * pUnixFrame = static_cast<XAP_UnixFrame *>(pFrame);
@@ -632,15 +618,35 @@ gint abiRunModalDialog(GtkDialog * me, XAP_Frame * pFrame, XAP_Dialog * pDlg,
 	
 	// and make it modal
 	gtk_window_set_modal ( GTK_WINDOW(me), TRUE ) ;
-	
-	// now run the dialog
-	gint result = gtk_dialog_run ( me ) ;
-	
-	// destroy the dialog
-	if ( destroyDialog )
-		abiDestroyWidget ( GTK_WIDGET ( me ) );
-	
-	return result ;
+}
+
+gint abiRunModalDialog(GtkDialog * me, bool destroyDialog)
+{
+  // now run the dialog
+  gint result = gtk_dialog_run ( me ) ;
+  
+  // destroy the dialog
+  if ( destroyDialog )
+    abiDestroyWidget ( GTK_WIDGET ( me ) );
+  
+  return result ;
+}
+
+/*!
+ * Runs the dialog \me as a modal dialog
+ * 1) Connect focus to toplevel frame
+ * 2) Centers dialog over toplevel window
+ * 3) Connects F1 to help system
+ * 4) Makes dialog modal
+ * 5) Sets the default button to dfl_response, sets ESC to close
+ * 6) Returns value of gtk_dialog_run(me)
+ * 7) If \destroyDialog is true, destroys the dialog, else you have to call abiDestroyWidget()
+ */
+gint abiRunModalDialog(GtkDialog * me, XAP_Frame * pFrame, XAP_Dialog * pDlg,
+					   gint dfl_response, bool destroyDialog )
+{
+  abiSetupModalDialog(me, pFrame, pDlg, dfl_response);
+  return abiRunModalDialog(me, destroyDialog);
 }
 
 /*!
@@ -873,7 +879,5 @@ void messageBoxOK(const char * message)
 GdkWindow * getRootWindow(GtkWidget * widget)
 {
 	UT_return_val_if_fail(widget, NULL);
-
-	// BROKEN!!!!
 	return gdk_get_default_root_window() ;
 }

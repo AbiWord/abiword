@@ -58,9 +58,7 @@ AP_UnixDialog_Spell::~AP_UnixDialog_Spell(void)
 
 /************************************************************/
 void AP_UnixDialog_Spell::runModal(XAP_Frame * pFrame)
-{
-   UT_DEBUGMSG(("beginning spelling check...\n"));
-   
+{   
    // class the base class method to initialize some basic xp stuff
    AP_Dialog_Spell::runModal(pFrame);
    
@@ -70,29 +68,12 @@ void AP_UnixDialog_Spell::runModal(XAP_Frame * pFrame)
    if (bRes) { // we need to prepare the dialog
       GtkWidget * mainWindow = _constructWindow();
       UT_ASSERT(mainWindow);
-      
-      connectFocus(GTK_WIDGET(mainWindow),pFrame);
+
       // Populate the window's data items
       _populateWindowData();
       
-      // To center the dialog, we need the frame of its parent.
-      XAP_UnixFrame * pUnixFrame = static_cast<XAP_UnixFrame *>(pFrame);
-      UT_ASSERT(pUnixFrame);
-      
-      // Get the GtkWindow of the parent frame
-      GtkWidget * parentWindow = pUnixFrame->getTopLevelWindow();
-      UT_ASSERT(parentWindow);
+      abiSetupModalDialog(GTK_DIALOG(mainWindow), pFrame, this, BUTTON_CANCEL);
 
-      // Center our new dialog in its parent and make it a transient
-      // so it won't get lost underneath
-      centerDialog(parentWindow, mainWindow);
-      
-      // Show the top level dialog
-      gtk_widget_show_all(mainWindow);
-
-      // Make it modal, and stick it up top
-      gtk_grab_add(mainWindow);
-      
       // now loop while there are still misspelled words
       while (bRes) {
 	 
@@ -103,11 +84,26 @@ void AP_UnixDialog_Spell::runModal(XAP_Frame * pFrame)
 	 _showMisspelledWord();
 	 
 	 // run into the GTK event loop for this window
-	 gtk_main();
+	 switch(abiRunModalDialog(GTK_DIALOG(mainWindow), false))
+	   {
+	   case BUTTON_CHANGE:
+	     event_Change(); break ;
+	   case BUTTON_CHANGE_ALL:
+	     event_ChangeAll(); break ;
+	   case BUTTON_IGNORE:
+	     event_Ignore(); break;
+	   case BUTTON_IGNORE_ALL:
+	     event_IgnoreAll(); break;
+	   case BUTTON_ADD:
+	     event_AddToDict(); break;
+	   default:
+	     event_Cancel(); break;
+	   }
 	 
 	 _purgeSuggestions();
 	 
-	 if (m_bCancelled) break;
+	 if (m_bCancelled) 
+	   break;
 	 
 	 // get the next unknown word
 	 bRes = nextMisspelledWord();
@@ -115,51 +111,11 @@ void AP_UnixDialog_Spell::runModal(XAP_Frame * pFrame)
       
       _storeWindowData();
       
-      if(mainWindow && GTK_IS_WIDGET(mainWindow))
-	gtk_widget_destroy(mainWindow);
+      abiDestroyWidget(mainWindow);
    }
-   
-   // TODO: all done message?
-   UT_DEBUGMSG(("spelling check complete.\n"));
 }
 
 /**********************************************************/
-
-static void s_change_clicked(GtkWidget * widget, AP_UnixDialog_Spell * dlg)
-{
-   UT_ASSERT(widget && dlg);
-   dlg->event_Change();
-}
-
-static void s_change_all_clicked(GtkWidget * widget, AP_UnixDialog_Spell * dlg)
-{
-   UT_ASSERT(widget && dlg);
-   dlg->event_ChangeAll();
-}
-
-static void s_ignore_clicked(GtkWidget * widget, AP_UnixDialog_Spell * dlg)
-{
-   UT_ASSERT(widget && dlg);
-   dlg->event_Ignore();
-}
-
-static void s_ignore_all_clicked(GtkWidget * widget, AP_UnixDialog_Spell * dlg)
-{
-   UT_ASSERT(widget && dlg);
-   dlg->event_IgnoreAll();
-}
-
-static void s_add_to_dict_clicked(GtkWidget * widget, AP_UnixDialog_Spell * dlg)
-{
-   UT_ASSERT(widget && dlg);
-   dlg->event_AddToDict();
-}
-
-static void s_cancel_clicked(GtkWidget * widget, AP_UnixDialog_Spell * dlg)
-{
-   UT_ASSERT(widget && dlg);
-   dlg->event_Cancel();
-}
 
 static void s_suggestion_selected(GtkWidget * widget, gint row, gint column,
 				  GdkEventButton * /*event*/, AP_UnixDialog_Spell * dlg)
@@ -174,14 +130,6 @@ static void s_replacement_changed(GtkWidget * widget, AP_UnixDialog_Spell * dlg)
    dlg->event_ReplacementChanged();
 }
 
-static void s_delete_clicked(GtkWidget * /* widget */,
-			     gpointer /* data */,
-			     AP_UnixDialog_Spell * dlg)
-{
-   UT_ASSERT(dlg);
-   dlg->event_Cancel();
-}
-      
 /********************************************************************/
 
 GtkWidget * AP_UnixDialog_Spell::_constructWindow(void)
@@ -191,10 +139,7 @@ GtkWidget * AP_UnixDialog_Spell::_constructWindow(void)
 
    const XAP_StringSet * pSS = m_pApp->getStringSet();
    
-   //windowSpell = gtk_window_new (GTK_WINDOW_DIALOG);
-   windowSpell = gtk_dialog_new();
-   gtk_window_set_title (GTK_WINDOW (windowSpell),  pSS->getValue(AP_STRING_ID_DLG_Spell_SpellTitle));
-   gtk_window_set_policy (GTK_WINDOW (windowSpell), TRUE, TRUE, FALSE);
+   windowSpell = abiDialogNew(true, pSS->getValue(AP_STRING_ID_DLG_Spell_SpellTitle));
 
    // *very* important to add the vbox
    // to the window so that it gets a
@@ -202,6 +147,33 @@ GtkWidget * AP_UnixDialog_Spell::_constructWindow(void)
    //
    m_windowMain = windowSpell;
    vbox = GTK_DIALOG(m_windowMain)->vbox;
+   
+  XML_Char * unixstr = NULL;      // used for conversions
+
+  UT_XML_cloneNoAmpersands(unixstr,
+			   pSS->getValue(AP_STRING_ID_DLG_Spell_Change));
+  m_buttonChange = abiAddButton (GTK_DIALOG(windowSpell), unixstr, BUTTON_CHANGE);
+  FREEP(unixstr);
+  
+  UT_XML_cloneNoAmpersands(unixstr, 
+			   pSS->getValue(AP_STRING_ID_DLG_Spell_ChangeAll));
+  m_buttonChangeAll = abiAddButton (GTK_DIALOG(windowSpell), unixstr, BUTTON_CHANGE_ALL);
+  FREEP(unixstr);
+
+  UT_XML_cloneNoAmpersands(unixstr, 
+			   pSS->getValue(AP_STRING_ID_DLG_Spell_Ignore));
+  m_buttonIgnore = abiAddButton (GTK_DIALOG(windowSpell), unixstr, BUTTON_IGNORE);
+  FREEP(unixstr);
+
+  UT_XML_cloneNoAmpersands(unixstr, 
+			   pSS->getValue(AP_STRING_ID_DLG_Spell_IgnoreAll));
+  m_buttonIgnoreAll = abiAddButton (GTK_DIALOG(windowSpell), unixstr, BUTTON_IGNORE_ALL);
+  FREEP(unixstr);
+
+  m_buttonAddToDict = abiAddStockButton (GTK_DIALOG(windowSpell), GTK_STOCK_ADD, BUTTON_ADD);
+
+   // add the cancel button
+  m_buttonCancel = abiAddStockButton(GTK_DIALOG(windowSpell), GTK_STOCK_CANCEL, BUTTON_CANCEL);
 
    _constructWindowContents(vbox);
    _connectSignals();
@@ -254,14 +226,6 @@ void AP_UnixDialog_Spell::_constructWindowContents(GtkWidget *box)
    gtk_widget_set_usize (m_textWord, 350, 80);
    gtk_widget_realize (m_textWord);
 
-   // ignore button set
-   GtkWidget * vboxIgnoreButtons = gtk_vbox_new(FALSE, 5);
-   gtk_table_attach_defaults (GTK_TABLE(tableMain), vboxIgnoreButtons, 2, 3, 1, 4);
-   
-   gtk_box_pack_start (GTK_BOX(vboxIgnoreButtons), m_buttonIgnore, FALSE, FALSE, 5);
-   gtk_box_pack_start (GTK_BOX(vboxIgnoreButtons), m_buttonIgnoreAll, FALSE, FALSE, 5);
-   gtk_box_pack_start (GTK_BOX(vboxIgnoreButtons), m_buttonAddToDict, FALSE, FALSE, 5);
-
    // suggestion half
    GtkWidget * hboxChangeTo = gtk_hbox_new(FALSE, 5);
    gtk_table_attach_defaults (GTK_TABLE(tableMain), hboxChangeTo, 0, 2, 5, 6);
@@ -284,16 +248,7 @@ void AP_UnixDialog_Spell::_constructWindowContents(GtkWidget *box)
    gtk_container_add (GTK_CONTAINER (scroll1), m_clistSuggestions);
    gtk_widget_set_usize (m_clistSuggestions, -2, 100);
    gtk_clist_set_column_width (GTK_CLIST (m_clistSuggestions), 0, 80);
-   gtk_clist_column_titles_hide (GTK_CLIST (m_clistSuggestions));
-   
-   // change button set
-   GtkWidget * vboxChangeButtons = gtk_vbox_new(FALSE, 5);
-   gtk_table_attach_defaults (GTK_TABLE(tableMain), vboxChangeButtons, 2, 3, 6, 9);
-
-   gtk_box_pack_start (GTK_BOX(vboxChangeButtons), m_buttonChange, FALSE, FALSE, 5);
-   gtk_box_pack_start (GTK_BOX(vboxChangeButtons), m_buttonChangeAll, FALSE, FALSE, 5);
-   gtk_box_pack_start (GTK_BOX(vboxChangeButtons), m_buttonCancel, FALSE, FALSE, 5);
-   // gtk_table_attach (GTK_TABLE(tableMain), buttonCancel, 2, 3, 9, 10, GTK_FILL, GTK_EXPAND, 2, 5);
+   gtk_clist_column_titles_hide (GTK_CLIST (m_clistSuggestions));   
 
    // highlight our misspelled word in red
    GdkColormap * cm = gdk_colormap_get_system();
@@ -309,61 +264,11 @@ void AP_UnixDialog_Spell::_constructWindowContents(GtkWidget *box)
 // override for gnome buttons
 void AP_UnixDialog_Spell::_createButtons(void)
 {
-  const XAP_StringSet * pSS = m_pApp->getStringSet();
-  XML_Char * unixstr = NULL;      // used for conversions
-
-  UT_XML_cloneNoAmpersands(unixstr,
-			   pSS->getValue(AP_STRING_ID_DLG_Spell_Change));
-  m_buttonChange = gtk_button_new_with_label (unixstr);
-  FREEP(unixstr);
-  
-  UT_XML_cloneNoAmpersands(unixstr, 
-			   pSS->getValue(AP_STRING_ID_DLG_Spell_ChangeAll));
-  m_buttonChangeAll = gtk_button_new_with_label (unixstr);
-  FREEP(unixstr);
-
-  UT_XML_cloneNoAmpersands(unixstr, 
-			   pSS->getValue(AP_STRING_ID_DLG_Spell_Ignore));
-  m_buttonIgnore = gtk_button_new_with_label (unixstr);
-  FREEP(unixstr);
-
-  UT_XML_cloneNoAmpersands(unixstr, 
-			   pSS->getValue(AP_STRING_ID_DLG_Spell_IgnoreAll));
-  m_buttonIgnoreAll = gtk_button_new_with_label (unixstr);
-  FREEP(unixstr);
-
-  UT_XML_cloneNoAmpersands(unixstr, 
-			   pSS->getValue(AP_STRING_ID_DLG_Spell_AddToDict));
-  m_buttonAddToDict = gtk_button_new_with_label (unixstr);
-  FREEP(unixstr);
-
-   // add the cancel button
-   m_buttonCancel = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Cancel));
 }
 
 void AP_UnixDialog_Spell::_connectSignals(void)
 {
    // connect signals to handlers
-
-   // buttons
-   g_signal_connect(G_OBJECT(m_buttonChange), "clicked",
-		      G_CALLBACK(s_change_clicked),
-		      (gpointer) this);
-   g_signal_connect(G_OBJECT(m_buttonChangeAll), "clicked",
-		      G_CALLBACK(s_change_all_clicked),
-		      (gpointer) this);
-   g_signal_connect(G_OBJECT(m_buttonIgnore), "clicked",
-		      G_CALLBACK(s_ignore_clicked),
-		      (gpointer) this);
-   g_signal_connect(G_OBJECT(m_buttonIgnoreAll), "clicked",
-		      G_CALLBACK(s_ignore_all_clicked),
-		      (gpointer) this);
-   g_signal_connect(G_OBJECT(m_buttonAddToDict), "clicked",
-		      G_CALLBACK(s_add_to_dict_clicked),
-		      (gpointer) this);
-   g_signal_connect(G_OBJECT(m_buttonCancel), "clicked",
-		      G_CALLBACK(s_cancel_clicked),
-		      (gpointer) this);
 
    // suggestion list
    m_listHandlerID = g_signal_connect(G_OBJECT(m_clistSuggestions), "select-row",
@@ -374,17 +279,6 @@ void AP_UnixDialog_Spell::_connectSignals(void)
    m_replaceHandlerID = g_signal_connect(G_OBJECT(m_entryChange), "changed",
 					   G_CALLBACK(s_replacement_changed),
 					   (gpointer) this);
-   
-   // the catch-alls
-   g_signal_connect(G_OBJECT(m_windowMain),
-		      "delete_event",
-		      G_CALLBACK(s_delete_clicked),
-		      (gpointer) this);
-         
-   g_signal_connect_after(G_OBJECT(m_windowMain),
-			    "destroy",
-			    NULL,
-			    NULL);
 }
 
 void AP_UnixDialog_Spell::_showMisspelledWord(void)
@@ -490,9 +384,7 @@ void AP_UnixDialog_Spell::event_Change()
 		}
 		changeWordWith(replace);
 		FREEP(replace);
-	  }
-	
-	gtk_main_quit();
+	  }	
 }
 
 void AP_UnixDialog_Spell::event_ChangeAll()
@@ -515,21 +407,17 @@ void AP_UnixDialog_Spell::event_ChangeAll()
 	changeWordWith(replace);
 	FREEP(replace);
      }
-   
-   gtk_main_quit();
 }
 
 void AP_UnixDialog_Spell::event_Ignore()
 {
    ignoreWord();
-   gtk_main_quit();
 }
 
 void AP_UnixDialog_Spell::event_IgnoreAll()
 {
    addIgnoreAll();
    ignoreWord();
-   gtk_main_quit();
 }
 
 void AP_UnixDialog_Spell::event_AddToDict()
@@ -537,13 +425,11 @@ void AP_UnixDialog_Spell::event_AddToDict()
    addToDict();
    
    ignoreWord();
-   gtk_main_quit();
 }
 
 void AP_UnixDialog_Spell::event_Cancel()
 {
    m_bCancelled = true;
-   gtk_main_quit();
 }
 
 void AP_UnixDialog_Spell::event_SuggestionSelected(gint row, gint column)
@@ -601,12 +487,8 @@ char * AP_UnixDialog_Spell::_convertToMB(UT_UCSChar *wword)
 // make a wide string from a multibyte string
 UT_UCSChar * AP_UnixDialog_Spell::_convertFromMB(char *word)
 {
-#if 1
         UT_UCSChar *wword = NULL;
 	UT_UCS4_cloneString_char ( &wword, word );
-#else
-	UT_UCSChar *wword = (UT_UCSChar *) malloc (strlen(word)*2);
-	UT_UCS4_strcpy_char(wword,word);
-#endif
+
 	return wword;
 }

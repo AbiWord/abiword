@@ -61,6 +61,16 @@ class AP_UnixDialog_Spell: public AP_Dialog_Spell
 
    char * _convertToMB(UT_UCSChar *wword);
    UT_UCSChar * _convertFromMB(char *word);
+
+   enum
+     {
+       BUTTON_CHANGE,
+       BUTTON_CHANGE_ALL,
+       BUTTON_IGNORE,
+       BUTTON_IGNORE_ALL,
+       BUTTON_ADD,
+       BUTTON_CANCEL
+     } ResponseId ;
       
    // pointers to widgets we need to query/set
    GtkWidget * m_windowMain;
