@@ -1,3 +1,5 @@
+<?xml version="1.0"?>
+<abiword version="unnumbered">
 <!-- =====================================================================  -->
 <!-- This file is an AbiWord document.                                      -->
 <!-- AbiWord is a free, Open Source word processor.                         -->
@@ -7,22 +9,43 @@
 
 <!--         Build_ID          = (none) -->
 <!--         Build_Version     = unnumbered -->
-<!--         Build_Options     = LicensedTrademarks:Off Debug:Off -->
-<!--         Build_Target      = /fs/hd0-qnx4/home/thomasf/Ports/abiword/abi/src/wp/../../src/procnto_2.00_x86pc_OBJ/obj -->
-<!--         Build_CompileTime = 11:56:46 -->
-<!--         Build_CompileDate = Jan 10 2000 -->
+<!--         Build_Options     = LicensedTrademarks:Off Debug:On -->
+<!--         Build_Target      = /fs/hd0-qnx4/home/thomasf/Ports/abiword/abi/src/../src/procnto_2.00_x86pc_DBG/obj -->
+<!--         Build_CompileTime = 20:51:50 -->
+<!--         Build_CompileDate = Feb  8 2000 -->
 
-<abiword version="unnumbered">
-<section>
-<p><c props="font-weight:bold; text-decoration:underline">AbiWord ToDo List:</c></p>
+<section props="columns:1">
+<p props="margin-left:0.0000in; text-indent:0.0000in"><c props="font-weight:bold; text-decoration:underline">AbiWord ToDo List:</c></p>
 <p></p>
-<p><c props="font-style:normal; font-weight:normal; text-decoration:none">-Figure out why CNTR keys don't work</c></p>
-<p><c props="font-style:normal; font-weight:normal; text-decoration:none">-Right click menus</c></p>
-<p><c props="font-style:normal; font-weight:normal; text-decoration:none">-Dragging and general ruler events</c></p>
-<p><c props="font-style:normal; font-weight:normal; text-decoration:none">-Dialogs</c></p>
-<p><c props="font-style:normal; font-weight:normal; text-decoration:none">-Proper point sizes</c></p>
-<p><c props="font-style:normal; font-weight:normal; text-decoration:none">-Toolbar toggling proper updating</c></p>
-<p><c props="font-style:normal; font-weight:normal; text-decoration:none">-Toolbar proper ghosting of diaabled items</c></p>
+<p><c props="font-style:normal; font-weight:normal; text-decoration:line-through">-Figure out why CTRL keys don't work</c></p>
+<p>	-Proper hotkey support for things like ALT-F4</p>
+<p><c props="font-style:normal; font-weight:normal; text-decoration:line-through">-Right click menus</c></p>
+<p><c props="font-style:normal; font-weight:normal; text-decoration:none">-Dynamic menu updates (ie on OPEN of a file)</c></p>
+<p><c props="font-style:normal; font-weight:normal; text-decoration:line-through">-Dragging and general ruler events (partial ... no re-draws?)</c><c props="font-style:normal; font-weight:normal; text-decoration:none">  </c></p>
+<p>	- Determine why toolbars don't re-draw smoothly</p>
+<p><c props="font-style:normal; font-weight:normal; text-decoration:none">-Fill in missing dialogs</c></p>
+<p><c props="font-style:normal; font-weight:normal; text-decoration:line-through">-Proper point sizes on the font w/ scaling</c></p>
+<p><c props="font-style:normal; font-weight:normal; text-decoration:line-through">- Spacebar/Delete key detection on press and not release</c></p>
+<p><c props="font-style:normal; font-weight:normal; text-decoration:line-through">-Toolbar toggling proper updating</c></p>
+<p><c props="font-style:normal; font-weight:normal; text-decoration:none">-Menu &amp; Toolbar proper ghosting of disabled items</c></p>
+<p><c props="font-style:normal; font-weight:normal; text-decoration:line-through">-Proper re-instantiation (ie FILE-&gt;NEW causing a child to be on top!)</c></p>
+<p><c props="font-style:normal; font-weight:normal; text-decoration:line-through">-Find out where our bitmap images went in the non debug version!</c></p>
+<p>-Figure out how to reject focus from the widgets </p>
+<p>-Exclamation <c props="font-size:10pt">marks</c><c props="font-size:16pt"> </c><c props="font-size:16pt; font-weight:normal">!!</c></p>
+<p>-Figure out why the scrolling flashes so much</p>
+<p><c props="text-decoration:line-through">-Import image support </c></p>
+<p>-Better support for other document types (ie prompting)</p>
+<p><c props="text-decoration:line-through">-Find out where the cut and paste went </c><c props="text-decoration:none">  </c></p>
+<p>	-Cut and paste w/ the system clipboard too.</p>
+<p>-Larger font size on startup</p>
+<p>-Icon for application</p>
+<p>-Determine why we get big bad goey blocks occasionally on the </p>
+<p>    ruler re-draws.</p>
+<p>- Figure out why hitting tab stops input dead</p>
+<p>- Create better timers (add a work proc, create a thread etc)</p>
+<p>- Fix memory leak in menus (popup menu's especially)</p>
+<p></p>
+<p></p>
 <p></p>
 </section>
 </abiword>

@@ -104,6 +104,7 @@ PtWidget_t * AP_QNXTopRuler::createWidget(void)
         PtSetArg(&args[n], Pt_ARG_BORDER_WIDTH, 2, 2); n++;
         PtSetArg(&args[n], Pt_ARG_FLAGS, Pt_HIGHLIGHTED, Pt_HIGHLIGHTED); n++;
 	PtWidget_t *cont = PtCreateWidget(PtGroup, m_rootWindow, n, args);
+	PtAddCallback(cont, Pt_CB_RESIZE, &(_fe::resize), this);
 
 	n = 0;
 	PtSetArg(&args[n], Pt_ARG_DIM, &area.size, 0); n++;
@@ -210,7 +211,6 @@ static int get_stuff(PtCallbackInfo_t *info, EV_EditModifierState *ems,
 
 int AP_QNXTopRuler::_fe::button_press_event(PtWidget_t* w, void *data, PtCallbackInfo_t* info)
 {
-	//return Pt_CONTINUE;
 
 	// a static function
 	AP_QNXTopRuler * pQNXTopRuler = (AP_QNXTopRuler *)data;
@@ -222,8 +222,8 @@ int AP_QNXTopRuler::_fe::button_press_event(PtWidget_t* w, void *data, PtCallbac
 	mx = my = 0;
 	get_stuff(info, &ems, &emb, &mx, &my);
 
-	printf("Pressing the mouse %x %x %d,%d \n",
-				ems, emb, mx, my);
+	UT_DEBUGMSG(("TR: Pressing the mouse %x %x %d,%d ",
+				ems, emb, mx, my));
 	pQNXTopRuler->mousePress(ems, emb, mx, my);
 
 	return Pt_CONTINUE;
@@ -231,7 +231,6 @@ int AP_QNXTopRuler::_fe::button_press_event(PtWidget_t* w, void *data, PtCallbac
 
 int AP_QNXTopRuler::_fe::button_release_event(PtWidget_t* w, void *data, PtCallbackInfo_t* info)
 {
-	//return Pt_CONTINUE;
 
 	// a static function
 	AP_QNXTopRuler * pQNXTopRuler = (AP_QNXTopRuler *)data;
@@ -243,29 +242,22 @@ int AP_QNXTopRuler::_fe::button_release_event(PtWidget_t* w, void *data, PtCallb
 	mx = my = 0;
 	get_stuff(info, &ems, &emb, &mx, &my);
 
-/*
-	printf("Release type 0x%x \n", info->reason); 
-	printf("Release sub_type 0x%x \n", info->reason_subtype); 
-	printf("Release event type 0x%x \n", info->event->type);
-	printf("Release event subtype 0x%x \n", info->event->subtype);
-*/
-	
 	if (info->event->subtype == Ph_EV_RELEASE_REAL) {
-		UT_DEBUGMSG(("Mouse Real Release! (%d,%d)", mx, my));
+		UT_DEBUGMSG(("TR: Mouse Real Release! (%d,%d)", mx, my));
 	}
 	else if (info->event->subtype == Ph_EV_RELEASE_PHANTOM) {
-		UT_DEBUGMSG(("Mouse Phantom Release! (%d,%d)", mx, my));
-		UT_DEBUGMSG(("Skipping "));
+		UT_DEBUGMSG(("TR: Mouse Phantom Release! (%d,%d)", mx, my));
+		UT_DEBUGMSG(("TR: Skipping "));
 		return Pt_CONTINUE;
 	}
 	else if (info->event->subtype == Ph_EV_RELEASE_ENDCLICK) {
-		UT_DEBUGMSG(("Mouse Endclick Release! (%d,%d)", mx, my));
-		UT_DEBUGMSG(("Skipping "));
+		UT_DEBUGMSG(("TR: Mouse Endclick Release! (%d,%d)", mx, my));
+		UT_DEBUGMSG(("TR: Skipping "));
 		return Pt_CONTINUE;
 	}
 	else {
-		UT_DEBUGMSG(("Unknown release type 0x%x (%d,%d)",info->event->subtype, mx, my));
-		UT_DEBUGMSG(("Skipping "));
+		UT_DEBUGMSG(("TR: Unknown release type 0x%x (%d,%d)",info->event->subtype, mx, my));
+		UT_DEBUGMSG(("TR: Skipping "));
 		return Pt_CONTINUE;
 	}
 
@@ -276,7 +268,6 @@ int AP_QNXTopRuler::_fe::button_release_event(PtWidget_t* w, void *data, PtCallb
 	
 int AP_QNXTopRuler::_fe::motion_notify_event(PtWidget_t* w, void *data, PtCallbackInfo_t* info)
 {
-	//return Pt_CONTINUE;
 
 	// a static function
 	AP_QNXTopRuler * pQNXTopRuler = (AP_QNXTopRuler *)data;
@@ -310,6 +301,34 @@ int AP_QNXTopRuler::_fe::delete_event(GtkWidget * /* w */, GdkEvent * /*event*/,
 }
 #endif
 	
+int AP_QNXTopRuler::_fe::resize(PtWidget_t* w, void *data,  PtCallbackInfo_t *info)
+{
+	PtContainerCallback_t *cbinfo = (PtContainerCallback_t *)(info->cbdata);
+
+	// a static function
+	AP_QNXTopRuler * pQNXTopRuler = (AP_QNXTopRuler *)data;
+
+	if (pQNXTopRuler) {
+		UT_uint32 iHeight, iWidth;
+		UT_DEBUGMSG(("TR: Resize to %d,%d %d,%d \n",
+			cbinfo->new_size.ul.x, cbinfo->new_size.ul.y,
+			cbinfo->new_size.lr.x, cbinfo->new_size.lr.y));
+
+		iWidth = cbinfo->new_size.lr.x - cbinfo->new_size.ul.x; 
+		iHeight = cbinfo->new_size.lr.y - cbinfo->new_size.ul.y;
+	
+		if (iHeight != pQNXTopRuler->getHeight()) {
+			pQNXTopRuler->setHeight(iHeight);
+		}
+	
+		if (iWidth != pQNXTopRuler->getWidth()) {
+			pQNXTopRuler->setWidth(iWidth);
+		}
+	}
+
+	return Pt_CONTINUE;
+}
+
 int AP_QNXTopRuler::_fe::expose(PtWidget_t * w, PhTile_t *damage)
 {
 	PtArg_t args[1];
@@ -328,6 +347,9 @@ int AP_QNXTopRuler::_fe::expose(PtWidget_t * w, PhTile_t *damage)
 		return 0;
 	}
 
+	printf("TR Expose %d,%d %d,%d \n", 
+		damage->rect.ul.x, damage->rect.ul.y, damage->rect.lr.x, damage->rect.lr.y);
+
 #if 0
     if (damage->next) {
         damage = damage->next;
@@ -339,8 +361,8 @@ int AP_QNXTopRuler::_fe::expose(PtWidget_t * w, PhTile_t *damage)
         rClip.height = damage->rect.lr.y - damage->rect.ul.y;
         damage = damage->next;
 
-        printf("Clip to Rect %d,%d %d/%d \n",
-            rClip.left, rClip.top, rClip.width, rClip.height);
+        UT_DEBUGMSGr(("Clip to Rect %d,%d %d/%d ",
+            rClip.left, rClip.top, rClip.width, rClip.height));
 		pQNXRuler->draw(&rClip);
 		//pQNXRuler->draw(NULL);
     }
@@ -351,9 +373,3 @@ int AP_QNXTopRuler::_fe::expose(PtWidget_t * w, PhTile_t *damage)
 	return 0;
 }
 
-#if 0
-void AP_QNXTopRuler::_fe::destroy(GtkWidget * /*widget*/, gpointer /*data*/)
-{
-	// a static function
-}
-#endif

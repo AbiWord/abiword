@@ -429,7 +429,7 @@ void AP_QNXFrame::killFrameData(void)
 	m_pData = NULL;
 }
 
-UT_Bool AP_QNXFrame::_loadDocument(const char * szFilename, IEFileType ieft)
+UT_Error AP_QNXFrame::_loadDocument(const char * szFilename, IEFileType ieft)
 {
 	UT_DEBUGMSG(("Frame: _loadDocument \n"));
 	// are we replacing another document?
@@ -454,7 +454,7 @@ UT_Bool AP_QNXFrame::_loadDocument(const char * szFilename, IEFileType ieft)
 
 	UT_Error err; 
 	err = pNewDoc->readFromFile(szFilename, ieft);
-	if (!err)
+	if (err == UT_OK)
 		goto ReplaceDocument;
 	
 	UT_DEBUGMSG(("ap_Frame: could not open the file [%s]\n",szFilename));
@@ -466,7 +466,7 @@ ReplaceDocument:
 
 	// NOTE: prior document is discarded in _showDocument()
 	m_pDoc = pNewDoc;
-	return UT_TRUE;
+	return UT_OK;
 }
 	
 XAP_Frame * AP_QNXFrame::cloneFrame(void)
@@ -495,7 +495,7 @@ Cleanup:
 	return NULL;
 }
 
-UT_Bool AP_QNXFrame::loadDocument(const char * szFilename, int ieft)
+UT_Error AP_QNXFrame::loadDocument(const char * szFilename, int ieft)
 {
 	UT_Bool bUpdateClones;
 	UT_Vector vClones;
@@ -512,7 +512,7 @@ UT_Bool AP_QNXFrame::loadDocument(const char * szFilename, int ieft)
 	UT_DEBUGMSG(("Frame: calling _loadDocument \n"));
 	UT_Error err;
 	err = _loadDocument(szFilename, (IEFileType) ieft); 
-	if (err)
+	if (err != UT_OK)
 	{
 		UT_DEBUGMSG(("Frame: _loadDocument failed \n"));
 		// we could not load the document.

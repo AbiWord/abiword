@@ -297,102 +297,70 @@ void AP_QNXApp::copyToClipboard(PD_DocumentRange * pDocRange)
 	// copy the given subset of the given document to the
 	// system clipboard in a variety of formats.
 	//
-	// to minimize the effects of race-conditions, we create
-	// all of the buffers we need and then post them to the
-	// server (well sorta) all at one time.
-
-	UT_ByteBuf bufRTF;
-	UT_ByteBuf bufTEXT;
-
-	// create RTF buffer to put on the clipboard
-		
+	m_pClipboard->clearClipboard();
+	
+	// also put RTF on the clipboard
+	
 	IE_Exp_RTF * pExpRtf = new IE_Exp_RTF(pDocRange->m_pDoc);
 	if (pExpRtf)
 	{
-		pExpRtf->copyToBuffer(pDocRange,&bufRTF);
+		UT_ByteBuf buf;
+		UT_Error status = pExpRtf->copyToBuffer(pDocRange,&buf);
+		UT_Byte b = 0;
+		buf.append(&b,1);			// null terminate string
+		m_pClipboard->addData(AP_CLIPBOARD_RTF,(UT_Byte *)buf.getPointer(0),buf.getLength());
 		DELETEP(pExpRtf);
-		UT_DEBUGMSG(("CopyToClipboard: copying %d bytes in RTF format.\n",bufRTF.getLength()));
+		UT_DEBUGMSG(("CopyToClipboard: copying %d bytes in RTF format.\n",buf.getLength()));
 	}
 
-	// create raw 8bit text buffer to put on the clipboard
+	// put raw 8bit text on the clipboard
 		
 	IE_Exp_Text * pExpText = new IE_Exp_Text(pDocRange->m_pDoc);
 	if (pExpText)
 	{
-		pExpText->copyToBuffer(pDocRange,&bufTEXT);
+		UT_ByteBuf buf;
+		UT_Error status = pExpText->copyToBuffer(pDocRange,&buf);
+		UT_Byte b = 0;
+		buf.append(&b,1);			// null terminate string
+		m_pClipboard->addData(AP_CLIPBOARD_TEXTPLAIN_8BIT,(UT_Byte *)buf.getPointer(0),buf.getLength());
 		DELETEP(pExpText);
-		UT_DEBUGMSG(("CopyToClipboard: copying %d bytes in TEXTPLAIN format.\n",bufTEXT.getLength()));
+		UT_DEBUGMSG(("CopyToClipboard: copying %d bytes in TEXTPLAIN format.\n",buf.getLength()));
 	}
 
-	// NOTE: this clearData() will actually release our ownership of
-	// NOTE: the CLIPBOARD property in addition to clearing any
-	// NOTE: stored buffers.  I'm omitting it since we seem to get
-	// NOTE: clr callback after we have done some other processing
-	// NOTE: (like adding the new stuff).
-	// m_pClipboard->clearData(UT_TRUE,UT_FALSE);
-	
-	if (bufRTF.getLength() > 0)
-		m_pClipboard->addData(AP_CLIPBOARD_RTF,(UT_Byte *)bufRTF.getPointer(0),bufRTF.getLength());
-	if (bufTEXT.getLength() > 0)
-		m_pClipboard->addData(AP_CLIPBOARD_TEXTPLAIN_8BIT,(UT_Byte *)bufTEXT.getPointer(0),bufTEXT.getLength());
-
-	return;
 }
 
 void AP_QNXApp::pasteFromClipboard(PD_DocumentRange * pDocRange, UT_Bool bUseClipboard)
 {
 	// paste from the system clipboard using the best-for-us format
-	// that is present.  try to get the content in the order listed.
-
-	static const char * aszFormatsAccepted[] = { AP_CLIPBOARD_RTF,
-												 AP_CLIPBOARD_TEXTPLAIN_8BIT,
-												 0 /* must be last */ };
-
-	// TODO currently i have this set so that a ^v or Menu[Edit/Paste] will
-	// TODO use the CLIPBOARD property and a MiddleMouseClick will use the
-	// TODO PRIMARY property -- this seems to be the "X11 way" (sigh).
-	// TODO consider having a preferences switch to allow ^v and Menu[Edit/Paste]
-	// TODO to use the most recent property... this might be a nice way of
-	// TODO unifying things -- or it might not -- this is probably an area
-	// TODO for investigation or some usability testing.
+	// that is present.
 	
-	XAP_QNXClipboard::T_AllowGet tFrom = ((bUseClipboard)
-										   ? XAP_QNXClipboard::TAG_ClipboardOnly
-										   : XAP_QNXClipboard::TAG_PrimaryOnly);
-
-	const char * szFormatFound = NULL;
-	unsigned char * pData = NULL;
-	UT_uint32 iLen = 0;
-
-	UT_Bool bFoundOne = m_pClipboard->getData(tFrom,aszFormatsAccepted,(void**)&pData,&iLen,&szFormatFound);
-	if (!bFoundOne)
+	if (m_pClipboard->hasFormat(AP_CLIPBOARD_RTF))
 	{
-		UT_DEBUGMSG(("PasteFromClipboard: did not find anything to paste.\n"));
-		return;
-	}
-	
-	if (UT_stricmp(szFormatFound,AP_CLIPBOARD_RTF) == 0)
-	{
-		iLen = MyMin(iLen,strlen((const char *)pData));
-		UT_DEBUGMSG(("PasteFromClipboard: pasting %d bytes in format [%s].\n",iLen,szFormatFound));
-
+		unsigned char * pData = NULL;
+		UT_uint32 iLen = 0;
+		UT_Bool bResult = m_pClipboard->getClipboardData(AP_CLIPBOARD_RTF,(void**)&pData,&iLen);
+		UT_ASSERT(bResult);
+		iLen = MyMin(iLen,strlen((const char *) pData));
+		UT_DEBUGMSG(("PasteFromClipboard: pasting %d bytes in RTF format.\n",iLen));
 		IE_Imp_RTF * pImpRTF = new IE_Imp_RTF(pDocRange->m_pDoc);
 		pImpRTF->pasteFromBuffer(pDocRange,pData,iLen);
 		DELETEP(pImpRTF);
-
-		return;
 	}
-
-	if (UT_stricmp(szFormatFound,AP_CLIPBOARD_TEXTPLAIN_8BIT) == 0)
+	else if (m_pClipboard->hasFormat(AP_CLIPBOARD_TEXTPLAIN_8BIT))
 	{
-		iLen = MyMin(iLen,strlen((const char *)pData));
-		UT_DEBUGMSG(("PasteFromClipboard: pasting %d bytes in format [%s].\n",iLen,szFormatFound));
-
+		unsigned char * pData = NULL;
+		UT_uint32 iLen = 0;
+		UT_Bool bResult = m_pClipboard->getClipboardData(AP_CLIPBOARD_TEXTPLAIN_8BIT,(void**)&pData,&iLen);
+		UT_ASSERT(bResult);
+		iLen = MyMin(iLen,strlen((const char *) pData));
+		UT_DEBUGMSG(("PasteFromClipboard: pasting %d bytes in TEXTPLAIN format.\n",iLen));
 		IE_Imp_Text * pImpText = new IE_Imp_Text(pDocRange->m_pDoc);
 		pImpText->pasteFromBuffer(pDocRange,pData,iLen);
 		DELETEP(pImpText);
-
-		return;
+	}
+	else {
+		// TODO figure out what to do with an image....
+		UT_DEBUGMSG(("PasteFromClipboard: TODO support this format..."));
 	}
 
 	return;
@@ -400,8 +368,12 @@ void AP_QNXApp::pasteFromClipboard(PD_DocumentRange * pDocRange, UT_Bool bUseCli
 
 UT_Bool AP_QNXApp::canPasteFromClipboard(void)
 {
-	// TODO fix this...
-	return UT_TRUE;
+	if (m_pClipboard->hasFormat(AP_CLIPBOARD_RTF))
+		return UT_TRUE;
+	if (m_pClipboard->hasFormat(AP_CLIPBOARD_TEXTPLAIN_8BIT))
+		return UT_TRUE;
+
+	return UT_FALSE;
 }
 
 /*****************************************************************/
@@ -409,6 +381,7 @@ UT_Bool AP_QNXApp::canPasteFromClipboard(void)
 
 void AP_QNXApp::setSelectionStatus(AV_View * pView)
 {
+#if 0
 	// this is called by the view-listeners when the state
 	// of the X Selection is changed by the user on one of
 	// our windows.
@@ -469,6 +442,9 @@ void AP_QNXApp::setSelectionStatus(AV_View * pView)
 	m_pFrameSelection = (XAP_Frame *)pView->getParentData();
 
 	m_bSelectionInFlux = UT_FALSE;
+#else
+	UT_DEBUGMSG(("Hunt me down and kill me!"));
+#endif
 	return;
 }
 
@@ -482,7 +458,7 @@ UT_Bool AP_QNXApp::forgetFrame(XAP_Frame * pFrame)
 
 	if (m_pFrameSelection && (pFrame==m_pFrameSelection))
 	{
-		m_pClipboard->clearData(UT_FALSE,UT_TRUE);
+		m_pClipboard->clearClipboard();
 		m_pFrameSelection = NULL;
 		m_pViewSelection = NULL;
 	}
@@ -522,6 +498,7 @@ void AP_QNXApp::clearSelection(void)
 
 void AP_QNXApp::cacheCurrentSelection(AV_View * pView)
 {
+#if 0
 	if (pView)
 	{
 		// remember a temporary copy of the extent of the current
@@ -558,6 +535,9 @@ void AP_QNXApp::cacheCurrentSelection(AV_View * pView)
 	}
 
 	return;
+#else
+	UT_DEBUGMSG(("Hunt me down and kill me!"));
+#endif
 }
 
 UT_Bool AP_QNXApp::getCurrentSelection(const char** formatList,
@@ -773,6 +753,7 @@ static GR_Image * _showSplash(UT_uint32 delay)
 }
 
 /*****************************************************************/
+AP_QNXApp * gQNXApp = NULL; 
 
 int AP_QNXApp::main(const char * szAppName, int argc, char ** argv)
 {
@@ -809,6 +790,7 @@ int AP_QNXApp::main(const char * szAppName, int argc, char ** argv)
 	PtDestroyWidget(spwin);
 	
 	AP_QNXApp * pMyQNXApp = new AP_QNXApp(&Args, szAppName);
+	gQNXApp = pMyQNXApp;
 
 	// if the initialize fails, we don't have icons, fonts, etc.
 	printf("App: Calling initialize \n");
@@ -989,3 +971,23 @@ void AP_QNXApp::_printUsage(void)
 	printf("\n");
 }
 
+PtWidget_t *get_window() {
+	int 		 i;
+    XAP_QNXFrame *frame;
+
+	if (!gQNXApp) {
+		return NULL;
+	}
+
+	frame = NULL;	
+	for (i = 0; i < gQNXApp->getFrameCount(); i++) {
+    	if ((frame = (XAP_QNXFrame *)gQNXApp->getFrame(i))) {
+			break;
+		}
+	}
+	if (!frame) {
+		return NULL;
+	}
+
+    return frame->getTopLevelWindow();
+}

@@ -24,9 +24,6 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 
-// This header defines some functions for QNX dialogs,
-// like centering them, measuring them, etc.
-
 #include "xap_App.h"
 #include "xap_QNXApp.h"
 #include "xap_QNXFrame.h"
@@ -195,7 +192,13 @@ PtWidget_t * AP_QNXDialog_Break::_constructWindow(void)
 	windowBreak = PtCreateWidget(PtWindow, NULL, n, args);
 	PtAddCallback(windowBreak, Pt_CB_WINDOW_CLOSING, s_delete_clicked, this);
 
+	n = 0;
+	windowBreak = PtCreateWidget(PtWindow, NULL, n, args);
+
+
 	/* TODO: Add all these items to a group */
+	n = 0
+	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, Pt_GROUP_EXCLUSIVE, Pt_GROUP_EXCLUSIVE);
 
 #define LABEL_WIDTH  100
 #define RADIO_WIDTH  150 
@@ -222,6 +225,7 @@ PtWidget_t * AP_QNXDialog_Break::_constructWindow(void)
 	area.pos.x = 2*GEN_OFFSET; area.pos.y += area.size.h + GEN_OFFSET;
 	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0);
 	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_ONE_OF_MANY, 0);
+	PtSetArg(&args[n++], Pt_ARG_FLAGS, Pt_SET, Pt_SET);
 	bm[bmi].widget =
 	radiobuttonPageBreak = PtCreateWidget(PtToggleButton, windowBreak, n, args);
 	bm[bmi++].type = AP_Dialog_Break::b_PAGE;
@@ -314,15 +318,6 @@ PtWidget_t * AP_QNXDialog_Break::_constructWindow(void)
 
 void AP_QNXDialog_Break::_populateWindowData(void)
 {
-#if 0
-	// We're a pretty stateless dialog, so we just set up
-	// the defaults from our members.
-
-	PtWidget_t * widget = _findRadioByID(m_break);
-	UT_ASSERT(widget);
-	
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(widget), TRUE);
-#endif
 }
 
 void AP_QNXDialog_Break::_storeWindowData(void)

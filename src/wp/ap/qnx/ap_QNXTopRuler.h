@@ -58,7 +58,7 @@ protected:
 		static int button_press_event(PtWidget_t* w, void *data, PtCallbackInfo_t* info);
 		static int button_release_event(PtWidget_t* w, void *data, PtCallbackInfo_t* info);
 		static int motion_notify_event(PtWidget_t* w, void *data, PtCallbackInfo_t* info);
-//		static int configure_event(GtkWidget* w, GdkEventConfigure *e);
+		static int resize(PtWidget_t* w, void *data,  PtCallbackInfo_t *info);
 //		static int key_press_event(GtkWidget* w, GdkEventKey* e);
 //		static int delete_event(GtkWidget * w, GdkEvent * /*event*/, gpointer /*data*/);
 		static int expose(PtWidget_t * w, PhTile_t* damage);
