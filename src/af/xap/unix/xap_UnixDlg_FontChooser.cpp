@@ -68,6 +68,8 @@ XAP_UnixDialog_FontChooser::XAP_UnixDialog_FontChooser(AP_DialogFactory * pDlgFa
 	m_gc = NULL;
 	m_pUnixFrame = NULL;
 	m_pApp = NULL;
+
+	m_doneFirstFont = UT_FALSE;
 }
 
 XAP_UnixDialog_FontChooser::~XAP_UnixDialog_FontChooser(void)
@@ -208,7 +210,8 @@ static gint s_drawing_area_expose(GtkWidget * w,
 	XAP_UnixDialog_FontChooser * dlg = (XAP_UnixDialog_FontChooser *)
 		                              gtk_object_get_user_data(GTK_OBJECT(w));
 
-	if (dlg)
+	// if a font has been set since this dialog was launched, draw things with it
+	if (dlg->m_doneFirstFont)
 	{
 		char * entryString;
 
@@ -221,7 +224,8 @@ static gint s_drawing_area_expose(GtkWidget * w,
 		// erase the area with the background color of the document
 		UT_RGBColor bgcolor;
 		dlg->getBackgroundColor(&bgcolor);
-		dlg->m_gc->fillRect(bgcolor, 0,0,1000,1000);
+		dlg->m_gc->fillRect(bgcolor, 0, 0, GTK_WIDGET(dlg->m_preview)->allocation.width,
+							GTK_WIDGET(dlg->m_preview)->allocation.height);
 
 		// get metrics to center vertically in box
 		UT_sint32 top = (UT_sint32) PREVIEW_BOX_HEIGHT_PIXELS / (UT_sint32) 2 -
@@ -254,6 +258,17 @@ static gint s_drawing_area_expose(GtkWidget * w,
 	}
 #endif
 
+	}
+	else
+	{
+		// we get here when NO font has been set, because the user hasn't
+		// set one and the dialog didn't know enough to find its own
+
+		// simply fill
+		UT_RGBColor bgcolor;
+		dlg->getBackgroundColor(&bgcolor);
+		dlg->m_gc->fillRect(bgcolor, 0, 0, GTK_WIDGET(dlg->m_preview)->allocation.width,
+							GTK_WIDGET(dlg->m_preview)->allocation.height);
 	}
 		
 	return FALSE;
@@ -619,7 +634,6 @@ GtkWidget * XAP_UnixDialog_FontChooser::create_windowFontSelection(void)
 	return windowFontSelection;
 }
 
-// the real runModal()	
 void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 {
 	m_pUnixFrame = (XAP_UnixFrame *)pFrame;
@@ -746,7 +760,7 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	if (foundAt >= 0)
 	{
 		gtk_clist_select_row(GTK_CLIST(m_sizeList), foundAt, 0);
-		gtk_clist_moveto(GTK_CLIST(m_fontList), foundAt, 0, 0, -1);
+		gtk_clist_moveto(GTK_CLIST(m_sizeList), foundAt, 0, 0, -1);
 	}
 	
 	// Set color in the color selector
@@ -788,6 +802,8 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	gtk_widget_show(GTK_WIDGET(cf));
 	gtk_grab_add(GTK_WIDGET(cf));
 
+	m_doneFirstFont = UT_FALSE;
+	
 	// attach a new graphics context
 	m_gc = new GR_UnixGraphics(m_preview->window, m_fontManager);
 	gtk_object_set_user_data(GTK_OBJECT(m_preview), this);
@@ -930,6 +946,10 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 
 	gtk_widget_destroy (GTK_WIDGET(cf));
 
+	// these dialogs are cached around through the dialog framework,
+	// and this variable needs to get set back
+	m_doneFirstFont = UT_FALSE;
+	
     gtk_widget_pop_visual();
     gtk_widget_pop_colormap();
 	
@@ -1122,6 +1142,9 @@ void XAP_UnixDialog_FontChooser::updatePreview(void)
 	{
 		// set the new font
 		m_gc->setFont(entry);
+
+		// if we've set a font, this variable is true
+		m_doneFirstFont = UT_TRUE;
 
 		// now do the switch
 		DELETEP(m_lastFont);

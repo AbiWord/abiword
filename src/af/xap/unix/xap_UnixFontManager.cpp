@@ -274,7 +274,7 @@ XAP_UnixFont * XAP_UnixFontManager::getFont(const char * fontname,
 	
 	UT_HashTable::UT_HashEntry * entry = m_fontHash.findEntry(keyBuffer);
 
-	UT_DEBUGMSG(("Found font [%p] in table.\n", entry));
+	//UT_DEBUGMSG(("Found font [%p] in table.\n", entry));
 	
 	return (entry && entry->pData) ? ((XAP_UnixFont *) entry->pData) : NULL;
 }

@@ -61,10 +61,12 @@ public:
 	UT_Bool					getEntryString(char ** string);
 	GR_UnixGraphics * 		m_gc;
 
+	UT_Bool					m_doneFirstFont;
+	
 protected:
 
-	UT_Bool 			m_blockUpdate;
-
+	UT_Bool		 			m_blockUpdate;
+	
 	// careful, these must be in the order the
 	// list box will show them (Windows order)
 	typedef enum
