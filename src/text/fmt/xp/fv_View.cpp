@@ -7109,7 +7109,19 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 	if (pRun)
 	{
 		// we now have coords relative to the page containing the ins pt
-		fp_Page* pPointPage = pRun->getLine()->getContainer()->getPage();
+	        fp_Line * pLine =  pRun->getLine();
+	        if(!pLine)
+		{
+		    x = x2 = 0;
+		    y = y2 = 0;
+		
+		    height = 0;
+		    if(ppBlock)
+		      *ppBlock = 0;
+		    return;
+		}
+
+		fp_Page* pPointPage = pLine->getContainer()->getPage();
 
 		UT_sint32 iPageOffset;
 		getPageYOffset(pPointPage, iPageOffset);

@@ -2247,6 +2247,10 @@ bool fl_DocSectionLayout::isThisPageValid(HdrFtrType hfType, fp_Page * pThisPage
 	PageType FirstLast = odd;
 	PageType OddEven = odd;
 	fp_Page * pPage = m_pFirstOwnedPage;
+	if(!pPage)
+	{
+	    return false;
+	}
 //
 // No header/footerness assigned yet. Page is invalid.
 //
