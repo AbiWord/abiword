@@ -79,6 +79,12 @@ int fb_SimpleLineBreaker::reLayoutParagraph(fl_BlockLayout* pBlock)
 						  For now, I've fixed the symptom, not the problem, by commenting
 						  out the check (see below).  TODO we should fix the problem,
 						  not the symptom.  -EWS
+
+						  REVISED COMMENT:  (EWS)  This check is not merely too aggressive.
+						  It's simply wrong.  It is assuming that the 'screenWidth' variable
+						  returned from getScreenOffsets is in fact the width of the
+						  entire window.  (same for screenHeight).  This is quite wrong.
+						  This code should be revisited or removed.
 						*/
 						bLineOnScreen = UT_FALSE;
 					}
@@ -88,9 +94,11 @@ int fb_SimpleLineBreaker::reLayoutParagraph(fl_BlockLayout* pBlock)
 			pLine->m_bDirty = UT_FALSE;
 
 			int iWidth = 0;
-			// this line no longer fits ...
 			if (pLine->getWidth() > pLine->getMaxWidth())
 			{
+				/*
+				  This line no longer fits in its available space.
+				*/
 				fp_Run* pRun = pLine->getFirstRun();
 				fp_Run* pLastRun = pLine->getLastRun();
 				fp_Run* pNewLastRun = NULL;
@@ -149,6 +157,7 @@ int fb_SimpleLineBreaker::reLayoutParagraph(fl_BlockLayout* pBlock)
 
 									pRun = pRun->getNext();
 									pLine->shrink(pRun->getWidth());
+									pLine->m_bDirty = UT_TRUE;
 								}
 								else
 								{
@@ -265,6 +274,10 @@ int fb_SimpleLineBreaker::reLayoutParagraph(fl_BlockLayout* pBlock)
 			}
 			else
 			{
+				/*
+				  The line fits.  So, we need to check and see if anything
+				  from the subsequent line can be slurped onto this one.
+				*/
 				fp_Line* pRealNextLine = pLine->getNext();
 				fp_Line* pNextLine = pRealNextLine;
 				UT_uint32 iWidthLooking = 0;
@@ -452,6 +465,8 @@ int fb_SimpleLineBreaker::reLayoutParagraph(fl_BlockLayout* pBlock)
 						pLine->align();
 						pLine->draw(pLine->getFirstRun()->getGraphics());
 					}
+
+					pLine = pLine->getNext();
 				}
 				else
 				{
@@ -468,6 +483,7 @@ int fb_SimpleLineBreaker::reLayoutParagraph(fl_BlockLayout* pBlock)
 			pLine = pLine->getNext();
 		}
 	}
+	
 	return 0;
 }
 
