@@ -335,7 +335,7 @@ bool be_Window::QuitRequested(void) {
 	}
 
 	// let the window be destroyed
-	return(true);
+	return(false);
 }
 
 void be_Window::MessageReceived(BMessage *pMsg)
