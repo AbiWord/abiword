@@ -697,8 +697,11 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 			{
 				if(iLeft > 0)
 				{
-					UT_String_sprintf(sLeft,"%d",iLeft-1);
-					UT_String_sprintf(sRight,"%d",iLeft);
+					PT_DocPosition posCellLeft = findCellPosAt(posTable,i,iLeft-1);
+					UT_sint32 jLeft,jRight,jTop,jBot;
+					getCellParams(posCellLeft+1,&jLeft,&jRight,&jTop,&jBot);
+					UT_String_sprintf(sLeft,"%d",jRight);
+					UT_String_sprintf(sRight,"%d",jRight+1);
 				}
 				else
 				{
