@@ -415,7 +415,8 @@ int FL_BlockLayout::format()
 		m_pCurrentSlice = (FP_BlockSlice*) m_vecSlices.getNthItem(0);
 	}
 	
-	_allocateCharWidthArray();
+	if (!m_pCharWidths)
+		_allocateCharWidthArray();
 	_createRuns();
 	_verifyCurrentSlice(); // this is helpful for empty paragraphs
 
@@ -916,7 +917,7 @@ void FL_BlockLayout::dump()
 
 // *************************************************************************
 
-#ifdef BUFFER
+#ifdef BUFFER	// top-down edit operations -- obsolete?
 void FL_BlockLayout::mergeWithNextBlock()
 {
 	UT_ASSERT(m_pLayout->getGraphics()->queryProperties(DG_Graphics::DGP_SCREEN));

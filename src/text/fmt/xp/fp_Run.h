@@ -106,7 +106,7 @@ class FP_Run
 	UT_uint32 				containsOffset(UT_uint32 iOffset);
 	void 					findPointCoords(UT_uint32 iOffset, UT_uint32& x, UT_uint32& y, UT_uint32& height);
 
-#ifdef BUFFER
+#ifdef BUFFER	// top-down edit operations -- obsolete?
 	UT_Bool 				insertData(UT_uint32 iOffset, UT_uint32 iCount);
 	UT_Bool 				deleteChars(UT_uint32 iOffset, UT_uint32 iCountUnits, UT_uint32 iCountChars);
 	UT_Bool					insertInlineMarker(UT_uint32 newMarkerOffset, UT_uint32 markerSize);

@@ -445,7 +445,7 @@ void DG_LayoutView::insertCharacterFormatting(const XML_Char * properties[])
 	_drawSelectionOrInsertionPoint();
 }
 
-#ifdef BUFFER
+#ifdef BUFFER	// top-down edit operations -- obsolete?
 UT_Bool DG_LayoutView::_insertFormatPair(const XML_Char * szName, const XML_Char * properties[])
 {
 	// insert an inline formatting pair.

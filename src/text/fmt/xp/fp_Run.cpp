@@ -41,6 +41,7 @@ FP_Run::FP_Run(FL_BlockLayout* pBL, DG_Graphics* pG, UT_uint32 iOffsetFirst, UT_
 	m_pG = pG;
 	m_pBL = pBL;
 
+	// TODO -- this would work, but is it needed?  if not, nuke it
 //	m_pDoc = m_pBL->getDocument();
 
 	m_bCanSplit = 1;
@@ -368,13 +369,17 @@ UT_Bool	FP_Run::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInf
 
 			if (32 == pSpan[i])
 			{
-				si.iLeftWidth = iLeftWidth;
-				si.iRightWidth = iRightWidth;
-				si.iOffset = i + offset;
-			}
-			else
-			{
-				break;
+				if (iLeftWidth <= iMaxLeftWidth)
+				{
+					si.iLeftWidth = iLeftWidth;
+					si.iRightWidth = iRightWidth;
+					si.iOffset = i + offset;
+				}
+				else
+				{
+					bContinue = UT_FALSE;
+					break;
+				}
 			}
 		}
 
@@ -430,6 +435,7 @@ UT_Bool	FP_Run::findMinLeftFitSplitPoint(fp_RunSplitInfo& si)
 				si.iLeftWidth = iLeftWidth;
 				si.iRightWidth = iRightWidth;
 				si.iOffset = i + offset;
+				bContinue = UT_FALSE;
 				break;
 			}
 		}
@@ -668,6 +674,9 @@ void FP_Run::_drawPart(UT_sint32 xoff, UT_sint32 yoff, UT_uint32 iStart, UT_uint
 	UT_uint32 len = iLen;
 	UT_Bool bContinue = UT_TRUE;
 
+	UT_ASSERT(offset >= m_iOffsetFirst);
+	UT_ASSERT(offset + len <= m_iOffsetFirst + m_iLen);
+
 	UT_uint32 iLeftWidth = 0;
 	
 	for (UT_uint32 i=m_iOffsetFirst; i<iStart; i++)
@@ -681,13 +690,13 @@ void FP_Run::_drawPart(UT_sint32 xoff, UT_sint32 yoff, UT_uint32 iStart, UT_uint
 
 		if (len <= lenSpan)
 		{
-			m_pG->drawChars(pSpan, offset, len, xoff + iLeftWidth, yoff);
+			m_pG->drawChars(pSpan, 0, len, xoff + iLeftWidth, yoff);
 
 			bContinue = UT_FALSE;
 		}
 		else
 		{
-			m_pG->drawChars(pSpan, offset, lenSpan, xoff + iLeftWidth, yoff);
+			m_pG->drawChars(pSpan, 0, lenSpan, xoff + iLeftWidth, yoff);
 
 			for (UT_uint32 i=offset; i<lenSpan; i++)
 			{
@@ -696,6 +705,9 @@ void FP_Run::_drawPart(UT_sint32 xoff, UT_sint32 yoff, UT_uint32 iStart, UT_uint
 
 			offset += lenSpan;
 			len -= lenSpan;
+
+			UT_ASSERT(offset >= m_iOffsetFirst);
+			UT_ASSERT(offset + len <= m_iOffsetFirst + m_iLen);
 		}
 	}
 }
@@ -734,7 +746,7 @@ void FP_Run::dumpRun(void) const
 	return;
 }
 
-#ifdef BUFFER
+#ifdef BUFFER	// top-down edit operations -- obsolete?
 UT_Bool FP_Run::insertData(UT_uint32 iOffset, UT_uint32 iCount)
 {
 	UT_ASSERT(m_pG->queryProperties(DG_Graphics::DGP_SCREEN));

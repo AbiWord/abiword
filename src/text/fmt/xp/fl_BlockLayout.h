@@ -133,7 +133,7 @@ public:
 
 	UT_Bool getSpanPtr(UT_uint32 offset, const UT_UCSChar ** ppSpan, UT_uint32 * pLength) const;
 
-#ifdef BUFFER
+#ifdef BUFFER	// top-down edit operations -- obsolete?
 	UT_Bool		insertData(UT_UCSChar * text, UT_uint32 count);
 	UT_Bool		cmdCharDelete(UT_Bool bForward, UT_uint32 iCount);
 
