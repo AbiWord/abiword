@@ -2970,7 +2970,14 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			UT_sint32 adjustedLeft	= getPageViewLeftMargin() - m_xScrollOffset;
 			UT_sint32 adjustedRight = adjustedLeft + iPageWidth;
 
-			adjustedBottom -= getPageViewSep();
+			if(pPage->getNext() != NULL)	
+			{
+				adjustedBottom -= getPageViewSep() - 1;
+			}
+			else
+			{
+				adjustedBottom -= getPageViewSep() + getPageViewTopMargin();
+			}
 
 			if (!bDirtyRunsOnly || pPage->needsRedraw() && (getViewMode() == VIEW_PRINT))
 			{
@@ -3048,7 +3055,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 				{
 					m_pG->fillRect(clrMargin, adjustedLeft, adjustedBottom + 1, m_iWindowWidth - adjustedLeft, getPageViewSep());
 				}
-				else
+				else // found last page
 				{
 					UT_sint32 botfill = getWindowHeight() - adjustedBottom - 1 ;
 					m_pG->fillRect(clrMargin, adjustedLeft, adjustedBottom + 1, m_iWindowWidth - adjustedLeft, botfill);
