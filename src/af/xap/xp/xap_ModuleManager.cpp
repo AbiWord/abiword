@@ -27,6 +27,7 @@
 
 #include "xap_Spider.h"
 #include "xap_ModuleManager.h"
+#include "xap_Prefs.h"
 #include "ut_string_class.h"
 #include "ut_path.h"
 
@@ -66,6 +67,19 @@
   #define MODULE_CLASS XAP_UnixModule
 
 #endif
+
+// log information about plugin loading into the <log> section of AbiWord.profile
+// (we save the prefs file after each call, so as to maximise the information we have in
+// case a plugin crashes and the crash handler does not get a chance to save it for us
+#define XAP_MODULE_MANAGER_LOAD_LOG(msg1, msg2)                                      \
+if(XAP_App::getApp() && XAP_App::getApp()->getPrefs())                               \
+{                                                                                    \
+    UT_String __s;                                                                   \
+    UT_String_sprintf(__s, "(L%d): %s %s", __LINE__, msg1, msg2);                    \
+	UT_DEBUGMSG(("%s",__s.c_str()));                                                 \
+    XAP_App::getApp()->getPrefs()->log("XAP_ModuleManager::loadModule", __s.c_str());\
+	XAP_App::getApp()->getPrefs()->savePrefsFile();                                  \
+}
 
 /*!
  * Protected destructor creates an instance of this module class
@@ -112,7 +126,10 @@ bool XAP_ModuleManager::loadModule (const char * szFilename)
 	if ( szFilename == 0) return false;
 	if (*szFilename == 0) return false;
 
+	XAP_MODULE_MANAGER_LOAD_LOG("loading", szFilename)
+
 	// check to see if plugin is already loaded
+	
 	XAP_Module* pModuleLoop = 0;
 	const UT_GenericVector<class XAP_Module *> *pVec = enumModules();
 	
@@ -148,11 +165,13 @@ bool XAP_ModuleManager::loadModule (const char * szFilename)
 	if (!pModule->load (szFilename))
 	{		
 		UT_DEBUGMSG (("Failed to load module %s\n", szFilename));
+		XAP_MODULE_MANAGER_LOAD_LOG("failed to load", szFilename)
 		
 		char * errorMsg = 0;
 		if (pModule->getErrorMsg (&errorMsg))
 		{	
 			UT_DEBUGMSG (("Reason: %s\n", errorMsg));
+			XAP_MODULE_MANAGER_LOAD_LOG("error msg", errorMsg)
 			FREEP (errorMsg);
 		}
 		delete pModule;
@@ -168,11 +187,13 @@ bool XAP_ModuleManager::loadModule (const char * szFilename)
 	if (!pModule->registerThySelf ())
 	{
 		UT_DEBUGMSG (("Failed to register module %s\n", szFilename));
+		XAP_MODULE_MANAGER_LOAD_LOG("failed to register", szFilename)
 		
 		char * errorMsg = 0;
 		if (pModule->getErrorMsg (&errorMsg))
 		{	
 			UT_DEBUGMSG (("Reason: %s\n", errorMsg));
+			XAP_MODULE_MANAGER_LOAD_LOG("error msg", errorMsg)
 			FREEP (errorMsg);
 		}
 		pModule->unload ();
@@ -181,6 +202,7 @@ bool XAP_ModuleManager::loadModule (const char * szFilename)
 	}
 	if (m_modules->addItem (pModule)) // an error occurred...
 	{
+		XAP_MODULE_MANAGER_LOAD_LOG("could not add", szFilename)
 		pModule->unregisterThySelf ();
 		pModule->unload ();
 		delete pModule;
