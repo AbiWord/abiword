@@ -398,7 +398,7 @@ void GR_QNXGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 //	UT_uint32 len;
 
 	for(int i=0;i<iLength;i++)
-		ucs2[i] = pChars[i];	
+		ucs2[i] = pChars[i+iCharOffset];	
 	ucs2[iLength]='\0';
 
 	xoff = tdu(xoff);
