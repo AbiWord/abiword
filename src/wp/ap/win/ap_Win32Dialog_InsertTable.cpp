@@ -121,9 +121,20 @@ BOOL AP_Win32Dialog_InsertTable::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM 
 	
 	m_hwndDlg = hWnd;
 		
-	// localize controls (TODO: add the missing controls)
+		
+	// localize controls 
 	_DSX(BTN_OK,		DLG_OK);
-	_DSX(BTN_CANCEL,	DLG_Cancel);		
+	_DSX(BTN_CANCEL,	DLG_Cancel);			
+	_DS(TEXT_SIZE,		DLG_InsertTable_TableSize);		
+	_DS(TEXT_COLUMN,	DLG_InsertTable_NumCols);		
+	_DS(TEXT_ROW,		DLG_InsertTable_NumRows);		
+	_DS(TEXT_AUTOFIT,	DLG_InsertTable_AutoFit);		
+	_DS(RADIO_AUTO,		DLG_InsertTable_AutoColSize);		
+	_DS(RADIO_FIXED,	DLG_InsertTable_FixedColSize);		
+	
+		
+	// Localise caption
+	SetWindowText(hWnd, pSS->getValue(AP_STRING_ID_DLG_InsertTable_TableTitle));
 
 	// Set Spin range (TODO: check if the max value is correct, copied from the unix version)
 	SendMessage(GetDlgItem(hWnd,AP_RID_DIALOG_INSERTTABLE_SPIN_COLUMN),UDM_SETRANGE,(WPARAM)1,(WPARAM)9999);
