@@ -5810,80 +5810,62 @@ Defun(fontSize)
 
 Defun(formatPainter)
 {
-  // TODO: MAKE ME WORK!!!
-
   CHECK_FRAME;
   ABIWORD_VIEW;
 
   // prereqs: !pView->isSelectionEmpty() && XAP_App::getApp()->canPasteFromClipboard()
   // taken care of in ap_Toolbar_Functions.cpp::ap_ToolbarGetState_Clipboard
 
-  xxx_UT_DEBUGMSG(("DOM: FORMAT PAINTER!!\n"));
-
-  bool retval = false;
-
   const XML_Char ** block_properties = 0;
   const XML_Char ** span_properties  = 0;
 
   // get the current document's selected range
   PD_DocumentRange range;
-  pView->getDocumentRangeOfCurrentSelection ( &range ) ;
+  pView->getDocumentRangeOfCurrentSelection (&range);
 
   // now create a new (invisible) view to paste our clipboard contents into
   PD_Document * pNewDoc = new PD_Document(XAP_App::getApp());
   pNewDoc->newDocument();
 
-  xxx_UT_DEBUGMSG(("Created new document\n"));
-
   FL_DocLayout *pDocLayout = new FL_DocLayout(pNewDoc, pView->getGraphics());
   FV_View pPasteView (XAP_App::getApp(), 0, pDocLayout);
+  pDocLayout->setView (&pPasteView);
   pDocLayout->fillLayouts();
   pDocLayout->formatAll();
 
-  xxx_UT_DEBUGMSG(("Created paste view\n"));
-
   // paste contents
-  pPasteView.cmdPaste ();
+  pPasteView.cmdPaste (true);
 
   // select all so that we can get the block & span properties
   pPasteView.cmdSelect(0, 0, FV_DOCPOS_BOD, FV_DOCPOS_EOD);
-
-  // re-select it so that we still have those contents on the clipboard
-  pPasteView.cmdCopy ();
-
-  xxx_UT_DEBUGMSG(("DOM: Selected and copied\n"));
 
   // get the paragraph and span/character formatting properties of
   // the clipboard selection
   if (!pPasteView.getBlockFormat(&block_properties))
     {
       UT_DEBUGMSG(("DOM: No block attributes in the new paragraph!\n"));
-      goto cleanup;
     }
 
   if (!pPasteView.getCharFormat(&span_properties))
     {
       UT_DEBUGMSG(("DOM: No span attributes in the new paragraph!\n"));
-      goto cleanup;
     }
 
   // reset what was selected before setting the block and char formatting
   pView->cmdSelect (range.m_pos1, range.m_pos2) ;
 
   // set the current selection's properties to what's on the clipboard
-  pView->setBlockFormat (block_properties);
-  pView->setCharFormat (span_properties);
+  if ( block_properties )
+    pView->setBlockFormat (block_properties);
+  if ( span_properties )
+    pView->setCharFormat (span_properties);
 
-  retval = true;
-
- cleanup:
   FREEP(block_properties);
   FREEP(block_properties);
   DELETEP(pDocLayout);
   UNREFP(pNewDoc);
 
-  // done!
-  return retval;
+  return true;
 }
 
 /*****************************************************************/

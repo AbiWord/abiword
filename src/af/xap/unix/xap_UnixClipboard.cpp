@@ -1,5 +1,4 @@
 /* AbiSource Application Framework
- * Copyright (c) 1998 AbiSource, Inc.
  * Copyright (c) 2002 Dom Lachowicz
  *
  * This program is free software; you can redistribute it and/or
@@ -22,25 +21,16 @@
 #include "xap_UnixClipboard.h"
 #include "xap_Frame.h"
 #include "xav_View.h"
-#include "ut_debugmsg.h"
-#include "ut_assert.h"
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
 static GtkClipboard* gtkClipboardForTarget(XAP_UnixClipboard::_T_AllowGet get)
 {
-  switch(get)
-    {
-    case XAP_UnixClipboard::TAG_ClipboardOnly:
+  if (XAP_UnixClipboard::TAG_ClipboardOnly == get)
       return gtk_clipboard_get(GDK_SELECTION_CLIPBOARD);
-      break;
-
-    case XAP_UnixClipboard::TAG_PrimaryOnly:
-      return gtk_clipboard_get(GDK_SELECTION_PRIMARY);
-      break;
-    }
-
+  else if (XAP_UnixClipboard::TAG_PrimaryOnly == get)
+    return gtk_clipboard_get(GDK_SELECTION_PRIMARY);
   return 0;
 }
 
@@ -63,8 +53,7 @@ XAP_UnixClipboard::XAP_UnixClipboard(XAP_UnixApp * pUnixApp)
 
 XAP_UnixClipboard::~XAP_UnixClipboard()
 {
-  // TODO: see if clearData is really needed
-  clearData(true,true);  
+  clearData(true,true);
   g_free(m_Targets);
 }
 
@@ -99,11 +88,19 @@ void XAP_UnixClipboard::common_get_func(GtkClipboard *clipboard,
 					GtkSelectionData *selection_data,
 					guint info, T_AllowGet which)
 {
-  AV_View * pView = viewFromApp(m_pUnixApp);
-  if (!pView) return; // race condition - have request for data but no view
-
   XAP_FakeClipboard & which_clip = ( which == TAG_ClipboardOnly ? m_fakeClipboard : m_fakePrimaryClipboard );
-  pView->cmdCopy(which == TAG_ClipboardOnly);
+
+  // if this is for PRIMARY, we need to copy the current selection
+  // else this is for CLIPBOARD and the data is already copied; do nothing
+  if (which == TAG_PrimaryOnly)
+    {
+      // will only get the view from the last focussed frame, and not some offscreen
+      // (print, format painter) view. this is fine, since we're operating on PRIMARY
+      AV_View * pView = viewFromApp(m_pUnixApp);
+      if (!pView) 
+	return; // race condition - have request for data but no view. fail harmlessly
+      pView->cmdCopy(false);
+    }
 
   guint ntargets = m_vecFormat_GdkAtom.getItemCount();
 
@@ -112,12 +109,12 @@ void XAP_UnixClipboard::common_get_func(GtkClipboard *clipboard,
   {
       if (needle == (GdkAtom)m_vecFormat_GdkAtom.getNthItem(i))
       {
-        const gchar * data = 0;
-        UT_uint32 data_len = 0;
         const gchar * format_name = (const gchar*)m_vecFormat_AP_Name.getNthItem(i);
 
         if(which_clip.hasFormat(format_name))
             {
+	        const gchar * data = 0;
+	        UT_uint32 data_len = 0;
                 which_clip.getClipboardData(format_name,(void**)&data,&data_len);	 
                 gtk_selection_data_set(selection_data,needle,8,(const guchar*)data,data_len);
             }
@@ -153,9 +150,7 @@ void XAP_UnixClipboard::clipboard_get_func(GtkClipboard *clipboard,
 
 bool XAP_UnixClipboard::assertSelection()
 {
-  xxx_UT_DEBUGMSG(("DOM: assertSelection\n"));
-
-  // assert the X-Selection for PRIMARY.
+  // assert the X-Selection for PRIMARY
   return ( gtk_clipboard_set_with_data (gtkClipboardForTarget(TAG_PrimaryOnly),
 					m_Targets,
 					m_nTargets,
@@ -166,30 +161,22 @@ bool XAP_UnixClipboard::assertSelection()
 
 bool XAP_UnixClipboard::addData(T_AllowGet tFrom, const char* format, void* pData, UT_sint32 iNumBytes)
 {
-  // add this data to our data store
   if( tFrom == TAG_PrimaryOnly )
     {
       if(!m_fakePrimaryClipboard.addData(format,pData,iNumBytes))
 	return false;
-      
-      xxx_UT_DEBUGMSG(("Added %d bytes of '%s' data to PRIMARY selection\n", iNumBytes, format));
       return true;
     }
   else 
     {
       if(!m_fakeClipboard.addData(format,pData,iNumBytes))
 	return false;
-      
-      xxx_UT_DEBUGMSG(("Added %d bytes of '%s' data to CLIPBOARD selection\n", iNumBytes, format));
       return true;
     }
 }
 
 void XAP_UnixClipboard::clearData(bool bClipboard, bool bPrimary)
 {
-  UT_DEBUGMSG(("DOM: clearData: [CLIPBOARD: %d] [PRIMARY: %d]\n", bClipboard, bPrimary));
-
-  // User requested us to clear the clipboard
   if (bClipboard)
     {
       gtk_clipboard_clear (gtkClipboardForTarget (TAG_ClipboardOnly));
@@ -209,51 +196,29 @@ bool XAP_UnixClipboard::getData(T_AllowGet tFrom, const char** formatList,
 {
   // Fetch data from the clipboard (using the allowable source(s)) in one of
   // the prioritized list of formats.  Return pointe to clipboard's buffer. 
-
-  UT_DEBUGMSG(("DOM: getData attempt\n"));
-
   *pszFormatFound = NULL;
   *ppData = NULL;
   *pLen = 0;
   
-  switch (tFrom)
+  if (TAG_ClipboardOnly == tFrom)
     {
-    case TAG_ClipboardOnly:
-      if (ownsClipboard(tFrom))
-	return _getDataFromFakeClipboard(tFrom,formatList,ppData,pLen,pszFormatFound);
-      else
-	{
-	  // setup clipboard selection, delay primary until assertSelection()
-	  gtk_clipboard_set_with_data  (gtkClipboardForTarget(TAG_ClipboardOnly),
-					m_Targets,
-					m_nTargets,
-					s_clipboard_get_func,
-					s_clipboard_clear_func,
-					this); 
-
-	  return _getDataFromServer(tFrom,formatList,ppData,pLen,pszFormatFound);
-	}
-      
-    case TAG_PrimaryOnly:
-      if (ownsClipboard(tFrom))
-	return _getDataFromFakeClipboard(tFrom,formatList,ppData,pLen,pszFormatFound);
-      else
+        // setup clipboard selection, delay primary until assertSelection()
+        gtk_clipboard_set_with_data  (gtkClipboardForTarget(TAG_ClipboardOnly),
+				      m_Targets,
+				      m_nTargets,
+				      s_clipboard_get_func,
+				      s_clipboard_clear_func,
+				      this);
 	return _getDataFromServer(tFrom,formatList,ppData,pLen,pszFormatFound);
-      
-    default:
-      UT_ASSERT_NOT_REACHED();
-      return false;
     }
+  else if (TAG_PrimaryOnly == tFrom)
+        return _getDataFromServer(tFrom,formatList,ppData,pLen,pszFormatFound);
+  else
+      return false;
 }
 	
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
-
-bool XAP_UnixClipboard::ownsClipboard(T_AllowGet which)
-{
-  // TODO: Possibly noticable speedups iff we own the clipboard. Determine how to determine this...
-  return false;
-}
 
 bool XAP_UnixClipboard::_getDataFromFakeClipboard(T_AllowGet tFrom, const char** formatList,
 						  void ** ppData, UT_uint32 * pLen,
@@ -269,7 +234,6 @@ bool XAP_UnixClipboard::_getDataFromFakeClipboard(T_AllowGet tFrom, const char**
       }
   
   // should always happen since this is our internal buffer
-  UT_ASSERT_NOT_REACHED();
   return false;
 }
 
@@ -277,15 +241,13 @@ bool XAP_UnixClipboard::_getDataFromServer(T_AllowGet tFrom, const char** format
 					   void ** ppData, UT_uint32 * pLen,
 					   const char **pszFormatFound)
 {
-  // walk desired formats list and find first one that server also has.
-
+  // walk desired formats list and find first one that server also has
   GtkClipboard * clipboard = gtkClipboardForTarget (tFrom);
 
   UT_Vector atoms ;
   for(int atomCounter = 0; formatList[atomCounter]; atomCounter++)
-    {
       atoms.addItem((void *) gdk_atom_intern(formatList[atomCounter],FALSE));
-    }
+
   int len = atoms.size () ;
 
   for(int i = 0; i < len; i++)
@@ -304,7 +266,6 @@ bool XAP_UnixClipboard::_getDataFromServer(T_AllowGet tFrom, const char** format
 	}
     }
 
-  xxx_UT_DEBUGMSG(("Clipboard::_getDataFromServer: didn't contain anything in format requested.\n"));
   return false;
 }
 

@@ -174,7 +174,7 @@
 
     DefineToolbarIcon(tb_smiley)
     DefineToolbarIcon(tb_anchor)
-    DefineToolbarIcon(tb_hyperlink)
+    DefineToolbarIcon(tb_hyperlink_xpm)
 	DefineToolbarIcon(tb_symbol_xpm)
 	DefineToolbarIcon(tb_para_0before_xpm)
 	DefineToolbarIcon(tb_para_12before_xpm)

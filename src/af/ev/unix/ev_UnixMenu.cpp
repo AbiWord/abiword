@@ -47,12 +47,22 @@
 #include "ap_Menu_Id.h"
 
 // set up these replacement icons
-#include "stock/menu_import.xpm"
+#include "stock/menu_about.xpm"
+#include "stock/menu_add_column.xpm"
+#include "stock/menu_add_row.xpm"
+#include "stock/menu_book.xpm"
+#include "stock/menu_credits.xpm"
+#include "stock/menu_delete_column.xpm"
+#include "stock/menu_delete_row.xpm"
 #include "stock/menu_export.xpm"
+#include "stock/menu_import.xpm"
+#include "stock/menu_insert_hyperlink.xpm"
 #include "stock/menu_insert_image.xpm"
 #include "stock/menu_insert_symbol.xpm"
-#include "stock/menu_book.xpm"
-#include "stock/menu_about.xpm"
+#include "stock/menu_insert_table.xpm"
+#include "stock/menu_merge_cells.xpm"
+#include "stock/menu_new_window.xpm"
+#include "stock/menu_split_cells.xpm"
 
 static bool s_init = false;
 
@@ -308,23 +318,43 @@ EV_UnixMenu::EV_UnixMenu(XAP_UnixApp * pUnixApp, XAP_UnixFrame * pUnixFrame,
 		
 		// NOTE: KEEP THE ORDER OF THESE TWO STATIC ARRAYS THE SAME
 		static const GtkStockItem items[] = {
-			{ "Menu_AbiWord_Import", "_GTK!", (GdkModifierType)0, 0, NULL },
-			{ "Menu_AbiWord_Export", "_GTK!", (GdkModifierType)0, 0, NULL },
-			{ "Menu_AbiWord_InsertSymbol", "_GTK!", (GdkModifierType)0, 0, NULL },
-			{ "Menu_AbiWord_InsertImage", "_GTK!", (GdkModifierType)0, 0, NULL },
+			{ "Menu_AbiWord_About", "_GTK!", (GdkModifierType)0, 0, NULL },
+			{ "Menu_AbiWord_Add_Column", "_GTK!", (GdkModifierType)0, 0, NULL },
+			{ "Menu_AbiWord_Add_Row", "_GTK!", (GdkModifierType)0, 0, NULL },
 			{ "Menu_AbiWord_Book", "_GTK!", (GdkModifierType)0, 0, NULL },
-			{ "Menu_AbiWord_About", "_GTK!", (GdkModifierType)0, 0, NULL }
+			{ "Menu_AbiWord_Credits", "_GTK!", (GdkModifierType)0, 0, NULL },
+			{ "Menu_AbiWord_Delete_Column", "_GTK!", (GdkModifierType)0, 0, NULL },
+			{ "Menu_AbiWord_Delete_Row", "_GTK!", (GdkModifierType)0, 0, NULL },
+			{ "Menu_AbiWord_Export", "_GTK!", (GdkModifierType)0, 0, NULL },
+			{ "Menu_AbiWord_Import", "_GTK!", (GdkModifierType)0, 0, NULL },
+			{ "Menu_AbiWord_Insert_Hyperlink", "_GTK!", (GdkModifierType)0, 0, NULL },
+			{ "Menu_AbiWord_Insert_Image", "_GTK!", (GdkModifierType)0, 0, NULL },
+			{ "Menu_AbiWord_Insert_Symbol", "_GTK!", (GdkModifierType)0, 0, NULL },
+			{ "Menu_AbiWord_Insert_Table", "_GTK!", (GdkModifierType)0, 0, NULL },
+			{ "Menu_AbiWord_Merge_Cells", "_GTK!", (GdkModifierType)0, 0, NULL },
+			{ "Menu_AbiWord_New_Window", "_GTK!", (GdkModifierType)0, 0, NULL },
+			{ "Menu_AbiWord_Split_Cells", "_GTK!", (GdkModifierType)0, 0, NULL }
 		};
 		static struct AbiWordStockPixmap{
 			const char * name;
 			char ** xpm_data;
 		} const item_names [] = {
-			{ "Menu_AbiWord_Import", menu_import_xpm },
-			{ "Menu_AbiWord_Export", menu_export_xpm },
-			{ "Menu_AbiWord_InsertSymbol", menu_insert_symbol_xpm },
-			{ "Menu_AbiWord_InsertImage", menu_insert_image_xpm },
-			{ "Menu_AbiWord_Book", menu_book_xpm },
 			{ "Menu_AbiWord_About", menu_about_xpm },
+			{ "Menu_AbiWord_Add_Column", menu_add_column_xpm },
+			{ "Menu_AbiWord_Add_Row", menu_add_row_xpm },
+			{ "Menu_AbiWord_Book", menu_book_xpm },
+			{ "Menu_AbiWord_Credits", menu_credits_xpm },
+			{ "Menu_AbiWord_Delete_Column", menu_delete_column_xpm },
+			{ "Menu_AbiWord_Delete_Row", menu_delete_row_xpm },
+			{ "Menu_AbiWord_Export", menu_export_xpm },
+			{ "Menu_AbiWord_Import", menu_import_xpm },
+			{ "Menu_AbiWord_Insert_Hyperlink", menu_insert_hyperlink_xpm },
+			{ "Menu_AbiWord_Insert_Image", menu_insert_image_xpm },
+			{ "Menu_AbiWord_Insert_Symbol", menu_insert_symbol_xpm },
+			{ "Menu_AbiWord_Insert_Table", menu_insert_table_xpm },
+			{ "Menu_AbiWord_Merge_Cells", menu_merge_cells_xpm },
+			{ "Menu_AbiWord_New_Window", menu_new_window_xpm },
+			{ "Menu_AbiWord_Split_Cells", menu_split_cells_xpm },
 			{ NULL, NULL }
 		};
 
@@ -496,9 +526,10 @@ const char * EV_UnixMenu::s_getStockPixmapFromId (int id)
 		{AP_MENU_ID_EDIT_REPLACE, GTK_STOCK_FIND_AND_REPLACE},
 		{AP_MENU_ID_EDIT_GOTO, GTK_STOCK_JUMP_TO},
 		
-		{AP_MENU_ID_INSERT_SYMBOL, "Menu_AbiWord_InsertSymbol"},
-		{AP_MENU_ID_INSERT_PICTURE, "Menu_AbiWord_InsertImage"},
-		{AP_MENU_ID_INSERT_GRAPHIC, "Menu_AbiWord_InsertImage"},
+		{AP_MENU_ID_INSERT_SYMBOL, "Menu_AbiWord_Insert_Symbol"},
+		{AP_MENU_ID_INSERT_PICTURE, "Menu_AbiWord_Insert_Image"},
+		{AP_MENU_ID_INSERT_GRAPHIC, "Menu_AbiWord_Insert_Image"},
+		{AP_MENU_ID_INSERT_HYPERLINK, "Menu_AbiWord_Insert_Hyperlink"},
 
 		{AP_MENU_ID_FMT_FONT, GTK_STOCK_SELECT_FONT},
 		{AP_MENU_ID_FMT_BOLD, GTK_STOCK_BOLD},
@@ -527,14 +558,28 @@ const char * EV_UnixMenu::s_getStockPixmapFromId (int id)
 		{AP_MENU_ID_WINDOW_7, GTK_STOCK_NEW},
 		{AP_MENU_ID_WINDOW_8, GTK_STOCK_NEW},
 		{AP_MENU_ID_WINDOW_9, GTK_STOCK_NEW},
+		{AP_MENU_ID_WINDOW_NEW, "Menu_AbiWord_New_Window"},
 
 		{AP_MENU_ID_TOOLS_LANGUAGE, "Menu_AbiWord_Book"},
 		{AP_MENU_ID_FMT_LANGUAGE, "Menu_AbiWord_Book"},
+		
+		{AP_MENU_ID_TABLE_INSERT_TABLE, "Menu_AbiWord_Insert_Table"},
+
+		{AP_MENU_ID_TABLE_INSERT_COLUMNS_BEFORE, "Menu_AbiWord_Add_Column"},
+		{AP_MENU_ID_TABLE_INSERT_COLUMNS_AFTER, "Menu_AbiWord_Add_Column"},
+		{AP_MENU_ID_TABLE_INSERT_ROWS_BEFORE, "Menu_AbiWord_Add_Row"},
+		{AP_MENU_ID_TABLE_INSERT_ROWS_AFTER, "Menu_AbiWord_Add_Row"},
+
+		{AP_MENU_ID_TABLE_DELETE_COLUMNS, "Menu_AbiWord_Delete_Column"},
+		{AP_MENU_ID_TABLE_DELETE_ROWS, "Menu_AbiWord_Delete_Row"},
+		{AP_MENU_ID_TABLE_MERGE_CELLS, "Menu_AbiWord_Merge_Cells"},
+		{AP_MENU_ID_TABLE_SPLIT_CELLS, "Menu_AbiWord_Split_Cells"},
 
 		{AP_MENU_ID_HELP_CONTENTS, GTK_STOCK_HELP},
 		{AP_MENU_ID_HELP_INDEX, GTK_STOCK_INDEX},
 		{AP_MENU_ID_HELP_SEARCH, GTK_STOCK_FIND},
 		{AP_MENU_ID_HELP_ABOUT, "Menu_AbiWord_About"},
+		{AP_MENU_ID_HELP_CREDITS, "Menu_AbiWord_Credits"},
 		
 		{AP_MENU_ID_SPELL_ADD, GTK_STOCK_ADD},
 

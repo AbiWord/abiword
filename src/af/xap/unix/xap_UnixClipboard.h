@@ -111,8 +111,6 @@ public:
 			     GtkSelectionData *selection_data,
 			     guint info, T_AllowGet which);
 
-	bool ownsClipboard(T_AllowGet which);
-
 	UT_Vector  m_vecFormat_AP_Name;
 	UT_Vector  m_vecFormat_GdkAtom;
 
