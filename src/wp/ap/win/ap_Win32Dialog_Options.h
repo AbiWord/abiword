@@ -228,9 +228,11 @@ public:
 	SET_GATHER			(PrefsAutoSave, 	bool );
 
 	SET_GATHER			(ViewShowRuler, 	bool );
-	SET_GATHER			(ViewShowStandardBar,bool );
-	SET_GATHER			(ViewShowFormatBar, bool );
-	SET_GATHER			(ViewShowExtraBar,	bool );
+
+	
+	virtual bool _gatherViewShowToolbar(UT_uint32 t);
+	virtual void _setViewShowToolbar(UT_uint32 row, bool b);
+
 	SET_GATHER			(ViewShowStatusBar, bool );
 	SET_GATHER			(ViewRulerUnits,	UT_Dimension);
 	SET_GATHER			(ViewCursorBlink,	bool);
@@ -252,6 +254,7 @@ public:
 	virtual void _setAutoSaveFileExt(const UT_String &stExt);	
 	virtual void _gatherUILanguage(UT_String &stRetVal);
 	virtual void _setUILanguage(const UT_String &stExt);
+
 
 	SET_GATHER			(NotebookPageNum,	int );
 	SET_GATHER          (LanguageWithKeyboard, bool);
