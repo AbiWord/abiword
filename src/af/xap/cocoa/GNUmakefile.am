@@ -33,5 +33,6 @@ libXap_cocoa_a_SOURCES=		\
 	xap_CocoaFrame.mm		\
 	xap_CocoaModule.mm		\
 	xap_CocoaTimer.mm		\
+	xap_CocoaToolbarWindow.mm	\
 	xap_CocoaToolbar_Icons.mm
 
