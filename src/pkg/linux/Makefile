@@ -46,6 +46,7 @@ install:
 ########################################################################
 
 install_redhat:
+	@strip $(OUTDIR)/bin/AbiWord_d $(OUTDIR)/bin/AbiWord_s
 	@TARGET=/usr/share/abisuite BINDIR=/usr/bin/X11 SRCDIR=$(OUTDIR) \
 		DOCDIR=/usr/doc LIBDIR=/usr/lib \
 		SCRIPTDIR=$(ABI_ROOT)/src/pkg/common/unix/scripts \
@@ -60,13 +61,6 @@ uninstall_redhat:
 	rm -f /usr/lib/menu/abiword
 	rm -f /usr/bin/X11/abiword
 	rm -f /usr/bin/X11/AbiWord
-
-########################################################################
-
-install_debian:
-	@echo TODO
-uninstall_debian:
-	@echo TODO
 
 ########################################################################
 
@@ -93,9 +87,6 @@ pack_rpm:
 		 abisuite-$(ABI_BUILD_VERSION))
 	@rm -rf $(PACK_ROOT)
 
-pack_deb:
-	@echo TODO
-
 ########################################################################
 
 # These targets actually do all the heavy lifting of packaging.
@@ -109,7 +100,7 @@ rpm: pack_rpm
 		> $(RPM_SOURCE_DIR)/SPECS/abisuite-$(ABI_BUILD_VERSION).spec)
 	@echo "Producing RPM..."
 	rpm -ba $(RPM_SOURCE_DIR)/SPECS/abisuite-$(ABI_BUILD_VERSION).spec
-	mv $(RPM_SOURCE_DIR)/RPMS/abisuite-$(ABI_BUILD_VERSION)-$(ABI_RELEASE_NUMBER).$(OS_ARCH).rpm $(DIST)
+	mv $(RPM_SOURCE_DIR)/RPMS/$(OS_ARCH)/abisuite-$(ABI_BUILD_VERSION)-$(ABI_RELEASE_NUMBER).$(OS_ARCH).rpm $(DIST)
 	rm -f $(RPM_SOURCE_DIR)/SRPMS/abisuite-$(ABI_BUILD_VERSION)-$(ABI_RELEASE_NUMBER).$(OS_ARCH).src.rpm
 
 # We're using alien to convert from RPM to DEB package
@@ -125,3 +116,5 @@ slp: rpm
 # tgz target is provided by a common Unix makefile
 include $(ABI_ROOT)/src/pkg/common/unix/tgz.mk
 
+# This target should build all packages 
+distribution: tgz rpm deb slp
