@@ -1,5 +1,7 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998-2003 AbiSource, Inc.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -28,6 +30,9 @@
 #include "ut_types.h"
 #include "ut_misc.h"
 #include "ut_units.h"
+
+#include "pp_PropertyMap.h"
+
 class PP_AttrProp;
 class PD_Document;
 

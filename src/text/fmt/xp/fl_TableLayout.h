@@ -31,6 +31,7 @@
 #include "fl_Layout.h"
 #include "fl_ContainerLayout.h"
 #include "fl_SectionLayout.h"
+#include "pp_PropertyMap.h"
 #include "pl_Listener.h"
 #include "ut_debugmsg.h"
 #include "ut_misc.h" // for UT_RGBColor
@@ -189,6 +190,15 @@ UT_sint32                    getBottomOffset(void) const;
 	const UT_Vector *        getVecRowProps(void) const
 		{ return &m_vecRowProps;}
 
+	const PP_PropertyMap::Background & getBackground () const { return m_background; }
+
+	const UT_RGBColor & getDefaultColor () const { return m_colorDefault; }
+
+	const PP_PropertyMap::Line & getBottomStyle () const { return m_lineBottom; }
+	const PP_PropertyMap::Line & getLeftStyle ()   const { return m_lineLeft; }
+	const PP_PropertyMap::Line & getRightStyle ()  const { return m_lineRight; }
+	const PP_PropertyMap::Line & getTopStyle ()    const { return m_lineTop; }
+
 protected:
 	virtual void		        _lookupProperties(void);
 	void				        _purgeLayout();
@@ -222,6 +232,16 @@ private:
 	UT_Vector              m_vecRowProps;
 	FL_RowHeightType       m_iRowHeightType;
 	UT_sint32              m_iRowHeight;
+
+// table-background properties
+	PP_PropertyMap::Background	m_background;
+
+// table-border properties
+	UT_RGBColor            m_colorDefault;
+	PP_PropertyMap::Line   m_lineBottom;
+	PP_PropertyMap::Line   m_lineLeft;
+	PP_PropertyMap::Line   m_lineRight;
+	PP_PropertyMap::Line   m_lineTop;
 };
 
 
@@ -292,24 +312,14 @@ private:
 	bool                   m_bCellPositionedOnPage;
 	UT_sint32              m_iCellHeight;
 
-// Line properties
-	UT_RGBColor            m_cLeftColor;
-	UT_RGBColor            m_cRightColor;
-	UT_RGBColor            m_cTopColor;
-	UT_RGBColor            m_cBottomColor;	
-	UT_sint32              m_iLeftStyle;
-	UT_sint32              m_iRightStyle;
-	UT_sint32              m_iTopStyle;
-	UT_sint32              m_iBottomStyle;
-	
-	UT_sint32              m_iLeftLineThickness;
-	UT_sint32              m_iTopLineThickness;
-	UT_sint32              m_iRightLineThickness;
-	UT_sint32              m_iBottomLineThickness;
+// cell-background properties
+	PP_PropertyMap::Background	m_background;
 
-// Background properties
-	UT_RGBColor            m_cBgColor;
-	UT_sint32              m_iBgStyle;
+// cell-border properties
+	PP_PropertyMap::Line   m_lineBottom;
+	PP_PropertyMap::Line   m_lineLeft;
+	PP_PropertyMap::Line   m_lineRight;
+	PP_PropertyMap::Line   m_lineTop;
 
 	void                   _updateCell(void);
 	void                   _localCollapse();
@@ -331,6 +341,8 @@ private:
 ///
 #define LS_OFF		0	// No line style, which means no line is drawn
 #define LS_NORMAL	1	// A normal solid line
+#define LS_DOTTED	2	// A dotted line
+#define LS_DASHED	3	// A dashed line
 // add more line styles here
 
 #endif /* TABLELAYOUT_H */

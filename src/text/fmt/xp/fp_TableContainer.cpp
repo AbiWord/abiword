@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2002 Martin Sevior <msevior@physics.unimelb.edu.au>
@@ -110,19 +112,6 @@ fp_CellContainer::fp_CellContainer(fl_SectionLayout* pSectionLayout)
 	  m_bDrawBot(false),
 	  m_bDrawRight(false),
 	  m_bLinesDrawn(false),
-	  m_cLeftColor(UT_RGBColor(0,0,0)),
-	  m_cRightColor(UT_RGBColor(0,0,0)),
-	  m_cTopColor(UT_RGBColor(0,0,0)),
-	  m_cBottomColor(UT_RGBColor(0,0,0)),
-	  m_iLeftStyle(LS_NORMAL),
-	  m_iRightStyle(LS_NORMAL),
-	  m_iTopStyle(LS_NORMAL),
-	  m_iBottomStyle(LS_NORMAL),
-	  m_iLeftThickness(-1),
-	  m_iTopThickness(-1),
-	  m_iRightThickness(-1),
-	  m_iBottomThickness(-1),
-	  m_iBgStyle( FS_FILL ),
 	  m_bBgDirty(true)
 {
 }
@@ -314,10 +303,37 @@ UT_sint32 fp_CellContainer::getSpannedHeight(void)
 
 void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 {
-	if(!m_bLinesDrawn && m_iBgStyle == FS_OFF) // FIXME MarcM: replace by m_iLeftStyle, m_iRightStyle, etc.
-	{
-		return;
-	}
+// Lookup table properties to get the line thickness, etc.
+
+	fl_ContainerLayout * pLayout = getSectionLayout()->myContainingLayout ();
+	UT_ASSERT(pLayout);
+	if (pLayout == 0) return;
+
+	UT_ASSERT(pLayout->getContainerType () == FL_CONTAINER_TABLE);
+	if (pLayout->getContainerType () != FL_CONTAINER_TABLE) return;
+
+	fl_TableLayout * pTableLayout = static_cast<fl_TableLayout *>(pLayout);
+
+	PP_PropertyMap::Background background = getBackground ();
+
+	PP_PropertyMap::Line lineBottom = getBottomStyle (pTableLayout);
+	PP_PropertyMap::Line lineLeft   = getLeftStyle   (pTableLayout);
+	PP_PropertyMap::Line lineRight  = getRightStyle  (pTableLayout);
+	PP_PropertyMap::Line lineTop    = getTopStyle    (pTableLayout);
+
+	if ((lineBottom.m_t_linestyle == PP_PropertyMap::linestyle_none) &&
+		(  lineLeft.m_t_linestyle == PP_PropertyMap::linestyle_none) &&
+		( lineRight.m_t_linestyle == PP_PropertyMap::linestyle_none) &&
+		(   lineTop.m_t_linestyle == PP_PropertyMap::linestyle_none) &&
+		(background.m_t_background == PP_PropertyMap::background_none))
+		{
+			/* nothing to draw
+			 */
+			return;
+		}
+
+	UT_RGBColor page_color(255,255,255);
+
 	fp_Container * pCon = getContainer();
 	if(pCon->getContainer() && !pCon->getContainer()->isColumnType())
 	{
@@ -326,19 +342,12 @@ void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 	UT_Rect bRec;
 	fp_Page * pPage = NULL;
 	_getBrokenRect(pBroke, pPage, bRec);	
-	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(getContainer());
 	if (pPage != NULL)
 	{
 		if (getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))
 		{
-			getGraphics()->setColor(*pPage->getOwningSection()->getPaperColor());
+			page_color = *(pPage->getOwningSection()->getPaperColor ());
 		}
-		else
-		{
-			UT_RGBColor pClr(255,255,255);
-			getGraphics()->setColor(pClr);
-		}
-		getGraphics()->setLineWidth(pTab->getLineThickness());
 
 		xxx_UT_DEBUGMSG(("_clear: top %d bot %d cell left %d top %d \n",bRec.top,bRec.top+bRec.height,m_iLeftAttach,m_iTopAttach));
 // only clear the lines if no background is set: the background clearing will also clear the lines
@@ -347,32 +356,36 @@ void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 // FIXME MARCM: When the backgroud is on, it _should_ also clear the lines, but it doesn't
 		//if (m_iBgStyle == FS_OFF)
 		{
-			if(m_iLeftStyle != LS_OFF)
-			{	
-				getGraphics()->setLineWidth(m_iLeftThickness >=0 ? m_iLeftThickness : pTab->getLineThickness());
-				getGraphics()->drawLine(bRec.left, bRec.top, bRec.left,  bRec.top + bRec.height); 
+			if (lineLeft.m_t_linestyle != PP_PropertyMap::linestyle_none)
+			{
+				lineLeft.m_t_linestyle = PP_PropertyMap::linestyle_solid;
+				lineLeft.m_color = page_color;
+				_drawLine (lineLeft, bRec.left, bRec.top, bRec.left,  bRec.top + bRec.height);
 			}
-			if(m_iTopStyle != LS_OFF)
+			if (lineTop.m_t_linestyle != PP_PropertyMap::linestyle_none)
 			{	
-				getGraphics()->setLineWidth(m_iTopThickness >=0 ? m_iTopThickness : pTab->getLineThickness());
-				getGraphics()->drawLine(bRec.left, bRec.top, bRec.left + bRec.width,  bRec.top); 
+				lineTop.m_t_linestyle = PP_PropertyMap::linestyle_solid;
+				lineTop.m_color = page_color;
+				_drawLine (lineTop, bRec.left, bRec.top, bRec.left + bRec.width,  bRec.top); 
 				if(pBroke && pBroke->getPage() && pBroke->getBrokenTop() > 0)
 				{
 					UT_sint32 col_x,col_y;
 					fp_Column * pCol = static_cast<fp_Column *>(pBroke->getColumn());
 					pBroke->getPage()->getScreenOffsets(pCol, col_x,col_y);
-					getGraphics()->drawLine(bRec.left, col_y, bRec.left + bRec.width,  col_y);
+					_drawLine (lineTop, bRec.left, col_y, bRec.left + bRec.width,  col_y);
 				}
 			}
-			if(m_iRightStyle != LS_OFF)
+			if (lineRight.m_t_linestyle != PP_PropertyMap::linestyle_none)
 			{	
-				getGraphics()->setLineWidth(m_iRightThickness >=0 ? m_iRightThickness : pTab->getLineThickness());
-				getGraphics()->drawLine(bRec.left + bRec.width, bRec.top, bRec.left + bRec.width, bRec.top + bRec.height); 
+				lineRight.m_t_linestyle = PP_PropertyMap::linestyle_solid;
+				lineRight.m_color = page_color;
+				_drawLine (lineRight, bRec.left + bRec.width, bRec.top, bRec.left + bRec.width, bRec.top + bRec.height); 
 			}
-			if(m_iBottomStyle != LS_OFF)
+			if (lineBottom.m_t_linestyle != PP_PropertyMap::linestyle_none)
 			{	
-				getGraphics()->setLineWidth(m_iBottomThickness >=0 ? m_iBottomThickness : pTab->getLineThickness());
-				getGraphics()->drawLine(bRec.left, bRec.top + bRec.height, bRec.left + bRec.width , bRec.top + bRec.height);
+				lineBottom.m_t_linestyle = PP_PropertyMap::linestyle_solid;
+				lineBottom.m_color = page_color;
+				_drawLine (lineBottom, bRec.left, bRec.top + bRec.height, bRec.left + bRec.width , bRec.top + bRec.height);
 				xxx_UT_DEBUGMSG(("_Clear: pBroke %x \n",pBroke));
 				if(pBroke && pBroke->getPage() && pBroke->getBrokenBot() >= 0)
 				{
@@ -381,7 +394,7 @@ void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 					pBroke->getPage()->getScreenOffsets(pCol, col_x,col_y);
 					UT_sint32 bot = col_y + pCol->getHeight();
 					xxx_UT_DEBUGMSG(("_clear: Clear broken bottom %d \n",bot));
-					getGraphics()->drawLine(bRec.left, bot, bRec.left + bRec.width,  bot);
+					_drawLine (lineBottom, bRec.left, bot, bRec.left + bRec.width,  bot);
 				}
 
 			}
@@ -389,21 +402,11 @@ void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 		getGraphics()->setLineWidth(1 );
 
 // then clear the background as well
-		switch (m_iBgStyle)
+// NOTE: if we support non-solid backgrounds this ought to be changed - the
+//       parent container should be asked to redraw the exposed area
+		if (background.m_t_background != PP_PropertyMap::background_none)
 		{
-			case FS_FILL:
-				if (getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))
-				{
-					getGraphics()->fillRect(*pPage->getOwningSection()->getPaperColor(),bRec.left,bRec.top,bRec.width,bRec.height);
-				}
-				else
-				{
-					UT_RGBColor pClr(255,255,255);
-					getGraphics()->fillRect(pClr,bRec.left,bRec.top,bRec.width,bRec.height);
-				}
-				break;
-			default:
-				break;
+			getGraphics()->fillRect (page_color,bRec.left,bRec.top,bRec.width,bRec.height);
 		}
 	}
 	m_bBgDirty = true;
@@ -479,28 +482,155 @@ void fp_CellContainer::setContainer(fp_Container * pContainer)
 	fp_CellContainer::setWidth(iWidth);
 }
 
-// just a little helper function
-void fp_CellContainer::_drawLine(UT_RGBColor clr, UT_sint32 lineStyle, UT_sint32 left, UT_sint32 top, UT_sint32 right, UT_sint32 bot)
+/* just a little helper function
+ */
+void fp_CellContainer::_drawLine (const PP_PropertyMap::Line & style,
+								  UT_sint32 left, UT_sint32 top, UT_sint32 right, UT_sint32 bot)
 {
-	GR_Graphics * pGr = getGraphics();
-	
-	pGr->setColor(clr);
-	switch (lineStyle)
+	if (style.m_t_linestyle == PP_PropertyMap::linestyle_none) return;
+
+	GR_Graphics * pGr = getGraphics ();
+
+	GR_Graphics::JoinStyle js = GR_Graphics::JOIN_MITER;
+	GR_Graphics::CapStyle  cs = GR_Graphics::CAP_BUTT;
+
+	switch (style.m_t_linestyle)
 	{
-		case LS_OFF: // do nothing
+		case PP_PropertyMap::linestyle_dotted:
+			pGr->setLineProperties (1, js, cs, GR_Graphics::LINE_DOTTED);
 			break;
-		case LS_NORMAL: // normal line style is default, so don't do anything
+		case PP_PropertyMap::linestyle_dashed:
+			pGr->setLineProperties (1, js, cs, GR_Graphics::LINE_ON_OFF_DASH);
 			break;
-		default:
+		case PP_PropertyMap::linestyle_solid:
+			pGr->setLineProperties (1, js, cs, GR_Graphics::LINE_SOLID);
+			break;
+		default: // do nothing; shouldn't happen
 			break;
 	}
+
+	pGr->setLineWidth (static_cast<UT_sint32>(style.m_thickness));
+	pGr->setColor (style.m_color);
+
 	xxx_UT_DEBUGMSG(("_drawLine: top %d bot %d \n",top,bot));
-// draw the actual line
-	if (lineStyle != LS_OFF)
-		pGr->drawLine(left, top, right, bot);
-	
-// set the line style to normal again, because nobody sets it themself when drawing something
-	pGr->setLineProperties(1, GR_Graphics::JOIN_MITER, GR_Graphics::CAP_BUTT, GR_Graphics::LINE_SOLID);
+
+	pGr->drawLine (left, top, right, bot);
+
+	pGr->setLineProperties (1, js, cs, GR_Graphics::LINE_SOLID);
+}
+
+PP_PropertyMap::Background fp_CellContainer::getBackground () const
+{
+	PP_PropertyMap::Background background(m_background);
+
+	fl_ContainerLayout * pLayout = getSectionLayout()->myContainingLayout ();
+	UT_ASSERT(pLayout);
+	if (pLayout == 0) return background;
+
+	UT_ASSERT(pLayout->getContainerType () == FL_CONTAINER_TABLE);
+	if (pLayout->getContainerType () != FL_CONTAINER_TABLE) return background;
+
+	fl_TableLayout * table = static_cast<fl_TableLayout *>(pLayout);
+
+	const PP_PropertyMap::Background & table_background = table->getBackground ();
+
+	/* (unclear how "inherit" differs from "transparent")
+	 */
+	if (background.m_t_background != PP_PropertyMap::background_solid)
+		{
+			background.m_t_background = table_background.m_t_background;
+			if (background.m_t_background == PP_PropertyMap::background_solid)
+				background.m_color = table_background.m_color;
+		}
+	if ((background.m_t_background == PP_PropertyMap::background_inherit) ||
+		(background.m_t_background == PP_PropertyMap::background__unset))
+		{
+			background.m_t_background = PP_PropertyMap::background_none;
+		}
+
+	return background;
+}
+
+/* sort out inheritance and defaults of cell-border properties
+ */
+void s_cell_border_style (PP_PropertyMap::Line & line, const PP_PropertyMap::Line & table_line,
+						  const fl_TableLayout * table)
+{
+	if (line.m_t_color == PP_PropertyMap::color_inherit)
+		{
+			line.m_t_color = table_line.m_t_color;
+			if (line.m_t_color == PP_PropertyMap::color_color)
+				line.m_color = table_line.m_color;
+		}
+	if ((line.m_t_color == PP_PropertyMap::color_inherit) ||
+		(line.m_t_color == PP_PropertyMap::color__unset))
+		{
+			line.m_t_color = PP_PropertyMap::color_color;
+			line.m_color = table->getDefaultColor ();
+		}
+
+	if (line.m_t_linestyle == PP_PropertyMap::linestyle_inherit)
+		line.m_t_linestyle = table_line.m_t_linestyle;
+	if ((line.m_t_linestyle == PP_PropertyMap::linestyle_inherit) ||
+		(line.m_t_linestyle == PP_PropertyMap::linestyle__unset))
+		line.m_t_linestyle = PP_PropertyMap::linestyle_solid;
+
+	if (line.m_t_thickness == PP_PropertyMap::thickness_inherit)
+		{
+			line.m_t_thickness = table_line.m_t_thickness;
+			if (line.m_t_thickness == PP_PropertyMap::thickness_length)
+				line.m_thickness = table_line.m_thickness;
+		}
+	if ((line.m_t_thickness == PP_PropertyMap::thickness_inherit) ||
+		(line.m_t_thickness == PP_PropertyMap::thickness__unset))
+		{
+			line.m_t_thickness = table_line.m_t_thickness;
+			UT_sint32 defaultThickness = table->getLineThickness ();
+			line.m_thickness = (defaultThickness > 0) ? static_cast<UT_uint32>(defaultThickness) : 0;
+		}
+
+	/* if the color is transparent or the thickness is 0, then set the line-style to none
+	 */
+	if ((line.m_thickness == 0) || (line.m_t_color == PP_PropertyMap::color_transparent))
+		{
+			line.m_t_linestyle = PP_PropertyMap::linestyle_none;
+		}
+}
+
+PP_PropertyMap::Line fp_CellContainer::getBottomStyle (const fl_TableLayout * table) const
+{
+	PP_PropertyMap::Line line(m_lineBottom);
+	if (table == 0) return line;
+	const PP_PropertyMap::Line & table_line = table->getBottomStyle ();
+	s_cell_border_style (line, table_line, table);
+	return line;
+}
+
+PP_PropertyMap::Line fp_CellContainer::getLeftStyle (const fl_TableLayout * table) const
+{
+	PP_PropertyMap::Line line(m_lineLeft);
+	if (table == 0) return line;
+	const PP_PropertyMap::Line & table_line = table->getLeftStyle ();
+	s_cell_border_style (line, table_line, table);
+	return line;
+}
+
+PP_PropertyMap::Line fp_CellContainer::getRightStyle (const fl_TableLayout * table) const
+{
+	PP_PropertyMap::Line line(m_lineRight);
+	if (table == 0) return line;
+	const PP_PropertyMap::Line & table_line = table->getRightStyle ();
+	s_cell_border_style (line, table_line, table);
+	return line;
+}
+
+PP_PropertyMap::Line fp_CellContainer::getTopStyle (const fl_TableLayout * table) const
+{
+	PP_PropertyMap::Line line(m_lineTop);
+	if (table == 0) return line;
+	const PP_PropertyMap::Line & table_line = table->getTopStyle ();
+	s_cell_border_style (line, table_line, table);
+	return line;
 }
 
 /*!
@@ -520,18 +650,28 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke)
 		pBroke = static_cast<fp_TableContainer *>(getContainer());
 	}
 
-// Lookup table properties to get the line thickness.
-	fl_TableLayout * pTab = static_cast<fl_TableLayout *>(getSectionLayout()->myContainingLayout());
-	UT_ASSERT(pTab->getContainerType() == FL_CONTAINER_TABLE);
-	getGraphics()->setLineWidth(pTab->getLineThickness());
+// Lookup table properties to get the line thickness, etc.
 
-// see if we need to draw lines around the cell or draw the background of the cell.
-	
-	if(m_iLeftStyle == LS_OFF && m_iRightStyle == LS_OFF && m_iTopStyle == LS_OFF && m_iBottomStyle == LS_OFF)
-	{
-		return;
-	}
-	
+	fl_ContainerLayout * pLayout = getSectionLayout()->myContainingLayout ();
+	UT_ASSERT(pLayout->getContainerType () == FL_CONTAINER_TABLE);
+	if (pLayout->getContainerType () != FL_CONTAINER_TABLE) return;
+	fl_TableLayout * pTableLayout = static_cast<fl_TableLayout *>(pLayout);
+
+	PP_PropertyMap::Line lineBottom = getBottomStyle (pTableLayout);
+	PP_PropertyMap::Line lineLeft   = getLeftStyle   (pTableLayout);
+	PP_PropertyMap::Line lineRight  = getRightStyle  (pTableLayout);
+	PP_PropertyMap::Line lineTop    = getTopStyle    (pTableLayout);
+
+	if ((lineBottom.m_t_linestyle == PP_PropertyMap::linestyle_none) &&
+		(  lineLeft.m_t_linestyle == PP_PropertyMap::linestyle_none) &&
+		( lineRight.m_t_linestyle == PP_PropertyMap::linestyle_none) &&
+		(   lineTop.m_t_linestyle == PP_PropertyMap::linestyle_none))
+		{
+			/* nothing to draw
+			 */
+			return;
+		}
+
 //
 // Now correct if iTop or iBot is off the page.
 //
@@ -626,27 +766,21 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke)
 			}
 		}
 		m_bDrawRight = true;
-		if(m_bDrawLeft)
+		if (m_bDrawLeft)
 		{
-			// must draw a line : if no thickness available, fetch it from the enclosing table object
-			getGraphics()->setLineWidth(m_iLeftThickness >=0 ? m_iLeftThickness : pTab->getLineThickness());
-			_drawLine(m_cLeftColor, m_iLeftStyle, iLeft,iTop, iLeft, iBot);
+			_drawLine(lineLeft, iLeft, iTop, iLeft, iBot);
 		}
 		if(m_bDrawTop || bDrawTop)
 		{
-			getGraphics()->setLineWidth(m_iTopThickness >=0 ? m_iTopThickness : pTab->getLineThickness());
-			_drawLine(m_cTopColor, m_iTopStyle, iLeft, iTop, iRight, iTop);
+			_drawLine(lineTop, iLeft, iTop, iRight, iTop);
 		}
 		if(m_bDrawRight)
 		{
-			xxx_UT_DEBUGMSG(("RightThickness %d \n",m_iRightThickness));
-			getGraphics()->setLineWidth(m_iRightThickness >=0 ? m_iRightThickness : pTab->getLineThickness());
-			_drawLine(m_cRightColor, m_iRightStyle, iRight, iTop, iRight, iBot);
+			_drawLine(lineRight, iRight, iTop, iRight, iBot);
 		}
 		if(m_bDrawBot || bDrawBot)
 		{
-			getGraphics()->setLineWidth(m_iBottomThickness >=0 ? m_iBottomThickness : pTab->getLineThickness());
-			_drawLine(m_cBottomColor, m_iBottomStyle, iLeft, iBot, iRight, iBot);
+			_drawLine(lineBottom, iLeft, iBot, iRight, iBot);
 		}
 	}
 }
@@ -913,6 +1047,8 @@ void fp_CellContainer::draw(dg_DrawArgs* pDA)
 void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 								  fp_TableContainer * pBroke)
 {
+	PP_PropertyMap::Background background = getBackground ();
+
 	UT_sint32 count = countCons();
 	m_bDrawLeft = false;
 	m_bDrawTop = false;
@@ -964,11 +1100,12 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 		fp_Page * pPage;
 		UT_Rect bRec;
 		_getBrokenRect(pBroke, pPage, bRec);
-		switch (m_iBgStyle)
+		switch (background.m_t_background)
 		{
-			case FS_OFF:
+			default:
+			case PP_PropertyMap::background_none:
 				break;
-			case FS_FILL:
+			case PP_PropertyMap::background_solid:
 			{
 				UT_sint32 xdiff =0;
 				UT_sint32 ydiff = 0;
@@ -979,7 +1116,7 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 //
 					pPage->getDocLayout()->getView()->getPageScreenOffsets(pPage, xdiff, ydiff);
 				}
-				getGraphics()->fillRect(m_cBgColor,bRec.left,bRec.top - ydiff,bRec.width,bRec.height);
+				getGraphics()->fillRect(background.m_color,bRec.left,bRec.top - ydiff,bRec.width,bRec.height);
 			}
 				break;
 		}	

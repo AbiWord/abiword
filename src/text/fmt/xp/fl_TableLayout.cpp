@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2002 Martin Sevior (msevior@physics.unimelb.edu.au>
@@ -53,6 +55,13 @@
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 #include "ut_units.h"
+
+static void s_border_properties (const char * border_color, const char * border_style, const char * border_width,
+								 const char * color, PP_PropertyMap::Line & line);
+
+static void s_background_properties (const char * pszBgStyle, const char * pszBgColor,
+									 const char * pszBackgroundColor,
+									 PP_PropertyMap::Background & background);
 
 fl_TableLayout::fl_TableLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, 
 			       PT_AttrPropIndex indexAP, fl_ContainerLayout * pMyContainerLayout)
@@ -1023,6 +1032,57 @@ void fl_TableLayout::_lookupProperties(void)
 			pRowP->m_iRowHeight = 0;
 		}
 	}
+
+	/* table-border properties:
+	 */
+	const char * pszColor = NULL;
+	pSectionAP->getProperty ("color", reinterpret_cast<const XML_Char *>(pszColor));
+	if (pszColor)
+		UT_parseColor (pszColor, m_colorDefault);
+	else
+		m_colorDefault = UT_RGBColor(0,0,0);
+
+	const char * pszBorderColor = NULL;
+	const char * pszBorderStyle = NULL;
+	const char * pszBorderWidth = NULL;
+
+	pSectionAP->getProperty ("bot-color",       reinterpret_cast<const XML_Char *>(pszBorderColor));
+	pSectionAP->getProperty ("bot-style",       reinterpret_cast<const XML_Char *>(pszBorderStyle));
+	pSectionAP->getProperty ("bot-thickness",   reinterpret_cast<const XML_Char *>(pszBorderWidth));
+
+	s_border_properties (pszBorderColor, pszBorderStyle, pszBorderWidth, pszColor, m_lineBottom);
+
+	pSectionAP->getProperty ("left-color",      reinterpret_cast<const XML_Char *>(pszBorderColor));
+	pSectionAP->getProperty ("left-style",      reinterpret_cast<const XML_Char *>(pszBorderStyle));
+	pSectionAP->getProperty ("left-thickness",  reinterpret_cast<const XML_Char *>(pszBorderWidth));
+
+	s_border_properties (pszBorderColor, pszBorderStyle, pszBorderWidth, pszColor, m_lineLeft);
+
+	pSectionAP->getProperty ("right-color",     reinterpret_cast<const XML_Char *>(pszBorderColor));
+	pSectionAP->getProperty ("right-style",     reinterpret_cast<const XML_Char *>(pszBorderStyle));
+	pSectionAP->getProperty ("right-thickness", reinterpret_cast<const XML_Char *>(pszBorderWidth));
+
+	s_border_properties (pszBorderColor, pszBorderStyle, pszBorderWidth, pszColor, m_lineRight);
+
+	pSectionAP->getProperty ("top-color",       reinterpret_cast<const XML_Char *>(pszBorderColor));
+	pSectionAP->getProperty ("top-style",       reinterpret_cast<const XML_Char *>(pszBorderStyle));
+	pSectionAP->getProperty ("top-thickness",   reinterpret_cast<const XML_Char *>(pszBorderWidth));
+
+	s_border_properties (pszBorderColor, pszBorderStyle, pszBorderWidth, pszColor, m_lineTop);
+
+	/* table fill
+	 */
+	m_background.reset ();
+
+	const char * pszBgStyle = NULL;
+	const char * pszBgColor = NULL;
+	const char * pszBackgroundColor = NULL;
+
+	pSectionAP->getProperty ("bg-style",         reinterpret_cast<const XML_Char *>(pszBgStyle));
+	pSectionAP->getProperty ("bgcolor",          reinterpret_cast<const XML_Char *>(pszBgColor));
+	pSectionAP->getProperty ("background-color", reinterpret_cast<const XML_Char *>(pszBackgroundColor));
+
+	s_background_properties (pszBgStyle, pszBgColor, pszBackgroundColor, m_background);
 }
 
 UT_sint32 fl_TableLayout::getColSpacing(void) const
@@ -1190,20 +1250,7 @@ fl_CellLayout::fl_CellLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_At
 	  m_iTopAttach(0),
 	  m_iBottomAttach(1),
 	  m_bCellPositionedOnPage(false),
-	  m_iCellHeight(0),
-	  m_cLeftColor(UT_RGBColor(0,0,0)),
-	  m_cRightColor(UT_RGBColor(0,0,0)),
-	  m_cTopColor(UT_RGBColor(0,0,0)),
-	  m_cBottomColor(UT_RGBColor(0,0,0)),
-	  m_iLeftStyle(LS_NORMAL),
-	  m_iRightStyle(LS_NORMAL),
-	  m_iTopStyle(LS_NORMAL),
-	  m_iBottomStyle(LS_NORMAL),
-	  m_iLeftLineThickness(-1),
-	  m_iTopLineThickness(-1),
-	  m_iRightLineThickness(-1),
-	  m_iBottomLineThickness(-1),
-	  m_iBgStyle(FS_OFF)
+	  m_iCellHeight(0)
 {
 	createCellContainer();
 }
@@ -1265,21 +1312,13 @@ void fl_CellLayout::setCellContainerProperties(fp_CellContainer * pCell)
 	pCell->setRightPad(m_iRightOffset);
 	pCell->setTopPad(m_iTopOffset);
 	pCell->setBotPad(m_iBottomOffset);
-	pCell->setLeftColor(m_cLeftColor);
-	pCell->setRightColor(m_cRightColor);
-	pCell->setTopColor(m_cTopColor);
-	pCell->setBottomColor(m_cBottomColor);
-	pCell->setBgColor(m_cBgColor);
-	pCell->setLeftStyle(m_iLeftStyle);
-	pCell->setRightStyle(m_iRightStyle);
-	pCell->setTopStyle(m_iTopStyle);
-	pCell->setBottomStyle(m_iBottomStyle);
-	pCell->setBgStyle(m_iBgStyle);
-	
-	pCell->setLeftThickness(m_iLeftLineThickness);
-	pCell->setTopThickness(m_iTopLineThickness);
-	pCell->setRightThickness(m_iRightLineThickness);
-	pCell->setBottomThickness(m_iBottomLineThickness);
+
+	pCell->setBackground(m_background);
+
+	pCell->setBottomStyle(m_lineBottom);
+	pCell->setLeftStyle(m_lineLeft);
+	pCell->setRightStyle(m_lineRight);
+	pCell->setTopStyle(m_lineTop);
 }
 
 /*!
@@ -1712,147 +1751,53 @@ void fl_CellLayout::_lookupProperties(void)
 	{
 		m_iBottomAttach = m_iTopAttach+1;
 	}
-	UT_RGBColor clrBlack(0,0,0);
-	const char* pszLeftColor = NULL;
-	const char* pszRightColor = NULL;
-	const char* pszTopColor = NULL;
-	const char* pszBottomColor = NULL;
-	pSectionAP->getProperty("left-color", (const XML_Char *&)pszLeftColor);
-	pSectionAP->getProperty("right-color", (const XML_Char *&)pszRightColor);
-	pSectionAP->getProperty("top-color", (const XML_Char *&)pszTopColor);
-	pSectionAP->getProperty("bot-color", (const XML_Char *&)pszBottomColor);
-	if(pszLeftColor && pszLeftColor[0])
-	{
-		UT_parseColor(pszLeftColor, m_cLeftColor);
-	}
-	else
-	{
-		m_cLeftColor = clrBlack;
-	}
-	if(pszRightColor && pszRightColor[0])
-	{
-		UT_parseColor(pszRightColor, m_cRightColor);
-	}
-	else
-	{
-		m_cRightColor = clrBlack;
-	}
-	if(pszTopColor && pszTopColor[0])
-	{
-		UT_parseColor(pszTopColor, m_cTopColor);
-	}
-	else
-	{
-		m_cTopColor = clrBlack;
-	}
-	if(pszBottomColor && pszBottomColor[0])
-	{
-		UT_parseColor(pszBottomColor, m_cBottomColor);
-	}
-	else
-	{
-		m_cBottomColor = clrBlack;
-	}
-	const char* pszLeftStyle = NULL;
-	const char* pszRightStyle = NULL;
-	const char* pszTopStyle = NULL;
-	const char* pszBottomStyle = NULL;
-	pSectionAP->getProperty("left-style", (const XML_Char *&)pszLeftStyle);
-	pSectionAP->getProperty("right-style", (const XML_Char *&)pszRightStyle);
-	pSectionAP->getProperty("top-style", (const XML_Char *&)pszTopStyle);
-	pSectionAP->getProperty("bot-style", (const XML_Char *&)pszBottomStyle);
-	if(pszLeftStyle && pszLeftStyle[0])
-	{
-		m_iLeftStyle = atoi(pszLeftStyle);
-	}	
-	if(pszRightStyle && pszRightStyle[0])
-	{
-		m_iRightStyle = atoi(pszRightStyle);
-	}
-	if(pszTopStyle && pszTopStyle[0])
-	{
-		m_iTopStyle = atoi(pszTopStyle);
-	}
-	if(pszBottomStyle && pszBottomStyle[0])
-	{
-		m_iBottomStyle = atoi(pszBottomStyle);
-	}
-	const char* pszBgColor = NULL;
-	pSectionAP->getProperty("bgcolor", (const XML_Char *&)pszBgColor);
-	if(pszBgColor && pszBgColor[0])
-	{
-		UT_parseColor(pszBgColor, m_cBgColor);
-	}
-	else
-	{
-		m_cBgColor = UT_RGBColor(255,255,255); // fallback to something: it's not used anyway, cause bg-style would (most likely) be "off"
-	}
-	const char* pszBgStyle = NULL;
-	pSectionAP->getProperty("bg-style", (const XML_Char *&)pszBgStyle);
-	if(pszBgStyle && pszBgStyle[0])
-	{
-		m_iBgStyle = atoi(pszBgStyle);
-	}
-	const char *pszLeftLineThickness = NULL;
-	const char *pszTopLineThickness = NULL;
-	const char *pszRightLineThickness = NULL;
-	const char *pszBottomLineThickness = NULL;
-	pSectionAP->getProperty("left-thickness", (const XML_Char *&)pszLeftLineThickness);
-	pSectionAP->getProperty("top-thickness", (const XML_Char *&)pszTopLineThickness);
-	pSectionAP->getProperty("right-thickness", (const XML_Char *&)pszRightLineThickness);
-	pSectionAP->getProperty("bot-thickness", (const XML_Char *&)pszBottomLineThickness);
-	if (pszLeftLineThickness && pszLeftLineThickness[0]) 
-	{
-		m_iLeftLineThickness = UT_convertToLogicalUnits(pszLeftLineThickness);
-		double res = UT_convertToInches(pszLeftLineThickness);
-		if(m_iLeftLineThickness == 0 && (res > 0.0001))
-		{
-			m_iLeftLineThickness = 1;
-		}
-	}
-	else
-	{
-		m_iLeftLineThickness = -1;
-	}
-	if (pszTopLineThickness && pszTopLineThickness[0]) 
-	{
-		m_iTopLineThickness = UT_convertToLogicalUnits(pszTopLineThickness);
-		double res = UT_convertToInches(pszTopLineThickness);
-		if(m_iTopLineThickness == 0 && (res > 0.0001))
-		{
-			m_iTopLineThickness = 1;
-		}
-	}
-	else
-	{
-		m_iTopLineThickness = -1;
-	}
-	if (pszRightLineThickness && pszRightLineThickness[0]) 
-	{
-		m_iRightLineThickness = UT_convertToLogicalUnits(pszRightLineThickness);
-		double res = UT_convertToInches(pszRightLineThickness);
-		if(m_iRightLineThickness == 0 && (res > 0.0001))
-		{
-			m_iRightLineThickness = 1;
-		}
-	}
-	else
-	{
-		m_iRightLineThickness = -1;
-	}
-	if (pszBottomLineThickness && pszBottomLineThickness[0]) 
-	{
-		m_iBottomLineThickness = UT_convertToLogicalUnits(pszBottomLineThickness);
-		double res = UT_convertToInches(pszBottomLineThickness);
-		if(m_iBottomLineThickness == 0 && (res > 0.0001))
-		{
-			m_iBottomLineThickness = 1;
-		}
-	}
-	else
-	{
-		m_iBottomLineThickness = -1;
-	}
+
+	/* cell-border properties:
+	 */
+	const char * pszColor = NULL;
+	pSectionAP->getProperty ("color", reinterpret_cast<const XML_Char *>(pszColor));
+
+	const char * pszBorderColor = NULL;
+	const char * pszBorderStyle = NULL;
+	const char * pszBorderWidth = NULL;
+
+	pSectionAP->getProperty ("bot-color",       reinterpret_cast<const XML_Char *>(pszBorderColor));
+	pSectionAP->getProperty ("bot-style",       reinterpret_cast<const XML_Char *>(pszBorderStyle));
+	pSectionAP->getProperty ("bot-thickness",   reinterpret_cast<const XML_Char *>(pszBorderWidth));
+
+	s_border_properties (pszBorderColor, pszBorderStyle, pszBorderWidth, pszColor, m_lineBottom);
+
+	pSectionAP->getProperty ("left-color",      reinterpret_cast<const XML_Char *>(pszBorderColor));
+	pSectionAP->getProperty ("left-style",      reinterpret_cast<const XML_Char *>(pszBorderStyle));
+	pSectionAP->getProperty ("left-thickness",  reinterpret_cast<const XML_Char *>(pszBorderWidth));
+
+	s_border_properties (pszBorderColor, pszBorderStyle, pszBorderWidth, pszColor, m_lineLeft);
+
+	pSectionAP->getProperty ("right-color",     reinterpret_cast<const XML_Char *>(pszBorderColor));
+	pSectionAP->getProperty ("right-style",     reinterpret_cast<const XML_Char *>(pszBorderStyle));
+	pSectionAP->getProperty ("right-thickness", reinterpret_cast<const XML_Char *>(pszBorderWidth));
+
+	s_border_properties (pszBorderColor, pszBorderStyle, pszBorderWidth, pszColor, m_lineRight);
+
+	pSectionAP->getProperty ("top-color",       reinterpret_cast<const XML_Char *>(pszBorderColor));
+	pSectionAP->getProperty ("top-style",       reinterpret_cast<const XML_Char *>(pszBorderStyle));
+	pSectionAP->getProperty ("top-thickness",   reinterpret_cast<const XML_Char *>(pszBorderWidth));
+
+	s_border_properties (pszBorderColor, pszBorderStyle, pszBorderWidth, pszColor, m_lineTop);
+
+	/* cell fill
+	 */
+	m_background.reset ();
+
+	const char * pszBgStyle = NULL;
+	const char * pszBgColor = NULL;
+	const char * pszBackgroundColor = NULL;
+
+	pSectionAP->getProperty ("bg-style",         reinterpret_cast<const XML_Char *>(pszBgStyle));
+	pSectionAP->getProperty ("bgcolor",          reinterpret_cast<const XML_Char *>(pszBgColor));
+	pSectionAP->getProperty ("background-color", reinterpret_cast<const XML_Char *>(pszBackgroundColor));
+
+	s_background_properties (pszBgStyle, pszBgColor, pszBackgroundColor, m_background);
 }
 
 UT_sint32   fl_CellLayout::getLeftOffset(void) const
@@ -1982,3 +1927,74 @@ void fl_CellLayout::_purgeLayout(void)
 	}
 }
 
+static void s_background_properties (const char * pszBgStyle, const char * pszBgColor,
+									 const char * pszBackgroundColor,
+									 PP_PropertyMap::Background & background)
+{
+	if (pszBgStyle)
+		{
+			if (strcmp (pszBgStyle, "0") == 0)
+				{
+					background.m_t_background = PP_PropertyMap::background_none;
+				}
+			else if (strcmp (pszBgStyle, "1") == 0)
+				{
+					if (pszBgColor)
+						{
+							background.m_t_background = PP_PropertyMap::background_type (pszBgColor);
+							if (background.m_t_background == PP_PropertyMap::background_solid)
+								UT_parseColor (pszBgColor, background.m_color);
+						}
+				}
+		}
+
+	if (pszBackgroundColor)
+		{
+			background.m_t_background = PP_PropertyMap::background_type (pszBackgroundColor);
+			if (background.m_t_background == PP_PropertyMap::background_solid)
+				UT_parseColor (pszBackgroundColor, background.m_color);
+		}
+}
+
+static void s_border_properties (const char * border_color, const char * border_style, const char * border_width,
+								 const char * color, PP_PropertyMap::Line & line)
+{
+	/* cell-border properties:
+	 * 
+	 * (1) color      - defaults to value of "color" property
+	 * (2) line-style - defaults to solid (in contrast to "none" in CSS)
+	 * (3) thickness  - defaults to 1 layout unit (??, vs "medium" in CSS)
+	 */
+	line.reset ();
+
+	PP_PropertyMap::TypeColor t_border_color = PP_PropertyMap::color_type (border_color);
+	if (t_border_color)
+		{
+			line.m_t_color = t_border_color;
+			if (t_border_color == PP_PropertyMap::color_color)
+				UT_parseColor (border_color, line.m_color);
+		}
+	else if (color)
+		{
+			PP_PropertyMap::TypeColor t_color = PP_PropertyMap::color_type (color);
+
+			line.m_t_color = t_color;
+			if (t_color == PP_PropertyMap::color_color)
+				UT_parseColor (color, line.m_color);
+		}
+
+	line.m_t_linestyle = PP_PropertyMap::linestyle_type (border_style);
+	if (!line.m_t_linestyle)
+		line.m_t_linestyle = PP_PropertyMap::linestyle_solid;
+
+	line.m_t_thickness = PP_PropertyMap::thickness_type (border_width);
+	if (line.m_t_thickness == PP_PropertyMap::thickness_length)
+		{
+			line.m_thickness = UT_convertToLogicalUnits (border_width);
+			if (!line.m_thickness)
+				if (UT_convertToInches (border_width) > 0.0001)
+					line.m_thickness = 1;
+		}
+	else
+		line.m_thickness = 1;
+}

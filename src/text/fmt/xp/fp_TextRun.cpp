@@ -793,6 +793,7 @@ bool fp_TextRun::canMergeWithNext(void)
 		|| (pNext->m_pLanguage != m_pLanguage)	//this is not a bug
 		|| (pNext->_getColorFG() != _getColorFG())
 		|| (pNext->_getColorHL() != _getColorHL())
+		|| (pNext->_getColorHL().isTransparent() != _getColorHL().isTransparent())
 		|| (pNext->m_fPosition != m_fPosition)
 		|| (pNext->getVisDirection() != getVisDirection())
 		// we also want to test the override, because we do not want runs that have the same
@@ -1534,6 +1535,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 
 	UT_uint32 iBase = getBlock()->getPosition();
 
+	UT_RGBColor clrPageBackground(_getColorPG());
 	UT_RGBColor clrNormalBackground(_getColorHL());
 	UT_RGBColor clrSelBackground = _getView()->getColorSelBackground();
 
@@ -1560,17 +1562,24 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 
 	// draw the background for the whole run, but only in sreen context or if
 	// it is not white
-	static const UT_RGBColor clrWhite(255,255,255); // FIXME: should not be hardwired?!
+	// static const UT_RGBColor clrWhite(255,255,255); // FIXME: should not be hardwired?!
 	bool bDrawBckg = (getGR()->queryProperties(GR_Graphics::DGP_SCREEN)
-					 || clrNormalBackground != clrWhite);
+			  /* || clrNormalBackground != clrWhite */);
 
 	if(bDrawBckg)
 	{
-		getGR()->fillRect(clrNormalBackground,
-					pDA->xoff,
-					yTopOfSel + getAscent() - getLine()->getAscent(),
-					getWidth(),
-					getLine()->getHeight());
+		if (!clrPageBackground.isTransparent ())
+			getGR()->fillRect(clrPageBackground,
+						pDA->xoff,
+						yTopOfSel + getAscent() - getLine()->getAscent(),
+						getWidth(),
+						getLine()->getHeight());
+		if (!clrNormalBackground.isTransparent ())
+			getGR()->fillRect(clrNormalBackground,
+						pDA->xoff,
+						yTopOfSel + getAscent() - getLine()->getAscent(),
+						getWidth(),
+						getLine()->getHeight());
 	}
 
 	UT_uint32 iRunBase = iBase + getBlockOffset();

@@ -1874,6 +1874,7 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const XML
 // stuff for cell insertion.
 //
 	UT_sint32 i,j;
+	const XML_Char * attrs[3] = {"style","Normal",NULL};
 	const XML_Char * props[9] = {NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL};
 	UT_String sRowTop = "top-attach";
 	UT_String sRowBot = "bot-attach";
@@ -1898,7 +1899,7 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const XML
 			props[7] = sRight.c_str();
 			e |= static_cast<UT_sint32>(m_pDoc->insertStrux(getPoint(),PTX_SectionCell,NULL,props));
 			pointBreak = getPoint();
-			e |= static_cast<UT_sint32>(m_pDoc->insertStrux(getPoint(),PTX_Block));
+			e |= static_cast<UT_sint32>(m_pDoc->insertStrux(getPoint(),PTX_Block,attrs,NULL));
 			UT_DEBUGMSG(("SEVIOR: 4  cur point %d \n",getPoint()));
 			if(getPoint() == pointBreak)
 			{

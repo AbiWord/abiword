@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998,1999 AbiSource, Inc.
  * Copyright (c) 2001,2002 Tomas Frydrych
@@ -162,7 +164,7 @@ public:
 	void					unlinkFromRunList();
 
 	bool                    updateBackgroundColor(void);
-	bool		            updateHighlightColor(void);
+	// bool		            updateHighlightColor(void);
 	bool				    updatePageColor(void);
 
 	const UT_RGBColor		getPageColor(void);

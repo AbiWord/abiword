@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (c) 2001,2002 Tomas Frydrych
@@ -183,7 +185,7 @@ void fp_Run::lookupProperties()
 	const char * pszBGcolor = PP_evalProperty("bgcolor",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
 	_setColorHL(pszBGcolor);
 
-	updateHighlightColor();
+	// updateHighlightColor();
 	updatePageColor();
 
 	_lookupProperties(pSpanAP, pBlockAP, pSectionAP);
@@ -310,10 +312,11 @@ fp_Run::_inheritProperties(void)
 	}
 }
 
+#if 0
 /*!
  * This method returns the High Light color as defined for this page. It examines
- * the bgcolor property and uses that over the page color if its defined as not
- * transperent. It sets the m_pColorHL member variable.
+ * the bgcolor property and uses that over the page color if it's defined as not
+ * transparent. It sets the m_pColorHL member variable.
  */
 bool fp_Run::updateHighlightColor(void)
 {
@@ -329,11 +332,16 @@ bool fp_Run::updateHighlightColor(void)
 			if(pCon)
 			{
 				// Check if we are in a table cell which has a NON-transparent background
-				// if it is, then use the cell backgound color
-				if(pCon->getContainerType() == FP_CONTAINER_CELL && ((static_cast<fp_CellContainer *>(pCon))->getBgStyle() != FS_OFF))
+				// if it is, then use the cell background color
+				if(pCon->getContainerType() == FP_CONTAINER_CELL)
 				{
-					_setColorHL((static_cast<fp_CellContainer *>(pCon))->getBgColor());
-					return m_pColorHL != oldColor;
+					fp_CellContainer * pCell = static_cast<fp_CellContainer *>(pCon);
+					PP_PropertyMap::Background background = pCell->getBackground ();
+					if (background.m_t_background == PP_PropertyMap::background_solid)
+					{
+						_setColorHL(background.m_color);
+						return m_pColorHL != oldColor;
+					}
 				}
 				pPage = pCon->getPage();
 			}
@@ -361,6 +369,7 @@ bool fp_Run::updateHighlightColor(void)
 
 	return false;
 }
+#endif
 
 /*!
  * This method updates the page color member variable as defined for
@@ -383,10 +392,15 @@ bool fp_Run::updatePageColor(void)
 
 			// Check if we are in a table cell which has a NON-transparent background
 			// if it is, then use the cell backgound color
-			if(pCon->getContainerType() == FP_CONTAINER_CELL && ((static_cast<fp_CellContainer *>(pCon))->getBgStyle() != FS_OFF))
+			if(pCon->getContainerType() == FP_CONTAINER_CELL)
 			{
-				m_pColorPG = (static_cast<fp_CellContainer *>(pCon))->getBgColor();
-				return m_pColorPG != oldColor;
+				fp_CellContainer * pCell = static_cast<fp_CellContainer *>(pCon);
+				PP_PropertyMap::Background background = pCell->getBackground ();
+				if (background.m_t_background == PP_PropertyMap::background_solid)
+				{
+					m_pColorPG = background.m_color;
+					return m_pColorPG != oldColor;
+				}
 			}
 			pPage = pCon->getPage();
 		}
@@ -414,7 +428,7 @@ bool fp_Run::updatePageColor(void)
  */
 bool fp_Run::updateBackgroundColor(void)
 {
-	bool h = updateHighlightColor();
+	bool h = false; // updateHighlightColor();
 	bool p = updatePageColor();
 	return h || p;
 }
@@ -3405,7 +3419,7 @@ void fp_FieldRun::_defaultDraw(dg_DrawArgs* pDA)
 		}
 		else
 		{
-			updateHighlightColor();
+			// updateHighlightColor();
 			getGR()->fillRect(_getColorHL(), pDA->xoff, iFillTop, getWidth(), iFillHeight);
 		}
 	}

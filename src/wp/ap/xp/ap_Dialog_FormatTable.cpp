@@ -252,15 +252,18 @@ void AP_Dialog_FormatTable::setCurCellProps(void)
 		return;
 	
 	FV_View * pView = static_cast<FV_View *>(m_pApp->getLastFocussedFrame()->getCurrentView());
-	XML_Char * bgColor;
-	if (pView->getCellBGColor(bgColor))
+
+	removeVecProp (m_vecProps, "bg-style");
+	removeVecProp (m_vecProps, "bgcolor");
+
+	XML_Char * bgColor = NULL;
+	if (pView->getCellBGColor (bgColor))
 	{
-		addOrReplaceVecProp(m_vecProps, "bgcolor", bgColor);
+		addOrReplaceVecProp (m_vecProps, "background-color", bgColor);
 	}
 	else
 	{
-		// we can't get a bgcolor, so let's remove it from our properties list
-		removeVecProp(m_vecProps, "bgcolor");
+		removeVecProp (m_vecProps, "background-color");
 	}
 	
 	// draw the preview with the changed properties
@@ -362,12 +365,16 @@ void AP_Dialog_FormatTable::setBorderColor(UT_RGBColor clr)
 void AP_Dialog_FormatTable::setBGColor(UT_RGBColor clr)
 {
 	UT_String bgcol = UT_String_sprintf("%02x%02x%02x", clr.m_red, clr.m_grn, clr.m_blu);
-	UT_String bstmp = UT_String_sprintf("%d", FS_FILL);
 
-	addOrReplaceVecProp(m_vecProps, "bgcolor", bgcol.c_str());
-	addOrReplaceVecProp(m_vecProps, "bg-style", bstmp.c_str());
+	removeVecProp (m_vecProps, "bg-style");
+	removeVecProp (m_vecProps, "bgcolor");
 
-	m_bSettingsChanged = true;	
+	if (clr.isTransparent ())
+		removeVecProp (m_vecProps, "background-color");
+	else
+		addOrReplaceVecProp (m_vecProps, "background-color", bgcol.c_str ());
+
+	m_bSettingsChanged = true;
 }
 
 void AP_Dialog_FormatTable::_createPreviewFromGC(GR_Graphics * gc,
@@ -417,7 +424,11 @@ void AP_FormatTable_preview::draw(void)
 //
 	
 	const XML_Char * pszBGCol = NULL;
-	m_pFormatTable->getVecProp(m_pFormatTable->m_vecProps, static_cast<const XML_Char *>("bgcolor"), pszBGCol);
+	m_pFormatTable->getVecProp (m_pFormatTable->m_vecProps,
+				    static_cast<const XML_Char *>("background-color"), pszBGCol);
+	if (pszBGCol == NULL)
+		m_pFormatTable->getVecProp (m_pFormatTable->m_vecProps,
+					    static_cast<const XML_Char *>("bgcolor"), pszBGCol);
 	if (pszBGCol && *pszBGCol)
 	{
 		UT_parseColor(pszBGCol, tmpCol);

@@ -38,6 +38,7 @@ libPtbl_a_SOURCES= \
 	pf_Frags_TestRoutines.cpp	\
 	pp_AttrProp.cpp		\
 	pp_Property.cpp		\
+	pp_PropertyMap.cpp	\
 	pp_TableAttrProp.cpp	\
 	pp_Revision.cpp     \
 	po_Bookmark.cpp		\

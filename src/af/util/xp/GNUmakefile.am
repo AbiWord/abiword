@@ -85,4 +85,5 @@ libUtil_xp_a_SOURCES=\
 	$(SCRIPT_OBJ)		\
 	$(THREAD_OBJ)		\
 	ut_xml.cpp		\
-	ut_spi.cpp
+	ut_spi.cpp		\
+	ut_IntStrMap.cpp

@@ -123,7 +123,8 @@ OBJS=		$(PLATFORM_OBJS)						\
 		$(OBJDIR)/ut_spi.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ut_contextGlyph.$(OBJ_SUFFIX) 	\
 		$(OBJDIR)/ut_thread.$(OBJ_SUFFIX)		\
-		$(OBJDIR)/ut_decompress.$(OBJ_SUFFIX)
+		$(OBJDIR)/ut_decompress.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/ut_IntStrMap.$(OBJ_SUFFIX)
 
 ifeq ($(ABI_OPT_PEER_EXPAT),1)
  OBJS += $(OBJDIR)/ut_xml_expat.$(OBJ_SUFFIX)

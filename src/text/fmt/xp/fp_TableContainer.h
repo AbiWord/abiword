@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2002 Martin Sevior <msevior@physics.unimelb.edu.au>
@@ -163,46 +165,20 @@ public:
 	void                setBotPad(UT_sint32 i)
 		{ m_iBotPad = i;}
 		
-    UT_RGBColor        getLeftColor(void)
-		{ return m_cLeftColor;}
-    UT_RGBColor        getRightColor(void)
-		{ return m_cRightColor;}
-    UT_RGBColor        getTopColor(void)
-		{ return m_cTopColor;}
-    UT_RGBColor        getBottomColor(void)
-		{ return m_cBottomColor;}
-    UT_RGBColor        getBgColor(void)
-		{ return m_cBgColor;}
-	void                setLeftColor(UT_RGBColor c)
-		{ m_cLeftColor = c;}
-    void                setRightColor(UT_RGBColor c)
-		{ m_cRightColor = c;}
-    void                setTopColor(UT_RGBColor c)
-		{ m_cTopColor = c;}
-    void                setBottomColor(UT_RGBColor c)
-		{ m_cBottomColor = c;}
-    void                setBgColor(UT_RGBColor c)
-		{ m_cBgColor = c;}
-    UT_sint32           getLeftStyle(void)
-		{ return m_iLeftStyle;}
-    UT_sint32           getRightStyle(void)
-		{ return m_iRightStyle;}
-    UT_sint32           getTopStyle(void)
-		{ return m_iTopStyle;}
-    UT_sint32           getBottomStyle(void)
-		{ return m_iBottomStyle;}
-    UT_sint32           getBgStyle(void)
-		{ return m_iBgStyle;}
-	void                setLeftStyle(UT_sint32 i)
-		{ m_iLeftStyle = i;}
-    void                setRightStyle(UT_sint32 i)
-		{ m_iRightStyle = i;}
-    void                setTopStyle(UT_sint32 i)
-		{ m_iTopStyle = i;}
-    void                setBottomStyle(UT_sint32 i)
-		{ m_iBottomStyle = i;}
-    void                setBgStyle(UT_sint32 i)
-		{ m_iBgStyle = i;}
+	PP_PropertyMap::Background getBackground () const;
+
+	void setBackground (const PP_PropertyMap::Background & style) { m_background = style; }
+
+	PP_PropertyMap::Line getBottomStyle (const fl_TableLayout * table) const;
+	PP_PropertyMap::Line getLeftStyle   (const fl_TableLayout * table) const;
+	PP_PropertyMap::Line getRightStyle  (const fl_TableLayout * table) const;
+	PP_PropertyMap::Line getTopStyle    (const fl_TableLayout * table) const;
+
+	void setBottomStyle (const PP_PropertyMap::Line & style) { m_lineBottom = style; }
+	void setLeftStyle   (const PP_PropertyMap::Line & style) { m_lineLeft   = style; }
+	void setRightStyle  (const PP_PropertyMap::Line & style) { m_lineRight  = style; }
+	void setTopStyle    (const PP_PropertyMap::Line & style) { m_lineTop    = style; }
+
 	bool                getXexpand(void) const
 		{ return m_bXexpand;}
 	bool                getYexpand(void) const
@@ -237,33 +213,6 @@ public:
 		{  return m_iRight; }
  
 
-UT_sint32 getLeftThickness(void) const {
-	return m_iLeftThickness;
-	}
-void setLeftThickness(UT_uint32 i) {
-	m_iLeftThickness = i;
-	}
-UT_sint32 getTopThickness(void) const {
-	return m_iTopThickness;
-	}
-void setTopThickness(UT_uint32 i) {
-	m_iTopThickness = i;
-	}
-UT_sint32 getRightThickness(void) const {
-	return m_iRightThickness;
-	}
-void setRightThickness(UT_uint32 i) 
-	 {
-		 m_iRightThickness = i;
-	 }
-UT_sint32 getBottomThickness(void) const 
-	 {
-		 return m_iBottomThickness;
-	 }
-void setBottomThickness(UT_uint32 i) 
-     {
-		 m_iBottomThickness = i;
-	 }
 #ifdef FMT_TEST
 	void				__dump(FILE * fp) const;
 #endif
@@ -271,7 +220,8 @@ void setBottomThickness(UT_uint32 i)
 private:
 		
 	void                _clear(fp_TableContainer * pBroke);
-	void				_drawLine(UT_RGBColor clr, UT_sint32 lineStyle, UT_sint32 left, UT_sint32 top, UT_sint32 right, UT_sint32 bot);
+	void				_drawLine(const PP_PropertyMap::Line & style,
+								  UT_sint32 left, UT_sint32 top, UT_sint32 right, UT_sint32 bot);
 	void				_getBrokenRect(fp_TableContainer * pBroke, fp_Page* &pPage, UT_Rect &bRec);
 		
 //
@@ -334,35 +284,18 @@ private:
 	bool                m_bDrawBot;
 	bool                m_bDrawRight;
 	bool                m_bLinesDrawn;
-	
-// Line colors to be used for drawing the cell borders
 
-	UT_RGBColor         m_cLeftColor;
-	UT_RGBColor         m_cRightColor;
-	UT_RGBColor         m_cTopColor;
-	UT_RGBColor         m_cBottomColor;
-	
-// Line styles to be used for drawing cell borders	
-	
-	UT_sint32			m_iLeftStyle;
-	UT_sint32			m_iRightStyle;
-	UT_sint32			m_iTopStyle;
-	UT_sint32			m_iBottomStyle;
-	
-// Line thicknesses
-    UT_sint32           m_iLeftThickness;
-    UT_sint32           m_iTopThickness;
-    UT_sint32           m_iRightThickness;
-    UT_sint32           m_iBottomThickness;	
-	
-// Cell background fill color
-	UT_RGBColor			m_cBgColor;
-
-// Cell background fill style
-	UT_sint32			m_iBgStyle;
-	
 // bool to see if the background needs to be redrawn
 	bool				m_bBgDirty;
+	
+// cell-background properties
+	PP_PropertyMap::Background	m_background;
+
+// cell-border properties
+	PP_PropertyMap::Line   m_lineBottom;
+	PP_PropertyMap::Line   m_lineLeft;
+	PP_PropertyMap::Line   m_lineRight;
+	PP_PropertyMap::Line   m_lineTop;
 };
 
 class ABI_EXPORT fp_TableContainer : public fp_VerticalContainer

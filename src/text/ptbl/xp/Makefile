@@ -37,6 +37,7 @@ CPPSRCS=		pd_Document.cpp			\
 			pf_Frags_TestRoutines.cpp	\
 			pp_AttrProp.cpp			\
 			pp_Property.cpp			\
+			pp_PropertyMap.cpp		\
 			pp_TableAttrProp.cpp		\
 			pp_Revision.cpp			\
 			pt_PieceTable.cpp		\
