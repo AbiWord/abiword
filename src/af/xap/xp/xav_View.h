@@ -86,8 +86,8 @@ public:
 	virtual UT_Bool	canDo(UT_Bool bUndo) const = 0;
 	virtual void	cmdUndo(UT_uint32 count) = 0;
 	virtual void	cmdRedo(UT_uint32 count) = 0;
-	virtual void	cmdSave(void) = 0;
-	virtual void	cmdSaveAs(const char * szFilename) = 0;
+	virtual UT_Bool	cmdSave(void) = 0;
+	virtual UT_Bool	cmdSaveAs(const char * szFilename) = 0;
 
 	virtual void	getTopRulerInfo(AP_TopRulerInfo * pInfo) = 0;
 	

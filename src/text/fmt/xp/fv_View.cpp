@@ -3617,16 +3617,22 @@ void FV_View::cmdRedo(UT_uint32 count)
 	}
 }
 
-void FV_View::cmdSave(void)
+UT_Bool FV_View::cmdSave(void)
 {
-	m_pDoc->save(IEFT_AbiWord_1);
+	if (!m_pDoc->save(IEFT_AbiWord_1))
+		return UT_FALSE;
+
 	notifyListeners(AV_CHG_SAVE);
+	return UT_TRUE;
 }
 
-void FV_View::cmdSaveAs(const char * szFilename)
+UT_Bool FV_View::cmdSaveAs(const char * szFilename)
 {
-	m_pDoc->saveAs(szFilename, IEFT_AbiWord_1);
+	if (!m_pDoc->saveAs(szFilename, IEFT_AbiWord_1))
+		return UT_FALSE;
+	
 	notifyListeners(AV_CHG_SAVE);
+	return UT_TRUE;
 }
 
 void FV_View::cmdCut(void)
@@ -4142,4 +4148,3 @@ void FV_View::cmdInsertPNGImage(UT_ByteBuf* pBB, const char* pszName)
 		_drawInsertionPoint();
 	}
 }
-

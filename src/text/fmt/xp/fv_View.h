@@ -93,8 +93,8 @@ public:
 	virtual UT_Bool	canDo(UT_Bool bUndo) const;
 	virtual void	cmdUndo(UT_uint32 count);
 	virtual void	cmdRedo(UT_uint32 count);
-	virtual void	cmdSave(void);
-	virtual void	cmdSaveAs(const char * szFilename);
+	virtual UT_Bool	cmdSave(void);
+	virtual UT_Bool	cmdSaveAs(const char * szFilename);
 
 	void			_insertPNGImage(UT_ByteBuf* pBB, const char* szName, UT_sint32 iImageWidth, UT_sint32 iImageHeight);
 	void			cmdInsertPNGImage(UT_ByteBuf*, const char*);

@@ -530,6 +530,28 @@ Defun1(fileNew)
 // TODO we want to abstract things further and make us think about
 // TODO localization of the question strings....
 
+static void s_TellSaveFailed(XAP_Frame * pFrame, const char * fileName)
+{
+	pFrame->raise();
+
+	AP_DialogFactory * pDialogFactory
+		= (AP_DialogFactory *)(pFrame->getDialogFactory());
+
+	AP_Dialog_MessageBox * pDialog
+		= (AP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
+	UT_ASSERT(pDialog);
+
+	pDialog->setMessage("Save failed for file %s.", fileName);
+	pDialog->setButtons(AP_Dialog_MessageBox::b_O);
+	pDialog->setDefaultAnswer(AP_Dialog_MessageBox::a_OK);
+
+	pDialog->runModal(pFrame);
+
+//	AP_Dialog_MessageBox::tAnswer ans = pDialog->getAnswer();
+
+	pDialogFactory->releaseDialog(pDialog);
+}
+
 static UT_Bool s_AskRevertFile(XAP_Frame * pFrame)
 {
 	// return UT_TRUE if we should revert the file (back to the saved copy).
@@ -844,7 +866,12 @@ Defun(fileSave)
 	if (!pFrame->getFilename())
 		return EX(fileSaveAs);
 
-	pAV_View->cmdSave();
+	if (!pAV_View->cmdSave())
+	{
+		// throw up a dialog
+		s_TellSaveFailed(pFrame, pFrame->getFilename());
+		return UT_FALSE;
+	}
 
 	if (pFrame->getViewNumber() > 0)
 	{
@@ -869,7 +896,16 @@ Defun1(fileSaveAs)
 		return UT_FALSE;
 
 	UT_DEBUGMSG(("fileSaveAs: saving as [%s]\n",pNewFile));
-	pAV_View->cmdSaveAs(pNewFile);
+
+	UT_Bool bSaved = pAV_View->cmdSaveAs(pNewFile);
+
+	if (!bSaved)
+	{
+		// throw up a dialog
+		s_TellSaveFailed(pFrame, pNewFile);
+		free(pNewFile);
+		return UT_FALSE;
+	}
 	free(pNewFile);
 
 	if (pFrame->getViewNumber() > 0)
