@@ -266,7 +266,7 @@ UT_RGBColor * fp_Run::getHighlightColor(void)
 			else
 			{
 				UT_setColor (m_colorHL, 255, 255, 255);
-				return;
+				return &m_colorHL;
 			}			
 			pClr = pPage->getOwningSection()->getPaperColor();
 		}
