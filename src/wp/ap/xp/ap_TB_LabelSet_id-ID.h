@@ -69,6 +69,7 @@ BeginSet(IdID,UT_TRUE)
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_BOLD,		"Tebal",		tb_text_bold_xpm,		NULL, "Tebal")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_ITALIC,		"Miring",	tb_text_italic_xpm,	NULL, "Miring")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_UNDERLINE,	"Garis bawah",tb_text_underline_xpm,	NULL, "Garis bawah")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_OVERLINE,	"Garis atas",tb_text_overline_xpm,	NULL, "Garis atas")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_STRIKE,		"Coret",   tb_text_strikeout_xpm,	NULL, "Dicoret")
 
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUPERSCRIPT,	"Huruf dinaikkan",	tb_text_superscript_xpm,	NULL, "Huruf dinaikkan")
