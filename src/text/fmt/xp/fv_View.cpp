@@ -5223,6 +5223,49 @@ void FV_View::getDocumentRangeOfCurrentSelection(PD_DocumentRange * pdr)
 }
 
 
+bool FV_View::setTableFormat(const XML_Char * properties[])
+{
+	bool bRet;
+	setCursorWait();
+	//
+	// Signal PieceTable Change
+	_saveAndNotifyPieceTableChange();
+	_eraseInsertionPoint();
+
+	PT_DocPosition posStart = getPoint();
+	PT_DocPosition posEnd = posStart;
+
+	if (!isSelectionEmpty())
+	{
+		if (m_iSelectionAnchor < posStart)
+			posStart = m_iSelectionAnchor;
+		else
+			posEnd = m_iSelectionAnchor;
+		if(posStart < 2)
+		{
+			posStart = 2;
+		}
+	}
+
+	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,NULL,properties,PTX_SectionTable);
+
+	_generalUpdate();
+
+	// Signal PieceTable Changes have finished
+	_restorePieceTableState();
+
+	if (!_ensureThatInsertionPointIsOnScreen())
+	{
+		_fixInsertionPointCoords();
+		if (isSelectionEmpty())
+		{
+			_drawInsertionPoint();
+		}
+	}
+	clearCursorWait();
+	notifyListeners(AV_CHG_MOTION);
+	return bRet;
+}
 
 bool FV_View::setSectionFormat(const XML_Char * properties[])
 {

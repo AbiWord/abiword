@@ -2401,8 +2401,58 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 			xdelta = m_draggingCenter - pTInfo->m_iLeftCellPos ;
 			UT_String sCellPos = m_pG->invertDimension(tick.dimType,dxrel);
 			UT_DEBUGMSG(("cellPos dragged to position %s from left column edge difference in pixels %d \n",sCellPos.c_str(),xdelta));
+			UT_String sColWidths;
+			UT_sint32 i;
+			for(i=1; i <= nCells;i++)
+			{
+				UT_sint32 left =0;
+				UT_sint32 right = 0;
+				pTInfo = (AP_TopRulerTableInfo *) m_infoCache.m_vecTableColInfo->getNthItem(i-1);
+				if((i - 1) != m_draggingCell)
+				{
+					left = pTInfo->m_iLeftCellPos + pTInfo->m_iLeftSpacing;
+				}
+				else
+				{
+					left =  m_draggingCenter - xAbsLeft;
+				}
+				if(i != nCells && i != m_draggingCell)
+				{
+					pTInfo = (AP_TopRulerTableInfo *) m_infoCache.m_vecTableColInfo->getNthItem(i);
+					right = pTInfo->m_iLeftCellPos - pTInfo->m_iLeftSpacing;
+				}
+				else if( i == nCells && i != m_draggingCell)
+				{
+					pTInfo = (AP_TopRulerTableInfo *) m_infoCache.m_vecTableColInfo->getNthItem(i-1);
+					right = pTInfo->m_iRightCellPos - pTInfo->m_iRightSpacing;
+				}
+				else
+				{
+					right = m_draggingCenter - xAbsLeft;
+				}
+				UT_DEBUGMSG(("SEVIOR i %d iCell %d left %d right %d \n",i,m_draggingCell,left,right));
+				UT_sint32 width = right - left;
+				dxrel = tick.scalePixelDistanceToUnits(width);
+				UT_String sTmp = m_pG->invertDimension(tick.dimType,dxrel);
+				sColWidths += sTmp;
+				sColWidths += '/';
+			}
+			UT_DEBUGMSG(("SEVIOR: COlumn Width string = %s \n",sColWidths.c_str()));
 			m_draggingWhat = DW_NOTHING;
 			FV_View * pView = static_cast<FV_View *>(m_pView);
+			const XML_Char * props[5] = {NULL,NULL,NULL,NULL,NULL};
+			props[0] = "table-column-props";
+			props[1] = sColWidths.c_str();
+
+			if(m_draggingCell == 0)
+			{
+				UT_sint32 leftCol =  m_draggingCenter - xAbsLeft;
+				double dLeft = tick.scalePixelDistanceToUnits(leftCol);
+				sCellPos = m_pG->invertDimension(tick.dimType,dLeft);
+				props[2] = "table-column-leftpos";
+				props[3] = sCellPos.c_str();
+			}
+			pView->setTableFormat(props);
 			notify(pView, AV_CHG_HDRFTR);
 			m_pG->setCursor(GR_Graphics::GR_CURSOR_LEFTRIGHT);
 			return;

@@ -224,6 +224,7 @@ public:
 	virtual UT_sint32 getPageViewTopMargin(void) const;
 	virtual UT_sint32 getPageViewSep(void) const;
 
+	bool	setTableFormat(const XML_Char * properties[]);
 	bool	setSectionFormat(const XML_Char * properties[]);
 	bool	getSectionFormat(const XML_Char *** properties);
 

@@ -93,6 +93,7 @@ fl_TableLayout::fl_TableLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_
 	fl_ContainerLayout * pCL = myContainingLayout();
 	fp_Container * pCon = pCL->getLastContainer();
 	pCon->addCon(pTableContainer);
+	pTableContainer->setContainer(pCon);
 }
 
 fl_TableLayout::~fl_TableLayout()
@@ -134,7 +135,9 @@ void fl_TableLayout::createTableContainer(void)
 	}
 	pTableContainer->setWidth(iWidth);
 	pTableContainer->setWidthInLayoutUnits(iWidthLayout);
-	pTableContainer->setContainer(pCon);
+//
+// The container of the tbale is set in getNewContainer()
+//
 }
 
 /*!
@@ -168,22 +171,43 @@ fp_Container* fl_TableLayout::getNewContainer(fp_Container * pPrevTab)
 //
 	pNewTab->setPrev(NULL);
 	pNewTab->setNext(NULL);
-	fl_ContainerLayout * pCL = myContainingLayout();
-	fp_Container * pCon = pCL->getLastContainer();
-	if(pPrevTab == NULL)
+//
+// Now find the right place to put our new Table container within the arrangement
+// of it's own container.
+//
+	fl_ContainerLayout * pUPCL = myContainingLayout();
+	fl_ContainerLayout * pPrevL = (fl_ContainerLayout *) getPrev();
+	fp_Container * pPrevCon = NULL;
+	fp_Container * pUpCon = NULL;
+	if(pPrevL != NULL)
 	{
-		pCon->addCon(pNewTab);
+		pPrevCon = pPrevL->getLastContainer();
+		pUpCon = pPrevCon->getContainer();
 	}
 	else
 	{
-		UT_sint32 i = pCon->findCon(pPrevTab);
-		if(i >= 0 && (i+1) < (UT_sint32) pCon->countCons())
+		pUpCon = pUPCL->getLastContainer();
+	}
+	if(pPrevL == NULL)
+	{
+		UT_DEBUGMSG(("SEVIOR!!!!!!!!!! New Table %x added into %x \n",pNewTab,pUpCon));
+		pUpCon->addCon(pNewTab);
+		pNewTab->setContainer(pUpCon);
+;
+	}
+	else
+	{
+		UT_sint32 i = pUpCon->findCon(pPrevCon);
+		UT_DEBUGMSG(("SEVIOR!!!!!!!!!! New Table %x inserted into %x \n",pNewTab,pUpCon));
+		if(i >= 0 && (i+1) < (UT_sint32) pUpCon->countCons())
 		{
-			pCon->insertConAt(pNewTab,i+1);
+			pUpCon->insertConAt(pNewTab,i+1);
+			pNewTab->setContainer(pUpCon);
 		}
-		else if( i >=0 &&  (i+ 1) == (UT_sint32) pCon->countCons())
+		else if( i >=0 &&  (i+ 1) == (UT_sint32) pUpCon->countCons())
 		{
-			pCon->addCon(pNewTab);
+			pUpCon->addCon(pNewTab);
+			pNewTab->setContainer(pUpCon);
 		}
 		else
 		{
@@ -289,7 +313,7 @@ bool fl_TableLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange *
 
 	setAttrPropIndex(pcrxc->getIndexAP());
 	collapse();
-	updateLayout();
+	updateTable();
 	return true;
 }
 
@@ -605,9 +629,10 @@ void fl_TableLayout::_lookupProperties(void)
    As new properties for each column are defined these will be delineated with "_"
    characters. But we'll cross that bridge later.
 */
+		UT_DEBUGMSG(("Processing Column width string %s \n",pszColumnProps));
 		UT_VECTOR_PURGEALL(fl_ColProps *,m_vecColProps);
+		m_vecColProps.clear();
 		UT_String sProps = pszColumnProps;
-		UT_String sSub;
 		UT_sint32 sizes = sProps.size();
 		UT_sint32 i =0;
 		UT_sint32 j =0;
@@ -616,17 +641,19 @@ void fl_TableLayout::_lookupProperties(void)
 			for (j=i; (j<sizes) && (sProps[j] != '/') ; j++) {}
 			if((j+1)>i && sProps[j] == '/')
 			{
-				sSub = sProps.substr(i,(j-i));
+				char * pszSub = UT_strdup(sProps.substr(i,(j-i)).c_str());
 				i = j + 1;
 				fl_ColProps * pColP = new fl_ColProps;
-				pColP->m_iColWidth = UT_convertToLayoutUnits(sSub.c_str());
+				pColP->m_iColWidth = UT_convertToLayoutUnits(pszSub);
 				m_vecColProps.addItem((void *) pColP);
+				delete [] pszSub;
 			}
 		}
  	}
 	else
 	{
 		UT_VECTOR_PURGEALL(fl_ColProps *,m_vecColProps);
+		m_vecColProps.clear();
 	}
 	
 }
@@ -718,6 +745,11 @@ void fl_TableLayout::collapse(void)
 
 	// delete our Table
 	pTab = (fp_TableContainer *) getFirstContainer();
+//
+// Remove from the container it comes from
+//
+	fp_VerticalContainer * pUpCon = (fp_VerticalContainer *)pTab->getContainer();
+	pUpCon->removeContainer(pTab);
 	if (pTab)
 	{
 		delete pTab;
@@ -778,7 +810,7 @@ void fl_TableLayout::attachCell(fl_ContainerLayout * pCell)
 	fl_ContainerLayout * pCur = getFirstLayout();
 	while(pCur && pCur !=  pCell)
 	{
-		UT_DEBUGMSG(("SEVIOR: Looking for %x found %x \n",pCell,pCur));
+		xxx_UT_DEBUGMSG(("SEVIOR: Looking for %x found %x \n",pCell,pCur));
 		pCur = pCur->getNext();
 	}
 	if(pCur == NULL)
@@ -903,6 +935,10 @@ void fl_CellLayout::setCellContainerProperties(fp_CellContainer * pCell)
 void fl_CellLayout::checkAndAdjustCellSize(void)
 {
 	fp_CellContainer * pCell = (fp_CellContainer *) getFirstContainer();
+	if(pCell == NULL)
+	{
+		return;
+	}
 	fp_Requisition Req;
 	pCell->sizeRequest(&Req);
 	if(Req.height == m_iCellHeight)
@@ -962,7 +998,7 @@ fp_Container* fl_CellLayout::getNewContainer(fp_Container * pPrev)
 
 void fl_CellLayout::format(void)
 {
-	UT_DEBUGMSG(("SEVIOR: New container is %x \n",getFirstContainer()));
+	xxx_UT_DEBUGMSG(("SEVIOR: Formatting first container is %x \n",getFirstContainer()));
 	if(getFirstContainer() == NULL)
 	{
 		getNewContainer(NULL);

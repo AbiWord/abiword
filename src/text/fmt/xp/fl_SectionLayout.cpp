@@ -2086,6 +2086,10 @@ UT_sint32 fl_DocSectionLayout::breakSection(fl_ContainerLayout * pLastValidLayou
 					double scale = ((double) pTab->getGraphics()->getResolution())/UT_LAYOUT_UNITS;
 					iAvail = (UT_sint32)( ((double) iAvail)*scale);
 					UT_sint32 iBreakAt = pTab->wantVBreakAt(iAvail -1);
+					if(iBreakAt > (iAvail -1))
+					{
+						UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+					}
 					UT_sint32 iBreakLO = (UT_sint32) (((double) iBreakAt)/scale);
 					if(bDoTableBreak && (iBreakLO + iWorkingColHeight <= iMaxColHeight))
 					{
@@ -2100,13 +2104,13 @@ UT_sint32 fl_DocSectionLayout::breakSection(fl_ContainerLayout * pLastValidLayou
 //
 // Break it at 0 first.
 //
-							xxx_UT_DEBUGMSG(("SEVIOR: Breaking MAster iBreakAt %d yloc = %d \n",iBreakAt,pTab->getY()));
-							xxx_UT_DEBUGMSG(("SEVIOR: iBreakLO %d iWorkingColHeight %d iMaxColHeight %d Container Height %d MArginAfter %d \n",iBreakLO,iWorkingColHeight,iMaxColHeight,pTab->getHeightInLayoutUnits() , iContainerMarginAfter ));
+							UT_DEBUGMSG(("SEVIOR: Breaking MAster iBreakAt %d yloc = %d \n",iBreakAt,pTab->getY()));
+							UT_DEBUGMSG(("SEVIOR: iBreakLO %d iWorkingColHeight %d iMaxColHeight %d Container Height %d MArginAfter %d \n",iBreakLO,iWorkingColHeight,iMaxColHeight,pTab->getHeightInLayoutUnits() , iContainerMarginAfter ));
 							fp_Container * pNext = (fp_Container *) pTab->getNext();
-							xxx_UT_DEBUGMSG(("SEVIOR: getNext %x \n",pNext));
+							UT_DEBUGMSG(("SEVIOR: getNext %x \n",pNext));
 							if(pNext)
 							{
-								xxx_UT_DEBUGMSG(("SEVIOR: Container of next %d \n",pNext->getContainerType()));
+								UT_DEBUGMSG(("SEVIOR: Container of next %d \n",pNext->getContainerType()));
 							}
 							pTab->deleteBrokenTables();
 							pTab->VBreakAt(0);

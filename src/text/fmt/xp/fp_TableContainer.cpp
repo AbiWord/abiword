@@ -1572,9 +1572,11 @@ fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
 // broken table points and is pointed to by the Master table
 // 
 	pBroke->setPrev(this);
+	fp_Container * pUpCon = NULL;
 	if(getMasterTable()->getFirstBrokenTable() == this)
 	{
 		i = getContainer()->findCon(getMasterTable());
+		pUpCon = getMasterTable()->getContainer();
   		pBroke->setPrev(getMasterTable());
   		pBroke->setNext(NULL);
   		getMasterTable()->setNext(pBroke);
@@ -1584,22 +1586,45 @@ fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
 	{
   		pBroke->setNext(NULL);
   		setNext(pBroke);
-		i = getContainer()->findCon(this);
+		if(getYBreak() == 0 )
+		{
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			pUpCon = getMasterTable()->getContainer();
+//
+// Fallback for loads...
+//
+			if(pUpCon == NULL)
+			{
+				pUpCon = getContainer();
+			}
+		}
+		else
+		{
+			pUpCon = getContainer();
+		}
+		if(getYBreak() == 0)
+		{
+			i = pUpCon->findCon(getMasterTable());
+		}
+		else
+		{
+			i = pUpCon->findCon(this);
+		}
 	}
-	if(i >=0 && i < (UT_sint32)  getContainer()->countCons() -1)
+	if(i >=0 && i < (UT_sint32)  pUpCon->countCons() -1)
 	{
-		getContainer()->insertConAt(pBroke,i+1);
+		pUpCon->insertConAt(pBroke,i+1);
 	}
-	else if( i == (UT_sint32) getContainer()->countCons() -1)
+	else if( i == (UT_sint32) pUpCon->countCons() -1)
 	{
-		getContainer()->addCon(pBroke);
+		pUpCon->addCon(pBroke);
 	}
 	else
 	{
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return NULL;
 	}
-	pBroke->setContainer(getContainer());
+	pBroke->setContainer(pUpCon);
 	return pBroke;
 }
 
@@ -2732,7 +2757,7 @@ void  fp_TableContainer::_size_allocate_pass2(void)
 		  getNthCol(col)->allocation = pColProp->m_iColWidth;
 	  }
   }
-  
+  m_MyAllocation.x = pTL->getLeftColPos() - m_iBorderWidth;
   child = (fp_CellContainer *) getNthCon(0);
   while (child)
   {
@@ -2852,13 +2877,13 @@ void fp_TableContainer::sizeRequest(fp_Requisition * pRequisition)
   for (row = 0; row < m_iRows; row++)
   {
 	  pRequisition->height += getNthRow(row)->requisition;
-	  UT_DEBUGMSG(("SEVIOR: requisition height %d \n", pRequisition->height));
+	  xxx_UT_DEBUGMSG(("SEVIOR: requisition height %d \n", pRequisition->height));
   }
   for (row = 0; row + 1 < m_iRows; row++)
   {
 	  pRequisition->height += getNthRow(row)->spacing;
-	  UT_DEBUGMSG(("SEVIOR: requisition spacing 2 is %d \n", getNthRow(row)->spacing));
-	  UT_DEBUGMSG(("SEVIOR: requisition height 2 is %d \n", pRequisition->height));
+	  xxx_UT_DEBUGMSG(("SEVIOR: requisition spacing 2 is %d \n", getNthRow(row)->spacing));
+	  xxx_UT_DEBUGMSG(("SEVIOR: requisition height 2 is %d \n", pRequisition->height));
   }
 }
 
