@@ -24,8 +24,20 @@ if WITH_GNOME
 SUBDIRS=gnome
 else
 
+if ABI_BUILD_SHARED
+ABIBINSHARED = AbiWord_d
+else
+ABIBINSHARED = 
+endif
+
+if ABI_BUILD_STATIC
+ABIBINSTATIC = AbiWord_s
+else
+ABIBINSTATIC = 
+endif
+
 indirectdir=$(bindir)
-indirect_PROGRAMS = AbiWord_d AbiWord_s
+indirect_PROGRAMS = $(ABIBINSHARED) $(ABIBINSTATIC)
 
 INCLUDES=\
 	 -DABIWORD_APP_NAME="\"$(ABIWORD_APP_NAME)\"" \
