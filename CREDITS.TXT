@@ -120,11 +120,12 @@ Tamas Decsi <tamas@pressflex.com>               Hungarian
 Philippe Duperron <duperron@mail.dotcom.fr>     French
 Gro Elin Hansen  <Gro.Hansen@student.uib.no>    Norwegian (Bokmål)
 Martin Willemoes Hansen <mwh@stampede.org>      Danish
-Chih-Wei Huang <cwhuang@linux.org.tw>           Chinese
-Karl Ove Hufthammer <huftis@bigfoot.com> 	    Norwegian (Nynorsk)
+Chih-Wei Huang <cwhuang@linux.org.tw>           Chinese (zh-TW)
+Karl Ove Hufthammer <huftis@bigfoot.com> 	Norwegian (Nynorsk)
 Marco Innocenti <dot0037@iperbole.bologna.it>   Italian
 Karl Trygve Kalleberg <karltk@prosalg.no>       Norwegian Bokmål
 Jarmo Karvonen <jarmo@dawn.joensuu.fi>          Finnish
+Michl Ladislav <xmichl03@stud.fee.vutbr.cz>     Czech
 Edouard Lafargue <Edouard.Lafargue@bigfoot.com> Norwegian (Bokmål)
 Birger Langkjer <birger.langkjer@image.dk>      Danish
 Linus G Larsson <linus@centrumntr.se>           Swedish
@@ -137,7 +138,7 @@ Gediminas Paulauskas <menesis@03bar.ktu.lt>     Lithuanian
 Eutanazy Sercxemulo <szperacz@free.net.pl>      Polish
 Rui Silva <rms@ssi.aaum.pt>                     Portugese
 Christian Terboven <cterboven@gmx.net>          German
-Owen Thomas <owen@llanilar.freeserve.co.uk>		Welsh
+Owen Thomas <owen@llanilar.freeserve.co.uk>	Welsh
 I Made Wiryana <made@nakula.rvs.uni-bielefeld.de>   Indonesian
 Javier Yáñez <javier@cibal.es>                  Spanish
 hj <huangj@citiz.net>				Chinese (zh-CN)
