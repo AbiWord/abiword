@@ -56,13 +56,13 @@
 
 	 \htmlonly <pre>
 	 \endhtmlonly
-	 
+	 \verbatim
 		    a
 		   / \
 		  b   c
 		       \
 		        d
-				
+	 \endverbatim			
 	 \htmlonly </pre>
 	 \endhtmlonly
 
