@@ -22,6 +22,7 @@
 
 #include "xap_Frame.h"
 #include "xap_Dialog.h"
+#include "fv_View.h"
 #include "xap_Draw_Symbol.h"
 
 
@@ -43,7 +44,7 @@ class AP_Dialog_Insert_Symbol : public XAP_Dialog_AppPersistent
 	char *     getInsertedFont(void);
 	typedef enum { a_OK, a_CANCEL} tAnswer;
 	AP_Dialog_Insert_Symbol::tAnswer    getAnswer(void) const;
-	void setView(AV_View *p_View)
+	void setView(FV_View *p_View)
 	{
 		m_pCurrentView = p_View;
 	}
@@ -72,12 +73,13 @@ class AP_Dialog_Insert_Symbol : public XAP_Dialog_AppPersistent
 
 	// This variable stores the current symbol font
 	GR_Font *		   m_Insert_Symbol_font;
+	char			   m_FontName[50];
 
 	// This is character selected.
 	UT_UCSChar	       m_Inserted_Symbol;
 	AP_Dialog_Insert_Symbol::tAnswer   m_answer;
 
-	AV_View	*			m_pCurrentView;
+	FV_View	*			m_pCurrentView;
 };
 
 #endif /* XAP_DIALOG_ZOOM_H */

@@ -29,7 +29,7 @@
 
 #include "xap_Draw_Symbol.h"
 
-static char m_Insert_Symbol_font[50]; 
+static UT_UCSChar m_Insert_Symbol_font[50]; 
 
 XAP_Draw_Symbol::XAP_Draw_Symbol(GR_Graphics * gc)
 	: XAP_Preview(gc)
@@ -89,13 +89,15 @@ void XAP_Draw_Symbol::setFontToGC(GR_Graphics *p_gc, UT_uint32 MaxWidthAllowable
 		p_buffer[i] = i + 32;
 	}
 
+	char font[50];
+	UT_UCS_strcpy_to_char(font, m_Insert_Symbol_font);
 
 	while(!SizeOK)
 	{
 		char temp[10];
 		sprintf(temp, "%ipt", PointSize);
 
-		found = p_gc->findFont(m_Insert_Symbol_font, "normal", "", "normal", "", temp);
+		found = p_gc->findFont(font, "normal", "", "normal", "", temp);
 		if (found)
 		{
 			p_gc->setFont(found);
@@ -138,7 +140,7 @@ void XAP_Draw_Symbol::setFontToGC(GR_Graphics *p_gc, UT_uint32 MaxWidthAllowable
 
 }
 
-char * XAP_Draw_Symbol::getSelectedFont(void)
+UT_UCSChar * XAP_Draw_Symbol::getSelectedFont(void)
 {
 	return m_Insert_Symbol_font;
 }
@@ -147,7 +149,7 @@ void XAP_Draw_Symbol::setSelectedFont(UT_UCSChar *font)
 {
 	// TODO: We need UT_UCS_strncpy_*
 
-	UT_UCS_strcpy_to_char(m_Insert_Symbol_font, font);
+	UT_UCS_strcpy(m_Insert_Symbol_font, font);
 	setFontString ();
 	setFontStringarea ();
 

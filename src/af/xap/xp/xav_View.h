@@ -99,10 +99,6 @@ public:
 	virtual UT_Bool 	isSelectionEmpty(void) const = 0;
 	virtual void		cmdUnselectSelection(void) = 0;
 	
-	// TODO: This should probably not be here. (Bruce Pearson, BruceP@wn.com.au)
-	virtual void insertSymbol(UT_UCSChar c, XML_Char * symfont, XML_Char * currentfont) = 0;
-	virtual UT_Bool getCharFormat(const XML_Char *** pProps, UT_Bool bExpandStyles = UT_TRUE) = 0;
-	
 protected:
 	XAP_App *			m_pApp;
 	void*				m_pParentData;

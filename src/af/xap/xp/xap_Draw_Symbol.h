@@ -35,33 +35,33 @@ public:
 	virtual ~XAP_Draw_Symbol(void);
 				
 	// data twiddlers
-	void    setSelectedFont(UT_UCSChar *font);
-	void	setFontString(void);
-	void	setFontStringarea(void);
-	void	setFontToGC(GR_Graphics *p_gc, UT_uint32 MaxWidthAllowable, UT_sint32 PointSize);
-	void	setFontfont(GR_Font * font);
-	void    setWindowSize(UT_uint32 width, UT_uint32 height);
-	void    setAreaSize(UT_uint32 width, UT_uint32 height);
-	void    setAreaGc(GR_Graphics *);
-	char * getSelectedFont(void);
+	void			setSelectedFont(UT_UCSChar *font);
+	void			setFontString(void);
+	void			setFontStringarea(void);
+	void			setFontToGC(GR_Graphics *p_gc, UT_uint32 MaxWidthAllowable, UT_sint32 PointSize);
+	void			setFontfont(GR_Font * font);
+	void			setWindowSize(UT_uint32 width, UT_uint32 height);
+	void			setAreaSize(UT_uint32 width, UT_uint32 height);
+	void			setAreaGc(GR_Graphics *);
+	UT_UCSChar *	getSelectedFont(void);
 
     // where all the Symbol-specific drawing happens
 	
-	void	draw(void);
-	void    drawarea(UT_UCSChar c, UT_UCSChar p);
-	UT_UCSChar calcSymbol(UT_uint32 x, UT_uint32 y);
+	void			draw(void);
+	void			drawarea(UT_UCSChar c, UT_UCSChar p);
+	UT_UCSChar		calcSymbol(UT_uint32 x, UT_uint32 y);
 
-	void	setCurrent(UT_UCSChar c)
+	void			setCurrent(UT_UCSChar c)
 	{
 		m_PreviousSymbol = m_CurrentSymbol;
 		m_CurrentSymbol = c;
 		drawarea(m_CurrentSymbol, m_PreviousSymbol);
 	}
-	UT_UCSChar getCurrent(void)
+	UT_UCSChar		getCurrent(void)
 	{
 		return m_CurrentSymbol;
 	}
-	void	onLeftButtonDown(UT_sint32 x, UT_sint32 y);
+	void			onLeftButtonDown(UT_sint32 x, UT_sint32 y);
 
 protected:
 	GR_Graphics *               m_areagc;

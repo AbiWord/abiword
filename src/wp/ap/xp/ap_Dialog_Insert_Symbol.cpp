@@ -64,7 +64,9 @@ UT_UCSChar  AP_Dialog_Insert_Symbol::getInsertedSymbol(void)
 char * AP_Dialog_Insert_Symbol::getInsertedFont(void)
 {
 	UT_ASSERT(m_DrawSymbol);
-	return m_DrawSymbol->getSelectedFont();
+	UT_UCS_strcpy_to_char(m_FontName, m_DrawSymbol->getSelectedFont());
+
+	return m_FontName;
 }
 
 AP_Dialog_Insert_Symbol::tAnswer AP_Dialog_Insert_Symbol::getAnswer(void) const
