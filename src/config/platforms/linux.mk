@@ -167,6 +167,16 @@ PLATFORM_FLAGS		+= $(S390_ARCH_FLAGS)
 OS_ENDIAN		= BigEndian32
 endif
 
+ifeq ($(OS_ARCH), parisc)
+PLATFORM_FLAGS      += $(HPPA_ARCH_FLAGS)
+OS_ENDIAN       = BigEndian32
+endif
+
+ifeq ($(OS_ARCH), parisc64)
+PLATFORM_FLAGS      += $(HPPA_ARCH_FLAGS)
+OS_ENDIAN       = BigEndian32
+endif
+
 GLIB_CONFIG		= glib-config
 GTK_CONFIG		= gtk-config
 GNOME_CONFIG    	= gnome-config
