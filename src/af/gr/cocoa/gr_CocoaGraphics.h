@@ -128,6 +128,7 @@ private:
 	XAP_CocoaFontManager * 	m_pFontManager;
 	Abi_NSView*  	  			m_pWin;
 	NSImage*					m_offscreen;
+	NSColor *					m_currentColor;
 
 	// our currently requested font by handle
 	XAP_CocoaFontHandle *	m_pFont;
@@ -136,12 +137,12 @@ private:
 	static XAP_CocoaFontHandle *	s_pFontGUI;
 	static UT_uint32		s_iInstanceCount;
   
-	int          			m_iWindowHeight, m_iWindowWidth;
+	int          			m_iWindowHeight, m_iWindowWidth;		//FIXME unused?
 	UT_sint32				m_iLineWidth;
 	GR_Graphics::Cursor		m_cursor;
 
 	GR_Graphics::ColorSpace	m_cs;
-	
+public:		//HACK	
 	NSColor	*			m_3dColors[COUNT_3D_COLORS];
 };
 

@@ -94,22 +94,24 @@ GR_CocoaGraphics::GR_CocoaGraphics(NSView * win, XAP_CocoaFontManager * fontMana
 	[m_pWin setGraphics:this];
 	m_pFontManager = fontManager;
 	m_pFont = NULL;
+	m_iLineWidth = 0;
 	s_iInstanceCount++;
 	init3dColors ();
 	
 	m_offscreen = [[NSImage alloc] initWithSize:viewBounds.size];
-	//[m_offscreen setFlipped:YES];
+	[m_offscreen setFlipped:YES];
 	
-	//StNSViewLocker locker(m_pWin);
 	StNSImageLocker locker (m_offscreen);
 	
-	[NSBezierPath setDefaultLineWidth:0.0f];
- 	[[NSColor blackColor] set];
+	[NSBezierPath setDefaultLineWidth:m_iLineWidth];
+	m_currentColor = [[NSColor blackColor] copy];
+ 	[m_currentColor set];
 		
 	m_cs = GR_Graphics::GR_COLORSPACE_COLOR;
 	m_cursor = GR_CURSOR_INVALID;
 	setCursor(GR_CURSOR_DEFAULT);
-	
+	[[NSGraphicsContext currentContext] setShouldAntialias:NO];
+	/* save initial graphics state that has no clipping */
 	[NSGraphicsContext saveGraphicsState];
 }
 
@@ -325,13 +327,12 @@ UT_uint32 GR_CocoaGraphics::measureUnRemappedChar(const UT_UCSChar c)
 
 UT_uint32 GR_CocoaGraphics::_getResolution(void) const
 {
-	// this is hard-coded at 100 for X now, since 75 (which
-	// most X servers return when queried for a resolution)
-	// makes for tiny fonts on modern resolutions.
-
 	return 100;
 }
 
+/*
+	Allocate the color. Must be released by caller.
+ */
 NSColor	*GR_CocoaGraphics::_utRGBColorToNSColor (const UT_RGBColor& clr)
 {
 	float r,g,b;
@@ -346,16 +347,20 @@ NSColor	*GR_CocoaGraphics::_utRGBColorToNSColor (const UT_RGBColor& clr)
 
 void GR_CocoaGraphics::setColor(const UT_RGBColor& clr)
 {
+	UT_DEBUGMSG (("GR_CocoaGraphics::setColor(const UT_RGBColor&): setting color %d, %d, %d\n", clr.m_red, clr.m_grn, clr.m_blu)); 
 	NSColor *c = _utRGBColorToNSColor (clr);
 	_setColor(c);
 	[c release];
 }
 
+/* c will be copied */
 void GR_CocoaGraphics::_setColor(NSColor * c)
 {
-	//StNSViewLocker locker(m_pWin);
+	UT_DEBUGMSG (("GR_CocoaGraphics::_setColor(NSColor *): setting NSColor\n"));
+	[m_currentColor release];
+	m_currentColor = [c copy];
 	StNSImageLocker locker (m_offscreen);
-	[c set];
+	[m_currentColor set];
 }
 
 GR_Font * GR_CocoaGraphics::getGUIFont(void)
@@ -366,7 +371,7 @@ GR_Font * GR_CocoaGraphics::getGUIFont(void)
 	if (!s_pFontGUI)
 	{
 		// get the font resource
-		//UT_DEBUGMSG(("GR_CocoaGraphics::getGUIFont: getting default font\n"));
+		UT_DEBUGMSG(("GR_CocoaGraphics::getGUIFont: getting default font\n"));
 		XAP_CocoaFont * font = (XAP_CocoaFont *) m_pFontManager->getDefaultFont();
 		UT_ASSERT(font);
 
@@ -385,6 +390,7 @@ GR_Font * GR_CocoaGraphics::findFont(const char* pszFontFamily,
 									const char* /*pszFontStretch*/, 
 									const char* pszFontSize)
 {
+	UT_DEBUGMSG (("GR_CocoaGraphics::findFont()\n"));
 	if (!m_pFontManager)
 		return NULL;
 
@@ -540,9 +546,9 @@ void GR_CocoaGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 
 void GR_CocoaGraphics::invertRect(const UT_Rect* pRect)
 {
+	UT_DEBUGMSG (("GR_CocoaGraphics::invertRect()\n"));
 	UT_ASSERT(pRect);
 
-	//StNSViewLocker locker(m_pWin);
 	StNSImageLocker locker (m_offscreen);
 	// TODO handle invert. this is highlight.
 	
@@ -551,20 +557,24 @@ void GR_CocoaGraphics::invertRect(const UT_Rect* pRect)
 
 void GR_CocoaGraphics::setClipRect(const UT_Rect* pRect)
 {
+	UT_DEBUGMSG (("GR_CocoaGraphics::setClipRect()\n"));
 	m_pRect = pRect;
 
-	if (pRect == NULL) {
-		UT_DEBUGMSG (("GR_CocoaGraphics::setClipRect(NULL)\n"));
-		[NSGraphicsContext restoreGraphicsState];
-		[NSGraphicsContext saveGraphicsState];
-		return;
-	}
-	//StNSViewLocker locker(m_pWin);
 	StNSImageLocker locker (m_offscreen);
+	/* discard the clipping */
+	/* currently the only way is to restore the graphic state */
+	[NSGraphicsContext restoreGraphicsState];
+	[NSGraphicsContext saveGraphicsState];
+	/* restore the graphics settings */
+	[m_currentColor set];
+	[NSBezierPath setDefaultLineWidth:m_iLineWidth];
 	
-	if (pRect)
-	{
+	if (pRect) {
+		UT_DEBUGMSG (("ClipRect set\n"));
 		NSRectClip(NSMakeRect (pRect->left, pRect->top, pRect->width, pRect->height));
+	}
+	else {
+		UT_DEBUGMSG (("ClipRect reset!!\n"));
 	}
 }
 
@@ -576,7 +586,7 @@ void GR_CocoaGraphics::fillRect(UT_RGBColor& c, UT_Rect &r)
 void GR_CocoaGraphics::fillRect(UT_RGBColor& clr, UT_sint32 x, UT_sint32 y,
 							   UT_sint32 w, UT_sint32 h)
 {
-	UT_DEBUGMSG(("GR_CocoaGraphics::fillRect(%ld, %ld, %ld, %ld)\n", x, y, w, h));
+	UT_DEBUGMSG(("GR_CocoaGraphics::fillRect(UT_RGBColor&, %ld, %ld, %ld, %ld)\n", x, y, w, h));
 	// save away the current color, and restore it after we fill the rect
 	NSColor *c = _utRGBColorToNSColor (clr);
 		
@@ -593,6 +603,7 @@ void GR_CocoaGraphics::fillRect(UT_RGBColor& clr, UT_sint32 x, UT_sint32 y,
 void GR_CocoaGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
 {
 	UT_ASSERT(c < COUNT_3D_COLORS);
+	UT_DEBUGMSG(("GR_CocoaGraphics::fillRect(GR_Color3D&, %ld, %ld, %ld, %ld)\n", x, y, w, h));
 	
 	//StNSViewLocker locker(m_pWin);
 	StNSImageLocker locker (m_offscreen);
@@ -604,6 +615,7 @@ void GR_CocoaGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint3
 
 void GR_CocoaGraphics::fillRect(GR_Color3D c, UT_Rect &r)
 {
+	UT_DEBUGMSG(("GR_CocoaGraphics::fillRect(GR_Color3D&, UT_Rect &)\n"));
 	UT_ASSERT(c < COUNT_3D_COLORS);
 	fillRect(c,r.left,r.top,r.width,r.height);
 }
@@ -824,16 +836,17 @@ GR_Graphics::Cursor GR_CocoaGraphics::getCursor(void) const
 
 void GR_CocoaGraphics::setColor3D(GR_Color3D c)
 {
+	UT_DEBUGMSG(("GR_CocoaGraphics::setColor3D(GR_Color3D %d)\n", c));
 	UT_ASSERT(c < COUNT_3D_COLORS);
 	_setColor(m_3dColors[c]);
 }
 
 void GR_CocoaGraphics::init3dColors()
 {
-	m_3dColors[CLR3D_Foreground] = [NSColor controlColor];
-	m_3dColors[CLR3D_Background] = [NSColor controlBackgroundColor];
-	m_3dColors[CLR3D_BevelUp] = [NSColor controlShadowColor];
-	m_3dColors[CLR3D_BevelDown] = [NSColor controlDarkShadowColor];
+	m_3dColors[CLR3D_Foreground] = [NSColor blackColor /*controlColor*/];
+	m_3dColors[CLR3D_Background] = [NSColor controlColor /*controlBackgroundColor*/];
+	m_3dColors[CLR3D_BevelUp] = [NSColor lightGrayColor /*controlShadowColor*/];
+	m_3dColors[CLR3D_BevelDown] = [NSColor darkGrayColor /*controlDarkShadowColor*/];
 	m_3dColors[CLR3D_Highlight] = [NSColor controlHighlightColor];
 }
 
@@ -852,7 +865,6 @@ void GR_CocoaGraphics::polygon(UT_RGBColor& clr,UT_Point *pts,UT_uint32 nPoints)
 	}
 	[path closePath];
 	NSColor *c = _utRGBColorToNSColor (clr);
-	//StNSViewLocker locker(m_pWin);
 	StNSImageLocker locker (m_offscreen);
 	[NSGraphicsContext saveGraphicsState];
 	[c set];
@@ -927,8 +939,16 @@ void GR_Font::s_getGenericFontProperties(const char * /*szFontName*/,
 	[c set];
 	NSRectFill ([self bounds]);
 	[c release];
+	// and show 3d colors just for fun.
+	if (m_pGR) {
+		int i;
+		for (i = 0; i < COUNT_3D_COLORS; i++) {
+			[m_pGR->m_3dColors[i] set];
+			NSRectFill (NSMakeRect (i * 10, i * 10, 10, 10));
+		}
+	}
 	[NSGraphicsContext restoreGraphicsState];
-#endif
+#else
 	if (m_pGR) {
 		NSImage * img = m_pGR->_getOffscreen ();
 		// TODO: only draw what is needed.
@@ -938,17 +958,18 @@ void GR_Font::s_getGenericFontProperties(const char * /*szFontName*/,
 		
 //		}
 	}
+#endif
 }
 
 
 /*!
 	Cocoa overridden method. 
 	
-	\return YES. Coordinates are upside down.
+	\return NO. Coordinates are still upside down, but we'll reverse the offscreen instead
  */
 - (BOOL)isFlipped
 {
-	return YES;
+	return NO;
 }
 
 
