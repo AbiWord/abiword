@@ -18,10 +18,10 @@
  * 02111-1307, USA.
  */
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h> // for rint (font size)
 
 #include "xap_EncodingManager.h"
 
@@ -40,9 +40,10 @@
 #include "xap_Frame.h"
 #include "ap_Strings.h"
 
-#include "ie_imp_WordPerfect_6.h"
+#include "ie_imp_WordPerfect.h"
 
 #define X_CheckFileError(v) if (v==EOF) return UT_IE_IMPORTERROR;
+#define X_CheckFileReadElementError(v) if (v != 1) return UT_IE_IMPORTERROR; // makes sure that one element is read
 #define X_CheckDocumentError(v) if (!v) return UT_IE_IMPORTERROR;
 #define X_CheckWordPerfectError(v) if ((v != UT_OK)) return UT_IE_IMPORTERROR;
 
@@ -65,6 +66,8 @@ WordPerfectTextAttributes::WordPerfectTextAttributes()
    m_smallCaps = false;
    m_Blink = false;
    m_reverseVideo = false;
+   
+   m_fontSize = 12; // silly default. TODO: read from file.
 }
 
 WordPerfectParagraphProperties::WordPerfectParagraphProperties()
@@ -89,7 +92,7 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 
 	if (!m_sniffer)
 	{
-		m_sniffer = new IE_Imp_WordPerfect_6_Sniffer ();
+		m_sniffer = new IE_Imp_WordPerfect_Sniffer ();
 	}
 	else
 	{
@@ -98,8 +101,8 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 
 	UT_ASSERT (m_sniffer);
 
-	mi->name    = "WordPerfect (tm) Importer";
-	mi->desc    = "WordPerfect (tm) Documents";
+	mi->name    = "WordPerfect 6/7/8 (tm) Importer";
+	mi->desc    = "WordPerfect 6/7/8 (tm) Documents";
 	mi->version = ABI_VERSION_STRING;
 	mi->author  = "Abi the Ant";
 	mi->usage   = "No Usage";
@@ -140,47 +143,57 @@ int abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor,
 /****************************************************************************/
 /****************************************************************************/
 
-bool IE_Imp_WordPerfect_6_Sniffer::recognizeContents (const char * szBuf, 
+bool IE_Imp_WordPerfect_Sniffer::recognizeContents (const char * szBuf, 
 						     UT_uint32 iNumbytes)
 {
    
-	char * magic    = 0;
-	int magicoffset = 0;
+   char * magic    = 0;
+   int magicoffset = 0;
 
-	magic = "WPC";
-	magicoffset = 1;
-	if (iNumbytes > (magicoffset + strlen (magic)))
-	{
-	   if (!strncmp (szBuf + magicoffset, magic, strlen (magic)))
-	     {
-		return true;
-	     }
-	}
+   magic = "WPC";
+   magicoffset = 1;
+   
+   if (iNumbytes > (magicoffset + strlen (magic)))
+     {
+	if (!strncmp (szBuf + magicoffset, magic, strlen (magic)))
+	  {
+	     int productType = (int) *(szBuf + WP_HEADER_PRODUCT_TYPE_OFFSET);
+	     int fileType = (int) *(szBuf + WP_HEADER_FILE_TYPE_OFFSET);
+	     int majorVersion = (int) *(szBuf + WP_HEADER_MAJOR_VERSION_OFFSET);
+	     int minorVersion = (int) *(szBuf + WP_HEADER_MINOR_VERSION_OFFSET);
+	     UT_DEBUGMSG(("product type: %i, file type: %i, major version: %i, minor version: %i\n", productType, fileType, majorVersion, minorVersion ));
+	     // we only want to try parsing wordperfect 6/7/8 documents for now
+	     if ((majorVersion != WP_WORDPERFECT678_EXPECTED_MAJOR_VERSION) || (fileType != WP_WORDPERFECT_DOCUMENT_FILE_TYPE))
+	       return false;
+	     
+	     return true;
+	  }
+     }
 
    // ok, that didn't work, we'll try to dig through the OLE stream
    // (TODO)
    return false;
 }
 
-bool IE_Imp_WordPerfect_6_Sniffer::recognizeSuffix (const char * szSuffix)
+bool IE_Imp_WordPerfect_Sniffer::recognizeSuffix (const char * szSuffix)
 {
 	// We recognize both word documents and their template versions
 	return (!UT_stricmp(szSuffix,".wpd"));
 }
 
-UT_Error IE_Imp_WordPerfect_6_Sniffer::constructImporter (PD_Document * pDocument,
+UT_Error IE_Imp_WordPerfect_Sniffer::constructImporter (PD_Document * pDocument,
 													  IE_Imp ** ppie)
 {
-	IE_Imp_WordPerfect_6 * p = new IE_Imp_WordPerfect_6(pDocument);
+	IE_Imp_WordPerfect * p = new IE_Imp_WordPerfect(pDocument);
 	*ppie = p;
 	return UT_OK;
 }
 
-bool	IE_Imp_WordPerfect_6_Sniffer::getDlgLabels (const char ** pszDesc,
+bool	IE_Imp_WordPerfect_Sniffer::getDlgLabels (const char ** pszDesc,
 												const char ** pszSuffixList,
 												IEFileType * ft)
 {
-	*pszDesc = "WordPerfect (.wpd)";
+	*pszDesc = "WordPerfect 6/7/8 (.wpd)";
 	*pszSuffixList = "*.wpd";
 	*ft = getFileType();
 	return true;
@@ -193,20 +206,22 @@ bool	IE_Imp_WordPerfect_6_Sniffer::getDlgLabels (const char ** pszDesc,
 #define DOC_TEXTRUN_SIZE 2048
 #define DOC_PROPBUFFER_SIZE 1024
 
-IE_Imp_WordPerfect_6::IE_Imp_WordPerfect_6(PD_Document * pDocument)
+IE_Imp_WordPerfect::IE_Imp_WordPerfect(PD_Document * pDocument)
   : IE_Imp (pDocument)
 {
    m_firstParagraph = true;
    m_undoOn = false;
 }
 
+IE_Imp_WordPerfect::~IE_Imp_WordPerfect() 
+{
+   UT_VECTOR_PURGEALL(WordPerfectFontDescriptor *, m_fontDescriptorList);
+}
+
 /****************************************************************************/
 /****************************************************************************/
-#define DOCUMENT_POINTER_POSITION 4
-#define DOCUMENT_SIZE_POSITION 20
 
-
-UT_Error IE_Imp_WordPerfect_6::importFile(const char * szFilename)
+UT_Error IE_Imp_WordPerfect::importFile(const char * szFilename)
 {
    m_importFile = fopen(szFilename, "rb");
    if (!m_importFile)
@@ -217,41 +232,160 @@ UT_Error IE_Imp_WordPerfect_6::importFile(const char * szFilename)
 
    UT_Error error;  
 
-   //getDoc()->appendStrux(PTX_Block, NULL);
    error = _parseHeader(); 
-   if( error == UT_OK)
-     error = _parseDocument();   
-      
+   if (error == UT_OK) 
+     {
+	error = _parseIndexHeader();
+	if (error == UT_OK)
+	  error = _parseDocument();   
+     }
+   
    fclose(m_importFile);
    return error;
 }
 
-void IE_Imp_WordPerfect_6::pasteFromBuffer (PD_DocumentRange *, 
+void IE_Imp_WordPerfect::pasteFromBuffer (PD_DocumentRange *, 
 										unsigned char *, unsigned int, const char *)
 {
 	// nada
 }
 
-UT_Error IE_Imp_WordPerfect_6::_parseHeader()
+UT_Error IE_Imp_WordPerfect::_parseHeader()
 {
    UT_DEBUGMSG(("WordPerfect: Parsing the Header \n"));
-   if (fseek(m_importFile, DOCUMENT_POINTER_POSITION, SEEK_SET) != 0)
+   UT_uint16 documentEncrypted;
+   
+   if (fseek(m_importFile, WP_HEADER_DOCUMENT_POINTER_POSITION, SEEK_SET) != 0)
      return UT_IE_IMPORTERROR;
    if (fread(&m_documentPointer, sizeof(UT_uint32), 1, m_importFile) != 1)
      return UT_IE_IMPORTERROR;
 
-   if (fseek(m_importFile, DOCUMENT_SIZE_POSITION, SEEK_SET) != 0)
+   if (fseek(m_importFile, WP_HEADER_DOCUMENT_SIZE_POSITION, SEEK_SET) != 0)
      return UT_IE_IMPORTERROR;
    if (fread(&m_documentEnd, sizeof(UT_uint32), 1, m_importFile) != 1)
      return UT_IE_IMPORTERROR;
    
+   if (fseek(m_importFile, WP_HEADER_INDEX_HEADER_POSITION, SEEK_SET) != 0)
+     return UT_IE_IMPORTERROR;
+   if (fread(&m_indexPointer, sizeof(UT_uint16), 1, m_importFile) != 1)
+     return UT_IE_IMPORTERROR;
+   
+   if (fseek(m_importFile, WP_HEADER_ENCRYPTION_POSITION, SEEK_SET) != 0)
+     return UT_IE_IMPORTERROR;
+   if (fread(&documentEncrypted, sizeof(UT_uint16), 1, m_importFile) != 1)
+     return UT_IE_IMPORTERROR;
+   
+   UT_DEBUGMSG(("WordPerfect: Index Header Position = %i \n",(int)m_indexPointer));
    UT_DEBUGMSG(("WordPerfect: Document Pointer = %i \n",(int)m_documentPointer));
    UT_DEBUGMSG(("WordPerfect: Document End Position = %i \n",(int)m_documentEnd));
-
+   
+   if (documentEncrypted != 0)
+     return UT_IE_PROTECTED;
+   
+   // sanity check
+   if (m_documentPointer > m_documentEnd)
+     return UT_IE_IMPORTERROR;
+   
    return UT_OK;
 }
 
-UT_Error IE_Imp_WordPerfect_6::_parseDocument()
+UT_Error IE_Imp_WordPerfect::_parseIndexHeader()
+{
+   UT_DEBUGMSG(("WordPerfect: Parsing the Index Header \n"));
+   UT_uint16 numIndices;
+   
+   if (fseek(m_importFile, (long) (m_indexPointer+WP_INDEX_HEADER_NUM_INDICES_POSITION), SEEK_SET) != 0)
+     return UT_IE_IMPORTERROR;
+   if (fread(&numIndices, sizeof(UT_uint16), 1, m_importFile) != 1)
+     return UT_IE_IMPORTERROR;
+   UT_DEBUGMSG(("WordPerfect: Index header has %i packet indices \n", (int) numIndices));
+   
+   if (fseek(m_importFile, (long) (m_indexPointer+WP_INDEX_HEADER_INDICES_POSITION), SEEK_SET) != 0)
+     return UT_IE_IMPORTERROR;
+   
+   for (unsigned int i=1; i<numIndices; i++)
+     {
+	unsigned char flags, packetType;
+	UT_uint16 packetUseCount, hiddenCount;
+	UT_uint32 dataPacketSize, dataPointer;
+	X_CheckFileReadElementError(fread(&flags, sizeof(unsigned char), 1, m_importFile));
+	X_CheckFileReadElementError(fread(&packetType, sizeof(unsigned char), 1, m_importFile));
+	X_CheckFileReadElementError(fread(&packetUseCount, sizeof(UT_uint16), 1, m_importFile));
+	X_CheckFileReadElementError(fread(&hiddenCount, sizeof(UT_uint16), 1, m_importFile));
+	X_CheckFileReadElementError(fread(&dataPacketSize, sizeof(UT_uint32), 1, m_importFile));
+	X_CheckFileReadElementError(fread(&dataPointer, sizeof(UT_uint32), 1, m_importFile));
+	UT_DEBUGMSG(("WordPerfect: (Packet Element %i: flags: %i, type: %i, use count: %i, hidden count: %i, size: %i, pointer: %i) \n", (int)i, (int)flags, (int)packetType, (int)packetUseCount, (int)hiddenCount, (int)dataPacketSize, (int)dataPointer));
+
+	switch (packetType)
+	  {
+	   case WP_INDEX_HEADER_FONT_TYPEFACE_DESCRIPTOR_POOL:
+	   case WP_INDEX_HEADER_DESIRED_FONT_DESCRIPTOR_POOL:
+	     X_CheckWordPerfectError(_parseFontDescriptorPacket(i, dataPacketSize, dataPointer));
+	     break;
+	   default:
+	     break;
+	  }
+	
+     }
+   
+   return UT_OK;
+}
+
+UT_Error IE_Imp_WordPerfect::_parseFontDescriptorPacket(int packetID, UT_uint32 dataPacketSize, UT_uint32 dataPointer)
+{
+   UT_DEBUGMSG(("WordPerfect: Parsing a Font Descriptor\n"));
+   UT_uint32 lastPosition = ftell(m_importFile);
+
+   WordPerfectFontDescriptor *fontDescriptor = new WordPerfectFontDescriptor;
+   UT_uint16 fontNameLength;
+   
+   if (fseek(m_importFile, (long) (dataPointer), SEEK_SET) != 0)
+     return UT_IE_IMPORTERROR;
+
+   // the packet number that this font is representative of
+   // (this is what we use in the document to look up the correct font for a face/size change)
+   fontDescriptor->m_packetID = packetID;
+
+   // short sized characteristics
+   X_CheckFileReadElementError(fread(&fontDescriptor->m_characterWidth, sizeof(UT_uint16), 1, m_importFile));
+   X_CheckFileReadElementError(fread(&fontDescriptor->m_ascenderHeight, sizeof(UT_uint16), 1, m_importFile));
+   X_CheckFileReadElementError(fread(&fontDescriptor->m_xHeight, sizeof(UT_uint16), 1, m_importFile));
+   X_CheckFileReadElementError(fread(&fontDescriptor->m_descenderHeight, sizeof(UT_uint16), 1, m_importFile));
+   X_CheckFileReadElementError(fread(&fontDescriptor->m_italicsAdjust, sizeof(UT_uint16), 1, m_importFile));
+   X_CheckFileReadElementError(fread(&fontDescriptor->m_primaryFamilyId, sizeof(UT_Byte), 1, m_importFile));
+   X_CheckFileReadElementError(fread(&fontDescriptor->m_primaryFamilyMemberId, sizeof(UT_Byte), 1, m_importFile));
+   // byte sized characteristics
+   X_CheckFileReadElementError(fread(&fontDescriptor->m_scriptingSystem, sizeof(UT_Byte), 1, m_importFile));
+   X_CheckFileReadElementError(fread(&fontDescriptor->m_primaryCharacterSet, sizeof(UT_Byte), 1, m_importFile));
+   X_CheckFileReadElementError(fread(&fontDescriptor->m_width, sizeof(UT_Byte), 1, m_importFile));
+   X_CheckFileReadElementError(fread(&fontDescriptor->m_weight, sizeof(UT_Byte), 1, m_importFile));
+   X_CheckFileReadElementError(fread(&fontDescriptor->m_attributes, sizeof(UT_Byte), 1, m_importFile));
+   X_CheckFileReadElementError(fread(&fontDescriptor->m_generalCharacteristics, sizeof(UT_Byte), 1, m_importFile));
+   X_CheckFileReadElementError(fread(&fontDescriptor->m_classification, sizeof(UT_Byte), 1, m_importFile));
+   X_CheckFileReadElementError(fread(&fontDescriptor->m_fill, sizeof(UT_Byte), 1, m_importFile));
+   X_CheckFileReadElementError(fread(&fontDescriptor->m_fontType, sizeof(UT_Byte), 1, m_importFile));
+   X_CheckFileReadElementError(fread(&fontDescriptor->m_fontSourceFileType, sizeof(UT_Byte), 1, m_importFile));
+
+   X_CheckFileReadElementError(fread(&fontNameLength, sizeof(UT_uint16), 1, m_importFile));
+   if(fontNameLength > 0)
+     {	
+	fontDescriptor->m_fontName = new char[fontNameLength];
+	if(fread(fontDescriptor->m_fontName, sizeof(char), fontNameLength, m_importFile) != fontNameLength)
+	  return UT_IE_IMPORTERROR;
+     }
+   
+   UT_DEBUGMSG(("WordPerfect: Read Font (primary family id: %i, font type: %i, font source file type: %i font name length: %i, font name: %s)\n", (int) fontDescriptor->m_primaryFamilyId, (int) fontDescriptor->m_fontType, (int) fontDescriptor->m_fontSourceFileType, (int) fontNameLength, fontDescriptor->m_fontName));
+   
+   m_fontDescriptorList.addItem(fontDescriptor); // todo: check for error? how?
+   
+   if (fseek(m_importFile, (long) (lastPosition), SEEK_SET) != 0)
+     return UT_IE_IMPORTERROR;
+   
+   return UT_OK;
+}
+
+
+UT_Error IE_Imp_WordPerfect::_parseDocument()
 {
    UT_DEBUGMSG(("WordPerfect: Parsing the Document \n"));
 
@@ -261,9 +395,6 @@ UT_Error IE_Imp_WordPerfect_6::_parseDocument()
    
    if (fseek(m_importFile, m_documentPointer, SEEK_SET) != 0)
      return UT_IE_IMPORTERROR;
-
-   //int readVal = fgetc(m_importFile);
-   //X_CheckFileError(readVal);
    
    while (ftell(m_importFile) < (int)m_documentEnd)
      {
@@ -353,7 +484,7 @@ UT_Error IE_Imp_WordPerfect_6::_parseDocument()
    return UT_OK;
 }
 
-UT_Error IE_Imp_WordPerfect_6::_handleHardEndOfLine()
+UT_Error IE_Imp_WordPerfect::_handleHardEndOfLine()
 {
    // (TODO: eliminate a prev space if it's just before this)
    UT_DEBUGMSG(("WordPerfect: Handling a hard EOL \n"));
@@ -369,7 +500,7 @@ UT_Error IE_Imp_WordPerfect_6::_handleHardEndOfLine()
 // handles an end-of-line function that has formatting information embedded
 // into it. Fortunately, only the first code is relevant for our purposes..
 // the rest can be safely skipped (at least according to the developer documentation)
-UT_Error IE_Imp_WordPerfect_6::_handleEndOfLineGroup()
+UT_Error IE_Imp_WordPerfect::_handleEndOfLineGroup()
 {
    UT_DEBUGMSG(("WordPerfect: Handling a EOL group\n"));
    
@@ -414,7 +545,7 @@ UT_Error IE_Imp_WordPerfect_6::_handleEndOfLineGroup()
 
 // handles a page group
 // (TODO: not implemented, just skips over it)
-UT_Error IE_Imp_WordPerfect_6::_handlePageGroup()
+UT_Error IE_Imp_WordPerfect::_handlePageGroup()
 {
    UT_DEBUGMSG(("WordPerfect: Handling a page group\n"));
    X_CheckWordPerfectError(_skipGroup(WP_TOP_PAGE_GROUP));
@@ -424,7 +555,7 @@ UT_Error IE_Imp_WordPerfect_6::_handlePageGroup()
 
 // handles a column group
 // (TODO: not implemented, just skips over it)
-UT_Error IE_Imp_WordPerfect_6::_handleColumnGroup()
+UT_Error IE_Imp_WordPerfect::_handleColumnGroup()
 {
    UT_DEBUGMSG(("WordPerfect: Handling a column group\n"));
    X_CheckWordPerfectError(_skipGroup(WP_TOP_COLUMN_GROUP));
@@ -434,26 +565,22 @@ UT_Error IE_Imp_WordPerfect_6::_handleColumnGroup()
 
 // handles a paragraph group
 // (TODO: not completely implemented)
-UT_Error IE_Imp_WordPerfect_6::_handleParagraphGroup()
+UT_Error IE_Imp_WordPerfect::_handleParagraphGroup()
 {
    UT_DEBUGMSG(("WordPerfect: Handling a paragraph group\n"));
 
    // flush what's come before this change
    //X_CheckWordPerfectError(_flushText());
-
-   int subGroup = fgetc(m_importFile); 
-   X_CheckFileError(subGroup);
+   unsigned char subGroup;   
+   UT_uint16 size;
+   unsigned char flags;
+   UT_uint16 nonDeletableInfoSize;
    
-   unsigned short value;
-   if(fread( &value, 2, 1, m_importFile) != 1)  // I have no idea WHAT this var. does. but it's there.
-     return UT_IE_IMPORTERROR;
-   
-   unsigned char flags = fgetc(m_importFile);
-   
-   // (TODO: handle prefix data, if indicated by flags - this will not work perfectly until we do so)
-   unsigned short numNonDeletableBytes; 
-   if(fread( &numNonDeletableBytes, 2, 1, m_importFile) != 1)
-     return UT_IE_IMPORTERROR;
+   X_CheckFileReadElementError(fread(&subGroup, sizeof(unsigned char), 1, m_importFile));
+   // variables common to all the different subgroups (although they may be blank)
+   X_CheckFileReadElementError(fread(&size, sizeof(UT_uint16), 1, m_importFile)); // I have no idea WHAT this var. does. but it's there.
+   X_CheckFileReadElementError(fread(&flags, sizeof(unsigned char), 1, m_importFile)); 
+   X_CheckFileReadElementError(fread(&nonDeletableInfoSize, sizeof(UT_uint16), 1, m_importFile));
 
    // dispatch to subgroup to handle the rest of the relevant properties within the
    // group (and thus, read more of the file-- so we keep this even if undo is 'on')
@@ -472,7 +599,7 @@ UT_Error IE_Imp_WordPerfect_6::_handleParagraphGroup()
 
 // handles a style group
 // (TODO: not implemented, just skips over it)
-UT_Error IE_Imp_WordPerfect_6::_handleStyleGroup()
+UT_Error IE_Imp_WordPerfect::_handleStyleGroup()
 {
    UT_DEBUGMSG(("WordPerfect: Handling a style group\n"));
    X_CheckWordPerfectError(_skipGroup(WP_TOP_STYLE_GROUP));
@@ -482,7 +609,7 @@ UT_Error IE_Imp_WordPerfect_6::_handleStyleGroup()
 
 // handles a tab group
 // (TODO: not implemented, just skips over it)
-UT_Error IE_Imp_WordPerfect_6::_handleTabGroup()
+UT_Error IE_Imp_WordPerfect::_handleTabGroup()
 {
    UT_DEBUGMSG(("WordPerfect: Handling a tab group\n"));
    X_CheckWordPerfectError(_skipGroup(WP_TOP_TAB_GROUP));
@@ -492,7 +619,7 @@ UT_Error IE_Imp_WordPerfect_6::_handleTabGroup()
 
 // handles a tab group
 // (TODO: not implemented, just skips over it)
-UT_Error IE_Imp_WordPerfect_6::_handleFootEndNoteGroup()
+UT_Error IE_Imp_WordPerfect::_handleFootEndNoteGroup()
 {
    UT_DEBUGMSG(("WordPerfect: Handling a foot/endnote group\n"));
    X_CheckWordPerfectError(_skipGroup(WP_TOP_FOOTENDNOTE_GROUP));
@@ -503,7 +630,7 @@ UT_Error IE_Imp_WordPerfect_6::_handleFootEndNoteGroup()
 // handles an attribute byte in wordperfect. if attributeOn is true,
 // turn the attribute on, if attributeOn is false, turn the attribute
 // off.
-UT_Error IE_Imp_WordPerfect_6::_handleAttribute(bool attributeOn)
+UT_Error IE_Imp_WordPerfect::_handleAttribute(bool attributeOn)
 {   
    UT_DEBUGMSG(("WordPerfect: Handling an attribute\n"));
    int readVal = fgetc(m_importFile); // TODO: handle case that we get eof?
@@ -528,7 +655,7 @@ UT_Error IE_Imp_WordPerfect_6::_handleAttribute(bool attributeOn)
 	     break;
 	  }
         
-	X_CheckWordPerfectError(_appendCurrentTextProperties());
+ 	X_CheckWordPerfectError(_appendCurrentTextProperties());
      }
    
    // read the ending byte
@@ -543,17 +670,36 @@ UT_Error IE_Imp_WordPerfect_6::_handleAttribute(bool attributeOn)
    return UT_OK;
 }
 
-// TODO: figure out what this function does, implement it
-// (right now it just skips over it)
-UT_Error IE_Imp_WordPerfect_6::_handleCharacterGroup()
+UT_Error IE_Imp_WordPerfect::_handleCharacterGroup()
 {
    UT_DEBUGMSG(("WordPerfect: Handling a character group\n"));
 
+   unsigned char subGroup;
+   UT_uint16 size;
+   unsigned char flags;
+   
+   X_CheckFileReadElementError(fread(&subGroup, sizeof(unsigned char), 1, m_importFile));
+   // variables common to all the different subgroups (although they may be blank)
+   X_CheckFileReadElementError(fread(&size, sizeof(UT_uint16), 1, m_importFile)); // I have no idea WHAT this var. does. but it's there.
+   X_CheckFileReadElementError(fread(&flags, sizeof(unsigned char), 1, m_importFile)); 
+   
+   switch(subGroup)
+     {
+      case WP_CHARACTER_GROUP_FONT_FACE_CHANGE:
+	X_CheckWordPerfectError(_handleFontFaceChange());
+	break;	
+      case WP_CHARACTER_GROUP_FONT_SIZE_CHANGE:
+	X_CheckWordPerfectError(_handleFontSizeChange());
+	break;
+      default:
+	break;
+     }
+			       
    X_CheckWordPerfectError(_skipGroup(WP_TOP_CHARACTER_GROUP));
    return UT_OK;
 }
 
-UT_Error IE_Imp_WordPerfect_6::_handleExtendedCharacter()
+UT_Error IE_Imp_WordPerfect::_handleExtendedCharacter()
 {
    UT_DEBUGMSG(("WordPerfect: Handling an extended character\n"));
 
@@ -567,10 +713,14 @@ UT_Error IE_Imp_WordPerfect_6::_handleExtendedCharacter()
      {
 	// TODO: hack, hack, hack
 	// find out how to reliably map ALL characters between character sets and extended characters
-	if( character == 28 && characterSet == 4 )
+	if(character == 28 && characterSet == 4)
 	  wc = 39; // character: '
+	else if((character == 31 || character == 32) && characterSet == 4)
+	  {
+	     wc = 34; // character: "
+	  }	
 	else
-	  wc = m_Mbtowc.mbtowc(wc, ' ');
+	  wc = 0; // whitespace
    
 	m_textBuf.append( (UT_uint16 *)&wc, 1);
      }
@@ -582,7 +732,67 @@ UT_Error IE_Imp_WordPerfect_6::_handleExtendedCharacter()
    return UT_OK;
 }
 
-UT_Error IE_Imp_WordPerfect_6::_handleUndo()
+UT_Error IE_Imp_WordPerfect::_handleFontFaceChange()
+{
+   UT_DEBUGMSG(("WordPerfect: Handling a Font Face Change\n"));
+   
+   unsigned char numPIDs;
+   UT_uint16 fontDescriptorPID; 
+   UT_uint16 nonDeletableInfoSize;
+   UT_uint16 oldMatchedPointSize;
+   UT_uint16 hash;
+   UT_uint16 matchedFontIndex;
+   UT_uint16 matchedFontPointSize;
+   
+   X_CheckFileReadElementError(fread(&numPIDs, sizeof(unsigned char), 1, m_importFile));
+   X_CheckFileReadElementError(fread(&fontDescriptorPID, sizeof(UT_uint16), 1, m_importFile));
+   X_CheckFileReadElementError(fread(&nonDeletableInfoSize, sizeof(UT_uint16), 1, m_importFile));
+   X_CheckFileReadElementError(fread(&oldMatchedPointSize, sizeof(UT_uint16), 1, m_importFile));
+   X_CheckFileReadElementError(fread(&hash, sizeof(UT_uint16), 1, m_importFile));
+   X_CheckFileReadElementError(fread(&matchedFontIndex, sizeof(UT_uint16), 1, m_importFile));
+   X_CheckFileReadElementError(fread(&matchedFontPointSize, sizeof(UT_uint16), 1, m_importFile));
+   
+   UT_DEBUGMSG(("WordPerfect: Got this font face change info: (num PIDS: %i, font descriptor PID: %i, old matched point size: %i, hash: %i, matched font index: %i, matched font point size: %i)\n",
+		(int) numPIDs, (int) fontDescriptorPID, (int) oldMatchedPointSize, (int) hash, (int) matchedFontIndex, (int) matchedFontPointSize));
+
+   m_textAttributes.m_fontSize = (UT_uint16) rint((double)((((float)matchedFontPointSize)/100.0f)*2.0f)); // fixme: ghastly magic numbers;
+   X_CheckWordPerfectError(_flushText());
+   X_CheckWordPerfectError(_appendCurrentTextProperties());
+
+   return UT_OK;
+}
+
+UT_Error IE_Imp_WordPerfect::_handleFontSizeChange()
+{
+   UT_DEBUGMSG(("WordPerfect: Handling a Font Size Change\n"));
+   
+   unsigned char numPIDs;
+   UT_uint16 oldDesiredDescriptorPID; 
+   UT_uint16 nonDeletableInfoSize;
+   UT_uint16 desiredPointSize;
+   UT_uint16 hash;
+   UT_uint16 matchedFontIndex;
+   UT_uint16 matchedFontPointSize;
+   
+   X_CheckFileReadElementError(fread(&numPIDs, sizeof(unsigned char), 1, m_importFile));
+   X_CheckFileReadElementError(fread(&oldDesiredDescriptorPID, sizeof(UT_uint16), 1, m_importFile));
+   X_CheckFileReadElementError(fread(&nonDeletableInfoSize, sizeof(UT_uint16), 1, m_importFile));
+   X_CheckFileReadElementError(fread(&desiredPointSize, sizeof(UT_uint16), 1, m_importFile));
+   X_CheckFileReadElementError(fread(&hash, sizeof(UT_uint16), 1, m_importFile));
+   X_CheckFileReadElementError(fread(&matchedFontIndex, sizeof(UT_uint16), 1, m_importFile));
+   X_CheckFileReadElementError(fread(&matchedFontPointSize, sizeof(UT_uint16), 1, m_importFile));
+   
+   UT_DEBUGMSG(("WordPerfect: Got this font size change info: (num PIDS: %i, old typeface PID: %i, desired point size: %i, hash: %i, matched font index: %i, matched font point size: %i)\n",
+		(int) numPIDs, (int) oldDesiredDescriptorPID, (int) desiredPointSize, (int) hash, (int) matchedFontIndex, (int) matchedFontPointSize));
+   
+   m_textAttributes.m_fontSize = (UT_uint16) rint((double)((((float)desiredPointSize)/100.0f)*2.0f)); // fixme: ghastly magic numbers;
+   X_CheckWordPerfectError(_flushText());
+   X_CheckWordPerfectError(_appendCurrentTextProperties());
+   
+   return UT_OK;
+}
+
+UT_Error IE_Imp_WordPerfect::_handleUndo()
 {
    // this function isn't very well documented and could very well be buggy
    // it is based off of my interpretation of a single test file
@@ -609,13 +819,12 @@ UT_Error IE_Imp_WordPerfect_6::_handleUndo()
    return UT_OK;
 }
 
-UT_Error IE_Imp_WordPerfect_6::_handleParagraphGroupJustification()
+UT_Error IE_Imp_WordPerfect::_handleParagraphGroupJustification()
 {
    UT_DEBUGMSG(("WordPerfect: Handling a paragraph group's justification\n"));
-
-   int paragraphJustification;
-   paragraphJustification = fgetc(m_importFile);
-   X_CheckFileError(paragraphJustification);
+ 
+   unsigned char paragraphJustification;
+   X_CheckFileReadElementError(fread(&paragraphJustification, sizeof(unsigned char), 1, m_importFile));
 
    if(!m_undoOn)
      {	
@@ -640,7 +849,7 @@ UT_Error IE_Imp_WordPerfect_6::_handleParagraphGroupJustification()
 	     m_paragraphProperties.m_justificationMode = WordPerfectParagraphProperties::reserved;
 	     break;
 	  }
-	UT_DEBUGMSG(("Paragraph Justification is now: %i\n", paragraphJustification));
+    	UT_DEBUGMSG(("WordPerfect: Paragraph Justification is now: %i\n", paragraphJustification));
      }
    
    return UT_OK;
@@ -650,7 +859,7 @@ UT_Error IE_Imp_WordPerfect_6::_handleParagraphGroupJustification()
 // skips over a group (sequences of bytes which begin with a value and end with a value) of
 // bytes until we hit the end byte. This may be useful either for skipping entire groups
 // outright or, more practically, skipping over garbage contained in the remainder of a group
-UT_Error IE_Imp_WordPerfect_6::_skipGroup(int groupByte)
+UT_Error IE_Imp_WordPerfect::_skipGroup(int groupByte)
 {
    UT_DEBUGMSG(("WordPerfect: Skipping a group\n"));
    
@@ -668,7 +877,7 @@ UT_Error IE_Imp_WordPerfect_6::_skipGroup(int groupByte)
 
 // insert the text in the current textbuf to the document, taking its
 // style into account
-UT_Error IE_Imp_WordPerfect_6::_flushText()
+UT_Error IE_Imp_WordPerfect::_flushText()
 {
    UT_DEBUGMSG(("WordPerfect: Flushing Text\n"));
    	
@@ -688,12 +897,13 @@ UT_Error IE_Imp_WordPerfect_6::_flushText()
    return UT_OK;
 }
 
-UT_Error IE_Imp_WordPerfect_6::_appendCurrentTextProperties()
+UT_Error IE_Imp_WordPerfect::_appendCurrentTextProperties()
 {
    UT_DEBUGMSG(("WordPerfect: Appending current text properties\n"));
    
    XML_Char* pProps = "props";
    XML_Char propBuffer[1024];	//TODO is this big enough?  better to make it a member and stop running all over the stack
+   XML_Char tempBuffer[128];
    propBuffer[0] = 0;
    
    // bold 418
@@ -720,7 +930,9 @@ UT_Error IE_Imp_WordPerfect_6::_appendCurrentTextProperties()
 	decors = "none";
      }
    strcat(propBuffer, decors.c_str());
-
+   
+   sprintf(tempBuffer, "; font-size:%spt", std_size_string((float)m_textAttributes.m_fontSize));
+   strcat(propBuffer, tempBuffer);
    
    UT_DEBUGMSG(("Appending Format: %s\n", propBuffer));
    const XML_Char* propsArray[3];
@@ -733,7 +945,7 @@ UT_Error IE_Imp_WordPerfect_6::_appendCurrentTextProperties()
    return UT_OK;
 }
 
-UT_Error IE_Imp_WordPerfect_6::_appendCurrentParagraphProperties()
+UT_Error IE_Imp_WordPerfect::_appendCurrentParagraphProperties()
 {
    UT_DEBUGMSG(("WordPerfect: Appending Paragraph Properties\n"));
 

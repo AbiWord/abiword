@@ -56,7 +56,7 @@
 #include "ie_imp_XSL-FO.h"
 #include "ie_imp_Applix.h"
 #include "ie_imp_ISCII.h"
-#include "ie_imp_WordPerfect_6.h"
+#include "ie_imp_WordPerfect.h"
 #include "ie_imp_KWord_1.h"
 
 
@@ -85,7 +85,7 @@ void IE_ImpExp_RegisterXP ()
 	IE_Imp::registerImporter(new IE_Imp_Text_Sniffer ());
 	IE_Imp::registerImporter(new IE_Imp_EncodedText_Sniffer ());
 	IE_Imp::registerImporter(new IE_Imp_WML_Sniffer ());
-	IE_Imp::registerImporter(new IE_Imp_WordPerfect_6_Sniffer ());
+	IE_Imp::registerImporter(new IE_Imp_WordPerfect_Sniffer ());
 	IE_Imp::registerImporter(new IE_Imp_GZipAbiWord_Sniffer ());
 	
 	IE_Exp::registerExporter(new IE_Exp_AbiWord_1_Sniffer ());

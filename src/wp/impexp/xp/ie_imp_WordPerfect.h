@@ -19,8 +19,8 @@
  */
 
 
-#ifndef IE_IMP_WP6_H
-#define IE_IMP_WP6_H
+#ifndef IE_IMP_WP_H
+#define IE_IMP_WP_H
 
 #include <stdio.h>
 #include "ie_imp.h"
@@ -29,6 +29,24 @@
 #include "pd_Document.h"
 
 // The importer/reader for WordPerfect 6 documents.
+
+#define WP_WORDPERFECT678_EXPECTED_MAJOR_VERSION 2
+#define WP_WORDPERFECT_DOCUMENT_FILE_TYPE 10
+#define WP_FONT_TABLE_SIZE_GUESS 10
+
+#define WP_HEADER_PRODUCT_TYPE_OFFSET 8
+#define WP_HEADER_FILE_TYPE_OFFSET 9
+#define WP_HEADER_MAJOR_VERSION_OFFSET 10
+#define WP_HEADER_MINOR_VERSION_OFFSET 11
+#define WP_HEADER_ENCRYPTION_POSITION 12
+#define WP_HEADER_DOCUMENT_POINTER_POSITION 4
+#define WP_HEADER_DOCUMENT_SIZE_POSITION 20
+#define WP_HEADER_INDEX_HEADER_POSITION 14
+
+#define WP_INDEX_HEADER_NUM_INDICES_POSITION 2
+#define WP_INDEX_HEADER_INDICES_POSITION 14
+#define WP_INDEX_HEADER_FONT_TYPEFACE_DESCRIPTOR_POOL 32
+#define WP_INDEX_HEADER_DESIRED_FONT_DESCRIPTOR_POOL 85
 
 #define WP_TOP_SOFT_SPACE 128
 #define WP_TOP_HARD_HYPHEN 132 // (0x84)
@@ -48,6 +66,9 @@
 #define WP_TOP_ATTRIBUTE_ON 242 // (0xf2)
 #define WP_TOP_ATTRIBUTE_OFF 243 // (0xf3)
 
+#define WP_CHARACTER_GROUP_FONT_FACE_CHANGE 26 // 0x1a
+#define WP_CHARACTER_GROUP_FONT_SIZE_CHANGE 27 // 0x1b
+
 #define WP_PARAGRAPH_GROUP_JUSTIFICATION 5 // 0x05
 #define WP_PARAGRAPH_GROUP_JUSTIFICATION_LEFT 0
 #define WP_PARAGRAPH_GROUP_JUSTIFICATION_FULL 1
@@ -60,6 +81,7 @@
 struct WordPerfectTextAttributes
 {
    WordPerfectTextAttributes();
+   // text attributes
    bool	m_extraLarge;
    bool	m_veryLarge;
    bool	m_large;
@@ -76,13 +98,39 @@ struct WordPerfectTextAttributes
    bool m_underLine;
    bool m_smallCaps;
    bool m_Blink;
-   bool m_reverseVideo;     
+   bool m_reverseVideo;
+   // font stuff
+   UT_uint16 m_fontSize;
+};
+
+struct WordPerfectFontDescriptor
+{
+   int m_packetID;
+
+   UT_uint16 m_characterWidth;
+   UT_uint16 m_ascenderHeight;
+   UT_uint16 m_xHeight;
+   UT_uint16 m_descenderHeight;
+   UT_uint16 m_italicsAdjust;
+   UT_Byte m_primaryFamilyId; // family id's are supposed to be one unified element, but I split them up to ease parsing
+   UT_Byte m_primaryFamilyMemberId;
+   
+   UT_Byte m_scriptingSystem;
+   UT_Byte m_primaryCharacterSet;
+   UT_Byte m_width;
+   UT_Byte m_weight; 
+   UT_Byte m_attributes;
+   UT_Byte m_generalCharacteristics;
+   UT_Byte m_classification;
+   UT_Byte m_fill; // fill byte
+   UT_Byte m_fontType;
+   UT_Byte m_fontSourceFileType;
+   char *m_fontName; // is this platform indep?
 };
 
 // Paragraph Properties (set using group WP_TOP_PARAGrAPH_GROUP)
 struct WordPerfectParagraphProperties
 {
-
    WordPerfectParagraphProperties();
    //float m_lineHeight; // originally in "signed WPU" 0.0=default
    unsigned int m_lineSpacing; // d301
@@ -113,14 +161,14 @@ struct WordPerfectParagraphProperties
    // (TODO: paragraph character count) 0xd31a
 };
 
-class IE_Imp_WordPerfect_6_Sniffer : public IE_ImpSniffer
+class IE_Imp_WordPerfect_Sniffer : public IE_ImpSniffer
 {
 	friend class IE_Imp;
-	friend class IE_Imp_WordPerfect_6;
+	friend class IE_Imp_WordPerfect;
 
 public:
-	IE_Imp_WordPerfect_6_Sniffer() {}
-	virtual ~IE_Imp_WordPerfect_6_Sniffer() {}
+	IE_Imp_WordPerfect_Sniffer() {}
+	virtual ~IE_Imp_WordPerfect_Sniffer() {}
 
 	virtual bool recognizeContents (const char * szBuf,
 									UT_uint32 iNumbytes);
@@ -132,11 +180,11 @@ public:
 										IE_Imp ** ppie);
 };
 
-class IE_Imp_WordPerfect_6 : public IE_Imp
+class IE_Imp_WordPerfect : public IE_Imp
 {
 public:
-	IE_Imp_WordPerfect_6(PD_Document * pDocument);
-	~IE_Imp_WordPerfect_6() {}
+	IE_Imp_WordPerfect(PD_Document * pDocument);
+	~IE_Imp_WordPerfect(); 
 
 	virtual UT_Error	importFile(const char * szFilename);
 	virtual void		pasteFromBuffer(PD_DocumentRange * pDocRange,
@@ -145,7 +193,10 @@ public:
    FILE *m_importFile;
    UT_uint32 m_documentEnd;
    UT_uint32 m_documentPointer;
+   UT_uint16 m_indexPointer;
    UT_Error _parseHeader();
+   UT_Error _parseIndexHeader();
+   UT_Error _parseFontDescriptorPacket(int packetID, UT_uint32 dataPacketSize, UT_uint32 dataPointer);
    UT_Error _parseDocument();
    UT_Error _handleHardEndOfLine();
    UT_Error _handleEndOfLineGroup();
@@ -157,6 +208,8 @@ public:
    UT_Error _handleTabGroup();
    UT_Error _handleCharacterGroup();
    UT_Error _handleFootEndNoteGroup();
+   UT_Error _handleFontFaceChange();
+   UT_Error _handleFontSizeChange();
    UT_Error _handleExtendedCharacter();
    UT_Error _handleUndo();
    UT_Error _handleAttribute(bool attributeOn);
@@ -171,8 +224,9 @@ public:
    bool m_firstParagraph; 
    UT_Mbtowc m_Mbtowc;
    UT_GrowBuf m_textBuf;
+   UT_Vector m_fontDescriptorList;
    WordPerfectTextAttributes m_textAttributes;
    WordPerfectParagraphProperties m_paragraphProperties;
 };
 
-#endif /* IE_IMP_WP6_H */
+#endif /* IE_IMP_WP_H */
