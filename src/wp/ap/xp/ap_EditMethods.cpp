@@ -1843,8 +1843,6 @@ UT_Error fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 	UT_DEBUGMSG(("fileOpen: loading [%s]\n",pNewFile));
 	XAP_App * pApp = pFrame->getApp();
 	UT_ASSERT(pApp);
-	XAP_Prefs * pPrefs = pApp->getPrefs();
-	UT_ASSERT(pPrefs);
 
 	XAP_Frame * pNewFrame = NULL;
 	// not needed bool bRes = false;
@@ -1866,7 +1864,6 @@ UT_Error fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 			if (!errorCode)
 			{
 				pNewFrame->show();
-				pPrefs->addRecent(pNewFile);
 			}
 			else
 			{
@@ -1920,7 +1917,6 @@ UT_Error fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 		if (!errorCode)
 		{
 			pNewFrame->show();
-			pPrefs->addRecent(pNewFile);
 		}
 #if 0
 		else
@@ -1966,7 +1962,6 @@ UT_Error fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 	if (!errorCode)
 	{
 		pFrame->show();
-		pPrefs->addRecent(pNewFile);
 	}
 	else
 	{
@@ -2161,9 +2156,6 @@ s_actuallySaveAs(AV_View * pAV_View, bool overwriteName)
 	// update the MRU list
 	XAP_App * pApp = pFrame->getApp();
 	UT_ASSERT(pApp);
-	XAP_Prefs * pPrefs = pApp->getPrefs();
-	UT_ASSERT(pPrefs);
-	pPrefs->addRecent(pNewFile);
 	free(pNewFile);
 
 	if (pFrame->getViewNumber() > 0)
