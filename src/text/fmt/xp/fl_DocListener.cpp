@@ -34,6 +34,7 @@
 #include "fl_SectionLayout.h"
 #include "fl_ColumnSetLayout.h"
 #include "fl_ColumnLayout.h"
+#include "fl_BlockLayout.h"
 #include "pd_Document.h"
 
 #include "ut_debugmsg.h"
@@ -146,8 +147,18 @@ UT_Bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 			int countSections = m_pLayout->m_vecSectionLayouts.getItemCount();
 			UT_ASSERT(countSections > 0);
 			FL_SectionLayout* pSL = (FL_SectionLayout*) m_pLayout->m_vecSectionLayouts.getNthItem(countSections - 1);
+			UT_ASSERT(pSL);
 
-			// TODO -- append a new BlockLayout to that SectionLayout
+			// append a new BlockLayout to that SectionLayout
+			FL_BlockLayout*	pBL = pSL->appendBlock(sdh);
+			if (!pBL)
+			{
+				UT_DEBUGMSG(("no memory for BlockLayout"));
+				return UT_FALSE;
+			}
+			pBL->setPTvars(pcr->getVarSetIndex(),pcr->getIndexAP());
+
+			psfh = (PL_StruxFmtHandle *)pBL;
 		}
 		break;
 			

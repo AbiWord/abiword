@@ -98,6 +98,8 @@ class PP_Property;
 */
 class FL_BlockLayout : public fl_Layout
 {
+	friend class fl_DocListener;
+
 public:
 	FL_BlockLayout(PL_StruxDocHandle sdh, FB_LineBreaker*, FL_BlockLayout*, FL_SectionLayout*);
 	~FL_BlockLayout();

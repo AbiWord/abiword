@@ -30,10 +30,11 @@
 #include "fl_Layout.h"
 
 class FL_DocLayout;
+class FL_ColumnSetLayout;
+class FL_BlockLayout;
 class FB_LineBreaker;
 class FP_Column;
 class PD_Document;
-class FL_ColumnSetLayout;
 class PP_AttrProp;
 
 /*
@@ -42,6 +43,8 @@ class PP_AttrProp;
 */
 class FL_SectionLayout : public fl_Layout
 {
+	friend class fl_DocListener;
+
 public:
 	FL_SectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh);
 	~FL_SectionLayout();
@@ -53,13 +56,20 @@ public:
 
 	void				setColumnSetLayout(FL_ColumnSetLayout * pcsl);
 	FL_ColumnSetLayout*	getColumnSetLayout(void) const;
-	
+
+	FL_BlockLayout *	getFirstBlock(void) const;
+	FL_BlockLayout *	appendBlock(PL_StruxDocHandle sdh);
+
 protected:
 	void				_purgeLayout();
+	FB_LineBreaker *	_getLineBreaker(void);
 
 	FL_DocLayout*		m_pLayout;
 	FB_LineBreaker*		m_pLB;
 	FL_ColumnSetLayout*	m_pColumnSetLayout;
+
+	FL_BlockLayout*		m_pFirstBlock;
+	FL_BlockLayout*		m_pLastBlock;
 	
 	UT_Vector			m_vecSlices;
 	UT_Vector			m_vecColumns;

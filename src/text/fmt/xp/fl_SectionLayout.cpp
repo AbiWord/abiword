@@ -48,6 +48,8 @@ FL_SectionLayout::FL_SectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh)
 	m_pDoc = pLayout->getDocument();
 	m_pLB = NULL;
 	m_pColumnSetLayout = NULL;
+	m_pFirstBlock = NULL;
+	m_pLastBlock = NULL;
 }
 
 fp_ColumnInfo::fp_ColumnInfo(FP_Column* _pCol, UT_sint32 _iXoff, UT_sint32 _iYoff)
@@ -152,13 +154,13 @@ FP_Column* FL_SectionLayout::getNewColumn()
 
 int FL_SectionLayout::format()
 {
+#ifdef BUFFER	// format
 	// TODO -- why recreate this for each format call?
 	SimpleLineBreaker* slb = new SimpleLineBreaker();
 
 	// remember this so we can delete it later
 	m_pLB = slb;
 
-#ifdef BUFFER	// format
 	UT_uint32 iSectionStart = m_pBuffer->getMarkerPosition(m_sdh);
 	
 	UT_UCSChar data;
@@ -325,3 +327,41 @@ FL_ColumnSetLayout * FL_SectionLayout::getColumnSetLayout(void) const
 	return m_pColumnSetLayout;
 }
 
+FL_BlockLayout * FL_SectionLayout::getFirstBlock(void) const
+{
+	return m_pFirstBlock;
+}
+
+FL_BlockLayout * FL_SectionLayout::appendBlock(PL_StruxDocHandle sdh)
+{
+	FL_BlockLayout*	pBL = new FL_BlockLayout(sdh, _getLineBreaker(), m_pLastBlock, this);
+	if (!pBL)
+		return pBL;
+
+	if (!m_pLastBlock)
+	{
+		UT_ASSERT(!m_pFirstBlock);
+		m_pFirstBlock = pBL;
+		m_pLastBlock = pBL;
+	}
+	else
+	{
+		m_pLastBlock = pBL;
+	}
+
+	return pBL;
+}
+
+FB_LineBreaker * FL_SectionLayout::_getLineBreaker(void)
+{
+	if (!m_pLB)
+	{
+		SimpleLineBreaker* slb = new SimpleLineBreaker();
+
+		m_pLB = slb;
+	}
+
+	UT_ASSERT(m_pLB);
+
+	return m_pLB;
+}
