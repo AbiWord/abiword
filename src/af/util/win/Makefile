@@ -1,7 +1,7 @@
 #! gmake
 
 ## AbiSource Program Utilities
-## Copyright (C) 1998 AbiSource, Inc.
+## Copyright (C) 1998-2000 AbiSource, Inc.
 ##
 ## This program is free software; you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License
@@ -23,10 +23,13 @@ ABI_ROOT:=$(shell pwd)/../../../..
 include $(ABI_ROOT)/src/config/abi_defs.mk
 
 CPPSRCS=		ut_debugmsg.cpp		\
+			ut_iconv.cpp		\
 			ut_Win32OS.cpp		\
 			ut_Win32String.cpp	\
 			ut_Win32Timer.cpp	\
 			ut_Xpm2Bmp.cpp
+
+INCLUDES=		-I$(ABI_XX_ROOT)/../libiconv/include
 
 TARGETS=		$(OBJS)
 

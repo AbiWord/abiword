@@ -167,31 +167,31 @@ ev_Win32Keyboard::ev_Win32Keyboard(EV_EditEventMapper * pEEM)
 	: EV_Keyboard(pEEM)
 {
 	m_hKeyboardLayout = 0;
-	m_iconv = (iconv_t)-1;
+	m_iconv = (UT_iconv_t)-1;
 	remapKeyboard(GetKeyboardLayout(0));
 }
 
 ev_Win32Keyboard::~ev_Win32Keyboard()
 {
-	if( m_iconv != (iconv_t)-1 )
-		iconv_close( m_iconv );
+	if( m_iconv != (UT_iconv_t)-1 )
+		UT_iconv_close( m_iconv );
 }
 
 void ev_Win32Keyboard::remapKeyboard(HKL hKeyboardLayout)
 {
 	char  szCodePage[10];
 
-	if( m_iconv != (iconv_t)-1 )
+	if( m_iconv != (UT_iconv_t)-1 )
 	{
-		iconv_close( m_iconv );
-		m_iconv = (iconv_t)-1;
+		UT_iconv_close( m_iconv );
+		m_iconv = (UT_iconv_t)-1;
 	}
 	if( hKeyboardLayout != 0 )
 	{
 		strcpy( szCodePage, "CP" );
 		if( GetLocaleInfo( LOWORD( hKeyboardLayout ), LOCALE_IDEFAULTANSICODEPAGE, &szCodePage[2], sizeof( szCodePage ) / sizeof( szCodePage[0] ) - 2 ) )
 		{
-			m_iconv = iconv_open( "UCS-2-INTERNAL", szCodePage );
+			m_iconv = UT_iconv_open( "UCS-2-INTERNAL", szCodePage );
 		}
 
 		m_hKeyboardLayout = hKeyboardLayout;
@@ -511,7 +511,7 @@ void ev_Win32Keyboard::_emitChar(AV_View * pView,
 	//			 (ems&EV_EMS_ALT)?"alt":""));
 
 	UT_uint16 charData;
-	if( m_iconv != (iconv_t)-1 )
+	if( m_iconv != (UT_iconv_t)-1 )
 	{
 		// convert to 8bit string and null terminate
 		size_t len_in, len_out;
@@ -520,7 +520,7 @@ void ev_Win32Keyboard::_emitChar(AV_View * pView,
 
 		len_in = 1;
 		len_out = 2;
-		iconv( m_iconv, &In, &len_in, &Out, &len_out );
+		UT_iconv( m_iconv, &In, &len_in, &Out, &len_out );
 	}
 	else
 		charData = b;

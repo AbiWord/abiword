@@ -25,7 +25,7 @@
 
 #include "ev_Keyboard.h"
 #include "ev_EditBits.h"
-#include "iconv.h"
+#include "ut_iconv.h"
 
 class AV_View;
 
@@ -48,7 +48,7 @@ protected:
 								  HWND hWnd, UINT iMsg, WPARAM nVirtKey, LPARAM keyData,
 								  BYTE b, EV_EditModifierState ems);
 	HKL					m_hKeyboardLayout;
-	iconv_t				m_iconv; /* Selected translation to Unicode */
+	UT_iconv_t			m_iconv; /* Selected translation to Unicode */
 };
 
 #endif /* EV_WIN32KEYBOARD_H */
