@@ -95,6 +95,22 @@
 				}
 				UT_ASSERT(bFound);
 			};
+		void removeItem(XAP_Menu_Id id)
+			{
+				UT_uint32 i = 0;
+				bool bFound = false;
+				for(i=0; i< m_Vec_lt.getItemCount(); i++)
+				{
+					_lt * plt = (_lt *) m_Vec_lt.getNthItem(i);
+					if(plt->m_id == id)
+					{
+						m_Vec_lt.deleteNthItem(i);
+						delete plt;
+						bFound = true;
+					}
+				}
+				UT_ASSERT(bFound);
+			};
 		void setNthIDFlags(UT_uint32 n, XAP_Menu_Id id,EV_Menu_LayoutFlags flags)
 			{
 				_lt * plt = (_lt *) m_Vec_lt.getNthItem(n);
@@ -341,11 +357,53 @@ XAP_Menu_Id XAP_Menu_Factory::addNewMenuBefore(const char * szMenu,
 	return 0;
 }
 
+/*!
+ * Remove the menu item named szNuke from the menu labelled szMenu in the
+ * Language set szLanguage
+ */
 XAP_Menu_Id XAP_Menu_Factory::removeMenuItem(const char * szMenu,
 									  const char * szLanguage,
 											 const char * szNuke)
 {
-	return 0;
+	UT_ASSERT(szMenu && *szMenu);		// no defaults
+	UT_uint32 k = 0;
+	bool bFoundMenu = false;
+	_vectt * pVectt = NULL;
+	for (k=0; (k< m_vecTT.getItemCount()) && !bFoundMenu; k++)
+	{
+		pVectt = (_vectt *)m_vecTT.getNthItem(k);
+		bFoundMenu = (UT_stricmp(szMenu,pVectt->m_name)==0);
+	}
+	if(!bFoundMenu)
+	{
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return 0;
+	}
+	
+// next we need to find the id of the label name
+//
+// OK now search for this label
+//
+	UT_String Nuke = szNuke;
+	XAP_Menu_Id nukeID = EV_searchMenuLabel( m_pLabelSet, Nuke);
+	if(nukeID == 0)
+	{
+		if(m_pEnglishLabelSet == NULL)
+		{
+			buildBuiltInMenuLabelSet( m_pEnglishLabelSet);
+		}
+		nukeID = EV_searchMenuLabel( m_pEnglishLabelSet, Nuke);
+		if(nukeID == 0)
+		{	
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			return 0;
+		}
+	}
+//
+// Got the id. Now remove it.
+//
+	pVectt->removeItem(nukeID);
+	return nukeID;
 }
 
 void XAP_Menu_Factory::resetMenusToDefault(void)
