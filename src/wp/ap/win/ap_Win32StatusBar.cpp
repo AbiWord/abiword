@@ -136,11 +136,11 @@ void ap_usb_TextListener::notify()
 	AP_StatusBarField_TextInfo * textInfo = ((AP_StatusBarField_TextInfo *)m_pStatusBarField);
 
 	char *pText = UT_convert (textInfo->getBuf().utf8_str(),
-				  textInfo->getBuf().length();,
-				  "UTF-8",
-				  XAP_EncodingManager::get_instance()->getNative8BitEncodingName(),
-			  	  &uRead, &uWrite);
-
+							  textInfo->getBuf().length(),
+							  "UTF-8",
+							  XAP_EncodingManager::get_instance()->getNative8BitEncodingName(),
+							  &uRead, &uWrite);
+	
 	SendMessage(m_hWnd, SB_SETTEXT, m_nID, (LPARAM)  pText);
 	FREEP(pText);	
 
