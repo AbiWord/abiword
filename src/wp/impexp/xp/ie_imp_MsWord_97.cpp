@@ -1462,44 +1462,195 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 		to see what information we can get from the lists and how, since the MS
 		documentation is very poor
 	*/
-	UT_DEBUGMSG(("is this a list?: ilvl %d, ilfo %d\n",apap->ilvl,apap->ilfo));  //ilvl is the list level
-	//level=
-	//sprintf(propBuffer, "%d", apap->ilvl);
-	LVL * myLVL;
-	LFO * myLFO;
-	LST * myLST;
-	LSTF * myLSTF;
-	LVLF * myLVLF;
-	PAPX * myPAPX;
-	CHPX * myCHPX;
 
 	if ( apap->ilfo )
 	{
 		// all lists have ilfo set
-		//sprintf(propBuffer, "%d", apap->ilfo);
+		UT_DEBUGMSG(("list: ilvl %d, ilfo %d\n",apap->ilvl,apap->ilfo));  //ilvl is the list level
+		LVL * myLVL = NULL;
+		LFO * myLFO = NULL;
+		LST * myLST = NULL;
+		LSTF * myLSTF = NULL;
+		LVLF * myLVLF = NULL;
+		LFOLVL * myLFOLVL = NULL;
 
-		// for the time being we will ignore any format overrides, and will deal
-		// only with the basic information found in the LST
+		UT_sint32 myStartAt = -1;
+		U8 * mygPAPX = NULL;
+		U8 * mygCHPX = NULL;
+		XCHAR * myNumberStr = NULL;
+		UT_sint32 myNumberStr_count = 0;
+		UT_uint32 mygPAPX_count = 0, mygCHPX_count = 0;
+
+		PAPX myPAPX;
+		CHPX myCHPX;
+
+		UT_uint32 myListId;
+
+		// first, get the LFO, and then find the lfovl for this paragraph
 		myLFO = &ps->lfo[apap->ilfo - 1];
-		UT_uint32 i = 0;
-		xxx_UT_DEBUGMSG(("list: number of LSTs %d, my lsid %d\n", ps->noofLST,myLFO->lsid));
-		while(i < ps->noofLST && ps->lst[i++].lstf.lsid != myLFO->lsid)
-			UT_DEBUGMSG(("list: lsid in LST %d\n", ps->lst[i-1].lstf.lsid));
 
-		if(ps->lst[--i].lstf.lsid != myLFO->lsid)
+		UT_uint32 i = 0, j = 0, k = 0;
+		while(i < apap->ilfo - 1 && i < ps->nolfo)
 		{
-			UT_DEBUGMSG(("error: could not locate LST entry\n"));
-			goto list_error;
+			j += ps->lfo[i].clfolvl;
+			i++;
 		}
 
-		myLST = &ps->lst[i];
-		myLVL = &myLST->lvl[apap->ilvl];
-		myLVLF = &myLVL->lvlf;
-		UT_DEBUGMSG(("list: lvlf: iStartAt %d\n",myLVLF->iStartAt));
+		// remember how many overrides are there for this record
+		k = ps->lfo[i].clfolvl;
 
-		// now that we have the LVLF, let's see what else is says
+		// if there are any overrides, then see if one of them applies to this level
+		if(k)
+		{
+			i = 0;
+			while(i < k && ps->lfolvl[j].ilvl != apap->ilvl)
+			{
+				j++;
+				i++;
+			}
+
+			if(ps->lfolvl[--j].ilvl != apap->ilvl)
+			{
+				UT_DEBUGMSG(("list: no LFOLVL found for this level (1)\n"));
+				myLFOLVL = NULL;
+			}
+			else
+			{
+				myLFOLVL = &ps->lfolvl[j];
+				UT_DEBUGMSG(("list: lfovl: iStartAt %d, fStartAt", myLFOLVL->iStartAt,myLFOLVL->fStartAt,myLFOLVL->fFormatting));
+				if(!myLFOLVL->fFormatting && myLFOLVL->fStartAt)
+				myStartAt = myLFOLVL->iStartAt;
+			}
+		}
+		else
+		{
+			UT_DEBUGMSG(("list: no LFOLVL found for this level (2)\n"));
+			myLFOLVL = NULL;
+		}
+
+		// now that we might have the LFOLVL, let's see if we should use the LVL from the LFO
+		bool bNeedLST_LVL = (!myLFOLVL || !myLFOLVL->fStartAt || !myLFOLVL->fFormatting);
+		bool bLST_LVL_format = true;
+		if(myLFOLVL)
+		{
+			// this branch has not been debugged, as I have not been able to create a
+			// Word document that would use the LFO LVL
+			UT_DEBUGMSG(("list: using the LVL from LFO\n"));
+			myListId = myLFOLVL->iStartAt;
+			i = 0;
+			xxx_UT_DEBUGMSG(("list: number of LSTs %d, my lsid %d\n", ps->noofLST,myListId));
+			while(i < ps->noofLST && ps->lst[i].lstf.lsid != myListId)
+			{
+				i++;
+				UT_DEBUGMSG(("list: lsid in LST %d\n", ps->lst[i-1].lstf.lsid));
+			}
+
+			if(i == ps->noofLST || ps->lst[i].lstf.lsid != myListId)
+			{
+				UT_DEBUGMSG(("error: could not locate LST entry\n"));
+				goto list_error;
+			}
+
+			myLST = &ps->lst[i];
+			myLVL = &myLST->lvl[apap->ilvl];
+
+			// now we should have the LVL
+			UT_ASSERT(myLVL);
+
+			myLVLF = &myLVL->lvlf;
+			UT_ASSERT(myLVLF);
+
+			myStartAt = myLFOLVL->fStartAt ? myLVLF->iStartAt : -1;
+
+			mygPAPX = myLFOLVL->fFormatting ? myLVL->grpprlPapx : NULL;
+			mygPAPX_count = myLFOLVL->fFormatting ? myLVLF->cbGrpprlPapx : 0;
+
+			// not sure about this, the CHPX applies to the number, so it might be
+			// that we should take this if the fStartAt is set -- the docs are not clear
+			mygCHPX = myLFOLVL->fFormatting ? myLVL->grpprlChpx : NULL;
+			mygCHPX_count = myLFOLVL->fFormatting ? myLVLF->cbGrpprlChpx : 0;
+
+			myNumberStr = myLFOLVL->fStartAt ? myLVL->numbertext + 1 : NULL;
+			myNumberStr_count = myLFOLVL->fStartAt ? *(myLVL->numbertext) : 0;
+
+			if(myLFOLVL->fFormatting)
+				bLST_LVL_format = false;
+
+		}
+
+		if(bNeedLST_LVL)
+		{
+			LVL * prevLVL = myLVL;
+			LVLF * prevLVLF = myLVLF;
+			myListId = myLFO->lsid;
+			UT_DEBUGMSG(("list: using the LVL from LST\n"));
+			i = 0;
+			UT_DEBUGMSG(("list: number of LSTs %d, my lsid %d\n", ps->noofLST,myListId));
+			while(i < ps->noofLST && ps->lst[i].lstf.lsid != myListId)
+			{
+				i++;
+				xxx_UT_DEBUGMSG(("list: lsid in LST %d\n", ps->lst[i-1].lstf.lsid));
+			}
+
+			if(i == ps->noofLST || ps->lst[i].lstf.lsid != myListId)
+			{
+				UT_DEBUGMSG(("error: could not locate LST entry\n"));
+				goto list_error;
+			}
+
+			myLST = &ps->lst[i];
+			myLVL = &myLST->lvl[apap->ilvl];
+
+			// now we should have the correct LVL
+			UT_ASSERT(myLVL);
+
+			myLVLF = &myLVL->lvlf;
+			UT_ASSERT(myLVLF);
+
+			// retrieve any stuff we need from here (i.e., only what we did not get from the LFO LVL)
+			myStartAt = myStartAt == -1 ? myLVLF->iStartAt : myStartAt;
+
+			mygPAPX_count = !mygPAPX ? myLVLF->cbGrpprlPapx : mygPAPX_count;
+			mygPAPX = !mygPAPX ? myLVL->grpprlPapx : mygPAPX;
+
+			mygCHPX_count = !mygCHPX ? myLVLF->cbGrpprlChpx : mygCHPX_count;
+			mygCHPX = !mygCHPX ? myLVL->grpprlChpx : mygCHPX;
+
+			myNumberStr_count = !myNumberStr ? *(myLVL->numbertext) : myNumberStr_count;
+			myNumberStr = !myNumberStr ? (myLVL->numbertext + 1) : myNumberStr;
+
+
+			// if there was a valid LFO LVL record that pertained to formatting
+			// then we will set the myLVL and myLVLF variables back to this record
+			// so that it can be used
+			if(!bLST_LVL_format && prevLVL && prevLVLF)
+			{
+				myLVL = prevLVL;
+				myLVLF = prevLVLF;
+			}
+		}
+
+		UT_DEBUGMSG(("list: number text len %d, papx len %d, chpx len%d\n",myNumberStr_count,mygPAPX_count,mygCHPX_count));
+		myPAPX.cb = mygPAPX_count;
+		myPAPX.grpprl = mygPAPX;
+		myPAPX.istd = 4095; // no style
+
+		myCHPX.cbGrpprl = mygCHPX_count;
+		myCHPX.grpprl = mygCHPX;
+		myCHPX.istd = 4095; // no style
+
 		/*
-		   OK, there are  more list numerical formats than the MS documentation list :-)
+		   IMPORTANT now we have the list formatting sutff retrieved; you should use the
+		   members of the myLVL and myLVLF structs to access all of this info, except
+		   for the iStartAt value, where you should use myStartAt, lsid, where myListId
+		   should be used andthe PAPX/CHPX values which are now stored in myPAPX and myCHPX.
+
+		   IMPORTANT the myStartAt value IS NOT the number to be applied to this specific
+		   paragraph, rather it is the number to be applied to the first item in this list
+		   Consequently our code implementing the lists will have to keep track of how many
+		   items in the list and level there have been (apap->ilvl, and myListId)
+
+		   Also, there are	more list numerical formats than the MS documentation states :-)
 		   so here I will put what I found out (latter we will move it to some better place
 		   enum wordListNumberFormat { WLNF_ARABIC = 0,
 									   WLNF_UPPER_ROMAN = 1,
@@ -1510,16 +1661,11 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 									   WLNF_BULLETS = 23  // the actual bullet shape is stored elsewhere
 									 } ;
 		*/
+		UT_DEBUGMSG(("list: id %d \n",myListId));
+		UT_DEBUGMSG(("list: iStartAt %d\n", myStartAt));
 		UT_DEBUGMSG(("list: lvlf: format %d\n",myLVLF->nfc)); // see the comment above for nfc values
-		UT_DEBUGMSG(("list: lvlf: number align	%d\n",myLVLF->jc));
-		/* the following members of the myLVLF struct (see wv.h) might be usefull and have
-		   the following meaning:
-
-		   jc  -- alignment of the number(0 == left, 1 == right, 2 == center)
-		   ixchFollow -- character to follow the number (0 == tab, 1 == space, 2 == nothing)
-
-		   there is of course more stuff we can get, but this is it for the moment
-		*/
+		UT_DEBUGMSG(("list: lvlf: number align %d [0: lft, 1: rght, 2: cntr]\n",myLVLF->jc));
+		UT_DEBUGMSG(("list: lvlf: ixchFollow %d [0:= tab, 1: spc, 2: none]\n",myLVLF->ixchFollow));
 	}
 list_error:
 #endif
@@ -2000,25 +2146,25 @@ typedef enum {
 static MSWord_ImageType s_determineImageType ( Blip * b )
 {
   if ( !b )
-    return MSWord_UnknownImage;
+	return MSWord_UnknownImage;
 
   switch ( b->type )
-    {
-    case msoblipEMF:
-    case msoblipWMF:
-    case msoblipPICT:
-      return MSWord_VectorImage;
+	{
+	case msoblipEMF:
+	case msoblipWMF:
+	case msoblipPICT:
+	  return MSWord_VectorImage;
 
-    case msoblipJPEG:
-    case msoblipPNG:
-    case msoblipDIB:
-      return MSWord_RasterImage;
+	case msoblipJPEG:
+	case msoblipPNG:
+	case msoblipDIB:
+	  return MSWord_RasterImage;
 
-    case msoblipERROR:
-    case msoblipUNKNOWN:
-    default:
-      return MSWord_UnknownImage;
-    }
+	case msoblipERROR:
+	case msoblipUNKNOWN:
+	default:
+	  return MSWord_UnknownImage;
+	}
 }
 
 UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height)
@@ -2036,33 +2182,33 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height)
 
   MSWord_ImageType imgType = s_determineImageType ( b );
 
-    // will load (but not display the images) from http://www.stud.uni-karlsruhe.de/~uhwe/abi/
+	// will load (but not display the images) from http://www.stud.uni-karlsruhe.de/~uhwe/abi/
 
   if ( imgType == MSWord_RasterImage )
-    {
+	{
 #if 0
-      while (EOF != (data = getc((FILE*)(b->blip.bitmap.m_pvBits))))
+	  while (EOF != (data = getc((FILE*)(b->blip.bitmap.m_pvBits))))
 #else
-      while (EOF != (data = getc(((wvStream*)(b->blip.bitmap.m_pvBits))->stream.file_stream)))
+	  while (EOF != (data = getc(((wvStream*)(b->blip.bitmap.m_pvBits))->stream.file_stream)))
 #endif
 	pictData->append((UT_Byte*)&data, 1);
-    }
+	}
   else if ( imgType == MSWord_VectorImage )
-    {
+	{
 #if 0
-      while (EOF != (data = getc((FILE*)(b->blip.metafile.m_pvBits))))
+	  while (EOF != (data = getc((FILE*)(b->blip.metafile.m_pvBits))))
 #else
-      while (EOF != (data = getc(((wvStream*)(b->blip.metafile.m_pvBits))->stream.file_stream)))
+	  while (EOF != (data = getc(((wvStream*)(b->blip.metafile.m_pvBits))->stream.file_stream)))
 #endif
 	pictData->append((UT_Byte*)&data, 1);
-    }
+	}
   else
-    {
-      UT_DEBUGMSG(("UNKNOWN IMAGE TYPE!!"));
-      DELETEP(pictData);
-      FREEP(mimetype);
-      return UT_ERROR;
-    }
+	{
+	  UT_DEBUGMSG(("UNKNOWN IMAGE TYPE!!"));
+	  DELETEP(pictData);
+	  FREEP(mimetype);
+	  return UT_ERROR;
+	}
 
   error = IE_ImpGraphic::constructImporter (pictData, IEGFT_Unknown, &importer);
   if ((error != UT_OK) || !importer)
