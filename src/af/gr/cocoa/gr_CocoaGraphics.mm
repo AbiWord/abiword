@@ -1194,3 +1194,13 @@ float	GR_CocoaGraphics::_getScreenResolution(void)
 	}
 	return fResolution;
 }
+
+
+GR_Graphics *  GR_CocoaGraphics::graphicsAllocator(GR_AllocInfo& info)
+{
+	GR_CocoaAllocInfo & allocator = (GR_CocoaAllocInfo&)info;
+	
+	return new GR_CocoaGraphics(allocator.m_view, allocator.m_app);
+}
+
+

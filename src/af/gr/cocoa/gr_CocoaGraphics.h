@@ -34,11 +34,15 @@ class StNSViewLocker;
 
 class GR_CocoaAllocInfo : public GR_AllocInfo
 {
-  public:
-	GR_CocoaAllocInfo() = 0;
+public:
+	GR_CocoaAllocInfo(NSView * v, XAP_App * app)
+		: m_view(v), m_app(app) {};
 
 	virtual GR_GraphicsId getType() const {return GRID_COCOA;}
-	virtual bool isPrinterGraphics() const = 0;
+	virtual bool isPrinterGraphics() const { return false; }
+	
+	NSView *m_view;
+	XAP_App *m_app;
 };
 
 class GR_CocoaGraphics : public GR_Graphics
@@ -55,7 +59,7 @@ class GR_CocoaGraphics : public GR_Graphics
 	virtual GR_Capability getCapability(){UT_ASSERT(UT_NOT_IMPLEMENTED); return GRCAP_UNKNOWN;}
 	
 	static const char *    graphicsDescriptor(void){return "Cocoa Default";}
-	static GR_Graphics *   graphicsAllocator(GR_AllocInfo&){UT_ASSERT(UT_NOT_IMPLEMENTED); return NULL;}
+	static GR_Graphics *   graphicsAllocator(GR_AllocInfo&);
 	
     // HACK: I need more speed
 	virtual void      drawGlyph(UT_uint32 glyph_idx, UT_sint32 xoff, UT_sint32 yoff) 

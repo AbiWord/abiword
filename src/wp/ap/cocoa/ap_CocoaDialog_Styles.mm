@@ -96,9 +96,11 @@ void AP_CocoaDialog_Styles::runModal(XAP_Frame * pFrame)
 	// make a new Cocoa GC
 	DELETEP (m_pParaPreviewWidget);
 	XAP_CocoaNSView * preview = m_dlg->_paraPreview;
-	//m_pParaPreviewWidget = new GR_CocoaGraphics(preview, m_pApp);
-	GR_CocoaAllocInfo ai(preview, m_pApp);
-	m_pParaPreviewWidget = (GR_CocoaGraphics*)XAP_App::getApp()->newGraphics(ai);
+	{
+		//m_pParaPreviewWidget = new GR_CocoaGraphics(preview, m_pApp);
+		GR_CocoaAllocInfo ai(preview, m_pApp);
+		m_pParaPreviewWidget = (GR_CocoaGraphics*)XAP_App::getApp()->newGraphics(ai);
+	}
 	
         // let the widget materialize
 	NSSize size = [preview frame].size;
@@ -108,9 +110,11 @@ void AP_CocoaDialog_Styles::runModal(XAP_Frame * pFrame)
 	// make a new Cocoa GC
 	DELETEP (m_pCharPreviewWidget);
 	preview = m_dlg->_charPreview;
-	//m_pCharPreviewWidget = new GR_CocoaGraphics(preview, m_pApp);
-	GR_CocoaAllocInfo ai(preview, m_pApp);
-	m_pCharPreviewWidget = (GR_CocoaGraphics*)XAP_App::getApp()->newGraphics(ai);
+	{
+		//m_pCharPreviewWidget = new GR_CocoaGraphics(preview, m_pApp);
+		GR_CocoaAllocInfo ai(preview, m_pApp);
+		m_pCharPreviewWidget = (GR_CocoaGraphics*)XAP_App::getApp()->newGraphics(ai);
+	}
 
 	// let the widget materialize
 	size = [preview frame].size;
@@ -409,7 +413,10 @@ void  AP_CocoaDialog_Styles::modifyRunModal(void)
 		// make a new Cocoa GC
 		DELETEP (m_pAbiPreviewWidget);
 		XAP_CocoaNSView * preview = m_modifyDlg->_preview;
-		m_pAbiPreviewWidget = new GR_CocoaGraphics(preview, m_pApp);
+		//m_pAbiPreviewWidget = new GR_CocoaGraphics(preview, m_pApp);
+		GR_CocoaAllocInfo ai(preview, m_pApp);
+		m_pAbiPreviewWidget = (GR_CocoaGraphics*)XAP_App::getApp()->newGraphics(ai);
+
 		
 			// let the widget materialize
 	

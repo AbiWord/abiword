@@ -324,7 +324,9 @@ void XAP_CocoaDialog_FontChooser::_cancelAction(void)
 void	XAP_CocoaDialog_FontChooser::_createGC(XAP_CocoaNSView* owner)
 {
 	NSSize  size;
-	m_pGraphics = new GR_CocoaGraphics(owner, m_pApp);
+	GR_CocoaAllocInfo ai(owner, m_pApp);
+	m_pGraphics = static_cast<GR_CocoaGraphics*>(XAP_App::getApp()->newGraphics(ai));
+
 	size = [owner bounds].size;
 	_createFontPreviewFromGC(m_pGraphics, lrintf(size.width), lrintf(size.height));
 }

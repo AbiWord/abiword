@@ -80,7 +80,8 @@ void AP_CocoaLeftRuler::setView(AV_View * pView)
 	
 	DELETEP(m_pG);
 
-	GR_CocoaGraphics * pG = new GR_CocoaGraphics(m_wLeftRuler, m_pFrame->getApp());
+	GR_CocoaAllocInfo ai(m_wLeftRuler, m_pFrame->getApp());
+	GR_CocoaGraphics * pG = static_cast<GR_CocoaGraphics*>(XAP_App::getApp()->newGraphics(ai));
 	m_pG = pG;
 	UT_ASSERT(m_pG);
 	m_delegate = [[AP_CocoaLeftRulerDelegate alloc] init];
