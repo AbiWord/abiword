@@ -1,0 +1,39 @@
+{
+    IBClasses = (
+        {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
+        {
+            ACTIONS = {
+                cancelAction = id; 
+                heightChanged = id; 
+                heightNumChanged = id; 
+                heightNumStepperChanged = id; 
+                okAction = id; 
+                preserveAction = id; 
+                widthChanged = id; 
+                widthNumChanged = id; 
+                widthNumStepperChanged = id; 
+            }; 
+            CLASS = "XAP_CocoaDialog_ImageController"; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {
+                "_altData" = NSTextField; 
+                "_altLabel" = NSTextField; 
+                "_cancelBtn" = NSButton; 
+                "_heightData" = NSTextField; 
+                "_heightLabel" = NSTextField; 
+                "_heightNumData" = NSTextField; 
+                "_heightNumStepper" = NSStepper; 
+                "_okBtn" = NSButton; 
+                "_preserveAspectBtn" = NSButton; 
+                "_titleData" = NSTextField; 
+                "_titleLabel" = NSTextField; 
+                "_widthData" = NSTextField; 
+                "_widthLabel" = NSTextField; 
+                "_widthNumData" = NSTextField; 
+                "_widthNumStepper" = NSStepper; 
+            }; 
+            SUPERCLASS = NSWindowController; 
+        }
+    ); 
+    IBVersion = 1; 
+}
