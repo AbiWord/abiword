@@ -17,7 +17,8 @@
  * 02111-1307, USA.
  */
 
-#include <stdexcpt.h>
+#include <exception>
+#include <stdexcept>
 #include "gr_Win32USPGraphics.h"
 #include "ut_debugmsg.h"
 
@@ -172,7 +173,7 @@ GR_Graphics *   GR_Win32USPGraphics::graphicsAllocator(GR_AllocInfo& info)
 		UT_DEBUGMSG(("GR_Win32USPGraphics::graphicsAllocator: error 0x%04x\n",e.error));
 		return NULL;
 	}
-	catch (exception &e)
+	catch (std::exception &e)
 	{
 		UT_DEBUGMSG(("GR_Win32USPGraphics::graphicsAllocator: %s\n",e.what()));
 		return NULL;
