@@ -138,6 +138,9 @@ EV_EditMethod * EV_EditMethodContainer::getNthEditMethod(UT_uint32 ndx)
 }
 
 // for use in a binary search of an EV_EditMethod array
+#ifdef __MRC__
+extern "C"
+#endif
 static int ev_compar (const void * a, const void * b)
 {
   const char * str = (const char *)a;
