@@ -93,19 +93,22 @@ GtkWidget * XAP_UnixDialog_Language::constructWindow(void)
 	vboxMain = constructWindowContents(GTK_OBJECT (windowLangSelection));
 	gtk_box_pack_start (GTK_BOX (vboxOuter), vboxMain, TRUE, TRUE, 0);
 
-	fixedButtons = gtk_fixed_new ();
+	fixedButtons = gtk_hbutton_box_new ();
 	gtk_widget_show (fixedButtons);
 	gtk_box_pack_start (GTK_BOX (vboxOuter), fixedButtons, FALSE, TRUE, 0);
+	gtk_button_box_set_layout (GTK_BUTTON_BOX (fixedButtons), GTK_BUTTONBOX_END);
+	gtk_button_box_set_spacing (GTK_BUTTON_BOX (fixedButtons), 10);
+	gtk_button_box_set_child_size (GTK_BUTTON_BOX (fixedButtons), 85, 24);
 
 	buttonOK = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_OK));
 	gtk_widget_show (buttonOK);
-	gtk_fixed_put (GTK_FIXED (fixedButtons), buttonOK, 279, 0);
+	gtk_container_add (GTK_CONTAINER (fixedButtons), buttonOK);
 	GTK_WIDGET_SET_FLAGS (buttonOK, GTK_CAN_DEFAULT);
 	gtk_widget_grab_default (buttonOK);
 
 	buttonCancel = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Cancel));
 	gtk_widget_show (buttonCancel);
-	gtk_fixed_put (GTK_FIXED (fixedButtons), buttonCancel, 374, 6);
+	gtk_container_add (GTK_CONTAINER (fixedButtons), buttonCancel);
 
 	gtk_signal_connect_after(GTK_OBJECT(windowLangSelection),
 							  "destroy",
