@@ -276,49 +276,14 @@ void fl_TableLayout::format(void)
 	}
 	m_bRecursiveFormat = true;
 	bool bRebuild = false;
-//
-// All this code is to find the right page to do a sectionBreak from.
-//
-	fl_ContainerLayout * pPrevCL = getPrev();
-	fp_Page * pPrevP = NULL;
-#if 0
-	while(pPrevCL && (pPrevCL->myContainingLayout()->getContainerType() != FL_CONTAINER_DOCSECTION))
+	//
+	// Get the old height of the table
+	//
+	UT_sint32 iOldHeight = 0;
+	if(getFirstContainer())
 	{
-		pPrevCL = pPrevCL->myContainingLayout();
+		iOldHeight = getFirstContainer()->getHeight();
 	}
-	if(pPrevCL)
-	{
-		fp_Container * pPrevCon = pPrevCL->getFirstContainer();
-		if(pPrevCon)
-		{
-			pPrevP = pPrevCon->getPage();
-		}
-		static_cast<fl_DocSectionLayout *>(pPrevCL)->setNeedsSectionBreak(true,pPrevP);
-	}
-	else
-	{
-		getDocLayout()->getFirstSection()->setNeedsSectionBreak(true,NULL);
-		pPrevCL = myContainingLayout();
-		while(pPrevCL && (pPrevCL->myContainingLayout()->getContainerType() != FL_CONTAINER_DOCSECTION))
-		{
-			pPrevCL = pPrevCL->myContainingLayout();
-		}
-		if(pPrevCL)
-		{
-			static_cast<fl_DocSectionLayout *>(pPrevCL)->setNeedsSectionBreak(true,pPrevP);
-		}
-	}
-#else
-	if(pPrevCL)
-	{
-		fp_Container * pPrevCon = pPrevCL->getFirstContainer();
-		if(pPrevCon)
-		{
-			pPrevP = pPrevCon->getPage();
-		}
-	}
-	static_cast<fl_DocSectionLayout *>(getSectionLayout())->setNeedsSectionBreak(true,pPrevP);
-#endif
 //
 // OK on with the formatting
 //
@@ -368,6 +333,32 @@ void fl_TableLayout::format(void)
 	if(m_bNeedsReformat)
 	{
 		UT_DEBUGMSG(("SEVIOR: After format in TableLayout need another format \n"));
+	}
+	UT_sint32 iNewHeight = -10;
+	if(getFirstContainer())
+	{
+		iNewHeight = getFirstContainer()->getHeight();
+	}
+	if(iNewHeight != iOldHeight)
+	{
+		//
+		// Set a section break.
+		//
+
+//
+// All this code is to find the right page to do a sectionBreak from.
+//
+		fl_ContainerLayout * pPrevCL = getPrev();
+		fp_Page * pPrevP = NULL;
+		if(pPrevCL)
+		{
+			fp_Container * pPrevCon = pPrevCL->getFirstContainer();
+			if(pPrevCon)
+			{
+				pPrevP = pPrevCon->getPage();
+			}
+		}
+		static_cast<fl_DocSectionLayout *>(getSectionLayout())->setNeedsSectionBreak(true,pPrevP);
 	}
 	m_bRecursiveFormat = false;
 }

@@ -24,8 +24,6 @@
 #include "gr_Caret.h"
 #include "gr_Graphics.h"
 #include "xap_App.h"
-#include "xap_Frame.h"
-#include "xav_View.h"
 
 static const UT_uint32 CURSOR_BLINK_TIME = 600; /* milliseconds */
 static const UT_uint32 CURSOR_DELAY_TIME = 10;

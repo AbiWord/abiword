@@ -2869,6 +2869,14 @@ void  fp_TableContainer::clearScreen(void)
 	{
 		return;
 	}
+	if(getPage() == NULL)
+	{
+		return;
+	}
+	if(getPage()->getDocLayout()->isLayoutFilling())
+	{
+		return;
+	}
 	fp_CellContainer * pCell = static_cast<fp_CellContainer *>(getNthCon(0));
 	while(pCell)
 	{

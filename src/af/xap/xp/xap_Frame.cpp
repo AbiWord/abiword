@@ -90,6 +90,8 @@ XAP_Frame::XAP_Frame(XAP_FrameImpl *pFrameImpl, XAP_App * pApp)
 	  m_iZoomPercentage(100)
 {
 	m_pApp->rememberFrame(this);
+//	UT_DEBUGMSG(("Remembering UnCloned Frame \n"));
+//	UT_ASSERT(0);
 }
 
 XAP_Frame::XAP_Frame(XAP_Frame * f)
@@ -121,6 +123,8 @@ XAP_Frame::XAP_Frame(XAP_Frame * f)
 	m_iZoomPercentage(f->m_iZoomPercentage)
 {
 	m_pApp->rememberFrame(this, f);
+//	UT_DEBUGMSG(("Remembering Cloned Frame \n"));
+//	UT_ASSERT(0);
 }
 
 XAP_Frame::~XAP_Frame(void)

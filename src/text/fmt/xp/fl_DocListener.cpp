@@ -240,6 +240,10 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 			}
 		}
 	}
+	else
+	{
+		UT_DEBUGMSG(("No valid frame!!! \n"));
+	}
 //
 // This piece of code detects if there is enough document to notify
 // listeners and other things.

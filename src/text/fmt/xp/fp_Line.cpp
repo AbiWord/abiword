@@ -2182,7 +2182,6 @@ UT_sint32 fp_Line::getMarginBefore(void) const
 		}
 		else
 		{
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			iBottomMargin = 0;
 		}
 		UT_sint32 iNextTopMargin = getBlock()->getTopMargin();

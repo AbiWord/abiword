@@ -82,7 +82,10 @@ UT_Error AP_Frame::_loadDocument(const char * szFilename, IEFileType ieft,
 
 	// load a document into the current frame.
 	// if no filename, create a new document.
-
+	if(m_pApp->findFrame(this) < 0)
+	{
+		m_pApp->rememberFrame(this);
+	}
 	AD_Document * pNewDoc = new PD_Document(getApp());
 	UT_ASSERT(pNewDoc);
 	
@@ -216,11 +219,23 @@ UT_Error AP_Frame::loadDocument(const char * szFilename, int ieft, bool createNe
 	bool bUpdateClones;
 	UT_Vector vClones;
 	XAP_App * pApp = getApp();
-
+	UT_uint32 j = 0;
+	if(pApp->findFrame(this) < 0)
+	{
+			pApp->rememberFrame(this);
+	}
 	bUpdateClones = (getViewNumber() > 0);
 	if (bUpdateClones)
 	{
 		pApp->getClones(&vClones, this);
+	}
+	for(j=0; j<vClones.getItemCount();j++)
+	{
+		XAP_Frame * pFrame = static_cast<XAP_Frame *>(vClones.getNthItem(j));
+		if(pApp->findFrame(pFrame) < 0)
+		{
+			pApp->rememberFrame(pFrame,this);
+		}
 	}
 	UT_Error errorCode;
 	errorCode =  _loadDocument(szFilename, static_cast<IEFileType>(ieft), createNew);
@@ -235,6 +250,10 @@ UT_Error AP_Frame::loadDocument(const char * szFilename, int ieft, bool createNe
 	XAP_Frame::tZoomType iZoomType;
 	UT_uint32 iZoom = getNewZoom(&iZoomType);
 	setZoomType(iZoomType);
+	if(pApp->findFrame(this) < 0)
+	{
+		pApp->rememberFrame(this);
+	}
 	if (bUpdateClones)
 	{
 		for (UT_uint32 i = 0; i < vClones.getItemCount(); i++)
@@ -497,7 +516,6 @@ void AP_Frame::_replaceView(GR_Graphics * pG, FL_DocLayout *pDocLayout,
 	{
 		inspt = static_cast<FV_View*>(m_pView)->getInsPoint ();
 		pOldView = static_cast<FV_View *>(m_pView);
-		pOldView->killBlink();
 	}
 	else
 		hadView = false;
@@ -507,7 +525,6 @@ void AP_Frame::_replaceView(GR_Graphics * pG, FL_DocLayout *pDocLayout,
 	{
 		pOldDoc = (static_cast<AP_FrameData*>(m_pData)->m_pDocLayout->getDocument());
 		pOldDocLayout = static_cast<AP_FrameData*>(m_pData)->m_pDocLayout;
-		pOldDocLayout->dequeueAll();
 	}
 
 	REPLACEP(static_cast<AP_FrameData*>(m_pData)->m_pG, pG);

@@ -384,9 +384,11 @@ bool AP_UnixApp::shutdown(void)
 	{
 		m_pToolbarFactory->saveToolbarsInCurrentScheme();
 	}
-    if (m_prefs->getAutoSavePrefs())
-		m_prefs->savePrefsFile();
-
+	if(!isBonoboRunning())
+	{
+		if (m_prefs->getAutoSavePrefs())
+			m_prefs->savePrefsFile();
+	}
     return true;
 }
 

@@ -1559,6 +1559,23 @@ void fl_BlockLayout::updateBackgroundColor(void)
 }
 
 /*!
+ * Calculate the height of the all the text contained by this block
+ */
+UT_sint32 fl_BlockLayout::getHeightOfBlock(void)
+{
+	UT_sint32 iHeight = 0;
+	fp_Line * pCon = static_cast<fp_Line *>(getFirstContainer());
+	while(pCon)
+	{
+		iHeight += pCon->getHeight();
+		iHeight += pCon->getMarginBefore();
+		iHeight += pCon->getMarginAfter();
+		pCon = static_cast<fp_Line *>(pCon->getNext());
+	}
+	return iHeight;
+}
+
+/*!
   Format paragraph: split the content into lines which
   will fit in the container.  */
 void fl_BlockLayout::format()
@@ -1578,6 +1595,24 @@ void fl_BlockLayout::format()
 	{
 		return;
 	}
+	//
+	// Save the old height of the block. We compare to the new height after
+	// the format.
+	//
+	UT_sint32 iOldHeight = getHeightOfBlock();
+	//
+	// Need this to find where to break section in the document.
+	//
+	fl_ContainerLayout * pPrevCL = getPrev();
+	fp_Page * pPrevP = NULL;
+	if(pPrevCL)
+	{
+		fp_Container * pPrevCon = pPrevCL->getFirstContainer();
+		if(pPrevCon)
+		{
+			pPrevP = pPrevCon->getPage();
+		}
+	}
 	xxx_UT_DEBUGMSG(("fl_BlockLayout - format \n"));
 	_assertRunListIntegrity();
 	fp_Run *pRunToStartAt = NULL;
@@ -1595,18 +1630,7 @@ void fl_BlockLayout::format()
 // set a bool in blocks with these sort of fields.
 //
 	setUpdatableField(false);
-	fl_ContainerLayout * pPrevCL = getPrev();
-	fp_Page * pPrevP = NULL;
-	if(pPrevCL)
-	{
-		fp_Container * pPrevCon = pPrevCL->getFirstContainer();
-		if(pPrevCon)
-		{
-			pPrevP = pPrevCon->getPage();
-		}
-	}
 	xxx_UT_DEBUGMSG(("formatBlock 3: pPage %x \n",pPrevP));
-	getDocSectionLayout()->setNeedsSectionBreak(true,pPrevP);
 	if (m_pFirstRun)
 	{
 		if(m_iNeedsReformat > 0)
@@ -1692,6 +1716,14 @@ void fl_BlockLayout::format()
 
 	_assertRunListIntegrity();
 	m_bIsCollapsed = false;
+	//
+	// Only break section if the height of the block changes.
+	//
+	UT_sint32 iNewHeight = getHeightOfBlock();
+	if(iOldHeight != iNewHeight)
+	{
+		getDocSectionLayout()->setNeedsSectionBreak(true,pPrevP);
+	}
 	return;	// TODO return code
 }
 
