@@ -45,7 +45,6 @@ void fb_Alignment_left::initialize(fp_Line * pLine )
 	 		m_iStartPositionLayoutUnits = 0;
 	 	}
 #endif
-	xxx_UT_DEBUGMSG(("fb_Alignment_left::initialize (0x%x)\n",this));
 
 }
 
@@ -69,17 +68,7 @@ UT_sint32 fb_Alignment_left::getStartPositionInLayoutUnits()
 
 void fb_Alignment_left::eraseLineFromRun(fp_Line *pLine, UT_uint32 runIndex)
 {
-//  	if(runIndex > 0)
-//  	{
-//  		// Erase from the previous run.
-//  		// This is required for characters that have part of their glyph
-//  		// visible before their character position. eg bottom of a 'j' in
-//  		// Times New Roman.
-
-//  		runIndex--;
-//  	}
 	pLine->clearScreenFromRunToEnd(runIndex);
-	
 }
 
 /////////////////////////////////////////////////////////////
@@ -124,7 +113,6 @@ void fb_Alignment_right::initialize(fp_Line *pLine)
 {
 	UT_sint32 iTrailing = pLine->calculateWidthOfTrailingSpaces();
 	UT_sint32 iWidth = pLine->calculateWidthOfLine() - iTrailing;
-	xxx_UT_DEBUGMSG(("fb_Alignment_right::initialize (0x%x), iWidth %d\n",this,iWidth));
 
 	m_startPosition = pLine->getMaxWidth() - iWidth;
 
@@ -174,53 +162,52 @@ void fb_Alignment_justify::initialize(fp_Line *pLine)
 {
 	if (!pLine->isLastLineInBlock())
 	{
-		pLine->resetJustification();
-
-		UT_sint32 iWidth = pLine->calculateWidthOfLine() - pLine->calculateWidthOfTrailingSpaces();
-
-		m_iExtraWidth = pLine->getMaxWidth() - iWidth;
-
-		xxx_UT_DEBUGMSG(("fb_Alignment_justify::initialize (0x%x), iWidth %d, m_iExtraWidth %d\n",this,iWidth,m_iExtraWidth));
-		pLine->distributeJustificationAmongstSpaces(m_iExtraWidth);
-
+	  pLine->resetJustification();
+	  
+	  UT_sint32 iWidth = pLine->calculateWidthOfLine() - pLine->calculateWidthOfTrailingSpaces();
+	  
+	  m_iExtraWidth = pLine->getMaxWidth() - iWidth;
+	  
+	  xxx_UT_DEBUGMSG(("fb_Alignment_justify::initialize (0x%x), iWidth %d, m_iExtraWidth %d\n",this,iWidth,m_iExtraWidth));
+	  pLine->distributeJustificationAmongstSpaces(m_iExtraWidth);
+	  
 #ifdef BIDI_ENABLED
-		if(pLine->getBlock()->getDominantDirection() == FRIBIDI_TYPE_RTL)
-		{
-	    	m_iStartPosition = pLine->getMaxWidth();
-	    	m_iStartPositionLayoutUnits = pLine->getMaxWidthInLayoutUnits();
-	 	}
-	 	else
-	 	{
-	 		m_iStartPosition = 0;
-	 		m_iStartPositionLayoutUnits = 0;
-	 	}
+	  if(pLine->getBlock()->getDominantDirection() == FRIBIDI_TYPE_RTL)
+	    {
+	      m_iStartPosition = pLine->getMaxWidth();
+	      m_iStartPositionLayoutUnits = pLine->getMaxWidthInLayoutUnits();
+	    }
+	  else
+	    {
+	      m_iStartPosition = 0;
+	      m_iStartPositionLayoutUnits = 0;
+	    }
 #endif
-
+	  
 #ifndef NDEBUG	
-		_confirmJustification(pLine);
+	  _confirmJustification(pLine);
 #endif
 
 	}
 #ifdef BIDI_ENABLED
 	else if(pLine->getBlock()->getDominantDirection() == FRIBIDI_TYPE_RTL) //this is RTL block, the last line behaves as if right-justified
-	{
-		m_iStartPosition = pLine->getMaxWidth();
-		m_iStartPositionLayoutUnits = pLine->getMaxWidthInLayoutUnits();
-		
-	}
+	  {
+	    m_iStartPosition = pLine->getMaxWidth();
+	    m_iStartPositionLayoutUnits = pLine->getMaxWidthInLayoutUnits();
+	    
+	  }
 	else
-	{
-		//UT_DEBUGMSG(("Justified block, last line, left justified\n"));
+	  {
+	    xxx_UT_DEBUGMSG(("Justified block, last line, left justified\n"));
 	    m_iStartPosition = 0;
 	    m_iStartPositionLayoutUnits = 0;
-	}
+	  }
 #endif
 }
 
 UT_sint32 fb_Alignment_justify::getStartPosition()
 {
 #ifdef BIDI_ENABLED
-	//UT_DEBUGMSG(("Alignment_justify::getStartPosition : %d\n", m_iStartPosition));
 	return m_iStartPosition;
 #else
 	return 0;
@@ -230,7 +217,6 @@ UT_sint32 fb_Alignment_justify::getStartPosition()
 UT_sint32 fb_Alignment_justify::getStartPositionInLayoutUnits()
 {
 #ifdef BIDI_ENABLED
-	//UT_DEBUGMSG(("Alignment_justify::getStartPositionInLayoutUnits : %d\n", m_iStartPositionLayoutUnits));
 	return m_iStartPositionLayoutUnits;
 #else
 	return 0;
@@ -241,12 +227,6 @@ UT_sint32 fb_Alignment_justify::getStartPositionInLayoutUnits()
 
 void fb_Alignment_justify::_confirmJustification(fp_Line *pLine)
 {
-	/*
-	UT_sint32 iJustifiedLength = pLine->calculateWidthOfLine() - pLine->calculateWidthOfTrailingSpaces();
-	UT_sint32 iLineLength = pLine->getMaxWidth();
-
-//	UT_ASSERT(iJustifiedLength == iLineLength);
-	*/
 }
 
 #endif /* NDEBUG */
