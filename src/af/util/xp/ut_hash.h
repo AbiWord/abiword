@@ -71,4 +71,21 @@ protected:
 	UT_StringPool	m_pool;
 };
 
+// NB: this macro is useful only in destructors
+#define UT_HASH_PURGEDATA(d, h)							\
+	do	{	int utmax = h.getEntryCount();				\
+			UT_HashTable::UT_HashEntry* e;				\
+			for (int uti=utmax-1; uti>=0; uti--)		\
+			{											\
+				e = h.getNthEntry(uti);					\
+				UT_ASSERT(e);							\
+				if (e)									\
+				{										\
+					d* p = (d*) e->pData;				\
+					if (p)								\
+						delete p;						\
+				}										\
+			}											\
+	} while (0)
+
 #endif /* UTHASH_H */

@@ -39,6 +39,10 @@ UT_HashTable::UT_HashTable() : m_pool()
 
 UT_HashTable::~UT_HashTable()
 {
+	// in case this never got used
+	if (!m_pBuckets)
+		return;
+
 	for (int i=0; i < NUM_BUCKETS; i++)
 	{
 		UT_HashEntryListNode* pHELN = m_pBuckets[i].pHead;
@@ -58,7 +62,7 @@ UT_HashTable::~UT_HashTable()
 UT_sint32 UT_HashTable::addEntry(const char* pszLeft, const char* pszRight, void* pData)
 {
 	UT_ASSERT(pszLeft);
-	UT_ASSERT(pszRight);
+	UT_ASSERT(pszRight || pData);
 
 	// TODO check to see if the entry is already there.
 
@@ -69,7 +73,10 @@ UT_sint32 UT_HashTable::addEntry(const char* pszLeft, const char* pszRight, void
 
 	// TODO the following are essentially memory allocations which can fail.  check them
 	m_pEntries[m_iEntryCount].pszLeft = m_pool.addString(pszLeft);
-	m_pEntries[m_iEntryCount].pszRight = m_pool.addString(pszRight);
+
+	if (pszRight)
+		m_pEntries[m_iEntryCount].pszRight = m_pool.addString(pszRight);
+
 	m_pEntries[m_iEntryCount].pData = pData;
 
 	int iBucket = hashFunc(pszLeft);
