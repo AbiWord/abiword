@@ -1882,7 +1882,20 @@ void FV_View::_moveInsPtNextPrevScreen(bool bMovingDown)
 
 	iYnext = yoff + getWindowHeight() * iDir;
 	iYscroll = m_yScrollOffset + (getWindowHeight() * iDir);
-	if (iYscroll < 0) return;
+	if (iYscroll < 0)
+	{
+		// We're trying to scroll past beginning/end of document
+		// Move insertion pointer to BOD/EOD instead
+		if (iDir == 1)
+		{
+			moveInsPtTo(FV_DOCPOS_EOD);
+		}
+		else
+		{
+			moveInsPtTo(FV_DOCPOS_BOD);
+		}
+		return;
+	}
 
 	xxx_UT_DEBUGMSG(("SEVIOR:!!!!!! Yoff %d iYnext %d page %x \n",yoff,iYnext,pPage));
 
