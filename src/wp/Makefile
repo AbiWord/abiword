@@ -47,5 +47,16 @@ canonical:
 	@$(ABICOPY) $(USERDIR)/wp/readme.txt $(CANON_AppDir)
 	@$(ABICOPY) $(USERDIR)/wp/system.profile* $(CANON_AppDir)
 	@$(ABICOPY) $(USERDIR)/wp/strings/*.strings $(CANON_AppDir)/strings
+ifeq ($(ABI_FE),Win32)
+	@if [ -d $(ABI_ROOT)/../abiword-docs ]; then				\
+		echo "Found abiword-docs in peer directory - building help files"; \
+		cd $(ABI_ROOT)/../abiword-docs; \
+		make-html.sh $(BINDIR)/AbiWord.exe; \
+		cp -r $(ABI_ROOT)/../abiword-docs/help/* $(CANON_AppDir)/help; \
+	else \
+		echo "No abiword-docs directory - skipping help files"; \
+	fi
+endif
+
 #	(cd $(USERDIR)/wp/help; tar cf - images $(CANON_Lang)/*.* $(CANON_Lang)/*/*.*) | (cd $(CANON_AppDir)/help; tar xf -)
 #	@$(ABICOPY) $(ABI_ROOT)/CREDITS.TXT $(CANON_AppDir)/help/en-US/credits.txt
