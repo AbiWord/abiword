@@ -64,7 +64,7 @@ void AP_UnixDialog_ListRevisions::runModal(XAP_Frame * pFrame)
 	UT_return_if_fail(mainWindow);
 
 	switch ( abiRunModalDialog ( GTK_DIALOG(mainWindow),
-								 pFrame, this, BUTTON_CANCEL, false ) )
+								 pFrame, this, BUTTON_OK, false ) )
 	{
 		case BUTTON_OK:
 			event_OK () ; break ;
@@ -100,67 +100,70 @@ void AP_UnixDialog_ListRevisions::unselect_Row()
 
 GtkWidget * AP_UnixDialog_ListRevisions::constructWindow ()
 {
-  GtkWidget *dialog1;
-  GtkWidget *dialog_vbox1;
-  GtkWidget *dialog_action_area1;
+  GtkWidget *ap_UnixDialog_ListRevisions;
+  GtkWidget *vbDialog;
+  GtkWidget *aaDialog;
 	
-  dialog1 = abiDialogNew ( "list revisions dialog", TRUE, getTitle());	
+  ap_UnixDialog_ListRevisions = abiDialogNew ( "list revisions dialog", TRUE, getTitle());	
 	
-  gtk_window_set_modal (GTK_WINDOW (dialog1), TRUE);
-  gtk_window_set_default_size ( GTK_WINDOW(dialog1), 250, 250 ) ;
+  gtk_window_set_modal (GTK_WINDOW (ap_UnixDialog_ListRevisions), TRUE);
+  gtk_window_set_default_size ( GTK_WINDOW(ap_UnixDialog_ListRevisions), 250, 250 ) ;
 
-  dialog_vbox1 = GTK_DIALOG (dialog1)->vbox;
-  gtk_widget_show (dialog_vbox1);
-  gtk_container_set_border_width (GTK_CONTAINER (dialog_vbox1), 5);
+  vbDialog = GTK_DIALOG (ap_UnixDialog_ListRevisions)->vbox;
+  gtk_widget_show (vbDialog);
+  gtk_container_set_border_width (GTK_CONTAINER (vbDialog), 5);
 
-  dialog_action_area1 = GTK_DIALOG (dialog1)->action_area;
-  gtk_widget_show (dialog_action_area1);
-  gtk_container_set_border_width (GTK_CONTAINER (dialog_action_area1), 10);
+  aaDialog = GTK_DIALOG (ap_UnixDialog_ListRevisions)->action_area;
+  gtk_widget_show (aaDialog);
 
-  constructWindowContents ( dialog_vbox1 ) ;
+  constructWindowContents ( vbDialog ) ;
 
-  abiAddStockButton ( GTK_DIALOG(dialog1), GTK_STOCK_CANCEL, BUTTON_CANCEL ) ;
-  abiAddStockButton ( GTK_DIALOG(dialog1), GTK_STOCK_OK, BUTTON_OK ) ;
+  abiAddStockButton ( GTK_DIALOG(ap_UnixDialog_ListRevisions), GTK_STOCK_CANCEL, BUTTON_CANCEL ) ;
+  abiAddStockButton ( GTK_DIALOG(ap_UnixDialog_ListRevisions), GTK_STOCK_OK, BUTTON_OK ) ;
 
-  return dialog1;
+  return ap_UnixDialog_ListRevisions;
 }
 
-void AP_UnixDialog_ListRevisions::constructWindowContents ( GtkWidget * dialog_vbox1 )
+void AP_UnixDialog_ListRevisions::constructWindowContents ( GtkWidget * vbDialog )
 {
-  GtkWidget *frame1;
-  GtkWidget *scrolledwindow1;
-  GtkWidget *clist1;
-  GtkWidget *rev_id;
-  GtkWidget *comment;
+  GtkWidget *vbContent;
+  GtkWidget *lbExistingRevisions;
+  GtkWidget *swExistingRevisions;
+  GtkWidget *clExistingRevisions;
+  GtkWidget *lbColumnRevisionID;
+  GtkWidget *lbColumnComment;
 
-  frame1 = gtk_frame_new (getLabel1());
-  gtk_widget_show (frame1);
-  gtk_box_pack_start (GTK_BOX (dialog_vbox1), frame1, TRUE, TRUE, 0);
-  gtk_container_set_border_width (GTK_CONTAINER (frame1), 5);
-  gtk_frame_set_shadow_type(GTK_FRAME(frame1), GTK_SHADOW_NONE);
+  vbContent = gtk_vbox_new (FALSE, 6);
+  gtk_widget_show (vbContent);
+  gtk_container_add (GTK_CONTAINER (vbDialog), vbContent);
+  gtk_container_set_border_width (GTK_CONTAINER (vbContent), 5);
 
-  scrolledwindow1 = gtk_scrolled_window_new (NULL, NULL);
-  gtk_widget_show (scrolledwindow1);
-  gtk_container_add (GTK_CONTAINER (frame1), scrolledwindow1);
-  gtk_container_set_border_width (GTK_CONTAINER (scrolledwindow1), 1);
-  gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolledwindow1), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+  lbExistingRevisions = gtk_label_new (getLabel1());
+  gtk_widget_show (lbExistingRevisions);
+  gtk_misc_set_alignment (GTK_MISC (lbExistingRevisions), 0.0, 0.5);
+  gtk_box_pack_start (GTK_BOX (vbContent), lbExistingRevisions, FALSE, FALSE, 0);
 
-  clist1 = gtk_clist_new (2);
-  gtk_widget_show (clist1);
-  gtk_container_add (GTK_CONTAINER (scrolledwindow1), clist1);
-  gtk_clist_set_column_width (GTK_CLIST (clist1), 0, 80);
-  gtk_clist_set_column_width (GTK_CLIST (clist1), 1, 80);
-  gtk_clist_column_titles_show (GTK_CLIST (clist1));
+  swExistingRevisions = gtk_scrolled_window_new (NULL, NULL);
+  gtk_widget_show (swExistingRevisions);
+  gtk_container_add (GTK_CONTAINER (vbContent), swExistingRevisions);
+  gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (swExistingRevisions), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
 
-  rev_id = gtk_label_new (getColumn1Label());
-  gtk_widget_show (rev_id);
-  gtk_clist_set_column_widget (GTK_CLIST (clist1), 0, rev_id);
+  clExistingRevisions = gtk_clist_new (2);
+  gtk_widget_show (clExistingRevisions);
+  gtk_container_add (GTK_CONTAINER (swExistingRevisions), clExistingRevisions);
+  gtk_clist_set_column_width (GTK_CLIST (clExistingRevisions), 0, 80);
+  gtk_clist_set_column_width (GTK_CLIST (clExistingRevisions), 1, 80);
+  gtk_clist_column_titles_show (GTK_CLIST (clExistingRevisions));
 
-  comment = gtk_label_new (getColumn2Label());
-  gtk_widget_show (comment);
-  gtk_clist_set_column_widget (GTK_CLIST (clist1), 1, comment);
+  lbColumnRevisionID = gtk_label_new (getColumn1Label());
+  gtk_widget_show (lbColumnRevisionID);
+  gtk_clist_set_column_widget (GTK_CLIST (clExistingRevisions), 0, lbColumnRevisionID);
 
-  gtk_clist_freeze ( GTK_CLIST ( clist1 ) ) ;
+  lbColumnComment = gtk_label_new (getColumn2Label());
+  gtk_widget_show (lbColumnComment);
+  gtk_clist_set_column_widget (GTK_CLIST (clExistingRevisions), 1, lbColumnComment);
+
+  gtk_clist_freeze ( GTK_CLIST ( clExistingRevisions ) ) ;
 
   UT_uint32 itemCnt = getItemCount () ;
 
@@ -176,25 +179,25 @@ void AP_UnixDialog_ListRevisions::constructWindowContents ( GtkWidget * dialog_v
     txt[1] = static_cast<gchar*>(getNthItemText ( i ));
     txt[2] = NULL;
 
-    gtk_clist_append ( GTK_CLIST(clist1), txt ) ;
+    gtk_clist_append ( GTK_CLIST(clExistingRevisions), txt ) ;
 
     UT_DEBUGMSG(("DOM: appending revision %s : %s\n", txt[1], txt[0]));
 
     FREEP(txt[1]);
   }
-  gtk_clist_thaw ( GTK_CLIST ( clist1 ) ) ;
-  gtk_clist_select_row (GTK_CLIST (clist1), 0, 0);
+  gtk_clist_thaw ( GTK_CLIST ( clExistingRevisions ) ) ;
+  gtk_clist_select_row (GTK_CLIST (clExistingRevisions), 0, 0);
 
-  g_signal_connect (G_OBJECT(clist1), "select-row",
+  g_signal_connect (G_OBJECT(clExistingRevisions), "select-row",
 		    G_CALLBACK(select_row_callback), this);
 
-  g_signal_connect (G_OBJECT(clist1), "unselect-row",
+  g_signal_connect (G_OBJECT(clExistingRevisions), "unselect-row",
 		    G_CALLBACK(select_row_callback), this);
 
-  g_signal_connect(G_OBJECT(clist1),
+  g_signal_connect(G_OBJECT(clExistingRevisions),
 		   "button_press_event",
 		   G_CALLBACK(dblclick_callback),
 		   static_cast<gpointer>(this));
 
-  mClist = clist1 ;
+  mClist = clExistingRevisions ;
 }
