@@ -7481,7 +7481,7 @@ void FV_View::getLeftRulerInfo(AP_LeftRulerInfo * pInfo)
 //
 	if(getPoint()== 0)
 	{
-		m_iFreePass = AV_CHG_FMTSECTION | AV_CHG_HDRFTR;
+		m_iFreePass = AV_CHG_COLUMN | AV_CHG_FMTSECTION | AV_CHG_FMTBLOCK | AV_CHG_HDRFTR;
 		return;
 	}
 	getLeftRulerInfo(getPoint(),pInfo);
@@ -7494,7 +7494,7 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 //
 	if(m_pDoc->isPieceTableChanging())
 	{
-		m_iFreePass = AV_CHG_FMTSECTION | AV_CHG_HDRFTR;
+		m_iFreePass = AV_CHG_COLUMN | AV_CHG_FMTSECTION | AV_CHG_FMTBLOCK | AV_CHG_HDRFTR;
 		return;
 	}
 
@@ -10315,6 +10315,7 @@ bool FV_View::isInTableForSure(PT_DocPosition pos)
  */
 bool FV_View::isInTable( PT_DocPosition pos)
 {
+	UT_DEBUGMSG(("Look in table at pos %d \n",pos));
 	if(m_pDoc->isTableAtPos(pos))
 	{
 		xxx_UT_DEBUGMSG(("As Table pos this char will actuall right before the table %d \n",pos));

@@ -521,6 +521,10 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_TOCOK)
   {
     s = EV_MIS_Gray;
   }
+  else if(pView->getSelectionMode() >= FV_SelectionMode_Multiple)
+  {
+	  return EV_MIS_Gray;
+  }
   return s;
 }
 
@@ -1491,6 +1495,10 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_BreakOK)
 		return EV_MIS_Gray;
 	}
 	else if(pView->isHdrFtrEdit())
+	{
+		return EV_MIS_Gray;
+	}
+	else if(pView->getSelectionMode() >= FV_SelectionMode_Multiple)
 	{
 		return EV_MIS_Gray;
 	}

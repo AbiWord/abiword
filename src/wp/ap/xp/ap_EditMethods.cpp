@@ -1349,7 +1349,7 @@ static void _sFrequentRepeat(UT_Worker * pWorker)
 	_Freq * pFreq = static_cast<_Freq *>(pWorker->getInstanceData());
 	pFreq->m_pExe(pFreq->m_pView,pFreq->m_pData);
 //
-// Once then delete, stop and set to NULL
+// Once run then delete, stop and set to NULL
 //
 	DELETEP(pFreq->m_pData);
 	delete pFreq;
