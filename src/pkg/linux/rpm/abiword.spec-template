@@ -47,9 +47,9 @@
 %endif
 
 %if %{enable_tools}
-%define plugin_tools --enable-abicommand --enable-abigimp --enable-babelfish --enable-freetranslation --enable-gdict --enable-referee --enable-urldict --enable-wikipedia --disable-magick --enable-shell %{?_with_ots:--enable-ots} %{!?_with_ots:--disable-ots} %{?_with_aiksaurus:--enable-aiksaurus} %{!?_with_aiksaurus:--disable-aiksaurus}
+%define plugin_tools --enable-abicommand --enable-abigimp --enable-babelfish --enable-freetranslation --enable-gdict --enable-referee --enable-urldict --enable-wikipedia --disable-magick --enable-shell %{?_with_ots:--enable-ots} %{!?_with_ots:--disable-ots} %{?_with_aiksaurus:--enable-aiksaurus} %{!?_with_aiksaurus:--disable-aiksaurus} %{?_with_gda:--enable-gda} %{!?_with_gda:--disable-gda}
 %else
-%define plugin_tools --disable-abicommand --disable-abigimp --disable-babelfish --disable-freetranslation --disable-gdict --disable-referee --disable-urldict --disable-wikipedia --disable-magick --disable-shell --disable-ots --disable-aiksaurus
+%define plugin_tools --disable-abicommand --disable-abigimp --disable-babelfish --disable-freetranslation --disable-gdict --disable-referee --disable-urldict --disable-wikipedia --disable-magick --disable-shell --disable-ots --disable-aiksaurus --disable-gda
 %endif
 
 %if %{enable_impexp}
@@ -168,7 +168,8 @@ This is a set of plugins for AbiWord.  It includes
 %{?_with_aiksaurus:  aiksaurus: Use the Aiksaurus thesaurus in AbiWord.}
   babelfish: Translate text online using Babelfish.
 ScriptHappy: Run other programs in a shell and direct the output to AbiWord.
-%{?_with_ots:        Ots: Summarize documents}
+%{?_with_ots: ots: Summarize documents.}
+%{?_with_gda: gda: Enable connectivity with external datasources.}
 
 %endif
 
@@ -321,8 +322,8 @@ cd ../abi
 %{ABIPREFIX}/plugins/libAbiScriptHappy.so
 %{ABIPREFIX}/plugins/libAbiCAPI.so
 %{ABIPREFIX}/plugins/libAbiDash.so
-%{_with_gda:%{ABIPREFIX}/plugins/libAbiGDA.so}
-%{ABIPREFIX}/plugins/libAbiGypsython.so
+%{?_with_gda:%{ABIPREFIX}/plugins/libAbiGDA.so}
+#%{ABIPREFIX}/plugins/libAbiGypsython.so
 %endif
 
 %if %{enable_impexp}
