@@ -440,3 +440,8 @@ FreeMemory:
 	
 	return 1;
 }
+
+void AP_Win32Dialog_Replace::_updateLists()
+{
+	UT_ASSERT(UT_NOT_IMPLEMENTED);	
+}

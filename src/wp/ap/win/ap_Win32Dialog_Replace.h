@@ -43,6 +43,8 @@ public:
 	static XAP_Dialog * 	static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 	static BOOL CALLBACK	s_dlgProc(HWND,UINT,WPARAM,LPARAM);
 	
+    virtual void                    _updateLists();    
+	      
 protected:
 	void					_initButtons(HWND hWnd);
 	BOOL					_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
