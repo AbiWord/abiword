@@ -151,7 +151,7 @@ UT_PerlBindings::evalFile(const UT_String& filename)
 	}
 
 	code += '"';
-	eval_pv(code.c_str(), FALSE);
+	perl_eval_pv(code.c_str(), FALSE);
 
 	if (SvTRUE(ERRSV))
 	{
@@ -173,8 +173,8 @@ UT_PerlBindings::runCallback(const char* method)
 {
 	dSP;
 	PUSHMARK(SP);
-	call_pv(const_cast<char*> (method),
-			G_VOID | G_DISCARD | G_NOARGS /* | G_EVAL */ );
+	perl_call_pv(const_cast<char*> (method),
+				 G_VOID | G_DISCARD | G_NOARGS /* | G_EVAL */ );
 
 	if (SvTRUE(ERRSV))
 	{
