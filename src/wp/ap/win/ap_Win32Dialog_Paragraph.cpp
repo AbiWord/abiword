@@ -37,7 +37,7 @@
 #include "xap_Win32LabelledSeparator.h"
 
 #include "gr_Win32Graphics.h"
-
+#include "xap_Win32DialogHelper.h"
 #include "ap_Win32Resources.rc2"
 
 /*****************************************************************/
@@ -283,7 +283,7 @@ BOOL AP_Win32Dialog_Paragraph::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lP
 	// sync all controls once to get started
 	// HACK: the first arg gets ignored
 	_syncControls(id_MENU_ALIGNMENT, true);
-
+	XAP_Win32DialogHelper::s_centerDialog(hWnd);	
 	return 1;							// 1 == we did not call SetFocus()
 }
 

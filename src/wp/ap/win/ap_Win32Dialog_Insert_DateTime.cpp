@@ -32,7 +32,7 @@
 #include "ap_Dialog_Id.h"
 #include "ap_Dialog_Insert_DateTime.h"
 #include "ap_Win32Dialog_Insert_DateTime.h"
-
+#include "xap_Win32DialogHelper.h"
 #include "ap_Win32Resources.rc2"
 
 /*****************************************************************/
@@ -133,6 +133,8 @@ BOOL AP_Win32Dialog_Insert_DateTime::_onInitDialog(HWND hWnd, WPARAM wParam, LPA
     m_hwndFormats = GetDlgItem(hWnd, AP_RID_DIALOG_DATETIME_LIST_FORMATS);
     SetFormatsList();
     SendMessage(m_hwndFormats,LB_SETCURSEL,(WPARAM)0,(LPARAM)0);
+    
+    XAP_Win32DialogHelper::s_centerDialog(hWnd);	
 
     return 1;             // 1 == we did not call SetFocus()
 }

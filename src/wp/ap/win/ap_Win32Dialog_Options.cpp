@@ -44,7 +44,7 @@
 #include "ap_Win32Resources.rc2"
 #include "ap_Win32Dialog_Options.h"
 #include "ap_Win32Dialog_Background.h"
-
+#include "xap_Win32DialogHelper.h"
 #include "fp_PageSize.h"
 
 /*****************************************************************/
@@ -397,7 +397,7 @@ BOOL AP_Win32Dialog_Options::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPar
 		
 	//Subclass
 	gLong = (WNDPROC) SetWindowLong(m_hwndTab, GWL_WNDPROC, (long)tabWindowProc);
-
+	XAP_Win32DialogHelper::s_centerDialog(hWnd);	
 	return 1;							// 1 == we did not call SetFocus()
 }
 

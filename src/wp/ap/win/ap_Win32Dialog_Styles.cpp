@@ -33,7 +33,7 @@
 #include "ap_Win32Dialog_Styles.h"
 
 #include "ap_Win32Resources.rc2"
-
+#include "xap_Win32DialogHelper.h"
 #include "fl_DocLayout.h"
 #include "fl_BlockLayout.h"
 #include "fv_View.h"
@@ -494,6 +494,8 @@ BOOL AP_Win32Dialog_Styles::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPara
 		_populatePreviews(true);
 
 	}
+	
+	XAP_Win32DialogHelper::s_centerDialog(hWnd);	
 	return 1;							// 1 == we did not call SetFocus()
 }
 

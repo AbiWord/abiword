@@ -32,7 +32,7 @@
 #include "xap_Dialog_Id.h"
 #include "xap_Win32Dlg_FileOpenSaveAs.h"
 #include "xap_Win32Dlg_PluginManager.h"
-
+#include "xap_Win32DialogHelper.h"
 #include "xap_Module.h"
 #include "xap_ModuleManager.h"
 
@@ -214,7 +214,7 @@ BOOL XAP_Win32Dialog_PluginManager::_onInitDialog(HWND hWnd, WPARAM wParam, LPAR
 
 	// make sure first tab is selected.
 	ShowWindow((HWND)m_vecSubDlgHWnd.getNthItem(0), SW_SHOW);
-
+	XAP_Win32DialogHelper::s_centerDialog(hWnd);	
 	return 1;							// 1 == we did not call SetFocus()
 }
 

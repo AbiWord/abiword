@@ -31,7 +31,7 @@
 #include "ap_Dialog_Id.h"
 #include "ap_Dialog_InsertBookmark.h"
 #include "ap_Win32Dialog_InsertBookmark.h"
-
+#include "xap_Win32DialogHelper.h"
 #include "ap_Win32Resources.rc2"
 
 /*****************************************************************/
@@ -98,7 +98,7 @@ BOOL AP_Win32Dialog_InsertBookmark::_onInitDialog(HWND hWnd, WPARAM wParam, LPAR
 		_win32Dialog.addItemToCombo( AP_RID_DIALOG_INSERTBOOKMARK_CBX_BOOKMARK,
 									 getNthExistingBookmark( i ) );
 	}
-
+	XAP_Win32DialogHelper::s_centerDialog(hWnd);	
 	return 1;
 }
 
