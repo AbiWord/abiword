@@ -2083,7 +2083,7 @@ Defun1(dlgAbout)
 	return true;
 }
 
-Defun1(fileNew)
+Defun(fileNew)
 {
 	FV_View * pView = static_cast<FV_View *>(pAV_View);
 
@@ -2469,7 +2469,7 @@ Defun1(insertClipart)
 
 	if (bOK && pNewFile)
 	{
-		IEGraphicFileType iegft;
+		IEGraphicFileType iegft = IEGFT_Unknown;
 		IE_ImpGraphic *pIEG;
 		FG_Graphic* pFG;
 		
