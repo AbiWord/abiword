@@ -222,7 +222,7 @@ void ev_Win32Keyboard::_emitChar(AV_View * pView,
 
 	UT_UCSChar charData[2];
 	size_t ret;
-	if( m_iconv != UT_ICONV_INVALID && iswascii(b))
+	if( m_iconv != UT_ICONV_INVALID )
 	{
 		// convert to 8bit string and null terminate
 		size_t len_in, len_out;
@@ -321,13 +321,8 @@ EV_EditBits ev_Win32Keyboard::_getModifierState(void)
 int ev_Win32Keyboard::_scanCodeToChars(UINT nVirtKey, UINT wScanCode, CONST PBYTE lpKeyState,
 									   LPWSTR pwszBuff, int cchBuff)
 {
-	if (m_bIsUnicodeInput)
-	{
-		UT_ASSERT(m_pToUnicodeEx);
-		return (*m_pToUnicodeEx)(nVirtKey,wScanCode,lpKeyState,pwszBuff,cchBuff,0,m_hKeyboardLayout);
-	}
-	else
-		return ToAsciiEx(nVirtKey,wScanCode,lpKeyState,(WORD*)pwszBuff,0,m_hKeyboardLayout);
+	UT_ASSERT(m_pToUnicodeEx);
+	return (*m_pToUnicodeEx)(nVirtKey,wScanCode,lpKeyState,pwszBuff,cchBuff,0,m_hKeyboardLayout);
 };
 
 /*****************************************************************/

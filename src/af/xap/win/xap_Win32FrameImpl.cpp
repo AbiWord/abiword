@@ -522,9 +522,9 @@ void XAP_Win32FrameImpl::_nullUpdate (void) const
 	MSG msg;
 	for( int i = 0 ; i < 10 ; i++ )
 	{
-		if( PeekMessageW( &msg, (HWND) NULL, 0, 0, PM_REMOVE) )
+		if( PeekMessage( &msg, (HWND) NULL, 0, 0, PM_REMOVE) )
 		{
-			DispatchMessageW(&msg); 
+			DispatchMessage(&msg); 
 		} 
 	}
 }
@@ -570,7 +570,7 @@ bool XAP_Win32FrameImpl::_RegisterClass(XAP_Win32App * app)
 	wndclass.hCursor			= LoadCursor(NULL, IDC_ARROW);
 	wndclass.hbrBackground		= (HBRUSH)(COLOR_BTNFACE+1);
 	wndclass.lpszMenuName		= NULL;
-	wndclass.lpszClassName		= app->getApplicationName();
+	wndclass.lpszClassName		= app->getApplicationName();;
 	wndclass.hIconSm			= app->getSmallIcon();
 
 	ATOM a = RegisterClassEx(&wndclass);

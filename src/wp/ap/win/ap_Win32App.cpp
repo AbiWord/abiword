@@ -1106,7 +1106,7 @@ __try
 		}	
 
 		// do dispatch loop
-		while( GetMessageW(&msg, NULL, 0, 0) )
+		while( GetMessage(&msg, NULL, 0, 0) )
 	    {
    	      	// TranslateMessage is not called because AbiWord
 	      	// has its own way of decoding keyboard accelerators
@@ -1114,11 +1114,11 @@ __try
 				continue;
 				
 			TranslateMessage(&msg);	
-	    	DispatchMessageW(&msg);	
+	    	DispatchMessage(&msg);	
 	    	
 			// Check for idle condition
 			while( !UT_Win32Idle::_isEmpty() &&
-                   !PeekMessageW(&msg, NULL, 0, 0, PM_NOREMOVE) ) 
+                   !PeekMessage(&msg, NULL, 0, 0, PM_NOREMOVE) ) 
 			{
 				// Fire idle functions when no pending messages
 		    	UT_Win32Idle::_fireall();
