@@ -123,24 +123,36 @@ class ABI_EXPORT GR_Font
 };
 
 
+/*
+    GR_GraphicsId defines IDs returned by GR_Graphics::getClassId()
+    used to identify the class in communication with GR_GraphicsFactory.
 
+	ID's for plugins are auto-generated at load time from the range
+	between GRID_LAST_BULT_IN and GRID_UNKNOWN. The downside of this
+	is that auto-generated IDs cannot be stored in preference files.
+	It is, therefore, desirable that plugins be assigned fixed IDs as
+	well (we could use UUIDs to identify graphics, but that seems an
+	overkill).
+ */
 enum GR_GraphicsId
 {
-	/* id's for built-in classes*/
-	GRID_DEFAULT = 0,
-	GRID_BEOS,
-	GRID_COCOA,
-	GRID_QNX,
-	GRID_WIN32,
-	GRID_UNIX,
-	GRID_UNIX_PS,
-	GRID_UNIX_NULL,
-	GRID_UNIX_PANGO,
-	GRID_WIN32_UNISCRIBE,
+	/* id's for built-in classes: DO NOT CHANGE THE ASSIGNED VALUES !!!*/
+	GRID_DEFAULT         =  0,
+	GRID_BEOS            =  1,
+	GRID_COCOA           =  2,
+	GRID_QNX             =  3,
+	GRID_WIN32           =  4,
+	GRID_UNIX            =  5,
+	GRID_UNIX_PS         =  6,
+	GRID_UNIX_NULL       =  7,
+	GRID_UNIX_PANGO      =  8,
+	GRID_WIN32_UNISCRIBE =  9,
+
+	/*add new built-in ids here*/
 	
 	GRID_LAST_BUILT_IN = 0x0000ffff,
 
-	/* id's for plugins should be from between here */
+	/* id's for plugins will be auto-generatoed from between here */
 	
 	GRID_UNKNOWN = 0xffffffff
 };
@@ -158,7 +170,44 @@ enum GR_Capability
     The following class serves as an argument to GR_GraphicsFactory::newGraphics()
 
     There should be only one derived class for each platform (not each
-    graphics).
+    graphics), capable of holding information for all different
+    graphics classes on the platform.
+
+    For example, on Unix we have three different classes with the
+    following constructors:
+    
+   	    GR_UnixGraphics(GdkWindow * win, XAP_UnixFontManager * fontManager, XAP_App *app)
+
+		PS_Graphics(const char * szFilename,
+		            const char * szTitle,
+					const char * szSoftwareNameAndVersion,
+					XAP_UnixFontManager * fontManager,
+					bool		 bIsFile,
+					XAP_App *pApp);
+					
+		UnixNull_Graphics(XAP_UnixFontManager * fontManager,XAP_App *pApp);
+
+	GR_UnixAllocInfo will need to be able to hold parameters for all
+	the constructors, something like
+
+	    class GR_UnixAllocInfo
+	    {
+	        GdkWindow *           win;
+	        XAP_UnixFontManager * fontManager;
+	        XAP_App *             app;
+			const char *          szFilename;
+		    const char *          szTitle;
+			const char *          szSoftwareNameAndVersion;
+			bool		          bIsFile;
+	    };
+
+	This does impose some limitations on classes implemented as
+	plugins: if the plugin class needs something that is not in the
+	platform class and cannot obtain it by other means (for example by
+	quering XAP_App), the AllocInfo class will need to be extended.
+
+	Platform implementation needs to override getType() so that
+	graphicsAllocator() can do type-checking.
 */
 class GR_AllocInfo
 {
