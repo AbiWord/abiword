@@ -279,11 +279,42 @@ void PS_Graphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	if (!m_bStartPage)
 		return;
 
-	_drawCharsUTF8(pChars, iCharOffset, iLength, tdu(xoff), tdu(yoff), pCharWidths);
+	if (!pCharWidths) {
+		_drawCharsUTF8(pChars, iCharOffset, iLength, tdu(xoff), tdu(yoff));
+		return;
+	}
+
+	// this following nastiness is needed for justified text, since it now
+	// uses charwidths to specify how large a space or tab character should be
+	// this means that we must emit moveto()s instead of spaces
+	UT_UTF8String utf8;
+	bool last_was_space = false;
+	UT_sint32 advance = 0, prevAdvance = 0;
+
+	for (UT_sint32 i = 0; i < iLength; i++) {
+		UT_UCS4Char ch = pChars[iCharOffset + i];
+		advance += pCharWidths [i];
+
+		if (UT_UCS4_isspace (ch)) { // not sure if this needs to be a UCS4 space test or just an ASCII space test...
+			if (!last_was_space && !utf8.empty()) { // draw non-space chars at every flush
+				_drawCharsUTF8(utf8.ucs4_str().ucs4_str(), 0, utf8.size(), tdu (xoff + prevAdvance), tdu(yoff));
+				utf8.clear ();
+			} else
+				last_was_space = true;		   
+			prevAdvance = advance;
+		} else {
+			last_was_space = false;
+			utf8.appendUCS4 (&ch, 1);
+		}
+	}
+
+	// chars remain - flush buffer
+	if (!utf8.empty ())
+		_drawCharsUTF8(utf8.ucs4_str().ucs4_str(), 0, utf8.size(), tdu (xoff + prevAdvance), tdu(yoff));
 }
 
 void PS_Graphics::_drawCharsUTF8(const UT_UCSChar* pChars, UT_uint32 iCharOffset,
-							 UT_uint32 iLength, UT_sint32 xoff, UT_sint32 yoff, int * pCharWidths)
+							 UT_uint32 iLength, UT_sint32 xoff, UT_sint32 yoff)
 {
 	xxx_UT_DEBUGMSG(("_drawCharsUTF8\n"));
 	const encoding_pair*  enc = 0;

@@ -144,8 +144,7 @@ protected:
 									UT_uint32			iCharOffset,
 								 	UT_uint32			iLength,
 								 	UT_sint32 			xoff,
-								 	UT_sint32 			yoff, 
-								    int *				pCharWidths);
+								    UT_sint32 			yoff); 
 								 		
 	UT_Vector		m_vecFontList;
 	PSFont *		m_pCurrentFont;
