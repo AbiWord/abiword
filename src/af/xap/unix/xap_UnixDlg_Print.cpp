@@ -33,6 +33,8 @@
 #include <glib.h>
 
 #define DELETEP(p)	do { if (p) delete(p); (p)=NULL; } while (0)
+#define MyMin(a,b)	(((a)<(b)) ? (a) : (b))
+#define MyMax(a,b)	(((a)>(b)) ? (b) : (a))
 
 /*****************************************************************/
 AP_Dialog * AP_UnixDialog_Print::static_constructor(AP_DialogFactory * pFactory,
@@ -365,7 +367,7 @@ void AP_UnixDialog_Print::_raisePrintDialog(void)
 			gtk_toggle_button_set_state (GTK_TOGGLE_BUTTON (buttonAll), TRUE);
 
 
-		char str[5];
+		char str[30];
 		sprintf(str, "%ld", m_persistPrintDlg.nFromPage);
 		gtk_entry_set_text (GTK_ENTRY (entryFrom), str);
 		sprintf(str, "%ld", m_persistPrintDlg.nToPage);
@@ -380,7 +382,7 @@ void AP_UnixDialog_Print::_raisePrintDialog(void)
 
 	//m_pUnixFrame = NULL;
 
-	if(m_answer == a_OK)
+	if (m_answer == a_OK)
 	{
 		m_bDoPrintRange		= GTK_TOGGLE_BUTTON(buttonRange)->active;
 		m_bDoPrintSelection = GTK_TOGGLE_BUTTON(buttonSelection)->active;
@@ -389,21 +391,19 @@ void AP_UnixDialog_Print::_raisePrintDialog(void)
 		m_nCopies			= gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(spinCopies));
 
 		// TODO check for valid entries
-		// TODO this should really be done before they hit print, maybe when field loses focus 
-		if(m_bDoPrintRange)
+
+		if (m_bDoPrintRange)
 		{
 			UT_uint32 first = atoi(gtk_entry_get_text(GTK_ENTRY(entryFrom)));
+			if (first < m_persistPrintDlg.nMinPage)
+				first = m_persistPrintDlg.nMinPage;
+
 			UT_uint32 last = atoi(gtk_entry_get_text(GTK_ENTRY(entryTo)));
-			if( (first <= last) && (first >= m_persistPrintDlg.nMinPage) && (last <= m_persistPrintDlg.nMaxPage) )
-			{
-				m_nFirstPage = first;
-				m_nLastPage = last;
-			}
-			else
-			{
-				m_nFirstPage = m_persistPrintDlg.nMinPage;
-				m_nLastPage = m_persistPrintDlg.nMaxPage;
-			}
+			if (last > m_persistPrintDlg.nMaxPage)
+				last = m_persistPrintDlg.nMaxPage;
+			
+			m_nFirstPage = MyMin(first,last);
+			m_nLastPage = MyMax(first,last);
 		}
 
 		UT_cloneString(m_szPrintCommand, gtk_entry_get_text(GTK_ENTRY(entryPrint)));

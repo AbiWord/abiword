@@ -1682,13 +1682,8 @@ static UT_Bool s_doPrint(FV_View * pView, UT_Bool bTryToSuppressDialog)
 		UT_uint32 nFromPage, nToPage;
 		(void)pDialog->getDoPrintRange(&nFromPage,&nToPage);
 
-		// TODO is it really okay to clamp the value like this?
-		// TODO we're assuming that the user typed something out of range, and we're silently fixing it.
-
-		if ((UT_sint32) nToPage > pDocLayout->countPages())
-		{
-			nToPage = pDocLayout->countPages();
-		}
+		// nFromPage and nToPage are range checked in the platform
+		// dialog code, so we can freely assert this here.
 		
 		UT_ASSERT((UT_sint32) nToPage <= pDocLayout->countPages());
 		

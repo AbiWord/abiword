@@ -37,9 +37,10 @@ public:
 
 protected:
 
-	// user interaction
-	void 			notifyError_OKOnly(AP_Frame * pFrame, const char * message);
-	UT_Bool 		askOverwrite_YesNo(AP_Frame * pFrame, const char * fileName);
+	UT_Bool					_run_gtk_main(AP_Frame * pFrame, void * pFSvoid, UT_Bool bCheckWritePermission);
+	void 					_notifyError_OKOnly(AP_Frame * pFrame, const char * message);
+	void 					_notifyError_OKOnly(AP_Frame * pFrame, const char * message, const char * sz1);
+	UT_Bool 				_askOverwrite_YesNo(AP_Frame * pFrame, const char * fileName);
 	
 	AP_UnixFrame *			m_pUnixFrame;
 };
