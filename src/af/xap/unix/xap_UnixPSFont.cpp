@@ -40,7 +40,7 @@
   machine and their metrics).
 
   It's not pretty, and these wrappers should probably go
-  away if someone gets around to making DG_Font basically
+  away if someone gets around to making GR_Font basically
   AP_UnixFont, but at a cross platform class where there
   is no Windows implementation.
 */

@@ -37,8 +37,8 @@ public:
 	virtual void			runModal(XAP_Frame * pFrame);
 	virtual void			useEnd(void);
 
-	virtual DG_Graphics *	getPrinterGraphicsContext(void);
-	virtual void			releasePrinterGraphicsContext(DG_Graphics *);
+	virtual GR_Graphics *	getPrinterGraphicsContext(void);
+	virtual void			releasePrinterGraphicsContext(GR_Graphics *);
 
 	static AP_Dialog *		static_constructor(AP_DialogFactory *, AP_Dialog_Id id);
 

@@ -35,7 +35,7 @@
 /*****************************************************************/
 /*****************************************************************/
 
-class PS_Graphics : public DG_Graphics
+class PS_Graphics : public GR_Graphics
 {
 public:
 	/* TODO add other constructors to route to lp/lpr rather than a file */
@@ -49,7 +49,7 @@ public:
 	virtual void drawChars(const UT_UCSChar* pChars, 
 						   int iCharOffset, int iLength,
 						   UT_sint32 xoff, UT_sint32 yoff);
-	virtual void setFont(DG_Font* pFont);
+	virtual void setFont(GR_Font* pFont);
 
 	virtual UT_uint32 getFontAscent();
 	virtual UT_uint32 getFontDescent();
@@ -59,8 +59,8 @@ public:
 	
 	virtual UT_uint32 getResolution() const;
 	virtual void setColor(UT_RGBColor& clr);
-	virtual DG_Font* getGUIFont();
-	virtual DG_Font* findFont(const char* pszFontFamily, 
+	virtual GR_Font* getGUIFont();
+	virtual GR_Font* findFont(const char* pszFontFamily, 
 							  const char* pszFontStyle, 
 							  const char* pszFontVariant, 
 							  const char* pszFontWeight, 
@@ -78,7 +78,7 @@ public:
 						UT_sint32 width, UT_sint32 height);
 	virtual void clearArea(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
 	
-	virtual UT_Bool queryProperties(DG_Graphics::Properties gp) const;
+	virtual UT_Bool queryProperties(GR_Graphics::Properties gp) const;
 	
 	virtual UT_Bool startPrint(void);
 	virtual UT_Bool startPage(const char * szPagelabel, UT_uint32 pageNumber,

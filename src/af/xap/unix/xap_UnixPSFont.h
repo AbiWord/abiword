@@ -32,7 +32,7 @@
 /*****************************************************************/
 /*****************************************************************/
 
-class PSFont : public DG_Font
+class PSFont : public GR_Font
 {
 public:
 	PSFont(AP_UnixFont * hFont, UT_uint32 size);
@@ -52,7 +52,7 @@ protected:
 };
 
 /*
-class ps_Font : public DG_Font
+class ps_Font : public GR_Font
 {
 public:
 	ps_Font(UT_uint32 ndx);

@@ -39,7 +39,7 @@
 
 /*****************************************************************/
 
-UnixFont::UnixFont(AP_UnixFont * pFont, UT_uint32 size)
+GR_UnixFont::GR_UnixFont(AP_UnixFont * pFont, UT_uint32 size)
 {
 	UT_ASSERT(pFont);
   
@@ -47,26 +47,26 @@ UnixFont::UnixFont(AP_UnixFont * pFont, UT_uint32 size)
 	m_pointSize = size;
 }
 
-UnixFont::~UnixFont(void)
+GR_UnixFont::~GR_UnixFont(void)
 {
 	;
 	// don't remove where our font points, since it's
 	// owned by the font manager (we don't keep our own copy)
 }
 
-AP_UnixFont * UnixFont::getUnixFont(void)
+AP_UnixFont * GR_UnixFont::getUnixFont(void)
 {
 	UT_ASSERT(m_hFont);
 	return m_hFont;
 }
 
-GdkFont * UnixFont::getGdkFont(void)
+GdkFont * GR_UnixFont::getGdkFont(void)
 {
 	UT_ASSERT(m_hFont);
 	return m_hFont->getGdkFont(m_pointSize);
 }
 
-UNIXGraphics::UNIXGraphics(GdkWindow * win, AP_UnixFontManager * fontManager)
+GR_UNIXGraphics::GR_UNIXGraphics(GdkWindow * win, AP_UnixFontManager * fontManager)
 {
 	m_pWin = win;
 	m_pFontManager = fontManager;
@@ -97,12 +97,12 @@ UNIXGraphics::UNIXGraphics(GdkWindow * win, AP_UnixFontManager * fontManager)
 	memset(m_aCharWidths, 0, 256 * sizeof(int));
 }
 
-UNIXGraphics::~UNIXGraphics()
+GR_UNIXGraphics::~GR_UNIXGraphics()
 {
 	DELETEP(m_pFontGUI);
 }
 
-UT_Bool UNIXGraphics::queryProperties(DG_Graphics::Properties gp) const
+UT_Bool GR_UNIXGraphics::queryProperties(GR_Graphics::Properties gp) const
 {
 	switch (gp)
 	{
@@ -116,7 +116,7 @@ UT_Bool UNIXGraphics::queryProperties(DG_Graphics::Properties gp) const
 	}
 }
 
-void UNIXGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
+void GR_UNIXGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 							 int iLength, UT_sint32 xoff, UT_sint32 yoff)
 {
 	GdkWindowPrivate *drawable_private;
@@ -154,11 +154,11 @@ void UNIXGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	delete pNChars;
 }
 
-void UNIXGraphics::setFont(DG_Font* pFont)
+void GR_UNIXGraphics::setFont(GR_Font* pFont)
 {
 	UT_ASSERT(pFont);
 
-	UnixFont * pUFont = static_cast<UnixFont*> (pFont);
+	GR_UnixFont * pUFont = static_cast<GR_UnixFont*> (pFont);
   
 	if (m_pFont)
     {
@@ -179,7 +179,7 @@ void UNIXGraphics::setFont(DG_Font* pFont)
 	memset(m_aCharWidths, 0, 256 * sizeof(int));
 }
 
-UT_uint32 UNIXGraphics::getFontHeight()
+UT_uint32 GR_UNIXGraphics::getFontHeight()
 {
 	UT_ASSERT(m_pFont);
 	UT_ASSERT(m_pGC);
@@ -190,7 +190,7 @@ UT_uint32 UNIXGraphics::getFontHeight()
 	return pXFont->ascent + pXFont->descent;
 }
 
-UT_uint32 UNIXGraphics::measureString(const UT_UCSChar* s, int iOffset,
+UT_uint32 GR_UNIXGraphics::measureString(const UT_UCSChar* s, int iOffset,
 									  int num,  unsigned short* pWidths)
 {
 	UT_ASSERT(m_pFont);
@@ -234,12 +234,12 @@ UT_uint32 UNIXGraphics::measureString(const UT_UCSChar* s, int iOffset,
 	return charWidth;
 }
 
-UT_uint32 UNIXGraphics::getResolution() const
+UT_uint32 GR_UNIXGraphics::getResolution() const
 {
 	return 75;
 }
 
-void UNIXGraphics::setColor(UT_RGBColor& clr)
+void GR_UNIXGraphics::setColor(UT_RGBColor& clr)
 {
 	UT_ASSERT(m_pGC);
 	GdkColor c;
@@ -269,7 +269,7 @@ void UNIXGraphics::setColor(UT_RGBColor& clr)
 	XChangeGC(pgc->xdisplay, pgc->xgc, GCForeground | GCFunction, &gcv);
 }
 
-DG_Font* UNIXGraphics::getGUIFont(void)
+GR_Font* GR_UNIXGraphics::getGUIFont(void)
 {
 	if (!m_pFontGUI)
 	{
@@ -277,14 +277,14 @@ DG_Font* UNIXGraphics::getGUIFont(void)
 		AP_UnixFont * font = m_pFontManager->getDefaultFont();
 		UT_ASSERT(font);
 		
-		m_pFontGUI = new UnixFont(font, 10);
+		m_pFontGUI = new GR_UnixFont(font, 10);
 		UT_ASSERT(m_pFontGUI);
 	}
 
 	return m_pFontGUI;
 }
 
-DG_Font* UNIXGraphics::findFont(const char* pszFontFamily, 
+GR_Font* GR_UNIXGraphics::findFont(const char* pszFontFamily, 
 								const char* pszFontStyle, 
 								const char* /*pszFontVariant*/, 
 								const char* pszFontWeight, 
@@ -326,7 +326,7 @@ DG_Font* UNIXGraphics::findFont(const char* pszFontFamily,
 	}
 
 	// Request the appropriate AP_UnixFont::, and bury it in an
-	// instance of a UnixFont:: with the correct size.
+	// instance of a GR_UnixFont:: with the correct size.
 	AP_UnixFont * unixfont = m_pFontManager->getFont(pszFontFamily, s);
 	AP_UnixFont * item = NULL;
 	if (unixfont)
@@ -341,14 +341,14 @@ DG_Font* UNIXGraphics::findFont(const char* pszFontFamily,
 		item = new AP_UnixFont(*m_pFontManager->getFont("Times New Roman", s));
 	}
 	
-	UnixFont * pFont = new UnixFont(item, convertDimension(pszFontSize));
+	GR_UnixFont * pFont = new GR_UnixFont(item, convertDimension(pszFontSize));
 
 	UT_ASSERT(pFont);
 
 	return pFont;
 }
 
-UT_uint32 UNIXGraphics::getFontAscent()
+UT_uint32 GR_UNIXGraphics::getFontAscent()
 {
 	UT_ASSERT(m_pFont);
 	UT_ASSERT(m_pGC);
@@ -360,7 +360,7 @@ UT_uint32 UNIXGraphics::getFontAscent()
 	return pXFont->ascent;
 }
 
-UT_uint32 UNIXGraphics::getFontDescent()
+UT_uint32 GR_UNIXGraphics::getFontDescent()
 {
 	UT_ASSERT(m_pFont);
 	UT_ASSERT(m_pGC);
@@ -371,19 +371,19 @@ UT_uint32 UNIXGraphics::getFontDescent()
 	return pXFont->descent;
 }
 
-void UNIXGraphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
+void GR_UNIXGraphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
 							UT_sint32 y2)
 {
 	gdk_draw_line(m_pWin, m_pGC, x1, y1, x2, y2);
 }
 
-void UNIXGraphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
+void GR_UNIXGraphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
 			    UT_sint32 y2)
 {
 	gdk_draw_line(m_pWin, m_pXORGC, x1, y1, x2, y2);
 }
 
-void UNIXGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
+void GR_UNIXGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 {
 	GdkPoint * points = (GdkPoint *)calloc(nPoints, sizeof(GdkPoint));
 	UT_ASSERT(points);
@@ -395,7 +395,7 @@ void UNIXGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 		// one pixel beyond where GDK draws it (even though both coordinate
 		// systems start at 0,0 (?)).  Subtracting one clears this up so
 		// that the poly line is in the correct place relative to where
-		// the rest of UNIXGraphics:: does things (drawing text, clearing
+		// the rest of GR_UNIXGraphics:: does things (drawing text, clearing
 		// areas, etc.).
 		points[i].y = pts[i].y - 1;	
 	}
@@ -405,7 +405,7 @@ void UNIXGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 	FREEP(points);
 }
 
-void UNIXGraphics::invertRect(const UT_Rect* pRect)
+void GR_UNIXGraphics::invertRect(const UT_Rect* pRect)
 {
 	UT_ASSERT(pRect);
 	
@@ -413,7 +413,7 @@ void UNIXGraphics::invertRect(const UT_Rect* pRect)
 					   pRect->width, pRect->height);
 }
 
-void UNIXGraphics::setClipRect(const UT_Rect* pRect)
+void GR_UNIXGraphics::setClipRect(const UT_Rect* pRect)
 {
 	if (pRect)
 	{
@@ -434,7 +434,7 @@ void UNIXGraphics::setClipRect(const UT_Rect* pRect)
 	}
 }
 
-void UNIXGraphics::fillRect(UT_RGBColor& c, UT_sint32 x, UT_sint32 y,
+void GR_UNIXGraphics::fillRect(UT_RGBColor& c, UT_sint32 x, UT_sint32 y,
 							UT_sint32 w, UT_sint32 h)
 {
 	// save away the current color, and restore it after we fill the rect
@@ -463,7 +463,7 @@ void UNIXGraphics::fillRect(UT_RGBColor& c, UT_sint32 x, UT_sint32 y,
 	gdk_gc_set_foreground(m_pGC, &oColor);
 }
 
-void UNIXGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
+void GR_UNIXGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 {
 	GdkWindowPrivate* pPWin = (GdkWindowPrivate*) m_pWin;
 
@@ -498,7 +498,7 @@ void UNIXGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 	
 }
 
-void UNIXGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
+void GR_UNIXGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 						  UT_sint32 x_src, UT_sint32 y_src,
 						  UT_sint32 width, UT_sint32 height)
 {
@@ -506,7 +506,7 @@ void UNIXGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 						 m_pWin, x_src, y_src, width, height);
 }
 
-void UNIXGraphics::clearArea(UT_sint32 x, UT_sint32 y,
+void GR_UNIXGraphics::clearArea(UT_sint32 x, UT_sint32 y,
 							 UT_sint32 width, UT_sint32 height)
 {
 //	UT_DEBUGMSG(("ClearArea: %d %d %d %d\n", x, y, width, height));
@@ -534,20 +534,20 @@ void UNIXGraphics::clearArea(UT_sint32 x, UT_sint32 y,
 	}
 }
 
-UT_Bool UNIXGraphics::startPrint(void)
+UT_Bool GR_UNIXGraphics::startPrint(void)
 {
 	UT_ASSERT(0);
 	return UT_FALSE;
 }
 
-UT_Bool UNIXGraphics::startPage(const char * /*szPageLabel*/, UT_uint32 /*pageNumber*/,
+UT_Bool GR_UNIXGraphics::startPage(const char * /*szPageLabel*/, UT_uint32 /*pageNumber*/,
 								UT_Bool /*bPortrait*/, UT_uint32 /*iWidth*/, UT_uint32 /*iHeight*/)
 {
 	UT_ASSERT(0);
 	return UT_FALSE;
 }
 
-UT_Bool UNIXGraphics::endPrint(void)
+UT_Bool GR_UNIXGraphics::endPrint(void)
 {
 	UT_ASSERT(0);
 	return UT_FALSE;

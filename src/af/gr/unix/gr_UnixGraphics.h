@@ -30,15 +30,15 @@
 // a wrapper around the xap/unix/xap_UnixFont.h class,
 // but if we got rid of it, we'd break the methods that
 // poke and prod this class (XP format code) which
-// expects to use a platform-independent DG_Font *
-// for all its work.  DG_Font is an empty class, it only
+// expects to use a platform-independent GR_Font *
+// for all its work.  GR_Font is an empty class, it only
 // serves as a typing tool, but it breaks my xap stuff.
 
-class UnixFont : public DG_Font
+class GR_UnixFont : public GR_Font
 {
 public:
-  UnixFont(AP_UnixFont * hFont, UT_uint32 size);
-  ~UnixFont(void);
+  GR_UnixFont(AP_UnixFont * hFont, UT_uint32 size);
+  ~GR_UnixFont(void);
   
   // this shouldn't need to be called to draw things,
   // since it has no idea of "size"; it's just
@@ -54,22 +54,22 @@ protected:
   UT_uint32				m_pointSize;
 };
 
-class UNIXGraphics : public DG_Graphics
+class GR_UNIXGraphics : public GR_Graphics
 {
 public:
-  UNIXGraphics(GdkWindow * win, AP_UnixFontManager * fontManager);
-  ~UNIXGraphics();
+  GR_UNIXGraphics(GdkWindow * win, AP_UnixFontManager * fontManager);
+  ~GR_UNIXGraphics();
 
   virtual void drawChars(const UT_UCSChar* pChars, int iCharOffset,
 			 int iLength, UT_sint32 xoff, UT_sint32 yoff);
-  virtual void setFont(DG_Font* pFont);
+  virtual void setFont(GR_Font* pFont);
   virtual UT_uint32 getFontHeight();
   virtual UT_uint32 measureString(const UT_UCSChar*s, int iOffset, int num,
 				  unsigned short* pWidths);
   virtual UT_uint32 getResolution() const;
   virtual void setColor(UT_RGBColor& clr);
-  virtual DG_Font* getGUIFont();
-  virtual DG_Font* findFont(
+  virtual GR_Font* getGUIFont();
+  virtual GR_Font* findFont(
 		const char* pszFontFamily, 
 		const char* pszFontStyle, 
 		const char* pszFontVariant, 
@@ -90,7 +90,7 @@ public:
 					  UT_sint32 width, UT_sint32 height);
   virtual void clearArea(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
   
-  virtual UT_Bool queryProperties(DG_Graphics::Properties gp) const;
+  virtual UT_Bool queryProperties(GR_Graphics::Properties gp) const;
   virtual UT_Bool startPrint(void);
   virtual UT_Bool startPage(const char * szPageLabel, UT_uint32 pageNumber,
 							UT_Bool bPortrait, UT_uint32 iWidth, UT_uint32 iHeight);
@@ -101,8 +101,8 @@ protected:
   GdkGC*       			m_pGC;
   GdkGC*        		m_pXORGC;
   GdkWindow*    		m_pWin;
-  UnixFont*				m_pFont;
-  UnixFont*				m_pFontGUI;
+  GR_UnixFont*			m_pFont;
+  GR_UnixFont*			m_pFontGUI;
   GdkColormap*  		m_pColormap;
   int					m_aCharWidths[256];
   int          			m_iWindowHeight, m_iWindowWidth;

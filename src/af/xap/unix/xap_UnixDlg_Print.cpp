@@ -84,14 +84,14 @@ void AP_UnixDialog_Print::useEnd(void)
 	UT_cloneString(m_persistPrintDlg.szPrintCommand, m_szPrintCommand);
 }
 
-DG_Graphics * AP_UnixDialog_Print::getPrinterGraphicsContext(void)
+GR_Graphics * AP_UnixDialog_Print::getPrinterGraphicsContext(void)
 {
 	UT_ASSERT(m_answer == a_OK);
 
 	return m_pPSGraphics;
 }
 
-void AP_UnixDialog_Print::releasePrinterGraphicsContext(DG_Graphics * pGraphics)
+void AP_UnixDialog_Print::releasePrinterGraphicsContext(GR_Graphics * pGraphics)
 {
 	UT_ASSERT(pGraphics == m_pPSGraphics);
 	

@@ -72,7 +72,7 @@ PS_Graphics::~PS_Graphics()
 	// TODO free stuff
 }
 
-UT_Bool PS_Graphics::queryProperties(DG_Graphics::Properties gp) const
+UT_Bool PS_Graphics::queryProperties(GR_Graphics::Properties gp) const
 {
 	switch (gp)
 	{
@@ -86,7 +86,7 @@ UT_Bool PS_Graphics::queryProperties(DG_Graphics::Properties gp) const
 	}
 }
 
-void PS_Graphics::setFont(DG_Font* pFont)
+void PS_Graphics::setFont(GR_Font* pFont)
 {
 	UT_ASSERT(pFont);
 	PSFont * pNewFont = (static_cast<PSFont*> (pFont));
@@ -176,7 +176,7 @@ void PS_Graphics::setColor(UT_RGBColor& clr)
 	_emit_SetColor();
 }
 
-DG_Font* PS_Graphics::getGUIFont()
+GR_Font* PS_Graphics::getGUIFont()
 {
 	// getGUIFont is only used for drawing UI widgets, which does not apply on paper.
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -184,7 +184,7 @@ DG_Font* PS_Graphics::getGUIFont()
 	return NULL;
 }
 
-DG_Font* PS_Graphics::findFont(const char* pszFontFamily, 
+GR_Font* PS_Graphics::findFont(const char* pszFontFamily, 
 							   const char* pszFontStyle, 
 							   const char* pszFontVariant, 
 							   const char* pszFontWeight, 

@@ -62,7 +62,7 @@ UT_Bool AP_UnixFrame::_showDocument(void)
 		return UT_FALSE;
 	}
 
-	UNIXGraphics * pG = NULL;
+	GR_UNIXGraphics * pG = NULL;
 	FL_DocLayout * pDocLayout = NULL;
 	AV_View * pView = NULL;
 	AV_ScrollObj * pScrollObj = NULL;
@@ -73,10 +73,9 @@ UT_Bool AP_UnixFrame::_showDocument(void)
 	AV_ListenerId lidScrollbarViewListener;
 	UT_uint32 nrToolbars;
 
-	// TODO fix prefix on class UNIXGraphics
 	AP_UnixFontManager * fontManager = ((AP_UnixApp *) getApp())->getFontManager();
 	
-	pG = new UNIXGraphics(m_dArea->window, fontManager);
+	pG = new GR_UNIXGraphics(m_dArea->window, fontManager);
 	ENSUREP(pG);
 	pDocLayout = new FL_DocLayout(static_cast<PD_Document *>(m_pDoc), pG);
 	ENSUREP(pDocLayout);
