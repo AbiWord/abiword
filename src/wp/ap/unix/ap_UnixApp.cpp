@@ -870,7 +870,7 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
 	// HACK : but need to be here to throw the splash screen as
 	// HACK : soon as possible.
 	
-	if (bShowSplash && bShowApp)
+	if (bShowSplash || bShowApp)
 	{
 		gtk_set_locale();
 		gtk_init(&Args.m_argc,&Args.m_argv);
