@@ -51,9 +51,9 @@ AP_Win32Dialog_Replace::AP_Win32Dialog_Replace(AP_DialogFactory * pDlgFactory,
 	: AP_Dialog_Replace(pDlgFactory,id)
 {
 
-	findString = (char *) 0;
-	replaceString = (char *) 0;
-    matchCase = true;
+	m_findString = NULL;
+	m_replaceString = NULL;
+    m_matchCase = UT_TRUE;
 }
 
 AP_Win32Dialog_Replace::~AP_Win32Dialog_Replace(void)

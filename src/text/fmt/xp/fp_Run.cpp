@@ -1022,12 +1022,12 @@ UT_Bool fp_Run::del(UT_uint32 iOffset, UT_uint32 iCount)
 void fp_Run::drawSquiggle(UT_uint32 iOffset, UT_uint32 iLen)
 {
 		UT_Rect rect;
-		UT_sint32 xoff = 0, yoff = 0;
+		UT_sint32 xoff = 0, yoff = 0, width, height;
 		const UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths();  
 		UT_RGBColor redSquiggle(255, 0, 0);
 
 		/* TODO: are these params coorect? */
-		m_pLine->getScreenOffsets(this, m_pLineData, xoff, yoff, 0, 0, UT_TRUE);
+		m_pLine->getScreenOffsets(this, m_pLineData, xoff, yoff, width, height, UT_TRUE);
 
 		_getPartRect( &rect, xoff, yoff, iOffset, iLen, pgbCharWidths);
 

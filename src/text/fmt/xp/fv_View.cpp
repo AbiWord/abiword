@@ -1597,7 +1597,7 @@ void FV_View::findReset(void)
 	
 }
 
-UT_Bool FV_View::findNext(const UT_UCSChar * string, UT_Bool bSelect = UT_TRUE)
+UT_Bool FV_View::findNext(const UT_UCSChar * string, UT_Bool bSelect)
 {
 	UT_ASSERT(string);
 
