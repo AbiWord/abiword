@@ -1455,7 +1455,6 @@ void IE_Imp_RTF::CloseTable(void)
 	{
 		return;
 	}
-
 	if(getTable() && getTable()->wasTableUsed())
 	{
 		UT_DEBUGMSG(("SEVIOR: Table used appened end Table, block \n"));
@@ -3880,6 +3879,17 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		else if (strcmp((char*)pKeyword, "tlhyph") == 0)
 		{
 			m_currentRTFState.m_paraProps.m_curTabLeader = FL_LEADER_HYPHEN;
+			return true;
+		}
+		else if(strcmp((char *) pKeyword, "trautofit") == 0)
+		{
+			if(getTable())
+			{
+				if(param==1)
+				{
+					getTable()->setAutoFit(true);
+				}
+			}
 			return true;
 		}
 		else if (strcmp((char*)pKeyword, "tlul") == 0)
