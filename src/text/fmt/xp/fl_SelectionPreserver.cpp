@@ -37,8 +37,10 @@ FL_SelectionPreserver::~FL_SelectionPreserver ()
 	// restore the selection if we once had it
 	// TODO: this might not be entirely correct, but it's probably
 	// a "close enough" heuristic for this class' uses
-	if (m_bHadSelection)
+	if (m_bHadSelection) {
+		m_pView->cmdUnselectSelection();
 		m_pView->cmdSelect (m_docRange.m_pos1, m_docRange.m_pos2);
+	}
 }
 
 bool FL_SelectionPreserver::cmdCharInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce)
