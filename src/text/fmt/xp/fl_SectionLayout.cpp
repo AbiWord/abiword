@@ -2309,10 +2309,15 @@ bool fl_ShadowListener::populate(PL_StruxFmtHandle sfh,
 	UT_DEBUGMSG(("fl_ShadowListener::populate\n"));
 
 	bool bResult = false;
-	//	bool curInsPoint = m_pDoc->getAllowChangeInsPoint();
-	//	m_pDoc->setDontChangeInsPoint();
 	FV_View* pView = m_pHFSL->getDocLayout()->getView();
-	PT_DocPosition oldPos = pView->getPoint();
+	PT_DocPosition oldPos = 0;
+	//
+	// We're not printing
+	//
+	if(pView != NULL)
+	{
+	        oldPos = pView->getPoint();
+	}
 	switch (pcr->getType())
 	{
 	case PX_ChangeRecord::PXT_InsertSpan:
@@ -2368,17 +2373,24 @@ bool fl_ShadowListener::populate(PL_StruxFmtHandle sfh,
 	default:
 	        UT_DEBUGMSG(("Unknown Change record = %d \n",pcr->getType())); 
 		UT_ASSERT(0);
-		pView->setPoint(oldPos);
-		//		if(curInsPoint)
-		//        m_pDoc->allowChangeInsPoint();
+		//
+		// We're not printing
+		//
+		if(pView != NULL)
+		{
+		        pView->setPoint(oldPos);
+		}
 		return false;
 	}
 
 finish_up:
-	pView->setPoint(oldPos);
-	//	if(curInsPoint)
-	// 	 m_pDoc->allowChangeInsPoint();
-	
+	//
+	// We're not printing
+	//
+	if(pView != NULL)
+	{
+	        pView->setPoint(oldPos);
+	}
 	return bResult;
 }
 
@@ -2392,10 +2404,12 @@ bool fl_ShadowListener::populateStrux(PL_StruxDocHandle sdh,
 	UT_ASSERT(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux);
 	const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);
 
-	//	bool curInsPoint = m_pDoc->getAllowChangeInsPoint();
-	//m_pDoc->setDontChangeInsPoint();
 	FV_View* pView = m_pHFSL->getDocLayout()->getView();
-	PT_DocPosition oldPos = pView->getPoint();
+	PT_DocPosition oldPos = 0;
+	if(pView != NULL)
+	{
+               oldPos = pView->getPoint();
+	}
 
 	switch (pcrx->getStruxType())
 	{
@@ -2467,15 +2481,22 @@ bool fl_ShadowListener::populateStrux(PL_StruxDocHandle sdh,
 			
 	default:
 		UT_ASSERT(0);
-		//     	        if(curInsPoint)
-	 	//        m_pDoc->allowChangeInsPoint();
-		pView->setPoint(oldPos);
+		//
+		// We're not printing
+		//
+		if(pView != NULL)
+		{
+		       pView->setPoint(oldPos);
+		}
 		return false;
 	}
-	pView->setPoint(oldPos);
-	//	if(curInsPoint)
-	// 	 m_pDoc->allowChangeInsPoint();
-
+	//
+	// We're not printing
+	//
+	if(pView != NULL)
+	{
+	        pView->setPoint(oldPos);
+	}
 	return true;
 }
 
