@@ -306,12 +306,12 @@ setPageSize(pFrame, iWidth, iHeight)
 	int iWidth
 	int iHeight
 	CODE:
-		// THIS METHOD DOESN'T WORKS
+		// THIS METHOD DOESN'T WORK
 		AD_Document* ad_doc = pFrame->getCurrentDoc();
 		PD_Document* doc = dynamic_cast<PD_Document*> (ad_doc);
 		if (doc)
 		{
-			fp_PageSize ps(iWidth, iHeight, fp_PageSize::mm);
+			fp_PageSize ps(iWidth, iHeight, DIM_MM);
 //			doc->setPageSize(ps);
 		}
 		
