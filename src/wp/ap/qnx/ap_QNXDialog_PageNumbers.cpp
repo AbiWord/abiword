@@ -120,8 +120,6 @@ AP_QNXDialog_PageNumbers::AP_QNXDialog_PageNumbers(XAP_DialogFactory * pDlgFacto
                                                  XAP_Dialog_Id id)
     : AP_Dialog_PageNumbers(pDlgFactory,id)
 {
-  m_recentAlign   = AP_Dialog_PageNumbers::id_RALIGN;
-  m_recentControl = AP_Dialog_PageNumbers::id_FTR;
   m_qnxGraphics  = NULL;
 }
 

@@ -35,6 +35,7 @@ PLATFORM_OBJS=	$(OBJDIR)/ap_$(ABI_FE)App.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_Lists.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_Options.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_PageNumbers.$(OBJ_SUFFIX)  \
+		$(OBJDIR)/ap_$(ABI_FE)Dialog_PageSetup.$(OBJ_SUFFIX)    \
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_Paragraph.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_Spell.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_Columns.$(OBJ_SUFFIX)	\
@@ -76,6 +77,7 @@ PLATFORM_OBJS+=	$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)App.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Replace.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_WordCount.$(OBJ_SUFFIX)         \
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_PageNumbers.$(OBJ_SUFFIX)       \
+		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_PageSetup.$(OBJ_SUFFIX)       \
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Paragraph.$(OBJ_SUFFIX)         \
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Lists.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Spell.$(OBJ_SUFFIX)		\
@@ -94,6 +96,7 @@ OBJS=		$(PLATFORM_OBJS)				\
 		$(OBJDIR)/ap_Dialog_Lists.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_Dialog_Options.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_Dialog_PageNumbers.$(OBJ_SUFFIX)   \
+		$(OBJDIR)/ap_Dialog_PageSetup.$(OBJ_SUFFIX)     \
 		$(OBJDIR)/ap_Dialog_Paragraph.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_Dialog_Replace.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_Dialog_Spell.$(OBJ_SUFFIX)		\

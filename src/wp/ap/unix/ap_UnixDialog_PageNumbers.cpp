@@ -92,8 +92,8 @@ AP_UnixDialog_PageNumbers::AP_UnixDialog_PageNumbers(XAP_DialogFactory * pDlgFac
                                                  XAP_Dialog_Id id)
     : AP_Dialog_PageNumbers(pDlgFactory,id)
 {
-  m_recentAlign   = AP_Dialog_PageNumbers::id_RALIGN;
-  m_recentControl = AP_Dialog_PageNumbers::id_FTR;
+  m_recentControl = m_control;
+  m_recentAlign   = m_align;
   m_unixGraphics  = NULL;
 }
 
@@ -362,7 +362,6 @@ GtkWidget * AP_UnixDialog_PageNumbers::_constructWindow (void)
 {
   const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-  // TODO: translate
   m_window = gtk_dialog_new ();
   gtk_window_set_title (GTK_WINDOW (m_window), pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Title));
 

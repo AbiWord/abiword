@@ -58,9 +58,6 @@ AP_Win32Dialog_PageNumbers::AP_Win32Dialog_PageNumbers(XAP_DialogFactory* pDlgFa
 	m_pPreviewWidget(0),
 	m_hThisDlg(0)
 {
-	// Bloody baseclasses not intitializing their own bloody data!!! Hate!
-	m_align		= id_CALIGN;
-	m_control	= id_FTR;
 }
 
 

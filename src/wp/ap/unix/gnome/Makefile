@@ -34,6 +34,7 @@ PLATFORM_OBJS+=	$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)App.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_WordCount.$(OBJ_SUFFIX)         \
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Paragraph.$(OBJ_SUFFIX)         \
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_PageNumbers.$(OBJ_SUFFIX)       \
+		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_PageSetup.$(OBJ_SUFFIX)         \
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Lists.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Spell.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Tab.$(OBJ_SUFFIX)		\
@@ -48,6 +49,7 @@ CPPSRCS=		ap_$(ABI_FE)$(ABI_GNOME_PREFIX)App.cpp			\
 			ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Replace.cpp	\
 			ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_WordCount.cpp     \
 			ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_PageNumbers.cpp   \
+			ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_PageSetup.cpp     \
 			ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Paragraph.cpp     \
 			ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Lists.cpp		\
 			ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Spell.cpp		\

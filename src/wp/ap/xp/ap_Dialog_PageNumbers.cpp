@@ -26,6 +26,9 @@ AP_Dialog_PageNumbers::AP_Dialog_PageNumbers (XAP_DialogFactory * pDlgFactory,
 					      XAP_Dialog_Id id)
   : XAP_Dialog_NonPersistent(pDlgFactory,id)
 {
+  m_align   = id_RALIGN;
+  m_control = id_FTR;
+
   m_answer  = a_OK;
   m_pFrame  = NULL;
   m_preview = NULL;

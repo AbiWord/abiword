@@ -48,6 +48,7 @@
 #	include "ap_UnixDialog_Break.h"
 #	include "ap_UnixDialog_Goto.h"
 #       include "ap_UnixDialog_PageNumbers.h"
+#       include "ap_UnixDialog_PageSetup.h"
 #	include "ap_UnixDialog_Paragraph.h"
 #	include "ap_UnixDialog_Options.h"
 #	include "ap_UnixDialog_Spell.h"
@@ -74,6 +75,7 @@
 #       include "ap_UnixGnomeDialog_Insert_DateTime.h"
 #	include "ap_UnixGnomeDialog_Paragraph.h"
 #       include "ap_UnixGnomeDialog_PageNumbers.h"
+#       include "ap_UnixGnomeDialog_PageSetup.h"
 #	include "ap_UnixGnomeDialog_Options.h"
 #	include "ap_UnixGnomeDialog_WordCount.h"
 #	include "ap_UnixGnomeDialog_Field.h"
@@ -108,7 +110,8 @@
 	DeclareDialog(AP_DIALOG_ID_BREAK,			AP_UnixGnomeDialog_Break)
 	DeclareDialog(AP_DIALOG_ID_SPELL,			AP_UnixGnomeDialog_Spell)
 	DeclareDialog(AP_DIALOG_ID_TAB,				AP_UnixGnomeDialog_Tab)
-        DeclareDialog(AP_DIALOG_ID_PAGE_NUMBERS,                 AP_UnixGnomeDialog_PageNumbers)
+        DeclareDialog(AP_DIALOG_ID_PAGE_NUMBERS,                AP_UnixGnomeDialog_PageNumbers)
+        DeclareDialog(AP_DIALOG_ID_FILE_PAGESETUP,              AP_UnixGnomeDialog_PageSetup) 
 	DeclareDialog(AP_DIALOG_ID_PARAGRAPH,		AP_UnixGnomeDialog_Paragraph)
 	DeclareDialog(AP_DIALOG_ID_OPTIONS,			AP_UnixGnomeDialog_Options)
 	DeclareDialog(AP_DIALOG_ID_INSERT_DATETIME,	AP_UnixGnomeDialog_Insert_DateTime)
@@ -125,7 +128,7 @@
 	DeclareDialog(XAP_DIALOG_ID_FILE_SAVEAS,	XAP_UnixDialog_FileOpenSaveAs)
 	DeclareDialog(XAP_DIALOG_ID_PRINT,			XAP_UnixDialog_Print)
 	DeclareDialog(XAP_DIALOG_ID_PRINTTOFILE,	XAP_UnixDialog_FileOpenSaveAs)
-	DeclareDialog(XAP_DIALOG_ID_FONT,			XAP_UnixDialog_FontChooser)
+        DeclareDialog(XAP_DIALOG_ID_FONT,			XAP_UnixDialog_FontChooser)
 	DeclareDialog(XAP_DIALOG_ID_WINDOWMORE,		XAP_UnixDialog_WindowMore)
 	DeclareDialog(XAP_DIALOG_ID_ZOOM,			XAP_UnixDialog_Zoom)
 	DeclareDialog(XAP_DIALOG_ID_INSERT_SYMBOL,  XAP_UnixDialog_Insert_Symbol)
@@ -148,6 +151,7 @@
 	DeclareDialog(AP_DIALOG_ID_LISTS,			AP_UnixDialog_Lists)
 	DeclareDialog(AP_DIALOG_ID_COLUMNS,			AP_UnixDialog_Columns)
 	DeclareDialog(AP_DIALOG_ID_TAB,				AP_UnixDialog_Tab)
+        DeclareDialog(AP_DIALOG_ID_FILE_PAGESETUP,     AP_UnixDialog_PageSetup)
 
 	// ... also add new dialogs here ...
 #   endif
