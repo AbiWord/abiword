@@ -30,13 +30,13 @@
 ## compiler/loader options are used.  It will probably also be used
 ## in constructing the name object file destination directory.
 
-OS_ARCH		:= $(shell uname -m | sed "s/\//-/" )
+#OS_ARCH		:= $(shell uname -m | sed "s/\//-/" )
 #We should change this at some point in time to the generic x86/ppc
-#OS_ARCH		:= $(shell uname -m | sed "s/\//-/" | \
-#		           sed -e s/BePC/x86/ -e s/BeBox/ppc/ )
+OS_ARCH		:= $(shell uname -m | sed "s/\//-/" | \
+	           sed -e s/BePC/x86/ -e s/BeBox/ppc/ )
 
 # These are (probably) optional for your platform.
-x86_ARCH_FLAGS		= 
+X86_ARCH_FLAGS		= 
 PPC_ARCH_FLAGS		=
 
 # Define tools
@@ -73,7 +73,7 @@ OS_CFLAGS		= $(DSO_CFLAGS) $(PLATFORM_FLAGS) $(PORT_FLAGS)
 
 # Architecture-specific flags
 ifeq ($(OS_ARCH), x86)
-PLATFORM_FLAGS		+= $(x86_ARCH_FLAGS)
+PLATFORM_FLAGS		+= $(X86_ARCH_FLAGS)
 endif
 
 ifeq ($(OS_ARCH), ppc)
