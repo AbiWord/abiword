@@ -177,6 +177,9 @@ public:
 	bool					enumDataItems(UT_uint32 k,
 										  void ** ppHandle, const char ** pszName, const UT_ByteBuf ** ppByteBuf, void** ppToken) const;
 	bool                    verifySectionID(const XML_Char * pszId);
+	PL_StruxDocHandle       getLastSectionSDH(void);
+	bool                    changeSectionAttsNoUpdate(PL_StruxDocHandle sdh, const char * attr, const char * attvalue);
+
     bool                    getAttributeFromSDH(PL_StruxDocHandle sdh, const char * szAttribute, const char ** pszValue);
 	// styles
 	void                    getAllUsedStyles(UT_Vector * pVecStyles);

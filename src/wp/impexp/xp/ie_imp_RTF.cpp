@@ -1258,6 +1258,12 @@ IE_Imp_RTF::IE_Imp_RTF(PD_Document * pDocument)
 	m_numLists = 0;
 	m_currentHdrID = 0;
 	m_currentFtrID = 0;
+	m_currentHdrEvenID = 0;
+	m_currentFtrEvenID = 0;
+	m_currentHdrFirstID = 0;
+	m_currentFtrFirstID = 0;
+	m_currentHdrLastID = 0;
+	m_currentFtrLastID = 0;
 	m_parsingHdrFtr = false;
 	m_icurOveride = 0;
 	m_icurOverideLevel = 0;
@@ -1380,6 +1386,12 @@ UT_Error IE_Imp_RTF::_parseFile(FILE* fp)
 	m_currentRTFState.m_destinationState = RTFStateStore::rdsNorm;
 	m_currentHdrID = 0;
 	m_currentFtrID = 0;
+	m_currentHdrEvenID = 0;
+	m_currentFtrEvenID = 0;
+	m_currentHdrFirstID = 0;
+	m_currentFtrFirstID = 0;
+	m_currentHdrLastID = 0;
+	m_currentFtrLastID = 0;
 
 	bool ok = true;
     int cNibble = 2;
@@ -2758,7 +2770,13 @@ bool IE_Imp_RTF::HandleHeaderFooter(RTFHdrFtr::HdrFtrType hftype, UT_uint32 & he
 
 	header = new RTFHdrFtr ();
 	header->m_type = hftype;
-	header->m_id = UT_newNumber();    // TODO: make sure it is unique
+	UT_uint32 id = 0;
+	while(id < 10000)
+	{
+		id  = UT_rand();
+	}
+
+	header->m_id = id;
 
 	m_hdrFtrTable.addItem (header);
 	headerID = header->m_id;
@@ -2769,9 +2787,33 @@ bool IE_Imp_RTF::HandleHeaderFooter(RTFHdrFtr::HdrFtrType hftype, UT_uint32 & he
 		UT_DEBUGMSG(("RTF: \\header stuffed into %d\n",headerID));
 		m_currentHdrID = headerID;
 		break;
+	case RTFHdrFtr::hftHeaderEven:
+		UT_DEBUGMSG(("RTF: \\header Even stuffed into %d\n",headerID));
+		m_currentHdrEvenID = headerID;
+		break;
+	case RTFHdrFtr::hftHeaderFirst:
+		UT_DEBUGMSG(("RTF: \\header First stuffed into %d\n",headerID));
+		m_currentHdrFirstID = headerID;
+		break;
+	case RTFHdrFtr::hftHeaderLast:
+		UT_DEBUGMSG(("RTF: \\header Last stuffed into %d\n",headerID));
+		m_currentHdrLastID = headerID;
+		break;
 	case RTFHdrFtr::hftFooter:
 		UT_DEBUGMSG(("RTF: \\footer stuffed into %d\n",headerID));
 		m_currentFtrID = headerID;
+		break;
+	case RTFHdrFtr::hftFooterEven:
+		UT_DEBUGMSG(("RTF: \\footer Even stuffed into %d\n",headerID));
+		m_currentFtrEvenID = headerID;
+		break;
+	case RTFHdrFtr::hftFooterFirst:
+		UT_DEBUGMSG(("RTF: \\footer stuffed into %d\n",headerID));
+		m_currentFtrFirstID = headerID;
+		break;
+	case RTFHdrFtr::hftFooterLast:
+		UT_DEBUGMSG(("RTF: \\footer stuffed into %d\n",headerID));
+		m_currentFtrLastID = headerID;
 		break;
 	default:
 		UT_ASSERT (UT_SHOULD_NOT_HAPPEN);
@@ -2927,18 +2969,18 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		}
 		else if (strcmp((char*)pKeyword, "footerf") == 0) 
 		{
-			// TODO handle this
-			return SkipCurrentGroup ();
+			UT_uint32 footerID = 0;
+			return HandleHeaderFooter (RTFHdrFtr::hftFooterFirst, footerID);
 		}
 		else if (strcmp((char*)pKeyword, "footerr") == 0) 
 		{
-			// TODO handle this
-			return SkipCurrentGroup ();
+			UT_uint32 footerID = 0;
+			return HandleHeaderFooter (RTFHdrFtr::hftFooter, footerID);
 		}
 		else if (strcmp((char*)pKeyword, "footerl") == 0) 
 		{
-			// TODO handle this
-			return SkipCurrentGroup ();
+			UT_uint32 footerID = 0;
+			return HandleHeaderFooter (RTFHdrFtr::hftFooterEven, footerID);
 		}
 		break;
 	case 'h':
@@ -2949,18 +2991,18 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		}
 		else if (strcmp((char*)pKeyword, "headerf") == 0) 
 		{
-			// TODO handle this
-			return SkipCurrentGroup ();
+			UT_uint32 headerID = 0;
+			return HandleHeaderFooter (RTFHdrFtr::hftHeaderFirst, headerID);
 		}
 		else if (strcmp((char*)pKeyword, "headerr") == 0) 
 		{
-			// TODO handle this
-			return SkipCurrentGroup ();
+			UT_uint32 headerID = 0;
+			return HandleHeaderFooter (RTFHdrFtr::hftHeader, headerID);
 		}
 		else if (strcmp((char*)pKeyword, "headerl") == 0) 
 		{
-			// TODO handle this
-			return SkipCurrentGroup ();
+			UT_uint32 headerID = 0;
+			return HandleHeaderFooter (RTFHdrFtr::hftHeaderEven, headerID);
 		}
 		break;
 	case 'i':
@@ -3941,6 +3983,28 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 		pOver->buildAbiListProperties( &szListID, &szParentID, &szLevel, &szStartat, &szFieldFont, 
 									   &szListDelim, &szListDecimal, &szAlign, &szIndent, 
 									   &szListStyle, iLevel);
+
+//
+// fix up indents.
+//
+		UT_String val;
+		double firstLine = UT_convertToInches(szAlign);
+		double leftIndent = -firstLine + 0.01;
+		if(szIndent && *szIndent)
+		{
+			leftIndent = UT_convertToInches(szIndent);
+		}
+		else
+		{
+			val =  UT_formatDimensionedValue(leftIndent,"in");
+			szIndent = val.c_str();
+		}
+		if((firstLine + leftIndent) < 0.0)
+		{
+			leftIndent = -firstLine +0.01;
+			val =  UT_formatDimensionedValue(leftIndent,"in");
+			szIndent = val.c_str();
+		}
 //
 // Got attributes
 //
@@ -4300,8 +4364,14 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 	XML_Char* pProps = "props";
 	XML_Char propBuffer[1024];	//TODO is this big enough?  better to make it a member and stop running all over the stack
 	XML_Char tempBuffer[128];
-	XML_Char szHdrID[128];
-	XML_Char szFtrID[128];
+	XML_Char szHdrID[20];
+	XML_Char szFtrID[20];
+	XML_Char szHdrEvenID[20];
+	XML_Char szFtrEvenID[20];
+	XML_Char szHdrFirstID[20];
+	XML_Char szFtrFirstID[20];
+	XML_Char szHdrLastID[20];
+	XML_Char szFtrLastID[20];
 	short paramIndex = 0;
 
 	UT_DEBUGMSG (("Applying SectionAttributes\n"));
@@ -4341,7 +4411,7 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 	}
 #endif	
 
-	const XML_Char* propsArray[7];
+	const XML_Char* propsArray[15];
 	propsArray[0] = pProps;
 	propsArray[1] = propBuffer;
 	paramIndex = 2;
@@ -4354,6 +4424,34 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 		propsArray [paramIndex] = szHdrID;
 		paramIndex++;
 	}
+	if (m_currentHdrEvenID != 0) 
+	{
+		UT_DEBUGMSG (("Applying header even\n"));
+		propsArray [paramIndex] = "header-even";
+		paramIndex++;
+		sprintf (szHdrEvenID, "hdrevn%u", m_currentHdrEvenID);
+		propsArray [paramIndex] = szHdrEvenID;
+		paramIndex++;
+	}
+	if (m_currentHdrFirstID != 0) 
+	{
+		UT_DEBUGMSG (("Applying header first\n"));
+		propsArray [paramIndex] = "header-first";
+		paramIndex++;
+		sprintf (szHdrFirstID, "hdrfst%u", m_currentHdrFirstID);
+		propsArray [paramIndex] = szHdrFirstID;
+		paramIndex++;
+	}
+	if (m_currentHdrLastID != 0) 
+	{
+		UT_DEBUGMSG (("Applying header last\n"));
+		UT_ASSERT(0);
+		propsArray [paramIndex] = "header-last";
+		paramIndex++;
+		sprintf (szHdrLastID, "hdrlst%u", m_currentHdrLastID);
+		propsArray [paramIndex] = szHdrLastID;
+		paramIndex++;
+	}
 	if (m_currentFtrID != 0) 
 	{
 		UT_DEBUGMSG (("Applying footer\n"));
@@ -4363,7 +4461,34 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 		propsArray [paramIndex] = szFtrID;
 		paramIndex++;
 	}
-	UT_ASSERT (paramIndex < 7);
+	if (m_currentFtrEvenID != 0) 
+	{
+		UT_DEBUGMSG (("Applying footer even\n"));
+		propsArray [paramIndex] = "footer-even";
+		paramIndex++;
+		sprintf (szFtrEvenID, "ftrevn%u", m_currentFtrEvenID);
+		propsArray [paramIndex] = szFtrEvenID;
+		paramIndex++;
+	}
+	if (m_currentFtrFirstID != 0) 
+	{
+		UT_DEBUGMSG (("Applying footer first\n"));
+		propsArray [paramIndex] = "footer-first";
+		paramIndex++;
+		sprintf (szFtrFirstID, "ftrfst%u", m_currentFtrFirstID);
+		propsArray [paramIndex] = szFtrFirstID;
+		paramIndex++;
+	}
+	if (m_currentFtrLastID != 0) 
+	{
+		UT_DEBUGMSG (("Applying footer last\n"));
+		propsArray [paramIndex] = "footer-last";
+		paramIndex++;
+		sprintf (szFtrLastID, "ftrlst%u", m_currentFtrLastID);
+		propsArray [paramIndex] = szFtrLastID;
+		paramIndex++;
+	}
+	UT_ASSERT (paramIndex < 15);
 	propsArray [paramIndex] = NULL;
 
 	if ((m_pImportFile) || (m_parsingHdrFtr)) // if we are reading a file or parsing a header and footer
@@ -6272,20 +6397,46 @@ void IE_Imp_RTF::_appendHdrFtr ()
 		m_pCurrentCharInPasteBuffer = m_pPasteBuffer;
 		m_dposPaste = FV_DOCPOS_EOD;
 		const XML_Char* propsArray[9];
+		UT_String hdrftrID;
 		switch (header->m_type)
 		{
 		case RTFHdrFtr::hftHeader:
 			sprintf (tempBuffer, "hdr%u", header->m_id);
 			szType = "header";
 			break;
+		case RTFHdrFtr::hftHeaderEven:
+			sprintf (tempBuffer, "hdrevn%u", header->m_id);
+			szType = "header-even";
+			break;
+		case RTFHdrFtr::hftHeaderFirst:
+			sprintf (tempBuffer, "hdrfst%u", header->m_id);
+			szType = "header-first";
+			break;
+		case RTFHdrFtr::hftHeaderLast:
+			sprintf (tempBuffer, "hdrlst%u", header->m_id);
+			szType = "header-last";
+			break;
 		case RTFHdrFtr::hftFooter:
 			sprintf (tempBuffer, "ftr%u", header->m_id);
 			szType = "footer";
+			break;
+		case RTFHdrFtr::hftFooterEven:
+			sprintf (tempBuffer, "ftrevn%u", header->m_id);
+			szType = "footer-even";
+			break;
+		case RTFHdrFtr::hftFooterFirst:
+			sprintf (tempBuffer, "ftrfst%u", header->m_id);
+			szType = "footer-first";
+			break;
+		case RTFHdrFtr::hftFooterLast:
+			sprintf (tempBuffer, "ftrlst%u", header->m_id);
+			szType = "footer-last";
 			break;
 		default:
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		}
 		UT_DEBUGMSG (("id is %s\n", tempBuffer));
+		hdrftrID = tempBuffer;
 		propsArray[0] = "type";
 		propsArray[1] = szType;
 		propsArray[2] = "id";
@@ -6296,6 +6447,11 @@ void IE_Imp_RTF::_appendHdrFtr ()
 		propsArray[7] = "0";
 		propsArray[8] = NULL;
 
+		if(!getDoc()->verifySectionID(hdrftrID.c_str()))
+		{
+			PL_StruxDocHandle sdh = getDoc()->getLastSectionSDH();
+			getDoc()->changeSectionAttsNoUpdate(sdh,szType,hdrftrID.c_str());
+		}
 		getDoc()->appendStrux (PTX_SectionHdrFtr, propsArray);
 		propsArray[0] = NULL;
 		// actually it appears that we have to append a block for some cases.

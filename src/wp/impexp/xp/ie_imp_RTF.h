@@ -149,7 +149,6 @@ struct ABI_EXPORT _rtfListTable
 };
 
 
-
 // Paragraph properties
 struct ABI_EXPORT RTFProps_ParaProps
 {
@@ -379,7 +378,15 @@ struct ABI_EXPORT RTFProps_SectionProps
  */
 struct ABI_EXPORT RTFHdrFtr
 {
-	enum HdrFtrType {hftNone, hftHeader, hftFooter };
+	enum HdrFtrType {hftNone,
+					 hftHeader, 
+					 hftHeaderEven, 
+					 hftHeaderFirst, 
+					 hftHeaderLast,  
+					 hftFooter, 
+					 hftFooterEven, 
+					 hftFooterFirst, 
+					 hftFooterLast };
 
 	RTFHdrFtr () : m_type(hftNone), m_id(0), m_buf(1024) {}
 	
@@ -593,7 +600,6 @@ private:
 	int m_groupCount;
 	bool m_newParaFlagged;
 	bool m_newSectionFlagged;
-
 	int m_cbBin;
 
 	// headers and footers
@@ -603,6 +609,12 @@ private:
 	// TODO: handle \titlepg and \facingpg cases.
 	UT_uint32       m_currentHdrID;     // these are numbers.
 	UT_uint32       m_currentFtrID;
+	UT_uint32       m_currentHdrEvenID;     // these are numbers.
+	UT_uint32       m_currentFtrEvenID;
+	UT_uint32       m_currentHdrFirstID;     // these are numbers.
+	UT_uint32       m_currentFtrFirstID;
+	UT_uint32       m_currentHdrLastID;     // these are numbers.
+	UT_uint32       m_currentFtrLastID;
 
 
 	UT_Stack m_stateStack;

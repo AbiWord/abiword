@@ -537,6 +537,39 @@ bool PD_Document::getAttributeFromSDH(PL_StruxDocHandle sdh, const char * szAttr
 	return true;
 }
 
+bool  PD_Document::changeSectionAttsNoUpdate(PL_StruxDocHandle sdh, const char * attr, const char * attvalue)
+{
+	pf_Frag_Strux * pfStrux = (pf_Frag_Strux *)sdh;
+	UT_ASSERT(pfStrux);
+	UT_ASSERT(pfStrux->getStruxType() == PTX_Section);
+	bool bres = m_pPieceTable->changeSectionAttsNoUpdate(pfStrux, attr, attvalue);
+	return bres;
+}
+
+/*!
+ * This method returns the last pf_Frag_Strux as a PL_StruxDocHandle before the end of the piecetable.
+ */
+PL_StruxDocHandle  PD_Document::getLastSectionSDH(void)
+{
+	pf_Frag * currentFrag = m_pPieceTable->getFragments().getFirst();
+	pf_Frag_Strux * pfSecLast = NULL;
+	while (currentFrag!=m_pPieceTable->getFragments().getLast())
+	{
+		UT_ASSERT(currentFrag);
+		if(currentFrag->getType()  == pf_Frag::PFT_Strux)
+		{
+		     pf_Frag_Strux * pfSec = static_cast<pf_Frag_Strux *>(currentFrag);
+		     if(pfSec->getStruxType() == PTX_Section)
+		     {
+				 pfSecLast = pfSec;
+			 }
+		}
+		currentFrag = currentFrag->getNext();
+	}
+	return (PL_StruxDocHandle *) pfSecLast;
+}
+
+
 /*!
  * This method scans the document to check that the id of a header/footer 
  *  section actually exists in a section somewhere in the document.
@@ -553,52 +586,52 @@ bool PD_Document::verifySectionID(const XML_Char * pszId)
 		     pf_Frag_Strux * pfSec = static_cast<pf_Frag_Strux *>(currentFrag);
 		     if(pfSec->getStruxType() == PTX_Section)
 		     {
-			  indexAP = static_cast<pf_Frag_Text *>(currentFrag)->getIndexAP();
-			  const PP_AttrProp * pAP = NULL;
-			  m_pPieceTable->getAttrProp(indexAP,&pAP);
-			  UT_ASSERT(pAP);
-			  const XML_Char * pszIDName = NULL;
-			  (pAP)->getAttribute("header", pszIDName);
-			  if(pszIDName && UT_XML_stricmp(pszIDName,pszId) == 0)
-			  {
-			      return true;
-			  }
-			  (pAP)->getAttribute("header-first", pszIDName);
-			  if(pszIDName && UT_XML_stricmp(pszIDName,pszId) == 0)
-			  {
-			      return true;
-			  }
-			  (pAP)->getAttribute("header-last", pszIDName);
-			  if(pszIDName && UT_XML_stricmp(pszIDName,pszId) == 0)
-			  {
-			      return true;
-			  }
-			  (pAP)->getAttribute("header-even", pszIDName);
-			  if(pszIDName && UT_XML_stricmp(pszIDName,pszId) == 0)
-			  {
-			      return true;
-			  }
-			  (pAP)->getAttribute("footer", pszIDName);
-			  if(pszIDName && UT_XML_stricmp(pszIDName,pszId) == 0)
-			  {
-			      return true;
-			  }
-			  (pAP)->getAttribute("footer-first", pszIDName);
-			  if(pszIDName && UT_XML_stricmp(pszIDName,pszId) == 0)
-			  {
-			      return true;
-			  }
-			  (pAP)->getAttribute("footer-last", pszIDName);
-			  if(pszIDName && UT_XML_stricmp(pszIDName,pszId) == 0)
-			  {
-			      return true;
-			  }
-			  (pAP)->getAttribute("footer-even", pszIDName);
-			  if(pszIDName && UT_XML_stricmp(pszIDName,pszId) == 0)
-			  {
-			      return true;
-			  }
-		          
+				 indexAP = static_cast<pf_Frag_Text *>(currentFrag)->getIndexAP();
+				 const PP_AttrProp * pAP = NULL;
+				 m_pPieceTable->getAttrProp(indexAP,&pAP);
+				 UT_ASSERT(pAP);
+				 const XML_Char * pszIDName = NULL;
+				 (pAP)->getAttribute("header", pszIDName);
+				 if(pszIDName && UT_XML_stricmp(pszIDName,pszId) == 0)
+				 {
+					 return true;
+				 }
+				 (pAP)->getAttribute("header-first", pszIDName);
+				 if(pszIDName && UT_XML_stricmp(pszIDName,pszId) == 0)
+				 {
+					 return true;
+				 }
+				 (pAP)->getAttribute("header-last", pszIDName);
+				 if(pszIDName && UT_XML_stricmp(pszIDName,pszId) == 0)
+				 {
+					 return true;
+				 }
+				 (pAP)->getAttribute("header-even", pszIDName);
+				 if(pszIDName && UT_XML_stricmp(pszIDName,pszId) == 0)
+				 {
+					 return true;
+				 }
+				 (pAP)->getAttribute("footer", pszIDName);
+				 if(pszIDName && UT_XML_stricmp(pszIDName,pszId) == 0)
+				 {
+					 return true;
+				 }
+				 (pAP)->getAttribute("footer-first", pszIDName);
+				 if(pszIDName && UT_XML_stricmp(pszIDName,pszId) == 0)
+				 {
+					 return true;
+				 }
+				 (pAP)->getAttribute("footer-last", pszIDName);
+				 if(pszIDName && UT_XML_stricmp(pszIDName,pszId) == 0)
+				 {
+					 return true;
+				 }
+				 (pAP)->getAttribute("footer-even", pszIDName);
+				 if(pszIDName && UT_XML_stricmp(pszIDName,pszId) == 0)
+				 {
+					 return true;
+				 }
+				 
 		     }
 		}
 //

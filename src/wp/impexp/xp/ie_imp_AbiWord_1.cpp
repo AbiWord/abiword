@@ -257,12 +257,21 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		else
 		{
 //
-// OK this is a header/footer with an id without a matching section skip the
-// rest but load till here. This will ignore all the header/footers.
+// OK this is a header/footer with an id without a matching section. Fix this
+// now.
 //
+			const XML_Char * pszType = (XML_Char*)_getXMLPropValue("type", atts);
+			if(pszType)
+			{
+				PL_StruxDocHandle sdh = getDoc()->getLastSectionSDH();
+				getDoc()->changeSectionAttsNoUpdate(sdh,pszType,pszId);
+				m_parseState = _PS_Sec;
+				m_bWroteSection = true;
+				X_CheckError(getDoc()->appendStrux(PTX_Section,atts));
+				return;
+			}
 			m_error = UT_IE_SKIPINVALID;
-			UT_DEBUGMSG(("No matching section id for this header/footer - ignore rest of document \n"));
-			X_EatIfAlreadyError();
+		    X_EatIfAlreadyError();
 		    return;
 		}
 	}

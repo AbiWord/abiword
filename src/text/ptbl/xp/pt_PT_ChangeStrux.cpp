@@ -132,6 +132,33 @@ bool pt_PieceTable::changeStruxForLists(PL_StruxDocHandle sdh,
 
 }
 
+
+/*!
+ * This Method implements the change strux we need to reparent lists.
+ */
+bool pt_PieceTable::changeSectionAttsNoUpdate(pf_Frag_Strux * pfs, 
+											  const char * atts, 
+											  const char * attsValue)
+{
+	const char * attributes[3] = {atts,attsValue,NULL};
+
+	PT_AttrPropIndex indexNewAP;
+	PT_AttrPropIndex indexOldAP = pfs->getIndexAP();
+	bool bMerged;
+	bMerged = m_varset.mergeAP( PTC_AddFmt ,indexOldAP,attributes,NULL,&indexNewAP,getDocument());
+	UT_ASSERT(bMerged);
+	xxx_UT_DEBUGMSG(("Merging atts/props oldindex=%d , newindex =%d \n",indexOldAP,indexNewAP));
+	if (indexOldAP == indexNewAP)		// the requested change will have no effect on this fragment.
+		return true;
+
+	bool bResult;
+	bResult = _fmtChangeStrux(pfs,indexNewAP);
+	UT_ASSERT(bResult);
+
+	return true;
+
+}
+
 bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 									  PT_DocPosition dpos1,
 									  PT_DocPosition dpos2,
