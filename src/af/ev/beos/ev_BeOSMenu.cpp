@@ -35,7 +35,7 @@
 
 #include <Menu.h>
 #include <MessageFilter.h>
-
+#include <String.h>
 /*********************************************************************/
 /*
  EVENT FILTERING
@@ -177,30 +177,71 @@ int _ev_convert(char * bufResult, const char * szString) {
 }
 
 // Is there a reason why this couldn't be made generic?
-const char * _ev_GetLabelName(XAP_BeOSApp * pBeOSApp,
+const char ** _ev_GetLabelName(XAP_BeOSApp * pBeOSApp,
 							  XAP_Frame * pBeOSFrame,
 							  EV_Menu_Action * pAction,
 							  EV_Menu_Label * pLabel)
 {
+	static const char * data[2] = {NULL, NULL};
+
+	// hit the static pointers back to null each time around
+	data[0] = NULL;
+	data[1] = NULL;
+	
 	const char * szLabelName;
 	
 	if (pAction->hasDynamicLabel())
-		szLabelName = pAction->getDynamicLabel(pBeOSFrame, pLabel);
+		szLabelName = pAction->getDynamicLabel(pBeOSFrame,pLabel);
 	else
 		szLabelName = pLabel->getMenuLabel();
 
 	if (!szLabelName || !*szLabelName)
-		return NULL;
+		return data;	// which will be two nulls now
+
+	static char accelbuf[32];
+	{
+		// see if this has an associated keybinding
+		const char * szMethodName = pAction->getMethodName();
+
+		if (szMethodName)
+		{
+			const EV_EditMethodContainer * pEMC = pBeOSApp->getEditMethodContainer();
+			UT_ASSERT(pEMC);
+
+			EV_EditMethod * pEM = pEMC->findEditMethodByName(szMethodName);
+			UT_ASSERT(pEM);						// make sure it's bound to something
+
+			const EV_EditEventMapper * pEEM = pBeOSFrame->getEditEventMapper();
+			UT_ASSERT(pEEM);
+
+			const char * string = pEEM->getShortcutFor(pEM);
+			if (string && *string)
+				strcpy(accelbuf, string);
+			else
+				// zero it out for this round
+				*accelbuf = 0;
+		}
+	}
+
+	// set shortcut mnemonic, if any
+	if (*accelbuf)
+		data[1] = accelbuf;
 	
 	if (!pAction->raisesDialog())
-		return szLabelName;
+	{
+		data[0] = szLabelName;
+		return data;
+	}
 
 	// append "..." to menu item if it raises a dialog
 	static char buf[128];
 	memset(buf,0,NrElements(buf));
 	strncpy(buf,szLabelName,NrElements(buf)-4);
 	strcat(buf,"...");
-	return buf;
+
+	data[0] = buf;
+	
+	return data;
 }
 
 UT_Bool EV_BeOSMenu::synthesize(void) {
@@ -261,14 +302,83 @@ UT_Bool EV_BeOSMenu::synthesize(void) {
                                 	bCheck = UT_TRUE;
                         }                 
 #endif
-			szLabelName = _ev_GetLabelName(m_pBeOSApp, m_pBeOSFrame, pAction, pLabel);
+			const char **data = _ev_GetLabelName(m_pBeOSApp, m_pBeOSFrame, pAction, pLabel);
                         //const char ** data = _ev_GetLabelName(m_pBeOSApp, m_pBeOSFrame, pAction, pLabel);
-                        //szLabelName = data[0];
-                        //szMnemonicName = data[1];            
+                        szLabelName = data[0];
+                        szMnemonicName = data[1];
+			printf("Mnemonic name 1 is %s\n",szMnemonicName);
+			BString betterString(szMnemonicName);
+			int index,modifiers;
+			char key;
+			key=0;
+			modifiers=0;
+			if (szMnemonicName != NULL)
+			{
+				if ((index=betterString.FindFirst("Ctrl+")) != B_ERROR)
+				{
+					modifiers=B_CONTROL_KEY;
+					if (betterString.FindFirst("F4") != B_ERROR)
+					{
+						//key=B_F4_KEY;
+					}
+					else if (betterString.FindFirst("F7") !=B_ERROR)
+					{
+						//key=B_F7_KEY;
+					}
+					else if (betterString.FindFirst("Del") != B_ERROR)
+					{
+						//key=B_DELETE;
+					}
+					else
+					{
+						key=betterString[5];
+					}
+				}
+				else if ((index=betterString.FindFirst("Alt+")) != B_ERROR)
+				{
+					modifiers=B_COMMAND_KEY;
+					if (betterString.FindFirst("F4") != B_ERROR)
+					{
+					//	key=B_F4_KEY;
+					}
+					else if (betterString.FindFirst("F7") !=B_ERROR)
+					{
+					//	key=B_F7_KEY;
+					}
+					else if	(betterString.FindFirst("Del") != B_ERROR)
+					{
+					//	key=B_DELETE;
+					}
+					else
+					{
+						key=betterString[4];
+					}
+				}
+				else 
+				{
+					modifiers=0;
+					if (betterString.FindFirst("F4") != B_ERROR)
+					{
+					//	key=B_F4_KEY;
+					}
+					else if (betterString.FindFirst("F7") !=B_ERROR)
+					{
+					//	key=B_F7_KEY;
+					}
+					else if	(betterString.FindFirst("Del") != B_ERROR)
+					{
+					//	key=B_DELETE;
+					}
+					else
+					{
+						key=betterString[0];
+					}	
+				}
+			}
+
 			UT_DEBUGMSG(("NORM MENU: L:[%s] MN:[%s] \n", 
 				(szLabelName) ? szLabelName : "NULL", 
 				(szMnemonicName) ? szMnemonicName : "NULL")); 
-
 			if (szLabelName && *szLabelName) {
 				char buf[1024];
 				// convert label into proper version and get accelerators
@@ -280,7 +390,7 @@ UT_Bool EV_BeOSMenu::synthesize(void) {
 				//UT_ASSERT(pMenu);
 				BMessage *newmesg = new BMessage(ABI_BEOS_MENU_EV);
 				newmesg->AddInt32(ABI_BEOS_MENU_EV_NAME, id);
-				BMenuItem *pMenuItem = new BMenuItem(buf, newmesg, accel);
+				BMenuItem *pMenuItem = new BMenuItem(buf, newmesg, key,modifiers);
 				pMenu->AddItem(pMenuItem);	
 			}
 			else {
@@ -290,10 +400,12 @@ UT_Bool EV_BeOSMenu::synthesize(void) {
 			break;
 		}
 		case EV_MLF_BeginSubMenu: {
-			szLabelName = _ev_GetLabelName(m_pBeOSApp, m_pBeOSFrame, pAction, pLabel);
+			const char **data= _ev_GetLabelName(m_pBeOSApp, m_pBeOSFrame, pAction, pLabel);
 			//char ** data = _ev_GetLabelName(m_pBeOSApp, m_pBeOSFrame, pAction, pLabel);
-                        //szLabelName = data[0];
-                        //szMnemonicName = data[1];           
+                        szLabelName = data[0];
+
+                        szMnemonicName = data[1];           
+			printf("Mnemonic name 2 is %s\n",data[1]);
 			UT_DEBUGMSG(("START SUB MENU: L:[%s] MN:[%s] \n", 
 				(szLabelName) ? szLabelName : "NULL", 
 				(szMnemonicName) ? szMnemonicName : "NULL")); 
