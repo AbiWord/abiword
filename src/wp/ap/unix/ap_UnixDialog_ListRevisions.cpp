@@ -67,9 +67,8 @@ void AP_UnixDialog_ListRevisions::runModal(XAP_Frame * pFrame)
 	   getColumn1Label(), getColumn2Label(), getItemCount(),
 	   getNthItemId() and getNthItemText() to fill the list
 
-	   if the user clicks OK but there is no selection, set m_aswer to
-	   CANCEL; otherwise do not forget to set m_iId to the id of the
-	   selected revision
+	   if the user clicks OK but there is no selection, set m_iId to 0
+           otherwise set m_iId to the id of the selected revision
 	*/
 
 	UT_ASSERT(UT_NOT_IMPLEMENTED);
