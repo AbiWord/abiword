@@ -190,8 +190,8 @@ public:
 	virtual UT_sint32		getMinOverline(void) { return 0; };
 
 #ifdef BIDI_ENABLED
-	UT_sint32				inline getDirection(){return m_iDirection; };
-	UT_sint32               getVisDirection();
+	UT_sint32		inline getDirection(){return m_iDirection; };
+	UT_sint32		getVisDirection();
 	virtual void            setDirection(UT_sint32 iDirection = -1);
 	UT_uint32               getVisPosition(UT_uint32 ilogPos);
 	UT_uint32               getVisPosition(UT_uint32 iLogPos, UT_uint32 iLen);

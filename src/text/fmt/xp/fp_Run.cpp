@@ -490,6 +490,7 @@ void fp_TabRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& po
 
 void fp_TabRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection)
 {
+	//UT_DEBUGMSG(("fintPointCoords: TabRun\n"));
 	UT_sint32 xoff;
 	UT_sint32 yoff;
 #ifdef BIDI_ENABLED
@@ -702,6 +703,7 @@ void fp_ForcedLineBreakRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, 
 
 void fp_ForcedLineBreakRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection)
 {
+	//UT_DEBUGMSG(("fintPointCoords: ForcedLineBreakRun\n"));	
 	UT_ASSERT(m_iOffsetFirst == iOffset || m_iOffsetFirst+1 == iOffset);
 
 	UT_sint32 xoff, yoff;
@@ -878,6 +880,10 @@ fp_EndOfParagraphRun::fp_EndOfParagraphRun(fl_BlockLayout* pBL,
 	
 	m_iLen = 1;
 	m_bDirty = true;
+#ifdef BIDI_ENABLED
+	UT_ASSERT((pBL));
+	m_iDirection = pBL->getDominantDirection();
+#endif
 	lookupProperties();
 }
 
@@ -929,8 +935,9 @@ void fp_EndOfParagraphRun::findPointCoords(UT_uint32 iOffset,
 	// FIXME:jskov Find out why we are sometimes asked to find pos at
 	// right of pilcrow. Should never ever happen... But does.
 	// fjsdkjfklsd<forced-column-break>sdfsdsd move cursor back
-//	UT_ASSERT(m_iOffsetFirst == iOffset);
+	//	UT_ASSERT(m_iOffsetFirst == iOffset);
 
+	//UT_DEBUGMSG(("fintPointCoords: EndOfParagraphRun\n"));
 	UT_sint32 xoff, yoff;
 
 	fp_Run* pPropRun = _findPrevPropertyRun();
@@ -942,6 +949,9 @@ void fp_EndOfParagraphRun::findPointCoords(UT_uint32 iOffset,
 
 	if (pPropRun)
 	{
+#ifdef BIDI_ENABLED
+		pPropRun->findPointCoords(iOffset, x, y, x2, y2, height, bDirection);
+#else		
 		height = pPropRun->getHeight();
 		// If property Run is on the same line, get y location from
 		// it (to reflect proper ascent).
@@ -950,11 +960,14 @@ void fp_EndOfParagraphRun::findPointCoords(UT_uint32 iOffset,
 			m_pLine->getOffsets(pPropRun, xoff, yoff);
 			y = yoff;
 		}
+#endif
 	}
-
 #ifdef BIDI_ENABLED
-	x2 = x;
-	y2 = y;
+	else
+	{	
+		x2 = x;
+		y2 = y;
+	}
 #endif
 }
 
@@ -1099,6 +1112,7 @@ void fp_ImageRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& 
 
 void fp_ImageRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection)
 {
+	//UT_DEBUGMSG(("fintPointCoords: ImmageRun\n"));	
 	UT_sint32 xoff;
 	UT_sint32 yoff;
 
@@ -1436,6 +1450,7 @@ void fp_FieldRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x,
                                   UT_sint32& y, UT_sint32& x2,
                                   UT_sint32& y2, UT_sint32& height, bool& bDirection)
 {
+	//UT_DEBUGMSG(("fintPointCoords: FieldRun\n"));	
 	UT_sint32 xoff;
 	UT_sint32 yoff;
 
@@ -2169,6 +2184,7 @@ void fp_ForcedColumnBreakRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/
 
 void fp_ForcedColumnBreakRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection)
 {
+	//UT_DEBUGMSG(("fintPointCoords: ForcedColumnBreakRun\n"));
 	UT_ASSERT(m_iOffsetFirst == iOffset || m_iOffsetFirst+1 == iOffset);
 
 	UT_sint32 xoff, yoff;
@@ -2272,6 +2288,7 @@ void fp_ForcedPageBreakRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, 
 
 void fp_ForcedPageBreakRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection)
 {
+	//UT_DEBUGMSG(("fintPointCoords: ForcedPageBreakRun\n"));	
 	UT_ASSERT(m_iOffsetFirst == iOffset || m_iOffsetFirst+1 == iOffset);
 
 	UT_sint32 xoff, yoff;
@@ -2462,13 +2479,16 @@ UT_sint32 fp_Run::getVisDirection()
     while(r)
     {
         nextDir = r->getDirection();
-        r = r->getNext();
 
         if(nextDir != -1)
         {
             //UT_DEBUGMSG(("getVisDirection (next): direction = %d, visDirection = %d\n", m_iDirection, nextDir));
-            return(nextDir);
+            //last run pefore end of paragraph mark will have direction of the run
+            //that precedes it, otherwise the direction of the next run
+            return(r->getType() == FPRUN_ENDOFPARAGRAPH) ? prevDir : nextDir;
         }
+        r = r->getNext();
+
     }
 
     // if get this far, this white space run is the last one on the line

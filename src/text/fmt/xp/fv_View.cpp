@@ -5319,23 +5319,23 @@ void FV_View::_xorInsertionPoint()
 		m_pG->xorLine(m_xPoint, m_yPoint+1, m_xPoint, m_yPoint + m_iPointHeight+1);
 		m_bCursorIsOn = !m_bCursorIsOn;
 #ifdef BIDI_ENABLED
-		// #TF the caret will have a small flag at the top indicating the direction of
-		// writing
-		if(m_bPointDirection) //rtl flag
-		{
-		    m_pG->xorLine(m_xPoint-3, m_yPoint+1, m_xPoint-1, m_yPoint+1);
-		    m_pG->xorLine(m_xPoint-2, m_yPoint+2, m_xPoint-1, m_yPoint+2);
-		}
-		else
-		{
-		    m_pG->xorLine(m_xPoint+1, m_yPoint+1, m_xPoint+3, m_yPoint+1);
-		    m_pG->xorLine(m_xPoint+1, m_yPoint+2, m_xPoint+2, m_yPoint+2);
-		}
-		
-		
-		//this is the second caret on ltr-rtl boundary
 		if((m_xPoint != m_xPoint2) || (m_yPoint != m_yPoint2))
 		{
+			// #TF the caret will have a small flag at the top indicating the direction of
+			// writing
+			if(m_bPointDirection) //rtl flag
+			{
+		    	m_pG->xorLine(m_xPoint-3, m_yPoint+1, m_xPoint-1, m_yPoint+1);
+		    	m_pG->xorLine(m_xPoint-2, m_yPoint+2, m_xPoint-1, m_yPoint+2);
+			}
+			else
+			{
+		    	m_pG->xorLine(m_xPoint+1, m_yPoint+1, m_xPoint+3, m_yPoint+1);
+		    	m_pG->xorLine(m_xPoint+1, m_yPoint+2, m_xPoint+2, m_yPoint+2);
+			}
+		
+		
+			//this is the second caret on ltr-rtl boundary
 			m_pG->xorLine(m_xPoint2-1, m_yPoint2+1, m_xPoint2-1, m_yPoint2 + m_iPointHeight);
 			m_pG->xorLine(m_xPoint2, m_yPoint2+1, m_xPoint2, m_yPoint2 + m_iPointHeight);
  			//this is the line that links the two carrets

@@ -1580,23 +1580,22 @@ UT_sint32 fp_Line::_createMapOfRuns()
 			// that have different direction than the dominant will have value 1,
 			// neutral runs -1 and the rest 0
 			UT_sint32 RTLdominant = m_pBlock->getDominantDirection();
-			UT_sint32 iRunDirection;
-			for (UT_uint32 i=0; i < count; i++)
+			UT_sint32 iRunDirection = ((fp_Run*) m_vecRuns.getNthItem(0))->getDirection();
+			// run 0 is a special case, we will treat it here, to speed up the loop below
+			if(iRunDirection == -1)
+				//if this is the very first run, then set it to the paragraph direction,
+				//this will make things easier in the next step				
+				s_pMapOfRuns[0] = RTLdominant;
+			else
+				s_pMapOfRuns[0] = (iRunDirection) ? !RTLdominant : RTLdominant;
+				
+			for (UT_uint32 i=1; i < count; i++)
 			{
-				fp_TextRun* pRun = (fp_TextRun*) m_vecRuns.getNthItem(i);
+				fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(i);
 				iRunDirection = pRun->getDirection();
 				if(iRunDirection == -1)
 				{
-					//if this is the very first run, then set it to the paragraph direction,
-					//this will make things easier in the next step
-					if(i == 0)
-					{
-						s_pMapOfRuns[0] = RTLdominant;
-					}
-					else
-					{					
-						s_pMapOfRuns[i] = -1;
-					}
+					s_pMapOfRuns[i] = -1;
 				}
 				else
 				{
@@ -1613,7 +1612,7 @@ UT_sint32 fp_Line::_createMapOfRuns()
         	//UT_DEBUGMSG(("pre-map0 %d, %d, %d, %d, %d, %d\n", s_pMapOfRuns[0], s_pMapOfRuns[1], s_pMapOfRuns[2], s_pMapOfRuns[3], s_pMapOfRuns[4], s_pMapOfRuns[5]));
 
         	UT_uint32 j;
-        	for (UT_uint32 i=0; i < count; i++)
+        	for (UT_uint32 i=1; i < count; i++)
         	{
             	if(s_pMapOfRuns[i] == -1) //directionally neutral, i.e., whitespace
 				{
@@ -1626,14 +1625,22 @@ UT_sint32 fp_Line::_createMapOfRuns()
                     	s_pMapOfRuns[i] = 0;
 					}
                 	//if the preceeding run is foreign, we will have the direction of the following run
+                	//except where the following run is end of paragraph marker.
                 	//but we have to skip any following whitespace runs
                 	else
                 	{
                     	j = i + 1;
                     	while ((s_pMapOfRuns[j] == -1) && (j < count))
                         	j++;
-                    	if(j == count)
-							s_pMapOfRuns[i] = s_pMapOfRuns[i-1]; //last run on the line, will have the direction of the preceding run
+                    	/*	last run on the line and the last run before
+                    		the formating marker require special treatment.
+                    		if the last run on the line is whitespace, it will have the
+                    		direction of the preceding run; if it is a formating marker
+                    		preceded by a white space, the white space will also get
+                    		the direction of the preceding run.
+                    	*/
+                    	if(j == count || ((j == count -1) && (((fp_Run *) m_vecRuns.getNthItem(j))->getType() == FPRUN_ENDOFPARAGRAPH)))
+                			s_pMapOfRuns[i] = s_pMapOfRuns[i-1]; //last run on the line, will have the direction of the preceding run
                     	else
 							s_pMapOfRuns[i] = s_pMapOfRuns[j]; //otherwise the direction of the first non-white run we found
                 	}

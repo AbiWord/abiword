@@ -499,6 +499,7 @@ void fp_TextRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/,
 
 void fp_TextRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection)
 {
+	//UT_DEBUGMSG(("fintPointCoords: TextRun\n"));	
 	UT_sint32 xoff;
 	UT_sint32 yoff;
 #ifdef BIDI_ENABLED
@@ -532,7 +533,7 @@ void fp_TextRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, 
 	}
 #ifdef BIDI_ENABLED
 	UT_sint32 iDirection = getVisDirection();
-	UT_sint32 iNextDir = iDirection; //if this is last run we will anticipate the next to have the same direction
+	UT_sint32 iNextDir = iDirection ? 0 : 1; //if this is last run we will anticipate the next to have *different* direction
 	fp_Run * pRun = 0;   //will use 0 as indicator that there is no need to deal with the second caret
 #ifdef UT_DEBUG	
 	UT_uint32 rtype;
