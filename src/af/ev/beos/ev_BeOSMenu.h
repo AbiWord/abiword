@@ -44,7 +44,7 @@ public:
 	~EV_BeOSMenu(void);
 	bool synthesize();
 	bool synthesizeMenuBar();
-	virtual bool		refreshMenu(AV_View * pView) = 0;
+//	virtual bool		refreshMenu(AV_View * pView) = 0;
 
 protected:
 	XAP_BeOSApp 		*m_pBeOSApp;
