@@ -19,9 +19,9 @@
 ## 02111-1307, USA.
 
 ABI_AP_INCS=	/wp/ap/xp	/wp/ap/$(ABI_NATIVE)	\
-		/wp/fmt/xp				\
+		/text/fmt/xp				\
 		/wp/impexp/xp				\
-		/wp/ptbl/xp	/wp/ap/xp/ToolbarIcons
+		/text/ptbl/xp	/wp/ap/xp/ToolbarIcons
 
 include $(ABI_DEPTH)/config/abi_defs.mk
 

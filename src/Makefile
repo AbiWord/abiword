@@ -24,7 +24,7 @@ include $(ABI_DEPTH)/config/abi_defs.mk
 T=abiword
 
 ifeq ($(T), abiword)
-DIRS=		config other af wp
+DIRS=		config other af text wp
 endif
 
 include $(ABI_DEPTH)/config/abi_rules.mk

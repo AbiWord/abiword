@@ -67,25 +67,16 @@ ABICOPY=cp
 ##    reference for header files.
 
 ABI_XAP_INCS=	/config					\
-		/xap/xp		/xap/$(ABI_NATIVE)	\
-		/ev/xp		/ev/$(ABI_NATIVE)	\
-		/util/xp	/util/$(ABI_NATIVE)	\
-		/gr/xp		/gr/$(ABI_NATIVE)	\
-		/ver/xp
+		/af/xap/xp		/af/xap/$(ABI_NATIVE)	\
+		/af/ev/xp		/af/ev/$(ABI_NATIVE)	\
+		/af/util/xp		/af/util/$(ABI_NATIVE)	\
+		/af/gr/xp		/af/gr/$(ABI_NATIVE)
 
-ABI_CALC_INCS=	/calc/engine/xp				\
-		/calc/gui/$(ABI_NATIVE)
-
-ABI_SH_INCS=	/sh/ap/xp	/sh/ap/$(ABI_NATIVE)	\
-		/sh/ap/xp/ToolbarIcons
-
-ABI_OTH_INCS=	/other/expat/xmltok			\
-		/other/expat/xmlparse			\
-		/other/spell
+ABI_OTH_INCS=	/other/spell
 
 ###ABI_DIST_INCS=	-I$(ABI_DEPTH)/../dist/$(OBJDIR)/include
 
-ABI_ALL_INCS=	$(ABI_XAP_INCS) $(ABI_CALC_INCS) $(ABI_AP_INCS) $(ABI_OTH_INCS)
+ABI_ALL_INCS=	$(ABI_XAP_INCS) $(ABI_AP_INCS) $(ABI_OTH_INCS)
 ABI_INCS=	$(addprefix -I, $(addprefix $(ABI_DEPTH),$(ABI_ALL_INCS)))
 
 ##################################################################
@@ -96,18 +87,6 @@ ABI_INCS=	$(addprefix -I, $(addprefix $(ABI_DEPTH),$(ABI_ALL_INCS)))
 ##             including in an AboutBox.
 
 ABI_ENABLED_OPTIONS=
-
-## conditionally include support for JavaScript
-
-ifdef ABI_OPT_JS
-ABI_JSLIBS=		js
-ABI_JSDEFS=		-DABI_OPT_JS
-ABI_OPTIONS+=JavaScript:On
-else
-ABI_JSLIBS=
-ABI_JSDEFS=
-ABI_OPTIONS+=JavaScript:Off
-endif
 
 ## conditionally enable some additional debugging and test code
 
@@ -124,14 +103,8 @@ endif
 
 LINK_DLL	= $(LINK) $(OS_DLLFLAGS) $(DLLFLAGS)
 
-# For now, we do NOT notify before deletes, which means bug 7 is back.
-# uncomment the line below if you want bug 7 fixed, along with all of
-# the negative consequences of that condition.  :-)
-
-# ABI_BUG7_SWITCH=	-DPT_NOTIFY_BEFORE_DELETES
-
 CFLAGS		= $(OPTIMIZER) $(OS_CFLAGS) $(DEFINES) $(INCLUDES) $(XCFLAGS)	\
-			$(ABI_DBGDEFS) $(ABI_JSDEFS) $(ABI_INCS) $(ABI_BUG7_SWITCH)
+			$(ABI_DBGDEFS) $(ABI_INCS)
 
 ##################################################################
 ##################################################################

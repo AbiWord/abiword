@@ -18,7 +18,8 @@
 ## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
 ## 02111-1307, USA.
 
-ABI_DEPTH=..
+ABI_DEPTH=../..
+
 include $(ABI_DEPTH)/config/abi_defs.mk
 
 DIRS=		$(ABI_NATIVE)
