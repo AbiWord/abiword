@@ -488,6 +488,7 @@ private:
 	bool StuffCurrentGroup(UT_ByteBuf & buf);
 	bool CanHandlePictFormat(PictFormat format);
 	bool LoadPictData(PictFormat format, char * image_name);
+	bool InsertImage (const UT_ByteBuf * buf, const char * image_name);
 	
 	RTFFontTableItem* GetNthTableFont(UT_uint32 fontNum);
 	UT_uint32 GetNthTableColour(UT_uint32 colNum);
@@ -563,6 +564,7 @@ private:
 // import member vars
 private:
 	UT_GrowBuf m_gbBlock;
+	char *m_szFileDirName;
 
 	int m_groupCount;
 	bool m_newParaFlagged;
@@ -621,7 +623,7 @@ private:
 	UT_Vector           m_vecWord97ListOveride;
 	void _appendHdrFtr ();
 	bool _appendField (const XML_Char *xmlField);
-	XML_Char *_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField);
+	XML_Char *_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField, bool & isXML);
 };
 
 #endif /* IE_IMP_RTF_H */

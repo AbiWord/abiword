@@ -31,6 +31,8 @@
 #include "ut_types.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
+#include "ut_math.h"
+#include "ut_path.h"
 #include "ut_string.h"
 #include "ut_string_class.h"
 #include "ut_units.h"
@@ -1241,6 +1243,7 @@ IE_Imp_RTF::IE_Imp_RTF(PD_Document * pDocument)
 	m_parsingHdrFtr = false;
 	m_icurOveride = 0;
 	m_icurOverideLevel = 0;
+	m_szFileDirName = NULL;
 	if(m_vecAbiListTable.getItemCount() != 0)
 	{
 		UT_VECTOR_PURGEALL(_rtfAbiListTable *,m_vecAbiListTable);
@@ -1280,7 +1283,7 @@ IE_Imp_RTF::~IE_Imp_RTF()
 	UT_VECTOR_PURGEALL(RTFHdrFtr *, m_hdrFtrTable);
 	UT_VECTOR_PURGEALL(RTF_msword97_list *, m_vecWord97Lists);
 	UT_VECTOR_PURGEALL(RTF_msword97_listOveride *, m_vecWord97ListOveride);
-	
+	FREEP (m_szFileDirName);
 }
 
 
@@ -1288,6 +1291,10 @@ UT_Error IE_Imp_RTF::importFile(const char * szFilename)
 {
 	m_newParaFlagged = true;
 	m_newSectionFlagged = true;
+	
+	m_szFileDirName = UT_strdup (szFilename);
+	char * tmp = UT_basename (m_szFileDirName);
+	*tmp = 0;
 
 	FILE *fp = fopen(szFilename, "r");
 	if (!fp)
@@ -1916,6 +1923,7 @@ bool IE_Imp_RTF::CanHandlePictFormat(PictFormat format)
 bool IE_Imp_RTF::LoadPictData(PictFormat format, char * image_name)
 {
 	// first, we load the actual data into a buffer
+	bool ok;
 
 	const UT_uint16 chars_per_byte = 2;
 	const UT_uint16 BITS_PER_BYTE = 8;
@@ -2004,85 +2012,12 @@ bool IE_Imp_RTF::LoadPictData(PictFormat format, char * image_name)
 			delete pictData;
 			return false;
 		} 
-	   
-		if (m_pImportFile != NULL)
-		{	
-			// non-null file, we're importing a doc
-			// Now, we should insert the picture into the document
-			
-			const char * mimetype = NULL;
-			mimetype = UT_strdup("image/png");
 
-			const XML_Char* propsArray[3];
-			propsArray[0] = (XML_Char *)"dataid";
-			propsArray[1] = (XML_Char *) image_name;
-			propsArray[2] = NULL;
-			
-			if (!getDoc()->appendObject(PTO_Image, propsArray)) 
-			{
-				delete pictData;
-				FREEP(mimetype);
-				return false;
-			}
-			
-			if (!getDoc()->createDataItem(image_name, false,
-											 buf, (void*)mimetype, NULL)) 
-			{
-				delete pictData;
-				FREEP(mimetype);
-				return false;
-			}
-		}
-		else
+		ok = InsertImage (buf, image_name);
+		if (!ok) 
 		{
-			// null file, we're pasting an image. this really makes
-			// quite a difference to the piece table
-
-			// Get a unique name for image.
-		    UT_ASSERT(image_name);
-			char * szName = NULL;
-			if( image_name)
-			{
-				szName = new char [strlen (image_name) + 64 + 1];
-			}
-			else
-			{
-				image_name = "image_z";
-				szName = new char [strlen (image_name) + 64 + 1];
-			}
-			UT_uint32 ndx = 0;
-			for (;;)
-			{
-				sprintf(szName, "%s_%d", image_name, ndx);
-				if (!getDoc()->getDataItemDataByName(szName, NULL, NULL, NULL))
-				{
-					break;
-				}
-				ndx++;
-			}
-//
-// Code from fg_GraphicsRaster.cpp
-//
-			/*
-			  Create the data item
-			*/
-			const char * mimetype = NULL;
-			mimetype = UT_strdup("image/png");
-			bool bOK = false;
-			bOK = getDoc()->createDataItem(szName, false, buf, (void *) mimetype, NULL);
-			UT_ASSERT(bOK);
-			/*
-			  Insert the object into the document.
-			*/
-			const XML_Char * attributes[] = {
-				"dataid", NULL,
-				NULL, NULL
-			};
-			attributes [1] = szName;
-			
-			getDoc()->insertObject(m_dposPaste, PTO_Image, attributes, NULL);
-            m_dposPaste++;
-			delete [] szName;
+			delete pictData;
+			return false;
 		}
 	}
 	else
@@ -2091,6 +2026,93 @@ bool IE_Imp_RTF::LoadPictData(PictFormat format, char * image_name)
 		delete pictData;
 	}
 
+	return true;
+}
+
+
+/*!
+  Insert and image at the current position. 
+  Check whether we are pasting or importing
+ */
+bool IE_Imp_RTF::InsertImage (const UT_ByteBuf * buf, const char * image_name)
+{
+	if ((m_pImportFile != NULL) || (m_parsingHdrFtr))
+	{	
+		// non-null file, we're importing a doc
+		// Now, we should insert the picture into the document
+		
+		const char * mimetype = NULL;
+		mimetype = UT_strdup("image/png");
+		
+		const XML_Char* propsArray[3];
+		propsArray[0] = (XML_Char *)"dataid";
+		propsArray[1] = (XML_Char *) image_name;
+		propsArray[2] = NULL;
+		
+		if (!getDoc()->appendObject(PTO_Image, propsArray)) 
+		{
+			FREEP(mimetype);
+			return false;
+		}
+		
+		if (!getDoc()->createDataItem(image_name, false,
+									  buf, (void*)mimetype, NULL)) 
+		{
+			FREEP(mimetype);
+			return false;
+		}
+	}
+	else
+	{
+		// null file, we're pasting an image. this really makes
+		// quite a difference to the piece table
+		
+		// Get a unique name for image.
+		UT_ASSERT(image_name);
+		char * szName = NULL;
+		if( image_name)
+		{
+			szName = new char [strlen (image_name) + 64 + 1];
+		}
+		else
+		{
+			image_name = "image_z";
+			szName = new char [strlen (image_name) + 64 + 1];
+		}
+		UT_uint32 ndx = 0;
+		for (;;)
+		{
+			sprintf(szName, "%s_%d", image_name, ndx);
+			if (!getDoc()->getDataItemDataByName(szName, NULL, NULL, NULL))
+			{
+				break;
+			}
+			ndx++;
+		}
+//
+// Code from fg_GraphicsRaster.cpp
+//
+		/*
+		  Create the data item
+		*/
+		const char * mimetype = NULL;
+		mimetype = UT_strdup("image/png");
+		bool bOK = false;
+		bOK = getDoc()->createDataItem(szName, false, buf, (void *) mimetype, NULL);
+		UT_ASSERT(bOK);
+		/*
+		  Insert the object into the document.
+		*/
+		const XML_Char * attributes[] = {
+			"dataid", NULL,
+			NULL, NULL
+		};
+		attributes [1] = szName;
+		
+		getDoc()->insertObject(m_dposPaste, PTO_Image, attributes, NULL);
+		m_dposPaste++;
+		delete [] szName;
+	}
 	return true;
 }
 
@@ -2330,16 +2352,17 @@ bool IE_Imp_RTF::HandleField()
 			}
 		}
 		while ((tokenType != RTF_TOKEN_CLOSE_BRACE) || (nested >= 0));
-		xmlField = _parseFldinstBlock (fldBuf, xmlField);
-		bUseResult = (xmlField == NULL);
+		bool isXML = false;
+		xmlField = _parseFldinstBlock (fldBuf, xmlField, isXML);
+		bUseResult = (xmlField == NULL) && (!isXML);
 		if (!bUseResult) 
 		{
 			bool ok;
 			ok = _appendField (xmlField);
 			UT_ASSERT (ok);
+			// we own xmlField, so we delete it after use.
+			FREEP (xmlField);
 		}
-		// we own xmlField, so we delete it after use.
-		FREEP (xmlField);
 	}
 	else 
 	{
@@ -2430,10 +2453,12 @@ bool IE_Imp_RTF::HandleField()
 
 
 /*!
-  
+  \param buf the buffer that contains the RTF.
+  \param xmlField the XML attributes for the field.
+  \param isXML whether xmlField is used or not.
   \see IE_Imp_RTF::HandleField
  */
-XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField)
+XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField, bool & isXML)
 {
 	// this is quite complex as field instructions are not really document in the RTF specs.
 	// we will guess as much us possible.
@@ -2463,6 +2488,7 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField)
 	char *instr;
 	char *newBuf;
 	UT_uint32  len;
+	isXML = false;
 	
 	// buffer is empty, nothing to parse
 	if (buf.getLength() == 0) 
@@ -2499,6 +2525,7 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField)
 			// TODO handle parameters
 			xmlField = UT_strdup ("file_name");
 			UT_ASSERT (xmlField);
+			isXML = (xmlField != NULL);
 		}
 		break;
 	case 'H':
@@ -2518,6 +2545,7 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField)
 		{ 
 			xmlField = UT_strdup ("page_number");
 			UT_ASSERT (xmlField);
+			isXML = (xmlField != NULL);
 		}
 		break;
 	case 'N':
@@ -2525,17 +2553,20 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField)
 		{ 
 			xmlField = UT_strdup ("char_count");
 			UT_ASSERT (xmlField);
+			isXML = (xmlField != NULL);
 		}
 		// this one have been found with ApplixWare exported RTF.
 		else if (strcmp (instr, "NUMPAGES") == 0)
 		{
 			xmlField = UT_strdup ("page_count");
 			UT_ASSERT (xmlField);
+			isXML = (xmlField != NULL);
 		}
 		else if (strcmp (instr, "NUMWORDS") == 0)
 		{ 
 			xmlField = UT_strdup ("word_count");
 			UT_ASSERT (xmlField);
+			isXML = (xmlField != NULL);
 		}
 		break;
 	case 'T':
@@ -2544,6 +2575,7 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField)
 			// TODO handle parameters
 			xmlField = UT_strdup ("time");
 			UT_ASSERT (xmlField);
+			isXML = (xmlField != NULL);
 		}
 		break;
 	case 'd':
@@ -2552,6 +2584,7 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField)
 			// TODO handle parameters
 			xmlField = UT_strdup ("date");
 			UT_ASSERT (xmlField);
+			isXML = (xmlField != NULL);
 		}
 		break;
 	case '\\':
@@ -2560,11 +2593,57 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField)
 		{
 			xmlField = UT_strdup ("file_name");
 			UT_ASSERT (xmlField);
+			isXML = (xmlField != NULL);
+		}
+		else if (strcmp (instr, "\\import") == 0)
+		{
+			// need to read the filename.
+			UT_DEBUGMSG (("importing StarOffice image\n"));
+
+			if (m_szFileDirName	!= NULL) 
+			{
+				char * fileName = NULL;
+				char * tok  = strtok (NULL, " ");
+				fileName = (char *)malloc (sizeof (char) * (strlen (tok) + strlen (m_szFileDirName) + 1));
+				strcpy (fileName, m_szFileDirName);
+				strcat (fileName, tok);
+				UT_DEBUGMSG (("fileName is %s\n", fileName));
+								
+				bool ok = FlushStoredChars ();
+				if (ok) 
+				{
+					// insert the image in the piece table AFTER flushing
+					// current output
+					IE_ImpGraphic * pGraphicImporter = NULL;
+					FG_Graphic* pFG;
+					UT_Error error = IE_ImpGraphic::constructImporter(fileName, IEGFT_JPEG, &pGraphicImporter);
+					
+					// load file to buffer
+					if (error == UT_OK) 
+					{
+						error = pGraphicImporter->importGraphic(fileName, &pFG);
+						DELETEP(pGraphicImporter);
+						UT_ByteBuf * buf;
+						buf = static_cast<FG_GraphicRaster *>(pFG)->getRaster_PNG();
+						ok = InsertImage (buf, fileName);
+					}
+					else 
+					{
+						UT_DEBUGMSG (("RTF: error while importing SO image: %d\n", error));
+					}
+				}
+				else
+				{
+					UT_DEBUGMSG (("RTF: we don't know the current filename path\n"));
+				}
+				FREEP (fileName);
+			}
 		}
 		else if (strcmp (instr, "\\page") == 0)
 		{ 
 			xmlField = UT_strdup ("page_number");
 			UT_ASSERT (xmlField);
+			isXML = (xmlField != NULL);
 		}
 		break;
 	default:
@@ -2589,7 +2668,7 @@ bool IE_Imp_RTF::HandleHeaderFooter(RTFHdrFtr::HdrFtrType hftype, UT_uint32 & he
 
 	header = new RTFHdrFtr ();
 	header->m_type = hftype;
-	header->m_id = UT_rand();    // TODO: make sure it is unique
+	header->m_id = UT_newNumber();    // TODO: make sure it is unique
 
 	m_hdrFtrTable.addItem (header);
 	headerID = header->m_id;
@@ -6650,4 +6729,5 @@ bool IE_Imp_RTF::buildAllProps(char * propBuffer,  RTFProps_ParaProps * pParas,
 	}
 	return true;
 }
+
 
