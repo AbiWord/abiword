@@ -61,6 +61,7 @@ class RTFProps_CharProps
 public:
 	RTFProps_CharProps();
 
+	UT_Bool	m_deleted;
 	UT_Bool	m_bold;
 	UT_Bool	m_italic;
 	UT_Bool	m_underline;
@@ -186,6 +187,7 @@ private:
 	UT_Bool AddChar(UT_UCSChar ch);
 	UT_Bool FlushStoredChars(UT_Bool forceInsertPara = UT_FALSE);
 	UT_Bool StartNewPara();
+	UT_Bool StartNewSection();
 	UT_Bool PushRTFState();
 	UT_Bool PopRTFState();
 	UT_Bool ParseRTFKeyword();
@@ -205,6 +207,7 @@ private:
 	UT_Bool ResetCharacterAttributes();
 	UT_Bool ApplyCharacterAttributes();
 	UT_Bool HandleBoolCharacterProp(UT_Bool state, UT_Bool* pProp);
+		UT_Bool HandleDeleted(UT_Bool state);
 		UT_Bool HandleBold(UT_Bool state);
 		UT_Bool HandleItalic(UT_Bool state);
 		UT_Bool HandleUnderline(UT_Bool state);
@@ -222,6 +225,7 @@ private:
 
 	// Section property handlers
 	UT_Bool ApplySectionAttributes();
+	UT_Bool ResetSectionAttributes();
 
 
 // import member vars

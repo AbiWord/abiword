@@ -361,6 +361,7 @@ UT_Bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 				// first character and the FmtMark would be gone.
 				//
 				// TODO decide if we like this...
+				// NOTE this causes BUG#431.... :-)
 
 				bNeedGlob = UT_TRUE;
 				beginMultiStepGlob();

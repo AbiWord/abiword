@@ -33,6 +33,7 @@
 #include "ut_string.h"
 #include "ie_types.h"
 #include "ie_imp_RTF.h"
+#include "pd_Document.h"
 
 
 // Font table items
@@ -61,6 +62,7 @@ RTFFontTableItem::~RTFFontTableItem()
 // Character properties
 RTFProps_CharProps::RTFProps_CharProps()
 {
+	m_deleted = UT_FALSE;
 	m_bold = UT_FALSE;
 	m_italic = UT_FALSE;
 	m_underline = UT_FALSE;
@@ -163,7 +165,8 @@ IE_Imp_RTF::IE_Imp_RTF(PD_Document * pDocument)
 :	IE_Imp(pDocument),
 	m_gbBlock(1024),
 	m_groupCount(0),
-	m_newParaFlagged(UT_TRUE),
+	m_newParaFlagged(UT_FALSE),
+	m_newSectionFlagged(UT_FALSE),
 	m_cbBin(0),
 	m_pImportFile(NULL)
 {
@@ -195,6 +198,9 @@ IE_Imp_RTF::~IE_Imp_RTF()
 
 IEStatus IE_Imp_RTF::importFile(const char * szFilename)
 {
+	m_newParaFlagged = UT_TRUE;
+	m_newSectionFlagged = UT_TRUE;
+
 	FILE *fp = fopen(szFilename, "r");
 	if (!fp)
 	{
@@ -216,9 +222,6 @@ IEStatus IE_Imp_RTF::importFile(const char * szFilename)
 
 IEStatus IE_Imp_RTF::_writeHeader(FILE * /*fp*/)
 {
-	if (!m_pDocument->appendStrux(PTX_Section, NULL))
-		return IES_NoMemory;
-	else
 		return IES_OK;
 }
 
@@ -345,6 +348,21 @@ UT_Bool IE_Imp_RTF::StartNewPara()
 }
 
 
+// flush any remaining text in the previous sction and
+// flag a new section to be started.  Don't actually 
+// start a new section as it may turn out to be empty
+// 
+UT_Bool IE_Imp_RTF::StartNewSection()
+{
+	UT_Bool ok = FlushStoredChars(UT_TRUE);
+	
+	m_newParaFlagged = UT_TRUE;
+	m_newSectionFlagged = UT_TRUE;
+
+	return ok;
+}
+
+
 // add a new character.  Characters are actually cached and 
 // inserted into the document in batches - see FlushStoredChars
 // 
@@ -360,7 +378,13 @@ UT_Bool IE_Imp_RTF::FlushStoredChars(UT_Bool forceInsertPara)
 {
 	// start a new para if we have to
 	UT_Bool ok = UT_TRUE;
-	if (m_newParaFlagged  &&  (forceInsertPara  ||  (m_gbBlock.getLength() > 0)) )
+	if (m_newSectionFlagged  &&  (m_gbBlock.getLength() > 0))
+	{
+		ok = ApplySectionAttributes();
+		m_newSectionFlagged = UT_FALSE;
+	}
+
+	if (ok  &&  m_newParaFlagged  &&  (forceInsertPara  ||  (m_gbBlock.getLength() > 0)) )
 	{
 		ok = ApplyParagraphAttributes();
 		m_newParaFlagged = UT_FALSE;
@@ -462,7 +486,7 @@ UT_Bool IE_Imp_RTF::ParseChar(UT_UCSChar ch)
 			return UT_TRUE;
 		case RTFStateStore::rdsNorm:
 			// Insert a character into the story
-			if (ch >= 32  ||  ch == 9)
+			if ((ch >= 32  ||  ch == 9)  &&  !m_currentRTFState.m_charProps.m_deleted)
 			{
 				return AddChar(ch);
 			}
@@ -639,6 +663,13 @@ UT_Bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, UT_Boo
 		}
 		break;
 
+	case 'd':
+		if (strcmp((char*)pKeyword, "deleted") == 0)
+		{
+			// bold - either on or off depending on the parameter
+			return HandleDeleted(fParam ? UT_FALSE : UT_TRUE);
+		}
+
 	case 'e':
 		if (strcmp((char*)pKeyword, "emdash") == 0)
 		{
@@ -772,12 +803,11 @@ UT_Bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, UT_Boo
 		}
 		else if (strcmp((char*)pKeyword, "sect") == 0 )
 		{
-			m_newSectionFlagged = UT_TRUE;
-			UT_Bool ok = (FlushStoredChars()  &&  
-							m_pDocument->appendStrux(PTX_Section, NULL)  &&
-							m_pDocument->appendStrux(PTX_Block, NULL) );
-			m_newParaFlagged = UT_TRUE;
-			return ok;
+			return StartNewSection();
+		}
+		else if (strcmp((char*)pKeyword, "sectd") == 0 )
+		{
+			return ResetSectionAttributes();
 		}
 		else if (strcmp((char*)pKeyword, "sa") == 0)
 		{
@@ -944,22 +974,6 @@ UT_Bool IE_Imp_RTF::ResetCharacterAttributes()
 
 UT_Bool IE_Imp_RTF::ApplyParagraphAttributes()
 {
-	if (m_newSectionFlagged)
-	{
-		m_newSectionFlagged = UT_FALSE;
-
-		ApplySectionAttributes();
-
-		// create the new section
-//		if (!m_pDocument->appendStrux(PTX_Section, NULL)  ||
-//			 !m_pDocument->appendStrux(PTX_Block, NULL)  )
-//		{
-//			return UT_FALSE;
-//		}
-
-		// apply its attributes
-	}
-
 	XML_Char* pProps = "PROPS";
 	XML_Char propBuffer[1024];	//TODO is this big enough?  better to make it a member and stop running all over the stack // TODO consider using a UT_ByteBuf instead -- jeff
 	XML_Char tempBuffer[128];
@@ -1063,9 +1077,19 @@ UT_Bool IE_Imp_RTF::ResetParagraphAttributes()
 }
 
 
+UT_Bool IE_Imp_RTF::ResetSectionAttributes()
+{
+	UT_Bool ok = FlushStoredChars();
+
+	m_currentRTFState.m_sectionProps = RTFProps_SectionProps();
+
+	return ok;
+}
+
+
 UT_Bool IE_Imp_RTF::ApplySectionAttributes()
 {
-/*	XML_Char* pProps = "PROPS";
+	XML_Char* pProps = "PROPS";
 	XML_Char propBuffer[1024];	//TODO is this big enough?  better to make it a member and stop running all over the stack
 	XML_Char tempBuffer[128];
 
@@ -1080,10 +1104,17 @@ UT_Bool IE_Imp_RTF::ApplySectionAttributes()
 	propsArray[1] = propBuffer;
 	propsArray[2] = NULL;
 
-	return m_pDocument->appendStrux(PTX_Block, propsArray);
-	*/
-
-	return UT_TRUE;
+	if (m_pImportFile)					// if we are reading a file
+		return m_pDocument->appendStrux(PTX_Section, propsArray);
+	else
+	{
+		UT_Bool bSuccess = m_pDocument->insertStrux(m_dposPaste,PTX_Section);
+		m_dposPaste++;
+		if (bSuccess)
+			bSuccess = m_pDocument->changeStruxFmt(PTC_AddFmt,m_dposPaste,m_dposPaste,
+												   propsArray,NULL,PTX_Section);
+		return bSuccess;
+	}
 }
 
 
@@ -1413,6 +1444,11 @@ UT_Bool IE_Imp_RTF::HandleBoolCharacterProp(UT_Bool state, UT_Bool* pProp)
 	return ok;
 }
 
+UT_Bool IE_Imp_RTF::HandleDeleted(UT_Bool state)
+{
+	return HandleBoolCharacterProp(state, &m_currentRTFState.m_charProps.m_deleted);
+}
+
 UT_Bool IE_Imp_RTF::HandleBold(UT_Bool state)
 {
 	return HandleBoolCharacterProp(state, &m_currentRTFState.m_charProps.m_bold);
@@ -1487,6 +1523,9 @@ void IE_Imp_RTF::pasteFromBuffer(PD_DocumentRange * pDocRange,
 {
 	UT_ASSERT(m_pDocument == pDocRange->m_pDoc);
 	UT_ASSERT(pDocRange->m_pos1 == pDocRange->m_pos2);
+
+	m_newParaFlagged = UT_FALSE;
+	m_newSectionFlagged = UT_FALSE;
 
 	UT_DEBUGMSG(("Pasting %d bytes of RTF\n",lenData));
 
