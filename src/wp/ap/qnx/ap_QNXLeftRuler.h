@@ -57,9 +57,6 @@ protected:
 		static int button_press_event(PtWidget_t * w, void *data, PtCallbackInfo_t *info);
 		static int button_release_event(PtWidget_t * w, void *data, PtCallbackInfo_t *info);
 		static int motion_notify_event(PtWidget_t * w, void *data, PtCallbackInfo_t *info);
-//		static int configure_event(PtWidget_t * w, GdkEventConfigure *e);
-//		static int key_press_event(PtWidget_t * w, GdkEventKey* e);
-//		static int delete_event(PtWidget_t * w, GdkEvent * /*event*/, gpointer /*data*/);
 		static int expose(PtWidget_t * w, PhTile_t *damage);
 		static int resize(PtWidget_t * w, void *data,  PtCallbackInfo_t *info);
 	};
