@@ -12,10 +12,16 @@
 			</array>
 			<key>CFBundleTypeIconFile</key>
 			<string>ABWDocument.icns</string>
+			<key>CFBundleTypeMIMETypes</key>
+			<array>
+				<string>application/x-abiword</string>
+			</array>
 			<key>CFBundleTypeName</key>
 			<string>AbiWord Document</string>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
+			<key>LSIsAppleDefaultForType</key>
+			<true/>
 			<key>LSTypeIsPackage</key>
 			<false/>
 		</dict>
@@ -27,10 +33,16 @@
 			</array>
 			<key>CFBundleTypeIconFile</key>
 			<string>ABWDocument.icns</string>
+			<key>CFBundleTypeMIMETypes</key>
+			<array>
+				<string>application/x-abiword</string>
+			</array>
 			<key>CFBundleTypeName</key>
 			<string>AbiWord Template</string>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
+			<key>LSIsAppleDefaultForType</key>
+			<true/>
 			<key>LSTypeIsPackage</key>
 			<false/>
 		</dict>
@@ -44,10 +56,16 @@
 			</array>
 			<key>CFBundleTypeIconFile</key>
 			<string>ABWDocument.icns</string>
+			<key>CFBundleTypeMIMETypes</key>
+			<array>
+				<string>application/x-abiword</string>
+			</array>
 			<key>CFBundleTypeName</key>
 			<string>Compressed AbiWord Document</string>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
+			<key>LSIsAppleDefaultForType</key>
+			<true/>
 			<key>LSTypeIsPackage</key>
 			<false/>
 		</dict>
@@ -61,15 +79,57 @@
 			</array>
 			<key>CFBundleTypeIconFile</key>
 			<string>DOCDocument.icns</string>
+			<key>CFBundleTypeMIMETypes</key>
+			<array>
+				<string>application/msword</string>
+			</array>
 			<key>CFBundleTypeName</key>
 			<string>Microsoft Word Document</string>
 			<key>CFBundleTypeOSTypes</key>
 			<array>
+				<string>W8BN</string>
 				<string>W6BN</string>
 				<string>WDBN</string>
+				<string>W8TN</string>
 			</array>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
+			<key>LSIsAppleDefaultForType</key>
+			<false/>
+			<key>LSTypeIsPackage</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>WP</string>
+				<string>wp</string>
+				<string>wpd</string>
+				<string>WPD</string>
+			</array>
+			<key>CFBundleTypeIconFile</key>
+			<string>WPDDocument.icns</string>
+			<key>CFBundleTypeMIMETypes</key>
+			<array>
+				<string>application/vnd.wordperfect</string>
+				<string>application/wordperfect5.1</string>
+				<string>application/vnd.wordperfect5.1</string>
+				<string>application/vnd.wordperfect6.1</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>WordPerfect Document</string>
+			<key>CFBundleTypeOSTypes</key>
+			<array>
+				<string>.WP5</string>
+				<string>.WP6</string>
+				<string>WPPC</string>
+				<string>WPD3</string>
+				<string>WPD4</string>
+			</array>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>LSIsAppleDefaultForType</key>
+			<false/>
 			<key>LSTypeIsPackage</key>
 			<false/>
 		</dict>
@@ -81,6 +141,10 @@
 			</array>
 			<key>CFBundleTypeIconFile</key>
 			<string>RTFDocument.icns</string>
+			<key>CFBundleTypeMIMETypes</key>
+			<array>
+				<string>text/rtf</string>
+			</array>
 			<key>CFBundleTypeName</key>
 			<string>Rich Text Format Document</string>
 			<key>CFBundleTypeOSTypes</key>
@@ -89,6 +153,8 @@
 			</array>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
+			<key>LSIsAppleDefaultForType</key>
+			<false/>
 			<key>LSTypeIsPackage</key>
 			<false/>
 		</dict>
@@ -99,10 +165,16 @@
 			</array>
 			<key>CFBundleTypeIconFile</key>
 			<string>ABWBackup.icns</string>
+			<key>CFBundleTypeMIMETypes</key>
+			<array>
+				<string>application/x-abiword</string>
+			</array>
 			<key>CFBundleTypeName</key>
 			<string>AbiWord Auto-Saved Document</string>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
+			<key>LSIsAppleDefaultForType</key>
+			<true/>
 			<key>LSTypeIsPackage</key>
 			<false/>
 		</dict>
@@ -113,10 +185,16 @@
 			</array>
 			<key>CFBundleTypeIconFile</key>
 			<string>ABWSaved.icns</string>
+			<key>CFBundleTypeMIMETypes</key>
+			<array>
+				<string>application/x-abiword</string>
+			</array>
 			<key>CFBundleTypeName</key>
 			<string>AbiWord Crash-Saved Document</string>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
+			<key>LSIsAppleDefaultForType</key>
+			<true/>
 			<key>LSTypeIsPackage</key>
 			<false/>
 		</dict>
