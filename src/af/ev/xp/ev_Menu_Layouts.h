@@ -42,6 +42,8 @@ typedef enum _ev_Menu_LayoutFlags
 	EV_MLF_Normal,
 	EV_MLF_BeginSubMenu,
 	EV_MLF_EndSubMenu,
+	EV_MLF_BeginPopupMenu,
+	EV_MLF_EndPopupMenu,
 	EV_MLF_Separator
 
 } EV_Menu_LayoutFlags;

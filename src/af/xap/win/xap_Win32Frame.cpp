@@ -40,7 +40,7 @@
 #define GWL(hwnd)		(XAP_Win32Frame*)GetWindowLong((hwnd), GWL_USERDATA)
 #define SWL(hwnd, f)	(XAP_Win32Frame*)SetWindowLong((hwnd), GWL_USERDATA,(LONG)(f))
 
-#define DELETEP(p)		do { if (p) delete p; } while (0)
+#define DELETEP(p)		do { if (p) delete p; p = NULL; } while (0)
 #define REPLACEP(p,q)	do { if (p) delete p; p = q; } while (0)
 #define ENSUREP(p)		do { UT_ASSERT(p); if (!p) goto Cleanup; } while (0)
 
@@ -82,6 +82,7 @@ XAP_Win32Frame::XAP_Win32Frame(AP_Win32App * app)
 	m_pWin32Keyboard = NULL;
 	m_pWin32Mouse = NULL;
 	m_pWin32Menu = NULL;
+	m_pWin32Popup = NULL;
 	m_pView = NULL;
 	m_hwndFrame = NULL;
 	m_hwndRebar = NULL;
@@ -102,6 +103,7 @@ XAP_Win32Frame::XAP_Win32Frame(XAP_Win32Frame * f)
 	m_pWin32Keyboard = NULL;
 	m_pWin32Mouse = NULL;
 	m_pWin32Menu = NULL;
+	m_pWin32Popup = NULL;
 	m_pView = NULL;
 	m_hwndFrame = NULL;
 	m_hwndRebar = NULL;
@@ -117,6 +119,7 @@ XAP_Win32Frame::~XAP_Win32Frame(void)
 	DELETEP(m_pWin32Keyboard);
 	DELETEP(m_pWin32Mouse);
 	DELETEP(m_pWin32Menu);
+	DELETEP(m_pWin32Popup);
 	UT_VECTOR_PURGEALL(EV_Win32Toolbar *, m_vecWin32Toolbars);
 }
 
@@ -187,13 +190,23 @@ void XAP_Win32Frame::_createTopLevelWindow(void)
 	UT_ASSERT(m_hwndFrame);
 	SWL(m_hwndFrame, this);					// bind this frame to its window
 
-	// synthesize a menu from the info in our base class.
-	m_pWin32Menu = new EV_Win32Menu(m_pWin32App,this,
-								  m_szMenuLayoutName,
-								  m_szMenuLabelSetName);
+	// synthesize a menu from the info in our
+	// base class and install it into the window.
+	m_pWin32Menu = new EV_Win32MenuBar(m_pWin32App,
+									   getEditEventMapper(),
+									   m_szMenuLayoutName,
+									   m_szMenuLabelSetName);
 	UT_ASSERT(m_pWin32Menu);
-	UT_Bool bResult = m_pWin32Menu->synthesize();
+	UT_Bool bResult = m_pWin32Menu->synthesizeMenuBar();
 	UT_ASSERT(bResult);
+
+	HMENU oldMenu = GetMenu(m_hwndFrame);
+	if (SetMenu(m_hwndFrame, m_pWin32Menu->getMenuHandle()))
+	{
+		DrawMenuBar(m_hwndFrame);
+		if (oldMenu)
+			DestroyMenu(oldMenu);
+	}
 
 	// create a rebar container for all the toolbars
 	m_hwndRebar = CreateWindowEx(0L, REBARCLASSNAME, NULL,
@@ -319,7 +332,12 @@ LRESULT CALLBACK XAP_Win32Frame::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wPar
 		return 0;
 
 	case WM_COMMAND:
-		if (f->m_pWin32Menu->onCommand(pView,hwnd,wParam))
+		if (f->m_pWin32Popup)
+		{
+			if (f->m_pWin32Popup->onCommand(pView,hwnd,wParam))
+				return 0;
+		}
+		else if (f->m_pWin32Menu->onCommand(pView,hwnd,wParam))
 		{
 			return 0;
 		}
@@ -339,7 +357,12 @@ LRESULT CALLBACK XAP_Win32Frame::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wPar
 		return DefWindowProc(hwnd,iMsg,wParam,lParam);
 
 	case WM_INITMENU:
-		if (f->m_pWin32Menu->onInitMenu(pView,hwnd,(HMENU)wParam))
+		if (f->m_pWin32Popup)
+		{
+			if (f->m_pWin32Popup->onInitMenu(pView,hwnd,(HMENU)wParam))
+				return 0;
+		}
+		else if (f->m_pWin32Menu->onInitMenu(pView,hwnd,(HMENU)wParam))
 			return 0;
 		return DefWindowProc(hwnd,iMsg,wParam,lParam);
 		
@@ -461,4 +484,32 @@ LRESULT CALLBACK XAP_Win32Frame::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wPar
 	} /* switch (iMsg) */
 
 	return DefWindowProc(hwnd, iMsg, wParam, lParam);
+}
+
+/*****************************************************************/
+
+UT_Bool XAP_Win32Frame::runModalContextMenu(AV_View * pView, const char * szMenuName,
+											UT_sint32 x, UT_sint32 y)
+{
+	UT_Bool bResult = UT_FALSE;
+
+	UT_ASSERT(!m_pWin32Popup);
+
+	m_pWin32Popup = new EV_Win32MenuPopup(m_pWin32App,szMenuName,m_szMenuLabelSetName);
+	if (m_pWin32Popup && m_pWin32Popup->synthesizeMenuPopup())
+	{
+		UT_DEBUGMSG(("ContextMenu: %s at [%d,%d]\n",szMenuName,x,y));
+
+		translateDocumentToScreen(x,y);
+
+		TrackPopupMenu(m_pWin32Popup->getMenuHandle(),
+					   TPM_CENTERALIGN | TPM_TOPALIGN | TPM_RIGHTBUTTON,
+					   x,y,0,m_hwndFrame,NULL);
+
+		// the popup steals our capture, so we need to reset our counter.
+		m_pWin32Mouse->reset();
+	}
+
+	DELETEP(m_pWin32Popup);
+	return bResult;
 }

@@ -80,6 +80,9 @@ public:
 	virtual AP_DialogFactory *	getDialogFactory(void) = 0;
 	virtual void				setXScrollRange(void) = 0;
 	virtual void				setYScrollRange(void) = 0;
+
+	virtual UT_Bool				runModalContextMenu(AV_View * pView, const char * szMenuName,
+													UT_sint32 x, UT_sint32 y) = 0;
 	
 protected:
 	AP_App *					m_app;			/* handle to application-specific data */

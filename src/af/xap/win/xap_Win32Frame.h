@@ -28,7 +28,8 @@
 class AP_Win32App;
 class ev_Win32Keyboard;
 class EV_Win32Mouse;
-class EV_Win32Menu;
+class EV_Win32MenuBar;
+class EV_Win32MenuPopup;
 
 /*****************************************************************
 ******************************************************************
@@ -62,6 +63,9 @@ public:
 	virtual AP_DialogFactory *	getDialogFactory(void);
 	virtual void				setXScrollRange(void)=0;
 	virtual void				setYScrollRange(void)=0;
+	virtual UT_Bool				runModalContextMenu(AV_View * pView, const char * szMenuName,
+													UT_sint32 x, UT_sint32 y);
+	virtual void				translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y) = 0;
 
 	static UT_Bool				RegisterClass(AP_Win32App * app);
 
@@ -76,7 +80,8 @@ protected:
 	AP_Win32App *				m_pWin32App;
 	ev_Win32Keyboard *			m_pWin32Keyboard;
 	EV_Win32Mouse *				m_pWin32Mouse;
-	EV_Win32Menu *				m_pWin32Menu;
+	EV_Win32MenuBar *			m_pWin32Menu;
+	EV_Win32MenuPopup *			m_pWin32Popup; /* only valid while a context popup is up */
 	UT_Vector					m_vecWin32Toolbars;
 	UT_uint32					m_iBarHeight;
 	

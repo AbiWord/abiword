@@ -26,7 +26,6 @@
 #include "xap_Types.h"
 #include "ev_Win32Menu.h"
 #include "xap_Win32App.h"
-#include "xap_Win32Frame.h"
 #include "ev_Menu_Layouts.h"
 #include "ev_Menu_Actions.h"
 #include "ev_Menu_Labels.h"
@@ -39,7 +38,7 @@
 /*****************************************************************/
 
 static const char * _ev_GetLabelName(AP_Win32App * pWin32App,
-									 XAP_Win32Frame * pWin32Frame,
+									 const EV_EditEventMapper * pEEM,
 									 EV_Menu_Action * pAction,
 									 EV_Menu_Label * pLabel)
 {
@@ -55,6 +54,8 @@ static const char * _ev_GetLabelName(AP_Win32App * pWin32App,
 
 	const char * szShortcut = NULL;
 	int len = 0;
+
+	if (pEEM)
 	{
 		// see if this has an associated keybinding
 		const char * szMethodName = pAction->getMethodName();
@@ -65,15 +66,11 @@ static const char * _ev_GetLabelName(AP_Win32App * pWin32App,
 			UT_ASSERT(pEMC);
 
 			EV_EditMethod * pEM = pEMC->findEditMethodByName(szMethodName);
-			UT_ASSERT(pEM);						// make sure it's bound to something
-
-			const EV_EditEventMapper * pEEM = pWin32Frame->getEditEventMapper();
-			UT_ASSERT(pEEM);
+			UT_ASSERT(pEM);					// make sure it's bound to something
 
 			szShortcut = pEEM->getShortcutFor(pEM);
 			if (szShortcut && *szShortcut)
 				len = strlen(szShortcut) + 1;	// extra char is for the tab
-
 		}
 	}
 	
@@ -103,23 +100,27 @@ static const char * _ev_GetLabelName(AP_Win32App * pWin32App,
 	
 /*****************************************************************/
 
-EV_Win32Menu::EV_Win32Menu(AP_Win32App * pWin32App, XAP_Win32Frame * pWin32Frame,
+EV_Win32Menu::EV_Win32Menu(AP_Win32App * pWin32App,
+						   const EV_EditEventMapper * pEEM,
 						   const char * szMenuLayoutName,
 						   const char * szMenuLabelSetName)
 	: EV_Menu(pWin32App->getEditMethodContainer(),szMenuLayoutName,szMenuLabelSetName)
 {
 	m_pWin32App = pWin32App;
-	m_pWin32Frame = pWin32Frame;
+	m_pEEM = pEEM;
 	m_myMenu = NULL;
 }
 
 EV_Win32Menu::~EV_Win32Menu(void)
 {
+	// we let the derrived classes handle destruction of m_myMenu iff appropriate.
 }
 
 UT_Bool EV_Win32Menu::onCommand(AV_View * pView,
 								HWND hWnd, WPARAM wParam)
 {
+	// TODO do we need the hWnd parameter....
+
 	// map the windows WM_COMMAND command-id into one of our AP_Menu_Id.
 	// we don't need to range check it, getAction() will puke if it's
 	// out of range.
@@ -148,12 +149,11 @@ UT_Bool EV_Win32Menu::onCommand(AV_View * pView,
 	EV_EditMethod * pEM = pEMC->findEditMethodByName(szMethodName);
 	UT_ASSERT(pEM);						// make sure it's bound to something
 
-//	invokeMenuMethod(m_pWin32Frame->getCurrentView(),pEM,0,0);
 	invokeMenuMethod(pView,pEM,0,0);
 	return UT_TRUE;
 }
 
-UT_Bool EV_Win32Menu::synthesize(void)
+UT_Bool EV_Win32Menu::synthesizeMenu(HMENU menuRoot)
 {
 	// create a Win32 menu from the info provided.
 
@@ -166,16 +166,12 @@ UT_Bool EV_Win32Menu::synthesize(void)
 	UT_uint32 nrLabelItemsInLayout = m_pMenuLayout->getLayoutItemCount();
 	UT_ASSERT(nrLabelItemsInLayout > 0);
 
-	HWND wTLW = m_pWin32Frame->getTopLevelWindow();
-
-	HMENU menuBar = CreateMenu();
-
 	// we keep a stack of the submenus so that we can properly
 	// parent the menu items and deal with nested pull-rights.
 	
 	UT_Stack stack;
-	stack.push(menuBar);
-	UT_DEBUGMSG(("MenuBar::synthesize [menuBar 0x%08lx]\n",menuBar));
+	stack.push(menuRoot);
+	UT_DEBUGMSG(("Menu::synthesize [menuRoot 0x%08lx]\n",menuRoot));
 	
 	for (UT_uint32 k=0; (k < nrLabelItemsInLayout); k++)
 	{
@@ -190,7 +186,7 @@ UT_Bool EV_Win32Menu::synthesize(void)
 
 		// get the name for the menu item
 
-		const char * szLabelName = _ev_GetLabelName(m_pWin32App,m_pWin32Frame,pAction,pLabel);
+		const char * szLabelName = _ev_GetLabelName(m_pWin32App,m_pEEM,pAction,pLabel);
 		
 		switch (pLayoutItem->getMenuLayoutFlags())
 		{
@@ -218,11 +214,11 @@ UT_Bool EV_Win32Menu::synthesize(void)
 					flags |= MF_POPUP;
 					stack.push(sub);
 					u = (UINT) sub;
-					UT_DEBUGMSG(("menuBar::synthesize [name %s][subMenu 0x%08lx]\n",szLabelName,u));
+					UT_DEBUGMSG(("menu::synthesize [name %s][subMenu 0x%08lx]\n",szLabelName,u));
 				}
 				else
 				{
-					UT_DEBUGMSG(("menuBar::synthesize [name %s]\n",szLabelName));
+					UT_DEBUGMSG(("menu::synthesize [name %s]\n",szLabelName));
 				}
 
 				if (szLabelName && *szLabelName)
@@ -235,7 +231,7 @@ UT_Bool EV_Win32Menu::synthesize(void)
 				HMENU m = NULL;
 				bResult = stack.pop((void **)&m);
 				UT_ASSERT(bResult);
-				UT_DEBUGMSG(("menuBar::synthesize [endSubMenu 0x%08lx]\n",m));
+				UT_DEBUGMSG(("menu::synthesize [endSubMenu 0x%08lx]\n",m));
 			}
 			break;
 			
@@ -246,8 +242,12 @@ UT_Bool EV_Win32Menu::synthesize(void)
 				UT_ASSERT(bResult);
 
 				AppendMenu(m, MF_SEPARATOR, 0, NULL);
-				UT_DEBUGMSG(("menuBar::synthesize [separator appended to submenu 0x%08lx]\n",m));
+				UT_DEBUGMSG(("menu::synthesize [separator appended to submenu 0x%08lx]\n",m));
 			}
+			break;
+
+		case EV_MLF_BeginPopupMenu:
+		case EV_MLF_EndPopupMenu:
 			break;
 
 		default:
@@ -260,27 +260,9 @@ UT_Bool EV_Win32Menu::synthesize(void)
 	HMENU wDbg = NULL;
 	bResult = stack.pop((void **)&wDbg);
 	UT_ASSERT(bResult);
-	UT_ASSERT(wDbg == menuBar);
+	UT_ASSERT(wDbg == menuRoot);
 #endif
 
-	// swap menus for top-level window
-	HMENU oldMenu = GetMenu(wTLW);
-
-	if (SetMenu(wTLW, menuBar))
-	{
-		DrawMenuBar(wTLW);
-		m_myMenu = menuBar;
-
-		if (oldMenu)
-			DestroyMenu(oldMenu);
-	}
-	else
-	{
-		DWORD err = GetLastError();
-		UT_ASSERT(err);
-		return UT_FALSE;
-	}
-	
 	return UT_TRUE;
 }
 
@@ -304,7 +286,7 @@ UT_Bool EV_Win32Menu::onInitMenu(AV_View * pView, HWND hWnd, HMENU hMenuBar)
 
 	HMENU mTemp;
 	HMENU m = hMenuBar;
-	UT_DEBUGMSG(("menuBar::onInitMenu: [menubar 0x%08lx]\n",m));
+	UT_DEBUGMSG(("menu::onInitMenu: [menubar 0x%08lx]\n",m));
 	
 	for (UT_uint32 k=0; (k < nrLabelItemsInLayout); k++)
 	{
@@ -357,7 +339,7 @@ UT_Bool EV_Win32Menu::onInitMenu(AV_View * pView, HWND hWnd, HMENU hMenuBar)
 				// compute the value for the label.
 				// if it is blank, we remove the item from the menu.
 
-				const char * szLabelName = _ev_GetLabelName(m_pWin32App,m_pWin32Frame,pAction,pLabel);
+				const char * szLabelName = _ev_GetLabelName(m_pWin32App,m_pEEM,pAction,pLabel);
 
 				BOOL bRemoveIt = (!szLabelName || !*szLabelName);
 
@@ -420,7 +402,7 @@ UT_Bool EV_Win32Menu::onInitMenu(AV_View * pView, HWND hWnd, HMENU hMenuBar)
 			stackPos.push((void*)pos);
 
 			m = GetSubMenu(mTemp, pos-1);
-			UT_DEBUGMSG(("menuBar::onInitMenu: [menu 0x%08lx] at [pos %d] has [submenu 0x%08lx]\n",
+			UT_DEBUGMSG(("menu::onInitMenu: [menu 0x%08lx] at [pos %d] has [submenu 0x%08lx]\n",
 						 mTemp,pos-1,m));
 			UT_ASSERT(m);
 			pos = 0;
@@ -432,11 +414,15 @@ UT_Bool EV_Win32Menu::onInitMenu(AV_View * pView, HWND hWnd, HMENU hMenuBar)
 			bResult = stackPos.pop((void **)&pos);
 			UT_ASSERT(bResult);
 
-			UT_DEBUGMSG(("menuBar::onInitMenu: endSubMenu [popping to menu 0x%08lx pos %d] from 0x%08lx\n",
+			UT_DEBUGMSG(("menu::onInitMenu: endSubMenu [popping to menu 0x%08lx pos %d] from 0x%08lx\n",
 						 mTemp,pos,m));
 			m = mTemp;
 			break;
 
+		case EV_MLF_BeginPopupMenu:
+		case EV_MLF_EndPopupMenu:
+			break;
+			
 		default:
 			UT_ASSERT(0);
 			break;
@@ -450,15 +436,52 @@ UT_Bool EV_Win32Menu::onInitMenu(AV_View * pView, HWND hWnd, HMENU hMenuBar)
 	UT_ASSERT(bResult);
 	UT_ASSERT(wDbg == hMenuBar);
 #endif
-
-	// TODO some of the documentation refers to a need to call DrawMenuBar(hWnd)
-	// TODO after any change to it.  other parts of the documentation makes no
-	// TODO reference to it.  if you have problems, do something like:
-	// TODO
-	// TODO if (bNeedToRedrawMenu)
-	// TODO 	DrawMenuBar(hWnd);
 		
 	return UT_TRUE;
 }
 
+/*****************************************************************/
+/*****************************************************************/
 
+EV_Win32MenuBar::EV_Win32MenuBar(AP_Win32App * pWin32App,
+								 const EV_EditEventMapper * pEEM,
+								 const char * szMenuLayoutName,
+								 const char * szMenuLabelSetName)
+	: EV_Win32Menu(pWin32App,pEEM,szMenuLayoutName,szMenuLabelSetName)
+{
+}
+
+EV_Win32MenuBar::~EV_Win32MenuBar(void)
+{
+	// TODO should we destroy m_myMenu if set ??
+}
+
+UT_Bool EV_Win32MenuBar::synthesizeMenuBar(void)
+{
+	m_myMenu = CreateMenu();
+
+	return (synthesizeMenu(m_myMenu));
+}
+
+/*****************************************************************/
+/*****************************************************************/
+
+EV_Win32MenuPopup::EV_Win32MenuPopup(AP_Win32App * pWin32App,
+									 const char * szMenuLayoutName,
+									 const char * szMenuLabelSetName)
+	: EV_Win32Menu(pWin32App,NULL,szMenuLayoutName,szMenuLabelSetName)
+{
+}
+
+EV_Win32MenuPopup::~EV_Win32MenuPopup(void)
+{
+	if (m_myMenu)
+		DestroyMenu(m_myMenu);
+}
+
+UT_Bool EV_Win32MenuPopup::synthesizeMenuPopup(void)
+{
+	m_myMenu = CreatePopupMenu();
+
+	return synthesizeMenu(m_myMenu);
+}

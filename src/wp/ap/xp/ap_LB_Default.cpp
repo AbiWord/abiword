@@ -112,6 +112,15 @@ static struct ap_bs_Mouse s_MouseTable[] =
 //  { context	{ click				doubleclick		drag,	dbldrag,	release,	doublerelease	}},
 //	{_CI _B1,	{ "selectField",	"editField",	"",		"",			"",			""				}},
 
+//	Button-3, context menus
+//  { context	{ click					dblclick	drag,	dbldrag,	release,	doublerelease	}},
+	//{_CU _B3,	{ "contextDefault",		"",			"",		"",			"",			""				}},
+	{_CT _B3,	{ "contextText",		"",			"",		"",			"",			""				}},
+	//{_CL _B3,	{ "contextLeftOfText",	"",			"",		"",			"",			""				}},
+	//{_CM _B3,	{ "contextMisspellText","",			"",		"",			"",			""				}},
+	//{_CI _B3,	{ "contextImage",		"",			"",		"",			"",			""				}},
+	//{_CZ _B3,	{ "contextImageSize",	"",			"",		"",			"",			""				}},
+	//{_CF _B3,	{ "contextField",		"",			"",		"",			"",			""				}},
 
 #if defined(PT_TEST) || defined(FMT_TEST) || defined(UT_TEST)
 //	Button-3, Left-of-Text-context

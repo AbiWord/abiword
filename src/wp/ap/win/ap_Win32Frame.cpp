@@ -39,6 +39,7 @@
 #include "ev_Win32Mouse.h"
 #include "ap_Win32TopRuler.h"
 #include "ap_Win32LeftRuler.h"
+#include "ev_Win32Menu.h"
 
 /*****************************************************************/
 
@@ -892,3 +893,16 @@ ReplaceDocument:
 	m_pDoc = pNewDoc;
 	return UT_TRUE;
 }
+
+void AP_Win32Frame::translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y)
+{
+	// translate the given document mouse coordinates into absolute screen coordinates.
+
+	POINT pt;
+	pt.x = x;
+	pt.y = y;
+	ClientToScreen(m_hwndDocument,&pt);
+	x = pt.x;
+	y = pt.y;
+}
+

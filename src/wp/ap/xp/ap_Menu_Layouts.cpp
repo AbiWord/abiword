@@ -45,8 +45,10 @@ struct _lt
 #define BeginLayout(Name)		static struct _lt s_ltTable_##Name[] = {
 #define MenuItem(id)			{ EV_MLF_Normal,		(id)				 },
 #define BeginSubMenu(id)		{ EV_MLF_BeginSubMenu,	(id)				 },
+#define BeginPopupMenu()		{ EV_MLF_BeginPopupMenu,AP_MENU_ID__BOGUS1__ },
 #define Separator()				{ EV_MLF_Separator,		AP_MENU_ID__BOGUS1__ },
 #define EndSubMenu()			{ EV_MLF_EndSubMenu,	AP_MENU_ID__BOGUS1__ },
+#define EndPopupMenu()			{ EV_MLF_EndPopupMenu,	AP_MENU_ID__BOGUS1__ },
 #define EndLayout()				};
 
 #include "ap_Menu_Layouts_All.h"
@@ -54,8 +56,10 @@ struct _lt
 #undef BeginLayout
 #undef MenuItem
 #undef BeginSubMenu
+#undef BeginPopupMenu
 #undef Separator
 #undef EndSubMenu
+#undef EndPopupMenu
 #undef EndLayout
 
 /*****************************************************************
@@ -76,8 +80,10 @@ struct _tt
 #define BeginLayout(Name)		{ #Name, NrElements(s_ltTable_##Name), s_ltTable_##Name },
 #define MenuItem(id)			/*nothing*/
 #define BeginSubMenu(id)		/*nothing*/
+#define BeginPopupMenu()		/*nothing*/
 #define Separator()				/*nothing*/
 #define EndSubMenu()			/*nothing*/
+#define EndPopupMenu()			/*nothing*/
 #define EndLayout()				/*nothing*/
 
 static struct _tt s_ttTable[] =
@@ -90,8 +96,10 @@ static struct _tt s_ttTable[] =
 #undef BeginLayout
 #undef MenuItem
 #undef BeginSubMenu
+#undef BeginPopupMenu
 #undef Separator
 #undef EndSubMenu
+#undef EndPopupMenu
 #undef EndLayout
 
 /*****************************************************************

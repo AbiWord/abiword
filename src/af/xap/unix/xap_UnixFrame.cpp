@@ -422,3 +422,33 @@ UT_Bool XAP_UnixFrame::updateTitle()
 
 	return UT_TRUE;
 }
+
+/*****************************************************************/
+
+UT_Bool XAP_UnixFrame::runModalContextMenu(AV_View * pView, const char * szMenuName,
+										   UT_sint32 x, UT_sint32 y)
+{
+	UT_Bool bResult = UT_FALSE;
+#if 0
+
+	UT_ASSERT(!m_pWin32Popup);
+
+	m_pWin32Popup = new EV_Win32MenuPopup(m_pWin32App,szMenuName,m_szMenuLabelSetName);
+	if (m_pWin32Popup && m_pWin32Popup->synthesizeMenuPopup())
+	{
+		UT_DEBUGMSG(("ContextMenu: %s at [%d,%d]\n",szMenuName,x,y));
+
+		translateDocumentToScreen(x,y);
+
+		TrackPopupMenu(m_pWin32Popup->getMenuHandle(),
+					   TPM_CENTERALIGN | TPM_TOPALIGN | TPM_RIGHTBUTTON,
+					   x,y,0,m_hwndFrame,NULL);
+
+		// the popup steals our capture, so we need to reset our counter.
+		m_pWin32Mouse->reset();
+	}
+
+	DELETEP(m_pWin32Popup);
+#endif
+	return bResult;
+}

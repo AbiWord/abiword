@@ -103,6 +103,8 @@ public:
 	static EV_EditMethod_Fn cursorImage;
 	static EV_EditMethod_Fn cursorImageSize;
 
+	static EV_EditMethod_Fn contextText;
+
 	static EV_EditMethod_Fn dragToXY;
 	static EV_EditMethod_Fn dragToXYword;
 	static EV_EditMethod_Fn endDrag;
@@ -284,6 +286,8 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(cursorRightArrow),		0,	""),
 	EV_EditMethod(NF(cursorImage),			0,	""),
 	EV_EditMethod(NF(cursorImageSize),		0,	""),
+
+	EV_EditMethod(NF(contextText),			0,	""),
 
 	EV_EditMethod(NF(dragToXY),				0,	""),
 	EV_EditMethod(NF(dragToXYword),			0,	""),
@@ -1392,6 +1396,17 @@ Defun1(cursorImageSize)
 	if (pG)
 		pG->setCursor(GR_Graphics::GR_CURSOR_IBEAM);
 	return UT_TRUE;
+}
+
+/*****************************************************************/
+
+Defun(contextText)
+{
+	ABIWORD_VIEW;
+	XAP_Frame * pFrame = (XAP_Frame *)pView->getParentData();
+	UT_ASSERT(pFrame);
+
+	return pFrame->runModalContextMenu(pView,"ContextText",pCallData->m_xPos,pCallData->m_yPos);
 }
 
 /*****************************************************************/

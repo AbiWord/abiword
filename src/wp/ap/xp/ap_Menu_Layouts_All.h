@@ -28,7 +28,4 @@
 // Include each menu layout that we want to build.
 
 #include "ap_Menu_Layouts_MainMenu.h"
-
-#ifdef UT_DEBUG
-#include "ap_Menu_Layouts_DebugMenu.h"
-#endif
+#include "ap_ML_ContextText.h"

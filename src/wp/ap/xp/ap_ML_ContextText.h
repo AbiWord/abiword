@@ -25,14 +25,15 @@
 ******************************************************************
 *****************************************************************/
 
-BeginLayout(DebugMain)
+BeginLayout(ContextText)
 
-	BeginSubMenu(AP_MENU_ID_FILE)
-		MenuItem(AP_MENU_ID_FILE_SAVE)
-		MenuItem(AP_MENU_ID_FILE_SAVEAS)
+	BeginPopupMenu()
+		MenuItem(AP_MENU_ID_EDIT_CUT)
+		MenuItem(AP_MENU_ID_EDIT_COPY)
+		MenuItem(AP_MENU_ID_EDIT_PASTE)
 		Separator()
-		MenuItem(AP_MENU_ID_FILE_NEW)
-		MenuItem(AP_MENU_ID_FILE_OPEN)
-	EndSubMenu()
+		MenuItem(AP_MENU_ID_FMT_FONT)
+		MenuItem(AP_MENU_ID_FMT_PARAGRAPH)
+	EndPopupMenu()
 
 EndLayout()

@@ -27,7 +27,7 @@
 
 class AV_View;
 class AP_Win32App;
-class XAP_Win32Frame;
+class EV_EditEventMapper;
 
 
 /*****************************************************************/
@@ -35,23 +35,52 @@ class XAP_Win32Frame;
 class EV_Win32Menu : public EV_Menu
 {
 public:
-	EV_Win32Menu(AP_Win32App * pWin32App, XAP_Win32Frame * pWin32Frame,
+	EV_Win32Menu(AP_Win32App * pWin32App,
+				 const EV_EditEventMapper * pEEM,
 				 const char * szMenuLayoutName,
 				 const char * szMenuLabelSetName);
 	~EV_Win32Menu(void);
 
-	UT_Bool				synthesize(void);
+	UT_Bool				synthesizeMenu(HMENU menuRoot);
 	UT_Bool				onCommand(AV_View * pView, HWND hWnd, WPARAM wParam);
 	UT_Bool				onInitMenu(AV_View * pView, HWND hWnd, HMENU hMenuBar);
 
+	inline HMENU		getMenuHandle(void) const			{ return m_myMenu; };
 	inline AP_Menu_Id	MenuIdFromWmCommand(UINT cmd)		{ return (AP_Menu_Id)(cmd - WM_USER); };
 	inline UINT			WmCommandFromMenuId(AP_Menu_Id id)	{ return (id + WM_USER); };
 
 protected:
-	AP_Win32App *		m_pWin32App;
-	XAP_Win32Frame *	m_pWin32Frame;
+	AP_Win32App *				m_pWin32App;
+	const EV_EditEventMapper *	m_pEEM;
 
-	HMENU				m_myMenu;
+	HMENU						m_myMenu;
+};
+
+/*****************************************************************/
+
+class EV_Win32MenuBar : public EV_Win32Menu
+{
+public:
+	EV_Win32MenuBar(AP_Win32App * pWin32App,
+					const EV_EditEventMapper * pEEM,
+					const char * szMenuLayoutName,
+					const char * szMenuLabelSetName);
+	~EV_Win32MenuBar(void);
+
+	UT_Bool				synthesizeMenuBar(void);
+};
+
+/*****************************************************************/
+
+class EV_Win32MenuPopup : public EV_Win32Menu
+{
+public:
+	EV_Win32MenuPopup(AP_Win32App * pWin32App,
+					  const char * szMenuLayoutName,
+					  const char * szMenuLabelSetName);
+	~EV_Win32MenuPopup(void);
+
+	UT_Bool				synthesizeMenuPopup(void);
 };
 
 #endif /* EV_WIN32MENU_H */
