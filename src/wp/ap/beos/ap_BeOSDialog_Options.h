@@ -21,7 +21,6 @@
 #define AP_BEOSDIALOG_OPTIONS_H
 
 #include "ap_Dialog_Options.h"
-#include <Pt.h>
 
 class XAP_BeOSFrame;
 
@@ -56,7 +55,7 @@ public:
  	SET_GATHER			(SpellInternet,		UT_Bool );
  
 	SET_GATHER			(SmartQuotesEnable, UT_Bool );
-	SET_GATHER			(DefaultPageSize,   fp_PageSize::Predefined);
+	SET_GATHER			(DefaultPageSize,   fp_PageSize::Predefined );
  	SET_GATHER			(PrefsAutoSave,		UT_Bool );
  
  	SET_GATHER			(ViewShowRuler,		UT_Bool );
