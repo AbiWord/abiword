@@ -2131,11 +2131,11 @@ void s_HTML_Listener::_handleDataItems(void)
 			int result = m_pDocument->getApp()->makeDirectory(fname, 0750);
 			
 			if (!UT_strcmp(szMimeType, "image/svg-xml"))
-				sprintf(fname, "%s/%d.svg", fname, loc);
+				sprintf(fname, "%s/%s_%d.svg", fname, szName, loc);
 			if (!UT_strcmp(szMimeType, "text/mathml"))
-				sprintf(fname, "%s/%d.mathml", fname, loc);
+				sprintf(fname, "%s/%s_%d.mathml", fname, szName, loc);
 			else // PNG Image
-				sprintf(fname, "%s/%d.png", fname, loc);
+				sprintf(fname, "%s/%s_%d.png", fname, szName, loc);
 			
 			fp = fopen (fname, "wb+");
 			
