@@ -310,6 +310,8 @@ public:
     pt_VarSet &             getVarSet(void) {return m_varset;};
     pf_Fragments &          getFragments(void) {return m_fragments;};
 
+	bool                    purgeFmtMarks();
+
 #ifdef PT_TEST
 	UT_TestStatus			__test_VerifyCoalescedFrags(FILE * fp) const;
 	void					__dump(FILE * fp) const;

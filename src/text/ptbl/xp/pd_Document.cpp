@@ -5899,6 +5899,17 @@ void PD_Document::setMarkRevisions(bool bMark)
 	}
 }
 
+/*!
+    This function crawls over the entire document and removes all fmt marks. It is principally meant
+    to do PT clean up on import (for example, the structure of MS Word documents is such that we end
+    up with a myriad of superfluous fmt marks in the document), and should be called by an importer
+    at the end of import process.
+*/
+bool PD_Document::purgeFmtMarks()
+{
+	return m_pPieceTable->purgeFmtMarks();
+}
+
 
 #ifdef DEBUG
 void PD_DocumentDiff::_dump() const

@@ -563,6 +563,8 @@ public:
 	void       setNewFtrHeight(UT_sint32 newHeight)
 	{ m_iNewFtrHeight = newHeight;}
 
+	bool                    purgeFmtMarks();
+	
 protected:
 	~PD_Document();
 
@@ -584,7 +586,7 @@ public:
 private:
 	bool                    _exportInitVisDirection(PT_DocPosition pos);
 	bool                    _exportFindVisDirectionRunAtPos(PT_DocPosition pos);
-	
+
 private:
 	bool					m_ballowListUpdates;
 	pt_PieceTable *			m_pPieceTable;

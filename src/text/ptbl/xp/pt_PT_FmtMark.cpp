@@ -227,6 +227,48 @@ bool pt_PieceTable::_deleteFmtMark(pf_Frag_FmtMark * pffm,
 	return true;
 }
 
+/*
+     purges fmt marks from document; leaves no records in the undo history
+*/
+bool pt_PieceTable::purgeFmtMarks()
+{
+	pf_Frag * pf_First = m_fragments.getFirst();
+	pf_Frag * pfTemp   = pf_First;
+
+#ifdef DEBUG
+	UT_uint32 iCount  = 0;
+#endif
+	while (pfTemp)
+	{
+		if (pfTemp->getType() == pf_Frag::PFT_EndOfDoc)
+			break;
+
+		if (pfTemp->getType() == pf_Frag::PFT_FmtMark)
+		{
+			pf_Frag * pfNewTemp;
+			PT_BlockOffset fragOffsetNewTemp;
+
+			bool bResult = _deleteFmtMark(static_cast<pf_Frag_FmtMark *>(pfTemp), &pfNewTemp,&fragOffsetNewTemp);
+			
+			UT_return_val_if_fail (bResult,false);
+
+			// FmtMarks have length zero, so we don't need to update dposTemp.
+			pfTemp = pfNewTemp;
+
+#ifdef DEBUG
+			++iCount;
+#endif
+		}
+		else
+		{
+			pfTemp = pfTemp->getNext();
+		}
+	}
+
+	UT_DEBUGMSG(("pt_PieceTable::purgeFmtMarks: removed %d marks\n", iCount));
+	return true;
+}
+
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
