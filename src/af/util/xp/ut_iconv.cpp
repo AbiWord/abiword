@@ -138,7 +138,9 @@ int UT_iconv_isValid ( UT_iconv_t cd )
 
 UT_iconv_t  UT_iconv_open( const char* to, const char* from )
 {
+  if ( to && from )
     return iconv_open( to, from );
+  return INVALID_ICONV_HANDLE;
 }
 
 size_t  UT_iconv( UT_iconv_t cd, const char **inbuf, 
@@ -150,13 +152,18 @@ size_t  UT_iconv( UT_iconv_t cd, const char **inbuf,
   // 2) some iconv implementations don't use a const char ** inbuf
   //    while some (newer, conformant ones) do
 
+  if ( !UT_iconv_isValid ( cd ) )
+    return -1;
+
   ICONV_CONST char ** buf = (ICONV_CONST char**)(inbuf);
   return iconv( cd, buf, inbytesleft, outbuf, outbytesleft );
 }
 
 int  UT_iconv_close( UT_iconv_t cd )
 {
+  if ( UT_iconv_isValid ( cd ) )
     return iconv_close( cd );
+  return -1;
 }
 
 void UT_iconv_reset(UT_iconv_t cd)
