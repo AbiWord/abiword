@@ -1353,7 +1353,12 @@ void FV_View::cmdCharMotion(bool bForward, UT_uint32 count)
 		}
 		_updateInsertionPoint();
 	}
+//
+// No need to update screen for 0.5 seconds.
+//
+	m_pLayout->setSkipUpdates(5);
 	notifyListeners(AV_CHG_MOTION);
+	
 }
 
 /*!
@@ -3699,6 +3704,10 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 	UT_sint32 yPoint2;
 	bool bDirection;
 
+//
+// No need to to do background updates for 0.5 seconds.
+//
+	m_pLayout->setSkipUpdates(5);
 	UT_sint32 xOldSticky = m_xPointSticky;
 
 	// first, find the line we are on now

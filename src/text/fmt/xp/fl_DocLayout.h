@@ -87,7 +87,8 @@ public:
 	inline void considerPendingSmartQuoteCandidate() {considerSmartQuoteCandidateAt(m_pPendingBlockForSmartQuote, m_uOffsetForSmartQuote); }
 
 	void			notifyBlockIsBeingDeleted(fl_BlockLayout *pBlock);
-
+	void            setSkipUpdates(UT_uint32 numSkips) {m_iSkipUpdates = numSkips;}
+	UT_uint32       getSkipUpdates(void) { return m_iSkipUpdates;}
 	UT_sint32		getHeight();
 	UT_sint32       getWidth();
 
@@ -225,6 +226,7 @@ protected:
 //	UT_Vector			m_vecLists;
 	
 	UT_Timer*			m_pRedrawUpdateTimer;
+	UT_uint32           m_iSkipUpdates;
 };
 
 #endif /* DOCLAYOUT_H */

@@ -433,7 +433,7 @@ void  AP_Dialog_Lists::fillUncustomizedValues(void)
 void  AP_Dialog_Lists::fillFakeLabels(void)
 {
 
-	if(m_bisCustomized == false)
+	if(m_bisCustomized == false && !isModal())
 	{
 		m_iLevel = getBlock()->getLevel();
 		if(m_iLevel == 0 || m_bStartSubList == true)

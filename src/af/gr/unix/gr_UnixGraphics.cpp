@@ -743,8 +743,8 @@ void GR_UnixGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 		//
 		// We're moving left so left is reduced
 		//
-		exposeArea.left += dx;
 		exposeArea.width += dx;
+		exposeArea.left -= dx;
 	}
 	if(exposeArea.width > 100000 || exposeArea.height > 100000)
 	{

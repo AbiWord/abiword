@@ -65,6 +65,7 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
 	m_bStopSpellChecking = false;
 	m_bImSpellCheckingNow = false;
 	m_uDocBackgroundCheckReasons = 0;
+	m_iSkipUpdates = 0;
 	m_pRedrawUpdateTimer = UT_Timer::static_constructor(_redrawUpdate, this, m_pG);
 	if (m_pRedrawUpdateTimer)
 	{
@@ -1207,7 +1208,16 @@ void FL_DocLayout::_redrawUpdate(UT_Timer * pTimer)
 	PD_Document * pDoc = pDocLayout->getDocument();
 	if(pDoc->isPieceTableChanging())
 		return;
-
+//
+// Check if we've been asked to wait for a while..
+//
+	UT_uint32 skip = pDocLayout->getSkipUpdates();
+	if(skip > 0)
+	{
+		skip--;
+		pDocLayout->setSkipUpdates(skip);
+		return;
+	}
 	fl_SectionLayout* pSL = pDocLayout->m_pFirstSection;
 	while (pSL)
 	{
