@@ -22,6 +22,14 @@
 ## Linux platform defines
 ##############################################################################
 
+# Define architecture-specific flags (L. Kollar, 3 Nov 1998)
+# (only i386 and ppc now; anyone want to add sparc & alpha?)
+# These are (probably) optional for your platform.
+i386_ARCH_FLAGS		= -mno-486 -Di386
+PPC_ARCH_FLAGS		= -O2
+ALPHA_ARCH_FLAGS 	= 
+SPARC_ARCH_FLAGS 	= 
+
 # Define tools
 CC		= gcc
 CCC		= g++
@@ -49,7 +57,23 @@ PLATFORM_FLAGS		= -ansi -Wall -pipe -DLINUX -Dlinux
 PORT_FLAGS		= -D_POSIX_SOURCE -D_BSD_SOURCE -DHAVE_STRERROR
 OS_CFLAGS		= $(DSO_CFLAGS) $(PLATFORM_FLAGS) $(PORT_FLAGS)
 
-PLATFORM_FLAGS		+= # -mno-486 -Di386
+# Architecture-specific flags
+ifeq ($(OS_ARCH), i386)
+PLATFORM_FLAGS		+= $(i386_ARCH_FLAGS)
+endif
+
+ifeq ($(OS_ARCH), ppc)
+PLATFORM_FLAGS		+= $(PPC_ARCH_FLAGS)
+endif
+
+ifeq ($(OS_ARCH), alpha)
+PLATFORM_FLAGS		+= $(ALPHA_ARCH_FLAGS)
+endif
+
+ifeq ($(OS_ARCH), sparc)
+PLATFORM_FLAGS		+= $(SPARC_ARCH_FLAGS)
+endif
+
 PORT_FLAGS		+= -D_XOPEN_SOURCE
 
 # Shared library flags

@@ -41,10 +41,13 @@
 # (so we don't imply another level of depth).  This is to solve
 # a problem with BSD/OS.  In fact, it might be good to do this
 # to all uname results, so that one doesn't see "sun4/m" as an
-# architecture.
+# architecture.  The substitutions are taken from the Linux
+# kernel Makefile.  The result of this is that even if you have
+# a Pentium Pro, you will see your bins in a "...i386" directory.
+# This doesn't mean it didn't use your optimizations.
 OS_NAME		:= $(shell uname -s | sed "s/\//-/")
 OS_RELEASE	:= $(shell uname -r | sed "s/\//-/")
-OS_ARCH		:= $(shell uname -m | sed "s/\//-/")
+OS_ARCH		:= $(shell uname -m | sed -e s/i.86/i386/ -e s/sun4u/sparc64/ -e s/arm.*/arm/ -e s/sa110/arm/ | sed "s/\//-/")
 
 # Where to stuff all the bins
 DISTBASE 	= $(ABI_DEPTH)/../dist
