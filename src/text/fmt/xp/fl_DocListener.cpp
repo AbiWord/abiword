@@ -944,6 +944,7 @@ UT_Bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 					{
 						pRun->m_iOffsetFirst -= blockOffset;
 						pRun->m_pBL = pNewBL;
+						pRun->calcWidths(&pNewBL->m_gbCharWidths);
 						
 						pRun = pRun->getNext();
 					}

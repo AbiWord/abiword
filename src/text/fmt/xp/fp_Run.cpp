@@ -928,14 +928,23 @@ void fp_Run::dumpRun(void) const
 UT_Bool fp_Run::ins(UT_uint32 iOffset, UT_uint32 iCount, PT_AttrPropIndex /*indexAP*/)
 {
 	UT_ASSERT(m_pG->queryProperties(DG_Graphics::DGP_SCREEN));
+	
+	/*
+	  NOTE  changing the following comparison to <= (from <)
+	  and deleting the || (m_iOffsetFirst == iOffset) case
+	  from the if below gets rid of bug 96.  However, these
+	  changes cause other problems which are worse.
+	*/
 	if ((m_iOffsetFirst + m_iLen) < iOffset)
 	{
 		// nothing to do.  the insert occurred AFTER this run
 		return UT_FALSE;
 	}
 
-	if ((m_iOffsetFirst > iOffset) || 
-		((m_iOffsetFirst == iOffset) && (iOffset > 0)))
+	if (
+		(m_iOffsetFirst > iOffset)
+		|| ((m_iOffsetFirst == iOffset) && (iOffset > 0))
+		)
 	{
 		m_iOffsetFirst += iCount;
 		return UT_FALSE;
