@@ -354,7 +354,7 @@ void fl_TableLayout::format(void)
 	}
 	if(isDirty())
 	{
-		UT_DEBUGMSG(("TableLayout Mark All runs dirty \n"));
+		xxx_UT_DEBUGMSG(("TableLayout Mark All runs dirty \n"));
 		markAllRunsDirty();
 	}
 	fl_ContainerLayout*	pCell = getFirstLayout();
@@ -367,7 +367,7 @@ void fl_TableLayout::format(void)
 		}
 		pCell = pCell->getNext();
 	}
-	UT_DEBUGMSG(("fl_TableLayout: Finished Formatting %x isDirty %d \n",this,isDirty()));
+	xxx_UT_DEBUGMSG(("fl_TableLayout: Finished Formatting %x isDirty %d \n",this,isDirty()));
 
 	if(isDirty() && !getDocument()->isDontImmediateLayout())
 	{
@@ -2061,7 +2061,7 @@ void fl_CellLayout::_lookupProperties(void)
 	pSectionAP->getProperty("right-attach", (const XML_Char *&)pszRightAttach);
 	pSectionAP->getProperty("top-attach", (const XML_Char *&)pszTopAttach);
 	pSectionAP->getProperty("bot-attach", (const XML_Char *&)pszBottomAttach);
-	UT_DEBUGMSG(("CellLayout _lookupProps top %s bot %s left %s right %s \n",pszTopAttach,pszBottomAttach,pszLeftAttach,pszRightAttach)); 
+	xxx_UT_DEBUGMSG(("CellLayout _lookupProps top %s bot %s left %s right %s \n",pszTopAttach,pszBottomAttach,pszLeftAttach,pszRightAttach)); 
 	if(pszLeftAttach && pszLeftAttach[0])
 	{
 		m_iLeftAttach = atoi(pszLeftAttach);
