@@ -6528,6 +6528,7 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 			char * buffer  = UT_strdup(styleName.c_str());
 			char * oldbuffer;
 			m_styleTable.setNthItem(styleNumber,(void *)buffer,(void **)&oldbuffer);
+			FREEP(oldbuffer);
 			break;
 		}
 		if (nesting == 1)
@@ -6617,7 +6618,10 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 				if(NULL == szNext)
 				{
 					UT_sint32 istyle = BasedOn[i];
-					attribs[attribsCount++] = UT_strdup(( const char *) m_styleTable[istyle]);
+					// must not mix static and dynamically allocated strings in the same
+					// array, otherwise there is no way we can free it !!!
+					//attribs[attribsCount++] = UT_strdup(( const char *) m_styleTable[istyle]);
+					attribs[attribsCount++] = ( const char *)m_styleTable[istyle];
 				}
 				else
 				{
@@ -6630,7 +6634,10 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 				if(NULL == szNext)
 				{
 					UT_sint32 istyle = FollowedBy[i];
-					attribs[attribsCount++] = UT_strdup(( const char *) m_styleTable[istyle]);
+					// must not mix static and dynamically allocated strings in the same
+					// array, otherwise there is no way we can free it !!!
+					// attribs[attribsCount++] = UT_strdup(( const char *) m_styleTable[istyle]);
+					attribs[attribsCount++] = ( const char *)m_styleTable[istyle];
 				}
 				else
 				{
@@ -6670,7 +6677,9 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 		{
 			char * sz = (char *) pCurStyleVec->getNthItem(j);
 			if(sz != NULL)
-				delete [] sz;
+				// MUST NOT USED delete[] on strings allocated by malloc/calloc !!!
+				// delete [] sz;
+				FREEP(sz);
 		}
 		delete pCurStyleVec;
 

@@ -294,6 +294,8 @@ s_RTF_ListenerWriteDoc::s_RTF_ListenerWriteDoc(PD_Document * pDocument,
 	m_sdh = NULL;
 	m_bToClipboard = bToClipboard;
 	_setTabEaten(false);
+	_setListBlock(false);
+	
 	// when we are going to the clipboard, we should implicitly
 	// assume that we are starting in the middle of a section
 	// and block.  when going to a file we should not.

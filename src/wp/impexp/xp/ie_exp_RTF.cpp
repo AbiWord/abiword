@@ -456,11 +456,14 @@ void IE_Exp_RTF::_rtf_fontname(const char * szFontName)
 void IE_Exp_RTF::_rtf_chardata(const char * pbuf, UT_uint32 buflen)
 {
 	if (m_bLastWasKeyword)
+	{
 		write(" ");
+		m_bLastWasKeyword = false;
+	}
+	
 	if(0 == buflen)
 		return;
 	write(pbuf,buflen);
-	m_bLastWasKeyword = false;
 }
 
 void IE_Exp_RTF::_rtf_nl(void)
