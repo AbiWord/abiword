@@ -13,6 +13,8 @@ PX_ChangeRecord_Span::PX_ChangeRecord_Span(PXType type,
 										   UT_uint32 length)
 	: PX_ChangeRecord(type, atomic, position, bLeftSide, indexAP)
 {
+	UT_ASSERT(length > 0);
+	
 	m_bufIndex = bufIndex;
 	m_length = length;
 }

@@ -15,6 +15,8 @@ PX_ChangeRecord_SpanChange::PX_ChangeRecord_SpanChange(PXType type,
 													   UT_uint32 length)
 	: PX_ChangeRecord(type, atomic, position, bLeftSide, indexNewAP)
 {
+	UT_ASSERT(length > 0);
+	
 	// m_indexAP in base class is set to indexNewAP
 	m_indexOldAP = indexOldAP;
 	m_ptc = ptc;

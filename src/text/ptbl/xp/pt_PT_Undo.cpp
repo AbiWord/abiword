@@ -79,7 +79,27 @@ UT_Bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr)
 			PT_BlockOffset fragOffset = 0;
 			if (!getTextFragFromPosition(pcrs->getPosition(),UT_FALSE,&pfs,&pft,&fragOffset))
 				return UT_FALSE;
-			_fmtChangeSpan(pft,fragOffset,pcrs->getLength(),pcrs->getIndexAP(),NULL,NULL);
+
+			// we need to loop here, because even though we have a simple (atomic) change,
+			// the document may be fragmented slightly differently (or rather, it may not
+			// yet be possible to coalesce it (until the end of the loop)).
+			
+			pf_Frag * pfEnd;
+			UT_uint32 fragOffsetEnd;
+			UT_uint32 length = pcrs->getLength();
+			while (length)
+			{
+				UT_uint32 lengthInFrag = pft->getLength() - fragOffset;
+				UT_uint32 lengthThisStep = UT_MIN(lengthInFrag, length);
+
+				_fmtChangeSpan(pft,fragOffset,lengthThisStep,pcrs->getIndexAP(),&pfEnd,&fragOffsetEnd);
+
+				UT_ASSERT(pfEnd->getType() == pf_Frag::PFT_Text);
+				pft = static_cast<pf_Frag_Text *> (pfEnd);
+				fragOffset = fragOffsetEnd;
+				length -= lengthThisStep;
+			}
+			
 			m_pDocument->notifyListeners(pfs,pcr);
 		}
 		return UT_TRUE;
