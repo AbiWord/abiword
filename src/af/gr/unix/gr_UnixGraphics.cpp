@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  *
@@ -88,6 +90,9 @@ GR_UnixGraphics::GR_UnixGraphics(GdkWindow * win, XAP_UnixFontManager * fontMana
 	GR_UnixGraphics::GR_UnixGraphics(GdkWindow * win, XAP_App * app)
 #endif
 		:
+#if (!defined(WITH_PANGO) || !defined(USE_XFT))
+         m_wctomb(new UT_Wctomb),
+#endif
 #ifdef USE_XFT
          m_bLayoutUnits(false),
 #endif
@@ -175,6 +180,10 @@ GR_UnixGraphics::~GR_UnixGraphics()
 	delete m_pFallBackFontHandle;
 #endif
 #endif
+
+#if (!defined(WITH_PANGO) || !defined(USE_XFT))
+	DELETEP(m_wctomb);
+#endif
 }
 
 bool GR_UnixGraphics::queryProperties(GR_Graphics::Properties gp) const
@@ -247,23 +256,19 @@ void GR_UnixGraphics::setLineProperties ( double inWidthPixels,
 
 #if (!defined(WITH_PANGO) || !defined(USE_XFT))
 
-#define WCTOMB_DECLS \
-	if (!w) {	\
-	    w = new UT_Wctomb;	\
-	} else	\
-	    w->initialize();
+#define WCTOMB_DECLS m_wctomb->initialize()
 
 #define CONVERT_TO_MBS(c)	\
     	if (c<=0xff) {	\
 		/* this branch is to allow Lists to function */	\
-		text[0] = (unsigned char)c;			\
-		text_length = 1;				\
-		fallback_used = 0;				\
+		m_text[0] = (unsigned char)c;			\
+		m_text_length = 1;				\
+		m_fallback_used = 0;				\
 	} else	{\
-		fallback_used = 0;	\
-		if (!w->wctomb(text,text_length,c)) {	\
-		    w->wctomb_or_fallback(text,text_length,c);	\
-		    fallback_used = 1;	\
+		m_fallback_used = 0;	\
+		if (!m_wctomb->wctomb(m_text,m_text_length,c)) {	\
+		    m_wctomb->wctomb_or_fallback(m_text,m_text_length,c);	\
+		    m_fallback_used = 1;	\
 		}	\
 	}
 #endif
@@ -306,7 +311,7 @@ void GR_UnixGraphics::drawGlyph(UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff)
 	{
 		WCTOMB_DECLS;
 		CONVERT_TO_MBS(Wide_char);
-		gdk_draw_text(m_pWin,font,m_pGC,xoff,yoff+font->ascent,text,text_length);
+		gdk_draw_text(m_pWin,font,m_pGC,xoff,yoff+font->ascent,m_text,m_text_length);
 	}
 #endif
 }
@@ -483,8 +488,8 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 		else
 		{
 			CONVERT_TO_MBS(actual);
-			gdk_draw_text(m_pWin,font,m_pGC,x,yoff+font->ascent,text,text_length);
-			x+=gdk_text_width(font, text, text_length);
+			gdk_draw_text(m_pWin,font,m_pGC,x,yoff+font->ascent,m_text,m_text_length);
+			x+=gdk_text_width(font, m_text, m_text_length);
 		}
 	}
 	flush();
@@ -649,11 +654,11 @@ UT_uint32 GR_UnixGraphics::measureUnRemappedChar(const UT_UCSChar c)
 		{
 			WCTOMB_DECLS;
 			CONVERT_TO_MBS(Wide_char);
-			if (fallback_used)
+			if (m_fallback_used)
 				return 0;
 			font = XAP_EncodingManager::get_instance()->is_cjk_letter(Wide_char) ? m_pMultiByteFont : m_pSingleByteFont;
 
-			return _UL(gdk_text_width(font, text, text_length));
+			return _UL(gdk_text_width(font, m_text, m_text_length));
 		}
 	}
 //

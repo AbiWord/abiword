@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* Abiword
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -33,6 +35,7 @@
 
 class UT_ByteBuf;
 class UT_String;
+class UT_Wctomb;
 
 class GR_UnixGraphics : public GR_Graphics
 {
@@ -139,6 +142,16 @@ class GR_UnixGraphics : public GR_Graphics
 #ifndef WITH_PANGO 
 	XAP_UnixFontManager * 	m_pFontManager;
 #endif	
+
+#if (!defined(WITH_PANGO) || !defined(USE_XFT))
+	/* variables used by WCTOMB_DECLS and CONVERT_TO_MBS(c)
+	 */
+	UT_Wctomb *				m_wctomb;
+	char					m_text[1];
+	int						m_text_length;
+	int						m_fallback_used;
+#endif	
+
 	GdkGC*       			m_pGC;
 	GdkGC*  	      		m_pXORGC;
 	GdkWindow*  	  		m_pWin;
