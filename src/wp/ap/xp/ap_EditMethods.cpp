@@ -2437,6 +2437,7 @@ Defun(closeWindow)
 	UT_ASSERT(pPrefs);
 
 	bool close = false;
+
 	pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_CloseOnLastDoc, &close);
 	return s_closeWindow (pAV_View, pCallData, close);
 }

@@ -141,7 +141,13 @@
 #define AP_PREF_KEY_DefaultSaveFormat "DefaultSaveFormat"
 #define AP_PREF_DEFAULT_DefaultSaveFormat ".abw"
 #define AP_PREF_KEY_CloseOnLastDoc "CloseOnLastDoc"
+
+#ifdef DEBUG
 #define AP_PREF_DEFAULT_CloseOnLastDoc "0"
+#else
+// TODO: turn on after 0.9.3
+#define AP_PREF_DEFAULT_CloseOnLastDoc "1"
+#endif
 
 #else /* AP_PREFS_SCHEMEIDS_H */
 #ifdef dcl
