@@ -91,7 +91,7 @@ XAP_Frame::XAP_Frame(XAP_FrameImpl *pFrameImpl, XAP_App * pApp)
 }
 
 XAP_Frame::XAP_Frame(XAP_Frame * f)
-	: m_pFrameImpl(f->m_pFrameImpl),
+	: m_pFrameImpl(f->m_pFrameImpl->createInstance(this, f->m_pApp)),
 	m_pApp(f->m_pApp),
 	m_pDoc(REFP(f->m_pDoc)),
 	m_pView(0),

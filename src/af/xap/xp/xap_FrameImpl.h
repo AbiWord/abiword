@@ -53,6 +53,8 @@ class ABI_EXPORT XAP_FrameImpl
 {
 public:
 	XAP_Frame*	getFrame() { return m_pFrame; };	/* needed for Obj-C access */
+	virtual XAP_FrameImpl * createInstance(XAP_Frame *pFrame, XAP_App *pApp) = 0;
+
 protected:
 	XAP_FrameImpl(XAP_Frame *pFrame);
 	virtual ~XAP_FrameImpl();
@@ -101,8 +103,10 @@ protected:
 
 	const char * m_szMenuLayoutName;
 	const char * m_szMenuLabelSetName;		/* language for menus */
-private:
+
 	XAP_Frame * m_pFrame;
+
+private:
 };
 #endif
 
