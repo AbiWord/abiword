@@ -194,7 +194,33 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	
 	if (bDialogResult != FALSE)
 	{
-		UT_cloneString(m_szFinalPathname,szFile);
+		UT_uint32 end = UT_pointerArrayLength((void **) m_szSuffixes);
+
+		if ((m_id == XAP_DIALOG_ID_FILE_SAVEAS) && 
+			(!UT_pathSuffix(szFile)) &&
+			(ofn.nFilterIndex <= end))
+		{
+			// add suffix based on selected file type
+			UT_ASSERT(ofn.nFilterIndex > 0);
+
+			const char * szSuffix = UT_pathSuffix(m_szSuffixes[ofn.nFilterIndex - 1]);
+			UT_ASSERT(szSuffix);
+
+			UT_uint32 length = strlen(szFile) + strlen(szSuffix) + 1;
+			m_szFinalPathname = (char *)calloc(length,sizeof(char));
+			if (m_szFinalPathname)
+			{
+				char * p = m_szFinalPathname;
+
+				strcpy(p,szFile);
+				strcat(p,szSuffix);
+			}
+		}
+		else
+		{
+			UT_cloneString(m_szFinalPathname,szFile);
+		}
+
 		m_answer = a_OK;
 
 		// set file type to auto-detect, since the Windows common
