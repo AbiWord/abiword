@@ -3257,7 +3257,6 @@ void FV_View::cmdAcceptRejectRevision(bool bReject, UT_sint32 xPos, UT_sint32 yP
 			pRun= pRun->getNext();
 
 		UT_ASSERT(pRun);
-		//fp_Run * pOrigRun = pRun;
 
 		const PP_RevisionAttr * pRevAttr = pRun->getRevisions();
 		iStart = pBlock->getPosition(false) + pRun->getBlockOffset();
@@ -3266,14 +3265,15 @@ void FV_View::cmdAcceptRejectRevision(bool bReject, UT_sint32 xPos, UT_sint32 yP
 		_acceptRejectRevision(bReject,iStart,iEnd,pRevAttr);
 
 #if 0
+		fp_Run * pOrigRun = pRun;
+
 		// now we have the run we clicked on, next we need to work back
 		// through the runs to find where the revision starts
 		// this does not work -- the PT gets out of sync with the
 		// layout; we can only do one run at at time
 		while(pRun && pRun->containsRevisions())
 		{
-			// do any necessary processing to accept/reject the
-		// revision
+			// do any necessary processing to accept/reject the revision
 			const PP_RevisionAttr * pRevAttr = pRun->getRevisions();
 			iStart = pBlock->getPosition(false) + pRun->getBlockOffset();
 			iEnd = pBlock->getPosition(false) + pRun->getBlockOffset() + pRun->getLength();
@@ -3299,14 +3299,6 @@ void FV_View::cmdAcceptRejectRevision(bool bReject, UT_sint32 xPos, UT_sint32 yP
 			pRun = pRun->getNext();
 		}
 #endif
-	}
-	else
-	{
-		// selection
-		iStart = UT_MIN(getPoint(),m_iSelectionAnchor);
-		iEnd   = UT_MAX(getPoint(),m_iSelectionAnchor);
-
-
 	}
 
 	// Signal PieceTable Changes have finished

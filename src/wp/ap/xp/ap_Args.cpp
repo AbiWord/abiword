@@ -134,7 +134,7 @@ bool AP_Args::doWindowlessArgs() const
 
 	if (m_sTo) 
 	{
-		AP_Convert * conv = new AP_Convert(getApp());
+		AP_Convert * conv = new AP_Convert();
 		conv->setVerbose(m_iVerbose);
 		while ((m_sFile = poptGetArg (poptcon)) != NULL)
 			conv->convertTo(m_sFile, m_sTo);
@@ -145,7 +145,7 @@ bool AP_Args::doWindowlessArgs() const
 	}
 	
 	if (m_iToPNG) {
-	  AP_Convert * conv = new AP_Convert(getApp());
+	  AP_Convert * conv = new AP_Convert();
 	  conv->setVerbose(m_iVerbose);
 // this has the problem that it calls the convertToPNG method on
 // ie_impGraphicPNG, which perhaps doesn't like you freeing the

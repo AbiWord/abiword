@@ -21,6 +21,7 @@
 #include <string.h>
 
 #include "ap_Convert.h"
+#include "xap_App.h"
 #include "ie_exp.h"
 #include "ie_imp.h"
 #include "ut_types.h"
@@ -49,12 +50,10 @@
 #include "xap_UnixPSGraphics.h"
 #endif
 
-class XAP_App;
-
 //////////////////////////////////////////////////////////////////
 
-AP_Convert::AP_Convert(XAP_App *pApp)
-  : m_iVerbose(1), m_pApp(pApp)
+AP_Convert::AP_Convert(int inVerbose)
+  : m_iVerbose(inVerbose)
 {
 }
 
@@ -65,16 +64,14 @@ AP_Convert::~AP_Convert(void)
 /////////////////////////////////////////////////////////////////
 
 void AP_Convert::convertTo(const char * szSourceFilename,
-							IEFileType sourceFormat,
-							const char * szTargetFilename,
-							IEFileType targetFormat)
+			   IEFileType sourceFormat,
+			   const char * szTargetFilename,
+			   IEFileType targetFormat)
 {
-	PD_Document * pNewDoc = new PD_Document(getApp());
-	UT_Error error;
-	UT_ASSERT(pNewDoc);
+	UT_Error error = UT_OK;
 
-	if (m_iVerbose > 1)
-		printf("AbiWord: [%s] -> [%s]\tStarting conversion...\n", szSourceFilename, szTargetFilename);
+	PD_Document * pNewDoc = new PD_Document(XAP_App::getApp());
+	UT_return_if_fail(pNewDoc);
 
 	error = pNewDoc->readFromFile(szSourceFilename, sourceFormat);
 
@@ -120,52 +117,45 @@ void AP_Convert::convertTo(const char * szSourceFilename,
 	UNREFP(pNewDoc);
 }
 
-void AP_Convert::convertTo(const char * szFilename, const char * szTargetSuffix)
+void AP_Convert::convertTo(const char * szFilename, const char * szTargetSuffixOrFilename)
 {
-  UT_String ext("."), file;
-  IEFileType ieft = 0;
+  UT_return_if_fail(szTargetSuffixOrFilename);
+  UT_return_if_fail(strlen(szTargetSuffixOrFilename)>0);
+
+  UT_String file;
+  IEFileType ieft = IEFT_Unknown;
+
   char *tmp = NULL;
-  char * fileDup = UT_strdup ( szFilename );
 
-  ext += szTargetSuffix;
-  ieft = IE_Exp::fileTypeForSuffix(ext.c_str());
+  if(NULL != (tmp = strrchr(szTargetSuffixOrFilename, '.')))
+    {
+      // found an extension. use that instead, else just use AbiWord native format
+      if(strlen(tmp) > 1)
+	ieft = IE_Exp::fileTypeForSuffix(tmp);
+      else
+	ieft = IE_Exp::fileTypeForSuffix(".abw");
+      file = szTargetSuffixOrFilename;
+    }
+  else
+    {
+      char * fileDup = UT_strdup ( szFilename );
+      
+      UT_String ext(".");
 
-  tmp = strrchr(fileDup, '.');
-  if (tmp != NULL)
-    *tmp = '\0';
+      ext += szTargetSuffixOrFilename;
+      ieft = IE_Exp::fileTypeForSuffix(ext.c_str());
+      
+      tmp = strrchr(fileDup, '.');
+      if (tmp != NULL)
+	*tmp = '\0';
+
+      file = fileDup;
+      file += ext;
   
-  file = fileDup;
-  file += ext;
-  
-  FREEP(fileDup);
+      FREEP(fileDup);
+    }
 
   convertTo(szFilename, IEFT_Unknown, file.c_str(), ieft);
-}
-
-void AP_Convert::convertTo(const char * szFilename, const char * szSourceSuffix, const char * szTargetSuffix)
-{
-  UT_String ext("."), sourceExt("."), file;
-  IEFileType ieft = 0;
-  IEFileType sourceIeft = 0;
-  char *tmp = NULL;
-  char * fileDup = UT_strdup ( szFilename );
-
-  ext += szTargetSuffix;
-  sourceExt += szSourceSuffix;
-
-  ieft = IE_Exp::fileTypeForSuffix(ext.c_str());
-  sourceIeft = IE_Imp::fileTypeForSuffix(sourceExt.c_str());
-
-  tmp = strrchr(fileDup, '.');
-  if (tmp != NULL)
-    *tmp = '\0';
-
-  file = fileDup;
-  file += ext;
-  
-  FREEP( fileDup );
-
-  convertTo(szFilename, sourceIeft, file.c_str(), ieft);
 }
 
 void AP_Convert::setVerbose(int level)
@@ -176,16 +166,15 @@ void AP_Convert::setVerbose(int level)
 
 void AP_Convert::print(const char * szFile, GR_Graphics * pGraphics)
 {
-  UT_DEBUGMSG(("DOM: AP_Convert::print %s\n", szFile));
-  UT_ASSERT(pGraphics);
+  UT_return_if_fail(pGraphics);
 
   // get the current document
-  PD_Document *pDoc = new PD_Document(getApp());
+  PD_Document *pDoc = new PD_Document(XAP_App::getApp());
   pDoc->readFromFile(szFile, IEFT_Unknown);
 
   // create a new layout and view object for the doc
   FL_DocLayout *pDocLayout = new FL_DocLayout(pDoc,pGraphics);
-  FV_View printView(getApp(),0,pDocLayout);
+  FV_View printView(XAP_App::getApp(),0,pDocLayout);
   pDocLayout->setView (&printView);
   pDocLayout->fillLayouts();
   pDocLayout->formatAll();

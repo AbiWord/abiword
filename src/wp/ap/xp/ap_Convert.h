@@ -30,31 +30,25 @@ class GR_Graphics;
 class ABI_EXPORT AP_Convert
 {
  public:
-	AP_Convert(XAP_App *pApp);
+	AP_Convert(int verbose=1);
 	~AP_Convert(void);
 
-    void convertTo(const char * szSourceFilename,
-				   IEFileType sourceFormat,
-				   const char * szTargetFilename,
-				   IEFileType targetFormat);
+	void convertTo(const char * szSourceFilename,
+		       IEFileType sourceFormat,
+		       const char * szTargetFilename,
+		       IEFileType targetFormat);
 	
 	void convertTo(const char * szSourceFilename,
-				   const char * szTargetSuffix);
-
-	void convertTo(const char * szSourceFilename,
-				   const char * szSourceSuffix,
-				   const char * szTargetFormat);
+		       const char * szTargetSuffixOrFilename);
 
 	void convertToPNG ( const char * szSourceFileName ) ;
 
 	void setVerbose(int level);
-	XAP_App* getApp() { return m_pApp; }
 
 	void print(const char * file, GR_Graphics * pGraphics);
 
  private:
 	int m_iVerbose;
-	XAP_App *m_pApp;
 };
 
 #endif /* AP_CONVERT_H */
