@@ -806,7 +806,7 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 			const char ** data = _ev_GetLabelName(m_pUnixApp, m_pUnixFrame, pAction, pLabel);
 			const char * szLabelName = data[0];
 				
-			// First we check to make sure the item exits.  If it does not,
+			// First we check to make sure the item exists.  If it does not,
 			// we create it and continue on.
 			GList * testchildren = gtk_container_children(GTK_CONTAINER(m_vecMenuWidgets.getNthItem(k)));
 			if (!testchildren)
@@ -859,7 +859,7 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 					gtk_signal_connect(GTK_OBJECT(w), "select", GTK_SIGNAL_FUNC(_wd::s_onMenuItemSelect), wd);
 					gtk_signal_connect(GTK_OBJECT(w), "deselect", GTK_SIGNAL_FUNC(_wd::s_onMenuItemDeselect), wd);				
 						
-					// we do NOT ad a new item, we point the existing index at our new widget
+					// we do NOT add a new item, we point the existing index at our new widget
 					// (update the pointers)
 					void ** old = NULL;
 					if (m_vecMenuWidgets.setNthItem(k, w, old))
