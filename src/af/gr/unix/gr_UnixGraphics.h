@@ -132,6 +132,8 @@ class GR_UnixGraphics : public GR_Graphics
 	GR_Graphics::ColorSpace	m_cs;
 	
 	GdkColor				m_3dColors[COUNT_3D_COLORS];
+private:
+	XAP_UnixFontHandle *	m_pFallBackFontHandle;
 };
 
 #endif /* GR_UNIXGRAPHICS_H */

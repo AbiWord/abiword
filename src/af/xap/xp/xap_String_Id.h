@@ -31,6 +31,12 @@ dcl(MSG_ShowUnixFontWarning, "AbiWord was not able to add its fonts to the X fon
                              "the Abiword help file for more detailed information, including\n"
                              "instructions on how to turn this warning off.")
 
+dcl(MSG_UnixFontSizeWarning, "The operating system was unable to allocate a font of the\n"
+							 "requested size; a smaller font will be used in its place on\n"
+							 "the screen, which will look strange, but the overall layout\n"
+							 "will be correct, and you should be able to print the document\n"
+							 "properly. Using a smaller zoom factor may resolve this problem.")
+							
 /* Default name for new, untitled document */
 dcl(UntitledDocument,			"Untitled%d")
 

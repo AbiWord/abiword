@@ -29,20 +29,10 @@
 #include "gr_UnixImage.h"
 #include "ut_sleep.h"
 #include "xap_UnixFrame.h"
+#include "xap_Strings.h"
 
 #ifdef HAVE_GNOME
 #include "gr_UnixGnomeImage.h"
-#endif
-
-#if 1
-#include <gdk/gdkprivate.h>
-static bool isFontUnicode(GdkFont *font)
-{
-	GdkFontPrivate *font_private = (GdkFontPrivate*) font;
-	XFontStruct *xfont = (XFontStruct *) font_private->xfont;
-	
-	return ((xfont->min_byte1 == 0) || (xfont->max_byte1 == 0));
-}
 #endif
 
 #include "ut_debugmsg.h"
@@ -54,10 +44,30 @@ static bool isFontUnicode(GdkFont *font)
 #include "xap_EncodingManager.h"
 #include "ut_OverstrikingChars.h"
 
+
+#if 1
+#include <gdk/gdkprivate.h>
+static bool isFontUnicode(GdkFont *font)
+{
+	if(!font)
+	{
+		UT_DEBUGMSG(("gr_UnixGraphics: isFontUnicode: font is NULL !!!\n"));
+		return false;
+	}
+	
+	GdkFontPrivate *font_private = (GdkFontPrivate*) font;
+	XFontStruct *xfont = (XFontStruct *) font_private->xfont;
+	
+	return ((xfont->min_byte1 == 0) || (xfont->max_byte1 == 0));
+}
+#endif
+
+
 //
 // Below this size we use GDK fonts. Above it we use metric info.
 //
 #define MAX_ABI_GDK_FONT_SIZE 200
+#define FALLBACK_FONT_SIZE 12
 
 XAP_UnixFontHandle *	GR_UnixGraphics::s_pFontGUI = NULL;
 UT_uint32 				GR_UnixGraphics::s_iInstanceCount = 0;
@@ -106,6 +116,8 @@ GR_UnixGraphics::GR_UnixGraphics(GdkWindow * win, XAP_UnixFontManager * fontMana
 	m_cs = GR_Graphics::GR_COLORSPACE_COLOR;
 	m_cursor = GR_CURSOR_INVALID;
 	setCursor(GR_CURSOR_DEFAULT);
+	
+	m_pFallBackFontHandle = new XAP_UnixFontHandle(m_pFontManager->getDefaultFont(), FALLBACK_FONT_SIZE);
 }
 
 GR_UnixGraphics::~GR_UnixGraphics()
@@ -113,6 +125,8 @@ GR_UnixGraphics::~GR_UnixGraphics()
 	s_iInstanceCount--;
 	if(!s_iInstanceCount)
 		DELETEP(s_pFontGUI);
+	
+	delete m_pFallBackFontHandle;
 }
 
 bool GR_UnixGraphics::queryProperties(GR_Graphics::Properties gp) const
@@ -202,6 +216,8 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	WCTOMB_DECLS;
 	GdkFont *font;
 	UT_sint32 x;
+	
+	static bool bFontSizeWarning = true;
 
 #ifdef BIDI_ENABLED	
 	// to be able to handle overstriking characters, we have to remember the width
@@ -221,6 +237,42 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 			continue;
 			
 		font=XAP_EncodingManager::get_instance()->is_cjk_letter(actual)? m_pMultiByteFont: m_pSingleByteFont;
+
+		if(!font)
+		{
+			// what now? this happens for instance when you set font size to 72
+			// and zoom to 200; obviously gtk cannot create font that big
+			// we do get the width right though, since we use the afm file for
+			// such big sizes, so we should just use the default font here,
+			// this will look really weird, but it is better then not drawing anything
+			// and much better than crashing
+			if(bFontSizeWarning)
+			{
+				XAP_App * pApp = XAP_App::getApp();
+				UT_ASSERT(pApp);
+				const XML_Char * msg = pApp->getStringSet()->getValue(XAP_STRING_ID_MSG_UnixFontSizeWarning);
+				UT_ASSERT(msg);
+				bFontSizeWarning = false;
+				messageBoxOK(msg);
+			}
+			
+			UT_DEBUGMSG(("gr_UnixGraphics::drawChars: no font to draw with, using default !!!\n"));
+			UT_sint32 iSize = m_pFallBackFontHandle ? m_pFallBackFontHandle->getSize() : 0;
+			UT_sint32 iMySize = FALLBACK_FONT_SIZE * getZoomPercentage() / 100;
+				
+			if(iSize != iMySize)
+			{
+				delete m_pFallBackFontHandle;
+				m_pFallBackFontHandle = new XAP_UnixFontHandle(m_pFontManager->getDefaultFont(),iMySize);
+			}
+			
+			setFont(m_pFallBackFontHandle);
+			font=XAP_EncodingManager::get_instance()->is_cjk_letter(actual)? m_pMultiByteFont: m_pSingleByteFont;
+			
+			UT_ASSERT(font);
+			if(!font)
+				return;
+		}
 		
 		if(XAP_EncodingManager::get_instance()->isUnicodeLocale())
 		{
