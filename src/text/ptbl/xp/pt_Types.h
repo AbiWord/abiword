@@ -43,8 +43,11 @@ typedef UT_uint32 PL_ListenerId;
 typedef const void * PL_StruxDocHandle;	/* opaque document data */
 typedef const void * PL_StruxFmtHandle;	/* opaque layout data */
 
-#define PT_PROPS_ATTRIBUTE_NAME		((const XML_Char *)"PROPS")
-#define PT_STYLE_ATTRIBUTE_NAME		((const XML_Char *)"STYLE")
-#define PT_BASEDON_ATTRIBUTE_NAME	((const XML_Char *)"BASEDON")
+#define PT_PROPS_ATTRIBUTE_NAME			((const XML_Char *)"props")
+#define PT_STYLE_ATTRIBUTE_NAME			((const XML_Char *)"style")
+#define PT_NAME_ATTRIBUTE_NAME			((const XML_Char *)"name")
+#define PT_TYPE_ATTRIBUTE_NAME			((const XML_Char *)"type")
+#define PT_BASEDON_ATTRIBUTE_NAME		((const XML_Char *)"basedon")
+#define PT_FOLLOWEDBY_ATTRIBUTE_NAME	((const XML_Char *)"followedby")
 
 #endif /* PT_TYPES_H */

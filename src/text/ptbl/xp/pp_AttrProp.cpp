@@ -31,6 +31,10 @@
 #include "pt_Types.h"
 #include "pp_AttrProp.h"
 
+#define DELETEP(p)	do { if (p) delete p; } while (0)
+#define FREEP(p)	do { if (p) free(p); } while (0)
+
+/****************************************************************/
 PP_AttrProp::PP_AttrProp()
 {
 	m_pAttributes = NULL;
@@ -41,11 +45,8 @@ PP_AttrProp::PP_AttrProp()
 
 PP_AttrProp::~PP_AttrProp()
 {
-	if (m_pAttributes)
-		delete m_pAttributes;
-
-	if (m_pProperties)
-		delete m_pProperties;
+	DELETEP(m_pAttributes);
+	DELETEP(m_pProperties);
 }
 
 UT_Bool	PP_AttrProp::setAttributes(const XML_Char ** attributes)
@@ -171,7 +172,22 @@ UT_Bool	PP_AttrProp::setAttribute(const XML_Char * szName, const XML_Char * szVa
 			}
 		}
 
-		return (m_pAttributes->addEntry(szName, szValue, NULL) == 0);
+		// make sure we store attribute names in lowercase
+		UT_ASSERT(sizeof(char) == sizeof(XML_Char));
+		char * copy;
+		if (!UT_cloneString(copy, szName))
+		{
+			UT_DEBUGMSG(("setAttribute: could not allocate lowercase copy.\n"));
+			return UT_FALSE;
+		}
+
+		UT_lowerString(copy);
+			
+		UT_Bool bRet = (m_pAttributes->addEntry(copy, szValue, NULL) == 0);
+
+		FREEP(copy);
+
+		return bRet;
 	}
 }
 
@@ -447,7 +463,7 @@ PP_AttrProp * PP_AttrProp::cloneWithReplacements(const XML_Char ** attributes,
 	return papNew;
 
 Failed:
-	if (papNew) delete papNew;
+	DELETEP(papNew);
 	return NULL;
 }
 
@@ -524,7 +540,7 @@ PP_AttrProp * PP_AttrProp::cloneWithElimination(const XML_Char ** attributes,
 	return papNew;
 
 Failed:
-	if (papNew) delete papNew;
+	DELETEP(papNew);
 	return NULL;
 }
 
