@@ -3927,7 +3927,7 @@ msgstr "Kunde inte aktivera/läsa in insticksprogram"
 msgid "Could not deactivate plugin"
 msgstr "Kunde inte avaktivera insticksprogram"
 
-#. DICTIONARY_CANTLOAD
+#. SPELL_CANTLOAD_DICT
 #: po/tmp/xap_String_Id.h.h:129
 #, c-format
 msgid "Could not load the dictionary for the %s language"

@@ -10,7 +10,7 @@
 <AbiStrings app="AbiWord" ver="1.0" language="al-AL">
 
 <Strings    class="XAP"
-DICTIONARY_CANTLOAD="Nuk mund të ngarkoj fjalorin për gjuhën %s"
+SPELL_CANTLOAD_DICT="Nuk mund të ngarkoj fjalorin për gjuhën %s"
 DLG_ABOUT_Title="Rreth %s"
 DLG_Break_Insert="Fut"
 DLG_CLIPART_Title="Vizatime"

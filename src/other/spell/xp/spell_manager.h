@@ -55,19 +55,23 @@ public:
 		LOOKUP_ERROR = 2      // internal error
 	};
 
-	virtual SpellCheckResult	checkWord(const UT_UCSChar* word, size_t len) = 0;
-	virtual UT_Vector*			suggestWord(const UT_UCSChar* word, size_t len) = 0;
+	SpellCheckResult	checkWord(const UT_UCSChar* word, size_t len);
+	UT_Vector*			suggestWord(const UT_UCSChar* word, size_t len);
+
 	// vector of DictionaryMapping*
 	virtual	UT_Vector & getMapping() {return m_vecEmpty;};
-	virtual bool  doesDictionaryExist (const char * szLang) {return false;};
+	virtual bool doesDictionaryExist (const char * szLang) {return false;};
 	virtual bool addToCustomDict (const UT_UCSChar *word, size_t len);
 
 	virtual void correctWord (const UT_UCSChar *toCorrect, size_t toCorrectLen,
 							  const UT_UCSChar *correct, size_t correctLen);
 
-protected:
+    UT_String getLanguage () const
+    {
+		return m_sLanguage;
+    }
 
-	virtual bool requestDictionary (const char * szLang) = 0;
+	bool requestDictionary (const char * szLang);
 
 
 protected:
@@ -81,20 +85,22 @@ protected:
 		m_sLanguage = lang;
     }
 
-    UT_String getLanguage () const
-    {
-		return m_sLanguage;
-    }
-
 	static void couldNotLoadDictionary ( const char * szLang );
 
     UT_String       	m_sLanguage;
     BarbarismChecker	m_BarbarismChecker;
     UT_Vector			m_vecEmpty;
 
+    bool				m_bIsBarbarism;
+	bool				m_bIsDictionaryWord;
+
 private:
     SpellChecker(const SpellChecker&);		// no impl
     void operator=(const SpellChecker&);	// no impl
+
+	virtual bool				_requestDictionary (const char * szLang) = 0;
+	virtual SpellCheckResult	_checkWord(const UT_UCSChar* word, size_t len) = 0;
+	virtual UT_Vector			*_suggestWord(const UT_UCSChar* word, size_t len) = 0;
 };
 
 class SpellManager

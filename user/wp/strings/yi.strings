@@ -10,7 +10,7 @@
 <AbiStrings app="AbiWord" ver="1.0" language="yi">
 
 <Strings    class="XAP"
-DICTIONARY_CANTLOAD="‫ניט געקענט אַרײַנשטעלן װערטערבוך צו %s"
+SPELL_CANTLOAD_DICT="‫ניט געקענט אַרײַנשטעלן װערטערבוך צו %s"
 DLG_ABOUT_Title="‫װעגן %s"
 DLG_Break_Insert="לײג אַרײַן"
 DLG_CLIPART_Title="שנײַד קונסט"

@@ -3919,7 +3919,7 @@ msgstr "Kunne ikkje aktivera programtillegg"
 msgid "Could not deactivate plugin"
 msgstr "Kunne ikkje deaktivera programtillegg"
 
-#. DICTIONARY_CANTLOAD
+#. SPELL_CANTLOAD_DICT
 #: po/tmp/xap_String_Id.h.h:129
 #, c-format
 msgid "Could not load the dictionary for the %s language"

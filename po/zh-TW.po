@@ -173,7 +173,7 @@ msgstr "下邊界 [%s]"
 msgid "Column Gap [%s]"
 msgstr "分欄空白 [%s]"
 
-#: DICTIONARY_CANTLOAD
+#: SPELL_CANTLOAD_DICT
 msgid "Could not load the dictionary for the %s language"
 msgstr "不能載入 %s 語言的詞典"
 

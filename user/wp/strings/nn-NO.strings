@@ -133,7 +133,7 @@ LANG_PL_PL="Polsk"
 LANG_SK_SK="Slovakisk"
 LANG_SL_SI="Slovensk"
 
-DICTIONARY_CANTLOAD="Klarte ikkje lasta ordlista for språket %s"
+SPELL_CANTLOAD_DICT="Klarte ikkje lasta ordlista for språket %s"
 DLG_Image_Height="Høgd:"
 DLG_Image_Width="Breidd:"
 DLG_Image_Title="Bileteigenskapar"

@@ -24,6 +24,7 @@
 #include "ut_debugmsg.h"
 
 // we either use an ispell or pspell based backend
+
 #ifdef HAVE_PSPELL
 #include "pspell_checker.h"
 typedef PSpellChecker SpellCheckerClass;
@@ -46,6 +47,74 @@ typedef ISpellChecker SpellCheckerClass;
 /* protected */ SpellChecker::~SpellChecker ()
 {
 	// not used, abstract base class
+}
+
+bool SpellChecker::requestDictionary (const char * szLang)
+{
+	bool bSuccess = _requestDictionary(szLang);
+
+	m_BarbarismChecker.load(szLang);
+
+	return bSuccess;
+}
+
+SpellChecker::SpellCheckResult SpellChecker::checkWord(const UT_UCSChar* word, size_t len)
+{
+	SpellChecker::SpellCheckResult ret;
+
+	m_bIsBarbarism = false;
+	m_bIsDictionaryWord = false;
+
+    if (m_BarbarismChecker.checkWord (word, len))
+	{
+		UT_DEBUGMSG(("SPELL:  spell %lx %s barb \"%s\"\n", this, getLanguage().c_str(), UT_UTF8String (word, len).utf8_str()));
+		m_bIsBarbarism = true;
+	}
+
+	ret = _checkWord(word, len);
+
+	if (ret == SpellChecker::LOOKUP_SUCCEEDED && m_bIsBarbarism)
+		ret = SpellChecker::LOOKUP_FAILED;
+
+	return ret;
+}
+
+UT_Vector *SpellChecker::suggestWord(const UT_UCSChar* word, size_t len)
+{
+	UT_Vector *pvSugg = _suggestWord(word, len);
+
+	m_BarbarismChecker.suggestWord(word, len, pvSugg);
+
+	return pvSugg;
+}
+
+bool SpellChecker::addToCustomDict (const UT_UCSChar *word, size_t len)
+{
+	// TODO: make this support language tags, subclass this for pspell
+	return XAP_App::getApp()->addWordToDict (word, len);
+}
+
+void SpellChecker::correctWord (const UT_UCSChar *toCorrect, size_t toCorrectLen,
+								const UT_UCSChar *correct, size_t correctLen)
+{
+}
+
+/* static */ void SpellChecker::couldNotLoadDictionary ( const char * szLang )
+{
+	XAP_App             * pApp   = XAP_App::getApp ();
+	XAP_Frame           * pFrame = pApp->getLastFocussedFrame ();
+
+	UT_String buf (UT_String_sprintf(pApp->getStringSet ()->getValue (XAP_STRING_ID_SPELL_CANTLOAD_DICT),
+									 szLang));
+
+	if (pFrame)
+		pFrame->showMessageBox (buf.c_str(),
+								XAP_Dialog_MessageBox::b_O,
+								XAP_Dialog_MessageBox::a_OK);
+	else
+	{
+		UT_DEBUGMSG(("SpellChecker::could not load dictionary for %s\n", szLang));
+	}
 }
 
 /***********************************************************************/
@@ -115,10 +184,11 @@ SpellManager::requestDictionary (const char * szLang)
 	// not found, so insert it
 	checker = new SpellCheckerClass ();
 
+	checker->setLanguage (szLang);
+
 	if (checker->requestDictionary (szLang))
     {
 		m_map.insert (szLang, static_cast<void *>(checker));
-		checker->setLanguage (szLang);
 		m_lastDict = checker;
 		m_nLoadedDicts++;
 		return checker;
@@ -144,33 +214,4 @@ SpellManager::lastDictionary () const
 SpellChecker *	SpellManager::getInstance() const
 {
 	return new SpellCheckerClass ();
-}
-
-bool SpellChecker::addToCustomDict (const UT_UCSChar *word, size_t len)
-{
-	// TODO: make this support language tags, subclass this for pspell
-	return XAP_App::getApp()->addWordToDict (word, len);
-}
-
-void SpellChecker::correctWord (const UT_UCSChar *toCorrect, size_t toCorrectLen,
-								const UT_UCSChar *correct, size_t correctLen)
-{
-}
-
-/* static */ void SpellChecker::couldNotLoadDictionary ( const char * szLang )
-{
-	XAP_App             * pApp   = XAP_App::getApp ();
-	XAP_Frame           * pFrame = pApp->getLastFocussedFrame ();
-
-	UT_String buf (UT_String_sprintf(pApp->getStringSet ()->getValue (XAP_STRING_ID_DICTIONARY_CANTLOAD),
-									 szLang));
-
-	if (pFrame)
-		pFrame->showMessageBox (buf.c_str(),
-								XAP_Dialog_MessageBox::b_O,
-								XAP_Dialog_MessageBox::a_OK);
-	else
-	{
-		UT_DEBUGMSG(("spell_checker::could not load dictionary for %s\n", szLang));
-	}
 }

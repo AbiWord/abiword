@@ -14,7 +14,7 @@
 <AbiStrings app="AbiWord" ver="1.0" language="pl-PL">
 
 <Strings    class="XAP"
-DICTIONARY_CANTLOAD="Nie znaleziono s³ownika dla jêzyka %s."
+SPELL_CANTLOAD_DICT="Nie znaleziono s³ownika dla jêzyka %s."
 DLG_ABOUT_Title="O programie %s"
 DLG_Apply="Zastosuj"
 DLG_CLIPART_Title="Grafika gotowiec"

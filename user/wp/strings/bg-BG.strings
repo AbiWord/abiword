@@ -10,7 +10,7 @@
 <AbiStrings app="AbiWord" ver="1.0" language="bg-BG">
 
 <Strings    class="XAP"
-DICTIONARY_CANTLOAD="Не мога да заредя речника за %s"
+SPELL_CANTLOAD_DICT="Не мога да заредя речника за %s"
 DLG_ABOUT_Title="Относно %s"
 DLG_CLIPART_Title="Клипчета"
 DLG_Cancel="Отказ"

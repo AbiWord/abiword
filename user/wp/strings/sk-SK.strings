@@ -10,7 +10,7 @@
 <AbiStrings app="AbiWord" ver="1.0" language="sk-SK">
 
 <Strings    class="XAP"
-DICTIONARY_CANTLOAD="Nepodarilo sa nahrať slovník pre %s jazyk"
+SPELL_CANTLOAD_DICT="Nepodarilo sa nahrať slovník pre %s jazyk"
 DLG_ABOUT_Title="O %s"
 DLG_Break_Insert="Vložiť"
 DLG_CLIPART_Title="Klip Art"

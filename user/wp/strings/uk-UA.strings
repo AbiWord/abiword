@@ -10,7 +10,7 @@
 <AbiStrings app="AbiWord" ver="1.0" language="uk-UA">
 
 <Strings    class="XAP"
-DICTIONARY_CANTLOAD="Помилка при завантаженн╕ словника для мови '%s'"
+SPELL_CANTLOAD_DICT="Помилка при завантаженн╕ словника для мови '%s'"
 DLG_ABOUT_Title="Про %s"
 DLG_Break_Insert="Вставити"
 DLG_CLIPART_Title="Клiп-Арт"

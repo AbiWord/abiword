@@ -3997,7 +3997,7 @@ msgstr "Nisem mogel nalo¾iti ali aktivirati vtiènika"
 msgid "Could not deactivate plugin"
 msgstr "Nisem mogel deaktivirati vtiènika"
 
-#. DICTIONARY_CANTLOAD
+#. SPELL_CANTLOAD_DICT
 #: po/tmp/xap_String_Id.h.h:137
 #, c-format
 msgid "Could not load the dictionary for the %s language"

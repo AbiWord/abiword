@@ -10,7 +10,7 @@
 <AbiStrings app="AbiWord" ver="1.0" language="art-lojban">
 
 <Strings    class="XAP"
-DICTIONARY_CANTLOAD="na ka'e cpacu le vlaste be bau %s"
+SPELL_CANTLOAD_DICT="na ka'e cpacu le vlaste be bau %s"
 DLG_ABOUT_Title="A propos de %s"
 DLG_CLIPART_Title="larcu spisa"
 DLG_Cancel=""

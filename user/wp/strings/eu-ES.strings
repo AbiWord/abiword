@@ -10,7 +10,7 @@
 <AbiStrings app="AbiWord" ver="1.0" language="eu-ES">
 
 <Strings    class="XAP"
-DICTIONARY_CANTLOAD="Ezinezkoa da %s lenguaiaren hiztegia kargatzea"
+SPELL_CANTLOAD_DICT="Ezinezkoa da %s lenguaiaren hiztegia kargatzea"
 DLG_ABOUT_Title="%s-ri buruz"
 DLG_Break_Insert="Txertatu"
 DLG_CLIPART_Title="Clip Art irudiak"

@@ -238,7 +238,8 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
 
 				   // Get suggestions from spell checker
 				   _purgeSuggestions();
-				   m_Suggestions = checker->suggestWord(m_pWord, m_iWordLength);
+				   if (checker->checkWord(m_pWord, m_iWordLength) == SpellChecker::LOOKUP_FAILED)
+					   m_Suggestions = checker->suggestWord(m_pWord, m_iWordLength);
 				   // If it didn't have any, create an empty vector
 				   if(!m_Suggestions)
 				   {

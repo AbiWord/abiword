@@ -12,7 +12,7 @@
 <AbiStrings app="AbiWord" ver="1.0" language="sv-SE">
 
 <Strings    class="XAP"
-DICTIONARY_CANTLOAD="Kunde inte läsa in ordlistan för %s"
+SPELL_CANTLOAD_DICT="Kunde inte läsa in ordlistan för %s"
 DLG_ABOUT_Title="Om %s"
 DLG_Apply="Verkställ"
 DLG_Break_Insert="Infoga"

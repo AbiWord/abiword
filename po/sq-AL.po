@@ -5506,7 +5506,7 @@ msgstr "S'mund të aktivizoj/ngarkoj shtojcën"
 msgid "Could not deactivate plugin"
 msgstr "S'mund të çaktivizoj shtojcën"
 
-#. DICTIONARY_CANTLOAD
+#. SPELL_CANTLOAD_DICT
 #: po/tmp/xap_String_Id.h.h:163
 #, c-format
 msgid "Could not load the dictionary for the %s language"

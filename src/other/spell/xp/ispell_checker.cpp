@@ -20,7 +20,11 @@
 #include "ap_HashDownloader.h"
 #endif
 
+#if defined(WIN32)
+#define DICTIONARY_LIST_FILENAME "\\dictionary\\ispell_dictionary_list.xml"
+#else
 #define DICTIONARY_LIST_FILENAME "/dictionary/ispell_dictionary_list.xml"
+#endif
 
 /***************************************************************************/
 
@@ -160,20 +164,17 @@ ISpellChecker::~ISpellChecker()
 }
 
 SpellChecker::SpellCheckResult
-ISpellChecker::checkWord(const UT_UCSChar *word32, size_t length)
+ISpellChecker::_checkWord(const UT_UCSChar *ucszWord, size_t length)
 {
     SpellChecker::SpellCheckResult retVal;
     ichar_t iWord[INPUTWORDLEN + MAXAFFIXLEN];
-    char  word8[INPUTWORDLEN + MAXAFFIXLEN];
+    char szWord[INPUTWORDLEN + MAXAFFIXLEN];
 
     if (!m_bSuccessfulInit)
         return SpellChecker::LOOKUP_FAILED;
 
-    if (!word32 || length >= (INPUTWORDLEN + MAXAFFIXLEN) || length == 0)
+    if (!ucszWord || length >= (INPUTWORDLEN + MAXAFFIXLEN) || length == 0)
 		return SpellChecker::LOOKUP_FAILED;
-
-    if (m_BarbarismChecker.checkWord (word32, length))
-		return SpellChecker::LOOKUP_FAILED; // is a barbarism, should be squiggled
 
     if (!UT_iconv_isValid(m_translate_in))
 		return SpellChecker::LOOKUP_FAILED;
@@ -181,34 +182,48 @@ ISpellChecker::checkWord(const UT_UCSChar *word32, size_t length)
     {
         /* convert to 8bit string and null terminate */
         size_t len_in, len_out;
-        const char *In = reinterpret_cast<const char *>(word32);
-        char *Out = word8;
+        const char *In = reinterpret_cast<const char *>(ucszWord);
+        char *Out = szWord;
 
         len_in = length * sizeof(UT_UCSChar);
-        len_out = sizeof( word8 ) - 1;
+        len_out = sizeof( szWord ) - 1;
         UT_iconv(m_translate_in, &In, &len_in, &Out, &len_out);
         *Out = '\0';
     }
 
-    if (!strtoichar(iWord, word8, sizeof(iWord), 0))
+    if (!strtoichar(iWord, szWord, sizeof(iWord), 0))
+	{
 		if (good(iWord, 0, 0, 1, 0) == 1 ||
 			compoundgood(iWord, 1) == 1)
-		retVal = SpellChecker::LOOKUP_SUCCEEDED;
-    else
-		retVal = SpellChecker::LOOKUP_FAILED;
+		{
+			m_bIsDictionaryWord = true;
+			retVal = SpellChecker::LOOKUP_SUCCEEDED;
+		}
+		else
+			retVal = SpellChecker::LOOKUP_FAILED;
+	}
     else
 		retVal = SpellChecker::LOOKUP_ERROR;
 
     // Look the word up in the dictionary, return if found
+	// TODO user custom dictionary should be read into memory when the ispell
+	// TODO hash is read into memory. This is the way the original ispell
+	// TODO code works and it means the same algorithm is used for choosing
+	// TODO suggestions from either dictionary
     if (retVal != SpellChecker::LOOKUP_SUCCEEDED)
-		if (XAP_App::getApp ()->isWordInDict(word32, length))
+	{
+		if (XAP_App::getApp ()->isWordInDict(ucszWord, length))
+		{
+			m_bIsDictionaryWord = true;
 			retVal = SpellChecker::LOOKUP_SUCCEEDED;
+		}
+	}
 
     return retVal; /* 0 - not found, 1 on found, -1 on error */
 }
 
 UT_Vector *
-ISpellChecker::suggestWord(const UT_UCSChar *word32, size_t length)
+ISpellChecker::_suggestWord(const UT_UCSChar *ucszWord, size_t length)
 {
     ichar_t  iWord[INPUTWORDLEN + MAXAFFIXLEN];
     char word8[INPUTWORDLEN + MAXAFFIXLEN];
@@ -216,7 +231,7 @@ ISpellChecker::suggestWord(const UT_UCSChar *word32, size_t length)
 
 	if (!m_bSuccessfulInit)
 		return 0;
-	if (!word32 || length >= (INPUTWORDLEN + MAXAFFIXLEN) || length == 0)
+	if (!ucszWord || length >= (INPUTWORDLEN + MAXAFFIXLEN) || length == 0)
 		return 0;
 
 	if (!UT_iconv_isValid(m_translate_in))
@@ -226,7 +241,7 @@ ISpellChecker::suggestWord(const UT_UCSChar *word32, size_t length)
 		/* convert to 8bit string and null terminate */
 
 		size_t len_in, len_out;
-		const char *In = reinterpret_cast<const char *>(word32);
+		const char *In = reinterpret_cast<const char *>(ucszWord);
 		char *Out = word8;
 		len_in = length * sizeof(UT_UCSChar);
 		len_out = sizeof( word8 ) - 1;
@@ -241,44 +256,45 @@ ISpellChecker::suggestWord(const UT_UCSChar *word32, size_t length)
 
 	UT_Vector * sgvec = new UT_Vector();
 
- 	// Add suggestions if the word is a barbarism
- 	m_BarbarismChecker.suggestWord(word32, length, sgvec);
-
-	for (c = 0; c < m_pcount; c++)
+	// Normal spell checker suggests words second
+	if (!m_bIsDictionaryWord)
 	{
-	    int l = strlen(m_possibilities[c]);
+		for (c = 0; c < m_pcount; c++)
+		{
+			int l = strlen(m_possibilities[c]);
 
-	    UT_UCS4Char *theWord = static_cast<UT_UCS4Char*>(malloc(sizeof(UT_UCS4Char) * (l + 1)));
-	    if (theWord == NULL)
-	    {
-			// OOM, but return what we have so far
-			return sgvec;
-	    }
+			UT_UCS4Char *ucszSugg = static_cast<UT_UCS4Char*>(malloc(sizeof(UT_UCS4Char) * (l + 1)));
+			if (ucszSugg == NULL)
+			{
+				// OOM, but return what we have so far
+				return sgvec;
+			}
 
-	    if (m_translate_out == UT_ICONV_INVALID)
-	    {
-			/* copy to 32bit string and null terminate */
-			register int x;
+			if (!UT_iconv_isValid(m_translate_out))
+			{
+				/* copy to 32bit string and null terminate */
+				register int x;
 
-			for (x = 0; x < l; x++)
-				theWord[x] = static_cast<unsigned char>(m_possibilities[c][x]);
-			theWord[l] = 0;
-	    }
-	    else
-	    {
-			/* convert to 32bit string and null terminate */
+				for (x = 0; x < l; x++)
+					ucszSugg[x] = static_cast<unsigned char>(m_possibilities[c][x]);
+				ucszSugg[l] = 0;
+			}
+			else
+			{
+				/* convert to 32bit string and null terminate */
 
-			size_t len_in, len_out;
-			const char *In = m_possibilities[c];
-			char *Out = reinterpret_cast<char *>(theWord);
+				size_t len_in, len_out;
+				const char *In = m_possibilities[c];
+				char *Out = reinterpret_cast<char *>(ucszSugg);
 
-			len_in = l;
-			len_out = sizeof(UT_UCS4Char) * (l+1);
-			UT_iconv(m_translate_out, &In, &len_in, &Out, &len_out);
-			*(reinterpret_cast<UT_UCS4Char *>(Out)) = 0;
-	    }
+				len_in = l;
+				len_out = sizeof(UT_UCS4Char) * (l+1);
+				UT_iconv(m_translate_out, &In, &len_in, &Out, &len_out);
+				*(reinterpret_cast<UT_UCS4Char *>(Out)) = 0;
+			}
 
-	    sgvec->addItem(static_cast<void *>(theWord));
+			sgvec->addItem(static_cast<void *>(ucszSugg));
+		}
 	}
 
 	return sgvec;
@@ -288,7 +304,11 @@ static char *
 s_buildHashName ( const char * base, const char * dict )
 {
 	UT_String hName ( base );
+#if defined(WIN32)
+	hName += "\\dictionary\\";
+#else
 	hName += "/dictionary/";
+#endif
 	hName += dict;
 	return UT_strdup (hName.c_str());
 }
@@ -305,7 +325,6 @@ ISpellChecker::loadGlobalDictionary ( const char *szHash )
 		return(NULL);
 	}
 
-	m_BarbarismChecker.load(hashname);
 	return(hashname);
 }
 
@@ -470,11 +489,10 @@ bool ISpellChecker::doesDictionaryExist (const char * szLang)
 		fclose(in);
 		return true;
 	}
-
 }
 
 bool
-ISpellChecker::requestDictionary(const char *szLang)
+ISpellChecker::_requestDictionary(const char *szLang)
 {
 	if (!loadDictionaryForLanguage ( szLang ))
 	{

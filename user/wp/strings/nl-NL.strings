@@ -10,7 +10,7 @@
 <AbiStrings app="AbiWord" ver="1.0" language="nl-NL">
 
 <Strings    class="XAP"
-DICTIONARY_CANTLOAD="Kan het woordenboek niet laden voor de %s taal"
+SPELL_CANTLOAD_DICT="Kan het woordenboek niet laden voor de %s taal"
 DLG_ABOUT_Title="Over %s"
 DLG_Break_Insert="Invoegen"
 DLG_CLIPART_Title="Clip Art"

@@ -4859,7 +4859,7 @@ msgstr "Tidak dapat mengaktifkan/memuatkan plugin"
 msgid "Could not deactivate plugin"
 msgstr "Tidak dapat menyahaktifkan plugin"
 
-#. DICTIONARY_CANTLOAD
+#. SPELL_CANTLOAD_DICT
 #: po/tmp/xap_String_Id.h.h:151
 #, c-format
 msgid "Could not load the dictionary for the %s language"

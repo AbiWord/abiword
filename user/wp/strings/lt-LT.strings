@@ -10,7 +10,7 @@
 <AbiStrings app="AbiWord" ver="1.0" language="lt-LT">
 
 <Strings    class="XAP"
-DICTIONARY_CANTLOAD="Negalëjau ákelti þodyno %s kalbai"
+SPELL_CANTLOAD_DICT="Negalëjau ákelti þodyno %s kalbai"
 DLG_ABOUT_Title="Apie %s"
 DLG_Apply="Pritaikyti"
 DLG_Break_Insert="Áterpti"

@@ -21,6 +21,8 @@
 #include "ut_xml.h"
 #include "ut_hash.h"
 
+#include "ut_string_class.h"
+
 #define MAX_PATHNM 512
 
 class BarbarismChecker : public UT_XML::Listener
@@ -29,11 +31,11 @@ public:
 	BarbarismChecker();
 	~BarbarismChecker();
 	
-	bool load(const char *szHash);		
-	
-	bool suggestWord(const UT_UCSChar *word32, size_t length, UT_Vector* pVecsugg);
+	bool load(const char *szLang);		
 	
 	bool checkWord(const UT_UCSChar * word32, size_t length);
+	
+	bool suggestWord(const UT_UCSChar *word32, size_t length, UT_Vector* pVecsugg);
 	
 	/* 
 		Implementation of UT_XML::Listener
@@ -48,5 +50,7 @@ private:
 	
 	UT_StringPtrMap	m_map;
 	UT_Vector*		m_pCurVector;	
+
+	UT_String m_sLang;
 };
 

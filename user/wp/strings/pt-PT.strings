@@ -72,7 +72,7 @@ BottomMarginStatus="Margen Inferior [%s]"
 ColumnGapStatus="Espaçamento de Coluna [%s]"
 ColumnStatus="Coluna [%s]"
 
-DICTIONARY_CANTLOAD="Não foi possível carregar o dicionário para a língua %s"
+SPELL_CANTLOAD_DICT="Não foi possível carregar o dicionário para a língua %s"
 
 DLG_ABOUT_Title="Acerca de %s"
 

@@ -5448,7 +5448,7 @@ msgstr "Methu gweithredu/llwytho atodyn"
 msgid "Could not deactivate plugin"
 msgstr "Methu atal yr atodyn"
 
-#. DICTIONARY_CANTLOAD
+#. SPELL_CANTLOAD_DICT
 #: po/tmp/xap_String_Id.h.h:163
 #, c-format
 msgid "Could not load the dictionary for the %s language"

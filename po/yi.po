@@ -5741,7 +5741,7 @@ msgid "Could not deactivate plugin"
 msgstr ""
 "ניט געקענט לײגן שלאָפֿן אַרײַנשטעכװאַרג"
 
-#. DICTIONARY_CANTLOAD
+#. SPELL_CANTLOAD_DICT
 #: po/tmp/xap_String_Id.h.h:163
 #, c-format
 msgid "Could not load the dictionary for the %s language"

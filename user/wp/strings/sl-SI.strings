@@ -10,7 +10,7 @@
 <AbiStrings app="AbiWord" ver="1.0" language="sl-SI">
 
 <Strings    class="XAP"
-DICTIONARY_CANTLOAD="Nisem mogel nalo¾iti slovarja za %s jezik"
+SPELL_CANTLOAD_DICT="Nisem mogel nalo¾iti slovarja za %s jezik"
 DLG_ABOUT_Title="O %s"
 DLG_Break_Insert="Vstavi"
 DLG_CLIPART_Title="Clipart"

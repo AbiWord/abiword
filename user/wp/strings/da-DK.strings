@@ -10,7 +10,7 @@
 <AbiStrings app="AbiWord" ver="1.0" language="da-DK">
 
 <Strings    class="XAP"
-DICTIONARY_CANTLOAD="Kunne ikke finde ordbog for sproget %s"
+SPELL_CANTLOAD_DICT="Kunne ikke finde ordbog for sproget %s"
 DLG_ABOUT_Title="Om %s"
 DLG_Apply="Anvend"
 DLG_Break_Insert="Indsæt"

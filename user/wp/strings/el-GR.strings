@@ -10,7 +10,7 @@
 <AbiStrings app="AbiWord" ver="1.0" language="el-GR">
 
 <Strings    class="XAP"
-DICTIONARY_CANTLOAD="Δεν ήταν δυνατή η φόρτωση του λεξικού για την %s γλώσσα"
+SPELL_CANTLOAD_DICT="Δεν ήταν δυνατή η φόρτωση του λεξικού για την %s γλώσσα"
 DLG_ABOUT_Title="Περί %s"
 DLG_Break_Insert="Εισαγωγή"
 DLG_CLIPART_Title="Clip Art"

@@ -3949,7 +3949,7 @@ msgstr "No s'ha pogut carregar/activar l'extensió"
 msgid "Could not deactivate plugin"
 msgstr "No s'ha pogut desactivar l'extensió"
 
-#. DICTIONARY_CANTLOAD
+#. SPELL_CANTLOAD_DICT
 #: po/tmp/xap_String_Id.h.h:129
 #, c-format
 msgid "Could not load the dictionary for the %s language"

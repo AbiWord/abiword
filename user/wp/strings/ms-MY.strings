@@ -10,7 +10,7 @@
 <AbiStrings app="AbiWord" ver="1.0" language="ms-MY" translator="Sharuzzaman Ahmat Raslan (sharuzzaman@myrealbox.com)">
 
 <Strings    class="XAP"
-DICTIONARY_CANTLOAD="Tidak dapat memuatkan kamus untuk bahasa %s"
+SPELL_CANTLOAD_DICT="Tidak dapat memuatkan kamus untuk bahasa %s"
 DLG_ABOUT_Title="Perihal %s"
 DLG_CLIPART_Title="Clip Art"
 DLG_Cancel="Batal"

@@ -10,7 +10,7 @@
 <AbiStrings app="AbiWord" ver="1.0" language="sr-SR">
 
 <Strings    class="XAP"
-DICTIONARY_CANTLOAD="Ne mogu da uèitam reènik za jezik %s"
+SPELL_CANTLOAD_DICT="Ne mogu da uèitam reènik za jezik %s"
 DLG_ABOUT_Title="O %s"
 DLG_CLIPART_Title="Biblioteka medija"
 DLG_Cancel="Poni¹ti"

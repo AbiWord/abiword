@@ -3956,7 +3956,8 @@ UT_UCSChar * FV_View::_lookupSuggestion(fl_BlockLayout* pBL,
 
 	{
 		SpellChecker * checker = getDictForSelection ();
-		sg = checker->suggestWord (theWord, pPOB->getLength());
+		if (checker->checkWord(theWord, pPOB->getLength()) == SpellChecker::LOOKUP_FAILED)
+			sg = checker->suggestWord (theWord, pPOB->getLength());
 		if(sg)
 			 m_pApp->suggestWord(sg,theWord, pPOB->getLength());
 	}

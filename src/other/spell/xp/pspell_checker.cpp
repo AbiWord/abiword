@@ -24,15 +24,30 @@
  */
 #define USE_ORIGINAL_MANAGER_FUNCS 1
 
+#if defined(WIN32)
+#include <windows.h>
+// TODO Is this always going to be 15?
+#define ASPELL_DLL_NAME "aspell-15"
+#define ASPELL_PATH_BUFSIZE 128
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
+#include "xap_App.h"
+#include "xap_Frame.h"
+#include "xap_Strings.h"
 #include "pspell_checker.h"
 #include "ut_string.h"
 #include "ut_string_class.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
+
+#if defined(WIN32)
+HINSTANCE PSpellChecker::sm_hinstLib(0);
+int PSpellChecker::sm_nDllUseCount(0);
+#endif
 
 /*!
  * Convert a UTF-8 string to a UTF-32 string
@@ -48,16 +63,91 @@ utf8_to_utf32(const char *word8)
 	return ucs4;
 }
 
+/*!
+ * Constructor
+ */
 PSpellChecker::PSpellChecker ()
-  : spell_manager(0)
+  :	m_pPSpellManager(0)
 {
+#if defined(WIN32)
+
+	// only open the DLL once
+	UT_DEBUGMSG(("SPELL: pspell++ == %d\n", sm_nDllUseCount));
+	if (sm_nDllUseCount++ == 0)
+	{
+		HKEY hKey;
+		TCHAR szPath[ASPELL_PATH_BUFSIZE];
+		DWORD dwBufLen = ASPELL_PATH_BUFSIZE;
+		LONG lRet;
+
+		if (RegOpenKeyEx(HKEY_LOCAL_MACHINE,
+						 TEXT("SOFTWARE\\Aspell"),
+						 0, KEY_QUERY_VALUE, &hKey) == ERROR_SUCCESS)
+		{
+			lRet = RegQueryValueEx(hKey,
+								   TEXT("Path"),
+								   NULL, NULL, reinterpret_cast<LPBYTE>(szPath),
+								   &dwBufLen);
+
+			RegCloseKey(hKey);
+
+			if (lRet == ERROR_SUCCESS)
+			{
+				UT_String sPath(szPath);
+
+				sPath += "\\"ASPELL_DLL_NAME;
+
+				sm_hinstLib = LoadLibrary(sPath.c_str());
+
+				if (sm_hinstLib)
+					UT_DEBUGMSG(("SPELL: pspell %lx \?\?-\?\? dll loaded "ASPELL_DLL_NAME".dll %lx\n", this, sm_hinstLib));
+				else
+					UT_DEBUGMSG(("SPELL: pspell %lx \?\?-\?\? dll load failed "ASPELL_DLL_NAME".dll\n", this));
+			}
+			else
+				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		}
+		else
+			UT_DEBUGMSG(("HIPI: Aspell registry key not found\n"));
+	}
+
+	if (!sm_hinstLib)
+	{
+		XAP_App		*pApp   = XAP_App::getApp ();
+		XAP_Frame	*pFrame = pApp->getLastFocussedFrame ();
+
+		UT_String sErr(UT_String_sprintf(pApp->getStringSet()->getValue(XAP_STRING_ID_SPELL_CANTLOAD_DLL),
+										 ASPELL_DLL_NAME));
+
+		if (pFrame)
+			pFrame->showMessageBox(sErr.c_str(),
+								   XAP_Dialog_MessageBox::b_O,
+								   XAP_Dialog_MessageBox::a_OK);
+	}
+#endif
 }
 
+/*!
+ * Destructor
+ */
 PSpellChecker::~PSpellChecker()
 {
 	// some versions of pspell segfault here for some reason
-	if (spell_manager)
-		delete_pspell_manager(spell_manager);
+	if (m_pPSpellManager)
+		delete_pspell_manager(m_pPSpellManager);
+
+#if defined(WIN32)
+	UT_DEBUGMSG(("SPELL: --pspell == %d\n", sm_nDllUseCount-1));
+	if (--sm_nDllUseCount == 0)
+	{
+		if (sm_hinstLib)
+		{
+			FreeLibrary(sm_hinstLib);
+			sm_hinstLib = 0;
+			UT_DEBUGMSG(("SPELL: pspell %lx \?\?-\?\? dll unloaded %lx\n", this, sm_hinstLib));
+		}
+	}
+#endif
 }
 
 /*!
@@ -68,11 +158,16 @@ PSpellChecker::~PSpellChecker()
  * \return true if we loaded the dictionary, false if not
  */
 bool
-PSpellChecker::requestDictionary (const char * szLang)
+PSpellChecker::_requestDictionary (const char * szLang)
 {
+	bool bSuccess = true;
 	PspellConfig *spell_config;
 	PspellCanHaveError *spell_error;
 
+#if defined(WIN32)
+	if (! sm_hinstLib)
+		return false;
+#endif
 	UT_return_val_if_fail ( szLang, false );
 
 	// Convert the language tag from en-US to en_US form
@@ -95,11 +190,12 @@ PSpellChecker::requestDictionary (const char * szLang)
 		couldNotLoadDictionary ( szLang );
 		UT_DEBUGMSG(("SpellCheckInit: Pspell error: %s\n",
 					 pspell_error_message(spell_error)));
-		return false;
+		bSuccess = false;
 	}
 
-	spell_manager = to_pspell_manager(spell_error);
-	return true;
+	m_pPSpellManager = to_pspell_manager(spell_error);
+
+	return bSuccess;
 }
 
 /*!
@@ -111,22 +207,26 @@ PSpellChecker::requestDictionary (const char * szLang)
  * \return One of SpellChecker::SpellCheckResult
  */
 SpellChecker::SpellCheckResult
-PSpellChecker::checkWord (const UT_UCSChar * szWord, size_t len)
+PSpellChecker::_checkWord (const UT_UCSChar * ucszWord, size_t len)
 {
 	SpellChecker::SpellCheckResult ret = SpellChecker::LOOKUP_FAILED;
 
-	UT_return_val_if_fail ( spell_manager, SpellChecker::LOOKUP_ERROR );
-	UT_return_val_if_fail ( szWord, SpellChecker::LOOKUP_ERROR );
+	UT_return_val_if_fail ( m_pPSpellManager, SpellChecker::LOOKUP_ERROR );
+	UT_return_val_if_fail ( ucszWord, SpellChecker::LOOKUP_ERROR );
 	UT_return_val_if_fail ( len, SpellChecker::LOOKUP_ERROR );
 
-	switch (pspell_manager_check(spell_manager, const_cast<char*>(UT_UTF8String (szWord, len).utf8_str())))
+	switch (pspell_manager_check(m_pPSpellManager, const_cast<char*>(UT_UTF8String (ucszWord, len).utf8_str())))
 	{
 	case 0:
-		ret = SpellChecker::LOOKUP_FAILED; break;
+		ret = SpellChecker::LOOKUP_FAILED;
+		break;
 	case 1:
-		ret = SpellChecker::LOOKUP_SUCCEEDED; break;
+		m_bIsDictionaryWord = true;
+		ret = SpellChecker::LOOKUP_SUCCEEDED;
+		break;
 	default:
-		ret = SpellChecker::LOOKUP_ERROR; break;
+		ret = SpellChecker::LOOKUP_ERROR;
+		break;
 	}
 
 	return ret;
@@ -138,50 +238,50 @@ PSpellChecker::checkWord (const UT_UCSChar * szWord, size_t len)
  * \param len Length of szWord
  *
  * \return A vector of UT_UCSChar * suggestions. The vector must be
- *         'delete'd and its UT_UCSChar * suggests must be 'free()'d
+ *         'delete'd and its UT_UCSChar * suggestions must be 'free()'d
  */
 UT_Vector *
-PSpellChecker::suggestWord (const UT_UCSChar * szWord, size_t len)
+PSpellChecker::_suggestWord (const UT_UCSChar *ucszWord, size_t len)
 {
-	PspellStringEmulation *suggestions = NULL;
-	const PspellWordList *word_list = NULL;
-	const char *new_word = NULL;
-	int count = 0, i = 0;
+	// Check validity
+	UT_return_val_if_fail ( ucszWord && len, 0 );
 
-	UT_return_val_if_fail ( spell_manager, 0 );
-	UT_return_val_if_fail ( szWord && len, 0 );
+	UT_Vector * pvSugg = new UT_Vector ();
 
-	word_list   = pspell_manager_suggest(spell_manager,
-										 const_cast<char*>(UT_UTF8String(szWord, len).utf8_str()));
-	suggestions = pspell_word_list_elements(word_list);
-	count       = pspell_word_list_size(word_list);
-
-	// no suggestions, not an error
-	if (count == 0)
-		return 0;
-
-	UT_Vector * sg = new UT_Vector ();
-
-	while ((new_word = pspell_string_emulation_next(suggestions)) != NULL)
+	if (m_pPSpellManager)
 	{
-		UT_UCSChar *word = utf8_to_utf32(new_word);
-		if (word)
+		const PspellWordList	*word_list;
+		PspellStringEmulation	*suggestions;
+
+		word_list = pspell_manager_suggest(m_pPSpellManager,
+										   const_cast<char*>(UT_UTF8String(ucszWord, len).utf8_str()));
+
+		// Normal spell checker suggests words second
+		if (!m_bIsDictionaryWord && ((suggestions = pspell_word_list_elements(word_list)) != 0))
 		{
-			sg->addItem (static_cast<void *>(word));
-			i++;
+			int count = pspell_word_list_size(word_list);
+			const char *szSugg;
+
+			int sugn = 0;
+			while ((szSugg = pspell_string_emulation_next(suggestions)) != NULL)
+			{
+				UT_UCSChar *ucszSugg = utf8_to_utf32(szSugg);
+				if (ucszSugg)
+					pvSugg->addItem (static_cast<void *>(ucszSugg));
+			}
+			delete_pspell_string_emulation (suggestions);
 		}
 	}
 
-	delete_pspell_string_emulation (suggestions);
-	return sg;
+	return pvSugg;
 }
 
 bool
-PSpellChecker::addToCustomDict (const UT_UCSChar *word, size_t len)
+PSpellChecker::addToCustomDict (const UT_UCSChar *ucszWord, size_t len)
 {
-	if (spell_manager && word && len)
+	if (m_pPSpellManager && ucszWord && len)
 	{
-		pspell_manager_add_to_personal(spell_manager, const_cast<char *>(UT_UTF8String (word, len).utf8_str()));
+		pspell_manager_add_to_personal(m_pPSpellManager, const_cast<char *>(UT_UTF8String (ucszWord, len).utf8_str()));
 		return true;
 	}
 	return false;
@@ -191,12 +291,13 @@ void
 PSpellChecker::correctWord (const UT_UCSChar *toCorrect, size_t toCorrectLen,
 							const UT_UCSChar *correct, size_t correctLen)
 {
-	UT_return_if_fail (spell_manager);
+	UT_return_if_fail (m_pPSpellManager);
 	UT_return_if_fail (toCorrect || toCorrectLen);
 	UT_return_if_fail (correct || correctLen);
 
 	UT_UTF8String bad (toCorrect, toCorrectLen);
 	UT_UTF8String good (correct, correctLen);
 
-	pspell_manager_store_replacement (spell_manager, bad.utf8_str(), good.utf8_str());
+	pspell_manager_store_replacement (m_pPSpellManager, bad.utf8_str(), good.utf8_str());
 }
+

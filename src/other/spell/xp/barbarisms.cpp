@@ -25,6 +25,7 @@
 #include "ut_string.h"
 #include "ut_stringbuf.h"
 #include "ut_string_class.h"
+#include "xap_App.h"
 
 BarbarismChecker::BarbarismChecker()
 {
@@ -38,30 +39,33 @@ BarbarismChecker::~BarbarismChecker()
 
 
 /*
-	Takes a full dictionary filename (.hash) and builds the barbarism full
-	filename. The barbarism file is expected to be in the same directory, using
-	the same name, and just with a different file extension
+	Takes a language code and builds the barbarism full filename.
 */
-bool BarbarismChecker::load(const char *szHash)
+bool BarbarismChecker::load(const char *szLang)
 {
-	char 	szHashExt[] = ".hash";
-	UT_XML 	parser;
-	char	szBarFile[MAX_PATHNM];
+	UT_String	fullPath;
+	UT_XML 		parser;
 
-	if (strlen(szHash)<strlen(szHashExt))
+	if (!szLang || !*szLang)
 		return false;
 
-	// Takes dictionary filename and builds the barbarism filename
-	memset(szBarFile, 0, MAX_PATHNM);
-	strncpy (szBarFile, szHash, strlen(szHash)-strlen(szHashExt));
-	strcat (szBarFile, "-barbarism.xml");
+	m_sLang = szLang;
+
+	fullPath = XAP_App::getApp()->getUserPrivateDirectory();
+#if defined(WIN32)
+	fullPath += "\\dictionary\\";
+#else
+	fullPath += "/dictionary/";
+#endif
+	fullPath += szLang;
+	fullPath += "-barbarism.xml";
 
 	parser.setListener (this);
 
-	if ((parser.parse (szBarFile) != UT_OK))
+	if ((parser.parse (fullPath.c_str()) != UT_OK))
 		return false; // cannot parse the file
 
-	UT_DEBUGMSG(( "BarbarismChecker::load->Read %u elements into the map\n", m_map.size()));
+	UT_DEBUGMSG(("SPELL: barbar %s loaded %u\n", szLang, m_map.size()));
 
 	return true;
 }
@@ -76,11 +80,14 @@ bool BarbarismChecker::checkWord(const UT_UCSChar * word32, size_t length)
 
 	// TODO: capitalization issues
 
-	return (m_map.pick(stUTF8.utf8_str()) != NULL);
+	bool bResult = (m_map.pick(stUTF8.utf8_str()) != NULL);
+
+	return bResult;
 }
 
 /*
 	Looks for an exact case match of the suggestion
+	Returns true if word is a barbarism
 */
 bool BarbarismChecker::suggestExactWord(const UT_UCSChar *word32, size_t length, UT_Vector* pVecsugg)
 {
@@ -109,6 +116,7 @@ bool BarbarismChecker::suggestExactWord(const UT_UCSChar *word32, size_t length,
 		nSize = sizeof(UT_UCS4Char) * (UT_UCS4_strlen(pWord) + 1);
 		suggest32 = static_cast<UT_UCS4Char*>(malloc(nSize));
 		memcpy (suggest32, pWord, nSize);
+		
 		pVecsugg->addItem(static_cast<void *>(suggest32));
 	}
 
@@ -122,9 +130,11 @@ bool BarbarismChecker::suggestExactWord(const UT_UCSChar *word32, size_t length,
 	- If it has the first letter upper case, we look for an exact match and for lower case
 	- If it's upper case, we look for the exact match and lower case // not implemented yet
 
+	Returns true if word is a barbarism
 */
 bool BarbarismChecker::suggestWord(const UT_UCSChar *word32, size_t length, UT_Vector* pVecsugg)
 {
+	bool bIsBarbarism = false;
 	bool bIsLower = true;
 	bool bIsUpperLower = false;
 	size_t len;
@@ -132,9 +142,6 @@ bool BarbarismChecker::suggestWord(const UT_UCSChar *word32, size_t length, UT_V
 
 	if (!length)
 		return false;
-
-	/* The vector should be empty because we want our suggestions first */
-	UT_ASSERT (pVecsugg->getItemCount()==0);
 
 	/*
 		If the word is lower case we just look at the lower case
@@ -174,17 +181,17 @@ bool BarbarismChecker::suggestWord(const UT_UCSChar *word32, size_t length, UT_V
 
 	if (bIsUpperLower)
 	{
-		UT_UCS4Char*	wordsearch;
+		UT_UCS4Char* wordsearch;
 
 		UT_UCS4_cloneString(&wordsearch, word32);
 
 		/* Convert word into lowercase (only need the first char) */
 		wordsearch[0] = UT_UCS4_tolower(wordsearch[0]);
 
-		if (suggestExactWord(wordsearch, length, pVecsugg))
+		if ((bIsBarbarism = suggestExactWord(wordsearch,  length, pVecsugg)))
 		{
 			const UT_uint32 nItems = pVecsugg->getItemCount();
-			UT_UCSChar*	pSug;
+			UT_UCSChar* pSug;
 
 			/* Make the first letter of all the results uppercase */
 			for (UT_uint32 iItem = nItems; iItem; --iItem)
@@ -198,14 +205,14 @@ bool BarbarismChecker::suggestWord(const UT_UCSChar *word32, size_t length, UT_V
 			free(wordsearch);
 	}
 
-	return 0;
+	return bIsBarbarism;
 }
 
 /*
 	Called by the parser. We build the barbarism list here
 
 	Barbarism (the index of the map) is stored in UTF-8 because the map index
-	and the suggestions in UT_UCSChar
+	and the suggestions are in UT_UCSChar
 
 */
 void BarbarismChecker::startElement(const XML_Char *name, const XML_Char **atts)
@@ -223,12 +230,12 @@ void BarbarismChecker::startElement(const XML_Char *name, const XML_Char **atts)
 	{
 		if (m_pCurVector)
 		{
-			const char*	pUTF8 = UT_getAttribute ("word", atts);
+			const char* pUTF8 = UT_getAttribute ("word", atts);
 			if (pUTF8 == NULL)
 				return;
 
-			size_t	length = strlen (pUTF8);
-			int		nUSC4Len = 0;
+			size_t			length = strlen (pUTF8);
+			int				nUSC4Len = 0;
 			UT_UCS4String	usc4;
 
 			while (true)
@@ -244,7 +251,11 @@ void BarbarismChecker::startElement(const XML_Char *name, const XML_Char **atts)
 
 			UT_UCS4Char *word32 = new UT_UCS4Char[nUSC4Len+1];
 			memcpy (word32, pData, (nUSC4Len+1)*sizeof(UT_UCS4Char));
-			m_pCurVector->addItem(word32);
+
+			// insert suggestions at beginning
+			// this preserves the order in the xml file
+			// and puts them ahead of the regular suggestions
+			m_pCurVector->insertItemAt(word32, 0);
 		}
 	}
 }

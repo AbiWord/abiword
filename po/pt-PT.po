@@ -3920,7 +3920,7 @@ msgstr "Não foi possivel ligar/carregar o plugin"
 msgid "Could not deactivate plugin"
 msgstr "Não foi possivel desligar/descarregar o plugin"
 
-#. DICTIONARY_CANTLOAD
+#. SPELL_CANTLOAD_DICT
 #: po/tmp/xap_String_Id.h.h:129
 #, c-format
 msgid "Could not load the dictionary for the %s language"

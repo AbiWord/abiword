@@ -17,15 +17,11 @@ public:
 	ISpellChecker();
 	virtual ~ISpellChecker();
 
-	virtual SpellCheckResult	checkWord(const UT_UCSChar* word, size_t len);
-	virtual UT_Vector*			suggestWord(const UT_UCSChar* word, size_t len);
-
 	// vector of DictionaryMapping*
 	virtual	UT_Vector & getMapping();
 	virtual bool  doesDictionaryExist (const char * szLang);
 
 protected:
-	virtual bool requestDictionary (const char * szLang);
 
 #ifdef HAVE_CURL
 	void		setUserSaidNo(UT_uint32 flag) { m_userSaidNo = flag; }
@@ -36,11 +32,17 @@ private:
 	ISpellChecker(const ISpellChecker&);	// no impl
 	void operator=(const ISpellChecker&);	// no impl
 
+	virtual bool _requestDictionary (const char * szLang);
+
 	char * loadGlobalDictionary ( const char *szHash );
 	char * loadLocalDictionary ( const char *szHash );
 
 	bool   loadDictionaryForLanguage ( const char * szLang );
 	void   setDictionaryEncoding ( const char * hashname, const char * enc );
+
+
+	virtual SpellCheckResult	_checkWord(const UT_UCSChar* word, size_t len);
+	virtual UT_Vector*			_suggestWord(const UT_UCSChar* word, size_t len);
 
 	//
 	// The member functions after this point were formerly global functions

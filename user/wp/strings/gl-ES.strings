@@ -55,7 +55,7 @@ BottomMarginStatus="Margen Inferior [%s]"
 ColumnGapStatus="Espazo entre Colunas [%s]"
 ColumnStatus="Coluna [%s]"
 
-DICTIONARY_CANTLOAD="Non se dá carregado o dicionário da língua %s"
+SPELL_CANTLOAD_DICT="Non se dá carregado o dicionário da língua %s"
 
 DLG_ABOUT_Title="Acerca de %s"
 

@@ -4007,7 +4007,7 @@ msgstr "Αδυναμία ενεργοποίησης/φόρτωσης βύσματος"
 msgid "Could not deactivate plugin"
 msgstr "Αδυναμία απενεργοποίησης βύσματος"
 
-#. DICTIONARY_CANTLOAD
+#. SPELL_CANTLOAD_DICT
 #: po/tmp/xap_String_Id.h.h:137
 #, c-format
 msgid "Could not load the dictionary for the %s language"

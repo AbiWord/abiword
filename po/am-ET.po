@@ -4967,7 +4967,7 @@ msgstr "ተጨማሪውን ማሰራት/መጫን አልተቻለም"
 msgid "Could not deactivate plugin"
 msgstr "ተጨማሪውን ፕሮግራም ማዘግየት አልተቻለም"
 
-#. DICTIONARY_CANTLOAD
+#. SPELL_CANTLOAD_DICT
 #: po/tmp/xap_String_Id.h.h:159
 #, c-format
 msgid "Could not load the dictionary for the %s language"

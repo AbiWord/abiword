@@ -10,7 +10,7 @@
 <AbiStrings app="AbiWord" ver="1.0" language="de-CH">
 
 <Strings    class="XAP"
-DICTIONARY_CANTLOAD="Das Wörterbuch für die %s Sprache konnte nicht geladen werden."
+SPELL_CANTLOAD_DICT="Das Wörterbuch für die %s Sprache konnte nicht geladen werden."
 DLG_ABOUT_Title="Über %s"
 DLG_Break_Insert="Einfügen"
 DLG_CLIPART_Title="Clipart"
