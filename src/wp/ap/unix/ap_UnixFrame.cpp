@@ -209,11 +209,14 @@ UT_Error AP_UnixFrame::_showDocument(UT_uint32 iZoom)
 	// frame is created.
 	if ( ((AP_FrameData*)m_pData)->m_bShowRuler )
 	{
-		((AP_FrameData*)m_pData)->m_pTopRuler->setView(pView, iZoom);
+	  if ( ((AP_FrameData*)m_pData)->m_pTopRuler )
+	    ((AP_FrameData*)m_pData)->m_pTopRuler->setView(pView, iZoom);
+	  if ( ((AP_FrameData*)m_pData)->m_pLeftRuler )
 		((AP_FrameData*)m_pData)->m_pLeftRuler->setView(pView, iZoom);
 	}
 
-	((AP_FrameData*)m_pData)->m_pStatusBar->setView(pView);
+	if ( ((AP_FrameData*)m_pData)->m_pStatusBar )
+	  ((AP_FrameData*)m_pData)->m_pStatusBar->setView(pView);
 
 	pView->setInsertMode(((AP_FrameData*)m_pData)->m_bInsertMode);
     ((FV_View *) m_pView)->setShowPara(((AP_FrameData*)m_pData)->m_bShowPara);

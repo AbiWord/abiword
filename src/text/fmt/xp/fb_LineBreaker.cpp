@@ -95,9 +95,11 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 					// end of the line
 
 					UT_ASSERT(pPreviousRun);
-					UT_sint32 iTrailingSpace = 
-						_moveBackToFirstNonBlankData(pPreviousRun,
-													 &pOffendingRun);
+					UT_sint32 iTrailingSpace = 0;
+
+					fp_Run * pArun = (pPreviousRun ? pPreviousRun : pCurrentRun);
+					iTrailingSpace = _moveBackToFirstNonBlankData(pArun,
+										      &pOffendingRun);
 
 					m_iWorkingLineWidth -= iTrailingSpace;
 					if (m_iWorkingLineWidth > m_iMaxLineWidth)
@@ -105,7 +107,6 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 						// This run needs splitting.
 
 						UT_ASSERT(pOffendingRun);
-
 						_splitAtOrBeforeThisRun(pOffendingRun);
 						goto done_with_run_loop;
 					}
