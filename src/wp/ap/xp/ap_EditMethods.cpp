@@ -5094,7 +5094,7 @@ Defun(viCmd_db)
 Defun(viCmd_dd)
 {
 	// delete the current line
-	return ( EX(warpInsPtBOL) && EX(extSelEOL) && EX(cut) );
+	return ( EX(warpInsPtBOL) && EX(extSelEOL) && EX(extSelRight) && EX(cut) );
 }
 
 Defun(viCmd_dw)
