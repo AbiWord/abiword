@@ -96,6 +96,8 @@ endif
 
 ifneq ($(ABI_OPT_PACIFY_COMPILER),1)
 WARNFLAGS	+= -Wall -ansi -pedantic
+else
+WARNFLAGS	+= -fpermissive
 endif
 
 ABI_REQUIRE_PEER_ICONV = 1
