@@ -1752,13 +1752,12 @@ msgstr "Afsluiten:"
 #: po/tmp/ap_String_Id.h.h:742
 #, c-format
 msgid "Column Gap [%s]"
-msgstr "Kolom Tussenruimte [%s]"
+msgstr "Kolom tussenruimte [%s]"
 
 #. ColumnStatus
 #: po/tmp/ap_String_Id.h.h:744
-#, fuzzy, c-format
 msgid "Column [%d]"
-msgstr "Kolom Tussenruimte [%s]"
+msgstr "Kolom [%d]"
 
 #. DLG_Column_ColumnTitle
 #: po/tmp/ap_String_Id.h.h:746
