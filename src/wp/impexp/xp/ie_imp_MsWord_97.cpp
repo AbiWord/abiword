@@ -45,7 +45,7 @@
 
 
 int CharProc(wvParseStruct *ps,U16 eachchar,U8 chartype);
-int ElementProc(wvParseStruct *ps,wvTag tag, void *props);
+int ElementProc(wvParseStruct *ps,wvTag tag, void *props, int dirty);
 int DocProc(wvParseStruct *ps,wvTag tag);
 
 // a little look-up table for mapping Word text colors 
@@ -148,10 +148,10 @@ int DocProc(wvParseStruct *ps,wvTag tag)
 	return(pDocReader->_docProc(ps, tag));
 	}
 
-int ElementProc(wvParseStruct *ps,wvTag tag,void *props)
+int ElementProc(wvParseStruct *ps,wvTag tag,void *props, int dirty)
 	{
 	IE_Imp_MsWord_97* pDocReader = (IE_Imp_MsWord_97 *) ps->userData;
-	return(pDocReader->_eleProc(ps, tag, props));
+	return(pDocReader->_eleProc(ps, tag, props, dirty));
 	UT_DEBUGMSG(("ele begins\n"));
 	return(0);
 	}
@@ -186,7 +186,7 @@ int IE_Imp_MsWord_97::_docProc(wvParseStruct * ps, wvTag tag)
 	return(0);
 	}
 
-int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps, wvTag tag, void *props)
+int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps, wvTag tag, void *props, int dirty)
 	{
 	XML_Char propBuffer[1024];
 	XML_Char* pProps = "PROPS";
