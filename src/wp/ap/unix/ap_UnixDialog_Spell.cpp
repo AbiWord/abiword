@@ -425,7 +425,7 @@ void AP_UnixDialog_Spell::_showMisspelledWord(void)
    
    gchar *suggest[2] = {NULL, NULL};
    
-   for (int i = 0; i < m_Suggestions->getItemCount(); i++) {
+   for (UT_uint32 i = 0; i < m_Suggestions->getItemCount(); i++) {
       suggest[0] = (gchar*) _convertToMB((UT_UCSChar*)m_Suggestions->getNthItem(i));
       gtk_clist_append( GTK_CLIST(m_clistSuggestions), suggest);
    }

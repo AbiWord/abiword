@@ -140,7 +140,7 @@ bool EV_Menu_ActionSet::setAction(XAP_Menu_Id id,
 {
 	void *tmp;
 
-	if ((id < m_first) || (id >= m_first + m_actionTable.size()))
+	if ((id < m_first) || (id >= m_first + (UT_sint32)m_actionTable.size()))
 		return false;
 
 	UT_uint32 index = (id - m_first);
@@ -156,7 +156,7 @@ bool EV_Menu_ActionSet::setAction(XAP_Menu_Id id,
 const EV_Menu_Action * EV_Menu_ActionSet::getAction(XAP_Menu_Id id) const
 {
 	xxx_UT_DEBUGMSG(("JCA: EV_Menu_ActionSet::getAction(%d) m_first = [%d], size_table = [%d]\n", id, m_first, m_actionTable.size()));
-	if ((id < m_first) || (id > m_first + m_actionTable.size()))
+	if ((id < m_first) || (id > m_first + (UT_sint32)m_actionTable.size()))
 		return NULL;
 
 	UT_uint32 index = (id - m_first);
@@ -174,7 +174,7 @@ bool EV_Menu_ActionSet::addAction(EV_Menu_Action *pAction)
 				 pAction->getMenuId(), size_table, m_first));
 
 #ifdef DEBUG
-	if (pAction->getMenuId() < size_table + m_first - 1 || pAction->getMenuId() > size_table + m_first)
+	if (pAction->getMenuId() < (UT_sint32)size_table + m_first - 1 || pAction->getMenuId() > (UT_sint32)size_table + m_first)
 		UT_DEBUGMSG(("WARNING: Weird menu id.\n"));
 #endif
 

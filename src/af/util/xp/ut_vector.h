@@ -43,7 +43,7 @@ public:
 	UT_sint32	addItem(void*);
 	inline UT_sint32	push_back(void *item)	{ return addItem(item); }
 	bool				pop_back();
-	inline void*		back() const			{ return getLastItem(); }
+	inline const void*	back() const			{ return getLastItem(); }
 	 
 	UT_sint32	addItem(void* p, UT_uint32 * pIndex);
 	inline void*getNthItem(UT_uint32 n) const
@@ -129,10 +129,10 @@ class UT_Vector
 	UT_sint32	addItem(void*);
 	UT_sint32	addItem(void* p, UT_uint32 * pIndex);
 	void*		getNthItem(UT_uint32 n) const;
-	const void*		operator[](UT_uint32 i) const;
+	const void*	operator[](UT_uint32 i) const;
 	UT_sint32	setNthItem(UT_uint32 ndx, void * pNew, void ** ppOld);
-	void*		getFirstItem() const;
-	void*		getLastItem() const;
+	const void*	getFirstItem() const;
+	const void*	getLastItem() const;
 	UT_uint32	getItemCount() const;
 	UT_sint32	findItem(void*) const;
 

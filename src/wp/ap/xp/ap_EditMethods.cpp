@@ -6356,7 +6356,7 @@ Defun1(doubleSpace)
 Defun1(Test_Dump)
 {
 	ABIWORD_VIEW;
-	pView->Test_Dump();
+//  	pView->Test_Dump();
 	return true;
 }
 
