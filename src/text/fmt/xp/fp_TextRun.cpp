@@ -44,7 +44,8 @@ fp_TextRun::fp_TextRun(fl_BlockLayout* pBL,
 					   UT_uint32 iOffsetFirst,
 					   UT_uint32 iLen,
 					   UT_Bool bLookupProperties)
-	: fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_TEXT)
+:	fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_TEXT),
+	m_fPosition(TEXT_POSITION_NORMAL)
 {
 	m_pFont = NULL;
 	m_pFontLayout = NULL;
@@ -250,12 +251,8 @@ UT_Bool fp_TextRun::alwaysFits(void) const
 
 		return UT_FALSE;
 	}
-	else
-	{
-		// could assert here -- this should never happen, I think
-		return UT_TRUE;
-	}
 
+	// could assert here -- this should never happen, I think
 	return UT_TRUE;
 }
 
@@ -338,17 +335,24 @@ UT_Bool	fp_TextRun::findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidt
 
 void fp_TextRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL)
 {
-	if  (x <= 0)
+	if (x <= 0)
 	{
 		pos = m_pBL->getPosition() + m_iOffsetFirst;
 		// don't set bBOL to false here
 		bEOL = UT_FALSE;
+
+		UT_ASSERT(bBOL == UT_TRUE || bBOL == UT_FALSE);
+
 		return;
 	}
 
 	if (x >= m_iWidth)
 	{
 		pos = m_pBL->getPosition() + m_iOffsetFirst + m_iLen;
+
+		UT_ASSERT(bEOL == UT_TRUE || bEOL == UT_FALSE);
+		UT_ASSERT(bBOL == UT_TRUE || bBOL == UT_FALSE);
+
 		return;
 	}
 
@@ -379,6 +383,10 @@ void fp_TextRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& p
 			bEOL = UT_TRUE;
 
 			pos = m_pBL->getPosition() + i;
+
+			UT_ASSERT(bEOL == UT_TRUE || bEOL == UT_FALSE);
+			UT_ASSERT(bBOL == UT_TRUE || bBOL == UT_FALSE);
+
 			return;
 		}
 	}
@@ -421,23 +429,16 @@ void fp_TextRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, 
 
 UT_Bool fp_TextRun::canMergeWithNext(void)
 {
-	if (
-		(!m_pNext)
-		|| (m_pNext->getType() != FPRUN_TEXT)
-		)
+	if (!m_pNext ||
+		!m_pLine ||
+		m_pNext->getType() != FPRUN_TEXT ||
+		!m_pNext->getLine())
 	{
 		return UT_FALSE;
 	}
 
-	if (
-		!(m_pLine)
-	    || !(m_pNext->getLine())
-		)
-	{
-		return UT_FALSE;
-	}
 	
-	fp_TextRun* pNext = (fp_TextRun*) m_pNext;
+	fp_TextRun* pNext = static_cast<fp_TextRun*>(m_pNext);
 	if (
 		(pNext->m_iOffsetFirst != (m_iOffsetFirst + m_iLen))
 		|| (pNext->m_fDecorations != m_fDecorations)
@@ -962,20 +963,22 @@ class. If a underline or overline is pending (because the next run continues
 drawn.
      */
 
-  if( (m_fDecorations & (TEXT_DECOR_UNDERLINE | TEXT_DECOR_OVERLINE | 
-			TEXT_DECOR_LINETHROUGH)) == 0) return;
-        UT_sint32 old_LineWidth = m_iLineWidth;
-        UT_sint32 cur_linewidth = 1+ (UT_MAX(10,m_iAscent)-10)/8;
+	if( (m_fDecorations & (TEXT_DECOR_UNDERLINE | TEXT_DECOR_OVERLINE | 
+			TEXT_DECOR_LINETHROUGH)) == 0)
+	{
+		return;
+	}
+
+	const UT_sint32 old_LineWidth = m_iLineWidth;
+	UT_sint32 cur_linewidth = 1+ (UT_MAX(10,m_iAscent)-10)/8;
 	UT_sint32 iDrop = 0;
-        fp_Run* P_Run = getPrev();
-        fp_Run* N_Run = getNext();
-        UT_Bool b_Underline = isUnderline();
-        UT_Bool b_Overline = isOverline();
-	UT_Bool b_Strikethrough = isStrikethrough();
-	const UT_UCSChar* pSpan;
-	UT_uint32 lenSpan;
-	UT_Bool b_Firstrun = (P_Run == NULL) || (m_pLine->getFirstRun()== this);
-	UT_Bool b_Lastrun = (N_Run == NULL) || (m_pLine->getLastRun()== this);
+	fp_Run* P_Run = getPrev();
+	fp_Run* N_Run = getNext();
+	const UT_Bool b_Underline = isUnderline();
+	const UT_Bool b_Overline = isOverline();
+	const UT_Bool b_Strikethrough = isStrikethrough();
+	const UT_Bool b_Firstrun = (P_Run == NULL) || (m_pLine->getFirstRun()== this);
+	const UT_Bool b_Lastrun = (N_Run == NULL) || (m_pLine->getLastRun()== this);
 
 	/*
 	  If the previous run is NULL or if this is the first run of a line, 
