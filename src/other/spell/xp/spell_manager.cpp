@@ -17,6 +17,7 @@
  * 02111-1307, USA.
  */
 
+#include "xap_App.h"
 #include "spell_manager.h"
 
 // we either use an ispell or pspell based backend
@@ -112,8 +113,9 @@ SpellManager::requestDictionary (const char * szLang)
 	checker = new SpellCheckerClass ();
 	
 	if (checker->requestDictionary (szLang))
-    {
+    {     
 		m_map.insert (szLang, (void *)checker);
+		checker->setLanguage (szLang);
 		m_lastDict = checker;
 		m_nLoadedDicts++;
 		return checker;
@@ -139,4 +141,10 @@ SpellManager::lastDictionary () const
 SpellChecker *	SpellManager::getInstance()  const 
 {
 	return  new SpellCheckerClass ();
+}
+
+bool SpellChecker::addToCustomDict (const UT_UCSChar *word, size_t len)
+{
+  // TODO: make this support language tags, subclass this for pspell
+  return XAP_App::getApp()->addWordToDict (word, len);
 }

@@ -38,6 +38,9 @@
 
 /*
  * $Log$
+ * Revision 1.8  2003/01/06 18:48:40  dom
+ * ispell cleanup, start of using new 'add' save features
+ *
  * Revision 1.7  2003/01/04 19:09:04  dom
  * some tidying... bug pissing me off...
  *
@@ -136,14 +139,6 @@
 
 #include "ispell.h"
 #include "msgs.h"
-
-#if 0
-int		findfiletype P ((char * name, int searchnames, int * deformatter));
-char *		ichartosstr P (ichar_t * in, int canonical));
-#ifndef NO_CAPITALIZATION_SUPPORT
-long		whatcap P ((ispell_state_t *istate, ichar_t * word));
-#endif
-#endif
 
 int		makedent P ((char * lbuf, int lbuflen, struct dent * ent));
 int		addvheader P ((ispell_state_t *istate, struct dent * ent));

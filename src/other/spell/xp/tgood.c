@@ -44,7 +44,11 @@
 
 /*
  * $Log$
+ * Revision 1.6  2003/01/06 18:48:42  dom
+ * ispell cleanup, start of using new 'add' save features
+ *
  * Revision 1.5  2002/09/19 05:31:20  hippietrail
+ *
  * More Ispell cleanup.  Conditional globals and DEREF macros are removed.
  * K&R function declarations removed, converted to Doxygen style comments
  * where possible.  No code has been changed (I hope).  Compiles for me but
@@ -273,15 +277,7 @@ static void pfx_list_chk (ispell_state_t *istate, ichar_t *word, ichar_t *ucword
 		if ((flent->flagflags & FF_COMPOUNDONLY) != 0
 		  &&  (optflags & FF_COMPOUNDONLY) == 0)
 			continue;
-		/*
-		 * In COMPOUND_CONTROLLED mode, the FF_COMPOUNDONLY bit must
-		 * match exactly.
-		 */
-#if 0 /* DELETE_ME */
-		if (compoundflag == COMPOUND_CONTROLLED
-		  &&  ((flent->flagflags ^ optflags) & FF_COMPOUNDONLY) != 0)
-			continue;
-#endif /* DELETE_ME */
+
 		/*
 		 * See if the prefix matches.
 		 */
@@ -331,12 +327,6 @@ static void pfx_list_chk (ispell_state_t *istate, ichar_t *word, ichar_t *ucword
 							*cp++ = '-';
 							(void) icharcpy (cp, flent->strip);
 						}
-#if 0 /* Capitalization handler 12/98 */
-						(void) ins_root_cap (tword2, word,
-						  flent->stripl, preadd,
-						  0, (cp - tword2) - tlen - preadd,
-						  dent, flent, (struct flagent *) NULL);
-#endif /* Capitalizaition handler 12/98 */
 					}
 				}
 				else if ((dent = ispell_lookup (istate, tword, 1)) != NULL
@@ -457,15 +447,7 @@ static void suf_list_chk (ispell_state_t *istate, ichar_t *word, ichar_t *ucword
 		if ((flent->flagflags & FF_COMPOUNDONLY) != 0
 		  &&  (optflags & FF_COMPOUNDONLY) == 0)
 			continue;
-		/*
-		 * In COMPOUND_CONTROLLED mode, the FF_COMPOUNDONLY bit must
-		 * match exactly.
-		 */
-#if 0 /*  DELETE_ME */
-		if (compoundflag == COMPOUND_CONTROLLED
-		  &&  ((flent->flagflags ^ optflags) & FF_COMPOUNDONLY) != 0)
-			continue;
-#endif /* DELETE_ME */
+
 		/*
 		 * See if the suffix matches.
 		 */
@@ -534,13 +516,6 @@ static void suf_list_chk (ispell_state_t *istate, ichar_t *word, ichar_t *ucword
 							(void) icharcpy (cp, flent->affix);
 							cp += flent->affl;
 						}
-#if 0 /* Capitalization handler 12/98 */
-						(void) ins_root_cap (tword2, word,
-						  (optflags & FF_CROSSPRODUCT) ? pfxent->stripl : 0,
-						  preadd,
-						  flent->stripl, (cp - tword2) - tlen - preadd,
-						  dent, pfxent, flent);
-#endif /* Capitalization handler 12/98 */
 					}
 				}
 				else if ((dent = ispell_lookup (istate, tword, 1)) != NULL

@@ -43,7 +43,11 @@
 
 /*
  * $Log$
+ * Revision 1.6  2003/01/06 18:48:38  dom
+ * ispell cleanup, start of using new 'add' save features
+ *
  * Revision 1.5  2002/09/19 05:31:15  hippietrail
+ *
  * More Ispell cleanup.  Conditional globals and DEREF macros are removed.
  * K&R function declarations removed, converted to Doxygen style comments
  * where possible.  No code has been changed (I hope).  Compiles for me but
@@ -150,118 +154,27 @@
 #include "ispell.h"
 
 int		good P ((ispell_state_t *istate, ichar_t * word, int ignoreflagbits, int allhits,
-		  int pfxopts, int sfxopts));
+			 int pfxopts, int sfxopts));
 
 #ifndef NO_CAPITALIZATION_SUPPORT
-static int	entryhasaffixes P ((struct dent * dent, struct success * hit));
-#endif /* NO_CAPITALIZATION_SUPPORT */
-void		flagpr P ((ichar_t * word, int preflag, int prestrip,
-		  int preadd, int sufflag, int sufadd));
 
-#if 0 /* DELETE_ME */
-static ichar_t *	orig_word;
-#endif /* DELETE_ME */
-
-#ifndef NO_CAPITALIZATION_SUPPORT
 /*!
- * \param w Word to look up
- * \param ignoreflagbits NZ to ignore affix flags in dict
- * \param allhits NZ to ignore case, get every hit
- * \param pfxopts Options to apply to prefixes
- * \param sfxopts Options to apply to suffixes
- *
- * \return
- */
-int good (ispell_state_t *istate, ichar_t *w, int ignoreflagbits, int allhits, int pfxopts, int sfxopts)
-#else
-/* ARGSUSED */
-int good (ispell_state_t *istate, ichar_t *w, int ignoreflagbits, int dummy, int pfxopts, int sfxopts)
-#if 0
-    ichar_t *		w;		/* Word to look up */
-    int			ignoreflagbits;	/* NZ to ignore affix flags in dict */
-    int			dummy;
-#define allhits	0	/* Never actually need more than one hit */
-    int			pfxopts;	/* Options to apply to prefixes */
-    int			sfxopts;	/* Options to apply to suffixes */
-#endif
-#endif
+** See if this particular capitalization (dent) is legal with these
+** particular affixes.
+**
+** \param dent
+** \param hit
+**
+** \return
+*/
+static int entryhasaffixes (struct dent *dent, struct success *hit)
 {
-    ichar_t		nword[INPUTWORDLEN + MAXAFFIXLEN];
-    register ichar_t *	p;
-    register ichar_t *	q;
-    register int	n;
-    register struct dent * dp;
-
-    /*
-    ** Make an uppercase copy of the word we are checking.
-    */
-    for (p = w, q = nword;  *p;  )
-		*q++ = mytoupper (istate, *p++);
-    *q = 0;
-    n = q - nword;
-
-    istate->numhits = 0;
-
-#if 0 /* DELETE_ME */
-    if (cflag)
-	{
-		(void) printf ("%s", ichartosstr (w, 0));
-		orig_word = w;
-	}
-    else 
-#endif /* DELETE_ME */
-    if ((dp = ispell_lookup (istate, nword, 1)) != NULL)
-	{
-		istate->hits[0].dictent = dp;
-		istate->hits[0].prefix = NULL;
-		istate->hits[0].suffix = NULL;
-#ifndef NO_CAPITALIZATION_SUPPORT
-		if (allhits  ||  cap_ok (istate, w, &istate->hits[0], n))
-			istate->numhits = 1;
-#else
-		istate->numhits = 1;
-#endif
-		/*
-		 * If we're looking for compounds, and this root doesn't
-		 * participate in compound formation, undo the hit.
-		 */
-
-#if 0 /*  DELETE_ME */
-		if (compoundflag == COMPOUND_CONTROLLED
-		  &&  ((pfxopts | sfxopts) & FF_COMPOUNDONLY) != 0
-		  &&  hashheader.compoundbit >= 0
-		  &&  TSTMASKBIT (dp->mask, hashheader.compoundbit) == 0)
-			numhits = 0;
-#endif /* DELETE_ME */
-	}
-
-    if (istate->numhits  &&  !allhits)
-		return 1;
-
-    /* try stripping off affixes */
-
-#if 0
-    numchars = icharlen (nword);
-    if (numchars < 4)
-	{
-		if (cflag)
-			(void) putchar ('\n');
-		return numhits  ||  (numchars == 1);
-	}
-#endif
-
-    chk_aff (istate, w, nword, n, ignoreflagbits, allhits, pfxopts, sfxopts);
-
-#if 0 /* DELETE_ME */
-    if (cflag)
-		(void) putchar ('\n');
-
-#endif /* DELETE_ME */
-
-    return istate->numhits;
+    if (hit->prefix  &&  !TSTMASKBIT (dent->mask, hit->prefix->flagbit))
+		return 0;
+    if (hit->suffix  &&  !TSTMASKBIT (dent->mask, hit->suffix->flagbit))
+		return 0;
+    return 1;			/* Yes, these affixes are legal */
 }
-
-#ifndef NO_CAPITALIZATION_SUPPORT
 
 /*
  * \param word
@@ -394,24 +307,59 @@ int cap_ok (ispell_state_t *istate, ichar_t *word, struct success *hit, int len)
     /* No matches found */
     return 0;
 }
-
-/*!
-** See if this particular capitalization (dent) is legal with these
-** particular affixes.
-**
-** \param dent
-** \param hit
-**
-** \return
-*/
-static int entryhasaffixes (struct dent *dent, struct success *hit)
-{
-
-    if (hit->prefix  &&  !TSTMASKBIT (dent->mask, hit->prefix->flagbit))
-		return 0;
-    if (hit->suffix  &&  !TSTMASKBIT (dent->mask, hit->suffix->flagbit))
-		return 0;
-    return 1;			/* Yes, these affixes are legal */
-}
 #endif
 
+#ifndef NO_CAPITALIZATION_SUPPORT
+/*!
+ * \param w Word to look up
+ * \param ignoreflagbits NZ to ignore affix flags in dict
+ * \param allhits NZ to ignore case, get every hit
+ * \param pfxopts Options to apply to prefixes
+ * \param sfxopts Options to apply to suffixes
+ *
+ * \return
+ */
+int good (ispell_state_t *istate, ichar_t *w, int ignoreflagbits, int allhits, int pfxopts, int sfxopts)
+#else
+/* ARGSUSED */
+int good (ispell_state_t *istate, ichar_t *w, int ignoreflagbits, int dummy, int pfxopts, int sfxopts)
+#endif
+{
+    ichar_t		nword[INPUTWORDLEN + MAXAFFIXLEN];
+    register ichar_t *	p;
+    register ichar_t *	q;
+    register int	n;
+    register struct dent * dp;
+
+    /*
+    ** Make an uppercase copy of the word we are checking.
+    */
+    for (p = w, q = nword;  *p;  )
+		*q++ = mytoupper (istate, *p++);
+    *q = 0;
+    n = q - nword;
+
+    istate->numhits = 0;
+
+    if ((dp = ispell_lookup (istate, nword, 1)) != NULL)
+	{
+		istate->hits[0].dictent = dp;
+		istate->hits[0].prefix = NULL;
+		istate->hits[0].suffix = NULL;
+#ifndef NO_CAPITALIZATION_SUPPORT
+		if (allhits  ||  cap_ok (istate, w, &istate->hits[0], n))
+			istate->numhits = 1;
+#else
+		istate->numhits = 1;
+#endif
+	}
+
+    if (istate->numhits  &&  !allhits)
+		return 1;
+
+    /* try stripping off affixes */
+
+    chk_aff (istate, w, nword, n, ignoreflagbits, allhits, pfxopts, sfxopts);
+
+    return istate->numhits;
+}

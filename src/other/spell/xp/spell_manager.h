@@ -60,22 +60,36 @@ public:
 	// vector of DictionaryMapping*
 	virtual	UT_Vector & getMapping() {return m_vecEmpty;};	
 	virtual bool  doesDictionaryExist (const char * szLang) {return false;};
-	
+	virtual bool addToCustomDict (const UT_UCSChar *word, size_t len);
+
 protected:
 
 	virtual bool requestDictionary (const char * szLang) = 0;
 	
 	
 protected:
-    SpellChecker();
-    virtual ~SpellChecker();
-    
-   	Barbarisms		m_barbarism;
-   	UT_Vector		m_vecEmpty;
 
+	SpellChecker();
+
+	virtual ~SpellChecker();
+
+    void setLanguage (const char * lang)
+      {
+	m_language = lang;
+      }
+
+    UT_String getLanguage () const
+      {
+	return m_language;
+      }
+    
+    UT_String           m_language;
+    Barbarisms		m_barbarism;
+    UT_Vector		m_vecEmpty;
+    
 private:
-	SpellChecker(const SpellChecker&);		// no impl
-	void operator=(const SpellChecker&);	// no impl
+    SpellChecker(const SpellChecker&);		// no impl
+    void operator=(const SpellChecker&);	// no impl
 };
 
 

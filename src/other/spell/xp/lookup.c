@@ -42,7 +42,11 @@
 
 /*
  * $Log$
+ * Revision 1.12  2003/01/06 18:48:39  dom
+ * ispell cleanup, start of using new 'add' save features
+ *
  * Revision 1.11  2002/09/19 05:31:17  hippietrail
+ *
  * More Ispell cleanup.  Conditional globals and DEREF macros are removed.
  * K&R function declarations removed, converted to Doxygen style comments
  * where possible.  No code has been changed (I hope).  Compiles for me but
@@ -173,10 +177,6 @@
 #include "ut_iconv.h"
 #include "msgs.h"
 
-#if 0
-int		linit P ((char *));
-struct dent *	ispell_lookup P ((ispell_state_t *istate, ichar_t * word, int dotree));
-#endif
 #ifdef INDEXDUMP
 static void	dumpindex P ((struct flagptr * indexp, int depth));
 #endif /* INDEXDUMP */
@@ -204,7 +204,6 @@ int linit (ispell_state_t *istate, char *hashname)
 
     if ((fpHash = fopen (hashname, "rb")) == NULL)
 	{
-/*		(void) fprintf (stderr, CANT_OPEN, hashname);*/
 		return (-1);
 	}
 
@@ -246,31 +245,7 @@ int linit (ispell_state_t *istate, char *hashname)
 			(unsigned int) COMPILEOPTIONS, MAXSTRINGCHARS, MAXSTRINGCHARLEN));
 		return (-1);
 	}
-#if 0 /* DELETE_ME */
-    if (nodictflag)
-	{
-		/*
-		 * Dictionary is not needed - create an empty dummy table.  We
-		 * actually have to have one entry since the hash
-		 * algorithm involves a divide by the table size
-		 * (actually modulo, but zero is still unacceptable).
-		 * So we create an empty entry.
-		 */
-		hashsize = 1;		/* This prevents divides by zero */
-		hashtbl = (struct dent *) calloc (1, sizeof (struct dent));
-		if (hashtbl == NULL)
-		{
-			(void) fprintf (stderr, LOOKUP_C_NO_HASH_SPACE);
-			return (-1);
-		}
-		hashtbl[0].word = NULL;
-		hashtbl[0].next = NULL;
-		hashtbl[0].flagfield &= ~(USED | KEEP);
-		/* The flag bits don't matter, but calloc cleared them. */
-		hashstrings = (char *) malloc ((unsigned) hashheader.lstringsize);
-	}
-    else
-#endif /* DELETE_ME */
+
 	{
 		istate->hashtbl =
 		 (struct dent *)
@@ -328,9 +303,6 @@ int linit (ispell_state_t *istate, char *hashname)
 	}
     (void) fclose (fpHash);
 
-#if 0 /* DELETE_ME */
-    if (!nodictflag)
-#endif /* DELETE_ME */
 	{
 		for (i = istate->hashsize, dp = istate->hashtbl;  --i >= 0;  dp++)
 		{
@@ -718,14 +690,6 @@ struct dent * ispell_lookup (ispell_state_t *istate, ichar_t *s, int dotree)
 			dp = dp->next;
 #endif
 	}
-#if 0 /* NO PERSONAL DICTIONARY LOOKUP NOW 12/98 */
-    if (dotree)
-	{
-		dp = treelookup (s);
-		return dp;
-	}
-    else
-#endif /* NO PERSONAL DICTIONARY LOOKUP NOW 12/98 */
 	return NULL;
 }
 
