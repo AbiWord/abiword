@@ -91,6 +91,7 @@ Will Robinson <wsr23@stanford.edu>
 Pavel Roskin <proski@gnu.org>			Makefile and install.sh fixes
 Duncan Rose <d.rose@salford.ac.uk>
 Bernhard Rosenkraenzer <bero@redhat.de>         gcc 2.96 lint, IA64
+Leonard Rosenthal <leonardr@lazerware.com>      Windows, Mac guru
 Gaetan Ryckeboer <gaetan.ryckeboer@microfox.fr> CSS/HTML script
 Gilles Saint-Denis <stdenisg@cedep.net>         fixes for bugs 787, 282, others
 Pierre Sarrazin <ps@cam.org>
