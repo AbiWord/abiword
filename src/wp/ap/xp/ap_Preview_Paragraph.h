@@ -115,6 +115,7 @@ class AP_Preview_Paragraph : public XAP_Preview
 	
 	virtual UT_Bool _loadDrawFont(void);
 	virtual void 	_drawPageBackground(void);
+	virtual void	_drawPageBorder(void);
 	virtual void 	_appendBlock(AP_Preview_Paragraph_Block * block);
 	virtual UT_uint32 _appendLine(UT_Vector * words,
 								  UT_Vector * widths,

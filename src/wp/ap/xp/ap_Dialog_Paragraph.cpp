@@ -581,6 +581,11 @@ AP_Dialog_Paragraph::tAnswer AP_Dialog_Paragraph::getAnswer(void) const
 
 /************************************************************************/
 
+// how many characters do we want to pull from the current paragraph
+// to fill our preview
+
+#define NUM_CHARS_FOR_SAMPLE 100
+
 void AP_Dialog_Paragraph::_createPreviewFromGC(GR_Graphics * gc,
 											   UT_uint32 width,
 											   UT_uint32 height)
@@ -607,13 +612,10 @@ void AP_Dialog_Paragraph::_createPreviewFromGC(GR_Graphics * gc,
 	UT_GrowBuf gb;
 	UT_Bool hadMem = bl->getBlockBuf(&gb);
 
-	// we use the first 200 characters from the document's current block.
 	UT_UCSChar * tmp = NULL;
-
 	if (hadMem && gb.getLength() > 0)
 	{
-		// cap it at 200
-		gb.truncate(200);
+		gb.truncate(NUM_CHARS_FOR_SAMPLE);
 		UT_UCS_cloneString(&tmp, (UT_UCSChar *) gb.getPointer(0));
 	}
 	else
@@ -973,13 +975,13 @@ void AP_Dialog_Paragraph::_syncControls(tControl changed, UT_Bool bAll /* = UT_F
 	// the preview needs to suck in the changed data (to cache it
 	// for subsequent draws)
 	m_paragraphPreview->setFormat((AP_Dialog_Paragraph::tAlignState) _getMenuItemValue(id_MENU_ALIGNMENT),
-								  _getSpinItemValue(id_SPIN_SPECIAL_INDENT),
+								  ((changed == id_MENU_SPECIAL_INDENT) || (changed == id_SPIN_SPECIAL_INDENT)) ? _getSpinItemValue(id_SPIN_SPECIAL_INDENT) : NULL,
 								  (AP_Dialog_Paragraph::tIndentState) _getMenuItemValue(id_MENU_SPECIAL_INDENT),
-								  _getSpinItemValue(id_SPIN_LEFT_INDENT),
-								  _getSpinItemValue(id_SPIN_RIGHT_INDENT),
-								  _getSpinItemValue(id_SPIN_BEFORE_SPACING),
-								  _getSpinItemValue(id_SPIN_AFTER_SPACING),
-								  _getSpinItemValue(id_SPIN_SPECIAL_SPACING),
+								  (changed == id_SPIN_LEFT_INDENT) ? _getSpinItemValue(id_SPIN_LEFT_INDENT) : NULL,
+								  (changed == id_SPIN_RIGHT_INDENT) ? _getSpinItemValue(id_SPIN_RIGHT_INDENT) : NULL,
+								  (changed == id_SPIN_BEFORE_SPACING) ? _getSpinItemValue(id_SPIN_BEFORE_SPACING) : NULL,
+								  (changed == id_SPIN_AFTER_SPACING) ? _getSpinItemValue(id_SPIN_AFTER_SPACING) : NULL,
+								  ((changed == id_MENU_SPECIAL_SPACING) || (changed == id_SPIN_SPECIAL_SPACING)) ? _getSpinItemValue(id_SPIN_SPECIAL_SPACING) : NULL,
 								  (AP_Dialog_Paragraph::tSpacingState) _getMenuItemValue(id_MENU_SPECIAL_SPACING));
 	
 	m_paragraphPreview->draw();

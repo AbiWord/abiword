@@ -138,7 +138,7 @@ void AP_Preview_Paragraph_Block::setText(const UT_UCSChar * text)
 #define DIMENSION_INCH_SCALE_FACTOR	36
 
 #define STORE_CONVERTED(m, v) \
-            if (v) m = (UT_uint32) (UT_convertToInches(v) * DIMENSION_INCH_SCALE_FACTOR);
+            if (v) m = (UT_uint32) (UT_convertToInches(v) * (double) DIMENSION_INCH_SCALE_FACTOR);
 
 void AP_Preview_Paragraph_Block::setFormat(AP_Dialog_Paragraph::tAlignState align,
 										   const XML_Char * firstLineIndent,
@@ -349,6 +349,8 @@ void AP_Preview_Paragraph::draw(void)
 	_appendBlock(m_activeBlock);
 	_appendBlock(m_followingBlock);
 
+	_drawPageBorder();
+	
 	m_y = DEFAULT_TOP_MARGIN;
 }
 
@@ -372,7 +374,10 @@ void AP_Preview_Paragraph::_drawPageBackground(void)
 {
 	// clear area
 	m_gc->fillRect(*m_clrWhite, 0, 0, getWindowWidth(), getWindowHeight());
+}
 
+void AP_Preview_Paragraph::_drawPageBorder(void)
+{
 	// draw a black one pixel border
 	m_gc->setColor(*m_clrBlack);
 	m_gc->drawLine(0, 0, getWindowWidth(), 0);
@@ -419,7 +424,10 @@ void AP_Preview_Paragraph::_appendBlock(AP_Preview_Paragraph_Block * block)
 	// start y at m_y;
 	UT_uint32 y = m_y;
 
-	// handle any spacing before first block
+	// do before block spacing
+	y += block->m_beforeSpacing;
+	
+	// handle any spacing before first line
 	y += ypre;
 	// draw first line
 	wordCounter += _appendLine(&block->m_words,
@@ -430,13 +438,13 @@ void AP_Preview_Paragraph::_appendBlock(AP_Preview_Paragraph_Block * block)
 							   block->m_align,
 							   y);
 	y += block->m_fontHeight;
-	// handle any spacing after first block
+	// handle any spacing after first line
 	y += ypost;
 	
 	// handle all other lines until out of words
 	while (wordCounter < wordCount)
 	{
-		// handle any spacing before first block
+		// handle any spacing before this line
 		y += ypre;
 		wordCounter += _appendLine(&block->m_words,
 								   &block->m_widths,
@@ -446,10 +454,13 @@ void AP_Preview_Paragraph::_appendBlock(AP_Preview_Paragraph_Block * block)
 								   block->m_align,
 								   y);
 		y += block->m_fontHeight;
-		// handle any spacing after first block
+		// handle any spacing after this line
 		y += ypost;
 	}
 
+	// do after block spacing
+	y += block->m_afterSpacing;
+	
 	// record the changes
 	m_y = y;
 }
