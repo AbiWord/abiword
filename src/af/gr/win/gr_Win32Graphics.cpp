@@ -422,6 +422,19 @@ void Win32Graphics::scroll(UT_sint32 dx, UT_sint32 dy)
 //	FillRect(m_hdc, &rInvalid, hBrush);
 }
 
+void Win32Graphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
+						   UT_sint32 x_src, UT_sint32 y_src,
+						   UT_sint32 width, UT_sint32 height)
+{
+	RECT r;
+	r.left = x_src;
+	r.top = y_src;
+	r.right = x_src + width;
+	r.bottom = y_src + height;
+	ScrollWindowEx(m_hwnd, (x_dest - x_src), (y_dest - y_src),
+				   &r, NULL, NULL, NULL, SW_ERASE);
+}
+
 void Win32Graphics::clearArea(UT_sint32 x, UT_sint32 y, UT_sint32 width, UT_sint32 height)
 {
 //	UT_ASSERT((x + width) < 800);

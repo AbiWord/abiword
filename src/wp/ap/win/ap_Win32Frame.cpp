@@ -43,7 +43,7 @@
 #define GWL(hwnd)		(AP_Win32Frame*)GetWindowLong((hwnd), GWL_USERDATA)
 #define SWL(hwnd, f)	(AP_Win32Frame*)SetWindowLong((hwnd), GWL_USERDATA,(LONG)(f))
 
-#define HACK_RULER_SIZE		25			// TODO move this
+#define HACK_RULER_SIZE		40			// TODO move this
 
 #define DELETEP(p)		do { if (p) delete p; } while (0)
 #define REPLACEP(p,q)	do { if (p) delete p; p = q; } while (0)
@@ -422,7 +422,7 @@ HWND AP_Win32Frame::_createDocumentWindow(HWND hwndParent,
 	// the 'container' will in turn contain the document window, the
 	// rulers, and the various scroll bars and other dead space.
 
-	RECT r, rTopRuler;
+	RECT r;
 	int cxVScroll, cyHScroll;
 	
 	HWND hwndContainer = CreateWindowEx(WS_EX_CLIENTEDGE, s_ContainerWndClassName, NULL,
@@ -462,18 +462,20 @@ HWND AP_Win32Frame::_createDocumentWindow(HWND hwndParent,
 	AP_Win32TopRuler * pWin32TopRuler = new AP_Win32TopRuler(this);
 	UT_ASSERT(pWin32TopRuler);
 	m_hwndTopRuler = pWin32TopRuler->createWindow(hwndContainer,
-												  0,0, (r.right - cxVScroll), HACK_RULER_SIZE);
-	pWin32TopRuler->setOffsetLeftRuler(HACK_RULER_SIZE);
+												  0,0, (r.right - cxVScroll));
 	m_pData->m_pTopRuler = pWin32TopRuler;
-	GetClientRect(m_hwndTopRuler, &rTopRuler);
+	UT_uint32 yTopRulerHeight = pWin32TopRuler->getHeight();
 	
 	m_hwndLeftRuler = CreateWindowEx(0, s_LeftRulerWndClassName, NULL,
 									 WS_CHILD | WS_VISIBLE,
-									 0, rTopRuler.bottom,
-									 HACK_RULER_SIZE, r.bottom - rTopRuler.bottom - cyHScroll,
+									 0, yTopRulerHeight,
+									 HACK_RULER_SIZE, r.bottom - yTopRulerHeight - cyHScroll,
 									 hwndContainer, NULL, m_pWin32App->getInstance(), NULL);
 	UT_ASSERT(m_hwndLeftRuler);
 	SWL(m_hwndLeftRuler, this);
+
+	// TODO get the width from the left ruler and stuff it into the top ruler.
+	pWin32TopRuler->setOffsetLeftRuler(HACK_RULER_SIZE);
 
 	// create a child window for us.
 	m_hwndDocument = CreateWindowEx(0, s_DocumentWndClassName, NULL,
@@ -573,15 +575,17 @@ LRESULT CALLBACK AP_Win32Frame::_ContainerWndProc(HWND hwnd, UINT iMsg, WPARAM w
 			int nHeight = HIWORD(lParam);
 			int cxVScroll = GetSystemMetrics(SM_CXVSCROLL);
 			int cyHScroll = GetSystemMetrics(SM_CYHSCROLL);
+
+			int yTopRulerHeight = f->m_pData->m_pTopRuler->getHeight();
 			
 			MoveWindow(f->m_hwndVScroll, nWidth-cxVScroll, 0, cxVScroll, nHeight-cyHScroll, TRUE);
 			MoveWindow(f->m_hwndHScroll, 0, nHeight-cyHScroll, nWidth - cxVScroll, cyHScroll, TRUE);
 			MoveWindow(f->m_hwndDeadLowerRight, nWidth-cxVScroll, nHeight-cyHScroll, cxVScroll, cyHScroll, TRUE);
-			MoveWindow(f->m_hwndTopRuler, 0, 0, nWidth-cxVScroll, HACK_RULER_SIZE, TRUE);
-			MoveWindow(f->m_hwndLeftRuler, 0, HACK_RULER_SIZE,
-					   HACK_RULER_SIZE, nHeight - HACK_RULER_SIZE - cyHScroll, TRUE);
-			MoveWindow(f->m_hwndDocument, HACK_RULER_SIZE, HACK_RULER_SIZE,
-					   nWidth - HACK_RULER_SIZE - cxVScroll, nHeight - HACK_RULER_SIZE - cyHScroll, TRUE);
+			MoveWindow(f->m_hwndTopRuler, 0, 0, nWidth-cxVScroll, yTopRulerHeight, TRUE);
+			MoveWindow(f->m_hwndLeftRuler, 0, yTopRulerHeight,
+					   HACK_RULER_SIZE, nHeight - yTopRulerHeight - cyHScroll, TRUE);
+			MoveWindow(f->m_hwndDocument, HACK_RULER_SIZE, yTopRulerHeight,
+					   nWidth - HACK_RULER_SIZE - cxVScroll, nHeight - yTopRulerHeight - cyHScroll, TRUE);
 		}
 		return 0;
 	}
@@ -637,7 +641,7 @@ LRESULT CALLBACK AP_Win32Frame::_ContainerWndProc(HWND hwnd, UINT iMsg, WPARAM w
 			GetScrollInfo(f->m_hwndVScroll, SB_CTL, &si);
 
 			// now tell the view
-			pView->setYScrollOffset(si.nPos);
+			pView->sendVerticalScrollEvent(si.nPos);
 		}
 	}
 	return 0;
@@ -693,7 +697,7 @@ LRESULT CALLBACK AP_Win32Frame::_ContainerWndProc(HWND hwnd, UINT iMsg, WPARAM w
 			GetScrollInfo(f->m_hwndHScroll, SB_CTL, &si);
 
 			// now tell the view
-			pView->setXScrollOffset(si.nPos);
+			pView->sendHorizontalScrollEvent(si.nPos);
 		}
 	}
 	return 0;
@@ -779,10 +783,10 @@ LRESULT CALLBACK AP_Win32Frame::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARAM wP
 			si.fMask = SIF_ALL;
 
 			GetScrollInfo(f->m_hwndVScroll, SB_CTL, &si);
-			pView->setYScrollOffset(si.nPos);
+			pView->sendVerticalScrollEvent(si.nPos);
 
 			GetScrollInfo(f->m_hwndHScroll, SB_CTL, &si);
-			pView->setXScrollOffset(si.nPos);
+			pView->sendHorizontalScrollEvent(si.nPos);
 		}
 		return 0;
 	}

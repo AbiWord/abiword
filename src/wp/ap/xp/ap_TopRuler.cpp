@@ -41,6 +41,13 @@ AP_TopRuler::AP_TopRuler(XAP_Frame * pFrame)
 	m_iLeftRulerWidth = 0;
 	m_iPageViewLeftMargin = 0;
 	m_xScrollOffset = 0;
+
+	// i wanted these to be "static const x = 40;" in the
+	// class declaration, but MSVC5 can't handle it....
+	// (GCC can :-)
+	
+	s_iFixedHeight = 40;
+	s_iFixedWidth = 40;
 }
 
 AP_TopRuler::~AP_TopRuler(void)

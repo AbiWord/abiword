@@ -67,8 +67,8 @@ protected:
 	UT_uint32			m_iPageViewLeftMargin;
 	UT_sint32			m_xScrollOffset;
 
-	static const UT_uint32	s_iFixedHeight= 40;	/* size we draw stuff w/o regard to window size */
-	static const UT_uint32	s_iFixedWidth = 40;	/* minimum width of non-scrolling area on left */
+	/* static const*/ UT_uint32	s_iFixedHeight /* =40 */;	/* size we draw stuff w/o regard to window size */
+	/* static const*/ UT_uint32	s_iFixedWidth  /* =40 */;	/* minimum width of non-scrolling area on left */
 };
 
 #endif /* AP_TOPRULER_H */

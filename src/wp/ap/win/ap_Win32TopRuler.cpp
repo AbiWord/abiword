@@ -63,14 +63,6 @@ void AP_Win32TopRuler::setView(AV_View * pView)
 
 /*****************************************************************/
 
-void AP_Win32TopRuler::scrollRuler(UT_sint32 xoff)
-{
-	// platform-dependent scrolling for the ruler
-	UT_DEBUGMSG(("Win32TopRuler: received scrollRuler [x %d]\n",xoff));
-}
-
-/*****************************************************************/
-
 UT_Bool AP_Win32TopRuler::RegisterClass(AP_Win32App * app)
 {
 	WNDCLASSEX  wndclass;
@@ -104,13 +96,12 @@ UT_Bool AP_Win32TopRuler::RegisterClass(AP_Win32App * app)
 
 HWND AP_Win32TopRuler::createWindow(HWND hwndContainer,
 									UT_uint32 left, UT_uint32 top,
-									UT_uint32 width, UT_uint32 height)
+									UT_uint32 width)
 {
 	AP_Win32App * app = static_cast<AP_Win32App *>(m_pFrame->getApp());
-	setHeight(height);
 	m_hwndTopRuler = CreateWindowEx(0, s_TopRulerWndClassName, NULL,
 									WS_CHILD | WS_VISIBLE,
-									left, top, width, height,
+									left, top, width, s_iFixedHeight,
 									hwndContainer, NULL, app->getInstance(), NULL);
 	UT_ASSERT(m_hwndTopRuler);
 	SWL(m_hwndTopRuler, this);
@@ -143,8 +134,10 @@ LRESULT CALLBACK AP_Win32TopRuler::_TopRulerWndProc(HWND hwnd, UINT iMsg, WPARAM
 
 	case WM_SIZE:
 		{
+			int nWidth = LOWORD(lParam);
 			int nHeight = HIWORD(lParam);
 			pRuler->setHeight(nHeight);
+			pRuler->setWidth(nWidth);
 			return 0;
 		}
 	

@@ -41,9 +41,8 @@ public:
 
 	HWND					createWindow(HWND hwndContainer,
 										 UT_uint32 left, UT_uint32 top,
-										 UT_uint32 width, UT_uint32 height);
+										 UT_uint32 width);
 	virtual void			setView(AV_View * pView);
-	void					scrollRuler(UT_sint32 xoff);
 
 	static UT_Bool			RegisterClass(AP_Win32App * app);
 	static LRESULT CALLBACK	_TopRulerWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
