@@ -111,18 +111,57 @@ IEStatus IE_Imp_MsWord_97::importFile(const char * szFilename)
 int CharProc(wvParseStruct *ps,U16 eachchar,U8 chartype,U16 lid)
 	{
 	   IE_Imp_MsWord_97* pDocReader = (IE_Imp_MsWord_97 *) ps->userData;
+	   
+	   // convert incoming character to unicode
+	   if (chartype)
+	     eachchar = wvHandleCodePage(eachchar, lid);
+
 	   UT_DEBUGMSG(("word 97 char is %c (%d), type is %d\n",eachchar,(int)eachchar,chartype));
 
 	   // take care of any oddities in Microsoft's character "encoding"
+	   // TODO: does the above code page handler take care of these?
 	   if (chartype == 1 && eachchar == 146) eachchar = 39; // apostrophe
 
-	   // HACK: don't pass through the paragraph delimiter
-	   // TODO: is there a better place to filter this?
-	   // TODO: the upcoming special character callback might
-	   // TODO: take care of these for us... -JB
-	   if (eachchar == UCS_CR)
-	     return 0;
-
+	   // marks, breaks, etc.
+	   switch (eachchar)
+	     {
+	      case 13: // paragraph end
+		return 0;
+	      case 11: // hard line break
+		eachchar = UCS_LF;
+		break;
+	      case 12: // page breaks, section marks
+		// flush current text buffer
+		pDocReader->_charData(pDocReader->m_pTextRun, pDocReader->m_iTextRunLength);
+		pDocReader->m_iTextRunLength = 0;
+		// we'll go ahead and always add this as a page break.
+		// when we hit an end-of-section, we'll remove it if it's
+		// the last character in the text buffer. since we just 
+		// flushed it above, there's no chance of auto-flushing
+		// before the end-of-section hits.
+		UT_DEBUGMSG(("a page break/section mark\n"));
+		eachchar = UCS_FF;
+		break;
+	      case 14: // column break
+		eachchar = UCS_VTAB;
+		break;
+	      case 19: // field begin
+		// flush current text buffer
+		pDocReader->_charData(pDocReader->m_pTextRun, pDocReader->m_iTextRunLength);
+		pDocReader->m_iTextRunLength = 0;
+		ps->fieldstate++;
+		ps->fieldmiddle = 0;
+		return 0;
+	      case 20: // field separator
+		// TODO: do we get multiple separators in a field?
+		ps->fieldmiddle = 1;
+		return 0;
+	      case 21: // field end
+		ps->fieldstate--;
+		ps->fieldmiddle = 0;
+		return 0;
+	     }
+	   
 	   // add character to our current text run
 	   pDocReader->m_pTextRun[pDocReader->m_iTextRunLength++] = 
 	     (UT_UCSChar) eachchar;
@@ -158,8 +197,9 @@ int ElementProc(wvParseStruct *ps,wvTag tag,void *props, int dirty)
 
 int IE_Imp_MsWord_97::_charData(UT_UCSChar * charstr, int len)
 	{
-	X_CheckError0(m_pDocument->appendSpan(charstr, len));
-	return(0);
+	   if (len)
+	     X_CheckError0(m_pDocument->appendSpan(charstr, len));
+	   return(0);
 	}
 
 int IE_Imp_MsWord_97::_docProc(wvParseStruct * ps, wvTag tag)
@@ -191,15 +231,8 @@ int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps, wvTag tag, void *props, int di
 	XML_Char propBuffer[1024];
 	XML_Char* pProps = "PROPS";
 	const XML_Char* propsArray[3];
-
-	if (m_iTextRunLength)
-	     {
-		// flush any text in the current run
-		int iRes = _charData(m_pTextRun, m_iTextRunLength);
-		m_iTextRunLength = 0;
-		UT_ASSERT(iRes == 0);
-	     }
-
+	   int iRes;
+	   
 	propBuffer[0] = 0;
 	UT_DEBUGMSG((" started\n"));
 	PAP *apap;
@@ -209,6 +242,10 @@ int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps, wvTag tag, void *props, int di
 	switch(tag)
 		{
 		 case SECTIONBEGIN:
+		   iRes = _charData(m_pTextRun, m_iTextRunLength);
+		   m_iTextRunLength = 0;
+		   UT_ASSERT(iRes == 0);
+
 		   UT_DEBUGMSG(("section properties...\n"));
 		   asep = (SEP*)props;
 
@@ -257,7 +294,21 @@ int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps, wvTag tag, void *props, int di
 		   break;
 
 		 case PARABEGIN:
+		   iRes = _charData(m_pTextRun, m_iTextRunLength);
+		   m_iTextRunLength = 0;
+		   UT_ASSERT(iRes == 0);
+
 		   apap = (PAP*)props;
+
+		   // break before paragraph?
+		   // TODO: this should really set a property in
+		   // TODO: in the paragraph, instead; but this
+		   // TODO: is gives a similar effect for now.
+		   if (apap->fPageBreakBefore)
+		     {
+			UT_UCSChar ucs = UCS_FF;
+                        m_pDocument->appendSpan(&ucs,1);
+		     }
 
 		   // paragraph alignment
 		   strcat(propBuffer, "text-align:");
@@ -379,6 +430,10 @@ int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps, wvTag tag, void *props, int di
 		   /* X_ReturnNoMemIfError(m_pDocument->appendStrux(PTX_Block,NULL)); */
 		   break;
 		case CHARPROPBEGIN:
+		   iRes = _charData(m_pTextRun, m_iTextRunLength);
+		   m_iTextRunLength = 0;
+		   UT_ASSERT(iRes == 0);
+
 		   achp = (CHP*)props;
 
 		   // bold text
@@ -454,9 +509,17 @@ int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps, wvTag tag, void *props, int di
 		   UT_DEBUGMSG(("the propBuffer is %s\n",propBuffer));
 		   X_ReturnNoMemIfError(m_pDocument->appendFmt(propsArray));
 		   break;
+		case SECTIONEND:
+		   if (m_iTextRunLength && 
+		       m_pTextRun[m_iTextRunLength-1] == UCS_FF)
+		     {
+			m_iTextRunLength--;
+			UT_DEBUGMSG(("section mark removed\n"));
+		     }
+		   UT_DEBUGMSG(("section end\n"));
+		   break;
 		case CHARPROPEND: /* not needed */
 		case PARAEND:	/* not needed */
-		case SECTIONEND: /* not needed */
 		default:
 		   break;
 			 }

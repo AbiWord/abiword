@@ -31,7 +31,7 @@
 #include "ut_bytebuf.h"
 class PD_Document;
 
-// The importer/reader for Microsoft Word 97
+// The importer/reader for Microsoft Word 97, 95, and 6.0
 
 class IE_Imp_MsWord_97 : public IE_Imp
 {
