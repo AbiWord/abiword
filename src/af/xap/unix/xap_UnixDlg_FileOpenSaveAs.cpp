@@ -833,7 +833,7 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 
 	// attach and clear the area immediately
 	GR_UnixGraphics* pGr = new GR_UnixGraphics(m_preview->window, unixapp->getFontManager(), m_pApp);
-	
+	{	
 	GR_Painter painter(pGr);
 
 	painter.clearArea(0, 0, pGr->tlu(m_preview->allocation.width), pGr->tlu(m_preview->allocation.height));
@@ -925,7 +925,8 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 	{
 	  UT_ASSERT_NOT_REACHED ();
 	}
-
+	}
+	
  Cleanup:
 	DELETEP(pImage);
 	DELETEP(pGr);
