@@ -1009,7 +1009,7 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 
 			if (!UT_strcmp("superscript", szValue))
 			{
-				m_pie->write("sup");
+				m_pie->write("super");
 			}
 			else if (!UT_strcmp("subscript", szValue))
 			{
