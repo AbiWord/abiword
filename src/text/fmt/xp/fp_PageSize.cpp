@@ -181,6 +181,8 @@ void fp_PageSize::Set(double w, double h, Unit u)
 	if ( i == (int)_last_predefined_pagesize_dont_use_ )
 	{
 		Set (static_cast<Predefined>(i-1), u);
+		m_iWidth  = w * ScaleFactors[m_unit];
+		m_iHeight = h * ScaleFactors[m_unit];
 	}
 }
 
