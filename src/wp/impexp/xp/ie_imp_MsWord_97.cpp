@@ -889,7 +889,7 @@ UT_Error IE_Imp_MsWord_97::_handleImage(Blip * b, long width, long height)
       case msoblipJPEG:
       default:
 	// TODO: support other image types
-	return;
+	return UT_ERROR;
      }
 
    buf = new UT_ByteBuf();
