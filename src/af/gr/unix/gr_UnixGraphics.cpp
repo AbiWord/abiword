@@ -685,6 +685,16 @@ UT_uint32 GR_UnixGraphics::getFontAscent(GR_Font * fnt)
 	{
 		GdkFont* pFont = hndl->getGdkFont();
 		GdkFont* pMatchFont=hndl->getMatchGdkFont();
+
+		// with the incremental loader in place, this happens to be
+		// the first place which tries to load fonts (because we need
+		// to compute font ascents).  If they're not present, these
+		// GdkFont guys will be NULL, so we would segfault.  Let's
+		// quietly abort instead.
+
+		if (!pFont || !pMatchFont)
+			abort();
+
 		return MAX(pFont->ascent, pMatchFont->ascent);
 	}
 //
@@ -695,6 +705,11 @@ UT_uint32 GR_UnixGraphics::getFontAscent(GR_Font * fnt)
 		XAP_UnixFont * pSingleByte = NULL;
 		XAP_UnixFont * pMultiByte = NULL;
 		hndl->explodeUnixFonts(&pSingleByte,&pMultiByte);
+
+		// Some more crash protection.  Why not?
+		if (!pSingleByte || !pSingleByte->getMetricsData())
+			abort();
+
 		GlobalFontInfo * gfsi = pSingleByte->getMetricsData()->gfi;
 		UT_ASSERT(gfsi);
 		UT_uint32 ascsingle = (UT_uint32) ( (double) gfsi->fontBBox.ury * (double) hndl->getSize() /1000.);

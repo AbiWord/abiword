@@ -87,7 +87,8 @@ void AP_UnixStatusBar::setView(AV_View * pView)
 	pG->init3dColors(style);
 
 	GR_Font * pFont = m_pG->getGUIFont();
-	m_pG->setFont(pFont);
+	if (pFont)
+		m_pG->setFont(pFont);
 
 	// Now that we've initialized the graphics context and
 	// installed the GUI font, let the base class do it's
