@@ -1705,7 +1705,7 @@ void fp_ShadowContainer::layout(bool bForceLayout)
 //
 // FIXME: Dirty hack to clip.
 //
-			pContainer->setY(-1000000);
+//			pContainer->setY(-1000000);
 		}
 		iY += iContainerHeight;
 		iY += iContainerMarginAfter;
@@ -1717,9 +1717,17 @@ void fp_ShadowContainer::layout(bool bForceLayout)
 		return;
 	}
 
-	if(iY <= getMaxHeight())
+    if(iY <= getMaxHeight())
 	{
 		setHeight(iNewHeight);
+	}
+	else
+	{
+		fl_HdrFtrSectionLayout * pHFSL = getHdrFtrSectionLayout();
+		fl_DocSectionLayout * pDSL = pHFSL->getDocSectionLayout();
+		bool bHdrFtr = (pHFSL->getHFType() <= FL_HDRFTR_HEADER_LAST);
+
+		pDSL->setHdrFtrHeightChange(bHdrFtr,iNewHeight+10);
 	}
 }
 

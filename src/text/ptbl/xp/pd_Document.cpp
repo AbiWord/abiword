@@ -104,7 +104,9 @@ PD_Document::PD_Document(XAP_App *pApp)
 	  m_iLastDirMarker(0),
 	  m_pVDBl(NULL),
 	  m_pVDRun(NULL),
-	  m_iVDLastPos(0xffffffff)
+	  m_iVDLastPos(0xffffffff),
+	  m_iNewHdrHeight(0), 
+	  m_iNewFtrHeight(0)
 {
 	m_pApp = pApp;
 	

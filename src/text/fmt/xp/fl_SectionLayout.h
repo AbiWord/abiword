@@ -93,7 +93,7 @@ class fb_ColumnBreaker;
 class fp_EndnoteContainer;
 class fl_TableLayout;
 class fl_CellLayout;
-
+class UT_Worker;
 class ABI_EXPORT fl_SectionLayout : public fl_ContainerLayout
 {
 	friend class fl_DocListener;
@@ -255,7 +255,6 @@ public:
 											  void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
 																	  PL_ListenerId lid,
 																	  PL_StruxFmtHandle sfhNew));
-
 	void				setHdrFtr(HdrFtrType iType, fl_HdrFtrSectionLayout* pHFSL);
 
 	fl_HdrFtrSectionLayout*         getHeader(void);
@@ -266,6 +265,9 @@ public:
 	fl_HdrFtrSectionLayout*         getFooterFirst(void);
 	fl_HdrFtrSectionLayout*         getHeaderLast(void);
 	fl_HdrFtrSectionLayout*         getFooterLast(void);
+
+	bool                            setHdrFtrHeightChange(bool bDoHdr, UT_sint32 newHeight);
+	static void         _HdrFtrChangeCallback(UT_Worker * pWorker);
 
 	void				addOwnedPage(fp_Page*);
 	void                            prependOwnedHeaderPage(fp_Page * p_Page);
@@ -345,6 +347,10 @@ private:
 	bool                m_bDeleteingBrokenContainers;
 	UT_String           m_sPaperColor;
 	UT_String           m_sScreenColor;
+	UT_sint32           m_iNewHdrHeight;
+	UT_sint32           m_iNewFtrHeight;
+	UT_Worker *         m_pHdrFtrChangeTimer;
+	UT_String           m_sHdrFtrChangeProps;
 };
 
 class _PageHdrFtrShadowPair;

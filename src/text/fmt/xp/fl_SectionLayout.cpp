@@ -58,6 +58,7 @@
 #include "ut_assert.h"
 #include "ut_units.h"
 #include "fg_Graphic.h"
+#include "pt_Types.h"
 /*
   TODO this file is now really too long.  divide it up
   into smaller ones.
@@ -620,7 +621,10 @@ fl_DocSectionLayout::fl_DocSectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandl
 	  m_bNeedsSectionBreak(true),
 	  m_pFirstEndnoteContainer(NULL),
 	  m_pLastEndnoteContainer(NULL),
-	  m_bDeleteingBrokenContainers(false)
+	  m_bDeleteingBrokenContainers(false),
+	  m_iNewHdrHeight(0),
+	  m_iNewFtrHeight(0),
+	  m_pHdrFtrChangeTimer(NULL)
 {
 	UT_ASSERT(iType == FL_SECTION_DOC);
 
@@ -633,6 +637,14 @@ fl_DocSectionLayout::fl_DocSectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandl
 
 fl_DocSectionLayout::~fl_DocSectionLayout()
 {
+// Remove any background HdrFtr change callbacks
+
+	if(m_pHdrFtrChangeTimer)
+	{
+		m_pHdrFtrChangeTimer->stop();
+		DELETEP(m_pHdrFtrChangeTimer);
+	}
+
 	// NB: be careful about the order of these
 	_purgeLayout();
 
@@ -811,6 +823,136 @@ void fl_DocSectionLayout::setHdrFtr(HdrFtrType iType, fl_HdrFtrSectionLayout* pH
 	}
 
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+}
+
+/*!
+ * The calback that implements the HdrFtr size change
+ */
+void fl_DocSectionLayout::_HdrFtrChangeCallback(UT_Worker * pWorker)
+{
+	UT_ASSERT(pWorker);
+
+	// Get the docSectionLayout
+	fl_DocSectionLayout * pDSL = static_cast<fl_DocSectionLayout *>(pWorker->getInstanceData());
+	UT_ASSERT(pDSL);
+
+	// Win32 timers can fire prematurely on asserts (the dialog's
+	// message pump releases the timers)
+	if (!pDSL->getDocument())
+	{
+		return;
+	}
+	// Don't do anything while PT is changing
+	PD_Document * pDoc = pDSL->getDocument();
+	if(pDoc->isPieceTableChanging())
+	{
+		return;
+	}
+	if(pDSL->m_pLayout->isLayoutFilling())
+	{
+		return;
+	}
+	// Don't do anything while a redrawupdate is happening either...
+	if(pDoc->isRedrawHappenning())
+	{
+		return;
+	}
+	const char * pProps = pDSL->m_sHdrFtrChangeProps.c_str();
+	PT_DocPosition pos = pDoc->getStruxPosition(pDSL->getStruxDocHandle()) +1;
+	const XML_Char * pszAtts[4] = {"props",pProps,NULL,NULL};
+	pDoc->notifyPieceTableChangeStart();
+	FV_View * pView =  pDSL->m_pLayout->getView();
+//	PT_DocPosition insPos = pView->getPoint();
+	pDoc->changeStruxFmt(PTC_AddFmt,pos,pos,pszAtts,NULL,PTX_Section);
+//
+// update the screen
+//
+	pDoc->signalListeners(PD_SIGNAL_UPDATE_LAYOUT);
+	pDoc->notifyPieceTableChangeEnd();
+//	pView->setPoint(insPos);
+	pView->notifyListeners(AV_CHG_MOTION | AV_CHG_HDRFTR );
+//
+// Stop the resizer and delete and clear it's pointer. It's job is done now.
+//
+	pDSL->m_pHdrFtrChangeTimer->stop();
+	DELETEP(pDSL->m_pHdrFtrChangeTimer);
+}
+/*!
+ * Signal a PT change at the next opportunity to change the height of a Hdr
+ * (true) or footer (false)
+ *
+ * newHeight is the value in layout units of the new height of the 
+ * header/footer
+ *
+ * In both caes the header/footers grow "into" the document area.
+ */
+bool fl_DocSectionLayout::setHdrFtrHeightChange(bool bHdrFtr, UT_sint32 newHeight)
+{
+//
+// Look to see if we've already sent a signal and if we have to adjust
+// the height of the HdrFtr
+//
+	if(bHdrFtr)
+	{
+		if(newHeight <= m_iNewHdrHeight)
+		{
+			return false;
+		}
+		if(newHeight <= getDocument()->getNewHdrHeight())
+		{
+			m_iNewHdrHeight = newHeight;
+			return false;
+		}
+		getDocument()->setNewHdrHeight(newHeight);
+		UT_sint32 fullHeight = newHeight + getHeaderMargin();
+		UT_String sHeight = m_pLayout->getGraphics()->invertDimension(DIM_IN, static_cast<double>(fullHeight));
+		UT_String sProp = "page-margin-top";
+		UT_String_setProperty(m_sHdrFtrChangeProps,sProp,sHeight);
+	}
+	else
+	{
+		if(newHeight <= m_iNewFtrHeight)
+		{
+			return false;
+		}
+		if(newHeight <= getDocument()->getNewFtrHeight())
+		{
+			m_iNewFtrHeight = newHeight;
+			return false;
+		}
+		getDocument()->setNewFtrHeight(newHeight);
+		UT_sint32 fullHeight = newHeight + getFooterMargin();
+		UT_String sHeight = m_pLayout->getGraphics()->invertDimension(DIM_IN, static_cast<double>(fullHeight));
+		UT_String sProp = "page-margin-bottom";
+		UT_String_setProperty(m_sHdrFtrChangeProps,sProp,sHeight);
+	}
+//
+// OK the idea is to run the timer in the idle loop until the Piecetable
+// is clear and we're not redrawing
+//
+// This means the resize will happen at the first opportunity after the
+// current edit is finished.
+//
+	if(m_pHdrFtrChangeTimer == NULL)
+	{
+	    int inMode = UT_WorkerFactory::IDLE | UT_WorkerFactory::TIMER;
+	    UT_WorkerFactory::ConstructMode outMode = UT_WorkerFactory::NONE;
+
+	    m_pHdrFtrChangeTimer = UT_WorkerFactory::static_constructor (_HdrFtrChangeCallback, this, inMode, outMode, m_pLayout->getGraphics());
+
+	    UT_ASSERT(m_pHdrFtrChangeTimer);
+	    UT_ASSERT(outMode != UT_WorkerFactory::NONE);
+
+		// If the worker is working on a timer instead of in the idle
+		// time, set the frequency of the checks.
+	    if ( UT_WorkerFactory::TIMER == outMode )
+		{
+			// this is really a timer, so it's safe to static_cast it
+			static_cast<UT_Timer*>(m_pHdrFtrChangeTimer)->set(100);
+		}
+	    m_pHdrFtrChangeTimer->start();
+	}
+	return true;
 }
 
 fl_HdrFtrSectionLayout*   fl_DocSectionLayout::getHeader(void)
@@ -1384,6 +1526,14 @@ void fl_DocSectionLayout::_lookupProperties(void)
 //  Find the folded Level of the strux
 
 	lookupFoldedLevel();
+
+// Now turn off the HdrFtr size change locks.
+
+	m_iNewHdrHeight = 0;
+	m_iNewFtrHeight = 0;
+	getDocument()->setNewHdrHeight(0);
+	getDocument()->setNewFtrHeight(0);
+	m_sHdrFtrChangeProps.clear();
 
 	const PP_AttrProp* pSectionAP = NULL;
 	getAP(pSectionAP);

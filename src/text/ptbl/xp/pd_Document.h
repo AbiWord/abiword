@@ -538,6 +538,17 @@ public:
 
 	virtual void   setAutoRevisioning(bool autorev);
 
+
+	UT_sint32     getNewHdrHeight(void) const
+	{ return m_iNewHdrHeight;}
+	UT_sint32     getNewFtrHeight(void) const
+	{ return m_iNewFtrHeight;}
+
+	void       setNewHdrHeight(UT_sint32 newHeight)
+	{ m_iNewHdrHeight = newHeight;}
+	void       setNewFtrHeight(UT_sint32 newHeight)
+	{ m_iNewFtrHeight = newHeight;}
+
 protected:
 	~PD_Document();
 
@@ -596,6 +607,8 @@ private:
 	fp_Run *                m_pVDRun;
 	PT_DocPosition          m_iVDLastPos;
 	UT_UniqueId             m_UID;
+	UT_sint32               m_iNewHdrHeight;
+	UT_sint32               m_iNewFtrHeight;
 };
 
 #endif /* PD_DOCUMENT_H */
