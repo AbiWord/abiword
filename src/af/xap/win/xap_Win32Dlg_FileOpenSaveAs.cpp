@@ -533,7 +533,10 @@ UINT XAP_Win32Dialog_FileOpenSaveAs::_previewPicture(HWND hDlg)
 	{
 		UT_sint32 layoutWidth;
 		UT_sint32 layoutHeight;
-		UT_SVG_getDimensions(pBB, pGr, iImageWidth, iImageHeight, layoutWidth, layoutHeight);
+		// TODO Fix this
+	//	UT_SVG_getDimensions(pBB, pGr, iImageWidth, iImageHeight, layoutWidth, layoutHeight);
+		iImageWidth = 0;
+		iImageHeight = 0;
 	}
 
 	// Update Height and Width Strings
