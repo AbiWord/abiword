@@ -37,7 +37,7 @@
 
 #include "ap_Dialog_Id.h"
 #include "ap_Dialog_Replace.h"
-#include "ap_Dialog_About.h"
+#include "xap_Dlg_About.h"
 #include "ap_Dialog_Goto.h"
 
 #include "xap_DialogFactory.h"
@@ -1262,8 +1262,7 @@ Defun1(dlgAbout)
 	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
 	UT_ASSERT(pFrame);
 
-	s_doAboutDlg(pFrame, AP_DIALOG_ID_ABOUT);
-//	s_TellNotImplemented(pFrame, "About dialog", __LINE__);
+	s_doAboutDlg(pFrame, XAP_DIALOG_ID_ABOUT);
 	return UT_TRUE;
 }
 

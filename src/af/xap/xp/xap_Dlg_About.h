@@ -17,35 +17,29 @@
  * 02111-1307, USA.
  */
 
-#ifndef AP_DIALOG_ABOUT_H
-#define AP_DIALOG_ABOUT_H
+#ifndef XAP_DIALOG_ABOUT_H
+#define XAP_DIALOG_ABOUT_H
 
 #include "xap_Dialog.h"
 #include "fv_View.h"
 #include "xav_View.h"
 #include "pt_Types.h"
 
-#define ABOUT_COPYRIGHT   "Copyright 1998, 1999 AbiSource, Inc."
-#define ABOUT_GPL         "AbiWord is available for use under the terms\nof the GNU General Public License"
-#define ABOUT_URL         "For source and support: http://www.abisource.com/"
-#define ABOUT_DESCRIPTION "AbiWord is Open Source Software, licensed under the GPL.\nThere are no other licensing retrictions placed upon you\nYou may freely distribute this product."
+#define XAP_ABOUT_COPYRIGHT "Copyright 1998, 1999 AbiSource, Inc."
+#define XAP_ABOUT_DESCRIPTION "%s is an Open Source application licensed under the GPL.\nYou are free to redistribute this product"
+#define XAP_ABOUT_GPL "%s is available for use under the therms\nof the GNU General Public License"
+#define XAP_ABOUT_URL "For source and support: http://www.abisource.com/"
 
-class AP_Dialog_About : public AP_Dialog_AppPersistent
+class AP_Dialog_About : public AP_Dialog_NonPersistent
 {
  public:
 	AP_Dialog_About(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
 	virtual ~AP_Dialog_About(void);
 
-	virtual void				useStart(void);
 	virtual void				runModal(XAP_Frame * pFrame) = 0;
-	virtual void				useEnd(void);
 
  protected:
-	char* strCopyright;
-	char* strGPL;
-	char* strVersion;
-	char* strBuildInfo;
-	char* strURL;
+
 };
 
 #endif // AP_DIALOG_ABOUT_H

@@ -24,7 +24,7 @@
 #include "ut_string.h"
 #include "ut_debugmsg.h"
 
-#include "ap_Dialog_About.h"
+#include "xap_Dlg_About.h"
 
 #include "ap_Dialog_Id.h"
 #include "xap_DialogFactory.h"
@@ -33,7 +33,7 @@
 #include "fv_View.h"
 
 AP_Dialog_About::AP_Dialog_About(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id)
-	: AP_Dialog_AppPersistent(pDlgFactory,id)
+	: AP_Dialog_NonPersistent(pDlgFactory,id)
 {
 
 }
@@ -42,14 +42,3 @@ AP_Dialog_About::~AP_Dialog_About(void)
 {
 
 }
-
-void AP_Dialog_About::useStart(void)
-{
-
-}
-
-void AP_Dialog_About::useEnd(void)
-{
-
-}
-

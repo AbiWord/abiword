@@ -33,6 +33,7 @@ TARGETS=		$(LIBRARY)
 # note: the $(DIST)/bin directory on Windows.
 
 PLATFORM_OBJS=	$(ABI_NATIVE)/$(OBJDIR)/xap_$(ABI_FE)App.$(OBJ_SUFFIX)				\
+		$(ABI_NATIVE)/$(OBJDIR)/xap_$(ABI_FE)Dlg_About.$(OBJ_SUFFIX)		\
 		$(ABI_NATIVE)/$(OBJDIR)/xap_$(ABI_FE)Dlg_FileOpenSaveAs.$(OBJ_SUFFIX)		\
 		$(ABI_NATIVE)/$(OBJDIR)/xap_$(ABI_FE)Dlg_FontChooser.$(OBJ_SUFFIX)		\
 		$(ABI_NATIVE)/$(OBJDIR)/xap_$(ABI_FE)Dlg_MessageBox.$(OBJ_SUFFIX)		\
@@ -45,6 +46,7 @@ PLATFORM_OBJS=	$(ABI_NATIVE)/$(OBJDIR)/xap_$(ABI_FE)App.$(OBJ_SUFFIX)				\
 ifeq ($(ABI_FE), Unix)
 PLATFORM_OBJS += 	$(ABI_NATIVE)/$(OBJDIR)/xap_$(ABI_FE)Font.$(OBJ_SUFFIX)			\
 			$(ABI_NATIVE)/$(OBJDIR)/xap_$(ABI_FE)FontManager.$(OBJ_SUFFIX)		\
+			$(ABI_NATIVE)/$(OBJDIR)/xap_$(ABI_FE)Dlg_About.$(OBJ_SUFFIX)		\
 			$(ABI_NATIVE)/$(OBJDIR)/xap_$(ABI_FE)FontXLFD.$(OBJ_SUFFIX)		\
 			$(ABI_NATIVE)/$(OBJDIR)/xap_$(ABI_FE)PSFont.$(OBJ_SUFFIX)		\
 			$(ABI_NATIVE)/$(OBJDIR)/xap_$(ABI_FE)PSGenerate.$(OBJ_SUFFIX)		\
@@ -64,6 +66,7 @@ OBJS=		$(PLATFORM_OBJS)						\
 		xp/$(OBJDIR)/xap_Clipboard.$(OBJ_SUFFIX)			\
 		xp/$(OBJDIR)/xap_Dialog.$(OBJ_SUFFIX)				\
 		xp/$(OBJDIR)/xap_DialogFactory.$(OBJ_SUFFIX)			\
+		xp/$(OBJDIR)/xap_Dlg_About.$(OBJ_SUFFIX)		\
 		xp/$(OBJDIR)/xap_Dlg_FileOpenSaveAs.$(OBJ_SUFFIX)		\
 		xp/$(OBJDIR)/xap_Dlg_FontChooser.$(OBJ_SUFFIX)			\
 		xp/$(OBJDIR)/xap_Dlg_MessageBox.$(OBJ_SUFFIX)			\

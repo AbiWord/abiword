@@ -28,10 +28,8 @@
 #include "xap_Win32App.h"
 #include "xap_Win32Frame.h"
 
-#include "ap_Dialog_Id.h"
-#include "ap_Dialog_About.h"
-#include "ap_Win32Dialog_All.h"
-#include "ap_Win32Dialog_About.h"
+#include "xap_Dialog_About.h"
+#include "xap_Win32Dialog_About.h"
 
 #define FREEP(p)	do { if (p) free(p); (p)=NULL; } while (0)
 #define DELETEP(p)	do { if (p) delete p; } while (0)

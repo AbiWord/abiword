@@ -30,16 +30,14 @@
 #include "xap_UnixApp.h"
 #include "xap_UnixFrame.h"
 
-#include "ap_Dialog_Id.h"
-#include "ap_Dialog_About.h"
-#include "ap_UnixDialog_All.h"
-#include "ap_UnixDialog_About.h"
-
-#include "abisource.xpm"
+#include "xap_Dialog_Id.h"
+#include "xap_Dlg_About.h"
+#include "xap_UnixDlg_About.h"
 
 #define FREEP(p)	do { if (p) free(p); (p)=NULL; } while (0)
 #define DELETEP(p)	do { if (p) delete p; } while (0)
 
+#define DEFAULT_BUTTON_WIDTH 85
 
 /*****************************************************************/
 AP_Dialog * AP_UnixDialog_About::static_constructor(AP_DialogFactory * pFactory,
@@ -70,9 +68,6 @@ void AP_UnixDialog_About::runModal(XAP_Frame * pFrame)
 	GtkWidget* dialog;
 	GtkWidget* dialog_vbox1;
 	GtkWidget* dialog_action_area1;
-	GtkWidget* Image;
-	GdkPixmap* pixmap;
-	GdkBitmap* mask;
 	GtkWidget* vbox1;
 	GtkWidget* hbox1;
 	GtkWidget* label1;
@@ -84,6 +79,8 @@ void AP_UnixDialog_About::runModal(XAP_Frame * pFrame)
 	GtkWidget* okButton;
 	GtkWidget* frame;
 	
+	XAP_App* pApp = pFrame->getApp();
+	
 	dialog = gtk_dialog_new ();
 	gtk_object_set_data (GTK_OBJECT (dialog), "About AbiWord", dialog);
 	gtk_window_set_title (GTK_WINDOW (dialog), "dialog");
@@ -92,14 +89,6 @@ void AP_UnixDialog_About::runModal(XAP_Frame * pFrame)
     gtk_window_set_policy(GTK_WINDOW(dialog), FALSE, FALSE, TRUE);
 
 	gtk_widget_realize(dialog);
-	
-	pixmap = gdk_pixmap_create_from_xpm_d(dialog->window, &mask,
-										  &dialog->style->bg[GTK_STATE_NORMAL],
-										  abisourceXPM);
-
-	Image = gtk_pixmap_new(pixmap, mask);
-
-	gtk_widget_show(Image);
 	
 	gtk_signal_connect_after(GTK_OBJECT(dialog),
 							 "destroy",
@@ -123,27 +112,25 @@ void AP_UnixDialog_About::runModal(XAP_Frame * pFrame)
 	gtk_widget_show(frame);
 	gtk_box_pack_start(GTK_BOX(vbox1), frame, TRUE, TRUE, 0);
 	
-	hbox1 = gtk_hbox_new(FALSE, 0);
-	gtk_widget_show(hbox1);
-	gtk_container_add(GTK_CONTAINER(frame), hbox1);
-	
-	gtk_box_pack_start(GTK_BOX(hbox1), Image, TRUE, TRUE, 5);
-
-	label5 = gtk_label_new (ABOUT_DESCRIPTION);
+	char buf[2048];
+	sprintf(buf, XAP_ABOUT_DESCRIPTION, pApp->getApplicationName());
+			
+	label5 = gtk_label_new (buf);
 	gtk_widget_show (label5);
-	gtk_box_pack_start (GTK_BOX (hbox1), label5, TRUE, TRUE, 5);
+	gtk_container_add(GTK_CONTAINER(frame), label5);
 	
-	label1 = gtk_label_new (ABOUT_COPYRIGHT);
+	label1 = gtk_label_new (XAP_ABOUT_COPYRIGHT);
 	gtk_object_set_data (GTK_OBJECT (dialog), "label1", label1);
 	gtk_widget_show (label1);
 	gtk_box_pack_start (GTK_BOX (vbox1), label1, TRUE, TRUE, 5);
 	
-	label2 = gtk_label_new (ABOUT_GPL);
+	sprintf(buf, XAP_ABOUT_GPL, pApp->getApplicationName());
+	
+	label2 = gtk_label_new (buf);
 	gtk_object_set_data (GTK_OBJECT (dialog), "label2", label2);
 	gtk_widget_show (label2);
 	gtk_box_pack_start (GTK_BOX (vbox1), label2, TRUE, TRUE, 5);
 	
-	char buf[2048];
 	sprintf(buf, "Version: %s", XAP_App::s_szBuild_Version); 
 
 	label3 = gtk_label_new (buf);
@@ -151,7 +138,7 @@ void AP_UnixDialog_About::runModal(XAP_Frame * pFrame)
 	gtk_widget_show (label3);
 	gtk_box_pack_start (GTK_BOX (vbox1), label3, TRUE, TRUE, 5);
 	
-	label4 = gtk_label_new (ABOUT_URL);
+	label4 = gtk_label_new (XAP_ABOUT_URL);
 	gtk_object_set_data (GTK_OBJECT (dialog), "label4", label4);
 	gtk_widget_show (label4);
 	gtk_box_pack_start (GTK_BOX (vbox1), label4, TRUE, TRUE, 5);
@@ -170,6 +157,8 @@ void AP_UnixDialog_About::runModal(XAP_Frame * pFrame)
 	okButton = gtk_button_new_with_label ("OK");
 	gtk_object_set_data (GTK_OBJECT (dialog), "okButton", okButton);
 	gtk_widget_show (okButton);
+	gtk_widget_set_usize(okButton, DEFAULT_BUTTON_WIDTH, 0);
+	
 	gtk_box_pack_start (GTK_BOX (dialog_action_area1), okButton, FALSE, FALSE, 0);
 
 	gtk_signal_connect(GTK_OBJECT(okButton), "clicked", GTK_SIGNAL_FUNC(s_okClicked), NULL);
