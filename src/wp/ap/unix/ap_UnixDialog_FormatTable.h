@@ -40,6 +40,7 @@ public:
 	// callbacks can fire these events
 	virtual void			event_Close(void);
 	void					event_previewExposed(void);
+	void					event_ApplyToChanged(void);
 	virtual void            setSensitivity(bool bsens);
 	virtual void            destroy(void);
 	virtual void            activate(void);
@@ -71,6 +72,7 @@ protected:
 	GtkWidget * m_wLineBottom;
 	
 	GtkWidget * m_wPreviewArea;
+	GtkWidget * m_wApplyToMenu;
 };
 
 #endif /* AP_UNIXDIALOG_FORMATTABLE_H */

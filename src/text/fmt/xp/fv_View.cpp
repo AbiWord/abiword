@@ -5678,29 +5678,29 @@ bool FV_View::getCellLineStyle(PT_DocPosition posCell, UT_sint32 * pLeft, UT_sin
 }
 
 /*!
- Set the selected cells to a given format
- \param pFind String to find
+ Set cells in a table to a given format. The formatting of the current selection, row, 
+ column or the whole table can be changed.
+ \param properties the new cell format
+ \param applyTo the range to apply the changes to
  \return True if the operation was succesful, false otherwise
  */
-bool FV_View::setCellFormat(const XML_Char * properties[])
+bool FV_View::setCellFormat(const XML_Char * properties[], FormatTable applyTo)
 {
 	bool bRet;
 	setCursorWait();
-	//
+
 	// Signal PieceTable Change
 	_saveAndNotifyPieceTableChange();
 
 	// Turn off list updates
-
 	m_pDoc->disableListUpdates();
 
-// turn off immediate layout of table. uwog this stops the formatter from prematurely building the table.
-
+	// turn off immediate layout of table. uwog this stops the formatter from prematurely building the table.
 	m_pDoc->setDontImmediatelyLayout(true);
 
+	PT_DocPosition posTable = 0;
 	PT_DocPosition posStart = getPoint();
 	PT_DocPosition posEnd = posStart;
-	PT_DocPosition posTable = 0;
 	if (!isSelectionEmpty())
 	{
 		if (m_iSelectionAnchor < posStart)
@@ -5712,10 +5712,9 @@ bool FV_View::setCellFormat(const XML_Char * properties[])
 			posStart = 2;
 		}
 	}
-//
-// Have to find the enclosing table and cell. If just look for the first one we can get fooled by nested tables.
-//
-	PL_StruxDocHandle tableSDH,cellSDH;
+	
+	// Find the enclosing table. If just look for the first one we can get fooled by nested tables.
+	PL_StruxDocHandle tableSDH;
 	bRet = m_pDoc->getStruxOfTypeFromPosition(posStart,PTX_SectionTable,&tableSDH);
 	if(!bRet)
 	{
@@ -5726,38 +5725,116 @@ bool FV_View::setCellFormat(const XML_Char * properties[])
 		_restorePieceTableState();
 		return false;
 	}
-	
 	posTable = m_pDoc->getStruxPosition(tableSDH)+1;
-	bRet = m_pDoc->getStruxOfTypeFromPosition(posStart,PTX_SectionCell,&cellSDH);
-	if(!bRet)
-	{
-		// Allow table updates
-		m_pDoc->setDontImmediatelyLayout(false);
 
-		// Signal PieceTable Changes have finished
-		_restorePieceTableState();
-		return false;
-	}
-	posStart = m_pDoc->getStruxPosition(cellSDH)+1;
-//
-// Need this to trigger a table update!
-//
+	// Need this to trigger a table update!
 	UT_sint32 iLineType = _changeCellParams(posTable, tableSDH);
-//
-// Do the change
-//
-	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,NULL,properties,PTX_SectionCell);
-//
-// restore the line
-//
-// Now trigger a rebuild of the whole table by sending a changeStrux to the table strux
-// with the restored line-type property it has before.
-//
+	
+	// The Format Selection case needs some special attention
+	if (applyTo == FORMAT_TABLE_SELECTION)
+	{
+		PL_StruxDocHandle cellSDH;
+        bRet = m_pDoc->getStruxOfTypeFromPosition(posStart,PTX_SectionCell,&cellSDH);
+        if(!bRet)
+        {
+                // Allow table updates
+                m_pDoc->setDontImmediatelyLayout(false);
+                                                                                                                                                                                                         
+                // Signal PieceTable Changes have finished
+                _restorePieceTableState();
+                return false;
+        }
+        posStart = m_pDoc->getStruxPosition(cellSDH)+1;
+		
+		// Do the actual change
+		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,NULL,properties,PTX_SectionCell);	
+	}
+	else
+	{
+		fp_CellContainer * cell = getCellAtPos(posStart);
+		if (!cell)
+		{
+			// Allow table updates
+			m_pDoc->setDontImmediatelyLayout(false);
+	
+			// Signal PieceTable Changes have finished
+			_restorePieceTableState();
+			return false;		
+		}
+		UT_DEBUGMSG(("MARCM: Current cell is at (%d,%d)\n", cell->getTopAttach(), cell->getLeftAttach());
+		
+		// get the number of rows and columns in the current table
+		UT_sint32 numRows;
+		UT_sint32 numCols;
+		bRet = m_pDoc->getRowsColsFromTableSDH(tableSDH, &numRows, &numCols));
+		if(!bRet)
+		{
+			// Allow table updates
+			m_pDoc->setDontImmediatelyLayout(false);
+	
+			// Signal PieceTable Changes have finished
+			_restorePieceTableState();
+			return false;
+		}	
+		UT_DEBUGMSG(("MARCM: Current table size is (%dx%d)\n", numRows, numCols));		
+		
+		// determine the range of the cells that should be adjusted
+		UT_sint32 rowStart;
+		UT_sint32 rowEnd;
+		UT_sint32 colStart;
+		UT_sint32 colEnd;
+		
+		switch (applyTo)
+		{
+	
+			// row
+			case FORMAT_TABLE_ROW:
+				rowStart = cell->getTopAttach();
+				rowEnd = cell->getTopAttach();
+				colStart = 0;
+				colEnd = numCols-1;
+				break;
+			// column
+			case FORMAT_TABLE_COLUMN:
+				rowStart = 0;
+				rowEnd = numRows-1;
+				colStart = cell->getLeftAttach();
+				colEnd = cell->getLeftAttach();
+				break;
+			// table
+			case FORMAT_TABLE_TABLE:
+				rowStart = 0;
+				rowEnd = numRows-1;
+				colStart = 0;
+				colEnd = numCols-1;
+				break;
+		}		
+		
+		// Loop through the table cells to adjust their formatting		
+		UT_sint32 i;
+		UT_sint32 j;
+		for (j = rowStart; j <= rowEnd; j++)
+		{
+			for (i = colStart; i <= colEnd; i++)
+			{
+				PL_StruxDocHandle cellSDH = m_pDoc->getCellSDHFromRowCol(tableSDH, j, i);
+				if(cellSDH)
+				{
+					// Do the actual change
+					posStart = m_pDoc->getStruxPosition(cellSDH)+1;
+					bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posStart,NULL,properties,PTX_SectionCell);
+				}
+				else
+					UT_DEBUGMSG(("MARCM: Yikes! There is no cell at position (%dx%d)!\n", j, i));
+			}
+		}
+	}
+	// Now trigger a rebuild of the whole table by sending a changeStrux to the table strux
+	// with the restored line-type property it has before.
 	iLineType += 1;
 	_restoreCellParams(posTable,iLineType);
 
-// Allow table updates
-
+	// Allow table updates
 	m_pDoc->setDontImmediatelyLayout(false);
 
 	_generalUpdate();

@@ -50,6 +50,7 @@ AP_Dialog_FormatTable::AP_Dialog_FormatTable(XAP_DialogFactory * pDlgFactory, XA
 	  m_answer(a_OK),
 	  m_pFormatTablePreview(NULL),
 	  m_bSettingsChanged(false),
+	  m_ApplyTo(FORMAT_TABLE_SELECTION),
 
 	  m_pAutoUpdaterMC(NULL),
 	  m_borderToggled(false),
@@ -275,6 +276,11 @@ void AP_Dialog_FormatTable::setCurCellProps(void)
 		m_pFormatTablePreview->draw();
 }
 
+void AP_Dialog_FormatTable::setApplyFormatTo(FormatTable applyTo)
+{
+	m_ApplyTo = applyTo;
+}
+
 void AP_Dialog_FormatTable::applyChanges()
 {
 	UT_DEBUGMSG(("Doing apply changes number props %d \n",m_vecProps.getItemCount()));
@@ -293,7 +299,7 @@ void AP_Dialog_FormatTable::applyChanges()
 		propsArray[j+1] = static_cast<XML_Char *>(m_vecProps.getNthItem(j+1));
 	}
 
-	pView->setCellFormat(propsArray);
+	pView->setCellFormat(propsArray, m_ApplyTo);
 	delete [] propsArray;
 	
 	m_bSettingsChanged = false;

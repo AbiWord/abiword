@@ -97,7 +97,7 @@ static void s_border_color(GtkWidget *widget, gpointer data )
 	dlg->event_previewExposed();
 }
 
-static void s_background_color(GtkWidget *widget, gpointer data )
+static void s_background_color(GtkWidget *widget, gpointer data)
 {
 	AP_UnixDialog_FormatTable * dlg = static_cast<AP_UnixDialog_FormatTable *>(data);
 	UT_return_if_fail(widget && dlg);
@@ -112,6 +112,14 @@ static gboolean s_preview_exposed(GtkWidget * widget, gpointer /* data */, AP_Un
 {
 	UT_return_val_if_fail(widget && dlg, FALSE);
 	dlg->event_previewExposed();
+	return FALSE;
+}
+
+static gboolean s_apply_to_changed(GtkWidget *widget, gpointer data)
+{
+	AP_UnixDialog_FormatTable * dlg = reinterpret_cast<AP_UnixDialog_FormatTable *>(data);
+	UT_return_if_fail(widget && dlg);
+	dlg->event_ApplyToChanged();
 	return FALSE;
 }
 
@@ -140,7 +148,8 @@ AP_UnixDialog_FormatTable::AP_UnixDialog_FormatTable(XAP_DialogFactory * pDlgFac
 	m_wLineLeft = NULL;
 	m_wLineRight = NULL;
 	m_wLineTop = NULL;
-	m_wLineBottom = NULL;	
+	m_wLineBottom = NULL;
+	m_wApplyToMenu = NULL;	
 }
 
 AP_UnixDialog_FormatTable::~AP_UnixDialog_FormatTable(void)
@@ -205,6 +214,32 @@ void AP_UnixDialog_FormatTable::event_previewExposed(void)
 {
 	if(m_pFormatTablePreview)
 		m_pFormatTablePreview->draw();
+}
+
+void AP_UnixDialog_FormatTable::event_ApplyToChanged(void)
+{
+	if (m_wApplyToMenu)
+	{
+		gint history = gtk_option_menu_get_history(GTK_OPTION_MENU(m_wApplyToMenu));
+		switch (history)
+		{
+			case 0:
+				setApplyFormatTo(FORMAT_TABLE_SELECTION);
+				break;
+			case 1:
+				setApplyFormatTo(FORMAT_TABLE_ROW);
+				break;
+			case 2:
+				setApplyFormatTo(FORMAT_TABLE_COLUMN);
+				break;
+			case 3:
+				setApplyFormatTo(FORMAT_TABLE_TABLE);
+				break;
+			default:
+				// should not happen
+				break;
+		}
+	}
 }
 
 void AP_UnixDialog_FormatTable::destroy(void)
@@ -287,6 +322,8 @@ GtkWidget * AP_UnixDialog_FormatTable::_constructWindow(void)
 	localizeLabel(glade_xml_get_widget(xml, "lbBackgroundColor"), pSS, AP_STRING_ID_DLG_FormatTable_Color);
 	
 	localizeLabelMarkup(glade_xml_get_widget(xml, "lbPreview"), pSS, AP_STRING_ID_DLG_FormatTable_Preview);
+
+	localizeLabel(glade_xml_get_widget(xml, "lbApplyTo"), pSS, AP_STRING_ID_DLG_FormatTable_Apply_To);
 	
 	// add the custom color picker buttons to the dialog
 	m_wBorderColorButton = gtk_color_picker_new();
@@ -299,6 +336,34 @@ GtkWidget * AP_UnixDialog_FormatTable::_constructWindow(void)
 	m_wBackgroundColorButton = gtk_color_picker_new();
 	gtk_widget_show(m_wBackgroundColorButton);
 	gtk_box_pack_start(GTK_BOX (glade_xml_get_widget(xml, "hbBackgroundColor")), m_wBackgroundColorButton, FALSE, TRUE, 0);
+	
+	// add the options to the "Apply to" menu
+	// NOTE: if you change this order, make sure to adjust event_ApplyToChanged as well!
+	// FIXME: PLEASE ADD A "localizeMenuItem" HELPER FUNCTION OR SOMETHING LIKE THAT
+	m_wApplyToMenu = glade_xml_get_widget(xml, "omApplyTo");
+	GtkWidget * menu = gtk_menu_new();
+	
+	XML_Char * unixstr = NULL;	// used for conversions
+	
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTable_Apply_To_Selection).c_str());
+	gtk_menu_shell_append(GTK_MENU_SHELL(menu), gtk_menu_item_new_with_label(unixstr));
+	FREEP(unixstr);	
+
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTable_Apply_To_Row).c_str());
+	gtk_menu_shell_append(GTK_MENU_SHELL(menu), gtk_menu_item_new_with_label(unixstr));
+	FREEP(unixstr);	
+
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTable_Apply_To_Column).c_str());
+	gtk_menu_shell_append(GTK_MENU_SHELL(menu), gtk_menu_item_new_with_label(unixstr));
+	FREEP(unixstr);	
+
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTable_Apply_To_Table).c_str());
+	gtk_menu_shell_append(GTK_MENU_SHELL(menu), gtk_menu_item_new_with_label(unixstr));
+	FREEP(unixstr);	
+
+	gtk_option_menu_set_menu(GTK_OPTION_MENU(m_wApplyToMenu), menu);
+	gtk_option_menu_set_history(GTK_OPTION_MENU(m_wApplyToMenu), 0);
+	gtk_widget_show_all(menu);
 	
 	// add the apply and ok buttons to the dialog
 	m_wCloseButton = glade_xml_get_widget(xml, "btClose");
@@ -375,7 +440,12 @@ void AP_UnixDialog_FormatTable::_connectSignals(void)
 	g_signal_connect(G_OBJECT(m_wPreviewArea),
 							"expose_event",
 							G_CALLBACK(s_preview_exposed),
-							reinterpret_cast<gpointer>(this));						   
+							reinterpret_cast<gpointer>(this));
+
+	g_signal_connect(G_OBJECT(m_wApplyToMenu),
+							"changed",
+							G_CALLBACK(s_apply_to_changed),
+							reinterpret_cast<gpointer>(this));
 }
 
 void AP_UnixDialog_FormatTable::_populateWindowData(void)

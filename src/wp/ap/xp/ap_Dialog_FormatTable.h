@@ -27,6 +27,7 @@
 #include "xav_View.h"
 #include "pt_Types.h"
 #include "xap_Preview.h"
+#include "fv_View.h"
 
 class UT_Timer;
 class XAP_Frame;
@@ -96,6 +97,7 @@ public:
 	
 	void                                setAllSensitivities(void);
 	void 								setCurCellProps(void);	
+	void								setApplyFormatTo(FormatTable applyTo);
 	void								applyChanges(void);
 	void                                toggleLineType(toggle_button btn, bool enabled);
 	void								setBorderColor(UT_RGBColor clr);
@@ -134,6 +136,8 @@ private:
 	
 	bool								m_borderToggled;
 	
+	FormatTable							m_ApplyTo;
+
 	// Handshake variables
 	bool m_bDestroy_says_stopupdating;
 	bool m_bAutoUpdate_happening_now;

@@ -83,6 +83,14 @@ typedef enum _ToggleCase
   CASE_ROTATE
 } ToggleCase;
 
+typedef enum _FormatTable
+{
+	FORMAT_TABLE_SELECTION,
+	FORMAT_TABLE_ROW,
+	FORMAT_TABLE_COLUMN,
+	FORMAT_TABLE_TABLE
+} FormatTable;
+
 typedef enum
 {
 	BreakSectionContinuous,
@@ -518,7 +526,7 @@ public:
 									  UT_sint32 *iRight,UT_sint32 *iTop, UT_sint32 *iBot);
 	bool				getCellLineStyle(PT_DocPosition posCell, UT_sint32 * pLeft, UT_sint32 * pRight,
 										 UT_sint32 * pTop, UT_sint32 * pBot);
-	bool				setCellFormat(const XML_Char * properties[]);
+	bool				setCellFormat(const XML_Char * properties[], FormatTable applyTo);
 	bool				getCellBGColor(XML_Char * &color);
 	bool	            setTableFormat(const XML_Char * properties[]);
 	bool	            setTableFormat(PT_DocPosition pos,const XML_Char * properties[]);
@@ -802,4 +810,3 @@ private:
 };
 
 #endif /* FV_VIEW_H */
-
