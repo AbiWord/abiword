@@ -134,6 +134,11 @@ fl_SectionLayout * fl_BlockLayout::getSectionLayout()
 
 void fl_BlockLayout::_fixColumns(void)
 {
+	if (!m_pFirstLine)
+	{
+		return;
+	}
+	
 	fp_Column* pCol = NULL;
 	fp_Line* pLine = m_pFirstLine;
 	while (pLine)
@@ -421,6 +426,15 @@ fp_Run* fl_BlockLayout::getFirstRun()
 fp_Line* fl_BlockLayout::getNewLine(UT_sint32 iHeight)
 {
 	UT_ASSERT(iHeight > 0);
+
+	/*
+	  Calling fixColumns every time we need to create a new line
+	  is a bit heavy, but it seems to be necessary.  Specifically,
+	  there are cases where we are inserting a new line into a column
+	  which is not updated, and the resulting calculations become
+	  very wrong.
+	*/
+	_fixColumns();
 	
 	fp_Line* pLine = new fp_Line();
 	UT_ASSERT(pLine);
