@@ -75,7 +75,7 @@ private:
 	char * loadLocalDictionary ( const char *szHash );
 	char * loadDictionaryForLanguage ( const char * szLang );
 
-	/*this is used for converting form unsigned short to UCS-2*/
+	/*this is used for converting form unsigned short to UCS-4*/
 
 	int deftflag;              /* NZ for TeX mode by default */
 	int prefstringchar;        /* Preferred string character type */

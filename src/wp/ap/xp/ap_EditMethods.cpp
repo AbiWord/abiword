@@ -283,6 +283,7 @@ public:
 	static EV_EditMethod_Fn fileInsertGraphic;
 	static EV_EditMethod_Fn insertClipart;
 	static EV_EditMethod_Fn fileSaveAsWeb;
+  static EV_EditMethod_Fn fileSaveTemplate;
 	static EV_EditMethod_Fn filePreviewWeb;
 	static EV_EditMethod_Fn openTemplate;
 
@@ -698,6 +699,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(fileSaveAs),			0,	""),
 	EV_EditMethod(NF(fileSaveAsWeb),				0, ""),
 	EV_EditMethod(NF(fileSaveImage),		0,	""),
+	EV_EditMethod(NF(fileSaveTemplate), 0, ""),
 	EV_EditMethod(NF(find), 				0,	""),
 	EV_EditMethod(NF(findAgain),			0,	""),
 	EV_EditMethod(NF(fontFamily),			_D_,	""),
@@ -2109,6 +2111,40 @@ Defun1(fileSaveAs)
 {
 	CHECK_FRAME;
 	return s_actuallySaveAs(pAV_View, true);
+}
+
+Defun1(fileSaveTemplate)
+{
+  CHECK_FRAME;
+
+  XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
+  UT_ASSERT(pFrame);
+  
+  IEFileType ieft = IE_Exp::fileTypeForSuffix ( ".awt" ) ;
+  char * pNewFile = NULL;
+  XAP_Dialog_Id id = XAP_DIALOG_ID_FILE_SAVEAS;
+  
+  UT_String suggestedName (XAP_App::getApp()->getUserPrivateDirectory());
+  suggestedName += "/templates" ;
+  
+  bool bOK = s_AskForPathname(pFrame,true, id, suggestedName.c_str(),&pNewFile,&ieft);
+  
+  if (!bOK || !pNewFile)
+    return false;
+  
+  UT_DEBUGMSG(("fileSaveTemplate: saving as [%s]\n",pNewFile));
+  
+  UT_Error errSaved;
+  errSaved = pAV_View->cmdSaveAs(pNewFile, (int) ieft, false);
+  if (errSaved)
+    {
+      // throw up a dialog
+      s_TellSaveFailed(pFrame, pNewFile, errSaved);
+      free(pNewFile);
+      return false;
+    }
+  
+  return bOK;
 }
 
 Defun1(fileSaveAsWeb)

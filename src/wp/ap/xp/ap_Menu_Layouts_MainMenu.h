@@ -32,6 +32,7 @@ BeginLayout(Main,0)
 		MenuItem(AP_MENU_ID_FILE_OPEN)
 		MenuItem(AP_MENU_ID_FILE_SAVE)
 		MenuItem(AP_MENU_ID_FILE_SAVEAS)
+     MenuItem(AP_MENU_ID_FILE_SAVE_TEMPLATE)
      Separator()
 	    MenuItem(AP_MENU_ID_FILE_IMPORT)
 	    MenuItem(AP_MENU_ID_FILE_EXPORT)
@@ -184,10 +185,7 @@ BeginLayout(Main,0)
                 MenuItem(AP_MENU_ID_INSERT_FILE)
 		MenuItem(AP_MENU_ID_INSERT_BOOKMARK)
 		MenuItem(AP_MENU_ID_INSERT_HYPERLINK)
-#ifdef DEBUG
-        // QUACK Un-DEBUG here to activate endnotes
 		MenuItem(AP_MENU_ID_INSERT_ENDNOTE)
-#endif
 
 #ifdef HAVE_GNOME
                 // only enabled for GNOME builds in the 0.9.x releases

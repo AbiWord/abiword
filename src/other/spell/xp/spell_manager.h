@@ -59,8 +59,7 @@ private:
 
 class SpellManager
 {
-public:
-	
+public:	
 	static SpellManager & instance (void);
 	
 	virtual ~SpellManager ();
@@ -75,7 +74,6 @@ private:
 	SpellManager ( const SpellManager & other ) ;
 	SpellManager & operator= ( const SpellManager & other ) ;
 
-private:
 	UT_StringPtrMap m_map;
 	UT_String m_missingHashs;
 	SpellChecker *  m_lastDict;

@@ -73,6 +73,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_FILE_SAVE,		0,0,0,	"fileSave",			ap_GetState_Changes,					NULL);
 	_s(AP_MENU_ID_FILE_SAVEAS,		0,1,0,	"fileSaveAs",		NULL,					NULL);
 	_s(AP_MENU_ID_FILE_SAVEIMAGE,		0,1,0,	"fileSaveImage",		NULL,					NULL);
+	_s(AP_MENU_ID_FILE_SAVE_TEMPLATE, 0,1,0, "fileSaveTemplate", NULL, NULL);
 	_s(AP_MENU_ID_FILE_IMPORT, 0,1,0, "fileImport", NULL, NULL);
 	_s(AP_MENU_ID_FILE_EXPORT, 0,1,0, "fileExport", NULL, NULL);
 	_s(AP_MENU_ID_FILE_PROPERTIES, 0,1,0, "dlgMetaData", NULL, NULL);
@@ -145,10 +146,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_INSERT_FIELD,		0,1,0,	"insField",			NULL,					NULL);
 	_s(AP_MENU_ID_INSERT_FILE, 0,1,0, "insFile", NULL, NULL);
 	_s(AP_MENU_ID_INSERT_SYMBOL,	0,1,0,	"insSymbol",		NULL,					NULL);
-#ifdef DEBUG
-	// QUACK Un-DEBUG here to activate endnotes!
 	_s(AP_MENU_ID_INSERT_ENDNOTE,	0,0,0,	"insEndnote",		NULL,					NULL);
-#endif
 #ifdef HAVE_GNOME
 	_s(AP_MENU_ID_INSERT_PICTURE,   1,0,0,  NULL, NULL, NULL);
 #else
