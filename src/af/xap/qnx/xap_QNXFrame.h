@@ -64,7 +64,7 @@ public:
 	virtual bool				openURL(const char * szURL);
 	virtual bool				updateTitle(void);
 	virtual UT_sint32			setInputMode(const char * szName);
-	virtual void                            nullUpdate () const {}
+	virtual void                            nullUpdate () const;
 	virtual void                setCursor(GR_Graphics::Cursor c);
 
 	PtWidget_t *				getTopLevelWindow(void) const;	//Get the Window widget

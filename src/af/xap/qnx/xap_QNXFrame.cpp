@@ -58,7 +58,8 @@ int XAP_QNXFrame::_fe::focus_in_event(PtWidget_t *w, void *data, PtCallbackInfo_
 																		 : AV_FOCUS_NEARBY);
 	*/
 	//I don't understand the AV_FOCUS_HERE vs NEARBY
-	pFrame->getCurrentView()->focusChange(AV_FOCUS_HERE/*AV_FOCUS_NEARBY*/);
+        if (pFrame->getCurrentView())
+            pFrame->getCurrentView()->focusChange(AV_FOCUS_HERE/*AV_FOCUS_NEARBY*/);
 	return Pt_CONTINUE;
 }
 
@@ -410,6 +411,30 @@ GR_Graphics * XAP_QNXFrame::getGraphics() {
 XAP_DialogFactory * XAP_QNXFrame::getDialogFactory(void)
 {
 	return &m_dialogFactory;
+}
+
+void XAP_QNXFrame::nullUpdate() const
+{
+        #define EVENT_SIZE sizeof(PhEvent_t) + 1000
+   
+	UT_uint32 i =0;
+	PhEvent_t *event = (PhEvent_t*)malloc(EVENT_SIZE);
+        if (!event) return;
+
+	while(i < 5)
+	{
+		switch(PhEventPeek(event, EVENT_SIZE))
+		{
+		case Ph_EVENT_MSG:
+			PtEventHandler( event );
+			break;
+		case -1:
+			perror( "PhEventPeek failed" );
+			break;
+		}
+		i++;
+	}
+        free(event);
 }
 
 /*

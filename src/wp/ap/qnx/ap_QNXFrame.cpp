@@ -96,6 +96,7 @@ UT_Error AP_QNXFrame::_showDocument(UT_uint32 iZoom)
 	AV_ListenerId lidScrollbarViewListener;
 	UT_uint32 nrToolbars;
 	UT_uint32 point = 0;
+	UT_uint32 k = 0;
 
 	pG = new GR_QNXGraphics(m_wTopLevelWindow, m_dArea, getApp());
 	ENSUREP(pG);
@@ -141,7 +142,7 @@ UT_Error AP_QNXFrame::_showDocument(UT_uint32 iZoom)
 	// TODO and its very confusing.
 	pScrollObj = new AV_ScrollObj(this,_scrollFuncX,_scrollFuncY);
 	ENSUREP(pScrollObj);
-	pViewListener = new ap_ViewListener(this);
+	pViewListener = new ap_QNXViewListener(this);
 	ENSUREP(pViewListener);
 	pScrollbarViewListener = new ap_Scrollbar_ViewListener(this,pView);
 	ENSUREP(pScrollbarViewListener);
@@ -154,7 +155,6 @@ UT_Error AP_QNXFrame::_showDocument(UT_uint32 iZoom)
 		goto Cleanup;
 
 	nrToolbars = m_vecToolbarLayoutNames.getItemCount();
-	UT_uint32 k;
 	for (k=0; k < nrToolbars; k++)
 	{
 		// TODO Toolbars are a frame-level item, but a view-listener is
@@ -196,6 +196,7 @@ UT_Error AP_QNXFrame::_showDocument(UT_uint32 iZoom)
 	m_lid = lid;
 	REPLACEP(m_pScrollbarViewListener,pScrollbarViewListener);
 	m_lidScrollbarViewListener = lidScrollbarViewListener;
+
 	m_pView->addScrollListener(m_pScrollObj);
 
 	// Associate the new view with the existing TopRuler, LeftRuler.
@@ -208,12 +209,19 @@ UT_Error AP_QNXFrame::_showDocument(UT_uint32 iZoom)
 		  if ( ((AP_FrameData*)m_pData)->m_bShowRuler )
 	  before showing the rulers.
 	*/
-	((AP_FrameData*)m_pData)->m_pTopRuler->setView(pView, iZoom);
-	((AP_FrameData*)m_pData)->m_pLeftRuler->setView(pView, iZoom);
-	((AP_FrameData*)m_pData)->m_pStatusBar->setView(pView);
+	if ( ((AP_FrameData*)m_pData)->m_bShowRuler )
+	{
+	  if ( ((AP_FrameData*)m_pData)->m_pTopRuler )
+	    ((AP_FrameData*)m_pData)->m_pTopRuler->setView(pView, iZoom);
+	  if ( ((AP_FrameData*)m_pData)->m_pLeftRuler )
+		((AP_FrameData*)m_pData)->m_pLeftRuler->setView(pView, iZoom);
+	}
+
+	if ( ((AP_FrameData*)m_pData)->m_pStatusBar )
+	  ((AP_FrameData*)m_pData)->m_pStatusBar->setView(pView);
+    ((FV_View *) m_pView)->setShowPara(((AP_FrameData*)m_pData)->m_bShowPara);
 
 	pView->setInsertMode(((AP_FrameData*)m_pData)->m_bInsertMode);
-    ((FV_View *) m_pView)->setShowPara(((AP_FrameData*)m_pData)->m_bShowPara);
 	
 	unsigned short w, h;
 	UT_QNXGetWidgetArea(m_dArea, NULL, NULL, &w, &h);
@@ -224,28 +232,26 @@ UT_Error AP_QNXFrame::_showDocument(UT_uint32 iZoom)
 	setYScrollRange();
 	updateTitle();
 
-	PtContainerGiveFocus(m_dArea, NULL);
-
-#if 1
-	/*
-	  UPDATE:  this code is back, but I'm leaving these comments as
-	  an audit trail.  See bug 99.  This only happens when loading
-	  a document into an empty window -- the case where a frame gets
-	  reused.  TODO consider putting an expose into ap_EditMethods.cpp
-	  instead of a draw() here.
-	*/
-	
-	/*
-	  I've removed this once again.  (Eric)  I replaced it with a call
-	  to draw() which is now in the configure event handler in the GTK
-	  section of the code.  See me if this causes problems.
-	*/
 	pDocLayout->fillLayouts();
-	if (point != 0) {
-		((FV_View *) m_pView)->moveInsPtTo(point);
+	if (m_pView != NULL)
+	{
+		// we cannot just set the insertion position to that of the previous
+		// view, since the new document could be shorter or completely
+		// different from the previous one (see bug 2615)
+		// Instead we have to test that the original position is within
+		// the editable bounds, and if not, we will set the point
+		// to the end of the document (i.e., if reloading an earlier
+		// version of the same document we try to get the point as near
+		// the users editing position as possible
+		point = ((FV_View *) m_pView)->getPoint();
+		PT_DocPosition posEOD;
+		static_cast<FV_View *>(pView)->getEditableBounds(true, posEOD, false);
+		if(point > posEOD)
+			point = posEOD;
 	}
+	if (point != 0)
+		((FV_View *) m_pView)->moveInsPtTo(point);
 	m_pView->draw();
-#endif	
 
 	/*TF DIFF: QNX code to control the ruler looks like:
 	  if ( ((AP_FrameData*)m_pData)->m_bShowRuler  ) {
@@ -264,6 +270,8 @@ UT_Error AP_QNXFrame::_showDocument(UT_uint32 iZoom)
 	if(PtWidgetIsRealized(m_wStatusBar) != 0) {
 		((AP_FrameData*)m_pData)->m_pStatusBar->draw();
 	}
+
+	PtContainerGiveFocus(m_dArea, NULL);
 
 	return UT_OK;
 
