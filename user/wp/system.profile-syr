@@ -15,4 +15,6 @@
 <SystemDefaults
     DocumentLocale="syr"
     DefaultDirectionRtl="1"
+    RulerUnits="cm"
+    DefaultPageSize="A4"
 />
