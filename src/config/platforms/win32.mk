@@ -30,7 +30,9 @@
 ## compiler/loader options are used.  It will probably also be used
 ## in constructing the name object file destination directory.
 
+ifndef OS_ARCH
 OS_ARCH		:= $(shell uname -m | sed -e s/i.86/i386/ | sed "s/\//-/")
+endif
 
 # Define tools
 CC 	= cl
@@ -53,14 +55,18 @@ EXE_SUFFIX = .exe
 # Architecture-specific flags
 ifeq ($(OS_ARCH), i386)
 ARCH_FLAGS	= -D_X86_
+ifndef OPTIMIZER
 OPTIMIZER	= -O2 -Ob1
+endif
 LINK_ARCH	= IX86
 OS_ENDIAN	= LittleEndian32
 endif
 
 ifeq ($(OS_ARCH), alpha)
 ARCH_FLAGS	= -D_ALPHA_
+ifndef OPTIMIZER
 OPTIMIZER	= -Oib3 -QAtuneEV56 -QAarchEV4 -QAgq -QAOu0 -QAieee0
+endif
 LINK_ARCH	= ALPHA
 OS_ENDIAN	= LittleEndian32
 endif
@@ -69,7 +75,12 @@ endif
 
 ifdef ABI_OPT_DEBUG
 
+ifndef OPTIMIZER_DEBUG
 OPTIMIZER 	= -Od -Z7 -Ob1
+else
+OPTIMIZER = $(OPTIMIZER_DEBUG)
+endif
+
 DEFINES 	= -DDEBUG -D_DEBUG -UNDEBUG -D_CRTDBG_MAP_ALLOC
 OBJ_DIR_SFX	= DBG
 OS_CFLAGS 	= -W3 -nologo -GF -Gy -MDd -DWIN32

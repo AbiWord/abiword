@@ -97,6 +97,17 @@
 
 ##################################################################
 ##################################################################
+# Suck in any existing defines if they exist
+# This is primarily designed for the CygWin Win32 build - all the
+# calls to sed that are made for each definition of OS_NAME,
+# OS_RELEASE, etc. are for some reason a performance killer.
+# Allowing them to be predefined in a persistent makefile speeds
+# up the build quite a bit.
+-include $(ABI_ROOT)/src/config/predefines.mk
+
+
+##################################################################
+##################################################################
 # OS_NAME is the output of uname -s minus any forward slashes
 # (so we don't imply another level of depth).  This is to solve
 # a problem with BSD/OS.  In fact, it might be good to do this
@@ -107,8 +118,12 @@
 # This doesn't mean it didn't use your optimizations.
 
 # this makes HP-UX look like "HP" (sed turns "HP-UX" into "HP" with the -.* pattern)
+ifndef OS_NAME
 OS_NAME		:= $(shell uname -s | sed "s/\//-/" | sed "s/_/-/" | sed "s/-.*//g")
+endif
+ifndef OS_RELEASE
 OS_RELEASE	:= $(shell uname -r | sed "s/\//-/" | sed "s/[() ].*//g")
+endif
 ####OS_ARCH is now set in platform/*.mk
 
 ##################################################################
@@ -125,9 +140,15 @@ OS_NAME = WIN32
 endif
 
 ifeq ($(OS_NAME), WIN32)
+ifndef CYGWIN_MAJOR_VERSION
 CYGWIN_MAJOR_VERSION := $(shell echo $(OS_RELEASE) | cut -d . -f 1)
+endif
+ifndef CYGWIN_MINOR_VERSION
 CYGWIN_MINOR_VERSION := $(shell echo $(OS_RELEASE) | cut -d . -f 2)
+endif
+ifndef CYGWIN_REVISION
 CYGWIN_REVISION      := $(shell echo $(OS_RELEASE) | cut -d . -f 3)
+endif
 endif
 
 ##################################################################
@@ -141,16 +162,18 @@ OS_NAME = CYGWIN
 endif
 endif
 
-ABI_ESCAPE_QUOTES=NO
-ifeq ($(OS_NAME),WIN32)
-ifeq ($(CYGWIN_MAJOR_VERSION),1)
-ifeq ($(CYGWIN_MINOR_VERSION),1)
-OLD_CYGWIN := $(shell expr $(CYGWIN_REVISION) "<=" 2)
-ifeq ($(OLD_CYGWIN),1)
-ABI_ESCAPE_QUOTES=YES
-endif
-endif
-endif
+ifndef ABI_ESCAPE_QUOTES
+ ABI_ESCAPE_QUOTES=NO
+ ifeq ($(OS_NAME),WIN32)
+  ifeq ($(CYGWIN_MAJOR_VERSION),1)
+   ifeq ($(CYGWIN_MINOR_VERSION),1)
+    OLD_CYGWIN := $(shell expr $(CYGWIN_REVISION) "<=" 2)
+    ifeq ($(OLD_CYGWIN),1)
+     ABI_ESCAPE_QUOTES=YES
+    endif
+   endif
+  endif
+ endif
 endif
 
 ##################################################################
