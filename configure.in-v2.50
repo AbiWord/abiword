@@ -24,7 +24,7 @@ AC_CONFIG_SRCDIR([src/af/ev/xp/ev_Menu.h])
 AC_CONFIG_AUX_DIR(ac-helpers)
 AC_CONFIG_HEADERS(config.h)
 
-AM_INIT_AUTOMAKE(abiword,7,15)
+AM_INIT_AUTOMAKE(AbiSuite,0.9.0)
 
 dnl APR [ Apache Portable Runtime ] does it this way, but I don't know
 dnl why.  I figure they probably have a good reason. 
@@ -287,6 +287,8 @@ dnl Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
 AC_C_INLINE
 AC_TYPE_SIZE_T
+AC_C_BIGENDIAN
+AC_SUBST(WORDS_BIGENDIAN)
 
 dnl Currently, we need all of the following, but in the future we
 dnl might not.  

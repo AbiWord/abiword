@@ -58,33 +58,41 @@ realrealclean: realclean
 # Install the datafiles. This is quick-and-dirty.
 install-data-local:
 	if test -d $(top_srcdir)/../unixfonts/fonts ; then \
-	  $(mkinstalldirs) $(DESTDIR)$(pkglibdir)/fonts ;\
+	  $(mkinstalldirs) $(DESTDIR)$(pkgdatadir)/fonts ;\
 	  for file in $(top_srcdir)/../unixfonts/fonts/* ; do \
 	    if test -f $$file ; then \
-	      $(INSTALL_DATA) $$file $(DESTDIR)$(pkglibdir)/fonts; \
+	      $(INSTALL_DATA) $$file $(DESTDIR)$(pkgdatadir)/fonts; \
 	    fi ;\
 	  done; \
 	else \
 	  echo "Warning: unixfonts package not found." ;\
 	fi
 	if test -d $(top_srcdir)/../abidistfiles ; then \
-         for dir in `cd $(top_srcdir)/../abidistfiles; find . -type d ! -name CVS` ; do \
-           $(mkinstalldirs) $(DESTDIR)$(pkglibdir)/$$dir ;\
-           for file in $(top_srcdir)/../abidistfiles/$$dir/* ; do \
-             if test -f $$file ; then \
-               $(INSTALL_DATA) $$file $(DESTDIR)$(pkglibdir)/$$dir; \
-             fi; \
-           done; \
+          for dir in `cd $(top_srcdir)/../abidistfiles; find . -type d ! -name CVS` ; do \
+            $(mkinstalldirs) $(DESTDIR)$(pkgdatadir)/$$dir ;\
+            if test "$$dir" = "./dictionary"; then \
+              if test -z "$(WORDS_BIGENDIAN)"; then \
+                $(INSTALL_DATA) $(top_srcdir)/../abidistfiles/dictionary/LittleEndian32.american.hash $(DESTDIR)$(pkgdatadir)/$$dir/american.hash; \
+              else \
+                $(INSTALL_DATA) $(top_srcdir)/../abidistfiles/dictionary/BigEndian32.american.hash $(DESTDIR)$(pkgdatadir)/$$dir/american.hash; \
+              fi; \
+            else \
+              for file in $(top_srcdir)/../abidistfiles/$$dir/* ; do \
+                if test -f $$file ; then \
+                  $(INSTALL_DATA) $$file $(DESTDIR)$(pkgdatadir)/$$dir; \
+                fi; \
+              done; \
+            fi; \
 	  done; \
 	else \
 	  echo "Warning: abidistfiles package not found." ;\
 	fi
-	$(mkinstalldirs) $(DESTDIR)$(pkglibdir)/AbiWord
+	$(mkinstalldirs) $(DESTDIR)$(pkgdatadir)/AbiWord
 	for dir in `cd $(top_srcdir)/user/wp; find . -type d ! -name CVS` ; do \
-	  $(mkinstalldirs) $(DESTDIR)$(pkglibdir)/AbiWord/$$dir ;\
+	  $(mkinstalldirs) $(DESTDIR)$(pkgdatadir)/AbiWord/$$dir ;\
 	  for file in $(top_srcdir)/user/wp/$$dir/* ; do \
 	    if test -f $$file ; then \
-	      $(INSTALL_DATA) $$file $(DESTDIR)$(pkglibdir)/AbiWord/$$dir; \
+	      $(INSTALL_DATA) $$file $(DESTDIR)$(pkgdatadir)/AbiWord/$$dir; \
 	    fi ; \
 	  done; \
 	done

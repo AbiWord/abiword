@@ -24,7 +24,7 @@ if WITH_GNOME
 SUBDIRS=gnome
 else
 
-indirectdir=$(pkglibdir)/bin
+indirectdir=$(DESTDIR)$(bindir)
 indirect_PROGRAMS = AbiWord_d AbiWord_s
 
 INCLUDES=\
@@ -47,8 +47,7 @@ abi_ver.cpp:
 
 endif
 
-# Install the wrapper and a sane link
+# Install the wrapper
 install-exec-local:
-	$(top_srcdir)/src/pkg/common/unix/scripts/makewrapper.sh AbiWord $(pkglibdir) $(pkglibdir)/bin $(DESTDIR)
-	$(mkinstalldirs) $(DESTDIR)$(bindir)
-	ln -f $(DESTDIR)$(pkglibdir)/bin/AbiWord $(DESTDIR)$(bindir)/AbiWord
+	$(top_srcdir)/src/pkg/common/unix/scripts/makewrapper.sh AbiWord $(pkgdatadir) $(DESTDIR)$(bindir) $(DESTDIR)
+
