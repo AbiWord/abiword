@@ -99,7 +99,7 @@ endif
 	@$(ABICOPY) $(ABI_ROOT)/../abidistfiles/clipart/*.png $(CANONDIR)/clipart
 
 	@$(subst xxxx,$(CANONDIR)/templates,$(VERIFY_DIRECTORY))
-	@$(ABICOPY) $(ABI_ROOT)/../abidistfiles/templates/*.awt $(CANONDIR)/templates
+	@$(ABICOPY) $(ABI_ROOT)/../abidistfiles/templates/*.awt* $(CANONDIR)/templates
 
 ##################################################################
 ## Targets for installs.  There is a generic install method, for
