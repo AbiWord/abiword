@@ -398,6 +398,7 @@ UT_Bool EV_BeOSMenu::synthesize(void)
 				int32 state =0;
 			
 				convert_to_utf8(B_ISO1_CONVERSION , szLabelName , &iLength ,  buffer , &destLength , &state);
+				buffer[destLength] = '\0';
 				
 				accel = _ev_convert(buf, buffer);
 				
@@ -446,6 +447,7 @@ UT_Bool EV_BeOSMenu::synthesize(void)
 				int32 state =0;
 			
 				convert_to_utf8(B_ISO1_CONVERSION , szLabelName , &iLength ,  buffer , &destLength , &state);
+				buffer[destLength] = '\0';
 
 				accel = _ev_convert(buf, buffer);
 
