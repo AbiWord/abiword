@@ -512,6 +512,9 @@ void ap_sb_Field_InputMode::notify(AV_View * /*pavView*/, const AV_ChangeMask ma
 	}
 }
 
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+
 class ap_sb_Field_InsertMode : public ap_sb_Field
 {
 public:
@@ -596,6 +599,100 @@ void ap_sb_Field_InsertMode::notify(AV_View * /*pavView*/, const AV_ChangeMask m
     }
 }
 
+
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+
+class ap_sb_Field_Language : public ap_sb_Field
+{
+public:
+	ap_sb_Field_Language(AP_StatusBar * pSB);
+	virtual ~ap_sb_Field_Language(void);
+
+	virtual UT_uint32 getDesiredWidth(void);
+	virtual void draw(void);
+	virtual void notify(AV_View * pView, const AV_ChangeMask mask);
+
+private:
+	UT_UCSChar m_Language[AP_MAX_MESSAGE_FIELD];
+	UT_uint32 m_iDesiredWidth;
+};
+
+ap_sb_Field_Language::ap_sb_Field_Language(AP_StatusBar * pSB)
+	: ap_sb_Field(pSB)
+{
+	m_Language[0] = 0;
+	m_iDesiredWidth = 0;
+}
+
+ap_sb_Field_Language::~ap_sb_Field_Language(void)
+{
+}
+
+UT_uint32 ap_sb_Field_Language::getDesiredWidth(void)
+{
+	if (!m_iDesiredWidth)
+	{
+		UT_GrowBufElement charWidths[AP_MAX_MESSAGE_FIELD];
+
+		// TODO language tags can be longer, eg "art-lojban"
+		UT_UCSChar language[5+1];
+		// Use m/M to measure string since it's a fat letter
+		UT_UCS4_strcpy_char(language,"mm-MM");
+
+		// TODO language tags can be longer, eg "art-lojban"
+		m_iDesiredWidth = m_pSB->getGraphics()->measureString(language,0,5,charWidths);
+		UT_ASSERT(m_iDesiredWidth);
+		m_iDesiredWidth = MyMin(m_iDesiredWidth,_UL(300)) + _UL(6);
+	}
+	return m_iDesiredWidth;
+}
+
+void ap_sb_Field_Language::draw(void)
+{
+	_draw3D();
+	int len;
+
+	UT_UCSChar *bufLanguage = m_Language;
+
+	len = UT_UCS4_strlen(bufLanguage);
+
+	if (len)
+	{
+		GR_Graphics * pG = m_pSB->getGraphics();
+		UT_uint32 iFontHeight = pG->getFontHeight();
+
+		UT_uint32 x = m_rect3d.left + _UL(3);
+		UT_uint32 y = m_rect3d.top + (m_rect3d.height-iFontHeight)/2;
+
+		pG->setColor3D(GR_Graphics::CLR3D_Foreground);
+
+		pG->setClipRect(&m_rect3d);
+		pG->drawChars(bufLanguage,0,len,x,y);
+		pG->setClipRect(NULL);
+	}
+}
+
+void ap_sb_Field_Language::notify(AV_View * pavView, const AV_ChangeMask mask)
+{
+	// TODO do we want our own bit for language change?
+	//if (mask & (AV_CHG_INSERTMODE))
+	{
+		const char * szLang = NULL;
+
+		const XML_Char ** props_in = NULL;
+		if (pavView && static_cast<FV_View *>(pavView)->getCharFormat(&props_in))
+		{
+			szLang = UT_getAttribute("lang", props_in);
+			FREEP(props_in);
+
+			UT_UCS4_strcpy_char(m_Language,szLang ? szLang : "");
+		}
+
+		draw();
+	}
+}
+
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
@@ -673,6 +770,8 @@ void AP_StatusBar::setView(AV_View * pView)
 		DclField(ap_sb_Field_InsertMode, pf4);
 		DclField(ap_sb_Field_InputMode, pf3);
 		
+		DclField(ap_sb_Field_Language, pf5);
+
 		// TODO add other fields
 
 #undef DclField
@@ -699,6 +798,8 @@ UT_uint32 AP_StatusBar::getHeight(void) const
 
 void AP_StatusBar::setWidth(UT_uint32 iWidth)
 {
+	// TODO change status message control width
+	// TODO change x position of all controls to right of status message
 	m_iWidth = iWidth;
 }
 
@@ -713,8 +814,8 @@ bool AP_StatusBar::notify(AV_View * pView, const AV_ChangeMask mask)
 
 	// We choose to clear any status message we may have,
 	// since it's a pain for the code which set the message
-	// to hang around and clear it at somepoint in the future.
-	// This way, message will get cleared anytime the user does
+	// to hang around and clear it at some point in the future.
+	// This way, message will get cleared any time the user does
 	// something with the window.
 
 	if (*m_bufUCS)
