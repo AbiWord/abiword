@@ -167,7 +167,7 @@ UT_Error UT_XML::parse (const char * buffer, UT_uint32 length)
   if (!m_bSniffing)
     {
       UT_ASSERT (m_pListener || m_pExpertListener);
-      if (m_pListener == 0) return UT_ERROR;
+      if ((m_pListener == 0) && (m_pExpertListener == 0)) return UT_ERROR;
     }
   UT_ASSERT (buffer);
   if (buffer == 0) return UT_ERROR;
