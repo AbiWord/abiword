@@ -3001,6 +3001,65 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 				return;
 			}
 		}
+
+		// Code that deals with deleting runs that do not like to be deleted ...  This handles runs
+		// that return true for deleteFollowingIfAtInsPoint(). Runs in this category are typically
+		// not visible on screen, such as hyperlinks and bookmarks, and are deleted through the main
+		// menu. Such runs must not be deleted inadvertedly when pressing delete/backpace. Just to
+		// exaplain why: for example, in Word bookmarks inadvertedly disappear when the bookmarked
+		// text is edited; this is extremely annoying if such bookmarks are referenced from page
+		// reference and similar fields, particularly if the document is long and contains many such
+		// fields -- imagine printing a 200+ page document, only to discover that on page 178 you
+		// have 'error: bookmark not found' where a page number should have been -- we want to
+		// minimise this happening and will only delete such runs when (a) the user explicitely asks
+		// to, or (b) they are inside a selection.
+		if(!curBlock)
+			curBlock = _findBlockAtPosition(getPoint());
+
+		if(bForward && count == 1)
+		{
+			UT_return_if_fail( curBlock );
+			
+			fp_Run * pRun = curBlock->findRunAtOffset(getPoint() - curBlock->getPosition());
+
+			UT_return_if_fail( pRun );
+
+			fp_Run * pPrevRun = NULL;
+			UT_uint32 iLength = 0;
+			while(pRun && pRun->deleteFollowingIfAtInsPoint())
+			{
+				pPrevRun = pRun;
+				iLength += pRun->getLength();
+				pRun = pRun->getNextRun();
+			}
+
+			_setPoint(m_iInsPoint + iLength);
+			
+		}
+		else if(!bForward && count == 1)
+		{
+			UT_return_if_fail( curBlock );
+			
+			fp_Run * pRun = curBlock->findRunAtOffset(getPoint() - curBlock->getPosition());
+
+			UT_return_if_fail( pRun );
+
+			// back one further
+			pRun = pRun->getPrevRun();
+
+			fp_Run * pPrevRun = NULL;
+			UT_uint32 iLength = 0;
+			while(pRun && pRun->deleteFollowingIfAtInsPoint())
+			{
+				pPrevRun = pRun;
+				iLength += pRun->getLength();
+				pRun = pRun->getPrevRun();
+			}
+
+			_setPoint(m_iInsPoint - iLength);
+			
+		}
+		
 		// Code to deal with font boundary problem.
 		// TODO: This should really be fixed by someone who understands
 		// how this code works! In the meantime save current font to be
@@ -3019,7 +3078,7 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 		if (!bForward)
 		{
 
-			if (!_charMotion(bForward,count))
+			if (!_charMotion(bForward,count, false))
 			{
 				UT_ASSERT(getPoint() <= posCur);
 				UT_DEBUGMSG(("SEVIOR: posCur %d getPoint() %d \n",posCur,getPoint()));
