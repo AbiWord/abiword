@@ -98,7 +98,11 @@ dnl These are the flags required and defined above
 AC_SUBST(ABI_FE)
 
 dnl iconv peer library is in libiconv as per the CVS module name.
-ICONV_INCLUDES=-I'$(top_srcdir)/../libiconv/include'
+if test "$PLATFORM" = "mac"; then
+	ICONV_INCLUDES=
+else
+	ICONV_INCLUDES=-I'$(top_srcdir)/../libiconv/include'
+fi
 AC_SUBST(ICONV_INCLUDES)
 
 if test "$PLATFORM" = "unix"; then
@@ -225,7 +229,7 @@ if test "$PLATFORM" = "unix"; then
 fi
 dnl AUTOCONF SUCKS
 if test "$PLATFORM" = "mac"; then
-	PLATFORM_LIBS="-framework Carbon -framework CoreServices -framework ApplicationServices"
+	PLATFORM_LIBS="-liconv -framework Carbon -framework CoreServices -framework ApplicationServices"
 	PLATFORM_CFLAGS=-I'$(top_builddir)/src/af/util/unix'\ -fpascal-strings\ -DCARBON_ON_MACH_O=1\ -DNO_SYS_ERRLIST\ -I/Developer/Headers/FlatCarbon
 fi
 
