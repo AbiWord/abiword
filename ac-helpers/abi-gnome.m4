@@ -43,6 +43,7 @@ if test "$gnome" = true ; then
 
 	PKG_CHECK_MODULES(GNOME,[
 		libbonobo-2.0 >= 2.0
+		libglade-2.0 >= 2.0.0
 		libgnomeui-2.0 >= 2.0
 		gal-2.0 >= 1.99
 		libgnomeprint-2.2 >= 2.2.1

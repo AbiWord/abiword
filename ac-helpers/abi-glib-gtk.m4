@@ -41,8 +41,10 @@ AC_DEFUN([ABI_GLIB2],[
 AC_DEFUN([ABI_GTK2],[
 	ABI_GLIB2
 
-	PKG_CHECK_MODULES(GTK,gtk+-2.0 >= 2.0 libglade-2.0 >= 2.0.0,[
-		abi_gtk2=yes
+	PKG_CHECK_MODULES(GTK,[
+		gtk+-2.0 >= 2.0
+		libglade-2.0 >= 2.0.0
+	],[	abi_gtk2=yes
 	],[	abi_gtk2=no
 	])
 	if test $abi_gtk2 = no; then
