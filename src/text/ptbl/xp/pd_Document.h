@@ -468,8 +468,35 @@ public:
 	}
 	void invalidateCache(void);
 
+	/*
+	   The purpose of the following methods is to generate and manage
+	   document-wide unique identifiers; the indetifiers are type
+	   specific, with the types defined in UT_UniqueId class (ut_mics.h).
+	   
+       UT_uint32 getUID(type):    Generates an id of a given type or
+                                  UT_UID_INVALID if unique id cannot
+                                  be generated (0 <= uid < UT_UID_INVALID).
+
+       bool isIdUnique(type, id): Returns true if a given id can be
+                                  used as a unique identifier of a
+                                  given type; before the identifier is
+                                  used, the caller should call
+                                  setMinUID(id+1) to ensure integrity of
+                                  the UID generator.
+                                  
+       bool setMinUID(type, uid): Allows to set a minimum value for all
+                                  future identifiers; it returns true on
+                                  success false on failure. The purpose is
+                                  to allow an easy insertion of
+                                  document-stored id's into the UID space
+                                  by document importers: if the importer
+                                  encounters a stored value ID it should
+                                  call setMinUID(type, ID+1).
+	*/
+
 	UT_uint32 getUID(UT_UniqueId::idType t) {return m_UID.getUID(t);}
 	bool      setMinUID(UT_UniqueId::idType t, UT_uint32 i) {return m_UID.setMinId(t,i);}
+	bool      isIdUnique(UT_UniqueId::idType t, UT_uint32 i) {return m_UID.isIdUnique(t,i);}
 	
 protected:
 	~PD_Document();

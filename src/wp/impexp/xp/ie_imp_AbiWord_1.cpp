@@ -313,7 +313,13 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		if(pszId)
 		{
 			UT_uint32 id = atoi(pszId);
-			getDoc()->setMinUID(UT_UniqueId::HeaderFtr,id);
+			bOK = getDoc()->setMinUID(UT_UniqueId::HeaderFtr,id+1);
+			if(!bOK)
+			{
+				UT_DEBUGMSG(("Section id %d [%s] already in use\n",id, pszId));
+				UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
+			}
+			
 		    bOK = getDoc()->verifySectionID(pszId);
 		}
 		if(bOK)
@@ -352,10 +358,16 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		m_bWroteSection = true;
 		const XML_Char * pszId = _getXMLPropValue("footnote-id", atts);
 		UT_ASSERT( pszId );
+		bool bOK;
 		if(pszId)
 		{
 			UT_uint32 id = atoi(pszId);
-			getDoc()->setMinUID(UT_UniqueId::Footnote,id);
+			bOK = getDoc()->setMinUID(UT_UniqueId::Footnote,id+1);
+			if(!bOK)
+			{
+				UT_DEBUGMSG(("Footnote id %d [%s] already in use\n",id,pszId));
+				UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
+			}
 		}
 		X_CheckError(getDoc()->appendStrux(PTX_SectionFootnote,atts));
 		xxx_UT_DEBUGMSG(("FInished Append footnote strux \n"));
@@ -369,10 +381,16 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		m_bWroteSection = true;
 		const XML_Char * pszId = _getXMLPropValue("endnote-id", atts);
 		UT_ASSERT( pszId );
+		bool bOK;
 		if(pszId)
 		{
 			UT_uint32 id = atoi(pszId);
-			getDoc()->setMinUID(UT_UniqueId::Endnote,id);
+			bOK = getDoc()->setMinUID(UT_UniqueId::Endnote,id+1);
+			if(!bOK)
+			{
+				UT_DEBUGMSG(("Endnote id %d [%s] already in use\n",id,pszId));
+				UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
+			}
 		}
 		X_CheckError(getDoc()->appendStrux(PTX_SectionEndnote,atts));
 		xxx_UT_DEBUGMSG(("FInished Append Endnote strux \n"));
@@ -384,10 +402,16 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		m_parseState = _PS_Block;
 		m_bWroteParagraph = true;
 		const XML_Char * pszId = _getXMLPropValue("list", atts);
+		bool bOK;
 		if(pszId)
 		{
 			UT_uint32 id = atoi(pszId);
-			getDoc()->setMinUID(UT_UniqueId::List,id);
+			bOK = getDoc()->setMinUID(UT_UniqueId::List,id+1);
+			if(!bOK)
+			{
+				UT_DEBUGMSG(("List id %d [%s] already in use\n",id,pszId));
+				UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
+			}
 		}
 		X_CheckError(getDoc()->appendStrux(PTX_Block,atts));
 		m_iInlineStart = getOperationCount();
@@ -415,10 +439,16 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 #else
 		const XML_Char * pszId = _getXMLPropValue("dataid", atts);
 		UT_ASSERT( pszId );
+		bool bOK;
 		if(pszId)
 		{
 			UT_uint32 id = atoi(pszId);
-			getDoc()->setMinUID(UT_UniqueId::Image,id);
+			bOK = getDoc()->setMinUID(UT_UniqueId::Image,id+1);
+			if(!bOK)
+			{
+				UT_DEBUGMSG(("Image id %d [%s] already in use\n",id,pszId));
+				UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
+			}
 		}
 		X_CheckError(getDoc()->appendObject(PTO_Image,atts));
 #endif
@@ -923,9 +953,6 @@ bool IE_Imp_AbiWord_1::_handleImage (const XML_Char ** atts)
 
 	if ( old_id == 0) return false; // huh?
 	if (*old_id == 0) return false; // huh?
-
-	UT_uint32 id = atoi(old_id);
-	getDoc()->setMinUID(UT_UniqueId::Image,id);
 
 	UT_UTF8String re_id;
 

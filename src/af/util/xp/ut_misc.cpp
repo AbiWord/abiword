@@ -992,12 +992,12 @@ UT_UniqueId::UT_UniqueId()
 
 
 /*!
-    returns unique id (0 <= id < 0xffffffff) of given type or
-    0xffffffff on failure
+    returns unique id (0 <= id < UT_UID_INVALID) of given type or
+    UT_UID_INVALID on failure
 */
 UT_uint32 UT_UniqueId::getUID(idType t)
 {
-	UT_return_val_if_fail(t < _Last, 0xffffffff);
+	UT_return_val_if_fail(t < _Last, UT_UID_INVALID);
 	UT_uint32 i = (UT_uint32)t;
 	UT_uint32 r = m_iID[i]++;
 	return r;
@@ -1025,3 +1025,21 @@ bool UT_UniqueId::setMinId(idType t, UT_uint32 iMin)
 	return true;
 }
 
+/*!
+    returns true of iId can be used as a unique identifier of a type
+    t; before using iId, THE CALLER MUST CALL setMinId(t, iId+1) !!!
+*/
+bool UT_UniqueId::isIdUnique(idType t, UT_uint32 iId)
+{
+	UT_return_val_if_fail(t < _Last, false);
+
+	// we really want some space left to generate future id's
+	UT_return_val_if_fail(iId < UINT_MAX - 1000, false);
+	
+	UT_uint32 i = (UT_uint32) t;
+
+	if(m_iID[i] > iId)
+		return false;
+	
+	return true;
+}
