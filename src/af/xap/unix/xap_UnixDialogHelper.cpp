@@ -42,10 +42,6 @@
 #include <libgnomeui/gnome-window-icon.h>
 #endif
 
-
-// default GTK message box button width, in GTK screen units (pixels)
-#define DEFAULT_BUTTON_WIDTH	85
-
 /*****************************************************************/
 
 static gboolean focus_in_event(GtkWidget *widget,GdkEvent */*event*/,gpointer /*user_data*/)
@@ -223,85 +219,6 @@ gint s_key_pressed(GtkWidget * /* widget */, GdkEventKey * e)
 	}
 
 	return TRUE;
-}
-
-/*
-  This is a small message box for startup warnings and/or
-  errors.  Please do NOT use this for normal system execution
-  user messages; use the XAP_UnixDialog_MessageBox class for that.
-  We can't use that here because there is no parent frame, etc.
-*/
-
-void messageBoxOK(const char * message)
-{
-	// New GTK+ dialog window
-	GtkWidget * dialog_window = gtk_dialog_new();								 
-
-	g_signal_connect_after (G_OBJECT (dialog_window),
-							  "destroy",
-							  NULL,
-							  NULL);
-	g_signal_connect_after (G_OBJECT (dialog_window),
-							  "delete_event",
-							  G_CALLBACK(gtk_main_quit),
-							  NULL);
-
-	gtk_window_set_title(GTK_WINDOW(dialog_window), "AbiWord");
-
-	// don't let user shrink or expand, but auto-size to
-	// contents initially
-    gtk_window_set_policy(GTK_WINDOW(dialog_window),
-						  FALSE,
-						  FALSE,
-						  TRUE);
-
-	// Intercept key strokes
-	g_signal_connect(G_OBJECT(dialog_window),
-					   "key_press_event",
-					   G_CALLBACK(s_key_pressed),
-					   NULL);
-
-	// Add our label string to the dialog in the message area
-	GtkWidget * label = gtk_label_new(message);
-	gtk_misc_set_padding(GTK_MISC(label), 10, 10);
-	gtk_box_pack_start(GTK_BOX(GTK_DIALOG (dialog_window)->vbox),
-					   label, TRUE, TRUE, 0);
-	gtk_widget_show(label);
-
-	GtkWidget *		ok_label;
-	GtkWidget * 	ok_button;
-	guint			ok_accel;
-	
-	// create the OK
-	ok_label = gtk_label_new("SHOULD NOT APPEAR");
-	ok_accel = gtk_label_parse_uline(GTK_LABEL(ok_label), "O_K");
-	gtk_widget_show(ok_label);
-	ok_button = gtk_button_new();
-	gtk_container_add(GTK_CONTAINER(ok_button), ok_label);
-	g_signal_connect (G_OBJECT (ok_button),
-						"clicked",
-						G_CALLBACK(gtk_main_quit),
-						NULL);
-	GTK_WIDGET_SET_FLAGS (ok_button, GTK_CAN_DEFAULT);
-	gtk_widget_set_usize(ok_button, DEFAULT_BUTTON_WIDTH, 0);
-
-	// pack the OK
-	gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog_window)->action_area),
-						ok_button, FALSE, FALSE, 0);
-	gtk_widget_grab_default (ok_button);
-	gtk_widget_show (ok_button);
-
-	// set the size of the dialog to size with the label inside
-	gtk_widget_size_request(dialog_window, &dialog_window->requisition);
-	gtk_widget_set_usize(dialog_window, dialog_window->requisition.width + 40, 0);
-	
-	gtk_grab_add(GTK_WIDGET(dialog_window));
-	gtk_widget_show(dialog_window);
-	
-	gtk_main();
-
-	// clean up
-	gtk_widget_destroy(GTK_WIDGET(dialog_window));
 }
 
 gint searchCList(GtkCList * clist, char * compareText)
@@ -596,59 +513,11 @@ void createLabelAccelerators( GtkWidget *widget )
 	gtk_window_add_accel_group (GTK_WINDOW (widget), data.accel_group);
 }
 
-/*!
- * For a parented/displayed widget, this will just return
- * gtk_widget_ensure_style(w). For a non-displayed widgets,
- * This will return a valid GtkStyle for that widget
- */
-GtkStyle *
-get_ensured_style (GtkWidget * w)
-{
-	GtkStyle  * style = NULL;
-	GtkWidget * hidden_window = NULL;
-
-	if (w->parent == NULL)
-	{
-		hidden_window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-		gtk_container_add (GTK_CONTAINER (hidden_window), w);
-	}
-
-	gtk_widget_ensure_style (w);
-	gtk_widget_realize (w);
-
-	style = gtk_widget_get_style (w);
-	UT_ASSERT(style);
-
-	if (hidden_window)
-	{
-		// now we destroy the hidden window
-		gtk_container_remove (GTK_CONTAINER(hidden_window), w);
-		gtk_widget_destroy (hidden_window);
-	}
-
-	return style;
-}
-
-/*!
- * Creates a new GdkDrawingArea with the proper colormap and visual
- */
-GtkWidget *createDrawingArea ()
-{
-  GtkWidget *area;
-  
-  gtk_widget_push_visual (gdk_rgb_get_visual ());
-  gtk_widget_push_colormap (gdk_rgb_get_cmap ());
-  
-  area = gtk_drawing_area_new ();
-  
-  gtk_widget_pop_colormap ();
-  gtk_widget_pop_visual ();
-  
-  return area;
-}
-
 /****************************************************************/
 /****************************************************************/
+
+// in ap_editmethods.cpp
+extern bool helpLocalizeAndOpenURL(XAP_Frame * pFrame, bool bLocal, const char* pathBeforeLang, const char* pathAfterLang);
 
 static void sDoHelp ( XAP_Dialog * pDlg )
 {
@@ -666,7 +535,7 @@ static void sDoHelp ( XAP_Dialog * pDlg )
 	// open the url
 	if ( pDlg->getHelpUrl().size () > 0 )
     {
-		pFrame->openURL ( pDlg->getHelpUrl().c_str() ) ;
+		helpLocalizeAndOpenURL ( pFrame, true, "AbiWord/help", pDlg->getHelpUrl().c_str() ) ;
     }
 	else
     {
@@ -850,17 +719,18 @@ GtkWidget * abiDialogNew(gboolean resizable, const char * title, ...)
   
   if ( title != NULL && strlen ( title ) )
   {
-    UT_String inStr ( "" ) ;
+    UT_String titleStr ( "" ) ;
 
     va_list args;
     va_start (args, title);
-    UT_String_vprintf (inStr, title, args);
+    UT_String_vprintf (titleStr, title, args);
     va_end (args);
 
-	// TODO: locale->utf8 title
+	// locale->utf8 title
+	UT_String utf8 ( abiLocaleToUTF8 ( titleStr ) ) ;
 	
     // create the title
-    gtk_window_set_title ( GTK_WINDOW(dlg), inStr.c_str() ) ;
+    gtk_window_set_title ( GTK_WINDOW(dlg), utf8.c_str() ) ;
   }
 
   return dlg ;
@@ -890,7 +760,10 @@ void abiAddButton(GtkDialog * me, const gchar * btn_id,
 	UT_return_if_fail(btn_id);
 
 	// todo: possibly make me locale sensitive->utf8
-	gtk_dialog_add_button(me, btn_id, response_id);
+
+	UT_String utf8 ( abiLocaleToUTF8 ( btn_id ) ) ;
+	
+	gtk_dialog_add_button(me, utf8.c_str(), response_id);
 	gtk_dialog_set_response_sensitive(me, response_id, TRUE);
 }
 
@@ -903,6 +776,108 @@ void abiDestroyWidget(GtkWidget * me)
   if(me && GTK_IS_WIDGET(me))
     gtk_widget_destroy(me);
 }
+
+/*!
+ * Convert the incoming string which is in the user's locale to utf8
+ */
+UT_String abiLocaleToUTF8(const UT_String & inStr)
+{
+	GError * err = NULL ;
+	gsize bytes_read = 0, bytes_written = 0 ;
+
+	gchar * utf8 = g_locale_to_utf8 ( inStr.c_str(), -1,
+									  &bytes_read, &bytes_written, &err ) ;
+
+	// blissfully ignore errors
+	
+	UT_String rtn_utf8 ( utf8 ) ;
+	g_free ( utf8 ) ;
+
+	return rtn_utf8 ;
+}
+
+/*!
+ * Convert the incoming string which is in the user's locale to utf8
+ */
+UT_String abiLocaleToUTF8(const char * str)
+{
+	UT_String input ( str ) ;
+	return abiLocaleToUTF8 ( input ) ;
+}
+
+/*!
+ * For a parented/displayed widget, this will just return
+ * gtk_widget_ensure_style(w). For a non-displayed widgets,
+ * This will return a valid GtkStyle for that widget
+ */
+GtkStyle *
+get_ensured_style (GtkWidget * w)
+{
+	GtkStyle  * style = NULL;
+	GtkWidget * hidden_window = NULL;
+
+	if (w->parent == NULL)
+	{
+		hidden_window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+		gtk_container_add (GTK_CONTAINER (hidden_window), w);
+	}
+
+	gtk_widget_ensure_style (w);
+	gtk_widget_realize (w);
+
+	style = gtk_widget_get_style (w);
+	UT_ASSERT(style);
+
+	if (hidden_window)
+	{
+		// now we destroy the hidden window
+		gtk_container_remove (GTK_CONTAINER(hidden_window), w);
+		gtk_widget_destroy (hidden_window);
+	}
+
+	return style;
+}
+
+/*!
+ * Creates a new GdkDrawingArea with the proper colormap and visual
+ */
+GtkWidget *createDrawingArea ()
+{
+  GtkWidget *area;
+  
+  gtk_widget_push_visual (gdk_rgb_get_visual ());
+  gtk_widget_push_colormap (gdk_rgb_get_cmap ());
+  
+  area = gtk_drawing_area_new ();
+  
+  gtk_widget_pop_colormap ();
+  gtk_widget_pop_visual ();
+  
+  return area;
+}
+
+/*!
+ * This is a small message box for startup warnings and/or
+ * errors.  Please do NOT use this for normal system execution
+ * user messages; use the XAP_UnixDialog_MessageBox class for that.
+ * We can't use that here because there is no parent frame, etc.
+ */
+void messageBoxOK(const char * message)
+{
+	GtkWidget * msg = gtk_message_dialog_new ( NULL,
+											   GTK_DIALOG_MODAL,
+											   GTK_MESSAGE_INFO,
+											   GTK_BUTTTONS_OK,
+											   message ) ;
+
+	gtk_window_set_title(GTK_WINDOW(msg), "AbiWord");
+	gtk_widget_show ( msg ) ;
+	gtk_dialog_run ( msg ) ;
+	gtk_widget_destroy ( msg ) ;
+}
+
+/****************************************************************/
+/****************************************************************/
 
 GdkWindow * getRootWindow(GtkWidget * widget)
 {

@@ -21,9 +21,9 @@
 #define UT_DIALOGHELPER_H
 
 #include <gtk/gtk.h>
-#include <gdk/gdkprivate.h>
-#include"ut_types.h"
-
+#include <gdk/gdk.h>
+#include "ut_types.h"
+#include "ut_string_class.h"
 
 class XAP_Frame;
 class XAP_App;
@@ -81,6 +81,9 @@ void abiAddButton(GtkDialog * me, const gchar * btn_id,
 
 GtkWidget * abiDialogNew(gboolean resizable = FALSE);
 GtkWidget * abiDialogNew(gboolean resizable, const char * title, ...);
+
+UT_String abiLocaleToUTF8(const UT_String & inStr);
+UT_String abiLocaleToUTF8(const char * str);
 
 // Returns the root window of the X display, useful for doing
 // pointer or coordinate measurement on an absolute scale.
