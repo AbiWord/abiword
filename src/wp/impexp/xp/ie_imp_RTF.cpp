@@ -144,7 +144,7 @@ bool	IE_Imp_RTF_Sniffer::getDlgLabels(const char ** pszDesc,
 //////////////////////////////////////////////////////////////////
 // List class definitions
 //////////////////////////////////////////////////////////////////
-RTF_msword97_level::RTF_msword97_level(RTF_msword97_list * pmsword97List, UT_uint32 level )
+RTF_msword97_level::RTF_msword97_level(RTF_msword97_list * pmsword97List, UT_uint32 level)
 {
 	m_levelStartAt = 1;
 #if 0
@@ -152,7 +152,9 @@ RTF_msword97_level::RTF_msword97_level(RTF_msword97_list * pmsword97List, UT_uin
 	while(m_AbiLevelID < 10000)
 		m_AbiLevelID = UT_rand();
 #else
-	m_AbiLevelID = m_sLastAssignedLevelID++;
+	//m_AbiLevelID = m_sLastAssignedLevelID++;
+	UT_ASSERT(pmsword97List);
+	m_AbiLevelID = pmsword97List->m_pie_rtf->getDoc()->getUID(UT_UniqueId::List);
 #endif
 	m_pParaProps = NULL;
 	m_pCharProps = NULL;
@@ -167,7 +169,7 @@ RTF_msword97_level::RTF_msword97_level(RTF_msword97_list * pmsword97List, UT_uin
 }
 
 // Static data members must be initialized at file scope.
-UT_uint32 RTF_msword97_level::m_sLastAssignedLevelID = 100000;
+//UT_uint32 RTF_msword97_level::m_sLastAssignedLevelID = 100000;
 UT_uint32 RTF_msword97_level::m_sPreviousLevel =0;
 
 
@@ -210,7 +212,8 @@ void RTF_msword97_level::buildAbiListProperties( const char ** szListID,
 //
 	if (m_bRestart && (m_sPreviousLevel < m_localLevel))
 	{
-		m_AbiLevelID = m_sLastAssignedLevelID++;
+		//m_AbiLevelID = m_sLastAssignedLevelID++;
+		m_AbiLevelID = m_pMSWord97_list->m_pie_rtf->getDoc()->getUID(UT_UniqueId::List);
 	}
 	m_sPreviousLevel = m_localLevel;
 	UT_String_sprintf(buf,"%d",m_AbiLevelID);
@@ -1317,9 +1320,12 @@ IE_Imp_RTF::IE_Imp_RTF(PD_Document * pDocument)
 	m_bAppendAnyway(false),
 	m_bInFootnote(false),
 	m_iDepthAtFootnote(0),
-	m_iLastFootnoteId(0),
+	m_iLastFootnoteId((UT_uint32)pDocument->getUID(UT_UniqueId::Footnote)),
 	m_iHyperlinkOpen(0),
-	m_bBidiMode(false)
+	m_bBidiMode(false),
+	m_bFootnotePending(false),
+	m_bFtnReferencePending(false),
+	m_bNoteIsFNote(true)
 {
 	if(m_vecAbiListTable.getItemCount() != 0)
 	{
@@ -1693,12 +1699,92 @@ void IE_Imp_RTF::HandleRow(void)
 	UT_DEBUGMSG(("ie_imp_RTF: Handle Row now \n"));
 	m_TableControl.NewRow();
 }
-		
-void IE_Imp_RTF::HandleFootnote(void)
+
+void IE_Imp_RTF::HandleNoteReference(void)
 {
+	// see if we have a reference marker pending ...
+		const XML_Char * attribs[3] ={"footnote-id",NULL,NULL};
+
+		if(!m_bNoteIsFNote)
+		{
+			attribs[0] = "endnote-id";
+		}
+		
+		UT_String footpid;
+		UT_uint32 pid = 0;
+		if(m_bInFootnote && !m_bFtnReferencePending)
+		{
+			UT_String_sprintf(footpid,"%i",m_iLastFootnoteId);
+			attribs[1] = footpid.c_str();
+
+			if(m_bNoteIsFNote)
+			{
+				_appendField ("footnote_anchor",attribs);
+				return;
+			}
+			else
+			{
+				_appendField ("endnote_anchor",attribs);
+				return;
+			}
+		}
+		else if(m_bInFootnote && m_bFtnReferencePending)
+		{
+			// we have a pending reference mark; since the \footnote
+			// keyword pushed the stack on us, we need to temporarily
+			// pop if for the insertion
+			RTFStateStore* pState = NULL;
+			m_stateStack.pop(reinterpret_cast<void**>(&pState));
+
+			m_iLastFootnoteId = getDoc()->getUID(UT_UniqueId::Footnote);
+			UT_String_sprintf(footpid,"%i",m_iLastFootnoteId);
+			attribs[1] = footpid.c_str();
+
+			if(m_bNoteIsFNote)
+			{
+				_appendField ("footnote_ref",attribs);
+			}
+			else
+			{
+				_appendField ("endnote_ref",attribs);
+			}
+			
+			m_bFtnReferencePending = false;
+
+			// now push the the previous top of the stack back
+			// on
+			m_stateStack.push(pState);
+		}
+		else
+		{
+			m_bFtnReferencePending = true;
+		}
+}
+
+void IE_Imp_RTF::HandleNote(void)
+{
+	
 	m_bInFootnote = true;
+	if(m_bFtnReferencePending)
+	{
+		HandleNoteReference();
+	}
+	else
+	{
+		// if there is no reference pending, this is a note with a
+		// manually set marker; we have to flush characters before
+		// inserting the footnote strux
+		FlushStoredChars(true);
+	}
+	
 	m_iDepthAtFootnote = m_stateStack.getDepth();
 	const XML_Char * attribs[3] ={"footnote-id",NULL,NULL};
+
+	if(!m_bNoteIsFNote)
+	{
+		attribs[0] = "endnote-id";
+	}
+	
 	UT_String footpid;
 	UT_String_sprintf(footpid,"%i",m_iLastFootnoteId);
 	attribs[1] = footpid.c_str();
@@ -1706,17 +1792,26 @@ void IE_Imp_RTF::HandleFootnote(void)
 
 	if(m_pImportFile)
 	{
-		getDoc()->appendStrux(PTX_SectionFootnote,attribs);
+		if(m_bNoteIsFNote)
+			getDoc()->appendStrux(PTX_SectionFootnote,attribs);
+		else
+			getDoc()->appendStrux(PTX_SectionEndnote,attribs);
+			
 		getDoc()->appendStrux(PTX_Block,NULL);
 	}
 	else
 	{
-		getDoc()->insertStrux(m_dposPaste,PTX_SectionFootnote,attribs,NULL);
+		if(m_bNoteIsFNote)
+			getDoc()->insertStrux(m_dposPaste,PTX_SectionFootnote,attribs,NULL);
+		else
+			getDoc()->insertStrux(m_dposPaste,PTX_SectionEndnote,attribs,NULL);
+			
 		m_dposPaste++;
 		getDoc()->insertStrux(m_dposPaste,PTX_Block);
 		m_dposPaste++;
 	}
 }
+
 
 UT_Error IE_Imp_RTF::_parseText()
 {
@@ -1741,6 +1836,51 @@ UT_Error IE_Imp_RTF::_parseText()
 		}
 		else
 		{
+			if(m_bFootnotePending && c != '\\')
+			{
+				// not followed by a keyword, this is an ordinary
+				// footnote
+				m_bNoteIsFNote = true;
+				HandleNote();
+				m_bFootnotePending = false;
+			}
+			else if(m_bFootnotePending && c == '\\')
+			{
+				// need to see if the keyword is \ftnalt indicating
+				// endnote
+				unsigned char keyword[MAX_KEYWORD_LEN];
+				long parameter = 0;
+				bool parameterUsed = false;
+				if (ReadKeyword(keyword, &parameter, &parameterUsed, MAX_KEYWORD_LEN))
+				{
+					if(0 == strcmp((const char*)&keyword[0], "ftnalt"))
+					{
+						// we have an end-note
+						m_bNoteIsFNote = false;
+						HandleNote();
+						m_bFootnotePending = false;
+						continue;
+					}
+					else
+					{
+						// we have some other keyword ...
+						m_bNoteIsFNote = true;
+						HandleNote();
+						m_bFootnotePending = false;
+						
+						TranslateKeyword(keyword, parameter, parameterUsed);
+						continue;
+					}
+				}
+				else
+				{
+					// something seriously wrong ...
+					UT_DEBUGMSG(("RTF: could not read keyword (l: %d)\n", __LINE__));
+					continue;
+				}
+			}
+			
+			
 			switch (c)
 			{
 			case '{':
@@ -1756,11 +1896,15 @@ UT_Error IE_Imp_RTF::_parseText()
 				}
 				break;
 			case '\\':
+			{
 				ok = ParseRTFKeyword();
+
 				if (!ok) {
 					UT_DEBUGMSG(("ParseRTFKeyword()\n"));
 				}
 				break;
+			}
+					
 			default:
 				if (m_currentRTFState.m_internalState == RTFStateStore::risNorm)
 				{
@@ -1886,6 +2030,12 @@ UT_Error IE_Imp_RTF::_parseFile(FILE* fp)
 	if(m_pImportFile && UT_OK != _isBidiDocument())
 		return UT_ERROR;
 #endif
+	if(m_pImportFile)
+	{
+		// need to init docs Attributes and props
+		getDoc()->setAttrProp(NULL);
+	}
+	
 	return _parseText();
 }
 
@@ -1987,11 +2137,19 @@ bool IE_Imp_RTF::FlushStoredChars(bool forceInsertPara)
 	{
 		if(m_pImportFile)
 		{
-			getDoc()->appendStrux(PTX_EndFootnote,NULL);
+			if(m_bNoteIsFNote)
+				getDoc()->appendStrux(PTX_EndFootnote,NULL);
+			else
+				getDoc()->appendStrux(PTX_EndEndnote,NULL);
+				
 		}
 		else
 		{
-			ok = getDoc()->insertStrux(m_dposPaste,PTX_EndFootnote);
+			if(m_bNoteIsFNote)
+				ok = getDoc()->insertStrux(m_dposPaste,PTX_EndFootnote);
+			else
+				ok = getDoc()->insertStrux(m_dposPaste,PTX_EndEndnote);
+				
 			m_dposPaste++;
 		}
 		m_bInFootnote = false;
@@ -2627,7 +2785,7 @@ bool IE_Imp_RTF::InsertImage (const UT_ByteBuf * buf, const char * image_name,
 		// Get a unique name for image.
 		UT_ASSERT_HARMLESS(image_name);
 		UT_String szName;
-
+#if 0
 		if( !image_name)
 		{
 			image_name = "image_z";
@@ -2642,6 +2800,10 @@ bool IE_Imp_RTF::InsertImage (const UT_ByteBuf * buf, const char * image_name,
 			}
 			ndx++;
 		}
+#else
+		UT_uint32 iid = getDoc()->getUID(UT_UniqueId::Image);
+		UT_String_sprintf(szName, "%d", iid);
+#endif
 //
 // Code from fg_GraphicsRaster.cpp
 //
@@ -2718,7 +2880,6 @@ bool IE_Imp_RTF::HandlePicture()
 {
 	// this method loads a picture from the file
 	// and insert it in the document.
-	static UT_uint32 nImage = 0;
 
 	unsigned char ch;
 	bool bPictProcessed = false;
@@ -2817,7 +2978,7 @@ bool IE_Imp_RTF::HandlePicture()
 			// if we know how to handle this format, we insert the picture
 
 			UT_String image_name;
-			UT_String_sprintf(image_name,"image_%d",++nImage);
+			UT_String_sprintf(image_name,"%d",getDoc()->getUID(UT_UniqueId::Image));
 
 			// the first char belongs to the picture too
 			SkipBackChar(ch);
@@ -3428,12 +3589,13 @@ bool IE_Imp_RTF::HandleHeaderFooter(RTFHdrFtr::HdrFtrType hftype, UT_uint32 & he
 	UT_DEBUGMSG(("SEVIOR: Doing handle header/footer \n"));
 	header = new RTFHdrFtr ();
 	header->m_type = hftype;
-	UT_uint32 id = 0;
+	UT_uint32 id = getDoc()->getUID(UT_UniqueId::HeaderFtr);
+#if 0
 	while(id < 10000)
 	{
 		id  = UT_rand();
 	}
-
+#endif
 	header->m_id = id;
 
 	m_hdrFtrTable.addItem (header);
@@ -3515,6 +3677,64 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 			getDoc()->setEncodingName(szEncoding);
 			return true;
 		}
+		else if (strcmp(reinterpret_cast<char*>(pKeyword), "aendnotes") == 0)
+		{
+			const XML_Char * props[] = {"document-endnote-place-endsection", "1",
+										NULL};
+			getDoc()->setProperties(&props[0]);
+
+		}
+		else if (strcmp(reinterpret_cast<char*>(pKeyword), "aenddoc") == 0)
+		{
+			const XML_Char * props[] = {"document-endnote-place-enddoc", "1",
+										NULL};
+			getDoc()->setProperties(&props[0]);
+		}
+		else if (strcmp(reinterpret_cast<char*>(pKeyword), "aftnstart") == 0)
+		{
+			const XML_Char * props[] = {"document-endnote-initial", NULL,
+										NULL};
+			UT_String i;
+			UT_String_sprintf(i,"%d",param);
+			props[1] = i.c_str();
+			getDoc()->setProperties(&props[0]);
+		}
+		else if (strcmp(reinterpret_cast<char*>(pKeyword), "aftnrestart") == 0)
+		{
+			const XML_Char * props[] = {"document-endnote-restart-section", "1",
+										NULL};
+			getDoc()->setProperties(&props[0]);
+		}
+		else if (strcmp(reinterpret_cast<char*>(pKeyword), "aftnnar") == 0)
+		{
+			const XML_Char * props[] = {"document-endnote-type", "numeric",
+										NULL};
+			getDoc()->setProperties(&props[0]);
+		}
+		else if (strcmp(reinterpret_cast<char*>(pKeyword), "aftnnalc") == 0)
+		{
+			const XML_Char * props[] = {"document-endnote-type", "lower",
+										NULL};
+			getDoc()->setProperties(&props[0]);
+		}
+		else if (strcmp(reinterpret_cast<char*>(pKeyword), "aftnnauc") == 0)
+		{
+			const XML_Char * props[] = {"document-endnote-type", "upper",
+										NULL};
+			getDoc()->setProperties(&props[0]);
+		}
+		else if (strcmp(reinterpret_cast<char*>(pKeyword), "aftnnrlc") == 0)
+		{
+			const XML_Char * props[] = {"document-endnote-type", "lower-roman",
+										NULL};
+			getDoc()->setProperties(&props[0]);
+		}
+		else if (strcmp(reinterpret_cast<char*>(pKeyword), "aftnnruc") == 0)
+		{
+			const XML_Char * props[] = {"document-footnote-type", "upper-roman",
+										NULL};
+			getDoc()->setProperties(&props[0]);
+		}
 		break;
 	case 'b':
 		if (strcmp(reinterpret_cast<char*>(pKeyword), "b") == 0)
@@ -3581,24 +3801,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		}
 		else if (strcmp(reinterpret_cast<char*>(pKeyword), "chftn") == 0)
 		{
-			const XML_Char * attribs[3] ={"footnote-id",NULL,NULL};
-			UT_String footpid;
-			UT_uint32 pid = 0;
-			if(m_bInFootnote)
-			{
-				UT_String_sprintf(footpid,"%i",m_iLastFootnoteId);
-				attribs[1] = footpid.c_str();
-				return _appendField ("footnote_anchor",attribs);
-			}
-			else
-			{
-				while (pid < AUTO_LIST_RESERVED)
-					pid = UT_rand();
-				m_iLastFootnoteId = pid;
-				UT_String_sprintf(footpid,"%i",m_iLastFootnoteId);
-				attribs[1] = footpid.c_str();
-				return _appendField ("footnote_ref",attribs);
-			}
+			HandleNoteReference();
 		}
  		else if (strcmp(reinterpret_cast<char*>(pKeyword), "cs") == 0)
  		{
@@ -3658,8 +3861,20 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		{
 			return ParseChar(UCS_EN_SPACE);
 		}
-		break;
+		else if (strcmp(reinterpret_cast<char*>(pKeyword), "endnotes") == 0)
+		{
+			const XML_Char * props[] = {"document-endnote-place-endsection", "1",
+										NULL};
+			getDoc()->setProperties(&props[0]);
 
+		}
+		else if (strcmp(reinterpret_cast<char*>(pKeyword), "enddoc") == 0)
+		{
+			const XML_Char * props[] = {"document-endnote-place-enddoc", "1",
+										NULL};
+			getDoc()->setProperties(&props[0]);
+		}
+		break;
 	case 'f':
 		if (strcmp(reinterpret_cast<char*>(pKeyword), "fonttbl") == 0)
 		{
@@ -3710,8 +3925,68 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		}
 		else if( strcmp(reinterpret_cast<char *>(pKeyword), "footnote") == 0)
 		{
-			HandleFootnote();
+			// can be both footnote and endnote ...
+			//HandleFootnote();
+			m_bFootnotePending = true;
 			return true;
+		}
+		else if( strcmp(reinterpret_cast<char *>(pKeyword), "ftnalt") == 0)
+		{
+			// should not be here, since this keyword is supposed to
+			// follow \footnote and is handled separately
+			UT_DEBUGMSG(("RTF Keyword \'ftnalt\' where it should not have been\n"));
+			return true;
+		}
+		else if (strcmp(reinterpret_cast<char*>(pKeyword), "ftnstart") == 0)
+		{
+			const XML_Char * props[] = {"document-footnote-initial", NULL,
+										NULL};
+			UT_String i;
+			UT_String_sprintf(i,"%d",param);
+			props[1] = i.c_str();
+			getDoc()->setProperties(&props[0]);
+		}
+		else if (strcmp(reinterpret_cast<char*>(pKeyword), "ftnrstpg") == 0)
+		{
+			const XML_Char * props[] = {"document-footnote-restart-page", "1",
+										NULL};
+			getDoc()->setProperties(&props[0]);
+		}
+		else if (strcmp(reinterpret_cast<char*>(pKeyword), "ftnrestart") == 0)
+		{
+			const XML_Char * props[] = {"document-footnote-restart-section", "1",
+										NULL};
+			getDoc()->setProperties(&props[0]);
+		}
+		else if (strcmp(reinterpret_cast<char*>(pKeyword), "ftnnar") == 0)
+		{
+			const XML_Char * props[] = {"document-footnote-type", "numeric",
+										NULL};
+			getDoc()->setProperties(&props[0]);
+		}
+		else if (strcmp(reinterpret_cast<char*>(pKeyword), "ftnnalc") == 0)
+		{
+			const XML_Char * props[] = {"document-footnote-type", "lower",
+										NULL};
+			getDoc()->setProperties(&props[0]);
+		}
+		else if (strcmp(reinterpret_cast<char*>(pKeyword), "ftnnauc") == 0)
+		{
+			const XML_Char * props[] = {"document-footnote-type", "upper",
+										NULL};
+			getDoc()->setProperties(&props[0]);
+		}
+		else if (strcmp(reinterpret_cast<char*>(pKeyword), "ftnnrlc") == 0)
+		{
+			const XML_Char * props[] = {"document-footnote-type", "lower-roman",
+										NULL};
+			getDoc()->setProperties(&props[0]);
+		}
+		else if (strcmp(reinterpret_cast<char*>(pKeyword), "ftnnruc") == 0)
+		{
+			const XML_Char * props[] = {"document-footnote-type", "upper-roman",
+										NULL};
+			getDoc()->setProperties(&props[0]);
 		}
 		break;
 	case 'h':
@@ -4515,7 +4790,8 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 //
 						else if (strcmp(reinterpret_cast<char*>(keyword_star), "footnote") == 0)
 						{
-							HandleFootnote();
+							//HandleFootnote();
+							m_bFootnotePending = true;
 							return true;
 						}
 #endif
@@ -5159,11 +5435,14 @@ UT_uint32 IE_Imp_RTF::mapID(UT_uint32 id)
 					}
 				}
 				if(pMapAuto == NULL )
-					mappedID = UT_rand();
+					//mappedID = UT_rand();
+					mappedID = getDoc()->getUID(UT_UniqueId::List);
 				else if( getAbiList(i)->level <= pMapAuto->getLevel() && pMapAuto->getID() != 0)
 					mappedID = pMapAuto->getID();
 				else
-					mappedID = UT_rand();
+					//mappedID = UT_rand();
+					mappedID = getDoc()->getUID(UT_UniqueId::List);
+				
 				getAbiList(i)->hasBeenMapped = true;
 				getAbiList(i)->mapped_id = mappedID;
 				if(highestLevel > 0)
@@ -6036,7 +6315,7 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 		UT_DEBUGMSG (("Applying header\n"));
 		propsArray [paramIndex] = "header";
 		paramIndex++;
-		UT_String_sprintf (szHdrID, "hdr%u", m_currentHdrID);
+		UT_String_sprintf (szHdrID, "%u", m_currentHdrID);
 		propsArray [paramIndex] = szHdrID.c_str();
 		paramIndex++;
 	}
@@ -6045,7 +6324,7 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 		UT_DEBUGMSG (("Applying header even\n"));
 		propsArray [paramIndex] = "header-even";
 		paramIndex++;
-		UT_String_sprintf (szHdrEvenID, "hdrevn%u", m_currentHdrEvenID);
+		UT_String_sprintf (szHdrEvenID, "%u", m_currentHdrEvenID);
 		propsArray [paramIndex] = szHdrEvenID.c_str();
 		paramIndex++;
 	}
@@ -6054,7 +6333,7 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 		UT_DEBUGMSG (("Applying header first\n"));
 		propsArray [paramIndex] = "header-first";
 		paramIndex++;
-		UT_String_sprintf (szHdrFirstID, "hdrfst%u", m_currentHdrFirstID);
+		UT_String_sprintf (szHdrFirstID, "%u", m_currentHdrFirstID);
 		propsArray [paramIndex] = szHdrFirstID.c_str();
 		paramIndex++;
 	}
@@ -6063,7 +6342,7 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 		UT_DEBUGMSG (("Applying header last\n"));
 		propsArray [paramIndex] = "header-last";
 		paramIndex++;
-		UT_String_sprintf (szHdrLastID, "hdrlst%u", m_currentHdrLastID);
+		UT_String_sprintf (szHdrLastID, "%u", m_currentHdrLastID);
 		propsArray [paramIndex] = szHdrLastID.c_str();
 		paramIndex++;
 	}
@@ -6072,7 +6351,7 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 		UT_DEBUGMSG (("Applying footer\n"));
 		propsArray [paramIndex] = "footer";
 		paramIndex++;
-		UT_String_sprintf (szFtrID, "ftr%u", m_currentFtrID);
+		UT_String_sprintf (szFtrID, "%u", m_currentFtrID);
 		propsArray [paramIndex] = szFtrID.c_str();
 		paramIndex++;
 	}
@@ -6081,7 +6360,7 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 		UT_DEBUGMSG (("Applying footer even\n"));
 		propsArray [paramIndex] = "footer-even";
 		paramIndex++;
-		UT_String_sprintf (szFtrEvenID, "ftrevn%u", m_currentFtrEvenID);
+		UT_String_sprintf (szFtrEvenID, "%u", m_currentFtrEvenID);
 		propsArray [paramIndex] = szFtrEvenID.c_str();
 		paramIndex++;
 	}
@@ -6090,7 +6369,7 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 		UT_DEBUGMSG (("Applying footer first\n"));
 		propsArray [paramIndex] = "footer-first";
 		paramIndex++;
-		UT_String_sprintf (szFtrFirstID, "ftrfst%u", m_currentFtrFirstID);
+		UT_String_sprintf (szFtrFirstID, "%u", m_currentFtrFirstID);
 		propsArray [paramIndex] = szFtrFirstID.c_str();
 		paramIndex++;
 	}
@@ -6099,7 +6378,7 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 		UT_DEBUGMSG (("Applying footer last\n"));
 		propsArray [paramIndex] = "footer-last";
 		paramIndex++;
-		UT_String_sprintf (szFtrLastID, "ftrlst%u", m_currentFtrLastID);
+		UT_String_sprintf (szFtrLastID, "%u", m_currentFtrLastID);
 		propsArray [paramIndex] = szFtrLastID.c_str();
 		paramIndex++;
 	}
@@ -6347,14 +6626,15 @@ bool IE_Imp_RTF::HandleListLevel(RTF_msword97_list * pList, UT_uint32 levelCount
 	pLevel->m_pbParaProps = pbParas;
 	pLevel->m_pbCharProps = pbChars;
 	pList->m_RTF_level[levelCount] = pLevel;
-#if 1 // Sevior use this!! The other method can lead to inccorect results upon
+#if 0 // Sevior use this!! The other method can lead to inccorect results upon
 	// import. If we export RTF list ID starting at 10000 they might clash
     // with these later.
 	pLevel->m_AbiLevelID = UT_rand();
 	while(pLevel->m_AbiLevelID < 10000)
 		pLevel->m_AbiLevelID = UT_rand();
 #else
-	pLevel->m_AbiLevelID = pLevel->m_sLastAssignedLevelID++;
+	//pLevel->m_AbiLevelID = pLevel->m_sLastAssignedLevelID++;
+	pLevel->m_AbiLevelID = getDoc()->getUID(UT_UniqueId::List);
 #endif
 	while(nesting > 0)
 	{
@@ -8185,35 +8465,35 @@ void IE_Imp_RTF::_appendHdrFtr ()
 		switch (header->m_type)
 		{
 		case RTFHdrFtr::hftHeader:
-			UT_String_sprintf (tempBuffer, "hdr%u", header->m_id);
+			UT_String_sprintf (tempBuffer, "%u", header->m_id);
 			szType = "header";
 			break;
 		case RTFHdrFtr::hftHeaderEven:
-			UT_String_sprintf (tempBuffer, "hdrevn%u", header->m_id);
+			UT_String_sprintf (tempBuffer, "%u", header->m_id);
 			szType = "header-even";
 			break;
 		case RTFHdrFtr::hftHeaderFirst:
-			UT_String_sprintf (tempBuffer, "hdrfst%u", header->m_id);
+			UT_String_sprintf (tempBuffer, "%u", header->m_id);
 			szType = "header-first";
 			break;
 		case RTFHdrFtr::hftHeaderLast:
-			UT_String_sprintf (tempBuffer, "hdrlst%u", header->m_id);
+			UT_String_sprintf (tempBuffer, "%u", header->m_id);
 			szType = "header-last";
 			break;
 		case RTFHdrFtr::hftFooter:
-			UT_String_sprintf (tempBuffer, "ftr%u", header->m_id);
+			UT_String_sprintf (tempBuffer, "%u", header->m_id);
 			szType = "footer";
 			break;
 		case RTFHdrFtr::hftFooterEven:
-			UT_String_sprintf (tempBuffer, "ftrevn%u", header->m_id);
+			UT_String_sprintf (tempBuffer, "%u", header->m_id);
 			szType = "footer-even";
 			break;
 		case RTFHdrFtr::hftFooterFirst:
-			UT_String_sprintf (tempBuffer, "ftrfst%u", header->m_id);
+			UT_String_sprintf (tempBuffer, "%u", header->m_id);
 			szType = "footer-first";
 			break;
 		case RTFHdrFtr::hftFooterLast:
-			UT_String_sprintf (tempBuffer, "ftrlst%u", header->m_id);
+			UT_String_sprintf (tempBuffer, "%u", header->m_id);
 			szType = "footer-last";
 			break;
 		default:

@@ -262,7 +262,6 @@ public:
 	bool ParseLevelText(const UT_String & szLevelText,const UT_String & szLevelNumbers, UT_uint32 iLevel);
 	UT_sint32 m_levelStartAt;
 	UT_uint32 m_AbiLevelID;
-	static UT_uint32 m_sLastAssignedLevelID;
 	static UT_uint32 m_sPreviousLevel;
 	UT_uint32 m_RTFListType;
 	UT_String m_listDelim;
@@ -287,7 +286,6 @@ public:
 	UT_uint32 m_RTF_listID;
 	UT_uint32 m_RTF_listTemplateID;
 	RTF_msword97_level * m_RTF_level[9];
-private:
 	IE_Imp_RTF * m_pie_rtf;
 };
 
@@ -636,7 +634,9 @@ private:
     void           HandleCell(void);
 	void           HandleCellX(UT_sint32 cellx);
     void           HandleRow(void);
-	void           HandleFootnote();
+	void           HandleNote();
+	void           HandleNoteReference();
+	
 	// Section property handlers
 	bool ApplySectionAttributes();
 	bool ResetSectionAttributes();
@@ -741,6 +741,9 @@ private:
 	UT_uint32             m_iHyperlinkOpen;
 	bool                  m_bBidiMode;
 	UT_Stack              m_pasteTableStack;
+	bool                  m_bFootnotePending;
+	bool                  m_bFtnReferencePending;
+	bool                  m_bNoteIsFNote;
 };
 
 #endif /* IE_IMP_RTF_H */
