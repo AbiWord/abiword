@@ -372,7 +372,7 @@ void PS_Graphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 y
 	
 	char buf[OUR_LINE_LIMIT*2];
 //	UT_sint32 nA = getFontAscent();
-	sprintf(buf,"%d %d %d %d ML\n", x2, y2, x1, y1);
+	g_snprintf(buf,sizeof (buf),"%d %d %d %d ML\n", x2, y2, x1, y1);
 	m_ps->writeBytes(buf);
 }
 
@@ -535,7 +535,7 @@ UT_Bool PS_Graphics::_startPage(const char * szPageLabel, UT_uint32 pageNumber,
 	// emit stuff prior to each page
 	
 	char buf[1024];
-	sprintf(buf,"%d",pageNumber);
+	g_snprintf(buf, sizeof(buf),"%d",pageNumber);
 
 	const char * argv[2] = { buf, buf };
 	m_ps->formatComment("Page",argv,2);
@@ -544,7 +544,7 @@ UT_Bool PS_Graphics::_startPage(const char * szPageLabel, UT_uint32 pageNumber,
 
 	m_ps->formatComment("BeginPageSetup");
 
-	sprintf(buf,"%d %d %d %s\n",iWidth,iHeight,PS_RESOLUTION,((bPortrait) ? "BPP" : "BPL"));
+	g_snprintf(buf,sizeof (buf),"%d %d %d %s\n",iWidth,iHeight,PS_RESOLUTION,((bPortrait) ? "BPP" : "BPL"));
 	m_ps->writeBytes(buf);
 	
 	// TODO add page-setup stuff here
@@ -663,18 +663,18 @@ void PS_Graphics::_emit_IncludeResource(void)
 		XAP_UnixFontXLFD myXLFD(unixfont->getXLFD());
 
 		// write findfont
-		g_snprintf(buf, 128, "/%s findfont\n", psf->getMetricsData()->gfi->fontName);
+		g_snprintf(buf, sizeof (buf), "/%s findfont\n", psf->getMetricsData()->gfi->fontName);
 		m_ps->writeBytes(buf);
 
 		// Compare with iso8859, and emit LAT for that font
 		if (!UT_stricmp(myXLFD.getRegistry(), "iso8859") && !UT_stricmp(myXLFD.getEncoding(), "1"))
 		{
-			g_snprintf(buf, 128, "LAT\n");
+			g_snprintf(buf, sizeof (buf), "LAT\n");
 			m_ps->writeBytes(buf);
 		}
 
 		// exec the swapper macro
-		g_snprintf(buf, 128, "/%s EXC\n", psf->getMetricsData()->gfi->fontName);
+		g_snprintf(buf, sizeof (buf), "/%s EXC\n", psf->getMetricsData()->gfi->fontName);
 		m_ps->writeBytes(buf);
 
 	}
@@ -706,7 +706,7 @@ void PS_Graphics::_emit_PrologMacros(void)
 	
 	for (unsigned int k=0; k<NrElements(t); k++)
 	{
-		sprintf(buf,"  %s\n",t[k]);
+		g_snprintf(buf,sizeof(buf),"  %s\n",t[k]);
 		m_ps->writeBytes(buf);
 	}
 }
@@ -720,7 +720,7 @@ void PS_Graphics::_emit_FontMacros(void)
 	for (k=0; k<kLimit; k++)
 	{
 		PSFont * psf = (PSFont *)m_vecFontList.getNthItem(k);
-		sprintf(buf,"  /F%d {%d /%s FSF setfont} bind def\n", k,
+		g_snprintf(buf,sizeof(buf),"  /F%d {%d /%s FSF setfont} bind def\n", k,
 				psf->getSize(), psf->getMetricsData()->gfi->fontName);
 		m_ps->writeBytes(buf);
 	}
@@ -729,14 +729,14 @@ void PS_Graphics::_emit_FontMacros(void)
 void PS_Graphics::_emit_SetFont(void)
 {
 	char buf[1024];
-	g_snprintf(buf, 1024, "F%d\n", m_pCurrentFont->getIndex());
+	g_snprintf(buf, sizeof (buf), "F%d\n", m_pCurrentFont->getIndex());
 	m_ps->writeBytes(buf);
 }
 
 void PS_Graphics::_emit_SetLineWidth(void)
 {
 	char buf[1024];
-	g_snprintf(buf, 1024, " %d setlinewidth\n", m_iLineWidth);
+	g_snprintf(buf, sizeof(buf), " %d setlinewidth\n", m_iLineWidth);
 	m_ps->writeBytes(buf);
 }
 
@@ -757,7 +757,7 @@ void PS_Graphics::_emit_SetColor(void)
 	switch(m_cs)
 	{
 	case GR_Graphics::GR_COLORSPACE_COLOR:
-        sprintf(buf, "%.8f %.8f %.8f setrgbcolor\n",
+        g_snprintf(buf, sizeof (buf), "%.8f %.8f %.8f setrgbcolor\n",
                 ((float) m_currentColor.m_red / (float) 255.0),
                 ((float) m_currentColor.m_grn / (float) 255.0),
                 ((float) m_currentColor.m_blu / (float) 255.0));
@@ -767,12 +767,12 @@ void PS_Graphics::_emit_SetColor(void)
 									(float) m_currentColor.m_grn +
 									(float) m_currentColor.m_blu ) /
 								  (float) 3.0);
-		sprintf(buf,"%.8f setgray\n", (float) newclr / (float) 255.0);
+		g_snprintf(buf, sizeof(buf), "%.8f setgray\n", (float) newclr / (float) 255.0);
 		break;
 	case GR_Graphics::GR_COLORSPACE_BW:
 		// Black & White is a special case of the Gray color space where
 		// all colors are 0 (black) and all absence of color is 1 (white)
-		sprintf(buf,"0 setgray\n");
+		g_snprintf(buf,sizeof(buf),"0 setgray\n");
 		break;
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -836,28 +836,28 @@ void PS_Graphics::drawRGBImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
 	char buf[128];
 
 	// remember all the context information 
-	sprintf(buf, "gsave\n");
+	g_snprintf(buf, sizeof(buf), "gsave\n");
 	m_ps->writeBytes(buf);	
 
 	// this is the number of bytes in a "row" of image data, which
 	// is image->width times 3 bytes per pixel
-	sprintf(buf, "/rowdata %d string def\n", image->width * 3);
+	g_snprintf(buf, sizeof(buf),"/rowdata %d string def\n", image->width * 3);
 	m_ps->writeBytes(buf);
 	
 	// translate for quadrant 2, so Y values are negative; land us at
 	// lower left of image (baseline), which is twice the height
-	sprintf(buf, "%d %d translate\n", xDest, m_iRasterPosition - yDest  - iDestHeight);
+	g_snprintf(buf, sizeof (buf), "%d %d translate\n", xDest, m_iRasterPosition - yDest  - iDestHeight);
 	m_ps->writeBytes(buf);
 
-	sprintf(buf, "%d %d scale\n", iDestWidth, iDestHeight);
+	g_snprintf(buf, sizeof (buf),"%d %d scale\n", iDestWidth, iDestHeight);
 	m_ps->writeBytes(buf);
 
 	// use true image source data dimensions for matrix 
-	sprintf(buf, "%d %d 8 [%d 0 0 %d 0 %d]\n", image->width, image->height,
+	g_snprintf(buf, sizeof (buf),"%d %d 8 [%d 0 0 %d 0 %d]\n", image->width, image->height,
 			image->width, image->height * -1, image->height);
 	m_ps->writeBytes(buf);
 	
-	sprintf(buf, "{currentfile\n  rowdata readhexstring pop}\nfalse 3\ncolorimage\n");
+	g_snprintf(buf, sizeof (buf),"{currentfile\n  rowdata readhexstring pop}\nfalse 3\ncolorimage\n");
 	m_ps->writeBytes(buf);
 	
 	// "image" is full of 24 bit data; throw the data specifications
@@ -870,21 +870,21 @@ void PS_Graphics::drawRGBImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
 	for (cursor = start, col = 0 ; cursor < end; cursor++, col++)
 	{
 		// fetch a byte and convert to hex
-		g_snprintf((char *) hexbuf, 3, "%.2X", *cursor);
+		g_snprintf((char *) hexbuf, sizeof (hexbuf), "%.2X", *cursor);
 		m_ps->writeBytes(hexbuf, 2);
 
 		if (col == 40) // 2 chars per round, 80 columns total
 		{
 			col = -1;
-			sprintf((char *) hexbuf, "\n");
+			g_snprintf((char *) hexbuf, sizeof(hexbuf), "\n");
 			m_ps->writeBytes(hexbuf, 1);
 		}
 	}
-	sprintf(buf, "\n");
+	g_snprintf(buf, sizeof(buf), "\n");
 	m_ps->writeBytes(buf);
 
 	// recall all that great info
-	sprintf(buf, "grestore\n");
+	g_snprintf(buf, sizeof(buf),"grestore\n");
 	m_ps->writeBytes(buf);
 	
 }
@@ -906,28 +906,28 @@ void PS_Graphics::drawGrayImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest
 	char buf[128];
 
 	// remember all the context information 
-	sprintf(buf, "gsave\n");
+	g_snprintf(buf, sizeof(buf),"gsave\n");
 	m_ps->writeBytes(buf);	
 
 	// this is the number of bytes in a "row" of image data, which
 	// is image->width in a grayscale image
-	sprintf(buf, "/rowdata %d string def\n", image->width);
+	g_snprintf(buf, sizeof(buf),"/rowdata %d string def\n", image->width);
 	m_ps->writeBytes(buf);
 	
 	// translate for quadrant 2, so Y values are negative; land us at
 	// lower left of image (baseline), which is twice the height
-	sprintf(buf, "%d %d translate\n", xDest, m_iRasterPosition - yDest  - iDestHeight);
+	g_snprintf(buf, sizeof(buf),"%d %d translate\n", xDest, m_iRasterPosition - yDest  - iDestHeight);
 	m_ps->writeBytes(buf);
 
-	sprintf(buf, "%d %d scale\n", iDestWidth, iDestHeight);
+	g_snprintf(buf, sizeof(buf),"%d %d scale\n", iDestWidth, iDestHeight);
 	m_ps->writeBytes(buf);
 
 	// use true image source data dimensions for matrix 
-	sprintf(buf, "%d %d 8 [%d 0 0 %d 0 %d]\n", image->width, image->height,
+	g_snprintf(buf, sizeof(buf),"%d %d 8 [%d 0 0 %d 0 %d]\n", image->width, image->height,
 			image->width, image->height * -1, image->height);
 	m_ps->writeBytes(buf);
 
-	sprintf(buf, "{currentfile\n  rowdata readhexstring pop}\nimage\n");
+	g_snprintf(buf, sizeof(buf),"{currentfile\n  rowdata readhexstring pop}\nimage\n");
 	// color image does:
 	// sprintf(buf, "{currentfile\n  rowdata readhexstring pop}\nfalse 3\ncolorimage\n");
 	m_ps->writeBytes(buf);
@@ -956,11 +956,11 @@ void PS_Graphics::drawGrayImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest
 #if 0
 		// We can use the Y channel from the YIQ spec, which weights
 		// the R, G, and B channels to be perceptually more balanced.
-		g_snprintf((char *) hexbuf, 3, "%.2X", ( (UT_Byte) ( ( (float) (*cursor++) * (float) (0.299) +
+		g_snprintf((char *) hexbuf, sizeof(hexbuf), "%.2X", ( (UT_Byte) ( ( (float) (*cursor++) * (float) (0.299) +
 															   (float) (*cursor++) * (float) (0.587) +
 															   (float) (*cursor++) * (float) (0.114) ) ) ));
 #endif
-		g_snprintf((char *) hexbuf, 3, "%.2X", ( (UT_Byte) ( ( (float) (*cursor++) * (float) (1) +
+		g_snprintf((char *) hexbuf, sizeof(hexbuf), "%.2X", ( (UT_Byte) ( ( (float) (*cursor++) * (float) (1) +
 															   (float) (*cursor++) * (float) (1) +
 															   (float) (*cursor++) * (float) (1) ) /
 															 (float) (3.0) )) );
@@ -974,11 +974,11 @@ void PS_Graphics::drawGrayImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest
 		else
 			col++;
 	}
-	sprintf(buf, "\n");
+	g_snprintf(buf, sizeof(buf),"\n");
 	m_ps->writeBytes(buf);
 
 	// recall all that great info
-	sprintf(buf, "grestore\n");
+	g_snprintf(buf, sizeof(buf),"grestore\n");
 	m_ps->writeBytes(buf);
 	
 }
