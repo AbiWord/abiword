@@ -1593,6 +1593,11 @@ void FV_View::insertParagraphBreaknoListUpdate(void)
 	}
 }
 
+UT_Bool FV_View::appendStyle(const XML_Char ** style)
+{
+        return m_pDoc->appendStyle(style);
+}
+
 UT_Bool FV_View::setStyle(const XML_Char * style)
 {
 	UT_Bool bRet;

@@ -46,6 +46,7 @@ CPPSRCS=		xap_UnixApp.cpp				\
 			xap_UnixPSGenerate.cpp			\
 			xap_UnixPSParseAFM.cpp			\
 			xap_UnixPSImage.cpp			\
+			xap_UnixModule.cpp                      \
 			xap_UnixPSGraphics.cpp			\
 			xap_UnixEncodingManager.cpp
 

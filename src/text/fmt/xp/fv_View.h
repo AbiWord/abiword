@@ -196,6 +196,7 @@ public:
 
 	UT_Bool	setStyle(const XML_Char * style);
 	UT_Bool	getStyle(const XML_Char ** style);
+	UT_Bool appendStyle(const XML_Char ** style);
 
 	UT_uint32		getCurrentPageNumber(void);
 
