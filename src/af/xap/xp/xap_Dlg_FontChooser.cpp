@@ -449,6 +449,7 @@ XAP_Preview_FontPreview::~XAP_Preview_FontPreview()
 		g_list_free(m_pGlyphString);
 	}
 #endif
+	delete m_pFont;
 }
 
 /*!
