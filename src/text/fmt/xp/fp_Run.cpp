@@ -4052,10 +4052,10 @@ bool fp_FieldEndnoteAnchorRun::calculateValue(void)
 	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
 	sz_ucs_FieldValue[0] = 0;
 
-	FootnoteType iFootType = pView->getLayout()->getFootnoteType();
+	FootnoteType iEndType = pView->getLayout()->getEndnoteType();
 
 	UT_String sFieldValue;
-	pView->getLayout()->getStringFromFootnoteVal(sFieldValue,endnoteNo,iFootType);
+	pView->getLayout()->getStringFromFootnoteVal(sFieldValue,endnoteNo,iEndType);
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, sFieldValue.c_str());
 
 	return _setValue(sz_ucs_FieldValue);
@@ -4088,10 +4088,10 @@ bool fp_FieldEndnoteRefRun::calculateValue(void)
 	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
 	sz_ucs_FieldValue[0] = 0;
 
-	FootnoteType iFootType = pView->getLayout()->getFootnoteType();
+	FootnoteType iEndType = pView->getLayout()->getEndnoteType();
 
 	UT_String sFieldValue;
-	pView->getLayout()->getStringFromFootnoteVal(sFieldValue,endnoteNo,iFootType);
+	pView->getLayout()->getStringFromFootnoteVal(sFieldValue,endnoteNo,iEndType);
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, sFieldValue.c_str());
 
 	return _setValue(sz_ucs_FieldValue);
