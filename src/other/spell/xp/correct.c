@@ -50,6 +50,9 @@ static char Rcs_Id[] =
 
 /*
  * $Log$
+ * Revision 1.1  2001/04/15 16:01:24  tomas_f
+ * moving to spell/xp
+ *
  * Revision 1.2  1999/10/05 16:17:28  paul
  * Fixed build, and other tidyness.
  * Spell dialog enabled by default, with keyboard binding of F7.

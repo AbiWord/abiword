@@ -18,7 +18,7 @@
  */
 
 #include "spell_manager.h"
-
+#include "ut_debugmsg.h"
 // we either use an ispell or pspell based backend
 #ifdef HAVE_PSPELL
 #include "pspell_checker.h"
@@ -92,6 +92,7 @@ SpellManager::instance ()
 SpellChecker *
 SpellManager::requestDictionary (const char * szLang)
 {  
+	//UT_DEBUGMSG(("SpellManager: requested dictionary %s\n", szLang));
 	SpellCheckerClass * checker = 0;
 	
 	// first look up the entry in the hashtable
@@ -100,6 +101,7 @@ SpellManager::requestDictionary (const char * szLang)
 		return (SpellCheckerClass *)pEntry->pData;
 	
 	// not found, so insert it
+	//UT_DEBUGMSG(("Dictionary not found, we try to create a new checker\n"));
 	checker = new SpellCheckerClass ();
 	
 	if (checker->requestDictionary (szLang))
@@ -111,6 +113,7 @@ SpellManager::requestDictionary (const char * szLang)
 	else
     {
 		delete checker;
+		//UT_DEBUGMSG(("The new checker does not support this language.\n"));
 		return 0;
     }
 }

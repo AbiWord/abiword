@@ -1,6 +1,6 @@
 #! gmake
 
-## AbiSource Program Utilities
+## AbiWord
 ## Copyright (C) 1998 AbiSource, Inc.
 ##
 ## This program is free software; you can redistribute it and/or
@@ -18,46 +18,10 @@
 ## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
 ## 02111-1307, USA.
 
-# TODO we should move this down into src/other/spell/xp
-
 ABI_ROOT:=$(shell pwd)/../../..
-ABI_PEER:=/spell
+include $(ABI_ROOT)/src/config/abi_defs_wp.mk
 
-include $(ABI_ROOT)/src/config/abi_defs.mk
-
-#dummy initialization
-CSRCS=
-CPPSRCS= spell_manager.cpp
-
-ifdef ABI_OPT_PSPELL
-	CPPSRCS+= pspell_checker.cpp
-else
-	CSRCS=	newMain.c good.c tgood.c lookup.c makedent.c hash.c \
-correct.c 
-	CPPSRCS+= ispell_checker.cpp
-endif
-
-LIBRARY_NAME=		AbiSpell
-LIBRARY_VERSION=	$(ABI_VERSION)
-TARGETS=		$(LIBRARY)
-
-# Win32 must build libiconv as a peer, Unix should either
-# have iconv.h available as part of its C library (GNU libc
-# systems) or have it installed as part of the libiconv-1.0
-# package.
-
-# Test for iconv in system locations
-HAVE_ICONV_SYSTEM := $(shell if [ -r /usr/include/iconv.h -o -r /usr/local/include/iconv.h ] ; then echo 1 ; fi)
-
-ifeq ($(OS_NAME), WIN32)
-INCLUDES=		-I$(ABI_XX_ROOT)/../libiconv/include
-else
-ifneq ($(HAVE_ICONV_SYSTEM),1)
-INCLUDES= 		-I$(ABI_ROOT)/../libiconv/include
-endif
-endif
-
+DIRS=	xp $(ABI_NATIVE)
 
 include $(ABI_ROOT)/src/config/abi_rules.mk
 
-build:: $(TARGETS)

@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.1  2001/04/15 16:01:24  tomas_f
+ * moving to spell/xp
+ *
  * Revision 1.13  2001/04/13 12:33:12  tamlin
  * ispell can now be used from C++
  *

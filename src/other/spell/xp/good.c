@@ -48,6 +48,9 @@ static char Rcs_Id[] =
 
 /*
  * $Log$
+ * Revision 1.1  2001/04/15 16:01:24  tomas_f
+ * moving to spell/xp
+ *
  * Revision 1.5  2000/02/09 22:35:25  sterwill
  * Clean up some warnings
  *

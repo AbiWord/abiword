@@ -49,6 +49,9 @@ static char Rcs_Id[] =
 
 /*
  * $Log$
+ * Revision 1.1  2001/04/15 16:01:24  tomas_f
+ * moving to spell/xp
+ *
  * Revision 1.7  1999/10/20 06:03:56  sterwill
  * Changed C++-style comments to C-style comments in C code.
  *

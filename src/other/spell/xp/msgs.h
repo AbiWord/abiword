@@ -65,6 +65,9 @@
 
 /*
  * $Log$
+ * Revision 1.1  2001/04/15 16:01:24  tomas_f
+ * moving to spell/xp
+ *
  * Revision 1.1  1998/12/28 18:04:43  davet
  * Spell checker code stripped from ispell.  At this point, there are
  * two external routines...  the Init routine, and a check-a-word routine

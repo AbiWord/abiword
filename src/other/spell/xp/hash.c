@@ -47,7 +47,11 @@ static char Rcs_Id[] =
 
 /*
  * $Log$
+ * Revision 1.1  2001/04/15 16:01:24  tomas_f
+ * moving to spell/xp
+ *
  * Revision 1.3  1998/12/29 14:55:33  eric
+ *
  * I've doctored the ispell code pretty extensively here.  It is now
  * warning-free on Win32.  It also *works* on Win32 now, since I
  * replaced all the I/O calls with ANSI standard ones.

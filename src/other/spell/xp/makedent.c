@@ -43,6 +43,9 @@ static char Rcs_Id[] =
 
 /*
  * $Log$
+ * Revision 1.1  2001/04/15 16:01:24  tomas_f
+ * moving to spell/xp
+ *
  * Revision 1.6  1999/12/21 18:46:29  sterwill
  * ispell patch for non-English dictionaries by Henrik Berg <henrik@lansen.se>
  *
