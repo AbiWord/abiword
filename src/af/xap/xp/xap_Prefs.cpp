@@ -45,6 +45,7 @@ enum
 {
 	TT_ABIPREFERENCES,
 	TT_GEOMETRY,
+	TT_PLUGIN,
 	TT_RECENT,
 	TT_SCHEME,
 	TT_SELECT
@@ -55,6 +56,7 @@ static struct xmlToIdMapping s_Tokens[] =
 {
 	{ "AbiPreferences",		TT_ABIPREFERENCES },
 	{ "Geometry",			TT_GEOMETRY },
+	{ "Plugin",				TT_PLUGIN },
 	{ "Recent",				TT_RECENT },
 	{ "Scheme",				TT_SCHEME },
 	{ "Select",				TT_SELECT }
@@ -414,19 +416,30 @@ XAP_Prefs::XAP_Prefs(XAP_App * pApp)
 XAP_Prefs::~XAP_Prefs(void)
 {
 	UT_VECTOR_PURGEALL(XAP_PrefsScheme *, m_vecSchemes);
+	UT_VECTOR_PURGEALL(XAP_PrefsScheme *, m_vecPluginSchemes);
 	UT_VECTOR_FREEALL(char *, m_vecRecent);
 	UT_VECTOR_PURGEALL(tPrefsListenersPair *, m_vecPrefsListeners);
 }
 
 /*****************************************************************/
 
-XAP_PrefsScheme * XAP_Prefs::getNthScheme(UT_uint32 k) const
+XAP_PrefsScheme * XAP_Prefs::_getNthScheme(UT_uint32 k, const UT_Vector &vecSchemes) const
 {
-	UT_uint32 kLimit = m_vecSchemes.getItemCount();
+	UT_uint32 kLimit = vecSchemes.getItemCount();
 	if (k < kLimit)
-		return (XAP_PrefsScheme *)m_vecSchemes.getNthItem(k);
+		return (XAP_PrefsScheme *)vecSchemes.getNthItem(k);
 	else
 		return NULL;
+}
+
+XAP_PrefsScheme * XAP_Prefs::getNthScheme(UT_uint32 k) const
+{
+	return _getNthScheme(k, m_vecSchemes);
+}
+
+XAP_PrefsScheme * XAP_Prefs::getNthPluginScheme(UT_uint32 k) const
+{
+	return _getNthScheme(k, m_vecPluginSchemes);
 }
 
 XAP_PrefsScheme * XAP_Prefs::getScheme(const XML_Char * szSchemeName) const
@@ -437,6 +450,22 @@ XAP_PrefsScheme * XAP_Prefs::getScheme(const XML_Char * szSchemeName) const
 	for (k=0; k<kLimit; k++)
 	{
 		XAP_PrefsScheme * p = getNthScheme(k);
+		UT_ASSERT(p);
+		if (strcmp((const char*)szSchemeName,(const char*)p->getSchemeName()) == 0)
+			return p;
+	}
+
+	return NULL;
+}
+
+XAP_PrefsScheme * XAP_Prefs::getPluginScheme(const XML_Char * szSchemeName) const
+{
+	UT_uint32 kLimit = m_vecPluginSchemes.getItemCount();
+	UT_uint32 k;
+
+	for (k=0; k<kLimit; k++)
+	{
+		XAP_PrefsScheme * p = getNthPluginScheme(k);
 		UT_ASSERT(p);
 		if (strcmp((const char*)szSchemeName,(const char*)p->getSchemeName()) == 0)
 			return p;
@@ -457,6 +486,11 @@ bool XAP_Prefs::addScheme(XAP_PrefsScheme * pNewScheme)
 	}
 	
 	return (m_vecSchemes.addItem(pNewScheme) == 0);
+}
+
+bool XAP_Prefs::addPluginScheme(XAP_PrefsScheme * pNewScheme)
+{
+	return (m_vecPluginSchemes.addItem(pNewScheme) == 0);
 }
 
 
@@ -765,6 +799,51 @@ void XAP_Prefs::startElement(const XML_Char *name, const XML_Char **atts)
 		}
 
 		if (!addScheme(pNewScheme))
+			goto MemoryError;
+		pNewScheme = NULL;				// we don't own it anymore
+		break;
+		}
+		case TT_PLUGIN:
+		{
+		// Almost the same as TT_SCHEME, except is denoted by <Plugin ... /> 
+		// instead of <Scheme ... /> and has no builtin to deal with
+
+		bool bIsNamed = false;
+		
+		pNewScheme = new XAP_PrefsScheme(this, NULL);
+		if (!pNewScheme)
+			goto MemoryError;
+		
+		const XML_Char ** a = atts;
+		while (*a)
+		{
+			UT_ASSERT(a[1] && *a[1]);	// require a value for each attribute keyword
+
+			if (strcmp((const char*)a[0], "name") == 0)
+			{
+				bIsNamed = true;
+				
+				if (getPluginScheme(a[1]))
+				{
+					UT_DEBUGMSG(("Duplicate Plugin scheme [%s]; ignoring latter instance.\n",a[1]));
+					goto IgnoreThisScheme;
+				}
+
+				if (!pNewScheme->setSchemeName(a[1]))
+					goto MemoryError;
+
+				UT_DEBUGMSG(("Found Preferences Plugin scheme [%s].\n",a[1]));
+			}
+			else
+			{
+				if (!pNewScheme->setValue(a[0],a[1]))
+					goto MemoryError;
+			}
+
+			a += 2;
+		}
+
+		if (!addPluginScheme(pNewScheme))
 			goto MemoryError;
 		pNewScheme = NULL;				// we don't own it anymore
 		break;
@@ -1124,6 +1203,59 @@ bool XAP_Prefs::savePrefsFile(void)
 				
 			fprintf(fp,"\t\t/>\n");
 		}
+
+		// add Plugin Scheme (plugin specific preferences) if they exist
+		kLimit = m_vecPluginSchemes.getItemCount();
+		for (k=0; k<kLimit; k++)
+		{
+			XAP_PrefsScheme * p = getNthPluginScheme(k);
+			UT_ASSERT(p);
+
+			const XML_Char * szThisSchemeName = p->getSchemeName();
+			fprintf(fp,"\n\t<Plugin\n\t\tname=\"%s\"\n",szThisSchemeName);
+
+			const XML_Char * szKey;
+			const XML_Char * szValue;
+			UT_uint32 j;
+
+			for (j=0;(p->getNthValue(j, &szKey, &szValue)) ; j++)
+			{
+					// szValue is UTF8.  Convert to Unicode and then
+					// do XML-encoding of XML-special characters and
+					// non-ASCII characters.  The printed value
+					// strings will get XML parsing and conversion to
+					// UTF8 the next time the application reads the
+					// prefs file.
+					UT_GrowBuf gb;
+					UT_decodeUTF8string(szValue, UT_XML_strlen(szValue), &gb);
+					UT_uint32 length = gb.getLength();
+					fprintf(fp,"\t\t%s=\"",szKey);
+					for (UT_uint32 udex=0; udex<length; ++udex)
+					{
+						UT_UCSChar ch = *(gb.getPointer(udex));
+						switch (ch)
+						{
+						case '&':   fputs("&amp;", fp);  break;
+						case '<':   fputs("&lt;", fp);  break;
+						case '>':   fputs("&gt;", fp);  break;
+						case '"':   fputs("&quot;", fp);  break;
+						default:
+							if (ch < ' ' || ch >= 128)
+							{
+								fprintf(fp, "&#x%x;", ch);
+							}
+							else
+							{
+								putc(ch, fp);
+							}
+						}
+					}
+					fputs("\"\n", fp);
+			}
+				
+			fprintf(fp,"\t\t/>\n");
+		}
+		// end Plugin preferences
 
 		fprintf(fp,"\n\t<Recent\n\t\tmax=\"%d\"\n",
 				(UT_uint32)m_iMaxRecent);

@@ -60,6 +60,7 @@
 #define AP_RID_DIALOG_MARK_REVISIONS            230
 #define AP_RID_DIALOG_LIST_REVISIONS            231
 #define AP_RID_DIALOG_INSERT_TABLE		232
+#define AP_RID_DIALOG_DOWNLOADFILE				233
 
 
 #include "ap_Win32Res_DlgPageSetup.rc2"
@@ -87,3 +88,4 @@
 #include "ap_Win32Res_DlgMarkRevisions.rc2"
 #include "ap_Win32Res_DlgListRevisions.rc2"
 #include "ap_Win32Res_InsertTable.rc2"
+#include "ap_Win32Res_DlgDownload_File.rc2"

@@ -100,8 +100,11 @@ public:
 	bool					savePrefsFile(void);
 	
 	XAP_PrefsScheme *		getNthScheme(UT_uint32 k) const;
-    XAP_PrefsScheme *		getScheme(const XML_Char * szSchemeName) const;
+	XAP_PrefsScheme *		getNthPluginScheme(UT_uint32 k) const;
+	XAP_PrefsScheme *		getScheme(const XML_Char * szSchemeName) const;
+	XAP_PrefsScheme *		getPluginScheme(const XML_Char * szSchemeName) const;
 	bool					addScheme(XAP_PrefsScheme * pNewScheme);
+	bool					addPluginScheme(XAP_PrefsScheme * pNewScheme);
 	XAP_PrefsScheme *		getCurrentScheme(bool bCreate = false);
 	bool					setCurrentScheme(const XML_Char * szSchemeName);
 
@@ -139,12 +142,14 @@ public:
 	void					_markPrefChange	( const XML_Char *szKey );
 protected:
 	void					_pruneRecent(void);
+	XAP_PrefsScheme * 		_getNthScheme(UT_uint32 k, const UT_Vector &vecSchemes) const;
 
 	XAP_App *				m_pApp;
 	bool					m_bAutoSavePrefs; /* save on any changes or only when user asks */
 	bool					m_bUseEnvLocale; /* use POSIX env vars to set locale */
 
 	UT_Vector				m_vecSchemes;		/* vector of XAP_PrefsScheme */
+	UT_Vector				m_vecPluginSchemes;	/* vector of XAP_PrefsScheme */
 	XAP_PrefsScheme *		m_currentScheme;
 	XAP_PrefsScheme *		m_builtinScheme;
 

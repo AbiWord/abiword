@@ -36,7 +36,11 @@ public:
 	virtual void		_abortDialog(void);	/* Called when download is finished and dialog should be remobed */
 
  protected:
+	static BOOL CALLBACK	s_dlgProc(HWND,UINT,WPARAM,LPARAM);
+	BOOL					_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
 
+	HWND 				dlDlgHandle;
 };
 
 #endif /* AP_WINDIALOG_DOWNLOAD_FILE_H */

@@ -16,66 +16,77 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
-#ifndef UT_THREAD_H
-#define UT_THREAD_H
+#ifndef UT_THREADIMPL_H
+#define UT_THREADIMPL_H
 
-#include <stdio.h>
-#include "ut_types.h"
+#include "ut_thread.h"
+#include <process.h>
 
-class UT_ThreadImpl;
+// for friendly assert message
+#define PRIORITIES_NOT_SUPPORTED 0
 
-class ABI_EXPORT UT_Thread
+
+class ABI_EXPORT UT_ThreadImpl
 {
-  friend class UT_ThreadImpl;
 
  public:
 
-  typedef enum {
-    PRI_LOW,
-    PRI_NORMAL,
-    PRI_HIGH
-  } Priority;
+  UT_ThreadImpl ( UT_Thread * owner )
+    : mOwner ( owner ), mThread ( 0 )
+    {
+    }
 
-  virtual ~UT_Thread ();
+  ~UT_ThreadImpl ()
+    {
+      // only exit if started
+      if ( mOwner->mbStarted )
+        _endthread();
+    }
 
   /*!
    * Starts a new thread and executes the code in the
    * (overridden) run method
    */
-  void start () ;
-
-  /*!
-   * Get this thread's priority
-   */
-  UT_Thread::Priority getPriority () const
+  void start ()
     {
-      return mPri;
+      UT_Thread::Priority pri = mOwner->getPriority () ;
+
+      // the priority is ignored
+
+	if (mThread = _beginthread(start_routine, 0, (void *)this) == -1)
+	{
+	  printf ( "thread create failed!!\n" ) ;
+	}
     }
 
   /*!
    * Sets this thread's priority
    */
-  void setPriority ( UT_Thread::Priority pri ) ;
+  void setPriority ( UT_Thread::Priority pri )
+    {
+      UT_ASSERT(PRIORITIES_NOT_SUPPORTED);
+    }
 
   /*!
    * Causes the current running thread to temporarily pause
    * and let other threads execute
    */
-  static void yield () ;
-  
- protected:
-  // qualifying Priority with UT_Thread:: confuses VC
-  UT_Thread (Priority pri = PRI_NORMAL) ;
-
-  /*!
-   * Pretty pretty please override me!!
-   */
-  virtual void run () = 0;
+  static void yield ()
+    {
+	// yield? 
+    }
 
  private:
-  UT_ThreadImpl * mPimpl;
-  UT_Thread::Priority mPri;
-  bool mbStarted;
+
+  static void start_routine ( void * inPtr )
+    {
+      UT_Thread * thisPtr = static_cast<UT_ThreadImpl *>(inPtr)->mOwner;
+      printf ( "In the start routine: %d\n", thisPtr == NULL );
+      thisPtr->run () ;
+    }
+
+  UT_Thread         * mOwner;
+  unsigned long     mThread;
 };
 
-#endif /* UT_THREAD_H */
+#endif

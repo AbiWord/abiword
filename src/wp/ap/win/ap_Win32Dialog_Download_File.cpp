@@ -28,13 +28,14 @@
 #include "xap_Win32App.h"
 #include "xap_Win32Frame.h"
 
-#include "xap_Dialog_Id.h"
+#include "ap_Dialog_Id.h"
 #include "ap_Win32Dialog_Download_File.h"
 
-#include "ut_bytebuf.h"
-#include "ut_png.h"
 #include "ut_worker.h"
+#include "ut_string_class.h"
 
+
+#include "ap_Win32Resources.rc2"
 
 XAP_Dialog * AP_Win32Dialog_Download_File::static_constructor(XAP_DialogFactory * pFactory,
 													 XAP_Dialog_Id id)
@@ -45,21 +46,108 @@ XAP_Dialog * AP_Win32Dialog_Download_File::static_constructor(XAP_DialogFactory 
 
 AP_Win32Dialog_Download_File::AP_Win32Dialog_Download_File(XAP_DialogFactory * pDlgFactory,
 											 XAP_Dialog_Id id)
-	: AP_Dialog_Download_File(pDlgFactory,id)
+	: AP_Dialog_Download_File(pDlgFactory,id),
+	  dlDlgHandle(NULL)
 {
 }
 
 AP_Win32Dialog_Download_File::~AP_Win32Dialog_Download_File(void)
 {
+	_abortDialog();	// does nothing if no dialog
 }
 
 
+// called to display the dialog, displayed until user presses cancel
+// or download complete as indicated by call to _abortDialog() below.
 void AP_Win32Dialog_Download_File::_runModal(XAP_Frame * pFrame)
 {
+	// raise the dialog
+	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
+	XAP_Win32Frame * pWin32Frame = static_cast<XAP_Win32Frame *>(pFrame);
+
+	LPCTSTR lpTemplate = NULL;
+
+	UT_ASSERT(m_id == AP_DIALOG_ID_DOWNLOAD_FILE);
+
+	lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_DOWNLOADFILE);
+
+	int result = DialogBoxParam(pWin32App->getInstance(),lpTemplate,
+								pWin32Frame->getTopLevelWindow(),
+								(DLGPROC)s_dlgProc,(LPARAM)this);
+	UT_ASSERT((result != -1));
 }
 
 void
 AP_Win32Dialog_Download_File::_abortDialog(void)
 {
+	if (dlDlgHandle != NULL)
+	{
+		_setUserAnswer(a_NONE);
+		EndDialog(dlDlgHandle, 0);
+	}
 }
 
+
+BOOL CALLBACK AP_Win32Dialog_Download_File::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
+{
+	// This is a static function.
+
+	AP_Win32Dialog_Download_File * pThis;
+	
+	switch (msg)
+	{
+	case WM_INITDIALOG:
+		pThis = (AP_Win32Dialog_Download_File *)lParam;
+		SetWindowLong(hWnd,DWL_USER,lParam);
+		return pThis->_onInitDialog(hWnd,wParam,lParam);
+		
+	case WM_COMMAND:
+		pThis = (AP_Win32Dialog_Download_File *)GetWindowLong(hWnd,DWL_USER);
+		return pThis->_onCommand(hWnd,wParam,lParam);
+		
+	default:
+		return 0;
+	}
+}
+
+#define _DS(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
+#define _DSX(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
+
+BOOL AP_Win32Dialog_Download_File::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
+{
+	dlDlgHandle = hWnd;	// store dialog handle so we can programmatically close it
+
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
+	
+	SetWindowText(hWnd, pSS->getValue(XAP_STRING_ID_DLG_DlFile_Title));
+
+	// localize controls
+	_DSX(DOWNLOADFILE_BTN_CANCEL,		DLG_Cancel);
+
+	char buf[4096];
+	sprintf(buf, pSS->getValue(XAP_STRING_ID_DLG_DlFile_Status), getDescription(), getURL());
+	SetDlgItemText(hWnd,AP_RID_DIALOG_DOWNLOADFILE_TEXT, buf);
+
+	return 1;							// 1 == we did not call SetFocus()
+}
+
+BOOL AP_Win32Dialog_Download_File::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
+{
+	WORD wNotifyCode = HIWORD(wParam);
+	WORD wId = LOWORD(wParam);
+	HWND hWndCtrl = (HWND)lParam;
+
+	switch (wId)
+	{
+	case IDCANCEL:						// also AP_RID_DIALOG_DOWNLOADFILE_BTN_CANCEL
+		_setUserAnswer(a_CANCEL);
+		dlDlgHandle = NULL;				// important, indicate no dialog open
+
+		EndDialog(hWnd,0);
+		return 1;
+
+	default:							// we did not handle this notification
+		UT_DEBUGMSG(("WM_Command for id %ld\n",wId));
+		return 0;						// return zero to let windows take care of it.
+	}
+}
