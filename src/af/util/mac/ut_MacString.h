@@ -1,5 +1,6 @@
 /* AbiSource Program Utilities
- * Copyright (C) 2000 Hubert Figuiere <hfiguiere@teaser.fr>
+ * Copyright (C) 1998,1999 AbiSource, Inc.
+ * Copyright (C) 2000,2001 Hubert Figuiere <hfiguiere@teaser.fr>
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -29,10 +30,13 @@
 
 /* Mac headers */
 #include <MacTypes.h>
+
+#if defined TARGET_API_MAC_CARBON && (TARGET_API_MAC_CARBON == 1)
 #include <CFString.h>
 
 void UT_C2PStrWithConversion (const char *inStr, StringPtr outStr, CFStringBuiltInEncodings inCharset, 
                               CFStringBuiltInEncodings outCharset);
+#endif 
 
 inline void C2PStr (Str255 pString, const char * str)
 {

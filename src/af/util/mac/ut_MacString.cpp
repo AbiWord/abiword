@@ -1,5 +1,6 @@
 /* AbiSource Program Utilities
  * Copyright (C) 1998,1999 AbiSource, Inc.
+ * Copyright (C) 2000,2001 Hubert Figuiere <hfiguiere@teaser.fr>
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -46,6 +47,8 @@ char * UT_catPathname(const char * szPath, const char * szFile)
 	return szPathname;
 }
 
+
+#if defined(TARGET_API_MAC_CARBON) && (TARGET_API_MAC_CARBON == 1)
 /*
     Convert a C string to a Pascal Str255 with String conversion
     
@@ -57,3 +60,4 @@ void UT_C2PStrWithConversion (const char *inStr, StringPtr outStr, CFStringBuilt
         CFStringRef  myCFStr = CFStringCreateWithCString (NULL, inStr, inCharset);
         UT_ASSERT (CFStringGetPascalString (myCFStr, outStr, sizeof (Str255), outCharset));
 }
+#endif
