@@ -125,7 +125,6 @@ URL: http://www.abisource.com/
 BuildRoot: %{_tmppath}/%{name}-%{version}-buildroot
 License: GPL
 Prefix: %{prefix}
-Epoch: 1
 Packager: __ABI_BUILD_PACKAGER__
 Distribution: RedHat 7.x Contrib
 # Basic requirements
@@ -279,7 +278,6 @@ Go to http://www.aiksaurus.com and download AikSaurus and AikSaurusGTK.
 %package fonts
 Summary: AbiWord Fonts
 Group: Applications/Productivity
-Serial: 1
 
 %description fonts
 These are the basic fonts used by AbiWord.
@@ -312,6 +310,203 @@ Group: Documentation
 %description help-fr-FR
 This is the AbiWord Manual for French.
 
+%package ispell-brazilian
+Summary: AbiWord brazilian dictionary.
+Group: Documentation
+
+%description ispell-brazilian
+AbiWord brazilian dictionary.
+
+%package ispell-british
+Summary: AbiWord british dictionary.
+Group: Documentation
+
+%description ispell-british
+AbiWord british dictionary.
+
+%package ispell-deutsch
+Summary: AbiWord deutsch dictionary.
+Group: Documentation
+
+%description ispell-deutsch
+AbiWord deutsch dictionary.
+
+%package ispell-espanol
+Summary: AbiWord espanol dictionary.
+Group: Documentation
+
+%description ispell-espanol
+AbiWord espanol dictionary.
+
+%package ispell-finnish
+Summary: AbiWord finnish dictionary.
+Group: Documentation
+
+%description ispell-finnish
+AbiWord finnish dictionary.
+
+%package ispell-francais
+Summary: AbiWord francais dictionary.
+Group: Documentation
+
+%description ispell-francais
+AbiWord francais dictionary.
+
+%package ispell-galician
+Summary: AbiWord galician dictionary.
+Group: Documentation
+
+%description ispell-galician
+AbiWord galician dictionary.
+
+%package ispell-hungarian
+Summary: AbiWord hungarian dictionary.
+Group: Documentation
+
+%description ispell-hungarian
+AbiWord hungarian dictionary.
+
+%package ispell-italian
+Summary: AbiWord italian dictionary.
+Group: Documentation
+
+%description ispell-italian
+AbiWord italian dictionary.
+
+%package ispell-mlatin
+Summary: AbiWord mlatin dictionary.
+Group: Documentation
+
+%description ispell-mlatin
+AbiWord mlatin dictionary.
+
+%package ispell-portugues
+Summary: AbiWord portugues dictionary.
+Group: Documentation
+
+%description ispell-portugues
+AbiWord portugues dictionary.
+
+%package ispell-ukrainian
+Summary: AbiWord ukrainian dictionary.
+Group: Documentation
+
+%ifarch %ix86
+%description ispell-ukrainian
+AbiWord ukrainian dictionary.
+
+%package ispell-catalan
+Summary: AbiWord catalan dictionary.
+Group: Documentation
+
+%description ispell-catalan
+AbiWord catalan dictionary.
+
+%package ispell-czech
+Summary: AbiWord czech dictionary.
+Group: Documentation
+
+%description ispell-czech
+AbiWord czech dictionary.
+
+%package ispell-dansk
+Summary: AbiWord dansk dictionary.
+Group: Documentation
+
+%description ispell-dansk
+AbiWord dansk dictionary.
+
+%package ispell-deutschmed
+Summary: AbiWord deutschmed dictionary.
+Group: Documentation
+
+%description ispell-deutschmed
+AbiWord deutschmed dictionary.
+
+%package ispell-ellhnika
+Summary: AbiWord ellhnika dictionary.
+Group: Documentation
+
+%description ispell-ellhnika
+AbiWord ellhnika dictionary.
+
+%package ispell-esperanto
+Summary: AbiWord esperanto dictionary.
+Group: Documentation
+
+%description ispell-esperanto
+AbiWord esperanto dictionary.
+
+%package ispell-irish
+Summary: AbiWord irish dictionary.
+Group: Documentation
+
+%description ispell-irish
+AbiWord irish dictionary.
+
+%package ispell-lietuviu
+Summary: AbiWord lietuviu dictionary.
+Group: Documentation
+
+%description ispell-lietuviu
+AbiWord lietuviu dictionary.
+
+%package ispell-nederlands
+Summary: AbiWord nederlands dictionary.
+Group: Documentation
+
+%description ispell-nederlands
+AbiWord nederlands dictionary.
+
+%package ispell-norsk
+Summary: AbiWord norsk dictionary.
+Group: Documentation
+
+%description ispell-norsk
+AbiWord norsk dictionary.
+
+%package ispell-nynorsk
+Summary: AbiWord nynorsk dictionary.
+Group: Documentation
+
+%description ispell-nynorsk
+AbiWord nynorsk dictionary.
+
+%package ispell-polish
+Summary: AbiWord polish dictionary.
+Group: Documentation
+
+%description ispell-polish
+AbiWord polish dictionary.
+
+%package ispell-russian
+Summary: AbiWord russian dictionary.
+Group: Documentation
+
+%description ispell-russian
+AbiWord russian dictionary.
+
+%package ispell-slovensko
+Summary: AbiWord slovensko dictionary.
+Group: Documentation
+
+%description ispell-slovensko
+AbiWord slovensko dictionary.
+
+%package ispell-svenska
+Summary: AbiWord svenska dictionary.
+Group: Documentation
+
+%description ispell-svenska
+AbiWord svenska dictionary.
+
+%package ispell-swiss
+Summary: AbiWord swiss dictionary.
+Group: Documentation
+
+%description ispell-swiss
+AbiWord swiss dictionary.
+%endif
 
 %prep
 %__rm -rf $RPM_BUILD_ROOT
@@ -360,6 +555,13 @@ cp $RPM_BUILD_DIR/%{name}-%{version}/abidistfiles/dictionary/*.hash $RPM_BUILD_R
 # Copies all clipart
 %__cp $RPM_BUILD_DIR/%{name}-%{version}/abidistfiles/clipart/*.png $RPM_BUILD_ROOT%{ABIPREFIX}/AbiSuite/clipart/
 
+# Copies all dictionaries
+%ifarch %ix86
+%__cp $RPM_BUILD_DIR/%{name}-%{version}/abispell/le/*.hash $RPM_BUILD_ROOT%{ABIPREFIX}/AbiSuite/dictionary/
+%else
+%__cp $RPM_BUILD_DIR/%{name}-%{version}/abispell/be/*.hash $RPM_BUILD_ROOT%{ABIPREFIX}/AbiSuite/dictionary/
+%endif
+
 #
 # Fix for wrong file rights on fonts,icons,clipart
 %__chmod 644 $RPM_BUILD_ROOT%{ABIPREFIX}/AbiSuite/fonts/*
@@ -382,7 +584,7 @@ cp $RPM_BUILD_DIR/%{name}-%{version}/abidistfiles/dictionary/*.hash $RPM_BUILD_R
 %{ABIPREFIX}/AbiSuite/AbiWord/strings
 %{ABIPREFIX}/AbiSuite/AbiWord/system.profile-*
 %{ABIPREFIX}/AbiSuite/bin
-%{ABIPREFIX}/AbiSuite/dictionary
+%{ABIPREFIX}/AbiSuite/dictionary/*american*.hash
 %{ABIPREFIX}/AbiSuite/icons
 %{ABIPREFIX}/AbiSuite/templates
 %attr(644,root,root) %{prefix}/share/pixmaps/abiword_48.png
@@ -455,6 +657,95 @@ cp $RPM_BUILD_DIR/%{name}-%{version}/abidistfiles/dictionary/*.hash $RPM_BUILD_R
 %files help-fr-FR
 %defattr(-,root,root)
 %{ABIPREFIX}/AbiSuite/AbiWord/help/fr-FR
+
+%files ispell-deutsch
+%{ABIPREFIX}/AbiSuite/dictionary/deutsch.hash
+
+%files ispell-galician
+%{ABIPREFIX}/AbiSuite/dictionary/galician.hash
+
+%files ispell-portugues
+%{ABIPREFIX}/AbiSuite/dictionary/portugues.hash
+
+%files ispell-ukrainian
+%{ABIPREFIX}/AbiSuite/dictionary/ukrainian.hash
+
+%files ispell-espanol
+%{ABIPREFIX}/AbiSuite/dictionary/espanol.hash
+
+%files ispell-hungarian
+%{ABIPREFIX}/AbiSuite/dictionary/hungarian.hash
+
+%files ispell-slovensko
+%{ABIPREFIX}/AbiSuite/dictionary/slovensko.hash
+
+%files ispell-british
+%{ABIPREFIX}/AbiSuite/dictionary/british.hash
+
+%files ispell-finnish
+%{ABIPREFIX}/AbiSuite/dictionary/finnish.hash
+
+%files ispell-italian
+%{ABIPREFIX}/AbiSuite/dictionary/italian.hash
+
+%files ispell-svenska
+%{ABIPREFIX}/AbiSuite/dictionary/svenska.hash
+
+%files ispell-francais
+%{ABIPREFIX}/AbiSuite/dictionary/francais.hash
+
+%files ispell-mlatin
+%{ABIPREFIX}/AbiSuite/dictionary/mlatin.hash
+
+%files ispell-swiss
+%{ABIPREFIX}/AbiSuite/dictionary/swiss.hash
+
+
+%ifarch %ix86
+
+%files ispell-brazilian
+%{ABIPREFIX}/AbiSuite/dictionary/brazilian.hash
+
+%files ispell-catalan
+%{ABIPREFIX}/AbiSuite/dictionary/catalan.hash
+
+%files ispell-czech
+%{ABIPREFIX}/AbiSuite/dictionary/czech.hash
+
+%files ispell-dansk
+%{ABIPREFIX}/AbiSuite/dictionary/dansk.hash
+
+%files ispell-deutschmed
+%{ABIPREFIX}/AbiSuite/dictionary/deutschmed.hash
+
+%files ispell-ellhnika
+%{ABIPREFIX}/AbiSuite/dictionary/ellhnika.hash
+
+%files ispell-esperanto
+%{ABIPREFIX}/AbiSuite/dictionary/esperanto.hash
+
+%files ispell-irish
+%{ABIPREFIX}/AbiSuite/dictionary/irish.hash
+
+%files ispell-lietuviu
+%{ABIPREFIX}/AbiSuite/dictionary/lietuviu.hash
+
+%files ispell-nederlands
+%{ABIPREFIX}/AbiSuite/dictionary/nederlands.hash
+
+%files ispell-norsk
+%{ABIPREFIX}/AbiSuite/dictionary/norsk.hash
+
+%files ispell-nynorsk
+%{ABIPREFIX}/AbiSuite/dictionary/nynorsk.hash
+
+%files ispell-polish
+%{ABIPREFIX}/AbiSuite/dictionary/polish.hash
+
+%files ispell-russian
+%{ABIPREFIX}/AbiSuite/dictionary/russian.hash
+
+%endif
 
 %post
 
