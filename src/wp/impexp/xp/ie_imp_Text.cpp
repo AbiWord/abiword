@@ -819,7 +819,7 @@ UT_Error IE_Imp_Text::_parseStream(ImportStream * pStream)
 		case 0x001d:
 		case 0x001e:
 		case 0x001f:
-			UT_ASSERT(!(c <= 0x001f));
+			// UT_ASSERT(!(c <= 0x001f));
 			c = '?';
 			/* return UT_ERROR; // fall through with modified character */
 			

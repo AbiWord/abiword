@@ -1407,18 +1407,37 @@ PT_DocPosition FV_View::mapDocPos( FV_DocPos dp ) {
 
 PT_DocPosition FV_View::saveSelectedImage (const UT_ByteBuf ** pBytes)
 {
-	const char * dataId = NULL;
-	PT_DocPosition pos = m_iSelectionAnchor;
-	bool bFoundImage = false;
-	fp_Run* pRun = NULL;
-	if(!isSelectionEmpty())
+	const char * dataId;
+	PT_DocPosition pos = getSelectedImage(&dataId);
+
+	// if nothing selected or selection not an image
+	if (pos == 0) return 0;
+
+	if ( m_pDoc->getDataItemDataByName ( dataId, pBytes, NULL, NULL ) )
+	  {
+		return pos ;
+	  }
+	return 0 ;
+}
+
+/* If no image is selected returns 0
+ * and if dataId is not NULL will set value to NULL
+ * Otherwise returns a nonzero value indicating the position of the image
+ * and if dataId is not NULL will set value to the image's data ID
+ */
+PT_DocPosition FV_View::getSelectedImage(const char **dataId)
+{
+	// if nothing selected, then an image can't be
+	if (!isSelectionEmpty())
 	{
+		PT_DocPosition pos = m_iSelectionAnchor;
+		fp_Run* pRun = NULL;
+
 		UT_Vector vBlock;
 		getBlocksInSelection( &vBlock);
-		UT_uint32 i=0;
 		UT_uint32 count = vBlock.getItemCount();
 		fl_BlockLayout * pBlock = NULL;
-		for(i=0; (i< count) && !bFoundImage; i++)
+		for(UT_uint32 i=0; (i< count); i++)
 		{
 			if(i==0)
 			{
@@ -1446,26 +1465,19 @@ PT_DocPosition FV_View::saveSelectedImage (const UT_ByteBuf ** pBytes)
 			if(pRun && pRun->getType() == FPRUN_IMAGE)
 			{
 				pos = pBlock->getPosition() +  pRun->getBlockOffset();
-				bFoundImage = true;
+				if (dataId != NULL)
+				{
+					fp_ImageRun * pImRun = static_cast<fp_ImageRun *>(pRun);
+					*dataId = pImRun->getDataId();
+				}
+				return pos;
 			}
 		}
-		if(!bFoundImage)
-		{
-			return 0;
-		}
-		fp_ImageRun * pImRun = static_cast<fp_ImageRun *>(pRun);
-		dataId = pImRun->getDataId();
-	}
-	else
-	{
-		return 0;
 	}
 
-	if ( m_pDoc->getDataItemDataByName ( dataId, pBytes, NULL, NULL ) )
-	  {
-		return pos ;
-	  }
-	return 0 ;
+	// if we made it here, then run type is not an image
+	if (dataId != NULL) *dataId = NULL;
+	return 0;
 }
 
 bool FV_View::isSelectionEmpty(void) const

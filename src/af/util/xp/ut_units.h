@@ -45,31 +45,31 @@ typedef enum _ut_dimension { DIM_IN, DIM_CM, DIM_MM, DIM_PI, DIM_PT, DIM_PX, DIM
  *	DIM_PX := pixels
  */
 
-double UT_convertToInches(const char* s);
-double UT_convertDimToInches (double f, UT_Dimension dim);
+ABI_EXPORT double UT_convertToInches(const char* s);
+ABI_EXPORT double UT_convertDimToInches (double f, UT_Dimension dim);
 ABI_EXPORT double UT_convertDimensions(double f, UT_Dimension from, UT_Dimension to);
 ABI_EXPORT double UT_convertToPoints(const char* s);
 ABI_EXPORT double UT_convertToDimension(const char* s, UT_Dimension dim);
-UT_sint32 UT_convertToLogicalUnits(const char* s);
-UT_sint32 UT_convertSizeToLayoutUnits(double Value, UT_Dimension dim);
-double UT_convertDimensionless(const char * sz);
-double UT_convertInchesToDimension(double inches, UT_Dimension dim);
+ABI_EXPORT UT_sint32 UT_convertToLogicalUnits(const char* s);
+ABI_EXPORT UT_sint32 UT_convertSizeToLayoutUnits(double Value, UT_Dimension dim);
+ABI_EXPORT double UT_convertDimensionless(const char * sz);
+ABI_EXPORT double UT_convertInchesToDimension(double inches, UT_Dimension dim);
 
-UT_sint32 UT_paperUnits(const char * sz);
-double    UT_inchesFromPaperUnits(UT_sint32 iPaperUnits);
-UT_sint32 UT_paperUnitsFromInches(double dInches);
+ABI_EXPORT UT_sint32 UT_paperUnits(const char * sz);
+ABI_EXPORT double    UT_inchesFromPaperUnits(UT_sint32 iPaperUnits);
+ABI_EXPORT UT_sint32 UT_paperUnitsFromInches(double dInches);
 
-const char * UT_incrementDimString(const char * dimString, double inc);
-const char * UT_multiplyDimString(const char * dimString, double mult);
-UT_Dimension UT_determineDimension(const char * sz, UT_Dimension fallback = DIM_IN);
+ABI_EXPORT const char * UT_incrementDimString(const char * dimString, double inc);
+ABI_EXPORT const char * UT_multiplyDimString(const char * dimString, double mult);
+ABI_EXPORT UT_Dimension UT_determineDimension(const char * sz, UT_Dimension fallback = DIM_IN);
 ABI_EXPORT const char * UT_dimensionName(UT_Dimension dim);
-const char * UT_convertInchesToDimensionString(UT_Dimension, double valueInInches, const char * szPrecision = NULL);
-const char * UT_formatDimensionString(UT_Dimension, double value, const char * szPrecision = NULL);
-const char * UT_reformatDimensionString(UT_Dimension dim, const char *sz, const char * szPrecision = NULL);
+ABI_EXPORT const char * UT_convertInchesToDimensionString(UT_Dimension, double valueInInches, const char * szPrecision = NULL);
+ABI_EXPORT const char * UT_formatDimensionString(UT_Dimension, double value, const char * szPrecision = NULL);
+ABI_EXPORT const char * UT_reformatDimensionString(UT_Dimension dim, const char *sz, const char * szPrecision = NULL);
 ABI_EXPORT const char * UT_convertToDimensionlessString(double value, const char * szPrecision = NULL);
-const char * UT_formatDimensionedValue(double value, const char * szUnits, const char * szPrecision = NULL);
+ABI_EXPORT const char * UT_formatDimensionedValue(double value, const char * szUnits, const char * szPrecision = NULL);
 
-bool UT_hasDimensionComponent(const char * sz);
+ABI_EXPORT bool UT_hasDimensionComponent(const char * sz);
 
 
 UT_END_EXTERN_C
