@@ -427,11 +427,11 @@ HWND AP_Win32Frame::_createDocumentWindow(HWND hwndParent,
 	SWL(m_hwndHScroll, this);
 
 	m_hwndDeadLowerRight = CreateWindowEx(0,"ScrollBar",NULL,
-										  WS_CHILD | WS_VISIBLE | WS_DISABLED | SBS_SIZEBOX,
+										  WS_CHILD | WS_VISIBLE | SBS_SIZEGRIP,
 										  r.right-cxVScroll, r.bottom-cyHScroll, cxVScroll, cyHScroll,
 										  hwndContainer, NULL, m_pWin32App->getInstance(), NULL);
-	UT_ASSERT(m_hwndHScroll);
-	SWL(m_hwndHScroll, this);
+	UT_ASSERT(m_hwndDeadLowerRight);
+	SWL(m_hwndDeadLowerRight, this);
 
 	// create the top ruler
 	
