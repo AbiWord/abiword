@@ -32,6 +32,16 @@
 class XAP_Frame;
 class GR_CocoaGraphics;
 
+
+@interface XAP_CocoaNSStatusBar : NSView
+{
+
+}
+
+- (NSControl *)addField:(AP_StatusBarField*)field;
+
+@end
+
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
@@ -42,17 +52,14 @@ public:
 	virtual ~AP_CocoaStatusBar(void);
 
 	virtual void		setView(AV_View * pView);
-	XAP_CocoaNSView *			createWidget(void);
+	XAP_CocoaNSStatusBar*	createWidget(void);
 
 	virtual void		show(void);
 	virtual void		hide(void);
 
-	void _style_changed (void);
-
 private:
-	static bool _graphicsUpdateCB(NSRect * aRect, GR_CocoaGraphics *pGR, void *param);
 
-	XAP_CocoaNSView *	m_wStatusBar;
+	XAP_CocoaNSStatusBar *	m_wStatusBar;
 	NSView *			m_superView;
 };
 

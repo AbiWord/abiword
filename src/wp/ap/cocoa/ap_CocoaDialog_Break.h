@@ -21,9 +21,10 @@
 #ifndef AP_COCOADIALOG_BREAK_H
 #define AP_COCOADIALOG_BREAK_H
 
+#import <Cocoa/Cocoa.h>
+
 #include "ap_Dialog_Break.h"
 
-class XAP_CocoaFrame;
 class AP_CocoaDialog_Break;
 
 @interface AP_CocoaDialog_BreakController : NSWindowController

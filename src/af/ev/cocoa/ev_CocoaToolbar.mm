@@ -38,6 +38,7 @@
 #include "xav_View.h"
 #include "xap_Prefs.h"
 #include "xap_EncodingManager.h"
+#include "ap_CocoaFrame.h"
 
 #import <Cocoa/Cocoa.h>
 #import <AppKit/NSNibControlConnector.h>
@@ -75,10 +76,21 @@ public:									// we create...
 	else  if ([sender isKindOfClass:[NSComboBox class]]){
 		_wd* wd = (_wd*)[sender tag];
 		NSString * str = [sender stringValue];
-		int numChars = [str cStringLength];
-		UT_UCS2Char * data = (UT_UCS2Char *)malloc (sizeof (UT_UCS2Char) * (numChars + 1));
-		[str getCharacters:data];
-		wd->m_pCocoaToolbar->toolbarEvent (wd, data, numChars * sizeof(UT_UCS2Char));
+		int numChars = [str length];
+		UT_UCS2Char * data = NULL;
+		size_t dataSize = 0;
+	    if (wd->m_id == AP_TOOLBAR_ID_FMT_SIZE)
+		{
+		    UT_UCS2Char * data = (UT_UCS2Char*)strdup(XAP_EncodingManager::fontsizes_mapping.lookupByTarget([str cString]));
+			dataSize = strlen((char *)data);
+		}
+		else
+		{
+			UT_UCS2Char * data = (UT_UCS2Char *)malloc (sizeof (UT_UCS2Char) * (numChars + 1));
+			[str getCharacters:data];
+			dataSize = numChars * sizeof(UT_UCS2Char);
+		}
+		wd->m_pCocoaToolbar->toolbarEvent (wd, data, dataSize);
 		FREEP (data);
 	}
 	else {
@@ -254,7 +266,7 @@ _wd::~_wd(void)
 /*****************************************************************/
 
 
-EV_CocoaToolbar::EV_CocoaToolbar(XAP_CocoaApp * pCocoaApp, XAP_CocoaFrame * pCocoaFrame,
+EV_CocoaToolbar::EV_CocoaToolbar(XAP_CocoaApp * pCocoaApp, AP_CocoaFrame * pCocoaFrame,
 							   const char * szToolbarLayoutName,
 							   const char * szToolbarLabelSetName)
 	: EV_Toolbar(pCocoaApp->getEditMethodContainer(),
@@ -874,7 +886,6 @@ bool EV_CocoaToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 				case EV_TBIT_ComboBox:
 				{
 					bool bGrayed = EV_TIS_ShouldBeGray(tis);
-					//bool bString = EV_TIS_ShouldUseString(tis);
 					
 					_wd * wd = (_wd *) m_vecToolbarWidgets.getNthItem(k);
 					UT_ASSERT(wd);
@@ -883,27 +894,15 @@ bool EV_CocoaToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 					UT_ASSERT([item isKindOfClass:[NSComboBox class]]);
 					// Disable/enable toolbar item
 					[item setEnabled:(bGrayed?NO:YES)];
+					NSString* value;
+					if (wd->m_id==AP_TOOLBAR_ID_FMT_SIZE) {
+					    value = [NSString stringWithCString:XAP_EncodingManager::fontsizes_mapping.lookupBySource(szState)];
+					}
+					else {
+						value = [NSString stringWithCString:szState];
+					}
 
-//		TODO: look at what we should do here.
-//					// Block the signal, set the contents
-//					bool wasBlocked = wd->m_blockSignal;
-//					wd->m_blockSignal = true;
-//					if (szState) {
-//						gtk_entry_set_text(GTK_ENTRY(item->entry), 
-//						    wd->m_id==AP_TOOLBAR_ID_FMT_SIZE ?
-//						    XAP_EncodingManager::fontsizes_mapping.lookupBySource(szState) 
-//						    : szState);
-//					} 
-//					else {
-//						gtk_entry_set_text(GTK_ENTRY(item->entry), "");
-//					}					
-//
-//					wd->m_blockSignal = wasBlocked;
-					
-					//UT_DEBUGMSG(("refreshToolbar: ComboBox [%s] is %s and %s\n",
-					//			 m_pToolbarLabelSet->getLabel(id)->getToolbarLabel(),
-					//			 ((bGrayed) ? "disabled" : "enabled"),
-					//			 ((bString) ? szState : "no state")));
+					[item selectItemWithObjectValue:value];
 				}
 				break;
 
@@ -938,7 +937,7 @@ XAP_CocoaApp * EV_CocoaToolbar::getApp(void)
 	return m_pCocoaApp;
 }
 
-XAP_CocoaFrame * EV_CocoaToolbar::getFrame(void)
+AP_CocoaFrame * EV_CocoaToolbar::getFrame(void)
 {
 	return m_pCocoaFrame;
 }

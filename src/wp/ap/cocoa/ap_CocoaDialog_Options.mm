@@ -1543,7 +1543,7 @@ void AP_CocoaDialog_Options::_storeWindowData(void)
 
 - (void)windowDidLoad
 {
-	XAP_CocoaFrame *pFrame = m_xap->_getFrame ();
+	XAP_Frame *pFrame = m_xap->_getFrame ();
 	// we get all our strings from the application string set
 	const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
 

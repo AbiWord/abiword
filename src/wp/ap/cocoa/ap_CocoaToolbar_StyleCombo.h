@@ -24,9 +24,9 @@
 #include "xap_Types.h"
 #include "ev_Toolbar_Control.h"
 #include "pd_Document.h"
-#include "xap_CocoaFrame.h"
 
 class EV_Toolbar;
+class AP_CocoaFrame;
 
 /*****************************************************************/
 
@@ -41,8 +41,9 @@ public:
 	static EV_Toolbar_Control *		static_constructor(EV_Toolbar *, XAP_Toolbar_Id tlbrid);
 
 protected:
+	/* shouldn't these be stuck into XP class, AP ?*/
     PD_Document * m_pDocument;
-	XAP_CocoaFrame * m_pFrame;
+	AP_CocoaFrame * m_pFrame;
 };
 
 #endif /* AP_COCOATOOLBAR_STYLECOMBO_H */

@@ -26,12 +26,12 @@
 
 #include "xap_App.h"
 #include "xap_CocoaApp.h"
-#include "xap_CocoaFrame.h"
 
 #include "ap_Strings.h"
 #include "ap_Dialog_Id.h"
 #include "ap_Dialog_Break.h"
 #include "ap_CocoaDialog_Break.h"
+#include "ap_CocoaFrame.h"
 
 /*****************************************************************/
 
@@ -65,7 +65,7 @@ void AP_CocoaDialog_Break::runModal(XAP_Frame * pFrame)
 	_populateWindowData();
 	
 	// To center the dialog, we need the frame of its parent.
-	XAP_CocoaFrame * pCocoaFrame = static_cast<XAP_CocoaFrame *>(pFrame);
+	AP_CocoaFrame * pCocoaFrame = static_cast<AP_CocoaFrame *>(pFrame);
 	UT_ASSERT(pCocoaFrame);
 	
 	[NSApp runModalForWindow:win];

@@ -43,6 +43,7 @@
 #include "ev_EditEventMapper.h"
 #include "ut_string_class.h"
 #include "ap_Menu_Id.h"
+#include "ap_CocoaFrame.h"
 
 #import <Cocoa/Cocoa.h>
 #import <AppKit/NSNibControlConnector.h>
@@ -60,11 +61,21 @@ public:									// we create...
 
 
 @implementation EV_CocoaMenuTarget
+- (BOOL)validateMenuItem:(id <NSMenuItem>)menuItem
+{
+	UT_ASSERT ([menuItem isKindOfClass:[NSMenuItem class]]);
+	_wd *wd = (_wd *)[menuItem tag];
+	
+	wd->m_pCocoaMenu->_refreshMenu (wd->m_pCocoaMenu->getFrame()->getCurrentView(), [menuItem menu]);
+	return NO;
+}
+
+
 - (id)menuSelected:(id)sender
 {
 	UT_DEBUGMSG (("@EV_CocoaMenuTarget (id)menuSelected:(id)sender\n"));
 
-	UT_ASSERT ([sender class] == [NSMenuItem class]);
+	UT_ASSERT ([sender isKindOfClass:[NSMenuItem class]]);
 	_wd *wd = (_wd *)[sender tag];
 	UT_ASSERT  (wd);
 	wd->m_pCocoaMenu->menuEvent(wd->m_id);
@@ -104,7 +115,7 @@ public:									// we create...
 		_wd * wd = (_wd *) data;
 		UT_ASSERT(wd && wd->m_pCocoaMenu);
 
-		XAP_CocoaFrame * pFrame = wd->m_pCocoaMenu->getFrame();
+		AP_CocoaFrame * pFrame = wd->m_pCocoaMenu->getFrame();
 		UT_ASSERT(pFrame);
 		EV_Menu_Label * pLabel = wd->m_pCocoaMenu->getLabelSet()->getLabel(wd->m_id);
 		if (!pLabel)
@@ -127,7 +138,7 @@ public:									// we create...
 		_wd * wd = (_wd *) data;
 		UT_ASSERT(wd && wd->m_pCocoaMenu);
 
-		XAP_CocoaFrame * pFrame = wd->m_pCocoaMenu->getFrame();
+		AP_CocoaFrame * pFrame = wd->m_pCocoaMenu->getFrame();
 		UT_ASSERT(pFrame);
 
 		pFrame->setStatusMessage(NULL);
@@ -152,7 +163,7 @@ public:									// we create...
 
 		// we always clear the status bar when a menu goes away, so we don't
 		// leave a message behind
-		XAP_CocoaFrame * pFrame = wd->m_pCocoaMenu->getFrame();
+		AP_CocoaFrame * pFrame = wd->m_pCocoaMenu->getFrame();
 		UT_ASSERT(pFrame);
 
 		pFrame->setStatusMessage(NULL);
@@ -181,7 +192,7 @@ public:									// we create...
 /*****************************************************************/
 
 
-EV_CocoaMenu::EV_CocoaMenu(XAP_CocoaApp * pCocoaApp, XAP_CocoaFrame * pCocoaFrame,
+EV_CocoaMenu::EV_CocoaMenu(XAP_CocoaApp * pCocoaApp, AP_CocoaFrame * pCocoaFrame,
 						 const char * szMenuLayoutName,
 						 const char * szMenuLabelSetName)
 	: EV_Menu(pCocoaApp, pCocoaApp->getEditMethodContainer(), szMenuLayoutName, szMenuLabelSetName),
@@ -197,7 +208,7 @@ EV_CocoaMenu::~EV_CocoaMenu()
 	[m_menuTarget release];
 }
 
-XAP_CocoaFrame * EV_CocoaMenu::getFrame()
+AP_CocoaFrame * EV_CocoaMenu::getFrame()
 {
 	return m_pCocoaFrame;
 }
@@ -302,17 +313,17 @@ bool EV_CocoaMenu::synthesizeMenu(NSMenu * wMenuRoot)
 				switch (menuid) {
 				
 				case AP_MENU_ID_HELP_ABOUT:
-					menuItem = m_pCocoaFrame->_getAboutMenuItem();
+					menuItem = static_cast<XAP_CocoaFrameHelper*>(m_pCocoaFrame->getFrameHelper())->_getAboutMenuItem();
 					[menuItem setTitle:str];
 					[menuItem setKeyEquivalent:shortCut];
 					break;
 				case AP_MENU_ID_TOOLS_OPTIONS:
-					menuItem = m_pCocoaFrame->_getPreferenceMenuItem();
+					menuItem = static_cast<XAP_CocoaFrameHelper*>(m_pCocoaFrame->getFrameHelper())->_getPreferenceMenuItem();
 					[menuItem setTitle:str];
 					[menuItem setKeyEquivalent:shortCut];
 					break;
 				case AP_MENU_ID_FILE_EXIT:
-					menuItem = m_pCocoaFrame->_getQuitMenuItem();
+					menuItem = static_cast<XAP_CocoaFrameHelper*>(m_pCocoaFrame->getFrameHelper())->_getQuitMenuItem();
 					[menuItem setTitle:str];
 					[menuItem setKeyEquivalent:shortCut];					
 					break;
@@ -776,7 +787,7 @@ void EV_CocoaMenu::_getItemCmd (const char * mnemonic, unsigned int & modifiers,
 /*****************************************************************/
 
 EV_CocoaMenuBar::EV_CocoaMenuBar(XAP_CocoaApp * pCocoaApp,
-							   XAP_CocoaFrame * pCocoaFrame,
+							   AP_CocoaFrame * pCocoaFrame,
 							   const char * szMenuLayoutName,
 							   const char * szMenuLabelSetName)
 	: EV_CocoaMenu(pCocoaApp, pCocoaFrame, szMenuLayoutName, szMenuLabelSetName)
@@ -849,7 +860,7 @@ bool EV_CocoaMenuBar::refreshMenu(AV_View * pView)
 /*****************************************************************/
 
 EV_CocoaMenuPopup::EV_CocoaMenuPopup(XAP_CocoaApp * pCocoaApp,
-								   XAP_CocoaFrame * pCocoaFrame,
+								   AP_CocoaFrame * pCocoaFrame,
 								   const char * szMenuLayoutName,
 								   const char * szMenuLabelSetName)
 	: EV_CocoaMenu(pCocoaApp, pCocoaFrame, szMenuLayoutName, szMenuLabelSetName),

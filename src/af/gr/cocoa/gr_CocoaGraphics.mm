@@ -131,7 +131,7 @@ GR_CocoaGraphics::GR_CocoaGraphics(NSView * win, XAP_App * app)
 		[win retain];
 		m_pWin = win;
 	}
-	[m_pWin setXAPFrame:(XAP_CocoaFrame*)(app->getLastFocussedFrame())];
+	[m_pWin setXAPFrame:app->getLastFocussedFrame()];
 	[m_pWin setAutoresizingMask:(NSViewWidthSizable | NSViewHeightSizable)];
 	[m_pWin setGraphics:this];
 	m_iLineWidth = 0;
@@ -147,13 +147,13 @@ GR_CocoaGraphics::GR_CocoaGraphics(NSView * win, XAP_App * app)
 	::CGContextSetLineCap (m_CGContext, kCGLineCapButt);
 	::CGContextSetLineJoin (m_CGContext, kCGLineJoinMiter);
 	::CGContextTranslateCTM (m_CGContext, 0.5, 0.5);
+	::CGContextSetShouldAntialias (m_CGContext, false);
 	m_currentColor = [[NSColor blackColor] copy];
  	[m_currentColor set];
 
 	m_cs = GR_Graphics::GR_COLORSPACE_COLOR;
 	m_cursor = GR_CURSOR_INVALID;
 	setCursor(GR_CURSOR_DEFAULT);
-	::CGContextSetShouldAntialias (m_CGContext, 0);
 	/* save initial graphics state that has no clipping */
 	::CGContextSaveGState(m_CGContext);
 # ifndef USE_OFFSCREEN
@@ -273,32 +273,6 @@ void GR_CocoaGraphics::setLineProperties ( double    inWidthPixels,
 }
 
 
-// HACK: I need more speed
-void GR_CocoaGraphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
-{
-	UT_DEBUGMSG (("GR_CocoaGraphics::drawChar()\n"));
-	UT_UCSChar Wide_char = remapGlyph(Char, false);
-	if(Wide_char == 0x200B || Wide_char == 0xFEFF) //zero width spaces
-		return;
-
-	NSFont *font = m_pFont->getNSFont();
-
-	NSString * string = [[NSString alloc] initWithData:
-							[NSData dataWithBytes:&Wide_char length:sizeof(Wide_char)]
-							encoding:NSUnicodeStringEncoding];
-
-	NSPoint point;
-	point.x = xoff;
-	point.y = yoff + [font descender];
-
-	LOCK_CONTEXT__;
-	// TODO: set attributes
-	NSMutableDictionary* fontProps = [NSMutableDictionary dictionaryWithObject:font forKey:NSFontAttributeName];
-	
-	[string drawAtPoint:point withAttributes:fontProps];
-	[string release];
-}
-
 void GR_CocoaGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 								 int iLength, UT_sint32 xoff, UT_sint32
 								 yoff,
@@ -343,7 +317,7 @@ void GR_CocoaGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 		//UT_DEBUGMSG(("CocoaGraphics::drawChars: utf-8\n"));
 
 		NSMutableDictionary* fontProps = [NSMutableDictionary dictionaryWithObject:font forKey:NSFontAttributeName];
-
+		[fontProps setObject:m_currentColor forKey:NSForegroundColorAttributeName];
 		switch(UT_OVERSTRIKING_DIR & UT_isOverstrikingChar(*pC))
 		{
 		case UT_NOT_OVERSTRIKING:
@@ -407,7 +381,7 @@ UT_uint32 GR_CocoaGraphics::getFontHeight(GR_Font * fnt)
 
 	NSFont* pFont = hndl->getNSFont();
 //	printf ("line height %f\n", [pFont defaultLineHeightForFont]);
-	return (UT_uint32)[pFont ascender] + [pFont descender]; //[pFont defaultLineHeightForFont];
+	return (UT_uint32)([pFont ascender] + [pFont descender]); //[pFont defaultLineHeightForFont];
 }
 
 UT_uint32 GR_CocoaGraphics::getFontHeight()
@@ -450,7 +424,7 @@ UT_uint32 GR_CocoaGraphics::_getResolution(void) const
 	UT_ASSERT(desc);
 	NSValue* value = [desc objectForKey:NSDeviceResolution];
 	UT_ASSERT(value);
-	return [value sizeValue].height;
+	return (UT_uint32)[value sizeValue].height;
 }
 
 /*!
@@ -967,7 +941,8 @@ void GR_CocoaGraphics::setColor3D(GR_Color3D c)
 void GR_CocoaGraphics::init3dColors()
 {
 	m_3dColors[CLR3D_Foreground] = [[NSColor blackColor] retain];
-	m_3dColors[CLR3D_Background] = [[NSColor controlColor] retain];
+	m_3dColors[CLR3D_Background] = [[NSColor windowBackgroundColor] retain];
+//	m_3dColors[CLR3D_Background] = [[NSColor controlColor] retain];
 //	m_3dColors[CLR3D_Background] = [[NSColor grayColor] retain];
 	m_3dColors[CLR3D_BevelUp] = [[NSColor lightGrayColor] retain];
 	m_3dColors[CLR3D_BevelDown] = [[NSColor darkGrayColor] retain];

@@ -23,9 +23,11 @@
 
 #import <Cocoa/Cocoa.h>
 
+#import "ap_CocoaFrame.h"
+
 #include "ap_Dialog_Options.h"
 
-class XAP_CocoaFrame;
+class XAP_Frame;
 class AP_CocoaDialog_Options;
 
 
@@ -120,8 +122,8 @@ public:
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 	
-	XAP_CocoaFrame * _getFrame()
-		{ return static_cast<XAP_CocoaFrame*>(m_pFrame); };
+	AP_CocoaFrame * _getFrame()
+		{ return static_cast<AP_CocoaFrame*>(m_pFrame); };
 	//void initializeTransperentToggle(void);
 	void event_ChooseTransparentColor(void);
 	void event_AllowTransparentColor(void);

@@ -17,10 +17,11 @@
                 "m_quitMenu" = NSMenuItem; 
                 mainView = NSView; 
                 menuBar = NSMenu; 
-                statusBar = "XAP_CocoaNSView"; 
+                statusBar = "XAP_CocoaNSStatusBar"; 
             }; 
             SUPERCLASS = NSWindowController; 
         }, 
+        {CLASS = "XAP_CocoaNSStatusBar"; LANGUAGE = ObjC; SUPERCLASS = NSView; }, 
         {CLASS = "XAP_CocoaNSView"; LANGUAGE = ObjC; SUPERCLASS = NSView; }
     ); 
     IBVersion = 1; 

@@ -28,6 +28,8 @@
 #include "xap_App.h"
 #include "ev_CocoaToolbar.h"
 #include "ut_debugmsg.h"
+#include "xap_CocoaFrame.h"
+#include "ap_CocoaFrame.h"
 
 /*****************************************************************/
 

@@ -71,7 +71,7 @@ XAP_CocoaDialog_About::~XAP_CocoaDialog_About(void)
 void XAP_CocoaDialog_About::runModal(XAP_Frame * pFrame)
 {
 	// stash away the frame
-	m_pFrame = static_cast<XAP_CocoaFrame *>(pFrame);
+	m_pFrame = pFrame;
 
 	m_dlg = [XAP_CocoaDlg_AboutController loadFromNib];
 	[m_dlg setXAPOwner:this];
@@ -104,7 +104,7 @@ void XAP_CocoaDialog_About::event_URL(void)
 
 - (void)windowDidLoad
 {
-	XAP_CocoaFrame *pFrame = m_xap->_getFrame ();
+	XAP_Frame *pFrame = m_xap->_getFrame ();
 	// we get all our strings from the application string set
 	const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
 	[[self window] setTitle:[NSString stringWithFormat:@XAP_ABOUT_TITLE, pFrame->getApp()->getApplicationName()]];	

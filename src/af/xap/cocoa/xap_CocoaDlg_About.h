@@ -60,7 +60,7 @@ public:
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
 	virtual void			runModal(XAP_Frame * pFrame);
-	XAP_CocoaFrame * _getFrame () { return m_pFrame; };
+	XAP_Frame * _getFrame () { return m_pFrame; };
 
 	// callbacks can fire these events
 
@@ -70,7 +70,7 @@ public:
 	GR_CocoaImage * m_pGrImageSidebar;
 
 private:
-	XAP_CocoaFrame * m_pFrame;
+	XAP_Frame * m_pFrame;
 	XAP_CocoaDlg_AboutController * m_dlg;
 };
 

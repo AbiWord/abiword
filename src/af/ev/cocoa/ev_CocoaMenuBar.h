@@ -27,7 +27,7 @@
 
 class AV_View;
 class XAP_CocoaApp;
-class XAP_CocoaFrame;
+class AP_CocoaFrame;
 
 
 /*****************************************************************/
@@ -36,7 +36,7 @@ class EV_CocoaMenuBar : public EV_CocoaMenu
 {
 public:
 	EV_CocoaMenuBar(XAP_CocoaApp * pCocoaApp,
-				   XAP_CocoaFrame * pCocoaFrame,
+				   AP_CocoaFrame * pCocoaFrame,
 				   const char * szMenuLayoutName,
 				   const char * szMenuLabelSetName);
 	virtual ~EV_CocoaMenuBar();

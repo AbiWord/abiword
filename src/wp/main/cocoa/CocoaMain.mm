@@ -19,11 +19,19 @@
  */
 
 #import <Cocoa/Cocoa.h>
+#ifdef DEBUG
+#import <Foundation/NSDebug.h>
+#endif
 
+#include "ut_debugmsg.h"
 #include "ap_CocoaApp.h"
 
 int main (int argc, const char **argv)
 {
+#ifdef DEBUG
+	UT_DEBUGMSG(("activating NSDebug\n"));
+	NSDebugEnabled = NSZombieEnabled = YES;
+#endif
 	NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
 	int ret = AP_CocoaApp::main(ABIWORD_APP_NAME, argc, argv);
 	[pool release];

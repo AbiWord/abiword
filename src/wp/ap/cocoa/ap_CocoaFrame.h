@@ -1,6 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001 Hubert Figuiere
+ * Copyright (C) 2001-2002 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -26,7 +26,9 @@
 #import "xap_CocoaFrame.h"
 
 class AP_CocoaFrame;
+class FL_DocLayout;
 
+#include "ap_Frame.h"
 #include "ie_types.h"
 #include "ut_assert.h"
 
@@ -38,15 +40,45 @@ class AP_CocoaFrame;
     IBOutlet XAP_CocoaNSView *hRuler;
     IBOutlet XAP_CocoaNSView *vRuler;
 }
-+ (XAP_CocoaFrameController*)createFrom:(XAP_CocoaFrame *)frame;
-- (id)initWith:(XAP_CocoaFrame *)frame;
++ (XAP_CocoaFrameController*)createFrom:(XAP_Frame *)frame;
+- (id)initWith:(XAP_Frame *)frame;
 - (IBAction)rulerClick:(id)sender;
 - (XAP_CocoaNSView *)getVRuler;
 - (XAP_CocoaNSView *)getHRuler;
 @end
 
+/*****************************************************************/
+class AP_CocoaFrameHelper : public XAP_CocoaFrameHelper
+{
+ public:
+	AP_CocoaFrameHelper(AP_CocoaFrame *pCocoaFrame, XAP_CocoaApp *pCocoaApp); 
+	virtual NSString *			_getNibName (); /* must be public to be called from Obj-C */
 
-class AP_CocoaFrame : public XAP_CocoaFrame
+ protected:
+	void _showOrHideStatusbar(void);
+
+	void _showOrHideToolbars(void);
+	virtual void _refillToolbarsInFrameData();
+	void _bindToolbars(AV_View * pView);
+
+	virtual void _createDocumentWindow();
+	virtual void _createStatusBarWindow(XAP_CocoaNSStatusBar *);
+
+	friend class AP_CocoaFrame;
+	virtual void _setWindowIcon();
+	/* Cocoa specific stuff */
+	virtual XAP_CocoaFrameController *_createController();
+	virtual	void	_createDocView(GR_CocoaGraphics* &pG);
+
+	NSScroller *				m_hScrollbar;
+	NSScroller *				m_vScrollbar;
+	XAP_CocoaNSView *			m_docAreaGRView;
+private:
+	static bool					_graphicsUpdateCB(NSRect * aRect, GR_CocoaGraphics *pG, void* param);
+};
+
+
+class AP_CocoaFrame : public XAP_Frame
 {
 public:
 	AP_CocoaFrame(XAP_CocoaApp * app);
@@ -74,27 +106,15 @@ public:
 	virtual void                            toggleLeftRuler(bool bRulerOn);
 	virtual void				toggleBar(UT_uint32 iBarNb, bool bBarOn);
 	virtual void				toggleStatusBar(bool bStatusBarOn);
-	virtual NSString *			_getNibName ();
-	virtual XAP_CocoaFrameController *_createController();
-	virtual void                refillToolbarsInFrameData(void);
 
 protected:
-	virtual void			_createDocumentWindow(void);
-	virtual void				_createStatusBarWindow(NSView *);
-	virtual void				_setWindowIcon(void);
 	UT_Error   					_loadDocument(const char * szFilename, IEFileType ieft, bool createNew);
 	virtual UT_Error            _importDocument(const char * szFilename, int ieft, bool markClean);
 	UT_Error   					_showDocument(UT_uint32 iZoom=100);
 	static void					_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 xlimit);
 	static void					_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 ylimit);
 	UT_Error					_replaceDocument(AD_Document * pDoc);
-	virtual void				_showOrHideToolbars(void);
-	virtual void				_showOrHideStatusbar(void);
-	static bool					_graphicsUpdateCB(NSRect * aRect, GR_CocoaGraphics *pG, void* param);
 
-	NSScroller *				m_hScrollbar;
-	NSScroller *				m_vScrollbar;
-	XAP_CocoaNSView *			m_docAreaGRView;
 #if 0	
 	GtkAdjustment *				m_pVadj;
 	GtkAdjustment *				m_pHadj;

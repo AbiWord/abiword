@@ -24,8 +24,59 @@
 #include "ut_debugmsg.h"
 #include "xap_Frame.h"
 #include "xap_CocoaFrame.h"
+#include "ap_CocoaFrame.h"
 #include "gr_CocoaGraphics.h"
 #include "ap_CocoaStatusBar.h"
+
+class ap_csb_TextListener : public AP_StatusBarFieldListener
+{
+public:
+	/* policy is as usual retain the object */
+	ap_csb_TextListener(AP_StatusBarField *pStatusBarField, NSTextField *pLabel) 
+		: AP_StatusBarFieldListener(pStatusBarField) 
+	{
+		m_pLabel = pLabel; 
+		[m_pLabel retain];
+	}
+	virtual ~ap_csb_TextListener()
+	{
+		[m_pLabel release];
+	}
+	virtual void notify(); 
+
+protected:
+	NSTextField *m_pLabel;
+};
+
+void ap_csb_TextListener::notify()
+{
+	UT_ASSERT(m_pLabel);
+
+	AP_StatusBarField_TextInfo * textInfo = ((AP_StatusBarField_TextInfo *)m_pStatusBarField);
+	const UT_UCS4Char * buf = textInfo->getBufUCS();
+	UT_UTF8String utf8 (buf);	
+
+	[m_pLabel setStringValue:[NSString stringWithUTF8String:utf8.utf8_str()]];
+
+	// we conditionally update the size request, if the representative string (or an earlier
+	// size) wasn't large enough, if the element uses the representative string method
+	// and is aligned with the center
+	if (textInfo->getFillMethod() == REPRESENTATIVE_STRING && 
+			textInfo->getAlignmentMethod() == CENTER) {
+		// TODO FIXME
+	/*
+		GtkRequisition requisition;
+		gint iOldWidthRequest, iOldHeightRequest;
+		gtk_widget_get_size_request(m_pLabel, &iOldWidthRequest, &iOldHeightRequest);
+		gtk_widget_set_size_request(m_pLabel, -1, -1);		
+		gtk_widget_size_request(m_pLabel, &requisition);
+		if (requisition.width > iOldWidthRequest)			
+			gtk_widget_set_size_request(m_pLabel, requisition.width, -1);		
+		else
+			gtk_widget_set_size_request(m_pLabel, iOldWidthRequest, -1);	
+	*/
+	}
+}
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
@@ -34,91 +85,62 @@ AP_CocoaStatusBar::AP_CocoaStatusBar(XAP_Frame * pFrame)
 	: AP_StatusBar(pFrame)
 {
 	m_wStatusBar = nil;
-	m_pG = NULL;
 
 	/* fetch the widget from the controller */
-	m_wStatusBar = [static_cast<XAP_CocoaFrame *>(m_pFrame)->_getController() getStatusBar];
+	m_wStatusBar = [(AP_CocoaFrameController *)(static_cast<XAP_CocoaFrameHelper*>(m_pFrame->getFrameHelper()))->_getController() getStatusBar];
 }
 
 AP_CocoaStatusBar::~AP_CocoaStatusBar(void)
 {
-	DELETEP(m_pG);
 }
 
-#if 0
-void AP_CocoaStatusBar::_style_changed(void)
-{
-	setView(m_pView);
-}
-#endif
 
 void AP_CocoaStatusBar::setView(AV_View * pView)
 {
-	// We really should allocate m_pG in createWidget(), but
-	// unfortunately, the actual window (m_wStatusBar->window)
-	// is not created until the frame's top-level window is
-	// shown.
-
-	DELETEP(m_pG);	
-	GR_CocoaGraphics * pG = new GR_CocoaGraphics(m_wStatusBar, m_pFrame->getApp());
-	m_pG = pG;
-	UT_ASSERT(m_pG);
-	static_cast<GR_CocoaGraphics *>(m_pG)->_setUpdateCallback (&_graphicsUpdateCB, (void *)this);
-	
-#if 0
-	GtkStyle * style = gtk_widget_get_style((static_cast<XAP_CocoaFrame *> (m_pFrame))->getTopLevelWindow());
-	UT_ASSERT(style);
-	pG->init3dColors(style);
-#endif
-
-	GR_Font * pFont = m_pG->getGUIFont();
-	m_pG->setFont(pFont);
-
-	// Now that we've initialized the graphics context and
-	// installed the GUI font, let the base class do it's
-	// think and layout the fields.
-	
 	AP_StatusBar::setView(pView);
 }
 
-XAP_CocoaNSView * AP_CocoaStatusBar::createWidget(void)
+XAP_CocoaNSStatusBar * AP_CocoaStatusBar::createWidget(void)
 {
-	// TODO remove that method. uneeded.
+	UT_ASSERT(m_wStatusBar);
+	float currentX = 0.0;
+	float height = [m_wStatusBar frame].size.height;
+	for (UT_uint32 k=0; k<getFields()->getItemCount(); k++) {
+ 		AP_StatusBarField * pf = (AP_StatusBarField *)m_vecFields.getNthItem(k);
+		UT_ASSERT(pf); // we should NOT have null elements
+		
+		AP_StatusBarField_TextInfo *pf_TextInfo = static_cast<AP_StatusBarField_TextInfo*>(pf);
+		NSRect frame = NSMakeRect (currentX, 0, 50, height);
+		NSTextField *pStatusBarElementLabel = [[NSTextField alloc] initWithFrame:frame];
+		pf->setListener((AP_StatusBarFieldListener *)(new ap_csb_TextListener
+				(pf_TextInfo, pStatusBarElementLabel)));
+		[pStatusBarElementLabel setEditable:NO];
+		[pStatusBarElementLabel setBezeled:YES];
+		[pStatusBarElementLabel setSelectable:NO];
+		[pStatusBarElementLabel setStringValue:[NSString stringWithUTF8String:pf_TextInfo->getRepresentativeString()]];
+		// align
+		if (pf_TextInfo->getAlignmentMethod() == LEFT) {
+			// TODO set the text alignement. Probaably thru attributed string
+		//	gtk_misc_set_alignment(GTK_MISC(pStatusBarElementLabel), 0.0, 0.0);
+		}
+			
+		// size and place
+		if (pf_TextInfo->getFillMethod() == REPRESENTATIVE_STRING) {
+		/*
+			GtkRequisition requisition;
+			gtk_widget_size_request(pStatusBarElementLabel, &requisition);				
+			gtk_widget_set_size_request(pStatusBarElementLabel, requisition.width, -1);
+			
+			gtk_box_pack_start(GTK_BOX(m_wStatusBar), pStatusBarElement, FALSE, FALSE, 0);
+			*/
+		}
+		[m_wStatusBar addSubview:pStatusBarElementLabel];
+	}
+	
 	return m_wStatusBar;
 }
 
 
-bool AP_CocoaStatusBar::_graphicsUpdateCB(NSRect * aRect, GR_CocoaGraphics *pGR, void *param)
-{
-	// a static function
-	UT_DEBUGMSG (("AP_CocoaStatusBar::_graphicsUpdateCB()\n"));
-	AP_CocoaStatusBar * pCocoaStatusBar = (AP_CocoaStatusBar *)param;
-	if (!pCocoaStatusBar)
-		return false;
-
-	pCocoaStatusBar->draw();
-	return true;
-}
-
-
-///////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////
-#if 0
-gint AP_CocoaStatusBar::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
-{
-	// a static function
-	AP_CocoaStatusBar * pCocoaStatusBar = (AP_CocoaStatusBar *)g_object_get_user_data(G_OBJECT(w));
-
-	UT_uint32 iHeight = (UT_uint32)e->height;
-	pCocoaStatusBar->setHeight(iHeight);
-
-	UT_uint32 iWidth = (UT_uint32)e->width;
-	if (iWidth != pCocoaStatusBar->getWidth())
-		pCocoaStatusBar->setWidth(iWidth);
-	
-	return 1;
-}
-#endif
 
 void AP_CocoaStatusBar::show(void)
 {
@@ -139,3 +161,13 @@ void AP_CocoaStatusBar::hide(void)
 	}
 	// TODO Check about resizing / layout changes
 }
+
+@implementation XAP_CocoaNSStatusBar
+- (NSControl *)addField:(AP_StatusBarField*)field
+{
+	UT_ASSERT (UT_NOT_IMPLEMENTED);;
+	return nil;
+}
+
+
+@end

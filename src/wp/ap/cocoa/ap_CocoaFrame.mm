@@ -1,6 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
- * Copyright (C) 2001 Hubert Figuiere
+ * Copyright (C) 2001-2002 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -60,6 +60,245 @@
 #define ENSUREP(p)		do { UT_ASSERT(p); if (!p) goto Cleanup; } while (0)
 
 /*****************************************************************/
+AP_CocoaFrameHelper::AP_CocoaFrameHelper(AP_CocoaFrame *pCocoaFrame, XAP_CocoaApp *pCocoaApp)
+	: XAP_CocoaFrameHelper (pCocoaFrame, pCocoaApp)
+{
+	m_hScrollbar = NULL;
+	m_vScrollbar = NULL;
+	m_docAreaGRView = NULL;
+}
+
+
+void AP_CocoaFrameHelper::_createDocView(GR_CocoaGraphics* &pG)
+{
+	NSView*		docArea = [_getController() getMainView];
+	NSArray*	docAreaSubviews;
+	
+	docAreaSubviews = [docArea subviews];
+	if ([docAreaSubviews count] != 0) {
+		NSEnumerator *enumerator = [docAreaSubviews objectEnumerator];
+		NSView* aSubview;
+	
+		while (aSubview = [enumerator nextObject]) {
+			[aSubview removeFromSuperviewWithoutNeedingDisplay];
+		}
+		
+		m_hScrollbar = NULL;
+		m_vScrollbar = NULL;
+		m_docAreaGRView = NULL;
+	}
+		NSRect frame = [docArea bounds];
+	NSRect controlFrame;
+	
+	/* vertical scrollbar */
+	controlFrame.origin.y = [NSScroller scrollerWidth];
+	controlFrame.size.width = [NSScroller scrollerWidth];
+	controlFrame.size.height = frame.size.height - controlFrame.origin.y;
+	controlFrame.origin.x = frame.size.width - controlFrame.size.width;
+	m_vScrollbar = [[NSScroller alloc] initWithFrame:controlFrame];
+	[docArea addSubview:m_vScrollbar];
+	[m_vScrollbar setAutoresizingMask:(NSViewMinXMargin |  NSViewHeightSizable)];
+	[m_vScrollbar release];
+	
+	/* horizontal scrollbar */
+	controlFrame.origin.x = 0;
+	controlFrame.origin.y = 0;
+	controlFrame.size.height = [NSScroller scrollerWidth];
+	controlFrame.size.width = frame.size.width - controlFrame.size.height;
+	m_hScrollbar = [[NSScroller alloc] initWithFrame:controlFrame];
+	[docArea addSubview:m_hScrollbar];
+	[m_hScrollbar setAutoresizingMask:(NSViewMaxYMargin |  NSViewWidthSizable)];
+	[m_hScrollbar release];
+
+	/* doc view */
+	controlFrame.origin.x = 0;
+	controlFrame.origin.y = [NSScroller scrollerWidth];
+	controlFrame.size.height = frame.size.height - controlFrame.origin.y;
+	controlFrame.size.width = frame.size.width - [NSScroller scrollerWidth];
+	m_docAreaGRView = [[XAP_CocoaNSView alloc] initWith:m_pFrame andFrame:controlFrame];
+	[docArea addSubview:m_docAreaGRView];
+	[m_docAreaGRView setAutoresizingMask:(NSViewHeightSizable | NSViewWidthSizable)];
+	[m_docAreaGRView release];
+
+	
+	pG = new GR_CocoaGraphics(m_docAreaGRView, /*fontManager,*/ m_pFrame->getApp());
+	static_cast<GR_CocoaGraphics *>(pG)->_setUpdateCallback (&_graphicsUpdateCB, (void *)this);
+	
+
+}
+
+
+void AP_CocoaFrameHelper::_bindToolbars(AV_View * pView)
+{
+	int nrToolbars = m_vecToolbarLayoutNames.getItemCount();
+	for (int k = 0; k < nrToolbars; k++)
+	{
+		// TODO Toolbars are a frame-level item, but a view-listener is
+		// TODO a view-level item.  I've bound the toolbar-view-listeners
+		// TODO to the current view within this frame and have code in the
+		// TODO toolbar to allow the view-listener to be rebound to a different
+		// TODO view.  in the future, when we have support for multiple views
+		// TODO in the frame (think splitter windows), we will need to have
+		// TODO a loop like this to help change the focus when the current
+		// TODO view changes.
+		
+		EV_CocoaToolbar * pCocoaToolbar = (EV_CocoaToolbar *)m_vecToolbars.getNthItem(k);
+		pCocoaToolbar->bindListenerToView(pView);
+	}
+}
+
+// Does the initial show/hide of statusbar (based on the user prefs).
+// Idem.
+void AP_CocoaFrameHelper::_showOrHideStatusbar()
+{
+	bool bShowStatusBar = static_cast<AP_FrameData*> (m_pFrame->getFrameData())->m_bShowStatusBar && false;
+	static_cast<AP_CocoaFrame *>(m_pFrame)->toggleStatusBar(bShowStatusBar);
+}
+
+// Does the initial show/hide of toolbars (based on the user prefs).
+// This is needed because toggleBar is called only when the user
+// (un)checks the show {Stantandard,Format,Extra} toolbar checkbox,
+// and thus we have to manually call this function at startup.
+void AP_CocoaFrameHelper::_showOrHideToolbars()
+{
+	bool *bShowBar = static_cast<AP_FrameData*> (m_pFrame->getFrameData())->m_bShowBar;
+	UT_uint32 cnt = m_vecToolbarLayoutNames.getItemCount();
+
+	for (UT_uint32 i = 0; i < cnt; i++)
+	{
+		// TODO: The two next lines are here to bind the EV_Toolbar to the
+		// AP_FrameData, but their correct place are next to the toolbar creation (JCA)
+		EV_CocoaToolbar * pCocoaToolbar = static_cast<EV_CocoaToolbar *> (m_vecToolbars.getNthItem(i));
+		static_cast<AP_FrameData*> (m_pFrame->getFrameData())->m_pToolbar[i] = pCocoaToolbar;
+		static_cast<AP_CocoaFrame *>(m_pFrame)->toggleBar(i, bShowBar[i]);
+	}
+}
+
+
+/*!
+ * Refills the framedata class with pointers to the current toolbars. We 
+ * need to do this after a toolbar icon and been dragged and dropped.
+ */
+void AP_CocoaFrameHelper::_refillToolbarsInFrameData(void)
+{
+	UT_uint32 cnt = m_vecToolbarLayoutNames.getItemCount();
+
+	for (UT_uint32 i = 0; i < cnt; i++)
+	{
+		EV_CocoaToolbar * pCocoaToolbar = static_cast<EV_CocoaToolbar *> (m_vecToolbars.getNthItem(i));
+		static_cast<AP_FrameData*> (m_pFrame->getFrameData())->m_pToolbar[i] = pCocoaToolbar;
+	}
+}
+
+void AP_CocoaFrameHelper::_createDocumentWindow()
+{
+	AP_FrameData* pData = static_cast<AP_FrameData*> (m_pFrame->getFrameData());
+	bool bShowRulers = pData->m_bShowRuler;
+
+	// create the rulers
+	AP_CocoaTopRuler * pCocoaTopRuler = NULL;
+	AP_CocoaLeftRuler * pCocoaLeftRuler = NULL;
+
+	if ( bShowRulers )
+	{
+		pCocoaTopRuler = new AP_CocoaTopRuler(m_pFrame);
+		UT_ASSERT(pCocoaTopRuler);
+		pCocoaTopRuler->createWidget();
+		
+		if (pData->m_pViewMode == VIEW_PRINT) {
+		    pCocoaLeftRuler = new AP_CocoaLeftRuler(m_pFrame);
+		    UT_ASSERT(pCocoaLeftRuler);
+		    pCocoaLeftRuler->createWidget();
+
+		    // get the width from the left ruler and stuff it into the top ruler.
+		    pCocoaTopRuler->setOffsetLeftRuler(pCocoaLeftRuler->getWidth());
+		}
+		else {
+//		    m_leftRuler = NULL;
+		    pCocoaTopRuler->setOffsetLeftRuler(0);
+		}
+	}
+
+	pData->m_pTopRuler = pCocoaTopRuler;
+	pData->m_pLeftRuler = pCocoaLeftRuler;
+
+	// TODO check what really remains to be done.
+//	UT_ASSERT (UT_TODO);
+#if 0
+//	g_signal_connect(G_OBJECT(m_pHadj), "value_changed", G_CALLBACK(_fe::hScrollChanged), NULL);
+//	g_signal_connect(G_OBJECT(m_pVadj), "value_changed", G_CALLBACK(_fe::vScrollChanged), NULL);
+
+	g_signal_connect(G_OBJECT(m_dArea), "expose_event",
+					   G_CALLBACK(_fe::expose), NULL);
+  
+	g_signal_connect(G_OBJECT(m_dArea), "button_press_event",
+					   G_CALLBACK(_fe::button_press_event), NULL);
+
+	g_signal_connect(G_OBJECT(m_dArea), "button_release_event",
+					   G_CALLBACK(_fe::button_release_event), NULL);
+
+	g_signal_connect(G_OBJECT(m_dArea), "motion_notify_event",
+					   G_CALLBACK(_fe::motion_notify_event), NULL);
+  
+	g_signal_connect(G_OBJECT(m_dArea), "configure_event",
+					   G_CALLBACK(_fe::configure_event), NULL);
+#endif
+}
+
+void AP_CocoaFrameHelper::_createStatusBarWindow(XAP_CocoaNSStatusBar * statusBar)
+{
+	UT_DEBUGMSG (("AP_CocoaFrame::_createStatusBarWindow ()\n"));
+	// TODO: pass the NSView instead of the whole frame
+	AP_CocoaStatusBar * pCocoaStatusBar = new AP_CocoaStatusBar(m_pFrame);
+	UT_ASSERT(pCocoaStatusBar);
+
+	((AP_FrameData *)m_pFrame->getFrameData())->m_pStatusBar = pCocoaStatusBar;
+	
+//	GtkWidget * w = pCocoaStatusBar->createWidget();
+
+	//return [_getController() getStatusBar];
+}
+
+void AP_CocoaFrameHelper::_setWindowIcon()
+{
+	// this is NOT needed. Just need to the the title.
+}
+
+NSString *	AP_CocoaFrameHelper::_getNibName ()
+{
+	return @"ap_CocoaFrame";
+}
+
+/*!
+	Create and intialize the controller.
+ */
+XAP_CocoaFrameController *AP_CocoaFrameHelper::_createController()
+{
+	UT_DEBUGMSG (("AP_CocoaFrame::_createController()\n"));
+	return [AP_CocoaFrameController createFrom:m_pFrame];
+}
+
+
+
+bool AP_CocoaFrameHelper::_graphicsUpdateCB(NSRect * aRect, GR_CocoaGraphics *pG, void* param)
+{
+	// a static function
+	AP_CocoaFrame * pCocoaFrame = (AP_CocoaFrame *)param;
+	if (!pCocoaFrame)
+		return false;
+
+	UT_Rect rClip;
+	rClip.left = aRect->origin.x;
+	rClip.top = aRect->origin.y;
+	rClip.width = aRect->size.width;
+	rClip.height = aRect->size.height;
+	xxx_UT_DEBUGMSG(("Cocoa in frame expose painting area:  left=%d, top=%d, width=%d, height=%d\n", rClip.left, rClip.top, rClip.width, rClip.height));
+	if(pG != NULL)
+		pG->doRepaint(&rClip);
+	else
+		return false;
+	return true;
+}
 
 void AP_CocoaFrame::setZoomPercentage(UT_uint32 iZoom)
 {
@@ -94,72 +333,17 @@ UT_Error AP_CocoaFrame::_showDocument(UT_uint32 iZoom)
 	ap_Scrollbar_ViewListener * pScrollbarViewListener = NULL;
 	AV_ListenerId lid;
 	AV_ListenerId lidScrollbarViewListener;
-	UT_uint32 nrToolbars;
 	UT_uint32 point = 0;
-	UT_uint32 k = 0;
 	
 	NSRect rect;
 
-	bool bFocus;
 //	XAP_CocoaFontManager * fontManager = ((XAP_CocoaApp *) getApp())->getFontManager();
-	NSView*		docArea = [_getController() getMainView];
-	NSArray*	docAreaSubviews;
-	
-	docAreaSubviews = [docArea subviews];
-	if ([docAreaSubviews count] != 0) {
-		NSEnumerator *enumerator = [docAreaSubviews objectEnumerator];
-		NSView* aSubview;
-	
-		while (aSubview = [enumerator nextObject]) {
-			[aSubview removeFromSuperviewWithoutNeedingDisplay];
-		}
-		
-		m_hScrollbar = NULL;
-		m_vScrollbar = NULL;
-		m_docAreaGRView = NULL;
-	}
-	NSRect frame = [docArea bounds];
-	NSRect controlFrame;
-	
-	/* vertical scrollbar */
-	controlFrame.origin.y = [NSScroller scrollerWidth];
-	controlFrame.size.width = [NSScroller scrollerWidth];
-	controlFrame.size.height = frame.size.height - controlFrame.origin.y;
-	controlFrame.origin.x = frame.size.width - controlFrame.size.width;
-	m_vScrollbar = [[NSScroller alloc] initWithFrame:controlFrame];
-	[docArea addSubview:m_vScrollbar];
-	[m_vScrollbar setAutoresizingMask:(NSViewMinXMargin |  NSViewHeightSizable)];
-	[m_vScrollbar release];
-	
-	/* horizontal scrollbar */
-	controlFrame.origin.x = 0;
-	controlFrame.origin.y = 0;
-	controlFrame.size.height = [NSScroller scrollerWidth];
-	controlFrame.size.width = frame.size.width - controlFrame.size.height;
-	m_hScrollbar = [[NSScroller alloc] initWithFrame:controlFrame];
-	[docArea addSubview:m_hScrollbar];
-	[m_hScrollbar setAutoresizingMask:(NSViewMaxYMargin |  NSViewWidthSizable)];
-	[m_hScrollbar release];
-	
-	/* doc view */
-	controlFrame.origin.x = 0;
-	controlFrame.origin.y = [NSScroller scrollerWidth];
-	controlFrame.size.height = frame.size.height - controlFrame.origin.y;
-	controlFrame.size.width = frame.size.width - [NSScroller scrollerWidth];
-	m_docAreaGRView = [[XAP_CocoaNSView alloc] initWith: this andFrame:controlFrame];
-	[docArea addSubview:m_docAreaGRView];
-	[m_docAreaGRView setAutoresizingMask:(NSViewHeightSizable | NSViewWidthSizable)];
-	[m_docAreaGRView release];
-
-	
-	pG = new GR_CocoaGraphics(m_docAreaGRView, /*fontManager,*/ getApp());
+	static_cast<AP_CocoaFrameHelper*>(m_pFrameHelper)->_createDocView(pG);
 	ENSUREP(pG);
-	static_cast<GR_CocoaGraphics *>(pG)->_setUpdateCallback (&_graphicsUpdateCB, (void *)this);
 	pG->setZoomPercentage(iZoom);
-	
 	pDocLayout = new FL_DocLayout(static_cast<PD_Document *>(m_pDoc), pG);
 	ENSUREP(pDocLayout);
-  
+	  
 	if (m_pView != NULL)
 	{
 		point = ((FV_View *) m_pView)->getPoint();
@@ -213,21 +397,6 @@ UT_Error AP_CocoaFrame::_showDocument(UT_uint32 iZoom)
 							&lidScrollbarViewListener))
 		goto Cleanup;
 
-	nrToolbars = m_vecToolbarLayoutNames.getItemCount();
-	for (k = 0; k < nrToolbars; k++)
-	{
-		// TODO Toolbars are a frame-level item, but a view-listener is
-		// TODO a view-level item.  I've bound the toolbar-view-listeners
-		// TODO to the current view within this frame and have code in the
-		// TODO toolbar to allow the view-listener to be rebound to a different
-		// TODO view.  in the future, when we have support for multiple views
-		// TODO in the frame (think splitter windows), we will need to have
-		// TODO a loop like this to help change the focus when the current
-		// TODO view changes.
-		
-		EV_CocoaToolbar * pCocoaToolbar = (EV_CocoaToolbar *)m_vecToolbars.getNthItem(k);
-		pCocoaToolbar->bindListenerToView(pView);
-	}
 
 	/****************************************************************
 	*****************************************************************
@@ -282,7 +451,7 @@ UT_Error AP_CocoaFrame::_showDocument(UT_uint32 iZoom)
 
 	pView->setInsertMode(((AP_FrameData*)m_pData)->m_bInsertMode);
 
-	rect = [[_getController() window] frame];
+	rect = [[static_cast<XAP_CocoaFrameHelper*>(m_pFrameHelper)->_getController() window] frame];
 	m_pView->setWindowSize(rect.size.width , rect.size.height);
 	setXScrollRange();
 	setYScrollRange();
@@ -317,7 +486,15 @@ UT_Error AP_CocoaFrame::_showDocument(UT_uint32 iZoom)
 			((AP_FrameData*)m_pData)->m_pLeftRuler->draw(NULL);
 	}
 
-	((AP_FrameData*)m_pData)->m_pStatusBar->draw();
+	if(isStatusBarShown())
+	{
+		((AP_FrameData*)m_pData)->m_pStatusBar->notify(m_pView, AV_CHG_ALL);
+	}
+	if(m_pView)
+	{
+		m_pView->notifyListeners(AV_CHG_ALL);
+		m_pView->focusChange(AV_FOCUS_HERE);
+	}
 	
 	return UT_OK;
 
@@ -340,7 +517,7 @@ Cleanup:
 void AP_CocoaFrame::setXScrollRange(void)
 {
 	int width = ((AP_FrameData*)m_pData)->m_pDocLayout->getWidth();
-	NSRect rect = [m_docAreaGRView frame];
+	NSRect rect = [static_cast<AP_CocoaFrameHelper *>(m_pFrameHelper)->m_docAreaGRView frame];
 	int windowWidth = rect.size.width;
 
 	int newvalue = ((m_pView) ? m_pView->getXScrollOffset() : 0);
@@ -375,7 +552,7 @@ void AP_CocoaFrame::setXScrollRange(void)
 void AP_CocoaFrame::setYScrollRange(void)
 {
 	int height = ((AP_FrameData*)m_pData)->m_pDocLayout->getHeight();
-	NSRect rect = [m_docAreaGRView frame];
+	NSRect rect = [static_cast<AP_CocoaFrameHelper *>(m_pFrameHelper)->m_docAreaGRView frame];
 	int windowHeight = rect.size.width;
 
 	int newvalue = ((m_pView) ? m_pView->getYScrollOffset() : 0);
@@ -409,17 +586,14 @@ void AP_CocoaFrame::setYScrollRange(void)
 
 
 AP_CocoaFrame::AP_CocoaFrame(XAP_CocoaApp * app)
-	: XAP_CocoaFrame (app)
+	: XAP_Frame (app)
 {
 	// TODO
 	m_pData = NULL;
-	m_hScrollbar = NULL;
-	m_vScrollbar = NULL;
-	m_docAreaGRView = NULL;
 }
 
 AP_CocoaFrame::AP_CocoaFrame(AP_CocoaFrame * f)
-	: XAP_CocoaFrame(static_cast<XAP_CocoaFrame *>(f))
+	: XAP_Frame(static_cast<XAP_Frame *>(f))
 {
 	// TODO
 	m_pData = NULL;
@@ -436,67 +610,29 @@ bool AP_CocoaFrame::initialize()
 	if (!initFrameData())
 		return false;
 
-	if (!XAP_CocoaFrame::initialize(AP_PREF_KEY_KeyBindings,AP_PREF_DEFAULT_KeyBindings,
+	if (!XAP_Frame::initialize(AP_PREF_KEY_KeyBindings,AP_PREF_DEFAULT_KeyBindings,
 								   AP_PREF_KEY_MenuLayout, AP_PREF_DEFAULT_MenuLayout,
 								   AP_PREF_KEY_StringSet, AP_PREF_DEFAULT_StringSet,
 								   AP_PREF_KEY_ToolbarLayouts, AP_PREF_DEFAULT_ToolbarLayouts,
 								   AP_PREF_KEY_StringSet, AP_PREF_DEFAULT_StringSet))
 		return false;
 
-#ifndef ABI_OPT_WIDGET
-	_createTopLevelWindow();
-	// needs to be shown so that the following functions work
-	// TODO: get rid of cursed flicker caused by initially
-	// TODO: showing these and then hiding them (esp.
-	// TODO: noticable in the gnome build with a toolbar disabled)
+	static_cast<AP_CocoaFrameHelper *>(m_pFrameHelper)->_createTopLevelWindow();
 //	gtk_widget_show(m_wTopLevelWindow);
-	_showOrHideToolbars();
-	_showOrHideStatusbar();
-#endif
+	if(getFrameMode() == XAP_NormalFrame)
+	{
+		// needs to be shown so that the following functions work
+		// TODO: get rid of cursed flicker caused by initially
+		// TODO: showing these and then hiding them (esp.
+		// TODO: noticable in the gnome build with a toolbar disabled)
+		static_cast<AP_CocoaFrameHelper *>(m_pFrameHelper)->_showOrHideToolbars();
+		static_cast<AP_CocoaFrameHelper *>(m_pFrameHelper)->_showOrHideStatusbar();
+	}
 	return true;
 }
 
-// Does the initial show/hide of toolbars (based on the user prefs).
-// This is needed because toggleBar is called only when the user
-// (un)checks the show {Stantandard,Format,Extra} toolbar checkbox,
-// and thus we have to manually call this function at startup.
-void AP_CocoaFrame::_showOrHideToolbars()
-{
-	bool *bShowBar = static_cast<AP_FrameData*> (m_pData)->m_bShowBar;
-	UT_uint32 cnt = m_vecToolbarLayoutNames.getItemCount();
 
-	for (UT_uint32 i = 0; i < cnt; i++)
-	{
-		// TODO: The two next lines are here to bind the EV_Toolbar to the
-		// AP_FrameData, but their correct place are next to the toolbar creation (JCA)
-		EV_CocoaToolbar * pCocoaToolbar = static_cast<EV_CocoaToolbar *> (m_vecToolbars.getNthItem(i));
-		static_cast<AP_FrameData*> (m_pData)->m_pToolbar[i] = pCocoaToolbar;
-		toggleBar(i, bShowBar[i]);
-	}
-}
 
-/*!
- * Refills the framedata class with pointers to the current toolbars. We 
- * need to do this after a toolbar icon and been dragged and dropped.
- */
-void AP_CocoaFrame::	refillToolbarsInFrameData(void)
-{
-	UT_uint32 cnt = m_vecToolbarLayoutNames.getItemCount();
-
-	for (UT_uint32 i = 0; i < cnt; i++)
-	{
-		EV_CocoaToolbar * pCocoaToolbar = static_cast<EV_CocoaToolbar *> (m_vecToolbars.getNthItem(i));
-		static_cast<AP_FrameData*> (m_pData)->m_pToolbar[i] = pCocoaToolbar;
-	}
-}
-
-// Does the initial show/hide of statusbar (based on the user prefs).
-// Idem.
-void AP_CocoaFrame::_showOrHideStatusbar()
-{
-	bool bShowStatusBar = static_cast<AP_FrameData*> (m_pData)->m_bShowStatusBar && false;
-	toggleStatusBar(bShowStatusBar);
-}
 
 /*****************************************************************/
 
@@ -504,7 +640,7 @@ bool AP_CocoaFrame::initFrameData()
 {
 	UT_ASSERT(!((AP_FrameData*)m_pData));
 
-	AP_FrameData* pData = new AP_FrameData(_getApp());
+	AP_FrameData* pData = new AP_FrameData(static_cast<XAP_App *>(m_pApp));
 
 	m_pData = (void*)pData;
 	return (pData ? true : false);
@@ -635,7 +771,7 @@ Cleanup:
 	// clean up anything we created here
 	if (pClone)
 	{
-		_getApp()->forgetFrame(pClone);
+		static_cast<XAP_App *>(m_pApp)->forgetFrame(pClone);
 		delete pClone;
 	}
 
@@ -663,7 +799,7 @@ Cleanup:
 	// clean up anything we created here
 	if (pClone)
 	{
-		_getApp()->forgetFrame(pClone);
+		static_cast<XAP_App *>(m_pApp)->forgetFrame(pClone);
 		delete pClone;
 	}
 
@@ -796,74 +932,7 @@ void AP_CocoaFrame::_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 /*xrang
 	pView->setXScrollOffset((UT_sint32)xoffNew);
 }
 
-NSString *	AP_CocoaFrame::_getNibName ()
-{
-	return @"ap_CocoaFrame";
-}
 
-/*!
-	Create and intialize the controller.
- */
-XAP_CocoaFrameController *AP_CocoaFrame::_createController()
-{
-	UT_DEBUGMSG (("AP_CocoaFrame::_createController()\n"));
-	return [AP_CocoaFrameController createFrom:this];
-}
-
-
-void AP_CocoaFrame::_createDocumentWindow()
-{
-	bool bShowRulers = static_cast<AP_FrameData*> (m_pData)->m_bShowRuler;
-
-	// create the rulers
-	AP_CocoaTopRuler * pCocoaTopRuler = NULL;
-	AP_CocoaLeftRuler * pCocoaLeftRuler = NULL;
-
-	if ( bShowRulers )
-	{
-		pCocoaTopRuler = new AP_CocoaTopRuler(this);
-		UT_ASSERT(pCocoaTopRuler);
-		pCocoaTopRuler->createWidget();
-		
-		if (static_cast<AP_FrameData*> (m_pData)->m_pViewMode == VIEW_PRINT) {
-		    pCocoaLeftRuler = new AP_CocoaLeftRuler(this);
-		    UT_ASSERT(pCocoaLeftRuler);
-		    pCocoaLeftRuler->createWidget();
-
-		    // get the width from the left ruler and stuff it into the top ruler.
-		    pCocoaTopRuler->setOffsetLeftRuler(pCocoaLeftRuler->getWidth());
-		}
-		else {
-//		    m_leftRuler = NULL;
-		    pCocoaTopRuler->setOffsetLeftRuler(0);
-		}
-	}
-
-	((AP_FrameData*)m_pData)->m_pTopRuler = pCocoaTopRuler;
-	((AP_FrameData*)m_pData)->m_pLeftRuler = pCocoaLeftRuler;
-
-	// TODO check what really remains to be done.
-//	UT_ASSERT (UT_TODO);
-#if 0
-//	g_signal_connect(G_OBJECT(m_pHadj), "value_changed", G_CALLBACK(_fe::hScrollChanged), NULL);
-//	g_signal_connect(G_OBJECT(m_pVadj), "value_changed", G_CALLBACK(_fe::vScrollChanged), NULL);
-
-	g_signal_connect(G_OBJECT(m_dArea), "expose_event",
-					   G_CALLBACK(_fe::expose), NULL);
-  
-	g_signal_connect(G_OBJECT(m_dArea), "button_press_event",
-					   G_CALLBACK(_fe::button_press_event), NULL);
-
-	g_signal_connect(G_OBJECT(m_dArea), "button_release_event",
-					   G_CALLBACK(_fe::button_release_event), NULL);
-
-	g_signal_connect(G_OBJECT(m_dArea), "motion_notify_event",
-					   G_CALLBACK(_fe::motion_notify_event), NULL);
-  
-	g_signal_connect(G_OBJECT(m_dArea), "configure_event",
-					   G_CALLBACK(_fe::configure_event), NULL);
-#endif
-}
 
 void AP_CocoaFrame::translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y)
 {
@@ -883,29 +952,12 @@ void AP_CocoaFrame::translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y)
 #endif
 }
 
-void AP_CocoaFrame::_createStatusBarWindow(NSView * statusBar)
-{
-	UT_DEBUGMSG (("AP_CocoaFrame::_createStatusBarWindow ()\n"));
-	// TODO: pass the NSView instead of the whole frame
-	AP_CocoaStatusBar * pCocoaStatusBar = new AP_CocoaStatusBar(this);
-	UT_ASSERT(pCocoaStatusBar);
-
-	((AP_FrameData *)m_pData)->m_pStatusBar = pCocoaStatusBar;
-	
-//	GtkWidget * w = pCocoaStatusBar->createWidget();
-
-	//return [_getController() getStatusBar];
-}
 
 void AP_CocoaFrame::setStatusMessage(const char * szMsg)
 {
 	((AP_FrameData *)m_pData)->m_pStatusBar->setStatusMessage(szMsg);
 }
 
-void AP_CocoaFrame::_setWindowIcon()
-{
-	// this is NOT needed. Just need to the the title.
-}
 
 UT_Error AP_CocoaFrame::_replaceDocument(AD_Document * pDoc)
 {
@@ -1044,37 +1096,18 @@ void AP_CocoaFrame::toggleStatusBar(bool bStatusBarOn)
 	}
 }
 
-bool AP_CocoaFrame::_graphicsUpdateCB(NSRect * aRect, GR_CocoaGraphics *pG, void* param)
-{
-	// a static function
-	AP_CocoaFrame * pCocoaFrame = (AP_CocoaFrame *)param;
-	if (!pCocoaFrame)
-		return false;
-
-	UT_Rect rClip;
-	rClip.left = aRect->origin.x;
-	rClip.top = aRect->origin.y;
-	rClip.width = aRect->size.width;
-	rClip.height = aRect->size.height;
-	xxx_UT_DEBUGMSG(("Cocoa in frame expose painting area:  left=%d, top=%d, width=%d, height=%d\n", rClip.left, rClip.top, rClip.width, rClip.height));
-	if(pG != NULL)
-		pG->doRepaint(&rClip);
-	else
-		return false;
-	return true;
-}
 
 /* Objective-C section */
 
 @implementation AP_CocoaFrameController
-+ (XAP_CocoaFrameController*)createFrom:(XAP_CocoaFrame *)frame
++ (XAP_CocoaFrameController*)createFrom:(XAP_Frame *)frame
 {
 	UT_DEBUGMSG (("Cocoa: @AP_CocoaFrameController createFrom:frame\n"));
 	AP_CocoaFrameController *obj = [[AP_CocoaFrameController alloc] initWith:frame];
 	return obj;
 }
 
-- (id)initWith:(XAP_CocoaFrame *)frame
+- (id)initWith:(XAP_Frame *)frame
 {
 	UT_DEBUGMSG (("Cocoa: @AP_CocoaFrameController initWith:frame\n"));
 	return [super initWith:frame];

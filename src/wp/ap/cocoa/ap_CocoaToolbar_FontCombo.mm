@@ -1,6 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001 Hubert Figuiere
+ * Copyright (C) 2001-2002 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -26,7 +26,6 @@
 #include "ut_debugmsg.h"
 
 #include "xap_CocoaFont.h"
-#include "xap_CocoaFontManager.h"
 
 #include "ap_CocoaToolbar_FontCombo.h"
 #include "ap_Toolbar_Id.h"
@@ -55,7 +54,17 @@ AP_CocoaToolbar_FontCombo::AP_CocoaToolbar_FontCombo(EV_Toolbar * pToolbar,
 
 AP_CocoaToolbar_FontCombo::~AP_CocoaToolbar_FontCombo(void)
 {
-	// nothing to purge.  contents are static strings
+	UT_VECTOR_FREEALL(char *, m_vecContents);
+}
+
+// this is the comparator to sort the combo box.
+// TODO: move it else where in a place it is reusable by anybody.
+static  int compareStrings(const void * ppS1, const void * ppS2)
+{
+	#pragma warning TODO: move it else where in a place it is reusable by anybody.
+	const char ** sz1 = (const char **) (ppS1);
+	const char ** sz2 = (const char **) (ppS2);
+	return strcmp(*sz1, *sz2);
 }
 
 bool AP_CocoaToolbar_FontCombo::populate(void)
@@ -65,21 +74,19 @@ bool AP_CocoaToolbar_FontCombo::populate(void)
 	
 	// Things are relatively easy with the font manager.  Just
 	// request all fonts and ask them their names.
-	EV_CocoaToolbar * toolbar = static_cast<EV_CocoaToolbar *>(m_pToolbar);
-	
 	NSArray * list = [[NSFontManager sharedFontManager] availableFontFamilies];
 	
 	NSEnumerator*	enumerator = [list objectEnumerator];
 	m_vecContents.clear();
 
-	while (item = [enumerator nextObject])
-	{
-		// sort-out duplicates
-//		XAP_CocoaFont * pFont = [item font];
-		const char * fName = [item cString];
-		//pFont->getName();
-		m_vecContents.addItem((void *)(fName));
+	while (item = [enumerator nextObject]) {
+		const char * fName = strdup([item cString]);
+		UT_ASSERT (fName);
+		if (*fName != '.') {
+			m_vecContents.addItem((void *)(fName));
+		}
 	}
-
+	m_vecContents.qsort(compareStrings);
+	
 	return true;
 }

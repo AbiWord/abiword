@@ -26,7 +26,6 @@
 #include "xap_CocoaFrame.h"
 #include "xap_Dlg_MessageBox.h"
 
-class XAP_CocoaFrame;
 
 class XAP_CocoaDialog_MessageBox;
 
@@ -72,9 +71,9 @@ public:
 	// must let static callbacks read our bindings
 	void 				_setAnswer(XAP_Dialog_MessageBox::tAnswer answer);
 	
-	XAP_CocoaFrame *		_getFrame () { return m_pCocoaFrame; };	//accessor for Obj-C
+	XAP_Frame *		_getFrame () { return m_pCocoaFrame; };	//accessor for Obj-C
 private:
-	XAP_CocoaFrame *		m_pCocoaFrame;
+	XAP_Frame *		m_pCocoaFrame;
 	XAP_CocoaDlg_MessageBoxController *m_dlg;	
 };
 

@@ -1,6 +1,6 @@
 /* AbiSource Program Utilities
  * Copyright (C) 1998-2000 AbiSource, Inc.
- * Copyright (C) 2001 Hubert Figuiere
+ * Copyright (C) 2001-2002 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -30,7 +30,7 @@
 
 class AV_View;
 class XAP_CocoaApp;
-class XAP_CocoaFrame;
+class AP_CocoaFrame;
 
 /*****************************************************************/
 @interface EV_CocoaMenuTarget : NSObject
@@ -38,6 +38,7 @@ class XAP_CocoaFrame;
 	
 }
 - (id)menuSelected:(id)sender;
+- (BOOL)validateMenuItem:(id <NSMenuItem>)menuItem;
 @end
 
 
@@ -46,7 +47,7 @@ class EV_CocoaMenu : public EV_Menu
 {
 public:
 	EV_CocoaMenu(XAP_CocoaApp * pCocoaApp,
-				XAP_CocoaFrame * pCocoaFrame,
+				AP_CocoaFrame * pCocoaFrame,
 				const char * szMenuLayoutName,
 				const char * szMenuLabelSetName);
 	virtual ~EV_CocoaMenu();
@@ -55,10 +56,11 @@ public:
 	bool				menuEvent(XAP_Menu_Id menuid);
 	virtual bool		refreshMenu(AV_View * pView) = 0;
 	
-	XAP_CocoaFrame * 	getFrame();
+	AP_CocoaFrame * 	getFrame();
 
+	bool				_refreshMenu(AV_View * pView, NSMenu * wMenuRoot); // can't set this one protected
+	                                     // as it is called from Obj-C
 protected:
-	bool				_refreshMenu(AV_View * pView, NSMenu * wMenuRoot);
 	bool				_isItemPresent(XAP_Menu_Id menuid) const;
 
 	virtual bool		_doAddMenuItem(UT_uint32 layout_pos);
@@ -66,7 +68,7 @@ protected:
 private:
 	static void _getItemCmd (const char * mnemonic, unsigned int & modifiers, NSString * & key);
 	XAP_CocoaApp *		m_pCocoaApp;
-	XAP_CocoaFrame *		m_pCocoaFrame;
+	AP_CocoaFrame *		m_pCocoaFrame;
 	
 	// actual GTK menu widgets
 	UT_Vector			m_vecMenuWidgets;

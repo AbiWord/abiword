@@ -104,8 +104,8 @@ protected:
 // The line between these two things _is_ sometimes ambiguous. use your judgement
 // when adding something onto the frame code
 
-// WL: ONLY ENABLE NEW FRAME CODE ON UNIX/GTK FOR NOW
-#if defined(ANY_UNIX)
+// WL: ONLY ENABLE NEW FRAME CODE ON UNIX/GTK FOR NOW AND Cocoa (Hub)
+#if defined(ANY_UNIX)  || (defined(__APPLE__) && defined(__MACH__))
 class ABI_EXPORT XAP_FrameHelper
 {
 public:

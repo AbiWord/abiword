@@ -60,7 +60,7 @@ void XAP_CocoaDialog_MessageBox::_setAnswer(XAP_Dialog_MessageBox::tAnswer answe
 
 void XAP_CocoaDialog_MessageBox::runModal(XAP_Frame * pFrame)
 {
-	m_pCocoaFrame = (XAP_CocoaFrame *)pFrame;
+	m_pCocoaFrame = pFrame;
 	UT_ASSERT(m_pCocoaFrame);
 	XAP_CocoaApp * pApp = (XAP_CocoaApp *)m_pCocoaFrame->getApp();
 	UT_ASSERT(pApp);
@@ -93,7 +93,7 @@ void XAP_CocoaDialog_MessageBox::runModal(XAP_Frame * pFrame)
 
 - (void)windowDidLoad
 {
-	XAP_CocoaFrame *pFrame = m_xap->_getFrame ();
+	XAP_Frame *pFrame = m_xap->_getFrame ();
 	// we get all our strings from the application string set
 	const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
 	LocalizeControl (m_okBtn, pSS, XAP_STRING_ID_DLG_OK);

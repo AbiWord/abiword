@@ -45,7 +45,7 @@ class GR_CocoaGraphics : public GR_Graphics
 								  int iLength, UT_sint32 xoff, UT_sint32 yoff,
 								  int * pCharWidhths = NULL);
 #endif
-	virtual void        drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff);
+//	virtual void        drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff);
 	virtual void		setFont(GR_Font* pFont);
 	virtual UT_uint32	getFontHeight();
 
@@ -141,7 +141,6 @@ private:
 
 	gr_cocoa_graphics_update	m_updateCallback;
 	void 						*m_updateCBparam;
-//	XAP_CocoaFontManager * 	m_pFontManager;
 	XAP_CocoaNSView *  			m_pWin;
 	CGContextRef				m_CGContext;
 	NSImage*					m_offscreen;
@@ -150,11 +149,9 @@ private:
 	// our currently requested font by handle
 	XAP_CocoaFont *	m_pFont;
 
-	// our "OEM" system font, like a 10 point Helvetica for GUI items
 	static XAP_CocoaFont*	s_pFontGUI;
 	static UT_uint32		s_iInstanceCount;
   
-	int          			m_iWindowHeight, m_iWindowWidth;		//FIXME unused?
 	UT_sint32				m_iLineWidth;
 	GR_Graphics::Cursor		m_cursor;
 
