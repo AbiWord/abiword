@@ -407,6 +407,49 @@ public:
 
         static EV_EditMethod_Fn toggleAutoSpell;
 
+        static EV_EditMethod_Fn insAutotext_attn_1;
+        static EV_EditMethod_Fn insAutotext_attn_2;
+
+        static EV_EditMethod_Fn insAutotext_closing_1;
+        static EV_EditMethod_Fn insAutotext_closing_2;
+        static EV_EditMethod_Fn insAutotext_closing_3;
+        static EV_EditMethod_Fn insAutotext_closing_4;
+        static EV_EditMethod_Fn insAutotext_closing_5;
+        static EV_EditMethod_Fn insAutotext_closing_6;
+        static EV_EditMethod_Fn insAutotext_closing_7;
+        static EV_EditMethod_Fn insAutotext_closing_8;
+        static EV_EditMethod_Fn insAutotext_closing_9;
+        static EV_EditMethod_Fn insAutotext_closing_10;
+        static EV_EditMethod_Fn insAutotext_closing_11;
+        static EV_EditMethod_Fn insAutotext_closing_12;
+
+        static EV_EditMethod_Fn insAutotext_mail_1;
+        static EV_EditMethod_Fn insAutotext_mail_2;
+        static EV_EditMethod_Fn insAutotext_mail_3;
+        static EV_EditMethod_Fn insAutotext_mail_4;
+        static EV_EditMethod_Fn insAutotext_mail_5;
+        static EV_EditMethod_Fn insAutotext_mail_6;
+        static EV_EditMethod_Fn insAutotext_mail_7;
+        static EV_EditMethod_Fn insAutotext_mail_8;
+
+        static EV_EditMethod_Fn insAutotext_reference_1;
+        static EV_EditMethod_Fn insAutotext_reference_2;
+        static EV_EditMethod_Fn insAutotext_reference_3;
+
+        static EV_EditMethod_Fn insAutotext_salutation_1;
+        static EV_EditMethod_Fn insAutotext_salutation_2;
+        static EV_EditMethod_Fn insAutotext_salutation_3;
+        static EV_EditMethod_Fn insAutotext_salutation_4;
+
+        static EV_EditMethod_Fn insAutotext_subject_1;
+
+        static EV_EditMethod_Fn insAutotext_email_1;
+        static EV_EditMethod_Fn insAutotext_email_2;
+        static EV_EditMethod_Fn insAutotext_email_3;
+        static EV_EditMethod_Fn insAutotext_email_4;
+        static EV_EditMethod_Fn insAutotext_email_5;
+        static EV_EditMethod_Fn insAutotext_email_6;
+
 	static EV_EditMethod_Fn noop;
 
 	// Test routines
@@ -549,6 +592,42 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(helpSearch),			0,		""),
 	
 	// i
+	EV_EditMethod(NF(insAutotext_attn_1), 0, ""),
+	EV_EditMethod(NF(insAutotext_attn_2), 0, ""),
+	EV_EditMethod(NF(insAutotext_closing_1), 0, ""),
+	EV_EditMethod(NF(insAutotext_closing_10), 0, ""),
+	EV_EditMethod(NF(insAutotext_closing_11), 0, ""),
+	EV_EditMethod(NF(insAutotext_closing_12), 0, ""),
+	EV_EditMethod(NF(insAutotext_closing_2), 0, ""),
+	EV_EditMethod(NF(insAutotext_closing_3), 0, ""),
+	EV_EditMethod(NF(insAutotext_closing_4), 0, ""),
+	EV_EditMethod(NF(insAutotext_closing_5), 0, ""),
+	EV_EditMethod(NF(insAutotext_closing_6), 0, ""),
+	EV_EditMethod(NF(insAutotext_closing_7), 0, ""),
+	EV_EditMethod(NF(insAutotext_closing_8), 0, ""),
+	EV_EditMethod(NF(insAutotext_closing_9), 0, ""),
+	EV_EditMethod(NF(insAutotext_email_1), 0, ""),
+	EV_EditMethod(NF(insAutotext_email_2), 0, ""),
+	EV_EditMethod(NF(insAutotext_email_3), 0, ""),
+	EV_EditMethod(NF(insAutotext_email_4), 0, ""),
+	EV_EditMethod(NF(insAutotext_email_5), 0, ""),
+	EV_EditMethod(NF(insAutotext_email_6), 0, ""),
+	EV_EditMethod(NF(insAutotext_mail_1), 0, ""),
+	EV_EditMethod(NF(insAutotext_mail_2), 0, ""),
+	EV_EditMethod(NF(insAutotext_mail_3), 0, ""),
+	EV_EditMethod(NF(insAutotext_mail_4), 0, ""),
+	EV_EditMethod(NF(insAutotext_mail_5), 0, ""),
+	EV_EditMethod(NF(insAutotext_mail_6), 0, ""),
+	EV_EditMethod(NF(insAutotext_mail_7), 0, ""),
+	EV_EditMethod(NF(insAutotext_mail_8), 0, ""),
+	EV_EditMethod(NF(insAutotext_reference_1), 0, ""),
+	EV_EditMethod(NF(insAutotext_reference_2), 0, ""),
+	EV_EditMethod(NF(insAutotext_reference_3), 0, ""),
+	EV_EditMethod(NF(insAutotext_salutation_1), 0, ""),
+	EV_EditMethod(NF(insAutotext_salutation_2), 0, ""),
+	EV_EditMethod(NF(insAutotext_salutation_3), 0, ""),
+	EV_EditMethod(NF(insAutotext_salutation_4), 0, ""),
+	EV_EditMethod(NF(insAutotext_subject_1), 0, ""),
 	EV_EditMethod(NF(insBreak),			0,		""),
 	EV_EditMethod(NF(insDateTime),			0,		""),
 	EV_EditMethod(NF(insField),			0,		""),
@@ -6022,4 +6101,248 @@ Defun(viCmd_yy)
 {
 	//copy current line
 	return ( EX(warpInsPtBOL) && EX(extSelEOL) && EX(copy) );
+}
+
+bool _insAutotext (FV_View *pView, int id)
+{
+        XAP_Frame * pFrame = static_cast<XAP_Frame *>(pView->getParentData());
+	if (!pFrame)
+	  return false;
+
+	XAP_App * pApp = pFrame->getApp();
+	if (!pApp)
+	  return false;
+
+	const XAP_StringSet * pSS = pApp->getStringSet();
+	if (!pSS)
+	  return false;
+
+	const char * text = (const char *)pSS->getValue(id);
+	UT_uint32 len = strlen (text);
+
+	UT_UCSChar * ucstext = new UT_UCSChar [len + 1]; 
+	UT_UCS_strcpy_char (ucstext, text);
+
+	pView->cmdCharInsert(ucstext, len);
+
+	delete [] ucstext;
+
+	return true;
+}
+
+Defun(insAutotext_attn_1)
+{
+  return _insAutotext(static_cast<FV_View *>(pAV_View), 
+		      AP_STRING_ID_AUTOTEXT_ATTN_1);
+}
+
+Defun(insAutotext_attn_2)
+{
+  return _insAutotext(static_cast<FV_View *>(pAV_View), 
+		      AP_STRING_ID_AUTOTEXT_ATTN_2);
+}
+
+Defun(insAutotext_closing_1)
+{
+  return _insAutotext(static_cast<FV_View *>(pAV_View), 
+		      AP_STRING_ID_AUTOTEXT_CLOSING_1);
+}
+
+Defun(insAutotext_closing_2)
+{
+  return _insAutotext(static_cast<FV_View *>(pAV_View), 
+		      AP_STRING_ID_AUTOTEXT_CLOSING_2);
+}
+
+Defun(insAutotext_closing_3)
+{
+  return _insAutotext(static_cast<FV_View *>(pAV_View), 
+		      AP_STRING_ID_AUTOTEXT_CLOSING_3);
+}
+
+Defun(insAutotext_closing_4)
+{
+  return _insAutotext(static_cast<FV_View *>(pAV_View), 
+		      AP_STRING_ID_AUTOTEXT_CLOSING_4);
+}
+
+Defun(insAutotext_closing_5)
+{
+  return _insAutotext(static_cast<FV_View *>(pAV_View), 
+		      AP_STRING_ID_AUTOTEXT_CLOSING_5);
+}
+
+Defun(insAutotext_closing_6)
+{
+  return _insAutotext(static_cast<FV_View *>(pAV_View), 
+		      AP_STRING_ID_AUTOTEXT_CLOSING_6);
+}
+
+Defun(insAutotext_closing_7)
+{
+  return _insAutotext(static_cast<FV_View *>(pAV_View), 
+		      AP_STRING_ID_AUTOTEXT_CLOSING_7);
+}
+
+Defun(insAutotext_closing_8)
+{
+  return _insAutotext(static_cast<FV_View *>(pAV_View), 
+		      AP_STRING_ID_AUTOTEXT_CLOSING_8);
+}
+
+Defun(insAutotext_closing_9)
+{
+  return _insAutotext(static_cast<FV_View *>(pAV_View), 
+		      AP_STRING_ID_AUTOTEXT_CLOSING_9);
+}
+
+Defun(insAutotext_closing_10)
+{
+  return _insAutotext(static_cast<FV_View *>(pAV_View), 
+		      AP_STRING_ID_AUTOTEXT_CLOSING_10);
+}
+
+Defun(insAutotext_closing_11)
+{
+  return _insAutotext(static_cast<FV_View *>(pAV_View), 
+		      AP_STRING_ID_AUTOTEXT_CLOSING_11);
+}
+
+Defun(insAutotext_closing_12)
+{
+  return _insAutotext(static_cast<FV_View *>(pAV_View), 
+		      AP_STRING_ID_AUTOTEXT_CLOSING_12);
+}
+
+Defun(insAutotext_email_1)
+{
+  return _insAutotext(static_cast<FV_View *>(pAV_View), 
+		      AP_STRING_ID_AUTOTEXT_EMAIL_1);
+}
+
+Defun(insAutotext_email_2)
+{
+  return _insAutotext(static_cast<FV_View *>(pAV_View), 
+		      AP_STRING_ID_AUTOTEXT_EMAIL_2);
+}
+
+Defun(insAutotext_email_3)
+{
+  return _insAutotext(static_cast<FV_View *>(pAV_View), 
+		      AP_STRING_ID_AUTOTEXT_EMAIL_3);
+}
+
+Defun(insAutotext_email_4)
+{
+  return _insAutotext(static_cast<FV_View *>(pAV_View), 
+		      AP_STRING_ID_AUTOTEXT_EMAIL_4);
+}
+
+Defun(insAutotext_email_5)
+{
+  return _insAutotext(static_cast<FV_View *>(pAV_View), 
+		      AP_STRING_ID_AUTOTEXT_EMAIL_5);
+}
+
+Defun(insAutotext_email_6)
+{
+  return _insAutotext(static_cast<FV_View *>(pAV_View), 
+		      AP_STRING_ID_AUTOTEXT_EMAIL_6);
+}
+
+Defun(insAutotext_mail_1)
+{
+  return _insAutotext(static_cast<FV_View *>(pAV_View), 
+		      AP_STRING_ID_AUTOTEXT_MAIL_1);
+}
+
+
+Defun(insAutotext_mail_2)
+{
+  return _insAutotext(static_cast<FV_View *>(pAV_View), 
+		      AP_STRING_ID_AUTOTEXT_MAIL_2);
+}
+
+Defun(insAutotext_mail_3)
+{
+  return _insAutotext(static_cast<FV_View *>(pAV_View), 
+		      AP_STRING_ID_AUTOTEXT_MAIL_3);
+}
+
+Defun(insAutotext_mail_4)
+{
+  return _insAutotext(static_cast<FV_View *>(pAV_View), 
+		      AP_STRING_ID_AUTOTEXT_MAIL_4);
+}
+
+Defun(insAutotext_mail_5)
+{
+  return _insAutotext(static_cast<FV_View *>(pAV_View), 
+		      AP_STRING_ID_AUTOTEXT_MAIL_5);
+}
+
+Defun(insAutotext_mail_6)
+{
+  return _insAutotext(static_cast<FV_View *>(pAV_View), 
+		      AP_STRING_ID_AUTOTEXT_MAIL_6);
+}
+
+Defun(insAutotext_mail_7)
+{
+  return _insAutotext(static_cast<FV_View *>(pAV_View), 
+		      AP_STRING_ID_AUTOTEXT_MAIL_7);
+}
+
+Defun(insAutotext_mail_8)
+{
+  return _insAutotext(static_cast<FV_View *>(pAV_View), 
+		      AP_STRING_ID_AUTOTEXT_MAIL_8);
+}
+
+Defun(insAutotext_reference_1)
+{
+  return _insAutotext(static_cast<FV_View *>(pAV_View), 
+		      AP_STRING_ID_AUTOTEXT_REFERENCE_1);
+}
+
+Defun(insAutotext_reference_2)
+{
+  return _insAutotext(static_cast<FV_View *>(pAV_View), 
+		      AP_STRING_ID_AUTOTEXT_REFERENCE_2);
+}
+
+Defun(insAutotext_reference_3)
+{
+  return _insAutotext(static_cast<FV_View *>(pAV_View), 
+		      AP_STRING_ID_AUTOTEXT_REFERENCE_3);
+}
+
+Defun(insAutotext_salutation_1)
+{
+  return _insAutotext(static_cast<FV_View *>(pAV_View), 
+		      AP_STRING_ID_AUTOTEXT_SALUTATION_1);
+}
+
+Defun(insAutotext_salutation_2)
+{
+  return _insAutotext(static_cast<FV_View *>(pAV_View), 
+		      AP_STRING_ID_AUTOTEXT_SALUTATION_2);
+}
+
+Defun(insAutotext_salutation_3)
+{
+  return _insAutotext(static_cast<FV_View *>(pAV_View), 
+		      AP_STRING_ID_AUTOTEXT_SALUTATION_3);
+}
+
+Defun(insAutotext_salutation_4)
+{
+  return _insAutotext(static_cast<FV_View *>(pAV_View), 
+		      AP_STRING_ID_AUTOTEXT_SALUTATION_4);
+}
+
+Defun(insAutotext_subject_1)
+{
+  return _insAutotext(static_cast<FV_View *>(pAV_View), 
+		      AP_STRING_ID_AUTOTEXT_SUBJECT_1);
 }

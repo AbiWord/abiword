@@ -27,14 +27,13 @@
 
 class AP_UnixGnomeDialog_ToggleCase: public AP_UnixDialog_ToggleCase
 {
-public:
+ public:
 	AP_UnixGnomeDialog_ToggleCase(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~AP_UnixGnomeDialog_ToggleCase(void);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
+ protected:
 	virtual GtkWidget * _constructWindow(void);
-protected:
-
 };
 
 #endif /* AP_UNIXGNOMEDIALOG_ToggleCase_H */

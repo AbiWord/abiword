@@ -20,10 +20,7 @@
 #ifndef AP_DIALOG_TOGGLECASE_H
 #define AP_DIALOG_TOGGLECASE_H
 
-#include "xap_Frame.h"
 #include "xap_Dialog.h"
-#include "xav_View.h"
-
 #include "fv_View.h" // for ToggleCase enum
 
 class XAP_Frame;
@@ -31,19 +28,20 @@ class XAP_Frame;
 class AP_Dialog_ToggleCase : public XAP_Dialog_NonPersistent
 {
 public:
-	AP_Dialog_ToggleCase(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
+	AP_Dialog_ToggleCase(XAP_DialogFactory * pDlgFactory, 
+			     XAP_Dialog_Id id);
 	virtual ~AP_Dialog_ToggleCase(void);
 
-	virtual void					runModal(XAP_Frame * pFrame) = 0;
+	virtual void		 runModal(XAP_Frame * pFrame) = 0;
 
-	typedef enum { a_OK, a_CANCEL } tAnswer;
+	typedef enum { a_OK=0, a_CANCEL=1 } tAnswer;
 
-	inline AP_Dialog_ToggleCase::tAnswer	getAnswer(void) const {return m_answer;};
-	inline void                     setAnswer(tAnswer a) {m_answer = a;}
-	inline void                     setCase (ToggleCase c) {m_case = c;}
-	inline ToggleCase               getCase (void) const {return m_case;}
+	tAnswer	                 getAnswer(void) const;
+	void                     setAnswer(tAnswer a);
+	void                     setCase (ToggleCase c);
+	ToggleCase               getCase (void) const;
 
-protected:
+private:
 	
 	AP_Dialog_ToggleCase::tAnswer	m_answer;
 	ToggleCase                      m_case;

@@ -193,6 +193,58 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_SPELL_IGNOREALL,	0,0,0,	"spellIgnoreAll",	NULL,					NULL);
 	_s(AP_MENU_ID_SPELL_ADD,		0,0,0,	"spellAdd",			NULL,					NULL);
 
+	_s(AP_MENU_ID_INSERT_AUTOTEXT,  1,0,0, NULL, NULL, NULL);
+	_s(AP_MENU_ID_AUTOTEXT_ATTN, 1,0,0, NULL, NULL, NULL);
+	_s(AP_MENU_ID_AUTOTEXT_CLOSING, 1,0,0, NULL, NULL, NULL);
+	_s(AP_MENU_ID_AUTOTEXT_MAIL, 1,0,0, NULL, NULL, NULL);
+	_s(AP_MENU_ID_AUTOTEXT_REFERENCE, 1,0,0, NULL, NULL, NULL);
+	_s(AP_MENU_ID_AUTOTEXT_SALUTATION, 1,0,0, NULL, NULL, NULL);
+	_s(AP_MENU_ID_AUTOTEXT_SUBJECT, 1,0,0, NULL, NULL, NULL);
+	_s(AP_MENU_ID_AUTOTEXT_EMAIL, 1,0,0, NULL, NULL, NULL);
+
+	_s(AP_MENU_ID_AUTOTEXT_ATTN_1, 0,0,0, "insAutotext_attn_1", NULL, ap_GetLabel_Autotext);
+	_s(AP_MENU_ID_AUTOTEXT_ATTN_2, 0,0,0, "insAutotext_attn_2", NULL, ap_GetLabel_Autotext);
+
+	_s(AP_MENU_ID_AUTOTEXT_CLOSING_1, 0,0,0, "insAutotext_closing_1", NULL, ap_GetLabel_Autotext);
+	_s(AP_MENU_ID_AUTOTEXT_CLOSING_2, 0,0,0, "insAutotext_closing_2", NULL, ap_GetLabel_Autotext);
+	_s(AP_MENU_ID_AUTOTEXT_CLOSING_3, 0,0,0, "insAutotext_closing_3", NULL, ap_GetLabel_Autotext);
+	_s(AP_MENU_ID_AUTOTEXT_CLOSING_4, 0,0,0, "insAutotext_closing_4", NULL, ap_GetLabel_Autotext);
+	_s(AP_MENU_ID_AUTOTEXT_CLOSING_5, 0,0,0, "insAutotext_closing_5", NULL, ap_GetLabel_Autotext);
+	_s(AP_MENU_ID_AUTOTEXT_CLOSING_6, 0,0,0, "insAutotext_closing_6", NULL, ap_GetLabel_Autotext);
+	_s(AP_MENU_ID_AUTOTEXT_CLOSING_7, 0,0,0, "insAutotext_closing_7", NULL, ap_GetLabel_Autotext);
+	_s(AP_MENU_ID_AUTOTEXT_CLOSING_8, 0,0,0, "insAutotext_closing_8", NULL, ap_GetLabel_Autotext);
+	_s(AP_MENU_ID_AUTOTEXT_CLOSING_9, 0,0,0, "insAutotext_closing_9", NULL, ap_GetLabel_Autotext);
+	_s(AP_MENU_ID_AUTOTEXT_CLOSING_10, 0,0,0, "insAutotext_closing_10", NULL, ap_GetLabel_Autotext);
+	_s(AP_MENU_ID_AUTOTEXT_CLOSING_11, 0,0,0, "insAutotext_closing_11", NULL, ap_GetLabel_Autotext);
+	_s(AP_MENU_ID_AUTOTEXT_CLOSING_12, 0,0,0, "insAutotext_closing_12", NULL, ap_GetLabel_Autotext);
+
+	_s(AP_MENU_ID_AUTOTEXT_MAIL_1, 0,0,0, "insAutotext_mail_1", NULL, ap_GetLabel_Autotext);
+	_s(AP_MENU_ID_AUTOTEXT_MAIL_2, 0,0,0, "insAutotext_mail_2", NULL, ap_GetLabel_Autotext);
+	_s(AP_MENU_ID_AUTOTEXT_MAIL_3, 0,0,0, "insAutotext_mail_3", NULL, ap_GetLabel_Autotext);
+	_s(AP_MENU_ID_AUTOTEXT_MAIL_4, 0,0,0, "insAutotext_mail_4", NULL, ap_GetLabel_Autotext);
+	_s(AP_MENU_ID_AUTOTEXT_MAIL_5, 0,0,0, "insAutotext_mail_5", NULL, ap_GetLabel_Autotext);
+	_s(AP_MENU_ID_AUTOTEXT_MAIL_6, 0,0,0, "insAutotext_mail_6", NULL, ap_GetLabel_Autotext);
+	_s(AP_MENU_ID_AUTOTEXT_MAIL_7, 0,0,0, "insAutotext_mail_7", NULL, ap_GetLabel_Autotext);
+	_s(AP_MENU_ID_AUTOTEXT_MAIL_8, 0,0,0, "insAutotext_mail_8", NULL, ap_GetLabel_Autotext);
+ 
+	_s(AP_MENU_ID_AUTOTEXT_REFERENCE_1, 0,0,0, "insAutotext_reference_1", NULL, ap_GetLabel_Autotext);
+	_s(AP_MENU_ID_AUTOTEXT_REFERENCE_2, 0,0,0, "insAutotext_reference_2", NULL, ap_GetLabel_Autotext);
+	_s(AP_MENU_ID_AUTOTEXT_REFERENCE_3, 0,0,0, "insAutotext_reference_3", NULL, ap_GetLabel_Autotext);
+
+	_s(AP_MENU_ID_AUTOTEXT_SALUTATION_1, 0,0,0, "insAutotext_salutation_1", NULL, ap_GetLabel_Autotext);
+	_s(AP_MENU_ID_AUTOTEXT_SALUTATION_2, 0,0,0, "insAutotext_salutation_2", NULL, ap_GetLabel_Autotext);
+	_s(AP_MENU_ID_AUTOTEXT_SALUTATION_3, 0,0,0, "insAutotext_salutation_3", NULL, ap_GetLabel_Autotext);
+	_s(AP_MENU_ID_AUTOTEXT_SALUTATION_4, 0,0,0, "insAutotext_salutation_4", NULL, ap_GetLabel_Autotext);
+
+	_s(AP_MENU_ID_AUTOTEXT_SUBJECT_1, 0,0,0, "insAutotext_subject_1", NULL, ap_GetLabel_Autotext);
+ 
+	_s(AP_MENU_ID_AUTOTEXT_EMAIL_1, 0,0,0, "insAutotext_email_1", NULL, ap_GetLabel_Autotext);
+	_s(AP_MENU_ID_AUTOTEXT_EMAIL_2, 0,0,0, "insAutotext_email_2", NULL, ap_GetLabel_Autotext);
+	_s(AP_MENU_ID_AUTOTEXT_EMAIL_3, 0,0,0, "insAutotext_email_3", NULL, ap_GetLabel_Autotext);
+	_s(AP_MENU_ID_AUTOTEXT_EMAIL_4, 0,0,0, "insAutotext_email_4", NULL, ap_GetLabel_Autotext);
+	_s(AP_MENU_ID_AUTOTEXT_EMAIL_5, 0,0,0, "insAutotext_email_5", NULL, ap_GetLabel_Autotext);
+	_s(AP_MENU_ID_AUTOTEXT_EMAIL_6, 0,0,0, "insAutotext_email_6", NULL, ap_GetLabel_Autotext);
+
 	// ... add others here ...
 	
 	_s(AP_MENU_ID__BOGUS2__,		0,0,0,	NULL,				NULL,					NULL);

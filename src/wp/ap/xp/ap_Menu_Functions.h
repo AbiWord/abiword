@@ -51,5 +51,6 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Search);
 Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_AboutOS);
 Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Index);
 Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Suggest);
+Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Autotext);
 
 #endif /* AP_MENU_FUNCTIONS_H */

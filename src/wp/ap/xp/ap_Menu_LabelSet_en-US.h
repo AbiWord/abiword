@@ -163,6 +163,16 @@ BeginSet(en,US,true)
 	MenuLabel(AP_MENU_ID_SPELL_IGNOREALL,	"&Ignore All", 		"Ignore all occurrences of this word in the document")
 	MenuLabel(AP_MENU_ID_SPELL_ADD,			"&Add", 			"Add this word to the custom dictionary")
 
+     /* autotext submenu labels */
+     MenuLabel(AP_MENU_ID_INSERT_AUTOTEXT, "Autotext", "")
+     MenuLabel(AP_MENU_ID_AUTOTEXT_ATTN, "Attention:", "")
+     MenuLabel(AP_MENU_ID_AUTOTEXT_CLOSING, "Closing:", "") 
+     MenuLabel(AP_MENU_ID_AUTOTEXT_MAIL, "Mail Instructions:", "")
+     MenuLabel(AP_MENU_ID_AUTOTEXT_REFERENCE, "Reference:", "")
+     MenuLabel(AP_MENU_ID_AUTOTEXT_SALUTATION, "Salutation:", "")
+     MenuLabel(AP_MENU_ID_AUTOTEXT_SUBJECT, "Subject:", "")
+     MenuLabel(AP_MENU_ID_AUTOTEXT_EMAIL, "Email:", "")
+
 	// ... add others here ...
 
 	MenuLabel(AP_MENU_ID__BOGUS2__,			NULL,				NULL)

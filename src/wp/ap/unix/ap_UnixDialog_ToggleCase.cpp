@@ -138,16 +138,16 @@ GtkWidget * AP_UnixDialog_ToggleCase::_constructWindow (void)
 	gtk_signal_connect(GTK_OBJECT(windowMain),
 			   "delete_event",
 			   GTK_SIGNAL_FUNC(s_delete_clicked),
-			   (gpointer) &m_answer);
+			   (gpointer) this);
 
 	gtk_signal_connect(GTK_OBJECT(buttonOK),
 			   "clicked",
 			   GTK_SIGNAL_FUNC(s_ok_clicked),
-			   (gpointer) &m_answer);
+			   (gpointer) this);
 	gtk_signal_connect(GTK_OBJECT(buttonCancel),
 			   "clicked",
 			   GTK_SIGNAL_FUNC(s_cancel_clicked),
-			   (gpointer) &m_answer);
+			   (gpointer) this);
 
   return windowMain;
 }

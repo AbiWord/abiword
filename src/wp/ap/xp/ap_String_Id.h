@@ -421,3 +421,48 @@ dcl(DLG_ToggleCase_UpperCase, "UPPERCASE")
 dcl(DLG_ToggleCase_TitleCase, "Title Case")
 dcl(DLG_ToggleCase_ToggleCase, "tOGGLE cASE")
 
+     /* below are autotext defaults */
+
+     dcl(AUTOTEXT_ATTN_1, "Attention:")
+     dcl(AUTOTEXT_ATTN_2, "ATTN:")
+
+     dcl(AUTOTEXT_CLOSING_1, "Best regards,")
+     dcl(AUTOTEXT_CLOSING_2, "Best wishes,")
+     dcl(AUTOTEXT_CLOSING_3, "Cordially,")
+     dcl(AUTOTEXT_CLOSING_4, "Love,")
+     dcl(AUTOTEXT_CLOSING_5, "Regards,")
+     dcl(AUTOTEXT_CLOSING_6, "Respectfully yours,")
+     dcl(AUTOTEXT_CLOSING_7, "Respectfully,")
+     dcl(AUTOTEXT_CLOSING_8, "Sincerely yours,")
+     dcl(AUTOTEXT_CLOSING_9, "Take care,")
+     dcl(AUTOTEXT_CLOSING_10,"Thank you,")
+     dcl(AUTOTEXT_CLOSING_11,"Thanks,")
+     dcl(AUTOTEXT_CLOSING_12,"Yours truly,")
+
+     dcl(AUTOTEXT_MAIL_1,"CERTIFIED MAIL")
+     dcl(AUTOTEXT_MAIL_2,"CONFIDENTIAL")
+     dcl(AUTOTEXT_MAIL_3,"PERSONAL")
+     dcl(AUTOTEXT_MAIL_4,"REGISTERED MAIL")
+     dcl(AUTOTEXT_MAIL_5,"SPECIAL DELIVERY")
+     dcl(AUTOTEXT_MAIL_6,"VIA AIRMAIL")
+     dcl(AUTOTEXT_MAIL_7,"VIA FACSIMILE")
+     dcl(AUTOTEXT_MAIL_8,"VIA OVERNIGHT MAIL")
+
+     dcl(AUTOTEXT_REFERENCE_1,"In reply to:")
+     dcl(AUTOTEXT_REFERENCE_2,"RE:")
+     dcl(AUTOTEXT_REFERENCE_3,"Reference:")
+
+     dcl(AUTOTEXT_SALUTATION_1,"Dear Mom and Dad,")
+     dcl(AUTOTEXT_SALUTATION_2,"Dear Sir or Madam:")
+     dcl(AUTOTEXT_SALUTATION_3,"Ladies and Gentlemen:")
+     dcl(AUTOTEXT_SALUTATION_4,"To Whom It May Concern:")
+
+     dcl(AUTOTEXT_SUBJECT_1,"Subject")
+
+     dcl(AUTOTEXT_EMAIL_1, "To:")
+     dcl(AUTOTEXT_EMAIL_2, "From:")
+     dcl(AUTOTEXT_EMAIL_3, "Subject:")
+     dcl(AUTOTEXT_EMAIL_4, "CC:")
+     dcl(AUTOTEXT_EMAIL_5, "BCC:")
+     dcl(AUTOTEXT_EMAIL_6, "Fwd:")
+     

@@ -43,6 +43,106 @@
 /*****************************************************************/
 /*****************************************************************/
 
+Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Autotext)
+{
+	UT_ASSERT(pFrame);
+	XAP_App * pApp = pFrame->getApp();
+	UT_ASSERT(pApp);
+	UT_ASSERT(pLabel);
+
+	const char * c = NULL;
+
+	const XAP_StringSet * pss = pApp->getStringSet();
+	c = pss->getValue(AP_STRING_ID_DLG_Spell_NoSuggestions);
+
+	switch (id)
+	  {
+	  case AP_MENU_ID_AUTOTEXT_ATTN_1: 
+	    c = pss->getValue(AP_STRING_ID_AUTOTEXT_ATTN_1); break;
+	  case AP_MENU_ID_AUTOTEXT_ATTN_2: 
+	    c = pss->getValue(AP_STRING_ID_AUTOTEXT_ATTN_2); break;
+
+	  case AP_MENU_ID_AUTOTEXT_CLOSING_1: 
+	    c = pss->getValue(AP_STRING_ID_AUTOTEXT_CLOSING_1); break;
+	  case AP_MENU_ID_AUTOTEXT_CLOSING_2: 
+	    c = pss->getValue(AP_STRING_ID_AUTOTEXT_CLOSING_2); break;
+	  case AP_MENU_ID_AUTOTEXT_CLOSING_3: 
+	    c = pss->getValue(AP_STRING_ID_AUTOTEXT_CLOSING_3); break;
+	  case AP_MENU_ID_AUTOTEXT_CLOSING_4: 
+	    c = pss->getValue(AP_STRING_ID_AUTOTEXT_CLOSING_4); break;
+	  case AP_MENU_ID_AUTOTEXT_CLOSING_5: 
+	    c = pss->getValue(AP_STRING_ID_AUTOTEXT_CLOSING_5); break;
+	  case AP_MENU_ID_AUTOTEXT_CLOSING_6: 
+	    c = pss->getValue(AP_STRING_ID_AUTOTEXT_CLOSING_6); break;
+	  case AP_MENU_ID_AUTOTEXT_CLOSING_7: 
+	    c = pss->getValue(AP_STRING_ID_AUTOTEXT_CLOSING_7); break;
+	  case AP_MENU_ID_AUTOTEXT_CLOSING_8: 
+	    c = pss->getValue(AP_STRING_ID_AUTOTEXT_CLOSING_8); break;
+	  case AP_MENU_ID_AUTOTEXT_CLOSING_9: 
+	    c = pss->getValue(AP_STRING_ID_AUTOTEXT_CLOSING_9); break;
+	  case AP_MENU_ID_AUTOTEXT_CLOSING_10: 
+	    c = pss->getValue(AP_STRING_ID_AUTOTEXT_CLOSING_10); break;
+	  case AP_MENU_ID_AUTOTEXT_CLOSING_11: 
+	    c = pss->getValue(AP_STRING_ID_AUTOTEXT_CLOSING_11); break;
+	  case AP_MENU_ID_AUTOTEXT_CLOSING_12: 
+	    c = pss->getValue(AP_STRING_ID_AUTOTEXT_CLOSING_12); break;
+
+	  case AP_MENU_ID_AUTOTEXT_MAIL_1: 
+	    c = pss->getValue(AP_STRING_ID_AUTOTEXT_MAIL_1); break;
+	  case AP_MENU_ID_AUTOTEXT_MAIL_2: 
+	    c = pss->getValue(AP_STRING_ID_AUTOTEXT_MAIL_2); break;
+	  case AP_MENU_ID_AUTOTEXT_MAIL_3: 
+	    c = pss->getValue(AP_STRING_ID_AUTOTEXT_MAIL_3); break;
+	  case AP_MENU_ID_AUTOTEXT_MAIL_4: 
+	    c = pss->getValue(AP_STRING_ID_AUTOTEXT_MAIL_4); break;
+	  case AP_MENU_ID_AUTOTEXT_MAIL_5: 
+	    c = pss->getValue(AP_STRING_ID_AUTOTEXT_MAIL_5); break;
+	  case AP_MENU_ID_AUTOTEXT_MAIL_6: 
+	    c = pss->getValue(AP_STRING_ID_AUTOTEXT_MAIL_6); break;
+	  case AP_MENU_ID_AUTOTEXT_MAIL_7: 
+	    c = pss->getValue(AP_STRING_ID_AUTOTEXT_MAIL_7); break;
+	  case AP_MENU_ID_AUTOTEXT_MAIL_8: 
+	    c = pss->getValue(AP_STRING_ID_AUTOTEXT_MAIL_8); break;
+
+	  case AP_MENU_ID_AUTOTEXT_REFERENCE_1: 
+	    c = pss->getValue(AP_STRING_ID_AUTOTEXT_REFERENCE_1); break;
+	  case AP_MENU_ID_AUTOTEXT_REFERENCE_2: 
+	    c = pss->getValue(AP_STRING_ID_AUTOTEXT_REFERENCE_2); break;
+	  case AP_MENU_ID_AUTOTEXT_REFERENCE_3: 
+	    c = pss->getValue(AP_STRING_ID_AUTOTEXT_REFERENCE_3); break;
+
+	  case AP_MENU_ID_AUTOTEXT_SALUTATION_1: 
+	    c = pss->getValue(AP_STRING_ID_AUTOTEXT_SALUTATION_1); break;
+	  case AP_MENU_ID_AUTOTEXT_SALUTATION_2: 
+	    c = pss->getValue(AP_STRING_ID_AUTOTEXT_SALUTATION_2); break;
+	  case AP_MENU_ID_AUTOTEXT_SALUTATION_3: 
+	    c = pss->getValue(AP_STRING_ID_AUTOTEXT_SALUTATION_3); break;
+	  case AP_MENU_ID_AUTOTEXT_SALUTATION_4: 
+	    c = pss->getValue(AP_STRING_ID_AUTOTEXT_SALUTATION_4); break;
+
+	  case AP_MENU_ID_AUTOTEXT_SUBJECT_1: 
+	    c = pss->getValue(AP_STRING_ID_AUTOTEXT_SUBJECT_1); break;
+
+	  case AP_MENU_ID_AUTOTEXT_EMAIL_1: 
+	    c = pss->getValue(AP_STRING_ID_AUTOTEXT_EMAIL_1); break;
+	  case AP_MENU_ID_AUTOTEXT_EMAIL_2: 
+	    c = pss->getValue(AP_STRING_ID_AUTOTEXT_EMAIL_2); break;
+	  case AP_MENU_ID_AUTOTEXT_EMAIL_3: 
+	    c = pss->getValue(AP_STRING_ID_AUTOTEXT_EMAIL_3); break;
+	  case AP_MENU_ID_AUTOTEXT_EMAIL_4: 
+	    c = pss->getValue(AP_STRING_ID_AUTOTEXT_EMAIL_4); break;
+	  case AP_MENU_ID_AUTOTEXT_EMAIL_5: 
+	    c = pss->getValue(AP_STRING_ID_AUTOTEXT_EMAIL_5); break;
+	  case AP_MENU_ID_AUTOTEXT_EMAIL_6: 
+	    c = pss->getValue(AP_STRING_ID_AUTOTEXT_EMAIL_6); break;
+	    
+	  default: 
+	    c = "No clue"; break;
+	  }
+
+	return c;
+}
+
 Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Recent)
 {
 	// Compute the menu label for _recent_1 thru _recent_9 on the menu.

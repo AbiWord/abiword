@@ -69,15 +69,13 @@ GtkWidget * XAP_UnixGnomeDialog_Language::constructWindow(void)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	GtkWidget *windowLangSelection;
-	GtkWidget *vboxMain;
 	GtkWidget *buttonOK;
 	GtkWidget *buttonCancel;
 
 	windowLangSelection = gnome_dialog_new (pSS->getValue(XAP_STRING_ID_DLG_ULANG_LangTitle),
 						GNOME_STOCK_BUTTON_OK, GNOME_STOCK_BUTTON_CANCEL, NULL);
 
-	vboxMain = constructWindowContents(GTK_OBJECT (windowLangSelection));
-	gtk_box_pack_start (GTK_BOX (GNOME_DIALOG(windowLangSelection)->vbox), vboxMain, TRUE, TRUE, 0);
+	constructWindowContents(GTK_OBJECT(GNOME_DIALOG (windowLangSelection)->vbox));
 
 	buttonOK = GTK_WIDGET (g_list_first (GNOME_DIALOG (windowLangSelection)->buttons)->data);
 	GTK_WIDGET_SET_FLAGS (buttonOK, GTK_CAN_DEFAULT);

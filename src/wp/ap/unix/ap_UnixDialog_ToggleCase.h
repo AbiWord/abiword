@@ -29,18 +29,17 @@ class XAP_UnixFrame;
 
 class AP_UnixDialog_ToggleCase: public AP_Dialog_ToggleCase
 {
-public:
+ public:
 	AP_UnixDialog_ToggleCase(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~AP_UnixDialog_ToggleCase(void);
 
 	virtual void			runModal(XAP_Frame * pFrame);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
-	
+
+ protected:
 	virtual GtkWidget * _constructWindow(void);
 	virtual void        _constructWindowContents (GtkWidget *parent);
-
-protected:
 	
 };
 

@@ -57,24 +57,23 @@ AP_UnixGnomeDialog_ToggleCase::~AP_UnixGnomeDialog_ToggleCase(void)
 
 /*****************************************************************/
 
-static void s_delete_clicked(GtkWidget * /* widget */,
-							 gpointer /* data */,
-							 AP_Dialog_ToggleCase::tAnswer * answer)
+static void s_cancel_clicked(GtkWidget * /* widget */,
+			     AP_Dialog_ToggleCase * tc)
 {
-	*answer = AP_Dialog_ToggleCase::a_CANCEL;
+	tc->setAnswer(AP_Dialog_ToggleCase::a_CANCEL);
 	gtk_main_quit();
+}
+
+static void s_delete_clicked(GtkWidget * w,
+			     gpointer /* data */,
+			     AP_Dialog_ToggleCase * tc)
+{
+        s_cancel_clicked (w, tc);
 }
 
 static void s_ok_clicked(GtkWidget * /* widget */,
-						 AP_Dialog_ToggleCase::tAnswer * answer)
-{	*answer = AP_Dialog_ToggleCase::a_OK;
-	gtk_main_quit();
-}
-
-static void s_cancel_clicked(GtkWidget * /* widget */,
-							 AP_Dialog_ToggleCase::tAnswer * answer)
-{
-	*answer = AP_Dialog_ToggleCase::a_CANCEL;
+			 AP_Dialog_ToggleCase * tc)
+{	tc->setAnswer(AP_Dialog_ToggleCase::a_OK);
 	gtk_main_quit();
 }
 
@@ -105,16 +104,16 @@ GtkWidget * AP_UnixGnomeDialog_ToggleCase::_constructWindow(void)
 	gtk_signal_connect(GTK_OBJECT(windowMain),
 			   "delete_event",
 			   GTK_SIGNAL_FUNC(s_delete_clicked),
-			   (gpointer) &m_answer);
+			   (gpointer) this);
 
 	gtk_signal_connect(GTK_OBJECT(buttonOK),
 			   "clicked",
 			   GTK_SIGNAL_FUNC(s_ok_clicked),
-			   (gpointer) &m_answer);
+			   (gpointer) this);
 	gtk_signal_connect(GTK_OBJECT(buttonCancel),
 			   "clicked",
 			   GTK_SIGNAL_FUNC(s_cancel_clicked),
-			   (gpointer) &m_answer);
+			   (gpointer) this);
 	
 	return windowMain;
 }

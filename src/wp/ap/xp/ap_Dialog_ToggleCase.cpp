@@ -17,24 +17,37 @@
  * 02111-1307, USA.
  */
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include "ut_assert.h"
-#include "ut_string.h"
-#include "ut_debugmsg.h"
-
 #include "xap_Dialog_Id.h"
 #include "xap_DialogFactory.h"
-#include "xap_Dlg_MessageBox.h"
-
 #include "ap_Dialog_ToggleCase.h"
 
-AP_Dialog_ToggleCase::AP_Dialog_ToggleCase(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
-  : XAP_Dialog_NonPersistent(pDlgFactory,id), m_answer(a_CANCEL), m_case(CASE_SENTENCE)
+AP_Dialog_ToggleCase::AP_Dialog_ToggleCase(XAP_DialogFactory * pDlgFactory, 
+					   XAP_Dialog_Id id)
+  : XAP_Dialog_NonPersistent(pDlgFactory,id), m_answer(a_CANCEL), 
+  m_case(CASE_SENTENCE)
 {
 }
 
 AP_Dialog_ToggleCase::~AP_Dialog_ToggleCase(void)
 {
+}
+
+void AP_Dialog_ToggleCase::setAnswer(AP_Dialog_ToggleCase::tAnswer a)
+{
+  m_answer = a;
+}
+
+AP_Dialog_ToggleCase::tAnswer AP_Dialog_ToggleCase::getAnswer(void) const
+{
+  return m_answer;
+}
+
+void AP_Dialog_ToggleCase::setCase(ToggleCase tc)
+{
+  m_case = tc;
+}
+
+ToggleCase AP_Dialog_ToggleCase::getCase(void) const
+{
+  return m_case;
 }
