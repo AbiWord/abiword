@@ -2330,12 +2330,17 @@ static void s_props_append (UT_UTF8String & props, UT_uint32 css_mask,
 					/* AbiWord uses "text-position" for CSS's "vertical-align" in the case
 					 * of super-/subscripts.
 					 */
-					if ((UT_strcmp (value, "superscript") == 0) ||
-						(UT_strcmp (value, "subscript") == 0))
+					if (UT_strcmp (value, "super") == 0)
 						{
 							static const char * text_position = "text-position";
 							name = text_position;
-							verbatim = value;
+							verbatim = "superscript";
+						}
+					if (UT_strcmp (value, "sub") == 0)
+						{
+							static const char * text_position = "text-position";
+							name = text_position;
+							verbatim = "subscript";
 						}
 				}
 			else if ((UT_strcmp (name, "color") == 0) || (UT_strcmp (name, "background") == 0))
