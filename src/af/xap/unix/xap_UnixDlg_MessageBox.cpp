@@ -19,6 +19,7 @@
 
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>
+#include <glib.h>
 #include "ut_assert.h"
 #include "ut_vector.h"
 #include "xap_UnixDialog_MessageBox.h"
