@@ -21,6 +21,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <locale.h>
 #include "ut_types.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
@@ -291,6 +292,8 @@ IE_Imp_XHTML::~IE_Imp_XHTML()
 #define TT_DT                   43
 #define TT_DD                   44
 
+#define TT_TT                   45
+
 // This certainly leaves off lots of tags, but with HTML, this is inevitable - samth
 
 static struct xmlToIdMapping s_Tokens[] =
@@ -336,6 +339,7 @@ static struct xmlToIdMapping s_Tokens[] =
 	{       "sup",                  TT_SUP                  },
 	{       "title",                TT_TITLE                },
 	{       "tr",                   TT_TR                   },	
+	{       "tt",                   TT_TT                   },
 	{       "u",                    TT_UNDERLINE            },
 	{       "ul",                   TT_UL                   },
 	{       "var",                  TT_VAR                  }
@@ -595,7 +599,6 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 		X_CheckError(getDoc()->appendFmt(new_atts));
 		return;
 
-	case TT_CODE:
 	case TT_DFN:
 	case TT_STRONG:
 	case TT_B:
@@ -605,6 +608,18 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 		new_atts[0]=sz;
 		sz = NULL;
 		UT_XML_cloneString(sz, "font-weight:bold");
+		new_atts[1]=sz;
+		X_CheckError(getDoc()->appendFmt(new_atts));
+		return;
+
+	case TT_CODE:
+	case TT_TT:
+	  //UT_DEBUGMSG(("B %d\n", m_parseState));
+		X_VerifyParseState(_PS_Block);
+		UT_XML_cloneString(sz, PT_PROPS_ATTRIBUTE_NAME);
+		new_atts[0]=sz;
+		sz = NULL;
+		UT_XML_cloneString(sz, "font-family:\"Courier\"");
 		new_atts[1]=sz;
 		X_CheckError(getDoc()->appendFmt(new_atts));
 		return;
@@ -687,7 +702,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 	case TT_H3:
 	{
 	    //    UT_DEBUGMSG(("B %d\n", m_parseState));
-		X_VerifyParseState(_PS_Sec);
+//		X_VerifyParseState(_PS_Sec);
 		m_parseState = _PS_Block;
 		
 		const XML_Char *p_val;
@@ -797,8 +812,10 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 			UT_String_sprintf(szListID, "%u", thisID);
 			UT_String_sprintf(szParentID, "%u", *parentID);
 			UT_String_sprintf(szLevel, "%u", m_utsParents.getDepth());
+			setlocale (LC_NUMERIC, "C");
 			UT_String_sprintf(szMarginLeft, " margin-left: %.2fin", 
 					  m_utsParents.getDepth() * 0.5);
+			setlocale (LC_NUMERIC, "");
 
 			const int LevelPos = 1;
 			const int IDpos = 3;
@@ -844,7 +861,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 	case TT_H6:
 		//UT_DEBUGMSG(("B %d\n", m_parseState));
 	{
-		X_VerifyParseState(_PS_Sec);
+//		X_VerifyParseState(_PS_Sec);
 		m_parseState = _PS_Block;
 		
 		if(tokenIndex == TT_PRE)
@@ -1059,6 +1076,7 @@ void IE_Imp_XHTML::endElement(const XML_Char *name)
 	case TT_I:
 	case TT_UNDERLINE:
 	case TT_FONT:
+	case TT_TT:
 		UT_ASSERT(m_lenCharDataSeen==0);
 		//UT_DEBUGMSG(("B %d\n", m_parseState));
 		X_VerifyParseState(_PS_Block);
@@ -1079,7 +1097,7 @@ void IE_Imp_XHTML::endElement(const XML_Char *name)
 	case TT_BREAK:						// not a container, so we don't pop stack
 		UT_ASSERT(m_lenCharDataSeen==0);
 		//UT_DEBUGMSG(("B %d\n", m_parseState));
-		X_VerifyParseState(_PS_Block);
+//		X_VerifyParseState(_PS_Block);
 		return;
 
 	case TT_HEAD:
