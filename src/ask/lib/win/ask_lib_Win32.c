@@ -973,6 +973,7 @@ int ASK_DoScreen_chooseDirForFileSet(ASK_FileSet* pSet)
 {
 	char 	buf[1024];
 	char	buf2[64];
+	char*   pszUpdateDir = NULL;
 	int 	result;
 	
 	HWND	hwndStatic_Top;
@@ -1107,7 +1108,33 @@ int ASK_DoScreen_chooseDirForFileSet(ASK_FileSet* pSet)
 	
 	SetCursor(hcursorPrev);
 
-	_updateDirAndSpace(g_pSet_BrowseDir->pszDefaultPath);
+	pszUpdateDir = g_pSet_BrowseDir->pszDefaultPath;
+
+	if( !strcmp( g_pSet_BrowseDir->pszDefaultPath, "c:/Program Files" ) )
+	{
+		HKEY hKey;
+		DWORD dwSize;
+
+		if( RegOpenKeyEx( HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion", 0, KEY_READ, &hKey ) == ERROR_SUCCESS )
+		{
+			pszUpdateDir = (char*)malloc( ASK_MAX_PATH + 1 );
+
+			if( RegQueryValueEx( hKey, "ProgramFilesDir", NULL, NULL, pszUpdateDir, &dwSize ) != ERROR_SUCCESS )
+			{
+				free( pszUpdateDir );
+
+				// Fall back to the default
+				pszUpdateDir = g_pSet_BrowseDir->pszDefaultPath;
+			}
+
+			RegCloseKey( hKey );
+		}
+	}
+
+	_updateDirAndSpace( pszUpdateDir );
+
+	if( pszUpdateDir != g_pSet_BrowseDir->pszDefaultPath )
+		free( pszUpdateDir );
 
 	result = DoEventLoop();
 
