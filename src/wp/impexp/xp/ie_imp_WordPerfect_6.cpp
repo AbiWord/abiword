@@ -238,15 +238,15 @@ void IE_Imp_WordPerfect_6::extractFile(FILE *fp)
 	  { 
 	   case WP_TOP_HARD_HYPHEN:
 	     m_Mbtowc.mbtowc(wc, '-');
-	     m_textBuf.append( &(UT_uint16)wc, 1);
+	     m_textBuf.append( (UT_uint16*)&wc, 1);
 	     break;
 	   case WP_TOP_SOFT_SPACE:
 	     m_Mbtowc.mbtowc(wc, ' ');
-	     m_textBuf.append( &(UT_uint16)wc, 1);
+	     m_textBuf.append( (UT_uint16*)&wc, 1);
 	     break;
 	   case WP_TOP_SOFT_EOL:
 	     m_Mbtowc.mbtowc(wc, ' ');
-	     m_textBuf.append( &(UT_uint16)wc, 1);
+	     m_textBuf.append( (UT_uint16*)&wc, 1);
 	     break;
 	   case WP_TOP_DORMANT_HARD_RETURN:
 	   case WP_TOP_HARD_EOL: 
@@ -290,7 +290,7 @@ void IE_Imp_WordPerfect_6::extractFile(FILE *fp)
 	       {
 		  //UT_DEBUGMSG((" current char = %c \n",(char)readVal));
 		  m_Mbtowc.mbtowc(wc, (char)readVal);
-		  m_textBuf.append( &(UT_uint16)wc, 1);
+		  m_textBuf.append( (UT_uint16*)&wc, 1);
 	       }	     
 	     break;
 	  }
@@ -329,7 +329,7 @@ void IE_Imp_WordPerfect_6::_handleEndOfLineGroup(FILE *fp)
       case 21: // 0x15 (deletable soft EOC) 
       case 22: // 0x16 (deleteable soft EOC at EOP) 
 	m_Mbtowc.mbtowc(wc, ' ');
-	m_textBuf.append( &(UT_uint16)wc, 1);
+	m_textBuf.append( (UT_uint16*)&wc, 1);
 	break;
       case 4: // 0x04 (hard end-of-line)
       case 5: // 0x05 (hard EOL at EOC) 
@@ -437,7 +437,7 @@ void IE_Imp_WordPerfect_6::_handleExtendedCharacter(FILE *fp)
    else
      wc = m_Mbtowc.mbtowc(wc, ' ');
    
-   m_textBuf.append( &(UT_uint16)wc, 1);
+   m_textBuf.append( (UT_uint16*)&wc, 1);
      
    int readVal = fgetc(fp); // TODO: check for eof and also that the end byte is the extended character flag
 }
