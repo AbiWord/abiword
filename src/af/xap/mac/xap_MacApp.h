@@ -51,6 +51,11 @@ public:
 	virtual const char *					getUserPrivateDirectory(void);
 
 
+    virtual void                            setViewSelection( AV_View * pView) 
+    												{ UT_ASSERT (UT_NOT_IMPLEMENTED); };
+    virtual AV_View *                       getViewSelection( void) 
+    												{ UT_ASSERT (UT_NOT_IMPLEMENTED); };
+
 	static bool m_NotInitialized;
 
 protected:

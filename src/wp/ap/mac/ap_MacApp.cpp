@@ -33,6 +33,12 @@
 #include "ap_MacApp.h"
 #include "sp_spell.h"
 
+#include "xap_EditMethods.h"
+#include "ap_LoadBindings.h"
+#include "xap_Menu_ActionSet.h"
+#include "xap_Toolbar_ActionSet.h"       
+
+
 /*****************************************************************/
 
 AP_MacApp::AP_MacApp(XAP_Args * pArgs, const char * szAppName)
@@ -59,15 +65,26 @@ UT_Bool AP_MacApp::initialize(void)
 
 	// TODO overlay command line arguments onto preferences...
 		   
-	// now that preferences are established, let the xap init
-		   
+
+	// RFC: shouldn't the code above go to XP ?		   
 	m_pClipboard = new AP_MacClipboard();
 	UT_ASSERT(m_pClipboard);
+	
+	m_pEMC = AP_GetEditMethods();
+	UT_ASSERT(m_pEMC);
 
+	m_pBindingSet = new AP_BindingSet(m_pEMC);
+	UT_ASSERT(m_pBindingSet);
+
+	m_pMenuActionSet = AP_CreateMenuActionSet();
+	UT_ASSERT(m_pMenuActionSet);
+
+	m_pToolbarActionSet = AP_CreateToolbarActionSet();
+	UT_ASSERT(m_pToolbarActionSet);
+	
+	// now that preferences are established, let the xap init
 	if (! XAP_MacApp::initialize())
 		return UT_FALSE;
-
-	UT_ASSERT(m_pClipboard);
 
 #if 0
 	//////////////////////////////////////////////////////////////////

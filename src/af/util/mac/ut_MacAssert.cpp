@@ -62,6 +62,7 @@ void UT_MacAssertMsg(const char * szMsg, const char * szFile, int iLine)
 			return;		// continue the application
 
 		case 2:
+			::DebugStr ("\pAssert failed");
 			abort();	// kill the application
 			return;
 		default:

@@ -49,7 +49,6 @@ XAP_MacFrame::XAP_MacFrame(XAP_MacApp * app)
 	: XAP_Frame(static_cast<XAP_App *>(app))
 {
 	m_MacWindow = NULL;
-	MacWindowInit ();
 }
 
 // TODO when cloning a new frame from an existing one
@@ -59,7 +58,6 @@ XAP_MacFrame::XAP_MacFrame(XAP_MacApp * app)
 XAP_MacFrame::XAP_MacFrame(XAP_MacFrame * f)
 	: XAP_Frame(static_cast<XAP_Frame *>(f))
 {
-	MacWindowInit ();
 }
 
 void XAP_MacFrame::MacWindowInit ()
@@ -70,10 +68,14 @@ void XAP_MacFrame::MacWindowInit ()
 	m_MacWindow = ::NewWindow(NULL, &theBounds, "\pUntitled", 0, 0, (WindowPtr) -1, 0, (long) this);
 	UT_ASSERT (m_MacWindow != NULL);
 
-#ifdef XP_MAC_TARGET_CARBON
+	::SetWRefCon (m_MacWindow, (long)this);
 	::SetWindowKind (m_MacWindow, XAP_MACFRAME_WINDOW_KIND);
+
+#if 0
+#ifdef XP_MAC_TARGET_CARBON
 #else
 	((WindowPeek)m_MacWindow)->windowKind = XAP_MACFRAME_WINDOW_KIND;
+#endif
 #endif
 }
 
@@ -124,6 +126,8 @@ XAP_DialogFactory *XAP_MacFrame::getDialogFactory(void)
 
 void XAP_MacFrame::_createTopLevelWindow(void)
 {
+	MacWindowInit ();
+
 	UT_ASSERT(UT_NOT_IMPLEMENTED);
 }
 

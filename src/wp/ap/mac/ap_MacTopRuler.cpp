@@ -23,6 +23,10 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ap_MacTopRuler.h"
-#include "gr_MacGraphics.h"
+#ifndef XP_MAC_TARGET_QUARTZ
+# include "gr_MacQDGraphics.h"
+#else
+# include "gr_MacGraphics.h"
+#endif
 #include "xap_MacApp.h"
 #include "ap_MacFrame.h"

@@ -53,7 +53,10 @@ public:
  	SET_GATHER			(SpellNumbers,		UT_Bool );
  	SET_GATHER			(SpellInternet,		UT_Bool );
  
- 	SET_GATHER			(PrefsAutoSave,		UT_Bool );
+ 	SET_GATHER			(SmartQuotesEnable,	UT_Bool);
+	SET_GATHER			(DefaultPageSize,	fp_PageSize::Predefined);
+
+	SET_GATHER			(PrefsAutoSave,		UT_Bool );
  
  	SET_GATHER			(ViewShowRuler,		UT_Bool );
 	SET_GATHER			(ViewShowStandardBar,	UT_Bool);
@@ -69,9 +72,6 @@ public:
  	SET_GATHER			(ViewUnprintable,	UT_Bool );
   
  	SET_GATHER			(NotebookPageNum,	int );
-
-	// Added cjp
-	SET_GATHER			(SmartQuotesEnable,	UT_Bool);
 
 #undef SET_GATHER
 	

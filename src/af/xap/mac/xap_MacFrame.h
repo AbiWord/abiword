@@ -62,10 +62,22 @@ public:
 	virtual void				setXScrollRange(void);
 	virtual void				setYScrollRange(void);
 	virtual UT_Bool 			runModalContextMenu(AV_View * pView, const char * szMenuName, UT_sint32 x, UT_sint32 y);
-	virtual void                            setStatusMessage(const char * szMsg) = 0;
+	
+	virtual void				setStatusMessage(const char * szMsg) { UT_ASSERT (UT_NOT_IMPLEMENTED); };
+
+	virtual void				toggleRuler(UT_Bool bRulerOn) { UT_ASSERT (UT_NOT_IMPLEMENTED); };
+	virtual void				toggleBar(UT_uint32 iBarNb, UT_Bool bBarOn) { UT_ASSERT (UT_NOT_IMPLEMENTED); };
+	virtual void				toggleStatusBar(UT_Bool bStatusBarOn) { UT_ASSERT (UT_NOT_IMPLEMENTED); };
+	virtual UT_Bool				getBarVisibility(UT_uint32 iBarNb) { UT_ASSERT (UT_NOT_IMPLEMENTED); };
+
+
+	virtual void				queue_resize() { UT_ASSERT (UT_NOT_IMPLEMENTED); };
 
 	WindowPtr _getMacWindow (void) { UT_ASSERT (m_MacWindow != NULL); return m_MacWindow; } ;
 protected:
+	virtual EV_Toolbar *		_newToolbar(XAP_App *app, XAP_Frame *frame, const char *, const char *) 
+										{ UT_ASSERT (UT_NOT_IMPLEMENTED); };
+
 	void						_createTopLevelWindow(void);
 	WindowPtr					m_MacWindow;
 	Rect 						theBounds;
