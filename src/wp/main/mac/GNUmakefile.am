@@ -30,20 +30,8 @@ AbiWord_SOURCES = abi_ver.cpp MacMain.cpp
 
 REPEAT_LIBS = $(ABI_LIBS) 
 
-AbiWord_LDADD = $(REPEAT_LIBS) $(OTHER_LIBS) 
+AbiWord_LDADD = $(REPEAT_LIBS) $(REPEAT_LIBS) @PLATFORM_LIBS@ $(OTHER_LIBS) 
 
 abi_ver.cpp:
 	cp $(srcdir)/../xp/abi_ver.cpp .
-
-
-
-
-
-
-
-
-
-
-
-
 
