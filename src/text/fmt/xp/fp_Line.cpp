@@ -615,8 +615,6 @@ UT_sint32 fp_Line::getMarginBefore(void) const
 
 UT_sint32 fp_Line::getMarginAfter(void) const
 {
-	DG_Graphics* pG = getBlock()->getDocLayout()->getGraphics();
-	
 	if (isLastLineInBlock() && getBlock()->getNext(UT_FALSE))
 	{
 		fp_Line* pNextLine = getBlock()->getNext(UT_FALSE)->getFirstLine();
