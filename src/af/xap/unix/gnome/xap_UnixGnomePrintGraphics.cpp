@@ -874,7 +874,7 @@ UT_uint32 XAP_UnixGnomePrintGraphics::_getResolution(void) const
         return GPG_RESOLUTION;
 }
 
-void XAP_UnixGnomePrintGraphics::fillRect(UT_RGBColor& c, 
+void XAP_UnixGnomePrintGraphics::fillRect(const UT_RGBColor& c, 
 										  UT_sint32 x, UT_sint32 y, 
 										  UT_sint32 w, UT_sint32 h)
 {
@@ -900,7 +900,7 @@ void XAP_UnixGnomePrintGraphics::fillRect(UT_RGBColor& c,
 								(int)(m_currentColor.m_blu / 255));
 }
 
-void XAP_UnixGnomePrintGraphics::fillRect(UT_RGBColor& c, UT_Rect & r)
+void XAP_UnixGnomePrintGraphics::fillRect(const UT_RGBColor& c, UT_Rect & r)
 {
 		fillRect(c, r.left, r.top, r.width, r.height);
 }

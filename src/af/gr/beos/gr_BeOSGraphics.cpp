@@ -605,13 +605,13 @@ void GR_BeOSGraphics::invertRect(const UT_Rect* pRect)
 	UPDATE_VIEW
 }
 
-void GR_BeOSGraphics::fillRect(UT_RGBColor& c, UT_Rect &r) {
+void GR_BeOSGraphics::fillRect(const UT_RGBColor& c, UT_Rect &r) {
 	fillRect(c,r.left,r.top,r.width,r.height);
 }
 
 
-void GR_BeOSGraphics::fillRect(UT_RGBColor& c, UT_sint32 x, UT_sint32 y,
-						UT_sint32 w, UT_sint32 h)
+void GR_BeOSGraphics::fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y,
+			       UT_sint32 w, UT_sint32 h)
 {
 	DPRINTF(printf("GR: Flll Rect\n"));
 	if (m_pShadowView->Window()->Lock())

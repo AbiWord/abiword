@@ -607,13 +607,13 @@ void GR_CocoaGraphics::setClipRect(const UT_Rect* pRect)
 	}
 }
 
-void GR_CocoaGraphics::fillRect(UT_RGBColor& c, UT_Rect &r)
+void GR_CocoaGraphics::fillRect(const UT_RGBColor& c, UT_Rect &r)
 {
 	UT_DEBUGMSG(("GR_CocoaGraphics::fillRect(UT_RGBColor&, UT_Rect &)\n"));
 	fillRect(c,r.left,r.top,r.width,r.height);
 }
 
-void GR_CocoaGraphics::fillRect(UT_RGBColor& clr, UT_sint32 x, UT_sint32 y,
+void GR_CocoaGraphics::fillRect(const UT_RGBColor& clr, UT_sint32 x, UT_sint32 y,
 							   UT_sint32 w, UT_sint32 h)
 {
 	UT_DEBUGMSG(("GR_CocoaGraphics::fillRect(UT_RGBColor&, %ld, %ld, %ld, %ld)\n", x, y, w, h));

@@ -72,8 +72,8 @@ public:
 	virtual void setLineWidth(UT_sint32);
 	virtual void xorLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
 	virtual void polyLine(UT_Point * pts, UT_uint32 nPoints);
-	virtual void fillRect(UT_RGBColor& c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h);
-	virtual void fillRect(UT_RGBColor& c, UT_Rect &r);
+	virtual void fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h);
+	virtual void fillRect(const UT_RGBColor& c, UT_Rect &r);
 	virtual void invertRect(const UT_Rect*);
 	virtual void setClipRect(const UT_Rect*);
 	virtual void scroll(UT_sint32, UT_sint32);

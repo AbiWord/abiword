@@ -919,12 +919,12 @@ void GR_UnixGraphics::setClipRect(const UT_Rect* pRect)
 	}
 }
 
-void GR_UnixGraphics::fillRect(UT_RGBColor& c, UT_Rect &r)
+void GR_UnixGraphics::fillRect(const UT_RGBColor& c, UT_Rect &r)
 {
 	fillRect(c,r.left,r.top,r.width,r.height);
 }
 
-void GR_UnixGraphics::fillRect(UT_RGBColor& c, UT_sint32 x, UT_sint32 y,
+void GR_UnixGraphics::fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y,
 							   UT_sint32 w, UT_sint32 h)
 {
 	// save away the current color, and restore it after we fill the rect

@@ -118,10 +118,10 @@ public:
 												LineStyle inLineStyle = LINE_SOLID );
 
 	virtual void			polyLine(UT_Point * pts, UT_uint32 nPoints);
-	virtual void			fillRect(UT_RGBColor& c,
+	virtual void			fillRect(const UT_RGBColor& c,
 									 UT_sint32 x, UT_sint32 y,
 									 UT_sint32 w, UT_sint32 h);
-	virtual void			fillRect(UT_RGBColor& c, UT_Rect &r);
+	virtual void			fillRect(const UT_RGBColor& c, UT_Rect &r);
 	virtual void			invertRect(const UT_Rect* pRect);
 	virtual void			setClipRect(const UT_Rect* pRect);
 	virtual void			scroll(UT_sint32 dx, UT_sint32 dy);

@@ -200,24 +200,24 @@ class ABI_EXPORT GR_Graphics
 	virtual void      setLineWidth(UT_sint32) = 0;
 	virtual void      polyLine(UT_Point * pts, UT_uint32 nPoints) = 0;
 
-	virtual void      fillRect(UT_RGBColor& c,
-							   UT_sint32 x,
-							   UT_sint32 y,
-							   UT_sint32 w,
-							   UT_sint32 h) = 0;
-
-	virtual void      fillRect(UT_RGBColor& c, UT_Rect &r) = 0;
+	virtual void      fillRect(const UT_RGBColor& c,
+				   UT_sint32 x,
+				   UT_sint32 y,
+				   UT_sint32 w,
+				   UT_sint32 h) = 0;
+	
+	virtual void      fillRect(const UT_RGBColor& c, UT_Rect &r) = 0;
 	virtual void      invertRect(const UT_Rect* pRect) = 0;
 	virtual void      setClipRect(const UT_Rect* pRect) = 0;
 	const UT_Rect *   getClipRect(void) const { return m_pRect;}
 	virtual void      scroll(UT_sint32, UT_sint32) = 0;
 
 	virtual void      scroll(UT_sint32 x_dest,
-							 UT_sint32 y_dest,
-							 UT_sint32 x_src,
-							 UT_sint32 y_src,
-							 UT_sint32 width,
-							 UT_sint32 height) = 0;
+				 UT_sint32 y_dest,
+				 UT_sint32 x_src,
+				 UT_sint32 y_src,
+				 UT_sint32 width,
+				 UT_sint32 height) = 0;
 
 	virtual void      clearArea(UT_sint32, UT_sint32, UT_sint32, UT_sint32) = 0;
 

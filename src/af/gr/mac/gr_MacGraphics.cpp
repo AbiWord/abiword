@@ -265,7 +265,7 @@ void GR_MacGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 	**   begin fill at x0,y0,
 	**   ?? should x0+w,y0+h or x0+w+1,y0+h+1 be the last pixel affected ??
 	*/
-void GR_MacGraphics::fillRect(UT_RGBColor& c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
+void GR_MacGraphics::fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
 {
     CGRect myRect;
 
@@ -277,7 +277,7 @@ void GR_MacGraphics::fillRect(UT_RGBColor& c, UT_sint32 x, UT_sint32 y, UT_sint3
     CGContextFillRect (m_CGContext, myRect);
 }
 
-void GR_MacGraphics::fillRect(UT_RGBColor& c, UT_Rect &r)
+void GR_MacGraphics::fillRect(const UT_RGBColor& c, UT_Rect &r)
 {
     fillRect (c, r.left, r.top, r.width, r.height);
 }

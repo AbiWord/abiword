@@ -416,11 +416,11 @@ void UnixNull_Graphics::polyLine(UT_Point * /* pts */, UT_uint32 /* nPoints */)
 {
 }
 
-void UnixNull_Graphics::fillRect(UT_RGBColor& c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
+void UnixNull_Graphics::fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
 {
 }
 
-void UnixNull_Graphics::fillRect(UT_RGBColor& c, UT_Rect & r)
+void UnixNull_Graphics::fillRect(const UT_RGBColor& c, UT_Rect & r)
 {
 }
 

@@ -639,7 +639,7 @@ void GR_Win32Graphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 	FREEP(points);
 }
 
-void GR_Win32Graphics::fillRect(UT_RGBColor& c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
+void GR_Win32Graphics::fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
 {
 	RECT r;
 	r.left = x;
@@ -663,7 +663,7 @@ void GR_Win32Graphics::fillRect(UT_RGBColor& c, UT_sint32 x, UT_sint32 y, UT_sin
 #endif
 }
 
-void GR_Win32Graphics::fillRect(UT_RGBColor& c, UT_Rect &r)
+void GR_Win32Graphics::fillRect(const UT_RGBColor& c, UT_Rect &r)
 {
 	fillRect(c,r.left,r.top,r.width,r.height);
 }
