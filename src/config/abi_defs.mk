@@ -45,6 +45,20 @@
 #### ABI_OPT_GNOME=1
 ####
 
+#### To get a cygwin/gcc/gtk (as opposed to a native win32) build: add
+#### the following line back to the Makefile, add the variable to the
+#### make command line, or set this variable as an environment
+#### variable.  A full recompile must be done when switching the value
+#### of this variable.  (Each platform makefile (./platforms/*.mk)
+#### also has a commented- out note about this incase you only want to
+#### enable it on a particular platform.)
+####
+#### NOTE: the Makefiles use 'ifdef' rather than 'ifeq' so setting
+#### NOTE: this to **any** value will enable it.
+####
+#### ABI_OPT_CYGWIN_UNIX=1
+####
+
 ##################################################################
 ##################################################################
 ## abi_defs.mk --  Makefile definitions for building AbiSource software.
@@ -91,6 +105,17 @@ OS_NAME = WIN32
 endif
 ifeq ($(OS_NAME), CYGWIN)
 OS_NAME = WIN32
+endif
+
+##################################################################
+##################################################################
+#### if ABI_OPT_CYGWIN_UNIX is defined then the OS_NAME becomes
+#### CYGWIN, and we build with gcc etc.
+
+ifdef ABI_OPT_CYGWIN_UNIX
+ifeq ($(OS_NAME), WIN32)
+OS_NAME = CYGWIN
+endif
 endif
 
 ##################################################################
@@ -181,6 +206,10 @@ CFLAGS		= $(OPTIMIZER) $(OS_CFLAGS) $(DEFINES) $(INCLUDES) $(XCFLAGS)	\
 
 ifeq ($(OS_NAME), WIN32)
 include $(ABI_ROOT)/src/config/platforms/win32.mk
+endif
+
+ifeq ($(OS_NAME), CYGWIN)
+include $(ABI_ROOT)/src/config/platforms/cygwin.mk
 endif
 
 ifeq ($(OS_NAME), Linux)
