@@ -2846,13 +2846,6 @@ FV_View::_findBlockSearchRegexp(const UT_UCSChar* /* haystack */,
 void FV_View::_generalUpdate(void)
 {
 	bool bOK = true;
-	if(!isPointLegal() && bOK)
-	{
-//
-// If we're in an illegal position move forward till we're safe.
-//
-		bOK = _charMotion(true,1);
-	}
 	if(!shouldScreenUpdateOnGeneralUpdate())
 		return;
 	m_pDoc->signalListeners(PD_SIGNAL_UPDATE_LAYOUT);
@@ -2862,6 +2855,13 @@ void FV_View::_generalUpdate(void)
 //
 	if(isPreview())
 		return;
+	if(!isPointLegal() && bOK)
+	{
+//
+// If we're in an illegal position move forward till we're safe.
+//
+		bOK = _charMotion(true,1);
+	}
 	/*
 	  TODO note that we are far too heavy handed with the mask we
 	  send here.  I ripped out all the individual calls to notifyListeners
@@ -2879,7 +2879,10 @@ void FV_View::_generalUpdate(void)
 	*/
 //
 //	notifyListeners(AV_CHG_TYPING | AV_CHG_FMTCHAR | AV_CHG_FMTBLOCK );
-	notifyListeners(AV_CHG_TYPING | AV_CHG_FMTCHAR | AV_CHG_FMTBLOCK | AV_CHG_PAGECOUNT | AV_CHG_FMTSTYLE );
+	if(!m_pDoc->isDoingPaste())
+	{
+		notifyListeners(AV_CHG_TYPING | AV_CHG_FMTCHAR | AV_CHG_FMTBLOCK | AV_CHG_PAGECOUNT | AV_CHG_FMTSTYLE );
+	}
 }
 
 
@@ -4438,7 +4441,10 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 		m_pLayout->considerPendingSmartQuoteCandidate();
 		_checkPendingWordForSpell();
 		_clearIfAtFmtMark(posOld);
-		notifyListeners(AV_CHG_MOTION);
+		if(!m_pDoc->isDoingPaste())
+		{
+			notifyListeners(AV_CHG_MOTION);
+		}
 	}
 	UT_DEBUGMSG(("SEVIOR: Point = %d \n",getPoint()));
 	_fixInsertionPointCoords();

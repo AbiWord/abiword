@@ -147,9 +147,13 @@ void fp_FootnoteContainer::setContainer(fp_Container * pContainer)
 fl_DocSectionLayout * fp_FootnoteContainer::getDocSectionLayout(void)
 {
 	fl_FootnoteLayout * pFL = static_cast<fl_FootnoteLayout *>(getSectionLayout());
-	fl_DocSectionLayout * pDSL = static_cast<fl_DocSectionLayout *>(pFL->myContainingLayout());
+	fl_ContainerLayout * pDSL = pFL->myContainingLayout();
+	while(pDSL && pDSL->getContainerType() != FL_CONTAINER_DOCSECTION)
+	{
+		pDSL = pDSL->myContainingLayout();
+	}
 	UT_ASSERT(pDSL && (pDSL->getContainerType() == FL_CONTAINER_DOCSECTION));
-	return pDSL;
+	return static_cast<fl_DocSectionLayout *>(pDSL);
 }
 
 /*!
@@ -248,8 +252,17 @@ void fp_FootnoteContainer::layout(void)
 	_setMaxContainerHeight(0);
 	UT_sint32 iY = 0, iPrevY = 0;
 	iY= 0;
-	UT_sint32 iMaxFootHeight = getPage()->getHeight();
+	fp_Page * pPage = getPage();
 	fl_DocSectionLayout * pDSL = getDocSectionLayout();
+	UT_sint32 iMaxFootHeight = 0;
+	if(pPage != NULL)
+	{
+		iMaxFootHeight = pPage->getHeight();
+	}
+	else
+	{
+		iMaxFootHeight = pDSL->getDocLayout()->getHeight();
+	}
 	iMaxFootHeight -= pDSL->getTopMargin();
 	iMaxFootHeight -= pDSL->getBottomMargin();
 	iMaxFootHeight -= getGraphics()->tlu(20)*3;
@@ -304,7 +317,6 @@ void fp_FootnoteContainer::layout(void)
 	}
 
 	setHeight(iY);
-	fp_Page * pPage = getPage();
 //	UT_ASSERT(pPage);
 	if(pPage)
 	{

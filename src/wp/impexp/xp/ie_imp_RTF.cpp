@@ -1500,23 +1500,28 @@ IE_Imp_RTF::~IE_Imp_RTF()
 // Close off pasted rows by incrementing the top and botton's of the cell's
 // below
 //
-				UT_sint32 numRows = pPaste->m_iCurTopCell -pPaste->m_iRowNumberAtPaste;
+				UT_sint32 numRows = pPaste->m_iCurTopCell -pPaste->m_iRowNumberAtPaste +1;
 				PL_StruxDocHandle sdhCell = NULL;
 				PL_StruxDocHandle sdhTable = NULL;
 				PL_StruxDocHandle sdhEndTable = NULL;
 				bool b = getDoc()->getStruxOfTypeFromPosition(m_dposPaste,PTX_SectionTable,&sdhTable);
+				PT_DocPosition posTable = getDoc()->getStruxPosition(sdhTable);
 				UT_ASSERT(b);
 				sdhEndTable = getDoc()->getEndTableStruxFromTableSDH(sdhTable);
 				UT_ASSERT(sdhEndTable);
 				PT_DocPosition posEndTable = getDoc()->getStruxPosition(sdhEndTable);
-				b = getDoc()->getStruxOfTypeFromPosition(m_dposPaste,PTX_SectionCell,&sdhCell);
+				b = getDoc()->getStruxOfTypeFromPosition(m_dposPaste-1,PTX_SectionCell,&sdhCell);
 				b = getDoc()->getNextStruxOfType(sdhCell,PTX_SectionCell,&sdhCell);
 				UT_String sTop;
 				UT_String sBot;
 				const char * szVal = NULL;
 				const XML_Char * sProps[5] = {NULL,NULL,NULL,NULL};
-				PT_DocPosition posCell = getDoc()->getStruxPosition(sdhCell);
-				while(b && (posCell < posEndTable));
+				PT_DocPosition posCell = 0;
+				if(b)
+				{
+					posCell = getDoc()->getStruxPosition(sdhCell);
+				}
+				while(b && (posCell < posEndTable))
 				{
 					getDoc()->getPropertyFromSDH(sdhCell,"top-attach", &szVal);
 					UT_ASSERT(szVal);
@@ -1527,7 +1532,8 @@ IE_Imp_RTF::~IE_Imp_RTF()
 					UT_ASSERT(szVal);
 					UT_sint32 iBot = atoi(szVal);
 					iBot += numRows;
-					UT_String_sprintf(sTop,"%d",iBot);
+					UT_String_sprintf(sBot,"%d",iBot);
+					UT_DEBUGMSG(("Change cell top to %d bot to %d \n",iTop,iBot));
 					sProps[0] = "top-attach";
 					sProps[1] = sTop.c_str();
 					sProps[2] = "bot-attach";
@@ -1539,6 +1545,16 @@ IE_Imp_RTF::~IE_Imp_RTF()
 						posCell = getDoc()->getStruxPosition(sdhCell);
 					}
 				}
+//
+// Now a change strux on the table to make it rebuild.
+//
+				sProps[0] = "list-tag";
+				UT_String sVal;
+				UT_String_sprintf(sVal,"%d",getDoc()->getUID(UT_UniqueId::List));
+				sProps[1] = sVal.c_str();
+				sProps[2] = NULL;
+				sProps[3] = NULL;
+				getDoc()->changeStruxFmt(PTC_AddFmt,posTable+1,posTable+1,NULL,sProps,PTX_SectionTable);
 			}
 			delete pPaste;
 		}
@@ -2637,13 +2653,13 @@ bool IE_Imp_RTF::isPastedTableOpen(void)
 	{
 		return false;
 	}
-	if(!pPaste->m_bHasPastedTableStrux)
-	{
-		return false;
-	}
 	if(!pPaste->m_bHasPastedCellStrux)
 	{
 		return true;
+	}
+	if(!pPaste->m_bHasPastedTableStrux)
+	{
+		return false;
 	}
 	return false;
 }
@@ -8666,7 +8682,7 @@ bool IE_Imp_RTF::HandleAbiTable(void)
 	}
 	ABI_Paste_Table * pPaste = new ABI_Paste_Table();
 	m_pasteTableStack.push(pPaste);
-	pPaste->m_bHasPastedTableStrux = true;
+	pPaste->m_bHasPastedTableStrux = false;
 	pPaste->m_iRowNumberAtPaste = 0;
 	
 	UT_DEBUGMSG(("RTF_Import: Paste: Tables props are: %s \n",sProps.c_str()));
@@ -8674,25 +8690,29 @@ bool IE_Imp_RTF::HandleAbiTable(void)
 	PL_StruxDocHandle sdhTable = NULL;
 	PL_StruxDocHandle sdhEndTable = NULL;
 	bool bFound = getDoc()->getStruxOfTypeFromPosition(m_dposPaste,PTX_SectionTable,&sdhTable);
+	PT_DocPosition posTable = 0;
 	if(bFound)
 	{
+		posTable = getDoc()->getStruxPosition(sdhTable);
 		sdhEndTable = getDoc()->getEndTableStruxFromTableSDH(sdhTable);
 		if(sdhEndTable != NULL)
 		{
 			PT_DocPosition posEndTable = getDoc()->getStruxPosition(sdhEndTable);
 			if(posEndTable > m_dposPaste)
 			{
-				UT_String sTableSDH("");
+				UT_String sPasteTableSDH;
 				UT_String sProp = "table-sdh";
-				sTableSDH = UT_String_getPropVal(sProps,sProp);
-				PL_StruxDocHandle tableSDH = reinterpret_cast<const void *>(atoi(sTableSDH.c_str()));
-				if(tableSDH == sdhTable)
+				sPasteTableSDH = UT_String_getPropVal(sProps,sProp);
+				UT_String sThisTableSDH;
+				UT_String_sprintf(sThisTableSDH,"%x",sdhTable);
+				UT_DEBUGMSG(("sThisTableSDH %s sPasteTableSDH %s \n",sThisTableSDH.c_str(),sPasteTableSDH.c_str()));
+				if(sThisTableSDH == sPasteTableSDH)
 				{
 					UT_DEBUGMSG(("Pasting into same Table!!!!! \n"));
 					bIsPasteIntoSame = true;
 					pPaste->m_bPasteAfterRow = true;
 					PL_StruxDocHandle sdhCell = NULL;
-					bool b = getDoc()->getStruxOfTypeFromPosition(m_dposPaste,PTX_SectionTable,&sdhCell);
+					bool b = getDoc()->getStruxOfTypeFromPosition(m_dposPaste,PTX_SectionCell,&sdhCell);
 					UT_return_val_if_fail(b,false);
 					const char * szTop = NULL;
 					getDoc()->getPropertyFromSDH(sdhCell,"top-attach",&szTop);
@@ -8736,6 +8756,16 @@ bool IE_Imp_RTF::HandleAbiTable(void)
 //
 						m_dposPaste = getDoc()->getStruxPosition(sdhCell);
 					}
+//
+// Now a change strux on the table to make it rebuild.
+//
+					const char * sDumProp[3] = {NULL,NULL,NULL};
+					sDumProp[0] = "list-tag";
+					UT_String sVal;
+					UT_String_sprintf(sVal,"%d",getDoc()->getUID(UT_UniqueId::List));
+					sDumProp[1] = sVal.c_str();
+					sDumProp[2] = NULL;
+					getDoc()->changeStruxFmt(PTC_AddFmt,posTable+1,posTable+1,NULL,sDumProp,PTX_SectionTable);
 
 				}
 			}
@@ -8758,6 +8788,7 @@ bool IE_Imp_RTF::HandleAbiTable(void)
 //
 // Insert the table strux at the same spot. This will make the table link correctly in the
 // middle of the broken text.
+		pPaste->m_bHasPastedTableStrux = true;
 		getDoc()->insertStrux(m_dposPaste,PTX_SectionTable,attrs,NULL);
 		m_dposPaste++;
 	}	
@@ -8929,7 +8960,7 @@ bool IE_Imp_RTF::HandleAbiCell(void)
 	UT_sint32 iMyBot = atoi(sBot.c_str());
 	if(pPaste->m_bPasteAfterRow)
 	{
-		UT_sint32 idiff = pPaste->m_iRowNumberAtPaste - iMyTop + 1;
+		UT_sint32 idiff = pPaste->m_iRowNumberAtPaste - iMyTop;
 		iMyTop += idiff;
 		sTop = UT_String_sprintf("%d",iMyTop);
 		iMyBot += idiff;

@@ -95,7 +95,7 @@ protected:
 	void                _close_cell(void);
 	void                _close_table(void);
 	void                _open_cell(PT_AttrPropIndex api);
-	void                _open_table(PT_AttrPropIndex api);
+	void                _open_table(PT_AttrPropIndex api, bool bIsCell = false);
 	void                _export_AbiWord_Table_props(PT_AttrPropIndex api);
 	void                _fillTableProps(PT_AttrPropIndex api, UT_String & sTableProps);
 	void                _export_AbiWord_Cell_props(PT_AttrPropIndex api,bool bFill);

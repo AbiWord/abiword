@@ -1534,6 +1534,11 @@ bool FV_View::notifyListeners(const AV_ChangeMask hint)
 		else
 		{
 			pContainer = pRun->getLine()->getColumn();
+			if(pContainer == NULL)
+			{
+				pBlock->needsReformat();
+				return false;
+			}
 		}
 
 		UT_ASSERT(pContainer);
@@ -1563,6 +1568,10 @@ bool FV_View::notifyListeners(const AV_ChangeMask hint)
 			// Hack the kludge:
 			// Clearly you can't change columns while editing a header. -PL
 			mask ^= AV_CHG_COLUMN;
+		}
+		else
+		{
+			return false;
 		}
 	}
 

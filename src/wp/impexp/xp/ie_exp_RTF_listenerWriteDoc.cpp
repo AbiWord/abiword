@@ -2093,7 +2093,7 @@ void s_RTF_ListenerWriteDoc::_open_cell(PT_AttrPropIndex api)
 //
 	if(m_Table.getNestDepth() < 1)
 	{
-		_open_table(api);
+		_open_table(api,true);
 		_export_AbiWord_Cell_props(api,true);
 	}
 	else
@@ -2850,21 +2850,30 @@ void s_RTF_ListenerWriteDoc::_fillTableProps(PT_AttrPropIndex api, UT_String & s
 		sPropVal= pszBackgroundColor;
 		UT_String_setProperty(sTableProps,sProp,sPropVal);
 	}
+	sProp = "table-sdh";
+	UT_String_sprintf(sPropVal,"%x",m_Table.getTableSDH());
+	UT_String_setProperty(sTableProps,sProp,sPropVal);
 	if(sTableProps.size() == 0)
 	{
 		sTableProps += " ";
 	}
-	else
-	{
-		sProp = "table-sdh";
-		UT_String_sprintf("%x",m_Table.getTableSDH());
-		UT_String_setProperty(sTableProps,sProp,sPropVal);
-	}
 }
 
-void s_RTF_ListenerWriteDoc::_open_table(PT_AttrPropIndex api)
+void s_RTF_ListenerWriteDoc::_open_table(PT_AttrPropIndex api,bool bIsCell)
 {
-	m_Table.OpenTable(m_sdh,api);
+	PL_StruxDocHandle sdhTable = NULL;
+	if(bIsCell)
+	{
+		PT_DocPosition posCell = m_pDocument->getStruxPosition(m_sdh);
+		bool b = m_pDocument->getStruxOfTypeFromPosition(posCell,PTX_SectionTable,&sdhTable);
+		UT_return_if_fail(b);
+		api = m_pDocument->getAPIFromSDH(sdhTable);
+		m_Table.OpenTable(sdhTable,api);
+	}
+	else
+	{
+		m_Table.OpenTable(m_sdh,api);
+	}
 	m_bNewTable = true;
 	m_iLeft = -1;
 	m_iRight = -1;
