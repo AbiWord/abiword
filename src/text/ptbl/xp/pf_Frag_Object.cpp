@@ -28,18 +28,19 @@
 #include "pt_PieceTable.h"
 
 pf_Frag_Object::pf_Frag_Object(pt_PieceTable * pPT,
-							   PTObjectType objectType,
-							   PT_AttrPropIndex indexAP)
-	: pf_Frag(pPT, pf_Frag::PFT_Object, pf_FRAG_OBJECT_LENGTH)
+                               PTObjectType objectType,
+                               PT_AttrPropIndex indexAP)
+    : pf_Frag(pPT, pf_Frag::PFT_Object, pf_FRAG_OBJECT_LENGTH)
 {
-	m_objectType = objectType;
-	m_indexAP = indexAP;
+    m_objectType = objectType;
+    m_indexAP = indexAP;
     const PP_AttrProp * pAP = NULL;
     m_pPieceTable->getAttrProp(m_indexAP,&pAP);
     UT_ASSERT(pAP);
     const XML_Char* pszType = NULL;
     (pAP)->getAttribute((const XML_Char *)"type", pszType);
     fd_Field::FieldType fieldType;
+
     if (objectType==PTO_Field) 
     {
 
@@ -70,8 +71,8 @@ pf_Frag_Object::pf_Frag_Object(pt_PieceTable * pPT,
         else
         { 
             UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			//Better than segfaulting I figure
-			fieldType = fd_Field::FD_Test;
+            //Better than segfaulting I figure
+            fieldType = fd_Field::FD_Test;
         }
         m_pField = new fd_Field(*this, pPT,fieldType);
     }
@@ -85,32 +86,32 @@ pf_Frag_Object::~pf_Frag_Object()
 
 PTObjectType pf_Frag_Object::getObjectType(void) const
 {
-	return m_objectType;
+    return m_objectType;
 }
 
 PT_AttrPropIndex pf_Frag_Object::getIndexAP(void) const
 {
-	return m_indexAP;
+    return m_indexAP;
 }
 
 void pf_Frag_Object::setIndexAP(PT_AttrPropIndex indexNewAP)
 {
-	m_indexAP = indexNewAP;
+    m_indexAP = indexNewAP;
 }
 
 UT_Bool pf_Frag_Object::createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
-												  PT_DocPosition dpos,
-												  PT_BlockOffset blockOffset) const
+                                                  PT_DocPosition dpos,
+                                                  PT_BlockOffset blockOffset) const
 {
-	UT_ASSERT(ppcr);
+    UT_ASSERT(ppcr);
 	
-	PX_ChangeRecord_Object * pcr
-		= new PX_ChangeRecord_Object(PX_ChangeRecord::PXT_InsertObject,
-									 dpos, m_indexAP, m_objectType,
-									 blockOffset, m_pField);
-	if (!pcr)
-		return UT_FALSE;
+    PX_ChangeRecord_Object * pcr
+        = new PX_ChangeRecord_Object(PX_ChangeRecord::PXT_InsertObject,
+                                     dpos, m_indexAP, m_objectType,
+                                     blockOffset, m_pField);
+    if (!pcr)
+        return UT_FALSE;
 
-	*ppcr = pcr;
-	return UT_TRUE;
+    *ppcr = pcr;
+    return UT_TRUE;
 }
