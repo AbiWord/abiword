@@ -911,7 +911,8 @@ bool XAP_Prefs::loadPrefsFile(void)
 	{
 		bResult = _sax (szFilename, false);
 	}
- Cleanup:
+	if (!bResult)
+		goto Cleanup;
 #else
 	fp = fopen(szFilename, "r");
 	if (!fp)
@@ -984,10 +985,10 @@ bool XAP_Prefs::loadPrefsFile(void)
 		goto Cleanup;
 	}
 
-#ifndef HAVE_LIBXML2
 	bResult = true;
 Cleanup:
 	FREEP(m_parserState.m_szSelectedSchemeName);
+#ifndef HAVE_LIBXML2
 	if (parser)
 		XML_ParserFree(parser);
 	if (fp)
