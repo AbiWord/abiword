@@ -36,6 +36,7 @@ libWpAp_unix_a_SOURCES=\
 	ap_$(ABI_FE)Clipboard.cpp		\
 	ap_$(ABI_FE)DialogFactory.cpp		\
 	ap_$(ABI_FE)Dialog_Break.cpp		\
+	ap_$(ABI_FE)Dialog_New.cpp		\
 	ap_$(ABI_FE)Dialog_Background.cpp	\
 	ap_$(ABI_FE)Dialog_Columns.cpp		\
 	ap_$(ABI_FE)Dialog_Field.cpp		\
