@@ -90,6 +90,7 @@ public:
 
 	static void registerImporter (IE_ImpSniffer * sniffer);
 	static void unregisterImporter (IE_ImpSniffer * sniffer);
+	static void unregisterAllImporters ();
 
  public:
 	IE_Imp(PD_Document * pDocument);

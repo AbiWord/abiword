@@ -48,6 +48,8 @@
 #include "gr_UnixImage.h"
 #endif
 
+#include <sys/stat.h>
+
 #include "../../../wp/impexp/xp/ie_types.h"
 #include "../../../wp/impexp/xp/ie_imp.h"
 #include "../../../wp/impexp/xp/ie_impGraphic.h"
@@ -758,6 +760,19 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 	    pGr->drawChars (ucstext, 0, len, 12, 35);
 	    goto Cleanup;
 	  }
+
+	// are we dealing with a file or directory here?
+	struct stat st;
+	if (!stat (buf, &st)) {
+		if (!S_ISREG(st.st_mode)) {
+			pGr->drawChars (ucstext, 0, len, 12, 35);
+			goto Cleanup;
+		}
+	}
+	else {
+		pGr->drawChars (ucstext, 0, len, 12, 35);
+		goto Cleanup;
+	}
 
 	// Load File into memory
 	pBB     = new UT_ByteBuf(0);

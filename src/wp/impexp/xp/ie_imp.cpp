@@ -81,6 +81,11 @@ void IE_Imp::unregisterImporter (IE_ImpSniffer * s)
 	m_sniffers.deleteNthItem (ndx-1);
 }
 
+void IE_Imp::unregisterAllImporters ()
+{
+	UT_VECTOR_PURGEALL (IE_ImpSniffer *, m_sniffers);
+}
+
 /*****************************************************************/
 /*****************************************************************/
 

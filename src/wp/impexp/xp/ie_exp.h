@@ -91,7 +91,8 @@ public:
 
 	static void registerExporter (IE_ExpSniffer *);
 	static void unregisterExporter (IE_ExpSniffer *);
-	
+	static void unregisterAllExporters ();
+
 public:
 	IE_Exp(PD_Document * pDocument);
 	virtual ~IE_Exp();

@@ -84,6 +84,9 @@ AP_MacApp::~AP_MacApp(void)
 	//SpellCheckCleanup(); Spell check doesn't compile...yet (SBK)
 	DELETEP(m_pStringSet);
 	DELETEP(m_pClipboard);
+
+	IE_Exp::unregisterAllExporters ();
+	IE_Imp::unregisterAllImporters ();
 }
 
 bool AP_MacApp::initialize(void)

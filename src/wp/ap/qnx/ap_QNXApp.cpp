@@ -124,6 +124,9 @@ AP_QNXApp::~AP_QNXApp(void)
 	DELETEP(m_prefs);
 	DELETEP(m_pStringSet);
 	DELETEP(m_pClipboard);
+
+	IE_Exp::unregisterAllExporters ();
+	IE_Imp::unregisterAllImporters ();
 }
 
 static bool s_createDirectoryIfNecessary(const char * szDir)

@@ -150,6 +150,9 @@ AP_UnixApp::~AP_UnixApp(void)
 {
     DELETEP(m_pStringSet);
     DELETEP(m_pClipboard);
+
+	IE_Exp::unregisterAllExporters ();
+	IE_Imp::unregisterAllImporters ();
 }
 
 /*!

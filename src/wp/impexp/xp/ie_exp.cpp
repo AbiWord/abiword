@@ -77,6 +77,11 @@ void IE_Exp::unregisterExporter (IE_ExpSniffer * s)
 	m_sniffers.deleteNthItem (ndx-1);
 }
 
+void IE_Exp::unregisterAllExporters ()
+{
+	UT_VECTOR_PURGEALL (IE_ExpSniffer *, m_sniffers);
+}
+
 /*****************************************************************/
 /*****************************************************************/
 
