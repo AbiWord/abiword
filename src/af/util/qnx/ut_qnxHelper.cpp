@@ -18,7 +18,8 @@ int  UT_QNXCenterWindow(PtWidget_t *parent, PtWidget_t *widget) {
 
 	UT_ASSERT(widget);
 
-	if (!parent) {		//Center on the screen
+/* TODO: Change the code so centering on a parent works */
+	if (1 || !parent) {		//Center on the screen
 #if 0
 		PgHWCaps_t 			caps;
 		PgVideoModeInfo_t 	mode;
