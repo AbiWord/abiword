@@ -493,7 +493,12 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Suggest)
 	if (len)
 	{
 		// this is a suggestion
-		UT_UCS4_strcpy_to_char(cBuf, p);
+		char *outbuf = cBuf;
+		int i;
+		for (i = 0; i < (int)len; i++) {
+			outbuf += unichar_to_utf8(p[i], (unsigned char *)outbuf);
+		}
+		*outbuf = 0;
 		c = cBuf;
 	}
 	else if (ndx == 1)
