@@ -761,6 +761,7 @@ void fl_BlockLayout::clearScreen(GR_Graphics* /* pG */)
 	fp_Line* pLine = m_pFirstLine;
 	while (pLine)
 	{
+		UT_ASSERT(!pLine->isEmpty());
 		fp_Run * pRun = pLine->getFirstRun();
 		while(pRun)
 		{
@@ -3473,8 +3474,11 @@ bool fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 		}
 	}
 
-	// Erase the old version
-	clearScreen(m_pLayout->getGraphics());
+	// Erase the old version.  Or this what I added when adding the
+	// EOP stuff. Only, I don't remember why I did it, and it's wrong:
+	// the strux is deleted only after its content has been deleted -
+	// so the call might try to clear empty lines. jskov 2001.04.23
+//	clearScreen(m_pLayout->getGraphics());
 
 	// If there is a previous strux, we merge the Runs from this strux
 	// into it - including the EOP Run, so delete that in the previous
