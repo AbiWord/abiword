@@ -223,6 +223,7 @@ dcl(DLG_Column_One,				"One")
 dcl(DLG_Column_Two,				"Two")
 dcl(DLG_Column_Three,			"Three")
 dcl(DLG_Column_Line_Between,	"Line between")
+dcl(DLG_Column_Number_Cols,	    "Number of Columns")
 #ifdef BIDI_ENABLED
 dcl(DLG_Column_RtlOrder,		"Use RTL Order")
 #endif

@@ -120,6 +120,7 @@ public:
 
 	void		formatAll();
 	void  		updateLayout();
+	void        rebuildFromHere(fl_DocSectionLayout * pDSL);
 	void        updateColor();
 
 	bool		isPendingWordForSpell(void) const;

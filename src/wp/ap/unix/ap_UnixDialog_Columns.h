@@ -146,6 +146,7 @@ public:
 	// callbacks can fire these events
 
 	void                            checkLineBetween(void);
+	void                            readSpin(void);
 	void                            event_Toggle( UT_uint32 icolumns);
 	void                            event_previewExposed(void);
 	virtual void			event_OK(void);
@@ -172,12 +173,14 @@ protected:
 	GtkWidget * m_wtoggleOne;
 	GtkWidget * m_wtoggleTwo;
 	GtkWidget * m_wtoggleThree;
-        GtkWidget * m_wpreviewArea;
+	GtkWidget * m_wpreviewArea;
 	GtkWidget * m_wGnomeButtons;
+	GtkWidget * m_wSpin;
 
 	guint m_oneHandlerID;
 	guint m_twoHandlerID;
 	guint m_threeHandlerID;
+	guint m_spinHandlerID;
 	
 #ifdef BIDI_ENABLED
     GtkWidget * m_checkOrder;

@@ -381,6 +381,11 @@ public:
 	void                setPreviewMode(PreViewMode pre) {m_previewMode = pre;}
 	PreViewMode         getPreviewMode(void) { return m_previewMode;}
 
+	void                setScreenUpdateOnGeneralUpdate( bool bDoit) 
+		{m_bDontUpdateScreenOnGeneralUpdate = !bDoit;}
+	bool                shouldScreenUpdateOnGeneralUpdate(void) const 
+		{ return !m_bDontUpdateScreenOnGeneralUpdate;}
+
 	inline PD_Document * getDocument (void) const {return m_pDoc;}
 
 protected:
@@ -458,10 +463,6 @@ protected:
 	void				_checkPendingWordForSpell(void);
 
     bool                _isSpaceBefore(PT_DocPosition pos);
-	void                _setScreenUpdateOnGeneralUpdate( bool bDoit) 
-		{m_bDontUpdateScreenOnGeneralUpdate = !bDoit;}
-	bool                _shouldScreenUpdateOnGeneralUpdate(void) const 
-		{ return !m_bDontUpdateScreenOnGeneralUpdate;}
 
 	PT_DocPosition		m_iInsPoint;
 	UT_sint32			m_xPoint;
@@ -543,12 +544,7 @@ protected:
 	//#TF had to change the whole logic of storing PT state, since
 	//the earlier implementation did not work with nested calls to
 	//_saveAndNotifyPieceTableChange();
-#define INT_PT_STATE
-#ifndef INT_PT_STATE
-	bool				m_bPieceTableState;
-#else	
 	UT_uint32			m_iPieceTableState;
-#endif
 };
 
 #endif /* FV_VIEW_H */

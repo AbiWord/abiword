@@ -737,7 +737,8 @@ void fp_Line::clearScreenFromRunToEnd(fp_Run * ppRun)
 			UT_sint32 xoffLine, yoffLine;
 		
 			m_pContainer->getScreenOffsets(this, xoffLine, yoffLine);
-			xxx_UT_DEBUGMSG(("cleartoend prun xoff %d xoffline %d \n",xoff,xoffLine));
+			if(pPrev)
+				xxx_UT_DEBUGMSG(("cleartoend prun leftOffset %d xpos %d pPrev->getType()= %d \n",leftClear,xoff,pPrev->getType()));
 			if(xoff == xoffLine)
 				leftClear = pRun->getDescent();
 			UT_RGBColor * pClr = pRun->getPageColor();
@@ -835,6 +836,7 @@ void fp_Line::clearScreenFromRunToEnd(UT_uint32 runIndex)
 		recalcHeight();
 		UT_ASSERT(oldheight == getHeight());
 		m_pContainer->getScreenOffsets(this, xoffLine, yoffLine);
+		xxx_UT_DEBUGMSG(("cleartoend irun leftOffset %d xpos %d \n",leftClear,xoff));
 		xxx_UT_DEBUGMSG(("cleartoend index xoff %d xoffline %d \n",xoff,xoffLine));
 		if(xoff == xoffLine)
 				leftClear = pRun->getDescent();

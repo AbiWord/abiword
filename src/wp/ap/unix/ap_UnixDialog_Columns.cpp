@@ -61,10 +61,12 @@ AP_UnixDialog_Columns::AP_UnixDialog_Columns(XAP_DialogFactory * pDlgFactory,
 	m_wtoggleOne = NULL;
 	m_wtoggleTwo = NULL;
 	m_wtoggleThree = NULL;
+	m_wSpin = NULL;
+	m_spinHandlerID = 0;
 	m_windowMain = NULL;
-        m_wpreviewArea = NULL;
+	m_wpreviewArea = NULL;
 	m_wGnomeButtons = NULL;
-        m_pPreviewWidget = NULL;
+	m_pPreviewWidget = NULL;
 #ifdef BIDI_ENABLED
     m_checkOrder = NULL;
 #endif
@@ -102,6 +104,12 @@ static void s_three_clicked(GtkWidget * widget, AP_UnixDialog_Columns * dlg)
 {
 	UT_ASSERT(widget && dlg);
 	dlg->event_Toggle(3);
+}
+
+static void s_spin_changed(GtkWidget * widget, AP_UnixDialog_Columns *dlg)
+{
+	UT_ASSERT(widget && dlg);
+	dlg->readSpin();
 }
 
 
@@ -217,36 +225,71 @@ void AP_UnixDialog_Columns::runModal(XAP_Frame * pFrame)
 
 void AP_UnixDialog_Columns::checkLineBetween(void)
 {
-        if (GTK_TOGGLE_BUTTON (m_wlineBetween)->active)
-        {
-	        setLineBetween(true);
+	if (GTK_TOGGLE_BUTTON (m_wlineBetween)->active)
+	{
+		setLineBetween(true);
 	}
 	else
-        {
-	        setLineBetween(false);
+	{
+		setLineBetween(false);
 	}
+}
+
+void AP_UnixDialog_Columns::readSpin(void)
+{
+	UT_sint32 val = gtk_spin_button_get_value_as_int( GTK_SPIN_BUTTON(m_wSpin));
+	if(val < 1)
+		return;
+	if(val < 4)
+	{
+		event_Toggle(val);
+		return;
+	}
+	gtk_signal_handler_block(GTK_OBJECT(m_wtoggleOne), 
+							 m_oneHandlerID);
+	gtk_signal_handler_block(GTK_OBJECT(m_wtoggleTwo), 
+							 m_twoHandlerID);
+	gtk_signal_handler_block(GTK_OBJECT(m_wtoggleThree), 
+							 m_threeHandlerID);
+
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wtoggleOne),FALSE);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wtoggleTwo),FALSE);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wtoggleThree),FALSE);
+	gtk_signal_handler_unblock(GTK_OBJECT(m_wtoggleOne), 
+							   m_oneHandlerID);
+	gtk_signal_handler_unblock(GTK_OBJECT(m_wtoggleTwo), 
+							   m_twoHandlerID);
+	gtk_signal_handler_unblock(GTK_OBJECT(m_wtoggleThree), 
+							   m_threeHandlerID);
+	setColumns( val );
+	m_pColumnsPreview->draw();
 }
 
 void AP_UnixDialog_Columns::event_Toggle( UT_uint32 icolumns)
 {
 	checkLineBetween();
-        gtk_signal_handler_block(GTK_OBJECT(m_wtoggleOne), 
-					  m_oneHandlerID);
-        gtk_signal_handler_block(GTK_OBJECT(m_wtoggleTwo), 
-					  m_twoHandlerID);
-        gtk_signal_handler_block(GTK_OBJECT(m_wtoggleThree), 
-					  m_threeHandlerID);
+	gtk_signal_handler_block(GTK_OBJECT(m_wtoggleOne), 
+							 m_oneHandlerID);
+	gtk_signal_handler_block(GTK_OBJECT(m_wtoggleTwo), 
+							 m_twoHandlerID);
+	gtk_signal_handler_block(GTK_OBJECT(m_wtoggleThree), 
+							 m_threeHandlerID);
 
 		// DOM: TODO: rewrite me
+	gtk_signal_handler_block(GTK_OBJECT(m_wSpin), 
+							 m_spinHandlerID);
+	gtk_spin_button_set_value( GTK_SPIN_BUTTON(m_wSpin), (gfloat) icolumns);
+	gtk_signal_handler_unblock(GTK_OBJECT(m_wSpin), 
+							   m_spinHandlerID);
 
 	switch (icolumns)
-        {
-        case 1:
+	{
+	case 1:
 		 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wtoggleOne),TRUE);
 		 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wtoggleTwo),FALSE);
 		 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wtoggleThree),FALSE);
 		 break;
-        case 2:
+	case 2:
 		 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wtoggleOne),FALSE);
 		 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wtoggleTwo),TRUE);
 		 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wtoggleThree),FALSE);
@@ -260,12 +303,12 @@ void AP_UnixDialog_Columns::event_Toggle( UT_uint32 icolumns)
 		// TODO: make these insenstive and update a spin control
 	         UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
-        gtk_signal_handler_unblock(GTK_OBJECT(m_wtoggleOne), 
-					  m_oneHandlerID);
-        gtk_signal_handler_unblock(GTK_OBJECT(m_wtoggleTwo), 
-					  m_twoHandlerID);
-        gtk_signal_handler_unblock(GTK_OBJECT(m_wtoggleThree), 
-					  m_threeHandlerID);
+	gtk_signal_handler_unblock(GTK_OBJECT(m_wtoggleOne), 
+							   m_oneHandlerID);
+	gtk_signal_handler_unblock(GTK_OBJECT(m_wtoggleTwo), 
+							   m_twoHandlerID);
+	gtk_signal_handler_unblock(GTK_OBJECT(m_wtoggleThree), 
+							   m_threeHandlerID);
 	setColumns( icolumns );
 	m_pColumnsPreview->draw();
 }
@@ -354,7 +397,11 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 	GtkWidget *wDrawFrame;
 	GtkWidget *wPreviewArea;
 	GtkWidget *vbuttonbox1;
-
+	GtkWidget *hboxSpin;
+	GtkWidget *hseparator;
+	GtkAdjustment *SpinAdj;
+	GtkWidget *Spinbutton;
+	GtkWidget *SpinLabel;
 	GtkWidget *hbox2;
 	GtkWidget *wLineBtween;
 
@@ -450,15 +497,10 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
        	gtk_widget_show(wPreviewArea);
 	gtk_container_add (GTK_CONTAINER (wDrawFrame), wPreviewArea);
 
-	vbuttonbox1 = gtk_vbutton_box_new ();
-	gtk_widget_show(vbuttonbox1 );
-	gtk_box_pack_end (GTK_BOX (hbox1), vbuttonbox1, FALSE, FALSE, 0);
-	gtk_button_box_set_layout (GTK_BUTTON_BOX (vbuttonbox1), GTK_BUTTONBOX_START);
-	gtk_button_box_set_spacing (GTK_BUTTON_BOX (vbuttonbox1), 0);
-//	gtk_button_box_set_child_size (GTK_BUTTON_BOX (vbuttonbox1), 74, 27);
-	gtk_button_box_set_child_ipadding (GTK_BUTTON_BOX (vbuttonbox1), 0, 1);
 
-	m_wGnomeButtons = vbuttonbox1;
+//////////////////////////////////////////////////////
+// Line Between
+/////////////////////////////////////////////////////
 
 	hbox2 = gtk_hbox_new (FALSE, 0);
 	gtk_widget_show(hbox2 );
@@ -479,6 +521,35 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 				GTK_TOGGLE_BUTTON(checkOrder), getColumnOrder() );
 	m_checkOrder = checkOrder;
 #endif	
+
+/////////////////////////////////////////////////////////
+// Spin Button
+/////////////////////////////////////////////////////////
+
+	hseparator =  gtk_hseparator_new ();
+	gtk_box_pack_start(GTK_BOX (vbox1), hseparator, FALSE, TRUE, 0);
+	hboxSpin = gtk_hbox_new (FALSE, 0);
+	gtk_widget_show(hboxSpin );
+	gtk_box_pack_start (GTK_BOX (vbox1), hboxSpin, FALSE, FALSE, 0);
+
+	SpinLabel =  gtk_label_new ( pSS->getValue(AP_STRING_ID_DLG_Column_Number_Cols));
+	gtk_widget_show(SpinLabel);
+	gtk_box_pack_start(GTK_BOX(hboxSpin),SpinLabel,FALSE,FALSE,0);
+		
+	SpinAdj = (GtkAdjustment *) gtk_adjustment_new( 1.0, 1.0, 20., 1.0,10.0,0.0);
+	Spinbutton = gtk_spin_button_new( SpinAdj, 1.0,0);
+	gtk_widget_show(Spinbutton);
+	gtk_box_pack_start(GTK_BOX(hboxSpin),Spinbutton,FALSE,FALSE,0);
+
+	vbuttonbox1 = gtk_vbutton_box_new ();
+	gtk_widget_show(vbuttonbox1 );
+	gtk_box_pack_end (GTK_BOX (hbox1), vbuttonbox1, FALSE, FALSE, 0);
+	gtk_button_box_set_layout (GTK_BUTTON_BOX (vbuttonbox1), GTK_BUTTONBOX_START);
+	gtk_button_box_set_spacing (GTK_BUTTON_BOX (vbuttonbox1), 0);
+//	gtk_button_box_set_child_size (GTK_BUTTON_BOX (vbuttonbox1), 74, 27);
+	gtk_button_box_set_child_ipadding (GTK_BUTTON_BOX (vbuttonbox1), 0, 1);
+
+	m_wGnomeButtons = vbuttonbox1;
 	// Update member variables with the important widgets that
 	// might need to be queried or altered later.
 
@@ -486,8 +557,9 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 	m_wtoggleOne = wToggleOne;
 	m_wtoggleTwo = wToggleTwo;
 	m_wtoggleThree = wToggleThree;
+	m_wSpin = Spinbutton;
 	m_windowMain = windowColumns;
-        m_wpreviewArea = wPreviewArea;
+	m_wpreviewArea = wPreviewArea;
 }
 
 void AP_UnixDialog_Columns::_connectsignals(void)
@@ -507,6 +579,12 @@ void AP_UnixDialog_Columns::_connectsignals(void)
 	m_threeHandlerID = gtk_signal_connect(GTK_OBJECT(m_wtoggleThree),
 					   "clicked",
 					   GTK_SIGNAL_FUNC(s_three_clicked),
+					   (gpointer) this);
+
+
+	m_spinHandlerID = gtk_signal_connect(GTK_OBJECT(m_wSpin),
+					   "changed",
+					   GTK_SIGNAL_FUNC(s_spin_changed),
 					   (gpointer) this);
 
 	gtk_signal_connect(GTK_OBJECT(m_wlineBetween),

@@ -84,7 +84,7 @@ public:
 	
 	FL_DocLayout*		getDocLayout(void) const;
 
-	virtual fp_Container*		getNewContainer() = 0;
+	virtual fp_Container*		getNewContainer(fp_Line * pFirstLine = NULL) = 0;
 	virtual fp_Container*		getFirstContainer() = 0;
 	virtual fp_Container*		getLastContainer() = 0;
 
@@ -94,6 +94,7 @@ public:
 	virtual void		format(void) = 0;
 	virtual void		updateLayout(void) = 0;
 	void                updateBackgroundColor(void);
+	void                markAllRunsDirty(void);
 
 	virtual void		redrawUpdate(void) = 0;
 
@@ -181,11 +182,13 @@ public:
 	virtual void		updateLayout(void);
 	void                updateDocSection(void);
 	void                collapseDocSection(void);
-	UT_sint32			breakSection(void);
+	UT_sint32			breakSection(fl_BlockLayout * pLastValidBlock=NULL);
+	void                markAllRunsDirty(void);
 
 	virtual void		redrawUpdate(void);
 	
-	virtual fp_Container*		getNewContainer();
+	virtual fp_Container*		getNewContainer(fp_Line * pFirstLine = NULL);
+
 	virtual fp_Container*		getFirstContainer();
 	virtual fp_Container*		getLastContainer();
 
@@ -232,7 +235,9 @@ public:
 	void                            prependOwnedHeaderPage(fp_Page * p_Page);
 	void                            prependOwnedFooterPage(fp_Page * p_Page);
 	void				deleteOwnedPage(fp_Page*);
-
+	void                markForRebuild(void) { m_bNeedsRebuild = true;}
+	void                clearRebuild(void) { m_bNeedsRebuild = false;}
+	bool                needsRebuild(void) const { return m_bNeedsRebuild;}
 	void				checkAndAdjustColumnGap(UT_sint32 iLayoutWidth);
     void                markForReformat(void) { m_bNeedsFormat = true;}
     bool                needsReFormat(void) const { return m_bNeedsFormat;}
@@ -289,6 +294,7 @@ private:
 	//! For an endnote DocSectionLayout, the DSL containing it.
 	fl_DocSectionLayout* m_pEndnoteOwnerSL;
 	bool                m_bNeedsFormat;
+	bool                m_bNeedsRebuild;
 };
 
 class fl_HdrFtrSectionLayout : public fl_SectionLayout
@@ -307,6 +313,7 @@ public:
 	bool                        doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx);
 	void                        localFormat(void);
 	void                        localCollapse(void);
+	void                        markAllRunsDirty(void);
 	void                        collapseBlock(fl_BlockLayout * pBlock);
 	virtual void				format(void);
 	virtual void				updateLayout(void);
@@ -315,7 +322,7 @@ public:
 	virtual void				redrawUpdate(void);
 	void                        updateBackgroundColor(void);
 	
-	virtual fp_Container*		getNewContainer();
+	virtual fp_Container*		getNewContainer(fp_Line * pFirstLine = NULL);
 	virtual fp_Container*		getFirstContainer();
 	virtual fp_Container*		getLastContainer();
 	fl_HdrFtrShadow *               getFirstShadow(void);
@@ -383,7 +390,7 @@ public:
 	void						clearScreen(void);
 	virtual void				redrawUpdate(void);
 	fp_Page *                       getPage(void) { return m_pPage;}
-	virtual fp_Container*		getNewContainer();
+	virtual fp_Container*		getNewContainer(fp_Line *pFirstLine = NULL);
 	virtual fp_Container*		getFirstContainer();
 	virtual fp_Container*		getLastContainer();
 	virtual bool				doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc);

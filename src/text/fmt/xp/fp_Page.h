@@ -75,8 +75,10 @@ public:
 						
 	void				draw(dg_DrawArgs*, bool bAlaysUseWhiteBackground=false);
 	bool				needsRedraw(void) const;
-						
+    UT_sint32           getFilledHeightInLayoutUnits(fp_Line * prevLine) const;				
+	UT_sint32           getAvailableHeightInLayoutUnits(void) const;
 	void 				columnHeightChanged(fp_Column* pLeader);
+	bool                breakPage(void);
 	UT_uint32 			countColumnLeaders(void) const;
 	fp_Column*			getNthColumnLeader(UT_sint32 n) const;
 	bool				insertColumnLeader(fp_Column* pLeader, fp_Column* pAfter);

@@ -334,7 +334,7 @@ public:
 
 	void					setNeedsRedraw(void) { m_bNeedsRedraw = true; }
 	inline bool			needsRedraw(void) const { return m_bNeedsRedraw; }
-
+    void                    markAllRunsDirty(void);
 	bool					checkWord(fl_PartOfBlock* pPOB);
 	fl_PartOfBlock*			getSquiggle(UT_uint32 iOffset) const;
 	void					recheckIgnoredWords();

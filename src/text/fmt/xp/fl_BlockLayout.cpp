@@ -1350,6 +1350,22 @@ fl_BlockLayout::format()
 	return 0;	// TODO return code
 }
 
+void fl_BlockLayout::markAllRunsDirty(void)
+{
+	fp_Run * pRun = m_pFirstRun;
+	while(pRun)
+	{
+		pRun->markAsDirty();
+		pRun = pRun->getNext();
+	}
+	fp_Line  * pLine = m_pFirstLine;
+	while(pLine)
+	{
+		pLine->setNeedsRedraw();
+		pLine = pLine->getNext();
+	}
+}
+
 void fl_BlockLayout::redrawUpdate()
 {
 //

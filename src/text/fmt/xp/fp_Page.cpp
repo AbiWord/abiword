@@ -97,6 +97,68 @@ UT_sint32 fp_Page::getHeightInLayoutUnits(void) const
 	return (UT_sint32)m_pageSize.Height(fp_PageSize::LayoutUnit);
 }
 
+/*!
+ * Returns the page height minus the top and bottom margins in layout units
+ */
+UT_sint32 fp_Page::getAvailableHeightInLayoutUnits(void) const
+{
+	fl_DocSectionLayout * pDSL = getNthColumnLeader(0)->getDocSectionLayout();
+	UT_sint32 avail = getHeightInLayoutUnits() - pDSL->getTopMarginInLayoutUnits() - pDSL->getBottomMarginInLayoutUnits();
+	return avail;
+}
+
+/*!
+ * This method scans the page and returns the total height in layout units of all the columns 
+ * on it.
+ * If prevLine is non-NULL the maximum column height up to this line is calculated.
+ */
+UT_sint32 fp_Page::getFilledHeightInLayoutUnits(fp_Line * prevLine) const
+{
+	UT_sint32 totalHeight = 0;
+    UT_sint32 maxHeight = 0;
+	fp_Column * pColumn = NULL;
+	UT_uint32 i =0;
+	fp_Column * prevColumn = NULL;
+	bool bstop = false;
+	if(prevLine)
+	{
+		prevColumn = (fp_Column *) prevLine->getContainer();
+	}
+	for(i=0; !bstop && (i<  m_vecColumnLeaders.getItemCount()); i++)
+	{
+		maxHeight = 0;
+		pColumn = (fp_Column *) m_vecColumnLeaders.getNthItem(i);
+		totalHeight += pColumn->getDocSectionLayout()->getSpaceAfterInLayoutUnits();
+		while(pColumn != NULL)
+		{
+			if(prevColumn == pColumn)
+			{
+				bstop = true;
+				fp_Line * pCurLine = pColumn->getFirstLine();
+				UT_sint32 curHeight = 0;
+				while((pCurLine != NULL) && (pCurLine != prevLine))
+				{
+					curHeight += pCurLine->getHeightInLayoutUnits();
+					pCurLine = pCurLine->getNext();
+				}
+				if(pCurLine == prevLine)
+				{
+					curHeight += pCurLine->getHeightInLayoutUnits();
+				}
+				maxHeight = UT_MAX(curHeight,maxHeight);
+			}
+			else
+			{
+				maxHeight = UT_MAX(pColumn->getHeightInLayoutUnits(),maxHeight);
+			}
+			pColumn = pColumn->getFollower();
+		}
+		totalHeight += maxHeight;
+	}
+	return totalHeight;
+}
+
+
 UT_sint32 fp_Page::getBottom(void) const
 {
 	int count = countColumnLeaders();
@@ -281,6 +343,236 @@ fp_Column* fp_Page::getNthColumnLeader(UT_sint32 n) const
 	return (fp_Column*) m_vecColumnLeaders.getNthItem(n);
 }
 
+/*!
+ * This method scans the current page to make sure that there is space to at least start
+ * every column on the page. Columns with space are deleted and their contents redistributed.
+ */
+bool fp_Page::breakPage(void)
+{
+	UT_sint32 count = countColumnLeaders();
+	if (count <= 0)
+	{
+		return true;
+	}
+	UT_sint32 iYPrev = 0;
+	fp_Column* pFirstColumnLeader = getNthColumnLeader(0);
+	fl_DocSectionLayout* pFirstSectionLayout = (pFirstColumnLeader->getDocSectionLayout());
+	UT_ASSERT(m_pOwner == pFirstSectionLayout);
+	UT_sint32 iTopMarginLayoutUnits = pFirstSectionLayout->getTopMarginInLayoutUnits();
+	UT_sint32 iBottomMarginLayoutUnits = pFirstSectionLayout->getBottomMarginInLayoutUnits();
+	UT_sint32 iYLayoutUnits = iTopMarginLayoutUnits;
+	UT_sint32 availHeight = getHeightInLayoutUnits() - iBottomMarginLayoutUnits;
+	UT_sint32 i;
+	for (i=0; i<count; i++)
+	{
+		fp_Column* pLeader = getNthColumnLeader(i);
+		fp_Column* pTmpCol = pLeader;
+		UT_sint32 iMostHeightLayoutUnits = 0;
+		iYPrev = iYLayoutUnits;
+		while (pTmpCol)
+		{
+			iMostHeightLayoutUnits = UT_MAX(iMostHeightLayoutUnits, pTmpCol->getHeightInLayoutUnits());
+			pTmpCol = pTmpCol->getFollower();
+		}
+		iYLayoutUnits += iMostHeightLayoutUnits;
+		iYLayoutUnits += pLeader->getDocSectionLayout()->getSpaceAfterInLayoutUnits();
+		iYLayoutUnits += pLeader->getDocSectionLayout()->getSpaceAfterInLayoutUnits();
+		if (iYLayoutUnits >= availHeight)
+		{
+			break;
+		}
+	}
+	if(i < count)
+	{
+		i++;
+	}
+	if(i == count)
+	{
+//
+// Clear out 1 line columns at the bottom of the page. If the row of columns
+// at the bottom of the page contains a maxium of one line and if adding an
+// extra line makes the column bigger than the page size, remove this column
+// from the page.
+//
+		i--;
+		if(i < 1)
+		{
+			return true;
+		}
+		fp_Column * pPrev = getNthColumnLeader(i);
+		UT_sint32 maxLines= 0;
+		UT_sint32 maxLineHeight = 0;
+		fp_Column * pCol = pPrev;
+		while(pCol != NULL)
+		{
+			UT_sint32 countLines = 0;
+			fp_Line * pLine = pCol->getFirstLine();
+			while(pLine != NULL && pLine != pCol->getLastLine())
+			{
+				countLines++;
+				maxLineHeight = UT_MAX(maxLineHeight,pLine->getHeightInLayoutUnits());
+				pLine = pLine->getNext();
+			}
+			if(pLine != NULL)
+			{
+				maxLineHeight = UT_MAX(maxLineHeight,pLine->getHeightInLayoutUnits());
+				countLines++;
+			}
+			maxLines = UT_MAX(maxLines,countLines);
+			pCol = pCol->getFollower();
+		}
+		if(maxLines > 1)
+		{
+			return true;
+		}
+//
+//OK this is a candidate to clear off this page. Next test, is the column over
+//80% of the way down the page?
+//
+		double rat = (double) iYPrev / (double) availHeight;
+		if(rat < 0.80)
+			return true;
+//
+// Finally if iYPrev plus 2* prev line height is greater than or equal to the
+// total height, remove the container.
+//
+		if((iYPrev + 2*maxLineHeight) < availHeight)
+		{
+//
+// OK we want to delete this column if the docsection of the 
+// previous column continues onto the next page.
+//
+			fp_Page * pPNext = getNext();
+			if(pPNext== NULL)
+			{
+				return true;
+			}
+			fl_DocSectionLayout * pPrevDSL = getNthColumnLeader(i-1)->getDocSectionLayout();
+			if(pPrevDSL == pPrev->getDocSectionLayout())
+			{
+				return true;
+			}
+			if(pPNext->countColumnLeaders() == 0)
+			{
+				return true;
+			}
+			fp_Column * pCNext = pPNext->getNthColumnLeader(0);
+			if(pCNext == NULL)
+			{
+				return true;
+			}
+			fl_DocSectionLayout * pNextDSL = pCNext->getDocSectionLayout();
+			if(pNextDSL != pPrevDSL)
+			{
+				return true;
+			}
+		}
+	}
+	return false;
+//
+// OK now i is one less than count and points to our orphaned container
+//
+//
+// We enter this loop if there are column Leaders left but no space to put them
+// on the page. These will have to be deleted and the content restributed on 
+// subsequent pages.
+//
+// OK collapse the blocks with lines in this container. Then format the section.
+//
+#if 0
+	fl_DocSectionLayout * pCurSL = NULL;
+	fl_BlockLayout * pFirstBlockToFormat = NULL;
+	while (i < count)
+	{
+		fp_Column* pLeader = getNthColumnLeader(i);
+		fl_DocSectionLayout* pSL = pLeader->getDocSectionLayout();
+		fl_BlockLayout *pCurBL = NULL;
+		while(pLeader != NULL)
+		{
+			UT_Vector vBlock;
+			vBlock.clear();
+			fp_Line * pLine = pLeader->getFirstLine();
+			while(pLine != NULL)
+			{
+				if(pLine->getBlock() != pCurBL)
+				{
+					pCurBL = pLine->getBlock();
+					if(vBlock.getItemCount() == 0)
+					{
+						vBlock.addItem( (void *) pCurBL);
+					}
+					else
+					{
+						if(vBlock.findItem(pCurBL) < 0)
+						{
+							vBlock.addItem((void *) pCurBL);
+						}
+					}
+				}
+				pLine = pLine->getNext();
+			}
+//
+// Now collapse the blocks that generated these lines.
+//
+			for(UT_uint32 j = 0; j< vBlock.getItemCount(); j++)
+			{
+				pCurBL = (fl_BlockLayout *) vBlock.getNthItem(j);
+				if((j == 0) && (pFirstBlockToFormat == NULL))
+				{
+					UT_DEBUGMSG(("SEVIOR: First block to format is %x \n",pCurBL));
+					pFirstBlockToFormat = pCurBL;
+				}
+				if(!pCurBL->isCollapsed())
+				{
+					UT_DEBUGMSG(("SEVIOR: Collapsing block  %x \n",pCurBL));
+					pCurBL->collapse();
+				}
+			}
+			pLeader = pLeader->getFollower();
+		}
+		
+		if(pSL != pCurSL)
+		{
+			pCurSL = pSL;
+			pCurSL->markForReformat();
+		}
+//
+// This will take care of all bookkeeping and destructing.
+//
+		pCurSL->deleteEmptyColumns();
+		UT_DEBUGMSG((" fp_Page::BreakSection i < count, i= %d count= %d \n",i,count)); 
+		i++;
+	}
+//
+// Now reformat
+//
+	if(pFirstBlockToFormat != NULL)
+	{
+		fl_BlockLayout * pLastValidBlock = pFirstBlockToFormat->getPrev();
+		fl_BlockLayout * pBL = pFirstBlockToFormat;
+		pCurSL = (fl_DocSectionLayout *)  pBL->getSectionLayout();
+		while(pBL != NULL)
+		{
+			pBL->format();
+			pBL = pBL->getNext();
+		}
+		pCurSL->breakSection(pLastValidBlock);
+		pCurSL = pCurSL->getNextDocSection();
+		while(pCurSL != NULL)
+		{
+			if(pCurSL->needsReFormat())
+			{
+				pCurSL->format();
+			}
+			pCurSL = pCurSL->getNextDocSection();
+		}
+		m_pLayout->deleteEmptyColumnsAndPages();
+	}
+#endif
+}
+
+
+
 void fp_Page::_reformat(void)
 {
 	int count = countColumnLeaders();
@@ -290,6 +582,7 @@ void fp_Page::_reformat(void)
 	}
 
 	fp_Column* pFirstColumnLeader = getNthColumnLeader(0);
+	fp_Column * pLastCol = NULL;
 	fl_DocSectionLayout* pFirstSectionLayout = (pFirstColumnLeader->getDocSectionLayout());
 	
 	UT_ASSERT(m_pOwner == pFirstSectionLayout);
@@ -313,7 +606,10 @@ void fp_Page::_reformat(void)
 	{
 		if (iYLayoutUnits >= (getHeightInLayoutUnits() - iBottomMarginLayoutUnits))
 		{
-			break;
+			UT_DEBUGMSG(("SEVIOR: Page incorrectly laid out iYlayoutuints= %d  \n",iYLayoutUnits));
+			m_pOwner->markForRebuild();
+			return;
+//			break;
 		}
 
 		fp_Column* pLeader = getNthColumnLeader(i);
@@ -369,6 +665,7 @@ void fp_Page::_reformat(void)
 #endif
 			iMostHeight = UT_MAX(iMostHeight, pTmpCol->getHeight());
 			iMostHeightLayoutUnits = UT_MAX(iMostHeightLayoutUnits, pTmpCol->getHeightInLayoutUnits());
+			pLastCol = pTmpCol;
 			pTmpCol = pTmpCol->getFollower();
 		}
 
@@ -378,102 +675,40 @@ void fp_Page::_reformat(void)
 		iY += pLeader->getDocSectionLayout()->getSpaceAfter();
 		iYLayoutUnits += pLeader->getDocSectionLayout()->getSpaceAfterInLayoutUnits();
 	}
-
+//	UT_ASSERT(i == count);
 //
-// We enter this loop if there are column Leaders left but no space to put them
-// on the page. These will have to be deleted and the content restributed on 
-// subsequent pages.
+// Look for blank space to put more text
 //
-// OK collapse the blocks with lines in this container. Then format the section.
-//
-	if(i<count)
+	fp_Column * pFirstOfNext = NULL;
+	fp_Page *pNext = getNext();
+	if(pNext && pLastCol)
 	{
-		fl_DocSectionLayout * pCurSL = NULL;
-		UT_uint32 numValidLeaders = (UT_uint32) i;
-		while (i < count)
+		fp_Line * pLastLine = pLastCol->getLastLine();
+		if(pLastLine)
 		{
-			fp_Column* pLeader = getNthColumnLeader(i);
-			fl_DocSectionLayout* pSL = pLeader->getDocSectionLayout();
-			fl_BlockLayout *pCurBL = NULL;
-			while(pLeader != NULL)
+			if(pLastLine->containsForcedPageBreak())
 			{
-				UT_Vector vBlock;
-				vBlock.clear();
-				fp_Line * pLine = pLeader->getFirstLine();
-				while(pLine != NULL)
-				{
-					if(pLine->getBlock() != pCurBL)
-					{
-						pCurBL = pLine->getBlock();
-						if(vBlock.getItemCount() == 0)
-						{
-							vBlock.addItem( (void *) pCurBL);
-						}
-						else
-						{
-							if(vBlock.findItem(pCurBL) < 0)
-							{
-								vBlock.addItem((void *) pCurBL);
-							}
-						}
-					}
-					pLine = pLine->getNext();
-				}
-//
-// Now collapse the blocks that generated these lines.
-//
-				for(UT_uint32 j = 0; j< vBlock.getItemCount(); j++)
-				{
-					pCurBL = (fl_BlockLayout *) vBlock.getNthItem(j);
-					if(!pCurBL->isCollapsed())
-					{
-						pCurBL->collapse();
-					}
-				}
-				pLeader = pLeader->getFollower();
+				return;
 			}
-
-			if(pSL != pCurSL)
+			pFirstOfNext = pNext->getNthColumnLeader(0);
+			if(!pFirstOfNext)
 			{
-				pCurSL = pSL;
-				pCurSL->markForReformat();
+				return;
 			}
-			UT_DEBUGMSG((" fp_Page::_reformat i < count, i= %d count= %d \n",i,count)); 
-			i++;
-		}
-
-//
-// Remove these from our vector of leaders and delete the containers.
-//
-  		while(m_vecColumnLeaders.getItemCount() > numValidLeaders)
-  		{
-  			fp_Column* pLeader = getNthColumnLeader(numValidLeaders);
-
-  			// Delete leader from list
-  			m_vecColumnLeaders.deleteNthItem(numValidLeaders);
-  			fp_Column * pFollower = pLeader;
-  			while(pLeader)
-  			{
-  				pFollower = pLeader->getFollower();
-//  				delete pLeader;
-				pLeader->setPage(NULL);
- 				pLeader = pFollower;
-  			}
-  		}
-//  
-// Now reformat
-//
-		pCurSL = m_pOwner->getNextDocSection();
-		while(pCurSL != NULL)
-		{
-			if(pCurSL->needsReFormat())
+			fp_Line *pFirstNextLine = pFirstOfNext->getFirstLine();
+			if(pFirstNextLine == NULL)
 			{
-				pCurSL->format();
+				return;
 			}
-			pCurSL = pCurSL->getNextDocSection();
+			UT_sint32 iYLayoutNext = pFirstNextLine->getHeightInLayoutUnits();
+			if( (iYLayoutUnits + 3*iYLayoutNext) < (getHeightInLayoutUnits() - iBottomMarginLayoutUnits))
+			{
+				UT_DEBUGMSG(("SEVIOR: Mark for rebuild to fill blank gap. iYLayoutUnits =%d iYnext = %d \n",iYLayoutUnits,iYLayoutNext));
+				m_pOwner->markForRebuild();
+			}
 		}
 	}
-
+	return;
 }
 
 /*!
@@ -607,11 +842,18 @@ bool fp_Page::insertColumnLeader(fp_Column* pLeader, fp_Column* pAfter)
 void fp_Page::columnHeightChanged(fp_Column* pCol)
 {
 	fp_Column* pLeader = pCol->getLeader();
-	
+	xxx_UT_DEBUGMSG(("SEVIOR: Column height changed \n"));
 	UT_sint32 ndx = m_vecColumnLeaders.findItem(pLeader);
 	UT_ASSERT(ndx >= 0);
-
-	_reformat();
+	if(breakPage())
+	{
+		_reformat();
+	}
+	else
+	{
+		UT_DEBUGMSG(("SEVIOR: Mark for rebuild from columnheight changed. \n"));
+		m_pOwner->markForRebuild();
+	}
 }
 
 PT_DocPosition fp_Page::getFirstLastPos(bool bFirst) const

@@ -60,7 +60,6 @@ protected:
 	UT_uint32		m_iColumns;
 	bool			m_bLineBetween;
 
-
 };
 
 class AP_Dialog_Columns : public XAP_Dialog_NonPersistent

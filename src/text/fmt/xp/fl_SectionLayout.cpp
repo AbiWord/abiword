@@ -244,6 +244,16 @@ fb_LineBreaker * fl_SectionLayout::_getLineBreaker(void)
 	return m_pLB;
 }
 
+void fl_SectionLayout::markAllRunsDirty(void)
+{
+	fl_BlockLayout*	pBL = m_pFirstBlock;
+	while (pBL)
+	{
+		pBL->markAllRunsDirty();
+		pBL = pBL->getNext();
+	}
+}
+
 void fl_SectionLayout::_purgeLayout()
 {
 	fl_BlockLayout*	pBL = m_pLastBlock;
@@ -413,6 +423,7 @@ fl_DocSectionLayout::fl_DocSectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandl
 	m_pEndnoteOwnerSL = NULL;
 	m_pFirstOwnedPage = NULL;
 	m_bNeedsFormat = false;
+	m_bNeedsRebuild = false;
 	_lookupProperties();
 }
 
@@ -527,7 +538,7 @@ fp_Container* fl_DocSectionLayout::getLastContainer()
   This creates a new column or row of same.
 
 */
-fp_Container* fl_DocSectionLayout::getNewContainer(void)
+fp_Container* fl_DocSectionLayout::getNewContainer(fp_Line * pFirstLine)
 {
 	fp_Page* pPage = NULL;
 	fp_Column* pLastColumn = (fp_Column*) getLastContainer();
@@ -535,14 +546,60 @@ fp_Container* fl_DocSectionLayout::getNewContainer(void)
 
 	if (pLastColumn)
 	{
-		fp_Page* pTmpPage = pLastColumn->getPage();
-		if (pTmpPage->getNext())
+		fp_Line * prevLine = NULL;
+		fp_Page* pTmpPage = NULL;
+		UT_sint32 nextLine = 0;
+		UT_sint32 pageHeight = 0;
+		pTmpPage = pLastColumn->getPage();
+		nextLine = 0;
+		if(pFirstLine != NULL)
 		{
-			pPage = pTmpPage->getNext();
+			prevLine = pFirstLine->getPrevLineInSection();
+		}
+//
+// Calculate from the page height up to prevLine
+//
+		pageHeight = pTmpPage->getFilledHeightInLayoutUnits(prevLine);
+		if(pFirstLine != NULL)
+		{
+			nextLine = pFirstLine->getHeightInLayoutUnits();
+		}
+		else if( pLastColumn->getLastLine())
+		{
+			nextLine = pLastColumn->getLastLine()->getHeightInLayoutUnits();
 		}
 		else
 		{
-			pPage = m_pLayout->addNewPage(this);
+			nextLine =12*14; // approximately one average line
+		}
+		UT_sint32 avail =  pTmpPage->getAvailableHeightInLayoutUnits();
+		UT_sint32 newHeight = pageHeight+ 3*nextLine;
+		xxx_UT_DEBUGMSG(("SEVIOR: Pageheight =%d nextlineheight =%d newheight = %d availableheight =%d linepos %d \n",pageHeight,nextLine,newHeight,avail));
+		if( newHeight  >= avail || pFirstLine == NULL)
+		{
+			xxx_UT_DEBUGMSG(("SEVIOR: Container on new page \n"));
+			if (pTmpPage->getNext())
+			{
+				pPage = pTmpPage->getNext();
+			}
+			else
+			{
+				pPage = m_pLayout->addNewPage(this);
+			}
+		}
+		else
+		{
+			xxx_UT_DEBUGMSG(("SEVIOR: Container on current page \n"));
+			pPage = pTmpPage;
+			if(prevLine == NULL)
+			{
+				pAfterColumn = pPage->getNthColumnLeader(pPage->countColumnLeaders()-1);
+			}
+			else
+			{
+				pAfterColumn = static_cast<fp_Column *>(prevLine->getContainer())->getLeader();
+			}
+
 		}
 	}
 	else
@@ -563,29 +620,33 @@ fp_Container* fl_DocSectionLayout::getNewContainer(void)
 			// Sevior this code should not be needed!
 			//
 			fp_Column * pPrevCol = (fp_Column *) pPrevSL->getLastContainer();
-			if(pPrevCol == NULL)
+			while(pPrevCol == NULL)
 			{
 				UT_DEBUGMSG(("BUG! BUG! Prev section has no last container! Attempting to fix this \n"));
 				pPrevSL->format();
+			    pPrevCol = (fp_Column *) pPrevSL->getLastContainer();
 			}
 			fp_Page* pTmpPage = pPrevSL->getLastContainer()->getPage();
-			UT_sint32 iMaxColHeight = pPrevCol->getMaxHeightInLayoutUnits();
-			UT_sint32 iCurColHeight =  0;
-			fp_Column * pLeader = pPrevCol->getLeader();
-			fp_Column *pMaxCol = NULL;
-			while(pLeader != NULL)
+			fp_Line * prevLine = NULL;
+			UT_sint32 nextLine = 0;
+			if(pFirstLine != NULL)
 			{
-				if( pLeader->getHeightInLayoutUnits() > iCurColHeight)
-				{
-					pMaxCol = pLeader;
-					iCurColHeight =  pLeader->getHeightInLayoutUnits();
-				}
-				pLeader = pLeader->getFollower();
+				prevLine = pFirstLine->getPrevLineInSection();
 			}
-			UT_sint32 iLastLineHeight = 0;
-			if(pMaxCol->getLastLine() != NULL)
-				iLastLineHeight = pMaxCol->getLastLine()->getHeightInLayoutUnits();
-			bool bForce = (iCurColHeight + iLastLineHeight) >= iMaxColHeight;
+			UT_sint32 pageHeight = pTmpPage->getFilledHeightInLayoutUnits(prevLine);
+			if(pFirstLine != NULL)
+			{
+				nextLine = pFirstLine->getHeightInLayoutUnits();
+			}
+			else if(pPrevCol->getLastLine())
+			{
+				nextLine = pPrevCol->getLastLine()->getHeightInLayoutUnits();
+			}
+			else
+			{
+				nextLine = 12*14; //average height!
+			}
+			bool bForce = (pageHeight + 2*nextLine) >= pTmpPage->getAvailableHeightInLayoutUnits();
 			if (m_bForceNewPage || bForce)
 			{
 				if (pTmpPage->getNext())
@@ -603,7 +664,14 @@ fp_Container* fl_DocSectionLayout::getNewContainer(void)
 #if 0 // This fixes bug 966 but introduces new problems - jskov 2001.06.10
 				pAfterColumn = pPrevCol;
 #else
-				pAfterColumn = pPage->getNthColumnLeader(pPage->countColumnLeaders()-1);
+				if(prevLine == NULL)
+				{
+					pAfterColumn = pPage->getNthColumnLeader(pPage->countColumnLeaders()-1);
+				}
+				else
+				{
+					pAfterColumn = static_cast<fp_Column *>(prevLine->getContainer())->getLeader();
+				}
 #endif
 			}
 		}
@@ -710,6 +778,24 @@ void fl_DocSectionLayout::format(void)
 	m_bNeedsFormat = false;
 }
 
+void fl_DocSectionLayout::markAllRunsDirty(void)
+{
+	fl_BlockLayout*	pBL = m_pFirstBlock;
+	while (pBL)
+	{
+		pBL->markAllRunsDirty();
+		pBL = pBL->getNext();
+	}
+	if(m_pHeaderSL)
+	{
+		m_pHeaderSL->markAllRunsDirty();
+	}
+	if(m_pFooterSL)
+	{
+		m_pFooterSL->markAllRunsDirty();
+	}
+}
+
 void fl_DocSectionLayout::updateLayout(void)
 {
 	fl_BlockLayout*	pBL = m_pFirstBlock;
@@ -774,33 +860,40 @@ void fl_DocSectionLayout::updateDocSection(void)
 	  when it's time to update everything, we'll actually do the format.
 	*/
 
+	FV_View * pView = m_pLayout->getView();
+	if(pView)
+	{
+		pView->setScreenUpdateOnGeneralUpdate(false);
+	}
+
 	format();
-	redrawUpdate();
 	updateBackgroundColor();
 	if(m_pHeaderSL)
 	{
 		m_pHeaderSL->format();
-		m_pHeaderSL->redrawUpdate();
 	}
 	if(m_pFooterSL)
 	{
 		m_pFooterSL->format();
-		m_pFooterSL->redrawUpdate();
 	}
 
 	if (m_pEndnoteSL)
 	{
 		m_pEndnoteSL->format();
-		m_pEndnoteSL->redrawUpdate();
+	}
+	markAllRunsDirty();
+
+	if(pView)
+	{
+		pView->setScreenUpdateOnGeneralUpdate(true);
 	}
 
-	FV_View* pView = m_pLayout->getView();
-	if (pView)
-	{
-		pView->eraseInsertionPoint();
-		pView->updateScreen(false);
-		pView->notifyListeners(AV_CHG_TYPING | AV_CHG_FMTSECTION);
-	}
+//	if (pView)
+//	{
+//		pView->eraseInsertionPoint();
+//		pView->updateScreen(false);
+//		pView->notifyListeners(AV_CHG_TYPING | AV_CHG_FMTSECTION);
+//	}
 
 	return;
 }
@@ -1097,9 +1190,10 @@ void fl_DocSectionLayout::deleteEmptyColumns(void)
 			if (bAllEmpty)
 			{
 				UT_ASSERT(pLastInGroup);
-
-				pCol->getPage()->removeColumnLeader(pCol);
-
+				if(pCol->getPage() != NULL)
+				{
+					pCol->getPage()->removeColumnLeader(pCol);
+				}
 				if (pCol == m_pFirstColumn)
 				{
 					m_pFirstColumn = pLastInGroup->getNext();
@@ -1383,13 +1477,13 @@ void fl_DocSectionLayout::deleteOwnedPage(fp_Page* pPage)
 	
 	if (m_pHeaderSL)
 	{
-		UT_DEBUGMSG(("SEVIOR: Deleting header from DocSecition Layout\n"));
+		xxx_UT_DEBUGMSG(("SEVIOR: Deleting header from DocSecition Layout\n"));
 		m_pHeaderSL->deletePage(pPage);
 	}
 
 	if (m_pFooterSL)
 	{
-		UT_DEBUGMSG(("SEVIOR: Deleting footer from DocSection Layout \n"));
+		xxx_UT_DEBUGMSG(("SEVIOR: Deleting footer from DocSection Layout \n"));
 		m_pFooterSL->deletePage(pPage);
 	}
 //
@@ -1420,17 +1514,38 @@ void fl_DocSectionLayout::deleteOwnedPage(fp_Page* pPage)
 
   \fixme This function should move to fb_ColumnBreaker.cpp
 */
-UT_sint32 fl_DocSectionLayout::breakSection(void)
+UT_sint32 fl_DocSectionLayout::breakSection(fl_BlockLayout * pLastValidBlock)
 {
-	fl_BlockLayout* pFirstBlock = getFirstBlock();
-	if (!pFirstBlock)
+	fl_BlockLayout* pFirstBlock = NULL;
+	fp_Line* pCurrentLine = NULL;
+	fp_Column* pCurColumn = NULL;
+	if(pLastValidBlock == NULL)
 	{
-		return 0;
+		pFirstBlock = getFirstBlock();
+		if (!pFirstBlock)
+		{
+			return 0;
+		}
+		pCurrentLine = pFirstBlock->getFirstLine();
+		pCurColumn = (fp_Column*) getFirstContainer();
 	}
-
-	fp_Line* pCurrentLine = pFirstBlock->getFirstLine();
-		
-	fp_Column* pCurColumn = (fp_Column*) getFirstContainer();
+//
+// This branch is from _reformat in fp_Page. A column that used to exist has been bumped off 
+// the page by an expanding column. We need to layout from the last valid block onwards. If
+// start the beginning we get stuck in an infinite loop. The last valid block, is the last block
+// that has all it's lines correctly laid out on a page.
+//
+	else
+	{
+		xxx_UT_DEBUGMSG(("SEVIOR: Doing break section with block %x \n",pLastValidBlock));
+		pFirstBlock = pLastValidBlock;
+		if (!pFirstBlock)
+		{
+			return 0;
+		}
+		pCurrentLine = pFirstBlock->getFirstLine();
+		pCurColumn = (fp_Column*) pCurrentLine->getContainer();
+	}
 
 	while (pCurColumn)
 	{
@@ -1617,6 +1732,8 @@ UT_sint32 fl_DocSectionLayout::breakSection(void)
 					pLastLineToKeep = pCurLine;
 					bBreakOnColumnBreak = pCurLine->containsForcedColumnBreak();
 					bBreakOnPageBreak = pCurLine->containsForcedPageBreak();
+					if(iWorkingColHeight >=  iMaxColHeight)
+						bBreakOnColumnBreak = false;
 					break;
 				}
 			}
@@ -1670,15 +1787,29 @@ UT_sint32 fl_DocSectionLayout::breakSection(void)
 				// Make sure there is a next column and that it
 				// falls on the next page if there's a page break.
 				pNextColumn = pNextColumn->getNext();
+				if(bBreakOnColumnBreak)
+				{
+					if((pNextColumn != NULL) &&( pNextColumn != pCurColumn->getFollower()) && (pNextColumn->getPage() != pCurColumn->getPage()))
+					{
+						pNextColumn = NULL;
+					}
+				}
 				if (!pNextColumn)
 				{
-					pNextColumn = (fp_Column*) getNewContainer();
+					if(bBreakOnColumnBreak)
+					{
+						pNextColumn = (fp_Column*) getNewContainer(pLastLineToKeep->getNextLineInSection());
+					}
+					else
+					{
+						pNextColumn = (fp_Column*) getNewContainer(NULL);
+					}
 				}
 			} while (pLastLineToKeep->containsForcedPageBreak() 
 					 && (pNextColumn->getPage() == pPrevPage));
-			
+		   
 			// Bump content down the columns
-			while (pCurColumn != pNextColumn)
+			while (pCurColumn != NULL && pCurColumn != pNextColumn)
 			{
 				pCurColumn->bumpLines(pLastLineToKeep);
 				pCurColumn->layout();
@@ -1884,7 +2015,7 @@ fp_Container* fl_HdrFtrSectionLayout::getLastContainer()
 	return m_pHdrFtrContainer;
 }
 
-fp_Container* fl_HdrFtrSectionLayout::getNewContainer(void)
+fp_Container* fl_HdrFtrSectionLayout::getNewContainer(fp_Line * pFirstLine)
 {
 	DELETEP(m_pHdrFtrContainer);
 	UT_sint32 iWidth = m_pDocSL->getFirstContainer()->getPage()->getWidth();
@@ -2253,6 +2384,20 @@ void fl_HdrFtrSectionLayout::updateLayout(void)
 		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
 
 		pPair->pShadow->updateLayout();
+	}
+}
+
+/*!
+ * Mark all runs and lines in the all shadows for redraw.
+ */
+void fl_HdrFtrSectionLayout::markAllRunsDirty(void)
+{
+  	UT_uint32 iCount = m_vecPages.getItemCount();
+	for (UT_uint32 i=0; i<iCount; i++)
+	{
+		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
+
+		pPair->pShadow->markAllRunsDirty();
 	}
 }
 
@@ -2802,7 +2947,7 @@ fp_Container* fl_HdrFtrShadow::getLastContainer()
 	return NULL;
 }
 
-fp_Container* fl_HdrFtrShadow::getNewContainer(void)
+fp_Container* fl_HdrFtrShadow::getNewContainer(fp_Line * pFirstLine)
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 

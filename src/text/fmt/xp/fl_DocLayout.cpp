@@ -450,7 +450,7 @@ fp_Page* FL_DocLayout::addNewPage(fl_DocSectionLayout* pOwner)
 	// so that it can update the scroll bar ranges
 	// and whatever else it needs to do.
 
-	if (m_pView)
+	if (m_pView && m_pView->shouldScreenUpdateOnGeneralUpdate()) // skip this if rebuilding
 	{
 		m_pView->notifyListeners(AV_CHG_PAGECOUNT);
 	}
@@ -576,11 +576,57 @@ void FL_DocLayout::formatAll()
 	UT_ASSERT(m_pDoc);
 	m_pDoc->enableListUpdates();
 	fl_SectionLayout* pSL = m_pFirstSection;
+//  	while (pSL)
+//  	{
+//  		if(pSL->getType() == FL_SECTION_DOC)
+//  		{
+//  			static_cast<fl_DocSectionLayout *>(pSL)->collapseDocSection();
+//  		}
+//  		pSL = pSL->getNext();
+//  	}
 	while (pSL)
 	{
 		pSL->format();
 		
 		pSL = pSL->getNext();
+	}
+}
+
+
+void FL_DocLayout::rebuildFromHere( fl_DocSectionLayout * pFirstDSL)
+{
+	UT_ASSERT(m_pDoc);
+	fl_DocSectionLayout * pStart = pFirstDSL->getPrevDocSection();
+	if(pStart == NULL)
+	{
+		pStart = pFirstDSL;
+	}
+	fl_DocSectionLayout * pDSL = pStart;
+	// add page view dimensions 
+#if 0
+	UT_DEBUGMSG(("SEVIOR: Rebuild from section %x \n",pFirstDSL));
+	for(UT_sint32 k=0; k< m_vecPages.getItemCount(); k++)
+	{
+		fp_Page * pPage = (fp_Page *) m_vecPages.getNthItem(k);
+		if(pPage->getOwningSection() == pFirstDSL)
+		{
+			UT_DEBUGMSG(("SEVIOR: Rebuilding from page %d \n",k));
+			break;
+		}
+	}
+#endif
+
+	while (pDSL)
+	{
+		pDSL->collapseDocSection();
+		pDSL->clearRebuild();
+		pDSL = pDSL->getNextDocSection();
+	}
+	pDSL= pStart;
+	while (pDSL)
+	{
+		pDSL->updateDocSection();
+		pDSL = pDSL->getNextDocSection();
 	}
 }
 
@@ -600,11 +646,21 @@ void FL_DocLayout::updateLayout()
 	while (pSL)
 	{
 		pSL->updateLayout();
-		
+		if(pSL->getType() == FL_SECTION_DOC)
+		{
+			if(static_cast<fl_DocSectionLayout *>(pSL)->needsRebuild())
+			{
+				break;
+			}
+		}
 		pSL = pSL->getNext();
 	}
-	
-	deleteEmptyColumnsAndPages();
+	if(pSL == NULL)
+	{
+		deleteEmptyColumnsAndPages();
+		return;
+	}
+	rebuildFromHere((fl_DocSectionLayout *) pSL);
 }
 
 
@@ -1348,10 +1404,26 @@ void FL_DocLayout::_redrawUpdate(UT_Timer * pTimer)
 			return;
 		}
 		pSL->redrawUpdate();
+//
+// Might need some code here to check if we need a rebuild. In principle we should not need it.
+//
+		if(pSL->getType() == FL_SECTION_DOC)
+		{
+			if(static_cast<fl_DocSectionLayout *>(pSL)->needsRebuild())
+			{
+				break;
+			}
+		}
 		pSL = pSL->getNext();
 	}
-
-	pDocLayout->deleteEmptyColumnsAndPages();
+	if(pSL == NULL)
+	{
+		pDocLayout->deleteEmptyColumnsAndPages();
+	}
+	else
+	{
+		pDocLayout->rebuildFromHere((fl_DocSectionLayout *) pSL);
+	}
 //
 // we've finished
 //

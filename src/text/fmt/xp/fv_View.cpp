@@ -125,11 +125,7 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_viewMode(VIEW_NORMAL),
 		m_previewMode(PREVIEW_NONE),
 		m_bDontUpdateScreenOnGeneralUpdate(false),
-#ifndef INT_PT_STATE
-		m_bPieceTableState(false)		
-#else
 		m_iPieceTableState(0)
-#endif
 {
 //	UT_ASSERT(m_pG->queryProperties(GR_Graphics::DGP_SCREEN));
 
@@ -1615,12 +1611,7 @@ void FV_View::insertSectionBreak(BreakSectionType type)
 
 	// Signal PieceTable Changes have Started
 	m_pDoc->notifyPieceTableChangeEnd();
-#ifndef INT_PT_STATE
-	m_bPieceTableState = false;
-#else	
 	m_iPieceTableState = 0;
-#endif
-
 }
 
 void FV_View::insertSectionBreak(void)
@@ -1634,12 +1625,7 @@ void FV_View::insertSectionBreak(void)
 
 	// Signal PieceTable Changes have ended
 	m_pDoc->notifyPieceTableChangeEnd();
-
-#ifndef INT_PT_STATE
-	m_bPieceTableState = false;
-#else	
 	m_iPieceTableState = 0;
-#endif
 	m_pDoc->endUserAtomicGlob();
 }
 
@@ -1763,9 +1749,6 @@ void FV_View::processSelectedBlocks(List_Type listType)
 	// Signal PieceTable Change
 	_saveAndNotifyPieceTableChange();
 
-    // don't screen update till we're done!
-	_setScreenUpdateOnGeneralUpdate(false);
-
 //
 // Turn off cursor
 //
@@ -1811,8 +1794,6 @@ void FV_View::processSelectedBlocks(List_Type listType)
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
 
-    // enable screen updates now.
-	_setScreenUpdateOnGeneralUpdate(true);
 	_generalUpdate();
 
 	// Signal piceTable is stable again
@@ -1963,12 +1944,8 @@ void FV_View::insertParagraphBreak(void)
 	// Signal piceTable is stable again
 	// Signal PieceTable Changes have finished
 	m_pDoc->notifyPieceTableChangeEnd();
-
-#ifndef INT_PT_STATE
-	m_bPieceTableState = false;
-#else	
 	m_iPieceTableState = 0;
-#endif
+
 
 	_ensureThatInsertionPointIsOnScreen();
 	m_pLayout->considerPendingSmartQuoteCandidate();
@@ -5487,8 +5464,8 @@ void FV_View::insertSymbol(UT_UCSChar c, XML_Char * symfont)
 */
 void FV_View::_generalUpdate(void)
 {
-//	if(!_shouldScreenUpdateOnGeneralUpdate())
-//		return;
+	if(!shouldScreenUpdateOnGeneralUpdate())
+		return;
 	m_pDoc->signalListeners(PD_SIGNAL_UPDATE_LAYOUT);
 //
 // No need to update other stuff if we're doing a preview
@@ -6377,8 +6354,10 @@ void FV_View::drawInsertionPoint()
 
 void FV_View::_drawInsertionPoint()
 {
-	if(m_focus==AV_FOCUS_NONE || !_shouldScreenUpdateOnGeneralUpdate())
+	if(m_focus==AV_FOCUS_NONE || !shouldScreenUpdateOnGeneralUpdate())
+	{
 		return;
+	}
 	if (m_bCursorBlink && (m_focus==AV_FOCUS_HERE || m_focus==AV_FOCUS_MODELESS || AV_FOCUS_NEARBY))
 	{
 		if (m_pAutoCursorTimer == NULL)
@@ -7207,12 +7186,7 @@ void FV_View::cmdUndo(UT_uint32 count)
 	}
 	// Signal PieceTable Changes have finished
 	m_pDoc->notifyPieceTableChangeEnd();
-
-#ifndef INT_PT_STATE
-	m_bPieceTableState = false;
-#else	
 	m_iPieceTableState = 0;
-#endif
 }
 
 void FV_View::cmdRedo(UT_uint32 count)
@@ -7265,13 +7239,7 @@ void FV_View::cmdRedo(UT_uint32 count)
 	}
 	// Signal PieceTable Changes have finished
 	m_pDoc->notifyPieceTableChangeEnd();
-
-#ifndef INT_PT_STATE
-	m_bPieceTableState = false;
-#else	
 	m_iPieceTableState = 0;
-#endif
-
 }
 
 UT_Error FV_View::cmdSave(void)
@@ -7331,12 +7299,7 @@ void FV_View::cmdCut(void)
 
 	// Signal PieceTable Changes have finished
 	m_pDoc->notifyPieceTableChangeEnd();
-
-#ifndef INT_PT_STATE
-	m_bPieceTableState = false;
-#else	
 	m_iPieceTableState = 0;
-#endif
 }
 
 void FV_View::getDocumentRangeOfCurrentSelection(PD_DocumentRange * pdr)
@@ -7394,12 +7357,7 @@ void FV_View::cmdPaste(bool bHonorFormatting)
 
 	// Signal PieceTable Changes have finished
 	m_pDoc->notifyPieceTableChangeEnd();
-
-#ifndef INT_PT_STATE
-	m_bPieceTableState = false;
-#else	
 	m_iPieceTableState = 0;
-#endif
 
 	m_pDoc->clearDoingPaste();
 
@@ -8534,9 +8492,6 @@ void FV_View::cmdRemoveHdrFtr( bool isHeader)
 		return;
 	
 	m_pDoc->beginUserAtomicGlob();
-	// Signal PieceTable Change
-    // dont screen update till we're done!
-	_setScreenUpdateOnGeneralUpdate(false);
 
 	_saveAndNotifyPieceTableChange();
 //
@@ -8591,10 +8546,6 @@ void FV_View::cmdRemoveHdrFtr( bool isHeader)
 // Now delete the header strux.
 //
 	m_pDoc->deleteSpan(posBOS,posBOS+2,NULL);
-
-    // screen update now!
-
-	_setScreenUpdateOnGeneralUpdate(true);
 
 //
 // After erarsing the cursor, Restore to the point before all this mess started.
@@ -8925,28 +8876,14 @@ void FV_View::cmdEditFooter(void)
 */
 void FV_View::_saveAndNotifyPieceTableChange(void)
 {
-#ifndef INT_PT_STATE
-   	m_bPieceTableState = m_pDoc->isPieceTableChanging();
-#else	
 	//UT_DEBUGMSG(("notifying PieceTableChange start [%d]\n", m_iPieceTableState));
 	if(m_pDoc->isPieceTableChanging())
 		m_iPieceTableState++;
-#endif
 	m_pDoc->notifyPieceTableChangeStart();
 }
 
 void FV_View::_restorePieceTableState(void)
 {
-#ifndef INT_PT_STATE
-	if(m_bPieceTableState)
-	{
-		m_pDoc->notifyPieceTableChangeStart();
-	}
-	else
-	{
-		m_pDoc->notifyPieceTableChangeEnd();
-	}
-#else	
     if(m_iPieceTableState > 0)
 	{
 		//UT_DEBUGMSG(("notifying PieceTableChange (restore/start) [%d]\n", m_iPieceTableState));
@@ -8958,7 +8895,6 @@ void FV_View::_restorePieceTableState(void)
 		//UT_DEBUGMSG(("notifying PieceTableChange (restore/end) [%d]\n", m_iPieceTableState));
 		m_pDoc->notifyPieceTableChangeEnd();
 	}
-#endif
 }
 
 void FV_View::insertHeaderFooter(HdrFtrType hfType)
@@ -8991,12 +8927,7 @@ void FV_View::insertHeaderFooter(HdrFtrType hfType)
 	// Signal PieceTable Changes have Ended
 
 	m_pDoc->notifyPieceTableChangeEnd();
-
-#ifndef INT_PT_STATE
-	m_bPieceTableState = false;
-#else	
 	m_iPieceTableState = 0;
-#endif	
 	m_pDoc->endUserAtomicGlob(); // End the big undo block
 
 // Update Layout everywhere. This actually creates the header/footer container
@@ -9094,10 +9025,6 @@ bool FV_View::insertHeaderFooter(const XML_Char ** props, HdrFtrType hfType)
 
 	// change the section to point to the footer which doesn't exist yet.
 
-    // No stupid flicker yet.
-
-	_setScreenUpdateOnGeneralUpdate(false);
-
 	m_pDoc->changeStruxFmt(PTC_AddFmt, posSec, posSec, sec_attributes2, NULL, PTX_Section);
 
  
@@ -9147,9 +9074,6 @@ bool FV_View::insertHeaderFooter(const XML_Char ** props, HdrFtrType hfType)
     //(currently just center it)
 
 	m_pDoc->changeStruxFmt(PTC_AddFmt, getPoint(), getPoint(), NULL, props, PTX_Block);
-
-   // Allow screen updates
-	_setScreenUpdateOnGeneralUpdate(true);
 
 // OK it's in!
 
