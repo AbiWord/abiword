@@ -300,7 +300,7 @@ IEFileType IE_Exp::fileTypeForSuffix(const char * szSuffix)
 
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			// Hm... an exporter has registered for the given suffix,
-			// bug refuses to support any file type we request.
+			// but refuses to support any file type we request.
 			// Default to native format.
 			return IE_Exp::fileTypeForSuffix(".abw");
 		}
@@ -313,16 +313,52 @@ IEFileType IE_Exp::fileTypeForSuffix(const char * szSuffix)
 }
 
 /*! 
-  Find the suffixes for the given filetype.
- \param szSuffix File suffix
+  Find the filetype for the given filetype description.
+ \param szDescription Filetype description
+
+ Returns IEFT_Unknown if no importer has this description.
+ This function should closely resemble IE_Exp::fileTypeForDescription()
+*/
+IEFileType IE_Exp::fileTypeForDescription(const char * szDescription)
+{
+	IEFileType ieft = IEFT_Unknown;
+
+	if (!szDescription)
+		return ieft;
+	
+	// we have to construct the loop this way because a
+	// given filter could support more than one file type,
+	// so we must query a suffix match for all file types
+	UT_uint32 nrElements = getExporterCount();
+
+	for (UT_uint32 k=0; k < nrElements; k++)
+	{
+		IE_ExpSniffer * pSniffer = static_cast<IE_ExpSniffer *>(m_sniffers.getNthItem(k));
+
+		const char * szDummy;
+		const char * szDescription2 = 0;
+
+		if (pSniffer->getDlgLabels(&szDescription2,&szDummy,&ieft))
+		{
+			if (!UT_strcmp(szDescription,szDescription2))
+				return ieft;
+		}
+		else
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	}
+
+	return ieft;
+}
+
+/*! 
+  Find the filetype sniffer for the given filetype.
+ \param ieft Filetype
 
  Returns 0 if no exporter knows this filetype.
- This function should closely resemble IE_Exp::suffixesForFileType()
+ This function should closely resemble IE_Exp::snifferForFileType()
 */
-const char * IE_Exp::suffixesForFileType(IEFileType ieft)
+IE_ExpSniffer * IE_Exp::snifferForFileType(IEFileType ieft)
 {
-	const char * szSuffixes = 0;
-
 	// we have to construct the loop this way because a
 	// given filter could support more than one file type,
 	// so we must query a suffix match for all file types
@@ -332,15 +368,56 @@ const char * IE_Exp::suffixesForFileType(IEFileType ieft)
 	{
 		IE_ExpSniffer * s = static_cast<IE_ExpSniffer*>(m_sniffers.getNthItem(k));
 		if (s->supportsFileType(ieft))
-		{
-			const char *szDummy;
-			IEFileType ieftDummy;
-			if (s->getDlgLabels(&szDummy,&szSuffixes,&ieftDummy))
-				return szSuffixes;
-			else
-				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		}
+			return s;
 	}
+
+	// The passed in filetype is invalid.
+	return 0;
+}
+
+/*! 
+  Find the suffixes for the given filetype.
+ \param szSuffix File suffix
+
+ Returns 0 if no exporter knows this filetype.
+ This function should closely resemble IE_Exp::suffixesForFileType()
+*/
+const char * IE_Exp::suffixesForFileType(IEFileType ieft)
+{
+	const char * szDummy;
+	const char * szSuffixes = 0;
+	IEFileType ieftDummy;
+
+	IE_ExpSniffer * pSniffer = snifferForFileType(ieft);
+
+	if (pSniffer->getDlgLabels(&szDummy,&szSuffixes,&ieftDummy))
+		return szSuffixes;
+	else
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+
+	// The passed in filetype is invalid.
+	return 0;
+}
+
+/*! 
+  Find the description for the given filetype.
+ \param ieft Numerical "export filetype" ID
+
+ Returns 0 if filetype doesn't exist.
+ This function should closely resemble IE_Exp::descriptionForFileType()
+*/
+const char * IE_Exp::descriptionForFileType(IEFileType ieft)
+{
+	const char * szDummy;
+	const char * szDescription = 0;
+	IEFileType ieftDummy;
+
+	IE_ExpSniffer * pSniffer = snifferForFileType(ieft);
+
+	if (pSniffer->getDlgLabels(&szDescription,&szDummy,&ieftDummy))
+		return szDescription;
+	else
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 
 	// The passed in filetype is invalid.
 	return 0;

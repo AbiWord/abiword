@@ -2191,31 +2191,25 @@ void PD_Document::_destroyDataItemData(void)
 */
 bool PD_Document::_syncFileTypes(bool bReadSaveWriteOpen)
 {
-	const char *szSuffixes;
+	const char *szDescription;
 
 	if (bReadSaveWriteOpen)
-	  szSuffixes = IE_Exp::suffixesForFileType(m_lastSavedAsType);
+	  szDescription = IE_Exp::descriptionForFileType(m_lastSavedAsType);
 	else
-	  szSuffixes = IE_Imp::suffixesForFileType(m_lastOpenedType);
+	  szDescription = IE_Imp::descriptionForFileType(m_lastOpenedType);
 
-	if (!szSuffixes)
+	if (!szDescription)
 	  return false;
-
-	// Pull first suffix from the file dialog pattern string
-	UT_String suffix;
-	for (const char *p = szSuffixes; *p && *p != ';'; ++p)
-		if (*p != '*')
-			suffix += *p;
 
 	IEFileType ieft;
 	if (bReadSaveWriteOpen)
 	{
-		ieft = IE_Imp::fileTypeForSuffix(suffix.c_str());
+		ieft = IE_Imp::fileTypeForDescription(szDescription);
 		m_lastOpenedType = ieft;
 	}
 	else
 	{
-		ieft = IE_Exp::fileTypeForSuffix(suffix.c_str());
+		ieft = IE_Exp::fileTypeForDescription(szDescription);
 		m_lastSavedAsType = ieft;
 	}
 

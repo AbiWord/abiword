@@ -87,7 +87,10 @@ public:
 						    UT_uint32 iNumbytes);
 	
 	static IEFileType	fileTypeForSuffix(const char * szSuffix);
+	static IEFileType	fileTypeForDescription(const char * szSuffix);
+	static IE_ImpSniffer * snifferForFileType(IEFileType ieft);
 	static const char * suffixesForFileType(IEFileType ieft);
+	static const char * descriptionForFileType(IEFileType ieft);
 	
 	static UT_Error	constructImporter(PD_Document * pDocument,
 					  const char * szFilename,
