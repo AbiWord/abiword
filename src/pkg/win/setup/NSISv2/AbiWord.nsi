@@ -51,8 +51,8 @@
 ; was not corrupted by the download.  
 CRCCheck on
 
-; set the compression algorithm used, zlib | bzip2
-SetCompressor bzip2
+; set the compression algorithm used, zlib | bzip2 | lzma
+SetCompressor lzma
 
 ; where to look for NSIS plugins during setup creation
 ; default includes ./plugins, but we also want to check current directory
@@ -99,6 +99,7 @@ InstallDirRegKey HKLM SOFTWARE\${APPSET}\${PRODUCT}\v${VERSION_MAJOR} "Install_D
 
 ; Support 'Modern' UI and multiple languages
 !ifndef CLASSIC_UI
+  !define MUI_COMPONENTSPAGE_SMALLDESC  ; but put the description below choices
 
   ; include the Modern UI support
   !include "Mui.nsh"
@@ -113,7 +114,7 @@ InstallDirRegKey HKLM SOFTWARE\${APPSET}\${PRODUCT}\v${VERSION_MAJOR} "Install_D
   ; including the license of AbiWord  (license could be localized, but we don't)
   !insertmacro MUI_PAGE_LICENSE '${MUI_LICENSEDATA}'
   ; allow user to select what parts to install
-  !define MUI_COMPONENTSPAGE_SMALLDESC  ; but put the description below choices
+;  !define MUI_COMPONENTSPAGE_SMALLDESC  ; but put the description below choices
   !insertmacro MUI_PAGE_COMPONENTS
   ; and where to install to
   !insertmacro MUI_PAGE_DIRECTORY
