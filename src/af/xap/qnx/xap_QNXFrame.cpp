@@ -67,7 +67,8 @@ int XAP_QNXFrame::_fe::focus_out_event(PtWidget_t *w, void *data, PtCallbackInfo
 {
 	XAP_QNXFrame * pFrame = (XAP_QNXFrame *)data;
 	UT_ASSERT(pFrame);
-	pFrame->getCurrentView()->focusChange(AV_FOCUS_NONE);
+	if(pFrame->getCurrentView())	
+		pFrame->getCurrentView() ->focusChange(AV_FOCUS_NONE);
 	return Pt_CONTINUE;
 }
 
