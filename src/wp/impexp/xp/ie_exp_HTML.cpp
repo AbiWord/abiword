@@ -677,6 +677,7 @@ private:
 	UT_UTF8String & m_sTitle;
 
 	UT_uint32       m_iOutputLen;
+	bool            m_bCellHasData;
 };
 
 /*****************************************************************/
@@ -3074,7 +3075,7 @@ void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 	// more often than not border attributes are same all around, so
 	// we want to use the border shortcut
 	// 0-L, 1-R, 2-T, 3-B
-	UT_sint32 iB[4] = {0,0,0,0};
+	double dB[4] = {0.0,0.0,0.0,0.0};
 	UT_UTF8String sB[4];
 	UT_UTF8String sC[4];
 	UT_UTF8String sS[4];
@@ -3148,36 +3149,32 @@ void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 	pszBorderWidth = m_TableHelper.getTableProp ("bot-thickness");
 	if (pszBorderWidth)
 	{
-		double dMM = UT_convertToDimension(pszBorderWidth, DIM_PT);
-		iB[3] = (UT_sint32)(dMM + 0.5);
-		sB[3] = UT_UTF8String_sprintf("%dpt", iB[3]);
+		dB[3] = UT_convertToDimension(pszBorderWidth, DIM_PT);
+		sB[3] = UT_UTF8String_sprintf("%.2fpt", dB[3]);
 	}
 	else
 		sB[3] += border_default;
 	pszBorderWidth = m_TableHelper.getTableProp ("left-thickness");
 	if (pszBorderWidth)
 	{
-		double dMM = UT_convertToDimension(pszBorderWidth, DIM_PT);
-		iB[0] = (UT_sint32)(dMM + 0.5);
-		sB[0] = UT_UTF8String_sprintf("%dpt", iB[0]);
+		dB[0] = UT_convertToDimension(pszBorderWidth, DIM_PT);
+		sB[0] = UT_UTF8String_sprintf("%.2fpt", dB[0]);
 	}
 	else
 		sB[0] = border_default;
 	pszBorderWidth = m_TableHelper.getTableProp ("right-thickness");
 	if (pszBorderWidth)
 	{
-		double dMM = UT_convertToDimension(pszBorderWidth, DIM_PT);
-		iB[1] = (UT_sint32)(dMM + 0.5);
-		sB[1] = UT_UTF8String_sprintf("%dpt", iB[1]);
+		dB[1] = UT_convertToDimension(pszBorderWidth, DIM_PT);
+		sB[1] = UT_UTF8String_sprintf("%.2fpt", dB[1]);
 	}
 	else
 		sB[1] = border_default;
 	pszBorderWidth = m_TableHelper.getTableProp ("top-thickness");
 	if (pszBorderWidth)
 	{
-		double dMM = UT_convertToDimension(pszBorderWidth, DIM_PT);
-		iB[2] = (UT_sint32)(dMM + 0.5);
-		sB[2] = UT_UTF8String_sprintf("%dpt", iB[2]);
+		dB[2] = UT_convertToDimension(pszBorderWidth, DIM_PT);
+		sB[2] = UT_UTF8String_sprintf("%.2fpt", dB[2]);
 	}
 	else
 		sB[2] += border_default;
@@ -3194,7 +3191,7 @@ void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 	{
 		for(UT_sint32 j = i+1; j < 4; j++)
 		{
-			if(iB[i] == iB[j])
+			if(dB[i] == dB[j])
 			{
 				iBCount[i]++;
 				iBCount[j]++;
@@ -3268,7 +3265,7 @@ void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 	{
 		for(i = 0; i < 4; ++i)
 		{
-			if((UT_uint32)i == iBMaxIndx || iB[i] == iB[iBMaxIndx] || sB[i].size() == 0)
+			if((UT_uint32)i == iBMaxIndx || dB[i] == dB[iBMaxIndx] || sB[i].size() == 0)
 				continue;
 
 			switch(i)
@@ -3478,6 +3475,8 @@ void s_HTML_Listener::_openRow (PT_AttrPropIndex api)
 
 void s_HTML_Listener::_openCell (PT_AttrPropIndex api)
 {
+	m_bCellHasData = false;
+	
 	if (m_bFirstWrite) _openSection (api);
 
 	if (!m_bInSection) return;
@@ -3532,7 +3531,7 @@ void s_HTML_Listener::_openCell (PT_AttrPropIndex api)
 		// more often than not border attributes are same all around, so
 		// we want to use the border shortcut
 		// 0-L, 1-R, 2-T, 3-B
-		UT_sint32 iB[4] = {0,0,0,0};
+		double dB[4] = {0.0,0.0,0.0,0.0};
 		UT_UTF8String sB[4];
 		UT_UTF8String sC[4];
 		UT_UTF8String sS[4];
@@ -3606,30 +3605,26 @@ void s_HTML_Listener::_openCell (PT_AttrPropIndex api)
 		pszBorderWidth = m_TableHelper.getCellProp ("bot-thickness");
 		if (pszBorderWidth)
 		{
-			double dMM = UT_convertToDimension(pszBorderWidth, DIM_PT);
-			iB[3] = (UT_sint32)(dMM + 0.5);
-			sB[3] = UT_UTF8String_sprintf("%dpt", iB[3]);
+			dB[3] = UT_convertToDimension(pszBorderWidth, DIM_PT);
+			sB[3] = UT_UTF8String_sprintf("%.2fpt", dB[3]);
 		}
 		pszBorderWidth = m_TableHelper.getCellProp ("left-thickness");
 		if (pszBorderWidth)
 		{
-			double dMM = UT_convertToDimension(pszBorderWidth, DIM_PT);
-			iB[0] = (UT_sint32)(dMM + 0.5);
-			sB[0] = UT_UTF8String_sprintf("%dpt", iB[0]);
+			dB[0] = UT_convertToDimension(pszBorderWidth, DIM_PT);
+			sB[0] = UT_UTF8String_sprintf("%.2fpt", dB[0]);
 		}
 		pszBorderWidth = m_TableHelper.getCellProp ("right-thickness");
 		if (pszBorderWidth)
 		{
-			double dMM = UT_convertToDimension(pszBorderWidth, DIM_PT);
-			iB[1] = (UT_sint32)(dMM + 0.5);
-			sB[1] = UT_UTF8String_sprintf("%dpt", iB[1]);
+			dB[1] = UT_convertToDimension(pszBorderWidth, DIM_PT);
+			sB[1] = UT_UTF8String_sprintf("%.2fpt", dB[1]);
 		}
 		pszBorderWidth = m_TableHelper.getCellProp ("top-thickness");
 		if (pszBorderWidth)
 		{
-			double dMM = UT_convertToDimension(pszBorderWidth, DIM_PT);
-			iB[2] = (UT_sint32)(dMM + 0.5);
-			sB[2] = UT_UTF8String_sprintf("%dpt", iB[2]);
+			dB[2] = UT_convertToDimension(pszBorderWidth, DIM_PT);
+			sB[2] = UT_UTF8String_sprintf("%.2fpt", dB[2]);
 		}
 
 		// now we need to decide which attributes are to be used in the
@@ -3644,7 +3639,7 @@ void s_HTML_Listener::_openCell (PT_AttrPropIndex api)
 		{
 			for(UT_sint32 j = i+1; j < 4; j++)
 			{
-				if(iB[i] == iB[j])
+				if(dB[i] == dB[j])
 				{
 					iBCount[i]++;
 					iBCount[j]++;
@@ -3734,7 +3729,7 @@ void s_HTML_Listener::_openCell (PT_AttrPropIndex api)
 		{
 			for(i = 0; i < 4; ++i)
 			{
-				if((UT_uint32)i == iBMaxIndx || iB[i] == iB[iBMaxIndx])
+				if((UT_uint32)i == iBMaxIndx || dB[i] == dB[iBMaxIndx])
 					continue;
 
 				switch(i)
@@ -3843,6 +3838,14 @@ void s_HTML_Listener::_closeCell ()
 {
 	if (m_TableHelper.getNestDepth () < 1) return;
 
+	if(!m_bCellHasData)
+	{
+		// we need to insert a &nbsp; to make sure that the cell will
+		// have its borders
+		UT_UTF8String s = "&nbsp;";
+		tagRaw(s);
+	}
+	
 	m_utf8_1 = "td";
 	tagClose (TT_TD, m_utf8_1);
 
@@ -3884,24 +3887,29 @@ void s_HTML_Listener::_outputData (const UT_UCSChar * data, UT_uint32 length)
 				/* Smart quotes get translated back into normal quotes
 				 */
 				m_utf8_1 += "'";
+				m_bCellHasData = true;
 				break;
 
 			case UCS_LDBLQUOTE:
 				m_utf8_1 += "&ldquo;";
+				m_bCellHasData = true;
 				break;
 
 			case UCS_RDBLQUOTE:
 				m_utf8_1 += "&rdquo;";
+				m_bCellHasData = true;
 				break;
 
 			case UCS_EN_DASH: // TODO: isn't there a better way?
 			case UCS_EM_DASH:
 				m_utf8_1 += "-";
+				m_bCellHasData = true;
 				break;
 
 			default:
 				if ((*ucs_ptr & 0x007f) == *ucs_ptr) // ASCII
 				{
+					m_bCellHasData = true;
 					char c = static_cast<char>(*ucs_ptr & 0x007f);
 
 					if (isspace (static_cast<int>(static_cast<unsigned char>(c))))
@@ -3990,7 +3998,9 @@ s_HTML_Listener::s_HTML_Listener (PD_Document * pDocument, IE_Exp_HTML * pie, bo
 		m_dCellWidthInches(0.0),
 		m_sLinkCSS(linkCSS),
 		m_sTitle(title),
-		m_iOutputLen(0)
+		m_iOutputLen(0),
+		m_bCellHasData(true)  // we are not in cell to start with, set
+							  // to true
 {
 	m_StyleTreeBody = m_style_tree->find ("Normal");
 }
@@ -4526,7 +4536,6 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 
 	switch (pcrx->getStruxType ())
 	{
-		case PTX_SectionHdrFtr:
 		case PTX_Section:
 			{
 				if(m_bIgnoreTillEnd)
@@ -4645,6 +4654,14 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 		case PTX_SectionFootnote:
 		case PTX_EndEndnote:
 #endif
+			// because headers and footers live at the end of AW
+			// documents, we cannot just oputput them; until we find a
+			// smart way of representing hdr/ftr in html, we will
+			// ignore them
+		case PTX_SectionHdrFtr:
+			m_bIgnoreTillEnd = true;
+			return true;
+
 		default:
 			UT_DEBUGMSG(("WARNING: ie_exp_HTML.cpp: unhandled strux type!\n"));
 			return false;
