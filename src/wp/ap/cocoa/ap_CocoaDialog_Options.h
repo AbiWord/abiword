@@ -99,7 +99,7 @@ class AP_CocoaDialog_Options;
 	AP_CocoaDialog_Options * m_xap;
 	XAP_StringListDataSource* m_tlbTlbListDataSource;
 }
-+ (AP_CocoaDialog_OptionsController *)loadFromNib;
+- (id)initFromNib;
 - (oneway void)dealloc;
 - (void)windowDidLoad;
 - (void)setXAPOwner:(AP_CocoaDialog_Options *)owner;

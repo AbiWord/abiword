@@ -1,6 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2002 Hubert Figuiere
+ * Copyright (C) 2002-2003 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -104,7 +104,8 @@ XAP_Dialog * AP_CocoaDialog_Options::static_constructor(XAP_DialogFactory * pFac
 
 AP_CocoaDialog_Options::AP_CocoaDialog_Options(XAP_DialogFactory * pDlgFactory,
 					     XAP_Dialog_Id dlgid)
-  : AP_Dialog_Options(pDlgFactory, dlgid)
+  : AP_Dialog_Options(pDlgFactory, dlgid),
+	m_dlg (nil)
 {
 }
 
@@ -116,11 +117,11 @@ AP_CocoaDialog_Options::~AP_CocoaDialog_Options(void)
 
 void AP_CocoaDialog_Options::runModal(XAP_Frame * pFrame)
 {
-	m_dlg = [AP_CocoaDialog_OptionsController loadFromNib];
-	[m_dlg setXAPOwner:this];
-	
+	if (m_dlg == nil) {
+		m_dlg = [[AP_CocoaDialog_OptionsController alloc] initFromNib];
+		[m_dlg setXAPOwner:this];
+	}
 
-//    connectFocus(GTK_WIDGET(mainWindow),pFrame);
     // save for use with event
     m_pFrame = pFrame;
 
@@ -129,7 +130,6 @@ void AP_CocoaDialog_Options::runModal(XAP_Frame * pFrame)
     _populateWindowData();
 	_initCocoaOnlyPrefs();
 
-    // Run into the GTK event loop for this window.
     do {
 		[NSApp runModalForWindow:win];
 
@@ -153,6 +153,9 @@ void AP_CocoaDialog_Options::runModal(XAP_Frame * pFrame)
 		};
 
     } while ( m_answer == AP_Dialog_Options::a_APPLY );
+
+	[m_dlg close];		// close before release because of the NSTableView data source
+	[m_dlg release];
 	m_dlg = nil;
 }
 
@@ -635,15 +638,18 @@ void AP_CocoaDialog_Options::_storeWindowData(void)
 
 @implementation AP_CocoaDialog_OptionsController
 
-+ (AP_CocoaDialog_OptionsController *)loadFromNib
+- (id)initFromNib
 {
-	AP_CocoaDialog_OptionsController * dlg = [[AP_CocoaDialog_OptionsController alloc] initWithWindowNibName:@"ap_CocoaDialog_Options"];
-	return [dlg autorelease];
+	self = [super initWithWindowNibName:@"ap_CocoaDialog_Options"];
+	return self;
 }
 
 - (oneway void)dealloc
 {
+	// perhaps shall we dealloc super before release the source because that crash
+	// therefore we close the dialog before release
 	[m_tlbTlbListDataSource release];
+	[super dealloc];
 }
 
 - (void)windowDidLoad
