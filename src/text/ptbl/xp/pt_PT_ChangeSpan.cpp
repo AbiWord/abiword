@@ -389,6 +389,7 @@ bool pt_PieceTable::changeSpanFmt(PTChangeFmt ptc,
 		{
 		case pf_Frag::PFT_EndOfDoc:
 		default:
+			UT_DEBUGMSG(("fragment type: %d\n",pf_First->getType()));
 			UT_ASSERT(0);
 			return false;
 			
