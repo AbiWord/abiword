@@ -155,7 +155,9 @@ AM_CONDITIONAL(ABI_BUILD_STATIC,[test $abi_build_static = yes])
 ABI_CURL
 AM_CONDITIONAL(WITH_CURL, test x$abi_curl = xyes)
 
+AC_LANG_CPLUSPLUS
 ABI_SPELL
+AC_LANG_C
 
 ABI_FRIBIDI
 
@@ -331,7 +333,7 @@ AC_CHECK_HEADERS(limits.h strings.h sys/time.h unistd.h malloc.h)
 
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
-AC_C_INLINE
+ABI_C_INLINE
 AC_TYPE_SIZE_T
 AC_C_BIGENDIAN
 AM_CONDITIONAL(BIGENDIAN,[ test "x$ac_cv_c_bigendian" = "xyes" ])
