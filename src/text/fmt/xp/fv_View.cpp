@@ -1244,8 +1244,6 @@ void FV_View::_moveInsPtNextPrevLine(UT_Bool bNext)
 		// cannot move.  should we beep?
 		_drawInsertionPoint();
 	}
-
-	notifyListeners(AV_CHG_MOTION);
 }
 
 UT_Bool FV_View::_ensureThatInsertionPointIsOnScreen(void)
@@ -1280,9 +1278,6 @@ void FV_View::warpInsPtNextPrevLine(UT_Bool bNext)
 	_resetSelection();
 
 	_moveInsPtNextPrevLine(bNext);
-
-	_fixInsertionPointCoords();
-	_drawInsertionPoint();
 
 	notifyListeners(AV_CHG_MOTION);
 }
@@ -1359,6 +1354,12 @@ void FV_View::extSelHorizontal(UT_Bool bForward, UT_uint32 count)
 			_resetSelection();
 		}
 	}
+	
+	if (!_ensureThatInsertionPointIsOnScreen())
+	{
+		_fixInsertionPointCoords();
+//		_drawInsertionPoint();
+	}
 
 	notifyListeners(AV_CHG_MOTION);
 }
@@ -1368,6 +1369,12 @@ void FV_View::extSelTo(FV_DocPos dp)
 	PT_DocPosition iPos = _getDocPos(dp);
 
 	_extSelToPos(iPos);
+
+	if (!_ensureThatInsertionPointIsOnScreen())
+	{
+		_fixInsertionPointCoords();
+//		_drawInsertionPoint();
+	}
 
 	notifyListeners(AV_CHG_MOTION);
 }
