@@ -18,9 +18,9 @@
 ## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
 ## 02111-1307, USA.
 
-ABI_DEPTH = ../../..
+ABI_ROOT:=$(shell pwd)/../../../..
 
-include $(ABI_DEPTH)/config/abi_defs_wp.mk
+include $(ABI_ROOT)/src/config/abi_defs_wp.mk
 
 CPPSRCS=		BeOSMain.cpp
 PROGRAM=		$(BINDIR)/AbiWord
@@ -40,7 +40,7 @@ endif
 
 TARGETS=		$(PROGRAM)
 
-include $(ABI_DEPTH)/config/abi_rules.mk
+include $(ABI_ROOT)/src/config/abi_rules.mk
 
 ##################################################################
 ## everything below here must *FOLLOW* abi_rules

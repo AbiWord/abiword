@@ -23,7 +23,7 @@ ABI_AP_INCS=	/wp/ap/xp	/wp/ap/$(ABI_NATIVE)	\
 		/wp/impexp/xp				\
 		/text/ptbl/xp	/wp/ap/xp/ToolbarIcons
 
-include $(ABI_DEPTH)/config/abi_defs.mk
+include $(ABI_ROOT)/src/config/abi_defs.mk
 
 ##################################################################
 ## Deal with branding issues.

@@ -18,9 +18,9 @@
 ## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
 ## 02111-1307, USA.
 
-ABI_DEPTH = ../../..
+ABI_ROOT:=$(shell pwd)/../../../..
 
-include $(ABI_DEPTH)/config/abi_defs_hello.mk
+include $(ABI_ROOT)/src/config/abi_defs_hello.mk
 
 CPPSRCS=		Win32Main.cpp
 RCSRCS=			Win32Main.rc
@@ -42,7 +42,7 @@ ABI_LIBS=		kernel32 user32 gdi32 winspool comdlg32 advapi32 \
 GARBAGE=		AbiHello.map AbiHello.pdb
 TARGETS=		$(PROGRAM)
 
-include $(ABI_DEPTH)/config/abi_rules.mk
+include $(ABI_ROOT)/src/config/abi_rules.mk
 
 ##################################################################
 ## everything below here must *FOLLOW* abi_rules

@@ -18,9 +18,9 @@
 ## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
 ## 02111-1307, USA.
 
-ABI_DEPTH=../..
-include $(ABI_DEPTH)/config/abi_defs_wp.mk
-include $(ABI_DEPTH)/config/abi_rules.mk
+ABI_ROOT:=$(shell pwd)/../../..
+include $(ABI_ROOT)/src/config/abi_defs_wp.mk
+include $(ABI_ROOT)/src/config/abi_rules.mk
 
 ##################################################################
 ## makefile target to make binary distribution for this platform.
@@ -32,7 +32,7 @@ distribution:	tgz deb rpm
 # things covered by all unix platform code
 
 # tgz
-include $(ABI_DEPTH)/pkg/common/unix/tgz.mk
+include $(ABI_ROOT)/src/pkg/common/unix/tgz.mk
 
 # things only Linux does
 

@@ -19,13 +19,12 @@
 ## 02111-1307, USA.
 
 ABI_ROOT:=$(shell pwd)/..
-ABI_DEPTH=.
 
-include $(ABI_DEPTH)/config/abi_defs.mk
+include $(ABI_ROOT)/src/config/abi_defs.mk
 
 DIRS=		config tools other af text wp ask
 
-include $(ABI_DEPTH)/config/abi_rules.mk
+include $(ABI_ROOT)/src/config/abi_rules.mk
 
 ##################################################################
 ## Targets for cleaning up
@@ -42,7 +41,7 @@ realclean::
 ## non-installed layout.
 
 ## Set the following to a list of pathnames to be copied to $(CANONDIR)
-CANON_TOPLEVELFILES=	$(ABI_DEPTH)/../COPYING $(ABI_DEPTH)/../user/wp/readme.txt
+CANON_TOPLEVELFILES=	$(ABI_ROOT)/COPYING $(ABI_ROOT)/user/wp/readme.txt
 
 ## Set the following to a list of directories (probably a subset of DIRS)
 ## that have work to do.

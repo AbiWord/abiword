@@ -18,17 +18,17 @@
 ## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
 ## 02111-1307, USA.
 
-ABI_DEPTH = ../../..
+ABI_ROOT:=$(shell pwd)/../../../..
 
-include $(ABI_DEPTH)/config/abi_defs.mk
+include $(ABI_ROOT)/src/config/abi_defs.mk
 
 CPPSRCS=		gr_Win32Graphics.cpp	\
 			gr_Win32Image.cpp
 
 TARGETS=		$(OBJS)
-INCLUDES=		-I$(ABI_DEPTH)/../../libpng	\
-			-I$(ABI_DEPTH)/../../zlib
+INCLUDES=		-I$(ABI_ROOT)/../libpng	\
+			-I$(ABI_ROOT)/../zlib
 
-include $(ABI_DEPTH)/config/abi_rules.mk
+include $(ABI_ROOT)/src/config/abi_rules.mk
 
 build:: $(TARGETS)

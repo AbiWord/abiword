@@ -18,9 +18,9 @@
 ## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
 ## 02111-1307, USA.
 
-ABI_DEPTH = ../../..
+ABI_ROOT:=$(shell pwd)/../../../..
 
-include $(ABI_DEPTH)/config/abi_defs.mk
+include $(ABI_ROOT)/src/config/abi_defs.mk
 
 CSRCS=			setup.c			\
 			$(OBJDIR)/data.c
@@ -41,11 +41,11 @@ ABI_LIBS=		kernel32 user32 gdi32 winspool comdlg32 advapi32 \
 GARBAGE=		setup.map setup.pdb $(OBJDIR)/data.c _tmp_.ask
 TARGETS=		$(PROGRAM)
 
-INCLUDES=		-I$(ABI_DEPTH)/ask/lib/xp
+INCLUDES=		-I$(ABI_ROOT)/src/ask/lib/xp
 
 CFLAGS +=		-Zm1000
 
-include $(ABI_DEPTH)/config/abi_rules.mk
+include $(ABI_ROOT)/src/config/abi_rules.mk
 
 ifdef ABISOURCE_LICENSED_TRADEMARKS
 GRAPHICNAME=setup_tm.png

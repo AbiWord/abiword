@@ -20,9 +20,9 @@
 
 # TODO we should move this down into src/other/spell/xp
 
-ABI_DEPTH = ../..
+ABI_ROOT:=$(shell pwd)/../../..
 
-include $(ABI_DEPTH)/config/abi_defs.mk
+include $(ABI_ROOT)/src/config/abi_defs.mk
 
 CSRCS=		newMain.c good.c tgood.c lookup.c makedent.c hash.c
 
@@ -30,6 +30,6 @@ LIBRARY_NAME=		AbiSpell
 LIBRARY_VERSION=	$(ABI_VERSION)
 TARGETS=		$(LIBRARY)
 
-include $(ABI_DEPTH)/config/abi_rules.mk
+include $(ABI_ROOT)/src/config/abi_rules.mk
 
 build:: $(TARGETS)

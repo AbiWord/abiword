@@ -18,9 +18,9 @@
 ## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
 ## 02111-1307, USA.
 
-ABI_DEPTH = ../../..
+ABI_ROOT:=$(shell pwd)/../../../..
 
-include $(ABI_DEPTH)/config/abi_defs.mk
+include $(ABI_ROOT)/src/config/abi_defs.mk
 
 CPPSRCS=	ev_$(ABI_FE)Keyboard.cpp		\
 			ev_$(ABI_FE)Menu.cpp			\
@@ -33,6 +33,6 @@ CPPSRCS=	ev_$(ABI_FE)Keyboard.cpp		\
 
 TARGETS=	$(OBJS)
 
-include $(ABI_DEPTH)/config/abi_rules.mk
+include $(ABI_ROOT)/src/config/abi_rules.mk
 
 build:: $(TARGETS)

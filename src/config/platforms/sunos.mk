@@ -37,8 +37,6 @@ CC		= gcc
 CCC		= g++
 RANLIB		= ranlib
 
-# INSTALL		= $(ABI_DEPTH)/util/unix/install-sh -c
-
 # Suffixes
 OBJ_SUFFIX	= o
 LIB_SUFFIX	= a
@@ -95,7 +93,7 @@ ABI_FE		= Unix
 ##################################################################
 ## ABIPKGDIR defines the directory containing the Makefile to use to
 ## build a set of distribution archives (.deb, .rpm, .tgz, .exe, etc)
-## This is relative to $(ABI_DEPTH)/pkg
+## This is relative to $(ABI_ROOT)/src/pkg
 
 ABIPKGDIR	= sunos
 

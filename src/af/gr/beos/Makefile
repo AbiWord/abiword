@@ -18,9 +18,9 @@
 ## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
 ## 02111-1307, USA.
 
-ABI_DEPTH = ../../..
+ABI_ROOT:=$(shell pwd)/../../../..
 
-include $(ABI_DEPTH)/config/abi_defs.mk
+include $(ABI_ROOT)/src/config/abi_defs.mk
 
 CPPSRCS=	gr_$(ABI_FE)Graphics.cpp	\
 			gr_$(ABI_FE)Image.cpp
@@ -28,10 +28,10 @@ CPPSRCS=	gr_$(ABI_FE)Graphics.cpp	\
 #TF Change to
 #CPPSRCS= $(wildcard *.cpp)
 
-ABI_INCS += -I$(ABI_DEPTH)/../../libpng -I$(ABI_DEPTH)/../../zlib
+ABI_INCS += -I$(ABI_ROOT)/../libpng -I$(ABI_ROOT)/../zlib
 
 TARGETS=		$(OBJS)
 
-include $(ABI_DEPTH)/config/abi_rules.mk
+include $(ABI_ROOT)/src/config/abi_rules.mk
 
 build:: $(TARGETS)

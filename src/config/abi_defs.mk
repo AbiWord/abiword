@@ -31,16 +31,16 @@
 ##################################################################
 ##################################################################
 ## abi_defs.mk --  Makefile definitions for building AbiSource software.
-## This is a makefile include.  It should be included after ABI_DEPTH
+## This is a makefile include.  It should be included after ABI_ROOT
 ## is set and before any other declarations.
 ##
 ## The general structure of an AbiSource Makefile should be:
 ##
 ##        #! gmake
-##        ABI_DEPTH=<your depth in source tree from abi/src>
-##        include $(ABI_DEPTH)/config/abi_defs.mk
+##        ABI_ROOT=<the top-level abi directory>
+##        include $(ABI_ROOT)/src/config/abi_defs.mk
 ##        <local declarations>
-##        include $(ABI_DEPTH)/config/abi_rules.mk
+##        include $(ABI_ROOT)/src/config/abi_rules.mk
 ##        <local rules>
 ##
 ##################################################################
@@ -100,7 +100,7 @@ ABI_PEER_INCS=	/../../expat/xmlparse	\
 		/../../expat/xmltok
 
 ABI_ALL_INCS=	$(ABI_XAP_INCS) $(ABI_PEER_INCS) $(ABI_AP_INCS) $(ABI_OTH_INCS) $(ABI_TM_INCS)
-ABI_INCS=	$(addprefix -I, $(addprefix $(ABI_DEPTH),$(ABI_ALL_INCS)))
+ABI_INCS=	$(addprefix -I, $(addprefix $(ABI_ROOT)/src,$(ABI_ALL_INCS)))
 
 ##################################################################
 ##################################################################
@@ -148,36 +148,36 @@ endif
 #### any new platforms you port to.
 
 ifeq ($(OS_NAME), WIN32)
-include $(ABI_DEPTH)/config/platforms/win32.mk
+include $(ABI_ROOT)/src/config/platforms/win32.mk
 endif
 
 ifeq ($(OS_NAME), Linux)
-include $(ABI_DEPTH)/config/platforms/linux.mk
+include $(ABI_ROOT)/src/config/platforms/linux.mk
 endif
 
 ifeq ($(OS_NAME), FreeBSD)
-include $(ABI_DEPTH)/config/platforms/freebsd.mk
+include $(ABI_ROOT)/src/config/platforms/freebsd.mk
 endif
 
 ifeq ($(OS_NAME), OpenBSD)
-include $(ABI_DEPTH)/config/platforms/openbsd.mk
+include $(ABI_ROOT)/src/config/platforms/openbsd.mk
 endif
 
 ifeq ($(OS_NAME), NetBSD)
-include $(ABI_DEPTH)/config/platforms/netbsd.mk
+include $(ABI_ROOT)/src/config/platforms/netbsd.mk
 endif
 
 ifeq ($(OS_NAME), BeOS)
-include $(ABI_DEPTH)/config/platforms/beos.mk
+include $(ABI_ROOT)/src/config/platforms/beos.mk
 endif
 
 # TODO: how do we differentiate between old SunOS and new Solaris
 ifeq ($(OS_NAME), SunOS)
-include $(ABI_DEPTH)/config/platforms/sunos.mk
+include $(ABI_ROOT)/src/config/platforms/sunos.mk
 endif
 
 ifeq ($(OS_NAME), IRIX)
-include $(ABI_DEPTH)/config/platforms/irix.mk
+include $(ABI_ROOT)/src/config/platforms/irix.mk
 endif
 
 # Catch all for undefined platform (CC will always be defined on a working platform)
@@ -233,10 +233,16 @@ endef
 ## ABI_BUILD_ID		can be used as a identifying label (such as
 ##			a date stamp in a nightly build system).
 ##
+
 ABI_BUILD_VERSION	= unnumbered
 ABI_BUILD_ID		=
 
-OUT			= $(ABI_DEPTH)
+DIST			= $(ABI_ROOT)/dist
+OUT			= $(ABI_ROOT)/src
+
+##################################################################
+## set everything else from the above four variables....
+
 OUTDIR			= $(OUT)/$(OS_NAME)_$(OS_RELEASE)_$(OS_ARCH)_$(OBJ_DIR_SFX)
 OBJDIR			= $(OUTDIR)/obj
 LIBDIR			= $(OUTDIR)/lib
@@ -248,8 +254,7 @@ PKGBASENAME_POST	= $(ABI_BUILD_VERSION)-$(OS_NAME)_$(OS_ARCH)
 
 PKGBASENAME		= $(PKGBASENAME_PRE)$(PKGBASENAME_POST)
 
-DIST			= $(ABI_DEPTH)/../dist
-USERDIR			= $(ABI_DEPTH)/../user
+USERDIR			= $(ABI_ROOT)/user
 
 ##################################################################
 ##################################################################

@@ -33,8 +33,8 @@
 ##			platforms (no deb, rpm, slp, etc.)
 
 # get the package names we'll use to build with
-ABI_DEPTH=../..
-include $(ABI_DEPTH)/pkg/common/unix/allfonts.mk
+ABI_ROOT=../../..
+include $(ABI_ROOT)/src/pkg/common/unix/allfonts.mk
 
 # fonts aren't tied to an architecture, so there's no arch in the name
 TGZ_ABI_FONTS_PKGBASENAME	= $(PKGBASENAME_PRE)Fonts-$(ABI_FONTS_BUILD_VERSION)

@@ -18,9 +18,9 @@
 ## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
 ## 02111-1307, USA.
 
-ABI_DEPTH = ../../..
+ABI_ROOT:=$(shell pwd)/../../../..
 
-include $(ABI_DEPTH)/config/abi_defs.mk
+include $(ABI_ROOT)/src/config/abi_defs.mk
 
 CSRCS=			askrm_Win32.c
 
@@ -38,9 +38,9 @@ ABI_LIBS=		kernel32 user32 gdi32 winspool comdlg32 advapi32 \
 GARBAGE=		askrm.map askrm.pdb
 TARGETS=		$(PROGRAM)
 
-INCLUDES=		-I$(ABI_DEPTH)/ask/lib/xp
+INCLUDES=		-I$(ABI_ROOT)/src/ask/lib/xp
 
-include $(ABI_DEPTH)/config/abi_rules.mk
+include $(ABI_ROOT)/src/config/abi_rules.mk
 
 ##################################################################
 ## everything below here must *FOLLOW* abi_rules

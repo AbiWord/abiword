@@ -27,10 +27,10 @@
 ## The general structure of an AbiSource Makefile should be:
 ##
 ##        #! gmake
-##        ABI_DEPTH=<your depth in source tree from abi/src>
-##        include $(ABI_DEPTH)/config/abi_defs.mk
+##        ABI_ROOT=<the top-level abi directory>
+##        include $(ABI_ROOT)/src/config/abi_defs.mk
 ##        <local declarations>
-##        include $(ABI_DEPTH)/config/abi_rules.mk
+##        include $(ABI_ROOT)/src/config/abi_rules.mk
 ##        <local rules>
 ##
 ##################################################################

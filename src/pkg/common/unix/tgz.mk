@@ -27,8 +27,8 @@
 ##################################################################	
 
 # tgz fonts are handled by these rules
-ABI_DEPTH=../..
-include $(ABI_DEPTH)/pkg/common/unix/tgzfonts.mk
+ABI_ROOT:=../../..
+include $(ABI_ROOT)/src/pkg/common/unix/tgzfonts.mk
 
 ##################################################################
 ## tgz -- this is a very simple tree of the essentials.  this is

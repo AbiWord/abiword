@@ -18,16 +18,16 @@
 ## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
 ## 02111-1307, USA.
 
-ABI_DEPTH = ../../..
+ABI_ROOT:=$(shell pwd)/../../../..
 
-include $(ABI_DEPTH)/config/abi_defs.mk
+include $(ABI_ROOT)/src/config/abi_defs.mk
 
 CSRCS=			ask_lib_Win32.c ask_lib_Win32_small.c
 
 TARGETS=		$(OBJS)
 
-INCLUDES=		-I$(ABI_DEPTH)/ask/lib/xp -I$(ABI_DEPTH)/../../libpng -I$(ABI_DEPTH)/../../zlib
+INCLUDES=		-I$(ABI_ROOT)/src/ask/lib/xp -I$(ABI_ROOT)/../libpng -I$(ABI_ROOT)/../zlib
 
-include $(ABI_DEPTH)/config/abi_rules.mk
+include $(ABI_ROOT)/src/config/abi_rules.mk
 
 build:: $(TARGETS)

@@ -18,8 +18,8 @@
 ## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
 ## 02111-1307, USA.
 
-ABI_DEPTH=../..
-include $(ABI_DEPTH)/config/abi_defs_wp.mk
+ABI_ROOT:=../../..
+include $(ABI_ROOT)/src/config/abi_defs_wp.mk
 
 # rpm fonts are handled by these rules
 include rpmfonts/rpmfonts.mk

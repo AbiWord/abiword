@@ -20,14 +20,14 @@
 
 # TODO we should move this down into src/other/libmswordview/xp
 
-ABI_DEPTH = ../..
+ABI_ROOT:=$(shell pwd)/../../..
 
-include $(ABI_DEPTH)/config/abi_defs.mk
+include $(ABI_ROOT)/src/config/abi_defs.mk
 
 CFLAGS += -DHAVE_CONFIG_H 								\
-		-DPATTERNDIR=\"file:$(ABI_DEPTH)/other/libmswordview/patterns\"		\
-		-DSYMBOLFONTDIR=\"file:$(ABI_DEPTH)/libmswordview/symbolfont\"		\
-		-DWINGDINGFONTDIR=\"file:$(ABI_DEPTH)/libmswordview/wingdingfont\"
+		-DPATTERNDIR=\"file:$(ABI_ROOT)/src/other/libmswordview/patterns\"	\
+		-DSYMBOLFONTDIR=\"file:$(ABI_ROOT)/src/libmswordview/symbolfont\"	\
+		-DWINGDINGFONTDIR=\"file:$(ABI_ROOT)/src/libmswordview/wingdingfont\"
 
 CSRCS=	oledecod.c annotations.c blip.c decompresswmf.c			\
 	field.c formatting.c getopt.c getopt1.c gpprl.c hyperlink.c	\
@@ -38,8 +38,8 @@ CSRCS=	oledecod.c annotations.c blip.c decompresswmf.c			\
 LIBRARY_NAME=		MsWordView
 LIBRARY_VERSION=	$(ABI_VERSION)
 TARGETS=		$(LIBRARY)
-INCLUDES=		-I$(ABI_DEPTH)/../../zlib
+INCLUDES=		-I$(ABI_ROOT)/../zlib
 
-include $(ABI_DEPTH)/config/abi_rules.mk
+include $(ABI_ROOT)/src/config/abi_rules.mk
 
 build:: $(TARGETS)

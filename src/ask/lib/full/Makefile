@@ -18,8 +18,8 @@
 ## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
 ## 02111-1307, USA.
 
-ABI_DEPTH=		../../..
-include $(ABI_DEPTH)/config/abi_defs.mk
+ABI_ROOT:=$(shell pwd)/../../../..
+include $(ABI_ROOT)/src/config/abi_defs.mk
 
 LIBRARY_NAME=		AbiSetup
 LIBRARY_VERSION=	$(ABI_VERSION)
@@ -30,6 +30,6 @@ PLATFORM_OBJS=	$(OBJDIR)/ask_lib_$(ABI_FE).$(OBJ_SUFFIX) $(OBJDIR)/ask_lib_$(ABI
 OBJS=		$(PLATFORM_OBJS)					\
 		$(OBJDIR)/ask_lib.$(OBJ_SUFFIX)
 
-include $(ABI_DEPTH)/config/abi_rules.mk
+include $(ABI_ROOT)/src/config/abi_rules.mk
 
 build:: $(TARGETS)

@@ -18,9 +18,9 @@
 ## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
 ## 02111-1307, USA.
 
-ABI_DEPTH = ../../..
+ABI_ROOT:=$(shell pwd)/../../../..
 
-include $(ABI_DEPTH)/config/abi_defs.mk
+include $(ABI_ROOT)/src/config/abi_defs.mk
 
 CPPSRCS=		abi_ver.cpp
 
@@ -57,6 +57,6 @@ ABI_VERFLAGS=		-DABI_BUILD_ID=\"$(BUILD_ID)\"			\
 
 INCLUDES=		$(ABI_VERFLAGS)
 
-include $(ABI_DEPTH)/config/abi_rules.mk
+include $(ABI_ROOT)/src/config/abi_rules.mk
 
 build:: $(TARGETS)

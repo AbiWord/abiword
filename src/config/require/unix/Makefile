@@ -18,18 +18,18 @@
 ## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
 ## 02111-1307, USA.
 
-ABI_DEPTH=../../..
+ABI_ROOT:=$(shell pwd)/../../../..
 
-include $(ABI_DEPTH)/config/abi_defs.mk
+include $(ABI_ROOT)/src/config/abi_defs.mk
 
 REQUIRE=		_GCC_ _GLIB_ _GTK_ _ZLIB_ _LIBPNG_ 
-## REQUIRE=		_GCC_ _GLIB_ _GTK_ _ZLIB_ _LIBPNG_ _FONTS_ #_COLE_
+## REQUIRE=		_GCC_ _GLIB_ _GTK_ _ZLIB_ _LIBPNG_ #_COLE_
 REQUIRECLEAN=		clean_ZLIB_ clean_LIBPNG_ #clean_COLE_
 REQUIREREALCLEAN=	$(REQUIRECLEAN) 
 
 TARGET=		build
 
-include $(ABI_DEPTH)/config/abi_rules.mk
+include $(ABI_ROOT)/src/config/abi_rules.mk
 
 
 build::		$(REQUIRE)
@@ -44,8 +44,8 @@ realclean::	$(REQUIREREALCLEAN)
 _GCC_:
 	@echo TODO do we need to test for GCC or EGCS and a version number?
 
-REQ_GTK_MINOR=1
-REQ_GTK_BUILD=13
+REQ_GTK_MINOR=2
+REQ_GTK_BUILD=1
 
 _GLIB_:
 	@glib-config --version >/dev/null 2>&1 			\
@@ -63,9 +63,9 @@ _ZLIB_:
 	      -o -r /usr/X11R6/lib/libz.a			\
 	    ]; then						\
 		echo Found zlib in system directories;		\
-	elif [ -d ../../$(ABI_DEPTH)/zlib ]; then		\
+	elif [ -d $(ABI_ROOT)/../zlib ]; then			\
 		echo Found zlib in peer directory;		\
-		$(MAKE) -C ../../$(ABI_DEPTH)/zlib;		\
+		$(MAKE) -C $(ABI_ROOT)/../zlib;			\
 	else							\
 		echo zlib not found;				\
 		echo TODO provide a nicer error message;	\
@@ -79,41 +79,14 @@ _LIBPNG_:
 	      -o -r /usr/X11R6/lib/libpng.a			\
 	    ]; then						\
 		echo Found libpng in system directories;	\
-	elif [ -d ../../$(ABI_DEPTH)/libpng ]; then		\
+	elif [ -d $(ABI_ROOT)/../libpng ]; then			\
 		echo Found libpng in peer directory;		\
-		$(MAKE) -C ../../$(ABI_DEPTH)/libpng;		\
+		$(MAKE) -C $(ABI_ROOT)/../libpng;		\
 	else							\
 		echo libpng not found;				\
 		echo TODO provide a nicer error message;	\
 		echo TODO with instructions for obtaining it;	\
 		exit 1;						\
-	fi
-
-_FONTS_:
-	@if [ !   -d $(ABI_DEPTH)/wp/lib/unix/fonts							\
-	     -o ! -f $(ABI_DEPTH)/wp/lib/unix/fonts/fonts.dir				\
-		];																\
-	then																\
-		echo Missing font directory.;									\
-		exit 1;															\
-	else																\
-		xxx=`grep \.pfa $(ABI_DEPTH)/wp/lib/unix/fonts/fonts.dir | awk '{print $$1}'`;	\
-		for k in $$xxx;													\
-		do																\
-			if [ ! -f $(ABI_DEPTH)/wp/lib/unix/fonts/$$k ];				\
-			then														\
-				echo ***AbiWord FONT NOT FOUND***;						\
-				echo;													\
-				echo AbiWord has a collection of font metrics that;		\
-				echo need to be downloaded separately.  Please see;		\
-				echo http://www.abisource.com/dev_download.phtml#type1;	\
-				echo for information.;									\
-				echo;													\
-				echo ***STOP***;										\
-				exit 1;													\
-			fi;															\
-		done;															\
-		echo AbiWord fonts found.;										\
 	fi
 
 _COLE_:
@@ -122,12 +95,12 @@ _COLE_:
 	      -o -r /usr/X11R6/lib/libcole.a			\
 	    ]; then						\
 		echo Found libcole in system directories;	\
-	elif [ -d ../../$(ABI_DEPTH)/cole-0.2.0 ]; then		\
+	elif [ -d $(ABI_ROOT)/../cole-0.2.0 ]; then		\
 		echo Found libcole in peer directory;		\
-		pushd ../../$(ABI_DEPTH)/cole-0.2.0;		\
+		pushd $(ABI_ROOT)/../cole-0.2.0;		\
 			./configure;				\
 		popd;						\
-		$(MAKE) -C ../../$(ABI_DEPTH)/cole-0.2.0;	\
+		$(MAKE) -C $(ABI_ROOT)/../cole-0.2.0;		\
 	else							\
 		echo libcole not found;				\
 		echo ***COLE LIBRARY NOT FOUND***;		\
@@ -142,20 +115,16 @@ _COLE_:
 #################################################################
 
 clean_ZLIB_:
-	@if [ -d ../../$(ABI_DEPTH)/zlib ]; then		\
-		$(MAKE) -C ../../$(ABI_DEPTH)/zlib clean;	\
+	@if [ -d $(ABI_ROOT)/../zlib ]; then		\
+		$(MAKE) -C $(ABI_ROOT)/../zlib clean;	\
 	fi
 
 clean_LIBPNG_:
-	@if [ -d ../../$(ABI_DEPTH)/libpng ]; then		\
-		$(MAKE) -C ../../$(ABI_DEPTH)/libpng clean;	\
+	@if [ -d $(ABI_ROOT)/../libpng ]; then		\
+		$(MAKE) -C $(ABI_ROOT)/../libpng clean;	\
 	fi
 
 clean_COLE_:
-	@if [ -d ../../$(ABI_DEPTH)/cole-0.2.0 ]; then		\
-		$(MAKE) -C ../../$(ABI_DEPTH)/cole-0.2.0 clean;	\
+	@if [ -d $(ABI_ROOT)/../cole-0.2.0 ]; then		\
+		$(MAKE) -C $(ABI_ROOT)/../cole-0.2.0 clean;	\
 	fi
-
-clean_FONTS_:
-	@rm -f $(ABI_DEPTH)/wp/lib/unix/fonts/*.pfa
-	@rm -f $(ABI_DEPTH)/wp/lib/unix/fonts/*.afm

@@ -21,7 +21,7 @@
 ABI_AP_INCS=	/show/ap/xp	/show/ap/$(ABI_NATIVE)	\
 		/show/ap/xp/ToolbarIcons /ev/xp /ev/$(ABI_NATIVE)
 
-include $(ABI_DEPTH)/config/abi_defs.mk
+include $(ABI_ROOT)/src/config/abi_defs.mk
 
 ##################################################################
 

@@ -18,8 +18,8 @@
 ## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
 ## 02111-1307, USA.
 
-ABI_DEPTH=..
-include $(ABI_DEPTH)/config/abi_defs_wp.mk
+ABI_ROOT:=$(shell pwd)/../..
+include $(ABI_ROOT)/src/config/abi_defs_wp.mk
 
 # TODO currently AbiSetup only runs on Windows
 
@@ -27,5 +27,5 @@ ifeq ($(ABI_NATIVE),win)
 DIRS=		lib gendata askrm
 endif
 
-include $(ABI_DEPTH)/config/abi_rules.mk
+include $(ABI_ROOT)/src/config/abi_rules.mk
 
