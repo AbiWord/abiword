@@ -4502,7 +4502,7 @@ fl_HdrFtrShadow::fl_HdrFtrShadow(FL_DocLayout* pLayout, fp_Page* pPage, fl_HdrFt
 	// Force creation of the appropriate container object;
 	// throw away return value.
 	m_pPage->getHdrFtrContainer(m_pHdrFtrSL);
-	UT_DEBUGMSG(("check that m_iType is indeed FL_SECTION_SHADOW"));
+	UT_DEBUGMSG(("check that m_iType is indeed FL_SECTION_SHADOW \n"));
 	UT_ASSERT(m_iType == FL_SECTION_SHADOW);
 //	UT_ASSERT(0);
 	fl_Layout::setType(PTX_Section); // Set the type of this strux
