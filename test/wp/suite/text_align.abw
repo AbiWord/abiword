@@ -1,3 +1,5 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<abiword version="unnumbered">
 <!-- =====================================================================  -->
 <!-- This file is an AbiWord document.                                      -->
 <!-- AbiWord is a free, Open Source word processor.                         -->
@@ -6,17 +8,16 @@
 <!-- =====================================================================  -->
 
 <!--         Build_ID          = (none) -->
-<!--         Build_Version     = 0.7.6 -->
-<!--         Build_Options     = LicensedTrademarks:On Debug:Off -->
-<!--         Build_Target      = /Builds/AbiBldSvr/0940446998/tmp/abi-0.7.6/src/WIN32_4.0_i386_OBJ/obj -->
-<!--         Build_CompileTime = 14:30:34 -->
-<!--         Build_CompileDate = Oct 20 1999 -->
+<!--         Build_Version     = unnumbered -->
+<!--         Build_Options     = LicensedTrademarks:Off Debug:Off Gnome:Off LibXML:Off -->
+<!--         Build_Target      = /home/phma/abi/abi/src/Linux_2.2.14-15mdk_i386_OBJ/obj -->
+<!--         Build_CompileTime = 08:18:58 -->
+<!--         Build_CompileDate = Nov 15 2000 -->
 
-<abiword version="0.7.6">
 <section>
-<p><c props="font-size:18pt">This text is left aligned.  </c><c props="color:000000; font-family:Times New Roman; font-size:18pt; font-style:normal; font-weight:normal; text-decoration:none">This text is left aligned.  This text is left aligned. </c></p>
-<p props="text-align:center"><c props="font-size:18pt">This text is center aligned</c></p>
-<p props="text-align:right"><c props="color:000000; font-family:Times New Roman; font-size:18pt; font-style:normal; font-weight:normal; text-decoration:none">This text is right aligned.  This text is right aligned.  </c><c props="font-size:18pt">This text is right aligned</c></p>
-<p props="text-align:justify"><c props="font-size:18pt">This text is full justified.  </c><c props="color:000000; font-family:Times New Roman; font-size:18pt; font-style:normal; font-weight:normal; text-decoration:none">This text is full justified.  This text is full justified.  </c></p>
+<p><c props="font-size:18pt">This text is left aligned.  </c><c props="color:000000; font-family:Times New Roman; font-size:18pt; font-style:normal; font-weight:normal; text-decoration:none; text-position:normal">This text is left aligned.  This text is left aligned.  This text is left aligned.  This text is left aligned.  This text is left aligned.  This text is left aligned.  </c><c props="color:000000; font-family:Times New Roman; font-size:18pt; font-style:normal; font-weight:normal; text-decoration:none">This text is left aligned. </c></p>
+<p props="text-align:center"><c props="color:000000; font-family:Times New Roman; font-size:18pt; font-style:normal; font-weight:normal; text-decoration:none; text-position:normal">This text is center aligned.  This text is center aligned.  This text is center aligned.  This text is center aligned.  This text is center aligned.  This text is center aligned.  This text is center aligned.   This text is center aligned. </c></p>
+<p props="text-align:right"><c props="color:000000; font-family:Times New Roman; font-size:18pt; font-style:normal; font-weight:normal; text-decoration:none">This text is right aligned.  </c><c props="color:000000; font-family:Times New Roman; font-size:18pt; font-style:normal; font-weight:normal; text-decoration:none; text-position:normal">This text is right aligned.  This text is right aligned.  This text is right aligned.  This text is right aligned.  This text is right aligned.  This text is right aligned.  </c><c props="font-size:18pt">This text is right aligned</c></p>
+<p props="text-align:justify"><c props="font-size:18pt">This text is full justified.  </c><c props="color:000000; font-family:Times New Roman; font-size:18pt; font-style:normal; font-weight:normal; text-decoration:none; text-position:normal">This text is full justified.  This text is full justified.  This text is full justified.  This text is full justified.  This text is full justified.  This text is full justified.  </c><c props="color:000000; font-family:Times New Roman; font-size:18pt; font-style:normal; font-weight:normal; text-decoration:none">This text is full justified.  </c></p>
 </section>
 </abiword>
