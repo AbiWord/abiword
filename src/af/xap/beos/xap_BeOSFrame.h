@@ -31,9 +31,10 @@ class XAP_BeOSApp;
 class ev_BeOSKeyboard;
 class ev_BeOSMouse;
 class EV_BeOSMenu;
+class EV_BeOSMenuPopup;
 class EV_Toolbar;
 class GR_Graphics;
-
+class ap_BeOSStausBar;
 /*****************************************************************
 ******************************************************************
 ** This file defines the beos-platform-specific class for the
@@ -63,6 +64,12 @@ class be_DocView: public BView {
 		virtual	void FrameResized(float new_width, float new_height);
 
 	BPicture *	m_pBPicture;
+                           
+	
+	private:
+		float		m_fOldWidth;
+		float		m_fOldHeight;
+		
 };
 
 class be_Window: public BWindow {
@@ -78,7 +85,9 @@ class be_Window: public BWindow {
 
 		//Located in the app specific code
 		be_DocView *		_createDocumentWindow(void);
+		virtual BView *		_createStatusBarWindow(void);
 
+		
 		//Be Function overrides
 		virtual bool QuitRequested(void);
 
@@ -88,7 +97,10 @@ class be_Window: public BWindow {
 		XAP_BeOSFrame 		*m_pBeOSFrame;
 		TFScrollBar		*m_hScroll, *m_vScroll;
 		BRect			m_winRectAvailable;
+		BView 			*m_pBeOSStatusBarView; //TODO: I don't like this!!!!!!!!!!!!!
 };
+
+class be_Status;
 
 /*****************************************************************/
 
@@ -138,22 +150,26 @@ public:
 	void					setScrollBars(TFScrollBar *h, TFScrollBar *v);
 
 	virtual void				toggleRuler(UT_Bool bRulerOn) = 0;
+	virtual void  				translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y) = 0;
 
 protected:
 //	virtual GtkWidget *			_createDocumentWindow(void)=0;
 	virtual void				_createTopLevelWindow(void);
-	
+
 	virtual EV_Toolbar *		_newToolbar(XAP_App *app, XAP_Frame *frame, const char *, const char *);
 
 	// TODO see why ev_BeOSKeyboard has lowercase prefix...
 	XAP_BeOSApp *				m_pBeOSApp;
 	EV_BeOSMenu *				m_pBeOSMenu;
+	EV_BeOSMenuPopup *			m_pBeOSPopup; /* only valid while a context popup is up */
 	
 	//Main window and  document view 
-	be_Window *				m_pBeWin;			
+	be_Window *					m_pBeWin;			
 	be_DocView *				m_pBeDocView;						
 	TFScrollBar *				m_hScroll;
 	TFScrollBar *				m_vScroll;
+
+
 /*
 	GtkWidget *				m_wTopLevelWindow;
 	GtkWidget *				m_wVBox;

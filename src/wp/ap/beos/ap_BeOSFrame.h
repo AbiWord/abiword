@@ -46,6 +46,7 @@ public:
 	virtual void 				setStatusMessage(const char * szMsg);
 	
 	virtual void				toggleRuler(UT_Bool bRulerOn);
+	virtual void  				translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y);
 
 protected:
 	//virtual GtkWidget *			_createDocumentWindow(void);

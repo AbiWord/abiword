@@ -31,6 +31,7 @@
 class AV_View;
 class XAP_BeOSApp;
 class XAP_BeOSFrame;
+class BPopUpMenu;
 
 /*****************************************************************/
 
@@ -46,6 +47,25 @@ public:
 protected:
 	XAP_BeOSApp 		*m_pBeOSApp;
 	XAP_BeOSFrame 		*m_pBeOSFrame;
+};
+
+/*****************************************************************/
+
+class EV_BeOSMenuPopup : public EV_BeOSMenu
+{
+public:
+	EV_BeOSMenuPopup(XAP_BeOSApp * pWin32App, XAP_BeOSFrame * pBeOSFrame,
+					  const char * szMenuLayoutName,
+					  const char * szMenuLabelSetName);
+	~EV_BeOSMenuPopup(void);
+
+	UT_Bool				synthesizeMenuPopup(XAP_BeOSFrame * pFrame);
+	
+	BPopUpMenu* GetHandle();
+	
+protected:
+	
+	BPopUpMenu* m_pPopup;
 };
 
 #endif /* EV_BEOSMENU_H */

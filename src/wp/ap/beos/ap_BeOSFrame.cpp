@@ -90,7 +90,10 @@ UT_Error AP_BeOSFrame::_showDocument(UT_uint32 iZoom)
 	UT_uint32 point = 0;
 	
 	//pG = new GR_BeOSGraphics(m_dArea->window, fontManager);
-	pG = new GR_BeOSGraphics(getBeDocView(), getApp());
+	//pG = new GR_BeOSGraphics(getBeDocView());
+	
+	pG = new GR_BeOSGraphics(getBeDocView(), getApp()); 
+
 	ENSUREP(pG);
 	pG->setZoomPercentage(iZoom);
 
@@ -197,8 +200,9 @@ UT_Error AP_BeOSFrame::_showDocument(UT_uint32 iZoom)
 	// frame is created.
 	((AP_FrameData*)m_pData)->m_pTopRuler->setView(pView);
 	((AP_FrameData*)m_pData)->m_pLeftRuler->setView(pView);
-	//((AP_FrameData*)m_pData)->m_pStatusBar->setView(pView);
-
+	((AP_FrameData*)m_pData)->m_pStatusBar->setView(pView);
+	
+	
 	pView->setInsertMode(((AP_FrameData*)m_pData)->m_bInsertMode);
     ((FV_View *) m_pView)->setShowPara(((AP_FrameData*)m_pData)->m_bShowPara);
 	
@@ -232,8 +236,7 @@ UT_Error AP_BeOSFrame::_showDocument(UT_uint32 iZoom)
 #endif	
 	((AP_FrameData*)m_pData)->m_pTopRuler->draw(NULL);
         ((AP_FrameData*)m_pData)->m_pLeftRuler->draw(NULL);
-	//((AP_FrameData*)m_pData)->m_pStatusBar->draw();
-
+	((AP_FrameData*)m_pData)->m_pStatusBar->draw();
 	return UT_OK;
 
 Cleanup:
@@ -558,8 +561,8 @@ void AP_BeOSFrame::_scrollFuncY(void * pData,
 
 void AP_BeOSFrame::setStatusMessage(const char * szMsg)
 {
-	printf("FRAME:Set Status Message not yet supported \n");
-//        ((AP_FrameData *)m_pData)->m_pStatusBar->setStatusMessage(szMsg);
+//	printf("FRAME:Set Status Message not yet supported \n");
+    ((AP_FrameData *)m_pData)->m_pStatusBar->setStatusMessage(szMsg);
 }                                                                        
 
 
@@ -571,22 +574,24 @@ void AP_BeOSFrame::setStatusMessage(const char * szMsg)
 be_DocView *be_Window::_createDocumentWindow() {
 	BRect r;
 	
+
         //Set up the scroll bars on the outer edges of the document area
         r = m_winRectAvailable;
-        r.bottom -= B_H_SCROLL_BAR_HEIGHT;
+        r.bottom -= (B_H_SCROLL_BAR_HEIGHT+1+ STATUS_BAR_HEIGHT);//TODO create a constant
         r.left = r.right - B_V_SCROLL_BAR_WIDTH;
         m_vScroll = new TFScrollBar(m_pBeOSFrame, r,
                                     "VertScroll", NULL, 0, 100, B_VERTICAL);
         AddChild(m_vScroll);
 
         r = m_winRectAvailable;
-        r.top = r.bottom - B_H_SCROLL_BAR_HEIGHT;
+        r.top = r.bottom - (B_H_SCROLL_BAR_HEIGHT+1+ STATUS_BAR_HEIGHT);
+        r.bottom-=21;
         r.right -= B_V_SCROLL_BAR_WIDTH;
         m_hScroll = new TFScrollBar(m_pBeOSFrame, r,
                                     "HortScroll", NULL, 0, 100, B_HORIZONTAL);
         AddChild(m_hScroll);
         m_pBeOSFrame->setScrollBars(m_hScroll, m_vScroll);
-        m_winRectAvailable.bottom -= B_H_SCROLL_BAR_HEIGHT +1;
+        m_winRectAvailable.bottom -= (B_H_SCROLL_BAR_HEIGHT +2+ STATUS_BAR_HEIGHT);
         m_winRectAvailable.right -= B_V_SCROLL_BAR_WIDTH +1;
 
 	//Create the Top and Left Rulers (need a width here)
@@ -627,6 +632,24 @@ be_DocView *be_Window::_createDocumentWindow() {
         return(m_pbe_DocView);                                    
 }
 
+
+BView * be_Window::_createStatusBarWindow() {
+
+	AP_BeOSStatusBar *pStatusBar = new AP_BeOSStatusBar(m_pBeOSFrame);
+	BView *pStatusBarView;
+	UT_ASSERT(pStatusBar);
+	static_cast<AP_FrameData*>(m_pBeOSFrame->m_pData)->m_pStatusBar = pStatusBar;
+	BRect r;
+    r = Bounds();
+    r.top = r.bottom - STATUS_BAR_HEIGHT;
+	pStatusBarView = pStatusBar->createWidget(r);
+	AddChild(pStatusBarView);
+	return pStatusBarView;	
+	
+}	
+//////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////
+
 UT_Error AP_BeOSFrame::_replaceDocument(AD_Document * pDoc)
 {
 	// NOTE: prior document is discarded in _showDocument()
@@ -641,5 +664,26 @@ void AP_BeOSFrame::toggleRuler(UT_Bool bRulerOn)
  
 	AP_FrameData *pFrameData = (AP_FrameData *)getFrameData();
 	UT_ASSERT(pFrameData);
+}
+
+void AP_BeOSFrame::translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y)
+{ 
+	// translate the given document mouse coordinates into absolute screen coordinates.
+
+	BPoint pt(x,y);// = { x, y };
+
+	m_pBeWin->Lock();
+	
+	be_DocView *pView = getBeDocView();
+	
+	if(pView)
+	{
+		pView->ConvertToScreen(&pt);
+	}
+	
+	m_pBeWin->Unlock();
+	
+	x = pt.x;
+	y = pt.y;
 }
 

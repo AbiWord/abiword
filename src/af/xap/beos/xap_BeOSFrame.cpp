@@ -34,6 +34,7 @@
 #include "xav_View.h"
 #include "xad_Document.h"
 
+
 #include "ap_FrameData.h"
 #include "gr_BeOSGraphics.h"
 
@@ -84,6 +85,7 @@ XAP_BeOSFrame::XAP_BeOSFrame(XAP_BeOSApp * app)
 	m_pView = NULL;
 	m_pBeWin = NULL;
 	m_pBeDocView = NULL;
+	m_pBeOSPopup = NULL;
 }
 
 // TODO when cloning a new frame from an existing one
@@ -200,7 +202,6 @@ void XAP_BeOSFrame::_createTopLevelWindow(void)
 			      	B_NORMAL_WINDOW_FEEL, 0);
 	UT_ASSERT(m_pBeWin);
 	m_pBeWin->_createWindow(m_szMenuLayoutName, m_szMenuLabelSetName);
-
 	// we let our caller decide when to show m_wTopLevelWindow.
 	return;
 }
@@ -265,43 +266,6 @@ UT_Bool XAP_BeOSFrame::updateTitle()
 	return UT_TRUE;
 }
 
-UT_Bool XAP_BeOSFrame::runModalContextMenu(AV_View * /* pView */, const char * szMenuName, UT_sint32 x, UT_sint32 y) {
-#if 0
-	UT_Bool bResult = UT_TRUE;
-
-	UT_ASSERT(!m_pBeOSPopup);
-
-	m_pBeOSPopup = new EV_BeOSMenuPopup(m_pBeOSApp,this,szMenuName,m_szMenuLabelSetName);
-	if (m_pBeOSPopup && m_pBeOSPopup->synthesizeMenuPopup())
-	{
-		// the popup will steal the mouse and so we won't get the
-		// button_release_event and we won't know to release our
-		// grab.  so let's do it here.  (when raised from a keyboard
-		// context menu, we may not have a grab, but that should be ok.
-
-		GtkWidget * w = gtk_grab_get_current();
-		if (w)
-		{
-			UT_DEBUGMSG(("Ungrabbing mouse [before popup].\n"));
-			gtk_grab_remove(w);
-		}
-
-		translateDocumentToScreen(x,y);
-
-		UT_DEBUGMSG(("ContextMenu: %s at [%d,%d]\n",szMenuName,x,y));
-		UT_Point pt;
-		pt.x = x;
-		pt.y = y;
-		gtk_menu_popup(GTK_MENU(m_pBeOSPopup->getMenuHandle()), NULL, NULL,
-					   s_gtkMenuPositionFunc, &pt, 3, 0);
-	}
-
-	DELETEP(m_pBeOSPopup);
-	return bResult;
-#endif
-	return(UT_FALSE);
-}
-
 UT_Vector * XAP_BeOSFrame::VecToolbarLayoutNames() {
 	return(&m_vecToolbarLayoutNames); 
 }
@@ -319,6 +283,8 @@ void XAP_BeOSFrame::setScrollBars(TFScrollBar *h, TFScrollBar *v) {
 	m_vScroll = v;
 }	
 
+
+
 /*********************************************************
  Local Window/View Class Stuff 
 *********************************************************/
@@ -332,6 +298,7 @@ be_Window::be_Window(XAP_BeOSApp *theApp, XAP_BeOSFrame *theFrame,
 	m_pBeOSFrame = theFrame;
 	m_pBeOSApp = theApp;
 }
+
 #if 0
 void be_Window::MessageReceived(BMessage *msg) {
 	switch(msg->what) {
@@ -342,6 +309,7 @@ void be_Window::MessageReceived(BMessage *msg) {
 		BWindow::MessageReceived(msg);
 	}
 }
+
 #endif
 
 bool be_Window::QuitRequested(void) {
@@ -395,22 +363,18 @@ bool be_Window::_createWindow(const char *szMenuLayoutName,
 
         _createDocumentWindow();
 
-#if 0
-
         // Let the app-specific frame code create the status bar
         // if it wants to.  we will put it below the document
         // window (a peer with toolbars and the overall sunkenbox)
         // so that it will appear outside of the scrollbars.
-	m_wStatusBar = _createStatusBarWindow();
-        if (m_wStatusBar) {
-                gtk_widget_show(m_wStatusBar);
-                gtk_box_pack_end(GTK_BOX(m_wVBox), m_wStatusBar, FALSE, FALSE, 0
-);
-        }                    
-#endif
+       m_pBeOSStatusBarView =  _createStatusBarWindow();
+	
+    if (!m_pBeOSStatusBarView)
+	 return (false);
 
 	return(true);	
 }
+
 
 be_DocView::be_DocView(BRect frame, const char *name, uint32 resizeMask, uint32 flags)
 	:BView(frame, name, resizeMask, flags | B_FRAME_EVENTS) {
@@ -422,8 +386,8 @@ void be_DocView::FrameResized(float new_width, float new_height) {
 	GR_BeOSGraphics *pG;
 	pBWin = (be_Window *)Window();
 	if (!pBWin || !pBWin->m_pBeOSFrame)
-		return;
- 	pBWin->DisableUpdates(); 
+		return; 
+// 	pBWin->DisableUpdates(); 
 	pG = (GR_BeOSGraphics *)pBWin->m_pBeOSFrame->Graphics();
 	if (!pG)
 	{
@@ -438,10 +402,10 @@ void be_DocView::FrameResized(float new_width, float new_height) {
 	AV_View *pView = pBWin->m_pBeOSFrame->getCurrentView();
 	if (pView) {
 		pView->setWindowSize(rect.Width(), rect.Height());
-		pView->draw();
+		pView->draw(); //TODO do we need this???
  		/* Methinks it can handle itself*/
 	}
-	pBWin->EnableUpdates();
+//	pBWin->EnableUpdates();
 	pBWin->Sync(); //Maybe Sync? We'll see
 }
 
@@ -507,6 +471,44 @@ Things to do to speed this up, make it less flashy:
 	pBWin->EnableUpdates();
 	pBWin->Sync();
 #endif
+}
+
+
+/*****************************************************************/
+UT_Bool XAP_BeOSFrame::runModalContextMenu(AV_View * /* pView */, const char * szMenuName,
+										   UT_sint32 x, UT_sint32 y)
+{
+	UT_Bool bResult = UT_TRUE;
+	UT_ASSERT(!m_pBeOSPopup);
+
+	m_pBeOSPopup = new EV_BeOSMenuPopup(m_pBeOSApp, this, 
+									  szMenuName, 
+									  m_szMenuLabelSetName);
+									  
+	if (m_pBeOSPopup && m_pBeOSPopup->synthesizeMenuPopup(this))
+	{
+		UT_DEBUGMSG(("ContextMenu: %s at [%d,%d]\n",szMenuName,x,y));
+		
+		translateDocumentToScreen(x,y);
+	 
+		BPoint screenPoint(x,y);
+		BPopUpMenu* pMenu = m_pBeOSPopup->GetHandle();
+		BMenuItem* selectedItem = pMenu->Go(screenPoint , false , false, false);
+	
+		// Send the menu item invocation message to the window
+		
+		if(selectedItem) // The user clicked an item, will be NULL if they click away from the popup.
+		{
+			if(m_pBeWin) // Should always be valid here, but just in case.
+				m_pBeWin->PostMessage(selectedItem->Message());	
+		}
+		
+	}
+	
+	DELETEP(m_pBeOSPopup);
+
+	return bResult;
+
 }
 
 EV_Toolbar * XAP_BeOSFrame::_newToolbar(XAP_App *app, XAP_Frame *frame,

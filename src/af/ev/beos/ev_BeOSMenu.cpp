@@ -511,4 +511,285 @@ UT_Bool EV_BeOSMenu::synthesize(void)
 	return UT_TRUE;
 }
 
-    			   
+/*****************************************************************/
+
+EV_BeOSMenuPopup::EV_BeOSMenuPopup(XAP_BeOSApp * pBeOSApp,
+									XAP_BeOSFrame * pBeOSFrame,
+									 const char * szMenuLayoutName,
+									 const char * szMenuLabelSetName)
+	: EV_BeOSMenu(pBeOSApp,pBeOSFrame,szMenuLayoutName,szMenuLabelSetName)
+{
+}
+
+EV_BeOSMenuPopup::~EV_BeOSMenuPopup(void)
+{
+	if (m_pPopup)
+		delete m_pPopup;
+}
+
+BPopUpMenu* EV_BeOSMenuPopup::GetHandle()
+{
+	return m_pPopup;
+}
+
+UT_Bool EV_BeOSMenuPopup::synthesizeMenuPopup(XAP_BeOSFrame * pFrame)
+{
+	BPopUpMenu	*pMenuBar = NULL;
+	BMenu 		*pMenu = NULL;
+//	BMenuBar 	*pMenuBar = NULL;
+
+	//Future reference, use the UT_Stack stack;
+	my_stack_t	*stack = NULL;
+	int			accel;
+
+	UT_ASSERT(pFrame);
+		
+    // Get the list of actions, and a count.
+	const EV_Menu_ActionSet * pMenuActionSet = m_pBeOSApp->getMenuActionSet();
+	UT_ASSERT(pMenuActionSet);
+	
+	UT_uint32 nrLabelItemsInLayout = m_pMenuLayout->getLayoutItemCount();
+	UT_ASSERT(nrLabelItemsInLayout > 0);
+
+	//Create the top level menubar
+	//BRect all = pBWin->m_winRectAvailable;
+	//all.bottom = all.top + 18;
+	//pBWin->m_winRectAvailable.top = all.bottom + 1;
+	pMenuBar = new BPopUpMenu("popup" , false, false);//BMenuBar(all, "Menubar");
+	m_pPopup = pMenuBar;
+	
+	UT_ASSERT(pMenuBar);
+	
+	// we keep a stack of the widgets so that we can properly
+	// parent the menu items and deal with nested pull-rights.
+	for (UT_uint32 k=0; (k < nrLabelItemsInLayout); k++)
+	{
+		EV_Menu_LayoutItem * pLayoutItem = m_pMenuLayout->getLayoutItem(k);
+		UT_ASSERT(pLayoutItem);
+		
+		XAP_Menu_Id id = pLayoutItem->getMenuId();
+
+		EV_Menu_Action * pAction = pMenuActionSet->getAction(id);
+		UT_ASSERT(pAction);
+
+
+		EV_Menu_Label * pLabel = m_pMenuLabelSet->getLabel(id);
+		UT_ASSERT(pLabel);
+
+		// get the name for the menu item
+		const char * szLabelName = NULL;
+                const char * szMnemonicName = NULL;
+
+		switch (pLayoutItem->getMenuLayoutFlags())
+		{
+		case EV_MLF_Normal:	{
+#if 0
+			UT_Bool bEnable = UT_TRUE;
+                        UT_Bool bCheck = UT_FALSE;
+
+                        if (pAction->hasGetStateFunction()) {
+                        	EV_Menu_ItemState mis = pAction->getMenuItemState(pView);
+                                if (mis & EV_MIS_Gray)
+                                	bEnable = UT_FALSE;
+                                if (mis & EV_MIS_Toggled)
+                                	bCheck = UT_TRUE;
+                        }                 
+#endif
+
+			const char **data = _ev_GetLabelName(m_pBeOSApp, m_pBeOSFrame, pAction, pLabel);
+                        //const char ** data = _ev_GetLabelName(m_pBeOSApp, m_pBeOSFrame, pAction, pLabel);
+                        szLabelName = data[0];
+                        szMnemonicName = data[1];
+
+			BString betterString(szMnemonicName);
+			int index,modifiers;
+			char key;
+			key=0;
+			modifiers=0;
+			if (szMnemonicName != NULL)
+			{
+				if ((index=betterString.FindFirst("Ctrl+")) != B_ERROR)
+				{
+					modifiers=B_CONTROL_KEY;
+					if (betterString.FindFirst("F4") != B_ERROR)
+					{
+						//key=B_F4_KEY;
+					}
+					else if (betterString.FindFirst("F7") !=B_ERROR)
+					{
+						//key=B_F7_KEY;
+					}
+					else if (betterString.FindFirst("Del") != B_ERROR)
+					{
+						//key=B_DELETE;
+					}
+					else
+					{
+						key=betterString[5];
+					}
+				}
+				else if ((index=betterString.FindFirst("Alt+")) != B_ERROR)
+				{
+					modifiers=B_COMMAND_KEY;
+					if (betterString.FindFirst("F4") != B_ERROR)
+					{
+					//	key=B_F4_KEY;
+					}
+					else if (betterString.FindFirst("F7") !=B_ERROR)
+					{
+					//	key=B_F7_KEY;
+					}
+					else if	(betterString.FindFirst("Del") != B_ERROR)
+					{
+					//	key=B_DELETE;
+					}
+					else
+					{
+						key=betterString[4];
+					}
+				}
+				else 
+				{
+					modifiers=0;
+					if (betterString.FindFirst("F4") != B_ERROR)
+					{
+					//	key=B_F4_KEY;
+					}
+					else if (betterString.FindFirst("F7") !=B_ERROR)
+					{
+					//	key=B_F7_KEY;
+					}
+					else if	(betterString.FindFirst("Del") != B_ERROR)
+					{
+					//	key=B_DELETE;
+					}
+					else
+					{
+						key=betterString[0];
+					}	
+				}
+			}
+
+			UT_DEBUGMSG(("NORM MENU: L:[%s] MN:[%s] \n", 
+				(szLabelName) ? szLabelName : "NULL", 
+				(szMnemonicName) ? szMnemonicName : "NULL")); 
+			if (szLabelName && *szLabelName) {
+			
+
+        
+				char buf[1024];
+				// convert label into proper version and get accelerators
+				
+				int32 iLength = strlen(szLabelName);
+				char* buffer = new char[2*(iLength+1)];
+			        
+        		memset(buffer, 0, 2*(iLength+1));
+
+				int32 destLength = 2*(iLength + 1);
+				int32 state =0;
+			
+				convert_to_utf8(B_ISO1_CONVERSION , szLabelName , &iLength ,  buffer , &destLength , &state);
+				buffer[destLength] = '\0';
+				
+				accel = _ev_convert(buf, buffer);
+				
+				//UT_ASSERT(pMenu);
+				BMessage *newmesg = new BMessage(ABI_BEOS_MENU_EV);
+				newmesg->AddInt32(ABI_BEOS_MENU_EV_NAME, id);
+                
+				BMenuItem *pMenuItem = new BMenuItem(buf, newmesg, key,modifiers);
+				pMenuBar->AddItem(pMenuItem);
+				
+				delete [] buffer;
+			}
+			else {
+				//We are reserving a spot in the menu for something
+				//printf("Spot being reserved \n");
+			}
+			break;
+		}
+		case EV_MLF_BeginSubMenu: {
+			const char **data= _ev_GetLabelName(m_pBeOSApp, m_pBeOSFrame, pAction, pLabel);
+			//char ** data = _ev_GetLabelName(m_pBeOSApp, m_pBeOSFrame, pAction, pLabel);
+                        szLabelName = data[0];
+
+                        szMnemonicName = data[1];           
+			UT_DEBUGMSG(("START SUB MENU: L:[%s] MN:[%s] \n", 
+				(szLabelName) ? szLabelName : "NULL", 
+				(szMnemonicName) ? szMnemonicName : "NULL")); 
+
+			if (szLabelName && *szLabelName) {
+				// convert label into underscored version
+				char buf[1024];
+				
+				int32 iLength = strlen(szLabelName);
+				char* buffer = new char[2*(iLength+1)];
+
+				int32 destLength = 2*(iLength + 1);
+				int32 state =0;
+			
+				convert_to_utf8(B_ISO1_CONVERSION , szLabelName , &iLength ,  buffer , &destLength , &state);
+				buffer[destLength] = '\0';
+
+				accel = _ev_convert(buf, buffer);
+
+				pMenu = new BMenu(buf);		//Accellerator ignored
+				if (!pMenu) 
+				{
+					delete [] buffer;
+					break;
+				}
+				//printf("----- Before push ---\n");
+				//print_stack(stack);
+				stack = push(stack, pMenu);
+				//printf("----- After push ---\n");
+				//print_stack(stack);
+				delete [] buffer;
+			}
+			break;
+		}
+		case EV_MLF_EndSubMenu:	{
+			pMenu = top(stack); 
+			if (!pMenu)		//Skip bogus first entry
+				break;
+			//UT_ASSERT(pMenu);
+	
+			//printf("----- Before pop ---\n");
+			//print_stack(stack);
+			stack = pop(stack);
+			//printf("----- After pop ---\n");
+			//print_stack(stack);
+			BMenu *parentMenu = top(stack);
+			if (!parentMenu) {
+				pMenuBar->AddItem(pMenu);
+			}
+			else { 
+				parentMenu->AddItem(pMenu);
+			}
+			break;
+		}
+		case EV_MLF_Separator:	{	
+			pMenu = top(stack);
+			if (pMenu)
+				pMenu->AddSeparatorItem();
+			else
+				pMenuBar->AddSeparatorItem();
+				
+			break;
+		}
+
+		case EV_MLF_BeginPopupMenu:
+			UT_DEBUGMSG(("MENU: Begin popup menu \n"));
+                        break;
+                case EV_MLF_EndPopupMenu:
+			UT_DEBUGMSG(("MENU: End popup menu \n"));
+                        break;
+
+		default:
+			UT_ASSERT(0);
+			break;
+		}
+	}
+		
+	return UT_TRUE;
+}
