@@ -113,10 +113,20 @@ UT_Bool GR_Win32Image::convertFromPNG(const UT_ByteBuf* pBB, UT_sint32 iDisplayW
 	png_set_packing(png_ptr);
 
 	/* Expand paletted colors into true RGB triplets */
-	if (color_type == PNG_COLOR_TYPE_PALETTE)
-	{
-		png_set_expand(png_ptr);
-	}
+	png_set_expand(png_ptr);
+
+	/*  If we've got images with 16 bits per channel, we don't need that
+		much precision.  We'll do fine with 8 bits per channel */
+	png_set_strip_16(png_ptr);
+
+	/*  For simplicity, treat grayscale as RGB */
+	png_set_gray_to_rgb(png_ptr);
+
+	/*  For simplicity, we'll ignore alpha */
+	png_set_strip_alpha(png_ptr);
+	
+	/*  We want libpng to deinterlace the image for us */
+	UT_uint32 iInterlacePasses = png_set_interlace_handling(png_ptr);
 
 	/* flip the RGB pixels to BGR (or RGBA to BGRA) */
 	png_set_bgr(png_ptr);
@@ -156,12 +166,14 @@ UT_Bool GR_Win32Image::convertFromPNG(const UT_ByteBuf* pBB, UT_sint32 iDisplayW
 	
 	UT_Byte* pBits = ((unsigned char*) m_pDIB) + m_pDIB->bmiHeader.biSize;
 	
-	/* Now it's time to read the image.  One of these methods is REQUIRED */
-	for (UT_uint32 iRow = 0; iRow < height; iRow++)
+	for (; iInterlacePasses; iInterlacePasses--)
 	{
-		UT_Byte* pRow = pBits + (height - iRow - 1) * iBytesInRow;
+		for (UT_uint32 iRow = 0; iRow < height; iRow++)
+		{
+			UT_Byte* pRow = pBits + (height - iRow - 1) * iBytesInRow;
 		
-		png_read_rows(png_ptr, &pRow, NULL, 1);
+			png_read_rows(png_ptr, &pRow, NULL, 1);
+		}
 	}
 
 	/* read rest of file, and get additional chunks in info_ptr - REQUIRED */
