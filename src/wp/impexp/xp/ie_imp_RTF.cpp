@@ -1976,59 +1976,49 @@ bool IE_Imp_RTF::LoadPictData(PictFormat format, char * image_name,
 	if (CanHandlePictFormat (format))
 	{
 		// TODO: investigate whether pictData is leaking memory or not
-		IEGraphicFileType fileType = IEGFT_Unknown;
 		IE_ImpGraphic * pGraphicImporter = NULL;
 		
-		switch (format)
+		UT_Error error = IE_ImpGraphic::constructImporter(pictData, IEGFT_Unknown, &pGraphicImporter);
+
+		if (pGraphicImporter) 
 		{
-		case picPNG:
-			fileType = IEGFT_PNG;
-			break;
-		case picBMP:
-			fileType = IEGFT_BMP;
-			break;
-#ifdef HAVE_LIBJPEG
-		case picJPEG:
-			fileType = IEGFT_JPEG;
-			break;
-#endif
-		default:
-			UT_DEBUGMSG (("Unknown format may crash !!\n"));
-			fileType = IEGFT_Unknown;
+			FG_Graphic* pFG;
+			
+			// TODO: according with IE_ImpGraphic header, we shouldn't free
+			// TODO: the buffer. Confirm that.
+			error = pGraphicImporter->importGraphic(pictData, &pFG);
+			DELETEP(pGraphicImporter);
+
+			if (error != UT_OK) 
+			{
+				UT_DEBUGMSG(("Error parsing embedded PNG\n"));
+				delete pictData;
+				return false;
+			}
+			
+			UT_ByteBuf * buf;
+			buf = static_cast<FG_GraphicRaster *>(pFG)->getRaster_PNG();
+			imgProps.width = static_cast<FG_GraphicRaster *>(pFG)->getWidth ();
+			imgProps.height = static_cast<FG_GraphicRaster *>(pFG)->getHeight ();
+			// Not sure whether this is the right way, but first, we should
+			// insert any pending chars
+			if (!FlushStoredChars(true))
+			{
+				UT_DEBUGMSG(("Error flushing stored chars just before inserting a picture\n"));
+				delete pictData;
+				return false;
+			} 
+			
+			ok = InsertImage (buf, image_name, imgProps);
+			if (!ok) 
+			{
+				delete pictData;
+				return false;
+			}
 		}
-
-		UT_Error error = IE_ImpGraphic::constructImporter(pictData, fileType, &pGraphicImporter);
-
-		FG_Graphic* pFG;
-
-		// TODO: according with IE_ImpGraphic header, we shouldn't free
-		// TODO: the buffer. Confirm that.
-		error = pGraphicImporter->importGraphic(pictData, &pFG);
-		DELETEP(pGraphicImporter);
-
-		if (error != UT_OK) 
+		else 
 		{
-			UT_DEBUGMSG(("Error parsing embedded PNG\n"));
-			delete pictData;
-			return false;
-		}
-
-		UT_ByteBuf * buf;
-		buf = static_cast<FG_GraphicRaster *>(pFG)->getRaster_PNG();
-		imgProps.width = static_cast<FG_GraphicRaster *>(pFG)->getWidth ();
-		imgProps.height = static_cast<FG_GraphicRaster *>(pFG)->getHeight ();
-		// Not sure whether this is the right way, but first, we should
-		// insert any pending chars
-		if (!FlushStoredChars(true))
-		{
-			UT_DEBUGMSG(("Error flushing stored chars just before inserting a picture\n"));
-			delete pictData;
-			return false;
-		} 
-
-		ok = InsertImage (buf, image_name, imgProps);
-		if (!ok) 
-		{
+			UT_DEBUGMSG(("RTF: Unable to translate image\n"));
 			delete pictData;
 			return false;
 		}
@@ -6412,7 +6402,8 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 			}
 			else if ((strcmp((char *)keyword,  "s") == 0) ||
 				     (strcmp((char *)keyword, "ds") == 0) ||
-				     (strcmp((char *)keyword, "cs") == 0))
+				     (strcmp((char *)keyword, "cs") == 0) ||
+					 (strcmp((char *)keyword, "ts") == 0))
 			{
 				styleNumber = parameter;
 			}
