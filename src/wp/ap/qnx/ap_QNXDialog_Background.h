@@ -37,8 +37,11 @@ public:
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 	
+	virtual void			eventCancel (void);
+	virtual void			eventOk (void);
 protected:
-
+	PtWidget_t *			_constructWindow (void);
+	int						done;
 };
 
 #endif /* AP_QNXDIALOG_BACKGROUND_H */
