@@ -105,12 +105,23 @@ bool EV_Menu_Action::isCheckable() const
 /*****************************************************************/
 /*****************************************************************/
 
+/*!
+ * This class is only a vector of EV_Menu_Action, but instead
+ * of start with an index of 0, we start with an index of
+ * "first" (and we finish at "last"), but of course the underlying
+ * vector will still start at 0 and finish at (last - first).
+ *
+ * In practice, "first" will be AP_MENU_ID__BOGUS1__, and "last"
+ * will be AP_MENU_ID__BOGUS2__.
+ */
 EV_Menu_ActionSet::EV_Menu_ActionSet(XAP_Menu_Id first, XAP_Menu_Id last)
 	: m_actionTable(last - first + 1),
-	  m_first(first),
-	  m_last(last)
+	  m_first(first)
 {
-	for (size_t i = 0; i < m_actionTable.getItemCount(); ++i)
+	size_t nb_items = last - first + 1;
+	size_t i;
+	
+	for (i = 0; i < nb_items; ++i)
 		m_actionTable.addItem(0);
 }
 
@@ -129,7 +140,7 @@ bool EV_Menu_ActionSet::setAction(XAP_Menu_Id id,
 {
 	void *tmp;
 
-	if ((id < m_first) || (id > m_last))
+	if ((id < m_first) || (id >= m_first + m_actionTable.size()))
 		return false;
 
 	UT_uint32 index = (id - m_first);
@@ -144,46 +155,29 @@ bool EV_Menu_ActionSet::setAction(XAP_Menu_Id id,
 
 EV_Menu_Action * EV_Menu_ActionSet::getAction(XAP_Menu_Id id) const
 {
-	if ((id < m_first) || (id > m_last))
+	xxx_UT_DEBUGMSG(("JCA: EV_Menu_ActionSet::getAction(%d) m_first = [%d], size_table = [%d]\n", id, m_first, m_actionTable.size()));
+	if ((id < m_first) || (id > m_first + m_actionTable.size()))
 		return NULL;
 
 	UT_uint32 index = (id - m_first);
 	EV_Menu_Action * pAction = static_cast<EV_Menu_Action *> (m_actionTable[index]);
-	UT_ASSERT(pAction && (pAction->getMenuId()==id));
+	UT_ASSERT(pAction && (pAction->getMenuId() == id));
 	return pAction;
 }
 
-#define min(a, b) ((a) < (b) ? (a) : (b))
-#define max(a, b) ((a) < (b) ? (b) : (a))
-
 bool EV_Menu_ActionSet::addAction(EV_Menu_Action *pAction)
 {
-	int id = pAction->getMenuId();
-	int i;
-	void *tmp;
-
 	UT_DEBUGMSG(("JCA: EV_Menu_ActionSet::addAction\n"));
-	if ((id >= m_first) && (id <= m_last))
-	{
-		// here we do exactly the same thing that setAction
-		UT_uint32 index = (id - m_first);
-		UT_uint32 error = m_actionTable.setNthItem(index, pAction, &tmp);
-		EV_Menu_Action * pTmpAction = static_cast<EV_Menu_Action *> (tmp);
-		DELETEP(pTmpAction);
+	UT_ASSERT(pAction);
+	size_t size_table = m_actionTable.size();
+	UT_DEBUGMSG(("pAction->getMenuId() = [%d], size_table = [%d], m_first = [%d]\n",
+				 pAction->getMenuId(), size_table, m_first));
 
-		return (error == 0);
-	}
+#ifdef DEBUG
+	if (pAction->getMenuId() < size_table + m_first - 1 || pAction->getMenuId() > size_table + m_first)
+		UT_DEBUGMSG(("WARNING: Weird menu id.\n"));
+#endif
 
-	for (i = m_first; i > id; --i)
-		UT_ASSERT(UT_NOT_IMPLEMENTED);
-	for (i = m_last; i < id; ++i)
-		m_actionTable.addItem(0);
-
-	m_actionTable.setNthItem(id - m_first, pAction, &tmp);
-	UT_ASSERT(tmp == 0);
-
-	m_first = min(id, m_first);
-	m_last = max(id, m_last);
-
-	return true;
+	m_actionTable.insertItemAt(pAction, pAction->getMenuId() - m_first);
+	return (size_table + 1 == m_actionTable.size());
 }

@@ -415,7 +415,7 @@ bool AP_UnixFrame::initialize()
 #endif
 
 #if 0
-	m_pUnixMenu->addMenuItem("/File/Adieu");
+	m_pUnixMenu->addPath("/&Edit/Adieu");
 #endif
 	return true;
 }

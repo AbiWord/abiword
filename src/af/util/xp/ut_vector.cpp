@@ -151,6 +151,18 @@ UT_sint32 UT_Vector::addItem(void* p)
 	return 0;
 }
 
+/** It returns true if there were no errors, false elsewhere */
+bool UT_Vector::pop_back()
+{
+	if (m_iCount > 0)
+	{
+		--m_iCount;
+		return true;
+	}
+	else
+		return false;
+}
+
 UT_sint32 UT_Vector::setNthItem(UT_uint32 ndx, void * pNew, void ** ppOld)
 {
 	const UT_uint32 old_iSpace = m_iSpace;

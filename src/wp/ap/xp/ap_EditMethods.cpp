@@ -2992,7 +2992,7 @@ Defun1(delEOD)
 Defun(insertData)
 {
 	ABIWORD_VIEW;
-	pView->cmdCharInsert(pCallData->m_pData,pCallData->m_dataLength);
+	pView->cmdCharInsert(pCallData->m_pData, pCallData->m_dataLength);
 	return true;
 }
 

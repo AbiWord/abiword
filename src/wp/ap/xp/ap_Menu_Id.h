@@ -35,7 +35,7 @@
 
 enum _Ap_Menu_Id
 {
-	AP_MENU_ID__BOGUS1__ = 0,			/* must be first */
+	AP_MENU_ID__BOGUS1__ = 0,			/* must be first and must be zero */
 
 	AP_MENU_ID_FILE,
 	AP_MENU_ID_FILE_NEW,

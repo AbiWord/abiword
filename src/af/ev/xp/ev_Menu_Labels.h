@@ -78,12 +78,11 @@ public:
 #endif
 	const char *		getLanguage() const;
 	void				setLanguage(const char *szLanguage);
+	inline const UT_Vector& getAllLabels() const { return m_labelTable; }
 
 private:
 	UT_Vector			m_labelTable;
-//	EV_Menu_Label **	m_labelTable;
 	XAP_Menu_Id			m_first;
-	XAP_Menu_Id			m_last;
 	UT_String			m_stLanguage;	/* for the convenience of the app only  */
 };
 

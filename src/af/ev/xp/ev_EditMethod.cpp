@@ -29,32 +29,32 @@
 /*****************************************************************/
 /*****************************************************************/
 
-EV_EditMethodCallData::EV_EditMethodCallData(void)
+EV_EditMethodCallData::EV_EditMethodCallData()
+	: m_xPos(0),
+	  m_yPos(0),
+	  m_pData(0),
+	  m_dataLength(0),
+	  m_bAllocatedData(false)
 {
-	m_xPos = 0;
-	m_yPos = 0;
-	m_pData = 0;
-	m_dataLength = 0;
-	m_bAllocatedData = false;
 }
 
 EV_EditMethodCallData::EV_EditMethodCallData(UT_UCSChar * pData, UT_uint32 dataLength)
+	: m_xPos(0),
+	  m_yPos(0),
+	  m_pData(pData),
+	  m_dataLength(dataLength),
+	  m_bAllocatedData(false)
 {
-	m_xPos = 0;
-	m_yPos = 0;
-	m_pData = pData;
-	m_dataLength = dataLength;
-	m_bAllocatedData = false;
 }
 
 EV_EditMethodCallData::EV_EditMethodCallData(const char * pChar, UT_uint32 dataLength)
+	: m_xPos(0),
+	  m_yPos(0),
+	  m_pData(new UT_UCSChar[dataLength])
 {
-	m_xPos = 0;
-	m_yPos = 0;
-	m_pData = new UT_UCSChar[dataLength];
 	if (m_pData)
 	{
-		for (UT_uint32 k=0; k<dataLength; k++)
+		for (UT_uint32 k = 0; k < dataLength; k++)
 			m_pData[k] = pChar[k];
 		m_dataLength = dataLength;
 		m_bAllocatedData = true;
@@ -68,37 +68,36 @@ EV_EditMethodCallData::EV_EditMethodCallData(const char * pChar, UT_uint32 dataL
 
 EV_EditMethodCallData::~EV_EditMethodCallData()
 {
-	if (m_bAllocatedData)
-		delete m_pData;
+	delete m_pData;
 }
 
 /*****************************************************************/
 /*****************************************************************/
 
-EV_EditMethod::EV_EditMethod(const char * szName,EV_EditMethod_pFn fn,EV_EditMethodType emt,const char * szDescription)
+EV_EditMethod::EV_EditMethod(const char * szName, EV_EditMethod_pFn fn, EV_EditMethodType emt, const char * szDescription)
+	: m_szName(szName),
+	  m_fn(fn),
+	  m_emt(emt),
+	  m_szDescription(szDescription)
 {
-	m_szName = szName;					// we assume that the caller passed a static literal
-	m_fn = fn;
-	m_emt = emt;
-	m_szDescription = szDescription;	// we assume that the caller passed a static literal
 }
 
-EV_EditMethod_pFn EV_EditMethod::getFn(void) const
+EV_EditMethod_pFn EV_EditMethod::getFn() const
 {
 	return m_fn;
 }
 
-EV_EditMethodType EV_EditMethod::getType(void) const
+EV_EditMethodType EV_EditMethod::getType() const
 {
 	return m_emt;
 }
 
-inline const char * EV_EditMethod::getName(void) const
+inline const char * EV_EditMethod::getName() const
 {
 	return m_szName;
 }
 
-const char * EV_EditMethod::getDescription(void) const
+const char * EV_EditMethod::getDescription() const
 {
 	return m_szDescription;
 }
@@ -125,7 +124,7 @@ bool EV_EditMethodContainer::addEditMethod(EV_EditMethod * pem)
 	return (error == 0);
 }
 
-UT_uint32 EV_EditMethodContainer::countEditMethods(void)
+UT_uint32 EV_EditMethodContainer::countEditMethods()
 {
 	return m_countStatic + m_vecDynamicEditMethods.getItemCount();
 }

@@ -67,10 +67,9 @@ EV_Menu_LabelSet::EV_Menu_LabelSet(const char * szLanguage,
 								   XAP_Menu_Id first, XAP_Menu_Id last)
 	: m_labelTable(last - first + 1),
 	  m_first(first),
-	  m_last(last),
 	  m_stLanguage(szLanguage)
 {
-	size_t size = m_labelTable.getItemCount();
+	size_t size = last - first + 1;
 	
 	for (size_t i = 0; i < size; ++i)
 		m_labelTable.addItem(0);
@@ -86,10 +85,12 @@ bool EV_Menu_LabelSet::setLabel(XAP_Menu_Id id,
 								const char * szStatusMsg)
 {
 	void *tmp;
-	if ((id < m_first) || (id > m_last))
+	XAP_Menu_Id last = m_first + m_labelTable.size();
+	
+	if (id < m_first || id >= last)
 		return false;
 
-	UT_uint32 index = (id - m_first);
+	UT_sint32 index = id - m_first;
 	EV_Menu_Label *label = new EV_Menu_Label(id, szMenuLabel, szStatusMsg);
 	UT_sint32 error = m_labelTable.setNthItem(index, label, &tmp);
 	EV_Menu_Label * pTmpLbl = static_cast<EV_Menu_Label *> (tmp);
@@ -103,7 +104,8 @@ EV_Menu_Label * EV_Menu_LabelSet::getLabel(XAP_Menu_Id id)
 EV_Menu_Label * EV_Menu_LabelSet::getLabel(XAP_Menu_Id id) const
 #endif
 {
-	if ((id < m_first) || (id > m_last))
+	XAP_Menu_Id last = m_first + m_labelTable.size();
+	if (id < m_first || id >= last)
 		return NULL;
 
 	UT_uint32 index = (id - m_first);
@@ -131,11 +133,24 @@ EV_Menu_Label * EV_Menu_LabelSet::getLabel(XAP_Menu_Id id) const
 
 bool EV_Menu_LabelSet::addLabel(EV_Menu_Label *pLabel)
 {
+	UT_DEBUGMSG(("JCA: EV_Menu_LabelSet::addLabel\n"));
 	UT_ASSERT(pLabel);
-	XAP_Menu_Id id = pLabel->getMenuId();
-	m_last = max(id, m_last);
-	m_first = min(id, m_first);
-	return (m_labelTable.addItem(pLabel) == 0);
+	XAP_Menu_Id size_table = m_labelTable.size();
+
+	// the if (...) is here due to
+	// AP_MENU_ID__BOGUS2__, which ocupes an entry in the
+	// action table, but that not in the layout table
+	// the real fix is to erase AP_MENU_ID__BOGUS2__
+	if (pLabel->getMenuId() == size_table + m_first - 1)
+	{
+		m_labelTable.pop_back();
+		size_table = m_labelTable.size();
+	}
+	
+	UT_ASSERT(pLabel->getMenuId() == size_table + m_first);
+	m_labelTable.push_back(pLabel);
+
+	return (size_table + 1 == (XAP_Menu_Id) m_labelTable.size());
 }
 
 const char * EV_Menu_LabelSet::getLanguage() const

@@ -775,7 +775,7 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 	
 	gint nPositionInThisMenu = -1;
 	
-	for (UT_uint32 k=0; (k < nrLabelItemsInLayout); k++)
+	for (UT_uint32 k = 0; k < nrLabelItemsInLayout; ++k)
 	{
 		EV_Menu_LayoutItem * pLayoutItem = m_pMenuLayout->getLayoutItem(k);
 		XAP_Menu_Id id = pLayoutItem->getMenuId();
@@ -1070,46 +1070,16 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
  * that you will find it in the menu "Format", and that the item
  * label is "Blah").
  */
-bool EV_UnixMenu::_doAddMenuItem(XAP_Menu_Id id)
+bool EV_UnixMenu::_doAddMenuItem(UT_uint32 layout_pos)
 {
-	EV_Menu_Layout *pLayout = getLayoutSet();
-	UT_uint32 nItems = pLayout->getLayoutItemCount();
-	EV_Menu_LayoutItem *pItem;
-	UT_uint32 pos = 30; // FIXME!
-
-	UT_DEBUGMSG(("JCA: _doAddMenuItem(%d)\n", id));	
-	UT_DEBUGMSG(("JCA: nItems = %d\n", nItems));	
-
-	for (size_t i = 0; i < nItems; ++i)
+	UT_DEBUGMSG(("JCA: layout_pos = [%d]\n", layout_pos));
+	if (layout_pos > 0)
 	{
-		pItem = pLayout->getLayoutItem(i);
-
-		UT_DEBUGMSG(("JCA: %d\n", pItem));
-		if (pItem->getMenuId() == id)
-		{
-			_insertMenuItem(id, pos);
-			return true;
-		}
+		UT_sint32 err = m_vecMenuWidgets.insertItemAt(NULL, layout_pos);
+		return !err;
 	}
 
 	return false;
-}
-
-/*!
- * This method will build and put in the menubar a gtk+ widget that
- * will be the actual menu item, knowing its id and the desired
- * position in the menu bar.
- *
- * Knowing the menu id, you can get the label (and the status bar
- * message) of the menu item (iterating over the EV_Menu_LabelSet
- * structure).
- *
- * @todo Implement it.
- */
-void EV_UnixMenu::_insertMenuItem(XAP_Menu_Id id, UT_uint32 pos)
-{
-	/* TODO: Build a gtk+ widget with this info, and put it somewhere in the menubar */
-	UT_DEBUGMSG(("JCA: _insertMenuItem(%d, %d)\n", id, pos));	
 }
 
 /*****************************************************************/
@@ -1118,7 +1088,7 @@ EV_UnixMenuBar::EV_UnixMenuBar(XAP_UnixApp * pUnixApp,
 							   XAP_UnixFrame * pUnixFrame,
 							   const char * szMenuLayoutName,
 							   const char * szMenuLabelSetName)
-	: EV_UNIXBASEMENU(pUnixApp,pUnixFrame,szMenuLayoutName,szMenuLabelSetName)
+	: EV_UNIXBASEMENU(pUnixApp, pUnixFrame, szMenuLayoutName, szMenuLabelSetName)
 {
 }
 
@@ -1169,7 +1139,7 @@ EV_UnixMenuPopup::EV_UnixMenuPopup(XAP_UnixApp * pUnixApp,
 								   XAP_UnixFrame * pUnixFrame,
 								   const char * szMenuLayoutName,
 								   const char * szMenuLabelSetName)
-	: EV_UNIXBASEMENU(pUnixApp,pUnixFrame,szMenuLayoutName,szMenuLabelSetName)
+	: EV_UNIXBASEMENU(pUnixApp, pUnixFrame, szMenuLayoutName, szMenuLabelSetName)
 {
 }
 

@@ -26,6 +26,7 @@
 
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
+#include "ut_misc.h"
 #include "ev_Menu.h"
 #include "ev_EditMethod.h"
 #include "ev_EditBinding.h"
@@ -37,6 +38,31 @@
 #include "xap_App.h"
 #include "xap_Frame.h"
 
+
+/*****************************************************************/
+// Utility function.  Too bad we're not using std:: stuff... that should
+// be something like find(labels.begin(), labels.end(), label);
+
+static XAP_Menu_Id
+searchMenuLabel(const EV_Menu_LabelSet &labels, const UT_String &label)
+{
+	const UT_Vector &labels_table = labels.getAllLabels();
+	const EV_Menu_Label *l = 0;
+	UT_uint32 size_labels = labels_table.size();
+	XAP_Menu_Id id = 0;
+
+	for (UT_uint32 i = 0; i < size_labels; ++i)
+	{
+		l = static_cast<EV_Menu_Label*> (labels_table[i]);
+		if (l && label == l->getMenuLabel())
+		{
+			id = l->getMenuId();
+			break;
+		}
+	}
+
+	return id;
+}
 
 /*****************************************************************/
 
@@ -75,14 +101,81 @@ const EV_Menu_LabelSet * EV_Menu::getMenuLabelSet() const
 	return m_pMenuLabelSet;
 }
 
-void EV_Menu::addMenuItem(const UT_String &path)
+void EV_Menu::addPath(const UT_String &path)
 {
-	XAP_Menu_Id id = m_pMenuLayout->addLayoutItem(path);
+	UT_DEBUGMSG(("Adding path %s.\n", path.c_str()));
+	UT_Vector *names = simpleSplit(path, '/');
 	EV_Menu_ActionSet *pMenuActionSet = getApp()->getMenuActionSet();
-	pMenuActionSet->addAction(new EV_Menu_Action(id, false, false, false, "FIXME_methodName", NULL, NULL));
-	m_pMenuLabelSet->addLabel(new EV_Menu_Label(id, "TODO_labelName", "TODO_Statusbar"));
+	const UT_String *label;
+	UT_uint32 last_pos = 1;
+	XAP_Menu_Id last_index = 0;
+	XAP_Menu_Id index = 0;
+	UT_ASSERT(names);
+	UT_ASSERT(m_pMenuLabelSet);
+	UT_ASSERT(pMenuActionSet);
 
-	_doAddMenuItem(id);
+	// if need, we create submenus
+	UT_DEBUGMSG(("Gonna create submenus...\n"));
+	size_t end = names->size() - 1;
+	for (size_t i = 0; i < end; ++i)
+	{
+		label = static_cast<UT_String*> ((*names)[i]);
+		UT_ASSERT(label);
+		index = searchMenuLabel(*m_pMenuLabelSet, *label);
+
+		// Here we should create end - i submenus
+		if (index == 0)
+		{
+			UT_DEBUGMSG(("... yes.  i = [%d], end = [%d]\n", i, end));
+			UT_uint32 lpos = m_pMenuLayout->getLayoutIndex(last_index);
+
+			// and now we add the new submenus
+			for (size_t j = i; j < end; ++j)
+			{
+				label = static_cast<UT_String*> ((*names)[j]);
+				UT_ASSERT(label);
+				index = m_pMenuLayout->addLayoutItem(++lpos, EV_MLF_BeginSubMenu);
+				pMenuActionSet->addAction(new EV_Menu_Action(index, true, false, false, NULL, NULL, NULL));
+				m_pMenuLabelSet->addLabel(new EV_Menu_Label(index, label->c_str(), label->c_str()));
+				_doAddMenuItem(lpos);
+			}
+
+			last_pos = lpos + 1;
+
+			// and we close the submenus
+			for (size_t k = i; k < end; ++k)
+			{
+				m_pMenuLayout->addFakeLayoutItem(++lpos, EV_MLF_EndSubMenu);
+				_doAddMenuItem(lpos);
+			}
+
+			break;
+		}
+
+		last_index = index;
+	}
+
+	if (index != 0)
+		last_pos = m_pMenuLayout->getLayoutIndex(last_index) + 1;
+
+	UT_DEBUGMSG(("Gonna add a menu item.\n"));
+	// and now we create the menu item
+	index = m_pMenuLayout->addLayoutItem(last_pos, EV_MLF_Normal);
+	pMenuActionSet->addAction(new EV_Menu_Action(index, false, false, false, "scriptPlay", NULL, NULL));
+	m_pMenuLabelSet->addLabel(new EV_Menu_Label(index, ((UT_String *) names->back())->c_str(),
+												((UT_String *) names->back())->c_str()));
+
+	if (!_doAddMenuItem(last_pos))
+	{
+		UT_ASSERT(UT_NOT_IMPLEMENTED);
+#if 0
+		pMenuActionSet->deleteAction(index);
+		m_pMenuLabelSet->deleteLabel(index);
+		m_pMenuLayout->deleteLayoutItem(index);
+#endif
+	}
+
+	delete names;
 }
 
 bool EV_Menu::invokeMenuMethod(AV_View * pView,

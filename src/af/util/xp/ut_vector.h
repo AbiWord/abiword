@@ -41,6 +41,10 @@ public:
 	~UT_Vector();
 
 	UT_sint32	addItem(void*);
+	inline UT_sint32	push_back(void *item)	{ return addItem(item); }
+	bool				pop_back();
+	inline void*		back() const			{ return getLastItem(); }
+	 
 	UT_sint32	addItem(void* p, UT_uint32 * pIndex);
 	inline void*getNthItem(UT_uint32 n) const
 	{
@@ -50,6 +54,7 @@ public:
 
 		return m_pEntries[n];
 	}
+
 	void*		operator[](UT_uint32 i) const;
 	UT_sint32	setNthItem(UT_uint32 ndx, void * pNew, void ** ppOld);
 	void*		getFirstItem() const;
@@ -141,6 +146,13 @@ class UT_Vector
 
 	bool		copy(UT_Vector *pVec);
 	UT_uint32 inline size() const { return getItemCount(); }
+	inline UT_sint32	push_back(void *item)	{ m_STLVec.push_back(item); return 0; }
+	inline bool			pop_back()
+    {
+		m_STLVec.pop_back();
+		return true;
+	}
+	inline void*		back() const			{ return m_STLVec.back(); }
 
 private:
 	vector<void *>  m_STLVec;

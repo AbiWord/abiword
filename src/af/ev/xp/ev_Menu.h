@@ -54,7 +54,7 @@ public:
 
 	const EV_Menu_Layout *		getMenuLayout() const;
 	const EV_Menu_LabelSet *	getMenuLabelSet() const;
-	void 						addMenuItem(const UT_String &path/*, ... todo */);
+	void 						addPath(const UT_String &path);
 
 protected:
 	const char ** 				getLabelName(XAP_App * pApp,  XAP_Frame * pFrame,
@@ -73,7 +73,7 @@ protected:
 	EV_Menu_LabelSet *			m_pMenuLabelSet;/* strings (in a given language) for the menu */
 
 private:
-	virtual bool				_doAddMenuItem(XAP_Menu_Id id) = 0;
+	virtual bool				_doAddMenuItem(UT_uint32 layout_pos) = 0;
 	XAP_App *					m_pApp;
 };
 

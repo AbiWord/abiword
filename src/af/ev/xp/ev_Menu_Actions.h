@@ -100,7 +100,7 @@ public:
 	bool							raisesDialog() const;
 	bool							isCheckable() const;
 	
-protected:
+private:
 	XAP_Menu_Id						m_id;
 	bool							m_bHoldsSubMenu;	/* is a PullRight */
 	bool							m_bRaisesDialog;	/* does it raise a dialog */
@@ -129,10 +129,9 @@ public:
 
 	EV_Menu_Action *	getAction(XAP_Menu_Id id) const;
 
-protected:
+private:
 	UT_Vector			m_actionTable;
 	XAP_Menu_Id			m_first;
-	XAP_Menu_Id			m_last;
 };
 
 #endif /* EV_MENU_ACTIONS_H */

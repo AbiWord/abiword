@@ -51,8 +51,7 @@ protected:
 	bool				_isItemPresent(XAP_Menu_Id id) const;
 
 private:
-	virtual bool		_doAddMenuItem(XAP_Menu_Id id);
-	void				_insertMenuItem(XAP_Menu_Id id, UT_uint32 pos);
+	virtual bool		_doAddMenuItem(UT_uint32 layout_pos);
 
 protected: // FIXME! These variables should be private.
 	XAP_UnixApp *		m_pUnixApp;
