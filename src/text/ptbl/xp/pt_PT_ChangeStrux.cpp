@@ -442,7 +442,13 @@ bool pt_PieceTable::_realChangeStruxFmt(PTChangeFmt ptc,
 	bFoundFirst = _getStruxOfTypeFromPosition(dpos1,ptsTemp,&pfs_First);
 	bool bFoundEnd;
 	bFoundEnd = _getStruxOfTypeFromPosition(dpos2,ptsTemp,&pfs_End);
-	UT_return_val_if_fail (bFoundFirst && bFoundEnd,false);
+	if(!(bFoundFirst && bFoundEnd))
+	{
+		UT_DEBUGMSG((" could not find bFoundFirst %d or Maybe bFoundEnd %d \n",
+					 bFoundFirst,bFoundEnd));
+		UT_DEBUGMSG(("Aborting attempted change. \n"));
+		return false;
+	}
 	while(pfs_End && (pfs_End->getPos() < pfs_First->getPos() && (dpos2 >= dpos1)))
 	{
 		dpos2--;
