@@ -219,6 +219,19 @@ ifeq ($(OS_NAME), WIN32)
   endef 
  else
 CYGWIN_ROOT := $(shell cygpath -w / | sed 's|\\|/|g')
+  ifeq ($(CYGWIN_MAJOR_VERSION),1)
+   ifeq ($(CYGWIN_MINOR_VERSION),1)
+    NEW_CYGWIN := $(shell expr $(CYGWIN_REVISION) ">=" 6)
+    ifeq ($(NEW_CYGWIN),1)
+     # Are we dealing with the root directory?
+	 CYGWIN_ROOT_TEST := $(shell echo $(CYGWIN_ROOT) | grep [A-Z]:\\\\$)
+	 ifneq ($(CYGWIN_ROOT_TEST), $(CYGWIN_ROOT))
+	  # Nope, append another slash
+	  CYGWIN_ROOT := $(shell echo $(CYGWIN_ROOT) / | sed 's| ||g')
+	 endif
+    endif
+   endif
+  endif
   ifneq (,$(findstring  ,$(shell uname -r)))
    define TRANSFORM_TO_DOS_PATH
    sed 's|//[a-zA-Z]/|/|g' | sed 's|/|\\\\|g'
