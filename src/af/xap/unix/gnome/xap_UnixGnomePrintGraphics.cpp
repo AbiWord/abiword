@@ -789,6 +789,8 @@ bool	XAP_UnixGnomePrintGraphics::_startDocument(void)
 
 bool XAP_UnixGnomePrintGraphics::_startPage(const char * szPageLabel)
 {
+	if ( !m_gpm )
+		return true;
         gnome_print_beginpage(m_gpc, szPageLabel);
 		_setup_rotation ();
 		return true;
@@ -798,6 +800,8 @@ bool XAP_UnixGnomePrintGraphics::_endPage(void)
 {
 	if(m_bNeedStroked)
 	  gnome_print_stroke(m_gpc);
+	if ( !m_gpm )
+		return true;
 
 	gnome_print_showpage(m_gpc);
 	return true;
