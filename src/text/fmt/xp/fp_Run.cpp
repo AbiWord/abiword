@@ -958,23 +958,43 @@ void fp_Run::Run_ClearScreen(bool bFullLineHeightRect)
 			{
 				if(getType() == FPRUN_TEXT)
 				{
+					bool bRTL = (getVisDirection() == UT_BIDI_RTL);
+					
 					UT_sint32 xoff,yoff;
 					getLine()->getScreenOffsets(this, xoff, yoff);
 					UT_sint32 xLeft = xoff;
+					UT_sint32 xRight = xLeft + getWidth();
 					UT_sint32 x1,y1,x2,y2,height;
 					bool bDir;
 					if(posSelLow() > getBlock()->getPosition(true) + getBlockOffset())
 					{
 						findPointCoords(posSelLow() - getBlock()->getPosition(true), x1,y1,x2,y2,height,bDir);
-						xLeft = x1 + _getView()->getPageViewLeftMargin();
-						xLeft -= _getView()->getXScrollOffset();
+
+					    if(bRTL) //rtl needs translation
+						{
+							xRight = x1 + _getView()->getPageViewLeftMargin();
+							xRight -= _getView()->getXScrollOffset();
+						}
+						else
+						{
+							xLeft = x1 + _getView()->getPageViewLeftMargin();
+							xLeft -= _getView()->getXScrollOffset();
+						}
+						
 					}
-					UT_sint32 xRight = xLeft + getWidth();
 					if(posSelHigh() < getBlock()->getPosition(true) + getBlockOffset() + getLength())
 					{
 						findPointCoords(posSelHigh() - getBlock()->getPosition(true) +1, x1,y1,x2,y2,height,bDir);
-						xRight = x1 + _getView()->getPageViewLeftMargin();;
-						xRight -= _getView()->getXScrollOffset();
+					    if(bRTL) //rtl needs translation
+						{
+							xLeft = x1 + _getView()->getPageViewLeftMargin();;
+							xLeft -= _getView()->getXScrollOffset();
+						}
+						else
+						{
+							xRight = x1 + _getView()->getPageViewLeftMargin();;
+							xRight -= _getView()->getXScrollOffset();
+						}
 					}
 					clip.set(xLeft,yoff,xRight-xLeft,getLine()->getHeight());
 					getGraphics()->setClipRect(&clip);
@@ -1133,21 +1153,39 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 	{
 		if((getType() == FPRUN_TEXT) && getLine())
 		{
+			bool bRTL = (getVisDirection() == UT_BIDI_RTL);
 			UT_sint32 xLeft = pDA->xoff;
+			UT_sint32 xRight = xLeft + getWidth();
 			UT_sint32 x1,y1,x2,y2,height;
 			bool bDir;
+			
 			if(posSelLow() > getBlock()->getPosition(true) + getBlockOffset())
 			{
 				findPointCoords(posSelLow() - getBlock()->getPosition(true), x1,y1,x2,y2,height,bDir);
-				xLeft = x1 + _getView()->getPageViewLeftMargin();
-				xLeft -= _getView()->getXScrollOffset();
+				if(bRTL)
+				{
+					xRight = x1 + _getView()->getPageViewLeftMargin();
+					xRight -= _getView()->getXScrollOffset();
+				}
+				else
+				{
+					xLeft = x1 + _getView()->getPageViewLeftMargin();
+					xLeft -= _getView()->getXScrollOffset();
+				}
 			}
-			UT_sint32 xRight = xLeft + getWidth();
 			if(posSelHigh() < getBlock()->getPosition(true) + getBlockOffset() + getLength())
 			{
 				findPointCoords(posSelHigh() - getBlock()->getPosition(true) +1, x1,y1,x2,y2,height,bDir);
-				xRight = x1 + _getView()->getPageViewLeftMargin();
-				xRight -= _getView()->getXScrollOffset();
+				if(bRTL)
+				{
+					xLeft = x1 + _getView()->getPageViewLeftMargin();
+					xLeft -= _getView()->getXScrollOffset();
+				}
+				else
+				{
+					xRight = x1 + _getView()->getPageViewLeftMargin();
+					xRight -= _getView()->getXScrollOffset();
+				}
 			}
 			UT_sint32 width = xRight-xLeft;
 			clip.set(xLeft,pDA->yoff-getLine()->getAscent(),width,getLine()->getHeight());
