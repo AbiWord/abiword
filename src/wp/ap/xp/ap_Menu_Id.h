@@ -37,7 +37,9 @@
 
 enum _Ap_Menu_Id
 {
+	AP_MENU_ID__BOGUS1__,
 #include "ap_Menu_Id_List.h"
+	AP_MENU_ID__BOGUS2__
 };
 
 
