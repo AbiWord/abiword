@@ -25,8 +25,6 @@
 #include "gr_BeOSImage.h"
 
 #include "xap_BeOSFrame.h"	//For be_DocView 
-//#include <float.h>		//for FLT_MAX
-//#define FLT_MAX         3.402823466e+38f 
 #include <limits.h>
 #include <Font.h>
 #include "ut_debugmsg.h"
@@ -178,42 +176,49 @@ UT_Bool GR_BeOSGraphics::queryProperties(GR_Graphics::Properties gp) const
 	}
 }
 
+
 //Draw this string of characters on the screen in current font
 void GR_BeOSGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 							 int iLength, UT_sint32 xoff, UT_sint32 yoff)
 {
 	int i;
+	char *buffer;
 
-/*     I wonder if this is expecting the 
-	   value to be drawn in the middle
-	   of the ascent and descent values?
-	   |____
-	   |     Ascent
-	   |----String
-	   |----String
-	   |____ Descent
-	  
-*/
-
-	//Someday learn to output 16 bit values ...
 	DPRINTF(printf("GR: Draw Chars\n"));
+
 	/*Wow, this really sucks here, we are allocating memory/releasing it 
 	 * on every drawString. We should find a way around this
 	 */
-	char *buffer = new char[iLength +1];
-	for (i=0; i<iLength; i++) {
-		buffer[i] = (char)pChars[i+iCharOffset];
-	}
-	buffer[i] = '\0';
-	
-	if (m_pShadowView->Window()->Lock())
-	{
 
-	//This is really strange ... I have to offset all the 
-	//text by the ascent, descent, leading values ...
+	//We need to convert the string from UCS2 to UTF8 before
+	//we use the BeOS string operations on it.
+	if (!(buffer = new char[2*(iLength+1)])) {
+		return;
+	}
+
+	memset(buffer, 0, 2*(iLength+1));
+	for (i=0; i<iLength; i++) {
+		char * utf8char;
+		utf8char =  UT_encodeUTF8char(pChars[i+iCharOffset]);
+		/*	
+		printf("GR: 0x%x -UCS2 2 UTF8-> ", pChars[i+iCharOffset]);
+		for (int t=0; utf8char[t]; t++) {
+			printf("0x%x ", utf8char[t]);
+		}
+		printf("\n");
+		*/
+		strcat(buffer, utf8char);						
+	}
+	
+	if (!m_pShadowView->Window()->Lock()) {
+		return;
+	}
+
 	font_height fh;
 	m_pShadowView->GetFontHeight(&fh);
-/*I just had a brainstorm on how to fix the jitter problem.
+
+/*DH:
+ * I just had a brainstorm on how to fix the jitter problem.
  * Let's measure the string, and draw using the charwidths Abi thinks
  * we are using. This involves moving the pen and using DrawChar, which sucks,
  * but let's see if it works.
@@ -224,13 +229,16 @@ void GR_BeOSGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	BFont viewFont;
 	m_pShadowView->GetFont(&viewFont);
 	BPoint *escapementArray=new BPoint[iLength];
+
 	escapement_delta tempdelta;
 	tempdelta.space=0.0;
 	tempdelta.nonspace=0.0;
 	float fontsize=viewFont.Size();
 	viewFont.GetEscapements(buffer,iLength,&tempdelta,escapementArray);
-	m_pShadowView->DrawChar(buffer[0],BPoint(xoff,yoff+offset));
-	for (i=1;i<iLength;i++)
+
+	m_pShadowView->DrawString(UT_encodeUTF8char(pChars[0+iCharOffset]),
+							  BPoint(xoff,yoff+offset));
+	for (i=1; i<iLength; i++)
 	{
 		int widthAbiWants;
 		/*Measure the width of the previous character, draw char at new
@@ -238,11 +246,11 @@ void GR_BeOSGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 		 */
 		widthAbiWants=(unsigned short int)ceil(escapementArray[i-1].x*fontsize);
 		xoff+=widthAbiWants;
-		m_pShadowView->DrawChar(buffer[i],BPoint(xoff,yoff+offset));
+		m_pShadowView->DrawString(UT_encodeUTF8char(pChars[i+iCharOffset]),
+								  BPoint(xoff,yoff+offset));
 	}
 	m_pShadowView->Window()->Unlock();
 	delete [] escapementArray;
-	}
 	delete [] buffer;
 	UPDATE_VIEW
 }
@@ -429,61 +437,61 @@ UT_uint32 GR_BeOSGraphics::getFontDescent()
 	DPRINTF(printf("GR: Font Descent %d\n",(int)(fh.descent + 0.5)));
 	return((UT_uint32)(fh.descent + 0.5));
 }
+
 UT_uint32 GR_BeOSGraphics::measureString(const UT_UCSChar* s, int iOffset,
 									  int num,  unsigned short* pWidths)
 {
 	DPRINTF(printf("GR: Measure String\n"));
 	UT_uint32	size, i;	
-	char 		*buffer = new char[num+1];
+	char 		*buffer;
+
+	//We need to convert the string from UCS2 to UTF8 before
+	//we use the BeOS string operations on it.
+	buffer = new char[2*(num+1)];
 	if (!buffer) {
 		return(0);
 	}
+
 	//Set the character, then set the length of the character
 	size=0;
-	memset(buffer, 0, num+1*sizeof(char));
+	memset(buffer, 0, 2*(num+1));
+
 	BFont viewFont;
 	BPoint *escapementArray=new BPoint[num];
+
 	m_pShadowView->GetFont(&viewFont);
-	for (i=0; i<num; i++) {
-		buffer[i] = (char)(s[i+iOffset]);						
-	//	pWidths[i] = (short unsigned int) m_pShadowView->StringWidth(&buffer[i]);				
+	viewFont.SetSpacing(B_BITMAP_SPACING);
+	if (m_pShadowView->Window()->Lock()) {
+		m_pShadowView->SetFont(&viewFont);
+		m_pShadowView->Window()->Unlock();
 	}
+
+	for (i=0; i<num; i++) {
+		char * utf8char;
+		utf8char =  UT_encodeUTF8char(s[i+iOffset]);
+		strcat(buffer, utf8char);						
+	}
+
 	escapement_delta tempdelta;
 	tempdelta.space=0.0;
 	tempdelta.nonspace=0.0;
+	//Hope this works on UTF8 characters buffers
 	viewFont.GetEscapements(buffer,num,&tempdelta,escapementArray);
 	float fontsize=viewFont.Size();
-	for (i=0;i<num;i++)
+
+	for (i=0; i<num; i++)
 	{
 		pWidths[i]=(short unsigned int) ceil(escapementArray[i].x*fontsize) ;
-	//	printf("Escapement for %d is %d (%f)\n",i,(short unsigned int) ceil(escapementArray[i].x*fontsize),ceil(escapementArray[i].x*fontsize));
-		size+=ceil(escapementArray[i].x *fontsize);
-	}
 /*
- Note Now with R4 we should use for more accurate measurements:
-void GetBoundingBoxesForStrings(const char *stringArray[], int32 numStrings, 
-     font_metric_mode mode, escapement_delta *deltas[], BRect boundingBoxArray[])
-BRect r;
-escapement_delta d;
-mFont->GetBoundinfBoxesForStrings(buffer, 1, B_SCREEN_METRIC, &d, &r);
+		printf("Escapement for %d is %d (%f)\n",i,
+			(short unsigned int) ceil(escapementArray[i].x*fontsize),
+			ceil(escapementArray[i].x*fontsize));
 */
-	//size = (UT_uint32) m_pShadowView->StringWidth(buffer);
+		size+= ceil(escapementArray[i].x *fontsize);
+	}
+
 	delete [] buffer;
 	return(size);
-	
-//	m_pShadowView->StringWidth(&s[iOffset]);
-/*	
-	int iCharWidth = 0;
-	for (int i=0; i<num; i++)
-	{
-		// TODO should this assert be s[i+iOffset] ??
-		UT_ASSERT(s[i] < 256);	// TODO we currently cannot deal with Unicode properly
-
-		iCharWidth += m_aCharWidths[s[i + iOffset]];
-		pWidths[i] = m_aCharWidths[s[i + iOffset]];
-	}
-	return iCharWidth;
-*/
 }
 
 UT_uint32 GR_BeOSGraphics::_getResolution() const
