@@ -230,13 +230,7 @@ void fp_Line::genOverlapRects(UT_Rect & recLeft,UT_Rect & recRight)
 	recRight.top = pRec->top;
 	recLeft.height = pRec->height;
 	recRight.height = pRec->height;
-	if(!isWrapped())
-	{
-		delete pRec;
-		recLeft.width = 0;
-		recRight.width = 0;
-		return;
-	}
+
 	UT_sint32 iLeftX = m_pBlock->getLeftMargin();
 	UT_sint32 iMaxWidth = getContainer()->getWidth();
 	UT_BidiCharType iBlockDir = m_pBlock->getDominantDirection();
@@ -271,10 +265,6 @@ void fp_Line::genOverlapRects(UT_Rect & recLeft,UT_Rect & recRight)
 	}
 	UT_ASSERT(recLeft.width >= 0);
 	UT_ASSERT(recRight.width >= 0);
-	if((recLeft.left <= (iLeftX+xdiff)) && (recRight.left >= (iLeftX + iMaxWidth)))
-	{
-		setWrapped(false);
-	}
 	delete pRec;
 }
 

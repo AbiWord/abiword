@@ -214,6 +214,25 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 				if(pCon->getContainerType() == FP_CONTAINER_LINE)
 				{
 					fp_Line * pLine = static_cast<fp_Line *>(pCon);
+					UT_Rect recLeft;
+					UT_Rect recRight;
+					pLine->genOverlapRects(recLeft,recRight);
+					if(recLeft.width == 0 && recRight.width == 0)
+					{
+						pLine->setWrapped(false);
+					}
+					else
+					{
+						pLine->setWrapped(true);
+						if(pLine->getPrev() && !pLine->isSameYAsPrevious())
+						{
+							fp_Line * pPrev = static_cast<fp_Line *>(pLine->getPrev());
+							if(pPrev->getY() == pLine->getY())
+							{
+								pLine->setSameYAsPrevious(true);
+							}
+						}
+					}
 					if(bFormatAllWrapped)
 					{
 						if(pLine->isWrapped())
@@ -278,12 +297,8 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 // Look to see if the wrapped line has no white space that overlaps
 // a wrapped object
 //
-								UT_Rect recLeft;
-								UT_Rect recRight;
-								pLine->genOverlapRects(recLeft,recRight);
 								
-								if((recLeft.width > 0 && recRight.width >0)
-								   && !overlapsWrappedFrame(recLeft) &&
+								if(!overlapsWrappedFrame(recLeft) &&
 								   !overlapsWrappedFrame(recRight))
 								{
 									UT_DEBUGMSG(("Found wrapped line with extra  space %x  \n",pLine));
