@@ -40,6 +40,7 @@ glade_DATA = \
 	ap_UnixDialog_Break.glade \
 	ap_UnixDialog_HdrFtr.glade \
 	ap_UnixDialog_InsertTable.glade \
+	ap_UnixDialog_Insert_DateTime.glade \
 	ap_UnixDialog_PageNumbers.glade
 	
 if WITH_CURL

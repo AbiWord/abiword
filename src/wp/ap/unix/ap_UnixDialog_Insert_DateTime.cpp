@@ -19,6 +19,7 @@
 
 #include <stdlib.h>
 #include <time.h>
+#include <glade/glade.h>
 
 #include "ut_string.h"
 #include "ut_assert.h"
@@ -55,7 +56,7 @@ AP_UnixDialog_Insert_DateTime::AP_UnixDialog_Insert_DateTime(XAP_DialogFactory *
 	: AP_Dialog_Insert_DateTime(pDlgFactory,id)
 {
 	m_windowMain = NULL;
-	m_listFormats = NULL;
+	m_tvFormats = NULL;
 }
 
 AP_UnixDialog_Insert_DateTime::~AP_UnixDialog_Insert_DateTime(void)
@@ -70,165 +71,141 @@ void AP_UnixDialog_Insert_DateTime::runModal(XAP_Frame * pFrame)
 	UT_return_if_fail(pFrame);
 	
 	// Build the window's widgets and arrange them
-	GtkWidget * mainWindow = _constructWindow();
-	UT_return_if_fail(mainWindow);
+	m_windowMain = _constructWindow();
+	UT_return_if_fail(m_windowMain);
 
 	// Populate the window's data items
 	_populateWindowData();
 
-	switch(abiRunModalDialog(GTK_DIALOG(mainWindow), pFrame, this,
-							 BUTTON_CANCEL, false ))
+	switch(abiRunModalDialog(GTK_DIALOG(m_windowMain), pFrame, this,
+							 GTK_RESPONSE_CANCEL, false ))
 	{
-		case BUTTON_OK:
-			event_OK(); break;
+		case GTK_RESPONSE_OK:
+			event_OK();
+			break;
 		default:
-			event_Cancel(); break ;
+			m_answer = AP_Dialog_Insert_DateTime::a_CANCEL;
+			break;
 	}
 
-	abiDestroyWidget ( mainWindow ) ;
+	abiDestroyWidget ( m_windowMain ) ;
 }
 
 void AP_UnixDialog_Insert_DateTime::event_OK(void)
 {
-	UT_ASSERT(m_windowMain && m_listFormats);
-	
-	// find item selected in list box, save it to m_iFormatIndex
+	UT_ASSERT(m_windowMain && m_tvFormats);
 
-	GList * listitem = GTK_LIST(m_listFormats)->selection;
+	GtkTreeSelection * selection;
+	GtkTreeIter iter;
+	GtkTreeModel * model;
+
+	selection = gtk_tree_view_get_selection( GTK_TREE_VIEW(m_tvFormats) );
 
 	// if there is no selection, or the selection's data (GtkListItem widget)
 	// is empty, return cancel.  GTK can make this happen.
-	if (!(listitem) || !(listitem)->data)
+	if ( !selection || 
+		 !gtk_tree_selection_get_selected (selection, &model, &iter)
+	   )
 	{
 		m_answer = AP_Dialog_Insert_DateTime::a_CANCEL;
 		return;
 	}
 
-	// since we only do single mode selection, there is only one
-	// item in the GList we just got back
-
-	gint indexdata = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(listitem->data), LIST_ITEM_INDEX_KEY));
-
-	m_iFormatIndex = indexdata;
-	
+	// get the ID of the selected DataTime format	
+	gtk_tree_model_get (model, &iter, 1, &m_iFormatIndex, -1);
 	m_answer = AP_Dialog_Insert_DateTime::a_OK;
-}
-
-void AP_UnixDialog_Insert_DateTime::event_Cancel(void)
-{
-	m_answer = AP_Dialog_Insert_DateTime::a_CANCEL;
 }
 
 /*****************************************************************/
 GtkWidget * AP_UnixDialog_Insert_DateTime::_constructWindow(void)
 {
-  GtkWidget *vbox;
-  GtkWidget *contents;
-
-  const XAP_StringSet * pSS = m_pApp->getStringSet();
-
-  m_windowMain = abiDialogNew ( "insert date time dialog", TRUE, pSS->getValueUTF8(AP_STRING_ID_DLG_DateTime_DateTimeTitle).c_str());
-  
-  vbox = GTK_DIALOG(m_windowMain)->vbox;
-  contents = _constructWindowContents();
-  gtk_box_pack_start (GTK_BOX (vbox), contents, TRUE, TRUE, 0);
-
-  abiAddStockButton ( GTK_DIALOG(m_windowMain), GTK_STOCK_CANCEL, BUTTON_CANCEL ) ;
-  abiAddStockButton ( GTK_DIALOG(m_windowMain), GTK_STOCK_OK, BUTTON_OK ) ;
-
-  return m_windowMain;
-}
-
-GtkWidget * AP_UnixDialog_Insert_DateTime::_constructWindowContents(void)
-{
-        GtkWidget *vboxFormats;
-	GtkWidget *labelFormats;
-	GtkWidget *scrolledwindowFormats;
-	GtkWidget *viewportFormats;
-	GtkWidget *listFormats;
-
+	GtkWidget * window;	
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	XML_Char * unixstr = NULL;	// used for conversions
+	
+	// get the path where our glade file is located
+	XAP_UnixApp * pApp = static_cast<XAP_UnixApp*>(m_pApp);
+	UT_String glade_path( pApp->getAbiSuiteAppGladeDir() );
+	glade_path += "/ap_UnixDialog_Insert_DateTime.glade";
+	
+	// load the dialog from the glade file
+	GladeXML *xml = abiDialogNewFromXML( glade_path.c_str() );
 
-	vboxFormats = gtk_vbox_new (FALSE, 0);
-	gtk_widget_show (vboxFormats);
+	// Update our member variables with the important widgets that 
+	// might need to be queried or altered later
+	window = glade_xml_get_widget(xml, "ap_UnixDialog_Insert_DateTime");
+	m_tvFormats = glade_xml_get_widget(xml, "tvFormats");
 
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_DateTime_AvailableFormats).c_str());
-	labelFormats = gtk_label_new (unixstr);
-	FREEP(unixstr);
-	gtk_widget_show (labelFormats);
-	gtk_box_pack_start (GTK_BOX (vboxFormats), labelFormats, FALSE, FALSE, 0);
-	gtk_label_set_justify (GTK_LABEL (labelFormats), GTK_JUSTIFY_LEFT);
-	gtk_misc_set_alignment (GTK_MISC (labelFormats), 0, 0.5);
-
-	scrolledwindowFormats = gtk_scrolled_window_new (NULL, NULL);
-	gtk_widget_show (scrolledwindowFormats);
-	gtk_box_pack_start (GTK_BOX (vboxFormats), scrolledwindowFormats, TRUE, TRUE, 0);
-	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolledwindowFormats), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
-	gtk_widget_set_usize(scrolledwindowFormats,-1,240);
-
-	viewportFormats = gtk_viewport_new (NULL, NULL);
-	gtk_widget_show (viewportFormats);
-	gtk_container_add (GTK_CONTAINER (scrolledwindowFormats), viewportFormats);
-
-	listFormats = gtk_list_new ();
-	gtk_list_set_selection_mode (GTK_LIST(listFormats), GTK_SELECTION_SINGLE);
-	gtk_widget_show (listFormats);
-	gtk_container_add (GTK_CONTAINER (viewportFormats), listFormats);
-
-	// *must set this here*
-	m_listFormats = listFormats;
-
-	return vboxFormats;
+	// set the single selection mode for the TreeView
+    gtk_tree_selection_set_mode (gtk_tree_view_get_selection (GTK_TREE_VIEW (m_tvFormats)), GTK_SELECTION_SINGLE);		
+	
+	// set the dialog title
+	abiDialogSetTitle(window, pSS->getValueUTF8(AP_STRING_ID_DLG_DateTime_DateTimeTitle).c_str());
+	
+	// localize the strings in our dialog
+	
+	localizeLabelMarkup(glade_xml_get_widget(xml, "lbAvailableFormats"), pSS, AP_STRING_ID_DLG_DateTime_AvailableFormats);
+	
+	return window;
 }
 
 void AP_UnixDialog_Insert_DateTime::_populateWindowData(void)
 {
-	UT_ASSERT(m_windowMain && m_listFormats);
+	UT_ASSERT(m_windowMain && m_tvFormats);
 
 	// NOTE : this code is similar to the Windows dialog code to do
 	// NOTE : the same thing.  if you are implementing this dialog
 	// NOTE : for a new front end, this is the formatting logic 
 	// NOTE : you'll want to use to populate your list
-	
-	int i;
 
+	UT_sint32 i;
+	
 	// this constant comes from ap_Dialog_Insert_DateTime.h
     char szCurrentDateTime[CURRENT_DATE_TIME_SIZE];
 	
     time_t tim = time(NULL);
 	
     struct tm *pTime = localtime(&tim);
-
-	GList * list = NULL;
-	GtkWidget * listitem;
 	
-	// build GList of gtk_list_items
+	GtkListStore *model;
+	GtkTreeIter iter;
+	GtkCellRenderer *renderer;
+	GtkTreeViewColumn *column;	
+	
+	model = gtk_list_store_new (2, 
+							    G_TYPE_STRING,
+								G_TYPE_INT
+	                            );
+	
+ 	// build a list of all items
     for (i = 0; InsertDateTimeFmts[i] != NULL; i++)
 	{
         strftime(szCurrentDateTime, CURRENT_DATE_TIME_SIZE, InsertDateTimeFmts[i], pTime);
 
-		// allocate a list item with that string
-		listitem = gtk_list_item_new_with_label(szCurrentDateTime);
-		UT_ASSERT(listitem);
-
-		gtk_widget_show(listitem);
-		
-		// store index in data pointer
-		g_object_set_data(G_OBJECT(listitem), LIST_ITEM_INDEX_KEY, GINT_TO_POINTER(i));
-
-		// add to list
-	    list = g_list_append(list, (void *) listitem);
+		// Add a new row to the model
+		gtk_list_store_append (model, &iter);
+		gtk_list_store_set (model, &iter,
+					  		0, szCurrentDateTime,
+							1, i,
+					  		-1);
 	}
-
-	// TODO : Does the gtk_list free this list for me?  I think it does.
 	
-	// add GList items to list box
-	gtk_list_append_items(GTK_LIST(m_listFormats), list);
+	gtk_tree_view_set_model( GTK_TREE_VIEW(m_tvFormats), (GtkTreeModel *)model);
 
+	// create a column, and add it to the TreeView
+	renderer = gtk_cell_renderer_text_new ();
+	column = gtk_tree_view_column_new_with_attributes ("Format",
+							 renderer,
+							 "text", 
+							 0,
+							 NULL);
+	//gtk_tree_view_column_set_sort_column_id (column, COLUMN_DESCRIPTION);
+	gtk_tree_view_append_column( GTK_TREE_VIEW(m_tvFormats), column);	
+	
+	g_object_unref (model);
+	
 	// now select first item in box
-	if (i > 0)
-		gtk_list_select_item(GTK_LIST(m_listFormats), 0);
-
+	/*gtk_tree_selection_select_iter  (gtk_tree_view_get_selection (GTK_TREE_VIEW (m_tvFormats)),
+                                     );*/
+ 	gtk_widget_grab_focus (m_tvFormats);
 }
 
