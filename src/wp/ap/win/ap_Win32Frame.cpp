@@ -154,6 +154,7 @@ UT_Bool AP_Win32Frame::_showDocument(void)
 	m_pView->setWindowSize(r.right - r.left, iWindowHeight);
 	InvalidateRect(hwnd, NULL, true);
 
+	setXScrollRange();
 	setYScrollRange();
 	
 	updateTitle();
@@ -174,6 +175,33 @@ Cleanup:
 	m_pDoc = m_pData->m_pDocLayout->getDocument();
 
 	return UT_FALSE;
+}
+
+void AP_Win32Frame::setXScrollRange(void)
+{
+	// TODO do we need to increase width by the amount of
+	// TODO white space, drop shadows, and etc. that we
+	// TODO draw around the pages.
+
+	UT_uint32 iWindowWidth, iWidth;
+	HWND hwnd = m_hwndChild;
+
+	RECT r;
+	GetClientRect(hwnd, &r);
+	iWindowWidth = r.right - r.left;
+
+	iWidth = m_pData->m_pDocLayout->getWidth();
+
+	SCROLLINFO si;
+	memset(&si, 0, sizeof(si));
+
+	si.cbSize = sizeof(si);
+	si.fMask = SIF_ALL | SIF_DISABLENOSCROLL;
+	si.nMin = 0;
+	si.nMax = iWidth;
+	si.nPos = ((m_pView) ? m_pView->getXScrollOffset() : 0);
+	si.nPage = iWindowWidth;
+	SetScrollInfo(hwnd, SB_HORZ, &si, TRUE);
 }
 
 void AP_Win32Frame::setYScrollRange(void)

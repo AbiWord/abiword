@@ -60,6 +60,7 @@ public:
 	ev_Win32Keyboard *			getWin32Keyboard(void);
 
 	virtual AP_DialogFactory *	getDialogFactory(void);
+	virtual void				setXScrollRange(void);
 	virtual void				setYScrollRange(void);
 
 	static UT_Bool				RegisterClass(AP_Win32App * app);

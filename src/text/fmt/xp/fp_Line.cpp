@@ -428,7 +428,7 @@ void fp_Line::_recalcHeight()
 	UT_uint32 iMaxAscent = 0;
 	UT_uint32 iMaxDescent = 0;
 
-    UT_sint32 iOldHeight = m_iHeight;
+    UT_uint32 iOldHeight = m_iHeight;
 
 	for (i=0; i<count; i++)
 	{

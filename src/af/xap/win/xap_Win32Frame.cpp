@@ -328,7 +328,7 @@ void AP_Win32Frame::_createTopLevelWindow(void)
 				CHILDWINCLASS,			// window class name
 				NULL,					// window caption
 				WS_CHILD | WS_VISIBLE
-				| WS_VSCROLL
+				| WS_VSCROLL | WS_HSCROLL
 				,						// window style
 				0,						// initial x position
 				m_iBarHeight,			// initial y position
@@ -378,12 +378,20 @@ void AP_Win32Frame::_scrollFunc(void* pData, UT_sint32 xoff, UT_sint32 yoff)
 	GetScrollInfo(hwnd, SB_VERT, &si);
 
 	si.nPos = yoff;
-
 	SetScrollInfo(hwnd, SB_VERT, &si, TRUE);
 
 	// TODO: move this logic back to shared code
 	GetScrollInfo(hwnd, SB_VERT, &si);	// may have been clamped
 	pWin32Frame->m_pView->setYScrollOffset(si.nPos);
+
+	GetScrollInfo(hwnd, SB_HORZ, &si);
+
+	si.nPos = xoff;
+	SetScrollInfo(hwnd, SB_HORZ, &si, TRUE);
+
+	// TODO: move this logic back to shared code
+	GetScrollInfo(hwnd, SB_HORZ, &si);	// may have been clamped
+	pWin32Frame->m_pView->setXScrollOffset(si.nPos);
 }
 
 UT_Bool AP_Win32Frame::close()
@@ -666,7 +674,69 @@ LRESULT CALLBACK AP_Win32Frame::_ChildWndProc(HWND hwnd, UINT iMsg, WPARAM wPara
 		}
 
 		if (nScrollCode != SB_ENDSCROLL)
+		{
+			// in case we got clamped
+			GetScrollInfo(hwnd, SB_VERT, &si);
+
+			// now tell the view
 			pView->setYScrollOffset(si.nPos);
+		}
+	}
+	return 0;
+
+	case WM_HSCROLL:
+	{
+		int nScrollCode = (int) LOWORD(wParam); // scroll bar value 
+		int nPos = (int) HIWORD(wParam);  // scroll box position 
+
+		SCROLLINFO si;
+		memset(&si, 0, sizeof(si));
+
+		si.cbSize = sizeof(si);
+		si.fMask = SIF_ALL;
+		GetScrollInfo(hwnd, SB_HORZ, &si);
+
+		switch (nScrollCode)
+		{
+		case SB_PAGEUP:
+			si.nPos -= si.nPage;
+			if (si.nPos < 0)
+			{
+				si.nPos = 0;
+			}
+			SetScrollInfo(hwnd, SB_HORZ, &si, TRUE);
+			break;
+		case SB_PAGEDOWN:
+			si.nPos += si.nPage;
+			SetScrollInfo(hwnd, SB_HORZ, &si, TRUE);
+			break;
+		case SB_LINEDOWN:
+			si.nPos += SCROLL_LINE_SIZE;
+			SetScrollInfo(hwnd, SB_HORZ, &si, TRUE);
+			break;
+		case SB_LINEUP:
+			si.nPos -= SCROLL_LINE_SIZE;
+			if (si.nPos < 0)
+			{
+				si.nPos = 0;
+			}
+			SetScrollInfo(hwnd, SB_HORZ, &si, TRUE);
+			break;
+		case SB_THUMBPOSITION:
+		case SB_THUMBTRACK:
+			si.nPos = nPos;
+			SetScrollInfo(hwnd, SB_HORZ, &si, TRUE);
+			break;
+		}
+
+		if (nScrollCode != SB_ENDSCROLL)
+		{
+			// in case we got clamped
+			GetScrollInfo(hwnd, SB_HORZ, &si);
+
+			// now tell the view
+			pView->setXScrollOffset(si.nPos);
+		}
 	}
 	return 0;
 

@@ -142,6 +142,7 @@ UT_Bool AP_UnixFrame::_showDocument(void)
 	
 	m_pView->setWindowSize(GTK_WIDGET(m_dArea)->allocation.width,
 						   GTK_WIDGET(m_dArea)->allocation.height);
+	setXScrollRange();
 	setYScrollRange();
 	updateTitle();
 
@@ -170,6 +171,24 @@ Cleanup:
 	m_pDoc = m_pData->m_pDocLayout->getDocument();
 
 	return UT_FALSE;
+}
+
+void AP_UnixFrame::setXScrollRange(void)
+{
+	// TODO do we need to increase width by the amount of
+	// TODO white space, drop shadows, and etc. that we
+	// TODO draw around the pages.
+
+	int width = m_pData->m_pDocLayout->getWidth();
+	int windowWidth = GTK_WIDGET(m_dArea)->allocation.width;
+	
+	m_pHadj->value = (gfloat)((m_pView) ? m_pView->getXScrollOffset() : 0);
+	m_pHadj->lower = 0.0;
+	m_pHadj->upper = (gfloat) width;
+	m_pHadj->step_increment = 20.0;
+	m_pHadj->page_increment = (gfloat) windowWidth;
+	m_pHadj->page_size = (gfloat) windowWidth;
+	gtk_signal_emit_by_name(GTK_OBJECT(m_pHadj), "changed");
 }
 
 void AP_UnixFrame::setYScrollRange(void)

@@ -165,6 +165,11 @@ void AV_View::sendScrollEvent(UT_sint32 xoff, UT_sint32 yoff)
 	}
 }
 
+UT_sint32 AV_View::getXScrollOffset(void) const
+{
+	return m_xScrollOffset;
+}
+
 UT_sint32 AV_View::getYScrollOffset(void) const
 {
 	return m_yScrollOffset;

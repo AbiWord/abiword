@@ -1267,6 +1267,8 @@ void FV_View::_moveInsPtNextPrevLine(UT_Bool bNext)
 
 UT_Bool FV_View::_ensureThatInsertionPointIsOnScreen(void)
 {
+	UT_Bool bRet = UT_FALSE;
+
 	if (m_iWindowHeight <= 0)
 	{
 		return UT_FALSE;
@@ -1277,15 +1279,29 @@ UT_Bool FV_View::_ensureThatInsertionPointIsOnScreen(void)
 	if (m_yPoint < 0)
 	{
 		cmdScroll(AV_SCROLLCMD_LINEUP, (UT_uint32) (-(m_yPoint)));
-		return UT_TRUE;
+		bRet = UT_TRUE;
 	}
 	else if (((UT_uint32) (m_yPoint + m_iPointHeight)) >= ((UT_uint32) m_iWindowHeight))
 	{
 		cmdScroll(AV_SCROLLCMD_LINEDOWN, (UT_uint32)(m_yPoint + m_iPointHeight - m_iWindowHeight));
-		return UT_TRUE;
+		bRet = UT_TRUE;
 	}
 
-	return UT_FALSE;
+	/*
+		TODO: we really ought to try to do better than this.  
+	*/
+	if (m_xPoint < 0)
+	{
+		cmdScroll(AV_SCROLLCMD_LINELEFT, (UT_uint32) (-(m_xPoint)));
+		bRet = UT_TRUE;
+	}
+	else if (((UT_uint32) (m_xPoint)) >= ((UT_uint32) m_iWindowWidth))
+	{
+		cmdScroll(AV_SCROLLCMD_LINERIGHT, (UT_uint32)(m_xPoint - m_iWindowWidth));
+		bRet = UT_TRUE;
+	}
+
+	return bRet;
 }
 
 void FV_View::warpInsPtNextPrevLine(UT_Bool bNext)
@@ -1628,7 +1644,7 @@ void FV_View::getPageScreenOffsets(fp_Page* pThePage, UT_sint32& xoff,
 	}
 
 	yoff = y - m_yScrollOffset;
-	xoff = m_xScrollOffset;
+	xoff = -m_xScrollOffset;
 	height = m_iWindowHeight;
 	width = m_iWindowWidth;
 }
@@ -2048,7 +2064,7 @@ void FV_View::draw(UT_sint32 x, UT_sint32 y,
 			dg_DrawArgs da;
 			
 			da.pG = m_pG;
-			da.xoff = 0;
+			da.xoff = -m_xScrollOffset;
 			da.yoff = adjustedTop;
 			da.x = x;
 			da.y = y;

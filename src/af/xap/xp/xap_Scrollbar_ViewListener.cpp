@@ -40,7 +40,10 @@ UT_Bool ap_Scrollbar_ViewListener::notify(AV_View * pView, const AV_ChangeMask m
 				 pView,this,mask));
 	
 	if (mask & (AV_CHG_PAGECOUNT | AV_CHG_WINDOWSIZE))
+	{
+		m_pFrame->setXScrollRange();
 		m_pFrame->setYScrollRange();
+	}
 
 	return UT_TRUE;
 }

@@ -115,9 +115,9 @@ UT_uint32 FL_DocLayout::getWidth()
 	{
 		fp_Page* p = (fp_Page*) m_vecPages.getNthItem(i);
 
-		// TODO: we layout pages vertically, so this should be max, not sum
-		// TODO: coordinate this change with print HACK in ap_EditMethods
-		iWidth += p->getWidth();
+		// we layout pages vertically, so this is max, not sum
+		if ((UT_sint32) iWidth < p->getWidth())
+			iWidth = p->getWidth();
 	}
 
 	return iWidth;

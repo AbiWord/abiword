@@ -80,6 +80,7 @@ public:
 	const char *				getViewKey(void) const;
 
 	virtual AP_DialogFactory *	getDialogFactory(void) = 0;
+	virtual void				setXScrollRange(void) = 0;
 	virtual void				setYScrollRange(void) = 0;
 	
 protected:
