@@ -69,6 +69,7 @@
 #include "ut_debugmsg.h"
 
 #include "fv_View.h"
+#include "fp_Run.h"
 
 /*****************************************************************/
 
@@ -187,7 +188,7 @@ UT_Bool AP_UnixApp::initialize(void)
 		UT_ASSERT(pBuiltinStringSet);
 		m_pStringSet = pBuiltinStringSet;
 
-		// see if we should load an alternate set from the disk
+		// see if we should load an alternative set from the disk
 		
 		const char * szDirectory = NULL;
 		const char * szStringSet = NULL;
@@ -225,6 +226,21 @@ UT_Bool AP_UnixApp::initialize(void)
 				
 			free(szPathname);
 		}
+	}
+	
+	// Now we have the strings loaded we can populate the field names correctly
+	int i;
+	
+	for (i = 0; fp_FieldTypes[i].m_Type != FPFIELDTYPE_END; i++)
+	{
+	    (&fp_FieldTypes[i])->m_Desc = m_pStringSet->getValue(fp_FieldTypes[i].m_DescId);
+	    UT_DEBUGMSG(("Setting field type desc for type %d, desc=%s\n", fp_FieldTypes[i].m_Type, fp_FieldTypes[i].m_Desc));
+	}
+
+	for (i = 0; fp_FieldFmts[i].m_Tag != NULL; i++)
+	{
+	    (&fp_FieldFmts[i])->m_Desc = m_pStringSet->getValue(fp_FieldFmts[i].m_DescId);
+	    UT_DEBUGMSG(("Setting field desc for field %s, desc=%s\n", fp_FieldFmts[i].m_Tag, fp_FieldFmts[i].m_Desc));
 	}
 
 	//////////////////////////////////////////////////////////////////

@@ -207,6 +207,13 @@ dcl(DLG_Field_FieldTitle,				"Field")
 dcl(DLG_Field_Types,					"&Types:")
 dcl(DLG_Field_Fields,					"&Fields:")
 
+dcl(FIELD_Type_Datetime,		"Date and Time")
+dcl(FIELD_Type_Numbers,			"Numbers")
+dcl(FIELD_Datetime_CurrentTime,		"Current time")
+dcl(FIELD_Numbers_PageNumber,		"Page number")
+dcl(FIELD_Numbers_PagesCount,		"Number of pages")
+dcl(FIELD_Numbers_ListLabel,		"List Label")
+
 dcl(DLG_Goto_Title,						"Go to...")
 dcl(DLG_Goto_Label_Help,				"Choose your target in the left side.\n"
 										"If you want to use the \"Go To\" button, "

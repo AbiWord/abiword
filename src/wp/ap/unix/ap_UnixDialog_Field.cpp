@@ -194,7 +194,7 @@ void AP_UnixDialog_Field::types_changed(gint row)
 	m_iTypeIndex = row;
 
 	// Update the fields list with this new Type
-	SetFieldsList();
+	setFieldsList();
 }
 
 void AP_UnixDialog_Field::event_Cancel(void)
@@ -210,14 +210,14 @@ void AP_UnixDialog_Field::event_WindowDelete(void)
 }
 
 
-void AP_UnixDialog_Field::SetTypesList(void)
+void AP_UnixDialog_Field::setTypesList(void)
 {
 	gint i;
 	gint cnt = 0;
 	GtkCList * c_listTypes = GTK_CLIST(m_listTypes);
 	for (i = 0;fp_FieldTypes[i].m_Desc != NULL;i++) 
 	{
-		gtk_clist_append(c_listTypes, (gchar **) & fp_FieldFmts[i].m_Desc  );
+		gtk_clist_append(c_listTypes, (gchar **) & fp_FieldTypes[i].m_Desc  );
 		// store index in data pointer
 		gtk_clist_set_row_data( c_listTypes, cnt, GINT_TO_POINTER(i));
 		cnt++;
@@ -234,7 +234,7 @@ void AP_UnixDialog_Field::SetTypesList(void)
 	}
 }
 
-void AP_UnixDialog_Field::SetFieldsList(void)
+void AP_UnixDialog_Field::setFieldsList(void)
 {
 	UT_ASSERT(m_listFields);
 	fp_FieldTypesEnum  FType = fp_FieldTypes[m_iTypeIndex].m_Type;
@@ -244,12 +244,12 @@ void AP_UnixDialog_Field::SetFieldsList(void)
 	gtk_clist_clear( c_listFields);
 
 	gint cnt = 0;
-	for (i = 0;fp_FieldFmts[i].m_Tag != NULL;i++) 
+	for (i = 0; fp_FieldFmts[i].m_Tag != NULL; i++) 
 	{
-		if( fp_FieldFmts[i].m_Type == FType )
+		if (fp_FieldFmts[i].m_Type == FType)
 		{
-			gtk_clist_append(c_listFields, (gchar **) & fp_FieldFmts[i].m_Desc  );
-			gtk_clist_set_row_data( c_listFields, cnt, GINT_TO_POINTER(i));
+			gtk_clist_append(c_listFields, (gchar **) & fp_FieldFmts[i].m_Desc );
+			gtk_clist_set_row_data(c_listFields, cnt, GINT_TO_POINTER(i));
 			cnt++;
 		}
 	}
@@ -317,8 +317,8 @@ GtkWidget * AP_UnixDialog_Field::_constructWindow(void)
 void AP_UnixDialog_Field::_populateCatogries(void)
 {
 	// Fill in the two lists
-	SetTypesList();
-	SetFieldsList();
+	setTypesList();
+	setFieldsList();
 }
 	
 GtkWidget *AP_UnixDialog_Field::_constructWindowContents (void)

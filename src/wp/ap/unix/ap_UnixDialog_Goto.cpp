@@ -269,7 +269,6 @@ GtkWidget *AP_UnixDialog_Goto::_constructWindowContents (void)
 	char **tmp2 = getJumpTargets ();
 	for (int i = 0; tmp2[i] != NULL; i++)
 		gtk_clist_append (GTK_CLIST (clist), &tmp2[i]);
-
 	vbox2 = gtk_vbox_new (FALSE, 0);
 	gtk_box_pack_start (GTK_BOX (hbox), vbox2, TRUE, TRUE, 0);
 

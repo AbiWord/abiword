@@ -810,13 +810,13 @@ void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 //////////////////////////////////////////////////////////////////
 
 #define  _FIELD(type,desc,tag)  /*nothing*/
-#define  _FIELDTYPE(type,desc)  { FPFIELDTYPE_##type, desc },
+#define  _FIELDTYPE(type,desc)  {FPFIELDTYPE_##type, NULL, desc},
 
-const fp_FieldTypeData fp_FieldTypes[] = {
+fp_FieldTypeData fp_FieldTypes[] = {
 
 #include "fp_Fields.h"
 
-{ FPFIELDTYPE_END, NULL } };
+{FPFIELDTYPE_END, NULL, 0} };
 
 #undef  _FIELD
 #undef  _FIELDTYPE
@@ -824,14 +824,14 @@ const fp_FieldTypeData fp_FieldTypes[] = {
 // The way to turn macro argument into string constant
 #define xstr2(x) #x
 #define xstr(x) xstr2(x)
-#define _FIELD(type,desc,tag)  { FPFIELDTYPE_##type, FPFIELD_##tag, desc, xstr(tag) },
+#define _FIELD(type,desc,tag)  {FPFIELDTYPE_##type, FPFIELD_##tag, NULL, xstr(tag), desc},
 #define _FIELDTYPE(type,desc)  /*nothing*/
 
-const fp_FieldData fp_FieldFmts[] = {
+fp_FieldData fp_FieldFmts[] = {
 
 #include "fp_Fields.h"
 
-{ FPFIELDTYPE_END, FPFIELD_end, NULL, NULL } };
+{FPFIELDTYPE_END, FPFIELD_end, NULL, NULL, 0} };
 
 #undef  xstr2
 #undef  xstr

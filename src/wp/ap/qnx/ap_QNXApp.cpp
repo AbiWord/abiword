@@ -225,6 +225,23 @@ UT_Bool AP_QNXApp::initialize(void)
 		}
 	}
 
+	// Now we have the strings loaded we can populate the field names correctly
+	// CHECK THIS: the following was added by a Linux developer who can't test
+	// on QNX, or even compile, so someone with a QNX box (or fridge? ;-)) needs to check it
+	int i;
+	
+	for (i = 0; fp_FieldTypes[i].m_Type != FPFIELDTYPE_END; i++)
+	{
+	    (&fp_FieldTypes[i])->m_Desc = m_pStringSet->getValue(fp_FieldTypes[i].m_DescId);
+	    UT_DEBUGMSG(("Setting field type desc for type %d, desc=%s\n", fp_FieldTypes[i].m_Type, fp_FieldTypes[i].m_Desc));
+	}
+
+	for (i = 0; fp_FieldFmts[i].m_Tag != NULL; i++)
+	{
+	    (&fp_FieldFmts[i])->m_Desc = m_pStringSet->getValue(fp_FieldFmts[i].m_DescId);
+	    UT_DEBUGMSG(("Setting field desc for field %s, desc=%s\n", fp_FieldFmts[i].m_Tag, fp_FieldFmts[i].m_Desc));
+	}
+
 	//////////////////////////////////////////////////////////////////
 
 	return UT_TRUE;

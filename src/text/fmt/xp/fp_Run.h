@@ -30,6 +30,7 @@
 #include "ut_misc.h"
 #include "pt_Types.h"
 #include "ut_assert.h"
+#include "ap_Strings.h"
 
 
 class UT_GrowBuf;
@@ -349,22 +350,26 @@ FPFIELD_end };
 #undef  _FIELD
 #undef  _FIELDTYPE
 
+
 struct fp_FieldTypeData
 {
     fp_FieldTypesEnum  m_Type;
-	char*              m_Desc;
+    const char*        m_Desc;
+    XAP_String_Id      m_DescId;
 };
 
 struct fp_FieldData
 {
     fp_FieldTypesEnum  m_Type;
     fp_FieldsEnum      m_Num;
-	char*              m_Desc;
-	char*              m_Tag;
+    const char*        m_Desc;
+    const char*        m_Tag;
+    XAP_String_Id      m_DescId;
 };
 
-extern const fp_FieldTypeData fp_FieldTypes[];
-extern const fp_FieldData fp_FieldFmts[];
+
+extern fp_FieldTypeData fp_FieldTypes[];
+extern fp_FieldData fp_FieldFmts[];
 
 class fp_FieldRun : public fp_Run
 {

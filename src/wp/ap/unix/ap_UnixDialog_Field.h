@@ -42,8 +42,8 @@ pFactory , XAP_Dialog_Id id);
 	void event_Cancel(void);
 	void event_WindowDelete(void);
 	void types_changed(gint row);
-	void SetTypesList(void);
-	void SetFieldsList(void);
+	void setTypesList(void);
+	void setFieldsList(void);
 
 protected:
 	virtual GtkWidget *		_constructWindow(void);
