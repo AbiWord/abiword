@@ -144,6 +144,18 @@
 }
 */
 
+- (void)resetCursorRects
+{
+	[self addCursorRect:[self visibleRect] cursor:_cursor];
+	//[_cursor setOnMouseEntered:YES];
+}
+
+- (void)setCursor:(NSCursor*)cursor;
+{
+	[_cursor release];
+	_cursor = [cursor retain];
+}
+
 - (void)setEventDelegate:(NSObject <XAP_MouseEventDelegate>*)delegate
 {
 	[_eventDelegate release];

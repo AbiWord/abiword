@@ -57,6 +57,7 @@ class FV_View;
 // TODO should figure out if need default values
 @interface XAP_CocoaNSView : NSView
 {
+	NSCursor		*_cursor;
 	XAP_Frame 		*m_pFrame;
 	GR_CocoaGraphics	*m_pGR;
 	NSObject<XAP_MouseEventDelegate>	*_eventDelegate;
@@ -73,6 +74,8 @@ class FV_View;
 - (void)drawRect:(NSRect)aRect;
 - (BOOL)isFlipped;
 - (BOOL)isOpaque;
+
+- (void)setCursor:(NSCursor*)cursor;
 @end
 
 

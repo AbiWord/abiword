@@ -729,10 +729,11 @@ void GR_CocoaGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 	UT_sint32 oldDX = tdu(getPrevXOffset());
 	UT_sint32 newY = getPrevYOffset() + dy;
 	UT_sint32 newX = getPrevXOffset() + dx;
+	UT_sint32 ddx = -(tdu(newX) - oldDX);
+	UT_sint32 ddy = -(tdu(newY) - oldDY);
 	setPrevYOffset(newY);
 	setPrevXOffset(newX);
-	[m_pWin scrollRect:[m_pWin bounds] by:NSMakeSize(-tduD(dx),-tduD(dy))];
-	[m_pWin setNeedsDisplay:YES];
+	[m_pWin scrollRect:[m_pWin bounds] by:NSMakeSize(ddx,ddy)];
 }
 
 void GR_CocoaGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
@@ -745,7 +746,6 @@ void GR_CocoaGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 	
 	[m_pWin scrollRect:NSMakeRect(tduD(x_src), tduD(y_src), tduD(width), tduD(height)) 
 				by:NSMakeSize(dx,dy)];
-	[m_pWin setNeedsDisplay:YES];
 }
 
 void GR_CocoaGraphics::clearArea(UT_sint32 x, UT_sint32 y,
@@ -849,24 +849,25 @@ void GR_CocoaGraphics::setCursor(GR_Graphics::Cursor c)
 
 	m_cursor = c;
 
-	NSCursor * cursor;
-
 	switch (c)
 	{
 	default:
 		NSLog (@"Using unimplemented cursor");
 		/*FALLTHRU*/
 	case GR_CURSOR_DEFAULT:
-		cursor = [NSCursor arrowCursor];
+		NSLog(@"Cursor default");
+		[m_pWin setCursor:[NSCursor arrowCursor]];
 		break;
 
 	case GR_CURSOR_IBEAM:
-		cursor = [NSCursor IBeamCursor];
+		NSLog(@"Cursor IBeam");
+		[m_pWin setCursor:[NSCursor IBeamCursor]];
 		break;
 
 	case GR_CURSOR_WAIT:
 		// There is no wait cursor for Cocoa.  Or something.
-		cursor = [NSCursor arrowCursor];
+		NSLog(@"Cursor wait");
+		[m_pWin setCursor:[NSCursor arrowCursor]];
 		break;
 
 #if 0
@@ -936,8 +937,7 @@ void GR_CocoaGraphics::setCursor(GR_Graphics::Cursor c)
 		break;
 #endif
 	}
-	[m_pWin addCursorRect:[m_pWin bounds] cursor:cursor];
-	[cursor setOnMouseEntered:YES];
+	[[m_pWin window] invalidateCursorRectsForView:m_pWin];
 }
 
 GR_Graphics::Cursor GR_CocoaGraphics::getCursor(void) const
