@@ -51,6 +51,7 @@ typedef struct {
 	BBitmap 		*bitmap; 
 	BMenuField		*menu;
 	BRect			rect;
+	char* 			popupString;
 } tb_item_t;
 
 #define ITEM_WIDTH 		23
@@ -67,7 +68,7 @@ class ToolbarView: public BView {
 		~ToolbarView();
 				
 		bool AddSeperator();
-		bool AddItem(BBitmap *onbitmap, BBitmap *offbitmap, XAP_Toolbar_Id id);
+		bool AddItem(BBitmap *onbitmap, BBitmap *offbitmap, XAP_Toolbar_Id id , const char* popupString);
 		bool AddItem(BPopUpMenu * menu, int width, XAP_Toolbar_Id id);
 		
 		virtual void Draw(BRect clip);
@@ -83,6 +84,10 @@ class ToolbarView: public BView {
 		EV_BeOSToolbar	*m_pBeOSToolbar;
 		float		m_fOldWidth;
 		float		m_fOldHeight;
+		
+		bool m_bDisplayTooltip;
+		class 	TToolTip *fToolTip;
+		long lastToolTipIndex;
 };
 
 

@@ -17,6 +17,7 @@
  * 02111-1307, USA.
  */
 
+#include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include "ut_assert.h"
@@ -34,9 +35,10 @@
 #include "xap_BeOSToolbar_Icons.h"
 #include "ev_BeOSToolbar_ViewListener.h"
 #include "xav_View.h"
+#include "ev_BeOSTooltip.h"
 
 #define DPRINTF(x)
-
+							 	 
 EV_BeOSToolbar::EV_BeOSToolbar(XAP_BeOSApp * pBeOSApp, 
 			   XAP_BeOSFrame * pBeOSFrame,
 			   const char * szToolbarLayoutName,
@@ -113,7 +115,7 @@ UT_Bool EV_BeOSToolbar::synthesize(void) {
 			const char * szToolTip = pLabel->getToolTip();
 			if (!szToolTip || !*szToolTip)
 				szToolTip = pLabel->getStatusMsg();
-
+				
 			switch (pAction->getItemType()) {
 			case EV_TBIT_PushButton: {
 				DPRINTF(printf("EVTOOLBAR: Push button \n"));
@@ -121,7 +123,7 @@ UT_Bool EV_BeOSToolbar::synthesize(void) {
 				BBitmap * bitmap = m_pBeOSToolbarIcons->GetIconBitmap(pLabel->getIconName());
 				//UT_ASSERT(bitmap);
 				//Add the bitmap to the toolbar
-				tb->AddItem(bitmap, NULL, id);
+				tb->AddItem(bitmap, NULL, id , szToolTip);
 			}
 			break;
 
@@ -134,7 +136,7 @@ UT_Bool EV_BeOSToolbar::synthesize(void) {
 				BBitmap * bitmap = m_pBeOSToolbarIcons->GetIconBitmap(pLabel->getIconName());
 				//UT_ASSERT(bitmap);
 				//Add the bitmap to the toolbar
-				tb->AddItem(bitmap, NULL, id);
+				tb->AddItem(bitmap, NULL, id , szToolTip);
 			}
 			break;
 			
@@ -419,27 +421,30 @@ TBMouseFilter::TBMouseFilter(ToolbarView *pToolbarView)
 	m_pTBView = pToolbarView;
 }					   
 
-filter_result TBMouseFilter::Filter(BMessage *message, BHandler **target) { 
-	switch(message->what) {
-	case B_MOUSE_UP: {
-		BRect r;
-		BPoint pt;
- 		int i;
-		
-		message->FindPoint("where", &pt);
-		for (i=0; i< m_pTBView->item_count; i++) {
-			r = m_pTBView->items[i].rect;
-			if (m_pTBView->items[i].state & ENABLED_MASK &&
-			    r.Contains(pt) && m_pTBView->items[i].bitmap != NULL) {
-				//We have a hit on an item ...
-				int id = m_pTBView->items[i].id;
-		 		m_pTBView->m_pBeOSToolbar->toolbarEvent(id, NULL, 0);		
-				break;
+filter_result TBMouseFilter::Filter(BMessage *message, BHandler **target) 
+{ 
+	BRect r;
+	BPoint pt;
+ 	int i;
+ 		
+	switch(message->what) 
+	{
+		case B_MOUSE_UP: 
+		{		
+			message->FindPoint("where", &pt);
+			for (i=0; i< m_pTBView->item_count; i++) {
+				r = m_pTBView->items[i].rect;
+				if (m_pTBView->items[i].state & ENABLED_MASK &&
+				    r.Contains(pt) && m_pTBView->items[i].bitmap != NULL) 
+				{
+					//We have a hit on an item ...
+					int id = m_pTBView->items[i].id;
+			 		m_pTBView->m_pBeOSToolbar->toolbarEvent(id, NULL, 0);		
+					break;
+				}
 			}
+			break;
 		}
-			
-	}		
-	break;
 	
 	default:
 		return(B_DISPATCH_MESSAGE);
@@ -467,9 +472,21 @@ ToolbarView::ToolbarView(EV_BeOSToolbar *tb, BRect frame, const char *name,
 	m_fOldHeight=frame.Height();
 	TBMouseFilter *filter = new TBMouseFilter(this);
 	AddFilter(filter);
+	
+	m_bDisplayTooltip = false;
+	fToolTip = new TToolTip();
+	lastToolTipIndex = -1;
 }
-ToolbarView::~ToolbarView() {
+
+ToolbarView::~ToolbarView() 
+{
 	; //Do nothing ...
+
+	for(int i = 0; i < item_count; i ++)
+	{
+		if(items[i].popupString)
+			free(items[i].popupString);
+	}
 }
 
 tb_item_t * ToolbarView::FindItemByID(XAP_Toolbar_Id id) {
@@ -485,11 +502,15 @@ tb_item_t * ToolbarView::FindItemByID(XAP_Toolbar_Id id) {
 	return(NULL);
 }
 
-bool ToolbarView::AddItem(BBitmap *upbitmap, BBitmap *downbitmap, XAP_Toolbar_Id id) {
+bool ToolbarView::AddItem(BBitmap *upbitmap, BBitmap *downbitmap, XAP_Toolbar_Id id , const char* popupString) {
 	if (item_count >= ITEM_MAX -1)
 		return(false);
 		
 	if (downbitmap == NULL) {
+		items[item_count].popupString = (char *)malloc(strlen(popupString) + 1);
+		strcpy(items[item_count].popupString , popupString);// strdup(popupString);
+		items[item_count].popupString[strlen(popupString)] = '\0';
+		
 		items[item_count].type = BITMAP_BUTTON;
 		items[item_count].id = id;
 		items[item_count].bitmap = upbitmap;		
@@ -511,6 +532,7 @@ bool ToolbarView::AddItem(BPopUpMenu *popupmenu, int iWidth, XAP_Toolbar_Id id) 
 	if (item_count >= ITEM_MAX -1)
 		return(false);
 
+	items[item_count].popupString = NULL;
 	items[item_count].type = DROP_DOWN;
 	items[item_count].id = id;
 	items[item_count].rect.top = ITEM_SEPERATE; 
@@ -546,6 +568,8 @@ bool ToolbarView::AddItem(BPopUpMenu *popupmenu, int iWidth, XAP_Toolbar_Id id) 
 bool ToolbarView::AddSeperator() {
 	if (item_count >= ITEM_MAX -1)
 		return(false);
+		
+	items[item_count].popupString = NULL;
 	items[item_count].type = SEPERATOR;
 	items[item_count].rect.top = ITEM_SEPERATE; 
 	items[item_count].rect.bottom = ITEM_SEPERATE + ITEM_HEIGHT;
@@ -573,7 +597,13 @@ void ToolbarView::MessageReceived(BMessage *msg) {
 		char buffer[255];
 		strcpy(buffer, mnuitem->Label());
 		m_pBeOSToolbar->toolbarEvent(id, (UT_UCSChar *)buffer, strlen(buffer));
-		break;	
+		break;
+		
+	case eToolTipStart:	
+	case eToolTipStop:
+			fToolTip->PostMessage(msg);
+		break;
+		
 	}
 	default:		
 		BView::MessageReceived(msg);
@@ -692,7 +722,9 @@ void ToolbarView::FrameResized(float width, float height) {
 	m_fOldWidth=width;
 }
 									
-void ToolbarView::MouseMoved(BPoint where, uint32 code,	const BMessage *msg) {
+void ToolbarView::MouseMoved(BPoint where, uint32 code,	const BMessage *msg) 
+{
+#if 0 // Old code.
 	int i;
 
 	return;
@@ -711,5 +743,54 @@ void ToolbarView::MouseMoved(BPoint where, uint32 code,	const BMessage *msg) {
 	}
 	if (last_highlight >= 0)
 		HighLightItem(last_highlight, 1);
+#else // New code -- Added by cjp - 11/17/00
+
+			int i = 0;
+			BRect r;
+						
+			for (i=0; i< item_count; i++) 
+			{
+				r = items[i].rect;
+				if (r.Contains(where)) 
+				{
+					break;
+				}
+			}
+			
+			if(i >= item_count)
+				return;
+				
+			// if mouse has moved into our view, our window is active and it previously
+			// wasn't in, send a message to start the ToolTip
+			if (items[i].popupString && (items[i].rect.Contains(where)) && (Window()->IsActive())) 
+			{
+				if (!m_bDisplayTooltip) 
+				{
+					BMessage	msg(eToolTipStart);
+		
+					msg.AddPoint("start", ConvertToScreen(where));
+					msg.AddRect("bounds", ConvertToScreen(items[i].rect));
+					msg.AddString("string", items[i].popupString);
+					MessageReceived(&msg);
+
+					m_bDisplayTooltip = true;
+					lastToolTipIndex = i;
+				}
+				else if(lastToolTipIndex != -1 && i != lastToolTipIndex)
+				{
+					BMessage msg(eToolTipStop);
+					MessageReceived(&msg);
+					m_bDisplayTooltip = false;
+					lastToolTipIndex = -1;
+				}
+			}
+			// otherwise stop the message
+			else if (m_bDisplayTooltip) {
+				BMessage msg(eToolTipStop);
+				MessageReceived(&msg);
+				m_bDisplayTooltip = false;
+				lastToolTipIndex = -1;
+			}
+#endif
 }
 
