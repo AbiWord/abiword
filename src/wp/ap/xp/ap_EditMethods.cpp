@@ -2773,7 +2773,7 @@ bool _helpLocalizeAndOpenURL(AV_View* pAV_View, bool bLocal, const char* pathBef
 {
 	XAP_Frame* pFrame = static_cast<XAP_Frame*> (pAV_View->getParentData());
 
-	return _helpLocalizeAndOpenURL(pRame, bLocal, pathBeforeLang, pathAfterLang);
+	return _helpLocalizeAndOpenURL(pFrame, bLocal, pathBeforeLang, pathAfterLang);
 }
 
 Defun1(helpContents)
