@@ -54,7 +54,7 @@ void XAP_FontPreview::_createFontPreviewFromGC(GR_Graphics * gc,
 	
 	m_pFontPreview->setDrawString(m_drawString);
 	m_pFontPreview->setVecProperties(&m_vecProps);
-	m_pFontPreview->setWindowSize(gc->tlu(width), gc->tlu(height));
+	m_pFontPreview->setWindowSize(width, height);
 	m_width = gc->tlu(width);
 	m_height = gc->tlu(height);
 	addOrReplaceVecProp("font-size","36pt");
