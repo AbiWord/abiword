@@ -708,7 +708,7 @@ void GR_QNXGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 	adjust_rect(&rect, &offset);
 
 
-	UT_DEBUGMSG(("GR Scroll1 %d,%d %d,%d  by %d,%d",
+	xxx_UT_DEBUGMSG(("GR Scroll1 %d,%d %d,%d  by %d,%d",
 			rect.ul.x, rect.ul.y, rect.lr.x, rect.lr.y, offset.x, offset.y));
 
 	PhBlit(PtWidgetRid(PtFindDisjoint(m_pDraw)), &rect, &offset);
@@ -772,7 +772,7 @@ void GR_QNXGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 	PtTranslateRect(&rect, &shift);
 
 
-	UT_DEBUGMSG(("GR Scroll2 %d,%d %d,%d  by %d,%d",
+	xxx_UT_DEBUGMSG(("GR Scroll2 %d,%d %d,%d  by %d,%d",
 			rect.ul.x, rect.ul.y, rect.lr.x, rect.lr.y, offset.x, offset.y));
 
 
