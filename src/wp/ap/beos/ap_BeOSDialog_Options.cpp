@@ -211,6 +211,7 @@ DEFINE_GET_SET_BOOL(PrefsAutoSave);
 
 DEFINE_GET_SET_BOOL	(ViewShowRuler);
 	// have a units option
+DEFINE_GET_SET_BOOL	(ViewCursorBlink);
 DEFINE_GET_SET_BOOL	(ViewShowToolbars);
 
 DEFINE_GET_SET_BOOL	(ViewAll);

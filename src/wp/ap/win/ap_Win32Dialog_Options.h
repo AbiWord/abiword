@@ -57,6 +57,7 @@ public:
  
  	SET_GATHER			(ViewShowRuler,		UT_Bool );
 	SET_GATHER			(ViewRulerUnits,	UT_Dimension);		
+	SET_GATHER			(ViewCursorBlink,	UT_Bool);
  	SET_GATHER			(ViewShowToolbars,	UT_Bool );
  
  	SET_GATHER			(ViewAll,			UT_Bool );
