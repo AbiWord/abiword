@@ -74,7 +74,10 @@ bool XAP_QNXClipboard::hasFormat(const char *format)
 	void *cbdata;
 	cbdata=PhClipboardPasteStart(PhInputGroup(0));
 	if(!PhClipboardPasteType(cbdata,(char*)format)|| (XAP_FakeClipboard::hasFormat(format)==false))
-	return false;
+	{
+		PhClipboardPasteFinish(cbdata);	
+		return false;
+	}
 PhClipboardPasteFinish(cbdata);
 return true;
 }
@@ -92,8 +95,8 @@ bool XAP_QNXClipboard::getClipboardData(const char* format, void ** ppData, UT_u
 	clip=PhClipboardPasteType(cbdata,(char*)format);	
 if(clip){
 	(char*)*ppData=strdup((char*)clip->data);
-
 	*pLen=strlen((char*)*ppData);
+	PhClipboardPasteFinish(cbdata);
 	return true;
 } 
 return	XAP_FakeClipboard::getClipboardData(format, ppData, pLen);
