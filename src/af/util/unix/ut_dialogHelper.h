@@ -69,6 +69,8 @@ void createLabelAccelerators( GtkWidget * widget );
 void setDefaultButton (GnomeDialog * dlg, int which);
 #endif
 
+GtkStyle * get_ensured_style (GtkWidget * w);
+
 #endif /* UT_DIALOGHELPER_H */
 
 

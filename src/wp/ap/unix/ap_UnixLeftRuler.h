@@ -45,6 +45,7 @@ public:
 	
 protected:
 	GtkWidget *		m_wLeftRuler;
+	GtkWidget *     m_ruler;
 
 protected:
 

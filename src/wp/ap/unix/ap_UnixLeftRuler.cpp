@@ -25,6 +25,7 @@
 #include "xap_UnixFrame.h"
 #include "ap_UnixLeftRuler.h"
 #include "gr_UnixGraphics.h"
+#include "ut_dialogHelper.h"
 
 #define ENSUREP(p)		do { UT_ASSERT(p); if (!p) goto Cleanup; } while (0)
 
@@ -34,17 +35,14 @@ AP_UnixLeftRuler::AP_UnixLeftRuler(XAP_Frame * pFrame)
 	: AP_LeftRuler(pFrame)
 {
 	m_wLeftRuler = NULL;
+	m_ruler = gtk_vruler_new ();
 	m_pG = NULL;
-
-	// Initialize ruler colors to match the style of the GTK Window
-	// representing pFrame
-	GtkStyle * style = gtk_widget_get_style((static_cast<XAP_UnixFrame *> (pFrame))->getTopLevelWindow());
-	UT_ASSERT(style);
 }
 
 AP_UnixLeftRuler::~AP_UnixLeftRuler(void)
 {
 	DELETEP(m_pG);
+	gtk_widget_destroy (m_ruler);
 }
 
 GtkWidget * AP_UnixLeftRuler::createWidget(void)
@@ -92,15 +90,14 @@ void AP_UnixLeftRuler::setView(AV_View * pView)
 	// shown.
 	
 	DELETEP(m_pG);
+
 	XAP_UnixApp * app = static_cast<XAP_UnixApp *>(m_pFrame->getApp());
 	XAP_UnixFontManager * fontManager = app->getFontManager();
 	GR_UnixGraphics * pG = new GR_UnixGraphics(m_wLeftRuler->window, fontManager, m_pFrame->getApp());
 	m_pG = pG;
 	UT_ASSERT(m_pG);
 
-	GtkStyle * style = gtk_widget_get_style((static_cast<XAP_UnixFrame *> (m_pFrame))->getTopLevelWindow());
-	UT_ASSERT(style);
-	pG->init3dColors(style);
+	pG->init3dColors(get_ensured_style (m_ruler));
 }
 
 /*****************************************************************/
