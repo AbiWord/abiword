@@ -10422,7 +10422,7 @@ Defun(resizeImage)
 				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		}
 		
-		pG->setLineProperties(1, GR_Graphics::JOIN_MITER, GR_Graphics::CAP_BUTT, GR_Graphics::LINE_DOTTED); // MARCM: setting the line style to DOTTED doesn't seem to work with GTK2
+		pG->setLineProperties(pView->getGraphics()->tlu(1), GR_Graphics::JOIN_MITER, GR_Graphics::CAP_BUTT, GR_Graphics::LINE_DOTTED); // MARCM: setting the line style to DOTTED doesn't seem to work with GTK2
 		pG->setColor(UT_RGBColor(255,255,255));
 		if (bIsResizing)
 		{
@@ -10431,7 +10431,7 @@ Defun(resizeImage)
 		}
 		pView->setCurImageSel(r);
 		xorRect(pG, r);
-		pG->setLineProperties(1, GR_Graphics::JOIN_MITER, GR_Graphics::CAP_BUTT, GR_Graphics::LINE_SOLID);
+		pG->setLineProperties(pView->getGraphics()->tlu(1), GR_Graphics::JOIN_MITER, GR_Graphics::CAP_BUTT, GR_Graphics::LINE_SOLID);
 				
 		UT_DEBUGMSG(("MARCM: image display size: (w:%d,h:%d) - total change (w:%d,h:%d)\n",r.width,r.height,xDiff, yDiff));
 	}
@@ -10475,16 +10475,16 @@ Defun(endResizeImage)
 			newImgBounds.height = (UT_sint32)max_height;
 		
 		if (newImgBounds.width == 0)
-			newImgBounds.width = 1;
+			newImgBounds.width = pView->getGraphics()->tlu(1);
 
 		if (newImgBounds.height == 0)
-			newImgBounds.height = 1;
+			newImgBounds.height = pView->getGraphics()->tlu(1);
 		
 		// clear the resizing line
-		pG->setLineProperties(1, GR_Graphics::JOIN_MITER, GR_Graphics::CAP_BUTT, GR_Graphics::LINE_DOTTED); // MARCM: setting the line style to DOTTED doesn't seem to work with GTK2
+		pG->setLineProperties(pView->getGraphics()->tlu(1), GR_Graphics::JOIN_MITER, GR_Graphics::CAP_BUTT, GR_Graphics::LINE_DOTTED); // MARCM: setting the line style to DOTTED doesn't seem to work with GTK2
 		pG->setColor(UT_RGBColor(255,255,255));
 		xorRect(pG, pView->getCurImageSel());
-		pG->setLineProperties(1, GR_Graphics::JOIN_MITER, GR_Graphics::CAP_BUTT, GR_Graphics::LINE_SOLID);
+		pG->setLineProperties(pView->getGraphics()->tlu(1), GR_Graphics::JOIN_MITER, GR_Graphics::CAP_BUTT, GR_Graphics::LINE_SOLID);
 		
 		UT_DEBUGMSG(("MARCM: ap_EditMethods::done resizing image! new size in px (h:%d,w:%d)\n", newImgBounds.width, newImgBounds.height));
 	
