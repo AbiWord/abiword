@@ -444,3 +444,25 @@ fp_Line* fp_Column::getLastLine(void) const
 	}
 }
 
+void fp_Column::bumpLines(fp_Line* pLastLineToKeep)
+{
+	UT_sint32 ndx = m_vecLines.findItem(pLastLineToKeep);
+	UT_ASSERT(ndx >= 0);
+	UT_uint32 iCount = m_vecLines.getItemCount();
+	UT_uint32 i;
+
+	fp_Column* pNextColumn = getNext();
+	UT_ASSERT(pNextColumn);
+	
+	for (i=ndx + 1; i<iCount; i++)
+	{
+		fp_Line* pLine = (fp_Line*) m_vecLines.getNthItem(i);
+
+		pNextColumn->addLine(pLine);
+	}
+	
+	for (i=iCount - 1; i > ndx; i--)
+	{
+		m_vecLines.deleteNthItem(i);
+	}
+}

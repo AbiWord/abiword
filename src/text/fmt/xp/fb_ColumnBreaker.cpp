@@ -260,16 +260,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_SectionLayout* pSL)
 				pNextColumn = pSL->getNewColumn();
 			}
 
-			fp_Line* pLineToBump = pCurColumn->getLastLine();
-			while (pCurColumn->getLastLine() != pLastLineToKeep)
-			{
-				UT_ASSERT(pLineToBump->getColumn() == pCurColumn);
-
-				pCurColumn->removeLine(pLineToBump);
-				pNextColumn->insertLine(pLineToBump);
-
-				pLineToBump = pLineToBump->getPrevLineInSection();
-			}
+			pCurColumn->bumpLines(pLastLineToKeep);
 		}
 
 		UT_ASSERT((!pLastLineToKeep) || (pCurColumn->getLastLine() == pLastLineToKeep));

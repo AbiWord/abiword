@@ -92,6 +92,7 @@ public:
 	void 				dump();
 
 	void				clearScreen(void);
+	void 				bumpLines(fp_Line* pLastLineToKeep);
 	
 protected:
 	UT_uint32 				_getBottomOfLastLine(void) const;

@@ -31,7 +31,7 @@
 
 UT_Vector::UT_Vector()
 {
-	m_iCutoffDouble = 128;
+	m_iCutoffDouble = 2048;			// TODO make this tunable?
 	m_iPostCutoffIncrement = 32;
 	m_iCount = 0;
 	m_iSpace = 0;

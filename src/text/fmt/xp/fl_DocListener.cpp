@@ -44,7 +44,7 @@
 #include "pd_Document.h"
 #include "pp_AttrProp.h"
 
-// #define UPDATE_LAYOUT_ON_SIGNAL
+#define UPDATE_LAYOUT_ON_SIGNAL
 
 fl_DocListener::fl_DocListener(PD_Document* doc, FL_DocLayout *pLayout)
 {
