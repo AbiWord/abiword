@@ -1,4 +1,4 @@
-/* AbiWord
+* AbiWord
  * Copyright (C) 2000 AbiSource, Inc.
  * Copyright (C) 2000 Frodo Looijaard <frodol@dds.nl>
  * 
@@ -22,9 +22,6 @@
 
 //  Import Word or TextEd data from a Psion file. 
 //  We use libpsiconv for the real work
-
-// To do:
-//	Fix characters with high ASCII codes
 
 // To do once Abiword supports it:
 //   Styles: enable
@@ -165,7 +162,7 @@ UT_Error IE_Imp_Psion_Word_Sniffer::constructImporter(PD_Document * pDocument,
 	return UT_OK;
 }
 
-// We take the .psi suffix for now, but this will need to change to none at all
+// We take the .psiword suffix for now (no standard)
 bool	IE_Imp_Psion_Word_Sniffer::getDlgLabels(const char ** pszDesc,
 												const char ** pszSuffixList,
 												IEFileType * ft)
@@ -801,7 +798,10 @@ bool IE_Imp_Psion::prepareCharacters(char *input, int length,
 	wchar_t wc;
 	int i;
 
-	mbtowc.setInCharset("CP1252");
+	const char *szEncoding = XAP_EncodingManager::get_instance()->
+                                                     charsetFromCodepage(1252);
+
+	mbtowc.setInCharset(szEncoding);
 
 	for (i = 0; i < length; i++) {
 		// Note that we may actually encounter an '\000' here too. This
@@ -831,7 +831,7 @@ bool IE_Imp_Psion::prepareCharacters(char *input, int length,
 			uc = UCS_SPACE; 
 		else if (input[i] == '\020') // Unbreakable space
 			uc = UCS_NBSP; 
-		else if (input[i] < 32) // Not implemented
+		else if ((input [i] >= 0) && (input[i] < 32)) // Not implemented
 			continue;
 		else if (!mbtowc.mbtowc(wc,input[i]))
 			continue;
