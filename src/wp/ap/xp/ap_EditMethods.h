@@ -31,4 +31,10 @@ bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics,
 		     UT_sint32 inWidth,  UT_sint32 inHeight,
 		     UT_uint32 nToPage, UT_uint32 nFromPage) ;
 
+void s_getPageMargins(FV_View * inView,
+					  double &margin_left,
+					  double &margin_right,
+					  double &page_margin_left,
+					  double &page_margin_right);
+
 #endif
