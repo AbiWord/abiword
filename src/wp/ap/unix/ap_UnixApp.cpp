@@ -1330,7 +1330,7 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
 #ifdef LOGFILE
 	fprintf(logfile,"About to start gnome_program_init \n");
 #endif
-	  GnomeProgram * program = gnome_program_init ("AbiWord", ABI_BUILD_VERSION, 
+	  GnomeProgram * program = gnome_program_init ("AbiWord-" PACKAGE_VERSION, ABI_BUILD_VERSION, 
 												   LIBGNOMEUI_MODULE, XArgs.m_argc, const_cast<char **>(XArgs.m_argv),
 												   GNOME_PARAM_APP_PREFIX, ABIWORD_PREFIX,
 												   GNOME_PARAM_APP_SYSCONFDIR, ABIWORD_SYSCONFDIR,
