@@ -176,7 +176,7 @@ class GR_QNXGraphics : public GR_Graphics
  	bool             m_bPrintNextPage;    
 	PpPrintContext_t *  m_pPrintContext;
 
-    virtual GR_Image * genImageFromRectangle(UT_Rect & r) { return NULL;}
+	virtual GR_Image * genImageFromRectangle(UT_Rect & r);
 private:
 
 	virtual void saveRectangle(UT_Rect &r, UT_uint32 iIndx);

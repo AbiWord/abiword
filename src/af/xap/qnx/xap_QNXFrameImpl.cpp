@@ -120,6 +120,8 @@ int XAP_QNXFrameImpl::_fe::motion_notify_event(PtWidget_t* w, void *data, PtCall
 	AV_View * pView = pFrame->getCurrentView();
 	EV_QNXMouse * pQNXMouse = (EV_QNXMouse *) pFrame->getMouse();
 
+	//Photon compresses events, ie, we will get called with the last collected motion event. (unix/gtk needs special handling for that)
+
 	if (pView)
 		pQNXMouse->mouseMotion(pView, info);
 	
