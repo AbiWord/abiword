@@ -332,13 +332,16 @@ AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
 	}
 
 	const XAP_StringSet * pSS = dlg->getApp()->getStringSet();
-
-	m_previousBlock->setText(pSS->getValueUTF8(AP_STRING_ID_DLG_Para_PreviewPrevParagraph).ucs4_str().ucs4_str());
+	UT_UTF8String s;
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_PreviewPrevParagraph,s);
+	
+	m_previousBlock->setText(s.ucs4_str().ucs4_str());
 
 	// this text came from the current document, passed in as arg
 	m_activeBlock->setText(text);
 
-	m_followingBlock->setText(pSS->getValueUTF8(AP_STRING_ID_DLG_Para_PreviewFollowParagraph).ucs4_str().ucs4_str());
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_PreviewFollowParagraph,s);
+	m_followingBlock->setText(s.ucs4_str().ucs4_str());
 }
 
 AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
@@ -386,13 +389,15 @@ AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
 	}
 
 	const XAP_StringSet * pSS = dlg->getApp()->getStringSet();
-
-	m_previousBlock->setText(pSS->getValueUTF8(AP_STRING_ID_DLG_Para_PreviewPrevParagraph).ucs4_str().ucs4_str());
+	UT_UTF8String s;
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_PreviewPrevParagraph,s);
+	m_previousBlock->setText(s.ucs4_str().ucs4_str());
 
 	// this text came from the current document, passed in as arg
 	m_activeBlock->setText(text);
-
-	m_followingBlock->setText(pSS->getValueUTF8(AP_STRING_ID_DLG_Para_PreviewFollowParagraph).ucs4_str().ucs4_str());
+	
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_PreviewFollowParagraph,s);
+	m_followingBlock->setText(s.ucs4_str().ucs4_str());
 }
 
 AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
@@ -468,13 +473,15 @@ AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
 	}
 
 	const XAP_StringSet * pSS = dlg->m_pApp->getStringSet();
-
-	m_previousBlock->setText(pSS->getValueUTF8(AP_STRING_ID_DLG_Para_PreviewPrevParagraph).ucs4_str().ucs4_str());
+	UT_UTF8String s;
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_PreviewPrevParagraph,s);
+	m_previousBlock->setText(s.ucs4_str().ucs4_str());
 
 	// this text came from the current document, passed in as arg
 	m_activeBlock->setText(text);
-
-	m_followingBlock->setText(pSS->getValueUTF8(AP_STRING_ID_DLG_Para_PreviewFollowParagraph).ucs4_str().ucs4_str());
+	
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_PreviewFollowParagraph,s);
+	m_followingBlock->setText(s.ucs4_str().ucs4_str());
 }
 
 AP_Preview_Paragraph::~AP_Preview_Paragraph()

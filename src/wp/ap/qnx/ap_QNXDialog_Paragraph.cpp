@@ -403,6 +403,7 @@ PtWidget_t * AP_QNXDialog_Paragraph::_constructWindow(void)
 {
 	// grab the string set
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
+	UT_UTF8String s;
 
 	PtWidget_t * windowParagraph;
 	PtWidget_t * listAlignment;
@@ -450,13 +451,14 @@ PtWidget_t * AP_QNXDialog_Paragraph::_constructWindow(void)
 	PtArg_t args[10];
 	int     n = 0;
 	double  inc = 0.01;
-
+	UT_UTF8String s;
 	//TODO: Put a vertical group in the window first, set the offset etc.
 
 #define WIN_WIDTH  550	
 #define WIN_HEIGHT 400	
 	n = 0;
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_ParaTitle ).utf8_str());
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_ParaTitle,s);
+	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str());
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, unixstr, 0);
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, ABI_MODAL_WINDOW_RENDER_FLAGS);
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 0, ABI_MODAL_WINDOW_MANAGE_FLAGS);
@@ -647,13 +649,17 @@ PtWidget_t * AP_QNXDialog_Paragraph::_constructWindow(void)
 	PtCreateWidget( PtSeparator, NULL, sizeof(args3) / sizeof(PtArg_t), args3 );
 
 	listAlignment = PtCreateWidget( PtComboBox, NULL, sizeof(args4) / sizeof(PtArg_t), args4 );
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_AlignLeft ).utf8_str()); litem[0]= unixstr;
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_AlignLeft,s);
+	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str()); litem[0]= unixstr;
 	PtListAddItems(listAlignment, litem, 1, 0); FREEP(unixstr);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_AlignCentered ).utf8_str()); litem[0]= unixstr;
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_AlignCentered,s);
+	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str()); litem[0]= unixstr;
 	PtListAddItems(listAlignment, litem, 1, 0); FREEP(unixstr);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_AlignRight ).utf8_str()); litem[0]= unixstr;
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_AlignRight,s);
+	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str()); litem[0]= unixstr;
 	PtListAddItems(listAlignment, litem, 1, 0); FREEP(unixstr);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_AlignJustified ).utf8_str()); litem[0]= unixstr;
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_AlignJustified,s);
+	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str()); litem[0]= unixstr;
 	PtListAddItems(listAlignment, litem, 1, 0); FREEP(unixstr);
 	TFSetDataInt(listAlignment, id_MENU_ALIGNMENT);
 
@@ -677,11 +683,14 @@ PtWidget_t * AP_QNXDialog_Paragraph::_constructWindow(void)
 
 	listSpecial = PtCreateWidget( PtComboBox, NULL, sizeof(args10) / sizeof(PtArg_t), args10 );
 	PtListDeleteAllItems(listSpecial);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_SpecialNone ).utf8_str()); litem[0]= unixstr;
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_SpecialNone,s);
+	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str()); litem[0]= unixstr;
 	PtListAddItems(listSpecial, litem, 1, 0); FREEP(unixstr);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_SpecialFirstLine ).utf8_str()); litem[0]= unixstr;
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_SpecialFirstLine,s );
+	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str()); litem[0]= unixstr;
 	PtListAddItems(listSpecial, litem, 1, 0); FREEP(unixstr);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_SpecialHanging ).utf8_str()); litem[0]= unixstr;
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_SpecialHanging,s);
+	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str()); litem[0]= unixstr;
 	PtListAddItems(listSpecial, litem, 1, 0); FREEP(unixstr);
 	TFSetDataInt(listSpecial, id_MENU_SPECIAL_INDENT);
 
@@ -720,17 +729,23 @@ PtWidget_t * AP_QNXDialog_Paragraph::_constructWindow(void)
 
 	listLineSpacing = PtCreateWidget( PtComboBox, NULL, sizeof(args21) / sizeof(PtArg_t), args21 );
 	PtListDeleteAllItems(listLineSpacing);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_SpacingSingle ).utf8_str()); litem[0]= unixstr;
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_SpacingSingle,s);
+	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str()); litem[0]= unixstr;
 	PtListAddItems(listLineSpacing, litem, 1, 0); FREEP(unixstr);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_SpacingHalf ).utf8_str()); litem[0]= unixstr;
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_SpacingHalf,s);
+	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str()); litem[0]= unixstr;
 	PtListAddItems(listLineSpacing, litem, 1, 0); FREEP(unixstr);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_SpacingDouble ).utf8_str()); litem[0]= unixstr;
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_SpacingDouble,s);
+	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str()); litem[0]= unixstr;
 	PtListAddItems(listLineSpacing, litem, 1, 0); FREEP(unixstr);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_SpacingAtLeast ).utf8_str()); litem[0]= unixstr;
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_SpacingAtLeast,s);
+	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str()); litem[0]= unixstr;
 	PtListAddItems(listLineSpacing, litem, 1, 0); FREEP(unixstr);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_SpacingExactly ).utf8_str()); litem[0]= unixstr;
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_SpacingExactly,s);
+	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str()); litem[0]= unixstr;
 	PtListAddItems(listLineSpacing, litem, 1, 0); FREEP(unixstr);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_SpacingMultiple ).utf8_str()); litem[0]= unixstr;
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_SpacingMultiple,s);
+	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str()); litem[0]= unixstr;
 	PtListAddItems(listLineSpacing, litem, 1, 0); FREEP(unixstr);
 	TFSetDataInt(listLineSpacing, id_MENU_SPECIAL_SPACING);
 
@@ -887,7 +902,8 @@ PtWidget_t * AP_QNXDialog_Paragraph::_constructWindow(void)
 
 	/* Now at the bottom add in some buttons ... */
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_ButtonTabs ).utf8_str());
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_ButtonTabs,s);
+	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str());
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
 	PtSetArg(&args[n++], Pt_ARG_FLAGS,Pt_TRUE,Pt_GHOST|Pt_BLOCKED);
 	buttonTabs = PtCreateWidget(PtButton, hbuttongroup, n, args);
@@ -900,14 +916,16 @@ PtWidget_t * AP_QNXDialog_Paragraph::_constructWindow(void)
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(XAP_STRING_ID_DLG_OK ).utf8_str());
+	pSS->getValueUTF8(XAP_STRING_ID_DLG_OK,);
+	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str());
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
 	buttonOK = PtCreateWidget(PtButton, hbuttongroup, n, args);
 	FREEP(unixstr);
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel ).utf8_str());
+	pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel,s);
+	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str());
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
 	buttonCancel = PtCreateWidget(PtButton, hbuttongroup, n, args);
 	FREEP(unixstr);

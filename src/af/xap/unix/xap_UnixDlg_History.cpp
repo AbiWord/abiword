@@ -127,7 +127,9 @@ GtkWidget * XAP_UnixDialog_History::_constructWindow(void)
 	// might need to be queried or altered later
 	m_windowMain = glade_xml_get_widget(m_pXML, "xap_UnixDlg_History");
 	UT_ASSERT(m_windowMain);
-	gtk_window_set_title (GTK_WINDOW(m_windowMain), pSS->getValueUTF8(XAP_STRING_ID_DLG_History_WindowLabel).utf8_str());
+	UT_UTF8String s;
+	pSS->getValueUTF8(XAP_STRING_ID_DLG_History_WindowLabel,s);
+	gtk_window_set_title (GTK_WINDOW(m_windowMain), s.utf8_str());
 	m_wListWindow = glade_xml_get_widget(m_pXML, "wListWindow");
 
 	_fillHistoryTree();

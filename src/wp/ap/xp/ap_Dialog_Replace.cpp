@@ -131,20 +131,24 @@ void  AP_Dialog_Replace::ConstructWindowName(void)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	XML_Char * tmp = NULL;
-        UT_uint32 title_width = 0;
+    UT_uint32 title_width = 0;
 	// conditionally set title
+	UT_UTF8String s;
+	
 	if (m_id == AP_DIALOG_ID_FIND)
 	{
-                UT_XML_cloneNoAmpersands(tmp, pSS->getValueUTF8(AP_STRING_ID_DLG_FR_FindTitle).utf8_str());
-                title_width = 30;
+		pSS->getValueUTF8(AP_STRING_ID_DLG_FR_FindTitle,s);
+		UT_XML_cloneNoAmpersands(tmp, s.utf8_str());
+		title_width = 30;
 	}
 	else
 	{
-                UT_XML_cloneNoAmpersands(tmp, pSS->getValueUTF8(AP_STRING_ID_DLG_FR_ReplaceTitle).utf8_str());	
-                title_width = 60;
+		pSS->getValueUTF8(AP_STRING_ID_DLG_FR_ReplaceTitle,s);
+		UT_XML_cloneNoAmpersands(tmp, s.utf8_str());	
+		title_width = 60;
 	}
-        BuildWindowName((char *) m_WindowName,(char*)tmp,title_width);
-        FREEP(tmp);
+	BuildWindowName((char *) m_WindowName,(char*)tmp,title_width);
+	FREEP(tmp);
 }
 
 FV_View * AP_Dialog_Replace::getFvView(void) 

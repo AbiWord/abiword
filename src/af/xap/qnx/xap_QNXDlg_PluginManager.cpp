@@ -88,7 +88,7 @@ void XAP_QNXDialog_PluginManager::event_Close () {
 void XAP_QNXDialog_PluginManager::event_Deactivate ()
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-
+	UT_UTF8String s;
 	XAP_Module * pModule = 0;
 
 	unsigned short * selectedRow = NULL;
@@ -100,7 +100,8 @@ void XAP_QNXDialog_PluginManager::event_Deactivate ()
 	else 
 	{
 		// error message box - didn't select a plugin
-		_errorMessage (m_pFrame, pSS->getValueUTF8(XAP_STRING_ID_DLG_PLUGIN_MANAGER_NONE_SELECTED ).utf8_str());
+		pSS->getValueUTF8(XAP_STRING_ID_DLG_PLUGIN_MANAGER_NONE_SELECTED,s);
+		_errorMessage (m_pFrame, s.utf8_str());
 		return;
 	}
 
@@ -114,21 +115,23 @@ void XAP_QNXDialog_PluginManager::event_Deactivate ()
 		else
 		{
 			// error message box
-			_errorMessage (m_pFrame, 
-pSS->getValueUTF8(XAP_STRING_ID_DLG_PLUGIN_MANAGER_COULDNT_UNLOAD ).utf8_str());
+			pSS->getValueUTF8(XAP_STRING_ID_DLG_PLUGIN_MANAGER_COULDNT_UNLOAD,s);
+			_errorMessage (m_pFrame,s.utf8_str());
 		}
 	}
 	else
 	{
 		// error message box
-		_errorMessage (m_pFrame, 
-pSS->getValueUTF8(XAP_STRING_ID_DLG_PLUGIN_MANAGER_COULDNT_UNLOAD ).utf8_str());
+		pSS->getValueUTF8(XAP_STRING_ID_DLG_PLUGIN_MANAGER_COULDNT_UNLOAD,s);
+		_errorMessage (m_pFrame,s.utf8_str());
 	}
 }
 
 void XAP_QNXDialog_PluginManager::event_Load ()
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
+	UT_UTF8String s;
+	
 
 	XAP_DialogFactory * pDialogFactory
 		= (XAP_DialogFactory *) m_pFrame->getDialogFactory();
@@ -179,7 +182,8 @@ void XAP_QNXDialog_PluginManager::event_Load ()
 			else
 			{
 				// error message
-				_errorMessage (m_pFrame, pSS->getValueUTF8(XAP_STRING_ID_DLG_PLUGIN_MANAGER_COULDNT_LOAD ).utf8_str());
+				pSS->getValueUTF8(XAP_STRING_ID_DLG_PLUGIN_MANAGER_COULDNT_LOAD,s);
+				_errorMessage (m_pFrame, s.utf8_str());
 			}
 		}
 	}

@@ -156,8 +156,9 @@ void  AP_UnixDialog_InsertBookmark::_constructWindowContents(GtkWidget * contain
 {
   GtkWidget *label1;
   const XAP_StringSet * pSS = m_pApp->getStringSet();
-
-  label1 = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_InsertBookmark_Msg).utf8_str());
+  UT_UTF8String s;
+  pSS->getValueUTF8(AP_STRING_ID_DLG_InsertBookmark_Msg,s);
+  label1 = gtk_label_new (s.utf8_str());
   gtk_widget_show (label1);
   gtk_box_pack_start (GTK_BOX (container), label1, FALSE, FALSE, 0);
 
@@ -175,8 +176,10 @@ GtkWidget*  AP_UnixDialog_InsertBookmark::_constructWindow(void)
   GtkWidget *vbox;
 
   const XAP_StringSet * pSS = m_pApp->getStringSet();
-
-  m_windowMain = abiDialogNew("insert bookmark dialog", TRUE, pSS->getValueUTF8(AP_STRING_ID_DLG_InsertBookmark_Title).utf8_str());
+  UT_UTF8String s;
+  pSS->getValueUTF8(AP_STRING_ID_DLG_InsertBookmark_Title,s);
+  
+  m_windowMain = abiDialogNew("insert bookmark dialog", TRUE, s.utf8_str());
 
   
   vbox = gtk_vbox_new (FALSE, 6);

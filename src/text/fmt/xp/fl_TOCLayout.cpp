@@ -1321,7 +1321,7 @@ void fl_TOCLayout::_lookupProperties(void)
 	const XML_Char * pszTOCHEADING = NULL;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-heading",pszTOCHEADING))
 	{
-		m_sTOCHeading = pSS->getValueUTF8(AP_STRING_ID_TOC_TocHeading);
+		pSS->getValueUTF8(AP_STRING_ID_TOC_TocHeading, m_sTOCHeading);
 	}
 	else
 	{

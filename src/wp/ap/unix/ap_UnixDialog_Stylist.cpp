@@ -270,7 +270,9 @@ GtkWidget * AP_UnixDialog_Stylist::_constructWindow(void)
 	m_wClose = glade_xml_get_widget(xml,"btClose");
 
 	// set the dialog title
-	abiDialogSetTitle(m_windowMain, pSS->getValueUTF8(AP_STRING_ID_DLG_Stylist_Title).utf8_str());
+	UT_UTF8String s;
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Stylist_Title,s);
+	abiDialogSetTitle(m_windowMain, s.utf8_str());
 	
 	return m_windowMain;
 }
@@ -359,10 +361,10 @@ void  AP_UnixDialog_Stylist::_fillTree(void)
 	
 	const XAP_StringSet * pSS = m_pApp->getStringSet ();
 	m_wRenderer = gtk_cell_renderer_text_new ();
-
+	UT_UTF8String s;
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Stylist_Styles,s);
 	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (m_wStyleList),
-												 -1, 
-												 pSS->getValueUTF8(AP_STRING_ID_DLG_Stylist_Styles).utf8_str(),
+												 -1, s.utf8_str(),
 												 m_wRenderer, "text", 0, NULL); 	
 
 	gtk_tree_view_collapse_all (GTK_TREE_VIEW (m_wStyleList));

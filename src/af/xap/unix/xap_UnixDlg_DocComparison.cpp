@@ -91,7 +91,9 @@ GtkWidget * XAP_UnixDialog_DocComparison::constructWindow(void)
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
 	m_windowMain = glade_xml_get_widget(m_pXML, "xap_UnixDlg_DocComparison");
-	gtk_window_set_title (GTK_WINDOW(m_windowMain), pSS->getValueUTF8(XAP_STRING_ID_DLG_DocComparison_WindowLabel).utf8_str());
+	UT_UTF8String s;
+	pSS->getValueUTF8(XAP_STRING_ID_DLG_DocComparison_WindowLabel,s);
+	gtk_window_set_title (GTK_WINDOW(m_windowMain), s.utf8_str());
   
 	return m_windowMain;
 }

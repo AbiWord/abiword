@@ -295,7 +295,9 @@ GtkWidget * AP_UnixDialog_FormatTOC::_constructWindow(void)
 	m_wClose = _getWidget("wClose");
 
 	// set the dialog title
-	abiDialogSetTitle(m_windowMain, pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTOC_Title).utf8_str());
+	UT_UTF8String s;
+	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTOC_Title,s);
+	abiDialogSetTitle(m_windowMain, s.utf8_str());
 
 // localize notebook tabs
 	localizeLabel(_getWidget( "lbGeneral"), pSS, AP_STRING_ID_DLG_FormatTOC_General);
@@ -440,9 +442,11 @@ void AP_UnixDialog_FormatTOC::setDetailsLevel(UT_sint32 iLevel)
 void AP_UnixDialog_FormatTOC::_createLevelItems(void)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet ();
+	UT_UTF8String s;
 	GtkWidget * wM = gtk_menu_new();
 
-	GtkWidget * pW = gtk_menu_item_new_with_label(pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTOC_Level1).utf8_str());
+	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTOC_Level1,s);
+	GtkWidget * pW = gtk_menu_item_new_with_label(s.utf8_str());
 	g_object_set_data(G_OBJECT(pW),"level",(gpointer)"1");
 	g_signal_connect(G_OBJECT(pW),
 					 "activate",
@@ -450,7 +454,8 @@ void AP_UnixDialog_FormatTOC::_createLevelItems(void)
 					 (gpointer) this);
 	gtk_menu_shell_append (GTK_MENU_SHELL (wM),pW);
 
-	pW = gtk_menu_item_new_with_label(pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTOC_Level2).utf8_str());
+	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTOC_Level2,s);
+	pW = gtk_menu_item_new_with_label(s.utf8_str());
 	g_object_set_data(G_OBJECT(pW),"level",(gpointer)"2");
 	g_signal_connect(G_OBJECT(pW),
 					 "activate",
@@ -458,7 +463,8 @@ void AP_UnixDialog_FormatTOC::_createLevelItems(void)
 					 (gpointer) this);
 	gtk_menu_shell_append (GTK_MENU_SHELL (wM),pW);
 
-	pW = gtk_menu_item_new_with_label(pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTOC_Level3).utf8_str());
+	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTOC_Level3,s);
+	pW = gtk_menu_item_new_with_label(s.utf8_str());
 	g_object_set_data(G_OBJECT(pW),"level",(gpointer)"3");
 	g_signal_connect(G_OBJECT(pW),
 					 "activate",
@@ -466,7 +472,8 @@ void AP_UnixDialog_FormatTOC::_createLevelItems(void)
 					 (gpointer) this);
 	gtk_menu_shell_append (GTK_MENU_SHELL (wM),pW);
 
-	pW = gtk_menu_item_new_with_label(pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTOC_Level4).utf8_str());
+	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTOC_Level4,s);
+	pW = gtk_menu_item_new_with_label(s.utf8_str());
 	g_object_set_data(G_OBJECT(pW),"level",(gpointer)"4");
 	g_signal_connect(G_OBJECT(pW),
 					 "activate",
@@ -480,7 +487,8 @@ void AP_UnixDialog_FormatTOC::_createLevelItems(void)
 
 	wM = gtk_menu_new();
 
-	pW = gtk_menu_item_new_with_label(pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTOC_Level1).utf8_str());
+	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTOC_Level1,s);
+	pW = gtk_menu_item_new_with_label(s.utf8_str());
 	g_object_set_data(G_OBJECT(pW),"level",(gpointer)"1");
 	g_signal_connect(G_OBJECT(pW),
 					 "activate",
@@ -488,7 +496,8 @@ void AP_UnixDialog_FormatTOC::_createLevelItems(void)
 					 (gpointer) this);
 	gtk_menu_shell_append (GTK_MENU_SHELL (wM),pW);
 
-	pW = gtk_menu_item_new_with_label(pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTOC_Level2).utf8_str());
+	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTOC_Level2,s);
+	pW = gtk_menu_item_new_with_label(s.utf8_str());
 	g_object_set_data(G_OBJECT(pW),"level",(gpointer)"2");
 	g_signal_connect(G_OBJECT(pW),
 					 "activate",
@@ -496,7 +505,8 @@ void AP_UnixDialog_FormatTOC::_createLevelItems(void)
 					 (gpointer) this);
 	gtk_menu_shell_append (GTK_MENU_SHELL (wM),pW);
 
-    pW = gtk_menu_item_new_with_label(pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTOC_Level3).utf8_str());
+	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTOC_Level3,s);
+    pW = gtk_menu_item_new_with_label(s.utf8_str());
 	g_object_set_data(G_OBJECT(pW),"level",(gpointer)"3");
 	g_signal_connect(G_OBJECT(pW),
 					 "activate",
@@ -504,7 +514,8 @@ void AP_UnixDialog_FormatTOC::_createLevelItems(void)
 					 (gpointer) this);
 	gtk_menu_shell_append (GTK_MENU_SHELL (wM),pW);
 
-	pW = gtk_menu_item_new_with_label(pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTOC_Level4).utf8_str());
+	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTOC_Level4,s);
+	pW = gtk_menu_item_new_with_label(s.utf8_str());
 	g_object_set_data(G_OBJECT(pW),"level",(gpointer)"4");
 	g_signal_connect(G_OBJECT(pW),
 					 "activate",

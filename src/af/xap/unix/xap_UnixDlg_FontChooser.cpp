@@ -402,7 +402,9 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindow(void)
 	GtkWidget *vboxMain;
 	GtkWidget *vboxOuter;
 
-	windowFontSelection = abiDialogNew ( "font dialog", TRUE, pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_FontTitle).utf8_str() ) ;
+	UT_UTF8String s;
+	pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_FontTitle,s);
+	windowFontSelection = abiDialogNew ( "font dialog", TRUE, s.utf8_str() ) ;
 
 	vboxOuter = GTK_DIALOG(windowFontSelection)->vbox;
 
@@ -473,8 +475,10 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
 							  reinterpret_cast<GtkDestroyNotify>(gtk_widget_unref));
 	gtk_widget_show (table1);
 
+	UT_UTF8String s;
 	// Label for first page of the notebook
-	labelTabFont = gtk_label_new (pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_FontTab).utf8_str());
+	pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_FontTab,s);
+	labelTabFont = gtk_label_new (s.utf8_str());
 	gtk_widget_show (labelTabFont);
 //
 // Make first page of the notebook
@@ -491,7 +495,8 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
 					  static_cast<GtkAttachOptions>(GTK_EXPAND | GTK_FILL),
 					  static_cast<GtkAttachOptions>(GTK_EXPAND | GTK_FILL), 0, 0);
 
-	labelFont = gtk_label_new (pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_FontLabel).utf8_str());
+	pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_FontLabel,s);
+	labelFont = gtk_label_new (s.utf8_str());
 	gtk_widget_set_name (labelFont, "labelFont");
 	gtk_widget_ref (labelFont);
 	g_object_set_data_full (G_OBJECT (window1), "labelFont", labelFont,
@@ -528,7 +533,8 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
 					  static_cast<GtkAttachOptions>(GTK_FILL),
 					  static_cast<GtkAttachOptions>(GTK_FILL), 0, 0);
 
-	labelStyle = gtk_label_new (pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_StyleLabel).utf8_str());
+	pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_StyleLabel,s);
+	labelStyle = gtk_label_new (s.utf8_str());
 	gtk_widget_set_name (labelStyle, "labelStyle");
 	gtk_widget_ref (labelStyle);
 	g_object_set_data_full (G_OBJECT (window1), "labelStyle", labelStyle,
@@ -565,7 +571,8 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
 					  static_cast<GtkAttachOptions>(GTK_FILL),
 					  static_cast<GtkAttachOptions>(GTK_FILL), 0, 0);
 
-	labelSize = gtk_label_new (pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_SizeLabel).utf8_str());
+	pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_SizeLabel,s);
+	labelSize = gtk_label_new (s.utf8_str());
 	gtk_widget_set_name (labelSize, "labelSize");
 	gtk_widget_ref (labelSize);
 	g_object_set_data_full (G_OBJECT (window1), "labelSize", labelSize,
@@ -602,7 +609,8 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
 					  static_cast<GtkAttachOptions>(GTK_FILL),
 					  static_cast<GtkAttachOptions>(GTK_FILL), 0, 0);
 
-	frameEffects = gtk_frame_new (pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_EffectsFrameLabel).utf8_str());
+	pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_EffectsFrameLabel,s);
+	frameEffects = gtk_frame_new (s.utf8_str());
 	gtk_frame_set_shadow_type(GTK_FRAME(frameEffects), GTK_SHADOW_NONE);
 	gtk_widget_show (frameEffects);
 	gtk_box_pack_start(GTK_BOX (vboxmisc), frameEffects, 0,0, 2);
@@ -611,22 +619,26 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
 	gtk_widget_show (hboxDecorations);
 	gtk_container_add (GTK_CONTAINER (frameEffects), hboxDecorations);
 
-	checkbuttonStrikeout = gtk_check_button_new_with_label (pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_StrikeoutCheck).utf8_str());
+	pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_StrikeoutCheck,s);
+	checkbuttonStrikeout = gtk_check_button_new_with_label (s.utf8_str());
 	gtk_container_border_width (GTK_CONTAINER (checkbuttonStrikeout), 5);
 	gtk_widget_show (checkbuttonStrikeout);
 	gtk_box_pack_start (GTK_BOX (hboxDecorations), checkbuttonStrikeout, TRUE, TRUE, 0);
 
-	checkbuttonUnderline = gtk_check_button_new_with_label (pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_UnderlineCheck).utf8_str());
+	pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_UnderlineCheck,s);
+	checkbuttonUnderline = gtk_check_button_new_with_label (s.utf8_str());
 	gtk_container_border_width (GTK_CONTAINER (checkbuttonUnderline), 5);
 	gtk_widget_show (checkbuttonUnderline);
 	gtk_box_pack_start (GTK_BOX (hboxDecorations), checkbuttonUnderline, TRUE, TRUE, 0);
 
-	checkbuttonOverline = gtk_check_button_new_with_label (pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_OverlineCheck).utf8_str());
+	pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_OverlineCheck,s);
+	checkbuttonOverline = gtk_check_button_new_with_label (s.utf8_str());
 	gtk_container_border_width (GTK_CONTAINER (checkbuttonOverline), 5);
 	gtk_widget_show (checkbuttonOverline);
 	gtk_box_pack_start (GTK_BOX (hboxDecorations), checkbuttonOverline, TRUE, TRUE, 0);
 
-	checkbuttonHidden = gtk_check_button_new_with_label (pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_HiddenCheck).utf8_str());
+	pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_HiddenCheck,s);
+	checkbuttonHidden = gtk_check_button_new_with_label (s.utf8_str());
 	gtk_container_border_width (GTK_CONTAINER (checkbuttonHidden), 5);
 	gtk_widget_show (checkbuttonHidden);
 	gtk_box_pack_start (GTK_BOX (hboxDecorations), checkbuttonHidden, TRUE, TRUE, 0);
@@ -638,7 +650,8 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
 
     // Label for second page of the notebook
 
-	labelTabColor = gtk_label_new (pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_ColorTab).utf8_str());
+	pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_ColorTab,s);
+	labelTabColor = gtk_label_new (s.utf8_str());
 	gtk_widget_show (labelTabColor);
 
 //
@@ -658,7 +671,8 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
 
     // Label for third page of the notebook
 
-	labelTabBGColor = gtk_label_new (pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_BGColorTab).utf8_str());
+	pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_BGColorTab,s);
+	labelTabBGColor = gtk_label_new (s.utf8_str());
 	gtk_widget_show (labelTabBGColor);
 //
 // Make third page of the notebook
@@ -673,7 +687,8 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
 //
 // Make a toggle button to set hightlight color transparent
 //
-	GtkWidget * checkbuttonTrans = gtk_check_button_new_with_label (pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_TransparencyCheck).utf8_str());
+	pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_TransparencyCheck,s);
+	GtkWidget * checkbuttonTrans = gtk_check_button_new_with_label (s.utf8_str());
 	gtk_widget_show (checkbuttonTrans);
 	gtk_box_pack_start (GTK_BOX (vboxBG), checkbuttonTrans, TRUE, TRUE, 0);
 

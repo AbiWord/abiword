@@ -68,7 +68,8 @@ void XAP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
 	
 	const XAP_StringSet * pSS = pApp->getStringSet ();
 	char * tmp_str = NULL;
-
+	UT_UTF8String s;
+	
 	int dflResponse = GTK_RESPONSE_OK;
 
 	switch (m_buttons)
@@ -93,7 +94,8 @@ void XAP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
 		case b_YNC:
 			// YES - NO - CANCEL
 			// this is only used for saving files.
-		        UT_XML_cloneNoAmpersands(tmp_str, pSS->getValueUTF8(XAP_STRING_ID_DLG_Exit_CloseWithoutSaving).utf8_str());
+			pSS->getValueUTF8(XAP_STRING_ID_DLG_Exit_CloseWithoutSaving,s);
+	        UT_XML_cloneNoAmpersands(tmp_str, s.utf8_str());
 			message = gtk_dialog_new_with_buttons("",
 							      toplevel, 
 							      GTK_DIALOG_MODAL,

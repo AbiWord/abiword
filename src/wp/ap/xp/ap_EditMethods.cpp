@@ -8512,9 +8512,14 @@ UT_return_val_if_fail(pPrefsScheme, false);
 
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 
-	UT_UTF8String sPageWidth (pSS->getValueUTF8(XAP_STRING_ID_TB_Zoom_PageWidth));
-	UT_UTF8String sWholePage (pSS->getValueUTF8(XAP_STRING_ID_TB_Zoom_WholePage));
-	UT_UTF8String sPercent (pSS->getValueUTF8(XAP_STRING_ID_TB_Zoom_Percent));
+	UT_UTF8String sPageWidth;
+	pSS->getValueUTF8(XAP_STRING_ID_TB_Zoom_PageWidth,sPageWidth);
+	
+	UT_UTF8String sWholePage;
+	pSS->getValueUTF8(XAP_STRING_ID_TB_Zoom_WholePage,sWholePage);
+	
+	UT_UTF8String sPercent;
+	pSS->getValueUTF8(XAP_STRING_ID_TB_Zoom_Percent,sPercent);
 	
 	if(strcmp(p_zoom, sPageWidth.utf8_str()) == 0)
 	{
@@ -10416,7 +10421,9 @@ static bool _insAutotext (FV_View *pView, int id)
 	if (!pSS)
 	  return false;
 
-	UT_UCS4String ucs4 (pSS->getValueUTF8(id).ucs4_str());
+	UT_UTF8String s;
+	pSS->getValueUTF8(id,s);
+	UT_UCS4String ucs4 (s.ucs4_str());
 	pView->cmdCharInsert(ucs4.ucs4_str(), ucs4.size());
 
 	return true;

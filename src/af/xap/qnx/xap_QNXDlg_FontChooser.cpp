@@ -76,6 +76,7 @@ void XAP_QNXDialog_FontChooser::runModal(XAP_Frame * pFrame)
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	char *newfont;
+	UT_UTF8String s;
 
 	XAP_QNXFrameImpl * pQNXFrameImpl = (XAP_QNXFrameImpl*)pFrame->getFrameImpl();
 	PtWidget_t *parentWindow =	pQNXFrameImpl->getTopLevelWindow();	
@@ -94,10 +95,11 @@ void XAP_QNXDialog_FontChooser::runModal(XAP_Frame * pFrame)
 
 	PfGenerateFontName(getVal("font-family"),flags,size,fontname);
 
+	pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_FontTitle,s);
 	newfont = (char *)PtFontSelection(parentWindow,	/* Parent */
 							  		  NULL, 		/* Position (centered) */
 							  				/* Title */
-pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_FontTitle).utf8_str(),
+									  s.utf8_str(),
 							  		  fontname,		/* Initial font */
 							  		  PHFONT_ALL_SYMBOLS,			/* Symbol to select fonts by */							
 							  		  PHFONT_SCALABLE, /* Which type of fonts */

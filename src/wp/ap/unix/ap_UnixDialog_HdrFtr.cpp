@@ -199,7 +199,9 @@ GtkWidget * AP_UnixDialog_HdrFtr::_constructWindow (void)
 	m_spinAdj = gtk_spin_button_get_adjustment( GTK_SPIN_BUTTON(m_wSpin) );
 	
 	// set the dialog title
-	abiDialogSetTitle(window, pSS->getValueUTF8(AP_STRING_ID_DLG_HdrFtr_Title).utf8_str());
+	UT_UTF8String s;
+	pSS->getValueUTF8(AP_STRING_ID_DLG_HdrFtr_Title,s);
+	abiDialogSetTitle(window, s.utf8_str());
 
 	// localize the strings in our dialog
 	

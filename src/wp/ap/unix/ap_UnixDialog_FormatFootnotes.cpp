@@ -451,7 +451,9 @@ GtkWidget * AP_UnixDialog_FormatFootnotes::_constructWindow(void)
 	// might need to be queried or altered later
 	window = glade_xml_get_widget(xml, "ap_UnixDialog_FormatFootnotes");
 	// set the dialog title
-	abiDialogSetTitle(window, pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_Title).utf8_str());
+	UT_UTF8String s;
+	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_Title,s);
+	abiDialogSetTitle(window, s.utf8_str());
 	
 	// localize the strings in our dialog, and set tags for some widgets
 	
@@ -501,16 +503,19 @@ GtkWidget * AP_UnixDialog_FormatFootnotes::_constructWindow(void)
 	m_wFootnoteNumberingMenu = glade_xml_get_widget(xml, "omNumbering");
 	UT_ASSERT(m_wFootnoteNumberingMenu );
 	GtkWidget * wMenuFoot = gtk_menu_new ();
-	m_wFootnotesDontRestart = gtk_menu_item_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_FootRestartNone).utf8_str());
+	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_FootRestartNone,s);
+	m_wFootnotesDontRestart = gtk_menu_item_new_with_label (s.utf8_str());
 	gtk_widget_show (m_wFootnotesDontRestart );
 	gtk_menu_shell_append (GTK_MENU_SHELL (wMenuFoot),m_wFootnotesDontRestart );
 
-	m_wFootnotesRestartOnSection = gtk_menu_item_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_FootRestartSec).utf8_str());
+	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_FootRestartSec,s);
+	m_wFootnotesRestartOnSection = gtk_menu_item_new_with_label (s.utf8_str());
 	gtk_widget_show (m_wFootnotesRestartOnSection );
 	gtk_menu_shell_append (GTK_MENU_SHELL (wMenuFoot),m_wFootnotesRestartOnSection );
 
 
-	m_wFootnotesRestartOnPage = gtk_menu_item_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_FootRestartPage).utf8_str());
+	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_FootRestartPage,s);
+	m_wFootnotesRestartOnPage = gtk_menu_item_new_with_label (s.utf8_str());
 	gtk_widget_show (m_wFootnotesRestartOnPage );
 	gtk_menu_shell_append (GTK_MENU_SHELL (wMenuFoot),m_wFootnotesRestartOnPage );
 
@@ -523,11 +528,13 @@ GtkWidget * AP_UnixDialog_FormatFootnotes::_constructWindow(void)
 	UT_ASSERT(m_wEndnotesPlaceMenu );
 	GtkWidget * wMenuPlace = gtk_menu_new();
 
-	m_wEndnotesPlaceEndOfDoc = gtk_menu_item_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_EndPlaceEndDoc).utf8_str());
+	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_EndPlaceEndDoc,s);
+	m_wEndnotesPlaceEndOfDoc = gtk_menu_item_new_with_label (s.utf8_str());
 	gtk_widget_show (m_wEndnotesPlaceEndOfDoc );
 	gtk_menu_shell_append (GTK_MENU_SHELL (wMenuPlace),m_wEndnotesPlaceEndOfDoc );
 
-	m_wEndnotesPlaceEndOfSec = gtk_menu_item_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_EndPlaceEndSec).utf8_str());
+	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_EndPlaceEndSec,s);
+	m_wEndnotesPlaceEndOfSec = gtk_menu_item_new_with_label (s.utf8_str());
 	gtk_widget_show (m_wEndnotesPlaceEndOfSec );
 	gtk_menu_shell_append (GTK_MENU_SHELL (wMenuPlace),m_wEndnotesPlaceEndOfSec);
 

@@ -460,20 +460,24 @@ GtkWidget * AP_UnixDialog_FormatTable::_constructWindow(void)
 	GtkWidget * menu = gtk_menu_new();
 	
 	XML_Char * unixstr = NULL;	// used for conversions
-	
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTable_Apply_To_Selection).utf8_str());
+	UT_UTF8String s;
+	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTable_Apply_To_Selection,s);
+	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str());
 	gtk_menu_shell_append(GTK_MENU_SHELL(menu), gtk_menu_item_new_with_label(unixstr));
 	FREEP(unixstr);	
 
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTable_Apply_To_Row).utf8_str());
+	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTable_Apply_To_Row,s);
+	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str());
 	gtk_menu_shell_append(GTK_MENU_SHELL(menu), gtk_menu_item_new_with_label(unixstr));
 	FREEP(unixstr);	
 
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTable_Apply_To_Column).utf8_str());
+	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTable_Apply_To_Column,s);
+	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str());
 	gtk_menu_shell_append(GTK_MENU_SHELL(menu), gtk_menu_item_new_with_label(unixstr));
 	FREEP(unixstr);	
 
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTable_Apply_To_Table).utf8_str());
+	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTable_Apply_To_Table,s);
+	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str());
 	gtk_menu_shell_append(GTK_MENU_SHELL(menu), gtk_menu_item_new_with_label(unixstr));
 	FREEP(unixstr);	
 

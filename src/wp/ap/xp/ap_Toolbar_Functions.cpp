@@ -707,15 +707,18 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Zoom)
 
 	static char buf[10];
 	UT_uint32 iZoom = 0 ;
-
+	UT_String str;
+	
 	switch(pFrame->getZoomType())
 	{
 	// special cases
 	case XAP_Frame::z_PAGEWIDTH:
-		sprintf(buf, "%s", pSS->getValue(XAP_STRING_ID_TB_Zoom_PageWidth, pFrame->getApp()->getDefaultEncoding()).c_str());
+		pSS->getValue(XAP_STRING_ID_TB_Zoom_PageWidth, pFrame->getApp()->getDefaultEncoding(),str);
+		sprintf(buf, "%s", str.c_str());
 		break;
 	case XAP_Frame::z_WHOLEPAGE:
-		sprintf(buf, "%s", pSS->getValue(XAP_STRING_ID_TB_Zoom_WholePage, pFrame->getApp()->getDefaultEncoding()).c_str());
+		pSS->getValue(XAP_STRING_ID_TB_Zoom_WholePage, pFrame->getApp()->getDefaultEncoding(),str);
+		sprintf(buf, "%s", str.c_str());
 		break;
 	default:
 	  iZoom = pView->getGraphics()->getZoomPercentage();

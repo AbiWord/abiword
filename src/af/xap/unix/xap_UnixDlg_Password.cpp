@@ -107,8 +107,10 @@ GtkWidget * XAP_UnixDialog_Password::_constructWindow ()
 	// might need to be queried or altered later
 	mMainWindow = glade_xml_get_widget(xml, "xap_UnixDlg_Password");
 	mTextEntry = glade_xml_get_widget(xml, "enPassword");
-	
-	gtk_window_set_title (GTK_WINDOW(mMainWindow), pSS->getValueUTF8(XAP_STRING_ID_DLG_Password_Title).utf8_str());
+
+	UT_UTF8String s;
+	pSS->getValueUTF8(XAP_STRING_ID_DLG_Password_Title,s);
+	gtk_window_set_title (GTK_WINDOW(mMainWindow), s.utf8_str());
 
 	/* localize labels */
 	localizeLabel (glade_xml_get_widget (xml, "lbPassword"), pSS, XAP_STRING_ID_DLG_Password_Password);

@@ -4588,8 +4588,11 @@ bool fp_FieldPageReferenceRun::calculateValue(void)
 		UT_ASSERT((pFrame));
 
 		const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
-		UT_String Msg1 = pSS->getValue(AP_STRING_ID_FIELD_Error, pApp->getDefaultEncoding()).c_str();
-		UT_String Msg2 = pSS->getValue(AP_STRING_ID_MSG_BookmarkNotFound, pApp->getDefaultEncoding()).c_str();
+		UT_String Msg1;
+		pSS->getValue(AP_STRING_ID_FIELD_Error, pApp->getDefaultEncoding(), Msg1);
+
+		UT_String Msg2;
+		pSS->getValue(AP_STRING_ID_MSG_BookmarkNotFound, pApp->getDefaultEncoding(), Msg2);
 		UT_String format;
 
 		UT_String_sprintf(format, "{%s: %s}", Msg1.c_str(), Msg2.c_str());

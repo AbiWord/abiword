@@ -40,7 +40,9 @@ class XAP_Dialog;
 // be stripped of ampersands (Windows accelerator characters).
 #define	CONVERT_TO_UNIX_STRING(str, id, newstr)		do { \
                                                     FREEP(newstr); \
-                                                    UT_XML_cloneNoAmpersands(newstr, pSS->getValueUTF8(id).c_str()); \
+													UT_UTF8String _s; \
+                                                    pSS->getValueUTF8(id,_s); \
+                                                    UT_XML_cloneNoAmpersands(newstr, _s.c_str()); \
                                                     } while (0)
 												   
 

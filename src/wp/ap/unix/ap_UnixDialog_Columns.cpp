@@ -406,8 +406,10 @@ GtkWidget * AP_UnixDialog_Columns::_constructWindow(void)
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	//	XML_Char * unixstr = NULL;	// used for conversions
-
-	windowColumns = abiDialogNew ( "column dialog", TRUE, pSS->getValueUTF8(AP_STRING_ID_DLG_Column_ColumnTitle).utf8_str() ) ;
+	UT_UTF8String s;
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Column_ColumnTitle,s);
+	
+	windowColumns = abiDialogNew ( "column dialog", TRUE, s.utf8_str() ) ;
 
 	_constructWindowContents(GTK_DIALOG(windowColumns)->vbox);
 
@@ -444,7 +446,9 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 	gtk_widget_show (tableTop);
 	gtk_box_pack_start (GTK_BOX (windowColumns), tableTop, FALSE, FALSE, 6);
 
-	wColumnFrame = gtk_frame_new ( pSS->getValueUTF8(AP_STRING_ID_DLG_Column_Number).utf8_str());
+	UT_UTF8String s;
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Column_Number,s);
+	wColumnFrame = gtk_frame_new ( s.utf8_str());
 	gtk_frame_set_shadow_type(GTK_FRAME(wColumnFrame), GTK_SHADOW_NONE);
 	gtk_widget_show(wColumnFrame);
 	gtk_table_attach (GTK_TABLE (tableTop), wColumnFrame, 0, 1, 0, 1,
@@ -465,8 +469,8 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 	GTK_WIDGET_SET_FLAGS (wToggleOne, GTK_CAN_DEFAULT);
 	gtk_table_attach (GTK_TABLE (tableColumns), wToggleOne, 0, 1, 0, 1,
 				  (GtkAttachOptions) (0), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 0);
-
-	wLabelOne = gtk_label_new ( pSS->getValueUTF8(AP_STRING_ID_DLG_Column_One).utf8_str());
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Column_One,s);
+	wLabelOne = gtk_label_new ( s.utf8_str());
 	gtk_widget_show(wLabelOne );
 	gtk_table_attach (GTK_TABLE (tableColumns), wLabelOne, 1, 2, 0, 1,
 				  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 0);
@@ -479,7 +483,8 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 	gtk_table_attach (GTK_TABLE (tableColumns), wToggleTwo, 0, 1, 1, 2,
 				  (GtkAttachOptions) (0), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 0);
 
-	wLabelTwo = gtk_label_new( pSS->getValueUTF8(AP_STRING_ID_DLG_Column_Two).utf8_str());
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Column_Two,s);
+	wLabelTwo = gtk_label_new( s.utf8_str());
 	gtk_widget_show(wLabelTwo );
 	gtk_table_attach (GTK_TABLE (tableColumns), wLabelTwo, 1, 2, 1, 2,
 				  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 0);	
@@ -492,13 +497,15 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 	gtk_table_attach (GTK_TABLE (tableColumns), wToggleThree, 0, 1, 2, 3,
 				  (GtkAttachOptions) (0), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 0);
 
-	wLabelThree = gtk_label_new ( pSS->getValueUTF8(AP_STRING_ID_DLG_Column_Three).utf8_str());
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Column_Three,s);
+	wLabelThree = gtk_label_new ( s.utf8_str());
 	gtk_widget_show(wLabelThree);
 	gtk_table_attach (GTK_TABLE (tableColumns), wLabelThree, 1, 2, 2, 3,
 				  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 0);	
 	gtk_misc_set_alignment (GTK_MISC (wLabelThree), 0, 0.5);
 
-	wPreviewFrame = gtk_frame_new ( pSS->getValueUTF8(AP_STRING_ID_DLG_Column_Preview).utf8_str());
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Column_Preview,s);
+	wPreviewFrame = gtk_frame_new ( s.utf8_str());
 	gtk_frame_set_shadow_type(GTK_FRAME(wPreviewFrame), GTK_SHADOW_NONE);
 	gtk_widget_show(wPreviewFrame);
 	gtk_table_attach (GTK_TABLE (tableTop), wPreviewFrame, 1, 2, 0, 1,
@@ -546,12 +553,14 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 	gtk_widget_show (table);
 	gtk_box_pack_start (GTK_BOX (windowColumns), table, FALSE, FALSE, 0);
 
-	wLineBtween = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Column_Line_Between).utf8_str());
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Column_Line_Between,s);
+	wLineBtween = gtk_check_button_new_with_label (s.utf8_str());
 	gtk_widget_show(wLineBtween);
 	gtk_table_attach (GTK_TABLE (table), wLineBtween, 0, 2, 0, 1,
 				  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 0);
 
-	GtkWidget * checkOrder = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Column_RtlOrder).utf8_str());
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Column_RtlOrder,s);
+	GtkWidget * checkOrder = gtk_check_button_new_with_label (s.utf8_str());
 	gtk_widget_show (checkOrder);
 	gtk_table_attach (GTK_TABLE (table), checkOrder, 0, 2, 1, 2,
 				  (GtkAttachOptions) (GTK_SHRINK | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 0);
@@ -566,8 +575,8 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 	gtk_widget_show(hseparator);
 	gtk_table_attach (GTK_TABLE (table), hseparator, 0, 3, 2, 3,
 				  (GtkAttachOptions) (GTK_SHRINK | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 6);
-	
-	SpinLabel = gtk_label_new ( pSS->getValueUTF8(AP_STRING_ID_DLG_Column_Number_Cols).utf8_str());
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Column_Number_Cols,s);
+	SpinLabel = gtk_label_new ( s.utf8_str());
 	gtk_widget_show(SpinLabel);
 	gtk_table_attach (GTK_TABLE (table), SpinLabel, 0, 1, 3, 4,
 				  (GtkAttachOptions) (GTK_SHRINK | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 0);
@@ -583,7 +592,8 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 // Spin Button for Space After
 /////////////////////////////////////////////////////////
 
-	GtkWidget * SpinLabelAfter = gtk_label_new ( pSS->getValueUTF8(AP_STRING_ID_DLG_Column_Space_After).utf8_str());
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Column_Space_After,s);
+	GtkWidget * SpinLabelAfter = gtk_label_new ( s.utf8_str());
 	gtk_widget_show(SpinLabelAfter);
 	gtk_table_attach (GTK_TABLE (table), SpinLabelAfter, 0, 1, 4, 5,
 				  (GtkAttachOptions) (GTK_SHRINK | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 3);
@@ -604,8 +614,8 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 /////////////////////////////////////////////////////////
 // Spin Button for Column Height
 /////////////////////////////////////////////////////////
-
-	GtkWidget * SpinLabelColumnSize = gtk_label_new ( pSS->getValueUTF8(AP_STRING_ID_DLG_Column_Size).utf8_str());
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Column_Size,s);
+	GtkWidget * SpinLabelColumnSize = gtk_label_new ( s.utf8_str());
 	gtk_widget_show(SpinLabelColumnSize);
 	gtk_table_attach (GTK_TABLE (table), SpinLabelColumnSize, 0, 1, 5, 6,
 				  (GtkAttachOptions) (GTK_SHRINK | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 7);

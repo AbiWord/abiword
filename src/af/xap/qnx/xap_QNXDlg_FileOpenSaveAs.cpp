@@ -65,7 +65,8 @@ void XAP_QNXDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	UT_ASSERT(m_pQNXFrame);
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-
+	UT_UTF8String s;
+	
 	// do we want to let this function handle stating the QNX
 	// directory for writability?  Save/Export operations will want
 	// this, open/import will not.
@@ -78,7 +79,8 @@ void XAP_QNXDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	{
 	case XAP_DIALOG_ID_FILE_SAVEAS:
 	{
-szTitle = strdup(pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_SaveAsTitle).utf8_str());
+		pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_SaveAsTitle,s);
+		szTitle = strdup(s.utf8_str());
 		bCheckWritePermission = true;
 		/* Allow non-existant files to be selected and confirm overwrite */
 		flags = Pt_FSR_NO_FCHECK | Pt_FSR_CONFIRM_EXISTING;
@@ -86,41 +88,47 @@ szTitle = strdup(pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_SaveAsTitle).utf8_str(
 	}
 	case XAP_DIALOG_ID_PRINTTOFILE:
 	{
-szTitle = strdup(pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_PrintToFileTitle).utf8_str());
+		pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_PrintToFileTitle,s);
+		szTitle = strdup(s.utf8_str());
 		bCheckWritePermission = true;
 		flags = Pt_FSR_NO_FCHECK | Pt_FSR_CONFIRM_EXISTING;
 		break;
 	}
 		case XAP_DIALOG_ID_INSERT_PICTURE:
 	  {
-szTitle = strdup(pSS->getValueUTF8(XAP_STRING_ID_DLG_IP_Title).utf8_str());
-		bCheckWritePermission = false;    
-		break;
+		  pSS->getValueUTF8(XAP_STRING_ID_DLG_IP_Title,s);
+		  szTitle = strdup(s.utf8_str());
+		  bCheckWritePermission = false;    
+		  break;
 	  }
 	case XAP_DIALOG_ID_FILE_OPEN:
 	{
-szTitle = strdup(pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_OpenTitle).utf8_str());
+		pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_OpenTitle,s);
+		szTitle = strdup(s.utf8_str());
 		bCheckWritePermission = false;
 		break;
 	}
 	case XAP_DIALOG_ID_FILE_IMPORT:
 	  {
-szTitle = strdup(pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_ImportTitle).utf8_str());
-		bCheckWritePermission = false;
-	    break;
+		  pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_ImportTitle,s);
+		  szTitle = strdup(s.utf8_str());
+		  bCheckWritePermission = false;
+		  break;
 	  }
 	case XAP_DIALOG_ID_INSERT_FILE:
 	  {
-szTitle = strdup(pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_InsertTitle).utf8_str());
-		bCheckWritePermission = false;
-		break;
+		  pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_InsertTitle,s);
+		  szTitle = strdup(s.utf8_str());
+		  bCheckWritePermission = false;
+		  break;
 	  }
 	case XAP_DIALOG_ID_FILE_EXPORT:
 	  {
-szTitle = strdup(pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_ExportTitle).utf8_str());
-		bCheckWritePermission = true;
-		flags = Pt_FSR_NO_FCHECK | Pt_FSR_CONFIRM_EXISTING;
-    break;
+		  pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_ExportTitle,s);
+		  szTitle = strdup(s.utf8_str());
+		  bCheckWritePermission = true;
+		  flags = Pt_FSR_NO_FCHECK | Pt_FSR_CONFIRM_EXISTING;
+		  break;
 	  }
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);

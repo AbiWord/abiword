@@ -303,27 +303,34 @@ GtkWidget * AP_UnixDialog_Replace::_constructWindow(void)
 	gtk_combo_disable_activate (GTK_COMBO(m_comboFind)); 
 	gtk_combo_disable_activate (GTK_COMBO(m_comboReplace));
 
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_FR_MatchCase).utf8_str());	
+	UT_UTF8String s;
+	pSS->getValueUTF8(AP_STRING_ID_DLG_FR_MatchCase,s);
+	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str());	
 	gtk_button_set_label(GTK_BUTTON(m_checkbuttonMatchCase), unixstr); 
 	FREEP(unixstr);
 
-        UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_FR_WholeWord).utf8_str());
+	pSS->getValueUTF8(AP_STRING_ID_DLG_FR_WholeWord,s);
+    UT_XML_cloneNoAmpersands(unixstr, s.utf8_str());
 	gtk_button_set_label(GTK_BUTTON(m_checkbuttonWholeWord), unixstr);
-       	FREEP(unixstr);
+    FREEP(unixstr);
 
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_FR_ReverseFind).utf8_str());
+	pSS->getValueUTF8(AP_STRING_ID_DLG_FR_ReverseFind,s);
+	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str());
 	gtk_button_set_label(GTK_BUTTON(m_checkbuttonReverseFind), unixstr);
 	FREEP(unixstr);
-	
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_FR_ReplaceWithLabel).utf8_str());	
+
+	pSS->getValueUTF8(AP_STRING_ID_DLG_FR_ReplaceWithLabel,s);
+	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str());	
 	gtk_label_set_text(GTK_LABEL(labelReplace), unixstr);
 	FREEP(unixstr);
 
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_FR_FindLabel).utf8_str());
+	pSS->getValueUTF8(AP_STRING_ID_DLG_FR_FindLabel,s);
+	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str());
 	gtk_label_set_text(GTK_LABEL(labelFind), unixstr);
 	FREEP(unixstr);
 
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_FR_ReplaceAllButton).utf8_str());	
+	pSS->getValueUTF8(AP_STRING_ID_DLG_FR_ReplaceAllButton,s);
+	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str());	
 	gtk_button_set_label(GTK_BUTTON(m_buttonReplaceAll), unixstr);
 	FREEP(unixstr);
 

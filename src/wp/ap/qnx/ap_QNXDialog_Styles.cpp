@@ -508,14 +508,19 @@ void AP_QNXDialog_Styles::event_ClistClicked(int row, int col)
 void AP_QNXDialog_Styles::event_ListClicked(const char * which)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-
-if (!strcmp(which, pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_LBL_InUse).utf8_str()))
+	UT_UTF8String s;
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_LBL_InUse,s);
+	if (!strcmp(which, s.utf8_str()))
 		m_whichType = USED_STYLES;
-else if (!strcmp(which, pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_LBL_UserDefined).utf8_str()))
-		m_whichType = USER_STYLES;
 	else
-		m_whichType = ALL_STYLES;
-
+	{
+		pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_LBL_UserDefined,s);
+		if (!strcmp(which, s.utf8_str()))
+			m_whichType = USER_STYLES;
+		else
+			m_whichType = ALL_STYLES;
+	}
+	
 	// force a refresh of everything
 	_populateWindowData();
 }
@@ -549,7 +554,7 @@ PtWidget_t * AP_QNXDialog_Styles::_constructWindow(void)
 
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-
+	UT_UTF8String s;
 	PtArg_t args[10];
 	void *data;
 	int n;
@@ -600,9 +605,12 @@ _(AP,DLG_Styles_StylesTitle), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, PREVIEW_WIDTH, 0);
 	comboList = PtCreateWidget(PtComboBox, top_vgrouplist, n, args);
 	const char *items[3];
-	items[0] = pSS->getValueUTF8 (AP_STRING_ID_DLG_Styles_LBL_InUse).utf8_str();
-items[1] = pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_LBL_All).utf8_str();
-items[2] = pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_LBL_UserDefined).utf8_str();
+	pSS->getValueUTF8 (AP_STRING_ID_DLG_Styles_LBL_InUse,s);
+	items[0] = s.utf8_str();
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_LBL_All,s);
+	items[1] = s.utf8_str();
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_LBL_UserDefined,s);
+	items[2] = s.utf8_str();
 	PtListAddItems(comboList, items, 3, 0);  
 	UT_QNXComboSetPos(comboList, 1);
 	PtAddCallback(comboList, Pt_CB_SELECTION, s_typeslist_changed, this);
@@ -614,7 +622,8 @@ items[2] = pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_LBL_UserDefined).utf8_str()
 
 	n = 0;
 	frameParaPrev = PtCreateWidget(PtGroup, top_vgroupshow, n, args);
-	pretty_group(frameParaPrev, pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ParaPrev ).utf8_str());
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ParaPrev,s);
+	pretty_group(frameParaPrev, s.utf8_str());
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, PREVIEW_WIDTH, 0);
 	PtSetArg(&args[n++], Pt_ARG_HEIGHT, 70, 0);
@@ -625,7 +634,8 @@ items[2] = pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_LBL_UserDefined).utf8_str()
 
 	n = 0;
 	frameCharPrev = PtCreateWidget(PtGroup, top_vgroupshow, n, args);
-	pretty_group(frameCharPrev, pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_CharPrev ).utf8_str());
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_CharPrev,s);
+	pretty_group(frameCharPrev, s.utf8_str());
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, PREVIEW_WIDTH, 0);
 	PtSetArg(&args[n++], Pt_ARG_HEIGHT, 50, 0);
@@ -636,7 +646,8 @@ items[2] = pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_LBL_UserDefined).utf8_str()
 
 	n = 0;
 	frameDescription = PtCreateWidget(PtGroup, top_vgroupshow, n, args);
-	pretty_group(frameDescription, pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_Description ).utf8_str());
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_Description,s);
+	pretty_group(frameDescription, s.utf8_str());
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, PREVIEW_WIDTH, 0);
 	PtSetArg(&args[n++], Pt_ARG_HEIGHT, 60, 0);
@@ -648,19 +659,19 @@ items[2] = pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_LBL_UserDefined).utf8_str()
 	hgroup = PtCreateWidget(PtGroup, vgroup, n, args);
 
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(AP,DLG_Styles_New), 0);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(AP,DLG_Styles_New), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	buttonNew = PtCreateWidget(PtButton, hgroup, n, args);
 	PtAddCallback(buttonNew, Pt_CB_ACTIVATE, s_newbtn_clicked, this);
 
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(AP,DLG_Styles_Modify), 0);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(AP,DLG_Styles_Modify), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	buttonModify = PtCreateWidget(PtButton, hgroup, n, args);
 	PtAddCallback(buttonModify, Pt_CB_ACTIVATE, s_modifybtn_clicked, this);
 
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(AP,DLG_Styles_Delete), 0);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(AP,DLG_Styles_Delete), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	buttonDelete = PtCreateWidget(PtButton, hgroup, n, args);
 	PtAddCallback(buttonDelete, Pt_CB_ACTIVATE, s_deletebtn_clicked, this);
@@ -670,13 +681,13 @@ PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(AP,DLG_Styles_Delete), 0);
 	hgroup = PtCreateWidget(PtGroup, vgroup, n, args);
 
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(XAP,DLG_Close), 0);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(XAP,DLG_Close), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	buttonClose = PtCreateWidget(PtButton, hgroup, n, args);
 	PtAddCallback(buttonClose, Pt_CB_ACTIVATE, s_close_clicked, this);
 
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(XAP,DLG_Apply), 0);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(XAP,DLG_Apply), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	buttonApply = PtCreateWidget(PtButton, hgroup, n, args);
 	PtAddCallback(buttonApply, Pt_CB_ACTIVATE, s_apply_clicked, this);
@@ -1005,25 +1016,31 @@ PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(AP,DLG_Styles_ModifyShortCut), 0);
 void  AP_QNXDialog_Styles::_constructFormatList(PtWidget_t * FormatMenu)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	
+	UT_UTF8String s;
 	const char *item;
 
-item = pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyFormat).utf8_str();
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyFormat,s);
+	item = s.utf8_str();
 	PtListAddItems(FormatMenu, &item, 1, 0);
 
-item = pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyParagraph).utf8_str();
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyParagraph,s);
+	item = s.utf8_str();
 	PtListAddItems(FormatMenu, &item, 1, 0);
 
-item = pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyFont).utf8_str();
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyFont,s);
+	item = s.utf8_str();
 	PtListAddItems(FormatMenu, &item, 1, 0);
 
-item = pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyTabs).utf8_str();
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyTabs,s);
+	item = s.utf8_str();
 	PtListAddItems(FormatMenu, &item, 1, 0);
 
-item = pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyNumbering).utf8_str();
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyNumbering,s);
+	item = s.utf8_str();
 	PtListAddItems(FormatMenu, &item, 1, 0);
 
-item = pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyLanguage).utf8_str();
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyLanguage,s);
+	item = s.utf8_str();
 	PtListAddItems(FormatMenu, &item, 1, 0);
 
 	PtAddCallback(FormatMenu, Pt_CB_SELECTION, s_modify_format, this);
@@ -1092,21 +1109,27 @@ void AP_QNXDialog_Styles::new_styleName(void)
 {
 	static char message[200];
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-
+	UT_UTF8String s,s1;
 	char * psz = NULL;
 	psz = _combo_or_text_entry(m_wStyleNameEntry, NULL);
 
-if(psz && strcmp(psz,pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_DefNone ).utf8_str())== 0)
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_DefNone,s);
+	if(psz && strcmp(psz,s.utf8_str())== 0)
 	{
-			// TODO: do a real error dialog
-sprintf(message,"%s%s%s",pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ErrNotTitle1).utf8_str(),psz,pSS->getValue(AP_STRING_ID_DLG_Styles_ErrNotTitle2));
+		// TODO: do a real error dialog
+		pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ErrNotTitle1,s);
+		sprintf(message,"%s%s%s",s.utf8_str(),psz,pSS->getValue(AP_STRING_ID_DLG_Styles_ErrNotTitle2));
 		//messageBoxOK((const char *) message);
 		return;
 	}
-if(psz && strcmp(psz,pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_DefCurrent).utf8_str())== 0)
+
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_DefCurrent,s);
+	if(psz && strcmp(psz,s.utf8_str())== 0)
 	{
-			// TODO: do a real error dialog
-sprintf(message,"%s%s%s",pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ErrNotTitle1).utf8_str(),psz,pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ErrNotTitle2).utf8_str());
+		// TODO: do a real error dialog
+		pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ErrNotTitle1,s);
+		pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ErrNotTitle2,s1);
+		sprintf(message,"%s%s%s",s.utf8_str(),psz,s1.utf8_str());
 		//messageBoxOK((const char *) message);
 		return;
 	}
@@ -1165,12 +1188,14 @@ void AP_QNXDialog_Styles::event_followedBy(void)
 void AP_QNXDialog_Styles::event_styleType(void)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
+	UT_UTF8String s;
 	char * psz = NULL;
 	psz = _combo_or_text_entry(m_wStyleTypeEntry, NULL);
 
 	snprintf((char *) m_styleType,40,"%s",psz);
 	const XML_Char * pszSt = "P";
-if(strstr(m_styleType, pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyCharacter ).utf8_str()) != 0)
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyCharacter,s);
+	if(strstr(m_styleType, s.utf8_str()) != 0)
 		pszSt = "C";
 	addOrReplaceVecAttribs("type",pszSt);
 }
@@ -1290,7 +1315,8 @@ void  AP_QNXDialog_Styles::setModifyDescription( const char * desc)
 bool  AP_QNXDialog_Styles::_populateModify(void)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-
+	UT_UTF8String s;
+	
 	//
 	// Don't do any callback while setting up stuff here.
 	//
@@ -1371,16 +1397,20 @@ bool  AP_QNXDialog_Styles::_populateModify(void)
 		PtListAddItems(m_wFollowingEntry, &name, 1, 0);
 	}
 
-const char *item = pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_DefCurrent).utf8_str();
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_DefCurrent,s);
+	const char *item = s.utf8_str();
 	_combo_or_text_entry(m_wFollowingEntry, item); 
 
-item = pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_DefNone).utf8_str();
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_DefNone,s);
+	item = s.utf8_str();
 	_combo_or_text_entry(m_wBasedOnEntry, item); 
 
-item = pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyParagraph).utf8_str();
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyParagraph,s);
+	item = s.utf8_str();
 	_combo_or_text_entry(m_wStyleTypeEntry, item); 
 
-item = pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyCharacter).utf8_str();
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyCharacter,s);
+	item = s.utf8_str();
 	_combo_or_text_entry(m_wStyleTypeEntry, item); 
  
 	/*
@@ -1397,26 +1427,41 @@ item = pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyCharacter).utf8_str();
 		if(pBasedOnStyle != NULL)
 			_combo_or_text_entry(m_wBasedOnEntry, szBasedOn);
 		else
-	_combo_or_text_entry(m_wBasedOnEntry, pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_DefNone ).utf8_str());
-
+		{
+			pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_DefNone,s);
+			_combo_or_text_entry(m_wBasedOnEntry, s.utf8_str());
+		}
+		
 		if(pFollowedByStyle != NULL)
 			_combo_or_text_entry(m_wFollowingEntry, szFollowedBy);
 		else
-_combo_or_text_entry(m_wFollowingEntry, pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_DefCurrent ).utf8_str());
-
+		{
+			pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_DefCurrent,s);
+			_combo_or_text_entry(m_wFollowingEntry, s.utf8_str());
+		}
+		
 		if(strstr(getAttsVal("type"),"P") != 0)
-_combo_or_text_entry(m_wStyleTypeEntry, pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyParagraph ).utf8_str());
+		{
+			pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyParagraph,s);
+			_combo_or_text_entry(m_wStyleTypeEntry, s.utf8_str());
+		}
 		else
-_combo_or_text_entry(m_wStyleTypeEntry, pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyCharacter ).utf8_str());
+		{
+			pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyCharacter,s);
+			_combo_or_text_entry(m_wStyleTypeEntry, s.utf8_str());
+		}
 	}
 	else
 	{
 		//
 		// Hardwire defaults for "new"
 		//
-_combo_or_text_entry(m_wBasedOnEntry, pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_DefNone ).utf8_str());
-_combo_or_text_entry(m_wFollowingEntry, pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_DefCurrent ).utf8_str());
-_combo_or_text_entry(m_wStyleTypeEntry, pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyParagraph ).utf8_str());
+		pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_DefNone,s);
+		_combo_or_text_entry(m_wBasedOnEntry, s.utf8_str());
+		pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_DefCurrent,s);
+		_combo_or_text_entry(m_wFollowingEntry, s.utf8_str());
+		pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyParagraph,s);
+		_combo_or_text_entry(m_wStyleTypeEntry, s.utf8_str());
 	}
 
 	//

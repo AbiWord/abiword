@@ -269,7 +269,9 @@ GtkWidget * XAP_UnixDialog_Zoom::_constructWindow(void)
 	m_spinAdj = gtk_spin_button_get_adjustment( GTK_SPIN_BUTTON(m_spinPercent) );
 
 	// set the dialog title
-	abiDialogSetTitle(window, pSS->getValueUTF8(XAP_STRING_ID_DLG_Zoom_ZoomTitle).utf8_str());
+	UT_UTF8String s;
+	pSS->getValueUTF8(XAP_STRING_ID_DLG_Zoom_ZoomTitle,s);
+	abiDialogSetTitle(window, s.utf8_str());
 
 	// disable double buffering on our preview
 	gtk_widget_set_double_buffered(m_previewArea, FALSE);  

@@ -79,6 +79,12 @@ PtWidget_t *abiPhabLocateWidget(PtWidget_t *parent,char *name);
 char * _ev_convert(char *,const char *);
 // a *huge* convenience macro
 static char _ev_buf[256];
-#define _(a, x) _ev_convert (_ev_buf, pSS->getValueUTF8 (a##_STRING_ID_##x).utf8_str())
+#define _(a, x)                                                 \
+                  {                                             \
+				      UT_UTF8String _s;                         \
+					  pSS->getValueUTF8 (a##_STRING_ID_##x,_s); \
+                      _ev_convert (_ev_buf, _s.utf8_str());     \
+				  }
+
 
 #endif /* UT_QNXHELPER_H */

@@ -436,7 +436,8 @@ void /* static*/ XAP_FrameImpl::viewAutoUpdater(UT_Worker *wkr)
 	XAP_FrameImpl *pFrameImpl = static_cast<XAP_FrameImpl *> (wkr->getInstanceData());
 	XAP_App *pApp = pFrameImpl->m_pFrame->getApp(); // WL_REFACTOR: may be redundant
 	const XAP_StringSet * pSS = pFrameImpl->m_pFrame->getApp()->getStringSet();
-	UT_String msg = pSS->getValue(XAP_STRING_ID_MSG_BuildingDoc, pApp->getDefaultEncoding());
+	UT_String msg;
+	pSS->getValue(XAP_STRING_ID_MSG_BuildingDoc, pApp->getDefaultEncoding(),msg);
 	pFrameImpl->_setCursor(GR_Graphics::GR_CURSOR_WAIT);
 	AV_View * pView = pFrameImpl->m_pFrame->getCurrentView();
 	UT_DEBUGMSG(("SEVIOR: frame view updater \n"));
@@ -744,10 +745,12 @@ XAP_Dialog_MessageBox * XAP_Frame::createMessageBox(XAP_String_Id id,
 	if (id > 0) {
 		char * szNewMessage = static_cast<char *>(malloc(sizeof(char) * 256));
 		const XAP_StringSet * pSS = getApp()->getStringSet();
+		UT_String s;
+		pSS->getValue(id, m_pApp->getDefaultEncoding(), s);
 		
 		va_list args;		
 		va_start(args, default_answer);		
-		vsprintf(szNewMessage, static_cast<const char*>(pSS->getValue(id, m_pApp->getDefaultEncoding()).c_str()), args);
+		vsprintf(szNewMessage, static_cast<const char*>(s.c_str()), args);
 		va_end(args);
 
 		pDialog->setMessage(szNewMessage);
@@ -806,7 +809,8 @@ UT_String XAP_Frame::makeBackupName(const char* szExt)
   if (oldName.empty())
     {
       const XAP_StringSet * pSS = m_pApp->getStringSet();
-	  const UT_String sTmp = pSS->getValue(XAP_STRING_ID_UntitledDocument, m_pApp->getDefaultEncoding());
+	  UT_String sTmp;
+	  pSS->getValue(XAP_STRING_ID_UntitledDocument, m_pApp->getDefaultEncoding(), sTmp);
 	  UT_String_sprintf(oldName, sTmp.c_str(), m_iUntitled);
 
       UT_DEBUGMSG(("Untitled.  We will give it the name [%s]\n", oldName.c_str()));

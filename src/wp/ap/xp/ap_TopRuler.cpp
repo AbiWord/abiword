@@ -4343,7 +4343,8 @@ void AP_TopRuler::setDimension( UT_Dimension newdim )
 void AP_TopRuler::_displayStatusMessage(XAP_String_Id messageID, const ap_RulerTicks &tick, double dValue)
 {
 	const XML_Char * pText = m_pG->invertDimension(tick.dimType, dValue);
-	UT_String pzMessageFormat (m_pFrame->getApp()->getStringSet()->getValue(messageID, XAP_App::getApp()->getDefaultEncoding()));
+	UT_String pzMessageFormat;
+	m_pFrame->getApp()->getStringSet()->getValue(messageID, XAP_App::getApp()->getDefaultEncoding(),pzMessageFormat);
 	UT_String temp(UT_String_sprintf(pzMessageFormat.c_str(), pText));
 
 	AP_FrameData * pFrameData = static_cast<AP_FrameData *>(m_pFrame->getFrameData());
@@ -4358,7 +4359,8 @@ void AP_TopRuler::_displayStatusMessage(XAP_String_Id messageID, const ap_RulerT
 	strcpy(buf1, pText);
 	pText = m_pG->invertDimension(tick.dimType, dValue2);
 
-	UT_String pzMessageFormat (m_pFrame->getApp()->getStringSet()->getValue(messageID, XAP_App::getApp()->getDefaultEncoding()));
+	UT_String pzMessageFormat;
+	m_pFrame->getApp()->getStringSet()->getValue(messageID, XAP_App::getApp()->getDefaultEncoding(), pzMessageFormat);
 	UT_String temp(UT_String_sprintf(pzMessageFormat.c_str(), buf1, pText));
 
 	AP_FrameData * pFrameData = static_cast<AP_FrameData *>(m_pFrame->getFrameData());
@@ -4368,7 +4370,8 @@ void AP_TopRuler::_displayStatusMessage(XAP_String_Id messageID, const ap_RulerT
 
 void AP_TopRuler::_displayStatusMessage(XAP_String_Id FormatMessageID, UT_sint32 iCol, const char * /*format*/)
 {
-	UT_String pzMessageFormat (m_pFrame->getApp()->getStringSet()->getValue(FormatMessageID, XAP_App::getApp()->getDefaultEncoding()));
+	UT_String pzMessageFormat;
+	m_pFrame->getApp()->getStringSet()->getValue(FormatMessageID, XAP_App::getApp()->getDefaultEncoding(), pzMessageFormat);
 	static UT_String sCell;
 	UT_String_sprintf(sCell,pzMessageFormat.c_str(),iCol);
 
@@ -4380,7 +4383,8 @@ void AP_TopRuler::_displayStatusMessage(XAP_String_Id FormatMessageID, UT_sint32
 
 void AP_TopRuler::_displayStatusMessage(XAP_String_Id FormatMessageID)
 {
-	UT_String pzMessageFormat(m_pFrame->getApp()->getStringSet()->getValue(FormatMessageID, XAP_App::getApp()->getDefaultEncoding()));
+	UT_String pzMessageFormat;
+	m_pFrame->getApp()->getStringSet()->getValue(FormatMessageID, XAP_App::getApp()->getDefaultEncoding(),pzMessageFormat);
 
 	AP_FrameData * pFrameData = static_cast<AP_FrameData *>(m_pFrame->getFrameData());
 	if(m_pFrame->getFrameMode() == XAP_NormalFrame)

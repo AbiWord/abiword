@@ -131,7 +131,9 @@ GtkWidget* AP_UnixDialog_Tab::_constructWindow (void )
 	accel_group = gtk_accel_group_new ();
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-	windowTabs = abiDialogNew("tab dialog", TRUE, pSS->getValueUTF8( AP_STRING_ID_DLG_Tab_TabTitle).utf8_str());
+	UT_UTF8String s;
+	pSS->getValueUTF8( AP_STRING_ID_DLG_Tab_TabTitle,s);
+	windowTabs = abiDialogNew("tab dialog", TRUE, s.utf8_str());
 	g_object_set_data (G_OBJECT (windowTabs), "windowTabs", windowTabs);
 
 	_constructWindowContents(windowTabs);
@@ -218,7 +220,9 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
 	gtk_button_box_set_child_ipadding (GTK_BUTTON_BOX (hbuttonbox4), 0, 0);
 #endif
 
-	buttonSet = gtk_button_new_with_label(pSS->getValueUTF8( AP_STRING_ID_DLG_Tab_Button_Set).utf8_str());
+	UT_UTF8String s;
+	pSS->getValueUTF8( AP_STRING_ID_DLG_Tab_Button_Set,s);
+	buttonSet = gtk_button_new_with_label(s.utf8_str());
 	gtk_widget_show (buttonSet);
 	gtk_container_add (GTK_CONTAINER (hbuttonbox4), buttonSet);
 	GTK_WIDGET_SET_FLAGS (buttonSet, GTK_CAN_DEFAULT);
@@ -228,7 +232,8 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
 	gtk_container_add (GTK_CONTAINER (hbuttonbox4), buttonClear);
 	GTK_WIDGET_SET_FLAGS (buttonClear, GTK_CAN_DEFAULT);
 
-	buttonClearAll = gtk_button_new_with_label(pSS->getValueUTF8( AP_STRING_ID_DLG_Tab_Button_ClearAll).utf8_str());
+	pSS->getValueUTF8( AP_STRING_ID_DLG_Tab_Button_ClearAll,s);
+	buttonClearAll = gtk_button_new_with_label(s.utf8_str());
 	gtk_widget_show (buttonClearAll);
 	gtk_container_add (GTK_CONTAINER (hbuttonbox4), buttonClearAll);
 	GTK_WIDGET_SET_FLAGS (buttonClearAll, GTK_CAN_DEFAULT);
@@ -258,7 +263,8 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
 					  (GtkAttachOptions) (GTK_FILL),
 					  (GtkAttachOptions) (GTK_FILL), 0, 0);
 
-	label8 = gtk_label_new (pSS->getValueUTF8( AP_STRING_ID_DLG_Tab_Label_TabToClear).utf8_str());
+	pSS->getValueUTF8( AP_STRING_ID_DLG_Tab_Label_TabToClear,s);
+	label8 = gtk_label_new (s.utf8_str());
 	gtk_widget_show (label8);
 	gtk_box_pack_start (GTK_BOX (hbox10), label8, FALSE, FALSE, 0);
 	gtk_label_set_justify (GTK_LABEL (label8), GTK_JUSTIFY_LEFT);
@@ -278,7 +284,8 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
 	gtk_widget_show (hbox15);
 	gtk_box_pack_start (GTK_BOX (vbox4), hbox15, FALSE, FALSE, 5);
 
-	label13 = gtk_label_new (pSS->getValueUTF8( AP_STRING_ID_DLG_Tab_Label_TabPosition).utf8_str());
+	pSS->getValueUTF8( AP_STRING_ID_DLG_Tab_Label_TabPosition,s);
+	label13 = gtk_label_new (s.utf8_str());
 	gtk_widget_show (label13);
 	gtk_box_pack_start (GTK_BOX (hbox15), label13, FALSE, TRUE, 0);
 	gtk_label_set_justify (GTK_LABEL (label13), GTK_JUSTIFY_LEFT);
@@ -314,7 +321,8 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
 					  (GtkAttachOptions) (GTK_FILL),
 					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 0);
 
-	label10 = gtk_label_new (pSS->getValueUTF8( AP_STRING_ID_DLG_Tab_Label_Alignment).utf8_str());
+	pSS->getValueUTF8( AP_STRING_ID_DLG_Tab_Label_Alignment,s);
+	label10 = gtk_label_new (s.utf8_str());
 	gtk_widget_show (label10);
 	gtk_box_pack_start (GTK_BOX (hbox13), label10, FALSE, FALSE, 0);
 	gtk_misc_set_padding (GTK_MISC (label10), 5, 0);
@@ -329,7 +337,8 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
 					  (GtkAttachOptions) (GTK_FILL),
 					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 0);
 
-	label11 = gtk_label_new (pSS->getValueUTF8( AP_STRING_ID_DLG_Tab_Label_Leader).utf8_str());
+	pSS->getValueUTF8( AP_STRING_ID_DLG_Tab_Label_Leader,s);
+	label11 = gtk_label_new (s.utf8_str());
 	gtk_widget_show (label11);
 	gtk_box_pack_start (GTK_BOX (hbox14), label11, FALSE, FALSE, 0);
 	gtk_misc_set_padding (GTK_MISC (label11), 5, 0);
@@ -338,16 +347,16 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
 	gtk_widget_show (hseparator7);
 	gtk_box_pack_start (GTK_BOX (hbox14), hseparator7, TRUE, TRUE, 0);
 
-	radiobuttonDecimal = gtk_radio_button_new_with_label (group_align_group, 
-			pSS->getValueUTF8( AP_STRING_ID_DLG_Tab_Radio_Decimal).utf8_str());
+	pSS->getValueUTF8( AP_STRING_ID_DLG_Tab_Radio_Decimal,s);
+	radiobuttonDecimal = gtk_radio_button_new_with_label (group_align_group,s.utf8_str());
 	group_align_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (radiobuttonDecimal));
 	gtk_widget_show (radiobuttonDecimal);
 	gtk_table_attach (GTK_TABLE (table14), radiobuttonDecimal, 1, 2, 2, 3,
 					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
 					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 0);
 
-	radiobuttonLeft = gtk_radio_button_new_with_label (group_align_group, 
-					pSS->getValueUTF8( AP_STRING_ID_DLG_Tab_Radio_Left).utf8_str());
+	pSS->getValueUTF8( AP_STRING_ID_DLG_Tab_Radio_Left,s);
+	radiobuttonLeft = gtk_radio_button_new_with_label (group_align_group,s.utf8_str());
 	group_align_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (radiobuttonLeft));
 	gtk_widget_show (radiobuttonLeft);
 	gtk_table_attach (GTK_TABLE (table14), radiobuttonLeft, 0, 1, 2, 3,
@@ -355,48 +364,49 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
 					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 10, 0);
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (radiobuttonLeft), TRUE);
 
-	radiobuttonCenter = gtk_radio_button_new_with_label (group_align_group, 
-						pSS->getValueUTF8( AP_STRING_ID_DLG_Tab_Radio_Center).utf8_str());
+	pSS->getValueUTF8( AP_STRING_ID_DLG_Tab_Radio_Center,s);
+	radiobuttonCenter = gtk_radio_button_new_with_label (group_align_group,s.utf8_str());
 	group_align_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (radiobuttonCenter));
 	gtk_widget_show (radiobuttonCenter);
 	gtk_table_attach (GTK_TABLE (table14), radiobuttonCenter, 0, 1, 3, 4,
 					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
 					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 10, 0);
 
-	radiobuttonRight = gtk_radio_button_new_with_label (group_align_group, 
-				pSS->getValueUTF8( AP_STRING_ID_DLG_Tab_Radio_Right).utf8_str());
+	pSS->getValueUTF8( AP_STRING_ID_DLG_Tab_Radio_Right,s);
+	radiobuttonRight = gtk_radio_button_new_with_label (group_align_group,s.utf8_str());
 	group_align_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (radiobuttonRight));
 	gtk_widget_show (radiobuttonRight);
 	gtk_table_attach (GTK_TABLE (table14), radiobuttonRight, 0, 1, 4, 5,
 					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
 					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 10, 0);
 
-	radiobuttonBar = gtk_radio_button_new_with_label (group_align_group, 
-					pSS->getValueUTF8( AP_STRING_ID_DLG_Tab_Radio_Bar).utf8_str());
+	pSS->getValueUTF8( AP_STRING_ID_DLG_Tab_Radio_Bar,s);
+	radiobuttonBar = gtk_radio_button_new_with_label (group_align_group,s.utf8_str());
 	group_align_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (radiobuttonBar));
 	gtk_widget_show (radiobuttonBar);
 	gtk_table_attach (GTK_TABLE (table14), radiobuttonBar, 1, 2, 3, 4,
 					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
 					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 0);
 
-	radiobuttonLeaderDash = gtk_radio_button_new_with_label (group_leader_group, 
-				pSS->getValueUTF8( AP_STRING_ID_DLG_Tab_Radio_Dash).utf8_str());
+	pSS->getValueUTF8( AP_STRING_ID_DLG_Tab_Radio_Dash,s);
+	radiobuttonLeaderDash = gtk_radio_button_new_with_label (group_leader_group,s.utf8_str());
+	
 	group_leader_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (radiobuttonLeaderDash));
 	gtk_widget_show (radiobuttonLeaderDash);
 	gtk_table_attach (GTK_TABLE (table14), radiobuttonLeaderDash, 1, 2, 6, 7,
 					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
 					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 0);
 
-	radiobuttonLeaderDot = gtk_radio_button_new_with_label (group_leader_group, 
-				pSS->getValueUTF8( AP_STRING_ID_DLG_Tab_Radio_Dot).utf8_str());
+	pSS->getValueUTF8( AP_STRING_ID_DLG_Tab_Radio_Dot,s);
+	radiobuttonLeaderDot = gtk_radio_button_new_with_label (group_leader_group,s.utf8_str());
 	group_leader_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (radiobuttonLeaderDot));
 	gtk_widget_show (radiobuttonLeaderDot);
 	gtk_table_attach (GTK_TABLE (table14), radiobuttonLeaderDot, 0, 1, 7, 8,
 					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
 					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 10, 0);
 
-	radiobuttonLeaderNone = gtk_radio_button_new_with_label (group_leader_group, 
-			pSS->getValueUTF8( AP_STRING_ID_DLG_Tab_Radio_None).utf8_str());
+	pSS->getValueUTF8( AP_STRING_ID_DLG_Tab_Radio_None,s);
+	radiobuttonLeaderNone = gtk_radio_button_new_with_label (group_leader_group,s.utf8_str());
 	group_leader_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (radiobuttonLeaderNone));
 	gtk_widget_show (radiobuttonLeaderNone);
 	gtk_table_attach (GTK_TABLE (table14), radiobuttonLeaderNone, 0, 1, 6, 7,
@@ -404,8 +414,8 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
 					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 10, 0);
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (radiobuttonLeaderNone), TRUE);
 
-	radiobuttonLeaderUnderline = gtk_radio_button_new_with_label (group_leader_group, 
-					pSS->getValueUTF8( AP_STRING_ID_DLG_Tab_Radio_Underline).utf8_str());
+	pSS->getValueUTF8( AP_STRING_ID_DLG_Tab_Radio_Underline,s);
+	radiobuttonLeaderUnderline = gtk_radio_button_new_with_label (group_leader_group,s.utf8_str());
 	group_leader_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (radiobuttonLeaderUnderline));
 	gtk_widget_show (radiobuttonLeaderUnderline);
 	gtk_table_attach (GTK_TABLE (table14), radiobuttonLeaderUnderline, 1, 2, 7, 8,
@@ -418,7 +428,8 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
 					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
 					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 5, 5);
 
-	label9 = gtk_label_new (pSS->getValueUTF8( AP_STRING_ID_DLG_Tab_Label_DefaultTS).utf8_str());
+	pSS->getValueUTF8( AP_STRING_ID_DLG_Tab_Label_DefaultTS,s);
+	label9 = gtk_label_new (s.utf8_str());
 	gtk_widget_show (label9);
 	gtk_box_pack_start (GTK_BOX (hbox12), label9, FALSE, FALSE, 1);
 

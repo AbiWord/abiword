@@ -364,7 +364,9 @@ void AP_QNXDialog_Spell::_showMisspelledWord(void)
   
    if (!m_Suggestions->getItemCount()) {
 		const XAP_StringSet * pSS = m_pApp->getStringSet();
-		UT_XML_cloneNoAmpersands(suggest[0], pSS->getValueUTF8(AP_STRING_ID_DLG_Spell_NoSuggestions ).utf8_str());
+		UT_UTF8String s;
+		pSS->getValueUTF8(AP_STRING_ID_DLG_Spell_NoSuggestions,s);
+		UT_XML_cloneNoAmpersands(suggest[0], s.utf8_str());
 
 
 		PtListAddItems(m_clistSuggestions, (const char **)&suggest[0], 1, 0);

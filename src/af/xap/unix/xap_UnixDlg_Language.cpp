@@ -123,7 +123,9 @@ GtkWidget * XAP_UnixDialog_Language::constructWindow(void)
 	m_windowMain = glade_xml_get_widget(xml, "xap_UnixDlg_Language");
 	m_pLanguageList = glade_xml_get_widget(xml, "tvAvailableLanguages");
 
-	gtk_window_set_title (GTK_WINDOW(m_windowMain), pSS->getValueUTF8(XAP_STRING_ID_DLG_ULANG_LangTitle).utf8_str());
+	UT_UTF8String s;
+	pSS->getValueUTF8(XAP_STRING_ID_DLG_ULANG_LangTitle,s);
+	gtk_window_set_title (GTK_WINDOW(m_windowMain), s.utf8_str());
 	localizeLabelMarkup (glade_xml_get_widget(xml, "lbAvailableLanguages"), pSS, XAP_STRING_ID_DLG_ULANG_AvailableLanguages);
 	localizeButtonUnderline (glade_xml_get_widget(xml, "btSetLanguage"), pSS, XAP_STRING_ID_DLG_ULANG_SetLangButton);
 

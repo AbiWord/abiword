@@ -58,8 +58,7 @@ void XAP_QNXDialog_MessageBox::runModal(XAP_Frame * pFrame)
 
 	// we get all our strings from the application string set
 	const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
-
-
+	UT_UTF8String s;
 
 	PtSetParentWidget(parent);
 
@@ -68,21 +67,26 @@ void XAP_QNXDialog_MessageBox::runModal(XAP_Frame * pFrame)
 	switch (m_buttons)
 	{
 	case b_OC: // OK && Cancel
-		str2 = strdup(pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel).utf8_str());
+		pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel,s);
+		str2 = strdup(s.utf8_str());
 		if (m_defaultAnswer == a_CANCEL) {
 			def_button = 2;
 		}
 
 	case b_O: // OK
-str1 = strdup(pSS->getValueUTF8(XAP_STRING_ID_DLG_OK).utf8_str());
+		pSS->getValueUTF8(XAP_STRING_ID_DLG_OK,s);
+		str1 = strdup(s.utf8_str());
 		break;
 
 	case b_YNC: // Yes && No && Cancel
-str3 = strdup(pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel).utf8_str());
+		pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel,s);
+		str3 = strdup(s.utf8_str());
 
 	case b_YN: // Yes && No
-str1 = strdup(pSS->getValueUTF8(XAP_STRING_ID_DLG_QNXMB_Yes).utf8_str());
-str2 = strdup(pSS->getValueUTF8(XAP_STRING_ID_DLG_QNXMB_No).utf8_str());
+		pSS->getValueUTF8(XAP_STRING_ID_DLG_QNXMB_Yes,s);
+		str1 = strdup(s.utf8_str());
+		pSS->getValueUTF8(XAP_STRING_ID_DLG_QNXMB_No,s);
+		str2 = strdup(s.utf8_str());
 		if (m_defaultAnswer == a_NO) {
 			def_button = 2;
 		}

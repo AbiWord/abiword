@@ -120,7 +120,9 @@ GtkWidget * AP_UnixDialog_InsertTable::_constructWindow(void)
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(m_pColWidthSpin), getColumnWidth());
 	
 	// set the dialog title
-	abiDialogSetTitle(window, pSS->getValueUTF8(AP_STRING_ID_DLG_InsertTable_TableTitle).utf8_str());
+	UT_UTF8String s;
+	AP_STRING_ID_DLG_InsertTable_TableTitle,s);
+	abiDialogSetTitle(window, pSS->getValueUTF8(s.utf8_str());
 	
 	// localize the strings in our dialog, and set tags for some widgets
 	

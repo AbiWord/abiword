@@ -144,7 +144,9 @@ GtkWidget * XAP_UnixDialog_WindowMore::_constructWindow(void)
 	m_windowMain = glade_xml_get_widget(xml, "xap_UnixDlg_WindowMore");
 	m_listWindows = glade_xml_get_widget(xml, "tvAvailableDocuments");
 
-	gtk_window_set_title (GTK_WINDOW(m_windowMain), pSS->getValueUTF8(XAP_STRING_ID_DLG_MW_MoreWindows).utf8_str());
+	UT_UTF8String s;
+	pSS->getValueUTF8(XAP_STRING_ID_DLG_MW_MoreWindows,s);
+	gtk_window_set_title (GTK_WINDOW(m_windowMain), s.utf8_str());
 	localizeLabelMarkup(glade_xml_get_widget(xml, "lbAvailableDocuments"), pSS, XAP_STRING_ID_DLG_MW_AvailableDocuments);
 	localizeButtonUnderline(glade_xml_get_widget(xml, "btView"), pSS, XAP_STRING_ID_DLG_MW_ViewButton);
 

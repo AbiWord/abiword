@@ -32,6 +32,7 @@
 #include "ut_wctomb.h"
 #include "ut_iconv.h"
 #include "ut_exception.h"
+#include "ut_Language.h"
 
 #include "xap_App.h"
 #include "xap_Strings.h"
@@ -64,33 +65,48 @@ const XML_Char * XAP_StringSet::getLanguageName(void) const
 	return m_szLanguageName;
 }
 
-/*
-   I changed the return values to reference, because without that we were returning temporary
-   variables of uncertain life span (was getting crashes in synthesizing menus).
-   Tomas, Apr 9, 2004
-*/
-UT_String & XAP_StringSet::getValue(XAP_String_Id id, const char * inEncoding) const
+bool XAP_StringSet::getValue(XAP_String_Id id, const char * inEncoding, UT_String &s) const
 {
-	static UT_String s;
-	s = getValue(id);
-	return s;
+	const char * toTranslate = getValue(id);
+
+	if(!UT_strcmp(m_encoding.c_str(),inEncoding))
+	{
+		s = toTranslate;
+	}
+	else
+	{
+		auto_iconv cd(m_encoding.c_str(), inEncoding);
+		char * translated = UT_convert_cd(toTranslate, -1, cd, NULL, NULL);
+
+		UT_return_val_if_fail(translated, false);
+		s = translated;
+
+		free(translated);
+	}
+	
+	return true;
 }
 
-UT_UTF8String & XAP_StringSet::getValueUTF8(XAP_String_Id id) const
+bool XAP_StringSet::getValueUTF8(XAP_String_Id id, UT_UTF8String & s) const
 {	
-	//TODO: We can return early and avoid conversion if string is already in UTF-8	
-	const char * toTranslate = getValue(id);                                                     	
-	auto_iconv cd(m_encoding.c_str(), "UTF-8");                                                                                                        
-	char * translated = UT_convert_cd(toTranslate, -1, cd, NULL, NULL);       
+	const char * toTranslate = getValue(id);
 
-	UT_ASSERT(translated);                                                    
+	if(!UT_strcmp(m_encoding.c_str(), "UTF-8"))
+	{
+		s = toTranslate;
+	}
+	else
+	{
+		auto_iconv cd(m_encoding.c_str(), "UTF-8");
+		char * translated = UT_convert_cd(toTranslate, -1, cd, NULL, NULL);
 
-	// cannot return local variable !!!
-	static UT_UTF8String toReturn;
-	toReturn = translated; 
+		UT_return_val_if_fail(translated, false);
+		s = translated;
 
-	free(translated);       
-	return toReturn;  	
+		free(translated);
+	}
+	
+	return true;
 }
 
 void XAP_StringSet::setEncoding(const XML_Char * inEncoding)
@@ -219,7 +235,13 @@ bool XAP_DiskStringSet::setValue(XAP_String_Id id, const XML_Char * szString)
 					fbdStr[i] = static_cast<FriBidiChar>(p[i]);
 				}
 
-				FriBidiCharType fbdDomDir = fribidi_get_type(fbdStr[0]);
+				// Testing the first char is not good enough; we really need to get this from the
+				// language
+				// FriBidiCharType fbdDomDir = fribidi_get_type(fbdStr[0]);
+				FriBidiCharType fbdDomDir = FRIBIDI_TYPE_LTR;
+				UT_Language l;
+				if(UTLANG_RTL == l.getDirFromCode(getLanguageName()))
+				   fbdDomDir = FRIBIDI_TYPE_RTL;
 
 				fribidi_log2vis (		/* input */
 				       fbdStr,

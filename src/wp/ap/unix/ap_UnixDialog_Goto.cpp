@@ -186,7 +186,9 @@ void AP_UnixDialog_Goto::setSelectedRow (int row)
 	}
 
 	// change string ids
-	char * tmp = s_convert ((char*)pSS->getValueUTF8 (id).utf8_str());
+	UT_UTF8String s;
+	pSS->getValueUTF8 (id,s);
+	char * tmp = s_convert ((char*)s.utf8_str());
 	gtk_label_parse_uline (GTK_LABEL (m_numberLabel), tmp);
 	g_free (tmp);
 }
@@ -300,7 +302,9 @@ GtkWidget *AP_UnixDialog_Goto::_constructWindowContents (void)
 	gtk_box_pack_start (GTK_BOX (hbox), vbox, TRUE, TRUE, 0);
 
 	what_lb = gtk_label_new ("");
-	tmp = s_convert((char*)pSS->getValueUTF8(AP_STRING_ID_DLG_Goto_Label_What).utf8_str());
+	UT_UTF8String s;
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Goto_Label_What,s);
+	tmp = s_convert((char*)s.utf8_str());
 	what_lb_key = gtk_label_parse_uline (GTK_LABEL (what_lb), tmp);
 	g_free (tmp);
 	gtk_box_pack_start (GTK_BOX (vbox), what_lb, FALSE, FALSE, 0);
@@ -320,7 +324,8 @@ GtkWidget *AP_UnixDialog_Goto::_constructWindowContents (void)
 
 	number_lb = gtk_label_new ("");
 	m_numberLabel = number_lb;
-	tmp = s_convert ((char*)pSS->getValueUTF8 (AP_STRING_ID_DLG_Goto_Label_Number).utf8_str());
+	pSS->getValueUTF8 (AP_STRING_ID_DLG_Goto_Label_Number,s);
+	tmp = s_convert ((char*)s.utf8_str());
 	number_lb_key = gtk_label_parse_uline (GTK_LABEL (number_lb), tmp);
 	g_free (tmp);
 	gtk_box_pack_start (GTK_BOX (vbox2), number_lb, FALSE, FALSE, 0);
@@ -329,7 +334,8 @@ GtkWidget *AP_UnixDialog_Goto::_constructWindowContents (void)
 	m_wEntry = gtk_entry_new ();
 	gtk_box_pack_start (GTK_BOX (vbox2), m_wEntry, FALSE, FALSE, 0);
 
-	m_dlabel = gtk_label_new (pSS->getValueUTF8 (AP_STRING_ID_DLG_Goto_Label_Help).utf8_str());
+	pSS->getValueUTF8 (AP_STRING_ID_DLG_Goto_Label_Help,s);
+	m_dlabel = gtk_label_new (s.utf8_str());
 	gtk_box_pack_start (GTK_BOX (vbox2), m_dlabel, FALSE, FALSE, 0);
 	gtk_label_set_justify (GTK_LABEL (m_dlabel), GTK_JUSTIFY_FILL);
 	gtk_label_set_line_wrap (GTK_LABEL (m_dlabel), TRUE);

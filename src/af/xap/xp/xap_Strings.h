@@ -69,8 +69,8 @@ public:
 
 	virtual const XML_Char *	getValue(XAP_String_Id id) const = 0;
 
-	UT_String & getValue(XAP_String_Id id, const char * inEncoding) const;
-	UT_UTF8String & getValueUTF8(XAP_String_Id id) const;
+	bool getValue(XAP_String_Id id, const char * inEncoding, UT_String &s) const;
+	bool getValueUTF8(XAP_String_Id id, UT_UTF8String &s) const;
 
 	void setEncoding(const char * inEndcoding);
 	const char * getEncoding() const;
