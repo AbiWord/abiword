@@ -4313,9 +4313,6 @@ UT_Bool FV_View::cmdInsertPNGImage(UT_ByteBuf* pBB, const char* pszName)
 
 EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 {
-	if (isLeftMargin(xPos,yPos))
-		return EV_EMC_LEFTOFTEXT;
-
 	UT_sint32 xClick, yClick;
 	PT_DocPosition pos;
 	UT_Bool bBOL, bEOL;
@@ -4324,6 +4321,21 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 	fp_Page* pPage = _getPageForXY(xPos, yPos, xClick, yClick);
 	if (!pPage)
 		return EV_EMC_UNKNOWN;
+
+	if (
+		(yClick < 0)
+		|| (xClick < 0)
+		|| (xClick > pPage->getWidth())
+		)
+	{
+		return EV_EMC_UNKNOWN;
+	}
+
+	if (isLeftMargin(xPos,yPos))
+	{
+		return EV_EMC_LEFTOFTEXT;
+	}
+
 	pPage->mapXYToPosition(xClick, yClick, pos, bBOL, bEOL);
 	fl_BlockLayout* pBlock = _findBlockAtPosition(pos);
 	if (!pBlock)
