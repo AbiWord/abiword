@@ -317,6 +317,20 @@ bool pt_PieceTable::insertFmtMarkBeforeFrag(pf_Frag * pF)
 	return true;
 }
 
+
+bool pt_PieceTable::insertFmtMarkBeforeFrag(pf_Frag * pF, const XML_Char ** attributes)
+{
+	// cannot insert before first fragment
+	UT_return_val_if_fail(pF && pF->getPrev() && pF != m_fragments.getFirst(), false);
+
+	pf_Frag_FmtMark * pff = NULL;
+	if (!_makeFmtMark(pff,attributes) || !pff)
+		return false;
+
+	m_fragments.insertFragBefore(pF, pff);
+	return true;
+}
+
 bool pt_PieceTable::_makeStrux(PTStruxType pts, const XML_Char ** attributes, pf_Frag_Strux * &pfs)
 {
 	// create a new structure fragment at the current end of the document.
@@ -392,6 +406,31 @@ bool pt_PieceTable::_makeFmtMark(pf_Frag_FmtMark * &pff)
 		return false;
 
 	pff = new pf_Frag_FmtMark(this,loading.m_indexCurrentInlineAP);
+	if (!pff)
+		return false;
+
+	return true;
+}
+
+
+bool pt_PieceTable::_makeFmtMark(pf_Frag_FmtMark * &pff, const XML_Char ** attributes)
+{
+	// this function can only be called while loading the document.
+	UT_ASSERT(m_pts==PTS_Loading);
+
+	// Only a strux can be appended to an empty document
+	UT_ASSERT(NULL != m_fragments.getFirst());
+	if (!m_fragments.getFirst())
+		return false;
+	if(attributes == NULL)
+		{
+			return _makeFmtMark(pff);
+		}
+	PT_AttrPropIndex indexAP;
+	if (!m_varset.storeAP(attributes,&indexAP))
+		return false;
+
+	pff = new pf_Frag_FmtMark(this,indexAP);
 	if (!pff)
 		return false;
 

@@ -4033,6 +4033,21 @@ bool PD_Document::insertFmtMarkBeforeFrag(pf_Frag * pF)
 	return m_pPieceTable->insertFmtMarkBeforeFrag(pF);
 }
 
+bool PD_Document::changeStruxFormatNoUpdate(PTChangeFmt ptc ,PL_StruxDocHandle sdh,const XML_Char ** attributes)
+{
+	pf_Frag_Strux * pfs = const_cast<pf_Frag_Strux *>(static_cast<const pf_Frag_Strux *>(sdh));
+	return m_pPieceTable->changeStruxFormatNoUpdate(ptc ,pfs,attributes);
+}
+
+bool PD_Document::insertFmtMarkBeforeFrag(pf_Frag * pF, const XML_Char ** attributes)
+{
+	UT_ASSERT(m_pPieceTable);
+
+	// can only be used while loading the document
+
+	return m_pPieceTable->insertFmtMarkBeforeFrag(pF,attributes);
+}
+
 pf_Frag * PD_Document::findFragOfType(pf_Frag::PFType type, UT_sint32 iSubtype, const pf_Frag * pfStart)
 {
 	UT_return_val_if_fail(m_pPieceTable,NULL);

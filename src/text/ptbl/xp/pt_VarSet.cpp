@@ -421,21 +421,27 @@ bool pt_VarSet::addIfUniqueAP(PP_AttrProp * pAP, PT_AttrPropIndex * papi)
 	// it and return the index where we added it.
 	// return false if we have any errors.
 
+//#define LOAD_OPTION_2 1
 	UT_ASSERT(pAP && papi);
 	UT_uint32 subscript = 0;
 	UT_uint32 table = 0;
-	
-	for (table=0; table<2; table++)
-		if (m_tableAttrProp[table].findMatch(pAP,&subscript))
-		{
-			// use the one that we already have in the table.
-			delete pAP;
-			*papi = _makeAPIndex(table,subscript);
-			return true;
-		}
+#if LOAD_OPTION_2
+	if(m_currentVarSet == 1)
+	{
+#endif
+		for (table=0; table<2; table++)
+			if (m_tableAttrProp[table].findMatch(pAP,&subscript))
+			{
+				// use the one that we already have in the table.
+				delete pAP;
+				*papi = _makeAPIndex(table,subscript);
+				return true;
+			}
 
-	// we did not find a match, so we store our new one.
-	
+	// we did not find a match or we're loading a document , so we store our new one.
+#if LOAD_OPTION_2
+	}
+#endif
 	if (m_tableAttrProp[m_currentVarSet].addAP(pAP,&subscript))
 	{
 		*papi = _makeAPIndex(m_currentVarSet,subscript);

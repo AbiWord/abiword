@@ -143,6 +143,25 @@ bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 		return _realChangeStruxFmt(ptc, dpos1, dpos2, attributes, properties, pts);
 }
 
+bool pt_PieceTable::changeStruxFormatNoUpdate(PTChangeFmt ptc ,pf_Frag_Strux * pfs, const XML_Char ** attributes)
+{
+	PT_AttrPropIndex indexNewAP;
+	PT_AttrPropIndex indexOldAP = pfs->getIndexAP();
+	bool bMerged;
+	bMerged = m_varset.mergeAP(ptc,indexOldAP,attributes,NULL,&indexNewAP,getDocument());
+	UT_ASSERT(bMerged);
+	xxx_UT_DEBUGMSG(("Merging atts/props oldindex=%d , newindex =%d \n",indexOldAP,indexNewAP));
+	if (indexOldAP == indexNewAP)		// the requested change will have no effect on this fragment.
+		return true;
+
+	bool bResult;
+	bResult = _fmtChangeStrux(pfs,indexNewAP);
+	UT_ASSERT(bResult);
+
+	return true;
+
+}
+
 bool pt_PieceTable::_fmtChangeStrux(pf_Frag_Strux * pfs,
 									   PT_AttrPropIndex indexNewAP)
 {

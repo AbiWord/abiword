@@ -95,6 +95,13 @@ public:
 										UT_uint32 lenData, 
 										const char * szEncoding = 0);
 
+	virtual bool  appendStrux(PTStruxType pts, const XML_Char ** attributes);
+	virtual bool  appendFmt( const XML_Char ** attributes);
+	virtual bool  appendFmt( const UT_Vector * pVecAttributes);
+	virtual bool  appendSpan(const UT_UCSChar * p, UT_uint32 length);
+	virtual bool  appendObject(PTObjectType pto, const XML_Char ** attributes);
+
+
 protected:
 	virtual FG_Graphic *	importImage (const XML_Char * szSrc);
 
@@ -127,6 +134,7 @@ private:
 
 	UT_Vector	m_divClasses;
 	UT_Vector	m_divStyles;
+	bool        bInTable(void);
 };
 
 #endif /* IE_IMP_XHTML_H */

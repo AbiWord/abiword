@@ -249,13 +249,14 @@ public:
 	bool					appendObject(PTObjectType pto, const XML_Char ** attributes);
 	bool					appendFmtMark(void);
 	bool					appendStyle(const XML_Char ** attributes);
-	
+	bool                    changeStruxFormatNoUpdate(PTChangeFmt ptc ,PL_StruxDocHandle sdh,const XML_Char ** attributes);	
 	bool					insertStruxBeforeFrag(pf_Frag * pF, PTStruxType pts,
 												  const XML_Char ** attributes, pf_Frag_Strux ** ppfs_ret = 0);
 	bool					insertSpanBeforeFrag(pf_Frag * pF, const UT_UCSChar * p, UT_uint32 length);
 	bool					insertObjectBeforeFrag(pf_Frag * pF, PTObjectType pto,
 												   const XML_Char ** attributes);
 	bool					insertFmtMarkBeforeFrag(pf_Frag * pF);
+	bool					insertFmtMarkBeforeFrag(pf_Frag * pF, const XML_Char ** attributes);
 
 	pf_Frag *               findFragOfType(pf_Frag::PFType iType, UT_sint32 iSubtype = -1,
 										   const pf_Frag * pfStart = NULL);

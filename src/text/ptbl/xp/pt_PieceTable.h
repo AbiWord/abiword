@@ -198,6 +198,8 @@ public:
 										   const XML_Char ** properties,
 										   PTStruxType pts);
 
+	bool                    changeStruxFormatNoUpdate(PTChangeFmt ptc, pf_Frag_Strux * pfs,const XML_Char ** attributes);
+
 	bool                    changeStruxForLists(PL_StruxDocHandle sdh,
 												const char * pszParentID);
     bool                    changeSectionAttsNoUpdate(pf_Frag_Strux * pfStrux, const char * attr, const char * attvalue);
@@ -231,6 +233,7 @@ public:
 	bool					insertObjectBeforeFrag(pf_Frag * pF, PTObjectType pto,
 												   const XML_Char ** attributes);
 	bool					insertFmtMarkBeforeFrag(pf_Frag * pF);
+	bool					insertFmtMarkBeforeFrag(pf_Frag * pF, const XML_Char ** attributes);
 	
 	bool					removeStyle(const XML_Char * name);
 	size_t					getStyleCount(void);
@@ -504,7 +507,7 @@ protected:
 	bool					_makeObject(PTObjectType pto, const XML_Char ** attributes,
 										pf_Frag_Object * &pfo);
 	bool					_makeFmtMark(pf_Frag_FmtMark * &pff);
-	
+	bool                    _makeFmtMark(pf_Frag_FmtMark * &pff, const XML_Char ** attributes);
 
 	PTState					m_pts;		/* are we loading or editing */
 	pt_VarSet				m_varset;

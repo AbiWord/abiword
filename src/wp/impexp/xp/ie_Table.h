@@ -267,75 +267,82 @@ private:
 };
 
 // EXPERIMENTAL CODE
-/* #define USE_IE_IMP_TABLEHELPER 1 */
+#define USE_IE_IMP_TABLEHELPER 1 */
 
 #ifdef USE_IE_IMP_TABLEHELPER
+enum TableZone
+	{
+		/* tz_caption, */
+		tz_head,
+		tz_foot,
+		tz_body
+	};
+class ABI_EXPORT CellHelper
+{
+public:
+	CellHelper ();
+	void setProp(const char * szProp, const UT_String sVal);
+	UT_UTF8String		m_style;
+
+		/* cell frag/strux
+		 */
+	pf_Frag_Strux *		m_pfsCell;
+		
+		/* cell-attach points
+		 */
+	UT_sint32			m_bottom;
+	UT_sint32			m_left;
+	UT_sint32			m_right;
+	UT_sint32			m_top;
+
+	UT_sint32			m_rowspan;
+	UT_sint32			m_colspan;
+
+	CellHelper *		m_next;
+	TableZone           m_tzone;
+	UT_String           m_sCellProps;
+	bool	isVirtual () const { return (m_next != 0); }
+};
 
 class ABI_EXPORT IE_Imp_TableHelper
 {
 public:
-	static bool			Strux (PD_Document * pDocument, PTStruxType pts,
-							   const XML_Char ** attributes,
-							   pf_Frag * pf,
-							   pf_Frag_Strux *& pfs_ret, bool bImport);
+	IE_Imp_TableHelper (PD_Document * pDocument, pf_Frag_Strux * pfsInsertionPoint, const char * style);
 
-	static bool			StruxFmt (PD_Document * pDocument,
-								  const XML_Char ** attributes,
-								  pf_Frag_Strux * pfs, bool bImport);
+	~IE_Imp_TableHelper ();
+	bool	           tableStart ();
 
-	static bool			Span (PD_Document * pDocument,
-							  const UT_UCSChar * ucs4_str, UT_uint32 length,
-							  pf_Frag * pf,
-							  bool bImport);
+	bool	           tableEnd ();
+	PL_StruxDocHandle  ToSDH(pf_Frag_Strux * pfs);
+	pf_Frag_Strux *    ToPFS(PL_StruxDocHandle sdh);
+	bool	           theadStart (const char * style);
+	bool	           tfootStart (const char * style);
+	bool	           tbodyStart (const char * style = 0);
 
-	static bool			Fmt (PD_Document * pDocument,
-							 const XML_Char ** attributes,
-							 pf_Frag * pf,
-							 bool bImport);
+	bool	           trStart (const char * style);
+	bool	           tdStart (UT_sint32 rowspan, UT_sint32 colspan, const char * style, pf_Frag_Strux * pfsThis);
+	/* append/insert methods
+	 */
+	bool	           Block (PTStruxType pts, const XML_Char ** attributes);
+	bool	           BlockFormat (const XML_Char ** attributes);
 
-	static bool			Object (PD_Document * pDocument, PTObjectType pto,
-								const XML_Char ** attributes,
-								pf_Frag * pf,
-								bool bImport);
+	bool	           Inline (const UT_UCSChar * ucs4_str, UT_sint32 length);
+	bool	           InlineFormat (const XML_Char ** attributes);
 
+	bool	           Object (PTObjectType pto, const XML_Char ** attributes);
+    void               padAllRowsWithCells(UT_Vector & vecCells,UT_sint32 extra);
+	void               padRowWithCells(UT_Vector & vecCells,UT_sint32 row, UT_sint32 extra);
+	CellHelper *       getCellAtRowCol(UT_Vector & vecCells, UT_sint32 row, UT_sint32 col);
 private:
-	enum TableZone
-		{
-			/* tz_caption, */
-			tz_head,
-			tz_foot,
-			tz_body
-		};
-	class ABI_EXPORT CellHelper
-	{
-	public:
-		CellHelper ();
-
-		UT_UTF8String		m_style;
-
-		/* cell frag/strux
-		 */
-		pf_Frag_Strux *		m_pfsCell;
-		
-		/* cell-attach points
-		 */
-		UT_uint32			m_bottom;
-		UT_uint32			m_left;
-		UT_uint32			m_right;
-		UT_uint32			m_top;
-
-		UT_uint32			m_rowspan;
-		UT_uint32			m_colspan;
-
-		CellHelper *		m_next;
-
-		bool	isVirtual () const { return (m_next != 0); }
-	};
 
 	/* 1. Need a section on column definitions, allowing for <col> and <colgroup><col>
 	 * 2. <thead> & <tfoot> should come before <tbody>; any repeats or trailing entries
 	 *    shall be treated as additional <tbody> sections for the moment
 	 */
+	bool	trEnd ();
+	void	trClean ();
+	bool	tdEnd ();
+	bool	tdPending ();
 	
 	PD_Document *		m_pDocument;
 
@@ -348,142 +355,71 @@ private:
 	pf_Frag_Strux *		m_pfsInsertionPoint;
 	pf_Frag_Strux *		m_pfsTableStart;
 	pf_Frag_Strux *		m_pfsTableEnd;
-		
-	UT_uint32			m_rows;
-	UT_uint32			m_rows_head;
-	UT_uint32			m_rows_head_max;
-	UT_uint32			m_rows_foot;
-	UT_uint32			m_rows_foot_max;
-	UT_uint32			m_rows_body;
-	UT_uint32			m_rows_body_max;
+	pf_Frag_Strux *     m_pfsCellPoint;
+	UT_sint32			m_rows;
+	UT_sint32			m_rows_head;
+	UT_sint32			m_rows_head_max;
+	UT_sint32			m_rows_foot;
+	UT_sint32			m_rows_foot_max;
+	UT_sint32			m_rows_body;
+	UT_sint32			m_rows_body_max;
 
-	UT_uint32			m_cols;
-	UT_uint32			m_cols_max;
+	UT_sint32			m_cols;
+	UT_sint32			m_cols_max;
 
-	UT_uint32			m_col_next;
-	UT_uint32			m_row_next;
+	UT_sint32			m_col_next;
+	UT_sint32			m_row_next;
 
-	UT_uint32			m_garbage_count;
-
-	CellHelper ***		m_thead;
-	CellHelper ***		m_tfoot;
-	CellHelper ***		m_tbody;
+	UT_Vector   		m_thead;
+	UT_Vector   		m_tfoot;
+	UT_Vector   		m_tbody;
 
 	CellHelper *		m_current;
-
-	CellHelper *		m_garbage;
-
 	TableZone			m_tzone;
+	bool                m_bBlockInsertedForCell;
+	PD_Document *	    getDoc () const { return m_pDocument; }
 
-	PD_Document *	getDoc () const { return m_pDocument; }
+	pf_Frag_Strux *	    getInsertionPoint () const { return m_pfsInsertionPoint; }
 
-	pf_Frag_Strux *	getInsertionPoint () const { return m_pfsInsertionPoint; }
-
-	/* garbage collection & recycling
-	 */
-	CellHelper *	recoverCellHelper (bool create_if_none = true);
-	void			discardCellHelper (CellHelper * cell_helper);
-	bool			requireCellHelper (UT_uint32 number);
-
-public:
-	IE_Imp_TableHelper (PD_Document * pDocument, pf_Frag_Strux * pfsInsertionPoint, const char * style);
-
-	~IE_Imp_TableHelper ();
-
-private:
-	bool	tableStart ();
-public:
-	bool	tableEnd ();
-
-	bool	theadStart (const char * style);
-	bool	tfootStart (const char * style);
-	bool	tbodyStart (const char * style = 0);
-
-	bool	trStart (const char * style);
-private:
-	bool	trEnd ();
-	void	trClean ();
-public:
-	bool	tdStart (UT_uint32 rowspan, UT_uint32 colspan, const char * style, bool bounded = false);
-private:
-	bool	tdEnd ();
-	bool	tdPending ();
-
-	/* these confirm capacities of existing arrays, they do not create new arrays
-	 */
-	bool	grow_cols (UT_uint32 cols);
-	bool	grow_rows (UT_uint32 rows);
-
-	/* these add new (virtual and/or pending) cells and increase effective table size
-	 */
-	bool	append_cols (UT_uint32 cols = 1);
-	bool	append_rows (UT_uint32 rows = 1);
-
-	bool	append_col (); // use these via the above
-	bool	append_row ();
-
-public:
-	/* append/insert methods
-	 */
-	bool					Block (PTStruxType pts, const XML_Char ** attributes);
-	bool					BlockFormat (const XML_Char ** attributes);
-
-	bool					Inline (const UT_UCSChar * ucs4_str, UT_uint32 length);
-	bool					InlineFormat (const XML_Char ** attributes);
-
-	bool					Object (PTObjectType pto, const XML_Char ** attributes);
 };
 
 class ABI_EXPORT IE_Imp_TableHelperStack
 {
-private:
-	PD_Document *			m_pDocument;
-
-	UT_uint32				m_count;
-	UT_uint32				m_max;
-
-	IE_Imp_TableHelper **	m_stack;
-
-	pf_Frag *				m_pfInsertionPoint;
-	pf_Frag_Strux *			m_pfsCurrent;
 public:
-	inline bool				import () const { return (m_pfInsertionPoint == 0); }
-
-	IE_Imp_TableHelperStack (PD_Document * pDocument);
+	IE_Imp_TableHelperStack (void);
 
 	~IE_Imp_TableHelperStack ();
 
 	void					clear ();
+	IE_Imp_TableHelper *	top () const;
 
-	/* by default this class will attempt to import a fresh document; if you are pasting
-	 * then you need to set the document position with setPasteInsertionPoint()
-	 */
-	void					setPasteInsertionPoint (PT_DocPosition docPos);
-
-private:
-	bool					push (const char * style);
-	bool					pop ();
-public:
-	IE_Imp_TableHelper *	top () const { return m_stack ? m_stack[m_count] : 0; }
-
-	bool					tableStart (const char * style);
+	bool					tableStart (PD_Document * pDocument, const char * style);
 	bool					tableEnd ();
 
 	bool					theadStart (const char * style);
 	bool					tfootStart (const char * style);
 	bool					tbodyStart (const char * style = 0);
 	bool					trStart (const char * style);
-	bool					tdStart (UT_uint32 rowspan, UT_uint32 colspan, const char * style);
+	bool					tdStart (UT_sint32 rowspan, UT_sint32 colspan, const char * style);
 
 	/* append/insert methods
 	 */
 	bool					Block (PTStruxType pts, const XML_Char ** attributes);
 	bool					BlockFormat (const XML_Char ** attributes);
 
-	bool					Inline (const UT_UCSChar * ucs4_str, UT_uint32 length);
+	bool					Inline (const UT_UCSChar * ucs4_str, UT_sint32 length);
 	bool					InlineFormat (const XML_Char ** attributes);
 
 	bool					Object (PTObjectType pto, const XML_Char ** attributes);
+private:
+	PD_Document *			m_pDocument;
+
+	UT_sint32				m_count;
+	UT_sint32				m_max;
+
+	IE_Imp_TableHelper **	m_stack;
+	bool					push (const char * style);
+	bool					pop ();
 };
 
 #endif /* USE_IE_IMP_TABLEHELPER */

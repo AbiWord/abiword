@@ -208,7 +208,7 @@ bool	IE_Imp_XHTML_Sniffer::getDlgLabels(const char ** pszDesc,
 IE_Imp_XHTML::IE_Imp_XHTML(PD_Document * pDocument) :
 	IE_Imp_XML(pDocument,false),
 #ifdef USE_IE_IMP_TABLEHELPER
-	m_TableHelperStack(new IE_Imp_TableHelperStack(pDocument)),
+	m_TableHelperStack(new IE_Imp_TableHelperStack()),
 #else
 	m_TableHelperStack(0),
 #endif
@@ -1180,7 +1180,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 		{
 			const XML_Char * szStyle = _getXMLPropValue (static_cast<const XML_Char *>("style"), atts);
 
-			X_CheckError(m_TableHelperStack->tableStart (static_cast<const char *>(szStyle)));
+			X_CheckError(m_TableHelperStack->tableStart (getDoc(),static_cast<const char *>(szStyle)));
 		}
 		break;
 	case TT_THEAD:
@@ -1220,7 +1220,6 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 
 			UT_uint32 colspan = 1;
 			UT_uint32 rowspan = 1;
-
 			if (szColSpan)
 				{
 					int span = atoi (static_cast<const char *>(szColSpan));
@@ -1233,7 +1232,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 					if (span > 1)
 						rowspan = static_cast<UT_uint32>(span);
 				}
-			m_TableHelperStack->tdStart (colspan, rowspan, static_cast<const char *>(szStyle));
+			m_TableHelperStack->tdStart (rowspan,colspan, static_cast<const char *>(szStyle));
 		}
 		break;
 #endif /* USE_IE_IMP_TABLEHELPER */
@@ -1782,6 +1781,94 @@ bool IE_Imp_XHTML::requireSection ()
 
 	m_addedPTXSection = true;
 	return true;
+}
+
+bool IE_Imp_XHTML::appendStrux(PTStruxType pts, const XML_Char ** attributes)
+{
+	UT_DEBUGMSG(("XHTML Import - appendStruxStrux type %d document %x \n",pts,getDoc()));
+
+	if(!bInTable())
+		{
+			return getDoc()->appendStrux(pts,attributes);
+		}
+	else
+		{
+			return m_TableHelperStack->Block(pts,attributes);
+		}
+	return true;
+}
+
+bool IE_Imp_XHTML::appendFmt( const XML_Char ** attributes)
+{
+	if(!bInTable())
+		{
+			return getDoc()->appendFmt(attributes);
+		}
+	else
+		{
+			return m_TableHelperStack->InlineFormat(attributes);
+		}
+	return true;
+}
+
+bool IE_Imp_XHTML::appendFmt( const UT_Vector * pVecAttributes)
+{
+	if(!bInTable())
+		{
+			return getDoc()->appendFmt(pVecAttributes);
+		}
+	else
+		{
+			const XML_Char * attributes[3] = {"props",NULL,NULL};
+			UT_String sPropString("");
+			UT_uint32 i = 0;
+			for(i=0; i< pVecAttributes->getItemCount(); i +=2)
+				{
+					UT_String sProp = static_cast<char *>(pVecAttributes->getNthItem(i));
+					UT_String sVal = static_cast<char *>(pVecAttributes->getNthItem(i));
+					UT_String_setProperty(sPropString,sProp,sVal);
+				}
+			attributes[1] = sPropString.c_str();
+			return m_TableHelperStack->InlineFormat(attributes);
+		}
+	return true;
+}
+
+bool IE_Imp_XHTML::appendSpan(const UT_UCSChar * p, UT_uint32 length)
+{
+	if(!bInTable())
+		{
+			return getDoc()->appendSpan(p,length);
+		}
+	else
+		{
+			return m_TableHelperStack->Inline(p, static_cast<UT_sint32>(length));
+		}
+	return true;
+}
+
+
+bool IE_Imp_XHTML::appendObject(PTObjectType pto, const XML_Char ** attributes)
+{
+	if(!bInTable())
+		{
+			return getDoc()->appendObject(pto,attributes);
+		}
+	else
+		{
+			return m_TableHelperStack->Object(pto,attributes);
+		}
+	return true;
+}
+
+
+
+/*!
+ * Returns true if we're in a table
+ */
+bool IE_Imp_XHTML::bInTable(void)
+{
+	return !(m_TableHelperStack->top() == NULL);
 }
 
 /* returns true if child of a <div> with a recognized "class" attribute

@@ -156,13 +156,13 @@ public:
 	void setClipboard (PT_DocPosition dpos);
 	bool isClipboard () const;
 
-	bool appendStrux (PTStruxType pts, const XML_Char ** attributes);
-	bool appendStruxFmt(pf_Frag_Strux * pfs, const XML_Char ** attributes);
-	bool appendSpan (const UT_UCSChar * p, UT_uint32 length);
-	bool appendObject (PTObjectType pto, const XML_Char ** attribs,
+	virtual bool appendStrux (PTStruxType pts, const XML_Char ** attributes);
+	virtual bool appendStruxFmt(pf_Frag_Strux * pfs, const XML_Char ** attributes);
+	virtual bool appendSpan (const UT_UCSChar * p, UT_uint32 length);
+	virtual bool appendObject (PTObjectType pto, const XML_Char ** attribs,
 					   const XML_Char ** props = NULL);
-	bool appendFmt(const XML_Char ** attributes);
-	bool appendFmt(const UT_Vector * pVecAttributes);
+	virtual bool appendFmt(const XML_Char ** attributes);
+	virtual bool appendFmt(const UT_Vector * pVecAttributes);
 
 public:
 	const UT_UTF8String * getProperty (const char * key) {

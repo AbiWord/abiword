@@ -58,6 +58,7 @@
 
 #define X_CheckError(v)			do {  if (!(v))								\
 									  {  m_error = UT_ERROR;			\
+UT_ASSERT(0); \
 										 return; } } while (0)
 
 #define	X_EatIfAlreadyError()	do {  if (m_error) return; } while (0)
