@@ -974,6 +974,23 @@ fl_AutoNum * fl_AutoNum::getActiveParent(void)
 	return pAutoNum;
 }
 
+/*!
+ * This method returns true if the requested ID is somewhere in this
+ * List heiracy.
+ */
+bool fl_AutoNum::isIDSomeWhere(UT_uint32 ID)
+{
+	fl_AutoNum * pAuto = this;
+	while(pAuto != NULL)
+	{
+		if(pAuto->getID() == ID)
+		{
+			return true;
+		}
+		pAuto = pAuto->getParent();
+	}
+}
+
 void fl_AutoNum::_setParent(fl_AutoNum * pParent)
 {
 	if(pParent == this)

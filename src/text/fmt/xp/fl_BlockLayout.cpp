@@ -837,7 +837,7 @@ void fl_BlockLayout::_lookupProperties(void)
 			UT_DEBUGMSG(("BlockLayout %x Set Hidden \n",this));
 			setVisibility(FP_HIDDEN_FOLDED);
 		}
-		else if(m_pAutoNum->getLevel() >  getFoldedLevel())
+		else if(!m_pAutoNum->isIDSomeWhere(getFoldedID()) || (static_cast<UT_sint32 >(m_pAutoNum->getLevel()) >  getFoldedLevel()))
 		{
 			UT_DEBUGMSG(("BlockLayout %x Set Hidden \n",this));
 			setVisibility(FP_HIDDEN_FOLDED);
@@ -1919,7 +1919,7 @@ UT_sint32 fl_BlockLayout::getHeightOfBlock(void)
   will fit in the container.  */
 void fl_BlockLayout::format()
 {
-	if(isHidden() >= FP_HIDDEN_FOLDED)
+	if((isHidden() >= FP_HIDDEN_FOLDED) || (m_pSectionLayout->isHidden() >= FP_HIDDEN_FOLDED))
 	{
 		UT_DEBUGMSG(("Don't format coz I'm hidden! \n"));
 		return;

@@ -89,7 +89,8 @@ typedef enum _PTStruxType
     PTX_EndEndnote,
     PTX_EndFrame,
 	PTX_SectionTOC,
-	PTX_EndTOC
+	PTX_EndTOC,
+	PTX_StruxDummy
 } PTStruxType;
 
 //! PTObjectType tells the sub-type of an FragObject.

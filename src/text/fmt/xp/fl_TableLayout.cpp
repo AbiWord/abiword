@@ -126,6 +126,12 @@ fl_TableLayout::~fl_TableLayout()
 void fl_TableLayout::createTableContainer(void)
 {
 	_lookupProperties();
+	if(isHidden() >= FP_HIDDEN_FOLDED)
+	{
+		UT_DEBUGMSG(("Don't format coz I'm hidden! \n"));
+		return;
+	}
+
 	fp_TableContainer * pTableContainer = new fp_TableContainer(static_cast<fl_SectionLayout *>(this));
 	setFirstContainer(pTableContainer);
 	setLastContainer(pTableContainer);
@@ -297,6 +303,11 @@ void fl_TableLayout::format(void)
 	{
 		return;
 	}
+	if(isHidden() >= FP_HIDDEN_FOLDED)
+	{
+		UT_DEBUGMSG(("Don't format coz I'm hidden! \n"));
+		return;
+	}
 	m_bRecursiveFormat = true;
 	bool bRebuild = false;
 	//
@@ -462,7 +473,7 @@ void fl_TableLayout::redrawUpdate(void)
 		pBL = pBL->getNext();
 	}
 	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(getFirstContainer());
-	if(pTab->doRedrawLines())
+	if(pTab && pTab->doRedrawLines())
 	{
 		pTab->drawLines();
 	}
@@ -727,7 +738,10 @@ void fl_TableLayout::_lookupProperties(void)
 //  Find the folded Level of the strux
 
 	lookupFoldedLevel();
-
+	if(getFoldedLevel()>0)
+	{
+		setVisibility(FP_HIDDEN_FOLDED);
+	}
 	const PP_AttrProp* pSectionAP = NULL;
 
 	m_pLayout->getDocument()->getAttrProp(m_apIndex, &pSectionAP);
@@ -1342,6 +1356,12 @@ fl_CellLayout::~fl_CellLayout()
 void fl_CellLayout::createCellContainer(void)
 {
 	_lookupProperties();
+	if(isHidden() >= FP_HIDDEN_FOLDED)
+	{
+		UT_DEBUGMSG(("Don't format coz I'm hidden! \n"));
+		return;
+	}
+
 	fp_CellContainer * pCellContainer = new fp_CellContainer(static_cast<fl_SectionLayout *>(this));
 	setFirstContainer(pCellContainer);
 	setLastContainer(pCellContainer);
@@ -1403,6 +1423,10 @@ void fl_CellLayout::decNumNestedTables(void)
  */
 void fl_CellLayout::setCellContainerProperties(fp_CellContainer * pCell)
 {
+	if(pCell == NULL)
+	{
+		return;
+	}
 	pCell->setLeftAttach(m_iLeftAttach);
 	pCell->setRightAttach(m_iRightAttach);
 	pCell->setTopAttach(m_iTopAttach);
@@ -1599,6 +1623,11 @@ fp_Container* fl_CellLayout::getNewContainer(fp_Container * pPrev)
 void fl_CellLayout::format(void)
 {
 	xxx_UT_DEBUGMSG(("SEVIOR: Formatting first container is %x \n",getFirstContainer()));
+	if(isHidden() >= FP_HIDDEN_FOLDED)
+	{
+		UT_DEBUGMSG(("Don't format coz I'm hidden! \n"));
+		return;
+	}
 	if(getFirstContainer() == NULL)
 	{
 		getNewContainer(NULL);
@@ -1768,7 +1797,10 @@ void fl_CellLayout::_lookupProperties(void)
 //  Find the folded Level of the strux
 
 	lookupFoldedLevel();
-
+	if(getFoldedLevel()>0)
+	{
+		setVisibility(FP_HIDDEN_FOLDED);
+	}
 	const PP_AttrProp* pSectionAP = NULL;
 
 	m_pLayout->getDocument()->getAttrProp(m_apIndex, &pSectionAP);

@@ -494,7 +494,7 @@ void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos,
 	UT_uint32 count = m_vecRuns.getItemCount();
 	UT_uint32 i = 0;
 	fp_Run* pFirstRun;
-
+	xxx_UT_DEBUGMSG(("fp_line: mapXYToPosition this %x Y %d \n",this,getY()));
 	do {
 
 		pFirstRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(_getRunLogIndx(i++))); //#TF retrieve first visual run
@@ -539,6 +539,7 @@ void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos,
 //			if (((y2) >= 0) && ((y2) < (pRun2->getHeight())))
 				{
 					pRun2->mapXYToPosition(x - pRun2->getX(), y2, pos, bBOL, bEOL,isTOC);
+					xxx_UT_DEBUGMSG(("Found run %x offset %d pos %d \n",pRun2,pRun2->getBlockOffset(),pos));
 					return;
 				}
 			}

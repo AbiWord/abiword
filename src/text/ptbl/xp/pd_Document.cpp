@@ -845,6 +845,19 @@ bool PD_Document::changeStruxFmt(PTChangeFmt ptc,
 	return m_pPieceTable->changeStruxFmt(ptc,dpos1,dpos2,attributes,properties,pts);
 }
 
+
+/*!
+ * This method changes *all* the strux fragments in the specified region.
+ */
+bool PD_Document::changeStruxFmt(PTChangeFmt ptc,
+								 PT_DocPosition dpos1,
+								 PT_DocPosition dpos2,
+								 const XML_Char ** attributes,
+								 const XML_Char ** properties)
+{
+	return m_pPieceTable->changeStruxFmt(ptc,dpos1,dpos2,attributes,properties);
+}
+
 /*!
  * This Method is used to change just the parentID of each strux in a list
  * without updating the fl_Layouts.

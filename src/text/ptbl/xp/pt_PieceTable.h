@@ -196,7 +196,7 @@ public:
 										   PT_DocPosition dpos2,
 										   const XML_Char ** attributes,
 										   const XML_Char ** properties,
-										   PTStruxType pts);
+										   PTStruxType pts=PTX_StruxDummy);
 
 	bool                    changeStruxFormatNoUpdate(PTChangeFmt ptc, pf_Frag_Strux * pfs,const XML_Char ** attributes);
 

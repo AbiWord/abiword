@@ -240,6 +240,12 @@ public:
 										   const XML_Char ** properties,
 										   PTStruxType pts);
 
+	bool					changeStruxFmt(PTChangeFmt ptc,
+										   PT_DocPosition dpos1,
+										   PT_DocPosition dpos2,
+										   const XML_Char ** attributes,
+										   const XML_Char ** properties);
+
 	bool					changeStruxForLists(PL_StruxDocHandle sdh,
 												const char * pszParentID);
 

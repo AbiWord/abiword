@@ -62,15 +62,20 @@ bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 									  const XML_Char ** properties,
 								   PTStruxType pts)
 {
+	bool bDoAll = (pts == PTX_StruxDummy);
 	if(m_pDocument->isMarkRevisions())
 	{
 		pf_Frag_Strux * pfs_First;
 		pf_Frag_Strux * pfs_End;
-
-		if(!_getStruxOfTypeFromPosition(dpos1,pts,&pfs_First))
+		PTStruxType ptsTemp = pts;
+		if(pts==PTX_StruxDummy)
+		{
+			ptsTemp = PTX_Block;
+		}
+		if(!_getStruxOfTypeFromPosition(dpos1,ptsTemp,&pfs_First))
 			return false;
 
-		if(!_getStruxOfTypeFromPosition(dpos2,pts,&pfs_End))
+		if(!_getStruxOfTypeFromPosition(dpos2,ptsTemp,&pfs_End))
 			return false;
 
 		// see if the change is exactly one block.  if so, we have
@@ -96,7 +101,7 @@ bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 				case pf_Frag::PFT_Strux:
 					{
 						pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);
-						if (pfs->getStruxType() == pts)
+						if (bDoAll || (pfs->getStruxType() == pts))
 						{
 							bool bResult;
 							// get attributes for this fragement
@@ -287,7 +292,7 @@ bool pt_PieceTable::_realChangeStruxFmt(PTChangeFmt ptc,
 									  PTStruxType pts)
 {
 	UT_ASSERT(m_pts==PTS_Editing);
-
+	bool bDoAll = (pts == PTX_StruxDummy);
 	// apply a strux-level formatting change to the given region.
 
 	UT_ASSERT(dpos1 <= dpos2);
@@ -303,14 +308,19 @@ bool pt_PieceTable::_realChangeStruxFmt(PTChangeFmt ptc,
 	// type for both end points of the change.
 
 	bool bFoundFirst;
-	bFoundFirst = _getStruxOfTypeFromPosition(dpos1,pts,&pfs_First);
+	PTStruxType ptsTemp = pts;
+	if(bDoAll)
+	{
+		ptsTemp = PTX_Block;
+	}
+	bFoundFirst = _getStruxOfTypeFromPosition(dpos1,ptsTemp,&pfs_First);
 	bool bFoundEnd;
-	bFoundEnd = _getStruxOfTypeFromPosition(dpos2,pts,&pfs_End);
+	bFoundEnd = _getStruxOfTypeFromPosition(dpos2,ptsTemp,&pfs_End);
 	UT_ASSERT(bFoundFirst && bFoundEnd);
 	while(pfs_End->getPos() < pfs_First->getPos() && (dpos2 >= dpos1))
 	{
 		dpos2--;
-		bFoundEnd = _getStruxOfTypeFromPosition(dpos2,pts,&pfs_End);
+		bFoundEnd = _getStruxOfTypeFromPosition(dpos2,ptsTemp,&pfs_End);
 	}
 	// see if the change is exactly one block.  if so, we have
 	// a simple change.  otherwise, we have a multistep change.
@@ -342,7 +352,7 @@ bool pt_PieceTable::_realChangeStruxFmt(PTChangeFmt ptc,
 			case pf_Frag::PFT_Strux:
 				{
 					pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);
-					if (pfs->getStruxType() == pts)
+					if (bDoAll || (pfs->getStruxType() == pts))
 					{
 						bool bResult;
 						bResult = _fmtChangeStruxWithNotify(ptc,pfs,attributes,properties);
@@ -438,7 +448,7 @@ bool pt_PieceTable::_realChangeStruxFmt(PTChangeFmt ptc,
 					pfNewEnd = pf->getNext();
 					fragOffsetNewEnd = 0;
 					pfsContainer = static_cast<pf_Frag_Strux *> (pf);
-					if (!bEndSeen && (pfsContainer->getStruxType() == pts))
+					if (!bEndSeen && (bDoAll || (pfsContainer->getStruxType() == pts)))
 					{
 						bool bResult;
 						bResult = _fmtChangeStruxWithNotify(ptc,pfsContainer,attributes,sProps);

@@ -3832,7 +3832,7 @@ bool FV_View::setCollapsedRange(PT_DocPosition posLow,
 
 	_clearIfAtFmtMark(getPoint());
 
-	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posLow,posHigh,NULL,properties,PTX_Block);
+	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posLow,posHigh,NULL,properties);
 
 	_generalUpdate();
 	_fixInsertionPointCoords();

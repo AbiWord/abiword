@@ -111,6 +111,7 @@ public:
 	bool						isUpdating(void) { return m_bUpdatingItems; }
 	UT_uint32					getID() const { return m_iID; }
 	UT_uint32					getParentID() const { return m_iParentID; }
+	bool                        isIDSomeWhere(UT_uint32 ID);
 	static char *				dec2roman(UT_sint32 value, bool lower);
 	static char *				dec2ascii(UT_sint32 value, UT_uint32 offset);
 	static void					dec2hebrew(UT_UCSChar labelStr[], UT_uint32 * insPoint, UT_sint32 value);

@@ -226,29 +226,23 @@ void AP_Dialog_Lists::Apply(void)
 //
 // OK fold up the text according the level specified.
 //
-		const XML_Char * props[3] = {"text-folded",NULL,NULL};
-		UT_UTF8String sStr = UT_UTF8String_sprintf("%d",getCurrentFold());
-		props[1] = sStr.utf8_str();
 		fl_AutoNum * pAuto = getBlock()->getAutoNum();
-		PT_DocPosition posLow = 0;
-		PT_DocPosition posHigh = 0;
 		if(!pAuto)
 		{
-			posLow = getView()->getSelectionAnchor();
-			posHigh = getView()->getPoint();
-			if(posHigh < posLow)
-			{
-				posHigh = posLow;
-				posLow = getView()->getPoint();
-			}
+			return;
 		}
-		else
-		{
-			PL_StruxDocHandle sdhLow = pAuto->getFirstItem();
-			PL_StruxDocHandle sdhHigh = pAuto->getLastItem();
-			posLow = getView()->getDocument()->getStruxPosition(sdhLow)+1;
-			posHigh = getView()->getDocument()->getStruxPosition(sdhHigh)+1;
-		}
+		const XML_Char * props[5] = {"text-folded",NULL,"text-folded-id",NULL,NULL};
+		UT_UTF8String sStr = UT_UTF8String_sprintf("%d",getCurrentFold());
+		props[1] = sStr.utf8_str();
+		PT_DocPosition posLow = 0;
+		PT_DocPosition posHigh = 0;
+		UT_uint32 ID = pAuto->getID();
+		UT_UTF8String sID = UT_UTF8String_sprintf("%d",ID);
+		props[3] = sID.utf8_str();
+		PL_StruxDocHandle sdhLow = pAuto->getFirstItem();
+		PL_StruxDocHandle sdhHigh = pAuto->getLastItem();
+		posLow = getView()->getDocument()->getStruxPosition(sdhLow)+1;
+		posHigh = getView()->getDocument()->getStruxPosition(sdhHigh)+1;
 		getView()->setCollapsedRange(posLow,posHigh,props);
 		return;
 	}
