@@ -345,7 +345,7 @@ GnomeUIInfo * EV_UnixGnomeMenu::_convertMenu2UIInfo (int &pos)
 				
 				retval[i].label = g_strdup (buf);
 				retval[i].hint = g_strdup (tooltip);
-				retval[i].moreinfo = menuEvent;
+				retval[i].moreinfo = (void*)menuEvent;
 				retval[i].user_data = g_malloc (sizeof(__Aux));
 				((__Aux *) retval[i].user_data)->me = this;
 				((__Aux *) retval[i].user_data)->id = id;

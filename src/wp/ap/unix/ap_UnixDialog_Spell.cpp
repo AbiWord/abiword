@@ -21,6 +21,7 @@
 // TODO: still getting some artifacts when doing highligh/replacements
 
 #include <stdlib.h>
+#include <string.h>
 
 #include "ut_string.h"
 #include "ut_assert.h"
