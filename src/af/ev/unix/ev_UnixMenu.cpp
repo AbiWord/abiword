@@ -170,8 +170,7 @@ UT_Bool EV_UnixMenu::menuEvent(AP_Menu_Id id)
 
 UT_Bool EV_UnixMenu::synthesize(void)
 {
-	// create a GTK menu from the info provided.
-
+    // create a GTK menu from the info provided.
 	const EV_Menu_ActionSet * pMenuActionSet = m_pUnixApp->getMenuActionSet();
 	UT_ASSERT(pMenuActionSet);
 	
@@ -221,8 +220,8 @@ UT_Bool EV_UnixMenu::synthesize(void)
 			szLabelName = _ev_GetLabelName(m_pUnixApp, pAction, pLabel);
 			if (szLabelName && *szLabelName)
 				_append_NormalItem(bufMenuPathname,szLabelName,id,pAction->isCheckable());
-			break;
-			
+			break;	
+		
 		case EV_MLF_BeginSubMenu:
 			szLabelName = _ev_GetLabelName(m_pUnixApp, pAction, pLabel);
 			if (szLabelName && *szLabelName)
@@ -454,6 +453,9 @@ UT_Bool EV_UnixMenu::_refreshMenu(FV_View * pView)
 {
 	// update the status of stateful items on menu bar.
 
+    // This function is a big hack, and is tied to the Window menu
+	// in the "new item" stage.  Must fix.
+	
 	const EV_Menu_ActionSet * pMenuActionSet = m_pUnixApp->getMenuActionSet();
 	UT_ASSERT(pMenuActionSet);
 	UT_uint32 nrLabelItemsInLayout = m_pMenuLayout->getLayoutItemCount();
@@ -469,6 +471,8 @@ UT_Bool EV_UnixMenu::_refreshMenu(FV_View * pView)
 		const char * szMenuFactoryItemPath = _getItemPath(id);
 		UT_Bool bPresent = _isItemPresent(id);
 
+		GtkWidget * item;
+		
 		switch (pLayoutItem->getMenuLayoutFlags())
 		{
 		case EV_MLF_Normal:
@@ -487,40 +491,45 @@ UT_Bool EV_UnixMenu::_refreshMenu(FV_View * pView)
 						bCheck = UT_TRUE;
 				}
 
-				if (!szMenuFactoryItemPath)
-					break;
-				
-				// Get a pointer to the current item for later queries
-
-				// Strip out the underscores from the path
-				// or else the lookup in the hash will fail.
-				_ev_strip_accel(buf, szMenuFactoryItemPath);
-				GtkWidget * item = gtk_item_factory_get_widget(m_wMenuBarItemFactory,
-															   buf);
-				if (item)
-					bPresent = UT_TRUE;
-			
-				if (!pAction->hasDynamicLabel())
+				// we can only get an item pointer if the widget already has a
+				// path.  If it's missing one, code to create one happens later.
+				if (szMenuFactoryItemPath)
 				{
-					// if no dynamic label, all we need to do
-					// is enable/disable and/or check/uncheck it.
+					// Get a pointer to the current item for later queries
 
 					// Strip out the underscores from the path
 					// or else the lookup in the hash will fail.
 					_ev_strip_accel(buf, szMenuFactoryItemPath);
-					item = gtk_item_factory_get_widget(m_wMenuBarItemFactory,
-																   buf);
-					UT_ASSERT(item);
+					item = gtk_item_factory_get_widget(m_wMenuBarItemFactory, buf);
 
-					// check boxes 
-					if (GTK_IS_CHECK_MENU_ITEM(item))
-						GTK_CHECK_MENU_ITEM(item)->active = bCheck;
-					// all get the gray treatment
+					if (item)
+						bPresent = UT_TRUE;
+			
+					if (!pAction->hasDynamicLabel())
+					{
+						if (bPresent)
+						{
+							// if no dynamic label, all we need to do
+							// is enable/disable and/or check/uncheck it.
 
-					gtk_widget_set_sensitive(GTK_WIDGET(item), bEnable);
-					break;
+							// Strip out the underscores from the path
+							// or else the lookup in the hash will fail.
+							_ev_strip_accel(buf, szMenuFactoryItemPath);
+							item = gtk_item_factory_get_widget(m_wMenuBarItemFactory,
+															   buf);
+							UT_ASSERT(item);
+
+							// check boxes 
+							if (GTK_IS_CHECK_MENU_ITEM(item))
+								GTK_CHECK_MENU_ITEM(item)->active = bCheck;
+							// all get the gray treatment
+
+							gtk_widget_set_sensitive(GTK_WIDGET(item), bEnable);
+							break;
+						}
+					}
 				}
-
+				
 				// this item has a dynamic label...
 				// compute the value for the label.
 				// if it is blank, we remove the item from the menu.
@@ -531,6 +540,8 @@ UT_Bool EV_UnixMenu::_refreshMenu(FV_View * pView)
 
 				if (bRemoveIt)			// we don't want it to be there
 				{
+					// happens only if the item has a path and is found
+					// in the item factory
 					if (bPresent)
 					{
 						_ev_strip_accel(buf, szMenuFactoryItemPath);
@@ -548,42 +559,15 @@ UT_Bool EV_UnixMenu::_refreshMenu(FV_View * pView)
 						// dynamic label has not changed, all we need to do
 						// is enable/disable and/or check/uncheck it.
 
-						// check boxes and disable
 						if (GTK_IS_CHECK_MENU_ITEM(item))
 							GTK_CHECK_MENU_ITEM(item)->active = bCheck;
 						gtk_widget_set_sensitive((GtkWidget *) item, bEnable);
 
-						// Will we need to handle this case?
-						//bNeedToRedrawMenu = UT_TRUE;
 					}
 					else
 					{
 						// dynamic label has changed, do the complex modify.
-#if 0
-						_ev_strip_accel(buf, szMenuFactoryItemPath);
-						gtk_item_factory_delete_item(m_wMenuBarItemFactory, buf);
 
-						GtkItemFactoryEntry p;
-						*buf = 0;
-						
-						_ev_concat_and_convert(buf, "/Window", szLabelName);
-						UT_cloneString(p.path, buf);
-
-						p.accelerator = NULL;
-						p.callback = (GtkItemFactoryCallback)_wd::s_onActivate;
-
-						_wd * wd = new _wd(this,id);
-						UT_ASSERT(wd);
-
-						p.callback_action = (guint)wd;
-						p.item_type = NULL;
-
-//						gtk_item_factory_create_item(m_wMenuBarItemFactory, p, wd, NULL);
-
-						gtk_item_factory_create_items(m_wMenuBarItemFactory, 1,
-													  &p, NULL);
-													 
-#endif
 						/****************************************************************
 						  BIG HACK:  We update the menu label directly, which means we
 						  do not update the mnemonics.  This will work for the Window
@@ -592,7 +576,10 @@ UT_Bool EV_UnixMenu::_refreshMenu(FV_View * pView)
 						  be fixed!
 						****************************************************************/
 
-#if 0
+						// bail if we don't have an item (widget) yet, but are created
+						if (!item)
+							break;
+						
 						// Get a list of children, one of which is our label
 						GList * children = gtk_container_children(GTK_CONTAINER(item));
 						UT_ASSERT(children);
@@ -604,53 +591,48 @@ UT_Bool EV_UnixMenu::_refreshMenu(FV_View * pView)
 						_ev_convert(buf, szLabelName);
 						_ev_strip_accel(buf2, buf);
 						gtk_label_set(GTK_LABEL((GtkTypeObject *)labelChild->data), buf2);
-#endif
-						
-						// Will we need to handle this case?
-						// bNeedToRedrawMenu = UT_TRUE;
 					}
-					break;
 				}
 				else
 				{
-// THIS IS NEVER GETTING CALLED!
-#if 0
-					// insert new item at the correct location
+					GtkItemFactoryEntry * p = &m_menuFactoryItems[m_nrActualFactoryItems++];
 
-					GtkItemFactoryEntry p;
-					*buf = 0;
-						
-					_ev_concat_and_convert(buf, szMenuFactoryItemPath, szLabelName);
-					UT_cloneString(p.path, buf);
+					// BAD!
+					_ev_concat_and_convert(buf, "/Window", szLabelName);
+					UT_cloneString(p->path,buf);
 
-					p.accelerator = NULL;
-					p.callback = (GtkItemFactoryCallback)_wd::s_onActivate;
+					p->accelerator = NULL;
+					p->callback = (GtkItemFactoryCallback)_wd::s_onActivate;
 
 					_wd * wd = new _wd(this,id);
 					UT_ASSERT(wd);
 
-					p.callback_action = (guint)wd;
-					p.item_type = NULL;
+					p->callback_action = (guint)wd;
+					p->item_type = NULL;
 
-					_ev_strip_accel(buf, szMenuFactoryItemPath);
-					
-					gtk_item_factory_create_items(m_wMenuBarItemFactory, 1,
-												  &p, NULL);
-#endif
+					// Currently no checkable dynamic items
+                    //if (bCheckable)
+					//p->item_type = "<CheckItem>";
+
+					// Why am I passing a 1?  Gtk's item factory code does it when
+					// given multiple items to create.
+					gtk_item_factory_create_item(m_wMenuBarItemFactory, p, wd, 1); 
 				}
 			}
 			break;
-	
-		case EV_MLF_BeginSubMenu:
-		case EV_MLF_EndSubMenu:
 		case EV_MLF_Separator:
+			break;
+
+		case EV_MLF_BeginSubMenu:
+			break;
+
+		case EV_MLF_EndSubMenu:
 			break;
 
 		default:
 			UT_ASSERT(0);
 			break;
-		}
-		
+		}	
 	}
 
 	return UT_TRUE;
