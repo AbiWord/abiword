@@ -26,9 +26,8 @@ public:
 										  const char * szFilename,
 										  IE_Imp ** ppie);
 
-protected:
-	IE_Imp(PD_Document * pDocument);
 public:
+	IE_Imp(PD_Document * pDocument);
 	virtual ~IE_Imp();
 	virtual IEStatus	importFile(const char * szFilename) = 0;
 

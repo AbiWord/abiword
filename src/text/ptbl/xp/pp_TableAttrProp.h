@@ -17,11 +17,13 @@ public:
 	pp_TableAttrProp();
 	~pp_TableAttrProp();
 
-	UT_Bool					createAP(void);
+	UT_Bool					createAP(UT_uint32 * pIndex);
+
 	UT_Bool					createAP(const XML_Char ** attributes,
 									 const XML_Char ** properties,
 									 UT_uint32 * pIndex);
-	UT_Bool					createAP(UT_Vector * pVector,
+
+	UT_Bool					createAP(const UT_Vector * pVector,
 									 UT_uint32 * pIndex);
 	
 	const PP_AttrProp *		getAP(UT_uint32 index) const;

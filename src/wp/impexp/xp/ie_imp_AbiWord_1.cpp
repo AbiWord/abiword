@@ -1,10 +1,41 @@
 
+#include <stdio.h>
+#include <malloc.h>
+#include "ut_types.h"
+#include "ut_assert.h"
+#include "ut_debugmsg.h"
+#include "ut_string.h"
 #include "ie_imp_AbiWord_1.h"
+#include "pd_Document.h"
+
+/*****************************************************************
+******************************************************************
+** C-style callback functions that we register with the XML parser
+******************************************************************
+*****************************************************************/
+
+void startElement(void *userData, const XML_Char *name, const XML_Char **atts)
+{
+	IE_Imp_AbiWord_1* pDocReader = (IE_Imp_AbiWord_1*) userData;
+	pDocReader->_startElement(name, atts);
+}
+
+void endElement(void *userData, const XML_Char *name)
+{
+	IE_Imp_AbiWord_1* pDocReader = (IE_Imp_AbiWord_1*) userData;
+	pDocReader->_endElement(name);
+}
+
+void charData(void* userData, const XML_Char *s, int len)
+{
+	IE_Imp_AbiWord_1* pDocReader = (IE_Imp_AbiWord_1*) userData;
+	pDocReader->_charData(s, len);
+}
 
 /*****************************************************************/
 /*****************************************************************/
 
-IEStatus IE_Imp_AbiWord_1::importFile(const char * szFilename)
+IE_Imp::IEStatus IE_Imp_AbiWord_1::importFile(const char * szFilename)
 {
 	XML_Parser parser = NULL;
 	FILE *fp = NULL;
@@ -66,30 +97,6 @@ IE_Imp_AbiWord_1::IE_Imp_AbiWord_1(PD_Document * pDocument)
 	m_parseState = _PS_Init;
 }
 
-/*****************************************************************
-******************************************************************
-** C-style callback functions that we register with the XML parser
-******************************************************************
-*****************************************************************/
-
-void startElement(void *userData, const XML_Char *name, const XML_Char **atts)
-{
-	IE_Imp_AbiWord_1* pDocReader = (IE_Imp_AbiWord_1*) userData;
-	pDocReader->_startElement(name, atts);
-}
-
-void endElement(void *userData, const XML_Char *name)
-{
-	IE_Imp_AbiWord_1* pDocReader = (IE_Imp_AbiWord_1*) userData;
-	pDocReader->_endElement(name);
-}
-
-void charData(void* userData, const XML_Char *s, int len)
-{
-	IE_Imp_AbiWord_1* pDocReader = (IE_Imp_AbiWord_1*) userData;
-	pDocReader->_charData(s, len);
-}
-
 /*****************************************************************/
 /*****************************************************************/
 
@@ -134,7 +141,7 @@ static UT_uint32 s_mapNameToToken(const XML_Char * name)
 
 #define X_TestParseState(ps)	((m_parseState==(ps)))
 
-#define X_VerityParseState(ps)	do {  if (X_TestParseState(ps))						\
+#define X_VerifyParseState(ps)	do {  if (X_TestParseState(ps))						\
 									  {  m_iestatus = IE_Imp::IES_BogusDocument;	\
 										 return; } } while (0)
 
@@ -164,19 +171,19 @@ void IE_Imp_AbiWord_1::_startElement(const XML_Char *name, const XML_Char **atts
 	case TT_SECTION:
 		X_VerifyParseState(_PS_Doc);
 		m_parseState = _PS_Sec;
-		X_CheckError(m_pDocument->appendStrux(PTX_Section,atts,NULL));
+		X_CheckError(m_pDocument->appendStrux(PTX_Section,atts));
 		return;
 
 	case TT_COLUMNSET:
 		X_VerifyParseState(_PS_Sec);
 		m_parseState = _PS_ColSet;
-		X_CheckError(m_pDocument->appendStrux(PTX_ColumnSet,atts,NULL));
+		X_CheckError(m_pDocument->appendStrux(PTX_ColumnSet,atts));
 		return;
 		
 	case TT_COLUMN:
 		X_VerifyParseState(_PS_ColSet);
 		m_parseState = _PS_Col;
-		X_CheckError(m_pDocument->appendStrux(PTX_Column,atts,NULL));
+		X_CheckError(m_pDocument->appendStrux(PTX_Column,atts));
 		return;
 		
 	case TT_BLOCK:
@@ -282,7 +289,7 @@ void IE_Imp_AbiWord_1::_charData(const XML_Char *s, int len)
 			}
 		}
 
-		UT_Bool bResult = m_pDocument->appendData(xx,iConverted);
+		UT_Bool bResult = m_pDocument->appendSpan(xx,iConverted);
 		delete xx;
 		X_CheckError(bResult);
 	}
@@ -304,7 +311,7 @@ UT_Bool IE_Imp_AbiWord_1::_pushInlineFmt(const XML_Char ** atts)
 
 	for (k=0; (atts[k]); k++)
 	{
-		const XML_Char * p;
+		XML_Char * p;
 		if (!UT_XML_cloneString(p,atts[k]))
 			return UT_FALSE;
 		if (m_vecInlineFmt.addItem(p)!=0)
@@ -324,10 +331,10 @@ void IE_Imp_AbiWord_1::_popInlineFmt(void)
 	UT_uint32 end = m_vecInlineFmt.getItemCount();
 	for (k=end; k>=start; k--)
 	{
-		const XML_Char * p = (const XML_Char *)m_vecInlineFmt(getNthItem(k-1));
+		const XML_Char * p = (const XML_Char *)m_vecInlineFmt.getNthItem(k-1);
 		m_vecInlineFmt.deleteNthItem(k-1);
 		if (p)
-			free(p);
+			free((void *)p);
 	}
 }
 

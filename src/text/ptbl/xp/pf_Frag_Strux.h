@@ -16,7 +16,7 @@
 class pf_Frag_Strux : public pf_Frag
 {
 public:
-	pf_Frag_Strux();
+	pf_Frag_Strux(UT_uint32 vsIndex, pt_AttrPropIndex indexAP);
 	virtual ~pf_Frag_Strux();
 
 	PTStruxType				getStruxType(void) const;

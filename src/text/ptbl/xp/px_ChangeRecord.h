@@ -3,6 +3,7 @@
 #define PX_CHANGERECORD_H
 
 #include "ut_types.h"
+#include "pd_Document.h"
 
 // PX_ChangeRecord describes a change made to the document.
 // This description should be sufficient to allow undo to

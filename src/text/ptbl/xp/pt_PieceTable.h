@@ -2,27 +2,24 @@
 #ifndef PT_PIECETABLE_H
 #define PT_PIECETABLE_H
 
-typedef UT_uint32 PT_DocPosition;		/* absolute document position */
-typedef UT_uint32 pt_BufPosition;		/* offset in one of the VarSet buffers */
-typedef UT_uint32 pt_AttrPropIndex;		/* index in one of the VarSet AP Tables */
-
-typedef enum _PTStruxType { PTX_Section, PTX_ColumnSet, PTX_Column, PTX_Block } PTStruxType;
-
-
 #include "ut_types.h"
 #include "ut_growbuf.h"
 #include "pp_TableAttrProp.h"
 #include "px_ChangeHistory.h"
 #include "pf_Fragments.h"
 
-// PT_PieceTable implements a "Piece Table" as described/suggested
+typedef UT_uint32 pt_BufPosition;		/* offset in one of the VarSet buffers */
+typedef UT_uint32 pt_AttrPropIndex;		/* index in one of the VarSet AP Tables */
+
+
+// pt_PieceTable implements a "Piece Table" as described/suggested
 // by .../dev/design/PieceTable.html
 
-class PT_PieceTable
+class pt_PieceTable
 {
 public:
-	PT_PieceTable();
-	~PT_PieceTable();
+	pt_PieceTable(PD_Document * pDocument);
+	~pt_PieceTable();
 
 	typedef enum _PTState { PTS_Invalid=-1, PTS_Loading=0, PTS_Editing=1 } PTState;
 
@@ -87,7 +84,9 @@ protected:
 
 	struct {
 		UT_uint32			m_indexCurrentInlineAP;
-	} loading;
+	} loading;							/* stuff only valid while m_pts==PTS_Loading */
+
+	PD_Document *			m_pDocument; /* back pointer to our document */
 };
 
 #endif /* PT_PIECETABLE_H */

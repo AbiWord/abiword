@@ -1,7 +1,8 @@
 
 #include "ut_types.h"
+#include "ut_assert.h"
 #include "ie_imp.h"
-#incluce "ie_imp_AbiWord_1.h"
+#include "ie_imp_AbiWord_1.h"
 
 IE_Imp::IE_Imp(PD_Document * pDocument)
 {
@@ -15,7 +16,7 @@ IE_Imp::~IE_Imp()
 /*****************************************************************/
 /*****************************************************************/
 
-IE_IMP::IEStatus IE_Imp::constructImporter(PD_Document * pDocument,
+IE_Imp::IEStatus IE_Imp::constructImporter(PD_Document * pDocument,
 										   const char * szFilename,
 										   IE_Imp ** ppie)
 {
@@ -36,8 +37,8 @@ IE_IMP::IEStatus IE_Imp::constructImporter(PD_Document * pDocument,
 
 	IE_Imp_AbiWord_1 * p = new IE_Imp_AbiWord_1(pDocument);
 	if (!p)
-		return IE_IMP::IES_NoMemory;
+		return IE_Imp::IES_NoMemory;
 
 	*ppie = p;
-	return IE_IMP::IES_OK;
+	return IE_Imp::IES_OK;
 }

@@ -14,7 +14,7 @@ class pf_Frag_Text : public pf_Frag
 {
 public:
 	pf_Frag_Text(UT_uint32 vsIndex,
-				 ptBufPosition offset,
+				 pt_BufPosition offset,
 				 UT_uint32 length,
 				 pt_AttrPropIndex index);
 	virtual ~pf_Frag_Text();
