@@ -1,0 +1,46 @@
+## AbiSource Applications
+## Copyright (C) 2001 Sam Tobin-Hochstadt
+##
+## This program is free software; you can redistribute it and/or
+## modify it under the terms of the GNU General Public License
+## as published by the Free Software Foundation; either version 2
+## of the License, or (at your option) any later version.
+## 
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+## 
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+## 02111-1307, USA.
+
+include $(top_srcdir)/includes.mk
+
+INCLUDES= $(AF_INCLUDES) $(WP_INCLUDES) $(TEXT_INCLUDES) $(ICONV_INCLUDES)
+
+noinst_LIBRARIES = libXap_cocoa.a
+
+libXap_cocoa_a_SOURCES=		\
+	xap_CocoaApp.mm                          \
+	xap_CocoaDlg_PrintPreview.mm	\
+	xap_CocoaClipboard.mm	\
+	xap_CocoaDlg_About.mm	\
+	xap_CocoaDlg_Image.mm	\
+	xap_CocoaDlg_WindowMore.mm	\
+	xap_CocoaDlg_Encoding.mm	\
+	xap_CocoaDlg_FileOpenSaveAs.mm	\
+	xap_CocoaDlg_Zoom.mm	\
+	xap_CocoaDlg_FontChooser.mm	\
+	xap_CocoaEncodingManager.mm	\
+	xap_CocoaDlg_Insert_Symbol.mm	\
+	xap_CocoaDlg_Password.mm		\
+	xap_CocoaFontManager.mm	\
+	xap_CocoaDlg_Language.mm	\
+	xap_CocoaFrame.mm	\
+	xap_CocoaDlg_MessageBox.mm	\
+	xap_CocoaModule.mm	\
+	xap_CocoaDlg_Print.mm	\
+	xap_CocoaTlbr_Icons.mm
+
