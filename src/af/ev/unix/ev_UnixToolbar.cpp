@@ -516,9 +516,9 @@ UT_Bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 					// Disable/enable toolbar item
 					gtk_widget_set_sensitive(GTK_WIDGET(item), !bGrayed);
 
-					UT_DEBUGMSG(("refreshToolbar: PushButton [%s] is %s\n",
-								 m_pToolbarLabelSet->getLabel(id)->getToolbarLabel(),
-								 ((bGrayed) ? "disabled" : "enabled")));
+					//UT_DEBUGMSG(("refreshToolbar: PushButton [%s] is %s\n",
+					//			 m_pToolbarLabelSet->getLabel(id)->getToolbarLabel(),
+					//			 ((bGrayed) ? "disabled" : "enabled")));
 				}
 				break;
 			
@@ -543,10 +543,10 @@ UT_Bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 					// Disable/enable toolbar item
 					//gtk_widget_set_sensitive(GTK_WIDGET(item), !bGrayed);
 						
-					UT_DEBUGMSG(("refreshToolbar: ToggleButton [%s] is %s and %s\n",
-								 m_pToolbarLabelSet->getLabel(id)->getToolbarLabel(),
-								 ((bGrayed) ? "disabled" : "enabled"),
-								 ((bToggled) ? "pressed" : "not pressed")));
+					//UT_DEBUGMSG(("refreshToolbar: ToggleButton [%s] is %s and %s\n",
+					//			 m_pToolbarLabelSet->getLabel(id)->getToolbarLabel(),
+					//			 ((bGrayed) ? "disabled" : "enabled"),
+					//			 ((bToggled) ? "pressed" : "not pressed")));
 				}
 				break;
 
@@ -576,14 +576,13 @@ UT_Bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 						gtk_entry_set_text(GTK_ENTRY(item->entry), "");
 					wd->m_blockSignal = wasBlocked;
 					
-					UT_DEBUGMSG(("refreshToolbar: ComboBox [%s] is %s and %s\n",
-								 m_pToolbarLabelSet->getLabel(id)->getToolbarLabel(),
-								 ((bGrayed) ? "disabled" : "enabled"),
-								 ((bString) ? szState : "no state")));
-					
-
+					//UT_DEBUGMSG(("refreshToolbar: ComboBox [%s] is %s and %s\n",
+					//			 m_pToolbarLabelSet->getLabel(id)->getToolbarLabel(),
+					//			 ((bGrayed) ? "disabled" : "enabled"),
+					//			 ((bString) ? szState : "no state")));
 				}
 				break;
+
 				case EV_TBIT_StaticLabel:
 					break;
 				case EV_TBIT_Spacer:

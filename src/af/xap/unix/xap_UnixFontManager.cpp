@@ -93,7 +93,7 @@ UT_Bool AP_UnixFontManager::scavengeFonts(void)
 			// for real error messages in a release version (perhaps with
 			// friendly messages telling the users where to look to fix
 			// a busted font path problem)
-			#ifdef DEBUG
+#ifdef DEBUG
 			if (fontcount < 0)
 			{
 				UT_DEBUGMSG(("WARNING: Font directory [%s] declares an invalid number of fonts (%d).\n",
@@ -103,7 +103,7 @@ UT_Bool AP_UnixFontManager::scavengeFonts(void)
 			{
 				UT_DEBUGMSG(("File says %d fonts should follow...", fontcount));
 			}
-			#endif
+#endif
 			
 			// every line after is a font name / XLFD pair
 			long line;

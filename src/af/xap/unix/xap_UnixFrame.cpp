@@ -47,7 +47,7 @@ gint XAP_UnixFrame::_fe::button_press_event(GtkWidget * w, GdkEventButton * e)
 	AV_View * pView = pUnixFrame->getCurrentView();
 	EV_UnixMouse * pUnixMouse = pUnixFrame->getUnixMouse();
 
-	UT_DEBUGMSG(("Grabbing mouse.\n"));
+	//UT_DEBUGMSG(("Grabbing mouse.\n"));
 	gtk_grab_add(w);
 	
 	if (pView)
@@ -61,7 +61,7 @@ gint XAP_UnixFrame::_fe::button_release_event(GtkWidget * w, GdkEventButton * e)
 	AV_View * pView = pUnixFrame->getCurrentView();
 	EV_UnixMouse * pUnixMouse = pUnixFrame->getUnixMouse();
 
-	UT_DEBUGMSG(("Ungrabbing mouse.\n"));
+	//UT_DEBUGMSG(("Ungrabbing mouse.\n"));
 	gtk_grab_remove(w);
 	
 	if (pView)
@@ -150,7 +150,7 @@ gint XAP_UnixFrame::_fe::expose(GtkWidget * w, GdkEventExpose* pExposeEvent)
 	rClip.width = pExposeEvent->area.width;
 	rClip.height = pExposeEvent->area.height;
 	
-	UT_DEBUGMSG(("gtk expose:  left=%d, top=%d, width=%d, height=%d\n", rClip.left, rClip.top, rClip.width, rClip.height));
+	//UT_DEBUGMSG(("gtk expose:  left=%d, top=%d, width=%d, height=%d\n", rClip.left, rClip.top, rClip.width, rClip.height));
 	
 	XAP_UnixFrame * pUnixFrame = (XAP_UnixFrame *)gtk_object_get_user_data(GTK_OBJECT(w));
 	AV_View * pView = pUnixFrame->getCurrentView();
@@ -166,7 +166,7 @@ void XAP_UnixFrame::_fe::vScrollChanged(GtkAdjustment * w, gpointer /*data*/)
 	XAP_UnixFrame * pUnixFrame = (XAP_UnixFrame *)gtk_object_get_user_data(GTK_OBJECT(w));
 	AV_View * pView = pUnixFrame->getCurrentView();
 	
-	UT_DEBUGMSG(("gtk vScroll: value %ld\n",(UT_sint32)w->value));
+	//UT_DEBUGMSG(("gtk vScroll: value %ld\n",(UT_sint32)w->value));
 	
 	if (pView)
 		pView->sendVerticalScrollEvent((UT_sint32) w->value);

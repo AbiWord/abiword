@@ -45,8 +45,8 @@ EV_Menu::EV_Menu(EV_EditMethodContainer * pEMC,
 
 	m_pEMC = pEMC;
 
-	UT_DEBUGMSG(("EV_Menu: Creating menu for [layout %s, language %s]\n",
-				 szMenuLayoutName,szMenuLabelSetName));
+	//UT_DEBUGMSG(("EV_Menu: Creating menu for [layout %s, language %s]\n",
+	//			 szMenuLayoutName,szMenuLabelSetName));
 	
 	m_pMenuLayout = AP_CreateMenuLayout(szMenuLayoutName);
 	UT_ASSERT(m_pMenuLayout);
@@ -81,7 +81,7 @@ UT_Bool EV_Menu::invokeMenuMethod(AV_View * pView,
 	UT_ASSERT(pView);
 	UT_ASSERT(pEM);
 
-	UT_DEBUGMSG(("invokeMenuMethod: %s repeat %d\n",pEM->getName(),iPrefixCount));
+	//UT_DEBUGMSG(("invokeMenuMethod: %s repeat %d\n",pEM->getName(),iPrefixCount));
 
 	EV_EditMethodType t = pEM->getType();
 

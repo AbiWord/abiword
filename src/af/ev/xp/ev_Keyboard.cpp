@@ -47,7 +47,7 @@ UT_Bool EV_Keyboard::invokeKeyboardMethod(AV_View * pView,
 	UT_ASSERT(pView);
 	UT_ASSERT(pEM);
 
-#ifdef UT_DEBUG
+#if 0
 	UT_DEBUGMSG(("invokeKeyboardMethod: %s repeat %d length %d with [",
 				 pEM->getName(),iPrefixCount,dataLength));
 	if (pData && dataLength)

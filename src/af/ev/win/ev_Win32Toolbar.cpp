@@ -743,9 +743,9 @@ UT_Bool EV_Win32Toolbar::_refreshItem(AV_View * pView, const EV_Toolbar_Action *
 
 				SendMessage(m_hwnd, TB_ENABLEBUTTON, u, (LONG)!bGrayed) ;
 
-				UT_DEBUGMSG(("refreshToolbar: PushButton [%s] is %s\n",
-							m_pToolbarLabelSet->getLabel(id)->getToolbarLabel(),
-							((bGrayed) ? "disabled" : "enabled")));
+				//UT_DEBUGMSG(("refreshToolbar: PushButton [%s] is %s\n",
+				//			m_pToolbarLabelSet->getLabel(id)->getToolbarLabel(),
+				//			((bGrayed) ? "disabled" : "enabled")));
 			}
 			break;
 	
@@ -758,10 +758,10 @@ UT_Bool EV_Win32Toolbar::_refreshItem(AV_View * pView, const EV_Toolbar_Action *
 				SendMessage(m_hwnd, TB_ENABLEBUTTON, u, (LONG)!bGrayed);
 				SendMessage(m_hwnd, TB_CHECKBUTTON, u, (LONG)bToggled);
 
-				UT_DEBUGMSG(("refreshToolbar: ToggleButton [%s] is %s and %s\n",
-							 m_pToolbarLabelSet->getLabel(id)->getToolbarLabel(),
-							 ((bGrayed) ? "disabled" : "enabled"),
-							 ((bToggled) ? "pressed" : "not pressed")));
+				//UT_DEBUGMSG(("refreshToolbar: ToggleButton [%s] is %s and %s\n",
+				//			 m_pToolbarLabelSet->getLabel(id)->getToolbarLabel(),
+				//			 ((bGrayed) ? "disabled" : "enabled"),
+				//			 ((bToggled) ? "pressed" : "not pressed")));
 			}
 			break;
 
@@ -778,10 +778,10 @@ UT_Bool EV_Win32Toolbar::_refreshItem(AV_View * pView, const EV_Toolbar_Action *
 				if (idx==CB_ERR)
 					SetWindowText(hwndCombo, szState);
 
-				UT_DEBUGMSG(("refreshToolbar: ComboBox [%s] is %s and %s\n",
-							 m_pToolbarLabelSet->getLabel(id)->getToolbarLabel(),
-							 ((bGrayed) ? "disabled" : "enabled"),
-							 ((bString) ? szState : "no state")));
+				//UT_DEBUGMSG(("refreshToolbar: ComboBox [%s] is %s and %s\n",
+				//			 m_pToolbarLabelSet->getLabel(id)->getToolbarLabel(),
+				//			 ((bGrayed) ? "disabled" : "enabled"),
+				//			 ((bString) ? szState : "no state")));
 			}
 			break;
 

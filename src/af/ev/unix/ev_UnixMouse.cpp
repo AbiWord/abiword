@@ -60,7 +60,7 @@ void EV_UnixMouse::mouseUp(AV_View* pView, GdkEventButton* e)
 
 	// report movements under the mouse button that we did the capture on
 
-	UT_DEBUGMSG(("onButtonMove: %p [b=%d m=%d]\n",EV_EMO_DRAG|ems, emb, ems));
+	//UT_DEBUGMSG(("onButtonMove: %p [b=%d m=%d]\n",EV_EMO_DRAG|ems, emb, ems));
 	
 	result = m_pEEM->Mouse(EV_EMO_RELEASE|emb|ems, &pEM,&iPrefix);
 	
@@ -173,7 +173,7 @@ void EV_UnixMouse::mouseMotion(AV_View* pView, GdkEventMotion *e)
 
 	// report movements under the mouse button that we did the capture on
 
-	UT_DEBUGMSG(("onButtonMove: %p [b=%d m=%d]\n",EV_EMO_DRAG|ems, emb, ems));
+	//UT_DEBUGMSG(("onButtonMove: %p [b=%d m=%d]\n",EV_EMO_DRAG|ems, emb, ems));
 	
 	result = m_pEEM->Mouse(EV_EMO_DRAG|emb|ems, &pEM,&iPrefix);
 	

@@ -45,8 +45,8 @@ EV_Toolbar::EV_Toolbar(EV_EditMethodContainer * pEMC,
 
 	m_pEMC = pEMC;
 
-	UT_DEBUGMSG(("EV_Toolbar: Creating toolbar for [layout %s, language %s]\n",
-				 szToolbarLayoutName,szToolbarLabelSetName));
+	//UT_DEBUGMSG(("EV_Toolbar: Creating toolbar for [layout %s, language %s]\n",
+	//			 szToolbarLayoutName,szToolbarLabelSetName));
 	
 	m_pToolbarLayout = AP_CreateToolbarLayout(szToolbarLayoutName);
 	UT_ASSERT(m_pToolbarLayout);
@@ -80,7 +80,7 @@ UT_Bool EV_Toolbar::invokeToolbarMethod(AV_View * pView,
 	UT_ASSERT(pView);
 	UT_ASSERT(pEM);
 
-	UT_DEBUGMSG(("invokeToolbarMethod: %s repeat %d\n",pEM->getName(),iPrefixCount));
+	//UT_DEBUGMSG(("invokeToolbarMethod: %s repeat %d\n",pEM->getName(),iPrefixCount));
 
 	EV_EditMethodType t = pEM->getType();
 

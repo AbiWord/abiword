@@ -140,7 +140,7 @@ UT_Bool AP_TopRuler::notify(AV_View * pView, const AV_ChangeMask mask)
 	// Handle AV_Listener events on the view.
 
 	UT_ASSERT(pView==m_pView);
-	UT_DEBUGMSG(("AP_TopRuler::notify [view %p][mask %p]\n",pView,mask));
+	//UT_DEBUGMSG(("AP_TopRuler::notify [view %p][mask %p]\n",pView,mask));
 
 	// if the column containing the caret has changed or any
 	// properties on the section (like the number of columns
@@ -687,7 +687,7 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 
 void AP_TopRuler::mousePress(EV_EditModifierState ems, EV_EditMouseButton emb, UT_uint32 x, UT_uint32 y)
 {
-	UT_DEBUGMSG(("mousePress: [ems 0x%08lx][emb 0x%08lx][x %ld][y %ld]\n",ems,emb,x,y));
+	//UT_DEBUGMSG(("mousePress: [ems 0x%08lx][emb 0x%08lx][x %ld][y %ld]\n",ems,emb,x,y));
 
 	// get the complete state of what should be on the ruler at the time of the grab.
 	// we assume that nothing in the document can change during our grab unless we
@@ -704,7 +704,7 @@ void AP_TopRuler::mousePress(EV_EditModifierState ems, EV_EditMouseButton emb, U
 	_getMarginMarkerRects(&m_infoCache,rLeftMargin,rRightMargin);
 	if (rLeftMargin.containsPoint(x,y))
 	{
-		UT_DEBUGMSG(("hit left margin block\n"));
+		//UT_DEBUGMSG(("hit left margin block\n"));
 		m_bValidMouseClick = UT_TRUE;
 		m_draggingWhat = DW_LEFTMARGIN;
 		m_bBeforeFirstMotion = UT_TRUE;
@@ -712,7 +712,7 @@ void AP_TopRuler::mousePress(EV_EditModifierState ems, EV_EditMouseButton emb, U
 	}
 	if (rRightMargin.containsPoint(x,y))
 	{
-		UT_DEBUGMSG(("hit right margin block\n"));
+		//UT_DEBUGMSG(("hit right margin block\n"));
 		m_bValidMouseClick = UT_TRUE;
 		m_draggingWhat = DW_RIGHTMARGIN;
 		m_bBeforeFirstMotion = UT_TRUE;
@@ -726,7 +726,7 @@ void AP_TopRuler::mousePress(EV_EditModifierState ems, EV_EditMouseButton emb, U
 		_getColumnMarkerRect(&m_infoCache,0,_getColumnMarkerXCenter(&m_infoCache,0),&rCol);
 		if (rCol.containsPoint(x,y))
 		{
-			UT_DEBUGMSG(("hit in column gap block\n"));
+			//UT_DEBUGMSG(("hit in column gap block\n"));
 			m_bValidMouseClick = UT_TRUE;
 			m_draggingWhat = DW_COLUMNGAP;
 			m_bBeforeFirstMotion = UT_TRUE;
@@ -742,7 +742,7 @@ void AP_TopRuler::mousePress(EV_EditModifierState ems, EV_EditMouseButton emb, U
 							 &rLeftIndent, &rRightIndent, &rFirstLineIndent);
 	if (rLeftIndent.containsPoint(x,y))
 	{
-		UT_DEBUGMSG(("hit left indent block\n"));
+		//UT_DEBUGMSG(("hit left indent block\n"));
 		m_bValidMouseClick = UT_TRUE;
 		m_draggingWhat = DW_LEFTINDENT;
 		m_bBeforeFirstMotion = UT_TRUE;
@@ -750,7 +750,7 @@ void AP_TopRuler::mousePress(EV_EditModifierState ems, EV_EditMouseButton emb, U
 	}
 	if (rRightIndent.containsPoint(x,y))
 	{
-		UT_DEBUGMSG(("hit right indent block\n"));
+		//UT_DEBUGMSG(("hit right indent block\n"));
 		m_bValidMouseClick = UT_TRUE;
 		m_draggingWhat = DW_RIGHTINDENT;
 		m_bBeforeFirstMotion = UT_TRUE;
@@ -758,7 +758,7 @@ void AP_TopRuler::mousePress(EV_EditModifierState ems, EV_EditMouseButton emb, U
 	}
 	if (rFirstLineIndent.containsPoint(x,y))
 	{
-		UT_DEBUGMSG(("hit first-line-indent block\n"));
+		//UT_DEBUGMSG(("hit first-line-indent block\n"));
 		m_bValidMouseClick = UT_TRUE;
 		m_draggingWhat = DW_FIRSTLINEINDENT;
 		m_bBeforeFirstMotion = UT_TRUE;
@@ -807,7 +807,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb,
 	// that we make to the document will cause a notify event to come back
 	// to us and cause a full draw.
 	
-	UT_DEBUGMSG(("mouseRelease: [ems 0x%08lx][emb 0x%08lx][x %ld][y %ld]\n",ems,emb,x,y));
+	//UT_DEBUGMSG(("mouseRelease: [ems 0x%08lx][emb 0x%08lx][x %ld][y %ld]\n",ems,emb,x,y));
 
 	ap_RulerTicks tick(m_pG);
 

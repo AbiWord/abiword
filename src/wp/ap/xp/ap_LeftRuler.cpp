@@ -136,7 +136,7 @@ UT_Bool AP_LeftRuler::notify(AV_View * pView, const AV_ChangeMask mask)
 	// Handle AV_Listener events on the view.
 
 	UT_ASSERT(pView==m_pView);
-	UT_DEBUGMSG(("AP_LeftRuler::notify [view %p][mask %p]\n",pView,mask));
+	//UT_DEBUGMSG(("AP_LeftRuler::notify [view %p][mask %p]\n",pView,mask));
 	return UT_TRUE;
 }
 
@@ -166,7 +166,7 @@ void AP_LeftRuler::_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 ylimit)
 
 void AP_LeftRuler::scrollRuler(UT_sint32 yoff, UT_sint32 ylimit)
 {
-	UT_DEBUGMSG(("LeftRuler:: scroll [y %d]\n",yoff));
+	//UT_DEBUGMSG(("LeftRuler:: scroll [y %d]\n",yoff));
 
 	if (ylimit > 0)
 		m_yScrollLimit = ylimit;

@@ -36,8 +36,8 @@ UT_Bool ap_Scrollbar_ViewListener::notify(AV_View * pView, const AV_ChangeMask m
 {
 	UT_ASSERT(pView == m_pView);
 	
-	UT_DEBUGMSG(("Scrollbar_ViewListener::notify [view %p tb %p][mask %p]\n",
-				 pView,this,mask));
+	//UT_DEBUGMSG(("Scrollbar_ViewListener::notify [view %p tb %p][mask %p]\n",
+	//			 pView,this,mask));
 	
 	if (mask & (AV_CHG_PAGECOUNT | AV_CHG_WINDOWSIZE))
 	{

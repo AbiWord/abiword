@@ -34,8 +34,8 @@ UT_Bool EV_UnixToolbar_ViewListener::notify(AV_View * pView, const AV_ChangeMask
 {
 	UT_ASSERT(pView == m_pView);
 	
-	UT_DEBUGMSG(("UnixToolbar_ViewListener::notify [view %p tb 0x%08lx][mask 0x%08lx]\n",
-				 pView,this,mask));
+	//UT_DEBUGMSG(("UnixToolbar_ViewListener::notify [view %p tb 0x%08lx][mask 0x%08lx]\n",
+	//			 pView,this,mask));
 	
 	// this code really could be in EV_UnixToolbar, but I didn't want
 	// to multiple-inherit it.
