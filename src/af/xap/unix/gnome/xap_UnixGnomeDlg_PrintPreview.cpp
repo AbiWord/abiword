@@ -65,7 +65,7 @@ void XAP_UnixGnomeDialog_PrintPreview::runModal(XAP_Frame * pFrame)
        m_pGnomePrintGraphics = new XAP_UnixGnomePrintGraphics(gnome_print_job_new(XAP_UnixGnomePrintGraphics::s_setup_config(pFrame)),
 															  fontmgr,
 															  unixapp,
-															  1);
+															  true);
        UT_return_if_fail(m_pGnomePrintGraphics != NULL);       
        m_pGnomePrintGraphics->setColorSpace(GR_Graphics::GR_COLORSPACE_COLOR);
 }

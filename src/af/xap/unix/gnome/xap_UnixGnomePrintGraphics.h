@@ -41,13 +41,9 @@ class XAP_UnixGnomePrintGraphics : public GR_Graphics
 {
  public:
 
-	XAP_UnixGnomePrintGraphics(GnomePrintJob *gpm,
-							   XAP_UnixFontManager * fontManager,
-							   XAP_App *pApp, bool isPreview);
-
-	XAP_UnixGnomePrintGraphics(GnomePrintContext *gpc,
-							   XAP_UnixFontManager * fontManager,
-							   XAP_App *pApp);
+	explicit XAP_UnixGnomePrintGraphics(GnomePrintJob *gpm,
+										XAP_UnixFontManager * fontManager,
+										XAP_App *pApp, bool isPreview = false);
 
 	virtual ~XAP_UnixGnomePrintGraphics();
 
@@ -131,6 +127,8 @@ protected:
 
 private:
 
+	UT_sint32 scale_ydir (UT_sint32 in);
+
 	GnomeFont * _allocGnomeFont(PSFont* pFont);
 	void _drawAnyImage (GR_Image* pImg, 
 						UT_sint32 xDest, 
@@ -157,6 +155,11 @@ private:
 	PSFont *                m_pCurrentPSFont;
 
 	XAP_UnixFontManager *	m_fm;
+
+	// not implemented, not possible
+	XAP_UnixGnomePrintGraphics ();
+	XAP_UnixGnomePrintGraphics (const XAP_UnixGnomePrintGraphics & other);
+	XAP_UnixGnomePrintGraphics& operator=(const XAP_UnixGnomePrintGraphics & other);
 };
 
 

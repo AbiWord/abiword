@@ -46,7 +46,7 @@
 #include "xap_App.h"
 
 // the resolution that we report to the application (pixels per inch).
-#define PS_RESOLUTION		75
+#define PS_RESOLUTION		72
 
 /*
 	How long line in the PS output we will allow;
@@ -640,7 +640,7 @@ bool PS_Graphics::_startDocument(void)
 	m_ps->formatComment("Pages",m_iPageCount);
 	
 	//TODO: emit iWidth and iHeight in BoundingBox somehow (what's a 
-	//factor between them and PS units (that are 1/75 of inch IIRC)
+	//factor between them and PS units (that are 1/72 of inch IIRC)
 	m_ps->formatComment("DocumentPaperSizes",m_szPageSizeName);
 
 	_emit_DocumentNeededResources();
@@ -925,7 +925,7 @@ void PS_Graphics::_emit_PrologMacros(void)
 		"/MS  {neg moveto show} bind def",					// Move and draw. (<string>) <x> <y> MS
 		"/GS  {glyphshow} bind def",						// show glyph by name
 		"/MV  {neg moveto} bind def",						// Move only
-		"/BP  {gsave 75 exch div dup scale} bind def",		// Begin Page. <res> BP
+		"/BP  {gsave 72 exch div dup scale} bind def",		// Begin Page. <res> BP
 		"/SZ  {/HH exch def /WW exch def} bind def",		// Page Size.  <w> <h> SZ
 		"/BPP {BP SZ 0 HH translate} bind def",				// Begin Portrait Page.  <w> <h> <res> BPP
 		"/BPL {BP SZ 90 rotate} bind def",					// Begin Landscape Page. <w> <h> <res> BPP

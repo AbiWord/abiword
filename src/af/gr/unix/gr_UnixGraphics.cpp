@@ -784,11 +784,11 @@ UT_uint32 GR_UnixGraphics::measureUnRemappedChar(const UT_UCSChar c)
 
 UT_uint32 GR_UnixGraphics::s_getDeviceResolution(void)
 {
-	// this is hard-coded at 96 for X now, since 75 (which
+	// this is hard-coded at 96 for X now, since 72 (which
 	// most X servers return when queried for a resolution)
 	// makes for tiny fonts on modern resolutions.
 
-	return 75;
+	return 72;
 }
 
 UT_uint32 GR_UnixGraphics::getDeviceResolution(void) const

@@ -62,7 +62,7 @@ static const struct {
 } paperMap[] = {
 	{"Letter", "USLetter"},
 	{"Legal",  "USLegal"},
-	{"Folio",  "Executive"}, // i think that this is correct
+	{"Folio",  "Executive"},
 	{NULL,     NULL}
 };
 
@@ -94,28 +94,11 @@ GnomePrintConfig * XAP_UnixGnomePrintGraphics::s_setup_config (XAP_Frame * pFram
 	return cfg;
 }
 
-XAP_UnixGnomePrintGraphics::XAP_UnixGnomePrintGraphics(GnomePrintContext *gpc,
-													   XAP_UnixFontManager * fontManager,
-													   XAP_App *pApp)
-{
-	m_gpm = NULL;
-	m_gpc = gpc;
-	m_paper = NULL;
-	
-	m_bIsPreview   = false;
-	m_fm           = fontManager;
-	m_bStartPrint  = false;
-	m_bStartPage   = false;
-	m_pCurrentFont = NULL;
-	m_pCurrentPSFont = NULL;
-	
-	m_cs = GR_Graphics::GR_COLORSPACE_COLOR;
-}
-
 XAP_UnixGnomePrintGraphics::XAP_UnixGnomePrintGraphics(GnomePrintJob *gpm,
 													   XAP_UnixFontManager * fontManager,
 													   XAP_App *pApp,
 													   bool isPreview)
+	: GR_Graphics ()
 {
 	m_pApp         = pApp;
 	m_gpm          = gpm;
@@ -183,7 +166,7 @@ void XAP_UnixGnomePrintGraphics::drawChars(const UT_UCSChar* pChars,
 	gnome_print_gsave (m_gpc);
 	gnome_print_setfont (m_gpc, m_pCurrentFont);
 
-	gnome_print_moveto(m_gpc, tdu(xoff), tdu(yoff));
+	gnome_print_moveto(m_gpc, tdu(xoff), scale_ydir (tdu(yoff)));
 	gnome_print_show_sized (m_gpc, (const guchar *)utf8.utf8_str(), utf8.byteLength());
 
 	// pop the graphics state
@@ -196,8 +179,8 @@ void XAP_UnixGnomePrintGraphics::drawLine (UT_sint32 x1, UT_sint32 y1,
 	if (!m_bStartPage)
 		return;
 
-	gnome_print_moveto (m_gpc, tdu(x1), tdu(y1));
-	gnome_print_lineto (m_gpc, tdu(x2), tdu(y2));
+	gnome_print_moveto (m_gpc, tdu(x1), scale_ydir (tdu(y1)));
+	gnome_print_lineto (m_gpc, tdu(x2), scale_ydir (tdu(y2)));
 	gnome_print_stroke (m_gpc);
 }
 
@@ -265,9 +248,6 @@ bool XAP_UnixGnomePrintGraphics::startPage (const char *szPageLabel,
 											UT_uint32 pageNo, bool portrait, 
 											UT_uint32 width, UT_uint32 height)
 {
-	width  = tdu (width);
-	height = tdu (height);
-
 	if (m_bStartPage)
 	  _endPage();
 	m_bStartPage = true;
@@ -309,7 +289,7 @@ void XAP_UnixGnomePrintGraphics::_drawAnyImage (GR_Image* pImg,
 	UT_return_if_fail (image);
 
 	gnome_print_gsave (m_gpc);
-	gnome_print_translate (m_gpc, xDest, yDest + iDestHeight);
+	gnome_print_translate (m_gpc, xDest, yDest - iDestHeight);
 	gnome_print_scale (m_gpc, ((double) iDestWidth), ((double) iDestHeight));
 	
 	gint width, height, rowstride;
@@ -338,7 +318,7 @@ void XAP_UnixGnomePrintGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest,
 		return;
 
 	xDest = tdu(xDest);
-	yDest = tdu(yDest);
+	yDest = scale_ydir (tdu(yDest));
 
    	if (pImg->getType() != GR_Image::GRT_Raster) 
 	    pImg->render(this, xDest, yDest);
@@ -444,13 +424,13 @@ void XAP_UnixGnomePrintGraphics::fillRect(const UT_RGBColor& c,
 	UT_RGBColor old (m_currentColor);
 	setColor (c);
 	
-	x = tdu(x); y = tdu(y); w = tdu(w); h = tdu(h);
+	x = tdu(x); y = scale_ydir (tdu(y)); w = tdu(w); h = tdu(h);
 
 	gnome_print_newpath (m_gpc);
 	gnome_print_moveto (m_gpc, x,   y);		
 	gnome_print_lineto (m_gpc, x+w, y);
-	gnome_print_lineto (m_gpc, x+w, y+h);
-	gnome_print_lineto (m_gpc, x,   y+h);
+	gnome_print_lineto (m_gpc, x+w, y-h);
+	gnome_print_lineto (m_gpc, x,   y-h);
 	gnome_print_lineto (m_gpc, x,   y);
 	gnome_print_closepath (m_gpc);
 	gnome_print_fill (m_gpc);
@@ -714,3 +694,14 @@ void XAP_UnixGnomePrintGraphics::setLineProperties (double inWidthPixels,
 /***********************************************************************/
 /*                Private Scaling Conversion Routines                  */
 /***********************************************************************/
+
+UT_sint32 XAP_UnixGnomePrintGraphics::scale_ydir (UT_sint32 in)
+{
+	UT_return_val_if_fail (m_paper, in); // horribly bad error
+
+	UT_sint32 height = (UT_sint32)m_paper->height;
+	if (!isPortrait ())
+		height = (UT_sint32)m_paper->width;
+
+	return (UT_sint32)(height - in);
+}
