@@ -79,6 +79,7 @@ public:
 										   const char * szToolbarLabelSetKey, const char * szToolbarLabelSetDefaultValue);
 */
 	virtual void _initialize();
+	virtual void                notifyViewChanged(AV_View * pView);
 //	virtual	XAP_Frame *			cloneFrame() = 0;
 //	virtual UT_Error   			loadDocument(const char * szFilename, int ieft) = 0;
 //	virtual UT_Error                        loadDocument(const char * szFilename, int ieft, bool createNew) = 0;
@@ -106,7 +107,7 @@ public:
 //	virtual void				toggleRuler(bool bRulerOn) = 0;
 	virtual void				_queue_resize();
 	virtual EV_Menu*			_getMainMenu();
-	virtual void                rebuildMenus(void);
+
     virtual void                _rebuildToolbar(UT_uint32 ibar);
 	void                        _setController (XAP_CocoaFrameController * ctrl);
 	XAP_CocoaFrameController *	_getController () { return m_frameController; };

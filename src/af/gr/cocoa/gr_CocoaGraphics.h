@@ -64,15 +64,15 @@ class GR_CocoaGraphics : public GR_Graphics
 	static GR_Graphics *   graphicsAllocator(GR_AllocInfo&);
 	
     // HACK: I need more speed
-	virtual void      drawGlyph(UT_uint32 glyph_idx, UT_sint32 xoff, UT_sint32 yoff) 
+	virtual void      drawGlyph(UT_uint32 glyph_idx, double xoff, double yoff) 
 		{ UT_ASSERT (UT_NOT_IMPLEMENTED); };
 	virtual void		drawChars(const UT_UCSChar* pChars, int iCharOffset,
-								  int iLength, UT_sint32 xoff, UT_sint32 yoff,
+								  int iLength, double xoff, double yoff,
 								  int * pCharWidhths = NULL);
 
 	virtual void		setFont(GR_Font* pFont);
 	virtual void        clearFont(void) { m_pFont = NULL;}
-	virtual UT_uint32	getFontHeight();
+	virtual double	getFontHeight();
 
 	virtual UT_sint32 measureUnRemappedChar(const UT_UCSChar c);
 	virtual void getCoverage(UT_NumberVector& coverage);
@@ -87,25 +87,25 @@ class GR_CocoaGraphics : public GR_Graphics
 
 	virtual GR_Font*	getGUIFont();
 
-	virtual UT_uint32	getFontAscent();
-	virtual UT_uint32	getFontDescent();
-	virtual void		drawLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
-	virtual void		setLineWidth(UT_sint32);
+	virtual double	getFontAscent();
+	virtual double	getFontDescent();
+	virtual void		drawLine(double, double, double, double);
+	virtual void		setLineWidth(double);
 	virtual void		polyLine(UT_Point * pts, UT_uint32 nPoints);
 	void			rawPolyAtOffset(NSPoint * point, int npoint, UT_sint32 offset_x, UT_sint32 offset_y, NSColor * color, bool bFill);
 	void			fillNSRect (NSRect & aRect, NSColor * color);
 	virtual void		fillRect(const UT_RGBColor& c,
-								 UT_sint32 x, UT_sint32 y,
-								 UT_sint32 w, UT_sint32 h);
+								 double x, double y,
+								 double w, double h);
 	virtual void		invertRect(const UT_Rect* pRect);
 	virtual void		setClipRect(const UT_Rect* pRect);
-	virtual void		scroll(UT_sint32, UT_sint32);
-	virtual void		scroll(UT_sint32 x_dest, UT_sint32 y_dest,
+	virtual void		scroll(double, double);
+	virtual void            scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 							   UT_sint32 x_src, UT_sint32 y_src,
 							   UT_sint32 width, UT_sint32 height);
-	virtual void		clearArea(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
+	virtual void		clearArea(double, double, double, double);
   
-	virtual void		drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest);
+	virtual void		drawImage(GR_Image* pImg, double xDest, double yDest);
 	virtual GR_Image*	createNewImage(const char* pszName, const UT_ByteBuf* pBB,
 					       UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight,
 					       GR_Image::GRType = GR_Image::GRT_Raster);
@@ -135,16 +135,16 @@ class GR_CocoaGraphics : public GR_Graphics
 	virtual void		setColor3D(GR_Color3D c);
 	void				init3dColors();
 	virtual void		fillRect(GR_Color3D c,
-								 UT_sint32 x, UT_sint32 y,
-								 UT_sint32 w, UT_sint32 h);
+								 double x, double y,
+								 double w, double h);
 	virtual void		fillRect(GR_Color3D c, UT_Rect &r);
 	
 	virtual void		polygon(UT_RGBColor& c,UT_Point *pts,UT_uint32 nPoints);
 	
 	/* GR_Font versions of the above -- TODO: should I add drawChar* methods too? */
-	virtual UT_uint32 getFontAscent(GR_Font *);
-	virtual UT_uint32 getFontDescent(GR_Font *);
-	virtual UT_uint32 getFontHeight(GR_Font *);
+	virtual double getFontAscent(GR_Font *);
+	virtual double getFontDescent(GR_Font *);
+	virtual double getFontHeight(GR_Font *);
 
     virtual GR_Image * genImageFromRectangle(const UT_Rect & r);
 	virtual void	  saveRectangle(UT_Rect & r, UT_uint32 iIndx);
