@@ -6852,7 +6852,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 			m_pasteTableStack.viewTop((void**)(&pPaste));
 			if(pPaste != NULL)
 			{
-				if(!pPaste->m_bHasPastedCellStrux)
+				if(!pPaste->m_bHasPastedCellStrux && pPaste->m_bHasPastedTableStrux)
 				{
 //
 // We have either a bare table strux or a bare endcell strux. No blocks

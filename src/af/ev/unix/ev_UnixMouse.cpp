@@ -36,7 +36,7 @@ EV_UnixMouse::EV_UnixMouse(EV_EditEventMapper * pEEM)
 	: EV_Mouse(pEEM)
 {
 	m_clickState = 0;					// no click
-	m_contextState = 0;
+	m_contextState = EV_EMC_UNKNOWN;
 }
 
 void EV_UnixMouse::mouseUp(AV_View* pView, GdkEventButton* e)
@@ -220,6 +220,7 @@ void EV_UnixMouse::mouseMotion(AV_View* pView, GdkEventMotion *e)
 	else
 	{
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		emc = m_contextState;
 		return;
 	}
 
