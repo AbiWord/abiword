@@ -1,3 +1,6 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+
 <html>
 
 <head>
@@ -6,7 +9,7 @@
 
 <body bgcolor="FFFFFF">
 
-<table border="0" cellpadding="0" cellspacing="0" width="100%" borderstyle="none">
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
   <tr>
     <td bgcolor="#280066" height="70"><img src="../images/topbar_logo.png" alt="AbiWord logo"
             align="left" hspace="0" WIDTH="294" HEIGHT="70"> <img src="../images/topbar_right.png"
@@ -16,7 +19,7 @@
 
 <p><br clear="all"></p>
 
-<table border="0" cellpadding="5" borderstyle="none">
+<table border="0" cellpadding="5">
 <tbody>
   <tr>
      <td valign="top" bgcolor="#F0F8FF" nowrap><font size="2">
@@ -42,7 +45,7 @@
           <a href="about.html">abisource.com</a><br>
           <a href="faq.html">FAQ</a><br>
           <a href="credits.html">Credits</a><br><br>
-          <a href="search.html">Search</a>
+          <a href="search.html">Search</a></font>
   </td>
 
 
@@ -52,15 +55,21 @@
 
 
           <h2>Installating AbiWord on Linux / PowerPC</h2>
+
           <p>Welcome to the community of AbiWord users!&nbsp;</p>
+
           <p>The current version of AbiWord (0.7.9) should install and run properly
 	on any Linux system using a PowerPC processor. AbiWord
 	has been packaged in several different industry standard distribution
 	formats to simplify the installation onto your system:&nbsp;</p>
+
           <ul>
+
             <li><a href="#rpm">RPM</a> -- LinuxPPC 1999 Q3 or later
             <li><a href="#tar">TAR</a> -- for all others</li>
+
           </ul>
+
           <p>A much more detailed version of these instructions is contained in the<a
 
 href="http://www.abisource.com/binaries/0.7.9/linux/README">README</a>.</p>
@@ -77,19 +86,23 @@ href="http://www.abisuite.com">abisuite-0.7.9-1.i386.rpm</a>,
 2.6MB).&nbsp;</li>
 
 <li>
-Become superuser, and enter the command:&nbsp;</li>
+Become superuser, and enter the command
 
-<p><br>rpm - Uvh abisuite-0.7.9-1.i386.rpm
+<p>rpm - Uvh abisuite-0.7.9-1.i386.rpm
 </p><p>
  
  This release of AbiWord
+
 was built on a host with all applied updates from
+
 <a href="ftp://ftp.linuxppc.com/linuxppc-1999/updates/">ftp://ftp.linuxppc.com/linuxppc-1999/updates/</a>.
+
 Specifically, you will need <a href="ftp://ftp.linuxppc.com/linuxppc-1999/updates/libstdc++-2.10.0-0a.ppc.rpm">libstdc++-2.10.0-0a.ppc.rpm</a> to install this RPM.  You may also try the <a href="#tar">static .tar.gz package</a> if you wish to avoid this upgrade.
+
 
 </p><p>
 <br>If you have any unsatisfied dependencies,
-then you will have to install&nbsp;</font>
+then you will have to install&nbsp;
 <br><font face="Times New Roman,Times">those before you can install
 Abiword.</font> <br>&nbsp;
 <li>
@@ -100,11 +113,11 @@ Uvh option instead of - will take care of replacing the older version
 of AbiWord for people who are updating.&nbsp;</li>
 
 <li>
-For more information one RPM package dependencies, please see the <a href="/cgi-bin/translate?lp=fr_en&urltext=http%3a%2f%2fwww%2eabisource%2ecom%2fbinaries%2f0%2e7%2e6%2flinux%2fREADME">README</a>.&nbsp;</li>
+For more information one RPM package dependencies, please see the <a href="/cgi-bin/translate?lp=fr_en&amp;urltext=http%3a%2f%2fwww%2eabisource%2ecom%2fbinaries%2f0%2e7%2e6%2flinux%2fREADME">README</a>.&nbsp;</li>
 </ol>
 
-          </p>
                   <h3><a name="tar">TAR</a></h3>
+
 There are two versions of the Tar files: one is the statically-linked version
 and the other is the dynamically-linked version. The dynamic version is
 smaller (2.6Mb vs 3.3Mb), our goal is to make use of a number of shared
@@ -114,12 +127,12 @@ static version.&nbsp;
 is actually quite simple.&nbsp;
 <ol>
 <li>
-Download the distribution files (<a href="/cgi-bin/translate?lp=fr_en&urltext=http%3a%2f%2fwww%2eabisource%2ecom%2fbinaries%2f0%2e7%2e6%2flinux%2fi386%2fabisuite%2d0%2e7%2e6%2dLinux%5fi386%5fstatic%2etar%2egz">abisuite-0.7.9-Linux_i386_static.tar.gz</a>,
+Download the distribution files (<a href="/cgi-bin/translate?lp=fr_en&amp;urltext=http%3a%2f%2fwww%2eabisource%2ecom%2fbinaries%2f0%2e7%2e6%2flinux%2fi386%2fabisuite%2d0%2e7%2e6%2dLinux%5fi386%5fstatic%2etar%2egz">abisuite-0.7.9-Linux_i386_static.tar.gz</a>,
 3.3MB).&nbsp;</li>
 
 <li>
 Copy the files to a directory that you have permission for and open the
-files:&nbsp;</li>
+files:
 
 <pre>&nbsp; gunzip - C abisuite-0.7.9-Linux_i386_static.tar.gz |
 tar xvf -</pre>
@@ -130,7 +143,7 @@ Both these commands will create the directory <tt>abisuite-0.7.9-Linux_i386_stat
 Change to that directory and become superuser.&nbsp;</li>
 
 <li>
-Run the install script like:&nbsp;</li>
+Run the install script like:
 
 <pre>&nbsp; /install.sh</pre>
 
@@ -145,16 +158,21 @@ You will also have the option to create links to the executable in a common
 directory. By default, this is <tt>/usr/local/bin</tt>.&nbsp;</li>
 
 <li>
-Please consult the <a href="/cgi-bin/translate?lp=fr_en&urltext=http%3a%2f%2fwww%2eabisource%2ecom%2fbinaries%2f0%2e7%2e6%2flinux%2fREADME">README</a>
+Please consult the <a href="/cgi-bin/translate?lp=fr_en&amp;urltext=http%3a%2f%2fwww%2eabisource%2ecom%2fbinaries%2f0%2e7%2e6%2flinux%2fREADME">README</a>
 spins for additional details.&nbsp;</li>
 </ol>
-The installation process for the dynamic Tar files (<a href="/cgi-bin/translate?lp=fr_en&urltext=http%3a%2f%2fwww%2eabisource%2ecom%2fbinaries%2f0%2e7%2e6%2flinux%2fi386%2fabisuite%2d0%2e7%2e6%2dLinux%5fi386%5fdynamic%2etar%2egz">abisuite-0.7.9-Linux_i386_dynamic.tar.gz</a>,
+The installation process for the dynamic Tar files (<a href="/cgi-bin/translate?lp=fr_en&amp;urltext=http%3a%2f%2fwww%2eabisource%2ecom%2fbinaries%2f0%2e7%2e6%2flinux%2fi386%2fabisuite%2d0%2e7%2e6%2dLinux%5fi386%5fdynamic%2etar%2egz">abisuite-0.7.9-Linux_i386_dynamic.tar.gz</a>,
 2.6MB) is identical. Simply substitute <tt>_ dynamic</tt> for <tt>_ static</tt>
 in steps 1 and 2 above. If you want to read more about which libraries
-and versions that the dynamic version uses, please consult the <a href="/cgi-bin/translate?lp=fr_en&urltext=http%3a%2f%2fwww%2eabisource%2ecom%2fbinaries%2f0%2e7%2e6%2flinux%2fREADME">README</a>.&nbsp;
+and versions that the dynamic version uses, please consult the <a href="/cgi-bin/translate?lp=fr_en&amp;urltext=http%3a%2f%2fwww%2eabisource%2ecom%2fbinaries%2f0%2e7%2e6%2flinux%2fREADME">README</a>.&nbsp;
         
           
+
     </tr>
+
 </tbody></table>
 
+
+
 </html>
+

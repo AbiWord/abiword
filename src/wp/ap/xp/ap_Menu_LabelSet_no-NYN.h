@@ -79,7 +79,7 @@ BeginSet(no,NYN,UT_TRUE)
 	MenuLabel(AP_MENU_ID_VIEW_STATUSBAR,	"&Statuslinje",		"Viser eller skjuler statuslinja")
 	MenuLabel(AP_MENU_ID_VIEW_SHOWPARA,		"Vis &avsnittsmerke",	"Viser eller skjuler teikn som ikkje blir skrivne ut")
 	MenuLabel(AP_MENU_ID_VIEW_HEADFOOT,		"&Topptekst og botntekst",	"Viser tekst på toppen eller botnen av kvar side")
-	MenuLabel(AP_MENU_ID_VIEW_ZOOM,			"&Zoom ",			"Endrar visingsstorleiken på skjermen")
+	MenuLabel(AP_MENU_ID_VIEW_ZOOM,			"&Forstørring ",			"Endrar visingsstorleiken på skjermen")
 
 	MenuLabel(AP_MENU_ID_INSERT,			"Sett &inn",			NULL)
 	MenuLabel(AP_MENU_ID_INSERT_BREAK,		"&Skift ",			"Sett inn side-, spalte- eller inndelingsskift")

@@ -90,7 +90,7 @@ BeginSet(no,NYN,UT_TRUE)
 	ToolbarLabel(AP_TOOLBAR_ID_2COLUMN,			"To spalter",		tb_2column_xpm,			NULL, "To spalter")
 	ToolbarLabel(AP_TOOLBAR_ID_3COLUMN,			"Tre spalter",		tb_3column_xpm,			NULL, "Tre spalter")
 
-	ToolbarLabel(AP_TOOLBAR_ID_ZOOM,			"Zoom",		NoIcon,			NULL, "Zoom")
+	ToolbarLabel(AP_TOOLBAR_ID_ZOOM,			"Forstørring",		NoIcon,			NULL, "Forstørring")
 	ToolbarLabel(AP_TOOLBAR_ID_LISTS_BULLETS,		"Punktmerkt liste",		tb_lists_bullets_xpm,		NULL,		"Startar/avsluttar punktmerkt liste")
 	ToolbarLabel(AP_TOOLBAR_ID_LISTS_NUMBERS,		"Nummerert liste",		tb_lists_numbers_xpm,		NULL,		"Start/avsluttar nummerert liste")
 	
