@@ -122,6 +122,7 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		_m_matchCase(false),
 		_m_findNextString(0),
 		m_bShowPara(false),
+		m_viewMode(VIEW_NORMAL),
 		m_previewMode(PREVIEW_NONE)
 {
 //	UT_ASSERT(m_pG->queryProperties(GR_Graphics::DGP_SCREEN));
