@@ -2239,8 +2239,10 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 	 {
 		 const PP_AttrProp * pSpanAP = NULL;
 		 const XML_Char * pszDataId = NULL;
+		 const XML_Char * pszLatexId = NULL;
 		 m_pDocument->getAttrProp(api, &pSpanAP);
 		 pSpanAP->getAttribute("dataid", pszDataId);
+		 pSpanAP->getAttribute("latexid", pszLatexId);
 		 UT_UTF8String sProps;
 		 if(pszDataId == NULL)
 		 {
@@ -2274,6 +2276,12 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		 sPropName = "dataid";
 		 sPropVal =pszDataId;
 		 UT_UTF8String_setProperty(sAllProps,sPropName,sPropVal);
+		 if(pszLatexId)
+		 {
+		   sPropName = "latexid";
+		   sPropVal =pszLatexId;
+		   UT_UTF8String_setProperty(sAllProps,sPropName,sPropVal);
+		 }
 		 m_pie->write(sAllProps.utf8_str());
 		 m_pie->_rtf_close_brace();
 	 }

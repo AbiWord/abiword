@@ -156,7 +156,7 @@ ap_bs_Mouse MouseTable[] =
 //	{_CI _B1,	{ "selectImage",	"editImage",	"moveImage","",			"endImageMove",	""				}},
 
 //	Button-1, Math-context
-	{_CMA _B1, {"selectMath",                "selectMath",   "selectMath",            "",             "",                       "" }},
+	{_CMA _B1, {"selectMath",                "editLatexEquation",   "selectMath",            "",             "",                       "" }},
 
 //	{_CI _B1,	{ "selectImage",	"editImage",	"moveImage","",			"endImageMove",	""				}},
 

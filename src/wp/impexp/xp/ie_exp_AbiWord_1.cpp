@@ -769,6 +769,12 @@ bool s_AbiWord_1_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 						UT_DEBUGMSG(("resource name #%s# recorded \n",sPNGname->utf8_str()));
 						m_pUsedImages.insert(sPNGname->utf8_str());
 					}
+					const XML_Char* latex_name = getObjectKey(api, static_cast<const XML_Char*>("latexid"));
+					if(latex_name)
+					{
+						UT_DEBUGMSG(("resource name #%s# recorded \n",latex_name));
+						m_pUsedImages.insert(latex_name);
+					}
                     return true;
                 }
   			case PTO_Bookmark:

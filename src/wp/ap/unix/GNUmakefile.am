@@ -59,7 +59,8 @@ glade_DATA = \
 	ap_UnixDialog_Styles.glade	\
 	ap_UnixDialog_Stylist.glade	\
 	ap_UnixDialog_Stylist_modal.glade	\
-	ap_UnixDialog_WordCount.glade
+	ap_UnixDialog_WordCount.glade \
+	ap_UnixDialog_Latex.glade 
 
 libWpAp_unix_a_SOURCES=\
 	ap_@ABI_FE@App.cpp			\
@@ -111,4 +112,5 @@ libWpAp_unix_a_SOURCES=\
 	ap_@ABI_FE@TopRuler.cpp			\
 	ap_@ABI_FE@ViewListener.cpp		\
 	abiwidget.cpp				\
-	ap_@ABI_FE@Dialog_PageSetup.cpp
+	ap_@ABI_FE@Dialog_PageSetup.cpp \
+	ap_@ABI_FE@Dialog_Latex.cpp 

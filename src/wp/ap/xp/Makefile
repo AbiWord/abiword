@@ -57,6 +57,7 @@ CPPSRCS=	ap_Args.cpp			\
 		ap_Dialog_MergeCells.cpp	\
 		ap_Dialog_SplitCells.cpp	\
 		ap_Dialog_MailMerge.cpp		\
+		ap_Dialog_Latex.cpp		\
 		ap_EditMethods.cpp		\
 		ap_FrameData.cpp		\
 		ap_LeftRuler.cpp		\

@@ -2603,7 +2603,7 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(UT_sint32 iX,
    				m_pVertContainer->insertConAt(pLine,m_iLinePosInContainer);
 				m_iLinePosInContainer++;
 	   			pLine->setContainer(m_pVertContainer);
-				UT_DEBUGMSG(("Max width 2 set to %d \n",projRec.width));
+				xxx_UT_DEBUGMSG(("Max width 2 set to %d \n",projRec.width));
 				pLine->setMaxWidth(projRec.width);
 				pLine->setX(projRec.left-xoff);
 				pLine->setSameYAsPrevious(false);
@@ -2625,13 +2625,13 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(UT_sint32 iX,
 					m_iLinePosInContainer = pContainer->findCon(pLine)+1;
 					pLine->setContainer(pContainer);
 				}
-				UT_DEBUGMSG(("Max width 3 set to %d \n",projRec.width));
+				xxx_UT_DEBUGMSG(("Max width 3 set to %d \n",projRec.width));
 				pLine->setMaxWidth(projRec.width);
 				pLine->setX(projRec.left-xoff);
 				pLine->setSameYAsPrevious(m_bSameYAsPrevious);
 				m_bSameYAsPrevious = true;
 			}
-			UT_DEBUGMSG(("-1- New line %x has X %d Max width %d wrapped %d sameY %d \n",pLine,pLine->getX(),pLine->getMaxWidth(),pLine->isWrapped(),pLine->isSameYAsPrevious()));
+			xxx_UT_DEBUGMSG(("-1- New line %x has X %d Max width %d wrapped %d sameY %d \n",pLine,pLine->getX(),pLine->getMaxWidth(),pLine->isWrapped(),pLine->isSameYAsPrevious()));
 			pLine->setHeight(iHeight);
 #if DEBUG
 			if(getFirstContainer())

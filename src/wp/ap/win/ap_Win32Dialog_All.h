@@ -80,6 +80,7 @@
 #	include "ap_Win32Dialog_MailMerge.h"
 #	include "ap_Win32Dialog_FormatFrame.h"
 #	include "ap_Win32Dialog_FormatTOC.h"
+#	include "ap_Win32Dialog_Latex.h"
 #if 0
 #	include "ap_Win32Dialog_Download_File.h"
 #endif
@@ -148,6 +149,7 @@
 	DeclareDialog(AP_DIALOG_ID_FORMAT_FOOTNOTES,AP_Win32Dialog_FormatFootnotes)
 	DeclareDialog(AP_DIALOG_ID_FORMAT_TOC,      AP_Win32Dialog_FormatTOC)
 	DeclareDialog(AP_DIALOG_ID_MAILMERGE,		AP_Win32Dialog_MailMerge)
+	DeclareDialog(AP_DIALOG_ID_LATEX,	     AP_Win32Dialog_Latex)
 	
 #if 0
 	DeclareDialog(AP_DIALOG_ID_DOWNLOAD_FILE,	AP_Win32Dialog_Download_File)

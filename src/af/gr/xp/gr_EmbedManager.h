@@ -29,6 +29,8 @@ class GR_Graphics;
 class GR_Image;
 class UT_ByteBuf;
 class AD_Document;
+class UT_ByteBuf;
+
 class ABI_EXPORT GR_EmbedView
 {
 public:
@@ -70,6 +72,7 @@ public:
     virtual bool           isDefault(void);
     virtual bool           modify(UT_sint32 uid); 
     virtual bool           changeAPI(UT_sint32 uid, UT_uint32 api);
+    virtual bool           convert(UT_uint32 iConvType, UT_ByteBuf & pFrom, UT_ByteBuf & pTo);
 private:
     GR_Graphics *               m_pG;
     UT_GenericVector<GR_EmbedView *>   m_vecSnapshots;

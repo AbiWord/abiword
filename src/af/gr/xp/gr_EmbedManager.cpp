@@ -22,6 +22,7 @@
 #include "gr_Painter.h"
 #include "xad_Document.h"
 #include "ut_png.h"
+#include "ut_bytebuf.h"
 
 /*!
  * see the document abi/src/doc/EmbedablePlugins.abw for a more detailed 
@@ -169,6 +170,16 @@ const char * GR_EmbedManager::getObjectType(void) const
 void GR_EmbedManager::initialize(void)
 {
   // FIXME write this
+}
+
+/*!
+ * Some plugins might want to transform data types. eg The Math plugin can 
+ * transfrom Latex to MathML. This method enables this. Returns true if the
+ * conversion was successful.
+ */
+bool GR_EmbedManager::convert(UT_uint32 iConv, UT_ByteBuf & From, UT_ByteBuf &  To  )
+{
+  return false;
 }
 
 /*!

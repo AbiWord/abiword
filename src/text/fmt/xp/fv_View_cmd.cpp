@@ -4807,6 +4807,91 @@ UT_Error FV_View::cmdInsertGraphic(FG_Graphic* pFG)
 	return errorCode;
 }
 
+/*!
+ * This method inserts a MathML object and it's Latex representation
+ * at the current insertion point.
+ * It leaves the Object selected so it can be altered as needed.
+ */
+bool FV_View::cmdInsertLatexMath(UT_UTF8String & sLatex,
+						   UT_UTF8String & sMath)
+{
+  //
+  // First create the Data Items
+  //
+        UT_UTF8String sMathName;
+        UT_UTF8String sLatexName;
+        sMathName = "MathLatex";
+	sLatexName = "LatexMath";
+	UT_uint32 uid = m_pDoc->getUID(UT_UniqueId::Image);
+	UT_UTF8String sUID;
+	UT_UTF8String_sprintf(sUID,"%d",uid);
+	sMathName += sUID;
+	sLatexName += sUID;
+	//
+	// Insert these into the Piece Table
+	//
+	UT_ByteBuf mathBuf;
+	UT_ByteBuf latexBuf;
+	mathBuf.ins(0,reinterpret_cast<const UT_Byte *>(sMath.utf8_str()),static_cast<UT_uint32>(sMath.size()));
+	latexBuf.ins(0,reinterpret_cast<const UT_Byte *>(sLatex.utf8_str()),static_cast<UT_uint32>(sLatex.size()));
+	m_pDoc->createDataItem(sMathName.utf8_str(),false,&mathBuf,NULL,NULL);
+	m_pDoc->createDataItem(sLatexName.utf8_str(),false,&latexBuf,NULL,NULL);
+	// OK Insert the MathML Object
+	const XML_Char * atts[9]={"dataid",NULL,"latexid",NULL,"props",NULL,NULL,NULL,NULL};
+	atts[1] = static_cast<const XML_Char *>(sMathName.utf8_str());
+	atts[3] = static_cast<const XML_Char *>(sLatexName.utf8_str());
+	const XML_Char *cur_style = NULL;
+	getStyle(&cur_style);
+	if((cur_style != NULL) && (*cur_style) && (strcmp(cur_style,"None") != 0))
+	{
+		atts[6] = PT_STYLE_ATTRIBUTE_NAME;
+		atts[7] = cur_style;
+	}
+
+	bool bDidGlob = false;
+	const XML_Char ** props = NULL;
+
+	// Signal PieceTable Change
+	_saveAndNotifyPieceTableChange();
+	PT_DocPosition pos = getPoint();
+	if (!isSelectionEmpty())
+	{
+	        getCharFormat(&props,false,pos);
+		bDidGlob = true;
+		m_pDoc->beginUserAtomicGlob();
+		_deleteSelection();
+	}
+	else
+	{
+	        getCharFormat(&props,false,pos);
+	}
+	pos = getPoint();
+	UT_UTF8String sNewProps;
+	UT_UTF8String sProp;
+	UT_UTF8String sVal;
+	const XML_Char * szProp = NULL;
+	UT_sint32 i = 0;
+	if(props)
+	{
+	  while(props[i] != NULL)
+	  {
+	    sProp = props[i];
+	    sVal = props[i+1];
+	    UT_UTF8String_setProperty(sNewProps,sProp,sVal);
+	    i +=2;
+	  }
+	}
+	atts[5] = sNewProps.utf8_str();
+	m_pDoc->insertObject(pos,PTO_Math,atts,NULL);
+
+	if (bDidGlob)
+		m_pDoc->endUserAtomicGlob();
+
+	_generalUpdate();
+	_restorePieceTableState();
+	cmdSelect(pos,pos+1);
+	return true;
+}
 
 /*!
  * This method inserts a MathML object at the point presented.

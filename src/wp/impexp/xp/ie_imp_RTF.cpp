@@ -8437,12 +8437,27 @@ bool IE_Imp_RTF::HandleAbiMathml(void)
 	}
 	UT_UTF8String sPropName;
 	UT_UTF8String sInputAbiProps;
-	const XML_Char * attrs[5] = {"dataid",NULL,"props",NULL,NULL};
+	const XML_Char * attrs[7] = {"dataid",NULL,NULL,NULL,NULL,NULL,NULL};
 	sPropName = "dataid";
 	UT_UTF8String sDataIDVal = UT_UTF8String_getPropVal(sProps,sPropName);
 	attrs[1] = sDataIDVal.utf8_str();
 	UT_UTF8String_removeProperty(sProps,sPropName);
-	attrs[3] = sProps.utf8_str();
+	sPropName ="latexid";
+	UT_UTF8String sLatexIDVal = UT_UTF8String_getPropVal(sProps,sPropName);
+	if(sLatexIDVal.size() > 0)
+	{
+		UT_UTF8String_removeProperty(sProps,sPropName);
+		attrs[2] = "latexid";
+		attrs[3] =  sLatexIDVal.utf8_str();
+		attrs[4]= "props";
+		attrs[5] = sProps.utf8_str();
+	}
+	else
+	{
+		attrs[2] = "props";
+		attrs[3] = sProps.utf8_str();
+	}
+	getDoc()->getUID(UT_UniqueId::Image); // Increment the image uid counter
 	if(bUseInsertNotAppend())
 	{
 		getDoc()->insertObject(m_dposPaste, PTO_Math, attrs,NULL);

@@ -190,7 +190,8 @@ IE_Imp_AbiWord_1::IE_Imp_AbiWord_1(PD_Document * pDocument)
 	m_iInlineStart(0), 
 	m_refMap(new UT_GenericStringMap<UT_UTF8String*>),
 	m_bAutoRevisioning(false),
-	m_bInMath(false)
+	m_bInMath(false),
+	m_iImageId(0)
 {
 }
 
@@ -507,6 +508,8 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 	{
 		X_VerifyParseState(_PS_Block);
 		X_CheckError(appendObject(PTO_Math,atts));
+		m_iImageId++;
+		getDoc()->setMinUID(UT_UniqueId::Image, m_iImageId);
 		m_bInMath = true;
 		return;
 	}
@@ -961,6 +964,8 @@ void IE_Imp_AbiWord_1::endElement(const XML_Char *name)
 	case TT_IMAGE:						// not a container, so we don't pop stack
 		UT_ASSERT_HARMLESS(m_lenCharDataSeen==0);
 		X_VerifyParseState(_PS_Block);
+		m_iImageId++;
+		getDoc()->setMinUID(UT_UniqueId::Image, m_iImageId);
 		return;
 
 	case TT_MATH:						// not a container, so we don't pop stack
@@ -1275,6 +1280,8 @@ bool IE_Imp_AbiWord_1::_handleImage (const XML_Char ** atts)
 	*new_attr++ = 0;
 
 	bool success = appendObject (PTO_Image, new_atts);
+	m_iImageId++;
+	getDoc()->setMinUID(UT_UniqueId::Image, m_iImageId);
 
 	free (new_atts);
 

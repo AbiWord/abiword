@@ -195,6 +195,8 @@ public:
 	UT_Error		cmdDeleteHyperlink();
 	bool                    cmdInsertMathML(const char * szFileName,
 						PT_DocPosition pos);
+	bool                    cmdInsertLatexMath(UT_UTF8String & sLatex,
+						   UT_UTF8String & sMath);
 
 	UT_Error		cmdInsertTOC(void);
 	UT_Error		cmdHyperlinkStatusBar(UT_sint32 xPos, UT_sint32 yPos);

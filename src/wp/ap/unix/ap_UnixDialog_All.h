@@ -81,6 +81,7 @@
 #   include "ap_UnixDialog_FormatFootnotes.h"
 #   include "ap_UnixDialog_FormatTOC.h"
 #   include "ap_UnixDialog_MailMerge.h"
+#   include "ap_UnixDialog_Latex.h"
 #if 0
 #	include "ap_UnixDialog_Download_File.h"
 #endif
@@ -172,6 +173,7 @@
 	 DeclareDialog(AP_DIALOG_ID_FORMAT_FOOTNOTES,		AP_UnixDialog_FormatFootnotes)
 	 DeclareDialog(AP_DIALOG_ID_FORMAT_TOC,		AP_UnixDialog_FormatTOC)
 	 DeclareDialog(AP_DIALOG_ID_MAILMERGE,		AP_UnixDialog_MailMerge)
+	 DeclareDialog(AP_DIALOG_ID_LATEX,		    AP_UnixDialog_Latex)
 #if 0
 	DeclareDialog(AP_DIALOG_ID_DOWNLOAD_FILE,	AP_UnixDialog_Download_File)
 #endif

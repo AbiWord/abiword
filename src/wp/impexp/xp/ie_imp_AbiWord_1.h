@@ -94,6 +94,7 @@ protected:
 	UT_GenericStringMap<UT_UTF8String *> *	m_refMap;
 	bool                m_bAutoRevisioning;
 	bool                m_bInMath;
+	UT_uint32           m_iImageId;
 };
 
 #endif /* IE_IMP_ABIWORD_1_H */
