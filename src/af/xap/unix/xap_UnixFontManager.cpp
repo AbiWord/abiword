@@ -256,7 +256,7 @@ XAP_UnixFont * XAP_UnixFontManager::getDefaultFont(void)
 	// do some manual behind-the-back construction
 	f->setName("Default");
 	f->setStyle(XAP_UnixFont::STYLE_NORMAL);
-	f->setXLFD("-*-helvetica-medium-r-normal--0-0-*-*-p-56-iso8859-1");
+	f->setXLFD("-*-helvetica-medium-r-*-*-*-100-*-*-*-*-*-*");
 
 	return f;
 }
