@@ -244,11 +244,14 @@ void fp_Page::_reformat(void)
 
 		fp_Column* pLeader = getNthColumnLeader(i);
 		fl_DocSectionLayout* pSL = (pLeader->getDocSectionLayout());
+
+		UT_uint32 iSpace = m_iWidth - iLeftMargin - iRightMargin;
+		pSL->checkAndAdjustColumnGap(iSpace);
+
 		UT_uint32 iNumColumns = pSL->getNumColumns();
 		UT_uint32 iColumnGap = pSL->getColumnGap();
 		UT_uint32 iColumnGapLayoutUnits = pSL->getColumnGapInLayoutUnits();
 
-		UT_uint32 iSpace = m_iWidth - iLeftMargin - iRightMargin;
 		UT_uint32 iSpaceLayoutUnits = m_iWidthLayoutUnits - iLeftMarginLayoutUnits - iRightMarginLayoutUnits;
 		UT_uint32 iColWidth = (iSpace - ((iNumColumns - 1) * iColumnGap)) / iNumColumns;
 		UT_uint32 iColWidthLayoutUnits = (iSpaceLayoutUnits - ((iNumColumns - 1) * iColumnGapLayoutUnits)) / iNumColumns;

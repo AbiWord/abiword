@@ -1250,6 +1250,24 @@ UT_sint32 fl_DocSectionLayout::breakSection(void)
 	return 0; // TODO return code
 }
 
+void fl_DocSectionLayout::checkAndAdjustColumnGap(UT_sint32 iLayoutWidth)
+{
+	// Check to make sure column gap is not to wide to fit on the page with the
+	// given number of columns.
+
+	if(m_iNumColumns > 1)
+	{
+		UT_sint32 minColumnWidth = m_pLayout->getGraphics()->convertDimension("0.5in");	//TODO should this dimension be hard coded.
+		UT_sint32 iColWidth = (iLayoutWidth - (UT_sint32)(((m_iNumColumns - 1) * m_iColumnGap))) / (UT_sint32)m_iNumColumns;
+
+		if(iColWidth < minColumnWidth)
+		{
+			m_iColumnGap = (iLayoutWidth - minColumnWidth * m_iNumColumns) / (m_iNumColumns - 1);
+		}
+			
+	}
+
+}
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 

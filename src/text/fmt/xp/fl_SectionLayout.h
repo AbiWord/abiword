@@ -185,6 +185,8 @@ public:
 	void				addOwnedPage(fp_Page*);
 	void				deleteOwnedPage(fp_Page*);
 
+	void				checkAndAdjustColumnGap(UT_sint32 iLayoutWidth);
+
 protected:
 	virtual void		_lookupProperties(void);
 

@@ -110,6 +110,9 @@ void AP_TopRuler::setView(AV_View* pView, UT_uint32 iZoom)
 
 	UT_ASSERT(m_pG);
 	m_pG->setZoomPercentage(iZoom);
+
+	m_minColumnWidth = m_pG->convertDimension("0.5in");//TODO should this dimension be hard coded.
+
 }
 
 void AP_TopRuler::setView(AV_View * pView)
@@ -1446,53 +1449,49 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 		return;
 
 	case DW_COLUMNGAP:
-		{
-			// TODO what upper/lower bound should we place on this ?
-			
-			UT_sint32 xAbsLeft = _getFirstPixelInColumn(&m_infoCache,0);
-			UT_sint32 xAbsRight = xAbsLeft + m_infoCache.u.c.m_xColumnWidth;
-			UT_sint32 xAbsRightGap = xAbsRight + m_infoCache.u.c.m_xColumnGap;
-			UT_sint32 xAbsMidPoint = (xAbsRight + xAbsRightGap)/2;
-			UT_sint32 xAbsLowerLimit = xAbsMidPoint + _snapPixelToGrid((UT_sint32)(tick.dragDelta/tick.tickUnitScale),tick);
-			if (((UT_sint32)x) < xAbsLowerLimit)
-				x = (UT_uint32)xAbsLowerLimit;
-			UT_sint32 xrel = ((UT_sint32)x) - xAbsRight;
-			UT_sint32 xgrid = _snapPixelToGrid(xrel,tick);
-			UT_sint32 oldDraggingCenter = m_draggingCenter;
-			UT_Rect oldDraggingRect = m_draggingRect;
-			m_draggingCenter = xAbsRight + xgrid;
-			_getColumnMarkerRect(&m_infoCache,0,m_draggingCenter,&m_draggingRect);
-			UT_DEBUGMSG(("Gap: [x %ld][xAbsRight %ld][xrel %ld][xgrid %ld][width %ld]\n",x,xAbsRight,xrel,xgrid,m_draggingRect.width));
-
-			double dgrid = _scalePixelDistanceToUnits(m_draggingRect.width,tick);
-			UT_DEBUGMSG(("SettingColumnGap: %s\n",m_pG->invertDimension(tick.dimType,dgrid)));
-			if (!m_bBeforeFirstMotion && (m_draggingCenter != oldDraggingCenter))
-				draw(((oldDraggingRect.width > m_draggingRect.width ) ? &oldDraggingRect : &m_draggingRect),
-					 &m_infoCache);
-			_drawColumnProperties(NULL,&m_infoCache,0);
-			_xorGuide();
-		}
-		m_bBeforeFirstMotion = UT_FALSE;
-		return;
-
 	case DW_COLUMNGAPLEFTSIDE:
 		{
-			// TODO what upper/lower bound should we place on this ?
-			
 			UT_sint32 xAbsLeft = _getFirstPixelInColumn(&m_infoCache,0);
 			UT_sint32 xAbsRight = xAbsLeft + m_infoCache.u.c.m_xColumnWidth;
 			UT_sint32 xAbsRightGap = xAbsRight + m_infoCache.u.c.m_xColumnGap;
 			UT_sint32 xAbsMidPoint = (xAbsRight + xAbsRightGap)/2;
-			UT_sint32 xAbsUpperLimit = xAbsMidPoint - _snapPixelToGrid((UT_sint32)(tick.dragDelta/tick.tickUnitScale),tick);
-			if (((UT_sint32)x) > xAbsUpperLimit)
-				x = (UT_uint32)xAbsUpperLimit;
-			UT_sint32 xrel = xAbsRightGap - ((UT_sint32)x);
+			UT_sint32 xrel;
+			
+			if(m_draggingWhat == DW_COLUMNGAP)
+			{
+				UT_sint32 xAbsLowerLimit = xAbsMidPoint + _snapPixelToGrid((UT_sint32)(tick.dragDelta/tick.tickUnitScale),tick);
+				if (((UT_sint32)x) < xAbsLowerLimit)
+					x = (UT_uint32)xAbsLowerLimit;
+				xrel = ((UT_sint32)x) - xAbsRight;
+			}
+			else
+			{
+				UT_sint32 xAbsUpperLimit = xAbsMidPoint - _snapPixelToGrid((UT_sint32)(tick.dragDelta/tick.tickUnitScale),tick);
+				if (((UT_sint32)x) > xAbsUpperLimit)
+					x = (UT_uint32)xAbsUpperLimit;
+				xrel = xAbsRightGap - ((UT_sint32)x);
+			}
+
 			UT_sint32 xgrid = _snapPixelToGrid(xrel,tick);
+
+			// Check the column width.
+
+			UT_sint32 columnWidth = xAbsRightGap - xgrid - xAbsLeft;
+			UT_DEBUGMSG(("[Column width %ld]\n",columnWidth));
+
+			if(columnWidth < m_minColumnWidth)
+			{
+				xgrid -= m_minColumnWidth - columnWidth;
+			}
+
 			UT_sint32 oldDraggingCenter = m_draggingCenter;
 			UT_Rect oldDraggingRect = m_draggingRect;
 			m_draggingCenter = xAbsRight + xgrid;
 			_getColumnMarkerRect(&m_infoCache,0,m_draggingCenter,&m_draggingRect);
+
+
 			UT_DEBUGMSG(("Gap: [x %ld][xAbsRight %ld][xrel %ld][xgrid %ld][width %ld]\n",x,xAbsRight,xrel,xgrid,m_draggingRect.width));
+
 
 			double dgrid = _scalePixelDistanceToUnits(m_draggingRect.width,tick);
 			UT_DEBUGMSG(("SettingColumnGap: %s\n",m_pG->invertDimension(tick.dimType,dgrid)));
@@ -1501,6 +1500,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 					 &m_infoCache);
 			_drawColumnProperties(NULL,&m_infoCache,0);
 			_xorGuide();
+			
 		}
 		m_bBeforeFirstMotion = UT_FALSE;
 		return;

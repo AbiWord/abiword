@@ -204,6 +204,8 @@ protected:
 	UT_sint32			m_xScrollOffset;
 	UT_sint32			m_xScrollLimit;
 
+	UT_sint32			m_minColumnWidth;
+
 	AP_TopRulerInfo		m_infoCache;
 	UT_Bool				m_bValidMouseClick;
 
