@@ -368,8 +368,22 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 
 		if (pCharWidths)
 		{
-			for (UT_sint32 i = 0; i < iLengthOrig; i++)
-				pCharAdvances[i] = tdu (pCharWidths[i]);
+			// convert width into display units; since we have removed
+			// all 0x200B and 0xFEFF characters, we also have to
+			// remove their entires from the advances
+			UT_sint32 i,j;
+			
+			for (i = 0, j = 0; i < iLengthOrig; i++,j++)
+			{
+				if(pChars[iCharOffset+i] == 0x200B || pChars[iCharOffset+i] == 0xFEFF)
+				{
+					j--;
+				}
+				else
+				{
+					pCharAdvances[j] = tdu (pCharWidths[i]);
+				}
+			}
 		}
 		else
 			pCharAdvances=NULL;
