@@ -2254,6 +2254,20 @@ CellHelper * IE_Imp_TableHelper::getCellAtRowCol(UT_GenericVector<CellHelper *> 
 }
 
 /*!
+ * Handle </td> tag. In there is no content, write a blank block
+ */
+bool IE_Imp_TableHelper::tdEnd(void)
+{
+	if(m_bBlockInsertedForCell)
+		{
+			return true;
+		}
+	pf_Frag * pf = static_cast<pf_Frag *>(m_pfsInsertionPoint);
+	getDoc()->insertStruxBeforeFrag(pf,PTX_Block,NULL);
+	return true;
+}
+
+/*!
  * Handle the <td> tag. Insert a cell.
  */
  bool IE_Imp_TableHelper::tdStart (UT_sint32 rowspan, UT_sint32 colspan, const char * style, pf_Frag_Strux * pfsThis)
@@ -2337,6 +2351,7 @@ CellHelper * IE_Imp_TableHelper::getCellAtRowCol(UT_GenericVector<CellHelper *> 
 		{
 			getDoc()->insertStruxBeforeFrag(pf,PTX_Block,NULL);
 			getDoc()->insertStruxBeforeFrag(pf,PTX_EndCell,NULL);
+			m_bBlockInsertedForCell = true;
 		}
 	if(pPrev == NULL)
 		{
@@ -2358,10 +2373,6 @@ CellHelper * IE_Imp_TableHelper::getCellAtRowCol(UT_GenericVector<CellHelper *> 
 	return true;
 }
 
-bool IE_Imp_TableHelper::tdEnd ()
-{
-	return true;
-}
 
 bool IE_Imp_TableHelper::tdPending ()
 {
@@ -2642,6 +2653,16 @@ bool IE_Imp_TableHelperStack::tdStart (UT_sint32 rowspan, UT_sint32 colspan, con
 		return false;
 
 	return th->tdStart (rowspan, colspan, style,NULL);
+}
+
+
+bool IE_Imp_TableHelperStack::tdEnd (void)
+{
+	IE_Imp_TableHelper * th = top ();
+	if (th == 0)
+		return false;
+
+	return th->tdEnd();
 }
 
 bool IE_Imp_TableHelperStack::Block (PTStruxType pts, const XML_Char ** attributes)

@@ -184,6 +184,9 @@ public:
 
 	virtual UT_Error		newDocument(void);
 
+	UT_Error                createRawDocument(void);
+	void                    finishRawCreation(void);
+
 	virtual bool			isDirty(void) const;
 	virtual void            forceDirty();
 	

@@ -335,6 +335,7 @@ public:
 	CellHelper *       getCellAtRowCol(UT_GenericVector<CellHelper *> & vecCells, UT_sint32 row, UT_sint32 col);
     bool               setCaptionOn(void);
 	bool               setCaptionOff(void);
+	bool               tdEnd(void);
 private:
 
 	/* 1. Need a section on column definitions, allowing for <col> and <colgroup><col>
@@ -343,7 +344,6 @@ private:
 	 */
 	bool	trEnd ();
 	void	trClean ();
-	bool	tdEnd ();
 	bool	tdPending ();
 	
 	PD_Document *		m_pDocument;
@@ -415,6 +415,7 @@ public:
 	bool					Object (PTObjectType pto, const XML_Char ** attributes);
 	bool                    setCaptionOn(void);
 	bool                    setCaptionOff(void);
+	bool                    tdEnd(void);
 private:
 	PD_Document *			m_pDocument;
 

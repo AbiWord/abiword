@@ -46,7 +46,7 @@ class PX_ChangeRecord;
 class ABI_EXPORT IE_Imp_PasteListener: public PL_Listener
 {
 public:
-	IE_Imp_PasteListener(PD_Document * pDocToPaste, PT_DocPosition insPoint);
+	IE_Imp_PasteListener(PD_Document * pDocToPaste, PT_DocPosition insPoint, PD_Document * pSourceDoc);
 	virtual ~IE_Imp_PasteListener(){}
 	
 	virtual bool		populate(PL_StruxFmtHandle sfh,
@@ -80,5 +80,8 @@ private:
 	PD_Document *     getDoc(void) const;
 	PD_Document *     m_pPasteDocument;
 	PT_DocPosition    m_insPoint;
+	bool              m_bFirstSection;
+	bool              m_bFirstBlock;
+	PD_Document *     m_pSourceDoc;
 };
 #endif  /* IE_IMP_PASTELISTENER_H */

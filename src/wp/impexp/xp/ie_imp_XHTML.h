@@ -39,7 +39,7 @@
 
 /* Define if the tables are supported
  */
-#define XHTML_TABLES_SUPPORTED
+#define XHTML_TABLES_SUPPORTED 1
 
 /* Define if meta information is supported
  */

@@ -330,6 +330,44 @@ UT_Error PD_Document::importFile(const char * szFilename, int ieft,
 	return UT_OK;
 }
 
+UT_Error PD_Document::createRawDocument(void)
+{
+	m_pPieceTable = new pt_PieceTable(this);
+	if (!m_pPieceTable)
+	{
+		UT_DEBUGMSG(("PD_Document::readFromFile -- could not construct piece table\n"));
+		return UT_NOPIECETABLE;
+	}
+
+	m_pPieceTable->setPieceTableState(PTS_Loading);
+
+	{
+		UT_String template_list[6];
+		
+		buildTemplateList (template_list, "normal.awt");
+
+		bool success = false;
+		int ieft = IEFT_Unknown;
+		for (UT_uint32 i = 0; i < 6 && !success; i++)
+			success = (importStyles(template_list[i].c_str(), ieft, true) == UT_OK);
+
+		// don't worry if this fails
+	}
+
+	// set standard document properties and attributes, such as dtd, lang,
+	// dom-dir, etc., which the importer can then overwite
+	// this also initializes m_indexAP
+	m_indexAP = 0xffffffff;
+	setAttrProp(NULL);
+	return UT_OK;
+}
+
+void PD_Document::finishRawCreation(void)
+{
+	m_pPieceTable->setPieceTableState(PTS_Editing);
+	updateFields();
+	_setClean();							// mark the document as not-dirty
+}
 
 UT_Error PD_Document::readFromFile(const char * szFilename, int ieft,
 								   const char * impProps)

@@ -605,6 +605,7 @@ void IE_Imp_XHTML::pasteFromBuffer(PD_DocumentRange * pDocRange,
 	UT_return_if_fail(pDocRange->m_pos1 == pDocRange->m_pos2);
 	
 	PD_Document * newDoc = new PD_Document(getDoc()->getApp());
+	newDoc->createRawDocument();
 	UT_XML * newXML = new UT_XML;
 	IE_Imp_XHTML * p = new IE_Imp_XHTML(newDoc);
 	newXML->setListener(p);
@@ -615,7 +616,12 @@ void IE_Imp_XHTML::pasteFromBuffer(PD_DocumentRange * pDocRange,
 	{
 		UT_DEBUGMSG(("Error pasting HTML.... \n"));
 	}
-	IE_Imp_PasteListener * pPasteListen = new  IE_Imp_PasteListener(getDoc(),pDocRange->m_pos1);
+	newDoc->finishRawCreation();
+	//
+	// OK Broadcast from the just filled source document into our current
+	// doc via the paste listener
+	//
+	IE_Imp_PasteListener * pPasteListen = new  IE_Imp_PasteListener(getDoc(),pDocRange->m_pos1,newDoc);
 	newDoc->tellListener(static_cast<PL_Listener *>(pPasteListen));
 	delete pPasteListen;
 	delete p;
@@ -1471,6 +1477,8 @@ void IE_Imp_XHTML::endElement(const XML_Char *name)
 	case TT_TH:
 	case TT_TD:
 		{
+			m_TableHelperStack->tdEnd();
+			m_parseState = _PS_Cell;
 			break;
 		}
 #endif /* USE_IE_IMP_TABLEHELPER */
