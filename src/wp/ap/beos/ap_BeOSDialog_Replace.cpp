@@ -35,32 +35,20 @@
 
 #include "ut_Rehydrate.h"
 
-// CJP Note: The problem described below is fixed since the dialog is now modeless
-
-/* 
- TF Note:
-  This class is totally screwed.  We halt the main thread while
-we run the dialog ... of course all hell breaks loose as a result
-because of the fact that we have halted the main thread. Sucks
-to be so damn fast and multithreaded.
-
-  This causes a crappy deadlock that I haven't figured out how 
-to fix just yet.
-*/
-
-/*****************************************************************/
 #define RAD_ON(rad, str) ((rad = (BRadioButton *)FindView(str)) && \
 			  (rad->Value() == B_CONTROL_ON))
 
 class FindWin:public BWindow {
 	public:
 		FindWin(BMessage *data);
-		void SetDlg(AP_BeOSDialog_Replace *repl);
-		virtual void DispatchMessage(BMessage *msg, BHandler *handler);
-		virtual bool QuitRequested(void);
+		void 		SetDlg(AP_BeOSDialog_Replace *repl);
+		virtual void 	DispatchMessage(BMessage *msg, BHandler *handler);
+		virtual bool 	QuitRequested(void);
 		
 	private:
-		AP_BeOSDialog_Replace 	*m_DlgReplace;
+		AP_BeOSDialog_Replace	*m_DlgReplace;
+		sem_id				modalSem;
+		status_t				WaitForDelete(sem_id blocker);
 };
 
 FindWin::FindWin(BMessage *data) 
@@ -69,31 +57,45 @@ FindWin::FindWin(BMessage *data)
 
 void FindWin::SetDlg(AP_BeOSDialog_Replace *repl) {
 	m_DlgReplace = repl;
-	
 	BTextControl *txt;
+	BFont font(be_plain_font);
 	UT_UCSChar *bufferUnicode;
-        char * bufferNormal;
+	char * bufferNormal;
 
 	//What an ugly piece of code this is ..
+
 	txt = (BTextControl *)FindView("txtFind");
-	bufferUnicode = m_DlgReplace->getFindString();
-        bufferNormal = (char *)UT_calloc(UT_UCS_strlen(bufferUnicode) + 1, sizeof(char));
-        UT_UCS_strcpy_to_char(bufferNormal, bufferUnicode);
-	if (txt) txt->SetText(bufferNormal);
-	if (bufferNormal) free(bufferNormal);
+
+	if (txt){
+		txt->TextView()->SetFontAndColor(&font,B_FONT_ALL);
+//		bufferUnicode = m_DlgReplace->getFindString();
+//		bufferNormal = (char *)UT_calloc(UT_UCS_strlen(bufferUnicode) + 1, sizeof(char));
+//		UT_UCS_strcpy_to_char(bufferNormal, bufferUnicode);
+//		txt->SetText(bufferNormal);
+		txt->SetText((char *)m_DlgReplace->getFindString());
+		txt->MakeFocus(true);
+	}
 
 	txt = (BTextControl *)FindView("txtReplace");
-	bufferUnicode = m_DlgReplace->getReplaceString();
-        bufferNormal = (char *)UT_calloc(UT_UCS_strlen(bufferUnicode) + 1, sizeof(char));
-        UT_UCS_strcpy_to_char(bufferNormal, bufferUnicode);
-	if (txt) txt->SetText(bufferNormal);
-	if (bufferNormal) free(bufferNormal);
+	if (txt) {
+		txt->TextView()->SetFontAndColor(&font,B_FONT_ALL);
+//		bufferUnicode = m_DlgReplace->getReplaceString();
+//		bufferNormal = (char *)UT_calloc(UT_UCS_strlen(bufferUnicode) + 1, sizeof(char));
+//		UT_UCS_strcpy_to_char(bufferNormal, bufferUnicode);
+//		txt->SetText(bufferNormal);
+		txt->SetText((char *)m_DlgReplace->getReplaceString());
+	}
 
 	BCheckBox *chk = (BCheckBox *)FindView("chkCase");
 	if (chk) chk->SetValue(m_DlgReplace->getMatchCase());
 
-//	For the find/replace dialog we can return right away
+// This semaphore ties up the window until after it deletes..
+
+	modalSem = create_sem(0,"FindModalSem");
+
 	Show();
+	WaitForDelete(modalSem);
+	Hide();
 }
 
 void FindWin::DispatchMessage(BMessage *msg, BHandler *handler) {
@@ -139,12 +141,11 @@ void FindWin::DispatchMessage(BMessage *msg, BHandler *handler) {
 	}
 } 
 
-//Behave like a good citizen
 bool FindWin::QuitRequested() {
 	UT_ASSERT(m_DlgReplace);
 	m_DlgReplace->setAnswer(AP_Dialog_Replace::a_CANCEL);
-
-	return(true);
+	delete_sem(modalSem);
+	return(false);
 }
 
 /*****************************************************************/
@@ -152,26 +153,28 @@ bool FindWin::QuitRequested() {
 void AP_BeOSDialog_Replace::runModeless(XAP_Frame * pFrame)
 {
 	BMessage msg;
-	FindWin  *newwin;
+	FindWin  *newwin = 0;
 
 	// this dialogs needs this
-        setView(static_cast<FV_View *> (pFrame->getCurrentView()));          
+        setView(static_cast<FV_View *> (pFrame->getCurrentView()));
 
 	if (m_id == AP_DIALOG_ID_FIND) 
 	{
 		if (RehydrateWindow("FindWindow", &msg)) 
 		{
-                	newwin = new FindWin(&msg);
+			newwin = new FindWin(&msg);
 			newwin->SetDlg(this);
 		}
-    }                                                
+	}                                                
 	else  
 	{
 		if (RehydrateWindow("ReplaceWindow", &msg)) {
-                	newwin = new FindWin(&msg);
+			newwin = new FindWin(&msg);
 			newwin->SetDlg(this);
 		}
 	}
+	newwin->Lock();
+	newwin->Close();
 }
 
 void AP_BeOSDialog_Replace::notifyActiveFrame(XAP_Frame *pFrame)
@@ -219,23 +222,55 @@ AP_BeOSDialog_Replace::~AP_BeOSDialog_Replace(void)
 void AP_BeOSDialog_Replace::runModal(XAP_Frame * pFrame)
 {
 	BMessage msg;
-	FindWin  *newwin;
+	FindWin  *newwin = 0;
 
 	// this dialogs needs this
-        setView(static_cast<FV_View *> (pFrame->getCurrentView()));          
+        setView(static_cast<FV_View *> (pFrame->getCurrentView()));
 
 	if (m_id == AP_DIALOG_ID_FIND) {
 		if (RehydrateWindow("FindWindow", &msg)) {
-                	newwin = new FindWin(&msg);
+			newwin = new FindWin(&msg);
 			newwin->SetDlg(this);
 		}
-        }                                                
+	}                                                
 	else  {
 		if (RehydrateWindow("ReplaceWindow", &msg)) {
-                	newwin = new FindWin(&msg);
+			newwin = new FindWin(&msg);
 			newwin->SetDlg(this);
 		}
 	}
+	newwin->Lock();
+	newwin->Close();
 }
 
 
+status_t FindWin::WaitForDelete(sem_id blocker)
+{
+	status_t	result;
+	thread_id	this_tid = find_thread(NULL);
+	BLooper	*pLoop;
+	BWindow	*pWin = 0;
+
+	pLoop = BLooper::LooperForThread(this_tid);
+	if (pLoop)
+		pWin = dynamic_cast<BWindow*>(pLoop);
+
+	// block until semaphore is deleted (modal is finished)
+	if (pWin) {
+		do {
+			pWin->Unlock();
+			snooze(100);
+			pWin->Lock();
+
+			// update the window periodically
+			pWin->UpdateIfNeeded();
+			result = acquire_sem_etc(blocker, 1, B_TIMEOUT, 1000);
+		} while (result != B_BAD_SEM_ID);
+	} else {
+		do {
+			// just wait for exit
+			result = acquire_sem(blocker);
+		} while (result != B_BAD_SEM_ID);
+	}
+	return result;
+}

@@ -42,8 +42,6 @@ public:
 	AP_BeOSTopRuler(XAP_Frame * pFrame);
 	virtual ~AP_BeOSTopRuler(void);
 
-	virtual void	show(void);
-	virtual void	hide(void);
 	virtual void	setView(AV_View * pView);
 	virtual void	createWidget(BRect r);
 	
