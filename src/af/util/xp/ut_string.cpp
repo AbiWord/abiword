@@ -17,6 +17,8 @@
  * 02111-1307, USA.
  */
  
+
+
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
@@ -31,8 +33,12 @@
 #include "ut_string.h"
 #include "ut_debugmsg.h"
 #include "ut_growbuf.h"
+
+#ifndef __FreeBSD__
 #include "ut_mbtowc.h"
 #include "ut_wctomb.h"
+#endif
+
 
 //////////////////////////////////////////////////////////////////
 // char * UT_catPathname(const char * szPath, const char * szFile);
@@ -589,12 +595,19 @@ UT_UCSChar * UT_UCS_strcpy_char(UT_UCSChar * dest, const char * src)
 	UT_UCSChar * d 		= dest;
 	unsigned char * s	= (unsigned char *) src;
 
+#ifndef __FreeBSD__
 	UT_Mbtowc m;
 	wchar_t wc;
+#endif
+
 	while (*s != 0)
 	  {
+#ifdef __FreeBSD__
+	    *d++ = *s++;   
+#else
 		if(m.mbtowc(wc,*s))*d++=wc;
 		s++;
+#endif
 	  }
 	*d = 0;
 
@@ -609,12 +622,19 @@ char * UT_UCS_strcpy_to_char(char * dest, const UT_UCSChar * src)
 	char * 			d = dest;
 	UT_UCSChar * 	s = (UT_UCSChar *) src;
 
+#ifndef __FreeBSD__
 	UT_Wctomb w;
+#endif
+
 	while (*s != 0)
 	  {
+#ifdef __FreeBSD__
+	    *d++ = *s++;   
+#else
 		int length;
 		if(w.wctomb(d,length,*s++))
 		  d+=length;
+#endif
 	  }
 	*d = 0;
 	
@@ -634,24 +654,40 @@ UT_Bool UT_UCS_cloneString(UT_UCSChar ** dest, const UT_UCSChar * src)
 
 UT_Bool UT_UCS_cloneString_char(UT_UCSChar ** dest, const char * src)
 {
-  UT_uint32 length = MB_LEN_MAX*strlen(src) + 1;
-  *dest = (UT_UCSChar *)calloc(length,sizeof(UT_UCSChar));
-  if (!*dest)
-	return UT_FALSE;
-  UT_UCSChar * d= *dest;
-  unsigned char * s	= (unsigned char *) src;
-  
-  UT_Mbtowc m;
-  wchar_t wc;
 
-  while (*s != 0)
-	{
-	  if(m.mbtowc(wc,*s))*d++=wc;
-	  s++;
-	}
-  *d = 0;  
-  
-  return UT_TRUE;
+#ifdef __FreeBSD__
+
+		UT_uint32 length = strlen(src) + 1;   
+		*dest = (UT_UCSChar *)calloc(length,sizeof(UT_UCSChar)); 
+		if (!*dest)
+				return UT_FALSE;
+		UT_UCS_strcpy_char(*dest, src);
+
+		return UT_TRUE;          
+
+#else
+
+		UT_uint32 length = MB_LEN_MAX*strlen(src) + 1;
+		*dest = (UT_UCSChar *)calloc(length,sizeof(UT_UCSChar));
+		if (!*dest)
+				return UT_FALSE;
+		UT_UCSChar * d= *dest;
+		unsigned char * s	= (unsigned char *) src;
+		
+		UT_Mbtowc m;
+		wchar_t wc;
+		
+		while (*s != 0)
+		{
+				if(m.mbtowc(wc,*s))*d++=wc;
+				s++;
+		}
+		*d = 0;  
+		
+		return UT_TRUE;
+
+#endif
+
 }
 
 // convert each character in a string to ASCII uppercase

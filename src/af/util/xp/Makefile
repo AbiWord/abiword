@@ -22,6 +22,26 @@ ABI_ROOT:=$(shell pwd)/../../../..
 
 include $(ABI_ROOT)/src/config/abi_defs.mk
 
+ifdef __FreeBSD__
+CPPSRCS=	ut_alphahash.cpp	\
+		ut_base64.cpp		\
+		ut_base64_TestRoutines.cpp	\
+		ut_bytebuf.cpp		\
+		ut_growbuf.cpp		\
+		ut_hash.cpp		\
+		ut_math.cpp		\
+		ut_misc.cpp		\
+		ut_png.cpp		\
+		ut_svg.cpp		\
+		ut_pool.cpp		\
+		ut_stack.cpp		\
+		ut_string.cpp		\
+		ut_test.cpp		\
+		ut_timer.cpp		\
+		ut_units.cpp		\
+		ut_vector.cpp		
+
+else
 CPPSRCS=	ut_alphahash.cpp	\
 		ut_base64.cpp		\
 		ut_base64_TestRoutines.cpp	\
@@ -41,6 +61,7 @@ CPPSRCS=	ut_alphahash.cpp	\
 		ut_units.cpp		\
 		ut_vector.cpp		\
 		ut_wctomb.cpp
+endif
 
 ### regex is only used by calc.
 ###CSRCS=		ut_regex.c

@@ -1,11 +1,7 @@
 #ifndef UT_WCTOMB_H
 #define UT_WCTOMB_H
 
-#if defined(__FreeBSD__)
-#include <cwchar.h>
-#else
 #include <wchar.h>
-#endif
 #include <string.h>
 #include <limits.h>
 

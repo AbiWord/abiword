@@ -1,11 +1,7 @@
 #ifndef UT_MBTOWC_H
 #define UT_MBTOWC_H
 
-#if defined(__FreeBSD__)
-#include <cwchar.h>
-#else
 #include <wchar.h>
-#endif
 #include <limits.h>
 
 #if defined(__BEOS__)
