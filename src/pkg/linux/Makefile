@@ -54,7 +54,7 @@ install_redhat:
 
 ########################################################################
 
-RPM_LOC = $(shell [ -x /usr/bin/rpm ] && echo 1)
+RPM_LOC = $(shell [ -x /usr/bin/rpm ] && echo 1 || [ -x /bin/rpm ] && echo 1)
 ALIEN_LOC = $(shell [ -x /usr/bin/alien ] && echo 1)
 
 # If tgz is inside $ABI_DIST_TARGET
@@ -149,7 +149,7 @@ rpm: pack_rpm
 		| sed "s/__ABI_RELEASE_NUMBER__/$(ABI_RELEASE_NUMBER)/" \
 		> $(RPM_SOURCE_DIR)/SPECS/abisuite-$(ABI_BUILD_VERSION).spec)
 	@echo "Producing RPM..."
-	rpm -ba $(RPM_SOURCE_DIR)/SPECS/abisuite-$(ABI_BUILD_VERSION).spec
+	rpm -vvba $(RPM_SOURCE_DIR)/SPECS/abisuite-$(ABI_BUILD_VERSION).spec
 	mv $(RPM_SOURCE_DIR)/RPMS/$(OS_ARCH)/abisuite-$(ABI_BUILD_VERSION)-$(ABI_RELEASE_NUMBER).$(OS_ARCH).rpm $(DIST)
 	rm -f $(RPM_SOURCE_DIR)/SRPMS/abisuite-$(ABI_BUILD_VERSION)-$(ABI_RELEASE_NUMBER).$(OS_ARCH).src.rpm
 
