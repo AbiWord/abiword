@@ -6097,8 +6097,10 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 
 	fl_SectionLayout* pSL = static_cast<fl_SectionLayout *>(myContainingLayout());
 	UT_ASSERT(pSL);
-	pSL->remove(this);
-
+	if(pSL)
+	{
+		pSL->remove(this);
+	}
 	if (pPrevBL)
 	{
 //
@@ -6130,22 +6132,23 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 		// In case we've never checked this one
 		m_pLayout->dequeueBlockForBackgroundCheck(this);
 	}
-
-	FV_View* pView = pSL->getDocLayout()->getView();
-	if (pView->isHdrFtrEdit() && (!pView->getEditShadow() ||
-		                         !pView->getEditShadow()->getLastLayout()))
-		pView->clearHdrFtrEdit();
-
-	if (pView && (pView->isActive() || pView->isPreview()))
+	if(pSL)
 	{
-		pView->_setPoint(pcrx->getPosition());
+		FV_View* pView = pSL->getDocLayout()->getView();
+		if (pView->isHdrFtrEdit() && (!pView->getEditShadow() ||
+									  !pView->getEditShadow()->getLastLayout()))
+			pView->clearHdrFtrEdit();
+		
+		if (pView && (pView->isActive() || pView->isPreview()))
+		{
+			pView->_setPoint(pcrx->getPosition());
+		}
+		else if(pView && pView->getPoint() > pcrx->getPosition())
+		{
+			pView->_setPoint(pView->getPoint() - 1);
+		}
+		_assertRunListIntegrity();
 	}
-	else if(pView && pView->getPoint() > pcrx->getPosition())
-	{
-		pView->_setPoint(pView->getPoint() - 1);
-	}
-	_assertRunListIntegrity();
-
 
 	delete this;			// FIXME: whoa!  this construct is VERY dangerous.
 
