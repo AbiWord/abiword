@@ -1729,6 +1729,9 @@ fl_BlockLayout* FV_View::_findBlockAtPosition(PT_DocPosition pos) const
 	}
 	pBL = m_pLayout->findBlockAtPosition(pos);
 	UT_ASSERT(pBL);
+	if(!pBL)
+		return NULL;
+	
 //
 // Sevior should remove this after a while..
 //
@@ -4915,9 +4918,12 @@ void FV_View::_moveInsPtNextPrevScreen(bool bNext)
 	
 	if(bNext)
 		y-= pLine->getHeight();
+
+	UT_uint32 iLineCount = 0;
 	
 	while(pLine)
 	{
+		iLineCount++;
 		pCont = pLine->getContainer();
 		pPage = pCont->getPage();
 		getPageYOffset(pPage, y2);
@@ -4949,8 +4955,14 @@ void FV_View::_moveInsPtNextPrevScreen(bool bNext)
 		}
 	}
 
-	//if(!pLine)
-	pLine  = pPrevLine;
+	// if we do not have pLine, we will use pPrevLine
+	// also, if we processed less than 3 lines, i.e, there is
+	// a wide gap between our line an the next line, we want to
+	// move to the next line even though we will not be able to
+	// see the current line on screen any more
+	if(iLineCount > 2 || !pLine)
+		pLine  = pPrevLine;
+	
 	UT_ASSERT(pLine);
 	if(!pLine)
 		return;
@@ -7070,7 +7082,8 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 		y = y2 = 0;
 		
 		height = 0;
-		*ppBlock = 0;
+		if(ppBlock)
+			*ppBlock = 0;
 		return;
 	}
 
@@ -10800,6 +10813,13 @@ bool FV_View::getEditableBounds(bool isEnd, PT_DocPosition &posEOD, bool bOverid
 	{	
 		pSL = (fl_SectionLayout *)	m_pLayout->getLastSection();
 
+		if(!pSL)
+		{
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			res = m_pDoc->getBounds(isEnd,posEOD);
+			return res;
+		}
+		
 		// So if there are no HdrFtr sections, return m_pDoc->getBounds.
 
 		while(pSL->getNext() != NULL && (pSL->getType() == FL_SECTION_DOC ||

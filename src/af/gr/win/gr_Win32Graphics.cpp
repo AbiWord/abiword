@@ -37,6 +37,7 @@
 #include "ut_Win32OS.h"
 
 /*****************************************************************/
+UT_sint32 GR_Win32Graphics::s_iScreenResolution = 0;
 
 // A small helper class
 class private_FontReverter
@@ -96,6 +97,9 @@ void GR_Win32Graphics::_constructorCommonCode(HDC hdc)
 #ifdef BIDI_ENABLED
 	m_remapIndices = NULL;
 #endif
+	if(!s_iScreenResolution)
+		s_iScreenResolution = _getResolution();
+	UT_DEBUGMSG(("GR_Win32Graphics: screen resolution %d\n", s_iScreenResolution));
 }
 
 GR_Win32Graphics::GR_Win32Graphics(HDC hdc, HWND hwnd, XAP_App * app)
@@ -913,6 +917,10 @@ void GR_Win32Graphics::handleSetCursorMessage(void)
 	case GR_CURSOR_IMAGESIZE_E:
 	case GR_CURSOR_IMAGESIZE_W:
 		cursor_name = IDC_SIZEWE;
+		hinst = NULL;
+
+	case GR_CURSOR_WAIT:
+		cursor_name = IDC_WAIT;
 		hinst = NULL;
 		break;
 	}

@@ -484,6 +484,10 @@ protected:
 	bool                    m_bListItem;
 	bool                    m_bIsCollapsed;
 	bool                    m_bHasUpdatableField;
+#ifdef BIDI_ENABLED
+	FriBidiCharType 		m_iDomDirection;
+	FriBidiCharType 		m_iDirOverride;
+#endif
 };
 
 /*

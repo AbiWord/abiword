@@ -569,6 +569,9 @@ fl_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos)
 	if (bRes)
 	{
 		fl_Layout * pL = (fl_Layout *)sfh;
+		if(!pL)
+			return NULL;
+		
 		switch (pL->getType())
 		{
 		case PTX_Block:
