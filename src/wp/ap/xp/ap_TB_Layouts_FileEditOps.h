@@ -51,5 +51,6 @@ BeginLayout(FileEditOps)
 
 	Spacer()
 	ToolbarItem(AP_TOOLBAR_ID_ZOOM)
-
+        Spacer()
+	ToolbarItem(AP_TOOLBAR_ID_LISTS_BULLETS)
 EndLayout()

@@ -113,6 +113,7 @@ EV_Toolbar_ActionSet * AP_CreateToolbarActionSet(void)
 	// AV_CHG_WINDOWSIZE, below, doesn't seem right.  TODO
 	
 	_s(AP_TOOLBAR_ID_ZOOM,			EV_TBIT_ComboBox,		"zoom",			AV_CHG_WINDOWSIZE,	ap_ToolbarGetState_Zoom);
+	_s(AP_TOOLBAR_ID_LISTS_BULLETS,		EV_TBIT_PushButton,		"dlgBullets",		AV_CHG_NONE,		NULL);
 	
 	// ... add others here ...
 	

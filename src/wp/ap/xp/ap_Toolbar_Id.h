@@ -78,7 +78,8 @@ enum _Ap_Toolbar_Id
 	AP_TOOLBAR_ID_3COLUMN,
 
 	AP_TOOLBAR_ID_ZOOM,
-	
+	AP_TOOLBAR_ID_LISTS_BULLETS,
+
 	/* ... add others here ... */
 
 	AP_TOOLBAR_ID__BOGUS2__				/* must be last */

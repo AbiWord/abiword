@@ -89,6 +89,7 @@ BeginSet(en,US,UT_TRUE)
 	ToolbarLabel(AP_TOOLBAR_ID_3COLUMN,			"3 Columns",		tb_3column_xpm,			NULL, "3 Columns")
 
 	ToolbarLabel(AP_TOOLBAR_ID_ZOOM,			"Zoom",		NoIcon,			NULL, "Zoom")
+	ToolbarLabel(AP_TOOLBAR_ID_LISTS_BULLETS,		"Lists",		tb_lists_xpm,		NULL,		"Lists and Bullets")
 	
 	// ... add others here ...
 
