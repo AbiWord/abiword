@@ -56,6 +56,7 @@ protected:
 	GtkWidget *				_constructWindowContents(void);
 	void					_populateWindowData(void);
 	void					_connectSignals(void);
+	void                            _fillListTypeMenu( GtkWidget *listmenu);
 
 	UT_Bool                         m_bDestroy_says_stopupdating;
 	UT_Bool                         m_bAutoUpdate_happening_now;
@@ -68,6 +69,7 @@ protected:
 	GtkWidget * m_wContents;
 	GtkWidget * m_wCheckstartlist;
 	GtkWidget * m_wCheckstoplist;
+	GtkWidget * m_wCheckresumelist;
 	GtkWidget * m_wNewlisttypel;
         GtkWidget * m_wOption_types;
         GtkWidget * m_wOption_types_menu;

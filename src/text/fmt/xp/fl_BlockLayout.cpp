@@ -425,23 +425,9 @@ void fl_BlockLayout::_lookupProperties(void)
 	}
 	else 
 	{
-	        fl_BlockLayout * pPrev = getPrev();
-		UT_Bool bmatchLevel =  UT_FALSE;
-		if( pPrev != NULL && pPrev->isListItem())
+	        prevBlockInList = getPreviousList( level);
+                if (prevBlockInList != NULL)
 		{
-		         bmatchLevel = (UT_Bool) (level == pPrev->getLevel());
-		}
-	        while(pPrev != NULL && bmatchLevel == UT_FALSE) 
-		{ 
-		         pPrev = pPrev->getPrev() ;
-			 if( pPrev != NULL && pPrev->isListItem())
-			 {
-		               bmatchLevel = (UT_Bool) (level == pPrev->getLevel());
-			 }
-		}
-                if (pPrev != NULL)
-		{
-		         prevBlockInList = pPrev;
 			 last_id = prevBlockInList->getAutoNum()->getID();
 		}
 		else 
@@ -4099,6 +4085,35 @@ void fl_BlockLayout::remItemFromList(void)
 		pView->_generalUpdate();
 		pView->_drawInsertionPoint();
 	}
+}
+
+fl_BlockLayout * fl_BlockLayout::getPreviousList(UT_uint32 level)
+{
+	fl_BlockLayout * pPrev = getPrev();
+	UT_Bool bmatchLevel =  UT_FALSE;
+	if( pPrev != NULL && pPrev->isListItem())
+	{
+	        bmatchLevel = (UT_Bool) (level == pPrev->getLevel());
+	}
+	while(pPrev != NULL && bmatchLevel == UT_FALSE) 
+	{ 
+	        pPrev = pPrev->getPrev() ;
+		if( pPrev != NULL && pPrev->isListItem())
+	        {
+		        bmatchLevel = (UT_Bool) (level == pPrev->getLevel());
+		}
+	}
+        return pPrev;
+}
+
+fl_BlockLayout * fl_BlockLayout::getPreviousList( void)
+{
+	fl_BlockLayout * pPrev = getPrev();
+	while(pPrev != NULL && !pPrev->isListItem()) 
+	{ 
+	        pPrev = pPrev->getPrev() ;
+	}
+        return pPrev;
 }
 
 void fl_BlockLayout::listUpdate(void)

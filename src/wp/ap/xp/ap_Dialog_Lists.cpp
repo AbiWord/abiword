@@ -164,6 +164,11 @@ void  AP_Dialog_Lists::PopulateDialogData(void)
 	      const char * tmp1 =  (char *) getBlock()->getListLabel();
 	      strcpy( m_curListLabel, tmp1);
               m_curListLevel = getBlock()->getLevel();
+	      if (getBlock()->getPreviousList() != NULL)
+	              m_previousListExistsAtPoint = UT_TRUE;
+	      else
+	              m_previousListExistsAtPoint = UT_FALSE;
+
               m_curStartValue = getAutoNum()->getStartValue32();
 	      const char * tmp2 = getAutoNum()->getType();
 	      if(strstr(tmp2,"%*%d.")!= NULL)

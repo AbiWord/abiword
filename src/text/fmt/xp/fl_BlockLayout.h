@@ -180,7 +180,8 @@ public:
 	UT_uint32 getLevel(void);
 	void setStarting( UT_Bool bValue);
 	void setStopping( UT_Bool bValue);
-
+        fl_BlockLayout * getPreviousList(UT_uint32 level);
+        fl_BlockLayout * getPreviousList(void);
 	void findSquigglesForRun(fp_Run* pRun);
 	UT_uint32 canSlurp(fp_Line* pLine) const;
 

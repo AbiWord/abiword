@@ -265,6 +265,11 @@ void  AP_UnixDialog_Lists::startChanged(void)
        if (GTK_TOGGLE_BUTTON (m_wCheckstartlist)->active)
        {
 	       m_bStartList = UT_TRUE;
+	       m_bStopList = UT_FALSE;
+	       m_bChangeStartValue = UT_FALSE;
+               gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wCur_changestart_button),FALSE);
+               gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wCheckresumelist),FALSE);
+               gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wCheckstoplist),FALSE);
        }
        else
        {
@@ -278,8 +283,11 @@ void  AP_UnixDialog_Lists::stopChanged(void)
        if (GTK_TOGGLE_BUTTON (m_wCheckstoplist)->active)
        {
 	       m_bStopList = UT_TRUE;
+	       m_bChangeStartValue = UT_FALSE;
+	       m_bStartList = UT_FALSE;
                gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wCur_changestart_button),FALSE);
-	        m_bChangeStartValue = UT_FALSE;
+               gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wCheckresumelist),FALSE);
+               gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wCheckstartlist),FALSE);
        }
        else
        {
@@ -293,7 +301,12 @@ void  AP_UnixDialog_Lists::startvChanged(void)
 {
        if (GTK_TOGGLE_BUTTON (m_wCur_changestart_button)->active)
        {
-	        m_bChangeStartValue = UT_TRUE;
+	       m_bChangeStartValue = UT_TRUE;
+	       m_bStartList = UT_FALSE;
+	       m_bStopList = UT_FALSE;
+               gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wCheckresumelist),FALSE);
+               gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wCheckstoplist),FALSE);
+               gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wCheckstartlist),FALSE);
        }
        else
        {
@@ -315,17 +328,13 @@ void AP_UnixDialog_Lists::setAllSensitivity(void)
        PopulateDialogData();
        if(m_isListAtPoint == UT_TRUE)
        {
-	       if(isLastOnLevel())
-		       gtk_widget_set_sensitive( m_wCheckstoplist,TRUE);
-	       else
-	       {
-		       gtk_widget_set_sensitive( m_wCheckstoplist,FALSE);
-		       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wCheckstoplist),FALSE);
-	       }
+	       gtk_widget_set_sensitive( m_wCheckstoplist,TRUE);
 	       gtk_widget_set_sensitive( m_wCur_listtype,TRUE);
 	       gtk_widget_set_sensitive( m_wCur_listtypev,TRUE);
 	       gtk_widget_set_sensitive( m_wCur_listlabel,TRUE);
 	       gtk_widget_set_sensitive( m_wCur_listlabelv,TRUE);
+	       gtk_widget_set_sensitive( m_wCheckresumelist,FALSE);
+               gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wCheckresumelist),FALSE);
        }
        else
        {
@@ -342,6 +351,16 @@ void AP_UnixDialog_Lists::setAllSensitivity(void)
 	       gtk_widget_set_sensitive( m_wCur_Option_types,FALSE);
 	       gtk_widget_set_sensitive( m_wCur_startingvaluel,FALSE);
 	       gtk_widget_set_sensitive( m_wCur_startingvaluev,FALSE);
+	       if(m_previousListExistsAtPoint == UT_TRUE)
+	       {
+	               gtk_widget_set_sensitive( m_wCheckresumelist,TRUE);
+	       }
+	       else
+	       {
+	               gtk_widget_set_sensitive( m_wCheckresumelist,FALSE);
+		       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wCheckresumelist),FALSE);
+	       }
+
        }
        if(!GTK_TOGGLE_BUTTON( m_wCur_changestart_button)->active)
        {
@@ -353,9 +372,11 @@ void AP_UnixDialog_Lists::setAllSensitivity(void)
        if(GTK_TOGGLE_BUTTON( m_wCheckstoplist)->active)
        {
 	       gtk_widget_set_sensitive( m_wCur_changestart_button,FALSE);
+	       gtk_widget_set_sensitive( m_wCheckresumelist,FALSE);
 	       gtk_widget_set_sensitive( m_wCur_Option_types,FALSE);
 	       gtk_widget_set_sensitive( m_wCur_startingvaluel,FALSE);
 	       gtk_widget_set_sensitive( m_wCur_startingvaluev,FALSE);
+               gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wCheckresumelist),FALSE);
        }
        else if(m_isListAtPoint == UT_TRUE)
        {
@@ -374,6 +395,9 @@ void AP_UnixDialog_Lists::setAllSensitivity(void)
 	       gtk_widget_set_sensitive( m_wOption_types_menu,TRUE);
 	       gtk_widget_set_sensitive( m_wNew_startingvaluel,TRUE);
 	       gtk_widget_set_sensitive( m_wNew_startingvaluev,TRUE);
+	       gtk_widget_set_sensitive( m_wCheckresumelist,FALSE);
+               gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wCur_changestart_button),FALSE);
+               gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wCheckresumelist),FALSE);
        }
        else
        {
@@ -443,24 +467,24 @@ GtkWidget * AP_UnixDialog_Lists::_constructWindow (void)
 GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 {
         GtkWidget *contents;
-	GtkWidget *hbox1;
+	GtkWidget *stopResumeList;
 	GtkWidget *check_startlist;
 	GtkWidget *check_stoplist;
+	GtkWidget *check_resumelist;
 	GtkWidget *hseparator1;
-	GtkWidget *hbox2;
+	GtkWidget *defineNewList;
 	GtkWidget *new_startingvaluel;
 	GtkWidget *new_startingvaluev;
 	GtkWidget *new_listtype;
 	GtkWidget *option_types;
 	GtkWidget *option_types_menu;
-	GtkWidget *glade_menuitem;
 	GtkWidget *hseparator2;
-	GtkWidget *hbox4;
+	GtkWidget *dispCurrentList;
 	GtkWidget *cur_listtype;
 	GtkWidget *cur_listtypev;
 	GtkWidget *cur_listlabel;
 	GtkWidget *cur_listlabelv;
-	GtkWidget *hbox5;
+	GtkWidget *changeCurrentList;
 	GtkWidget *cur_changestart_button;
 	GtkWidget *change_option_types;
 	GtkWidget *change_option_types_menu;
@@ -472,110 +496,36 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 
 	contents = gtk_vbox_new (FALSE, 0);
 
-	hbox1 = gtk_hbox_new (FALSE, 0);
-	gtk_box_pack_start (GTK_BOX (contents), hbox1, TRUE, TRUE, 0);
+	//--------Display Current List Stuff--------------------------------
 
-	check_startlist = gtk_check_button_new_with_label (
-	       pSS->getValue(AP_STRING_ID_DLG_Lists_Start_New_List));
-	gtk_box_pack_start (GTK_BOX (hbox1), check_startlist, TRUE, FALSE, 2);
-	gtk_container_set_border_width (GTK_CONTAINER (check_startlist), 6);
-
-	check_stoplist = gtk_check_button_new_with_label (
-	       pSS->getValue(AP_STRING_ID_DLG_Lists_Stop_Current_List));
-	gtk_box_pack_start (GTK_BOX (hbox1), check_stoplist, TRUE, FALSE, 10);
-	gtk_container_set_border_width (GTK_CONTAINER (check_stoplist), 7);
-
-	hseparator1 = gtk_hseparator_new ();
-	gtk_box_pack_start (GTK_BOX (contents), hseparator1, TRUE, TRUE, 0);
-
-	hbox2 = gtk_hbox_new (FALSE, 0);
-	gtk_box_pack_start (GTK_BOX (contents), hbox2, TRUE, TRUE, 0);
-
-	new_listtype = gtk_label_new (
-	       pSS->getValue(AP_STRING_ID_DLG_Lists_New_List_Type));
-	gtk_box_pack_start (GTK_BOX (hbox2), new_listtype, FALSE, FALSE, 0);
-	gtk_misc_set_padding (GTK_MISC (new_listtype), 6, 0);
-
-	//-----------------------------------------------------------
-        // Choose New List type menu
-        //-----------------------------------------------------------
-
-	option_types = gtk_option_menu_new ();
-        gtk_widget_show (option_types);
-
-	gtk_box_pack_start (GTK_BOX (hbox2), option_types, FALSE, FALSE, 0);
-	gtk_container_set_border_width (GTK_CONTAINER (option_types), 1);
-
-	option_types_menu = gtk_menu_new ();
-        gtk_widget_show (option_types_menu);
-
-	glade_menuitem = gtk_menu_item_new_with_label (
-	       pSS->getValue(AP_STRING_ID_DLG_Lists_Numbered_List));
-        gtk_widget_show (glade_menuitem);
-	gtk_object_set_user_data(GTK_OBJECT(glade_menuitem),GINT_TO_POINTER(0));
-	gtk_menu_append (GTK_MENU (option_types_menu), glade_menuitem);
-
-        glade_menuitem = gtk_menu_item_new_with_label (
-	       pSS->getValue(AP_STRING_ID_DLG_Lists_Lower_Case_List));
-        gtk_widget_show (glade_menuitem);
-	gtk_object_set_user_data(GTK_OBJECT(glade_menuitem),GINT_TO_POINTER(1));
-	gtk_menu_append (GTK_MENU (option_types_menu), glade_menuitem);
-
-	glade_menuitem = gtk_menu_item_new_with_label (
-	       pSS->getValue(AP_STRING_ID_DLG_Lists_Upper_Case_List));
-        gtk_widget_show (glade_menuitem);
-	gtk_object_set_user_data(GTK_OBJECT(glade_menuitem),GINT_TO_POINTER(2));
-	gtk_menu_append (GTK_MENU (option_types_menu), glade_menuitem);
-
-	glade_menuitem = gtk_menu_item_new_with_label (
-	       pSS->getValue(AP_STRING_ID_DLG_Lists_Bullet_List));
-        gtk_widget_show (glade_menuitem);
-	gtk_object_set_user_data(GTK_OBJECT(glade_menuitem),GINT_TO_POINTER(3));
-	gtk_menu_append (GTK_MENU (option_types_menu), glade_menuitem);
-
-	gtk_option_menu_set_menu (GTK_OPTION_MENU (option_types), option_types_menu);
-        gtk_menu_set_active(GTK_MENU (option_types_menu),0);
-
-	//--------End of Choose New List Type Menu --------------------
-
-	new_startingvaluel = gtk_label_new (
-	       pSS->getValue(AP_STRING_ID_DLG_Lists_Starting_Value));
-	gtk_box_pack_start (GTK_BOX (hbox2), new_startingvaluel, FALSE, FALSE, 12);
-	gtk_label_set_line_wrap (GTK_LABEL (new_startingvaluel), TRUE);
-	new_startingvaluev = gtk_entry_new ();
-	gtk_box_pack_end (GTK_BOX (hbox2), new_startingvaluev, FALSE, FALSE, 1);
-	gtk_widget_set_usize (new_startingvaluev, 90, -2);
-	gtk_entry_set_text (GTK_ENTRY ( new_startingvaluev),"1");
-
-	hseparator2 = gtk_hseparator_new ();
-	gtk_box_pack_start (GTK_BOX (contents), hseparator2, TRUE, TRUE, 0);
-
-	hbox4 = gtk_hbox_new (FALSE, 0);
-	gtk_box_pack_start (GTK_BOX (contents), hbox4, TRUE, TRUE, 0);
+	dispCurrentList = gtk_hbox_new (FALSE, 0);
+	gtk_box_pack_start (GTK_BOX (contents), dispCurrentList, TRUE, TRUE, 0);
 
 	cur_listtype = gtk_label_new (
 	       pSS->getValue(AP_STRING_ID_DLG_Lists_Current_List_Type));
-	gtk_box_pack_start (GTK_BOX (hbox4), cur_listtype, FALSE, FALSE, 0);
+	gtk_box_pack_start (GTK_BOX (dispCurrentList), cur_listtype, FALSE, FALSE, 0);
 	gtk_misc_set_padding (GTK_MISC (cur_listtype), 8, 0);
 
         cur_listtypev = gtk_label_new ("");
-	gtk_box_pack_start (GTK_BOX (hbox4), cur_listtypev, FALSE, FALSE, 0);
+	gtk_box_pack_start (GTK_BOX (dispCurrentList), cur_listtypev, FALSE, FALSE, 0);
 	gtk_misc_set_padding (GTK_MISC (cur_listtypev), 5, 0);
 
         cur_listlabel = gtk_label_new (
 	       pSS->getValue(AP_STRING_ID_DLG_Lists_Current_List_Label));
-	gtk_box_pack_start (GTK_BOX (hbox4), cur_listlabel, FALSE, FALSE, 0);
+	gtk_box_pack_start (GTK_BOX (dispCurrentList), cur_listlabel, FALSE, FALSE, 0);
 	gtk_misc_set_padding (GTK_MISC (cur_listlabel), 18, 0);
 
 	cur_listlabelv = gtk_label_new ("");
-	gtk_box_pack_start (GTK_BOX (hbox4), cur_listlabelv, FALSE, FALSE, 0);
+	gtk_box_pack_start (GTK_BOX (dispCurrentList), cur_listlabelv, FALSE, FALSE, 0);
 
-	hbox5 = gtk_hbox_new (FALSE, 0);
-	gtk_box_pack_start (GTK_BOX (contents), hbox5, TRUE, TRUE, 0);
+	// --------- Change Current list region--------------------------
+
+	changeCurrentList = gtk_hbox_new (FALSE, 0);
+	gtk_box_pack_start (GTK_BOX (contents), changeCurrentList, TRUE, TRUE, 0);
 
 	cur_changestart_button = gtk_check_button_new_with_label (
 	       pSS->getValue(AP_STRING_ID_DLG_Lists_Cur_Change_Start));
-	gtk_box_pack_start (GTK_BOX (hbox5), cur_changestart_button, FALSE, FALSE, 0);
+	gtk_box_pack_start (GTK_BOX (changeCurrentList), cur_changestart_button, FALSE, FALSE, 0);
 	gtk_container_set_border_width (GTK_CONTAINER (cur_changestart_button), 6);
 
 	//-----------------------------------------------------------
@@ -585,55 +535,101 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 	change_option_types = gtk_option_menu_new ();
         gtk_widget_show (change_option_types);
 
-	gtk_box_pack_start (GTK_BOX (hbox5), change_option_types, FALSE, FALSE, 0);
-	//	gtk_container_set_border_width (GTK_CONTAINER (change_option_types), 1);
+
+	gtk_box_pack_start (GTK_BOX (changeCurrentList), change_option_types, FALSE, FALSE, 0);
+	gtk_container_set_border_width (GTK_CONTAINER (change_option_types), 1);
 
 	change_option_types_menu = gtk_menu_new ();
         gtk_widget_show (change_option_types_menu);
-
-	glade_menuitem = gtk_menu_item_new_with_label (
-	       pSS->getValue(AP_STRING_ID_DLG_Lists_Numbered_List));
-        gtk_widget_show (glade_menuitem);
-	gtk_object_set_user_data(GTK_OBJECT(glade_menuitem),GINT_TO_POINTER(0));
-	gtk_menu_append (GTK_MENU (change_option_types_menu), glade_menuitem);
-
-        glade_menuitem = gtk_menu_item_new_with_label (
-	       pSS->getValue(AP_STRING_ID_DLG_Lists_Lower_Case_List));
-        gtk_widget_show (glade_menuitem);
-	gtk_object_set_user_data(GTK_OBJECT(glade_menuitem),GINT_TO_POINTER(1));
-	gtk_menu_append (GTK_MENU (change_option_types_menu), glade_menuitem);
-
-	glade_menuitem = gtk_menu_item_new_with_label (
-	       pSS->getValue(AP_STRING_ID_DLG_Lists_Upper_Case_List));
-        gtk_widget_show (glade_menuitem);
-	gtk_object_set_user_data(GTK_OBJECT(glade_menuitem),GINT_TO_POINTER(2));
-	gtk_menu_append (GTK_MENU (change_option_types_menu), glade_menuitem);
-
-	glade_menuitem = gtk_menu_item_new_with_label (
-	       pSS->getValue(AP_STRING_ID_DLG_Lists_Bullet_List));
-        gtk_widget_show (glade_menuitem);
-	gtk_object_set_user_data(GTK_OBJECT(glade_menuitem),GINT_TO_POINTER(3));
-	gtk_menu_append (GTK_MENU (change_option_types_menu), glade_menuitem);
-
-	gtk_option_menu_set_menu (GTK_OPTION_MENU (change_option_types), change_option_types_menu);
+	_fillListTypeMenu(change_option_types_menu);
+	gtk_option_menu_set_menu (GTK_OPTION_MENU (change_option_types),change_option_types_menu );
         gtk_menu_set_active(GTK_MENU (change_option_types_menu),0);
-
-	//----- end of new listype menu -------------------------
 
 	cur_startingvaluel = gtk_label_new (
 	       pSS->getValue(AP_STRING_ID_DLG_Lists_Starting_Value));
-	gtk_box_pack_start (GTK_BOX (hbox5), cur_startingvaluel, FALSE, FALSE, 12);
+	gtk_box_pack_start (GTK_BOX (changeCurrentList), cur_startingvaluel, FALSE, FALSE, 12);
 	gtk_label_set_line_wrap (GTK_LABEL (cur_startingvaluel), TRUE);
 	cur_startingvaluev = gtk_entry_new ();
-	gtk_box_pack_end (GTK_BOX (hbox5), cur_startingvaluev, FALSE, FALSE, 1);
+	gtk_box_pack_end (GTK_BOX (changeCurrentList), cur_startingvaluev, FALSE, FALSE, 1);
 	gtk_widget_set_usize (cur_startingvaluev, 90, -2);
 	gtk_entry_set_text (GTK_ENTRY ( cur_startingvaluev),"1");
+
+
+	//----- end of Change Current listype menu -------------------------
+
+	//--------- Start New List --------------------------------
+
+	hseparator1 = gtk_hseparator_new ();
+	gtk_box_pack_start (GTK_BOX (contents), hseparator1, TRUE, TRUE, 0);
+
+	defineNewList = gtk_hbox_new (FALSE, 0);
+	gtk_box_pack_start (GTK_BOX (contents), defineNewList, TRUE, TRUE, 0);
+
+
+	check_startlist = gtk_check_button_new_with_label (
+	       pSS->getValue(AP_STRING_ID_DLG_Lists_Start_New_List));
+	gtk_box_pack_start (GTK_BOX (defineNewList), check_startlist, TRUE, FALSE, 2);
+	gtk_container_set_border_width (GTK_CONTAINER (check_startlist), 6);
+
+	new_listtype = gtk_label_new (
+	       pSS->getValue(AP_STRING_ID_DLG_Lists_New_List_Type));
+	gtk_box_pack_start (GTK_BOX (defineNewList), new_listtype, FALSE, FALSE, 0);
+	gtk_misc_set_padding (GTK_MISC (new_listtype), 6, 0);
+
+	//-----------------------------------------------------------
+        // Define New List type menu
+        //-----------------------------------------------------------
+
+	option_types = gtk_option_menu_new ();
+        gtk_widget_show (option_types);
+
+	gtk_box_pack_start (GTK_BOX (defineNewList), option_types, FALSE, FALSE, 0);
+	gtk_container_set_border_width (GTK_CONTAINER (option_types), 1);
+
+	option_types_menu = gtk_menu_new ();
+        gtk_widget_show (option_types_menu);
+
+	_fillListTypeMenu(option_types_menu);
+	gtk_option_menu_set_menu (GTK_OPTION_MENU (option_types),option_types_menu );
+        gtk_menu_set_active(GTK_MENU (option_types_menu),0);
+
+	new_startingvaluel = gtk_label_new (
+	       pSS->getValue(AP_STRING_ID_DLG_Lists_Starting_Value));
+	gtk_box_pack_start (GTK_BOX (defineNewList), new_startingvaluel, FALSE, FALSE, 12);
+	gtk_label_set_line_wrap (GTK_LABEL (new_startingvaluel), TRUE);
+	new_startingvaluev = gtk_entry_new ();
+	gtk_box_pack_end (GTK_BOX (defineNewList), new_startingvaluev, FALSE, FALSE, 1);
+	gtk_widget_set_usize (new_startingvaluev, 90, -2);
+	gtk_entry_set_text (GTK_ENTRY ( new_startingvaluev),"1");
+
+	//
+	//--------End of Define New List Type Menu --------------------
+        //-------Stop List / Resume List checkboxes -------------------
+	//
+
+	hseparator2 = gtk_hseparator_new ();
+	gtk_box_pack_start (GTK_BOX (contents), hseparator2, TRUE, TRUE, 0);
+
+	stopResumeList = gtk_hbox_new (FALSE, 0);
+	gtk_box_pack_start (GTK_BOX (contents), stopResumeList, TRUE, TRUE, 0);
+
+	check_stoplist = gtk_check_button_new_with_label (
+	       pSS->getValue(AP_STRING_ID_DLG_Lists_Stop_Current_List));
+	gtk_box_pack_start (GTK_BOX (stopResumeList), check_stoplist, TRUE, FALSE, 10);
+	gtk_container_set_border_width (GTK_CONTAINER (check_stoplist), 7);
+
+
+	check_resumelist = gtk_check_button_new_with_label (
+	       pSS->getValue(AP_STRING_ID_DLG_Lists_Resume_Previous_List));
+	gtk_box_pack_start (GTK_BOX (stopResumeList), check_resumelist, TRUE, FALSE, 10);
+	gtk_container_set_border_width (GTK_CONTAINER (check_resumelist), 7);
 
 	// Save useful widgets in member variables
 
 	m_wContents = contents;
 	m_wCheckstartlist = check_startlist;
 	m_wCheckstoplist = check_stoplist;
+	m_wCheckresumelist = check_resumelist;
 	m_wNewlisttypel = new_listtype;
         m_wOption_types = option_types;
         m_wOption_types_menu = option_types_menu;
@@ -649,6 +645,37 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 	m_wCur_startingvaluel = cur_startingvaluel;
 	m_wCur_startingvaluev = cur_startingvaluev;
 	return contents;
+}
+
+void AP_UnixDialog_Lists::_fillListTypeMenu( GtkWidget *listmenu)
+{
+        GtkWidget *glade_menuitem;
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
+
+	glade_menuitem = gtk_menu_item_new_with_label (
+	       pSS->getValue(AP_STRING_ID_DLG_Lists_Numbered_List));
+        gtk_widget_show (glade_menuitem);
+	gtk_object_set_user_data(GTK_OBJECT(glade_menuitem),GINT_TO_POINTER(0));
+	gtk_menu_append (GTK_MENU (listmenu), glade_menuitem);
+
+        glade_menuitem = gtk_menu_item_new_with_label (
+	       pSS->getValue(AP_STRING_ID_DLG_Lists_Lower_Case_List));
+        gtk_widget_show (glade_menuitem);
+	gtk_object_set_user_data(GTK_OBJECT(glade_menuitem),GINT_TO_POINTER(1));
+	gtk_menu_append (GTK_MENU (listmenu), glade_menuitem);
+
+	glade_menuitem = gtk_menu_item_new_with_label (
+	       pSS->getValue(AP_STRING_ID_DLG_Lists_Upper_Case_List));
+        gtk_widget_show (glade_menuitem);
+	gtk_object_set_user_data(GTK_OBJECT(glade_menuitem),GINT_TO_POINTER(2));
+	gtk_menu_append (GTK_MENU (listmenu), glade_menuitem);
+
+	glade_menuitem = gtk_menu_item_new_with_label (
+	       pSS->getValue(AP_STRING_ID_DLG_Lists_Bullet_List));
+        gtk_widget_show (glade_menuitem);
+	gtk_object_set_user_data(GTK_OBJECT(glade_menuitem),GINT_TO_POINTER(3));
+	gtk_menu_append (GTK_MENU (listmenu), glade_menuitem);
+
 }
 
 void AP_UnixDialog_Lists::_populateWindowData (void) 

@@ -68,6 +68,7 @@ public:
 	tAnswer						m_answer;
 	char                                            m_WindowName[100];
 	UT_Bool                                         m_isListAtPoint;
+	UT_Bool                                         m_previousListExistsAtPoint;
         char                                            m_curListType[100];
 	char                                            m_newListType[100];
         char                                            m_curListLabel[100];
