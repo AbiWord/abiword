@@ -40,6 +40,7 @@
 #include "ut_wctomb.h"
 #include "ut_path.h"
 #include "ut_math.h"
+#include "ut_misc.h"
 #include "ut_string_class.h"
 
 #include "xap_App.h"
@@ -4868,52 +4869,27 @@ UT_Error IE_Exp_HTML::_writeDocument ()
 
 	prop = getProperty ("html4");
 	if (prop)
-		{
-			if (*prop == "yes")
-				m_exp_opt.bIs4 = true;
-			else if (*prop == "no")
-				m_exp_opt.bIs4 = false;
-		}
+		m_exp_opt.bIs4 = UT_parseBool (prop->utf8_str (), m_exp_opt.bIs4);
+
 	prop = getProperty ("php-includes");
 	if (prop)
-		{
-			if (*prop == "yes")
-				m_exp_opt.bIsAbiWebDoc = true;
-			else if (*prop == "no")
-				m_exp_opt.bIsAbiWebDoc = false;
-		}
+		m_exp_opt.bIsAbiWebDoc = UT_parseBool (prop->utf8_str (), m_exp_opt.bIsAbiWebDoc);
+
 	prop = getProperty ("declare-xml");
 	if (prop)
-		{
-			if (*prop == "yes")
-				m_exp_opt.bDeclareXML = true;
-			else if (*prop == "no")
-				m_exp_opt.bDeclareXML = false;
-		}
+		m_exp_opt.bDeclareXML = UT_parseBool (prop->utf8_str (), m_exp_opt.bDeclareXML);
+
 	prop = getProperty ("use-awml");
 	if (prop)
-		{
-			if (*prop == "yes")
-				m_exp_opt.bAllowAWML = true;
-			else if (*prop == "no")
-				m_exp_opt.bAllowAWML = false;
-		}
+		m_exp_opt.bAllowAWML = UT_parseBool (prop->utf8_str (), m_exp_opt.bAllowAWML);
+
 	prop = getProperty ("embed-css");
 	if (prop)
-		{
-			if (*prop == "yes")
-				m_exp_opt.bEmbedCSS = true;
-			else if (*prop == "no")
-				m_exp_opt.bEmbedCSS = false;
-		}
+		m_exp_opt.bEmbedCSS = UT_parseBool (prop->utf8_str (), m_exp_opt.bEmbedCSS);
+
 	prop = getProperty ("embed-images");
 	if (prop)
-		{
-			if (*prop == "yes")
-				m_exp_opt.bEmbedImages = true;
-			else if (*prop == "no")
-				m_exp_opt.bEmbedImages = false;
-		}
+		m_exp_opt.bEmbedImages = UT_parseBool (prop->utf8_str (), m_exp_opt.bEmbedImages);
 
 	prop = getProperty ("html-template");
 	if (!prop)
