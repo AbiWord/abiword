@@ -47,6 +47,10 @@ static char Rcs_Id[] =
 
 /*
  * $Log$
+ * Revision 1.6  1999/04/13 17:12:51  jeff
+ * Applied "Darren O. Benham" <gecko@benham.net> spell check changes.
+ * Fixed crash on Win32 with the new code.
+ *
  * Revision 1.5  1999/01/07 01:07:48  paul
  * Fixed spell leaks.
  *
@@ -121,6 +125,8 @@ static void	dumpindex P ((struct flagptr * indexp, int depth));
 static void	clearindex P ((struct flagptr * indexp));
 struct dent *	ispell_lookup P ((ichar_t * word, int dotree));
 
+int		gnMaskBits = 64;
+
 static		inited = 0;
 
 int linit (hashname)
@@ -132,7 +138,7 @@ char *hashname; /* name of the hash file (dictionary) */
     register struct dent * dp;
     struct flagent *	entry;
     struct flagptr *	ind;
-    int			nextchar;
+    int			nextchar, x;
     int			viazero;
     register ichar_t *	cp;
 
@@ -172,7 +178,8 @@ char *hashname; /* name of the hash file (dictionary) */
 	    (unsigned int) hashheader.magic2));
 	return (-1);
 	}
-    else if (hashheader.compileoptions != COMPILEOPTIONS
+/*    else if (hashheader.compileoptions != COMPILEOPTIONS*/
+    else if ( 1 != 1
       ||  hashheader.maxstringchars != MAXSTRINGCHARS
       ||  hashheader.maxstringcharlen != MAXSTRINGCHARLEN)
 	{
@@ -210,7 +217,7 @@ char *hashname; /* name of the hash file (dictionary) */
 	{
 	hashtbl =
 	 (struct dent *)
-	    malloc ((unsigned) hashheader.tblsize * sizeof (struct dent));
+	    calloc ((unsigned) hashheader.tblsize, sizeof (struct dent));
 	hashsize = hashheader.tblsize;
 	hashstrings = (char *) malloc ((unsigned) hashheader.stringsize);
 	}
@@ -225,37 +232,35 @@ char *hashname; /* name of the hash file (dictionary) */
 	}
     pflaglist = sflaglist + numsflags;
 
-#if 0 /* DELETE_ME */
-    if (nodictflag)
 	{
-	/*
-	 * Read just the strings for the language table, and
-	 * skip over the rest of the strings and all of the
-	 * hash table.
-	 */
-	if (fread (hashstrings, 1, (unsigned) hashheader.lstringsize, fpHash)
-	  != hashheader.lstringsize)
+		if( fread ( hashstrings, 1, (unsigned)hashheader.stringsize, fpHash) 
+			!= ((size_t)(hashheader.stringsize)) )
 	    {
-	    (void) fprintf (stderr, LOOKUP_C_BAD_FORMAT);
-	    return (-1);
+		    (void) fprintf (stderr, LOOKUP_C_BAD_FORMAT);
+			(void) fprintf (stderr, "stringsize err\n" );
+	    	return (-1);
 	    }
-	(void) fseek (fpHash,
-	  (long) hashheader.stringsize - (long) hashheader.lstringsize
-	    + (long) hashheader.tblsize * (long) sizeof (struct dent),
-	  SEEK_SET);
-	}
-    else
-#endif /*DELETE_ME */
-	{
-	if (fread (hashstrings, 1, (unsigned) hashheader.stringsize, fpHash)
-	    != ((size_t) (hashheader.stringsize))
-	  ||  fread ((char *) hashtbl, 1,
-	      (unsigned) hashheader.tblsize * sizeof (struct dent), fpHash)
-	    != ((size_t) (hashheader.tblsize * sizeof (struct dent))))
-	    {
-	    (void) fprintf (stderr, LOOKUP_C_BAD_FORMAT);
-	    return (-1);
-	    }
+		if ( hashheader.compileoptions & 0x04 )
+		{
+			if(  fread ((char *) hashtbl, 1, (unsigned)hashheader.tblsize * sizeof(struct dent), fpHash)
+		    	!= ((size_t) (hashheader.tblsize * sizeof (struct dent))))
+		    {
+			    (void) fprintf (stderr, LOOKUP_C_BAD_FORMAT);
+		    	return (-1);
+		    }
+		}
+		else
+		{
+			for( x=0; x<hashheader.tblsize; x++ )
+			{
+				if(  fread ( (char*)(hashtbl+x), sizeof( struct dent)-sizeof( MASKTYPE ), 1, fpHash)
+			    	!= 1)
+			    {
+				    (void) fprintf (stderr, LOOKUP_C_BAD_FORMAT);
+			    	return (-1);
+			    }
+			}	/*for*/
+		}	/*else*/
 	}
     if (fread ((char *) sflaglist, 1,
 	(unsigned) (numsflags + numpflags) * sizeof (struct flagent), fpHash)

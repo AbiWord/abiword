@@ -42,6 +42,10 @@
 
 /*
  * $Log$
+ * Revision 1.7  1999/04/13 17:12:51  jeff
+ * Applied "Darren O. Benham" <gecko@benham.net> spell check changes.
+ * Fixed crash on Win32 with the new code.
+ *
  * Revision 1.6  1999/01/07 05:14:22  sterwill
  * So it builds on Unix... it might break win32 in ispell, since ut_types
  * is no longer included.  This is a temporary solution to a larger problem
@@ -147,10 +151,11 @@
 ** Note that a number of non-English affix files depend on having a
 ** larger value for MASKBITS.  See the affix files for more
 ** information.
-*/
 #ifndef MASKBITS
-#define MASKBITS	32
+#define MASKBITS	64
 #endif
+*/
+extern int		gnMaskBits;
 
 /*
 ** C type to use for masks.  This should be a type that the processor
@@ -170,10 +175,11 @@
 #ifndef MASKTYPE_WIDTH
 #define MASKTYPE_WIDTH	32
 #endif
+/* program: this should be coded now in init
 #if MASKBITS < MASKTYPE_WIDTH
 #undef MASKBITS
 #define MASKBITS	MASKTYPE_WIDTH
-#endif /* MASKBITS < MASKTYPE_WIDTH */
+#endif / * MASKBITS < MASKTYPE_WIDTH */
 
 /*
 ** Maximum hash table fullness percentage.  Larger numbers trade space
@@ -254,65 +260,35 @@
 #define SET_SIZE	256
 #endif
 
-#define MASKSIZE	(MASKBITS / MASKTYPE_WIDTH)
+/*#define MASKSIZE	(gnMaskBits / MASKTYPE_WIDTH)*/
 
 #ifdef lint
-extern void	SETMASKBIT P ((MASKTYPE * mask, int bit));
-extern void	CLRMASKBIT P ((MASKTYPE * mask, int bit));
 extern int	TSTMASKBIT P ((MASKTYPE * mask, int bit));
 #else /* lint */
 /* The following is really testing for MASKSIZE <= 1, but cpp can't do that */
-#if MASKBITS <= MASKTYPE_WIDTH
-#define SETMASKBIT(mask, bit) ((mask)[0] |= (MASKTYPE) 1 << (bit))
-#define CLRMASKBIT(mask, bit) ((mask)[0] &= (MASKTYPE) ~(1 << (bit)))
-#define TSTMASKBIT(mask, bit) ((mask)[0] & ((MASKTYPE) 1 << (bit)))
-#else
-#define SETMASKBIT(mask, bit) \
-		    ((mask)[(bit) / MASKTYPE_WIDTH] |= \
-		      (MASKTYPE) 1 << ((bit) & (MASKTYPE_WIDTH - 1)))
-#define CLRMASKBIT(mask, bit) \
-		    ((mask)[(bit) / MASKTYPE_WIDTH] &= \
-		      ~((MASKTYPE) 1 << ((bit) & (MASKTYPE_WIDTH - 1))))
 #define TSTMASKBIT(mask, bit) \
 		    ((mask)[(bit) / MASKTYPE_WIDTH] & \
 		      ((MASKTYPE) 1 << ((bit) & (MASKTYPE_WIDTH - 1))))
-#endif
 #endif /* lint */
 
+/*
 #if MASKBITS > 64
 #define FULLMASKSET
 #endif
+*/
 
-#ifdef lint
-extern int	BITTOCHAR P ((int bit));
-extern int	CHARTOBIT P ((int ch));
-#endif /* lint */
-
+#define FLAGBASE	((MASKTYPE_WIDTH) - 6)
+/*
 #if MASKBITS <= 32
-# ifndef lint
-#define BITTOCHAR(bit)	((bit) + 'A')
-#define CHARTOBIT(ch)	((ch) - 'A')
-# endif /* lint */
-#define LARGESTFLAG	26	/* 5 are needed for flagfield below */
-#define FLAGBASE	((MASKTYPE_WIDTH) - 6)
+	#define FLAGBASE	((MASKTYPE_WIDTH) - 6)
 #else
-# if MASKBITS <= 64
-#  ifndef lint
-#define BITTOCHAR(bit)	((bit) + 'A')
-#define CHARTOBIT(ch)	((ch) - 'A')
-#  endif /* lint */
-#define LARGESTFLAG	(64 - 6) /* 5 are needed for flagfield below */
-#define FLAGBASE	((MASKTYPE_WIDTH) - 6)
-# else
-#  ifndef lint
-#define BITTOCHAR(bit)	(bit)
-#define CHARTOBIT(ch)	(ch)
-#  endif /* lint */
-#define LARGESTFLAG	MASKBITS /* flagfield is a separate field */
-#define FLAGBASE	0
-# endif
+	# if MASKBITS <= 64
+		#define FLAGBASE	((MASKTYPE_WIDTH) - 6)
+	# else
+		#define FLAGBASE	0
+	# endif
 #endif
-
+*/
 /*
 ** Data type for internal word storage.  If necessary, we use shorts rather
 ** than chars so that string characters can be encoded as a single unit.
@@ -367,7 +343,7 @@ struct dent
     {
     struct dent *	next;
     char *		word;
-    MASKTYPE		mask[MASKSIZE];
+    MASKTYPE		mask[2];
 #ifdef FULLMASKSET
     char		flags;
 #endif
@@ -442,7 +418,7 @@ struct dent
 #ifdef FULLMASKSET
 #define flagfield	flags
 #else
-#define flagfield	mask[MASKSIZE - 1]
+#define flagfield	mask[1]
 #endif
 #define USED		((MASKTYPE) 1 << (FLAGBASE + 0))
 #define KEEP		((MASKTYPE) 1 << (FLAGBASE + 1))
@@ -555,11 +531,12 @@ struct hashheader
 #else
 # define MAGICCAPITALIZATION	0x02
 #endif
+#  define MAGICMASKSET		0x04
+/*
 #if MASKBITS <= 32
 # define MAGICMASKSET		0x00
 #else
 # if MASKBITS <= 64
-#  define MAGICMASKSET		0x04
 # else
 #  if MASKBITS <= 128
 #   define MAGICMASKSET		0x08
@@ -568,6 +545,7 @@ struct hashheader
 #  endif
 # endif
 #endif
+*/
 
 #define COMPILEOPTIONS	(MAGIC8BIT | MAGICCAPITALIZATION | MAGICMASKSET)
 

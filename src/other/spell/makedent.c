@@ -43,7 +43,12 @@ static char Rcs_Id[] =
 
 /*
  * $Log$
+ * Revision 1.4  1999/04/13 17:12:51  jeff
+ * Applied "Darren O. Benham" <gecko@benham.net> spell check changes.
+ * Fixed crash on Win32 with the new code.
+ *
  * Revision 1.3  1998/12/29 14:55:33  eric
+ *
  * I've doctored the ispell code pretty extensively here.  It is now
  * warning-free on Win32.  It also *works* on Win32 now, since I
  * replaced all the I/O calls with ANSI standard ones.
@@ -98,24 +103,27 @@ int		makedent P ((char * lbuf, int lbuflen, struct dent * ent));
 long		whatcap P ((ichar_t * word));
 #endif
 int		addvheader P ((struct dent * ent));
-int		combinecaps P ((struct dent * hdr, struct dent * newent));
+/*int		combinecaps P ((struct dent * hdr, struct dent * newent));
 #ifndef NO_CAPITALIZATION_SUPPORT
 static void	forcevheader P ((struct dent * hdrp, struct dent * oldp,
 		  struct dent * newp));
-#endif /* NO_CAPITALIZATION_SUPPORT */
+#endif / * NO_CAPITALIZATION_SUPPORT * /
 static int	combine_two_entries P ((struct dent * hdrp,
 		  struct dent * oldp, struct dent * newp));
 static int	acoversb P ((struct dent * enta, struct dent * entb));
+*/
 void		upcase P ((ichar_t * string));
 void		lowcase P ((ichar_t * string));
 void		chupcase P ((char * s));
-static int	issubset P ((struct dent * ent1, struct dent * ent2));
-static void	combineaffixes P ((struct dent * ent1, struct dent * ent2));
+/*static int	issubset P ((struct dent * ent1, struct dent * ent2));
+static void	combineaffixes P ((struct dent * ent1, struct dent * ent2));*/
+
 void		toutent P ((FILE * outfile, struct dent * hent,
 		  int onlykeep));
-static void	toutword P ((FILE * outfile, char * word,
+/*static void	toutword P ((FILE * outfile, char * word,
 		  struct dent * cent));
 static void	flagout P ((FILE * outfile, int flag));
+*/
 int		stringcharlen P ((char * bufp, int canonical));
 int		strtoichar P ((ichar_t * out, char * in, int outlen,
 		  int canonical));
@@ -133,114 +141,17 @@ int		icharncmp P ((ichar_t * s1, ichar_t * s2, int n));
 int		findfiletype P ((char * name, int searchnames,
 		  int * deformatter));
 
-static int  	has_marker;
+/*static int  	has_marker;*/
 
 /*
  * Fill in a directory entry, including setting the capitalization flags, and
  * allocate and initialize memory for the d->word field.  Returns -1
  * if there was trouble.  The input word must be in canonical form.
- */
-
 int makedent (lbuf, lbuflen, d)
-    char *		lbuf;
-    int			lbuflen;
-    struct dent *	d;
-    {
-    ichar_t		ibuf[INPUTWORDLEN + MAXAFFIXLEN];
-    ichar_t *		ip;
-    char *		p;
-    int			bit;
-    int			len;
-
-    /* Strip off any trailing newline */
-    len = strlen (lbuf) - 1;
-    if (lbuf[len] == '\n')
-	lbuf[len] = '\0';
-
-    d->next = NULL;
-    /* WARNING:  flagfield might be the same as mask! See ispell.h. */
-    d->flagfield = 0;
-    (void) memset ((char *) d->mask, 0, sizeof (d->mask));
-    d->flagfield |= USED;
-    d->flagfield &= ~KEEP;
-
-    p = strchr (lbuf, hashheader.flagmarker);
-    if (p != NULL)
-	*p = 0;
-
-    /*
-    ** Convert the word to an ichar_t and back;  this makes sure that
-    ** it is in canonical form and thus that the length is correct.
-    */
-    if (strtoichar (ibuf, lbuf, INPUTWORDLEN * sizeof (ichar_t), 1)
-      ||  ichartostr (lbuf, ibuf, lbuflen, 1))
-	{
-	(void) fprintf (stderr, WORD_TOO_LONG (lbuf));
-	return (-1);
-	}
-    /*
-    ** Make sure the word is well-formed (contains only legal characters).
-    */
-    for (ip = ibuf;  *ip != 0;  ip++)
-	{
-	if (!iswordch (*ip))
-	    {
-	    /* Boundary characters are legal as long as they're not at edges */
-	    if (!isboundarych (*ip)
-	      ||  ip == ibuf  ||  ip[1] == 0)
-		{
-		(void) fprintf (stderr, MAKEDENT_C_BAD_WORD_CHAR, lbuf);
-		return -1;
-		}
-	    }
-	}
-    len = strlen (lbuf);
-#ifndef NO_CAPITALIZATION_SUPPORT
-    /*
-    ** Figure out the capitalization rules from the capitalization of
-    ** the sample entry.
-    */
-    d->flagfield |= whatcap (ibuf);
-#endif
-
-    if (len > INPUTWORDLEN - 1)
-	{
-	(void) fprintf (stderr, WORD_TOO_LONG (lbuf));
-	return (-1);
-	}
-
-    d->word = malloc ((unsigned) len + 1);
-    if (d->word == NULL)
-	{
-	(void) fprintf (stderr, MAKEDENT_C_NO_WORD_SPACE, lbuf);
-	return -1;
-	}
-
-    (void) strcpy (d->word, lbuf);
-#ifdef NO_CAPITALIZATION_SUPPORT
-    chupcase (d->word);
-#else /* NO_CAPITALIZATION_SUPPORT */
-    if (captype (d->flagfield) != FOLLOWCASE)
-	chupcase (d->word);
-#endif /* NO_CAPITALIZATION_SUPPORT */
-    if (p == NULL)
-	return (0);
-
-    p++;
-    while (*p != '\0'  &&  *p != '\n')
-	{
-	bit = CHARTOBIT ((unsigned char) *p);
-	if (bit >= 0  &&  bit <= LARGESTFLAG)
-	    SETMASKBIT (d->mask, bit);
-	else
-	    (void) fprintf (stderr, BAD_FLAG, (unsigned char) *p);
-	p++;
-	if (*p == hashheader.flagmarker)
-	    p++;		/* Handle old-format dictionaries too */
-	}
-    return (0);
-    }
-
+This function is not used by AbiWord.  I don't know if it'll be needed for 
+other abi documents
+ */
+	
 #ifndef NO_CAPITALIZATION_SUPPORT
 /*
 ** Classify the capitalization of a sample entry.  Returns one of the
@@ -403,207 +314,11 @@ int addvheader (dp)
 **
 ** For any "hdrp" without variants, oldp is the same as hdrp.  Otherwise,
 ** the above tests are applied using each variant in turn for oldp.
-*/
 int combinecaps (hdrp, newp)
-    struct dent *	hdrp;	/* Header of entry currently in dictionary */
-    register struct dent *
-			newp;	/* Entry to add */
-    {
-    register struct dent *
-			oldp;	/* Current "oldp" entry */
-#ifndef NO_CAPITALIZATION_SUPPORT
-    register struct dent *
-			tdent; /* Entry we'll add to the dictionary */
-#endif /* NO_CAPITALIZATION_SUPPORT */
-    register int	retval = 0; /* Return value from combine_two_entries */
-
-    /*
-    ** First, see if we can combine the two entries (cases 1 and 2).  If
-    ** combine_two_entries does so, it will return 1.  If it has trouble,
-    ** it will return zero.
-    */
-    oldp = hdrp;
-#ifdef NO_CAPITALIZATION_SUPPORT
-    retval = combine_two_entries (hdrp, oldp, newp);
-#else /* NO_CAPITALIZATION_SUPPORT */
-    if ((oldp->flagfield & (CAPTYPEMASK | MOREVARIANTS))
-      == (ALLCAPS | MOREVARIANTS))
-	{
-	while (oldp->flagfield & MOREVARIANTS)
-	    {
-	    oldp = oldp->next;
-	    retval = combine_two_entries (hdrp, oldp, newp);
-	    if (retval != 0)		/* Did we combine them? */
-		break;
-	    }
-	}
-    else
-	retval = combine_two_entries (hdrp, oldp, newp);
-    if (retval == 0)
-	{
-	/*
-	** Couldn't combine the two entries.  Add a new variant.  For
-	** ease, we'll stick it right behind the header, rather than
-	** at the end of the list.
-	*/
-	forcevheader (hdrp, oldp, newp);
-	tdent = (struct dent *) malloc (sizeof (struct dent));
-	if (tdent == NULL)
-	    {
-	    (void) fprintf (stderr, MAKEDENT_C_NO_WORD_SPACE, newp->word);
-	    return -1;
-	    }
-	*tdent = *newp;
-	tdent->next = hdrp->next;
-	hdrp->next = tdent;
-	tdent->flagfield |= (hdrp->flagfield & MOREVARIANTS);
-	hdrp->flagfield |= MOREVARIANTS;
-	combineaffixes (hdrp, newp);
-	hdrp->flagfield |= (newp->flagfield & KEEP);
-	if (captype (newp->flagfield) == FOLLOWCASE)
-	    tdent->word = newp->word;
-	else
-	    {
-	    tdent->word = NULL;
-	    free (newp->word);		/* newp->word isn't needed */
-	    }
-	}
-#endif /* NO_CAPITALIZATION_SUPPORT */
-    return retval;
-    }
-
-#ifndef NO_CAPITALIZATION_SUPPORT
-/*
-** The following routine implements steps 3a and 3b in the commentary
-** for "combinecaps".
-*/
 static void forcevheader (hdrp, oldp, newp)
-    register struct dent *	hdrp;
-    struct dent *		oldp;
-    struct dent *		newp;
-    {
-
-    if ((hdrp->flagfield & (CAPTYPEMASK | MOREVARIANTS)) == ALLCAPS
-      &&  ((oldp->flagfield ^ newp->flagfield) & KEEP) == 0)
-	return;			/* Caller will set MOREVARIANTS */
-    else if ((hdrp->flagfield & (CAPTYPEMASK | MOREVARIANTS))
-      != (ALLCAPS | MOREVARIANTS))
-	(void) addvheader (hdrp);
-    }
-#endif /* NO_CAPITALIZATION_SUPPORT */
-
-/*
-** This routine implements steps 4 and 5 of the commentary for "combinecaps".
-**
-** Returns 1 if newp can be discarded, 0 if nothing done.
-*/
 static int combine_two_entries (hdrp, oldp, newp)
-    struct dent *	hdrp;	/* (Possible) header of variant chain */
-    register struct dent *
-			oldp;	/* Pre-existing dictionary entry */
-    register struct dent *
-			newp;	/* Entry to possibly combine */
-    {
-
-    if (acoversb (oldp, newp))
-	{
-	/* newp is superfluous.  Drop it, preserving affixes and keep flag */
-	combineaffixes (oldp, newp);
-	oldp->flagfield |= (newp->flagfield & KEEP);
-	hdrp->flagfield |= (newp->flagfield & KEEP);
-	free (newp->word);
-	return 1;
-	}
-    else if (acoversb (newp, oldp))
-	{
-	/*
-	** oldp is superfluous.  Replace it with newp, preserving affixes and
-	** the keep flag.
-	*/
-	combineaffixes (newp, oldp);
-#ifdef NO_CAPITALIZATION_SUPPORT
-	newp->flagfield |= (oldp->flagfield & KEEP);
-#else /* NO_CAPITALIZATION_SUPPORT */
-	newp->flagfield |= (oldp->flagfield & (KEEP | MOREVARIANTS));
-#endif /* NO_CAPITALIZATION_SUPPORT */
-	hdrp->flagfield |= (newp->flagfield & KEEP);
-	newp->next = oldp->next;
-	/*
-	** We really want to free oldp->word, but that might be part of
-	** "hashstrings".  So we'll futz around to arrange things so we can
-	** free newp->word instead.  This depends very much on the fact
-	** that both words are the same length.
-	*/
-	if (oldp->word != NULL)
-	    (void) strcpy (oldp->word, newp->word);
-	free (newp->word);	/* No longer needed */
-	newp->word = oldp->word;
-	*oldp = *newp;
-#ifndef NO_CAPITALIZATION_SUPPORT
-	/* We may need to add a header if newp is followcase */
-	if (captype (newp->flagfield) == FOLLOWCASE
-	  &&  (hdrp->flagfield & (CAPTYPEMASK | MOREVARIANTS))
-	    != (ALLCAPS | MOREVARIANTS))
-	    (void) addvheader (hdrp);
-#endif /* NO_CAPITALIZATION_SUPPORT */
-	return 1;
-	}
-    else
-	return 0;
-    }
-
-/*
-** Determine if enta covers entb, according to the rules in steps 4 and 5
-** of the commentary for "combinecaps".
-*/
 static int acoversb (enta, entb)
-    register struct dent *	enta;	/* "A" in the rules */
-    register struct dent *	entb;	/* "B" in the rules */
-    {
-    int				subset;	/* NZ if entb is a subset of enta */
-
-    if ((subset = issubset (entb, enta)) != 0)
-	{
-	/* entb is a subset of enta;  thus enta might cover entb */
-	if (((enta->flagfield ^ entb->flagfield) & KEEP) != 0
-	  &&  (enta->flagfield & KEEP) == 0)	/* Inverse of condition (4b) */
-	    return 0;
-	}
-    else
-	{
-	/* not a subset;  KEEP flags must match exactly (both (4a) and (4b)) */
-	if (((enta->flagfield ^ entb->flagfield) & KEEP) != 0)
-	    return 0;
-	}
-
-    /* Rules (4a) and (4b) are satisfied;  check for capitalization match */
-#ifdef NO_CAPITALIZATION_SUPPORT
-#ifdef lint
-    return subset;				/* Just so it gets used */
-#else /* lint */
-    return 1;					/* All words match */
-#endif /* lint */
-#else /* NO_CAPITALIZATION_SUPPORT */
-    if (((enta->flagfield ^ entb->flagfield) & CAPTYPEMASK) == 0)
-	{
-	if (captype (enta->flagfield) != FOLLOWCASE	/* Condition (4c) */
-	  ||  strcmp (enta->word, entb->word) == 0)
-	    return 1;				/* Perfect match */
-	else
-	    return 0;
-	}
-    else if (subset == 0)			/* No flag subset, refuse */
-	return 0;				/* ..near matches */
-    else if (captype (entb->flagfield) == ALLCAPS)
-	return 1;
-    else if (captype (enta->flagfield) == ANYCASE
-      &&  captype (entb->flagfield) == CAPITALIZED)
-	return 1;
-    else
-	return 0;
-#endif /* NO_CAPITALIZATION_SUPPORT */
-    }
-
+*/
 void upcase (s)
     register ichar_t *	s;
     {
@@ -643,143 +358,19 @@ void chupcase (s)
 /*
 ** See if one affix field is a subset of another.  Returns NZ if ent1
 ** is a subset of ent2.  The KEEP flag is not taken into consideration.
-*/
 static int issubset (ent1, ent2)
-    register struct dent *	ent1;
-    register struct dent *	ent2;
-    {
-/* The following is really testing for MASKSIZE > 1, but cpp can't do that */
-#if MASKBITS > 32
-    register int		flagword;
-
-#ifdef FULLMASKSET
-#define MASKMAX	MASKSIZE
-#else
-#define MASKMAX	MASKSIZE - 1
-#endif /* FULLMASKSET */
-    for (flagword = MASKMAX;  --flagword >= 0;  )
-	{
-	if ((ent1->mask[flagword] & ent2->mask[flagword])
-	  != ent1->mask[flagword])
-	    return 0;
-	}
-#endif /* MASKBITS > 32 */
-#ifdef FULLMASKSET
-    return ((ent1->mask[MASKSIZE - 1] & ent2->mask[MASKSIZE - 1])
-      == ent1->mask[MASKSIZE - 1]);
-#else
-    if (((ent1->mask[MASKSIZE - 1] & ent2->mask[MASKSIZE - 1])
-      ^ ent1->mask[MASKSIZE - 1]) & ~ALLFLAGS)
-	return 0;
-    else
-	return 1;
-#endif /* FULLMASKSET */
-    }
-
-/*
-** Add ent2's affix flags to ent1.
-*/
 static void combineaffixes (ent1, ent2)
-    register struct dent *	ent1;
-    register struct dent *	ent2;
-    {
-/* The following is really testing for MASKSIZE > 1, but cpp can't do that */
-#if MASKBITS > 32
-    register int		flagword;
-
-    if (ent1 == ent2)
-	return;
-    /* MASKMAX is defined in issubset, just above */
-    for (flagword = MASKMAX;  --flagword >= 0;  )
-	ent1->mask[flagword] |= ent2->mask[flagword];
-#endif /* MASKBITS > 32 */
-#ifndef FULLMASKSET
-    ent1->mask[MASKSIZE - 1] |= ent2->mask[MASKSIZE - 1] & ~ALLFLAGS;
-#endif
-    }
+*/
 
 /*
 ** Write out a dictionary entry, including capitalization variants.
 ** If onlykeep is true, only those variants with KEEP set will be
 ** written.
-*/
-void toutent (toutfile, hent, onlykeep)
-    register FILE *	toutfile;
-    struct dent *	hent;
-    register int	onlykeep;
-    {
-#ifdef NO_CAPITALIZATION_SUPPORT
-    if (!onlykeep  ||  (hent->flagfield & KEEP))
-	toutword (toutfile, hent->word, hent);
-#else
-    register struct dent * cent;
-    ichar_t		wbuf[INPUTWORDLEN + MAXAFFIXLEN];
-
-    cent = hent;
-    if (strtoichar (wbuf, cent->word, INPUTWORDLEN, 1))
-	(void) fprintf (stderr, WORD_TOO_LONG (cent->word));
-    for (  ;  ;  )
-	{
-	if (!onlykeep  ||  (cent->flagfield & KEEP))
-	    {
-	    switch (captype (cent->flagfield))
-		{
-		case ANYCASE:
-		    lowcase (wbuf);
-		    toutword (toutfile, ichartosstr (wbuf, 1), cent);
-		    break;
-		case ALLCAPS:
-		    if ((cent->flagfield & MOREVARIANTS) == 0
-		      ||  cent != hent)
-			{
-			upcase (wbuf);
-			toutword (toutfile, ichartosstr (wbuf, 1), cent);
-			}
-		    break;
-		case CAPITALIZED:
-		    lowcase (wbuf);
-		    wbuf[0] = mytoupper (wbuf[0]);
-		    toutword (toutfile, ichartosstr (wbuf, 1), cent);
-		    break;
-		case FOLLOWCASE:
-		    toutword (toutfile, cent->word, cent);
-		    break;
-		}
-	    }
-	if (cent->flagfield & MOREVARIANTS)
-	    cent = cent->next;
-	else
-	    break;
-	}
-#endif
-    }
-		
+Removed -- not used by Abiword
+void toutent_ (toutfile, hent, onlykeep)
 static void toutword (toutfile, word, cent)
-    register FILE *	toutfile;
-    char *		word;
-    register struct dent * cent;
-    {
-    register int	bit;
-
-    has_marker = 0;
-    (void) fprintf (toutfile, "%s", word);
-    for (bit = 0;  bit < LARGESTFLAG;  bit++)
-	{
-	if (TSTMASKBIT (cent->mask, bit))
-	  flagout (toutfile, BITTOCHAR (bit));
-	}
-    (void) fprintf (toutfile, "\n");
-    }
-
 static void flagout (toutfile, flag)
-    register FILE *	toutfile;
-    int			flag;
-    {
-    if (!has_marker)
-	(void) putc (hashheader.flagmarker, toutfile);
-    has_marker = 1;
-    (void) putc (flag, toutfile);
-    }
+*/
 
 /*
  * If the string under the given pointer begins with a string character,
@@ -1120,7 +711,7 @@ int TSTMASKBIT (mask, bit) MASKTYPE * mask; int bit;
 void CLRMASKBIT (mask, bit) MASKTYPE * mask; int bit; { bit += (int) *mask; }
 void SETMASKBIT (mask, bit) MASKTYPE * mask; int bit; { bit += (int) *mask; }
 int BITTOCHAR (bit) int bit; { return bit; }
-int CHARTOBIT (ch) int ch; { return ch; }
+/*int CHARTOBIT (ch) int ch; { return ch; }*/
 int myupper (ch) unsigned int ch; { return (int) ch; }
 int mylower (ch) unsigned int ch; { return (int) ch; }
 int myspace (ch) unsigned int ch; { return (int) ch; }

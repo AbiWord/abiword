@@ -49,7 +49,12 @@ static char Rcs_Id[] =
 
 /*
  * $Log$
+ * Revision 1.5  1999/04/13 17:12:51  jeff
+ * Applied "Darren O. Benham" <gecko@benham.net> spell check changes.
+ * Fixed crash on Win32 with the new code.
+ *
  * Revision 1.4  1998/12/29 14:55:33  eric
+ *
  * I've doctored the ispell code pretty extensively here.  It is now
  * warning-free on Win32.  It also *works* on Win32 now, since I
  * replaced all the I/O calls with ANSI standard ones.
@@ -261,12 +266,6 @@ static void pfx_list_chk (word, ucword, len, optflags, sfxopts, ind,
 		 */
 		tlen += flent->stripl;
 
-#if 0 /* DELETE_ME */
-		if (cflag)
-		    flagpr (tword, BITTOCHAR (flent->flagbit), flent->stripl,
-		      flent->affl, -1, 0);
-		else 
-#endif /* DELETE_ME */
 		if (ignoreflagbits)
 		    {
 		    if ((dent = ispell_lookup (tword, 1)) != NULL)
@@ -441,19 +440,6 @@ static void suf_list_chk (word, ucword, len, ind, optflags, pfxent,
 		 * The conditions match.  See if the word is in the
 		 * dictionary.
 		 */
-#if 0 /* DELETE_ME */
-		if (cflag)
-		    {
-		    if (optflags & FF_CROSSPRODUCT)
-			flagpr (tword, BITTOCHAR (pfxent->flagbit),
-			  pfxent->stripl, pfxent->affl,
-			  BITTOCHAR (flent->flagbit), flent->affl);
-		    else
-			flagpr (tword, -1, 0, 0,
-			  BITTOCHAR (flent->flagbit), flent->affl);
-		    }
-		else 
-#endif /* DELETE_ME */
 		if (ignoreflagbits)
 		    {
 		    if ((dent = ispell_lookup (tword, 1)) != NULL)
