@@ -44,6 +44,10 @@ AP_QNXToolbar_ZoomCombo::AP_QNXToolbar_ZoomCombo(EV_Toolbar * pToolbar,
 AP_QNXToolbar_ZoomCombo::~AP_QNXToolbar_ZoomCombo(void)
 {
 	// nothing to purge.  contents are static strings
+	free(m_vecContents.getNthItem(6));
+	free(m_vecContents.getNthItem(7));
+	free(m_vecContents.getNthItem(8));
+
 }
 
 /*****************************************************************/
@@ -63,9 +67,9 @@ bool AP_QNXToolbar_ZoomCombo::populate(void)
 
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 	
-	m_vecContents.addItem((void *)pSS->getValueUTF8(XAP_STRING_ID_TB_Zoom_PageWidth).c_str());
-	m_vecContents.addItem((void *)pSS->getValueUTF8(XAP_STRING_ID_TB_Zoom_WholePage ).c_str());
-	m_vecContents.addItem((void *)pSS->getValueUTF8(XAP_STRING_ID_TB_Zoom_Percent ).c_str());
+	m_vecContents.addItem((void *)strdup(pSS->getValueUTF8(XAP_STRING_ID_TB_Zoom_PageWidth).c_str()));
+	m_vecContents.addItem((void *)strdup(pSS->getValueUTF8(XAP_STRING_ID_TB_Zoom_WholePage ).c_str()));
+	m_vecContents.addItem((void *)strdup(pSS->getValueUTF8(XAP_STRING_ID_TB_Zoom_Percent ).c_str()));
 
 	return true;
 }
