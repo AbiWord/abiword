@@ -96,7 +96,11 @@
 #define XAP_PREF_DEFAULT_AutoSaveFilePeriod 			"5" 						/* Auto save files by default */
 
 #define XAP_PREF_KEY_AutoSaveFileExt					"AutoSaveFileExt"
-#define XAP_PREF_DEFAULT_AutoSaveFileExt				".bak"						/* TODO: set a platform specific suffix */
+#ifdef WIN32
+#define XAP_PREF_DEFAULT_AutoSaveFileExt			".bak"
+#else
+#define XAP_PREF_DEFAULT_AutoSaveFileExt			".bak~"
+#endif
 
 #define XAP_PREF_KEY_EmbedFontsInPS 				"EmbedFontsInPs"
 #define XAP_PREF_DEFAULT_EmbedFontsInPS 			"1"
