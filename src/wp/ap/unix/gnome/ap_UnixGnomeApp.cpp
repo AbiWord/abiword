@@ -85,8 +85,10 @@
 #include <bonobo.h>
 #include <liboaf/liboaf.h>
 #include "abiwidget.h"
+#if 0
 #include "ap_NautilusView.h"
 #include <libnautilus/nautilus-view-standard-main.h>
+#endif 0
 
 // quick hack - this is defined in ap_EditMethods.cpp
 extern XAP_Dialog_MessageBox::tAnswer s_CouldNotLoadFileMessage(XAP_Frame * pFrame, const char * pNewFile, UT_Error errorCode);
@@ -1067,6 +1069,7 @@ static int NautilusMain(int argc, char *argv[])
 {
 	int ires = 0;
 
+#if 0
 	ires = nautilus_view_standard_main ("abiword",
 					    "1.0.6",
 					    NULL,	/* Could be PACKAGE */
@@ -1078,5 +1081,6 @@ static int NautilusMain(int argc, char *argv[])
 					    nautilus_view_create_from_get_type_function,
 					    NULL,
 					    (void *)nautilus_abiword_content_view_get_type);
+#endif
 	return ires;
 }

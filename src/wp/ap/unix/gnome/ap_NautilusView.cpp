@@ -31,11 +31,14 @@
 #define ABIWORD_INTERNAL
 
 #include <config.h>
+#if 0
 #include "ap_NautilusView.h"
+#endif
 
 #include <bonobo.h>
 #include <string.h>
 
+#if 0
 #include <libnautilus/nautilus-bonobo-ui.h>
 #include <bonobo/bonobo-control.h>
 #include <libgnome/gnome-i18n.h>
@@ -295,3 +298,4 @@ abiword_merge_bonobo_items_callback (BonoboControl *control,
          * menu & toolbar items.
 		 */
 }
+#endif
