@@ -23,7 +23,7 @@
 %define enable_gdkpixbuf 1
 %define enable_html 1
 %define enable_imagemagick 0
-%define enable_openwriter 1
+%define enable_openwriter 0
 %define enable_shell 1
 %define enable_urldict 1
 %define enable_wikipedia 1

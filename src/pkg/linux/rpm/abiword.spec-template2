@@ -35,7 +35,7 @@
 %endif
 
 %if %{enable_impexp}
-%define plugin_bz2abw --enable-bz2abw %{enable_gdkpixbuf} --enable-html --enable-openwriter
+%define plugin_bz2abw --enable-bz2abw %{enable_gdkpixbuf} --enable-html --disable-openwriter
 %else
 %define plugin_bz2abw --disable-bz2abw --disable-gdkpixbuf --disable-html --disable-openwriter
 %endif
