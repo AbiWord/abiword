@@ -311,6 +311,7 @@ The KAD Association (Korvigelloù An Drouizig)
 		    <drouizig@drouizig.org>		Breton
 Team Turca <team_turca@yahoo.com>			Turkish
 Ismo Mäkinen <ismtaol@luukku.com>			Finnish
+Fabio Ranquetat <fabio_abr@hotmail.com>		Portugese (Brazil)
 
 unsung heroes
 -------------

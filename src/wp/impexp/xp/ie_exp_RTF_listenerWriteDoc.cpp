@@ -54,7 +54,7 @@
 
 #include "xap_EncodingManager.h"
 #include "ut_string_class.h"
-#include <fribidi/fribidi.h>
+#include <fribidi.h>
 
 void s_RTF_ListenerWriteDoc::_closeSection(void)
 {
@@ -661,6 +661,10 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		 const XML_Char * pszType = NULL;
 		 m_pDocument->getAttrProp(api, &pSpanAP);
 		 pSpanAP->getAttribute("type", pszType);
+		 if(pszType == NULL)
+		 {
+			 return;
+		 }
 		 if(UT_XML_strcmp(pszType,"list_label") == 0)
 		 {
 			 return;
@@ -2789,13 +2793,17 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 	case PTX_Block:
 		{
 			_closeSpan();
+			if(!m_bBlankLine)
+ 			{
+ 				m_bInBlock = true;
+ 			}
 			_closeBlock(pcr->getIndexAP());
 			_setListBlock(false);
 			_setTabEaten(false);
 			m_sdh = sdh;
 			_rtf_open_block(pcr->getIndexAP());
-			m_bBlankLine = true;	
-			UT_DEBUGMSG(("_rtf_listenerWriteDoc: openned block \n"));
+			m_bBlankLine = true;
+			m_bInBlock = true;
 		return true;
 		}
 

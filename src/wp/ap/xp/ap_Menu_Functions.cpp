@@ -34,6 +34,7 @@
 #include "xap_Frame.h"
 #include "xap_Prefs.h"
 #include "xav_View.h"
+#include "xap_Toolbar_Layouts.h"
 #include "fv_View.h"
 #include "ap_FrameData.h"
 #include "ap_Prefs.h"
@@ -41,6 +42,10 @@
 #include "ut_Script.h"
 #include "spell_manager.h"
 #include "ie_mailmerge.h"
+
+#ifdef _WIN32
+#include "ap_Win32App.h" 
+#endif
 
 #define ABIWORD_VIEW  	FV_View * pView = static_cast<FV_View *>(pAV_View)
 
@@ -57,88 +62,88 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Autotext)
 	const char * c = NULL;
 
 	const XAP_StringSet * pss = pApp->getStringSet();
-	c = pss->getValue(AP_STRING_ID_DLG_Spell_NoSuggestions);
+	c = pss->getValueUTF8(AP_STRING_ID_DLG_Spell_NoSuggestions).utf8_str();
 
 	switch (id)
 	  {
 	  case AP_MENU_ID_AUTOTEXT_ATTN_1:
-	    c = pss->getValue(AP_STRING_ID_AUTOTEXT_ATTN_1); break;
+	    c = pss->getValueUTF8(AP_STRING_ID_AUTOTEXT_ATTN_1).utf8_str(); break;
 	  case AP_MENU_ID_AUTOTEXT_ATTN_2:
-	    c = pss->getValue(AP_STRING_ID_AUTOTEXT_ATTN_2); break;
+	    c = pss->getValueUTF8(AP_STRING_ID_AUTOTEXT_ATTN_2).utf8_str(); break;
 
 	  case AP_MENU_ID_AUTOTEXT_CLOSING_1:
-	    c = pss->getValue(AP_STRING_ID_AUTOTEXT_CLOSING_1); break;
+	    c = pss->getValueUTF8(AP_STRING_ID_AUTOTEXT_CLOSING_1).utf8_str(); break;
 	  case AP_MENU_ID_AUTOTEXT_CLOSING_2:
-	    c = pss->getValue(AP_STRING_ID_AUTOTEXT_CLOSING_2); break;
+	    c = pss->getValueUTF8(AP_STRING_ID_AUTOTEXT_CLOSING_2).utf8_str(); break;
 	  case AP_MENU_ID_AUTOTEXT_CLOSING_3:
-	    c = pss->getValue(AP_STRING_ID_AUTOTEXT_CLOSING_3); break;
+	    c = pss->getValueUTF8(AP_STRING_ID_AUTOTEXT_CLOSING_3).utf8_str(); break;
 	  case AP_MENU_ID_AUTOTEXT_CLOSING_4:
-	    c = pss->getValue(AP_STRING_ID_AUTOTEXT_CLOSING_4); break;
+	    c = pss->getValueUTF8(AP_STRING_ID_AUTOTEXT_CLOSING_4).utf8_str(); break;
 	  case AP_MENU_ID_AUTOTEXT_CLOSING_5:
-	    c = pss->getValue(AP_STRING_ID_AUTOTEXT_CLOSING_5); break;
+	    c = pss->getValueUTF8(AP_STRING_ID_AUTOTEXT_CLOSING_5).utf8_str(); break;
 	  case AP_MENU_ID_AUTOTEXT_CLOSING_6:
-	    c = pss->getValue(AP_STRING_ID_AUTOTEXT_CLOSING_6); break;
+	    c = pss->getValueUTF8(AP_STRING_ID_AUTOTEXT_CLOSING_6).utf8_str(); break;
 	  case AP_MENU_ID_AUTOTEXT_CLOSING_7:
-	    c = pss->getValue(AP_STRING_ID_AUTOTEXT_CLOSING_7); break;
+	    c = pss->getValueUTF8(AP_STRING_ID_AUTOTEXT_CLOSING_7).utf8_str(); break;
 	  case AP_MENU_ID_AUTOTEXT_CLOSING_8:
-	    c = pss->getValue(AP_STRING_ID_AUTOTEXT_CLOSING_8); break;
+	    c = pss->getValueUTF8(AP_STRING_ID_AUTOTEXT_CLOSING_8).utf8_str(); break;
 	  case AP_MENU_ID_AUTOTEXT_CLOSING_9:
-	    c = pss->getValue(AP_STRING_ID_AUTOTEXT_CLOSING_9); break;
+	    c = pss->getValueUTF8(AP_STRING_ID_AUTOTEXT_CLOSING_9).utf8_str(); break;
 	  case AP_MENU_ID_AUTOTEXT_CLOSING_10:
-	    c = pss->getValue(AP_STRING_ID_AUTOTEXT_CLOSING_10); break;
+	    c = pss->getValueUTF8(AP_STRING_ID_AUTOTEXT_CLOSING_10).utf8_str(); break;
 	  case AP_MENU_ID_AUTOTEXT_CLOSING_11:
-	    c = pss->getValue(AP_STRING_ID_AUTOTEXT_CLOSING_11); break;
+	    c = pss->getValueUTF8(AP_STRING_ID_AUTOTEXT_CLOSING_11).utf8_str(); break;
 	  case AP_MENU_ID_AUTOTEXT_CLOSING_12:
-	    c = pss->getValue(AP_STRING_ID_AUTOTEXT_CLOSING_12); break;
+	    c = pss->getValueUTF8(AP_STRING_ID_AUTOTEXT_CLOSING_12).utf8_str(); break;
 
 	  case AP_MENU_ID_AUTOTEXT_MAIL_1:
-	    c = pss->getValue(AP_STRING_ID_AUTOTEXT_MAIL_1); break;
+	    c = pss->getValueUTF8(AP_STRING_ID_AUTOTEXT_MAIL_1).utf8_str(); break;
 	  case AP_MENU_ID_AUTOTEXT_MAIL_2:
-	    c = pss->getValue(AP_STRING_ID_AUTOTEXT_MAIL_2); break;
+	    c = pss->getValueUTF8(AP_STRING_ID_AUTOTEXT_MAIL_2).utf8_str(); break;
 	  case AP_MENU_ID_AUTOTEXT_MAIL_3:
-	    c = pss->getValue(AP_STRING_ID_AUTOTEXT_MAIL_3); break;
+	    c = pss->getValueUTF8(AP_STRING_ID_AUTOTEXT_MAIL_3).utf8_str(); break;
 	  case AP_MENU_ID_AUTOTEXT_MAIL_4:
-	    c = pss->getValue(AP_STRING_ID_AUTOTEXT_MAIL_4); break;
+	    c = pss->getValueUTF8(AP_STRING_ID_AUTOTEXT_MAIL_4).utf8_str(); break;
 	  case AP_MENU_ID_AUTOTEXT_MAIL_5:
-	    c = pss->getValue(AP_STRING_ID_AUTOTEXT_MAIL_5); break;
+	    c = pss->getValueUTF8(AP_STRING_ID_AUTOTEXT_MAIL_5).utf8_str(); break;
 	  case AP_MENU_ID_AUTOTEXT_MAIL_6:
-	    c = pss->getValue(AP_STRING_ID_AUTOTEXT_MAIL_6); break;
+	    c = pss->getValueUTF8(AP_STRING_ID_AUTOTEXT_MAIL_6).utf8_str(); break;
 	  case AP_MENU_ID_AUTOTEXT_MAIL_7:
-	    c = pss->getValue(AP_STRING_ID_AUTOTEXT_MAIL_7); break;
+	    c = pss->getValueUTF8(AP_STRING_ID_AUTOTEXT_MAIL_7).utf8_str(); break;
 	  case AP_MENU_ID_AUTOTEXT_MAIL_8:
-	    c = pss->getValue(AP_STRING_ID_AUTOTEXT_MAIL_8); break;
+	    c = pss->getValueUTF8(AP_STRING_ID_AUTOTEXT_MAIL_8).utf8_str(); break;
 
 	  case AP_MENU_ID_AUTOTEXT_REFERENCE_1:
-	    c = pss->getValue(AP_STRING_ID_AUTOTEXT_REFERENCE_1); break;
+	    c = pss->getValueUTF8(AP_STRING_ID_AUTOTEXT_REFERENCE_1).utf8_str(); break;
 	  case AP_MENU_ID_AUTOTEXT_REFERENCE_2:
-	    c = pss->getValue(AP_STRING_ID_AUTOTEXT_REFERENCE_2); break;
+	    c = pss->getValueUTF8(AP_STRING_ID_AUTOTEXT_REFERENCE_2).utf8_str(); break;
 	  case AP_MENU_ID_AUTOTEXT_REFERENCE_3:
-	    c = pss->getValue(AP_STRING_ID_AUTOTEXT_REFERENCE_3); break;
+	    c = pss->getValueUTF8(AP_STRING_ID_AUTOTEXT_REFERENCE_3).utf8_str(); break;
 
 	  case AP_MENU_ID_AUTOTEXT_SALUTATION_1:
-	    c = pss->getValue(AP_STRING_ID_AUTOTEXT_SALUTATION_1); break;
+	    c = pss->getValueUTF8(AP_STRING_ID_AUTOTEXT_SALUTATION_1).utf8_str(); break;
 	  case AP_MENU_ID_AUTOTEXT_SALUTATION_2:
-	    c = pss->getValue(AP_STRING_ID_AUTOTEXT_SALUTATION_2); break;
+	    c = pss->getValueUTF8(AP_STRING_ID_AUTOTEXT_SALUTATION_2).utf8_str(); break;
 	  case AP_MENU_ID_AUTOTEXT_SALUTATION_3:
-	    c = pss->getValue(AP_STRING_ID_AUTOTEXT_SALUTATION_3); break;
+	    c = pss->getValueUTF8(AP_STRING_ID_AUTOTEXT_SALUTATION_3).utf8_str(); break;
 	  case AP_MENU_ID_AUTOTEXT_SALUTATION_4:
-	    c = pss->getValue(AP_STRING_ID_AUTOTEXT_SALUTATION_4); break;
+	    c = pss->getValueUTF8(AP_STRING_ID_AUTOTEXT_SALUTATION_4).utf8_str(); break;
 
 	  case AP_MENU_ID_AUTOTEXT_SUBJECT_1:
-	    c = pss->getValue(AP_STRING_ID_AUTOTEXT_SUBJECT_1); break;
+	    c = pss->getValueUTF8(AP_STRING_ID_AUTOTEXT_SUBJECT_1).utf8_str(); break;
 
 	  case AP_MENU_ID_AUTOTEXT_EMAIL_1:
-	    c = pss->getValue(AP_STRING_ID_AUTOTEXT_EMAIL_1); break;
+	    c = pss->getValueUTF8(AP_STRING_ID_AUTOTEXT_EMAIL_1).utf8_str(); break;
 	  case AP_MENU_ID_AUTOTEXT_EMAIL_2:
-	    c = pss->getValue(AP_STRING_ID_AUTOTEXT_EMAIL_2); break;
+	    c = pss->getValueUTF8(AP_STRING_ID_AUTOTEXT_EMAIL_2).utf8_str(); break;
 	  case AP_MENU_ID_AUTOTEXT_EMAIL_3:
-	    c = pss->getValue(AP_STRING_ID_AUTOTEXT_EMAIL_3); break;
+	    c = pss->getValueUTF8(AP_STRING_ID_AUTOTEXT_EMAIL_3).utf8_str(); break;
 	  case AP_MENU_ID_AUTOTEXT_EMAIL_4:
-	    c = pss->getValue(AP_STRING_ID_AUTOTEXT_EMAIL_4); break;
+	    c = pss->getValueUTF8(AP_STRING_ID_AUTOTEXT_EMAIL_4).utf8_str(); break;
 	  case AP_MENU_ID_AUTOTEXT_EMAIL_5:
-	    c = pss->getValue(AP_STRING_ID_AUTOTEXT_EMAIL_5); break;
+	    c = pss->getValueUTF8(AP_STRING_ID_AUTOTEXT_EMAIL_5).utf8_str(); break;
 	  case AP_MENU_ID_AUTOTEXT_EMAIL_6:
-	    c = pss->getValue(AP_STRING_ID_AUTOTEXT_EMAIL_6); break;
+	    c = pss->getValueUTF8(AP_STRING_ID_AUTOTEXT_EMAIL_6).utf8_str(); break;
 
 	  default:
 	    c = "No clue"; break;
@@ -146,6 +151,35 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Autotext)
 
 	return c;
 }
+
+Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Toolbar)
+{
+	UT_ASSERT(pFrame);
+	XAP_App * pApp = pFrame->getApp();
+	UT_ASSERT(pApp);
+	UT_ASSERT(pLabel);
+
+	UT_ASSERT(id >= AP_MENU_ID_VIEW_TB_1);
+	UT_ASSERT(id <= AP_MENU_ID_VIEW_TB_4);
+
+	UT_uint32 ndx = (id - AP_MENU_ID_VIEW_TB_1);
+	const UT_Vector & vec = pApp->getToolbarFactory()->getToolbarNames();
+
+
+	if (ndx <= vec.getItemCount())
+	{
+		const char * szFormat = pLabel->getMenuLabel();
+		static char buf[128];	
+		
+		const char * szRecent = reinterpret_cast<const UT_UTF8String*>(vec.getNthItem(ndx))->utf8_str();
+
+		snprintf(buf,sizeof(buf),szFormat,szRecent);
+		return buf;
+	}
+
+	return NULL;
+}
+
 
 Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Recent)
 {
@@ -500,13 +534,13 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Suggest)
 			outbuf += unichar_to_utf8(p[i], reinterpret_cast<unsigned char *>(outbuf));
 		}
 		*outbuf = 0;
-		c = cBuf;
+		c = cBuf;		
 	}
 	else if (ndx == 1)
 	{
 		// placeholder when no suggestions
 		const XAP_StringSet * pSS = pApp->getStringSet();
-		c = pSS->getValue(AP_STRING_ID_DLG_Spell_NoSuggestions);
+		c = pSS->getValueUTF8(AP_STRING_ID_DLG_Spell_NoSuggestions).utf8_str();
 	}
 
 	FREEP(p);
@@ -720,7 +754,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_CharFmt)
 	const XML_Char * prop = NULL;
 	const XML_Char * val  = NULL;
 
-	if(pView->getDocument()->areStylesLocked() && (AP_MENU_ID_FMT_SUPERSCRIPT != id || AP_MENU_ID_FMT_SUBSCRIPT != id)) {
+	if(pView->getDocument()->areStylesLocked() && !(AP_MENU_ID_FMT_SUPERSCRIPT == id || AP_MENU_ID_FMT_SUBSCRIPT == id)) {
           return EV_MIS_Gray;
 	}
 
@@ -773,6 +807,16 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_CharFmt)
 	case AP_MENU_ID_FMT_SUBSCRIPT:
 		prop = "text-position";
 		val  = "subscript";
+		break;
+
+	case AP_MENU_ID_FMT_DIRECTION_DO_RTL:
+		prop = "dir-override";
+		val  = "rtl";
+		break;
+		
+	case AP_MENU_ID_FMT_DIRECTION_DO_LTR:
+		prop = "dir-override";
+		val  = "ltr";
 		break;
 
 	default:
@@ -844,6 +888,11 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_BlockFmt)
 		val  = "justify";
 		break;
 
+	case AP_MENU_ID_FMT_DIRECTION_DD_RTL:
+		prop = "dom-dir";
+		val  = "rtl";
+		break;
+
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		break;
@@ -904,25 +953,25 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_View)
 		else
 			s = EV_MIS_Toggled;
 		break;
-	case AP_MENU_ID_VIEW_TB_STD:
+	case AP_MENU_ID_VIEW_TB_1:
 		if ( pFrameData->m_bShowBar[0] && !pFrameData->m_bIsFullScreen)
 			s = EV_MIS_Toggled;
 		else
 			s = EV_MIS_ZERO;
 		break;
-	case AP_MENU_ID_VIEW_TB_FORMAT:
+	case AP_MENU_ID_VIEW_TB_2:	
 		if ( pFrameData->m_bShowBar[1] && !pFrameData->m_bIsFullScreen)
 			s = EV_MIS_Toggled;
 		else
 			s = EV_MIS_ZERO;
 		break;
-	case AP_MENU_ID_VIEW_TB_TABLE:
+	case AP_MENU_ID_VIEW_TB_3:	
 		if ( pFrameData->m_bShowBar[2] && !pFrameData->m_bIsFullScreen)
 			s = EV_MIS_Toggled;
 		else
 			s = EV_MIS_ZERO;
 		break;
-	case AP_MENU_ID_VIEW_TB_EXTRA:
+	case AP_MENU_ID_VIEW_TB_4:	
 		if ( pFrameData->m_bShowBar[3] && !pFrameData->m_bIsFullScreen)
 			s = EV_MIS_Toggled;
 		else
@@ -1042,18 +1091,62 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_InTable)
 }
 
 
+Defun_EV_GetMenuItemState_Fn(ap_GetState_TableOK)
+{
+	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, EV_MIS_Gray);
+
+	if(pView->isInTable(pView->getPoint()-1) && pView->isInTable() && pView->isHdrFtrEdit())
+	{
+		return EV_MIS_Gray;
+	}
+	else if(pView->isInFootnote())
+	{
+		return EV_MIS_Gray;
+	}
+	else if(pView->isInEndnote())
+	{
+		return EV_MIS_Gray;
+	}
+    return EV_MIS_ZERO;
+}
+
+
 Defun_EV_GetMenuItemState_Fn(ap_GetState_InFootnote)
 {
 	ABIWORD_VIEW;
 	UT_ASSERT(pView);
 
-	if(!pView->isInFootnote())
+	if(!pView->isInFootnote() && !pView->isHdrFtrEdit() && !(pView->getEmbedDepth(pView->getPoint()) > 0))
 	{
 		return EV_MIS_ZERO;
 	}
 	else
 	{
 		return EV_MIS_Gray;
+	}
+}
+
+Defun_EV_GetMenuItemState_Fn(ap_GetState_BreakOK)
+{
+	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, EV_MIS_Gray);
+
+	if(pView->isInFootnote())
+	{
+		return EV_MIS_Gray;
+	}
+	if(pView->isInEndnote())
+	{
+		return EV_MIS_Gray;
+	}
+	else if(pView->isInTable(pView->getPoint()-1) && pView->isInTable())
+	{
+		return EV_MIS_Gray;
+	}
+	else
+	{
+		return EV_MIS_ZERO;
 	}
 }
 
@@ -1090,29 +1183,29 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Zoom)
 	switch(id)
 	{
 	case AP_MENU_ID_VIEW_ZOOM_200:
-		if (pFrame->getZoomPercentage() == 200)
+		if (pFrame->getZoomPercentage() == 200 && (pFrame->getZoomType() == XAP_Frame::z_PERCENT || pFrame->getZoomType() == XAP_Frame::z_200))
 			s = EV_MIS_Toggled;
 		break;
 	case AP_MENU_ID_VIEW_ZOOM_100:
-		if (pFrame->getZoomPercentage() == 100)
+		if (pFrame->getZoomPercentage() == 100 && (pFrame->getZoomType() == XAP_Frame::z_PERCENT || pFrame->getZoomType() == XAP_Frame::z_100))
 			s = EV_MIS_Toggled;
 		break;
 	case AP_MENU_ID_VIEW_ZOOM_75:
-		if (pFrame->getZoomPercentage() == 75)
+		if (pFrame->getZoomPercentage() == 75 && (pFrame->getZoomType() == XAP_Frame::z_PERCENT || pFrame->getZoomType() == XAP_Frame::z_75))
 			s = EV_MIS_Toggled;
 		break;
 	case AP_MENU_ID_VIEW_ZOOM_50:
-		if (pFrame->getZoomPercentage() == 50)
+		if (pFrame->getZoomPercentage() == 50 && pFrame->getZoomType() == XAP_Frame::z_PERCENT)
 			s = EV_MIS_Toggled;
 		break;
 	case AP_MENU_ID_VIEW_ZOOM_WHOLE:
 		xxx_UT_DEBUGMSG(("Whole: %d %d\n", pFrame->getZoomPercentage(), pView->calculateZoomPercentForWholePage()));
-		if (pFrame->getZoomPercentage() == pView->calculateZoomPercentForWholePage())
+		if (pFrame->getZoomType() == XAP_Frame::z_WHOLEPAGE)
 			s = EV_MIS_Toggled;
 		break;
 	case AP_MENU_ID_VIEW_ZOOM_WIDTH:
 		xxx_UT_DEBUGMSG(("Width: %d %d\n", pFrame->getZoomPercentage(), pView->calculateZoomPercentForPageWidth()));
-		if (pFrame->getZoomPercentage() == pView->calculateZoomPercentForPageWidth())
+		if (pFrame->getZoomType() == XAP_Frame::z_PAGEWIDTH)
 			s = EV_MIS_Toggled;
 		break;
 	default:

@@ -26,7 +26,7 @@ CPPSRCS=		widget-color-combo.c                    \
 			e-colors.c				\
 			color-palette.c                         \
 			color-group.c                           \
-			gtk-combo-box.c                         \
+			gal-combo-box.c                         \
 			gnm-marshalers.c                        \
 			xap_UnixGnomeApp.cpp               \
 			xap_UnixGnomeDlg_About.cpp         \

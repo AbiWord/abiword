@@ -311,9 +311,8 @@ bool XAP_Win32DialogHelper::isParentFrame(/*const*/ XAP_Frame& frame) const
 void XAP_Win32DialogHelper::setParentFrame(const XAP_Frame* pFrame)
 {
 	_assertValidDlgHandle(m_hDlg);
-	SetWindowLong(	m_hDlg,
-					GWL_HWNDPARENT,
-					(LONG)(pFrame ? pFrame : NULL));
+	SetWindowLong(m_hDlg, GWL_HWNDPARENT, (long)(pFrame ? static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow() : NULL));
+	SetWindowPos(m_hDlg, NULL, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
 }
 
 

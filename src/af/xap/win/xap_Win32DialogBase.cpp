@@ -219,6 +219,12 @@ int XAP_Win32DialogBase::getComboDataItem(UT_sint32 controlId, int nIndex)
 	return SendDlgItemMessage(m_hDlg, controlId, CB_GETITEMDATA, nIndex,0);
 }
 
+int XAP_Win32DialogBase::getComboItemIndex(UT_sint32 controlId, LPCSTR p_str)
+{
+	UT_ASSERT(IsWindow(m_hDlg));
+	return SendDlgItemMessage(m_hDlg, controlId, CB_FINDSTRINGEXACT, -1, (LPARAM) p_str);
+}
+
 void XAP_Win32DialogBase::selectComboItem(UT_sint32 controlId, int index)
 {
 	UT_ASSERT(IsWindow(m_hDlg));

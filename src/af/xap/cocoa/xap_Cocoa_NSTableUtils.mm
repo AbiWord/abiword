@@ -63,9 +63,9 @@
 	[_array addObject:string];
 }
 
-- (void)addUT_String:(const UT_String &)string
+- (void)addUT_UTF8String:(const UT_UTF8String &)string
 {
-	NSString *str = [[NSString alloc] initWithUTF8String:string.c_str()];
+	NSString *str = [[NSString alloc] initWithUTF8String:string.utf8_str()];
 	[_array addObject:str];		
 	[str release];
 }

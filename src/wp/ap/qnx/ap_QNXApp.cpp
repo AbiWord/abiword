@@ -226,13 +226,13 @@ bool AP_QNXApp::initialize(void)
 	
 	for (i = 0; fp_FieldTypes[i].m_Type != FPFIELDTYPE_END; i++)
 	{
-			(&fp_FieldTypes[i])->m_Desc = strdup(m_pStringSet->getValueUTF8(fp_FieldTypes[i].m_DescId).c_str());
+			(&fp_FieldTypes[i])->m_Desc = strdup(m_pStringSet->getValueUTF8(fp_FieldTypes[i].m_DescId).utf8_str());
 	    UT_DEBUGMSG(("Setting field type desc for type %d, desc=%s\n", fp_FieldTypes[i].m_Type, fp_FieldTypes[i].m_Desc));
 	}
 
 	for (i = 0; fp_FieldFmts[i].m_Tag != NULL; i++)
 	{
-			(&fp_FieldFmts[i])->m_Desc = strdup(m_pStringSet->getValueUTF8(fp_FieldFmts[i].m_DescId).c_str());
+			(&fp_FieldFmts[i])->m_Desc = strdup(m_pStringSet->getValueUTF8(fp_FieldFmts[i].m_DescId).utf8_str());
 	    UT_DEBUGMSG(("Setting field desc for field %s, desc=%s\n", fp_FieldFmts[i].m_Tag, fp_FieldFmts[i].m_Desc));
 	}
 
@@ -251,13 +251,7 @@ bool AP_QNXApp::initialize(void)
 
 	getMenuFactory()->buildMenuLabelSet(szMenuLabelSetName);
 
-	bool bLoadPlugins = true;
-	bool bFound = getPrefsValueBool(XAP_PREF_KEY_AutoLoadPlugins,&bLoadPlugins);
-	if(bLoadPlugins || !bFound)
-	{
-		loadAllPlugins();
-	}
-
+	loadAllPlugins();
 #ifdef ABI_OPT_PERL
     // hack to keep the perl bindings working on unix
     UT_ScriptLibrary& instance = UT_ScriptLibrary::instance(); 
@@ -348,8 +342,8 @@ void AP_QNXApp::copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard
 		pExpRtf->copyToBuffer(pDocRange,&rtfbuf);
 		DELETEP(pExpRtf);
 	}
-	// put raw 8bit text on the clipboard
-	IE_Exp_Text * pExpText = new IE_Exp_Text(pDocRange->m_pDoc);
+	// put UTF-8 text on the clipboard
+	IE_Exp_Text * pExpText = new IE_Exp_Text(pDocRange->m_pDoc,"UTF-8");
 	if (pExpText)
 	{
 		pExpText->copyToBuffer(pDocRange,&txtbuf);
@@ -388,7 +382,7 @@ void AP_QNXApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipbo
 	else if (m_pClipboard->getClipboardData(Ph_CLIPBOARD_TEXT,(void**)&pData,&iLen)) {
 		iLen = UT_MIN(iLen,strlen((const char *) pData));
 		UT_DEBUGMSG(("PasteFromClipboard: pasting %d bytes in TEXTPLAIN format.\n",iLen));
-		IE_Imp_Text * pImpText = new IE_Imp_Text(pDocRange->m_pDoc);
+		IE_Imp_Text * pImpText = new IE_Imp_Text(pDocRange->m_pDoc,"UTF-8");
 		pImpText->pasteFromBuffer(pDocRange,pData,iLen);
 		DELETEP(pImpText);
 	}
@@ -658,11 +652,12 @@ void AP_QNXApp::catchSignals(int sig_num)
 	UT_DEBUGMSG(("Oh no - we just segfaulted!\n"));
 
 	UT_uint32 i = 0;
+	IEFileType abiType = IE_Imp::fileTypeForSuffix("abw");
 	for(;i<m_vecFrames.getItemCount();i++)
 	{
 		AP_QNXFrame * curFrame = (AP_QNXFrame*) m_vecFrames[i];
 		UT_ASSERT(curFrame);
-		curFrame->backup();
+		curFrame->backup(".abw.saved", abiType);
 	}
 
 	fflush(stdout);
@@ -691,9 +686,18 @@ static int so_only (struct dirent *d)
 	return 0;
 }
 
+#ifdef ABI_PLUGIN_BUILTIN
+extern void abipgn_builtin_register();
+#endif
+
 void AP_QNXApp::loadAllPlugins ()
 {
-  struct direct **namelist;
+#ifdef ABI_PLUGIN_BUILTIN
+	UT_DEBUGMSG(("Loading builtin plugins:\n"));
+	abipgn_builtin_register();
+	UT_DEBUGMSG(("Finished loading builtin plugins.\n"));
+#endif
+	struct direct **namelist;
   int n = 0;
 
   UT_String pluginList[2];

@@ -433,9 +433,18 @@ void fl_BlockLayout::_lookupProperties(void)
 				pRun = pRun->getNext();
 				pTextRun->breakMeAtDirBoundaries(FRIBIDI_TYPE_IGNORE);
 			}
+			else if(pRun->getType() == FPRUN_ENDOFPARAGRAPH)
+			{
+				// need to set the direction correctly
+				pRun->setDirection(m_iDomDirection);
+				pRun->setVisDirection(m_iDomDirection);
+				pRun = pRun->getNext();
+			}
 			else
 				pRun = pRun->getNext();
 		}
+
+		
 	}
 	{
 		const PP_PropertyTypeInt *pOrphans = static_cast<const PP_PropertyTypeInt *>(getPropertyType("orphans", Property_type_int));
@@ -865,18 +874,35 @@ UT_sint32 fl_BlockLayout::getEmbeddedOffset(UT_sint32 offset, fl_ContainerLayout
  */
 void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbeddedSize)
 {
-	UT_DEBUGMSG(("In update Offsets \n"));
+	UT_DEBUGMSG(("In update Offsets posEmbedded %d EmbeddedSize %d \n",posEmbedded,iEmbeddedSize));
 	fp_Run * pRun = getFirstRun();
-	PT_DocPosition posInBlock = getPosition();
+	PT_DocPosition posInBlock = getPosition(true);
+	fp_Run * pPrev = NULL;
 	while(pRun && (posInBlock + pRun->getBlockOffset() < posEmbedded))
 	{
+		UT_DEBUGMSG(("Look at run %x runType %d posindoc %d \n",pRun,pRun->getType(),posInBlock+pRun->getBlockOffset()));
+		pPrev = pRun;
 		pRun = pRun->getNext();
 	}
 	if(pRun == NULL)
 	{
-		return;
+		if(pPrev == NULL)
+		{
+			return;
+		}
+		//
+		// Catch case of EOP actually containing posEmebedded
+		//
+		if((posInBlock + pPrev->getBlockOffset() +1) < posEmbedded)
+		{
+			return;
+		}
+		else
+		{
+			pRun = pPrev;
+			pPrev = pRun->getPrev();
+		}
 	}
-	fp_Run * pPrev = pRun->getPrev();
 	UT_sint32 iDiff = 0;
 	PT_DocPosition posRun = 0;
 	if(pPrev == NULL)
@@ -886,12 +912,17 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 	else
 	{
 		posRun = posInBlock + pPrev->getBlockOffset();
-		if(posRun + pPrev->getLength() <= posEmbedded)
+		bool bHandleOne = false;
+ 		if(pPrev && (pPrev->getLength() == 1) && (posRun+1 == posEmbedded))
+ 		{
+ 			bHandleOne = true;
+ 		}
+ 		if(!bHandleOne && (posRun + pPrev->getLength() <= posEmbedded))
 		{
 			iDiff = static_cast<UT_sint32>((pRun->getBlockOffset() - pPrev->getBlockOffset() - pPrev->getLength()));
-			xxx_UT_DEBUGMSG(("updateOffsets: after BlockOffset %d or pos %d \n",pRun->getBlockOffset(),posInBlock+pRun->getBlockOffset())); 
+			UT_DEBUGMSG(("updateOffsets: after BlockOffset %d or pos %d \n",pRun->getBlockOffset(),posInBlock+pRun->getBlockOffset())); 
 		}
-		else if((posRun == posEmbedded) && pRun->getNext())
+ 		else if(!bHandleOne && (posRun == posEmbedded) && pRun->getNext())
 		{
 			iDiff = static_cast<UT_sint32>((pRun->getNext()->getBlockOffset() -pRun->getBlockOffset() - pRun->getLength()));
 			pRun = pRun->getNext();
@@ -905,7 +936,7 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 		else
 		{
 			pRun = pRun->getPrev();
-			if(pRun->getType() == FPRUN_FIELD)
+ 			if(pRun->getLength() == 1)
 			{
 				//
 				// We're here if the first run of the block is the footnote
@@ -913,15 +944,24 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 				//
 				UT_DEBUGMSG(("posEmbedded %d posInBlock %d prev pos %d next pos %d \n",posEmbedded,posInBlock,posInBlock+pRun->getBlockOffset(),posInBlock+pRun->getNext()->getBlockOffset()));
 				iDiff = pRun->getNext()->getBlockOffset() - pRun->getBlockOffset();
-				pPrev = pRun;
-				pRun = pRun->getNext();
+ 				if((iDiff == 1) && bHandleOne)
+ 				{
+ 					iDiff = 0;
+ 					pRun = pPrev;
+ 					pPrev = pRun->getPrev();
+ 				}
+ 				else
+ 				{
+ 					pPrev = pRun;
+ 					pRun = pRun->getNext();
+ 				}
 			}
 			else
 			{
 				UT_ASSERT(pRun->getType() == FPRUN_TEXT);
 				fp_TextRun * pTRun = static_cast<fp_TextRun *>(pRun);
-				UT_uint32 splitOffset = posEmbedded - posInBlock;
-				xxx_UT_DEBUGMSG(("updateOffsets: Split at offset %d \n",splitOffset));
+				UT_uint32 splitOffset = posEmbedded - posInBlock -1;
+				UT_DEBUGMSG(("updateOffsets: Split at offset %d \n",splitOffset));
 				bool bres = pTRun->split(splitOffset);
 				UT_ASSERT(bres);
 				pRun = pTRun->getNext();
@@ -931,7 +971,7 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 		}
 	}
 	UT_ASSERT(iDiff >= 0);
-	xxx_UT_DEBUGMSG(("Updating block %x with orig shift %d new shift %d \n",this,iDiff,iEmbeddedSize));
+	UT_DEBUGMSG(("Updating block %x with orig shift %d new shift %d \n",this,iDiff,iEmbeddedSize));
 	if(iDiff != static_cast<UT_sint32>(iEmbeddedSize))
 	{
 //
@@ -1690,6 +1730,10 @@ void fl_BlockLayout::format()
 	// Need this to find where to break section in the document.
 	//
 	fl_ContainerLayout * pPrevCL = getPrev();
+	while(pPrevCL && pPrevCL->getContainerType() != FL_CONTAINER_BLOCK)
+	{
+		pPrevCL = pPrevCL->getPrev();
+	}
 	fp_Page * pPrevP = NULL;
 	if(pPrevCL)
 	{
@@ -2055,6 +2099,27 @@ const char* fl_BlockLayout::getProperty(const XML_Char * pszName, bool bExpandSt
 	return PP_evalProperty(pszName,pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
 }
 
+/*!
+ * This method returns the length of the Block, including the initial strux.
+ * so if "i" is the position of the block strux, i+getLength() will be the 
+ * position of the strux (whatever it might be), following this block.
+ * The length includes any embedded struxes (like footnotes and endnotes).
+ */
+UT_sint32 fl_BlockLayout::getLength()
+{
+	PT_DocPosition posThis = getPosition(true);
+	PL_StruxDocHandle nextSDH =NULL;
+	m_pDoc->getNextStrux(getStruxDocHandle(),&nextSDH);
+	if(nextSDH == NULL)
+	{
+		return 1;
+	}
+	PT_DocPosition posNext = m_pDoc->getStruxPosition(nextSDH);
+
+	UT_sint32 length = static_cast<UT_sint32>(posNext) - static_cast<UT_sint32>(posThis);
+	return length;
+}
+
 const PP_PropertyType * fl_BlockLayout::getPropertyType(const XML_Char * pszName, tProperty_type Type, bool bExpandStyles) const
 {
 	const PP_AttrProp * pSpanAP = NULL;
@@ -2073,7 +2138,7 @@ const PP_PropertyType * fl_BlockLayout::getPropertyType(const XML_Char * pszName
  \return Position of block (or first run in block)
  \fixme Split in two functions if called most often with FALSE
 */
-UT_uint32 fl_BlockLayout::getPosition(bool bActualBlockPos) const
+PT_DocPosition fl_BlockLayout::getPosition(bool bActualBlockPos) const
 {
 	PT_DocPosition pos = m_pDoc->getStruxPosition(m_sdh);
 
@@ -2453,147 +2518,6 @@ fp_Line* fl_BlockLayout::findNextLineInDocument(fp_Line* pLine)
 	return NULL;
 }
 
-fl_BlockLayout* fl_BlockLayout::getNextBlockInDocument(void) const
-{
-	fl_ContainerLayout * pNext = getNext();
-	fl_ContainerLayout * pOld = NULL;
-	UT_uint32 depth = 0;
-	next_is_null :
-	if(pNext == NULL)
-	{
-		while((pNext == NULL) && ((pOld != NULL) || (depth == 0)))
-	    {
-			fl_ContainerLayout * pPrevOld = pOld;
-			if(depth > 0)
-			{
-				pOld = pOld->myContainingLayout();
-			}
-			else
-			{
-				pOld = myContainingLayout();
-			}
-			depth++;
-			pNext = pOld->getNext();
-			if(pPrevOld == pOld)
-			{
-				pOld = NULL;
-			}
-		}
-	}
-	while(pNext)
-	{
-		pOld = pNext;
-		if(pNext->getContainerType() == FL_CONTAINER_BLOCK)
-		{
-			return static_cast<fl_BlockLayout *>(pNext);
-		}
-		else if(pNext->getContainerType() == FL_CONTAINER_DOCSECTION)
-		{
-			pNext = pNext->getFirstLayout();
-		}
-		else if(pNext->getContainerType() == FL_CONTAINER_TABLE)
-		{
-			pNext = pNext->getFirstLayout();
-		}
-		else if(pNext->getContainerType() == FL_CONTAINER_CELL)
-		{
-			pNext = pNext->getFirstLayout();
-		}
-		else if(pNext->getContainerType() == FL_CONTAINER_FOOTNOTE)
-		{
-			pNext = pNext->getNext();
-			if(pNext == NULL)
-			{
-				goto next_is_null;
-			}
-		}
-		else if(pNext->getContainerType() == FL_CONTAINER_ENDNOTE)
-		{
-			pNext = pNext->getNext();
-			if(pNext == NULL)
-			{
-				goto next_is_null;
-			}
-		}
-		else
-		{
-			pNext = NULL;
-			break;
-		}
-		if(pNext == NULL)
-		{
-				goto next_is_null;
-		}
-	}
-	return NULL;
-}
-
-fl_BlockLayout* fl_BlockLayout::getPrevBlockInDocument(void) const
-{
-	fl_ContainerLayout * pPrev = getPrev();
-	fl_ContainerLayout * pOld = NULL;
-	UT_uint32 depth = 0;
-	if(pPrev == NULL)
-	{
-		while((pPrev == NULL) && ((pOld != NULL) || (depth == 0)))
-	    {
-			fl_ContainerLayout * pPrevOld = pOld;
-			if(depth > 0)
-			{
-				pOld = pOld->myContainingLayout();
-			}
-			else
-			{
-				pOld = myContainingLayout();
-			}
-			depth++;
-			pPrev = pOld->getPrev();
-			if(pPrevOld == pOld)
-			{
-				pOld = NULL;
-			}
-		}
-	}
-	while(pPrev)
-	{
-		pOld = pPrev;
-		if(pPrev->getContainerType() == FL_CONTAINER_BLOCK)
-		{
-			return static_cast<fl_BlockLayout *>(pPrev);
-		}
-		else if(pPrev->getContainerType() == FL_CONTAINER_DOCSECTION)
-		{
-			pPrev = pPrev->getLastLayout();
-		}
-		else if(pPrev->getContainerType() == FL_CONTAINER_TABLE)
-		{
-			pPrev = pPrev->getLastLayout();
-		}
-		else if(pPrev->getContainerType() == FL_CONTAINER_CELL)
-		{
-			pPrev = pPrev->getLastLayout();
-		}
-		else if(pPrev->getContainerType() == FL_CONTAINER_FOOTNOTE)
-		{
-			pPrev = pPrev->getLastLayout();
-		}
-		else if(pPrev->getContainerType() == FL_CONTAINER_ENDNOTE)
-		{
-			pPrev = pPrev->getLastLayout();
-		}
-		else
-		{
-			pPrev = NULL;
-			break;
-		}
-		if(pPrev == NULL)
-		{
-			pPrev = pOld->myContainingLayout()->getPrev();
-		}
-	}
-	return NULL;
-}
-
 /*****************************************************************/
 /*****************************************************************/
 
@@ -2813,14 +2737,15 @@ fl_BlockLayout::_recalcPendingWord(UT_uint32 iOffset, UT_sint32 chg)
  overall effect is rather erratic. I do not see, though, a good way of
  fixing this, particularly concering short blocks.
 */
-void
-fl_BlockLayout::checkSpelling(void)
+bool fl_BlockLayout::checkSpelling(void)
 {
 
 	xxx_UT_DEBUGMSG(("fl_BlockLayout::checkSpelling: this 0x%08x isOnScreen(): %d\n", this,static_cast<UT_uint32>(isOnScreen())));
 	// Don't spell check non-formatted blocks!
-	if(m_pFirstRun == NULL || m_pFirstRun->getLine() == NULL)
-		return;
+	if(m_pFirstRun == NULL)
+		return false;
+	if(m_pFirstRun->getLine() == NULL)
+		return false;
 
 	// only update screen if this block is on it
 	bool bIsOnScreen = isOnScreen();
@@ -2852,8 +2777,10 @@ fl_BlockLayout::checkSpelling(void)
 	// Finally update screen
 	if (bIsOnScreen && bUpdateScreen && pView)
 	{
+		markAllRunsDirty();
 		pView->updateScreen();
 	}
+	return true;
 }
 
 /*!
@@ -2908,7 +2835,15 @@ fl_BlockLayout::_checkMultiWord(UT_sint32 iStart,
 
 		if (pPOB)
 		{
-			bScreenUpdated |= _doCheckWord(pPOB, pWord, true, bToggleIP);
+			bool bwrong = false;
+			bwrong = _doCheckWord(pPOB, pWord, true, bToggleIP);
+#if 0
+			if(bwrong)
+			{
+				UT_DEBUGMSG(("Found misspelt word in block %x \n",this));
+			}
+#endif
+			bScreenUpdated |= bwrong;
 		}
 	}
 
@@ -4752,6 +4687,14 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 	// Deal with embedded containers if any in this block.
 	//
 	shuffleEmbeddedIfNeeded(pPrevBL, 0);
+	//
+	// The idea here is to append the runs of the deleted block, if
+	// any, at the end of the previous block. We must make sure to take
+	// of embedded footnotes/endnotes. We need to calculate the offset
+	// before we deletes the EOP run. The offset may not be contiguous
+	// because of embedded footnotes/endnotes
+	//
+	UT_uint32 offset = 0;
 	if (pPrevBL)
 	{
 		// Find the EOP Run.
@@ -4765,6 +4708,21 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 			pNukeRun  = pPrevRun->getNext();
 		}
 		UT_ASSERT(FPRUN_ENDOFPARAGRAPH == pNukeRun->getType());
+		//
+		// The idea here is to append the runs of the deleted block, if
+		// any, at the end of the previous block. We must make sure to take
+		// account of embedded footnotes/endnotes. 
+		// We need to calculate the offset
+		// before we delete the EOP run.
+		//
+		if(FPRUN_ENDOFPARAGRAPH == pNukeRun->getType())
+		{
+			offset = pNukeRun->getBlockOffset();
+		}
+		else
+		{
+			offset =  pNukeRun->getBlockOffset() + pNukeRun->getLength();
+		}
 
 		// Detach from the line
 		fp_Line* pLine = pNukeRun->getLine();
@@ -4801,9 +4759,8 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 
 	}
 
-	// The idea here is to append the runs of the deleted block, if
-	// any, at the end of the previous block.
-	UT_uint32 offset = 0;
+	// We use the offset we calculated earlier.
+ 
 	if (m_pFirstRun)
 	{
 		// Figure out where the merge point is
@@ -4812,10 +4769,8 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 		while (pRun)
 		{
 			pLastRun = pRun;
-			offset += pRun->getLength();
 			pRun = pRun->getNext();
 		}
-
 		// Link them together
 		if (pLastRun)
 		{
@@ -4824,13 +4779,10 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 			{
 				m_pFirstRun->setPrev(pLastRun);
 			}
-			offset = pLastRun->getBlockOffset();
-			offset += pLastRun->getLength();
 		}
 		else
 		{
 			pPrevBL->m_pFirstRun = m_pFirstRun;
-			offset = m_pFirstRun->getBlockOffset();
 		}
 		UT_DEBUGMSG(("deleteStrux: offset = %d \n",offset));
 		// Merge charwidths
@@ -5016,7 +4968,7 @@ bool fl_BlockLayout::doclistener_insertFirstBlock(const PX_ChangeRecord_Strux * 
 	FV_View* pView = getView();
 	if (pView && (pView->isActive() || pView->isPreview()))
 		pView->_setPoint(pcrx->getPosition());
-	else if (pView) pView->_setPoint(pView->getPoint() + fl_BLOCK_STRUX_OFFSET);
+	else if (pView && ((pView->getPoint() == 0) || pView->getPoint() > pcrx->getPosition()) ) pView->_setPoint(pView->getPoint() + fl_BLOCK_STRUX_OFFSET);
 
 	// Run list should be valid now.
 	_assertRunListIntegrity();
@@ -5093,12 +5045,14 @@ bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
 	fp_Run* pFirstNewRun = NULL;
 	fp_Run* pLastRun = NULL;
 	fp_Run* pRun;
+ 	UT_DEBUGMSG(("BlockOffset %d \n",blockOffset));
 	for (pRun=m_pFirstRun; (pRun && !pFirstNewRun);
 		 pLastRun=pRun, pRun=pRun->getNext())
 	{
 		// We have passed the point. Why didn't previous Run claim to
 		// hold the offset? Make the best of it in non-debug
 		// builds. But keep the assert to get us information...
+ 		xxx_UT_DEBUGMSG(("pRun %x pRun->next %x pRun->blockOffset %d pRun->getLength %d \n",pRun,pRun->getNextRun(),pRun->getBlockOffset(),pRun->getLength()));
 		if (pRun->getBlockOffset() > blockOffset)
 		{
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -5133,16 +5087,20 @@ bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
 		}
 	}
 
-	if (pFirstNewRun && (pFirstNewRun->getType() == FPRUN_FMTMARK))
+	while(pFirstNewRun && (pFirstNewRun->getType() == FPRUN_FMTMARK))
 	{
 		// Since a FmtMark has length zero, both it and the next run
 		// have the same blockOffset.  We always want to be to the
 		// right of the FmtMark, so we take the next one.
 		pFirstNewRun = pFirstNewRun->getNext();
 	}
-
+	UT_sint32 iEOPOffset = -1;
 	if (pFirstNewRun)
 	{
+		if(pFirstNewRun->getBlockOffset() == blockOffset)
+		{
+			iEOPOffset = pFirstNewRun->getBlockOffset();
+		}
 		if (pFirstNewRun->getPrev())
 		{
 			// Break doubly-linked list of runs into two distinct lists.
@@ -5199,11 +5157,18 @@ bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
 		UT_ASSERT(pLastRun);
 		// Create a new end-of-paragraph run and add it to the block.
 		fp_EndOfParagraphRun* pNewRun =
-			new fp_EndOfParagraphRun(this, m_pLayout->getGraphics(), 0, 0);
+			new fp_EndOfParagraphRun(this, m_pLayout->getGraphics(),  0, 0);
 		pLastRun->setNext(pNewRun);
 		pNewRun->setPrev(pLastRun);
-		pNewRun->setBlockOffset(pLastRun->getBlockOffset()
-								+ pLastRun->getLength());
+		if(iEOPOffset < 0)
+		{
+			pNewRun->setBlockOffset(pLastRun->getBlockOffset()
+									+ pLastRun->getLength());
+		}
+		else
+		{
+			pNewRun->setBlockOffset(iEOPOffset);
+		}
 		if(pLastRun->getLine())
 			pLastRun->getLine()->addRun(pNewRun);
 		coalesceRuns();
@@ -5266,10 +5231,10 @@ void fl_BlockLayout::shuffleEmbeddedIfNeeded(fl_BlockLayout * pBlock, UT_uint32 
 			bStop = true;
 			break;
 		}
-		if((blockOffset > 0) && (iEmbed > static_cast<UT_sint32>(blockOffset)))
+		if((blockOffset > 0) && (iEmbed < static_cast<UT_sint32>(blockOffset)))
 		{
-			bStop = true;
-			break;
+			iEmbed++;
+			continue;
 		}
 		//
 		// Move pEmbedCL to be just after this block.
@@ -6798,8 +6763,10 @@ void	fl_BlockLayout::StartList( const XML_Char * style, PL_StruxDocHandle prevSD
 		else
 			fIndent =  static_cast<float>(-LIST_DEFAULT_INDENT_LABEL);
 		if(!szFont)
+		{
+			szFont = "Times New Roman";
 			UT_ASSERT(0);
-
+		}
 		double dLeft;
 		if(m_iDomDirection == FRIBIDI_TYPE_LTR)
 			dLeft = UT_convertToInches(getProperty("margin-left",true));
@@ -6980,23 +6947,31 @@ void	fl_BlockLayout::StartList( List_Type lType, UT_uint32 start,const XML_Char 
 	const PP_AttrProp * pBlockAP = NULL;
 	const XML_Char * szLid=NULL;
 	getAttrProp(&pBlockAP);
+ 	bool bGetPrevAuto = true;
 	if (!pBlockAP || !pBlockAP->getAttribute(PT_LISTID_ATTRIBUTE_NAME, szLid))
 		szLid = NULL;
 	if (szLid)
 		id = atoi(szLid);
 	else
-		id = 0;
+ 		{
+			id = 0;
+			bGetPrevAuto = false;
+		}
+			
 
 	FV_View* pView = getView();
 	UT_ASSERT(pView);
-
-	pAutoNum = m_pDoc->getListByID(id);
-	xxx_UT_DEBUGMSG(("SEVIOR: found autonum %x from id %d \n",pAutoNum,id));
-	if(pAutoNum != NULL)
+	if(bGetPrevAuto)
 	{
-		m_pAutoNum = pAutoNum;
-		m_bListItem = true;
-		listUpdate();
+		pAutoNum = m_pDoc->getListByID(id);
+		UT_DEBUGMSG(("SEVIOR: found autonum %x from id %d \n",pAutoNum,id));
+		if(pAutoNum != NULL)
+		{
+			m_pAutoNum = pAutoNum;
+			m_bListItem = true;
+			UT_DEBUGMSG(("Found list of id %d \n",id));
+			listUpdate();
+		}
 	}
 
 	UT_return_if_fail(m_pDoc);
@@ -7290,7 +7265,7 @@ void	fl_BlockLayout::StopListInBlock(void)
 		{
 			pRun = pRun->getNext();
 		}
-		PT_DocPosition lastPos = getPosition() + pRun->getBlockOffset();
+		PT_DocPosition lastPos = getPosition(false) + pRun->getBlockOffset();
 		bRet = m_pDoc->changeSpanFmt(PTC_RemoveFmt, getPosition(false), lastPos, pListAttrs, pListProps);
 //
 // Set the indents to match.

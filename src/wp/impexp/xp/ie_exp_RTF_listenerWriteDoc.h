@@ -107,10 +107,11 @@ protected:
  private:
 	PD_Document *		m_pDocument;
 	IE_Exp_RTF *		m_pie;
-	bool				m_bInSpan;
-	bool				m_bJustStartingDoc;
-	bool				m_bJustStartingSection;
-	bool				m_bToClipboard;
+	bool			m_bInSpan;
+	bool			m_bInBlock;
+	bool			m_bJustStartingDoc;
+	bool			m_bJustStartingSection;
+	bool			m_bToClipboard;
 	PT_AttrPropIndex	m_apiLastSpan;
 	bool                m_bIsListBlock;
 

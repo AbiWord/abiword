@@ -23,7 +23,6 @@
 #include "gr_CharWidths.h"
 
 class UT_NumberVector;
-class GR_Graphics;
 
 //////////////////////////////////////////////////////////////////
 // the only reason that we subclass is because Win32 provides a
@@ -32,7 +31,7 @@ class GR_Graphics;
 class GR_Win32CharWidths : public GR_CharWidths
 {
 public:
-	void  setCharWidthsOfRange(HDC hdc, UT_UCSChar c0, UT_UCSChar c1, GR_Graphics * pGr);
+	void  setCharWidthsOfRange(HDC hdc, UT_UCSChar c0, UT_UCSChar c1);
 
 private:
 	bool _doesGlyphExist(UT_UCS4Char g);

@@ -44,11 +44,10 @@ protected:
 void ap_usb_TextListener::notify()
 {
 
-	const UT_UCS4Char * buf = ((AP_StatusBarField_TextInfo *)m_pStatusBarField)->getBufUCS();
-	UT_UTF8String	utf8(buf);	
+	AP_StatusBarField_TextInfo *textInfo  = ((AP_StatusBarField_TextInfo *)m_pStatusBarField);
 	UT_ASSERT(m_pLabel);
 
-	PtSetResource(m_pLabel,Pt_ARG_TEXT_STRING,utf8.utf8_str(),0);
+	PtSetResource(m_pLabel,Pt_ARG_TEXT_STRING,textInfo->getBuf().utf8_str(),0);
 }
 
 //////////////////////////////////////////////////////////////////

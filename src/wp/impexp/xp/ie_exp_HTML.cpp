@@ -290,7 +290,6 @@ static const char * s_prop_list[] = {
 	"font-variant",		"normal",
 	"font-weight",		"normal",
 	"height",			"auto",
-   	"lang",             0,
 	"margin-bottom",	"0pt",
 	"margin-left",		"0pt",
 	"margin-right",		"0pt",
@@ -555,10 +554,10 @@ private:
 
 	// Need to look up proper type, and place to stick #defines...
   
-	UT_uint16		m_iBlockType;	// BT_*
-	UT_uint16		m_iListDepth;	// 0 corresponds to not in a list
-	UT_Stack		m_utsListType;
-	UT_uint16		m_iImgCnt;
+	UT_uint32		m_iBlockType;	// BT_*
+	UT_uint32		m_iListDepth;	// 0 corresponds to not in a list
+	UT_NumberStack	m_utsListType;
+	UT_uint32		m_iImgCnt;
 	UT_Wctomb		m_wmctomb;
 
 	enum WhiteSpace
@@ -615,11 +614,11 @@ private:
 	void			tlistPop ();
 	void			tlistPopItem ();
 
-	UT_uint16		listDepth ();
-	UT_uint16		listType ();
-	void			listPush (UT_uint16 type, const char * ClassName);
+	UT_uint32		listDepth ();
+	UT_uint32		listType ();
+	void			listPush (UT_uint32 type, const char * ClassName);
 	void			listPop ();
-	void			listPopToDepth (UT_uint16 depth);
+	void			listPopToDepth (UT_uint32 depth);
 
 	bool			compareStyle (const char * key, const char * value);
 	void            _fillColWidthsVector();
@@ -640,7 +639,7 @@ private:
 
 	UT_UTF8String	m_utf8_css_path; // Multipart HTML: cache for content location
 
-	UT_Stack		m_tagStack;
+	UT_NumberStack	m_tagStack;
 
 	UT_uint32		m_styleIndent;
 
@@ -749,8 +748,7 @@ void s_HTML_Listener::tagOpen (UT_uint32 tagID, const UT_UTF8String & content,
 
 	tagRaw (m_utf8_0);
 
-	void * vptr = reinterpret_cast<void *>(tagID);
-	m_tagStack.push (vptr);
+	m_tagStack.push (tagID);
 }
 
 void s_HTML_Listener::tagClose (UT_uint32 tagID, const UT_UTF8String & content,
@@ -774,10 +772,10 @@ void s_HTML_Listener::tagClose (UT_uint32 tagID, const UT_UTF8String & content,
 
 void s_HTML_Listener::tagClose (UT_uint32 tagID)
 {
-	void * vptr = 0;
-	m_tagStack.pop (&vptr);
+	UT_uint32 i = 0;
+	m_tagStack.pop ((UT_sint32*)&i);
 
-	if (reinterpret_cast<UT_uint32>(vptr) == tagID) return;
+	if (i == tagID) return;
 
 	UT_DEBUGMSG(("WARNING: possible tag mis-match in XHTML output!\n"));
 }
@@ -820,8 +818,8 @@ void s_HTML_Listener::tagCloseBroken (const UT_UTF8String & content, bool suppre
 
 UT_uint32 s_HTML_Listener::tagTop ()
 {
-	void * vptr = 0;
-	if (m_tagStack.viewTop (&vptr)) return reinterpret_cast<UT_uint32>(vptr);
+	UT_sint32 i = 0;
+	if (m_tagStack.viewTop (i)) return (UT_uint32)i;
 	return 0;
 }
 
@@ -1151,7 +1149,7 @@ void s_HTML_Listener::multiBreak ()
 
 static const char * s_DTD_XHTML = "!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\"";
 
-static const char * s_DTD_HTML4 = "!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\" \"http://www.w3.org/TR/REC-html40/loose.dtd\"";
+static const char * s_DTD_HTML4 = "!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\"";
 
 static const char * s_Delimiter = 
 "================================================================================ ";
@@ -1175,9 +1173,10 @@ void s_HTML_Listener::_outputBegin (PT_AttrPropIndex api)
 #ifdef HTML_META_SUPPORTED
 	m_pDocument->getMetaDataProp (PD_META_KEY_TITLE, titleProp);
 
-	if (titleProp.byteLength () == 0) titleProp = m_pie->getFileName ();
+	if (titleProp.byteLength () == 0  && m_pie->getFileName () != NULL) 
+		titleProp = UT_basename(m_pie->getFileName ());
 #else
-	titleProp = m_pie->getFileName ();
+	titleProp = UT_basename(m_pie->getFileName ());
 #endif
 
 	if (get_Multipart ()) multiHeader (titleProp);
@@ -1459,7 +1458,7 @@ void s_HTML_Listener::_outputStyles (const PP_AttrProp * pAP)
 			m_utf8_1 = "body";
 			styleOpen (m_utf8_1);
 
-			for (UT_uint16 i = 0; i < pStyle->getPropertyCount (); i++)
+			for (UT_uint32 i = 0; i < pStyle->getPropertyCount (); i++)
 				{
 					pStyle->getNthProperty (i, szName, szValue);
 
@@ -1889,19 +1888,19 @@ void s_HTML_Listener::tlistPopItem ()
 	m_bInTListItem = false;
 }
 
-UT_uint16 s_HTML_Listener::listDepth ()
+UT_uint32 s_HTML_Listener::listDepth ()
 {
-	return static_cast<UT_uint16>(m_utsListType.getDepth ());
+	return static_cast<UT_uint32>(m_utsListType.getDepth ());
 }
 
-UT_uint16 s_HTML_Listener::listType ()
+UT_uint32 s_HTML_Listener::listType ()
 {
-	void * vptr = 0;
-	m_utsListType.viewTop (&vptr);
-	return static_cast<UT_uint16>(reinterpret_cast<UT_uint32>(vptr));
+	UT_sint32 i = 0;
+	m_utsListType.viewTop (i);
+	return (UT_uint32)i;
 }
 
-void s_HTML_Listener::listPush (UT_uint16 type, const char * ClassName)
+void s_HTML_Listener::listPush (UT_uint32 type, const char * ClassName)
 {
 	if (tagTop () == TT_LI)
 		{
@@ -1923,8 +1922,7 @@ void s_HTML_Listener::listPush (UT_uint16 type, const char * ClassName)
 		}
 	tagOpen (tagID, m_utf8_1);
 
-	void * vptr = reinterpret_cast<void *>(static_cast<UT_uint32>(type));
-	m_utsListType.push (vptr);
+	m_utsListType.push (type);
 }
 
 void s_HTML_Listener::listPop ()
@@ -1935,9 +1933,8 @@ void s_HTML_Listener::listPop ()
 			tagClose (TT_LI, m_utf8_1, ws_Post);
 		}
 
-	void * vptr = 0;
-	m_utsListType.pop (&vptr);
-	UT_uint16 type = static_cast<UT_uint16>(reinterpret_cast<UT_uint32>(vptr));
+	UT_uint32 type = 0;
+	m_utsListType.pop ((UT_sint32*)&type);
 
 	UT_uint32 tagID;
 
@@ -1954,12 +1951,12 @@ void s_HTML_Listener::listPop ()
 	tagClose (tagID, m_utf8_1);
 }
 
-void s_HTML_Listener::listPopToDepth (UT_uint16 depth)
+void s_HTML_Listener::listPopToDepth (UT_uint32 depth)
 {
 	if (listDepth () <= depth) return;
 
-	UT_uint16 count = listDepth () - depth;
-	for (UT_uint16 i = 0; i < count; i++) listPop ();
+	UT_uint32 count = listDepth () - depth;
+	for (UT_uint32 i = 0; i < count; i++) listPop ();
 }
 
 void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
@@ -2001,7 +1998,7 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 			return;
 		}
 
-	UT_uint16 tagID = TT_OTHER;
+	UT_uint32 tagID = TT_OTHER;
 
 	bool tagPending = false;
 
@@ -2505,7 +2502,6 @@ void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 	const XML_Char * szP_TextPosition = 0;
 	const XML_Char * szP_Color = 0;
 	const XML_Char * szP_BgColor = 0;
-	const XML_Char * szP_Lang = 0;
 
 	pAP->getProperty ("font-weight",     szP_FontWeight);
 	pAP->getProperty ("font-style",      szP_FontStyle);
@@ -2515,7 +2511,6 @@ void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 	pAP->getProperty ("text-position",   szP_TextPosition);
 	pAP->getProperty ("color",           szP_Color);
 	pAP->getProperty ("bgcolor",         szP_BgColor);
-	pAP->getProperty ("lang",         szP_Lang);
 
 	bool first = true;
 
@@ -2539,14 +2534,6 @@ void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 					m_utf8_1 += "font-style: italic";
 					first = false;
 				}
-	if (szP_Lang)
-		if (!compareStyle ("font-style", szP_Lang))
-			{
-				if (!first) m_utf8_1 += "; ";
-				m_utf8_1 += "lang: ";
-				m_utf8_1 += szP_Lang;
-				first = false;
-			}
 
 	if (szP_FontSize)
 		{
@@ -2692,10 +2679,28 @@ void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 				bInSpan = true;
 			}
 
+	const XML_Char * szP_Lang = 0;
+	pAP->getProperty ("lang",         szP_Lang);
+	
+	if (szP_Lang)
+		{
+			if (!get_HTML4 ()) {
+				// we want to emit xml:lang in addition to lang
+				m_utf8_1 += " xml:lang=\"";
+				m_utf8_1 += szP_Lang;
+				m_utf8_1 += "\"";
+			}
+
+			m_utf8_1 += " lang=\"";
+			m_utf8_1 += szP_Lang;
+			m_utf8_1 += "\"";
+			bInSpan = true;
+		}
+	
 	/* if the dir-override is set, or dir is 'rtl' or 'ltr', we will output
 	 * the dir property; however, this property cannot be within a style 
 	 * sheet, so anything that needs to be added to this code and belongs 
-	 * withing a style property must be above us; further it should be noted 
+	 * within a style property must be above us; further it should be noted 
 	 * that there is a good chance that the html browser will not handle it 
 	 * correctly. For instance IE will take dir=rtl as an indication that 
 	 * the span should have rtl placement on a line, but it will ignore this 
@@ -3068,9 +3073,15 @@ void s_HTML_Listener::_setCellWidthInches(void)
 	UT_sint32 right = m_TableHelper.getRight ();
 	double tot = 0;
 	UT_sint32 i =0;
+
+	UT_ASSERT(m_vecDWidths.size() >= (right-1));
+
 	for(i=left; i<right; i++)
 	{
-		tot += *reinterpret_cast<double *>(m_vecDWidths.getNthItem(i));
+		// probably covering up some sort of issue
+		// but we assert above, so we'll notice it again
+		if (i < m_vecDWidths.size ())
+			tot += *reinterpret_cast<double *>(m_vecDWidths.getNthItem(i));
 	}
 	m_dCellWidthInches = tot;
 }
@@ -3557,7 +3568,7 @@ void s_HTML_Listener::_handleImage (PT_AttrPropIndex api)
 		if (*--ptr == '.')
 			{
 				suffix = ptr;
-				break;
+				// break;
 			}
 	if (dataid == suffix) return;
 
@@ -4230,7 +4241,7 @@ bool s_StyleTree::add (const char * style_name, PD_Style * style)
 		{
 			tree = new s_StyleTree(this,style_name,style);
 		}
-	UT_CATCH(...)
+	UT_CATCH(UT_CATCH_ANY)
 		{
 			tree = 0;
 		}
@@ -4273,6 +4284,10 @@ bool s_StyleTree::add (const char * style_name, PD_Document * pDoc)
 		}
 	else parent = this;
 
+	if (!parent) {
+		UT_ASSERT_NOT_REACHED();
+		return false;
+	}
 	return parent->add (style_name, style);
 }
 
@@ -4654,6 +4669,20 @@ void s_TemplateHandler::ProcessingInstruction (const XML_Char * target, const XM
 					m_pie->write (m_utf8.utf8_str (), m_utf8.byteLength ());
 #endif /* HTML_META_SUPPORTED */
 				}
+			else if (m_utf8 == "creator")
+				{
+#ifdef HTML_META_SUPPORTED
+					m_utf8 = "";
+
+					m_pDocument->getMetaDataProp (PD_META_KEY_CREATOR, m_utf8);
+
+					if (m_utf8.byteLength ())
+						{
+							m_utf8.escapeXML ();
+							m_pie->write (m_utf8.utf8_str (), m_utf8.byteLength ());
+						}
+#endif /* HTML_META_SUPPORTED */
+				}
 			else if (m_utf8 == "meta")
 				{
 #ifdef HTML_META_SUPPORTED
@@ -4675,8 +4704,24 @@ void s_TemplateHandler::ProcessingInstruction (const XML_Char * target, const XM
 
 			if (sz_property && sz_comment)
 				{
-					const UT_UTF8String * prop = m_pie->getProperty (sz_property->utf8_str ());
+#ifdef HTML_META_SUPPORTED
+					UT_UTF8String creator = "";
+#endif /* HTML_META_SUPPORTED */
+					const UT_UTF8String * prop = 0;
 
+					if (*sz_property == "meta::creator")
+						{
+#ifdef HTML_META_SUPPORTED
+							m_pDocument->getMetaDataProp (PD_META_KEY_CREATOR, creator);
+
+							if (creator.byteLength ())
+								prop = &creator;
+#endif /* HTML_META_SUPPORTED */
+						}
+					else
+						{
+							prop = m_pie->getProperty (sz_property->utf8_str ());
+						}
 					if (prop)
 						{
 							const UT_UTF8String DD("$$");

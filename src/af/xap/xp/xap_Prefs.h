@@ -41,7 +41,8 @@ class UT_String;
 enum {
 	PREF_FLAG_GEOMETRY_POS = 0x1,     // Position is valid
 	PREF_FLAG_GEOMETRY_SIZE = 0x2,    // Size is valid
-	PREF_FLAG_GEOMETRY_NOUPDATE = 0x4 // User specified, don't update it
+	PREF_FLAG_GEOMETRY_NOUPDATE = 0x4, // User specified, don't update it
+	PREF_FLAG_GEOMETRY_MAXIMIZED = 0x8 // Maximize at start
 };
 
 typedef void (*PrefsListener) (
@@ -131,6 +132,8 @@ public:
 	const char *			getRecent(UT_uint32 k) const;		// one-based
 	void					addRecent(const char * szRecent);
 	void					removeRecent(UT_uint32 k);			// one-based
+	void                    setIgorneNextRecent(void)
+		{ m_bIgnoreThisOne = true;}
 
 	bool					setGeometry(UT_sint32 posx, UT_sint32 posy, UT_uint32 width, UT_uint32 height, UT_uint32 flags = 0);
 	bool					getGeometry(UT_sint32 *posx, UT_sint32 *posy, UT_uint32 *width, UT_uint32 *height, UT_uint32 *flags = 0);
@@ -184,7 +187,7 @@ public:
 private:
 	void					_startElement_SystemDefaultFile(const XML_Char *name, const XML_Char **atts);
 	bool					m_bLoadSystemDefaultFile;
-
+	bool                    m_bIgnoreThisOne;
 private:
 	struct
 	{

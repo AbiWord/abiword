@@ -36,9 +36,9 @@
 
 #include "ut_AdobeEncoding.h"
 
-#include <X11/Xft/Xft.h>
 #include <ft2build.h>
 #include FT_FREETYPE_H
+#include <X11/Xft/Xft.h>
 
 class ps_Generate;
 class XAP_UnixFontManager;
@@ -105,7 +105,8 @@ class ABI_EXPORT XAP_UnixFont
 
 	void					setXLFD(const char * xlfd);
 	const char * 			getXLFD(void) const;
-	
+	bool                    isSymbol(void)
+		{ return m_bIsSymbol;}	
 	bool					embedInto(ps_Generate& ps);
 	bool					openPFA(void);
 	char					getPFAChar(void);
@@ -118,7 +119,7 @@ class ABI_EXPORT XAP_UnixFont
 	bool					is_PS_font()  const {return ((m_fontType == FONT_TYPE_PFA) || (m_fontType == FONT_TYPE_PFB));}
 	font_type				getFontType() const {return m_fontType;}
 
-	void					getCoverage(UT_Vector& coverage);
+	void					getCoverage(UT_NumberVector& coverage);
 
 	float					getAscender(UT_uint32 iSize) const;
 	float					getDescender(UT_uint32 iSize) const;

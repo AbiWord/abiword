@@ -280,7 +280,7 @@ void XAP_UnixDialog_Image::_constructWindowContents (GtkWidget * dialog_vbox1)
   gtk_box_pack_start (GTK_BOX (dialog_vbox1), table1, TRUE, TRUE, 0);
   gtk_container_set_border_width (GTK_CONTAINER (table1), 5);
 
-  label2 = gtk_label_new (pSS->getValueUTF8(XAP_STRING_ID_DLG_Image_Height).c_str());
+  label2 = gtk_label_new (pSS->getValueUTF8(XAP_STRING_ID_DLG_Image_Height).utf8_str());
   gtk_widget_show (label2);
   gtk_table_attach (GTK_TABLE (table1), label2, 0, 1, 0, 1,
                     static_cast<GtkAttachOptions>(GTK_FILL),
@@ -288,7 +288,7 @@ void XAP_UnixDialog_Image::_constructWindowContents (GtkWidget * dialog_vbox1)
   gtk_misc_set_alignment (GTK_MISC (label2), 0, 0.5);
 
 
-  label1 = gtk_label_new (pSS->getValueUTF8(XAP_STRING_ID_DLG_Image_Width).c_str());
+  label1 = gtk_label_new (pSS->getValueUTF8(XAP_STRING_ID_DLG_Image_Width).utf8_str());
   gtk_widget_show (label1);
   gtk_table_attach (GTK_TABLE (table1), label1, 0, 1, 1, 2,
                     static_cast<GtkAttachOptions>(GTK_FILL),
@@ -340,7 +340,7 @@ void XAP_UnixDialog_Image::_constructWindowContents (GtkWidget * dialog_vbox1)
 //
 // Preserve aspect ratio checkbox.
 //
-  m_wAspectCheck = gtk_check_button_new_with_label(pSS->getValueUTF8(XAP_STRING_ID_DLG_Image_Aspect).c_str());
+  m_wAspectCheck = gtk_check_button_new_with_label(pSS->getValueUTF8(XAP_STRING_ID_DLG_Image_Aspect).utf8_str());
   gtk_widget_show(m_wAspectCheck);
   gtk_box_pack_start (GTK_BOX (dialog_vbox1), m_wAspectCheck, TRUE, TRUE, 0);
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (m_wAspectCheck), getPreserveAspect());
@@ -363,7 +363,7 @@ GtkWidget * XAP_UnixDialog_Image::_constructWindow ()
 
   const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-  dialog1 = abiDialogNew ( "resize image dialog", TRUE, pSS->getValueUTF8(XAP_STRING_ID_DLG_Image_Title).c_str() );
+  dialog1 = abiDialogNew ( "resize image dialog", TRUE, pSS->getValueUTF8(XAP_STRING_ID_DLG_Image_Title).utf8_str() );
 
   dialog_vbox1 = GTK_DIALOG (dialog1)->vbox;
   gtk_widget_show (dialog_vbox1);

@@ -35,7 +35,13 @@
 #include <string.h>
 #include <io.h>
 #include <fcntl.h>
+
+#if !defined(__WINE__) && (!defined(_MSC_VER) || _MSC_VER < 1310)
 #include <iostream.h>
+#elif _MSC_VER >= 1310
+#include <iostream>
+#endif
+
 #include <ole2.h>
 
 #include "ut_debugmsg.h"
@@ -380,6 +386,9 @@ bool AP_Win32App::shutdown(void)
 {
 	if (m_prefs->getAutoSavePrefs())
 		m_prefs->savePrefsFile();
+
+	delete m_prefs;
+	m_prefs = NULL;
 
 	return true;
 }
@@ -1000,6 +1009,8 @@ bool AP_Win32App::_pasteFormatFromClipboard(PD_DocumentRange * pDocRange, const 
 
 bool AP_Win32App::canPasteFromClipboard(void)
 {
+	UT_return_val_if_fail(getLastFocussedFrame(), false);
+	
 	AP_Win32FrameImpl * pFrameImp = static_cast<AP_Win32FrameImpl*>(getLastFocussedFrame()->getFrameImpl());
 	UT_return_val_if_fail(pFrameImp, false);
 	
@@ -1200,7 +1211,7 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 	bool bShowApp = true;
 	bool bShowSplash = true;
 	bool bSplashPref = true;
-	BOOL bInitialized; 
+	BOOL bInitialized = FALSE; 
 	
 	// this is a static function and doesn't have a 'this' pointer.
 	MSG msg;
@@ -1295,8 +1306,16 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 __try
 #endif	
 {		
+	UT_uint32 iHeight = 0, iWidth = 0, t_flag =0;
+	UT_sint32 iPosX = 0, iPosY = 0;
+		
+	if (!((XAP_App::getApp()->getGeometry(&iPosX,&iPosY,&iWidth,&iHeight,&t_flag)) &&
+	       ((iWidth > 0) && (iHeight > 0)))	)
+		XAP_App::getApp()->getDefaultGeometry(iWidth,iHeight,t_flag);
 	
-
+	if ((t_flag & PREF_FLAG_GEOMETRY_MAXIMIZED)==PREF_FLAG_GEOMETRY_MAXIMIZED)
+			iCmdShow = SW_SHOWMAXIMIZED;
+	
 	if (bShowApp)
 	{
 		// display the windows
@@ -1335,6 +1354,8 @@ __try
         if (bInitialized)
                 OleUninitialize();
 
+	FreeLibrary(hinstRich);
+
 	// unload all loaded plugins (remove some of the memory leaks shown at shutdown :-)
 	XAP_ModuleManager::instance().unloadAllPlugins();
 	
@@ -1357,17 +1378,28 @@ __except (1)
 	UT_ASSERT(pApp);
 	
 	UT_uint32 i = 0;
-	
+	IEFileType abiType = IE_Imp::fileTypeForSuffix("abw");
 	for(;i<pApp->m_vecFrames.getItemCount();i++)
 	{
 		AP_Win32Frame * curFrame = (AP_Win32Frame*)pApp->m_vecFrames[i];
 		UT_ASSERT(curFrame);
 		
 		if (NULL == curFrame->getFilename())
-		  curFrame->backup(".abw~");
+		  curFrame->backup(".abw.saved", abiType);
 		else
-		  curFrame->backup(".CRASHED");
+		  curFrame->backup(".saved", abiType);
+
 	}	
+
+	// Tell the user was has just happened
+	AP_Win32Frame * curFrame = (AP_Win32Frame*)pApp->m_vecFrames[0];
+	if (curFrame)
+	{
+		curFrame->showMessageBox(AP_STRING_ID_MSG_Exception,XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK);
+		
+	}
+		
+
 }// end of except
 #endif
 
@@ -1669,5 +1701,3 @@ UT_UTF8String	AP_Win32App::s_fromAnsiToUTF8(const char* szIn)
 
 	return sRslt;
 }
-
-

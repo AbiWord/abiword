@@ -56,6 +56,7 @@ Name: %{name}
 Summary: Multi-platform word processor
 Version: %{version}
 Release: %{release}
+Epoch: 1
 Source: %{name}-%{version}.tar.gz
 Group: Applications/Publishing
 URL: http://www.abisource.com/
@@ -65,8 +66,8 @@ Prefix: %{prefix}
 Packager: __ABI_BUILD_PACKAGER__
 Distribution: RedHat 7.x Contrib
 # Basic requirements
-Requires: gtk2 >= 2.0.0 glib2 >= 2.0.0 libfribidi0 >= 0.10.4 fontconfig >= 2.1 libtool
-BuildRequires: gtk2-devel >= 2.0.0 glib2 >= 2.0.0 fontconfig-devel >= 2.1
+Requires: gtk2 >= 2.2.0 glib2 >= 2.0.0 /usr/lib/libfribidi.so fontconfig >= 2.0 libtool
+BuildRequires: gtk2-devel >= 2.2.0 glib2 >= 2.0.0 fontconfig-devel >= 2.0 /usr/include/fribidi/fribidi.h
 
 %if %{enable_jpeg}
 Requires: libjpeg
@@ -307,7 +308,6 @@ cd ../abi
 %{_libdir}/%{AbiWord}/plugins/libAbiBMP.so
 %{_libdir}/%{AbiWord}/plugins/libAbiBZ2.so
 %{_libdir}/%{AbiWord}/plugins/libAbiClarisWorks.so
-%{_libdir}/%{AbiWord}/plugins/libAbiCoquille.so
 %{_libdir}/%{AbiWord}/plugins/libAbiDocBook.so
 %{_libdir}/%{AbiWord}/plugins/libAbiEML.so
 %{_libdir}/%{AbiWord}/plugins/libAbiGdkPixbuf.so

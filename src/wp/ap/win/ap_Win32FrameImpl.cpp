@@ -262,25 +262,13 @@ void AP_Win32FrameImpl::_toggleBar(UT_uint32 iBarNb, bool bBarOn)
 			_setBarHeight(1);
 
 		GetClientRect(_getHwndContainer(), &r);
-		_onSize(static_cast<AP_FrameData *>(getFrame()->getFrameData()), r.right - r.left, r.bottom - r.top);
+		_onSize(static_cast<AP_FrameData *>(getFrame()->getFrameData()), r.right - r.left + 1, r.bottom - r.top + 1);
 	}
 
-	// We *need* to make the window recalc its layout after adding/removing a
-	// toolbar in the rebar control. Since we have no "recalcLayout" I'm
-	// aware of we use this not-so-good-but-old idiom of resizing the window.
-	RECT rc;
-	GetWindowRect(_getTopLevelWindow(), &rc);
-	const int cx = rc.right - rc.left;
-	const int cy = rc.bottom - rc.top;
-	const UINT fFlags =
-		SWP_FRAMECHANGED	|
-		SWP_NOACTIVATE		|
-		SWP_NOCOPYBITS		|
-		SWP_NOMOVE			|
-		SWP_NOOWNERZORDER	|
-		SWP_NOZORDER;
-	SetWindowPos(_getTopLevelWindow(), 0, 0, 0, cx - 1, cy - 1, fFlags | SWP_NOREDRAW);
-	SetWindowPos(_getTopLevelWindow(), 0, 0, 0, cx, cy, fFlags);
+	// Tell frame to recalculate layout (screen refresh)
+	// Defer the screen repaint if we're in fullscreen mode
+	if (!static_cast<AP_FrameData *>(getFrame()->getFrameData())->m_bIsFullScreen)
+		getFrame()->queue_resize();
 }
 
 void AP_Win32FrameImpl::_bindToolbars(AV_View *pView)
@@ -595,7 +583,7 @@ bool AP_Win32FrameImpl::_RegisterClass(XAP_Win32App * app)
 	// register class for the container window (this will contain the document
 	// and the rulers and the scroll bars)
 
-	_snprintf(s_ContainerWndClassName, MAXCNTWNDCLSNMSIZE, "%SContainer", app->getApplicationName());
+	_snprintf(s_ContainerWndClassName, MAXCNTWNDCLSNMSIZE, "%sContainer", app->getApplicationName());
 
 	memset(&wndclass, 0, sizeof(wndclass));
 	wndclass.cbSize        = sizeof(wndclass);
@@ -615,7 +603,7 @@ bool AP_Win32FrameImpl::_RegisterClass(XAP_Win32App * app)
 	UT_return_val_if_fail(a, false);
 
 	// register class for the actual document window
-	_snprintf(s_DocumentWndClassName, MAXDOCWNDCLSNMSIZE, "%SDocument", app->getApplicationName());
+	_snprintf(s_DocumentWndClassName, MAXDOCWNDCLSNMSIZE, "%sDocument", app->getApplicationName());
 
 	memset(&wndclass, 0, sizeof(wndclass));
 	wndclass.cbSize        = sizeof(wndclass);
@@ -1284,6 +1272,18 @@ LRESULT CALLBACK AP_Win32FrameImpl::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARA
 				int nHeight = HIWORD(lParam);
 
 				pView->setWindowSize(nWidth, nHeight);
+				
+				// when resizing, set the rulers to their new height/width
+				if ((f->getAPFrameData()->m_pTopRuler) && (f->getAPFrameData()->m_pLeftRuler))
+				{
+					f->getAPFrameData()->m_pTopRuler->setWidth(nWidth + pView->getGraphics()->tdu(f->getAPFrameData()->m_pLeftRuler->getWidth()));
+					f->getAPFrameData()->m_pLeftRuler->setHeight(nHeight + pView->getGraphics()->tdu(f->getAPFrameData()->m_pTopRuler->getHeight()));
+				} else {
+					if (f->getAPFrameData()->m_pTopRuler)
+						f->getAPFrameData()->m_pTopRuler->setWidth(nWidth);
+					if (f->getAPFrameData()->m_pLeftRuler)
+						f->getAPFrameData()->m_pLeftRuler->setHeight(nHeight);
+				}
 
 				// may need to scroll to keep everything in sync.
 				// the following is necessary to make sure that the
@@ -1315,8 +1315,8 @@ LRESULT CALLBACK AP_Win32FrameImpl::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARA
 
 			
 			UT_Rect r(pG->tlu(ps.rcPaint.left), pG->tlu(ps.rcPaint.top),
-					pG->tlu(ps.rcPaint.right-ps.rcPaint.left),
-					pG->tlu(ps.rcPaint.bottom-ps.rcPaint.top));
+					pG->tlu(ps.rcPaint.right-ps.rcPaint.left+1),
+					pG->tlu(ps.rcPaint.bottom-ps.rcPaint.top+1));
 			pView->draw(&r);
 
 			EndPaint(hwnd, &ps);

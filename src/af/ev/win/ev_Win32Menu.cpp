@@ -20,6 +20,8 @@
 #include <windows.h>
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
+#include <stdlib.h>
 #include "ut_types.h"
 #include "ut_stack.h"
 #include "ut_string.h"
@@ -38,6 +40,7 @@
 #include "xap_App.h"
 #include "xap_Win32App.h"
 #include "xap_Win32Toolbar_Icons.h"
+#include "ap_Win32App.h"
 
 #define SPACE_ICONTEXT	4	// Pixels between the icon and the text
 
@@ -155,6 +158,10 @@ static const char * _ev_GetLabelName(XAP_Win32App * pWin32App,
 	if (!szLabelName || !*szLabelName)
 		return NULL;
 
+	UT_String str = AP_Win32App::s_fromUTF8ToAnsi(szLabelName);
+	szLabelName = str.c_str();
+
+	
 	const char * szShortcut = NULL;
 	int len = 0;
 
@@ -181,7 +188,11 @@ static const char * _ev_GetLabelName(XAP_Win32App * pWin32App,
 		len += 4;
 
 	if (!len)
-		return szLabelName;
+	{
+		static char buf[128];
+		strcpy(buf,szLabelName);
+		return buf;
+	}
 
 	static char buf[128];
 	memset(buf,0,NrElements(buf));
@@ -236,6 +247,8 @@ EV_Win32Menu::EV_Win32Menu(XAP_Win32App * pWin32App,
 			m_nBitmapCX = bitmap.bmWidth+2;
 			m_nBitmapCY = bitmap.bmHeight+2;
 		}
+
+		DeleteObject(hBitmap);
 	}						
 	
 }
@@ -459,7 +472,7 @@ bool EV_Win32Menu::onInitMenu(XAP_Frame * pFrame, AV_View * pView, HWND hWnd, HM
 	
 	const EV_Menu_ActionSet * pMenuActionSet = m_pWin32App->getMenuActionSet();
 	UT_uint32 nrLabelItemsInLayout = m_pMenuLayout->getLayoutItemCount();
-	bool bNeedToRedrawMenu = false;
+	
 
 	UT_uint32 pos = 0;
 	bool bResult;
@@ -533,16 +546,52 @@ bool EV_Win32Menu::onInitMenu(XAP_Frame * pFrame, AV_View * pView, HWND hWnd, HM
 				if (bRemoveIt)			// we don't want it to be there
 				{
 					if (bPresent)
-					{
 						RemoveMenu(hMenuBar,cmd,MF_BYCOMMAND);
-						bNeedToRedrawMenu = true;
-					}
+					
 					break;
 				}
 
 				// we want the item in the menu.
 				pos++;			
 
+				if (bPresent)			// just update the label on the item.
+				{					
+					// dynamic label has changed
+					XAP_Menu_Id id = MenuIdFromWmCommand(cmd);
+					EV_Menu_Item*	item;
+					for(UT_sint32 i = 0; i< m_vecItems.getItemCount(); i++)
+					{
+						item = reinterpret_cast<EV_Menu_Item*>(m_vecItems.getNthItem(i));											
+						if (id==item->id)
+						{
+							strcpy (item->szText, szLabelName);					
+							//UT_DEBUGMSG(("Menu changing text->%s\n",szLabelName));
+							break;
+						}
+					}
+				}
+				else	
+				{
+					EV_Menu_Item*	item = new EV_Menu_Item;
+					item->id = id;					
+					item->pMenu= this;													
+					strcpy (item->szText, szLabelName);					
+					m_vecItems.addItem(item);
+					//UT_DEBUGMSG(("Menu adding menu->%s\n",szLabelName));
+					AppendMenu(m, MF_OWNERDRAW,cmd, (const char*) item);					
+				}
+				
+				EV_Menu_ItemState mis = pAction->getMenuItemState(pView);
+				
+				if (mis & EV_MIS_Gray)
+						uEnable |= MF_GRAYED;
+						
+				if (mis & EV_MIS_Toggled)
+						uCheck |= MF_CHECKED;
+						
+				EnableMenuItem(m,cmd,uEnable);
+				CheckMenuItem(m,cmd,uCheck);
+				
 			}
 			break;
 	
@@ -646,36 +695,6 @@ bool EV_Win32Menu::_isAMenuBar(XAP_Menu_Id id, HMENU hMenu)
 	return false;
 }
 
-bool _isAMenuBar2(XAP_Menu_Id id, EV_Menu_Item* item)
-{
-	XAP_Menu_Id ids[] = { AP_MENU_ID_FILE, AP_MENU_ID_EDIT, AP_MENU_ID_VIEW,AP_MENU_ID_INSERT,
-		AP_MENU_ID_TOOLS, AP_MENU_ID_WINDOW, AP_MENU_ID_HELP,AP_MENU_ID_TABLE, AP_MENU_ID_FORMAT, NULL};
-
-	for (int i=0; i<(sizeof(ids)/sizeof(XAP_Menu_Id)); i++)
-	{
-		if (ids[i]==id)
-		{		
-			
-			/*
-			MENUITEMINFO menuInfo;	 
-			memset (&menuInfo, 0, sizeof(MENUITEMINFO));
-			menuInfo.cbSize = sizeof(MENUITEMINFO);
-			menuInfo.fMask = MIIM_DATA;
-			GetMenuItemInfo(hMenu, 0, TRUE, &menuInfo);		
-			EV_Menu_Item*	item = (EV_Menu_Item *) menuInfo.dwItemData;            			           				
-			*/
-
-			if (item && id==item->id)		
-			{
-				UT_DEBUGMSG(("EV_Win32Menu::_isAMenuBar2->%s, 1\n", item->szText));
-				return true;
-			}
-		}
-	}
-
-	UT_DEBUGMSG(("EV_Win32Menu::_isAMenuBar2->0\n"));
-	return false;
-}
 
 
 /*
@@ -700,15 +719,6 @@ void EV_Win32Menu::onMeasureItem(HWND hwnd, WPARAM wParam, LPARAM lParam)
 	else
 		lpmis->itemHeight = size.cy;
 
-/*	if (item->bMenuBar)
-	//if (_isAMenuBar2(item->id, (EV_Menu_Item*)(lpmis->itemData)))
-	{
-		lpmis->itemWidth =  size.cx;
-		lpmis->itemHeight = size.cy;
-
-		UT_DEBUGMSG(("Bar Measure->%s - %u\n", item->szText, _isAMenuBar2(item->id,(EV_Menu_Item*) lpmis->itemData)));
-	}
-	else*/
 
 	lpmis->itemWidth =  size.cx + item->pMenu->m_nBitmapCX + SPACE_ICONTEXT;
 
@@ -749,7 +759,7 @@ LPARAM EV_Win32Menu::onMenuChar(HWND hwnd, WPARAM wParam, LPARAM lParam)
 
 				pHotKeyPos++;
 
-				if (*pHotKeyPos==n)			
+				if (toupper(*pHotKeyPos)==toupper(n))			
 					return MAKELRESULT(i, MNC_EXECUTE);														 
 				
 			}
@@ -769,12 +779,13 @@ void EV_Win32Menu::onDrawItem(HWND hwnd, WPARAM wParam, LPARAM lParam)
 	EV_Menu_Item*	item = (EV_Menu_Item *) lpdis->itemData;            			           	
     COLORREF crText;    
     COLORREF crBkgnd;   
-	DWORD dwColor = GetSysColor(COLOR_MENU);
+	DWORD dwColor;
 	int x = 255, y=255;									
 	RECT rect;
 	UT_String sTextRight, sTextLeft;
 	UINT nFormat;
 	HBITMAP hBitmap;	
+	int colorID;
 	UT_ASSERT(lpdis->CtlType==ODT_MENU); 						
 
 	/* Rect to draw the text */	
@@ -791,13 +802,15 @@ void EV_Win32Menu::onDrawItem(HWND hwnd, WPARAM wParam, LPARAM lParam)
 		else
 			crText = SetTextColor(lpdis->hDC, GetSysColor(COLOR_MENUTEXT));			
 
-	//if (lpdis->itemState & ODS_SELECTED)     
-	//	dwColor = GetSysColor(COLOR_HIGHLIGHT);
-
+	if (lpdis->itemState & ODS_SELECTED)     
+		colorID = COLOR_HIGHLIGHT;
+	else
+		colorID = COLOR_MENU;		
+	
+	dwColor = GetSysColor(colorID);
+	
 	UT_RGBColor Color(GetRValue(dwColor),GetGValue(dwColor),GetBValue(dwColor));
 	hBitmap =  EV_Win32Menu::_loadBitmap(item->id,  x, y, Color);			
-
-	UT_DEBUGMSG(("EV_Win32Menu::onDrawItem->%s\n", item->szText));
 
 	if (hBitmap)	
 	{
@@ -806,18 +819,7 @@ void EV_Win32Menu::onDrawItem(HWND hwnd, WPARAM wParam, LPARAM lParam)
 	}	
 
 	/*Draw the background of the item*/
-	if (lpdis->itemState & ODS_SELECTED) 
-    { 
-		dwColor = GetSysColor(COLOR_HIGHLIGHT);
-
-		/* We only highlight the text part of the item, not the bitmap*/
-		if (lpdis->itemState & ODS_CHECKED || hBitmap)
-			FillRect(lpdis->hDC, &rect, GetSysColorBrush(COLOR_HIGHLIGHT));															  		
-		else
-			FillRect(lpdis->hDC, &lpdis->rcItem, GetSysColorBrush(COLOR_HIGHLIGHT));															  		
-    }  			
-	else
-		FillRect(lpdis->hDC, &lpdis->rcItem, GetSysColorBrush(COLOR_MENU));
+	FillRect(lpdis->hDC, &lpdis->rcItem, GetSysColorBrush(colorID));
 
 	rect.left = rect.left + SPACE_ICONTEXT;  
 	
@@ -863,28 +865,12 @@ void EV_Win32Menu::onDrawItem(HWND hwnd, WPARAM wParam, LPARAM lParam)
 	/* Draw bitmap*/
 	if (hBitmap)
 	{	
-		/*if (lpdis->itemState & ODS_GRAYED) 
-		{
-			HBRUSH hBGBrush = CreateSolidBrush(GetSysColor(COLOR_MENU));
-			crBkgnd = SetBkColor(lpdis->hDC, GetSysColor(COLOR_MENU));
-			SelectObject(lpdis->hDC, hBGBrush);
-
-			SetBkMode(lpdis->hDC, OPAQUE);
-			PatBlt(lpdis->hDC, lpdis->rcItem.left, lpdis->rcItem.top, m_nBitmapCX, m_nBitmapCY, PATCOPY);
-
-			DrawState(lpdis->hDC, hBrush, NULL, (LPARAM) hBitmap, 0, 
-				lpdis->rcItem.left, lpdis->rcItem.top, m_nBitmapCX, m_nBitmapCY, DST_BITMAP|DSS_DISABLED);		
-
-			SetBkColor(lpdis->hDC, crBkgnd); 			
-		}	*/	
-				  		
+					  		
 		HDC hdcMem = CreateCompatibleDC(lpdis->hDC);
 		SelectObject(hdcMem,(void *)hBitmap);				
-		BitBlt(lpdis->hDC, lpdis->rcItem.left+1, lpdis->rcItem.top+1, 16, 16, /*m_nBitmapCX, m_nBitmapCY,*/	hdcMem, 0, 0, SRCCOPY );
+		BitBlt(lpdis->hDC, lpdis->rcItem.left+1, lpdis->rcItem.top+1, 16, 16, hdcMem, 0, 0, SRCCOPY );
 
-		//StretchBlt(lpdis->hDC, lpdis->rcItem.left, lpdis->rcItem.top, 20, 20, /*m_nBitmapCX, m_nBitmapCY,*/	hdcMem, 
-		//	0,0, m_nBitmapCX, m_nBitmapCY, SRCCOPY);
-
+		
 		DeleteDC(hdcMem);					
 				
 	}
@@ -896,10 +882,11 @@ void EV_Win32Menu::onDrawItem(HWND hwnd, WPARAM wParam, LPARAM lParam)
 			RECT r;
 			HBITMAP bm = CreateBitmap(nWidth, nHeight, 1, 1, NULL );
 			HDC hdcMem = CreateCompatibleDC(lpdis->hDC);
-			SetTextColor(lpdis->hDC, GetSysColor(COLOR_MENUTEXT));
+
+			SetBkColor(lpdis->hDC, GetSysColor(colorID));
 			SelectObject(hdcMem, bm);
 			SetRect(&r, 0, 0, nWidth, nHeight);
-			DrawFrameControl(hdcMem, &r, DFC_MENU,DFCS_MENUCHECK);
+			DrawFrameControl(hdcMem, &r, DFC_MENU,DFCS_MENUCHECK);			
         
 			BitBlt(lpdis->hDC, lpdis->rcItem.left+2, lpdis->rcItem.top+2, nWidth, nHeight,
 				hdcMem, 0, 0, SRCCOPY);
@@ -909,8 +896,7 @@ void EV_Win32Menu::onDrawItem(HWND hwnd, WPARAM wParam, LPARAM lParam)
 		}	
 
     SelectObject(lpdis->hDC, hfontOld); 
-    SetTextColor(lpdis->hDC, crText); 
-	
+    SetTextColor(lpdis->hDC, crText); 	
 	if (hBitmap)
 		DeleteObject(hBitmap);	
 }
@@ -926,21 +912,21 @@ bool EV_Win32Menu::onMenuSelect(XAP_Frame * pFrame, AV_View * pView,
 	{
 		//UT_DEBUGMSG(("ClearMessage 1\n"));
 		pFrame->setStatusMessage(NULL);
-		return 1;
+		return true;
 	}
 
 	if ( (nItemID==0) || (nFlags & (MF_SEPARATOR|MF_POPUP)) )
 	{
 		//UT_DEBUGMSG(("ClearMessage 2\n"));
 		pFrame->setStatusMessage(NULL);
-		return 1;
+		return true;
 	}
 
 	if (nFlags & (MF_SYSMENU))
 	{
 		//UT_DEBUGMSG(("SysMenu [%x]\n",nItemID));
 		pFrame->setStatusMessage(NULL);
-		return 1;
+		return true;
 	}
 	
 	XAP_Menu_Id id = MenuIdFromWmCommand(nItemID);
@@ -949,16 +935,17 @@ bool EV_Win32Menu::onMenuSelect(XAP_Frame * pFrame, AV_View * pView,
 	{
 		//UT_DEBUGMSG(("ClearMessage 3 [%d %d]\n",nItemID,id));
 		pFrame->setStatusMessage(NULL);
-		return 1;
+		return true;
 	}
 
 	const char * szMsg = pLabel->getMenuStatusMessage();
 	if (!szMsg || !*szMsg)
 		szMsg = "TODO This menu item doesn't have a StatusMessage defined.";
-	
-	//UT_DEBUGMSG(("SetMessage [%s]\n",szMsg));
-	pFrame->setStatusMessage(szMsg);
-	return 1;
+
+	UT_String str = AP_Win32App::s_fromUTF8ToAnsi(szMsg);
+	pFrame->setStatusMessage(str.c_str());
+
+	return true;
 }
 
 

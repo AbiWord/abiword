@@ -54,7 +54,6 @@ protected:
 private:
 	// overridden virtual functions
 	virtual void			notifyActiveFrame(XAP_Frame *pFrame);
-	virtual void			notifyCloseFrame(XAP_Frame *pFrame);
 	virtual void*			pGetWindowHandle() { return (void*)m_hThisDlg; }
 
 	// current selection of the drop-list combo boxes

@@ -218,7 +218,7 @@ AC_DEFUN([ABI_PSPELL_OPT], [
 
 			AC_MSG_CHECKING(for pspell >= $_abi_pspell_major.$_abi_pspell_minor.$_abi_pspell_micro)
 
-			abi_pspell_version="0`$abi_pspell_config --version`"
+			abi_pspell_version="0`$abi_pspell_config --version | cut -d. -f1,2,3`"
 			abi_pspell_major=`echo $abi_pspell_version | sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\1/'`
 			abi_pspell_minor=`echo $abi_pspell_version | sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\2/'`
 			abi_pspell_micro=`echo $abi_pspell_version | sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\3/'`
