@@ -239,6 +239,13 @@ void IE_Imp_DocBook::startElement(const XML_Char *name,
 		return;
 
 	case TT_CHAPTER:
+	  {
+		X_VerifyParseState(_PS_Doc);
+		// let's leave parse state as it is...
+		
+		return;
+	  }
+
 	case TT_SECTION:
 	  {
 		X_VerifyParseState(_PS_Doc);
@@ -367,6 +374,9 @@ void IE_Imp_DocBook::endElement(const XML_Char *name)
 		return;
 
 	case TT_CHAPTER:
+		X_VerifyParseState(_PS_Doc);
+		return;
+
 	case TT_SECTION:
 		X_VerifyParseState(_PS_Sec);
 		m_parseState = _PS_Doc;
