@@ -177,10 +177,20 @@ void FV_View::_deleteSelection(void)
 	PT_DocPosition iPoint = _getPoint();
 	UT_ASSERT(iPoint != m_iSelectionAnchor);
 	
-	UT_uint32 iCountChars = _getDataCount(iPoint,m_iSelectionAnchor);
 	UT_Bool bForward = (iPoint < m_iSelectionAnchor);
+	UT_uint32 iCountChars;
 
-	m_pDoc->deleteSpan((bForward ? iPoint : m_iSelectionAnchor), iCountChars);
+	if (bForward)
+	{
+		iCountChars = _getDataCount(iPoint,m_iSelectionAnchor);
+		m_pDoc->deleteSpan(iPoint, iCountChars);
+	}
+	else
+	{
+		iCountChars = _getDataCount(m_iSelectionAnchor,iPoint);
+		_setPoint(m_iSelectionAnchor);
+		m_pDoc->deleteSpan(m_iSelectionAnchor, iCountChars);
+	}
 
 	_resetSelection();
 
@@ -1585,23 +1595,25 @@ void FV_View::_setPoint(PT_DocPosition pt)
 
 UT_uint32 FV_View::_getDataCount(UT_uint32 pt1, UT_uint32 pt2)
 {
+	UT_ASSERT(pt2>=pt1);
 	return pt2 - pt1;
 }
 
 UT_Bool FV_View::_charMotion(UT_Bool bForward,UT_uint32 countChars)
 {
-#ifdef BUFFER	// _charMotion
-	// TODO: see if there are any additional semantics for return value
-	return m_pBuffer->charMotion(bForward,countChars);
-#endif /* BUFFER */
-
+	// advance(backup) the current insertion point by count characters.
+	// return UT_FALSE if we ran into an end (or had an error).
+	
 	if (bForward)
 		m_iInsPoint += countChars;
 	else
 		m_iInsPoint -= countChars;
 
-	if (m_iInsPoint < 0) 
+	if ((UT_sint32) m_iInsPoint < 0)
+	{
 		m_iInsPoint = 0;
+		return UT_FALSE;
+	}
 
 	// TODO: clamp at end of document, too
 
