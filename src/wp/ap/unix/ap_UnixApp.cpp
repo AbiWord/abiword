@@ -99,7 +99,6 @@
 #include "ap_Prefs_SchemeIds.h"
 #include "gr_Image.h"
 
-#include "xap_ModuleManager.h"
 #include "xap_UnixPSGraphics.h"
 #include "abiwidget.h"
 #include "ut_sleep.h"
