@@ -290,7 +290,22 @@ void XAP_UnixGnomePrintGraphics::_drawAnyImage (GR_Image* pImg,
 	gnome_print_translate (m_gpc, xDest, yDest + iDestHeight);
 	gnome_print_scale (m_gpc, ((double) iDestWidth), ((double) iDestHeight));
 	
-	//gnome_print_pixbuf (m_gpc, image);	
+	gint width, height, rowstride;
+	const guchar * pixels;
+	
+	width     = gdk_pixbuf_get_width (image);
+	height    = gdk_pixbuf_get_height (image);
+	rowstride = gdk_pixbuf_get_rowstride (image);
+	pixels    = gdk_pixbuf_get_pixels (image);
+
+	/* Not sure about the grayimage part, but the other 2 are correct */
+	if (!rgb)
+		gnome_print_grayimage (m_gpc, pixels, width, height, rowstride);
+	else if (gdk_pixbuf_get_has_alpha (image))
+		gnome_print_rgbaimage (m_gpc, pixels, width, height, rowstride);
+	ekse
+		gnome_print_rgbimage (m_gpc, pixels, width, height, rowstride);
+
 	gnome_print_grestore(m_gpc);
 }
 
@@ -305,12 +320,10 @@ void XAP_UnixGnomePrintGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest,
 			case GR_Graphics::GR_COLORSPACE_COLOR:
 				_drawAnyImage(pImg, xDest, yDest, true);
 				break;
-#if 0
 			case GR_Graphics::GR_COLORSPACE_GRAYSCALE:
 			case GR_Graphics::GR_COLORSPACE_BW:
 				_drawAnyImage(pImg, xDest, yDest, false);
 				break;
-#endif
 			default:
 				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			}
