@@ -23,6 +23,7 @@ ABI_ROOT:=$(shell pwd)/../../../..
 include $(ABI_ROOT)/src/config/abi_defs.mk
 
 REQUIRE=	_ZLIB_ _LIBPNG_ _LIBICONV_ _LIBWV_
+REQUIREREALCLEAN=	realclean_LIBICONV_ realclean_LIBWV_
 TARGET=		build
 
 include $(ABI_ROOT)/src/config/abi_rules.mk
@@ -30,6 +31,9 @@ include $(ABI_ROOT)/src/config/abi_rules.mk
 
 build::		$(REQUIRE)
 	@echo Build requirements satisfied.
+
+realclean::		$(REQUIREREALCLEAN)
+
 
 #################################################################
 
@@ -83,4 +87,16 @@ _LIBWV_:
 		echo TODO provide a nicer error message;	\
 		echo TODO with instructions for obtaining it;	\
 		exit 1;						\
+	fi
+
+#################################################################
+
+realclean_LIBICONV_:
+	@if [ -d $(ABI_ROOT)/../libiconv ]; then			\
+		$(MAKE) -C $(ABI_ROOT)/../libiconv distclean;	\
+	fi
+
+realclean_LIBWV_:
+	@if [ -d $(ABI_ROOT)/../wv ]; then			\
+		$(MAKE) -C $(ABI_ROOT)/../wv realclean;	\
 	fi
