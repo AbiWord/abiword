@@ -153,6 +153,47 @@ fp_Run::~fp_Run()
 	DELETEP(m_pRevisions);
 }
 
+UT_sint32 fp_Run::getHeight() const
+{
+	if(isHidden() == FP_VISIBLE)
+		return m_iHeight;
+
+	return 0;
+}
+
+UT_sint32 fp_Run::getWidth() const
+{
+	if(isHidden() == FP_VISIBLE)
+		return m_iWidth;
+
+	return 0;
+}
+
+UT_uint32 fp_Run::getAscent() const
+{
+	if(isHidden() == FP_VISIBLE)
+		return m_iAscent;
+
+	return 0;
+}
+
+UT_uint32 fp_Run::getDescent() const
+{
+	if(isHidden() == FP_VISIBLE)
+		return m_iDescent;
+
+	return 0;
+}
+
+UT_sint32 fp_Run::getDrawingWidth() const
+{
+	if(isHidden() == FP_VISIBLE)
+		return static_cast<UT_sint32>(m_iWidth);
+
+	return 0;
+}
+
+
 fg_FillType * fp_Run::getFillType(void)
 {
 	return &m_FillType;
@@ -3034,12 +3075,14 @@ void fp_ImageRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 		_setHeight(UT_convertToLogicalUnits("0.5in"));
 	}
 
-	UT_ASSERT(getWidth() > 0);
-	UT_ASSERT(getHeight() > 0);
+	// these asserts are no longer valid -- image can be hidden due to
+	//hidden text mark up or revisions
+	//UT_ASSERT(getWidth() > 0);
+	//UT_ASSERT(getHeight() > 0);
 	m_iImageWidth = getWidth();
 	m_iImageHeight = getHeight();
 
-	_setAscent(getHeight());
+	_setAscent(_getHeight());
 	_setDescent(0);
 	const PP_AttrProp * pBlockAP = NULL;
 	const PP_AttrProp * pSectionAP = NULL;
