@@ -28,27 +28,31 @@ endif
 
 CPPSRCS=		xap_UnixApp.cpp				\
 			xap_UnixClipboard.cpp			\
-			xap_UnixDlg_About.cpp			\
 			xap_UnixDlg_FileOpenSaveAs.cpp		\
 			xap_UnixDlg_FontChooser.cpp		\
 			xap_UnixDlg_MessageBox.cpp		\
 			xap_UnixDlg_Print.cpp			\
-			xap_UnixDlg_PrintPreview.cpp            \
 			xap_UnixDlg_WindowMore.cpp		\
 			xap_UnixDlg_Zoom.cpp			\
 			xap_UnixDlg_Insert_Symbol.cpp		\
 			xap_UnixFontXLFD.cpp			\
 			xap_UnixFont.cpp			\
+			xap_UnixPSFont.cpp			\
 			xap_UnixFontManager.cpp			\
 			xap_UnixFrame.cpp			\
 			xap_UnixToolbar_Icons.cpp		\
-			xap_UnixPSFont.cpp			\
-			xap_UnixPSGenerate.cpp			\
-			xap_UnixPSParseAFM.cpp			\
-			xap_UnixPSImage.cpp			\
 			xap_UnixModule.cpp                      \
-			xap_UnixPSGraphics.cpp			\
+			xap_UnixPSImage.cpp			\
+			xap_UnixPSParseAFM.cpp			\
 			xap_UnixEncodingManager.cpp
+
+# only build these for non-gnome
+ifndef ABI_OPT_GNOME
+CPPSRCS +=		xap_UnixDlg_About.cpp			\
+			xap_UnixPSGenerate.cpp			\
+			xap_UnixDlg_PrintPreview.cpp            \
+			xap_UnixPSGraphics.cpp
+endif
 
 TARGETS=		$(OBJS)
 INCLUDES=      -I/usr/X11R6/include

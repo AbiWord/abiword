@@ -29,16 +29,20 @@ TARGETS=		$(LIBRARY)
 
 PLATFORM_OBJS=	$(OBJDIR)/xap_$(ABI_FE)App.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_$(ABI_FE)Clipboard.$(OBJ_SUFFIX)			\
-		$(OBJDIR)/xap_$(ABI_FE)Dlg_About.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_$(ABI_FE)Dlg_FileOpenSaveAs.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/xap_$(ABI_FE)Dlg_FontChooser.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/xap_$(ABI_FE)Dlg_MessageBox.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/xap_$(ABI_FE)Dlg_Print.$(OBJ_SUFFIX)			\
-		$(OBJDIR)/xap_$(ABI_FE)Dlg_PrintPreview.$(OBJ_SUFFIX)           \
 		$(OBJDIR)/xap_$(ABI_FE)Dlg_WindowMore.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/xap_$(ABI_FE)Dlg_Zoom.$(OBJ_SUFFIX)			\
-		$(OBJDIR)/xap_$(ABI_FE)Dlg_Insert_Symbol.$(OBJ_SUFFIX)			\
+		$(OBJDIR)/xap_$(ABI_FE)Dlg_Insert_Symbol.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/xap_$(ABI_FE)Frame.$(OBJ_SUFFIX)
+
+# gnome has its own about dialog
+ifndef ABI_OPT_GNOME
+PLATFORM_OBJS += $(OBJDIR)/xap_$(ABI_FE)Dlg_About.$(OBJ_SUFFIX)			\
+		 $(OBJDIR)/xap_$(ABI_FE)Dlg_PrintPreview.$(OBJ_SUFFIX)
+endif
 
 ifeq ($(ABI_FE), Mac)
 PLATFORM_OBJS += $(OBJDIR)/xap_$(ABI_FE)Tlbr_Icons.$(OBJ_SUFFIX)
@@ -53,15 +57,21 @@ endif
 
 # THESE ARE OBJECTS EXCLUSIVE TO THE UNIX FRONT-END
 ifeq ($(ABI_FE), Unix)
+
 PLATFORM_OBJS += 	$(OBJDIR)/xap_$(ABI_FE)Font.$(OBJ_SUFFIX)		\
 			$(OBJDIR)/xap_$(ABI_FE)FontManager.$(OBJ_SUFFIX)	\
 			$(OBJDIR)/xap_$(ABI_FE)FontXLFD.$(OBJ_SUFFIX)		\
-			$(OBJDIR)/xap_$(ABI_FE)PSFont.$(OBJ_SUFFIX)		\
-			$(OBJDIR)/xap_$(ABI_FE)PSGenerate.$(OBJ_SUFFIX)		\
-			$(OBJDIR)/xap_$(ABI_FE)PSParseAFM.$(OBJ_SUFFIX)		\
+			$(OBJDIR)/xap_$(ABI_FE)EncodingManager.$(OBJ_SUFFIX)	\
 			$(OBJDIR)/xap_$(ABI_FE)PSImage.$(OBJ_SUFFIX)		\
-			$(OBJDIR)/xap_$(ABI_FE)PSGraphics.$(OBJ_SUFFIX)		\
-			$(OBJDIR)/xap_$(ABI_FE)EncodingManager.$(OBJ_SUFFIX)
+			$(OBJDIR)/xap_$(ABI_FE)PSParseAFM.$(OBJ_SUFFIX)		\
+			$(OBJDIR)/xap_$(ABI_FE)PSFont.$(OBJ_SUFFIX)
+
+# Unix specific
+ifndef ABI_OPT_GNOME
+PLATFORM_OBJS +=	$(OBJDIR)/xap_$(ABI_FE)PSGenerate.$(OBJ_SUFFIX)		\
+			$(OBJDIR)/xap_$(ABI_FE)PSGraphics.$(OBJ_SUFFIX)		
+endif
+
 endif
 
 ifeq ($(ABI_FE), Win32)
