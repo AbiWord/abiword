@@ -77,7 +77,9 @@ UT_sint32 UT_Vector::grow(UT_uint32 ndx)
 		return -1;
 	}
 	//Is this required? We always check Count first anyways.
-	//memset(&new_pEntries[m_iSpace], 0, new_iSpace - m_iSpace * sizeof(void *));
+	// TMN: Unfortunately it is, since the class GR_CharWidths
+	// uses UT_Vector as a sparse array!
+	memset(&new_pEntries[m_iSpace], 0, (new_iSpace - m_iSpace) * sizeof(void *));
 	m_iSpace = new_iSpace;
 	m_pEntries = new_pEntries;
 
