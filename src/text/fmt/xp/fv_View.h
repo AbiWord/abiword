@@ -129,8 +129,8 @@ protected:
 	PT_DocPosition		_getDocPos(FV_DocPos dp, UT_Bool bKeepLooking=UT_TRUE);
 	void 				_findPositionCoords(UT_uint32 pos,
 											UT_Bool b,
-											UT_uint32& x,
-											UT_uint32& y,
+											UT_sint32& x,
+											UT_sint32& y,
 											UT_uint32& height,
 											fl_BlockLayout** ppBlock,
 											fp_Run** ppRun);
@@ -162,8 +162,8 @@ protected:
 	UT_Bool				_clearPointAP(UT_Bool bNotify);
 	
 	PT_DocPosition		m_iInsPoint;
-	UT_uint32			m_xPoint;
-	UT_uint32			m_yPoint;
+	UT_sint32			m_xPoint;
+	UT_sint32			m_yPoint;
 	UT_uint32			m_iPointHeight;
 	
 	UT_Bool				m_bPointVisible;

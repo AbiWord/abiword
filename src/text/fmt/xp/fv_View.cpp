@@ -1612,8 +1612,8 @@ void FV_View::_drawBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2)
 	UT_uint32 uheight;
 
 	{
-		UT_uint32 x;
-		UT_uint32 y;
+		UT_sint32 x;
+		UT_sint32 y;
 		fl_BlockLayout* pBlock1;
 		fl_BlockLayout* pBlock2;
 
@@ -1688,8 +1688,8 @@ void FV_View::_drawBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2)
 
 void FV_View::_findPositionCoords(PT_DocPosition pos,
 										UT_Bool bEOL,
-										UT_uint32& x,
-										UT_uint32& y,
+										UT_sint32& x,
+										UT_sint32& y,
 										UT_uint32& height,
 										fl_BlockLayout** ppBlock,
 										fp_Run** ppRun)
