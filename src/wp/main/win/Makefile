@@ -48,6 +48,10 @@ ifeq ($(ABI_OPT_UNICODE),1)
 ABI_LIBS += unicows
 endif			
 
+ifeq ($(ABI_OPT_DEBUG),1)
+ABI_LIBS += version
+endif
+
 LoadOrder=	AbiGr AbiFmt AbiPTbl AbiImpExp AbiXAp AbiWPAp \
 			AbiEv AbiUtil AbiImpExp AbiWordVer AbiSpell Abi_libwv fribidi \
 			Abi_libpopt $(ABIICONV) Abi_libpng Abi_zlib
