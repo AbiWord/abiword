@@ -21,7 +21,7 @@
 #ifndef XAP_COCOAFONT_H
 #define XAP_COCOAFONT_H
 
-#import <AppKit/AppKit.h>
+#import <Cocoa/Cocoa.h>
 
 #include "ut_types.h"
 #include "ut_vector.h"
@@ -78,17 +78,21 @@ class XAP_CocoaFont
 
 
 private:
+/*
 	struct allocFont
 	{
+		allocFont() { nsFont = nil; };
+		~allocFont() { [nsFont release;];}
 		UT_uint32			pixelSize;
 		NSFont *			nsFont;
 	};
-
+ */
 	void					_makeFontKey();
 	char * 					m_fontKey;
 
-	// a cache of GdkFont * at a given size
-	UT_Vector				m_allocFonts;
+	// cache NSFont. Key is NSNumber (size)
+	NSMutableDictionary*	m_allocFonts;
+	
 	
 	char * 					m_name;
 	NSString*				m_nsName;

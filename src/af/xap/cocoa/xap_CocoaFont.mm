@@ -36,6 +36,7 @@
 #include "xap_App.h"
 //#include "ut_AdobeEncoding.h"
 
+#if 0
 //this one is for use with qsort
 static int s_compareUniWidths(const void * w1, const void * w2)
 {
@@ -60,6 +61,7 @@ static int s_compareUniWidthsChar(const void * c, const void * w)
 		return 1;
 	return 0;
 }
+#endif
 
 #ifdef DEBUG
 #define ASSERT_MEMBERS	do { UT_ASSERT(m_name); UT_ASSERT(m_nsName); } while (0)
@@ -156,7 +158,7 @@ XAP_CocoaFont::XAP_CocoaFont(const XAP_CocoaFont & copy)
 	//UT_DEBUGMSG(("XAP_CocoaFont:: copy constructor\n"));
 
 	m_name = NULL;
-	m_nsName = NULL;
+	m_nsName = nil;
 
 	m_fontKey = NULL;
 	setName (copy.getName());
@@ -176,13 +178,7 @@ XAP_CocoaFont::~XAP_CocoaFont(void)
 
 	FREEP(m_fontKey);
 
-	//	UT_VECTOR_PURGEALL(allocFont *, m_allocFonts);
-	for(UT_uint32 i = 0; i < m_allocFonts.getItemCount(); i++)
-	{
-		allocFont * p = (allocFont *) m_allocFonts.getNthItem(i);
-		[p->nsFont release];
-		delete p;
-	}
+	[m_allocFonts release];
 }
 
 
@@ -191,12 +187,10 @@ void XAP_CocoaFont::setName(const char * name)
 	FREEP(m_name);
 	UT_DEBUGMSG (("XAP_CocoaFont::setName(%s)\n", name));
 	UT_cloneString(m_name, name);
-	if (m_nsName == NULL) {
-		m_nsName = [[NSString stringWithCString:m_name] retain];
+	if (m_nsName != nil) {
+		[m_nsName release];
 	}
-	else {
-		[m_nsName initWithCString:m_name];
-	}
+	m_nsName = [[NSString alloc] initWithCString:m_name];
 	_makeFontKey ();
 }
 
@@ -239,49 +233,18 @@ const char * XAP_CocoaFont::getFontKey(void) const
 */
 bool XAP_CocoaFont::isSizeInCache(UT_uint32 pixelsize)
 {
-	UT_uint32 l = 0;
-	UT_uint32 count = m_allocFonts.getItemCount();
-	allocFont * entry;
-	while (l < count)
-	{
-		entry = (allocFont *) m_allocFonts.getNthItem(l);
-		if (entry && entry->pixelSize == pixelsize)
-			return true;
-		else
-			l++;
-	}
-    return false;
+	NSFont* font = [m_allocFonts objectForKey:[NSNumber numberWithUnsignedLong:pixelsize]];
+	return (font != nil);
 }
 
 NSFont * XAP_CocoaFont::getNSFont(UT_uint32 pixelsize)
 {
-	// this might return NULL, but that means a font at a certain
-	// size couldn't be found
-	UT_uint32 l = 0;
-	UT_uint32 count = m_allocFonts.getItemCount();
-	xxx_UT_DEBUGMSG(("There are %d allocated fonts for %s \n",count,m_name));
-//	UT_ASSERT (m_name);
-//	UT_ASSERT (m_nsName);
-	allocFont * entry;
-	char buf[1000];
-
- 	bool bFontNotFound = false;
-		
-	while (l < count)
+	NSNumber* key = [NSNumber numberWithUnsignedLong:pixelsize];
+	NSFont * nsfont = [m_allocFonts objectForKey:key];
+	if (nsfont)
 	{
-		entry = (allocFont *) m_allocFonts.getNthItem(l);
-		if (entry && entry->pixelSize == pixelsize)
-		{
-			return entry->nsFont;
-		}
-		else
-		{
-			l++;
-		}
+		return nsfont;
 	}
-
-	NSFont * nsfont = NULL;
-	
 	// If the font is really, really small (an EXTREMELY low Zoom can trigger this) some
 	// fonts will be calculated to 0 height.  Bump it up to 2 since the user obviously
 	// doesn't care about readability anyway.  :)
@@ -312,25 +275,19 @@ NSFont * XAP_CocoaFont::getNSFont(UT_uint32 pixelsize)
 		s=0;
 	}
 	if ((!m_name) || (strcmp (m_name, "Default") == 0)) {
-		nsfont = [NSFont labelFontOfSize:(float)pixelsize];
+		nsfont = [[NSFont labelFontOfSize:(float)pixelsize] retain];
 	}
 	else {
-		nsfont = [NSFont fontWithName:m_nsName size:(float)pixelsize];
+		nsfont = [[NSFont fontWithName:m_nsName size:(float)pixelsize] retain];
 	}
-
-	if (!nsfont) {
-		UT_DEBUGMSG (("font not found. It is likely to be a bug\n"));
-		bFontNotFound = true;
+	if (nsfont)
+	{
+		[m_allocFonts setObject:nsfont forKey:key];
 	}
-	
-	if(bFontNotFound)
-		return NULL;
-		
-	allocFont * item = new allocFont;
-	item->pixelSize = pixelsize;
-	item->nsFont = nsfont;
-	xxx_UT_DEBUGMSG(("HUB: Allocated font of pixel size %d \n",pixelsize));
-	m_allocFonts.addItem((void *) item);
+	else
+	{
+		NSLog(@"XAP_CocoaFont::getNSFont(): Font not found !");
+	}
 
 	return nsfont;
 }
