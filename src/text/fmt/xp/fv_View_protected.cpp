@@ -1428,36 +1428,33 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 // version of mapXYToPosition
 //
 	if(isHdrFtrEdit())
-	{
 		pPage->mapXYToPosition(xClick, yClick, iNewPoint, bBOL, bEOL, true, &pShadow);
-	}
 	else
 	{
 		pPage->mapXYToPosition(xClick, yClick, iNewPoint, bBOL, bEOL);
 		while(pPage && (iNewPoint == iOldPoint) && (yClick < m_pLayout->getHeight()) && (yClick > 0))
 		{
 			if (bNext)
-			{
 				yClick += iLineHeight/2;
-			}
 			else
-			{
 				yClick -= 2;
-			}
+
 			if(yClick > pPage->getHeight())
 			{
 				pPage = pPage->getNext();
+				if (!pPage) break;
 				yClick -= pPage->getHeight();
 			}
+
 			if(yClick < 0)
 			{
 				pPage = pPage->getPrev();
+				if (!pPage) break;
 				yClick += pPage->getHeight();
 			}
+
 			if(pPage)
-			{
 				pPage->mapXYToPosition(xClick, yClick, iNewPoint, bBOL, bEOL);
-			}
 		}
 	}
 //
