@@ -4251,11 +4251,17 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			m_pG->drawLine(adjustedLeft, adjustedBottom, adjustedLeft, adjustedTop);
 
 			// fill to right of page
-			m_pG->fillRect(clrMargin, adjustedRight + 1, adjustedTop, m_iWindowWidth - (adjustedRight + 1), iPageHeight + 1);
+			if (m_iWindowWidth - (adjustedRight + 1) > 0)
+			{
+				m_pG->fillRect(clrMargin, adjustedRight + 1, adjustedTop, m_iWindowWidth - (adjustedRight + 1), iPageHeight + 1);
+			}
 
 			// fill separator below page
-			m_pG->fillRect(clrMargin, adjustedLeft, adjustedBottom + 1, m_iWindowWidth - adjustedLeft, fl_PAGEVIEW_PAGE_SEP);
-
+			if (m_iWindowHeight - (adjustedBottom + 1) > 0)
+			{
+				m_pG->fillRect(clrMargin, adjustedLeft, adjustedBottom + 1, m_iWindowWidth - adjustedLeft, fl_PAGEVIEW_PAGE_SEP);
+			}
+			
 			// two pixel drop shadow
 			adjustedLeft += 3;
 			adjustedBottom += 1;
