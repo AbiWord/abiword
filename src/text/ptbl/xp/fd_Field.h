@@ -105,7 +105,7 @@ class ABI_EXPORT fd_Field
     UT_uint32 m_updateCount;
     FieldType m_iFieldType;
 	XML_Char * m_szValue;
-	const XML_Char * m_pParameter;
+	XML_Char * m_pParameter;
 };
 
 #endif
