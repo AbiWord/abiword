@@ -13,6 +13,14 @@ current maintainer
 -----------------------------
 Dom Lachowicz <doml@appligent.com>
 
+platform maintainers
+-----------------------------
+Dom Lachowicz <doml@appligent.com>, Martin Sevior <msevior@physics.unimelb.edu.au> - Unix
+Johann Bjork <phearbear@home.se> - Qnx
+Hubert Figuiere <hfiguiere@teaser.fr> - Mac OS
+Jordi Mas i Hernàndez <jmas@softcatala.org> - Win32  
+
+
 contributors
 ------------
 Pierre Abbat <phma@webjockey.net>			LaTeX Testing,
