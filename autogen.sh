@@ -38,9 +38,9 @@ aclocal -I ac-helpers
 
 # autoheader
 
-# Produce all the `Makefile.in's, verbosely, and create neat missing things
-# like `libtool', `install-sh', etc.
-automake --add-missing --verbose --foreign
+# Produce all the `GNUmakefile.in's and create neat missing things
+# like `install-sh', etc.
+automake --add-missing --copy --foreign
 
 # If there's a config.cache file, we may need to delete it.  
 # If we have an existing configure script, save a copy for comparison.
