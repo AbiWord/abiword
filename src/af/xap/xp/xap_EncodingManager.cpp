@@ -75,6 +75,17 @@ const char* XAP_EncodingManager::getNative8BitEncodingName() const
 }
 
 /*!
+ * Returns the native non-Unicode encoding
+ *
+ * Always returns a non-Unicode encoding, even when the native
+ * encoding is Unicode like UCS-2 on Windows NT or UTF-8 on *nix.
+ */
+const char* XAP_EncodingManager::getNativeNonUnicodeEncodingName() const
+{
+    return getNativeEncodingName();
+}
+
+/*!
  * Returns the native Unicode encoding
  *
  * Typically UTF-8 on *nix and UCS-2 on Windows NT
@@ -244,8 +255,8 @@ const char* XAP_EncodingManager::strToNative(const char* in, const char* charset
 {
 	if (!charset || !*charset || !in || !*in || !buf)
 		return in; /*won't translate*/
-#if 0
-	// TODO this gets around the fact that gtk 1.2 cannot handle utf-8 input
+#if 1
+	// TODO this gets around the fact that gtk 1.2 cannot handle UTF-8 input
 	// when we move to gtk 2 this original branch needs to be enabled
 	UT_iconv_t iconv_handle = UT_iconv_open(
 		bUseSysEncoding ? getNativeSystemEncodingName() : getNativeEncodingName(), charset);
@@ -253,8 +264,8 @@ const char* XAP_EncodingManager::strToNative(const char* in, const char* charset
 	UT_iconv_t iconv_handle;
 	const char * pNative =  bUseSysEncoding ? getNativeSystemEncodingName() : getNativeEncodingName();
 	
-	if(!strcmp(pNative, "utf-8") || !strcmp(pNative, "UTF-8"))
-		pNative = getNative8BitEncodingName();
+	if(!UT_stricmp(pNative, "UTF-8"))
+		pNative = getNativeNonUnicodeEncodingName();
 
 	iconv_handle = UT_iconv_open(pNative, charset);
 	xxx_UT_DEBUGMSG(("xap_EncodingManager::strToNative: pNative %s, iconv_handle 0x%x\n",pNative, iconv_handle));
@@ -1185,9 +1196,11 @@ UT_uint32  XAP_EncodingManager::getWinCharsetCode() const
 void 	XAP_EncodingManager::describe()
 {
 	UT_DEBUGMSG(("EncodingManager reports the following:\n"
-		"	NativeEncodingName is %s, LanguageISOName is %s,\n"
-		"   Native8BitEncodingName is %s,\n"
-		"	LanguageISOTerritory is %s,  fallbackchar is '%c'\n"		
+		"	LanguageISOName is %s, LanguageISOTerritory is %s\n"		
+		"	NativeEncodingName is %s, NativeSystemEncodingName is %s,\n"
+		"   Native8BitEncodingName is %s, NativeNonUnicodeEncodingName is %s,\n"
+		"	NativeUnicodeEncodingName is %s,\n"
+		"	LanguageISOName is %s, LanguageISOTerritory is %s,  fallbackchar is '%c'\n"		
 		"	TexPrologue follows:\n"
 		"---8<--------------\n" 
 			"%s" 
@@ -1195,8 +1208,10 @@ void 	XAP_EncodingManager::describe()
 		
 		"	WinLanguageCode is 0x%04x, WinCharsetCode is %d\n"
 		"	cjk_locale %d, can_break_words %d, swap_utos %d, swap_stou %d\n"
-		,getNativeEncodingName(),getLanguageISOName(),getNative8BitEncodingName(),
-		getLanguageISOTerritory() ? getLanguageISOTerritory() : "NULL",
+		,getLanguageISOName(), getLanguageISOTerritory() ? getLanguageISOTerritory() : "NULL",
+		,getNativeEncodingName(),getNativeSystemEncodingName(),
+		,getNative8BitEncodingName(),getNativeNonUnicodeEncodingName(),
+		,getNativeUnicodeEncodingName(),
 		fallbackChar(1072), getTexPrologue(),getWinLanguageCode(),
 		 getWinCharsetCode(),
 		int(cjk_locale()), int(can_break_words()),int(swap_utos),int(swap_stou)

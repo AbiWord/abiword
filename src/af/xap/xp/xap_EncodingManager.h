@@ -58,51 +58,22 @@ class XAP_EncodingManager
 {
 public:
     /*
-	this shouldn't return NULL. Don't free or write to returned string. 
-	The string should be uppercased (extra font tarballs assume this).
+	These shouldn't return NULL. Don't free or write to returned strings.
+	The strings should be uppercased (extra font tarballs assume this).
     */
     virtual const char* getNativeEncodingName() const;
-
-    /*
-	this can return NULL. Don't free or write to returned string. 
-	The string should be uppercased (extra font tarballs assume this).
-    */
     virtual const char* getNativeSystemEncodingName() const;
-
-    /*
-	this shouldn't return NULL. Don't free or write to returned string. 
-	The string should be uppercased (extra font tarballs assume this).
-    */
     virtual const char* getNative8BitEncodingName() const;
+    virtual const char* getNativeNonUnicodeEncodingName() const;
 
     /*
-	this can return NULL. Don't free or write to returned string. 
-	The string should be uppercased (extra font tarballs assume this).
+	These can return NULL. Don't free or write to returned strings.
+	The strings should be uppercased (extra font tarballs assume this).
     */
     virtual const char* getNativeUnicodeEncodingName() const;
-
-    /*
-	this can return NULL. Don't free or write to returned string. 
-	The string should be uppercased (extra font tarballs assume this).
-    */
     virtual const char* getUCS2BEName() const;
-
-    /*
-	this can return NULL. Don't free or write to returned string. 
-	The string should be uppercased (extra font tarballs assume this).
-    */
     virtual const char* getUCS2LEName() const;
-
-    /*
-	this can return NULL. Don't free or write to returned string. 
-	The string should be uppercased (extra font tarballs assume this).
-    */
     virtual const char* getUCS4BEName() const;
-
-    /*
-	this can return NULL. Don't free or write to returned string. 
-	The string should be uppercased (extra font tarballs assume this).
-    */
     virtual const char* getUCS4LEName() const;
 
 	/*

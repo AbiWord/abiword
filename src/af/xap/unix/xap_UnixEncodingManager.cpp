@@ -271,34 +271,34 @@ compute_locale_variants (const gchar *locale)
 static const gchar *
 guess_category_value (const gchar *categoryname)
 {
-  const gchar *retval;
+	const gchar *retval;
 
-  /* The highest priority value is the `LANGUAGE' environment
-     variable.  This is a GNU extension.  */
-  retval = g_getenv ("LANGUAGE");
-  if (retval != NULL && retval[0] != '\0')
-    return retval;
+	/* The highest priority value is the `LANGUAGE' environment
+		 variable.  This is a GNU extension.  */
+	retval = g_getenv ("LANGUAGE");
+	if (retval != NULL && retval[0] != '\0')
+		return retval;
 
-  /* `LANGUAGE' is not set.  So we have to proceed with the POSIX
-     methods of looking to `LC_ALL', `LC_xxx', and `LANG'.  On some
-     systems this can be done by the `setlocale' function itself.  */
+	/* `LANGUAGE' is not set.  So we have to proceed with the POSIX
+		 methods of looking to `LC_ALL', `LC_xxx', and `LANG'.  On some
+		 systems this can be done by the `setlocale' function itself.  */
 
-  /* Setting of LC_ALL overwrites all other.  */
-  retval = g_getenv ("LC_ALL");  
-  if (retval != NULL && retval[0] != '\0')
-    return retval;
+	/* Setting of LC_ALL overwrites all other.  */
+	retval = g_getenv ("LC_ALL");
+	if (retval != NULL && retval[0] != '\0')
+		return retval;
 
-  /* Next comes the name of the desired category.  */
-  retval = g_getenv (categoryname);
-  if (retval != NULL && retval[0] != '\0')
-    return retval;
+	/* Next comes the name of the desired category.  */
+	retval = g_getenv (categoryname);
+	if (retval != NULL && retval[0] != '\0')
+		return retval;
 
-  /* Last possibility is the LANG environment variable.  */
-  retval = g_getenv ("LANG");
-  if (retval != NULL && retval[0] != '\0')
-    return retval;
+	/* Last possibility is the LANG environment variable.  */
+	retval = g_getenv ("LANG");
+	if (retval != NULL && retval[0] != '\0')
+		return retval;
 
-  return NULL;
+	return NULL;
 }
 
 /**
@@ -319,15 +319,15 @@ g_i18n_get_language_list (const gchar *category_name)
   GList *list;
   prepped_table = 0;
 
-  if (!category_name)
-    category_name= "LC_ALL";
+	if (!category_name)
+		category_name= "LC_ALL";
 
-  if (category_table)
+	if (category_table)
     {
 #if 0
-	  // we want a fresh reading of the LANG variable every time so we can
-	  // work out the 8bit encoding under utf-8 locale
-      list= (GList *)g_hash_table_lookup (category_table, (const gpointer) category_name);
+		// we want a fresh reading of the LANG variable every time so we can
+		// work out the 8bit encoding under utf-8 locale
+		list= (GList *)g_hash_table_lookup (category_table, (const gpointer) category_name);
 #else
 		xxx_UT_DEBUGMSG(("recreating hash table\n"));
 		g_hash_table_destroy (category_table);
@@ -336,55 +336,55 @@ g_i18n_get_language_list (const gchar *category_name)
 		
 #endif
     }
-  else
+	else
     {
-      category_table= g_hash_table_new (g_str_hash, g_str_equal);
-      list= NULL;
+		category_table= g_hash_table_new (g_str_hash, g_str_equal);
+		list= NULL;
     }
 
-  if (!list)
+	if (!list)
     {
-      gint c_locale_defined= FALSE;
-  
-      const gchar *category_value;
-      gchar *category_memory, *orig_category_memory;
-
-      category_value = guess_category_value (category_name);
-      if (! category_value)
-	category_value = "C";
-      orig_category_memory = category_memory =
-	(gchar*) g_malloc (strlen (category_value)+1);
-      
-      while (category_value[0] != '\0')
-	{
-	  while (category_value[0] != '\0' && category_value[0] == ':')
-	    ++category_value;
+		gint c_locale_defined= FALSE;
 	  
-	  if (category_value[0] != '\0')
-	    {
-	      char *cp= category_memory;
-	      
-	      while (category_value[0] != '\0' && category_value[0] != ':')
-		*category_memory++= *category_value++;
-	      
-	      category_memory[0]= '\0'; 
-	      category_memory++;
-	      
-	      cp = unalias_lang(cp);
-	      
-	      if (strcmp (cp, "C") == 0)
-		c_locale_defined= TRUE;
-	      
-	      list= g_list_concat (list, compute_locale_variants (cp));
-	    }
-	}
+		const gchar *category_value;
+		gchar *category_memory, *orig_category_memory;
 
-      g_free (orig_category_memory);
+		category_value = guess_category_value (category_name);
+		if (! category_value)
+			category_value = "C";
+		orig_category_memory = category_memory =
+			(gchar*) g_malloc (strlen (category_value)+1);
       
-      if (!c_locale_defined)
-	list= g_list_append (list, (void*)"C");
+		while (category_value[0] != '\0')
+		{
+			while (category_value[0] != '\0' && category_value[0] == ':')
+				++category_value;
+	  
+			if (category_value[0] != '\0')
+			{
+				char *cp= category_memory;
+	      
+				while (category_value[0] != '\0' && category_value[0] != ':')
+					*category_memory++= *category_value++;
+	      
+				category_memory[0]= '\0'; 
+				category_memory++;
+				  
+				cp = unalias_lang(cp);
+				  
+				if (strcmp (cp, "C") == 0)
+					c_locale_defined= TRUE;
+	      
+				list= g_list_concat (list, compute_locale_variants (cp));
+			}
+		}
 
-      g_hash_table_insert (category_table, (gpointer) category_name, list);
+		g_free (orig_category_memory);
+      
+		if (!c_locale_defined)
+			list= g_list_append (list, (void*)"C");
+
+		g_hash_table_insert (category_table, (gpointer) category_name, list);
     }
 
    g_hash_table_foreach(alias_table, free_entry, NULL);
@@ -418,8 +418,10 @@ XAP_UnixEncodingManager::XAP_UnixEncodingManager()
 XAP_UnixEncodingManager::~XAP_UnixEncodingManager() {}
 
 static const char * NativeEncodingName;
-static const char * NativeUnicodeEncodingName;
+static const char * NativeSystemEncodingName;
 static const char * Native8BitEncodingName;
+static const char * NativeNonUnicodeEncodingName;
+static const char * NativeUnicodeEncodingName;
 static const char * LanguageISOName;
 static const char * LanguageISOTerritory;
 
@@ -428,14 +430,24 @@ const char* XAP_UnixEncodingManager::getNativeEncodingName() const
   return NativeEncodingName; 
 }
 
-const char* XAP_UnixEncodingManager::getNativeUnicodeEncodingName() const
+const char* XAP_UnixEncodingManager::getNativeSystemEncodingName() const
 {     
-  return NativeUnicodeEncodingName; 
+  return NativeSystemEncodingName; 
 }
 
 const char* XAP_UnixEncodingManager::getNative8BitEncodingName() const
 {     
   return Native8BitEncodingName;
+}
+
+const char* XAP_UnixEncodingManager::getNativeNonUnicodeEncodingName() const
+{     
+  return NativeNonUnicodeEncodingName;
+}
+
+const char* XAP_UnixEncodingManager::getNativeUnicodeEncodingName() const
+{     
+  return NativeUnicodeEncodingName; 
 }
 
 const char* XAP_UnixEncodingManager::getLanguageISOName() const
@@ -453,8 +465,10 @@ void  XAP_UnixEncodingManager::initialize()
 	const GList* lst = g_i18n_get_language_list ("LANG");
 	const char* locname = (char*)lst->data;
 	
-	NativeEncodingName = "ISO-8859-1";
-	Native8BitEncodingName = "ISO-8859-1";
+	NativeEncodingName =
+	NativeSystemEncodingName =
+	Native8BitEncodingName =
+	NativeNonUnicodeEncodingName = "ISO-8859-1";
 	NativeUnicodeEncodingName = "UTF-8";
 	LanguageISOName = "en";
 	LanguageISOTerritory = "US";
@@ -512,15 +526,13 @@ void  XAP_UnixEncodingManager::initialize()
 							NativeEncodingName = name;
 						}
 				}
-			Native8BitEncodingName = NativeEncodingName;
-#if 0
-			/* This seems to be obsolete. 8Bit encoding can be UTF-8 if it wants... */
+			Native8BitEncodingName = NativeSystemEncodingName = NativeEncodingName;
 
-			// need to get 8bit encoding if encoding is utf-8
-			if(!strcmp(NativeEncodingName, "utf-8") || !strcmp(NativeEncodingName, "UTF-8"))
+			// need to get non-unicode encoding if encoding is utf-8
+			if(!UT_stricmp(NativeEncodingName, "UTF-8"))
 				{
 					// we want to get the encoding that would be used for the given
-					// language/territory if the utf-8 encoding was not specified
+					// language/territory if the UTF-8 encoding was not specified
 					// by LANG
 
 					UT_String OLDLANG (getenv("LANG"));
@@ -539,16 +551,16 @@ void  XAP_UnixEncodingManager::initialize()
 #endif
 					if (mask & COMPONENT_CODESET)
 						{
-							Native8BitEncodingName = cs+1;
-							xxx_UT_DEBUGMSG(("Native8BitEncodingName (1) %s\n", Native8BitEncodingName));
+							NativeNonUnicodeEncodingName = cs+1;
+							xxx_UT_DEBUGMSG(("NativeNonUnicodeEncodingName (1) %s\n", NativeNonUnicodeEncodingName));
 							if (!strncmp(cs+1,"ISO8859",strlen("ISO8859")))
 								{
 									static char buf[40];
 									strcpy(buf,"ISO-");
 									strcat(buf,cs+1+3);
-									Native8BitEncodingName = buf;
+									NativeNonUnicodeEncodingName = buf;
 								}
-							xxx_UT_DEBUGMSG(("Native8BitEncodingName (2) %s\n", Native8BitEncodingName));
+							xxx_UT_DEBUGMSG(("NativeNonUnicodeEncodingName (2) %s\n", NativeNonUnicodeEncodingName));
 						}
 #if defined(SETENV_MISSING)
 					MYLANG = "LANG=";
@@ -558,7 +570,6 @@ void  XAP_UnixEncodingManager::initialize()
 					setenv("LANG", OLDLANG.c_str(), 1);
 #endif			
 				}
-#endif			/* End of obsolete 8Bit work-around for UTF-8 */
 		}
 	};	
 	XAP_EncodingManager::initialize();

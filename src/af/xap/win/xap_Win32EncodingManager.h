@@ -17,6 +17,7 @@ public:
     const char* getNativeEncodingName() 	const;
     const char* getNativeSystemEncodingName() 	const;
     const char* getNative8BitEncodingName() const;
+    const char* getNativeNonUnicodeEncodingName() const;
     const char* getNativeUnicodeEncodingName() const;
 	inline virtual bool isUnicodeLocale()	const {return m_bIsUnicodeLocale;}
     const char* getLanguageISOName() 		const;

@@ -31,6 +31,7 @@ XAP_Win32EncodingManager::~XAP_Win32EncodingManager() {}
 static const char * NativeEncodingName;
 static const char * NativeSystemEncodingName;
 static const char * Native8BitEncodingName;
+static const char * NativeNonUnicodeEncodingName;
 static const char * NativeUnicodeEncodingName;
 static const char * LanguageISOName;
 static const char * LanguageISOTerritory;
@@ -43,6 +44,9 @@ const char* XAP_Win32EncodingManager::getNativeSystemEncodingName() const
 
 const char* XAP_Win32EncodingManager::getNative8BitEncodingName() const
 {     return Native8BitEncodingName; };
+
+const char* XAP_Win32EncodingManager::getNativeNonUnicodeEncodingName() const
+{     return NativeNonUnicodeEncodingName; };
 
 const char* XAP_Win32EncodingManager::getNativeUnicodeEncodingName() const
 {     return NativeUnicodeEncodingName; };
@@ -63,7 +67,7 @@ void  XAP_Win32EncodingManager::initialize()
 	static char szTerritory[64];
 	bool bNorwaySpecialCase = false;
 
-	Native8BitEncodingName = NativeSystemEncodingName = NativeEncodingName = "CP1252";
+	NativeNonUnicodeEncodingName = Native8BitEncodingName = NativeSystemEncodingName = NativeEncodingName = "CP1252";
 	LanguageISOName = "en";
 	LanguageISOTerritory = NULL;
 
@@ -71,6 +75,8 @@ void  XAP_Win32EncodingManager::initialize()
 
 	// Unicode Encoding Name
 	// TODO Does NT use UCS-2BE internally on non-Intel CPUs?
+	// TODO Windows 2000 and XP use UTF-16 but on 2000 it may involve a
+	// TODO  registry setting
 	NativeUnicodeEncodingName = getUCS2LEName();
 
 	// Encodings
@@ -88,7 +94,7 @@ void  XAP_Win32EncodingManager::initialize()
 			szCodepage[0] = 'C';
 			szCodepage[1] = 'P';
 			strcpy(szCodepage+2,szLocaleInfo);
-			Native8BitEncodingName = NativeEncodingName = szCodepage;
+			NativeNonUnicodeEncodingName = Native8BitEncodingName = NativeEncodingName = szCodepage;
 			m_bIsUnicodeLocale = false;
 		}
 	}
