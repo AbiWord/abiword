@@ -76,6 +76,8 @@
 #include "ut_string_class.h"
 #include "xap_EncodingManager.h"
 
+#include "ie_types.h"
+
 #include "ie_impexp_Register.h"
 #include "xap_EditMethods.h"
 #include "ev_EditMethod.h"
@@ -1807,14 +1809,15 @@ void AP_UnixApp::catchSignals(int sig_num)
 	}
 #endif
     UT_uint32 i = 0;
+	IEFileType abiType = IE_Imp::fileTypeForSuffix("abw");
     for(;i<m_vecFrames.getItemCount();i++)
     {
 		AP_UnixFrame * curFrame = const_cast<AP_UnixFrame*>(static_cast<const AP_UnixFrame*>(m_vecFrames[i]));
 		UT_ASSERT(curFrame);
 		if (NULL == curFrame->getFilename())
-		  curFrame->backup(".abw.CRASHED");
+		  curFrame->backup(".abw.CRASHED",abiType);
 		else
-		  curFrame->backup(".CRASHED");
+		  curFrame->backup(".CRASHED",abiType);
     }
     
     fflush(stdout);

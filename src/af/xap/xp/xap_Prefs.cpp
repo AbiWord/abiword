@@ -290,6 +290,11 @@ void XAP_Prefs::addRecent(const char * szRecent)
 	if (m_iMaxRecent == 0)
 		return;		// NOOP
 
+	if(m_bIgnoreThisOne)
+	{
+		m_bIgnoreThisOne = false;
+		return;
+	}
 	// was it already here? 
 	for (UT_uint32 i=0; i<m_vecRecent.getItemCount(); i++)
 	{
@@ -400,7 +405,7 @@ XAP_Prefs::XAP_Prefs(XAP_App * pApp)
 	m_builtinScheme = NULL;
 	m_iMaxRecent = atoi(XAP_PREF_DEFAULT_MaxRecent);
 	m_bInChangeBlock = false;
-
+	m_bIgnoreThisOne = false;
 	memset(&m_geom, 0, sizeof(m_geom));
 
 	// NOTE: since constructors cannot report malloc

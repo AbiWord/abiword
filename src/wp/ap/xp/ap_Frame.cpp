@@ -40,12 +40,8 @@
 
 void AP_Frame::setZoomPercentage(UT_uint32 iZoom)
 {
-	bool bChanged = (getZoomPercentage() != iZoom);
 	XAP_Frame::setZoomPercentage(iZoom);
-	if (bChanged) {
-		// only redisplay if zoom factor changed
-		_showDocument(iZoom);
-	}
+	_showDocument(iZoom);
 }
 
 /*!

@@ -179,7 +179,10 @@ public:
 											 EV_Toolbar * pTBsrc, 
 											 EV_Toolbar * pTBdest);
 	void                        dragEnd(XAP_Toolbar_Id srcId);
-
+	bool                        isBackupRunning(void)
+	{ return m_bBackupRunning;}
+	UT_sint32                   getAutoSavePeriod(void)
+	{ return m_iAutoSavePeriod;}
 	void						setAutoSaveFile(bool);
 	void						setAutoSaveFilePeriod(int);
 	void						setAutoSaveFileExt(const UT_String &);
@@ -204,7 +207,7 @@ public:
 
 	XAP_Dialog_MessageBox::tAnswer		showMessageBox(XAP_Dialog_MessageBox * pDialog);
 
-	UT_Error	    backup(const char* stExt = 0);
+	UT_Error	    backup(const char* stExt = 0, UT_sint32 iEFT = -1);
 	UT_String       makeBackupName (const char * szExt = 0);
 
 	const bool                  isStatusBarShown(void) const { return m_bShowStatusbar;}
@@ -249,6 +252,7 @@ private:
 	UT_uint32					m_iAutoSavePeriod;
 	UT_String					m_stAutoSaveExt;
 	bool						m_bBackupRunning;
+	bool						m_bBackupInProgress;
 	
 	static int					s_iUntitled;	
 

@@ -7804,14 +7804,26 @@ static bool s_doPageSetupDlg (FV_View * pView)
 			for (UT_uint32 i = 0; i < vClones.getItemCount(); i++)
 			{
 				XAP_Frame * f = static_cast<XAP_Frame *>(vClones.getNthItem(i));
-				FV_View * pV =	static_cast<FV_View *>(f->getCurrentView());
-				if(pV->isHdrFtrEdit())
+				UT_sint32 iZoom = f->getZoomPercentage();
+				XAP_Frame::tZoomType zt = f->getZoomType();
+				if((zt == XAP_Frame::z_PAGEWIDTH) || (zt == XAP_Frame::z_WHOLEPAGE))
 				{
-					pV->clearHdrFtrEdit();
-					pV->warpInsPtToXY(0,0,false);
+					FV_View * pV =	static_cast<FV_View *>(f->getCurrentView());
+					if(pV->isHdrFtrEdit())
+					{
+						pV->clearHdrFtrEdit();
+						pV->warpInsPtToXY(0,0,false);
+					} 
+					if(zt == XAP_Frame::z_PAGEWIDTH)
+					{
+						iZoom = pV->calculateZoomPercentForPageWidth();
+					}
+					if(zt == XAP_Frame::z_WHOLEPAGE)
+					{
+						iZoom = pV->calculateZoomPercentForWholePage();
+					}
 				}
-				UT_uint32 izoom = f->getZoomPercentage();
-				f->setZoomPercentage(izoom);
+				f->setZoomPercentage(iZoom);
 			}
 		}
 		else
@@ -7822,11 +7834,20 @@ static bool s_doPageSetupDlg (FV_View * pView)
 				pV->clearHdrFtrEdit();
 				pV->warpInsPtToXY(0,0,false);
 			}
-			UT_uint32 izoom = pFrame->getZoomPercentage();
-
-			s_StartStopLoadingCursor(true, pFrame);
-			pFrame->setZoomPercentage(izoom);
-			s_StartStopLoadingCursor(false, pFrame);
+			UT_sint32 iZoom = pFrame->getZoomPercentage();
+			XAP_Frame::tZoomType zt = pFrame->getZoomType();
+			if((zt == XAP_Frame::z_PAGEWIDTH) || (zt == XAP_Frame::z_WHOLEPAGE))
+			{
+				if(zt == XAP_Frame::z_PAGEWIDTH)
+				{
+					iZoom = pV->calculateZoomPercentForPageWidth();
+				}
+				if(zt == XAP_Frame::z_WHOLEPAGE)
+				{
+					iZoom = pV->calculateZoomPercentForWholePage();
+				}
+			}
+			pFrame->setZoomPercentage(iZoom);
 		}
 	}
 

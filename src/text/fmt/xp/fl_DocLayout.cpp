@@ -48,6 +48,7 @@
 #include "ut_assert.h"
 #include "ut_timer.h"
 #include "ut_string.h"
+#include "xap_Frame.h"
 
 #define REDRAW_UPDATE_MSECS	500
 
@@ -2508,7 +2509,41 @@ fl_DocSectionLayout* FL_DocLayout::findSectionForHdrFtr(const char* pszHdrFtrID)
 		pDocLayout->m_bAutoSpellCheck = b;
 		pDocLayout->_toggleAutoSpell( b );
 	}
-	// do this because it's recheck to document - TODO
+
+// autosave
+
+	UT_String stTmp;
+	bool autosave = true;
+	FV_View * pView = pDocLayout->getView();
+	if(pView)
+	{
+		XAP_Frame * pFrame = static_cast<XAP_Frame *>(pView->getParentData());
+		if(pFrame)
+		{
+			pPrefs->getPrefsValueBool(static_cast<const XML_Char *>(XAP_PREF_KEY_AutoSaveFile), &b );
+			changed = (b != pFrame->isBackupRunning());
+			if(changed)
+			{
+				pFrame->setAutoSaveFile(b);
+			}
+
+// autosave period
+
+			pPrefs->getPrefsValue(XAP_PREF_KEY_AutoSaveFilePeriod, stTmp);
+			UT_sint32 iPeriod = atoi(stTmp.c_str());
+			changed = (iPeriod != pFrame->getAutoSavePeriod());
+			if(changed)
+			{
+				pFrame->setAutoSaveFilePeriod(iPeriod);
+				if(pFrame->isBackupRunning())
+				{
+					pFrame->setAutoSaveFile(false);
+					pFrame->setAutoSaveFile(true);
+				}
+			}
+		}
+	}
+
 
 	if ( changed )
 	{
