@@ -84,6 +84,7 @@ private:
 	fp_EndnoteContainer * m_pLocalPrev;
 	UT_sint32             m_iY;
 	bool                  m_bOnPage;
+	bool                  m_bCleared;
 };
 
 #endif /* FOOTNOTECONTAINER_H */

@@ -294,7 +294,8 @@ fp_EndnoteContainer::fp_EndnoteContainer(fl_SectionLayout* pSectionLayout)
 	  m_pLocalNext(NULL),
 	  m_pLocalPrev(NULL),
 	  m_iY(0),
-	  m_bOnPage(false)
+	  m_bOnPage(false),
+	  m_bCleared(false)
 {
 }
 
@@ -347,8 +348,16 @@ void fp_EndnoteContainer::clearScreen(void)
 	{
 		return;
 	}
+	if(m_bCleared)
+	{
+		return;
+	}
 	if(getColumn() && (getHeight() != 0))
 	{
+		if(getPage() == NULL)
+		{
+			return;
+		}
 		fl_DocSectionLayout * pDSL = getPage()->getOwningSection();
 		if(pDSL == NULL)
 		{
@@ -371,6 +380,7 @@ void fp_EndnoteContainer::clearScreen(void)
 		pCon = static_cast<fp_Container *>(getNthCon(i));
 		pCon->clearScreen();
 	}
+	m_bCleared = true;
 }
 
 /*!
@@ -432,6 +442,7 @@ void fp_EndnoteContainer::draw(dg_DrawArgs* pDA)
 	{
 		UT_DEBUGMSG(("clip y %d height %d \n",pClipRect->top, pClipRect->height));
 	}
+	m_bCleared = false;
 //
 // Only draw the lines in the clipping region.
 //
