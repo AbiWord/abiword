@@ -10425,6 +10425,10 @@ bool FV_View::insertFootnote(bool bFootnote)
 //
 	if(m_pDoc->isTOCAtPos(getPoint()))
 	{
+		if(getPoint() ==2 || (pSL->getPosition(true) >= (getPoint() -2)))
+		{
+			return false;
+		}
 		setPoint(getPoint()-1);
 	}
 	const XML_Char ** props_in = NULL;
