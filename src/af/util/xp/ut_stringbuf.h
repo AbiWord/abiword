@@ -168,6 +168,23 @@ class ABI_EXPORT UT_UCS4Stringbuf
 public:
 	typedef UT_UCS4Char char_type;
 
+	/* scans a buffer for the next valid UTF-8 sequence and returns the corresponding
+	 * UCS-4 value for that sequence; the pointer and length-remaining are incremented
+	 * and decremented respectively; returns 0 if not valid UTF-8 sequence found by the
+	 * end of the string
+	 */
+	static UT_UCS4Char UTF8_to_UCS4 (const char *& buffer, size_t & length);
+
+	/* Returns -1 if ucs4 is not valid UCS-4, 0 if ucs4 is 0, 1-6 otherwise
+	 */
+	static int UTF8_ByteLength (UT_UCS4Char ucs4);
+
+	/* appends to the buffer the UTF-8 sequence corresponding to the UCS-4 value;
+	 * the pointer and length-remaining are incremented and decremented respectively;
+	 * returns false if not valid UCS-4 or if (length < UTF8_ByteLength (ucs4))
+	 */
+	static bool UCS4_to_UTF8 (char *& buffer, size_t & length, UT_UCS4Char ucs4);
+
 	UT_UCS4Stringbuf();
 	UT_UCS4Stringbuf(const UT_UCS4Stringbuf& rhs);
 	UT_UCS4Stringbuf(const char_type* sz, size_t n);
@@ -188,6 +205,8 @@ public:
 	const char_type*	data()		const { return m_psz; }
 	char_type*			data() 			  { return m_psz; }
 
+	const char*			utf8_data();
+
 private:
 	void	grow_nocopy(size_t n);
 	void	grow_copy(size_t n);
@@ -198,6 +217,8 @@ private:
 	char_type*	m_psz;
 	char_type*	m_pEnd;
 	size_t		m_size;
+
+	char*		m_utf8string;
 };
 
 #endif	// UT_STRINGBUF_H

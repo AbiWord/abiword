@@ -226,6 +226,8 @@ public:
 	// even if to an empty (0) string.
 	const UT_UCS4Char* ucs4_str() const;
 
+	const char * utf8_str ();
+
 private:
 	class UT_UCS4Stringbuf* pimpl;
 };

@@ -20,6 +20,7 @@
 #include <stdlib.h>
 #include <string.h>	// memcpy
 #include "ut_stringbuf.h"
+#include "ut_assert.h"
 #include "ut_debugmsg.h"
 
 // these classes keep zero terminated strings.
@@ -681,17 +682,166 @@ bool UT_UTF8Stringbuf::UTF8Iterator::sync ()
 /***************************************************************************/
 /***************************************************************************/
 
+/* scans a buffer for the next valid UTF-8 sequence and returns the corresponding
+ * UCS-4 value for that sequence; the pointer and length-remaining are incremented
+ * and decremented respectively; returns 0 if not valid UTF-8 sequence found by the
+ * end of the string
+ */
+UT_UCS4Char UT_UCS4Stringbuf::UTF8_to_UCS4 (const char *& buffer, size_t & length)
+{
+	UT_UCS4Char ucs4;
+
+	while (true) {
+		ucs4 = 0;
+		if (length == 0) break;
+
+		unsigned char c = static_cast<unsigned char>(*buffer);
+		buffer++;
+		length--;
+
+		if ((c & 0x80) == 0) { // ascii, single-byte sequence
+			ucs4 = static_cast<UT_UCS4Char>(c);
+			break;
+		}
+		if ((c & 0xc0) == 0x80) { // hmm, continuing byte - let's just ignore it
+			continue;
+		}
+
+		/* we have a multi-byte sequence...
+		 */
+		size_t seql;
+
+		if ((c & 0xe0) == 0xc0) {
+			seql = 2;
+			ucs4 = static_cast<UT_UCS4Char>(c & 0x1f);
+		}
+		else if ((c & 0xf0) == 0xe0) {
+			seql = 3;
+			ucs4 = static_cast<UT_UCS4Char>(c & 0x0f);
+		}
+		else if ((c & 0xf8) == 0xf0) {
+			seql = 4;
+			ucs4 = static_cast<UT_UCS4Char>(c & 0x07);
+		}
+		else if ((c & 0xfc) == 0xf8) {
+			seql = 5;
+			ucs4 = static_cast<UT_UCS4Char>(c & 0x03);
+		}
+		else if ((c & 0xfe) == 0xfc) {
+			seql = 6;
+			ucs4 = static_cast<UT_UCS4Char>(c & 0x01);
+		}
+		else { // or perhaps we don't :-( - whatever it is, let's just ignore it
+			continue;
+		}
+
+		if (length < seql) { // huh? broken sequence perhaps? anyway, let's just ignore it
+			continue;
+		}
+
+		bool okay = true;
+		for (size_t i = 1; i < seql; i++) {
+			c = static_cast<unsigned char>(*buffer);
+			buffer++;
+			length--;
+			if ((c & 0xc0) != 0x80) { // not a continuing byte? grr!
+				okay = false;
+				break;
+			}
+			ucs4 = ucs4 << 6 | static_cast<UT_UCS4Char>(c & 0x37);
+		}
+		if (okay) break;
+	}
+	return ucs4;
+}
+
+/* Returns -1 if ucs4 is not valid UCS-4, 0 if ucs4 is 0, 1-6 otherwise
+ */
+int UT_UCS4Stringbuf::UTF8_ByteLength (UT_UCS4Char u)
+{
+	if ((u & 0x7fffffff) != u) return -1; // UCS-4 is only 31-bit!
+
+	if (u == 0) return 0; // end-of-string
+
+	if ((u & 0x7fffff80) == 0) return 1;
+	if ((u & 0x7ffff800) == 0) return 2;
+	if ((u & 0x7fff0000) == 0) return 3;
+	if ((u & 0x7fe00000) == 0) return 4;
+	if ((u & 0x7c000000) == 0) return 5;
+	return 6;
+}
+
+/* appends to the buffer the UTF-8 sequence corresponding to the UCS-4 value;
+ * the pointer and length-remaining are incremented and decremented respectively;
+ * returns false if not valid UCS-4 or if (length < UTF8_ByteLength (ucs4))
+ */
+bool UT_UCS4Stringbuf::UCS4_to_UTF8 (char *& buffer, size_t & length, UT_UCS4Char ucs4)
+{
+	int seql = UT_UCS4Stringbuf::UTF8_ByteLength (ucs4);
+	if (seql < 0) return false;
+	if (seql == 0) {
+		if (length == 0) return false;
+		*buffer++ = 0;
+		length--;
+		return true;
+	}
+	if (length < seql) return false;
+	length -= seql;
+
+	switch (seql) {
+	case 1:
+		*buffer++ = static_cast<char>(static_cast<unsigned char>(ucs4 & 0x7f));
+		break;
+	case 2:
+		*buffer++ = static_cast<char>(0xc0 | static_cast<unsigned char>((ucs4 >> 6) & 0x1f));
+		*buffer++ = static_cast<char>(0x80 | static_cast<unsigned char>(ucs4 & 0x3f));
+		break;
+	case 3:
+		*buffer++ = static_cast<char>(0xe0 | static_cast<unsigned char>((ucs4 >> 12) & 0x0f));
+		*buffer++ = static_cast<char>(0x80 | static_cast<unsigned char>((ucs4 >> 6) & 0x3f));
+		*buffer++ = static_cast<char>(0x80 | static_cast<unsigned char>(ucs4 & 0x3f));
+		break;
+	case 4:
+		*buffer++ = static_cast<char>(0xf0 | static_cast<unsigned char>((ucs4 >> 18) & 0x07));
+		*buffer++ = static_cast<char>(0x80 | static_cast<unsigned char>((ucs4 >> 12) & 0x3f));
+		*buffer++ = static_cast<char>(0x80 | static_cast<unsigned char>((ucs4 >> 6) & 0x3f));
+		*buffer++ = static_cast<char>(0x80 | static_cast<unsigned char>(ucs4 & 0x3f));
+		break;
+	case 5:
+		*buffer++ = static_cast<char>(0xf8 | static_cast<unsigned char>((ucs4 >> 24) & 0x03));
+		*buffer++ = static_cast<char>(0x80 | static_cast<unsigned char>((ucs4 >> 18) & 0x3f));
+		*buffer++ = static_cast<char>(0x80 | static_cast<unsigned char>((ucs4 >> 12) & 0x3f));
+		*buffer++ = static_cast<char>(0x80 | static_cast<unsigned char>((ucs4 >> 6) & 0x3f));
+		*buffer++ = static_cast<char>(0x80 | static_cast<unsigned char>(ucs4 & 0x3f));
+		break;
+	case 6:
+		*buffer++ = static_cast<char>(0xfc | static_cast<unsigned char>((ucs4 >> 30) & 0x01));
+		*buffer++ = static_cast<char>(0x80 | static_cast<unsigned char>((ucs4 >> 24) & 0x3f));
+		*buffer++ = static_cast<char>(0x80 | static_cast<unsigned char>((ucs4 >> 18) & 0x3f));
+		*buffer++ = static_cast<char>(0x80 | static_cast<unsigned char>((ucs4 >> 12) & 0x3f));
+		*buffer++ = static_cast<char>(0x80 | static_cast<unsigned char>((ucs4 >> 6) & 0x3f));
+		*buffer++ = static_cast<char>(0x80 | static_cast<unsigned char>(ucs4 & 0x3f));
+		break;
+	default: // huh?
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		break;
+	}
+	return true;
+}
+
 UT_UCS4Stringbuf::UT_UCS4Stringbuf()
 :	m_psz(0),
 	m_pEnd(0),
-	m_size(0)
+	m_size(0),
+	m_utf8string(0)
 {
 }
 
 UT_UCS4Stringbuf::UT_UCS4Stringbuf(const UT_UCS4Stringbuf& rhs)
 :	m_psz(new char_type[rhs.capacity()]),
 	m_pEnd(m_psz + rhs.size()),
-	m_size(rhs.capacity())
+	m_size(rhs.capacity()),
+	m_utf8string(0)
 {
 	copy(m_psz, rhs.m_psz, rhs.capacity());
 }
@@ -699,7 +849,8 @@ UT_UCS4Stringbuf::UT_UCS4Stringbuf(const UT_UCS4Stringbuf& rhs)
 UT_UCS4Stringbuf::UT_UCS4Stringbuf(const char_type* sz, size_t n)
 :	m_psz(new char_type[n+1]),
 	m_pEnd(m_psz + n),
-	m_size(n+1)
+	m_size(n+1),
+	m_utf8string(0)
 {
 	copy(m_psz, sz, n);
 	m_psz[n] = 0;
@@ -722,6 +873,11 @@ void UT_UCS4Stringbuf::operator=(const UT_UCS4Stringbuf& rhs)
 
 void UT_UCS4Stringbuf::assign(const char_type* sz, size_t n)
 {
+	if (m_utf8string) // buffered internal UTF-8 string is invalid
+	{
+		delete[] m_utf8string;
+		m_utf8string = 0;
+	}
 	if (n)
 	{
 		if (n >= capacity())
@@ -747,6 +903,11 @@ void UT_UCS4Stringbuf::append(const char_type* sz, size_t n)
 		assign(sz, n);
 		return;
 	}
+	if (m_utf8string) // buffered internal UTF-8 string is invalid
+	{
+		delete[] m_utf8string;
+		m_utf8string = 0;
+	}
 	const size_t nLen = size();
 	grow_copy(nLen + n);
 	copy(m_psz + nLen, sz, n);
@@ -769,6 +930,8 @@ void UT_UCS4Stringbuf::swap(UT_UCS4Stringbuf& rhs)
 	my_ut_swap(m_psz , rhs.m_psz );
 	my_ut_swap(m_pEnd, rhs.m_pEnd);
 	my_ut_swap(m_size, rhs.m_size);
+
+	char * t = m_utf8string; m_utf8string = rhs.m_utf8string; rhs.m_utf8string = t;
 }
 
 void UT_UCS4Stringbuf::clear()
@@ -780,6 +943,40 @@ void UT_UCS4Stringbuf::clear()
 		m_pEnd = 0;
 		m_size = 0;
 	}
+	if (m_utf8string)
+	{
+		delete[] m_utf8string;
+		m_utf8string = 0;
+	}
+}
+
+const char* UT_UCS4Stringbuf::utf8_data()
+{
+	if (m_utf8string) return m_utf8string;
+
+	size_t utf8length = size ();
+	size_t bytelength = 0;
+	size_t i;
+	for (i = 0; i < utf8length; i++)
+	{
+		int seql = UT_UCS4Stringbuf::UTF8_ByteLength (m_psz[i]);
+		if (seql < 0) continue; // not UCS-4 !!
+		if (seql == 0) break; // huh? premature end-of-string?
+		bytelength += static_cast<size_t>(seql);
+	}
+	m_utf8string = new char[bytelength+1];
+
+	char * utf8string = m_utf8string;
+	for (i = 0; i < utf8length; i++)
+	{
+		int seql = UT_UCS4Stringbuf::UTF8_ByteLength (m_psz[i]);
+		if (seql < 0) continue; // not UCS-4 !!
+		if (seql == 0) break; // huh? premature end-of-string?
+		UT_UCS4Stringbuf::UCS4_to_UTF8 (utf8string, bytelength, m_psz[i]);
+	}
+	*utf8string = 0;
+
+	return m_utf8string;
 }
 
 void UT_UCS4Stringbuf::grow_nocopy(size_t n)
