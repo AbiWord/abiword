@@ -78,6 +78,14 @@ protected:
 private:
     UT_XML::Reader * m_pReader;
 
+    /* If you wish to use a non-standard parser (e.g., for HTML), then maybe this
+     * is useful...
+     */
+protected:
+    void setParser (UT_XML * pParser) { m_pParser = pParser; }
+private:
+    UT_XML * m_pParser;
+
 public:
     void		    incOperationCount(void) { m_iOperationCount++; }
     UT_uint32		getOperationCount(void) const { return m_iOperationCount; }

@@ -39,8 +39,9 @@ ABI_EXPORT char * UT_XML_Decode( const char * inKey );
 class ABI_EXPORT UT_XML
 {
  public:
-  UT_XML();
-  ~UT_XML();
+  UT_XML ();
+
+  virtual ~UT_XML ();
 
   /* Strip "svg:" from "svg:svg" etc. in element names, pass any other namespace indicators
    */
@@ -54,7 +55,9 @@ class ABI_EXPORT UT_XML
 
   bool grow (char *& buffer, UT_uint32 & length, UT_uint32 & max, UT_uint32 require);
 
+ protected:
   bool reset_all ();
+ private:
   void flush_all ();
 
   const char * m_namespace;
@@ -73,14 +76,15 @@ class ABI_EXPORT UT_XML
   const char * m_xml_type;
 
  public:
-  UT_Error parse (const char * szFilename);
+  virtual UT_Error parse (const char * szFilename);
+  virtual UT_Error parse (const char * buffer, UT_uint32 length);
+
   UT_Error parse (const UT_ByteBuf * pBB);
-  UT_Error parse (const char * buffer, UT_uint32 length);
 
  public:
   void stop () { m_bStopped = true; } // call this to stop callbacks and to stop the feed to the parser
 
- private:
+ protected:
   bool m_bStopped;
 
  public:
@@ -99,7 +103,7 @@ class ABI_EXPORT UT_XML
 
   void setListener (Listener * pListener) { m_pListener = pListener; }
 
- private:
+ protected:
   Listener * m_pListener;
 
  public:
@@ -118,7 +122,7 @@ class ABI_EXPORT UT_XML
 
   void setReader (Reader * pReader) { m_pReader = pReader; }
 
- private:
+ protected:
   Reader * m_pReader;
 
  public:
@@ -156,6 +160,29 @@ public:
 
 private:
   FILE * in;
+};
+
+/* This reads bytes from the buffer provided at construction.
+ * open(<file>) resets the position within the buffer, but ignores <file>.
+ * 
+ * NOTE: The buffer is not copied, or free()ed.
+ */
+class UT_XML_BufReader : public UT_XML::Reader
+{
+public:
+  UT_XML_BufReader (const char * buffer, UT_uint32 length);
+
+  virtual ~UT_XML_BufReader ();
+
+  virtual bool      openFile (const char * szFilename);
+  virtual UT_uint32 readBytes (char * buffer, UT_uint32 length);
+  virtual void      closeFile (void);
+
+private:
+  const char * const m_buffer;
+  const char *       m_bufptr;
+
+  UT_uint32          m_length;
 };
 
 #endif

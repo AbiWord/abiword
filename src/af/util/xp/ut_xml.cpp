@@ -59,6 +59,43 @@ void DefaultReader::closeFile (void)
   in = 0;
 }
 
+UT_XML_BufReader::UT_XML_BufReader (const char * buffer, UT_uint32 length) :
+  m_buffer(buffer),
+  m_bufptr(0),
+  m_length(length)
+{
+  // 
+}
+
+UT_XML_BufReader::~UT_XML_BufReader ()
+{
+  // 
+}
+
+bool UT_XML_BufReader::openFile (const char * szFilename)
+{
+  if ((m_buffer == 0) || (m_length == 0)) return false;
+  m_bufptr = m_buffer;
+  return true;
+}
+
+UT_uint32 UT_XML_BufReader::readBytes (char * buffer, UT_uint32 length)
+{
+  if ((buffer == 0) || (length == 0)) return 0;
+
+  UT_uint32 bytes = (m_buffer + m_length) - m_bufptr;
+  if (bytes > length) bytes = length;
+  memcpy (buffer, m_bufptr, bytes);
+  m_bufptr += bytes;
+
+  return bytes;
+}
+
+void UT_XML_BufReader::closeFile ()
+{
+  m_bufptr = 0;
+}
+
 UT_XML::UT_XML () :
   m_chardata_buffer(0),
   m_chardata_length(0),

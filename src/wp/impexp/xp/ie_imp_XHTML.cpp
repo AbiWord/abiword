@@ -333,169 +333,226 @@ static SectionClass s_class_query (const char * class_value)
 	return sc;
 }
 
-static void convertFontFace(UT_String & szDest, const char *szFrom)
+static void s_append_font_family (UT_UTF8String & style, const char * face)
 {
-	// TODO: make me better
-	// TODO: and handle things like comma lists of font faces
-	char *newFont;
-	
-	// default...
-	if(szFrom == NULL)
-		newFont = "Times New Roman";
+	unsigned char u;
+
+	while (*face)
+		{
+			u = static_cast<unsigned char>(*face);
+			if (!isspace ((int) u)) break;
+			++face;
+		}
+	if (*face == 0) return;
+
+	char quote = ',';
+	if ((*face == '"') || (*face == '\''))
+		{
+			quote = *face++;
+		}
+
+	char * value = UT_strdup (face);
+	if (value == 0) return;
+
+	char * ptr = value;
+	while (*ptr)
+		{
+			if (*ptr == quote)
+				{
+					*ptr = 0;
+					break;
+				}
+			++ptr;
+		}
+	if (quote == ',')
+		while (ptr > value)
+			{
+				--ptr;
+				u = static_cast<unsigned char>(*ptr);
+				if (!isspace ((int) u)) break;
+				*ptr = 0;
+			}
+	if (strlen (value))
+		{
+			if (style.byteLength ())
+				{
+					style += "; ";
+				}
+			style += "font-family:";
+			style += value;
+		}
+	free (value);
+}
+
+static const char * s_font_size[7] = {
+	"8pt",
+	"10pt",
+	"11pt",
+	"12pt",
+	"16pt",
+	"24pt",
+	"32pt"
+};
+
+static void s_append_font_size (UT_UTF8String & style, const char * size)
+{
+	unsigned char u;
+
+	while (*size)
+		{
+			u = static_cast<unsigned char>(*size);
+			if (!isspace ((int) u)) break;
+			++size;
+		}
+	if (*size == 0) return;
+
+	if (*size == '+')
+		{
+			int sz = atoi (size + 1);
+			if ((sz < 1) || (sz > 7)) return;
+			if (sz > 3) sz = 3;
+
+			if (style.byteLength ())
+				{
+					style += "; ";
+				}
+			style += "font-size:";
+			style += s_font_size[3+sz];
+		}
+	else if (*size == '-')
+		{
+			int sz = atoi (size + 1);
+			if ((sz < 1) || (sz > 7)) return;
+			if (sz > 3) sz = 3;
+
+			if (style.byteLength ())
+				{
+					style += "; ";
+				}
+			style += "font-size:";
+			style += s_font_size[3-sz];
+		}
 	else
-		newFont = (char*)szFrom;
-	
-	szDest = newFont;
+		{
+			int sz = atoi (size);
+			if (sz == 0) return;
+
+			if (style.byteLength ())
+				{
+					style += "; ";
+				}
+			style += "font-size:";
+
+			if (sz <= 7)
+				{
+					style += s_font_size[sz-1];
+				}
+			else
+				{
+					UT_String pt_size;
+					UT_String_sprintf(pt_size, "%2dpt", sz);
+					style += pt_size.c_str ();
+				}
+		}
 }
 
-static void convertFontSize(UT_String & szDest, const char *szFrom)
+static void s_append_color (UT_UTF8String & style, const char * color, const char * property)
 {
-	// if it starts with a +
-	// if it starts with a -
-	// if it is a number, clamp it
-	
-	int sz = 12;
-	
-	if(szFrom == NULL)
-    {
-		sz = 12;
-    }
-#ifdef XHTML_UCS4
-	else if(UT_UCS4_isdigit(*szFrom))
-#else
-	else if(UT_UCS_isdigit(*szFrom))
-#endif
-    {
-		sz = atoi(szFrom);
-    }
-	else if(*szFrom == '+')
-    {
-		switch(atoi(szFrom+1))
+	unsigned char u;
+
+	while (*color)
 		{
-		case 1:
-			sz = 10; break;
-		case 2:
-			sz = 12; break;
-		case 3:
-			sz = 16; break;
-		case 4:
-			sz = 20; break;
-		case 5:
-			sz = 24; break;
-		case 6:
-			sz = 36; break;
-		default:
-			sz = 12; break;
+			u = static_cast<unsigned char>(*color);
+			if (!isspace ((int) u)) break;
+			++color;
 		}
-    }
-	else if(*szFrom == '-')
-    {
-		switch(atoi(szFrom+1))
+	if (*color == 0) return;
+
+	char * value = UT_strdup (color);
+	if (value == 0) return;
+
+	int length = 0;
+
+	bool bValid = true;
+	bool bHexal = true;
+
+	char * ptr = value;
+	if (*ptr == '#') ++ptr;
+	while (*ptr)
 		{
-		case 1:
-			sz = 9; break;
-		default:
-			sz = 8; break;
+			char c = *ptr;
+			u = static_cast<unsigned char>(c);
+			if (isspace ((int) u))
+				{
+					*ptr = 0;
+					break;
+				}
+			if (!isalnum ((int) u))
+				{
+					bValid = false;
+					break;
+				}
+			if (bHexal)
+				if (!isdigit ((int) u))
+					if (((c < 'a') && (c > 'f')) && ((c < 'A') && (c > 'F')))
+						bHexal = false;
+			++ptr;
+			++length;
 		}
-    }
-	
-	// clamp the value
-	if(sz > 36)
-		sz = 36;
-	else if(sz < 8)
-		sz = 8;
-	
-	UT_String_sprintf(szDest, "%2d", sz);
-}
+	if (!bValid)
+		{
+			free (value);
+			return;
+		}
+	if (*value == '#')
+		if (!bHexal || ((length != 3) && (length != 6)))
+			{
+				free (value);
+				return;
+			}
 
-static void convertColor(UT_String & szDest, const char *szFrom, int dfl = 0x000000)
-{
+	UT_HashColor hash_color;
+	UT_UTF8String hex_color;
 
-  // if it starts with a #, send it through
-  // if it starts with a number, send it through
-  // else convert color from values in XHTML DTD
+	if (*value == '#')
+		{
+			if (length == 3)
+				{
+					unsigned int rgb;
+					if (sscanf (value + 1, "%x", &rgb) == 1)
+						{
+							unsigned int uir = (rgb & 0x0f00) >> 8;
+							unsigned int uig = (rgb & 0x00f0) >> 4;
+							unsigned int uib = (rgb & 0x000f);
 
-	int col = dfl;
-	
-	if(szFrom == NULL)
-    {
-		col = dfl;
-    }
-	if(*szFrom == '#')
-    {
-		col = atoi(szFrom+1);
-    }
-#ifdef XHTML_UCS4
-	else if(UT_UCS4_isdigit(*szFrom))
-#else
-	else if(UT_UCS_isdigit(*szFrom))
-#endif
-    {
-		col = atoi(szFrom);
-    }
-	else if(!UT_XML_stricmp((XML_Char *)szFrom, "green"))
-    {
-		col = 0x008000;
-    }
-	else if(!UT_XML_stricmp((XML_Char *)szFrom, "silver"))
-    {
-		col = 0xC0C0C0;
-    }
-	else if(!UT_XML_stricmp((XML_Char *)szFrom, "lime"))
-    {
-		col = 0x00FF00;
-    }
-	else if(!UT_XML_stricmp((XML_Char *)szFrom, "gray"))
-    {
-		col = 0x808080;
-    }
-	else if(!UT_XML_stricmp((XML_Char *)szFrom, "olive"))
-    {
-		col = 0x808000;
-    }
-	else if(!UT_XML_stricmp((XML_Char *)szFrom, "white"))
-    {
-		col = 0xFFFFFF;
-    }
-	else if(!UT_XML_stricmp((XML_Char *)szFrom, "yellow"))
-    {
-		col = 0xFFFF00;
-    }
-	else if(!UT_XML_stricmp((XML_Char *)szFrom, "maroon"))
-    {
-		col = 0x800000;
-    }
-	else if(!UT_XML_stricmp((XML_Char *)szFrom, "navy"))
-    {
-		col = 0x000080;
-    }
-	else if(!UT_XML_stricmp((XML_Char *)szFrom, "red"))
-    {
-		col = 0xFF0000;
-    }
-	else if(!UT_XML_stricmp((XML_Char *)szFrom, "blue"))
-    {
-		col = 0x0000FF;
-    }
-	else if(!UT_XML_stricmp((XML_Char *)szFrom, "purple"))
-    {
-		col = 0x800080;
-    }
-	else if(!UT_XML_stricmp((XML_Char *)szFrom, "teal"))
-    {
-		col = 0x008080;
-    }
-	else if(!UT_XML_stricmp((XML_Char *)szFrom, "fuchsia"))
-    {
-		col = 0xFF00FF;
-    }
-	else if(!UT_XML_stricmp((XML_Char *)szFrom, "aqua"))
-    {
-		col = 0x00FFFF;
-    }
-	
-	UT_String_sprintf(szDest, "%6x", col);
-	UT_DEBUGMSG(("DOM: color: %0xd (%s => %s)\n", col, szFrom, szDest.c_str()));
+							unsigned char r = static_cast<unsigned char>(uir|(uir<<4));
+							unsigned char g = static_cast<unsigned char>(uig|(uig<<4));
+							unsigned char b = static_cast<unsigned char>(uib|(uib<<4));
+
+							hex_color = hash_color.setColor (r, g, b) + 1;
+						}
+				}
+			else hex_color = value + 1;
+		}
+	else if (bHexal && (length == 6))
+		{
+			hex_color = value;
+		}
+	else
+		{
+			hex_color = hash_color.lookupNamedColor (color) + 1;
+		}
+	free (value);
+
+	if (hex_color.byteLength () == 0) return;
+
+	if (style.byteLength ())
+		{
+			style += "; ";
+		}
+	style += property;
+	style += ":";
+	style += hex_color;
 }
 
 /*****************************************************************/
@@ -680,29 +737,26 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 	case TT_FONT:
 		UT_DEBUGMSG(("Font tag encountered\n"));
 		{
-			const XML_Char *p_val;
-			UT_String color, bgcolor, size, face;
-			UT_String output;
+			UT_UTF8String style;
 			
-			p_val = _getXMLPropValue((const XML_Char *)"color", atts);
-			convertColor(color, p_val, 0x000000);
+			const XML_Char * p_val = 0;
 
-			p_val = _getXMLPropValue((const XML_Char *)"background", atts);
-			if ( p_val )
-			  convertColor(bgcolor, p_val, 0xFFFFFF);
-			else
-			  bgcolor = "none";
+			p_val = _getXMLPropValue ((const XML_Char *) "color", atts);
+			if (p_val) s_append_color (style, p_val, "color");
 
-			p_val = _getXMLPropValue((const XML_Char *)"size", atts);
-			convertFontSize(size, p_val);
+			p_val = _getXMLPropValue ((const XML_Char *) "background", atts);
+			if (p_val) s_append_color (style, p_val, "bgcolor");
+
+			p_val = _getXMLPropValue ((const XML_Char *) "size", atts);
+			if (p_val) s_append_font_size (style, p_val);
 			
-			p_val = _getXMLPropValue((const XML_Char *)"face", atts);
-			convertFontFace(face, p_val);
+			p_val = _getXMLPropValue ((const XML_Char *) "face", atts);
+			if (p_val) s_append_font_family (style, p_val);
 			
-			UT_String_sprintf(output, "color:%s; bgcolor: %s; font-family:%s; size:%spt", color.c_str(), bgcolor.c_str(), face.c_str(), size.c_str());
-			UT_DEBUGMSG(("Font properties: %s\n", output.c_str()));
-			
-			X_CheckError(pushInline (output.c_str ()));
+			// UT_String_sprintf(output, "color:%s; bgcolor: %s; font-family:%s; size:%spt", color.c_str(), bgcolor.c_str(), face.c_str(), size.c_str());
+			UT_DEBUGMSG(("Font properties: %s\n", style.utf8_str()));
+
+			X_CheckError(pushInline (style.utf8_str ()));
 		}
 		return;
 

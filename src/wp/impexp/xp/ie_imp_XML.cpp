@@ -99,10 +99,15 @@ UT_Error IE_Imp_XML::importFile(const char * szFilename)
 {
 	m_szFileName = szFilename;
 
-	UT_XML parser;
-	parser.setListener (this);
-	if (m_pReader) parser.setReader (m_pReader);
-	UT_Error err =parser.parse (szFilename);
+	UT_XML default_xml;
+	UT_XML * parser = &default_xml;
+	if (m_pParser) parser = m_pParser;
+
+	parser->setListener (this);
+	if (m_pReader) parser->setReader (m_pReader);
+
+	UT_Error err = parser->parse (szFilename);
+
 	if ((err != UT_OK) && (err != UT_IE_SKIPINVALID))
 		m_error = UT_IE_BOGUSDOCUMENT;
 
@@ -126,7 +131,7 @@ IE_Imp_XML::~IE_Imp_XML()
 }
 
 IE_Imp_XML::IE_Imp_XML(PD_Document * pDocument, bool whiteSignificant)
-	: IE_Imp(pDocument), m_pReader(NULL), m_error(UT_OK),
+	: IE_Imp(pDocument), m_pReader(NULL), m_pParser(NULL), m_error(UT_OK),
           m_parseState(_PS_Init), m_bLoadIgnoredWords(false),
 	  m_lenCharDataSeen(0), m_lenCharDataExpected(0),
 	  m_iOperationCount(0), m_bSeenCR(false),
