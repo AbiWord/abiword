@@ -46,7 +46,7 @@ Section "Abiword.exe (required)"
 
 	SetOutPath $INSTDIR
 	File /r "..\AbiSuite\dictionary"
-	File "..\AbiSuite\Copying"
+	File /oname=copying.txt "..\AbiSuite\Copying"
 	File "..\AbiSuite\readme.txt"
   
 	; Write the installation path into the registry
