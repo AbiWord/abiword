@@ -963,9 +963,19 @@ LRESULT CALLBACK AP_Win32FrameImpl::_ContainerWndProc(HWND hwnd, UINT iMsg, WPAR
 		}
 
 	 	case WM_MOUSEWHEEL:
- 		{
- 			// Get delta
- 			const int iDelta = (short) HIWORD(wParam);
+ 		{	 
+			const int iDelta = (short) HIWORD(wParam);
+
+			if (wParam & MK_CONTROL)	// Zoom in & Zoom out
+			{	
+				EV_Win32Mouse*	pMouse = (EV_Win32Mouse *) fImpl->m_pMouse;
+ 		
+ 				if (iDelta>0)
+ 					pMouse->onButtonWheel(pView,hwnd,EV_EMB_BUTTON4,wParam,LOWORD(lParam),HIWORD(lParam));
+ 				else
+ 					pMouse->onButtonWheel(pView,hwnd,EV_EMB_BUTTON5,wParam,LOWORD(lParam),HIWORD(lParam));
+			} 			
+ 			
 			const int cWheelLines = _getMouseWheelLines();
 
 			if (WHEEL_PAGESCROLL == cWheelLines)
@@ -978,6 +988,7 @@ LRESULT CALLBACK AP_Win32FrameImpl::_ContainerWndProc(HWND hwnd, UINT iMsg, WPAR
 			}
 			else
 			{
+
 				// Calculate the movement offset to an integer resolution
 				const int iMove = (iDelta * cWheelLines) / WHEEL_DELTA;
 

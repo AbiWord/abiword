@@ -45,6 +45,8 @@ public:
 	void onButtonUp  (AV_View * pView, HWND hWnd, EV_EditMouseButton emb, WPARAM fwKeys, WPARAM xPos, WPARAM yPos);
 	void onButtonMove(AV_View * pView, HWND hWnd, WPARAM fwKeys, WPARAM xPos, WPARAM yPos);
 	void onDoubleClick(AV_View * pView, HWND hWnd, EV_EditMouseButton emb, WPARAM fwKeys, WPARAM xPos, WPARAM yPos);
+	void EV_Win32Mouse::onButtonWheel(AV_View * pView, HWND hWnd, EV_EditMouseButton emb,  WPARAM fwKeys, WPARAM xPos, WPARAM yPos);
+
 
 protected:
 	UT_uint32			m_iCaptureCount;

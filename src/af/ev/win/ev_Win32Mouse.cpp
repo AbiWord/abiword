@@ -265,3 +265,42 @@ void EV_Win32Mouse::onDoubleClick(AV_View * pView,
 		return;
 	}
 }
+
+void EV_Win32Mouse::onButtonWheel(AV_View * pView, HWND hWnd, EV_EditMouseButton emb, 
+								  WPARAM fwKeys, WPARAM xPos, WPARAM yPos)
+{
+	EV_EditMethod * pEM;
+	EV_EditModifierState ems;
+	EV_EditEventMapperResult result;
+	EV_EditMouseOp mop;	
+	EV_EditMouseContext emc = 0;
+
+	ems = 0;
+	if (fwKeys & MK_SHIFT)
+		ems |= EV_EMS_SHIFT;
+	if (fwKeys & MK_CONTROL)
+		ems |= EV_EMS_CONTROL;
+	if (GetKeyState(VK_MENU) & 0x8000)
+		ems |= EV_EMS_ALT;	 
+
+	short x = (unsigned short) pView->getGraphics()->tlu(xPos);
+	short y = (unsigned short) pView->getGraphics()->tlu(yPos);
+
+	mop = EV_EMO_SINGLECLICK;
+	emc = EV_EMC_UNKNOWN;	 	
+
+	result = m_pEEM->Mouse(emc|mop|emb|ems, &pEM);
+	switch (result)
+	{
+	case EV_EEMR_COMPLETE:
+		UT_ASSERT(pEM);
+		invokeMouseMethod(pView,pEM,x,y);
+		return;
+
+	case EV_EEMR_INCOMPLETE:		
+	case EV_EEMR_BOGUS_START:
+	case EV_EEMR_BOGUS_CONT:	
+	default:		
+		return;
+	}
+}
