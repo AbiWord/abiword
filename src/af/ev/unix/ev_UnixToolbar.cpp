@@ -837,7 +837,7 @@ bool EV_UnixToolbar::synthesize(void)
 //	gtk_widget_add_events(m_wToolbar,GDK_ALL_EVENTS_MASK);
 
 	// an arbitrary padding to make our document not run into our buttons
-	gtk_container_set_border_width(GTK_CONTAINER(m_wToolbar), 2);
+//	gtk_container_set_border_width(GTK_CONTAINER(m_wToolbar), 2);
 
 	// pack it in a handle box
 	gtk_container_add(GTK_CONTAINER(m_wHandleBox), m_wToolbar);
