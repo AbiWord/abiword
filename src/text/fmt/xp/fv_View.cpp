@@ -550,8 +550,9 @@ void FV_View::toggleCase (ToggleCase c)
 					// runs that can be merged in a single go	
 					if(pPrevTR && !pPrevTR->canMergeWithNext())
 						break;
-					iLen += pRun->getLength();
-					iLenToCopy -= pRun->getLength();
+					UT_uint32 iDiff = UT_MIN(pRun->getLength(), iLenToCopy);
+					iLen += iDiff;
+					iLenToCopy -= iDiff;
 					pPrevTR = static_cast<fp_TextRun*>(pRun);
 					pRun = pRun->getNext();
 				}
