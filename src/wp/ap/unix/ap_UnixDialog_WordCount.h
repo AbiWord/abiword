@@ -60,6 +60,7 @@ protected:
 
 	// Labels for the Word Count data
 	GtkWidget * m_labelWCount;
+	GtkWidget * m_labelWNoFootnotesCount;
 	GtkWidget * m_labelPCount;
 	GtkWidget * m_labelCCount;
 	GtkWidget * m_labelCNCount;

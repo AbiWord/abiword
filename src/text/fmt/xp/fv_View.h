@@ -107,6 +107,8 @@ struct FV_DocCount
 	UT_uint32 ch_sp;
 	UT_uint32 line;
 	UT_uint32 page;
+       // sometimes people want to have a word count without header/footers included
+	UT_uint32 words_no_hdrftr;
 };
 
 class ABI_EXPORT fv_PropCache

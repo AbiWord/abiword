@@ -9416,6 +9416,7 @@ static bool s_notChar(UT_UCSChar c)
     }
 }
 
+
 /*!
  Count words
  \return structure with word counts
@@ -9570,7 +9571,25 @@ FV_View::countWords(void)
 			// quotes, etc).
 			if (newWord ||
 				XAP_EncodingManager::get_instance()->is_cjk_letter(pSpan[i]))
-				wCount.word++;
+                        {
+
+                                wCount.word++;
+                                wCount.words_no_hdrftr++;
+
+                                fl_ContainerLayout *l;
+
+                                pBL->getEmbeddedOffset(iCount, l);
+
+                                if (l)
+                                {
+                                        fl_ContainerType t = l->getContainerType();
+                                        if ((t == FL_CONTAINER_FOOTNOTE) ||
+                                            (t == FL_CONTAINER_ENDNOTE))
+                                        {
+                                                wCount.words_no_hdrftr--;
+                                        }
+                                }
+                        }
 		}
 
 		if (isPara)
@@ -9579,7 +9598,7 @@ FV_View::countWords(void)
 			isPara = false;
 		}
 
-		// Get next block
+		// Get next block, we want to include footnotes so can't use getNextBlockLayout
 		fl_ContainerLayout* pNextBlock = pBL->getNextBlockInDocument();
 		pBL = static_cast<fl_BlockLayout *>(pNextBlock);
 		pLine = NULL;

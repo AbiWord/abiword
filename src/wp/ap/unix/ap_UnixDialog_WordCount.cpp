@@ -169,13 +169,15 @@ GtkWidget * AP_UnixDialog_WordCount::_constructWindow(void)
 	m_labelLCount  = glade_xml_get_widget(xml, "lbLinesVal");	
 	m_labelPgCount = glade_xml_get_widget(xml, "lbPagesVal");	
 	m_labelTitle   = glade_xml_get_widget(xml, "lbTitle");
+	m_labelWNoFootnotesCount = glade_xml_get_widget(xml, "lbWordsNoFootnotesVal");
 
-	GtkWidget * labelWCount  = glade_xml_get_widget(xml, "lbWords");
-	GtkWidget * labelPCount  = glade_xml_get_widget(xml, "lbParagraphs");
-	GtkWidget * labelCCount  = glade_xml_get_widget(xml, "lbCharactersSpaces");
-	GtkWidget * labelCNCount = glade_xml_get_widget(xml, "lbCharactersNoSpaces");
-	GtkWidget * labelLCount  = glade_xml_get_widget(xml, "lbLines");	
-	GtkWidget * labelPgCount = glade_xml_get_widget(xml, "lbPages");	
+	GtkWidget * labelWCount	  = glade_xml_get_widget(xml, "lbWords");
+	GtkWidget * labelWNFCount = glade_xml_get_widget(xml ,"lbWordsNoFootnotes");
+	GtkWidget * labelPCount	  = glade_xml_get_widget(xml, "lbParagraphs");
+	GtkWidget * labelCCount	  = glade_xml_get_widget(xml, "lbCharactersSpaces");
+	GtkWidget * labelCNCount  = glade_xml_get_widget(xml, "lbCharactersNoSpaces");
+	GtkWidget * labelLCount	  = glade_xml_get_widget(xml, "lbLines");
+	GtkWidget * labelPgCount  = glade_xml_get_widget(xml, "lbPages");
 
 	gtk_label_set_text (GTK_LABEL (labelWCount),
 						pSS->getValue(AP_STRING_ID_DLG_WordCount_Words));
@@ -189,6 +191,9 @@ GtkWidget * AP_UnixDialog_WordCount::_constructWindow(void)
 						pSS->getValue(AP_STRING_ID_DLG_WordCount_Lines));
 	gtk_label_set_text (GTK_LABEL (labelPgCount),
 						pSS->getValue(AP_STRING_ID_DLG_WordCount_Pages));
+	
+	gtk_label_set_text (GTK_LABEL (labelWNFCount),
+		    pSS->getValue(AP_STRING_ID_DLG_WordCount_Words_No_Notes));
 
 	ConstructWindowName();
 	gtk_window_set_title (GTK_WINDOW(m_windowMain), m_WindowName);
@@ -214,6 +219,9 @@ void AP_UnixDialog_WordCount::_updateWindowData(void)
 	g_snprintf (tmp, sizeof(tmp), "%d", m_count.word);
 	gtk_label_set_text(GTK_LABEL(m_labelWCount), tmp);
 	
+	g_snprintf (tmp, sizeof(tmp),"%d", m_count.words_no_hdrftr);
+	gtk_label_set_text(GTK_LABEL(m_labelWNoFootnotesCount), tmp);
+
 	g_snprintf (tmp, sizeof(tmp),"%d", m_count.para);
 	gtk_label_set_text(GTK_LABEL(m_labelPCount), tmp);
 
