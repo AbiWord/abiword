@@ -143,6 +143,12 @@ void XAP_UnixDialog_Password::_constructWindowContents (GtkWidget * container)
   gtk_box_pack_start (GTK_BOX (container), password, TRUE, TRUE, 0);
   gtk_entry_set_visibility (GTK_ENTRY (password), FALSE);
 
+  gtk_widget_grab_focus(password);
+
+  gtk_signal_connect (GTK_OBJECT(password), "activate",
+                     GTK_SIGNAL_FUNC(s_ok_clicked),
+                     (gpointer)this);
+
   mTextEntry = password;
 }
 
