@@ -906,7 +906,6 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 		return;
 	}
 	
-	m_bWroteText = true;
 	const PP_AttrProp * pAP = NULL;
 	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
 	
@@ -1361,8 +1360,6 @@ void s_HTML_Listener::_closeSpan(void)
 
 void s_HTML_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 {
-	m_bWroteText = true;
-
 	UT_String sBuf;
 	const UT_UCSChar * pData;
 
@@ -1375,6 +1372,11 @@ void s_HTML_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 
 	for (pData=data; (pData<data+length); /**/)
 	{
+		if (*pData != ' ' && *pData != '\t')
+			// There has been some non-whitespace data output
+			m_bWroteText = true;
+		
+		// Check to see if the character which follows this one is whitespace 
 		pData++;
 		if (*pData == ' ' || *pData == '\t')
 		{
@@ -1637,14 +1639,32 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 	m_pie->write(m_pie->getFileName());
 	m_pie->write("</title>\r\n");
 	m_pie->write("<style type=\"text/css\">\r\n");
-	m_pie->write("body\r\n{\r\n\t");
 	if(bHaveProp && pAP)
 	{							// global page styles refer to the <body> tag
+		const XML_Char *szValue;
 		PD_Style *pStyle = NULL;
 		m_pDocument->getStyle("Normal", &pStyle);
-		if(pStyle)				// Add normal styles to body styles for
-		{						// global effect
-			const XML_Char *szName, *szValue;
+
+		m_pie->write("body\r\n{\r\n\t");
+								// these specific styles apply to only the body
+		if(pAP->getProperty("background-color", szValue))
+		{
+			m_pie->write("background-color: ");
+			if (!IS_TRANSPARENT_COLOR(szValue))
+			{
+				m_pie->write("#");
+				m_pie->write(szValue);
+			}
+			else m_pie->write(szValue);
+		}
+		m_pie->write("\r\n}\r\n\r\n");
+
+	
+		m_pie->write("body *\r\n{\r\n\t");
+		if(pStyle)				// Add normal styles to any descendent of the
+								// body for global effect
+		{						
+			const XML_Char *szName;
 			for(UT_uint16 i = 0; i < pStyle->getPropertyCount(); i++)
 			{
 				pStyle->getNthProperty(i, szName, szValue);
@@ -1677,8 +1697,6 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 				m_pie->write(";\r\n\t");
 			}
 		}
-
-		const XML_Char * szValue;
 
 		szValue = PP_evalProperty("background-color",
 								  NULL, NULL, pAP, m_pDocument, true);
@@ -1747,13 +1765,15 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 			m_pie->write(myStyleName);
 			m_pie->write("\r\n{");
 
-			FREEP(myStyleName);
-
 			UT_uint32 i = 0, j = 0;
 			while(pAP_style->getNthAttribute(i++, szName, szValue))
 			{
 				if(!is_CSS(static_cast<const char*>(szName)))
 					continue;
+				if(strstr(myStyleName, "List") && (
+					strstr(szName, "margin") || UT_strcmp(szName, "text-indent") == 0))
+					continue;
+					// see line 770 of this file for reasoning behind skipping here
 				
 				m_pie->write("\r\n\t");
 				m_pie->write(szName);
@@ -1766,6 +1786,11 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 			{
 				if(!is_CSS(static_cast<const char*>(szName)))
 					continue;
+				if(strstr(myStyleName, "List") && (
+					strstr(szName, "margin") || UT_strcmp(szName, "text-indent") == 0))
+					continue;
+					// see line 770 of this file for reasoning behind skipping here
+
 				m_pie->write("\r\n\t");
 				m_pie->write(szName);
 				m_pie->write(": ");
@@ -1795,6 +1820,7 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 				
 				m_pie->write(";");
 			}
+			FREEP(myStyleName);
 
 			m_pie->write("\r\n}\r\n\r\n");
 		}
@@ -1911,14 +1937,16 @@ bool s_HTML_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 					  {
 					    if(szWidth)
 					      {
+						sprintf(buf, "%d", (int) UT_convertToPoints(szWidth));
 						m_pie->write (" width=\"");
-						m_pie->write (szWidth);
+						m_pie->write (buf);
 						m_pie->write ("\" ");
 					      }
 					    if(szHeight)
 					      {
+						sprintf(buf, "%d", (int) UT_convertToPoints(szHeight));
 						m_pie->write (" height=\"");
-						m_pie->write (szHeight);
+						m_pie->write (buf);
 						m_pie->write ("\" ");
 					      }
 					  }
