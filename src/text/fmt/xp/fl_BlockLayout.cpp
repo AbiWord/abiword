@@ -4450,18 +4450,18 @@ void    fl_BlockLayout::StartList( const XML_Char * style)
 		if (szAlign)
 			fAlign = (float)atof(szAlign);
 		else
- 		        fAlign = LIST_DEFAULT_INDENT;
+ 		        fAlign = (float)LIST_DEFAULT_INDENT;
 		if (szIndent)
 			fIndent = (float)atof(szIndent);
 		else
-			fIndent =  -LIST_DEFAULT_INDENT;
+			fIndent =  (float)-LIST_DEFAULT_INDENT;
 	}
 	else
 	{
 		szDelim = "%L";
 		startv = 1;
-		fAlign =  LIST_DEFAULT_INDENT;
-		fIndent =  -LIST_DEFAULT_INDENT;
+		fAlign =  (float)LIST_DEFAULT_INDENT;
+		fIndent =  (float)-LIST_DEFAULT_INDENT;
 	}
 	
 	if (m_pAutoNum)
@@ -4758,8 +4758,8 @@ void    fl_BlockLayout::StopList(void)
 			}
 			else
 			{
-				fAlign =  LIST_DEFAULT_INDENT * level;
-				fIndent = - LIST_DEFAULT_INDENT;
+				fAlign =  (float)LIST_DEFAULT_INDENT * level;
+				fIndent = (float)-LIST_DEFAULT_INDENT;
 				sprintf(align, "%fin", fAlign);
 				sprintf(indent, "%fin", fIndent);
 			}

@@ -300,8 +300,8 @@ void  AP_Dialog_Lists::fillUncustomizedValues(void)
 	        m_iLevel = 1;
        }
        UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, (const XML_Char *) "%L");
-       m_fAlign =  LIST_DEFAULT_INDENT *(float) m_iLevel;
-       m_fIndent = - LIST_DEFAULT_INDENT;
+       m_fAlign =  (float)(LIST_DEFAULT_INDENT * m_iLevel);
+       m_fIndent = (float)-LIST_DEFAULT_INDENT;
 
        if( m_newListType == NUMBERED_LIST)
        {   
@@ -462,7 +462,7 @@ void  AP_Dialog_Lists::fillDialogFromBlock(void)
 		}
 		else
 		{
-                         m_fAlign = LIST_DEFAULT_INDENT;
+                         m_fAlign = (float)LIST_DEFAULT_INDENT;
 		}
 
 		i = findVecItem(&vp,"text-indent");
@@ -472,7 +472,7 @@ void  AP_Dialog_Lists::fillDialogFromBlock(void)
 		}
 		else
 		{
-	                 m_fIndent = - LIST_DEFAULT_INDENT;
+	                 m_fIndent = (float)-LIST_DEFAULT_INDENT;
 		}
 
 		if(getAutoNum() != NULL)
