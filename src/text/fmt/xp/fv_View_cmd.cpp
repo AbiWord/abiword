@@ -3336,7 +3336,7 @@ UT_Error FV_View::cmdInsertGraphic(FG_Graphic* pFG, const char* pszName)
 	UT_uint32 ndx = 0;
 	for (;;)
 	{
-		sprintf(szName, "%s_%d", pszName, ndx);
+		sprintf(szName, "image_%d", ndx);
 		if (!m_pDoc->getDataItemDataByName(szName, NULL, NULL, NULL))
 		{
 			break;
@@ -3687,4 +3687,3 @@ void FV_View::cmdAcceptRejectRevision(bool bReject, UT_sint32 xPos, UT_sint32 yP
 	_generalUpdate();
 	_restorePieceTableState();
 }
-
