@@ -181,6 +181,9 @@ private:
 	
 	UT_UCSChar*				m_remapBuffer;
 	UT_uint32				m_remapBufferSize;
+#ifdef BIDI_ENABLED
+	UT_UCSChar*				m_remapIndices;
+#endif
 };
 
 #endif /* GR_WIN32GRAPHICS_H */

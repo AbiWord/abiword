@@ -92,6 +92,9 @@ void GR_Win32Graphics::_constructorCommonCode(HDC hdc)
 
 	m_remapBuffer = NULL;
 	m_remapBufferSize = 0;
+#ifdef BIDI_ENABLED
+	m_remapIndices = NULL;
+#endif
 }
 
 GR_Win32Graphics::GR_Win32Graphics(HDC hdc, HWND hwnd, XAP_App * app)
@@ -117,6 +120,9 @@ GR_Win32Graphics::~GR_Win32Graphics()
 	}
 
 	delete [] m_remapBuffer;
+#ifdef BIDI_ENABLED
+	delete [] m_remapIndices;
+#endif
 }
 
 bool GR_Win32Graphics::queryProperties(GR_Graphics::Properties gp) const
@@ -270,7 +276,7 @@ void GR_Win32Graphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
 	else
 	{
 		// Unicode font and default character set handling for WinNT and Win9x
-		ExtTextOutW(m_hdc, xoff, yoff, 0, NULL, &currentChar, 1, NULL);
+		ExtTextOutW(m_hdc, xoff, yoff, 0/*ETO_GLYPH_INDEX*/, NULL, &currentChar, 1, NULL);
 	}
 }
 
@@ -298,6 +304,7 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 	LOGFONT lf;
 	int iRes = GetObject(hFont, sizeof(LOGFONT), &lf);
 	UT_ASSERT(iRes);
+
 	if (UT_IsWinNT() == false && lf.lfCharSet == SYMBOL_CHARSET)
 	{
 		// Symbol character handling for Win9x
@@ -311,7 +318,38 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 	else
 	{
 		// Unicode font and default character set handling for WinNT and Win9x
-		ExtTextOutW(m_hdc, xoff, yoff, 0, NULL, currentChars, iLength, NULL);
+#ifdef BIDI_ENABLED
+		if(XAP_App::getApp()->theOSHasBidiSupport())
+		{
+			UT_ASSERT(m_remapIndices);
+			GCP_RESULTSW gcpResult;
+			gcpResult.lStructSize = sizeof(GCP_RESULTS);
+			gcpResult.lpOutString = NULL;			// Output string
+			gcpResult.lpOrder = NULL;				// Ordering indices
+			gcpResult.lpDx = NULL;					// Distances between character cells
+			gcpResult.lpCaretPos = NULL;			// Caret positions
+			gcpResult.lpClass = NULL;				// Character classifications
+			gcpResult.lpGlyphs = m_remapIndices;	// Character glyphs
+			gcpResult.nGlyphs = m_remapBufferSize;  // Array size
+ 
+			if(GetCharacterPlacementW(m_hdc, currentChars, iLength, 0, &gcpResult, GCP_REORDER))
+			{
+				ExtTextOutW(m_hdc, xoff, yoff, ETO_GLYPH_INDEX, NULL, m_remapIndices, gcpResult.nGlyphs, NULL);
+			}
+			else
+			{
+				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+				goto simple_exttextout;
+			}
+		}
+		else
+#endif
+		{
+#ifdef BIDI_ENABLED
+simple_exttextout:
+#endif
+			ExtTextOutW(m_hdc, xoff, yoff, 0, NULL, currentChars, iLength, NULL);
+		}
 	}
 
 }
@@ -322,6 +360,13 @@ UT_UCSChar*	GR_Win32Graphics::_remapGlyphs(const UT_UCSChar* pChars, int iCharOf
 	if (iLength > (int)m_remapBufferSize)
 	{
 		delete [] m_remapBuffer;
+#ifdef BIDI_ENABLED
+		if(XAP_App::getApp()->theOSHasBidiSupport())
+		{
+			delete [] m_remapIndices;
+			m_remapIndices = new UT_UCSChar[iLength];
+		}
+#endif
 		m_remapBuffer = new UT_UCSChar[iLength];
 		m_remapBufferSize = iLength;
 	}
