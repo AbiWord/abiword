@@ -103,6 +103,14 @@ static Doc_Color_t word_colors [][3] = {
 	{0xc0, 0xc0, 0xc0}, /* light gray */
 };
 
+static UT_String sMapIcoToColor (UT_uint16 ico)
+{
+  return UT_String_sprintf("%02x%02x%02x",
+			   word_colors[ico-1][0],
+			   word_colors[ico-1][1],
+			   word_colors[ico-1][2]);
+}
+
 //
 // Field Ids that are useful later for mapping
 //
@@ -512,6 +520,7 @@ IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
 	m_pBookmarks(NULL),
 	m_iBookmarksCount(0),
 	m_iMSWordListId(0),
+        m_bEncounteredRevision(false),
         m_bInTable(false), 
 	m_iRowsRemaining(0), 
         m_iCellsRemaining(0),
@@ -857,15 +866,10 @@ int IE_Imp_MsWord_97::_docProc (wvParseStruct * ps, UT_uint32 tag)
 	// flush out any pending character data
 	this->_flush ();
 
-	UT_UCS4String revisionStr ("msword_revisioned_text");
-
 	switch ((wvTag)tag)
 	{
 	case DOCBEGIN:
 		UT_uint32 i,j;
-
-		// revision hack - add a single revision for all revisioned text
-		getDoc()->addRevision(1, revisionStr.ucs4_str(), revisionStr.size());
 
 		if(m_pBookmarks)
 		{
@@ -1515,7 +1519,7 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 	  if (apap->fInTable) {
 	    if (!m_bInTable) {
 	      m_bInTable = true;	    
-	        _table_open(ps, apap);
+	        _table_open();
 	    }
 	    
 	    if (ps->endcell) {
@@ -1562,7 +1566,7 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 	  }
 	  else if (m_bInTable) {
 	    m_bInTable = false;
-	    _table_close();
+	    _table_close(ps, apap);
 	  }
 	}
 
@@ -2240,11 +2244,8 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 	// foreground color
 	U8 ico = (achp->fBidi ? achp->icoBidi : achp->ico);
 	if (ico) {
-		UT_String_sprintf(propBuffer,
-				"color:%02x%02x%02x;",
-				word_colors[ico-1][0],
-				word_colors[ico-1][1],
-				word_colors[ico-1][2]);
+		UT_String_sprintf(propBuffer, "color:%s;",
+				  sMapIcoToColor(ico).c_str());
 		props += propBuffer;
 	}
 
@@ -2262,11 +2263,8 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 
 	// background color
 	if (achp->fHighlight) {
-		UT_String_sprintf(propBuffer,
-				"bgcolor:%02x%02x%02x;",
-				word_colors[achp->icoHighlight-1][0],
-				word_colors[achp->icoHighlight-1][1],
-				word_colors[achp->icoHighlight-1][2]);
+		UT_String_sprintf(propBuffer,"bgcolor:%s;",
+				  sMapIcoToColor(achp->icoHighlight).c_str());
 		props += propBuffer;
 	}
 
@@ -2337,6 +2335,14 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 
 	propsArray[0] = (XML_Char *)"props";
 	propsArray[1] = (XML_Char *)props.c_str();
+
+	if(!m_bEncounteredRevision && (achp->fRMark || achp->fRMarkDel))
+	  {
+		// revision "hack" - add a single revision for all revisioned text
+		UT_UCS4String revisionStr ("msword_revisioned_text");
+		getDoc()->addRevision(1, revisionStr.ucs4_str(), revisionStr.size());
+		m_bEncounteredRevision = true;
+	  }
 
 	if (achp->fRMark)
 	  {
@@ -2804,12 +2810,8 @@ static int docProc (wvParseStruct *ps, wvTag tag)
 //--------------------------------------------------------------------------/
 //--------------------------------------------------------------------------/
 
-void IE_Imp_MsWord_97::_table_open (const wvParseStruct *ps, const PAP *apap) 
+void IE_Imp_MsWord_97::_table_open () 
 {
-  // keep in here. i want to use these for setting up table properties
-  (void)ps;
-  (void)apap;
- 
   UT_DEBUGMSG(("\n<TABLE>"));
   
   m_iCurrentRow = 0;
@@ -2831,8 +2833,8 @@ void IE_Imp_MsWord_97::_table_open (const wvParseStruct *ps, const PAP *apap)
 //--------------------------------------------------------------------------/
 //--------------------------------------------------------------------------/
 
-void IE_Imp_MsWord_97::_table_close () {
-  
+void IE_Imp_MsWord_97::_table_close (const wvParseStruct *ps, const PAP *apap) 
+{  
   _cell_close();
   _row_close();
   
@@ -2843,6 +2845,8 @@ void IE_Imp_MsWord_97::_table_close () {
     UT_String propBuffer;
     UT_String props = "table-column-props:";
     
+    const char * loc = setlocale(LC_NUMERIC,"C");
+
     for (UT_uint32 i = 0; i < m_vecColumnWidths.size(); i++) {
       UT_String_sprintf(propBuffer,
 			"%s/",
@@ -2850,6 +2854,10 @@ void IE_Imp_MsWord_97::_table_close () {
 			);
       props += propBuffer;
     }
+
+    props += UT_String_sprintf("; table-col-spacing:%din", (2 * apap->ptap.dxaGapHalf)/ 1440);
+
+    setlocale(LC_NUMERIC, loc);
     
     XML_Char* pProps = "props";
     const XML_Char* propsArray[3];
@@ -2905,12 +2913,18 @@ void IE_Imp_MsWord_97::_row_close ()
 //--------------------------------------------------------------------------/
 //--------------------------------------------------------------------------/
 
+static int
+sConvertLineStyle (short lineType)
+{
+  // TODO - convert msword line styles to ours
+  return 1;
+}
+
 void IE_Imp_MsWord_97::_cell_open (const wvParseStruct *ps, const PAP *apap) 
 {
   
-  if (m_bCellOpen || apap->fTtp) {
+  if (m_bCellOpen || apap->fTtp)
     return;
-  }
   
   // determine column widths
   UT_Vector columnWidths;
@@ -2942,18 +2956,47 @@ void IE_Imp_MsWord_97::_cell_open (const wvParseStruct *ps, const PAP *apap)
     vspan--;
   }
   
-  UT_String_sprintf(
-		    propBuffer, 
-		    "left-attach:%d; right-attach:%d; top-attach:%d; bot-attach:%d", 
+  UT_String_sprintf(propBuffer, 
+		    "left-attach:%d; right-attach:%d; top-attach:%d; bot-attach:%d; ", 
 		    m_iCurrentCell - 1, 
 		    m_iCurrentCell + (int)m_vecColumnSpansForCurrentRow.getNthItem(m_iCurrentCell - 1), 
 		    m_iCurrentRow - 1, 
 		    m_iCurrentRow + vspan
 		    );
+
+  {
+    propBuffer += UT_String_sprintf("color:%s;", sMapIcoToColor(apap->ptap.rgshd[m_iCurrentCell - 1].icoFore).c_str());
+    propBuffer += UT_String_sprintf("bgcolor:%s;", sMapIcoToColor(apap->ptap.rgshd[m_iCurrentCell - 1].icoBack).c_str());
+
+    // not the "auto" color
+    if (apap->ptap.rgshd[m_iCurrentCell - 1].icoBack != 0)
+      propBuffer += "bg-style:1;";
+
+#define BRC_TO_PIXEL(x) (int)(8 * x)
+    
+    // BRC - useful fields: ico for color, brcType for line type, dptLineWidth
+    propBuffer += UT_String_sprintf("top-color:%s; table-line-thickness: %d;table-line-type:%d;", 
+				    sMapIcoToColor(apap->ptap.rgtc[m_iCurrentCell - 1].brcTop.ico).c_str(),
+				    BRC_TO_PIXEL(apap->ptap.rgtc[m_iCurrentCell - 1].brcTop.dptLineWidth),
+				    sConvertLineStyle(apap->ptap.rgtc[m_iCurrentCell - 1].brcTop.brcType));
+    propBuffer += UT_String_sprintf("left-color:%s; table-line-thickness: %d;table-line-type:%d;", 
+				    sMapIcoToColor(apap->ptap.rgtc[m_iCurrentCell - 1].brcLeft.ico).c_str(),
+				    BRC_TO_PIXEL(apap->ptap.rgtc[m_iCurrentCell - 1].brcLeft.dptLineWidth),
+				    sConvertLineStyle(apap->ptap.rgtc[m_iCurrentCell - 1].brcLeft.brcType));
+    propBuffer += UT_String_sprintf("bot-color:%s; table-line-thickness: %d;table-line-type:%d;", 
+				    sMapIcoToColor(apap->ptap.rgtc[m_iCurrentCell - 1].brcBottom.ico).c_str(),
+				    BRC_TO_PIXEL(apap->ptap.rgtc[m_iCurrentCell - 1].brcBottom.dptLineWidth),
+				    sConvertLineStyle(apap->ptap.rgtc[m_iCurrentCell - 1].brcBottom.brcType));
+    propBuffer += UT_String_sprintf("right-color:%s; table-line-thickness: %d;table-line-type:%d", 
+				    sMapIcoToColor(apap->ptap.rgtc[m_iCurrentCell - 1].brcRight.ico).c_str(),
+				    BRC_TO_PIXEL(apap->ptap.rgtc[m_iCurrentCell - 1].brcRight.dptLineWidth),
+				    sConvertLineStyle(apap->ptap.rgtc[m_iCurrentCell - 1].brcRight.brcType));
+
+#undef BRC_TO_PIXEL
+  }
   
-  XML_Char* pProps = "props";
   const XML_Char* propsArray[3];
-  propsArray[0] = pProps;
+  propsArray[0] = (XML_Char*)"props";
   propsArray[1] = propBuffer.c_str();
   propsArray[2] = NULL;
   

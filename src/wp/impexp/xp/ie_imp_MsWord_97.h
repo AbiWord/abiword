@@ -120,8 +120,8 @@ private:
 	void	   _appendChar (UT_UCSChar ch);
 	void	   _flush ();
 
-	void		_table_open(const wvParseStruct *ps, const PAP *apap);
-	void		_table_close();
+	void		_table_open();
+	void		_table_close(const wvParseStruct *ps, const PAP *apap);
 	void		_row_open();
 	void		_row_close();
 	void		_cell_open(const wvParseStruct *ps, const PAP *apap);
@@ -151,7 +151,7 @@ private:
 	UT_uint32 m_iListIdIncrement[9];
 	UT_uint32 m_iMSWordListId;
 	
-	
+	bool m_bEncounteredRevision;
 	bool		m_bInTable;						// are we in a table ?
 	int			m_iRowsRemaining;				// number of rows left to process
 	int			m_iCellsRemaining;				// number of cells left to process in the current row
