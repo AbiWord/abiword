@@ -1531,7 +1531,9 @@ UT_Error IE_Imp_WordPerfect::_appendCurrentParagraphProperties()
    m_paragraphChanged = false;
    
    if ( !m_bInSection )
-     _appendSection ();
+     {
+       X_CheckDocumentError(_appendSection ());
+     }
 
    X_CheckDocumentError(getDoc()->appendStrux(PTX_Block, propsArray));   
    
