@@ -2952,11 +2952,11 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 	UT_uint32 iRealDeleteCount = 0;
 
 
-	// Signal PieceTable Change
-	_saveAndNotifyPieceTableChange();
-
 	if (!isSelectionEmpty())
 	{
+
+		// Signal PieceTable Change
+		_saveAndNotifyPieceTableChange();
 		m_pDoc->disableListUpdates();
 
 		_deleteSelection();
@@ -3033,28 +3033,57 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 				fl_FootnoteLayout * pFL = getClosestFootnote(getPoint());
 				count += pFL->getLength();
 			}
+			else if(isInFootnote(getPoint()))
+			{
+				if(!isInFootnote(getPoint() - count))
+				{
+					return;
+				}
+				else if(!isInFootnote(getPoint() -2))
+				{
+//
+// Don't delete the paragraph strux in footnote
+//
+					return;
+				}
+				else if(!isInFootnote(getPoint() -3))
+				{
+//
+// Don't delete the paragraph strux in footnote
+//
+					return;
+				}
+			}
 			else if(!isInEndnote() && isInEndnote(getPoint() - count))
 			{
 				fl_EndnoteLayout * pEL = getClosestEndnote(getPoint());
 				count += pEL->getLength();
 			}
+			else if(isInEndnote(getPoint()))
+			{
+				if(!isInEndnote(getPoint() - count))
+				{
+					return;
+				}
+				else if(!isInEndnote(getPoint() -2))
+				{
+//
+// Don't delete the paragraph strux in endnote
+//
+					return;
+				}
+				else if(!isInEndnote(getPoint() -3))
+				{
+//
+// Don't delete the paragraph strux in endnote
+//
+					return;
+				}
+
+			}
 			if(m_pDoc->isTOCAtPos(getPoint()-2))
 			{
 				count +=2;
-			}
-			if(isInFootnote() && !isInFootnote(getPoint() - count))
-			{
-//
-// Can't delete a footnote strux. Bail out.
-//
-				return;
-			}
-			else if(isInEndnote() && !isInEndnote(getPoint() - count))
-			{
-//
-// Can't delete a footnote strux. Bail out.
-//
-				return;
 			}
 		}
 
@@ -3183,6 +3212,9 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 		if(!curBlock)
 			curBlock = _findBlockAtPosition(getPoint());
 
+		// Signal PieceTable Change
+		_saveAndNotifyPieceTableChange();
+
 		if (amt > 0)
 		{
 			m_pDoc->disableListUpdates();
@@ -3209,6 +3241,7 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 				}
 				else if(bisList == true)
 				{
+
 					m_pDoc->deleteSpan(posCur, posCur+amt,NULL, iRealDeleteCount);
 					nBlock->remItemFromList();
 				}
