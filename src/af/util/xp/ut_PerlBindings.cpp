@@ -63,11 +63,11 @@ extern "C" {
 
 extern "C" {
 
-  void boot_DynaLoader(PerlInterpreter *pi, CV* cv);
-
 #ifdef NOT_PERL_5_8
+  void boot_DynaLoader(CV* cv);
   void xs_init ()
 #else
+  void boot_DynaLoader(PerlInterpreter *pi, CV* cv);
   void xs_init(PerlInterpreter * my_perl)
 #endif
   {
