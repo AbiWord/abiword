@@ -22,7 +22,9 @@ ABI_ROOT:=$(shell pwd)/../../../..
 
 include $(ABI_ROOT)/src/config/abi_defs.mk
 
-REQUIRE=	_ZLIB_ _LIBPNG_
+#TF These aren't required any more.  As of R4 they ship w/ the OS
+#REQUIRE=	_ZLIB_ _LIBPNG_
+REQUIRE=
 TARGET=		build
 
 include $(ABI_ROOT)/src/config/abi_rules.mk
