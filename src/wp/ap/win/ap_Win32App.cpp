@@ -32,7 +32,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <io.h>
-#include <shlwapi.h>	// Where Windows defines DLLGETVERSIONPROC and DLLVERSIONINFO
 
 #include "ut_debugmsg.h"
 #include "ut_bytebuf.h"
@@ -69,12 +68,6 @@
 #include "ie_imp.h"
 #include "ie_imp_RTF.h"
 #include "ie_imp_Text.h"
-
-// According to Hubert Figuiere in bug report 2956 we should ensure
-// that the version is 4.72 or better	 
-#define CM_MAJOR_VERSION	4
-#define CM_MINOR_VERSION	72
-
 
 /*****************************************************************/
 
@@ -713,50 +706,6 @@ static GR_Image * _showSplash(HINSTANCE hInstance, const char * szAppName)
 }
 #endif
 
-
-/*
-		This function gets the comctl32.dll version. We need to check the version
-		of this DLL since AbiWord uses some advanced features not available in all
-		versions of this DLL.
-
-*/
-BOOL AP_Win32App::getCommCtrlVersion(HINSTANCE hInst, LPDWORD pdwMajor, LPDWORD pdwMinor)
-{    
-	DLLGETVERSIONPROC pDllGetVersion;
-	DLLVERSIONINFO    dvi;
-	BOOL 			bOK	= false;
-	
-	// Default values
-	*pdwMajor = 0;
-	*pdwMinor = 0;
-    
-	if (!hInst)	return bOK;	 // No instance, no version mate		
-		
-	/*
-			You must get this function explicitly.
-	*/
-	pDllGetVersion = (DLLGETVERSIONPROC)GetProcAddress(hInst, TEXT("DllGetVersion"));
-		
-	if(pDllGetVersion)	// Does not export the requiered function
-	{			
-		ZeroMemory(&dvi, sizeof(dvi));
-		dvi.cbSize = sizeof(dvi);
-						
-		HRESULT hr = (*pDllGetVersion)(&dvi);
-			
-		if(SUCCEEDED(hr))
-		{
-			*pdwMajor = dvi.dwMajorVersion;				
-			*pdwMinor = dvi.dwMinorVersion;
-			bOK = true;
-		}
-	}		
-				
-	return bOK;
-}
-
-
-
 /*****************************************************************/
 
 typedef BOOL __declspec(dllimport) (CALLBACK *InitCommonControlsEx_fn)(LPINITCOMMONCONTROLSEX lpInitCtrls);
@@ -764,15 +713,12 @@ typedef BOOL __declspec(dllimport) (CALLBACK *InitCommonControlsEx_fn)(LPINITCOM
 int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance, 
 						 HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow)
 {
-	
 	bool bShowApp = true;
 	bool bShowSplash = true;
 	bool bSplashPref = true;
-	bool bInitCommCtrls = false;
-	DWORD dwMajor, dwMinor;
-	MSG 	msg;	
 
 	// this is a static function and doesn't have a 'this' pointer.
+	MSG msg;
 
 	_CrtSetReportMode( _CRT_WARN, _CRTDBG_MODE_DEBUG );
 	_CrtSetReportMode( _CRT_ERROR, _CRTDBG_MODE_DEBUG );
@@ -784,7 +730,6 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 	InitCommonControlsEx_fn  pInitCommonControlsEx = NULL;
 	if( hinstCC != NULL )
 		pInitCommonControlsEx = (InitCommonControlsEx_fn)GetProcAddress( hinstCC, "InitCommonControlsEx" );
-		
 	if( pInitCommonControlsEx != NULL )
 	{
 		INITCOMMONCONTROLSEX icex;
@@ -795,23 +740,8 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 		pInitCommonControlsEx(&icex);
 	}
 	else
-		InitCommonControls();
-	
- 	
-	if (getCommCtrlVersion(hinstCC, &dwMajor, &dwMinor))
-	{			
-		if (dwMajor>CM_MAJOR_VERSION)
-				bInitCommCtrls = true;
-		else
-			if (dwMajor==CM_MAJOR_VERSION && dwMinor>=CM_MINOR_VERSION)		
-			{
-				bInitCommCtrls = true;
-			}				
-	}
-		
-	if (!bInitCommCtrls)	
 	{
-		
+		InitCommonControls();
 		MessageBox(NULL,
 			"AbiWord is designed for a newer version of the system file COMCTL32.DLL\n"
 			"than the one currently on your system.\n"
