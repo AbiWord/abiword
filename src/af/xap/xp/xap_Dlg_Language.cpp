@@ -48,6 +48,7 @@ XAP_Dialog_Language::XAP_Dialog_Language(XAP_DialogFactory * pDlgFactory, XAP_Di
 	m_bChangedLanguage	= false;
 	m_pLangTable = new UT_Language;
 	UT_ASSERT(m_pLangTable);
+	UT_uint32 i;
 	
 	m_iLangCount = m_pLangTable->getCount();
 	m_ppLanguages = new const XML_Char * [m_iLangCount];
@@ -55,7 +56,7 @@ XAP_Dialog_Language::XAP_Dialog_Language(XAP_DialogFactory * pDlgFactory, XAP_Di
 	
 	// find languages that needn't be sorted (where id = XAP_STRING_ID_LANG_0)
 	UT_uint32 dontsort = 0;
-	for(UT_uint32 i=0; i<m_iLangCount; i++)
+	for(i=0; i<m_iLangCount; i++)
 	{
 		if (m_pLangTable->getNthId(i)==XAP_STRING_ID_LANG_0)
 		{
@@ -67,7 +68,7 @@ XAP_Dialog_Language::XAP_Dialog_Language(XAP_DialogFactory * pDlgFactory, XAP_Di
 	// copy - at first - only the languages that need to be sorted into a temporary language array
 	const XML_Char ** ppTempLang = new const XML_Char * [m_iLangCount-dontsort];
 	UT_uint32 j = 0;
-	for(UT_uint32 i = 0; i < m_iLangCount; i++)
+	for(i = 0; i < m_iLangCount; i++)
 	{
 		if (m_pLangTable->getNthId(i)!=XAP_STRING_ID_LANG_0) {
 			ppTempLang[j] = m_pLangTable->getNthLanguage(i);
@@ -79,7 +80,7 @@ XAP_Dialog_Language::XAP_Dialog_Language(XAP_DialogFactory * pDlgFactory, XAP_Di
 
 	// copy all languages that needn't be sorted to the final array first
 	j = 0;
-	for(UT_uint32 i=0; i<m_iLangCount; i++) 
+	for(i=0; i<m_iLangCount; i++) 
 	{
 		if (m_pLangTable->getNthId(i)==XAP_STRING_ID_LANG_0)
 		{
@@ -88,7 +89,7 @@ XAP_Dialog_Language::XAP_Dialog_Language(XAP_DialogFactory * pDlgFactory, XAP_Di
 		}		
 	}
 	// now use 'j' as a base index to add the sorted items from the temporary language array
-	for(UT_uint32 i=0; i<m_iLangCount-dontsort; i++)
+	for(i=0; i<m_iLangCount-dontsort; i++)
 	{
 		m_ppLanguages[j] = ppTempLang[i];
 		j++;
@@ -99,7 +100,7 @@ XAP_Dialog_Language::XAP_Dialog_Language(XAP_DialogFactory * pDlgFactory, XAP_Di
 	// Assign its language code to every language once is sorted
 	for(UT_uint32 nLang = 0; nLang < m_iLangCount; nLang++)
 	{	
-		for(UT_uint32 i = 0; i < m_iLangCount; i++)
+		for(i = 0; i < m_iLangCount; i++)
 		{
 			if (strcmp (m_ppLanguages[nLang], m_pLangTable->getNthLanguage(i))==0)
 			{
