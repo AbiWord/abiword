@@ -127,7 +127,7 @@ double UT_convertInchesToDimension(double inches, UT_Dimension dim)
 	return valueScaled;
 }
 
-const char * UT_convertToDimensionString(UT_Dimension dim, double valueInInches, const char * szPrecision)
+const char * UT_convertInchesToDimensionString(UT_Dimension dim, double valueInInches, const char * szPrecision)
 {
 	// return pointer to static buffer -- use it quickly.
 	//
@@ -191,6 +191,67 @@ const char * UT_convertToDimensionString(UT_Dimension dim, double valueInInches,
 	}
 	setlocale(LC_NUMERIC,"C");
 	sprintf(buf,bufFormat,valueScaled);
+	//UT_DEBUGMSG(("ConvertToDimensionString: [%g] --> [%s]\n",valueScaled,buf));
+	setlocale(LC_NUMERIC,""); // restore original locale
+	
+	return buf;
+}
+
+const char * UT_formatDimensionString(UT_Dimension dim, double value, const char * szPrecision)
+{
+	// return pointer to static buffer -- use it quickly.
+	//
+	// We temporarily force the locale back to english so that
+	// we get a period as the decimal point.
+
+	// TODO what should the decimal precision of each different
+	// TODO unit of measurement be ??
+	
+	static char buf[100];
+	char bufFormat[100];
+	
+	switch (dim)
+	{
+	case DIM_IN:
+		// (1/16th (0.0625) is smallest unit the ui will
+		// let them enter (via the TopRuler), so let's
+		// set the precision so that we get nice roundoff.
+		// TODO we may need to improve this later.
+		sprintf(bufFormat,"%%%sfin",((szPrecision && *szPrecision) ? szPrecision : ".4"));
+		break;
+
+	case DIM_CM:
+		sprintf(bufFormat,"%%%sfcm",((szPrecision && *szPrecision) ? szPrecision : ".1"));
+		break;
+
+	case DIM_MM:
+		sprintf(bufFormat,"%%%sfmm",((szPrecision && *szPrecision) ? szPrecision : ".1"));
+		break;
+
+	case DIM_PI:
+		sprintf(bufFormat,"%%%sfpi",((szPrecision && *szPrecision) ? szPrecision : ".0"));
+		break;
+
+	case DIM_PT:
+		sprintf(bufFormat,"%%%sfpt",((szPrecision && *szPrecision) ? szPrecision : ".0"));
+		break;
+
+	case DIM_PX:
+ 	case DIM_none:
+		sprintf(bufFormat,"%%%sf",((szPrecision && *szPrecision) ? szPrecision : ""));
+		break;
+
+	case DIM_PERCENT:
+		sprintf(bufFormat,"%%%sf%%",((szPrecision && *szPrecision) ? szPrecision : ""));
+		break;
+
+	default:
+		UT_ASSERT(UT_NOT_IMPLEMENTED);
+		sprintf(bufFormat,"%%%sf",((szPrecision && *szPrecision) ? szPrecision : ""));
+		break;
+	}
+	setlocale(LC_NUMERIC,"C");
+	sprintf(buf,bufFormat,value);
 	//UT_DEBUGMSG(("ConvertToDimensionString: [%g] --> [%s]\n",valueScaled,buf));
 	setlocale(LC_NUMERIC,""); // restore original locale
 	

@@ -46,7 +46,8 @@ UT_sint32 UT_paperUnitsFromLayoutUnits(UT_sint32 iLayoutUnits);
 
 UT_Dimension UT_determineDimension(const char * sz, UT_Dimension fallback = DIM_IN);
 const char * UT_dimensionName(UT_Dimension dim);
-const char * UT_convertToDimensionString(UT_Dimension, double valueInInches, const char * szPrecision = NULL);
+const char * UT_convertInchesToDimensionString(UT_Dimension, double valueInInches, const char * szPrecision = NULL);
+const char * UT_formatDimensionString(UT_Dimension, double value, const char * szPrecision = NULL);
 const char * UT_convertToDimensionlessString(double value, const char * szPrecision = NULL);
 const char * UT_formatDimensionedValue(double value, const char * szUnits, const char * szPrecision = NULL);
 

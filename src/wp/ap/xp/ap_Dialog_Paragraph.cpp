@@ -381,7 +381,7 @@ UT_Bool AP_Dialog_Paragraph::getDialogData(const XML_Char **& pProps)
 		tIndentState i = (tIndentState) _getMenuItemValue(id_MENU_SPECIAL_INDENT);
 
 		if (i == indent_NONE)
-			UT_XML_cloneString(p->val, UT_convertToDimensionString(m_dim, 0));
+			UT_XML_cloneString(p->val, UT_convertInchesToDimensionString(m_dim, 0));
 		else if (i == indent_FIRSTLINE)
 			UT_XML_cloneString(p->val, _getSpinItemValue(id_SPIN_SPECIAL_INDENT));
 		else if (i == indent_HANGING)
@@ -397,7 +397,7 @@ UT_Bool AP_Dialog_Paragraph::getDialogData(const XML_Char **& pProps)
 			val = val * (double) -1;
 
 			// store the reconstructed
-			UT_XML_cloneString(p->val, UT_convertToDimensionString(dim, val));
+			UT_XML_cloneString(p->val, UT_convertInchesToDimensionString(dim, val));
 		}
 
 		v.addItem(p);
@@ -887,7 +887,7 @@ void AP_Dialog_Paragraph::_doSpin(tControl edit, UT_sint32 amt)
 		if (d < dMin)
 			d = dMin;
 	}
-	const XML_Char* szNew = UT_convertToDimensionString(dimSpin, d, szPrecision); 
+	const XML_Char* szNew = UT_formatDimensionString(dimSpin, d, szPrecision); 
 
 	_setSpinItemValue(edit, szNew);
 }
@@ -957,7 +957,7 @@ void AP_Dialog_Paragraph::_syncControls(tControl changed, UT_Bool bAll /* = UT_F
 			if (m_dim != DIM_IN)
 				dDefault = UT_convertInchesToDimension(dDefault, m_dim); 
 
-			const XML_Char* szNew = UT_convertToDimensionString(m_dim, dDefault, ".1"); 
+			const XML_Char* szNew = UT_convertInchesToDimensionString(m_dim, dDefault, ".1"); 
 
 			_setSpinItemValue(id_SPIN_SPECIAL_INDENT, szNew, op_SYNC);
 		}

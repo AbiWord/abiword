@@ -279,7 +279,7 @@ const char * GR_Graphics::invertDimension(UT_Dimension dim, double dValue) const
 
 	double dInches = dValue / dResolution;
 
-	return UT_convertToDimensionString( dim, dInches);
+	return UT_convertInchesToDimensionString( dim, dInches);
 }
 
 UT_Bool GR_Graphics::scaleDimensions(const char * szLeftIn, const char * szWidthIn,

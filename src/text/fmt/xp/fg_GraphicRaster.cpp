@@ -188,9 +188,9 @@ UT_Error FG_GraphicRaster::insertIntoDocument(PD_Document* pDoc, double fDPI,
 	char szProps[256];
 
 	strcpy(szProps,"width:");
-	strcat(szProps,UT_convertToDimensionString(DIM_IN, (double)m_iWidth/fDPI, "3.2"));
+	strcat(szProps,UT_convertInchesToDimensionString(DIM_IN, (double)m_iWidth/fDPI, "3.2"));
 	strcat(szProps,"; height:");
-	strcat(szProps,UT_convertToDimensionString(DIM_IN, (double)m_iHeight/fDPI, "3.2"));
+	strcat(szProps,UT_convertInchesToDimensionString(DIM_IN, (double)m_iHeight/fDPI, "3.2"));
 
 	const XML_Char*	attributes[] = {
 		"dataid", szName,
