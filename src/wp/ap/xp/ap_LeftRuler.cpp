@@ -230,6 +230,7 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 	{
 		m_draggingWhat = DW_NOTHING;
 		m_bValidMouseClick = false;
+		m_pG->setCursor( GR_Graphics::GR_CURSOR_DEFAULT);
 		return;
 	}
 	
@@ -241,6 +242,7 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 	{
 		_ignoreEvent(true);
 		m_draggingWhat = DW_NOTHING;
+		m_pG->setCursor( GR_Graphics::GR_CURSOR_DEFAULT);
 		return;
 	}
 
@@ -266,6 +268,7 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 	if (ygrid == m_oldY) // Not moved - clicked and released
 	{
 		m_draggingWhat = DW_NOTHING;
+		m_pG->setCursor( GR_Graphics::GR_CURSOR_DEFAULT);
 		return;
 	}
 
@@ -376,7 +379,10 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 		}
 		pView->clearSavedPosition();
 	}
-
+//
+// Redraw the left ruler.
+//
+	notify(pView,AV_CHG_MOTION);
 	return;
 }
 
@@ -386,9 +392,28 @@ void AP_LeftRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 
 {
 	// The X and Y that are passed to this function are x and y on the screen, not on the ruler.
 	
+	FV_View * pView = static_cast<FV_View *>(m_pView);
+	pView->getLeftRulerInfo(&m_infoCache);
+
 	if (!m_bValidMouseClick)
+	{
+	
+		UT_Rect rTopMargin, rBottomMargin;
+		_getMarginMarkerRects(&m_infoCache,rTopMargin,rBottomMargin);
+		if (rTopMargin.containsPoint(x,y))
+		{
+			m_pG->setCursor( GR_Graphics::GR_CURSOR_UPDOWN);
+		}
+		else if (rBottomMargin.containsPoint(x,y))
+		{
+			m_pG->setCursor( GR_Graphics::GR_CURSOR_UPDOWN);
+		}
+		else
+		{
+			m_pG->setCursor( GR_Graphics::GR_CURSOR_DEFAULT);
+		}
 		return;
-		
+	}		
 	m_bEventIgnored = false;
 
 //  	UT_DEBUGMSG(("mouseMotion: [ems 0x%08lx][x %ld][y %ld]\n",ems,x,y));
@@ -403,6 +428,7 @@ void AP_LeftRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 
 			_ignoreEvent(false);
 			m_bEventIgnored = true;
 		}
+		m_pG->setCursor( GR_Graphics::GR_CURSOR_DEFAULT);
 		return;
 	}
 
@@ -411,6 +437,8 @@ void AP_LeftRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 
 
 	// if we are this far along, the mouse motion is significant
 	// we cannot ignore it.
+
+	m_pG->setCursor( GR_Graphics::GR_CURSOR_GRAB);
 		
 	switch (m_draggingWhat)
 	{
