@@ -7421,7 +7421,7 @@ fl_BlockLayout::findGrammarSquigglesForRun(fp_Run* pRun)
 
 		// The first POB may only be partially within the region. Clip
 		// it if necessary.
-		pPOB = m_pSpellSquiggles->getNth(i++);
+		pPOB = m_pGrammarSquiggles->getNth(i++);
 		if (!pPOB->getIsIgnored())
 		{
 			iStart = pPOB->getOffset();
@@ -7439,7 +7439,7 @@ fl_BlockLayout::findGrammarSquigglesForRun(fp_Run* pRun)
 		// The ones in the middle don't need clipping.
 		for (; i < iLast; i++)
 		{
-			pPOB = m_pSpellSquiggles->getNth(i);
+			pPOB = m_pGrammarSquiggles->getNth(i);
 			if (pPOB->getIsIgnored()) continue;
 
 			iStart = pPOB->getOffset();
@@ -7448,7 +7448,7 @@ fl_BlockLayout::findGrammarSquigglesForRun(fp_Run* pRun)
 		}
 		// The last POB may only be partially within the region. Clip
 		// it if necessary. Note the load with iLast instead of i.
-		pPOB = m_pSpellSquiggles->getNth(iLast);
+		pPOB = m_pGrammarSquiggles->getNth(iLast);
 		if (!pPOB->getIsIgnored())
 		{
 			// Only load start if this POB is different from the first
