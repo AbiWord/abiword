@@ -24,18 +24,22 @@
 
 /*****************************************************************/
 
-class AP_Win32Dialog_About: public AP_Dialog_About
+class XAP_Win32Dialog_About: public XAP_Dialog_About
 {
 public:
-	AP_Win32Dialog_About(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
-	virtual ~AP_Win32Dialog_About(void);
-
-	static AP_Dialog *		static_constructor(AP_DialogFactory *, AP_Dialog_Id id);
+	XAP_Win32Dialog_About(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
+	virtual ~XAP_Win32Dialog_About(void);
 
 	virtual void			runModal(XAP_Frame * pFrame);
 
- protected:
+	static AP_Dialog *		static_constructor(AP_DialogFactory *, AP_Dialog_Id id);
+	static BOOL CALLBACK	s_dlgProc(HWND,UINT,WPARAM,LPARAM);
 	
+protected:
+	BOOL					_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+
+	XAP_App *				m_pApp;
 };
 
 #endif /* XAP_WIN32DIALOG_ABOUT_H */

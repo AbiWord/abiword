@@ -55,7 +55,7 @@ AP_Dialog * XAP_UnixDialog_FontChooser::static_constructor(AP_DialogFactory * pF
 
 XAP_UnixDialog_FontChooser::XAP_UnixDialog_FontChooser(AP_DialogFactory * pDlgFactory,
 												   AP_Dialog_Id id)
-	: AP_Dialog_FontChooser(pDlgFactory,id)
+	: XAP_Dialog_FontChooser(pDlgFactory,id)
 {
 	m_fontManager = NULL;
 	m_fontList = NULL;
@@ -147,22 +147,22 @@ static gint s_color_update(GtkWidget * widget,
 }
 
 static void s_delete_clicked(GtkWidget * widget, gpointer data,
-							 AP_Dialog_FontChooser::tAnswer * answer)
+							 XAP_Dialog_FontChooser::tAnswer * answer)
 {
-	*answer = AP_Dialog_FontChooser::a_CANCEL;
+	*answer = XAP_Dialog_FontChooser::a_CANCEL;
 	gtk_main_quit();
 }
 
 static void s_ok_clicked(GtkWidget * widget,
-						 AP_Dialog_FontChooser::tAnswer * answer)
-{	*answer = AP_Dialog_FontChooser::a_OK;
+						 XAP_Dialog_FontChooser::tAnswer * answer)
+{	*answer = XAP_Dialog_FontChooser::a_OK;
 	gtk_main_quit();
 }
 
 static void s_cancel_clicked(GtkWidget * widget,
-							 AP_Dialog_FontChooser::tAnswer * answer)
+							 XAP_Dialog_FontChooser::tAnswer * answer)
 {
-	*answer = AP_Dialog_FontChooser::a_CANCEL;
+	*answer = XAP_Dialog_FontChooser::a_CANCEL;
 	gtk_main_quit();
 }
 
@@ -768,7 +768,7 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	
 	gtk_main();
 
-	if (m_answer == AP_Dialog_FontChooser::a_OK)
+	if (m_answer == XAP_Dialog_FontChooser::a_OK)
 	{
 		GList * selectedRow = NULL;
 		gint rowNumber = 0;

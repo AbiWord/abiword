@@ -626,8 +626,8 @@ static void s_TellSaveFailed(XAP_Frame * pFrame, const char * fileName)
 	AP_DialogFactory * pDialogFactory
 		= (AP_DialogFactory *)(pFrame->getDialogFactory());
 
-	AP_Dialog_MessageBox * pDialog
-		= (AP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
+	XAP_Dialog_MessageBox * pDialog
+		= (XAP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
 	UT_ASSERT(pDialog);
 
 	// TODO consider adding a reason for the failure to the message....
@@ -635,8 +635,8 @@ static void s_TellSaveFailed(XAP_Frame * pFrame, const char * fileName)
 	const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
 	
 	pDialog->setMessage(pSS->getValue(AP_STRING_ID_MSG_SaveFailed), fileName);
-	pDialog->setButtons(AP_Dialog_MessageBox::b_O);
-	pDialog->setDefaultAnswer(AP_Dialog_MessageBox::a_OK);
+	pDialog->setButtons(XAP_Dialog_MessageBox::b_O);
+	pDialog->setDefaultAnswer(XAP_Dialog_MessageBox::a_OK);
 
 	pDialog->runModal(pFrame);
 
@@ -650,8 +650,8 @@ static void s_TellNotImplemented(XAP_Frame * pFrame, const char * szWhat, int iL
 	AP_DialogFactory * pDialogFactory
 		= (AP_DialogFactory *)(pFrame->getDialogFactory());
 
-	AP_Dialog_MessageBox * pDialog
-		= (AP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
+	XAP_Dialog_MessageBox * pDialog
+		= (XAP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
 	UT_ASSERT(pDialog);
 
 	char buf[1024];
@@ -659,12 +659,12 @@ static void s_TellNotImplemented(XAP_Frame * pFrame, const char * szWhat, int iL
 	sprintf(buf, "%s not implemented yet.\n\nAdd code in %s, line %d and mail patches to:\n\n\tabiword-dev@abisource.com", szWhat, __FILE__, iLine);
 
 	pDialog->setMessage(buf);
-	pDialog->setButtons(AP_Dialog_MessageBox::b_O);
-	pDialog->setDefaultAnswer(AP_Dialog_MessageBox::a_OK);
+	pDialog->setButtons(XAP_Dialog_MessageBox::b_O);
+	pDialog->setDefaultAnswer(XAP_Dialog_MessageBox::a_OK);
 
 	pDialog->runModal(pFrame);
 
-//	AP_Dialog_MessageBox::tAnswer ans = pDialog->getAnswer();
+//	XAP_Dialog_MessageBox::tAnswer ans = pDialog->getAnswer();
 
 	pDialogFactory->releaseDialog(pDialog);
 }
@@ -678,23 +678,23 @@ static UT_Bool s_AskRevertFile(XAP_Frame * pFrame)
 	AP_DialogFactory * pDialogFactory
 		= (AP_DialogFactory *)(pFrame->getDialogFactory());
 
-	AP_Dialog_MessageBox * pDialog
-		= (AP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
+	XAP_Dialog_MessageBox * pDialog
+		= (XAP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
 	UT_ASSERT(pDialog);
 
 	const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
 
 	pDialog->setMessage(pSS->getValue(AP_STRING_ID_MSG_RevertBuffer), pFrame->getFilename());
-	pDialog->setButtons(AP_Dialog_MessageBox::b_YN);
-	pDialog->setDefaultAnswer(AP_Dialog_MessageBox::a_YES);
+	pDialog->setButtons(XAP_Dialog_MessageBox::b_YN);
+	pDialog->setDefaultAnswer(XAP_Dialog_MessageBox::a_YES);
 
 	pDialog->runModal(pFrame);
 
-	AP_Dialog_MessageBox::tAnswer ans = pDialog->getAnswer();
+	XAP_Dialog_MessageBox::tAnswer ans = pDialog->getAnswer();
 
 	pDialogFactory->releaseDialog(pDialog);
 
-	return (ans == AP_Dialog_MessageBox::a_YES);
+	return (ans == XAP_Dialog_MessageBox::a_YES);
 }
 
 static UT_Bool s_AskCloseAllAndExit(XAP_Frame * pFrame)
@@ -706,45 +706,45 @@ static UT_Bool s_AskCloseAllAndExit(XAP_Frame * pFrame)
 	AP_DialogFactory * pDialogFactory
 		= (AP_DialogFactory *)(pFrame->getDialogFactory());
 
-	AP_Dialog_MessageBox * pDialog
-		= (AP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
+	XAP_Dialog_MessageBox * pDialog
+		= (XAP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
 	UT_ASSERT(pDialog);
 
 	const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
 
 	pDialog->setMessage(pSS->getValue(AP_STRING_ID_MSG_QueryExit));
-	pDialog->setButtons(AP_Dialog_MessageBox::b_YN);
-	pDialog->setDefaultAnswer(AP_Dialog_MessageBox::a_NO);
+	pDialog->setButtons(XAP_Dialog_MessageBox::b_YN);
+	pDialog->setDefaultAnswer(XAP_Dialog_MessageBox::a_NO);
 
 	pDialog->runModal(pFrame);
 
-	AP_Dialog_MessageBox::tAnswer ans = pDialog->getAnswer();
+	XAP_Dialog_MessageBox::tAnswer ans = pDialog->getAnswer();
 
 	pDialogFactory->releaseDialog(pDialog);
 
-	return (ans == AP_Dialog_MessageBox::a_YES);
+	return (ans == XAP_Dialog_MessageBox::a_YES);
 }
 
-static AP_Dialog_MessageBox::tAnswer s_AskSaveFile(XAP_Frame * pFrame)
+static XAP_Dialog_MessageBox::tAnswer s_AskSaveFile(XAP_Frame * pFrame)
 {
 	pFrame->raise();
 
 	AP_DialogFactory * pDialogFactory
 		= (AP_DialogFactory *)(pFrame->getDialogFactory());
 
-	AP_Dialog_MessageBox * pDialog
-		= (AP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
+	XAP_Dialog_MessageBox * pDialog
+		= (XAP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
 	UT_ASSERT(pDialog);
 
 	const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
 
 	pDialog->setMessage(pSS->getValue(AP_STRING_ID_MSG_ConfirmSave), pFrame->getTitle(200));
-	pDialog->setButtons(AP_Dialog_MessageBox::b_YNC);
-	pDialog->setDefaultAnswer(AP_Dialog_MessageBox::a_YES);
+	pDialog->setButtons(XAP_Dialog_MessageBox::b_YNC);
+	pDialog->setDefaultAnswer(XAP_Dialog_MessageBox::a_YES);
 
 	pDialog->runModal(pFrame);
 
-	AP_Dialog_MessageBox::tAnswer ans = pDialog->getAnswer();
+	XAP_Dialog_MessageBox::tAnswer ans = pDialog->getAnswer();
 
 	pDialogFactory->releaseDialog(pDialog);
 
@@ -796,8 +796,8 @@ static UT_Bool s_AskForPathname(XAP_Frame * pFrame,
 	AP_DialogFactory * pDialogFactory
 		= (AP_DialogFactory *)(pFrame->getDialogFactory());
 
-	AP_Dialog_FileOpenSaveAs * pDialog
-		= (AP_Dialog_FileOpenSaveAs *)(pDialogFactory->requestDialog(id));
+	XAP_Dialog_FileOpenSaveAs * pDialog
+		= (XAP_Dialog_FileOpenSaveAs *)(pDialogFactory->requestDialog(id));
 	UT_ASSERT(pDialog);
 
 	if (pSuggestedName && *pSuggestedName)
@@ -818,8 +818,8 @@ static UT_Bool s_AskForPathname(XAP_Frame * pFrame,
 
 	pDialog->runModal(pFrame);
 
-	AP_Dialog_FileOpenSaveAs::tAnswer ans = pDialog->getAnswer();
-	UT_Bool bOK = (ans == AP_Dialog_FileOpenSaveAs::a_OK);
+	XAP_Dialog_FileOpenSaveAs::tAnswer ans = pDialog->getAnswer();
+	UT_Bool bOK = (ans == XAP_Dialog_FileOpenSaveAs::a_OK);
 
 	if (bOK)
 	{
@@ -836,7 +836,7 @@ static UT_Bool s_AskForPathname(XAP_Frame * pFrame,
 /*****************************************************************/
 /*****************************************************************/
 
-static AP_Dialog_MessageBox::tAnswer s_CouldNotLoadFileMessage(XAP_Frame * pFrame,
+static XAP_Dialog_MessageBox::tAnswer s_CouldNotLoadFileMessage(XAP_Frame * pFrame,
 															   const char * pNewFile)
 {
 	pFrame->raise();
@@ -844,19 +844,19 @@ static AP_Dialog_MessageBox::tAnswer s_CouldNotLoadFileMessage(XAP_Frame * pFram
 	AP_DialogFactory * pDialogFactory
 		= (AP_DialogFactory *)(pFrame->getDialogFactory());
 
-	AP_Dialog_MessageBox * pDialog
-		= (AP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
+	XAP_Dialog_MessageBox * pDialog
+		= (XAP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
 	UT_ASSERT(pDialog);
 
 	const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
 
 	pDialog->setMessage(pSS->getValue(AP_STRING_ID_MSG_ImportError),pNewFile);
-	pDialog->setButtons(AP_Dialog_MessageBox::b_O);
-	pDialog->setDefaultAnswer(AP_Dialog_MessageBox::a_OK);
+	pDialog->setButtons(XAP_Dialog_MessageBox::b_O);
+	pDialog->setDefaultAnswer(XAP_Dialog_MessageBox::a_OK);
 
 	pDialog->runModal(pFrame);
 
-	AP_Dialog_MessageBox::tAnswer ans = pDialog->getAnswer();
+	XAP_Dialog_MessageBox::tAnswer ans = pDialog->getAnswer();
 
 	pDialogFactory->releaseDialog(pDialog);
 
@@ -1253,8 +1253,8 @@ static UT_Bool s_doAboutDlg(XAP_Frame* pFrame, AP_Dialog_Id id)
 	AP_DialogFactory * pDialogFactory
 		= (AP_DialogFactory *)(pFrame->getDialogFactory());
 
-	AP_Dialog_About * pDialog
-		= (AP_Dialog_About *)(pDialogFactory->requestDialog(id));
+	XAP_Dialog_About * pDialog
+		= (XAP_Dialog_About *)(pDialogFactory->requestDialog(id));
 	UT_ASSERT(pDialog);
 
 	// run the dialog (it should really be modeless if anyone
@@ -1335,11 +1335,11 @@ Defun(closeWindow)
 	if ((pFrame->getViewNumber() == 0) &&
 		(pFrame->isDirty()))
 	{
-		AP_Dialog_MessageBox::tAnswer ans = s_AskSaveFile(pFrame);
+		XAP_Dialog_MessageBox::tAnswer ans = s_AskSaveFile(pFrame);
 
 		switch (ans)
 		{
-		case AP_Dialog_MessageBox::a_YES:				// save it first
+		case XAP_Dialog_MessageBox::a_YES:				// save it first
 			{
 				UT_Bool bRet = EX(fileSave);
 				if (!bRet)								// didn't successfully save,
@@ -1347,10 +1347,10 @@ Defun(closeWindow)
 			}
 			break;
 
-		case AP_Dialog_MessageBox::a_NO:				// just close it
+		case XAP_Dialog_MessageBox::a_NO:				// just close it
 			break;
 
-		case AP_Dialog_MessageBox::a_CANCEL:			// don't close it
+		case XAP_Dialog_MessageBox::a_CANCEL:			// don't close it
 			return UT_FALSE;
 
 		default:
@@ -2666,8 +2666,8 @@ static UT_Bool s_doFontDlg(FV_View * pView)
 	AP_DialogFactory * pDialogFactory
 		= (AP_DialogFactory *)(pFrame->getDialogFactory());
 
-	AP_Dialog_FontChooser * pDialog
-		= (AP_Dialog_FontChooser *)(pDialogFactory->requestDialog(id));
+	XAP_Dialog_FontChooser * pDialog
+		= (XAP_Dialog_FontChooser *)(pDialogFactory->requestDialog(id));
 	UT_ASSERT(pDialog);
 
 	// stuff the GR_Graphics into the dialog so that it
@@ -2717,7 +2717,7 @@ static UT_Bool s_doFontDlg(FV_View * pView)
 
 	// extract what they did
 
-	UT_Bool bOK = (pDialog->getAnswer() == AP_Dialog_FontChooser::a_OK);
+	UT_Bool bOK = (pDialog->getAnswer() == XAP_Dialog_FontChooser::a_OK);
 
 	if (bOK)
 	{
@@ -2928,8 +2928,8 @@ static UT_Bool s_doPrint(FV_View * pView, UT_Bool bTryToSuppressDialog)
 	AP_DialogFactory * pDialogFactory
 		= (AP_DialogFactory *)(pFrame->getDialogFactory());
 
-	AP_Dialog_Print * pDialog
-		= (AP_Dialog_Print *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_PRINT));
+	XAP_Dialog_Print * pDialog
+		= (XAP_Dialog_Print *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_PRINT));
 	UT_ASSERT(pDialog);
 
 	FL_DocLayout* pLayout = pView->getLayout();
@@ -2946,8 +2946,8 @@ static UT_Bool s_doPrint(FV_View * pView, UT_Bool bTryToSuppressDialog)
 
 	pDialog->runModal(pFrame);
 
-	AP_Dialog_Print::tAnswer ans = pDialog->getAnswer();
-	UT_Bool bOK = (ans == AP_Dialog_Print::a_OK);
+	XAP_Dialog_Print::tAnswer ans = pDialog->getAnswer();
+	UT_Bool bOK = (ans == XAP_Dialog_Print::a_OK);
 
 	if (bOK)
 	{

@@ -62,26 +62,26 @@ static void _notifyError_OKOnly(XAP_Frame * pFrame, const char * message)
 
 /*****************************************************************/
 
-AP_Dialog * AP_UnixDialog_Print::static_constructor(AP_DialogFactory * pFactory,
+AP_Dialog * XAP_UnixDialog_Print::static_constructor(AP_DialogFactory * pFactory,
 													 AP_Dialog_Id id)
 {
-	AP_UnixDialog_Print * p = new AP_UnixDialog_Print(pFactory,id);
+	XAP_UnixDialog_Print * p = new XAP_UnixDialog_Print(pFactory,id);
 	return p;
 }
 
-AP_UnixDialog_Print::AP_UnixDialog_Print(AP_DialogFactory * pDlgFactory,
+XAP_UnixDialog_Print::XAP_UnixDialog_Print(AP_DialogFactory * pDlgFactory,
 										   AP_Dialog_Id id)
-	: AP_Dialog_Print(pDlgFactory,id)
+	: XAP_Dialog_Print(pDlgFactory,id)
 {
 	memset(&m_persistPrintDlg, 0, sizeof(m_persistPrintDlg));
 }
 
-AP_UnixDialog_Print::~AP_UnixDialog_Print(void)
+XAP_UnixDialog_Print::~XAP_UnixDialog_Print(void)
 {
 //	DELETEP(m_pPSGraphics);
 }
 
-void AP_UnixDialog_Print::useStart(void)
+void XAP_UnixDialog_Print::useStart(void)
 {
 	AP_Dialog_Print::useStart();
 
@@ -94,7 +94,7 @@ void AP_UnixDialog_Print::useStart(void)
 	}
 }
 
-void AP_UnixDialog_Print::useEnd(void)
+void XAP_UnixDialog_Print::useEnd(void)
 {
 	AP_Dialog_Print::useEnd();
 
@@ -109,14 +109,14 @@ void AP_UnixDialog_Print::useEnd(void)
 	UT_cloneString(m_persistPrintDlg.szPrintCommand, m_szPrintCommand);
 }
 
-GR_Graphics * AP_UnixDialog_Print::getPrinterGraphicsContext(void)
+GR_Graphics * XAP_UnixDialog_Print::getPrinterGraphicsContext(void)
 {
 	UT_ASSERT(m_answer == a_OK);
 
 	return m_pPSGraphics;
 }
 
-void AP_UnixDialog_Print::releasePrinterGraphicsContext(GR_Graphics * pGraphics)
+void XAP_UnixDialog_Print::releasePrinterGraphicsContext(GR_Graphics * pGraphics)
 {
 	UT_ASSERT(pGraphics == m_pPSGraphics);
 	
@@ -125,7 +125,7 @@ void AP_UnixDialog_Print::releasePrinterGraphicsContext(GR_Graphics * pGraphics)
 
 /*****************************************************************/
 
-void AP_UnixDialog_Print::runModal(XAP_Frame * pFrame)
+void XAP_UnixDialog_Print::runModal(XAP_Frame * pFrame)
 {
 	m_pUnixFrame = static_cast<XAP_UnixFrame *>(pFrame);
 	UT_ASSERT(m_pUnixFrame);
@@ -189,7 +189,7 @@ static void entry_toggle_enable (GtkWidget *checkbutton, GtkWidget *entry)
 	gtk_widget_grab_focus (entry);
 }
 
-void AP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
+void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 {
 	// raise the actual dialog and wait for an answer.
 	// return true if they hit ok.
@@ -496,7 +496,7 @@ void AP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 	return;
 }
 
-void AP_UnixDialog_Print::_getGraphics(void)
+void XAP_UnixDialog_Print::_getGraphics(void)
 {
 	UT_ASSERT(m_answer == a_OK);
 

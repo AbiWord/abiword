@@ -17,19 +17,19 @@
  * 02111-1307, USA.
  */
 
-#ifndef AP_WIN32DIALOG_FONTCHOOSER_H
-#define AP_WIN32DIALOG_FONTCHOOSER_H
+#ifndef XAP_WIN32DIALOG_FONTCHOOSER_H
+#define XAP_WIN32DIALOG_FONTCHOOSER_H
 
 #include "xap_Dlg_FontChooser.h"
 class XAP_Win32Frame;
 
 /*****************************************************************/
 
-class AP_Win32Dialog_FontChooser : public AP_Dialog_FontChooser
+class XAP_Win32Dialog_FontChooser : public XAP_Dialog_FontChooser
 {
 public:
-	AP_Win32Dialog_FontChooser(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
-	virtual ~AP_Win32Dialog_FontChooser(void);
+	XAP_Win32Dialog_FontChooser(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
+	virtual ~XAP_Win32Dialog_FontChooser(void);
 
 	virtual void			runModal(XAP_Frame * pFrame);
 
@@ -40,4 +40,4 @@ protected:
 
 };
 
-#endif /* AP_WIN32DIALOG_FONTCHOOSER_H */
+#endif /* XAP_WIN32DIALOG_FONTCHOOSER_H */

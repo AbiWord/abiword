@@ -87,4 +87,4 @@ protected:
 	XAP_UnixFrame *			m_pUnixFrame;
 };
 
-#endif /* AP_UNIXDIALOG_FONTCHOOSER_H */
+#endif /* XAP_UNIXDIALOG_FONTCHOOSER_H */

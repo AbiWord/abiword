@@ -29,27 +29,27 @@
 #include "ie_exp.h"
 
 /*****************************************************************/
-AP_Dialog * AP_MacDialog_FileOpenSaveAs::static_constructor(AP_DialogFactory * pFactory,
+AP_Dialog * XAP_MacDialog_FileOpenSaveAs::static_constructor(AP_DialogFactory * pFactory,
 															  AP_Dialog_Id id)
 {
-	AP_MacDialog_FileOpenSaveAs * p = new AP_MacDialog_FileOpenSaveAs(pFactory,id);
+	XAP_MacDialog_FileOpenSaveAs * p = new XAP_MacDialog_FileOpenSaveAs(pFactory,id);
 	return p;
 }
 
-AP_MacDialog_FileOpenSaveAs::AP_MacDialog_FileOpenSaveAs(AP_DialogFactory * pDlgFactory,
+XAP_MacDialog_FileOpenSaveAs::XAP_MacDialog_FileOpenSaveAs(AP_DialogFactory * pDlgFactory,
 															 AP_Dialog_Id id)
-	: AP_Dialog_FileOpenSaveAs(pDlgFactory,id)
+	: XAP_Dialog_FileOpenSaveAs(pDlgFactory,id)
 {
 }
 
-AP_MacDialog_FileOpenSaveAs::~AP_MacDialog_FileOpenSaveAs(void)
+XAP_MacDialog_FileOpenSaveAs::~XAP_MacDialog_FileOpenSaveAs(void)
 {
 }
 
 /*****************************************************************/
 
 
-void AP_MacDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
+void XAP_MacDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 {
 	return;
 }

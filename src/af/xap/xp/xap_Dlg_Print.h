@@ -17,19 +17,19 @@
  * 02111-1307, USA.
  */
 
-#ifndef AP_DIALOG_PRINT_H
-#define AP_DIALOG_PRINT_H
+#ifndef XAP_DIALOG_PRINT_H
+#define XAP_DIALOG_PRINT_H
 
 #include "xap_Dialog.h"
 class GR_Graphics;
 
 /*****************************************************************/
 
-class AP_Dialog_Print : public AP_Dialog_AppPersistent
+class XAP_Dialog_Print : public AP_Dialog_AppPersistent
 {
 public:
-	AP_Dialog_Print(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
-	virtual ~AP_Dialog_Print(void);
+	XAP_Dialog_Print(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
+	virtual ~XAP_Dialog_Print(void);
 
 	virtual void					useStart(void);
 	virtual void					runModal(XAP_Frame * pFrame) = 0;
@@ -46,7 +46,7 @@ public:
 	void							setEnablePrintToFile(UT_Bool bEnable);
 	void							setTryToBypassActualDialog(UT_Bool bTry);
 
-	AP_Dialog_Print::tAnswer		getAnswer(void) const;
+	XAP_Dialog_Print::tAnswer		getAnswer(void) const;
 	UT_Bool							getDoPrintRange(UT_uint32 * pnFirst, UT_uint32 * pnLast) const;
 	UT_Bool							getDoPrintSelection(void) const;
 	UT_Bool							getDoPrintToFile(const char *) const;
@@ -78,9 +78,9 @@ protected:
 	UT_uint32						m_nFirstPage;			/* input/output */
 	UT_uint32						m_nLastPage;			/* input/output */
 	UT_uint32						m_nCopies;				/* output */
-	AP_Dialog_Print::tAnswer		m_answer;				/* output */
+	XAP_Dialog_Print::tAnswer		m_answer;				/* output */
 	char *							m_szPrintToFilePathname;/* output */
 	char *							m_szPrintCommand;		/* output */
 };
 
-#endif /* AP_DIALOG_PRINT_H */
+#endif /* XAP_DIALOG_PRINT_H */

@@ -290,13 +290,13 @@ void AP_Dialog_Replace::_messageBox(char * message)
 	AP_DialogFactory * pDialogFactory
 		= (AP_DialogFactory *)(m_pFrame->getDialogFactory());
 
-	AP_Dialog_MessageBox * pDialog
-		= (AP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
+	XAP_Dialog_MessageBox * pDialog
+		= (XAP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
 	UT_ASSERT(pDialog);
 
 	pDialog->setMessage(message);
-	pDialog->setButtons(AP_Dialog_MessageBox::b_O);
-	pDialog->setDefaultAnswer(AP_Dialog_MessageBox::a_OK);
+	pDialog->setButtons(XAP_Dialog_MessageBox::b_O);
+	pDialog->setDefaultAnswer(XAP_Dialog_MessageBox::a_OK);
 
 	pDialog->runModal(m_pFrame);
 

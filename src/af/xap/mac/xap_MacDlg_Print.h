@@ -18,19 +18,19 @@
  * 02111-1307, USA.
  */
 
-#ifndef AP_MACDIALOG_PRINT_H
-#define AP_MACDIALOG_PRINT_H
+#ifndef XAP_MACDIALOG_PRINT_H
+#define XAP_MACDIALOG_PRINT_H
 
 #include "xap_Dlg_Print.h"
 class XAP_MacFrame;
 
 /*****************************************************************/
 
-class AP_MacDialog_Print : public AP_Dialog_Print
+class XAP_MacDialog_Print : public XAP_Dialog_Print
 {
 public:
-	AP_MacDialog_Print(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
-	virtual ~AP_MacDialog_Print(void);
+	XAP_MacDialog_Print(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
+	virtual ~XAP_MacDialog_Print(void);
 
 	virtual void			runModal(XAP_Frame * pFrame);
 	virtual GR_Graphics *	getPrinterGraphicsContext(void);
@@ -44,4 +44,4 @@ protected:
 	XAP_MacFrame *		m_pMacFrame;
 };
 
-#endif /* AP_MACDIALOG_PRINT_H */
+#endif /* XAP_MACDIALOG_PRINT_H */

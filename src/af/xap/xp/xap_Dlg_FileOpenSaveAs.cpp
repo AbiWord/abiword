@@ -54,7 +54,7 @@
 
 ******************************************************************/
 
-AP_Dialog_FileOpenSaveAs::AP_Dialog_FileOpenSaveAs(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id)
+XAP_Dialog_FileOpenSaveAs::XAP_Dialog_FileOpenSaveAs(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id)
 	: AP_Dialog_AppPersistent(pDlgFactory,id)
 {
 	m_szPersistPathname = NULL;
@@ -64,7 +64,7 @@ AP_Dialog_FileOpenSaveAs::AP_Dialog_FileOpenSaveAs(AP_DialogFactory * pDlgFactor
 	m_bSuggestName = UT_FALSE;
 }
 
-AP_Dialog_FileOpenSaveAs::~AP_Dialog_FileOpenSaveAs(void)
+XAP_Dialog_FileOpenSaveAs::~XAP_Dialog_FileOpenSaveAs(void)
 {
 	UT_ASSERT(!m_bInUse);
 	FREEP(m_szPersistPathname);
@@ -72,7 +72,7 @@ AP_Dialog_FileOpenSaveAs::~AP_Dialog_FileOpenSaveAs(void)
 	FREEP(m_szFinalPathname);
 }
 
-void AP_Dialog_FileOpenSaveAs::useStart(void)
+void XAP_Dialog_FileOpenSaveAs::useStart(void)
 {
 	AP_Dialog_AppPersistent::useStart();
 	
@@ -82,7 +82,7 @@ void AP_Dialog_FileOpenSaveAs::useStart(void)
 	m_bSuggestName = UT_FALSE;
 }
 
-void AP_Dialog_FileOpenSaveAs::useEnd(void)
+void XAP_Dialog_FileOpenSaveAs::useEnd(void)
 {
 	AP_Dialog_AppPersistent::useEnd();
 
@@ -95,7 +95,7 @@ void AP_Dialog_FileOpenSaveAs::useEnd(void)
 	}
 }
 
-void AP_Dialog_FileOpenSaveAs::setCurrentPathname(const char * szPathname)
+void XAP_Dialog_FileOpenSaveAs::setCurrentPathname(const char * szPathname)
 {
 	// this let's us know the pathname of the document
 	// in the frame from which we were invoked.
@@ -105,19 +105,19 @@ void AP_Dialog_FileOpenSaveAs::setCurrentPathname(const char * szPathname)
 		UT_cloneString(m_szInitialPathname,szPathname);
 }
 
-void AP_Dialog_FileOpenSaveAs::setSuggestFilename(UT_Bool bSuggestName)
+void XAP_Dialog_FileOpenSaveAs::setSuggestFilename(UT_Bool bSuggestName)
 {
 	m_bSuggestName = bSuggestName;
 }
 
-AP_Dialog_FileOpenSaveAs::tAnswer AP_Dialog_FileOpenSaveAs::getAnswer(void) const
+XAP_Dialog_FileOpenSaveAs::tAnswer XAP_Dialog_FileOpenSaveAs::getAnswer(void) const
 {
 	// let our caller know if user hit ok or cancel.
 	
 	return m_answer;
 }
 
-const char * AP_Dialog_FileOpenSaveAs::getPathname(void) const
+const char * XAP_Dialog_FileOpenSaveAs::getPathname(void) const
 {
 	// give our caller a temporary string (valid until the next
 	// use of this dialog) containing the pathname the user

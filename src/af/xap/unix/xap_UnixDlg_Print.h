@@ -17,8 +17,8 @@
  * 02111-1307, USA.
  */
 
-#ifndef AP_UNIXDIALOG_PRINT_H
-#define AP_UNIXDIALOG_PRINT_H
+#ifndef XAP_UNIXDIALOG_PRINT_H
+#define XAP_UNIXDIALOG_PRINT_H
 
 #include "xap_UnixFrame.h"
 #include "xap_Dlg_Print.h"
@@ -30,15 +30,15 @@ struct _printCBStruct
 {
 	GtkWidget * entry;
 	XAP_Frame * frame;
-	AP_Dialog_Print::tAnswer * answer;
+	XAP_Dialog_Print::tAnswer * answer;
 };
 typedef struct _printCBStruct printCBStruct;
 
-class AP_UnixDialog_Print : public AP_Dialog_Print
+class XAP_UnixDialog_Print : public XAP_Dialog_Print
 {
 public:
-	AP_UnixDialog_Print(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
-	virtual ~AP_UnixDialog_Print(void);
+	XAP_UnixDialog_Print(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
+	virtual ~XAP_UnixDialog_Print(void);
 
 	virtual void			useStart(void);
 	virtual void			runModal(XAP_Frame * pFrame);
@@ -82,4 +82,4 @@ protected:
 	
 };
 
-#endif /* AP_UNIXDIALOG_PRINT_H */
+#endif /* XAP_UNIXDIALOG_PRINT_H */

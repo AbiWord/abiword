@@ -17,18 +17,18 @@
  * 02111-1307, USA.
  */
 
-#ifndef AP_UNIXDIALOG_ABOUT_H
-#define AP_UNIXDIALOG_ABOUT_H
+#ifndef XAP_UNIXDIALOG_ABOUT_H
+#define XAP_UNIXDIALOG_ABOUT_H
 
 #include "xap_Dlg_About.h"
 
 /*****************************************************************/
 
-class AP_UnixDialog_About: public AP_Dialog_About
+class XAP_UnixDialog_About: public XAP_Dialog_About
 {
 public:
-	AP_UnixDialog_About(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
-	virtual ~AP_UnixDialog_About(void);
+	XAP_UnixDialog_About(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
+	virtual ~XAP_UnixDialog_About(void);
 
 	static AP_Dialog *		static_constructor(AP_DialogFactory *, AP_Dialog_Id id);
 
@@ -40,4 +40,4 @@ public:
 	
 };
 
-#endif /* AP_UNIXDIALOG_ABOUT_H */
+#endif /* XAP_UNIXDIALOG_ABOUT_H */

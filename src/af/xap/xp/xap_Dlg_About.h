@@ -25,17 +25,19 @@
 #include "xav_View.h"
 #include "pt_Types.h"
 
-#define XAP_ABOUT_COPYRIGHT "Copyright 1998, 1999 AbiSource, Inc."
-#define XAP_ABOUT_DESCRIPTION "%s is an Open Source application licensed under the GNU GPL.\nYou are free to redistribute this application."
-#define XAP_ABOUT_GPL "%s is available for use under the the terms\nof the GNU General Public License"
-#define XAP_ABOUT_URL "For more information: http://www.abisource.com/"
 #define XAP_ABOUT_TITLE "About %s"
+#define XAP_ABOUT_DESCRIPTION "%s is an Open Source application licensed under the GNU GPL.\nYou are free to redistribute this application."
+#define XAP_ABOUT_COPYRIGHT "Copyright 1998, 1999 AbiSource, Inc."
+#define XAP_ABOUT_GPL "%s is available for use under the the terms\nof the GNU General Public License"
+#define XAP_ABOUT_VERSION "Version: %s"
+#define XAP_ABOUT_BUILD "Build options: %s"
+#define XAP_ABOUT_URL "For more information: http://www.abisource.com/"
 
-class AP_Dialog_About : public AP_Dialog_NonPersistent
+class XAP_Dialog_About : public AP_Dialog_NonPersistent
 {
  public:
-	AP_Dialog_About(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
-	virtual ~AP_Dialog_About(void);
+	XAP_Dialog_About(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
+	virtual ~XAP_Dialog_About(void);
 
 	virtual void				runModal(XAP_Frame * pFrame) = 0;
 
@@ -43,4 +45,4 @@ class AP_Dialog_About : public AP_Dialog_NonPersistent
 
 };
 
-#endif // AP_DIALOG_ABOUT_H
+#endif // XAP_DIALOG_ABOUT_H

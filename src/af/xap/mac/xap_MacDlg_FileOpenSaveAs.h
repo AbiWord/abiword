@@ -18,19 +18,19 @@
  * 02111-1307, USA.
  */
 
-#ifndef AP_MACDIALOG_FILEOPENSAVEAS_H
-#define AP_MACDIALOG_FILEOPENSAVEAS_H
+#ifndef XAP_MACDIALOG_FILEOPENSAVEAS_H
+#define XAP_MACDIALOG_FILEOPENSAVEAS_H
 
 #include "xap_Dlg_FileOpenSaveAs.h"
 class XAP_MacFrame;
 
 /*****************************************************************/
 
-class AP_MacDialog_FileOpenSaveAs : public AP_Dialog_FileOpenSaveAs
+class XAP_MacDialog_FileOpenSaveAs : public XAP_Dialog_FileOpenSaveAs
 {
 public:
-	AP_MacDialog_FileOpenSaveAs(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
-	virtual ~AP_MacDialog_FileOpenSaveAs(void);
+	XAP_MacDialog_FileOpenSaveAs(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
+	virtual ~XAP_MacDialog_FileOpenSaveAs(void);
 
 	virtual void			runModal(XAP_Frame * pFrame);
 
@@ -40,4 +40,4 @@ protected:
 	XAP_MacFrame *		m_pMacFrame;
 };
 
-#endif /* AP_MACDIALOG_FILEOPENSAVEAS_H */
+#endif /* XAP_MACDIALOG_FILEOPENSAVEAS_H */

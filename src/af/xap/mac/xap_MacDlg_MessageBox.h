@@ -18,19 +18,19 @@
  * 02111-1307, USA.
  */
 
-#ifndef AP_MACDIALOG_MESSAGEBOX_H
-#define AP_MACDIALOG_MESSAGEBOX_H
+#ifndef XAP_MACDIALOG_MESSAGEBOX_H
+#define XAP_MACDIALOG_MESSAGEBOX_H
 
 #include "xap_Dlg_MessageBox.h"
 class XAP_MacFrame;
 
 /*****************************************************************/
 
-class AP_MacDialog_MessageBox : public AP_Dialog_MessageBox
+class XAP_MacDialog_MessageBox : public XAP_Dialog_MessageBox
 {
 public:
-	AP_MacDialog_MessageBox(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
-	virtual ~AP_MacDialog_MessageBox(void);
+	XAP_MacDialog_MessageBox(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
+	virtual ~XAP_MacDialog_MessageBox(void);
 
 	virtual void			runModal(XAP_Frame * pFrame);
 
@@ -41,4 +41,4 @@ protected:
 	
 };
 
-#endif /* AP_MACDIALOG_MESSAGEBOX_H */
+#endif /* XAP_MACDIALOG_MESSAGEBOX_H */

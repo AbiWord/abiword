@@ -29,26 +29,26 @@
 #include "gr_Graphics.h"
 
 /*****************************************************************/
-AP_Dialog * AP_Win32Dialog_FontChooser::static_constructor(AP_DialogFactory * pFactory,
+AP_Dialog * XAP_Win32Dialog_FontChooser::static_constructor(AP_DialogFactory * pFactory,
 														  AP_Dialog_Id id)
 {
-	AP_Win32Dialog_FontChooser * p = new AP_Win32Dialog_FontChooser(pFactory,id);
+	XAP_Win32Dialog_FontChooser * p = new XAP_Win32Dialog_FontChooser(pFactory,id);
 	return p;
 }
 
-AP_Win32Dialog_FontChooser::AP_Win32Dialog_FontChooser(AP_DialogFactory * pDlgFactory,
+XAP_Win32Dialog_FontChooser::XAP_Win32Dialog_FontChooser(AP_DialogFactory * pDlgFactory,
 													 AP_Dialog_Id id)
-	: AP_Dialog_FontChooser(pDlgFactory,id)
+	: XAP_Dialog_FontChooser(pDlgFactory,id)
 {
 }
 
-AP_Win32Dialog_FontChooser::~AP_Win32Dialog_FontChooser(void)
+XAP_Win32Dialog_FontChooser::~XAP_Win32Dialog_FontChooser(void)
 {
 }
 
 /*****************************************************************/
 
-void AP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
+void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 {
 	m_pWin32Frame = (XAP_Win32Frame *)pFrame;
 	UT_ASSERT(m_pWin32Frame);

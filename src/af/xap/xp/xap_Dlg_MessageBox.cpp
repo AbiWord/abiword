@@ -29,7 +29,7 @@
 
 /*****************************************************************/
 
-AP_Dialog_MessageBox::AP_Dialog_MessageBox(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id)
+XAP_Dialog_MessageBox::XAP_Dialog_MessageBox(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id)
 	: AP_Dialog_NonPersistent(pDlgFactory,id)
 {
 	m_szMessage = NULL;
@@ -38,18 +38,18 @@ AP_Dialog_MessageBox::AP_Dialog_MessageBox(AP_DialogFactory * pDlgFactory, AP_Di
 	m_answer = a_OK;
 }
 
-AP_Dialog_MessageBox::~AP_Dialog_MessageBox(void)
+XAP_Dialog_MessageBox::~XAP_Dialog_MessageBox(void)
 {
 	FREEP(m_szMessage);
 }
 
-void AP_Dialog_MessageBox::setMessage(const char * szMessage)
+void XAP_Dialog_MessageBox::setMessage(const char * szMessage)
 {
 	FREEP(m_szMessage);
 	UT_cloneString(m_szMessage,szMessage);
 }
 
-void AP_Dialog_MessageBox::setMessage(const char * szMessage, const char * sz1)
+void XAP_Dialog_MessageBox::setMessage(const char * szMessage, const char * sz1)
 {
 	FREEP(m_szMessage);
 	UT_uint32 joinedSize = strlen(szMessage) + strlen(sz1) + 10;
@@ -63,18 +63,18 @@ void AP_Dialog_MessageBox::setMessage(const char * szMessage, const char * sz1)
 	sprintf(m_szMessage,szMessage,sz1);
 }
 
-void AP_Dialog_MessageBox::setButtons(AP_Dialog_MessageBox::tButtons buttons)
+void XAP_Dialog_MessageBox::setButtons(XAP_Dialog_MessageBox::tButtons buttons)
 {
 	m_buttons = buttons;
 }
 
-void AP_Dialog_MessageBox::setDefaultAnswer(AP_Dialog_MessageBox::tAnswer answer)
+void XAP_Dialog_MessageBox::setDefaultAnswer(XAP_Dialog_MessageBox::tAnswer answer)
 {
 	m_defaultAnswer = answer;
 	m_answer = answer;
 }
 
-AP_Dialog_MessageBox::tAnswer AP_Dialog_MessageBox::getAnswer(void) const
+XAP_Dialog_MessageBox::tAnswer XAP_Dialog_MessageBox::getAnswer(void) const
 {
 	return m_answer;
 }

@@ -54,7 +54,7 @@ gint s_key_pressed(GtkWidget * widget, GdkEventKey * e)
 /*
   This is a small message box for startup warnings and/or
   errors.  Please do NOT use this for normal system execution
-  user messages; use the AP_UnixDialog_MessageBox class for that.
+  user messages; use the XAP_UnixDialog_MessageBox class for that.
   We can't use that here because there is no parent frame, etc.
 */
 void messageBoxOK(const char * message)

@@ -29,26 +29,26 @@
 #include "gr_Graphics.h"
 
 /*****************************************************************/
-AP_Dialog * AP_MacDialog_FontChooser::static_constructor(AP_DialogFactory * pFactory,
+AP_Dialog * XAP_MacDialog_FontChooser::static_constructor(AP_DialogFactory * pFactory,
 														  AP_Dialog_Id id)
 {
-	AP_MacDialog_FontChooser * p = new AP_MacDialog_FontChooser(pFactory,id);
+	XAP_MacDialog_FontChooser * p = new XAP_MacDialog_FontChooser(pFactory,id);
 	return p;
 }
 
-AP_MacDialog_FontChooser::AP_MacDialog_FontChooser(AP_DialogFactory * pDlgFactory,
+XAP_MacDialog_FontChooser::XAP_MacDialog_FontChooser(AP_DialogFactory * pDlgFactory,
 													 AP_Dialog_Id id)
-	: AP_Dialog_FontChooser(pDlgFactory,id)
+	: XAP_Dialog_FontChooser(pDlgFactory,id)
 {
 }
 
-AP_MacDialog_FontChooser::~AP_MacDialog_FontChooser(void)
+XAP_MacDialog_FontChooser::~XAP_MacDialog_FontChooser(void)
 {
 }
 
 /*****************************************************************/
 
-void AP_MacDialog_FontChooser::runModal(XAP_Frame * pFrame)
+void XAP_MacDialog_FontChooser::runModal(XAP_Frame * pFrame)
 {
 	m_pMacFrame = (XAP_MacFrame *)pFrame;
 	UT_ASSERT(m_pMacFrame);

@@ -31,22 +31,22 @@
 #define DEFAULT_BUTTON_WIDTH	85
 
 /*****************************************************************/
-AP_Dialog * AP_UnixDialog_MessageBox::static_constructor(AP_DialogFactory * pFactory,
+AP_Dialog * XAP_UnixDialog_MessageBox::static_constructor(AP_DialogFactory * pFactory,
 														 AP_Dialog_Id id)
 {
-	AP_UnixDialog_MessageBox * p = new AP_UnixDialog_MessageBox(pFactory,id);
+	XAP_UnixDialog_MessageBox * p = new XAP_UnixDialog_MessageBox(pFactory,id);
 	return p;
 }
 
-AP_UnixDialog_MessageBox::AP_UnixDialog_MessageBox(AP_DialogFactory * pDlgFactory,
+XAP_UnixDialog_MessageBox::XAP_UnixDialog_MessageBox(AP_DialogFactory * pDlgFactory,
 												   AP_Dialog_Id id)
-	: AP_Dialog_MessageBox(pDlgFactory,id)
+	: XAP_Dialog_MessageBox(pDlgFactory,id)
 {
 }
 
-AP_UnixDialog_MessageBox::~AP_UnixDialog_MessageBox(void)
+XAP_UnixDialog_MessageBox::~XAP_UnixDialog_MessageBox(void)
 {
-	UT_VECTOR_PURGEALL(AP_UnixDialog_MessageBox::keyBinding *, m_keyBindings);
+	UT_VECTOR_PURGEALL(XAP_UnixDialog_MessageBox::keyBinding *, m_keyBindings);
 }
 
 /*****************************************************************/
@@ -54,7 +54,7 @@ AP_UnixDialog_MessageBox::~AP_UnixDialog_MessageBox(void)
 // perhaps this should move to util/dialogHelper.cpp?  Right now
 // only hand-crafted dialogs like Message Box will need to handle
 // their own keys.
-static gint s_key_pressed(GtkWidget * widget, GdkEventKey * e, AP_UnixDialog_MessageBox * box)
+static gint s_key_pressed(GtkWidget * widget, GdkEventKey * e, XAP_UnixDialog_MessageBox * box)
 {
 	UT_ASSERT(e);
 	UT_ASSERT(box);
@@ -62,12 +62,12 @@ static gint s_key_pressed(GtkWidget * widget, GdkEventKey * e, AP_UnixDialog_Mes
 	const UT_Vector * bindings = box->_getBindingsVector();
 	
 	guint key = e->keyval;
-	AP_UnixDialog_MessageBox::keyBinding * item = NULL;
+	XAP_UnixDialog_MessageBox::keyBinding * item = NULL;
 	
 	// find binding
 	for (unsigned int i = 0; i < bindings->getItemCount(); i++)
 	{
-		item = (AP_UnixDialog_MessageBox::keyBinding *) bindings->getNthItem(i);
+		item = (XAP_UnixDialog_MessageBox::keyBinding *) bindings->getNthItem(i);
 		UT_ASSERT(item);
 
 		// execute action
@@ -75,23 +75,23 @@ static gint s_key_pressed(GtkWidget * widget, GdkEventKey * e, AP_UnixDialog_Mes
 		{
 			switch(item->answer)
 			{
-			case AP_Dialog_MessageBox::a_OK:
-				box->_setAnswer(AP_Dialog_MessageBox::a_OK);
+			case XAP_Dialog_MessageBox::a_OK:
+				box->_setAnswer(XAP_Dialog_MessageBox::a_OK);
 				gtk_main_quit();
 				return TRUE;
 				break;
-			case AP_Dialog_MessageBox::a_CANCEL:
-				box->_setAnswer(AP_Dialog_MessageBox::a_CANCEL);
+			case XAP_Dialog_MessageBox::a_CANCEL:
+				box->_setAnswer(XAP_Dialog_MessageBox::a_CANCEL);
 				gtk_main_quit();
 				return TRUE;
 				break;
-			case AP_Dialog_MessageBox::a_YES:
-				box->_setAnswer(AP_Dialog_MessageBox::a_YES);
+			case XAP_Dialog_MessageBox::a_YES:
+				box->_setAnswer(XAP_Dialog_MessageBox::a_YES);
 				gtk_main_quit();
 				return TRUE;
 				break;
-			case AP_Dialog_MessageBox::a_NO:
-				box->_setAnswer(AP_Dialog_MessageBox::a_NO);
+			case XAP_Dialog_MessageBox::a_NO:
+				box->_setAnswer(XAP_Dialog_MessageBox::a_NO);
 				gtk_main_quit();
 				return TRUE;
 				break;
@@ -105,44 +105,44 @@ static gint s_key_pressed(GtkWidget * widget, GdkEventKey * e, AP_UnixDialog_Mes
 }
 
 static void s_ok_clicked(GtkWidget * widget,
-						 AP_Dialog_MessageBox::tAnswer * answer)
+						 XAP_Dialog_MessageBox::tAnswer * answer)
 {
-	*answer = AP_Dialog_MessageBox::a_OK;
+	*answer = XAP_Dialog_MessageBox::a_OK;
 	gtk_main_quit();
 }
 
 static void s_cancel_clicked(GtkWidget * widget,
-							 AP_Dialog_MessageBox::tAnswer * answer)
+							 XAP_Dialog_MessageBox::tAnswer * answer)
 {
-	*answer = AP_Dialog_MessageBox::a_CANCEL;
+	*answer = XAP_Dialog_MessageBox::a_CANCEL;
 	gtk_main_quit();
 }
 
 static void s_yes_clicked(GtkWidget * widget,
-						  AP_Dialog_MessageBox::tAnswer * answer)
+						  XAP_Dialog_MessageBox::tAnswer * answer)
 {
-	*answer = AP_Dialog_MessageBox::a_YES;
+	*answer = XAP_Dialog_MessageBox::a_YES;
 	gtk_main_quit();
 }
 
 static void s_no_clicked(GtkWidget * widget,
-						 AP_Dialog_MessageBox::tAnswer * answer)
+						 XAP_Dialog_MessageBox::tAnswer * answer)
 {
-	*answer = AP_Dialog_MessageBox::a_NO;
+	*answer = XAP_Dialog_MessageBox::a_NO;
 	gtk_main_quit();
 }
 
-static void s_delete_clicked(GtkWidget * widget, gpointer data, AP_Dialog_MessageBox::tAnswer * answer)
+static void s_delete_clicked(GtkWidget * widget, gpointer data, XAP_Dialog_MessageBox::tAnswer * answer)
 {
-	*answer = AP_Dialog_MessageBox::a_CANCEL;
+	*answer = XAP_Dialog_MessageBox::a_CANCEL;
 	gtk_main_quit();
 }
 					  
 /*****************************************************************/
 
-void AP_UnixDialog_MessageBox::_bindKey(guint key, AP_Dialog_MessageBox::tAnswer answer)
+void XAP_UnixDialog_MessageBox::_bindKey(guint key, XAP_Dialog_MessageBox::tAnswer answer)
 {
-	AP_UnixDialog_MessageBox::keyBinding * item = new AP_UnixDialog_MessageBox::keyBinding;
+	XAP_UnixDialog_MessageBox::keyBinding * item = new XAP_UnixDialog_MessageBox::keyBinding;
 
 	item->key = key;
 	item->answer = answer;
@@ -153,17 +153,17 @@ void AP_UnixDialog_MessageBox::_bindKey(guint key, AP_Dialog_MessageBox::tAnswer
 /*****************************************************************/
 
 // static callback helpers, they break encapsulation
-UT_Vector * AP_UnixDialog_MessageBox::_getBindingsVector()
+UT_Vector * XAP_UnixDialog_MessageBox::_getBindingsVector()
 {
 	return &m_keyBindings;
 }
 
-void AP_UnixDialog_MessageBox::_setAnswer(AP_Dialog_MessageBox::tAnswer answer)
+void XAP_UnixDialog_MessageBox::_setAnswer(XAP_Dialog_MessageBox::tAnswer answer)
 {
 	m_answer = answer;
 }
 
-void AP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
+void XAP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
 {
 	m_pUnixFrame = (XAP_UnixFrame *)pFrame;
 	UT_ASSERT(m_pUnixFrame);

@@ -44,14 +44,14 @@
 
 #else
 
-	DeclareDialog(XAP_DIALOG_ID_MESSAGE_BOX,	AP_MacDialog_MessageBox)
-	DeclareDialog(XAP_DIALOG_ID_FILE_OPEN,		AP_MacDialog_FileOpenSaveAs)
-	DeclareDialog(XAP_DIALOG_ID_FILE_SAVEAS,	AP_MacDialog_FileOpenSaveAs)
-	DeclareDialog(XAP_DIALOG_ID_PRINT,			AP_MacDialog_Print)
-	DeclareDialog(XAP_DIALOG_ID_PRINTTOFILE,	AP_MacDialog_FileOpenSaveAs)
-	DeclareDialog(XAP_DIALOG_ID_FONT,			AP_MacDialog_FontChooser)
+	DeclareDialog(XAP_DIALOG_ID_MESSAGE_BOX,	XAP_MacDialog_MessageBox)
+	DeclareDialog(XAP_DIALOG_ID_FILE_OPEN,		XAP_MacDialog_FileOpenSaveAs)
+	DeclareDialog(XAP_DIALOG_ID_FILE_SAVEAS,	XAP_MacDialog_FileOpenSaveAs)
+	DeclareDialog(XAP_DIALOG_ID_PRINT,			XAP_MacDialog_Print)
+	DeclareDialog(XAP_DIALOG_ID_PRINTTOFILE,	XAP_MacDialog_FileOpenSaveAs)
+	DeclareDialog(XAP_DIALOG_ID_FONT,			XAP_MacDialog_FontChooser)
 	DeclareDialog(XAP_DIALOG_ID_WINDOWMORE,		XAP_MacDialog_WindowMore)
-//	DeclareDialog(XAP_DIALOG_ID_ABOUT,			AP_MacDialog_About)
+//	DeclareDialog(XAP_DIALOG_ID_ABOUT,			XAP_MacDialog_About)
 
 //	DeclareDialog(AP_DIALOG_ID_REPLACE,			AP_MacDialog_Replace)
 //	DeclareDialog(AP_DIALOG_ID_FIND,			AP_MacDialog_Replace)

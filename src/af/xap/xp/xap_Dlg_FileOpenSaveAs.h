@@ -17,8 +17,8 @@
  * 02111-1307, USA.
  */
 
-#ifndef AP_DIALOG_FILEOPENSAVEAS_H
-#define AP_DIALOG_FILEOPENSAVEAS_H
+#ifndef XAP_DIALOG_FILEOPENSAVEAS_H
+#define XAP_DIALOG_FILEOPENSAVEAS_H
 
 #include "xap_Dialog.h"
 
@@ -27,11 +27,11 @@
 ** file-save-as dialogs.
 *****************************************************************/
 
-class AP_Dialog_FileOpenSaveAs : public AP_Dialog_AppPersistent
+class XAP_Dialog_FileOpenSaveAs : public AP_Dialog_AppPersistent
 {
 public:
-	AP_Dialog_FileOpenSaveAs(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
-	virtual ~AP_Dialog_FileOpenSaveAs(void);
+	XAP_Dialog_FileOpenSaveAs(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
+	virtual ~XAP_Dialog_FileOpenSaveAs(void);
 
 	virtual void						useStart(void);
 	virtual void						runModal(XAP_Frame * pFrame) = 0;
@@ -41,7 +41,7 @@ public:
 	
 	void								setCurrentPathname(const char * szPathname);
 	void								setSuggestFilename(UT_Bool);
-	AP_Dialog_FileOpenSaveAs::tAnswer	getAnswer(void) const;
+	XAP_Dialog_FileOpenSaveAs::tAnswer	getAnswer(void) const;
 	const char *						getPathname(void) const;
 	
 protected:
@@ -49,8 +49,8 @@ protected:
 	char *								m_szInitialPathname;
 	char *								m_szFinalPathname;
 	UT_Bool								m_bSuggestName;
-	AP_Dialog_FileOpenSaveAs::tAnswer	m_answer;
+	XAP_Dialog_FileOpenSaveAs::tAnswer	m_answer;
 
 };
 
-#endif /* AP_DIALOG_FILEOPENSAVEAS_H */
+#endif /* XAP_DIALOG_FILEOPENSAVEAS_H */

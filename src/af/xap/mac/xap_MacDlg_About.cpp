@@ -29,9 +29,9 @@
 #include "xap_MacFrame.h"
 
 #include "ap_Dialog_Id.h"
-#include "ap_Dialog_About.h"
-#include "ap_MacDialog_All.h"
-#include "ap_MacDialog_About.h"
+#include "xap_Dlg_About.h"
+#include "xap_MacDlg_All.h"
+#include "xap_MacDlg_About.h"
 
 #include "abisource.xpm"
 
@@ -40,24 +40,24 @@
 
 
 /*****************************************************************/
-AP_Dialog * AP_MacDialog_About::static_constructor(AP_DialogFactory * pFactory,
+AP_Dialog * XAP_MacDialog_About::static_constructor(AP_DialogFactory * pFactory,
 															 AP_Dialog_Id id)
 {
-	AP_MacDialog_About * p = new AP_MacDialog_About(pFactory,id);
+	XAP_MacDialog_About * p = new XAP_MacDialog_About(pFactory,id);
 	return p;
 }
 
-AP_MacDialog_About::AP_MacDialog_About(AP_DialogFactory * pDlgFactory,
+XAP_MacDialog_About::XAP_MacDialog_About(AP_DialogFactory * pDlgFactory,
 											 AP_Dialog_Id id)
-	: AP_Dialog_About(pDlgFactory,id)
+	: XAP_Dialog_About(pDlgFactory,id)
 {
 }
 
-AP_MacDialog_About::~AP_MacDialog_About(void)
+XAP_MacDialog_About::~XAP_MacDialog_About(void)
 {
 }
 
-void AP_MacDialog_About::runModal(XAP_Frame * pFrame)
+void XAP_MacDialog_About::runModal(XAP_Frame * pFrame)
 {
 
 }

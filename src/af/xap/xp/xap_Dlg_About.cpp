@@ -32,13 +32,13 @@
 #include "fl_DocLayout.h"
 #include "fv_View.h"
 
-AP_Dialog_About::AP_Dialog_About(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id)
+XAP_Dialog_About::XAP_Dialog_About(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id)
 	: AP_Dialog_NonPersistent(pDlgFactory,id)
 {
 
 }
 
-AP_Dialog_About::~AP_Dialog_About(void)
+XAP_Dialog_About::~XAP_Dialog_About(void)
 {
 
 }

@@ -17,19 +17,19 @@
  * 02111-1307, USA.
  */
 
-#ifndef AP_WIN32DIALOG_MESSAGEBOX_H
-#define AP_WIN32DIALOG_MESSAGEBOX_H
+#ifndef XAP_WIN32DIALOG_MESSAGEBOX_H
+#define XAP_WIN32DIALOG_MESSAGEBOX_H
 
 #include "xap_Dlg_MessageBox.h"
 class XAP_Win32Frame;
 
 /*****************************************************************/
 
-class AP_Win32Dialog_MessageBox : public AP_Dialog_MessageBox
+class XAP_Win32Dialog_MessageBox : public XAP_Dialog_MessageBox
 {
 public:
-	AP_Win32Dialog_MessageBox(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
-	virtual ~AP_Win32Dialog_MessageBox(void);
+	XAP_Win32Dialog_MessageBox(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
+	virtual ~XAP_Win32Dialog_MessageBox(void);
 
 	virtual void			runModal(XAP_Frame * pFrame);
 
@@ -40,4 +40,4 @@ protected:
 	
 };
 
-#endif /* AP_WIN32DIALOG_MESSAGEBOX_H */
+#endif /* XAP_WIN32DIALOG_MESSAGEBOX_H */

@@ -40,20 +40,20 @@
 #define DEFAULT_BUTTON_WIDTH 85
 
 /*****************************************************************/
-AP_Dialog * AP_UnixDialog_About::static_constructor(AP_DialogFactory * pFactory,
+AP_Dialog * XAP_UnixDialog_About::static_constructor(AP_DialogFactory * pFactory,
 															 AP_Dialog_Id id)
 {
-	AP_UnixDialog_About * p = new AP_UnixDialog_About(pFactory,id);
+	XAP_UnixDialog_About * p = new XAP_UnixDialog_About(pFactory,id);
 	return p;
 }
 
-AP_UnixDialog_About::AP_UnixDialog_About(AP_DialogFactory * pDlgFactory,
+XAP_UnixDialog_About::XAP_UnixDialog_About(AP_DialogFactory * pDlgFactory,
 											 AP_Dialog_Id id)
-	: AP_Dialog_About(pDlgFactory,id)
+	: XAP_Dialog_About(pDlgFactory,id)
 {
 }
 
-AP_UnixDialog_About::~AP_UnixDialog_About(void)
+XAP_UnixDialog_About::~XAP_UnixDialog_About(void)
 {
 }
 
@@ -63,7 +63,7 @@ static void s_okClicked(GtkWidget * widget, gpointer data, gpointer extra)
 	gtk_main_quit();
 }
 
-void AP_UnixDialog_About::runModal(XAP_Frame * pFrame)
+void XAP_UnixDialog_About::runModal(XAP_Frame * pFrame)
 {
 	GtkWidget* dialog;
 	GtkWidget* dialog_vbox1;
@@ -133,7 +133,7 @@ void AP_UnixDialog_About::runModal(XAP_Frame * pFrame)
 	gtk_widget_show (label2);
 	gtk_box_pack_start (GTK_BOX (vbox1), label2, TRUE, TRUE, 5);
 	
-	sprintf(buf, "Version: %s", XAP_App::s_szBuild_Version); 
+	sprintf(buf, XAP_ABOUT_VERSION, XAP_App::s_szBuild_Version); 
 
 	label3 = gtk_label_new (buf);
 	gtk_object_set_data (GTK_OBJECT (dialog), "label3", label3);
@@ -145,7 +145,7 @@ void AP_UnixDialog_About::runModal(XAP_Frame * pFrame)
 	gtk_widget_show (label4);
 	gtk_box_pack_start (GTK_BOX (vbox1), label4, TRUE, TRUE, 5);
 
-	sprintf(buf, "Build options: %s", XAP_App::s_szBuild_Options);
+	sprintf(buf, XAP_ABOUT_BUILD, XAP_App::s_szBuild_Options);
 	
 	label6 = gtk_label_new (buf);
 	gtk_widget_show (label6);

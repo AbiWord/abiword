@@ -35,46 +35,46 @@
 #define FREEP(p)	do { if (p) free(p); (p)=NULL; } while (0)
 
 /*****************************************************************/
-AP_Dialog * AP_UnixDialog_FileOpenSaveAs::static_constructor(AP_DialogFactory * pFactory,
+AP_Dialog * XAP_UnixDialog_FileOpenSaveAs::static_constructor(AP_DialogFactory * pFactory,
 															 AP_Dialog_Id id)
 {
-	AP_UnixDialog_FileOpenSaveAs * p = new AP_UnixDialog_FileOpenSaveAs(pFactory,id);
+	XAP_UnixDialog_FileOpenSaveAs * p = new XAP_UnixDialog_FileOpenSaveAs(pFactory,id);
 	return p;
 }
 
-AP_UnixDialog_FileOpenSaveAs::AP_UnixDialog_FileOpenSaveAs(AP_DialogFactory * pDlgFactory,
+XAP_UnixDialog_FileOpenSaveAs::XAP_UnixDialog_FileOpenSaveAs(AP_DialogFactory * pDlgFactory,
 														   AP_Dialog_Id id)
-	: AP_Dialog_FileOpenSaveAs(pDlgFactory,id)
+	: XAP_Dialog_FileOpenSaveAs(pDlgFactory,id)
 {
 }
 
-AP_UnixDialog_FileOpenSaveAs::~AP_UnixDialog_FileOpenSaveAs(void)
+XAP_UnixDialog_FileOpenSaveAs::~XAP_UnixDialog_FileOpenSaveAs(void)
 {
 }
 
 /*****************************************************************/
 
 static void s_ok_clicked(GtkWidget * widget,
-						 AP_Dialog_FileOpenSaveAs::tAnswer * answer)
+						 XAP_Dialog_FileOpenSaveAs::tAnswer * answer)
 {
-	*answer = AP_Dialog_FileOpenSaveAs::a_OK;
+	*answer = XAP_Dialog_FileOpenSaveAs::a_OK;
 	gtk_main_quit();
 }
 
 static void s_cancel_clicked(GtkWidget * widget,
-							 AP_Dialog_FileOpenSaveAs::tAnswer * answer)
+							 XAP_Dialog_FileOpenSaveAs::tAnswer * answer)
 {
-	*answer = AP_Dialog_FileOpenSaveAs::a_CANCEL;
+	*answer = XAP_Dialog_FileOpenSaveAs::a_CANCEL;
 	gtk_main_quit();
 }
 
-static void s_delete_clicked(GtkWidget * widget, gpointer data, AP_Dialog_FileOpenSaveAs::tAnswer * answer)
+static void s_delete_clicked(GtkWidget * widget, gpointer data, XAP_Dialog_FileOpenSaveAs::tAnswer * answer)
 {
-	*answer = AP_Dialog_FileOpenSaveAs::a_CANCEL;
+	*answer = XAP_Dialog_FileOpenSaveAs::a_CANCEL;
 	gtk_main_quit();
 }
 
-UT_Bool AP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
+UT_Bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 													void * pFSvoid,
 													UT_Bool bCheckWritePermission)
 {
@@ -212,7 +212,7 @@ ReturnTrue:
 }
 
 
-UT_Bool AP_UnixDialog_FileOpenSaveAs::_askOverwrite_YesNo(XAP_Frame * pFrame, const char * fileName)
+UT_Bool XAP_UnixDialog_FileOpenSaveAs::_askOverwrite_YesNo(XAP_Frame * pFrame, const char * fileName)
 {
 	// return UT_TRUE if we should overwrite the file
 	AP_DialogFactory * pDialogFactory
@@ -236,7 +236,7 @@ UT_Bool AP_UnixDialog_FileOpenSaveAs::_askOverwrite_YesNo(XAP_Frame * pFrame, co
 }
 
 	
-void AP_UnixDialog_FileOpenSaveAs::_notifyError_OKOnly(XAP_Frame * pFrame, const char * message)
+void XAP_UnixDialog_FileOpenSaveAs::_notifyError_OKOnly(XAP_Frame * pFrame, const char * message)
 {
 	AP_DialogFactory * pDialogFactory
 		= (AP_DialogFactory *)(pFrame->getDialogFactory());
@@ -256,7 +256,7 @@ void AP_UnixDialog_FileOpenSaveAs::_notifyError_OKOnly(XAP_Frame * pFrame, const
 	pDialogFactory->releaseDialog(pDialog);
 }
 
-void AP_UnixDialog_FileOpenSaveAs::_notifyError_OKOnly(XAP_Frame * pFrame,
+void XAP_UnixDialog_FileOpenSaveAs::_notifyError_OKOnly(XAP_Frame * pFrame,
 													   const char * message, const char * sz1)
 {
 	AP_DialogFactory * pDialogFactory
@@ -280,7 +280,7 @@ void AP_UnixDialog_FileOpenSaveAs::_notifyError_OKOnly(XAP_Frame * pFrame,
 
 /*****************************************************************/
 
-void AP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
+void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 {
 	m_pUnixFrame = (XAP_UnixFrame *)pFrame;
 	UT_ASSERT(m_pUnixFrame);

@@ -24,26 +24,26 @@
 #include "xap_Win32Frame.h"
 
 /*****************************************************************/
-AP_Dialog * AP_Win32Dialog_MessageBox::static_constructor(AP_DialogFactory * pFactory,
+AP_Dialog * XAP_Win32Dialog_MessageBox::static_constructor(AP_DialogFactory * pFactory,
 														  AP_Dialog_Id id)
 {
-	AP_Win32Dialog_MessageBox * p = new AP_Win32Dialog_MessageBox(pFactory,id);
+	XAP_Win32Dialog_MessageBox * p = new XAP_Win32Dialog_MessageBox(pFactory,id);
 	return p;
 }
 
-AP_Win32Dialog_MessageBox::AP_Win32Dialog_MessageBox(AP_DialogFactory * pDlgFactory,
+XAP_Win32Dialog_MessageBox::XAP_Win32Dialog_MessageBox(AP_DialogFactory * pDlgFactory,
 													 AP_Dialog_Id id)
-	: AP_Dialog_MessageBox(pDlgFactory,id)
+	: XAP_Dialog_MessageBox(pDlgFactory,id)
 {
 }
 
-AP_Win32Dialog_MessageBox::~AP_Win32Dialog_MessageBox(void)
+XAP_Win32Dialog_MessageBox::~XAP_Win32Dialog_MessageBox(void)
 {
 }
 
 /*****************************************************************/
 
-void AP_Win32Dialog_MessageBox::runModal(XAP_Frame * pFrame)
+void XAP_Win32Dialog_MessageBox::runModal(XAP_Frame * pFrame)
 {
 	m_pWin32Frame = (XAP_Win32Frame *)pFrame;
 	UT_ASSERT(m_pWin32Frame);

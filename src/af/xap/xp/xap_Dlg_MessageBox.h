@@ -17,16 +17,16 @@
  * 02111-1307, USA.
  */
 
-#ifndef AP_DIALOG_MESSAGEBOX_H
-#define AP_DIALOG_MESSAGEBOX_H
+#ifndef XAP_DIALOG_MESSAGEBOX_H
+#define XAP_DIALOG_MESSAGEBOX_H
 
 #include "xap_Dialog.h"
 
-class AP_Dialog_MessageBox : public AP_Dialog_NonPersistent
+class XAP_Dialog_MessageBox : public AP_Dialog_NonPersistent
 {
 public:
-	AP_Dialog_MessageBox(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
-	virtual ~AP_Dialog_MessageBox(void);
+	XAP_Dialog_MessageBox(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
+	virtual ~XAP_Dialog_MessageBox(void);
 
 	virtual void					runModal(XAP_Frame * pFrame) = 0;
 
@@ -35,15 +35,15 @@ public:
 	
 	void							setMessage(const char * szMessage);
 	void							setMessage(const char * szMessage, const char * sz1);
-	void							setButtons(AP_Dialog_MessageBox::tButtons buttons);
-	void							setDefaultAnswer(AP_Dialog_MessageBox::tAnswer answer);
-	AP_Dialog_MessageBox::tAnswer	getAnswer(void) const;
+	void							setButtons(XAP_Dialog_MessageBox::tButtons buttons);
+	void							setDefaultAnswer(XAP_Dialog_MessageBox::tAnswer answer);
+	XAP_Dialog_MessageBox::tAnswer	getAnswer(void) const;
 
 protected:
 	char *							m_szMessage;
-	AP_Dialog_MessageBox::tButtons	m_buttons;
-	AP_Dialog_MessageBox::tAnswer	m_defaultAnswer;
-	AP_Dialog_MessageBox::tAnswer	m_answer;
+	XAP_Dialog_MessageBox::tButtons	m_buttons;
+	XAP_Dialog_MessageBox::tAnswer	m_defaultAnswer;
+	XAP_Dialog_MessageBox::tAnswer	m_answer;
 };
 
-#endif /* AP_DIALOG_MESSAGEBOX_H */
+#endif /* XAP_DIALOG_MESSAGEBOX_H */

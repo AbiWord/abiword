@@ -43,14 +43,14 @@
 
 #else
 
-	DeclareDialog(XAP_DIALOG_ID_MESSAGE_BOX,	AP_Win32Dialog_MessageBox)
-	DeclareDialog(XAP_DIALOG_ID_FILE_OPEN,		AP_Win32Dialog_FileOpenSaveAs)
-	DeclareDialog(XAP_DIALOG_ID_FILE_SAVEAS,	AP_Win32Dialog_FileOpenSaveAs)
-	DeclareDialog(XAP_DIALOG_ID_PRINT,			AP_Win32Dialog_Print)
-	DeclareDialog(XAP_DIALOG_ID_PRINTTOFILE,	AP_Win32Dialog_FileOpenSaveAs)
-	DeclareDialog(XAP_DIALOG_ID_FONT,			AP_Win32Dialog_FontChooser)
+	DeclareDialog(XAP_DIALOG_ID_MESSAGE_BOX,	XAP_Win32Dialog_MessageBox)
+	DeclareDialog(XAP_DIALOG_ID_FILE_OPEN,		XAP_Win32Dialog_FileOpenSaveAs)
+	DeclareDialog(XAP_DIALOG_ID_FILE_SAVEAS,	XAP_Win32Dialog_FileOpenSaveAs)
+	DeclareDialog(XAP_DIALOG_ID_PRINT,			XAP_Win32Dialog_Print)
+	DeclareDialog(XAP_DIALOG_ID_PRINTTOFILE,	XAP_Win32Dialog_FileOpenSaveAs)
+	DeclareDialog(XAP_DIALOG_ID_FONT,			XAP_Win32Dialog_FontChooser)
 	DeclareDialog(XAP_DIALOG_ID_WINDOWMORE,		XAP_Win32Dialog_WindowMore)
-	DeclareDialog(XAP_DIALOG_ID_ABOUT,			AP_Win32Dialog_About)
+	DeclareDialog(XAP_DIALOG_ID_ABOUT,			XAP_Win32Dialog_About)
 
 	DeclareDialog(AP_DIALOG_ID_REPLACE,			AP_Win32Dialog_Replace)
 	DeclareDialog(AP_DIALOG_ID_FIND,			AP_Win32Dialog_Replace)

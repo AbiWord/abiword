@@ -18,19 +18,19 @@
  * 02111-1307, USA.
  */
 
-#ifndef AP_MACDIALOG_FONTCHOOSER_H
-#define AP_MACDIALOG_FONTCHOOSER_H
+#ifndef XAP_MACDIALOG_FONTCHOOSER_H
+#define XAP_MACDIALOG_FONTCHOOSER_H
 
 #include "xap_Dlg_FontChooser.h"
 class XAP_MacFrame;
 
 /*****************************************************************/
 
-class AP_MacDialog_FontChooser : public AP_Dialog_FontChooser
+class XAP_MacDialog_FontChooser : public XAP_Dialog_FontChooser
 {
 public:
-	AP_MacDialog_FontChooser(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
-	virtual ~AP_MacDialog_FontChooser(void);
+	XAP_MacDialog_FontChooser(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
+	virtual ~XAP_MacDialog_FontChooser(void);
 
 	virtual void			runModal(XAP_Frame * pFrame);
 
@@ -41,4 +41,4 @@ protected:
 
 };
 
-#endif /* AP_MACDIALOG_FONTCHOOSER_H */
+#endif /* XAP_MACDIALOG_FONTCHOOSER_H */

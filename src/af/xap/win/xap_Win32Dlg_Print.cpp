@@ -29,16 +29,16 @@
 #include "gr_Win32Graphics.h"
 
 /*****************************************************************/
-AP_Dialog * AP_Win32Dialog_Print::static_constructor(AP_DialogFactory * pFactory,
+AP_Dialog * XAP_Win32Dialog_Print::static_constructor(AP_DialogFactory * pFactory,
 													 AP_Dialog_Id id)
 {
-	AP_Win32Dialog_Print * p = new AP_Win32Dialog_Print(pFactory,id);
+	XAP_Win32Dialog_Print * p = new XAP_Win32Dialog_Print(pFactory,id);
 	return p;
 }
 
-AP_Win32Dialog_Print::AP_Win32Dialog_Print(AP_DialogFactory * pDlgFactory,
+XAP_Win32Dialog_Print::XAP_Win32Dialog_Print(AP_DialogFactory * pDlgFactory,
 										   AP_Dialog_Id id)
-	: AP_Dialog_Print(pDlgFactory,id)
+	: XAP_Dialog_Print(pDlgFactory,id)
 {
 	m_pPersistPrintDlg = (PRINTDLG *)calloc(1,sizeof(PRINTDLG));
 	UT_ASSERT(m_pPersistPrintDlg);
@@ -47,7 +47,7 @@ AP_Win32Dialog_Print::AP_Win32Dialog_Print(AP_DialogFactory * pDlgFactory,
 	m_pPersistPrintDlg->lStructSize = sizeof(*m_pPersistPrintDlg);
 }
 
-AP_Win32Dialog_Print::~AP_Win32Dialog_Print(void)
+XAP_Win32Dialog_Print::~XAP_Win32Dialog_Print(void)
 {
 	if (m_pPersistPrintDlg)
 	{
@@ -59,7 +59,7 @@ AP_Win32Dialog_Print::~AP_Win32Dialog_Print(void)
 	}
 }
 
-GR_Graphics * AP_Win32Dialog_Print::getPrinterGraphicsContext(void)
+GR_Graphics * XAP_Win32Dialog_Print::getPrinterGraphicsContext(void)
 {
 	UT_ASSERT(m_answer == a_OK);
 
@@ -72,7 +72,7 @@ GR_Graphics * AP_Win32Dialog_Print::getPrinterGraphicsContext(void)
 	return pGraphics;
 }
 
-void AP_Win32Dialog_Print::releasePrinterGraphicsContext(GR_Graphics * pGraphics)
+void XAP_Win32Dialog_Print::releasePrinterGraphicsContext(GR_Graphics * pGraphics)
 {
 	GR_Win32Graphics * pWin32Graphics = (GR_Win32Graphics *)pGraphics;
 	if (pGraphics)
@@ -86,7 +86,7 @@ void AP_Win32Dialog_Print::releasePrinterGraphicsContext(GR_Graphics * pGraphics
 
 /*****************************************************************/
 
-void AP_Win32Dialog_Print::runModal(XAP_Frame * pFrame)
+void XAP_Win32Dialog_Print::runModal(XAP_Frame * pFrame)
 {
 	m_pWin32Frame = static_cast<XAP_Win32Frame *>(pFrame);
 	UT_ASSERT(m_pWin32Frame);
@@ -164,7 +164,7 @@ void AP_Win32Dialog_Print::runModal(XAP_Frame * pFrame)
 	return;
 }
 
-void AP_Win32Dialog_Print::_extractResults(void)
+void XAP_Win32Dialog_Print::_extractResults(void)
 {
 	m_bDoPrintRange		= ((m_pPersistPrintDlg->Flags & PD_PAGENUMS) != 0);
 	m_bDoPrintSelection = ((m_pPersistPrintDlg->Flags & PD_SELECTION) != 0);

@@ -29,41 +29,41 @@
 #include "gr_MacGraphics.h"
 
 /*****************************************************************/
-AP_Dialog * AP_MacDialog_Print::static_constructor(AP_DialogFactory * pFactory,
+AP_Dialog * XAP_MacDialog_Print::static_constructor(AP_DialogFactory * pFactory,
 													 AP_Dialog_Id id)
 {
-	AP_MacDialog_Print * p = new AP_MacDialog_Print(pFactory,id);
+	XAP_MacDialog_Print * p = new XAP_MacDialog_Print(pFactory,id);
 	return p;
 }
 
-AP_MacDialog_Print::AP_MacDialog_Print(AP_DialogFactory * pDlgFactory,
+XAP_MacDialog_Print::XAP_MacDialog_Print(AP_DialogFactory * pDlgFactory,
 										   AP_Dialog_Id id)
-	: AP_Dialog_Print(pDlgFactory,id)
+	: XAP_Dialog_Print(pDlgFactory,id)
 {
 }
 
-AP_MacDialog_Print::~AP_MacDialog_Print(void)
+XAP_MacDialog_Print::~XAP_MacDialog_Print(void)
 {
 }
 
-GR_Graphics * AP_MacDialog_Print::getPrinterGraphicsContext(void)
+GR_Graphics * XAP_MacDialog_Print::getPrinterGraphicsContext(void)
 {
 	return 0;
 }
 
-void AP_MacDialog_Print::releasePrinterGraphicsContext(GR_Graphics * pGraphics)
+void XAP_MacDialog_Print::releasePrinterGraphicsContext(GR_Graphics * pGraphics)
 {
 }
 
 /*****************************************************************/
 
-void AP_MacDialog_Print::runModal(XAP_Frame * pFrame)
+void XAP_MacDialog_Print::runModal(XAP_Frame * pFrame)
 {
 	m_pMacFrame = NULL;
 	return;
 }
 
-void AP_MacDialog_Print::_extractResults(void)
+void XAP_MacDialog_Print::_extractResults(void)
 {
 	m_answer = a_OK;
 	return;

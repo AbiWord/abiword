@@ -17,19 +17,19 @@
  * 02111-1307, USA.
  */
 
-#ifndef AP_WIN32DIALOG_FILEOPENSAVEAS_H
-#define AP_WIN32DIALOG_FILEOPENSAVEAS_H
+#ifndef XAP_WIN32DIALOG_FILEOPENSAVEAS_H
+#define XAP_WIN32DIALOG_FILEOPENSAVEAS_H
 
 #include "xap_Dlg_FileOpenSaveAs.h"
 class XAP_Win32Frame;
 
 /*****************************************************************/
 
-class AP_Win32Dialog_FileOpenSaveAs : public AP_Dialog_FileOpenSaveAs
+class XAP_Win32Dialog_FileOpenSaveAs : public XAP_Dialog_FileOpenSaveAs
 {
 public:
-	AP_Win32Dialog_FileOpenSaveAs(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
-	virtual ~AP_Win32Dialog_FileOpenSaveAs(void);
+	XAP_Win32Dialog_FileOpenSaveAs(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
+	virtual ~XAP_Win32Dialog_FileOpenSaveAs(void);
 
 	virtual void			runModal(XAP_Frame * pFrame);
 
@@ -39,4 +39,4 @@ protected:
 	XAP_Win32Frame *		m_pWin32Frame;
 };
 
-#endif /* AP_WIN32DIALOG_FILEOPENSAVEAS_H */
+#endif /* XAP_WIN32DIALOG_FILEOPENSAVEAS_H */

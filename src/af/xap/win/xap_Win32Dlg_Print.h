@@ -17,19 +17,19 @@
  * 02111-1307, USA.
  */
 
-#ifndef AP_WIN32DIALOG_PRINT_H
-#define AP_WIN32DIALOG_PRINT_H
+#ifndef XAP_WIN32DIALOG_PRINT_H
+#define XAP_WIN32DIALOG_PRINT_H
 
 #include "xap_Dlg_Print.h"
 class XAP_Win32Frame;
 
 /*****************************************************************/
 
-class AP_Win32Dialog_Print : public AP_Dialog_Print
+class XAP_Win32Dialog_Print : public XAP_Dialog_Print
 {
 public:
-	AP_Win32Dialog_Print(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
-	virtual ~AP_Win32Dialog_Print(void);
+	XAP_Win32Dialog_Print(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
+	virtual ~XAP_Win32Dialog_Print(void);
 
 	virtual void			runModal(XAP_Frame * pFrame);
 	virtual GR_Graphics *	getPrinterGraphicsContext(void);
@@ -46,4 +46,4 @@ protected:
 	DOCINFO					m_DocInfo;
 };
 
-#endif /* AP_WIN32DIALOG_PRINT_H */
+#endif /* XAP_WIN32DIALOG_PRINT_H */

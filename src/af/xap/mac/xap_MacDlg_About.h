@@ -17,18 +17,18 @@
  * 02111-1307, USA.
  */
 
-#ifndef AP_MACDIALOG_ABOUT_H
-#define AP_MACDIALOG_ABOUT_H
+#ifndef XAP_MACDIALOG_ABOUT_H
+#define XAP_MACDIALOG_ABOUT_H
 
-#include "ap_Dialog_About.h"
+#include "xap_Dialog_About.h"
 
 /*****************************************************************/
 
-class AP_MacDialog_About: public AP_Dialog_About
+class XAP_MacDialog_About: public XAP_Dialog_About
 {
 public:
-	AP_MacDialog_About(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
-	virtual ~AP_MacDialog_About(void);
+	XAP_MacDialog_About(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
+	virtual ~XAP_MacDialog_About(void);
 
 	static AP_Dialog *		static_constructor(AP_DialogFactory *, AP_Dialog_Id id);
 
@@ -40,4 +40,4 @@ public:
 	
 };
 
-#endif /* AP_MACDIALOG_ABOUT_H */
+#endif /* XAP_MACDIALOG_ABOUT_H */

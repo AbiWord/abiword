@@ -17,8 +17,8 @@
  * 02111-1307, USA.
  */
 
-#ifndef AP_DIALOG_FONTCHOOSER_H
-#define AP_DIALOG_FONTCHOOSER_H
+#ifndef XAP_DIALOG_FONTCHOOSER_H
+#define XAP_DIALOG_FONTCHOOSER_H
 
 #include "ut_types.h"
 #include "xmlparse.h"
@@ -27,11 +27,11 @@ class GR_Graphics;
 
 /*****************************************************************/
 
-class AP_Dialog_FontChooser : public AP_Dialog_NonPersistent
+class XAP_Dialog_FontChooser : public AP_Dialog_NonPersistent
 {
 public:
-	AP_Dialog_FontChooser(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
-	virtual ~AP_Dialog_FontChooser(void);
+	XAP_Dialog_FontChooser(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
+	virtual ~XAP_Dialog_FontChooser(void);
 
 	virtual void					runModal(XAP_Frame * pFrame) = 0;
 
@@ -45,7 +45,7 @@ public:
 	void							setColor(const XML_Char * pColor);
 	void							setFontDecoration(UT_Bool bUnderline, UT_Bool bStrikeOut);
 
-	AP_Dialog_FontChooser::tAnswer	getAnswer(void) const;
+	XAP_Dialog_FontChooser::tAnswer	getAnswer(void) const;
 	
 	// the following return TRUE iff the user changed the value
 	// of the control in the dialog.  they also return the value
@@ -62,7 +62,7 @@ public:
 	UT_Bool							getChangedStrikeOut(UT_Bool * pbStrikeOut) const;
 
 protected:
-	AP_Dialog_FontChooser::tAnswer	m_answer;
+	XAP_Dialog_FontChooser::tAnswer	m_answer;
 
 	GR_Graphics *					m_pGraphics;			/* input */
 	XML_Char *						m_pFontFamily;			/* input/output */
@@ -82,4 +82,4 @@ protected:
 	UT_Bool							m_bChangedStrikeOut;	/* output */
 };
 
-#endif /* AP_DIALOG_FONTCHOOSER_H */
+#endif /* XAP_DIALOG_FONTCHOOSER_H */

@@ -29,20 +29,20 @@
 #include "ie_exp.h"
 
 /*****************************************************************/
-AP_Dialog * AP_Win32Dialog_FileOpenSaveAs::static_constructor(AP_DialogFactory * pFactory,
+AP_Dialog * XAP_Win32Dialog_FileOpenSaveAs::static_constructor(AP_DialogFactory * pFactory,
 															  AP_Dialog_Id id)
 {
-	AP_Win32Dialog_FileOpenSaveAs * p = new AP_Win32Dialog_FileOpenSaveAs(pFactory,id);
+	XAP_Win32Dialog_FileOpenSaveAs * p = new XAP_Win32Dialog_FileOpenSaveAs(pFactory,id);
 	return p;
 }
 
-AP_Win32Dialog_FileOpenSaveAs::AP_Win32Dialog_FileOpenSaveAs(AP_DialogFactory * pDlgFactory,
+XAP_Win32Dialog_FileOpenSaveAs::XAP_Win32Dialog_FileOpenSaveAs(AP_DialogFactory * pDlgFactory,
 															 AP_Dialog_Id id)
-	: AP_Dialog_FileOpenSaveAs(pDlgFactory,id)
+	: XAP_Dialog_FileOpenSaveAs(pDlgFactory,id)
 {
 }
 
-AP_Win32Dialog_FileOpenSaveAs::~AP_Win32Dialog_FileOpenSaveAs(void)
+XAP_Win32Dialog_FileOpenSaveAs::~XAP_Win32Dialog_FileOpenSaveAs(void)
 {
 }
 
@@ -112,7 +112,7 @@ static void _buildPrintFilterList(char * szFilter)
 
 /*****************************************************************/
 
-void AP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
+void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 {
 	m_pWin32Frame = static_cast<XAP_Win32Frame *>(pFrame);
 	UT_ASSERT(m_pWin32Frame);

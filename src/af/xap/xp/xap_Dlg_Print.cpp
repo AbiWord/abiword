@@ -35,7 +35,7 @@
 
 /******************************************************************/
 
-AP_Dialog_Print::AP_Dialog_Print(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id)
+XAP_Dialog_Print::XAP_Dialog_Print(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id)
 	: AP_Dialog_AppPersistent(pDlgFactory,id)
 {
 	m_bPersistValid = UT_FALSE;
@@ -57,12 +57,12 @@ AP_Dialog_Print::AP_Dialog_Print(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id
 	m_answer = a_VOID;
 }
 
-AP_Dialog_Print::~AP_Dialog_Print(void)
+XAP_Dialog_Print::~XAP_Dialog_Print(void)
 {
 	UT_ASSERT(!m_bInUse);
 }
 
-void AP_Dialog_Print::useStart(void)
+void XAP_Dialog_Print::useStart(void)
 {
 	AP_Dialog_AppPersistent::useStart();
 	
@@ -84,7 +84,7 @@ void AP_Dialog_Print::useStart(void)
 	m_answer = a_VOID;
 }
 
-void AP_Dialog_Print::useEnd(void)
+void XAP_Dialog_Print::useEnd(void)
 {
 	AP_Dialog_AppPersistent::useEnd();
 
@@ -104,28 +104,28 @@ void AP_Dialog_Print::useEnd(void)
 	// if (m_answer == a_OK) in their implementations.
 }
 
-AP_Dialog_Print::tAnswer AP_Dialog_Print::getAnswer(void) const
+XAP_Dialog_Print::tAnswer XAP_Dialog_Print::getAnswer(void) const
 {
 	// let our caller know if user hit ok or cancel.
 	
 	return m_answer;
 }
 
-void AP_Dialog_Print::setDocumentTitle(const char * szDocTitle)
+void XAP_Dialog_Print::setDocumentTitle(const char * szDocTitle)
 {
 	FREEP(m_szDocumentTitle);
 	if (szDocTitle && *szDocTitle)
 		UT_cloneString(m_szDocumentTitle,szDocTitle);
 }
 
-void AP_Dialog_Print::setDocumentPathname(const char * szDocPath)
+void XAP_Dialog_Print::setDocumentPathname(const char * szDocPath)
 {
 	FREEP(m_szDocumentPathname);
 	if (szDocPath && *szDocPath)
 		UT_cloneString(m_szDocumentPathname,szDocPath);
 }
 
-void AP_Dialog_Print::setEnablePageRangeButton(UT_Bool bEnable,
+void XAP_Dialog_Print::setEnablePageRangeButton(UT_Bool bEnable,
 											   UT_uint32 nFirst,
 											   UT_uint32 nLast)
 {
@@ -134,17 +134,17 @@ void AP_Dialog_Print::setEnablePageRangeButton(UT_Bool bEnable,
 	m_nLastPage			= ((bEnable) ? nLast : 0);
 }
 
-void AP_Dialog_Print::setEnablePrintSelection(UT_Bool bEnable)
+void XAP_Dialog_Print::setEnablePrintSelection(UT_Bool bEnable)
 {
 	m_bEnablePrintSelection = bEnable;
 }
 
-void AP_Dialog_Print::setEnablePrintToFile(UT_Bool bEnable)
+void XAP_Dialog_Print::setEnablePrintToFile(UT_Bool bEnable)
 {
 	m_bEnablePrintToFile = bEnable;
 }
 
-void AP_Dialog_Print::setTryToBypassActualDialog(UT_Bool bEnable)
+void XAP_Dialog_Print::setTryToBypassActualDialog(UT_Bool bEnable)
 {
 	// allow the caller to bypass the actual dialog (useful for the
 	// print button on the toolbar (which should try to reuse as much
@@ -154,7 +154,7 @@ void AP_Dialog_Print::setTryToBypassActualDialog(UT_Bool bEnable)
 	m_bBypassActualDialog = (bEnable && m_bPersistValid);
 }
 
-UT_Bool AP_Dialog_Print::getDoPrintRange(UT_uint32 * pnFirst, UT_uint32 * pnLast) const
+UT_Bool XAP_Dialog_Print::getDoPrintRange(UT_uint32 * pnFirst, UT_uint32 * pnLast) const
 {
 	UT_ASSERT(m_answer == a_OK);
 
@@ -168,35 +168,35 @@ UT_Bool AP_Dialog_Print::getDoPrintRange(UT_uint32 * pnFirst, UT_uint32 * pnLast
 	return m_bDoPrintRange;
 }
 
-UT_Bool AP_Dialog_Print::getDoPrintSelection(void) const
+UT_Bool XAP_Dialog_Print::getDoPrintSelection(void) const
 {
 	UT_ASSERT(m_answer == a_OK);
 
 	return m_bDoPrintSelection;
 }
 
-UT_Bool AP_Dialog_Print::getDoPrintToFile(const char *) const
+UT_Bool XAP_Dialog_Print::getDoPrintToFile(const char *) const
 {
 	UT_ASSERT(m_answer == a_OK);
 
 	return m_bDoPrintToFile;
 }
 
-UT_uint32 AP_Dialog_Print::getNrCopies(void) const
+UT_uint32 XAP_Dialog_Print::getNrCopies(void) const
 {
 	UT_ASSERT(m_answer == a_OK);
 
 	return m_nCopies;
 }
 
-UT_Bool AP_Dialog_Print::getCollate(void) const
+UT_Bool XAP_Dialog_Print::getCollate(void) const
 {
 	UT_ASSERT(m_answer == a_OK);
 
 	return m_persistCollate;
 }
 
-UT_Bool AP_Dialog_Print::_getPrintToFilePathname(XAP_Frame * pFrame,
+UT_Bool XAP_Dialog_Print::_getPrintToFilePathname(XAP_Frame * pFrame,
 												 const char * szSuggestedName)
 {
 	UT_ASSERT(pFrame);
@@ -207,8 +207,8 @@ UT_Bool AP_Dialog_Print::_getPrintToFilePathname(XAP_Frame * pFrame,
 	AP_DialogFactory * pDialogFactory
 		= (AP_DialogFactory *)(pFrame->getDialogFactory());
 
-	AP_Dialog_FileOpenSaveAs * pDialog
-		= (AP_Dialog_FileOpenSaveAs *)(pDialogFactory->requestDialog(id));
+	XAP_Dialog_FileOpenSaveAs * pDialog
+		= (XAP_Dialog_FileOpenSaveAs *)(pDialogFactory->requestDialog(id));
 	UT_ASSERT(pDialog);
 
 	pDialog->setCurrentPathname(szSuggestedName);
@@ -216,8 +216,8 @@ UT_Bool AP_Dialog_Print::_getPrintToFilePathname(XAP_Frame * pFrame,
 
 	pDialog->runModal(pFrame);
 
-	AP_Dialog_FileOpenSaveAs::tAnswer ans = pDialog->getAnswer();
-	UT_Bool bOK = (ans == AP_Dialog_FileOpenSaveAs::a_OK);
+	XAP_Dialog_FileOpenSaveAs::tAnswer ans = pDialog->getAnswer();
+	UT_Bool bOK = (ans == XAP_Dialog_FileOpenSaveAs::a_OK);
 
 	if (bOK)
 		UT_cloneString(m_szPrintToFilePathname,pDialog->getPathname());
