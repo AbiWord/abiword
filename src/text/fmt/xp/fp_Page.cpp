@@ -705,6 +705,7 @@ void fp_Page::_reformat(void)
 			{
 				UT_DEBUGMSG(("SEVIOR: Mark for rebuild to fill blank gap. iYLayoutUnits =%d iYnext = %d \n",iYLayoutUnits,iYLayoutNext));
 				m_pOwner->markForRebuild();
+				//UT_ASSERT(0);
 			}
 		}
 	}

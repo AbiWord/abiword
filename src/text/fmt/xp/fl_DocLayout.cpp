@@ -620,16 +620,35 @@ void FL_DocLayout::rebuildFromHere( fl_DocSectionLayout * pFirstDSL)
 	deleteEmptyColumnsAndPages();
 	while (pDSL)
 	{
+		
 		pDSL->collapseDocSection();
+		pDSL = pDSL->getNextDocSection();
+	}
+//
+// Clear out rebuild marks from this collapse
+//
+	pDSL = (fl_DocSectionLayout *) m_pFirstSection;
+	while(pDSL)
+	{
 		pDSL->clearRebuild();
 		pDSL = pDSL->getNextDocSection();
 	}
+
 	deleteEmptyColumnsAndPages();
 	pDSL= pStart;
 	while (pDSL)
 	{
 		UT_DEBUGMSG(("SEVIOR: Building section %x \n",pDSL));
 		pDSL->updateDocSection();
+		pDSL->clearRebuild();
+		pDSL = pDSL->getNextDocSection();
+	}
+//
+// Clear out rebuild marks from the rebuild
+//
+	pDSL = (fl_DocSectionLayout *) m_pFirstSection;
+	while(pDSL)
+	{
 		pDSL->clearRebuild();
 		pDSL = pDSL->getNextDocSection();
 	}
@@ -1399,9 +1418,9 @@ void FL_DocLayout::_redrawUpdate(UT_Timer * pTimer)
 		pDoc->setRedrawHappenning(false);
 		return;
 	}
-
+	bool bStopOnRebuild = false;
 	fl_SectionLayout* pSL = pDocLayout->m_pFirstSection;
-	while (pSL)
+	while (pSL && !bStopOnRebuild)
 	{
 		if(pDoc->isPieceTableChanging())
 		{
@@ -1416,17 +1435,18 @@ void FL_DocLayout::_redrawUpdate(UT_Timer * pTimer)
 		{
 			if(static_cast<fl_DocSectionLayout *>(pSL)->needsRebuild())
 			{
-				break;
+				bStopOnRebuild = true;
 			}
 		}
-		pSL = pSL->getNext();
+		if(!bStopOnRebuild)
+		{
+			pSL = pSL->getNext();
+		}
 	}
-	if(pSL == NULL)
+	pDocLayout->deleteEmptyColumnsAndPages();
+	if(bStopOnRebuild)
 	{
-		pDocLayout->deleteEmptyColumnsAndPages();
-	}
-	else
-	{
+		UT_DEBUGMSG(("SEVIOR: Rebuilding from docLayout \n"));
 		pDocLayout->rebuildFromHere((fl_DocSectionLayout *) pSL);
 	}
 //
