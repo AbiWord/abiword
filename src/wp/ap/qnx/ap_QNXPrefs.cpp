@@ -77,9 +77,10 @@ void AP_QNXPrefs::overlayEnvironmentPrefs(void)
 	// en-US, es-ES, pt-PT
 if((ABLANG=getenv("ABLANG")))
 	{
-			if((val=strsep(&ABLANG,"_")))
+			val=strsep(&ABLANG,"_");
+			if(val && ABLANG)
 				{
-					snprintf((char*)&szNewLang,5,"%s-%s",val,ABLANG);
+					snprintf((char*)&szNewLang,6,"%s-%s",val,ABLANG);
 				}
 	}
 
