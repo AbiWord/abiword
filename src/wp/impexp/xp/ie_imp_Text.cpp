@@ -80,9 +80,8 @@ IEStatus IE_Imp_Text::importFile(const char * szFilename)
 
 	} 
 
-	m_pDocument->appendSpan(gbBlock.getPointer(0), gbBlock.getLength());
-
-
+	if (gbBlock.getLength() > 0)
+		m_pDocument->appendSpan(gbBlock.getPointer(0), gbBlock.getLength());
 
 	iestatus = IES_OK;
 
