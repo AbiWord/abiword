@@ -50,12 +50,9 @@ fp_MathRun::fp_MathRun(fl_BlockLayout* pBL,
 	m_pSpanAP(NULL),
 	m_iGraphicTick(0),
 	m_pszDataID(NULL),
-	m_sMathML("")
+	m_sMathML(""),
+	m_pMathView(NULL)
 {
-	m_pMathView = libxml2_MathView::create();
-	m_pMathView->setMathMLNamespaceContext(
-		MathMLNamespaceContext::create(m_pMathView,getMathDevice()));
-	UT_DEBUGMSG(("fp_MathRun Created! \n"));
 	lookupProperties(getGraphics());
 }
 
@@ -82,6 +79,7 @@ void fp_MathRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	UT_DEBUGMSG(("fp_MathRun _lookupProperties span %x \n",pSpanAP));
 	m_pSpanAP = pSpanAP;
 	bool bFoundDataID = pSpanAP->getAttribute("dataid", m_pszDataID);
+	m_sMathML.clear();
 	if (bFoundDataID && m_pszDataID)
 	{
 		const UT_ByteBuf * pByteBuf = NULL;
@@ -98,9 +96,15 @@ void fp_MathRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	UT_DEBUGMSG(("MATH ML string is... \n %s \n",m_sMathML.utf8_str()));
 
 // Load this into MathView
+	if(m_pMathView == NULL)
+	{
+		m_pMathView = libxml2_MathView::create();
+		m_pMathView->setMathMLNamespaceContext(
+			MathMLNamespaceContext::create(m_pMathView,getMathDevice()));
+		UT_DEBUGMSG(("fp_MathRun Created! \n"));
 
-	m_pMathView->loadBuffer(m_sMathML.utf8_str());
-
+		m_pMathView->loadBuffer(m_sMathML.utf8_str());
+	}
 	BoundingBox box = m_pMathView->getBoundingBox();
 	UT_sint32 iWidth = getAbiContext()->toAbiLayoutUnits(box.width);
 	UT_sint32 iAscent = getAbiContext()->toAbiLayoutUnits(box.height);
@@ -160,6 +164,7 @@ void fp_MathRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	_setAscent(iAscent);
 	_setDescent(iDescent);
 	_setWidth(iWidth);
+	_setHeight(iAscent+iDescent);
 	const PP_AttrProp * pBlockAP = NULL;
 	const PP_AttrProp * pSectionAP = NULL;
 
@@ -268,7 +273,7 @@ void fp_MathRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, 
 		x = xoff;
 		x2 = x;
 	}
-	y = yoff + getHeight() - m_iPointHeight;
+	y = yoff + getAscent() - m_iPointHeight;
 	height = m_iPointHeight;
 	y2 = y;
 	bDirection = (getVisDirection() != UT_BIDI_LTR);
@@ -300,8 +305,16 @@ void fp_MathRun::_draw(dg_DrawArgs* pDA)
 	GR_Graphics *pG = pDA->pG;
 	UT_DEBUGMSG(("Draw with class %x \n",pG));
 	UT_DEBUGMSG(("Contents of fp MathRun \n %s \n",m_sMathML.utf8_str()));
-	scaled x = getAbiContext()->fromAbiX(pDA->xoff);
-	scaled y = getAbiContext()->fromAbiLayoutUnits(pDA->yoff+getAscent()); // should be fromAbiY()
+	FV_View* pView = _getView();
+	UT_return_if_fail(pView);
+
+	// Fill with background, then redraw.
+
+	UT_sint32 iLineHeight = getLine()->getHeight();
+	Fill(getGraphics(),pDA->xoff, pDA->yoff, getWidth(), iLineHeight);
+
+	scaled x = getAbiContext()->fromAbiX(-pDA->xoff);
+	scaled y = getAbiContext()->fromAbiLayoutUnits(pDA->yoff); // should be fromAbiY()
 	m_pMathView->render(*getAbiContext(), x, y);
 }
 

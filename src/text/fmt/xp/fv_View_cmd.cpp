@@ -4043,10 +4043,14 @@ UT_Error FV_View::cmdInsertGraphic(FG_Graphic* pFG, const char* pszName)
  */
 bool FV_View::cmdInsertMathML(const char * szFileName,PT_DocPosition pos)
 {
-	const XML_Char * atts[3]={"dataid",NULL,NULL};
+	const XML_Char * atts[5]={"dataid",NULL,PT_STYLE_ATTRIBUTE_NAME,NULL,NULL};
 
 	atts[1] = static_cast<const XML_Char *>(szFileName);
+	const XML_Char *cur_style;
+	getStyle(&cur_style);
+	atts[3] = cur_style;
 	bool bDidGlob = false;
+	const XML_Char ** props = NULL;
 
 	// Signal PieceTable Change
 	_saveAndNotifyPieceTableChange();
@@ -4057,7 +4061,9 @@ bool FV_View::cmdInsertMathML(const char * szFileName,PT_DocPosition pos)
 		m_pDoc->beginUserAtomicGlob();
 		_deleteSelection();
 	}
-	m_pDoc->insertObject(pos,PTO_Math,atts,NULL);
+	getCharFormat(&props,false,pos);
+
+	m_pDoc->insertObject(pos,PTO_Math,atts,props);
 
 	if (bDidGlob)
 		m_pDoc->endUserAtomicGlob();
