@@ -687,6 +687,26 @@ fl_FrameLayout * FV_View::getFrameLayout(void)
 
 fl_FrameLayout * FV_View::getFrameLayout(PT_DocPosition pos)
 {
+	if(m_pDoc->isFrameAtPos(pos))
+	{
+		PL_StruxFmtHandle psfh = NULL;
+		m_pDoc->getStruxOfTypeFromPosition(getLayout()->getLID(),pos+1,
+										   PTX_SectionFrame, &psfh);
+		fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(const_cast<void *>(psfh));
+		UT_ASSERT(pFL->getContainerType() == FL_CONTAINER_FRAME);
+		return pFL;
+	}
+	if(m_pDoc->isFrameAtPos(pos-1))
+	{
+		PL_StruxFmtHandle psfh = NULL;
+		m_pDoc->getStruxOfTypeFromPosition(getLayout()->getLID(),
+											 pos,
+											 PTX_SectionFrame, &psfh);
+		fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(const_cast<void *>(psfh));
+		UT_ASSERT(pFL->getContainerType() == FL_CONTAINER_FRAME);
+		return pFL;
+	}
+
 	fl_BlockLayout* pBlock = _findBlockAtPosition(pos);
 
 	if(pBlock)
@@ -715,6 +735,13 @@ fl_FrameLayout * FV_View::getFrameLayout(PT_DocPosition pos)
  */
 bool FV_View::isInFrame(PT_DocPosition pos)
 {
+//
+// If at exactly the frame return true
+//
+	if(m_pDoc->isFrameAtPos(pos))
+	{
+		return true;
+	}
 	fl_BlockLayout* pBlock = _findBlockAtPosition(pos);
 
 	if(pBlock)
@@ -7832,6 +7859,25 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 //
 	if(isInFrame(pos))
 	{
+		//
+// Handle case of an image only as a backdrop to a frame. Then the frame
+// has no content.
+//
+		if(m_pDoc->isFrameAtPos(pos))
+		{
+			PL_StruxFmtHandle psfh = NULL;
+			m_pDoc->getStruxOfTypeFromPosition(m_pLayout->getLID(),pos+1,
+											   PTX_SectionFrame, &psfh);
+			fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(const_cast<void *>(psfh));
+			UT_ASSERT(pFL->getContainerType() == FL_CONTAINER_FRAME);
+			if(pFL->getFrameType() >= FL_FRAME_WRAPPER_IMAGE)
+			{
+				m_prevMouseContext = EV_EMC_FRAME;
+				return EV_EMC_FRAME;
+			}
+		}
+ 
+		   
 		//
 		// OK find the coordinates of the frame.
 		//

@@ -411,6 +411,9 @@ public:
 	// TOC functions
 	bool                    isTOCAtPos(PT_DocPosition pos);
 
+	// FRAME function
+	bool                    isFrameAtPos(PT_DocPosition pos);
+
 // Table functions
 
 	bool                    isTableAtPos(PT_DocPosition pos);

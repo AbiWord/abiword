@@ -597,9 +597,25 @@ void FV_FrameEdit::setDragType(UT_sint32 x, UT_sint32 y, bool bDrawFrame)
 {
 	xxx_UT_DEBUGMSG(("setDragType called frameEdit mode %d \n",m_iFrameEditMode));
 	PT_DocPosition posAtXY = m_pView->getDocPositionFromXY(x,y,false);
-	fl_BlockLayout * pBL = m_pView->_findBlockAtPosition(posAtXY);
-	UT_return_if_fail(pBL);
-	if(!isActive())
+	fp_FrameContainer * pFCon = NULL;
+	fl_FrameLayout * pFL = NULL;
+  	fl_BlockLayout * pBL = NULL;
+	if(getDoc()->isFrameAtPos(posAtXY))
+	{
+		PL_StruxFmtHandle psfh = NULL;
+		getDoc()->getStruxOfTypeFromPosition(m_pView->getLayout()->getLID(),posAtXY+1,
+										   PTX_SectionFrame, &psfh);
+		pFL = static_cast<fl_FrameLayout *>(const_cast<void *>(psfh));
+		UT_ASSERT(pFL->getContainerType() == FL_CONTAINER_FRAME);
+		pFCon = static_cast<fp_FrameContainer *>(pFL->getFirstContainer());
+		UT_ASSERT(pFCon->getContainerType() == FP_CONTAINER_FRAME);
+	}
+	else
+	{
+		pBL = m_pView->_findBlockAtPosition(posAtXY);
+		UT_return_if_fail(pBL);
+	}
+	if(!isActive() && (pFCon == NULL))
 	{
 		m_iFrameEditMode = 	FV_FrameEdit_EXISTING_SELECTED;
 		fl_ContainerLayout * pCL = pBL->myContainingLayout();
@@ -629,11 +645,25 @@ void FV_FrameEdit::setDragType(UT_sint32 x, UT_sint32 y, bool bDrawFrame)
 		m_iDraggingWhat = FV_FrameEdit_DragWholeFrame;
 		return;	
 	}
+	if(!isActive())
+	{
+		m_iFrameEditMode = 	FV_FrameEdit_EXISTING_SELECTED;
+		m_pFrameLayout = pFL;
+		UT_ASSERT(m_pFrameLayout->getContainerType() == FL_CONTAINER_FRAME);
+		m_pFrameContainer = pFCon;
+		UT_ASSERT(m_pFrameContainer);
+		if(bDrawFrame)
+		{
+			drawFrame(true);
+		}
+		m_iLastX = x;
+		m_iLastY = y;
+		m_iDraggingWhat = FV_FrameEdit_DragWholeFrame;
+		return;
+	}
 	//
 	// OK find the coordinates of the frame.
 	//
-	fp_FrameContainer * pFCon = NULL;
-	fl_FrameLayout * pFL = NULL;
 	UT_sint32 xPage,yPage;
 	UT_sint32 xClick, yClick;
 	fp_Page* pPage = m_pView->_getPageForXY(x, y, xClick, yClick);
@@ -645,8 +675,16 @@ void FV_FrameEdit::setDragType(UT_sint32 x, UT_sint32 y, bool bDrawFrame)
 	}
 	else
 	{
-		pFL = static_cast<fl_FrameLayout *>(pBL->myContainingLayout());
-		pFCon = static_cast<fp_FrameContainer *>(pFL->getFirstContainer());
+		if(pBL)
+		{
+			pFL = static_cast<fl_FrameLayout *>(pBL->myContainingLayout());
+			pFCon = static_cast<fp_FrameContainer *>(pFL->getFirstContainer());
+		}
+		else
+		{
+			UT_ASSERT(pFL);
+			UT_ASSERT(pFCon);
+		}
 	}
 	UT_return_if_fail(pFCon);
 	UT_sint32 ires = getGraphics()->tlu(FRAME_HANDLE_SIZE); // 6 pixels wide hit area
@@ -1319,14 +1357,20 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 
 // Copy the content of the frame to the clipboard
 
+		bool isTextBox = true;
+		if(m_pFrameLayout->getFrameType() >= FL_FRAME_WRAPPER_IMAGE)
+		{
+			isTextBox = false;
+		}
 		PT_DocPosition posStart = m_pFrameLayout->getPosition(true);
 		PT_DocPosition posEnd = posStart + m_pFrameLayout->getLength();
-
-		PD_DocumentRange dr_oldFrame;
-		dr_oldFrame.set(getDoc(),posStart+2,posEnd-1);
-		UT_DEBUGMSG(("SEVIOR: Copy to clipboard changing frame \n"));
-		getDoc()->getApp()->copyToClipboard(&dr_oldFrame);
-
+		if(isTextBox)
+		{
+			PD_DocumentRange dr_oldFrame;
+			dr_oldFrame.set(getDoc(),posStart+2,posEnd-1);
+			UT_DEBUGMSG(("SEVIOR: Copy to clipboard changing frame \n"));
+			getDoc()->getApp()->copyToClipboard(&dr_oldFrame);
+		}
 // Delete the frame
 
 		PL_StruxDocHandle sdhStart =  m_pFrameLayout->getStruxDocHandle();
@@ -1367,16 +1411,25 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		pf_Frag_Strux * pfFrame = NULL;
 		getDoc()->insertStrux(posAtXY,PTX_SectionFrame,atts,NULL,&pfFrame);
 		PT_DocPosition posFrame = pfFrame->getPos();
-		getDoc()->insertStrux(posFrame+1,PTX_Block);
-		getDoc()->insertStrux(posFrame+2,PTX_EndFrame);
+		if(isTextBox)
+		{
+			getDoc()->insertStrux(posFrame+1,PTX_Block);
+			getDoc()->insertStrux(posFrame+2,PTX_EndFrame);
+		}
+		else
+		{
+			getDoc()->insertStrux(posFrame+1,PTX_EndFrame);
+		}
 		delete [] atts;
 
 // paste in the contents of the new frame.
 //
-		PD_DocumentRange dr_dest(getDoc(),posFrame+2,posFrame+2);
-		UT_DEBUGMSG(("SEVIOR: Pasting from clipboard Frame changed \n"));
-		getDoc()->getApp()->pasteFromClipboard(&dr_dest,true,true);
-
+		if(isTextBox)
+		{
+			PD_DocumentRange dr_dest(getDoc(),posFrame+2,posFrame+2);
+			UT_DEBUGMSG(("SEVIOR: Pasting from clipboard Frame changed \n"));
+			getDoc()->getApp()->pasteFromClipboard(&dr_dest,true,true);
+		}
 // Finish up with the usual stuff
 		getDoc()->endUserAtomicGlob();
 		getDoc()->setDontImmediatelyLayout(false);
@@ -1392,7 +1445,14 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 //
 // OK get a pointer to the new frameLayout
 //
-		m_pFrameLayout = m_pView->getFrameLayout(posFrame+2);
+		if(isTextBox)
+		{
+			m_pFrameLayout = m_pView->getFrameLayout(posFrame+2);
+		}
+		else
+		{
+			m_pFrameLayout = m_pView->getFrameLayout(posFrame);
+		}
 		UT_ASSERT(m_pFrameLayout);
 
 // Set the point back to the same position on the screen

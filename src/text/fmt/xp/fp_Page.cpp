@@ -1692,7 +1692,13 @@ void fp_Page::mapXYToPosition(bool bNotFrames,UT_sint32 x, UT_sint32 y, PT_DocPo
 		for (i=0; i<static_cast<UT_sint32>(countFrameContainers()); i++)
 		{
 			pFrameC = getNthFrameContainer(i);
-			if (pFrameC->getFirstContainer())
+			bool isImage = false;
+			fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(pFrameC->getSectionLayout());
+			if(pFL->getFrameType() >= FL_FRAME_WRAPPER_IMAGE)
+			{
+				isImage = true;
+			}
+			if ((pFrameC->getFirstContainer()) || isImage )
 			{
 				if ((x >= (pFrameC->getFullX()- iextra))
 					&& (x < (pFrameC->getFullX() + pFrameC->getFullWidth()+iextra))
@@ -1700,6 +1706,11 @@ void fp_Page::mapXYToPosition(bool bNotFrames,UT_sint32 x, UT_sint32 y, PT_DocPo
 					&& (y < (pFrameC->getFullY() + pFrameC->getFullHeight() + iextra))
 					)
 				{
+					if(isImage)
+					{
+						pos = pFL->getPosition(true);
+						return;
+					}
 					pFrameC->mapXYToPosition(x - pFrameC->getX(), y - pFrameC->getY(), pos, bBOL, bEOL,isTOC);
 					return;
 				}
