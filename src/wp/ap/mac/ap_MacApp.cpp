@@ -21,10 +21,6 @@
 ** Only one of these is created by the application.
 *****************************************************************/
 
-#ifdef ABI_OPT_JS
-#include <js.h>
-#endif /* ABI_OPT_JS */
-
 #include <stdio.h>
 #include <string.h>
 
