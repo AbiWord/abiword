@@ -90,7 +90,7 @@ void   AP_UnixGnomeDialog_Styles::_constructGnomeModifyButtons( GtkWidget * dial
 	GtkWidget *buttonOK;
 	GtkWidget *cancelButton;
 	GtkWidget *FormatMenu;
-	GtkWidget *shortCutButton;
+	GtkWidget *shortCutButton = 0;
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
 	bottomButtons = gtk_hbox_new (TRUE, 5);
@@ -112,9 +112,11 @@ void   AP_UnixGnomeDialog_Styles::_constructGnomeModifyButtons( GtkWidget * dial
 
 	_constructFormatList(FormatMenu);
 
+#if 0
 	shortCutButton = gtk_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyShortCut));
 	gtk_widget_show (shortCutButton);
 	gtk_box_pack_start (GTK_BOX (bottomButtons), shortCutButton, TRUE, TRUE, 0);
+#endif
 
 	m_wModifyOk = buttonOK;
 	m_wModifyCancel = cancelButton;
