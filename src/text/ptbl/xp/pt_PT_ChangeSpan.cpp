@@ -74,27 +74,26 @@ bool pt_PieceTable::changeSpanFmt(PTChangeFmt ptc,
 		{
 			// get attributes for this fragement
 			const PP_AttrProp * pAP;
+			pRevision = NULL;
+			
 			if(_getSpanAttrPropHelper(pTemp, &pAP))
 			{
-				if(!pAP->getAttribute(name, pRevision))
-					pRevision = NULL;
-
-				PP_RevisionAttr Revisions(pRevision);
-				Revisions.addRevision(m_pDocument->getRevisionId(),PP_REVISION_FMT_CHANGE,attributes,properties);
-				const XML_Char * ppRevAttrib[3];
-				ppRevAttrib[0] = name;
-				ppRevAttrib[1] = Revisions.getXMLstring();
-				ppRevAttrib[2] = NULL;
-
-				PT_DocPosition dposEnd = UT_MIN(dpos2,dpos1 + pTemp->getLength());
-
-				if(!_realChangeSpanFmt(PTC_AddFmt, dpos1, dposEnd, ppRevAttrib,NULL))
-					return false;
-
-				dpos1 = dposEnd;
+				pAP->getAttribute(name, pRevision);
 			}
-			else
+			
+			PP_RevisionAttr Revisions(pRevision);
+			Revisions.addRevision(m_pDocument->getRevisionId(),PP_REVISION_FMT_CHANGE,attributes,properties);
+			const XML_Char * ppRevAttrib[3];
+			ppRevAttrib[0] = name;
+			ppRevAttrib[1] = Revisions.getXMLstring();
+			ppRevAttrib[2] = NULL;
+
+			PT_DocPosition dposEnd = UT_MIN(dpos2,dpos1 + pTemp->getLength());
+
+			if(!_realChangeSpanFmt(PTC_AddFmt, dpos1, dposEnd, ppRevAttrib,NULL))
 				return false;
+
+			dpos1 = dposEnd;
 		}
 
 		return true;
