@@ -1,0 +1,44 @@
+CREDITS
+
+principal authors of AbiWord
+----------------------------
+Thomas Fletcher <thomasf@qnx.com>               BeOS port
+Jeff Hostetler <jeff@abisource.com>
+Paul Rohr <paul@abisource.com>
+Bob Sievers <bob@abisource.com>                 QA
+Eric Sink <eric@abisource.com>
+Shaw Terwilliger <sterwill@abisource.com>
+
+contributors
+------------
+Peter Arnold <petera@intrinsica.co.uk>          RTF import
+Darren Benham <gecko@benham.net>                Debian package
+Justin Bradford <justin@ukans.edu>              Word8 import
+John Brewer <jbrewer@jera.com>                  started MacOS port
+Andy Burnett <andy@abisource.com>
+Heath D. Carr <heath@abisource.com>
+Albert Fluegel <albert.fluegel@hl.siemens.de>   Solaris
+Matt Kimball <robozapp@xmission.com>            layout bugs
+Larry Kollar <kollar@stc.net>                   MkLinux
+Tuomas Kuosmanen <tigert@gimp.org>              artist
+James Lefavour <James@albany.net>               Win98/VC6
+Pierre Sarrazin <ps@cam.org>            
+Dan Schreiber <dan@abisource.com>
+<kstailey@kstailey.tzo.com>                     OpenBSD
+Nigel Stepp <stepp@mithril.res.cmu.edu>         VI keybindings
+Dave Thompson <thompson@pdnt.com>           
+Robert G. Werner <rwerner@lx1.microbsys.com>    VI keybindings
+John Wood <jyonw@asu.edu>                       NetBSD
+
+translators
+-----------
+albi <albi@linuxfan.com>                        Dutch
+Martin Willemoes Hansen <mwh@stampede.org>      Danish
+Jarmo Karvonen <jarmo@dawn.joensuu.fi>          Finnish
+
+To get your name added to this list, see:
+
+  http://www.abisource.com
+  abiword-dev@abisource.com
+
+Last updated: $Date$
