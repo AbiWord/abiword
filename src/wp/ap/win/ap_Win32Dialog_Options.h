@@ -220,7 +220,6 @@ public:
 	SET_GATHER			(SpellMainOnly, 	bool );
 	SET_GATHER			(SpellUppercase,	bool );
 	SET_GATHER			(SpellNumbers,		bool );
-	SET_GATHER			(SpellInternet, 	bool );
 
 	SET_GATHER			(ShowSplash,		bool );
 

@@ -215,10 +215,6 @@ void AP_Win32Dialog_Options::_controlEnable( tControl id, bool value )
 		EnableWindow(GetDlgItem((HWND)getPage(PG_SPELL),AP_RID_DIALOG_OPTIONS_CHK_SpellNumbers),value);
 		return;
 
-	case id_CHECK_SPELL_INTERNET:
-		EnableWindow(GetDlgItem((HWND)getPage(PG_SPELL),AP_RID_DIALOG_OPTIONS_CHK_SpellInternet),value);
-		return;
-
 	case id_CHECK_VIEW_SHOW_RULER:
 		EnableWindow(GetDlgItem((HWND)getPage(PG_LAYOUT),AP_RID_DIALOG_OPTIONS_CHK_ViewShowRuler),value);
 		return;
@@ -300,7 +296,6 @@ DEFINE2_GET_SET_BOOL(PG_SPELL,SpellSuggest);
 DEFINE2_GET_SET_BOOL(PG_SPELL,SpellMainOnly);
 DEFINE2_GET_SET_BOOL(PG_SPELL,SpellUppercase);
 DEFINE2_GET_SET_BOOL(PG_SPELL,SpellNumbers);
-DEFINE2_GET_SET_BOOL(PG_SPELL,SpellInternet);
 
 DEFINE2_GET_SET_BOOL(PG_LAYOUT,ViewShowRuler);
 DEFINE2_GET_SET_BOOL(PG_LAYOUT,ViewShowStatusBar);
@@ -727,7 +722,6 @@ void AP_Win32Dialog_Options_Spelling::_onCommand(HWND hWnd, WPARAM wParam, LPARA
 		case AP_RID_DIALOG_OPTIONS_CHK_SpellMainOnly:		pParent->_enableDisableLogic(AP_Dialog_Options::id_CHECK_SPELL_MAIN_ONLY);		return ;
 		case AP_RID_DIALOG_OPTIONS_CHK_SpellUppercase:		pParent->_enableDisableLogic(AP_Dialog_Options::id_CHECK_SPELL_UPPERCASE);		return ;
 		case AP_RID_DIALOG_OPTIONS_CHK_SpellNumbers:		pParent->_enableDisableLogic(AP_Dialog_Options::id_CHECK_SPELL_NUMBERS);		return ;
-		case AP_RID_DIALOG_OPTIONS_CHK_SpellInternet:		pParent->_enableDisableLogic(AP_Dialog_Options::id_CHECK_SPELL_INTERNET);		return ;
 		default:
 		break;
 	}
@@ -749,7 +743,6 @@ void AP_Win32Dialog_Options_Spelling::_onInitDialog()
 	_DS2(OPTIONS_FRM_SpellIgnore,			DLG_Options_Label_Ignore);
 	_DS2(OPTIONS_CHK_SpellUppercase, 		DLG_Options_Label_SpellUppercase);
 	_DS2(OPTIONS_CHK_SpellNumbers,			DLG_Options_Label_SpellNumbers);
-	_DS2(OPTIONS_CHK_SpellInternet,			DLG_Options_Label_SpellInternet);
 	_DS2(OPTIONS_LBL_CUSTOMDICT, 			DLG_Options_Label_SpellCustomDict);
 	_DS2(OPTIONS_BTN_CUSTOMDICT, 			DLG_Options_Btn_CustomDict);
 	_DS2(OPTIONS_LBL_IGNOREDWORD,			DLG_Options_Label_SpellIgnoredWord);
