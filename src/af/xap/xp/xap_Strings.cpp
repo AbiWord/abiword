@@ -196,8 +196,12 @@ bool XAP_DiskStringSet::setValue(XAP_String_Id id, const XML_Char * szString)
 			}
 		}
 #endif
-		
-		UT_Wctomb wctomb_conv;
+
+		const char * encoding = (XAP_EncodingManager::get_instance()->getNativeSystemEncodingName()) ?
+		  XAP_EncodingManager::get_instance()->getNativeSystemEncodingName() :
+		  XAP_EncodingManager::get_instance()->getNativeEncodingName();
+
+		UT_Wctomb wctomb_conv(encoding);
 		char letter_buf[20];
 		int length;
 		for (int k=0; k<kLimit; k++)
