@@ -1848,7 +1848,7 @@ void fp_Line::layout(void)
 			the normal direction.
 	*/
 
-	xxx_UT_DEBUGMSG(("fp_Line::layout (0x%x)\n",this));
+	UT_DEBUGMSG(("fp_Line::layout (0x%x)\n",this));
 
 	// first of all, work out the height
 	recalcHeight();
@@ -2156,7 +2156,7 @@ void fp_Line::layout(void)
 					pRun->Run_setX(iStartX,FP_CLEARSCREEN_NEVER);
 					iStartX += pRun->getWidth();
 				}
-
+				xxx_UT_DEBUGMSG(("Final width of line %d maxwidth %d \n",iStartX,getMaxWidth()));
 			}
 		break;
 		case FB_ALIGNMENT_JUSTIFY:
@@ -2222,10 +2222,12 @@ void fp_Line::layout(void)
 							
 							iIndxToEraseFrom = iK;
 						}
+						xxx_UT_DEBUGMSG(("Run %x has width %d \n",pRun,pRun->getWidth()));
 						pRun->Run_setX(iStartX, FP_CLEARSCREEN_NEVER);
 						iStartX += pRun->getWidth();
 					}
 				}
+				xxx_UT_DEBUGMSG(("Final width of line %d maxwidth %d \n",iStartX,getMaxWidth()));
 		}
 		break;
 		case FB_ALIGNMENT_CENTER:

@@ -2215,6 +2215,7 @@ void fp_TextRun::resetJustification()
 {
 	UT_sint32 iAccumDiff = 0;
 	UT_sint32 iWidth = getWidth();
+	UT_DEBUGMSG(("reset Justification of run %x \n"));
 	if(m_bIsJustified)
 	{
 		UT_sint32 iSpaceWidthBefore = _getSpaceWidthBeforeJustification();
@@ -2266,8 +2267,10 @@ void fp_TextRun::distributeJustificationAmongstSpaces(UT_sint32 iAmount, UT_uint
 {
 	UT_GrowBuf * pgbCharWidths = getBlock()->getCharWidths()->getCharWidths();
 	UT_GrowBufElement* pCharWidths = pgbCharWidths->getPointer(0);
+
 	if(pCharWidths == NULL)
 	{
+		UT_DEBUGMSG(("No pCharWidths! IndistributeJustificationAmongstSpaces  \n"));
 		return;
 	}
 #if 0
@@ -2278,6 +2281,8 @@ void fp_TextRun::distributeJustificationAmongstSpaces(UT_sint32 iAmount, UT_uint
 		return;
 	}
 #endif
+	xxx_UT_DEBUGMSG(("In AmongstSpaces amount %d spacesinrun %d run %x line %x \n",iAmount,iSpacesInRun,this,getLine()));
+
 	if(!iAmount)
 	{
 		// this can happend near the start of the line (the line is
@@ -2295,7 +2300,7 @@ void fp_TextRun::distributeJustificationAmongstSpaces(UT_sint32 iAmount, UT_uint
 	if(iSpacesInRun && getLength() > 0)
 	{
 		_setWidth(getWidth() + iAmount);
-
+		xxx_UT_DEBUGMSG(("Run %x has width set to %d \n",this,getWidth()));
 		// NB: i is block offset, not run offset !!!
 		UT_sint32 i = findCharacter(0, UCS_SPACE);
 
@@ -2311,12 +2316,16 @@ void fp_TextRun::distributeJustificationAmongstSpaces(UT_sint32 iAmount, UT_uint
 
 			pCharWidths[i] += iThisAmount;
 
+			xxx_UT_DEBUGMSG(("Space at loc %d new width %d given extra width %d \n",i,pCharWidths[i],iThisAmount));
 			iAmount -= iThisAmount;
 
 			iSpacesInRun--;
 
 			// keep looping
-			i = findCharacter(i+1-iBlockOffset, UCS_SPACE);
+			if(iSpacesInRun > 0)
+			{
+				i = findCharacter(i+1-iBlockOffset, UCS_SPACE);
+			}
 		}
 	}
 }

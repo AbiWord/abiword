@@ -1951,6 +1951,14 @@ void fl_BlockLayout::format()
 		// formatting is drawn by a single call to OS text drawing
 		// routine
 		coalesceRuns();
+
+		// Reformat paragraph if we set to justify it. The coalesceRuns method
+		// removes all the justification marks for some reason.
+
+		if(	bJustifyStuff)
+		{
+			m_Breaker.breakParagraph(this, NULL);
+		}
 #endif
 	}
 	else
