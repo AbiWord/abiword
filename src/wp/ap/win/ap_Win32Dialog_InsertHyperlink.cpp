@@ -83,9 +83,18 @@ BOOL AP_Win32Dialog_InsertHyperlink::_onInitDialog(HWND hWnd, WPARAM wParam, LPA
 
 	SetFocus(GetDlgItem(hWnd,AP_RID_DIALOG_INSERTHYPERLINK_EBX_LINK));
 
-	if(getHyperlink())
+	const XML_Char * hyperlink = getHyperlink();
+
+	if(hyperlink)
 	{
-		setControlText(AP_RID_DIALOG_INSERTHYPERLINK_EBX_LINK, getHyperlink());
+		if(hyperlink[0]=='#')  //ignore the anchor for internal bookmarks
+		{
+			setControlText(AP_RID_DIALOG_INSERTHYPERLINK_EBX_LINK, hyperlink+1);
+		}
+		else
+		{
+			setControlText(AP_RID_DIALOG_INSERTHYPERLINK_EBX_LINK, hyperlink);
+		}
 		selectControlText(AP_RID_DIALOG_INSERTHYPERLINK_EBX_LINK, 0, -1);
 	}
 
