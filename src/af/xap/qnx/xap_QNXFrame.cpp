@@ -622,9 +622,58 @@ void XAP_QNXFrame::_createTopLevelWindow(void)
 	//Set the icon for the window
 	_setWindowIcon();
 
-	//Center the window (or put it below existing ones?)
-	UT_QNXCenterWindow(NULL, m_wTopLevelWindow);
+	// Set geometry 
+	int x,y;
+	UT_uint32 width,height;
+	UT_uint32 f;
+
+	m_pQNXApp->getWinGeometry(&x,&y,&width,&height,&f);
+	
+	//Get fall-back defaults from pref
+	UT_uint32 pref_flags, pref_width, pref_height;
+	UT_sint32 pref_x, pref_y;
+	m_pQNXApp->getPrefs()->getGeometry(&pref_x, &pref_y, &pref_width,
+										 &pref_height, &pref_flags);
+	if (!(f & XAP_QNXApp::GEOMETRY_FLAG_SIZE)
+	&& (pref_flags & PREF_FLAG_GEOMETRY_SIZE))
+	{
+		width = pref_width;
+		height = pref_height;
+		f |= XAP_QNXApp::GEOMETRY_FLAG_SIZE;
+	}
+	if (!(f & XAP_QNXApp::GEOMETRY_FLAG_POS)
+		&& (pref_flags & PREF_FLAG_GEOMETRY_POS))
+	{
+		x = pref_x;
+		y = pref_y;
+	f |= XAP_QNXApp::GEOMETRY_FLAG_POS;
+	}
+// Set the size if requested.
+	if(f & XAP_QNXApp::GEOMETRY_FLAG_SIZE)
+	{
+			PhDim_t dim;
+			dim.w = width;
+			dim.h = height;
+		
+			PtSetResource(m_wTopLevelWindow,Pt_ARG_DIM,&dim,0);		
+	}
+	//Only set the pos on the first window.
+	if(m_pQNXApp->getFrameCount() <= 1)
+	{
+		if( f & XAP_QNXApp::GEOMETRY_FLAG_POS)
+		{
+			PhPoint_t pos;
+			pos.x=x;
+			pos.y=y;
+			PtSetResource(m_wTopLevelWindow,Pt_ARG_POS,&pos,0);
+		}
+	}
+	//Remember the settings for next time
+	m_pQNXApp->getPrefs()->setGeometry(x,y,width,height,f);
+
+return;
 }
+
 
 bool XAP_QNXFrame::close()
 {
@@ -647,7 +696,6 @@ bool XAP_QNXFrame::show()
 
 bool XAP_QNXFrame::openURL(const char * szURL)
 {
-	//TODO: I should use spawn here
 	spawnlp(P_NOWAITO,"voyager","voyager","-u",szURL,NULL);
 	return true;
 }
