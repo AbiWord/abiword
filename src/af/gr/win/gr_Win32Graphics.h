@@ -40,6 +40,7 @@ class Win32Graphics : public DG_Graphics
 public:
 	Win32Graphics(HDC, HWND);					/* for screen */
 	Win32Graphics(HDC, const DOCINFO *);		/* for printing */
+	~Win32Graphics();
 
 	virtual void drawChars(const UT_UCSChar* pChars, int iCharOffset, int iLength, UT_sint32 xoff, UT_sint32 yoff);
 	virtual void setFont(DG_Font* pFont);
@@ -47,6 +48,7 @@ public:
 	virtual UT_uint32 measureString(const UT_UCSChar*s, int iOffset, int num, unsigned short* pWidths);
 	virtual UT_uint32 getResolution() const;
 	virtual void setColor(UT_RGBColor& clr);
+	virtual DG_Font* Win32Graphics::getGUIFont();
 	virtual DG_Font* findFont(
 		const char* pszFontFamily, 
 		const char* pszFontStyle, 
@@ -84,6 +86,7 @@ protected:
 	UT_Bool				m_bStartPrint;
 	UT_Bool				m_bStartPage;
 	Win32Font*			m_pFont;
+	Win32Font*			m_pFontGUI;
 	ABC					m_aABCs[256];
 	int					m_aCharWidths[256];
 

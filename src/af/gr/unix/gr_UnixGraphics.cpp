@@ -34,6 +34,7 @@
 #include "ut_misc.h"
 #include "ut_string.h"
 
+#define DELETEP(p)	do { if (p) delete p; } while (0)
 #define FREEP(p)	do { if (p) free(p); } while (0)
 
 /*****************************************************************/
@@ -63,6 +64,7 @@ UNIXGraphics::UNIXGraphics(GdkWindow * win, AP_UnixFontManager * fontManager)
 	m_pWin = win;
 	m_pFontManager = fontManager;
 	m_pFont = NULL;
+	m_pFontGUI = NULL;
 	m_pGC = gdk_gc_new(m_pWin);
 	m_pXORGC = gdk_gc_new(m_pWin);
 
@@ -86,6 +88,11 @@ UNIXGraphics::UNIXGraphics(GdkWindow * win, AP_UnixFontManager * fontManager)
 	gdk_gc_set_exposures(m_pXORGC,1);
 	
 	memset(m_aCharWidths, 0, 256 * sizeof(int));
+}
+
+UNIXGraphics::~UNIXGraphics()
+{
+	DELETEP(m_pFontGUI);
 }
 
 UT_Bool UNIXGraphics::queryProperties(DG_Graphics::Properties gp) const
@@ -253,6 +260,22 @@ void UNIXGraphics::setColor(UT_RGBColor& clr)
 	gcv.function = GXxor;
 
 	XChangeGC(pgc->xdisplay, pgc->xgc, GCForeground | GCFunction, &gcv);
+}
+
+DG_Font* UNIXGraphics::getGUIFont(void)
+{
+	if (!m_pFontGUI)
+	{
+		// lazily grab this (once)
+#if 0
+		// TODO: get the same font as combos, etc. use for ruler
+		HFONT f = (HFONT) GetStockObject(DEFAULT_GUI_FONT);
+		m_pFontGUI = new Win32Font(f);
+#endif
+		UT_ASSERT(m_pFontGUI);
+	}
+
+	return m_pFontGUI;
 }
 
 DG_Font* UNIXGraphics::findFont(const char* pszFontFamily, 

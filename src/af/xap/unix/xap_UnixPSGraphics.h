@@ -59,6 +59,7 @@ public:
 	
 	virtual UT_uint32 getResolution() const;
 	virtual void setColor(UT_RGBColor& clr);
+	virtual DG_Font* getGUIFont();
 	virtual DG_Font* findFont(const char* pszFontFamily, 
 							  const char* pszFontStyle, 
 							  const char* pszFontVariant, 

@@ -45,6 +45,8 @@ class DG_Font
 class DG_Graphics
 {
 public:
+	virtual ~DG_Graphics();
+
 	virtual void drawChars(const UT_UCSChar* pChars, 
 		int iCharOffset, int iLength, UT_sint32 xoff, UT_sint32 yoff) = 0;
 	virtual void setFont(DG_Font* pFont) = 0;
@@ -57,6 +59,7 @@ public:
 	
 	virtual UT_uint32 getResolution() const = 0;
 	virtual void setColor(UT_RGBColor& clr) = 0;
+	virtual DG_Font* getGUIFont() = 0;
 	virtual DG_Font* findFont(
 		const char* pszFontFamily, 
 		const char* pszFontStyle, 

@@ -26,6 +26,11 @@
 #include "ut_string.h"
 #include "ut_units.h"
 
+DG_Graphics::~DG_Graphics()
+{
+	// need this so children can clean up
+}
+
 UT_sint32 DG_Graphics::convertDimension(const char * s) const
 {
 	double dInches = UT_convertToInches(s);

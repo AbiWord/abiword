@@ -57,6 +57,8 @@ class UNIXGraphics : public DG_Graphics
 {
 public:
   UNIXGraphics(GdkWindow * win, AP_UnixFontManager * fontManager);
+  ~UNIXGraphics();
+
   virtual void drawChars(const UT_UCSChar* pChars, int iCharOffset,
 			 int iLength, UT_sint32 xoff, UT_sint32 yoff);
   virtual void setFont(DG_Font* pFont);
@@ -65,6 +67,7 @@ public:
 				  unsigned short* pWidths);
   virtual UT_uint32 getResolution() const;
   virtual void setColor(UT_RGBColor& clr);
+  virtual DG_Font* getGUIFont();
   virtual DG_Font* findFont(
 		const char* pszFontFamily, 
 		const char* pszFontStyle, 
@@ -98,6 +101,7 @@ protected:
   GdkGC*        		m_pXORGC;
   GdkWindow*    		m_pWin;
   UnixFont*				m_pFont;
+  UnixFont*				m_pFontGUI;
   GdkColormap*  		m_pColormap;
   int					m_aCharWidths[256];
   int          			m_iWindowHeight, m_iWindowWidth;

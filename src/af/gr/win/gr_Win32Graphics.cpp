@@ -25,6 +25,7 @@
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 
+#define DELETEP(p)	do { if (p) delete p; } while (0)
 #define FREEP(p)	do { if (p) free(p); } while (0)
 
 /*****************************************************************/
@@ -56,6 +57,7 @@ void Win32Graphics::_constructorCommonCode(HDC hdc)
 	m_bStartPrint = UT_FALSE;
 	m_bStartPage = UT_FALSE;
 	m_pFont = NULL;
+	m_pFontGUI = NULL;
 	memset(m_aABCs, 0, 256*sizeof(ABC));
 	memset(m_aCharWidths, 0, 256*sizeof(int));
 }
@@ -73,6 +75,11 @@ Win32Graphics::Win32Graphics(HDC hdc, const DOCINFO * pDocInfo)
 	m_pDocInfo = pDocInfo;
 }
 
+Win32Graphics::~Win32Graphics()
+{
+	DELETEP(m_pFontGUI);
+}
+
 UT_Bool Win32Graphics::queryProperties(DG_Graphics::Properties gp) const
 {
 	switch (gp)
@@ -87,10 +94,22 @@ UT_Bool Win32Graphics::queryProperties(DG_Graphics::Properties gp) const
 	}
 }
 
-
 Win32Font::Win32Font(HFONT hFont)
 {
 	m_hFont = hFont;
+}
+
+DG_Font* Win32Graphics::getGUIFont(void)
+{
+	if (!m_pFontGUI)
+	{
+		// lazily grab this (once)
+		HFONT f = (HFONT) GetStockObject(DEFAULT_GUI_FONT);
+		m_pFontGUI = new Win32Font(f);
+		UT_ASSERT(m_pFontGUI);
+	}
+
+	return m_pFontGUI;
 }
 
 DG_Font* Win32Graphics::findFont(
