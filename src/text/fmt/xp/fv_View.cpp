@@ -2968,29 +2968,22 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 fl_BlockLayout * FV_View::getBlockFromSDH(PL_StruxDocHandle sdh)
 {
 	PL_StruxFmtHandle sfh = NULL;
-	UT_uint32 i;
 	bool bFound = false;
 	fl_BlockLayout * pBlock = NULL;
 //
-// Loop through all the format handles that match our sdh until we find the one
-// in our View. (Not that it really matter I suppose.)
-//
-	for(i = 0; !bFound; ++i)
-	{
-//
 // Cast it into a fl_BlockLayout and we're done!
 //
-		sfh = m_pDoc->getNthFmtHandle(sdh, i);
-		if(sfh != NULL)
+	sfh = m_pDoc->getNthFmtHandle(sdh, m_pLayout->getLID());
+	if(sfh != NULL)
+	{
+		pBlock = const_cast<fl_BlockLayout *>(static_cast<const fl_BlockLayout *>(sfh));
+		if(pBlock->getDocLayout() == m_pLayout)
 		{
-			pBlock = const_cast<fl_BlockLayout *>(static_cast<const fl_BlockLayout *>(sfh));
-			if(pBlock->getDocLayout() == m_pLayout)
-			{
-				bFound = true;
-			}
+			bFound = true;
 		}
 		else
 		{
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			pBlock = NULL;
 			bFound = true;
 		}

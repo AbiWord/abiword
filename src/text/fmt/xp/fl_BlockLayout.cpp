@@ -932,24 +932,22 @@ UT_sint32 fl_BlockLayout::getEmbeddedOffset(UT_sint32 offset, fl_ContainerLayout
 	}
 	PL_StruxFmtHandle sfhEmbed = NULL;
 	bool bFound = false;
-	UT_sint32 i = 0;
-	while(!bFound)
+	sfhEmbed = m_pDoc->getNthFmtHandle(sdhEmbed,m_pLayout->getLID());
+	if(	sfhEmbed == NULL)
 	{
-		sfhEmbed = m_pDoc->getNthFmtHandle(sdhEmbed,i);
-		if(	sfhEmbed == NULL)
-		{
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			break;
-		}
-		pEmbedCL = reinterpret_cast<fl_ContainerLayout *>(const_cast<void *>(sfhEmbed));
-		if(pEmbedCL->getDocSectionLayout() == getDocSectionLayout())
-		{
-			bFound = true;
-		}
-		else
-		{
-			i++;
-		}
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return -1;
+	}
+	pEmbedCL = reinterpret_cast<fl_ContainerLayout *>(const_cast<void *>(sfhEmbed));
+	if(pEmbedCL->getDocSectionLayout() == getDocSectionLayout())
+	{
+		bFound = true;
+	}
+	else
+	{
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		pEmbedCL = NULL;
+		return -1;
 	}
 	if(bFound)
 	{
@@ -975,9 +973,10 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 	fp_Run * pPrev = NULL;
 	while(pRun && (posInBlock + pRun->getBlockOffset() < posEmbedded))
 	{
-		xxx_UT_DEBUGMSG(("Look at run %x runType %d posindoc %d \n",pRun,pRun->getType(),posInBlock+pRun->getBlockOffset()));
+		UT_DEBUGMSG(("Look at run %x runType %d posindoc %d \n",pRun,pRun->getType(),posInBlock+pRun->getBlockOffset()));
 		pPrev = pRun;
 		pRun = pRun->getNextRun();
+	 
 	}
 	if(pRun == NULL)
 	{
@@ -1015,12 +1014,18 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 		if(!bHandleOne && (posRun + pPrev->getLength() <= posEmbedded))
 		{
 			iDiff = static_cast<UT_sint32>((pRun->getBlockOffset() - pPrev->getBlockOffset() - pPrev->getLength()));
-			xxx_UT_DEBUGMSG(("updateOffsets: after BlockOffset %d or pos %d \n",pRun->getBlockOffset(),posInBlock+pRun->getBlockOffset())); 
+			UT_DEBUGMSG(("updateOffsets: after BlockOffset %d or pos %d \n",pRun->getBlockOffset(),posInBlock+pRun->getBlockOffset())); 
 		}
 		else if(!bHandleOne && (posRun == posEmbedded) && pRun->getNextRun())
 		{
 			iDiff = static_cast<UT_sint32>((pRun->getNextRun()->getBlockOffset() -pRun->getBlockOffset() - pRun->getLength()));
 			pRun = pRun->getNextRun();
+		}
+		else if(!bHandleOne && ((posRun +1) == posEmbedded))
+	    {
+			iDiff = 0;
+			pRun = pPrev;
+			pPrev = pRun->getPrevRun();
 		}
 //
 // here if the last run starts beyond the point where the footnote is embedded
@@ -1037,7 +1042,7 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 				// We're here if the first run of the block is the footnote
 				// field and we've just deleted the footnote
 				//
-				xxx_UT_DEBUGMSG(("posEmbedded %d posInBlock %d prev pos %d next pos %d \n",posEmbedded,posInBlock,posInBlock+pRun->getBlockOffset(),posInBlock+pRun->getNextRun()->getBlockOffset()));
+				UT_DEBUGMSG(("posEmbedded %d posInBlock %d prev pos %d next pos %d \n",posEmbedded,posInBlock,posInBlock+pRun->getBlockOffset(),posInBlock+pRun->getNextRun()->getBlockOffset()));
 				iDiff = pRun->getNextRun()->getBlockOffset() - pRun->getBlockOffset();
 				if((iDiff == 1) && bHandleOne)
 				{
@@ -1058,7 +1063,7 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 				UT_uint32 splitOffset = posEmbedded - posInBlock -1;
 				if(splitOffset > pTRun->getBlockOffset())
 				{
-					xxx_UT_DEBUGMSG(("updateOffsets: Split at offset %d \n",splitOffset));
+					UT_DEBUGMSG(("updateOffsets: Split at offset %d \n",splitOffset));
 					bool bres = pTRun->split(splitOffset);
 					UT_ASSERT(bres);
 					pRun = pTRun->getNextRun();
@@ -1079,7 +1084,7 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 		}
 	}
 	UT_ASSERT(iDiff >= 0);
-	xxx_UT_DEBUGMSG(("Updating block %x with orig shift %d new shift %d \n",this,iDiff,iEmbeddedSize));
+	UT_DEBUGMSG(("Updating block %x with orig shift %d new shift %d \n",this,iDiff,iEmbeddedSize));
 	if(iDiff != static_cast<UT_sint32>(iEmbeddedSize))
 	{
 //
@@ -1091,7 +1096,7 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 		{
 			UT_uint32 iNew = pRun->getBlockOffset() + iDiff;
 			UT_ASSERT(iNew >= 0);
-			xxx_UT_DEBUGMSG(("Run %x Old offset %d New Offset %d \n",pRun,pRun->getBlockOffset(),iNew));
+			UT_DEBUGMSG(("Run %x Old offset %d New Offset %d \n",pRun,pRun->getBlockOffset(),iNew));
 			pRun->setBlockOffset(static_cast<UT_uint32>(iNew));
 			pRun = pRun->getNextRun();
 		}
@@ -1100,7 +1105,7 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 //
 		getSquiggles()->updatePOBs(iFirstOffset,iDiff);
 	}
-#if 0
+#if 1
 #if DEBUG
 	pRun = getFirstRun();
 	while(pRun)
