@@ -40,7 +40,7 @@ typedef enum _ut_dimension { DIM_IN, DIM_CM, DIM_MM, DIM_PI, DIM_PT, DIM_PX, DIM
  *	DIM_IN := inches
  *	DIM_CM := centimeters
  *	DIM_MM := millimeters
- *	DIM_PI := picometers
+ *	DIM_PI := picas
  *	DIM_PT := points
  *	DIM_PX := pixels
  */

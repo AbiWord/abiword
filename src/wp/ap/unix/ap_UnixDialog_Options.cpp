@@ -691,8 +691,8 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	gtk_widget_show (glade_menuitem);
 	gtk_menu_append (GTK_MENU (ruler_units_menu), glade_menuitem);
 
-	// pico
-  	glade_menuitem = gtk_menu_item_new_with_label (pSS->getValueUTF8(XAP_STRING_ID_DLG_Unit_pico).c_str());
+	// picas
+  	glade_menuitem = gtk_menu_item_new_with_label (pSS->getValueUTF8(XAP_STRING_ID_DLG_Unit_pica).c_str());
   	g_object_set_data(G_OBJECT(glade_menuitem), WIDGET_MENU_OPTION_PTR, static_cast<gpointer>(ruler_units));
   	g_object_set_data(G_OBJECT(glade_menuitem), WIDGET_MENU_VALUE_TAG,  GINT_TO_POINTER(DIM_PI));
   	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(glade_menuitem);

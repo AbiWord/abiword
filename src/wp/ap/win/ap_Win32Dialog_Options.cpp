@@ -139,7 +139,7 @@ struct {
 	{ DIM_IN, XAP_STRING_ID_DLG_Unit_inch },
 	{ DIM_CM, XAP_STRING_ID_DLG_Unit_cm },
 	{ DIM_PT, XAP_STRING_ID_DLG_Unit_points },
-	{ DIM_PI, XAP_STRING_ID_DLG_Unit_pico },
+	{ DIM_PI, XAP_STRING_ID_DLG_Unit_pica },
 };
 #define SIZE_aAlignUnit  (sizeof(s_aAlignUnit)/sizeof(s_aAlignUnit[0]))
 #define _CDB(c,i)	CheckDlgButton(hWnd,AP_RID_DIALOG_##c,_getCheckItemValue(i))

@@ -79,7 +79,7 @@ dcl(DLG_Unit_inch,				"inch")
 dcl(DLG_Unit_cm,				"cm")
 dcl(DLG_Unit_mm,				"mm")
 dcl(DLG_Unit_points,			"points")
-dcl(DLG_Unit_pico,				"pica")
+dcl(DLG_Unit_pica,				"pica")
 
 /* Message box */
 /* These are tagged "UnixMB" because the underscores precede accelerator

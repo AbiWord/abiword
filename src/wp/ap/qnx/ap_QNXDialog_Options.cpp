@@ -569,7 +569,7 @@ item = pSS->getValueUTF8(XAP_STRING_ID_DLG_Unit_cm).c_str();
 item = pSS->getValueUTF8(XAP_STRING_ID_DLG_Unit_points).c_str();
 	PtListAddItems(listViewRulerUnit, &item, 1, 0);
     m_vecUnits.addItem((void *)DIM_PT);
-item = pSS->getValueUTF8(XAP_STRING_ID_DLG_Unit_pico).c_str();
+item = pSS->getValueUTF8(XAP_STRING_ID_DLG_Unit_pica).c_str();
 	PtListAddItems(listViewRulerUnit, &item, 1, 0);
     m_vecUnits.addItem((void *)DIM_PI);
 
