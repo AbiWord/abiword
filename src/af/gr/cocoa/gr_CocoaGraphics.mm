@@ -199,9 +199,11 @@ bool GR_CocoaGraphics::queryProperties(GR_Graphics::Properties gp) const
 
 /* let's cache this, since construction of UT_Wctomb is rather slow */
 static UT_Wctomb* w = NULL;
+#if 0
 static char text[MB_LEN_MAX];
 static int text_length;
 static bool fallback_used;
+#endif 
 
 #define WCTOMB_DECLS \
 	if (!w) {	\
@@ -452,7 +454,7 @@ NSColor	*GR_CocoaGraphics::_utRGBColorToNSColor (const UT_RGBColor& clr)
 	g = (float)clr.m_grn / 255.0f;
 	b = (float)clr.m_blu / 255.0f;
 	UT_DEBUGMSG (("converting color r=%f, g=%f, b=%f from %d, %d, %d\n", r, g, b, clr.m_red, clr.m_grn, clr.m_blu));
-	NSColor *c = [[NSColor colorWithDeviceRed:r green:g blue:b alpha:(clr.m_bIsTransparent ? 0.0 : 1.0)] retain];	// is autoreleased, so retain
+	NSColor *c = [[NSColor colorWithDeviceRed:r green:g blue:b alpha:1.0 /*(clr.m_bIsTransparent ? 0.0 : 1.0)*/] retain];	// is autoreleased, so retain
 	return c;
 }
 
@@ -646,8 +648,6 @@ UT_uint32 GR_CocoaGraphics::getFontDescent()
 void GR_CocoaGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,
 							   UT_sint32 x2, UT_sint32 y2)
 {
-	CGContextRef context;
-
 	LOCK_CONTEXT__;
 	UT_DEBUGMSG (("GR_CocoaGraphics::drawLine(%ld, %ld, %ld, %ld) width=%f\n", x1, y1, x2, y2,
 	              [NSBezierPath defaultLineWidth]));
@@ -846,7 +846,7 @@ void GR_CocoaGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDes
 		return;
 	}
 
-   	UT_sint32 iImageWidth = pCocoaImage->getDisplayWidth();
+//   	UT_sint32 iImageWidth = pCocoaImage->getDisplayWidth();
    	UT_sint32 iImageHeight = pCocoaImage->getDisplayHeight();
 
 	LOCK_CONTEXT__;
@@ -1118,20 +1118,23 @@ void GR_Font::s_getGenericFontProperties(const char * /*szFontName*/,
 	*pbTrueType = true;
 }
 
-bool GR_CocoaGraphics::storeCachedImage(UT_Rect * pRect)
+
+void GR_CocoaGraphics::saveRectangle(UT_Rect & rect)
 {
-	NSRect r = NSMakeRect(pRect->left, pRect->top, 
-						  pRect->width, pRect->height);
+	NSRect r = NSMakeRect(rect.left, rect.top, 
+						  rect.width, rect.height);
 	LOCK_CONTEXT__;
 	[[m_pWin window] cacheImageInRect:r];
 	[[m_pWin window] flushWindowIfNeeded];
-	return true; 
 }
 
-bool GR_CocoaGraphics::restoreCachedImage()
+
+void GR_CocoaGraphics::restoreRectangle()
 {
 	LOCK_CONTEXT__;
 	[[m_pWin window] restoreCachedImage];
 	[[m_pWin window] flushWindowIfNeeded];
-	return true; 
 }
+
+
+

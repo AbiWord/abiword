@@ -120,8 +120,10 @@ class GR_CocoaGraphics : public GR_Graphics
 	virtual UT_uint32 getFontAscent(GR_Font *);
 	virtual UT_uint32 getFontDescent(GR_Font *);
 	virtual UT_uint32 getFontHeight(GR_Font *);
-	virtual bool	  storeCachedImage(UT_Rect * pRect);
-	virtual bool	  restoreCachedImage();
+	
+	virtual void	  saveRectangle(UT_Rect & r);
+	virtual void	  restoreRectangle();
+
 
 	typedef bool (*gr_cocoa_graphics_update) (NSRect * rect, GR_CocoaGraphics *pGr, void * param);
 	void				_setUpdateCallback (gr_cocoa_graphics_update callback, void * param);
@@ -157,6 +159,8 @@ private:
 	GR_Graphics::Cursor		m_cursor;
 
 	GR_Graphics::ColorSpace	m_cs;
+	
+	NSImage*				m_savedImage;
 public:		//HACK	
 	NSColor	*			m_3dColors[COUNT_3D_COLORS];
 };
