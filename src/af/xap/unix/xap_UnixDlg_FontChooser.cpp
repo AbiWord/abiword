@@ -1027,6 +1027,9 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	// to sort out dupes
 	UT_StringPtrMap fontHash(256);
 
+	gtk_clist_freeze(GTK_CLIST(m_fontList));
+	gtk_clist_clear(GTK_CLIST(m_fontList));
+
 	// throw them in the hash save duplicates
 	UT_Vector * fonts = m_fontManager->getAllFonts();
 	for (UT_uint32 i = 0; i < fonts->size(); i++)
@@ -1034,27 +1037,15 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 		XAP_UnixFont * pFont = (XAP_UnixFont *)fonts->getNthItem(i);
 		const char * fName = pFont->getName();
 		if (!fontHash.contains(fName, NULL))
-			fontHash.insert(fName,
-					(void *) fName);
+		  {
+		    fontHash.insert(fName,
+				    (void *) fName);
+		    text[0] = (gchar*)fName;
+		    gtk_clist_append(GTK_CLIST(m_fontList), text);
+		  }
 	}
+
 	DELETEP(fonts);
-
-	// fetch them out
-	gtk_clist_freeze(GTK_CLIST(m_fontList));
-	gtk_clist_clear(GTK_CLIST(m_fontList));
-
-	UT_Vector * pVec = fontHash.enumerate();
-	UT_ASSERT(pVec);
-
-	UT_uint32 pVecSize = pVec->size();
-
-	for (UT_uint32 ndx = 0; ndx < pVecSize; ndx++)
-	{
-		text[0] = (gchar *)pVec->getNthItem(ndx);
-		gtk_clist_append(GTK_CLIST(m_fontList), text);
-	}
-
-	DELETEP(pVec);
 	
 	gtk_clist_thaw(GTK_CLIST(m_fontList));
 
