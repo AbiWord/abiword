@@ -4805,6 +4805,7 @@ void    fl_BlockLayout::StartList( List_Type lType, UT_uint32 start,const XML_Ch
 		m_bListItem = true;
 		listUpdate();
 	}
+	id = rand();
 	while(id < AUTO_LIST_RESERVED)
                 id = rand();
 	sprintf(lid, "%i", id);
