@@ -343,7 +343,8 @@ void fp_CellContainer::_getBrokenRect(fp_TableContainer * pBroke, fp_Page * &pPa
 				ydiff -= static_cast<fl_DocSectionLayout *>(getSectionLayout()->getDocSectionLayout())->getTopMargin();
 			}
 		}
-
+		iLeft -= xdiff;
+		iRight -= xdiff;
 		iTop -= ydiff;
 		iBot -= ydiff;
 	}
