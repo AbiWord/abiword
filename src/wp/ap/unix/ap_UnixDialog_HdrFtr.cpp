@@ -366,6 +366,7 @@ void AP_UnixDialog_HdrFtr::_constructWindowContents (GtkWidget * parent)
 	{
 		gtk_widget_set_sensitive(m_wSpin,TRUE);
 		gtk_widget_set_sensitive(m_wRestartLabel,TRUE);
+		gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON(m_wRestartButton),TRUE);
 	}
 	else
 	{

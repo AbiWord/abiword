@@ -1121,6 +1121,28 @@ void fl_DocSectionLayout::_lookupProperties(void)
 		m_iSpaceAfterLayoutUnits = UT_convertToLayoutUnits("0in");
 	}
 
+	const char* pszRestart = NULL;
+	pSectionAP->getProperty("section-restart", (const XML_Char *&)pszRestart);
+	if (pszRestart && pszRestart[0])
+	{
+		m_bRestart = (UT_strcmp(pszRestart,"1")==0);
+	}
+	else
+	{
+		m_bRestart = false;
+	}
+
+	const char* pszRestartValue = NULL;
+	pSectionAP->getProperty("section-restart-value", (const XML_Char *&)pszRestartValue);
+	if (pszRestartValue && pszRestartValue[0])
+	{
+		m_iRestartValue = atoi(pszRestartValue);
+	}
+	else
+	{
+		m_iRestartValue = 1;
+	}
+
 	const char* pszLeftMargin = NULL;
 	const char* pszTopMargin = NULL;
 	const char* pszRightMargin = NULL;

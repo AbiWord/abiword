@@ -203,7 +203,8 @@ public:
 	inline UT_sint32			getLeftMarginInLayoutUnits(void) const { return m_iLeftMarginLayoutUnits; }
 	inline UT_sint32			getRightMargin(void) const { return m_iRightMargin; }
 	inline UT_sint32			getRightMarginInLayoutUnits(void) const { return m_iRightMarginLayoutUnits; }
-
+	bool                        arePageNumbersRestarted (void) const { return m_bRestart;}
+	UT_sint32                   getRestartedPageNumber(void) const { return m_iRestartValue;}
 	UT_sint32                   getTopMargin(void) const;
 	UT_sint32                   getTopMarginInLayoutUnits(void) const;
     UT_sint32                   getBottomMargin(void) const;
@@ -286,6 +287,8 @@ protected:
 
 	UT_sint32			m_iSpaceAfter;
 	UT_sint32			m_iSpaceAfterLayoutUnits;
+	bool                m_bRestart;
+	UT_sint32           m_iRestartValue;
 	UT_sint32			m_iLeftMargin;
 	UT_sint32			m_iLeftMarginLayoutUnits;
 	double				m_dLeftMarginUserUnits;
