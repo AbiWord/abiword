@@ -55,6 +55,8 @@
 #include "pf_Frag_Strux.h"
 #include "pt_PieceTable.h"
 
+#include "ut_Language.h"
+
 #ifdef DEBUG
 #define IE_IMP_MSWORD_DUMP
 #include "ie_imp_MsWord_dump.h"
@@ -356,18 +358,11 @@ s_fieldFontForListStyle (MSWordListIdType id)
 // MS Word uses the langauge codes as explicit overrides when treating
 // weak characters; this function translates language id to the
 // overrided direction
-// TODO: list of RTL languages is incomplete (the values are found in winnt.h)
-#define PRIMARY_LANG_ID(lgid)    (static_cast<short int>(lgid) & 0x3ff)
 static bool s_isLanguageRTL(short unsigned int lid)
 {
-	switch(PRIMARY_LANG_ID(lid))
-	{
-		case 0x0d:
-	    case 0x01:
-			return true;
-		default:
-		    return false;
-	}
+	const char * s = wvLIDToLangConverter (lid);
+	UT_Language l;
+	return (UTLANG_RTL == l.getOrderFromProperty(s));
 }
 /****************************************************************************/
 /****************************************************************************/
@@ -932,7 +927,10 @@ int IE_Imp_MsWord_97::_docProc (wvParseStruct * ps, UT_uint32 tag)
 		UT_DEBUGMSG(("IE_Imp_MsWord_97::_docProc: complex %d, bidi %d\n",
 					 ps->fib.fComplex,m_bBidiDocument));
 #else
-		m_bBidiDocument = false;
+		// for now we will assume that all documents are bidi
+		// documents (Tomas, Apr 12, 2003)
+		
+		m_bBidiDocument = true;
 #endif
 		UT_uint32 i,j;
 
@@ -1156,9 +1154,6 @@ int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U
 						 eachchar,m_bLTRCharContext,m_bLanguageRTL));
 #endif
 
-	UT_UCS4Char cMarker = 0;
-	
-#ifdef BIDI_DEBUG
 	// bidi adjustments for neutrals
 	// 
 	// We have a problem in bidi documents caused by the fact that
@@ -1168,6 +1163,8 @@ int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U
 	// that would mean using explicit overrides all the time, but
 	// there are some cases when we need to jump through hoops to get
 	// sensible layout out of the document.
+
+	UT_UCS4Char cMarker = 0;
 
 	if(m_bBidiDocument)
 	{
@@ -1183,7 +1180,7 @@ int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U
 			//     inserting UCS_LRM and UCS_RLM after them
 			if(eachchar == ')' || eachchar == '}' || eachchar == ']')
 			{
-				if(s_isLanguageRTL(lid))
+				if(m_bLanguageRTL)
 				{
 					cMarker = UCS_RLM;
 				}
@@ -1194,10 +1191,8 @@ int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U
 			}
 		}
 	}
-#endif
 	
 #if 0
-
 	// I am going to disable this for now, to simplify debugging
 	// processing of numbers in RTL context (Tomas, Jan 30, 2003)
 	//
@@ -2382,21 +2377,29 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 	// set language based the lid - TODO: do we want to handle -none- differently?
 	m_charProps += "lang:";
 
+	unsigned short iLid = 0;
+	// I am not sure how the various lids are supposed to work, but
+	// achp->fBidi does not mean that the lidBidi is set ...
 	if (achp->fBidi)
 	{
-		m_charProps += wvLIDToLangConverter (achp->lidBidi);
-		m_bLanguageRTL = s_isLanguageRTL(achp->lidBidi);
+		iLid = achp->lidBidi;
 	}
-	else if (!ps->fib.fFarEast)
+	else if(ps->fib.fFarEast)
 	{
-		m_charProps += wvLIDToLangConverter (achp->lidDefault);
-		m_bLanguageRTL = s_isLanguageRTL(achp->lidBidi);
+		iLid = achp->lidFE;
 	}
 	else
 	{
-		m_charProps += wvLIDToLangConverter (achp->lidFE);
-		m_bLanguageRTL = s_isLanguageRTL(achp->lidBidi);
+		iLid = achp->lid;
 	}
+	
+
+	// if we do not have meaningful lid, try default ...
+	if(!iLid)
+		iLid = achp->lidDefault;
+	
+	m_charProps += wvLIDToLangConverter (iLid);
+	m_bLanguageRTL = s_isLanguageRTL(iLid);
 
 	m_charProps += ";";
 
