@@ -286,8 +286,8 @@ gint XAP_UnixFrame::_fe::delete_event(GtkWidget * w, GdkEvent * /*event*/, gpoin
 	const EV_EditMethodContainer * pEMC = pApp->getEditMethodContainer();
 	UT_ASSERT(pEMC);
 
-	// was "closeWindowX", FALSE, TRUE
-	const EV_EditMethod * pEM = pEMC->findEditMethodByName("closeWindow");
+	// was "closeWindow", TRUE, FALSE
+	const EV_EditMethod * pEM = pEMC->findEditMethodByName("closeWindowX");
 	UT_ASSERT(pEM);
 
 	if (pEM)
@@ -297,13 +297,13 @@ gint XAP_UnixFrame::_fe::delete_event(GtkWidget * w, GdkEvent * /*event*/, gpoin
 			// returning FALSE means destroy the window, continue along the
 			// chain of Gtk destroy events
 
-			return TRUE;
+			return FALSE;
 		}
 	}
 
 	// returning TRUE means do NOT destroy the window; halt the message
 	// chain so it doesn't see destroy
-	return FALSE;
+	return TRUE;
 }
 
 gint XAP_UnixFrame::_fe::expose(GtkWidget * w, GdkEventExpose* pExposeEvent)
