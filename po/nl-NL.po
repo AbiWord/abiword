@@ -3164,7 +3164,7 @@ msgstr "Linker Inspring [%s] Eerste Regel Inspring [%s]"
 #: po/tmp/ap_String_Id.h.h:1308
 #, c-format
 msgid "Left Margin [%s]"
-msgstr "Linker Marge [%s]"
+msgstr "Linker marge [%s]"
 
 #. TabToggleLeftTab
 #: po/tmp/ap_String_Id.h.h:1310
@@ -4213,19 +4213,18 @@ msgstr "Rechts"
 #: po/tmp/ap_String_Id.h.h:1727
 #, fuzzy, c-format
 msgid "Right Indent [%s]"
-msgstr "Rechter Inspring [%s]"
+msgstr "Rechter inspring [%s]"
 
 #. RightMarginStatus
 #: po/tmp/ap_String_Id.h.h:1729
 #, c-format
 msgid "Right Margin [%s]"
-msgstr "Rechter Marge [%s]"
+msgstr "Rechter marge [%s]"
 
 #. TabToggleRightTab
 #: po/tmp/ap_String_Id.h.h:1731
-#, fuzzy
 msgid "Right Tab"
-msgstr "&Rechter Tab"
+msgstr "Rechter tab"
 
 #. TOOLBAR_STATUSLINE_ALIGN_RIGHT
 #. TOOLBAR_TOOLTIP_ALIGN_RIGHT
@@ -4754,7 +4753,7 @@ msgstr "Statistieken:"
 #. DLG_Lists_Stop_Current_List
 #: po/tmp/ap_String_Id.h.h:1938
 msgid "Stop Current List"
-msgstr "Stop Huidige Lijst"
+msgstr "Stop de huidige lijst"
 
 #. MENU_LABEL_FMT_STRIKE
 #: po/tmp/ap_String_Id.h.h:1940
@@ -4788,12 +4787,12 @@ msgstr "Stijlnaam - "
 #. DLG_Styles_ModifyName
 #: po/tmp/ap_String_Id.h.h:1954
 msgid "Style Name:"
-msgstr "Stijl Naam:"
+msgstr "Stijlnaam:"
 
 #. DLG_Styles_ModifyType
 #: po/tmp/ap_String_Id.h.h:1956
 msgid "Style Type"
-msgstr "Stijl type"
+msgstr "Stijltype"
 
 #. DLG_Styles_ModifyFollowing
 #: po/tmp/ap_String_Id.h.h:1958
@@ -4875,7 +4874,6 @@ msgstr "Speciaal teken"
 
 #. MENU_LABEL_TABLE
 #: po/tmp/ap_String_Id.h.h:1993
-#, fuzzy
 msgid "T&able"
 msgstr "T&abel"
 
@@ -4883,7 +4881,7 @@ msgstr "T&abel"
 #: po/tmp/ap_String_Id.h.h:1995
 #, c-format
 msgid "Tab Stop [%s]"
-msgstr "Tab Stop [%s]"
+msgstr "Tab stop [%s]"
 
 #. DLG_Tab_Label_TabPosition
 #: po/tmp/ap_String_Id.h.h:1997
