@@ -50,6 +50,11 @@ static char Rcs_Id[] =
 
 /*
  * $Log$
+ * Revision 1.3  2001/05/14 09:52:50  hub
+ * Removed newMain.c from GNUmakefile.am
+ *
+ * C++ comments are not C comment. Changed to C comments
+ *
  * Revision 1.2  2001/05/12 16:05:42  thomasf
  * Big pseudo changes to ispell to make it pass around a structure rather
  * than rely on all sorts of gloabals willy nilly here and there.  Also
@@ -168,11 +173,11 @@ static void	save_root_cap P ((FIRST_ARG(istate) ichar_t * word, ichar_t * patter
 		  struct flagent * sufent,
 		  ichar_t savearea[MAX_CAPS][INPUTWORDLEN + MAXAFFIXLEN],
 		  int * nsaved));
-
-//extern void upcase P ((ichar_t * string));
-//extern void lowcase P ((ichar_t * string));
-//extern ichar_t * strtosichar P ((char * in, int canonical));
-
+/*
+extern void upcase P ((ichar_t * string));
+extern void lowcase P ((ichar_t * string));
+extern ichar_t * strtosichar P ((char * in, int canonical));
+*/
 int compoundflag = COMPOUND_CONTROLLED;
 
 static int posscmp (FIRST_ARG(istate) char *a, char *b)

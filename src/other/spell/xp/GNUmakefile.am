@@ -29,7 +29,7 @@ noinst_LIBRARIES = libSpell.a
 if WITH_PSPELL
 libSpell_a_SOURCES= spell_manager.cpp pspell_checker.cpp
 else
-libSpell_a_SOURCES= newMain.c good.c tgood.c \
+libSpell_a_SOURCES= good.c tgood.c \
 	lookup.c makedent.c hash.c correct.c \
 	spell_manager.cpp ispell_checker.cpp
 endif
