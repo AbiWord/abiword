@@ -20,6 +20,7 @@
 #ifndef UTMATH_H
 #define UTMATH_H
 
+#include <math.h>
 #include "ut_types.h"
 
 #define UT_E             2.7182818284590452354   /* e */
@@ -36,9 +37,9 @@
 #define UT_SQRT2         1.41421356237309504880  /* sqrt(2) */
 #define UT_SQRT1_2       0.70710678118654752440  /* 1/sqrt(2) */
 
-
-#ifdef WIN32
+#ifdef _WIN32
 #define finite _finite
-#endif /* WIN32 */
+double rint(double x);
+#endif /* _WIN32 */
 
 #endif /* UTMATH_H */

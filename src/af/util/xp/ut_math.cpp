@@ -16,10 +16,32 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
  * 02111-1307, USA.
  */
- 
-
-
 
 #include "ut_types.h"
 #include "ut_math.h"
 
+#ifdef _WIN32
+
+double rint(double x) 
+{
+	double y, z;
+	int n;
+ 
+	if(x >= 0) 
+	{
+		y = x + 0.5;
+		z = floor(y);
+		n = (int) z;
+		if (y == z && n % 2) --z;
+	} 
+	else 
+	{
+		y = x - 0.5;
+		z = ceil(y);
+		n = (int) z;
+		if(y == z && n % 2) ++z;
+	}
+	return z;
+}
+
+#endif

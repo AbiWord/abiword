@@ -41,7 +41,7 @@ PLATFORM_OBJS= $(OBJDIR)/ut_MacString.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ut_MacFiles.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ut_MacAssert.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ut_MacTimer.$(OBJ_SUFFIX)	\
-                $(OBJDIR)/ut_unixAssert.$(OBJ_SUFFIX)	\
+        $(OBJDIR)/ut_unixAssert.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ut_debugmsg.$(OBJ_SUFFIX)
 endif
 
@@ -52,7 +52,7 @@ PLATFORM_OBJS=	$(OBJDIR)/ut_debugmsg.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ut_$(ABI_FE)Timer.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ut_$(ABI_FE)Locale.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ut_sleep.$(OBJ_SUFFIX)            \
-		$(OBJDIR)/ut_Xpm2Bmp.$(OBJ_SUFFIX)
+		$(OBJDIR)/ut_Xpm2Bmp.$(OBJ_SUFFIX)			
 endif
 
 ifeq ($(ABI_NATIVE), beos)
@@ -110,7 +110,8 @@ OBJS=		$(PLATFORM_OBJS)						\
 		$(OBJDIR)/ut_OverstrikingChars.$(OBJ_SUFFIX) \
 		$(OBJDIR)/ut_Language.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ut_Encoding.$(OBJ_SUFFIX)		\
-		$(OBJDIR)/ut_path.$(OBJ_SUFFIX)
+		$(OBJDIR)/ut_path.$(OBJ_SUFFIX)			\
+		$(OBJDIR)/ut_math.$(OBJ_SUFFIX)
 
 
 include $(ABI_ROOT)/src/config/abi_rules.mk
