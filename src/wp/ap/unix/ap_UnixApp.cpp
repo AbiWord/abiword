@@ -35,7 +35,9 @@
 #include "ut_debugmsg.h"
 #include "ut_string.h"
 #include "ut_misc.h"
+#ifdef ABI_OPT_PERL
 #include "ut_PerlBindings.h"
+#endif
 #include "ut_Script.h"
 #include "ut_unixDirent.h"
 #include "ut_sleep.h"
