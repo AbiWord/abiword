@@ -39,7 +39,9 @@
 
 
 AP_Dialog_Replace::AP_Dialog_Replace(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
-	: XAP_Dialog_Modeless(pDlgFactory,id, "interface/dialogreplace")
+	: XAP_Dialog_Modeless(pDlgFactory,id, "interface/dialogreplace"),
+	m_findString(NULL),
+	m_replaceString(NULL)
 {
 	m_pView = NULL;
 	m_pFrame = NULL;
@@ -68,6 +70,8 @@ AP_Dialog_Replace::~AP_Dialog_Replace(void)
 		if (string) 
 			FREEP(string);
 	}
+	FREEP(m_findString);
+	FREEP(m_replaceString);
 }
 
 void AP_Dialog_Replace::useStart(void)
@@ -75,12 +79,8 @@ void AP_Dialog_Replace::useStart(void)
   	UT_DEBUGMSG(("AP_Dialog_Replace::useStart(void) I've been called\n"));
 
 	// restore from view
-	if (getFvView()->findGetFindString()) 
-		UT_UCS4_cloneString(&m_findString, getFvView()->findGetFindString());
-
-	if (getFvView()->findGetReplaceString()) 
-		UT_UCS4_cloneString(&m_replaceString, getFvView()->findGetReplaceString());
-
+	m_findString = getFvView()->findGetFindString();
+	m_replaceString = getFvView()->findGetReplaceString();
 }
 
 void AP_Dialog_Replace::useEnd(void)
@@ -154,30 +154,34 @@ FV_View * AP_Dialog_Replace::getFvView(void)
 
 void AP_Dialog_Replace::setFindString(const UT_UCSChar * string)
 {
-
-	if (string && getFvView()->findGetFindString() && UT_UCS4_strcmp(string, getFvView()->findGetFindString()) != 0)
+	UT_UCSChar *findString = getFvView()->findGetFindString();  // caller must FREEP
+	if (string && findString && UT_UCS4_strcmp(string, findString) != 0)
 	{
 		// When search parameters change, clear any existing selection to
 		// avoid replacement of the previous search string.
 		getFvView()->cmdUnselectSelection();
 	}
-
+	FREEP(findString);
 
 	getFvView()->findSetFindString(string);
 }
 
+/*!
+	Caller must FREEP() return value
+ */
 UT_UCSChar * AP_Dialog_Replace::getFindString(void)
 {
 	UT_UCSChar * string = NULL;
-	if (getFvView()->findGetFindString())
+	string = getFvView()->findGetFindString();
+	if (string)
 	{
-		if (UT_UCS4_cloneString(&string, getFvView()->findGetFindString()))
-			return string;
+		return string;
 	}
 	else
 	{
-		if (UT_UCS4_cloneString_char(&string, ""))
+		if (UT_UCS4_cloneString_char(&string, "")) {
 			return string;
+		}
 	}
 	return NULL;
 }
@@ -192,11 +196,11 @@ void AP_Dialog_Replace::setReplaceString(const UT_UCSChar * string)
 UT_UCSChar * AP_Dialog_Replace::getReplaceString(void)
 {
 	UT_UCSChar * string = NULL;
+	UT_UCSChar * replaceString = getFvView()->findGetReplaceString();
 	
-	if (getFvView()->findGetReplaceString())
+	if (replaceString)
 	{
-		if (UT_UCS4_cloneString(&string, getFvView()->findGetReplaceString()))
-			return string;
+		return replaceString;
 	}
 	else
 	{
@@ -275,10 +279,12 @@ bool AP_Dialog_Replace::findNext()
 {
 	
 	// manage the list of find strings
-	if (_manageList(&m_findList, getFindString()))
+	UT_UCSChar* findString = getFindString();
+	if (_manageList(&m_findList, findString))
 	{
 		_updateLists();
 	}
+	FREEP(findString);
 	
 	bool bDoneEntireDocument = false;
 
@@ -333,12 +339,17 @@ bool AP_Dialog_Replace::findReplaceAll()
 {
 
 	// manage the list of find & replace strings
-	bool var1 = _manageList(&m_findList, getFindString());
-	bool var2 = _manageList(&m_replaceList, getReplaceString());
+	UT_UCSChar* findString = getFindString();
+	UT_UCSChar* replaceString = getReplaceString();
+	bool var1 = _manageList(&m_findList, findString);
+	bool var2 = _manageList(&m_replaceList, replaceString);
 	if (var1 || var2)
 	{
 		_updateLists();
 	}
+	
+	FREEP(findString);
+	FREEP(replaceString);
 	
 	// call view to do the work
 	UT_uint32 numReplaced = getFvView()->findReplaceAll();
