@@ -3089,6 +3089,7 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 				{
 					m_pDoc->StopList(sdh);
 					PT_DocPosition listPoint,posEOD;
+					bool bRes = getEditableBounds(true, posEOD);
 					listPoint = getPoint();
 					fl_AutoNum * pAuto = nBlock->getAutoNum();
 					if(pAuto != NULL)
@@ -7360,7 +7361,7 @@ void FV_View::clearHdrFtrEdit(void)
 */
 bool FV_View::getEditableBounds(bool isEnd, PT_DocPosition &posEOD, bool bOveride)
 {
-	bool res;
+	bool res=true;
 	fl_DocSectionLayout * pSL = NULL;
 	fl_BlockLayout * pBL = NULL;
 	if(!isEnd && (!m_bEditHdrFtr || bOveride))
@@ -7435,7 +7436,7 @@ bool FV_View::getEditableBounds(bool isEnd, PT_DocPosition &posEOD, bool bOverid
 */
 bool FV_View::getEditableBounds(bool isEnd, PT_DocPosition &posEOD )
 {
-	bool res;
+	bool res=true;
 	fl_DocSectionLayout * pSL = NULL;
 	fl_BlockLayout * pBL = NULL;
 	if(!isEnd && !m_bEditHdrFtr)
