@@ -85,7 +85,11 @@ void DLGHandler::MessageReceived(BMessage *msg) {
 		BHandler::MessageReceived(msg);
 		return;
 	}
+	#if 0 // Do something pretty instead.
     	release_sem(sync_sem); 
+	#else
+		delete_sem(sync_sem);
+	#endif
 }
 
 /*****************************************************************/
@@ -103,8 +107,8 @@ XAP_BeOSDialog_FileOpenSaveAs::XAP_BeOSDialog_FileOpenSaveAs(XAP_DialogFactory *
 	m_pSavePanel = NULL;
 
 	//This isn't so good
-	if (sync_sem < 0)
-		sync_sem = create_sem(0, "sync_sem");
+//	if (sync_sem < 0)
+
 	m_pHandler = new DLGHandler(this, "Dialog Handler");
 }
 
@@ -118,7 +122,9 @@ void XAP_BeOSDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 {
 	m_pBeOSFrame = (XAP_BeOSFrame*)pFrame;
 	UT_ASSERT(m_pBeOSFrame);
-
+	
+	sync_sem = create_sem(0, "sync_sem");
+	
 	// do we want to let this function handle stating the BeOS
 	// directory for writability?  Save/Export operations will want
 	// this, open/import will not.
@@ -142,7 +148,7 @@ void XAP_BeOSDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
          								  	false, 			//multiselect
          								  	new BMessage('fopn'), 			//BMessage
          								  	NULL, 			//BRefFilter
-         								  	false, 			//modal
+         								  	true, 			//modal
          								  	false);			//hide when done
 			m_pOpenPanel->Window()->SetTitle("Open your file");
 		}
@@ -163,7 +169,7 @@ void XAP_BeOSDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
        									  false, 			//multiselect
        									  new BMessage('fsve'), 			//BMessage
        									  NULL, 			//BRefFilter
-       									  false, 			//modal
+       									  true, 			//modal
        									  false);			//hide when done
 			m_pSavePanel->Window()->SetTitle("Save your file");
 		}
@@ -196,8 +202,38 @@ void XAP_BeOSDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	}
 
 	
+
 	//Wait for the pannels to be finished
+#if 0 // Instead of just waiting, make the windows look pretty.
  	acquire_sem(sync_sem);
+#else
+	status_t	result;
+	thread_id	this_tid = find_thread(NULL);
+	BLooper		*pLoop;
+	BWindow		*pWin = 0;
+
+	pLoop = BLooper::LooperForThread(this_tid);
+	if (pLoop)
+		pWin = dynamic_cast<BWindow*>(pLoop);
+
+	// block until semaphore is deleted (modal is finished)
+	if (pWin) 
+	{
+		do {
+			// update the window periodically			
+			pWin->UpdateIfNeeded();
+			result = acquire_sem_etc(sync_sem, 1, B_TIMEOUT, 10000);
+		} while (result != B_BAD_SEM_ID);
+	} else 
+	{
+		do 
+		{
+			// just wait for exit
+			result = acquire_sem(sync_sem);
+		} while (result != B_BAD_SEM_ID);
+	}
+#endif
+ 	
 	delete m_pSavePanel;
 	delete m_pOpenPanel;
 
