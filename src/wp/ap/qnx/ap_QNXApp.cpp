@@ -776,7 +776,7 @@ int AP_QNXApp::main(const char * szAppName, int argc, const char ** argv)
 
 	// initialize our application.
 
-	XAP_Args Args = XAP_Args(argc,argv);
+	XAP_Args Args = XAP_Args(argc,(char**)argv);
 
 	//Initial state
 	bool bShowSplash = true;
