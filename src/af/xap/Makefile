@@ -50,7 +50,6 @@ ifeq ($(ABI_FE), Unix)
 PLATFORM_OBJS += 	$(OBJDIR)/xap_$(ABI_FE)Font.$(OBJ_SUFFIX)		\
 			$(OBJDIR)/xap_$(ABI_FE)FontManager.$(OBJ_SUFFIX)	\
 			$(OBJDIR)/xap_$(ABI_FE)FontXLFD.$(OBJ_SUFFIX)		\
-			$(OBJDIR)/xap_$(ABI_FE)GtkTricks.$(OBJ_SUFFIX)		\
 			$(OBJDIR)/xap_$(ABI_FE)PSFont.$(OBJ_SUFFIX)		\
 			$(OBJDIR)/xap_$(ABI_FE)PSGenerate.$(OBJ_SUFFIX)		\
 			$(OBJDIR)/xap_$(ABI_FE)PSParseAFM.$(OBJ_SUFFIX)		\
