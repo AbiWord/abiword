@@ -24,12 +24,12 @@
 #include "ut_types.h"
 #include "ut_xml.h"
 
-typedef struct
-	{
-		XML_Char ** encs;
-		XML_Char * desc;
-		UT_uint32  id;
-	} enc_entry;
+struct enc_entry
+{
+	XML_Char ** encs;
+	XML_Char * desc;
+	UT_uint32  id;
+};
 
 class UT_Encoding
 {
