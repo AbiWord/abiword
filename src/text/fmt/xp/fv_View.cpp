@@ -3129,24 +3129,83 @@ UT_Bool FV_View::_findNext(const UT_UCSChar * find, UT_Bool matchCase, UT_Bool *
 	offset = _findGetCurrentOffset();
 
 	UT_UCSChar * buffer = NULL;
-	
+
+	//Now we compute the static prefix function
+	//Which can be done based soley on the find string
+
+	UT_uint32	m = UT_UCS_strlen(find);
+	UT_uint32	*prefix;
+	UT_uint32	k = 0;
+	UT_uint32	q = 1;
+
+	prefix = (UT_uint32*) calloc (m, sizeof(UT_uint32));
+
+	prefix[0] = 0; //Must be this reguardless of the string
+
+	if (matchCase)
+	{
+		for (q = 1; q < m; q++)
+		{
+			while (k > 0 && find[k] != find[q])
+				k = prefix[k - 1];
+			if(find[k] == find[q])
+				k++;
+			prefix[q] = k;
+		}
+	}
+	else //!matchCase
+	{
+		for (q = 1; q < m; q++)
+		{
+			while (k > 0 && UT_UCS_tolower(find[k]) != UT_UCS_tolower(find[q]))
+				k = prefix[k - 1];
+			if(UT_UCS_tolower(find[k]) == UT_UCS_tolower(find[q]))
+				k++;
+			prefix[q] = k;
+		}
+	}
+
+	//Now we use this prefix function (stored as an array)
+	//to search through the document text.
 	while ((buffer = _findGetNextBlockBuffer(&block, &offset)))
 	{
+		
 		// magic number; range of UT_sint32 falls short of extremely large docs
-		UT_sint32 foundAt = -1;
+		UT_sint32	foundAt = -1;
+		UT_uint32	i = 0;
+		UT_uint32	t = 0;
 
-		// Change the ordering of searches to accomodate new searches (like
-		// regular expressions, case-sensitive, or reverse searches).
-		// Right now we just work off case searches.
-		if (matchCase == UT_TRUE)
+		if (matchCase)
 		{
-			// this search will do case-sensitive work
-			foundAt = _findBlockSearchDumbCase(buffer, find);
+			while (buffer[i] /*|| foundAt == -1*/)
+			{
+				while (t > 0 && find[t] != buffer[i])
+					t = prefix[t-1];
+				if (find[t] == buffer[i])
+					t++;
+				i++;
+				if (t == m)
+				{
+					foundAt = i - m;
+					break;
+				}
+			}
 		}
-		else if (matchCase == UT_FALSE)
+		else //!matchCase
 		{
-			// do the case-insensitive search
-			foundAt = _findBlockSearchDumbNoCase(buffer, find);
+			while (buffer[i] /*|| foundAt == -1*/)
+			{
+				while (t > 0 && UT_UCS_tolower(find[t]) != UT_UCS_tolower(buffer[i]))
+					t = prefix[t-1];
+				if (UT_UCS_tolower(find[t]) == UT_UCS_tolower(buffer[i]))
+					t++;
+				i++;
+				if (t == m)
+				{
+					foundAt = i - m;
+					break;
+				}
+			}
 		}
 
 
@@ -3157,7 +3216,104 @@ UT_Bool FV_View::_findNext(const UT_UCSChar * find, UT_Bool matchCase, UT_Bool *
 			_charMotion(UT_TRUE, UT_UCS_strlen(find));
 
 			m_doneFind = UT_TRUE;
-			
+
+			FREEP(buffer);
+			FREEP(prefix);
+			return UT_TRUE;
+		}
+
+		// didn't find anything, so set the offset to the end
+		// of the current area
+		offset += UT_UCS_strlen(buffer);
+
+		// must clean up buffer returned for search
+		FREEP(buffer);
+	}
+
+	if (bDoneEntireDocument)
+	{
+		*bDoneEntireDocument = UT_TRUE;
+	}
+
+	// reset wrap for next time
+	m_wrappedEnd = UT_FALSE;
+
+	FREEP(prefix);
+	
+	return UT_FALSE;
+}
+
+//Does exactly the same as the previous function except that the prefix
+//function is passed in as an agrument rather than computed within
+//the function body.
+UT_Bool FV_View::_findNext(const UT_UCSChar * find, UT_uint32 *prefix,
+						   UT_Bool matchCase, UT_Bool * bDoneEntireDocument)
+{
+	UT_ASSERT(find);
+
+	fl_BlockLayout * block = NULL;
+	PT_DocPosition   offset = 0;
+	
+	block = _findGetCurrentBlock();
+	offset = _findGetCurrentOffset();
+
+	UT_UCSChar * buffer = NULL;
+	UT_uint32	m = UT_UCS_strlen(find);
+
+	
+
+	//Now we use the prefix function (stored as an array)
+	//to search through the document text.
+	while ((buffer = _findGetNextBlockBuffer(&block, &offset)))
+	{
+		
+		// magic number; range of UT_sint32 falls short of extremely large docs
+		UT_sint32	foundAt = -1;
+		UT_uint32	i = 0;
+		UT_uint32	t = 0;
+
+		if (matchCase)
+		{
+			while (buffer[i] /*|| foundAt == -1*/)
+			{
+				while (t > 0 && find[t] != buffer[i])
+					t = prefix[t-1];
+				if (find[t] == buffer[i])
+					t++;
+				i++;
+				if (t == m)
+				{
+					foundAt = i - m;
+					break;
+				}
+			}
+		}
+		else //!matchCase
+		{
+			while (buffer[i] /*|| foundAt == -1*/)
+			{
+				while (t > 0 && UT_UCS_tolower(find[t]) != UT_UCS_tolower(buffer[i]))
+					t = prefix[t-1];
+				if (UT_UCS_tolower(find[t]) == UT_UCS_tolower(buffer[i]))
+					t++;
+				i++;
+				if (t == m)
+				{
+					foundAt = i - m;
+					break;
+				}
+			}
+		}
+
+
+		if (foundAt != -1)
+		{
+			_setPoint(block->getPosition(UT_FALSE) + offset + foundAt);
+			_setSelectionAnchor();
+			_charMotion(UT_TRUE, UT_UCS_strlen(find));
+
+			m_doneFind = UT_TRUE;
+
 			FREEP(buffer);
 			return UT_TRUE;
 		}
@@ -3416,6 +3572,74 @@ UT_Bool	FV_View::_findReplace(const UT_UCSChar * find, const UT_UCSChar * replac
 	return UT_FALSE;
 }
 
+
+UT_Bool	FV_View::_findReplace(const UT_UCSChar * find, const UT_UCSChar * replace,
+							  UT_uint32 *prefix, UT_Bool matchCase, UT_Bool * bDoneEntireDocument)
+{
+	UT_ASSERT(find && replace);
+
+	// if we have done a find, and there is a selection, then replace what's in the
+	// selection and move on to next find (batch run, the common case)
+	if ((m_doneFind == UT_TRUE) && (!isSelectionEmpty()))
+	{
+		UT_Bool result = UT_TRUE;
+
+		PP_AttrProp AttrProp_Before;
+
+		if (!isSelectionEmpty())
+		{
+			_eraseInsertionPoint();
+			_deleteSelection(&AttrProp_Before);
+		}
+		else
+		{
+			_eraseInsertionPoint();
+		}
+
+		// if we have a string with length, do an insert, else let it hang
+		// from the delete above
+		if (*replace)
+			result = m_pDoc->insertSpan(getPoint(), 
+											replace, 
+											UT_UCS_strlen(replace), 
+											&AttrProp_Before);
+
+		_generalUpdate();
+
+			// if we've wrapped around once, and we're doing work before we've
+			// hit the point at which we started, then we adjust the start
+			// position so that we stop at the right spot.
+		if (m_wrappedEnd && !*bDoneEntireDocument)
+			m_startPosition += ((long) UT_UCS_strlen(replace) - (long) UT_UCS_strlen(find));
+
+		UT_ASSERT(m_startPosition >= 2);
+
+		// do not increase the insertion point index, since the insert span will
+		// leave us at the correct place.
+		
+		_findNext(find, prefix, matchCase, bDoneEntireDocument);
+		return result;
+	}
+
+	// if we have done a find, but there is no selection, do a find for them
+	// but no replace
+	if (m_doneFind == UT_TRUE && isSelectionEmpty() == UT_TRUE)
+	{
+		_findNext(find, prefix, matchCase, bDoneEntireDocument);
+		return UT_FALSE;
+	}
+	
+	// if we haven't done a find yet, do a find for them
+	if (m_doneFind == UT_FALSE)
+	{
+		_findNext(find, prefix, matchCase, bDoneEntireDocument);
+		return UT_FALSE;
+	}
+
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	return UT_FALSE;
+}
+
 void FV_View::insertSymbol(UT_UCSChar c, XML_Char * symfont)
 {
 
@@ -3497,9 +3721,48 @@ UT_uint32 FV_View::findReplaceAll(const UT_UCSChar * find, const UT_UCSChar * re
 	m_pDoc->beginUserAtomicGlob();
 
 	UT_Bool bDoneEntireDocument = UT_FALSE;
+
+	//Now we compute the static prefix function
+	//Which can be done based soley on the find string
+	//we compute this here rather than inside the _findNext
+	//function so that it is not needlessy re-computed
+	//this will save a lot on large documents with many
+	//hits of the find word.
+
+	UT_uint32	m = UT_UCS_strlen(find);
+	UT_uint32	*prefix;
+	UT_uint32	k = 0;
+	UT_uint32	q = 1;
+
+	prefix = (UT_uint32*) calloc (m, sizeof(UT_uint32));
+
+	prefix[0] = 0; //Must be this reguardless of the string
+
+	if (matchCase)
+	{
+		for (q = 1; q < m; q++)
+		{
+			while (k > 0 && find[k] != find[q])
+				k = prefix[k - 1];
+			if(find[k] == find[q])
+				k++;
+			prefix[q] = k;
+		}
+	}
+	else //!matchCase
+	{
+		for (q = 1; q < m; q++)
+		{
+			while (k > 0 && UT_UCS_tolower(find[k]) != UT_UCS_tolower(find[q]))
+				k = prefix[k - 1];
+			if(UT_UCS_tolower(find[k]) == UT_UCS_tolower(find[q]))
+				k++;
+			prefix[q] = k;
+		}
+	}
 	
 	// prime it with a find
-	if (!_findNext(find, matchCase, &bDoneEntireDocument))
+	if (!_findNext(find, prefix, matchCase, &bDoneEntireDocument))
 	{
 		// can't find a single thing, we're done
 		m_pDoc->endUserAtomicGlob();
@@ -3511,7 +3774,7 @@ UT_uint32 FV_View::findReplaceAll(const UT_UCSChar * find, const UT_UCSChar * re
 	{
 		// if it returns false, it found nothing more before
 		// it hit the end of the document
-		if (!_findReplace(find, replace, matchCase, &bDoneEntireDocument))
+		if (!_findReplace(find, replace, prefix, matchCase, &bDoneEntireDocument))
 		{
 			m_pDoc->endUserAtomicGlob();
 			return numReplaced;
@@ -3535,6 +3798,9 @@ UT_uint32 FV_View::findReplaceAll(const UT_UCSChar * find, const UT_UCSChar * re
 	{
 		_ensureThatInsertionPointIsOnScreen();
 	}
+
+	//Clean up the prefix function array
+	FREEP(prefix);
 
 	return numReplaced;
 }

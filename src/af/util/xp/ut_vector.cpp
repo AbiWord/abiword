@@ -111,7 +111,7 @@ UT_sint32 UT_Vector::insertItemAt(void* p, UT_uint32 ndx)
 	
 	if ((m_iCount+1) > m_iSpace)
 	{
-		int err = grow(0);
+		UT_sint32 err = grow(0);
 		if (err)
 		{
 			return err;

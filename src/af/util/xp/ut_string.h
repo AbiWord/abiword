@@ -82,6 +82,8 @@ char *			UT_UCS_strcpy_to_char(char * dest, const UT_UCSChar * src);
 UT_Bool			UT_UCS_cloneString(UT_UCSChar ** dest, const UT_UCSChar * src);
 UT_Bool			UT_UCS_cloneString_char(UT_UCSChar ** dest, const char * src);
 
+UT_UCSChar		UT_UCS_tolower(UT_UCSChar c);
+
 char * UT_upperString(char * string);
 char * UT_lowerString(char * string);
 
