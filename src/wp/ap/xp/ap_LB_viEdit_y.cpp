@@ -20,7 +20,7 @@
 
 // ************************************************************************
 // ************************************************************************
-// *** THIS FILE DEFINES THE BINDINGS TO HANG OFF THE c PREFIX KEY IN   ***
+// *** THIS FILE DEFINES THE BINDINGS TO HANG OFF THE y PREFIX KEY IN   ***
 // *** THE viEdit BINDINGS TABLE.                                       ***
 // ************************************************************************
 // ************************************************************************
@@ -32,7 +32,7 @@
 #include "ev_EditMethod.h"
 #include "ev_NamedVirtualKey.h"
 #include "ap_LoadBindings.h"
-#include "ap_LB_viEdit_c.h"
+#include "ap_LB_viEdit_y.h"
 
 #define _S		| EV_EMS_SHIFT
 #define _C		| EV_EMS_CONTROL
@@ -51,14 +51,15 @@
 static struct ap_bs_Char s_CharTable[] =
 {
 //	{char, /* desc   */ { none,						_C,						_A,		   _A_C		}},
-	{0x24, /* $      */ { "viCmd_c24",				"",						"",			""		}},
-	{0x28, /* (      */ { "viCmd_c28",				"",						"",			""		}},
-	{0x29, /* )      */ { "viCmd_c29",				"",						"",			""		}},
-	{0x5b, /* [      */ { "viCmd_c5b",				"",						"",			""		}},
-	{0x5d, /* ]      */ { "viCmd_c5d",				"",						"",			""		}},
-	{0x5e, /* ^      */ { "viCmd_c5e",				"",						"",			""		}},
-	{0x62, /* b      */ { "viCmd_cb",				"",						"",			""		}},
-	{0x77, /* w      */ { "viCmd_cw",				"",			    		"",			""		}},
+	{0x24, /* $      */ { "viCmd_y24",				"",						"",			""		}},
+	{0x28, /* (      */ { "viCmd_y28",				"",						"",			""		}},
+	{0x29, /* )      */ { "viCmd_y29",				"",						"",			""		}},
+	{0x5b, /* [      */ { "viCmd_y5b",				"",			    		"",			""		}},
+	{0x5d, /* ]      */ { "viCmd_y5d",				"",			    		"",			""		}},
+	{0x5e, /* ^      */ { "viCmd_y5e",				"",			    		"",			""		}},
+	{0x62, /* b      */ { "viCmd_yb",				"",			    		"",			""		}},
+	{0x77, /* w      */ { "viCmd_yw",				"",			    		"",			""		}},
+	{0x79, /* y      */ { "viCmd_yy",				"",			    		"",			""		}},
 };
 
 
@@ -68,7 +69,7 @@ static struct ap_bs_Char s_CharTable[] =
 ******************************************************************
 *****************************************************************/
 
-UT_Bool ap_LoadBindings_viEdit_c(AP_BindingSet * pThis,
+UT_Bool ap_LoadBindings_viEdit_y(AP_BindingSet * pThis,
 								 EV_EditBindingMap * pebm)
 {
 	pThis->_loadChar(pebm,s_CharTable,NrElements(s_CharTable),NULL,0);

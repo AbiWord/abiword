@@ -285,9 +285,32 @@ public:
 	static EV_EditMethod_Fn viCmd_P;
 	static EV_EditMethod_Fn viCmd_a;
 	static EV_EditMethod_Fn viCmd_o;
-	static EV_EditMethod_Fn viCmd_dd;
 	static EV_EditMethod_Fn viCmd_c24;
+	static EV_EditMethod_Fn viCmd_c28;
+	static EV_EditMethod_Fn viCmd_c29;
+	static EV_EditMethod_Fn viCmd_c5b;
+	static EV_EditMethod_Fn viCmd_c5d;
+	static EV_EditMethod_Fn viCmd_c5e;
+	static EV_EditMethod_Fn viCmd_cb;
 	static EV_EditMethod_Fn viCmd_cw;
+	static EV_EditMethod_Fn viCmd_d24;
+	static EV_EditMethod_Fn viCmd_d28;
+	static EV_EditMethod_Fn viCmd_d29;
+	static EV_EditMethod_Fn viCmd_d5b;
+	static EV_EditMethod_Fn viCmd_d5d;
+	static EV_EditMethod_Fn viCmd_d5e;
+	static EV_EditMethod_Fn viCmd_db;
+	static EV_EditMethod_Fn viCmd_dd;
+	static EV_EditMethod_Fn viCmd_dw;
+	static EV_EditMethod_Fn viCmd_y24;
+	static EV_EditMethod_Fn viCmd_y28;
+	static EV_EditMethod_Fn viCmd_y29;
+	static EV_EditMethod_Fn viCmd_y5b;
+	static EV_EditMethod_Fn viCmd_y5d;
+	static EV_EditMethod_Fn viCmd_y5e;
+	static EV_EditMethod_Fn viCmd_yb;
+	static EV_EditMethod_Fn viCmd_yw;
+	static EV_EditMethod_Fn viCmd_yy;
 
 	static EV_EditMethod_Fn noop;
 
@@ -515,9 +538,32 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(viCmd_P),		0,	""),
 	EV_EditMethod(NF(viCmd_a),		0,	""),
 	EV_EditMethod(NF(viCmd_o),		0,	""),
-	EV_EditMethod(NF(viCmd_dd),		0,	""),
 	EV_EditMethod(NF(viCmd_c24),	0,	""),
+	EV_EditMethod(NF(viCmd_c28),	0,	""),
+	EV_EditMethod(NF(viCmd_c29),	0,	""),
+	EV_EditMethod(NF(viCmd_c5b),	0,	""),
+	EV_EditMethod(NF(viCmd_c5d),	0,	""),
+	EV_EditMethod(NF(viCmd_c5e),	0,	""),
+	EV_EditMethod(NF(viCmd_cb),		0,	""),
 	EV_EditMethod(NF(viCmd_cw),		0,	""),
+	EV_EditMethod(NF(viCmd_d24),		0,	""),
+	EV_EditMethod(NF(viCmd_d28),		0,	""),
+	EV_EditMethod(NF(viCmd_d29),		0,	""),
+	EV_EditMethod(NF(viCmd_d5b),		0,	""),
+	EV_EditMethod(NF(viCmd_d5d),		0,	""),
+	EV_EditMethod(NF(viCmd_d5e),		0,	""),
+	EV_EditMethod(NF(viCmd_db),		0,	""),
+	EV_EditMethod(NF(viCmd_dd),		0,	""),
+	EV_EditMethod(NF(viCmd_dw),		0,	""),
+	EV_EditMethod(NF(viCmd_y24),	0,	""),
+	EV_EditMethod(NF(viCmd_y28),	0,	""),
+	EV_EditMethod(NF(viCmd_y29),	0,	""),
+	EV_EditMethod(NF(viCmd_y5b),	0,	""),
+	EV_EditMethod(NF(viCmd_y5d),	0,	""),
+	EV_EditMethod(NF(viCmd_y5e),	0,	""),
+	EV_EditMethod(NF(viCmd_yb),		0,	""),
+	EV_EditMethod(NF(viCmd_yw),		0,	""),
+	EV_EditMethod(NF(viCmd_yy),		0,	""),
 
 	EV_EditMethod(NF(noop),					0,	""),
 
@@ -3510,10 +3556,14 @@ Defun1(Test_Dump)
 
 Defun1(setEditVI)
 {
+	ABIWORD_VIEW;
 	// enter "VI Edit Mode" (only valid when VI keys are loaded)
 	
 	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
 	UT_ASSERT(pFrame);
+
+	// When exiting input mode, vi goes to previous character
+	pView->cmdCharMotion(UT_FALSE,1);
 
 	UT_Bool bResult = (pFrame->setInputMode("viEdit") != 0);
 	return bResult;
@@ -3559,26 +3609,32 @@ Defun(viCmd_A)
 	// insert after the end of the current line
 	return ( EX(warpInsPtEOL) && EX(setInputVI) );
 }
+
 Defun(viCmd_I)
 {
 	// insert before the beginning of current line
 	return ( EX(warpInsPtBOL) && EX(setInputVI) );
 }
-Defun0(viCmd_J)
+
+Defun(viCmd_J)
 {
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
-	return UT_FALSE;
+	// Join current and next line.
+	return ( EX(warpInsPtEOL) && EX(delRight) && EX(insertSpace) );
 }
+
 Defun(viCmd_O)
 {
 	// insert new line before current line, go into input mode
-	return ( EX(warpInsPtBOL) && EX(insertLineBreak) && EX(setInputVI) );
+	return ( EX(warpInsPtBOL) && EX(insertLineBreak) && EX(warpInsPtLeft) \
+		&& EX(setInputVI) );
 }
+
 Defun(viCmd_P)
 {
 	// paste text before cursor
 	return ( EX(warpInsPtLeft) && EX(paste) );
 }
+
 Defun(viCmd_a)
 {
 	// insert after the current position
@@ -3590,19 +3646,177 @@ Defun(viCmd_o)
 	// insert new line after current line, go into input mode
 	return ( EX(warpInsPtEOL) && EX(insertLineBreak) && EX(setInputVI) );
 }
-Defun(viCmd_dd)
-{
-	// delete the current line
-	return ( EX(warpInsPtBOL) && EX(delEOL) );
-}
+
 /* c$ */
 Defun(viCmd_c24)
 {
-	//delete to end of current line, start input
+	//change to end of current line
 	return ( EX(delEOL) && EX(setInputVI) );
 }
+
+/* c( */
+Defun(viCmd_c28)
+{
+	//change to start of current sentence
+	return ( EX(delBOS) && EX(setInputVI) );
+}
+
+/* c) */
+Defun(viCmd_c29)
+{
+	//change to end of current sentence
+	return ( EX(delEOS) && EX(setInputVI) );
+}
+
+/* c[ */
+Defun(viCmd_c5b)
+{
+	//change to beginning of current block
+	return ( EX(delBOB) && EX(setInputVI) );
+}
+
+/* c] */
+Defun(viCmd_c5d)
+{
+	//change to end of current block
+	return ( EX(delEOB) && EX(setInputVI) );
+}
+
+/* c^ */
+Defun(viCmd_c5e)
+{
+	//change to beginning of current line
+	return ( EX(delBOL) && EX(setInputVI) );
+}
+
+Defun(viCmd_cb)
+{
+	//change to beginning of current word
+	return ( EX(delBOW) && EX(setInputVI) );
+}
+
 Defun(viCmd_cw)
 {
 	// delete to the end of current word, start input mode
 	return ( EX(delEOW) && EX(setInputVI) );
+}
+
+/* d$ */
+Defun(viCmd_d24)
+{
+	//delete to end of line
+	return ( EX(extSelEOL) && EX(cut) );
+}
+
+/* d( */
+Defun(viCmd_d28)
+{
+	//delete to start of sentence
+	return ( EX(extSelBOS) && EX(cut) );
+}
+
+/* d) */
+Defun(viCmd_d29)
+{
+	//delete to end of sentence
+	return ( EX(extSelEOS) && EX(cut) );
+}
+
+/* d[ */
+Defun(viCmd_d5b)
+{
+	//delete to beginning of block
+	return ( EX(extSelBOB) && EX(cut) );
+}
+
+/* d] */
+Defun(viCmd_d5d)
+{
+	//delete to end of block
+	return ( EX(extSelEOB) && EX(cut) );
+}
+
+/* d^ */
+Defun(viCmd_d5e)
+{
+	//delete to beginning of line
+	return ( EX(extSelBOL) && EX(cut) );
+}
+
+Defun(viCmd_db)
+{
+	//delete to beginning of word
+	return ( EX(extSelBOW) && EX(cut) );
+}
+
+Defun(viCmd_dd)
+{
+	// delete the current line
+	return ( EX(warpInsPtBOL) && EX(extSelEOL) && EX(cut) );
+}
+
+Defun(viCmd_dw)
+{
+	//delete to end of word
+	return ( EX(extSelEOW) && EX(cut) );
+}
+
+/* y$ */
+Defun(viCmd_y24)
+{
+	//copy to end of current line
+	return ( EX(extSelEOL) && EX(copy) );
+}
+
+/* y( */
+Defun(viCmd_y28)
+{
+	//copy to beginning of current sentence
+	return ( EX(extSelBOS) && EX(copy) );
+}
+
+/* y) */
+Defun(viCmd_y29)
+{
+	//copy to end of current sentence
+	return ( EX(extSelEOS) && EX(copy) );
+}
+
+/* y[ */
+Defun(viCmd_y5b)
+{
+	//copy to beginning of current block
+	return ( EX(extSelBOB) && EX(copy) );
+}
+
+/* y] */
+Defun(viCmd_y5d)
+{
+	//copy to end of current block
+	return ( EX(extSelEOB) && EX(copy) );
+}
+
+/* y^ */
+Defun(viCmd_y5e)
+{
+	//copy to beginning of current line
+	return ( EX(extSelBOL) && EX(copy) );
+}
+
+Defun(viCmd_yb)
+{
+	//copy to beginning of current word
+	return ( EX(extSelBOW) && EX(copy) );
+}
+
+Defun(viCmd_yw)
+{
+	//copy to end of current word
+	return ( EX(extSelEOW) && EX(copy) );
+}
+
+Defun(viCmd_yy)
+{
+	//copy current line
+	return ( EX(warpInsPtBOL) && EX(extSelEOL) && EX(copy) );
 }

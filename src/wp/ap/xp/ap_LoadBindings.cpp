@@ -34,8 +34,10 @@
 #include "ap_LB_Emacs.h"
 #include "ap_LB_EmacsCtrlX.h"
 #include "ap_LB_viEdit.h"
-#include "ap_LB_viEdit_d.h"
+#include "ap_LB_viEdit_colon.h"
 #include "ap_LB_viEdit_c.h"
+#include "ap_LB_viEdit_d.h"
+#include "ap_LB_viEdit_y.h"
 #include "ap_LB_viInput.h"
 #include "ap_LB_DeadAbovedot.h"
 #include "ap_LB_DeadAcute.h"
@@ -70,8 +72,10 @@ static struct _lb s_lbTable[] =
 	{   UT_FALSE, "emacsctrlx",			ap_LoadBindings_EmacsCtrlX,         NULL    }, // emacs ctrl-x key bindings
 
 	{	UT_TRUE,  "viEdit",				ap_LoadBindings_viEdit,				NULL	}, // vi Edit-Mode bindings
-	{	UT_FALSE, "viEdit_d",			ap_LoadBindings_viEdit_d,			NULL	}, // vi Edit-Mode d-prefix key bindings
+	{	UT_FALSE, "viEdit_colon",		ap_LoadBindings_viEdit_colon,		NULL	}, // vi Edit-Mode :-prefix key bindings
 	{	UT_FALSE, "viEdit_c",			ap_LoadBindings_viEdit_c,			NULL	}, // vi Edit-Mode c-prefix key bindings
+	{	UT_FALSE, "viEdit_d",			ap_LoadBindings_viEdit_d,			NULL	}, // vi Edit-Mode d-prefix key bindings
+	{	UT_FALSE, "viEdit_y",			ap_LoadBindings_viEdit_y,			NULL	}, // vi Edit-Mode y-prefix key bindings
 	{	UT_FALSE, "viInput",			ap_LoadBindings_viInput,			NULL	}, // vi Input-Mode bindings
 
 	{	UT_FALSE, "deadabovedot",		ap_LoadBindings_DeadAbovedot,		NULL	}, // subordinate maps for 'dead'

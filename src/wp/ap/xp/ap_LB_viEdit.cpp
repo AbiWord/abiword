@@ -292,7 +292,7 @@ static struct ap_bs_Char s_CharTable[] =
 	{0x37, /* 7      */ { "",					"",					"",				""					}},
 	{0x38, /* 8      */ { "",					"",					"",				""					}},
 	{0x39, /* 9      */ { "",					"",					"",				""					}},
-	{0x3a, /* :      */ { "",					"",					"",				""					}},
+	{0x3a, /* :      */ { PREFIX_KEY,			"",					"",				""					}},
 	{0x3b, /* ;      */ { "",					"",					"",				""					}},
 	{0x3c, /* <      */ { "",					"",					"warpInsPtBOD",	""					}},
 	{0x3d, /* =      */ { "",					"",					"",				""					}},
@@ -326,7 +326,7 @@ static struct ap_bs_Char s_CharTable[] =
 	{0x56, /* V      */ { "",					"",					"",				""					}},
 	{0x57, /* W      */ { "",					"",					"",				""					}},
 	{0x58, /* X      */ { "delLeft",			"",					"",				""					}},
-	{0x59, /* Y      */ { "",					"",					"",				""					}},
+	{0x59, /* Y      */ { "viCmd_yy",					"",					"",				""					}},
 	{0x5a, /* Z      */ { "",					"",					"",				""					}},
 	{0x5b, /* [      */ { "warpInsPtBOB",		"",					"",				""					}},
 	{0x5c, /* \      */ { "",					"",					"",				""					}},
@@ -335,7 +335,7 @@ static struct ap_bs_Char s_CharTable[] =
 	{0x5f, /* -      */ { "",					"",					"",				""					}},
 	{0x60, /* `      */ { "",					"",					"",				""					}},
 	{0x61, /* a      */ { "viCmd_a",			"",					"",				""					}},
-	{0x62, /* b      */ { "",					"",					"",				""					}},
+	{0x62, /* b      */ { "warpInsPtBOW",		"",					"",				""					}},
 	{0x63, /* c      */ { PREFIX_KEY,			"",					"",				""					}},
 	{0x64, /* d      */ { PREFIX_KEY,			"",					"",				""					}},
 	{0x65, /* e      */ { "warpInsPtEOW",		"",					"",				""					}},
@@ -358,13 +358,12 @@ static struct ap_bs_Char s_CharTable[] =
 	{0x75, /* u      */ { "undo",				"",					"",				""					}},
 	// Could implement visual selection from vim but might add too much bloat
 	{0x76, /* v      */ { "",					"",					"",				""					}},
-	{0x77, /* w      */ { "warpInsPtBOW",		"",					"",				""					}},
+	{0x77, /* w      */ { "warpInsPtEOW",		"",					"",				""					}},
 	{0x78, /* x      */ { "delRight",			"",					"",				""					}},
-	//need prefix for yanking text
-	{0x79, /* y      */ { "copy",				"",					"",				""					}},
+	{0x79, /* y      */ { PREFIX_KEY,			"",					"",				""					}},
 	{0x7a, /* z      */ { "",					"",					"",				""					}},
 	{0x7b, /* {      */ { "",					"",					"",				""					}},
-	{0x7c, /* |      */ { "",					"",					"",				""					}},
+	{0x7c, /* |      */ { "warpInsPtBOL",		"",					"",				""					}},
 	{0x7d, /* }      */ { "",					"",					"",				""					}},
 	{0x7e, /* ~      */ { "",					"",					"",				""					}},
 
@@ -491,8 +490,10 @@ static struct ap_bs_Char_Prefix s_CharPrefixTable[] =
 {
 //  Warning: case is significant here Ctrl-x and Ctrl-X are different :-)	
 //	{char, /* desc   */ { none,					_C,					_A,				_A_C				}},
+	{0x3a, /* :      */ { "viEdit_colon",		"",					"",				""					}},
 	{0x63, /* c      */ { "viEdit_c",			"",					"",				""					}},
 	{0x64, /* d      */ { "viEdit_d",			"",					"",				""					}},
+	{0x79, /* y      */ { "viEdit_y",			"",					"",				""					}},
 };
 
 /*****************************************************************
