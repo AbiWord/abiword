@@ -22,7 +22,7 @@
 #ifndef XAP_COCOAPLUGIN_H
 #define XAP_COCOAPLUGIN_H
 
-#define XAP_COCOAPLUGIN_INTERFACE 20050303 /** The current version of the CocoaPlugin API. */
+#define XAP_COCOAPLUGIN_INTERFACE 20050304 /** The current version of the CocoaPlugin API. */
 
 #import <Cocoa/Cocoa.h>
 
@@ -158,6 +158,13 @@
  * \return The current word, or nil if none could be selected.
  */
 - (NSString *)selectWord;
+
+/**
+ * Returns the current selection, if any.
+ * 
+ * \return The currently selected text, or nil if none is selected.
+ */
+- (NSString *)selectedText;
 
 /**
  * Insert a text string into the document.
