@@ -42,7 +42,8 @@ AD_Document::AD_Document() :
 	m_iRefCount(1),
 	m_szFilename(NULL),
 	m_szEncodingName(""), // Should this have a default? UTF-8, perhaps?
-	m_pIgnoreList(new UT_StringPtrMap(11)) // TODO do we need to auto-increase the bucket count, if the ignore list gets long?
+	m_pIgnoreList(new UT_StringPtrMap(11)), // TODO do we need to auto-increase the bucket count, if the ignore list gets long?
+	m_lastSavedTime(time(NULL))
 {
 	// 
 }

@@ -613,13 +613,12 @@ const char * XAP_Frame::getTitle(int len) const
 	}
 }
 
-const char * XAP_Frame::getTempNameFromTitle(void) const
+const char * XAP_Frame::getNonDecoratedTitle() const
 {
-	// extract a filename or pathname from the title.
-	// strip off all of the title's window decorations (the ":1 *").
-
 	return m_szNonDecoratedTitle;
 }
+
+#define MAX_TITLE_LENGTH 244
 	
 bool XAP_Frame::updateTitle()
 {
@@ -646,13 +645,13 @@ bool XAP_Frame::updateTitle()
 		// is way too long for a title bar, so no reason to
 		// increase the size to fit more snugly into the buffer.
 		// Here's that previous assertion:
-		// UT_ASSERT(strlen(szName) < 245); // TODO need #define for this number
+		// UT_ASSERT(strlen(szName) <= MAX_TITLE_LENGTH); 
 
 		// Check that the buffer (with generous room for
 		// later decorations) is big enough.
-		UT_ASSERT(sizeof(m_szTitle) > 245 + 30); 
+		UT_ASSERT(sizeof(m_szTitle) > MAX_TITLE_LENGTH + 30); 
 
-		if (strlen(szName) <= 244)
+		if (strlen(szName) <= MAX_TITLE_LENGTH)
 		{
 			strcpy(m_szTitle, szName); 
 		}
@@ -661,7 +660,7 @@ bool XAP_Frame::updateTitle()
 			// copy the tail of the pathname, the useful part.
 			// would be a bit more useful to break it at a	
 			// pathname component separator.
-			strcpy(m_szTitle, szName + (strlen(szName) - 244));
+			strcpy(m_szTitle, szName + (strlen(szName) - MAX_TITLE_LENGTH));
 		}
 	}
 	else
@@ -815,70 +814,73 @@ void XAP_Frame::setAutoSaveFileExt(const UT_String &stExt)
 	m_stAutoSaveExt = stExt;
 }
 
-XAP_Dialog_MessageBox::tAnswer XAP_Frame::showMessageBox(const char *szMessage,
-							 XAP_Dialog_MessageBox::tButtons buttons,
-							 XAP_Dialog_MessageBox::tAnswer default_answer)
+XAP_Dialog_MessageBox * XAP_Frame::createMessageBox(XAP_String_Id id,
+						    XAP_Dialog_MessageBox::tButtons buttons,
+						    XAP_Dialog_MessageBox::tAnswer default_answer,
+						    ...)
 {
-	raise();
+	char * szNewMessage = (char *)malloc(sizeof(char) * 256);
+	const XAP_StringSet * pSS = getApp()->getStringSet();
+  
+	va_list args;
 
-	XAP_DialogFactory * pDialogFactory
+	va_start(args, default_answer);
+
+	vsprintf(szNewMessage, (char*)pSS->getValue(id, m_app->getDefaultEncoding()).c_str(), args);
+
+  	XAP_DialogFactory * pDialogFactory
 		= (XAP_DialogFactory *)(getDialogFactory());
 
 	XAP_Dialog_MessageBox * pDialog
 		= (XAP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
 	UT_ASSERT(pDialog);
 
-	pDialog->setMessage(szMessage);
+	pDialog->setMessage(szNewMessage);
 
 	pDialog->setButtons(buttons);
 	pDialog->setDefaultAnswer(default_answer);
+
+	va_end(args);
+	
+	return pDialog;
+}
+XAP_Dialog_MessageBox::tAnswer XAP_Frame::showMessageBox(XAP_Dialog_MessageBox * pDialog)
+{
+	raise();
 
 	pDialog->runModal(this);
 
 	XAP_Dialog_MessageBox::tAnswer ans = pDialog->getAnswer();
 
-	pDialogFactory->releaseDialog(pDialog);
+	delete pDialog;
 
 	return ans;
 }
 
+XAP_Dialog_MessageBox::tAnswer XAP_Frame::showMessageBox(XAP_String_Id id,
+							 XAP_Dialog_MessageBox::tButtons buttons,
+							 XAP_Dialog_MessageBox::tAnswer default_answer)
+{
+  XAP_Dialog_MessageBox * pDialog = createMessageBox(id, buttons, default_answer);
+  return showMessageBox(pDialog);
+}
 
 XAP_Dialog_MessageBox::tAnswer XAP_Frame::showMessageBox(XAP_String_Id id,
-											  XAP_Dialog_MessageBox::tButtons buttons,
-											  XAP_Dialog_MessageBox::tAnswer default_answer,
-											  const char *p_str1)
+							 XAP_Dialog_MessageBox::tButtons buttons,
+							 XAP_Dialog_MessageBox::tAnswer default_answer,
+							 const char * sz)
 {
-	raise();
+  XAP_Dialog_MessageBox * pDialog = createMessageBox(id, buttons, default_answer, sz);
+  return showMessageBox(pDialog);
+}
 
-	XAP_DialogFactory * pDialogFactory
-		= (XAP_DialogFactory *)(getDialogFactory());
-
-	XAP_Dialog_MessageBox * pDialog
-		= (XAP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
-	UT_ASSERT(pDialog);
-
-	const XAP_StringSet * pSS = getApp()->getStringSet();
-
-	if(p_str1)
-	{
-		pDialog->setMessage((char*)pSS->getValue(id, m_app->getDefaultEncoding()).c_str(), p_str1);
-	}
-	else
-	{
-		pDialog->setMessage((char*)pSS->getValue(id, m_app->getDefaultEncoding()).c_str());
-	}
-
-
-	pDialog->setButtons(buttons);
-	pDialog->setDefaultAnswer(default_answer);
-
-	pDialog->runModal(this);
-
-	XAP_Dialog_MessageBox::tAnswer ans = pDialog->getAnswer();
-
-	pDialogFactory->releaseDialog(pDialog);
-
-	return ans;
+XAP_Dialog_MessageBox::tAnswer XAP_Frame::showMessageBox(const char * szMessage,
+							 XAP_Dialog_MessageBox::tButtons buttons,
+							 XAP_Dialog_MessageBox::tAnswer default_answer)
+{
+  XAP_Dialog_MessageBox * pDialog = createMessageBox(0, buttons, default_answer);
+  pDialog->setMessage(szMessage);
+  return showMessageBox(pDialog);
 }
 
 UT_String XAP_Frame::makeBackupName(const char* szExt)
@@ -1082,6 +1084,11 @@ void XAP_Frame::dragEnd(XAP_Toolbar_Id srcId)
 	m_bisDragging = true;
 	m_bHasDropped = false;
 	m_bHasDroppedTB = false;
+}
+
+UT_uint32 XAP_Frame::getTimeSinceSave() const
+{
+	return m_pDoc->getTimeSinceSave();
 }
 
 //////////////////////////////////////////////////////////////////

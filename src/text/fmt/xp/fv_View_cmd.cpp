@@ -2684,12 +2684,7 @@ UT_Error FV_View::cmdInsertHyperlink(const char * szName)
 		XAP_Frame * pFrame = (XAP_Frame *) getParentData();
 		UT_ASSERT((pFrame));
 
-		const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
-		const char *pMsg1 = pSS->getValue(AP_STRING_ID_MSG_HyperlinkNoSelection, m_pApp->getDefaultEncoding()).c_str();
-
-		UT_ASSERT(pMsg1);
-
-		pFrame->showMessageBox(pMsg1, XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK);
+		pFrame->showMessageBox(AP_STRING_ID_MSG_HyperlinkNoSelection, XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK);
 		return false;
 	}
 
@@ -2706,16 +2701,10 @@ UT_Error FV_View::cmdInsertHyperlink(const char * szName)
 		XAP_Frame * pFrame = (XAP_Frame *) getParentData();
 		UT_ASSERT((pFrame));
 
-		const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
-		const char *pMsg1 = pSS->getValue(AP_STRING_ID_MSG_HyperlinkNoBookmark, m_pApp->getDefaultEncoding()).c_str();
-		UT_ASSERT(pMsg1);
-
-		char * szMsg = new char[strlen(pMsg1)+strlen(szName)+1];
-		UT_ASSERT(szMsg);
-		sprintf(szMsg,pMsg1,szName);
-
-		pFrame->showMessageBox(szMsg, XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK);
-		delete[] szMsg;
+		pFrame->showMessageBox(AP_STRING_ID_MSG_HyperlinkNoBookmark, 
+				       XAP_Dialog_MessageBox::b_O, 
+				       XAP_Dialog_MessageBox::a_OK, 
+				       szName);
 	}
 
 	// Hack for bug 2940
@@ -2733,11 +2722,7 @@ UT_Error FV_View::cmdInsertHyperlink(const char * szName)
 		XAP_Frame * pFrame = (XAP_Frame *) getParentData();
 		UT_ASSERT((pFrame));
 
-		const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
-		const char *pMsg1 = pSS->getValue(AP_STRING_ID_MSG_HyperlinkCrossesBoundaries, m_pApp->getDefaultEncoding()).c_str();
-		UT_ASSERT(pMsg1);
-
-		pFrame->showMessageBox(pMsg1, XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK);
+		pFrame->showMessageBox(AP_STRING_ID_MSG_HyperlinkCrossesBoundaries, XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK);
 
 		return false;
 	}

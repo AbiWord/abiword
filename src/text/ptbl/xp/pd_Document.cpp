@@ -425,6 +425,9 @@ UT_Error PD_Document::saveAs(const char * szFilename, int ieft, bool cpy)
 	    _setClean(); // only mark as clean if we're saving under a new name
 	}
 
+	// record this as the last time the document was saved
+	m_lastSavedTime = time(NULL);
+
 	return UT_OK;
 }
 

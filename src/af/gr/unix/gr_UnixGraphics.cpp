@@ -43,6 +43,7 @@
 #include "ut_OverstrikingChars.h"
 #ifdef USE_XFT
 #include <X11/Xlib.h>
+#include <X11/Xft/Xft.h>
 #endif
 
 static UT_uint32 adobeSUni[185][2] =

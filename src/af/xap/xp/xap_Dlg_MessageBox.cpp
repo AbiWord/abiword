@@ -20,9 +20,11 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdarg.h>
 #include "ut_string.h"
 #include "ut_debugmsg.h"
 #include "xap_Dlg_MessageBox.h"
+#include "xap_App.h"
 
 /*****************************************************************/
 
@@ -30,6 +32,7 @@ XAP_Dialog_MessageBox::XAP_Dialog_MessageBox(XAP_DialogFactory * pDlgFactory, XA
 	: XAP_Dialog_NonPersistent(pDlgFactory,id)
 {
 	m_szMessage = NULL;
+	m_szSecondaryMessage = NULL;
 	m_buttons = b_O;
 	m_defaultAnswer = a_OK;
 	m_answer = a_OK;
@@ -40,38 +43,62 @@ XAP_Dialog_MessageBox::~XAP_Dialog_MessageBox(void)
 	FREEP(m_szMessage);
 }
 
-void XAP_Dialog_MessageBox::setMessage(const char * szMessage)
+void XAP_Dialog_MessageBox::setMessage(const char * szMessage, ...)
 {
+	va_list args;
+
+	va_start(args, szMessage);
+
 	FREEP(m_szMessage);
-	UT_cloneString(m_szMessage,szMessage);
+	m_szMessage = (char *)malloc(512*sizeof(char));
+	vsprintf(m_szMessage, szMessage, args);
+
+	va_end(args);
 }
 
-void XAP_Dialog_MessageBox::setMessage(const char * szMessage, const char * sz1)
+void XAP_Dialog_MessageBox::setMessage(XAP_String_Id id, ...)
 {
-	FREEP(m_szMessage);
-	UT_uint32 joinedSize = strlen(szMessage) + strlen(sz1) + 10;
-	m_szMessage = (char *)malloc(joinedSize * sizeof(char));
-	if (!m_szMessage)
-	{
-		UT_DEBUGMSG(("Could not allocate string for [%s %s]\n",szMessage,sz1));
-		return;
-	}
+	va_list args;
 
-	sprintf(m_szMessage,szMessage,sz1);
+	va_start(args, id);
+
+	FREEP(m_szMessage);
+
+	const XAP_StringSet * pSS = getApp()->getStringSet();
+
+	m_szMessage = (char *)malloc(512*sizeof(char));
+	vsprintf(m_szMessage, (char*)pSS->getValue(id, getApp()->getDefaultEncoding()).c_str(), args);
+
+	va_end(args);
 }
 
-void XAP_Dialog_MessageBox::setMessage(const char * szMessage, const char * sz1, const char * sz2, int num)
+void XAP_Dialog_MessageBox::setSecondaryMessage(const char * szMessage, ...)
 {
-	FREEP(m_szMessage);
-	UT_uint32 joinedSize = strlen(szMessage) + strlen(sz1) + strlen(sz2) + 4 + 10; // The 4 is for the line #
-	m_szMessage = (char *)malloc(joinedSize * sizeof(char));
-	if (!m_szMessage)
-	{
-		UT_DEBUGMSG(("Could not allocate string for [%s %s %s %d]\n",szMessage,sz1));
-		return;
-	}
+	va_list args;
 
-	sprintf(m_szMessage,szMessage,sz1,sz2,num);
+	va_start(args, szMessage);
+
+	FREEP(m_szSecondaryMessage);
+	m_szSecondaryMessage = (char *)malloc(512*sizeof(char));
+	vsprintf(m_szSecondaryMessage, szMessage, args);
+
+	va_end(args);
+}
+
+void XAP_Dialog_MessageBox::setSecondaryMessage(XAP_String_Id id, ...)
+{
+	va_list args;
+
+	va_start(args, id);
+
+	FREEP(m_szSecondaryMessage);
+
+	const XAP_StringSet * pSS = getApp()->getStringSet();
+
+	m_szSecondaryMessage = (char *)malloc(512*sizeof(char));
+	vsprintf(m_szSecondaryMessage, (char*)pSS->getValue(id, getApp()->getDefaultEncoding()).c_str(), args);
+
+	va_end(args);
 }
 
 

@@ -33,6 +33,8 @@
 #include "ut_types.h"
 #endif
 #include "ut_string_class.h"
+#include "time.h"
+
 
 // fwd. decl.
 class UT_StringPtrMap;
@@ -52,7 +54,7 @@ public:
 	XAP_ResourceManager &	resourceManager () const { return *m_pResourceManager; }
 
 	const char *			getFilename(void) const;
-	virtual UT_uint32               getLastSavedAsType() = 0; 
+	virtual UT_uint32       getLastSavedAsType() = 0; 
 	// TODO - this should be returning IEFileType, 
 	// but that's AP stuff, so it's not here
 
@@ -68,6 +70,11 @@ public:
 	virtual UT_Error		saveAs(const char * szFilename, int ieft) = 0;
 	virtual UT_Error		saveAs(const char * szFilename, int ieft, bool cpy) = 0;
 	virtual UT_Error		save() = 0;
+
+	/**
+	 * Returns the # of seconds since the last save of this file 
+	 */
+	UT_uint32       getTimeSinceSave () const { return (time(NULL) - m_lastSavedTime); }
 
    	// "ignore all" list for spell check
    	bool					appendIgnore(const UT_UCSChar * pWord, UT_uint32 len);
@@ -86,6 +93,7 @@ protected:
 	UT_String		m_szEncodingName;
 
 	UT_StringPtrMap *		m_pIgnoreList;
+	time_t          m_lastSavedTime;
 };
 
 

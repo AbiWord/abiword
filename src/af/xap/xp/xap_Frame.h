@@ -42,8 +42,6 @@
 
 #include "gr_Graphics.h"
 
-//#include "ev_Toolbar.h"
-
 class XAP_App;
 class XAP_DialogFactory;
 class ap_ViewListener;
@@ -135,7 +133,7 @@ public:
 	void                        setDoc(AD_Document * pDoc) {m_pDoc = pDoc;}
 	const char *				getFilename() const;
 	const char *				getTitle(int len) const;
-	const char *				getTempNameFromTitle() const;
+	const char *				getNonDecoratedTitle() const;
 
 	bool						isDirty() const;
 
@@ -196,13 +194,25 @@ public:
 	void						setAutoSaveFilePeriod(int);
 	void						setAutoSaveFileExt(const UT_String &);
 	
+	XAP_Dialog_MessageBox *      createMessageBox(XAP_String_Id id,
+												  XAP_Dialog_MessageBox::tButtons buttons,
+												  XAP_Dialog_MessageBox::tAnswer default_answer,
+												  ...);
+
+	XAP_Dialog_MessageBox::tAnswer		showMessageBox(XAP_String_Id id,
+													   XAP_Dialog_MessageBox::tButtons buttons,
+													   XAP_Dialog_MessageBox::tAnswer default_answer);
+													   
+	XAP_Dialog_MessageBox::tAnswer		showMessageBox(const char * sz,
+													   XAP_Dialog_MessageBox::tButtons buttons,
+													   XAP_Dialog_MessageBox::tAnswer default_answer);
+													   
 	XAP_Dialog_MessageBox::tAnswer		showMessageBox(XAP_String_Id id,
 													   XAP_Dialog_MessageBox::tButtons buttons,
 													   XAP_Dialog_MessageBox::tAnswer default_answer,
-													   const char *p_str1 = NULL);
-	XAP_Dialog_MessageBox::tAnswer		showMessageBox(const char *szMessage,
-													   XAP_Dialog_MessageBox::tButtons buttons,
-													   XAP_Dialog_MessageBox::tAnswer default_answer);
+													   const char * sz);
+
+	XAP_Dialog_MessageBox::tAnswer		showMessageBox(XAP_Dialog_MessageBox * pDialog);
 
 	UT_Error	    backup(const char* stExt = 0);
 	UT_String       makeBackupName (const char * szExt = 0);
@@ -216,6 +226,8 @@ public:
 	const bool                  isMenuBarShown(void) const { return m_bShowMenubar;}
 	virtual void                setStatusBarShown(bool bShowStatusbar) {}
 	virtual void                setMenuBarShown(bool bShowMenubar) {}
+	UT_uint32                   getTimeSinceSave() const;
+
 protected:
 	virtual void				_createToolbars();
 	virtual EV_Toolbar *		_newToolbar(XAP_App *app, XAP_Frame *frame, const char *, const char *) = 0; // Abstract

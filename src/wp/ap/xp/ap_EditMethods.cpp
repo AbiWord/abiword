@@ -1419,38 +1419,27 @@ static void s_TellSaveFailed(XAP_Frame * pFrame, const char * fileName, UT_Error
 	  String_id = AP_STRING_ID_MSG_SaveFailed;
 
 	pFrame->showMessageBox(String_id,
-				   XAP_Dialog_MessageBox::b_O,
-				   XAP_Dialog_MessageBox::a_OK,
-				   fileName);
+			       XAP_Dialog_MessageBox::b_O,
+			       XAP_Dialog_MessageBox::a_OK,
+			       fileName);
 }
 
 static void s_TellSpellDone(XAP_Frame * pFrame, bool bIsSelection)
 {
 	pFrame->showMessageBox(bIsSelection ? AP_STRING_ID_MSG_SpellSelectionDone : AP_STRING_ID_MSG_SpellDone,
-				   XAP_Dialog_MessageBox::b_O,
-				   XAP_Dialog_MessageBox::a_OK);
+			       XAP_Dialog_MessageBox::b_O,
+			       XAP_Dialog_MessageBox::a_OK);
 }
 
 static void s_TellNotImplemented(XAP_Frame * pFrame, const char * szWhat, int iLine)
 {
-	const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
-	const char *p_message = pSS->getValue(AP_STRING_ID_MSG_DlgNotImp);
+	XAP_Dialog_MessageBox * message = 
+		pFrame->createMessageBox(AP_STRING_ID_MSG_DlgNotImp,
+					 XAP_Dialog_MessageBox::b_O,
+					 XAP_Dialog_MessageBox::a_OK,
+					 szWhat, __FILE__, iLine);
+	pFrame->showMessageBox(message);
 
-	UT_uint32 joinedSize = strlen(p_message) + strlen(szWhat) + strlen(__FILE__) + 4 + 10; // The 4 is for the line #
-	char *szMessage = (char *)malloc(joinedSize * sizeof(char));
-	if (!szMessage)
-	{
-		UT_DEBUGMSG(("Could not allocate string for [%s %s %s %d]\n", p_message, szWhat));
-		return;
-	}
-
-	sprintf(szMessage, p_message, szWhat, __FILE__, iLine);
-
-	pFrame->showMessageBox(szMessage,
-							XAP_Dialog_MessageBox::b_O,
-							XAP_Dialog_MessageBox::a_OK);
-
-	FREEP(szMessage);
 }
 
 static bool s_AskRevertFile(XAP_Frame * pFrame)
@@ -1468,24 +1457,21 @@ static bool s_AskCloseAllAndExit(XAP_Frame * pFrame)
 {
 	// return true if we should quit.
 	return (pFrame->showMessageBox(AP_STRING_ID_MSG_QueryExit,
-										XAP_Dialog_MessageBox::b_YN,
-										XAP_Dialog_MessageBox::a_NO)
-						== XAP_Dialog_MessageBox::a_YES);
+				       XAP_Dialog_MessageBox::b_YN,
+				       XAP_Dialog_MessageBox::a_NO)
+		== XAP_Dialog_MessageBox::a_YES);
 
 }
 
 static XAP_Dialog_MessageBox::tAnswer s_AskSaveFile(XAP_Frame * pFrame)
 {
-  // remove the *, if it exists
-  UT_String title(pFrame->getTitle(200));
-  size_t star_pos = UT_String_findRCh(title, '*');
-  if ((size_t)-1 != star_pos && star_pos > 1)
-    title = title.substr(0, star_pos-1);
-
-  return pFrame->showMessageBox(AP_STRING_ID_MSG_ConfirmSave,
-				XAP_Dialog_MessageBox::b_YNC,
-				XAP_Dialog_MessageBox::a_YES,
-				title.c_str());
+	XAP_Dialog_MessageBox * message = 
+		pFrame->createMessageBox(AP_STRING_ID_MSG_ConfirmSave,
+					 XAP_Dialog_MessageBox::b_YNC,
+					 XAP_Dialog_MessageBox::a_YES,
+					 pFrame->getNonDecoratedTitle());
+	message->setSecondaryMessage(AP_STRING_ID_MSG_ConfirmSaveSecondary, pFrame->getTimeSinceSave()/60);
+	return pFrame->showMessageBox(message);
 }
 
 static bool s_AskForPathname(XAP_Frame * pFrame,
@@ -4199,12 +4185,9 @@ Defun1(insertHyperlink)
 		XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
 		UT_ASSERT((pFrame));
 
-		const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
-		const char *pMsg1 = pSS->getValue(AP_STRING_ID_MSG_HyperlinkNoSelection);
 
-		UT_ASSERT(pMsg1);
-
-		pFrame->showMessageBox(pMsg1, XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK);
+		pFrame->showMessageBox(AP_STRING_ID_MSG_HyperlinkNoSelection, 
+				       XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK);
 		return false;
 	}
 	else
@@ -6088,10 +6071,10 @@ static bool s_doPrint(FV_View * pView, bool bTryToSuppressDialog,bool bPrintDire
 	PD_Document * doc = pLayout->getDocument();
 
 	pDialog->setPaperSize (pView->getPageSize().getPredefinedName());
-	pDialog->setDocumentTitle(pFrame->getTempNameFromTitle());
+	pDialog->setDocumentTitle(pFrame->getNonDecoratedTitle());
 	pDialog->setDocumentPathname((doc->getFilename())
 								 ? doc->getFilename()
-								 : pFrame->getTempNameFromTitle());
+								 : pFrame->getNonDecoratedTitle());
 	pDialog->setEnablePageRangeButton(true,1,pLayout->countPages());
 	pDialog->setEnablePrintSelection(false);	// TODO change this when we know how to do it.
 	pDialog->setEnablePrintToFile(true);
@@ -6143,7 +6126,7 @@ static bool s_doPrint(FV_View * pView, bool bTryToSuppressDialog,bool bPrintDire
 		UT_sint32 iWidth = pLayout->getWidth();
 		UT_sint32 iHeight = pLayout->getHeight() / pLayout->countPages();
 
-		const char *pDocName = ((doc->getFilename()) ? doc->getFilename() : pFrame->getTempNameFromTitle());
+		const char *pDocName = ((doc->getFilename()) ? doc->getFilename() : pFrame->getNonDecoratedTitle());
 
 		s_actuallyPrint(doc, pGraphics, pPrintView, pDocName, nCopies, bCollate,
 				iWidth,  iHeight, nToPage, nFromPage);
@@ -6191,10 +6174,10 @@ static bool s_doPrintPreview(FV_View * pView)
 	s_pLoadingDoc = (AD_Document *) doc;
 
 	pDialog->setPaperSize (pView->getPageSize().getPredefinedName());
-	pDialog->setDocumentTitle(pFrame->getTempNameFromTitle());
+	pDialog->setDocumentTitle(pFrame->getNonDecoratedTitle());
 	pDialog->setDocumentPathname((doc->getFilename())
 					 ? doc->getFilename()
-					 : pFrame->getTempNameFromTitle());
+					 : pFrame->getNonDecoratedTitle());
 
 	pDialog->runModal(pFrame);
 
@@ -6220,7 +6203,7 @@ static bool s_doPrintPreview(FV_View * pView)
 	UT_sint32 iWidth = pLayout->getWidth();
 	UT_sint32 iHeight = pLayout->getHeight() / pLayout->countPages();
 
-	const char *pDocName = ((doc->getFilename()) ? doc->getFilename() : pFrame->getTempNameFromTitle());
+	const char *pDocName = ((doc->getFilename()) ? doc->getFilename() : pFrame->getNonDecoratedTitle());
 
 	s_actuallyPrint(doc, pGraphics, pPrintView, pDocName, nCopies, bCollate,
 			iWidth,  iHeight, nToPage, nFromPage);
@@ -9475,14 +9458,16 @@ Defun1(scriptPlay)
 	if (UT_OK != instance.execute(pNewFile.c_str(), ieft))
 	{
 		if (instance.errmsg().size() > 0)
+		{
 			pFrame->showMessageBox(instance.errmsg().c_str(),
-								   XAP_Dialog_MessageBox::b_O,
-								   XAP_Dialog_MessageBox::a_OK);
+					       XAP_Dialog_MessageBox::b_O,
+					       XAP_Dialog_MessageBox::a_OK);
+		}
 		else
 			pFrame->showMessageBox(AP_STRING_ID_SCRIPT_CANTRUN,
-								   XAP_Dialog_MessageBox::b_O,
-								   XAP_Dialog_MessageBox::a_OK,
-								   pNewFile.c_str());
+					       XAP_Dialog_MessageBox::b_O,
+					       XAP_Dialog_MessageBox::a_OK,
+					       pNewFile.c_str());
 	}
 
 	return true;

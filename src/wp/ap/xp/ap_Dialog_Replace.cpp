@@ -251,7 +251,7 @@ bool AP_Dialog_Replace::findNext()
 	
 	// call view to do the work
 	bool result = getFvView()->findNext(m_findString, m_matchCase, 
-										bDoneEntireDocument);
+					    bDoneEntireDocument);
 
 	if (bDoneEntireDocument == true)
 		_messageFinishedFind();
@@ -275,7 +275,7 @@ bool AP_Dialog_Replace::findReplace()
 	
 	// call view to do the work
 	bool result = getFvView()->findReplace(m_findString, m_replaceString,
-										   m_matchCase, bDoneEntireDocument);
+					       m_matchCase, bDoneEntireDocument);
 
 	if (bDoneEntireDocument == true)
 		_messageFinishedFind();
@@ -297,8 +297,8 @@ bool AP_Dialog_Replace::findReplaceAll()
 	
 	// call view to do the work
 	UT_uint32 numReplaced = getFvView()->findReplaceAll(m_findString,
-													m_replaceString,
-													m_matchCase);
+							    m_replaceString,
+							    m_matchCase);
 
 	_messageFinishedReplace(numReplaced);
 
@@ -307,22 +307,18 @@ bool AP_Dialog_Replace::findReplaceAll()
 
 void AP_Dialog_Replace::_messageFinishedFind(void)
 {
-  const XAP_StringSet * pSS = m_pApp->getStringSet();
-	_messageBox(pSS->getValue(AP_STRING_ID_DLG_FR_FinishedFind));
+	getActiveFrame()->showMessageBox(AP_STRING_ID_DLG_FR_FinishedFind,
+					 XAP_Dialog_MessageBox::b_O,
+					 XAP_Dialog_MessageBox::a_OK);
 }
 
 void AP_Dialog_Replace::_messageFinishedReplace(UT_uint32 numReplaced)
 {
-	char message[512];
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	sprintf(message, pSS->getValue(AP_STRING_ID_DLG_FR_FinishedReplace), 
-		numReplaced);
-	_messageBox(message);
+	XAP_Dialog_MessageBox * message = 
+	  getActiveFrame()->createMessageBox(AP_STRING_ID_DLG_FR_FinishedReplace,
+					     XAP_Dialog_MessageBox::b_O,
+					     XAP_Dialog_MessageBox::a_OK,
+					     numReplaced);
+	getActiveFrame()->showMessageBox(message);
 }
 
-void AP_Dialog_Replace::_messageBox(const char * message)
-{
-	getActiveFrame()->showMessageBox(message,
-								XAP_Dialog_MessageBox::b_O,
-								XAP_Dialog_MessageBox::a_OK);
-}

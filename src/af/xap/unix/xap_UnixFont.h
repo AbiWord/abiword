@@ -23,6 +23,7 @@
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
 #include <gdk/gdkx.h>
+#include <freetype/freetype.h>
 
 #include "ut_types.h"
 #include "ut_vector.h"
@@ -262,7 +263,7 @@ public:
 
 	XftFaceLocker& operator= (const XftFaceLocker& other);
 
-	FT_Face			getFace() { return m_pFace; }
+	FT_Face                 getFace() { return m_pFace; }
 
 private:
 	XftFont*		m_pFont;

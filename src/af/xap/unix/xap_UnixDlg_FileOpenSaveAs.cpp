@@ -410,27 +410,27 @@ ReturnTrue:
 bool XAP_UnixDialog_FileOpenSaveAs::_askOverwrite_YesNo(XAP_Frame * pFrame, const char * fileName)
 {
 	return (pFrame->showMessageBox(XAP_STRING_ID_DLG_OverwriteFile,
-										XAP_Dialog_MessageBox::b_YN,
-										XAP_Dialog_MessageBox::a_NO, // should this be YES?
-										fileName)
-						== XAP_Dialog_MessageBox::a_YES);
+				       XAP_Dialog_MessageBox::b_YN,
+				       XAP_Dialog_MessageBox::a_NO, // should this be YES?
+				       fileName)
+		== XAP_Dialog_MessageBox::a_YES);
 }
 	
 void XAP_UnixDialog_FileOpenSaveAs::_notifyError_OKOnly(XAP_Frame * pFrame, XAP_String_Id sid)
 {
 	pFrame->showMessageBox(sid,
-							XAP_Dialog_MessageBox::b_O,
-							XAP_Dialog_MessageBox::a_OK);
+			       XAP_Dialog_MessageBox::b_O,
+			       XAP_Dialog_MessageBox::a_OK);
 }
 
 void XAP_UnixDialog_FileOpenSaveAs::_notifyError_OKOnly(XAP_Frame * pFrame,
-														XAP_String_Id sid,
-														const char * sz1)
+							XAP_String_Id sid,
+							const char * sz1)
 {
 	pFrame->showMessageBox(sid,
-							XAP_Dialog_MessageBox::b_O,
-							XAP_Dialog_MessageBox::a_OK,
-							sz1);
+			       XAP_Dialog_MessageBox::b_O,
+			       XAP_Dialog_MessageBox::a_OK,
+			       sz1);
 }
 
 /*****************************************************************/

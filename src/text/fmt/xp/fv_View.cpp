@@ -4462,19 +4462,11 @@ book_mark_not_found:
 				XAP_Frame * pFrame = (XAP_Frame *) getParentData();
 				UT_ASSERT((pFrame));
 
-				const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
-				const char *pMsg1 = pSS->getValue(AP_STRING_ID_MSG_BookmarkNotFound);
+				pFrame->showMessageBox(AP_STRING_ID_MSG_BookmarkNotFound, 
+						       XAP_Dialog_MessageBox::b_O, 
+						       XAP_Dialog_MessageBox::a_OK, 
+						       numberString);
 
-				UT_ASSERT(pMsg1);
-
-				char * szMsg = new char[strlen(pMsg1) + BOOKMARK_NAME_SIZE + 10];
-				UT_ASSERT((szMsg));
-
-				sprintf(szMsg, pMsg1, numberString);
-
-				pFrame->showMessageBox(szMsg, XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK);
-
-				delete[] szMsg;
 				return true;
 			}
 

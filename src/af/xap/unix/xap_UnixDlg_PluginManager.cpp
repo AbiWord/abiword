@@ -41,11 +41,11 @@
 /*****************************************************************/
 /*****************************************************************/
 
-static void _errorMessage (XAP_Frame * pFrame, const char * msg)
+static void _errorMessage (XAP_Frame * pFrame, XAP_String_Id id)
 {
   // just a little simple error message box
-  UT_return_if_fail(pFrame && msg);
-  pFrame->showMessageBox (msg,
+  UT_return_if_fail(pFrame);
+  pFrame->showMessageBox (id,
 			  XAP_Dialog_MessageBox::b_O,
 			  XAP_Dialog_MessageBox::a_OK);
 }
@@ -81,7 +81,6 @@ void XAP_UnixDialog_PluginManager::event_DeactivateAll ()
 
 void XAP_UnixDialog_PluginManager::event_Deactivate ()
 {
-  const XAP_StringSet * pSS = m_pApp->getStringSet();
   
   XAP_Module * pModule = 0;
   
@@ -96,7 +95,7 @@ void XAP_UnixDialog_PluginManager::event_Deactivate ()
     {
       // error message box - didn't select a plugin
       _errorMessage (m_pFrame, 
-		     pSS->getValueUTF8(XAP_STRING_ID_DLG_PLUGIN_MANAGER_NONE_SELECTED).c_str());
+		     XAP_STRING_ID_DLG_PLUGIN_MANAGER_NONE_SELECTED);
       return;
     }
   
@@ -111,21 +110,19 @@ void XAP_UnixDialog_PluginManager::event_Deactivate ()
 	{
 	  // error message box
 	  _errorMessage (m_pFrame, 
-			 pSS->getValueUTF8(XAP_STRING_ID_DLG_PLUGIN_MANAGER_COULDNT_UNLOAD).c_str());
+			 XAP_STRING_ID_DLG_PLUGIN_MANAGER_COULDNT_UNLOAD);
 	}
     }
   else
     {
       // error message box
       _errorMessage (m_pFrame, 
-		     pSS->getValueUTF8(XAP_STRING_ID_DLG_PLUGIN_MANAGER_COULDNT_UNLOAD).c_str());
+		     XAP_STRING_ID_DLG_PLUGIN_MANAGER_COULDNT_UNLOAD);
     }
 }
 
 void XAP_UnixDialog_PluginManager::event_Load ()
 {
-  const XAP_StringSet * pSS = m_pApp->getStringSet();
-  
   XAP_DialogFactory * pDialogFactory
     = (XAP_DialogFactory *) m_pFrame->getDialogFactory();
   
@@ -178,7 +175,7 @@ void XAP_UnixDialog_PluginManager::event_Load ()
 	    {
 	      // error message
 	      _errorMessage (m_pFrame, 
-			     pSS->getValueUTF8(XAP_STRING_ID_DLG_PLUGIN_MANAGER_COULDNT_LOAD).c_str());
+			     XAP_STRING_ID_DLG_PLUGIN_MANAGER_COULDNT_LOAD);
 	    }
 	}
     }
