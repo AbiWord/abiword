@@ -368,8 +368,11 @@ UT_Bool AP_BeOSFrame::initialize()
 	//At this point in time the BeOS widgets are all
 	//realized so we should be able to go and attach
 	//the various input filters to them.
-	m_pBeOSKeyboard->synthesize(m_pBeOSApp, this);
-        m_pBeOSMouse->synthesize(m_pBeOSApp, this);
+	ev_BeOSKeyboard * pBeOSKeyboard = static_cast<ev_BeOSKeyboard *>(m_pKeyboard);
+	pBeOSKeyboard->synthesize(m_pBeOSApp, this);
+
+	ev_BeOSMouse * pBeOSMouse = static_cast<ev_BeOSMouse *>(m_pMouse);
+	pBeOSMouse->synthesize(m_pBeOSApp, this);
 
 	//Actually show the window to the world
 	m_pBeWin->Show();
