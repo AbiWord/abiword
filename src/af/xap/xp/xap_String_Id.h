@@ -29,6 +29,12 @@
 dcl(MSG_ImportingDoc, "Importing Document..")
 dcl(MSG_BuildingDoc,  "Building Document..")
 dcl(MSG_AutoRevision, "Autorevision")
+dcl(MSG_HistoryPartRestore1, "AbiWord cannot fully restore version %d of the document because the version information is incomplete.")
+dcl(MSG_HistoryPartRestore2, "The nearest version that can be restored fully is %d. Would you like to restore this version instead? To partially restore version %d press No.")
+dcl(MSG_HistoryPartRestore3, "To continue anyway, press OK.")
+dcl(MSG_HistoryPartRestore4, "To quit the restoration attempt, press Cancel.")
+dcl(MSG_HistoryNoRestore, "AbiWord cannot restore version %d of the document because the version information is missing.")
+dcl(MSG_HistoryConfirmSave, "You have to save changes to document %s before proceeding.")
 
 /* Default name for new, untitled document */
 dcl(UntitledDocument,			"Untitled%d")

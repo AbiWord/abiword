@@ -271,6 +271,7 @@ const UT_UUID & AD_Document::getHistoryNthUID(UT_uint32 i) const
 	return v->getUID();
 }
 
+
 /*!
     Returns true if both documents are based on the same root document
 */
@@ -315,6 +316,105 @@ bool AD_Document::areDocumentHistoriesEqual(const AD_Document & d, UT_uint32 &iV
 		return false;
 	
 	return true;		
+}
+
+/*!
+    Verifies to what extent we are able to restore given version of
+    the document
+
+    \return: return value indicates whether full/partial/no restore is possible
+    
+    \param UT_uint32 & iVersion: on entry contains the version number
+                                 user wants to revert to; if return
+                                 value indicates partial restore
+                                 iVersion indicates which nearest
+                                 (greater) version can be restored
+                                 fully, or 0 if no such version exists
+*/
+AD_HISTORY_STATE AD_Document::verifyHistoryState(UT_uint32 &iVersion) const
+{
+	if(!m_vHistory.getItemCount())
+		return ADHIST_NO_RESTORE;
+	
+	AD_HISTORY_STATE eRet = ADHIST_FULL_RESTORE; // be optimistic
+
+	const AD_VersionData * v = NULL;
+	UT_uint32 i;
+	bool bFullRestore = false;
+	bool bFound = false;
+	
+	// find the lowest autorevisioned record greater than iVersion and
+	// evaluate the state of history above iVersion
+	for(i = 0; i < getHistoryCount(); ++i)
+	{
+		v = (const AD_VersionData*)m_vHistory.getNthItem(i);
+
+		if(!v)
+		{
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			continue;
+		}
+
+		if(v->getId() < iVersion + 1)
+			continue;
+
+		if(!v->isAutoRevisioned())
+			continue;
+
+		// if we got so far, we have an autorevisioned record greater
+		// than iVersion
+		
+		if(!bFound)
+		{
+			bFound = true;
+
+			if(v->getId() == iVersion + 1)
+				bFullRestore = true;
+			
+			continue;
+		}
+
+		bFullRestore &= v->isAutoRevisioned();
+	}
+
+	if(!bFound)
+	{
+		// there are no autorevisioned records above our version
+		return ADHIST_NO_RESTORE;
+	}
+
+	if(!bFullRestore)
+	{
+		eRet = ADHIST_PARTIAL_RESTORE;
+
+		// we want to find out from which version would full restore
+		// be possible
+		UT_uint32 iMinVersion = 0; // assume nothing
+		for(i = getHistoryCount(); i > 0; --i)
+		{
+			v = (const AD_VersionData*)m_vHistory.getNthItem(i-1);
+
+			if(!v)
+			{
+				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+				continue;
+			}
+
+			if(v->getId() <= iVersion) // too far down the table
+				break;
+
+			if(!v->isAutoRevisioned()) // break in the history
+				break;
+
+			iMinVersion = v->getId();
+		}
+
+		// iMinVersion now contains the lowest version with a full
+		// record above it, which we pass back to the caller
+		iVersion = iMinVersion;
+	}
+
+	return eRet;
 }
 
 const AD_VersionData * AD_Document::findHistoryRecord(UT_uint32 iVersion) const

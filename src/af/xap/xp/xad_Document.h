@@ -81,6 +81,14 @@ class AD_VersionData
 	bool        m_bAutoRevision;
 };
 
+enum AD_HISTORY_STATE
+{
+	ADHIST_FULL_RESTORE,
+	ADHIST_PARTIAL_RESTORE,
+	ADHIST_NO_RESTORE
+};
+
+
 // a helper class for keeping track of revisions in the document
 class AD_Revision
 {
@@ -179,6 +187,8 @@ public:
 	UT_uint32       getHistoryNthEditTime(UT_uint32 i)const;
 	const UT_UUID&  getHistoryNthUID(UT_uint32 i)const;
 	bool            getHistoryNthAutoRevisioned(UT_uint32 i)const;
+
+	AD_HISTORY_STATE verifyHistoryState(UT_uint32 &iVersion) const;
 
 	const AD_VersionData * findHistoryRecord(UT_uint32 iVersion) const;
 		
