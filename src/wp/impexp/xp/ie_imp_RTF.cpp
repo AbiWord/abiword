@@ -1535,7 +1535,13 @@ bool IE_Imp_RTF::ResetCharacterAttributes()
   ///
 UT_uint32 IE_Imp_RTF::mapID(UT_uint32 id)
 {
-        UT_uint32 mappedID = id;
+	UT_uint32 mappedID = id;
+	if(id == 0)
+	{
+		UT_DEBUGMSG(("SEVIOR: Trying to map a non list item. This should not happen \n"));
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return id;
+	}
 	if (m_pImportFile)  // if we are reading a file - dont remap the ID
 	{
 	        return id;
@@ -1620,7 +1626,7 @@ UT_uint32 IE_Imp_RTF::mapParentID(UT_uint32 id)
   //
   // For the parent ID we have to look to see if the parent ID has been remapped
   //
-        UT_uint32 mappedID;
+	UT_uint32 mappedID;
 	mappedID = id;
 	if (m_pImportFile)  // if we are reading a file
 	{
@@ -1705,26 +1711,26 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 	// line spacing
 	if(m_currentRTFState.m_paraProps.m_isList == true)
 	{
-	        if (m_currentRTFState.m_paraProps.m_lineSpaceExact)
-                {
+		if (m_currentRTFState.m_paraProps.m_lineSpaceExact)
+		{
 		// ABIWord doesn't (yet) support exact line spacing we'll just fall back to single
-		       sprintf(tempBuffer, "line-height:1.0;");
+			sprintf(tempBuffer, "line-height:1.0;");
 		}
 		else
-	        {
-		       sprintf(tempBuffer, "line-height:%s;",	UT_convertToDimensionlessString(fabs(m_currentRTFState.m_paraProps.m_lineSpaceVal/240)));
+		{
+			sprintf(tempBuffer, "line-height:%s;",	UT_convertToDimensionlessString(fabs(m_currentRTFState.m_paraProps.m_lineSpaceVal/240)));
 		}
 
 	}
 	else
-        {
-	        if (m_currentRTFState.m_paraProps.m_lineSpaceExact)
-                {
+	{
+		if (m_currentRTFState.m_paraProps.m_lineSpaceExact)
+		{
 		// ABIWord doesn't (yet) support exact line spacing we'll just fall back to single
 		       sprintf(tempBuffer, "line-height:1.0");
 		}
 		else
-	        {
+		{
 		       sprintf(tempBuffer, "line-height:%s",	UT_convertToDimensionlessString(fabs(m_currentRTFState.m_paraProps.m_lineSpaceVal/240)));
 		}
 
@@ -1742,47 +1748,48 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 	static char pszStartValue[15];
 	UT_uint32 id,pid,startValue;
 	UT_uint32 attribsCount;
-	if(m_currentRTFState.m_paraProps.m_isList == true)
+	bool bPasteList = m_currentRTFState.m_paraProps.m_isList && ( 0 != m_currentRTFState.m_paraProps.m_rawID);
+	if( bPasteList )
 	{
 	  //
 	  // First off assemble the list attributes
 	  //
-	        sprintf(pszStyle,"%s",m_currentRTFState.m_paraProps.m_pszStyle);
-	        v.addItem((void *) "style"); v.addItem( (void *) pszStyle);
-	        id = mapID(m_currentRTFState.m_paraProps.m_rawID);
-	        sprintf(pszListID,"%d",id);
-	        v.addItem((void *) "listid"); v.addItem( (void *) pszListID);
-	        pid = mapParentID(m_currentRTFState.m_paraProps.m_rawParentID);
-	        sprintf(pszParentID,"%d",pid);
-	        v.addItem((void *) "parentid"); v.addItem( (void *) pszParentID);
-	        if(pid == 0)
-		       m_currentRTFState.m_paraProps.m_level = 1;
-	        sprintf(pszLevel,"%d",m_currentRTFState.m_paraProps.m_level);
-	        v.addItem((void *) "level"); v.addItem( (void *) pszLevel);
-
-	        UT_uint32 counta = v.getItemCount() + 3;
-	        attribs = (const XML_Char **) calloc(counta, sizeof(XML_Char *));
-	        for(attribsCount=0; attribsCount<v.getItemCount();attribsCount++)
-	        {
-		       attribs[attribsCount] = (XML_Char *) v.getNthItem(attribsCount);
-	        }
-	        //
-	        // Now handle the List properties
-	        //
-	        sprintf(tempBuffer, "list-decimal:%s; ",m_currentRTFState.m_paraProps.m_pszListDecimal);
-	        strcat(propBuffer, tempBuffer);
-	        sprintf(tempBuffer, "list-delim:%s; ",m_currentRTFState.m_paraProps.m_pszListDelim);
-	        strcat(propBuffer, tempBuffer);
-	        sprintf(tempBuffer, "field-font:%s; ",m_currentRTFState.m_paraProps.m_pszFieldFont);
-	        strcat(propBuffer, tempBuffer);
+		sprintf(pszStyle,"%s",m_currentRTFState.m_paraProps.m_pszStyle);
+		v.addItem((void *) "style"); v.addItem( (void *) pszStyle);
+		id = mapID(m_currentRTFState.m_paraProps.m_rawID);
+		sprintf(pszListID,"%d",id);
+		v.addItem((void *) "listid"); v.addItem( (void *) pszListID);
+		pid = mapParentID(m_currentRTFState.m_paraProps.m_rawParentID);
+		sprintf(pszParentID,"%d",pid);
+		v.addItem((void *) "parentid"); v.addItem( (void *) pszParentID);
+		if(pid == 0)
+			m_currentRTFState.m_paraProps.m_level = 1;
+		sprintf(pszLevel,"%d",m_currentRTFState.m_paraProps.m_level);
+		v.addItem((void *) "level"); v.addItem( (void *) pszLevel);
+		
+		UT_uint32 counta = v.getItemCount() + 3;
+		attribs = (const XML_Char **) calloc(counta, sizeof(XML_Char *));
+		for(attribsCount=0; attribsCount<v.getItemCount();attribsCount++)
+		{
+			attribs[attribsCount] = (XML_Char *) v.getNthItem(attribsCount);
+		}
+		//
+		// Now handle the List properties
+		//
+		sprintf(tempBuffer, "list-decimal:%s; ",m_currentRTFState.m_paraProps.m_pszListDecimal);
+		strcat(propBuffer, tempBuffer);
+		sprintf(tempBuffer, "list-delim:%s; ",m_currentRTFState.m_paraProps.m_pszListDelim);
+		strcat(propBuffer, tempBuffer);
+		sprintf(tempBuffer, "field-font:%s; ",m_currentRTFState.m_paraProps.m_pszFieldFont);
+		strcat(propBuffer, tempBuffer);
 		startValue = m_currentRTFState.m_paraProps.m_startValue;
 		sprintf(pszStartValue,"%d",startValue);
-	        sprintf(tempBuffer, "start-value:%s ",pszStartValue);
-	        strcat(propBuffer, tempBuffer);
+		sprintf(tempBuffer, "start-value:%s ",pszStartValue);
+		strcat(propBuffer, tempBuffer);
 
-	        attribs[attribsCount++] = pProps;
-	        attribs[attribsCount++] = propBuffer;
-	        attribs[attribsCount] = NULL;
+		attribs[attribsCount++] = pProps;
+		attribs[attribsCount++] = propBuffer;
+		attribs[attribsCount] = NULL;
 	}
 	propsArray[0] = pProps;
 	propsArray[1] = propBuffer;
@@ -1790,9 +1797,9 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 
 	if (m_pImportFile)					// if we are reading a file
 	{
-	        if(m_currentRTFState.m_paraProps.m_isList == true)
+		if(bPasteList )
 		{
-		        bool bret = m_pDocument->appendStrux(PTX_Block, attribs);
+			bool bret = m_pDocument->appendStrux(PTX_Block, attribs);
 			//
 			// Insert a list-label field??
 			//
@@ -1800,21 +1807,21 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 			const XML_Char* fielddef[3];
 			fielddef[0] ="type";
 			fielddef[1] = "list_label";
-                        fielddef[2] = NULL;
+			fielddef[2] = NULL;
 			bret =   m_pDocument->appendObject(PTO_Field,fielddef);
 			return bret;
 		}
 		else
 		{
-		        return m_pDocument->appendStrux(PTX_Block, propsArray);
+			return m_pDocument->appendStrux(PTX_Block, propsArray);
 		}
 	}
 	else
 	{
-	        bool bSuccess = true;
+		bool bSuccess = true;
 		if (bSuccess)
 		{
-	                if(m_currentRTFState.m_paraProps.m_isList == true)
+			if(bPasteList)
 			{
 				UT_DEBUGMSG(("SEVIOR: Pasting list id %d \n",id));
 				bool bSuccess = m_pDocument->insertStrux(m_dposPaste,PTX_Block);
@@ -1831,24 +1838,24 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 				 * been remapped.
 				 */
 				{
-				  UT_DEBUGMSG(("SEVIOR: Creating a new list \n"));
-				       List_Type lType = NOT_A_LIST;
-				       UT_uint32 size_xml_lists = sizeof(xml_Lists)/sizeof(xml_Lists[0]);
-				       for(j=0; j< size_xml_lists; j++)
-				       {
-				                if( UT_XML_strcmp(pszStyle,xml_Lists[j]) ==0)
+					UT_DEBUGMSG(("SEVIOR: Creating a new list \n"));
+					List_Type lType = NOT_A_LIST;
+					UT_uint32 size_xml_lists = sizeof(xml_Lists)/sizeof(xml_Lists[0]);
+					for(j=0; j< size_xml_lists; j++)
+					{
+						if( UT_XML_strcmp(pszStyle,xml_Lists[j]) ==0)
 						{
-						        break;
+							break;
 						}
-				       }
-				       if(j < size_xml_lists)
-				             lType = (List_Type) j;
-				       else
-				             lType = (List_Type) 0;
-				       pAuto = new fl_AutoNum(id, pid, lType, startValue,(XML_Char *)  m_currentRTFState.m_paraProps.m_pszListDelim,(XML_Char *)  m_currentRTFState.m_paraProps.m_pszListDecimal, m_pDocument);
-				       UT_DEBUGMSG(("SEVIOR: Created new list in Paste \n"));
-				       m_pDocument->addList(pAuto);
-				       pAuto->fixHierarchy(m_pDocument);
+					}
+					if(j < size_xml_lists)
+						lType = (List_Type) j;
+					else
+						lType = (List_Type) 0;
+					pAuto = new fl_AutoNum(id, pid, lType, startValue,(XML_Char *)  m_currentRTFState.m_paraProps.m_pszListDelim,(XML_Char *)  m_currentRTFState.m_paraProps.m_pszListDecimal, m_pDocument);
+					UT_DEBUGMSG(("SEVIOR: Created new list in Paste \n"));
+					m_pDocument->addList(pAuto);
+					pAuto->fixHierarchy(m_pDocument);
 				}
 				bSuccess = m_pDocument->getStruxOfTypeFromPosition(m_dposPaste,PTX_Block,&sdh_cur);
 				///
@@ -1856,44 +1863,73 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 				///
 				if(pAuto->isEmpty() == true)
 				{
-				        pAuto->addItem(sdh_cur);
+					pAuto->addItem(sdh_cur);
 				}
 				else
 				{
-				        j= 0;
+					j= 0;
 					sdh_next = pAuto->getNthBlock(j);
 					pos_next = m_pDocument->getStruxPosition(sdh_next);
 					while(sdh_next != NULL && pos_next < m_dposPaste)
 					{
-					        j++;
+						j++;
 						sdh_next = pAuto->getNthBlock(j);
 						if(sdh_next != NULL)
-						       pos_next = m_pDocument->getStruxPosition(sdh_next);
+							pos_next = m_pDocument->getStruxPosition(sdh_next);
 					}
 					if(sdh_next != NULL)
 					{
-					         pAuto->prependItem(sdh_cur,sdh_next);
+						pAuto->prependItem(sdh_cur,sdh_next);
 					}
 					else
 					{
-					         pAuto->addItem(sdh_cur);
+						pAuto->addItem(sdh_cur);
 					}
 				}
 				if(pid != 0)
 				{
-				        pAuto->findAndSetParentItem();
+					pAuto->findAndSetParentItem();
 					pAuto->markAsDirty();
 					pid = pAuto->getParentID();
 					sprintf(pszParentID,"%d",pid);
 				}
-			        bSuccess = m_pDocument->changeStruxFmt(PTC_AddFmt,m_dposPaste,m_dposPaste,attribs, NULL,PTX_Block);
+				bSuccess = m_pDocument->changeStruxFmt(PTC_AddFmt,m_dposPaste,m_dposPaste,attribs, NULL,PTX_Block);
   				FREEP(attribs);
 			}
 			else
 			{
 				bSuccess = m_pDocument->insertStrux(m_dposPaste,PTX_Block);
 				m_dposPaste++;
-			        bSuccess = m_pDocument->changeStruxFmt(PTC_AddFmt,m_dposPaste,m_dposPaste, propsArray,NULL,PTX_Block);
+				bSuccess = m_pDocument->changeStruxFmt(PTC_AddFmt,m_dposPaste,m_dposPaste, propsArray,NULL,PTX_Block);
+//
+// Now check if this strux has associated list element. If so stop the list!
+//
+				PL_StruxDocHandle sdh = NULL;
+				m_pDocument->getStruxOfTypeFromPosition(m_dposPaste,PTX_Block,&sdh);
+				UT_uint32 nLists = m_pDocument->getListsCount();
+				bool bisListItem = false;
+//
+// Have to loop so that multi-level lists get stopped. Each StopList removes
+// the sdh from the next highest level.
+//
+				do
+				{
+					fl_AutoNum * pAuto = NULL;
+					bisListItem = false;
+					for(UT_uint32 i=0; (i< nLists && !bisListItem); i++)
+					{
+						pAuto = m_pDocument->getNthList(i);
+						bisListItem = pAuto->isItem(sdh);
+					}
+//
+// We've created a list element where we should not. Stop it now!!
+//
+					if(bisListItem)
+					{
+						m_pDocument->StopList(sdh);
+					}
+				}
+				while(bisListItem);
 			}
 		}
 		return bSuccess;
