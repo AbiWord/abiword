@@ -1063,6 +1063,13 @@ void IE_Imp_MsWord_97::_flush ()
 	  m_nSections++;
 	}
 
+  pf_Frag * pF = getDoc()->getLastFrag();
+  if (pF && pF->getType() == pf_Frag::PFT_Strux) {
+	  pf_Frag_Strux * pFS = (pf_Frag_Strux*)pF;
+	  if (pFS->getStruxType() != PTX_Block)
+		  m_bInPara = false;
+  }
+
   if(!m_bInPara)
   {
 	  // append a blank defaul paragraph - assume it works
@@ -3394,8 +3401,8 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height)
     unsigned long uncomprLen, comprLen;
     comprLen = size;
     uncomprLen = b->blip.metafile.m_cb;
-    char *uncompr = new char[uncomprLen];
-    int  err = uncompress (uncompr, &uncomprLen, data, comprLen);
+    unsigned char *uncompr = new unsigned char[uncomprLen];
+    int err = uncompress (uncompr, &uncomprLen, data, comprLen);
     if (err != Z_OK)
       {
 	UT_DEBUGMSG(("Could not uncompress image\n"));
