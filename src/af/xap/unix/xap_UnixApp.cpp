@@ -69,6 +69,11 @@ AP_Frame * AP_UnixApp::newFrame(void)
 	return pUnixFrame;
 }
 
+void AP_UnixApp::reallyExit(void)
+{
+	gtk_main_quit();
+}
+
 AP_DialogFactory * AP_UnixApp::getDialogFactory(void)
 {
 	return &m_dialogFactory;

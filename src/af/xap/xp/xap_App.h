@@ -62,6 +62,7 @@ public:
 	virtual UT_Bool					rememberFrame(AP_Frame * pFrame, AP_Frame * pCloneOf=(AP_Frame*)NULL);
 	virtual UT_Bool					forgetFrame(AP_Frame * pFrame);
 	virtual AP_Frame * 				newFrame(void) = 0;
+	virtual void					reallyExit(void) = 0;
 
 	UT_Bool							updateClones(AP_Frame * pFrame);
 

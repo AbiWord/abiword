@@ -17,16 +17,6 @@
  * 02111-1307, USA.
  */
 
-#define DLGHACK
-#ifdef DLGHACK			// see bottom of file for an apology
-#  ifdef WIN32
-#    include <windows.h>	// needs to be first
-#  else
-#    define UNIXHACK
-#    include <gtk/gtk.h>
-#  endif
-#endif /* DLGHACK */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -861,19 +851,6 @@ Defun1(cycleWindowsBck)
 	return UT_TRUE;
 }
 
-static void _reallyExit(void)
-{
-#ifdef DLGHACK
-#ifdef WIN32
-	PostQuitMessage (0);
-#endif
-#ifdef UNIXHACK
-	gtk_main_quit();	// what miguel uses
-//	exit(0);			// what Andy had
-#endif
-#endif /* DLGHACK */
-}
-
 Defun(closeWindow)
 {
 	AP_Frame * pFrame = (AP_Frame *) pAV_View->getParentData();
@@ -912,7 +889,7 @@ Defun(closeWindow)
 	// are we the last window?
 	if (1 >= pApp->getFrameCount())
 	{
-		_reallyExit();
+		pApp->reallyExit();
 	}
 
 	// nuke the window
@@ -958,7 +935,7 @@ Defun(querySaveAndExit)
 	if (bRet)
 	{
 		// TODO: this shouldn't be necessary, but just in case
-		_reallyExit();
+		pApp->reallyExit();
 	}
 
 	return bRet;
@@ -1724,7 +1701,7 @@ static UT_Bool s_doPrint(FV_View * pView, UT_Bool bTryToSuppressDialog)
 			for (j=1; (j <= nCopies); j++)
 				for (k=nFromPage; (k <= nToPage); k++)
 				{
-					pGraphics->startPage(doc->getFilename(), k, TRUE, da.width, da.height);
+					pGraphics->startPage(doc->getFilename(), k, UT_TRUE, da.width, da.height);
 					pPrintView->draw(k-1, &da);
 				}
 		}
@@ -1733,7 +1710,7 @@ static UT_Bool s_doPrint(FV_View * pView, UT_Bool bTryToSuppressDialog)
 			for (k=nFromPage; (k <= nToPage); k++)
 				for (j=1; (j <= nCopies); j++)
 				{
-					pGraphics->startPage(doc->getFilename(), k, TRUE, da.width, da.height);
+					pGraphics->startPage(doc->getFilename(), k, UT_TRUE, da.width, da.height);
 					pPrintView->draw(k-1, &da);
 				}
 		}

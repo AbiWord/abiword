@@ -45,6 +45,7 @@ public:
 
 	virtual UT_Bool			initialize(void);
 	virtual AP_Frame * 		newFrame(void);
+	virtual void			reallyExit(void);
 
 	virtual HINSTANCE		getInstance() const;
 

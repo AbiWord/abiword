@@ -44,6 +44,7 @@ public:
 
 	virtual UT_Bool					initialize(void);
 	virtual AP_Frame * 				newFrame(void);
+	virtual void					reallyExit(void);
 
 	virtual AP_DialogFactory *				getDialogFactory(void);
 	virtual AP_Toolbar_ControlFactory *		getControlFactory(void);

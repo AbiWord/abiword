@@ -82,6 +82,11 @@ AP_Frame * AP_Win32App::newFrame(void)
 	return pWin32Frame;
 }
 
+void AP_Win32App::reallyExit(void)
+{
+	PostQuitMessage (0);
+}
+
 AP_DialogFactory * AP_Win32App::getDialogFactory(void)
 {
 	return &m_dialogFactory;
