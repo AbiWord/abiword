@@ -79,7 +79,7 @@ UT_Bool AV_View::removeListener(AV_ListenerId listenerId)
 UT_Bool AV_View::notifyListeners(const AV_ChangeMask hint)
 {
 	/*
-		App-specific logic calls this vritual method when relevant portions of 
+		App-specific logic calls this virtual method when relevant portions of 
 		the view state *may* have changed.  (That's why it's called a hint.)
 
 		This base class implementation doesn't do any filtering of those 
@@ -175,14 +175,4 @@ void AV_View::sendHorizontalScrollEvent(UT_sint32 xoff, UT_sint32 xlimit)
 
 		pObj->m_pfnX(pObj->m_pData, xoff, xlimit);
 	}
-}
-
-UT_sint32 AV_View::getXScrollOffset(void) const
-{
-	return m_xScrollOffset;
-}
-
-UT_sint32 AV_View::getYScrollOffset(void) const
-{
-	return m_yScrollOffset;
 }

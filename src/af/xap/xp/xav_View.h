@@ -66,8 +66,12 @@ public:
 	void			setWindowSize(UT_sint32, UT_sint32);
 	virtual void	setXScrollOffset(UT_sint32) = 0;
 	virtual void	setYScrollOffset(UT_sint32) = 0;
-	UT_sint32		getXScrollOffset(void) const;
-	UT_sint32		getYScrollOffset(void) const;
+
+	inline UT_sint32	getWindowWidth(void) const { return m_iWindowWidth; };
+	inline UT_sint32	getWindowHeight(void) const { return m_iWindowHeight; };
+	inline UT_sint32	getXScrollOffset(void) const { return m_xScrollOffset; };
+	inline UT_sint32	getYScrollOffset(void) const { return m_yScrollOffset; };
+
 	virtual UT_uint32	getPageViewLeftMargin(void) const = 0;
 	virtual UT_uint32	getPageViewTopMargin(void) const = 0;
 	
