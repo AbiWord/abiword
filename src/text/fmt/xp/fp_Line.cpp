@@ -498,7 +498,9 @@ void fp_Line::recalcHeight()
 	UT_sint32 iMaxDescent = 0;
 	UT_sint32 iMaxAscentLayoutUnits = 0;
 	UT_sint32 iMaxDescentLayoutUnits = 0;
-
+	UT_sint32 iMaxImage =0;
+	UT_sint32 iMaxText = 0;
+	bool bSetByImage = false;
 	for (i=0; i<count; i++)
 	{
 		UT_sint32 iAscent;
@@ -513,8 +515,7 @@ void fp_Line::recalcHeight()
 		iAscentLayoutUnits = pRun->getAscentInLayoutUnits();
 		UT_ASSERT(!iAscent || iAscentLayoutUnits);
 		iDescentLayoutUnits = pRun->getDescentInLayoutUnits();
-	
-	
+				
 		if (pRun->isSuperscript() || pRun->isSubscript())
 		{
 			iAscent += iAscent * 1/2;
@@ -522,12 +523,19 @@ void fp_Line::recalcHeight()
 			iAscentLayoutUnits += iAscentLayoutUnits * 1/2;
 			iDescentLayoutUnits += iDescentLayoutUnits;
 		}
+		if(pRun->getType() == FPRUN_IMAGE)
+		{
+			iMaxImage = UT_MAX(iAscent,iMaxImage);
+		}
+		else
+		{
+			iMaxText = UT_MAX(iAscent,iMaxText);
+		}
 		iMaxAscent = UT_MAX(iMaxAscent, iAscent);
 		iMaxDescent = UT_MAX(iMaxDescent, iDescent);
 		iMaxAscentLayoutUnits = UT_MAX(iMaxAscentLayoutUnits, iAscentLayoutUnits);
 		iMaxDescentLayoutUnits = UT_MAX(iMaxDescentLayoutUnits, iDescentLayoutUnits);
 	}
-
 	UT_sint32 iOldHeight = m_iHeight;
 	UT_sint32 iOldAscent = m_iAscent;
 	UT_sint32 iOldDescent = m_iDescent;
@@ -546,6 +554,10 @@ void fp_Line::recalcHeight()
 		xxx_UT_DEBUGMSG(("fp_Line: Set Linespace to 1.0 \n"));
 		dLineSpace = 1.0;
 	}
+	if(iMaxImage > 0 && (iMaxImage > iMaxText * dLineSpace))
+	{
+		bSetByImage = true;
+	}
 	if (eSpacing == fl_BlockLayout::spacing_EXACT)
 	{
 		xxx_UT_DEBUGMSG(("recalcHeight exact \n"));
@@ -561,9 +573,17 @@ void fp_Line::recalcHeight()
 	else
 	{
 		// multiple
-		iNewHeight = (UT_sint32) (iNewHeight * dLineSpace +0.5);
-		iNewHeightLayoutUnits = (UT_sint32) (iNewHeightLayoutUnits * dLineSpaceLayout +0.5);
-		xxx_UT_DEBUGMSG(("recalcHeight neither dLineSpace = %f newheight =%d m_iScreenHeight =%d m_iHeight= %d\n",dLineSpace,iNewHeight,m_iScreenHeight,m_iHeight));
+		if(!bSetByImage)
+		{
+			iNewHeight = (UT_sint32) (iNewHeight * dLineSpace +0.5);
+			iNewHeightLayoutUnits = (UT_sint32) (iNewHeightLayoutUnits * dLineSpaceLayout +0.5);
+			xxx_UT_DEBUGMSG(("recalcHeight neither dLineSpace = %f newheight =%d m_iScreenHeight =%d m_iHeight= %d\n",dLineSpace,iNewHeight,m_iScreenHeight,m_iHeight));
+		}
+		else
+		{
+			iNewHeight = UT_MAX(iMaxAscent+(UT_sint32) (iMaxDescent*dLineSpace + 0.5), (UT_sint32) dLineSpace);
+			iNewHeightLayoutUnits = UT_MAX(iMaxAscentLayoutUnits+(UT_sint32 )(iMaxDescentLayoutUnits*dLineSpace +0.5), (UT_sint32) dLineSpaceLayout);
+		}
 	}
 
 	if (
