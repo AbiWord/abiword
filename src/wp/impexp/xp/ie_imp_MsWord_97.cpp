@@ -218,7 +218,17 @@ int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps,wvTag tag, void *props)
 		      sprintf(propBuffer + strlen(propBuffer),
 			      "%1.4fin;", (((float)apap->dxaLeft1) / 1440));
 		   }
-		      
+		   // -top
+		   if (apap->dyaBefore) {
+		      strcat(propBuffer, "margin-top:");
+		      sprintf(propBuffer + strlen(propBuffer),
+			      "%dpt;", (apap->dyaBefore / 20));
+		   }		   
+		   // -bottom
+		   if (apap->dyaAfter) {
+		      // is there an Abiword equivalent?
+		   }
+
 		   // remove trailing ;
 		   propBuffer[strlen(propBuffer)-1] = 0;
 
