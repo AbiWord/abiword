@@ -23,6 +23,8 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 // #include "ut_dialogHelper.h"
+#include "ut_Rehydrate.h"
+#include <Be.h>
 
 #include "xap_App.h"
 #include "xap_Dialog_Id.h"
@@ -36,6 +38,27 @@
 #define DEFAULT_BUTTON_WIDTH 85
 
 /*****************************************************************/
+class AboutWin:public BWindow {
+        public:
+                AboutWin(BMessage *data);
+        private:
+};                                                    
+
+AboutWin::AboutWin(BMessage *data)
+        :BWindow(data) {
+	char buf[100];
+
+	BStringView *str = (BStringView*)FindView("strVersion");
+	sprintf(buf, XAP_ABOUT_VERSION, XAP_App::s_szBuild_Version);
+	if (str) str->SetText(buf);
+		
+	str = (BStringView*)FindView("strOptions");
+	sprintf(buf, XAP_ABOUT_BUILD, XAP_App::s_szBuild_Options);
+	if (str) str->SetText(buf);
+} 
+
+/*****************************************************************/
+
 XAP_Dialog * XAP_BeOSDialog_About::static_constructor(XAP_DialogFactory * pFactory,
 													 XAP_Dialog_Id id)
 {
@@ -55,9 +78,15 @@ XAP_BeOSDialog_About::~XAP_BeOSDialog_About(void)
 
 void XAP_BeOSDialog_About::runModal(XAP_Frame * pFrame)
 {
-	XAP_App* pApp = pFrame->getApp();
-	
-	char buf[2048];
-	sprintf(buf, XAP_ABOUT_TITLE, pApp->getApplicationName());
+	//XAP_App* pApp = pFrame->getApp();
+	//char buf[2048];
+	//sprintf(buf, XAP_ABOUT_TITLE, pApp->getApplicationName());
+	//sprintf(buf, XAP_ABOUT_DESCRIPTION, pApp->getApplicationName());
+	BMessage *msg = new BMessage();
+	if (RehydrateWindow("AboutWindow", msg)) {
+		AboutWin *nwin = new AboutWin(msg);
+		if (nwin)
+			nwin->Show();
+	}	
 }
 
