@@ -30,6 +30,8 @@
 #include "pf_Frag_Strux.h"
 #include "fp_FrameContainer.h"
 #include "fv_View.h"
+#include "ev_Mouse.h"
+#include "xap_Frame.h"
 #include "gr_Painter.h"
 #include "xap_App.h"
 
@@ -810,6 +812,16 @@ void FV_FrameEdit::mouseLeftPress(UT_sint32 x, UT_sint32 y)
 			m_pFrameLayout = NULL;
 			m_pFrameContainer = NULL;
 			DELETEP(m_pFrameImage);
+			XAP_Frame * pFrame = static_cast<XAP_Frame*>(m_pView->getParentData());
+			if(pFrame)
+			{
+				EV_Mouse * pMouse = pFrame->getMouse();
+				if(pMouse)
+				{
+					pMouse->clearMouseContext();
+				}
+			}
+			m_pView->m_prevMouseContext = EV_EMC_TEXT;
 			m_pView->setCursorToContext();
 		}
 		else
@@ -823,6 +835,28 @@ void FV_FrameEdit::mouseLeftPress(UT_sint32 x, UT_sint32 y)
 				m_iFrameEditMode = FV_FrameEdit_DRAG_EXISTING;
 				m_iInitialDragX = m_recCurFrame.left;
 				m_iInitialDragY = m_recCurFrame.top;
+#if 0
+//
+// Have to work out how to tell the difference between first click of
+// a whole frame drag and wanting to put the insertion point in the frame
+//
+				m_iFrameEditMode = FV_FrameEdit_NOT_ACTIVE;
+				drawFrame(false);
+				m_pFrameLayout = NULL;
+				m_pFrameContainer = NULL;
+				DELETEP(m_pFrameImage);
+				XAP_Frame * pFrame = static_cast<XAP_Frame*>(m_pView->getParentData());
+				if(pFrame)
+				{
+					EV_Mouse * pMouse = pFrame->getMouse();
+					if(pMouse)
+					{
+						pMouse->clearMouseContext();
+					}
+				}
+				m_pView->m_prevMouseContext = EV_EMC_TEXT;
+				m_pView->setCursorToContext();
+#endif
 			}
 		}
 		return;

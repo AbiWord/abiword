@@ -3581,9 +3581,6 @@ bool FV_View::setCharFormat(const XML_Char * properties[], const XML_Char * attr
 */
 bool FV_View::resetCharFormat(bool bAll)
 {
-	PT_DocPosition posStart = getPoint();
-	PT_DocPosition posEnd = posStart;
-
 	PP_AttrProp AP;
 
 	if(!bAll)
@@ -8530,7 +8527,7 @@ void FV_View::setCursorToContext()
 		{
 			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_S;
 		}
-		else if(m_FrameEdit.getFrameEditDragWhat() ==FV_FrameEdit_DragWholeFrame)
+		else if(m_FrameEdit.isActive() && m_FrameEdit.getFrameEditDragWhat() ==FV_FrameEdit_DragWholeFrame)
 		{
 			cursor = GR_Graphics::GR_CURSOR_IMAGE;
 		}
