@@ -198,6 +198,7 @@ UT_uint32 GR_QNXGraphics::_getResolution(void) const
 
 void GR_QNXGraphics::flush(void)
 {
+	GR_CaretDisabler caretDisabler(getCaret());
 	PgFlush();
 }
 
@@ -226,8 +227,8 @@ void GR_QNXGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	pos.x = xoff;
 	pos.y = yoff + _UD(getFontAscent());
 
-	DRAW_START
 	GR_CaretDisabler caretDisabler(getCaret());
+	DRAW_START
 	
 	PgSetFont(m_pFont->getFont());
 	PgSetTextColor(m_currentColor);
@@ -261,14 +262,12 @@ UT_uint32 GR_QNXGraphics::measureUnRemappedChar(const UT_UCSChar c)
 {
 const char *font;
 FontRender metrics;
-
+uint16_t mychr = c;
 if(!m_pFont || !(font = m_pFont->getFont())) {
 	return 0;
 	}
-if(PfGlyph(font,c,&metrics,NULL,NULL,NULL)==-1)
-	return GR_CW_UNKNOWN;
 
-return _UL(metrics.width);
+return _UL(PfWideTextWidthBytes(font,&mychr,2));
 }
 
 /***
@@ -519,8 +518,8 @@ void GR_QNXGraphics::setColor(const UT_RGBColor& clr)
 void GR_QNXGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,
 			      UT_sint32 x2, UT_sint32 y2)
 {
-	DRAW_START
 	GR_CaretDisabler caretDisabler(getCaret());
+	DRAW_START
 
 	_UUD(x1);
 	_UUD(x2);
@@ -558,6 +557,7 @@ void GR_QNXGraphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
 {
 	int old;
 
+	GR_CaretDisabler caretDisabler(getCaret());
 	old = PgSetDrawMode(Pg_DRAWMODE_XOR);
 	drawLine(x1, y1, x2, y2);
 	PgSetDrawMode(old);
@@ -650,8 +650,8 @@ void GR_QNXGraphics::fillRect(const UT_RGBColor & c, UT_sint32 x, UT_sint32 y,
 	h = (h < 0) ? -1*h : h;
 
 	newc = PgRGB(c.m_red, c.m_grn, c.m_blu);
-	DRAW_START
 	GR_CaretDisabler caretDisabler(getCaret());
+	DRAW_START
 	
 	PgSetFillColor(newc);
 	PgSetStrokeColor(newc);
@@ -955,6 +955,8 @@ void GR_QNXGraphics::setColor3D(GR_Color3D c)
 {
 	UT_ASSERT(c < COUNT_3D_COLORS);
 	m_currentColor = m_3dColors[c];
+
+	GR_CaretDisabler caretDisabler(getCaret());
 	PgSetStrokeColor(m_currentColor);
 	PgSetFillColor(m_currentColor);
 }
