@@ -365,21 +365,21 @@ void AP_UnixApp::copyToClipboard(PD_DocumentRange * pDocRange)
 	return;
 }
 
+/*
+  I've reordered AP_CLIPBOARD_STRING and AP_CLIPBOARD_TEXTPLAIN_8BIT
+  since for non-Latin1 text the data in AP_CLIPBOARD_TEXTPLAIN_8BIT
+  format has name of encoding as prefix, and AP_CLIPBOARD_STRING
+  doesn't - hvv.
+*/
+static const char * aszFormatsAccepted[] = { AP_CLIPBOARD_RTF,
+					     AP_CLIPBOARD_STRING,
+					     AP_CLIPBOARD_TEXTPLAIN_8BIT,
+					     0 /* must be last */ };
+
 void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, UT_Bool bUseClipboard)
 {
 	// paste from the system clipboard using the best-for-us format
 	// that is present.  try to get the content in the order listed.
-
-	/*
-	    I've reordered AP_CLIPBOARD_STRING and AP_CLIPBOARD_TEXTPLAIN_8BIT
-	    since for non-Latin1 text the data in AP_CLIPBOARD_TEXTPLAIN_8BIT
-	    format has name of encoding as prefix, and AP_CLIPBOARD_STRING
-	    doesn't - hvv.
-	*/
-	static const char * aszFormatsAccepted[] = { AP_CLIPBOARD_RTF,
-												 AP_CLIPBOARD_STRING,
-												 AP_CLIPBOARD_TEXTPLAIN_8BIT,
-												 0 /* must be last */ };
 
 	// TODO currently i have this set so that a ^v or Menu[Edit/Paste] will
 	// TODO use the CLIPBOARD property and a MiddleMouseClick will use the
@@ -434,8 +434,25 @@ void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, UT_Bool bUseCl
 
 UT_Bool AP_UnixApp::canPasteFromClipboard(void)
 {
-	// TODO fix this...
+#if 0
+	const char * szFormatFound = NULL;
+	unsigned char * pData = NULL;
+	UT_uint32 iLen = 0;
+
+	XAP_UnixClipboard::T_AllowGet tFrom = XAP_UnixClipboard::TAG_ClipboardOnly;
+
+	// first, try to see if we can paste from the clipboard
+	UT_Bool bFoundOne = m_pClipboard->getData(tFrom,aszFormatsAccepted,(void**)&pData,&iLen,&szFormatFound);
+	if (bFoundOne)
+	  return UT_TRUE;
+
+	// didn't work, try out the primary selection
+	tFrom = XAP_UnixClipboard::TAG_PrimaryOnly;
+	bFoundOne = m_pClipboard->getData(tFrom,aszFormatsAccepted,(void**)&pData,&iLen,&szFormatFound);
+	return bFoundOne;
+#else
 	return UT_TRUE;
+#endif
 }
 
 /*****************************************************************/
@@ -762,22 +779,20 @@ GR_Image * AP_UnixApp::_showSplash(UT_uint32 delay)
 
 		// create a centered window the size of our image
 		wSplash = gtk_window_new(GTK_WINDOW_POPUP);
-		gtk_object_set_data(GTK_OBJECT(wSplash), "wSplash", wSplash);
-		gtk_widget_set_usize(wSplash, iSplashWidth, iSplashHeight);
+		gtk_window_set_default_size (GTK_WINDOW (wSplash),
+					     iSplashWidth, iSplashHeight);
 		gtk_window_set_policy(GTK_WINDOW(wSplash), FALSE, FALSE, FALSE);
 
 		// create a frame to add depth
 		GtkWidget * frame = gtk_frame_new(NULL);
-		gtk_object_set_data(GTK_OBJECT(wSplash), "frame", frame);
 		gtk_container_add(GTK_CONTAINER(wSplash), frame);
 		gtk_frame_set_shadow_type(GTK_FRAME(frame), GTK_SHADOW_OUT);
 		gtk_widget_show(frame);
 
 		// create a drawing area
 		GtkWidget * da = gtk_drawing_area_new ();
-		gtk_object_set_data(GTK_OBJECT(wSplash), "da", da);
 		gtk_widget_set_events(da, GDK_ALL_EVENTS_MASK);
-		gtk_widget_set_usize(da, iSplashWidth, iSplashHeight);
+		gtk_drawing_area_size(GTK_DRAWING_AREA (da), iSplashWidth, iSplashHeight);
 		gtk_signal_connect(GTK_OBJECT(da), "expose_event",
 						   GTK_SIGNAL_FUNC(s_drawingarea_expose), NULL);
 		gtk_signal_connect(GTK_OBJECT(da), "button_press_event",
@@ -786,7 +801,7 @@ GR_Image * AP_UnixApp::_showSplash(UT_uint32 delay)
 		gtk_widget_show(da);
 
 		// now bring the window up front & center
-		gtk_window_set_position(GTK_WINDOW(wSplash), GTK_WIN_POS_CENTER);
+		gtk_window_set_position(GTK_WINDOW(wSplash), GTK_WIN_POS_CENTER_ALWAYS);
 
 		// create the window so we can attach a GC to it
 		gtk_widget_show(wSplash);
