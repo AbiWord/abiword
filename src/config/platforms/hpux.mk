@@ -48,15 +48,17 @@ DLL_SUFFIX	= sl
 AR		= ar cr $@
 
 ## nessecary changes for systems without snprintf() like hp-ux 10.20 from Martin Gansser mgansser@ngi.de
+## compilation instruction how to build abiword on hp-ux 10.20 can found on http://cloud.prohosting.com/patos
+## get precompiled snprintf for hp-ux 10.20 from http://hpux.connect.org.uk or http://hpux.asknet.de
 ## settings for systems with HP-UX Developer`s Toolkit for 10.0: (Product B3392BA) and both DevKit`s
 ## PHSS_21957   B.10.00.00.AA  X11R5/Motif1.2 DevKit AUG2000 Periodic Patch 
 ## PHSS_23519   B.10.00.00.AA  X11R6/Motif1.2 DevKit JUL2001 Periodic Patch
-## build binaries from glib/gtk+ sources, without nls (libiconv/gettext) support and set
-## OS_LIBS += -L/opt/snprintf/lib -lsnprintf
+## 
+## OS_LIBS += -L/opt/libiconv/lib -liconv -L/opt/snprintf/lib -lsnprintf
 ##
 ## settings for system without X11R6 developer kit:
 ## add X11R5 include path -I/usr/include/X11R5 to OS_INCLUDES and set
-## OS_LIBS += -L/opt/libiconv/lib -liconv -L/opt/snprintf/lib -lsnprintf and
+## OS_LIBS += -L/opt/libiconv/lib -liconv -L/opt/snprintf/lib -lsnprintf
 
 HPUX_MAJOR= $(shell uname -r|sed 's/^[^.]*\.\([^.]*\).*/\1/')
 # Compiler flags
@@ -90,7 +92,7 @@ else
 endif
 
 ifeq ($(USE_EXTERNAL_SNPRINTF),1)
-  OS_LIBS += -L/opt/snprintf/lib -lsnprintf
+  OS_LIBS += -L/opt/libiconv/lib -liconv -L/opt/snprintf/lib -lsnprintf
 endif
 
 OS_CFLAGS		= $(DSO_CFLAGS) $(PLATFORM_FLAGS) $(PORT_FLAGS)
