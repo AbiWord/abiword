@@ -16,11 +16,12 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
-/* $Id */
+/* $Id$ */
 
 
 
 #import <Cocoa/Cocoa.h>
+#include "ut_vector.h"
 
 #include "xap_CocoaDialog_Utilities.h"
 
@@ -92,6 +93,23 @@ void AppendLocalizedMenuItem (NSPopUpButton* menu, const XAP_StringSet * pSS, XA
 }
 
 /*!
+	Fill a NSPopUpButton with an UT_Vector full of char*
+
+	\desc The popup button gets emptied first.
+ */
+void FillPopupWithCStrVector(NSPopUpButton* menu, const UT_Vector& vec)
+{
+	int i;
+	int count = vec.getItemCount();
+	
+	[menu removeAllItems];
+	for (i = 0; i < count; i++) {
+		[menu addItemWithTitle:[NSString stringWithUTF8String:vec[i]]];
+	}
+}
+
+
+/*!
 	Strip the '&' from the label
 	
 	\param buf the result buffer
@@ -103,7 +121,7 @@ void _convertLabelToMac (char * buf, size_t bufSize, const UT_UTF8String& label)
 	UT_ASSERT(buf);
 	UT_ASSERT(label.length() < bufSize);
 
-	strcpy (buf, label.c_str());
+	strcpy (buf, label.utf8_str());
 
 	char * src, *dst;
 	src = dst = buf;

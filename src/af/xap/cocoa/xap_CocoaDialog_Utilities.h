@@ -27,10 +27,12 @@
 #include "xap_Strings.h"
 
 class XAP_Dialog;
+class UT_Vector;
 
 void LocalizeControl (id control, const XAP_StringSet * pSS, XAP_String_Id stringId);
 NSString* LocalizedString (const XAP_StringSet * pSS, XAP_String_Id stringId);
 void AppendLocalizedMenuItem (NSPopUpButton* menu, const XAP_StringSet * pSS, XAP_String_Id stringId, int tag);
+void FillPopupWithCStrVector(NSPopUpButton* menu, const UT_Vector& vec);
 void _convertLabelToMac (char * buf, size_t bufSize, const UT_UTF8String & label);
 
 @protocol XAP_CocoaDialogProtocol
