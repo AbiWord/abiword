@@ -138,6 +138,7 @@ void XAP_Dialog_Insert_Symbol::_onInsertButton()
 	XML_Char * symfont = (XML_Char *) getInsertedFont();
 
 	m_pListener->insertSymbol(c, (char*)symfont);
+	UT_DEBUGMSG(("Insert Char %x \n",c));
 }
 
 void XAP_Dialog_Insert_Symbol::setActiveFrame(XAP_Frame *pFrame)

@@ -155,7 +155,9 @@ XAP_UnixFont::XAP_UnixFont(XAP_UnixFontManager * pFM)
 	  m_fontType(FONT_TYPE_UNKNOWN),
 	  m_bisCopy(false), 
 	  m_pFontManager(pFM),
-	  m_pXftFont(0)
+	  m_pXftFont(0),
+	  m_bIsSymbol(false),
+	  m_bIsDingbat(false)
 {
 }
 
@@ -226,7 +228,17 @@ bool XAP_UnixFont::doesGlyphExist(UT_UCS4Char g)
 {
 	// possibly need to call:
 	// XftFontCheckGlyph or XftCharIndex instead
-
+//
+// Handle symbol and Dingbats
+//
+	if(m_bIsSymbol)
+	{
+		g = static_cast<UT_UCS4Char>(adobeToUnicode(g));
+	}
+	if(m_bIsDingbat)
+	{
+		g = static_cast<UT_UCS4Char>(adobeDingbatsToUnicode(g));
+	}
 	UT_return_val_if_fail (m_pXftFont, false);
 	return XftCharExists(GDK_DISPLAY(), m_pXftFont, (FcChar32)g);
 }
@@ -236,9 +248,23 @@ bool XAP_UnixFont::openFileAs(const char *fontfile, const char *metricfile, cons
 {
 	if (!fontfile || !metricfile || !xlfd)
 		return false;
-
 	FREEP(m_name);
 	UT_cloneString(m_name, static_cast<const char *>(family));
+	m_bIsSymbol = false;
+	m_bIsDingbat = false;
+	char * szUnixFontName = UT_strdup(m_name);
+	const char * szFontName = UT_lowerString(szUnixFontName);
+
+	if(strstr(szUnixFontName,"symbol") != NULL)
+	{
+		if(strstr(szUnixFontName,"star") != NULL)
+			m_bIsSymbol = false;
+		else
+			m_bIsSymbol = true;
+	}
+	if(strstr(szUnixFontName,"dingbat") != NULL)
+		m_bIsDingbat = true;
+	FREEP(szFontName);
 
 	// save to memebers
 	FREEP(m_fontfile);
@@ -275,6 +301,21 @@ void XAP_UnixFont::setName(const char *name)
 {
 	FREEP(m_name);
 	UT_cloneString(m_name, name);
+	m_bIsSymbol = false;
+	m_bIsDingbat = false;
+	char * szUnixFontName = UT_strdup(m_name);
+	const char * szFontName = UT_lowerString(szUnixFontName);
+
+	if(strstr(szUnixFontName,"symbol") != NULL)
+	{
+		if(strstr(szUnixFontName,"star") != NULL)
+			m_bIsSymbol = false;
+		else
+			m_bIsSymbol = true;
+	}
+	if(strstr(szUnixFontName,"dingbat") != NULL)
+		m_bIsDingbat = true;
+	FREEP(szFontName);
 }
 
 const char *XAP_UnixFont::getName(void) const

@@ -217,6 +217,7 @@ struct ABI_EXPORT RTFProps_ParaProps
 	UT_sint32  m_styleNumber ; //index into the style table
 	bool            m_RTL;
 	UT_sint32       m_tableLevel; //nesting level of the paragram in a table.
+	bool            m_bInTable; // true if paragraph is in a table
 };
 
 // These are set true if changed in list definitions.
@@ -642,8 +643,10 @@ private:
 	ie_imp_cell *  getCell(void);
 	void           FlushCellProps(void);
 	void           FlushTableProps(void);
-	void           OpenTable(void);
+	void           OpenTable(bool bDontFlush = false);
 	void           CloseTable(void);
+	void           SaveRowInfo(void);
+	void           RemoveRowInfo(void);
     void           HandleCell(void);
 	void           HandleCellX(UT_sint32 cellx);
     void           HandleRow(void);
@@ -763,6 +766,9 @@ private:
 	bool                  m_bStyleImportDone;
 	bool                  m_bCellHandled;
 	bool                  m_bContentFlushed;
+	bool                  m_bRowJustPassed;
+	UT_sint32             m_iStackLevelAtRow;
+	bool                  m_bDoCloseTable;
 };
 
 #endif /* IE_IMP_RTF_H */

@@ -729,7 +729,7 @@ void GR_UnixGraphics::drawGlyph(UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff)
 	if(m_bIsDingbat && iChar < 255  && iChar >= 32)
 	{
 		iChar = adobeDingbatsToUnicode(Char);
-		UT_DEBUGMSG(("DrawGlyph 1 remapped %d to %d \n",Char,iChar));
+		xxx_UT_DEBUGMSG(("DrawGlyph 1 remapped %d to %d \n",Char,iChar));
 	}
 	
 	// FIXME ascent in wrong unit
@@ -771,7 +771,7 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 		}
 		else if(m_bIsDingbat)
 		{
-			UT_DEBUGMSG(("Doing draw symbols length %d offset %d \n",iLength,iCharOffset));
+			xxx_UT_DEBUGMSG(("Doing draw symbols length %d offset %d \n",iLength,iCharOffset));
 			UT_uint32 * uChars = new UT_uint32[iLength];
 			for(UT_uint32 i = static_cast<UT_uint32>(iCharOffset); i< static_cast<UT_uint32>(iLength); i++)
 			{
@@ -779,7 +779,7 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 				if(uChars[i] < 255 && uChars[i] >= 32)
 				{
 					uChars[i] = adobeDingbatsToUnicode(uChars[i]);
-					UT_DEBUGMSG(("drawchars: mapped %d to %d \n",pChars[i],uChars[i]));
+					xxx_UT_DEBUGMSG(("drawchars: mapped %d to %d \n",pChars[i],uChars[i]));
 				}
 			}
 			XftDrawString32(m_pXftDraw, &m_XftColor, m_pXftFontD, tdu(xoff + m_iXoff), tdu(yoff + m_iYoff),
@@ -809,7 +809,7 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 			else if(m_bIsDingbat && uChar < 255 && uChar >=32)
 			{
 				pCharSpec[i].ucs4 = static_cast<FT_UInt>(adobeDingbatsToUnicode(uChar));
-				UT_DEBUGMSG(("DrawGlyph 2 remapped %d to %d \n",uChar,pCharSpec[i].ucs4));
+				xxx_UT_DEBUGMSG(("DrawGlyph 2 remapped %d to %d \n",uChar,pCharSpec[i].ucs4));
 
 			}
 			else

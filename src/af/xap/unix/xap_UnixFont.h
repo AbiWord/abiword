@@ -175,6 +175,8 @@ private:
 
 	/* last used font.  Only usable for when we don't care about the pixel size */
 	mutable XftFont*		m_pXftFont;
+	bool                    m_bIsSymbol;
+	bool                    m_bIsDingbat;
 };
 
 /* Values found in PFB files */

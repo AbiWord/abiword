@@ -744,6 +744,8 @@ void ie_imp_cell::copyCell(ie_imp_cell * pCell)
 	m_bMergeAbove = pCell->m_bMergeAbove;
 	m_bMergeRight = pCell->m_bMergeRight;
 	m_sCellProps = pCell->m_sCellProps;
+	m_bMergeLeft = pCell->m_bMergeLeft;
+	m_bFirstHori = pCell->m_bFirstHori;
 }
 
 /*!
@@ -1292,7 +1294,7 @@ void ie_imp_table::buildTableStructure(void)
 // Start by building a vector of cellX's
 //
 	_buildCellXVector();
-	xxx_UT_DEBUGMSG(("Building table structure \n"));
+	UT_DEBUGMSG(("Building table structure \n"));
 //
 // Now construct the table structure.
 //
@@ -1310,7 +1312,7 @@ void ie_imp_table::buildTableStructure(void)
 		bool bSkipThis = false;
 		pCell = static_cast<ie_imp_cell *>(m_vecCells.getNthItem(i));
 		cellx = pCell->getCellX();
-		xxx_UT_DEBUGMSG(("i %d cellx %d iLeft %d iRight %d \n",i,cellx,iLeft,iRight));
+		UT_DEBUGMSG(("i %d cellx %d iLeft %d iRight %d \n",i,cellx,iLeft,iRight));
 		if(i==0 || (pCell->getRow() > curRow))
 		{
 			curRow = pCell->getRow();
@@ -1336,6 +1338,10 @@ void ie_imp_table::buildTableStructure(void)
 		else
 		{
 			iRight = getColNumber(pCell);
+			if(iRight <= iLeft)
+			{
+				iRight = iLeft+1;
+			}
 		}
 		iTop = curRow;
 		if(pCell->isFirstVerticalMerged())

@@ -228,6 +228,7 @@ class ABI_EXPORT ie_imp_table
 	UT_sint32           m_iCellXOnRow;
 	UT_Vector           m_vecCells;
 	UT_Vector           m_vecCellX;
+	UT_Vector           m_vecSavedX;
 };			
 
 class ABI_EXPORT ie_imp_table_control
@@ -242,6 +243,8 @@ public:
 	void                CloseCell(void);
 	ie_imp_table *      getTable(void);
 	bool                NewRow(void);
+	void                SaveRowInfo(void);
+	void                RemoveRowInfo(void);
 private:
 	UT_Stack            m_sLastTable;
 	PD_Document *       m_pDoc;

@@ -358,7 +358,7 @@ void XAP_UnixDialog_Insert_Symbol::Symbolarea_exposed(void )
 gboolean XAP_UnixDialog_Insert_Symbol::Key_Pressed(GdkEventKey * e)
 {
 	int move = 0;
-	UT_DEBUGMSG(("Current Symbol %d \n",m_CurrentSymbol));
+	UT_DEBUGMSG(("Current Symbol %x \n",m_CurrentSymbol));
 	switch (e->keyval)
 	{
 	case GDK_Up:
@@ -414,7 +414,7 @@ gboolean XAP_UnixDialog_Insert_Symbol::Key_Pressed(GdkEventKey * e)
 		UT_ASSERT(iDrawSymbol);
 		m_PreviousSymbol = m_CurrentSymbol;
 		m_CurrentSymbol = iDrawSymbol->calcSymbolFromCoords(m_ix, m_iy);
-		UT_DEBUGMSG(("m_CurrentSymbol %d \n",m_CurrentSymbol));
+		UT_DEBUGMSG(("m_CurrentSymbol %x \n",m_CurrentSymbol));
 		iDrawSymbol->drawarea(m_CurrentSymbol, m_PreviousSymbol);
 
 		g_signal_stop_emission (G_OBJECT(m_windowMain), 
