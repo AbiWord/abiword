@@ -97,7 +97,8 @@ public:
 		const UT_HashTable	* m_d;
 		int		m_index;
 	};
-	
+	friend class UT_HashCursor;
+
 private:
 
 	enum _CM_search_type
