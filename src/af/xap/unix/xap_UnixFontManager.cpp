@@ -397,10 +397,6 @@ XAP_UnixFont* XAP_UnixFontManager::findNearestFont(const char* pszFontFamily,
 		
 	// find the font the hard way
 	XAP_UnixFont * pFont = searchFont(st.c_str());
-
-	// add the font to our cache as well
-	char * font_key = NULL;
-	CLONEP(font_key, pFont->getFontKey());
 	
 	return pFont;
 }
