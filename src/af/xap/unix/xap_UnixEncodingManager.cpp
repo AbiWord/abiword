@@ -393,9 +393,6 @@ const char* XAP_UnixEncodingManager::getNativeEncodingName() const
 const char* XAP_UnixEncodingManager::getNative8BitEncodingName() const
 {     return NativeEncodingName; };
 
-const char* XAP_UnixEncodingManager::getNativeEncodingName() const
-{     return NativeEncodingName; };
-
 const char* XAP_UnixEncodingManager::getLanguageISOName() const
 { 	return LanguageISOName; };
 

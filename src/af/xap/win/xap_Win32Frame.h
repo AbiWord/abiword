@@ -62,6 +62,7 @@ public:
 	virtual bool				openURL(const char * szURL);
 	virtual bool				updateTitle(void);
 	virtual UT_sint32			setInputMode(const char * szName);
+	virtual void                            nullUpdate () const {}
 
 	HWND						getTopLevelWindow(void) const;
 	HWND						getToolbarWindow(void) const;

@@ -4544,6 +4544,8 @@ static bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics,
 	memset(&da, 0, sizeof(da));
 	da.pG = NULL;
 
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pPrintView->getParentData());
+
 	fp_PageSize ps = pPrintView->getPageSize();
 
 	bool orient = ps.isPortrait ();
@@ -4562,6 +4564,9 @@ static bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics,
 					pGraphics->m_iRasterPosition = (k-1)*iHeight;
 					pGraphics->startPage(pDocName, k, orient, iWidth, iHeight);
 					pPrintView->draw(k-1, &da);
+
+					// TODO: give better user-feedback
+					pFrame->nullUpdate();
 				}
 		}
 	    else
@@ -4575,6 +4580,9 @@ static bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics,
 					pGraphics->m_iRasterPosition = (k-1)*iHeight;
 					pGraphics->startPage(pDocName, k, orient, iWidth, iHeight);
 					pPrintView->draw(k-1, &da);
+
+					// TODO: give better user-feedback
+					pFrame->nullUpdate();
 				}
 		}
 	    pGraphics->endPrint();

@@ -63,7 +63,7 @@ public:
 	virtual bool				openURL(const char * szURL);
 	virtual bool				updateTitle(void);
 	virtual UT_sint32			setInputMode(const char * szName);
-
+	virtual void                            nullUpdate () const {}
 	PtWidget_t *				getTopLevelWindow(void) const;	//Get the Window widget
 	PtWidget_t *				getVBoxWidget(void) const;		//Less than usefull 
 	PtWidget_t *				getTBGroupWidget(void) const;	//Get the Toolbar Group widget

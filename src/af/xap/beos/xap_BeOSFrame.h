@@ -132,6 +132,7 @@ public:
 	virtual bool				show(void);
 	virtual bool				openURL(const char * szURL);
 	virtual bool				updateTitle(void);
+	virtual void                            nullUpdate () const {}
 
 	BWindow *				getTopLevelWindow(void) const;
 	be_DocView *				getBeDocView(void) const;

@@ -547,6 +547,11 @@ XAP_DialogFactory * XAP_UnixFrame::getDialogFactory(void)
 	return &m_dialogFactory;
 }
 
+void XAP_UnixFrame::nullUpdate() const
+{
+  gtk_main_iteration ();
+}
+
 void XAP_UnixFrame::_createTopLevelWindow(void)
 {
 	// create a top-level window for us.

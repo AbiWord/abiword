@@ -101,6 +101,7 @@ public:
 	virtual bool				updateTitle(void);
 	virtual UT_sint32			setInputMode(const char * szName);
 	const char *				getInputMode(void) const;
+	virtual void                            nullUpdate () const = 0;
 
 	EV_EditEventMapper *		getEditEventMapper(void) const;
 	XAP_App *					getApp(void) const;

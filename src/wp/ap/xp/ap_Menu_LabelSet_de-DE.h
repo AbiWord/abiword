@@ -33,7 +33,7 @@
 // If the third argument is true, then this is the fall-back for
 // this language (named in the first argument).
 
-BeginSetEnc(da,DK,true,"iso-8859-1")
+BeginSetEnc(de,DE,true,"iso-8859-1")
 
 	MenuLabel(AP_MENU_ID__BOGUS1__,			NULL,				NULL)
 
