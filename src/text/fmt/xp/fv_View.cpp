@@ -6965,6 +6965,7 @@ bool FV_View::insertEndnote()
 #ifdef FMT_TEST							
 //						}
 #endif
+					}
 					pRun = pRun->getNext();
 				}
 
