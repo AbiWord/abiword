@@ -28,6 +28,9 @@
 #include "fp_Line.h"
 
 #include "ut_string.h"
+#include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 
