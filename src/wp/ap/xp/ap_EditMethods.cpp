@@ -49,6 +49,7 @@ typedef enum _dlg_Buttons { dlg_O, dlg_OC, dlg_YN, dlg_YNC } dlg_Buttons;
 dlg_Answer _askUser(AP_Frame * pFrame, const char * szQ, dlg_Buttons b, int defButton);
 char * _promptFile(AP_Frame * pFrame, UT_Bool bSaveAs);
 UT_Bool _chooseFont(AP_Frame * pFrame, FV_View * pView);
+UT_Bool _printDoc(AP_Frame * pFrame, FV_View * pView);
 #endif /* DLGHACK */
 
 
@@ -1045,8 +1046,11 @@ Defun1(fileSaveAs)
 	return UT_TRUE;
 }
 
-Defun0(print)
+Defun1(print)
 {
+	AP_Frame * pFrame = (AP_Frame *) pView->getParentData();
+	UT_ASSERT(pFrame);
+	_printDoc(pFrame, pView);
 	return UT_TRUE;
 }
 
@@ -1836,44 +1840,65 @@ dlg_Answer _askUser(AP_Frame * pFrame, const char * szQ, dlg_Buttons b, int defB
 }
 
 // TODO: figure out what can be shared here and move it up 
-UT_Bool _printDoc(HWND hwnd)
+UT_Bool _printDoc(AP_Frame * pFrame, FV_View * pView)
 {
-	PRINTDLG pd;
-	DOCINFO di;
+	AP_Win32Frame * pWin32Frame = static_cast<AP_Win32Frame *>(pFrame);
+	HWND hwnd = pWin32Frame->getTopLevelWindow();
+	FL_DocLayout* pLayout = pView->getLayout();
+	PD_Document * doc = pLayout->getDocument();
+	int nPagesInDoc = pLayout->countPages();
 
+	// init print dialog structure
+	PRINTDLG pd;
 	memset(&pd, 0, sizeof(PRINTDLG));
 	pd.lStructSize = sizeof(PRINTDLG);
 	pd.hwndOwner = hwnd;
-	pd.Flags = PD_RETURNDC | PD_NOSELECTION | PD_PAGENUMS;
+	pd.nFromPage = pd.nMinPage = 1;
+	pd.nToPage = pd.nMaxPage = nPagesInDoc;
+	pd.Flags = PD_RETURNDC | PD_NOSELECTION;
 
+	// open dialog
 	if(!PrintDlg(&pd))
 		return UT_FALSE;
 
-	PD_Document * doc;	// HACK to fake out compiler. otherwise useless
-
-	const char* pname = doc->getFilename();
-
+	// init doc info struct
+	DOCINFO di;
 	di.cbSize = sizeof(DOCINFO);
-	di.lpszDocName = pname;
+	di.lpszDocName = doc->getFilename();
 	di.lpszOutput = NULL;
+	// create a new graphics using this docinfo
 	Win32Graphics* ppG = new Win32Graphics(pd.hDC, &di);
 
+	// Create a new layout using the printer's graphics and format it
 	FL_DocLayout* pDL = new FL_DocLayout(doc, ppG);
 	pDL->formatAll();
-			
-	UT_uint32 iHeight = pDL->getHeight();
+
+	// Create the new view for the printer
 	FV_View* pV = new FV_View(NULL, pDL);	// TODO: fix first arg?
 
+	// page range implementation
+	WORD nFromPage, nToPage;
+	if(pd.Flags & PD_PAGENUMS)
+	{
+		nFromPage = pd.nFromPage;
+		nToPage = pd.nToPage;
+		// The dialog takes care of page range bounds issues
+	}
+	else	// print whole document
+	{
+		nFromPage = 1;
+		nToPage = pDL->countPages();
+	}
+
+	// init some dg_DrawArgs for startPage
+	UT_uint32 iHeight = pDL->getHeight();
 	dg_DrawArgs da;
 	da.pG = NULL;
 	da.width = pDL->getWidth();
 	da.height = pDL->getHeight();
 
 	ppG->startPrint();
-	
-//TODO allow page ranges
-	int nPages = pDL->countPages();
-	for(int i = 0; i < nPages; i++)
+	for(int i = nFromPage -1; i < nToPage; i++)	//page numbers are zero based
 	{
 		ppG->startPage(doc->getFilename(), i, TRUE, da.width,da.height);
 		pV->draw(i, &da);
@@ -1882,7 +1907,7 @@ UT_Bool _printDoc(HWND hwnd)
 
 	// clean up
 	delete ppG;
-	// these next 2 cause some asserts...do I need to do these?
+	// TODO are these 2 necessary?
 	//	delete pDL;
 	//	delete pV;
 	DeleteDC(pd.hDC);
@@ -1892,7 +1917,7 @@ UT_Bool _printDoc(HWND hwnd)
 	if(pd.hDevNames != NULL)
 		GlobalFree(pd.hDevNames);
 
-return UT_TRUE;
+	return UT_TRUE;
 }
 
 #endif /* WIN32 */
@@ -2009,6 +2034,11 @@ dlg_Answer _askUser(AP_Frame * pFrame, const char * szQ, dlg_Buttons b, int defB
 	return ans;
 }
 
+UT_Bool _printDoc(AP_Frame * pFrame, FV_View * pView)
+{
+	UT_ASSERT(0);
+	return UT_TRUE;
+}
 #endif /* LINUX */
 
 /*****************************************************************/
