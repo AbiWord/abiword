@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998-2000 AbiSource, Inc.
+ * Copyright (C) 1998-2001 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -93,12 +93,14 @@ BeginSet(nn,NO,true)
 	MenuLabel(AP_MENU_ID_INSERT_GRAPHIC,	"Bi&lde ",			"Sett inn eit bilde frå ei grafikkfil")
 
 	MenuLabel(AP_MENU_ID_FORMAT,			"F&ormat",			NULL)
+	MenuLabel(AP_MENU_ID_FMT_LANGUAGE,		"S&pråk",		"Endrar språket til merkt tekst")
 	MenuLabel(AP_MENU_ID_FMT_FONT,			"&Skrift ",			"Endrar skrift på merkt tekst")
 	MenuLabel(AP_MENU_ID_FMT_PARAGRAPH,		"&Avsnitt ",		"Endrar utsjånaden til merkt avsnitt")
 	MenuLabel(AP_MENU_ID_FMT_BULLETS,		"&Punktmerking og nummerering ",	"Legg til eller endrar punktmerking eller nummerering for merkt(e) avsnitt")
         MenuLabel(AP_MENU_ID_FMT_DOCUMENT,              "Utskr&iftsformat",             "Endrar sidestorleik og margar")
 	MenuLabel(AP_MENU_ID_FMT_BORDERS,		"&Kantlinjer og skyggelegging ",		"Endrar kantlinjene og skyggelegginga for det merkte området")
 	MenuLabel(AP_MENU_ID_FMT_COLUMNS,		"Spalte&r ",			"Endrar talet på spalter")
+        MenuLabel(AP_MENU_ID_FMT_TOGGLECASE, "&Endr bokstavtype", "Endrar bokstavtypen til merkt tekst")
 	MenuLabel(AP_MENU_ID_FMT_STYLE,			"Sti&l ",			"Brukar eller endrer stil på det merkte området")
 	MenuLabel(AP_MENU_ID_FMT_TABS,			"Ta&bulatorar ",			"Angjev tabularar")
 	MenuLabel(AP_MENU_ID_FMT_BOLD,			"&Halvfeit",			"Aktiverer/deaktiverer bruk av halvfeit skrift i det merkte området")
@@ -115,6 +117,7 @@ BeginSet(nn,NO,true)
         MenuLabel(AP_MENU_ID_TOOLS_AUTOSPELL, "&Fortløpande stavekontroll", "Fortløpande stavekontroll av dokumentet")
 	MenuLabel(AP_MENU_ID_TOOLS_WORDCOUNT,	"Ordt&elling ",		"Tel talet på ord i dokumentet")
 	MenuLabel(AP_MENU_ID_TOOLS_OPTIONS,		"&Innstillingar ",			"Endrar innstillingar")
+        MenuLabel(AP_MENU_ID_TOOLS_LANGUAGE, "S&pråk", "Endrar språket til merkt tekst")
 
 	MenuLabel(AP_MENU_ID_ALIGN,				"&Justering",			NULL)
 	MenuLabel(AP_MENU_ID_ALIGN_LEFT,		"&Venstrejuster",			"Venstrejusterer avsnittet")

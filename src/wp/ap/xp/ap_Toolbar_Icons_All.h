@@ -117,6 +117,8 @@
 #	include "tb_text_underline_rus.xpm"
 #	include "tb_text_overline_rus.xpm"
 #	include "tb_text_strikeout_rus.xpm"
+	// Italian translations
+#	include "tb_text_overline_S.xpm"
 	// ... add new icons here (don't forget to add below the #else) ...
 
 #else
@@ -205,6 +207,9 @@
 	DefineToolbarIcon(tb_text_underline_rus_xpm)
 	DefineToolbarIcon(tb_text_overline_rus_xpm)
 	DefineToolbarIcon(tb_text_strikeout_rus_xpm)
+	// Italian translations
+	DefineToolbarIcon(tb_text_overline_S_xpm)
+
 
 	// ... also add new icons here ...
 

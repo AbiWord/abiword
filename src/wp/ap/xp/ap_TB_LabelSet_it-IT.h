@@ -108,8 +108,6 @@ BeginSet(it,IT,true)
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_RTL,	"Forza il testo da destra a sinistra",	tb_text_direction_rtl_xpm,	NULL, "Forza la direzione del testo da destra a sinistra")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DOM_DIRECTION,		"Direzione del paragrafo",	tb_text_dom_direction_rtl_xpm,	NULL, "Cambia la direzione dominante del paragrafo")
 #endif
-
-
 	ToolbarLabel(AP_TOOLBAR_ID__BOGUS2__,		NULL,		NoIcon,			NULL,NULL)
 
 EndSet()
