@@ -47,7 +47,7 @@ gint XAP_UnixFrame::_fe::button_press_event(GtkWidget * w, GdkEventButton * e)
 	AV_View * pView = pUnixFrame->getCurrentView();
 	EV_UnixMouse * pUnixMouse = pUnixFrame->getUnixMouse();
 
-	//UT_DEBUGMSG(("Grabbing mouse.\n"));
+	UT_DEBUGMSG(("Grabbing mouse.\n"));
 	gtk_grab_add(w);
 	
 	if (pView)
@@ -61,7 +61,7 @@ gint XAP_UnixFrame::_fe::button_release_event(GtkWidget * w, GdkEventButton * e)
 	AV_View * pView = pUnixFrame->getCurrentView();
 	EV_UnixMouse * pUnixMouse = pUnixFrame->getUnixMouse();
 
-	//UT_DEBUGMSG(("Ungrabbing mouse.\n"));
+	UT_DEBUGMSG(("Ungrabbing mouse.\n"));
 	gtk_grab_remove(w);
 	
 	if (pView)
@@ -446,6 +446,18 @@ UT_Bool XAP_UnixFrame::runModalContextMenu(AV_View * pView, const char * szMenuN
 	m_pUnixPopup = new EV_UnixMenuPopup(m_pUnixApp,this,szMenuName,m_szMenuLabelSetName);
 	if (m_pUnixPopup && m_pUnixPopup->synthesizeMenuPopup())
 	{
+		// the popup will steal the mouse and so we won't get the
+		// button_release_event and we won't know to release our
+		// grab.  so let's do it here.  (when raised from a keyboard
+		// context menu, we may not have a grab, but that should be ok.
+
+		GtkWidget * w = gtk_grab_get_current();
+		if (w)
+		{
+			UT_DEBUGMSG(("Ungrabbing mouse [before popup].\n"));
+			gtk_grab_remove(w);
+		}
+
 		translateDocumentToScreen(x,y);
 
 		UT_DEBUGMSG(("ContextMenu: %s at [%d,%d]\n",szMenuName,x,y));
