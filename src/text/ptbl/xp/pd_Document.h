@@ -240,7 +240,7 @@ protected:
 	bool					m_bDoingPaste;
 
 private:
-	bool					m_bAllowInsretPointChange;
+	bool					m_bAllowInsertPointChange;
 };
 
 #endif /* PD_DOCUMENT_H */
