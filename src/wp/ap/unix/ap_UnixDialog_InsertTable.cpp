@@ -227,7 +227,7 @@ GtkWidget * AP_UnixDialog_InsertTable::_constructWindow(void)
 	gtk_widget_show (spinNumCols);
 	gtk_table_attach (GTK_TABLE (tableInsert), spinNumCols, 1, 2, 1, 2,
 					  (GtkAttachOptions) GTK_FILL, (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 0);
-	m_numRows = (UT_uint32) gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(m_pRowspin));
+
 	UT_XML_cloneNoAmpersands(unixstr, /*pSS->getValue(AP_STRING_ID_DLG_InsertTable_NumCols)*/"Number of rows:");
 	labelNumRows = gtk_label_new (unixstr);
 	FREEP(unixstr);
@@ -311,8 +311,6 @@ GtkWidget * AP_UnixDialog_InsertTable::_constructWindow(void)
 
 	m_pRowspin = spinNumRows;
 	m_pColspin = spinNumCols;
-	m_numRows = (UT_uint32) gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(m_pRowspin));
-	m_numCols = (UT_uint32) gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(m_pColspin));
 
 	return windowInsertTable;
 }
