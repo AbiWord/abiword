@@ -178,3 +178,6 @@ dcl(DLG_Options_Prompt_IgnoreResetAll,		"Do you want to reset ignored words in a
 
 dcl(DLG_DateTime_DateTimeTitle,			"Date and Time")
 dcl(DLG_DateTime_AvailableFormats,		"&Available formats:")
+
+dcl(DLG_Field_FieldTitle,				"Field")
+dcl(DLG_Field_AvailableFormats,			"&Available fields:")

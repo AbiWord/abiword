@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998-2000 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -34,11 +34,12 @@ typedef enum _AP_Dialog_Id
 	AP_DIALOG_ID_FIND,					/* find (w/o replace) dialog  */
 	AP_DIALOG_ID_GOTO,					/* warp to page/section/line, etc. */
 	AP_DIALOG_ID_BREAK,					/* insert page, column, section, etc. breaks */
-   	AP_DIALOG_ID_SPELL,					/* spell check */
+	AP_DIALOG_ID_SPELL,					/* spell check */
 	AP_DIALOG_ID_PARAGRAPH,				/* paragraph settings dialog */
 	AP_DIALOG_ID_OPTIONS,				/* edit|options settings dialog */
 	AP_DIALOG_ID_INSERT_DATETIME,		/* insert date and time dialog */
-     	/* ... add others here ... */
+	AP_DIALOG_ID_FIELD,					/* insert field dialog */
+	/* ... add others here ... */
 
 	AP_DIALOG_ID__LAST__				/* must be last */
 

@@ -4413,6 +4413,37 @@ void FV_View::getLeftRulerInfo(AP_LeftRulerInfo * pInfo)
 }
 
 /*****************************************************************/
+UT_Error FV_View::cmdInsertField(const char* szName)
+{
+	UT_Bool bResult;
+	const XML_Char*	attributes[] = {
+		"type", szName,
+		NULL, NULL
+	};
+
+	if (!isSelectionEmpty())
+	{
+		m_pDoc->beginUserAtomicGlob();
+		_deleteSelection();
+		bResult = m_pDoc->insertObject(getPoint(), PTO_Field, attributes, NULL);
+		m_pDoc->endUserAtomicGlob();
+	}
+	else
+	{
+		_eraseInsertionPoint();
+		bResult = m_pDoc->insertObject(getPoint(), PTO_Field, attributes, NULL);
+	}
+
+	_generalUpdate();
+
+	if (!_ensureThatInsertionPointIsOnScreen())
+	{
+		_fixInsertionPointCoords();
+		_drawInsertionPoint();
+	}
+
+	return bResult;
+}
 
 UT_Error FV_View::_insertGraphic(FG_Graphic* pFG, const char* szName)
 {

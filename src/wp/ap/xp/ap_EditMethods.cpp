@@ -49,6 +49,7 @@
 #include "ap_Dialog_Options.h"
 #include "ap_Dialog_Spell.h"
 #include "ap_Dialog_Insert_DateTime.h"
+#include "ap_Dialog_Field.h"
 
 #include "xap_DialogFactory.h"
 #include "xap_Dlg_About.h"
@@ -3909,42 +3910,42 @@ Defun1(dlgZoom)
 
 static UT_Bool s_doInsertDateTime(FV_View * pView)
 {
-  XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
-    UT_ASSERT(pFrame);
+	XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
+	UT_ASSERT(pFrame);
 
-    pFrame->raise();
+	pFrame->raise();
 
-    XAP_DialogFactory * pDialogFactory
-      = (XAP_DialogFactory *)(pFrame->getDialogFactory());
+	XAP_DialogFactory * pDialogFactory
+		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
 
-    AP_Dialog_Insert_DateTime * pDialog
-      = (AP_Dialog_Insert_DateTime *)(pDialogFactory->requestDialog(AP_DIALOG_ID_INSERT_DATETIME));
-    UT_ASSERT(pDialog);
+	AP_Dialog_Insert_DateTime * pDialog
+		= (AP_Dialog_Insert_DateTime *)(pDialogFactory->requestDialog(AP_DIALOG_ID_INSERT_DATETIME));
+	UT_ASSERT(pDialog);
 
-    pDialog->runModal(pFrame);
+	pDialog->runModal(pFrame);
 
-    if (pDialog->getAnswer() == AP_Dialog_Insert_DateTime::a_OK)
-    {
-        time_t  tim = time(NULL);
-        struct tm *pTime = localtime(&tim);
-        UT_UCSChar *CurrentDateTime = NULL;
-        char szCurrentDateTime[CURRENT_DATE_TIME_SIZE];
+	if (pDialog->getAnswer() == AP_Dialog_Insert_DateTime::a_OK)
+	{
+		time_t	tim = time(NULL);
+		struct tm *pTime = localtime(&tim);
+		UT_UCSChar *CurrentDateTime = NULL;
+		char szCurrentDateTime[CURRENT_DATE_TIME_SIZE];
 
-        strftime(szCurrentDateTime,CURRENT_DATE_TIME_SIZE,pDialog->GetDateTimeFormat(),pTime);
-        UT_UCS_cloneString_char(&CurrentDateTime,szCurrentDateTime);
-        pView->cmdCharInsert(CurrentDateTime,UT_UCS_strlen(CurrentDateTime));
-        FREEP(CurrentDateTime);
-    }
+		strftime(szCurrentDateTime,CURRENT_DATE_TIME_SIZE,pDialog->GetDateTimeFormat(),pTime);
+		UT_UCS_cloneString_char(&CurrentDateTime,szCurrentDateTime);
+		pView->cmdCharInsert(CurrentDateTime,UT_UCS_strlen(CurrentDateTime));
+		FREEP(CurrentDateTime);
+	}
 
-    pDialogFactory->releaseDialog(pDialog);
+	pDialogFactory->releaseDialog(pDialog);
 
-    return UT_TRUE;
+	return UT_TRUE;
 }
 
 Defun1(insDateTime)
 {
-  ABIWORD_VIEW;
-  return s_doInsertDateTime(pView);
+	ABIWORD_VIEW;
+	return s_doInsertDateTime(pView);
 }
 
 /*****************************************************************/
@@ -3965,13 +3966,44 @@ Defun1(insPageNo)
 	return UT_TRUE;
 }
 
-Defun1(insField)
+static UT_Bool s_doField(FV_View * pView)
 {
-	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
 	UT_ASSERT(pFrame);
 
-	s_TellNotImplemented(pFrame, "Insert field dialog", __LINE__);
+	pFrame->raise();
+
+	XAP_DialogFactory * pDialogFactory
+		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+
+	AP_Dialog_Field * pDialog
+		= (AP_Dialog_Field *)(pDialogFactory->requestDialog(AP_DIALOG_ID_FIELD));
+	UT_ASSERT(pDialog);
+
+	pDialog->runModal(pFrame);
+
+	if (pDialog->getAnswer() == AP_Dialog_Field::a_OK)
+	{
+		// TODO - Insert field correctly
+//		char szTmp[CURRENT_FIELD_SIZE];
+//		UT_UCSChar *NewField = NULL;
+
+//		strncpy(szTmp,pDialog->GetFieldFormat(),CURRENT_FIELD_SIZE);
+//		UT_UCS_cloneString_char(&NewField,szTmp);
+//		pView->cmdCharInsert(NewField,UT_UCS_strlen(NewField));
+		pView->cmdInsertField(pDialog->GetFieldFormat());
+//		FREEP(NewField);
+	}
+
+	pDialogFactory->releaseDialog(pDialog);
+
 	return UT_TRUE;
+}
+
+Defun1(insField)
+{
+	ABIWORD_VIEW;
+	return s_doField(pView);
 }
 
 Defun1(insSymbol)

@@ -110,6 +110,7 @@ public:
 	virtual UT_Error	cmdSave(void);
 	virtual UT_Error	cmdSaveAs(const char * szFilename, int ieft);
 
+	UT_Error		cmdInsertField(const char* szName);
 	UT_Error		cmdInsertGraphic(FG_Graphic*, const char*);
 	
 	virtual void	cmdCopy(void);
