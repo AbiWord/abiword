@@ -38,7 +38,7 @@ $(PROGRAM): $(BINDIR)/makensis$(EXE_SUFFIX)
 	 cd $(BINDIR); \
 	 $(BINDIR)/makensis$(EXE_SUFFIX) ./AbiWord.nsi
 
-ifdef ABI_OPT_DEBUG
+ifeq ($(ABI_OPT_DEBUG),1)
 
 distribution::
 	@echo ABI_OPT_DEBUG is set.  Building a setup program in
