@@ -2854,6 +2854,12 @@ void s_RTF_ListenerWriteDoc::_fillTableProps(PT_AttrPropIndex api, UT_String & s
 	{
 		sTableProps += " ";
 	}
+	else
+	{
+		sProp = "table-sdh";
+		UT_String_sprintf("%x",m_Table.getTableSDH());
+		UT_String_setProperty(sTableProps,sProp,sPropVal);
+	}
 }
 
 void s_RTF_ListenerWriteDoc::_open_table(PT_AttrPropIndex api)
