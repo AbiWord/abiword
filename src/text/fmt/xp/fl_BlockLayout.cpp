@@ -3580,7 +3580,14 @@ bool fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 		// Update the display
 //		pPrevBL->_lookupProperties();	// TODO: this may be needed
 		pPrevBL->setNeedsReformat();
-		pPrevBL->checkSpelling(); //Fix for bug #1119
+
+		//Fix for bug #1119, but only do it when auto spelling is
+		//enabled, or we get squiggles in the document when clearing
+		//selected text. See bug #1285
+		if (m_pLayout->getAutoSpellCheck())
+		{
+			pPrevBL->checkSpelling();
+		}
 	}
 
 	// In case we've never checked this one
