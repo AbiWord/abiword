@@ -2022,7 +2022,7 @@ something
 			if((posCur == nposCur) && (posCur > 0)) 
 			  {
 			    fontFlag = UT_TRUE;
-			    posCur--;
+       			    posCur--;
 			  }
 		}
 		else

@@ -32,6 +32,7 @@ class EV_UnixMouse;
 class EV_UnixMenuBar;
 class EV_UnixMenuPopup;
 
+
 /*****************************************************************
 ******************************************************************
 ** This file defines the unix-platform-specific class for the
@@ -115,8 +116,14 @@ protected:
 		static void destroy (GtkWidget * /*widget*/, gpointer /*data*/);
 		static gboolean focus_in_event(GtkWidget *w,GdkEvent *event,gpointer user_data);
 		static gboolean focus_out_event(GtkWidget *w,GdkEvent *event,gpointer user_data);
-	};
 
+		static void realize(GtkWidget * widget, GdkEvent */* e*/,gpointer /*data*/);
+		static void unrealize(GtkWidget * widget, GdkEvent */* e */,gpointer /* data */);
+		static void sizeAllocate(GtkWidget * widget, GdkEvent */* e */,gpointer /* data */);
+		static gint focusIn(GtkWidget * widget, GdkEvent */* e */,gpointer /* data */);
+		static gint focusOut(GtkWidget * /*widget*/, GdkEvent */* e */,gpointer /* data */);
+				
+	};
 };
 
 #endif /* XAP_UNIXFRAME_H */

@@ -36,11 +36,136 @@
 #include "xav_View.h"
 #include "xad_Document.h"
 
+
 /*****************************************************************/
 
 #define ENSUREP(p)		do { UT_ASSERT(p); if (!p) goto Cleanup; } while (0)
 
 /****************************************************************/
+void XAP_UnixFrame::_fe::realize(GtkWidget * widget, GdkEvent * /*e*/,gpointer /*data*/)
+{
+  GdkICAttr *ic_attr=(GdkICAttr *)gtk_object_get_data(GTK_OBJECT(widget), "ic_attr");
+  GdkIC * ic=(GdkIC *)gtk_object_get_data(GTK_OBJECT(widget), "ic");
+  if (gdk_im_ready () && (ic_attr = gdk_ic_attr_new ()) != NULL)
+    {
+      gint width, height;
+      int mask;
+	  GdkColormap *colormap;
+      GdkICAttr *attr = ic_attr;
+      int attrmask = GDK_IC_ALL_REQ;
+      GdkIMStyle style;
+
+      int supported_style =(GdkIMStyle)(GDK_IM_PREEDIT_NONE |
+				   GDK_IM_PREEDIT_NOTHING |
+			           GDK_IM_PREEDIT_POSITION |
+			           GDK_IM_STATUS_NONE |
+				   GDK_IM_STATUS_NOTHING);
+
+      if (widget->style && widget->style->font->type != GDK_FONT_FONTSET)
+		supported_style &= ~GDK_IM_PREEDIT_POSITION;
+
+      attr->style = style = gdk_im_decide_style ((GdkIMStyle)supported_style);
+      attr->client_window = widget->window;
+
+      if ((colormap = gtk_widget_get_colormap (widget)) !=
+		  gtk_widget_get_default_colormap ())
+		{
+		  attrmask |= GDK_IC_PREEDIT_COLORMAP;
+		  attr->preedit_colormap = colormap;
+		}
+      attrmask |= GDK_IC_PREEDIT_FOREGROUND;
+      attrmask |= GDK_IC_PREEDIT_BACKGROUND;
+      attr->preedit_foreground = widget->style->fg[GTK_STATE_NORMAL];
+      attr->preedit_background = widget->style->base[GTK_STATE_NORMAL];
+
+      switch (style & GDK_IM_PREEDIT_MASK)
+		{
+		case GDK_IM_PREEDIT_POSITION:
+		  if (widget->style && widget->style->font->type != GDK_FONT_FONTSET)
+			{
+			  g_warning ("over-the-spot style requires fontset");
+			  break;
+			}
+
+		  gdk_window_get_size (widget->window, &width, &height);
+		  
+		  attrmask |= GDK_IC_PREEDIT_POSITION_REQ;
+		  attr->spot_location.x = 0;
+		  attr->spot_location.y = height;
+		  attr->preedit_area.x = 0;
+		  attr->preedit_area.y = 0;
+		  attr->preedit_area.width = width;
+		  attr->preedit_area.height = height;
+		  attr->preedit_fontset = widget->style->font;
+		  
+		  break;
+		}
+      ic = gdk_ic_new (attr, (GdkICAttributesType)attrmask);
+	  
+      if (ic == NULL)
+		g_warning ("Can't create input context.");
+      else
+		{
+		  mask = gdk_window_get_events (widget->window);
+		  mask |= (GdkEventMask)gdk_ic_get_events (ic);
+		  gdk_window_set_events (widget->window,(GdkEventMask) mask);
+
+		  if (GTK_WIDGET_HAS_FOCUS(widget))
+			gdk_im_begin (ic, widget->window);
+		}
+	}
+  gtk_object_set_data(GTK_OBJECT(widget), "ic_attr", ic_attr);
+  gtk_object_set_data(GTK_OBJECT(widget), "ic", ic);
+}
+
+void XAP_UnixFrame::_fe::unrealize(GtkWidget * widget, GdkEvent * /*e*/,gpointer /*data*/)
+{
+  GdkICAttr *ic_attr=(GdkICAttr *)gtk_object_get_data(GTK_OBJECT(widget), "ic_attr");
+  GdkIC * ic=(GdkIC *)gtk_object_get_data(GTK_OBJECT(widget), "ic");
+  if (ic)
+    {
+      gdk_ic_destroy (ic);
+      ic = (GdkIC *)NULL;
+    }
+  if (ic_attr)
+    {
+      gdk_ic_attr_destroy (ic_attr);
+      ic_attr = (GdkICAttr *)NULL;
+    }
+  gtk_object_set_data(GTK_OBJECT(widget), "ic_attr", ic_attr);
+  gtk_object_set_data(GTK_OBJECT(widget), "ic", ic);
+}
+
+void XAP_UnixFrame::_fe::sizeAllocate(GtkWidget * widget, GdkEvent * /*e*/,gpointer /*data*/)
+{
+  GdkICAttr *ic_attr=(GdkICAttr *)gtk_object_get_data(GTK_OBJECT(widget), "ic_attr");
+  GdkIC * ic=(GdkIC *)gtk_object_get_data(GTK_OBJECT(widget), "ic");
+  if (ic &&
+	  (gdk_ic_get_style (ic) & GDK_IM_PREEDIT_POSITION))
+	{
+	  gint width, height;
+
+	  gdk_window_get_size (widget->window, &width, &height);
+	  ic_attr->preedit_area.width = width;
+	  ic_attr->preedit_area.height = height;
+	  gdk_ic_set_attr (ic, ic_attr,
+	      		   GDK_IC_PREEDIT_AREA);
+	}
+}
+
+gint XAP_UnixFrame::_fe::focusIn(GtkWidget * widget, GdkEvent * /*e*/,gpointer /*data*/)
+{
+  GdkIC * ic=(GdkIC *)gtk_object_get_data(GTK_OBJECT(widget), "ic");
+  if (ic)
+    gdk_im_begin (ic, widget->window);
+  return FALSE;
+}
+
+gint XAP_UnixFrame::_fe::focusOut(GtkWidget * /* w*/, GdkEvent * /*e*/,gpointer /*data*/)
+{
+  gdk_im_end ();
+  return FALSE;
+}
 gboolean XAP_UnixFrame::_fe::focus_in_event(GtkWidget *w,GdkEvent */*event*/,gpointer /*user_data*/)
 {
 	XAP_UnixFrame * pFrame = (XAP_UnixFrame *) gtk_object_get_user_data(GTK_OBJECT(w));
@@ -182,6 +307,7 @@ gint XAP_UnixFrame::_fe::delete_event(GtkWidget * w, GdkEvent * /*event*/, gpoin
 		{
 			// returning FALSE means destroy the window, continue along the
 			// chain of Gtk destroy events
+
 			return FALSE;
 		}
 	}
@@ -349,6 +475,8 @@ void XAP_UnixFrame::_createTopLevelWindow(void)
 	UT_Bool bResult;
 
 	m_wTopLevelWindow = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+	gtk_object_set_data(GTK_OBJECT(m_wTopLevelWindow), "ic_attr", NULL);
+	gtk_object_set_data(GTK_OBJECT(m_wTopLevelWindow), "ic", NULL);
 	gtk_object_set_data(GTK_OBJECT(m_wTopLevelWindow), "toplevelWindow",
 						m_wTopLevelWindow);
 	gtk_object_set_data(GTK_OBJECT(m_wTopLevelWindow), "toplevelWindowFocus",
@@ -363,6 +491,17 @@ void XAP_UnixFrame::_createTopLevelWindow(void)
 
 	// This is now done with --geometry parsing.
 	//gtk_widget_set_usize(GTK_WIDGET(m_wTopLevelWindow), 700, 650);
+
+	gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), "realize",
+					   GTK_SIGNAL_FUNC(_fe::realize), NULL);
+	gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), "unrealize",
+					   GTK_SIGNAL_FUNC(_fe::unrealize), NULL);
+	gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), "size_allocate",
+					   GTK_SIGNAL_FUNC(_fe::sizeAllocate), NULL);
+	gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), "focus_in_event",
+					   GTK_SIGNAL_FUNC(_fe::focusIn), NULL);
+	gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), "focus_out_event",
+					   GTK_SIGNAL_FUNC(_fe::focusOut), NULL);
 
 	gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), "delete_event",
 					   GTK_SIGNAL_FUNC(_fe::delete_event), NULL);
@@ -396,10 +535,14 @@ void XAP_UnixFrame::_createTopLevelWindow(void)
 	// create a toolbar instance for each toolbar listed in our base class.
 	// TODO for some reason, the toolbar functions require the TLW to be
 	// TODO realized (they reference m_wTopLevelWindow->window) before we call them.
+
 	gtk_widget_realize(m_wTopLevelWindow);
+
+
 
 	gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), "key_press_event",
 					   GTK_SIGNAL_FUNC(_fe::key_press_event), NULL);
+
 
 	_createToolbars();
 
