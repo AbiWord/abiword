@@ -377,6 +377,11 @@ bool XAP_Win32Frame::openURL(const char * szURL)
 	UT_String sURL = szURL;
 	HWND hwnd = getTopLevelWindow();
 
+	if ( "file:///\\" == sURL.substr(0,9) )
+	{
+	     sURL = sURL.substr(9, sURL.size() - 9);
+	}
+	
 	// strip "file://" from URL, win32 doesn't handle them well
 	if ( "file://" == sURL.substr(0, 7) )
 	{
