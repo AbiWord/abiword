@@ -60,7 +60,11 @@ void GR_Win32CharWidths::setCharWidthsOfRange(HDC hdc, UT_UCSChar c0, UT_UCSChar
 			}
 			else
 			{
+#ifdef DEBUG
 				GetCharWidth32W(hdc,k,k,&w);
+				ABC abc;
+				int iRes = GetCharABCWidthsW(hdc,k,k,&abc);
+#endif
 				// handle overstriking chars here
 				UT_uint32 iOver = UT_isOverstrikingChar(k);
 				if(!w || iOver != UT_NOT_OVERSTRIKING)
