@@ -34,7 +34,7 @@
   #include "xap_BeOSModule.h"
   #define MODULE_CLASS XAP_BeOSModule
 
-#elif defined (__QNXTO__)
+#elif defined (__QNXNTO__)
   #include "xap_QNXModule.h"
   #define MODULE_CLASS XAP_QNXModule
 
