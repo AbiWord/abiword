@@ -582,6 +582,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 			 m_pie->write("NUMPAGES ");
              m_pie->_rtf_close_brace();
              m_pie->_rtf_close_brace();
+             m_pie->_rtf_close_brace();
 			 return;
 		 }
 		 else if(UT_XML_strcmp(pszType,"date") == 0)
