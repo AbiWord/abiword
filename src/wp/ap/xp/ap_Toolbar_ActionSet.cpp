@@ -95,35 +95,35 @@ EV_Toolbar_ActionSet * AP_CreateToolbarActionSet(void)
 	_s(AP_TOOLBAR_ID_EDIT_REMOVEHEADER,	EV_TBIT_PushButton,		"removeHeader",		AV_CHG_MOTION,	ap_ToolbarGetState_HdrFtr);
 	_s(AP_TOOLBAR_ID_EDIT_REMOVEFOOTER,	EV_TBIT_PushButton,		"removeFooter",		AV_CHG_MOTION,	ap_ToolbarGetState_HdrFtr);
 
-	_s(AP_TOOLBAR_ID_FMT_STYLE,		EV_TBIT_ComboBox,		"style",		AV_CHG_FMTSTYLE,	ap_ToolbarGetState_Style);
-	_s(AP_TOOLBAR_ID_FMT_FONT,		EV_TBIT_ComboBox,		"fontFamily",	AV_CHG_FMTCHAR,		ap_ToolbarGetState_CharFmt);
-	_s(AP_TOOLBAR_ID_FMT_SIZE,		EV_TBIT_ComboBox,		"fontSize",		AV_CHG_FMTCHAR,		ap_ToolbarGetState_CharFmt);
-	_s(AP_TOOLBAR_ID_FMT_BOLD,		EV_TBIT_ToggleButton,	"toggleBold",	AV_CHG_FMTCHAR,		ap_ToolbarGetState_CharFmt);
-	_s(AP_TOOLBAR_ID_FMT_ITALIC,	EV_TBIT_ToggleButton,	"toggleItalic",	AV_CHG_FMTCHAR,		ap_ToolbarGetState_CharFmt);
-	_s(AP_TOOLBAR_ID_FMT_UNDERLINE,	EV_TBIT_ToggleButton,	"toggleUline",	AV_CHG_FMTCHAR,		ap_ToolbarGetState_CharFmt);
-	_s(AP_TOOLBAR_ID_FMT_OVERLINE,	EV_TBIT_ToggleButton,	"toggleOline",	AV_CHG_FMTCHAR,		ap_ToolbarGetState_CharFmt);
-	_s(AP_TOOLBAR_ID_FMT_STRIKE,	EV_TBIT_ToggleButton,	"toggleStrike",	AV_CHG_FMTCHAR,		ap_ToolbarGetState_CharFmt);
-	_s(AP_TOOLBAR_ID_FMT_TOPLINE,	EV_TBIT_ToggleButton,	"toggleTopline",	AV_CHG_FMTCHAR,		ap_ToolbarGetState_CharFmt);
-	_s(AP_TOOLBAR_ID_FMT_BOTTOMLINE,	EV_TBIT_ToggleButton,	"toggleBottomline",	AV_CHG_FMTCHAR,		ap_ToolbarGetState_CharFmt);
+	_s(AP_TOOLBAR_ID_FMT_STYLE,		EV_TBIT_ComboBox,		"style",		AV_CHG_FMTSTYLE | AV_CHG_MOTION,	ap_ToolbarGetState_Style);
+	_s(AP_TOOLBAR_ID_FMT_FONT,		EV_TBIT_ComboBox,		"fontFamily",	AV_CHG_FMTCHAR | AV_CHG_MOTION,		ap_ToolbarGetState_CharFmt);
+	_s(AP_TOOLBAR_ID_FMT_SIZE,		EV_TBIT_ComboBox,		"fontSize",		AV_CHG_FMTCHAR | AV_CHG_MOTION,		ap_ToolbarGetState_CharFmt);
+	_s(AP_TOOLBAR_ID_FMT_BOLD,		EV_TBIT_ToggleButton,	"toggleBold",	AV_CHG_FMTCHAR | AV_CHG_MOTION,		ap_ToolbarGetState_CharFmt);
+	_s(AP_TOOLBAR_ID_FMT_ITALIC,	EV_TBIT_ToggleButton,	"toggleItalic",	AV_CHG_FMTCHAR | AV_CHG_MOTION,		ap_ToolbarGetState_CharFmt);
+	_s(AP_TOOLBAR_ID_FMT_UNDERLINE,	EV_TBIT_ToggleButton,	"toggleUline",	AV_CHG_FMTCHAR | AV_CHG_MOTION,		ap_ToolbarGetState_CharFmt);
+	_s(AP_TOOLBAR_ID_FMT_OVERLINE,	EV_TBIT_ToggleButton,	"toggleOline",	AV_CHG_FMTCHAR | AV_CHG_MOTION,		ap_ToolbarGetState_CharFmt);
+	_s(AP_TOOLBAR_ID_FMT_STRIKE,	EV_TBIT_ToggleButton,	"toggleStrike",	AV_CHG_FMTCHAR | AV_CHG_MOTION,		ap_ToolbarGetState_CharFmt);
+	_s(AP_TOOLBAR_ID_FMT_TOPLINE,	EV_TBIT_ToggleButton,	"toggleTopline",	AV_CHG_FMTCHAR | AV_CHG_MOTION,		ap_ToolbarGetState_CharFmt);
+	_s(AP_TOOLBAR_ID_FMT_BOTTOMLINE,	EV_TBIT_ToggleButton,	"toggleBottomline",	AV_CHG_FMTCHAR | AV_CHG_MOTION,		ap_ToolbarGetState_CharFmt);
 
-	_s(AP_TOOLBAR_ID_INDENT,		EV_TBIT_PushButton,		"toggleIndent",		AV_CHG_FMTBLOCK,		ap_ToolbarGetState_Indents);
-	_s(AP_TOOLBAR_ID_UNINDENT,		EV_TBIT_PushButton,		"toggleUnIndent",	AV_CHG_FMTBLOCK,	ap_ToolbarGetState_Indents);
+	_s(AP_TOOLBAR_ID_INDENT,		EV_TBIT_PushButton,		"toggleIndent",		AV_CHG_FMTBLOCK | AV_CHG_MOTION,		ap_ToolbarGetState_Indents);
+	_s(AP_TOOLBAR_ID_UNINDENT,		EV_TBIT_PushButton,		"toggleUnIndent",	AV_CHG_FMTBLOCK | AV_CHG_MOTION,	ap_ToolbarGetState_Indents);
 
-	_s(AP_TOOLBAR_ID_FMT_SUPERSCRIPT,	EV_TBIT_ToggleButton,	"toggleSuper",	AV_CHG_FMTCHAR,	ap_ToolbarGetState_CharFmt);
-	_s(AP_TOOLBAR_ID_FMT_SUBSCRIPT,		EV_TBIT_ToggleButton,	"toggleSub",	AV_CHG_FMTCHAR,	ap_ToolbarGetState_CharFmt);
+	_s(AP_TOOLBAR_ID_FMT_SUPERSCRIPT,	EV_TBIT_ToggleButton,	"toggleSuper",	AV_CHG_FMTCHAR | AV_CHG_MOTION,	ap_ToolbarGetState_CharFmt);
+	_s(AP_TOOLBAR_ID_FMT_SUBSCRIPT,		EV_TBIT_ToggleButton,	"toggleSub",	AV_CHG_FMTCHAR | AV_CHG_MOTION,	ap_ToolbarGetState_CharFmt);
 	_s(AP_TOOLBAR_ID_INSERT_SYMBOL,		EV_TBIT_PushButton,	"insSymbol",	AV_CHG_NONE,		NULL);
 
-	_s(AP_TOOLBAR_ID_ALIGN_LEFT,	EV_TBIT_GroupButton,	"alignLeft",	AV_CHG_FMTBLOCK,	ap_ToolbarGetState_BlockFmt);
-	_s(AP_TOOLBAR_ID_ALIGN_CENTER,	EV_TBIT_GroupButton,	"alignCenter",	AV_CHG_FMTBLOCK,	ap_ToolbarGetState_BlockFmt);
-	_s(AP_TOOLBAR_ID_ALIGN_RIGHT,	EV_TBIT_GroupButton,	"alignRight",	AV_CHG_FMTBLOCK,	ap_ToolbarGetState_BlockFmt);
-	_s(AP_TOOLBAR_ID_ALIGN_JUSTIFY,	EV_TBIT_GroupButton,	"alignJustify",	AV_CHG_FMTBLOCK,	ap_ToolbarGetState_BlockFmt);
+	_s(AP_TOOLBAR_ID_ALIGN_LEFT,	EV_TBIT_GroupButton,	"alignLeft",	AV_CHG_FMTBLOCK | AV_CHG_MOTION,	ap_ToolbarGetState_BlockFmt);
+	_s(AP_TOOLBAR_ID_ALIGN_CENTER,	EV_TBIT_GroupButton,	"alignCenter",	AV_CHG_FMTBLOCK | AV_CHG_MOTION,	ap_ToolbarGetState_BlockFmt);
+	_s(AP_TOOLBAR_ID_ALIGN_RIGHT,	EV_TBIT_GroupButton,	"alignRight",	AV_CHG_FMTBLOCK | AV_CHG_MOTION,	ap_ToolbarGetState_BlockFmt);
+	_s(AP_TOOLBAR_ID_ALIGN_JUSTIFY,	EV_TBIT_GroupButton,	"alignJustify",	AV_CHG_FMTBLOCK | AV_CHG_MOTION,	ap_ToolbarGetState_BlockFmt);
 
-	_s(AP_TOOLBAR_ID_PARA_0BEFORE,	EV_TBIT_GroupButton,	"paraBefore0",	AV_CHG_FMTBLOCK,	ap_ToolbarGetState_BlockFmt);
-	_s(AP_TOOLBAR_ID_PARA_12BEFORE,	EV_TBIT_GroupButton,	"paraBefore12",	AV_CHG_FMTBLOCK,	ap_ToolbarGetState_BlockFmt);
+	_s(AP_TOOLBAR_ID_PARA_0BEFORE,	EV_TBIT_GroupButton,	"paraBefore0",	AV_CHG_FMTBLOCK | AV_CHG_MOTION,	ap_ToolbarGetState_BlockFmt);
+	_s(AP_TOOLBAR_ID_PARA_12BEFORE,	EV_TBIT_GroupButton,	"paraBefore12",	AV_CHG_FMTBLOCK | AV_CHG_MOTION,	ap_ToolbarGetState_BlockFmt);
 
-	_s(AP_TOOLBAR_ID_SINGLE_SPACE,	EV_TBIT_GroupButton,	"singleSpace",	AV_CHG_FMTBLOCK,	ap_ToolbarGetState_BlockFmt);
-	_s(AP_TOOLBAR_ID_MIDDLE_SPACE,	EV_TBIT_GroupButton,	"middleSpace",	AV_CHG_FMTBLOCK,	ap_ToolbarGetState_BlockFmt);
-	_s(AP_TOOLBAR_ID_DOUBLE_SPACE,	EV_TBIT_GroupButton,	"doubleSpace",	AV_CHG_FMTBLOCK,	ap_ToolbarGetState_BlockFmt);
+	_s(AP_TOOLBAR_ID_SINGLE_SPACE,	EV_TBIT_GroupButton,	"singleSpace",	AV_CHG_FMTBLOCK | AV_CHG_MOTION,	ap_ToolbarGetState_BlockFmt);
+	_s(AP_TOOLBAR_ID_MIDDLE_SPACE,	EV_TBIT_GroupButton,	"middleSpace",	AV_CHG_FMTBLOCK | AV_CHG_MOTION,	ap_ToolbarGetState_BlockFmt);
+	_s(AP_TOOLBAR_ID_DOUBLE_SPACE,	EV_TBIT_GroupButton,	"doubleSpace",	AV_CHG_FMTBLOCK | AV_CHG_MOTION,	ap_ToolbarGetState_BlockFmt);
 
 	_s(AP_TOOLBAR_ID_1COLUMN,		EV_TBIT_GroupButton,	"sectColumns1",	AV_CHG_ALL,	ap_ToolbarGetState_SectionFmt);
 	_s(AP_TOOLBAR_ID_2COLUMN,		EV_TBIT_GroupButton,	"sectColumns2",	AV_CHG_ALL,	ap_ToolbarGetState_SectionFmt);
@@ -146,9 +146,9 @@ EV_Toolbar_ActionSet * AP_CreateToolbarActionSet(void)
 	   AV_CHG_ALL, ap_ToolbarGetState_Clipboard);
 
 	// ... add others here ...
-	_s(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_LTR,	EV_TBIT_ToggleButton,	"toggleDirOverrideLTR",	AV_CHG_FMTCHAR | AV_CHG_DIRECTIONMODE,		ap_ToolbarGetState_CharFmt);
-	_s(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_RTL,	EV_TBIT_ToggleButton,	"toggleDirOverrideRTL",	AV_CHG_FMTCHAR | AV_CHG_DIRECTIONMODE,		ap_ToolbarGetState_CharFmt);
-	_s(AP_TOOLBAR_ID_FMT_DOM_DIRECTION,	EV_TBIT_ToggleButton,	"toggleDomDirection",	AV_CHG_FMTBLOCK | AV_CHG_FMTSECTION,		ap_ToolbarGetState_BlockFmt);
+	_s(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_LTR,	EV_TBIT_ToggleButton,	"toggleDirOverrideLTR",	AV_CHG_FMTCHAR | AV_CHG_DIRECTIONMODE | AV_CHG_MOTION,		ap_ToolbarGetState_CharFmt);
+	_s(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_RTL,	EV_TBIT_ToggleButton,	"toggleDirOverrideRTL",	AV_CHG_FMTCHAR | AV_CHG_DIRECTIONMODE | AV_CHG_MOTION,		ap_ToolbarGetState_CharFmt);
+	_s(AP_TOOLBAR_ID_FMT_DOM_DIRECTION,	EV_TBIT_ToggleButton,	"toggleDomDirection",	AV_CHG_FMTBLOCK | AV_CHG_FMTSECTION | AV_CHG_MOTION,		ap_ToolbarGetState_BlockFmt);
 
 
 	_s(AP_TOOLBAR_ID_INSERT_TABLE, EV_TBIT_PushButton, "insertTable", AV_CHG_ALL, NULL);
