@@ -219,9 +219,10 @@ bool AP_Dialog_Replace::setMatchCase(bool match)
 {
 	if (match != m_matchCase)
 	{
-		// When search parameters change, clear any existing selection to
-		// avoid replacement of the previous search string.
-		getFvView()->cmdUnselectSelection();
+	  // When search parameters change, clear any existing selection to
+	  // avoid replacement of the previous search string.
+	  if ( !getFvView()->isSelectionEmpty() )
+	    getFvView()->cmdUnselectSelection();
 	}
 
 	m_matchCase = match;
