@@ -321,6 +321,17 @@ ABI_PEER_INCS=	/../../expat/lib
 endif
 ABI_PEER_INCS+=/../../wv/exporter
 
+# Test for iconv in system locations
+HAVE_ICONV_SYSTEM := $(shell if [ -r /usr/include/iconv.h -o -r /usr/local/include/iconv.h ] ; then echo 1 ; fi)
+
+ifeq ($(OS_NAME), WIN32)
+ABI_PEER_INCS+=/../../libiconv/include
+else
+ifneq ($(HAVE_ICONV_SYSTEM),1)
+ABI_PEER_INCS+=/../../libiconv/include
+endif
+endif
+
 ABI_ALL_INCS=	$(ABI_XAP_INCS) $(ABI_PEER_INCS) $(ABI_AP_INCS) $(ABI_OTH_INCS) $(ABI_TM_INCS)
 
 ifeq ($(OS_NAME), WIN32)
