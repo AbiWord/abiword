@@ -156,6 +156,8 @@ pack_rpm:
 
 # These targets actually do all the heavy lifting of packaging.
 
+RPM_ARCH=$(OS_ARCH)
+
 rpm: pack_rpm
 # A tarball is already sitting in /usr/src/redhat/SOURCES (or thereabouts)
 # so rip the spec template through some sed magic and run with it.
@@ -175,7 +177,7 @@ rpm: pack_rpm
 	  rpm/abiword.spec-template > $(RPM_SOURCE_DIR)/SPECS/abiword-$(ABI_BUILD_VERSION).spec)
 	@echo "Producing RPM..."
 	rpm -ba $(RPM_SOURCE_DIR)/SPECS/abiword-$(ABI_BUILD_VERSION).spec
-	mv $(RPM_SOURCE_DIR)/RPMS/$(OS_ARCH)/abiword-$(ABI_BUILD_VERSION)-$(ABI_RELEASE_NUMBER).$(OS_ARCH).rpm $(DIST)
+	mv $(RPM_SOURCE_DIR)/RPMS/$(RPM_ARCH)/abiword-*$(ABI_BUILD_VERSION)-$(ABI_RELEASE_NUMBER).$(RPM_ARCH).rpm $(DIST)
 	mv $(RPM_SOURCE_DIR)/SRPMS/abiword-$(ABI_BUILD_VERSION)-$(ABI_RELEASE_NUMBER).src.rpm $(DIST)
 
 deb::

@@ -10,7 +10,7 @@
 %define enable_pspell __ABI_OPT_PSPELL__
 
 # PLUGIN OPTIONS: 1 for yes, 0 for no
-%define enable_aiksaurus 1
+%define enable_aiksaurus 0
 %define enable_gdict 0
 %define enable_babelfish 1
 %define enable_urldict 1
@@ -22,6 +22,9 @@
 %define enable_openwriter 0
 %define enable_eml 0
 %define enable_html 1
+%define enable_festvox 0
+%define enable_abigimp 1
+%define enable_shell 1
 %define enable_eg 0
 
 %define name abiword
@@ -103,6 +106,24 @@
 %define plugin_html --enable-html
 %else
 %define plugin_html --disable-html
+%endif
+
+%if %{enable_festvox}
+%define plugin_festvox --enable-festvox
+%else
+%define plugin_festvox --disable-festvox
+%endif
+
+%if %{enable_abigimp}
+%define plugin_abigimp --enable-abigimp
+%else
+%define plugin_abigimp --disable-abigimp
+%endif
+
+%if %{enable_shell}
+%define plugin_shell --enable-shell
+%else
+%define plugin_shell --disable-shell
 %endif
 
 %if %{enable_eg}
@@ -241,6 +262,36 @@ BuildRequires: libxml2-devel
 
 %description plugin-html
 Installing this plugin will allow abiword to import of arbitrary HTML documents (experimental)
+%endif
+
+%if %{enable_festvox}
+%package plugin-festvox
+Summary: Plugin for festvox
+Group: Applications/Productivity
+Requires: abiword
+
+%description plugin-festvox
+Plugin for festvox
+%endif
+
+%if %{enable_abigimp}
+%package plugin-abigimp
+Summary: Enables editing of your images in The GIMP.
+Group: Applications/Productivity
+Requires: abiword
+
+%description plugin-abigimp
+Installing this plugin will allow AbiWord to transfer images to The GIMP for editing.
+%endif
+
+%if %{enable_shell}
+%package plugin-shell
+Summary: Enables redirection of shell output into AbiWord.
+Group: Applications/Productivity
+Requires: abiword
+
+%description plugin-shell
+Installing this plugin will allow AbiWord to read output of shell commands.
 %endif
 
 %if %{enable_wikipedia}
@@ -519,7 +570,7 @@ make %{version_flag} ABI_OPT_DEBUG=%{enable_debug} ABI_OPT_LIBXML2=%{enable_xml2
 
 cd ../abiword-plugins
 ./autogen.sh
-./configure --prefix=$RPM_BUILD_ROOT%{ABIPREFIX}/AbiSuite %{plugin_aiksaurus} %{plugin_gdict} %{plugin_babelfish} %{plugin_urldict} %{plugin_wikipedia} %{plugin_freetranslation} %{plugin_bz2abw} %{plugin_imagemagick} %{plugin_gdkpixbuf} %{plugin_openwriter} %{plugin_eml} %{plugin_html} %{plugin_tests}
+./configure --prefix=$RPM_BUILD_ROOT%{ABIPREFIX}/AbiSuite %{plugin_aiksaurus} %{plugin_gdict} %{plugin_babelfish} %{plugin_urldict} %{plugin_wikipedia} %{plugin_freetranslation} %{plugin_bz2abw} %{plugin_imagemagick} %{plugin_gdkpixbuf} %{plugin_openwriter} %{plugin_eml} %{plugin_html} %{plugin_festvox} %{plugin_abigimp} %{plugin_shell} %{plugin_tests}
 make
 
 cd ../abi
@@ -626,6 +677,21 @@ cp $RPM_BUILD_DIR/%{name}-%{version}/abi/src/pkg/linux/rpm/data/abiword.desktop 
 %if %{enable_html}
 %files plugin-html
 %attr(-,root,root) %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiHTML.*
+%endif
+
+%if %{enable_festvox}
+%files plugin-festvox
+%attr(-,root,root) %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiFestVox.*
+%endif
+
+%if %{enable_abigimp}
+%files plugin-abigimp
+%attr(-,root,root) %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiGimp.*
+%endif
+
+%if %{enable_shell}
+%files plugin-shell
+%attr(-,root,root) %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libScriptHappy.*
 %endif
 
 %if %{enable_gdkpixbuf} && ! %{enable_gnome}
@@ -752,6 +818,9 @@ cp $RPM_BUILD_DIR/%{name}-%{version}/abi/src/pkg/linux/rpm/data/abiword.desktop 
 
 
 %changelog
+* Thu Mar 17 2002 Francis James Franklin <fjf@alinameridon.com>
+- Added festvox, abigimp & shell importer plugin to list
+
 * Thu Mar 14 2002 Rui M. Silva Seabra <rms@1407.org>
 - Added ispell dictionaries to rpm spec
 - fix permissions and owners
