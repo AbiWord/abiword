@@ -232,7 +232,7 @@ GtkWidget * XAP_UnixDialog_WindowMore::_constructWindow(void)
 	// Create the new top level window.
 	windowMain = gtk_window_new (GTK_WINDOW_DIALOG);
 	gtk_object_set_data (GTK_OBJECT (windowMain), "windowMain", windowMain);
-	gtk_window_set_title (GTK_WINDOW (windowMain), pSS->getValue(XAP_STRING_ID_DLG_MoreWindows));
+	gtk_window_set_title (GTK_WINDOW (windowMain), pSS->getValue(XAP_STRING_ID_DLG_MW_MoreWindows));
 	// This policy allows the window to let the window manager shrink and grow it.
 	gtk_window_set_policy (GTK_WINDOW (windowMain), TRUE, TRUE, FALSE);
 
@@ -241,7 +241,7 @@ GtkWidget * XAP_UnixDialog_WindowMore::_constructWindow(void)
 	gtk_widget_show (vboxMain);
 	gtk_container_add (GTK_CONTAINER (windowMain), vboxMain);
 
-	labelActivate = gtk_label_new (pSS->getValue(XAP_STRING_ID_DLG_Activate));
+	labelActivate = gtk_label_new (pSS->getValue(XAP_STRING_ID_DLG_MW_Activate));
 	gtk_object_set_data (GTK_OBJECT (windowMain), "labelActivate", labelActivate);
 	gtk_widget_show (labelActivate);
 	gtk_box_pack_start (GTK_BOX (vboxMain), labelActivate, FALSE, TRUE, 0);

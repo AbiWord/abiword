@@ -33,3 +33,14 @@ dcl(MSG_ImportError,	"Error importing file %s.")
 
 // Status Bar Messages
 dcl(PageInfoField,		"Page: %ld/%d")
+
+/* Find and Replace strings */
+dcl(DLG_FR_FindTitle, 		"Find")
+dcl(DLG_FR_ReplaceTitle,	"Replace")
+dcl(DLG_FR_FindLabel, 		"Find:")
+dcl(DLG_FR_ReplaceWithLabel,	"Replace With:")
+dcl(DLG_FR_MatchCase,		"Match Case")
+dcl(DLG_FR_FindNextButton,	"Find Next")
+dcl(DLG_FR_ReplaceButton,	"Replace")
+dcl(DLG_FR_ReplaceAllButton,	"Replace All")
+dcl(DLG_FR_CancelButton,	"Cancel")

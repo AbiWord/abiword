@@ -333,7 +333,7 @@ GtkWidget * XAP_UnixDialog_FontChooser::create_windowFontSelection(void)
 	
 	windowFontSelection = gtk_window_new (GTK_WINDOW_DIALOG);
 	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "windowFontSelection", windowFontSelection);
-	gtk_window_set_title (GTK_WINDOW (windowFontSelection), pSS->getValue(XAP_STRING_ID_DLG_FontTitle));
+	gtk_window_set_title (GTK_WINDOW (windowFontSelection), pSS->getValue(XAP_STRING_ID_DLG_UFS_FontTitle));
 	gtk_window_set_policy (GTK_WINDOW (windowFontSelection), FALSE, FALSE, FALSE);
 
 	vboxMain = gtk_vbox_new (FALSE, 0);
@@ -355,13 +355,13 @@ GtkWidget * XAP_UnixDialog_FontChooser::create_windowFontSelection(void)
 	gtk_container_add (GTK_CONTAINER (notebookMain), fixedFont);
 	gtk_widget_set_usize (fixedFont, -1, 191);
 
-	labelFont = gtk_label_new (pSS->getValue(XAP_STRING_ID_DLG_FontLabel));
+	labelFont = gtk_label_new (pSS->getValue(XAP_STRING_ID_DLG_UFS_FontLabel));
 	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "labelFont", labelFont);
 	gtk_widget_show (labelFont);
 	gtk_fixed_put (GTK_FIXED (fixedFont), labelFont, 8, 8);
 	gtk_widget_set_usize (labelFont, 34, 16);
 
-	labelStyle = gtk_label_new (pSS->getValue(XAP_STRING_ID_DLG_StyleLabel));
+	labelStyle = gtk_label_new (pSS->getValue(XAP_STRING_ID_DLG_UFS_StyleLabel));
 	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "labelStyle", labelStyle);
 	gtk_widget_show (labelStyle);
 	gtk_fixed_put (GTK_FIXED (fixedFont), labelStyle, 216, 8);
@@ -382,7 +382,7 @@ GtkWidget * XAP_UnixDialog_FontChooser::create_windowFontSelection(void)
 	gtk_widget_show (listFonts);
 	gtk_container_add (GTK_CONTAINER (frameFonts), listFonts);
 
-	labelSize = gtk_label_new (pSS->getValue(XAP_STRING_ID_DLG_SizeLabel));
+	labelSize = gtk_label_new (pSS->getValue(XAP_STRING_ID_DLG_UFS_SizeLabel));
 	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "labelSize", labelSize);
 	gtk_widget_show (labelSize);
 	gtk_fixed_put (GTK_FIXED (fixedFont), labelSize, 356, 8);
@@ -390,7 +390,7 @@ GtkWidget * XAP_UnixDialog_FontChooser::create_windowFontSelection(void)
 
 	/*************************************/
 	
-	frameEffects = gtk_frame_new (pSS->getValue(XAP_STRING_ID_DLG_EffectsFrameLabel));
+	frameEffects = gtk_frame_new (pSS->getValue(XAP_STRING_ID_DLG_UFS_EffectsFrameLabel));
 	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "frameEffects", frameEffects);
 	gtk_widget_show (frameEffects);
 	gtk_fixed_put (GTK_FIXED (fixedFont), frameEffects, 216, 117);
@@ -401,13 +401,13 @@ GtkWidget * XAP_UnixDialog_FontChooser::create_windowFontSelection(void)
 	gtk_widget_show (hboxDecorations);
 	gtk_container_add (GTK_CONTAINER (frameEffects), hboxDecorations);
 
-	checkbuttonStrikeout = gtk_check_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_StrikeoutCheck));
+	checkbuttonStrikeout = gtk_check_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_UFS_StrikeoutCheck));
 	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "checkbuttonStrikeout", checkbuttonStrikeout);
 	gtk_container_border_width (GTK_CONTAINER (checkbuttonStrikeout), 5);
 	gtk_widget_show (checkbuttonStrikeout);
 	gtk_box_pack_start (GTK_BOX (hboxDecorations), checkbuttonStrikeout, TRUE, TRUE, 0);
 
-	checkbuttonUnderline = gtk_check_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_UnderlineCheck));
+	checkbuttonUnderline = gtk_check_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_UFS_UnderlineCheck));
 	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "checkbuttonUnderline", checkbuttonUnderline);
 	gtk_container_border_width (GTK_CONTAINER (checkbuttonUnderline), 5);
 	gtk_widget_show (checkbuttonUnderline);
@@ -415,7 +415,7 @@ GtkWidget * XAP_UnixDialog_FontChooser::create_windowFontSelection(void)
 
 	/*************************************/
 
-	labelEncoding = gtk_label_new (pSS->getValue(XAP_STRING_ID_DLG_EncodingLabel));
+	labelEncoding = gtk_label_new (pSS->getValue(XAP_STRING_ID_DLG_UFS_EncodingLabel));
 	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "labelEncoding", labelEncoding);
 	gtk_widget_show (labelEncoding);
 	gtk_fixed_put (GTK_FIXED (fixedFont), labelEncoding, 216, 170);
@@ -490,12 +490,12 @@ GtkWidget * XAP_UnixDialog_FontChooser::create_windowFontSelection(void)
 	gtk_widget_show (colorSelector);
 	gtk_box_pack_start (GTK_BOX (hbox1), colorSelector, TRUE, TRUE, 0);
 
-	labelTabFont = gtk_label_new (pSS->getValue(XAP_STRING_ID_DLG_FontTab));
+	labelTabFont = gtk_label_new (pSS->getValue(XAP_STRING_ID_DLG_UFS_FontTab));
 	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "labelTabFont", labelTabFont);
 	gtk_widget_show (labelTabFont);
 	set_notebook_tab (notebookMain, 0, labelTabFont);
 
-	labelTabColor = gtk_label_new (pSS->getValue(XAP_STRING_ID_DLG_ColorTab));
+	labelTabColor = gtk_label_new (pSS->getValue(XAP_STRING_ID_DLG_UFS_ColorTab));
 	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "labelTabColor", labelTabColor);
 	gtk_widget_show (labelTabColor);
 	set_notebook_tab (notebookMain, 1, labelTabColor);
@@ -607,10 +607,10 @@ GtkWidget * XAP_UnixDialog_FontChooser::create_windowFontSelection(void)
 
 	// update the styles list
 	gtk_clist_clear(GTK_CLIST(m_styleList));
-	text[0] = (gchar *) pSS->getValue(XAP_STRING_ID_DLG_StyleRegular); 		gtk_clist_append(GTK_CLIST(m_styleList), text);
-	text[0] = (gchar *) pSS->getValue(XAP_STRING_ID_DLG_StyleItalic); 		gtk_clist_append(GTK_CLIST(m_styleList), text);
-	text[0] = (gchar *) pSS->getValue(XAP_STRING_ID_DLG_StyleBold); 	   	gtk_clist_append(GTK_CLIST(m_styleList), text);
-	text[0] = (gchar *) pSS->getValue(XAP_STRING_ID_DLG_StyleBoldItalic);  	gtk_clist_append(GTK_CLIST(m_styleList), text);	
+	text[0] = (gchar *) pSS->getValue(XAP_STRING_ID_DLG_UFS_StyleRegular); 		gtk_clist_append(GTK_CLIST(m_styleList), text);
+	text[0] = (gchar *) pSS->getValue(XAP_STRING_ID_DLG_UFS_StyleItalic); 		gtk_clist_append(GTK_CLIST(m_styleList), text);
+	text[0] = (gchar *) pSS->getValue(XAP_STRING_ID_DLG_UFS_StyleBold); 	   	gtk_clist_append(GTK_CLIST(m_styleList), text);
+	text[0] = (gchar *) pSS->getValue(XAP_STRING_ID_DLG_UFS_StyleBoldItalic);  	gtk_clist_append(GTK_CLIST(m_styleList), text);	
 	
     gtk_clist_clear(GTK_CLIST(m_sizeList));
 	// TODO perhaps populate the list based on the selected font/style?

@@ -33,6 +33,7 @@
 #include "xap_UnixApp.h"
 #include "xap_UnixFrame.h"
 
+#include "ap_Strings.h"
 #include "ap_Dialog_Id.h"
 #include "ap_Dialog_Replace.h"
 #include "ap_UnixDialog_All.h"
@@ -71,8 +72,6 @@ static void FindCallback(GtkWidget * widget, AP_UnixDialog_Replace * repDialog)
 
 	findEntryText = (char *) gtk_entry_get_text(GTK_ENTRY(repDialog->findEntry));
 	
-	UT_DEBUGMSG(("Find entry contents: \"%s\"\n", ((findEntryText) ? findEntryText : "NULL")));
-
 	UT_UCSChar * findString;
 
 	UT_UCS_cloneString_char(&findString, findEntryText);
@@ -96,9 +95,6 @@ static void ReplaceCallback(GtkWidget * widget, AP_UnixDialog_Replace * repDialo
 	findEntryText = (char *) gtk_entry_get_text(GTK_ENTRY(repDialog->findEntry));
 	replaceEntryText = (char *) gtk_entry_get_text(GTK_ENTRY(repDialog->replaceEntry));
 	
-	UT_DEBUGMSG(("Find entry contents: \"%s\"\n", ((findEntryText) ? findEntryText : "NULL")));
-	UT_DEBUGMSG(("Replace entry contents: \"%s\"\n", ((replaceEntryText) ? replaceEntryText : "NULL")));
-
 	UT_UCSChar * findString;
 	UT_UCSChar * replaceString;
 
@@ -126,9 +122,6 @@ static void ReplaceAllCallback(GtkWidget *widget,
 	findEntryText = (char *) gtk_entry_get_text(GTK_ENTRY(repDialog->findEntry));
 	replaceEntryText = (char *) gtk_entry_get_text(GTK_ENTRY(repDialog->replaceEntry));
 	
-	UT_DEBUGMSG(("Find entry contents: \"%s\"\n", ((findEntryText) ? findEntryText : "NULL")));
-	UT_DEBUGMSG(("Replace entry contents: \"%s\"\n", ((replaceEntryText) ? replaceEntryText : "NULL")));
-
 	UT_UCSChar * findString;
 	UT_UCSChar * replaceString;
 
@@ -149,8 +142,6 @@ static void MatchCaseCallback(GtkWidget * checkbutton,
 {
 	UT_ASSERT(checkbutton);
 	UT_ASSERT(repDialog);
-
-	UT_DEBUGMSG(("Match case is %d.\n", GTK_TOGGLE_BUTTON(checkbutton)->active));
 
 	repDialog->setMatchCase(GTK_TOGGLE_BUTTON(checkbutton)->active);
 }
@@ -205,10 +196,12 @@ void AP_UnixDialog_Replace::runModal(XAP_Frame * pFrame)
 						  FALSE,
 						  TRUE);
 
+	const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
+	
 	if (m_id == AP_DIALOG_ID_FIND)
-		gtk_window_set_title(GTK_WINDOW(topLevel), "Find");
+		gtk_window_set_title(GTK_WINDOW(topLevel), pSS->getValue(AP_STRING_ID_DLG_FR_FindTitle));
 	else
-		gtk_window_set_title(GTK_WINDOW(topLevel), "Replace");
+		gtk_window_set_title(GTK_WINDOW(topLevel), pSS->getValue(AP_STRING_ID_DLG_FR_ReplaceTitle));
 	
 	// show this at the very end
 	
@@ -246,7 +239,7 @@ void AP_UnixDialog_Replace::runModal(XAP_Frame * pFrame)
 	}
 
 	// create the find label
-	findLabel = gtk_label_new("Find: ");
+	findLabel = gtk_label_new(pSS->getValue(AP_STRING_ID_DLG_FR_FindLabel));
 	gtk_label_set_justify(GTK_LABEL(findLabel), GTK_JUSTIFY_RIGHT);
 	gtk_widget_set_usize(findLabel, 150, 0);
 	gtk_box_pack_end(GTK_BOX(findBox), findLabel, TRUE, TRUE, 0);
@@ -258,7 +251,7 @@ void AP_UnixDialog_Replace::runModal(XAP_Frame * pFrame)
 	gtk_widget_show (toggleBox);
 
 	// optional toggle switch for case
-	matchCaseCheck = gtk_check_button_new_with_label("Match Case");
+	matchCaseCheck = gtk_check_button_new_with_label(pSS->getValue(AP_STRING_ID_DLG_FR_MatchCase));
 	gtk_box_pack_end(GTK_BOX(toggleBox), matchCaseCheck, FALSE, TRUE, 0);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(matchCaseCheck), getMatchCase());
 	gtk_widget_show(matchCaseCheck);
@@ -297,7 +290,7 @@ void AP_UnixDialog_Replace::runModal(XAP_Frame * pFrame)
 						   GTK_SIGNAL_FUNC(ReplaceCallback),
 						   this);
 	
-		replaceLabel = gtk_label_new("Replace With: ");
+		replaceLabel = gtk_label_new(pSS->getValue(AP_STRING_ID_DLG_FR_ReplaceWithLabel));
 		gtk_label_set_justify(GTK_LABEL(replaceLabel), GTK_JUSTIFY_RIGHT);
 		gtk_widget_set_usize(replaceLabel, 150, 0);
 		gtk_box_pack_end(GTK_BOX(replaceBox), replaceLabel, TRUE, TRUE, 0);
@@ -314,7 +307,7 @@ void AP_UnixDialog_Replace::runModal(XAP_Frame * pFrame)
 	gtk_box_pack_start(GTK_BOX(vbox), buttonBox, FALSE, TRUE, 5);
 	gtk_widget_show(buttonBox);
 
-	findButton = gtk_button_new_with_label("Find Next");
+	findButton = gtk_button_new_with_label(pSS->getValue(AP_STRING_ID_DLG_FR_FindNextButton));
 	gtk_widget_set_usize(findButton, DEFAULT_BUTTON_WIDTH, 0);
 	gtk_box_pack_start(GTK_BOX(buttonBox), findButton, FALSE, FALSE, 0);
 	gtk_widget_show(findButton);
@@ -326,7 +319,7 @@ void AP_UnixDialog_Replace::runModal(XAP_Frame * pFrame)
 		
 	if (m_id == AP_DIALOG_ID_REPLACE)
 	{
-		replaceButton = gtk_button_new_with_label("Replace");
+		replaceButton = gtk_button_new_with_label(pSS->getValue(AP_STRING_ID_DLG_FR_ReplaceButton));
 		gtk_widget_set_usize(replaceButton, DEFAULT_BUTTON_WIDTH, 0);
 		gtk_box_pack_start(GTK_BOX(buttonBox), replaceButton, FALSE, FALSE, 0);
 		gtk_widget_show(replaceButton);
@@ -336,7 +329,7 @@ void AP_UnixDialog_Replace::runModal(XAP_Frame * pFrame)
 						   GTK_SIGNAL_FUNC(ReplaceCallback),
 						   this);
 
-		replaceAllButton = gtk_button_new_with_label("Replace All");
+		replaceAllButton = gtk_button_new_with_label(pSS->getValue(AP_STRING_ID_DLG_FR_ReplaceAllButton));
 		gtk_widget_set_usize(replaceAllButton, DEFAULT_BUTTON_WIDTH, 0);
 		gtk_box_pack_start(GTK_BOX(buttonBox), replaceAllButton, FALSE, FALSE, 0);
 		gtk_widget_show(replaceAllButton);
@@ -347,7 +340,7 @@ void AP_UnixDialog_Replace::runModal(XAP_Frame * pFrame)
 						   this);
 	}
 	
-	cancelButton = gtk_button_new_with_label("Cancel");
+	cancelButton = gtk_button_new_with_label(pSS->getValue(AP_STRING_ID_DLG_FR_CancelButton));
 	gtk_widget_set_usize(cancelButton, DEFAULT_BUTTON_WIDTH, 0);
 	gtk_box_pack_start(GTK_BOX(buttonBox), cancelButton, FALSE, FALSE, 0);
 	gtk_widget_show(cancelButton);

@@ -24,28 +24,37 @@
 ******************************************************************
 *****************************************************************/
 
+/* Commmon to many dialogs */
 dcl(DLG_OK,					"OK")
 dcl(DLG_Cancel,				"Cancel")
 
+/* Message box */
+/* These are tagged "UnixMB" because the underscores precede accelerator
+   characters.  It should be an ampersand on Windows, but Windows doesn't
+   need a hand-constructed message box (Win32 API provides one).
+*/
+dcl(DLG_UnixMB_Yes,				"_Yes")
+dcl(DLG_UnixMB_No,				"_No")
+	
 /* More Windows dialog */
-dcl(DLG_MoreWindows,		"More Windows")
-dcl(DLG_Activate,			"Activate")
+dcl(DLG_MW_MoreWindows,		"More Windows")
+dcl(DLG_MW_Activate,		"Activate:")
 
 /* Unix Font Selector dialog */
-dcl(DLG_FontTitle,			"Font")
-dcl(DLG_FontLabel,			"Font:")
-dcl(DLG_StyleLabel,			"Style:")
-dcl(DLG_SizeLabel,			"Size:")
-dcl(DLG_EncodingLabel,		"Encoding:")
-dcl(DLG_EffectsFrameLabel,	"Effects")
-dcl(DLG_StrikeoutCheck,		"Strikeout")
-dcl(DLG_UnderlineCheck,		"Underline")
-dcl(DLG_FontTab,			"   Font   ")
-dcl(DLG_ColorTab,			"   Color   ")
-dcl(DLG_StyleRegular,		"Regular")
-dcl(DLG_StyleItalic,		"Italic")
-dcl(DLG_StyleBold,			"Bold")
-dcl(DLG_StyleBoldItalic,	"Bold Italic")
+dcl(DLG_UFS_FontTitle,			"Font")
+dcl(DLG_UFS_FontLabel,			"Font:")
+dcl(DLG_UFS_StyleLabel,			"Style:")
+dcl(DLG_UFS_SizeLabel,			"Size:")
+dcl(DLG_UFS_EncodingLabel,		"Encoding:")
+dcl(DLG_UFS_EffectsFrameLabel,	"Effects")
+dcl(DLG_UFS_StrikeoutCheck,		"Strikeout")
+dcl(DLG_UFS_UnderlineCheck,		"Underline")
+dcl(DLG_UFS_FontTab,			"   Font   ")
+dcl(DLG_UFS_ColorTab,			"   Color   ")
+dcl(DLG_UFS_StyleRegular,		"Regular")
+dcl(DLG_UFS_StyleItalic,		"Italic")
+dcl(DLG_UFS_StyleBold,			"Bold")
+dcl(DLG_UFS_StyleBoldItalic,	"Bold Italic")
 
 /* Unix FileOpenSaveAs Dialog */
 dcl(DLG_FOSA_OpenTitle,					"Open File")
