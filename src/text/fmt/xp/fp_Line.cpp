@@ -216,7 +216,7 @@ void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_
 			}
 			else if (x >= pRun2->getX() + pRun2->getWidth())
 			{
-				iClosestDistance = (pRun2->getX() + pRun2->getWidth()) - x;
+				iClosestDistance = x - (pRun2->getX() + pRun2->getWidth());
 			}
 		}
 		else
@@ -229,11 +229,11 @@ void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_
 					pClosestRun = pRun2;
 				}
 			}
-			else if (x >= pRun2->getX() + pRun2->getWidth())
+			else if (x >= (pRun2->getX() + pRun2->getWidth()))
 			{
-				if (((pRun2->getX() + pRun2->getWidth()) - x) < iClosestDistance)
+				if (x - ((pRun2->getX() + pRun2->getWidth())) < iClosestDistance)
 				{
-					iClosestDistance = (pRun2->getX() + pRun2->getWidth()) - x;
+					iClosestDistance = x - (pRun2->getX() + pRun2->getWidth());
 					pClosestRun = pRun2;
 				}
 			}
