@@ -288,7 +288,8 @@ protected:
 
 	// search routines (these return values will fall short of an
 	// extremely large document - fix them)
-	UT_sint32 			_findBlockSearchDumb(const UT_UCSChar * haystack, const UT_UCSChar * needle);
+	UT_sint32 			_findBlockSearchDumbCase(const UT_UCSChar * haystack, const UT_UCSChar * needle);
+	UT_sint32 			_findBlockSearchDumbNoCase(const UT_UCSChar * haystack, const UT_UCSChar * needle);	
 	UT_sint32			_findBlockSearchRegexp(const UT_UCSChar * haystack, const UT_UCSChar * needle);
 };
 

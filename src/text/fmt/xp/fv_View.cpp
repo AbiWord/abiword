@@ -2158,12 +2158,12 @@ UT_Bool FV_View::_findNext(const UT_UCSChar * find, UT_Bool matchCase, UT_Bool *
 		if (matchCase == UT_TRUE)
 		{
 			// this search will do case-sensitive work
-			foundAt = _findBlockSearchDumb(buffer, find);
+			foundAt = _findBlockSearchDumbCase(buffer, find);
 		}
 		else if (matchCase == UT_FALSE)
 		{
-			// TODO call the right function
-			UT_ASSERT(UT_NOT_IMPLEMENTED);
+			// do the case-insensitive search
+			foundAt = _findBlockSearchDumbNoCase(buffer, find);
 		}
 
 
@@ -2501,7 +2501,7 @@ PT_DocPosition FV_View::_findGetCurrentOffset(void)
 /*
   A simple strstr search of the buffer.
 */
-UT_sint32 FV_View::_findBlockSearchDumb(const UT_UCSChar * haystack, const UT_UCSChar * needle)
+UT_sint32 FV_View::_findBlockSearchDumbCase(const UT_UCSChar * haystack, const UT_UCSChar * needle)
 {
 	UT_ASSERT(haystack);
 	UT_ASSERT(needle);
@@ -2512,12 +2512,29 @@ UT_sint32 FV_View::_findBlockSearchDumb(const UT_UCSChar * haystack, const UT_UC
 }
 
 /*
+  Pierre Sarrazin <ps@cam.org> supplied the Unicode stricmp comparison function,
+  which works for Latin-1 at the moment.
+*/
+
+UT_sint32 FV_View::_findBlockSearchDumbNoCase(const UT_UCSChar * haystack, const UT_UCSChar * needle)
+{
+	UT_ASSERT(haystack);
+	UT_ASSERT(needle);
+		
+	UT_UCSChar * at = UT_UCS_stristr(haystack, needle);
+
+	return (at) ? (at - haystack) : -1;
+}
+
+
+/*
   Any takers?
 */
+
 UT_sint32 FV_View::_findBlockSearchRegexp(const UT_UCSChar * haystack, const UT_UCSChar * needle)
 {
 	UT_ASSERT(UT_NOT_IMPLEMENTED);
-
+	
 	return -1;
 }
 

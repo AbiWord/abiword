@@ -235,6 +235,118 @@ UT_sint32 UT_UCS_strcmp(const UT_UCSChar* left, const UT_UCSChar* right)
 	}
 }
 
+/*
+  Latin-1 Unicode case-insensitive string comparison and casing done by
+  Pierre Sarrazin <ps@cam.org>.
+*/
+
+/*	Converts the given character to lowercase if it is an uppercase letter.
+	Returns it unchanged if it is not.
+	This function created by Pierre Sarrazin 1999-02-06
+*/
+  
+UT_UCSChar UT_UCS_tolower(UT_UCSChar c)
+{
+	if (c < 128)
+		return tolower(c);
+	if (c >= 256)
+		return c;  /* Unicode but not Latin-1 - don't know what to do */
+	if (c >= 0xC0 && c <= 0xDE && c != 0xD7)  /* uppercase Latin-1 chars */
+		return c + 0x20;
+	return c;
+}
+
+
+/*	Characters are converted to lowercase (if applicable) when they
+	are read from the needle or the haystack. See UT_UCS_tolower().
+	This function created by Pierre Sarrazin 1999-02-06
+*/
+
+UT_UCSChar * UT_UCS_stristr(const UT_UCSChar * phaystack, const UT_UCSChar * pneedle)
+{
+	register const UT_UCSChar *haystack, *needle;
+	register chartype b, c;
+
+	haystack = (const UT_UCSChar *) phaystack;
+	needle = (const UT_UCSChar *) pneedle;
+
+	b = UT_UCS_tolower(*needle);
+	if (b != '\0')
+    {
+		haystack--;                               /* possible ANSI violation */
+		do
+        {
+			c = UT_UCS_tolower(*++haystack);
+			if (c == '\0')
+				goto ret0;
+        }
+		while (c != b);
+
+		c = UT_UCS_tolower(*++needle);
+		if (c == '\0')
+			goto foundneedle;
+		++needle;
+		goto jin;
+
+		for (;;)
+        {
+			register chartype a;
+			register const UT_UCSChar *rhaystack, *rneedle;
+
+			do
+            {
+				a = UT_UCS_tolower(*++haystack);
+				if (a == '\0')
+					goto ret0;
+				if (a == b)
+					break;
+				a = UT_UCS_tolower(*++haystack);
+				if (a == '\0')
+					goto ret0;
+			shloop: ; // need a statement here for EGCS 1.1.1 to accept it
+			}
+			while (a != b);
+
+		jin:	a = UT_UCS_tolower(*++haystack);
+			if (a == '\0')
+				goto ret0;
+
+			if (a != c)
+				goto shloop;
+
+			rhaystack = haystack-- + 1;
+			rneedle = needle;
+			a = UT_UCS_tolower(*rneedle);
+
+			if (UT_UCS_tolower(*rhaystack) == a)
+				do
+				{
+					if (a == '\0')
+						goto foundneedle;
+					++rhaystack;
+					a = UT_UCS_tolower(*++needle);
+					if (UT_UCS_tolower(*rhaystack) != a)
+						break;
+					if (a == '\0')
+						goto foundneedle;
+					++rhaystack;
+					a = UT_UCS_tolower(*++needle);
+				}
+				while (UT_UCS_tolower(*rhaystack) == a);
+
+			needle = rneedle;             /* took the register-poor approach */
+
+			if (a == '\0')
+				break;
+        }
+    }
+ foundneedle:
+	return (UT_UCSChar *) haystack;
+ ret0:
+	return 0;
+}
+/****************************************************************************/
+
 UT_uint32 UT_UCS_strlen(const UT_UCSChar * string)
 {
 	UT_uint32 i;
