@@ -61,7 +61,8 @@ VOID CALLBACK Global_Win32TimerProc(HWND hwnd,
 	UT_Timer* pMyTimer = UT_Win32Timer::findWin32Timer(hwnd, idEvent);
 	UT_ASSERT(pMyTimer);
 
-	pMyTimer->fire();
+	if (pMyTimer && static_cast<UT_Win32Timer *>(pMyTimer)->isActive())
+		pMyTimer->fire();
 }
 
 UT_Win32Timer::~UT_Win32Timer()
