@@ -46,7 +46,8 @@ public:
 	virtual UT_Bool					shutdown(void);
 	virtual XAP_Prefs *				getPrefs(void) const;
 	virtual UT_Bool					getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const;
-	virtual UT_Bool					getPrefsValueDirectory(const XML_Char * szKey, const XML_Char ** pszValue) const;
+	virtual UT_Bool					getPrefsValueDirectory(UT_Bool bAppSpecific,
+														   const XML_Char * szKey, const XML_Char ** pszValue) const;
 	virtual const XAP_StringSet *	getStringSet(void) const;
 	virtual const char *			getAbiSuiteAppDir(void) const;
 	virtual void					copyToClipboard(PD_DocumentRange * pDocRange);
