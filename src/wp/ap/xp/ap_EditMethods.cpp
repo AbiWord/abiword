@@ -265,6 +265,8 @@ public:
 	static EV_EditMethod_Fn insertNBSpace;
 	static EV_EditMethod_Fn insertNBZWSpace;
 	static EV_EditMethod_Fn insertZWJoiner;
+	static EV_EditMethod_Fn insertLRM;
+	static EV_EditMethod_Fn insertRLM;
 
 	static EV_EditMethod_Fn insertGraveData; // for certain european keys
 	static EV_EditMethod_Fn insertAcuteData;
@@ -399,6 +401,8 @@ public:
 	static EV_EditMethod_Fn language;
 	static EV_EditMethod_Fn fontFamily;
 	static EV_EditMethod_Fn fontSize;
+	static EV_EditMethod_Fn fontSizeIncrease;
+	static EV_EditMethod_Fn fontSizeDecrease;
 	static EV_EditMethod_Fn toggleBold;
 	static EV_EditMethod_Fn toggleHidden;
 	static EV_EditMethod_Fn toggleItalic;
@@ -771,6 +775,8 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(findAgain),			0,	""),
 	EV_EditMethod(NF(fontFamily),			_D_,	""),
 	EV_EditMethod(NF(fontSize), 			_D_,	""),
+	EV_EditMethod(NF(fontSizeDecrease),		0,	""),
+	EV_EditMethod(NF(fontSizeIncrease),		0,	""),
 	EV_EditMethod(NF(formatFootnotes),        0,  ""),
 	EV_EditMethod(NF(formatPainter),		0,	""),
 	EV_EditMethod(NF(formatTable),			0,		""),
@@ -851,6 +857,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(insertDoubleacuteData),_D_,	""),
 	EV_EditMethod(NF(insertGraveData),		_D_,	""),
 	EV_EditMethod(NF(insertHyperlink),		0,	""),
+	EV_EditMethod(NF(insertLRM),		0,	""),
 	EV_EditMethod(NF(insertLineBreak),		0,	""),
 	EV_EditMethod(NF(insertMacronData), 	_D_,	""),
 	EV_EditMethod(NF(insertNBSpace),		0,	""),
@@ -858,6 +865,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(insertOgonekData), 	_D_,	""),
 	EV_EditMethod(NF(insertPageBreak),		0,	""),
 	EV_EditMethod(NF(insertParagraphBreak), 0,	""),
+	EV_EditMethod(NF(insertRLM),		0,	""),
 	EV_EditMethod(NF(insertRowsAfter),	0,	""),
 	EV_EditMethod(NF(insertRowsBefore),	0,	""),
 	EV_EditMethod(NF(insertSectionBreak),	0,	""),
@@ -4133,6 +4141,24 @@ Defun(insertData)
 	return true;
 }
 
+Defun1(insertLRM)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_UCS4Char cM = UCS_LRM;
+	pView->cmdCharInsert(&cM, 1);
+	return true;
+}
+
+Defun1(insertRLM)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_UCS4Char cM = UCS_RLM;
+	pView->cmdCharInsert(&cM, 1);
+	return true;
+}
+
 /*****************************************************************/
 // TODO the bInsert parameter is currently not used; it would require
 // changes to the dialogues so that if bInsert == false the dialogue
@@ -5948,6 +5974,80 @@ Defun(fontSize)
 		pView->setCharFormat(properties);
 	}
 	return true;
+}
+
+static bool _fontSizeChange(FV_View * pView, bool bIncrease)
+{
+	const XML_Char ** span_props = NULL;
+	const XML_Char * properties[] = { "font-size", NULL, 0};
+	
+	pView->getCharFormat(&span_props);
+	UT_return_val_if_fail(span_props, false);
+	
+	const XML_Char * s = UT_getAttribute("font-size", span_props);
+
+	if(!s)
+		return false;
+
+	double dPoints = UT_convertToPoints(s);
+
+#define PT_INC_SMALL  1.0
+#define PT_INC_MEDIUM 2.0
+#define PT_INC_LARGE  4.0
+	
+	if(bIncrease)
+	{
+		if(dPoints >= 26.0)
+			dPoints += PT_INC_LARGE;
+		else if(dPoints >= 8.0)
+			dPoints += PT_INC_MEDIUM;
+		else
+			dPoints += PT_INC_SMALL;
+	}
+	else
+	{
+		if(dPoints > 26.0)
+			dPoints -= PT_INC_LARGE;
+		else if(dPoints > 8.0)
+			dPoints -= PT_INC_MEDIUM;
+		else
+			dPoints -= PT_INC_SMALL;
+		
+	}
+
+#undef PT_INC_SMALL
+#undef PT_INC_MEDIUM
+#undef PT_INC_LARGE
+
+	// make sure that we do not decrease fonts too far ...
+	if(dPoints < 2.0)
+		return false;
+	
+	const XML_Char * sz = UT_formatDimensionString(DIM_PT, dPoints);
+
+	if(!sz || !*sz)
+		return false;
+
+	properties[1] = sz;
+	pView->setCharFormat(properties);
+
+	return true;
+}
+
+Defun1(fontSizeIncrease)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	
+	return _fontSizeChange(pView, true);
+}
+
+Defun1(fontSizeDecrease)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	
+	return _fontSizeChange(pView, false);
 }
 
 Defun(formatPainter)
