@@ -2424,15 +2424,11 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField)
  */
 bool IE_Imp_RTF::HandleHeaderFooter(RTFHdrFtr::HdrFtrType hftype, UT_uint32 & headerID)
 {
-	UT_DEBUGMSG(("Handling \\header of \\footer keyword\n"));
-
-
 	RTFHdrFtr * header;
 
 	header = new RTFHdrFtr ();
 	header->m_type = hftype;
 	header->m_id = UT_rand();    // TODO: make sure it is unique
-	UT_DEBUGMSG(("Header id=%u\n", header->m_id));
 
 	m_hdrFtrTable.addItem (header);
 	headerID = header->m_id;
@@ -2440,9 +2436,11 @@ bool IE_Imp_RTF::HandleHeaderFooter(RTFHdrFtr::HdrFtrType hftype, UT_uint32 & he
 	switch (hftype) 
 	{
 	case RTFHdrFtr::hftHeader:
+		UT_DEBUGMSG(("RTF: \\header stuffed into %d\n",headerID));
 		m_currentHdrID = headerID;
 		break;
 	case RTFHdrFtr::hftFooter:
+		UT_DEBUGMSG(("RTF: \\footer stuffed into %d\n",headerID));
 		m_currentFtrID = headerID;
 		break;
 	default:
@@ -2670,9 +2668,9 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		}	
 		else if (strcmp((char*)pKeyword, "lang") == 0)
 		{
-			UT_DEBUGMSG(("DOM: lang code (0x%x, %s)\n", param, wvLIDToLangConverter(param)));
+			UT_DEBUGMSG(("DOM: lang code (0x%x, %s)\n", param, wvLIDToLangConverter((unsigned short)param)));
 			// mark language for spell checking
-			m_currentRTFState.m_charProps.m_szLang = wvLIDToLangConverter(param);
+			m_currentRTFState.m_charProps.m_szLang = wvLIDToLangConverter((unsigned short)param);
 			return true;
 		}
 		else if (strcmp((char*)pKeyword, "listtext") == 0)
@@ -3901,6 +3899,7 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 	XML_Char szFtrID[128];
 	short paramIndex = 0;
 
+	UT_DEBUGMSG (("Applying SectionAttributes\n"));
 	propBuffer[0] = 0;
 
 	// columns
