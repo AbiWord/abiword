@@ -428,9 +428,6 @@ class ABI_EXPORT GR_Graphics
 	void              setDoMerge( bool bMergeState);
 	bool              doMerge(void) const;
 
-	virtual bool	  storeCachedImage(UT_Rect * pRect) { return false; }
-	virtual bool	  restoreCachedImage() { return false; }
-
 	const GR_Transform & getTransform() const {return m_Transform;}
 
 	/* returns true on success, false on failure */
@@ -449,8 +446,8 @@ class ABI_EXPORT GR_Graphics
 			m_pCaret = new GR_Caret(this);
 		}
 	GR_Caret *        getCaret() { return m_pCaret; }
-	virtual void	  saveRectangle(UT_Rect & r);
-	virtual void	  restoreRectangle();
+	virtual void	  saveRectangle(UT_Rect & r) = 0;
+	virtual void	  restoreRectangle() = 0;
 
  protected:
 	virtual UT_uint32 _getResolution(void) const = 0;

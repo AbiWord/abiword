@@ -1162,13 +1162,3 @@ void GR_Graphics::drawCharsDirectly(const UT_UCS4Char* pChars,
 
 #endif
 
-void GR_Graphics::saveRectangle(UT_Rect & r)
-{
-//	UT_ASSERT(0);
-}
-
-void GR_Graphics::restoreRectangle()
-{
-//	UT_ASSERT(0);
-}
-
