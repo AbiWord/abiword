@@ -1056,15 +1056,6 @@ Defun1(fileSaveAs)
 		free(pNewFile);
 		return UT_FALSE;
 	}
-	free(pNewFile);
-
-	if (pFrame->getViewNumber() > 0)
-	{
-		XAP_App * pApp = pFrame->getApp();
-		UT_ASSERT(pApp);
-
-		pApp->updateClones(pFrame);
-	}
 
 	// update the MRU list
 	XAP_App * pApp = pFrame->getApp();
@@ -1072,6 +1063,13 @@ Defun1(fileSaveAs)
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_ASSERT(pPrefs);
 	pPrefs->addRecent(pNewFile);
+	free(pNewFile);
+
+	if (pFrame->getViewNumber() > 0)
+	{
+		// renumber clones
+		pApp->updateClones(pFrame);
+	}
 
 	return UT_TRUE;
 }
