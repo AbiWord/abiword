@@ -65,11 +65,51 @@ public:									// we create...
 	
 		_wd * wd = (_wd *) user_data;
 		UT_ASSERT(wd);
-
+		GdkEvent * event = gtk_get_current_event();
+		wd->m_pUnixToolbar->setCurrentEvent(event);
+		UT_DEBUGMSG(("SEVIOR: in s_callback \n"));
 		if (!wd->m_blockSignal)
 			wd->m_pUnixToolbar->toolbarEvent(wd, 0, 0);
 	};
 
+	static void s_DragStartCallback(GtkWidget * /* widget */, gpointer user_data)
+	{
+		// this is a static callback method and does not have a 'this' pointer.
+		// map the user_data into an objectS and dispatch the event.
+	
+		_wd * wd = (_wd *) user_data;
+		UT_ASSERT(wd);
+		UT_DEBUGMSG(("SEVIOR: in s_DragStartCallback this %x Toolbar pointer %x id =%d \n",wd,wd->m_pUnixToolbar,wd->m_id));
+		GdkEvent * event = gtk_get_current_event();
+		gdk_window_get_pointer(event->motion.window,NULL,NULL,NULL);
+//		wd->m_pUnixToolbar->setCurrentEvent(event);
+	};
+
+
+	static void s_EnterCallback(GtkWidget * /* widget */, gpointer user_data)
+	{
+		// this is a static callback method and does not have a 'this' pointer.
+		// map the user_data into an objectS and dispatch the event.
+	
+		_wd * wd = (_wd *) user_data;
+		UT_ASSERT(wd);
+		UT_DEBUGMSG(("SEVIOR: in s_EnterCallback this %x Toolbar pointer %x id =%d \n",wd,wd->m_pUnixToolbar,wd->m_id));
+//		GdkEvent * event = gtk_get_current_event();
+//		wd->m_pUnixToolbar->setCurrentEvent(event);
+	};
+
+
+	static void s_LeaveCallback(GtkWidget * /* widget */, gpointer user_data)
+	{
+		// this is a static callback method and does not have a 'this' pointer.
+		// map the user_data into an objectS and dispatch the event.
+	
+		_wd * wd = (_wd *) user_data;
+		UT_ASSERT(wd);
+		UT_DEBUGMSG(("SEVIOR: in s_LeaveCallback this %x Toolbar pointer %x id =%d \n",wd,wd->m_pUnixToolbar,wd->m_id));
+//		GdkEvent * event = gtk_get_current_event();
+//		wd->m_pUnixToolbar->setCurrentEvent(event);
+	};
 
 	static void s_ColorCallback(GtkWidget * /* widget */, gpointer user_data)
 	{
@@ -193,7 +233,20 @@ bool EV_UnixToolbar::toolbarEvent(_wd * wd,
 	// return true iff handled.
 
 	XAP_Toolbar_Id id = wd->m_id;
+	UT_DEBUGMSG(("SEVIOR: button pressed m_eEvent = %x\n",m_eEvent));
 	
+	if(m_eEvent != NULL)
+	{
+		GdkEventButton * bevent = (GdkEventButton *) m_eEvent;
+		if(bevent->button == 3)
+		{
+			UT_DEBUGMSG(("SEVIOR: Right button pressed \n"));
+		}
+		if(bevent->button == 1)
+		{
+			UT_DEBUGMSG(("SEVIOR: Left button pressed \n"));
+		}
+	}
 	const EV_Toolbar_ActionSet * pToolbarActionSet = m_pUnixApp->getToolbarActionSet();
 	UT_ASSERT(pToolbarActionSet);
 
@@ -327,6 +380,15 @@ bool EV_UnixToolbar::synthesize(void)
 													   wPixmap,
 													   GTK_SIGNAL_FUNC(_wd::s_callback),
 													   wd);
+	//  			gtk_widget_add_events(wd->m_widget,GDK_ENTER_NOTIFY_MASK);
+//  				gtk_widget_add_events(wd->m_widget,GDK_LEAVE_NOTIFY_MASK);
+//  				gtk_widget_add_events(wd->m_widget,GDK_BUTTON3_MOTION_MASK);
+//  				gtk_widget_add_events(wd->m_widget,GDK_BUTTON_RELEASE_MASK);
+//  				gtk_widget_add_events(wd->m_widget,GDK_POINTER_MOTION_HINT_MASK);
+				gtk_signal_connect(GTK_OBJECT(wd->m_widget),"motion_notify_event",GTK_SIGNAL_FUNC(_wd::s_DragStartCallback), wd);
+					gtk_signal_connect(GTK_OBJECT(wd->m_widget),"enter_notify_event",GTK_SIGNAL_FUNC(_wd::s_EnterCallback), wd);
+					gtk_signal_connect(GTK_OBJECT(wd->m_widget),"leave_notify_event",GTK_SIGNAL_FUNC(_wd::s_LeaveCallback), wd);
+				UT_DEBUGMSG(("SEVIOR: Pushbutton: For wd %x toolbar pointer %x \n",wd,wd->m_pUnixToolbar));
 			}
 			break;
 
@@ -350,6 +412,18 @@ bool EV_UnixToolbar::synthesize(void)
 															  wPixmap,
 															  GTK_SIGNAL_FUNC(_wd::s_callback),
 															  wd);
+// Add in a right drag method
+//
+//  					gtk_widget_add_events(wd->m_widget,GDK_ENTER_NOTIFY_MASK);
+//  					gtk_widget_add_events(wd->m_widget,GDK_LEAVE_NOTIFY_MASK);
+//  					gtk_widget_add_events(wd->m_widget,GDK_BUTTON3_MOTION_MASK);
+//  					gtk_widget_add_events(wd->m_widget,GDK_BUTTON_RELEASE_MASK);
+//  					gtk_widget_add_events(wd->m_widget,GDK_POINTER_MOTION_HINT_MASK);
+					gtk_signal_connect(GTK_OBJECT(wd->m_widget),"motion_notify_event",GTK_SIGNAL_FUNC(_wd::s_DragStartCallback), wd);
+					UT_DEBUGMSG(("SEVIOR: Goupbutton: For wd %x toolbar pointer %x \n",wd,wd->m_pUnixToolbar));
+					gtk_signal_connect(GTK_OBJECT(wd->m_widget),"enter_notify_event",GTK_SIGNAL_FUNC(_wd::s_EnterCallback), wd);
+					gtk_signal_connect(GTK_OBJECT(wd->m_widget),"leave_notify_event",GTK_SIGNAL_FUNC(_wd::s_LeaveCallback), wd);
+
 				}
 				break;
 
@@ -452,6 +526,17 @@ bool EV_UnixToolbar::synthesize(void)
 										  szToolTip,
 										  (const char *) NULL);
 				wd->m_widget = comboBox;
+// Add in a right drag method
+//
+	//  			gtk_widget_add_events(wd->m_widget,GDK_ENTER_NOTIFY_MASK);
+//  				gtk_widget_add_events(wd->m_widget,GDK_LEAVE_NOTIFY_MASK);
+//  				gtk_widget_add_events(wd->m_widget,GDK_BUTTON3_MOTION_MASK);
+//  				gtk_widget_add_events(wd->m_widget,GDK_BUTTON_RELEASE_MASK);
+//  				gtk_widget_add_events(wd->m_widget,GDK_POINTER_MOTION_HINT_MASK);
+				gtk_signal_connect(GTK_OBJECT(wd->m_widget),"motion_notify_event",GTK_SIGNAL_FUNC(_wd::s_DragStartCallback), wd);
+				gtk_signal_connect(GTK_OBJECT(wd->m_widget),"enter_notify_event",GTK_SIGNAL_FUNC(_wd::s_EnterCallback), wd);
+				gtk_signal_connect(GTK_OBJECT(wd->m_widget),"leave_notify_event",GTK_SIGNAL_FUNC(_wd::s_LeaveCallback), wd);
+				UT_DEBUGMSG(("SEVIOR: Combo box For wd %x toolbar pointer %x \n",wd,wd->m_pUnixToolbar));
 
 				// for now, we never repopulate, so can just toss it
 				DELETEP(pControl);
@@ -476,6 +561,18 @@ bool EV_UnixToolbar::synthesize(void)
 													   wPixmap,
 													   GTK_SIGNAL_FUNC(_wd::s_ColorCallback),
 													   wd);
+//
+// Add in a right drag method
+//
+//  				gtk_widget_add_events(wd->m_widget,GDK_ENTER_NOTIFY_MASK);
+//  				gtk_widget_add_events(wd->m_widget,GDK_LEAVE_NOTIFY_MASK);
+//  				gtk_widget_add_events(wd->m_widget,GDK_BUTTON3_MOTION_MASK);
+//  				gtk_widget_add_events(wd->m_widget,GDK_BUTTON_RELEASE_MASK);
+//  				gtk_widget_add_events(wd->m_widget,GDK_POINTER_MOTION_HINT_MASK);
+				gtk_signal_connect(GTK_OBJECT(wd->m_widget),"motion_notify_event",GTK_SIGNAL_FUNC(_wd::s_DragStartCallback), wd);
+				gtk_signal_connect(GTK_OBJECT(wd->m_widget),"enter_notify_event",GTK_SIGNAL_FUNC(_wd::s_EnterCallback), wd);
+				gtk_signal_connect(GTK_OBJECT(wd->m_widget),"leave_notify_event",GTK_SIGNAL_FUNC(_wd::s_LeaveCallback), wd);
+				UT_DEBUGMSG(("SEVIOR: For wd %x toolbar pointer %x \n",wd,wd->m_pUnixToolbar));
 			}
 			break;
 				
@@ -492,8 +589,7 @@ bool EV_UnixToolbar::synthesize(void)
 //				UT_ASSERT(0);
 				break;
 			}
-
-			// add item after bindings to catch widget returned to us
+		// add item after bindings to catch widget returned to us
 			m_vecToolbarWidgets.addItem(wd);
 		}
 		break;
@@ -518,6 +614,7 @@ bool EV_UnixToolbar::synthesize(void)
 
 	// show the complete thing
 	gtk_widget_show(m_wToolbar);
+//	gtk_widget_add_events(m_wToolbar,GDK_ALL_EVENTS_MASK);
 
 	// an arbitrary padding to make our document not run into our buttons
 	gtk_container_set_border_width(GTK_CONTAINER(m_wToolbar), 2);

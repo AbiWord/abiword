@@ -52,6 +52,7 @@ public:
 	UT_uint32    GetMenuLabelSetLanguageCount(void);
 	const char * GetNthMenuLabelLanguageName(UT_uint32 ndx);
 	EV_Menu_LabelSet *  CreateMenuLabelSet(const char * szLanguage_);
+	bool         buildMenuLabelSet(const char * szLanguage_);
 	bool         addNewLabel(const char * szMenu, 
 								  XAP_Menu_Id newID, 
 								  const char * szNewLabel, 

@@ -348,6 +348,38 @@ void XAP_Menu_Factory::resetMenusToDefault(void)
 	}
 }
 
+/*!
+ * Build a label set in memory that can be cloned by frames and added to by plugins.
+ */
+bool  XAP_Menu_Factory::buildMenuLabelSet(const char * szLanguage_)
+{
+	char buf[300];
+	strcpy(buf,szLanguage_ ? szLanguage_ : "");
+	char* szLanguage = buf;
+
+	char* dot = strrchr(szLanguage,'.');
+	if (dot)
+		*dot = '\0'; /* remove encoding part from locale name */
+
+	UT_DEBUGMSG(("CreateMenuLabelSet: szLanguage_ %s, szLanguage %s\n"
+				,szLanguage_,szLanguage));
+
+
+	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
+	if( !m_pLabelSet )
+	{
+		m_pLabelSet = new EV_Menu_LabelSet(szLanguage,AP_MENU_ID__BOGUS1__,AP_MENU_ID__BOGUS2__);	
+		#define menuitem(id) \
+			m_pLabelSet->setLabel( (AP_MENU_ID_##id),	\
+								    pSS->getValue(AP_STRING_ID_MENU_LABEL_##id), \
+								    pSS->getValue(AP_STRING_ID_MENU_STATUSLINE_##id) );
+			#include "ap_Menu_Id_List.h"
+		#undef menuitem
+		return true;
+	}
+	return false;
+}
+
 EV_Menu_LabelSet *  XAP_Menu_Factory::CreateMenuLabelSet(const char * szLanguage_)
 {
 	char buf[300];

@@ -47,6 +47,7 @@
 #include "xap_Dlg_MessageBox.h"
 #include "xap_Dialog_Id.h"
 #include "xap_Menu_ActionSet.h"
+#include "xap_Menu_Layouts.h"
 #include "xap_Toolbar_ActionSet.h"
 #include "xav_View.h"
 
@@ -264,9 +265,24 @@ bool AP_UnixApp::initialize(void)
 		UT_DEBUGMSG(("Setting field desc for field %s, desc=%s\n", fp_FieldFmts[i].m_Tag, fp_FieldFmts[i].m_Desc));
     }
 
-    //////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////
+    /// Build a labelset so the plugins can add themselves to something ///
+    ///////////////////////////////////////////////////////////////////////
+
+	const char * szMenuLabelSetName = NULL;
+	if (getPrefsValue( AP_PREF_KEY_MenuLabelSet, (const XML_Char**)&szMenuLabelSetName)
+		&& (szMenuLabelSetName) && (*szMenuLabelSetName))
+	{
+		;
+	}
+	else
+		szMenuLabelSetName = AP_PREF_DEFAULT_MenuLabelSet ;
+
+	getMenuFactory()->buildMenuLabelSet(szMenuLabelSetName);
 
     loadAllPlugins();
+
+    //////////////////////////////////////////////////////////////////
 
     return true;
 }

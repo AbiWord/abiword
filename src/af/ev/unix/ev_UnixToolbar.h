@@ -52,7 +52,7 @@ public:
 	virtual bool repopulateStyles(void);
 	XAP_UnixApp *	getApp(void);
 	XAP_UnixFrame * getFrame(void);
-
+	void setCurrentEvent(GdkEvent * event) {m_eEvent = event;}
 	virtual void show(void);
 	virtual void hide(void);
 	
@@ -64,6 +64,7 @@ protected:
 	EV_UnixToolbar_ViewListener *	m_pViewListener;
 	AV_ListenerId					m_lid;	/* view listener id */
 
+	GdkEvent *                      m_eEvent;
 	GtkWidget *						m_wToolbar;
 	GtkWidget * 					m_wHandleBox;
 	AP_UnixToolbar_Icons *			m_pUnixToolbarIcons;
