@@ -1,5 +1,6 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998-2000 AbiSource, Inc.
+ * BIDI Copyright (c) 2001,2002 Tomas Frydrych
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -378,7 +379,13 @@ void XAP_Win32App::_setBidiOS(void)
 {
 
 	m_bBidiOS = false;
-
+/*
+	I have run into problems with the built-in win32 bidi support -- it is inconsistent
+	It treats some fonts (i.e., the MS fonts) correctly, but some common Hebrew fonts
+	it will not reorder. Consequently, I felt that the best solution would be to disable
+	the win32 bidi altogether and treating it as a non-bidi system, but there does
+	not seem to be a simple way of doing this
+*/
 #ifdef BIDI_ENABLED
 	const UT_UCSChar araAin  = 0x0639;
 	const UT_UCSChar one     = 0x0031;

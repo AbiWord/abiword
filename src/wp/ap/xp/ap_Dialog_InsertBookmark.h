@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 2000 AbiSource, Inc.
+ * Copyright (c) 2001,2002 Tomas Frydrych
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License

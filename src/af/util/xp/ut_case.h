@@ -1,3 +1,22 @@
+/* AbiSource Program Utilities
+ * Copyright (C) 2001 Tomas Frydrych
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+ * 02111-1307, USA.
+ */
+
 #ifndef UT_CASE_H
 #define UT_CASE_H
 
@@ -12,6 +31,55 @@ struct case_entry
 	UT_Byte    type;
 	UT_UCSChar other;
 };
+
+/*  the following structure works this way: low indicates lower boundary, and high
+    upper boundary of a range that is to be treated in the same way, depending on type
+    
+    if type is Lu/Ll, then the character is Upper/Lowecase and the other can be found
+    by adding the diff
+    
+    if type is Lu_even, then all even characters in this range are Upper-, while odd
+    characters are Lower-case; a lowecase character is obtained by adding diff while
+    uppercase character is obtained by subtracting diff.
+    
+    if type is Lu_odd, the all odd characters in this range are Upper-, while even
+    characters are Lower-case; a lowercase character is obtained by adding the diff,
+    while uppercase character is obtained by subtracting diff.
+    
+*/
+#if 0
+struct case_entry2
+{
+    UT_UCSChar  low;
+    UT_UCSChar  high;
+    UT_Byte     type;
+    UT_sint32   diff;
+}
+
+case_entry2 case_table2[] = 
+{
+ {0x0041, 0x005a, Lu,  0x0020},
+ {0x0061, 0x007a, Ll, -0x0020},
+ {0x00b5, 0x00b5, Ll,  0x02e7},
+ {0x00c0, 0x00d6, Lu,  0x0020},
+ {0x00d8, 0x00de, Lu,  0x0020},
+ {0x00e0, 0x00f6, Ll, -0x0020},
+ {0x00f8, 0x00fe, Ll, -0x0020},
+ {0x00ff, 0x00ff, Ll,  0x0079},
+ {0x0100, 0x012f, Lu_even, 0x0001},
+ {0x0130, 0x0130, Lu, -0x00c7},
+ {0x0131, 0x0131, Ll, -0x00e8},
+ {0x0132, 0x0137, Lu_even, 0x0001},
+ {0x0139, 0x0148, Lu_odd,  0x0001},
+ {0x014A, 0x0177, Lu_even, 0x0001},
+ {0x0178, 0x0178, Ll, -0x0079},
+ {0x0179, 0x017e, Lu_odd, 0x0001},
+ {0x017f, 0x017f, Ll, -0x0125},
+ {0x0181, 0x0181, Lu,  0x00d2},
+ {0x0182, 0x0188, Lu_even, 0x0001},
+ 
+}
+#endif
 
 #define Lu 1
 #define Ll 0
@@ -1335,5 +1403,4 @@ ucs_range whitespace_table[] =
 	{0x202f, 0x202f},
 	{0x3000, 0x3000}
 };
-
 #endif
