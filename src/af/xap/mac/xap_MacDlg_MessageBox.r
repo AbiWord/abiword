@@ -24,7 +24,8 @@
 */
 
 #include "Controls.r"
-#include "Types.r"
+#include "Dialogs.r"
+#include "MacTypes.r"
 
 #define __INCLUDING_REZ__
 #include "xap_Mac_ResID.h"

@@ -24,10 +24,13 @@
 */
 
 
-#include "Types.r"
+#include "MacTypes.r"
 #include "Controls.r"
-#include "Balloons.r"
 #include "Menus.r"
+
+#ifndef REZ_CARBON
+#include "Balloons.r"
+#endif
 
 #define __INCLUDING_REZ__
 #include "xap_Mac_ResID.h"
@@ -35,9 +38,9 @@
 #define APPLICATION_SIGNATURE	'AbiW'
 #define MAJOR_VERSION			0
 #define MINOR_VERSION			7
-#define RELEASE_KIND 			beta
-#define PATCH_LEVEL				12
-#define CURRENT_VERSION_TEXT	"0.7.12"
+#define RELEASE_KIND 			alpha
+#define PATCH_LEVEL				13
+#define CURRENT_VERSION_TEXT	"0.7.13"
 
 #define APP_NAME 				"AbiWord"
 
@@ -92,6 +95,7 @@ resource 'MENU' (RES_MENU_APPLE) {
 	}
 };
 
+#ifndef REZ_CARBON
 resource 'hfdr' (-5696) {
 	2,
 	0,
@@ -104,4 +108,4 @@ resource 'hfdr' (-5696) {
 		}
 	}
 };
-
+#endif

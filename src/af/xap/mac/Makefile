@@ -36,6 +36,9 @@ CPPSRCS=		xap_MacApp.cpp			\
 			xap_MacFrame.cpp			\
 			xap_MacTlbr_Icons.cpp
 
+REZSRCS=		xap_MacDlg_MessageBox.r		\
+                        xap_MacResources.r
+
 TARGETS=		$(OBJS)
 
 include $(ABI_ROOT)/src/config/abi_rules.mk
