@@ -27,12 +27,22 @@
 #define gint32 signed int
 #define guint32 unsigned int
 
+#ifdef FRIBIDI_INTERNAL_INCLUDE
+#ifndef TRUE
 #define TRUE 1
+#define FRIBIDI_DEFINED_TRUE
+#endif
+
+#ifndef FALSE
 #define FALSE 0
+#define FRIBIDI_DEFINED_FALSE
+#endif
 
 #define USE_SIMPLE_MALLOC 1
 #define g_malloc(n) malloc(n)
 #define g_new(T, n) malloc(n*sizeof(T))
 #define g_free(P) free(P)
+
+#endif /* frbidi internal*/
 
 #endif

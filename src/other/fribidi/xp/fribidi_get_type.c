@@ -23,6 +23,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#define FRIBIDI_INTERNAL_INCLUDE
 #include "fribidi.h"
 
 #include "gtype_def.h"
@@ -122,3 +123,4 @@ gboolean fribidi_get_mirror_char (	/* Input */
 }
 
 #include "gtype_undef.h"
+#undef FRIBIDI_INTERNAL_INCLUDE

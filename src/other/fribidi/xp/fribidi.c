@@ -21,6 +21,7 @@
  * <fwpg@sharif.edu>.
  */
  
+#define FRIBIDI_INTERNAL_INCLUDE
 #include "fribidi.h"
 #include "config.h"
 #ifdef DEBUG
@@ -1298,4 +1299,4 @@ guchar *fribidi_version_info =
  ;
 
 #include "gtype_undef.h"
-
+#undef FRIBIDI_INTERNAL_INCLUDE

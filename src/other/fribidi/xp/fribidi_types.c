@@ -19,6 +19,7 @@
  * For licensing issues, contact <fwpg@sharif.edu>. 
  */
 
+#define FRIBIDI_INTERNAL_INCLUDE
 #include "fribidi.h"
 
 #include "gtype_def.h"
@@ -146,3 +147,4 @@ FriBidiCharType prop_to_type[] = {
 #endif
 
 #include "gtype_undef.h"
+#undef FRIBIDI_INTERNAL_INCLUDE
