@@ -124,8 +124,8 @@ static bool s_createDirectoryIfNecessary(const char * szDir)
 bool AP_QNXApp::initialize(void)
 {
 	const char * szUserPrivateDirectory = getUserPrivateDirectory();
-	bool bVerified = s_createDirectoryIfNecessary(szUserPrivateDirectory);
-	UT_ASSERT(bVerified);
+	bool bVerified;
+	bVerified = s_createDirectoryIfNecessary(szUserPrivateDirectory);
 	
 	// load the preferences.
 
@@ -267,10 +267,17 @@ XAP_Frame * AP_QNXApp::newFrame(void)
 
 bool AP_QNXApp::shutdown(void)
 {
-	if (m_prefs->getAutoSavePrefs())
+	if (m_prefs->getAutoSavePrefs()) {
 		m_prefs->savePrefsFile();
+	}
 
 	return true;
+}
+
+void AP_QNXApp::reallyExit(void)
+{
+	shutdown();
+	XAP_QNXApp::reallyExit();
 }
 
 bool AP_QNXApp::getPrefsValueDirectory(bool bAppSpecific,
@@ -337,7 +344,8 @@ void AP_QNXApp::copyToClipboard(PD_DocumentRange * pDocRange)
 	IE_Exp_RTF * pExpRtf = new IE_Exp_RTF(pDocRange->m_pDoc);
 	if (pExpRtf)
 	{
-		UT_Error status = pExpRtf->copyToBuffer(pDocRange,&rtfbuf);
+		UT_Error status;
+		status = pExpRtf->copyToBuffer(pDocRange,&rtfbuf);
 		UT_Byte b = 0;
 		rtfbuf.append(&b,1);			// null terminate string
 		UT_DEBUGMSG(("CopyToClipboard: copying %d bytes in RTF format.",rtfbuf.getLength()));
@@ -357,7 +365,8 @@ void AP_QNXApp::copyToClipboard(PD_DocumentRange * pDocRange)
 	IE_Exp_Text * pExpText = new IE_Exp_Text(pDocRange->m_pDoc);
 	if (pExpText)
 	{
-		UT_Error status = pExpText->copyToBuffer(pDocRange,&txtbuf);
+		UT_Error status;
+		status = pExpText->copyToBuffer(pDocRange,&txtbuf);
 		UT_Byte b = 0;
 		txtbuf.append(&b,1);			// null terminate string
 		UT_DEBUGMSG(("CopyToClipboard: copying %d bytes in TEXTPLAIN format.\n",txtbuf.getLength()));
@@ -410,7 +419,8 @@ void AP_QNXApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipbo
 	{
 		unsigned char * pData = NULL;
 		UT_uint32 iLen = 0;
-		bool bResult = m_pClipboard->getClipboardData(AP_CLIPBOARD_RTF,(void**)&pData,&iLen);
+		bool bResult;
+		bResult = m_pClipboard->getClipboardData(AP_CLIPBOARD_RTF,(void**)&pData,&iLen);
 		UT_ASSERT(bResult);
 		iLen = MyMin(iLen,strlen((const char *) pData));
 		UT_DEBUGMSG(("PasteFromClipboard: pasting %d bytes in RTF format.\n",iLen));
@@ -422,7 +432,8 @@ void AP_QNXApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipbo
 	{
 		unsigned char * pData = NULL;
 		UT_uint32 iLen = 0;
-		bool bResult = m_pClipboard->getClipboardData(AP_CLIPBOARD_TEXTPLAIN_8BIT,(void**)&pData,&iLen);
+		bool bResult;
+		bResult = m_pClipboard->getClipboardData(AP_CLIPBOARD_TEXTPLAIN_8BIT,(void**)&pData,&iLen);
 		UT_ASSERT(bResult);
 		iLen = MyMin(iLen,strlen((const char *) pData));
 		UT_DEBUGMSG(("PasteFromClipboard: pasting %d bytes in TEXTPLAIN format.\n",iLen));
@@ -980,35 +991,9 @@ bool AP_QNXApp::parseCommandLine(void)
 			}
 			else if (UT_stricmp(m_pArgs->m_argv[k],"-geometry") == 0)
 			{
-				// [-geometry <X geometry string>]
-
-				// let us at the next argument
+				// [-geometry [WIDTHxHEIGHT][+-xoffset+-yoffset]
 				k++;
-				
-				// TODO : does X have a dummy geometry value reserved for this?
-				int dummy = 1 << ((sizeof(int) * 8) - 1);
-				int x = dummy;
-				int y = dummy;
-				int width = 0;
-				int height = 0;
-			
-				//XParseGeometry(m_pArgs->m_argv[k], &x, &y, &width, &height);
-
-				// use both by default
-				XAP_QNXApp::windowGeometryFlags f = (XAP_QNXApp::windowGeometryFlags)
-					(XAP_QNXApp::GEOMETRY_FLAG_SIZE
-					 | XAP_QNXApp::GEOMETRY_FLAG_POS);
-
-				// if pos (x and y) weren't provided just use size
-				if (x == dummy || y == dummy)
-					f = XAP_QNXApp::GEOMETRY_FLAG_SIZE;
-
-				// if size (width and height) weren't provided just use pos
-				if (width == 0 || height == 0)
-					f = XAP_QNXApp::GEOMETRY_FLAG_POS;
-			
-				// set the xap-level geometry for future frame use
-				setGeometry(x, y, width, height, f);
+				parseAndSetGeometry(m_pArgs->m_argv[k]);	
 			}
 			else if (UT_stricmp (m_pArgs->m_argv[k],"-to") == 0)
 			{
@@ -1117,7 +1102,8 @@ bool AP_QNXApp::parseCommandLine(void)
 					
 					pDialog->runModal(pFirstQNXFrame);
 					
-					XAP_Dialog_MessageBox::tAnswer ans = pDialog->getAnswer();
+					//XAP_Dialog_MessageBox::tAnswer ans = pDialog->getAnswer();
+					pDialog->getAnswer();
 					
 					pDialogFactory->releaseDialog(pDialog);
 #else
@@ -1142,35 +1128,7 @@ bool AP_QNXApp::parseCommandLine(void)
 		pFirstQNXFrame->initialize();
 		pFirstQNXFrame->loadDocument(NULL, IEFT_Unknown);
 	}
-
 	return true;
-}
-
-// TODO : MOVE THIS TO XP CODE!  This is a cut & paste job since each
-// TODO : platform _can_ have different options, and we didn't sort
-// TODO : out how to honor them correclty yet.  There is a copy of
-// TODO : this function in other platforms.
-
-void AP_QNXApp::_printUsage(void)
-{
-	// just print to stdout, not stderr
-	printf("\nUsage: %s [option]... [file]...\n\n", m_pArgs->m_argv[0]);
-	printf("  -to               The target format of the file\n");
-        printf("                    (abw, zabw, rtf, txt, utf8, html, latex)\n");
-	printf("  -verbose          The verbosity level (0, 1, 2)\n");
-	printf("  -show             If you really want to start the GUI\n");
-        printf("                    (even if you use the --to option)\n");
-#ifdef DEBUG
-	printf("  -dumpstrings      dump strings strings to file\n");
-#endif
-	printf("  -geometry geom    set initial frame geometry\n");
-	printf("  -lib dir          use dir for application components\n");
-	printf("  -nosplash         do not show splash screen\n");
-#ifdef ABI_OPT_JS
-	printf("  -script file      execute file as script\n");
-#endif
-
-	printf("\n");
 }
 
 /*** Signal handling functionality ***/

@@ -116,7 +116,6 @@ static int s_deleteClicked (PtWidget_t *widget, void *data, PtCallbackInfo_t *in
 static int s_preview_exposed(PtWidget_t * w, PhTile_t * damage) 
 {
 	PtArg_t args[1];
-	UT_Rect rClip;
 
    	PhRect_t rect;
    	PtSuperClassDraw(PtBasic, w, damage);
@@ -195,7 +194,8 @@ void AP_QNXDialog_Lists::runModeless(XAP_Frame * pFrame)
 
 	{
 		// attach a new graphics context to the drawing area
-		XAP_QNXApp * app = static_cast<XAP_QNXApp *> (m_pApp);
+		XAP_QNXApp * app;
+		app = static_cast<XAP_QNXApp *> (m_pApp);
 		UT_ASSERT(app);
 
 		UT_ASSERT(m_wPreviewArea);
@@ -279,7 +279,7 @@ void  AP_QNXDialog_Lists::typeChanged(int style)
 		UT_ASSERT(0);
 	}
 
-	int i;
+	UT_uint32 i;
 	printf("Set up %d different styles:\n  ", m_styleVector.getItemCount());
 	for (i=0; i<m_styleVector.getItemCount(); i++) {
 		void *junk;
@@ -398,7 +398,7 @@ PtWidget_t * AP_QNXDialog_Lists::_constructWindow (void)
 	PtWidget_t *togCustomize, *grpCustomize;
 	PtWidget_t *lblFormat;
 	PtWidget_t *numListLevel, *numListAlign, *numIndentAlign, *numStart;
-	PtWidget_t *radnewlist, *radexisting, *radsublist, *radresumelist;
+	PtWidget_t *radnewlist, *radexisting, *radsublist;
 	PtWidget_t *butOK, *butCancel;
 
    	PtArg_t    	args[10];
@@ -775,7 +775,7 @@ void AP_QNXDialog_Lists::_setData(void)
 		typeChanged(0);
 	}
 
-	int 		i;
+	UT_uint32 i;
 	for (i=0; i<m_styleVector.getItemCount(); i++) {
 		void *junk;
 		junk = m_styleVector.getNthItem(i);

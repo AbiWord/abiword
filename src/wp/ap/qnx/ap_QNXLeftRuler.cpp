@@ -146,7 +146,6 @@ int AP_QNXLeftRuler::_fe::delete_event(GtkWidget * /* w */, GdkEvent * /*event*/
 int AP_QNXLeftRuler::_fe::expose(PtWidget_t * w, PhTile_t * damage)
 {
 	PtArg_t args[1];
-	UT_Rect rClip;
 	PhRect_t rect;
 
 	//This will draw the basic widget

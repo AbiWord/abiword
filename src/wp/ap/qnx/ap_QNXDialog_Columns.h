@@ -24,6 +24,7 @@
 
 class XAP_QNXFrame;
 
+#if 0
 /*****************************************************************
 ******************************************************************
 ** Here we begin a little CPP magic to load all of the icons.
@@ -64,7 +65,7 @@ static struct _it s_itTable[] =
 // Some convience functions to make Abi's pixmaps easily available to dialogs
 static bool findIconDataByName(const char * szName, const char *** pIconData, UT_uint32 * pSizeofData) ;
 static bool label_button_with_abi_pixmap( PtWidget_t * button, const char * szIconName);
-
+#endif
 
 
 /*****************************************************************/

@@ -91,7 +91,8 @@ void AP_QNXDialog_Tab::runModal(XAP_Frame * pFrame)
 	PtRealizeWidget(mainWindow);
 
     // Run the event loop for this window.
-	int count = PtModalStart();
+	int count;
+	count = PtModalStart();
 
 	do {
 		done = 0;
@@ -570,9 +571,11 @@ void AP_QNXDialog_Tab::_spinChanged(void)
 
 /*static*/ int AP_QNXDialog_Tab::s_list_deselect(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
 {
+#if 0
 	AP_QNXDialog_Tab * dlg = (AP_QNXDialog_Tab *)data;
 	UT_ASSERT(widget && dlg); 
 	UT_DEBUGMSG(("AP_QNXDialog_Tab::s_list_deselect"));
+#endif
 	return Pt_CONTINUE;
 }
 
@@ -698,6 +701,9 @@ void AP_QNXDialog_Tab::_setAlignment( eTabType a )
 			id = id_ALIGN_BAR;
 			break;
 
+		//FL_TAB_NONE, __FL_TAB_MAX
+		default:
+		  return;
 		}
 
 	// time to set the alignment radiobutton widget
@@ -753,7 +759,6 @@ void AP_QNXDialog_Tab::_setDefaultTabStop( const XML_Char * a )
 {
 	const XML_Char *suffix;
 	double d;
-	int len;
 
 	PtWidget_t *w = _lookupWidget(id_SPIN_DEFAULT_TAB_STOP);
 	/* There are two parts here ... the number and the suffix,

@@ -93,7 +93,8 @@ void AP_QNXDialog_Spell::runModal(XAP_Frame * pFrame)
 	 		// update dialog with new misspelled word info/suggestions
 	 		_showMisspelledWord();
 	 
-			int count = PtModalStart();
+			int count;
+			count = PtModalStart();
 			done = 0;
 			while(!done) {
 				PtProcessEvent();
@@ -200,14 +201,11 @@ static int s_delete_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *in
 PtWidget_t * AP_QNXDialog_Spell::_constructWindow(void)
 {
    PtWidget_t *windowSpell;
-   PtWidget_t *tableMain;
    
    PtWidget_t *label1;
-   PtWidget_t *scroll2;
    PtWidget_t *textWord;
    PtWidget_t *label2;
    PtWidget_t *entryChange;
-   PtWidget_t *scroll1;
    PtWidget_t *clistSuggestions;
    PtWidget_t *buttonChange;
    PtWidget_t *buttonChangeAll;

@@ -44,6 +44,7 @@ public:
 	virtual bool					initialize(void);
 	virtual XAP_Frame *				newFrame(void);
 	virtual bool					forgetFrame(XAP_Frame * pFrame);
+	virtual void 					reallyExit(void);
 	virtual bool					shutdown(void);
 	virtual bool					getPrefsValueDirectory(bool bAppSpecific,
 														   const XML_Char * szKey, const XML_Char ** pszValue) const;
@@ -67,9 +68,6 @@ public:
 	static int main (const char * szAppName, int argc, char ** argv);
 
 protected:
-
-	void							_printUsage(void);
-
 	//AP_QNXPrefs *			m_prefs;
 	XAP_StringSet *			m_pStringSet;
 	AP_QNXClipboard *		m_pClipboard;

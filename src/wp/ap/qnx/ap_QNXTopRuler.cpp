@@ -311,7 +311,6 @@ int AP_QNXTopRuler::_fe::resize(PtWidget_t* w, void *data,  PtCallbackInfo_t *in
 int AP_QNXTopRuler::_fe::expose(PtWidget_t * w, PhTile_t *damage)
 {
 	PtArg_t args[1];
-	UT_Rect rClip;
 	PhRect_t rect;
 
 	PtSuperClassDraw(PtBasic, w, damage);

@@ -22,6 +22,7 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include <stdio.h>
+#include <string.h>
 
 // This header defines some functions for QNX dialogs,
 // like centering them, measuring them, etc.
@@ -80,7 +81,7 @@ void TFSetTextStringFloat(PtWidget_t *sp, char *str) {
 	}
 	PtSetResources(sp, n, arg);
 }
-int TFGetNumericString(PtWidget_t *sp, char *buffer, int len) {
+int TFGetNumericString(PtWidget_t *sp, char *buffer, unsigned int len) {
 	PtArg_t arg;
 	char   *str;
 
@@ -214,7 +215,6 @@ static int s_check_toggled(PtWidget_t * widget, void *data, PtCallbackInfo_t * i
 static int s_preview_exposed(PtWidget_t * w, PhTile_t * damage) 
 {
 	PtArg_t args[1];
-	UT_Rect rClip;
 
    	PhRect_t rect;
    	PtSuperClassDraw(PtBasic, w, damage);
@@ -263,7 +263,8 @@ void AP_QNXDialog_Paragraph::runModal(XAP_Frame * pFrame)
 	// *** this is how we add the gc ***
 	{
 		// attach a new graphics context to the drawing area
-		XAP_QNXApp * qnxapp = static_cast<XAP_QNXApp *> (m_pApp);
+		XAP_QNXApp * qnxapp;
+		qnxapp = static_cast<XAP_QNXApp *> (m_pApp);
 		UT_ASSERT(qnxapp);
 
 		UT_ASSERT(m_drawingareaPreview);
@@ -286,7 +287,8 @@ void AP_QNXDialog_Paragraph::runModal(XAP_Frame * pFrame)
 	UT_QNXBlockWidget(parentWindow, 1);
 
 	PtRealizeWidget(mainWindow);
-	int count = PtModalStart();
+	int count;
+	count = PtModalStart();
 	done = 0;
 	while(!done) {
 		PtProcessEvent();
@@ -400,22 +402,14 @@ PtWidget_t * AP_QNXDialog_Paragraph::_constructWindow(void)
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
 	PtWidget_t * windowParagraph;
-	PtWidget_t * vboxMain;
-	PtWidget_t * fixedMain;
-	PtWidget_t * tabMain;
-	PtWidget_t * fixedSpacing;
 	PtWidget_t * listAlignment;
-	PtWidget_t * listAlignment_menu;
-	PtWidget_t * glade_menuitem;
 	PtWidget_t * spinbuttonLeft;
 	PtWidget_t * spinbuttonRight;
 	PtWidget_t * listSpecial;
-	PtWidget_t * listSpecial_menu;
 	PtWidget_t * spinbuttonBy;
 	PtWidget_t * spinbuttonBefore;
 	PtWidget_t * spinbuttonAfter;
 	PtWidget_t * listLineSpacing;
-	PtWidget_t * listLineSpacing_menu;
 	PtWidget_t * spinbuttonAt;
 	PtWidget_t * labelAlignment;
 	PtWidget_t * labelBy;
@@ -423,39 +417,24 @@ PtWidget_t * AP_QNXDialog_Paragraph::_constructWindow(void)
 	PtWidget_t * labelLeft;
 	PtWidget_t * labelRight;
 	PtWidget_t * labelSpecial;
-	PtWidget_t * hseparator3;
-	PtWidget_t * labelSpacing;
 	PtWidget_t * labelAfter;
 	PtWidget_t * labelLineSpacing;
 	PtWidget_t * labelAt;
 	PtWidget_t * labelPreview;
 
-	PtWidget_t * framePreview;
 	PtWidget_t * drawingareaPreview;
 	PtWidget_t * drawingareaPreviewGroup;
 
-	PtWidget_t * hseparator4;
-	PtWidget_t * hseparator1;
 	PtWidget_t * labelBefore;
-	PtWidget_t * labelIndents;
-	PtWidget_t * fixedBreaks;
 	PtWidget_t * labelPagination;
-	PtWidget_t * hseparator5;
-	PtWidget_t * hseparator7;
 	PtWidget_t * labelPreview2;
 	PtWidget_t * checkbuttonWindowOrphan;
 	PtWidget_t * checkbuttonKeepLines;
 	PtWidget_t * checkbuttonPagebreak;
 	PtWidget_t * checkbuttonSuppress;
 	PtWidget_t * checkbuttonHyphenate;
-	PtWidget_t * hseparator6;
 	PtWidget_t * checkbuttonKeepNext;
-	PtWidget_t * labelBreaks;
-	PtWidget_t * hbox1;
-	PtWidget_t * hbuttonboxLeft;
 	PtWidget_t * buttonTabs;
-	PtWidget_t * hbox2;
-	PtWidget_t * hbuttonboxRight;
 	PtWidget_t * buttonOK;
 	PtWidget_t * buttonCancel;
 	PtWidget_t * panelGroup;
@@ -491,7 +470,6 @@ PtWidget_t * AP_QNXDialog_Paragraph::_constructWindow(void)
 	PtWidget_t *vwindowgroup = PtCreateWidget(PtGroup, windowParagraph, n, args);
 
 	n = 0;
-	PhPoint_t pos;
 #define PANEL_WIDTH (530)
 #define PANEL_HEIGHT (390)
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, PANEL_WIDTH, 0);
@@ -853,13 +831,6 @@ PtWidget_t * AP_QNXDialog_Paragraph::_constructWindow(void)
 		Pt_ARG( Pt_ARG_TEXT_FONT, "TextFont10", 0 ),
 		};
 
-	static const PhArea_t area13 = { { 15, 243 }, { 493, 96 } };
-	static const PtArg_t args13[] = {
-		Pt_ARG( Pt_ARG_AREA, &area13, 0 ),
-		Pt_ARG( Pt_ARG_FLAGS, 256,256 ),
-		Pt_ARG( Pt_ARG_BORDER_WIDTH, 1, 0 ),
-		};
-
 	PtCreateWidget( PtPane, panelGroup, sizeof(args1) / sizeof(PtArg_t), args1 );
 
 	labelPagination = PtCreateWidget( PtLabel, NULL, sizeof(args2) / sizeof(PtArg_t), args2 );
@@ -946,12 +917,10 @@ PtWidget_t * AP_QNXDialog_Paragraph::_constructWindow(void)
 	
 	m_spinbuttonRight = spinbuttonRight;
 	m_listSpecial = listSpecial;
-	m_listSpecial_menu = listSpecial_menu;
 	m_spinbuttonBy = spinbuttonBy;
 	m_spinbuttonBefore = spinbuttonBefore;
 	m_spinbuttonAfter = spinbuttonAfter;
 	m_listLineSpacing = listLineSpacing;
-	m_listLineSpacing_menu = listLineSpacing_menu;
 	m_spinbuttonAt = spinbuttonAt;
 
 	m_drawingareaPreview = drawingareaPreview;

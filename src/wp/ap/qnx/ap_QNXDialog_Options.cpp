@@ -161,7 +161,8 @@ AP_QNXDialog_Options::AP_QNXDialog_Options(XAP_DialogFactory * pDlgFactory,
 	UT_DEBUGMSG(("    current pref : %s\n",
 		prefs->getCurrentScheme()->getSchemeName()) );
 
-	bool b = prefs->savePrefsFile();
+	bool b;
+	b = prefs->savePrefsFile();
 	UT_DEBUGMSG(("    prefs saved (%d) in %s\n", b, prefs->getPrefsPathname() ));
 
 	UT_uint32 i;
@@ -211,7 +212,8 @@ void AP_QNXDialog_Options::runModal(XAP_Frame * pFrame)
 	PtRealizeWidget(mainWindow);
 
 one_more_time:
-	int count = PtModalStart();
+	int count;
+	count = PtModalStart();
 	done = 0;
 	while(!done) {
 		PtProcessEvent();
@@ -272,15 +274,12 @@ PtWidget_t* AP_QNXDialog_Options::_constructWindow ()
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
 	PtWidget_t *windowOptions;
-	PtWidget_t *table2;
-	PtWidget_t *hbuttonbox2;
 	PtWidget_t *buttonSave;
 	PtWidget_t *buttonDefaults;
 	PtWidget_t *buttonApply;
 	PtWidget_t *buttonOk;
 	PtWidget_t *buttonCancel;
 	PtWidget_t *notebook1;
-	PtWidget_t *tableSpell;
 	PtWidget_t *checkbuttonSpellHideErrors;
 	PtWidget_t *checkbuttonSpellSuggest;
 	PtWidget_t *checkbuttonSpellMainOnly;
@@ -295,34 +294,20 @@ PtWidget_t* AP_QNXDialog_Options::_constructWindow ()
 	PtWidget_t *label5;
 	PtWidget_t *listSpellDicts;
 	PtWidget_t *listSpellDicts_menu;
-	PtWidget_t *glade_menuitem;
-	PtWidget_t *labelSpell;
-	PtWidget_t *tablePreferences;
 	PtWidget_t *checkbuttonPrefsAutoSave;
 	PtWidget_t *label6;
 	PtWidget_t *comboPrefsSchemes;
-	PtWidget_t *comboPrefsSchemesEdit;
-	PtWidget_t *labelPreferences;
-	PtWidget_t *hboxView;
-	PtWidget_t *vbox4;
-	PtWidget_t *frame2;
-	PtWidget_t *vbox7;
-	PtWidget_t *hbox10;
 	PtWidget_t *checkbuttonViewRuler;
 	PtWidget_t *labelUnits;
 	PtWidget_t *listViewRulerUnit;
-	PtWidget_t *listViewRulerUnit_menu;
 	PtWidget_t *checkbuttonViewCursorBlink;
 	PtWidget_t *checkbuttonViewStandard;
 	PtWidget_t *checkbuttonViewFormat;
 	PtWidget_t *checkbuttonViewExtra;
 	PtWidget_t *checkbuttonViewStatusBar;
-	PtWidget_t *frameViewStuff;
-	PtWidget_t *vbox6;
 	PtWidget_t *checkbuttonViewAll;
 	PtWidget_t *checkbuttonViewHidden;
 	PtWidget_t *checkbuttonViewUnprintable;
-	PtWidget_t *labelView;
 
 	PtArg_t args[10];
 	int		n;
@@ -619,7 +604,7 @@ PtWidget_t* AP_QNXDialog_Options::_constructWindow ()
 
 
     m_windowMain = windowOptions;
-	m_notebook = notebook1;
+	m_notebook = notebook1 = NULL;
 
     m_checkbuttonSpellCheckAsType	= checkbuttonSpellCheckAsType;
     m_checkbuttonSpellHideErrors	= checkbuttonSpellHideErrors;
@@ -629,7 +614,7 @@ PtWidget_t* AP_QNXDialog_Options::_constructWindow ()
     m_checkbuttonSpellNumbers		= checkbuttonSpellNumbers;
     m_checkbuttonSpellInternet		= checkbuttonSpellInternet;
 	m_listSpellDicts				= listSpellDicts;
-	m_listSpellDicts_menu			= listSpellDicts_menu;
+	m_listSpellDicts_menu			= listSpellDicts_menu = NULL;
 	m_buttonSpellDictionary			= buttonSpellDictionary;
 	m_buttonSpellIgnoreEdit			= buttonSpellIgnoreEdit;
 	m_buttonSpellIgnoreReset		= buttonSpellIgnoreReset;

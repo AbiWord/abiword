@@ -37,6 +37,49 @@
 
 /*****************************************************************/
 
+/*****************************************************************
+******************************************************************
+** Here we begin a little CPP magic to load all of the icons.
+** It is important that all of the ..._Icon_*.{h,xpm} files
+** allow themselves to be included more than one time.
+******************************************************************
+*****************************************************************/
+// This comes from ap_Toolbar_Icons.cpp
+#include "xap_Toolbar_Icons.h"
+
+#include "ap_Toolbar_Icons_All.h"
+
+/*****************************************************************
+******************************************************************
+** Here we begin a little CPP magic to construct a table of
+** the icon names and pointer to the data.
+******************************************************************
+*****************************************************************/
+
+struct _it
+{
+	const char *				m_name;
+	const char **				m_staticVariable;
+	UT_uint32					m_sizeofVariable;
+};
+
+#define DefineToolbarIcon(name)		{ #name, (const char **) ##name, sizeof(##name)/sizeof(##name[0]) },
+
+static struct _it s_itTable[] =
+{
+
+#include "ap_Toolbar_Icons_All.h"
+	
+};
+
+#undef DefineToolbarIcon
+
+// Some convience functions to make Abi's pixmaps easily available to dialogs
+static bool findIconDataByName(const char * szName, const char *** pIconData, UT_uint32 * pSizeofData) ;
+static bool label_button_with_abi_pixmap( PtWidget_t * button, const char * szIconName);
+
+/*****************************************************************/
+
 XAP_Dialog * AP_QNXDialog_Columns::static_constructor(XAP_DialogFactory * pFactory,
 						   XAP_Dialog_Id id)
 {
@@ -96,7 +139,6 @@ static int s_toggle_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *in
 static int s_preview_exposed(PtWidget_t * w, PhTile_t * damage) 
 {
 	PtArg_t args[1];
-	UT_Rect rClip;
 
    	PhRect_t rect;
    	PtSuperClassDraw(PtBasic, w, damage);
@@ -212,7 +254,8 @@ void AP_QNXDialog_Columns::runModal(XAP_Frame * pFrame)
 	
     UT_QNXBlockWidget(parentWindow, 0);
 
-    int count = PtModalStart();
+    int count;
+	count = PtModalStart();
     done = 0;
     while(!done) {
     	PtProcessEvent();
@@ -305,7 +348,6 @@ void AP_QNXDialog_Columns::event_previewExposed(void)
 PtWidget_t * AP_QNXDialog_Columns::_constructWindow(void)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	XML_Char * unixstr = NULL;	// used for conversions
 
 	int n;
 	PtArg_t args[10];

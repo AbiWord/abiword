@@ -187,8 +187,8 @@ void    AP_QNXDialog_WordCount::setUpdateCounter( void )
 	m_bDestroy_says_stopupdating = false;
 	m_bAutoUpdate_happening_now = false;
 
-	float f_Update_rate = ((float) m_Update_rate)/ 1000.0;
 /*
+	float f_Update_rate = ((float) m_Update_rate)/ 1000.0;
 	gtk_adjustment_set_value( m_Spinrange, f_Update_rate );
 	gtk_spin_button_set_adjustment(GTK_SPIN_BUTTON( m_pAutospin), m_Spinrange);
 */

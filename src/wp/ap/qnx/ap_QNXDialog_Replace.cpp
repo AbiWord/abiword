@@ -86,42 +86,49 @@ static int s_find_clicked(PtWidget_t *w, void *data, PtCallbackInfo_t * e)
 {
 	AP_QNXDialog_Replace *dlg = (AP_QNXDialog_Replace *)data;
 	dlg->event_Find();
+	return Pt_CONTINUE;
 }
 
 static int s_replace_clicked(PtWidget_t *w, void *data, PtCallbackInfo_t * e)
 {
 	AP_QNXDialog_Replace *dlg = (AP_QNXDialog_Replace *)data;
 	dlg->event_Replace();
+	return Pt_CONTINUE;
 }
 
 static int s_replace_all_clicked(PtWidget_t *w, void *data, PtCallbackInfo_t * e)
 {
 	AP_QNXDialog_Replace *dlg = (AP_QNXDialog_Replace *)data;
 	dlg->event_ReplaceAll();
+	return Pt_CONTINUE;
 }
 
 static int s_cancel_clicked(PtWidget_t *w, void *data, PtCallbackInfo_t * e)
 {
 	AP_QNXDialog_Replace *dlg = (AP_QNXDialog_Replace *)data;
 	dlg->event_Cancel();
+	return Pt_CONTINUE;
 }
 
 static int s_match_case_toggled(PtWidget_t *w, void *data, PtCallbackInfo_t * e)
 {
 	AP_QNXDialog_Replace *dlg = (AP_QNXDialog_Replace *)data;
 	dlg->event_MatchCaseToggled();
+	return Pt_CONTINUE;
 }
 
 static int s_find_entry_activate(PtWidget_t *w, void *data, PtCallbackInfo_t * e)
 {
 	AP_QNXDialog_Replace *dlg = (AP_QNXDialog_Replace *)data;
 	dlg->event_Find();
+	return Pt_CONTINUE;
 }
 
 static int s_replace_entry_activate(PtWidget_t *w, void *data, PtCallbackInfo_t * e)
 {
 	AP_QNXDialog_Replace *dlg = (AP_QNXDialog_Replace *)data;
 	dlg->event_Replace();
+	return Pt_CONTINUE;
 }
 /*****************************************************************/
 
@@ -299,8 +306,6 @@ void AP_QNXDialog_Replace::event_WindowDelete(void)
 PtWidget_t * AP_QNXDialog_Replace::_constructWindow(void)
 {
 	PtWidget_t *windowReplace;
-	PtWidget_t *vboxReplace;
-	PtWidget_t *tableReplace;
 	PtWidget_t *entryFind;
 	PtWidget_t *entryReplace;
 	PtWidget_t *checkbuttonMatchCase;
@@ -388,6 +393,8 @@ PtWidget_t * AP_QNXDialog_Replace::_constructWindow(void)
 		entryReplace = PtCreateWidget(PtText, windowReplace, n, args);
 		PtAddCallback(entryReplace, Pt_CB_ACTIVATE, s_replace_entry_activate, this);
 
+	} else {
+		entryReplace = NULL;
 	}
 	
 	// button box at the side
@@ -426,6 +433,9 @@ PtWidget_t * AP_QNXDialog_Replace::_constructWindow(void)
 		PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 		buttonReplaceAll = PtCreateWidget(PtButton, hbuttonbox1, n, args);
 		PtAddCallback(buttonReplaceAll, Pt_CB_ACTIVATE, s_replace_all_clicked, this);
+	} else {
+		buttonReplace = NULL;
+		buttonReplaceAll = NULL;
 	}
 
 	n = 0;

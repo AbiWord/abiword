@@ -117,7 +117,8 @@ void AP_QNXDialog_Break::runModal(XAP_Frame * pFrame)
 	UT_QNXBlockWidget(parentWindow, 1);
 	PtRealizeWidget(mainWindow);
 
-	int count = PtModalStart();
+	int count;
+	count = PtModalStart();
 	done = 0;
 	while(!done) {
 		PtProcessEvent();
@@ -167,8 +168,7 @@ PtWidget_t * AP_QNXDialog_Break::_constructWindow(void)
 {
 
 	PtWidget_t * windowBreak;
-	PtWidget_t * boxTop, *boxBottom;
-	PtWidget_t * tableInsert;
+	PtWidget_t * boxTop;
 	PtWidget_t * labelInsert;
 	PtWidget_t * radiobuttonPageBreak;
 	PtWidget_t * radiobuttonNextPage;
@@ -177,9 +177,6 @@ PtWidget_t * AP_QNXDialog_Break::_constructWindow(void)
 	PtWidget_t * radiobuttonEvenPage;
 	PtWidget_t * radiobuttonOddPage;
 	PtWidget_t * labelSectionBreaks;
-	PtWidget_t * hseparator9;
-	PtWidget_t * hseparator10;
-	PtWidget_t * hbuttonboxBreak;
 	PtWidget_t * buttonOK;
 	PtWidget_t * buttonCancel;
 	PtArg_t	   args[10];

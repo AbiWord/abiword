@@ -91,7 +91,6 @@ public:
 	PtWidget_t * m_spinbuttonBy;
 
 	PtWidget_t * m_listSpecial;
-	PtWidget_t * m_listSpecial_menu;
 	PtWidget_t * m_menuitemNone;
 	PtWidget_t * m_menuitemFirstLine;
 	PtWidget_t * m_menuitemHanging;	
@@ -101,7 +100,6 @@ public:
 	PtWidget_t * m_spinbuttonAt;
 
 	PtWidget_t * m_listLineSpacing;
-	PtWidget_t * m_listLineSpacing_menu;
 	PtWidget_t * m_menuitemSingle;
 	PtWidget_t * m_menuitemOneAndHalf;
 	PtWidget_t * m_menuitemDouble;

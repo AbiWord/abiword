@@ -47,8 +47,11 @@ void AP_QNXStatusBar::setView(AV_View * pView)
 	// is not created until the frame's top-level window is
 	// shown.
 	DELETEP(m_pG);	
-	XAP_QNXApp * app = (XAP_QNXApp *)m_pFrame->getApp();
+	XAP_QNXApp * app;
+	app = (XAP_QNXApp *)m_pFrame->getApp();
+	UT_ASSERT(app);
 	XAP_QNXFrame *frame = (XAP_QNXFrame *) m_pFrame;
+	UT_ASSERT(frame);
 
 	m_pG = new GR_QNXGraphics(frame->getTopLevelWindow(), m_wStatusBar, m_pFrame->getApp());
 	UT_ASSERT(m_pG);
@@ -140,7 +143,6 @@ int AP_QNXStatusBar::_fe::resize(PtWidget_t * w, void *data, PtCallbackInfo_t *i
 int AP_QNXStatusBar::_fe::expose(PtWidget_t * w, PhTile_t *damage)
 {
 	PtArg_t args[1];
-	UT_Rect rClip;
 	PhRect_t rect;
 
 	PtSuperClassDraw(PtBasic, w, damage);
