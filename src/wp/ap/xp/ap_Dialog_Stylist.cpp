@@ -90,3 +90,11 @@ void AP_Dialog_Stylist::autoUpdate(UT_Worker * pTimer)
 	FV_View * pView = static_cast<FV_View *>(pDialog->getApp()->getLastFocussedFrame()->getCurrentView());
 	PD_Document * pDoc = pView->getDocument();
 }
+
+/*!
+ * Finalize the dialog.
+ */
+void  AP_Dialog_Stylist::finalize(void)
+{
+	modeless_cleanup();
+}
