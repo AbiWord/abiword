@@ -1,8 +1,8 @@
 /* An autonomous caret class.
  *
- * Author: Patrick Lam
- *         Dom Lachowicz
- *         Tomas Frydrych
+ * Authors: Patrick Lam
+ *          Dom Lachowicz
+ *          Tomas Frydrych
  * Inspired by Mike Nordell (tamlin@algonet.se)
  *
  * This program is free software; you can redistribute it and/or
@@ -23,11 +23,35 @@
 
 #include "gr_Caret.h"
 #include "gr_Graphics.h"
-#include "xap_App.h"
-#include "ut_debugmsg.h"
 
-static const UT_uint32 CURSOR_BLINK_TIME = 600; /* milliseconds */
-static const UT_uint32 CURSOR_DELAY_TIME = 10;
+static const UT_uint32 CURSOR_DELAY_TIME = 10; // milliseconds
+
+#ifdef XP_UNIX_TARGET_GTK
+#include <gtk/gtk.h>
+#elif defined(WIN32)
+#include <windows.h>
+#endif
+
+UT_uint32 GR_Caret::getCursorBlinkTime () const
+{
+#ifdef XP_UNIX_TARGET_GTK
+	UT_uint32 blink;
+	GtkSettings * settings = gtk_settings_get_default ();
+
+	g_object_get (G_OBJECT(settings), "gtk-cursor-blink-time", &blink, NULL);
+
+	return (blink/2);
+#elif defined(WIN32)
+	return GetCaretBlinkTime ();
+#else
+	return 600; // milliseconds
+#endif
+}
+
+bool GR_Caret::getCanCursorBlink () const
+{
+	return m_bCursorBlink;
+}
 
 // Description of m_enabler:
 // The problem is that a complicated draw operation will be somewhat
@@ -62,11 +86,13 @@ GR_Caret::GR_Caret(GR_Graphics * pG)
 	UT_WorkerFactory::ConstructMode outMode = UT_WorkerFactory::NONE;
 	m_worker = static_cast<UT_Timer *>(UT_WorkerFactory::static_constructor
 		(s_work, this, UT_WorkerFactory::TIMER, outMode, pG));
-	m_worker->set(CURSOR_BLINK_TIME);
+	m_worker->set(getCursorBlinkTime ());
 
 	m_enabler = static_cast<UT_Timer *>(UT_WorkerFactory::static_constructor
 		(s_enable, this, UT_WorkerFactory::TIMER, outMode, pG));
 	m_enabler->set(CURSOR_DELAY_TIME);
+	
+	setBlink (false);
 }
 
 GR_Caret::~GR_Caret()
@@ -181,7 +207,17 @@ void GR_Caret::disable(bool bNoMulti)
  * If not, then _blink() won't actually clear the caret; it'll only draw. */
 void GR_Caret::setBlink(bool bBlink)
 {
+#ifdef XP_UNIX_TARGET_GTK
+	gboolean can;
+	GtkSettings * settings = gtk_settings_get_default ();
+
+	g_object_get (G_OBJECT(settings), "gtk-cursor-blink", &can, NULL);
+	m_bCursorBlink = (can != FALSE);
+#elif defined(WIN32)
+	m_bCursorBlink = (GetCaretBlinkTime () > 0);
+#else
 	m_bCursorBlink = bBlink;
+#endif
 }
 
 void GR_Caret::_erase()
@@ -206,7 +242,7 @@ void GR_Caret::_blink(bool bExplicit)
 	// Blink if: (a) _blink explicitly called (not autoblink); or
 	//           (b) autoblink and caret blink enabled; or
 	//           (c) autoblink, caret blink disabled, caret is off
-	if (bExplicit || m_bCursorBlink || !m_bCursorIsOn)
+	if (bExplicit || getCanCursorBlink () || !m_bCursorIsOn)
 	{
 		m_bRecursiveDraw = true;
 		

@@ -84,6 +84,9 @@ private:
 	void	_erase();
 	void	_blink(bool bExplicit);
 	
+	UT_uint32 getCursorBlinkTime () const;
+	bool getCanCursorBlink () const;
+
 	UT_Timer *    m_worker;
 	UT_Timer *	  m_enabler;
 
