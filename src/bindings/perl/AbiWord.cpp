@@ -525,7 +525,7 @@ XS(XS_AbiWord__FV_View_getSelectionText)
 	Perl_croak(aTHX_ "Usage: AbiWord::FV_View::getSelectionText(pView)");
     {
 	FV_View*	pView;
-	char *	RETVAL;
+	char * RETVAL;
 	dXSTARG;
 
 	if (sv_isobject(ST(0)) && (SvTYPE(SvRV(ST(0))) == SVt_PVMG))
@@ -536,10 +536,12 @@ XS(XS_AbiWord__FV_View_getSelectionText)
 #line 243 "AbiWord.xs"
 		if (!pView->isSelectionEmpty())
 		{
-			UT_UCSChar* text = pView->getSelectionText();
-			UT_uint32 size = UT_UCS4_strlen(text);
+			UT_UCS4Char * pText;
+			pView->getSelectionText(pText);
+			UT_uint32 size = UT_UCS4_strlen(pText);
 			RETVAL = (char*) malloc(size);
-			UT_UCS4_strcpy_to_char(RETVAL, text);
+			UT_UCS4_strcpy_to_char(RETVAL, pText);
+			FREEP(pText);
 		}
 		else
 		{

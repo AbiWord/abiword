@@ -80,12 +80,15 @@ void AP_Dialog_InsertHyperlink::setDoc(FV_View * pView)
 	{
 		UT_return_if_fail(!pView->isSelectionEmpty());
 
-		UT_UCS4Char * pSelection = pView->getSelectionText();
+		UT_UCS4Char * pSelection;
+		pView->getSelectionText(pSelection);
 		UT_return_if_fail(pSelection);
 
 		m_pHyperlink = new XML_Char [UT_UCS4_strlen(pSelection)+1];
 		UT_UCS4_strcpy_to_char(m_pHyperlink, pSelection);
 
+		FREEP(pSelection);
+		
 		// now check if this is a valid URL, if not just delete the
 		// whole thing
 		if(!UT_isUrl(m_pHyperlink))

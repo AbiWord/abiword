@@ -4551,7 +4551,8 @@ static bool s_doBookmarkDlg(FV_View * pView, bool /*bInsert*/)
 
 	if (!pView->isSelectionEmpty())
 	{
-		UT_UCSChar * buffer = pView->getSelectionText();
+		UT_UCSChar * buffer;
+		pView->getSelectionText(buffer);
 		pDialog->setSuggestedBM(buffer);
 		FREEP(buffer);
 	}
@@ -5756,7 +5757,8 @@ static bool s_doFindOrFindReplaceDlg(FV_View * pView, XAP_Dialog_Id id)
 	// current selection.
 	if (!pView->isSelectionEmpty())
 	{
-		UT_UCSChar * buffer = pView->getSelectionText();
+		UT_UCSChar * buffer;
+		pView->getSelectionText(buffer);
 
 		pDialog->setFindString(buffer);
 
@@ -5970,10 +5972,14 @@ static bool s_doFontDlg(FV_View * pView)
 	}
 
 	if(!pView->isSelectionEmpty())
-	  {
+	{
 	    // set the drawable string to the selection text
-	    pDialog->setDrawString(pView->getSelectionText());
-	  }
+		// the pointer return by getSelectionText() must be freed
+		UT_UCS4Char* text;
+		pView->getSelectionText(text);
+		pDialog->setDrawString(text);
+		FREEP(text);
+	}
 
 	// run the dialog
 
