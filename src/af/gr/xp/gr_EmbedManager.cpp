@@ -24,15 +24,15 @@
  * see the document abi/src/doc/EmbedablePlugins.abw for a more detailed 
  * Descrition of the this class. Almost all the methods in this class are
  * overridden by a specific embedable plugin. However this code is pure XP
- * AbiWord that be happily used through the rest of the AbiWord program
- * without needed any external libraries.
+ * AbiWord that can be happily used through the rest of the AbiWord program
+ * without needing any external libraries.
  * The idea is to have a generic XP class with a well defined API with 
  * default implementations. Plugins are subclasses of this class which 
  * override the default implementations.
  *
  * The basic idea is that the EmbedManager takes care of drawing each object
- * the Managers Type. Each object created by the manager gets it's own unique
- * identifier which is used as index into a collection of valid classes
+ * of the Managers Type. Each object created by the manager gets it's own 
+ * unique identifier which is used as index into a collection of valid classes
  * which each draw their own object.
  */
 
@@ -48,7 +48,7 @@ GR_EmbedView::GR_EmbedView(AD_Document * pDoc, UT_uint32 api )
 }
 
 /*!
- * Create the EmbedManager class. PG is a pointer to the graphics class
+ * Create the EmbedManager class. pG is a pointer to the graphics class
  * that will be drawn into.
  */
 GR_EmbedManager::GR_EmbedManager(GR_Graphics* pG)
@@ -71,7 +71,7 @@ GR_Graphics * GR_EmbedManager::getGraphics(void)
 }
 
 /*! 
- * Change the graphics clas to this new class. Used when zooming the document.
+ * Change the graphics class to this new class. Used when zooming the document.
  */
 void GR_EmbedManager::setGraphics(GR_Graphics * pG)
 {
@@ -79,7 +79,7 @@ void GR_EmbedManager::setGraphics(GR_Graphics * pG)
 }
 
 /*!
- * Create a new instance of the manager and cast it to base GR_EmbedManager
+ * Create a new instance of the manager and cast it to the base GR_EmbedManager
  * class.
  */
 GR_EmbedManager * GR_EmbedManager::create(GR_Graphics * pG)
@@ -140,11 +140,11 @@ UT_sint32 GR_EmbedManager::makeEmbedView(AD_Document * pDoc, UT_uint32  api)
  * the plugin, the default implementation can render the snapshot of the 
  * object. 
  * 
- * I will make a PNG snapshotter for which just takes a screenshot of the 
+ * I will make a PNG snapshotter which just takes a screenshot of the 
  * object.
  * 
- * Once the SVG backend for gnome-print is in wide use, and printable 
- * document which employs gnome-print can be snapshotted.
+ * Once the SVG backend for gnome-print is in wide use, any printable 
+ * document which employs gnome-print can be snapshotted into SVG.
  */
 void GR_EmbedManager::makeSnapShot(UT_sint32)
 {
