@@ -2122,6 +2122,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	// this code handles spaces in justified runs
 	UT_uint32 iSpaceCount = 0;
 
+	// handle justification as required ...
 	if(m_pJustifiedSpaces)
 		iSpaceCount = m_pJustifiedSpaces->getItemCount();
 
@@ -2153,7 +2154,20 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 		UT_uint32 iLength = getLength();
 		UT_sint32 iX = xoff_draw;
 		UT_uint32 i = 2;
+		UT_uint32 iDrawLength;
+		UT_uint32 iPrevSpaceEnd = 0;
 
+		// the justification data is stored in logical order, however,
+		// if the run is RTL, it is being drawn relative to its left
+		// edge, and consequently we have to process the draw buffer
+		// in the reverse order
+		FriBidiCharType iVisDir = getVisDirection();
+
+		if(iVisDir == FRIBIDI_TYPE_RTL)
+		{
+			iX += getWidth();
+		}
+		
 		do
 		{
 			iSpaceOffset = (UT_uint32) m_pJustifiedSpaces->getNthItem(i) + iDelta;
@@ -2161,11 +2175,27 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 			iSpaceWidth  = (UT_uint32) m_pJustifiedSpaces->getNthItem(i+2);
 			iTextWidth   = (UT_uint32) m_pJustifiedSpaces->getNthItem(i+3);
 
-			getGR()->drawChars(m_pSpanBuff, iOffset, iSpaceOffset - iOffset, iX, yTopOfRun, s_pCharAdvance + iOffset);
+			if(iVisDir == FRIBIDI_TYPE_RTL)
+			{
+				iX -= iTextWidth;
+				iOffset = iLength - iSpaceOffset;
+				iDrawLength = iSpaceOffset - iPrevSpaceEnd;
+			}
+			else
+				iDrawLength = iSpaceOffset - iOffset;
+		
+			getGR()->drawChars(m_pSpanBuff, iOffset, iDrawLength, iX, yTopOfRun, s_pCharAdvance + iOffset);
 			xxx_UT_DEBUGMSG(( "fp_TextRun::_draw: iOffset %d, iSpaceOffset %d, iSpaceLength %d, iDelta %d, iCurrOffset %d, iSpaceWidth %d, iTextWidth %d\n", iOffset, iSpaceOffset, iSpaceLength, iDelta, iCurrOffset, iSpaceWidth, iTextWidth ));
 
 			iOffset = iSpaceOffset + iSpaceLength;
-			iX += iTextWidth + iSpaceWidth;
+
+			if(iVisDir == FRIBIDI_TYPE_RTL)
+			{
+				iPrevSpaceEnd = iSpaceOffset + iSpaceLength;
+				iX -= iSpaceWidth;
+			}
+			else
+				iX += iTextWidth + iSpaceWidth;
 
 			i += 4;
 
@@ -2712,35 +2742,47 @@ void fp_TextRun::_drawPart(UT_sint32 xoff,
 
 void fp_TextRun::_drawInvisibleSpaces(UT_sint32 xoff, UT_sint32 yoff)
 {
-	UT_GrowBuf * pgbCharWidths = getBlock()->getCharWidths()->getCharWidths();
-	UT_GrowBufElement* pCharWidths = pgbCharWidths->getPointer(0);
+	UT_GrowBuf        * pgbCharWidths = getBlock()->getCharWidths()->getCharWidths();
+	UT_GrowBufElement * pCharWidths = pgbCharWidths->getPointer(0);
+
 	if(pCharWidths == NULL)
 	{
 		return;
 	}
-	UT_sint32 iWidth = 0;
-	UT_uint32 iLen = getLength();
-	UT_sint32 cur_linewidth = 1+ (UT_MAX(10,getAscent())-10)/8;
-	UT_sint32 iRectSize = cur_linewidth * 3 / 2;
-	UT_uint32 iOffset = getBlockOffset();
+
+	UT_sint32       iWidth = 0;
+	UT_uint32       iLen = getLength();
+	UT_sint32       iLineWidth = 1+ (UT_MAX(10,getAscent())-10)/8;
+	UT_sint32       iRectSize = iLineWidth * 3 / 2;
+	UT_uint32       iOffset = getBlockOffset();
+	UT_uint32       iWidthOffset = iOffset;
+	UT_sint32       iWidthIncr = 1;
+	UT_uint32       iY = yoff + getAscent() * 2 / 3;
+	FriBidiCharType iVisDir = getVisDirection();
+
+	if(iVisDir == FRIBIDI_TYPE_RTL)
+	{
+		iWidthOffset += (iLen-1);
+		iWidthIncr = -1;
+	}
+	
 
 	FV_View* pView = getBlock()->getDocLayout()->getView();
-	UT_uint32 iy = yoff + getAscent() * 2 / 3;
 
-	UT_sint32 i = ((getVisDirection() == FRIBIDI_TYPE_LTR) ? 0 : iLen - 1);
-	UT_sint32 iStop = ((getVisDirection() == FRIBIDI_TYPE_LTR) ? (signed) iLen : -1);
-	UT_sint32 iInc = ((getVisDirection() == FRIBIDI_TYPE_LTR) ? 1 : -1);
-
-	for (; i != iStop; i += iInc)
+	// we will process this in visual order, keeping in mind that the
+	// width buffer is in logical order
+	
+	for (UT_uint32 i=0; i < iLen; i++)
 	{
 		if(m_pSpanBuff[i] == UCS_SPACE)
 		{
-			getGR()->fillRect(pView->getColorShowPara(), xoff + iWidth + (pCharWidths[i + iOffset] - iRectSize) / 2,iy,iRectSize,iRectSize);
+			getGR()->fillRect(pView->getColorShowPara(), xoff + iWidth + (pCharWidths[iWidthOffset] - iRectSize) / 2,iY,iRectSize,iRectSize);
 		}
-		UT_uint32 iCW = pCharWidths[i + iOffset] > 0
-			         && pCharWidths[i + iOffset] < GR_OC_MAX_WIDTH ?
-			                                       pCharWidths[i + iOffset] : 0;
+		UT_uint32 iCW = pCharWidths[iWidthOffset] > 0
+			         && pCharWidths[iWidthOffset] < GR_OC_MAX_WIDTH ?
+			                                       pCharWidths[iWidthOffset] : 0;
 		iWidth += iCW;
+		iWidthOffset += iWidthIncr;
 	}
 }
 
