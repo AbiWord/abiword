@@ -1472,6 +1472,7 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 			}
 			if(doNotify)
 			{
+				UT_DEBUGMSG(("Doing view notification \n"));
 				getLayout()->getView()->notifyListeners(chgMask);
 			}
 			else

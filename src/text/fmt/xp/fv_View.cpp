@@ -2109,6 +2109,7 @@ void FV_View::processSelectedBlocks(FL_ListType listType)
 
 	// Signal piceTable is stable again
 	_restorePieceTableState();
+	_fixInsertionPointCoords();
 	if (isSelectionEmpty())
 	{
 		_ensureInsertionPointOnScreen();

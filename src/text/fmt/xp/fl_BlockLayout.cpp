@@ -7311,8 +7311,8 @@ void fl_BlockLayout::remItemFromList(void)
 		//format();
 		m_pDoc->endUserAtomicGlob();
 
-		pView->AV_View::notifyListeners(AV_CHG_FMTBLOCK);
-		pView->_fixInsertionPointCoords();
+		//		pView->AV_View::notifyListeners(AV_CHG_FMTBLOCK);
+		// pView->_fixInsertionPointCoords();
 		FREEP(props);
 	}
 }
@@ -7645,10 +7645,7 @@ void	fl_BlockLayout::StartList( FL_ListType lType, UT_uint32 start,const XML_Cha
 	setStarting( false);
 	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, getPosition(), getPosition(), attribs, props, PTX_Block);
 
-	//	pView->_generalUpdate();
 	m_pDoc->listUpdate(getStruxDocHandle());
-	pView->_generalUpdate();
-	pView->_ensureInsertionPointOnScreen();
 	FREEP(attribs);
 	FREEP(props);
 }
@@ -7896,11 +7893,6 @@ void	fl_BlockLayout::StopListInBlock(void)
 		if(offset > 0 )
 			pView->_setPoint(pView->getPoint()+offset-2);
 	}
-	if(m_pDoc->areListUpdatesAllowed())
-	{
-		pView->_generalUpdate();
-	}
-	pView->_ensureInsertionPointOnScreen();
 	FREEP(props);
 }
 
@@ -8100,7 +8092,6 @@ void  fl_BlockLayout::prependList( fl_BlockLayout * nextList)
 	m_pDoc->changeStruxFmt(PTC_AddFmt, getPosition(), getPosition(), attribs, props, PTX_Block);
 	m_bListItem = true;
 	m_pDoc->listUpdate(getStruxDocHandle());
-	pView->_generalUpdate();
 	FREEP(attribs);
 	FREEP(props);
 }
@@ -8144,7 +8135,6 @@ void  fl_BlockLayout::resumeList( fl_BlockLayout * prevList)
 	m_pDoc->changeStruxFmt(PTC_AddFmt, getPosition(), getPosition(), attribs, props, PTX_Block);
 	m_bListItem = true;
 	m_pDoc->listUpdate(getStruxDocHandle());
-	pView->_generalUpdate();
 	FREEP(attribs);
 	FREEP(props);
 }
@@ -8169,14 +8159,8 @@ void fl_BlockLayout::listUpdate(void)
 		_createListLabel();
 
 	format();
-
+	
 	FV_View* pView = getView();
-	if (pView)
-	{
-		//		pView->_generalUpdate();
-		pView->_fixInsertionPointCoords();
-		pView->updateScreen();
-	}
 
 }
 
@@ -8293,7 +8277,6 @@ void fl_BlockLayout::_createListLabel(void)
 		NULL, NULL
 	};
 	bool bResult = m_pDoc->insertObject(getPosition(), PTO_Field, attributes, NULL);
-	//	pView->_generalUpdate();
 	PT_DocPosition diff = 1;
 	if(m_pDoc->isDoingPaste() == false)
 	{
@@ -8325,9 +8308,6 @@ void fl_BlockLayout::_createListLabel(void)
 	{
 		pView->_setPoint(pView->getPoint()+offset);
 	}
-	pView->_generalUpdate();
-
-	pView->_ensureInsertionPointOnScreen();
 	m_bListLabelCreated = true;
 }
 
