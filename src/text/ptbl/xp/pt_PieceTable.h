@@ -22,7 +22,7 @@ public:
 
 	typedef enum _PTState { PTS_Invalid=-1, PTS_Loading=0, PTS_Editing=1 } PTState;
 	void					setPieceTableState(PTState pts);
-	UT_GrowBuf *			getBuffer(UT_uint32 vsIndex);
+	UT_GrowBuf *			getBuffer(PT_VarSetIndex vsIndex);
 
 	UT_Bool					insertSpan(PT_DocPosition dpos,
 									   UT_Bool bLeftSide,
@@ -57,7 +57,7 @@ public:
 	UT_Bool					addListener(PL_Listener * pListener,
 										PL_ListenerId listenerId);
 	
-	UT_Bool					getAttrProp(UT_uint32 vsIndex, pt_AttrPropIndex indexAP,
+	UT_Bool					getAttrProp(PT_VarSetIndex vsIndex, PT_AttrPropIndex indexAP,
 										const PP_AttrProp ** ppAP) const;
 
 	// TODO add stuff for objects like in-line images.
@@ -83,14 +83,14 @@ protected:
 	//           are currently writing (appending) to.
 	
 	PTState					m_pts;
-	UT_uint32				m_vsIndex;		/* vs[] that we are writing to */
+	PT_VarSetIndex			m_vsIndex;		/* vs[] that we are writing to */
 	VarSet					m_vs[2];		/* [0] is initial, [1] is change */
 
 	px_ChangeHistory		m_history;
 	pf_Fragments			m_fragments;
 
 	struct {
-		pt_AttrPropIndex	m_indexCurrentInlineAP;
+		PT_AttrPropIndex	m_indexCurrentInlineAP;
 	} loading;							/* stuff only valid while m_pts==PTS_Loading */
 
 	PD_Document *			m_pDocument; /* back pointer to our document */

@@ -32,6 +32,7 @@
 #include "fp_SectionSlice.h"
 #include "fp_BlockSlice.h"
 #include "pp_Property.h"
+#include "pp_AttrProp.h"
 #include "dg_Graphics.h"
 #include "dg_DrawArgs.h"
 
@@ -440,11 +441,28 @@ void FP_Column::dump()
 	}
 }
 
-FP_BoxColumn::FP_BoxColumn(FL_SectionLayout* pSL, 
-					 UT_uint32 width, UT_uint32 height) : FP_Column(pSL)
+const XML_Char * FP_BoxColumn::myTypeName(void)
 {
-	m_iWidth = width;
-	m_iHeight = height;
+	return "Box";
+}
+
+FP_BoxColumn::FP_BoxColumn(FL_SectionLayout * pSL, const PP_AttrProp * pAP,
+								 UT_uint32 iWidthGiven, UT_uint32 iHeightGiven,
+								 UT_sint32 * piXoff, UT_sint32 * piYoff)
+	: FP_Column(pSL)
+{
+	const XML_Char * szLeft = "0";
+	const XML_Char * szTop = "0";
+	const XML_Char * szWidth = "*";
+	const XML_Char * szHeight = "*";
+
+	pAP->getAttribute("left",szLeft);
+	pAP->getAttribute("top",szTop);
+	pAP->getAttribute("width",szWidth);
+	pAP->getAttribute("height",szHeight);
+	
+	pSL->getLayout()->getGraphics()->scaleDimensions(szLeft,szWidth,iWidthGiven, piXoff,&m_iWidth);
+	pSL->getLayout()->getGraphics()->scaleDimensions(szTop,szHeight,iHeightGiven, piYoff,&m_iHeight);
 }
 
 UT_uint32 FP_BoxColumn::_getSliverWidth(UT_uint32 iY, UT_uint32 iHeight, UT_uint32* pX)
@@ -462,9 +480,44 @@ UT_uint32 FP_BoxColumn::_getSliverWidth(UT_uint32 iY, UT_uint32 iHeight, UT_uint
 	return m_iWidth;
 }
 
-FP_CircleColumn::FP_CircleColumn(FL_SectionLayout* pSL, UT_uint32 iRadius) : FP_Column(pSL)
+const XML_Char * FP_CircleColumn::myTypeName(void)
 {
-	m_iRadius = iRadius;
+	return "Circle";
+}
+
+FP_CircleColumn::FP_CircleColumn(FL_SectionLayout * pSL, const PP_AttrProp * pAP,
+								 UT_uint32 iWidthGiven, UT_uint32 iHeightGiven,
+								 UT_sint32 * piXoff, UT_sint32 * piYoff)
+	: FP_Column(pSL)
+{
+	const XML_Char * szLeft = "0";
+	const XML_Char * szTop = "0";
+	const XML_Char * szRadius = "*";
+
+	pAP->getAttribute("left",szLeft);
+	pAP->getAttribute("top",szTop);
+	pAP->getAttribute("radius",szRadius);
+	
+	UT_uint32 myWidth, myHeight, myRadius;
+	
+	pSL->getLayout()->getGraphics()->scaleDimensions(szLeft,"*",iWidthGiven, piXoff,&myWidth);
+	pSL->getLayout()->getGraphics()->scaleDimensions(szTop,"*",iHeightGiven, piYoff,&myHeight);
+	
+	if (szRadius[0] == '*')				// fill the space with largest circle
+	{
+		myRadius = (UT_MIN(myWidth,myHeight)) / 2;
+	}
+	else
+	{
+		UT_sint32 irx,iry;
+		UT_uint32 foo;
+
+		pSL->getLayout()->getGraphics()->scaleDimensions(szRadius,"*",iWidthGiven, &irx,&foo);
+		pSL->getLayout()->getGraphics()->scaleDimensions(szRadius,"*",iHeightGiven, &iry,&foo);
+		myRadius = UT_MIN(irx,iry);
+	}
+
+	m_iRadius = myRadius;
 }
 
 UT_uint32 FP_CircleColumn::_getSliverWidth(UT_uint32 iY, UT_uint32 iHeight, UT_uint32* pX)

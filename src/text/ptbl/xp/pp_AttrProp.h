@@ -31,10 +31,14 @@ public:
 	UT_Bool	setAttributes(const XML_Char ** attributes);
 	UT_Bool setAttributes(const UT_Vector * pVector);
 	UT_Bool	setProperties(const XML_Char ** properties);
+
 	UT_Bool	setAttribute(const XML_Char * szName, const XML_Char * szValue);
 	UT_Bool	setProperty(const XML_Char * szName, const XML_Char * szValue);
+
 	UT_Bool	getNthAttribute(int ndx, const XML_Char *& szName, const XML_Char *& szValue) const;
 	UT_Bool	getNthProperty(int ndx, const XML_Char *& szName, const XML_Char *& szValue) const;
+
+	UT_Bool getAttribute(const XML_Char * szName, const XML_Char *& szValue) const;
 	UT_Bool getProperty(const XML_Char * szName, const XML_Char *& szValue) const;
 	
 protected:

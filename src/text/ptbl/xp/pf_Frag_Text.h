@@ -15,10 +15,10 @@ class pf_Frag_Text : public pf_Frag
 {
 public:
 	pf_Frag_Text(pt_PieceTable * pPT,
-				 UT_uint32 vsIndex,
+				 PT_VarSetIndex vsIndex,
 				 pt_BufPosition offset,
 				 UT_uint32 length,
-				 pt_AttrPropIndex indexAP);
+				 PT_AttrPropIndex indexAP);
 	virtual ~pf_Frag_Text();
 	
 	virtual UT_Bool			createSpecialChangeRecord(PX_ChangeRecord ** ppcr) const;
@@ -26,10 +26,10 @@ public:
 	virtual void			dump(FILE * fp) const;
 
 protected:
-	UT_uint32				m_vsIndex;	/* which VS[] we are in */
+	PT_VarSetIndex			m_vsIndex;	/* which VS[] we are in */
 	pt_BufPosition			m_offset;	/* location of our text in the VS[].m_buffer */
 	UT_uint32				m_length;	/* length of our text in that buffer */
-	pt_AttrPropIndex		m_indexAP;	/* index in VS[].m_tableAttrProp to our A/P */
+	PT_AttrPropIndex		m_indexAP;	/* index in VS[].m_tableAttrProp to our A/P */
 };
 
 #endif /* PF_FRAG_TEXT_H */

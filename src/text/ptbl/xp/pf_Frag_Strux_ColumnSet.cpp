@@ -5,8 +5,8 @@
 
 
 pf_Frag_Strux_ColumnSet::pf_Frag_Strux_ColumnSet(pt_PieceTable * pPT,
-												 UT_uint32 vsIndex,
-												 pt_AttrPropIndex indexAP)
+												 PT_VarSetIndex vsIndex,
+												 PT_AttrPropIndex indexAP)
 	: pf_Frag_Strux(pPT,PTX_ColumnSet,vsIndex,indexAP)
 {
 }

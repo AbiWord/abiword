@@ -211,4 +211,18 @@ UT_Bool PP_AttrProp::getProperty(const XML_Char * szName, const XML_Char *& szVa
 	return UT_TRUE;
 }
 
+UT_Bool PP_AttrProp::getAttribute(const XML_Char * szName, const XML_Char *& szValue) const
+{
+	if (!m_pAttributes)
+		return UT_FALSE;
+	
+	UT_HashTable::UT_HashEntry* pEntry = m_pAttributes->findEntry(szName);
+	if (!pEntry)
+		return UT_FALSE;
+
+	szValue = pEntry->pszRight;
+
+	return UT_TRUE;
+}
+
 

@@ -31,6 +31,8 @@
 #include "px_ChangeRecord_Strux.h"
 #include "fl_DocLayout.h"
 #include "fl_SectionLayout.h"
+#include "fl_ColumnSetLayout.h"
+#include "fl_ColumnLayout.h"
 #include "fp_Page.h"
 #include "pd_Document.h"
 #include "dg_Graphics.h"
@@ -235,6 +237,7 @@ UT_Bool FL_DocLayout::populate(PL_StruxFmtHandle sfh,
 	UT_ASSERT(pcr->getType() == PX_ChangeRecord::PXT_InsertSpan);
 	PX_ChangeRecord_Span * pcrs = static_cast<PX_ChangeRecord_Span *> (pcr);
 
+	// paul-- a span is a sequence of text with the same formatting.
 	// TODO -- span is block-relative, right?
 	// HYP: append as a new run to last block of last section
 	// ALT: if format same, append to last run of that block
@@ -259,21 +262,58 @@ UT_Bool FL_DocLayout::populateStrux(PL_StruxDocHandle sdh,
 		{
 			// append a SectionLayout to this DocLayout
 			FL_SectionLayout* pSL = new FL_SectionLayout(this, sdh);
+			if (!pSL)
+			{
+				UT_DEBUGMSG(("no memory for SectionLayout"));
+				return UT_FALSE;
+			}
+			pSL->setPTvars(pcr->getVarSetIndex(),pcr->getIndexAP());
 			m_vecSectionLayouts.addItem(pSL);
 
-			psfh = (PL_StruxFmtHandle *) &pSL;
+			psfh = (PL_StruxFmtHandle *)pSL;
 		}
 		break;
 
 	case PTX_ColumnSet:
 		{
-			// TODO -- Jeff?
+			// locate the last SectionLayout
+			int countSections = m_vecSectionLayouts.getItemCount();
+			UT_ASSERT(countSections > 0);
+			FL_SectionLayout* pSL = (FL_SectionLayout*) m_vecSectionLayouts.getNthItem(countSections - 1);
+			UT_ASSERT(pSL);
+			FL_ColumnSetLayout * pCSL = new FL_ColumnSetLayout(pSL,sdh);
+			if (!pCSL)
+			{
+				UT_DEBUGMSG(("no memory for ColumnSetLayout"));
+				return UT_FALSE;
+			}
+			pCSL->setPTvars(pcr->getVarSetIndex(),pcr->getIndexAP());
+			UT_ASSERT(pSL->getColumnSetLayout()==NULL);
+			pSL->setColumnSetLayout(pCSL);
+
+			psfh = (PL_StruxFmtHandle *)pCSL;
 		}
 		break;
 			
 	case PTX_Column:
 		{
-			// TODO -- Jeff?
+			// locate the last SectionLayout
+			int countSections = m_vecSectionLayouts.getItemCount();
+			UT_ASSERT(countSections > 0);
+			FL_SectionLayout* pSL = (FL_SectionLayout*) m_vecSectionLayouts.getNthItem(countSections - 1);
+			UT_ASSERT(pSL);
+			FL_ColumnSetLayout * pCSL =	pSL->getColumnSetLayout();
+			UT_ASSERT(pCSL);
+			FL_ColumnLayout * pCL = new FL_ColumnLayout(pCSL,sdh);
+			if (!pCL)
+			{
+				UT_DEBUGMSG(("no memory for ColumnLayout"));
+				return UT_FALSE;
+			}
+			pCL->setPTvars(pcr->getVarSetIndex(),pcr->getIndexAP());
+			pCSL->appendColumnLayout(pCL);
+
+			psfh = (PL_StruxFmtHandle *)pCL;
 		}
 		break;
 			

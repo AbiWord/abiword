@@ -8,9 +8,9 @@ PX_ChangeRecord::PX_ChangeRecord(PXType type,
 								 UT_Bool bMultiStepStart,
 								 UT_Bool bMultiStepEnd,
 								 PT_DocPosition position,
-								 UT_uint32 vsIndex,
+								 PT_VarSetIndex vsIndex,
 								 UT_Bool bLeftSide,
-								 pt_AttrPropIndex indexAP)
+								 PT_AttrPropIndex indexAP)
 {
 	m_type = type;
 	m_bMultiStepStart = bMultiStepStart;
@@ -35,9 +35,14 @@ PT_DocPosition PX_ChangeRecord::getPosition(void) const
 	return m_position;
 }
 
-pt_AttrPropIndex PX_ChangeRecord::getIndexAP(void) const
+PT_AttrPropIndex PX_ChangeRecord::getIndexAP(void) const
 {
 	return m_indexAP;
+}
+
+PT_VarSetIndex PX_ChangeRecord::getVarSetIndex(void) const
+{
+	return m_vsIndex;
 }
 
 

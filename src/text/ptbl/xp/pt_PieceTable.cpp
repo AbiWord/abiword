@@ -32,7 +32,7 @@ pt_PieceTable::~pt_PieceTable()
 void pt_PieceTable::setPieceTableState(PTState pts)
 {
 	UT_uint32 k;
-	pt_AttrPropIndex ndx;
+	PT_AttrPropIndex ndx;
 	
 	m_pts = pts;
 
@@ -53,7 +53,7 @@ void pt_PieceTable::setPieceTableState(PTState pts)
 	}
 }
 
-UT_GrowBuf * pt_PieceTable::getBuffer(UT_uint32 vsIndex)
+UT_GrowBuf * pt_PieceTable::getBuffer(PT_VarSetIndex vsIndex)
 {
 	UT_ASSERT(vsIndex < NrElements(m_vs));
 	
@@ -111,7 +111,7 @@ UT_Bool pt_PieceTable::appendStrux(PTStruxType pts, const XML_Char ** attributes
 
 	// create a new structure fragment at the current end of the document.
 	
-	pt_AttrPropIndex indexAP = 0;
+	PT_AttrPropIndex indexAP = 0;
 
 	if (attributes && *attributes)
 		if (!m_vs[m_vsIndex].m_tableAttrProp.createAP(attributes,NULL,&indexAP))
@@ -259,7 +259,7 @@ UT_Bool pt_PieceTable::addListener(PL_Listener * pListener,
 	return UT_TRUE;
 }
 
-UT_Bool pt_PieceTable::getAttrProp(UT_uint32 vsIndex, pt_AttrPropIndex indexAP,
+UT_Bool pt_PieceTable::getAttrProp(PT_VarSetIndex vsIndex, PT_AttrPropIndex indexAP,
 								   const PP_AttrProp ** ppAP) const
 {
 	UT_ASSERT(vsIndex < NrElements(m_vs));

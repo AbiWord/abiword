@@ -32,6 +32,8 @@ class FL_DocLayout;
 class FB_LineBreaker;
 class FP_Column;
 class PD_Document;
+class FL_ColumnSetLayout;
+class PP_AttrProp;
 
 /*
 	A section keeps track of all of its columns, as well as all of its
@@ -43,11 +45,17 @@ public:
 	FL_SectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh);
 	~FL_SectionLayout();
 
-	FL_DocLayout* getLayout();
-	FP_Column* getNewColumn();
-	int format();
-	UT_Bool reformat();
+	FL_DocLayout *		getLayout();
+	FP_Column *			getNewColumn();
+	int					format();
+	UT_Bool				reformat();
 
+	void				setPTvars(PT_VarSetIndex vsIndex, PT_AttrPropIndex apIndex);
+	UT_Bool				getAttrProp(const PP_AttrProp ** ppAP) const;
+	
+	void				setColumnSetLayout(FL_ColumnSetLayout * pcsl);
+	FL_ColumnSetLayout*	getColumnSetLayout(void) const;
+	
 protected:
 	void				_purgeLayout();
 
@@ -56,6 +64,9 @@ protected:
 	FL_DocLayout*		m_pLayout;
 	PD_Document*		m_pDoc;
 	FB_LineBreaker*		m_pLB;
+	FL_ColumnSetLayout*	m_pColumnSetLayout;
+	PT_VarSetIndex		m_vsIndex;
+	PT_AttrPropIndex	m_apIndex;
 	
 	UT_Vector			m_vecSlices;
 	UT_Vector			m_vecColumns;

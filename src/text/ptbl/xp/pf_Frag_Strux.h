@@ -20,8 +20,8 @@ class pf_Frag_Strux : public pf_Frag
 public:
 	pf_Frag_Strux(pt_PieceTable * pPT,
 				  PTStruxType struxType,
-				  UT_uint32 vsIndex,
-				  pt_AttrPropIndex indexAP);
+				  PT_VarSetIndex vsIndex,
+				  PT_AttrPropIndex indexAP);
 	virtual ~pf_Frag_Strux();
 
 	PTStruxType				getStruxType(void) const;
@@ -34,8 +34,8 @@ public:
 	
 protected:
 	PTStruxType				m_struxType;
-	UT_uint32				m_vsIndex;	/* which VS[] we are in */
-	pt_AttrPropIndex		m_indexAP;	/* index in VS[].m_tableAttrProp to our A/P */
+	PT_VarSetIndex			m_vsIndex;	/* which VS[] we are in */
+	PT_AttrPropIndex		m_indexAP;	/* index in VS[].m_tableAttrProp to our A/P */
 	UT_Vector				m_vecFmtHandle;
 };
 

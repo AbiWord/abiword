@@ -32,6 +32,7 @@
 class FL_SectionLayout;
 class FP_SectionSlice;
 class FP_BlockSlice;
+class PP_AttrProp;
 class DG_Graphics;
 struct dg_DrawArgs;
 struct fp_Sliver;
@@ -132,11 +133,15 @@ protected:
 class FP_BoxColumn : public FP_Column
 {
 public:
-	FP_BoxColumn(FL_SectionLayout*, UT_uint32, UT_uint32);
+	FP_BoxColumn(FL_SectionLayout * pSL, const PP_AttrProp * pAP,
+				 UT_uint32 iWidthGiven, UT_uint32 iHeightGiven,
+				 UT_sint32 * piXoff, UT_sint32 * piYoff);
 
 	virtual UT_uint32 getTopOffset(UT_uint32 iLineHeight);
 	virtual UT_Bool 	containsPoint(UT_sint32 x, UT_sint32 y);
 	virtual UT_uint32 	distanceFromPoint(UT_sint32 x, UT_sint32 y);
+
+	static const XML_Char * myTypeName(void);
 
 protected:
 	virtual UT_uint32 	_getSliverWidth(UT_uint32 iY, UT_uint32 iHeight, UT_uint32* pX);
@@ -154,12 +159,16 @@ protected:
 class FP_CircleColumn : public FP_Column
 {
 public:
-	FP_CircleColumn(FL_SectionLayout*, UT_uint32 iRadius);
+	FP_CircleColumn(FL_SectionLayout * pSL, const PP_AttrProp * pAP,
+					UT_uint32 iWidthGiven, UT_uint32 iHeightGiven,
+					UT_sint32 * piXoff, UT_sint32 * piYoff);
 
 	virtual UT_uint32 getTopOffset(UT_uint32 iLineHeight);
 	virtual UT_Bool 	containsPoint(UT_sint32 x, UT_sint32 y);
 	virtual UT_uint32 	distanceFromPoint(UT_sint32 x, UT_sint32 y);
 
+	static const XML_Char * myTypeName(void);
+	
 protected:
 	virtual UT_uint32 	_getSliverWidth(UT_uint32 iY, UT_uint32 iHeight, UT_uint32* pX);
 	

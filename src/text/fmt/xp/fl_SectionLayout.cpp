@@ -28,11 +28,12 @@
 #include "fl_SectionLayout.h"
 #include "fl_DocLayout.h"
 #include "fl_BlockLayout.h"
+#include "fl_ColumnSetLayout.h"
+#include "fl_ColumnLayout.h"
 #include "fb_LineBreaker.h"
 #include "fp_Page.h"
 #include "fp_SectionSlice.h"
 #include "fp_Column.h"
-//#include "dg_ColumnModel.h"
 #include "pd_Document.h"
 
 #include "ut_assert.h"
@@ -46,10 +47,14 @@ FL_SectionLayout::FL_SectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh)
 	m_sdh = sdh;
 	m_pDoc = pLayout->getDocument();
 	m_pLB = NULL;
+	m_pColumnSetLayout = NULL;
+	m_vsIndex = 0;
+	m_apIndex = 0;
 }
 
 fp_ColumnInfo::fp_ColumnInfo(FP_Column* _pCol, UT_sint32 _iXoff, UT_sint32 _iYoff)
 {
+	// TODO does anyone use this ??
 	pColumn = _pCol;
 	xoff = _iXoff;
 	yoff = _iYoff;
@@ -63,15 +68,8 @@ FL_SectionLayout::~FL_SectionLayout()
 	UT_VECTOR_PURGEALL(FP_SectionSlice, m_vecSlices);
 	UT_VECTOR_PURGEALL(FP_Column, m_vecColumns);
 
-#ifdef COLUMNMODEL
-	if (m_sdh)
-	{
-		DG_ColumnModel * pCM = m_sdh->getColumnModel();
-
-		if (pCM)
-			delete pCM;
-	}
-#endif
+	if (m_pColumnSetLayout)
+		delete m_pColumnSetLayout;
 
 	if (m_pLB)
 		delete m_pLB;
@@ -87,7 +85,7 @@ FP_Column* FL_SectionLayout::getNewColumn()
 	/*
 		get the current page.
 		ask it for space.
-		within that space, create columns, in accordance with our columnModel.
+		within that space, create columns, in accordance with our ColumnSetLayout.
 		add those columns to our column list, linking them up properly.
 		return the first column in the new space.
 	*/
@@ -118,18 +116,28 @@ FP_Column* FL_SectionLayout::getNewColumn()
 	UT_sint32 iWidthSlice = pSlice->getWidth();
 	UT_sint32 iHeightSlice = pSlice->getHeight();
 
-#ifdef COLUMNMODEL
-	DG_ColumnModel * pCM = m_sdh->getColumnModel();
-	if (!pCM)
-		pCM = NULL; // TODO get default model from document
-	UT_ASSERT(pCM);
+	FL_ColumnSetLayout * pCSL = m_pColumnSetLayout;
+#if 0									// TODO support default column model on document
+	if (!pCSL)
+		pCSL = m_pLayout->getColumnSetLayout();
+#endif
+	UT_ASSERT(pCSL);
 
-	UT_uint32 kCMI=0;
-	UT_sint32 xoff, yoff;
-	FP_Column* pCol;
-
-	for (kCMI=0; (pCM->getNewColumn(kCMI,this,iWidthSlice,iHeightSlice, &pCol,&xoff,&yoff)); kCMI++)
+	// walk thru the list of column layouts and
+	// let each one instantiate a FP_Column of
+	// the right type and size.
+	
+	FL_ColumnLayout * pCL = pCSL->getFirstColumnLayout();
+	UT_ASSERT(pCL);
+	while (pCL)
 	{
+		UT_sint32 xoff, yoff;
+		FP_Column* pCol = NULL;
+		pCL->getNewColumn(iWidthSlice,iHeightSlice, &pCol,&xoff,&yoff);
+		UT_ASSERT(pCol);
+
+		// append the FP_Column to the list of columns.
+		
 		pSlice->addColumn(pCol, xoff, yoff);
 		if (m_vecColumns.getItemCount())
 		{
@@ -137,8 +145,10 @@ FP_Column* FL_SectionLayout::getNewColumn()
 			pcLast->setNext(pCol);
 		}
 		m_vecColumns.addItem(pCol);
+
+		pCL = pCL->getNext();
 	}
-#endif /* COLUMNMODEL */
+
 	return pSlice->getFirstColumn();
 }
 
@@ -305,5 +315,26 @@ void FL_SectionLayout::_purgeLayout()
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 #endif /* BUFFER */
 	return;
+}
+
+void FL_SectionLayout::setPTvars(PT_VarSetIndex vsIndex, PT_AttrPropIndex apIndex)
+{
+	m_vsIndex = vsIndex;
+	m_apIndex = apIndex;
+}
+
+UT_Bool FL_SectionLayout::getAttrProp(const PP_AttrProp ** ppAP) const
+{
+	return m_pDoc->getAttrProp(m_vsIndex,m_apIndex,ppAP);
+}
+
+void FL_SectionLayout::setColumnSetLayout(FL_ColumnSetLayout * pcsl)
+{
+	m_pColumnSetLayout = pcsl;
+}
+
+FL_ColumnSetLayout * FL_SectionLayout::getColumnSetLayout(void) const
+{
+	return m_pColumnSetLayout;
 }
 

@@ -14,8 +14,8 @@ class pf_Frag_Strux_Section : public pf_Frag_Strux
 {
 public:
 	pf_Frag_Strux_Section(pt_PieceTable * pPT,
-						  UT_uint32 vsIndex,
-						  pt_AttrPropIndex indexAP);
+						  PT_VarSetIndex vsIndex,
+						  PT_AttrPropIndex indexAP);
 	virtual ~pf_Frag_Strux_Section();
 
 	virtual void			dump(FILE * fp) const;

@@ -5,8 +5,8 @@
 
 
 pf_Frag_Strux_Section::pf_Frag_Strux_Section(pt_PieceTable * pPT,
-											 UT_uint32 vsIndex,
-											 pt_AttrPropIndex indexAP)
+											 PT_VarSetIndex vsIndex,
+											 PT_AttrPropIndex indexAP)
 	: pf_Frag_Strux(pPT,PTX_Section,vsIndex,indexAP)
 {
 }

@@ -33,14 +33,15 @@ public:
 					UT_Bool bMultiStepStart,
 					UT_Bool bMultiStepEnd,
 					PT_DocPosition position,
-					UT_uint32 vsIndex,
+					PT_VarSetIndex vsIndex,
 					UT_Bool bLeftSide,
-					pt_AttrPropIndex indexAP);
+					PT_AttrPropIndex indexAP);
 	virtual ~PX_ChangeRecord();
 
 	PXType					getType(void) const;
 	PT_DocPosition			getPosition(void) const;
-	pt_AttrPropIndex		getIndexAP(void) const;
+	PT_AttrPropIndex		getIndexAP(void) const;
+	PT_VarSetIndex			getVarSetIndex(void) const;
 
 	virtual void			dump(void) const;
 	
@@ -50,9 +51,9 @@ protected:
 	UT_Bool					m_bMultiStepStart;
 	UT_Bool					m_bMultiStepEnd;
 	PT_DocPosition			m_position;			/* absolute document position of the change */
-	UT_uint32				m_vsIndex;			/* which VS[] we are in */
+	PT_VarSetIndex			m_vsIndex;			/* which VS[] we are in */
 	UT_Bool					m_bLeftSide;
-	pt_AttrPropIndex		m_indexAP;			/* index in VS[].m_tableAttrProp to our A/P */
+	PT_AttrPropIndex		m_indexAP;			/* index in VS[].m_tableAttrProp to our A/P */
 };
 
 #endif /* PX_CHANGERECORD_H */

@@ -6,10 +6,10 @@
 
 
 pf_Frag_Text::pf_Frag_Text(pt_PieceTable * pPT,
-						   UT_uint32 vsIndex,
+						   PT_VarSetIndex vsIndex,
 						   pt_BufPosition offset,
 						   UT_uint32 length,
-						   pt_AttrPropIndex indexAP)
+						   PT_AttrPropIndex indexAP)
 	: pf_Frag(pPT,pf_Frag::PFT_Text)
 {
 	m_vsIndex = vsIndex;

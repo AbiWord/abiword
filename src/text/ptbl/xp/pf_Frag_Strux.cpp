@@ -6,8 +6,8 @@
 
 pf_Frag_Strux::pf_Frag_Strux(pt_PieceTable * pPT,
 							 PTStruxType struxType,
-							 UT_uint32 vsIndex,
-							 pt_AttrPropIndex indexAP)
+							 PT_VarSetIndex vsIndex,
+							 PT_AttrPropIndex indexAP)
 	: pf_Frag(pPT, pf_Frag::PFT_Strux)
 {
 	m_struxType = struxType;

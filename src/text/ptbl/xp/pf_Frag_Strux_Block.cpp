@@ -4,8 +4,8 @@
 #include "px_ChangeRecord_Strux.h"
 
 pf_Frag_Strux_Block::pf_Frag_Strux_Block(pt_PieceTable * pPT,
-										   UT_uint32 vsIndex,
-										   pt_AttrPropIndex indexAP)
+										   PT_VarSetIndex vsIndex,
+										   PT_AttrPropIndex indexAP)
 	: pf_Frag_Strux(pPT,PTX_Block,vsIndex,indexAP)
 {
 }

@@ -32,9 +32,9 @@ public:
 						 UT_Bool bMultiStepStart,
 						 UT_Bool bMultiStepEnd,
 						 PT_DocPosition position,
-						 UT_uint32 vsIndex,
+						 PT_VarSetIndex vsIndex,
 						 UT_Bool bLeftSide,
-						 pt_AttrPropIndex indexAP,
+						 PT_AttrPropIndex indexAP,
 						 pt_BufPosition offset,
 						 UT_uint32 length);
 	~PX_ChangeRecord_Span();

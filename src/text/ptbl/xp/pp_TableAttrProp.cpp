@@ -14,7 +14,7 @@ pp_TableAttrProp::~pp_TableAttrProp()
 	UT_VECTOR_PURGEALL(PP_AttrProp, m_vecTable);
 }
 
-UT_Bool pp_TableAttrProp::createAP(pt_AttrPropIndex * pIndex)
+UT_Bool pp_TableAttrProp::createAP(PT_AttrPropIndex * pIndex)
 {
 	PP_AttrProp * pNew = new PP_AttrProp();
 	if (!pNew)
@@ -30,9 +30,9 @@ UT_Bool pp_TableAttrProp::createAP(pt_AttrPropIndex * pIndex)
 
 UT_Bool pp_TableAttrProp::createAP(const XML_Char ** attributes,
 								   const XML_Char ** properties,
-								   pt_AttrPropIndex * pIndex)
+								   PT_AttrPropIndex * pIndex)
 {
-	pt_AttrPropIndex index;
+	PT_AttrPropIndex index;
 	if (!createAP(&index))
 		return UT_FALSE;
 
@@ -46,9 +46,9 @@ UT_Bool pp_TableAttrProp::createAP(const XML_Char ** attributes,
 }
 
 UT_Bool pp_TableAttrProp::createAP(const UT_Vector * pVector,
-								   pt_AttrPropIndex * pIndex)
+								   PT_AttrPropIndex * pIndex)
 {
-	pt_AttrPropIndex index;
+	PT_AttrPropIndex index;
 	if (!createAP(&index))
 		return UT_FALSE;
 
@@ -61,9 +61,9 @@ UT_Bool pp_TableAttrProp::createAP(const UT_Vector * pVector,
 	return UT_TRUE;
 }
 	
-const PP_AttrProp * pp_TableAttrProp::getAP(pt_AttrPropIndex index) const
+const PP_AttrProp * pp_TableAttrProp::getAP(PT_AttrPropIndex index) const
 {
-	pt_AttrPropIndex count = m_vecTable.getItemCount();
+	PT_AttrPropIndex count = m_vecTable.getItemCount();
 	if (index < count)
 		return (const PP_AttrProp *)m_vecTable.getNthItem(index);
 	else

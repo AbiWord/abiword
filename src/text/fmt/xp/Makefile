@@ -33,6 +33,8 @@ EXPORT_HEADERS=		dg_LayoutView.h	\
 HEADERS=		$(EXPORT_HEADERS)	\
 			fb_LineBreaker.h	\
 			fl_BlockLayout.h	\
+			fl_ColumnLayout.h	\
+			fl_ColumnSetLayout.h	\
 			fl_DocLayout.h		\
 			fp_BlockSlice.h		\
 			fp_Line.h		\
@@ -44,12 +46,14 @@ RELEASE_HEADERS=	$(EXPORT_HEADERS)
 RELEASE_HEADERS_DEST=	$(RELEASE_INCLUDE_DIR)
 
 CPPSRCS=		dg_LayoutView.cpp		\
-			fb_LineBreaker.cpp	\
+			fb_LineBreaker.cpp		\
 			fl_BlockLayout.cpp		\
+			fl_ColumnLayout.cpp		\
+			fl_ColumnSetLayout.cpp		\
 			fl_DocLayout.cpp		\
 			fl_SectionLayout.cpp		\
 			fp_BlockSlice.cpp		\
-			fp_Column.cpp		\
+			fp_Column.cpp			\
 			fp_Line.cpp			\
 			fp_Page.cpp			\
 			fp_Run.cpp			\

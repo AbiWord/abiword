@@ -61,7 +61,7 @@ public:
 	UT_Bool					addListener(PL_Listener * pListener, PL_ListenerId * pListenerId);
 	UT_Bool					removeListener(PL_ListenerId listenerId);
 
-	UT_Bool					getAttrProp(UT_uint32 vsIndex, pt_AttrPropIndex indexAP,
+	UT_Bool					getAttrProp(PT_VarSetIndex vsIndex, PT_AttrPropIndex indexAP,
 										const PP_AttrProp ** ppAP) const;
 
 	void					dump(FILE * fp) const;
