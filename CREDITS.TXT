@@ -20,7 +20,7 @@ platform maintainers
 Dom Lachowicz <doml@appligent.com>, Martin Sevior <msevior@physics.unimelb.edu.au> - Unix
 Johann Bjork <phearbear@home.se> - Qnx
 Hubert Figuiere <hfiguiere@teaser.fr> - Mac OS
-Jordi Mas i Hern‡ndez <jmas@softcatala.org> - Win32  
+Jordi Mas i Hern√†ndez <jmas@softcatala.org> - Win32  
 
 
 contributors
@@ -61,7 +61,7 @@ Chris Chamberlin <chricycle@yahoo.com>			Mem. Leak fix in
 David Chart <linux@dchart.demon.co.uk>			User documentation
 Allan Clark <shark@blueyonder.co.uk>			StringPool fixes, Find algorithm
 John L. Clark <jlc6@po.cwru.edu>			XHMTL exporter maintainer
-JoaquÌn Cuenca Abela <cuenca@ie2.u-psud.fr> 		GNOME front end,
+Joaqu√≠n Cuenca Abela <cuenca@ie2.u-psud.fr> 		GNOME front end,
 							LaTeX exporter,
 							perl bindings,
 							misc. fixes
@@ -207,7 +207,7 @@ Daniel Thompson <D.Thompson@gmx.net>			Page Size Option.
 Dave Thompson <thompson@pdnt.com>
 Sam Tobin-Hochstadt <sytobinh@uchicago.edu> 		Lots of fun stuff
 John Tunison <nosinut@WIND.REM.CMU.EDU> 		GNOME dialogs
-Gˆran Thyni <goran@kirra.net>				libxml support,
+G√∂ran Thyni <goran@kirra.net>				libxml support,
 							some autoconf work
 Sam Trenholme <abiword_bugs@yahoo.com>			RTF exporter fixes
 Kevin Vajk <kvajk@ricochet.net> 			File import/export
@@ -223,9 +223,9 @@ John Wood <jyonw@asu.edu>				NetBSD
 Alan Young <ayoung@teleport.com>			Alpha/NT
 Justin Zaun <jzaun@telerama.com>			Some templates
 Belcon Zhao <rainfall@yeah.net> 			Testing/fixing CJK support
-Johan Bjˆrk <phearbear@home.se>				QNX Maintainer
+Johan Bj√∂rk <phearbear@home.se>				QNX Maintainer
 Justin McPherson <ysidro@io.com>			Win32 Keyboard fixes
-Alberto Cabello S·nchez <alberto@unex.es>               LaTeX export fixes
+Alberto Cabello S√°nchez <alberto@unex.es>               LaTeX export fixes
 
 translators
 -----------
@@ -235,16 +235,16 @@ Takeshi Aihana <aihana@muc.biglobe.ne.jp,
 		aihana@turbolinux.co.jp>		Japanese (jp-JP)
 Albi <albi@linuxfan.com> <onderste@casema.net>		Dutch
 Jesus Bravo Alvarez <jba@pobox.com> 			Galician
-RamÛn Flores <fa2ramon@yahoo.com>			Galician
+Ram√≥n Flores <fa2ramon@yahoo.com>			Galician
 Henrik Berg <henrik@lansen.se>				Swedish
 Christopher Caron <ChrisDigo@aol.com>			Help (French)
-FrÈdÈric CELLA <fcella@mahj.org>			French
+Fr√©d√©ric CELLA <fcella@mahj.org>			French
 Philippe Duperron <duperron@mail.dotcom.fr>	 	French
 Kenneth Christiansen <kenneth@gnu.org>			Danish
-Jes˙s Corrius <jesus@softcatala.org>			Catalan
-JoaquÌn Cuenca Abela <cuenca@celium.net>		Castellan
-Javier Y·Òez <javier@cibal.es>				Castellan
-Luis Miguel GarcÌa <ktech@wanadoo.es>			Castellan
+Jes√∫s Corrius <jesus@softcatala.org>			Catalan
+Joaqu√≠n Cuenca Abela <cuenca@celium.net>		Castellan
+Javier Y√°√±ez <javier@cibal.es>				Castellan
+Luis Miguel Garc√≠a <ktech@wanadoo.es>			Castellan
 Francisco Javier F. Serrador <serrador@arrakis.es>	Castellan
 Tamas Decsi <tamas@pressflex.com>			Hungarian
 Vadim Frolov <vadim@krug.uch.net>			Ukrainian (uk-UA)
@@ -265,10 +265,10 @@ Jarmo Karvonen <jarmo@dawn.joensuu.fi>			Finnish
 Mantas Kriauciunas <mantelis@centras.lt>		Lithuanian (lt-LT)
 Michl Ladislav <xmichl03@stud.fee.vutbr.cz> 		Czech
 Karl Ove Hufthammer <karl@huftis.org>			Norwegian (Nynorsk)
-Gro Elin Hansen  <Gro.Hansen@student.uib.no>		Norwegian (BokmÂl)
-Edouard Lafargue <Edouard.Lafargue@bigfoot.com>		Norwegian (BokmÂl)
-Kjartan Maraas <kmaraas@online.no>			Norwegian (BokmÂl)
-Karl Trygve Kalleberg <karltk@prosalg.no>		Norwegian (BokmÂl)
+Gro Elin Hansen  <Gro.Hansen@student.uib.no>		Norwegian (Bokm√•l)
+Edouard Lafargue <Edouard.Lafargue@bigfoot.com>		Norwegian (Bokm√•l)
+Kjartan Maraas <kmaraas@online.no>			Norwegian (Bokm√•l)
+Karl Trygve Kalleberg <karltk@prosalg.no>		Norwegian (Bokm√•l)
 Linus G Larsson <linus@centrumntr.se>			Swedish
 Per Larsson <tucker@algonet.se> 			Swedish
 Jordi Mas <jmas@softcatala.org> 			Catalan
@@ -276,13 +276,14 @@ Marc Maurer <j.m.maurer@student.utwente.nl>		Dutch
 Zbynek Miksa <xmiksa@informatics.muni.cz>		Czech
 Gediminas Paulauskas <menesis@03bar.ktu.lt> 		Lithuanian
 John Profic <profic@linux.ru.net>			Russian
-nshmyrev <nshmyrev@yandex.ru>				Russian
+Nickolay Shmyrev (–ù–∏–∫–æ–ª–∞–π –í. –®–º—ã—Ä—ë–≤)
+		 <nshmyrev@yandex.ru>			Russian
 Piotr Banski <bansp@bigfoot.com>			Polish
 Andrzej Pruszynski <abi@rth.coi.waw.pl>			Polish
 Eutanazy Sercxemulo <szperacz@free.net.pl>		Polish
 Giovanni dos Reis Nunes <giovanni@skydome.net>		Portugese (Brazil)
 Rui M. Silva Seabra <rms@1407.org>	 		Portugese (Portugal)
-T‚nia M. G. Ferreira <tmgferreira@hotmail.com>		Portugese (Portugal)
+T√¢nia M. G. Ferreira <tmgferreira@hotmail.com>		Portugese (Portugal)
 Martin Lacko <lacko@host.sk>				Slovak
 Christian Neumair <christian-neumair@web.de>		German
 Christian Terboven <cterboven@gmx.net>			German
@@ -302,7 +303,7 @@ Nguyen Thai Ngoc Duy <pclouds@users.sourceforge.net>	Vietnamese
 Sharuzzaman Ahmat Raslan <sharuzzaman@myrealbox.com>	Malay
 Raphael Finkel <raphael@cs.uky.edu>			Yiddish
 Besnik Bleta <besnikbleta@hotmail.com>			Albanian
-Alberto Cabello S·nchez <alberto@unex.es> 
+Alberto Cabello S√°nchez <alberto@unex.es> 
 Vital Khilko <dojlid@mova.org>				Belarusian
 Gustavs Galdins <gusts@mits.lv>				Latvian
 
