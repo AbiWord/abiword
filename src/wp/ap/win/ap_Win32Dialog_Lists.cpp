@@ -95,12 +95,14 @@ void AP_Win32Dialog_Lists::runModeless(XAP_Frame * pFrame)
 	// Always revert to non-customized state when bringing it up.
 	m_bDisplayCustomControls = false;
 	m_bisCustomized = false;
-	if( m_hThisDlg )
+	if ( m_hThisDlg )
 	{
 		m_bisCustomized = _isNewList();
 		_customChanged();
 		_setData();
 	}
+
+	clearDirty();
 
 	// raise the dialog
 	_win32Dialog.runModeless(pFrame, AP_DIALOG_ID_LISTS, AP_RID_DIALOG_LIST, this);
@@ -250,6 +252,7 @@ BOOL AP_Win32Dialog_Lists::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		{
 			m_bisCustomized = true;
 			_typeChanged();
+			setDirty();
 			return 1;
 		}
 		return 0;
@@ -259,12 +262,14 @@ BOOL AP_Win32Dialog_Lists::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		{
 			m_bisCustomized = true;
 			_styleChanged();
+			setDirty();
 			return 1;
 		}
 		return 0;
 
 	case AP_RID_DIALOG_LIST_BTN_FONT:
 		_selectFont();
+		setDirty();
 		return 1;						// return zero to let windows take care of it.
 
 //	case AP_RID_DIALOG_LIST_EDIT_LIST_ALIGN:
@@ -274,18 +279,15 @@ BOOL AP_Win32Dialog_Lists::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		if (wNotifyCode == EN_CHANGE)
 		{
 			_getData();
+			setDirty();
 			_previewExposed();
 			return 1;
 		}
 		return 0;
 
 	default:	// we did not handle this notification
-		if (_win32Dialog.isControlVisible(wId))
-		{
-			UT_DEBUGMSG(("AP_Win32Dialog_Lists::_onCommand, WM_Command for visible control ID %ld\n",wId));
-		} else {
-			UT_DEBUGMSG(("AP_Win32Dialog_Lists::_onCommand, WM_Command for invisible control ID %ld\n",wId));
-		}
+		UT_DEBUGMSG(("AP_Win32Dialog_Lists::_onCommand, WM_Command for %svisible control ID %ld\n",
+					_win32Dialog.isControlVisible(wId) ? "" : "in", wId));
 		return 0;	// return zero to let windows take care of it.
 	}
 }
@@ -378,13 +380,18 @@ void AP_Win32Dialog_Lists::notifyActiveFrame(XAP_Frame *pFrame)
 
 void AP_Win32Dialog_Lists::notifyCloseFrame(XAP_Frame *pFrame)
 {
-	XAP_Win32Frame* pWin32Frame = static_cast<XAP_Win32Frame *>(pFrame);
-	if (_win32Dialog.isParentFrame(*pWin32Frame))
+	// Check that our hWnd still is valid. This is not always the case,
+	// such as when shutting down the application.
+	if (IsWindow(m_hThisDlg))
 	{
-		m_bisCustomized = false;
-		setActiveFrame(getActiveFrame());
+		XAP_Win32Frame* pWin32Frame = static_cast<XAP_Win32Frame *>(pFrame);
+		if (_win32Dialog.isParentFrame(*pWin32Frame))
+		{
+			m_bisCustomized = false;
+			setActiveFrame(getActiveFrame());
+		}
+		_updateCaption();
 	}
-	_updateCaption();
 }
 
 void AP_Win32Dialog_Lists::_enableControls(void)
@@ -961,8 +968,17 @@ void AP_Win32Dialog_Lists::autoupdateLists(UT_Timer * pTimer)
 
 	if (pDialog)	// runtime failsafe
 	{
-		pDialog->_enableControls();
-		pDialog->_previewExposed();
+		if (pDialog->isDirty())
+		{
+			return;
+		}
+		AV_View* pView = pDialog->getAvView();
+		if (!pView || pView->getTick() != pDialog->getTick())
+		{
+			pDialog->setTick(pView ? pView->getTick() : 0);
+			pDialog->_enableControls();
+			pDialog->_previewExposed();
+		}
 	}
 }
 
