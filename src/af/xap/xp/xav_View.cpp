@@ -177,7 +177,7 @@ void AV_View::setInsertMode(bool bInsert)
 	m_bInsertMode = bInsert; 
 
 	notifyListeners(AV_CHG_INSERTMODE); 
-};
+}
 
 /*! the input is in device units, but internal storage is in logical units
  */

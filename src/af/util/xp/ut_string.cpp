@@ -21,6 +21,11 @@
 
 #include <stdlib.h>
 #include <string.h>
+
+#ifdef __QNXNTO__
+#include <strings.h>
+#endif
+
 #include <math.h>
 #include <ctype.h>
 
@@ -30,7 +35,7 @@
 #include "ut_string.h"
 #include "ut_debugmsg.h"
 #include "ut_growbuf.h"
-#include <fribidi/fribidi.h>
+#include <fribidi.h>
 #include "ut_mbtowc.h"
 #include "ut_wctomb.h"
 
@@ -154,28 +159,39 @@ char * UT_strdup(const char * szSource)
 
 UT_sint32 UT_stricmp(const char * s1, const char * s2)
 {
-  UT_return_val_if_fail(s1, 1);
-  UT_return_val_if_fail(s2, -1);
+ UT_return_val_if_fail(s1, 1);
+ UT_return_val_if_fail(s2, -1);
 
-	// Lifted from glibc.  Looks better (in a constant-factor sort of way)
-	// than what we had before.  Ideally this should be per-platform.
-	const unsigned char *p1 = reinterpret_cast<const unsigned char *>(s1);
-	const unsigned char *p2 = reinterpret_cast<const unsigned char *>(s2);
-	unsigned char c1, c2;
+#if defined(HAVE_STRCASECMP)
 
-	if (s1 == s2)
-		return 0;
+  return strcasecmp(s1,s2);
 
-	do
-    {
-		c1 = tolower (*p1++);
-		c2 = tolower (*p2++);
-		if (c1 == '\0')
-			break;
-    }
-	while (c1 == c2);
+#elif defined(HAVE_STRICMP)
+  
+  return stricmp(s1,s2);
 
-	return c1 - c2;
+#else
+
+  // Lifted from glibc.  Looks better (in a constant-factor sort of way)
+  // than what we had before.  Ideally this should be per-platform.
+  const unsigned char *p1 = reinterpret_cast<const unsigned char *>(s1);
+  const unsigned char *p2 = reinterpret_cast<const unsigned char *>(s2);
+  unsigned char c1, c2;
+  
+  if (s1 == s2)
+	  return 0;
+  
+  do
+  {
+	  c1 = tolower (*p1++);
+	  c2 = tolower (*p2++);
+	  if (c1 == '\0')
+		  break;
+  }
+  while (c1 == c2);
+  
+  return c1 - c2;
+#endif /* HAVE_STRCASECMP || HAVE_STRICMP */
 }
 
 // should really be a size_t, but that might break compilation on weird
@@ -1086,7 +1102,7 @@ bool UT_UCS4_isupper(UT_UCS4Char c)
     if(letter && letter->type == 1)
         return true;
     return false;
-};
+}
 
 bool UT_UCS4_islower(UT_UCS4Char c)
 {
@@ -1097,7 +1113,7 @@ bool UT_UCS4_islower(UT_UCS4Char c)
     if(!letter || letter->type == 0)
         return true;
     return false;
-};
+}
 
 bool UT_UCS4_isspace(UT_UCS4Char c)
 {
@@ -1112,13 +1128,13 @@ bool UT_UCS4_isspace(UT_UCS4Char c)
 		return false;
 	}
 	return false;
-};
+}
 
 bool UT_UCS4_isalpha(UT_UCS4Char c)
 {
     FriBidiCharType type = fribidi_get_type(c);
     return (FRIBIDI_IS_LETTER(type) != 0);
-};
+}
 
 bool UT_UCS4_isSentenceSeparator(UT_UCS4Char c)
 {
@@ -1564,5 +1580,5 @@ const char* std_size_string(float f)
 	sprintf(string,"%d.%d", i,fr);
   };
   return string;
-};
+}
 

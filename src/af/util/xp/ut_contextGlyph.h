@@ -29,7 +29,7 @@
 #endif
 #include "ut_misc.h"
 
-#include <fribidi/fribidi.h>
+#include <fribidi.h>
 
 class UT_StringPtrMap;
 class XAP_App;

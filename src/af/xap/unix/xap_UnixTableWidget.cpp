@@ -21,6 +21,8 @@
  * 02111-1307, USA.
  */
 
+#undef GTK_DISABLE_DEPRECATED
+
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>
 #include <gdk/gdk.h>
@@ -30,6 +32,7 @@
 #include <gtk/gtkbutton.h>
 #include <gtk/gtkwindow.h>
 #include <gtk/gtksignal.h>
+#include <gtk/gtktoolbar.h>
 #include "xap_UnixTableWidget.h"
 #include "xap_Strings.h"
 #include "ap_Strings.h"
@@ -38,7 +41,7 @@
 #include "ut_debugmsg.h"
 
 /* NONE:UINT,UINT (/dev/stdin:1) */
-void
+static void
 g_cclosure_user_marshal_VOID__UINT_UINT (GClosure     *closure,
                                          GValue       *return_value,
                                          guint         n_param_values,
@@ -86,11 +89,11 @@ static GtkObjectClass *abi_table_parent_class;
 
 /* ------------------- now the guts of AbiTable ---------------------- */
 
-const guint cell_width = 24;
-const guint cell_height = 24;
-const guint cell_spacing = 4;
-const guint init_rows = 0;
-const guint init_cols = 0;
+static const guint cell_width = 24;
+static const guint cell_height = 24;
+static const guint cell_spacing = 4;
+static const guint init_rows = 0;
+static const guint init_cols = 0;
 
 static inline void
 cells_to_pixels(guint cols, guint rows, guint* w, guint* h)
@@ -203,7 +206,7 @@ abi_table_embed_on_toolbar (AbiTable* abi_table, GtkToolbar* toolbar)
 		gtk_widget_hide(abi_table->label);
 #endif
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
-	gtk_toolbar_append_widget (toolbar, GTK_WIDGET(abi_table), pSS->getValueUTF8(XAP_STRING_ID_TB_InsertNewTable).c_str(), NULL);
+	gtk_toolbar_append_widget (toolbar, GTK_WIDGET(abi_table), pSS->getValueUTF8(XAP_STRING_ID_TB_InsertNewTable).utf8_str(), NULL);
 }
 
 static gboolean
@@ -648,9 +651,9 @@ static void
 abi_table_init (AbiTable* table)
 {
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
-	UT_String prText =  "%d x %d ";
+	UT_UTF8String prText =  "%d x %d ";
 	prText += pSS->getValueUTF8(XAP_STRING_ID_TB_Table);
-	char* text = g_strdup_printf(prText.c_str(), init_rows, init_cols);
+	char* text = g_strdup_printf(prText.utf8_str(), init_rows, init_cols);
 
 	register_stock_icon();
 	

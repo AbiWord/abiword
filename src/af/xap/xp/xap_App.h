@@ -188,6 +188,7 @@ public:
 
 	void                            setBonoboRunning(void) {m_bBonoboRunning = true;}
 	bool                            isBonoboRunning(void) const { return m_bBonoboRunning;}
+	virtual void							getDefaultGeometry(UT_uint32& width, UT_uint32& height, UT_uint32& flags){};
 
 protected:
 	void									_setAbiSuiteLibDir(const char * sz);

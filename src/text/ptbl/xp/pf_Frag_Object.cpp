@@ -369,7 +369,12 @@ pf_Frag_Object::pf_Frag_Object(pt_PieceTable * pPT,
     else if (objectType==PTO_Bookmark)
     {
     	po_Bookmark::BookmarkType BT;
-    	if(0 == UT_strcmp(pszType, "end"))
+
+		if(!pszType) {
+			// see bug 6489...
+			UT_ASSERT_NOT_REACHED();
+			BT = po_Bookmark::POBOOKMARK_END;
+		} else if(0 == UT_strcmp(pszType, "end"))
 			BT = po_Bookmark::POBOOKMARK_END;
 		else
 			BT = po_Bookmark::POBOOKMARK_START;

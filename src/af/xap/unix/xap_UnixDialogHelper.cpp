@@ -623,8 +623,10 @@ void abiSetupModalDialog(GtkDialog * me, XAP_Frame *pFrame, XAP_Dialog * pDlg, g
 	gtk_window_set_modal ( GTK_WINDOW(me), TRUE ) ;
 }
 
-gint abiRunModalDialog(GtkDialog * me, bool destroyDialog)
+gint abiRunModalDialog(GtkDialog * me, bool destroyDialog, AtkRole role)
 {
+	atk_object_set_role (gtk_widget_get_accessible (GTK_WIDGET (me)), role);
+
   // now run the dialog
   gint result = gtk_dialog_run ( me ) ;
   
@@ -646,10 +648,10 @@ gint abiRunModalDialog(GtkDialog * me, bool destroyDialog)
  * 7) If \destroyDialog is true, destroys the dialog, else you have to call abiDestroyWidget()
  */
 gint abiRunModalDialog(GtkDialog * me, XAP_Frame *pFrame, XAP_Dialog * pDlg,
-					   gint dfl_response, bool destroyDialog )
+					   gint dfl_response, bool destroyDialog, AtkRole role)
 {
   abiSetupModalDialog(me, pFrame, pDlg, dfl_response);
-  return abiRunModalDialog(me, destroyDialog);
+  return abiRunModalDialog(me, destroyDialog, role);
 }
 
 /*!
@@ -663,7 +665,7 @@ gint abiRunModalDialog(GtkDialog * me, XAP_Frame *pFrame, XAP_Dialog * pDlg,
 6) Sets the default button to dfl_response, sets ESC to close
  */
 void abiSetupModelessDialog(GtkDialog * me, XAP_Frame * pFrame, XAP_Dialog * pDlg,
-			    gint dfl_response, bool abi_modeless )
+							gint dfl_response, bool abi_modeless, AtkRole role )
 {
 	// To center the dialog, we need the frame of its parent.
 	XAP_UnixFrameImpl * pUnixFrameImpl = static_cast<XAP_UnixFrameImpl *>(pFrame->getFrameImpl());
@@ -684,7 +686,7 @@ void abiSetupModelessDialog(GtkDialog * me, XAP_Frame * pFrame, XAP_Dialog * pDl
 	
 	// connect F1 to the help subsystem
 	g_signal_connect (G_OBJECT(me), "key-press-event",
-			  G_CALLBACK(nonmodal_keypress_cb), pDlg);
+					  G_CALLBACK(nonmodal_keypress_cb), pDlg);
 	
 	// set the default response
 	gtk_dialog_set_default_response ( me, dfl_response ) ;
@@ -699,6 +701,8 @@ void abiSetupModelessDialog(GtkDialog * me, XAP_Frame * pFrame, XAP_Dialog * pDl
 	
 	// and mark it as modeless
 	gtk_window_set_modal ( GTK_WINDOW(me), FALSE ) ;
+
+	atk_object_set_role (gtk_widget_get_accessible (GTK_WIDGET (me)), ATK_ROLE_ALERT);
 }
 
 /*!
@@ -837,7 +841,7 @@ void localizeLabel(GtkWidget * widget, const XAP_StringSet * pSS, XAP_String_Id 
 {
 	XML_Char * unixstr = NULL;	// used for conversions
 	
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(id).c_str());
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(id).utf8_str());
 	gtk_label_set_text (GTK_LABEL(widget), unixstr);
 	FREEP(unixstr);	
 }
@@ -848,7 +852,7 @@ void localizeLabel(GtkWidget * widget, const XAP_StringSet * pSS, XAP_String_Id 
  */
 void localizeLabelUnderline(GtkWidget * widget, const XAP_StringSet * pSS, XAP_String_Id id)
 {
-	XML_Char * newlbl = UT_strdup(pSS->getValueUTF8(id).c_str());
+	XML_Char * newlbl = UT_strdup(pSS->getValueUTF8(id).utf8_str());
 	UT_ASSERT(newlbl);
 	for (UT_uint32 i = 0; newlbl[i] != 0; i++) 
 	{
@@ -877,7 +881,7 @@ void localizeLabelMarkup(GtkWidget * widget, const XAP_StringSet * pSS, XAP_Stri
 {
 	XML_Char * unixstr = NULL;	// used for conversions
 	
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(id).c_str());
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(id).utf8_str());
 	UT_String markupStr(UT_String_sprintf(gtk_label_get_label (GTK_LABEL(widget)), unixstr));
 	gtk_label_set_markup (GTK_LABEL(widget), markupStr.c_str());
 	FREEP(unixstr);	
@@ -890,7 +894,7 @@ void localizeButton(GtkWidget * widget, const XAP_StringSet * pSS, XAP_String_Id
 {
 	XML_Char * unixstr = NULL;	// used for conversions
 	
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(id).c_str());
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(id).utf8_str());
 	gtk_button_set_label (GTK_BUTTON(widget), unixstr);
 	FREEP(unixstr);	
 }
@@ -901,7 +905,7 @@ void localizeButton(GtkWidget * widget, const XAP_StringSet * pSS, XAP_String_Id
  */
 void localizeButtonUnderline(GtkWidget * widget, const XAP_StringSet * pSS, XAP_String_Id id)
 {
-	XML_Char * newlbl = UT_strdup(pSS->getValueUTF8(id).c_str());
+	XML_Char * newlbl = UT_strdup(pSS->getValueUTF8(id).utf8_str());
 	UT_ASSERT(newlbl);
 	for (UT_uint32 i = 0; newlbl[i] != 0; i++) 
 	{
@@ -929,7 +933,7 @@ void localizeMenu(GtkWidget * widget, const XAP_StringSet * pSS, XAP_String_Id i
 //	UT_ASSERT(GTK_IS_MENU(widget));
 	XML_Char * unixstr = NULL;	// used for conversions
 	
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(id).c_str());
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(id).utf8_str());
 	gtk_menu_set_title (GTK_MENU(widget), unixstr);
 	FREEP(unixstr);	
 }

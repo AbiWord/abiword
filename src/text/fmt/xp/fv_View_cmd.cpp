@@ -99,6 +99,7 @@ void FV_View::cmdCharMotion(bool bForward, UT_uint32 count)
 		_moveToSelectionEnd(bForward);
 		_fixInsertionPointCoords();
 		_ensureInsertionPointOnScreen();
+		notifyListeners(AV_CHG_MOTION);
 		return;
 	}
 
@@ -365,6 +366,11 @@ bool FV_View::cmdMergeCells(PT_DocPosition posSource, PT_DocPosition posDestinat
 				}
 				bChanged = true;
 				_MergeCells(posSource,posWork,false);
+				UT_ASSERT(Bot > Top);
+				if(Bot <= Top)
+				{
+					break;
+				}
 				Top = Bot;
 			}
 //
@@ -466,17 +472,146 @@ bool FV_View::cmdMergeCells(PT_DocPosition posSource, PT_DocPosition posDestinat
 		return false;
 	}
 //
+// Now check if we've merged a whole row of height 2 or a whole col of width two//
+// Start with whole row.
+//
+	posDestination = findCellPosAt(posTable,dTop,dLeft) +2;
+	getCellParams(posDestination,&dLeft,&dRight,&dTop,&dBot);
+	UT_sint32 origTop = dTop;
+	if((dLeft==0) && (dRight== numCols))
+	{
+//
+// Yep one whole row merged.
+//
+// Look for the number of rows spanned now
+//
+		if(dBot > (dTop+1))
+		{
+//
+// Yep we have problem, we'll fix it. Subtract this number from all the cells
+// top and Bottom attach
+//
+			UT_sint32 diff = dBot - dTop -1;
+			PL_StruxDocHandle sdhCell = NULL;
+			PL_StruxDocHandle sdhNextCell = NULL;
+			PL_StruxDocHandle sdhEndTable = NULL;
+			PT_DocPosition posEndTable = 0;
+			PT_DocPosition posCell = 0;
+			bRes = m_pDoc->getStruxOfTypeFromPosition(posDestination,PTX_SectionCell,&sdhCell);
+			UT_return_val_if_fail(bRes,false);
+			sdhEndTable = m_pDoc->getEndTableStruxFromTableSDH(tableSDH);
+			UT_return_val_if_fail(sdhEndTable,false);
+			posEndTable = m_pDoc->getStruxPosition(sdhEndTable);
+			bool bKeepGoing = true;
+			while(bKeepGoing)
+			{
+				posCell = m_pDoc->getStruxPosition(sdhCell)+1;
+				getCellParams(posCell,&dLeft,&dRight,&dTop,&dBot);
+				dBot -= diff;
+				UT_sint32 row = dTop;
+				if(dTop != origTop)
+				{
+					dTop -= diff;
+				}
+				_changeCellTo(posTable,row,dLeft,dLeft,dRight,dTop,dBot); 
+
+				bRes = m_pDoc->getNextStruxOfType(sdhCell,PTX_SectionCell,&sdhNextCell);
+				PT_DocPosition posNextCell = 0;
+				if(bRes)
+				{
+					posNextCell = m_pDoc->getStruxPosition(sdhNextCell);
+					if(posNextCell > posEndTable)
+					{
+						posNextCell = 0;
+						bKeepGoing = false;
+						break;
+					}
+				}
+				else
+				{
+					bKeepGoing = false;
+					break;
+				}
+				sdhCell = sdhNextCell;
+			}
+
+		}
+	}
+//
+// Look for a whole merged column
+//
+	if((dTop==0) && (dBot == numRows))
+	{
+//
+// Yep one whole col merged.
+//
+// Look for the number of cols spanned now
+//
+		if(dRight > (dLeft+1))
+		{
+//
+// Yep we have problem, we'll fix it. Subtract this number from all the cells
+// Right attach from this cell and left and right for all cells to the right
+// of it
+// This is a bit tricky
+// because we don't want to subtract the difference twice so we'll make a 
+// vector of unique cell sdh's and only do our thing one those that aren't in 
+// it
+//
+			UT_sint32 diff = dRight - dLeft -1;
+			UT_sint32 origLeft = dLeft;
+			UT_sint32 origRight = dRight;
+			PL_StruxDocHandle sdhCell = NULL;
+			PT_DocPosition posCell = 0;
+			UT_Vector vecCells;
+			posCell = findCellPosAt(posTable, dTop, dLeft)+1;
+			m_pDoc->getStruxOfTypeFromPosition(posCell,PTX_SectionCell,&sdhCell);
+			vecCells.addItem(static_cast<const void*>(sdhCell));
+			getCellParams(posCell,&dLeft,&dRight,&dTop,&dBot);
+			dRight -= diff;
+			_changeCellTo(posTable,dTop,dLeft,dLeft,dRight,dTop,dBot); 
+			UT_sint32 row,col=0;
+			for (col = 0; col < numCols; col++)
+			{
+				for(row =0; row < numRows;row++)
+				{
+					posCell = findCellPosAt(posTable, row, col)+1;
+					m_pDoc->getStruxOfTypeFromPosition(posCell,PTX_SectionCell,&sdhCell);
+					if((sdhCell==NULL) || (vecCells.findItem(const_cast<void*>(sdhCell)) >= 0))
+					{
+						continue;
+					}
+					getCellParams(posCell,&dLeft,&dRight,&dTop,&dBot);
+					bool bDoIt = false;
+					if(dLeft > origLeft)
+					{
+						dLeft -= diff;
+						bDoIt = true;
+					}
+					if(dRight >= origRight)
+					{
+						dRight -= diff;
+						bDoIt = true;
+					}
+					if(bDoIt)
+					{
+						vecCells.addItem(static_cast<const void*>(sdhCell));
+						_changeCellTo(posTable,row,col,dLeft,dRight,dTop,dBot); 
+					}
+				}
+			}
+		}
+	}
+//
 // Now trigger a rebuild of the whole table by sending a changeStrux to the table strux
 // with the restored line-type property it has before.
 //
 	iLineType += 1;
 	_restoreCellParams(posTable,iLineType);
-	posDestination = findCellPosAt(posTable,dTop,dLeft) +2;
 	setPoint(posDestination);
-//	_charMotion(true,1);
-	notifyListeners(AV_CHG_MOTION);
 	_fixInsertionPointCoords();
 	_ensureInsertionPointOnScreen();
+	notifyListeners(AV_CHG_MOTION);
 	return true;
 }
 
@@ -1881,12 +2016,16 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const XML
 	m_pDoc->beginUserAtomicGlob();
 	if (!isSelectionEmpty())
 	{
+		m_pDoc->setDontImmediatelyLayout(true);
 		m_pDoc->beginUserAtomicGlob();
 		PP_AttrProp AttrProp_Before;
 		_deleteSelection(&AttrProp_Before);
 		m_pDoc->endUserAtomicGlob();
 	}
-	m_pDoc->setDontImmediatelyLayout(true);
+	else
+	{
+		m_pDoc->setDontImmediatelyLayout(true);
+	}
 //
 // insert a block to terminate the text before this.
 //
@@ -2199,7 +2338,7 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 		}
 		else
 		{
-			if(!isInFootnote() && isInFootnote(getPoint() - count))
+			if(!isInFootnote(getPoint()) && isInFootnote(getPoint() - count))
 			{
 				fl_FootnoteLayout * pFL = getClosestFootnote(getPoint());
 				count += pFL->getLength();
@@ -2343,7 +2482,10 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 
 		//special handling is required for delete in revisions mode
 		//where we have to move the insertion point
-		if(isMarkRevisions())
+		// only if we are deleting forward; if deleting backwards, the
+		// code above already moved the insertion point
+		// Tomas, Oct 28, 2003
+		if(bForward && isMarkRevisions())
 		{
 			UT_ASSERT( iRealDeleteCount <= count );
 			_charMotion(bForward,count - iRealDeleteCount);
@@ -2760,6 +2902,7 @@ void FV_View::cmdPaste(bool bHonorFormatting)
 	m_pDoc->disableListUpdates();
 	m_pDoc->setDoingPaste();
 	setCursorWait();
+	m_pDoc->setDontImmediatelyLayout(true);
 	_doPaste(true, bHonorFormatting);
 
 	// restore updates and clean up dirty lists
@@ -3268,7 +3411,7 @@ void FV_View::cmdContextIgnoreAll(void)
 	{
 		// remove the squiggles, too
 		fl_DocSectionLayout * pSL = m_pLayout->getFirstSection();
-		while (pSL)
+		if (pSL)
 		{
 			fl_BlockLayout* b = static_cast<fl_BlockLayout *>(pSL->getFirstLayout());
 			while (b)
@@ -3276,9 +3419,8 @@ void FV_View::cmdContextIgnoreAll(void)
 				// TODO: just check and remove matching squiggles
 				// for now, destructively recheck the whole thing
 				m_pLayout->queueBlockForBackgroundCheck(FL_DocLayout::bgcrSpelling, b);
-				b = static_cast<fl_BlockLayout *>(b->getNext());
+ 				b = static_cast<fl_BlockLayout *>(b->getNextBlockInDocument());
 			}
-			pSL = static_cast<fl_DocSectionLayout *>(pSL->getNext());
 		}
 	}
 }
@@ -3304,7 +3446,7 @@ void FV_View::cmdContextAdd(void)
 	{
 		// remove the squiggles, too
 		fl_DocSectionLayout * pSL = m_pLayout->getFirstSection();
-		while (pSL)
+		if(pSL)
 		{
 			fl_BlockLayout* b = static_cast<fl_BlockLayout *>(pSL->getFirstLayout());
 			while (b)
@@ -3314,10 +3456,13 @@ void FV_View::cmdContextAdd(void)
 				if(b->getContainerType() == FL_CONTAINER_BLOCK)
 				{
 					m_pLayout->queueBlockForBackgroundCheck(FL_DocLayout::bgcrSpelling, b);
+					b = static_cast<fl_BlockLayout *>(b->getNextBlockInDocument());
 				}
-				b = static_cast<fl_BlockLayout *>(b->getNext());
+				else
+				{
+					b = static_cast<fl_BlockLayout *>(b->getNext());
+				}
 			}
-			pSL = static_cast<fl_DocSectionLayout *>(pSL->getNext());
 		}
 	}
 }

@@ -23,7 +23,7 @@
 #include "ut_types.h"
 #include "pt_Types.h"
 #include "ut_stack.h"
-
+#include "xav_Listener.h"
 #include "pl_Listener.h"
 
 class FL_DocLayout;
@@ -51,6 +51,10 @@ public:
 
 	virtual bool		change(PL_StruxFmtHandle sfh,
 							   const PX_ChangeRecord * pcr);
+
+
+	virtual void		deferNotifications(void);
+	virtual void		processDeferredNotifications(void);
 
 	virtual bool		insertStrux(PL_StruxFmtHandle sfh,
 									const PX_ChangeRecord * pcr,
@@ -87,6 +91,8 @@ private:
 	UT_Stack               m_sLastContainerLayout;
 	bool                   m_bFootnoteInProgress;
 	bool                   m_bEndFootnoteProcessedInBlock;
+	AV_ChangeMask          m_chgMaskCached;
+	bool                   m_bCacheChanges;
 };
 
 #endif /* FL_DOCLISTENER_H */

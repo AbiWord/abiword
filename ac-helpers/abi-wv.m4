@@ -40,30 +40,25 @@ if test "x$abi_sys_wv" != "xno"; then
 
 # check for a shared install
 
-	if test "x$abi_sys_wv" != "xyes"; then
-		AC_PATH_PROG(WVLIBCFG,wv-libconfig,,["$abi_sys_wv"/bin:$PATH])
-	else
-		AC_PATH_PROG(WVLIBCFG,wv-libconfig,,[$PATH])
-	fi
-	if test "x$WVLIBCFG" = "x"; then
-		AC_MSG_WARN([* * * Can't find wv-libconfig, so I'm just going to guess what libs I need. * * *])
-		abi_wv_libs="-lwv -lpng -lz"
-	else
-		abi_wv_libs=`$WVLIBCFG`
-	fi
-	AC_CHECK_LIB(wv,wvInitParser,,[
-		AC_MSG_WARN([* * * unable to link against libwv. * * *])
-		_abi_wv_warning=yes
-	],$abi_wv_libs)
-	AC_CHECK_HEADER(wv.h,        ,[
-		AC_MSG_WARN([* * * unable to find wv.h * * *])
-		_abi_wv_warning=yes
-	])
-	WV_CFLAGS=""
-	WV_LIBS="$abi_wv_libs"
-	WV_PEERDIR=""
+# Thank goodness, or fjf, for using pkgconfig now.
+       PKG_CHECK_MODULES(WV,[
+              wv-1.0 >= 1.0.0
+       ],[    abi_syswv=yes
+       ],[    abi_syswv=no
+       ])
+       if test $abi_syswv = no; then
+              AC_MSG_ERROR([$WV_PKG_ERRORS])
+       else
+	dnl should really put flags in here to ease up on the code
+              WV_CFLAGS="$WV_CFLAGS"
+              AC_SUBST(WV_CFLAGS)
+       fi
+                                                                                                                                                                              
+       WV_LIBS="$WV_LIBS"
+	AC_SUBST(WV_LIBS)
 
-	abi_wv_message="wv in $abi_wv_libs"
+	abi_wv_message="$WV_LIBS"
+	
 else
 
 # otherwise, use the sources given as an argument.  [ this means the
@@ -124,3 +119,5 @@ echo "         Note: AbiWord-1.0.x requires a different version of libwv"
 echo ""
 
 ])
+
+

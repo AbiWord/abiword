@@ -39,7 +39,7 @@
 #include "fl_BlockLayout.h"
 #include "ap_Preview_Paragraph.h"
 #include "xad_Document.h"
-#include <fribidi/fribidi.h>
+#include <fribidi.h>
 
 AP_Dialog_Lists::AP_Dialog_Lists(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 :	XAP_Dialog_Modeless(pDlgFactory, id, "interface/dialoglists"),
@@ -266,6 +266,7 @@ void AP_Dialog_Lists::Apply(void)
 		m_OutProps.addItem((void *) "text-indent");
 		m_Output[3] = UT_convertInchesToDimensionString(DIM_IN, m_fIndent, 0);
 		m_OutProps.addItem((void *) m_Output[3].c_str());
+		m_Answer = a_OK;
 		return;
 	}
 /*!
@@ -975,8 +976,7 @@ void AP_Dialog_Lists::ConstructWindowName(void)
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	XML_Char * tmp = NULL;
 	UT_uint32 title_width = 33;
-	UT_String sTitle(pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Title));
-	UT_XML_cloneNoAmpersands(tmp, sTitle.c_str());
+	UT_XML_cloneNoAmpersands(tmp, pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Title).utf8_str());
 	BuildWindowName((char *) m_WindowName,(char*)tmp,title_width);
 	FREEP(tmp);
 }

@@ -167,7 +167,7 @@ void XAP_QNXDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 
 	m_answer = a_OK;
 
-#define DRAWING_RESOLUTION 96 
+#define DRAWING_RESOLUTION 72 
 	if (value == Pt_PRINTSEL_PRINT || value == Pt_PRINTSEL_PREVIEW) {
 		UT_uint32 first = 0, last = 0;
 		char *option;
@@ -175,15 +175,10 @@ void XAP_QNXDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 		PhRect_t 	nrect;
 		PhDim_t 	*dim, size;
 
-		//TODO: Do we need to specify a source of 72 dpi?
-
-#if 0 /* This makes bad things happen */
 		//Set the scaling to be 1 to 1, by setting x,y to -1000
 		point.x = point.y = -1000;
 		PpSetPC(m_pPrintContext, Pp_PC_SCALE, &point, 0);
-#endif
 
-		/* This doesn't make a difference, do it anyway */
 		//Set the source resolution so that we can scale properly
 		point.x = point.y = DRAWING_RESOLUTION;		
 		PpSetPC(m_pPrintContext, Pp_PC_SOURCE_RESOLUTION, &point, 0);

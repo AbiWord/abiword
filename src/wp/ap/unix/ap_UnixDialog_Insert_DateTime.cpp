@@ -152,7 +152,7 @@ GtkWidget * AP_UnixDialog_Insert_DateTime::_constructWindow(void)
     gtk_tree_selection_set_mode (gtk_tree_view_get_selection (GTK_TREE_VIEW (m_tvFormats)), GTK_SELECTION_SINGLE);		
 	
 	// set the dialog title
-	abiDialogSetTitle(window, pSS->getValueUTF8(AP_STRING_ID_DLG_DateTime_DateTimeTitle).c_str());
+	abiDialogSetTitle(window, pSS->getValueUTF8(AP_STRING_ID_DLG_DateTime_DateTimeTitle).utf8_str());
 	
 	// localize the strings in our dialog
 	
@@ -205,14 +205,20 @@ void AP_UnixDialog_Insert_DateTime::_populateWindowData(void)
  	// build a list of all items
     for (i = 0; InsertDateTimeFmts[i] != NULL; i++)
 	{
+		gsize bytes_read = 0, bytes_written = 0;
+		char * utf;
+
         strftime(szCurrentDateTime, CURRENT_DATE_TIME_SIZE, InsertDateTimeFmts[i], pTime);
 
-		// Add a new row to the model
-		gtk_list_store_append (model, &iter);
-		gtk_list_store_set (model, &iter,
-					  		0, szCurrentDateTime,
-							1, i,
-					  		-1);
+		utf = g_locale_to_utf8(szCurrentDateTime, -1, &bytes_read, &bytes_written, NULL);
+		if (utf) {
+			// Add a new row to the model
+			gtk_list_store_append (model, &iter);
+			gtk_list_store_set (model, &iter,
+								0, utf,
+								1, i,
+								-1);
+		}
 	}
 	
 	gtk_tree_view_set_model( GTK_TREE_VIEW(m_tvFormats), reinterpret_cast<GtkTreeModel *>(model));

@@ -31,6 +31,7 @@
 AP_FrameData::AP_FrameData(XAP_App * pApp)
 {
 	m_pDocLayout = NULL;
+	m_pRootView = NULL;
 	m_pG = NULL;
 	m_pTopRuler = NULL;
 	m_pLeftRuler = NULL;
