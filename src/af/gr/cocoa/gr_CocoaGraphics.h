@@ -1,6 +1,6 @@
 /* Abiword
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001-2002 Hubert Figuiere
+ * Copyright (C) 2001-2003 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -121,8 +121,8 @@ class GR_CocoaGraphics : public GR_Graphics
 	virtual UT_uint32 getFontDescent(GR_Font *);
 	virtual UT_uint32 getFontHeight(GR_Font *);
 	
-	virtual void	  saveRectangle(UT_Rect & r);
-	virtual void	  restoreRectangle();
+	virtual void	  saveRectangle(UT_Rect & r, UT_uint32 iIndx);
+	virtual void	  restoreRectangle(UT_uint32 iIndx);
 
 
 	typedef bool (*gr_cocoa_graphics_update) (NSRect * rect, GR_CocoaGraphics *pGr, void * param);
@@ -139,6 +139,13 @@ private:
 	static NSColor				*_utRGBColorToNSColor (const UT_RGBColor& clr);
 	static void 				_utNSColorToRGBColor (NSColor *c, UT_RGBColor &clr);
 	
+	NSImage*			_makeNewCacheImage() 
+	{
+			NSImage * cache = [[NSImage alloc] initWithSize:NSMakeSize(0,0)];
+			[cache setFlipped:YES];
+			return cache;
+	}
+	
 	void				_resetContext();	// reset m_CGContext to default values
 
 	gr_cocoa_graphics_update	m_updateCallback;
@@ -147,8 +154,11 @@ private:
 	NSMutableDictionary*		m_fontProps;
 	CGContextRef				m_CGContext;
 	NSImage*					m_offscreen;
-	NSImage*					m_cache;
-	NSRect						m_cacheRect;
+	NSMutableArray*				m_cacheArray;
+	UT_Vector					m_cacheRectArray;
+//	NSImage*					m_cache;
+//	NSRect						m_cacheRect;
+	NSImage*					m_xorCache;
 	NSColor *					m_currentColor;
 
 	// our currently requested font by handle
@@ -162,7 +172,6 @@ private:
 
 	GR_Graphics::ColorSpace	m_cs;
 	
-	NSImage*				m_savedImage;
 	UT_uint32				m_screenResolution;
 public:		//HACK	
 	NSColor	*			m_3dColors[COUNT_3D_COLORS];

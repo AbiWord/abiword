@@ -1,6 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001-2002 Hubert Figuiere
+ * Copyright (C) 2001-2003 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -60,6 +60,11 @@
 #endif
 
 #define CG_CONTEXT__ (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort]
+
+
+@interface NSFont(PrivateAPI)
+- (NSGlyph)_defaultGlyphForChar:(unichar)theChar;
+@end
 
 // create a stack object like that to lock a NSView, then it will be unlocked on scope exit.
 // never do a new
@@ -138,10 +143,14 @@ GR_CocoaGraphics::GR_CocoaGraphics(NSView * win, XAP_App * app)
 	m_iLineWidth = 0;
 	s_iInstanceCount++;
 	init3dColors ();
-
+/*
 	m_cache = [[NSImage alloc] initWithSize:NSMakeSize(0,0)];
 	[m_cache setFlipped:YES];
-	m_cacheRect = NSMakeRect(0,0,0,0);
+*/
+	m_cacheArray = [[NSMutableArray alloc] init]; 	
+	//NSMakeRect(0,0,0,0);
+	m_xorCache = [[NSImage alloc] initWithSize:NSMakeSize(0,0)] ;
+	[m_xorCache setFlipped:YES];
 
 	m_offscreen = [[NSImage alloc] initWithSize:viewBounds.size];
 	[m_offscreen setFlipped:YES];
@@ -167,7 +176,9 @@ GR_CocoaGraphics::GR_CocoaGraphics(NSView * win, XAP_App * app)
 
 GR_CocoaGraphics::~GR_CocoaGraphics()
 {
-	[m_cache release];
+	[m_cacheArray release];
+	UT_VECTOR_PURGEALL(NSRect*, m_cacheRectArray);
+	[m_xorCache release];
 	[m_fontProps release];
 #warning I can be wrong here.
 	[m_pWin removeFromSuperview];	// TODO FIXME: not always valid
@@ -362,13 +373,10 @@ UT_uint32 GR_CocoaGraphics::measureUnRemappedChar(const UT_UCSChar c)
 	if(c == 0x200B || c == 0xFEFF) // 0-with spaces
 		return 0;
 
-	UT_ASSERT(m_pFont);
-
 	NSString * string = [[NSString alloc] initWithData:[NSData dataWithBytes:&c length:sizeof(UT_UCSChar)]
 							encoding:NSUnicodeStringEncoding];
 	NSSize aSize = [string sizeWithAttributes:m_fontProps];
 	[string release];
-
 	return (UT_uint32)aSize.width;
 }
 
@@ -475,7 +483,6 @@ GR_Font * GR_CocoaGraphics::findFont(const char* pszFontFamily,
 	UT_ASSERT(pszFontWeight);
 	UT_ASSERT(pszFontSize);
 
-	// convert styles to XAP_CocoaFont:: formats
 	NSFontTraitMask s = 0;
 
 	// this is kind of sloppy
@@ -559,15 +566,25 @@ void GR_CocoaGraphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
 			    UT_sint32 y2)
 {
 	// TODO use XOR mode NSCompositeXOR
-	LOCK_CONTEXT__;
+//	LOCK_CONTEXT__;
+	float x = UT_MIN(x1,x2);
+	float y = UT_MIN(y1,y2);
+	NSRect newBounds = NSMakeRect (x, y, UT_MAX(x1,x2) - x, UT_MAX(y1,y2) - y);
+	[m_xorCache setSize:newBounds.size];
+	{
+		StNSImageLocker locker(m_pWin, m_xorCache);
+		CGContextRef context = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
 
-	::CGContextTranslateCTM (m_CGContext, 0.5, 0.5);
-	::CGContextBeginPath(m_CGContext);
-	// TODO set the line width according to m_iLineWidth
-	::CGContextMoveToPoint (m_CGContext, x1, y1);
-	::CGContextAddLineToPoint (m_CGContext, x2, y2);
-	::CGContextStrokePath (m_CGContext);
+		::CGContextTranslateCTM (context, 0.5, 0.5);
+		::CGContextBeginPath(context);
+		::CGContextSetLineWidth (context, m_iLineWidth);
+		::CGContextMoveToPoint (context, x1, y1);
+		::CGContextAddLineToPoint (context, x2, y2);
+		::CGContextStrokePath (context);
+	}
 	// Should make an NSImage and XOR it onto the real image.
+	LOCK_CONTEXT__;
+	[m_xorCache compositeToPoint:newBounds.origin operation:NSCompositeXOR];
 }
 
 void GR_CocoaGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
@@ -989,7 +1006,7 @@ bool GR_CocoaGraphics::_isFlipped()
 // in platform code.
 //////////////////////////////////////////////////////////////////
 
-void GR_Font::s_getGenericFontProperties(const char * /*szFontName*/,
+void GR_Font::s_getGenericFontProperties(const char * szFontName,
 										 FontFamilyEnum * pff,
 										 FontPitchEnum * pfp,
 										 bool * pbTrueType)
@@ -1001,30 +1018,50 @@ void GR_Font::s_getGenericFontProperties(const char * /*szFontName*/,
 	// Note: but it is just different....
 
 	// TODO add code to map the given font name into one of the
-	// TODO enums in GR_Font and set *pff and *pft.
-
+	
 	*pff = FF_Unknown;
-	*pfp = FP_Unknown;
-	*pbTrueType = true;
+
+	NSFont * nsfont = [[NSFontManager sharedFontManager] fontWithFamily:[NSString stringWithCString:szFontName] 
+		traits:0 weight:5 size:(float)12.0];
+
+	if ([[NSFontManager sharedFontManager] traitsOfFont:nsfont] == NSFixedPitchFontMask){
+		*pfp = FP_Fixed;
+	}
+	else {
+		*pfp = FP_Variable;
+	}
+	*pbTrueType = true;	// consider that they are all TT fonts. we don't care
 }
 
 
-void GR_CocoaGraphics::saveRectangle(UT_Rect & rect)
+void GR_CocoaGraphics::saveRectangle(UT_Rect & rect,  UT_uint32 iIndx)
 {
-	m_cacheRect = NSMakeRect(rect.left, rect.top, 
+	NSRect* cacheRect = new NSRect;
+	*cacheRect = NSMakeRect(rect.left, rect.top, 
 						  rect.width, rect.height);
-	[m_cache setSize:m_cacheRect.size];
-	StNSImageLocker locker(m_pWin, m_cache);
-	[m_offscreen compositeToPoint:NSMakePoint(0.0, 0.0) fromRect:m_cacheRect operation:NSCompositeCopy];
+	NSImage* cache = _makeNewCacheImage();
+	[cache setSize:cacheRect->size];
+	StNSImageLocker locker(m_pWin, cache);
+	[m_offscreen compositeToPoint:NSMakePoint(0.0, 0.0) fromRect:*cacheRect operation:NSCompositeCopy];
+	// update cache arrays
+	[m_cacheArray insertObject:cache atIndex:iIndx];
+	void * oldC = NULL;
+	m_cacheRectArray.setNthItem(iIndx, (void*) cacheRect, &oldC);
+	if(oldC)
+		DELETEP(oldC);
 }
 
 
-void GR_CocoaGraphics::restoreRectangle()
+void GR_CocoaGraphics::restoreRectangle(UT_uint32 iIndx)
 {
-	NSPoint pt = m_cacheRect.origin;
-	pt.y += m_cacheRect.size.height;
+	NSRect* cacheRect = (NSRect*)m_cacheRectArray.getNthItem(iIndx);
+	NSImage* cache = [m_cacheArray objectAtIndex:iIndx];
+	NSPoint pt = cacheRect->origin;
+	pt.y += cacheRect->size.height;
+	NSSize size = [cache size];
+	NSRect srcRect = NSMakeRect(0,0,size.width, size.height);
 	LOCK_CONTEXT__;
-	[m_cache compositeToPoint:pt operation:NSCompositeCopy];
+	[cache compositeToPoint:pt operation:NSCompositeCopy];
 	[[m_pWin window] flushWindowIfNeeded];
 }
 
