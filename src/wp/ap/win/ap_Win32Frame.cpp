@@ -1346,10 +1346,26 @@ void AP_Win32Frame::toggleBar(UT_uint32 iBarNb, bool bBarOn)
 			iToolbarCount++;
 	}
 
-	if( !iToolbarCount )
-		ShowWindow( m_hwndRebar, SW_HIDE );
-	else if( (iToolbarCount == 1) && bBarOn )
-		ShowWindow( m_hwndRebar, SW_SHOW );
+	if( !iToolbarCount || ((iToolbarCount == 1) && bBarOn) )
+	{
+		RECT r;
+		
+		ShowWindow( m_hwndRebar, (iToolbarCount ? SW_SHOW : SW_HIDE) );
+
+		MoveWindow(m_hwndRebar, 0, 0, (iToolbarCount ? m_iSizeWidth : 1), 
+									  (iToolbarCount ? m_iSizeHeight : 1), TRUE);
+
+		if( iToolbarCount )
+		{
+			GetClientRect(m_hwndRebar, &r);
+			m_iBarHeight = r.bottom - r.top + 6;
+		}
+		else
+			m_iBarHeight = 1;
+
+		GetClientRect(m_hwndContainer, &r);
+		_onSize(r.right - r.left, r.bottom - r.top);
+	}
 
 	// We *need* to make the window recalc its layout after adding/removing a
 	// toolbar in the rebar control. Since we have no "recalcLayout" I'm
