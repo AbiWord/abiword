@@ -26,7 +26,6 @@ CPPSRCS=	ut_alphahash.cpp	\
 		ut_base64.cpp		\
 		ut_base64_TestRoutines.cpp	\
 		ut_bytebuf.cpp		\
-		ut_getopt.cpp		\
 		ut_growbuf.cpp		\
 		ut_hash.cpp		\
 		ut_math.cpp		\
@@ -44,6 +43,13 @@ CPPSRCS=	ut_alphahash.cpp	\
 ###CSRCS=		ut_regex.c
 
 TARGETS=		$(OBJS)
+
+# for the moment, ut_getopt isn't *really* XP.  :-)
+
+ifneq ($(OS_NAME), WIN32)
+CPPSRCS += ut_getopt.cpp
+endif
+
 ifeq ($(OS_NAME), WIN32)
 INCLUDES=		-I$(ABI_XX_ROOT)/../libpng	\
 			-I$(ABI_XX_ROOT)/../zlib
