@@ -136,6 +136,7 @@ protected:
 		static gint focusIn(GtkWidget * widget, GdkEvent */* e */,gpointer /* data */);
 		static gint focusOut(GtkWidget * /*widget*/, GdkEvent */* e */,gpointer /* data */);
 	};
+	friend class _fe;
 };
 
 #endif /* XAP_UNIXFRAME_H */

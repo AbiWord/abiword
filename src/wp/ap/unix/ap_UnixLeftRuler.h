@@ -69,7 +69,7 @@ protected:
 		static gint abi_expose_repaint( gpointer /* AP_UnixLeftRuler * */ p);
 		static void destroy (GtkWidget * /*widget*/, gpointer /*data*/);
 	};
-
+	friend class _fe;	// we consider this _fe class to be friend....
 };
 
 #endif /* AP_UNIXLEFTRULER_H */
