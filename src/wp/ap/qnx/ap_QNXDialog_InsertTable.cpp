@@ -135,10 +135,7 @@ m_answer = AP_Dialog_InsertTable::a_CANCEL;
 PtWidget_t * AP_QNXDialog_InsertTable::_constructWindow(void)
 {
 PtWidget_t *mainwindow;
-PtWidget_t *group_size_col, *group_size_rows;
-	PtWidget_t *num_col,*num_row;
-
-PtWidget_t *group_fit_main, *group_fit_label, *group_fit_toggle;
+PtWidget_t *num_col,*num_row;
 	PtWidget_t *toggle_auto;
 	PtWidget_t *toggle_fixed;
 	PtWidget_t *fixed_size_value;
@@ -161,96 +158,64 @@ PtSetArg(&args[n++],Pt_ARG_WINDOW_TITLE,_(AP,DLG_InsertTable_TableTitle),0);
 
 	n=0;
 
-	PtSetArg(&args[n++],Pt_ARG_GROUP_ROWS_COLS,8,0);
+	PtSetArg(&args[n++],Pt_ARG_GROUP_ROWS_COLS,6,0);
 	PtSetArg(&args[n++],Pt_ARG_GROUP_ORIENTATION,Pt_GROUP_VERTICAL,0);
+	PtSetArg(&args[n++],Pt_ARG_GROUP_FLAGS,Pt_GROUP_EXCLUSIVE,Pt_TRUE);
 	group_main = PtCreateWidget(PtGroup,mainwindow,n,args);
+	pretty_group(group_main,_(AP,DLG_InsertTable_TableSize));
 
 	n=0;
-PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(AP,DLG_InsertTable_TableSize),0);
-	PtCreateWidget(PtLabel,group_main,n,args);
-
-	n=0;
-
-	PtSetArg(&args[n++],Pt_ARG_GROUP_ROWS_COLS,2,0);
-	PtSetArg(&args[n++],Pt_ARG_GROUP_ORIENTATION,Pt_GROUP_HORIZONTAL,0);
-	PtSetArg(&args[n++],Pt_ARG_GROUP_FLAGS,Pt_TRUE,Pt_GROUP_EQUAL_SIZE);
-	group_size_col = PtCreateWidget(PtGroup,group_main,n,args);
-
-
-	n=0;
-	
 	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(AP,DLG_InsertTable_NumCols),0);
-	PtCreateWidget(PtLabel,group_size_col,n,args);
-	
-	n=0;
-	
-	PtSetArg(&args[n++],Pt_ARG_NUMERIC_MIN,1,0);
-	PtSetArg(&args[n++],Pt_ARG_NUMERIC_MAX,9999,0);
-	num_col=PtCreateWidget(PtNumericInteger,group_size_col,n,args);
+	PtCreateWidget(PtLabel,Pt_DEFAULT_PARENT,n,args);
 
 	n=0;
-
-	PtSetArg(&args[n++],Pt_ARG_GROUP_ROWS_COLS,2,0);
-	PtSetArg(&args[n++],Pt_ARG_GROUP_ORIENTATION,Pt_GROUP_HORIZONTAL,0);
-	PtSetArg(&args[n++],Pt_ARG_GROUP_FLAGS,Pt_TRUE,Pt_GROUP_EQUAL_SIZE);
-	group_size_rows = PtCreateWidget(PtGroup,group_main,n,args);
-
-	n=0;
-	
 	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(AP,DLG_InsertTable_NumRows),0);
-	PtCreateWidget(PtLabel,group_size_rows,n,args);
+	PtCreateWidget(PtLabel,Pt_DEFAULT_PARENT,n,args);	
+	n=0;
+	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(AP,DLG_InsertTable_AutoFit),0);
+	PtCreateWidget(PtLabel,Pt_DEFAULT_PARENT,n,args);	
 	
 	n=0;
+	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(AP,DLG_InsertTable_AutoColSize),0);
+	PtSetArg(&args[n++],Pt_ARG_INDICATOR_TYPE,Pt_TOGGLE_RADIO,0);
+	toggle_auto = PtCreateWidget(PtToggleButton,Pt_DEFAULT_PARENT,n,args);
+
+	n=0;
+	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(AP,DLG_InsertTable_FixedColSize),0);
+	PtSetArg(&args[n++],Pt_ARG_INDICATOR_TYPE,Pt_TOGGLE_RADIO,0);
+	toggle_fixed = PtCreateWidget(PtToggleButton,Pt_DEFAULT_PARENT,n,args);
+	n=0;
+	//Space fill
+	PtCreateWidget(PtLabel,Pt_DEFAULT_PARENT,n,args);
 	
+	n=0;
 	PtSetArg(&args[n++],Pt_ARG_NUMERIC_MIN,1,0);
 	PtSetArg(&args[n++],Pt_ARG_NUMERIC_MAX,9999,0);
-	num_row=PtCreateWidget(PtNumericInteger,group_size_rows,n,args);
-
+	num_col=PtCreateWidget(PtNumericInteger,Pt_DEFAULT_PARENT,n,args);
 	n=0;
 
-	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(AP,DLG_InsertTable_AutoFit),0);
-	PtCreateWidget(PtLabel,group_main,n,args);
+	n=0;
+	PtSetArg(&args[n++],Pt_ARG_NUMERIC_MIN,1,0);
+	PtSetArg(&args[n++],Pt_ARG_NUMERIC_MAX,9999,0);
+	num_row=PtCreateWidget(PtNumericInteger,Pt_DEFAULT_PARENT,n,args);
+
+	n=0; //space filler.
+	PtCreateWidget(PtLabel,Pt_DEFAULT_PARENT,n,args);
+	PtCreateWidget(PtLabel,Pt_DEFAULT_PARENT,n,args);
 
 	n=0;
-	PtSetArg(&args[n++],Pt_ARG_GROUP_ROWS_COLS,2,0);
-	PtSetArg(&args[n++],Pt_ARG_GROUP_ORIENTATION,Pt_GROUP_HORIZONTAL,0);
-	PtSetArg(&args[n++],Pt_ARG_GROUP_FLAGS,Pt_TRUE,Pt_GROUP_EQUAL_SIZE);
-	group_fit_main = PtCreateWidget(PtGroup,group_main,n,args);
-
-	n=0;
-	PtSetArg(&args[n++],Pt_ARG_GROUP_ROWS_COLS,2,0);
-	PtSetArg(&args[n++],Pt_ARG_GROUP_ORIENTATION,Pt_GROUP_VERTICAL,0);
-	PtSetArg(&args[n++],Pt_ARG_GROUP_FLAGS,Pt_TRUE,Pt_GROUP_EXCLUSIVE);
-	group_fit_toggle = PtCreateWidget(PtGroup,group_fit_main,n,args);
-
-	n=0;
-PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(AP,DLG_InsertTable_AutoColSize),0);
-	PtSetArg(&args[n++],Pt_ARG_INDICATOR_TYPE,Pt_TOGGLE_RADIO,0);
-	toggle_auto = PtCreateWidget(PtToggleButton,group_fit_toggle,n,args);
-
-
-	n=0;
-PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(AP,DLG_InsertTable_FixedColSize),0);
-	PtSetArg(&args[n++],Pt_ARG_INDICATOR_TYPE,Pt_TOGGLE_RADIO,0);
-	toggle_fixed = PtCreateWidget(PtToggleButton,group_fit_toggle,n,args);
-
-	n=0;
-	PtSetArg(&args[n++],Pt_ARG_GROUP_ROWS_COLS,2,0);
-	PtSetArg(&args[n++],Pt_ARG_GROUP_ORIENTATION,Pt_GROUP_VERTICAL,0);
-	group_fit_label = PtCreateWidget(PtGroup,group_fit_main,n,args);
-	
-	n=0;
-	PtCreateWidget(PtLabel,group_fit_label,n,args);
-	
-	n=0;
-	fixed_size_value = PtCreateWidget(PtNumericFloat,group_fit_label,n,args);
+	double min=0;
+	PtSetArg(&args[n++],Pt_ARG_NUMERIC_MIN,&min,0);
+	double max=100000; //just for sizing the widget correctly.
+	PtSetArg(&args[n++],Pt_ARG_NUMERIC_MAX,&max,0);
+	fixed_size_value = PtCreateWidget(PtNumericFloat,Pt_DEFAULT_PARENT,n,args);
 
 	n=0;
 	PtSetArg(&args[n++],Pt_ARG_GROUP_ROWS_COLS,2,0);
 	PtSetArg(&args[n++],Pt_ARG_GROUP_ORIENTATION,Pt_GROUP_HORIZONTAL,0);
 	PtSetArg(&args[n++],Pt_ARG_GROUP_HORZ_ALIGN,Pt_GROUP_HORZ_RIGHT,0);
 	PtSetArg(&args[n++],Pt_ARG_GROUP_FLAGS,Pt_TRUE,Pt_GROUP_EQUAL_SIZE);
-	group_btn = PtCreateWidget(PtGroup,group_main,n,args);
+	group_btn = PtCreateWidget(PtGroup,Pt_DEFAULT_PARENT,n,args);
 
 	n=0;
 	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(XAP,DLG_OK),0);
