@@ -8740,12 +8740,15 @@ static bool s_AskForScriptName(XAP_Frame * pFrame,
 	if (bOK)
 	{
 		const char* szResultPathname = pDialog->getPathname();
+
+#ifdef WIN32
 		if (szResultPathname && *szResultPathname)
 		{
 			stPathname = "\"";
 			stPathname += szResultPathname;
 			stPathname += "\"";
 		}
+#endif
 
 		UT_sint32 type = pDialog->getFileType();
 		dflFileType = type;
