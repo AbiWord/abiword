@@ -443,7 +443,7 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 				   /*|| pChars[iCharOffset+i] == UCS_LIGATURE_PLACEHOLDER*/ ) )
 				{
 					iwidth += pCharWidths[i];
-					inextAdvance = _tduX(iwidth);
+					inextAdvance = tdu(iwidth);
 					pCharAdvances[j] = inextAdvance - iadvance;
 					iadvance = inextAdvance;
 					j++;
