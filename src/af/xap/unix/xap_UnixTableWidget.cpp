@@ -42,6 +42,43 @@
 #include "xap_UnixToolbar_Icons.h"
 #include "ut_debugmsg.h"
 
+/* NONE:UINT,UINT (/dev/stdin:1) */
+void
+g_cclosure_user_marshal_VOID__UINT_UINT (GClosure     *closure,
+                                         GValue       *return_value,
+                                         guint         n_param_values,
+                                         const GValue *param_values,
+                                         gpointer      invocation_hint,
+                                         gpointer      marshal_data)
+{
+  typedef void (*GMarshalFunc_VOID__UINT_UINT) (gpointer     data1,
+                                                guint        arg_1,
+                                                guint        arg_2,
+                                                gpointer     data2);
+  register GMarshalFunc_VOID__UINT_UINT callback;
+  register GCClosure *cc = (GCClosure*) closure;
+  register gpointer data1, data2;
+
+  g_return_if_fail (n_param_values == 3);
+
+  if (G_CCLOSURE_SWAP_DATA (closure))
+    {
+      data1 = closure->data;
+      data2 = g_value_get_pointer (param_values + 0);
+    }
+  else
+    {
+      data1 = g_value_get_pointer (param_values + 0);
+      data2 = closure->data;
+    }
+  callback = (GMarshalFunc_VOID__UINT_UINT) (marshal_data ? marshal_data : cc->callback);
+
+  callback (data1,
+            g_value_get_uint (param_values + 1),
+            g_value_get_uint (param_values + 2),
+            data2);
+}
+
 enum
 {
 	SELECTED,
@@ -54,14 +91,14 @@ static GtkObjectClass *abi_table_parent_class;
 
 /* ------------------- now the guts of AbiTable ---------------------- */
 
-const size_t cell_width = 24;
-const size_t cell_height = 24;
-const size_t cell_spacing = 4;
-const size_t init_rows = 0;
-const size_t init_cols = 0;
+const guint cell_width = 24;
+const guint cell_height = 24;
+const guint cell_spacing = 4;
+const guint init_rows = 0;
+const guint init_cols = 0;
 
 static inline void
-cells_to_pixels(size_t cols, size_t rows, size_t* w, size_t* h)
+cells_to_pixels(guint cols, guint rows, guint* w, guint* h)
 {
 	g_return_if_fail(w);
 	g_return_if_fail(h);
@@ -71,7 +108,7 @@ cells_to_pixels(size_t cols, size_t rows, size_t* w, size_t* h)
 }
 
 static inline void
-pixels_to_cells(size_t w, size_t h, size_t* cols, size_t* rows)
+pixels_to_cells(guint w, guint h, guint* cols, guint* rows)
 {
 	g_return_if_fail(cols);
 	g_return_if_fail(rows);
@@ -83,8 +120,8 @@ pixels_to_cells(size_t w, size_t h, size_t* cols, size_t* rows)
 static void
 abi_table_resize(AbiTable* table)
 {
-	size_t width;
-	size_t height;
+	guint width;
+	guint height;
 	char* text;	
 	GtkRequisition size;
 	
@@ -178,12 +215,12 @@ static gboolean
 on_drawing_area_event (GtkWidget *area, GdkEventExpose *ev, gpointer user_data)
 {
 	AbiTable* table = static_cast<AbiTable*>(user_data);
-	size_t i;
-	size_t j;
-	size_t selected_rows = table->selected_rows;
-	size_t selected_cols = table->selected_cols;
-	size_t x;
-	size_t y;
+	guint i;
+	guint j;
+	guint selected_rows = table->selected_rows;
+	guint selected_cols = table->selected_cols;
+	guint x;
+	guint y;
 	
 	// TODO: use gtk_paint_box, gtk_paint_line
 
@@ -249,8 +286,8 @@ on_drawing_area_event (GtkWidget *area, GdkEventExpose *ev, gpointer user_data)
 	return TRUE;
 }
 
-static inline size_t
-my_max(size_t a, size_t b)
+static inline guint
+my_max(guint a, guint b)
 {
 	return a < b ? b : a;
 }
@@ -260,13 +297,13 @@ on_motion_notify_event (GtkWidget *window, GdkEventMotion *ev, gpointer user_dat
 {
 	AbiTable* table = static_cast<AbiTable*>(user_data);
 	gboolean changed = FALSE;
-	size_t selected_cols;
-	size_t selected_rows;
+	guint selected_cols;
+	guint selected_rows;
 
 	if (ev->x < 0 || ev->y < 0)
 		return TRUE;
 	
-	pixels_to_cells(static_cast<size_t>(ev->x), static_cast<size_t>(ev->y), &selected_cols, &selected_rows);
+	pixels_to_cells(static_cast<guint>(ev->x), static_cast<guint>(ev->y), &selected_cols, &selected_rows);
 
 	if ((selected_cols != table->selected_cols) || (selected_rows != table->selected_rows))
 	{
@@ -322,9 +359,9 @@ emit_selected (AbiTable *table)
 		gtk_main_iteration();
 
 	if (table->selected_rows > 0 && table->selected_cols > 0)
-		gtk_signal_emit (GTK_OBJECT (table),
-						 abi_table_signals [SELECTED],
-						 static_cast<int>(table->selected_rows), static_cast<int>(table->selected_cols));
+		g_signal_emit (GTK_OBJECT (table),
+			       abi_table_signals [SELECTED], 0,
+			       table->selected_rows, table->selected_cols);
 
 	restart_widget(table);
 }
@@ -649,18 +686,13 @@ abi_table_class_init (AbiTableClass *klass)
 
 	abi_table_parent_class = static_cast<GtkObjectClass *>(gtk_type_class (GTK_TYPE_BUTTON));
 	abi_table_signals [SELECTED] =
-		gtk_signal_new (
-			"selected",
-			GTK_RUN_LAST,
-			GTK_CLASS_TYPE (object_class),
-			GTK_SIGNAL_OFFSET (AbiTableClass, selected),
-			gtk_marshal_VOID__INT_INT,
-			GTK_TYPE_NONE, 
-			2, 
-			GTK_TYPE_POINTER, 
-			GTK_TYPE_UINT);
-
-	klass->selected = NULL;
+		g_signal_new ("selected",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (AbiTableClass, selected),
+			      NULL, NULL,
+			      g_cclosure_user_marshal_VOID__UINT_UINT,
+			      G_TYPE_NONE, 2, G_TYPE_UINT, G_TYPE_UINT);
 }
 
 static void
@@ -694,11 +726,11 @@ abi_table_init (AbiTable* table)
 
 	gtk_widget_show_all(GTK_WIDGET(table->window_vbox));
 
-	table->selected_rows = static_cast<int>(init_rows);
-	table->selected_cols = static_cast<int>(init_cols);
+	table->selected_rows = init_rows;
+	table->selected_cols = init_cols;
 
-	table->total_rows = static_cast<int>(my_max(init_rows + 1, 5));
-	table->total_cols = static_cast<int>(my_max(init_cols + 1, 6));
+	table->total_rows = my_max(init_rows + 1, 5);
+	table->total_cols = my_max(init_cols + 1, 6);
 
 	abi_table_resize(table);
 

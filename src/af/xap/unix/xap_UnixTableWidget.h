@@ -64,7 +64,7 @@ typedef struct
 	GtkButtonClass parent_class;
 
 	/* Signals emited by this widget */
-	void (* selected) (AbiTable *abi_table, int rows, int cols);
+	void (* selected) (AbiTable *abi_table, guint rows, guint cols);
 } AbiTableClass;
 
 #define ABI_TABLE_TYPE     (abi_table_get_type ())
