@@ -363,13 +363,11 @@ bool AP_UnixFrame::initialize(void)
 		return false;
 
 	_createTopLevelWindow();
-
 	// needs to be shown so that the following functions work
 	// TODO: get rid of cursed flicker caused by initially
 	// TODO: showing these and then hiding them (esp.
 	// TODO: noticable in the gnome build with a toolbar disabled)
 	gtk_widget_show(m_wTopLevelWindow);
-
 	_showOrHideToolbars();
 	_showOrHideStatusbar();
 
@@ -395,12 +393,11 @@ void AP_UnixFrame::_showOrHideToolbars(void)
 	}
 }
 
-// Does the initial show/hide of toolbars (based on the user prefs).
+// Does the initial show/hide of statusbar (based on the user prefs).
 // Idem.
 void AP_UnixFrame::_showOrHideStatusbar(void)
 {
-        bool bShowStatusBar = static_cast<AP_FrameData*> (m_pData)->m_bShowStatusBar;
-	// I don't know why it doesn't work...
+	bool bShowStatusBar = static_cast<AP_FrameData*> (m_pData)->m_bShowStatusBar;
 	toggleStatusBar(bShowStatusBar);
 }
 

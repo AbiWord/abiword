@@ -503,7 +503,6 @@ bool EV_UnixGnomeToolbar::synthesize(void)
 
 	// add the toolbar to the band
 	_addToolbar(m_wToolbar);
-
 	return true;
 }
 
@@ -522,9 +521,9 @@ bool EV_UnixGnomeToolbar::_addToolbar (GtkWidget *toolbar)
 	name = g_strdup_printf("Abi-Toolbar-%d", nbBands);
 
 	gnome_app_add_toolbar(GNOME_APP(m_pUnixFrame->getTopLevelWindow()),
-			      GTK_TOOLBAR (toolbar), name, 
-			      (GnomeDockItemBehavior)beh, GNOME_DOCK_TOP,
-			      (nbBands % NUM_TOOLBARS_PER_APP)+1, 0, 0);
+						  GTK_TOOLBAR (toolbar), name, 
+						  (GnomeDockItemBehavior)beh, GNOME_DOCK_TOP,
+						  (nbBands % NUM_TOOLBARS_PER_APP)+1, 0, 0);
 	m_vecToolbars.addItem(toolbar);
 	g_free(name);
 
@@ -556,7 +555,7 @@ GtkWidget *EV_UnixGnomeToolbar::_makeToolbar(void)
 		else if (UT_XML_stricmp(szValue,"both") == 0)
 			style = GTK_TOOLBAR_BOTH;
 		else
-	  	        style = GTK_TOOLBAR_ICONS; // default case
+			style = GTK_TOOLBAR_ICONS; // default case
 	}
 		
 	toolbar = gtk_toolbar_new(GTK_ORIENTATION_HORIZONTAL, style);
@@ -574,19 +573,17 @@ GtkWidget *EV_UnixGnomeToolbar::_makeToolbar(void)
 
 void EV_UnixGnomeToolbar::show(void)
 {
-	if(m_wToolbar)
-	  {
-	    gtk_widget_show(m_wToolbar->parent);
-	  }
+	if (m_wToolbar)
+		gtk_widget_show(m_wToolbar->parent);
 }
 
 void EV_UnixGnomeToolbar::hide(void)
 {
-	if(m_wToolbar)
-	  {
+	if (m_wToolbar)
+	{
 	    gtk_widget_hide(m_wToolbar->parent);
-	    gtk_widget_queue_resize (m_wToolbar->parent->parent);
-	  }
+	    gtk_widget_queue_resize(m_wToolbar->parent->parent);
+	}
 }
 
 // TODO: Dom, we copy *far* too much code from the GTK version here

@@ -654,12 +654,14 @@ XAP_UnixFrame * EV_UnixToolbar::getFrame(void)
 
 void EV_UnixToolbar::show(void)
 {
+	printf("JCA: show called");
 	if (m_wToolbar)
 		gtk_widget_show (m_wToolbar->parent);
 }
 
 void EV_UnixToolbar::hide(void)
 {
+	printf("JCA: hide called");
 	if (m_wToolbar)
 		gtk_widget_hide (m_wToolbar->parent);
 }
