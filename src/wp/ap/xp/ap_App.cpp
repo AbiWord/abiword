@@ -51,7 +51,7 @@ bool AP_App::openCmdLineFiles(AP_Args * args)
 	poptContext poptcon = args->poptcon;
 
 	while ((file = poptGetArg (poptcon)) != NULL) {
-		XAP_Frame * pFrame = newFrame(this);
+		XAP_Frame * pFrame = newFrame();
 
 		UT_Error error = pFrame->loadDocument
 			(file, IEFT_Unknown, true);
@@ -85,7 +85,7 @@ bool AP_App::openCmdLineFiles(AP_Args * args)
 	{
 		// no documents specified or openable, open an untitled one
 		
-		XAP_Frame * pFrame = newFrame(this);
+		XAP_Frame * pFrame = newFrame();
 		pFrame->loadDocument(NULL, IEFT_Unknown);
 		if (args->m_sMerge) {
 			PD_Document * pDoc = static_cast<PD_Document*>(pFrame->getCurrentDoc());
@@ -129,8 +129,3 @@ bool AP_App::doWindowlessArgs (const AP_Args *)
 	return false;
 }
 
-XAP_Frame * AP_App::newFrame(AP_App *)
-{
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-	return NULL;
-}

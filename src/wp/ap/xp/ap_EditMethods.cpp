@@ -24,6 +24,8 @@
 #include <string.h>
 #include <time.h>
 
+#include "xap_Features.h"
+
 #include "ut_locale.h"
 #include "ut_debugmsg.h"
 #include "ut_string.h"
@@ -3193,6 +3195,10 @@ s_closeWindow (AV_View * pAV_View, EV_EditMethodCallData * pCallData,
 
 		pApp->closeModelessDlgs();
 
+		// in single XAPAPP mode we can't close the app when closing the last frame
+		// or reopen a new one.
+#if XAP_SINGLE_XAPAPP
+#else
 		if (bCanExit)
 		{
 			pApp->reallyExit();
@@ -3204,6 +3210,7 @@ s_closeWindow (AV_View * pAV_View, EV_EditMethodCallData * pCallData,
 			pFrame->show();
 			return true;
 		}
+#endif
 	}
 
 	// nuke the window

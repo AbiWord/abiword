@@ -77,9 +77,6 @@ class AP_App : public XAP_App_BaseClass
 	/* Allow additional platform-specific windowless args. */
 	virtual bool doWindowlessArgs (const AP_Args *);
 
-	/* Create a new XAP_Frame object. */
-	virtual XAP_Frame * newFrame(AP_App *);
-
 	bool openCmdLineFiles(AP_Args * args);
  private:
 
