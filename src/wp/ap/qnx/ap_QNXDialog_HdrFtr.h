@@ -39,7 +39,8 @@ public:
 	void event_Cancel(void);
 	void CheckChanged(HdrFtr_Control which);
 	void RestartChanged(void);
-
+        void UpDown(int updown);
+   
 protected:
 	PtWidget_t * m_wHdrFtr[6];
 	PtWidget_t * m_RestartLabel;
