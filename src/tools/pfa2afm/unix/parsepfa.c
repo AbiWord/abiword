@@ -635,26 +635,208 @@ return( *str-*within );
 return( *str=='\0'?0:1 );
 }
 
-static void parseline(struct fontparse *fp,char *line) {
-    char buffer[200], *pt, *endtok;
-    if ( fp->inencoding && strncmp(line,"dup",3)==0 ) {
-	char *end;
-	int pos = strtol(line+3,&end,10);
-	while ( isspace( *end )) ++end;
-	if ( *end=='/' ) ++end;
-	for ( pt = buffer; !isspace(*end); *pt++ = *end++ );
-	*pt = '\0';
-	if ( pos>=0 && pos<256 )
-	    fp->fd->encoding[pos] = strdup(buffer);
-return;
-    } else if ( fp->inencoding && strncmp(line,"0 1 255",7)==0 ) {
-	/* the T1 spec I've got doesn't allow for this, but I've seen it anyway*/
-	/* 0 1 255 {1 index exch /.notdef put} for */
-	int i;
-	for ( i=0; i<256; ++i )
-	    fp->fd->encoding[i] = strdup(".notdef");
-return;
+static char *myfgets(char *str, int len, FILE *file) {
+    char *pt, *end;
+    int ch;
+
+    for ( pt = str, end = str+len-1; pt<end && (ch=getc(file))!=EOF && ch!='\r' && ch!='\n';
+	*pt++ = ch );
+    if ( ch=='\n' )
+	*pt++ = '\n';
+    else if ( ch=='\r' ) {
+	*pt++ = '\n';
+	if ((ch=getc(file))!='\n' )
+	    ungetc(ch,file);
     }
+    if ( pt==str )
+return( NULL );
+    *pt = '\0';
+return( str );
+}
+
+/* find the first occurence of a three letter token on the line;
+   make sure we only find whole tokens
+*/
+static char * find_token3(char * line, char *tok, int start_of_line)
+{
+   char *d1, *d2, *d3, *d4;
+
+   /* we will allow for space or new line to start/end the token */
+   char t1[6] = "     ";
+   char t2[6] = "    \n";
+   char t3[5] = "    ";   /* the last two are only allowed at the start of a line */
+   char t4[5] = "   \n";
+
+   t1[1] = t2[1] = t3[0] = t4[0] = tok[0];
+   t1[2] = t2[2] = t3[1] = t4[1] = tok[1];
+   t1[3] = t2[3] = t3[2] = t4[2] = tok[2];
+
+   /* make sure that not found strings do not figure in the comparison later on;
+      and skip leading whitespace
+   */
+
+   d1 = strstr(line, t1);
+   d1 = d1 ? d1 + 1 : (char *)0xFFFFFFFF;
+
+   d2 = strstr(line, t2);
+   d2 = d2 ? d2 + 1 : (char *)0xFFFFFFFF;
+
+   d3 = strncmp(line, t3, 4)? (char*) 0xFFFFFFFF : line;
+
+   d4 = strcmp(line, t4)? (char*) 0xFFFFFFFF : line;
+
+   if(d2 < d1)
+      d1 = d2;
+   if(d3 < d1)
+      d1 = d3;
+   if(d4 < d1)
+      d1 = d4;
+
+   d1 = (d1 == (char *) 0xFFFFFFFF) ? 0 : d1;
+   return d1;
+}
+
+/* retrieve the numerical index and character name starting at position *pos,
+   and store the name in buff, returning the numerical value
+*/
+static int get_num_and_name(char ** pos, char *buff, char * line, FILE *in)
+{
+   char * pt;
+   int indx;
+
+   /* skip any whitespace */
+   while ( isspace( **pos )) ++*pos;
+
+   /* is this the end of line? */
+   if(!**pos)
+   {
+      /* OK, the number is on the next line, get it */
+      myfgets(line,256,in);
+      *pos = line;
+   }
+
+   /* the number should follow */
+   indx = strtol(*pos, pos,10);
+
+   /* skip any futher whitespace */
+   while ( isspace( **pos )) ++*pos;
+
+   /* is this the end of line? */
+   if(!**pos)
+   {
+      /* the name is on the next line, go and get it */
+      myfgets(line,256,in);
+      *pos = line;
+   }
+
+   /* skip any futher whitespace */
+   while ( isspace( **pos )) ++*pos;
+
+   /* the name should follow */
+   if ( **pos=='/' ) ++*pos;
+   else
+   {
+      /* this is a syntax error in the pfa file, just quit */
+      printf("Error: Syntax error in the Encoding table. Quiting\n");
+      exit(1);
+   }
+
+   /* copy the name into the buffer and null-terminate it */
+   for ( pt = buff; !isspace(**pos); *pt++ = **pos, (*pos)++);
+
+   *pt = '\0';
+
+   return indx;
+}
+
+/* retrieve the encoding vector, allowing for it not being written a character
+   per line
+*/
+static void parse_encoding(struct fontparse *fp, char *line, FILE *in)
+{
+   char * d;
+   char * pos = line;
+   int indx;
+   int start_of_line = 1;
+   char buff[200];
+   int line_count = 0;
+
+   while (1)
+   {
+      /* find the next "dup" token */
+      d = find_token3(pos, "dup", start_of_line);
+
+      if(d)
+      {
+         /* we found the dup token, so we move past the first whitespace */
+         pos = d + 3;
+         start_of_line = 0;
+      }
+      else
+      {
+         /*    no dup token, see if we can find a def token, in which
+               case this is the last line of the encoding, and we quit
+               otherwise get the next line and continue from the start
+               but first see if this is not one of the weird fonts ...
+         */
+         if ( start_of_line && strncmp(line,"0 1 255",7)==0 )
+         {
+         	/* the T1 spec I've got doesn't allow for this, but I've seen it anyway*/
+           	/* 0 1 255 {1 index exch /.notdef put} for */
+      	   int i;
+         	for ( i=0; i<256; ++i )
+               fp->fd->encoding[i] = strdup(".notdef");
+            return;
+         }
+
+         d = find_token3(pos, "def", start_of_line);
+         if(d)
+            break;
+         else
+         {
+            /* OK, we did not find a dup token, nor a def token, so we will try a new line;
+               however, to avoid endless loop in mallformed tables, we will keep count of
+               the lines, there should be 258 at most.
+            */
+            myfgets(line,256,in);
+            pos = line;
+            start_of_line = 1;
+            if(line_count++ > 258)
+            {
+               printf("Error: corrupt encoding table; bailing out after line %d\n", line_count);
+               exit(1);
+            }
+            continue;
+         }
+      }
+
+      /* now retrieve the number and name */
+      indx = get_num_and_name(&pos, buff, line, in);
+
+      /* if the returned value makes sense then store it */
+     	if ( indx>=0 && indx<256 )
+		{
+         fp->fd->encoding[indx] = strdup(buff);
+         /*printf("DEBUG: Enc. vector index [%03d], character [%s]\n", indx, buff);*/
+		}
+      	else
+      	{
+			printf("Error: encoding index out of bounds, value %d\n", indx);
+			exit(1);
+		}
+	}
+}
+
+
+static void parseline(struct fontparse *fp,char *line, FILE *in) {
+    char *endtok;
+   /* the original implementation had some code here dealing with the
+      encoding vector, but it was now replaced by parse_encoding()
+      as a result we need to be able to pass the input file pointer
+      through, but it is only used if the call is from withing doubledecrypt
+	  so we can safely default it to 0
+   */
+
     fp->inencoding = 0;
 
     while ( isspace(*line)) ++line;
@@ -782,7 +964,12 @@ return;
 	    else if ( strstr(endtok,"ISOLatin1Encoding")!=NULL )
 		setLatin1Enc(fp->fd->encoding);
 	    else
-		fp->inencoding = 1;
+         /* unfortunately the original implementation assumed that the encoding
+            vector is one character per line and this is not always so; the
+            function below will take care of this
+         */
+         parse_encoding(fp, line, in);
+		   /*fp->inencoding = 1;*/
 	} else if ( mycmp("PaintType",line+1,endtok)==0 )
 	    fp->fd->painttype = strtol(endtok,NULL,10);
 	else if ( mycmp("FontType",line+1,endtok)==0 )
@@ -806,37 +993,19 @@ return;
     }
 }
 
-static char *myfgets(char *str, int len, FILE *file) {
-    char *pt, *end;
-    int ch;
-
-    for ( pt = str, end = str+len-1; pt<end && (ch=getc(file))!=EOF && ch!='\r' && ch!='\n';
-	*pt++ = ch );
-    if ( ch=='\n' )
-	*pt++ = '\n';
-    else if ( ch=='\r' ) {
-	*pt++ = '\n';
-	if ((ch=getc(file))!='\n' )
-	    ungetc(ch,file);
-    }
-    if ( pt==str )
-return( NULL );
-    *pt = '\0';
-return( str );
-}
 
 static int hex(int ch1, int ch2) {
     if ( ch1>='0' && ch1<='9' )
 	ch1 -= '0';
     else if ( ch1>='a' )
 	ch1 -= 'a'-10;
-    else 
+    else
 	ch1 -= 'A'-10;
     if ( ch2>='0' && ch2<='9' )
 	ch2 -= '0';
     else if ( ch2>='a' )
 	ch2 -= 'a'-10;
-    else 
+    else
 	ch2 -= 'A'-10;
 return( (ch1<<4)|ch2 );
 }
@@ -915,7 +1084,7 @@ static void addinfo(struct fontparse *fp,char *line,char *tok,char *binstart,int
 /* (oh. I see now. it's allowed to be either one "RD" or "-|", but nothing else*/
 /*  right) */
 /* It's defined as {string currentfile exch readstring pop} so look for that */
-static int glorpline(struct fontparse *fp, FILE *temp, char *rdtok) {
+static int glorpline(struct fontparse *fp, FILE *temp, char *rdtok, FILE *in) {
     char buffer[3000], *pt, *binstart;
     int binlen;
     int ch;
@@ -1000,7 +1169,7 @@ return( 0 );
     }
     *pt = '\0';
     if ( binstart==NULL ) {
-	parseline(fp,buffer);
+	parseline(fp,buffer,in);
     } else {
 	addinfo(fp,buffer,temptok,binstart,binlen);
     }
@@ -1089,10 +1258,10 @@ return;
     if ( ch1!=EOF ) ungetc(ch1,in);
 }
 
-static void decryptagain(struct fontparse *fp,FILE *temp) {
+static void decryptagain(struct fontparse *fp,FILE *temp, FILE *in) {
     char rdtok[255];
     strcpy(rdtok,"RD");
-    while ( glorpline(fp,temp,rdtok));
+    while ( glorpline(fp,temp,rdtok,in));
 }
 
 static void doubledecrypt(struct fontparse *fp,FILE *in, FILE *temp) {
@@ -1103,9 +1272,9 @@ static void doubledecrypt(struct fontparse *fp,FILE *in, FILE *temp) {
     while ( myfgets(buffer,sizeof(buffer),in)!=NULL ) {
 	if ( first && buffer[0]=='\200' ) {
 	    hassectionheads = 1;
-	    parseline(fp,buffer+6);
+	    parseline(fp,buffer+6,in);
 	} else
-	    parseline(fp,buffer);
+	    parseline(fp,buffer,in);
 	first = 0;
 	if ( strstr(buffer,"currentfile")!=NULL && strstr(buffer, "eexec")!=NULL )
     break;
@@ -1113,10 +1282,10 @@ static void doubledecrypt(struct fontparse *fp,FILE *in, FILE *temp) {
 
     decrypteexec(in,temp,hassectionheads);
     rewind(temp);
-    decryptagain(fp,temp);
+    decryptagain(fp,temp,in);
     while ( myfgets(buffer,sizeof(buffer),in)!=NULL ) {
 	if ( buffer[0]!='\200' || !hassectionheads )
-	    parseline(fp,buffer);
+	    parseline(fp,buffer,in);
     }
 }
 
@@ -1148,7 +1317,7 @@ return(NULL);
     temp = fopen(tempname,"w+");
     if ( temp==NULL ) {
 	fprintf( stderr, "Cannot open %s for temp\n", tempname );
-	fclose(in); 
+	fclose(in);
 return(NULL);
     }
 
