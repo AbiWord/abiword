@@ -2087,7 +2087,8 @@ Defun1(fileNew)
 
 	if (bOK)
 	{
-		UT_String str = "";
+		UT_String str;
+		const char * szStr;
 
 		switch(pDialog->getOpenType())
 		{
@@ -2097,13 +2098,18 @@ Defun1(fileNew)
 
 			// these two will open things as templates
 		case AP_Dialog_New::open_Existing : 
-			str = pDialog->getFileName();
+			szStr = pDialog->getFileName();
+			if (szStr)
+				str += szStr;
 			break;
 
 		case AP_Dialog_New::open_Template : 
-			str = pApp->getAbiSuiteLibDir();
-			str += "/templates/"; // todo: will this work for windoze et al?
-			str += pDialog->getTemplateName();
+			szStr = pDialog->getTemplateName();
+			if (szStr) {
+				str = pApp->getAbiSuiteLibDir();
+				str += "/templates/"; // todo: will this work for windoze et al?
+				str += szStr;
+			}
 			break;
 		}
 

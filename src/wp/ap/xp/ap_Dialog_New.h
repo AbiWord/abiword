@@ -27,11 +27,6 @@
 
 class XAP_Frame;
 
-typedef struct _tag_TemplateData{
-	XML_Char * filename;
-	XAP_String_Id descriptionId;
-} TemplateData;
-
 class AP_Dialog_New : public XAP_Dialog_NonPersistent
 {
 public:
@@ -53,10 +48,6 @@ protected:
 	inline void setAnswer (AP_Dialog_New::tAnswer a) {m_answer = a;}
 	inline void setOpenType (AP_Dialog_New::tOpenType t) {m_openType = t;}
 
-
-	UT_uint32            getNumTabs(void) const;
-	const XML_Char *     getTabName (UT_uint32 tab) const;
-	const TemplateData * getListForTab (UT_uint32 tab) const;
 
 	void setTemplateName (const char * name);
 	void setFileName (const char * name);

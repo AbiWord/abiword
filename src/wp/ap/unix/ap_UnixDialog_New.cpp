@@ -178,6 +178,8 @@ void AP_UnixDialog_New::event_ToggleOpenExisting ()
 			gtk_entry_set_text (GTK_ENTRY(m_entryFilename), szResultPathname);
 			setFileName (szResultPathname);
 		}
+
+		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(m_radioExisting), TRUE);
 	}
 
 	FREEP(szDescList);
@@ -321,17 +323,7 @@ void AP_UnixDialog_New::_constructWindowContents (GtkWidget * container)
 	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolledWindow), 
 									GTK_POLICY_AUTOMATIC, GTK_POLICY_NEVER);
 
-	for (UT_uint32 i = 0; i < getNumTabs(); i++)
-	{
-		const TemplateData * td = getListForTab (i+1);
-		
-		// todo: populate the notebook with this data
-	
-		label1 = gtk_label_new ((const char *)getTabName(i+1));
-		gtk_widget_show (label1);
-		gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook_choices), 
-									gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook_choices), i), label1);
-	}
+	// TODO: add templates here
 	
 	hseparator2 = gtk_hseparator_new ();
 	gtk_widget_show (hseparator2);
