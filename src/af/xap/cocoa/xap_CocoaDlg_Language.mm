@@ -157,10 +157,14 @@ void XAP_CocoaDialog_Language::runModal(XAP_Frame * pFrame)
 	LocalizeControl(oCancel,           pSS, XAP_STRING_ID_DLG_Cancel);
 	LocalizeControl(oOK,               pSS, XAP_STRING_ID_DLG_OK);
 
-	LocalizeControl(oDocumentDefault,  pSS, XAP_STRING_ID_DLG_ULANG_DefaultLangLabel);
+	LocalizeControl(oDocumentDefault,  pSS, XAP_STRING_ID_DLG_ULANG_DefaultLangChkbox);
 
 	if (_xap)
 		{
+			UT_UTF8String defaultLanguageString;
+			_xap->getDocDefaultLangDescription(defaultLanguageString);
+			[oDocumentCurrent setStringValue:[NSString stringWithUTF8String:(defaultLanguageString.utf8_str())]];
+
 			const char * current_language = _xap->getCurrentLanguage();
 
 			int current_index = -1;
