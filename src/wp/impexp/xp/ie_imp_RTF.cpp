@@ -2457,13 +2457,13 @@ bool IE_Imp_RTF::HandleParKeyword()
 	UT_String sProps;
 	const XML_Char * attrs[3] = {NULL, NULL, NULL};
 	const XML_Char * props = NULL;
-		
+	UT_String rev;
+
 	UT_return_val_if_fail( buildCharacterProps(sProps), false);
 	props = sProps.c_str();
 
 	if(m_currentRTFState.m_charProps.m_eRevision != PP_REVISION_NONE)
 	{
-		UT_String rev;
 		const XML_Char * pStyle = NULL;
 		
 		if(m_currentRTFState.m_charProps.m_styleNumber >= 0
