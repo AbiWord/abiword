@@ -878,8 +878,12 @@ int AP_QNXApp::main(const char * szAppName, int argc, const char ** argv)
 	// continue out the door.
 	if (pMyQNXApp->parseCommandLine() && bShowApp)
 	{
+		PtCallbackList_t *cl;
+
 		XAP_QNXFrame *pFrame = static_cast<XAP_QNXFrame*>(XAP_App::getApp()->getLastFocussedFrame());
-		PtReRealizeWidget(pFrame->getTopLevelWindow());
+		//XXX: Kinda nasty.
+		PtGetResource(pFrame->getTopLevelWindow(),Pt_CB_GOT_FOCUS,&cl,0);
+		(int)(*cl->cb.event_f)(0,pFrame,0);		
 		PtMainLoop();
 	}
 	
@@ -1226,14 +1230,16 @@ void AP_QNXApp::loadAllPlugins ()
 			  }
 			  if (pluginIsBundle)
 			  {
+	#if 0
 				  if (XAP_ModuleManager::instance().loadBundle (plugin.c_str(), namelist[n]->d_name))
 				  {
 					  UT_DEBUGMSG(("FJF: loaded bundle: %s\n", namelist[n]->d_name));
 				  }
 				  else
 				  {
+	#endif 
 					  UT_DEBUGMSG(("FJF: didn't load bundle: %s\n", namelist[n]->d_name));
-				  }
+//				  }
 				  free(namelist[n]);
 				  continue;
 			  }

@@ -70,6 +70,7 @@
 #   include "ap_QNXDialog_HdrFtr.h"
 #	include "ap_QNXDialog_InsertBookmark.h"
 #	include "ap_QNXDialog_InsertHyperlink.h"
+# include "ap_QNXDialog_InsertTable.h"
 #	include "ap_QNXDialog_MarkRevisions.h"
 #	include "ap_QNXDialog_ListRevisions.h"
 #	include "ap_QNXDialog_MetaData.h"
@@ -113,6 +114,7 @@
 	DeclareDialog(AP_DIALOG_ID_PARAGRAPH,		AP_QNXDialog_Paragraph)
 	DeclareDialog(AP_DIALOG_ID_OPTIONS,			AP_QNXDialog_Options)
 	DeclareDialog(AP_DIALOG_ID_INSERT_DATETIME, AP_QNXDialog_Insert_DateTime)
+	DeclareDialog(AP_DIALOG_ID_INSERT_TABLE, AP_QNXDialog_InsertTable)
 	DeclareDialog(AP_DIALOG_ID_WORDCOUNT,		AP_QNXDialog_WordCount)
 	DeclareDialog(AP_DIALOG_ID_FIELD,			AP_QNXDialog_Field)
 	DeclareDialog(AP_DIALOG_ID_LISTS,			AP_QNXDialog_Lists)
@@ -126,6 +128,7 @@
  	DeclareDialog(AP_DIALOG_ID_MARK_REVISIONS,	AP_QNXDialog_MarkRevisions)
  	DeclareDialog(AP_DIALOG_ID_LIST_REVISIONS,	AP_QNXDialog_ListRevisions)
 	DeclareDialog(AP_DIALOG_ID_METADATA,		AP_QNXDialog_MetaData)
+
 #ifdef HAVE_CURL
 	DeclareDialog(AP_DIALOG_ID_DOWNLOAD_FILE,	AP_QNXDialog_Download_File)
 #endif
