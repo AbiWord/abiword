@@ -5337,7 +5337,7 @@ bool FV_View::isTabListAheadPoint(void)
 	fp_Run* pRun;
 	_findPositionCoords(cpos, bEOL, xPoint, yPoint, xPoint2, yPoint2, iPointHeight, bDirection, &pBlock, &pRun);
 
-	if (!pBlock || pBlock->isListItem() == false)
+	if (!pBlock)
 	{
 		return false;
 	}

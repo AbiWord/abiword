@@ -437,7 +437,20 @@ void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before, bool bNoUpdate)
 	{
 		m_pDoc->setDontImmediatelyLayout(true);
 	}
+	m_pDoc->beginUserAtomicGlob();
 	m_pDoc->deleteSpan(iLow, iHigh, p_AttrProp_Before, iRealDeleteCount, bDeleteTables);
+//
+// Stop any lists remaining if we've deleted their list fields
+//
+	PT_DocPosition origPos = getPoint();
+	if(getCurrentBlock()->getPosition() == iLow)
+	{
+		PL_StruxDocHandle sdh = getCurrentBlock()->getStruxDocHandle();
+		while(getCurrentBlock()->isListItem())
+		{
+			m_pDoc->StopList(sdh);
+		}
+	}
 	if(bDeleteTables || bNoUpdate)
 	{
 		m_pDoc->setDontImmediatelyLayout(bOldDelete);
@@ -445,13 +458,17 @@ void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before, bool bNoUpdate)
 //
 // Can't leave list-tab on a line
 //
+	if(origPos != getPoint())
+	{
+		setPoint(origPos);
+	}
 	if(isTabListAheadPoint() == true)
 	{
 		UT_uint32 iRealDeleteCount2;
-
 		m_pDoc->deleteSpan(getPoint(), getPoint()+2, p_AttrProp_Before, iRealDeleteCount2);
 		iRealDeleteCount += iRealDeleteCount2;
 	}
+	m_pDoc->endUserAtomicGlob();
 
 	//special handling is required for delete in revisions mode
 	//where we have to move the insertion point
