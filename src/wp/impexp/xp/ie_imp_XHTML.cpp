@@ -100,14 +100,14 @@ UT_Confidence_t IE_Imp_XHTML_Sniffer::recognizeContents(const char * szBuf,
 	{
 		magic = "<html" ;
 		if ( (iNumbytes - iBytesScanned) < strlen(magic) ) return(UT_CONFIDENCE_ZILCH);
-		if ( strncmp(p, magic, strlen(magic)) == 0 ) return(UT_CONFIDENCE_PERFECT);
+		if ( strncmp(p, magic, strlen(magic)) == 0 ) return(UT_CONFIDENCE_GOOD);
 		magic = "<!DOCTYPE html" ;
 		if ( (iNumbytes - iBytesScanned) < strlen(magic) ) return(UT_CONFIDENCE_ZILCH);
-		if ( strncmp(p, magic, strlen(magic)) == 0 ) return(UT_CONFIDENCE_PERFECT);
+		if ( strncmp(p, magic, strlen(magic)) == 0 ) return(UT_CONFIDENCE_GOOD);
 
 		magic = "<!DOCTYPE HTML" ;
 		if ( (iNumbytes - iBytesScanned) < strlen(magic) ) return(UT_CONFIDENCE_ZILCH);
-		if ( strncmp(p, magic, strlen(magic)) == 0 ) return(UT_CONFIDENCE_PERFECT);
+		if ( strncmp(p, magic, strlen(magic)) == 0 ) return(UT_CONFIDENCE_GOOD);
 		/*  Seek to the next newline:  */
 		while ( *p != '\n' && *p != '\r' )
 		{
@@ -124,15 +124,16 @@ UT_Confidence_t IE_Imp_XHTML_Sniffer::recognizeContents(const char * szBuf,
 			}
 		}
 	}
-	return(UT_CONFIDENCE_ZILCH);
+	return UT_CONFIDENCE_ZILCH;
 }
 
 UT_Confidence_t IE_Imp_XHTML_Sniffer::recognizeSuffix(const char * szSuffix)
 {
-  if ((UT_stricmp(szSuffix,".html")==0) || (UT_stricmp(szSuffix,".xhtml")==0)
-      || (UT_stricmp(szSuffix,".htm")==0))
-    return UT_CONFIDENCE_PERFECT;
-  return UT_CONFIDENCE_ZILCH;    
+	if (UT_stricmp(szSuffix,".xhtml") == 0)
+		return UT_CONFIDENCE_PERFECT;
+	if ((UT_stricmp(szSuffix,".html") == 0) || (UT_stricmp(szSuffix,".htm") == 0))
+		return UT_CONFIDENCE_GOOD;
+	return UT_CONFIDENCE_ZILCH;    
 }
 
 UT_Error IE_Imp_XHTML_Sniffer::constructImporter(PD_Document * pDocument,
