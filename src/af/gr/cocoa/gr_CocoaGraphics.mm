@@ -107,8 +107,7 @@ GR_CocoaGraphics::GR_CocoaGraphics(NSView * win, XAP_CocoaFontManager * fontMana
 	m_pApp = app;
 	UT_ASSERT (win);
 	NSRect viewBounds = [win bounds];
-	UT_DEBUGMSG (("frame is %f %f %f %f\n", theRect.origin.x, theRect.origin.y, theRect.size.width, theRect.size.height));
-	// QUACK QUACK QUACK
+//  	xxx_UT_DEBUGMSG (("frame is %f %f %f %f\n", theRect.origin.x, theRect.origin.y, theRect.size.width, theRect.size.height));
 	if (![win isKindOfClass:[XAP_CocoaNSView class]]) {
 		m_pWin = [[XAP_CocoaNSView alloc] initWithFrame:viewBounds];
 		[win addSubview:m_pWin];

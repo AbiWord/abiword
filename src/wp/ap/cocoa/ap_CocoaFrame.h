@@ -38,7 +38,7 @@ class AP_CocoaFrame;
     IBOutlet XAP_CocoaNSView *hRuler;
     IBOutlet XAP_CocoaNSView *vRuler;
 }
-+ (AP_CocoaFrameController*)createFrom:(AP_CocoaFrame *)frame;
++ (XAP_CocoaFrameController*)createFrom:(XAP_CocoaFrame *)frame;
 - (id)initWith:(XAP_CocoaFrame *)frame;
 - (IBAction)rulerClick:(id)sender;
 - (XAP_CocoaNSView *)getVRuler;

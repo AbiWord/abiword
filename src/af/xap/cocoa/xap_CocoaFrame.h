@@ -58,27 +58,16 @@ class GR_CocoaGraphics;
 - (BOOL)isOpaque;
 @end
 
-@interface XAP_CocoaNSScrollView : NSScrollView 
-{
-	GR_CocoaGraphics	*m_pGR;
-}
-- (void)setGraphics:(GR_CocoaGraphics *)gr;
-- (void)drawRect:(NSRect)aRect;
-- (void)keyDown:(NSEvent *)theEvent;
-- (BOOL)acceptsFirstResponder;
-- (BOOL)isFlipped;
-- (BOOL)isOpaque;
-@end
-
 @interface XAP_CocoaFrameController : NSWindowController
 {
 	XAP_CocoaFrame *m_frame;
-    IBOutlet XAP_CocoaNSScrollView *mainView;
+    IBOutlet NSScrollView *mainView;
     IBOutlet XAP_CocoaNSView *statusBar;
 	IBOutlet NSMenu *menuBar;
 }
++ (XAP_CocoaFrameController*)createFrom:(XAP_CocoaFrame *)frame;
 - (id)initWith:(XAP_CocoaFrame *)frame;
-- (XAP_CocoaNSScrollView *)getMainView;
+- (NSScrollView *)getMainView;
 - (NSMenu *)getMenuBar;
 - (XAP_CocoaNSView *)getStatusBar;
 @end
@@ -118,7 +107,7 @@ public:
 	virtual void				translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y) = 0;
 	virtual void				setStatusMessage(const char * szMsg) = 0;
 
-	void						setTimeOfLastEvent(unsigned long eventTime);
+	void						setTimeOfLastEvent(NSTimeInterval timestamp);
 	
 	virtual void				toggleRuler(bool bRulerOn) = 0;
 	virtual void				queue_resize();

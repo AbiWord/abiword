@@ -72,55 +72,16 @@ bool ev_CocoaKeyboard::keyPressEvent(AV_View* pView,
 	if ([e modifierFlags] & NSAlternateKeyMask)
 		state |= EV_EMS_ALT;
 
-	//UT_DEBUGMSG(("KeyPressEvent: keyval=%x state=%x\n",e->keyval,state));
-#if 0	
-	if (s_isVirtualKeyCode(e->keyval))
+	const char * s = [[e characters] cString];
+	int uLength = strlen(s);
+	UT_UCS2Char * ucs = (UT_UCS2Char*)UT_convert((char*)s, uLength,
+												 "UTF-8", "UCS-2",
+												 NULL, NULL);
+
+	for (int ind = 0; ind < uLength; ind++)
 	{
-		EV_EditBits nvk = s_mapVirtualKeyCodeToNVK(e->keyval);
-
-		switch (nvk)
-		{
-		case EV_NVK__IGNORE__:
-			return false;
-		default:
-
-			result = m_pEEM->Keystroke((UT_uint32)EV_EKP_PRESS|state|nvk,&pEM);
-
-			switch (result)
-			{
-			case EV_EEMR_BOGUS_START:
-				// If it is a bogus key and we don't have a sequence in
-				// progress, we should let the system handle it
-				// (this lets things like ALT-F4 work).
-				return false;
-				
-			case EV_EEMR_BOGUS_CONT:
-				// If it is a bogus key but in the middle of a sequence,
-				// we should silently eat it (this is to prevent things
-				// like Control-X ALT-F4 from killing us -- if they want
-				// to kill us, fine, but they shouldn't be in the middle
-				// of a sequence).
-				return true;
-				
-			case EV_EEMR_COMPLETE:
-				UT_ASSERT(pEM);
-				//UT_DEBUGMSG(("invokeKeyboardMethod (1)\n"));
-				invokeKeyboardMethod(pView,pEM,0,0); // no char data to offer
-				return true;
-				
-			case EV_EEMR_INCOMPLETE:
-				return true;
-				
-			default:
-				UT_ASSERT(0);
-				return true;
-			}
-		}
-	}
-	else
-	{
-		UT_uint16 charData = e->keyval;
-		//UT_DEBUGMSG(("CocoaKeyboard::pressKeyEvent: key value %x\n", charData));
+		UT_uint16 charData = ucs[ind];
+		UT_DEBUGMSG(("CocoaKeyboard::pressKeyEvent: key value %x\n", charData));
 
 		if(charData>0xff || charData == 0)
 		  result = m_pEEM->Keystroke(EV_EKP_PRESS|state|'a',&pEM);
@@ -148,7 +109,7 @@ bool ev_CocoaKeyboard::keyPressEvent(AV_View* pView,
 			UT_ASSERT(pEM);
 
 			UT_UCSChar *ucs = NULL;
-			char *mbs = e->string;
+			char *mbs = const_cast<char *>([[e characters] cString]);
 			int mLength = strlen(mbs);
 			int uLength = 0;
 
@@ -161,7 +122,11 @@ bool ev_CocoaKeyboard::keyPressEvent(AV_View* pView,
 			
 			if(XAP_EncodingManager::get_instance()->isUnicodeLocale() || mLength == 0)
 			{
-				UT_sint32 u = keysym2ucs(e->keyval);
+#if 0
+				UT_sint32 u = keysym2ucs(ucs[ind]);
+#else
+				UT_sint32 u = 'q';
+#endif
 				
 				if(u == -1 || u > 0xFFFF) //conversion failed, or more than 16 bit requied
 				{
@@ -186,9 +151,9 @@ bool ev_CocoaKeyboard::keyPressEvent(AV_View* pView,
 					wchar_t wc;
 					if(m.mbtowc(wc,mbs[i]))
 					  ucs[uLength++]=wc;
-					//UT_DEBUGMSG(("ucs[i] 0x%04x, ",ucs[i]));
+					UT_DEBUGMSG(("ucs[i] 0x%04x, ",ucs[i]));
 			  	}					
-			  	//UT_DEBUGMSG((" uLength %d\n",uLength));
+			  	UT_DEBUGMSG((" uLength %d\n",uLength));
 			 }
 			//UT_DEBUGMSG(("invokeKeyboardMethod (2)\n"));
 			invokeKeyboardMethod(pView,pEM,ucs,uLength); // no char data to offer
@@ -204,9 +169,6 @@ bool ev_CocoaKeyboard::keyPressEvent(AV_View* pView,
 			return true;
 		}
 	}
-#endif
-	UT_ASSERT (UT_NOT_IMPLEMENTED);
-	return false;
 }
 #if 0
 // pulled in from gdk/gdkkeysyms.h

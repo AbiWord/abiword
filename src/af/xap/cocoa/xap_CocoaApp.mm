@@ -251,8 +251,11 @@ void XAP_CocoaApp::_setAbiSuiteLibDir()
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-void XAP_CocoaApp::setTimeOfLastEvent(UT_uint32 eventTime)
+// causes memory corruption!
+void XAP_CocoaApp::setTimeOfLastEvent(NSTimeInterval timestamp)
 {
-	m_eventTime = eventTime;
+	// assert until memory corruption fixed
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	m_eventTime = timestamp;
 }
 

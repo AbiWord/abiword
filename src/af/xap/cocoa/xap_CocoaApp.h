@@ -22,6 +22,10 @@
 #ifndef XAP_COCOAAPP_H
 #define XAP_COCOAAPP_H
 
+//  BAD HACK BAD HACK I can't include Foundation/NSTimer.h
+//  because AP_Args somehow won't compile Obj-C.
+typedef double NSTimeInterval;
+
 #include <unistd.h>
 #include <sys/stat.h>
 #include "xap_App.h"
@@ -85,8 +89,8 @@ public:
 	virtual	void					getGeometry(int * x, int * y, UT_uint32 * width, UT_uint32 * height,
 												windowGeometryFlags * flags);
 
-	void							setTimeOfLastEvent(UT_uint32 eventTime);
-	UT_uint32	   					getTimeOfLastEvent() const { return m_eventTime; };
+	void							setTimeOfLastEvent(NSTimeInterval eventTime);
+	NSTimeInterval					getTimeOfLastEvent() const { return m_eventTime; };
 	virtual UT_sint32				makeDirectory(const char * szPath, const UT_sint32 mode ) const;
 	
 protected:
@@ -99,7 +103,7 @@ private:
 	XAP_CocoaFontManager *			m_fontManager;
 
 	windowGeometry			m_geometry;
-	UT_uint32					m_eventTime; // e->time field of a recent X event
+	NSTimeInterval			m_eventTime; // e->time field of a recent X event
 										 // (we use this to sync clipboard
 										 // operations with the server).
 };

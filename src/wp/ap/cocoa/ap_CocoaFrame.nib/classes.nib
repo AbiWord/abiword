@@ -12,13 +12,12 @@
             CLASS = XAP_CocoaFrameController; 
             LANGUAGE = ObjC; 
             OUTLETS = {
-                mainView = XAP_CocoaNSScrollView; 
+                mainView = NSScrollView; 
                 menuBar = NSMenu; 
                 statusBar = XAP_CocoaNSView; 
             }; 
             SUPERCLASS = NSWindowController; 
         }, 
-        {CLASS = XAP_CocoaNSScrollView; LANGUAGE = ObjC; SUPERCLASS = NSScrollView; }, 
         {CLASS = XAP_CocoaNSView; LANGUAGE = ObjC; SUPERCLASS = NSView; }
     ); 
     IBVersion = 1; 

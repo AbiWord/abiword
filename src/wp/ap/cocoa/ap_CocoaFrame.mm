@@ -106,7 +106,7 @@ UT_Error AP_CocoaFrame::_showDocument(UT_uint32 iZoom)
 	NSScrollView *scroller = [_getController() getMainView];
 	pG = new GR_CocoaGraphics(scroller, fontManager, getApp());
 	ENSUREP(pG);
-	[scroller setDocumentView:pG->_getView()];
+  	[scroller setDocumentView:pG->_getView()];
 	static_cast<GR_CocoaGraphics *>(pG)->_setUpdateCallback (&_graphicsUpdateCB, (void *)this);
 	pG->setZoomPercentage(iZoom);
 	
@@ -446,7 +446,6 @@ void AP_CocoaFrame::	refillToolbarsInFrameData(void)
 // Idem.
 void AP_CocoaFrame::_showOrHideStatusbar()
 {
-	// XXX PLAM QUACK QUACK QUACK
 	bool bShowStatusBar = static_cast<AP_FrameData*> (m_pData)->m_bShowStatusBar && false;
 	toggleStatusBar(bShowStatusBar);
 }
@@ -1020,7 +1019,7 @@ bool AP_CocoaFrame::_graphicsUpdateCB(NSRect * aRect, GR_CocoaGraphics *pG, void
 /* Objective-C section */
 
 @implementation AP_CocoaFrameController
-+ (AP_CocoaFrameController*)createFrom:(AP_CocoaFrame *)frame
++ (XAP_CocoaFrameController*)createFrom:(XAP_CocoaFrame *)frame
 {
 	UT_DEBUGMSG (("Cocoa: @AP_CocoaFrameController createFrom:frame\n"));
 	AP_CocoaFrameController *obj = [[AP_CocoaFrameController alloc] initWith:frame];

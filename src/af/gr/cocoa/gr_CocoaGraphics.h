@@ -111,7 +111,7 @@ class GR_CocoaGraphics : public GR_Graphics
 	XAP_CocoaNSView *	_getView () { return m_pWin; };
 	NSImage*			_getOffscreen () { return m_offscreen; };
 	void 				_updateRect(NSView * v, NSRect aRect);
-	bool				_isFlipped();
+	static bool			_isFlipped();
  protected:
 	virtual UT_uint32 	_getResolution(void) const;
 	void				_setColor(NSColor * c);

@@ -258,49 +258,6 @@ gint XAP_CocoaFrame::_fe::motion_notify_event(GtkWidget* w, GdkEventMotion* e)
 	return 1;
 }
 	
-gint XAP_CocoaFrame::_fe::key_press_event(GtkWidget* w, GdkEventKey* e)
-{
-	XAP_CocoaFrame * pCocoaFrame = (XAP_CocoaFrame *)g_object_get_user_data(G_OBJECT(w));
-	pCocoaFrame->setTimeOfLastEvent(e->time);
-	AV_View * pView = pCocoaFrame->getCurrentView();
-	ev_CocoaKeyboard * pCocoaKeyboard = static_cast<ev_CocoaKeyboard *>(pCocoaFrame->getKeyboard());
-	
-	if (pView)
-		pCocoaKeyboard->keyPressEvent(pView, e);
-
-	// HACK : This one's ugly.  If we continue through the callback chain,
-	// HACK : GTK will pick up key presses and hand them off to widgets with
-	// HACK : focus (like toolbar combos).  This is bad, since we have already
-	// HACK : acted on the key press (like space, we would insert a space
-	// HACK : in the document, but GTK will let space mean "open the menu"
-	// HACK : to a combo).  The user is confused and things are annoying.
-	// HACK :
-	// HACK : We _could_ block all GTK key handling, and do everything 
-	// HACK : ourselves, but then we lose the automatic menu accelerator
-	// HACK : bindings (Alt-F for File menu).  
-	// HACK :
-	// HACK : What we do is let ONLY Alt-modified keys through to GTK.
-
-	// If a modifier is down, return to let GTK catch
-
-	// don't let GTK handle keys when mod2 (numlock) or mod5 (scroll lock) are down
-
-	// What's "LOCK_MASK"?  I can't seem to trigger it with caps lock, scroll lock, or
-	// num lock.
-//		(e->state & GDK_LOCK_MASK))		// catch all keys with "num lock" down for now
-	
-	if ((e->state & GDK_MOD1_MASK) ||
-		(e->state & GDK_MOD3_MASK) ||
-		(e->state & GDK_MOD4_MASK))
-	{
-		return 0;
-	}
-
-	// ... else, stop this signal
-	g_signal_emit_stop_by_name(G_OBJECT(w), "key_press_event");
-	return 1;
-}
-	
 gint XAP_CocoaFrame::_fe::delete_event(GtkWidget * w, GdkEvent * /*event*/, gpointer /*data*/)
 {
 	XAP_CocoaFrame * pCocoaFrame = (XAP_CocoaFrame *) g_object_get_user_data(G_OBJECT(w));
@@ -558,9 +515,9 @@ void XAP_CocoaFrame::_createTopLevelWindow(void)
 	UT_ASSERT (theWindow);
 	NSString * str = [NSString stringWithCString:m_pCocoaApp->getApplicationTitleForTitleBar()];	// autoreleased
 	[theWindow setTitle:str];
-	XAP_CocoaNSScrollView * scroller = [m_frameController getMainView];
-	[scroller setHasHorizontalScroller:YES];
-	[scroller setHasVerticalScroller:YES];
+	NSScrollView * scroller = [m_frameController getMainView];
+  	[scroller setHasHorizontalScroller:YES];
+  	[scroller setHasVerticalScroller:YES];
 
 	// synthesize a menu from the info in our base class.
 
@@ -832,12 +789,10 @@ bool XAP_CocoaFrame::runModalContextMenu(AV_View * /* pView */, const char * szM
 	return false;
 }
 
-#if 0
-void XAP_CocoaFrame::setTimeOfLastEvent(guint32 eventTime)
+void XAP_CocoaFrame::setTimeOfLastEvent(NSTimeInterval timestamp)
 {
-	m_pCocoaApp->setTimeOfLastEvent(eventTime);
+	m_pCocoaApp->setTimeOfLastEvent(timestamp);
 }
-#endif
 
 EV_Toolbar * XAP_CocoaFrame::_newToolbar(XAP_App *app, XAP_Frame *frame,
 					const char *szLayout,
@@ -874,18 +829,33 @@ void XAP_CocoaFrame::_setController (XAP_CocoaFrameController * ctrl)
 /* Objective C section */
 
 @implementation XAP_CocoaFrameController
+- (BOOL)acceptsFirstResponder
+{
+	return YES;
+}
+
+- (void)keyDown:(NSEvent *)theEvent
+{
+	XAP_CocoaFrame * pFrame = m_frame;
+//  	pFrame->setTimeOfLastEvent([theEvent timestamp]);
+	AV_View * pView = pFrame->getCurrentView();
+	ev_CocoaKeyboard * pCocoaKeyboard = static_cast<ev_CocoaKeyboard *>
+		(pFrame->getKeyboard());
+
+	if (pView)
+		pCocoaKeyboard->keyPressEvent(pView, theEvent);
+}
+
 
 /*!
 	Returns an instance.
  */
-#if 0
 + (XAP_CocoaFrameController*)createFrom:(XAP_CocoaFrame *)frame
 {
 	UT_DEBUGMSG (("Cocoa: createFrom:frame\n"));
 	XAP_CocoaFrameController *obj = [[XAP_CocoaFrameController alloc] initWith:frame];
 	return obj;
 }
-#endif
 
 - (id)initWith:(XAP_CocoaFrame *)frame
 {
@@ -894,7 +864,7 @@ void XAP_CocoaFrame::_setController (XAP_CocoaFrameController * ctrl)
 	return self;
 }
 
-- (XAP_CocoaNSScrollView *)getMainView
+- (NSScrollView *)getMainView
 {
 	return mainView;
 }
@@ -935,89 +905,7 @@ void XAP_CocoaFrame::_setController (XAP_CocoaFrameController * ctrl)
 */
 - (BOOL)isFlipped
 {
-	if (m_pGR)
-		return m_pGR->_isFlipped();
-	else
-		return NO;
-}
-
-/*!
-	Cocoa overridden method.
-
-	\return NO. Not opaque.
- */
-- (BOOL)isOpaque
-{
-	return YES;
-}
-@end
-
-@implementation XAP_CocoaNSScrollView
-- (void)setGraphics:(GR_CocoaGraphics *)gr
-{
-	m_pGR = gr;
-}
-
-/*!
-	Cocoa overridden method. Redraw the screen.
- */
-- (void)drawRect:(NSRect)aRect
-{
-	if (m_pGR) {
-# ifdef USE_OFFSCREEN
-
-		NSImage * img = m_pGR->_getOffscreen ();
-		// TODO: only draw what is needed.
-# endif
-		if ([self inLiveResize]) {
-			UT_DEBUGMSG (("Is resizing\n"));
-# ifdef USE_OFFSCREEN
-			NSRect myBounds = [self bounds];
-			[img setSize:myBounds.size];
-			// take care of erasing after resizing.
-			{
-				StNSImageLocker locker (img);
-				NSEraseRect (myBounds);
-			}
-# endif
-			[NSGraphicsContext saveGraphicsState];
-			NSRectClip (aRect);
-			if (!m_pGR->_callUpdateCallback (&aRect)) {
-
-			}
-			[NSGraphicsContext restoreGraphicsState];
-		}
-# ifdef USE_OFFSCREEN
-		[img drawAtPoint:aRect.origin fromRect:aRect operation:NSCompositeCopy fraction:1.0f];
-# endif
-		UT_DEBUGMSG (("- (void)drawRect:(NSRect)aRect: calling callback !\n"));
-	}
-}
-
-- (void)keyDown:(NSEvent *)theEvent
-{
-        UT_DEBUGMSG(("KeyPressEvent: keyval=%x characters=%s\n",[theEvent keyCode],
-                     [[theEvent characters] cString]));
-}
-
-- (BOOL)acceptsFirstResponder
-{
-	return YES;
-}
-
-/*!
-	Cocoa overridden method.
-
-	\return NO. Coordinates are still upside down, but we'll reverse
-	the offscreen instead.
-*/
-- (BOOL)isFlipped
-{
-# ifdef USE_OFFSCREEN
-	return NO;
-# else
-	return YES;
-#endif
+	return GR_CocoaGraphics::_isFlipped();
 }
 
 /*!
