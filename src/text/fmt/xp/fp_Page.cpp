@@ -698,7 +698,8 @@ void fp_Page::_reformatColumns(void)
 // FIXME see if this code works instead
 //
 //		m_pOwner->setNeedsSectionBreak(true,getPrev());
-		UT_ASSERT(0);
+			// this triggers in docs with lot of footnotes, not sure why it is here, Tomas
+			// UT_ASSERT(0); 
 			return;
 //			break;
 		}
