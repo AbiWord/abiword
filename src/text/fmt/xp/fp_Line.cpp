@@ -66,12 +66,12 @@ void fp_Line::setBlock(fl_BlockLayout* pBlock)
 	m_pBlock = pBlock;
 }
 
-UT_uint32 fp_Line::getWidth() const
+UT_sint32 fp_Line::getWidth() const
 {
 	return m_iWidth;
 }
 
-UT_uint32 fp_Line::getMaxWidth() const
+UT_sint32 fp_Line::getMaxWidth() const
 {
 	return m_iMaxWidth;
 }
@@ -376,14 +376,14 @@ void fp_Line::_recalcHeight()
 	UT_sint32 count = m_vecRuns.getItemCount();
 	UT_sint32 i;
 
-	UT_uint32 iMaxAscent = 0;
-	UT_uint32 iMaxDescent = 0;
+	UT_sint32 iMaxAscent = 0;
+	UT_sint32 iMaxDescent = 0;
 
-    UT_uint32 iOldHeight = m_iHeight;
+    UT_sint32 iOldHeight = m_iHeight;
 
 	for (i=0; i<count; i++)
 	{
-		UT_uint32 iAscent;
+		UT_sint32 iAscent;
 
 		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(i);
 
@@ -393,7 +393,7 @@ void fp_Line::_recalcHeight()
 
 	for (i=0; i<count; i++)
 	{
-		UT_uint32 iDescent;
+		UT_sint32 iDescent;
 
 		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(i);
 
@@ -414,17 +414,17 @@ void fp_Line::_recalcHeight()
 	}
 }
 
-UT_uint32 fp_Line::getAscent(void) const
+UT_sint32 fp_Line::getAscent(void) const
 {
 	return m_iAscent;
 }
 
-void fp_Line::expandWidthTo(UT_uint32 iNewWidth)
+void fp_Line::expandWidthTo(UT_sint32 iNewWidth)
 {
-	UT_uint32 iPrevWidth = m_iWidth;
+	UT_sint32 iPrevWidth = m_iWidth;
 	UT_ASSERT(iNewWidth > iPrevWidth);
 
-	UT_uint32 iMoreWidth = iNewWidth - iPrevWidth;
+	UT_sint32 iMoreWidth = iNewWidth - iPrevWidth;
 
 	int count = m_vecRuns.getItemCount();
 	UT_sint32 i;
@@ -433,10 +433,10 @@ void fp_Line::expandWidthTo(UT_uint32 iNewWidth)
 	{
 		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(i);
 
-		UT_uint32 iCurSpanWidth = pRun->getWidth();
-		UT_uint32 iNewSpanWidth = 
+		UT_sint32 iCurSpanWidth = pRun->getWidth();
+		UT_sint32 iNewSpanWidth = 
 			iCurSpanWidth 
-			+ ((UT_uint32) ((iCurSpanWidth / ((double) iPrevWidth)) * iMoreWidth));
+			+ ((UT_sint32) ((iCurSpanWidth / ((double) iPrevWidth)) * iMoreWidth));
 		pRun->expandWidthTo(iNewSpanWidth);
 	}
 
@@ -595,8 +595,6 @@ UT_Bool fp_Line::isLastLineInBlock(void) const
 
 UT_sint32 fp_Line::getMarginBefore(void) const
 {
-	DG_Graphics* pG = getBlock()->getDocLayout()->getGraphics();
-	
 	if (isFirstLineInBlock() && getBlock()->getPrev(UT_FALSE))
 	{
 		fp_Line* pPrevLine = getBlock()->getPrev(UT_FALSE)->getLastLine();

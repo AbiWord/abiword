@@ -87,8 +87,8 @@ public:
 
 	DG_Graphics*	getGraphics();
 	PD_Document*	getDocument() const;
-	UT_uint32		getHeight();
-	UT_uint32       getWidth();
+	UT_sint32		getHeight();
+	UT_sint32       getWidth();
 
 	DG_Font*		findFont(const PP_AttrProp * pSpanAP,
 							 const PP_AttrProp * pBlockAP,
@@ -98,7 +98,7 @@ public:
 	fp_Page*	getFirstPage();
 	fp_Page*	getLastPage();
 	fp_Page*	getNthPage(int n);
-	int			countPages();
+	UT_uint32	countPages();
 
 	fl_BlockLayout*	findBlockAtPosition(PT_DocPosition pos);
 	fl_SectionLayout* getPrevSection(fl_SectionLayout* pSL) const;

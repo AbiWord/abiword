@@ -65,13 +65,12 @@ public:
 	fp_Line*			getFirstLine(void) const;
 	fp_Line*			getLastLine(void) const;
 	
-	UT_uint32			getWidth(void) const;
-	void				setWidth(UT_uint32);
+	UT_sint32			getWidth(void) const;
+	void				setWidth(UT_sint32);
 	
-	UT_uint32			getHeight(void) const;
-	UT_uint32			getMaxHeight(void) const;
-	void				setMaxHeight(UT_uint32);
-	void				setHeight(UT_uint32);
+	UT_sint32			getHeight(void) const;
+	void				setMaxHeight(UT_sint32);
+	void				setHeight(UT_sint32);
 
 	void				checkForWidowsAndOrphans(void);
 	UT_Bool				insertLineAfter(fp_Line* pNewLine, fp_Line*	pAfterLine, UT_sint32 iHeight);
@@ -107,9 +106,9 @@ protected:
 
 	fp_Page*				m_pPage;
 
-	UT_uint32 				m_iWidth;
-	UT_uint32 				m_iHeight;
-	UT_uint32				m_iMaxHeight;
+	UT_sint32 				m_iWidth;
+	UT_sint32 				m_iHeight;
+	UT_sint32				m_iMaxHeight;
 
 	UT_sint32				m_iX;
 	UT_sint32				m_iY;

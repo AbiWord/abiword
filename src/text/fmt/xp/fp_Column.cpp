@@ -75,12 +75,12 @@ void fp_Column::setPage(fp_Page* pPage)
 	m_pPage = pPage;
 }
 
-UT_uint32 fp_Column::getHeight(void) const
+UT_sint32 fp_Column::getHeight(void) const
 {
 	return m_iHeight;
 }
 
-void fp_Column::setWidth(UT_uint32 iWidth)
+void fp_Column::setWidth(UT_sint32 iWidth)
 {
 	if (iWidth == m_iWidth)
 	{
@@ -94,7 +94,7 @@ void fp_Column::setWidth(UT_uint32 iWidth)
 //	UT_ASSERT(UT_NOT_IMPLEMENTED);
 }
 
-void fp_Column::setHeight(UT_uint32 iHeight)
+void fp_Column::setHeight(UT_sint32 iHeight)
 {
 	if (iHeight == m_iHeight)
 	{
@@ -107,7 +107,7 @@ void fp_Column::setHeight(UT_uint32 iHeight)
 	UT_ASSERT(UT_NOT_IMPLEMENTED);
 }
 
-void fp_Column::setMaxHeight(UT_uint32 iMaxHeight)
+void fp_Column::setMaxHeight(UT_sint32 iMaxHeight)
 {
 	UT_ASSERT(iMaxHeight > 0);
 
@@ -340,7 +340,7 @@ void fp_Column::updateLayout(void)
 		m_bNeedsLayout = UT_FALSE;
 		
 		UT_Bool bBumpedSomething = UT_FALSE;
-		UT_uint32 iCurY = 0;
+		UT_sint32 iCurY = 0;
 		UT_uint32 count = m_vecLines.getItemCount();
 		UT_uint32 i;
 
@@ -554,11 +554,11 @@ void fp_Column::draw(dg_DrawArgs* pDA)
 
 UT_Bool fp_Column::containsPoint(UT_sint32 x, UT_sint32 y)
 {
-	if ((x < 0) || (x >= (UT_sint32)m_iWidth))
+	if ((x < 0) || (x >= m_iWidth))
 	{
 		return UT_FALSE;
 	}
-	if ((y < 0) || (y >= (UT_sint32)m_iHeight))
+	if ((y < 0) || (y >= m_iHeight))
 	{
 		return UT_FALSE;
 	}
@@ -640,7 +640,7 @@ UT_uint32	fp_Column::distanceFromPoint(UT_sint32 x, UT_sint32 y)
 	{
 		dx = -x;
 	}
-	else if (x > (UT_sint32)m_iWidth)
+	else if (x > m_iWidth)
 	{
 		dx = x - m_iWidth;
 	}
@@ -653,7 +653,7 @@ UT_uint32	fp_Column::distanceFromPoint(UT_sint32 x, UT_sint32 y)
 	{
 		dy = -y;
 	}
-	else if (y > (UT_sint32)m_iHeight)
+	else if (y > m_iHeight)
 	{
 		dy = y - m_iHeight;
 	}
@@ -672,7 +672,7 @@ void fp_Column::lineHeightChanged(fp_Line* pLine, DG_Graphics* pG, UT_sint32 iOl
 	m_bNeedsLayout = UT_TRUE;
 }
 
-UT_uint32 fp_Column::getWidth(void) const
+UT_sint32 fp_Column::getWidth(void) const
 {
 	return m_iWidth;
 }

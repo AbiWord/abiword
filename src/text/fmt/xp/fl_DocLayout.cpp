@@ -102,9 +102,9 @@ DG_Graphics* FL_DocLayout::getGraphics()
 	return m_pG;
 }
 
-UT_uint32 FL_DocLayout::getHeight()
+UT_sint32 FL_DocLayout::getHeight()
 {
-	UT_uint32 iHeight = 0;
+	UT_sint32 iHeight = 0;
 	int count = m_vecPages.getItemCount();
 
 	for (int i=0; i<count; i++)
@@ -124,9 +124,9 @@ UT_uint32 FL_DocLayout::getHeight()
 	return iHeight;
 }
 
-UT_uint32 FL_DocLayout::getWidth()
+UT_sint32 FL_DocLayout::getWidth()
 {
-	UT_uint32 iWidth = 0;
+	UT_sint32 iWidth = 0;
 	int count = m_vecPages.getItemCount();
 
 	for (int i=0; i<count; i++)
@@ -186,7 +186,7 @@ DG_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 	return pFont;
 }
 
-int FL_DocLayout::countPages()
+UT_uint32 FL_DocLayout::countPages()
 {
 	return m_vecPages.getItemCount();
 }

@@ -171,7 +171,7 @@ void fp_Page::_reformat(void)
 	UT_sint32 iTopMargin = pFirstSectionLayout->getTopMargin();
 	UT_sint32 iBottomMargin = pFirstSectionLayout->getBottomMargin();
 	
-	UT_uint32 iY = iTopMargin;
+	UT_sint32 iY = iTopMargin;
 	
 	int i;
 	for (i=0; i<count; i++)
@@ -184,7 +184,7 @@ void fp_Page::_reformat(void)
 		UT_uint32 iSpace = m_iWidth - iLeftMargin - iRightMargin;
 		UT_uint32 iColWidth = (iSpace - ((iNumColumns - 1) * iColumnGap)) / iNumColumns;
 		
-		UT_uint32 iX = iLeftMargin;
+		UT_sint32 iX = iLeftMargin;
 		
 		fp_Column* pTmpCol = pLeader;
 		UT_sint32 iMostHeight = 0;

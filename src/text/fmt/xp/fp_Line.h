@@ -52,7 +52,7 @@ public:
 
 	inline fp_Column* 			getColumn() const	{ return m_pColumn; }
 	inline fl_BlockLayout*		getBlock() const 	{ return m_pBlock; }
-	inline UT_uint32 			getHeight() const 	{ return m_iHeight; }
+	inline UT_sint32 			getHeight() const 	{ return m_iHeight; }
 	
 	inline UT_sint32			getX(void) const 	{ return m_iX; }
 	inline UT_sint32			getY(void) const 	{ return m_iY; }
@@ -60,8 +60,8 @@ public:
 	inline fp_Line*				getNext() const 	{ return m_pNext; }
 	inline fp_Line*    			getPrev() const 	{ return m_pPrev; }
 
-	UT_uint32 	getWidth() const;
-	UT_uint32 	getMaxWidth() const;
+	UT_sint32 	getWidth() const;
+	UT_sint32 	getMaxWidth() const;
 	void		setMaxWidth(UT_sint32);
 
 	UT_sint32	getBaseX(void) const;
@@ -93,12 +93,12 @@ public:
 #endif
 
 	void        shrink(UT_sint32);
-	void 		expandWidthTo(UT_uint32 iNewWidth);
+	void 		expandWidthTo(UT_sint32 iNewWidth);
 	void		clearScreen();
 	void		draw(dg_DrawArgs*);
 	void        draw(DG_Graphics*);
 	void		align();
-	UT_uint32	getAscent(void) const;
+	UT_sint32	getAscent(void) const;
 	
 	UT_Bool		isEmpty(void) const;
 
@@ -111,10 +111,10 @@ protected:
 	fl_BlockLayout*	m_pBlock;
 	fp_Column*		m_pColumn;
 	
-	UT_uint32	 	m_iWidth;
-	UT_uint32	 	m_iMaxWidth;
-	UT_uint32 		m_iHeight;
-	UT_uint32 		m_iAscent;
+	UT_sint32	 	m_iWidth;
+	UT_sint32	 	m_iMaxWidth;
+	UT_sint32 		m_iHeight;
+	UT_sint32 		m_iAscent;
 
 	UT_sint32		m_iX;
 	UT_sint32		m_iY;
