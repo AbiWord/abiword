@@ -2631,7 +2631,7 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 	PT_DocPosition curPos=0;
 	PT_DocPosition posNewStart = posStart;
 	PT_DocPosition posNewEnd = posEnd;
-	if(bisListStyle)
+	if(bisListStyle && !bCharStyle)
 	{
 //
 // Stop the Lists contained in the current selection.
@@ -2674,7 +2674,7 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 			}
 		}
 	}
-	else
+	else if(!bCharStyle)
 	{
 		UT_uint32 i;
 
@@ -7112,7 +7112,7 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 		pInfo->u.c.m_xColumnWidth = pColumn->getWidth();
 		if(pSection->getContainerType() == FL_CONTAINER_FOOTNOTE)
 		{
-			pInfo->m_iCurrentColumn = 1;
+			pInfo->m_iCurrentColumn = 0;
 			pInfo->m_iNumColumns = 1;
 			pInfo->u.c.m_xColumnGap = 0;
 			pInfo->u.c.m_xColumnWidth = pContainer->getWidth();
