@@ -1022,7 +1022,9 @@ void fp_Line::clearScreen(void)
 			{
 				return;
 			}
-			UT_sint32 iExtra = getGraphics()->getFontAscent()/2;
+//			UT_sint32 iExtra = getGraphics()->getFontAscent()/2;
+			UT_sint32 iExtra = 0;
+			
 			UT_ASSERT(m_iClearToPos + m_iClearLeftOffset < getPage()->getWidth());
 //			pRun->Fill(getGraphics(),xoffLine - m_iClearLeftOffset, yoffLine, m_iClearToPos + m_iClearLeftOffset+iExtra, height);
 			pRun->Fill(getGraphics(),xoffLine - m_iClearLeftOffset, yoffLine, getMaxWidth() + m_iClearLeftOffset +iExtra, height);
