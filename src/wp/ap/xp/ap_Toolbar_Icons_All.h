@@ -100,21 +100,21 @@
 #	include "tb_edit_editfooter.xpm"
 #	include "tb_edit_removeheader.xpm"
 #	include "tb_edit_removefooter.xpm"
-#       include "tb_anchor.xpm"
-#       include "tb_hyperlink.xpm"
-#       include "tb_smiley.xpm"
+#	include "tb_anchor.xpm"
+#	include "tb_hyperlink.xpm"
+#	include "tb_smiley.xpm"
 
 #	include "tb_script_play.xpm"
-#       include "tb_stock_paint.xpm"
+#	include "tb_stock_paint.xpm"
 
-#include "tb_insert_table.xpm"
-#include "tb_add_row.xpm"
-#include "tb_add_column.xpm"
-#include "tb_delete_row.xpm"
-#include "tb_delete_column.xpm"
-#include "tb_merge_cells.xpm"
-#include "tb_split_cells.xpm"
-#include "tb_transparent.xpm"
+#	include "tb_insert_table.xpm"
+#	include "tb_add_row.xpm"
+#	include "tb_add_column.xpm"
+#	include "tb_delete_row.xpm"
+#	include "tb_delete_column.xpm"
+#	include "tb_merge_cells.xpm"
+#	include "tb_split_cells.xpm"
+#	include "tb_transparent.xpm"
 
 	// these are specific to one or more translations
 #	include "tb_text_bold_G.xpm"
@@ -233,15 +233,15 @@
  	DefineToolbarIcon(tb_edit_removeheader_xpm)
  	DefineToolbarIcon(tb_edit_removefooter_xpm)
 	DefineToolbarIcon(tb_script_play_xpm)
-        DefineToolbarIcon(tb_stock_paint_xpm)
-        DefineToolbarIcon(tb_insert_table_xpm)
-        DefineToolbarIcon(tb_add_row_xpm)
-        DefineToolbarIcon(tb_add_column_xpm)
-        DefineToolbarIcon(tb_delete_row_xpm)
-        DefineToolbarIcon(tb_delete_column_xpm)
-        DefineToolbarIcon(tb_merge_cells_xpm)
-        DefineToolbarIcon(tb_split_cells_xpm)
-        DefineToolbarIcon(tb_transparent_xpm)
+	DefineToolbarIcon(tb_stock_paint_xpm)
+	DefineToolbarIcon(tb_insert_table_xpm)
+	DefineToolbarIcon(tb_add_row_xpm)
+	DefineToolbarIcon(tb_add_column_xpm)
+	DefineToolbarIcon(tb_delete_row_xpm)
+	DefineToolbarIcon(tb_delete_column_xpm)
+	DefineToolbarIcon(tb_merge_cells_xpm)
+	DefineToolbarIcon(tb_split_cells_xpm)
+	DefineToolbarIcon(tb_transparent_xpm)
 
 	// these are specific to one or more translations
 	DefineToolbarIcon(tb_text_bold_G_xpm)
@@ -261,9 +261,9 @@
 	DefineToolbarIcon(tb_text_bold_F_xpm)
 	DefineToolbarIcon(tb_text_strikeout_G_xpm)
 	// Hungarian translations
-		//DefineToolbarIcon(tb_text_bold_F_xpm)
+	//DefineToolbarIcon(tb_text_bold_F_xpm)
 	DefineToolbarIcon(tb_text_italic_D_xpm)
-		//DefineToolbarIcon(tb_text_underline_A_xpm)
+	//DefineToolbarIcon(tb_text_underline_A_xpm)
 	DefineToolbarIcon(tb_text_strikeout_K_xpm)
 	DefineToolbarIcon(tb_text_overline_F_xpm)
 	// Spanish translations
