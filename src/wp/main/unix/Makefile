@@ -75,5 +75,7 @@ $(PROGRAM): $(OBJS) $(THE_LIBS)
 build:: $(TARGETS)
 	@echo Exporting $(TARGETS) from `pwd`
 	@$(subst xxxx,$(DIST)/bin,$(VERIFY_DIRECTORY))
-	@$(INSTALL) -m 755 $(TARGETS) $(DIST)/bin
+	@$(ABICOPY) $(TARGETS) $(DIST)/bin
+
+
 

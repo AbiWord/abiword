@@ -42,7 +42,7 @@ include $(ABI_DEPTH)/config/abi_rules.mk
 build:: $(TARGETS)
 	@echo Exporting library $(LIBRARY_NAME) from `pwd`...
 	@$(subst xxxx,$(DIST)/lib,$(VERIFY_DIRECTORY))
-	@$(INSTALL) -m 444 $(TARGETS) $(DIST)/lib
+	@$(ABICOPY) $(TARGETS) $(DIST)/lib
 
 
 

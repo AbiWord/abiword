@@ -55,6 +55,8 @@ OS_ARCH		:= $(shell uname -m | sed -e s/i.86/i386/ -e s/sun4u/sparc64/ -e s/arm.
 # Where to stuff all the bins
 DISTBASE 	= $(ABI_DEPTH)/../dist
 
+ABICOPY=cp
+
 ##################################################################
 ##################################################################
 ## Help for finding all of our include files without needing to
@@ -126,8 +128,6 @@ LINK_DLL	= $(LINK) $(OS_DLLFLAGS) $(DLLFLAGS)
 CFLAGS		= $(OPTIMIZER) $(OS_CFLAGS) $(DEFINES) $(INCLUDES) $(XCFLAGS)	\
 			$(ABI_DBGDEFS) $(ABI_JSDEFS) $(ABI_INCS)
 
-INSTALL		= install
-
 ##################################################################
 ##################################################################
 #### Include the proper platform defs.  Add another if clause for
@@ -166,11 +166,11 @@ CFLAGS 		+=	`gtk-config --cflags`
 endif
 
 define MAKE_OBJDIR
-if test ! -d $(@D); then rm -rf $(@D); $(INSTALL) -d $(@D); fi
+if test ! -d $(@D); then rm -rf $(@D); mkdir -p $(@D); fi
 endef
 
 define VERIFY_DIRECTORY
-if test ! -d xxxx; then rm -rf xxxx; $(INSTALL) -d xxxx; fi
+if test ! -d xxxx; then rm -rf xxxx; mkdir -p  xxxx; fi
 endef
 
 OBJDIR = $(OS_NAME)_$(OS_RELEASE)_$(OS_ARCH)_$(OBJ_DIR_SFX)
