@@ -279,6 +279,15 @@ void s_RTF_ListenerGetProps::_compute_span_properties(const PP_AttrProp * pSpanA
 	UT_sint32 ndxFont = m_pie->_findFont(&fi);
 	if (ndxFont == -1)
 		m_pie->_addFont(&fi);
+//
+// Look in field-font too
+//
+	_rtf_font_info fii(s_RTF_AttrPropAdapter_AP(pSpanAP,pBlockAP,pSectionAP,m_pDocument),true);
+	ndxFont = m_pie->_findFont(&fii);
+	if (ndxFont == -1)
+		m_pie->_addFont(&fii);
 
 	return;
 }
+
+

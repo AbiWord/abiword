@@ -512,7 +512,7 @@ bool PD_Document::appendFmtMark(void)
 
 /*!
  * This method returns the value associated with attribute szAttribute
- * at picetable location given by sdh.
+ * at picetable strux given by sdh.
  \param  PL_StruxDocHandle sdh (pf_Frag_Strux) where we want to find the value
 \param const char * szAttribute the attribute we're looking for.
 \param const char ** pszValue the value of the attribute.
@@ -528,6 +528,33 @@ bool PD_Document::getAttributeFromSDH(PL_StruxDocHandle sdh, const char * szAttr
 	UT_ASSERT(pAP);
 	const XML_Char * pszValue = NULL;
 	(pAP)->getAttribute(szAttribute, pszValue);
+	if(pszValue == NULL)
+	{
+		*pszRetValue = NULL;
+		return false;
+	}
+	*pszRetValue = pszValue;
+	return true;
+}
+
+/*!
+ * This method returns the value associated with attribute szProperty
+ * at picetable strux given by sdh.
+ \param  PL_StruxDocHandle sdh (pf_Frag_Strux) where we want to find the value
+\param const char * szProperty the Property we're looking for.
+\param const char ** pszValue the value of the property.
+\returns true if the property was present at the sdh
+Don't FREEP *pszRetValue!!!
+*/
+bool PD_Document::getPropertyFromSDH(PL_StruxDocHandle sdh, const char * szProperty, const char ** pszRetValue)
+{
+	pf_Frag_Strux * pfStrux = (pf_Frag_Strux *)sdh;
+	PT_AttrPropIndex indexAP = pfStrux->getIndexAP();
+	const PP_AttrProp * pAP = NULL;
+	m_pPieceTable->getAttrProp(indexAP,&pAP);
+	UT_ASSERT(pAP);
+	const XML_Char * pszValue = NULL;
+	(pAP)->getProperty(szProperty, pszValue);
 	if(pszValue == NULL)
 	{
 		*pszRetValue = NULL;

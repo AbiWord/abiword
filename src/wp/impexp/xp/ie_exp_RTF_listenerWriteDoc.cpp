@@ -988,6 +988,20 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 	
 	m_pie->_rtf_keyword("pard");		// restore all defaults for this paragraph
 
+	// if string is "left" use "ql", but that is the default, so we don't need to write it out.
+	if (UT_strcmp(szTextAlign,"right")==0)		// output one of q{lrcj} depending upon paragraph alignment
+		m_pie->_rtf_keyword("qr");
+	else if (UT_strcmp(szTextAlign,"center")==0)
+		m_pie->_rtf_keyword("qc");
+	else if (UT_strcmp(szTextAlign,"justify")==0)
+		m_pie->_rtf_keyword("qj");
+
+	m_pie->_rtf_keyword_ifnotdefault_twips("fi",(char*)szFirstLineIndent,0);
+	m_pie->_rtf_keyword_ifnotdefault_twips("li",(char*)szLeftIndent,0);
+	m_pie->_rtf_keyword_ifnotdefault_twips("ri",(char*)szRightIndent,0);
+	m_pie->_rtf_keyword_ifnotdefault_twips("sb",(char*)szTopMargin,0);
+	m_pie->_rtf_keyword_ifnotdefault_twips("sa",(char*)szBottomMargin,0);
+
 #ifdef BIDI_ENABLED
 		const XML_Char * szBidiDir = PP_evalProperty("dom-dir",pSpanAP,pBlockAP,pSectionAP,m_pDocument,true);
 		xxx_UT_DEBUGMSG(("bidi paragraph: pSectionAp 0x%x, pBlockAP 0x%x, dom-dir\"%s\"\n",pSectionAP,pBlockAP,szBidiDir));
@@ -1019,7 +1033,7 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 		_setListBlock( true);
 		m_pie->_rtf_open_brace();
 		m_pie->_rtf_keyword("*");
-		m_pie->_rtf_keyword("abilist"); 
+		m_pie->_rtf_keyword("aaaabilist"); 
 		m_pie->_rtf_keyword_ifnotdefault("abilistid",(char *) szListid,-1);
 		m_pie->_rtf_keyword_ifnotdefault("abilistparentid",(char *) szParentid,-1);
 		m_pie->_rtf_keyword_ifnotdefault("abilistlevel",szLevel.c_str(),-1);
@@ -1234,19 +1248,6 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 	}
 
 
-	// if string is "left" use "ql", but that is the default, so we don't need to write it out.
-	if (UT_strcmp(szTextAlign,"right")==0)		// output one of q{lrcj} depending upon paragraph alignment
-		m_pie->_rtf_keyword("qr");
-	else if (UT_strcmp(szTextAlign,"center")==0)
-		m_pie->_rtf_keyword("qc");
-	else if (UT_strcmp(szTextAlign,"justify")==0)
-		m_pie->_rtf_keyword("qj");
-
-	m_pie->_rtf_keyword_ifnotdefault_twips("fi",(char*)szFirstLineIndent,0);
-	m_pie->_rtf_keyword_ifnotdefault_twips("li",(char*)szLeftIndent,0);
-	m_pie->_rtf_keyword_ifnotdefault_twips("ri",(char*)szRightIndent,0);
-	m_pie->_rtf_keyword_ifnotdefault_twips("sb",(char*)szTopMargin,0);
-	m_pie->_rtf_keyword_ifnotdefault_twips("sa",(char*)szBottomMargin,0);
 
 	///
 	/// OK Now output word-97 style lists. First detect if we've moved to

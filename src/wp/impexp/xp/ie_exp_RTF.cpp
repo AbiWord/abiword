@@ -609,10 +609,10 @@ bool IE_Exp_RTF::_write_rtf_header(void)
 			_rtf_nl();
 			_rtf_open_brace();
 			_rtf_keyword("f", k);								// font index number
-			_rtf_keyword(pk->szFamily);								// {\fnil,\froman,\fswiss,...}
-			_rtf_keyword("fcharset",pk->nCharset);
-			_rtf_keyword("fprq",pk->nPitch);							// {0==default,1==fixed,2==variable}
-			_rtf_keyword((pk->fTrueType) ? "fttruetype" : "ftnil");	// {\fttruetype,\ftnil}
+			_rtf_keyword(pk->getFontFamily());								// {\fnil,\froman,\fswiss,...}
+			_rtf_keyword("fcharset",pk->getFontCharset());
+			_rtf_keyword("fprq",pk->getFontPitch());							// {0==default,1==fixed,2==variable}
+			_rtf_keyword((pk->isTrueType()) ? "fttruetype" : "ftnil");	// {\fttruetype,\ftnil}
 			
 			// we do nothing with or use default values for
 			// \falt \panose \fname \fbias \ftnil \fttruetype \fontfile
@@ -621,7 +621,7 @@ bool IE_Exp_RTF::_write_rtf_header(void)
 			// the actual font name and a semicolon -- i couldn't see this
 			// described in the specification, but it was in other RTF files
 			// that i saw and really seems to help Word and WordPad....
-			_rtf_fontname(pk->szName);
+			_rtf_fontname(pk->getFontName());
 			
 			_rtf_close_brace();
 		}
@@ -1082,6 +1082,19 @@ void IE_Exp_RTF::_selectStyles()
 				{
 				}
 				UT_END_CATCH
+//
+// Now do it for the field font as well
+//
+				UT_TRY
+				{
+					_rtf_font_info fi(static_cast<s_RTF_AttrPropAdapter_Style>(pStyle),true);
+					if (_findFont(&fi) == -1)
+						_addFont(&fi);
+				}
+				UT_CATCH(_rtf_no_font e)
+				{
+				}
+				UT_END_CATCH
 			}
 		}
     }
@@ -1402,7 +1415,7 @@ void IE_Exp_RTF::_output_MultiLevelRTF(ie_exp_RTF_MsWord97ListMulti * pMulti)
 /*!
  * This method outputs the RTF defintion of the list pointed to by pAuto
  */
-void IE_Exp_RTF::_output_LevelText(fl_AutoNum * pAuto, UT_uint32 iLevel)
+void IE_Exp_RTF::_output_LevelText(fl_AutoNum * pAuto, UT_uint32 iLevel, UT_UCSChar bulletsym)
 {
 	UT_String LevelText;
 	UT_String LevelNumbers;
@@ -1411,19 +1424,33 @@ void IE_Exp_RTF::_output_LevelText(fl_AutoNum * pAuto, UT_uint32 iLevel)
 //
 // Level Text and Level Numbers
 //
-	_generate_level_Text(pAuto,LevelText,LevelNumbers,lenText,ifoundLevel);
 	_rtf_open_brace();
 	_rtf_keyword("leveltext");
-	UT_String tmp;
-	_rtf_nonascii_hex2(lenText,tmp);
-	tmp += LevelText;
-	tmp += ";";
-	write(tmp.c_str());
-	_rtf_close_brace();
-	_rtf_open_brace();
-	_rtf_keyword("levelnumbers");
-	write(LevelNumbers.c_str());
-	write(";");
+	if(bulletsym == 0)
+	{ 
+		_generate_level_Text(pAuto,LevelText,LevelNumbers,lenText,ifoundLevel);
+		UT_String tmp;
+		_rtf_nonascii_hex2(lenText,tmp);
+		tmp += LevelText;
+		tmp += ";";
+		write(tmp.c_str());
+		_rtf_close_brace();
+		_rtf_keyword("levelnumbers");
+		_rtf_open_brace();
+		write(LevelNumbers.c_str());
+		write(";");
+	}
+	else
+	{
+		_rtf_nonascii_hex2(1);
+		_rtf_nonascii_hex2((UT_sint32) bulletsym);
+		write(" ");
+		write(";");
+		_rtf_close_brace();
+		_rtf_open_brace();
+		_rtf_keyword("levelnumbers");
+		write(";");
+	}
 	_rtf_close_brace();
 }
 
@@ -1568,7 +1595,7 @@ void IE_Exp_RTF::_output_ListRTF(fl_AutoNum * pAuto, UT_uint32 iLevel)
 // List Type
 	UT_sint32 Param = 0;
 	UT_String fontName;
-	char bulletsym;
+	UT_UCSChar bulletsym=0;
 	List_Type lType = NUMBERED_LIST;
 	if(pAuto != NULL)
 	{
@@ -1600,7 +1627,7 @@ void IE_Exp_RTF::_output_ListRTF(fl_AutoNum * pAuto, UT_uint32 iLevel)
 	case BULLETED_LIST:
 		Param = 23;
 		bulletsym = 0xb7;
-		fontName = "symbol";
+		fontName = "Symbol";
 		break;
 	case DASHED_LIST:
 		Param = 23;
@@ -1654,21 +1681,55 @@ void IE_Exp_RTF::_output_ListRTF(fl_AutoNum * pAuto, UT_uint32 iLevel)
 		break;
 	}
 	_rtf_keyword("levelnfc",Param);
+	UT_sint32 startParam = 0;
 	if(pAuto)
 	{
-		Param  = pAuto->getStartValue32();
+		startParam  = pAuto->getStartValue32();
 	}
 	else
 	{
-		Param = 1;
+		startParam = 1;
 	}
-	_rtf_keyword("levelstartat",Param);
+	_rtf_keyword("levelstartat",startParam);
 	_rtf_keyword("levelspace",0);
 	_rtf_keyword("levelfollow",0);
 //
+// Output the indents and alignments. Use the first sdh to get these.
+//
+	PL_StruxDocHandle sdh = pAuto->getFirstItem();
+	const char * szIndent = NULL;
+	const char * szAlign = NULL;
+	if(sdh != NULL)
+	{
+		bool bres = getDoc()->getPropertyFromSDH(sdh,"text-indent",&szIndent);
+		if(bres)
+		{
+			_rtf_keyword_ifnotdefault_twips("fi",(char*)szIndent,0);
+		}		
+		bres = getDoc()->getPropertyFromSDH(sdh,"margin-left",&szAlign);
+		if(bres)
+		{
+			_rtf_keyword_ifnotdefault_twips("li",(char*)szAlign,0);
+		}		
+	}
+
 // Leveltext and levelnumbers
 //
-	_output_LevelText(pAuto,iLevel);
+	_output_LevelText(pAuto,iLevel,bulletsym);
+//
+// Export the bullet font
+//
+	if(Param == 23)
+	{
+		_rtf_font_info fi(fontName.c_str());
+		UT_sint32 ifont = _findFont(&fi);
+		if(ifont < 0)
+		{
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			ifont = 0;
+		}
+		_rtf_keyword("f",ifont);
+	}
 }
 
 /*!
@@ -1781,17 +1842,33 @@ void IE_Exp_RTF::_addFont(const _rtf_font_info * pfi)
 	return;
 }
 
-_rtf_font_info::_rtf_font_info(const s_RTF_AttrPropAdapter & apa) 
+_rtf_font_info::_rtf_font_info(const s_RTF_AttrPropAdapter & apa, bool bDoFieldFont) 
 	UT_THROWS((_rtf_no_font))
 {
     // Not a typo. The AbiWord "font-family" property is what RTF
     // calls font name. It has values like "Courier New".
-    szName = apa.getProperty("font-family");
+	const char * szName = NULL;
+	if(!bDoFieldFont)
+	{
+		szName = apa.getProperty("font-family");
+		if(szName != NULL)
+		{
+			m_szName = szName;
+		}
+	}
+	else
+	{
+		szName = apa.getProperty("field-font");
+		if(szName != NULL)
+		{
+			m_szName = szName;
+		}
+	}
     if (szName == NULL)
-      {
-	_rtf_no_font e;
-	UT_THROW(e);
-      }    
+	{
+		_rtf_no_font e;
+		UT_THROW(e);
+	}    
 
     static const char * t_ff[] = { "fnil", "froman", "fswiss", "fmodern", "fscript", "fdecor", "ftech", "fbidi" };
     GR_Font::FontFamilyEnum ff;
@@ -1803,6 +1880,39 @@ _rtf_font_info::_rtf_font_info(const s_RTF_AttrPropAdapter & apa)
 	szFamily = t_ff[ff];
     else
 	szFamily = t_ff[GR_Font::FF_Unknown];
+    nCharset = XAP_EncodingManager::get_instance()->getWinCharsetCode();
+    nPitch = fp;
+    fTrueType = tt;
+}
+
+
+_rtf_font_info::~_rtf_font_info(void) 
+{
+}
+
+_rtf_font_info::_rtf_font_info(const char * szFontName) 
+	UT_THROWS((_rtf_no_font))
+{
+    // Not a typo. The AbiWord "font-family" property is what RTF
+    // calls font name. It has values like "Courier New".
+    if (szFontName == NULL)
+	{
+		_rtf_no_font e;
+		UT_THROW(e);
+	}    
+
+	m_szName = szFontName;
+
+    static const char * t_ff[] = { "fnil", "froman", "fswiss", "fmodern", "fscript", "fdecor", "ftech", "fbidi" };
+    GR_Font::FontFamilyEnum ff;
+    GR_Font::FontPitchEnum fp;
+    bool tt;
+    GR_Font::s_getGenericFontProperties(m_szName.c_str(), &ff, &fp, &tt);
+
+    if ((ff >= 0) && (ff < (int)NrElements(t_ff)))
+		szFamily = t_ff[ff];
+    else
+		szFamily = t_ff[GR_Font::FF_Unknown];
     nCharset = XAP_EncodingManager::get_instance()->getWinCharsetCode();
     nPitch = fp;
     fTrueType = tt;
@@ -1827,19 +1937,14 @@ bool _rtf_font_info::_is_same(const _rtf_font_info & fi) const
 	{
 		bMatchFontFamily = true;
 	}
-	if(szName && *szName && fi.szName && *fi.szName)
+	if((m_szName.size() > 0) && (fi.m_szName.size() >0))
 	{
-		bMatchFontName =  UT_strcmp(szName, fi.szName) == 0;
+		bMatchFontName =  UT_strcmp(m_szName.c_str(), fi.m_szName.c_str()) == 0;
 	}
-	else if ( szName == fi.szName) // Both null pointers
-	{
-		bMatchFontName = true;
-	}
-	else if ( szName && fi.szName && *szName == *fi.szName) // Both pointer to NULLs
+	else if ( m_szName.size()  == fi.m_szName.size()) // Both null pointers
 	{
 		bMatchFontName = true;
 	}
-
     return bMatchFontFamily
 	&& nCharset == fi.nCharset
 	&& nPitch == fi.nPitch

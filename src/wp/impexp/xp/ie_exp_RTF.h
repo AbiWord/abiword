@@ -40,7 +40,7 @@ class ie_exp_RTF_MsWord97List;
 class ie_exp_RTF_MsWord97ListSimple;
 class ie_exp_RTF_MsWord97ListMulti;
 class ie_exp_RTF_ListOveride;
-struct _rtf_font_info;
+class _rtf_font_info;
 
 // The exporter/writer for RTF file format (based upon spec version 1.5).
 
@@ -159,10 +159,9 @@ protected:
     void                            _output_SimpleListRTF(ie_exp_RTF_MsWord97ListSimple * pSimple);
     void                            _output_OveridesRTF(ie_exp_RTF_ListOveride * pOver, UT_uint32 i);
 	void                            _output_ListRTF(fl_AutoNum * pAuto, UT_uint32 iLevel);
-	void                            _output_level_Text(fl_AutoNum * pAuto, UT_uint32 iLevel);
+	void                            _output_LevelText(fl_AutoNum * pAuto, UT_uint32 iLevel,UT_UCSChar bulletsym);
 	void                            _get_LeftRight_Side(UT_String & LeftSide, UT_String & RightSide);
 	void                            _generate_level_Text(fl_AutoNum * pAuto,UT_String & LevelText,UT_String &LevelNumbers, UT_uint32 & lenText, UT_uint32 & ifoundLevel);
-	void                            _output_LevelText(fl_AutoNum * pAuto, UT_uint32 iLevel);
 
 
 	UT_sint32			_findFont(const s_RTF_AttrPropAdapter * apa) const;
@@ -194,16 +193,23 @@ class ABI_EXPORT _rtf_no_font {};
 
 /* This struct contains the RTF font info as needed for the 
    font table. */
-struct ABI_EXPORT _rtf_font_info
+class ABI_EXPORT _rtf_font_info
 {
-    _rtf_font_info(const s_RTF_AttrPropAdapter & apa) UT_THROWS((_rtf_no_font));
+public:
+    _rtf_font_info(const s_RTF_AttrPropAdapter & apa, bool bDoFieldFont = false) UT_THROWS((_rtf_no_font));
+    _rtf_font_info(const char * szfontName ) UT_THROWS((_rtf_no_font));
+	virtual ~_rtf_font_info(void);
     bool _is_same(const _rtf_font_info & fi) const;
-    
-    /* Neither of the char variables should be freed. */
+	const char * getFontFamily(void) const { return szFamily;}
+	const char * getFontName(void) const { return m_szName.c_str();}
+	int getFontCharset(void) const { return nCharset;}
+	int getFontPitch(void) const { return nPitch;}
+	bool isTrueType(void) const { return fTrueType;}
+private:    
     const XML_Char * szFamily;
     int nCharset;
     int nPitch;
-    const XML_Char * szName;
+    UT_String m_szName;
     bool fTrueType;
 };
 

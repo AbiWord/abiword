@@ -574,10 +574,17 @@ void fp_Run::clearScreen(bool bFullLineHeightRect)
 		return;
 	}
 	xxx_UT_DEBUGMSG(("SEVIOR: Doing clear screen in run \n"));
-	_clearScreen(bFullLineHeightRect);
+	if(m_pLine->getContainer() != NULL)
+	{
+		if(m_pLine->getContainer()->getPage() != 0)
+		{
+			
+			_clearScreen(bFullLineHeightRect);
 	
-	// make sure we only get erased once
-	m_bDirty = true;
+			// make sure we only get erased once
+			m_bDirty = true;
+		}
+	}
 }
 
 void fp_Run::draw(dg_DrawArgs* pDA)

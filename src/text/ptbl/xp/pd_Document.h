@@ -184,6 +184,7 @@ public:
 	bool                    changeSectionAttsNoUpdate(PL_StruxDocHandle sdh, const char * attr, const char * attvalue);
 
     bool                    getAttributeFromSDH(PL_StruxDocHandle sdh, const char * szAttribute, const char ** pszValue);
+    bool                    getPropertyFromSDH(PL_StruxDocHandle sdh, const char * szProperty, const char ** pszValue);
 	// styles
 	void                    getAllUsedStyles(UT_Vector * pVecStyles);
 	PL_StruxFmtHandle       getNthFmtHandle(PL_StruxDocHandle sdh, UT_uint32 n);
