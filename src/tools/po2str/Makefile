@@ -1,5 +1,7 @@
-## AbiSource Applications
-## Copyright (C) 2001 Sam Tobin-Hochstadt
+#! gmake
+
+## AbiWord
+## Copyright (C) 1998 AbiSource, Inc.
 ##
 ## This program is free software; you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License
@@ -16,12 +18,10 @@
 ## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
 ## 02111-1307, USA.
 
-DIST_SUBDIRS = cdump po2str pfa2afm ttftool scripts
+ABI_ROOT:=$(shell pwd)/../../..
+include $(ABI_ROOT)/src/config/abi_defs_wp.mk
 
-if BUILD_TTFTOOL
-TTFTOOL = ttftool
-else
-TTFTOOL = 
-endif
+DIRS=		xp $(ABI_NATIVE)
 
-SUBDIRS = cdump po2str pfa2afm $(TTFTOOL) scripts
+include $(ABI_ROOT)/src/config/abi_rules.mk
+

@@ -16,12 +16,5 @@
 ## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
 ## 02111-1307, USA.
 
-DIST_SUBDIRS = cdump po2str pfa2afm ttftool scripts
-
-if BUILD_TTFTOOL
-TTFTOOL = ttftool
-else
-TTFTOOL = 
-endif
-
-SUBDIRS = cdump po2str pfa2afm $(TTFTOOL) scripts
+noinst_PROGRAMS= po2str
+po2str_SOURCES = po2str.c
