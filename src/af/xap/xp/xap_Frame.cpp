@@ -48,6 +48,7 @@
 #include "xap_Strings.h"
 #include "xap_DialogFactory.h"
 #include "xap_Dialog_Id.h"
+#include "xap_Dlg_Zoom.h"
 
 /*****************************************************************/
 
@@ -596,15 +597,22 @@ UT_Error XAP_Frame::backup()
 
 void XAP_Frame::updateZoom(void)
 {
-   switch( getZoomType() )
-   {
-   case z_PAGEWIDTH:
-       setZoomPercentage( m_pView->calculateZoomPercentForPageWidth() );
-       break;
-   case z_WHOLEPAGE:
-       setZoomPercentage( m_pView->calculateZoomPercentForWholePage() );
-       break;
-   default:
+	UT_uint32 newZoom = 100;
+	switch( getZoomType() )
+	{
+	case z_PAGEWIDTH:
+		newZoom = m_pView->calculateZoomPercentForPageWidth();
+		if      (newZoom < XAP_DLG_ZOOM_MINIMUM_ZOOM) newZoom = XAP_DLG_ZOOM_MINIMUM_ZOOM;
+		else if (newZoom > XAP_DLG_ZOOM_MAXIMUM_ZOOM) newZoom = XAP_DLG_ZOOM_MAXIMUM_ZOOM;
+		setZoomPercentage( newZoom );
+		break;
+	case z_WHOLEPAGE:
+		newZoom = m_pView->calculateZoomPercentForWholePage() ;
+		if      (newZoom < XAP_DLG_ZOOM_MINIMUM_ZOOM) newZoom = XAP_DLG_ZOOM_MINIMUM_ZOOM;
+		else if (newZoom > XAP_DLG_ZOOM_MAXIMUM_ZOOM) newZoom = XAP_DLG_ZOOM_MAXIMUM_ZOOM;
+		setZoomPercentage( newZoom );
+		break;
+	default:
        ;
    }
 }

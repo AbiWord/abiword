@@ -76,8 +76,10 @@ void XAP_Dialog_Zoom::setZoomPercent(UT_uint32 zoom)
 		m_zoomType = XAP_Frame::z_PERCENT;
 	}
 
-	// store the percentage
-	m_zoomPercent = zoom;
+	// store the percentage within limits clipping if necessary
+	if      (zoom < XAP_DLG_ZOOM_MINIMUM_ZOOM) m_zoomPercent = XAP_DLG_ZOOM_MINIMUM_ZOOM;
+	else if (zoom > XAP_DLG_ZOOM_MAXIMUM_ZOOM) m_zoomPercent = XAP_DLG_ZOOM_MAXIMUM_ZOOM;
+	else                                       m_zoomPercent = zoom;
 }	
 
 XAP_Frame::tZoomType XAP_Dialog_Zoom::getZoomType(void)
@@ -104,10 +106,10 @@ UT_uint32 XAP_Dialog_Zoom::getZoomPercent(void)
 	case XAP_Frame::z_PERCENT:
 		// fall through
 	default:
-		if (m_zoomPercent > 1)
+		if (m_zoomPercent > XAP_DLG_ZOOM_MINIMUM_ZOOM)
 			return m_zoomPercent;
 		else
-			return 1;
+			return XAP_DLG_ZOOM_MINIMUM_ZOOM;
 	}
 }
 

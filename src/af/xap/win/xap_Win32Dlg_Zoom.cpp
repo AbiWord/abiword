@@ -332,8 +332,9 @@ BOOL XAP_Win32Dialog_Zoom::_getValueFromEditPct(HWND hWnd, int * pNewValue)
 	if (!bOK)
 		return FALSE;
 	
-	if ((newValue < XAP_DLG_ZOOM_MINIMUM_ZOOM) || (newValue > XAP_DLG_ZOOM_MAXIMUM_ZOOM))
-		return FALSE;				// valid number, but out of range
+	// valid number, but out of range clip to MIN or MAX range;
+	if (newValue < XAP_DLG_ZOOM_MINIMUM_ZOOM) newValue = XAP_DLG_ZOOM_MINIMUM_ZOOM;
+	if (newValue > XAP_DLG_ZOOM_MAXIMUM_ZOOM) newValue = XAP_DLG_ZOOM_MAXIMUM_ZOOM;
 
 	*pNewValue = newValue;
 	return TRUE;
