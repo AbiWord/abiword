@@ -23,7 +23,6 @@
 #include <math.h>
 #include <ctype.h>
 
-#include <glib.h>
 #include <unistd.h>
 
 #include "ut_types.h"
@@ -55,7 +54,7 @@ void UT_unlink (const char * base)
 char * UT_tmpnam(char * base)
 {
 #if 1
-	char * name = g_strdup_printf ("/tmp/XXXXXX");
+	char * name = UT_strdup ("/tmp/XXXXXX");
 
 	int fd = mkstemp (name);
 
@@ -66,10 +65,10 @@ char * UT_tmpnam(char * base)
 		// no need for a strncpy since name is 0 terminated and
 		// we have no clue of len of base buffer. See bug 1647
 		strcpy (base, name);
-		g_free (name);
+		FREEP (name);
 		return base;
 	}
-
+	FREEP (name);
 	return base;
 #else
 	return tmpnam(base);
