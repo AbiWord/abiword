@@ -1020,8 +1020,8 @@ const UT_RGBColor fp_Run::getFGColor(void) const
 	{
 		bool bMark = pView->isMarkRevisions();
 		const PP_Revision * r = m_pRevisions->getLastRevision();
-		UT_uint32 iId = r->getId();
-		UT_uint32 iShowId = pView->getRevisionLevel();
+
+		UT_return_val_if_fail(r != NULL, _getColorFG());
 
 		bool bRevColor = false;
 
@@ -1030,6 +1030,9 @@ const UT_RGBColor fp_Run::getFGColor(void) const
 			// this is the case when we are in non-marking mode ...
 			bRevColor = true;
 		}
+
+		UT_uint32 iId = r->getId();
+		UT_uint32 iShowId = pView->getRevisionLevel();
 		
 		if(bMark && iShowId == 0)
 		{
@@ -1163,43 +1166,47 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 	FV_View* pView = _getView();
 	UT_return_if_fail(pView);
 	bool bShowRevs = pView->isShowRevisions();
-	
+
 	if(m_pRevisions && bShowRevs)
 	{
 		const PP_Revision * r = m_pRevisions->getLastRevision();
-		PP_RevisionType r_type = r->getType();
-		UT_uint32 iId = r->getId();
-		UT_uint32 iShowId = pView->getRevisionLevel();
-		bool bMark = pView->isMarkRevisions();
+		UT_ASSERT(r != NULL);
 
-		if(bMark && iShowId != 0)
-			iId--;
-		
-		if(!bMark || !iShowId || iId == iShowId)
-		{
-			pG->setColor(getFGColor());
-
-			UT_uint32 iWidth = getDrawingWidth();
-
-			if(r_type == PP_REVISION_ADDITION || r_type == PP_REVISION_ADDITION_AND_FMT)
-			{
-				painter.fillRect(s_fgColor,pDA->xoff, pDA->yoff, iWidth, getGraphics()->tlu(1));
-				painter.fillRect(s_fgColor,pDA->xoff, pDA->yoff + getGraphics()->tlu(2),
-							 iWidth, getGraphics()->tlu(1));
-
-			}
-			else if(r_type == PP_REVISION_FMT_CHANGE)
-			{
-				// draw a thick line underneath
-				painter.fillRect(s_fgColor,pDA->xoff, pDA->yoff, iWidth, getGraphics()->tlu(2));
-			}
-			else
-			{
-				// draw a strike-through line
-
-				painter.fillRect(s_fgColor,pDA->xoff, pDA->yoff - m_iHeight/3,
-							 iWidth, getGraphics()->tlu(2));
-			}
+		if (r) {
+			PP_RevisionType r_type = r->getType();
+			UT_uint32 iId = r->getId();
+			UT_uint32 iShowId = pView->getRevisionLevel();
+			bool bMark = pView->isMarkRevisions();
+			
+			if(bMark && iShowId != 0)
+				iId--;
+			
+			if(!bMark || !iShowId || iId == iShowId)
+				{
+					pG->setColor(getFGColor());
+					
+					UT_uint32 iWidth = getDrawingWidth();
+					
+					if(r_type == PP_REVISION_ADDITION || r_type == PP_REVISION_ADDITION_AND_FMT)
+						{
+							painter.fillRect(s_fgColor,pDA->xoff, pDA->yoff, iWidth, getGraphics()->tlu(1));
+							painter.fillRect(s_fgColor,pDA->xoff, pDA->yoff + getGraphics()->tlu(2),
+											 iWidth, getGraphics()->tlu(1));
+							
+						}
+					else if(r_type == PP_REVISION_FMT_CHANGE)
+						{
+							// draw a thick line underneath
+							painter.fillRect(s_fgColor,pDA->xoff, pDA->yoff, iWidth, getGraphics()->tlu(2));
+						}
+					else
+						{
+							// draw a strike-through line
+							
+							painter.fillRect(s_fgColor,pDA->xoff, pDA->yoff - m_iHeight/3,
+											 iWidth, getGraphics()->tlu(2));
+						}
+				}
 		}
 	}
 
