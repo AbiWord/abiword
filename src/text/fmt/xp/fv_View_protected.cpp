@@ -638,6 +638,15 @@ bool FV_View::_deleteCellAt(PT_DocPosition posTable, UT_sint32 row, UT_sint32 co
 	UT_uint32 iRealDeleteCount;
 
 	m_pDoc->deleteSpan( posCell, posEndCell, NULL,iRealDeleteCount,true);
+
+	// if in revisions mode, we might need to move the insertion point if it was within
+	// the cell that we are deleting (since the cell stays physically in the document) but
+	// the positions within it are now hidden from the user)
+	if(isMarkRevisions() && m_iInsPoint > posCell && m_iInsPoint < posEndCell)
+	{
+		_setPoint(posEndCell);
+	}
+	
 	return true;
 }
 
@@ -990,6 +999,13 @@ PT_DocPosition FV_View::_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp,
 			}
 		}
 
+		if(!pSpan)
+		{
+			// empty block; this should not happen and will trigger one of the asserts
+			// above if(offset == 0)
+			return iPoint;
+		}
+		
 		UT_uint32 iUseOffset = bKeepLooking ? offset-1 : offset;
 
 		bool bInWord = !UT_isWordDelimiter(pSpan[iUseOffset], UCS_UNKPUNK, iUseOffset > 0 ? pSpan[iUseOffset - 1] : UCS_UNKPUNK);
@@ -1049,6 +1065,13 @@ PT_DocPosition FV_View::_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp,
 				iPos = pBlock->getPosition();
 				break;
 			}
+		}
+
+		if(!pSpan)
+		{
+			// empty block; this should not happen and will trigger one of the asserts
+			// above if(offset == 0)
+			return iPoint;
 		}
 
 		bool bBetween = UT_isWordDelimiter(pSpan[offset], UCS_UNKPUNK, offset > 0 ? pSpan[offset - 1] : UCS_UNKPUNK);
@@ -1133,6 +1156,13 @@ PT_DocPosition FV_View::_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp,
 				iPos = pBlock->getPosition();
 				break;
 			}
+		}
+
+		if(!pSpan)
+		{
+			// empty block; this should not happen and will trigger one of the asserts
+			// above if(offset == 0)
+			return iPoint;
 		}
 
 		bool bBetween = UT_isWordDelimiter(pSpan[offset], UCS_UNKPUNK, offset > 0 ? pSpan[offset - 1] : UCS_UNKPUNK);

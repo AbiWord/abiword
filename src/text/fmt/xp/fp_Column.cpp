@@ -30,11 +30,13 @@
 #include "fp_TableContainer.h"
 #include "fp_FootnoteContainer.h"
 #include "fp_FrameContainer.h"
+#include "fp_Run.h"
 #include "fl_TOCLayout.h"
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 #include "fv_View.h"
 #include "gr_Painter.h"
+
 
 /*!
   Create container
@@ -1233,12 +1235,73 @@ void fp_VerticalContainer::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosit
 											pos, bBOL, bEOL,isTOC);
 			}
 		}
-		else
+		else if(!pLine->canContainPoint())
 		{
-			pContainer->mapXYToPosition(x - pContainer->getX(),
+			// lines that cannot contain point are those that are located in blocks that
+			// cannot contain point (hidden, collapsed, etc. So we need to find the block
+			// that can contain point
+			fl_BlockLayout * pBlock = pLine->getBlock();
+			UT_return_if_fail( pBlock );
+
+			pBlock = pBlock->getNextBlockInDocument();
+			
+			while(pBlock && !pBlock->canContainPoint())
+			{
+				pBlock = pBlock->getNextBlockInDocument();
+			}
+
+			if(!pBlock)
+			{
+				// look the other way (reusing pNext, even though it will be previous)
+				pBlock = pLine->getBlock();
+
+				pBlock = pBlock->getPrevBlockInDocument();
+
+				while(pBlock && !pBlock->canContainPoint())
+				{
+					pBlock = pBlock->getPrevBlockInDocument();
+				}
+				
+			}
+
+			if(!pBlock)
+			{
+				// we are in trouble
+				UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+			}
+			else
+			{
+				fp_Run * pFirstRun = pBlock->getFirstRun();
+
+				if(pFirstRun)
+				{
+					fp_Line * pVisibleLine = pFirstRun->getLine();
+
+					if(pVisibleLine)
+					{
+						// get the container that holds this line, so we deal with wrapped
+						// lines, etc.
+						fp_Container * pVisibleContainer = pVisibleLine->getContainer();
+						
+						pVisibleContainer->mapXYToPosition(x - pContainer->getX(),
+													  y - pContainer->getY() , 
+													  pos, bBOL, bEOL,isTOC);
+
+						return;
+					}
+					
+					UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );;
+				}
+				else
+				{
+					UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+				}
+			}
+		}
+
+		pContainer->mapXYToPosition(x - pContainer->getX(),
 								y - pContainer->getY() , 
 									pos, bBOL, bEOL,isTOC);
-		}
 	}
 	else
 	{

@@ -210,6 +210,7 @@ public:
 		{ return m_bIsSameYAsPrevious;}
 	void        genOverlapRects(UT_Rect & recLeft, UT_Rect & recRight);
 
+	bool        canContainPoint() const;
 #ifdef FMT_TEST
 	void		__dump(FILE * fp) const;
 #endif

@@ -352,6 +352,13 @@ fp_Page * fp_Line::getPage(void)
 	}
 }
 
+bool fp_Line::canContainPoint() const
+{
+	if(!m_pBlock)
+		return false;
+
+	return m_pBlock->canContainPoint();
+}
 
 /*!
  * Returns true if this is the first line in the block.
