@@ -199,6 +199,7 @@ private:
 	UT_Bool PopRTFState();
 	UT_Bool ParseRTFKeyword();
 	UT_Bool ParseChar(UT_UCSChar ch);
+  UT_Bool ReadCharFromFileWithCRLF(unsigned char* pCh);
 	UT_Bool ReadCharFromFile(unsigned char* pCh);
 	UT_Bool SkipBackChar(unsigned char ch);
 	UT_Bool ReadKeyword(unsigned char* pKeyword, long* pParam, UT_Bool* pParamUsed);
@@ -263,3 +264,4 @@ private:
 };
 
 #endif /* IE_IMP_RTF_H */
+

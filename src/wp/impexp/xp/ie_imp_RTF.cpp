@@ -557,7 +557,7 @@ UT_Bool IE_Imp_RTF::ReadKeyword(unsigned char* pKeyword, long* pParam, UT_Bool* 
 
 	// Read the first character of the control word
 	unsigned char ch;
-	if (!ReadCharFromFile(&ch))
+	if (!ReadCharFromFileWithCRLF(&ch))
 		return UT_FALSE;
 
 	// If it's a control symbol there is no delimiter, its just one character
@@ -573,7 +573,7 @@ UT_Bool IE_Imp_RTF::ReadKeyword(unsigned char* pKeyword, long* pParam, UT_Bool* 
 	{
 		*pKeyword = ch;
 		pKeyword++;
-		if (!ReadCharFromFile(&ch))
+		if (!ReadCharFromFileWithCRLF(&ch))
 			return UT_FALSE;
 	}
 	*pKeyword = 0;
@@ -582,7 +582,7 @@ UT_Bool IE_Imp_RTF::ReadKeyword(unsigned char* pKeyword, long* pParam, UT_Bool* 
     if (ch == '-')
     {
         fNegative = UT_TRUE;
-		if (!ReadCharFromFile(&ch))
+		if (!ReadCharFromFileWithCRLF(&ch))
 			return UT_FALSE;
     }
 
@@ -593,7 +593,7 @@ UT_Bool IE_Imp_RTF::ReadKeyword(unsigned char* pKeyword, long* pParam, UT_Bool* 
 		while (isdigit(ch))
 		{
 			parameter[count++] = ch;
-			if (!ReadCharFromFile(&ch))
+			if (!ReadCharFromFileWithCRLF(&ch))
 				return UT_FALSE;
 		}
 		parameter[count] = 0;
@@ -603,8 +603,8 @@ UT_Bool IE_Imp_RTF::ReadKeyword(unsigned char* pKeyword, long* pParam, UT_Bool* 
 			*pParam = -*pParam;
 	}
 
-	// If the delimeter was non-space then this character is part of the following text!
-	if (ch != ' ')
+	// If the delimeter was non-whitespace then this character is part of the following text!
+	if ((ch != ' ') && (ch != 10) && (ch != 13))
 	{
 		SkipBackChar(ch);
 	}
@@ -613,36 +613,44 @@ UT_Bool IE_Imp_RTF::ReadKeyword(unsigned char* pKeyword, long* pParam, UT_Bool* 
 }
 
 
-UT_Bool IE_Imp_RTF::ReadCharFromFile(unsigned char* pCh)
+// Reads a character from the file. Doesn't ignore CR and LF
+UT_Bool IE_Imp_RTF::ReadCharFromFileWithCRLF(unsigned char* pCh)
 {
+	
+	UT_Bool ok = UT_FALSE;
+
 	if (m_pImportFile)					// if we are reading a file
 	{
-		while (fread(pCh, 1, sizeof(unsigned char), m_pImportFile) > 0)
+		if (fread(pCh, 1, sizeof(unsigned char), m_pImportFile) > 0)
 		{
-			// line feed and cr should be ignored in RTF files
-			if (*pCh != 10  &&  *pCh != 13)
-			{
-				return UT_TRUE;
-			}
-		}
-
-		return UT_FALSE;
+			ok = UT_TRUE;
+		}		
 	}
 	else								// else we are pasting from a buffer
 	{
-		while (m_pCurrentCharInPasteBuffer < m_pPasteBuffer+m_lenPasteBuffer)
+		if (m_pCurrentCharInPasteBuffer < m_pPasteBuffer+m_lenPasteBuffer)
 		{
 			*pCh = *m_pCurrentCharInPasteBuffer++;
-			
-			// line feed and cr should be ignored in RTF files
-			if (*pCh != 10  &&  *pCh != 13)
-			{
-				return UT_TRUE;
-			}
+			ok = UT_TRUE;
 		}
-
-		return UT_FALSE;
 	}
+
+	return ok;
+}
+
+// Reads a character from the file ignoring CR and LF
+UT_Bool IE_Imp_RTF::ReadCharFromFile(unsigned char* pCh)
+{
+	// line feed and cr should be ignored in RTF files
+	do
+	{
+		if (ReadCharFromFileWithCRLF(pCh) == UT_FALSE) {
+			return UT_FALSE;
+		}
+	} while (*pCh == 10  ||  *pCh == 13);
+	
+	return UT_TRUE;
+
 }
 
 
@@ -1701,4 +1709,9 @@ void IE_Imp_RTF::pasteFromBuffer(PD_DocumentRange * pDocRange,
 
 	return;
 }
+
+
+
+
+
 
