@@ -200,14 +200,14 @@ void AP_QNXDialog_Lists::runModeless(XAP_Frame * pFrame)
 		XAP_QNXApp * app = static_cast<XAP_QNXApp *> (m_pApp);
 		UT_ASSERT(app);
 
-		UT_ASSERT(m_wPreview);
+		UT_ASSERT(m_wPreviewArea);
 
 		// make a new QNX GC
-		m_pPreviewWidget = new GR_QNXGraphics(m_mainWindow, m_wPreview, pFrame->getApp());
+		m_pPreviewWidget = new GR_QNXGraphics(m_mainWindow, m_wPreviewArea, pFrame->getApp());
 		unsigned short w, h;
 
 		// let the widget materialize
-		UT_QNXGetWidgetArea(m_wPreview, NULL, NULL, &w, &h);
+		UT_QNXGetWidgetArea(m_wPreviewArea, NULL, NULL, &w, &h);
 		_createPreviewFromGC(m_pPreviewWidget, w, h);
 
 	}
@@ -242,6 +242,15 @@ void    AP_QNXDialog_Lists::autoupdateLists(UT_Timer * pTimer)
 	}
 #endif
 }
+
+void AP_QNXDialog_Lists::previewExposed(void)
+{
+	if(m_pPreviewWidget) {
+		//setMemberVariables();
+		event_PreviewAreaExposed();
+	}
+} 
+
 
 void  AP_QNXDialog_Lists::typeChanged(int style)
 {
@@ -281,7 +290,7 @@ void  AP_QNXDialog_Lists::typeChanged(int style)
 	}
 
 /*
-	GtkWidget * wlisttype=gtk_menu_get_active(GTK_MENU(m_wListStyle_menu));
+	PtWidget_t * wlisttype=gtk_menu_get_active(GTK_MENU(m_wListStyle_menu));
 	m_newListType =  (List_Type) GPOINTER_TO_INT(gtk_object_get_user_data(GTK_OBJECT(wlisttype)));
 */
 	previewExposed();
@@ -294,7 +303,7 @@ void  AP_QNXDialog_Lists::setMemberVariables(void)
         // as shown on the GUI.
 	//
 #if 0	
-	GtkWidget * wlisttype=gtk_menu_get_active(GTK_MENU(m_wListStyle_menu));
+	PtWidget_t * wlisttype=gtk_menu_get_active(GTK_MENU(m_wListStyle_menu));
 	m_newListType =  (List_Type) GPOINTER_TO_INT(gtk_object_get_user_data(GTK_OBJECT(wlisttype)));
 	if(m_bisCustomized == UT_TRUE)
 	{
@@ -384,7 +393,7 @@ void AP_QNXDialog_Lists::setAllSensitivity(void)
 
 PtWidget_t * AP_QNXDialog_Lists::_constructWindow (void)
 {
-	PtWidget_t *window, *vgroup;
+	PtWidget_t *vgroup;
 	PtWidget_t *lblStyle, *listStyle;
 	PtWidget_t *lblType, *listType;
 	PtWidget_t *togCustomize, *grpCustomize;
@@ -407,7 +416,7 @@ PtWidget_t * AP_QNXDialog_Lists::_constructWindow (void)
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
-   	vgroup = PtCreateWidget(PtGroup, window, n, args);
+   	vgroup = PtCreateWidget(PtGroup, m_mainWindow, n, args);
 
 	PtWidget_t *hgroup;
 	n = 0;
@@ -540,7 +549,7 @@ PtWidget_t * AP_QNXDialog_Lists::_constructWindow (void)
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "Resume current list", 0);
 	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_TOGGLE_RADIO, 0);
-	radresumlist = PtCreateWidget(PtToggleButton, group, n, args);	
+	radresumelist = PtCreateWidget(PtToggleButton, group, n, args);	
 		
 	/*** Then we have the final cancellation buttons ***/
 	n = 0;
@@ -564,7 +573,7 @@ PtWidget_t * AP_QNXDialog_Lists::_constructWindow (void)
 	m_wListStyleBox = lblFormat;
 	m_wLevelSpin = numListLevel;
 	m_wStartSpin = numStart;
-	m_wAlignListSpin = numListSpin;
+	m_wAlignListSpin = numListAlign;
 	m_wIndentAlignSpin = numIndentAlign;
 
 	m_wStartNewList = radnewlist;
@@ -578,10 +587,10 @@ PtWidget_t * AP_QNXDialog_Lists::_constructWindow (void)
 	return m_mainWindow;
 }
 
-void AP_QNXDialog_Lists::_fillNoneStyleMenu( GtkWidget *listmenu)
+void AP_QNXDialog_Lists::_fillNoneStyleMenu( PtWidget_t *listmenu)
 {
 #if 0
-        GtkWidget *glade_menuitem;
+        PtWidget_t *glade_menuitem;
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
 	glade_menuitem = gtk_menu_item_new_with_label (
@@ -595,10 +604,10 @@ void AP_QNXDialog_Lists::_fillNoneStyleMenu( GtkWidget *listmenu)
 #endif
 }
 
-void AP_QNXDialog_Lists::_fillNumberedStyleMenu( GtkWidget *listmenu)
+void AP_QNXDialog_Lists::_fillNumberedStyleMenu( PtWidget_t *listmenu)
 {
 #if 0
-        GtkWidget *glade_menuitem;
+        PtWidget_t *glade_menuitem;
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
 	glade_menuitem = gtk_menu_item_new_with_label (
@@ -650,10 +659,10 @@ void AP_QNXDialog_Lists::_fillNumberedStyleMenu( GtkWidget *listmenu)
 }
 
 
-void AP_QNXDialog_Lists::_fillBulletedStyleMenu( GtkWidget *listmenu)
+void AP_QNXDialog_Lists::_fillBulletedStyleMenu( PtWidget_t *listmenu)
 {
 #if 0
-        GtkWidget *glade_menuitem;
+        PtWidget_t *glade_menuitem;
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
 	glade_menuitem = gtk_menu_item_new_with_label (
@@ -788,9 +797,9 @@ void AP_QNXDialog_Lists::_populateWindowData (void)
 #endif
 }
 
+#if 0
 void AP_QNXDialog_Lists::_connectSignals(void)
 {
-#if 0
 	gtk_signal_connect_after(GTK_OBJECT(m_wMainWindow),
 							 "destroy",
 							 NULL,
@@ -837,8 +846,8 @@ void AP_QNXDialog_Lists::_connectSignals(void)
 		     				 GTK_SIGNAL_FUNC(s_window_exposed),
 		    					 (gpointer) this);
 
-#endif
 }
+#endif
 
 void AP_QNXDialog_Lists::_setData(void)
 {
@@ -909,7 +918,7 @@ void AP_QNXDialog_Lists::_gatherData(void)
                  gtk_spin_button_set_value(GTK_SPIN_BUTTON( m_wIndentAlignSpin), 0.0);
 
 	}
-	GtkWidget * wfont = gtk_menu_get_active(GTK_MENU(m_wFontOptions_menu));
+	PtWidget_t * wfont = gtk_menu_get_active(GTK_MENU(m_wFontOptions_menu));
 	gint ifont =  GPOINTER_TO_INT(gtk_object_get_user_data(GTK_OBJECT(wfont)));
 	if(ifont == 0)
 	{

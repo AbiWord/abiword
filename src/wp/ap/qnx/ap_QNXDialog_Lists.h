@@ -44,7 +44,7 @@ public:
 
     void                            customChanged(void);
 	void                            applyClicked(void);
-	void                            typeChanged( gint type);
+	void                            typeChanged( int type);
 	void                            previewExposed(void);
 	void                            setMemberVariables(void);
 	/* Just Plain Useful Functions */
@@ -63,42 +63,13 @@ protected:
 	void                            _setData(void);
 	void                            _gatherData(void);
 
-#if 0
-	UT_Bool     m_bDestroy_says_stopupdating;
-	UT_Bool     m_bAutoUpdate_happening_now;
-	UT_Timer *  m_pAutoUpdateLists;
-
-	PtWidget_t *m_mainWindow;
-
-	PtWidget_t * m_wStop;
-	PtWidget_t * m_wApply;
-	PtWidget_t * m_wClose;
-	PtWidget_t * m_wResume;
-
-	PtWidget_t * m_wMenuListType;
-	PtWidget_t * m_wMenuListTypeLabel;
-	PtWidget_t * m_wStartValue;
-	PtWidget_t * m_wStartValueLabel;
-
-	PtWidget_t * m_wCheckcurlist;
-	PtWidget_t * m_wCheckstartlist;
-
-	PtWidget_t * m_wCur_listtype;
-	PtWidget_t * m_wCur_listtypev;
-	PtWidget_t * m_wCur_listlabel;
-	PtWidget_t * m_wCur_listlabelv;
-
-	PtWidget_t * m_wPreviewGroup, *m_wPreview;
-	GR_QNXGraphics * m_qnxGraphics;
-#else
-	GR_QNXGraphics *               m_pPreviewWidget;
+	PtWidget_t *					m_mainWindow;
+	GR_QNXGraphics *				m_pPreviewWidget;
 
 	UT_Bool                         m_bDestroy_says_stopupdating;
 	UT_Bool                         m_bAutoUpdate_happening_now;
 	UT_Bool                         m_bisCustomFrameHidden;
 	UT_Timer *                      m_pAutoUpdateLists;
-
-	PtWidget_t *				m_mainWindow;
 
 	//List things ...
 	PtWidget_t * m_wListStyleNumbered_menu;
