@@ -59,7 +59,7 @@ int list_author_key=0;
 
 int nofontfaces=0;
 int riskbadole=0;
-int NORMAL=20;	/* sterwill: was 20 */
+int NORMAL=20;
 int inunderline = 0;
 int inbold = 0;
 int incenter= 0;
@@ -135,6 +135,94 @@ char * outputbuffer = NULL;
 int outputbufferlen = 0;
 FlushCallback outputbufferfunc = NULL;
 void * outputbufferdata = NULL;
+
+void _initGlobals(void)
+{
+	nostyles = 0;
+	key_atrd = NULL;
+
+	picblips=NULL;
+
+	notablewidth=0;
+	madeinmac=0;
+
+	list_author_key=0;
+
+	nofontfaces=0;
+	riskbadole=0;
+	NORMAL=20;
+	inunderline = 0;
+	inbold = 0;
+	incenter= 0;
+	inrightjust= 0;
+	inblink= 0;
+	inah1= 0;
+	inaheaderfooter=0;
+	initalic = 0;
+	inafont= 0;
+	pagenumber=1;
+	sectionpagenumber=1;
+	sectionno=1;
+	insuper = 0;
+	insub = 0;
+	inatable=0;
+	tabsize=-1;
+	cellempty=1;
+	inarow=0;
+	inacell=0;
+	inalist = 0;
+	doannos=1;
+
+	noheaders=0;
+
+	deferrednewpage=0;
+
+	lastrowlen=0;
+
+	colcount =0;
+	rowcount = 0;
+
+	mainend = 0;
+	lastlistid =0;
+	currentfontsize = 0;
+	currentfontcode=-1;
+
+	currentsep=NULL;
+
+	newline=1;
+	inacolor = 0;
+
+	chps=0;
+
+	padding=0;
+	verpadding=0;
+	ignoreheadings=0;
+	cp=0;
+	realcp=0;
+	header = 0;
+	breakcount = 0;
+	footnotehack=0;
+	instrike=0;
+
+	symbolurl=NULL;
+	imagesurl=NULL;
+	imagesdir=NULL;
+	wingdingurl=NULL;
+	patternurl=NULL;
+	outputfilename=NULL;
+	errorfilename=NULL;
+	filename=NULL;
+	outputfile=NULL;
+	erroroutput=NULL;
+
+	no_default_props_hack = 0;
+
+	outputbuffer = NULL;
+	outputbufferlen = 0;
+	outputbufferfunc = NULL;
+	outputbufferdata = NULL;
+	
+}
 
 void usage( void )
     {
@@ -257,18 +345,18 @@ int decodeWordFile(int argc, char ** argv, char * buf, int len, void * cbdata,
 	
 	int ret=0;
 	int timeout=-1;
-	char *endptr;
-	char *buffer;
+	char *endptr = NULL;
+	char *buffer = NULL;
 	char fileinbuf[1024];
 	
-	FILE *filein;
+	FILE *filein = NULL;
 
 	FILE *mainfd=NULL;
 	FILE *tablefd0=NULL;
 	FILE *tablefd1=NULL;
 	FILE *data=NULL;
 
-	int c;
+	int c = 0;
 	int tail=1;
 	int core=1;
 	int index=0;
@@ -302,10 +390,15 @@ int decodeWordFile(int argc, char ** argv, char * buf, int len, void * cbdata,
 		{ 0,      0, 0, '0' },
 		};
 
+	/*
+	  THE FIRST THING WE DO IS CLEAR OUT ALL THE GARBAGE THAT MIGHT
+	  BE LEFT IN OLD GLOBAL VARIABLES.  THIS MAKES THIS FUNCTION
+	  RE-USABLE AT RUN-TIME.
+	*/
+	_initGlobals();
 
 	erroroutput=stderr;
-
-
+	
 	while (1)
 		{
 		c = getopt_long (argc, argv, "abcd:ef:g:hi:j:kmno:p:s:t:u:vw:y:", long_options, &index);

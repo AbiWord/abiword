@@ -80,6 +80,19 @@ static char sbfilename[L_tmpnam];
 static U32 *sbd_list;
 static U32 *root_list;
 
+void _initGlobals(void)
+{
+	input = NULL;
+	Block = NULL;
+	BDepot = NULL;
+	SDepot = NULL;
+	Root = NULL;
+	pps_list = NULL;
+	sbfile = NULL;
+	sbd_list = NULL;
+	root_list = NULL;
+}
+
 int
 OLEdecode (char *OLEfilename, pps_entry ** stream_list, U32 * root,
 	   U16 max_level)
@@ -91,6 +104,8 @@ OLEdecode (char *OLEfilename, pps_entry ** stream_list, U32 * root,
   long FilePos;
   /* FilePos is long, not U32, because second argument of fseek is long */
 
+  _initGlobals();
+  
   /* initialize static variables */
   input = sbfile = NULL;
   Block = BDepot = SDepot = Root = NULL;
