@@ -940,7 +940,8 @@ void fp_Line::layout(void)
    	recalcHeight();
    	
     // get current alignment; note that we cannot initialize the alignment
-    // at this stage, we have to first calculate the widths of our tabstops
+    // at this stage, (and chances are we will not need to anyway), because
+    // we have to first calculate the widths of our tabs
 	fb_Alignment* pAlignment = m_pBlock->getAlignment();
 	UT_ASSERT(pAlignment);
     FB_AlignmentType eAlignment 	  = pAlignment->getType();
@@ -955,14 +956,18 @@ void fp_Line::layout(void)
 	FriBidiCharType iDomDirection = m_pBlock->getDominantDirection();
 #endif
         	
-	//a variable to keep the processing direction
+	// a variable to keep the processing direction
+	// NB: it is important that WORK_FORWARD is set to 1 and
+	// WORK_BACKWARD to -1; this gives us a simple way to convert
+	// addition to substraction by mulplying by the direction
 	enum {WORK_FORWARD = 1,WORK_BACKWARD = -1,WORK_CENTER = 0}
 	eWorkingDirection = WORK_FORWARD;
 
+    // a variable that will tell us how to interpret the tabstops
     enum {USE_PREV_TABSTOP,USE_NEXT_TABSTOP,USE_FIXED_TABWIDTH}
 	eUseTabStop = USE_NEXT_TABSTOP;
 	
-	//a fixed width fraction of the font ascent which we will use for centered alignment
+	// a fixed width fraction of the font ascent which we will use for centered alignment
 	// i.e, width = font_ascent * iFixedWidthMlt / iFixedWidthDiv
 	const UT_uint32 iFixedWidthMlt = 2;
 	const UT_uint32 iFixedWidthDiv = 1;
@@ -1000,6 +1005,8 @@ void fp_Line::layout(void)
         case FB_ALIGNMENT_CENTER:
             eWorkingDirection = WORK_FORWARD;
             eUseTabStop = USE_FIXED_TABWIDTH;
+            // we will pretend the line starts at pos 0, work out the width
+            // and then shift it by the necessary amount to the right
             iStartX = 0;
             iStartXLayoutUnits = 0;
             break;
@@ -1033,7 +1040,7 @@ void fp_Line::layout(void)
 	bool bLineErased		= false;
 	UT_uint32 iIndxToEraseFrom = 0;
 
-#if 0//def DEBUG
+#ifdef DEBUG
 
 	//some extra but lengthy degug stuff
 	char *al;
@@ -1147,9 +1154,27 @@ void fp_Line::layout(void)
 			// now find the tabstop for this tab, depending on whether we
 			// are to use next or previous tabstop				
 			if(eUseTabStop == USE_NEXT_TABSTOP)
-				bRes = findNextTabStopInLayoutUnits(iXLayoutUnits, iPosLayoutUnits, iTabType, iTabLeader);
+			{
+#ifdef BIDI_ENABLED
+				if(iDomDirection == FRIBIDI_TYPE_RTL)
+				{
+					bRes = findNextTabStopInLayoutUnits(m_iMaxWidthLayoutUnits - iXLayoutUnits, iPosLayoutUnits, iTabType, iTabLeader);
+					iPosLayoutUnits = m_iMaxWidthLayoutUnits - iPosLayoutUnits;
+				}
+				else
+#endif
+					bRes = findNextTabStopInLayoutUnits(iXLayoutUnits, iPosLayoutUnits, iTabType, iTabLeader);
+			}
 			else
-				bRes = findPrevTabStopInLayoutUnits(iXLayoutUnits, iPosLayoutUnits, iTabType, iTabLeader);
+#ifdef BIDI_ENABLED
+				if(iDomDirection == FRIBIDI_TYPE_RTL)
+				{
+					bRes = findPrevTabStopInLayoutUnits(m_iMaxWidthLayoutUnits - iXLayoutUnits, iPosLayoutUnits, iTabType, iTabLeader);
+					iPosLayoutUnits = m_iMaxWidthLayoutUnits - iPosLayoutUnits;
+				}
+				else
+#endif
+					bRes = findPrevTabStopInLayoutUnits(iXLayoutUnits, iPosLayoutUnits, iTabType, iTabLeader);
 					
 				
 			UT_ASSERT(bRes);

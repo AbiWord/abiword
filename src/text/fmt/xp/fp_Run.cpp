@@ -1619,42 +1619,28 @@ void fp_EndOfParagraphRun::findPointCoords(UT_uint32 iOffset,
 	// fjsdkjfklsd<forced-column-break>sdfsdsd move cursor back
 	//	UT_ASSERT(m_iOffsetFirst == iOffset);
 
-	UT_sint32 xoff, yoff;
-
 	fp_Run* pPropRun = _findPrevPropertyRun();
-
+	
 	height = m_iHeight;
-	m_pLine->getOffsets(this, xoff, yoff);
-	x = x2 = xoff;
-	y = y2 = yoff;
 
 	if (pPropRun)
 	{
-		//UT_DEBUGMSG(("fp_EndOfParagraphRun::findPointCoords: prop. run type=%d\n", pPropRun->getType()));
 		height = pPropRun->getHeight();
 		// If property Run is on the same line, get y location from
 		// it (to reflect proper ascent).
 		if (pPropRun->getLine() == m_pLine)
 		{
-#ifdef BIDI_ENABLED
-			pPropRun->findPointCoords(iOffset, xoff, y, xoff, y2, height, bDirection);
-#else		
 			if(FPRUN_TEXT == pPropRun->getType())
 			{
 				pPropRun->findPointCoords(iOffset, x, y, x2, y2, height, bDirection);
+				return;
 			}
-			else
-			{
-				height = m_iHeight;
-				m_pLine->getOffsets(this, xoff, yoff);
-				x = xoff;
-				y = yoff;
-			}
-#endif
 		}
 	}
-	//UT_DEBUGMSG(("fintPointCoords: EndOfParagraphRun 0x%x: x,y,x2,y2=[%d,%d,%d,%d]\n", this,x,y,x2,y2));
-	
+		
+	m_pLine->getOffsets(this, x, y);
+	x2 = x;
+	y2 = y;
 }
 
 void fp_EndOfParagraphRun::_clearScreen(bool /* bFullLineHeightRect */)
