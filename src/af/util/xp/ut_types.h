@@ -67,8 +67,13 @@ typedef signed int		    UT_sint32;
 typedef __int64             UT_uint64;
 typedef __int64             UT_sint64;
 #else
+#if ABISIZEOF_LONG_INT == 8
+typedef unsigned long int UT_uint64;
+typedef signed long int UT_sint64;
+#else
 GNUC_EXTENSION typedef unsigned long long  UT_uint64;
 GNUC_EXTENSION typedef signed long long    UT_sint64;
+#endif
 #endif
 
 /* If expat is in use, include <expat.h> before "ut_types.h"
