@@ -125,8 +125,9 @@ void ap_sbf_PageInfo::notify(AV_View * pavView, const AV_ChangeMask mask)
 		
 		// WL: Assume all incoming strings are in UTF-8
 		// FIXME: Should we be doing this in a more principled way?
-		UT_UCS4_strcpy_utf8_char(m_bufUCS,buf);		
-
+		// 23/04/2003 Jordi: The string arrives here in ANSI format not UTF-8
+		UT_UCS4_strcpy_char(m_bufUCS,buf);		
+		
 		if (getListener())
 			getListener()->notify();
 
