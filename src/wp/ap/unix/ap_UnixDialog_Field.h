@@ -45,7 +45,6 @@ pFactory , XAP_Dialog_Id id);
 
 protected:
 	virtual GtkWidget *		_constructWindow(void);
-	GtkWidget *				_constructWindowContents (void);
 	void					_populateCatogries(void);
 
 	GtkWidget * m_windowMain;
