@@ -1,4 +1,4 @@
-/* AbiWord
+/* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
