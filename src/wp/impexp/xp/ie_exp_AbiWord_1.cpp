@@ -224,20 +224,51 @@ void ie_Exp_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 	// TODO for now, just squish it into ascii.
 	
 #define MY_BUFFER_SIZE		1024
+#define MY_HIGHWATER_MARK	6
 	char buf[MY_BUFFER_SIZE];
 	char * pBuf;
 	const UT_UCSChar * pData;
 
 	for (pBuf=buf, pData=data; (pData<data+length); /**/)
 	{
-		if (pBuf == buf+MY_BUFFER_SIZE)
+		if (pBuf >= (buf+MY_BUFFER_SIZE-MY_HIGHWATER_MARK))
 		{
-			m_pie->write(buf,MY_BUFFER_SIZE);
+			m_pie->write(buf,(pBuf-buf));
 			pBuf = buf;
 		}
 
 		UT_ASSERT(*pData < 256);
-		*pBuf++ = (UT_Byte)*pData++;
+		switch (*pData)
+		{
+		case '<':
+			*pBuf++ = '&';
+			*pBuf++ = 'l';
+			*pBuf++ = 't';
+			*pBuf++ = ';';
+			pData++;
+			break;
+			
+		case '>':
+			*pBuf++ = '&';
+			*pBuf++ = 'g';
+			*pBuf++ = 't';
+			*pBuf++ = ';';
+			pData++;
+			break;
+			
+		case '&':
+			*pBuf++ = '&';
+			*pBuf++ = 'a';
+			*pBuf++ = 'm';
+			*pBuf++ = 'p';
+			*pBuf++ = ';';
+			pData++;
+			break;
+			
+		default:
+			*pBuf++ = (UT_Byte)*pData++;
+			break;
+		}
 	}
 
 	if (pBuf > buf)
