@@ -456,8 +456,19 @@ UT_Bool XAP_UnixFrame::show()
 UT_Bool XAP_UnixFrame::openURL(const char * szURL)
 {
 	// TODO: call NSCP to open the specified URL
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
 
+	// TODO : FIX THIS.  Oh, this is hackish, really hackish, but
+	// TODO : better than an assert to the user.
+
+	// try to connect to a running Netscape
+	int launch = system("netscape -remote openURL\\(http://www.abisource.com/\\)");
+
+	// if that fails, open an new one
+	if (launch != 0)
+	{
+		system("netscape http://www.abisource.com/");
+	}
+	
 	return UT_FALSE;
 }
 

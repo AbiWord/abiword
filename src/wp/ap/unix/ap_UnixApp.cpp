@@ -373,6 +373,13 @@ static GR_Image * _showSplash(XAP_Args * pArgs, const char * /*szAppName*/)
 		gtk_widget_set_usize(wSplash, iSplashWidth, iSplashHeight);
 		gtk_window_set_policy(GTK_WINDOW(wSplash), FALSE, FALSE, FALSE);
 
+		// create a frame to add depth
+		GtkWidget * frame = gtk_frame_new(NULL);
+		gtk_object_set_data(GTK_OBJECT(wSplash), "frame", frame);
+		gtk_container_add(GTK_CONTAINER(wSplash), frame);
+		gtk_frame_set_shadow_type(GTK_FRAME(frame), GTK_SHADOW_OUT);
+		gtk_widget_show(frame);
+
 		// create a drawing area
 		GtkWidget * da = gtk_drawing_area_new ();
 		gtk_object_set_data(GTK_OBJECT(wSplash), "da", da);
@@ -384,14 +391,13 @@ static GR_Image * _showSplash(XAP_Args * pArgs, const char * /*szAppName*/)
 //						   GTK_SIGNAL_FUNC(s_key_event), NULL);
 		gtk_signal_connect(GTK_OBJECT(da), "button_press_event",
 						   GTK_SIGNAL_FUNC(s_button_event), NULL);
+		gtk_container_add(GTK_CONTAINER(frame), da);
 		gtk_widget_show(da);
-		gtk_container_add(GTK_CONTAINER(wSplash), da);
 
 		// now bring the window up front & center
-		//GdkWindowPrivate * root = getRootWindow(wSplash);
 		gtk_window_set_position(GTK_WINDOW(wSplash), GTK_WIN_POS_CENTER);
-		
-		// show it out front (this sucks; this should happen after the slow process of creating a new GC)
+
+		// create the window so we can attach a GC to it
 		gtk_widget_show(wSplash);
 
 		// create image context
@@ -400,6 +406,9 @@ static GR_Image * _showSplash(XAP_Args * pArgs, const char * /*szAppName*/)
 
 		// do timeout handler (so it automatically disappears in 2 seconds)
 		timeout_handler = gtk_timeout_add(2000, s_hideSplash, NULL);
+
+		// another for luck (to bring it up forward and paint)
+		gtk_widget_show(wSplash);
 	}
 
 	DELETEP(pBB);
