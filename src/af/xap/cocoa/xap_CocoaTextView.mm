@@ -50,7 +50,7 @@
 
 - (BOOL)resignFirstResponder
 {
-	return NO;
+	return YES;
 }
 
 
