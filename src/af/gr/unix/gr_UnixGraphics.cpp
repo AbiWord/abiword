@@ -317,8 +317,38 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 								int * pCharWidths)
 {
 #ifdef USE_XFT
-	XftDrawString32(m_pXftDraw, &m_XftColor, m_pXftFont, xoff, yoff + m_pXftFont->ascent,
-					const_cast<XftChar32*> (pChars + iCharOffset), iLength);
+	if (iLength == 0)
+		return;
+	
+	yoff += m_pXftFont->ascent;
+	
+	if (!pCharWidths)
+		XftDrawString32(m_pXftDraw, &m_XftColor, m_pXftFont, xoff, yoff,
+						const_cast<XftChar32*> (pChars + iCharOffset), iLength);
+	else
+	{
+		XftGlyphSpec aGlyphSpec[256];
+		XftGlyphSpec* pGlyphSpec = aGlyphSpec;
+		
+		if (iLength > 256)
+			pGlyphSpec = new XftGlyphSpec[iLength];
+
+		pGlyphSpec[0].glyph = (FT_UInt) pChars[iCharOffset];
+		pGlyphSpec[0].x = xoff;
+		pGlyphSpec[0].y = yoff;
+
+		for (int i = 1; i < iLength; ++i)
+		{
+			pGlyphSpec[i].glyph = (FT_UInt) pChars[i + iCharOffset];
+			pGlyphSpec[i].x = (short) (pGlyphSpec[i - 1].x + pCharWidths[i - 1]);
+			pGlyphSpec[i].y = yoff;
+		}
+		
+		XftDrawGlyphSpec (m_pXftDraw, &m_XftColor, m_pXftFont, pGlyphSpec, iLength);
+
+		if (pGlyphSpec != aGlyphSpec)
+			delete[] pGlyphSpec;
+	}
 #else
 	if (!m_pFontManager)
 		return;
