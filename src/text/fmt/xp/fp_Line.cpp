@@ -1099,10 +1099,17 @@ void fp_Line::draw(GR_Graphics* pG)
 
 	for (int i=0; i < count; i++)
 	{
+#if 0
+		// This is no longer necessary, and drawing in visual order
+		// fixes bug 2811. Tomas, Apr 10, 2003
+		// 
 		// NB !!! In the BiDi build drawing has to be done in the logical
 		// order, otherwise overstriking characters cannot be seen
 		fp_Run* pRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(i));
-
+#else
+		fp_Run* pRun = getRunAtVisPos(i);
+#endif
+		
 		FPVisibility eHidden  = pRun->isHidden();
 		if((eHidden == FP_HIDDEN_TEXT && !bShowHidden)
 		   || eHidden == FP_HIDDEN_REVISION
@@ -1173,9 +1180,16 @@ void fp_Line::draw(dg_DrawArgs* pDA)
 
 	for (int i=0; i<count; i++)
 	{
+#if 0
+		// This is no longer necessary, and drawing in visual order
+		// fixes bug 2811. Tomas, Apr 10, 2003
+		// 
 		// NB !!! In the BiDi build drawing has to be done in the logical
 		// order, otherwise overstriking characters cannot be seen
 		fp_Run* pRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(i));
+#else
+		fp_Run* pRun = getRunAtVisPos(i);
+#endif
 
 		FPVisibility eHidden  = pRun->isHidden();
 		if((eHidden == FP_HIDDEN_TEXT && !bShowHidden)
