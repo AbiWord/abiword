@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<RDF:RDF xmlns:RDF="http://www.w3.org/TR/PR-rdf-syntax"
+         xmlns:QPM="http://www.qnx.com">
+<RDF:Description about="http://www.qnx.com">

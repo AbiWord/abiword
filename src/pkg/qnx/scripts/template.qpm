@@ -1,0 +1,116 @@
+    <QPM:PackageManifest>
+
+        <QPM:PackageDescription>
+            <QPM:PackageName>abiword-(VERSION)</QPM:PackageName>
+            <QPM:PackageSize>(PKGSIZE)</QPM:PackageSize>
+            <QPM:PackageReleaseNumber>1.0</QPM:PackageReleaseNumber>
+            <QPM:PackageReleaseNotes></QPM:PackageReleaseNotes>
+            <QPM:PackageReleaseUrgency>Low</QPM:PackageReleaseUrgency>
+            <QPM:PackageReleaseDate>(DATE)</QPM:PackageReleaseDate>
+            <QPM:PackageRepository></QPM:PackageRepository>
+        </QPM:PackageDescription>
+
+        <QPM:ProductDescription>
+            <QPM:ProductName>AbiSuite</QPM:ProductName>
+            <QPM:ProductSize>(PRODSIZE)</QPM:ProductSize>
+            <QPM:ProductIdentifier>abisuite_core</QPM:ProductIdentifier>
+            <QPM:ProductHomeURL></QPM:ProductHomeURL>
+            <QPM:VendorName>AbiSource</QPM:VendorName>
+            <QPM:VendorInstallName>abisource</QPM:VendorInstallName>
+            <QPM:VendorEmbedURL>www.abisource.com</QPM:VendorEmbedURL>
+            <QPM:VendorURL>www.abisource.com</QPM:VendorURL>
+			<QPM:VendorIdentifier>abisource</QPM:VendorIdentifier>
+            <QPM:ProductIconSmall></QPM:ProductIconSmall>
+            <QPM:ProductIconLarge></QPM:ProductIconLarge>
+            <QPM:ProductDescriptionShort>A photon word processor</QPM:ProductDescriptionShort>
+            <QPM:ProductDescriptionLong>AbiWord is a more full featured word processor than ped featuring various document import formats.
+	        </QPM:ProductDescriptionLong>
+<!--
+            <QPM:ProductDescriptionEmbedURL></QPM:ProductDescriptionEmbedURL>
+            <QPM:ProductDescriptionURL></QPM:ProductDescriptionURL>
+-->	    
+	    <QPM:InstallPath>abisource/abiword</QPM:InstallPath>
+        </QPM:ProductDescription>
+
+        <QPM:ReleaseDescription>
+            <QPM:ReleaseCopyright>GNU Public License</QPM:ReleaseCopyright>
+            <QPM:ReleaseCopyrightURL></QPM:ReleaseCopyrightURL>
+            <QPM:ReleaseDate>(DATE)</QPM:ReleaseDate>
+            <QPM:ReleaseVersion>(VERSION)</QPM:ReleaseVersion>
+            <QPM:RelaseUrgency>Low</QPM:RelaseUrgency>
+            <QPM:ReleaseNoteMajor></QPM:ReleaseNoteMajor>
+            <QPM:ReleaseNoteMinor></QPM:ReleaseNoteMinor>
+        </QPM:ReleaseDescription>
+
+        <QPM:RelationshipDescription>
+            <QPM:RelationshipType>core</QPM:RelationshipType>
+            <QPM:CoreSibling></QPM:CoreSibling>
+            <QPM:ComponentType>Optional</QPM:ComponentType>
+            <QPM:ComponentTypeNotes>Install this if you need to process words</QPM:ComponentTypeNotes>
+            <QPM:ComponentParent></QPM:ComponentParent>
+            <QPM:ComponentAuthenticationKey></QPM:ComponentAuthenticationKey>
+            <QPM:ComponentSignature></QPM:ComponentSignature>
+            <QPM:UpgradeParent></QPM:UpgradeParent>
+            <QPM:UpgradeFromVersion></QPM:UpgradeFromVersion>
+        </QPM:RelationshipDescription>
+
+        <QPM:ContentDescription>
+            <QPM:ContentKeyword>editor</QPM:ContentKeyword>
+            <QPM:ContentTopic>Public Software/Editors</QPM:ContentTopic>
+            <QPM:ContentLanguage></QPM:ContentLanguage>
+            <QPM:Contains>macros,scripts</QPM:Contains>
+            <QPM:ContainsLibraries></QPM:ContainsLibraries>
+            <QPM:Processor></QPM:Processor>
+        </QPM:ContentDescription>
+
+        <QPM:ProductInstallationDependencies>
+            <QPM:HardwareRequirement>
+                <QPM:MinimumRAM></QPM:MinimumRAM>
+                <QPM:RecommendedRAM></QPM:RecommendedRAM>
+                <QPM:MinimumFreeStorage>10M</QPM:MinimumFreeStorage>
+                <QPM:RecommendedFreeStorage>20M</QPM:RecommendedFreeStorage>
+                <QPM:MinimumResolution></QPM:MinimumResolution>
+                <QPM:RecommendedColorDepth></QPM:RecommendedColorDepth>
+                <QPM:AudioSupport></QPM:AudioSupport>
+                <QPM:PhotonDistribution></QPM:PhotonDistribution>
+            </QPM:HardwareRequirement>
+
+            <QPM:Dependency>
+                <QPM:DependencyType>Install</QPM:DependencyType>
+                <QPM:Notes></QPM:Notes>
+                <QPM:Product>core_nto_2.1</QPM:Product>
+                <QPM:ProductHomeRepository></QPM:ProductHomeRepository>
+                <QPM:Filter>
+                    <QPM:FilterType></QPM:FilterType>
+                </QPM:Filter>
+            </QPM:Dependency>
+        </QPM:ProductInstallationDependencies>
+
+        <QPM:ProductInstallationProcedure>
+           <QPM:Script>
+               <QPM:ScriptName></QPM:ScriptName>
+               <QPM:Timing></QPM:Timing>
+               <QPM:Event></QPM:Event>
+               <QPM:Filter>
+                   <QPM:FilterType></QPM:FilterType>
+               </QPM:Filter>
+           </QPM:Script>
+
+<!--
+           <QPM:OrderDependency>
+                   <QPM:Order>InstallOver</QPM:Order>
+                   <QPM:Product>vim_core</QPM:Product>
+                   <QPM:Filter>
+                       <QPM:FilterType></QPM:FilterType>
+                   </QPM:Filter>
+           </QPM:OrderDependency>
+-->
+        </QPM:ProductInstallationProcedure>
+
+    </QPM:PackageManifest>
+ 
+	<QPM:Launch name="AbiWord">
+		<QPM:String name="Topic" value="Applications/Editors"></QPM:String>
+		<QPM:String name="Command" value="/bin/ksh -c /usr/photon/bin/AbiWord"></QPM:String>
+	</QPM:Launch>
+
