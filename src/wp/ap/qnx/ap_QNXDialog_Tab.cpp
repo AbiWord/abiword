@@ -227,10 +227,11 @@ PtWidget_t* AP_QNXDialog_Tab::_constructWindow (void )
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, UT_XML_transNoAmpersands(pSS->getValue( AP_STRING_ID_DLG_Tab_Radio_Left)), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, 2*ABI_DEFAULT_BUTTON_WIDTH, 0);
+	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE,Pt_TOGGLE_RADIO,0);
 	PtWidget_t *radiobuttonLeft = PtCreateWidget(PtToggleButton, radgroup, n, args);
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, UT_XML_transNoAmpersands(pSS->getValue( AP_STRING_ID_DLG_Tab_Radio_Decimal)), 0);
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, 2*ABI_DEFAULT_BUTTON_WIDTH, 0);
+	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE,Pt_TOGGLE_RADIO,0);
 	PtWidget_t *radiobuttonDecimal = PtCreateWidget(PtToggleButton, radgroup, n, args);
 
 	n = 0;
@@ -238,10 +239,11 @@ PtWidget_t* AP_QNXDialog_Tab::_constructWindow (void )
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, UT_XML_transNoAmpersands(pSS->getValue( AP_STRING_ID_DLG_Tab_Radio_Center)), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, 2*ABI_DEFAULT_BUTTON_WIDTH, 0);
+	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE,Pt_TOGGLE_RADIO,0);
 	PtWidget_t *radiobuttonCenter = PtCreateWidget(PtToggleButton, radgroup, n, args);
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, UT_XML_transNoAmpersands(pSS->getValue( AP_STRING_ID_DLG_Tab_Radio_Bar)), 0);
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, 2*ABI_DEFAULT_BUTTON_WIDTH, 0);
+	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE,Pt_TOGGLE_RADIO,0);
 	PtWidget_t *radiobuttonBar = PtCreateWidget(PtToggleButton, radgroup, n, args);
 
 	n = 0;
@@ -249,6 +251,7 @@ PtWidget_t* AP_QNXDialog_Tab::_constructWindow (void )
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, UT_XML_transNoAmpersands(pSS->getValue( AP_STRING_ID_DLG_Tab_Radio_Right)), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, 2*ABI_DEFAULT_BUTTON_WIDTH, 0);
+	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE,Pt_TOGGLE_RADIO,0);
 	PtWidget_t *radiobuttonRight = PtCreateWidget(PtToggleButton, radgroup, n, args);
 
 	PtWidget_t *lgroup;
@@ -264,10 +267,11 @@ PtWidget_t* AP_QNXDialog_Tab::_constructWindow (void )
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING,  UT_XML_transNoAmpersands(pSS->getValue( AP_STRING_ID_DLG_Tab_Radio_None)), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, 2*ABI_DEFAULT_BUTTON_WIDTH, 0);
+	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE,Pt_TOGGLE_RADIO,0);
 	PtWidget_t *radiobuttonLeaderNone = PtCreateWidget(PtToggleButton, radgroup, n, args);
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, UT_XML_transNoAmpersands(pSS->getValue( AP_STRING_ID_DLG_Tab_Radio_Dash)), 0);
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, 2*ABI_DEFAULT_BUTTON_WIDTH, 0);
+	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE,Pt_TOGGLE_RADIO,0);
 	PtWidget_t *radiobuttonLeaderDash = PtCreateWidget(PtToggleButton, radgroup, n, args);
 
 	n = 0;
@@ -275,22 +279,16 @@ PtWidget_t* AP_QNXDialog_Tab::_constructWindow (void )
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, UT_XML_transNoAmpersands(pSS->getValue( AP_STRING_ID_DLG_Tab_Radio_Dot)), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, 2*ABI_DEFAULT_BUTTON_WIDTH, 0);
+	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE,Pt_TOGGLE_RADIO,0);
 	PtWidget_t *radiobuttonLeaderDot = PtCreateWidget(PtToggleButton, radgroup, n, args);
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, UT_XML_transNoAmpersands(pSS->getValue( AP_STRING_ID_DLG_Tab_Radio_Underline)), 0);
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, 2*ABI_DEFAULT_BUTTON_WIDTH, 0);
+	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE,Pt_TOGGLE_RADIO,0);
 	PtWidget_t *radiobuttonLeaderUnderline = PtCreateWidget(PtToggleButton, radgroup, n, args);
 
 	/* Setting buttons */
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_FLAGS, Pt_HIGHLIGHTED, Pt_HIGHLIGHTED);
-	PtSetArg(&args[n++], Pt_ARG_BASIC_FLAGS, Pt_TOP_BEVEL | Pt_TOP_OUTLINE, Pt_ALL);
-	PtSetArg(&args[n++], Pt_ARG_BEVEL_WIDTH, 1, 0);
 	htmpgroup = PtCreateWidget(PtGroup, vgroup, n, args);
-
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, 2 * ABI_DEFAULT_BUTTON_WIDTH, 0);
-	PtCreateWidget(PtLabel, htmpgroup, n, args);
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, UT_XML_transNoAmpersands(pSS->getValue( AP_STRING_ID_DLG_Tab_Button_Set)), 0);
@@ -312,14 +310,7 @@ PtWidget_t* AP_QNXDialog_Tab::_constructWindow (void )
 
 	/* Other buttons */
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_FLAGS, Pt_HIGHLIGHTED, Pt_HIGHLIGHTED);
-	PtSetArg(&args[n++], Pt_ARG_BASIC_FLAGS, Pt_TOP_BEVEL | Pt_TOP_OUTLINE, Pt_ALL);
-	PtSetArg(&args[n++], Pt_ARG_BEVEL_WIDTH, 1, 0);
 	htmpgroup = PtCreateWidget(PtGroup, vgroup, n, args);
-
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, 2*ABI_DEFAULT_BUTTON_WIDTH, 0);
-	PtCreateWidget(PtLabel, htmpgroup, n, args);
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue( XAP_STRING_ID_DLG_OK), 0);
