@@ -1172,7 +1172,7 @@ void FV_View::toggleCase (ToggleCase c)
 		return;
 
 	// create a temp buffer of a reasonable size (will realloc if too small)
-	UT_uint32	 iTempLen = 150;
+	UT_sint32	 iTempLen = 150;
 	UT_UCSChar * pTemp = new UT_UCSChar[iTempLen];
 	UT_ASSERT(pTemp);
 
@@ -1259,7 +1259,7 @@ void FV_View::toggleCase (ToggleCase c)
 		bool bBlockDone = false;
 		while(!bBlockDone && (low < high) /*&& (low < lastPos)*/)
 		{
-			UT_uint32 iLenToCopy = UT_MIN(high - low, buffer.getLength() - offset);
+			UT_sint32 iLenToCopy = UT_MIN(high - low, buffer.getLength() - offset);
 
 			xxx_UT_DEBUGMSG(("fv_View::toggleCase: iLenToCopy %d, low %d\n", iLenToCopy, low));
 
@@ -1286,6 +1286,7 @@ void FV_View::toggleCase (ToggleCase c)
 					offset += pRun->getLength();
 					low += pRun->getLength();
 					pRun = pRun->getNextRun();
+					iLenToCopy--;
 				}
 
 				fp_TextRun * pPrevTR = NULL;
@@ -1298,7 +1299,7 @@ void FV_View::toggleCase (ToggleCase c)
 					// runs that can be merged in a single go
 					if(pPrevTR && !pPrevTR->canMergeWithNext())
 						break;
-					UT_uint32 iDiff = UT_MIN(pRun->getLength(), iLenToCopy);
+					UT_sint32 iDiff = UT_MIN((UT_sint32)pRun->getLength(), iLenToCopy);
 					iLen += iDiff;
 					iLenToCopy -= iDiff;
 					pPrevTR = static_cast<fp_TextRun*>(pRun);
@@ -1438,8 +1439,12 @@ void FV_View::toggleCase (ToggleCase c)
 				}
 				bResult = m_pDoc->insertSpan(low, pTemp, iLen, pSpanAPNow);
 				UT_ASSERT_HARMLESS( bResult );
-				bResult &= m_pDoc->changeSpanFmt(PTC_SetFmt,low,low+iLen,
-												 pSpanAPNow->getAttributes(),pSpanAPNow->getProperties());
+
+				if(pSpanAPNow->getAttributes() || pSpanAPNow->getProperties())
+				{
+					bResult &= m_pDoc->changeSpanFmt(PTC_SetFmt,low,low+iLen,
+													 pSpanAPNow->getAttributes(),pSpanAPNow->getProperties());
+				}
 				
 				// now remember the props for the next round
 				pSpanAPNow = const_cast<PP_AttrProp*>(pSpanAPAfter);
