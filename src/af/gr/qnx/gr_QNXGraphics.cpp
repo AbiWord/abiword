@@ -352,7 +352,10 @@ GR_Font * GR_QNXGraphics::findFont(const char* pszFontFamily,
 		}
 	}
 	UT_DEBUGMSG(("Setting to font name [%s] ", fname));
-	PfLoadFont(fname,PHFONT_LOAD_METRICS,0);
+	if(PfLoadMetrics(fname)!=0)
+	{
+		PfUnloadMetrics(fname);
+	}
 	return(new QNXFont(fname));
 }
 
