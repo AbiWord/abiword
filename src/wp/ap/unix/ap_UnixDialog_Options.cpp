@@ -819,7 +819,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	gtk_container_add (GTK_CONTAINER (frame40), vbox57);
 	gtk_container_set_border_width (GTK_CONTAINER (vbox57), 4);
 
-	pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_PrefsAutoSave);
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_PrefsAutoSave,s);
 	save_scheme = gtk_check_button_new_with_label (s.utf8_str());
 	gtk_widget_show (save_scheme);
 	gtk_box_pack_start (GTK_BOX (vbox57), save_scheme, FALSE, FALSE, 0);
