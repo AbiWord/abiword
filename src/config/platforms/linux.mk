@@ -62,10 +62,11 @@ AR		= ar cr $@
 # Compiler flags
 
 ifdef ABI_OPT_PROF
-OPTIMIZER   	= -pg -O2 -Wall -ansi -pedantic
+OPTIMIZER   	= -pg -Wall -ansi -pedantic -funroll-loops
 DEFINES  	= 
 OBJ_DIR_SFX	= PRF
 ABI_OPT_DEBUG 	= ""
+ABI_OPT_OPTIMIZE= ""
 ABI_OPTIONS	+= Profile:On
 else
 
@@ -187,3 +188,7 @@ ABI_FE		= Unix
 ABIPKGDIR	= linux
 
 # End of linux defs
+
+
+
+
