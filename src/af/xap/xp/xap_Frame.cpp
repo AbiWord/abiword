@@ -75,11 +75,12 @@ AP_Frame::~AP_Frame(void)
 	if (m_pView)
 		m_pView->removeListener(m_lid);
 
-	if (m_pViewListener)
-		delete m_pViewListener;
-
 	DELETEP(m_pView);
-	DELETEP(m_pDocLayout);		// NOTE: this also nukes m_pDoc
+	DELETEP(m_pViewListener);
+	DELETEP(m_pDocLayout);
+
+	if (m_nView==0)
+		DELETEP(m_pDoc);
 
 	DELETEP(m_pScrollObj);
 	DELETEP(m_pG);

@@ -72,13 +72,6 @@ FL_DocLayout::~FL_DocLayout()
 	UT_VECTOR_PURGEALL(fl_SectionLayout, m_vecSectionLayouts);
 
 	UT_HASH_PURGEDATA(DG_Font, m_hashFontCache);
-
-	// TODO -- the following delete operation is causing a core dump on exit, on Linux
-	if (m_pDoc)
-	{
-		delete m_pDoc;
-		m_pDoc = NULL;
-	}
 }
 
 void FL_DocLayout::setView(FV_View* pView)

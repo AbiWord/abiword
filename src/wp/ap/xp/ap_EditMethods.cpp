@@ -1049,7 +1049,9 @@ Defun1(print)
 {
 	AP_Frame * pFrame = (AP_Frame *) pView->getParentData();
 	UT_ASSERT(pFrame);
+#ifdef DLGHACK
 	_printDoc(pFrame, pView);
+#endif /* DLGHACK */
 	return UT_TRUE;
 }
 
@@ -1905,10 +1907,9 @@ UT_Bool _printDoc(AP_Frame * pFrame, FV_View * pView)
 	ppG->endPrint();
 
 	// clean up
+	delete pV;
+	delete pDL;
 	delete ppG;
-	// TODO are these 2 necessary?
-	//	delete pDL;
-	//	delete pV;
 	DeleteDC(pd.hDC);
 	// free any memory allocated by StartDoc
 	if(pd.hDevMode != NULL)
