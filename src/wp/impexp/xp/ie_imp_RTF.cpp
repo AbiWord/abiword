@@ -3609,6 +3609,15 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 			SkipCurrentGroup();
 			return true;
 		}
+		else if (strcmp((char*)pKeyword,"noproof") == 0)
+		{
+			// Set language to none for \noproof
+			// TODO actually implement proofing flag separate to language setting
+			UT_DEBUGMSG(("HIPI: RTF import keyword \\noproof\n"));
+			// mark language for spell checking
+			m_currentRTFState.m_charProps.m_szLang = "-none-";
+			return true;
+		}
 		break;
 	case 'o':
 		if (strcmp((char*)pKeyword,"ol") == 0)
