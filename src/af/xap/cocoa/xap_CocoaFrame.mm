@@ -810,7 +810,7 @@ void XAP_CocoaFrame::_setController (XAP_CocoaFrameController * ctrl)
 	
 	if (pEM)
 	{
-		if ((*pEM->getFn())(m_frame->getCurrentView(),NULL))
+		if (pEM->Fn(m_frame->getCurrentView(),NULL))
 		{
 			// returning YES means close the window
 			

@@ -189,7 +189,7 @@ int XAP_QNXFrame::_fe::window_delete(PtWidget_t *w, void *data, PtCallbackInfo_t
 
 	if (pEM)
 	{
-		if ((*pEM->getFn())(pQNXFrame->getCurrentView(),NULL))
+		if (pEM->Fn(pQNXFrame->getCurrentView(),NULL))
 		{
 			//Destroy this window.
 			PtDestroyWidget(w);

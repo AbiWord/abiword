@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Program Utilities
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -100,6 +102,11 @@ private:
 	UT_String			m_stScriptName;
 };
 
+typedef bool (*EV_EditMethod_pCtxtFn)(AV_View * pView, EV_EditMethodCallData * pCallData,
+									  void * context);
+typedef bool ( EV_EditMethod_CtxtFn) (AV_View * pView, EV_EditMethodCallData * pCallData,
+									  void * context);
+
 typedef bool (*EV_EditMethod_pFn)(AV_View * pView, EV_EditMethodCallData * pCallData);
 typedef bool ( EV_EditMethod_Fn) (AV_View * pView, EV_EditMethodCallData * pCallData);
 
@@ -109,18 +116,24 @@ typedef bool ( EV_EditMethod_Fn) (AV_View * pView, EV_EditMethodCallData * pCall
 class ABI_EXPORT EV_EditMethod
 {
 public:
-	EV_EditMethod(const char * szName, EV_EditMethod_pFn fn, EV_EditMethodType emt, const char * szDescription);
+	EV_EditMethod(const char * szName, EV_EditMethod_pFn fn, EV_EditMethodType emt,
+				  const char * szDescription);
+	EV_EditMethod(const char * szName, EV_EditMethod_pCtxtFn fn, EV_EditMethodType emt,
+				  const char * szDescription, void * context);
 
-	EV_EditMethod_pFn	getFn() const;
-	EV_EditMethodType	getType() const;
-	inline const char *	getName() const;
-	const char *		getDescription() const;
+	bool 					Fn(AV_View * pView, EV_EditMethodCallData * pCallData) const;
+
+	EV_EditMethodType		getType() const;
+	inline const char *		getName() const;
+	const char *			getDescription() const;
 
 protected:
-	const char *		m_szName;				// used for lookup; not malloced; this should not be localized
-	EV_EditMethod_pFn	m_fn;
-	EV_EditMethodType	m_emt;
-	const char *		m_szDescription;		// not malloced; this can be localized
+	const char *			m_szName; // used for lookup; not malloced; should not be localized
+	EV_EditMethod_pFn		m_fn;
+	EV_EditMethod_pCtxtFn	m_CtxtFn;
+	EV_EditMethodType		m_emt;
+	const char *			m_szDescription; // not malloced; this can be localized
+	void *					m_context;
 };
 
 /*****************************************************************/

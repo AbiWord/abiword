@@ -293,7 +293,7 @@ gint XAP_UnixFrame::_fe::delete_event(GtkWidget * w, GdkEvent * /*event*/, gpoin
 
 	if (pEM)
 	{
-		if ((*pEM->getFn())(pUnixFrame->getCurrentView(),NULL))
+		if (pEM->Fn(pUnixFrame->getCurrentView(),NULL))
 		{
 			// returning FALSE means destroy the window, continue along the
 			// chain of Gtk destroy events

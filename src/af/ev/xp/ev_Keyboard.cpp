@@ -71,7 +71,7 @@ bool EV_Keyboard::invokeKeyboardMethod(AV_View * pView,
 	}
 
 	EV_EditMethodCallData emcd(pData,dataLength);
-	(*pEM->getFn())(pView,&emcd);
+	pEM->Fn(pView,&emcd);
 
 	return true;
 }

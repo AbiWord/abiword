@@ -332,7 +332,7 @@ bool be_Window::QuitRequested(void) {
 	UT_ASSERT(pEM);                                         
 
 	if (pEM) {
-		(*pEM->getFn())(pView,NULL);
+		pEM->Fn(pView,NULL);
 	}
 
 	// let the window be destroyed

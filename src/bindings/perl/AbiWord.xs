@@ -271,7 +271,7 @@ print(pView)
 		else
 			pEM = pEMC->findEditMethodByName("printTB");
 
-		(*pEM->getFn())(pView, 0);
+		pEM->Fn(pView, 0);
 
 MODULE = AbiWord		PACKAGE = AbiWord::XAP_Frame
 

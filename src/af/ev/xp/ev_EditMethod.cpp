@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Program Utilities
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -22,6 +24,7 @@
 
 #include "ev_EditMethod.h"
 #include "ut_assert.h"
+#include "ut_debugmsg.h"
 #include "ut_vector.h"
 #include "ut_hash.h"
 #include "ut_string.h"
@@ -104,17 +107,38 @@ EV_EditMethodCallData::~EV_EditMethodCallData()
 /*****************************************************************/
 /*****************************************************************/
 
-EV_EditMethod::EV_EditMethod(const char * szName, EV_EditMethod_pFn fn, EV_EditMethodType emt, const char * szDescription)
+EV_EditMethod::EV_EditMethod(const char * szName, EV_EditMethod_pFn fn, EV_EditMethodType emt,
+							 const char * szDescription)
 	: m_szName(szName),
 	  m_fn(fn),
+	  m_CtxtFn(0),
 	  m_emt(emt),
-	  m_szDescription(szDescription)
+	  m_szDescription(szDescription),
+	  m_context(0)
 {
 }
 
-EV_EditMethod_pFn EV_EditMethod::getFn() const
+EV_EditMethod::EV_EditMethod(const char * szName, EV_EditMethod_pCtxtFn fn, EV_EditMethodType emt,
+							 const char * szDescription, void * context)
+	: m_szName(szName),
+	  m_fn(0),
+	  m_CtxtFn(fn),
+	  m_emt(emt),
+	  m_szDescription(szDescription),
+	  m_context(context)
 {
-	return m_fn;
+}
+
+bool EV_EditMethod::Fn(AV_View * pView, EV_EditMethodCallData * pCallData) const
+{
+	if (m_fn)
+		return (*m_fn) (pView, pCallData);
+	else if (m_CtxtFn)
+		return (*m_CtxtFn) (pView, pCallData, m_context);
+
+	UT_DEBUGMSG(("no function pointer in edit-method!\n"));
+	UT_ASSERT(m_fn || m_CtxtFn);
+	return false;
 }
 
 EV_EditMethodType EV_EditMethod::getType() const
@@ -249,12 +273,6 @@ bool ev_EditMethod_invoke (const EV_EditMethod * pEM,
   if ( !pEM || !pData )
     return false ;
 
-  // no impl function == bad joo joo - return false
-  EV_EditMethod_pFn pFN = pEM->getFn();
-  UT_ASSERT(pFN);
-  if(!pFN)
-    return false ;
-
   // no controlling view == bad joo joo - return false
   // Actually allow this for plugins invoked from the command line
   //
@@ -262,7 +280,7 @@ bool ev_EditMethod_invoke (const EV_EditMethod * pEM,
   XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
   if(!pFrame)
   {
-	  return (*pFN)(pView, pData);
+	  return pEM->Fn(pView, pData);
   }
   pView = pFrame->getCurrentView() ;
   UT_ASSERT(pView);
@@ -270,7 +288,7 @@ bool ev_EditMethod_invoke (const EV_EditMethod * pEM,
     return false;
 
   // return whatever the method says to based on the data at hand
-  return (*pFN)(pView, pData);
+  return pEM->Fn(pView, pData);
 }
 
 bool ev_EditMethod_invoke (const EV_EditMethod * pEM, const UT_String & data)

@@ -755,7 +755,7 @@ LRESULT CALLBACK XAP_Win32Frame::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wPar
 
 		if (pEM)
 		{
-			(*pEM->getFn())(pView,NULL);
+			pEM->Fn(pView,NULL);
 			return 0;
 		}
 

@@ -66,7 +66,7 @@ bool EV_Mouse::invokeMouseMethod(AV_View * pView,
 	EV_EditMethodCallData emcd;
 	emcd.m_xPos = xPos;
 	emcd.m_yPos = yPos;
-	(*pEM->getFn())(pView,&emcd);
+	pEM->Fn(pView,&emcd);
 
 	return true;
 }

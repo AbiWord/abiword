@@ -577,7 +577,7 @@ XS(XS_AbiWord__FV_View_print)
 		else
 			pEM = pEMC->findEditMethodByName("printTB");
 
-		(*pEM->getFn())(pView, 0);
+		pEM->Fn(pView, 0);
 #line 582 "AbiWord.c"
     }
     XSRETURN_EMPTY;

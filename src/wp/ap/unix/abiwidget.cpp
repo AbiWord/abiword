@@ -1791,10 +1791,6 @@ abi_widget_invoke_ex (AbiWidget * w, const char * mthdName,
 	method = container->findEditMethodByName (mthdName);
 	g_return_val_if_fail (method != 0, FALSE);
 
-	// get a pointer to the method's C/C++ function
-	function = method->getFn();
-	g_return_val_if_fail (function != 0, FALSE);
-
 	// get a valid frame
 	g_return_val_if_fail (w->priv->m_pFrame != 0, FALSE);
 
@@ -1808,7 +1804,7 @@ abi_widget_invoke_ex (AbiWidget * w, const char * mthdName,
 	calldata.m_yPos = y;
 
 	// actually invoke
-	return ((*function)(view, &calldata) ? TRUE : FALSE);
+	return (method->Fn(view, &calldata) ? TRUE : FALSE);
 }
 
 extern "C" void

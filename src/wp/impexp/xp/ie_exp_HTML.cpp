@@ -1899,13 +1899,13 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 		}
 
 	if (m_bIsAbiWebDoc)
-		m_pie->write("<?php\r\n  include(\"$DOCUMENT_ROOT/x-header.php\");\r\n ?>\r\n");
+		m_pie->write("<?php\r\n  include($DOCUMENT_ROOT.'/x-header.php');\r\n ?>\r\n");
 
 	m_pie->write("</head>\r\n");
 	m_pie->write("<body>\r\n");
 
 	if (m_bIsAbiWebDoc)
-		m_pie->write("<?php\r\n  include(\"$DOCUMENT_ROOT/x-page-begin.php\");\r\n ?>\r\n");
+		m_pie->write("<?php\r\n  include($DOCUMENT_ROOT.'/x-page-begin.php');\r\n ?>\r\n");
 
 	m_bFirstWrite = false;
 }
@@ -1944,7 +1944,7 @@ s_HTML_Listener::~s_HTML_Listener()
 	UT_VECTOR_FREEALL(char*, m_utvDataIDs);
 
 	if (m_bIsAbiWebDoc)
-		m_pie->write("<?php\r\n  include(\"$DOCUMENT_ROOT/x-page-end.php\");\r\n ?>\r\n");
+		m_pie->write("<?php\r\n  include($DOCUMENT_ROOT.'/x-page-end.php');\r\n ?>\r\n");
 
 	m_pie->write("</body>\r\n");
 	m_pie->write("</html>\r\n");
