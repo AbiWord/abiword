@@ -1191,7 +1191,17 @@ void fl_DocSectionLayout::_lookupProperties(void)
 
 	const char * pszColumnOrder = PP_evalProperty("dom-dir",pSpanAP,pBlockAP,pSectionAP,m_pDoc,false);
     UT_DEBUGMSG(("column order: %s\n", pszColumnOrder));
-	if (pszColumnOrder && pszColumnOrder[0])
+
+	FV_View * pView = m_pLayout->getView();
+
+	if(pView && pView->getBidiOrder() != FV_Order_Visual)
+	{
+		if(pView->getBidiOrder() == FV_Order_Logical_LTR)
+			m_iColumnOrder = 0;
+		else
+			m_iColumnOrder = 0;
+	}
+	else if(pszColumnOrder && pszColumnOrder[0])
 	{
 		m_iColumnOrder = strcmp(pszColumnOrder, "ltr")	? 1 : 0;
 	}

@@ -3304,6 +3304,10 @@ void FV_View::cmdRedo(UT_uint32 count)
 
 UT_Error FV_View::cmdSave(void)
 {
+	// transfer any persistent properties into the doc
+	const XML_Char ** ppProps = getViewPersistentProps();
+	m_pDoc->setProperties(ppProps);
+	
 	UT_Error tmpVar;
 	tmpVar = m_pDoc->save();
 	if (!tmpVar)
@@ -3315,6 +3319,10 @@ UT_Error FV_View::cmdSave(void)
 
 UT_Error FV_View::cmdSaveAs(const char * szFilename, int ieft, bool cpy)
 {
+	// transfer any persistent properties into the doc
+	const XML_Char ** ppProps = getViewPersistentProps();
+	m_pDoc->setProperties(ppProps);
+
 	UT_Error tmpVar;
 	tmpVar = m_pDoc->saveAs(szFilename, ieft, cpy);
 	if (!tmpVar && cpy)

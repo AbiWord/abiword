@@ -209,7 +209,8 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_FrameEdit(this),
 		m_VisualDragText(this),
 		m_Selection(this),
-		m_bShowRevisions(true)
+		m_bShowRevisions(true),
+		m_eBidiOrder(FV_Order_Visual)
 {
 	m_colorRevisions[0] = UT_RGBColor(171,4,254);
 	m_colorRevisions[1] = UT_RGBColor(171,20,119);
@@ -408,6 +409,27 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 			m_caretListener = NULL;
 		}
 	}
+
+	// see what the document value is for bidi ordering ...
+	const PP_AttrProp * pDocAP = m_pDoc->getAttrProp();
+	if(pDocAP)
+	{
+		const XML_Char * szValue;
+		pDocAP->getProperty("dom-dir",szValue);
+
+		if(szValue)
+		{
+			if(0 == UT_strcmp(szValue, "logical-ltr"))
+			{
+				m_eBidiOrder = FV_Order_Logical_LTR;
+			}
+			else if(0 == UT_strcmp(szValue, "logical-rtl"))
+			{
+				m_eBidiOrder = FV_Order_Logical_RTL;
+			}
+		}
+	}
+	
 }
 
 FV_View::~FV_View()
@@ -10039,6 +10061,39 @@ SpellChecker * FV_View::getDictForSelection ()
 
 	return checker;
 }
+
+/*
+   There are some 'document' properties that are specific for a given
+   view, but which should be transferred into the document at point of save.
+   For example, whether the document is displayed in Normal view / Web
+   view, etc, or whether the document should be layout in visual or
+   logical order
+
+   the returned pointer is to a static variable, so use it or loose it
+*/
+const XML_Char ** FV_View::getViewPersistentProps()
+{
+	const UT_uint32 iMax = 3;
+	static const XML_Char * pProps[iMax];
+	UT_uint32 i = 0;
+
+	if(m_eBidiOrder == FV_Order_Logical_LTR)
+	{
+		pProps[i++] = "dom-dir";
+		pProps[i++] = "logical-ltr";
+	}
+	else if(m_eBidiOrder == FV_Order_Logical_RTL)
+	{
+		pProps[i++] = "dom-dir";
+		pProps[i++] = "logical-rtl";
+	}
+	
+	UT_ASSERT( i < iMax );
+    pProps[i] = NULL;
+
+	return pProps;
+}
+
 
 fv_PropCache::fv_PropCache(void):
 	m_iTick(0),

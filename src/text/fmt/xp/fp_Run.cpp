@@ -5227,7 +5227,15 @@ void fp_Run::setDirection(FriBidiCharType iDir)
 // returns the direction with which the run is displayed,
 FriBidiCharType fp_Run::getVisDirection()
 {
-	if(m_iVisDirection == FRIBIDI_TYPE_UNSET)
+ 	FV_View * pView = _getView();
+	if(pView && pView->getBidiOrder() != FV_Order_Visual)
+	{
+		if(pView->getBidiOrder() == FV_Order_Logical_LTR)
+			return FRIBIDI_TYPE_LTR;
+		else
+			return FRIBIDI_TYPE_RTL;
+	}
+	else if(m_iVisDirection == FRIBIDI_TYPE_UNSET)
 	{
 		if(m_pLine)
 		{

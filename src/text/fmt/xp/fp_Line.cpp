@@ -3067,15 +3067,15 @@ UT_sint32 fp_Line::_createMapOfRuns()
 			UT_ASSERT(s_pMapOfRunsL2V && s_pMapOfRunsV2L && s_pPseudoString && s_pEmbeddingLevels);
 		}
 
-		if(!m_iRunsRTLcount)
+		FV_View * pView = getSectionLayout()->getDocLayout()->getView();
+		
+		if((pView && pView->getBidiOrder() == FV_Order_Logical_LTR) || !m_iRunsRTLcount)
 		{
 			xxx_UT_DEBUGMSG(("_createMapOfRuns: ltr line only (line 0x%x)\n", this));
 			for (i = 0; i < count; i++)
 			{
-				//the map is actually never used, we only need to set the
-				//the visual directions for all our runs to 0
-				//s_pMapOfRunsL2V[i] = i;
-				//s_pMapOfRunsV2L[i] = i;
+				s_pMapOfRunsL2V[i] = i;
+				s_pMapOfRunsV2L[i] = i;
 				(static_cast<fp_Run*>(m_vecRuns.getNthItem(i)))->setVisDirection(FRIBIDI_TYPE_LTR);
 			}
 			return UT_OK;
@@ -3084,7 +3084,7 @@ UT_sint32 fp_Line::_createMapOfRuns()
 
 		//if this is unidirectional rtl text, we just fill the map sequentially
 		//from back to start
-		if(!m_iRunsLTRcount)
+		if(pView && pView->getBidiOrder() == FV_Order_Logical_RTL || !m_iRunsLTRcount)
 		{
 			xxx_UT_DEBUGMSG(("_createMapOfRuns: rtl line only (line 0x%x)\n", this));
 			for(i = 0; i < count/2; i++)

@@ -330,130 +330,140 @@ const XML_Char * PP_evalProperty (const XML_Char *  pszName,
 	// TODO: ?? make lookup more efficient by tagging each property with scope (block, char, section)
 
 	if (pSpanAttrProp)
-		{
-			szValue = s_evalProperty (pProp, pSpanAttrProp, pDoc, bExpandStyles);
+	{
+		szValue = s_evalProperty (pProp, pSpanAttrProp, pDoc, bExpandStyles);
 
-			if (szValue)
-				if (UT_strcmp (szValue, "inherit") == 0)
+		if (szValue)
+			if (UT_strcmp (szValue, "inherit") == 0)
+			{
+				szValue = NULL;
+				bInherit = true;
+			}
+		if ((szValue == NULL) && (bInherit || pProp->canInherit ()))
+		{
+			bInherit = false;
+
+			if (pBlockAttrProp)
+			{
+				szValue = s_evalProperty (pProp, pBlockAttrProp, pDoc, bExpandStyles);
+
+				if (szValue)
+					if (UT_strcmp (szValue, "inherit") == 0)
 					{
 						szValue = NULL;
 						bInherit = true;
 					}
-			if ((szValue == NULL) && (bInherit || pProp->canInherit ()))
-				{
-					bInherit = false;
-
-					if (pBlockAttrProp)
-						{
-							szValue = s_evalProperty (pProp, pBlockAttrProp, pDoc, bExpandStyles);
-
-							if (szValue)
-								if (UT_strcmp (szValue, "inherit") == 0)
-									{
-										szValue = NULL;
-										bInherit = true;
-									}
-							if ((szValue == NULL) && (bInherit || pProp->canInherit ()))
-								{
-									bInherit = false;
-
-									if (pSectionAttrProp)
-										{
-											szValue = s_evalProperty (pProp, pSectionAttrProp, pDoc, bExpandStyles);
-
-											if (szValue)
-												if (UT_strcmp (szValue, "inherit") == 0)
-													{
-														szValue = NULL;
-														bInherit = true;
-													}
-											if ((szValue == NULL) && (bInherit || pProp->canInherit ()))
-												{
-													const PP_AttrProp * pDocAP = pDoc->getAttrProp ();
-													if (pDocAP)
-														pDocAP->getProperty (pszName, szValue);
-												}
-										}
-								}
-						}
-				}
-		}
-	else if (pBlockAttrProp)
-		{
-			szValue = s_evalProperty (pProp, pBlockAttrProp, pDoc, bExpandStyles);
-
-			if (szValue)
-				if (UT_strcmp (szValue, "inherit") == 0)
-					{
-						szValue = NULL;
-						bInherit = true;
-					}
-			if ((szValue == NULL) && (bInherit || pProp->canInherit ()))
+				if ((szValue == NULL) && (bInherit || pProp->canInherit ()))
 				{
 					bInherit = false;
 
 					if (pSectionAttrProp)
+					{
+						szValue = s_evalProperty (pProp, pSectionAttrProp, pDoc, bExpandStyles);
+
+						if (szValue)
+							if (UT_strcmp (szValue, "inherit") == 0)
+							{
+								szValue = NULL;
+								bInherit = true;
+							}
+						if ((szValue == NULL) && (bInherit || pProp->canInherit ()))
 						{
-							szValue = s_evalProperty (pProp, pSectionAttrProp, pDoc, bExpandStyles);
-
-							if (szValue)
-								if (UT_strcmp (szValue, "inherit") == 0)
-									{
-										szValue = NULL;
-										bInherit = true;
-									}
-							if ((szValue == NULL) && (bInherit || pProp->canInherit ()))
-								{
-									const PP_AttrProp * pDocAP = pDoc->getAttrProp ();
-									if (pDocAP)
-										pDocAP->getProperty (pszName, szValue);
-								}
+							const PP_AttrProp * pDocAP = pDoc->getAttrProp ();
+							if (pDocAP)
+								pDocAP->getProperty (pszName, szValue);
 						}
+					}
 				}
+			}
 		}
-	else if (pSectionAttrProp)
-		{
-			szValue = s_evalProperty (pProp, pSectionAttrProp, pDoc, bExpandStyles);
+	}
+	else if (pBlockAttrProp)
+	{
+		szValue = s_evalProperty (pProp, pBlockAttrProp, pDoc, bExpandStyles);
 
-			if (szValue)
-				if (UT_strcmp (szValue, "inherit") == 0)
+		if (szValue)
+			if (UT_strcmp (szValue, "inherit") == 0)
+			{
+				szValue = NULL;
+				bInherit = true;
+			}
+		if ((szValue == NULL) && (bInherit || pProp->canInherit ()))
+		{
+			bInherit = false;
+
+			if (pSectionAttrProp)
+			{
+				szValue = s_evalProperty (pProp, pSectionAttrProp, pDoc, bExpandStyles);
+
+				if (szValue)
+					if (UT_strcmp (szValue, "inherit") == 0)
 					{
 						szValue = NULL;
 						bInherit = true;
 					}
-			if ((szValue == NULL) && (bInherit || pProp->canInherit ()))
+				if ((szValue == NULL) && (bInherit || pProp->canInherit ()))
 				{
 					const PP_AttrProp * pDocAP = pDoc->getAttrProp ();
 					if (pDocAP)
 						pDocAP->getProperty (pszName, szValue);
 				}
+			}
 		}
-	else
+	}
+	else if (pSectionAttrProp)
+	{
+		szValue = s_evalProperty (pProp, pSectionAttrProp, pDoc, bExpandStyles);
+
+		if (szValue)
+			if (UT_strcmp (szValue, "inherit") == 0)
+			{
+				szValue = NULL;
+				bInherit = true;
+			}
+		if ((szValue == NULL) && (bInherit || pProp->canInherit ()))
 		{
 			const PP_AttrProp * pDocAP = pDoc->getAttrProp ();
 			if (pDocAP)
 				pDocAP->getProperty (pszName, szValue);
 		}
+	}
+	else
+	{
+		const PP_AttrProp * pDocAP = pDoc->getAttrProp ();
+		if (pDocAP)
+		{
+			pDocAP->getProperty (pszName, szValue);
+
+			// dom-dir requires special treatment at document level
+			if(szValue && UT_strcmp(pszName, "dom-dir") == 0)
+			{
+				if(   UT_strcmp(szValue, "logical-ltr") == 0
+				   || UT_strcmp(szValue, "logical-rtl") == 0)
+					szValue += 8;
+			}
+		}
+	}
 	if (szValue)
 		if (UT_strcmp (szValue, "inherit") == 0) // shouldn't happen, but doesn't hurt to check
 			szValue = NULL;
 
 	if (szValue == NULL)
 		if (bExpandStyles)
+		{
+			PD_Style * pStyle = 0;
+
+			if (pDoc->getStyle ("Normal", &pStyle))
 			{
-				PD_Style * pStyle = 0;
+				/* next to last resort -- check for this property in the Normal style
+				 */
+				pStyle->getProperty (pszName, szValue);
 
-				if (pDoc->getStyle ("Normal", &pStyle))
-					{
-						/* next to last resort -- check for this property in the Normal style
-						 */
-						pStyle->getProperty (pszName, szValue);
-
-						if (szValue)
-							if (UT_strcmp (szValue, "inherit") == 0)
-								szValue = NULL;
-					}
+				if (szValue)
+					if (UT_strcmp (szValue, "inherit") == 0)
+						szValue = NULL;
 			}
+		}
 	if (szValue == NULL)
 		szValue = pProp->getInitial (); // which may itself be NULL, but that is a bad thing - FIXME!!
 

@@ -412,8 +412,17 @@ void fl_BlockLayout::_lookupProperties(void)
 	}
 		
 	FriBidiCharType iOldDirection = m_iDomDirection;
-		
-	if(!strcmp(pszDir,"rtl"))
+
+ 	FV_View * pView = getView();
+
+	if(pView && pView->getBidiOrder() != FV_Order_Visual)
+	{
+		if(pView->getBidiOrder() == FV_Order_Logical_LTR)
+			m_iDomDirection = FRIBIDI_TYPE_LTR;
+		else
+			m_iDomDirection = FRIBIDI_TYPE_RTL;
+	}
+	else if(!strcmp(pszDir,"rtl"))
 	{
 		m_iDomDirection = FRIBIDI_TYPE_RTL;
 	}

@@ -20,6 +20,8 @@
 #ifndef FV_VIEW_H
 #define FV_VIEW_H
 
+#include <fribidi.h>
+
 #include "xap_Features.h"
 
 //#include "ut_misc.h"
@@ -123,6 +125,13 @@ private:
 	UT_uint32         m_iTick;
 	UT_uint32         m_iNumProps;
 	XML_Char **       m_pszProps;
+};
+
+enum FV_BIDI_Order
+{
+	FV_Order_Visual = 0,
+	FV_Order_Logical_LTR = FRIBIDI_TYPE_LTR,
+	FV_Order_Logical_RTL = FRIBIDI_TYPE_RTL
 };
 
 								
@@ -612,6 +621,10 @@ public:
 		                { return m_pLeftRuler;}
 	
 
+	const XML_Char **   getViewPersistentProps();
+	FV_BIDI_Order	    getBidiOrder()const {return m_eBidiOrder;}
+	void                setBidiOrder(FV_BIDI_Order o) {m_eBidiOrder = o;}
+	
 protected:
 	void				_saveAndNotifyPieceTableChange(void);
 	void				_restorePieceTableState(void);
@@ -820,6 +833,8 @@ private:
 	FV_VisualDragText   m_VisualDragText;
 	FV_Selection        m_Selection;
 	bool                m_bShowRevisions;
+
+	FV_BIDI_Order       m_eBidiOrder;
 };
 
 #endif /* FV_VIEW_H */
