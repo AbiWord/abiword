@@ -80,9 +80,11 @@ public:
 
 	UT_Bool					insertSpan(PT_DocPosition dpos,
 									   const UT_UCSChar * p,
-									   UT_uint32 length);
+									   UT_uint32 length,
+									   PP_AttrProp *p_AttrProp = NULL);
 	UT_Bool					deleteSpan(PT_DocPosition dpos1,
-									   PT_DocPosition dpos2);
+									   PT_DocPosition dpos2,
+									   PP_AttrProp *p_AttrProp_Before = NULL);
 
 	UT_Bool					changeSpanFmt(PTChangeFmt ptc,
 										  PT_DocPosition dpos1,

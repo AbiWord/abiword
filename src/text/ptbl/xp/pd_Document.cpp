@@ -254,16 +254,23 @@ UT_Bool	PD_Document::insertObject(PT_DocPosition dpos,
 
 UT_Bool PD_Document::insertSpan(PT_DocPosition dpos,
 								  const UT_UCSChar * p,
-								  UT_uint32 length)
+								  UT_uint32 length,
+								  PP_AttrProp *p_AttrProp)
 {
+	if(p_AttrProp)
+	{
+		m_pPieceTable->insertFmtMark(PTC_AddFmt, dpos, p_AttrProp);
+	}
+
 	return m_pPieceTable->insertSpan(dpos,p,length);
 }
 
 UT_Bool PD_Document::deleteSpan(PT_DocPosition dpos1,
-								PT_DocPosition dpos2)
+								PT_DocPosition dpos2,
+								PP_AttrProp *p_AttrProp_Before)
 {
-	return m_pPieceTable->deleteSpan(dpos1,dpos2);
-}
+	return m_pPieceTable->deleteSpan(dpos1, dpos2, p_AttrProp_Before);
+}												 
 
 UT_Bool PD_Document::changeSpanFmt(PTChangeFmt ptc,
 								   PT_DocPosition dpos1,

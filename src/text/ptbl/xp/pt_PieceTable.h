@@ -77,7 +77,8 @@ public:
 									   UT_uint32 length);
 
 	UT_Bool					deleteSpan(PT_DocPosition dpos1,
-									   PT_DocPosition dpos2);
+									   PT_DocPosition dpos2,
+									   PP_AttrProp *p_AttrProp_Before);
 
 	UT_Bool					changeSpanFmt(PTChangeFmt ptc,
 										  PT_DocPosition dpos1,
@@ -95,6 +96,14 @@ public:
 										   const XML_Char ** properties,
 										   PTStruxType pts);
 
+	UT_Bool					insertFmtMark(PTChangeFmt ptc,
+														 PT_DocPosition dpos,
+														 PP_AttrProp *p_AttrProp)
+								{
+								return _insertFmtMarkFragWithNotify(ptc,
+														 dpos,
+														 p_AttrProp);
+								}
 	// the append- methods are only available while importing
 	// the document.
 
@@ -283,6 +292,9 @@ protected:
 														 PT_DocPosition dpos,
 														 const XML_Char ** attributes,
 														 const XML_Char ** properties);
+	UT_Bool					_insertFmtMarkFragWithNotify(PTChangeFmt ptc,
+														 PT_DocPosition dpos,
+														 PP_AttrProp *p_AttrProp);
 	UT_Bool					_insertFmtMark(pf_Frag * pf, UT_uint32 fragOffset, PT_AttrPropIndex api);
 	UT_Bool					_insertFmtMarkAfterBlockWithNotify(pf_Frag_Strux * pfsBlock,
 															   PT_DocPosition dpos,

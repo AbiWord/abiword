@@ -67,6 +67,7 @@
 #include "ie_impGraphic.h"
 #include "ie_exp.h"
 #include "ie_types.h"
+#include "ap_EditMethods.h"
 
 /*****************************************************************/
 /*****************************************************************/
@@ -1208,7 +1209,7 @@ static XAP_Dialog_MessageBox::tAnswer s_CouldNotLoadFileMessage(XAP_Frame * pFra
 	return (ans);
 }
 
-static UT_Error _fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
+UT_Error fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 {
 	UT_DEBUGMSG(("fileOpen: loading [%s]\n",pNewFile));
 	XAP_App * pApp = pFrame->getApp();
@@ -1344,7 +1345,7 @@ Defun1(fileOpen)
 	
 	// we own storage for pNewFile and must free it.
 
-	UT_Error error = _fileOpen(pFrame, pNewFile, ieft);
+	UT_Error error = ::fileOpen(pFrame, pNewFile, ieft);
 
 	free(pNewFile);
 	return E2B(error);
@@ -1466,7 +1467,7 @@ static UT_Bool _openRecent(AV_View* pAV_View, UT_uint32 ndx)
 	// BROKEN: since the user can explictly export as any type.
 	// TODO HACK BROKEN BUSTED BLAH WARNING NOTE ERROR
 	
-	UT_Error error = _fileOpen(pFrame, szRecent, IEFT_Unknown);
+	UT_Error error = fileOpen(pFrame, szRecent, IEFT_Unknown);
 
 	if (error)
 		pPrefs->removeRecent(ndx);

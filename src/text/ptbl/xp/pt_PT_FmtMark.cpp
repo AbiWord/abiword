@@ -285,3 +285,51 @@ UT_Bool pt_PieceTable::_fmtChangeFmtMark(pf_Frag_FmtMark * pffm,
 	return UT_TRUE;
 }
 
+UT_Bool pt_PieceTable::_insertFmtMarkFragWithNotify(PTChangeFmt ptc,
+													PT_DocPosition dpos,
+													PP_AttrProp *p_AttrProp)
+{
+	UT_ASSERT(p_AttrProp);
+
+	const XML_Char * properties[] =	{ NULL, NULL, 0};
+
+	int Index = 0;
+	
+	do
+	{
+		if(p_AttrProp->getNthProperty(Index, properties[0], properties[1]))
+		{
+			_insertFmtMarkFragWithNotify(ptc, dpos, NULL,
+												properties);
+		}
+		else
+		{
+			break;
+		}
+
+		Index++;
+	}
+	while(UT_TRUE);
+
+	const XML_Char * Attributes[] =	{ NULL, NULL, 0};
+
+	Index = 0;
+	
+	do
+	{
+		if(p_AttrProp->getNthAttribute(Index, Attributes[0], Attributes[1]))
+		{
+			_insertFmtMarkFragWithNotify(ptc, dpos, Attributes,
+												NULL);
+		}
+		else
+		{
+			break;
+		}
+
+		Index++;
+	}
+	while(UT_TRUE);
+
+	return UT_TRUE;
+}

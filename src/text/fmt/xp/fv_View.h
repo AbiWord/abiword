@@ -46,7 +46,7 @@ class AP_LeftRulerInfo;
 class XAP_App;
 class XAP_Prefs;
 class UT_AlphaHashTable;
-
+class PP_AttrProp;
 
 typedef enum _FVDocPos
 {
@@ -271,7 +271,7 @@ protected:
 	void				_clearSelection(void);
 	void				_resetSelection(void);
 	void				_setSelectionAnchor(void);
-	void				_deleteSelection(void);
+	void				_deleteSelection(PP_AttrProp *p_AttrProp_Before = NULL);
 	UT_Bool				_insertFormatPair(const XML_Char * szName, const XML_Char * properties[]);
 	void 				_eraseInsertionPoint();
 	void				_drawInsertionPoint();

@@ -31,6 +31,8 @@
 #include "xap_Win32App.h"
 #include "xap_Win32Slurp.h"
 #include "xap_Prefs.h"
+#include "ie_types.h"
+#include "ap_EditMethods.h"
 
 //////////////////////////////////////////////////////////////////
 // "Slurp" (aka "Leech") refers to the ability of an application
@@ -90,7 +92,7 @@ HDDEDATA CALLBACK XAP_Win32Slurp::doCallback(UINT uType, UINT uFmt, HCONV hConv,
 											 HSZ hsz1, HSZ hsz2, HDDEDATA hData,
 											 DWORD dwData1, DWORD dwData2)
 {
-#ifdef DEBUG
+#ifdef UT_DEBUG
 	UINT xtypf	= (uType & 0x000f);
 	UINT xtyp	= (uType & XTYP_MASK);
 	UINT xclass	= (uType & XCLASS_MASK);
@@ -181,6 +183,7 @@ UT_Bool XAP_Win32Slurp::disconnectSlurper(void)
 	return UT_TRUE;
 }
 
+
 void XAP_Win32Slurp::processCommand(HDDEDATA hData)
 {
 	DWORD bufSize = DdeGetData(hData,NULL,0,0);
@@ -213,23 +216,13 @@ void XAP_Win32Slurp::processCommand(HDDEDATA hData)
 			}
 
 			// ask the application to load this document into a window....
-			// TODO we need to call the "fileOpen" edit method so that
-			// TODO we get behavior consistent with the menu command
-			// TODO (MRU list updated, the standard error message, and
-			// TODO the revert buffer message).
+
+			XAP_App *p_app = XAP_App::getApp();
+			UT_Error error = fileOpen(p_app->getLastFocussedFrame(), pathname, IEFT_Unknown);
 			
-			XAP_Frame * pNewFrame = m_pApp->newFrame();
-			UT_ASSERT(pNewFrame);
-			// TODO red alert, the hard-coded 0 below should be IEFT_Unknown
-			if (pNewFrame->loadDocument(pathname, 0))
-			{
-				pNewFrame->show();
-				m_pApp->getPrefs()->addRecent(pathname);
-			}
-			else
+			if(error != UT_OK)
 			{
 				UT_DEBUGMSG(("Could not load document given in DDE Open command [%s].\n",pathname));
-				delete pNewFrame;
 			}
 
 			goto Finished;
@@ -304,9 +297,9 @@ void XAP_Win32Slurp::stuffRegistry(const char * szSuffix,
 	// HKEY_CLASSES_ROOT\<foo>\shell\open\ddeexec\topic = System
 	// HKEY_CLASSES_ROOT\<foo>\DefaultIcon = <exe_pathname,1>
 
-#define VALUE_DDEEXEC_OPEN		"[Open(%1)]"
-#define FORMAT_OUR_INDIRECTION	"AbiSuite.%s"
-#define CONTENT_TYPE_KEY		"Content Type"
+#define VALUE_DDEEXEC_OPEN			"[Open(%1)]"
+#define FORMAT_OUR_INDIRECTION		"AbiSuite.%s"
+#define CONTENT_TYPE_KEY			"Content Type"
 #define DOCUMENT_ICON_POSITION	3
 #define xx(s)					((LPBYTE)(s)),(strlen(s)+1)
 	
@@ -478,8 +471,19 @@ void XAP_Win32Slurp::stuffRegistry(const char * szSuffix,
 			if (UT_stricmp(buf,szExePathname) == 0)
 				break;					// already has correct value, no need to overwrite.
 			
-			if (!_askForUpdateExePathname())
-				goto CleanupMess;
+			if(memcmp(buf, szExePathname, strlen(szExePathname)) == 0)
+			{
+				// Path name is the same but has extra at the end.
+				// Probably "%1"
+
+				// Fall throught to update path name.
+			}
+			else
+			{
+				
+				if (!_askForUpdateExePathname())
+					goto CleanupMess;
+			}
 		}
 
 		/* otherwise, replace the value */

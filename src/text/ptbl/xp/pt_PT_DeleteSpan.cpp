@@ -517,7 +517,8 @@ UT_Bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 }
 
 UT_Bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
-								  PT_DocPosition dpos2)
+								  PT_DocPosition dpos2,
+								  PP_AttrProp *p_AttrProp_Before)
 {
 	// remove (dpos2-dpos1) characters from the document at the given position.
 
@@ -541,6 +542,7 @@ UT_Bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 	// Get the attribute properties before the delete.
 
 	PP_AttrProp AttrProp_Before;
+
 	{
 		pf_Frag * pf1;
 		PT_BlockOffset Offset1;
@@ -551,6 +553,8 @@ UT_Bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 			getAttrProp(((pf_Frag_Text *)pf1)->getIndexAP(), &p_AttrProp);
 
 			AttrProp_Before = *p_AttrProp;
+			if(p_AttrProp_Before)
+				*p_AttrProp_Before = *p_AttrProp;
 		}
 	}
 
@@ -612,45 +616,7 @@ UT_Bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 
 		// All text in paragraph is deleted so insert a text format.
 
-		const XML_Char * properties[] =	{ NULL, NULL, 0};
-
-		int Index = 0;
-		
-		do
-		{
-			if(AttrProp_Before.getNthProperty(Index, properties[0], properties[1]))
-			{
-				_insertFmtMarkFragWithNotify(PTC_AddFmt, dpos1, NULL,
-													properties);
-			}
-			else
-			{
-				break;
-			}
-
-			Index++;
-		}
-		while(UT_TRUE);
-
-		const XML_Char * Attributes[] =	{ NULL, NULL, 0};
-
-		Index = 0;
-		
-		do
-		{
-			if(AttrProp_Before.getNthAttribute(Index, Attributes[0], Attributes[1]))
-			{
-				_insertFmtMarkFragWithNotify(PTC_AddFmt, dpos1, Attributes,
-													NULL);
-			}
-			else
-			{
-				break;
-			}
-
-			Index++;
-		}
-		while(UT_TRUE);
+		_insertFmtMarkFragWithNotify(PTC_AddFmt, dpos1, &AttrProp_Before);
 
 	}
 

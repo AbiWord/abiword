@@ -585,7 +585,7 @@ void FV_View::_setSelectionAnchor(void)
 	m_iSelectionAnchor = getPoint();
 }
 
-void FV_View::_deleteSelection(void)
+void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before)
 {
 	// delete the current selection.
 	// NOTE: this must clear the selection.
@@ -603,11 +603,11 @@ void FV_View::_deleteSelection(void)
 	UT_Bool bForward = (iPoint < iSelAnchor);
 	if (bForward)
 	{
-		m_pDoc->deleteSpan(iPoint, iSelAnchor);
+		m_pDoc->deleteSpan(iPoint, iSelAnchor, p_AttrProp_Before);
 	}
 	else
 	{
-		m_pDoc->deleteSpan(iSelAnchor, iPoint);
+		m_pDoc->deleteSpan(iSelAnchor, iPoint, p_AttrProp_Before);
 	}
 }
 
@@ -1054,8 +1054,9 @@ UT_Bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count, UT_Bool bForc
 	if (!isSelectionEmpty())
 	{
 		m_pDoc->beginUserAtomicGlob();
-		_deleteSelection();
-		bResult = m_pDoc->insertSpan(getPoint(), text, count);
+		PP_AttrProp AttrProp_Before;
+		_deleteSelection(&AttrProp_Before);
+		bResult = m_pDoc->insertSpan(getPoint(), text, count, &AttrProp_Before);
 		m_pDoc->endUserAtomicGlob();
 	} 
 	else 
@@ -3041,9 +3042,11 @@ UT_Bool	FV_View::_findReplace(const UT_UCSChar * find, const UT_UCSChar * replac
 	{
 		UT_Bool result = UT_TRUE;
 
+		PP_AttrProp AttrProp_Before;
+
 		if (!isSelectionEmpty())
 		{
-			_deleteSelection();
+			_deleteSelection(&AttrProp_Before);
 		}
 		else
 		{
@@ -3053,7 +3056,10 @@ UT_Bool	FV_View::_findReplace(const UT_UCSChar * find, const UT_UCSChar * replac
 		// if we have a string with length, do an insert, else let it hang
 		// from the delete above
 		if (*replace)
-			result = m_pDoc->insertSpan(getPoint(), replace, UT_UCS_strlen(replace));
+			result = m_pDoc->insertSpan(getPoint(), 
+											replace, 
+											UT_UCS_strlen(replace), 
+											&AttrProp_Before);
 
 		_generalUpdate();
 
