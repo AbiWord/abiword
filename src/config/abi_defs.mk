@@ -37,11 +37,17 @@
 ##################################################################
 
 
-OS_NAME		:= $(shell uname -s)
-OS_RELEASE	:= $(shell uname -r)
-OS_ARCH		:= $(shell uname -m)
+# OS_NAME is the output of uname -s minus any forward slashes
+# (so we don't imply another level of depth).  This is to solve
+# a problem with BSD/OS.  In fact, it might be good to do this
+# to all uname results, so that one doesn't see "sun4/m" as an
+# architecture.
+OS_NAME		:= $(shell uname -s | sed "s/\//-/")
+OS_RELEASE	:= $(shell uname -r | sed "s/\//-/")
+OS_ARCH		:= $(shell uname -m | sed "s/\//-/")
 
-DISTBASE = $(ABI_DEPTH)/../dist
+# Where to stuff all the bins
+DISTBASE 	= $(ABI_DEPTH)/../dist
 
 LINK_DLL	= $(LINK) $(OS_DLLFLAGS) $(DLLFLAGS)
 
@@ -49,78 +55,27 @@ CFLAGS		= $(OPTIMIZER) $(OS_CFLAGS) $(DEFINES) $(INCLUDES) $(XCFLAGS)
 
 INSTALL	= install
 
+# Include the proper platform defs.  Add another if clause for
+# any new platforms you port to.
+
+# CYGWIN32 is WINNT; WINNT is CYGWIN32, etc.
 ifeq ($(OS_NAME), CYGWIN32_NT)
 OS_NAME = WINNT
 endif
 
 ifeq ($(OS_NAME), WINNT)
-
-CC = cl
-CCC = cl
-LINK = link
-AR = lib -NOLOGO -OUT:"$@"
-RANLIB = echo
-BSDECHO = echo
-RC = rc.exe
-
-GARBAGE = $(OBJDIR)/vc20.pdb $(OBJDIR)/vc40.pdb
-
-OBJ_SUFFIX = obj
-LIB_SUFFIX = lib
-DLL_SUFFIX = dll
-
-# do we really need -GT?
-OS_CFLAGS = -W3 -nologo -GF -Gy -MDd -GT
-
-OPTIMIZER = -Od -Z7
-DEFINES = -DDEBUG -D_DEBUG -UNDEBUG -D_CRTDBG_MAP_ALLOC -DWIN32 -DWINNT -D_X86_
-# note that we only build debug.  TODO
-DBG_OR_NOT = DBG
-
-DLLFLAGS = -DEBUG -DEBUGTYPE:CV -OUT:"$@"
-LDFLAGS = -DEBUG -DEBUGTYPE:CV
-OS_DLLFLAGS = -nologo -DLL -SUBSYSTEM:WINDOWS -PDB:NONE
-
-ABI_NATIVE=	win
-ABI_FE=	Win32
+include $(ABI_DEPTH)/config/platforms/winnt.defs
 endif
-# end of WinNT section
-#######################
 
 ifeq ($(OS_NAME), Linux)
-
-OBJ_SUFFIX	= o
-LIB_SUFFIX	= a
-DLL_SUFFIX	= so
-AR		= ar cr $@
-
-OPTIMIZER	= -g
-DEFINES		= -DDEBUG -UNDEBUG
-# note that we only build debug.  TODO
-DBG_OR_NOT = DBG
-
-CC			= gcc
-CCC			= g++
-RANLIB			= ranlib
-
-OS_INCLUDES		=
-G++INCLUDES		= -I/usr/include/g++
-
-PLATFORM_FLAGS		= -ansi -Wall -pipe -DLINUX -Dlinux
-PORT_FLAGS		= -D_POSIX_SOURCE -D_BSD_SOURCE -DHAVE_STRERROR
-
-OS_CFLAGS		= $(DSO_CFLAGS) $(PLATFORM_FLAGS) $(PORT_FLAGS)
-
-PLATFORM_FLAGS		+= -mno-486 -Di386
-PORT_FLAGS		+= -D_XOPEN_SOURCE
-
-MKSHLIB			= $(LD) $(DSO_LDOPTS) -soname $(@:$(OBJDIR)/%.so=%.so)
-ABI_NATIVE=	unix
-ABI_FE=	Unix
-
+include $(ABI_DEPTH)/config/platforms/linux.defs
 endif
-# end of Linux section
-#######################
+
+# TODO: how do we differentiate between old SunOS and new Solaris
+ifeq ($(OS_NAME), SunOS)
+include $(ABI_DEPTH)/config/platforms/sunos.defs
+endif
+# End of platform defs
 
 define MAKE_OBJDIR
 if test ! -d $(@D); then rm -rf $(@D); $(INSTALL) -d $(@D); fi

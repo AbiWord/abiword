@@ -79,12 +79,17 @@ ALL_TRASH		= $(TARGETS) $(OBJS) $(OBJDIR) LOGS TAGS $(GARBAGE) \
 			  $(NOSUCHFILE) \
 			  so_locations
 
+# we used to echo this for each directory we did ("cd unix; make libs", for
+# example.  Why not just tell them the make command we're really doing?
+#
+#			echo "cd $$d; $(MAKE) $@";		\
+
 ifdef DIRS
 LOOP_OVER_DIRS		=					\
 	@for d in $(DIRS); do					\
 		if test -d $$d; then				\
 			set -e;					\
-			echo "cd $$d; $(MAKE) $@";		\
+			echo "$(MAKE) -C $$d $@";		\
 			$(MAKE) -C $$d $@;			\
 			set +e;					\
 		else						\
