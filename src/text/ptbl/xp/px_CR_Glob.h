@@ -60,6 +60,10 @@ public:
 	UT_Byte					getFlags(void) const;
 	UT_Byte					getRevFlags(void) const;
 	
+#ifdef PT_TEST
+	virtual void			__dump(FILE * fp) const;
+#endif
+
 protected:
 	UT_Byte					m_flags;			/* see PXFlags above */
 };

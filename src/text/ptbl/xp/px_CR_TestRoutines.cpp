@@ -25,10 +25,46 @@
 #include "ut_debugmsg.h"
 #include "pt_Types.h"
 #include "px_ChangeRecord.h"
+#include "px_CR_SpanChange.h"
+#include "px_CR_Span.h"
+#include "px_CR_Glob.h"
 
 /*****************************************************************/
 /*****************************************************************/
 
+static const char * s_CRNames[] = {
+	"GlobGlob",
+	"InstSpan",
+	"DeleSpan",
+	"ChngSpan",
+	"InstStrx",
+	"DeleStrx",
+	"ChngStrx",
+	"InstObjt",
+	"DeleObjt",
+	"ChngObjt",
+	"InstFMrk",
+	"DeleFMrk",
+	"ChngFMrk",
+	"ChngPnt ",
+	"UpdList ",
+	"StopList",
+	"DChngIP ",
+	"AChngIP ",
+	"UpdField",
+	"RemList "
+};
+
+void
+PX_ChangeRecord::__dump_type(FILE* fp) const
+{
+	UT_ASSERT(NrElements(s_CRNames)==(PXT__LAST__-PXT__FIRST__));
+	const char * szName = 
+		(((m_type >= PXT__FIRST__) && (m_type <= PXT__LAST__)) 
+		 ? s_CRNames[m_type+1] : "????????");
+	
+	fprintf(fp, "  T[%s] api[%08lx] ", szName, (long)m_indexAP);
+}
 
 /*!
   Dump information about this change record
@@ -42,55 +78,94 @@
 void
 PX_ChangeRecord::__dump(FILE* fp) const
 {
-	static const char * name = "????????";
-	
-	switch (m_type)
+	__dump_type(fp);
+	fprintf(fp, "\n");
+}
+
+#if 0
+void
+PX_ChangeRecord::__dump_buf(FILE* fp) const
+{
+	__dump_type(fp);
+	fprintf(fp, "b[%08lx,%ld@%08lx]\n", 
+			(long)m_bufIndex, (long)m_length, (long)m_blockOffset);
+
+	const UT_UCSChar * ptr = m_pPieceTable->getPointer(m_bufIndex);
+	char c;
+	UT_uint32 k;
+
+	fprintf(fp,"\t[");
+	for (k=0; k<m_length; k++)
 	{
-	case PX_ChangeRecord::PXT_GlobMarker:		
-		name = "GlobGlob";
-		break;
-	case PX_ChangeRecord::PXT_InsertSpan:
-		name = "InstSpan";
-		break;
-	case PX_ChangeRecord::PXT_DeleteSpan:
-		name = "DeleSpan";
-		break;
-	case PX_ChangeRecord::PXT_ChangeSpan:
-		name = "ChngSpan";
-		break;
-	case PX_ChangeRecord::PXT_InsertStrux:
-		name = "InstStrx";
-		break;
-	case PX_ChangeRecord::PXT_DeleteStrux:
-		name = "DeleStrx";
-		break;
-	case PX_ChangeRecord::PXT_ChangeStrux:
-		name = "ChngStrx";
-		break;
-	case PX_ChangeRecord::PXT_InsertObject:
-		name = "InstObjt";
-		break;
-	case PX_ChangeRecord::PXT_DeleteObject:
-		name = "DeleObjt";
-		break;
-	case PX_ChangeRecord::PXT_ChangeObject:
-		name = "ChngObjt";
-		break;
-	case PX_ChangeRecord::PXT_InsertFmtMark:
-		name = "InstFMrk";
-		break;
-	case PX_ChangeRecord::PXT_DeleteFmtMark:
-		name = "DeleFMrk";
-		break;
-	case PX_ChangeRecord::PXT_ChangeFmtMark:
-		name = "ChngFMrk";
-		break;
-	case PX_ChangeRecord::PXT_ChangePoint:
-	  default:
-	    break;
+		// note: this is a cheap unicode to ascii conversion for
+		// note: debugging purposes only.
+		c = (  ((ptr[k] < 20) || (ptr[k] > 0x7f))
+			   ? '@'
+			   : (char)ptr[k]);
+		fprintf(fp,"%c",c);
 	}
-	
-	fprintf(fp, "CRec: T[%s] [ap %d]\n", name, m_indexAP);
+	fprintf(fp,"]\n");
+}
+#endif
+
+void
+PX_ChangeRecord_SpanChange::__dump(FILE* fp) const
+{
+	__dump_type(fp);
+
+	fprintf(fp, "b[%08lx,%ld@%08lx]\n",
+			(long) m_bufIndex, (long)m_length, (long)m_blockOffset);
+}
+
+void
+PX_ChangeRecord_Span::__dump(FILE* fp) const
+{
+	__dump_type(fp);
+
+	fprintf(fp, "b[%08lx,%ld@%08lx]\n",
+			(long) m_bufIndex, (long)m_length, (long)m_blockOffset);
+
+#if 0
+	const UT_UCSChar * ptr = m_pPieceTable->getPointer(m_bufIndex);
+	char c;
+	UT_uint32 k;
+
+	fprintf(fp,"\t[");
+	for (k=0; k<m_length; k++)
+	{
+		// note: this is a cheap unicode to ascii conversion for
+		// note: debugging purposes only.
+		c = (  ((ptr[k] < 20) || (ptr[k] > 0x7f))
+			   ? '@'
+			   : (char)ptr[k]);
+		fprintf(fp,"%c",c);
+	}
+	fprintf(fp,"]\n");
+#endif
+}
+
+void
+PX_ChangeRecord_Glob::__dump(FILE* fp) const
+{
+	__dump_type(fp);
+
+	const char* szFlag;
+	switch (m_flags) 
+	{
+	case PXF_MultiStepStart:
+		szFlag = "MSS";	break;
+	case PXF_MultiStepEnd:
+		szFlag = "MSE";	break;
+	case PXF_UserAtomicStart:
+		szFlag = "UAS";	break;
+	case PXF_UserAtomicEnd:
+		szFlag = "UAE";	break;
+	default:
+		szFlag = "???"; break;
+	}
+
+	fprintf(fp, "F[%s]\n", szFlag);
+
 }
 
 #endif /* PT_TEST */

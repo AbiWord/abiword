@@ -28,17 +28,20 @@
 class PX_ChangeRecord
 {
 public:
-	typedef enum _PXType { PXT_GlobMarker=-1,
-						   PXT_InsertSpan=0, PXT_DeleteSpan=1,
-						   PXT_ChangeSpan=2, PXT_InsertStrux=3,
-						   PXT_DeleteStrux=4, PXT_ChangeStrux=5,
-						   PXT_InsertObject=6, PXT_DeleteObject=7,
-						   PXT_ChangeObject=8, PXT_InsertFmtMark=9,
-						   PXT_DeleteFmtMark=10, PXT_ChangeFmtMark=11,
-						   PXT_ChangePoint=12, PXT_ListUpdate=13, 
-						   PXT_StopList=14, PXT_DontChangeInsPoint=15,
-						   PXT_AllowChangeInsPoint=16, PXT_UpdateField=17,
-						   PXT_RemoveList=18
+	typedef enum _PXType { 
+		PXT__FIRST__=-1,
+		PXT_GlobMarker=-1,
+		PXT_InsertSpan=0, PXT_DeleteSpan=1,
+		PXT_ChangeSpan=2, PXT_InsertStrux=3,
+		PXT_DeleteStrux=4, PXT_ChangeStrux=5,
+		PXT_InsertObject=6, PXT_DeleteObject=7,
+		PXT_ChangeObject=8, PXT_InsertFmtMark=9,
+		PXT_DeleteFmtMark=10, PXT_ChangeFmtMark=11,
+		PXT_ChangePoint=12, PXT_ListUpdate=13, 
+		PXT_StopList=14, PXT_DontChangeInsPoint=15,
+		PXT_AllowChangeInsPoint=16, PXT_UpdateField=17,
+		PXT_RemoveList=18,
+		PXT__LAST__ = 19
 	} PXType;
 
 	PX_ChangeRecord(PXType type,
@@ -64,6 +67,7 @@ public:
 
 #ifdef PT_TEST
 	virtual void			__dump(FILE * fp) const;
+	void					__dump_type(FILE * fp) const;
 #endif
 	
 protected:

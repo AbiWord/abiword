@@ -44,9 +44,9 @@ px_ChangeHistory::__dump(FILE * fp) const
 {
 	// dump the change record history
 	
-	fprintf(fp,"  ChangeHistory: undo pos %d\n",(int)m_undoPosition);
-	fprintf(fp,"  ChangeHistory: save pos %d\n",(int)m_savePosition);
-	fprintf(fp,"  ChangeHistory: Change records:\n");
+	fprintf(fp," ChangeHistory: undo pos %d\n",(int)m_undoPosition);
+	fprintf(fp," ChangeHistory: save pos %d\n",(int)m_savePosition);
+	fprintf(fp," ChangeHistory: Change records:\n");
 
 	UT_uint32 kLimit = m_vecChangeRecords.getItemCount();
 	UT_uint32 k;

@@ -61,6 +61,10 @@ public:
 	PT_AttrPropIndex		getOldIndexAP(void) const;
 	PT_BlockOffset			getBlockOffset(void) const;
 	
+#ifdef PT_TEST
+	virtual void			__dump(FILE * fp) const;
+#endif
+
 protected:
 	PT_BufIndex				m_bufIndex;	/* bufIndex to our text */
 	UT_uint32				m_length;	/* length of our text */
