@@ -381,51 +381,60 @@ bool XAP_Win32FrameImpl::_openURL(const char * szURL)
 	// NOTE: could get finer control over browser window via DDE 
 	// NOTE: may need to fallback to WinExec for old NSCP versions
 
-	int res = (int) ShellExecute(m_hwndFrame /*(HWND) top level window */, "open", szURL, NULL, NULL, SW_SHOWNORMAL);
+	UT_String sURL = szURL;
 
-	// TODO: more specific (and localized) error messages ??
+	// strip "file://" from URL, win32 doesn't handle them well
+	if ( "file://" == sURL.substr(0, 7) )
+	{
+		sURL = sURL.substr(7, sURL.size() - 7);
+	}
+
+	int res = (int) ShellExecute(m_hwndFrame /*(HWND) top level window */, "open", sURL.c_str(), NULL, NULL, SW_SHOWNORMAL);
+
+	// TODO: localized error messages
 	// added more specific error messages as documented in http://msdn.microsoft.com/library/default.asp?url=/library/en-us/debug/base/system_error_codes.asp
 
 	if (res <= 32)	// show error message if failed to launch browser to display URL
 	{
+		UT_String errMsg;
 		switch (res)
 		{
 			case 2:
 				{
-					UT_String errMsg = "Error ("; 
+					errMsg = "Error ("; 
 					errMsg += UT_String_sprintf("%d", res);
 					errMsg += ") displaying URL: The system cannot find the file specified.\n";
-					errMsg += " [ ";  errMsg += szURL;  errMsg += " ] ";
+					errMsg += " [ ";  errMsg += sURL;  errMsg += " ] ";
 					MessageBox(m_hwndFrame, errMsg.c_str(), "Error displaying URL", MB_OK|MB_ICONEXCLAMATION);
 				}
 				break;
 
 			case 3:
 				{
-					UT_String errMsg = "Error ("; 
+					errMsg = "Error ("; 
 					errMsg += UT_String_sprintf("%d", res);
 					errMsg += ") displaying URL: The system cannot find the path specified.\n";
-					errMsg += " [ ";  errMsg += szURL;  errMsg += " ] ";
+					errMsg += " [ ";  errMsg += sURL;  errMsg += " ] ";
 					MessageBox(m_hwndFrame, errMsg.c_str(), "Error displaying URL", MB_OK|MB_ICONEXCLAMATION);
 				}
 				break;
 
 			case 5:
 				{
-					UT_String errMsg = "Error ("; 
+					errMsg = "Error ("; 
 					errMsg += UT_String_sprintf("%d", res);
 					errMsg += ") displaying URL: Access is denied.\n";
-					errMsg += " [ ";  errMsg += szURL;  errMsg += " ] ";
+					errMsg += " [ ";  errMsg += sURL;  errMsg += " ] ";
 					MessageBox(m_hwndFrame, errMsg.c_str(), "Error displaying URL", MB_OK|MB_ICONEXCLAMATION);
 				}
 				break;
 
 			default:
 				{
-					UT_String errMsg = "Error ("; 
+					errMsg = "Error ("; 
 					errMsg += UT_String_sprintf("%d", res);
 					errMsg += ") displaying URL: \n";
-					errMsg += " [ ";  errMsg += szURL;  errMsg += " ] ";
+					errMsg += " [ ";  errMsg += sURL;  errMsg += " ] ";
 					MessageBox(m_hwndFrame, errMsg.c_str(), "Error displaying URL", MB_OK|MB_ICONEXCLAMATION);
 				}
 				break;
