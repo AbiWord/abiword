@@ -1693,7 +1693,6 @@ UT_Error IE_Imp_WordPerfect::_appendSection()
 {
   UT_DEBUGMSG(("WordPerfect: Appending section\n"));
 
-  bool hashProp = false;
   XML_Char * propsArray[3];
   UT_String myProps ( "" ) ;
   propsArray[0] = "props";
@@ -1710,7 +1709,7 @@ UT_Error IE_Imp_WordPerfect::_appendSection()
     UT_DEBUGMSG(("WordPerfect: Appending right margin\n"));
 
     if ( myProps.size () )
-      mProps += "; " ;
+      myProps += "; " ;
     myProps += UT_String_sprintf("page-margin-right:%4.4fin", m_rightMargin);
   }
   if (m_bColumnsSet)
@@ -1718,7 +1717,7 @@ UT_Error IE_Imp_WordPerfect::_appendSection()
       UT_DEBUGMSG(("Appending column definition\n"));
 
       if ( myProps.size () )
-	mProps += "; " ;
+	myProps += "; " ;
 
       myProps += UT_String_sprintf("columns:%d", m_numberOfColumns);
   }
