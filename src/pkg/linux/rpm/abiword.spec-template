@@ -157,6 +157,7 @@ ScriptHappy: Run other programs in a shell and direct the output to AbiWord.
 Summary: Plugins to import and export otherwise unsupported formats.
 Group: Applications/Productivity
 Requires: abiword
+BuildRequires: bzip2-devel, libgsf-devel, librsvg-devel
 
 %description plugins-impexp
 This is a set of plugins for AbiWord.  It includes support for OpenWriter,
