@@ -2347,9 +2347,15 @@ UT_Error IE_Imp_RTF::_parseText()
 			{
 				ok = PopRTFState();
 				if (!ok) {
-					UT_DEBUGMSG(("PopRTFState()\n"));
-					bool b = ReadCharFromFile(&c);
-					if(!b) // reached end of file with extra "}"
+					UT_DEBUGMSG(("PopRTFState() bug\n"));
+					bool bCont = true;
+					char lastc =c;
+					while(ReadCharFromFile(&c) && bCont)
+					{
+						lastc = c;
+						bCont = (c == '}');
+					}
+					if(lastc == '}') // reached end of file with extra "}"
 					{
 						ok = true;
 						break;
