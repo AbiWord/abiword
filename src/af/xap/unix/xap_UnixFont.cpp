@@ -254,6 +254,7 @@ FontInfo * AP_UnixFont::getMetricsData(void)
 		break;
 	}
 
+	fclose(fp);
 	UT_ASSERT(m_metricsData);
 	UT_ASSERT(m_metricsData->gfi);
 	return m_metricsData;
