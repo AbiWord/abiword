@@ -27,37 +27,17 @@ include $(ABI_DEPTH)/config/abi_defs.mk
 ## TODO: decide if all of these need to be exported.
 ## TODO: move the ones which dont to the HEADERS definition
 
-EXPORT_HEADERS=		ap_Ap.h				\
-			ap_EditMethods.h		\
-			ap_Frame.h			\
-			ap_LoadBindings.h		\
-			ap_Menu_ActionSet.h		\
-			ap_Menu_Functions.h		\
-			ap_Menu_LabelSet.h		\
-			ap_Menu_Layouts.h		\
-			ap_Menu_Id.h
+EXPORT_HEADERS=		ap_UnixAp.h			\
+			ap_UnixFrame.h
 
-HEADERS=		$(EXPORT_HEADERS)		\
-			ap_LoadBindings_Default.h	\
-			ap_Menu_LabelSet_EnUS.h		\
-			ap_Menu_LabelSet_Languages.h	\
-			ap_Menu_Layouts.h		\
-			ap_Menu_Layouts_All.h		\
-			ap_Menu_Layouts_DebugMenu.h	\
-			ap_Menu_Layouts_MainMenu.h
+HEADERS=		$(EXPORT_HEADERS)
 
 RELEASE_HEADERS=	$(EXPORT_HEADERS)
 RELEASE_HEADERS_DEST=	$(RELEASE_INCLUDE_DIR)
 
-CPPSRCS=		ap_Ap.cpp			\
-			ap_EditMethods.cpp		\
-			ap_Frame.cpp			\
-			ap_LoadBindings.cpp		\
-			ap_LoadBindings_Default.cpp	\
-			ap_Menu_ActionSet.cpp		\
-			ap_Menu_Functions.cpp		\
-			ap_Menu_LabelSet.cpp		\
-			ap_Menu_Layouts.cpp
+CPPSRCS=		ap_UnixAp.cpp			\
+			ap_UnixFrame.cpp
+
 
 INCLUDES=		-I$(DIST)/include -I. -DUT_DEBUG
 

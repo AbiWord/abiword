@@ -20,23 +20,20 @@
 **  
 */
 
-#ifndef EV_UNIXKEYBOARD_H
-#define EV_UNIXKEYBOARD_H
+#include "ap_UnixAp.h"
 
-#include <gdk/gdk.h>
-#include "ev_Keyboard.h"
-#include "ev_EditBits.h"
+/*****************************************************************/
 
-class FV_View;
-
-
-class ev_UnixKeyboard : public EV_Keyboard
+AP_UnixAp::AP_UnixAp(void)
 {
-public:
-	ev_UnixKeyboard(EV_EditEventMapper * pEEM);
+}
 
-	UT_Bool keyPressEvent(FV_View * pView, GdkEventKey* e);
-};
+AP_UnixAp::~AP_UnixAp(void)
+{
+}
 
-#endif // EV_UNIXKEYBOARD_H
+UT_Bool AP_UnixAp::initialize(int argc, char ** argv)
+{
+	return UT_TRUE;
+}
 

@@ -38,11 +38,14 @@ ifeq ($(ABI_NATIVE), win)
 PLATFORM_OBJS=
 endif
 ifeq ($(ABI_NATIVE), unix)
-PLATFORM_OBJS=
+PLATFORM_OBJS=	unix/$(OBJDIR)/ap_UnixAp.$(OBJ_SUFFIX)			\
+		unix/$(OBJDIR)/ap_UnixFrame.$(OBJ_SUFFIX)
 endif
 
 OBJS=		$(PLATFORM_OBJS)					\
+		xp/$(OBJDIR)/ap_Ap.$(OBJ_SUFFIX)			\
 		xp/$(OBJDIR)/ap_EditMethods.$(OBJ_SUFFIX)		\
+		xp/$(OBJDIR)/ap_Frame.$(OBJ_SUFFIX)			\
 		xp/$(OBJDIR)/ap_LoadBindings.$(OBJ_SUFFIX)		\
 		xp/$(OBJDIR)/ap_LoadBindings_Default.$(OBJ_SUFFIX)	\
 		xp/$(OBJDIR)/ap_Menu_ActionSet.$(OBJ_SUFFIX)		\
