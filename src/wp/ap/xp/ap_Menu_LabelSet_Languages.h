@@ -49,3 +49,4 @@
 #include "ap_Menu_LabelSet_ru-RU.h"
 #include "ap_Menu_LabelSet_zh-TW.h"
 #include "ap_Menu_LabelSet_zh-CN.h"
+#include "ap_Menu_LabelSet_uk-UA.h"
