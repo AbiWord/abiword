@@ -27,6 +27,7 @@
 #include "ie_imp.h"
 #include "ut_string_class.h"
 #include "fl_DocLayout.h"
+#include "fl_AutoLists.h"
 
 //
 // forward decls so that we don't have to #include "wv.h" here
