@@ -58,7 +58,6 @@ public:
 	UT_Bool		copy(UT_Vector *pVec);
 
 protected:
-	UT_uint32		calcNewSpace();
 	UT_sint32		grow(UT_uint32);
 	
 	void**			m_pEntries;
@@ -111,7 +110,7 @@ protected:
 class UT_Vector
 {
  public:
-	UT_Vector();
+	UT_Vector(int sizehint = 2048);
 	~UT_Vector();
 
 	UT_sint32	addItem(void*);

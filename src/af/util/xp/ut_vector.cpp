@@ -243,7 +243,7 @@ const void* UT_Vector::operator[](UT_uint32 i) const
 
 UT_Vector::UT_Vector(int sizehint)
 {
-//TODO: Do something with the size hint?
+	//Ignore the sizehint
 }
 
 void UT_Vector::clear()
@@ -343,5 +343,6 @@ const void* UT_Vector::operator[](UT_uint32 i) const
 {
 	return m_STLVec[i];
 }
+
 
 #endif /* ABI_OPT_STL */
