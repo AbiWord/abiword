@@ -38,8 +38,7 @@
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 #include "ut_string.h"
-
-#define EXTRA_CHARWIDTH_SPACE 256
+#include "ut_dllist.h"
 
 fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 							   fb_LineBreaker* pBreaker,
@@ -1087,3 +1086,132 @@ void fl_BlockLayout::dump()
 		pRun = pRun->getNext();
 	}
 }
+
+fl_PartOfBlock::fl_PartOfBlock(void)
+{
+	iOffset = 0;
+	iLength = 0;
+}
+
+void fl_BlockLayout::_destroySpellCheckLists(void)
+{
+	fl_PartOfBlock*	pPOB;
+
+	while (NULL != (pPOB = (fl_PartOfBlock*) m_lstNotSpellChecked.head()))
+	{
+		delete pPOB;
+		m_lstNotSpellChecked.remove();
+	}
+
+	while (NULL != (pPOB = (fl_PartOfBlock*) m_lstSpelledWrong.head()))
+	{
+		delete pPOB;
+		m_lstSpelledWrong.remove();
+	}
+}
+
+void fl_BlockLayout::_addPartNotSpellChecked(UT_uint32 iOffset, UT_uint32 iLen)
+{
+	fl_PartOfBlock*	pPOB = new fl_PartOfBlock();
+	if (!pPOB)
+	{
+		// TODO handle outofmem
+	}
+	
+	pPOB->iOffset = iOffset;
+	pPOB->iLength = iLen;
+
+	(void) m_lstNotSpellChecked.tail();
+	m_lstNotSpellChecked.append(pPOB);
+}
+
+void fl_BlockLayout::_addPartSpelledWrong(UT_uint32 iOffset, UT_uint32 iLen)
+{
+	fl_PartOfBlock*	pPOB = new fl_PartOfBlock();
+	if (!pPOB)
+	{
+		// TODO handle outofmem
+	}
+	
+	pPOB->iOffset = iOffset;
+	pPOB->iLength = iLen;
+
+	(void) m_lstSpelledWrong.tail();
+	m_lstSpelledWrong.append(pPOB);
+}
+
+void fl_BlockLayout::_resetSpellCheckState(void)
+{
+	// first, remove anything currently in the lists.
+	_destroySpellCheckLists();
+
+	/*
+	  We grab the getBlockBuf() here just so we can get the length
+	  of the text in this block.  This a VERY bad.  There must be
+	  an easier, more efficient way to do this.
+	*/
+	UT_GrowBuf pgb(1024);
+	UT_Bool bRes = getBlockBuf(&pgb);
+	
+	_addPartNotSpellChecked(0, pgb.getLength());
+}
+
+void fl_BlockLayout::checkSpelling(void)
+{
+	/*
+	  First, we need to get a pointer to all the text in this
+	  block.
+	*/
+	
+	UT_GrowBuf pgb(1024);
+
+	UT_Bool bRes = getBlockBuf(&pgb);
+	UT_ASSERT(bRes);
+
+	const UT_UCSChar* pBlockText = pgb.getPointer(0);
+
+	fl_PartOfBlock* pPOB;
+	
+	for (pPOB = (fl_PartOfBlock*) m_lstNotSpellChecked.head(); pPOB; pPOB = (fl_PartOfBlock*) m_lstNotSpellChecked.next())
+	{
+		/*
+		  TODO
+		  For each word in this region, spell check it.  If it's bad,
+		  add it to lstSpelledWrong.  (_addPartSpelledWrong)
+		*/
+
+		UT_ASSERT(pPOB->iLength <= pgb.getLength());
+
+		/*
+		  TODO DaveThompson
+		  
+		  The text needing to be checked starts at pBlockText[pPOB->iOffset] and is of length pPOB->iLength.
+		  
+		  Use UT_isWordDelimiter to find the word boundaries and call SpellCheckWord16 on each one.
+		  
+		  You might want to modify the API to the spell checker to somehow allow a pointer and length,
+		  rather than a zero-terminated string.  This would avoid the need to make a copy of every word.
+		*/
+	}
+
+	/*
+	  After a spell check, m_lstNotSpellChecked should be empty.  So
+	  we clear it.
+	*/
+	while (NULL != (pPOB = (fl_PartOfBlock*) m_lstNotSpellChecked.head()))
+	{
+		delete pPOB;
+		m_lstNotSpellChecked.remove();
+	}
+}
+
+/*
+  TODO
+
+  spell check problems:
+
+  1.  we currently never call _resetSpellCheckState.  We need to do so sometime.
+  2.  when a block is modified, we need to be able to adjust the offsets of all
+      the POBs.
+*/
+

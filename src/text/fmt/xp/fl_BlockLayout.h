@@ -25,6 +25,7 @@
 #include "ut_misc.h"
 #include "ut_types.h"
 #include "ut_vector.h"
+#include "ut_dllist.h"
 #include "ut_growbuf.h"
 #include "pt_Types.h"
 #include "fl_Layout.h"
@@ -150,6 +151,8 @@ public:
 	void dump();
 	void align();
 
+	void checkSpelling(void);
+
 	/*
 		Blocks are stored in a linked list which contains all of the blocks in
 		the normal flow, in order.  A fl_BlockLayout knows in which fp_Column each
@@ -159,18 +162,22 @@ public:
 	*/
 
 protected:
-	void _addSlice(fp_BlockSlice*);
-	void _createNewSlice();
-	void _createRuns();
+	void				 	_addSlice(fp_BlockSlice*);
+	void 					_createNewSlice();
+	void 					_createRuns();
 	void					_purgeLayout(UT_Bool bVisible);
 	void					_removeLine(fp_Line*);
 	void					_removeAllEmptyLines(void);
+	void					_resetSpellCheckState(void);
+	void					_destroySpellCheckLists(void);
+	void					_addPartNotSpellChecked(UT_uint32 iOffset, UT_uint32 iLen);
+	void					_addPartSpelledWrong(UT_uint32 iOffset, UT_uint32 iLen);
 
-	int						m_bNeedsReformat;
-	
 	void					_verifyCurrentSlice();
 	UT_uint32				_getLastChar();
 
+	int						m_bNeedsReformat;
+	
 	UT_GrowBuf				m_gbCharWidths;
 	UT_Vector				m_vecSlices;
 
@@ -188,6 +195,29 @@ protected:
 	fp_Line*				m_pLastLine;
 
 	int						m_bFormatting;
+
+	/*
+	  The following lists are used to keep track of the spell
+	  check status of this block.  The lstNotSpellChecked member
+	  is a list of regions which have not been spell checked.
+	  The lstSpelledWrong member is a list of regions which have
+	  been found to be spelled wrong.
+	*/
+	UT_DLList				m_lstNotSpellChecked;
+	UT_DLList				m_lstSpelledWrong;
+};
+
+/*
+  This struct is used to represent a part of the block.  Pointers
+  to this struct are the things contained in m_lstNotSpellChecked
+  and m_lstSpelledWrong.
+*/
+struct fl_PartOfBlock
+{
+	fl_PartOfBlock();
+
+	UT_uint32	iOffset;
+	UT_uint32	iLength;
 };
 
 #endif /* BLOCKLAYOUT_H */
