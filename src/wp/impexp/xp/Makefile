@@ -36,6 +36,7 @@ CPPSRCS=		ie_exp.cpp				\
 			ie_exp_PalmDoc.cpp			\
 			ie_exp_WML.cpp				\
 			ie_exp_DocBook.cpp			\
+			ie_exp_Psion.cpp			\
 			ie_imp.cpp				\
 			ie_imp_XML.cpp				\
 			ie_imp_AbiWord_1.cpp			\
@@ -51,11 +52,8 @@ CPPSRCS=		ie_exp.cpp				\
 			ie_impGraphic.cpp			\
 			ie_impGraphic_PNG.cpp			\
 			ie_impGraphic_SVG.cpp			\
-			ie_impGraphic_BMP.cpp
-
-ifdef ABI_OPT_PSICONV
-CPPSRCS +=		ie_imp_Psion.cpp
-endif
+			ie_impGraphic_BMP.cpp			\
+			ie_imp_Psion.cpp
 
 
 LIBRARY_NAME=		AbiImpExp

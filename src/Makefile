@@ -23,7 +23,7 @@ ABI_ROOT:=$(shell pwd)/..
 include $(ABI_ROOT)/src/config/abi_defs.mk
 
 DIRS=		config tools other af text wp ask
-REQUIREREALCLEAN=		clean_ABI_ clean_ZLIB_ clean_LIBPNG_ clean_LIBWV_ clean_LIBICONV_
+REQUIREREALCLEAN=		clean_ABI_ clean_ZLIB_ clean_LIBPNG_ clean_LIBWV_ clean_LIBICONV_ clean_PSICONV_
 
 
 include $(ABI_ROOT)/src/config/abi_rules.mk
@@ -33,9 +33,6 @@ include $(ABI_ROOT)/src/config/abi_rules.mk
 
 abiclean::
 	rm -f $(OBJDIR)/*.*
-
-clean::
-	rm -rf $(OBJDIR)
 
 realclean:: $(REQUIREREALCLEAN)
 
@@ -202,5 +199,11 @@ clean_LIBICONV_:
 		$(MAKE) -C $(ABI_ROOT)/../libiconv distclean;	\
 	fi	
 
+clean_PSICONV_:
+	@if [ -d $(ABI_ROOT)/../psiconv -a -f $(ABI_ROOT)/../psiconv/psiconv/Makefile ]; then	\
+		$(MAKE) -C $(ABI_ROOT)/../psiconv distclean;	\
+	fi	
+
 clean_ABI_:
 	rm -rf $(OUTDIR) $(DIST)
+

@@ -44,6 +44,7 @@
 #include "ie_exp_PalmDoc.h"
 #include "ie_exp_WML.h"
 #include "ie_exp_DocBook.h"
+#include "ie_exp_Psion.h"
 
 /*****************************************************************/
 /*****************************************************************/
@@ -74,6 +75,8 @@ static struct _xp s_expTable[] =
 	DeclareExporter(IE_Exp_HTML),
 	DeclareExporter(IE_Exp_LaTeX),
 	DeclareExporter(IE_Exp_PalmDoc),
+	DeclareExporter(IE_Exp_Psion_TextEd),
+	DeclareExporter(IE_Exp_Psion_Word),
 	DeclareExporter(IE_Exp_RTF),
 	DeclareExporter_sub(IE_Exp_RTF,attic),
 	DeclareExporter(IE_Exp_Text),

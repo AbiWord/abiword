@@ -27,6 +27,7 @@ REQUIRE=
 else
 REQUIRE=	_EXPAT_ 
 endif
+REQUIRE+=	_PSICONV_
 TARGET=		build
 
 include $(ABI_ROOT)/src/config/abi_rules.mk
@@ -47,4 +48,23 @@ _EXPAT_:
 		echo It is identical to expat from www.jclark.com, except for;		\
 		echo minor modifications to integrate with the AbiSource build system.;	\
 		exit 1;									\
+	fi
+
+_PSICONV_:
+	@if [ -r $(ABI_ROOT)/../psiconv ]; then \
+		echo "Found psiconv in peer directory"; \
+		if [ ! -r $(ABI_ROOT)/../psiconv/config.h ]; then \
+			cd $(ABI_ROOT)/../psiconv; \
+			./configure --disable-shared --enable-static; \
+		fi; \
+		$(MAKE) -f Makefile -C $(ABI_ROOT)/../psiconv; \
+	elif [ -d /usr/include/psiconv -o -d /usr/local/include/psiconv ]; then \
+		echo "*** Found an install of psiconv. I'm going to use it; if it is too old,"; \
+		echo "*** you will have to upgrade it or get the version distributed with AbiWord."; \
+		echo "*** You can find psiconv at http://huizen.dds.nl/~frodol/psiconv/"; \
+		echo ; \
+	else \
+		echo "Psiconv not found. Get the version distributed with AbiWord and unpack it" ;\
+		echo "in a peer directory; or get it from http://huizen.dds.nl/~frodol/psiconv and" ;\
+		echo "install it separately." ;\
 	fi

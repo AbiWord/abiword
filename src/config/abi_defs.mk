@@ -527,10 +527,11 @@ ABI_OPTIONS+=LibXML:Off
 endif
 endif
 
-ifdef ABI_OPT_PSICONV
-EXTRA_LIBS	+=	-lpsiconv
-CFLAGS		+= -DHAVE_PSICONV
-endif
+# For psiconv. This should pick up the static psiconv library in the
+# peer directory, or the global one if it is not found. 
+EXTRA_LIBS	+= -L$(ABI_ROOT)/../psiconv/psiconv/.libs -lpsiconv
+CFLAGS		+= -I$(ABI_ROOT)/../psiconv
+
 
 ##################################################################
 ##################################################################

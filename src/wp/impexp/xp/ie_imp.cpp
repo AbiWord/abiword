@@ -36,10 +36,7 @@
 #include "ie_imp_GraphicAsDocument.h"
 #include "ie_imp_XHTML.h"
 #include "ie_imp_DocBook.h"
-
-#ifdef HAVE_PSICONV
 #include "ie_imp_Psion.h"
-#endif
 
 /*****************************************************************/
 /*****************************************************************/
@@ -65,10 +62,8 @@ static struct _imp s_impTable[] =
 	DeclareImporter(IE_Imp_DocBook),
 	DeclareImporter(IE_Imp_MsWord_97),
 	DeclareImporter(IE_Imp_XHTML),
-#ifdef HAVE_PSICONV
 	DeclareImporter(IE_Imp_Psion_TextEd),
 	DeclareImporter(IE_Imp_Psion_Word),
-#endif
 	DeclareImporter(IE_Imp_RTF),
 	DeclareImporter(IE_Imp_Text),
 	DeclareImporter(IE_Imp_UTF8),

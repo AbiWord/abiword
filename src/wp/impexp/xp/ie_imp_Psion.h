@@ -1,5 +1,6 @@
 /* AbiWord
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2000 AbiSource, Inc.
+ * Copyright (C) 2000 Frodo Looijaard <frodol@dds.nl>
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -47,7 +48,7 @@ protected:
 		UT_Bool			getCharacterAttributes(psiconv_character_layout layout, UT_ByteBuf *props);
 		UT_Bool			getParagraphAttributes(psiconv_paragraph_layout layout, UT_ByteBuf *props);
 		UT_Bool			applyCharacterAttributes(psiconv_character_layout layout);
-		UT_Bool			applyParagraphAttributes(psiconv_paragraph_layout layout,const char *stylename);
+		UT_Bool			applyParagraphAttributes(psiconv_paragraph_layout layout,const XML_Char *stylename);
 		UT_Bool			applyPageAttributes(psiconv_page_layout_section layout);
 		UT_Bool			prepareCharacters(char *input, int length, 
 						                  UT_GrowBuf *gbBlock);
@@ -55,6 +56,7 @@ protected:
 		UT_Bool 		applyStyles(psiconv_word_styles_section style_sec);
 
 	virtual	UT_Error	parseFile(psiconv_file psionfile) = 0;
+	const XML_Char *listid;
 };
 
 

@@ -1,5 +1,6 @@
 /* AbiWord
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2000 AbiSource, Inc.
+ * Copyright (C) 2000 Frodo Looijaard <frodol@dds.nl>
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -23,28 +24,33 @@
 //  We use libpsiconv for the real work
 
 // To do:
-//	Add bullets  (paragraph level)
+//	Fix characters with high ASCII codes
 
 // To do once Abiword supports it:
-//   Styles: finish
+//   Styles: enable
 //   Page header and footer, page size, first page number
 //   Paragraph borders and background color
 
+// Note that the current bullets implementation is incompatible with
+// styles: for a bullet to be displayed, we *have to set the paragraph
+// style to `Bullet List'. The current bullet implementation is one big
+// nasty hack :-(
+
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+
 #include "ut_types.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_string.h"
-#include "ie_imp_Psion.h"
-#include "pd_Document.h"
 #include "ut_growbuf.h"
-#include "xap_EncodingManager.h"
 #include "ut_mbtowc.h"
 #include "ut_units.h"
 #include "ut_bytebuf.h"
 
+#include "pd_Document.h"
+#include "xap_EncodingManager.h"
+
+#include "ie_imp_Psion.h"
 #include <psiconv/parse.h>
 
 // The style combo box does not support new styles yet... 
@@ -67,23 +73,21 @@ UT_Error IE_Imp_Psion::importFile(const char * szFilename)
 		return UT_IE_FILENOTFOUND;
 	}
 
-	if (!(buf = psiconv_list_new(sizeof(psiconv_u8)))) {
+	if (!(buf = psiconv_buffer_new())) {
 		fclose(fp);
 		return(UT_IE_NOMEMORY);
 	}
 
-	while (! feof(fp)) {
-		if (!(psiconv_list_fread(buf,1024,fp))) {
-			psiconv_list_free(buf);
-			fclose(fp);
-			return UT_IE_NOMEMORY;
-		}
+	if (psiconv_buffer_fread_all(buf,fp)) {
+		psiconv_buffer_free(buf);
+		fclose(fp);
+		return UT_IE_NOMEMORY;
 	}
 
 	fclose(fp);
 
 	res = psiconv_parse(buf,&psionfile);
-	psiconv_list_free(buf);
+	psiconv_buffer_free(buf);
 
 	if (res) {
 		if (res == PSICONV_E_NOMEM)
@@ -125,6 +129,7 @@ IE_Imp_Psion::IE_Imp_Psion(PD_Document * pDocument)
 #else
 	psiconv_verbosity=PSICONV_VERB_WARN;
 #endif
+	listid = NULL;
 }
 
 /*****************************************************************/
@@ -137,10 +142,10 @@ UT_Bool IE_Imp_Psion::applyStyles(psiconv_word_styles_section style_sec)
 	class UT_ByteBuf props(256);
 
 	int i;
-	const char *stylename;
+	const XML_Char *stylename;
 	psiconv_word_style style;
 
-	for (i = -1; i < psiconv_list_length(style_sec->styles); i++) {
+	for (i = -1; i < (int) psiconv_list_length(style_sec->styles); i++) {
 		if (i == -1)
 			style = style_sec->normal;
 		else if (!(style = (psiconv_word_style) 
@@ -161,21 +166,21 @@ UT_Bool IE_Imp_Psion::applyStyles(psiconv_word_styles_section style_sec)
 			return UT_FALSE;
 
 		if (i == -1)
-			stylename = "Normal";
+			stylename = (const XML_Char *) "Normal";
 		else
-			stylename = style->name;
+			stylename = (const XML_Char *) style->name;
 
 		// UT_DEBUGMSG(("Style attributes: %s\n",props.getPointer(0)));
 
 		const XML_Char* propsArray[7];
-		propsArray[0] = "props";
-		propsArray[1] = (char *) props.getPointer(0);
-		propsArray[2] = "name";
+		propsArray[0] = (const XML_Char *) "props";
+		propsArray[1] = (const XML_Char *) props.getPointer(0);
+		propsArray[2] = (const XML_Char *) "name";
 		propsArray[3] = stylename;
 		// All Psion styles are based upon the Normal style
-		propsArray[4] = "basedon";
-		propsArray[5] = "Normal";
-		propsArray[6] = NULL;
+		propsArray[4] = (const XML_Char *) "basedon";
+		propsArray[5] = (const XML_Char *) "Normal";
+		propsArray[6] = (const XML_Char *) NULL;
 
 		if (!( m_pDocument->appendStyle(propsArray))) {
 			UT_DEBUGMSG(("AppendStyle failed...\n"));
@@ -236,9 +241,9 @@ UT_Bool IE_Imp_Psion::applyPageAttributes(psiconv_page_layout_section layout)
 
 	// UT_DEBUGMSG(("Page: %s\n",props.getPointer(0)));
 	const XML_Char* propsArray[3];
-	propsArray[0] = "props";
-	propsArray[1] = (char *) props.getPointer(0);
-	propsArray[2] = NULL;
+	propsArray[0] = (const XML_Char *) "props";
+	propsArray[1] = (const XML_Char *) props.getPointer(0);
+	propsArray[2] = (const XML_Char *) NULL;
 
 	return  m_pDocument->appendStrux(PTX_Section,propsArray);
 }
@@ -262,6 +267,14 @@ UT_Bool IE_Imp_Psion::getParagraphAttributes(psiconv_paragraph_layout layout,
 	if (!props) {
 		props = new UT_ByteBuf(256);
 		props_allocated = UT_TRUE;
+	}
+
+	// If this is a bulleted paragraph with indent, we need to make sure
+	// the indent_first is positive. Stupid Psion.
+	if (layout->bullet && layout->bullet->on && layout->bullet->indent &&
+	    (layout->indent_first > 0)) {
+		layout->indent_left += layout->indent_first;
+		layout->indent_first = -layout->indent_first;
 	}
 
 	if (props->getLength())
@@ -340,8 +353,8 @@ UT_Bool IE_Imp_Psion::getParagraphAttributes(psiconv_paragraph_layout layout,
 	// orphans?!?
 	
 	sprintf(buffer,"; widows:%d; orphans:%d",
-            layout->no_widow_protection?0:2,
-            layout->no_widow_protection?0:2);
+	        layout->no_widow_protection?0:2,
+	        layout->no_widow_protection?0:2);
 	if (!(props->append((unsigned char *) buffer,strlen(buffer))))
 		goto ERROR;
 
@@ -355,7 +368,7 @@ UT_Bool IE_Imp_Psion::getParagraphAttributes(psiconv_paragraph_layout layout,
 		strcat(buffer,"; tabstops:");
 		if (!(props->append((unsigned char *) buffer,strlen(buffer))))
 			goto ERROR;
-		for (i = 0; i < psiconv_list_length(layout->tabs->extras); i++) {
+		for (i = 0; i < (int) psiconv_list_length(layout->tabs->extras); i++) {
 			if (!(tab = (psiconv_tab) psiconv_list_get(layout->tabs->extras,
 			                                           i))) {
 				UT_ASSERT(tab != NULL);
@@ -372,7 +385,13 @@ UT_Bool IE_Imp_Psion::getParagraphAttributes(psiconv_paragraph_layout layout,
 		}
 	}
 
-	// Not yet implemented: borders and bullets
+	// Bullets. I don't think there is a general way to do this yet.
+	// For now, we will hardcode all bullets to style 'Bullet List',
+	// because we might get into real trouble. Note that we hack
+	// this together in applyParagraphAttributes. That means we can
+	// not combine styles with bullets, and do other nifty things.
+	
+	// Not yet implemented: borders
 	
 	return UT_TRUE;
 
@@ -387,10 +406,11 @@ ERROR:
 // It does an appendStrux setting the current paragraph attributes and opening
 // a new paragraph.
 UT_Bool IE_Imp_Psion::applyParagraphAttributes(psiconv_paragraph_layout layout,
-                      const char *stylename)
+                      const XML_Char *stylename)
 {
 	// UT_Byte is `unsigned char', so we need some nasty casts :-(
 	class UT_ByteBuf props(256);
+	const XML_Char* propsArray[11];
 
 	// HACK: there is no real setting to do this.
 	if (layout->on_next_page) {
@@ -402,18 +422,69 @@ UT_Bool IE_Imp_Psion::applyParagraphAttributes(psiconv_paragraph_layout layout,
 	if (!(getParagraphAttributes(layout,&props)))
 		return UT_FALSE;
 
+	// HACK: Handle bullets
+	// This is really, really ugly. One day, when fields have stabilized,
+	// we will do it better.
+	if (layout->bullet->on) {
+		// Hardcode the stylename; it is the only way at this moment...
+		// This means that we throw away the real style if styles are enabled...
+		stylename = (const XML_Char *) "Bullet List";
+		// We need to generate the list once, but only if we actually
+		// have a bullet somewhere. Nasty. The attributes are mostly
+		// black magickish...
+		if (!listid) {
+			listid = (const XML_Char *) "666";
+			propsArray[0] = (const XML_Char *) "id";
+			propsArray[1] = listid;
+			propsArray[2] = (const XML_Char *) "parentid";
+			propsArray[3] = (const XML_Char *) "0";
+			propsArray[4] = (const XML_Char *) "type";
+			propsArray[5] = (const XML_Char *) "5";
+			propsArray[6] = (const XML_Char *) "start-value";
+			propsArray[7] = (const XML_Char *) "0";
+			propsArray[8] = (const XML_Char *) "list-delim";
+			propsArray[9] = (const XML_Char *) "%L";
+			propsArray[10] =(const XML_Char *)  NULL;
+			m_pDocument->appendList(propsArray);
+		}
+	}
+
 	// Append the string termination character '\000'
 	props.append((unsigned char *) "",1);
 
 	// UT_DEBUGMSG(("Paragraph: %s\n",props.getPointer(0)));
-	const XML_Char* propsArray[5];
-	propsArray[0] = "props";
-	propsArray[1] = (char *) props.getPointer(0);
-	propsArray[2] = "style";
+	propsArray[0] = (const XML_Char *) "props";
+	propsArray[1] = (const XML_Char *) props.getPointer(0);
+	propsArray[2] = (const XML_Char *) "style";
 	propsArray[3] = stylename;
-	propsArray[4] = NULL;
+	propsArray[4] = (const XML_Char *) NULL;
 
-	return m_pDocument->appendStrux(PTX_Block,propsArray);
+	if (layout->bullet->on) {
+		propsArray[4] = (const XML_Char *) "listid";
+		propsArray[5] = listid;
+		propsArray[6] = (const XML_Char *) NULL;
+	}
+
+	if (!(m_pDocument->appendStrux(PTX_Block,propsArray)))
+		return UT_FALSE;
+	
+	// We need to append a field and some other stuff...
+	if (layout->bullet->on) {
+		propsArray[0] = (const XML_Char *) "type";
+		propsArray[1] = (const XML_Char *) "list_label";
+		propsArray[2] = (const XML_Char *) NULL;
+		if (!(m_pDocument->appendObject(PTO_Field,propsArray)))
+			return UT_FALSE;
+
+		// If this is a bullet-with-indent, we need a tab to get the
+		// text alligned to the selected left margin.
+		if (layout->bullet->indent) {
+			UT_UCSChar uc = (UT_UCSChar) UCS_TAB;
+			if (!(m_pDocument->appendSpan(&uc,1)))
+				return UT_FALSE;
+		}
+	}
+	return UT_TRUE;
 }
 
 // Get all character-related attributes and append them to props.
@@ -449,7 +520,7 @@ UT_Bool IE_Imp_Psion::getCharacterAttributes(psiconv_character_layout layout,
 		goto ERROR;
 	// We can't sprintf this to buffer, because it might be long.
 	if (!(props->append((unsigned char *) layout->font->name,
-                 strlen(layout->font->name))))
+	                    strlen(layout->font->name))))
 		goto ERROR;
 
 	// font size. 
@@ -545,8 +616,8 @@ UT_Bool IE_Imp_Psion::applyCharacterAttributes(psiconv_character_layout layout)
 	// UT_DEBUGMSG(("Character: %s\n",props.getPointer(0)));
 
 	const XML_Char* propsArray[3];
-	propsArray[0] = "props";
-	propsArray[1] = (char *) props.getPointer(0);
+	propsArray[0] = (const XML_Char *) "props";
+	propsArray[1] = (const XML_Char *) props.getPointer(0);
 	propsArray[2] = NULL;
 
 	return m_pDocument->appendFmt(propsArray);
@@ -608,15 +679,14 @@ UT_Bool IE_Imp_Psion::prepareCharacters(char *input, int length,
 UT_Error IE_Imp_Psion::readParagraphs(psiconv_text_and_layout psiontext,
                                       psiconv_word_styles_section style_sec)
 {
-	int i,inline_nr;
-	unsigned int loc;
+	unsigned int i,inline_nr,loc;
 	psiconv_paragraph paragraph;
 	psiconv_in_line_layout in_line;
 	UT_GrowBuf gbBlock;
 #if ENABLE_STYLES
 	psiconv_word_style style;
 #endif
-	char *stylename;
+	const XML_Char *stylename;
 
 	for (i=0; i < psiconv_list_length(psiontext); i++) {
 		if (!(paragraph = (psiconv_paragraph) psiconv_list_get(psiontext,i))) {
@@ -631,7 +701,7 @@ UT_Error IE_Imp_Psion::readParagraphs(psiconv_text_and_layout psiontext,
 		      !(style = psiconv_get_style(style_sec,paragraph->base_style)) ||
 		  	  !(stylename = style->name))
 #endif
-			stylename = "Normal";
+			stylename = (const XML_Char *) "Normal";
 
 		loc = 0;
 		if (!(applyParagraphAttributes(paragraph->base_paragraph,stylename))) 
@@ -707,7 +777,7 @@ UT_Error IE_Imp_Psion_Word::parseFile(psiconv_file psionfile)
 		return UT_IE_NOMEMORY;
 	return readParagraphs(((psiconv_word_f) (psionfile->file))->paragraphs,
 #if ENABLE_STYLES
-                          ((psiconv_word_f) (psionfile->file))->styles_sec
+	                      ((psiconv_word_f) (psionfile->file))->styles_sec
 #else
 						  NULL 
 #endif
@@ -720,16 +790,16 @@ UT_Bool IE_Imp_Psion_Word::RecognizeContents(const char * szBuf, UT_uint32 iNumb
 	
 	UT_uint32 i;
 
-	psiconv_list pl = psiconv_list_new(sizeof(psiconv_u8));
+	psiconv_buffer pl = psiconv_buffer_new();
 	if (!pl) 
 		return UT_FALSE;
 	for (i=0; i < iNumbytes; i++)
-		if ((psiconv_list_add(pl,szBuf + i))) {
-			psiconv_list_free(pl);
+		if ((psiconv_buffer_add(pl,szBuf[i]))) {
+			psiconv_buffer_free(pl);
 			return UT_FALSE;
 		}
 	psiconv_file_type_t filetype = psiconv_file_type(pl,NULL,NULL);
-	psiconv_list_free(pl);
+	psiconv_buffer_free(pl);
 	if (filetype == psiconv_word_file)
 		return UT_TRUE;
 	else
@@ -793,16 +863,16 @@ UT_Bool IE_Imp_Psion_TextEd::RecognizeContents(const char * szBuf, UT_uint32 iNu
 	
 	UT_uint32 i;
 
-	psiconv_list pl = psiconv_list_new(sizeof(psiconv_u8));
+	psiconv_buffer pl = psiconv_buffer_new();
 	if (!pl) 
 		return UT_FALSE;
 	for (i=0; i < iNumbytes; i++)
-		if ((psiconv_list_add(pl,szBuf + i))) {
-			psiconv_list_free(pl);
+		if ((psiconv_buffer_add(pl,szBuf[i]))) {
+			psiconv_buffer_free(pl);
 			return UT_FALSE;
 		}
 	psiconv_file_type_t filetype = psiconv_file_type(pl,NULL,NULL);
-	psiconv_list_free(pl);
+	psiconv_buffer_free(pl);
 	if (filetype == psiconv_texted_file)
 		return UT_TRUE;
 	else
