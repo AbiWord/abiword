@@ -38,6 +38,8 @@ UT_Timer::~UT_Timer()
 	}
 }
 
+// declare static member
+UT_Vector UT_Timer::static_vecTimers;
 
 void UT_Timer::setIdentifier(UT_uint32 iIdentifier)
 {
