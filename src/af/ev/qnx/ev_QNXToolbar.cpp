@@ -500,7 +500,7 @@ bool EV_QNXToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 		{
 		case EV_TLF_Normal:
 			{
-				const char * szState = 0;
+				const char * szState = NULL;
 				EV_Toolbar_ItemState tis = pAction->getToolbarItemState(pView,&szState);
 
 				switch (pAction->getItemType())

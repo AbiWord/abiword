@@ -411,8 +411,9 @@ bool EV_BeOSToolbar::bindListenerToView(AV_View * pView) {
 	AV_ListenerId lid;
 	bool bResult = pView->addListener(static_cast<AV_Listener *>(m_pViewListener),&lid);
 	UT_ASSERT(bResult);
-
-	refreshToolbar(pView, AV_CHG_ALL);
+	
+	if (pView->isDocumentPresent())
+		refreshToolbar(pView, AV_CHG_ALL);
 	return true;
 }
 
