@@ -106,7 +106,7 @@ UT_LocaleInfo::UT_LocaleInfo (const UT_String & locale)
 /**
  * True if language field is non-null/non-empty, false if not
  */
-bool UT_LocaleInfo::hasLanguageField () const
+bool UT_LocaleInfo::hasLanguage () const
 {
   return mLanguage.size () != 0;
 }
@@ -114,7 +114,7 @@ bool UT_LocaleInfo::hasLanguageField () const
 /**
  * True if territory field is non-null/non-empty, false if not
  */
-bool UT_LocaleInfo::hasTerritoryField () const
+bool UT_LocaleInfo::hasTerritory () const
 {
   return mTerritory.size () != 0;
 }
@@ -122,7 +122,7 @@ bool UT_LocaleInfo::hasTerritoryField () const
 /**
  * True if encoding field is non-null/non-empty, false if not
  */
-bool UT_LocaleInfo::hasEncodingField () const
+bool UT_LocaleInfo::hasEncoding () const
 {
   return mEncoding.size () != 0;
 }
@@ -131,7 +131,7 @@ bool UT_LocaleInfo::hasEncodingField () const
  * Returns empty string or language. Example languages are
  * "en", "wen", "fr", "es"
  */
-UT_String UT_LocaleInfo::getLanguageField () const
+UT_String UT_LocaleInfo::getLanguage () const
 {
   return mLanguage;
 }
@@ -140,7 +140,7 @@ UT_String UT_LocaleInfo::getLanguageField () const
  * Returns empty string or territory. Example territories are:
  * "US", "GB", "FR", ...
  */
-UT_String UT_LocaleInfo::getTerritoryField () const
+UT_String UT_LocaleInfo::getTerritory () const
 {
   return mTerritory;
 }
@@ -149,7 +149,7 @@ UT_String UT_LocaleInfo::getTerritoryField () const
  * Returns empty string or encoding. Encoding is like "UTF-8" or
  * "ISO-8859-1"
  */
-UT_String UT_LocaleInfo::getEncodingField () const
+UT_String UT_LocaleInfo::getEncoding () const
 {
   return mEncoding;
 }
@@ -209,13 +209,13 @@ UT_String UT_LocaleInfo::toString () const
 {
   UT_String ret (mLanguage);
 
-  if (hasTerritoryField ())
+  if (hasTerritory ())
     {
       ret += '_';
       ret += mTerritory;
     }
 
-  if (hasEncodingField ())
+  if (hasEncoding ())
     {
       ret += '.';
       ret += mEncoding;

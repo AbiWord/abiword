@@ -64,8 +64,6 @@
 #include "spell_manager.h"
 #include "ut_rand.h"
 
-#include "xap_EncodingManager.h"
-
 #include "pp_Revision.h"
 #if 1
 // todo: work around to remove the INPUTWORDLEN restriction for pspell

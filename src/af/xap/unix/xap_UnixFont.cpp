@@ -672,12 +672,7 @@ const encoding_pair * XAP_UnixFont::loadEncodingFile(char * encfile)
 		{
 			strcpy(full_name, XAP_App::getApp()->getAbiSuiteLibDir());
 
-			//if(XAP_EncodingManager::get_instance()->isUnicodeLocale())
-				//unicode locale, use the complete table
-				strcat(full_name, "/fonts/adobe-full.u2g");
-			//else
-			//	strcat(full_name, "/fonts/adobe-short.u2g");
-			
+			strcat(full_name, "/fonts/adobe-full.u2g");
 			UT_DEBUGMSG(("UnixFont: loading generic encoding file [%s]\n", full_name));
 		
 			ef = fopen(full_name, "r");

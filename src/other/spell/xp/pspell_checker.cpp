@@ -34,7 +34,6 @@
 #include "ut_iconv.h"
 #include "ut_string.h"
 
-#include "xap_EncodingManager.h"
 #include "xap_App.h"
 #include "xap_Frame.h"
 #include "xap_Strings.h"

@@ -54,13 +54,13 @@ class UT_LocaleInfo
 
   static const UT_LocaleInfo system();
 
-  bool hasLanguageField () const;
-  bool hasTerritoryField () const;
-  bool hasEncodingField () const;
+  bool hasLanguage () const;
+  bool hasTerritory () const;
+  bool hasEncoding () const;
 
-  UT_String getLanguageField () const;
-  UT_String getTerritoryField () const;
-  UT_String getEncodingField () const;
+  UT_String getLanguage () const;
+  UT_String getTerritory () const;
+  UT_String getEncoding () const;
 
   UT_String toString () const;
 

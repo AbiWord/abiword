@@ -32,7 +32,6 @@
 #include "ut_hash.h"
 #include "ut_string_class.h"
 
-#include "xap_EncodingManager.h"
 #ifdef ENABLE_RESOURCE_MANAGER
 #include "xap_ResourceManager.h"
 #endif

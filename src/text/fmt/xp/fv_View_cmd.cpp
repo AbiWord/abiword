@@ -64,7 +64,6 @@
 #include "spell_manager.h"
 #include "ut_rand.h"
 #include "fp_TableContainer.h"
-#include "xap_EncodingManager.h"
 
 #include "pp_Revision.h"
 #if 1

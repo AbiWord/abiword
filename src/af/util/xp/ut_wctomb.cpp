@@ -20,7 +20,7 @@
 #include <string.h>
 #include "ut_wctomb.h"
 #include "ut_assert.h"
-#include "xap_EncodingManager.h"
+#include "ut_locale.h"
 
 void UT_Wctomb::initialize()
 {
@@ -41,7 +41,7 @@ UT_Wctomb::UT_Wctomb(const char* to_charset)
 
 UT_Wctomb::UT_Wctomb()
 {
-    cd = UT_iconv_open(XAP_EncodingManager::get_instance()->getNative8BitEncodingName(),UCS_INTERNAL);
+    cd = UT_iconv_open(UT_LocaleInfo::system().getEncoding().c_str(),UCS_INTERNAL);
     UT_ASSERT(UT_iconv_isValid(cd));
 }
 

@@ -23,7 +23,6 @@
 #include <string.h>
 
 #include "xap_App.h"
-#include "xap_EncodingManager.h"
 #include "xap_Prefs.h"
 #include "gr_Graphics.h"
 #include "gr_CharWidths.h"

@@ -1,5 +1,5 @@
 /* AbiSource Program Utilities
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998-2002 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -16,20 +16,16 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
  * 02111-1307, USA.
  */
- 
 
 #include <string.h>
 #include <limits.h>
-#include "ut_mbtowc.h"
+#include <errno.h>
 
-#include "ut_debugmsg.h"
+#include "ut_mbtowc.h"
+#include "ut_locale.h"
 
 // UTF-8 can use up to 6 bytes
 #define MY_MB_LEN_MAX 6
-
-#include "ut_assert.h"
-#include "xap_EncodingManager.h"
-#include "errno.h"
 
 UT_UCS2_mbtowc::Converter::Converter (const char * from_charset) :
   m_cd(UT_iconv_open (ucs2Internal (), from_charset))
@@ -54,7 +50,7 @@ void UT_UCS2_mbtowc::initialize (bool clear)
 }
 
 UT_UCS2_mbtowc::UT_UCS2_mbtowc () :
-  m_converter(new Converter(XAP_EncodingManager::get_instance()->getNative8BitEncodingName())),
+  m_converter(new Converter(UT_LocaleInfo::system().getEncoding().c_str())),
   m_bufLen(0)
 {
   // 
@@ -144,7 +140,7 @@ void UT_UCS4_mbtowc::initialize (bool clear)
 }
 
 UT_UCS4_mbtowc::UT_UCS4_mbtowc () :
-  m_converter(new Converter(XAP_EncodingManager::get_instance()->getNative8BitEncodingName())),
+  m_converter(new Converter(UT_LocaleInfo::system().getEncoding().c_str())),
   m_bufLen(0)
 {
   // 

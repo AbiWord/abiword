@@ -29,9 +29,6 @@
 #include "ut_misc.h"
 #include "ut_string_class.h"
 
-#include "xap_EncodingManager.h"
-
-
 DefaultReader::DefaultReader () :
   in(0)
 {

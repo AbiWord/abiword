@@ -27,7 +27,6 @@
 #include "ut_string.h"
 #include "ut_xml.h"
 
-#include "xap_EncodingManager.h"
 #include "ut_string_class.h"
 
 // Please keep the "/**/" to stop MSVC dependency generator complaining.

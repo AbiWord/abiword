@@ -41,7 +41,6 @@ current table via ie_Table::get* methods.
 #include "ut_assert.h"
 #include "ut_string.h"
 #include "ut_units.h"
-#include "xap_EncodingManager.h"
 #include "ut_string_class.h"
 #include "ie_Table.h"
 #include "pp_AttrProp.h"

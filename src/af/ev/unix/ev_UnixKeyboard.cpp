@@ -30,9 +30,7 @@
 #include "ev_NamedVirtualKey.h"
 #include "ev_UnixKeyboard.h"
 #include "ev_UnixKeysym2ucs.cpp"
-#include "xap_EncodingManager.h"
-
-#include"ut_mbtowc.h"
+#include "ut_mbtowc.h"
 
 //////////////////////////////////////////////////////////////////
 
@@ -152,7 +150,7 @@ bool ev_UnixKeyboard::keyPressEvent(AV_View* pView, GdkEventKey* e)
 			UT_ASSERT(pEM);
 
 			UT_UCSChar *ucs = NULL;
-			char *mbs = e->string;
+			const char *mbs = e->string;
 			int mLength = strlen(mbs);
 			int uLength = 0;
 
@@ -162,18 +160,18 @@ bool ev_UnixKeyboard::keyPressEvent(AV_View* pView, GdkEventKey* e)
 
 				if the current locale is utf-8, we will also use keysym2ucs
 			*/
-			if(XAP_EncodingManager::get_instance()->isUnicodeLocale() || mLength == 0)
+			if(mLength == 0)
 			{
 			  UT_uint32 u = gdk_keyval_to_unicode (e->keyval);
 
 			  mLength = 1;
-			  ucs = new UT_UCSChar[1];
+			  ucs = new UT_UCS4Char[1];
 			  ucs[0] = u;
 			  uLength = mLength;
 			}
 			else
-			{
-				UT_UCS4_mbtowc m ("UTF-8");
+			{			  
+				static UT_UCS4_mbtowc m ("UTF-8");
 				ucs=new UT_UCSChar[mLength];
 				for(int i=0;i<mLength;++i)
 			  	{
