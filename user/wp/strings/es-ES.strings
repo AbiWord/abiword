@@ -1139,6 +1139,27 @@ MENU_STATUSLINE_AUTOTEXT_EMAIL_4=" "
 MENU_STATUSLINE_AUTOTEXT_EMAIL_5=" "
 MENU_STATUSLINE_AUTOTEXT_EMAIL_6=" "
 MENU_STATUSLINE_FMT_IMAGE="Cambiar el tamaño de la imagen"
+
+LANG_PL_PL="Polaco"
+LANG_LT_LT="Lituano"
+LANG_LA_IT="Latín (Renacimiento)"
+LANG_LV_LV="Letón"
+LANG_HI_IN="Hindi"
+LANG_GA_IE="Irlandés"
+LANG_SK_SK="Eslovaco"
+LANG_IS_IS="Islandés"
+LANG_HU_HU="Húngaro"
+LANG_SL_SI="Esloveno"
+LANG_NB_NO="Noruego Bokmal"
+LANG_NN_NO="Noruego Nynorsk"
+LANG_FA_IR="Persa"
+ENC_UNIC_UTF_16="Unicode UTF-16"
+ENC_UNIC_UTF_32="Unicode UTF-32"
+ENC_UNIC_UCS2="Unicode UCS-2"
+ENC_UNIC_UCS4="Unicode UCS-4"
+DLG_ToggleCase_FirstUpperCase="Primera Letra En Mayúscula"
+FIELD_Application_Filename="Nombre de fichero"
+
 />
 
 </AbiStrings>
