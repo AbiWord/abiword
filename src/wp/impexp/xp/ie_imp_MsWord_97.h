@@ -134,6 +134,10 @@ private:
 	void		_row_close();
 	void		_cell_open(const wvParseStruct *ps, const PAP *apap);
 	void		_cell_close();
+	void        _handleStyleSheet(const wvParseStruct *ps);
+	void        _generateCharProps(UT_String &s, const CHP * achp, wvParseStruct *ps);
+	void        _generateParaProps(UT_String &s, const PAP * apap, wvParseStruct *ps);
+	
 
 	UT_UCS4String		m_pTextRun;
 	UT_uint32			m_iImageCount;

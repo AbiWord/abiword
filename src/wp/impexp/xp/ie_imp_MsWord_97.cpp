@@ -54,6 +54,7 @@
 
 #include "pf_Frag_Strux.h"
 #include "pt_PieceTable.h"
+#include "pd_Style.h"
 
 #include "ut_Language.h"
 
@@ -422,17 +423,23 @@ UT_Confidence_t IE_Imp_MsWord_97_Sniffer::recognizeContents (const char * szBuf,
 	if (iNumbytes > 8)
 	{
 	        // this code is too generic - also picks up .wri documents
-		if (szBuf[0] == static_cast<char>(0x31) && szBuf[1] == static_cast<char>(0xbe) &&
-			szBuf[2] == static_cast<char>(0) && szBuf[3] == static_cast<char>(0))
+		if (szBuf[0] == static_cast<char>(0x31)
+			&& static_cast< unsigned char>(szBuf[1]) == static_cast< unsigned char>(0xbe)
+			&&  szBuf[2] == static_cast<char>(0)
+			&& szBuf[3] == static_cast<char>(0))
 		{
 		  return UT_CONFIDENCE_SOSO; //POOR
 		}
 
 		// this identifies staroffice dox as well
-		if (szBuf[0] == static_cast<char>(0xd0) && szBuf[1] == static_cast<char>(0xcf) &&
-			szBuf[2] == static_cast<char>(0x11) && szBuf[3] == static_cast<char>(0xe0) &&
-			szBuf[4] == static_cast<char>(0xa1) && szBuf[5] == static_cast<char>(0xb1) &&
-			szBuf[6] == static_cast<char>(0x1a) && szBuf[7] == static_cast<char>(0xe1))
+		if (static_cast< unsigned char>(szBuf[0]) == static_cast<unsigned char>(0xd0)
+			&& static_cast< unsigned char>(szBuf[1]) == static_cast<unsigned char>(0xcf)
+			&& szBuf[2] == static_cast<char>(0x11)
+			&& static_cast< unsigned char>(szBuf[3]) == static_cast<unsigned char>(0xe0)
+			&& static_cast< unsigned char>(szBuf[4]) == static_cast<unsigned char>(0xa1)
+			&& static_cast< unsigned char>(szBuf[5]) == static_cast<unsigned char>(0xb1)
+			&& szBuf[6] == static_cast<char>(0x1a)
+			&& static_cast< unsigned char>(szBuf[7]) == static_cast<unsigned char>(0xe1))
 		{
 		  return UT_CONFIDENCE_SOSO; // POOR
 		}
@@ -442,15 +449,19 @@ UT_Confidence_t IE_Imp_MsWord_97_Sniffer::recognizeContents (const char * szBuf,
 		{
 			return UT_CONFIDENCE_POOR;
 		}
-		if (szBuf[0] == static_cast<char>(0xfe) && szBuf[1] == static_cast<char>(0x37) &&
-			szBuf[2] == static_cast<char>(0) && szBuf[3] == static_cast<char>(0x23))
+		if (static_cast< unsigned char>(szBuf[0]) == static_cast<unsigned char>(0xfe)
+			&& szBuf[1] == static_cast<char>(0x37)
+			&& szBuf[2] == static_cast<char>(0)
+			&& szBuf[3] == static_cast<char>(0x23))
 		{
 			return UT_CONFIDENCE_POOR;
 		}
 
-		if (szBuf[0] == static_cast<char>(0xdb) && szBuf[1] == static_cast<char>(0xa5) &&
-			szBuf[2] == static_cast<char>(0x2d) && szBuf[3] == static_cast<char>(0) &&
-			szBuf[4] == static_cast<char>(0) && szBuf[5] == static_cast<char>(0))
+		if (static_cast< unsigned char>(szBuf[0]) == static_cast<unsigned char>(0xdb)
+			&& static_cast< unsigned char>(szBuf[1]) == static_cast<unsigned char>(0xa5)
+			&& szBuf[2] == static_cast<char>(0x2d)
+			&& szBuf[3] == static_cast<char>(0)
+			&& szBuf[4] == static_cast<char>(0) && szBuf[5] == static_cast<char>(0))
 		{
 			return UT_CONFIDENCE_POOR;
 		}
@@ -1094,6 +1105,9 @@ int IE_Imp_MsWord_97::_docProc (wvParseStruct * ps, UT_uint32 tag)
 		
 		m_bBidiDocument = false;
 #endif
+		// import styles
+		_handleStyleSheet(ps);
+		
 		UT_uint32 i,j;
 
 		if(m_pBookmarks)
@@ -1808,53 +1822,15 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 	    return 0;
 	  }
 
-	UT_String propBuffer;
-	UT_String props;
-
-	// DOM TODO: i think that this is right
-	if (apap->fBidi == 1) {
-		props += "dom-dir:rtl;";
+	if (apap->fBidi == 1)
+	{
 		m_bLTRParaContext = false;
-	} else {
-		props += "dom-dir:ltr;";
+	} else
+	{
 		m_bLTRParaContext = true;
 	}
 
 	m_bBidiDocument = false;
-
-	// paragraph alignment/justification
-	switch(apap->jc)
-	{
-	case 0:
-		props += "text-align:left;";
-		break;
-	case 1:
-		props += "text-align:center;";
-		break;
-	case 2:
-		props += "text-align:right;";
-		break;
-	case 3:
-		props += "text-align:justify;";
-		break;
-	case 4:
-		/* this type of justification is of unknown purpose and is
-		 * undocumented , but it shows up in asian documents so someone
-		 * should be able to tell me what it is someday
-		 */
-		props += "text-align:justify;";
-		break;
-	}
-
-	// keep paragraph together?
-	if (apap->fKeep) {
-		props += "keep-together:yes;";
-	}
-
-	// keep with next paragraph?
-	if (apap->fKeepFollow) {
-		props += "keep-with-next:yes;";
-	}
 
 	// break before paragraph?
 	if (apap->fPageBreakBefore)
@@ -1862,111 +1838,32 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 		// TODO: this should really set a property in
 		// TODO: in the paragraph, instead; but this
 		// TODO: gives a similar effect for now.
+		// TOOD: when it is handled properly the code needs to be
+		// moved into _generateParaProps()
 		UT_DEBUGMSG(("_beginPara: appending default block\n"));
 		getDoc()->appendStrux(PTX_Block, NULL);
 		UT_UCSChar ucs = UCS_FF;
 		getDoc()->appendSpan(&ucs,1);
 	}
+	
+	UT_String props;
+	_generateParaProps(props, apap, ps);
+	
+	//props, level, listid, parentid, style (TODO), NULL
+	const XML_Char * propsArray[11];
 
-	// widowed/orphaned lines
-	if (!apap->fWidowControl) {
-		// these AbiWord properties give the same effect
-		props += "orphans:0;widows:0;";
-	}
+	// props
+	propsArray[0] = static_cast<const XML_Char *>("props");
+	propsArray[1] = static_cast<const XML_Char *>(props.c_str());
 
-	// line spacing (single-spaced, double-spaced, etc.)
-	if (apap->lspd.fMultLinespace) {
-		UT_String_sprintf(propBuffer,
-				"line-height:%s;",
-				UT_convertToDimensionlessString( (static_cast<float>(apap->lspd.dyaLine) / 240), "1.1"));
-		props += propBuffer;
-	} else {
-		// TODO: handle exact line heights
-	}
-
-	//
-	// margins
-	//
-
-	// margin-right
-	if (apap->dxaRight) {
-		UT_String_sprintf(propBuffer,
-				"margin-right:%s;",
-				UT_convertInchesToDimensionString(DIM_IN, (static_cast<float>(apap->dxaRight) / 1440),
-												  "1.4"));
-		props += propBuffer;
-	}
-
-	// margin-left
-	if (apap->dxaLeft) {
-		UT_String_sprintf(propBuffer,
-				"margin-left:%s;",
-				UT_convertInchesToDimensionString(DIM_IN, (static_cast<float>(apap->dxaLeft) / 1440),
-												  "1.4"));
-		props += propBuffer;
-	}
-
-	// margin-left first line (indent)
-	if (apap->dxaLeft1) {
-		UT_String_sprintf(propBuffer,
-				"text-indent:%s;",
-				UT_convertInchesToDimensionString(DIM_IN, (static_cast<float>(apap->dxaLeft1) / 1440),
-												  "1.4"));
-		props += propBuffer;
-	}
-
-	// margin-top
-	if (apap->dyaBefore) {
-		UT_String_sprintf(propBuffer,
-				"margin-top:%dpt;", (apap->dyaBefore / 20));
-		props += propBuffer;
-	}
-
-	// margin-bottom
-	if (apap->dyaAfter) {
-		UT_String_sprintf(propBuffer,
-				"margin-bottom:%dpt;", (apap->dyaAfter / 20));
-	}
-
-	// tab stops
-	if (apap->itbdMac) {
-		propBuffer += "tabstops:";
-
-		for (int iTab = 0; iTab < apap->itbdMac; iTab++) {
-			propBuffer += UT_String_sprintf(
-							"%s/",
-							UT_convertInchesToDimensionString(DIM_IN, ((static_cast<float>(apap->rgdxaTab[iTab]))
-												   / 1440), "1.4"));
-			switch (apap->rgtbd[iTab].jc) {
-			case 1:
-				propBuffer += "C,";
-				break;
-			case 2:
-				propBuffer += "R,";
-				break;
-			case 3:
-				propBuffer += "D,";
-				break;
-			case 4:
-				propBuffer += "B,";
-				break;
-			case 0:
-			default:
-				propBuffer += "L,";
-				break;
-			}
-		}
-		// replace final comma with a semi-colon
-		propBuffer[propBuffer.size()-1] = ';';
-		props += propBuffer;
-	}
-
+	/* lists */
 	UT_uint32 myListId = 0;
 	LVLF * myLVLF = NULL;
 	UT_String szListId;
 	UT_String szParentId;
 	UT_String szStartValue;
 	UT_String szLevel;
+	UT_String propBuffer;
 	/*
 	  The MS documentation on lists really sucks, but we've been able to decipher
 	  some meaning from it and get simple lists to sorta work. This code mostly prints out
@@ -1976,392 +1873,379 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 
 	if ( apap->ilfo && ps->lfo )
 	{
-	  // all lists have ilfo set
-	  UT_DEBUGMSG(("list: ilvl %d, ilfo %d\n",apap->ilvl,apap->ilfo));	//ilvl is the list level
-	  LVL * myLVL = NULL;
-	  LFO * myLFO = NULL;
-	  LST * myLST = NULL;
-	  LFOLVL * myLFOLVL = NULL;
+		// all lists have ilfo set
+		UT_DEBUGMSG(("list: ilvl %d, ilfo %d\n",apap->ilvl,apap->ilfo));	//ilvl is the list level
+		LVL * myLVL = NULL;
+		LFO * myLFO = NULL;
+		LST * myLST = NULL;
+		LFOLVL * myLFOLVL = NULL;
 
-	  UT_sint32 myStartAt = -1;
-	  U8 * mygPAPX = NULL;
-	  U8 * mygCHPX = NULL;
-	  XCHAR * myNumberStr = NULL;
-	  UT_sint32 myNumberStr_count = 0;
-	  UT_uint32 mygPAPX_count = 0, mygCHPX_count = 0;
+		UT_sint32 myStartAt = -1;
+		U8 * mygPAPX = NULL;
+		U8 * mygCHPX = NULL;
+		XCHAR * myNumberStr = NULL;
+		UT_sint32 myNumberStr_count = 0;
+		UT_uint32 mygPAPX_count = 0, mygCHPX_count = 0;
 
-	  PAPX myPAPX;
-	  CHPX myCHPX;
+		PAPX myPAPX;
+		CHPX myCHPX;
 
-	  // first, get the LFO, and then find the lfovl for this paragraph
-	  myLFO = &ps->lfo[apap->ilfo - 1];
+		// first, get the LFO, and then find the lfovl for this paragraph
+		myLFO = &ps->lfo[apap->ilfo - 1];
 
-	  UT_uint32 i = 0, j = 0, k = 0;
-	  while(static_cast<UT_sint32>(i) < apap->ilfo - 1 && i < ps->nolfo)
+		UT_uint32 i = 0, j = 0, k = 0;
+		while(static_cast<UT_sint32>(i) < apap->ilfo - 1 && i < ps->nolfo)
 		{
-		  j += ps->lfo[i].clfolvl;
-		  i++;
+			j += ps->lfo[i].clfolvl;
+			i++;
 		}
 
-	  // remember how many overrides are there for this record
-	  k = ps->lfo[i].clfolvl;
+		// remember how many overrides are there for this record
+		k = ps->lfo[i].clfolvl;
 
-	  // if there are any overrides, then see if one of them applies to this level
-	  if(k && ps->lfolvl)
+		// if there are any overrides, then see if one of them applies to this level
+		if(k && ps->lfolvl)
 		{
-		  i = 0;
-		  while(i < k && ps->lfolvl[j].ilvl != apap->ilvl)
+			i = 0;
+			while(i < k && ps->lfolvl[j].ilvl != apap->ilvl)
+			{
+				j++;
+				i++;
+			}
+
+			if(ps->lfolvl[--j].ilvl != apap->ilvl)
+			{
+				UT_DEBUGMSG(("list: no LFOLVL found for this level (1)\n"));
+				myLFOLVL = NULL;
+			}
+			else
+			{
+				myLFOLVL = &ps->lfolvl[j];
+				UT_DEBUGMSG(("list: lfovl: iStartAt %d, fStartAt\n", myLFOLVL->iStartAt,myLFOLVL->fStartAt,myLFOLVL->fFormatting));
+				if(!myLFOLVL->fFormatting && myLFOLVL->fStartAt)
+					myStartAt = myLFOLVL->iStartAt;
+			}
+		}
+		else
 		{
-		  j++;
-		  i++;
+			UT_DEBUGMSG(("list: no LFOLVL found for this level (2)\n"));
+			myLFOLVL = NULL;
 		}
 
-		  if(ps->lfolvl[--j].ilvl != apap->ilvl)
+		// now that we might have the LFOLVL, let's see if we should use the LVL from the LFO
+		bool bNeedLST_LVL = (!myLFOLVL || !myLFOLVL->fStartAt || !myLFOLVL->fFormatting);
+		bool bLST_LVL_format = true;
+		if(myLFOLVL)
 		{
-		  UT_DEBUGMSG(("list: no LFOLVL found for this level (1)\n"));
-		  myLFOLVL = NULL;
+			// this branch has not been (thoroughly) debugged
+			// Abi bugs 2205 and 2393 exhibit this behavior
+			UT_DEBUGMSG(("list: using the LVL from LFO\n"));
+			myListId = myLFOLVL->iStartAt;
+			i = 0;
+			UT_DEBUGMSG(("list: number of LSTs %d, my lsid %d\n", ps->noofLST,myListId));
+			while(i < ps->noofLST && ps->lst[i].lstf.lsid != myListId)
+			{
+				i++;
+				UT_DEBUGMSG(("list: lsid in LST %d\n", ps->lst[i-1].lstf.lsid));
+			}
+
+			if(i == ps->noofLST || ps->lst[i].lstf.lsid != myListId)
+			{
+				UT_DEBUGMSG(("error: could not locate LST entry\n"));
+				goto list_error;
+			}
+
+			myLST = &ps->lst[i];
+			myLVL = &myLST->lvl[apap->ilvl];
+
+			// now we should have the LVL
+			UT_ASSERT(myLVL);
+
+			myLVLF = &myLVL->lvlf;
+			UT_ASSERT(myLVLF);
+
+			myStartAt = myLFOLVL->fStartAt ? static_cast<signed>(myLVLF->iStartAt) : -1;
+
+			mygPAPX = myLFOLVL->fFormatting ? myLVL->grpprlPapx : NULL;
+			mygPAPX_count = myLFOLVL->fFormatting ? myLVLF->cbGrpprlPapx : 0;
+
+			// not sure about this, the CHPX applies to the number, so it might be
+			// that we should take this if the fStartAt is set -- the docs are not clear
+			mygCHPX = myLFOLVL->fFormatting ? myLVL->grpprlChpx : NULL;
+			mygCHPX_count = myLFOLVL->fFormatting ? myLVLF->cbGrpprlChpx : 0;
+
+			myNumberStr = myLFOLVL->fStartAt && myLVL->numbertext ? myLVL->numbertext + 1 : NULL;
+			myNumberStr_count = myNumberStr ? *(myLVL->numbertext) : 0;
+
+			if(myLFOLVL->fFormatting)
+				bLST_LVL_format = false;
+
 		}
-		  else
+
+		if(bNeedLST_LVL)
 		{
-		  myLFOLVL = &ps->lfolvl[j];
-		  UT_DEBUGMSG(("list: lfovl: iStartAt %d, fStartAt\n", myLFOLVL->iStartAt,myLFOLVL->fStartAt,myLFOLVL->fFormatting));
-		  if(!myLFOLVL->fFormatting && myLFOLVL->fStartAt)
-			myStartAt = myLFOLVL->iStartAt;
+			LVL * prevLVL = myLVL;
+			LVLF * prevLVLF = myLVLF;
+			myListId = myLFO->lsid;
+			UT_DEBUGMSG(("list: using the LVL from LST\n"));
+			i = 0;
+			UT_DEBUGMSG(("list: number of LSTs %d, my lsid %d\n", ps->noofLST,myListId));
+			while(i < ps->noofLST && ps->lst[i].lstf.lsid != myListId)
+			{
+				i++;
+				xxx_UT_DEBUGMSG(("list: lsid in LST %d\n", ps->lst[i-1].lstf.lsid));
+			}
+
+			if(i == ps->noofLST || ps->lst[i].lstf.lsid != myListId)
+			{
+				UT_DEBUGMSG(("error: could not locate LST entry\n"));
+				goto list_error;
+			}
+
+			myLST = &ps->lst[i];
+			myLVL = &myLST->lvl[apap->ilvl];
+
+			// now we should have the correct LVL
+			UT_ASSERT(myLVL);
+
+			myLVLF = &myLVL->lvlf;
+			UT_ASSERT(myLVLF);
+
+			// retrieve any stuff we need from here (i.e., only what we did not get from the LFO LVL)
+			myStartAt = myStartAt == -1 ? myLVLF->iStartAt : myStartAt;
+
+			mygPAPX_count = !mygPAPX ? myLVLF->cbGrpprlPapx : mygPAPX_count;
+			mygPAPX = !mygPAPX ? myLVL->grpprlPapx : mygPAPX;
+
+			mygCHPX_count = !mygCHPX ? myLVLF->cbGrpprlChpx : mygCHPX_count;
+			mygCHPX = !mygCHPX ? myLVL->grpprlChpx : mygCHPX;
+
+			myNumberStr_count = !myNumberStr && myLVL->numbertext ? *(myLVL->numbertext) : myNumberStr_count;
+			myNumberStr = !myNumberStr && myLVL->numbertext ? myLVL->numbertext + 1 : myNumberStr;
+
+
+			// if there was a valid LFO LVL record that pertained to formatting
+			// then we will set the myLVL and myLVLF variables back to this record
+			// so that it can be used
+			if(!bLST_LVL_format && prevLVL && prevLVLF)
+			{
+				myLVL = prevLVL;
+				myLVLF = prevLVLF;
+			}
 		}
-		}
-	  else
+
+		UT_DEBUGMSG(("list: number text len %d, papx len %d, chpx len%d\n",myNumberStr_count,mygPAPX_count,mygCHPX_count));
+		myPAPX.cb = mygPAPX_count;
+		myPAPX.grpprl = mygPAPX;
+		myPAPX.istd = 4095; // no style
+
+		myCHPX.cbGrpprl = mygCHPX_count;
+		myCHPX.grpprl = mygCHPX;
+		myCHPX.istd = 4095; // no style
+
+
+		// if we are in a new list, then do some clean up first and remember the list id
+		if(m_iMSWordListId != myListId)
 		{
-		  UT_DEBUGMSG(("list: no LFOLVL found for this level (2)\n"));
-		  myLFOLVL = NULL;
+			m_iMSWordListId = myListId;
+
+			for(UT_uint32 i = 0; i < 9; i++)
+				m_iListIdIncrement[i] = 0;
+
+			UT_VECTOR_PURGEALL(ListIdLevelPair *, m_vLists);
+			m_vLists.clear();
 		}
 
-	  // now that we might have the LFOLVL, let's see if we should use the LVL from the LFO
-	  bool bNeedLST_LVL = (!myLFOLVL || !myLFOLVL->fStartAt || !myLFOLVL->fFormatting);
-	  bool bLST_LVL_format = true;
-	  if(myLFOLVL)
+		// a hack -- see the note on myListId below
+		myListId += myLVLF->nfc;
+		myListId += apap->ilvl;
+
+		/*
+		  IMPORTANT now we have the list formatting sutff retrieved; it is found in several
+		  different places:
+		  apap->ilvl - the level of this list (0-8)
+
+		  myStartAt	- the value at which the numbering for this listshould start
+		  (i.e., the number of the first item on the list)
+
+		  myListId	- the id of this list, we need this to know to which list this
+		  paragraph belongs; unfortunately, there seem to be some cases where separate
+		  lists *share* the same id, for instance when two lists, of different formatting,
+		  are separated by only empty paragraphs. As a hack, I have added the format number
+		  to the list id, so gaining different id for different formattings (it is not foolproof,
+		  for if id1 + format1 == id2 + format2 then we get two lists joined, but the probability
+		  of that should be small). Further problem is that in AW, list id refers to the set of
+		  list elements on the same level, while in Word the id is that of the entire list. The
+		  easiest way to tranform the Word id to AW id is to add the level to the id, which
+		  is what has been done above
+
+		  PAPX		- the formatting information that needs to be added to the format
+		  of this list
+
+		  CHPX		- the formatting of the list number
+
+		  myNumberStr - the actual number string to display (XCHAR *); we probably need
+		  this to work out the number separator, since there does not seem
+		  to be any reference to this anywhere
+
+		  myNumberStr_count - length of the number string
+
+		  myLVLF->nfc - number format (see the enum below)
+
+		  myLVLF->jc	- number alignment [0: lft, 1: rght, 2: cntr]
+
+		  myLVLF->ixchFollow - what character stands between the number and the para
+		  [0:= tab, 1: spc, 2: none]
+
+		*/
+		UT_DEBUGMSG(("list: id %d \n",myListId));
+		UT_DEBUGMSG(("list: iStartAt %d\n", myStartAt));
+		UT_DEBUGMSG(("list: lvlf: format %d\n",myLVLF->nfc)); // see the comment above for nfc values
+		UT_DEBUGMSG(("list: lvlf: number align %d [0: lft, 1: rght, 2: cntr]\n",myLVLF->jc));
+		UT_DEBUGMSG(("list: lvlf: ixchFollow %d [0:= tab, 1: spc, 2: none]\n",myLVLF->ixchFollow));
+
+		// If a given list id has already been defined, appending a new list with
+		// same values will have a harmless effect
+
+
+		// we will use this to keep track of how many entries of given level we have had
+		// every time we get here, we increase the counter for all levels lower that ours
+		// then we will add the counter for our level to myListId; this way subsections of
+		// the list separated by a higher level list entry will have different id's
+
+
+		for(j = apap->ilvl + 1; j < 9; j++)
+			m_iListIdIncrement[j]++;
+
+		myListId += m_iListIdIncrement[apap->ilvl];
+
+		const XML_Char * list_atts[13];
+		
+		// list id number
+		list_atts[0] = "id";
+		UT_String_sprintf(propBuffer, "%d", myListId);
+		szListId = propBuffer;
+		list_atts[1] = szListId.c_str();
+
+		// parent id
+		list_atts[2] = "parentid";
+
+		// we will search backward our list vector for the first entry that has a lower level than we
+		// and that will be our parent
+		UT_uint32 myParentID = 0;
+		for(UT_sint32 n = m_vLists.getItemCount(); n > 0; n--)
 		{
-		  // this branch has not been (thoroughly) debugged
-		  // Abi bugs 2205 and 2393 exhibit this behavior
-		  UT_DEBUGMSG(("list: using the LVL from LFO\n"));
-		  myListId = myLFOLVL->iStartAt;
-		  i = 0;
-		  UT_DEBUGMSG(("list: number of LSTs %d, my lsid %d\n", ps->noofLST,myListId));
-		  while(i < ps->noofLST && ps->lst[i].lstf.lsid != myListId)
+			ListIdLevelPair * llp = (ListIdLevelPair *)(m_vLists.getNthItem(n - 1));
+			if(llp->level < apap->ilvl)
+			{
+				myParentID = llp->listId;
+				break;
+			}
+		}
+		UT_String_sprintf(propBuffer, "%d", myParentID);
+		szParentId = propBuffer;
+		list_atts[3] = szParentId.c_str();
+
+		// list type
+		list_atts[4] = "type";
+		list_atts[5] = s_mapDocToAbiListId (static_cast<MSWordListIdType>(myLVLF->nfc));
+
+		// start value
+		list_atts[6] = "start-value";
+		UT_String_sprintf(propBuffer, "%d", myStartAt);
+		szStartValue = propBuffer;
+		list_atts[7] = szStartValue.c_str();
+
+		// list delimiter
+		list_atts[8] = "list-delim";
+		list_atts[9] = s_mapDocToAbiListDelim (static_cast<MSWordListIdType>(myLVLF->nfc));
+
+		list_atts[10] = "level";
+		UT_String_sprintf(propBuffer, "%d", apap->ilvl + 1); // Word level starts at 0, Abi's at 1
+		szLevel = propBuffer;
+		list_atts[11] = szLevel.c_str();
+
+		// NULL
+		list_atts[12] = 0;
+
+		// now add this to our vector of lists
+		ListIdLevelPair * llp = new ListIdLevelPair;
+		llp->listId = myListId;
+		llp->level = apap->ilvl;
+		m_vLists.addItem(static_cast<void*>(llp));
+
+		getDoc()->appendList(list_atts);
+		UT_DEBUGMSG(("DOM: appended a list\n"));
+
+		// TODO: merge in list properties and such here with the variable 'props',
+		// such as list-style, field-font, ...
+
+		// start-value
+		props += "start-value:";
+		props += szStartValue;
+		props += ";";
+
+		// list style
+		props += "list-style:";
+		props += s_mapDocToAbiListStyle (static_cast<MSWordListIdType>(myLVLF->nfc));
+		props += ";";
+
+		// field-font
+		props += "field-font:";
+		props += s_fieldFontForListStyle (static_cast<MSWordListIdType>(myLVLF->nfc));
+		// Put in margin-left and text-indent - Use MS info if available or
+		// AbiWord defaults if these aren't present
+		//
+
+		UT_String sMargeLeft("margin-left"),sMargeLeftV;
+		UT_String sMargeLeftFirst("text-indent"),sMargeLeftFirstV;
+		// margin-left
+		if (apap->dxaLeft) {
+			UT_String_sprintf(sMargeLeftV,
+							  "margin-left:%s;",
+							  UT_convertInchesToDimensionString(DIM_IN, (static_cast<float>(apap->dxaLeft) / 1440),
+																"1.4"));
+			UT_DEBUGMSG(("Margin-left from MSWord Lists info %s \n",sMargeLeftV.c_str()));
+		}
+		//
+		// Overide the margin controls for lists.
+		// Abi's defaults for levels gives a better fit to average documents. We need
+		// to decypher where this info is stored in the MS Word document
+		// 
+		float fIndent = 0.5; // LIST_DEFAULT_INDENT
+		fIndent = static_cast<float>(apap->ilvl + 1) * fIndent;
+		if (apap->dxaLeft) 
 		{
-		  i++;
-		  UT_DEBUGMSG(("list: lsid in LST %d\n", ps->lst[i-1].lstf.lsid));
+			fIndent += static_cast<float>(apap->dxaLeft)/(float)1440.0;
+		}
+		UT_String_sprintf(sMargeLeftV,"%fin",fIndent);
+
+		UT_String_setProperty(props,sMargeLeft,sMargeLeftV);
+
+		// margin-left first line (indent) text-indent
+
+		if (apap->dxaLeft1) {
+			UT_String_sprintf(sMargeLeftFirst,
+							  "%s",
+							  UT_convertInchesToDimensionString(DIM_IN, (static_cast<float>(apap->dxaLeft1) / 1440),"1.4"));
+
+			UT_DEBUGMSG(("Margin-left-first (text-indent)  from MSWord Lists info %s \n",sMargeLeftFirst.c_str()));
+			sMargeLeftFirst = "text-indent";
 		}
 
-		  if(i == ps->noofLST || ps->lst[i].lstf.lsid != myListId)
-		{
-		  UT_DEBUGMSG(("error: could not locate LST entry\n"));
-		  goto list_error;
-		}
+		float fFirstIndent  = (float)-0.3; // LIST_DEFAULT_INDENT_LABEL
+		fFirstIndent = fFirstIndent - static_cast<float>(apap->ilvl) * (float)0.2;
+		UT_String_sprintf(sMargeLeftFirstV,"%fin;",fFirstIndent);
 
-		  myLST = &ps->lst[i];
-		  myLVL = &myLST->lvl[apap->ilvl];
 
-		  // now we should have the LVL
-		  UT_ASSERT(myLVL);
-
-		  myLVLF = &myLVL->lvlf;
-		  UT_ASSERT(myLVLF);
-
-		  myStartAt = myLFOLVL->fStartAt ? static_cast<signed>(myLVLF->iStartAt) : -1;
-
-		  mygPAPX = myLFOLVL->fFormatting ? myLVL->grpprlPapx : NULL;
-		  mygPAPX_count = myLFOLVL->fFormatting ? myLVLF->cbGrpprlPapx : 0;
-
-		  // not sure about this, the CHPX applies to the number, so it might be
-		  // that we should take this if the fStartAt is set -- the docs are not clear
-		  mygCHPX = myLFOLVL->fFormatting ? myLVL->grpprlChpx : NULL;
-		  mygCHPX_count = myLFOLVL->fFormatting ? myLVLF->cbGrpprlChpx : 0;
-
-		  myNumberStr = myLFOLVL->fStartAt && myLVL->numbertext ? myLVL->numbertext + 1 : NULL;
-		  myNumberStr_count = myNumberStr ? *(myLVL->numbertext) : 0;
-
-		  if(myLFOLVL->fFormatting)
-		bLST_LVL_format = false;
-
-		}
-
-	  if(bNeedLST_LVL)
-		{
-		  LVL * prevLVL = myLVL;
-		  LVLF * prevLVLF = myLVLF;
-		  myListId = myLFO->lsid;
-		  UT_DEBUGMSG(("list: using the LVL from LST\n"));
-		  i = 0;
-		  UT_DEBUGMSG(("list: number of LSTs %d, my lsid %d\n", ps->noofLST,myListId));
-		  while(i < ps->noofLST && ps->lst[i].lstf.lsid != myListId)
-		{
-		  i++;
-		  xxx_UT_DEBUGMSG(("list: lsid in LST %d\n", ps->lst[i-1].lstf.lsid));
-		}
-
-		  if(i == ps->noofLST || ps->lst[i].lstf.lsid != myListId)
-		{
-		  UT_DEBUGMSG(("error: could not locate LST entry\n"));
-		  goto list_error;
-		}
-
-		  myLST = &ps->lst[i];
-		  myLVL = &myLST->lvl[apap->ilvl];
-
-		  // now we should have the correct LVL
-		  UT_ASSERT(myLVL);
-
-		  myLVLF = &myLVL->lvlf;
-		  UT_ASSERT(myLVLF);
-
-		  // retrieve any stuff we need from here (i.e., only what we did not get from the LFO LVL)
-		  myStartAt = myStartAt == -1 ? myLVLF->iStartAt : myStartAt;
-
-		  mygPAPX_count = !mygPAPX ? myLVLF->cbGrpprlPapx : mygPAPX_count;
-		  mygPAPX = !mygPAPX ? myLVL->grpprlPapx : mygPAPX;
-
-		  mygCHPX_count = !mygCHPX ? myLVLF->cbGrpprlChpx : mygCHPX_count;
-		  mygCHPX = !mygCHPX ? myLVL->grpprlChpx : mygCHPX;
-
-		  myNumberStr_count = !myNumberStr && myLVL->numbertext ? *(myLVL->numbertext) : myNumberStr_count;
-		  myNumberStr = !myNumberStr && myLVL->numbertext ? myLVL->numbertext + 1 : myNumberStr;
-
-
-		  // if there was a valid LFO LVL record that pertained to formatting
-		  // then we will set the myLVL and myLVLF variables back to this record
-		  // so that it can be used
-		  if(!bLST_LVL_format && prevLVL && prevLVLF)
-		{
-		  myLVL = prevLVL;
-		  myLVLF = prevLVLF;
-		}
-		}
-
-	  UT_DEBUGMSG(("list: number text len %d, papx len %d, chpx len%d\n",myNumberStr_count,mygPAPX_count,mygCHPX_count));
-	  myPAPX.cb = mygPAPX_count;
-	  myPAPX.grpprl = mygPAPX;
-	  myPAPX.istd = 4095; // no style
-
-	  myCHPX.cbGrpprl = mygCHPX_count;
-	  myCHPX.grpprl = mygCHPX;
-	  myCHPX.istd = 4095; // no style
-
-
-	  // if we are in a new list, then do some clean up first and remember the list id
-	  if(m_iMSWordListId != myListId)
-	  {
-		  m_iMSWordListId = myListId;
-
-		  for(UT_uint32 i = 0; i < 9; i++)
-			  m_iListIdIncrement[i] = 0;
-
-		  UT_VECTOR_PURGEALL(ListIdLevelPair *, m_vLists);
-		  m_vLists.clear();
-	  }
-
-	  // a hack -- see the note on myListId below
-	  myListId += myLVLF->nfc;
-	  myListId += apap->ilvl;
-
-	  /*
-		IMPORTANT now we have the list formatting sutff retrieved; it is found in several
-		different places:
-		apap->ilvl - the level of this list (0-8)
-
-		myStartAt	- the value at which the numbering for this listshould start
-		(i.e., the number of the first item on the list)
-
-		myListId	- the id of this list, we need this to know to which list this
-		paragraph belongs; unfortunately, there seem to be some cases where separate
-		lists *share* the same id, for instance when two lists, of different formatting,
-		are separated by only empty paragraphs. As a hack, I have added the format number
-		to the list id, so gaining different id for different formattings (it is not foolproof,
-		for if id1 + format1 == id2 + format2 then we get two lists joined, but the probability
-		of that should be small). Further problem is that in AW, list id refers to the set of
-		list elements on the same level, while in Word the id is that of the entire list. The
-		easiest way to tranform the Word id to AW id is to add the level to the id, which
-		is what has been done above
-
-		PAPX		- the formatting information that needs to be added to the format
-		of this list
-
-		CHPX		- the formatting of the list number
-
-		myNumberStr - the actual number string to display (XCHAR *); we probably need
-		this to work out the number separator, since there does not seem
-		to be any reference to this anywhere
-
-		myNumberStr_count - length of the number string
-
-		myLVLF->nfc - number format (see the enum below)
-
-		myLVLF->jc	- number alignment [0: lft, 1: rght, 2: cntr]
-
-		myLVLF->ixchFollow - what character stands between the number and the para
-		[0:= tab, 1: spc, 2: none]
-
-	  */
-	  UT_DEBUGMSG(("list: id %d \n",myListId));
-	  UT_DEBUGMSG(("list: iStartAt %d\n", myStartAt));
-	  UT_DEBUGMSG(("list: lvlf: format %d\n",myLVLF->nfc)); // see the comment above for nfc values
-	  UT_DEBUGMSG(("list: lvlf: number align %d [0: lft, 1: rght, 2: cntr]\n",myLVLF->jc));
-	  UT_DEBUGMSG(("list: lvlf: ixchFollow %d [0:= tab, 1: spc, 2: none]\n",myLVLF->ixchFollow));
-
-	  // If a given list id has already been defined, appending a new list with
-	  // same values will have a harmless effect
-
-	  // id, parentid, type, start value, list-delim, NULL
-	  const XML_Char * list_atts[13];
-
-
-	  // we will use this to keep track of how many entries of given level we have had
-	  // every time we get here, we increase the counter for all levels lower that ours
-	  // then we will add the counter for our level to myListId; this way subsections of
-	  // the list separated by a higher level list entry will have different id's
-
-
-	  for(j = apap->ilvl + 1; j < 9; j++)
-		  m_iListIdIncrement[j]++;
-
-	  myListId += m_iListIdIncrement[apap->ilvl];
-
-	  // list id number
-	  list_atts[0] = "id";
-	  UT_String_sprintf(propBuffer, "%d", myListId);
-	  szListId = propBuffer;
-	  list_atts[1] = szListId.c_str();
-
-	  // parent id
-	  list_atts[2] = "parentid";
-
-	  // we will search backward our list vector for the first entry that has a lower level than we
-	  // and that will be our parent
-	  UT_uint32 myParentID = 0;
-	  for(UT_sint32 n = m_vLists.getItemCount(); n > 0; n--)
-	  {
-		  ListIdLevelPair * llp = (ListIdLevelPair *)(m_vLists.getNthItem(n - 1));
-		  if(llp->level < apap->ilvl)
-		  {
-			  myParentID = llp->listId;
-			  break;
-		  }
-	  }
-	  UT_String_sprintf(propBuffer, "%d", myParentID);
-	  szParentId = propBuffer;
-	  list_atts[3] = szParentId.c_str();
-
-	  // list type
-	  list_atts[4] = "type";
-	  list_atts[5] = s_mapDocToAbiListId (static_cast<MSWordListIdType>(myLVLF->nfc));
-
-	  // start value
-	  list_atts[6] = "start-value";
-	  UT_String_sprintf(propBuffer, "%d", myStartAt);
-	  szStartValue = propBuffer;
-	  list_atts[7] = szStartValue.c_str();
-
-	  // list delimiter
-	  list_atts[8] = "list-delim";
-	  list_atts[9] = s_mapDocToAbiListDelim (static_cast<MSWordListIdType>(myLVLF->nfc));
-
-	  list_atts[10] = "level";
-	  UT_String_sprintf(propBuffer, "%d", apap->ilvl + 1); // Word level starts at 0, Abi's at 1
-	  szLevel = propBuffer;
-	  list_atts[11] = szLevel.c_str();
-
-	  // NULL
-	  list_atts[12] = 0;
-
-	  // now add this to our vector of lists
-	  ListIdLevelPair * llp = new ListIdLevelPair;
-	  llp->listId = myListId;
-	  llp->level = apap->ilvl;
-	  m_vLists.addItem(static_cast<void*>(llp));
-
-	  getDoc()->appendList(list_atts);
-	  UT_DEBUGMSG(("DOM: appended a list\n"));
-
-	  // TODO: merge in list properties and such here with the variable 'props',
-	  // such as list-style, field-font, ...
-
-	  // start-value
-	  props += "start-value:";
-	  props += szStartValue;
-	  props += ";";
-
-	  // list style
-	  props += "list-style:";
-	  props += s_mapDocToAbiListStyle (static_cast<MSWordListIdType>(myLVLF->nfc));
-	  props += ";";
-
-	  // field-font
-	  props += "field-font:";
-	  props += s_fieldFontForListStyle (static_cast<MSWordListIdType>(myLVLF->nfc));
-    // Put in margin-left and text-indent - Use MS info if available or
-    // AbiWord defaults if these aren't present
-	//
-
-	  UT_String sMargeLeft("margin-left"),sMargeLeftV;
-	  UT_String sMargeLeftFirst("text-indent"),sMargeLeftFirstV;
-	  // margin-left
-	  if (apap->dxaLeft) {
-		  UT_String_sprintf(sMargeLeftV,
-							"margin-left:%s;",
-							UT_convertInchesToDimensionString(DIM_IN, (static_cast<float>(apap->dxaLeft) / 1440),
-															  "1.4"));
-		  UT_DEBUGMSG(("Margin-left from MSWord Lists info %s \n",sMargeLeftV.c_str()));
-	  }
-//
-// Overide the margin controls for lists.
-// Abi's defaults for levels gives a better fit to average documents. We need
-// to decypher where this info is stored in the MS Word document
-// 
-	  float fIndent = 0.5; // LIST_DEFAULT_INDENT
-	  fIndent = static_cast<float>(apap->ilvl + 1) * fIndent;
-	  if (apap->dxaLeft) 
-	  {
-		  fIndent += static_cast<float>(apap->dxaLeft)/1440.0;
-	  }
-	  UT_String_sprintf(sMargeLeftV,"%fin",fIndent);
-
-	  UT_String_setProperty(props,sMargeLeft,sMargeLeftV);
-
-	  // margin-left first line (indent) text-indent
-
-	  if (apap->dxaLeft1) {
-		  UT_String_sprintf(sMargeLeftFirst,
-							"%s",
-							UT_convertInchesToDimensionString(DIM_IN, (static_cast<float>(apap->dxaLeft1) / 1440),"1.4"));
-
-		  UT_DEBUGMSG(("Margin-left-first (text-indent)  from MSWord Lists info %s \n",sMargeLeftFirst.c_str()));
-		  sMargeLeftFirst = "text-indent";
-	  }
-
-	  float fFirstIndent  = -0.3; // LIST_DEFAULT_INDENT_LABEL
-	  fFirstIndent = fFirstIndent - static_cast<float>(apap->ilvl) * 0.2;
-	  UT_String_sprintf(sMargeLeftFirstV,"%fin;",fFirstIndent);
-
-
-	  UT_String_setProperty(props,sMargeLeftFirst,sMargeLeftFirstV);
-	  xxx_UT_DEBUGMSG(("props for MSWORD are %s \n",props.c_str()));
+		UT_String_setProperty(props,sMargeLeftFirst,sMargeLeftFirstV);
+		xxx_UT_DEBUGMSG(("props for MSWORD are %s \n",props.c_str()));
 
 
 	} // end of list-related code
 
-list_error:
-
-	// remove the trailing semi-colon
-	props [props.size()-1] = 0;
-
-	xxx_UT_DEBUGMSG(("Dom: the paragraph properties are: '%s'\n",props.c_str()));
-
-	//props, level, listid, parentid, style (TODO), NULL
-	const XML_Char * propsArray[11];
-
-	// props
-	propsArray[0] = static_cast<const XML_Char *>("props");
-	propsArray[1] = static_cast<const XML_Char *>(props.c_str());
-
+ list_error:
+	
 	UT_uint32 i = 2;
 	// level, or 0 for default, normal level
 	if (myListId > 0)
@@ -2373,7 +2257,7 @@ list_error:
 		propsArray[i++] = "parentid";
 		propsArray[i++] = szParentId.c_str();
 	}
-#if 0
+
 	// handle style
 	// TODO from wv we get the style props expanded and applied to the
 	// characters in the paragraph (i.e., part of the CHP structure);
@@ -2383,7 +2267,7 @@ list_error:
 		propsArray[i++] = "style";
 		propsArray[i++] = apap->stylename;
 	}
-#endif
+
 	// NULL
 	propsArray[i] = 0;
 
@@ -2449,63 +2333,12 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 
 	const XML_Char * propsArray[7];
 	UT_uint32 propsOffset = 0;
-	UT_String propBuffer;
 
 	m_charProps.clear();
 
 	memset (propsArray, 0, sizeof(propsArray));
 
-	// set char tolower if fSmallCaps && fLowerCase
-	if ( achp->fSmallCaps && achp->fLowerCase )
-	  m_bIsLower = true;
-	else
-	  m_bIsLower = false;
-
-	// set language based the lid - TODO: do we want to handle -none- differently?
-	m_charProps += "lang:";
-
-	unsigned short iLid = 0;
-	// I am not sure how the various lids are supposed to work, but
-	// achp->fBidi does not mean that the lidBidi is set ...
-	if (achp->fBidi)
-	{
-		iLid = achp->lidBidi;
-	}
-	else if(ps->fib.fFarEast)
-	{
-		iLid = achp->lidFE;
-	}
-	else
-	{
-		iLid = achp->lid;
-	}
-	
-
-	// if we do not have meaningful lid, try default ...
-	if(!iLid)
-		iLid = achp->lidDefault;
-	
-	m_charProps += wvLIDToLangConverter (iLid);
-	m_charProps += ";";
-
-	// decide best codepage based on the lid (as lang code above)
-	UT_String codepage;
-	if (achp->fBidi)
-		codepage = wvLIDToCodePageConverter (achp->lidBidi);
-	else if (!ps->fib.fFarEast)
-		codepage = wvLIDToCodePageConverter (achp->lidDefault);
-	else
-		codepage = wvLIDToCodePageConverter (achp->lidFE);
-
-	// watch out for codepage 0 = unicode
-	if (codepage == "CP0")
-		codepage = XAP_EncodingManager::get_instance()->getNativeUnicodeEncodingName();
-	// if this is the first codepage we've seen, use it.
-	// if we see more than one different codepage in a document, use unicode.
-	if (!getDoc()->getEncodingName())
-		getDoc()->setEncodingName(codepage.c_str());
-	else if (getDoc()->getEncodingName() != codepage)
-		getDoc()->setEncodingName(XAP_EncodingManager::get_instance()->getNativeUnicodeEncodingName());
+	_generateCharProps(m_charProps, achp, ps);
 
 	if (!achp->fBidi)
 		m_bLTRCharContext = true;
@@ -2513,111 +2346,6 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 		m_bLTRCharContext = false;
 
 	m_bBidiDocument = m_bLTRCharContext ^ m_bLTRParaContext;
-
-
-	// bold text
-	bool fBold = (achp->fBidi ? achp->fBoldBidi : achp->fBold);
-	if (fBold) {
-		m_charProps += "font-weight:bold;";
-	}
-
-	// italic text
-	bool fItalic = (achp->fBidi ? achp->fItalicBidi : achp->fItalic);
-	if (fItalic) {
-		m_charProps += "font-style:italic;";
-	}
-
-	// foreground color
-	U8 ico = (achp->fBidi ? achp->icoBidi : achp->ico);
-	if (ico) {
-		UT_String_sprintf(propBuffer, "color:%s;",
-				  sMapIcoToColor(ico).c_str());
-		m_charProps += propBuffer;
-	}
-
-	// underline and strike-through
-	if (achp->fStrike || achp->kul) {
-		m_charProps += "text-decoration:";
-		if ((achp->fStrike || achp->fDStrike) && achp->kul) {
-			m_charProps += "underline line-through;";
-		} else if (achp->kul) {
-			m_charProps += "underline;";
-		} else {
-			m_charProps += "line-through;";
-		}
-	}
-
-	// background color
-	if (achp->fHighlight) {
-		UT_String_sprintf(propBuffer,"bgcolor:%s;",
-				  sMapIcoToColor(achp->icoHighlight).c_str());
-		m_charProps += propBuffer;
-	}
-
-	// superscript && subscript
-	if (achp->iss == 1) {
-		m_charProps += "text-position: superscript;";
-	} else if (achp->iss == 2) {
-		m_charProps += "text-position: subscript;";
-	}
-
-	if (achp->fVanish)
-	  {
-	    m_charProps += "display:none;";
-	  }
-
-	// font size (hps is half-points)
-	// I have seen a bidi doc that had hpsBidi == 0, and the actual size in hps
-	U16 hps = (achp->fBidi &&  achp->hpsBidi ? achp->hpsBidi : achp->hps);
-	UT_String_sprintf(propBuffer,
-			"font-size:%dpt;", (int)(hps/2));
-	m_charProps += propBuffer;
-
-	// font family
-	char *fname;
-
-	// if the FarEast flag is set, use the FarEast font,
-	// otherwise, we'll use the ASCII font.
-	if (achp->fBidi) {
-		fname = wvGetFontnameFromCode(&ps->fonts, achp->ftcBidi);
-	} else if (!ps->fib.fFarEast) {
-		fname = wvGetFontnameFromCode(&ps->fonts, achp->ftcAscii);
-	} else {
-		fname = wvGetFontnameFromCode(&ps->fonts, achp->ftcFE);
-
-		if (strlen (fname) > 6)
-			fname[6] = '\0';
-
-		const char *f=XAP_EncodingManager::cjk_word_fontname_mapping.lookupByTarget(fname);
-
-		if (f == fname)
-		{
-			FREEP (fname);
-			fname = UT_strdup ("song");
-		}
-		else
-		{
-			FREEP (fname);
-			fname = UT_strdup (f ? f : "helvetic");
-		}
-	}
-
-	// there are times when we should use the third, Other font,
-	// and the logic to know when somehow depends on the
-	// character sets or encoding types? it's in the docs.
-
-	UT_ASSERT_HARMLESS(fname != NULL);
-	xxx_UT_DEBUGMSG(("font-family = %s\n", fname));
-
-	m_charProps += "font-family:";
-
-	if(fname)
-		m_charProps += fname;
-	else
-		m_charProps += "Times New Roman";
-	FREEP(fname);
-
-	xxx_UT_DEBUGMSG(("DOM: character properties are: '%s'\n", props.c_str()));
 
 	propsArray[propsOffset++] = static_cast<const XML_Char *>("props");
 	propsArray[propsOffset++] = static_cast<const XML_Char *>(m_charProps.c_str());
@@ -2644,13 +2372,14 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 	}
 	else
 		m_charRevs.clear();
-#if 0
+	
+	
 	if(achp->stylename[0])
 	{
 	    propsArray[propsOffset++] = static_cast<XML_Char *>("style");
 	    propsArray[propsOffset++] = static_cast<XML_Char *>(achp->stylename);
 	}
-#endif
+
 	// woah - major error here
 	if(!m_bInSect)
 	{
@@ -3332,4 +3061,415 @@ void IE_Imp_MsWord_97::_cell_close ()
   m_bInPara = false ;
 
   xxx_UT_DEBUGMSG(("</CELL>"));
+}
+
+
+void IE_Imp_MsWord_97::_generateCharProps(UT_String &s, const CHP * achp, wvParseStruct *ps)
+{
+	UT_String propBuffer;
+
+	// set char tolower if fSmallCaps && fLowerCase
+	if ( achp->fSmallCaps && achp->fLowerCase )
+		m_bIsLower = true;
+	else
+		m_bIsLower = false;
+
+	// set language based the lid - TODO: do we want to handle -none- differently?
+	s += "lang:";
+
+	unsigned short iLid = 0;
+	// I am not sure how the various lids are supposed to work, but
+	// achp->fBidi does not mean that the lidBidi is set ...
+	if (achp->fBidi)
+	{
+		iLid = achp->lidBidi;
+	}
+	else if(ps->fib.fFarEast)
+	{
+		iLid = achp->lidFE;
+	}
+	else
+	{
+		iLid = achp->lid;
+	}
+	
+
+	// if we do not have meaningful lid, try default ...
+	if(!iLid)
+		iLid = achp->lidDefault;
+	
+	s += wvLIDToLangConverter (iLid);
+	s += ";";
+
+	// decide best codepage based on the lid (as lang code above)
+	UT_String codepage;
+	if (achp->fBidi)
+		codepage = wvLIDToCodePageConverter (achp->lidBidi);
+	else if (!ps->fib.fFarEast)
+		codepage = wvLIDToCodePageConverter (achp->lidDefault);
+	else
+		codepage = wvLIDToCodePageConverter (achp->lidFE);
+
+	// watch out for codepage 0 = unicode
+	const char * pNUE = XAP_EncodingManager::get_instance()->getNativeUnicodeEncodingName();
+
+	if (codepage == "CP0")
+		codepage = pNUE;
+	
+	// if this is the first codepage we've seen, use it.
+	// if we see more than one different codepage in a document, use unicode.
+	if (!getDoc()->getEncodingName())
+		getDoc()->setEncodingName(codepage.c_str());
+	else if (getDoc()->getEncodingName() != codepage)
+		getDoc()->setEncodingName(pNUE);
+
+	// bold text
+	bool fBold = (achp->fBidi ? achp->fBoldBidi : achp->fBold);
+	if (fBold) {
+		s += "font-weight:bold;";
+	}
+
+	// italic text
+	bool fItalic = (achp->fBidi ? achp->fItalicBidi : achp->fItalic);
+	if (fItalic) {
+		s += "font-style:italic;";
+	}
+
+	// foreground color
+	U8 ico = (achp->fBidi ? achp->icoBidi : achp->ico);
+	if (ico) {
+		UT_String_sprintf(propBuffer, "color:%s;",
+						  sMapIcoToColor(ico).c_str());
+		s += propBuffer;
+	}
+
+	// underline and strike-through
+	if (achp->fStrike || achp->kul) {
+		s += "text-decoration:";
+		if ((achp->fStrike || achp->fDStrike) && achp->kul) {
+			s += "underline line-through;";
+		} else if (achp->kul) {
+			s += "underline;";
+		} else {
+			s += "line-through;";
+		}
+	}
+
+	// background color
+	if (achp->fHighlight) {
+		UT_String_sprintf(propBuffer,"bgcolor:%s;",
+						  sMapIcoToColor(achp->icoHighlight).c_str());
+		s += propBuffer;
+	}
+
+	// superscript && subscript
+	if (achp->iss == 1) {
+		s += "text-position: superscript;";
+	} else if (achp->iss == 2) {
+		s += "text-position: subscript;";
+	}
+
+	if (achp->fVanish)
+	{
+	    s += "display:none;";
+	}
+
+	// font size (hps is half-points)
+	// I have seen a bidi doc that had hpsBidi == 0, and the actual size in hps
+	U16 hps = (achp->fBidi &&  achp->hpsBidi ? achp->hpsBidi : achp->hps);
+	UT_String_sprintf(propBuffer,
+					  "font-size:%dpt;", (int)(hps/2));
+	s += propBuffer;
+
+	// font family
+	char *fname;
+
+	// if the FarEast flag is set, use the FarEast font,
+	// otherwise, we'll use the ASCII font.
+	if (achp->fBidi) {
+		fname = wvGetFontnameFromCode(&ps->fonts, achp->ftcBidi);
+	} else if (!ps->fib.fFarEast) {
+		fname = wvGetFontnameFromCode(&ps->fonts, achp->ftcAscii);
+	} else {
+		fname = wvGetFontnameFromCode(&ps->fonts, achp->ftcFE);
+
+		if (strlen (fname) > 6)
+			fname[6] = '\0';
+
+		const char *f=XAP_EncodingManager::cjk_word_fontname_mapping.lookupByTarget(fname);
+
+		if (f == fname)
+		{
+			FREEP (fname);
+			fname = UT_strdup ("song");
+		}
+		else
+		{
+			FREEP (fname);
+			fname = UT_strdup (f ? f : "helvetic");
+		}
+	}
+
+	// there are times when we should use the third, Other font,
+	// and the logic to know when somehow depends on the
+	// character sets or encoding types? it's in the docs.
+
+	UT_ASSERT_HARMLESS(fname != NULL);
+	xxx_UT_DEBUGMSG(("font-family = %s\n", fname));
+
+	s += "font-family:";
+
+	if(fname)
+		s += fname;
+	else
+		s += "Times New Roman";
+	FREEP(fname);
+}
+
+void IE_Imp_MsWord_97::_generateParaProps(UT_String &s, const PAP * apap, wvParseStruct *ps)
+{
+	UT_String propBuffer;
+
+	// DOM TODO: i think that this is right
+	if (apap->fBidi == 1)
+	{
+		s += "dom-dir:rtl;";
+	}
+	else
+	{
+		s += "dom-dir:ltr;";
+	}
+
+	// paragraph alignment/justification
+	switch(apap->jc)
+	{
+		case 0:
+			s += "text-align:left;";
+			break;
+		case 1:
+			s += "text-align:center;";
+			break;
+		case 2:
+			s += "text-align:right;";
+			break;
+		case 3:
+			s += "text-align:justify;";
+			break;
+		case 4:
+			/* this type of justification is of unknown purpose and is
+			 * undocumented , but it shows up in asian documents so someone
+			 * should be able to tell me what it is someday
+			 */
+			s += "text-align:justify;";
+			break;
+	}
+
+	// keep paragraph together?
+	if (apap->fKeep) {
+		s += "keep-together:yes;";
+	}
+
+	// keep with next paragraph?
+	if (apap->fKeepFollow) {
+		s += "keep-with-next:yes;";
+	}
+
+	// widowed/orphaned lines
+	if (!apap->fWidowControl) {
+		// these AbiWord properties give the same effect
+		s += "orphans:0;widows:0;";
+	}
+
+	// line spacing (single-spaced, double-spaced, etc.)
+	if (apap->lspd.fMultLinespace) {
+		UT_String_sprintf(propBuffer,
+						  "line-height:%s;",
+						  UT_convertToDimensionlessString( (static_cast<float>(apap->lspd.dyaLine) / 240), "1.1"));
+		s += propBuffer;
+	} else {
+		// TODO: handle exact line heights
+	}
+
+	//
+	// margins
+	//
+
+	// margin-right
+	if (apap->dxaRight) {
+		UT_String_sprintf(propBuffer,
+						  "margin-right:%s;",
+						  UT_convertInchesToDimensionString(DIM_IN, (static_cast<float>(apap->dxaRight) / 1440),
+															"1.4"));
+		s += propBuffer;
+	}
+
+	// margin-left
+	if (apap->dxaLeft) {
+		UT_String_sprintf(propBuffer,
+						  "margin-left:%s;",
+						  UT_convertInchesToDimensionString(DIM_IN, (static_cast<float>(apap->dxaLeft) / 1440),
+															"1.4"));
+		s += propBuffer;
+	}
+
+	// margin-left first line (indent)
+	if (apap->dxaLeft1) {
+		UT_String_sprintf(propBuffer,
+						  "text-indent:%s;",
+						  UT_convertInchesToDimensionString(DIM_IN, (static_cast<float>(apap->dxaLeft1) / 1440),
+															"1.4"));
+		s += propBuffer;
+	}
+
+	// margin-top
+	if (apap->dyaBefore) {
+		UT_String_sprintf(propBuffer,
+						  "margin-top:%dpt;", (apap->dyaBefore / 20));
+		s += propBuffer;
+	}
+
+	// margin-bottom
+	if (apap->dyaAfter) {
+		UT_String_sprintf(propBuffer,
+						  "margin-bottom:%dpt;", (apap->dyaAfter / 20));
+	}
+
+	// tab stops
+	if (apap->itbdMac) {
+		propBuffer += "tabstops:";
+
+		for (int iTab = 0; iTab < apap->itbdMac; iTab++) {
+			propBuffer += UT_String_sprintf(
+											"%s/",
+											UT_convertInchesToDimensionString(DIM_IN, ((static_cast<float>(apap->rgdxaTab[iTab]))
+																					   / 1440), "1.4"));
+			switch (apap->rgtbd[iTab].jc) {
+				case 1:
+					propBuffer += "C,";
+					break;
+				case 2:
+					propBuffer += "R,";
+					break;
+				case 3:
+					propBuffer += "D,";
+					break;
+				case 4:
+					propBuffer += "B,";
+					break;
+				case 0:
+				default:
+					propBuffer += "L,";
+					break;
+			}
+		}
+		// replace final comma with a semi-colon
+		propBuffer[propBuffer.size()-1] = ';';
+		s += propBuffer;
+	}
+
+
+	// remove the trailing semi-colon
+	s [s.size()-1] = 0;
+
+}
+
+/*! imports a stylesheet from our document */
+
+#define PT_MAX_ATTRIBUTES 8
+void IE_Imp_MsWord_97::_handleStyleSheet(const wvParseStruct *ps)
+{
+	UT_uint32 iCount = ps->stsh.Stshi.cstd;
+	UT_uint16 iBase  = ps->stsh.Stshi.cbSTDBaseInFile;
+
+	const XML_Char * attribs[PT_MAX_ATTRIBUTES*2 + 1];
+	UT_uint32 iOffset = 0;
+	
+	const STD * pSTD = ps->stsh.std;
+	const STD * pSTDBase = pSTD;
+	UT_String props;
+
+	for(UT_uint32 i = 0; i < iCount; i++, pSTD++)
+	{
+		iOffset = 0;
+		UT_DEBUGMSG(("Style name: %s\n", pSTD->xstzName));
+
+		if(!pSTD->xstzName)
+		{
+			continue;
+		}
+		
+		attribs[iOffset++] = PT_NAME_ATTRIBUTE_NAME;
+		attribs[iOffset++] = pSTD->xstzName;
+		
+		attribs[iOffset++] = PT_TYPE_ATTRIBUTE_NAME;
+		if(pSTD->sgc == sgcChp)
+		{
+			attribs[iOffset++] = "C";
+		}
+		else
+		{
+			attribs[iOffset++] = "P";
+
+			// also handle the followed-by, since that only applies to
+			// paragraph style
+			if(pSTD->istdNext != istdNil)
+			{
+				attribs[iOffset++] = PT_FOLLOWEDBY_ATTRIBUTE_NAME;
+				attribs[iOffset++] = (pSTDBase + pSTD->istdNext)->xstzName;
+			}
+		}
+
+		if(pSTD->istdBase != istdNil)
+		{
+			attribs[iOffset++] = PT_BASEDON_ATTRIBUTE_NAME;
+			attribs[iOffset++] = (pSTDBase + pSTD->istdBase)->xstzName;
+		}
+		
+		// now we want to generate props
+		props.clear();
+
+		wvParseStruct * PS = const_cast<wvParseStruct *>(ps);
+		
+		CHP achp;
+		wvInitCHPFromIstd(&achp, (U16)i, &(PS->stsh));
+		_generateCharProps(props,&achp,PS);
+
+		if(props.size())
+		{
+			props += ";";
+		}
+		
+		PAP apap;
+		wvInitPAPFromIstd (&apap, (U16)i, &(PS->stsh));
+		_generateParaProps(props,&apap,PS);
+
+		// remove trailing semicolon
+		if(props[props.size()-1] == ';')
+		{
+			props[props.size()-1] = 0;
+		}
+		
+		xxx_UT_DEBUGMSG(("Style props: %s\n", props.c_str()));
+
+		if(props.size())
+		{
+			attribs[iOffset++] = PT_PROPS_ATTRIBUTE_NAME;
+			attribs[iOffset++] = props.c_str();
+		}
+		
+		attribs[iOffset] = NULL;
+
+		PD_Style * pStyle = NULL;
+		if(getDoc()->getStyle(pSTD->xstzName, &pStyle))
+		{
+			xxx_UT_DEBUGMSG(("Redefining style %s\n", pSTD->xstzName));
+			pStyle->addAttributes(attribs);
+			pStyle->getBasedOn();
+			pStyle->getFollowedBy();
+		}
+		else
+		{
+			getDoc()->appendStyle(attribs);
+		}
+	}
 }
