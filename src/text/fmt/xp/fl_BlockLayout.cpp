@@ -881,11 +881,12 @@ UT_sint32 fl_BlockLayout::getEmbeddedOffset(UT_sint32 offset, fl_ContainerLayout
  */
 void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbeddedSize)
 {
-	UT_DEBUGMSG(("In update Offsets \n"));
+	xxx_UT_DEBUGMSG(("In update Offsets posEmbedded %d EmbeddedSize %d \n",posEmbedded,iEmbeddedSize));
 	fp_Run * pRun = getFirstRun();
-	PT_DocPosition posInBlock = getPosition();
+	PT_DocPosition posInBlock = getPosition(true);
 	while(pRun && (posInBlock + pRun->getBlockOffset() < posEmbedded))
 	{
+		xxx_UT_DEBUGMSG(("Look at run %x posindoc %d \n",pRun,posInBlock+pRun->getBlockOffset()));
 		pRun = pRun->getNextRun();
 	}
 	if(pRun == NULL)
@@ -902,15 +903,15 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 	else
 	{
 		posRun = posInBlock + pPrev->getBlockOffset();
-		if(posRun + pPrev->getLength() <= posEmbedded)
-		{
-			iDiff = static_cast<UT_sint32>((pRun->getBlockOffset() - pPrev->getBlockOffset() - pPrev->getLength()));
-			xxx_UT_DEBUGMSG(("updateOffsets: after BlockOffset %d or pos %d \n",pRun->getBlockOffset(),posInBlock+pRun->getBlockOffset())); 
-		}
-		else if((posRun == posEmbedded) && pRun->getNextRun())
+		if((posRun == posEmbedded) && pRun->getNextRun())
 		{
 			iDiff = static_cast<UT_sint32>((pRun->getNextRun()->getBlockOffset() -pRun->getBlockOffset() - pRun->getLength()));
 			pRun = pRun->getNextRun();
+		}
+		else if(posRun + pPrev->getLength() <= posEmbedded)
+		{
+			iDiff = static_cast<UT_sint32>((pRun->getBlockOffset() - pPrev->getBlockOffset() - pPrev->getLength()));
+			xxx_UT_DEBUGMSG(("updateOffsets: after BlockOffset %d or pos %d \n",pRun->getBlockOffset(),posInBlock+pRun->getBlockOffset())); 
 		}
 //
 // here if the last run starts beyond the point where the footnote is embedded
@@ -927,7 +928,7 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 				// We're here if the first run of the block is the footnote
 				// field and we've just deleted the footnote
 				//
-				UT_DEBUGMSG(("posEmbedded %d posInBlock %d prev pos %d next pos %d \n",posEmbedded,posInBlock,posInBlock+pRun->getBlockOffset(),posInBlock+pRun->getNextRun()->getBlockOffset()));
+				xxx_UT_DEBUGMSG(("posEmbedded %d posInBlock %d prev pos %d next pos %d \n",posEmbedded,posInBlock,posInBlock+pRun->getBlockOffset(),posInBlock+pRun->getNextRun()->getBlockOffset()));
 				iDiff = pRun->getNextRun()->getBlockOffset() - pRun->getBlockOffset();
 				pPrev = pRun;
 				pRun = pRun->getNextRun();
@@ -5281,12 +5282,14 @@ bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
 	fp_Run* pFirstNewRun = NULL;
 	fp_Run* pLastRun = NULL;
 	fp_Run* pRun;
+	UT_DEBUGMSG(("BlockOffset %d \n",blockOffset));
 	for (pRun=m_pFirstRun; (pRun && !pFirstNewRun);
 		 pLastRun=pRun, pRun=pRun->getNextRun())
 	{
 		// We have passed the point. Why didn't previous Run claim to
 		// hold the offset? Make the best of it in non-debug
 		// builds. But keep the assert to get us information...
+		xxx_UT_DEBUGMSG(("pRun %x pRun->next %x pRun->blockOffset %d pRun->getLength %d \n",pRun,pRun->getNextRun(),pRun->getBlockOffset(),pRun->getLength()));
 		if (pRun->getBlockOffset() > blockOffset)
 		{
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
