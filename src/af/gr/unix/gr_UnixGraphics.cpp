@@ -408,7 +408,7 @@ void UNIXGraphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
 
 void UNIXGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 {
-	GDKPoint * points = (GDKPoint *)calloc(nPoints, sizeof(GDKPoint));
+	GdkPoint * points = (GDKPoint *)calloc(nPoints, sizeof(GDKPoint));
 	UT_ASSERT(points);
 
 	for (UT_uint32 i = 0; i < nPoints; i++)
