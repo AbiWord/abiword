@@ -209,6 +209,10 @@ void AP_Preview_Paragraph_Block::setFormat(AP_Dialog_Paragraph::tAlignState alig
 			m_lineSpacing = m_fontHeight;
 			break;
 		case AP_Dialog_Paragraph::spacing_ATLEAST:
+			// TODO : THIS IS BROKEN SOMEHOW.  m_lineSpacing should be the number
+			// TODO : of pixels needed to place before the line (of height
+			// TODO : m_fontHeight pixels).  
+			
 			// we measure from top to top here, and use a minimum of the current
 			// line height
 			if (SCALE_TO_PIXELS(lineSpacing) > m_fontHeight)

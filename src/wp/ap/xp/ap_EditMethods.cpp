@@ -3232,7 +3232,9 @@ static UT_Bool s_doParagraphDlg(FV_View * pView)
 		
 	case AP_Dialog_Paragraph::a_TABS:
 
-		// TODO : call s_doTabsDialog when it exists
+		// TODO : make one of these and call it
+		
+		s_TellNotImplemented(pFrame, "Tabs dialog", __LINE__);
 
 		break;
 		
