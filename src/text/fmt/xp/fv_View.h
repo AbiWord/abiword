@@ -534,6 +534,7 @@ protected:
 											  PT_DocPosition iEnd,
 											  const PP_RevisionAttr * pRevAttr);
 
+private:
 	PT_DocPosition		m_iInsPoint;
 	UT_sint32			m_xPoint;
 	UT_sint32			m_yPoint;
@@ -615,7 +616,6 @@ protected:
 
 	UT_uint32           m_iViewRevision;
 
-private:
 	bool				m_bWarnedThatRestartNeeded;
 };
 

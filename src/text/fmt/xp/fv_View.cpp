@@ -1896,6 +1896,7 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 		_clearIfAtFmtMark(getPoint());	// TODO is this correct ??
 		UT_DEBUGMSG(("Applying Paragraph style: start %d, end %d\n", posStart, posEnd));
 
+		// PLAM this is the only place that PTC_AddStyle is used.
 		// NB: clear explicit props at both block and char levels
 		bRet = m_pDoc->changeStruxFmt(PTC_AddStyle,posStart,posEnd,attribs,NULL,PTX_Block);
 	}
@@ -6863,6 +6864,11 @@ bool FV_View::insertEndnote()
 {
 	fl_DocSectionLayout * pDSL = getCurrentPage()->getOwningSection();
 
+	// can only insert endnote into an FL_SECTION_DOC
+	if (_findBlockAtPosition(getPoint())->getSectionLayout()
+		      ->getType() != FL_SECTION_DOC)
+		return false;
+
 	// add field for endnote reference
 	// first, make up an id for this endnote.
 	static XML_Char enpid[15];
@@ -6979,7 +6985,7 @@ bool FV_View::insertEndnote()
 		// and insert a new block
 		UT_DEBUGMSG(("fv_View::insertEndnote: ErefStart %d, enoteCount %d\n", ErefStart, enoteCount));
 
-		// TODO HACK until we stop propagating endnote-ids.
+		// count through enoteCount distinct endnote ids
 		XML_Char * previd = NULL;
 
 		while(pBL)
