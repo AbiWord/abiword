@@ -49,6 +49,11 @@ public:
 	int					format();
 	UT_Bool				reformat();
 
+	inline UT_sint32			getLeftMargin(void) const { return m_iLeftMargin; }
+	inline UT_sint32			getRightMargin(void) const { return m_iRightMargin; }
+	inline UT_sint32			getTopMargin(void) const { return m_iTopMargin; }
+	inline UT_sint32			getBottomMargin(void) const { return m_iBottomMargin; }
+	
 	UT_uint32			getNumColumns(void) const;
 	UT_uint32			getColumnGap(void) const;
 
@@ -72,6 +77,11 @@ protected:
 
 	UT_uint32			m_iNumColumns;
 	UT_uint32			m_iColumnGap;
+
+	UT_sint32			m_iLeftMargin;
+	UT_sint32			m_iRightMargin;
+	UT_sint32			m_iTopMargin;
+	UT_sint32			m_iBottomMargin;
 
 	UT_Bool				m_bForceNewPage;
 

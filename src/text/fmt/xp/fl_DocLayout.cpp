@@ -253,9 +253,7 @@ fp_Page* FL_DocLayout::addNewPage()
 		pLastPage = NULL;
 	}
 	
-	// TODO pass the margins.  which ones?
-	// TODO get these constants from the document.
-	fp_Page*		pPage = new fp_Page(this, m_pView, 850, 1100, 100, 100, 100, 100);
+	fp_Page*		pPage = new fp_Page(this, m_pView, 850, 1100);
 	if (pLastPage)
 	{
 		UT_ASSERT(pLastPage->getNext() == NULL);

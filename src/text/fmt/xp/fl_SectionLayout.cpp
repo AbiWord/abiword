@@ -35,6 +35,7 @@
 #include "gr_Graphics.h"
 
 #include "ut_assert.h"
+#include "ut_units.h"
 
 fl_SectionLayout::fl_SectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_AttrPropIndex indexAP)
 	: fl_Layout(PTX_Section, sdh)
@@ -70,6 +71,11 @@ fl_SectionLayout::fl_SectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh,
 		m_iNumColumns = 1;
 		m_iColumnGap = m_pLayout->getGraphics()->convertDimension("0.25in");
 	}
+
+	m_iLeftMargin = UT_docUnitsFromPaperUnits(m_pLayout->getGraphics(), 100);
+	m_iRightMargin = UT_docUnitsFromPaperUnits(m_pLayout->getGraphics(), 100);
+	m_iTopMargin = UT_docUnitsFromPaperUnits(m_pLayout->getGraphics(), 100);
+	m_iBottomMargin = UT_docUnitsFromPaperUnits(m_pLayout->getGraphics(), 100);
 	
 	m_bForceNewPage = UT_FALSE;
 }

@@ -3424,10 +3424,10 @@ void FV_View::_doPaste(void)
 		{
 			UT_sint32 iLen = pClip->getDataLen(AP_CLIPBOARD_TEXTPLAIN_8BIT);
 
-			char* pData = new char[iLen];
+			unsigned char* pData = new unsigned char[iLen];
 			UT_ASSERT(pData); // TODO outofmem
 
-			pClip->getData(AP_CLIPBOARD_TEXTPLAIN_8BIT, pData);
+			pClip->getData(AP_CLIPBOARD_TEXTPLAIN_8BIT, (char*) pData);
 
 			UT_UCSChar* pUCSData = new UT_UCSChar[iLen];
 			for (int i=0; i<iLen; i++)

@@ -41,11 +41,7 @@ class fp_Page
 	fp_Page(FL_DocLayout*,
 			FV_View*,
 			UT_uint32 iWidth,
-			UT_uint32 iHeight,
-			UT_uint32 iLeft,
-			UT_uint32 iTop,
-			UT_uint32 iRight,
-			UT_uint32 iBottom);
+			UT_uint32 iHeight);
 	~fp_Page();
 
 	UT_sint32		getWidth(void) const;
@@ -82,8 +78,6 @@ class fp_Page
 protected:
 	void				_reformat(void);
 
-	UT_Bool				m_bReformatting;
-	
 	FL_DocLayout*		m_pLayout;
 	FV_View*			m_pView;
 	fp_Page*			m_pNext;
@@ -91,10 +85,6 @@ protected:
 
 	UT_sint32			m_iWidth;
 	UT_sint32			m_iHeight;
-	UT_sint32			m_iLeft;
-	UT_sint32			m_iTop;
-	UT_sint32			m_iRight;
-	UT_sint32			m_iBottom;
 
 	UT_Bool				m_bNeedsRedraw;
 

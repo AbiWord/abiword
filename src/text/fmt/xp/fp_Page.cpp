@@ -38,11 +38,7 @@
 #include "ut_units.h"
 
 fp_Page::fp_Page(FL_DocLayout* pLayout, FV_View* pView,
-				 UT_uint32 iWidth, UT_uint32 iHeight,
-				 UT_uint32 iLeft,
-				 UT_uint32 iTop, 
-				 UT_uint32 iRight,
-				 UT_uint32 iBottom)
+				 UT_uint32 iWidth, UT_uint32 iHeight)
 {
 	UT_ASSERT(pLayout);
 
@@ -54,11 +50,6 @@ fp_Page::fp_Page(FL_DocLayout* pLayout, FV_View* pView,
 
 	m_iWidth = UT_docUnitsFromPaperUnits(pG,iWidth);
 	m_iHeight = UT_docUnitsFromPaperUnits(pG,iHeight);
-
-	m_iLeft = UT_docUnitsFromPaperUnits(pG,iLeft);
-	m_iTop = UT_docUnitsFromPaperUnits(pG,iTop);
-	m_iRight = UT_docUnitsFromPaperUnits(pG,iRight);
-	m_iBottom = UT_docUnitsFromPaperUnits(pG,iBottom);
 
 	m_pNext = NULL;
 	m_pPrev = NULL;
@@ -167,11 +158,21 @@ fp_Column* fp_Page::getNthColumnLeader(UT_sint32 n) const
 
 void fp_Page::_reformat(void)
 {
-	m_bReformatting = UT_TRUE;
-	
-	UT_uint32 iY = m_iTop;
-	
 	int count = countColumnLeaders();
+	if (count <= 0)
+	{
+		return;
+	}
+
+	fp_Column* pFirstColumnLeader = getNthColumnLeader(0);
+	fl_SectionLayout* pFirstSectionLayout = pFirstColumnLeader->getSectionLayout();
+	UT_sint32 iLeftMargin = pFirstSectionLayout->getLeftMargin();
+	UT_sint32 iRightMargin = pFirstSectionLayout->getRightMargin();
+	UT_sint32 iTopMargin = pFirstSectionLayout->getTopMargin();
+	UT_sint32 iBottomMargin = pFirstSectionLayout->getBottomMargin();
+	
+	UT_uint32 iY = iTopMargin;
+	
 	int i;
 	for (i=0; i<count; i++)
 	{
@@ -180,10 +181,10 @@ void fp_Page::_reformat(void)
 		UT_uint32 iNumColumns = pSL->getNumColumns();
 		UT_uint32 iColumnGap = pSL->getColumnGap();
 
-		UT_uint32 iSpace = m_iWidth - m_iLeft - m_iRight;
+		UT_uint32 iSpace = m_iWidth - iLeftMargin - iRightMargin;
 		UT_uint32 iColWidth = (iSpace - ((iNumColumns - 1) * iColumnGap)) / iNumColumns;
 		
-		UT_uint32 iX = m_iLeft;
+		UT_uint32 iX = iLeftMargin;
 		
 		fp_Column* pTmpCol = pLeader;
 		UT_sint32 iMostHeight = 0;
@@ -191,7 +192,7 @@ void fp_Page::_reformat(void)
 		{
 			pTmpCol->setX(iX);
 			pTmpCol->setY(iY);
-			pTmpCol->setMaxHeight(m_iHeight - m_iBottom - iY);
+			pTmpCol->setMaxHeight(m_iHeight - iBottomMargin - iY);
 			pTmpCol->setWidth(iColWidth);
 			iX += (iColWidth + iColumnGap);
 
@@ -204,7 +205,7 @@ void fp_Page::_reformat(void)
 
 		iY += m_pLayout->getGraphics()->convertDimension("0.25in");	// TODO
 
-		if (iY >= (m_iHeight - m_iBottom))
+		if (iY >= (m_iHeight - iBottomMargin))
 		{
 			break;
 		}
@@ -218,8 +219,6 @@ void fp_Page::_reformat(void)
 		// TODO move this column to the next page.
 		i++;
 	}
-
-	m_bReformatting = UT_FALSE;
 }
 
 #if 0
