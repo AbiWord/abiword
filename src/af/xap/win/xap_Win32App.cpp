@@ -32,6 +32,7 @@
 #include "xap_Win32_TB_CFactory.h"
 #include "xap_Win32Slurp.h"
 #include "xap_Win32EncodingManager.h"
+#include "xap_Prefs.h"
 
 #ifdef _MSC_VER
 #pragma warning(disable:4355)	// 'this' used in base member initializer list
@@ -452,4 +453,12 @@ const char * XAP_Win32App::getDefaultEncoding () const
 {
 	XAP_EncodingManager * pEncodingManager = XAP_EncodingManager::get_instance();
 	return pEncodingManager->getNativeSystemEncodingName();
+}
+
+void XAP_Win32App::getDefaultGeometry(UT_uint32& width, UT_uint32& height, UT_uint32& flags)
+{
+	flags |= PREF_FLAG_GEOMETRY_MAXIMIZED;
+	
+	width = GetSystemMetrics(SM_CXFULLSCREEN);
+	height = GetSystemMetrics(SM_CYFULLSCREEN);	
 }

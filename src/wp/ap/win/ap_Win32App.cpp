@@ -1295,8 +1295,16 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 __try
 #endif	
 {		
+	UT_uint32 iHeight = 0, iWidth = 0, t_flag =0;
+	UT_sint32 iPosX = 0, iPosY = 0;
+		
+	if (!((XAP_App::getApp()->getGeometry(&iPosX,&iPosY,&iWidth,&iHeight,&t_flag)) &&
+	       ((iWidth > 0) && (iHeight > 0)))	)
+		XAP_App::getApp()->getDefaultGeometry(iWidth,iHeight,t_flag);
 	
-
+	if ((t_flag & PREF_FLAG_GEOMETRY_MAXIMIZED)==PREF_FLAG_GEOMETRY_MAXIMIZED)
+			iCmdShow = SW_SHOWMAXIMIZED;
+	
 	if (bShowApp)
 	{
 		// display the windows
