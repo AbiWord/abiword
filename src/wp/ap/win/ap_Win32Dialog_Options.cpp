@@ -46,7 +46,6 @@
 #include "ap_Win32Dialog_Options.h"
 #include "ap_Win32Dialog_Background.h"
 #include "xap_Win32DialogHelper.h"
-#include "fp_PageSize.h"
 #include "ut_Language.h"
 
 /*****************************************************************/
@@ -443,23 +442,7 @@ void AP_Win32Dialog_Options::_setNotebookPageNum(const int pn)
 {
 }
 
-void AP_Win32Dialog_Options::_setDefaultPageSize(fp_PageSize::Predefined pre)
-{
-	HWND hwndPaperSize = GetDlgItem((HWND)getPage(PG_LAYOUT),
-									 AP_RID_DIALOG_OPTIONS_COMBO_DefaultPageSize);
-	SendMessage(hwndPaperSize, CB_SETCURSEL, (WPARAM)pre, 0);
-}
 
-fp_PageSize::Predefined AP_Win32Dialog_Options::_gatherDefaultPageSize(void)
-{
-	HWND hwndPaperSize = GetDlgItem( (HWND)getPage(PG_LAYOUT),
-									 AP_RID_DIALOG_OPTIONS_COMBO_DefaultPageSize);
-	int nSel = SendMessage(hwndPaperSize, CB_GETCURSEL, 0, 0);
-
-	if( nSel != CB_ERR )
-		return (fp_PageSize::Predefined) nSel;
-	return fp_PageSize::psLetter;
-}
 
 void AP_Win32Dialog_Options::_initializeTransperentToggle(void)
 {
@@ -894,8 +877,7 @@ void AP_Win32Dialog_Options_Layout::_onCommand(HWND hWnd, WPARAM wParam, LPARAM 
 		case AP_RID_DIALOG_OPTIONS_CHK_ViewAll: 			pParent->_enableDisableLogic(AP_Dialog_Options::id_CHECK_VIEW_ALL); 			return;
 		case AP_RID_DIALOG_OPTIONS_CHK_ViewHiddenText:		pParent->_enableDisableLogic(AP_Dialog_Options::id_CHECK_VIEW_HIDDEN_TEXT); 	return;
 		case AP_RID_DIALOG_OPTIONS_CHK_ViewUnprintable: 	pParent->_enableDisableLogic(AP_Dialog_Options::id_CHECK_VIEW_UNPRINTABLE); 	return;
-		case AP_RID_DIALOG_OPTIONS_COMBO_UNITS: 																return;
-		case AP_RID_DIALOG_OPTIONS_COMBO_DefaultPageSize:														return;
+		case AP_RID_DIALOG_OPTIONS_COMBO_UNITS: 																return;		
 		case AP_RID_DIALOG_OPTIONS_CHK_SmartQuotesEnable:	pParent->_enableDisableLogic(AP_Dialog_Options::id_CHECK_SMART_QUOTES_ENABLE);	return;
 		case AP_RID_DIALOG_OPTIONS_CHK_BGColorEnable:
 			bChecked = (IsDlgButtonChecked( hWnd, AP_RID_DIALOG_OPTIONS_CHK_BGColorEnable ) == BST_CHECKED);
@@ -941,8 +923,7 @@ void AP_Win32Dialog_Options_Layout::_onInitDialog()
 	_DS2(OPTIONS_CHK_ViewAll,				DLG_Options_Label_ViewAll);
 	_DS2(OPTIONS_CHK_ViewHiddenText, 		DLG_Options_Label_ViewHiddenText);
 	_DS2(OPTIONS_CHK_ViewUnprintable,		DLG_Options_Label_ViewUnprintable);
-	_DS2(OPTIONS_LBL_UNITS,					DLG_Options_Label_ViewUnits);
-	_DS2(OPTIONS_LBL_DefaultPageSize,		DLG_Options_Label_DefaultPageSize);
+	_DS2(OPTIONS_LBL_UNITS,					DLG_Options_Label_ViewUnits);	
 	_DS2(OPTIONS_CHK_SmartQuotesEnable,		DLG_Options_Label_SmartQuotesEnable);
 	_DS2(OPTIONS_CHK_BGColorEnable,			DLG_Options_Label_CheckWhiteForTransparent);
 	_DS2(OPTIONS_BTN_BGColor,				DLG_Options_Label_ChooseForTransparent);
@@ -954,14 +935,7 @@ void AP_Win32Dialog_Options_Layout::_onInitDialog()
 		SendMessage(hwndAlign, CB_ADDSTRING, 0, (LPARAM)pSS->getValue(s_aAlignUnit[n1].id));
 	}
 	
-	HWND hwndPaperSize = GetDlgItem(getHandle(), AP_RID_DIALOG_OPTIONS_COMBO_DefaultPageSize);
-	for( int n2 = (int)fp_PageSize::_first_predefined_pagesize_; n2 < (int)fp_PageSize::_last_predefined_pagesize_dont_use_; n2++ )
-	{
-	SendMessage( hwndPaperSize,
-				 CB_INSERTSTRING,
-				 (WPARAM) n2,
-				 (LPARAM) fp_PageSize::PredefinedToName( (fp_PageSize::Predefined)n2) );
-	}	
+	
 }
 
 /*
