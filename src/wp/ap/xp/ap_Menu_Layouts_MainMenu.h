@@ -267,28 +267,43 @@ BeginLayout(Main,0)
 	        MenuItem(AP_MENU_ID_TABLE_INSERT_COLUMNS_AFTER)
 	        MenuItem(AP_MENU_ID_TABLE_INSERT_ROWS_BEFORE)
 	        MenuItem(AP_MENU_ID_TABLE_INSERT_ROWS_AFTER)
+#if 0
+// Not for 2.0
 		    MenuItem(AP_MENU_ID_TABLE_INSERT_CELLS)
+#endif
 		EndSubMenu()
    	    BeginSubMenu(AP_MENU_ID_TABLE_DELETE)
 	        MenuItem(AP_MENU_ID_TABLE_DELETE_TABLE)
 	        MenuItem(AP_MENU_ID_TABLE_DELETE_COLUMNS)
 	        MenuItem(AP_MENU_ID_TABLE_DELETE_ROWS)
+#if 0
+// Not for 2.0
 		    MenuItem(AP_MENU_ID_TABLE_DELETE_CELLS)
+#endif
 		EndSubMenu()
    	    BeginSubMenu(AP_MENU_ID_TABLE_SELECT)
 	        MenuItem(AP_MENU_ID_TABLE_SELECT_TABLE)
+#if 0
+// Not for 2.0
 	        MenuItem(AP_MENU_ID_TABLE_SELECT_COLUMN)
+#endif
 	        MenuItem(AP_MENU_ID_TABLE_SELECT_ROW)
 		    MenuItem(AP_MENU_ID_TABLE_SELECT_CELL)
 		EndSubMenu()
 		Separator()
 		MenuItem(AP_MENU_ID_TABLE_MERGE_CELLS)
+#if 0
+// Not for 2.0
 		MenuItem(AP_MENU_ID_TABLE_SPLIT_CELLS)
 		MenuItem(AP_MENU_ID_TABLE_SPLIT_TABLE)
+#endif
 		MenuItem(AP_MENU_ID_TABLE_FORMAT)
+#if 0
+// Not for 2.0
 		MenuItem(AP_MENU_ID_TABLE_AUTOFIT)
 		MenuItem(AP_MENU_ID_TABLE_HEADING_ROWS_REPEAT)
 		MenuItem(AP_MENU_ID_TABLE_SORT)
+#endif
 	EndSubMenu()
 	BeginSubMenu(AP_MENU_ID_WINDOW)
 		MenuItem(AP_MENU_ID_WINDOW_NEW)

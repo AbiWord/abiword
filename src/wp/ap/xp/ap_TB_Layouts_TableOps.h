@@ -39,6 +39,8 @@ BeginLayout(TableOps)
      Spacer()
 
      ToolbarItem(AP_TOOLBAR_ID_MERGE_CELLS)
+#if 0
+// Not for 2.0
      ToolbarItem(AP_TOOLBAR_ID_SPLIT_CELLS)
-
+#endif
 EndLayout()

@@ -3030,6 +3030,25 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_changeStrux(fl_ContainerLayout* pBL,
 	return bResult;
 }
 
+
+fl_SectionLayout * fl_HdrFtrSectionLayout::bl_doclistener_insertTable(fl_ContainerLayout* pBL,
+													SectionType iType,
+													const PX_ChangeRecord_Strux * pcrx,
+													PL_StruxDocHandle sdh,
+													PL_ListenerId lid,
+													void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+																			PL_ListenerId lid,
+																			PL_StruxFmtHandle sfhNew))
+{
+	fl_SectionLayout * pSL = static_cast<fl_BlockLayout *>(pBL)->doclistener_insertTable(pcrx, iType, sdh, lid, pfnBindHandles);
+	checkAndAdjustCellSize();
+//
+// FIXME: Propagate this to the shadows
+//      : Write code to handle populate cases in the shadows
+	return pSL;
+}
+
+
 bool fl_HdrFtrSectionLayout::bl_doclistener_insertBlock(fl_ContainerLayout* pBL, const PX_ChangeRecord_Strux * pcrx,PL_StruxDocHandle sdh,PL_ListenerId lid,void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,	PL_ListenerId lid, PL_StruxFmtHandle sfhNew))
 {
 	bool bResult = true;

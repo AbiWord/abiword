@@ -531,10 +531,14 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_SectionFmt)
 		// not allowed
 	      case AP_TOOLBAR_ID_2COLUMN:
 	      case AP_TOOLBAR_ID_3COLUMN:
+		  case AP_TOOLBAR_ID_INSERT_TABLE:
 	        return EV_TIS_Gray;
 	      }
 	  }
-
+	if(id == AP_TOOLBAR_ID_INSERT_TABLE)
+	{
+		return EV_TIS_ZERO;
+	}
 	switch (id)
 	{
 	case AP_TOOLBAR_ID_1COLUMN:

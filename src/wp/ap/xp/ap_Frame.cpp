@@ -569,6 +569,12 @@ void AP_Frame::_replaceView(GR_Graphics * pG, FL_DocLayout *pDocLayout,
 	m_pView->setWindowSize(_getDocumentAreaWidth(), _getDocumentAreaHeight());
 
 	updateTitle();
+	XAP_App * pApp = getApp();
+	if(pApp->findFrame(this) < 0)
+	{
+		pApp->rememberFrame(this);
+	}
+
 	pDocLayout->fillLayouts();      
 
 	if (holdsSelection)

@@ -358,7 +358,7 @@ void fl_TableLayout::format(void)
 				pPrevP = pPrevCon->getPage();
 			}
 		}
-		static_cast<fl_DocSectionLayout *>(getSectionLayout())->setNeedsSectionBreak(true,pPrevP);
+		getDocSectionLayout()->setNeedsSectionBreak(true,pPrevP);
 	}
 	m_bRecursiveFormat = false;
 }
@@ -1290,11 +1290,19 @@ void fl_CellLayout::createCellContainer(void)
 	setLastContainer(pCellContainer);
 	setCellContainerProperties(pCellContainer);
 	fl_ContainerLayout * pCL = myContainingLayout();
-	while(pCL!= NULL && pCL->getContainerType() != FL_CONTAINER_DOCSECTION)
+	while(pCL!= NULL && ((pCL->getContainerType() != FL_CONTAINER_DOCSECTION) && (pCL->getContainerType() != FL_CONTAINER_HDRFTR)))
 	{
 		pCL = pCL->myContainingLayout();
 	}
-	fl_DocSectionLayout * pDSL = static_cast<fl_DocSectionLayout *>(pCL);
+	fl_DocSectionLayout * pDSL = NULL;
+	if(pCL->getContainerType() == FL_CONTAINER_HDRFTR)
+	{
+		pDSL = static_cast<fl_HdrFtrSectionLayout *>(pCL)->getDocSectionLayout();
+	}
+	else
+	{
+		pDSL = static_cast<fl_DocSectionLayout *>(pCL);
+	}
 	UT_ASSERT(pDSL != NULL);
 	UT_sint32 iWidth = pDSL->getFirstContainer()->getPage()->getWidth();
 	pCellContainer->setWidth(iWidth);
@@ -1485,6 +1493,7 @@ void fl_CellLayout::format(void)
 	{
 		getNewContainer(NULL);
 	}
+	UT_sint32 iOldHeight = getFirstContainer()->getHeight();
 	fl_ContainerLayout * pPrevCL = myContainingLayout()->getPrev();
 	fp_Page * pPrevP = NULL;
 	if(pPrevCL)
@@ -1495,7 +1504,6 @@ void fl_CellLayout::format(void)
 			pPrevP = pPrevCon->getPage();
 		}
 	}
-	static_cast<fl_DocSectionLayout *>(getSectionLayout())->setNeedsSectionBreak(true,pPrevP);
 	fl_ContainerLayout*	pBL = getFirstLayout();
 	while (pBL)
 	{
@@ -1515,6 +1523,11 @@ void fl_CellLayout::format(void)
 		pBL = pBL->getNext();
 	}
 	static_cast<fp_CellContainer *>(getFirstContainer())->layout();
+	UT_sint32 iNewHeight = getFirstContainer()->getHeight();
+	if(iNewHeight != iOldHeight)
+	{
+		getDocSectionLayout()->setNeedsSectionBreak(true,pPrevP);
+	}
 	m_bNeedsReformat = false;
 	checkAndAdjustCellSize();
 }

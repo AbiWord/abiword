@@ -134,11 +134,25 @@ fl_ContainerLayout * fl_ContainerLayout::getPrev(void) const
 fl_DocSectionLayout * fl_ContainerLayout::getDocSectionLayout(void)
 {
 	fl_ContainerLayout * pCL = myContainingLayout();
-	while(pCL && pCL->getContainerType() != FL_CONTAINER_DOCSECTION)
+	while(pCL!= NULL && ((pCL->getContainerType() != FL_CONTAINER_DOCSECTION) && (pCL->getContainerType() != FL_CONTAINER_HDRFTR)))
 	{
 		pCL = pCL->myContainingLayout();
 	}
-	return static_cast<fl_DocSectionLayout *>(pCL);
+	if(pCL== NULL)
+	{
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return NULL;
+	}
+	fl_DocSectionLayout * pDSL = NULL;
+	if(pCL->getContainerType() == FL_CONTAINER_HDRFTR)
+	{
+		pDSL = static_cast<fl_HdrFtrSectionLayout *>(pCL)->getDocSectionLayout();
+	}
+	else
+	{
+		pDSL = static_cast<fl_DocSectionLayout *>(pCL);
+	}
+	return pDSL;
 }
 
 /*!

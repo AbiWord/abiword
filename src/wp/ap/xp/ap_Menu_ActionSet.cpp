@@ -203,8 +203,8 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_TOOLS_REVISIONS_REJECT_REVISION, 0,0,0,0, "revisionReject", ap_GetState_RevisionPresent,NULL);
 	
 	_s(AP_MENU_ID_TABLE,1,0,0,0,NULL,NULL,NULL);
-	_s(AP_MENU_ID_TABLE_INSERT,1,0,0,0, NULL, NULL, NULL);
-	_s(AP_MENU_ID_TABLE_INSERT_TABLE,0,1,0,0, "insertTable", NULL, NULL);
+	_s(AP_MENU_ID_TABLE_INSERT,1,0,0,0, NULL, ap_GetState_Changes, NULL);
+	_s(AP_MENU_ID_TABLE_INSERT_TABLE,0,1,0,0, "insertTable",ap_GetState_Changes , NULL);
 	_s(AP_MENU_ID_TABLE_INSERT_COLUMNS_BEFORE,0,0,0,0, "insertColsBefore", ap_GetState_InTable, NULL);
 	_s(AP_MENU_ID_TABLE_INSERT_COLUMNS_AFTER,0,0,0,0, "insertColsAfter", ap_GetState_InTable, NULL);
 	_s(AP_MENU_ID_TABLE_INSERT_ROWS_BEFORE,0,0,0,0,"insertRowsBefore", ap_GetState_InTable, NULL);

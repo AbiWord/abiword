@@ -2144,7 +2144,7 @@ AbiControl_add_interfaces (AbiWidget *abiwidget,
 	bonobo_object_add_interface (BONOBO_OBJECT (to_aggregate), BONOBO_OBJECT (pb));
 #ifdef LOGFILE
 	fprintf(logfile,"AbiControl_add_interfaces Property Bag with %d parameters added \n",n_pspecs);
-	fprintf(logfile," After Property Bag interface ref count %d \n",G_OBJECT(to_aggregate)->ref_count);
+//	fprintf(logfile," After Property Bag interface ref count %d \n",  bonobo_object_get_ao_ref_count(BONOBO_OBJECT(to_aggregate)));
 #endif
 
 	/* Interface Bonobo::Persist */
@@ -2165,7 +2165,7 @@ AbiControl_add_interfaces (AbiWidget *abiwidget,
 				     BONOBO_OBJECT (stream));
 #ifdef LOGFILE
 	fprintf(logfile,"AbiControl_add_interfaces stream created \n");
-	fprintf(logfile," After stream interface ref count %d \n",G_OBJECT(to_aggregate)->ref_count);
+//	fprintf(logfile," After Stream interface ref count %d \n",  bonobo_object_get_ao_ref_count(BONOBO_OBJECT(to_aggregate)));
 #endif
 
 
@@ -2192,7 +2192,7 @@ AbiControl_add_interfaces (AbiWidget *abiwidget,
 					  G_CALLBACK (abiwidget_get_object),
 					  abiwidget);
 #ifdef LOGFILE
-	fprintf(logfile," After get_object signal connect ref count %d \n",G_OBJECT(to_aggregate)->ref_count);
+//	fprintf(logfile," After get_object signal connect ref count %d \n",  bonobo_object_get_ao_ref_count(BONOBO_OBJECT(to_aggregate)));
 #endif
 	
 	bonobo_object_add_interface (BONOBO_OBJECT (to_aggregate),
@@ -2230,7 +2230,8 @@ AbiControl_add_interfaces (AbiWidget *abiwidget,
 	bonobo_object_add_interface (BONOBO_OBJECT (to_aggregate),
 								 BONOBO_OBJECT (zoomable));
 #ifdef LOGFILE
-	fprintf(logfile," After zoomable connects ref count %d \n",G_OBJECT(to_aggregate)->ref_count);
+//	fprintf(logfile," After zoomable connects ref count %d \n",  bonobo_object_get_ao_ref_count(BONOBO_OBJECT(to_aggregate)));
+	fprintf(logfile," After zoomable connects gobject ref count %d \n",G_OBJECT(to_aggregate)->ref_count);
 #endif
 
 	return to_aggregate;
@@ -2245,15 +2246,16 @@ static BonoboControl * AbiWidget_control_new (AbiWidget * abi)
 #endif
   BonoboControl * control = bonobo_control_new (GTK_WIDGET(abi));
 #ifdef LOGFILE
-	fprintf(logfile," Just after bonobo_control_new ref count %d \n",G_OBJECT(control)->ref_count);
+	fprintf(logfile," Just after bonobo_control_new GOBJECT ref count %d \n",G_OBJECT(control)->ref_count);
+//	fprintf(logfile," Just after bonobo_control_new BOnobo ref count %d \n",  bonobo_object_get_ao_ref_count(BONOBO_OBJECT(control)));
 #endif
 //
 // This fixes the double reference from the bonobo_control_new
 //
 	g_object_unref(G_OBJECT(abi));
 #ifdef LOGFILE
-	fprintf(logfile," Just after the un_ref count %d \n",G_OBJECT(control)->ref_count);
-	fprintf(logfile," Just after the un_ref count %d \n",G_OBJECT(abi)->ref_count);
+//	fprintf(logfile," Just after the un_ref count control %d \n", bonobo_object_get_ao_ref_count(BONOBO_OBJECT(control)));
+	fprintf(logfile," Just after the un_ref abi count %d \n",G_OBJECT(abi)->ref_count);
 #endif
 #if 0
   AbiWidgetClass * abi_klazz = ABI_WIDGET_CLASS (G_OBJECT_GET_CLASS(G_OBJECT(abi)));

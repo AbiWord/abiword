@@ -984,12 +984,7 @@ fl_DocSectionLayout * fl_BlockLayout::getDocSectionLayout(void) const
 	}
 	else if (getSectionLayout()->getType() == FL_SECTION_CELL)
 	{
-		fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>( getSectionLayout());
-		while(pCL != NULL && pCL->getContainerType() != FL_CONTAINER_DOCSECTION)
-		{
-			pCL = pCL->myContainingLayout();
-		}
-		pDSL = static_cast<fl_DocSectionLayout *>(pCL);
+		pDSL = static_cast<fl_ContainerLayout *>(getSectionLayout())->getDocSectionLayout();
 		return pDSL;
 	}
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);

@@ -151,7 +151,7 @@ EV_Toolbar_ActionSet * AP_CreateToolbarActionSet(void)
 	_s(AP_TOOLBAR_ID_FMT_DOM_DIRECTION,	EV_TBIT_ToggleButton,	"toggleDomDirection",	AV_CHG_FMTBLOCK | AV_CHG_FMTSECTION | AV_CHG_MOTION,		ap_ToolbarGetState_BlockFmt);
 
 
-	_s(AP_TOOLBAR_ID_INSERT_TABLE, EV_TBIT_PushButton, "insertTable", AV_CHG_ALL, NULL);
+	_s(AP_TOOLBAR_ID_INSERT_TABLE, EV_TBIT_PushButton, "insertTable", AV_CHG_ALL, ap_ToolbarGetState_SectionFmt);
 	_s(AP_TOOLBAR_ID_ADD_ROW, EV_TBIT_PushButton, "insertRowsAfter", AV_CHG_ALL, ap_ToolbarGetState_Table);
 	_s(AP_TOOLBAR_ID_ADD_COLUMN, EV_TBIT_PushButton, "insertColsAfter", AV_CHG_ALL, ap_ToolbarGetState_Table);
 	_s(AP_TOOLBAR_ID_DELETE_ROW, EV_TBIT_PushButton, "deleteRows", AV_CHG_ALL, ap_ToolbarGetState_Table);
