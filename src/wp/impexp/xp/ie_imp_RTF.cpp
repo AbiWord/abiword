@@ -72,7 +72,8 @@ static const XML_Char * xml_Lists[] = { XML_NUMBERED_LIST,
 			   XML_BOX_LIST,
 			   XML_HAND_LIST,
 			   XML_HEART_LIST };
-
+#if 0
+// these aren't used currently but might be useful
 static const char     * fmt_Lists[] = { fmt_NUMBERED_LIST, 
 			   fmt_LOWERCASE_LIST,
 			   fmt_UPPERCASE_LIST,
@@ -80,7 +81,7 @@ static const char     * fmt_Lists[] = { fmt_NUMBERED_LIST,
 			   fmt_LOWERROMAN_LIST,
 			   fmt_BULLETED_LIST,
 			   fmt_DASHED_LIST };
-
+#endif
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
@@ -629,8 +630,9 @@ bool IE_Imp_RTF::ReadKeyword(unsigned char* pKeyword, long* pParam, bool* pParam
 	*pParam = 0;
 	*pParamUsed = false;
 	*pKeyword = 0;
-	unsigned char parameter[256];
-	int count = 0;
+	const unsigned int max_param = 256;
+	unsigned char parameter[max_param];
+	unsigned int count = 0;
 
 	// Read the first character of the control word
 	unsigned char ch;
@@ -669,6 +671,13 @@ bool IE_Imp_RTF::ReadKeyword(unsigned char* pKeyword, long* pParam, bool* pParam
 		*pParamUsed = true;
 		while (isdigit(ch))
 		{
+			// Avoid buffer overflow
+			if (count == max_param )
+			{
+				UT_DEBUGMSG(("Parameter too large. Bogus RTF!\n"));
+				return false;
+			}
+
 			parameter[count++] = ch;
 			if (!ReadCharFromFileWithCRLF(&ch))
 				return false;
@@ -1794,6 +1803,12 @@ bool IE_Imp_RTF::ReadOneFontFromTable()
 		{
 			if (!ReadCharFromFile(&ch))
 				return false;
+
+			if (isdigit(ch))
+			{
+				 SkipBackChar(ch);
+			}
+
 			for (int i = 0; i < 10; i++)
 			{
 				unsigned char buf[3];
@@ -1805,13 +1820,18 @@ bool IE_Imp_RTF::ReadOneFontFromTable()
 				unsigned char val = (unsigned char)(atoi((char*)buf));
 				panose[i] = val;
 			}
-			--nesting;/*since this loop will break on '}'*/
 		}
 
 		//TODO - handle the other keywords
 
 		if (!ReadCharFromFile(&ch))
 			return false;
+
+		if (ch == '}' && (nesting-- > 0))
+		{
+			if (!ReadCharFromFile(&ch))
+				return false;
+		}
 	}
 	//we fall back here when space between parameter of keyword and font name
 	//is seen
