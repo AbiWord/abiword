@@ -139,7 +139,11 @@ void AP_CocoaDialog_Background::runModal(XAP_Frame * pFrame)
 			a = 1;
 		}
 	[oColorWell setColor:[NSColor colorWithDeviceRed:r green:g blue:b alpha:a]];
-	[oColorWell activate:YES];
+
+	if ([[NSColorPanel sharedColorPanel] isVisible])
+		{
+			[oColorWell activate:YES];
+		}
 }
 
 - (IBAction)aColor:(id)sender

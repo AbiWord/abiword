@@ -11,6 +11,8 @@
                 okAction = id; 
                 overlineAction = id; 
                 strikeoutAction = id; 
+                subscriptAction = id; 
+                superscriptAction = id; 
                 transparentAction = id; 
                 underlineAction = id; 
             }; 
@@ -32,6 +34,8 @@
                 "_strikeButton" = NSButton; 
                 "_styleLabel" = NSTextField; 
                 "_styleList" = NSTableView; 
+                "_subscriptButton" = NSButton; 
+                "_superscriptButton" = NSButton; 
                 "_textColorLabel" = NSTextField; 
                 "_textColorWell" = NSColorWell; 
                 "_textHighlightColorLabel" = NSTextField; 
