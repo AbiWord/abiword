@@ -252,10 +252,16 @@ UT_Error AP_QNXFrame::_showDocument(UT_uint32 iZoom)
 	      if ( ((AP_FrameData*)m_pData)->m_pTopRuler )
 		...
 	*/
-	((AP_FrameData*)m_pData)->m_pTopRuler->draw(NULL);
-	((AP_FrameData*)m_pData)->m_pLeftRuler->draw(NULL);
+	if ( ((AP_FrameData*)m_pData)->m_bShowRuler  ) 
+	{
+		if ( ((AP_FrameData*)m_pData)->m_pTopRuler )
+			((AP_FrameData*)m_pData)->m_pTopRuler->draw(NULL);
 
-	if(PtWidgetIsRealized(m_statusBar) != 0) {
+		if ( ((AP_FrameData*)m_pData)->m_pLeftRuler )
+			((AP_FrameData*)m_pData)->m_pLeftRuler->draw(NULL);
+	}
+
+	if(PtWidgetIsRealized(m_wStatusBar) != 0) {
 		((AP_FrameData*)m_pData)->m_pStatusBar->draw();
 	}
 
@@ -406,6 +412,7 @@ bool AP_QNXFrame::initialize(void)
 	_createTopLevelWindow();
 	_showOrHideToolbars();
 	_showOrHideStatusbar();
+	_showOrHideRulers();
 	PtRealizeWidget(m_wTopLevelWindow);
 	PtDamageWidget(m_wTopLevelWindow);
 
@@ -433,7 +440,18 @@ void AP_QNXFrame::_showOrHideToolbars(void)
     }
 }
 
-// Does the initial show/hide of toolbars (based on the user prefs).
+// Does the initial show/hide of the rulers (based on user prefs)
+void AP_QNXFrame::_showOrHideRulers(void)
+{
+	bool bShowRulers = static_cast<AP_FrameData*> (m_pData)->m_bShowRuler;
+	//It is enabled by default .. only toggle it off
+	if(!bShowRulers) {
+		toggleRuler(bShowRulers);
+	} 
+}
+
+
+// Does the initial show/hide of status bar (based on the user prefs).
 void AP_QNXFrame::_showOrHideStatusbar(void)
 {
     bool bShowStatusBar = static_cast<AP_FrameData*> (m_pData)->m_bShowStatusBar;
@@ -761,14 +779,14 @@ PtWidget_t * AP_QNXFrame::_createStatusBarWindow(void)
 	((AP_FrameData *)m_pData)->m_pStatusBar = pQNXStatusBar;
 	
 	//This should probably be held in XP land
-	m_statusBar = pQNXStatusBar->createWidget();
+	m_wStatusBar = pQNXStatusBar->createWidget();
 
-	return m_statusBar;
+	return m_wStatusBar;
 }
 
 void AP_QNXFrame::setStatusMessage(const char * szMsg)
 {
-	if(PtWidgetIsRealized(m_statusBar) != 0) {
+	if(PtWidgetIsRealized(m_wStatusBar) != 0) {
 		((AP_FrameData *)m_pData)->m_pStatusBar->setStatusMessage(szMsg);
 	}
 }
@@ -793,7 +811,7 @@ void AP_QNXFrame::toggleBar(UT_uint32 iBarNb, bool bBarOn) {
     AP_FrameData *pFrameData = static_cast<AP_FrameData *> (getFrameData());
     UT_ASSERT(pFrameData);
 
-	PtGetResource(getTBGroupWidget(), Pt_ARG_WIDTH, &height, 0);
+	PtGetResource(getTBGroupWidget(), Pt_ARG_HEIGHT, &height, 0);
 	before = *height;
 
     if (bBarOn) {
@@ -804,98 +822,42 @@ void AP_QNXFrame::toggleBar(UT_uint32 iBarNb, bool bBarOn) {
     }
 
 	PtExtentWidgetFamily(getTBGroupWidget());
-	PtGetResource(getTBGroupWidget(), Pt_ARG_WIDTH, &height, 0);
+	PtGetResource(getTBGroupWidget(), Pt_ARG_HEIGHT, &height, 0);
 	after = *height;
 
-	printf("Before %d After %d \n", before, after);
-	_reflowLayout(0, before - after);
+	_reflowLayout(0, before - after, 0, 0);
 }
 
 void AP_QNXFrame::toggleTopRuler(bool bRulerOn)
 {
-#if 0
-	AP_FrameData *pFrameData = (AP_FrameData *)getFrameData();
-	UT_ASSERT(pFrameData);
-		
-	AP_QNXTopRuler * pQNXTopRuler = NULL;
+	unsigned short *height;
 
-	UT_DEBUGMSG(("AP_QNXFrame::toggleTopRuler %d, %d\n", 
-		     bRulerOn, pFrameData->m_pTopRuler));
+	PtGetResource(m_topRuler, Pt_ARG_HEIGHT, &height, 0);
 
-	if ( bRulerOn )
-	{
-		UT_ASSERT(!pFrameData->m_pTopRuler);
-
-		pQNXTopRuler = new AP_QNXTopRuler(this);
-		UT_ASSERT(pQNXTopRuler);
-		m_topRuler = pQNXTopRuler->createWidget();
-
-		// get the width from the left ruler and stuff it into the 
-		// top ruler.
-
-		if (((AP_FrameData*)m_pData)->m_pLeftRuler)
-		  pQNXTopRuler->setOffsetLeftRuler(((AP_FrameData*)m_pData)->m_pLeftRuler->getWidth());
-		else
-		  pQNXTopRuler->setOffsetLeftRuler(0);
-
-		// attach everything	
-		gtk_table_attach(GTK_TABLE(m_innertable), m_topRuler, 0, 2, 0,
-				 1, (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
-				 (GtkAttachOptions)(GTK_FILL),
-				 0, 0);
-
-		pQNXTopRuler->setView(m_pView);
+	if (bRulerOn) {
+		PtRealizeWidget(m_topRuler);
+		_reflowLayout(0, 0, -(*height), 0);
+	} else {
+		PtUnrealizeWidget(m_topRuler);
+		PtSetResource(m_topRuler, Pt_ARG_FLAGS, Pt_DELAY_REALIZE, Pt_DELAY_REALIZE);
+		_reflowLayout(0, 0, *height, 0);
 	}
-	else
-	  {
-		// delete the actual widgets
-		gtk_object_destroy( GTK_OBJECT(m_topRuler) );
-		DELETEP(((AP_FrameData*)m_pData)->m_pTopRuler);
-		m_topRuler = NULL;
-	  }
-
-	((AP_FrameData*)m_pData)->m_pTopRuler = pQNXTopRuler;
-#else
-	UT_DEBUGMSG(("TODO: Toggle Right Ruler "));
-#endif
 }
 
 void AP_QNXFrame::toggleLeftRuler(bool bRulerOn)
 {
-#if 0
-	AP_FrameData *pFrameData = (AP_FrameData *)getFrameData();
-	UT_ASSERT(pFrameData);
+	unsigned short *width;
 
-	AP_QNXLeftRuler * pQNXLeftRuler = NULL;
+	PtGetResource(m_leftRuler, Pt_ARG_WIDTH, &width, 0);
 
-	UT_DEBUGMSG(("AP_QNXFrame::toggleLeftRuler %d, %d\n", 
-		     bRulerOn, pFrameData->m_pLeftRuler));
-
-	if (bRulerOn)
-	  {
-		pQNXLeftRuler = new AP_QNXLeftRuler(this);
-		UT_ASSERT(pQNXLeftRuler);
-		m_leftRuler = pQNXLeftRuler->createWidget();
-
-		gtk_table_attach(GTK_TABLE(m_innertable), m_leftRuler, 0, 1, 1, 2,
-				 (GtkAttachOptions)(GTK_FILL),
-				 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
-				 0,0);
-		pQNXLeftRuler->setView(m_pView);
-	  }
-	else
-	  {
-	    if (m_leftRuler && GTK_IS_OBJECT(m_leftRuler))
-		gtk_object_destroy( GTK_OBJECT(m_leftRuler) );
-	    
-	    DELETEP(((AP_FrameData*)m_pData)->m_pLeftRuler);
-	    m_leftRuler = NULL;
-	  }
-
-	((AP_FrameData*)m_pData)->m_pLeftRuler = pQNXLeftRuler;
-#else
-	UT_DEBUGMSG(("TODO: Toggle Left Ruler "));
-#endif
+	if (bRulerOn) {
+		PtRealizeWidget(m_leftRuler);
+		_reflowLayout(0, 0, 0, - (*width));
+	} else {
+		PtRealizeWidget(m_leftRuler);		
+		PtSetResource(m_leftRuler, Pt_ARG_FLAGS, Pt_DELAY_REALIZE, Pt_DELAY_REALIZE);
+		_reflowLayout(0, 0, 0, (*width));
+	}
 }
 
 void AP_QNXFrame::toggleRuler(bool bRulerOn)
@@ -915,12 +877,12 @@ void AP_QNXFrame::toggleStatusBar(bool bStatusBarOn) {
 
 	height = pFrameData->m_pStatusBar->getHeight();
     if (bStatusBarOn) {
-		_reflowLayout(-height, 0);
+		_reflowLayout(-height, 0, 0, 0);
         pFrameData->m_pStatusBar->show();
     }
     else {
         pFrameData->m_pStatusBar->hide();
-		_reflowLayout(height, 0);
+		_reflowLayout(height, 0, 0, 0);
     }
 
 }
@@ -930,12 +892,8 @@ void AP_QNXFrame::setDocumentFocus() {
 }
 
 /*** THIS CODE WILL GO AWAY WITH AN INTELLIGENT LAYOUT THINGY ***/
-void AP_QNXFrame::_reflowLayout(int loweradj, int upperadj) {
+void AP_QNXFrame::_reflowLayout(int loweradj, int upperadj, int topruleradj, int leftruleradj) {
 	PhArea_t 	newarea, *oldarea;
-	
-	/* The document area is comprised of 
-	*/	
-	printf("Adjusting by %d %d \n", loweradj, upperadj);
 	/*
      loweradj < 0 means we are enabling and > 0 means disabling
 	*/
@@ -967,7 +925,35 @@ void AP_QNXFrame::_reflowLayout(int loweradj, int upperadj) {
 	if(upperadj != 0) {
 		PtGetResource(m_vScroll, Pt_ARG_AREA, &oldarea, 0);
 		newarea = *oldarea;
-		newarea.pos.y -= loweradj;
+		newarea.pos.y -= upperadj;
+		newarea.size.h += upperadj;
 		PtSetResource(m_vScroll, Pt_ARG_AREA, &newarea, 0);
+
+		PtGetResource(m_topRuler, Pt_ARG_AREA, &oldarea, 0);
+		newarea = *oldarea;
+		newarea.pos.y -= upperadj;
+		PtSetResource(m_topRuler, Pt_ARG_AREA, &newarea, 0);
+	}
+
+	if(topruleradj != 0 || upperadj != 0) {
+		PtGetResource(m_leftRuler, Pt_ARG_AREA, &oldarea, 0);
+		newarea = *oldarea;
+		newarea.pos.y -= upperadj;
+		newarea.size.h += upperadj;
+		PtSetResource(m_leftRuler, Pt_ARG_AREA, &newarea, 0);
+
+		PtGetResource(m_dAreaGroup, Pt_ARG_AREA, &oldarea, 0);
+		newarea = *oldarea;
+		newarea.pos.y -= upperadj + topruleradj;
+		newarea.size.h += upperadj + topruleradj;
+		PtSetResource(m_dAreaGroup, Pt_ARG_AREA, &newarea, 0);
+	}
+
+	if(leftruleradj != 0) {
+		PtGetResource(m_dAreaGroup, Pt_ARG_AREA, &oldarea, 0);
+		newarea = *oldarea;
+		newarea.pos.x -= leftruleradj;
+		newarea.size.w += leftruleradj;
+		PtSetResource(m_dAreaGroup, Pt_ARG_AREA, &newarea, 0);
 	}
 }
