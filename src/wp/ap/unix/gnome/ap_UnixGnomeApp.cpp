@@ -204,10 +204,10 @@ static void s_poptInit(AP_Args *Args)
 	for (int i = 0; Args.options[i].longName != NULL; i++)
 		if (!strcmp(Args.options[i].longName, "version"))
 		{
-			Args.options[i].longName = NULL; Args.options[i].shortName = 0;
-			Args.options[i].argInfo = 0; Args.options[i].arg = NULL;
-			Args.options[i].val = 0; Args.options[i].descrip = NULL;
-			Args.options[i].argDescrip = NULL;
+			Args->options[i].longName = NULL; Args->options[i].shortName = 0;
+			Args->options[i].argInfo = 0; Args->options[i].arg = NULL;
+			Args->options[i].val = 0; Args->options[i].descrip = NULL;
+			Args->options[i].argDescrip = NULL;
 			break;
 		}
 
