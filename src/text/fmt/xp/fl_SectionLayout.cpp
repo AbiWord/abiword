@@ -29,6 +29,7 @@
 #include "fl_Layout.h"
 #include "fl_DocLayout.h"
 #include "fl_BlockLayout.h"
+#include "fl_TableLayout.h"
 #include "fb_LineBreaker.h"
 #include "fp_Page.h"
 #include "fp_Line.h"
@@ -124,6 +125,25 @@ void fl_SectionLayout::_purgeLayout()
 	return;
 }
 
+void fl_SectionLayout::setNeedsReformat(void)
+{
+	m_bNeedsReformat = true;
+	if(myContainingLayout() != NULL && static_cast<fl_SectionLayout *>(myContainingLayout()) != this)
+	{
+		static_cast<fl_SectionLayout *>(myContainingLayout())->setNeedsReformat();
+	}
+}
+
+
+void fl_SectionLayout::setNeedsRedraw(void)
+{
+	m_bNeedsRedraw = true;
+	if(myContainingLayout() != NULL  && static_cast<fl_SectionLayout *>(myContainingLayout()) != this)
+	{
+		static_cast<fl_SectionLayout *>(myContainingLayout())->setNeedsRedraw();
+	}
+}
+
 bool fl_SectionLayout::bl_doclistener_populateSpan(fl_ContainerLayout* pBL, const PX_ChangeRecord_Span * pcrs, PT_BlockOffset blockOffset, UT_uint32 len)
 {
 	if(pBL->getPrev()!= NULL && pBL->getPrev()->getLastContainer()==NULL)
@@ -143,27 +163,37 @@ bool fl_SectionLayout::bl_doclistener_populateObject(fl_ContainerLayout* pBL, PT
 
 bool fl_SectionLayout::bl_doclistener_insertSpan(fl_ContainerLayout* pBL, const PX_ChangeRecord_Span * pcrs)
 {
-	return static_cast<fl_BlockLayout *>(pBL)->doclistener_insertSpan(pcrs);
+	bool bres = static_cast<fl_BlockLayout *>(pBL)->doclistener_insertSpan(pcrs);
+	checkAndAdjustCellSize();
+	return bres;
 }
 
 bool fl_SectionLayout::bl_doclistener_deleteSpan(fl_ContainerLayout* pBL, const PX_ChangeRecord_Span * pcrs)
 {
-	return static_cast<fl_BlockLayout *>(pBL)->doclistener_deleteSpan(pcrs);
+	bool bres = static_cast<fl_BlockLayout *>(pBL)->doclistener_deleteSpan(pcrs);
+	checkAndAdjustCellSize();
+	return bres;
 }
 
 bool fl_SectionLayout::bl_doclistener_changeSpan(fl_ContainerLayout* pBL, const PX_ChangeRecord_SpanChange * pcrsc)
 {
-	return static_cast<fl_BlockLayout *>(pBL)->doclistener_changeSpan(pcrsc);
+	bool bres = static_cast<fl_BlockLayout *>(pBL)->doclistener_changeSpan(pcrsc);
+	checkAndAdjustCellSize();
+	return bres;
 }
 
 bool fl_SectionLayout::bl_doclistener_deleteStrux(fl_ContainerLayout* pBL, const PX_ChangeRecord_Strux * pcrx)
 {
-	return static_cast<fl_BlockLayout *>(pBL)->doclistener_deleteStrux(pcrx);
+	bool bres = static_cast<fl_BlockLayout *>(pBL)->doclistener_deleteStrux(pcrx);
+	checkAndAdjustCellSize();
+	return bres;
 }
 
 bool fl_SectionLayout::bl_doclistener_changeStrux(fl_ContainerLayout* pBL, const PX_ChangeRecord_StruxChange * pcrxc)
 {
-	return static_cast<fl_BlockLayout *>(pBL)->doclistener_changeStrux(pcrxc);
+	bool bres = static_cast<fl_BlockLayout *>(pBL)->doclistener_changeStrux(pcrxc);
+	checkAndAdjustCellSize();
+	return bres;
 }
 
 bool fl_SectionLayout::bl_doclistener_insertBlock(fl_ContainerLayout* pBL, const PX_ChangeRecord_Strux * pcrx,
@@ -175,7 +205,8 @@ bool fl_SectionLayout::bl_doclistener_insertBlock(fl_ContainerLayout* pBL, const
 {
 	if (pBL)
 	{
-		return static_cast<fl_BlockLayout *>(pBL)->doclistener_insertBlock(pcrx, sdh, lid, pfnBindHandles);
+		bool bres = static_cast<fl_BlockLayout *>(pBL)->doclistener_insertBlock(pcrx, sdh, lid, pfnBindHandles);
+		return bres;
 	}
 	else
 	{
@@ -187,9 +218,20 @@ bool fl_SectionLayout::bl_doclistener_insertBlock(fl_ContainerLayout* pBL, const
 			return false;
 		}
 
-		return pNewBL->doclistener_insertFirstBlock(pcrx, sdh,
+		bool bres =pNewBL->doclistener_insertFirstBlock(pcrx, sdh,
 													lid, pfnBindHandles);
+		return bres;
 	}
+}
+
+void fl_SectionLayout::checkAndAdjustCellSize(void)
+{
+	if(getContainerType() != FL_CONTAINER_CELL)
+	{
+		return;
+	}
+	fl_CellLayout * pCell = (fl_CellLayout *) this;
+	pCell->checkAndAdjustCellSize();
 }
 
 bool fl_SectionLayout::bl_doclistener_insertSection(fl_ContainerLayout* pBL,
@@ -201,37 +243,51 @@ bool fl_SectionLayout::bl_doclistener_insertSection(fl_ContainerLayout* pBL,
 																			PL_ListenerId lid,
 																			PL_StruxFmtHandle sfhNew))
 {
-	return static_cast<fl_BlockLayout *>(pBL)->doclistener_insertSection(pcrx, iType, sdh, lid, pfnBindHandles);
+	bool bres = static_cast<fl_BlockLayout *>(pBL)->doclistener_insertSection(pcrx, iType, sdh, lid, pfnBindHandles);
+	checkAndAdjustCellSize();
+	return bres;
 }
 
 bool fl_SectionLayout::bl_doclistener_insertObject(fl_ContainerLayout* pBL, const PX_ChangeRecord_Object * pcro)
 {
-	return static_cast<fl_BlockLayout *>(pBL)->doclistener_insertObject(pcro);
+	bool bres = static_cast<fl_BlockLayout *>(pBL)->doclistener_insertObject(pcro);
+	checkAndAdjustCellSize();
+	return bres;
 }
 
 bool fl_SectionLayout::bl_doclistener_deleteObject(fl_ContainerLayout* pBL, const PX_ChangeRecord_Object * pcro)
 {
-	return static_cast<fl_BlockLayout *>(pBL)->doclistener_deleteObject(pcro);
+	bool bres = static_cast<fl_BlockLayout *>(pBL)->doclistener_deleteObject(pcro);
+	checkAndAdjustCellSize();
+	return bres;
 }
 
 bool fl_SectionLayout::bl_doclistener_changeObject(fl_ContainerLayout* pBL, const PX_ChangeRecord_ObjectChange * pcroc)
 {
-	return static_cast<fl_BlockLayout *>(pBL)->doclistener_changeObject(pcroc);
+	bool bres = static_cast<fl_BlockLayout *>(pBL)->doclistener_changeObject(pcroc);
+	checkAndAdjustCellSize();
+	return bres;
 }
 
 bool fl_SectionLayout::bl_doclistener_insertFmtMark(fl_ContainerLayout* pBL, const PX_ChangeRecord_FmtMark * pcrfm)
 {
-	return static_cast<fl_BlockLayout *>(pBL)->doclistener_insertFmtMark(pcrfm);
+	bool bres = static_cast<fl_BlockLayout *>(pBL)->doclistener_insertFmtMark(pcrfm);
+	checkAndAdjustCellSize();
+	return bres;
 }
 
 bool fl_SectionLayout::bl_doclistener_deleteFmtMark(fl_ContainerLayout* pBL, const PX_ChangeRecord_FmtMark * pcrfm)
 {
-	return static_cast<fl_BlockLayout *>(pBL)->doclistener_deleteFmtMark(pcrfm);
+	bool bres = static_cast<fl_BlockLayout *>(pBL)->doclistener_deleteFmtMark(pcrfm);
+	checkAndAdjustCellSize();
+	return bres;
 }
 
 bool fl_SectionLayout::bl_doclistener_changeFmtMark(fl_ContainerLayout* pBL, const PX_ChangeRecord_FmtMarkChange * pcrfmc)
 {
-	return static_cast<fl_BlockLayout *>(pBL)->doclistener_changeFmtMark(pcrfmc);
+	bool bres = static_cast<fl_BlockLayout *>(pBL)->doclistener_changeFmtMark(pcrfmc);
+	checkAndAdjustCellSize();
+	return bres;
 }
 
 /*!
@@ -817,11 +873,14 @@ void fl_DocSectionLayout::updateLayout(void)
 	fl_ContainerLayout*	pBL = getFirstLayout();
 	while (pBL)
 	{
-		if (pBL->needsReformat())
+		if (pBL->getContainerType()== FL_CONTAINER_BLOCK && pBL->needsReformat())
 		{
 			pBL->format();
 		}
-
+		else
+		{
+			pBL->updateLayout();
+		}
 		pBL = pBL->getNext();
 	}
 
@@ -2524,7 +2583,6 @@ bool fl_HdrFtrSectionLayout::recalculateFields(UT_uint32 iUpdateCount)
 		UT_ASSERT(pPair->getShadow());
 		bResult = pPair->getShadow()->recalculateFields(iUpdateCount) || bResult;
 	}
-
 	return bResult;
 }
 

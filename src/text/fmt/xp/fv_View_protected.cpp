@@ -1072,7 +1072,6 @@ void FV_View::_moveInsPtNextPrevScreen(bool bNext)
 	_findPositionCoords(getPoint(),false,x,y,x2,y2,iHeight,bDirection,&pBlock,&pRun);
 	if(!pRun)
 		return;
-
 	fp_Line * pLine = pRun->getLine();
 	UT_ASSERT(pLine);
 
@@ -2860,7 +2859,15 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 	{
 		m_iInsPoint += countChars;
 		_findPositionCoords(m_iInsPoint-1, false, x, y, x2,y2,uheight, bDirection, &pBlock, &pRun);
-
+//
+// If we come to a table boundary we have doc positions with no blocks.
+// _findPositionCoords signals this by returning pRun == NULL
+//
+		while(pRun == NULL && m_iInsPoint <= posBOD)
+		{
+			m_iInsPoint++;
+			_findPositionCoords(m_iInsPoint-1, false, x, y, x2,y2,uheight, bDirection, &pBlock, &pRun);
+		}
 #if 0
 		while(pRun != NULL &&  pRun->isField() && m_iInsPoint <= posEOD)
 		{
@@ -2876,6 +2883,15 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 	{
 		m_iInsPoint -= countChars;
 		_findPositionCoords(m_iInsPoint, false, x, y, x2,y2,uheight, bDirection, &pBlock, &pRun);
+//
+// If we come to a table boundary we have doc positions with no blocks.
+// _findPositionCoords signals this by returning pRun == NULL
+//
+		while(pRun == NULL && m_iInsPoint >= posEOD)
+		{
+			m_iInsPoint--;
+			_findPositionCoords(m_iInsPoint-1, false, x, y, x2,y2,uheight, bDirection, &pBlock, &pRun);
+		}
 #if 0
 // Needed for piecetable fields - we don't have these in 1.0
 
@@ -2926,134 +2942,17 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 		pRun = pRun->getNext();
 		while(pRun && (!pRun->canContainPoint() || pRun->getLength() == 0))
 			pRun = pRun->getNext();
-
-		// if we end up with pRun == NULL, it means we reached the end
-		// of the block; we need to move to the next suitable block,
-		// or even next suitable layout ...
-		while(!pRun)
+		if(pRun)
 		{
-			pBL = pBL->getNext();
-			while(pBL && !pBL->canContainPoint())
-				pBL = pBL->getNext();
-
-			while(!pBL)
-			{
-				// got to the end of the containing layout (most often
-				// section), we will try the layout next to it
-				fl_ContainerLayout * pOrigCL = pCL;
-				iLayoutDepth = 0;
-
-				pCL = pCL->getNext();
-
-				while(pCL)
-				{
-					while (pCL && !pCL->canContainPoint())
-						pCL = pCL->getNext();
-
-					if(pCL)
-					{
-						// found suitable layout, quit
-						break;
-					}
-
-					while(!pCL)
-					{
-						// reached the end of this containing layout
-						// see if there is a suitable layout layer above
-						// us (e.g. if we are in a cell we want the table)
-						pCL = pOrigCL->myContainingLayout();
-
-						if(pCL)
-						{
-							// there is a suitable layout above us
-							iLayoutDepth += 1;
-
-							// we need to find the layout in the
-							// parent layout that preceedes us
-							fl_ContainerLayout * pNewCL = pCL->getFirstLayout();
-
-							if(pNewCL == pOrigCL)
-							{
-								// we are the very first layout in our
-								// parent layout, try moving still one layer up
-								pOrigCL = pCL;
-								pCL  = NULL;
-								continue;
-							}
-
-							while(pNewCL)
-							{
-								if(pNewCL->getNext() == pOrigCL)
-								{
-									pCL = pNewCL;
-									break;
-								}
-								pNewCL = pNewCL->getNext();
-							}
-						}
-						else
-						{
-							// there is no suitable layout layer above
-							// us, quit
-							break;
-						}
-					}
-				}
-
-				if(!pCL)
-				{
-					// we have reached the end of the document
-					break;
-				}
-
-				// now we need to find the container again
-				// however, the layout layer represented by our
-				// pCL could be several levels above the layer
-				// that we are interested in
-
-				for(UT_uint32 i = 0; i < iLayoutDepth; i++)
-				{
-					pCL = pCL->getFirstLayout();
-					if(!pCL)
-					{
-						UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
-						break;
-					}
-				}
-
-				// this will only happen if the assert above fails
-				if(!pCL)
-					break;
-
-				pBL = pCL->getFirstLayout();
-
-				UT_ASSERT( pBL && pBL->getContainerType() == FL_CONTAINER_BLOCK );
-
-				while(pBL && !pBL->canContainPoint())
-					pBL = pBL->getNext();
-
-			}
-
-			if(!pCL || !pBL) // end of document
-				break;
-
-			pRun = pBL->getFirstRun();
-
-			while(pRun && (!pRun->canContainPoint() || pRun->getLength() == 0))
-				pRun = pRun->getNext();
-
-		}
-
-		if(!pRun)
-		{
-			// reached end of document, set the point there
-			m_iInsPoint = posEOD;
-
+			m_iInsPoint = 1 + pBlock->getPosition(false) + pRun->getBlockOffset();
 		}
 		else
 		{
-			m_iInsPoint = 1 + pBL->getPosition(false) + pRun->getBlockOffset();
-		}
+//
+// FIXME: Put in some code here to handle table/cell boundaries. Right
+// now you have to press left arrow twice to move form outside to inside
+// a table. The comment in find 
+		}			
 	}
 
 	// this is much simpler, since the findPointCoords will return the

@@ -151,7 +151,7 @@ void fp_CellContainer::setWidth(UT_sint32 iWidth)
 	pCellL->localCollapse();
 	pCellL->format();
 	UT_sint32 i = 0;
-	for(i =0; i< countCons(); i++)
+	for(i =0; i< (UT_sint32) countCons(); i++)
 	{
 		fp_Container * pCon = (fp_Container *) getNthCon(i);
 		if(pCon->getContainerType() == FP_CONTAINER_LINE)
@@ -209,15 +209,14 @@ void fp_CellContainer::_drawBoundaries(dg_DrawArgs* pDA)
 		return;
 	}
     if(getPage()->getDocLayout()->getView()->getShowPara() && getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN)){
-		UT_sint32 ytab = getContainer()->getY();
-        UT_sint32 xoffBegin = pDA->xoff - 1 + getX();
-        UT_sint32 yoffBegin = pDA->yoff - 1 + getY();
-        UT_sint32 xoffEnd = pDA->xoff + getX() + getWidth() + 2;
-        UT_sint32 yoffEnd = pDA->yoff + getY() + getHeight() + 2;
+        UT_sint32 xoffBegin = pDA->xoff + getX();
+        UT_sint32 yoffBegin = pDA->yoff + getY();
+        UT_sint32 xoffEnd = pDA->xoff + getX() + getWidth();
+        UT_sint32 yoffEnd = pDA->yoff + getY() + getHeight();
 
 		UT_RGBColor clrShowPara(127,127,127);
 		getGraphics()->setColor(clrShowPara);
-		UT_DEBUGMSG(("SEVIOR: cell boundaries xleft %d xright %d ytop %d ybot %d \n",xoffBegin,xoffEnd,yoffBegin,yoffEnd));
+		xxx_UT_DEBUGMSG(("SEVIOR: cell boundaries xleft %d xright %d ytop %d ybot %d \n",xoffBegin,xoffEnd,yoffBegin,yoffEnd));
         getGraphics()->drawLine(xoffBegin, yoffBegin, xoffEnd, yoffBegin);
         getGraphics()->drawLine(xoffBegin, yoffEnd, xoffEnd, yoffEnd);
         getGraphics()->drawLine(xoffBegin, yoffBegin, xoffBegin, yoffEnd);
@@ -277,7 +276,6 @@ void fp_CellContainer::draw(dg_DrawArgs* pDA)
 	const UT_Rect * pClipRect = pDA->pG->getClipRect();
 	UT_sint32 ytop,ybot;
 	UT_sint32 i;
-	UT_sint32 ytab = getContainer()->getY(); 
 	UT_sint32 imax = (UT_sint32)(((UT_uint32)(1<<31)) - 1);
 	if(pClipRect)
 	{
@@ -292,7 +290,7 @@ void fp_CellContainer::draw(dg_DrawArgs* pDA)
 	}
 	bool bStop = false;
 	bool bStart = false;
-	UT_DEBUGMSG(("SEVIOR: Drawing cell %x x %d, y %d width %d height %d \n",this,getX(),getY(),getWidth(),getHeight()));
+	xxx_UT_DEBUGMSG(("SEVIOR: Drawing cell %x x %d, y %d width %d height %d \n",this,getX(),getY(),getWidth(),getHeight()));
 //
 // Only draw the lines in the clipping region.
 //
@@ -379,6 +377,7 @@ void fp_CellContainer::sizeRequest(fp_Requisition * pRequest)
 		fp_Container * pCon = (fp_Container *) getNthCon(i);
 		if(pCon->getContainerType() == FP_CONTAINER_LINE)
 		{
+			static_cast<fp_Line *>(pCon)->recalcHeight();
 			if(width < pCon->getWidthInLayoutUnits())
 			{
 				width = pCon->getWidthInLayoutUnits();
@@ -415,7 +414,7 @@ void fp_CellContainer::sizeRequest(fp_Requisition * pRequest)
 	}
 	m_MyRequest.width = width;
 	m_MyRequest.height = height;
-	UT_DEBUGMSG(("Sevior: Total height  %d width %d \n",height,width));
+	xxx_UT_DEBUGMSG(("Sevior: Total height  %d width %d \n",height,width));
 }
 
 void fp_CellContainer::sizeAllocate(fp_Allocation * pAllocate)
@@ -557,6 +556,89 @@ fp_TableContainer::~fp_TableContainer()
 	UT_VECTOR_PURGEALL(fp_TableRowColumn *, m_vecColumns);
 }
 
+
+
+/*!
+  Find document position from X and Y coordinates
+ \param  x X coordinate
+ \param  y Y coordinate
+ \retval pos Document position
+ \retval bBOL True if position is at begining of line, otherwise false
+ \retval bEOL True if position is at end of line, otherwise false
+ */
+void fp_TableContainer::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos,
+								   bool& bBOL, bool& bEOL)
+{
+	UT_sint32 count = countCons();
+	if(count == 0)
+	{
+		pos = 2;
+		bBOL = true;
+		bEOL = true;
+		return;
+	}
+
+	fp_VerticalContainer* pC = NULL;
+	UT_sint32 i = 0;
+	bool bFound = false;
+
+	// First see if there is a container with the point inside it.
+	for(i=0; (i< count) && !bFound; i++)
+	{
+		pC = (fp_VerticalContainer*) getNthCon(i);
+		if(x >= pC->getX() && x <  pC->getX() + pC->getWidth() &&
+		   y >=  pC->getY() && y < pC->getY()+ pC->getMaxHeight())
+		{
+			bFound = true;
+		}
+	}
+	if(bFound)
+	{
+		pC->mapXYToPosition(x - pC->getX(), y - pC->getY(), pos, bBOL, bEOL);
+		return;
+	}
+//
+// No cell directly overlaps. Look first for a column that overlaps and
+// then choose the cell that is closest within that. Otherwise choose
+// the closest cell.
+//
+	fp_VerticalContainer * pCloseX = NULL;
+	fp_VerticalContainer * pCloseTot = NULL;
+	UT_sint32 dclosex = 231456789;
+	UT_sint32 dclosetot = 231456789;
+	UT_sint32 d = 0;
+	for(i=0; (i< count) && !bFound; i++)
+	{
+		pC = (fp_VerticalContainer*) getNthCon(i);
+		if(x >= pC->getX() && x < pC->getX() + pC->getWidth())
+		{
+			d = y - pC->getY();
+			if(d < 0) 
+			    d = - d;
+			if(d < dclosex)
+			{
+				dclosex = d;
+				pCloseX = pC;
+			}
+		}
+		d = pC->distanceFromPoint(x,y);
+		if(d < dclosetot)
+		{
+			pCloseTot = pC;
+			dclosetot = d;
+		}
+	}
+	if(pCloseX != NULL)
+	{
+		pC = pCloseX;
+	}
+	else
+	{
+		pC = pCloseTot;
+	}
+	UT_ASSERT( pC != NULL);
+	pC->mapXYToPosition(x - pC->getX(), y  - pC->getY(), pos, bBOL, bEOL);
+}
 
 void fp_TableContainer::resize(UT_sint32 n_rows, UT_sint32 n_cols)
 {
@@ -781,22 +863,21 @@ void fp_TableContainer::layout(void)
 void fp_TableContainer::setToAllocation(void)
 {
 	setWidthInLayoutUnits(m_MyAllocation.width);
-	setHeightLayoutUnits(m_MyAllocation.height);
-	setMaxHeightInLayoutUnits(m_MyAllocation.height);
-//	setYInLayoutUnits(m_MyAllocation.y);
-//	setX(m_MyAllocation.x * SCALE_TO_SCREEN);
+	double dHeightLO = (double) m_MyAllocation.height ;
+	double scale = SCALE_TO_SCREEN;
+	dHeightLO = dHeightLO / scale;
+	UT_sint32 iHeightLO = (UT_sint32) dHeightLO;
+	setHeightLayoutUnits(iHeightLO);
+	setMaxHeightInLayoutUnits(iHeightLO);
 	setWidth(m_MyAllocation.width * SCALE_TO_SCREEN);
 	setHeight(m_MyAllocation.height);
 	setMaxHeight(m_MyAllocation.height);
-//	setY(m_MyAllocation.y);
 
 	fp_CellContainer * pCon = (fp_CellContainer *) getNthCon(0);
-	UT_DEBUGMSG(("SEVIOR: Doing set to Alloc pCon is %x \n",pCon));
 	while(pCon)
 	{
 		pCon->setToAllocation();
 		pCon = (fp_CellContainer *) pCon->getNext();
-		UT_DEBUGMSG(("SEVIOR: Doing set to Alloc pCon is %x \n",pCon));
 	}
 }
 
@@ -842,8 +923,8 @@ void  fp_TableContainer::_drawBoundaries(dg_DrawArgs* pDA)
 
 		UT_RGBColor clrShowPara(127,127,127);
 		getGraphics()->setColor(clrShowPara);
-		UT_DEBUGMSG(("SEVIOR: Table Top (getY()) = %d \n",getY()));
-		UT_DEBUGMSG(("SEVIOR: Table boundaries xleft %d xright %d ytop %d ybot %d \n",xoffBegin,xoffEnd,yoffBegin,yoffEnd));
+		xxx_UT_DEBUGMSG(("SEVIOR: Table Top (getY()) = %d \n",getY()));
+		xxx_UT_DEBUGMSG(("SEVIOR: Table boundaries xleft %d xright %d ytop %d ybot %d \n",xoffBegin,xoffEnd,yoffBegin,yoffEnd));
         getGraphics()->drawLine(xoffBegin, yoffBegin, xoffEnd, yoffBegin);
         getGraphics()->drawLine(xoffBegin, yoffEnd, xoffEnd, yoffEnd);
         getGraphics()->drawLine(xoffBegin, yoffBegin, xoffBegin, yoffEnd);
@@ -1609,7 +1690,11 @@ void fp_TableContainer::sizeAllocate(fp_Allocation * pAllocation)
 	UT_DEBUGMSG(("SEVIOR: Initial allocation height 2 is %d \n", m_MyAllocation.height));
 	_size_allocate_pass2 ();
 	UT_DEBUGMSG(("SEVIOR: Initial allocation height 3 is %d \n", m_MyAllocation.height));
+//	fp_Requisition pReq;
+//	sizeRequest(&pReq);
+//	m_MyAllocation.height = pReq.height;
 }
+
 
 
 

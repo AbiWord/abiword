@@ -34,6 +34,7 @@
 #include "fp_Page.h"
 #include "fv_View.h"
 #include "fl_SectionLayout.h"
+#include "fl_TableLayout.h"
 #include "gr_DrawArgs.h"
 #include "gr_Graphics.h"
 #include "ut_assert.h"
@@ -56,6 +57,7 @@ fp_Line         * fp_Line::s_pMapOwner = 0;
 #endif
 
 #define STATIC_BUFFER_INITIAL 150
+#define SCALE_TO_SCREEN (double)getGraphics()->getResolution() / UT_LAYOUT_UNITS
 
 UT_sint32 * fp_Line::s_pOldXs = NULL;
 UT_uint32   fp_Line::s_iOldXsSize = 0;
@@ -465,13 +467,6 @@ void fp_Line::getOffsets(fp_Run* pRun, UT_sint32& xoff, UT_sint32& yoff)
 	UT_sint32 my_yoff;
 
 	((fp_VerticalContainer *)getContainer())->getOffsets(this, my_xoff, my_yoff);
-	if(getContainer()->getContainerType() == FP_CONTAINER_CELL)
-	{
-		fp_CellContainer * pCell = (fp_CellContainer *) getContainer();
-		my_xoff += pCell->getCellX(this);
-		my_yoff += pCell->getCellY(this);
-	}
-
 	xoff = my_xoff + pRun->getX();
 	yoff = my_yoff + pRun->getY() + m_iAscent - pRun->getAscent();
 }
@@ -489,12 +484,6 @@ void fp_Line::getScreenOffsets(fp_Run* pRun,
 	*/
 
 	((fp_VerticalContainer *)getContainer())->getScreenOffsets(this, my_xoff, my_yoff);
-	if(getContainer()->getContainerType() == FP_CONTAINER_CELL)
-	{
-		fp_CellContainer * pCell = (fp_CellContainer *) getContainer();
-		my_xoff += pCell->getCellX(this);
-		my_yoff += pCell->getCellY(this);
-	}
 
 	xoff = my_xoff + pRun->getX();
 	yoff = my_yoff + pRun->getY();
@@ -744,12 +733,6 @@ void fp_Line::clearScreen(void)
 
 			UT_sint32 xoffLine, yoffLine;
 			((fp_VerticalContainer *)getContainer())->getScreenOffsets(this, xoffLine, yoffLine);
-			if(getContainer()->getContainerType() == FP_CONTAINER_CELL)
-			{
-				fp_CellContainer * pCell = (fp_CellContainer *) getContainer();
-				xoffLine += pCell->getCellX( this);
-				yoffLine += pCell->getCellY(this);
-			}
 
 			// Note: we use getHeight here instead of m_iScreenHeight
 			// in case the line is asked to render before it's been
@@ -828,15 +811,10 @@ void fp_Line::clearScreenFromRunToEnd(fp_Run * ppRun)
 			getScreenOffsets(pRun, xoff, yoff);
 			UT_sint32 xoffLine, yoffLine;
 			((fp_VerticalContainer *)getContainer())->getScreenOffsets(this, xoffLine, yoffLine);
-			if(getContainer()->getContainerType() == FP_CONTAINER_CELL)
-			{
-				fp_CellContainer * pCell = (fp_CellContainer *) getContainer();
-				xoffLine += pCell->getCellX(this);
-				yoffLine += pCell->getCellY(this);
-			}
 			if(xoff == xoffLine)
 				leftClear = pRun->getDescent();
-
+			UT_DEBUGMSG(("SEVIOR: Doing clear from run to end xoff %d yoff %d \n",xoff,yoff));
+			UT_ASSERT(yoff == yoffLine);
 			pRun->getGraphics()->fillRect(pRun->getPageColor(),
 										  xoff - leftClear,
 										  yoff,
@@ -945,15 +923,9 @@ void fp_Line::clearScreenFromRunToEnd(UT_uint32 runIndex)
 		recalcHeight();
 		UT_ASSERT(oldheight == getHeight());
 		((fp_VerticalContainer *)getContainer())->getScreenOffsets(this, xoffLine, yoffLine);
-		if(getContainer()->getContainerType() == FP_CONTAINER_CELL)
-		{
-			fp_CellContainer * pCell = (fp_CellContainer *) getContainer();
-			xoffLine += pCell->getCellX(this);
-			yoffLine += pCell->getCellY(this);
-		}
 
 		fp_Line * pPrevLine = (fp_Line *) getPrevContainerInSection();
-		if(pPrevLine != NULL)
+		if(pPrevLine != NULL && (pPrevLine->getContainerType() == FP_CONTAINER_LINE))
 		{
 			UT_sint32 xPrev=0;
 			UT_sint32 yPrev=0;
@@ -1024,12 +996,6 @@ void fp_Line::draw(GR_Graphics* pG)
 	UT_sint32 my_xoff = 0, my_yoff = 0;
 	((fp_VerticalContainer *)getContainer())->getScreenOffsets(this, my_xoff, my_yoff);
 	//xxx_UT_DEBUGMSG(("SEVIOR: Drawing line in line pG, my_yoff=%d \n",my_yoff));
-	if(getContainer()->getContainerType() == FP_CONTAINER_CELL)
-	{
-		fp_CellContainer * pCell = (fp_CellContainer *) getContainer();
-		my_yoff += pCell->getCellX(this);
-		my_xoff += pCell->getCellY(this);
-	}
 
 	if(((my_yoff < -32000) || (my_yoff > 32000)) && pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
@@ -1121,12 +1087,6 @@ void fp_Line::draw(dg_DrawArgs* pDA)
 		{
 			UT_sint32 my_xoff = 0, my_yoff = 0;
 			((fp_VerticalContainer *)getContainer())->getScreenOffsets(this, my_xoff, my_yoff);
-			if(getContainer()->getContainerType() == FP_CONTAINER_CELL)
-			{
-				fp_CellContainer * pCell = (fp_CellContainer *) getContainer();
-				my_xoff += pCell->getCellX(this);
-			    my_yoff += pCell->getCellY(this);
-			}
 			da.xoff = my_xoff;
 		}
 		else
@@ -2224,12 +2184,22 @@ UT_sint32 fp_Line::getMarginBefore(void) const
 {
 	if (isFirstLineInBlock() && getBlock()->getPrev())
 	{
-		fp_Line* pPrevLine = (fp_Line *) getBlock()->getPrev()->getLastContainer();
+		fp_Container* pPrevLine = (fp_Container *) getBlock()->getPrev()->getLastContainer();
 		UT_ASSERT(pPrevLine);
-		UT_ASSERT(pPrevLine->isLastLineInBlock());
-
-		UT_sint32 iBottomMargin = pPrevLine->getBlock()->getBottomMargin();
-
+		UT_sint32 iBottomMargin = 0;
+		if(pPrevLine->getContainerType() == FP_CONTAINER_LINE)
+		{
+			iBottomMargin = static_cast<fp_Line *>(pPrevLine)->getBlock()->getBottomMargin();
+		}
+		else if(pPrevLine->getContainerType() == FP_CONTAINER_TABLE)
+		{
+			iBottomMargin = static_cast<fl_TableLayout *>(pPrevLine->getSectionLayout())->getBottomOffset();
+		}
+		else
+		{
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			iBottomMargin = 0;
+		}
 		UT_sint32 iNextTopMargin = getBlock()->getTopMargin();
 
 		UT_sint32 iMargin = UT_MAX(iBottomMargin, iNextTopMargin);
@@ -2498,13 +2468,43 @@ void fp_Line::recalcMaxWidth(bool bDontClearIfNeeded)
 	UT_ASSERT(pSL);
 	if(pSL->getNumColumns() > 1)
 	{
-		m_iClearToPos = iMaxWidth + pSL->getColumnGap();
-		m_iClearLeftOffset = pSL->getColumnGap() -1;
+		if(getContainer()->getContainerType() == FP_CONTAINER_COLUMN)
+		{
+			m_iClearToPos = iMaxWidth + pSL->getColumnGap();
+			m_iClearLeftOffset = pSL->getColumnGap() -1;
+		}
+		else if(getContainer()->getContainerType() == FP_CONTAINER_CELL)
+		{
+			fp_CellContainer * pCell = (fp_CellContainer *) getContainer();
+			m_iClearToPos = iMaxWidth + pCell->getRightPad() * SCALE_TO_SCREEN;
+			m_iClearLeftOffset = pSL->getLeftMargin() -1;
+		}
+		else
+		{
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			m_iClearToPos = iMaxWidth;
+			m_iClearLeftOffset = pSL->getLeftMargin() -1;
+		}
 	}
 	else
 	{
-		m_iClearToPos = iMaxWidth + pSL->getRightMargin() - 2;
-		m_iClearLeftOffset = pSL->getLeftMargin() -1;
+		if(getContainer()->getContainerType() == FP_CONTAINER_COLUMN)
+		{
+			m_iClearToPos = iMaxWidth + pSL->getRightMargin() - 2;
+			m_iClearLeftOffset = pSL->getLeftMargin() -1;
+		}
+		else if(getContainer()->getContainerType() == FP_CONTAINER_CELL)
+		{
+			fp_CellContainer * pCell = (fp_CellContainer *) getContainer();
+			m_iClearToPos = iMaxWidth + pCell->getRightPad() * SCALE_TO_SCREEN;
+			m_iClearLeftOffset = pSL->getLeftMargin() -1;
+		}
+		else
+		{
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			m_iClearToPos = iMaxWidth;
+			m_iClearLeftOffset = pSL->getLeftMargin() -1;
+		}
 	}
 
 

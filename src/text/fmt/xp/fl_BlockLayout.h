@@ -361,13 +361,11 @@ public:
 	virtual bool			isCollapsed(void) const
 		{return m_bIsCollapsed;}
 	void					coalesceRuns(void);
-	virtual void			setNeedsReformat(void)
-		{ m_bNeedsReformat = true; }
-	inline bool 		    needsReformat(void) const
+	virtual void			setNeedsReformat(void); 
+	inline bool 		    needsReformat(void) const 
 		{ return m_bNeedsReformat; }
-	virtual void			setNeedsRedraw(void)
-		{ m_bNeedsRedraw = true; }
-	virtual bool 		    needsRedraw(void) const
+	virtual void			setNeedsRedraw(void);
+	virtual bool 		    needsRedraw(void) const 
 		{ return m_bNeedsRedraw; }
 	virtual void			markAllRunsDirty(void);
 	bool					checkWord(fl_PartOfBlock* pPOB);

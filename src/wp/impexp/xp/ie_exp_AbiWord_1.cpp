@@ -117,6 +117,8 @@ public:
 	virtual bool		signal(UT_uint32 iSignal);
 
 protected:
+	void                _closeTable(void);
+	void                _closeCell(void);
 	void				_closeSection(void);
 	void				_closeBlock(void);
 	void				_closeSpan(void);
@@ -145,6 +147,8 @@ protected:
 	bool				m_bInSpan;
 	bool				m_bInTag;
 	bool				m_bInHyperlink;
+	bool                m_bInTable;
+	bool                m_bInCell;
 	PT_AttrPropIndex	m_apiLastSpan;
     fd_Field *          m_pCurrentField;
 	bool                m_bOpenChar;
@@ -162,6 +166,28 @@ void s_AbiWord_1_Listener::_closeSection(void)
 
 	m_pie->write("</section>\n");
 	m_bInSection = false;
+	return;
+}
+
+
+void s_AbiWord_1_Listener::_closeTable(void)
+{
+	if (!m_bInTable)
+		return;
+
+	m_pie->write("</table>\n");
+	m_bInTable = false;
+	return;
+}
+
+
+void s_AbiWord_1_Listener::_closeCell(void)
+{
+	if (!m_bInCell)
+		return;
+
+	m_pie->write("</cell>\n");
+	m_bInCell = false;
 	return;
 }
 
@@ -681,9 +707,8 @@ bool s_AbiWord_1_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
             _closeField();
             _closeHyperlink();
 			_closeBlock();
-			_closeSection();
 			_openTag("table","",true,pcr->getIndexAP());
-			m_bInSection = true;
+			m_bInTable = true;
 			return true;
 		}
 	case PTX_SectionCell:
@@ -692,9 +717,8 @@ bool s_AbiWord_1_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
             _closeField();
             _closeHyperlink();
 			_closeBlock();
-			_closeSection();
 			_openTag("cell","",true,pcr->getIndexAP());
-			m_bInSection = true;
+			m_bInCell = true;
 			return true;
 		}
 	case PTX_SectionFootnote:
@@ -703,9 +727,7 @@ bool s_AbiWord_1_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
             _closeField();
             _closeHyperlink();
 			_closeBlock();
-			_closeSection();
 			_openTag("foot","",true,pcr->getIndexAP());
-			m_bInSection = true;
 			return true;
 		}
 	case PTX_SectionMarginnote:
@@ -714,9 +736,7 @@ bool s_AbiWord_1_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
             _closeField();
             _closeHyperlink();
 			_closeBlock();
-			_closeSection();
 			_openTag("margin","",true,pcr->getIndexAP());
-			m_bInSection = true;
 			return true;
 		}
 	case PTX_SectionFrame:
@@ -725,9 +745,7 @@ bool s_AbiWord_1_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
             _closeField();
             _closeHyperlink();
 			_closeBlock();
-			_closeSection();
 			_openTag("frame","",true,pcr->getIndexAP());
-			m_bInSection = true;
 			return true;
 		}
 	case PTX_EndTable:
@@ -736,9 +754,8 @@ bool s_AbiWord_1_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
             _closeField();
             _closeHyperlink();
 			_closeBlock();
-			_closeSection();
-			_openTag("endtable","",true,pcr->getIndexAP());
-			m_bInSection = true;
+			_closeTable();
+			m_pie->write("<endtable></endtable>");
 			return true;
 		}
 	case PTX_EndCell:
@@ -747,9 +764,8 @@ bool s_AbiWord_1_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
             _closeField();
             _closeHyperlink();
 			_closeBlock();
-			_closeSection();
-			_openTag("endcell","",true,pcr->getIndexAP());
-			m_bInSection = true;
+			_closeCell();
+			m_pie->write("<endcell></endcell>");
 			return true;
 		}
 	case PTX_EndFootnote:
@@ -758,9 +774,7 @@ bool s_AbiWord_1_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
             _closeField();
             _closeHyperlink();
 			_closeBlock();
-			_closeSection();
-			_openTag("endfoot","",true,pcr->getIndexAP());
-			m_bInSection = true;
+			m_pie->write("<endfoot></endfoot>");
 			return true;
 		}
 	case PTX_EndMarginnote:
@@ -769,9 +783,7 @@ bool s_AbiWord_1_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
             _closeField();
             _closeHyperlink();
 			_closeBlock();
-			_closeSection();
-			_openTag("endmargin","",true,pcr->getIndexAP());
-			m_bInSection = true;
+			m_pie->write("<endmargin></endmargin>");
 			return true;
 		}
 	case PTX_EndFrame:
@@ -780,9 +792,7 @@ bool s_AbiWord_1_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
             _closeField();
             _closeHyperlink();
 			_closeBlock();
-			_closeSection();
-			_openTag("endframe","",true,pcr->getIndexAP());
-			m_bInSection = true;
+			m_pie->write("<endframe></endframe>");
 			return true;
 		}
 	case PTX_EndEndnote:

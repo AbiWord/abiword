@@ -103,10 +103,8 @@ public:
 	virtual void                markAllRunsDirty(void) =0;
 	virtual bool                isCollapsed(void) const
 		{return m_bIsCollapsed;}
-	virtual void                setNeedsReformat(void)
-		{m_bNeedsReformat = true;}
-	virtual void                setNeedsRedraw(void)
-	    {m_bNeedsRedraw = true;}
+	virtual void                setNeedsReformat(void);
+	virtual void                setNeedsRedraw(void);
 	virtual bool                needsReformat(void) const
 		{return m_bNeedsReformat;}
 	virtual bool                needsRedraw(void) const
@@ -114,7 +112,7 @@ public:
 	virtual void        updateBackgroundColor(void);
 
 	virtual bool 	doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc) = 0;
-
+	void                        checkAndAdjustCellSize(void);
 	virtual bool bl_doclistener_populateSpan(fl_ContainerLayout*, const PX_ChangeRecord_Span * pcrs, PT_BlockOffset blockOffset, UT_uint32 len);
 	virtual bool bl_doclistener_populateObject(fl_ContainerLayout*, PT_BlockOffset blockOffset, const PX_ChangeRecord_Object * pcro);
 	virtual bool bl_doclistener_insertSpan(fl_ContainerLayout*, const PX_ChangeRecord_Span * pcrs);

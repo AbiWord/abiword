@@ -241,7 +241,7 @@ void fl_TableLayout::updateLayout(void)
 	{
 		if (pBL->needsReformat())
 		{
-			pBL->format();
+			pBL->updateLayout();
 		}
 
 		pBL = pBL->getNext();
@@ -677,7 +677,8 @@ fl_CellLayout::fl_CellLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_At
 	  m_iRightAttach(1),
 	  m_iTopAttach(0),
 	  m_iBotAttach(1),
-	  m_bCellPositionedOnPage(false)
+	  m_bCellPositionedOnPage(false),
+	  m_iCellHeight(0)
 {
 	_lookupProperties();
 	fp_CellContainer * pCellContainer = new fp_CellContainer((fl_SectionLayout *) this);
@@ -733,6 +734,24 @@ void fl_CellLayout::setCellContainerProperties(fp_CellContainer * pCell)
 	pCell->setBotPad(m_iBottomOffset);
 }
 
+/*!
+ * This method measures the cell height and compares it to the previously
+ * measured height. If they disagree update the layout of the table.
+ */
+void fl_CellLayout::checkAndAdjustCellSize(void)
+{
+	fp_CellContainer * pCell = (fp_CellContainer *) getFirstContainer();
+	fp_Requisition Req;
+	pCell->sizeRequest(&Req);
+	if(Req.height == m_iCellHeight)
+	{
+		return;
+	}
+	m_iCellHeight = Req.height;
+	static_cast<fl_TableLayout *>(myContainingLayout())->setDirty();
+	myContainingLayout()->format();
+}
+	
 bool fl_CellLayout::bl_doclistener_insertSection(fl_ContainerLayout*,
 											  SectionType iType,
 											  const PX_ChangeRecord_Strux * pcrx,
@@ -853,6 +872,7 @@ void fl_CellLayout::updateLayout(void)
 
 		pBL = pBL->getNext();
 	}
+	checkAndAdjustCellSize();
 }
 
 void fl_CellLayout::redrawUpdate(void)

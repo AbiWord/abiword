@@ -100,7 +100,6 @@ public:
 	void                sizeRequest(fp_Requisition * pRequest);
 	void                sizeAllocate(fp_Allocation * pAllocate);
 	void				layout(void);
-
 	virtual void		draw(dg_DrawArgs*);
 	virtual void		draw(GR_Graphics*) {}
 	virtual void        setContainer(fp_Container * pContainer);
@@ -240,6 +239,9 @@ public:
 
 	void                sizeRequest(fp_Requisition * pRequest);
 	void                sizeAllocate(fp_Allocation * pAllocate);
+    virtual void        mapXYToPosition(UT_sint32 x, UT_sint32 y, 
+										PT_DocPosition& pos,
+										bool& bBOL, bool& bEOL);
 
 	void				layout(void);
 	virtual void        setContainer(fp_Container * pContainer);

@@ -170,21 +170,31 @@ UT_sint32 fp_VerticalContainer::getY(void) const
  */
 void fp_VerticalContainer::getOffsets(fp_ContainerObject* pContainer, UT_sint32& xoff, UT_sint32& yoff)
 {
-	xoff = getX() + pContainer->getX();
-	yoff = getY() + pContainer->getY();
+	UT_sint32 my_xoff = 0;
+	UT_sint32 my_yoff = 0;
+	fp_Container * pCon = (fp_Container *) this;
+	while(pCon->getContainerType() != FP_CONTAINER_COLUMN)
+	{
+		my_xoff += pCon->getX();
+		my_yoff += pCon->getY();
+		pCon = pCon->getContainer();
+	}
+	xoff = pCon->getX() + my_xoff + pContainer->getX();
+	yoff = pCon->getY() + my_yoff + pContainer->getY();
 }
 
 /*!
-  Get line's offsets relative to the screen
- \param  pContainer Container
+  Get Containers' offsets relative to the screen
+ \param  pContainer Container which we want to find the absolute 
+                    position of.
  \retval xoff Container's X offset relative the screen
  \retval yoff Container's Y offset relative the screen
  */
 void fp_VerticalContainer::getScreenOffsets(fp_ContainerObject* pContainer,
 									UT_sint32& xoff, UT_sint32& yoff)
 {
-	UT_sint32 my_xoff;
-	UT_sint32 my_yoff;
+	UT_sint32 my_xoff =0;
+	UT_sint32 my_yoff =0;
 
 	if((getPage() == NULL) || (pContainer == NULL))
 	{
@@ -192,8 +202,16 @@ void fp_VerticalContainer::getScreenOffsets(fp_ContainerObject* pContainer,
 		yoff = 0;
 		return;
 	}
-	getPage()->getScreenOffsets(this, my_xoff, my_yoff);
+	fp_Column * pCol = (fp_Column *) getColumn();
+	getPage()->getScreenOffsets(pCol, my_xoff, my_yoff);
 
+	fp_Container * pCon = (fp_Container *) this;
+	while(pCon->getContainerType() != FP_CONTAINER_COLUMN)
+	{
+		my_xoff += pCon->getX();
+		my_yoff += pCon->getY();
+		pCon = pCon->getContainer();
+	}
 	xoff = my_xoff + pContainer->getX();
 	yoff = my_yoff + pContainer->getY();
 }
@@ -424,8 +442,14 @@ void fp_VerticalContainer::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosit
 								   bool& bBOL, bool& bEOL)
 {
 	int count = countCons();
+	if(count == 0)
+	{
+		pos = 2;
+		bBOL = true;
+		bEOL = true;
+		return;
+	}
 
-	UT_ASSERT(count > 0);
 
 	fp_ContainerObject* pContainer = NULL;
 	int i = 0;
@@ -454,8 +478,9 @@ void fp_VerticalContainer::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosit
 			pContainer = pContainerUpper;
 		}
 	}
-
-	pContainer->mapXYToPosition(x - pContainer->getX(), y - pContainer->getY() - pContainer->getHeight(), pos, bBOL, bEOL);
+	pContainer->mapXYToPosition(x - pContainer->getX(),
+								y - pContainer->getY() , 
+								pos, bBOL, bEOL);
 }
 
 /*!

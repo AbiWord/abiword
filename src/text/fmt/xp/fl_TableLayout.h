@@ -175,7 +175,7 @@ public:
 	fl_CellLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_AttrPropIndex ap, fl_ContainerLayout * pMyContainerLayout);
 	virtual ~fl_CellLayout();
 
-
+	void            checkAndAdjustCellSize(void);
 	virtual bool 	doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc);
 	virtual bool    doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx);
 	virtual bool bl_doclistener_insertSection(fl_ContainerLayout*,
@@ -241,6 +241,7 @@ private:
 	UT_sint32              m_iTopAttach;
 	UT_sint32              m_iBotAttach;
 	bool                   m_bCellPositionedOnPage;
+	UT_sint32              m_iCellHeight;
 };
 
 #endif /* TABLELAYOUT_H */

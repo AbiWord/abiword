@@ -596,6 +596,7 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 			return false;
 		}
 		*psfh = (PL_StruxFmtHandle)pCon;
+		static_cast<fl_TableLayout *>(pCon)->setDirty();
 	}
 	break;
 	case PTX_EndCell:
