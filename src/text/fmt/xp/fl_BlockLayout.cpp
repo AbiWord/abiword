@@ -2704,7 +2704,9 @@ UT_Bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs
 	UT_uint32 	iNormalBase = 0;
 	UT_Bool		bNormal = UT_FALSE;
 	UT_uint32 i;
-	UT_uint32 _sqlist[100], *sqlist = _sqlist;
+	UT_uint32 _sqlist[10000], *sqlist = _sqlist; //FIXME Sevior says:
+	                                             //This should not
+	                                             //be hardwired 
 	UT_uint32 sqcount = 0;
 	if (sizeof(_sqlist) / sizeof(_sqlist[0])  < len)
 	{
