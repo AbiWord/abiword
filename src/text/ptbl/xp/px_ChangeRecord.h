@@ -38,6 +38,10 @@ public:
 					pt_AttrPropIndex indexAP);
 	virtual ~PX_ChangeRecord();
 
+	PXType					getType(void) const;
+	PT_DocPosition			getPosition(void) const;
+	pt_AttrPropIndex		getIndexAP(void) const;
+
 	virtual void			dump(void) const;
 	
 protected:

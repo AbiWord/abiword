@@ -31,7 +31,9 @@ public:
 						  pt_AttrPropIndex indexAP,
 						  PTStruxType struxType);
 	~PX_ChangeRecord_Strux();
-	
+
+	PTStruxType				getStruxType(void) const;
+
 protected:
 	PTStruxType				m_struxType;	/* our type (paragraph, section) */
 };

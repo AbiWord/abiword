@@ -19,3 +19,9 @@ PX_ChangeRecord_Strux::PX_ChangeRecord_Strux(PXType type,
 PX_ChangeRecord_Strux::~PX_ChangeRecord_Strux()
 {
 }
+
+PTStruxType PX_ChangeRecord_Strux::getStruxType(void) const
+{
+	return m_struxType;
+}
+

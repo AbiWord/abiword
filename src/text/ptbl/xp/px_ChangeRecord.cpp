@@ -25,6 +25,22 @@ PX_ChangeRecord::~PX_ChangeRecord()
 {
 }
 
+PX_ChangeRecord::PXType PX_ChangeRecord::getType(void) const
+{
+	return m_type;
+}
+
+PT_DocPosition PX_ChangeRecord::getPosition(void) const
+{
+	return m_position;
+}
+
+pt_AttrPropIndex PX_ChangeRecord::getIndexAP(void) const
+{
+	return m_indexAP;
+}
+
+
 void PX_ChangeRecord::dump(void) const
 {
 #ifdef UT_DEBUG
