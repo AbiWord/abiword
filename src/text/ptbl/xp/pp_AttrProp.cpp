@@ -317,10 +317,15 @@ bool	PP_AttrProp::setProperty(const XML_Char * szName, const XML_Char * szValue)
 		}
 	}
 
+#if 0
+	// no. we have to set it empty, otherwise the code that changes
+	// properties has no way of knowing that this property is not to
+	// be present
+	// 
 	// if szValue == NULL or *szValue == 0, we want this property
 	// removed
 	bool bRemove = (!szValue || !*szValue);
-	
+#endif
 	const void * pEntry = m_pProperties->pick(szName);
 	if (pEntry)
 	{
@@ -338,12 +343,13 @@ bool	PP_AttrProp::setProperty(const XML_Char * szName, const XML_Char * szValue)
 		if (p->second())
 			delete static_cast<PP_PropertyType *const>(p->second());
 		delete p;
-
+#if 0
 		if(bRemove)
 		{
 			m_pProperties->remove(szName,NULL);
 		}
 		else
+#endif
 		{
 			m_pProperties->set(szName,
 							   static_cast<void *>(new UT_Pair(UT_strdup(szValue), static_cast<void *>(NULL))));
@@ -352,7 +358,9 @@ bool	PP_AttrProp::setProperty(const XML_Char * szName, const XML_Char * szValue)
 	}
 	else
 	{
+#if 0
 		if(!bRemove)
+#endif
 		{
 			m_pProperties->insert(szName,
 								  static_cast<void *>(new UT_Pair(UT_strdup(szValue), static_cast<void *>(NULL))));
