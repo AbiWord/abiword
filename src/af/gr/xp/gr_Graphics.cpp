@@ -82,7 +82,7 @@ const UT_String & GR_Font::hashKey(void) const
 UT_uint32 GR_Font::getCharWidthFromCache (UT_UCSChar c) const
 {
 	// first of all, handle 0-width spaces ...
-	if(c == 0xfeff || c == 0x200b)
+	if(c == 0xFEFF || c == 0x200B || c == UCS_LIGATURE_PLACEHOLDER)
 		return 0;
 	
 	UT_sint32	iWidth = GR_CW_UNKNOWN;
@@ -411,7 +411,8 @@ UT_UCSChar GR_Graphics::remapGlyph(const UT_UCSChar actual_, bool noMatterWhat)
 #endif		
 	if (!m_bRemapGlyphsMasterSwitch
 		|| actual == 0x200B  // zero width space
-		|| actual == 0xFEFF) // zero width non-breaking space
+		|| actual == 0xFEFF // zero width non-breaking space
+		|| actual == UCS_LIGATURE_PLACEHOLDER)
 	{
 		return (actual);
 	}

@@ -45,7 +45,7 @@ void GR_Win32CharWidths::setCharWidthsOfRange(HDC hdc, UT_UCSChar c0, UT_UCSChar
 	{
 		for (k=c0; k<=c1; k++)
 		{
-			if(k == 0x200B || k == 0xFEFF)
+			if(k == 0x200B || k == 0xFEFF || k == UCS_LIGATURE_PLACEHOLDER)
 				setWidth(k,0);
 			else
 			{
@@ -112,7 +112,7 @@ void GR_Win32CharWidths::setCharWidthsOfRange(HDC hdc, UT_UCSChar c0, UT_UCSChar
 			// Unicode font and default character sets
 			for (k=c0; k<=c1; k++)
 			{
-				if(k == 0x200B || k == 0xFEFF)
+				if(k == 0x200B || k == 0xFEFF || k == UCS_LIGATURE_PLACEHOLDER)
 					setWidth(k,0);
 				else
 				{
