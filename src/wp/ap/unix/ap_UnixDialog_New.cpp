@@ -24,6 +24,7 @@
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
+#include "ut_unixDirent.h"
 
 // This header defines some functions for Unix dialogs,
 // like centering them, measuring them, etc.

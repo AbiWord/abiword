@@ -18,6 +18,18 @@
  * 02111-1307, USA.
  */
 
+#ifdef SunOS
+
+/*
+ * If defined at the top level, this breaks things badly, but these 
+ * functions need either _POSIX_C_SOURCE or _XOPEN_SOURCE defined
+ * to use the DIR structure as expeceted in the code
+*/
+
+#define _POSIX_C_SOURCE 1
+ 
+#endif
+
 #ifdef SCANDIR_MISSING
 /* 
  * Scan the directory dirname calling select to make a list of selected 
