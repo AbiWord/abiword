@@ -101,17 +101,20 @@ void AP_UnixFrame::setYScrollRange(void)
 	else if (newvalue > newmax)
 		newvalue = newmax;
 
-	bool bDifferentPosition = (newvalue != pGr->tluD (pFrameImpl->m_pVadj->value));
-	bool bDifferentLimits ((height-windowHeight) != pFrameImpl->m_pVadj->upper-
-													pFrameImpl->m_pVadj->page_size);
-	
-	pFrameImpl->_setScrollRange(apufi_scrollY, newvalue, static_cast<gfloat>(height), static_cast<gfloat>(windowHeight));
+	bool bDifferentPosition = (newvalue != static_cast<UT_sint32>(pFrameImpl->m_pVadj->value +0.5));
+	UT_sint32 diff = static_cast<UT_sint32>(pFrameImpl->m_pVadj->upper-
+											pFrameImpl->m_pVadj->page_size +0.5);
+
+	bool bDifferentLimits = ((height-windowHeight) != diff);
 	
 	if (m_pView && (bDifferentPosition || bDifferentLimits))
+	{
+		pFrameImpl->_setScrollRange(apufi_scrollY, newvalue, static_cast<gfloat>(height), static_cast<gfloat>(windowHeight));
 		m_pView->sendVerticalScrollEvent(newvalue, 
 										 static_cast<UT_sint32>
 											   (pFrameImpl->m_pVadj->upper -
 												pFrameImpl->m_pVadj->page_size));
+	}
 }
 
 

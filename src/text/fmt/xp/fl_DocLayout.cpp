@@ -2347,7 +2347,7 @@ fl_DocSectionLayout* FL_DocLayout::findSectionForHdrFtr(const char* pszHdrFtrID)
 	// auto spell
 	pPrefs->getPrefsValueBool( static_cast<XML_Char *>(AP_PREF_KEY_AutoSpellCheck), &b );
 	changed = changed || (b != pDocLayout->m_bAutoSpellCheck);
-	if(b != pDocLayout->m_bAutoSpellCheck)
+	if(b != pDocLayout->m_bAutoSpellCheck || (pDocLayout->m_iGraphicTick < 2))
 	{
 		pDocLayout->m_bAutoSpellCheck = b;
 		pDocLayout->_toggleAutoSpell( b );
