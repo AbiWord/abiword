@@ -1,6 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001 Hubert Figuiere
+ * Copyright (C) 2001,2003 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -24,6 +24,53 @@
 #include "ap_Dialog_Paragraph.h"
 
 class XAP_CocoaFrame;
+class AP_CocoaDialog_Paragraph;
+
+@interface AP_CocoaDialog_ParagraphController : NSWindowController <XAP_CocoaDialogProtocol>
+{
+    IBOutlet NSTextField *_alignmentLabel;
+    IBOutlet NSPopUpButton *_alignmentPopup;
+    IBOutlet NSTextField *_atData;
+    IBOutlet NSTextField *_atLabel;
+    IBOutlet NSTextField *_byData;
+    IBOutlet NSTextField *_byLabel;
+    IBOutlet NSButton *_cancelBtn;
+    IBOutlet NSButton *_dontHyphenBtn;
+    IBOutlet NSBox *_indentationBox;
+    IBOutlet NSFormCell *_indentLeftFormCell;
+    IBOutlet NSFormCell *_indentRightFormCell;
+    IBOutlet NSButton *_keepNextBtn;
+    IBOutlet NSButton *_keepsLinesBtn;
+    IBOutlet NSTextField *_lineSpacingLabel;
+    IBOutlet NSPopUpButton *_lineSpacingPopup;
+    IBOutlet NSTabView *_mainTab;
+    IBOutlet NSButton *_okBtn;
+    IBOutlet NSButton *_pageBreakBtn;
+    IBOutlet NSBox *_paginationBox;
+    IBOutlet XAP_CocoaNSView *_preview;
+    IBOutlet NSBox *_previewBox;
+    IBOutlet NSButton *_rtlDominantBtn;
+    IBOutlet NSFormCell *_spacingAfterFormCell;
+    IBOutlet NSFormCell *_spacingBeforeFormCell;
+    IBOutlet NSBox *_spacingBox;
+    IBOutlet NSTextField *_specialLabel;
+    IBOutlet NSPopUpButton *_specialPopup;
+    IBOutlet NSButton *_suppressLineNumBtn;
+    IBOutlet NSButton *_tabsBtn;
+    IBOutlet NSButton *_widowOrphanBtn;
+	AP_CocoaDialog_Paragraph* _xap;
+}
+- (IBAction)cancelAction:(id)sender;
+- (IBAction)okAction:(id)sender;
+- (IBAction)tabAction:(id)sender;
+- (IBAction)checkBoxAction:(id)sender;
+- (IBAction)menuAction:(id)sender;
+- (IBAction)editAction:(id)sender;
+- (NSPopUpButton*)specialPopup;
+- (NSPopUpButton*)lineSpacingPopup;
+- (NSPopUpButton*)alignmentPopup;
+- (id)_getWidget:(AP_Dialog_Paragraph::tControl) widget;
+@end
 
 /*****************************************************************/
 
@@ -41,7 +88,10 @@ public:
 	virtual void event_OK(void);
 	virtual void event_Cancel(void);
 	virtual void event_Tabs(void);
-	virtual void event_WindowDelete(void);
+	virtual void event_MenuChanged(id sender);
+	virtual void event_EditChanged(id sender);
+	virtual void event_CheckToggled(id sender);
+	virtual void event_PreviewAreaExposed(void);
 
 #if 0
 	// all data controls are of three types in this dialog; the static
@@ -49,86 +99,33 @@ public:
 	// base class "tControl" IDs for data operations.
 
 		// menus take a "changed" event
-		virtual void event_MenuChanged(GtkWidget * widget);
 
 		// spin buttons can take "increment", "decrement", and "changed"
 		virtual void event_SpinIncrement(GtkWidget * widget);
 		virtual void event_SpinDecrement(GtkWidget * widget);
 		virtual void event_SpinFocusOut(GtkWidget * widget);
-		virtual void event_SpinChanged(GtkWidget * widget);
 
 		// checks are just "toggled"
-		virtual void event_CheckToggled(GtkWidget * widget);
 
 	// Preview
-	virtual void event_PreviewAreaExposed(void);
 #endif
-
+void	_createGC(XAP_CocoaNSView* owner);
+void 	_deleteGC(void);
  protected:
 
-	GR_CocoaGraphics	* 		m_unixGraphics;
-	bool					m_bEditChanged;
-
-#if 0
-	// private construction functions
-	virtual GtkWidget *  _constructWindow(void);
-	GtkWidget *          _constructWindowContents(GtkWidget *);
-	void                 _connectCallbackSignals(void);
+	GR_CocoaGraphics	* 		m_pGraphics;
 
 	void                 _populateWindowData(void);
 
 	virtual void         _syncControls(tControl changed, bool bAll = false);
+private:
+	int _tCheckStateToNS(AP_CocoaDialog_Paragraph::tCheckState x);
+	id _getWidget(AP_Dialog_Paragraph::tControl widget)
+	{
+		return [m_dlg _getWidget:widget];
+	};
 
-	// pointers to widgets we need to query/set
-	// there are a ton of them in this dialog
-
-	GtkWidget * m_windowMain;
-	GtkWidget * m_windowContents;
-
-	GtkWidget * m_listAlignment;
-	GtkWidget * m_menuitemLeft;
-	GtkWidget * m_menuitemCentered;
-	GtkWidget * m_menuitemRight;
-	GtkWidget * m_menuitemJustified;
-
-	GtkWidget * m_spinbuttonLeft;
-	GtkWidget * m_spinbuttonRight;
-	GtkWidget * m_spinbuttonBy;
-
-	GtkWidget * m_listSpecial;
-	GtkWidget * m_listSpecial_menu;
-	GtkWidget * m_menuitemNone;
-	GtkWidget * m_menuitemFirstLine;
-	GtkWidget * m_menuitemHanging;
-
-	GtkWidget * m_spinbuttonBefore;
-	GtkWidget * m_spinbuttonAfter;
-	GtkWidget * m_spinbuttonAt;
-
-	GtkWidget * m_listLineSpacing;
-	GtkWidget * m_listLineSpacing_menu;
-	GtkWidget * m_menuitemSingle;
-	GtkWidget * m_menuitemOneAndHalf;
-	GtkWidget * m_menuitemDouble;
-	GtkWidget * m_menuitemAtLeast;
-	GtkWidget * m_menuitemExactly;
-	GtkWidget * m_menuitemMultiple;
-
-	GtkWidget * m_drawingareaPreview;
-
-	GtkWidget * m_checkbuttonWidowOrphan;
-	GtkWidget * m_checkbuttonKeepLines;
-	GtkWidget * m_checkbuttonPageBreak;
-	GtkWidget * m_checkbuttonSuppress;
-	GtkWidget * m_checkbuttonHyphenate;
-	GtkWidget * m_checkbuttonKeepNext;
-
-	GtkWidget * m_buttonOK;
-	GtkWidget * m_buttonCancel;
-	GtkWidget * m_buttonTabs;
-
-	GtkWidget * m_checkbuttonDomDirection;
-#endif
+	AP_CocoaDialog_ParagraphController* m_dlg;
 };
 
 #endif /* XAP_COCOADIALOG_PARAGRAPH_H */

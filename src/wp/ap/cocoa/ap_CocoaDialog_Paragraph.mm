@@ -1,5 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (c) 2003 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -22,9 +23,7 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 
-// This header defines some functions for Cocoa dialogs,
-// like centering them, measuring them, etc.
-#include "xap_CocoaDialogHelper.h"
+#include "xap_CocoaDialog_Utilities.h"
 
 #include "gr_CocoaGraphics.h"
 
@@ -41,250 +40,154 @@
 
 /*****************************************************************/
 
-#define WIDGET_MENU_PARENT_ID_TAG	"parentmenu"
-#define WIDGET_MENU_VALUE_TAG		"menuvalue"
-#define WIDGET_DIALOG_TAG 			"dialog"
-#define WIDGET_ID_TAG				"id"
-
-/*****************************************************************/
-
 XAP_Dialog * AP_CocoaDialog_Paragraph::static_constructor(XAP_DialogFactory * pFactory,
-														 XAP_Dialog_Id id)
+														 XAP_Dialog_Id dlgid)
 {
-	AP_CocoaDialog_Paragraph * p = new AP_CocoaDialog_Paragraph(pFactory,id);
+	AP_CocoaDialog_Paragraph * p = new AP_CocoaDialog_Paragraph(pFactory,dlgid);
 	return p;
 }
 
 AP_CocoaDialog_Paragraph::AP_CocoaDialog_Paragraph(XAP_DialogFactory * pDlgFactory,
-												 XAP_Dialog_Id id)
-	: AP_Dialog_Paragraph(pDlgFactory,id)
+												 XAP_Dialog_Id dlgid)
+	: AP_Dialog_Paragraph(pDlgFactory,dlgid),
+		m_pGraphics(NULL),
+		m_dlg(nil)
 {
-	m_unixGraphics = NULL;
-	m_bEditChanged = false;
 }
 
 AP_CocoaDialog_Paragraph::~AP_CocoaDialog_Paragraph(void)
 {
-	DELETEP(m_unixGraphics);
-}
-
-/*****************************************************************/
-/* These are static callbacks for dialog widgets                 */
-/*****************************************************************/
-
-static void s_ok_clicked(GtkWidget * widget, AP_CocoaDialog_Paragraph * dlg)
-{ UT_ASSERT(widget && dlg); dlg->event_OK(); }
-
-static void s_cancel_clicked(GtkWidget * widget, AP_CocoaDialog_Paragraph * dlg)
-{ UT_ASSERT(widget && dlg); dlg->event_Cancel(); }
-
-static void s_tabs_clicked(GtkWidget * widget, AP_CocoaDialog_Paragraph * dlg)
-{ UT_ASSERT(widget && dlg);	dlg->event_Tabs(); }
-
-static void s_delete_clicked(GtkWidget * /* widget */,
-							 gpointer /* data */,
-							 AP_CocoaDialog_Paragraph * dlg)
-{ UT_ASSERT(dlg); dlg->event_WindowDelete(); }
-
-static gint s_spin_focus_out(GtkWidget * widget,
-							 GdkEventFocus * /* event */,
-							 AP_CocoaDialog_Paragraph * dlg)
-{
-	dlg->event_SpinFocusOut(widget);
-
-	// do NOT let GTK do its own update (which would erase the text we just
-	// put in the entry area
-	return FALSE;
-}
-
-static void s_spin_changed(GtkWidget * widget,
-						   AP_CocoaDialog_Paragraph * dlg)
-{
-	// notify the dialog that an edit has changed
-	dlg->event_SpinChanged(widget);
-}
-
-static void s_menu_item_activate(GtkWidget * widget, AP_CocoaDialog_Paragraph * dlg)
-{
-	UT_ASSERT(widget && dlg);
-
-	dlg->event_MenuChanged(widget);
-}
-
-static void s_check_toggled(GtkWidget * widget, AP_CocoaDialog_Paragraph * dlg)
-{
-	UT_ASSERT(widget && dlg);
-	dlg->event_CheckToggled(widget);
-}
-
-static gint s_preview_exposed(GtkWidget * /* widget */,
-							  GdkEventExpose * /* pExposeEvent */,
-							  AP_CocoaDialog_Paragraph * dlg)
-{
-	UT_ASSERT(dlg);
-	dlg->event_PreviewAreaExposed();
-	return FALSE;
+	DELETEP(m_pGraphics);
 }
 
 /*****************************************************************/
 
 void AP_CocoaDialog_Paragraph::runModal(XAP_Frame * pFrame)
 {
+	NSWindow* window;
 	m_pFrame = pFrame;
+	
+	m_dlg = [[AP_CocoaDialog_ParagraphController alloc] initFromNib];
+	[m_dlg setXAPOwner:this];
 
-	// Build the window's widgets and arrange them
-	GtkWidget * mainWindow = _constructWindow();
-	UT_ASSERT(mainWindow);
-
-	connectFocus(GTK_WIDGET(mainWindow),pFrame);
-	// Populate the window's data items
+	window = [m_dlg window];
 	_populateWindowData();
-
-	// Attach signals (after data settings, so we don't trigger
-	// updates yet)
-	_connectCallbackSignals();
-
-	// To center the dialog, we need the frame of its parent.
-	XAP_CocoaFrame * pCocoaFrame = static_cast<XAP_CocoaFrame *>(pFrame);
-	UT_ASSERT(pCocoaFrame);
-
-	// Get the GtkWindow of the parent frame
-	GtkWidget * parentWindow = pCocoaFrame->getTopLevelWindow();
-	UT_ASSERT(parentWindow);
-
-	// Center our new dialog in its parent and make it a transient
-	// so it won't get lost underneath
-	centerDialog(parentWindow, mainWindow);
-
-	// Show the top level dialog,
-	gtk_widget_show(mainWindow);
-
-	// Make it modal, and stick it up top
-	gtk_grab_add(mainWindow);
-
-	// *** this is how we add the gc ***
-	{
-		// attach a new graphics context to the drawing area
-		XAP_CocoaApp * unixapp = static_cast<XAP_CocoaApp *> (m_pApp);
-		UT_ASSERT(unixapp);
-
-		UT_ASSERT(m_drawingareaPreview && m_drawingareaPreview->window);
-
-		// make a new Cocoa GC
-		m_unixGraphics = new GR_CocoaGraphics(m_drawingareaPreview->window, unixapp->getFontManager(), m_pApp);
-
-		// let the widget materialize
-		_createPreviewFromGC(m_unixGraphics,
-							 (UT_uint32) m_drawingareaPreview->allocation.width,
-							 (UT_uint32) m_drawingareaPreview->allocation.height);
-	}
 
 	// sync all controls once to get started
 	// HACK: the first arg gets ignored
 	_syncControls(id_MENU_ALIGNMENT, true);
 
-	// Run into the GTK event loop for this window.
-	gtk_main();
-
-	if(mainWindow && GTK_IS_WIDGET(mainWindow))
-	  gtk_widget_destroy(mainWindow);
+	[NSApp runModalForWindow:window];
+	
+	
+	[m_dlg close];
+	[m_dlg release];
+	m_dlg = nil;
 }
 
+/* callbacks to create / release the GR_Graphics when the window is loaded / released */
+void	AP_CocoaDialog_Paragraph::_createGC(XAP_CocoaNSView* owner)
+{
+	NSSize  size;
+	m_pGraphics = new GR_CocoaGraphics(owner, XAP_App::getApp());
+	size = [owner bounds].size;
+	_createPreviewFromGC(m_pGraphics, lrintf(size.width), lrintf(size.height));
+}
+
+void AP_CocoaDialog_Paragraph::_deleteGC(void)
+{
+	DELETEP(m_pGraphics);
+	m_pGraphics = NULL;
+}
 /*****************************************************************/
 
 void AP_CocoaDialog_Paragraph::event_OK(void)
 {
 	m_answer = AP_Dialog_Paragraph::a_OK;
-	gtk_main_quit();
+	[NSApp stopModal];
 }
 
 void AP_CocoaDialog_Paragraph::event_Cancel(void)
 {
 	m_answer = AP_Dialog_Paragraph::a_CANCEL;
-	gtk_main_quit();
+	[NSApp stopModal];
 }
 
 void AP_CocoaDialog_Paragraph::event_Tabs(void)
 {
 	m_answer = AP_Dialog_Paragraph::a_TABS;
-	gtk_main_quit();
+	[NSApp stopModal];
 }
 
-void AP_CocoaDialog_Paragraph::event_WindowDelete(void)
+void AP_CocoaDialog_Paragraph::event_MenuChanged(id sender)
 {
-	m_answer = AP_Dialog_Paragraph::a_CANCEL;
-	gtk_main_quit();
-}
-
-void AP_CocoaDialog_Paragraph::event_MenuChanged(GtkWidget * widget)
-{
-	UT_ASSERT(widget);
-
-	tControl id = (tControl) (int) g_object_get_data(G_OBJECT(widget),
-												 WIDGET_MENU_PARENT_ID_TAG);
-
-	UT_uint32 value = (UT_uint32) g_object_get_data(G_OBJECT(widget),
-													  WIDGET_MENU_VALUE_TAG);
-
-	_setMenuItemValue(id, value);
-}
-
-void AP_CocoaDialog_Paragraph::event_SpinIncrement(GtkWidget * widget)
-{
-	UT_ASSERT(widget);
-}
-
-void AP_CocoaDialog_Paragraph::event_SpinDecrement(GtkWidget * widget)
-{
-	UT_ASSERT(widget);
-}
-
-void AP_CocoaDialog_Paragraph::event_SpinFocusOut(GtkWidget * widget)
-{
-	tControl id = (tControl) (int) g_object_get_data(G_OBJECT(widget),
-												 WIDGET_ID_TAG);
-
-	if (m_bEditChanged)
-	{
-		// this function will massage the contents for proper
-		// formatting for spinbuttons that need it.  for example,
-		// line spacing can't be negative.
-		_setSpinItemValue(id, (const XML_Char *)
-						  gtk_entry_get_text(GTK_ENTRY(widget)));
-
-		// to ensure the massaged value is reflected back up
-		// to the screen, we repaint from the member variable
-		_syncControls(id);
-
-		m_bEditChanged = false;
+	tControl idc = (tControl)-1;
+	
+	NSMenu* menu = [sender menu];
+	if (menu == [[m_dlg specialPopup] menu]) {
+		idc = (tControl)[[m_dlg specialPopup] tag];
 	}
+	else if (menu == [[m_dlg lineSpacingPopup] menu]) {
+		idc = (tControl)[[m_dlg lineSpacingPopup] tag];
+	}
+	else if (menu == [[m_dlg alignmentPopup] menu]) {
+		idc = (tControl)[[m_dlg alignmentPopup] tag];
+	}
+	
+	int value = [[sender selectedItem] tag];
+
+	_setMenuItemValue(idc, value);
 }
 
-void AP_CocoaDialog_Paragraph::event_SpinChanged(GtkWidget * widget)
+void AP_CocoaDialog_Paragraph::event_EditChanged(id sender)
 {
-	m_bEditChanged = true;
+	tControl idc = (tControl)-1;
+	
+	if ([sender isKindOfClass:[NSForm class]]) {
+		int idx = [sender indexOfSelectedItem];
+		UT_ASSERT (idx != -1);
+		idc = (tControl)[[sender cellAtRow:idx column:0] tag];
+	}
+	else {
+		idc = (tControl)[sender tag];
+	}
+	
+	// this function will massage the contents for proper
+	// formatting for spinbuttons that need it.  for example,
+	// line spacing can't be negative.
+	_setSpinItemValue(idc, (const XML_Char *)
+						[[sender stringValue] UTF8String]);
+
+	// to ensure the massaged value is reflected back up
+	// to the screen, we repaint from the member variable
+	_syncControls(idc);
 }
 
-void AP_CocoaDialog_Paragraph::event_CheckToggled(GtkWidget * widget)
+void AP_CocoaDialog_Paragraph::event_CheckToggled(id sender)
 {
-	UT_ASSERT(widget);
 
-	tControl id = (tControl) (int) g_object_get_data(G_OBJECT(widget),
-												 WIDGET_ID_TAG);
+	tControl idc = (tControl) [sender tag];
 
-	gboolean state = gtk_toggle_button_get_active(
-		GTK_TOGGLE_BUTTON(GTK_CHECK_BUTTON(widget)));
+	int state = [sender state];
 
 	tCheckState cs;
 
-	// TODO : handle tri-state boxes !!!
-	if (state == TRUE)
+	switch (state) {
+	case NSOnState:
 		cs = check_TRUE;
-	else
+		break;
+	case NSOffState:
 		cs = check_FALSE;
-
-	_setCheckItemValue(id, cs);
+		break;
+	case NSMixedState:
+		cs = check_INDETERMINATE;
+		break;
+	default:
+		UT_ASSERT (UT_SHOULD_NOT_HAPPEN);
+	}
+	_setCheckItemValue(idc, cs);
 }
+
 
 void AP_CocoaDialog_Paragraph::event_PreviewAreaExposed(void)
 {
@@ -292,1018 +195,33 @@ void AP_CocoaDialog_Paragraph::event_PreviewAreaExposed(void)
 		m_paragraphPreview->draw();
 }
 
-/*****************************************************************/
-
-GtkWidget * AP_CocoaDialog_Paragraph::_constructWindow(void)
-{
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
-
-	GtkWidget * windowParagraph;
-	GtkWidget * windowContents;
-	GtkWidget * vboxMain;
-
-	GtkWidget * hbox1;
-	GtkWidget * hbuttonboxLeft;
-	GtkWidget * buttonTabs;
-	GtkWidget * bottomSeparator;
-	GtkWidget * hbox2;
-	GtkWidget * hbuttonboxRight;
-	GtkWidget * buttonOK;
-	GtkWidget * buttonCancel;
-
-	XML_Char * unixstr = NULL;
-
-
-	windowParagraph = gtk_window_new (GTK_WINDOW_DIALOG);
-	g_object_set_data (G_OBJECT (windowParagraph), "windowParagraph", windowParagraph);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_ParaTitle));
-	gtk_window_set_title (GTK_WINDOW (windowParagraph), unixstr);
-	FREEP(unixstr);
-
-	vboxMain = gtk_vbox_new (FALSE, 0);
-	gtk_widget_ref (vboxMain);
-	g_object_set_data_full (G_OBJECT (windowParagraph), "vboxMain", vboxMain,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (vboxMain);
-	gtk_container_set_border_width (GTK_CONTAINER(vboxMain), 10);
-	gtk_container_add (GTK_CONTAINER (windowParagraph), vboxMain);
-
-	windowContents = _constructWindowContents(windowParagraph);
-	gtk_box_pack_start (GTK_BOX (vboxMain), windowContents, FALSE, TRUE, 5);
-
-	bottomSeparator = gtk_hseparator_new();
-	g_object_set_data_full (G_OBJECT (windowParagraph), "bottomSeparator", bottomSeparator,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (bottomSeparator);
-	gtk_box_pack_start (GTK_BOX (vboxMain), bottomSeparator, FALSE, TRUE, 0);
-
-	hbox1 = gtk_hbox_new (FALSE, 0);
-	gtk_widget_ref (hbox1);
-	g_object_set_data_full (G_OBJECT (windowParagraph), "hbox1", hbox1,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (hbox1);
-	gtk_box_pack_start (GTK_BOX (vboxMain), hbox1, FALSE, TRUE, 0);
-
-	hbuttonboxLeft = gtk_hbutton_box_new ();
-	gtk_widget_ref (hbuttonboxLeft);
-	g_object_set_data_full (G_OBJECT (windowParagraph), "hbuttonboxLeft", hbuttonboxLeft,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (hbuttonboxLeft);
-	gtk_box_pack_start (GTK_BOX (hbox1), hbuttonboxLeft, TRUE, TRUE, 0);
-	gtk_button_box_set_layout (GTK_BUTTON_BOX (hbuttonboxLeft), GTK_BUTTONBOX_START);
-	gtk_button_box_set_spacing (GTK_BUTTON_BOX (hbuttonboxLeft), 0);
-	gtk_button_box_set_child_ipadding (GTK_BUTTON_BOX (hbuttonboxLeft), 0, 0);
-
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_ButtonTabs));
-	buttonTabs = gtk_button_new_with_label (unixstr);
-	FREEP(unixstr);
-	gtk_widget_ref (buttonTabs);
-	g_object_set_data_full (G_OBJECT (windowParagraph), "buttonTabs", buttonTabs,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (buttonTabs);
-	gtk_container_add (GTK_CONTAINER (hbuttonboxLeft), buttonTabs);
-	GTK_WIDGET_SET_FLAGS (buttonTabs, GTK_CAN_DEFAULT);
-
-	hbox2 = gtk_hbox_new (FALSE, 0);
-	gtk_widget_ref (hbox2);
-	g_object_set_data_full (G_OBJECT (windowParagraph), "hbox2", hbox2,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (hbox2);
-	gtk_box_pack_start (GTK_BOX (hbox1), hbox2, TRUE, TRUE, 0);
-
-	hbuttonboxRight = gtk_hbutton_box_new ();
-	gtk_widget_ref (hbuttonboxRight);
-	g_object_set_data_full (G_OBJECT (windowParagraph), "hbuttonboxRight", hbuttonboxRight,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (hbuttonboxRight);
-	gtk_box_pack_start (GTK_BOX (hbox2), hbuttonboxRight, TRUE, TRUE, 0);
-	gtk_button_box_set_layout (GTK_BUTTON_BOX (hbuttonboxRight), GTK_BUTTONBOX_END);
-	gtk_button_box_set_spacing (GTK_BUTTON_BOX (hbuttonboxRight), 0);
-	gtk_button_box_set_child_ipadding (GTK_BUTTON_BOX (hbuttonboxRight), 0, 0);
-
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(XAP_STRING_ID_DLG_OK));
-	buttonOK = gtk_button_new_with_label (unixstr);
-	FREEP(unixstr);
-	gtk_widget_ref (buttonOK);
-	g_object_set_data_full (G_OBJECT (windowParagraph), "buttonOK", buttonOK,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (buttonOK);
-	gtk_container_add (GTK_CONTAINER (hbuttonboxRight), buttonOK);
-	GTK_WIDGET_SET_FLAGS (buttonOK, GTK_CAN_DEFAULT);
-
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(XAP_STRING_ID_DLG_Cancel));
-	buttonCancel = gtk_button_new_with_label (unixstr);
-	FREEP(unixstr);
-	gtk_widget_ref (buttonCancel);
-	g_object_set_data_full (G_OBJECT (windowParagraph), "buttonCancel", buttonCancel,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (buttonCancel);
-	gtk_container_add (GTK_CONTAINER (hbuttonboxRight), buttonCancel);
-	GTK_WIDGET_SET_FLAGS (buttonCancel, GTK_CAN_DEFAULT);
-
-	m_windowMain = windowParagraph;
-
-	m_buttonOK = buttonOK;
-	m_buttonCancel = buttonCancel;
-	m_buttonTabs = buttonTabs;
-
-	return windowParagraph;
-}
-
-GtkWidget * AP_CocoaDialog_Paragraph::_constructWindowContents(GtkWidget *windowMain)
-{
-	// grab the string set
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
-
-	GtkWidget * vboxContents;
-	GtkWidget * tabMain;
-	GtkWidget * boxSpacing;
-	GtkWidget * hboxAlignment;
-	GtkWidget * listAlignment;
-	GtkWidget * listAlignment_menu;
-	GtkWidget * glade_menuitem;
-	GtkWidget * spinbuttonLeft;
-	GtkWidget * spinbuttonRight;
-	GtkWidget * listSpecial;
-	GtkWidget * listSpecial_menu;
-	GtkWidget * spinbuttonBy;
-	GtkWidget * spinbuttonBefore;
-	GtkWidget * spinbuttonAfter;
-	GtkWidget * listLineSpacing;
-	GtkWidget * listLineSpacing_menu;
-	GtkWidget * spinbuttonAt;
-	GtkWidget * labelAlignment;
-	GtkWidget * labelBy;
-	GtkWidget * hboxIndentation;
-	GtkWidget * labelIndentation;
-	GtkWidget * labelLeft;
-	GtkWidget * labelRight;
-	GtkWidget * labelSpecial;
-	GtkWidget * hseparator3;
-	GtkWidget * hboxSpacing;
-	GtkWidget * labelSpacing;
-	GtkWidget * labelAfter;
-	GtkWidget * labelLineSpacing;
-	GtkWidget * labelAt;
-
-	GtkWidget * hboxPreview;
-	GtkWidget * labelPreview;
-	GtkWidget * hboxPreviewFrame;
-	GtkWidget * framePreview;
-	GtkWidget * drawingareaPreview;
-
-	GtkWidget * hseparator4;
-	GtkWidget * hseparator1;
-	GtkWidget * labelBefore;
-	GtkWidget * labelIndents;
-	GtkWidget * boxBreaks;
-	GtkWidget * hboxPagination;
-	GtkWidget * labelPagination;
-	GtkWidget * hseparator5;
-	GtkWidget * checkbuttonWidowOrphan;
-	GtkWidget * checkbuttonKeepLines;
-	GtkWidget * checkbuttonPageBreak;
-	GtkWidget * checkbuttonSuppress;
-	GtkWidget * checkbuttonHyphenate;
-	GtkWidget * hseparator6;
-	GtkWidget * checkbuttonKeepNext;
-	GtkWidget * labelBreaks;
-	GtkWidget * checkbuttonDomDirection;
-
-	XML_Char * unixstr = NULL;
-
-	vboxContents = gtk_vbox_new (FALSE, 0);
-	gtk_widget_ref (vboxContents);
-	g_object_set_data_full (G_OBJECT (vboxContents), "vboxContents", vboxContents,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (vboxContents);
-
-	tabMain = gtk_notebook_new ();
-	gtk_widget_ref (tabMain);
-	g_object_set_data_full (G_OBJECT (windowMain), "tabMain", tabMain,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (tabMain);
-	gtk_box_pack_start (GTK_BOX (vboxContents), tabMain, FALSE, TRUE, 0);
-
-
-	// "Indents and Spacing" page
-	boxSpacing = gtk_table_new (7, 4, FALSE);
-	gtk_widget_ref (boxSpacing);
-	g_object_set_data_full (G_OBJECT (windowMain), "boxSpacing", boxSpacing,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (boxSpacing);
-	gtk_table_set_row_spacings (GTK_TABLE(boxSpacing), 5);
-	gtk_table_set_col_spacings (GTK_TABLE(boxSpacing), 5);
-	gtk_container_set_border_width (GTK_CONTAINER(boxSpacing), 5);
-
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_TabLabelIndentsAndSpacing));
-	labelIndents = gtk_label_new (unixstr);
-	FREEP(unixstr);
-	gtk_widget_ref (labelIndents);
-	g_object_set_data_full (G_OBJECT (windowMain), "labelIndents", labelIndents,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (labelIndents);
-
-	gtk_notebook_append_page (GTK_NOTEBOOK (tabMain), boxSpacing, labelIndents);
-
-
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_LabelAlignment));
-	labelAlignment = gtk_label_new (unixstr);
-	FREEP(unixstr);
-	gtk_widget_ref (labelAlignment);
-	g_object_set_data_full (G_OBJECT (windowMain), "labelAlignment", labelAlignment,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (labelAlignment);
-	gtk_table_attach ( GTK_TABLE(boxSpacing), labelAlignment, 0,1, 0,1,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (GTK_FILL), 0, 0);
-	gtk_label_set_justify (GTK_LABEL (labelAlignment), GTK_JUSTIFY_RIGHT);
-	gtk_misc_set_alignment (GTK_MISC (labelAlignment), 1, 0.5);
-
-	hboxAlignment = gtk_hbox_new (FALSE, 5);
-	gtk_widget_ref (hboxAlignment);
-	g_object_set_data_full (G_OBJECT (hboxAlignment), "hboxAlignment", hboxAlignment,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (hboxAlignment);
-
-	listAlignment = gtk_option_menu_new ();
-	gtk_widget_ref (listAlignment);
-	g_object_set_data_full (G_OBJECT (windowMain), "listAlignment", listAlignment,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	/**/ g_object_set_data(G_OBJECT(listAlignment), WIDGET_ID_TAG, (gpointer) id_MENU_ALIGNMENT);
-	gtk_widget_show (listAlignment);
-	gtk_box_pack_start (GTK_BOX (hboxAlignment), listAlignment, FALSE, FALSE, 0);
-	gtk_table_attach ( GTK_TABLE(boxSpacing), hboxAlignment, 1,2, 0,1,
-                    (GtkAttachOptions) (GTK_FILL|GTK_EXPAND),
-                    (GtkAttachOptions) (GTK_FILL), 0, 0);
-
-	listAlignment_menu = gtk_menu_new ();
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_AlignLeft));
-	glade_menuitem = gtk_menu_item_new_with_label (unixstr);
-	FREEP(unixstr);
-	/**/ m_menuitemLeft = glade_menuitem;
-	/**/ g_object_set_data(G_OBJECT(m_menuitemLeft), WIDGET_MENU_PARENT_ID_TAG, (gpointer) id_MENU_ALIGNMENT);
-	/**/ g_object_set_data(G_OBJECT(m_menuitemLeft), WIDGET_MENU_VALUE_TAG, (gpointer) align_LEFT);
-	gtk_widget_show (glade_menuitem);
-	gtk_menu_append (GTK_MENU (listAlignment_menu), glade_menuitem);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_AlignCentered));
-	glade_menuitem = gtk_menu_item_new_with_label (unixstr);
-	FREEP(unixstr);
-	/**/ m_menuitemCentered = glade_menuitem;
-	/**/ g_object_set_data(G_OBJECT(m_menuitemCentered), WIDGET_MENU_PARENT_ID_TAG, (gpointer) id_MENU_ALIGNMENT);
-	/**/ g_object_set_data(G_OBJECT(m_menuitemCentered), WIDGET_MENU_VALUE_TAG, (gpointer) align_CENTERED);
-	gtk_widget_show (glade_menuitem);
-	gtk_menu_append (GTK_MENU (listAlignment_menu), glade_menuitem);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_AlignRight));
-	glade_menuitem = gtk_menu_item_new_with_label (unixstr);
-	FREEP(unixstr);
-	/**/ m_menuitemRight = glade_menuitem;
-	/**/ g_object_set_data(G_OBJECT(m_menuitemRight), WIDGET_MENU_PARENT_ID_TAG, (gpointer) id_MENU_ALIGNMENT);
-	/**/ g_object_set_data(G_OBJECT(m_menuitemRight), WIDGET_MENU_VALUE_TAG, (gpointer) align_RIGHT);
-	gtk_widget_show (glade_menuitem);
-	gtk_menu_append (GTK_MENU (listAlignment_menu), glade_menuitem);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_AlignJustified));
-	glade_menuitem = gtk_menu_item_new_with_label (unixstr);
-	FREEP(unixstr);
-	/**/ m_menuitemJustified = glade_menuitem;
-	/**/ g_object_set_data(G_OBJECT(m_menuitemJustified), WIDGET_MENU_PARENT_ID_TAG, (gpointer) id_MENU_ALIGNMENT);
-	/**/ g_object_set_data(G_OBJECT(m_menuitemJustified), WIDGET_MENU_VALUE_TAG, (gpointer) align_JUSTIFIED);
-	gtk_widget_show (glade_menuitem);
-	gtk_menu_append (GTK_MENU (listAlignment_menu), glade_menuitem);
-	gtk_option_menu_set_menu (GTK_OPTION_MENU (listAlignment), listAlignment_menu);
-
-
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_DomDirection));
-	checkbuttonDomDirection = gtk_check_button_new_with_label (unixstr);
-	FREEP(unixstr);
-	gtk_widget_ref (checkbuttonDomDirection);
-	g_object_set_data_full (G_OBJECT (windowMain), "checkbuttonDomDirection", checkbuttonDomDirection,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	/**/ g_object_set_data(G_OBJECT(checkbuttonDomDirection), WIDGET_ID_TAG, (gpointer) id_CHECK_DOMDIRECTION);
-	gtk_widget_show (checkbuttonDomDirection);
-	gtk_table_attach ( GTK_TABLE(boxSpacing), checkbuttonDomDirection, 3,4,0,1,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (GTK_FILL), 0, 0 );
-
-	hboxIndentation = gtk_hbox_new (FALSE, 5);
-	gtk_widget_ref (hboxIndentation);
-	g_object_set_data_full (G_OBJECT (hboxIndentation), "hboxIndentation", hboxIndentation,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (hboxIndentation);
-
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_LabelIndentation));
-	labelIndentation = gtk_label_new (unixstr);
-	FREEP(unixstr);
-	gtk_widget_ref (labelIndentation);
-	g_object_set_data_full (G_OBJECT (windowMain), "labelIndentation", labelIndentation,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (labelIndentation);
-	gtk_box_pack_start (GTK_BOX (hboxIndentation), labelIndentation, FALSE, FALSE, 0);
-	gtk_label_set_justify (GTK_LABEL (labelIndentation), GTK_JUSTIFY_LEFT);
-	gtk_misc_set_alignment (GTK_MISC (labelIndentation), 0, 0.5);
-
-	hseparator3 = gtk_hseparator_new ();
-	gtk_widget_ref (hseparator3);
-	g_object_set_data_full (G_OBJECT (windowMain), "hseparator3", hseparator3,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (hseparator3);
-	gtk_box_pack_start (GTK_BOX (hboxIndentation), hseparator3, TRUE, TRUE, 0);
-	gtk_table_attach ( GTK_TABLE(boxSpacing), hboxIndentation, 0,4, 1,2,
-                    (GtkAttachOptions) (GTK_FILL|GTK_EXPAND),
-                    (GtkAttachOptions) (GTK_FILL), 0, 0);
-
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_LabelLeft));
-	labelLeft = gtk_label_new (unixstr);
-	FREEP(unixstr);
-	gtk_widget_ref (labelLeft);
-	g_object_set_data_full (G_OBJECT (windowMain), "labelLeft", labelLeft,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (labelLeft);
-	gtk_table_attach ( GTK_TABLE(boxSpacing), labelLeft, 0,1, 2,3,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (GTK_FILL), 0, 0);
-	gtk_label_set_justify (GTK_LABEL (labelLeft), GTK_JUSTIFY_RIGHT);
-	gtk_misc_set_alignment (GTK_MISC (labelLeft), 1, 0.5);
-
-
-//	spinbuttonLeft_adj = gtk_adjustment_new (0, 0, 100, 0.1, 10, 10);
-//	spinbuttonLeft = gtk_spin_button_new (NULL, 1, 1);
-	spinbuttonLeft = gtk_entry_new();
-	gtk_widget_ref (spinbuttonLeft);
-	g_object_set_data_full (G_OBJECT (windowMain), "spinbuttonLeft", spinbuttonLeft,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	/**/ g_object_set_data(G_OBJECT(spinbuttonLeft), WIDGET_ID_TAG, (gpointer) id_SPIN_LEFT_INDENT);
-	gtk_widget_show (spinbuttonLeft);
-	gtk_table_attach ( GTK_TABLE(boxSpacing), spinbuttonLeft, 1,2, 2,3,
-                    (GtkAttachOptions) (GTK_FILL|GTK_EXPAND),
-                    (GtkAttachOptions) (GTK_FILL), 0, 0);
-
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_LabelRight));
-	labelRight = gtk_label_new (unixstr);
-	FREEP(unixstr);
-	gtk_widget_ref (labelRight);
-	g_object_set_data_full (G_OBJECT (windowMain), "labelRight", labelRight,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (labelRight);
-	gtk_table_attach ( GTK_TABLE(boxSpacing), labelRight, 0,1, 3,4,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (GTK_FILL), 0, 0);
-	gtk_label_set_justify (GTK_LABEL (labelRight), GTK_JUSTIFY_RIGHT);
-	gtk_misc_set_alignment (GTK_MISC (labelRight), 1, 0.5);
-
-//	spinbuttonRight_adj = gtk_adjustment_new (0, 0, 100, 0.1, 10, 10);
-//	spinbuttonRight = gtk_spin_button_new (NULL, 1, 1);
-	spinbuttonRight = gtk_entry_new();
-	gtk_widget_ref (spinbuttonRight);
-	g_object_set_data_full (G_OBJECT (windowMain), "spinbuttonRight", spinbuttonRight,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	/**/ g_object_set_data(G_OBJECT(spinbuttonRight), WIDGET_ID_TAG, (gpointer) id_SPIN_RIGHT_INDENT);
-	gtk_widget_show (spinbuttonRight);
-	gtk_table_attach ( GTK_TABLE(boxSpacing), spinbuttonRight, 1,2, 3,4,
-                    (GtkAttachOptions) (GTK_FILL|GTK_EXPAND),
-                    (GtkAttachOptions) (GTK_FILL), 0, 0);
-
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_LabelSpecial));
-	labelSpecial = gtk_label_new (unixstr);
-	FREEP(unixstr);
-	gtk_widget_ref (labelSpecial);
-	g_object_set_data_full (G_OBJECT (windowMain), "labelSpecial", labelSpecial,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (labelSpecial);
-	gtk_table_attach ( GTK_TABLE(boxSpacing), labelSpecial, 2,3, 2,3,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (GTK_FILL), 0, 0);
-	gtk_label_set_justify (GTK_LABEL (labelSpecial), GTK_JUSTIFY_LEFT);
-	gtk_misc_set_alignment (GTK_MISC (labelSpecial), 0, 0.5);
-
-	listSpecial = gtk_option_menu_new ();
-	gtk_widget_ref (listSpecial);
-	g_object_set_data_full (G_OBJECT (windowMain), "listSpecial", listSpecial,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	/**/ g_object_set_data(G_OBJECT(listSpecial), WIDGET_ID_TAG, (gpointer) id_MENU_SPECIAL_INDENT);
-	gtk_widget_show (listSpecial);
-	gtk_table_attach ( GTK_TABLE(boxSpacing), listSpecial, 2,3, 3,4,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (GTK_FILL), 0, 0);
-	listSpecial_menu = gtk_menu_new ();
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_SpecialNone));
-	glade_menuitem = gtk_menu_item_new_with_label (unixstr);
-	FREEP(unixstr);
-	/**/ m_menuitemNone = glade_menuitem;
-	/**/ g_object_set_data(G_OBJECT(m_menuitemNone), WIDGET_MENU_PARENT_ID_TAG, (gpointer) id_MENU_SPECIAL_INDENT);
-	/**/ g_object_set_data(G_OBJECT(m_menuitemNone), WIDGET_MENU_VALUE_TAG, (gpointer) indent_NONE);
-	gtk_widget_show (glade_menuitem);
-	gtk_menu_append (GTK_MENU (listSpecial_menu), glade_menuitem);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_SpecialFirstLine));
-	glade_menuitem = gtk_menu_item_new_with_label (unixstr);
-	FREEP(unixstr);
-	/**/ m_menuitemFirstLine = glade_menuitem;
-	/**/ g_object_set_data(G_OBJECT(m_menuitemFirstLine), WIDGET_MENU_PARENT_ID_TAG, (gpointer) id_MENU_SPECIAL_INDENT);
-	/**/ g_object_set_data(G_OBJECT(m_menuitemFirstLine), WIDGET_MENU_VALUE_TAG, (gpointer) indent_FIRSTLINE);
-	gtk_widget_show (glade_menuitem);
-	gtk_menu_append (GTK_MENU (listSpecial_menu), glade_menuitem);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_SpecialHanging));
-	glade_menuitem = gtk_menu_item_new_with_label (unixstr);
-	FREEP(unixstr);
-	/**/ m_menuitemHanging = glade_menuitem;
-	/**/ g_object_set_data(G_OBJECT(m_menuitemHanging), WIDGET_MENU_PARENT_ID_TAG, (gpointer) id_MENU_SPECIAL_INDENT);
-	/**/ g_object_set_data(G_OBJECT(m_menuitemHanging), WIDGET_MENU_VALUE_TAG, (gpointer) indent_HANGING);
-	gtk_widget_show (glade_menuitem);
-	gtk_menu_append (GTK_MENU (listSpecial_menu), glade_menuitem);
-	gtk_option_menu_set_menu (GTK_OPTION_MENU (listSpecial), listSpecial_menu);
-
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_LabelBy));
-	labelBy = gtk_label_new (unixstr);
-	FREEP(unixstr);
-	gtk_widget_ref (labelBy);
-	g_object_set_data_full (G_OBJECT (windowMain), "labelBy", labelBy,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (labelBy);
-	gtk_table_attach ( GTK_TABLE(boxSpacing), labelBy, 3,4, 2,3,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (GTK_FILL), 0, 0);
-	gtk_label_set_justify (GTK_LABEL (labelBy), GTK_JUSTIFY_LEFT);
-	gtk_misc_set_alignment (GTK_MISC (labelBy), 0, 0.5);
-
-//	spinbuttonBy_adj = gtk_adjustment_new (0.5, 0, 100, 0.1, 10, 10);
-//	spinbuttonBy = gtk_spin_button_new (NULL, 1, 1);
-	spinbuttonBy = gtk_entry_new();
-	gtk_widget_ref (spinbuttonBy);
-	g_object_set_data_full (G_OBJECT (windowMain), "spinbuttonBy", spinbuttonBy,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	/**/ g_object_set_data(G_OBJECT(spinbuttonBy), WIDGET_ID_TAG, (gpointer) id_SPIN_SPECIAL_INDENT);
-	gtk_widget_show (spinbuttonBy);
-	gtk_table_attach ( GTK_TABLE(boxSpacing), spinbuttonBy, 3,4, 3,4,
-                    (GtkAttachOptions) (GTK_FILL|GTK_EXPAND),
-                    (GtkAttachOptions) (GTK_FILL), 0, 0);
-
-
-	hboxSpacing = gtk_hbox_new (FALSE, 5);
-	gtk_widget_ref (hboxSpacing);
-	g_object_set_data_full (G_OBJECT (hboxSpacing), "hboxSpacing", hboxSpacing,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (hboxSpacing);
-
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_LabelSpacing));
-	labelSpacing = gtk_label_new (unixstr);
-	FREEP(unixstr);
-	gtk_widget_ref (labelSpacing);
-	g_object_set_data_full (G_OBJECT (windowMain), "labelSpacing", labelSpacing,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (labelSpacing);
-	gtk_box_pack_start (GTK_BOX (hboxSpacing), labelSpacing, FALSE, FALSE, 0);
-	gtk_label_set_justify (GTK_LABEL (labelSpacing), GTK_JUSTIFY_LEFT);
-	gtk_misc_set_alignment (GTK_MISC (labelSpacing), 0, 0.5);
-
-	hseparator1 = gtk_hseparator_new ();
-	gtk_widget_ref (hseparator1);
-	g_object_set_data_full (G_OBJECT (windowMain), "hseparator1", hseparator1,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (hseparator1);
-	gtk_box_pack_start (GTK_BOX (hboxSpacing), hseparator1, TRUE, TRUE, 0);
-	gtk_table_attach ( GTK_TABLE(boxSpacing), hboxSpacing, 0,4, 4,5,
-                    (GtkAttachOptions) (GTK_FILL|GTK_EXPAND),
-                    (GtkAttachOptions) (GTK_FILL), 0, 0);
-
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_LabelBefore));
-	labelBefore = gtk_label_new (unixstr);
-	FREEP(unixstr);
-	gtk_widget_ref (labelBefore);
-	g_object_set_data_full (G_OBJECT (windowMain), "labelBefore", labelBefore,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (labelBefore);
-	gtk_table_attach ( GTK_TABLE(boxSpacing), labelBefore, 0,1, 5,6,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (GTK_FILL), 0, 0);
-	gtk_label_set_justify (GTK_LABEL (labelBefore), GTK_JUSTIFY_RIGHT);
-	gtk_misc_set_alignment (GTK_MISC (labelBefore), 1, 0.5);
-
-//	spinbuttonBefore_adj = gtk_adjustment_new (0, 0, 1500, 0.1, 10, 10);
-//	spinbuttonBefore = gtk_spin_button_new (NULL, 1, 1);
-	spinbuttonBefore = gtk_entry_new();
-	gtk_widget_ref (spinbuttonBefore);
-	g_object_set_data_full (G_OBJECT (windowMain), "spinbuttonBefore", spinbuttonBefore,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	/**/ g_object_set_data(G_OBJECT(spinbuttonBefore), WIDGET_ID_TAG, (gpointer) id_SPIN_BEFORE_SPACING);
-	gtk_widget_show (spinbuttonBefore);
-	gtk_table_attach ( GTK_TABLE(boxSpacing), spinbuttonBefore, 1,2, 5,6,
-                    (GtkAttachOptions) (GTK_FILL|GTK_EXPAND),
-                    (GtkAttachOptions) (GTK_FILL), 0, 0);
-
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_LabelAfter));
-	labelAfter = gtk_label_new (unixstr);
-	FREEP(unixstr);
-	gtk_widget_ref (labelAfter);
-	g_object_set_data_full (G_OBJECT (windowMain), "labelAfter", labelAfter,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (labelAfter);
-	gtk_table_attach ( GTK_TABLE(boxSpacing), labelAfter, 0,1, 6,7,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (GTK_FILL), 0, 0);
-	gtk_label_set_justify (GTK_LABEL (labelAfter), GTK_JUSTIFY_RIGHT);
-	gtk_misc_set_alignment (GTK_MISC (labelAfter), 1, 0.5);
-
-//	spinbuttonAfter_adj = gtk_adjustment_new (0, 0, 1500, 0.1, 10, 10);
-//	spinbuttonAfter = gtk_spin_button_new (NULL, 1, 1);
-	spinbuttonAfter = gtk_entry_new();
-	gtk_widget_ref (spinbuttonAfter);
-	g_object_set_data_full (G_OBJECT (windowMain), "spinbuttonAfter", spinbuttonAfter,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	/**/ g_object_set_data(G_OBJECT(spinbuttonAfter), WIDGET_ID_TAG, (gpointer) id_SPIN_AFTER_SPACING);
-	gtk_widget_show (spinbuttonAfter);
-	gtk_table_attach ( GTK_TABLE(boxSpacing), spinbuttonAfter, 1,2, 6,7,
-                    (GtkAttachOptions) (GTK_FILL|GTK_EXPAND),
-                    (GtkAttachOptions) (GTK_FILL), 0, 0);
-
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_LabelLineSpacing));
-	labelLineSpacing = gtk_label_new (unixstr);
-	FREEP(unixstr);
-	gtk_widget_ref (labelLineSpacing);
-	g_object_set_data_full (G_OBJECT (windowMain), "labelLineSpacing", labelLineSpacing,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (labelLineSpacing);
-	gtk_table_attach ( GTK_TABLE(boxSpacing), labelLineSpacing, 2,3, 5,6,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (GTK_FILL), 0, 0);
-	gtk_label_set_justify (GTK_LABEL (labelLineSpacing), GTK_JUSTIFY_LEFT);
-	gtk_misc_set_alignment (GTK_MISC (labelLineSpacing), 0, 0.5);
-
-	listLineSpacing = gtk_option_menu_new ();
-	gtk_widget_ref (listLineSpacing);
-	g_object_set_data_full (G_OBJECT (windowMain), "listLineSpacing", listLineSpacing,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	/**/ g_object_set_data(G_OBJECT(listLineSpacing), WIDGET_ID_TAG, (gpointer) id_MENU_SPECIAL_SPACING);
-	gtk_widget_show (listLineSpacing);
-	gtk_table_attach ( GTK_TABLE(boxSpacing), listLineSpacing, 2,3, 6,7,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (GTK_FILL), 0, 0);
-	listLineSpacing_menu = gtk_menu_new ();
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_SpacingSingle));
-	glade_menuitem = gtk_menu_item_new_with_label (unixstr);
-	FREEP(unixstr);
-	/**/ m_menuitemSingle = glade_menuitem;
-	/**/ g_object_set_data(G_OBJECT(m_menuitemSingle), WIDGET_MENU_PARENT_ID_TAG, (gpointer) id_MENU_SPECIAL_SPACING);
-	/**/ g_object_set_data(G_OBJECT(m_menuitemSingle), WIDGET_MENU_VALUE_TAG, (gpointer) spacing_SINGLE);
-	gtk_widget_show (glade_menuitem);
-	gtk_menu_append (GTK_MENU (listLineSpacing_menu), glade_menuitem);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_SpacingHalf));
-	glade_menuitem = gtk_menu_item_new_with_label (unixstr);
-	FREEP(unixstr);
-	/**/ m_menuitemOneAndHalf = glade_menuitem;
-	/**/ g_object_set_data(G_OBJECT(m_menuitemOneAndHalf), WIDGET_MENU_PARENT_ID_TAG, (gpointer) id_MENU_SPECIAL_SPACING);
-	/**/ g_object_set_data(G_OBJECT(m_menuitemOneAndHalf), WIDGET_MENU_VALUE_TAG, (gpointer) spacing_ONEANDHALF);
-	gtk_widget_show (glade_menuitem);
-	gtk_menu_append (GTK_MENU (listLineSpacing_menu), glade_menuitem);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_SpacingDouble));
-	glade_menuitem = gtk_menu_item_new_with_label (unixstr);
-	FREEP(unixstr);
-	/**/ m_menuitemDouble = glade_menuitem;
-	/**/ g_object_set_data(G_OBJECT(m_menuitemDouble), WIDGET_MENU_PARENT_ID_TAG, (gpointer) id_MENU_SPECIAL_SPACING);
-	/**/ g_object_set_data(G_OBJECT(m_menuitemDouble), WIDGET_MENU_VALUE_TAG, (gpointer) spacing_DOUBLE);
-	gtk_widget_show (glade_menuitem);
-	gtk_menu_append (GTK_MENU (listLineSpacing_menu), glade_menuitem);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_SpacingAtLeast));
-	glade_menuitem = gtk_menu_item_new_with_label (unixstr);
-	FREEP(unixstr);
-	/**/ m_menuitemAtLeast = glade_menuitem;
-	/**/ g_object_set_data(G_OBJECT(m_menuitemAtLeast), WIDGET_MENU_PARENT_ID_TAG, (gpointer) id_MENU_SPECIAL_SPACING);
-	/**/ g_object_set_data(G_OBJECT(m_menuitemAtLeast), WIDGET_MENU_VALUE_TAG, (gpointer) spacing_ATLEAST);
-	gtk_widget_show (glade_menuitem);
-	gtk_menu_append (GTK_MENU (listLineSpacing_menu), glade_menuitem);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_SpacingExactly));
-	glade_menuitem = gtk_menu_item_new_with_label (unixstr);
-	FREEP(unixstr);
-	/**/ m_menuitemExactly = glade_menuitem;
-	/**/ g_object_set_data(G_OBJECT(m_menuitemExactly), WIDGET_MENU_PARENT_ID_TAG, (gpointer) id_MENU_SPECIAL_SPACING);
-	/**/ g_object_set_data(G_OBJECT(m_menuitemExactly), WIDGET_MENU_VALUE_TAG, (gpointer) spacing_EXACTLY);
-	gtk_widget_show (glade_menuitem);
-	gtk_menu_append (GTK_MENU (listLineSpacing_menu), glade_menuitem);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_SpacingMultiple));
-	glade_menuitem = gtk_menu_item_new_with_label (unixstr);
-	FREEP(unixstr);
-	/**/ m_menuitemMultiple = glade_menuitem;
-	/**/ g_object_set_data(G_OBJECT(m_menuitemMultiple), WIDGET_MENU_PARENT_ID_TAG, (gpointer) id_MENU_SPECIAL_SPACING);
-	/**/ g_object_set_data(G_OBJECT(m_menuitemMultiple), WIDGET_MENU_VALUE_TAG, (gpointer) spacing_MULTIPLE);
-	gtk_widget_show (glade_menuitem);
-	gtk_menu_append (GTK_MENU (listLineSpacing_menu), glade_menuitem);
-	gtk_option_menu_set_menu (GTK_OPTION_MENU (listLineSpacing), listLineSpacing_menu);
-
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_LabelAt));
-	labelAt = gtk_label_new (unixstr);
-	FREEP(unixstr);
-	gtk_widget_ref (labelAt);
-	g_object_set_data_full (G_OBJECT (windowMain), "labelAt", labelAt,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (labelAt);
-	gtk_table_attach ( GTK_TABLE(boxSpacing), labelAt, 3,4, 5,6,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (GTK_FILL), 0, 0);
-	gtk_label_set_justify (GTK_LABEL (labelAt), GTK_JUSTIFY_LEFT);
-	gtk_misc_set_alignment (GTK_MISC (labelAt), 0, 0.5);
-
-//	spinbuttonAt_adj = gtk_adjustment_new (0.5, 0, 100, 0.1, 10, 10);
-//	spinbuttonAt = gtk_spin_button_new (NULL, 1, 1);
-	spinbuttonAt = gtk_entry_new();
-	gtk_widget_ref (spinbuttonAt);
-	g_object_set_data_full (G_OBJECT (windowMain), "spinbuttonAt", spinbuttonAt,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	/**/ g_object_set_data(G_OBJECT(spinbuttonAt), WIDGET_ID_TAG, (gpointer) id_SPIN_SPECIAL_SPACING);
-	gtk_widget_show (spinbuttonAt);
-	gtk_table_attach ( GTK_TABLE(boxSpacing), spinbuttonAt, 3,4, 6,7,
-                    (GtkAttachOptions) (GTK_FILL|GTK_EXPAND),
-                    (GtkAttachOptions) (GTK_FILL), 0, 0);
-
-
-
-	// The "Line and Page Breaks" page
-	boxBreaks = gtk_table_new (6, 2, FALSE);
-	gtk_widget_ref (boxBreaks);
-	g_object_set_data_full (G_OBJECT (windowMain), "boxBreaks", boxBreaks,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (boxBreaks);
-	gtk_table_set_row_spacings (GTK_TABLE(boxBreaks), 5);
-	gtk_table_set_col_spacings (GTK_TABLE(boxBreaks), 5);
-	gtk_container_set_border_width (GTK_CONTAINER(boxBreaks), 5);
-
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_TabLabelLineAndPageBreaks));
-	labelBreaks = gtk_label_new (unixstr);
-	FREEP(unixstr);
-	gtk_widget_ref (labelBreaks);
-	g_object_set_data_full (G_OBJECT (windowMain), "labelBreaks", labelBreaks,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (labelBreaks);
-
-	gtk_notebook_append_page (GTK_NOTEBOOK (tabMain), boxBreaks, labelBreaks);
-
-
-	// Pagination headline
-	hboxPagination = gtk_hbox_new (FALSE, 5);
-	gtk_widget_ref (hboxPagination);
-	g_object_set_data_full (G_OBJECT (hboxPagination), "hboxPagination", hboxPagination,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (hboxPagination);
-
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_LabelPagination));
-	labelPagination = gtk_label_new (unixstr);
-	FREEP(unixstr);
-	gtk_widget_ref (labelPagination);
-	g_object_set_data_full (G_OBJECT (windowMain), "labelPagination", labelPagination,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (labelPagination);
-	gtk_box_pack_start (GTK_BOX (hboxPagination), labelPagination, FALSE, FALSE, 0);
-
-	hseparator5 = gtk_hseparator_new ();
-	gtk_widget_ref (hseparator5);
-	g_object_set_data_full (G_OBJECT (windowMain), "hseparator5", hseparator5,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (hseparator5);
-	gtk_box_pack_start (GTK_BOX (hboxPagination), hseparator5, TRUE, TRUE, 0);
-
-	gtk_table_attach ( GTK_TABLE(boxBreaks), hboxPagination, 0,2, 0,1,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (GTK_FILL), 0, 0);
-
-
-	// Pagination toggles
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_PushWidowOrphanControl));
-	checkbuttonWidowOrphan = gtk_check_button_new_with_label (unixstr);
-	FREEP(unixstr);
-	gtk_widget_ref (checkbuttonWidowOrphan);
-	g_object_set_data_full (G_OBJECT (windowMain), "checkbuttonWidowOrphan", checkbuttonWidowOrphan,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	/**/ g_object_set_data(G_OBJECT(checkbuttonWidowOrphan), WIDGET_ID_TAG, (gpointer) id_CHECK_WIDOW_ORPHAN);
-	gtk_widget_show (checkbuttonWidowOrphan);
-	gtk_table_attach ( GTK_TABLE(boxBreaks), checkbuttonWidowOrphan, 0,1, 1,2,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (GTK_FILL), 0, 0 );
-
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_PushKeepWithNext));
-	checkbuttonKeepNext = gtk_check_button_new_with_label (unixstr);
-	FREEP(unixstr);
-	gtk_widget_ref (checkbuttonKeepNext);
-	g_object_set_data_full (G_OBJECT (windowMain), "checkbuttonKeepNext", checkbuttonKeepNext,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	/**/ g_object_set_data(G_OBJECT(checkbuttonKeepNext), WIDGET_ID_TAG, (gpointer) id_CHECK_KEEP_NEXT);
-	gtk_widget_show (checkbuttonKeepNext);
-	gtk_table_attach ( GTK_TABLE(boxBreaks), checkbuttonKeepNext, 1,2, 1,2,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (GTK_FILL), 0, 0 );
-
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_PushKeepLinesTogether));
-	checkbuttonKeepLines = gtk_check_button_new_with_label (unixstr);
-	FREEP(unixstr);
-	gtk_widget_ref (checkbuttonKeepLines);
-	g_object_set_data_full (G_OBJECT (windowMain), "checkbuttonKeepLines", checkbuttonKeepLines,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	/**/ g_object_set_data(G_OBJECT(checkbuttonKeepLines), WIDGET_ID_TAG, (gpointer) id_CHECK_KEEP_LINES);
-	gtk_widget_show (checkbuttonKeepLines);
-	gtk_table_attach ( GTK_TABLE(boxBreaks), checkbuttonKeepLines, 0,1, 2,3,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (GTK_FILL), 0, 0 );
-
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_PushPageBreakBefore));
-	checkbuttonPageBreak = gtk_check_button_new_with_label (unixstr);
-	FREEP(unixstr);
-	gtk_widget_ref (checkbuttonPageBreak);
-	g_object_set_data_full (G_OBJECT (windowMain), "checkbuttonPageBreak", checkbuttonPageBreak,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	/**/ g_object_set_data(G_OBJECT(checkbuttonPageBreak), WIDGET_ID_TAG, (gpointer) id_CHECK_PAGE_BREAK);
-	gtk_widget_show (checkbuttonPageBreak);
-	gtk_table_attach ( GTK_TABLE(boxBreaks), checkbuttonPageBreak, 1,2, 2,3,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (GTK_FILL), 0, 0 );
-
-
-	hseparator6 = gtk_hseparator_new ();
-	gtk_widget_ref (hseparator6);
-	g_object_set_data_full (G_OBJECT (windowMain), "hseparator6", hseparator6,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (hseparator6);
-	gtk_table_attach ( GTK_TABLE(boxBreaks), hseparator6, 0,2, 3,4,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (GTK_FILL), 0, 0 );
-
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_PushSuppressLineNumbers));
-	checkbuttonSuppress = gtk_check_button_new_with_label (unixstr);
-	FREEP(unixstr);
-	gtk_widget_ref (checkbuttonSuppress);
-	g_object_set_data_full (G_OBJECT (windowMain), "checkbuttonSuppress", checkbuttonSuppress,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	/**/ g_object_set_data(G_OBJECT(checkbuttonSuppress), WIDGET_ID_TAG, (gpointer) id_CHECK_SUPPRESS);
-	gtk_widget_show (checkbuttonSuppress);
-	gtk_table_attach ( GTK_TABLE(boxBreaks), checkbuttonSuppress, 0,1, 4,5,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (GTK_FILL), 0, 0 );
-
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_PushNoHyphenate));
-	checkbuttonHyphenate = gtk_check_button_new_with_label (unixstr);
-	FREEP(unixstr);
-	gtk_widget_ref (checkbuttonHyphenate);
-	g_object_set_data_full (G_OBJECT (windowMain), "checkbuttonHyphenate", checkbuttonHyphenate,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	/**/ g_object_set_data(G_OBJECT(checkbuttonHyphenate), WIDGET_ID_TAG, (gpointer) id_CHECK_NO_HYPHENATE);
-	gtk_widget_show (checkbuttonHyphenate);
-	gtk_table_attach ( GTK_TABLE(boxBreaks), checkbuttonHyphenate, 0,1, 5,6,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (GTK_FILL), 0, 0 );
-
-
-	// End of notebook. Next comes the preview area.
-	hboxPreview = gtk_hbox_new (FALSE, 5);
-	gtk_widget_ref (hboxPreview);
-	g_object_set_data_full (G_OBJECT (hboxPreview), "hboxPreview", hboxPreview,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (hboxPreview);
-
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_LabelPreview));
-	labelPreview = gtk_label_new (unixstr);
-	FREEP(unixstr);
-	gtk_widget_ref (labelPreview);
-	g_object_set_data_full (G_OBJECT (windowMain), "labelPreview", labelPreview,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (labelPreview);
-	gtk_box_pack_start (GTK_BOX (hboxPreview), labelPreview, FALSE, TRUE, 0);
-	gtk_label_set_justify (GTK_LABEL (labelPreview), GTK_JUSTIFY_LEFT);
-	gtk_misc_set_alignment (GTK_MISC (labelPreview), 0, 0.5);
-
-	hseparator4 = gtk_hseparator_new ();
-	gtk_widget_ref (hseparator4);
-	g_object_set_data_full (G_OBJECT (windowMain), "hseparator4", hseparator4,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (hseparator4);
-	gtk_box_pack_start (GTK_BOX (hboxPreview), hseparator4, TRUE, TRUE, 0);
-	gtk_box_pack_start (GTK_BOX (vboxContents), hboxPreview, TRUE, TRUE, 0);
-
-
-	hboxPreviewFrame = gtk_hbox_new (FALSE, 5);
-	gtk_widget_ref (hboxPreviewFrame);
-	g_object_set_data_full (G_OBJECT (hboxPreviewFrame), "hboxPreviewFrame", hboxPreviewFrame,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (hboxPreviewFrame);
-
-	framePreview = gtk_frame_new (NULL);
-	gtk_widget_ref (framePreview);
-	g_object_set_data_full (G_OBJECT (windowMain), "framePreview", framePreview,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (framePreview);
-
-	gtk_box_pack_start (GTK_BOX (hboxPreviewFrame), framePreview, TRUE, FALSE, 0);
-	gtk_box_pack_start (GTK_BOX (vboxContents), hboxPreviewFrame, FALSE, TRUE, 0);
-	gtk_widget_set_usize (framePreview, 400, 150);
-	gtk_frame_set_shadow_type (GTK_FRAME (framePreview), GTK_SHADOW_NONE);
-
-	drawingareaPreview = createDrawingArea ();
-	gtk_widget_ref (drawingareaPreview);
-	g_object_set_data_full (G_OBJECT (windowMain), "drawingareaPreview", drawingareaPreview,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (drawingareaPreview);
-	gtk_container_add (GTK_CONTAINER (framePreview), drawingareaPreview);
-
-
-	// Update member variables with the important widgets that
-	// might need to be queried or altered later.
-
-	m_windowContents = vboxContents;
-
-	m_listAlignment = listAlignment;
-
-//	m_spinbuttonLeft_adj = spinbuttonLeft_adj;
-	m_spinbuttonLeft = spinbuttonLeft;
-
-//	m_spinbuttonRight_adj = spinbuttonRight_adj;
-	m_spinbuttonRight = spinbuttonRight;
-	m_listSpecial = listSpecial;
-	m_listSpecial_menu = listSpecial_menu;
-//	m_spinbuttonBy_adj = spinbuttonBy_adj;
-	m_spinbuttonBy = spinbuttonBy;
-//	m_spinbuttonBefore_adj = spinbuttonBefore_adj;
-	m_spinbuttonBefore = spinbuttonBefore;
-//	m_spinbuttonAfter_adj = spinbuttonAfter_adj;
-	m_spinbuttonAfter = spinbuttonAfter;
-	m_listLineSpacing = listLineSpacing;
-	m_listLineSpacing_menu = listLineSpacing_menu;
-//	m_spinbuttonAt_adj = spinbuttonAt_adj;
-	m_spinbuttonAt = spinbuttonAt;
-
-	m_drawingareaPreview = drawingareaPreview;
-
-	m_checkbuttonWidowOrphan = checkbuttonWidowOrphan;
-	m_checkbuttonKeepLines = checkbuttonKeepLines;
-	m_checkbuttonPageBreak = checkbuttonPageBreak;
-	m_checkbuttonSuppress = checkbuttonSuppress;
-	m_checkbuttonHyphenate = checkbuttonHyphenate;
-	m_checkbuttonKeepNext = checkbuttonKeepNext;
-	m_checkbuttonDomDirection = checkbuttonDomDirection;
-
-	return vboxContents;
-}
-
-#define CONNECT_SPIN_SIGNAL_CHANGED(w)				\
-        do {												\
-	        g_signal_connect(G_OBJECT(w), "changed",	\
-                G_CALLBACK(s_spin_changed),			\
-                (gpointer) this);							\
-        } while (0)
-
-#define CONNECT_SPIN_SIGNAL_FOCUS_OUT(w)			\
-        do {												\
-	        g_signal_connect(G_OBJECT(w), "focus_out_event",	\
-                G_CALLBACK(s_spin_focus_out),			\
-                (gpointer) this);							\
-        } while (0)
-
-#define CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(w)				\
-        do {												\
-	        g_signal_connect(G_OBJECT(w), "activate",	\
-                G_CALLBACK(s_menu_item_activate),		\
-                (gpointer) this);							\
-        } while (0)
-
-void AP_CocoaDialog_Paragraph::_connectCallbackSignals(void)
-{
-	// the control buttons
-	g_signal_connect(G_OBJECT(m_buttonOK),
-					   "clicked",
-					   G_CALLBACK(s_ok_clicked),
-					   (gpointer) this);
-
-	g_signal_connect(G_OBJECT(m_buttonCancel),
-					   "clicked",
-					   G_CALLBACK(s_cancel_clicked),
-					   (gpointer) this);
-
-	g_signal_connect(G_OBJECT(m_buttonTabs),
-					   "clicked",
-					   G_CALLBACK(s_tabs_clicked),
-					   (gpointer) this);
-
-	// we have to handle the changes in values for spin buttons
-	// to preserve units
-	CONNECT_SPIN_SIGNAL_CHANGED(m_spinbuttonLeft);
-	CONNECT_SPIN_SIGNAL_CHANGED(m_spinbuttonRight);
-	CONNECT_SPIN_SIGNAL_CHANGED(m_spinbuttonBy);
-	CONNECT_SPIN_SIGNAL_CHANGED(m_spinbuttonBefore);
-	CONNECT_SPIN_SIGNAL_CHANGED(m_spinbuttonAfter);
-	CONNECT_SPIN_SIGNAL_CHANGED(m_spinbuttonAt);
-
-	CONNECT_SPIN_SIGNAL_FOCUS_OUT(m_spinbuttonLeft);
-	CONNECT_SPIN_SIGNAL_FOCUS_OUT(m_spinbuttonRight);
-	CONNECT_SPIN_SIGNAL_FOCUS_OUT(m_spinbuttonBy);
-	CONNECT_SPIN_SIGNAL_FOCUS_OUT(m_spinbuttonBefore);
-	CONNECT_SPIN_SIGNAL_FOCUS_OUT(m_spinbuttonAfter);
-	CONNECT_SPIN_SIGNAL_FOCUS_OUT(m_spinbuttonAt);
-
-	// connect to option menus
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_menuitemLeft);
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_menuitemCentered);
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_menuitemRight);
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_menuitemJustified);
-
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_menuitemNone);
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_menuitemFirstLine);
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_menuitemHanging);
-
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_menuitemSingle);
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_menuitemOneAndHalf);
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_menuitemDouble);
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_menuitemAtLeast);
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_menuitemExactly);
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_menuitemMultiple);
-
-	// all the checkbuttons
-	g_signal_connect(G_OBJECT(m_checkbuttonWidowOrphan), "toggled",
-					   G_CALLBACK(s_check_toggled), (gpointer) this);
-	g_signal_connect(G_OBJECT(m_checkbuttonKeepLines), "toggled",
-					   G_CALLBACK(s_check_toggled), (gpointer) this);
-	g_signal_connect(G_OBJECT(m_checkbuttonPageBreak), "toggled",
-					   G_CALLBACK(s_check_toggled), (gpointer) this);
-	g_signal_connect(G_OBJECT(m_checkbuttonSuppress), "toggled",
-					   G_CALLBACK(s_check_toggled), (gpointer) this);
-	g_signal_connect(G_OBJECT(m_checkbuttonHyphenate), "toggled",
-					   G_CALLBACK(s_check_toggled), (gpointer) this);
-	g_signal_connect(G_OBJECT(m_checkbuttonKeepNext), "toggled",
-					   G_CALLBACK(s_check_toggled), (gpointer) this);
-	g_signal_connect(G_OBJECT(m_checkbuttonDomDirection), "toggled",
-					   G_CALLBACK(s_check_toggled), (gpointer) this);
-	// the catch-alls
-	g_signal_connect(G_OBJECT(m_windowMain),
-			   "delete_event",
-			   G_CALLBACK(s_delete_clicked),
-			   (gpointer) this);
-
-	g_signal_connect_after(G_OBJECT(m_windowMain),
-							 "destroy",
-							 NULL,
-							 NULL);
-
-	// the expose event off the preview
-	g_signal_connect(G_OBJECT(m_drawingareaPreview),
-					   "expose_event",
-					   G_CALLBACK(s_preview_exposed),
-					   (gpointer) this);
-}
 
 void AP_CocoaDialog_Paragraph::_populateWindowData(void)
 {
 
 	// alignment option menu
-	UT_ASSERT(m_listAlignment);
-	gtk_option_menu_set_history(GTK_OPTION_MENU(m_listAlignment),
-								(gint) _getMenuItemValue(id_MENU_ALIGNMENT));
+	[(NSPopUpButton*)_getWidget(id_MENU_ALIGNMENT) selectItemAtIndex:_getMenuItemValue(id_MENU_ALIGNMENT)];
 
 	// indent and paragraph margins
-	UT_ASSERT(m_spinbuttonLeft);
-	gtk_entry_set_text(GTK_ENTRY(m_spinbuttonLeft),
-					   (const gchar *) _getSpinItemValue(id_SPIN_LEFT_INDENT));
-
-	UT_ASSERT(m_spinbuttonRight);
-	gtk_entry_set_text(GTK_ENTRY(m_spinbuttonRight),
-					   (const gchar *) _getSpinItemValue(id_SPIN_RIGHT_INDENT));
-
-	UT_ASSERT(m_spinbuttonBy);
-	gtk_entry_set_text(GTK_ENTRY(m_spinbuttonBy),
-					   (const gchar *) _getSpinItemValue(id_SPIN_SPECIAL_INDENT));
-
-	UT_ASSERT(m_listSpecial);
-	gtk_option_menu_set_history(GTK_OPTION_MENU(m_listSpecial),
-								(gint) _getMenuItemValue(id_MENU_SPECIAL_INDENT));
-
+	[_getWidget(id_SPIN_LEFT_INDENT) setStringValue:[NSString stringWithUTF8String:_getSpinItemValue(id_SPIN_LEFT_INDENT)]];
+	[_getWidget(id_SPIN_RIGHT_INDENT) setStringValue:[NSString stringWithUTF8String:_getSpinItemValue(id_SPIN_RIGHT_INDENT)]];
+	[_getWidget(id_SPIN_SPECIAL_INDENT) setStringValue:[NSString stringWithUTF8String:_getSpinItemValue(id_SPIN_SPECIAL_INDENT)]];
+	[(NSPopUpButton*)_getWidget(id_MENU_SPECIAL_INDENT) selectItemAtIndex:_getMenuItemValue(id_MENU_SPECIAL_INDENT)];
 	// spacing
-	UT_ASSERT(m_spinbuttonLeft);
-	gtk_entry_set_text(GTK_ENTRY(m_spinbuttonBefore),
-					   (const gchar *) _getSpinItemValue(id_SPIN_BEFORE_SPACING));
-
-	UT_ASSERT(m_spinbuttonRight);
-	gtk_entry_set_text(GTK_ENTRY(m_spinbuttonAfter),
-					   (const gchar *) _getSpinItemValue(id_SPIN_AFTER_SPACING));
-
-	UT_ASSERT(m_spinbuttonAt);
-	gtk_entry_set_text(GTK_ENTRY(m_spinbuttonAt),
-					   (const gchar *) _getSpinItemValue(id_SPIN_SPECIAL_SPACING));
-
-	UT_ASSERT(m_listLineSpacing);
-	gtk_option_menu_set_history(GTK_OPTION_MENU(m_listLineSpacing),
-								(gint) _getMenuItemValue(id_MENU_SPECIAL_SPACING));
+	[_getWidget(id_SPIN_BEFORE_SPACING) setStringValue:[NSString stringWithUTF8String:_getSpinItemValue(id_SPIN_BEFORE_SPACING)]];
+	[_getWidget(id_SPIN_AFTER_SPACING) setStringValue:[NSString stringWithUTF8String:_getSpinItemValue(id_SPIN_AFTER_SPACING)]];
+	[_getWidget(id_SPIN_SPECIAL_SPACING) setStringValue:[NSString stringWithUTF8String:_getSpinItemValue(id_SPIN_SPECIAL_SPACING)]];
+	[(NSPopUpButton*)_getWidget(id_MENU_SPECIAL_SPACING) selectItemAtIndex:_getMenuItemValue(id_MENU_SPECIAL_SPACING)];
 
 	// set the check boxes
-	// TODO : handle tri-state boxes !!!
-
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(GTK_CHECK_BUTTON(m_checkbuttonWidowOrphan)),
-								 (_getCheckItemValue(id_CHECK_WIDOW_ORPHAN) == check_TRUE));
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(GTK_CHECK_BUTTON(m_checkbuttonKeepLines)),
-								 (_getCheckItemValue(id_CHECK_KEEP_LINES) == check_TRUE));
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(GTK_CHECK_BUTTON(m_checkbuttonPageBreak)),
-								 (_getCheckItemValue(id_CHECK_PAGE_BREAK) == check_TRUE));
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(GTK_CHECK_BUTTON(m_checkbuttonSuppress)),
-								 (_getCheckItemValue(id_CHECK_SUPPRESS) == check_TRUE));
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(GTK_CHECK_BUTTON(m_checkbuttonHyphenate)),
-								 (_getCheckItemValue(id_CHECK_NO_HYPHENATE) == check_TRUE));
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(GTK_CHECK_BUTTON(m_checkbuttonKeepNext)),
-								 (_getCheckItemValue(id_CHECK_KEEP_NEXT) == check_TRUE));
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(GTK_CHECK_BUTTON(m_checkbuttonDomDirection)),
-								 (_getCheckItemValue(id_CHECK_DOMDIRECTION) == check_TRUE));
+	[_getWidget(id_CHECK_WIDOW_ORPHAN) setState:_tCheckStateToNS(_getCheckItemValue(id_CHECK_WIDOW_ORPHAN))];
+	[_getWidget(id_CHECK_KEEP_LINES) setState:_tCheckStateToNS(_getCheckItemValue(id_CHECK_KEEP_LINES))];
+	[_getWidget(id_CHECK_PAGE_BREAK) setState:_tCheckStateToNS(_getCheckItemValue(id_CHECK_PAGE_BREAK))];
+	[_getWidget(id_CHECK_SUPPRESS) setState:_tCheckStateToNS(_getCheckItemValue(id_CHECK_SUPPRESS))];
+	[_getWidget(id_CHECK_NO_HYPHENATE) setState:_tCheckStateToNS(_getCheckItemValue(id_CHECK_NO_HYPHENATE))];
+	[_getWidget(id_CHECK_KEEP_NEXT) setState:_tCheckStateToNS(_getCheckItemValue(id_CHECK_KEEP_NEXT))];
+	[_getWidget(id_CHECK_DOMDIRECTION) setState:_tCheckStateToNS(_getCheckItemValue(id_CHECK_DOMDIRECTION))];
 }
-
 void AP_CocoaDialog_Paragraph::_syncControls(tControl changed, bool bAll /* = false */)
 {
 	// let parent sync any member variables first
@@ -1317,22 +235,34 @@ void AP_CocoaDialog_Paragraph::_syncControls(tControl changed, bool bAll /* = fa
 		// typing in the control can change the associated combo
 		if (_getMenuItemValue(id_MENU_SPECIAL_INDENT) == indent_FIRSTLINE)
 		{
-			gtk_option_menu_set_history(GTK_OPTION_MENU(m_listSpecial),
-										(gint) _getMenuItemValue(id_MENU_SPECIAL_INDENT));
+			[_getWidget(id_MENU_SPECIAL_INDENT) selectItemAtIndex:
+										_getMenuItemValue(id_MENU_SPECIAL_INDENT)];
 		}
 	}
 	if (bAll || (changed == id_MENU_SPECIAL_INDENT))
-	{
+	{	
+		NSTextField* control = nil;
 		switch(_getMenuItemValue(id_MENU_SPECIAL_INDENT))
 		{
 		case indent_NONE:
 			// clear the spin control
-			gtk_entry_set_text(GTK_ENTRY(m_spinbuttonBy), "");
+			{
+				control = _getWidget(id_SPIN_SPECIAL_INDENT);
+				UT_ASSERT (control);
+				[control setStringValue:@""];
+				[control setEnabled:NO];
+			}
 			break;
 
 		default:
+			{
+				control = _getWidget(id_SPIN_SPECIAL_INDENT);
 			// set the spin control
-			gtk_entry_set_text(GTK_ENTRY(m_spinbuttonBy), _getSpinItemValue(id_SPIN_SPECIAL_INDENT));
+				UT_ASSERT (control);
+				[control setStringValue:
+						[NSString stringWithUTF8String:_getSpinItemValue(id_SPIN_SPECIAL_INDENT)]];
+				[control setEnabled:YES];
+			}
 			break;
 		}
 	}
@@ -1344,24 +274,30 @@ void AP_CocoaDialog_Paragraph::_syncControls(tControl changed, bool bAll /* = fa
 		// typing in the control can change the associated combo
 		if (_getMenuItemValue(id_MENU_SPECIAL_SPACING) == spacing_MULTIPLE)
 		{
-			gtk_option_menu_set_history(GTK_OPTION_MENU(m_listLineSpacing),
-										(gint) _getMenuItemValue(id_MENU_SPECIAL_SPACING));
+			[_getWidget(id_MENU_SPECIAL_SPACING) selectItemAtIndex:
+										_getMenuItemValue(id_MENU_SPECIAL_SPACING)];
 		}
 	}
 	if (bAll || (changed == id_MENU_SPECIAL_SPACING))
 	{
+		NSTextField* control = nil;
 		switch(_getMenuItemValue(id_MENU_SPECIAL_SPACING))
 		{
 		case spacing_SINGLE:
 		case spacing_ONEANDHALF:
 		case spacing_DOUBLE:
 			// clear the spin control
-			gtk_entry_set_text(GTK_ENTRY(m_spinbuttonAt), "");
+			control = _getWidget(id_SPIN_SPECIAL_SPACING);
+			[control setStringValue:@""];
+			[control setEnabled:NO];
 			break;
 
 		default:
 			// set the spin control
-			gtk_entry_set_text(GTK_ENTRY(m_spinbuttonAt), _getSpinItemValue(id_SPIN_SPECIAL_SPACING));
+			control = _getWidget(id_SPIN_SPECIAL_SPACING);
+			[control setStringValue:
+					[NSString stringWithUTF8String:_getSpinItemValue(id_SPIN_SPECIAL_SPACING)]];
+			[control setEnabled:YES];
 			break;
 		}
 	}
@@ -1374,19 +310,235 @@ void AP_CocoaDialog_Paragraph::_syncControls(tControl changed, bool bAll /* = fa
 		switch (changed)
 		{
 		case id_SPIN_LEFT_INDENT:
-			gtk_entry_set_text(GTK_ENTRY(m_spinbuttonLeft), 	_getSpinItemValue(id_SPIN_LEFT_INDENT));
+			[_getWidget(id_SPIN_LEFT_INDENT) setStringValue:
+					[NSString stringWithUTF8String:_getSpinItemValue(id_SPIN_LEFT_INDENT)]];
 		case id_SPIN_RIGHT_INDENT:
-			gtk_entry_set_text(GTK_ENTRY(m_spinbuttonRight), 	_getSpinItemValue(id_SPIN_RIGHT_INDENT));
+			[_getWidget(id_SPIN_RIGHT_INDENT) setStringValue:
+					[NSString stringWithUTF8String:_getSpinItemValue(id_SPIN_RIGHT_INDENT)]];
 		case id_SPIN_SPECIAL_INDENT:
-			gtk_entry_set_text(GTK_ENTRY(m_spinbuttonBy), 		_getSpinItemValue(id_SPIN_SPECIAL_INDENT));
+			[_getWidget(id_SPIN_SPECIAL_INDENT) setStringValue:
+					[NSString stringWithUTF8String:_getSpinItemValue(id_SPIN_SPECIAL_INDENT)]];
 		case id_SPIN_BEFORE_SPACING:
-			gtk_entry_set_text(GTK_ENTRY(m_spinbuttonBefore), 	_getSpinItemValue(id_SPIN_BEFORE_SPACING));
+			[_getWidget(id_SPIN_BEFORE_SPACING) setStringValue:
+					[NSString stringWithUTF8String:_getSpinItemValue(id_SPIN_BEFORE_SPACING)]];
 		case id_SPIN_AFTER_SPACING:
-			gtk_entry_set_text(GTK_ENTRY(m_spinbuttonAfter), 	_getSpinItemValue(id_SPIN_AFTER_SPACING));
+			[_getWidget(id_SPIN_AFTER_SPACING) setStringValue:
+					[NSString stringWithUTF8String:_getSpinItemValue(id_SPIN_AFTER_SPACING)]];
 		case id_SPIN_SPECIAL_SPACING:
-			gtk_entry_set_text(GTK_ENTRY(m_spinbuttonAt), 		_getSpinItemValue(id_SPIN_SPECIAL_SPACING));
+			[_getWidget(id_SPIN_SPECIAL_SPACING) setStringValue:
+					[NSString stringWithUTF8String:_getSpinItemValue(id_SPIN_SPECIAL_SPACING)]];
 		default:
 			break;
 		}
 	}
 }
+
+int AP_CocoaDialog_Paragraph::_tCheckStateToNS(AP_CocoaDialog_Paragraph::tCheckState x) 
+{
+	switch (x) {
+	case check_FALSE:
+		return NSOffState;
+		break;
+	case check_TRUE:
+		return NSOnState;
+		break;
+	case check_INDETERMINATE:
+		return NSMixedState;
+		break;
+	}
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	return 0;
+}
+
+
+@implementation AP_CocoaDialog_ParagraphController
+
+- (id) initFromNib
+{
+	self = [super initWithWindowNibName:@"ap_CocoaDialog_Paragraph"];
+	return self;
+}
+
+- (void)setXAPOwner:(XAP_Dialog*)owner
+{
+	_xap = dynamic_cast<AP_CocoaDialog_Paragraph*>(owner);
+	UT_ASSERT(_xap);
+}
+
+- (void)discardXAP
+{
+	if (_xap) {
+		_xap->_deleteGC();
+		_xap = NULL;
+	}
+}
+
+- (void)windowDidLoad
+{
+	if (_xap) {
+		_xap->_createGC(_preview);
+		_xap->event_PreviewAreaExposed();
+		const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
+		LocalizeControl([self window], pSS, AP_STRING_ID_DLG_Para_ParaTitle);
+		LocalizeControl(_tabsBtn, pSS, AP_STRING_ID_DLG_Para_ButtonTabs);
+		LocalizeControl(_okBtn, pSS, XAP_STRING_ID_DLG_OK);
+		LocalizeControl(_cancelBtn, pSS, XAP_STRING_ID_DLG_Cancel);
+		LocalizeControl([_mainTab tabViewItemAtIndex:0], pSS, AP_STRING_ID_DLG_Para_TabLabelIndentsAndSpacing);
+		LocalizeControl(_alignmentLabel, pSS, AP_STRING_ID_DLG_Para_LabelAlignment);
+		/* menu items */
+		[_alignmentPopup setTag:(int)AP_Dialog_Paragraph::id_MENU_ALIGNMENT];
+		[_alignmentPopup removeAllItems];
+		AppendLocalizedMenuItem(_alignmentPopup, pSS, AP_STRING_ID_DLG_Para_AlignLeft, AP_Dialog_Paragraph::align_LEFT);
+		AppendLocalizedMenuItem(_alignmentPopup, pSS, AP_STRING_ID_DLG_Para_AlignCentered, AP_Dialog_Paragraph::align_CENTERED );
+		AppendLocalizedMenuItem(_alignmentPopup, pSS, AP_STRING_ID_DLG_Para_AlignRight, AP_Dialog_Paragraph::align_RIGHT);
+		AppendLocalizedMenuItem(_alignmentPopup, pSS, AP_STRING_ID_DLG_Para_AlignJustified, AP_Dialog_Paragraph::align_JUSTIFIED);
+		LocalizeControl(_rtlDominantBtn, pSS, AP_STRING_ID_DLG_Para_DomDirection);
+		[_rtlDominantBtn setTag:(int)AP_Dialog_Paragraph::id_CHECK_DOMDIRECTION];
+		LocalizeControl(_indentationBox, pSS, AP_STRING_ID_DLG_Para_LabelIndentation);
+		LocalizeControl(_indentLeftFormCell, pSS, AP_STRING_ID_DLG_Para_LabelLeft);
+		[_indentLeftFormCell setTag:(int)AP_Dialog_Paragraph::id_SPIN_LEFT_INDENT];
+		LocalizeControl(_indentRightFormCell, pSS, AP_STRING_ID_DLG_Para_LabelRight);
+		[_indentRightFormCell setTag:(int)AP_Dialog_Paragraph::id_SPIN_RIGHT_INDENT];
+		LocalizeControl(_specialLabel, pSS, AP_STRING_ID_DLG_Para_LabelSpecial);
+
+		/*menu items*/
+		[_specialPopup setTag:(int)AP_Dialog_Paragraph::id_MENU_SPECIAL_INDENT];
+		[_specialPopup removeAllItems];
+		AppendLocalizedMenuItem(_specialPopup, pSS, AP_STRING_ID_DLG_Para_SpecialNone, AP_Dialog_Paragraph::indent_NONE);
+		AppendLocalizedMenuItem(_specialPopup, pSS, AP_STRING_ID_DLG_Para_SpecialFirstLine, AP_Dialog_Paragraph::indent_FIRSTLINE);
+		AppendLocalizedMenuItem(_specialPopup, pSS, AP_STRING_ID_DLG_Para_SpecialHanging, AP_Dialog_Paragraph::indent_HANGING);
+		LocalizeControl(_byLabel, pSS, AP_STRING_ID_DLG_Para_LabelBy);
+		[_byData setTag:(int)AP_Dialog_Paragraph::id_SPIN_SPECIAL_INDENT];
+		LocalizeControl(_spacingBox, pSS, AP_STRING_ID_DLG_Para_LabelSpacing);
+		LocalizeControl(_spacingBeforeFormCell, pSS, AP_STRING_ID_DLG_Para_LabelBefore);
+		[_spacingBeforeFormCell setTag:(int)AP_Dialog_Paragraph::id_SPIN_BEFORE_SPACING];
+		LocalizeControl(_spacingAfterFormCell, pSS, AP_STRING_ID_DLG_Para_LabelAfter);
+		[_spacingAfterFormCell setTag:(int)AP_Dialog_Paragraph::id_SPIN_AFTER_SPACING];
+		LocalizeControl(_lineSpacingLabel, pSS, AP_STRING_ID_DLG_Para_LabelLineSpacing);
+		/*menu items*/
+		[_lineSpacingPopup setTag:(int)AP_Dialog_Paragraph::id_MENU_SPECIAL_SPACING];
+		[_lineSpacingPopup removeAllItems];
+		AppendLocalizedMenuItem(_lineSpacingPopup, pSS, AP_STRING_ID_DLG_Para_SpacingSingle, AP_Dialog_Paragraph::spacing_SINGLE);
+		AppendLocalizedMenuItem(_lineSpacingPopup, pSS, AP_STRING_ID_DLG_Para_SpacingHalf, AP_Dialog_Paragraph::spacing_ONEANDHALF);
+		AppendLocalizedMenuItem(_lineSpacingPopup, pSS, AP_STRING_ID_DLG_Para_SpacingDouble, AP_Dialog_Paragraph::spacing_DOUBLE);
+		AppendLocalizedMenuItem(_lineSpacingPopup, pSS, AP_STRING_ID_DLG_Para_SpacingAtLeast, AP_Dialog_Paragraph::spacing_ATLEAST);
+		AppendLocalizedMenuItem(_lineSpacingPopup, pSS, AP_STRING_ID_DLG_Para_SpacingExactly, AP_Dialog_Paragraph::spacing_EXACTLY);
+		AppendLocalizedMenuItem(_lineSpacingPopup, pSS, AP_STRING_ID_DLG_Para_SpacingMultiple, AP_Dialog_Paragraph::spacing_MULTIPLE);
+		LocalizeControl(_atLabel, pSS, AP_STRING_ID_DLG_Para_LabelAt);
+		[_atData setTag:(int)AP_Dialog_Paragraph::id_SPIN_SPECIAL_SPACING];
+		
+		LocalizeControl([_mainTab tabViewItemAtIndex:1], pSS, AP_STRING_ID_DLG_Para_TabLabelLineAndPageBreaks);
+		LocalizeControl(_paginationBox, pSS, AP_STRING_ID_DLG_Para_LabelPagination);
+		LocalizeControl(_widowOrphanBtn, pSS, AP_STRING_ID_DLG_Para_PushWidowOrphanControl);
+		[_widowOrphanBtn setTag:(int)AP_Dialog_Paragraph::id_CHECK_WIDOW_ORPHAN];
+		LocalizeControl(_keepNextBtn, pSS, AP_STRING_ID_DLG_Para_PushKeepWithNext);
+		[_keepNextBtn setTag:(int)AP_Dialog_Paragraph::id_CHECK_KEEP_NEXT];
+		LocalizeControl(_keepsLinesBtn, pSS, AP_STRING_ID_DLG_Para_PushKeepLinesTogether);
+		[_keepsLinesBtn setTag:(int)AP_Dialog_Paragraph::id_CHECK_KEEP_LINES];
+		LocalizeControl(_pageBreakBtn, pSS, AP_STRING_ID_DLG_Para_PushPageBreakBefore);
+		[_pageBreakBtn setTag:(int)AP_Dialog_Paragraph::id_CHECK_PAGE_BREAK];
+		LocalizeControl(_suppressLineNumBtn, pSS, AP_STRING_ID_DLG_Para_PushSuppressLineNumbers);
+		[_suppressLineNumBtn setTag:(int)AP_Dialog_Paragraph::id_CHECK_SUPPRESS];
+		LocalizeControl(_dontHyphenBtn, pSS, AP_STRING_ID_DLG_Para_PushNoHyphenate);
+		[_dontHyphenBtn setTag:(int)AP_Dialog_Paragraph::id_CHECK_NO_HYPHENATE];
+		LocalizeControl(_previewBox, pSS, AP_STRING_ID_DLG_Para_LabelPreview);
+	}
+}
+
+- (IBAction)cancelAction:(id)sender
+{
+	_xap->event_Cancel();
+}
+
+- (IBAction)okAction:(id)sender
+{
+	_xap->event_OK();
+}
+
+- (IBAction)tabAction:(id)sender
+{
+	_xap->event_Tabs();
+}
+
+- (IBAction)checkBoxAction:(id)sender
+{
+	_xap->event_CheckToggled(sender);
+}
+
+- (IBAction)menuAction:(id)sender
+{
+	_xap->event_MenuChanged(sender);
+}
+
+- (IBAction)editAction:(id)sender
+{
+	_xap->event_EditChanged(sender);
+}
+
+/*
+- (void)controlTextDidChange:(NSNotification *)aNotification
+{
+	id obj = [aNotification object];
+	
+}
+*/
+
+- (id)_getWidget:(AP_Dialog_Paragraph::tControl) widget
+{
+	id obj = nil;
+	switch(widget) {
+	case AP_Dialog_Paragraph::id_MENU_ALIGNMENT:
+		return _alignmentPopup;
+	case AP_Dialog_Paragraph::id_SPIN_LEFT_INDENT:
+		return _indentLeftFormCell;
+	case AP_Dialog_Paragraph::id_SPIN_RIGHT_INDENT:
+		return _indentRightFormCell;
+	case AP_Dialog_Paragraph::id_MENU_SPECIAL_INDENT:
+		return _specialPopup;
+	case AP_Dialog_Paragraph::id_SPIN_SPECIAL_INDENT:
+		return _byData;
+	case AP_Dialog_Paragraph::id_SPIN_BEFORE_SPACING:
+		return _spacingBeforeFormCell;
+	case AP_Dialog_Paragraph::id_SPIN_AFTER_SPACING:
+		return _spacingAfterFormCell;
+	case AP_Dialog_Paragraph::id_MENU_SPECIAL_SPACING:
+		return _lineSpacingPopup;
+	case AP_Dialog_Paragraph::id_SPIN_SPECIAL_SPACING:
+		return _atData;
+	case AP_Dialog_Paragraph::id_CHECK_WIDOW_ORPHAN:
+		return _widowOrphanBtn;
+	case AP_Dialog_Paragraph::id_CHECK_KEEP_LINES:
+		return _keepsLinesBtn;
+	case AP_Dialog_Paragraph::id_CHECK_PAGE_BREAK:
+		return _pageBreakBtn;
+	case AP_Dialog_Paragraph::id_CHECK_SUPPRESS:
+		return _suppressLineNumBtn;
+	case AP_Dialog_Paragraph::id_CHECK_NO_HYPHENATE:
+		return _dontHyphenBtn;
+	case AP_Dialog_Paragraph::id_CHECK_KEEP_NEXT:
+		return _keepNextBtn;
+	case AP_Dialog_Paragraph::id_CHECK_DOMDIRECTION:
+		return _rtlDominantBtn;
+	default:
+		obj =  [[[self window] contentView] viewWithTag:(int)widget]; 
+	}
+	UT_ASSERT(obj);
+	return obj;
+}
+
+- (NSPopUpButton*)specialPopup
+{
+	return _specialPopup;
+}
+
+- (NSPopUpButton*)lineSpacingPopup
+{
+	return _lineSpacingPopup;
+}
+
+- (NSPopUpButton*)alignmentPopup
+{
+	return _alignmentPopup;
+}
+
+@end

@@ -42,6 +42,17 @@ class AP_Dialog_Paragraph : public XAP_Dialog_NonPersistent
 	typedef enum { indent_NONE = 0, indent_FIRSTLINE, indent_HANGING } tIndentState;
 	typedef enum { spacing_SINGLE = 0, spacing_ONEANDHALF, spacing_DOUBLE,
 				   spacing_ATLEAST, spacing_EXACTLY, spacing_MULTIPLE } tSpacingState;
+	/* these are public because we must be able to identify widgets out this class (NSWindowController)*/
+	typedef enum { id_MENU_ALIGNMENT = 0, id_SPIN_LEFT_INDENT,
+				   id_SPIN_RIGHT_INDENT, id_MENU_SPECIAL_INDENT,
+				   id_SPIN_SPECIAL_INDENT, id_SPIN_BEFORE_SPACING,
+				   id_SPIN_AFTER_SPACING, id_MENU_SPECIAL_SPACING,
+				   id_SPIN_SPECIAL_SPACING, id_CHECK_WIDOW_ORPHAN,
+				   id_CHECK_KEEP_LINES, id_CHECK_PAGE_BREAK,
+				   id_CHECK_SUPPRESS, id_CHECK_NO_HYPHENATE,
+				   id_CHECK_KEEP_NEXT,
+				   id_CHECK_DOMDIRECTION
+				   } tControl;
 
 	AP_Dialog_Paragraph(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~AP_Dialog_Paragraph(void);
@@ -64,16 +75,6 @@ class AP_Dialog_Paragraph : public XAP_Dialog_NonPersistent
 	// enumerated types for drop-down lists (option menus)
 
 	typedef enum { check_FALSE = 0, check_TRUE, check_INDETERMINATE } tCheckState;
-	typedef enum { id_MENU_ALIGNMENT = 0, id_SPIN_LEFT_INDENT,
-				   id_SPIN_RIGHT_INDENT, id_MENU_SPECIAL_INDENT,
-				   id_SPIN_SPECIAL_INDENT, id_SPIN_BEFORE_SPACING,
-				   id_SPIN_AFTER_SPACING, id_MENU_SPECIAL_SPACING,
-				   id_SPIN_SPECIAL_SPACING, id_CHECK_WIDOW_ORPHAN,
-				   id_CHECK_KEEP_LINES, id_CHECK_PAGE_BREAK,
-				   id_CHECK_SUPPRESS, id_CHECK_NO_HYPHENATE,
-				   id_CHECK_KEEP_NEXT,
-				   id_CHECK_DOMDIRECTION
-				   } tControl;
 
 	typedef enum { op_INIT = 0, op_UICHANGE, op_SYNC } tOperation;
 

@@ -103,7 +103,7 @@
 //PORT	DeclareDialog(AP_DIALOG_ID_SPELL,			AP_CocoaDialog_Spell)
 //PORT	DeclareDialog(AP_DIALOG_ID_STYLES,			AP_CocoaDialog_Styles)
 //PORT    DeclareDialog(AP_DIALOG_ID_PAGE_NUMBERS,    AP_CocoaDialog_PageNumbers)
-//PORT	DeclareDialog(AP_DIALOG_ID_PARAGRAPH,		AP_CocoaDialog_Paragraph)
+	DeclareDialog(AP_DIALOG_ID_PARAGRAPH,		AP_CocoaDialog_Paragraph)
 	DeclareDialog(AP_DIALOG_ID_OPTIONS,			AP_CocoaDialog_Options)
 //PORT	DeclareDialog(AP_DIALOG_ID_TAB,				AP_CocoaDialog_Tab)
 //PORT	DeclareDialog(AP_DIALOG_ID_INSERT_DATETIME,	AP_CocoaDialog_Insert_DateTime)

@@ -58,6 +58,14 @@ NSString* LocalizedString (const XAP_StringSet * pSS, XAP_String_Id stringId)
 	return [NSString stringWithUTF8String:buf];
 }
 
+void AppendLocalizedMenuItem (NSPopUpButton* menu, const XAP_StringSet * pSS, XAP_String_Id stringId, int tag)
+{
+	NSString* str = LocalizedString(pSS, stringId);
+	NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:str action:nil keyEquivalent:@""];
+	[item setTag:tag];
+	[[menu menu] addItem:item];
+	[item release];
+}
 
 /*
 	Strip the '&' et '_' from the label
