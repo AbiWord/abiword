@@ -5714,7 +5714,6 @@ bool fl_BlockLayout::_delete(PT_BlockOffset blockOffset, UT_uint32 len)
 					m_pFirstRun = pRun->getNextRun();
 				}
 				pRun->unlinkFromRunList();
-				delete pRun;
 
 				// make sure that we do not do any bidi
 				// post-processing on the delete run ...
@@ -5726,6 +5725,8 @@ bool fl_BlockLayout::_delete(PT_BlockOffset blockOffset, UT_uint32 len)
 
 				if(pTR_prev == pRun)
 					pTR_prev = NULL;
+				
+				DELETEP(pRun);
 				
 				if (!m_pFirstRun)
 				{
