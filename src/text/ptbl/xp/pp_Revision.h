@@ -64,10 +64,14 @@ class PP_Revision: public PP_AttrProp
 	const XML_Char * getPropsString();
 	const XML_Char * getAttrsString();
 
+	// this is intentionally not virtual (no need for that)
+	bool	setAttributes(const XML_Char ** attributes);
+	
 	bool operator == (const PP_Revision &op2) const;
 
   private:
 	void             _refreshString();
+	bool             _handleNestedRevAttr();
 
 	UT_uint32        m_iID;
 	PP_RevisionType  m_eType;

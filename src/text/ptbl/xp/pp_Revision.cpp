@@ -22,6 +22,8 @@
 #include "pd_Style.h"
 #include "pd_Document.h"
 #include "ut_debugmsg.h"
+#include "ut_misc.h"
+
 //#include <limits.h>
 
 PP_Revision::PP_Revision(UT_uint32 Id, PP_RevisionType eType, const XML_Char * props, const XML_Char * attrs):
@@ -123,6 +125,53 @@ PP_Revision::PP_Revision(UT_uint32 Id, PP_RevisionType eType, const XML_Char ** 
 	{
 		setAttributes(attrs);
 	}
+}
+
+/*!
+    Sets attributes taking care of any nested revision attribute (which needs to be parsed
+    and combined with the current AP set.
+*/
+bool PP_Revision::setAttributes(const XML_Char ** attributes)
+{
+	if(!PP_AttrProp::setAttributes(attributes))
+		return false;
+	
+	return _handleNestedRevAttr();
+}
+
+
+
+bool PP_Revision::_handleNestedRevAttr()
+{
+	const XML_Char * pNestedRev = NULL;
+	getAttribute("revision", pNestedRev);
+	
+	if(pNestedRev)
+	{
+		PP_RevisionAttr NestedAttr(pNestedRev);
+
+		// now remove "revision"
+		setAttribute("revision", NULL);
+		prune();
+
+		// overlay the attrs and props from the revision attribute
+		for(UT_uint32 i = 0; i < NestedAttr.getRevisionsCount(); ++i)
+		{
+			const PP_Revision * pRev = NestedAttr.getNthRevision(i);
+			UT_return_val_if_fail( pRev, false );
+					
+			// ignore inserts and deletes
+			if(pRev->getType() == PP_REVISION_ADDITION || pRev->getType() == PP_REVISION_DELETION)
+				continue;
+
+			setProperties(pRev->getProperties());
+			setAttributes(pRev->getAttributes());
+		}
+
+		prune();
+	}
+
+	return true;
 }
 
 
@@ -737,9 +786,12 @@ bool PP_RevisionAttr::isVisible(UT_uint32 id)
 /*! adds id to the revision vector handling the special cases where id
     is already present in this attribute.
 */
-void PP_RevisionAttr::addRevision(UT_uint32 iId, PP_RevisionType eType, const XML_Char ** pAttrs, const XML_Char ** pProps)
+void PP_RevisionAttr::addRevision(UT_uint32 iId, PP_RevisionType eType,
+								  const XML_Char ** pAttrs, const XML_Char ** pProps)
 {
-	for(UT_uint32 i = 0; i < m_vRev.getItemCount(); i++)
+	UT_uint32 i;
+
+	for(i = 0; i < m_vRev.getItemCount(); i++)
 	{
 		PP_Revision * r = (PP_Revision*) m_vRev.getNthItem(i);
 		UT_uint32 r_id = r->getId();
@@ -813,6 +865,7 @@ void PP_RevisionAttr::addRevision(UT_uint32 iId, PP_RevisionType eType, const XM
 				m_vRev.deleteNthItem(i);
 
 				const PP_Revision * pRevision = new PP_Revision(iId, eType, pProps, pAttrs);
+				
 				m_vRev.addItem((void*)pRevision);
 			}
 			else if((eType == PP_REVISION_FMT_CHANGE) && (r_type == PP_REVISION_ADDITION))
@@ -822,7 +875,6 @@ void PP_RevisionAttr::addRevision(UT_uint32 iId, PP_RevisionType eType, const XM
 				// so we will keep the old revision record, but need
 				// to merge any existing props in the revision with
 				// the new ones
-
 				r->setProperties(pProps);
 				r->setAttributes(pAttrs);
 			}
@@ -855,6 +907,7 @@ void PP_RevisionAttr::addRevision(UT_uint32 iId, PP_RevisionType eType, const XM
 
 	// if we got here then the item is not in our vector so add it
 	const PP_Revision * pRevision = new PP_Revision(iId, eType, pProps, pAttrs);
+	
 	m_vRev.addItem((void*)pRevision);
 	m_bDirty = true;
 	m_pLastRevision = NULL;
