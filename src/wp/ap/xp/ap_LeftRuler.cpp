@@ -1280,18 +1280,6 @@ void AP_LeftRuler::_drawCellProperties(AP_LeftRulerInfo * pInfo)
 			_drawCellMark(&rCell,true);
 		}
 	}
-//
-// Draw bottom marker.
-//
-// 	if(nrows>0)
-// 	{
-// 		_getCellMarkerRects(pInfo,nrows-1,rCell);
-// 		if(rCell.height > 0)
-// 		{
-// 			rCell.top += rCell.height;
-// 			_drawCellMark(&rCell,true);
-// 		}
-// 	}
 }
 
 void AP_LeftRuler::_drawCellMark(UT_Rect *prDrag, bool bUp)
@@ -1304,37 +1292,21 @@ void AP_LeftRuler::_drawCellMark(UT_Rect *prDrag, bool bUp)
 		return;
 	}
 	UT_sint32 left = prDrag->left;
-	UT_sint32 right = left + prDrag->width;
+	UT_sint32 right = left + prDrag->width - m_pG->tlu(1);
 	UT_sint32 top = prDrag->top;
-	UT_sint32 bot = top + m_pG->tlu(4);
+	UT_sint32 bot = top + prDrag->height - m_pG->tlu(1); // For the clever people: this gives the rect a height of 5 pixels (eg. top:10, bot:14 is 5 pixels)!
+	
+	m_pG->fillRect(GR_Graphics::CLR3D_Background, left, top, prDrag->width, prDrag->height);
+	
 	m_pG->setColor3D(GR_Graphics::CLR3D_Foreground);
+	m_pG->drawLine(left,top,right,top);
 	m_pG->drawLine(left,top,left,bot);
-	m_pG->drawLine(left,bot,right,bot);
-	m_pG->drawLine(right,bot,right,top);
-	m_pG->drawLine(right,top,left,top);
-	if(bUp)
-	{
-//
-// Draw a bevel up
-//
-		m_pG->setColor3D(GR_Graphics::CLR3D_BevelUp);
-		left += m_pG->tlu(1);
-		top += m_pG->tlu(1);
-		right -= m_pG->tlu(1);
-		bot -= m_pG->tlu(1);
-		m_pG->drawLine(left,top,left,bot);
-		m_pG->drawLine(left,bot,right,bot);
-		m_pG->drawLine(right,bot,right,top);
-		m_pG->drawLine(right,top,left,top);
-//
-// Fill with Background?? color
-//
-		left += m_pG->tlu(1);
-		top += m_pG->tlu(1);
-		right -= m_pG->tlu(1);
-		bot -= m_pG->tlu(1);
-		m_pG->fillRect(GR_Graphics::CLR3D_Background,left,top,right -left,bot - top);
-	}
+	m_pG->drawLine(left,bot,right+m_pG->tlu(1),bot);
+	m_pG->drawLine(right,top,right,bot);
+	
+	m_pG->setColor3D(GR_Graphics::CLR3D_BevelUp);
+	m_pG->drawLine( left + m_pG->tlu(1), top + m_pG->tlu(1), right, top + m_pG->tlu(1));
+	m_pG->drawLine( left + m_pG->tlu(1), top + m_pG->tlu(1), left + m_pG->tlu(1), bot);
 }
 
 /*****************************************************************/
@@ -1483,9 +1455,6 @@ void AP_LeftRuler::draw(const UT_Rect * pCR, AP_LeftRulerInfo * lfi)
 		}
 	}
 
-	// draw the cell properties for a table
-	_drawCellProperties(lfi);
-
 	m_pG->setColor3D(GR_Graphics::CLR3D_Foreground);	
 	
 	// draw everything below the top margin
@@ -1523,12 +1492,18 @@ void AP_LeftRuler::draw(const UT_Rect * pCR, AP_LeftRulerInfo * lfi)
 			}
 		}
 	}
+	
 	//
 	// draw the various widgets for the left ruler
 	// 
-	// current section properties {left-margin, right-margin};
+	
+	// section properties {left-margin, right-margin};
 	_drawMarginProperties(pClipRect, lfi, GR_Graphics::CLR3D_Foreground);
 
+	// draw the cell properties for a table
+	_drawCellProperties(lfi);	
+	
+	// reset the current clip rect
 	if (pClipRect)
 	{
 		m_pG->setClipRect(NULL);
@@ -1610,4 +1585,3 @@ void AP_LeftRuler::_displayStatusMessage(XAP_String_Id messageID, const ap_Ruler
 		pFrameData->m_pStatusBar->setStatusMessage(temp);
 	}
 }
-

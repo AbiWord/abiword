@@ -362,8 +362,3 @@ private:
 };
 
 #endif /* AP_TOPRULER_H */
-
-
-
-
-

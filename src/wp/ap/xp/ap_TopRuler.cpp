@@ -1091,8 +1091,9 @@ void AP_TopRuler::_getMarginMarkerRects(AP_TopRulerInfo * pInfo, UT_Rect &rLeft,
 	UT_sint32 hs = m_pG->tlu(3);					// halfSize
 	UT_sint32 fs = hs * 2;			// fullSize
 
-	rLeft.set(xAbsLeft  - hs, yTop - fs, fs, fs- m_pG->tlu(1));
-	rRight.set(xAbsRight - hs, yTop - fs, fs, fs);
+	// we want the width to be 1 pixel more than 2*hs, cause you can "center" an odd number better
+	rLeft.set(xAbsLeft - hs, yTop - fs, fs + m_pG->tlu(1), fs);
+	rRight.set(xAbsRight - hs, yTop - fs, fs + m_pG->tlu(1), fs);
 }
 
 void AP_TopRuler::_drawMarginProperties(const UT_Rect * /* pClipRect */,
@@ -1105,39 +1106,24 @@ void AP_TopRuler::_drawMarginProperties(const UT_Rect * /* pClipRect */,
 	m_pG->fillRect(GR_Graphics::CLR3D_Background, rLeft);
 
 	m_pG->setColor3D(GR_Graphics::CLR3D_Foreground);
-	m_pG->drawLine( rLeft.left,  rLeft.top, rLeft.left + rLeft.width, rLeft.top);
-	m_pG->drawLine( rLeft.left + rLeft.width,  rLeft.top, rLeft.left + rLeft.width, rLeft.top + rLeft.height);
-	m_pG->drawLine( rLeft.left + rLeft.width,  rLeft.top + rLeft.height, rLeft.left, rLeft.top + rLeft.height);
-	m_pG->drawLine( rLeft.left,  rLeft.top + rLeft.height, rLeft.left, rLeft.top);
+	m_pG->drawLine( rLeft.left,  rLeft.top, rLeft.left + rLeft.width - m_pG->tlu(1), rLeft.top);
+	m_pG->drawLine( rLeft.left + rLeft.width - m_pG->tlu(1), rLeft.top, rLeft.left + rLeft.width - m_pG->tlu(1), rLeft.top + rLeft.height - m_pG->tlu(1));
+	m_pG->drawLine( rLeft.left + rLeft.width - m_pG->tlu(1), rLeft.top + rLeft.height - m_pG->tlu(1), rLeft.left, rLeft.top + rLeft.height - m_pG->tlu(1));
+	m_pG->drawLine( rLeft.left,  rLeft.top + rLeft.height - m_pG->tlu(1), rLeft.left, rLeft.top);
 	m_pG->setColor3D(GR_Graphics::CLR3D_BevelUp);
-	m_pG->drawLine( rLeft.left + m_pG->tlu(1),  rLeft.top + m_pG->tlu(1), rLeft.left + rLeft.width - m_pG->tlu(1), rLeft.top + m_pG->tlu(1));
-	m_pG->drawLine( rLeft.left + m_pG->tlu(1),  rLeft.top + rLeft.height - m_pG->tlu(2), rLeft.left + m_pG->tlu(1), rLeft.top + m_pG->tlu(1));
-
-	/* I've #ifed out the dark bevels because we don't make them on the margin dragging gargets,
-	 * (even the square box on the left) so I don't think we should make them here either, to be consistent.
-         * Jamie (jamie@montogmerie.net)
-	 */
-#if 0
-	m_pG->setColor3D(GR_Graphics::CLR3D_BevelDown);
-	m_pG->drawLine( rLeft.left + rLeft.width - m_pG->tlu(1),  rLeft.top + m_pG->tlu(1), rLeft.left + rLeft.width - m_pG->tlu(1), rLeft.top + rLeft.height - m_pG->tlu(1));
-	m_pG->drawLine( rLeft.left + rLeft.width - m_pG->tlu(1),  rLeft.top + rLeft.height - m_pG->tlu(1), rLeft.left + m_pG->tlu(1), rLeft.top + rLeft.height - m_pG->tlu(1));
-#endif
-
+	m_pG->drawLine( rLeft.left + m_pG->tlu(1), rLeft.top + m_pG->tlu(1), rLeft.left + rLeft.width - m_pG->tlu(1), rLeft.top + m_pG->tlu(1));
+	m_pG->drawLine( rLeft.left + m_pG->tlu(1), rLeft.top + m_pG->tlu(1), rLeft.left + m_pG->tlu(1), rLeft.top + rLeft.height - m_pG->tlu(1));
+	
 	m_pG->fillRect(GR_Graphics::CLR3D_Background, rRight);
 
 	m_pG->setColor3D(GR_Graphics::CLR3D_Foreground);
-	m_pG->drawLine( rRight.left,  rRight.top, rRight.left + rRight.width, rRight.top);
-	m_pG->drawLine( rRight.left + rRight.width,  rRight.top, rRight.left + rRight.width, rRight.top + rRight.height);
-	m_pG->drawLine( rRight.left + rRight.width,  rRight.top + rRight.height, rRight.left, rRight.top + rRight.height);
-	m_pG->drawLine( rRight.left,  rRight.top + rRight.height, rRight.left, rRight.top);
+	m_pG->drawLine( rRight.left,  rRight.top, rRight.left + rRight.width - m_pG->tlu(1), rRight.top);
+	m_pG->drawLine( rRight.left + rRight.width - m_pG->tlu(1), rRight.top, rRight.left + rRight.width - m_pG->tlu(1), rRight.top + rRight.height - m_pG->tlu(1));
+	m_pG->drawLine( rRight.left + rRight.width - m_pG->tlu(1), rRight.top + rRight.height - m_pG->tlu(1), rRight.left, rRight.top + rRight.height - m_pG->tlu(1));
+	m_pG->drawLine( rRight.left,  rRight.top + rRight.height - m_pG->tlu(1), rRight.left, rRight.top);
 	m_pG->setColor3D(GR_Graphics::CLR3D_BevelUp);
-	m_pG->drawLine( rRight.left + m_pG->tlu(1),  rRight.top + m_pG->tlu(1), rRight.left + rRight.width - m_pG->tlu(1), rRight.top + m_pG->tlu(1));
-	m_pG->drawLine( rRight.left + m_pG->tlu(1),  rRight.top + rRight.height - m_pG->tlu(2), rRight.left + m_pG->tlu(1), rRight.top + m_pG->tlu(1));
-#if 0
-    m_pG->setColor3D(GR_Graphics::CLR3D_BevelDown);
-	m_pG->drawLine( rRight.left + rRight.width - m_pG->tlu(1),  rRight.top + m_pG->tlu(1), rRight.left + rRight.width - m_pG->tlu(1), rRight.top + rRight.height - m_pG->tlu(1));
-	m_pG->drawLine( rRight.left + rRight.width - m_pG->tlu(1),  rRight.top + rRight.height - m_pG->tlu(1), rRight.left + m_pG->tlu(1), rRight.top + rRight.height - m_pG->tlu(1));
-#endif
+	m_pG->drawLine( rRight.left + m_pG->tlu(1), rRight.top + m_pG->tlu(1), rRight.left + rRight.width - m_pG->tlu(1), rRight.top + m_pG->tlu(1));
+	m_pG->drawLine( rRight.left + m_pG->tlu(1), rRight.top + m_pG->tlu(1), rRight.left + m_pG->tlu(1), rRight.top + rRight.height - m_pG->tlu(1));
 }
 
 /*****************************************************************/
@@ -1352,18 +1338,26 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 		_drawTicks(pClipRect,pInfo,tick,GR_Graphics::CLR3D_Foreground,pFont,xTickOrigin, sum, sum+pInfo->u.c.m_xaRightMargin);
 	}
 
-	// draw the various widgets for the:
 	//
-	// current section properties {left-margin, right-margin};
-	// the current column properties {column-gap};
-	// and the current paragraph properties {left-indent, right-indent, first-left-indent}.
-
+	// draw the various widgets for the top ruler
+	// 
+	
+	// draw the section properties {left-margin, right-margin};
 	_drawMarginProperties(pClipRect, pInfo, GR_Graphics::CLR3D_Foreground);
+	
+	// draw the column properties {column-gap};
 	if (pInfo->m_iNumColumns > 1)
 		_drawColumnProperties(pClipRect,pInfo,0);
+	
+	// draw the cell properties for a table
 	_drawCellProperties(pClipRect, pInfo,true);
-	_drawParagraphProperties(pClipRect,pInfo,true);
+
+	// draw the paragraph properties {left-indent, right-indent, first-left-indent}.
+	_drawParagraphProperties(pClipRect,pInfo,true);	
+	
+	// draw the Tab properties
 	_drawTabProperties(pClipRect,pInfo,true);
+	
 	return;
 }
 
@@ -1670,29 +1664,26 @@ void AP_TopRuler::_drawCellMark(UT_Rect * prDrag, bool bUp)
 	m_pG->drawLine(left,bot,right,bot);
 	m_pG->drawLine(right,bot,right,top);
 	m_pG->drawLine(right,top,left,top);
-	if(bUp)
-	{
 //
 // Draw a bevel up
 //
-		m_pG->setColor3D(GR_Graphics::CLR3D_BevelUp);
-		left += m_pG->tlu(1);
-		top += m_pG->tlu(1);
-		right -= m_pG->tlu(1);
-		bot -= m_pG->tlu(1);
-		m_pG->drawLine(left,top,left,bot);
-		m_pG->drawLine(left,bot,right,bot);
-		m_pG->drawLine(right,bot,right,top);
-		m_pG->drawLine(right,top,left,top);
+	m_pG->setColor3D(GR_Graphics::CLR3D_BevelUp);
+	left += m_pG->tlu(1);
+	top += m_pG->tlu(1);
+	right -= m_pG->tlu(1);
+	bot -= m_pG->tlu(1);
+	m_pG->drawLine(left,top,left,bot);
+	m_pG->drawLine(left,bot,right,bot);
+	m_pG->drawLine(right,bot,right,top);
+	m_pG->drawLine(right,top,left,top);
 //
 // Fill with Background?? color
 //
-		left += m_pG->tlu(1);
-		top += m_pG->tlu(1);
-		right -= m_pG->tlu(1);
-		bot -= m_pG->tlu(1);
-		m_pG->fillRect(GR_Graphics::CLR3D_Background,left,top,right -left,bot - top);
-	}
+	left += m_pG->tlu(1);
+	top += m_pG->tlu(1);
+	right -= m_pG->tlu(1);
+	bot -= m_pG->tlu(1);
+	m_pG->fillRect(GR_Graphics::CLR3D_Background,left,top,right - left + m_pG->tlu(1),bot - top + m_pG->tlu(1));
 }
 
 void AP_TopRuler::_drawCellProperties(const UT_Rect * pClipRect,
@@ -1761,9 +1752,7 @@ void AP_TopRuler::_drawCellProperties(const UT_Rect * pClipRect,
 	{
 //
 // Deal with the cell being dragged.
-//
-// First draw a boring box at the old position.
-//
+
 		_getCellMarkerRect(pInfo,  m_draggingCell, &rCell);
 		if (!pClipRect || rCell.intersectsRect(pClipRect))
 		{
