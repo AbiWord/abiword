@@ -888,20 +888,7 @@ GtkWidget * AP_UnixFrame::_createDocumentWindow()
 
 void AP_UnixFrame::translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y)
 {
-#if ABI_GTK_DEPRECATED
-	// translate the given document mouse coordinates into absolute screen coordinates.
-
-	Window child;
-	gint tx;
-	gint ty;
-  
-	GdkWindowPrivate * priv = (GdkWindowPrivate*) m_dArea->window;
-	if (!priv->destroyed)
-		XTranslateCoordinates (priv->xdisplay, priv->xwindow, gdk_root_window, x, y, &tx, &ty, &child);
-  
-	x = tx;
-	y = ty;
-#endif
+	UT_ASSERT_NOT_REACHED();
 }
 
 GtkWidget * AP_UnixFrame::_createStatusBarWindow()

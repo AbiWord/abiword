@@ -1084,18 +1084,27 @@ bool XAP_UnixFrame::runModalContextMenu(AV_View * /* pView */, const char * szMe
 			gtk_grab_remove(w);
 		}
 
-		translateDocumentToScreen(x,y);
+		//
+		// OK lets not immediately drop the menu if the user releases the mouse button.
+		// From the gtk FAQ.
+		//
+		GdkEvent * event = gtk_get_current_event();
+		GdkEventButton *bevent = (GdkEventButton *) event;
 
+#if 0
+		translateDocumentToScreen(x,y);
+#else
+		GtkRequisition req ;
+		gtk_widget_size_request (m_pUnixPopup->getMenuHandle(), &req);
+
+		x = bevent->x;
+		y = bevent->y + req.height;
+#endif
 		UT_DEBUGMSG(("ContextMenu: %s at [%d,%d]\n",szMenuName,x,y));
 		UT_Point pt;
 		pt.x = x;
 		pt.y = y;
-//
-// OK lets not immediately drop the menu if the user releases the mouse button.
-// From the gtk FAQ.
-//
-		GdkEvent * event = gtk_get_current_event();
-		GdkEventButton *bevent = (GdkEventButton *) event;
+
 		gtk_menu_popup(GTK_MENU(m_pUnixPopup->getMenuHandle()), NULL, NULL,
 			       s_gtkMenuPositionFunc, &pt, bevent->button, bevent->time);
 
