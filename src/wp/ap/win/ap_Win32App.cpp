@@ -635,6 +635,8 @@ Done:
 
 /*****************************************************************/
 
+typedef BOOL __declspec(dllimport) (CALLBACK *InitCommonControlsEx_fn)(LPINITCOMMONCONTROLSEX lpInitCtrls);
+
 int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance, 
 						 HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow)
 {
@@ -646,13 +648,31 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 	_CrtSetReportMode( _CRT_ASSERT, _CRTDBG_MODE_DEBUG );
 
 	// Ensure that common control DLL is loaded
-
-	INITCOMMONCONTROLSEX icex;
-	icex.dwSize = sizeof(INITCOMMONCONTROLSEX);
-	icex.dwICC = ICC_COOL_CLASSES | ICC_BAR_CLASSES		// load the rebar and toolbar
-				| ICC_TAB_CLASSES | ICC_UPDOWN_CLASS	// and tab and spin controls
-				;
-	InitCommonControlsEx(&icex);
+	HINSTANCE hinstCC = LoadLibrary("comctl32.dll");
+	UT_ASSERT(hinstCC);
+	InitCommonControlsEx_fn  pInitCommonControlsEx = NULL;
+	if( hinstCC != NULL )
+		pInitCommonControlsEx = (InitCommonControlsEx_fn)GetProcAddress( hinstCC, "InitCommonControlsEx" );
+	if( pInitCommonControlsEx != NULL )
+	{
+		INITCOMMONCONTROLSEX icex;
+		icex.dwSize = sizeof(INITCOMMONCONTROLSEX);
+		icex.dwICC = ICC_COOL_CLASSES | ICC_BAR_CLASSES 	// load the rebar and toolbar
+					| ICC_TAB_CLASSES | ICC_UPDOWN_CLASS	// and tab and spin controls
+					;
+		pInitCommonControlsEx(&icex);
+	}
+	else
+	{
+		InitCommonControls();
+		MessageBox(NULL,
+			"AbiWord is designed for a newer version of the system file COMCTL32.DLL\n"
+			"then the one currently on your system.\n"
+			"A solution to this problem is explained in the FAQ on AbiSource web site\n"
+			"\n\thttp://www.abisource.com\n\n"
+			"We hope this problem can be solved, until then you can use the program,\n"
+			"but the toolbar will be missing.", NULL, MB_OK);
+	}
 
 	// HACK: load least-common-denominator Rich Edit control
 	// TODO: fix Spell dlg so we don't rely on this
@@ -740,6 +760,10 @@ void AP_Win32App::ParseCommandLine(int iCmdShow)
 				pBuiltinStringSet->dumpBuiltinSet("EnUS.strings");
 				delete pBuiltinStringSet;
 #endif
+			}
+			else if (UT_stricmp(m_pArgs->m_argv[k],"-nosplash") == 0)
+			{
+				// we've alrady processed this before we initialized the App class
 			}
 			else
 			{
