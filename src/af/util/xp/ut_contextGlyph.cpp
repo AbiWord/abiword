@@ -536,6 +536,20 @@ static SmartQuote s_smart_quotes_default[] =
 	{NULL, 0x0022, &s_sq_double_en_us}
 };
 
+// if the character has a mirror form, returns the mirror form,
+// otherwise returns the character itself
+static UT_UCSChar s_getMirrorChar(UT_UCSChar c)
+{
+	//got to do this, otherwise bsearch screws up
+	FriBidiChar fbc = (FriBidiChar) c, mfbc;
+
+	if (fribidi_get_mirror_char (/* Input */ fbc, /* Output */&mfbc))
+		return (UT_UCSChar) mfbc;
+	else
+		return c;
+}
+
+
 
 // Initialisation of static members
 LetterData *     UT_contextGlyph::s_pGlyphTable     = &s_table[0];
@@ -864,7 +878,8 @@ void UT_contextGlyph::renderString(const UT_UCSChar * src,
 								   UT_uint32 len,
 								   const UT_UCSChar * prev,
 								   const UT_UCSChar * next,
-								   const XML_Char   * pLang) const
+								   const XML_Char   * pLang,
+							       FriBidiCharType    iDirection) const
 {
 	UT_ASSERT(src);
 	UT_ASSERT(dest);
@@ -1018,10 +1033,13 @@ void UT_contextGlyph::renderString(const UT_UCSChar * src,
 										 s_comp);
 
 			// if we have no pLet, it means the letter has only one form
-			// so we return it back
+			// last thing to do is to deal with mirror characters
 			if(!pLet)
 			{
-				*dst_ptr++ = *src_ptr;
+				if(iDirection == FRIBIDI_TYPE_RTL)
+					*dst_ptr++ = s_getMirrorChar(*src_ptr);
+				else
+					*dst_ptr++ = *src_ptr;
 				continue;
 			}
 		} // was not a smart quote

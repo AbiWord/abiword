@@ -29,6 +29,8 @@
 #endif
 #include "ut_misc.h"
 
+#include <fribidi/fribidi.h>
+
 /* #include "xap_App.h" */
 /* #include "xap_Prefs.h" */
 
@@ -80,7 +82,8 @@ public:
 					  UT_uint32          len,
 					  const UT_UCSChar * prev,
 					  const UT_UCSChar * next,
-					  const XML_Char   * pLang) const;
+					  const XML_Char   * pLang,
+					  FriBidiCharType    iDirection) const;
 		
 	const LetterData * smartQuote(UT_UCS4Char      c,
 								  const XML_Char * pLang) const;
