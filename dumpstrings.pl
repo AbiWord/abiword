@@ -14,27 +14,21 @@ sub PrintTime {
     printf("%02d/%02d/%02d %02d:%02d:00", $mon,$mday,1900+$year,$hour,$minute );
 }
 
-## EnUS is in a different file in a different format
+## en-US is in a different file in a different format
 my $lang = 'en-US';
-open(STRINGS, "< ./src/wp/ap/xp/ap_String_Id.h" )
-  or die "Cannot open /src/wp/ap/xp/ap_String_Id.h";
-
- while (<STRINGS>) {
-   next unless /(DLG_.*)\s*,\s*\"(.*)\"/;
-   $string = $2;
-   $string =~ s/&amp/&/;
-   $dlgs{$1}{$lang} = $string;
- }
-
-open(STRINGS, "< ./src/af/xap/xp/xap_String_Id.h" )
-  or die "Cannot open ./src/af/xap/xp/xap_String_Id.h";
-
- while (<STRINGS>) {
-   next unless /(DLG_.*)\s*,\s*\"(.*)\"/;
-   $string = $2;
-   $string =~ s/&amp/&/;
-   $dlgs{$1}{$lang} = $string;
- }
+foreach my $file (qw(./src/wp/ap/xp/ap_String_Id.h ./src/af/xap/xp/xap_String_Id.h)) {
+  open(STRINGS, "< $file" )
+    or die "Cannot open $file";
+  
+  while (<STRINGS>) {
+    next unless /(DLG_.*)\s*,\s*\"(.*)\"/;
+    my ($dlg,$string) = ($1,$2);
+    $string =~ s/&amp/&/;
+    $dlgs{$dlg}{$lang} = $string;
+    $longest{$dlg} = $lang
+  }
+  close(STRINGS);
+}
 
 ## Read in each of the other language files 
 ## and process them apropriatly
@@ -64,7 +58,7 @@ closedir DIR;
     ## string for the language can be looked up vi $dlgs
     ## later.
     if ($longest{$dlg}) {
-      $longest{$dlg} = $lang 
+      $longest{$dlg} = $lang
 	if length($dlgs{$dlg}{$lang}) > length($dlgs{$dlg}{$longest{$dlg}});
     }
     else {
@@ -137,19 +131,20 @@ print
 
 print
   a({name=>"LongestSummary"}, h2('Longest Language Summary'));
-@td = ();
-foreach my $dlg (sort keys %dlgs) {
+
+my @td = ();
+foreach my $dlg (sort { $longest{$a} cmp $longest{$b}  } keys %dlgs) {
   next unless $dlg;
   eval {
     $percent_longer = length($dlgs{$dlg}{'en-US'}) / length($dlgs{$dlg}{$longest{$dlg}}) * 100;
   };
   $percent_longer = sprintf("%3d%", 100 - $percent_longer);
-  push(@td, td([ a( { href => "#$dlg"}, b($dlg)), $longest{$dlg}, $percent_longer, $dlgs{$dlg}{$longest{$dlg}} ])),"\n";
+  push(@td, td([ a( { href => "#$dlg"}, b($dlg)), $longest{$dlg}, $longest{$dlg} eq 'en-US' ? 'N/A' : $percent_longer, $dlgs{$dlg}{$longest{$dlg}} ])),"\n";
 }  
 print
   table({ border => 1, cellspacing => 0 }, 
 	Tr( 
-	   [ th(['Dialog', 'Language', ' % Longer', 'String']), @td ] 
+	   [ th({valign=>"bottom"},['Dialog', 'Language', ' % Longer<br>than en-US', 'String']), @td ] 
 	  )
        ), "\n";
 
