@@ -8179,9 +8179,13 @@ FL_ListType fl_BlockLayout::getListType(void)
 	{
 		return NOT_A_LIST;
 	}
-	else
+	else if(getAutoNum())
 	{
 		return getAutoNum()->getType();
+	}
+	else
+	{
+		return NOT_A_LIST;
 	}
 }
 
@@ -8440,7 +8444,14 @@ void	fl_BlockLayout::getListAttributesVector(UT_GenericVector<const XML_Char*> *
 	getAP(pBlockAP);
 	pBlockAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME,style);
 	pBlockAP->getAttribute(static_cast<const XML_Char *>(PT_LISTID_ATTRIBUTE_NAME),lid);
-	level = getAutoNum()->getLevel();
+	if(getAutoNum())
+	{
+		level = getAutoNum()->getLevel();
+	}
+	else
+	{
+		level = 0;
+	}
 	sprintf(buf,"%i",level);
 	//	pBlockAP->getAttribute("level",buf);
 	if(lid != NULL)
