@@ -29,6 +29,7 @@
 #include "fp_Run.h"
 #include "fp_Line.h"
 #include "fl_BlockLayout.h"
+#include "fl_Squiggles.h"
 #include "fl_DocLayout.h"
 #include "fl_SectionLayout.h"
 #include "pt_PieceTable.h"
@@ -77,6 +78,32 @@ void __dump_pt(void)
 void __dump_ch(void)
 {
 	FL_DocLayout::m_pDocLayout->getDocument()->getPieceTable()->getChangeHistory()->__dump(stdout);
+}
+
+/*!
+  Dump AbiWord backend's squiggle structures
+  \see __dump
+*/
+void __dump_sq(void)
+{
+	if (FL_DocLayout::m_pDocLayout->isPendingWordForSpell())
+	{
+		fl_PartOfBlock* pPOB = FL_DocLayout::m_pDocLayout->getPendingWordForSpell();
+		fprintf(stdout, "Pending word: %p [%d:%d]\n", (void*)pPOB,
+				pPOB->getOffset(), pPOB->getOffset()+pPOB->getLength());
+	}
+	else
+	{
+		fprintf(stdout, "No pending word.\n");
+	}
+
+	fprintf(stdout,"FL_DocLayout::__dump(%p) sections:\n",(void*)FL_DocLayout::m_pDocLayout);
+	for (fl_SectionLayout * psl=FL_DocLayout::m_pDocLayout->getFirstSection(); (psl); psl=psl->getNext())
+	{
+		fprintf(stdout,"Section: %p [type %d]\n",(void*)psl,psl->getType());
+		for (fl_BlockLayout * pBL=psl->getFirstBlock(); (pBL); pBL=pBL->getNext())
+			pBL->getSquiggles()->__dump(stdout);
+	}
 }
 
 /*!
@@ -169,4 +196,18 @@ void fl_BlockLayout::__dump(FILE * fp) const
 	}
 }
 
+void fl_Squiggles::__dump(FILE * fp) const
+{
+	fprintf(fp," Squiggles: %p\n",(void*)this);
+
+	UT_sint32 iSquiggles = _getCount();
+	fl_PartOfBlock* pPOB;
+	UT_sint32 j;
+	for (j = 0; j < iSquiggles; j++)
+	{
+		pPOB = getNth(j);
+		fprintf(fp, "  %d: [%d:%d]\n", j, pPOB->getOffset(),
+				pPOB->getOffset() + pPOB->getLength());
+	}
+}
 #endif

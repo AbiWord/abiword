@@ -55,6 +55,10 @@ public:
 
 	bool					recheckIgnoredWords(const UT_UCSChar* pBlockText);
 
+#ifdef FMT_TEST
+	void					__dump(FILE * fp) const;
+#endif
+
 private:
 	void					_purge(void);
 
