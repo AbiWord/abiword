@@ -4543,7 +4543,51 @@ bool PD_Document::setAttrProp(const XML_Char ** ppAttr)
 
 		if(!bRet)
 			return false;
+		
+		// Yes, we have to set default properties for all document-level items, because
+		// some piece of code (exporter, plugin) may want to get the value of that default,
+		// not unitialized memory.
+		// I'm going to ask Dom the preferred way to make this rather more concise. -MG
 
+			// Endnotes
+		props[0] = "document-endnote-type";
+		props[1] = "numeric";
+		props[2] = NULL;
+		if(!setProperties(props)) return false;
+		props[0] = "document-endnote-place-enddoc";
+		props[1] = "1";
+		props[2] = NULL;
+		if(!setProperties(props)) return false;
+		props[0] = "document-endnote-place-endsection";
+		props[1] = "0";
+		props[2] = NULL;
+		if(!setProperties(props)) return false;
+		props[0] = "document-endnote-initial";
+		props[1] = "1";
+		props[2] = NULL;
+		if(!setProperties(props)) return false;
+		props[0] = "document-endnote-restart-section";
+		props[1] = "0";
+		props[2] = NULL;
+		if(!setProperties(props)) return false;
+			// Footnotes
+		props[0] = "document-footnote-type";
+		props[1] = "numeric";
+		props[2] = NULL;
+		if(!setProperties(props)) return false;
+		props[0] = "document-footnote-initial";
+		props[1] = "1";
+		props[2] = NULL;
+		if(!setProperties(props)) return false;
+		props[0] = "document-footnote-restart-page";
+		props[1] = "0";
+		props[2] = NULL;
+		if(!setProperties(props)) return false;
+		props[0] = "document-footnote-restart-section";
+		props[1] = "0";
+		props[2] = NULL;
+		if(!setProperties(props)) return false;
+			
 		// now overlay the attribs we were passed ...
 		bRet = setAttributes(ppAttr);
 	}
@@ -6383,6 +6427,3 @@ void PD_DocumentDiff::_dump() const
 				 m_bDeleted, m_pos1, m_pos2, m_len));
 }
 #endif
-
-
-

@@ -40,6 +40,13 @@
   It seems out of place... --EWS
 */
 /*
+	Response: I agree that it seems out of place.  It's inconsistent with
+				the per-class definition and organization of the properties.
+				IE, the pd_Document use of dom-dir.  We don't even have a
+				PP_LEVEL_DOC represented here.		-MG
+*/
+
+/*
 	We need to be able to change the BiDi relevant dafault properties at runtime
 	in response to the user changing the default direction in preferences.
 	Therefore cannot use constants for these three, since those are stored in

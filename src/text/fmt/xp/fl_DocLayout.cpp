@@ -127,8 +127,8 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
 	m_iEndnoteVal = 1;
 	m_EndnoteType = FOOTNOTE_TYPE_NUMERIC_SQUARE_BRACKETS;
     m_bRestartEndSection = false;
-	m_bPlaceAtDocEnd = true;
-	m_bPlaceAtSecEnd = false;
+	m_bPlaceAtDocEnd = false;
+	m_bPlaceAtSecEnd = true;
 
 }
 
@@ -366,11 +366,11 @@ void FL_DocLayout::_lookupProperties(void)
 	{
 		if(UT_XML_strcmp(pszTmp,"1") == 0)
 		{
-			m_bPlaceAtDocEnd = true;
+			m_bPlaceAtDocEnd = false;
 		}
 		else
 		{
-			m_bPlaceAtDocEnd = false;
+			m_bPlaceAtDocEnd = true;
 		}
 	}
 	else
@@ -383,16 +383,16 @@ void FL_DocLayout::_lookupProperties(void)
 	{
 		if(UT_XML_strcmp(pszTmp,"1") == 0)
 		{
-			m_bPlaceAtSecEnd = true;
+			m_bPlaceAtSecEnd = false;
 		}
 		else
 		{
-			m_bPlaceAtSecEnd = false;
+			m_bPlaceAtSecEnd = true;
 		}
 	}
 	else
 	{
-		m_bPlaceAtSecEnd = false;
+		m_bPlaceAtSecEnd = true;
 	}
 
 }

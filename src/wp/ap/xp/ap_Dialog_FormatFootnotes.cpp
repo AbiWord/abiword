@@ -329,7 +329,7 @@ void AP_Dialog_FormatFootnotes::updateDocWithValues(void)
 	{
 		pProps[13] = "0";
 	}
-	if(m_bPlaceAtDocEnd)
+	if(m_bPlaceAtSecEnd)
 	{
 		pProps[15] = "1";
 	}
@@ -337,7 +337,7 @@ void AP_Dialog_FormatFootnotes::updateDocWithValues(void)
 	{
 		pProps[15] = "0";
 	}
-	if(m_bPlaceAtSecEnd)
+	if(m_bPlaceAtDocEnd)
 	{
 		pProps[17] = "1";
 	}
@@ -364,5 +364,3 @@ const UT_GenericVector<const XML_Char*>* AP_Dialog_FormatFootnotes::getFootnoteT
 	
 	return vec;
 }
-
-

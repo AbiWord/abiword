@@ -541,6 +541,9 @@ private:
 	void    _handleMeta ();
 #endif
 
+	void	_doEndnotes ();
+	void	_doFootnotes ();
+
 	PD_Document *				m_pDocument;
 	IE_Exp_HTML *				m_pie;
 	bool						m_bClipBoard;
@@ -3852,8 +3855,6 @@ s_HTML_Listener::~s_HTML_Listener()
 
 	_outputEnd ();
 	
-	UT_VECTOR_PURGEALL(PD_DocumentRange *,m_vecFootnotes);
-	UT_VECTOR_PURGEALL(PD_DocumentRange *,m_vecEndnotes);
 	UT_VECTOR_PURGEALL(double *,m_vecDWidths);
 }
 
@@ -4473,8 +4474,14 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 			{
 				if(m_bIgnoreTillEnd)
 				{
-					return true;
+					return true;  // Nested sections could be the sign of a severe problem, even if caused by import
 				}
+				PT_AttrPropIndex docApi = m_pDocument->getAttrPropIndex();
+				const XML_Char * doEndnotes = NULL;
+				const PP_AttrProp * pDAP = NULL;
+				m_pDocument->getAttrProp (docApi, &pDAP);
+				pDAP->getProperty("document-endnote-place-endsection", doEndnotes);
+				if(atoi(doEndnotes)) _doEndnotes();
 				if (m_bInBlock) _closeTag (); // possible problem with lists??
 				_openSection (api);
 				return true;
@@ -4619,34 +4626,47 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 }
 
 bool s_HTML_Listener::endOfDocument () {
+	/* Remaining endnotes, whether from the last of multiple sections or from all sections */
+	_doEndnotes();
+	
+	_doFootnotes();
+	
+	return true;
+}
+
+void s_HTML_Listener::_doEndnotes () {
+	//
+	// Output Endnotes
+	//
+	UT_uint32 i = 0;
+	for(i=0; i< getNumEndnotes(); i++)
+	{
+		PD_DocumentRange * pDocRange = m_vecEndnotes.getNthItem(i);
+		m_bInAFENote = true;
+		m_pDocument->tellListenerSubset(this,pDocRange);
+		m_bInAFENote = false;
+		// Some combined bug fixes make tagpops no longer necessary, afaict.
+	}
+	UT_VECTOR_PURGEALL(PD_DocumentRange *,m_vecEndnotes);
+	m_vecEndnotes = NULL;
+}
+
+void s_HTML_Listener::_doFootnotes () {	
 	//
 	// Output footnotes
 	//
 	UT_uint32 i = 0;
+	startEmbeddedStrux();
 	for(i = 0; i < getNumFootnotes(); i = i + 1)
 	{
 		PD_DocumentRange * pDocRange = m_vecFootnotes.getNthItem(i);
-		startEmbeddedStrux();
 		m_bInAFENote = true;
 		m_pDocument->tellListenerSubset(this,pDocRange);
 		m_bInAFENote = false;
 		// Some combined bug fixes make tagpops no longer necessary, afaict.
 	}
-	//
-	// Output Endnotes
-	//
-	for(i=0; i< getNumEndnotes(); i++)
-	{
-		PD_DocumentRange * pDocRange = m_vecEndnotes.getNthItem(i);
-		startEmbeddedStrux();
-		m_bInAFENote = true;
-		m_pDocument->tellListenerSubset(this,pDocRange);
-		m_bInAFENote = false;
-		// Some combined bug fixes make tagpops no longer necessary, afaict.
-	}
-	return true;
+	UT_VECTOR_PURGEALL(PD_DocumentRange *,m_vecFootnotes);
 }
-
 
 /*****************************************************************/
 /*****************************************************************/

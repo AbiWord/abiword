@@ -312,13 +312,13 @@ void  AP_UnixDialog_FormatFootnotes::refreshVals(void)
 		gtk_option_menu_set_history(GTK_OPTION_MENU(m_wFootnoteNumberingMenu),0);
 	}
 
-	if(getRestartEndnoteOnSection())
-	{
-		gtk_option_menu_set_history(GTK_OPTION_MENU(m_wEndnotesPlaceMenu),0);
-	}
-	else if(getPlaceAtDocEnd())
+	if(getPlaceAtDocEnd())
 	{
 		gtk_option_menu_set_history(GTK_OPTION_MENU(m_wEndnotesPlaceMenu),1);
+	}
+	else if(getPlaceAtSecEnd())
+	{
+		gtk_option_menu_set_history(GTK_OPTION_MENU(m_wEndnotesPlaceMenu),0);
 	}
 
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wEndnotesRestartOnSection), static_cast<gboolean>(getRestartEndnoteOnSection()));
@@ -529,15 +529,15 @@ GtkWidget * AP_UnixDialog_FormatFootnotes::_constructWindow(void)
 	UT_ASSERT(m_wEndnotesPlaceMenu );
 	GtkWidget * wMenuPlace = gtk_menu_new();
 
-	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_EndPlaceEndDoc,s);
-	m_wEndnotesPlaceEndOfDoc = gtk_menu_item_new_with_label (s.utf8_str());
-	gtk_widget_show (m_wEndnotesPlaceEndOfDoc );
-	gtk_menu_shell_append (GTK_MENU_SHELL (wMenuPlace),m_wEndnotesPlaceEndOfDoc );
-
 	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_EndPlaceEndSec,s);
 	m_wEndnotesPlaceEndOfSec = gtk_menu_item_new_with_label (s.utf8_str());
 	gtk_widget_show (m_wEndnotesPlaceEndOfSec );
 	gtk_menu_shell_append (GTK_MENU_SHELL (wMenuPlace),m_wEndnotesPlaceEndOfSec);
+
+	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_EndPlaceEndDoc,s);
+	m_wEndnotesPlaceEndOfDoc = gtk_menu_item_new_with_label (s.utf8_str());
+	gtk_widget_show (m_wEndnotesPlaceEndOfDoc );
+	gtk_menu_shell_append (GTK_MENU_SHELL (wMenuPlace),m_wEndnotesPlaceEndOfDoc );
 
 	gtk_option_menu_set_menu (GTK_OPTION_MENU (m_wEndnotesPlaceMenu), wMenuPlace);
 
@@ -561,6 +561,7 @@ GtkWidget * AP_UnixDialog_FormatFootnotes::_constructWindow(void)
 	m_wFootnotesInitialValText = glade_xml_get_widget(xml, "footSpinValueText");
 	UT_ASSERT(m_wFootnotesInitialValText );
 	_connectSignals();
+	refreshVals();
 	return window;
 }
 
