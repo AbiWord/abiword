@@ -27,6 +27,7 @@ CPPSRCS=		ut_debugmsg.cpp		\
 			ut_Win32OS.cpp		\
 			ut_Win32String.cpp	\
 			ut_Win32Timer.cpp	\
+			ut_Win32Locale.cpp	\
 			ut_Xpm2Bmp.cpp
 
 INCLUDES=		-I$(ABI_XX_ROOT)/../libiconv/include

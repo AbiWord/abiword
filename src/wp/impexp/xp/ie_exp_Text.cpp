@@ -30,9 +30,16 @@
 #include "px_CR_Object.h"
 #include "px_CR_Span.h"
 #include "px_CR_Strux.h"
+#include "ut_iconv.h"
 #include "ut_wctomb.h"
+#include "xap_EncodingManager.h"
 
 #include "ut_string_class.h"
+
+#include "ap_Dialog_Id.h"
+#include "xap_App.h"
+#include "xap_DialogFactory.h"
+#include "xap_Dlg_Encoding.h"
 
 #define MY_MB_LEN_MAX 6
 
@@ -46,8 +53,12 @@ class s_Text_Listener : public PL_Listener
 public:
 	s_Text_Listener(PD_Document * pDocument,
 					IE_Exp_Text * pie,
-					bool bToClipboard);
-	virtual ~s_Text_Listener();
+					bool bToClipboard,
+					const char *szEncoding,
+					bool bIs16Bit,
+					bool bUseBOM,
+					bool bBigEndian);
+	virtual ~s_Text_Listener() {};
 
 	virtual bool		populate(PL_StruxFmtHandle sfh,
 								 const PX_ChangeRecord * pcr);
@@ -82,6 +93,7 @@ protected:
 	bool				m_bFirstWrite;
 	UT_Wctomb 			m_wctomb;
 	const char *		m_szEncoding;
+	bool				m_bIs16Bit;
 	bool				m_bBigEndian;
 	bool				m_bUseBOM;
 };
@@ -89,11 +101,14 @@ protected:
 /*****************************************************************/
 /*****************************************************************/
 
-IE_Exp_Text::IE_Exp_Text(PD_Document * pDocument)
+IE_Exp_Text::IE_Exp_Text(PD_Document * pDocument, bool bEncoded)
 	: IE_Exp(pDocument)
 {
 	m_error = 0;
 	m_pListener = NULL;
+	m_bIsEncoded = bEncoded;
+	// TODO Use persistent document encoding when it exists
+	_setEncoding(XAP_EncodingManager::get_instance()->getNativeEncodingName());
 }
 
 /*!
@@ -118,7 +133,7 @@ bool IE_Exp_Text_Sniffer::recognizeSuffix(const char * szSuffix)
 UT_Error IE_Exp_Text_Sniffer::constructExporter(PD_Document * pDocument,
 											   IE_Exp ** ppie)
 {
-	IE_Exp_Text * p = new IE_Exp_Text(pDocument);
+	IE_Exp_Text * p = new IE_Exp_Text(pDocument,false);
 	*ppie = p;
 	return UT_OK;
 }
@@ -128,7 +143,7 @@ bool IE_Exp_Text_Sniffer::getDlgLabels(const char ** pszDesc,
 									  IEFileType * ft)
 {
 	*pszDesc = "Text (.txt, .text)";
-	*pszSuffixList = "*.text; *.txt";
+	*pszSuffixList = "*.txt; *.text";
 	*ft = getFileType();
 	return true;
 }
@@ -136,9 +151,47 @@ bool IE_Exp_Text_Sniffer::getDlgLabels(const char ** pszDesc,
 /*****************************************************************/
 /*****************************************************************/
 
+/*!
+  Check filename extension for filetypes we support
+ \param szSuffix Filename extension
+ */
+bool IE_Exp_EncodedText_Sniffer::recognizeSuffix(const char * szSuffix)
+{
+	// TODO Change to ".txt" and ".text" when bug # is fixed.
+	return (!UT_stricmp(szSuffix,".etxt") || !UT_stricmp(szSuffix, ".etext"));
+}
+
+UT_Error IE_Exp_EncodedText_Sniffer::constructExporter(PD_Document * pDocument,
+											   IE_Exp ** ppie)
+{
+	IE_Exp_Text * p = new IE_Exp_Text(pDocument,true);
+	*ppie = p;
+	return UT_OK;
+}
+
+bool IE_Exp_EncodedText_Sniffer::getDlgLabels(const char ** pszDesc,
+									  const char ** pszSuffixList,
+									  IEFileType * ft)
+{
+	// TODO Change to ".txt" and ".text" when bug # is fixed.
+	*pszDesc = "Encoded Text (.etxt, .etext)";
+	*pszSuffixList = "*.etxt; *.etext";
+	*ft = getFileType();
+	return true;
+}
+
+/*****************************************************************/
+/*****************************************************************/
+
+// TODO This function is also used for Copy and Paste.
+// TODO We should really always Copy Unicode to the clipboard and have the
+// TODO clipboard handle conversion.  Currently we use the same encoding
+// TODO as when we're Saving a file.
+// TODO We'll need a way of knowing which Unicode format each OS needs for its clipboard.
+
 UT_Error IE_Exp_Text::_writeDocument(void)
 {
-	m_pListener = new s_Text_Listener(m_pDocument,this, (m_pDocRange!=NULL));
+	m_pListener = new s_Text_Listener(m_pDocument,this,(m_pDocRange!=NULL),m_szEncoding,m_bIs16Bit,m_bUseBOM,m_bBigEndian);
 	if (!m_pListener)
 		return UT_IE_NOMEMORY;
 
@@ -147,8 +200,66 @@ UT_Error IE_Exp_Text::_writeDocument(void)
 	else
 		m_pDocument->tellListener(static_cast<PL_Listener *>(m_pListener));
 	DELETEP(m_pListener);
-	
+
 	return ((m_error) ? UT_IE_COULDNOTWRITE : UT_OK);
+}
+
+/*!
+  Open the file to export to
+ \param szFilename File to open
+ */
+bool IE_Exp_Text::_openFile(const char * szFilename)
+{
+	// Don't call base method if user cancels encoding dialog
+	if (!m_bIsEncoded || _doEncodingDialog(m_szEncoding))
+		return IE_Exp::_openFile(szFilename);
+	else
+		return false;
+}
+
+/*!
+  Request file encoding from user
+
+ This function should be identical to the one in ie_Imp_Text
+ */
+bool IE_Exp_Text::_doEncodingDialog(const char *szEncoding)
+{
+	XAP_Dialog_Id id = XAP_DIALOG_ID_ENCODING;
+
+	XAP_DialogFactory * pDialogFactory
+		= (XAP_DialogFactory *)(m_pDocument->getApp()->getDialogFactory());
+
+	XAP_Dialog_Encoding * pDialog
+		= (XAP_Dialog_Encoding *)(pDialogFactory->requestDialog(id));
+	UT_ASSERT(pDialog);
+
+	pDialog->setEncoding(szEncoding);
+
+	// run the dialog
+	XAP_Frame * pFrame = m_pDocument->getApp()->getLastFocussedFrame();
+	UT_ASSERT(pFrame);
+
+	pDialog->runModal(pFrame);
+
+	// extract what they did
+
+	bool bOK = (pDialog->getAnswer() == XAP_Dialog_Encoding::a_OK);
+
+	if (bOK)
+	{
+		const XML_Char * s;
+		static XML_Char szEnc[16];
+
+		s = pDialog->getEncoding();
+		UT_ASSERT (s);
+
+		strcpy(szEnc,s);
+		_setEncoding((const char *)szEnc);
+	}
+
+	pDialogFactory->releaseDialog(pDialog);
+
+	return bOK;
 }
 
 /*****************************************************************/
@@ -159,22 +270,71 @@ void s_Text_Listener::_closeBlock(void)
 	if (!m_bInBlock)
 		return;
 
-	// TODO All writes should be re-routed via iconv since UCS-2
-	// TODO uses two bytes for each character.
+	UT_UCSChar wcLineBreak[3] = {0,0,0};
+	char mbLineBreak[MY_MB_LEN_MAX*2];
+	UT_UCSChar *pWC = wcLineBreak;
+	char *pMB = mbLineBreak;
+	int mbLen;
+
 	// TODO Old Mac should use "\r".  Mac OSX should Use U+2028 or U+2029.
-	// TODO We always add an extra line break at the end of a file but shouldn't
 #ifdef WIN32
-	m_pie->write("\r\n");
+	wcLineBreak[0] = '\r';
+	wcLineBreak[1] = '\n';
 #else
-	m_pie->write("\n");
+	wcLineBreak[0] = '\n';
 #endif
+	
+	while (*pWC)
+	{
+		if (!m_wctomb.wctomb(pMB,mbLen,(wchar_t)*pWC))
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		++pWC;
+		pMB += mbLen;
+	}
+
+	m_pie->write(mbLineBreak,pMB-mbLineBreak);
 	m_bInBlock = false;
 	return;
 }
 
+/*!
+  Output text buffer to file
+ \param data Buffer to output
+ \param length Size of buffer
+
+ Currently calls different functions for 8 bit and 16 bit encodings due to use
+ of dynamically sized string classes which only support one character size.
+ If we support UCS-4/UTF-32 in the future we'll need a third function.
+ */
 void s_Text_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 {
-	if (m_szEncoding && !strncmp(m_szEncoding,"UCS-2",5))
+	if (m_bFirstWrite)
+	{
+		UT_ASSERT(m_szEncoding);
+		m_wctomb.setOutCharset(m_szEncoding);
+
+		// TODO BOMs need separate code for UTF-7, UCS-4, etc
+		if (m_bUseBOM)
+		{
+			if (m_bIs16Bit)
+			{
+				if (m_bBigEndian)
+					m_pie->write("\xfe\xff",2);
+				else
+					m_pie->write("\xff\xfe",2);
+			}
+			else
+			{
+				// TODO There may be reason for using a BOM in UTF-8 text.
+				// TODO I've seen MS software do it.
+				m_pie->write("\xef\xbb\xbf",3);
+			}
+		}
+		m_bFirstWrite = false;
+	}
+
+	// TODO some iconvs use a different string!
+	if (m_bIs16Bit)
 		_output16BitData(data, length);
 	else
 		_output8BitData(data, length);
@@ -197,20 +357,8 @@ void s_Text_Listener::_output8BitData(const UT_UCSChar * data, UT_uint32 length)
 	int mbLen;
 	char pC[MY_MB_LEN_MAX];
 
+	// TODO Do we still need this?
 	UT_ASSERT(sizeof(UT_Byte) == sizeof(char));
-
-	if (m_bFirstWrite)
-	{
-		if (m_szEncoding)
-			m_wctomb.setOutCharset(m_szEncoding);
-		if (m_bUseBOM)
-		{
-			// TODO There may be reason for using a BOM in UTF-8 text.
-			// TODO I've seen MS software do it.
-			m_pie->write("\xef\xbb\xbf",3);
-		}
-		m_bFirstWrite = false;
-	}
 
 	for (pData=data; (pData<data+length); /**/)
 	{
@@ -222,6 +370,7 @@ void s_Text_Listener::_output8BitData(const UT_UCSChar * data, UT_uint32 length)
 		}
 		if (mbLen>1)		
 		{
+			pC[mbLen]='\0';
 			sBuf += pC;
 		}
 		else
@@ -230,7 +379,7 @@ void s_Text_Listener::_output8BitData(const UT_UCSChar * data, UT_uint32 length)
 			// TODO Old Mac should use "\r".  Mac OSX should Use U+2028 or U+2029.
 #ifdef WIN32
 			if (pC[0]==UCS_LF)
-				sBuf += "\r";
+				sBuf += '\r';
 #endif
 			sBuf += (char)pC[0];
 		}
@@ -249,77 +398,87 @@ void s_Text_Listener::_output8BitData(const UT_UCSChar * data, UT_uint32 length)
  */
 void s_Text_Listener::_output16BitData(const UT_UCSChar * data, UT_uint32 length)
 {
-	const UT_UCSChar * pInData;
-	char * pOutData;
+	UT_UCS2String sBuf;
+	const UT_UCSChar * pData;
 	
 	int mbLen;
-	unsigned char pC[MY_MB_LEN_MAX];
-	char * pConvertedData = 0;
-	
+	UT_UCSChar c;
+
 	UT_ASSERT(sizeof(UT_Byte) == sizeof(char));
 
-	pConvertedData = new char[length * sizeof(UT_UCSChar)];
-	pOutData = pConvertedData;
-
-	UT_ASSERT(pConvertedData);
-
-	if (m_bFirstWrite)
+	for (pData=data; (pData<data+length); /**/)
 	{
-		if (m_szEncoding)
-			m_wctomb.setOutCharset(m_szEncoding);
-		if (m_bUseBOM)
+		if(!m_wctomb.wctomb(reinterpret_cast<char *>(&c),mbLen,(wchar_t)*pData))
 		{
-			if (m_bBigEndian)
-				m_pie->write("\xfe\xff",2);
-			else
-				m_pie->write("\xff\xfe",2);
-		}
-		m_bFirstWrite = false;
-	}
-
-	for (pInData=data; (pInData<data+length); /**/)
-	{
-		if(!m_wctomb.wctomb(reinterpret_cast<char *>(pC),mbLen,(wchar_t)*pInData))
-		{
+			mbLen=2;
 			// TODO U+FFFD "REPLACEMENT CHARACTER" is the
 			// TODO correct unicode equivalent of '?' isn't it?
-			mbLen=2;
-			if (m_bBigEndian)
-			{
-				pC[0]=0xff;
-				pC[1]=0xfd;
-			}
-			else
-			{
-				pC[0]=0xfd;
-				pC[1]=0xff;
-			}
+			// TODO Or is it U+25A0 "BLACK SQUARE"?
+			c=0xFFFD;
 			m_wctomb.initialize();
 		}
+		UT_ASSERT(mbLen==2);
 		// We let any UCS_LF's (forced line breaks) go out as is.
-		if (*pInData == UCS_LF)
-		{
-			// TODO Old Mac should use "\r".  Mac OSX should Use U+2028 or U+2029.
+		// TODO Old Mac should use "\r".  Mac OSX should Use U+2028 or U+2029.
 #ifdef WIN32
-			// TODO Win needs to *insert* an extra CR character before the LF.
-			// TODO The old 8-bit code used UT_String which could grow dynamically
-			// TODO but the 16-bit code uses a fixed size buffer.
-			// TODO What is an appropriate solution?
+		if (c==UCS_LF)
+			sBuf += '\r';
 #endif
-		}
-		*pOutData++ = pC[0];
-		*pOutData++ = pC[1];
-		++pInData;
+		sBuf += c;
+
+		pData++;
 	}
 
-	m_pie->write(pConvertedData,length * sizeof(UT_UCSChar));
+	m_pie->write(reinterpret_cast<const char *>(sBuf.ucs_str()),sBuf.size()*sizeof(UT_UCSChar));
+}
 
-	delete [] pConvertedData;
+/*!
+  Set exporter's encoding and related members
+ \param szEncoding Encoding to export file into
+
+ Decides endian and BOM policy based on encoding
+ */
+void IE_Exp_Text::_setEncoding(const char *szEncoding)
+{
+	UT_ASSERT(szEncoding);
+
+	m_szEncoding = szEncoding;
+
+	// TODO some iconvs use a different string!
+	if (!strncmp(m_szEncoding,"UCS-2",5))
+	{
+		m_bIs16Bit = true;
+		if (!strcmp(m_szEncoding + strlen(m_szEncoding) - 2, "BE"))
+			m_bBigEndian = true;
+		else if (!strcmp(m_szEncoding + strlen(m_szEncoding) - 2, "LE"))
+			m_bBigEndian = false;
+		else
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+
+		// TODO Should BOM use be a user pref?
+		// TODO Does Mac OSX prefer BOMs?
+#ifdef WIN32
+		m_bUseBOM = true;
+#else
+		m_bUseBOM = false;
+#endif
+	}
+	else
+	{
+		m_bIs16Bit = false;
+		// These are currently meaningless when not in a Unicode encoding
+		m_bBigEndian = false;
+		m_bUseBOM = false;
+	}
 }
 
 s_Text_Listener::s_Text_Listener(PD_Document * pDocument,
 								 IE_Exp_Text * pie,
-								 bool bToClipboard)
+								 bool bToClipboard,
+								 const char *szEncoding,
+								 bool bIs16Bit,
+								 bool bUseBOM,
+								 bool bBigEndian)
 {
 	m_pDocument = pDocument;
 	m_pie = pie;
@@ -329,17 +488,10 @@ s_Text_Listener::s_Text_Listener(PD_Document * pDocument,
 	// when going to a file we should not.
 	m_bInBlock = m_bToClipboard;
 	m_bFirstWrite = true;
-	m_szEncoding = 0;
-	m_bBigEndian = true;
-	m_bUseBOM = false;
-}
-
-/*!
-  Destruct listener
- */
-s_Text_Listener::~s_Text_Listener()
-{
-	_closeBlock();
+	m_szEncoding = szEncoding;
+	m_bIs16Bit = bIs16Bit;
+	m_bUseBOM = bToClipboard ? false : bUseBOM;
+	m_bBigEndian = bBigEndian;
 }
 
 bool s_Text_Listener::populate(PL_StruxFmtHandle /*sfh*/,

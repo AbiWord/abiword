@@ -56,10 +56,31 @@ protected:
 									   bool bDeep);
 };
 
+// The importer/reader for Plain Text Files with selectable encoding.
+
+class IE_Imp_EncodedText_Sniffer : public IE_Imp_Text_Sniffer
+{
+	friend class IE_Imp;
+	friend class IE_Imp_Text;
+
+public:
+	IE_Imp_EncodedText_Sniffer() {}
+	virtual ~IE_Imp_EncodedText_Sniffer() {}
+
+	virtual bool recognizeSuffix (const char * szSuffix);
+	virtual bool getDlgLabels (const char ** szDesc,
+							   const char ** szSuffixList,
+							   IEFileType * ft);
+	virtual UT_Error constructImporter (PD_Document * pDocument,
+										IE_Imp ** ppie);
+
+protected:
+};
+
 class IE_Imp_Text : public IE_Imp
 {
 public:
-	IE_Imp_Text(PD_Document * pDocument);
+	IE_Imp_Text(PD_Document * pDocument, bool bEncoded=false);
 	~IE_Imp_Text();
 
 	virtual UT_Error	importFile(const char * szFilename);
@@ -70,8 +91,15 @@ protected:
 	UT_Error			_recognizeEncoding(FILE * fp);
 	UT_Error			_parseFile(FILE * fp);
 	UT_Error			_writeHeader(FILE * fp);
+	bool				_doEncodingDialog(const char *szEncoding);
+	void				_setEncoding(const char *szEncoding);
+
 	UT_Mbtowc 		m_Mbtowc;
 	const char *	m_szEncoding;
+	bool			m_bIsEncoded;
+	bool			m_bIs16Bit;
+	bool			m_bUseBOM;
+	bool			m_bBigEndian;
 };
 
 #endif /* IE_IMP_TEXT_H */

@@ -79,6 +79,9 @@ const char* XAP_EncodingManager::getLanguageISOTerritory() const
     return NULL;
 };
 
+// TODO Do we need an equivalent function which can return
+// TODO U+FFFD "REPLACEMENT CHARACTER" or U+25A0 "BLACK SQUARE"
+// TODO for translating into Unicode?
 char XAP_EncodingManager::fallbackChar(UT_UCSChar c) const 
 { 
     return '?'; 
@@ -486,6 +489,10 @@ static const _rmap langcode_to_cjk[]=
 };
 
 
+/*
+ TODO I'm pretty sure you can't break Korean at any character.
+ TODO And what about Japanese Katakana and Hiragana?
+*/
 static const _rmap can_break_words_data[]=
 {
 	{"0"}, /* default value - can't break words at any character. */    
@@ -494,15 +501,18 @@ static const _rmap can_break_words_data[]=
 };
 
 /*
- This table is useful since iconv implementations don't know some cpNNNN 
+ This table is useful since some iconv implementations don't know some cpNNNN 
  charsets but under some different name.
 */
 static const _map MSCodepagename_to_charset_name_map[]=
 {
 /*key, value*/
     {NULL,NULL},
+	// libiconv also lists "SHIFT_JIS", "SHIFT-JIS", "MS_KANJI", "csShiftJIS"
+	{"CP932","SJIS"},
     {"CP936","GB2312"},
     {"CP950","BIG5"},  
+	{"CP1361","JOHAB"},
     {NULL,NULL}
 };
 
@@ -515,8 +525,11 @@ static const _map charset_name_to_MSCodepagename_map[]=
 {
 /*key,value*/
     {NULL,NULL},
+	// libiconv also lists "SHIFT_JIS", "SHIFT-JIS", "MS_KANJI", "csShiftJIS"
+	{"SJIS","CP932"},
     {"GB2312","CP936"},
     {"BIG5","CP950"},
+	{"JOHAB","CP1361"},
     {NULL,NULL}
 };
 
@@ -787,7 +800,8 @@ void XAP_EncodingManager::initialize()
 	}
 	{
 	    if (cjk_locale()) {
-		/* CJK guys should do something similar to 'else' branch */	
+			/* CJK guys should do something similar to 'else' branch */	
+			TexPrologue = " ";
 	    } else {
 		char buf[500];
 		int len = 0;
@@ -837,6 +851,7 @@ bool XAP_EncodingManager::can_break_words() const
 /*
     I'm not sure whether any non-cjk language doesn't make distinction
     between upper and lower case of the letter, but let's be prepared.
+	TODO Arabic, Hebrew, Thai, Lao, all Indic scripts
 */
 bool XAP_EncodingManager::single_case() const { return cjk_locale(); }
 
@@ -876,6 +891,11 @@ const char* XAP_EncodingManager::getTexPrologue() const
     return TexPrologue;
 };
 
+// Warning:
+// This code forces us to use "GB2312", "BIG5", etc instead
+// of "CP936", "CP950", etc even when our iconv supports
+// the "CPxxx" form and the encodings differ.
+// Be sure this is what you want if you call this function.
 const char* XAP_EncodingManager::charsetFromCodepage(int lid) const
 {
     static char buf[100];

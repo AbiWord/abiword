@@ -25,6 +25,7 @@ INCLUDES= $(PSICONV_INCLUDES) $(WP_INCLUDES) \
 noinst_LIBRARIES = libImpexp.a
 
 libImpexp_a_SOURCES=\
+	ie_impexp_Register.cpp			\
 	ie_exp.cpp				\
 	ie_exp_AbiWord_1.cpp			\
 	ie_exp_AWT.cpp				\
@@ -37,7 +38,6 @@ libImpexp_a_SOURCES=\
 	ie_exp_RTF.cpp				\
 	ie_exp_RTF_listenerGetProps.cpp		\
 	ie_exp_RTF_listenerWriteDoc.cpp		\
-	ie_exp_UTF8.cpp				\
 	ie_exp_LaTeX.cpp			\
 	ie_exp_DocBook.cpp			\
 	ie_exp_WML.cpp				\
@@ -51,7 +51,6 @@ libImpexp_a_SOURCES=\
 	ie_imp_GZipAbiWord.cpp                  \
 	ie_imp_RTF.cpp				\
 	ie_imp_Text.cpp				\
-	ie_imp_UTF8.cpp				\
 	ie_imp_DocBook.cpp			\
 	ie_imp_WML.cpp				\
 	ie_imp_XHTML.cpp			\

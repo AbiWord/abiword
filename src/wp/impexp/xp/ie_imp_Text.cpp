@@ -24,10 +24,17 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_string.h"
+#include "ut_iconv.h"
 #include "ie_imp_Text.h"
 #include "pd_Document.h"
 #include "ut_growbuf.h"
 #include "xap_EncodingManager.h"
+
+
+#include "ap_Dialog_Id.h"
+#include "xap_App.h"
+#include "xap_DialogFactory.h"
+#include "xap_Dlg_Encoding.h"
 
 /*****************************************************************/
 /*****************************************************************/
@@ -217,17 +224,44 @@ bool IE_Imp_Text_Sniffer::recognizeSuffix(const char * szSuffix)
 UT_Error IE_Imp_Text_Sniffer::constructImporter(PD_Document * pDocument,
 												IE_Imp ** ppie)
 {
-	IE_Imp_Text * p = new IE_Imp_Text(pDocument);
+	IE_Imp_Text * p = new IE_Imp_Text(pDocument,false);
 	*ppie = p;
 	return UT_OK;
 }
 
-bool	IE_Imp_Text_Sniffer::getDlgLabels(const char ** pszDesc,
-										  const char ** pszSuffixList,
-										  IEFileType * ft)
+bool IE_Imp_Text_Sniffer::getDlgLabels(const char ** pszDesc,
+									   const char ** pszSuffixList,
+									   IEFileType * ft)
 {
 	*pszDesc = "Text (.txt, .text)";
 	*pszSuffixList = "*.txt; *.text";
+	*ft = getFileType();
+	return true;
+}
+
+/*!
+  Check filename extension for filetypes we support
+ \param szSuffix Filename extension
+ */
+bool IE_Imp_EncodedText_Sniffer::recognizeSuffix(const char * szSuffix)
+{
+	return (!UT_stricmp (szSuffix, ".etxt") || !UT_stricmp(szSuffix, ".etext"));
+}
+
+UT_Error IE_Imp_EncodedText_Sniffer::constructImporter(PD_Document * pDocument,
+												IE_Imp ** ppie)
+{
+	IE_Imp_Text * p = new IE_Imp_Text(pDocument,true);
+	*ppie = p;
+	return UT_OK;
+}
+
+bool IE_Imp_EncodedText_Sniffer::getDlgLabels(const char ** pszDesc,
+											  const char ** pszSuffixList,
+											  IEFileType * ft)
+{
+	*pszDesc = "Encoded Text (.etxt, .etext)";
+	*pszSuffixList = "*.etxt; *.etext";
 	*ft = getFileType();
 	return true;
 }
@@ -259,7 +293,6 @@ UT_Error IE_Imp_Text::importFile(const char * szFilename)
 	UT_Error error;
 
 	// First we need to determine the encoding.
-	// TODO We might want to find a way to combine this with recognizeContents().
 	X_CleanupIfError(error,_recognizeEncoding(fp));
 	X_CleanupIfError(error,_writeHeader(fp));
 	X_CleanupIfError(error,_parseFile(fp));
@@ -283,10 +316,12 @@ IE_Imp_Text::~IE_Imp_Text()
 {
 }
 
-IE_Imp_Text::IE_Imp_Text(PD_Document * pDocument)
+IE_Imp_Text::IE_Imp_Text(PD_Document * pDocument, bool bEncoded)
 	: IE_Imp(pDocument)
 {
-	m_szEncoding = 0;
+	m_bIsEncoded = bEncoded;
+	// TODO Use persistent document encoding when it exists
+	_setEncoding(XAP_EncodingManager::get_instance()->getNativeEncodingName());
 }
 
 /*****************************************************************/
@@ -312,7 +347,7 @@ UT_Error IE_Imp_Text::_recognizeEncoding(FILE * fp)
 
 	if (IE_Imp_Text_Sniffer::_recognizeUTF8(szBuf, iNumbytes))
 	{
-		m_szEncoding = "UTF-8";
+		_setEncoding("UTF-8");
 	}
 	else
 	{
@@ -320,14 +355,11 @@ UT_Error IE_Imp_Text::_recognizeEncoding(FILE * fp)
 
 		eUcs2 = IE_Imp_Text_Sniffer::_recognizeUCS2(szBuf, iNumbytes, true);
 		
+		// TODO Old libiconv uses UCS-2-BE, new uses UCS-2BE
 		if (eUcs2 == IE_Imp_Text_Sniffer::UE_BigEnd)
-		{
-			m_szEncoding = "UCS-2-BE";
-		}
+			_setEncoding("UCS-2-BE");
 		else if (eUcs2 == IE_Imp_Text_Sniffer::UE_LittleEnd)
-		{
-			m_szEncoding = "UCS-2-LE";
-		}
+			_setEncoding("UCS-2-LE");
 	}
 
 	return UT_OK;
@@ -349,65 +381,161 @@ UT_Error IE_Imp_Text::_parseFile(FILE * fp)
 	UT_UCSChar c;
 	wchar_t wc;
 
-	if (m_szEncoding)
+	// Call encoding dialog
+	if (!m_bIsEncoded || _doEncodingDialog(m_szEncoding))
+	{
+		UT_ASSERT(m_szEncoding);
 		m_Mbtowc.setInCharset(m_szEncoding);
 
-	while (fread(&b, 1, sizeof(b), fp) > 0)
-	{
-		if(!m_Mbtowc.mbtowc(wc,b))
-		    continue;
-		c = (UT_UCSChar)wc;
-		switch (c)
+		while (fread(&b, 1, sizeof(b), fp) > 0)
 		{
-		case (UT_UCSChar)'\r':
-		case (UT_UCSChar)'\n':
-		case 0x2028:			// Unicode line separator
-		case 0x2029:			// Unicode paragraph separator
-			
-			if ((c == (UT_UCSChar)'\n') && bEatLF)
+			if(!m_Mbtowc.mbtowc(wc,b))
+				continue;
+			c = (UT_UCSChar)wc;
+
+			// TODO We should switch fonts when we encounter
+			// TODO characters from different scripts
+			switch (c)
 			{
+			case (UT_UCSChar)'\r':
+			case (UT_UCSChar)'\n':
+			case 0x2028:			// Unicode line separator
+			case 0x2029:			// Unicode paragraph separator
+				
+				if ((c == (UT_UCSChar)'\n') && bEatLF)
+				{
+					bEatLF = false;
+					break;
+				}
+
+				if (c == (UT_UCSChar)'\r')
+				{
+					bEatLF = true;
+				}
+				
+				// we interpret either CRLF, CR, or LF as a paragraph break.
+				// we also accept U+2028 (line separator) and U+2029 (para separator)
+				// especially since these are recommended by Mac OS X.
+				
+				// start a paragraph and emit any text that we
+				// have accumulated.
+				X_ReturnNoMemIfError(m_pDocument->appendStrux(PTX_Block, NULL));
+				bEmptyFile = false;
+				if (gbBlock.getLength() > 0)
+				{
+					X_ReturnNoMemIfError(m_pDocument->appendSpan(gbBlock.getPointer(0), gbBlock.getLength()));
+					gbBlock.truncate(0);
+				}
+				break;
+
+			default:
 				bEatLF = false;
+				X_ReturnNoMemIfError(gbBlock.ins(gbBlock.getLength(),&c,1));
 				break;
 			}
+		} 
 
-			if (c == (UT_UCSChar)'\r')
-			{
-				bEatLF = true;
-			}
-			
-			// we interpret either CRLF, CR, or LF as a paragraph break.
-			// we also accept U+2028 (line separator) and U+2029 (para separator)
-			// especially since these are recommended by Mac OS X.
-			
-			// start a paragraph and emit any text that we
-			// have accumulated.
+		if (gbBlock.getLength() > 0 || bEmptyFile)
+		{
+			// if we have text left over (without final CR/LF),
+			// or if we read an empty file,
+			// create a paragraph and emit the text now.
 			X_ReturnNoMemIfError(m_pDocument->appendStrux(PTX_Block, NULL));
-			bEmptyFile = false;
 			if (gbBlock.getLength() > 0)
-			{
 				X_ReturnNoMemIfError(m_pDocument->appendSpan(gbBlock.getPointer(0), gbBlock.getLength()));
-				gbBlock.truncate(0);
-			}
-			break;
-
-		default:
-			bEatLF = false;
-			X_ReturnNoMemIfError(gbBlock.ins(gbBlock.getLength(),&c,1));
-			break;
 		}
-	} 
-
-	if (gbBlock.getLength() > 0 || bEmptyFile)
-	{
-		// if we have text left over (without final CR/LF),
-		// or if we read an empty file,
-		// create a paragraph and emit the text now.
-		X_ReturnNoMemIfError(m_pDocument->appendStrux(PTX_Block, NULL));
-		if (gbBlock.getLength() > 0)
-			X_ReturnNoMemIfError(m_pDocument->appendSpan(gbBlock.getPointer(0), gbBlock.getLength()));
+		return UT_OK;
 	}
 
-	return UT_OK;
+	// TODO If the encoding dialog was cancelled we still get an empty new document
+	// TODO with an error dialog ):
+
+	return UT_ERROR;
+}
+
+/*!
+  Request file encoding from user
+
+ This function should be identical to the one in ie_Exp_Text
+ */
+bool IE_Imp_Text::_doEncodingDialog(const char *szEncoding)
+{
+	XAP_Dialog_Id id = XAP_DIALOG_ID_ENCODING;
+
+	XAP_DialogFactory * pDialogFactory
+		= (XAP_DialogFactory *)(m_pDocument->getApp()->getDialogFactory());
+
+	XAP_Dialog_Encoding * pDialog
+		= (XAP_Dialog_Encoding *)(pDialogFactory->requestDialog(id));
+	UT_ASSERT(pDialog);
+
+	pDialog->setEncoding(szEncoding);
+
+	// run the dialog
+	XAP_Frame * pFrame = m_pDocument->getApp()->getLastFocussedFrame();
+	UT_ASSERT(pFrame);
+
+	pDialog->runModal(pFrame);
+
+	// extract what they did
+	
+	bool bOK = (pDialog->getAnswer() == XAP_Dialog_Encoding::a_OK);
+
+	if (bOK)
+	{
+		const XML_Char * s;
+		static XML_Char szEnc[16];
+
+		s = pDialog->getEncoding();
+		UT_ASSERT (s);
+
+		strcpy(szEnc,s);
+		_setEncoding((const char *)szEnc);
+	}
+
+	pDialogFactory->releaseDialog(pDialog);
+
+	return bOK;
+}
+
+/*!
+  Set exporter's encoding and related members
+ \param szEncoding Encoding to export file into
+
+ Decides endian and BOM policy based on encoding
+ */
+void IE_Imp_Text::_setEncoding(const char *szEncoding)
+{
+	UT_ASSERT(szEncoding);
+
+	m_szEncoding = szEncoding;
+
+	// TODO some iconvs use a different string!
+	if (!strncmp(m_szEncoding,"UCS-2",5))
+	{
+		m_bIs16Bit = true;
+		if (!strcmp(m_szEncoding + strlen(m_szEncoding) - 2, "BE"))
+			m_bBigEndian = true;
+		else if (!strcmp(m_szEncoding + strlen(m_szEncoding) - 2, "LE"))
+			m_bBigEndian = false;
+		else
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+
+		// TODO Should BOM use be a user pref?
+		// TODO Does Mac OSX prefer BOMs?
+#ifdef WIN32
+		m_bUseBOM = true;
+#else
+		m_bUseBOM = false;
+#endif
+	}
+	else
+	{
+		m_bIs16Bit = false;
+		// These are currently meaningless when not in a Unicode encoding
+		m_bBigEndian = false;
+		m_bUseBOM = false;
+	}
 }
 
 #undef X_ReturnNoMemIfError
@@ -416,11 +544,29 @@ UT_Error IE_Imp_Text::_parseFile(FILE * fp)
 /*****************************************************************/
 /*****************************************************************/
 
+// TODO This function needs an encoding parameter since the clipboard can be
+// TODO in any encoding and the OSes can track it.  Currently we check for
+// TODO UCS-2 which handles Windows's unicode clipboard.  8-bit data is
+// TODO always interpreted using the system default encoding which can be wrong.
+
 void IE_Imp_Text::pasteFromBuffer(PD_DocumentRange * pDocRange,
 								  unsigned char * pData, UT_uint32 lenData)
 {
 	UT_ASSERT(m_pDocument == pDocRange->m_pDoc);
 	UT_ASSERT(pDocRange->m_pos1 == pDocRange->m_pos2);
+
+	// Attempt to guess whether we're pasting 8 bit or unicode text
+	IE_Imp_Text_Sniffer::UCS2_Endian eUcs2 = IE_Imp_Text_Sniffer::_recognizeUCS2((const char *)pData, lenData, true);
+	
+	// TODO Old libiconv uses UCS-2-BE, new uses UCS-2BE
+	if (eUcs2 == IE_Imp_Text_Sniffer::UE_BigEnd)
+		_setEncoding("UCS-2-BE");
+	else if (eUcs2 == IE_Imp_Text_Sniffer::UE_LittleEnd)
+		_setEncoding("UCS-2-LE");
+	else
+		_setEncoding(XAP_EncodingManager::get_instance()->getNativeEncodingName());
+
+	m_Mbtowc.setInCharset(m_szEncoding);
 
 	UT_GrowBuf gbBlock(1024);
 	bool bEatLF = false;
@@ -439,6 +585,8 @@ void IE_Imp_Text::pasteFromBuffer(PD_DocumentRange * pDocRange,
 		    continue;
 		c = (UT_UCSChar)wc;
 		
+		// TODO We should switch fonts when we encounter
+		// TODO characters from different scripts
 		switch (c)
 		{
 		case (UT_UCSChar)'\r':

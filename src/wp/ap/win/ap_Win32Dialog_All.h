@@ -39,6 +39,7 @@
 #	include "xap_Win32Dlg_Zoom.h"
 #	include "xap_Win32Dlg_Insert_Symbol.h"
 #	include "xap_Win32Dlg_Language.h"
+#	include "xap_Win32Dlg_Encoding.h"
 
 #	include "ap_Win32Dialog_Replace.h"
 #	include "ap_Win32Dialog_Break.h"
@@ -74,6 +75,7 @@
 	DeclareDialog(XAP_DIALOG_ID_ABOUT,			XAP_Win32Dialog_About)
 	DeclareDialog(XAP_DIALOG_ID_INSERT_SYMBOL,	XAP_Win32Dialog_Insert_Symbol)
 	DeclareDialog(XAP_DIALOG_ID_INSERT_PICTURE, XAP_Win32Dialog_FileOpenSaveAs)
+	DeclareDialog(XAP_DIALOG_ID_ENCODING,			XAP_Win32Dialog_Encoding)
 
 	DeclareDialog(AP_DIALOG_ID_REPLACE,			AP_Win32Dialog_Replace)
 	DeclareDialog(AP_DIALOG_ID_FIND,			AP_Win32Dialog_Replace)

@@ -26,30 +26,9 @@
 #include "ut_units.h"
 
 #include "ut_debugmsg.h"
+#include "ut_Win32Locale.h"
 #include "ap_Win32Prefs.h"
 
-// Codes from ISO 3166 
-
-// Very compressed form. Two char code folowed by tree char code. 
-
-char s_ISO3166_2_and_3[] =
-"AFAFGALALBDZDZAASASMADANDAOAGOAIAIAAQATAAGATGARARGAMARMAWABWAUAUSATAUT"
-"AZAZEBSBHSBHBHRBDBGDBBBRBBYBLRBEBELBZBLZBJBENBMBMUBTBTNBOBOLBABIHBWBWA"
-"BVBVTBRBRAIOIOTBNBRNBGBGRBFBFABIBDIKHKHMCMCMRCACANCVCPVKYCYMCFCAFTDTCD"
-"CLCHLCNCHNCXCXRCCCCKCOCOLKMCOMCGCOGCKCOKCRCRICICIVHRHRVCUCUBCYCYPCZCZE"
-"DKDNKDJDJIDMDMADODOMTPTMPECECUEGEGYSVSLVGQGNQERERIEEESTETETHFKFLKFOFRO"
-"FJFJIFIFINFRFRAFXFXXGFGUFPFPYFTFATFGAGABGMGMBGEGEODEDEUGHGHAGIGIBGRGRC"
-"GLGRLGDGRDGPGLPGUGUMGTGTMGNGINGWGNBGYGUYHTHTIHMHMDHNHNDHKHKGHUHUNISISL"
-"ININDIDIDNIRIRNIQIRQIEIRLILISRITITAJMJAMJPJPNJOJORKZKAZKEKENKIKIRKPPRK"
-"KRKORKWKWTKGKGZLALAOLVLVALBLBNLSLSOLRLBRLYLBYLILIELTLTULULUXMOMACMKMKD"
-"MGMDGMWMWIMYMYSMVMDVMLMLIMTMLTMHMHLMQMTQMRMRTMUMUSYTMYTMXMEXFMFSMMDMDA"
-"MCMCOMNMNGMSMSRMAMARMZMOZMMMMRNANAMNRNRUNPNPLNLNLDANANTNCNCLNZNZLNINIC"
-"NENERNGNGANUNIUNFNFKMPMNPNONOROMOMNPKPAKPWPLWPAPANPGPNGPYPRYPEPERPHPHL"
-"PNPCNPLPOLPTPRTPRPRIQAQATREREUROROMRURUSRWRWAKNKNALCLCAVCVCTWSWSMSMSMR"
-"STSTPSASAUSNSENSCSYCSLSLESGSGPSKSVKSISVNSBSLBSOSOMZAZAFESESPLKLKASHSHN"
-"PMSPMSDSDNSRSURSJSJMSZSWZSESWECHCHESYSYRTWTWNTJTJKTZTZATHTHATGTGOTKTKL"
-"TOTONTTTTOTNTUNTRTURTMTKMTCTCATVTUVUGUGAUAUKRAEAREGBGBRUSUSAUMUMIUYURY"
-"UZUZBVUVUTVAVATVEVENVNVNMVGVGBVIVIRWFWLFEHESHYEYEMYUYUGZRZARZMZMBZWZWE";
 
 /*****************************************************************/
 
@@ -73,41 +52,20 @@ bool AP_Win32Prefs::loadBuiltinPrefs(void)
 		m_builtinScheme->setValue( AP_PREF_KEY_RulerUnits, UT_dimensionName( szLocaleInfo[0] == '0' ? DIM_CM : DIM_IN ) );
 	}
 
-	if( GetLocaleInfo( LOCALE_USER_DEFAULT, LOCALE_SABBREVLANGNAME, szLocaleInfo, sizeof( szLocaleInfo ) / sizeof( szLocaleInfo[0] ) ) )
+	if (UT_getISO639Language(szLocaleInfo))
 	{
-		char  szTmp[64];
-
-		if( !strcmp( szLocaleInfo, "Non" ) ) // Special case: Nynorsk in Norway
-        {
-			strcpy( szLocaleInfo, "no-NYNORSK" );
-        }
-		else if( GetLocaleInfo( LOCALE_USER_DEFAULT, LOCALE_SABBREVCTRYNAME, szTmp, sizeof( szTmp ) / sizeof( szTmp[0] ) ) )
-		{
-			char *psz;
-
-		    szLocaleInfo[0] = tolower( szLocaleInfo[0] );
-		    szLocaleInfo[1] = tolower( szLocaleInfo[1] );
-    		szLocaleInfo[2] = '-';
-
-			for( psz = s_ISO3166_2_and_3; *psz != '\0'; psz += 5 )
-				if( !strncmp( &psz[2], szTmp, 3 ) )
-					break;
-
-			strncpy( &szLocaleInfo[3], psz, 2 );
-			szLocaleInfo[5] = '\0';
-		}
-		else
-        {
-		    szLocaleInfo[0] = tolower( szLocaleInfo[0] );
-		    szLocaleInfo[1] = tolower( szLocaleInfo[1] );
-			szLocaleInfo[2] = '\0';
-        }
+		if (UT_getISO3166Country(&szLocaleInfo[3]))
+			szLocaleInfo[2] = '-';
 
 		UT_DEBUGMSG(("Prefs: Using LOCALE info from environment [%s]\n", szLocaleInfo));
 
 		m_builtinScheme->setValue( AP_PREF_KEY_MenuLabelSet, szLocaleInfo );
 		m_builtinScheme->setValue( AP_PREF_KEY_ToolbarLabelSet, szLocaleInfo );
 		m_builtinScheme->setValue( AP_PREF_KEY_StringSet, szLocaleInfo );
+	}
+	else
+	{
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
 
 	return ret;

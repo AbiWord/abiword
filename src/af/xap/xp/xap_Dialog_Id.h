@@ -53,6 +53,7 @@ enum _XAP_Dialog_Id
 	/* ... add others here ... */
 	XAP_DIALOG_ID_LANGUAGE,
 	XAP_DIALOG_ID_CLIPART,
+	XAP_DIALOG_ID_ENCODING,
 
 
 #ifdef HAVE_GNOME_DIRECT_PRINT

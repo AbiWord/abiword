@@ -2,11 +2,8 @@
 #include <windows.h>
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
+#include "ut_Win32Locale.h"
 #include "xap_Win32EncodingManager.h"
-
-// TODO This data is defined in ap_Win32Prefs.cpp
-
-extern char s_ISO3166_2_and_3[1190];
 
 /************************************************************/
 
@@ -46,11 +43,12 @@ const char* XAP_Win32EncodingManager::getLanguageISOTerritory() const
 void  XAP_Win32EncodingManager::initialize()
 {
 	char szLocaleInfo[64];
+	static char szCodepage[64];
 	static char szLanguage[64];
 	static char szTerritory[64];
 	bool bNorwaySpecialCase = false;
 
-	NativeEncodingName = "ISO-8859-1";
+	NativeEncodingName = "CP1252";
 	LanguageISOName = "en";
 	LanguageISOTerritory = NULL;
 
@@ -60,42 +58,30 @@ void  XAP_Win32EncodingManager::initialize()
 		// Windows Unicode locale?
 		if (!strcmp(szLocaleInfo,"0"))
 		{
-			NativeEncodingName = "UCS-2-INTERNAL";	// As in ev_Win32Keyboard.cpp
+			// TODO Does NT use UCS-2-BE internally on non-Intel CPUs?
+			NativeEncodingName = "UCS-2-LE";
 			m_bIsUnicodeLocale = true;
 		}
 		else
 		{
-			NativeEncodingName = charsetFromCodepage(atoi(szLocaleInfo));
+			szCodepage[0] = 'C';
+			szCodepage[1] = 'P';
+			strcpy(szCodepage+2,szLocaleInfo);
+			NativeEncodingName = szCodepage;
 			m_bIsUnicodeLocale = false;
 		}
 	}
 
-	// Language
-	if (GetLocaleInfo(LOCALE_USER_DEFAULT,LOCALE_SABBREVLANGNAME,szLanguage,sizeof(szLanguage)/sizeof(szLanguage[0])))
+	if (UT_getISO639Language(szLanguage))
 	{
-		if (!strcmp(szLanguage,"Non"))		// Special case: Nynorsk in Norway
-			bNorwaySpecialCase = true;		// As in ap_Win32Prefs.cpp
-
-		szLanguage[0] = tolower(szLanguage[0]);
-		szLanguage[1] = tolower(szLanguage[1]);
-		szLanguage[2] = '\0';
 		LanguageISOName = szLanguage;
 	}
-
-	// Territory
-	if (bNorwaySpecialCase == true)			// Special case: Nynorsk in Norway
-		LanguageISOTerritory = "NYNORSK";	// As in ap_Win32Prefs.cpp
-	else if (GetLocaleInfo(LOCALE_USER_DEFAULT,LOCALE_SABBREVCTRYNAME,szLocaleInfo,sizeof(szLocaleInfo)/sizeof(szLocaleInfo[0])))
+	else
 	{
-		// TODO This code is copied from ap_Win32Prefs.cpp
-		char *psz;
-
-		for (psz = s_ISO3166_2_and_3; *psz != '\0'; psz += 5 )
-			if (!strncmp(&psz[2],szLocaleInfo,3))
-				break;
-
-		strncpy(szTerritory, psz, 2 );
-		szTerritory[2] = '\0';
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	}
+	if (UT_getISO3166Country(szTerritory))
+	{
 		LanguageISOTerritory = szTerritory;
 	}
 

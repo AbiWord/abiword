@@ -46,7 +46,8 @@ CPPSRCS=	ut_base64.cpp		\
 		ut_stringbuf.cpp  \
 		ut_AdobeEncoding.cpp \
 		ut_OverstrikingChars.cpp \
-		ut_Language.cpp
+		ut_Language.cpp		\
+		ut_Encoding.cpp
 
 ### regex is only used by calc.
 ###CSRCS=		ut_regex.c

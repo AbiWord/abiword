@@ -44,16 +44,42 @@ public:
 										IE_Exp ** ppie);
 };
 
+// The exporter/writer for Plain Text Files with selectable encoding.
+
+class IE_Exp_EncodedText_Sniffer : public IE_ExpSniffer
+{
+	friend class IE_Exp;
+
+public:
+	IE_Exp_EncodedText_Sniffer () {}
+	virtual ~IE_Exp_EncodedText_Sniffer () {}
+
+	virtual bool recognizeSuffix (const char * szSuffix);
+	virtual bool getDlgLabels (const char ** szDesc,
+							   const char ** szSuffixList,
+							   IEFileType * ft);
+	virtual UT_Error constructExporter (PD_Document * pDocument,
+										IE_Exp ** ppie);
+};
+
 class IE_Exp_Text : public IE_Exp
 {
 public:
-	IE_Exp_Text(PD_Document * pDocument);
+	IE_Exp_Text(PD_Document * pDocument, bool bEncoded=false);
 	virtual ~IE_Exp_Text();
 
 protected:
 	virtual UT_Error	_writeDocument(void);
+	virtual bool		_openFile(const char * szFilename);
+	bool				_doEncodingDialog(const char *szEncoding);
+	void				_setEncoding(const char *szEncoding);
 	
 	s_Text_Listener *	m_pListener;
+	bool				m_bIsEncoded;
+	const char *		m_szEncoding;
+	bool				m_bIs16Bit;
+	bool				m_bUseBOM;
+	bool				m_bBigEndian;
 };
 
 #endif /* IE_EXP_TEXT_H */

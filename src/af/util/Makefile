@@ -50,6 +50,7 @@ PLATFORM_OBJS=	$(OBJDIR)/ut_debugmsg.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ut_$(ABI_FE)OS.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ut_$(ABI_FE)String.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ut_$(ABI_FE)Timer.$(OBJ_SUFFIX)	\
+		$(OBJDIR)/ut_$(ABI_FE)Locale.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ut_iconv.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ut_Xpm2Bmp.$(OBJ_SUFFIX)
 endif
@@ -101,7 +102,8 @@ OBJS=		$(PLATFORM_OBJS)						\
 		$(OBJDIR)/ut_wctomb.$(OBJ_SUFFIX)       \
 		$(OBJDIR)/ut_AdobeEncoding.$(OBJ_SUFFIX) \
 		$(OBJDIR)/ut_OverstrikingChars.$(OBJ_SUFFIX) \
-		$(OBJDIR)/ut_Language.$(OBJ_SUFFIX)
+		$(OBJDIR)/ut_Language.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/ut_Encoding.$(OBJ_SUFFIX)
 
 
 include $(ABI_ROOT)/src/config/abi_rules.mk

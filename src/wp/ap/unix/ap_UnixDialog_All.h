@@ -43,6 +43,7 @@
 #	include "xap_UnixDlg_Language.h"
 #   include "xap_UnixDlg_PluginManager.h"
 #   include "xap_UnixDlg_ClipArt.h"
+#   include "xap_UnixDlg_Encoding.h"
 
 #	include "ap_UnixDialog_Replace.h"
 #	include "ap_UnixDialog_Break.h"
@@ -144,6 +145,7 @@
     DeclareDialog(AP_DIALOG_ID_TOGGLECASE,      AP_UnixGnomeDialog_ToggleCase)
 	DeclareDialog(AP_DIALOG_ID_FILE_NEW,        AP_UnixGnomeDialog_New)
 	DeclareDialog(XAP_DIALOG_ID_PLUGIN_MANAGER, XAP_UnixGnomeDialog_PluginManager)
+	DeclareDialog(XAP_DIALOG_ID_ENCODING,       XAP_UnixDialog_Encoding)
 
 	// ... also add new dialogs here ...
 #   else
@@ -183,7 +185,7 @@
 	DeclareDialog(AP_DIALOG_ID_FILE_NEW,        AP_UnixDialog_New)
 	DeclareDialog(XAP_DIALOG_ID_PLUGIN_MANAGER, XAP_UnixDialog_PluginManager)
 	DeclareDialog(XAP_DIALOG_ID_CLIPART,        XAP_UnixDialog_ClipArt)
-
+	DeclareDialog(XAP_DIALOG_ID_ENCODING,       XAP_UnixDialog_Encoding)
 	// ... also add new dialogs here ...
 #   endif
 

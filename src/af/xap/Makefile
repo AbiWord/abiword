@@ -40,7 +40,8 @@ PLATFORM_OBJS=	$(OBJDIR)/xap_$(ABI_FE)App.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_$(ABI_FE)Module.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_$(ABI_FE)EncodingManager.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/xap_$(ABI_FE)Frame.$(OBJ_SUFFIX) \
-		$(OBJDIR)/xap_$(ABI_FE)Dlg_Language.$(OBJ_SUFFIX)
+		$(OBJDIR)/xap_$(ABI_FE)Dlg_Language.$(OBJ_SUFFIX)	\
+		$(OBJDIR)/xap_$(ABI_FE)Dlg_Encoding.$(OBJ_SUFFIX)
 
 # gnome has its own about dialog
 ifndef ABI_OPT_GNOME
@@ -143,7 +144,8 @@ OBJS=		$(PLATFORM_OBJS)						\
 		$(OBJDIR)/xap_EncodingManager.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_Module.$(OBJ_SUFFIX)				\
 		$(OBJDIR)/xap_ModuleManager.$(OBJ_SUFFIX)			\
-		$(OBJDIR)/xap_Dlg_Language.$(OBJ_SUFFIX)
+		$(OBJDIR)/xap_Dlg_Language.$(OBJ_SUFFIX)			\
+		$(OBJDIR)/xap_Dlg_Encoding.$(OBJ_SUFFIX)
 
 include $(ABI_ROOT)/src/config/abi_rules.mk
 

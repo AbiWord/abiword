@@ -22,7 +22,8 @@ ABI_ROOT:=$(shell pwd)/../../../..
 
 include $(ABI_ROOT)/src/config/abi_defs_wp.mk
 
-CPPSRCS=		ie_exp.cpp				\
+CPPSRCS=		ie_impexp_Register.cpp			\
+			ie_exp.cpp				\
 			ie_exp_AbiWord_1.cpp			\
 			ie_exp_AWT.cpp				\
 			ie_exp_Applix.cpp			\
@@ -36,7 +37,6 @@ CPPSRCS=		ie_exp.cpp				\
 			ie_exp_RTF_listenerWriteDoc.cpp		\
 			ie_exp_LaTeX.cpp			\
 			ie_exp_PalmDoc.cpp			\
-			ie_exp_UTF8.cpp				\
 			ie_exp_WML.cpp				\
 			ie_exp_DocBook.cpp			\
 			ie_exp_Psion.cpp			\
@@ -51,7 +51,6 @@ CPPSRCS=		ie_exp.cpp				\
 			ie_imp_PalmDoc.cpp			\
 			ie_imp_RTF.cpp				\
 			ie_imp_Text.cpp				\
-			ie_imp_UTF8.cpp				\
 			ie_imp_WML.cpp				\
 			ie_imp_XHTML.cpp			\
 			ie_imp_XSL-FO.cpp			\

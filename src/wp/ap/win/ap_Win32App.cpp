@@ -76,7 +76,6 @@
 #include "ie_exp_Psion.h"
 #include "ie_exp_Applix.h"
 #include "ie_exp_XSL-FO.h"
-#include "ie_exp_UTF8.h"
 
 #include "ie_imp.h"
 #include "ie_imp_AbiWord_1.h"
@@ -84,7 +83,6 @@
 #include "ie_imp_MsWord_97.h"
 #include "ie_imp_RTF.h"
 #include "ie_imp_Text.h"
-#include "ie_imp_UTF8.h"
 #include "ie_imp_WML.h"
 #include "ie_imp_GraphicAsDocument.h"
 #include "ie_imp_XHTML.h"
@@ -190,14 +188,14 @@ bool AP_Win32App::initialize(void)
 		IE_Imp::registerImporter(new IE_Imp_Psion_Word_Sniffer ());
 		IE_Imp::registerImporter(new IE_Imp_RTF_Sniffer ());
 		IE_Imp::registerImporter(new IE_Imp_Text_Sniffer ());
-		IE_Imp::registerImporter(new IE_Imp_UTF8_Sniffer ());
+		IE_Imp::registerImporter(new IE_Imp_EncodedText_Sniffer ());
 		IE_Imp::registerImporter(new IE_Imp_WML_Sniffer ());
 		IE_Imp::registerImporter(new IE_Imp_GZipAbiWord_Sniffer ());
 
 		IE_Exp::registerExporter(new IE_Exp_AbiWord_1_Sniffer ());
 		IE_Exp::registerExporter(new IE_Exp_AWT_Sniffer ());
 		IE_Exp::registerExporter(new IE_Exp_Applix_Sniffer ());
-		IE_Exp::registerExporter(new IE_Exp_DocBook_Sniffer ());		
+		IE_Exp::registerExporter(new IE_Exp_DocBook_Sniffer ());
 #ifdef DEBUG
 		IE_Exp::registerExporter(new IE_Exp_MsWord_97_Sniffer ());
 #endif	
@@ -210,8 +208,8 @@ bool AP_Win32App::initialize(void)
 		IE_Exp::registerExporter(new IE_Exp_RTF_Sniffer ());
 		IE_Exp::registerExporter(new IE_Exp_RTF_attic_Sniffer ());
 		IE_Exp::registerExporter(new IE_Exp_Text_Sniffer ());
+		IE_Exp::registerExporter(new IE_Exp_EncodedText_Sniffer ());
 		IE_Exp::registerExporter(new IE_Exp_HRText_Sniffer ());
-		IE_Exp::registerExporter(new IE_Exp_UTF8_Sniffer ());
 		IE_Exp::registerExporter(new IE_Exp_WML_Sniffer ());
 		IE_Exp::registerExporter(new IE_Exp_GZipAbiWord_Sniffer ());
 	}
@@ -413,7 +411,6 @@ void AP_Win32App::copyToClipboard(PD_DocumentRange * pDocRange)
 	// MSFT requests that we post them in the order of
 	// importance to us (most preserving to most lossy).
 	//
-	// TODO on NT, do we need to put unicode text on the clipboard ??
 	// TODO do we need to put something in .ABW format on the clipboard ??
 
 	if (!m_pClipboard->openClipboard())			// try to lock the clipboard
@@ -436,19 +433,47 @@ void AP_Win32App::copyToClipboard(PD_DocumentRange * pDocRange)
 			//UT_DEBUGMSG(("CopyToClipboard: [%s]\n",buf.getPointer(0)));
 		}
 
-		// put raw 8bit text on the clipboard
-		
-		IE_Exp_Text * pExpText = new IE_Exp_Text(pDocRange->m_pDoc);
-		if (pExpText)
+		// put raw text on the clipboard
+
+		if (XAP_EncodingManager::get_instance()->isUnicodeLocale())
 		{
-			UT_ByteBuf buf;
-			UT_Error status = pExpText->copyToBuffer(pDocRange,&buf);
-			UT_Byte b = 0;
-			buf.append(&b,1);			// NULL terminate the string
-			m_pClipboard->addData(AP_CLIPBOARD_TEXTPLAIN_8BIT,(UT_Byte *)buf.getPointer(0),buf.getLength());
-			DELETEP(pExpText);
-			UT_DEBUGMSG(("CopyToClipboard: copying %d bytes in TEXTPLAIN format.\n",buf.getLength()));
-			//UT_DEBUGMSG(("CopyToClipboard: [%s]\n",buf.getPointer(0)));
+			// put raw unicode text on the clipboard
+			// TODO On NT we should always put unicode text on the clipboard regardless of locale.
+			// TODO The system allows old apps to access it as 8 bit.
+			// TODO We can't do this yet due to the design of Abi's clipboard and import/export modules.
+
+			IE_Exp_Text * pExpUnicodeText = new IE_Exp_Text(pDocRange->m_pDoc);
+			if (pExpUnicodeText)
+			{
+				UT_ByteBuf buf;
+				UT_Error status = pExpUnicodeText->copyToBuffer(pDocRange,&buf);
+				UT_Byte b[2] = {0,0};
+				buf.append(b,2);			// NULL terminate the string
+				m_pClipboard->addData(AP_CLIPBOARD_TEXTPLAIN_UCS2,(UT_Byte *)buf.getPointer(0),buf.getLength());
+				DELETEP(pExpUnicodeText);
+				UT_DEBUGMSG(("CopyToClipboard: copying %d bytes in TEXTPLAIN UNICODE format.\n",buf.getLength()*2));
+				//UT_DEBUGMSG(("CopyToClipboard: [%s]\n",buf.getPointer(0)));
+			}
+		}
+		else
+		{
+			// put raw 8bit text on the clipboard
+			// TODO Windows adds CF_LOCALE data to the clipboard based on the current input locale.
+			// TODO We should try to do better so that users can load a Japanese document and
+			// TODO cut and paste without a Japanese input locale (keyboard).
+
+			IE_Exp_Text * pExpText = new IE_Exp_Text(pDocRange->m_pDoc);
+			if (pExpText)
+			{
+				UT_ByteBuf buf;
+				UT_Error status = pExpText->copyToBuffer(pDocRange,&buf);
+				UT_Byte b = 0;
+				buf.append(&b,1);			// NULL terminate the string
+				m_pClipboard->addData(AP_CLIPBOARD_TEXTPLAIN_8BIT,(UT_Byte *)buf.getPointer(0),buf.getLength());
+				DELETEP(pExpText);
+				UT_DEBUGMSG(("CopyToClipboard: copying %d bytes in TEXTPLAIN format.\n",buf.getLength()));
+				//UT_DEBUGMSG(("CopyToClipboard: [%s]\n",buf.getPointer(0)));
+			}
 		}
 	}
 
@@ -472,6 +497,8 @@ void AP_Win32App::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClip
 	// therefore, we do a strlen() and **hope** that this is
 	// right.  Oh, and the value returned by GlobalSize() varies
 	// from call-to-call on the same object.... sigh.
+
+	// TODO These macros should probably be functions now...
 
 #define TRY_TO_PASTE_IN_FORMAT(fmt,type)							\
 	do {															\
@@ -498,19 +525,41 @@ void AP_Win32App::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClip
 		}															\
 	} while (0)
 
+#define TRY_TO_PASTE_IN_FORMAT_WIDE(fmt,type)						\
+	do {															\
+		HANDLE hData;												\
+		hData = m_pClipboard->getHandleInFormat( fmt );				\
+		if (hData)													\
+		{															\
+			unsigned char * pData = (unsigned char *)GlobalLock(hData);				\
+			UT_DEBUGMSG(("Paste: [fmt %s][hdata 0x%08lx][pData 0x%08lx]\n",			\
+						 ##fmt, hData, pData));						\
+			UT_uint32 iSize = GlobalSize(hData);					\
+			UT_uint32 iStrLen = wcslen((const wchar_t *)pData) * 2;	\
+			UT_uint32 iLen = MyMin(iSize,iStrLen);					\
+																	\
+			type * pImp = new type (pDocRange->m_pDoc);				\
+			if (pImp)												\
+			{														\
+				pImp->pasteFromBuffer(pDocRange,pData,iLen);		\
+				delete pImp;										\
+			}														\
+																	\
+			GlobalUnlock(hData);									\
+			goto MyEnd;												\
+		}															\
+	} while (0)
+
 
 	if (!m_pClipboard->openClipboard())			// try to lock the clipboard
 		return;
 	
 	{
-		// TODO decide what the proper order is for these.
+		// TODO Paste the most detailed version unless user overrides.
 		// TODO decide if we need to support .ABW on the clipboard.
-		if( !bHonorFormatting )
-		{
-			TRY_TO_PASTE_IN_FORMAT(AP_CLIPBOARD_TEXTPLAIN_8BIT, IE_Imp_Text);
-		}
-
-		TRY_TO_PASTE_IN_FORMAT(AP_CLIPBOARD_RTF, IE_Imp_RTF);
+		if (bHonorFormatting)
+			TRY_TO_PASTE_IN_FORMAT(AP_CLIPBOARD_RTF, IE_Imp_RTF);
+		TRY_TO_PASTE_IN_FORMAT_WIDE(AP_CLIPBOARD_TEXTPLAIN_UCS2, IE_Imp_Text);
 		TRY_TO_PASTE_IN_FORMAT(AP_CLIPBOARD_TEXTPLAIN_8BIT, IE_Imp_Text);
 		
 		// TODO figure out what to do with an image and other formats....
@@ -530,6 +579,8 @@ bool AP_Win32App::canPasteFromClipboard(void)
 	// TODO decide if we need to support .ABW format on the clipboard.
 	
 	if (m_pClipboard->hasFormat(AP_CLIPBOARD_RTF))
+		goto ReturnTrue;
+	if (m_pClipboard->hasFormat(AP_CLIPBOARD_TEXTPLAIN_UCS2))
 		goto ReturnTrue;
 	if (m_pClipboard->hasFormat(AP_CLIPBOARD_TEXTPLAIN_8BIT))
 		goto ReturnTrue;

@@ -33,6 +33,7 @@
 #define XAP_RID_DIALOG_INSERT_PICTURE				103
 #define XAP_RID_DIALOG_LANGUAGE						104
 #define XAP_RID_DIALOG_FONT							105
+#define XAP_RID_DIALOG_ENCODING						106
 
 #include "xap_Win32Res_DlgWindowMore.rc2"
 #include "xap_Win32Res_DlgZoom.rc2"
@@ -40,3 +41,4 @@
 #include "xap_Win32Res_DlgInsertPicture.rc2"
 #include "xap_Win32Res_DlgLanguage.rc2"
 #include "xap_Win32Res_DlgFont.rc2"
+#include "xap_Win32Res_DlgEncoding.rc2"

@@ -30,6 +30,7 @@ CPPSRCS=		xap_UnixApp.cpp				\
 			xap_UnixClipboard.cpp			\
 			xap_UnixDlg_ClipArt.cpp			\
 			xap_UnixDlg_PluginManager.cpp		\
+			xap_UnixDlg_Encoding.cpp		\
 			xap_UnixDlg_FileOpenSaveAs.cpp		\
 			xap_UnixDlg_FontChooser.cpp		\
 			xap_UnixDlg_MessageBox.cpp		\

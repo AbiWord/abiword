@@ -28,7 +28,10 @@
 
 #include "xap_Win32Clipboard.h"
 
+// TODO I chose "ucs2" rather than "unicode" or "16bit"
+// TODO in case it might conflict with "utf8" in the future
 #define	AP_CLIPBOARD_TEXTPLAIN_8BIT 		"text-8bit"
+#define	AP_CLIPBOARD_TEXTPLAIN_UCS2 		"text-ucs2"
 #define AP_CLIPBOARD_RTF 					"rtf"
 #define AP_CLIPBOARD_UNKNOWN 				"unknown"
 

@@ -193,12 +193,11 @@ void ev_Win32Keyboard::remapKeyboard(HKL hKeyboardLayout)
 		if( GetLocaleInfo( LOWORD( hKeyboardLayout ), LOCALE_IDEFAULTANSICODEPAGE, &szCodePage[2], sizeof( szCodePage ) / sizeof( szCodePage[0] ) - 2 ) )
 		{
 			// Unicode locale?
-			// TODO Would UCS-2-LE / UCS-2-BE be preferable?
 			// TODO Does NT use UCS-2-BE internally on non-Intel CPUs?
 			if( !strcmp( szCodePage, "CP0" ) )
 			{
 				m_bIsUnicodeInput = true;
-				strcpy( szCodePage, "UCS-2-INTERNAL" );
+				strcpy( szCodePage, "UCS-2-LE" );
 			}
 			else
 				m_bIsUnicodeInput = false;
