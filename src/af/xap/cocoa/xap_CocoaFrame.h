@@ -46,21 +46,42 @@ class EV_CocoaMenuPopup;
 *****************************************************************/
 
 class XAP_CocoaFrame;
+class GR_CocoaGraphics;
+
+@interface XAP_CocoaNSView : NSView
+{
+	GR_CocoaGraphics	*m_pGR;
+}
+- (void)setGraphics:(GR_CocoaGraphics *)gr;
+- (void)drawRect:(NSRect)aRect;
+- (BOOL)isFlipped;
+- (BOOL)isOpaque;
+@end
+
+@interface XAP_CocoaNSScrollView : NSScrollView 
+{
+	GR_CocoaGraphics	*m_pGR;
+}
+- (void)setGraphics:(GR_CocoaGraphics *)gr;
+- (void)drawRect:(NSRect)aRect;
+- (void)keyDown:(NSEvent *)theEvent;
+- (BOOL)acceptsFirstResponder;
+- (BOOL)isFlipped;
+- (BOOL)isOpaque;
+@end
 
 @interface XAP_CocoaFrameController : NSWindowController
 {
 	XAP_CocoaFrame *m_frame;
-    IBOutlet NSScrollView *mainView;
-    IBOutlet Abi_NSView *statusBar;
+    IBOutlet XAP_CocoaNSScrollView *mainView;
+    IBOutlet XAP_CocoaNSView *statusBar;
 	IBOutlet NSMenu *menuBar;
 }
 - (id)initWith:(XAP_CocoaFrame *)frame;
-- (NSScrollView *)getMainView;
+- (XAP_CocoaNSScrollView *)getMainView;
 - (NSMenu *)getMenuBar;
-- (Abi_NSView *)getStatusBar;
+- (XAP_CocoaNSView *)getStatusBar;
 @end
-
-
 
 class XAP_CocoaFrame : public XAP_Frame
 {

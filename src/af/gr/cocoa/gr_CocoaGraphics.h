@@ -29,16 +29,7 @@
 class UT_ByteBuf;
 class GR_CocoaGraphics;
 
-@interface Abi_NSView : NSView 
-{
-	GR_CocoaGraphics	*m_pGR;
-}
-- (void)setGraphics:(GR_CocoaGraphics *)gr;
-- (void)drawRect:(NSRect)aRect;
-- (BOOL)isFlipped;
-- (BOOL)isOpaque;
-@end
-
+@class XAP_CocoaNSView, XAP_CocoaNSScrollView;
 
 class GR_CocoaGraphics : public GR_Graphics
 {
@@ -117,8 +108,10 @@ class GR_CocoaGraphics : public GR_Graphics
 	typedef bool (*gr_cocoa_graphics_update) (NSRect * rect, GR_CocoaGraphics *pGr, void * param);
 	void				_setUpdateCallback (gr_cocoa_graphics_update callback, void * param);
 	bool				_callUpdateCallback(NSRect *aRect);
-	Abi_NSView*			_getView () { return m_pWin; };
+	XAP_CocoaNSView *	_getView () { return m_pWin; };
 	NSImage*			_getOffscreen () { return m_offscreen; };
+	void 				_updateRect(NSView * v, NSRect aRect);
+	bool				_isFlipped();
  protected:
 	virtual UT_uint32 	_getResolution(void) const;
 	void				_setColor(NSColor * c);
@@ -127,7 +120,7 @@ private:
 	gr_cocoa_graphics_update	m_updateCallback;
 	void 						*m_updateCBparam;
 	XAP_CocoaFontManager * 	m_pFontManager;
-	Abi_NSView*  	  			m_pWin;
+	XAP_CocoaNSView *  			m_pWin;
 	NSImage*					m_offscreen;
 	NSColor *					m_currentColor;
 

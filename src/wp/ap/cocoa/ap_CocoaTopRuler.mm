@@ -114,7 +114,7 @@ void AP_CocoaTopRuler::_ruler_style_changed (void)
 }
 #endif
 
-Abi_NSView * AP_CocoaTopRuler::createWidget(void)
+XAP_CocoaNSView * AP_CocoaTopRuler::createWidget(void)
 {
 	//UT_DEBUGMSG(("AP_CocoaTopRuler::createWidget - [w=%p] [this=%p]\n", m_wTopRuler,this));
 

@@ -83,7 +83,7 @@ void AP_CocoaStatusBar::setView(AV_View * pView)
 	AP_StatusBar::setView(pView);
 }
 
-Abi_NSView * AP_CocoaStatusBar::createWidget(void)
+XAP_CocoaNSView * AP_CocoaStatusBar::createWidget(void)
 {
 	// TODO remove that method. uneeded.
 	return m_wStatusBar;

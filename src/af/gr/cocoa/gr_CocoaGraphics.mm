@@ -107,9 +107,10 @@ GR_CocoaGraphics::GR_CocoaGraphics(NSView * win, XAP_CocoaFontManager * fontMana
 	m_pApp = app;
 	UT_ASSERT (win);
 	NSRect viewBounds = [win bounds];
-	//xxx_UT_DEBUGMSG (("frame is %f %f %f %f\n", theRect.origin.x, theRect.origin.y, theRect.size.width, theRect.size.height));
-	if (![win isKindOfClass:[Abi_NSView class]]) {
-		m_pWin = [[Abi_NSView alloc] initWithFrame:viewBounds];
+	UT_DEBUGMSG (("frame is %f %f %f %f\n", theRect.origin.x, theRect.origin.y, theRect.size.width, theRect.size.height));
+	// QUACK QUACK QUACK
+	if (![win isKindOfClass:[XAP_CocoaNSView class]]) {
+		m_pWin = [[XAP_CocoaNSView alloc] initWithFrame:viewBounds];
 		[win addSubview:m_pWin];
 	}
 	else {
@@ -918,6 +919,57 @@ bool GR_CocoaGraphics::_callUpdateCallback(NSRect * aRect)
 	return (*m_updateCallback) (aRect, this, m_updateCBparam);
 }
 
+void GR_CocoaGraphics::_updateRect(NSView * v, NSRect aRect)
+{
+#if 0
+	[NSGraphicsContext saveGraphicsState];
+	static float r=1.0, g=1.0, b=0.0;
+	if (g == 0.0) { r = 1.0; g = 1.0; b = 0.0; }
+	else if (r == 0.0) { r = 1.0; g = 0.0; b = 1.0; }
+	else if (b == 0.0) { r = 0.0; g = 1.0; b = 1.0; }
+	NSColor *c = [NSColor colorWithDeviceRed:r green:g blue:b alpha:1.0];
+	[c set];
+	NSRectFill ([v bounds]);
+	[NSGraphicsContext restoreGraphicsState];
+#endif	
+# ifdef USE_OFFSCREEN
+
+		NSImage * img = _getOffscreen ();
+		// TODO: only draw what is needed.
+# endif
+		if ([v inLiveResize]) {
+			UT_DEBUGMSG (("Is resizing\n"));
+# ifdef USE_OFFSCREEN
+			NSRect myBounds = [v bounds];
+			[img setSize:myBounds.size];
+			// take care of erasing after resizing.
+			{
+				StNSImageLocker locker (img);
+				NSEraseRect (myBounds);
+			}
+# endif
+			[NSGraphicsContext saveGraphicsState];
+			NSRectClip (aRect);
+			if (!_callUpdateCallback (&aRect)) {
+
+			}
+			[NSGraphicsContext restoreGraphicsState];
+		}
+# ifdef USE_OFFSCREEN
+		[img drawAtPoint:aRect.origin fromRect:aRect operation:NSCompositeCopy fraction:1.0f];
+# endif
+		UT_DEBUGMSG (("- (void)drawRect:(NSRect)aRect: calling callback !\n"));
+}
+
+bool GR_CocoaGraphics::_isFlipped()
+{
+# ifdef USE_OFFSCREEN
+	return NO;
+# else
+	return YES;
+#endif
+}
+
 //////////////////////////////////////////////////////////////////
 // This is a static method in the GR_Font base class implemented
 // in platform code.
@@ -941,93 +993,3 @@ void GR_Font::s_getGenericFontProperties(const char * /*szFontName*/,
 	*pfp = FP_Unknown;
 	*pbTrueType = true;
 }
-
-
-@implementation Abi_NSView
-
-
-- (void)setGraphics:(GR_CocoaGraphics *)gr
-{
-	m_pGR = gr;
-}
-
-/*!
-	Cocoa overridden method. Redraw the screen.
- */
-- (void)drawRect:(NSRect)aRect
-{
-#if 0 // large debug code. show Abi_NSView in red
-	[NSGraphicsContext saveGraphicsState];
-	NSColor *c = [NSColor colorWithDeviceRed:1.0 green:0.0 blue:0.0 alpha:1.0]; // autoreleased
-	[c set];
-	NSRectFill ([self bounds]);
-	// and show 3d colors just for fun.
-	if (m_pGR) {
-		int i;
-		for (i = 0; i < COUNT_3D_COLORS; i++) {
-			[m_pGR->m_3dColors[i] set];
-			NSRectFill (NSMakeRect (i * 10, i * 10, 10, 10));
-		}
-	}
-	[NSGraphicsContext restoreGraphicsState];
-#else
-	if (m_pGR) {
-# ifdef USE_OFFSCREEN
-
-		NSImage * img = m_pGR->_getOffscreen ();
-		// TODO: only draw what is needed.
-# endif
-		if ([self inLiveResize]) {
-			UT_DEBUGMSG (("Is resizing\n"));
-# ifdef USE_OFFSCREEN
-			NSRect myBounds = [self bounds];
-			[img setSize:myBounds.size];
-			// take care of erasing after resizing.
-			{
-				StNSImageLocker locker (img);
-				NSEraseRect (myBounds);
-			}
-# endif
-			[NSGraphicsContext saveGraphicsState];
-			NSRectClip (aRect);
-			if (!m_pGR->_callUpdateCallback (&aRect)) {
-
-			}
-			[NSGraphicsContext restoreGraphicsState];
-		}
-# ifdef USE_OFFSCREEN
-		[img drawAtPoint:aRect.origin fromRect:aRect operation:NSCompositeCopy fraction:1.0f];
-# endif
-		UT_DEBUGMSG (("- (void)drawRect:(NSRect)aRect: calling callback !\n"));
-	}
-#endif
-}
-
-
-/*!
-	Cocoa overridden method.
-
-	\return NO. Coordinates are still upside down, but we'll reverse the offscreen instead
- */
-- (BOOL)isFlipped
-{
-# ifdef USE_OFFSCREEN
-	return NO;
-# else
-	return YES;
-#endif
-}
-
-
-/*!
-	Cocoa overridden method.
-
-	\return NO. Not opaque.
- */
-- (BOOL)isOpaque
-{
-	return YES;
-}
-
-
-@end

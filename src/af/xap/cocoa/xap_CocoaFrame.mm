@@ -558,7 +558,7 @@ void XAP_CocoaFrame::_createTopLevelWindow(void)
 	UT_ASSERT (theWindow);
 	NSString * str = [NSString stringWithCString:m_pCocoaApp->getApplicationTitleForTitleBar()];	// autoreleased
 	[theWindow setTitle:str];
-	NSScrollView * scroller = [m_frameController getMainView];
+	XAP_CocoaNSScrollView * scroller = [m_frameController getMainView];
 	[scroller setHasHorizontalScroller:YES];
 	[scroller setHasVerticalScroller:YES];
 
@@ -894,7 +894,7 @@ void XAP_CocoaFrame::_setController (XAP_CocoaFrameController * ctrl)
 	return self;
 }
 
-- (NSScrollView *)getMainView
+- (XAP_CocoaNSScrollView *)getMainView
 {
 	return mainView;
 }
@@ -904,9 +904,129 @@ void XAP_CocoaFrame::_setController (XAP_CocoaFrameController * ctrl)
 	return menuBar;
 }
 
-- (Abi_NSView *)getStatusBar
+- (XAP_CocoaNSView *)getStatusBar
 {
 	return statusBar;
 }
 
+@end
+
+@implementation XAP_CocoaNSView
+- (void)setGraphics:(GR_CocoaGraphics *)gr
+{
+	m_pGR = gr;
+}
+
+/*!
+	Cocoa overridden method. Redraw the screen.
+ */
+- (void)drawRect:(NSRect)aRect
+{
+	if (m_pGR) {
+		m_pGR->_updateRect(self, aRect);
+	}
+}
+
+/*!
+	Cocoa overridden method.
+
+	\return NO. Coordinates are still upside down, but we'll reverse
+	the offscreen instead.
+*/
+- (BOOL)isFlipped
+{
+	if (m_pGR)
+		return m_pGR->_isFlipped();
+	else
+		return NO;
+}
+
+/*!
+	Cocoa overridden method.
+
+	\return NO. Not opaque.
+ */
+- (BOOL)isOpaque
+{
+	return YES;
+}
+@end
+
+@implementation XAP_CocoaNSScrollView
+- (void)setGraphics:(GR_CocoaGraphics *)gr
+{
+	m_pGR = gr;
+}
+
+/*!
+	Cocoa overridden method. Redraw the screen.
+ */
+- (void)drawRect:(NSRect)aRect
+{
+	if (m_pGR) {
+# ifdef USE_OFFSCREEN
+
+		NSImage * img = m_pGR->_getOffscreen ();
+		// TODO: only draw what is needed.
+# endif
+		if ([self inLiveResize]) {
+			UT_DEBUGMSG (("Is resizing\n"));
+# ifdef USE_OFFSCREEN
+			NSRect myBounds = [self bounds];
+			[img setSize:myBounds.size];
+			// take care of erasing after resizing.
+			{
+				StNSImageLocker locker (img);
+				NSEraseRect (myBounds);
+			}
+# endif
+			[NSGraphicsContext saveGraphicsState];
+			NSRectClip (aRect);
+			if (!m_pGR->_callUpdateCallback (&aRect)) {
+
+			}
+			[NSGraphicsContext restoreGraphicsState];
+		}
+# ifdef USE_OFFSCREEN
+		[img drawAtPoint:aRect.origin fromRect:aRect operation:NSCompositeCopy fraction:1.0f];
+# endif
+		UT_DEBUGMSG (("- (void)drawRect:(NSRect)aRect: calling callback !\n"));
+	}
+}
+
+- (void)keyDown:(NSEvent *)theEvent
+{
+        UT_DEBUGMSG(("KeyPressEvent: keyval=%x characters=%s\n",[theEvent keyCode],
+                     [[theEvent characters] cString]));
+}
+
+- (BOOL)acceptsFirstResponder
+{
+	return YES;
+}
+
+/*!
+	Cocoa overridden method.
+
+	\return NO. Coordinates are still upside down, but we'll reverse
+	the offscreen instead.
+*/
+- (BOOL)isFlipped
+{
+# ifdef USE_OFFSCREEN
+	return NO;
+# else
+	return YES;
+#endif
+}
+
+/*!
+	Cocoa overridden method.
+
+	\return NO. Not opaque.
+ */
+- (BOOL)isOpaque
+{
+	return YES;
+}
 @end

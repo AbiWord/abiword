@@ -35,14 +35,14 @@ class AP_CocoaFrame;
 
 @interface AP_CocoaFrameController : XAP_CocoaFrameController
 {
-    IBOutlet Abi_NSView *hRuler;
-    IBOutlet Abi_NSView *vRuler;
+    IBOutlet XAP_CocoaNSView *hRuler;
+    IBOutlet XAP_CocoaNSView *vRuler;
 }
 + (AP_CocoaFrameController*)createFrom:(AP_CocoaFrame *)frame;
 - (id)initWith:(XAP_CocoaFrame *)frame;
 - (IBAction)rulerClick:(id)sender;
-- (Abi_NSView *)getVRuler;
-- (Abi_NSView *)getHRuler;
+- (XAP_CocoaNSView *)getVRuler;
+- (XAP_CocoaNSView *)getHRuler;
 @end
 
 

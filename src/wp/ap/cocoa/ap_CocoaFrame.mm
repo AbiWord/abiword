@@ -1011,21 +1011,9 @@ bool AP_CocoaFrame::_graphicsUpdateCB(NSRect * aRect, GR_CocoaGraphics *pG, void
 	rClip.height = aRect->size.height;
 	xxx_UT_DEBUGMSG(("Cocoa in frame expose painting area:  left=%d, top=%d, width=%d, height=%d\n", rClip.left, rClip.top, rClip.width, rClip.height));
 	if(pG != NULL)
-	{
 		pG->doRepaint(&rClip);
-//		pCocoaFrame->draw(&rClip);
-	}
-	else {
-		return false;
-	}
-#if 0
 	else
-	{
-		UT_DEBUGMSG(("No graphics Context. Doing fallback. \n"));
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		pCocoaFrame->draw(&rClip);
-	}
-#endif
+		return false;
 	return true;
 }
 
@@ -1051,12 +1039,12 @@ bool AP_CocoaFrame::_graphicsUpdateCB(NSRect * aRect, GR_CocoaGraphics *pG, void
 {
 }
 
-- (Abi_NSView *)getVRuler
+- (XAP_CocoaNSView *)getVRuler
 {
 	return vRuler;
 }
 
-- (Abi_NSView *)getHRuler
+- (XAP_CocoaNSView *)getHRuler
 {
 	return hRuler;
 }

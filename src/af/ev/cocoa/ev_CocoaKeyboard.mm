@@ -39,21 +39,6 @@
 #if 0
 static EV_EditBits s_mapVirtualKeyCodeToNVK(gint keyval);
 static bool s_isVirtualKeyCode(gint keyval);
-static GdkModifierType s_getAltMask(void);
-
-//////////////////////////////////////////////////////////////////
-// This is used to remember the modifier mask (GDK_MODx_MASK) that
-// is bound to the Alt keys.  We load this once per session.
-//
-// TODO Figure out if GTK/GDK can send us a MappingNotify event.
-// TODO If so, recompute this value.
-//
-static GdkModifierType s_alt_mask = GDK_MODIFIER_MASK;	// bogus value
-
-GdkModifierType ev_CocoaKeyboard::getAltModifierMask(void)
-{
-	return s_alt_mask;
-}
 #endif
 
 //////////////////////////////////////////////////////////////////
@@ -75,15 +60,17 @@ bool ev_CocoaKeyboard::keyPressEvent(AV_View* pView,
 	EV_EditBits state = 0;
 	EV_EditEventMapperResult result;
 	EV_EditMethod * pEM;
-	
-#if 0
-	if (e->state & GDK_SHIFT_MASK)
+
+        // note that we don't usually want keyCode, but instead [e characters].
+        UT_DEBUGMSG(("KeyPressEvent: keyval=%x characters=%s state=%x\n",[e keyCode],
+                     [[e characters] cString], state));
+
+	if ([e modifierFlags] & NSShiftKeyMask)
 		state |= EV_EMS_SHIFT;
-	if (e->state & GDK_CONTROL_MASK)
+	if ([e modifierFlags] & NSControlKeyMask)
 		state |= EV_EMS_CONTROL;
-	if (e->state & (s_alt_mask))
+	if ([e modifierFlags] & NSAlternateKeyMask)
 		state |= EV_EMS_ALT;
-#endif
 
 	//UT_DEBUGMSG(("KeyPressEvent: keyval=%x state=%x\n",e->keyval,state));
 #if 0	
@@ -486,86 +473,5 @@ static EV_EditBits s_mapVirtualKeyCodeToNVK(gint keyval)
 	return EV_NVK__IGNORE__;
 }
 
-//////////////////////////////////////////////////////////////////
-// deal with keyboard mapping oddities
-//////////////////////////////////////////////////////////////////
-
-#include <stdio.h>
-#include <gdk/gdk.h>
-#include <gdk/gdkx.h>
-#include <X11/keysym.h>
-
-static GdkModifierType s_getAltMask(void)
-{
-	//////////////////////////////////////////////////////////////////
-	// find out what modifier mask XL_Alt_{L,R} are bound to.
-	//////////////////////////////////////////////////////////////////
-	
-	int alt_mask = 0;
-
-	Display * display = GDK_DISPLAY();
-
-	KeyCode kcAltL = XKeysymToKeycode(display,XK_Alt_L);
-	KeyCode kcAltR = XKeysymToKeycode(display,XK_Alt_R);
-
-	XModifierKeymap * pModMap = XGetModifierMapping(display);
-	int mkpm = pModMap->max_keypermod;
-	int k,m;
-	int mAltL=-1;
-	int mAltR=-1;
-	
-	for (m=0; m<8; m++)
-	{
-		for (k=0; k<mkpm; k++)
-		{
-			KeyCode code = pModMap->modifiermap[m*mkpm + k];
-			if (kcAltL && (code == kcAltL))
-				mAltL = m;
-			if (kcAltR && (code == kcAltR))
-				mAltR = m;
-		}
-	}
-
-	switch (mAltL)
-	{
-	default:							// Should not happen...
-	case -1:							// Alt_L is not a modifier key ??
-	case 0:								// Alt_L is mapped to SHIFT ??
-	case 1:								// Alt_L is mapped to (Caps)LOCK ??
-	case 2:								// Alt_L is mapped to CONTROL ??
-		break;							// ... ignore this key.
-		
-	case 3: alt_mask |= GDK_MOD1_MASK; break;
-	case 4: alt_mask |= GDK_MOD2_MASK; break;
-	case 5: alt_mask |= GDK_MOD3_MASK; break;
-	case 6: alt_mask |= GDK_MOD4_MASK; break;
-	case 7: alt_mask |= GDK_MOD5_MASK; break;
-	}
-
-	switch (mAltR)
-	{
-	default:							// Should not happen...
-	case -1:							// Alt_R is not a modifier key ??
-	case 0:								// Alt_R is mapped to SHIFT ??
-	case 1:								// Alt_R is mapped to (Caps)LOCK ??
-	case 2:								// Alt_R is mapped to CONTROL ??
-		break;							// ... ignore this key.
-		
-	case 3: alt_mask |= GDK_MOD1_MASK; break;
-	case 4: alt_mask |= GDK_MOD2_MASK; break;
-	case 5: alt_mask |= GDK_MOD3_MASK; break;
-	case 6: alt_mask |= GDK_MOD4_MASK; break;
-	case 7: alt_mask |= GDK_MOD5_MASK; break;
-	}
-
-	XFreeModifiermap(pModMap);
-
-	if (!alt_mask)						// if nothing set, fall back to MOD1
-		alt_mask = GDK_MOD1_MASK;
-	
-	//UT_DEBUGMSG(("Keycodes for alt [l 0x%x][r 0x%x] using modifiers [%d %d] yields [0x%x]\n",kcAltL,kcAltR,mAltL-2,mAltR-2,alt_mask));
-
-	return (GdkModifierType)alt_mask;
-}
 
 #endif

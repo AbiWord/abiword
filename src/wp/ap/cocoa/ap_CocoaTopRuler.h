@@ -42,12 +42,12 @@ public:
 	AP_CocoaTopRuler(XAP_Frame * pFrame);
 	virtual ~AP_CocoaTopRuler(void);
 
-	Abi_NSView *		createWidget(void);
+	XAP_CocoaNSView *		createWidget(void);
 	virtual void	setView(AV_View * pView);
 
 	// cheats for the callbacks
 	void 				getWidgetPosition(int * x, int * y);
-	Abi_NSView * 		getWidget(void) { return m_wTopRuler; };
+	XAP_CocoaNSView * 		getWidget(void) { return m_wTopRuler; };
 	NSWindow * 	getRootWindow(void);
 
 	void _ruler_style_changed (void);
@@ -55,7 +55,7 @@ public:
 private:
 	static bool _graphicsUpdateCB(NSRect * aRect, GR_CocoaGraphics *pG, void* param);
 
-	Abi_NSView *			m_wTopRuler;
+	XAP_CocoaNSView *			m_wTopRuler;
 	NSWindow *	m_rootWindow;
 #if 0
 	class _fe

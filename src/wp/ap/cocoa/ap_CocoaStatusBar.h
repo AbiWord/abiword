@@ -42,7 +42,7 @@ public:
 	virtual ~AP_CocoaStatusBar(void);
 
 	virtual void		setView(AV_View * pView);
-	Abi_NSView *			createWidget(void);
+	XAP_CocoaNSView *			createWidget(void);
 
 	virtual void		show(void);
 	virtual void		hide(void);
@@ -52,7 +52,7 @@ public:
 private:
 	static bool _graphicsUpdateCB(NSRect * aRect, GR_CocoaGraphics *pGR, void *param);
 
-	Abi_NSView *			m_wStatusBar;
+	XAP_CocoaNSView *	m_wStatusBar;
 	NSView *			m_superView;
 };
 
