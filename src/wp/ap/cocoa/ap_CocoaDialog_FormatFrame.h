@@ -71,8 +71,8 @@ private:
     IBOutlet NSBox *_borderBox;
     IBOutlet NSTextField *_borderColorLabel;
     IBOutlet NSColorWell *_borderColorWell;
-    IBOutlet NSTextField *_applyToLabel;
-    IBOutlet NSPopUpButton *_applyToPopup;
+ //   IBOutlet NSTextField *_applyToLabel;
+ //   IBOutlet NSPopUpButton *_applyToPopup;
     IBOutlet NSButton *_bottomBorderBtn;
     IBOutlet NSButton *_leftBorderBtn;
     IBOutlet XAP_CocoaNSView *_preview;
@@ -96,7 +96,7 @@ private:
 
 - (XAP_CocoaNSView*)preview;
 - (void)setSensitivity:(bool)bSens;
-- (int)applyItemTag;
+//- (int)applyItemTag;
 @end
 
 #endif /* AP_COCOADIALOG_FORMATTABLE_H */

@@ -56,18 +56,22 @@ private:
 
 @interface AP_CocoaDialog_SplitCellsController : NSWindowController <XAP_CocoaDialogProtocol>
 {
-    IBOutlet NSButton *_mergeAboveBtn;
-    IBOutlet NSButton *_mergeBelowBtn;
-    IBOutlet NSButton *_mergeLeftBtn;
-    IBOutlet NSButton *_mergeRightBtn;
-	IBOutlet NSBox *_mergeCellsBox;
+    IBOutlet NSButton *_splitLeftBtn;
+    IBOutlet NSButton *_splitMiddleHBtn;
+    IBOutlet NSButton *_splitRightBtn;
+    IBOutlet NSButton *_splitTopBtn;
+    IBOutlet NSButton *_splitMiddleVBtn;
+    IBOutlet NSButton *_splitBottomBtn;
+	IBOutlet NSBox *_splitCellsBox;
 	AP_CocoaDialog_SplitCells* _xap;
 }
-- (IBAction)mergeAbove:(id)sender;
-- (IBAction)mergeBelow:(id)sender;
-- (IBAction)mergeLeft:(id)sender;
-- (IBAction)mergeRight:(id)sender;
-- (void)setEnableButton:(AP_Dialog_SplitCells::mergeWithCell)btn to:(bool)val;
+- (IBAction)splitLeft:(id)sender;
+- (IBAction)splitMiddleH:(id)sender;
+- (IBAction)splitRight:(id)sender;
+- (IBAction)splitTop:(id)sender;
+- (IBAction)splitMiddleV:(id)sender;
+- (IBAction)splitBottom:(id)sender;
+- (void)setEnableButton:(AP_Dialog_SplitCells::SplitType)btn to:(bool)val;
 
 @end
 
