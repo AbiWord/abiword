@@ -247,7 +247,7 @@ void fl_Squiggles::updatePOBs(UT_sint32 iFirstOffset, UT_sint32 iShift)
 void
 fl_Squiggles::add(fl_PartOfBlock* pPOB)
 {
-	UT_DEBUGMSG(("fl_Squiggles::add(%p) [%d:%d]\n", pPOB,
+	xxx_UT_DEBUGMSG(("fl_Squiggles::add(%p) [%d:%d]\n", pPOB,
 					 pPOB->getOffset(), 
 					 pPOB->getOffset() + pPOB->getLength()));
 	UT_ASSERT(pPOB->getOffset() >= 0);
