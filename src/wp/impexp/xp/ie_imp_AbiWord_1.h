@@ -92,6 +92,7 @@ protected:
     UT_uint32			m_iInlineStart;
 
 	UT_StringPtrMap *	m_refMap;
+	bool                m_bAutoRevisioning;
 };
 
 #endif /* IE_IMP_ABIWORD_1_H */

@@ -153,7 +153,7 @@ const char * XAP_Dialog_History::getButtonLabel(UT_uint32 indx) const
 
 	switch(indx)
 	{
-		case 0: return m_pSS->getValue(XAP_STRING_ID_DLG_OK);
+		case 0: return m_pSS->getValue(XAP_STRING_ID_DLG_Restore);
 			//case 1: return m_pSS->getValue(XAP_STRING_ID_DLG_Show);
 		case 1: return m_pSS->getValue(XAP_STRING_ID_DLG_Cancel);
 

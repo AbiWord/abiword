@@ -34,7 +34,7 @@ dcl(MSG_HistoryPartRestore2, "The nearest version that can be restored fully is 
 dcl(MSG_HistoryPartRestore3, "To continue anyway, press OK.")
 dcl(MSG_HistoryPartRestore4, "To quit the restoration attempt, press Cancel.")
 dcl(MSG_HistoryNoRestore, "AbiWord cannot restore version %d of the document because the version information is missing.")
-dcl(MSG_HistoryConfirmSave, "You have to save changes to document %s before proceeding.")
+dcl(MSG_HistoryConfirmSave, "You have to save changes to document %s before proceeding. Save now?")
 
 /* Default name for new, untitled document */
 dcl(UntitledDocument,			"Untitled%d")
@@ -90,6 +90,7 @@ dcl(DLG_Compare, 				"Compare")
 dcl(DLG_Select, 				"Select")
 dcl(DLG_Merge, 				    "Merge")
 dcl(DLG_Show, 				    "Show")
+dcl(DLG_Restore,			    "Restore")
 	
 /* Units */
 dcl(DLG_Unit_inch,				"inch")

@@ -41,6 +41,8 @@
 class UT_StringPtrMap;
 class XAP_ResourceManager;
 class UT_UUID;
+class XAP_Frame;
+class AV_View;
 
 // a helper class for history tracking
 class AD_VersionData
@@ -133,7 +135,6 @@ public:
 	XAP_ResourceManager &	resourceManager () const { return *m_pResourceManager; }
 
 	const char *			getFilename(void) const;
-	virtual UT_uint32       getLastSavedAsType() = 0; 
 	// TODO - this should be returning IEFileType, 
 	// but that's AP stuff, so it's not here
 
@@ -158,6 +159,7 @@ public:
 	UT_uint32       getTimeSinceSave () const { return (time(NULL) - m_lastSavedTime); }
 	time_t          getLastSavedTime() const {return m_lastSavedTime;}
 	void            setLastSavedTime(time_t t) {m_lastSavedTime = t;}
+	virtual UT_uint32 getLastSavedAsType() const = 0;
 
 	UT_uint32       getTimeSinceOpen () const { return (time(NULL) - m_lastOpenedTime); }
 	time_t          getLastOpenedTime() const {return m_lastOpenedTime;}
@@ -188,10 +190,10 @@ public:
 	const UT_UUID&  getHistoryNthUID(UT_uint32 i)const;
 	bool            getHistoryNthAutoRevisioned(UT_uint32 i)const;
 
-	AD_HISTORY_STATE verifyHistoryState(UT_uint32 &iVersion) const;
-
+	AD_HISTORY_STATE       verifyHistoryState(UT_uint32 &iVersion) const;
 	const AD_VersionData * findHistoryRecord(UT_uint32 iVersion) const;
-		
+    bool                   showHistory(AV_View * pView);
+	
 	bool            areDocumentsRelated (const AD_Document &d) const;
 	bool            areDocumentHistoriesEqual(const AD_Document &d, UT_uint32 &iVer) const;
 
@@ -255,6 +257,8 @@ protected:
 	void            _setForceDirty(bool b) {m_bForcedDirty = b;}
 	void            _setPieceTableChanging(bool b) {m_bPieceTableChanging = b;}
 	void            _setMarkRevisions(bool bMark) {m_bMarkRevisions = bMark;}
+
+    bool            _restoreVersion(XAP_Frame * pFrame, UT_uint32 iVersion);
 	
 	virtual ~AD_Document();		//  Use unref() instead.
 
@@ -286,6 +290,7 @@ private:
 	
 	UT_UUID *       m_pUUID;
 	UT_UUID *       m_pNewUUID;
+	bool            m_bDoNotAdjustHistory;
 };
 
 

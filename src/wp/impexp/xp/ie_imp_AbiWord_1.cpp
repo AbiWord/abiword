@@ -184,7 +184,8 @@ IE_Imp_AbiWord_1::~IE_Imp_AbiWord_1()
 IE_Imp_AbiWord_1::IE_Imp_AbiWord_1(PD_Document * pDocument)
   : IE_Imp_XML(pDocument, true), m_bWroteSection (false),
     m_bWroteParagraph(false), m_bDocHasLists(false), m_bDocHasPageSize(false),
-    m_iInlineStart(0), m_refMap(new UT_StringPtrMap)
+	m_iInlineStart(0), m_refMap(new UT_StringPtrMap),
+	m_bAutoRevisioning(false)
 {
 }
 
@@ -638,7 +639,21 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		if(szS)
 		{
 			i = atoi(szS);
-			getDoc()->setAutoRevisioning(i == 1);
+			// we cannot call setAutoRevisioning() from here because
+			// it creates a new revision, so we can only call it after
+			// the revisions have been all read it -- we will call it
+			// in the </revisions> processing
+			m_bAutoRevisioning = (i == 1);
+
+			// autorevisioned documents should not have revision
+			// marking turned on
+			if(m_bAutoRevisioning)
+			{
+				getDoc()->setShowRevisionId(0xffffffff);
+				getDoc()->setShowRevisions(false);
+			}
+			
+			
 		}
 		return;
 	}
@@ -1005,6 +1020,8 @@ void IE_Imp_AbiWord_1::endElement(const XML_Char *name)
 	case TT_REVISIONSECTION:
 		X_VerifyParseState(_PS_RevisionSec);
 		m_parseState = _PS_Doc;
+		getDoc()->setAutoRevisioning(m_bAutoRevisioning);
+		m_bAutoRevisioning = false;
 		return;
 
 	case TT_REVISION:

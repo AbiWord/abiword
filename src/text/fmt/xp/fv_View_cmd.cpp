@@ -4204,7 +4204,6 @@ void FV_View::cmdAcceptRejectRevision(bool bReject, UT_sint32 xPos, UT_sint32 yP
 
 	// Signal PieceTable Change
 	_saveAndNotifyPieceTableChange();
-	m_pDoc->beginUserAtomicGlob();
 
 	if(isSelectionEmpty())
 	{
@@ -4237,8 +4236,6 @@ void FV_View::cmdAcceptRejectRevision(bool bReject, UT_sint32 xPos, UT_sint32 yP
 	
 	m_pDoc->acceptRejectRevision(bReject,iStart,iEnd,m_iViewRevision);
 
-	// Signal PieceTable Changes have finished
-	m_pDoc->endUserAtomicGlob();
 	_generalUpdate();
 	_restorePieceTableState();
 }

@@ -4300,7 +4300,7 @@ bool PD_Document::_acceptRejectRevision(bool bReject, UT_uint32 iStart, UT_uint3
 	ppAttr[1] = NULL;
 	ppAttr[2] = NULL;
 
-	const XML_Char ** ppProps, ** ppAttr2;
+	const XML_Char ** ppProps = NULL, ** ppAttr2 = NULL;
 	bool bDeletePRev = false;
 	bool bRet = true;
 	UT_uint32 i;
@@ -4448,16 +4448,28 @@ bool PD_Document::rejectAllHigherRevisions(UT_uint32 iLevel)
 	
 	const PP_Revision * pRev;
 
+	beginUserAtomicGlob();	
 	while(t.getStatus() == UTIter_OK)
 	{
 		pf_Frag * pf = const_cast<pf_Frag *>(t.getFrag());
-		UT_return_val_if_fail(pf, false);
 
+		if(!pf)
+		{
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			endUserAtomicGlob();
+			return false;
+		}
+		
 		PT_AttrPropIndex API = pf->getIndexAP();
 
 		const PP_AttrProp * pAP = NULL;
 		m_pPieceTable->getAttrProp(API,&pAP);
-		UT_return_val_if_fail(pAP, false);
+		if(!pAP)
+		{
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			endUserAtomicGlob();
+			return false;
+		}
 		
 		const XML_Char * pszRevision = NULL;
 		pAP->getAttribute("revision", pszRevision);
@@ -4470,7 +4482,7 @@ bool PD_Document::rejectAllHigherRevisions(UT_uint32 iLevel)
 		}
 			
 		PP_RevisionAttr RevAttr(pszRevision);
-		pRev = RevAttr.getLowestGreaterOrEqualRevision(iLevel);
+		pRev = RevAttr.getLowestGreaterOrEqualRevision(iLevel+1);
 		if(!pRev)
 		{
 			// no higher revisions
@@ -4493,6 +4505,7 @@ bool PD_Document::rejectAllHigherRevisions(UT_uint32 iLevel)
 			t.reset(iEnd, NULL);
 	}
 
+	endUserAtomicGlob();
 	return true;
 }
 
@@ -4526,11 +4539,17 @@ bool PD_Document::acceptRejectRevision(bool bReject, UT_uint32 iPos1,
 	UT_uint32 iLenProcessed = 0;
 	bool bFirst = true;
 	
-
+	beginUserAtomicGlob();	
 	while(t.getStatus() == UTIter_OK && iPosStart + iLenProcessed < iPosEnd)
 	{
 		pf_Frag * pf = const_cast<pf_Frag *>(t.getFrag());
-		UT_return_val_if_fail(pf, false);
+		if(!pf)
+		{
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			endUserAtomicGlob();
+			return false;
+		}
+
 		UT_uint32 iFragLen = pf->getLength();
 
 		if(bFirst)
@@ -4546,7 +4565,12 @@ bool PD_Document::acceptRejectRevision(bool bReject, UT_uint32 iPos1,
 
 		const PP_AttrProp * pAP = NULL;
 		m_pPieceTable->getAttrProp(API,&pAP);
-		UT_return_val_if_fail(pAP, false);
+		if(!pAP)
+		{
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			endUserAtomicGlob();
+			return false;
+		}
 		
 		const XML_Char * pszRevision = NULL;
 		pAP->getAttribute("revision", pszRevision);
@@ -4582,6 +4606,7 @@ bool PD_Document::acceptRejectRevision(bool bReject, UT_uint32 iPos1,
 			t.reset(iEnd, NULL);
 	}
 
+	endUserAtomicGlob();
 	return true;
 }
 

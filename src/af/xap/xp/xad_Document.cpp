@@ -29,10 +29,13 @@
 #include "ut_vector.h"
 #include "ut_uuid.h"
 #include "ut_misc.h"
+#include "ut_path.h"
 
 #include "xad_Document.h"
+#include "xav_View.h"
 #include "xap_App.h"
 #include "xap_Strings.h"
+#include "xap_Dlg_History.h"
 
 #ifdef ENABLE_RESOURCE_MANAGER
 #include "xap_ResourceManager.h"
@@ -59,7 +62,8 @@ AD_Document::AD_Document() :
 	m_iShowRevisionID(0), // show all
 	m_bAutoRevisioning(false),
     m_bForcedDirty(false),
-	m_pUUID(NULL)
+	m_pUUID(NULL),
+	m_bDoNotAdjustHistory(false)
 {	// TODO: clear the ignore list
 	
 
@@ -623,6 +627,7 @@ void AD_Document::setAutoRevisioning(bool b)
 
 			// collapse all revisions ...
 			setShowRevisionId(0xffffffff);
+			setShowRevisions(false);
 		}
 
 		setMarkRevisions(b);
@@ -697,6 +702,9 @@ UT_uint32 AD_Document::findNearestAutoRevisionId(UT_uint32 iVersion, bool bLesse
 */
 void AD_Document::_adjustHistoryOnSave()
 {
+	if(m_bDoNotAdjustHistory)
+		return;
+	
 	// record this as the last time the document was saved + adjust
 	// the cumulative edit time
 	m_iVersion++;
@@ -740,6 +748,265 @@ void AD_Document::_adjustHistoryOnSave()
 		addRevision(iId, ucs4.ucs4_str(),ucs4.length(),time(NULL), m_iVersion);
 	}
 }
+
+bool AD_Document::_restoreVersion(XAP_Frame * pFrame, UT_uint32 iVersion)
+{
+	UT_return_val_if_fail(pFrame, false);
+	
+	if(isDirty())
+	{
+		if(pFrame->showMessageBox(XAP_STRING_ID_MSG_HistoryConfirmSave, 
+								  XAP_Dialog_MessageBox::b_YN, 
+								  XAP_Dialog_MessageBox::a_YES, getFilename())
+		   == XAP_Dialog_MessageBox::a_NO)
+		{
+			return false;
+		}
+
+		save();
+	}
+
+	// save the document under a different name ...
+	// create unique new name
+	UT_uint32 i = 0;
+
+	const char * pPath = UT_strdup(getFilename());
+	UT_return_val_if_fail(pPath, false);
+	
+	char * pDot = strrchr(pPath,'.');
+	if(pDot)
+	{
+		*pDot = 0;
+		pDot++;
+	}
+
+	UT_String s1, s2;
+	
+	do
+	{
+		i++;
+		
+		UT_String_sprintf(s2, "_version_%d-%d", iVersion, i);
+	
+		s1 = pPath;
+		s1 += s2;
+
+		if(pDot && *pDot)
+		{
+			s1 += ".";
+			s1 += pDot;
+		}
+	
+	}
+	while(UT_isRegularFile(s1.c_str()));
+
+	FREEP(pPath);
+
+	m_bDoNotAdjustHistory = true;
+	saveAs(s1.c_str(), getLastSavedAsType());
+	m_bDoNotAdjustHistory = false;
+	
+	if(rejectAllHigherRevisions(iVersion))
+	{
+		// we succeeded in restoring the document, so now clear the
+		// history record
+		UT_sint32 iCount = getHistoryCount();
+		const AD_VersionData * pVLast = NULL;
+		UT_uint32 iEditTime = 0;
+		
+		for(UT_sint32 j = 0; j < iCount; ++j)
+		{
+			AD_VersionData * v = (AD_VersionData *)m_vHistory.getNthItem(j);
+			if(!v)
+			{
+				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+				continue;
+			}
+
+			if(v->getId() == iVersion)
+			{
+				pVLast = v;
+				continue;
+			}
+			
+			if(v->getId() > iVersion)
+			{
+				// remember the lenth of the session
+				iEditTime += (v->getTime() - v->getStartTime());
+				
+				delete v;
+				m_vHistory.deleteNthItem(j);
+				iCount--;
+				j--;
+			}
+		}
+
+		UT_return_val_if_fail(pVLast,false);
+		
+		// set the document version correctly
+		setDocVersion(iVersion);
+		setLastSavedTime(pVLast->getTime());
+		setLastOpenedTime(time(NULL));
+
+		UT_ASSERT(m_iEditTime >= iEditTime);
+		m_iEditTime -= iEditTime;
+		
+		// now save me as I am
+		m_bDoNotAdjustHistory = true;
+		save();
+		m_bDoNotAdjustHistory = false;
+	}
+
+	return false;
+}
+
+bool AD_Document::showHistory(AV_View * pView)
+{
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());	
+	UT_return_val_if_fail(pFrame, false);
+
+	pFrame->raise();
+
+	XAP_DialogFactory * pDialogFactory
+		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
+
+	XAP_Dialog_History * pDialog
+	  = static_cast<XAP_Dialog_History *>(pDialogFactory->requestDialog(XAP_DIALOG_ID_HISTORY));
+	
+	UT_ASSERT(pDialog);
+	if (!pDialog)
+		return false;
+
+	pDialog->setDocument(this);
+	pDialog->runModal(pFrame);
+	
+	bool bShow   = (pDialog->getAnswer() == XAP_Dialog_History::a_OK);
+	bool bRet = false;
+
+	if (bShow)
+	{
+		UT_uint32 iVersion = pDialog->getSelectionId();
+		UT_uint32 iOrigVersion = iVersion;
+		
+		const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
+
+		if(iVersion)
+		{
+			switch(verifyHistoryState(iVersion))
+			{
+				case ADHIST_PARTIAL_RESTORE:
+					{
+						// display warning message allowing user to
+						// cancel, etc.
+						UT_return_val_if_fail(pSS,false);
+						UT_String s1, s2;
+						const char * msg1, * msg2, * msg3, * msg4;
+						
+						if(iVersion)
+						{
+							// full restore possible
+							msg1 = pSS->getValue(XAP_STRING_ID_MSG_HistoryPartRestore1);
+							msg2 = pSS->getValue(XAP_STRING_ID_MSG_HistoryPartRestore2);
+							msg4 = pSS->getValue(XAP_STRING_ID_MSG_HistoryPartRestore4);
+							UT_return_val_if_fail(msg1 && msg2 && msg4, false);
+
+							s1 = msg1;
+							s1 += " ";
+							s1 += msg2;
+							s1 += " ";
+							s1 += msg4;
+
+							UT_String_sprintf(s2,s1.c_str(),iOrigVersion,iVersion,iOrigVersion);
+						
+							switch(pFrame->showMessageBox(s2.c_str(), 
+														  XAP_Dialog_MessageBox::b_YNC, 
+														  XAP_Dialog_MessageBox::a_YES))
+							{
+								case XAP_Dialog_MessageBox::a_NO:
+									bRet = _restoreVersion(pFrame, iOrigVersion);
+									break;
+									
+								case XAP_Dialog_MessageBox::a_YES:
+									bRet = _restoreVersion(pFrame, iVersion);
+									break;
+
+								case XAP_Dialog_MessageBox::a_CANCEL:
+									break;
+
+								default:
+									UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+							}
+							
+						}
+						else
+						{
+							// full restore not possible
+							msg1 = pSS->getValue(XAP_STRING_ID_MSG_HistoryPartRestore1);
+							msg3 = pSS->getValue(XAP_STRING_ID_MSG_HistoryPartRestore3);
+							msg4 = pSS->getValue(XAP_STRING_ID_MSG_HistoryPartRestore4);
+							UT_return_val_if_fail(msg1 && msg3 && msg4,false);
+
+							s1 = msg1;
+							s1 += " ";
+							s1 += msg3;
+							s1 += " ";
+							s1 += msg4;
+						
+							UT_String_sprintf(s2, s1.c_str(), iOrigVersion);
+
+							switch(pFrame->showMessageBox(s2.c_str(), 
+														  XAP_Dialog_MessageBox::b_OC, 
+														  XAP_Dialog_MessageBox::a_OK))
+							{
+								case XAP_Dialog_MessageBox::a_OK:
+									bRet = _restoreVersion(pFrame, iOrigVersion);
+									break;
+
+								case XAP_Dialog_MessageBox::a_CANCEL:
+									break;
+
+								default:
+									UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+							}
+							
+						}
+					}
+					break;
+					
+				case ADHIST_FULL_RESTORE:
+					bRet = _restoreVersion(pFrame, iVersion);
+					break;
+					
+				case ADHIST_NO_RESTORE:
+					// issue a warning message and quit
+					{
+						
+						UT_return_val_if_fail(pSS,false);
+						UT_String s2;
+						const char * msg1;
+						
+						msg1 = pSS->getValue(XAP_STRING_ID_MSG_HistoryNoRestore);
+						UT_return_val_if_fail(msg1,false);
+						
+						UT_String_sprintf(s2, msg1, iOrigVersion);
+
+						pFrame->showMessageBox(s2.c_str(), 
+											   XAP_Dialog_MessageBox::b_O, 
+											   XAP_Dialog_MessageBox::a_OK);
+					}
+					break;
+					
+				default:
+					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			}
+		}
+	}
+
+	pDialogFactory->releaseDialog(pDialog);
+
+	return bRet;
+}
+
 
 ///////////////////////////////////////////////////
 // AD_VersionData

@@ -357,7 +357,7 @@ public:
 	void                    updateAllLayoutsInDoc( PL_StruxDocHandle sdh);
 	void					clearIfAtFmtMark(PT_DocPosition dpos);
 
-	UT_uint32				getLastSavedAsType() { return m_lastSavedAsType; }
+	virtual UT_uint32		getLastSavedAsType() const { return m_lastSavedAsType; }
 	UT_uint32				getLastOpenedType() { return m_lastOpenedType; }
 	XAP_App *				getApp() { return m_pApp; }
 	bool					updateFields(void);
