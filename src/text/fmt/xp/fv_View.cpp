@@ -683,6 +683,98 @@ void FV_View::setFrameFormat(const XML_Char * properties[])
 	setFrameFormat(properties,NULL,dataID);
 }
 
+/*!
+ * This method converts a positioned object described by fp_FrameLayout * pFram
+ * to an inline image. It then selects the inline image.
+ */
+bool FV_View::convertPositionedToInLine(fl_FrameLayout * pFrame)
+{
+	UT_GenericVector<fl_BlockLayout *> vecBlocks;
+	fp_FrameContainer * pFC = static_cast<fp_FrameContainer *>(pFrame->getFirstContainer());
+	pFC->getBlocksAroundFrame(vecBlocks);
+	fl_BlockLayout * pBL = vecBlocks.getNthItem(0);
+	fp_Line * pLine = static_cast<fp_Line *>(pBL->getFirstContainer());
+	bool bLoop = true;
+	while((pLine != NULL) && bLoop)
+	{
+			UT_sint32 xoffLine, yoffLine;
+			fp_VerticalContainer * pVCon= (static_cast<fp_VerticalContainer *>(pLine->getContainer()));
+			pVCon->getScreenOffsets(pLine, xoffLine, yoffLine);
+			if(yoffLine + pLine->getHeight() >= pFC->getFullY())
+			{
+				bLoop = false;
+				break;
+			}
+			pLine = static_cast<fp_Line *>(pLine->getNext());
+	}
+	if(pLine == NULL)
+	{
+		return false;
+	}
+	fp_Run * pRun = pLine->getLastRun();
+	PT_DocPosition pos = pBL->getPosition() + pRun->getBlockOffset() + pRun->getLength();
+	const PP_AttrProp* pAP = NULL;
+	pFrame->getAP(pAP);
+	if(pAP == NULL)
+	{
+		return false;
+	}
+	const XML_Char* szDataID = 0;
+	const XML_Char* szTitle = 0;
+	const XML_Char* szDescription = 0;
+	const  XML_Char* szWidth = 0;
+	const  XML_Char * szHeight = 0;
+    bool bFound = pAP->getAttribute(PT_STRUX_IMAGE_DATAID,szDataID);
+	if(!bFound)
+	{
+		return false;
+	}
+	bFound = pAP->getProperty("frame-width",szWidth);
+	if(!bFound)
+	{
+		return false;
+	}
+	bFound = pAP->getProperty("frame-height",szHeight);
+	if(!bFound)
+	{
+		return false;
+	}
+	bFound = pAP->getProperty("title",szTitle);
+	bFound = pAP->getProperty("alt",szDescription);
+	UT_String sProps;
+	sProps += "width:";
+	sProps += szWidth;
+	sProps += "; height:";
+	sProps += szHeight;
+	const XML_Char*	attributes[] = {
+		"dataid", NULL,
+		"title",NULL,
+		"alt",NULL,
+		PT_PROPS_ATTRIBUTE_NAME, NULL,
+	   	NULL, NULL};
+	attributes[1] = szDataID;
+	attributes[3] = szTitle;
+	attributes[5] = szDescription;
+	attributes[7] = sProps.c_str();
+	if(pFrame->getPosition(true) < pos)
+	{
+		pos -= 2;
+	}
+	m_pDoc->beginUserAtomicGlob();
+	m_FrameEdit.deleteFrame(pFrame);
+	_saveAndNotifyPieceTableChange();
+	m_pDoc->insertObject(pos, PTO_Image, attributes, NULL);
+	_restorePieceTableState();
+	m_pDoc->endUserAtomicGlob();
+	_updateInsertionPoint();
+	_generalUpdate();
+	cmdSelect(pos,pos+1);
+	return true;
+}
+
+/*!
+ * This method converts an image located position pos to a positioned object.
+ */
 void FV_View::convertInLineToPositioned(PT_DocPosition pos,const XML_Char ** attributes)
 {
 
@@ -925,9 +1017,11 @@ void FV_View::deleteFrame(void)
 	}
 	if(getFrameLayout() == NULL)
 	{
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		selectFrame(); // this will clear the frame context
 		return;
 	}
+	UT_DEBUGMSG(("Doing Delete Frame \n"));
 	m_FrameEdit.deleteFrame();
 	XAP_Frame * pFrame = static_cast<XAP_Frame*>(getParentData());
 	if(pFrame)
@@ -2103,7 +2197,7 @@ PT_DocPosition FV_View::saveSelectedImage (const UT_ByteBuf ** pBytes)
 		{
 			return 0;
 		}
-		bool bFoundDataID = pAP->getAttribute(PT_STRUX_IMAGE_DATAID, dataId);
+		pAP->getAttribute(PT_STRUX_IMAGE_DATAID, dataId);
 		pos = pFrame->getPosition();
 	}
 	else

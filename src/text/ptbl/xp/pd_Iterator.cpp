@@ -141,7 +141,14 @@ bool PD_DocIterator::_findFrag()
 
 	// do it the hard way
 	m_frag = m_pt.getFragments().findFirstFragBeforePos(m_pos);
-
+	if(m_frag == NULL)
+	{
+	  //
+	  // One last attempt
+	  //
+	        m_pt.getFragments().cleanFrags();
+		m_frag = m_pt.getFragments().findFirstFragBeforePos(m_pos);
+	}
 	if(m_frag)
 	{
 		// check that the position is not after the end of the
@@ -471,7 +478,11 @@ bool PD_StruxIterator::_findFrag()
 		m_frag = static_cast<const pf_Frag *>(m_sdh);
 		m_frag_offset = 0;
 	}
-	
+	if(m_pPT->getFragments().areFragsDirty())
+	{
+		m_pPT->getFragments().cleanFrags();
+	}
+
 	while(m_frag)
 	{
 		if(m_frag_offset <= m_offset && m_frag_offset + m_frag->getLength() > m_offset)

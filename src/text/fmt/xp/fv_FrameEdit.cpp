@@ -1752,12 +1752,16 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 /*!
  * This method deletes the current selected frame
  */
-void FV_FrameEdit::deleteFrame(void)
+void FV_FrameEdit::deleteFrame(fl_FrameLayout * pFL)
 {
 	if(m_pFrameLayout == NULL)
 	{
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		return;
+	        m_pFrameLayout = pFL;
+		if(m_pFrameLayout == NULL)
+		{
+		  UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		  return;
+		}
 	}
 	PP_AttrProp * p_AttrProp_Before = NULL;
 

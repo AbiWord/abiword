@@ -391,6 +391,8 @@ public:
 	void            convertInLineToPositioned(PT_DocPosition pos, 
 											const XML_Char ** attribs);
 
+	bool            convertPositionedToInLine(fl_FrameLayout * pFrame);
+
 // ----------------------
 
 	bool			isPosSelected(PT_DocPosition pos) const;

@@ -9603,6 +9603,7 @@ Defun (dlgFmtPosImage)
 	{
 	  return true;
 	}
+
 	const PP_AttrProp* pAP = NULL;
 	pPosObj->getAP(pAP);
 	const XML_Char* szTitle = 0;
@@ -9692,7 +9693,8 @@ Defun (dlgFmtPosImage)
 	}
 	if(pDialog->getWrapping() == WRAP_INLINE)
 	{
-	  // !! Have to convert back to inline!
+	  pView->convertPositionedToInLine(pPosObj);
+	  return true;
 	}
 	else
 	{
