@@ -84,11 +84,7 @@ static void fromucs2(unsigned short *word16, int length)
 	out[i]= 0;
 }
 
-#ifndef __GLIBC__
-#	define UCS_2_INTERNAL "UCS-2-INTERNAL"
-#else
 #	define UCS_2_INTERNAL "UCS-2"
-#endif
 
 static void try_autodetect_charset(char* hashname)
 {
