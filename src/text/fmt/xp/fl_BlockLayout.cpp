@@ -860,15 +860,29 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 		else
 		{
 			pRun = pRun->getPrev();
-			UT_ASSERT(pRun->getType() == FPRUN_TEXT);
-			fp_TextRun * pTRun = static_cast<fp_TextRun *>(pRun);
-			UT_uint32 splitOffset = posEmbedded - posInBlock;
-			xxx_UT_DEBUGMSG(("updateOffsets: Split at offset %d \n",splitOffset));
-			bool bres = pTRun->split(splitOffset);
-			UT_ASSERT(bres);
-			pRun = pTRun->getNext();
-			pPrev = pTRun;
-			iDiff = 0;
+			if(pRun->getType() == FPRUN_FIELD)
+			{
+				//
+				// We're here if the first run of the block is the footnote
+				// field and we've just deleted the footnote
+				//
+				UT_DEBUGMSG(("posEmbedded %d posInBlock %d prev pos %d next pos %d \n",posEmbedded,posInBlock,posInBlock+pRun->getBlockOffset(),posInBlock+pRun->getNext()->getBlockOffset()));
+				iDiff = pRun->getNext()->getBlockOffset() - pRun->getBlockOffset();
+				pPrev = pRun;
+				pRun = pRun->getNext();
+			}
+			else
+			{
+				UT_ASSERT(pRun->getType() == FPRUN_TEXT);
+				fp_TextRun * pTRun = static_cast<fp_TextRun *>(pRun);
+				UT_uint32 splitOffset = posEmbedded - posInBlock;
+				xxx_UT_DEBUGMSG(("updateOffsets: Split at offset %d \n",splitOffset));
+				bool bres = pTRun->split(splitOffset);
+				UT_ASSERT(bres);
+				pRun = pTRun->getNext();
+				pPrev = pTRun;
+				iDiff = 0;
+			}
 		}
 	}
 	UT_ASSERT(iDiff >= 0);
@@ -3672,6 +3686,10 @@ bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 		{
 			pRun->setBlockOffset(iRunBlockOffset + len);
 			pRun->insertIntoRunListBeforeThis(*pNewRun);
+			if(m_pFirstRun == pRun)
+			{
+				m_pFirstRun = pNewRun;
+			}
 			bInserted = true;
 			if(pRun->getLine())
 			{
@@ -3691,7 +3709,6 @@ bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 			pRun->setBlockOffset(iRunBlockOffset + len);
 
 			pRun->insertIntoRunListBeforeThis(*pNewRun);
-
 			if (m_pFirstRun == pRun)
 			{
 				m_pFirstRun = pNewRun;
@@ -4096,6 +4113,10 @@ fl_BlockLayout::_assertRunListIntegrityImpl(void)
 	fp_Run* pRun = m_pFirstRun;
 	UT_uint32 iOffset = 0;
 	bool bPastFirst = false;
+	if(m_pFirstRun)
+	{
+		UT_ASSERT(m_pFirstRun->getPrev() == NULL);
+	}
 	while (pRun)
 	{
 		// Verify that offset of this block is correct.

@@ -2184,6 +2184,20 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 				fl_EndnoteLayout * pEL = getClosestEndnote(getPoint());
 				count += pEL->getLength();
 			}
+			if(isInFootnote() && !isInFootnote(getPoint() - count))
+			{
+//
+// Can't delete a footnote strux. Bail out.
+//
+				return;
+			}
+			else if(isInEndnote() && !isInEndnote(getPoint() - count))
+			{
+//
+// Can't delete a footnote strux. Bail out.
+//
+				return;
+			}
 		}
 		// Code to deal with font boundary problem.
 		// TODO: This should really be fixed by someone who understands
