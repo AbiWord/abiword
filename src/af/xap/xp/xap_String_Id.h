@@ -492,6 +492,7 @@ dcl(DLG_Options_Label_LangWithKeyboard,         "Change Language when changing k
 dcl(DLG_Options_Label_DirMarkerAfterClosingParenthesis, "Auto-insert direction markers")
 
 dcl(DLG_History_WindowLabel, "Document History")
+dcl(DLG_History_DocumentDetails, "Document Details")
 dcl(DLG_History_Path, "Document name:")
 dcl(DLG_History_Created, "Created:")
 dcl(DLG_History_Version, "Version:")

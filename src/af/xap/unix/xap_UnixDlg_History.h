@@ -36,8 +36,15 @@ public:
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 	
-protected:
-
+private:
+	GtkWidget * _constructWindow(void);
+	void        _populateWindowData(void);
+	void        _connectSignals(void);
+	void        _fillHistoryTree(void);
+	GladeXML *              m_pXML;
+	GtkWidget *             m_windowMain;
+	GtkWidget *             m_wListWindow;
+	GtkWidget *             m_wTreeView;
 };
 
 #endif /* XAP_UNIXDIALOG_HISTORY_H */
