@@ -26,6 +26,13 @@ include $(ABI_ROOT)/src/config/abi_rules.mk
 
 PKGBASENAME=AbiSuite-$(ABI_BUILD_VERSION)
 
+ifeq ($(OS_ARCH), x86)
+SUFFIX=i386
+endif
+ifeq ($(OS_ARCH), ppc)
+SUFFiX=ppc
+endif
+
 distribution:	$(ABI_DIST_TARGET)
 
 zip:
@@ -35,5 +42,5 @@ zip:
 	$(subst xxxx,$(DIST)/tmp,$(VERIFY_DIRECTORY))
 	(cd $(OUTDIR); tar -cf - AbiSuite) | (cd $(DIST)/tmp;          tar -xf -)
 	(cd $(OUTDIR); tar -cf - bin/Abi*) | (cd $(DIST)/tmp/AbiSuite; tar -xf -)
-	(cd $(DIST)/tmp; zip -r ../$(PKGBASENAME)-$(OS_ARCH).zip AbiSuite)
+	(cd $(DIST)/tmp; zip -r ../$(PKGBASENAME)-$(SUFFIX).zip AbiSuite)
 	(cd $(DIST); rm -rf tmp)

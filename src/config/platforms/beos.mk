@@ -33,7 +33,7 @@
 #OS_ARCH		:= $(shell uname -m | sed "s/\//-/" )
 #We should change this at some point in time to the generic x86/ppc
 OS_ARCH		:= $(shell uname -m | sed "s/\//-/" | \
-	           sed -e s/BePC/x86/ -e s/BeBox/ppc/ )
+	           sed -e s/BePC/x86/ -e s/BeBox/ppc/ -e s/BeMac/ppc/)
 
 # These are (probably) optional for your platform.
 X86_ARCH_FLAGS		= 
