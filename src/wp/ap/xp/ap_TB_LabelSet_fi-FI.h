@@ -1,5 +1,5 @@
 /* AbiWord
-* Copyright (C) 1998-2000 AbiSource, Inc.
+* Copyright (C) 1998-2001 AbiSource, Inc.
 * 
 * This program is free software; you can redistribute it and/or
 * modify it under the terms of the GNU General Public License
@@ -17,8 +17,8 @@
 * 02111-1307, USA.
 */
 
-// Finnish translations provided by Jarmo Karvonen <Jarmo.Karvonen@lpg.fi>
-// Updated by Ismo M‰kinen <ismtaol@luukku.com> - December 2001
+// Original Finnish translations provided by Jarmo Karvonen <Jarmo.Karvonen@lpg.fi>
+// 2nd update by Ismo M‰kinen <ismtaol@luukku.com> - March 2002
 
 /*****************************************************************
 ******************************************************************
@@ -70,11 +70,11 @@ ToolbarLabel(AP_TOOLBAR_ID_SPELLCHECK, "Oikoluku", tb_spellcheck_xpm, NULL, "Asi
 ToolbarLabel(AP_TOOLBAR_ID_IMG, "Lis‰‰ kuva", tb_insert_graphic_xpm, NULL, "Lis‰‰ kuva asiakirjaan")
 
 ToolbarLabel(AP_TOOLBAR_ID_FMT_STYLE, "Tyyli", NoIcon, NULL, "Tyyli")
-ToolbarLabel(AP_TOOLBAR_ID_FMT_FONT, "Fontti", NoIcon, NULL, "Fontti")
-ToolbarLabel(AP_TOOLBAR_ID_FMT_HYPERLINK, "+Hyperlinkki", tb_hyperlink, NULL, "Lis‰‰ hyperlinkki asiakirjaan")
-ToolbarLabel(AP_TOOLBAR_ID_FMT_BOOKMARK, "+Kirjanmerkki", tb_anchor, NULL, "Lis‰‰ kirjanmerkki asiakirjaan")
+ToolbarLabel(AP_TOOLBAR_ID_FMT_FONT, "Kirjasin", NoIcon, NULL, "Kirjasin")
+ToolbarLabel(AP_TOOLBAR_ID_FMT_HYPERLINK, "Hyperlinkki", tb_hyperlink, NULL, "Lis‰‰ hyperlinkki asiakirjaan")
+ToolbarLabel(AP_TOOLBAR_ID_FMT_BOOKMARK, "Kirjanmerkki", tb_anchor, NULL, "Lis‰‰ kirjanmerkki asiakirjaan")
 
-ToolbarLabel(AP_TOOLBAR_ID_FMT_SIZE, "Fontin koko", NoIcon, NULL, "Fontin koko")
+ToolbarLabel(AP_TOOLBAR_ID_FMT_SIZE, "Kirjasinkoko", NoIcon, NULL, "Kirjasinkoko")
 ToolbarLabel(AP_TOOLBAR_ID_FMT_BOLD, "Lihavoitu", tb_text_bold_L_xpm, NULL, "Lihavoitu")
 ToolbarLabel(AP_TOOLBAR_ID_FMT_ITALIC, "Kursivoitu", tb_text_italic_K_xpm, NULL, "Kursivoitu")
 ToolbarLabel(AP_TOOLBAR_ID_FMT_UNDERLINE, "Alleviivattu",tb_text_underline_A_xpm, NULL, "Alleviivattu")
@@ -108,11 +108,12 @@ ToolbarLabel(AP_TOOLBAR_ID_VIEW_SHOWPARA, "N‰yt‰ kaikki", tb_view_showpara_xpm, 
 ToolbarLabel(AP_TOOLBAR_ID_ZOOM, "Zoomaus", NoIcon, NULL, "N‰ytˆn suurennussuhde")
 ToolbarLabel(AP_TOOLBAR_ID_LISTS_BULLETS, "Luettelo", tb_lists_xpm, NULL, "Luettelomerkit ja numerointi")
 ToolbarLabel(AP_TOOLBAR_ID_LISTS_NUMBERS, "Numerointi", tb_lists_numbers_xpm, NULL, "Valittujen rivien numerointi")
-ToolbarLabel(AP_TOOLBAR_ID_COLOR_FORE, "Tekstiv‰ri", tb_text_fgcolor_xpm, NULL, "Fontin v‰ri")
-ToolbarLabel(AP_TOOLBAR_ID_COLOR_BACK, "Korostus", tb_text_bgcolor_xpm, NULL, "Fontin taustav‰ri")
+ToolbarLabel(AP_TOOLBAR_ID_COLOR_FORE, "Tekstiv‰ri", tb_text_fgcolor_xpm, NULL, "Tekstin v‰ri")
+ToolbarLabel(AP_TOOLBAR_ID_COLOR_BACK, "Korostus", tb_text_bgcolor_xpm, NULL, "Tekstin taustav‰ri")
 ToolbarLabel(AP_TOOLBAR_ID_INDENT, "Suurenna sisennyst‰", tb_text_indent_xpm, NULL, "Suurenna sisennyst‰")
 ToolbarLabel(AP_TOOLBAR_ID_UNINDENT, "Pienenn‰ sisennyst‰", tb_text_unindent_xpm, NULL, "Pienenn‰ sisennyst‰")
 ToolbarLabel(AP_TOOLBAR_ID_SCRIPT_PLAY, "Aja skripti", tb_script_play_xpm, NULL, "Suorita skripti")
+ ToolbarLabel(AP_TOOLBAR_ID_FMTPAINTER, "Muotoilusivellin", tb_stock_paint_xpm, NULL, "K‰yt‰ aikaisemmin kopioitua kappalemuotoilua valitussa tekstiss‰")
 
 #ifdef BIDI_ENABLED
 ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_LTR, "Vasen-oikea", tb_text_direction_ltr_xpm, NULL, "Tekstin suunta vasemmalta oikealle")
