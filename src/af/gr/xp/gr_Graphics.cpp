@@ -41,6 +41,7 @@
 
 // static class member initializations
 UT_uint32 GR_Font::s_iAllocCount = 0;
+UT_VersionInfo GR_Graphics::s_Version;
 
 GR_Font::GR_Font()
 	:m_pCharWidths(NULL)
@@ -1214,23 +1215,13 @@ void GR_Graphics::justify(GR_RenderInfo & ri)
 bool GR_GraphicsFactory::registerClass(GR_Allocator allocator, GR_Descriptor descriptor,
 									   UT_uint32 iClassId)
 {
-	UT_return_val_if_fail(allocator && descriptor, false);
+	UT_return_val_if_fail(allocator && descriptor && iClassId > GRID_LAST_DEFAULT, false);
 	
 	UT_sint32 indx = m_vClassIds.findItem(iClassId);
 
 	if(indx >= 0)
 	{
-		if(iClassId < GRID_LAST_DEFAULT)
-		{
-			// we allow the default values to be replaced
-			m_vClassIds.deleteNthItem(indx);
-			m_vAllocators.deleteNthItem(indx);
-			m_vDescriptors.deleteNthItem(indx);
-		}
-		else
-		{
-			return false;
-		}
+		return false;
 	}
 	
 	m_vAllocators.addItem((void*)allocator);
@@ -1251,7 +1242,7 @@ UT_uint32 GR_GraphicsFactory::registerPluginClass(GR_Allocator allocator, GR_Des
 {
 	UT_return_val_if_fail(allocator && descriptor, 0);
 
-	static UT_uint32 iLastId = GRID_LAST_BUILT_IN;
+	static UT_uint32 iLastId = GRID_LAST_EXTENSION;
 	iLastId++;
 
 	while(iLastId < GRID_UNKNOWN && !registerClass(allocator,descriptor, iLastId))
@@ -1277,8 +1268,13 @@ UT_uint32 GR_GraphicsFactory::registerPluginClass(GR_Allocator allocator, GR_Des
 */
 bool GR_GraphicsFactory::unregisterClass(UT_uint32 iClassId)
 {
-	UT_return_val_if_fail(iClassId < GRID_LAST_BUILT_IN, false);
+	// cannot unregister built-in classes
+	UT_return_val_if_fail(iClassId > GRID_LAST_BUILT_IN, false);
 
+	// cannot unregister the default graphics class, hopefully the
+	// rogue plugin will pay attention to the return value
+	UT_return_val_if_fail(iClassId == m_iDefaultScreen || iClassId == m_iDefaultPrinter, false);
+	
 	UT_sint32 indx = m_vClassIds.findItem(iClassId);
 
 	if(indx < 0)
@@ -1297,6 +1293,12 @@ bool GR_GraphicsFactory::unregisterClass(UT_uint32 iClassId)
 */
 GR_Graphics * GR_GraphicsFactory::newGraphics(UT_uint32 iClassId, GR_AllocInfo &param) const
 {
+	if(iClassId == GRID_DEFAULT)
+		iClassId = m_iDefaultScreen;
+
+	if(iClassId == GRID_DEFAULT_PRINT)
+		iClassId = m_iDefaultPrinter;
+	
 	UT_sint32 indx = m_vClassIds.findItem(iClassId);
 
 	if(indx < 0)
@@ -1313,11 +1315,16 @@ GR_Graphics * GR_GraphicsFactory::newGraphics(UT_uint32 iClassId, GR_AllocInfo &
 
 const char *  GR_GraphicsFactory::getClassDescription(UT_uint32 iClassId) const
 {
+	if(iClassId == GRID_DEFAULT)
+		iClassId = m_iDefaultScreen;
+
+	if(iClassId == GRID_DEFAULT_PRINT)
+		iClassId = m_iDefaultPrinter;
+
 	UT_sint32 indx = m_vClassIds.findItem(iClassId);
 
 	if(indx < 0)
 		return NULL;
-				
 					
 	GR_Descriptor descr = (GR_Descriptor)m_vDescriptors.getNthItem(indx);
 				
@@ -1327,3 +1334,14 @@ const char *  GR_GraphicsFactory::getClassDescription(UT_uint32 iClassId) const
 	return descr();
 				
 }
+
+bool GR_GraphicsFactory::isRegistered(UT_uint32 iClassId) const
+{
+	UT_sint32 indx = m_vClassIds.findItem(iClassId);
+
+	if(indx < 0)
+		return false;
+
+	return true;
+}
+

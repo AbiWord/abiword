@@ -64,6 +64,8 @@ public:
 	virtual UT_sint32 resetJustification(GR_RenderInfo & ri);
 	virtual UT_sint32 countJustificationPoints(const GR_RenderInfo & ri) const;
 	virtual void      justify(GR_RenderInfo & ri);
+
+	virtual const UT_VersionInfo & getVersion() const {return s_Version;}
 	
   protected:
 	// all instances have to be created via GR_GraphicsFactory; see gr_Graphics.h
@@ -75,6 +77,7 @@ public:
 	
 	static HINSTANCE s_hUniscribe;
 	static UT_uint32 s_iInstanceCount;
+	static UT_VersionInfo s_Version;
 };
 
 class GR_USPRenderInfo : public GR_RenderInfo

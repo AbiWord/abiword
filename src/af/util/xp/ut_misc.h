@@ -34,6 +34,7 @@ class UT_RGBColor;
 class UT_Rect;
 class UT_Vector;
 class UT_String;
+class UT_UTF8String;
 
 // ----------------------------------------------------------------
 #define UT_RGBCOLOR_PROXIMITY 45
@@ -235,4 +236,58 @@ typedef unsigned char UT_EthernetAddress[6];
     retrieve the 6-byte address of the network card; returns true on success
 */
 bool UT_getEthernetAddress(UT_EthernetAddress &a);
+
+class ABI_EXPORT UT_VersionInfo
+{
+  public:
+	UT_VersionInfo(UT_uint32 maj, UT_uint32 min, UT_uint32 mic, UT_uint32 nan)
+		: m_iMajor(maj), m_iMinor(min), m_iMicro(mic), m_iNano(nan) {};
+
+	UT_VersionInfo()
+		: m_iMajor(0), m_iMinor(0), m_iMicro(0), m_iNano(0) {};
+
+	UT_uint32 getMajor() const {return m_iMajor;}
+	UT_uint32 getMinor() const {return m_iMinor;}
+	UT_uint32 getMicro() const {return m_iMicro;}
+	UT_uint32 getNano()  const {return m_iNano;}
+
+	void set(UT_uint32 maj, UT_uint32 min, UT_uint32 mic, UT_uint32 nan)
+    	{m_iMajor = maj; m_iMinor = min; m_iMicro = mic; m_iNano = nan;}
+
+	bool operator > (const UT_VersionInfo &v) const
+	    {
+			if(m_iMajor > v.m_iMajor)
+				return true;
+			if(m_iMajor < v.m_iMajor)
+				return false;
+
+			if(m_iMinor > v.m_iMinor)
+				return true;
+			if(m_iMinor < v.m_iMinor)
+				return false;
+			
+			if(m_iMicro > v.m_iMicro)
+				return true;
+			if(m_iMicro < v.m_iMicro)
+				return false;
+
+			if(m_iNano > v.m_iNano)
+				return true;
+			if(m_iNano < v.m_iNano)
+				return false;
+
+			return false;
+	    }
+
+	const UT_UTF8String & getString() const;
+
+	
+  private:
+	UT_uint32 m_iMajor;
+	UT_uint32 m_iMinor;
+	UT_uint32 m_iMicro;
+	UT_uint32 m_iNano;
+};
+
+
 #endif /* UTMISC_H */

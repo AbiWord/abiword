@@ -115,28 +115,11 @@ XAP_Win32App::XAP_Win32App(HINSTANCE hInstance, XAP_Args * pArgs, const char * s
 
 			UT_ASSERT( bSuccess );
 #if 0 // turned off until the class is functional ...
-			bSuccess = pGF->registerClass(GR_Win32USPGraphics::graphicsAllocator,
-										  GR_Win32USPGraphics::graphicsDescriptor,
-										  GRID_DEFAULT);
-			UT_ASSERT( bSuccess );
-
-			bSuccess = pGF->registerClass(GR_Win32USPGraphics::graphicsAllocator,
-										  GR_Win32USPGraphics::graphicsDescriptor,
-										  GRID_DEFAULT_PRINT);
-			UT_ASSERT( bSuccess );
-
+			pGF->registerAsDefault(GR_Win32USPGraphics::s_getClassId(), true);
+			pGF->registerAsDefault(GR_Win32USPGraphics::s_getClassId(), false);
 #else
-			bSuccess = pGF->registerClass(GR_Win32Graphics::graphicsAllocator,
-										  GR_Win32Graphics::graphicsDescriptor,
-										  GRID_DEFAULT);
-
-			UT_ASSERT( bSuccess );
-
-			bSuccess = pGF->registerClass(GR_Win32Graphics::graphicsAllocator,
-										  GR_Win32Graphics::graphicsDescriptor,
-										  GRID_DEFAULT_PRINT);
-
-			UT_ASSERT( bSuccess );
+			pGF->registerAsDefault(GR_Win32Graphics::s_getClassId(), true);
+			pGF->registerAsDefault(GR_Win32Graphics::s_getClassId(), false);
 #endif
 			
 			// now free the library (GR_Win32USPGraphics will load it
@@ -147,17 +130,8 @@ XAP_Win32App::XAP_Win32App(HINSTANCE hInstance, XAP_Args * pArgs, const char * s
 		else
 		{
 			UT_DEBUGMSG(("XAP_Win32App: could not load Uniscribe library"));
-			bSuccess = pGF->registerClass(GR_Win32Graphics::graphicsAllocator,
-										  GR_Win32Graphics::graphicsDescriptor,
-										  GRID_DEFAULT);
-
-			UT_ASSERT( bSuccess );
-
-			bSuccess = pGF->registerClass(GR_Win32Graphics::graphicsAllocator,
-										  GR_Win32Graphics::graphicsDescriptor,
-										  GRID_DEFAULT_PRINT);
-
-			UT_ASSERT( bSuccess );
+			pGF->registerAsDefault(GR_Win32Graphics::s_getClassId(), true);
+			pGF->registerAsDefault(GR_Win32Graphics::s_getClassId(), false);
 		}
 	}
 }

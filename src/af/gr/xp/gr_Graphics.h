@@ -147,15 +147,15 @@ class ABI_EXPORT GR_Font
  */
 enum GR_GraphicsId
 {
-	/* default id's (re-allocable) */
+	/* default id's */
+	/* these id's can be reregistered at will */
 	GRID_DEFAULT         =  0x0,
 	GRID_DEFAULT_PRINT   =  0x1,
-
 
 	GRID_LAST_DEFAULT    =  0xff,
 
 	/* IDs for built-in classes: DO NOT CHANGE THE ASSIGNED VALUES !!!*/
-	
+	/* (these classes cannot be unregistered) */
 	GRID_BEOS            =  0x101,
 	GRID_COCOA           =  0x102,
 	GRID_QNX             =  0x103,
@@ -163,12 +163,18 @@ enum GR_GraphicsId
 	GRID_UNIX            =  0x105,
 	GRID_UNIX_PS         =  0x106,
 	GRID_UNIX_NULL       =  0x107,
-	GRID_UNIX_PANGO      =  0x108,
-	GRID_WIN32_UNISCRIBE =  0x109,
-
+	
 	/*add new built-in ids here*/
 	
-	GRID_LAST_BUILT_IN = 0x0000ffff,
+	GRID_LAST_BUILT_IN = 0x200,
+
+	/* IDs for extension classes (can be both built-in and plugins) */
+	/* (these classes can be unregistered by explicit call to
+	   unregisterClass()) */
+	GRID_UNIX_PANGO      =  0x201,
+	GRID_WIN32_UNISCRIBE =  0x202,
+
+	GRID_LAST_EXTENSION = 0x0000ffff,
 
 	/* id's for plugins will be auto-generatoed from between here */
 	
@@ -256,8 +262,19 @@ class GR_GraphicsFactory
 
 	bool          registerClass(GR_Allocator, GR_Descriptor, UT_uint32 iClassId);
 	UT_uint32     registerPluginClass(GR_Allocator, GR_Descriptor);
-	
+
+	void          registerAsDefault(UT_uint32 iClassId, bool bScreen)
+	                     {
+							 if(bScreen)
+								 m_iDefaultScreen = iClassId;
+							 else
+								 m_iDefaultPrinter = iClassId;
+						 }
+
+	UT_uint32     getDefaultClass(bool bScreen) const {if(bScreen) return m_iDefaultScreen; else m_iDefaultPrinter;}
 	bool          unregisterClass(UT_uint32 iClassId);
+	bool          isRegistered(UT_uint32 iClassId) const;
+	
 	GR_Graphics * newGraphics(UT_uint32 iClassId, GR_AllocInfo &param) const;
 	const char *  getClassDescription(UT_uint32 iClassId) const;
 	
@@ -266,6 +283,9 @@ class GR_GraphicsFactory
 	UT_Vector       m_vAllocators;
 	UT_Vector       m_vDescriptors;
 	UT_NumberVector m_vClassIds;
+
+	UT_uint32       m_iDefaultScreen;
+	UT_uint32       m_iDefaultPrinter;
 };
 
 
@@ -560,6 +580,12 @@ class ABI_EXPORT GR_Graphics
 	virtual UT_sint32 resetJustification(GR_RenderInfo & ri);
 	virtual UT_sint32 countJustificationPoints(const GR_RenderInfo & ri) const;
 	virtual void justify(GR_RenderInfo & ri);
+
+	// should be overriden by any classes implemented as plugins
+	// NB: you must not use s_Version to store the version of derrived
+	// classes, but have your own static variable for the derrived
+	// class !!!
+	virtual const UT_VersionInfo & getVersion() const {UT_ASSERT( UT_NOT_IMPLEMENTED ); return s_Version;}
 	
  protected:
 
@@ -672,6 +698,8 @@ class ABI_EXPORT GR_Graphics
 	UT_StringPtrMap	 m_hashFontCache;
 
 	UT_uint32 m_paintCount;
+
+	static UT_VersionInfo   s_Version;
 };
 
 #endif /* GR_GRAPHICS_H */

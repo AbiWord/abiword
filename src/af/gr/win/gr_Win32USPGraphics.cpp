@@ -25,6 +25,7 @@
 
 HINSTANCE GR_Win32USPGraphics::s_hUniscribe = NULL;
 UT_uint32 GR_Win32USPGraphics::s_iInstanceCount = 0;
+UT_VersionInfo GR_Win32USPGraphics::s_Version;
 
 enum usp_error
 {
@@ -68,6 +69,7 @@ GR_Win32USPGraphics::GR_Win32USPGraphics(HDC hdc, const DOCINFO * pDI, XAP_App *
 	}
 }
 
+
 bool GR_Win32USPGraphics::_constructorCommonCode()
 {
 	// try to load Uniscribe
@@ -75,6 +77,8 @@ bool GR_Win32USPGraphics::_constructorCommonCode()
 	
 	if(s_iInstanceCount == 1)
 	{
+		s_Version.set(0,1,0,0);
+		
 		s_hUniscribe = LoadLibrary("usp10.dll");
 
 		if(!s_hUniscribe)
@@ -278,6 +282,9 @@ bool GR_USPRenderInfo::isJustified() const
 #define abi_plugin_supports_version abipgn_grwin32usp_supports_version
 #endif
 
+static	UT_uint32 s_iPrevDefaultScreen = 0;
+static	UT_uint32 s_iPrevDefaultPrinter = 0;
+
 ABI_PLUGIN_DECLARE("gr_Win32USPGraphics")
 
 ABI_FAR_CALL
@@ -285,25 +292,73 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 {
 	mi->name    = PLUGIN_NAME;
 	mi->desc    = "";
-	mi->version = "1.0.0.0";
+	mi->version = "0.1.0.0";
 	mi->author  = "Tomas Frydrych <tomasfrydrych@yahoo.co.uk";
 	mi->usage   = "";
 
+	UT_VersionInfo v1(0,1,0,0);
+	
 	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail(pApp, 0);
 
 	GR_GraphicsFactory * pGF = pApp->getGraphicsFactory();
 	UT_return_val_if_fail(pGF, 0);
 	
-	if(   !pGF->registerClass(GR_Win32USPGraphics::graphicsAllocator,
-							  GR_Win32USPGraphics::graphicsDescriptor,
-							  GR_Win32USPGraphics::getClassId())
-		  
-	   || !pGF->registerDefaultClass(GR_Win32USPGraphics::graphicsAllocator,
-									 GR_Win32USPGraphics::graphicsDescriptor))
+	if(!pGF->registerClass(GR_Win32USPGraphics::graphicsAllocator,
+						   GR_Win32USPGraphics::graphicsDescriptor,
+						   GR_Win32USPGraphics::s_getClassId()))
 	{
-		return 0;
+		// OK, there is a class already registered with our id
+		// (probably a built-in version of this class) -- get its
+		// version info and replace it if ours is higher
+		GR_Win32AllocInfo ai;
+		GR_Graphics * pG = pApp->newGraphics(GR_Win32USPGraphics::s_getClassId(), ai);
+		UT_return_val_if_fail(pG, 0);
+
+		const UT_VersionInfo & v2 = pG->getVersion();
+		if(v1 > v2)
+		{
+			// first we need to see if this class is registered as the
+			// default graphics class; if so we need to changed that
+			// to the basic win32 class before we can unregister it
+			// we also need to remember the previous values so we can
+			// restore them when we are unloaded
+			s_iPrevDefaultScreen  = pGF->getDefaultClass(true);
+			s_iPrevDefaultPrinter = pGF->getDefaultClass(false);
+			
+			if(s_iPrevDefaultScreen == GR_Win32USPGraphics::s_getClassId())
+			{
+				s_iPrevDefaultScreen = GRID_WIN32;
+				pGF->registerAsDefault(GRID_WIN32, true);
+			}
+			
+			if(s_iPrevDefaultPrinter == GR_Win32USPGraphics::s_getClassId())
+			{
+				s_iPrevDefaultPrinter = GRID_WIN32;
+				pGF->registerAsDefault(GRID_WIN32, false);
+			}
+
+			if(!pGF->unregisterClass(GR_Win32USPGraphics::s_getClassId()
+			|| !pGF->registerClass(GR_Win32USPGraphics::graphicsAllocator,
+								   GR_Win32USPGraphics::graphicsDescriptor,
+								   GR_Win32USPGraphics::s_getClassId())))
+			{
+				UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
+				delete pG;
+				return 0;
+			}
+		}
+		else
+		{
+			delete pG;
+			return 0;
+		}
+
+		delete pG;
 	}
+
+	pGF->registerAsDefault(GR_Win32USPGraphics::s_getClassId(), true);
+	pGF->registerAsDefault(GR_Win32USPGraphics::s_getClassId(), false);
 	
 	return 1;
 }
@@ -316,7 +371,37 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 	mi->version = 0;
 	mi->author = 0;
 	mi->usage = 0;
-  
+
+	XAP_App * pApp = XAP_App::getApp();
+	UT_return_val_if_fail(pApp, 0);
+
+	GR_GraphicsFactory * pGF = pApp->getGraphicsFactory();
+	UT_return_val_if_fail(pGF, 0);
+	
+	if(pGF->getDefaultClass(true) == GR_Win32USPGraphics::s_getClassId())
+	{
+		if(pGF->isRegistered(s_iPrevDefaultScreen))
+		{
+			pGF->registerAsDefault(s_iPrevDefaultScreen, true);
+		}
+		else
+		{
+			pGF->registerAsDefault(GRID_WIN32, true);
+		}
+	}
+	
+	if(pGF->getDefaultClass(false) == GR_Win32USPGraphics::s_getClassId())
+	{
+		if(pGF->isRegistered(s_iPrevDefaultPrinter))
+		{
+			pGF->registerAsDefault(s_iPrevDefaultPrinter, false);
+		}
+		else
+		{
+			pGF->registerAsDefault(GRID_WIN32, false);
+		}
+	}
+	
 	return 1;
 }
 

@@ -89,18 +89,8 @@ XAP_CocoaApp::XAP_CocoaApp(XAP_Args * pArgs, const char * szAppName)
 
 		// we are in deep trouble if this did not succeed
 		UT_ASSERT( bSuccess );
-
-		bSuccess = pGF->registerClass(GR_CocoaGraphics::graphicsAllocator,
-									  GR_CocoaGraphics::graphicsDescriptor,
-									  GRID_DEFAULT);
-
-		UT_ASSERT( bSuccess );
-
-		bSuccess = pGF->registerClass(GR_CocoaGraphics::graphicsAllocator,
-									  GR_CocoaGraphics::graphicsDescriptor,
-									  GRID_DEFAULT_PRINT);
-
-		UT_ASSERT( bSuccess );
+		pGF->registerAsDefault(GR_CocoaGraphics::s_getClassId(), true);
+		pGF->registerAsDefault(GR_CocoaGraphics::s_getClassId(), false);
 	}
 
 }

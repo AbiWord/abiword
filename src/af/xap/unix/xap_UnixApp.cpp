@@ -81,24 +81,15 @@ XAP_UnixApp::XAP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 
 		// we are in deep trouble if this did not succeed
 		UT_ASSERT( bSuccess );
-
-		bSuccess = pGF->registerClass(GR_UnixGraphics::graphicsAllocator,
-									  GR_UnixGraphics::graphicsDescriptor,
-									  GRID_DEFAULT);
-
-		UT_ASSERT( bSuccess );
+		pGF->registerAsDefault(GR_UnixGraphics::s_getClassId(), true);
 
 		bSuccess = pGF->registerClass(PS_Graphics::graphicsAllocator,
 									  PS_Graphics::graphicsDescriptor,
 									  PS_Graphics::s_getClassId());
 
 		UT_ASSERT( bSuccess );
-
-		bSuccess = pGF->registerClass(PS_Graphics::graphicsAllocator,
-									  PS_Graphics::graphicsDescriptor,
-									  GRID_DEFAULT_PRINT);
-
-		UT_ASSERT( bSuccess );
+		pGF->registerAsDefault(PS_Graphics::s_getClassId(), false);
+		
 
 		bSuccess = pGF->registerClass(UnixNull_Graphics::graphicsAllocator,
 									  UnixNull_Graphics::graphicsDescriptor,

@@ -60,18 +60,8 @@ XAP_BeOSApp::XAP_BeOSApp(XAP_Args * pArgs, const char * szAppName)
 
 		// we are in deep trouble if this did not succeed
 		UT_ASSERT( bSuccess );
-
-		bSuccess = pGF->registerClass(GR_BeOSGraphics::graphicsAllocator,
-									  GR_BeOSGraphics::graphicsDescriptor,
-									  GRID_DEFAULT);
-
-		UT_ASSERT( bSuccess );
-
-		bSuccess = pGF->registerClass(GR_BeOSGraphics::graphicsAllocator,
-									  GR_BeOSGraphics::graphicsDescriptor,
-									  GRID_DEFAULT_PRINT);
-
-		UT_ASSERT( bSuccess );
+		pGF->registerAsDefault(GR_BeOSGraphics::s_getClassId(), true);
+		pGF->registerAsDefault(GR_BeOSGraphics::s_getClassId(), false);
 	}
 }
 
