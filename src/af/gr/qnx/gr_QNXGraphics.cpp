@@ -88,7 +88,6 @@ int GR_QNXGraphics::DrawSetup() {
 			UT_DEBUGMSG(("and clip list %d,%d %d,%d ",
 						  m_pClipList->rect.ul.x, m_pClipList->rect.ul.y, 
 						  m_pClipList->rect.lr.x, m_pClipList->rect.lr.y));
-			UT_ASSERT(0);
 			//Instead set a 0,0 area
 			//PtBasicWidgetCanvas(m_pDraw, &_rdraw);				
 			memset(&_rdraw, 0, sizeof(_rdraw));				
@@ -599,7 +598,7 @@ void GR_QNXGraphics::setClipRect(const UT_Rect* pRect)
 		r.lr.x = r.ul.x + pRect->width;
 		r.lr.y = r.ul.y + pRect->height;
 
-		UT_ASSERT(!m_pClipList);		//Only one item for now	
+//		UT_ASSERT(!m_pClipList);		//Only one item for now	
 	
 		if (m_pClipList || (m_pClipList = PhGetTile())) {
 			m_pClipList->rect = r;
