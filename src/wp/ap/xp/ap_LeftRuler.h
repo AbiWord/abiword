@@ -41,7 +41,7 @@ class AV_ScrollObj;
 class GR_Graphics;
 class ap_RulerTicks;
 class fp_CellContainer;
-
+class fp_TableContainer;
 /*****************************************************************/
 
 
@@ -177,7 +177,7 @@ private:
 											  GR_Graphics::GR_Color3D clr);
 
 
-	void                _getCellMarkerRects(AP_LeftRulerInfo * pInfo, UT_sint32 iCell, UT_Rect &rCell);
+	void                _getCellMarkerRects(AP_LeftRulerInfo * pInfo, UT_sint32 iCell, UT_Rect &rCell, fp_TableContainer * pBroke=NULL);
 	void		        _drawCellProperties( AP_LeftRulerInfo * pInfo);
 	void                _drawCellMark(UT_Rect *prDrag, bool bUp);
 

@@ -221,8 +221,10 @@ public:
 		{  return m_iLeft; }
 	UT_sint32           getRightPos(void) const
 		{  return m_iRight; }
- 
-
+	void                markAsDirty(void) { m_bDirty = true;}
+	bool                isDirty(void) const
+	    {  return m_bDirty;}
+	bool                doesIntersectClip(fp_TableContainer * pBroke, UT_Rect * rClip);
 #ifdef FMT_TEST
 	void				__dump(FILE * fp) const;
 #endif
@@ -314,6 +316,7 @@ private:
 
 // Pointer to selection Colour
 	UT_RGBColor *          m_cClrSelection;
+	bool                   m_bDirty;
 };
 
 class ABI_EXPORT fp_TableContainer : public fp_VerticalContainer
@@ -495,6 +498,11 @@ private:
 // Last requested vbreak height
 
 	UT_sint32           m_iLastWantedVBreak;
+
+// Cache the first and last cells of a broken table
+
+	fp_CellContainer *  m_pFirstBrokenCell;
+	fp_CellContainer *  m_pLastBrokenCell;
 };
 
 #endif /* TABLECONTAINER_H */

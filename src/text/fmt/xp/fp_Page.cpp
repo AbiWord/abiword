@@ -100,6 +100,56 @@ UT_sint32 fp_Page::getColumnGap(void) const
 	return getOwningSection()->getColumnGap();
 }
 
+/*!
+ * This method scans the page for the table that contains the point given
+ */
+fp_TableContainer * fp_Page::getContainingTable(PT_DocPosition pos)
+{
+	if(!m_pView)
+	{
+	    return NULL;
+	}
+	fp_CellContainer * pCell = m_pView->getCellAtPos(pos);
+	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pCell->getContainer());
+	UT_sint32 i = 0;
+	UT_sint32 j =0;
+	bool bFound = false;
+	fp_Column * pColumn = NULL;
+	for(i =0; (i <static_cast<UT_sint32>(countColumnLeaders())) && !bFound; i++)
+	{
+		pColumn = getNthColumnLeader(i);
+		while(pColumn)
+		{
+			for(j =0; j< static_cast<UT_sint32>(pColumn->countCons()) && !bFound;i++)
+			{
+				fp_Container * pCon = pColumn->getNthCon(i);
+				if(pCon->getContainerType() == FP_CONTAINER_TABLE)
+				{
+					fp_TableContainer * pCurTab = static_cast<fp_TableContainer *>(pCon);
+					if(pCurTab->isThisBroken())
+					{
+						if(pCurTab->getMasterTable() == pTab)
+						{
+							bFound = true;
+							return pCurTab;
+						}
+					}
+					else
+					{
+						if(pCurTab == pTab)
+						{
+							bFound = true;
+							return pCurTab;
+						}
+					}
+				}
+			}
+			pColumn = pColumn->getFollower();
+		}
+	}
+	return NULL;
+}
+
 UT_sint32 fp_Page::getAvailableHeight(void) const
 {
 	fl_DocSectionLayout * pDSL = getNthColumnLeader(0)->getDocSectionLayout();

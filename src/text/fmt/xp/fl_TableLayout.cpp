@@ -294,6 +294,7 @@ void fl_TableLayout::format(void)
 	}
 	if(isDirty())
 	{
+		UT_DEBUGMSG(("TableLayout Mark All runs dirty \n"));
 		markAllRunsDirty();
 	}
 	fl_ContainerLayout*	pCell = getFirstLayout();
@@ -406,6 +407,11 @@ void fl_TableLayout::redrawUpdate(void)
 	{
 		return;
 	}
+	if(!needsRedraw())
+	{
+		return;
+	}
+	UT_DEBUGMSG(("Doing Redraw update in Table \n"));
 	fl_ContainerLayout*	pBL = getFirstLayout();
 	while (pBL)
 	{
@@ -1570,6 +1576,11 @@ void fl_CellLayout::updateLayout(void)
 void fl_CellLayout::redrawUpdate(void)
 {
 	fl_ContainerLayout*	pBL = getFirstLayout();
+	if(!m_bNeedsRedraw)
+	{
+		return;
+	}
+	
 	while (pBL)
 	{
 		if (pBL->needsRedraw())

@@ -1157,7 +1157,7 @@ void AP_LeftRuler::_drawMarginProperties(const UT_Rect * /* pClipRect */,
 
  
 void AP_LeftRuler::_getCellMarkerRects(AP_LeftRulerInfo * pInfo, UT_sint32 iCell, 
-									   UT_Rect &rCell)
+									   UT_Rect &rCell, fp_TableContainer * pBroke)
 {
 	if(pInfo->m_mode !=  AP_LeftRulerInfo::TRI_MODE_TABLE)
 	{
@@ -1184,19 +1184,27 @@ void AP_LeftRuler::_getCellMarkerRects(AP_LeftRulerInfo * pInfo, UT_sint32 iCell
 	UT_sint32 yOrigin = pInfo->m_yPageStart - m_yScrollOffset;
 	UT_sint32 pos =0;
 	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pLInfo->m_pCell->getContainer());
-	fp_TableContainer * pBroke = pTab->getFirstBrokenTable();
-	fp_Page * pCurPage =  static_cast<FV_View *>(m_pView)->getCurrentPage();
 	fp_Page * pPage = NULL;
-	while(pBroke && (pPage == NULL))
+	if(pBroke == NULL)
 	{
-		if(pBroke->getPage() != pCurPage)
+		fp_TableContainer * pBroke = pTab->getFirstBrokenTable();
+		fp_Page * pCurPage =  static_cast<FV_View *>(m_pView)->getCurrentPage();
+		fp_Page * pPage = NULL;
+		while(pBroke && (pPage == NULL))
 		{
-			pBroke = static_cast<fp_TableContainer *>(pBroke->getNext());
+			if(pBroke->getPage() != pCurPage)
+			{
+				pBroke = static_cast<fp_TableContainer *>(pBroke->getNext());
+			}
+			else
+			{
+				pPage = pBroke->getPage();
+			}
 		}
-		else
-		{
-			pPage = pBroke->getPage();
-		}
+	}
+	else
+	{
+		pPage = pBroke->getPage();
 	}
 	if(pPage == NULL)
 	{
@@ -1275,18 +1283,45 @@ void AP_LeftRuler::_drawCellProperties(AP_LeftRulerInfo * pInfo)
 	UT_sint32 nrows = pInfo->m_iNumRows;
 	UT_sint32 i = 0;
 	UT_Rect rCell;
-	for(i=0;i <= nrows; i++)
+	UT_DEBUGMSG(("ap_LeftRuler: Draw Cell Marks start \n"));
+	fp_Page * pCurPage =  static_cast<FV_View *>(m_pView)->getCurrentPage();
+	PT_DocPosition pos = static_cast<FV_View *>(m_pView)->getPoint();
+	bool bStop = false;
+	fp_TableContainer *pBroke = pCurPage->getContainingTable(pos);
+	for(i=pInfo->m_iCurrentRow;i <= nrows && !bStop; i++)
 	{
 		if(m_bValidMouseClick && (m_draggingWhat == DW_CELLMARK) && (i == m_draggingCell ))
 		{
 			continue;
 		}
-		_getCellMarkerRects(pInfo,i,rCell);
+		_getCellMarkerRects(pInfo,i,rCell,pBroke);
 		if(rCell.height > 0)
 		{
 			_drawCellMark(&rCell,true);
 		}
+		else
+		{
+			bStop = true;
+		}
 	}
+	bStop = false;
+	for(i=pInfo->m_iCurrentRow;i >= 0 && !bStop; i--)
+	{
+		if(m_bValidMouseClick && (m_draggingWhat == DW_CELLMARK) && (i == m_draggingCell ))
+		{
+			continue;
+		}
+		_getCellMarkerRects(pInfo,i,rCell,pBroke);
+		if(rCell.height > 0)
+		{
+			_drawCellMark(&rCell,true);
+		}
+		else
+		{
+			bStop = true;
+		}
+	}
+	UT_DEBUGMSG(("ap_LeftRuler: Draw Cell Marks end \n"));
 }
 
 void AP_LeftRuler::_drawCellMark(UT_Rect *prDrag, bool bUp)

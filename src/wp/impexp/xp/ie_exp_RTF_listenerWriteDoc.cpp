@@ -3294,6 +3294,10 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 //
 // Output Paragraph Cell nesting level.
 //
+	if(m_Table.getNestDepth() > 0)
+	{
+		m_pie->_rtf_keyword("intbl");
+	}
 	m_pie->_rtf_keyword("itap",m_Table.getNestDepth());
 
 	if (UT_strcmp(szKeepTogether,"yes")==0)

@@ -3463,12 +3463,39 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 
 	UT_sint32 curY = getPageViewTopMargin();
 	fp_Page* pPage = m_pLayout->getFirstPage();
+#if 1
+//
+// fixme for multiple sections in normal and web view
+// 
+	fl_DocSectionLayout * pDSL = pPage->getOwningSection();
+	UT_sint32 totPageHeight = pPage->getHeight();
+	if(getViewMode() == VIEW_PRINT)
+	{
+		totPageHeight += getPageViewSep();
+	}
+	else
+	{
+		curY = 0;
+		totPageHeight = totPageHeight  - pDSL->getTopMargin() - pDSL->getBottomMargin();
+	}
+	UT_sint32 nPage = (m_yScrollOffset-curY)/totPageHeight -1;
+	if(nPage >= static_cast<UT_sint32>(m_pLayout->countPages()))
+	{
+		nPage = m_pLayout->countPages() - 1;
+	}
+	if(nPage < 0) 
+	{
+		nPage = 0;
+	}
+	pPage = m_pLayout->getNthPage(nPage);
+	curY = curY + nPage*totPageHeight;
+#endif
 	while (pPage)
 	{
 		UT_sint32 iPageWidth		= pPage->getWidth();
 		UT_sint32 iPageHeight		= pPage->getHeight();
 		UT_sint32 adjustedTop		= curY - m_yScrollOffset;
-		fl_DocSectionLayout * pDSL = pPage->getOwningSection();
+		pDSL = pPage->getOwningSection();
 		if(getViewMode() != VIEW_PRINT)
 		{
 			iPageHeight = iPageHeight - pDSL->getTopMargin() - pDSL->getBottomMargin();
@@ -3514,6 +3541,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 							 m_yScrollOffset,
 							 getWindowHeight(),
 							 y,height));
+			break;
 		}
 		else if (adjustedBottom < y)
 		{

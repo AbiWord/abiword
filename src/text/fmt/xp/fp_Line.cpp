@@ -1083,6 +1083,11 @@ void fp_Line::clearScreenFromRunToEnd(UT_uint32 runIndex)
 void fp_Line::setNeedsRedraw(void)
 {
 	m_bNeedsRedraw = true;
+	if(getContainer() && getContainer()->getContainerType() == FP_CONTAINER_CELL)
+	{
+		fp_CellContainer * pCell = static_cast<fp_CellContainer *>(getContainer());
+		pCell->markAsDirty();
+	}
 	m_pBlock->setNeedsRedraw();
 }
 

@@ -114,7 +114,8 @@ fp_CellContainer::fp_CellContainer(fl_SectionLayout* pSectionLayout)
 	  m_bDrawRight(false),
 	  m_bLinesDrawn(false),
 	  m_bBgDirty(true),
-	  m_cClrSelection(NULL)
+	  m_cClrSelection(NULL),
+	  m_bDirty(true)
 {
 }
 
@@ -272,6 +273,18 @@ void fp_CellContainer::_getBrokenRect(fp_TableContainer * pBroke, fp_Page * &pPa
 	bRec = UT_Rect(iLeft,iTop,iRight-iLeft,iBot-iTop);
 }
 
+/*!
+ * Returns true if the cell in a broken table overlaps the supplied clip Rect
+ */
+bool fp_CellContainer::doesIntersectClip(fp_TableContainer * pBroke, UT_Rect * rClip)
+{
+	fp_Page * pPage = NULL;
+	UT_Rect CellRect;
+	_getBrokenRect(pBroke, pPage, CellRect);
+	return CellRect.intersectsRect(rClip);
+}
+
+	
 void fp_CellContainer::clearScreen(void)
 {
 	fp_Container * pUpCon = getContainer();
@@ -287,6 +300,7 @@ void fp_CellContainer::clearScreen(void)
 	{
 		return;
 	}
+	markAsDirty();
 	xxx_UT_DEBUGMSG(("Doing cell clearscreen \n"));
 // only clear the embeded containers if no background is set: the background clearing will also these containers
 // FIXME: should work, but doesn't??
@@ -301,7 +315,8 @@ void fp_CellContainer::clearScreen(void)
 			pCon->clearScreen();
 		}
 	//}
-	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(getContainer());
+		fp_TableContainer * pTab = static_cast<fp_TableContainer *>(getContainer());
+		m_bDirty = true;
 	if(pTab)
 	{
 		fp_TableContainer * pBroke = pTab->getFirstBrokenTable();
@@ -490,6 +505,7 @@ void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 	{
 		return;
 	}
+	markAsDirty();
 	if (pPage != NULL)
 	{
 		if (getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))
@@ -559,6 +575,7 @@ void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 			getGraphics()->fillRect (page_color,bRec.left,bRec.top,bRec.width,bRec.height);
 		}
 	}
+	m_bDirty = true;
 	m_bBgDirty = true;
 	m_bLinesDrawn = false;
 }
@@ -1178,6 +1195,7 @@ UT_sint32 fp_CellContainer::getCellY(fp_Line * pLine) const
 void fp_CellContainer::draw(dg_DrawArgs* pDA)
 {
 	m_bDrawTop = false;
+	m_bDirty = false;
 	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(getContainer());
 // draw bottom if this cell is the last of the table and fully contained on the page
 
@@ -1255,6 +1273,7 @@ void fp_CellContainer::draw(fp_Line * pLine)
 	{
 		return;
 	}
+	m_bDirty = false;
 	FV_View * pView = getPage()->getDocLayout()->getView();
 	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(getContainer());
 	if(pTab == NULL)
@@ -1314,6 +1333,7 @@ fp_Container * fp_CellContainer::drawSelectedCell(fp_Line * pLine)
 	{
 		return NULL;
 	}
+	m_bDirty = false;
 	FV_View * pView = getPage()->getDocLayout()->getView();
 	UT_RGBColor clrSelBackground = pView->getColorSelBackground();
 	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(getContainer());
@@ -1431,7 +1451,7 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 								  fp_TableContainer * pBroke)
 {
 	PP_PropertyMap::Background background = getBackground ();
-
+	m_bDirty = false;
 	UT_sint32 count = countCons();
 	m_bDrawLeft = false;
 	m_bDrawTop = false;
@@ -1814,6 +1834,7 @@ void fp_CellContainer::layout(void)
 	_setMaxContainerHeight(0);
 	UT_sint32 iY = 0, iPrevY = 0;
 	fp_Container *pContainer, *pPrevContainer = NULL;
+	xxx_UT_DEBUGMSG(("Doing Cell layout %x \n",this));
 	if(countCons() == 0)
 	{
 		return;
@@ -1979,7 +2000,11 @@ fp_TableContainer::fp_TableContainer(fl_SectionLayout* pSectionLayout)
 	  m_iBottomOffset(0),
 	  m_iLineThickness(1),
 	  m_iRowHeightType(FL_ROW_HEIGHT_NOT_DEFINED),
-	  m_iRowHeight(0)
+	  m_iRowHeight(0),
+	  m_iLastWantedVBreak(-1),
+	  m_pFirstBrokenCell(NULL),
+	  m_pLastBrokenCell(NULL)
+
 {
 	if(getSectionLayout())
 	{
@@ -2012,7 +2037,17 @@ fp_TableContainer::fp_TableContainer(fl_SectionLayout* pSectionLayout, fp_TableC
 	  m_iYBottom(0),
 	  m_iBrokenTop(0),
 	  m_iBrokenBottom(0),
-	  m_iLastWantedVBreak(-1)
+	  m_bRedrawLines(false),
+	  m_iLeftOffset(0),
+	  m_iRightOffset(0),
+	  m_iTopOffset(0),
+	  m_iBottomOffset(0),
+	  m_iLineThickness(1),
+	  m_iRowHeightType(FL_ROW_HEIGHT_NOT_DEFINED),
+	  m_iRowHeight(0),
+	  m_iLastWantedVBreak(-1),
+	  m_pFirstBrokenCell(NULL),
+	  m_pLastBrokenCell(NULL)
 {
 }
 
@@ -3164,6 +3199,7 @@ void fp_TableContainer::layout(void)
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return;
 	}
+	UT_DEBUGMSG(("Doing Table layout %x \n",this));
 	static fp_Requisition requisition;
 	static fp_Allocation alloc;
 	sizeRequest(&requisition);
@@ -3629,35 +3665,97 @@ void fp_TableContainer::_brokenDraw(dg_DrawArgs* pDA)
 	fp_CellContainer * pCell = static_cast<fp_CellContainer *>(getMasterTable()->getNthCon(0));
 	xxx_UT_DEBUGMSG(("SEVIOR: _brokenDraw table %x getYBreak %d getYBottom %d \n",this, getYBreak(),getYBottom()));
 	fp_TableContainer *pMaster = getMasterTable();
-	while(pCell)
+	UT_sint32 iCountCells = 0;
+	UT_Rect * pClipRect = const_cast<UT_Rect *>(pDA->pG->getClipRect());
+	fp_TableContainer * pBroke = const_cast<fp_TableContainer *>(this);
+	bool bDirtyOnly = pDA->bDirtyRunsOnly;
+	if(m_pFirstBrokenCell)
 	{
-		UT_sint32 botY = 0;
-		if(pCell->getBottomAttach() < pMaster->getNumRows())
+		pCell = m_pFirstBrokenCell;
+		while(pCell)
 		{
-			botY = pMaster->getYOfRow(pCell->getBottomAttach());
-		}
-		else
-		{
-			fp_VerticalContainer * pVert = static_cast<fp_VerticalContainer *>(pMaster);
-			botY = pMaster->getYOfRow(0) + pVert->getHeight();
-			botY -= 2 * pMaster->getBorderWidth();
-			botY +=  pMaster->getNthRow(pMaster->getNumRows()-1)->spacing/2;
-		}
-
-		if((pCell->getY() > getYBottom()) || (botY < getYBreak()) )
-		{
-			xxx_UT_DEBUGMSG(("SEVIOR: _drawBroken skipping cell %x cellY %d cellHeight %d YBreak %d yBottom %d \n",pCell,pCell->getY(), pCell->getHeight(), getYBreak(),getYBottom()));
-			pCell = static_cast<fp_CellContainer *>(pCell->getNext());
-		}
-		else
-		{
+			fl_SectionLayout *pSL=pCell->getSectionLayout();
 			dg_DrawArgs da = *pDA;
-			xxx_UT_DEBUGMSG(("SEVIOR: _drawBroken yoff %d cellY %d cellHeight %d YBreak %d yBottom %d \n",da.yoff,pCell->getY(), pCell->getHeight(), getYBreak(),getYBottom()));
 			da.yoff = da.yoff - getYBreak();
-			pCell->drawBroken(&da, this);
-			pCell = static_cast<fp_CellContainer *>(pCell->getNext());
+			if(bDirtyOnly)
+			{
+				//
+				// Fix me! Doesn't work deleting text in a table!
+				//		if(pCell->isDirty())
+				{
+					pCell->drawBroken(&da, this);
+					iCountCells++;
+				}
+			}
+			else
+			{
+				if(pClipRect)
+				{
+					if(pCell->doesIntersectClip(pBroke,pClipRect))
+				    {
+						pCell->drawBroken(&da, this);
+						iCountCells++;
+					}
+				}
+				else
+				{
+					pCell->drawBroken(&da, this);
+					iCountCells++;
+				}
+			}
+			if(pCell != m_pLastBrokenCell)
+			{
+				pCell = static_cast<fp_CellContainer *>(pCell->getNext());
+			}
+			else
+			{
+				pCell = NULL;
+			}
 		}
 	}
+	else
+	{
+		while(pCell)
+		{
+			UT_sint32 botY = 0;
+			if(pCell->getBottomAttach() < pMaster->getNumRows())
+			{
+				botY = pMaster->getYOfRow(pCell->getBottomAttach());
+			}
+			else
+			{
+				fp_VerticalContainer * pVert = static_cast<fp_VerticalContainer *>(pMaster);
+				botY = pMaster->getYOfRow(0) + pVert->getHeight();
+				botY -= 2 * pMaster->getBorderWidth();
+				botY +=  pMaster->getNthRow(pMaster->getNumRows()-1)->spacing/2;
+			}
+
+			if((pCell->getY() > getYBottom()) || (botY < getYBreak()) )
+			{
+				xxx_UT_DEBUGMSG(("SEVIOR: _drawBroken skipping cell %x cellY %d cellHeight %d YBreak %d yBottom %d \n",pCell,pCell->getY(), pCell->getHeight(), getYBreak(),getYBottom()));
+				if((m_pFirstBrokenCell != NULL) && (m_pLastBrokenCell == NULL))
+				{
+					m_pLastBrokenCell = static_cast<fp_CellContainer *>(pCell->getPrev());
+					break;
+				}
+				pCell = static_cast<fp_CellContainer *>(pCell->getNext());
+			}
+			else
+			{
+				dg_DrawArgs da = *pDA;
+				xxx_UT_DEBUGMSG(("SEVIOR: _drawBroken yoff %d cellY %d cellHeight %d YBreak %d yBottom %d \n",da.yoff,pCell->getY(), pCell->getHeight(), getYBreak(),getYBottom()));
+				da.yoff = da.yoff - getYBreak();
+				iCountCells++;
+				pCell->drawBroken(&da, this);
+				if(m_pFirstBrokenCell == NULL)
+				{
+					m_pFirstBrokenCell = pCell;
+				}
+				pCell = static_cast<fp_CellContainer *>(pCell->getNext());
+			}
+		}
+	}
+	UT_DEBUGMSG(("_brokenDraw: Draw %d cells \n",iCountCells));
     _drawBrokenBoundaries(pDA);
 }
 

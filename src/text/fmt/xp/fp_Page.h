@@ -39,6 +39,7 @@ class fl_HdrFtrShadow;
 class fl_FootnoteLayout;
 class FV_View;
 class GR_Graphics;
+class fp_TableContainer;
 struct dg_DrawArgs;
 
 // ----------------------------------------------------------------
@@ -76,6 +77,7 @@ public:
     UT_sint32           getFilledHeight(fp_Container * prevContainer) const;
 	UT_sint32           getAvailableHeight(void) const;
 	UT_sint32           getAvailableHeightForColumn(const fp_Column * pColumn) const;
+	fp_TableContainer * getContainingTable(PT_DocPosition pos);
 
 	// Leader (e.g. column) functions.
 	void 				columnHeightChanged(fp_Column* pLeader);

@@ -6272,9 +6272,26 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 			UT_sint32 i =0;
 			fp_CellContainer * pCur = NULL;
 			pInfo->m_vecTableRowInfo = new UT_Vector();
+			pCur = pTab->getCellAtRowColumn(0,col);
+			fp_CellContainer * pPrev = pCur;	
 			while( i < numrows)
 			{
-				pCur = pTab->getCellAtRowColumn(i,col);
+				bool bFound = false;
+				pPrev = pCur;
+				while(pCur && !bFound)
+				{
+					if(pCur->getLeftAttach() <= col && 
+					   pCur->getRightAttach() > col &&
+					   pCur->getTopAttach() <= i && 
+					   pCur->getBottomAttach() > i)
+					{
+						bFound = true;
+					}
+					else
+					{
+						pCur = static_cast<fp_CellContainer *>(pCur->getNext());
+					}
+				}
 				if(pCur == pCell)
 				{
 					pInfo->m_iCurrentRow = i;
@@ -6292,6 +6309,7 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 				}
 				else
 				{
+					pCur= pPrev;
 					i = numrows + 1;
 				}
 			}
@@ -6352,6 +6370,35 @@ bool FV_View::isXYSelected(UT_sint32 xPos, UT_sint32 yPos) const
 	pPage->mapXYToPosition(xClick, yClick, pos, bBOL, bEOL, true);
 
 	return isPosSelected(pos);
+}
+
+/*!
+ * Returns a pointer to the cell container surrounding the supplied point
+ * Return NULL if there isn't one.
+ */
+fp_CellContainer * FV_View::getCellAtPos(PT_DocPosition pos)
+{
+	bool bEOL = false;
+	UT_uint32 iPointHeight;
+	UT_sint32 xPoint, yPoint, xPoint2, yPoint2;
+	bool bDirection;
+	fl_BlockLayout* pBlock;
+	fp_Run* pRun;
+	_findPositionCoords(pos, bEOL, xPoint, yPoint, xPoint2, yPoint2, iPointHeight, bDirection, &pBlock, &pRun);
+	fp_CellContainer * pCell = NULL;
+	if(isInTable(pos))
+	{
+		fp_Line * pLine = pRun->getLine();
+		if(pLine)
+		{
+			pCell = static_cast<fp_CellContainer *>(pLine->getContainer());
+			if(pCell && pCell->getContainerType() == FP_CONTAINER_CELL)
+			{
+				return pCell;
+			}
+		}
+	}
+	return NULL;
 }
 
 EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
