@@ -63,8 +63,8 @@ public:
 	virtual bool				openURL(const char * szURL);
 	virtual bool				updateTitle(void);
 	virtual UT_sint32			setInputMode(const char * szName);
-	virtual void                            nullUpdate () const {}
-	virtual void                setCursor(GR_Graphics::Cursor c) {}
+	virtual void                nullUpdate () const;
+	virtual void                setCursor(GR_Graphics::Cursor c);
 
 	HWND						getTopLevelWindow(void) const;
 	HWND						getToolbarWindow(void) const;
@@ -79,7 +79,7 @@ public:
 	virtual void				translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y) = 0;
 	virtual void				setStatusMessage(const char * szMsg) = 0;
 
-	static bool				RegisterClass(XAP_Win32App * app);
+	static bool					RegisterClass(XAP_Win32App * app);
 
 	virtual void				toggleRuler(bool bRulerOn) = 0;	
 	virtual void				toggleTopRuler(bool bRulerOn) = 0;

@@ -199,7 +199,7 @@ UT_Error AP_Win32Frame::_showDocument(UT_uint32 iZoom)
 	pView = new FV_View(getApp(), this, pDocLayout);
 	ENSUREP(pView);
 
-	pDocLayout->fillLayouts();
+//	pDocLayout->fillLayouts();
 	
 	if (m_pView != NULL)
 	{
@@ -334,8 +334,10 @@ UT_Error AP_Win32Frame::_showDocument(UT_uint32 iZoom)
 
 	updateTitle();
 
+	pDocLayout->fillLayouts();
 	if (point != 0)
 		((FV_View *) m_pView)->moveInsPtTo(point);
+	m_pView->draw();
 
 	if (static_cast<AP_FrameData*>(m_pData)->m_pTopRuler)
 		static_cast<AP_FrameData*>(m_pData)->m_pTopRuler->draw(NULL);

@@ -165,6 +165,7 @@ bool XAP_Win32Frame::initialize(const char* szKeyBindingsKey,
 	// TODO: Jeff, I'm currently showing in WinMain, to honor iCmdShow.
 	// should we pass that via argv, to do it here for all frames?
 
+
 	return true;
 }
 
@@ -769,3 +770,22 @@ EV_Menu* XAP_Win32Frame::getMainMenu()
 {
 	return m_pWin32Menu;
 }
+
+void XAP_Win32Frame::nullUpdate() const
+{
+	MSG msg;
+	for( int i = 0 ; i < 10 ; i++ )
+	{
+		if( PeekMessage( &msg, (HWND) NULL, 0, 0, PM_REMOVE) )
+		{
+	        DispatchMessage(&msg); 
+    	} 
+	}
+}
+
+void XAP_Win32Frame::setCursor(GR_Graphics::Cursor c)
+{
+	// TODO - currently does nothing
+}
+
+
