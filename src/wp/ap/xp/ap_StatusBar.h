@@ -77,7 +77,9 @@ public:
 	virtual void		hide(void) {} // the platforms that don't implement show/hide
 	
 	/* used with AV_Listener */
-	virtual bool		notify(AV_View * pView, const AV_ChangeMask mask);
+	virtual bool		    notify(AV_View * pView, const AV_ChangeMask mask);
+	virtual AV_ListenerType getType(void) { return AV_LISTENER_STATUSBAR;}
+
 	UT_Vector *             getFields() { return &m_vecFields; }
 protected:
 

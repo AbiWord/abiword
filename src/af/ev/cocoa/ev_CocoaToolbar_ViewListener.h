@@ -33,6 +33,7 @@ public:
 								AV_View * pView);
 	
 	virtual bool		notify(AV_View * pView, const AV_ChangeMask mask);
+    virtual AV_ListenerType getType(void) { return AV_LISTENER_TOOLBAR;}
 
 protected:
 	EV_CocoaToolbar *	m_pCocoaToolbar;

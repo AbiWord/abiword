@@ -33,6 +33,18 @@ class AV_View;
 
 typedef UT_uint32 AV_ListenerId;
 
+
+typedef enum _AV_ListenerType
+{
+    AV_LISTENER_MENU,
+    AV_LISTENER_TOOLBAR,
+    AV_LISTENER_LEFTRULER,
+    AV_LISTENER_TOPRULER,
+    AV_LISTENER_SCROLLBAR,
+    AV_LISTENER_VIEW,
+    AV_LISTENER_STATUSBAR
+} AV_ListenerType;
+
 // TODO how did we fill this mask so fast?
 // TODO next it'll need to become a 32-bit mask
 typedef UT_uint16 AV_ChangeMask;
@@ -78,6 +90,7 @@ class AV_Listener
 {
 public:
 	virtual bool		notify(AV_View * pView, const AV_ChangeMask mask) = 0;
+	virtual AV_ListenerType    getType(void) = 0;
 };
 
 #endif /* AV_LISTENER_H */

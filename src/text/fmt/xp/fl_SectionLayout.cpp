@@ -862,7 +862,7 @@ void fl_DocSectionLayout::format(void)
 		pBL = pBL->getNext();
 	}
 
-	fb_ColumnBreaker::breakSection(this);
+	m_ColumnBreaker.breakSection(this);
 	m_bNeedsFormat = false;
 }
 
@@ -939,7 +939,7 @@ void fl_DocSectionLayout::updateLayout(void)
 	}
 	if(needsSectionBreak())
 	{
-		fb_ColumnBreaker::breakSection(this);
+		m_ColumnBreaker.breakSection(this);
 		UT_ASSERT(!needsSectionBreak());
 	}
 	if(needsRebuild())
@@ -950,6 +950,22 @@ void fl_DocSectionLayout::updateLayout(void)
 	}
 }
 
+void fl_DocSectionLayout::setNeedsSectionBreak(bool bSet, fp_Page * pPage)
+{
+	m_bNeedsSectionBreak = bSet;
+	fp_Page * pOldP = m_ColumnBreaker.getStartPage();
+	UT_sint32 iOldP = 999999999;
+	if(pOldP)
+	{
+		iOldP = getDocLayout()->findPage(pOldP);
+	}
+	UT_sint32 iNewP = getDocLayout()->findPage(pPage);
+	if( (iNewP > -1) && (iNewP < iOldP))
+	{
+		m_ColumnBreaker.setStartPage(pPage);
+	}
+}
+	
 void fl_DocSectionLayout::redrawUpdate(void)
 {
 	fl_ContainerLayout*	pBL = getFirstLayout();
@@ -977,7 +993,7 @@ void fl_DocSectionLayout::redrawUpdate(void)
 
 	if(needsSectionBreak() || needsRebuild())
 	{
-		fb_ColumnBreaker::breakSection(this);
+		m_ColumnBreaker.breakSection(this);
 	
 		if(needsRebuild())
 		{
@@ -1909,11 +1925,19 @@ void fl_DocSectionLayout::deleteOwnedPage(fp_Page* pPage)
 		}
 	}
 	fl_DocSectionLayout * pDSL = this;
-	while(pDSL != NULL && !getDocLayout()->isLayoutDeleting())
+	if(!getDocLayout()->isLayoutDeleting())
 	{
-		pDSL->checkAndRemovePages();
-		pDSL->addValidPages();
-		pDSL = pDSL->getNextDocSection();
+		UT_sint32 i = m_pLayout->findPage(pPage);
+		if(i>0)
+		{
+			m_pLayout->deletePage(pPage,true);
+		}
+		while(pDSL != NULL)
+		{
+			pDSL->checkAndRemovePages();
+			pDSL->addValidPages();
+			pDSL = pDSL->getNextDocSection();
+		}
 	}
 }
 

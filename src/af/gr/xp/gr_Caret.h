@@ -24,6 +24,7 @@
 
 #include "ut_timer.h"
 #include "ut_misc.h"
+#include "ut_assert.h"
 
 class GR_Graphics;
 
@@ -50,7 +51,6 @@ public:
 	void setCoords(UT_sint32 x, UT_sint32 y, UT_uint32 h,
 				   UT_sint32 x2 = 0, UT_sint32 y2 = 0, UT_uint32 h2 = 0,
 				   bool bPointDirection = false, UT_RGBColor * pClr = NULL);
-
 private:
 	static void s_work(UT_Worker * w);
 	static void s_enable(UT_Worker * w);
@@ -92,12 +92,18 @@ class GR_CaretDisabler
 	GR_CaretDisabler (GR_Caret * pCaret)
 		: m_pCaret(pCaret)
 		{
-			if (m_pCaret) m_pCaret->disable();
+			if (m_pCaret) 
+			{
+				m_pCaret->disable();
+			}
 		}
 
 	~GR_CaretDisabler ()
 		{
-			if (m_pCaret) m_pCaret->enable();
+			if(m_pCaret)
+			{
+				m_pCaret->enable();
+			}
 		}
 
 private:

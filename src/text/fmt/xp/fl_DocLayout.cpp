@@ -178,9 +178,9 @@ void FL_DocLayout::fillLayouts(void)
 // the document to pump it's content into the layout classes.
 //
 	m_pDoc->setDontImmediatelyLayout(true);
-	m_pDocListener->setHoldTableLayout(true);
-	m_pDoc->addListener(static_cast<PL_Listener *>(m_pDocListener),&m_lid);
 	m_pDocListener->setHoldTableLayout(false);
+	m_pDoc->addListener(static_cast<PL_Listener *>(m_pDocListener),&m_lid);
+//	m_pDocListener->setHoldTableLayout(false);
 	m_pDoc->setDontImmediatelyLayout(false);
 	UT_ASSERT(m_lid != 123);
 	formatAll();
@@ -469,7 +469,8 @@ void FL_DocLayout::deletePage(fp_Page* pPage, bool bDontNotify /* default false 
 	{
 		pPage->getNext()->setPrev(pPage->getPrev());
 	}
-
+	pPage->setPrev(NULL);
+	pPage->setNext(NULL);
 	m_vecPages.deleteNthItem(ndx);
 	delete pPage;
 

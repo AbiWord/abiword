@@ -1168,7 +1168,7 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
 	// hack needed to intialize gtk before ::initialize
     gtk_set_locale();
     gtk_init(&XArgs.m_argc,(char ***)&XArgs.m_argv);
-    
+    UT_DEBUGMSG(("UnixApp: about to initialize \n"));
     // if the initialize fails, we don't have icons, fonts, etc.
     if (!pMyUnixApp->initialize())
 	{

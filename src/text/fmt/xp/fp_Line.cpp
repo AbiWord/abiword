@@ -930,7 +930,7 @@ void fp_Line::clearScreenFromRunToEnd(fp_Run * ppRun)
 			pVCon->getScreenOffsets(this, xoffLine, yoffLine);
 			if(xoff == xoffLine)
 				leftClear = pRun->getDescent();
-			UT_DEBUGMSG(("SEVIOR: Doing clear from run to end xoff %d yoff %d \n",xoff,yoff));
+			xxx_UT_DEBUGMSG(("SEVIOR: Doing clear from run to end xoff %d yoff %d \n",xoff,yoff));
 			UT_ASSERT(yoff == yoffLine);
 			pRun->getGraphics()->fillRect(pRun->getPageColor(),
 										  xoff - leftClear,

@@ -65,8 +65,9 @@ fp_Page::~fp_Page()
 {
 	if (m_pOwner)
 	{
-		m_pOwner->deleteOwnedPage(this);
+		fl_DocSectionLayout *pDSL = m_pOwner;
 		m_pOwner = NULL;
+		pDSL->deleteOwnedPage(this);
 	}
 }
 

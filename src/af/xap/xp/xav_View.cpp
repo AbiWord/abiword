@@ -112,10 +112,6 @@ bool AV_View::notifyListeners(const AV_ChangeMask hint)
 	{
 		return false;
 	}
-	if(isLayoutFilling())
-	{
-		return false;
-	}
 	m_iTick++;
 
 	// make sure there's something left
@@ -137,8 +133,12 @@ bool AV_View::notifyListeners(const AV_ChangeMask hint)
 	for (lid=0; lid<lidCount; lid++)
 	{
 		AV_Listener * pListener = (AV_Listener *)m_vecListeners.getNthItem(lid);
-		if (pListener)
-			pListener->notify(this,hint);
+		if(pListener && (!isLayoutFilling() 
+						 || (pListener->getType()== AV_LISTENER_STATUSBAR)
+						 || (pListener->getType()== AV_LISTENER_SCROLLBAR)))
+		{
+				pListener->notify(this,hint);
+		}
 	}
 
 	return true;

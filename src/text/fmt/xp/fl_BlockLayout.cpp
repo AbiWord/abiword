@@ -1368,7 +1368,17 @@ void fl_BlockLayout::format()
 // set a bool in blocks with these sort of fields.
 //
 	setUpdatableField(false);
-	getDocSectionLayout()->setNeedsSectionBreak(true);
+	fl_ContainerLayout * pPrevCL = getPrev();
+	fp_Page * pPrevP = NULL;
+	if(pPrevCL)
+	{
+		fp_Container * pPrevCon = pPrevCL->getFirstContainer();
+		if(pPrevCon)
+		{
+			pPrevP = pPrevCon->getPage();
+		}
+	}
+	getDocSectionLayout()->setNeedsSectionBreak(true,pPrevP);
 	if (m_pFirstRun)
 	{
 		if(m_iNeedsReformat > 0)

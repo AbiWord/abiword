@@ -2434,7 +2434,7 @@ void FV_View::_extSelToPos(PT_DocPosition iNewPoint)
 		_clearIfAtFmtMark(getPoint());
 		_setSelectionAnchor();
 	}
-
+	m_bSelection = true;	
 	_setPoint(iNewPoint);
 	_extSel(iOldPoint);
 
@@ -3109,10 +3109,9 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 
 }
 
-
 void FV_View::_setPoint(PT_DocPosition pt, bool bEOL)
 {
-	bool bWasSelectionEmpty = isSelectionEmpty();
+	static UT_uint32 countDisable =0;
 
 	if (!m_pDoc->getAllowChangeInsPoint())
 	{
@@ -3125,16 +3124,29 @@ void FV_View::_setPoint(PT_DocPosition pt, bool bEOL)
 	{
 		m_pLayout->considerPendingSmartQuoteCandidate();
 		_checkPendingWordForSpell();
-	}
-
 	// So, if there is a selection now, we should disable the cursor; conversely,
 	// if there is no longer a selection, we should enable the cursor.
-	if (bWasSelectionEmpty != isSelectionEmpty())
-	{
 		if (isSelectionEmpty())
-			m_pG->getCaret()->enable();
-		else
+		{	
+			while(countDisable > 0)
+			{
+				m_pG->getCaret()->enable();
+				countDisable--;
+			}
 			m_pG->getCaret()->disable();
+			m_pG->getCaret()->enable();
+		}
+		else
+		{	
+//
+// We have to remember the number of times we disabled the cursor and wind
+// them back to re-enable it because the cursor class keeps a count this to
+// handle nested disable calls.
+//
+
+			m_pG->getCaret()->disable();
+			countDisable++;
+		}
 	}
 }
 
@@ -3599,7 +3611,7 @@ void FV_View::_clearIfAtFmtMark(PT_DocPosition dpos)
 	if ( ( dpos != _getDocPosFromPoint(dpos,FV_DOCPOS_BOL) ))
 	{
 		m_pDoc->clearIfAtFmtMark(dpos);
-		_generalUpdate();//  Sevior: May be able to live with notify.. always
+		//	_generalUpdate();//  Sevior: May be able to live with notify.. always
 	}
 	else
 	{
@@ -3974,6 +3986,7 @@ void FV_View::_restorePieceTableState(void)
 	{
 		//UT_DEBUGMSG(("notifying PieceTableChange (restore/end) [%d]\n", m_iPieceTableState));
 		m_pDoc->notifyPieceTableChangeEnd();
+		m_iPieceTableState =0;
 	}
 }
 

@@ -246,7 +246,17 @@ void fl_TableLayout::insertTableContainer( fp_TableContainer * pNewTab)
 void fl_TableLayout::format(void)
 {
 	bool bRebuild = false;
-	static_cast<fl_DocSectionLayout *>(getSectionLayout())->setNeedsSectionBreak(true);
+	fl_ContainerLayout * pPrevCL = getPrev();
+	fp_Page * pPrevP = NULL;
+	if(pPrevCL)
+	{
+		fp_Container * pPrevCon = pPrevCL->getFirstContainer();
+		if(pPrevCon)
+		{
+			pPrevP = pPrevCon->getPage();
+		}
+	}
+	static_cast<fl_DocSectionLayout *>(getSectionLayout())->setNeedsSectionBreak(true,pPrevP);
 	if(getFirstContainer() == NULL)
 	{
 		getNewContainer(NULL);
@@ -1272,7 +1282,17 @@ void fl_CellLayout::format(void)
 	{
 		getNewContainer(NULL);
 	}
-	static_cast<fl_DocSectionLayout *>(getSectionLayout())->setNeedsSectionBreak(true);
+	fl_ContainerLayout * pPrevCL = myContainingLayout()->getPrev();
+	fp_Page * pPrevP = NULL;
+	if(pPrevCL)
+	{
+		fp_Container * pPrevCon = pPrevCL->getFirstContainer();
+		if(pPrevCon)
+		{
+			pPrevP = pPrevCon->getPage();
+		}
+	}
+	static_cast<fl_DocSectionLayout *>(getSectionLayout())->setNeedsSectionBreak(true,pPrevP);
 	fl_ContainerLayout*	pBL = getFirstLayout();
 	while (pBL)
 	{

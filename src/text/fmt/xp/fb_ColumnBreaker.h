@@ -24,19 +24,25 @@
 
 #include "ut_types.h"
 
+
 class fp_Container;
 class fl_DocSectionLayout;
+class fp_Page;
 
 class ABI_EXPORT fb_ColumnBreaker
 {
 public:
-	static UT_sint32 breakSection(fl_DocSectionLayout * pSL);
+	fb_ColumnBreaker();
+	virtual ~fb_ColumnBreaker(void) {}
+	UT_sint32 breakSection(fl_DocSectionLayout * pSL);
+	void   setStartPage(fp_Page * pPage) { m_pStartPage = pPage;} 
+	fp_Page * getStartPage(void) { return m_pStartPage;}
 private:
-	static bool _breakTable(fp_Container *& pOffendingContainer,
+	bool _breakTable(fp_Container *& pOffendingContainer,
 							fp_Container *& pLastContainerToKeep,
 							int iMaxColHeight, int iWorkingColHeight,
 							int iContainerMarginAfter);
-	fb_ColumnBreaker();
+	fp_Page * m_pStartPage;
 };
 
 #endif /* COLUMNBREAKER_H */

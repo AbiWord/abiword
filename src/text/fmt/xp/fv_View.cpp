@@ -4727,9 +4727,6 @@ void FV_View::warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos, bool bClick = false)
 	  Pass the click down to that page.
 	*/
 
-	// Signal PieceTable Change
-
-	_saveAndNotifyPieceTableChange();
 	UT_sint32 xClick, yClick;
 	fp_Page* pPage = _getPageForXY(xPos, yPos, xClick, yClick);
 
@@ -4759,9 +4756,6 @@ void FV_View::warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos, bool bClick = false)
 	if ((pos != getPoint()) && !bClick)
 		_clearIfAtFmtMark(getPoint());
 
-
-	// Signal PieceTable Changes have finished
-	_restorePieceTableState();
 
 	_setPoint(pos, bEOL);
 	notifyListeners(AV_CHG_MOTION | AV_CHG_HDRFTR ); // Sevior Put this in

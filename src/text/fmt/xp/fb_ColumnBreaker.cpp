@@ -26,8 +26,11 @@
 #include "fp_Line.h"
 #include "fp_Column.h"
 #include "ut_assert.h"
+#include "fl_ContainerLayout.h"
+#include "fp_Page.h"
 
-fb_ColumnBreaker::fb_ColumnBreaker()
+fb_ColumnBreaker::fb_ColumnBreaker() :
+	m_pStartPage(NULL)
 {
 }
 
@@ -48,13 +51,29 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 	fp_Container* pOuterContainer = NULL;
 	fp_Column* pCurColumn = NULL;
 	UT_ASSERT(pSL->needsSectionBreak());
-	pSL->setNeedsSectionBreak(false);
+	pSL->setNeedsSectionBreak(false,m_pStartPage);
 	pFirstLayout = pSL->getFirstLayout();
 	if (!pFirstLayout)
+	{
+		m_pStartPage = NULL;
 		return 0;
-
+	}
 	pOuterContainer = pFirstLayout->getFirstContainer();
 	pCurColumn = (fp_Column*) pSL->getFirstContainer();
+	if(m_pStartPage)
+	{
+		pCurColumn = m_pStartPage->getNthColumnLeader(0);
+		pOuterContainer = pCurColumn->getFirstContainer();
+		if(pOuterContainer && pOuterContainer->getContainerType() == FP_CONTAINER_LINE)
+		{
+			
+			pFirstLayout = (fl_ContainerLayout *) static_cast<fp_Line *>(pOuterContainer)->getBlock();
+		}
+		else if(pOuterContainer)
+		{
+			pFirstLayout = (fl_ContainerLayout *) pOuterContainer->getSectionLayout();
+		}
+	}
 
 	while (pCurColumn)
 	{
@@ -557,6 +576,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 //
 // End of massive while loop here
 //
+	m_pStartPage = NULL;
 	return 0; // TODO return code
 }
 

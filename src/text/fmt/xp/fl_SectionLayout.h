@@ -59,6 +59,7 @@ typedef enum _HdrFtrType
 #include "pl_Listener.h"
 #include "ut_debugmsg.h"
 #include "ut_misc.h" // for UT_RGBColor
+#include "fb_ColumnBreaker.h"
 
 class fp_Page;
 class FL_DocLayout;
@@ -84,6 +85,7 @@ class PX_ChangeRecord_Span;
 class PX_ChangeRecord_SpanChange;
 class PX_ChangeRecord_Strux;
 class PX_ChangeRecord_StruxChange;
+class fb_ColumnBreaker;
 
 class ABI_EXPORT fl_SectionLayout : public fl_ContainerLayout
 {
@@ -268,12 +270,12 @@ public:
 	void                formatAllHdrFtr(void);
 	void                checkAndRemovePages(void);
 	void                addValidPages(void);
-	void                setNeedsSectionBreak(bool bSet ) {m_bNeedsSectionBreak =bSet;}
+	void                setNeedsSectionBreak(bool bSet, fp_Page * pPage );
 	bool                needsSectionBreak(void) const { return m_bNeedsSectionBreak;}
 
 private:
 	virtual void		_lookupProperties(void);
-
+	fb_ColumnBreaker    m_ColumnBreaker;
 	/*
 	  TODO support special case header/footer for first page of section
 	*/

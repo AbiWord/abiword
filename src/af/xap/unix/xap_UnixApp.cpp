@@ -116,9 +116,10 @@ bool XAP_UnixApp::initialize()
 
 #ifndef WITH_PANGO	
 	// load the font stuff from the font directory
-
+	UT_DEBUGMSG(("Loading Fonts\n"));
 	if (!_loadFonts())
 		return false;
+	UT_DEBUGMSG(("Fonts Loaded \n"));
 #endif
 	
 	/*******************************/
@@ -281,10 +282,11 @@ bool XAP_UnixApp::_loadFonts()
 	FREEP(szTemp);
 	
 	// let it loose
-
+	UT_DEBUGMSG(("Scavange Fonts started \n"));
 	if (!m_fontManager->scavengeFonts())
 		return false;
 	
+	UT_DEBUGMSG(("Scavange Fonts finished \n"));
 #if 0
 #ifdef DEBUG
 	XAP_UnixFont ** fonts = m_fontManager->getAllFonts();

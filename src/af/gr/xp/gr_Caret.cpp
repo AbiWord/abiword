@@ -89,8 +89,16 @@ void GR_Caret::s_enable(UT_Worker * _w)
 	GR_Caret * c = static_cast<GR_Caret *>(_w->getInstanceData());
 
  	xxx_UT_DEBUGMSG(("enabling caret %d (%p)\n", c->m_nDisableCount, c));
-
-	c->_blink(false);
+	c->m_worker->stop();
+	if (!c->m_bCursorIsOn)
+	{
+		c->_blink(true);
+	}
+	else
+	{
+		c->_blink(true);
+		c->_blink(true);
+	}
 	c->m_worker->start();
 	c->m_enabler->stop();
 }
@@ -110,10 +118,10 @@ void GR_Caret::setCoords(UT_sint32 x, UT_sint32 y, UT_uint32 h,
 	// now show the caret, if it's enabled, and restart the timer.
 	// if we don't do this, the caret is invisible during caret motion.
 	// For some reason, we seem to do OK now for that.  I don't get it.
-	if (m_nDisableCount == 0)
-	{
-		m_worker->stop(); m_worker->start();
-	}
+	//if (m_nDisableCount == 0)
+	//{
+	//	m_worker->stop(); m_worker->start();
+	//}
 }
 
 void GR_Caret::enable()
@@ -122,7 +130,7 @@ void GR_Caret::enable()
 	if (m_bRecursiveDraw)
 		return;
 
-  	xxx_UT_DEBUGMSG(("GR_Caret::enable(), this=%p, count = %d\n", this, m_nDisableCount));
+  	xxx_UT_DEBUGMSG(("GR_Caret::enable() - 2 , this=%p, count = %d\n", this, m_nDisableCount));
 	if (m_nDisableCount == 0)
 	{
 		// If the caret is already enabled, just return
@@ -141,7 +149,8 @@ void GR_Caret::enable()
 
 void GR_Caret::disable(bool bNoMulti)
 {
-	xxx_UT_DEBUGMSG(("GR_Caret: disable () recursive draw %d disablecount %d (%p)\n",m_bRecursiveDraw,m_nDisableCount, this));
+	xxx_UT_DEBUGMSG(("GR_Caret: disable () recursive draw %d disablecount %d \n",m_bRecursiveDraw,m_nDisableCount));
+//	UT_ASSERT(m_nDisableCount < 10);
 	if (m_bRecursiveDraw)
 		return;
 
@@ -204,6 +213,7 @@ void GR_Caret::_blink(bool bExplicit)
 		else
 		{
 			// TODO: need bigger rectangle for bidi cursor!
+			xxx_UT_DEBUGMSG(("gr_Caret: Drawing cursor NOW!!! \n"));
 			UT_Rect r(m_xPoint-1, m_yPoint+1, 2, m_iPointHeight);
 			m_pG->saveRectangle(r);
 

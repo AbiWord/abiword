@@ -127,6 +127,7 @@ public:
 
 	/* used with AV_Listener */
 	virtual bool		notify(AV_View * pView, const AV_ChangeMask mask);
+    virtual  AV_ListenerType getType(void) { return AV_LISTENER_LEFTRULER;}
 
 	/* used with AV_ScrollObj */
 	static void			_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 xlimit);
