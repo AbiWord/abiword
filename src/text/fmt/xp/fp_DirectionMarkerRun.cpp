@@ -45,6 +45,28 @@ fp_DirectionMarkerRun::fp_DirectionMarkerRun(fl_BlockLayout* pBL,
 
 bool fp_DirectionMarkerRun::recalcWidth(void)
 {
+	UT_sint32 iOldWidth = getWidth();
+	FV_View* pView = _getView();
+
+	if (pView && pView->getShowPara())
+	{
+		if((UT_sint32)m_iDrawWidth != iOldWidth)
+		{
+			_setWidth(m_iDrawWidth);
+			return true;
+		}
+		
+		xxx_UT_DEBUGMSG(("fp_DirectionMarkerRun::lookupProperties: width %d\n", getWidth()));
+	}
+	else
+	{
+		if(iOldWidth > 0)
+		{
+			_setWidth(0);
+			return true;
+		}
+	}
+	
 	return false;
 }
 
@@ -71,43 +93,25 @@ void fp_DirectionMarkerRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 		_setRevisions(new PP_RevisionAttr(pRevision));
 	}
 
-	FV_View* pView = _getView();
-	if (pView && pView->getShowPara())
+	// Find drawing width
+	fp_Run* pPropRun = _findPrevPropertyRun();
+	if (pPropRun && (FPRUN_TEXT == pPropRun->getType()))
 	{
-		// Find width
-		fp_Run* pPropRun = _findPrevPropertyRun();
-		if (pPropRun && (FPRUN_TEXT == pPropRun->getType()))
-		{
-			fp_TextRun* pTextRun = static_cast<fp_TextRun*>(pPropRun);
-			getGR()->setFont(pTextRun->getFont());
-		}
-		else
-		{
-			// look for fonts in this DocLayout's font cache
-			FL_DocLayout * pLayout = getBlock()->getDocLayout();
-
-			GR_Font * pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP));
-			getGR()->setFont(pFont);
-		}
-
-		UT_UCS4Char cM = m_iMarker == UCS_LRM ? (UT_UCS4Char)'>' : (UT_UCS4Char)'<';
-		m_iDrawWidth  = getGR()->measureString(&cM, 0, 1, NULL);
-		xxx_UT_DEBUGMSG(("fp_DirectionMarkerRun::lookupProperties: width %d\n", getWidth()));
+		fp_TextRun* pTextRun = static_cast<fp_TextRun*>(pPropRun);
+		getGR()->setFont(pTextRun->getFont());
 	}
 	else
 	{
-		// FIXME:jskov This should probably be the width of the
-		// document to the right of the pilcrow, see Paul's suggested
-		// selection behaviors. Doesn't matter until we get selection
-		// support though (which requires PT changes).
+		// look for fonts in this DocLayout's font cache
+		FL_DocLayout * pLayout = getBlock()->getDocLayout();
 
-		// I have changed this to 0, because otherwise it figures in
-		// calculation of line width, and the last line in righ-aligned
-		// paragraphs is shifted by the width of the pilcrow.
-		// this required some additional changes to the _draw function
-		// Tomas
-		m_iDrawWidth = 0;
+		GR_Font * pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP));
+		getGR()->setFont(pFont);
 	}
+
+	UT_UCS4Char cM = m_iMarker == UCS_LRM ? (UT_UCS4Char)'>' : (UT_UCS4Char)'<';
+	m_iDrawWidth  = getGR()->measureString(&cM, 0, 1, NULL);
+	xxx_UT_DEBUGMSG(("fp_DirectionMarkerRun::lookupProperties: width %d\n", getWidth()));
 }
 
 bool fp_DirectionMarkerRun::canBreakAfter(void) const
@@ -176,14 +180,17 @@ void fp_DirectionMarkerRun::_clearScreen(bool /* bFullLineHeightRect */)
 	UT_ASSERT(!isDirty());
 	UT_ASSERT(getGR()->queryProperties(GR_Graphics::DGP_SCREEN));
 
-	UT_sint32 xoff = 0, yoff = 0;
-	getLine()->getScreenOffsets(this, xoff, yoff);
-
-	if(getVisDirection() == FRIBIDI_TYPE_RTL)
+	if(getWidth())
 	{
-		xoff -= m_iDrawWidth;
+		UT_sint32 xoff = 0, yoff = 0;
+		getLine()->getScreenOffsets(this, xoff, yoff);
+
+		if(getVisDirection() == FRIBIDI_TYPE_RTL)
+		{
+			xoff -= m_iDrawWidth;
+		}
+		getGR()->fillRect(_getColorPG(), xoff, yoff+1, m_iDrawWidth, getLine()->getHeight()+1);
 	}
-	getGR()->fillRect(_getColorPG(), xoff, yoff+1, m_iDrawWidth, getLine()->getHeight()+1);
 }
 
 /*!
@@ -199,12 +206,6 @@ void fp_DirectionMarkerRun::_draw(dg_DrawArgs* pDA)
 	FV_View* pView = _getView();
     if(!pView || !pView->getShowPara())
     {
-    	if(m_iDrawWidth)
-    	{
-    		m_iDrawWidth = 0;
-    		//getLine()->layout();
-    		//getLine()->redrawUpdate();
-    	}
     	return;
     }
 
@@ -257,21 +258,24 @@ void fp_DirectionMarkerRun::_draw(dg_DrawArgs* pDA)
 	_setHeight(getGR()->getFontHeight());
 	m_iXoffText = pDA->xoff;
 
-	if(getVisDirection() == FRIBIDI_TYPE_RTL)
-	{
-		m_iXoffText -= m_iDrawWidth;
-	}
-
 	m_iYoffText = pDA->yoff - iAscent;
 	xxx_UT_DEBUGMSG(("fp_DirectionMarkerRun::draw: width %d\n", m_iDrawWidth));
 
 	if (bIsSelected)
 	{
-		getGR()->fillRect(_getView()->getColorSelBackground(), m_iXoffText, m_iYoffText, m_iDrawWidth, getLine()->getHeight());
+		getGR()->fillRect(_getView()->getColorSelBackground(),
+						  m_iXoffText,
+						  m_iYoffText,
+						  m_iDrawWidth,
+						  getLine()->getHeight());
 	}
 	else
 	{
-		getGR()->fillRect(_getColorPG(), m_iXoffText, m_iYoffText, m_iDrawWidth, getLine()->getHeight());
+		getGR()->fillRect(_getColorPG(),
+						  m_iXoffText,
+						  m_iYoffText,
+						  m_iDrawWidth,
+						  getLine()->getHeight());
 	}
 	if (pView->getShowPara())
 	{
