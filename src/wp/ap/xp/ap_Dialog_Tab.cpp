@@ -444,7 +444,7 @@ void AP_Dialog_Tab::_event_somethingChanged()
 	{
 		fl_TabStop *pTabInfo = (fl_TabStop *)m_tabInfo.getNthItem(i);
 		UT_ASSERT(pTabInfo);
-		const char cbuffer = buffer.c_str();
+		const char *cbuffer = buffer.c_str();
 		// if we have a tab at that unit
 		if ( !strcmp(cbuffer, _getTabString(pTabInfo)) )
 		{
