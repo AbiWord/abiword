@@ -2444,14 +2444,15 @@ bool IE_Imp_RTF::HandleParKeyword()
 
 	if(!m_bSectionHasPara)
 	{
-		//if(m_newSectionFlagged)
-		//ApplySectionAttributes();
+		if(m_newSectionFlagged)
+			ApplySectionAttributes();
 		
-		//m_newSectionFlagged = false;
+		m_newSectionFlagged = false;
+
+		ApplyParagraphAttributes();
 		
-		getDoc()->appendStrux(PTX_Block,NULL);
+		//getDoc()->appendStrux(PTX_Block,NULL);
 		m_newParaFlagged = false;
-		
 		m_bSectionHasPara = true;
 	}
 	

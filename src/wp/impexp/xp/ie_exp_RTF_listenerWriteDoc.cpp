@@ -1432,6 +1432,7 @@ s_RTF_ListenerWriteDoc::s_RTF_ListenerWriteDoc(PD_Document * pDocument,
 	m_iFirstTop = 0;
 	m_bHyperLinkOpen = false;
 	m_bOpenBlockForSpan = bHasMultiBlock;
+
 	// <section>+ will be handled by the populate code.
 }
 
@@ -4418,7 +4419,12 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 	}
 ///
 /// OK we need to output the char props if there is a list here
-///
+	// no, we must not output character properties here, because the properties that are
+	// output here will apply to everyting that will follow in this paragraph: see bug 5693
+	// -- I am really not sure what the rationale for the char props output here was, so
+	// if commenting this out creates some other problem, please let me know. Tomas, Sep
+	// 2, 2004
+#if 0 //#TF
 	if(id != 0)
 	{
 		const PP_AttrProp * pSpanAP = NULL;
@@ -4429,7 +4435,7 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 		m_pDocument->getAttrProp(m_apiThisBlock,&pBlockAP);
 		m_pie->_write_charfmt(s_RTF_AttrPropAdapter_AP(pSpanAP, pBlockAP, pSectionAP, m_pDocument));
 	}
-
+#endif
 	///
 	/// OK if there is list info in this paragraph we encase it inside
 	/// the {\*\abilist..} extension

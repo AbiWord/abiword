@@ -146,6 +146,7 @@ protected:
 	UT_sint32           m_iFirstTop;
 	bool                m_bHyperLinkOpen;
 	bool                m_bOpenBlockForSpan;
+	
 };
 
 #endif /* IE_EXP_RTF_LISTENERWRITEDOC */
