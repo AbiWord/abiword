@@ -549,8 +549,7 @@ coverage.push_back((void*)(info->lochar - info->hichar));
 }
 void GR_QNXGraphics::setLineWidth(UT_sint32 iLineWidth)
 {
-	fprintf(stderr,"linewidth=%d",iLineWidth);
-	m_iLineWidth = iLineWidth;
+	m_iLineWidth = _UD(iLineWidth);
 }
 
 void GR_QNXGraphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
