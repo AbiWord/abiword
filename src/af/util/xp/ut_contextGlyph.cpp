@@ -45,18 +45,15 @@ struct LigatureSequence
 // this table has to be sorted by the first two numbers !!!
 // use 1 to indicate that no ligature glyph exists
 //
-// if the ligature is not context-sensitive, set the stan-alone form
+// if the ligature is not context-sensitive, set the stand-alone form
 // to 0 and the initial form to the ligature value
 
 static LigatureData s_ligature[] =
 {
 	// code_low, code_high, intial, medial, final, stand-alone
-#if 0
-#define ENABLE_LATIN_LIGATURES
-#endif
-	
-#ifdef ENABLE_LATIN_LIGATURES
+
 	// Latin
+#define LATIN_LIGATURES_FIRST 0x0021
 	{0x0021, 0x0021, 0x203c, 0, 0, 0}, // !!
 	{0x0021, 0x003f, 0x2049, 0, 0, 0}, // !?
 	{0x003f, 0x0021, 0x2048, 0, 0, 0}, // ?!
@@ -65,7 +62,7 @@ static LigatureData s_ligature[] =
 	{0x0066, 0x0069, 0xFB01, 0xFB01, 0xFB01, 0}, // fi
 	{0x0066, 0x006C, 0xFB02, 0xFB02, 0xFB02, 0}, // fl
 	{0x017F, 0x0074, 0xFB05, 0xFB05, 0xFB05, 0},
-#endif
+#define LATIN_LIGATURES_LAST 0x017F
 	
 	// Greek
 	{0x0391, 0x0301, 0x0386, 0x0386, 0x0386, 0},
@@ -123,7 +120,7 @@ static LigatureData s_ligature[] =
 	{0x05E9, 0x05C2, 0xFB2B, 0xFB2B, 0xFB2B, 0},
 	{0x05EA, 0x05BC, 0xFB4A, 0xFB4A, 0xFB4A, 0},
 	{0x05F2, 0x05B7, 0xFB1F, 0xFB1F, 0xFB1F, 0},
-
+	
 	// Arabic
 	{0x0626, 0x0627, 1, 1, 0xFBEB, 0xFBEA},
 	{0x0626, 0x062c, 0xFC97, 1, 1, 0xFC00},
@@ -363,7 +360,9 @@ void UT_contextGlyph::_generateNoLigatureTable()
 	
 	for(UT_uint32 i = 1; i < NrElements(s_ligature) - 1; i++)
 	{
-		if(s_ligature[i].code_low != iLow)
+		if(s_ligature[i].code_low != iLow
+		   && (s_bLatinLigatures || iLow < LATIN_LIGATURES_FIRST
+			                     || iLow > LATIN_LIGATURES_LAST))
 		{
 			pRange = new UCSRange;
 			UT_return_if_fail(pRange);
@@ -377,7 +376,9 @@ void UT_contextGlyph::_generateNoLigatureTable()
 						 pRange->low, pRange->high));
 		}
 
-		if(s_ligature[i+1].code_low == s_ligature[i].code_low + 1)
+		if(s_ligature[i+1].code_low == s_ligature[i].code_low + 1
+		   || (!s_bLatinLigatures && s_ligature[i+1].code_low >= LATIN_LIGATURES_FIRST
+			                      && s_ligature[i+1].code_low <= LATIN_LIGATURES_LAST))
 		{
 			iLow++;
 		}
@@ -409,9 +410,7 @@ static LetterData s_table[] =
 	{0x03C3, 0x03C3, 0x03C3, 0x03C2, 0x03C2},
 
 	// Hebrew letters
-	// the following macro defines how many entries in this table
-	// precede the Hebrew section
-#define HEBREW_START 2
+#define HEBREW_SHAPING_FIRST 0x05da
 	{0x05DA, 0x05DB, 0x05DB, 0x05DA, 0x05DA},
 	{0x05DB, 0x05DB, 0x05DB, 0x05DA, 0x05DA},
 
@@ -424,9 +423,7 @@ static LetterData s_table[] =
 	{0x05E4, 0x05E4, 0x05E4, 0x05E3, 0x05E3},
 	{0x05E5, 0x05E6, 0x05E6, 0x05E5, 0x05E5},
 	{0x05E6, 0x05E6, 0x05E6, 0x05E5, 0x05E5},
-	// the following macro defines the index of the last entry in
-	// the Hebrew section of the table
-#define HEBREW_END 11
+#define HEBREW_SHAPING_LAST 0x5e6
 	
 	// Arabic
 	{0x0621, 0x0621, 0x0621, 0x0621, 0xFE80},
@@ -591,15 +588,16 @@ void UT_contextGlyph::_generateNoShapingTable()
 				 pRange->low, pRange->high));
 	
 	UT_uint32 iPrev = s_table[0].code;
-	if((s_iGlyphTableSize/sizeof(LetterData) > 1) &&
-	   s_table[0].code + 1 == s_table[1].code)
+	if(NrElements(s_table) > 1 && s_table[0].code + 1 == s_table[1].code)
 	{
 		iPrev++;
 	}
 	
-	for(UT_uint32 i = 1; i < s_iGlyphTableSize/sizeof(LetterData) - 1; i++)
+	for(UT_uint32 i = 1; i < NrElements(s_table) - 1; i++)
 	{
-		if(s_table[i].code != iPrev)
+		if(s_table[i].code != iPrev
+		   && (s_bHebrewShaping || s_table[i].code < HEBREW_SHAPING_FIRST
+			                    || s_table[i].code > HEBREW_SHAPING_LAST))
 		{
 			pRange = new UCSRange;
 			UT_return_if_fail(pRange);
@@ -613,7 +611,9 @@ void UT_contextGlyph::_generateNoShapingTable()
 						 pRange->low, pRange->high));
 		}
 		
-		if(s_table[i].code + 1 == s_table[i+1].code)
+		if(s_table[i].code + 1 == s_table[i+1].code
+		   || (!s_bHebrewShaping && s_table[i+1].code >= HEBREW_SHAPING_FIRST
+			                     && s_table[i+1].code <= HEBREW_SHAPING_LAST))
 		{
 			iPrev++;
 		}
@@ -701,7 +701,7 @@ bool UT_contextGlyph::isNotContextSensitive(UT_UCS4Char c) const
     // the last time I checked the glyph table had 88 entries, and the
     // no shaping table 30; however, most characters will exit in
 	// first three cycles, and the glyph table is expanding.
-	
+
 	for(UT_uint32 i = 0; i < s_noShaping.getItemCount(); i++)
 	{
 		if(c >= static_cast<UCSRange*>(s_noShaping.getNthItem(i))->low &&
@@ -887,20 +887,14 @@ static UT_UCSChar s_getMirrorChar(UT_UCSChar c)
 
 // Initialisation of static members
 bool             UT_contextGlyph::s_bInit           = false;
-UT_uint32        UT_contextGlyph::s_iGlyphTableSize = sizeof(s_table);
 const XML_Char * UT_contextGlyph::s_pEN_US          = NULL;
-UT_UCS4Char      UT_contextGlyph::s_cDefaultGlyph    = '?';
+UT_UCS4Char      UT_contextGlyph::s_cDefaultGlyph   = '?';
+bool             UT_contextGlyph::s_bHebrewShaping  = true;
+bool             UT_contextGlyph::s_bLatinLigatures = true;
+
 
 ////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-UT_contextGlyph::UT_contextGlyph(bool bNoInit)
-{
-	if(!bNoInit)
-	{
-		UT_contextGlyph();
-	}
-}
-
 UT_contextGlyph::UT_contextGlyph()
 {
 	if(!s_bInit)
@@ -909,25 +903,23 @@ UT_contextGlyph::UT_contextGlyph()
 		// to the falue hardcode in our tables, 0xF854
 		UT_ASSERT(UCS_LIGATURE_PLACEHOLDER == 0xF854);
 		
-
-		bool bHebrewContextGlyphs = false;
 		XAP_App::getApp()->getPrefsValueBool((XML_Char*)XAP_PREF_KEY_UseHebrewContextGlyphs,
-											 &bHebrewContextGlyphs);
+											 &s_bHebrewShaping);
 
-		// fix the letter and ligature data depending on whether the user wants
+		XAP_App::getApp()->getPrefsValueBool((XML_Char*)XAP_PREF_KEY_LatinLigatures,
+											 &s_bLatinLigatures);
+
+		// fix ligature data depending on whether the user wants
 		// shaping for Hebrew
-		_fixHebrewLetters(bHebrewContextGlyphs);
-		_fixHebrewLigatures(bHebrewContextGlyphs);
+		_fixHebrewLigatures(s_bHebrewShaping);
 		
 		// generate the no-shaping and no-ligature tables
 		_generateNoLigatureTable();
 		_generateNoShapingTable();
 
-		xxx_UT_DEBUGMSG(("UT_ContextGlyph: glyphs: %d, ligatures: %d, no-lig: %d, no-lig2: %d, "
-					 "no-shap: %d\n",
-					 s_iGlyphTableSize/sizeof(LetterData), NrElements(s_ligature),
-					 s_noLigature.getItemCount(), s_noLigature2.getItemCount(),
-					 s_noShaping.getItemCount()));
+		UT_DEBUGMSG(("UT_ContextGlyph: glyphs: %d, ligatures: %d, no-lig: %d, no-shap: %d\n",
+					 NrElements(s_table), NrElements(s_ligature),
+					 s_noLigature.getItemCount(), s_noShaping.getItemCount()));
 		
 		// init the smart quote tables with the pointers to language
 		// codes in UT_Laguage
@@ -965,10 +957,13 @@ void UT_contextGlyph::static_destructor()
 void UT_contextGlyph::_prefsListener(XAP_App *pApp, XAP_Prefs *, UT_StringPtrMap *, void *)
 {
 	UT_return_if_fail(pApp);
+
+	// retrieve the default glyph to remap missing glyphs to ...
 	const XML_Char *default_utf8;
 	UT_GrowBuf gb;
+	
 	bool bNoErr = pApp->getPrefsValue(static_cast<const XML_Char*>(XAP_PREF_KEY_RemapGlyphsDefault),
-								 &default_utf8);
+									  &default_utf8);
 	UT_ASSERT( bNoErr );
 		
 	UT_decodeUTF8string(default_utf8, UT_XML_strlen(default_utf8), &gb);
@@ -977,6 +972,46 @@ void UT_contextGlyph::_prefsListener(XAP_App *pApp, XAP_Prefs *, UT_StringPtrMap
 		s_cDefaultGlyph = *(gb.getPointer(0));
 	else
 		s_cDefaultGlyph = '?';
+
+	// handle Hebrew shaping and Latin ligature preferences ...
+	bool bSChange = s_bHebrewShaping;
+	bNoErr = XAP_App::getApp()->getPrefsValueBool((XML_Char*)XAP_PREF_KEY_UseHebrewContextGlyphs,
+												  &s_bHebrewShaping);
+
+	UT_ASSERT( bNoErr );
+
+	bSChange ^= s_bHebrewShaping;
+
+	if(bSChange)
+	{
+		UT_DEBUGMSG(("UT_ContextGlyph:prefs: hebrew shaping preference changed, now %d\n",
+					 s_bHebrewShaping));
+
+		_fixHebrewLigatures(s_bHebrewShaping);
+
+		UT_VECTOR_PURGEALL(UCSRange*,s_noShaping);   s_noShaping.clear();
+		_generateNoShapingTable();
+	}
+
+	bool bLChange  = s_bLatinLigatures;
+	bNoErr = XAP_App::getApp()->getPrefsValueBool((XML_Char*)XAP_PREF_KEY_LatinLigatures,
+												  &s_bLatinLigatures);
+	UT_ASSERT( bNoErr );
+	
+	bLChange ^= s_bLatinLigatures;
+	
+	if(bLChange)
+	{
+		UT_DEBUGMSG(("UT_ContextGlyph::prefs: latin ligatures preference changed, now %d\n",
+					 s_bLatinLigatures));
+
+		UT_VECTOR_PURGEALL(UCSRange*,s_noLigature);  s_noLigature.clear();
+		_generateNoLigatureTable();
+	}
+	
+	UT_DEBUGMSG(("UT_ContextGlyph::prefs: glyphs %d, ligatures: %d, no-lig: %d, no-shap: %d\n",
+				 NrElements(s_table), NrElements(s_ligature),
+				 s_noLigature.getItemCount(), s_noShaping.getItemCount()));
 }
 
 /*!
@@ -1064,64 +1099,42 @@ UT_UCS4Char UT_contextGlyph::getSmartQuote(UT_TextIterator & text,
 	return c;
 }
 
-void UT_contextGlyph::_fixHebrewLetters(bool bShape)
-{
-	// this function can only be called when the singleton is being
-	// initialised and only once ...
-	static bool bCalled = false;
-	UT_return_if_fail(!s_bInit && !bCalled);
-
-	if(!bShape)
-	{
-		s_iGlyphTableSize -= (HEBREW_END - HEBREW_START + 1) * sizeof(LetterData);
-
-		// this works because the the segement we are
-		// cutting out is longer than a chunk that memmove
-		// might be moving in a single go
-		memmove(&s_table[HEBREW_START], &s_table[HEBREW_END + 1],
-				s_iGlyphTableSize - HEBREW_START);
-	}
-
-	bCalled  = true;
-}
-
-
 /*!
     find and modify the handful of ligature entries that need to be
 	modified if hebrew shaping is on
 */
 void UT_contextGlyph::_fixHebrewLigatures(bool bShape)
 {
-	// this function should only be called when the singleton is being
-	// initialised
-	UT_return_if_fail(!s_bInit);
-	
-	if(bShape)
+	LigatureSequence Lig;
+	LigatureData * pLig = NULL;
+		
+	for(UT_uint32 i = 0; i < NrElements(s_hebrewShapingLigature); i++)
 	{
-		LigatureSequence Lig;
-		LigatureData * pLig = NULL;
+		Lig.code = s_hebrewShapingLigature[i].code_low;
+		Lig.next = s_hebrewShapingLigature[i].code_high;
 		
-		for(UT_uint32 i = 0; i < NrElements(s_hebrewShapingLigature); i++)
+		pLig = static_cast<LigatureData*>(bsearch(static_cast<void*>(&Lig),
+												  static_cast<void*>(s_ligature),
+												  NrElements(s_ligature),
+												  sizeof(LigatureData),
+												  s_comp_lig));
+
+		if(!pLig)
 		{
-			Lig.code = s_hebrewShapingLigature[i].code_low;
-			Lig.next = s_hebrewShapingLigature[i].code_high;
-		
-			pLig = static_cast<LigatureData*>(bsearch(static_cast<void*>(&Lig),
-													  static_cast<void*>(s_ligature),
-													  NrElements(s_ligature),
-													  sizeof(LigatureData),
-													  s_comp_lig));
+			UT_ASSERT(UT_NOT_REACHED);
+			continue;
+		}
 
-			if(!pLig)
-			{
-				UT_ASSERT(UT_NOT_REACHED);
-				continue;
-			}
-
+		if(bShape)
+		{
 			pLig->initial = s_hebrewShapingLigature[i].initial;
 			pLig->medial  = s_hebrewShapingLigature[i].medial;
 			pLig->final   = s_hebrewShapingLigature[i].final;
 			pLig->alone   = s_hebrewShapingLigature[i].alone;
+		}
+		else
+		{
+			pLig->alone   = 0;
 		}
 	}
 }
@@ -1416,7 +1429,7 @@ UTShapingResult UT_contextGlyph::renderString(UT_TextIterator & text,
 				
 			pLet = static_cast<LetterData*>(bsearch(static_cast<const void*>(&current),
 													static_cast<void*>(s_table),
-													s_iGlyphTableSize/sizeof(LetterData),
+													NrElements(s_table),
 													sizeof(LetterData),
 													s_comp));
 		}
@@ -1579,7 +1592,7 @@ UTShapingResult UT_contextGlyph::copyString(UT_TextIterator & text,
     this function remaps a number of specialised glyphs to reasonable
     alternatives
 */
-UT_UCS4Char UT_contextGlyph::_remapGlyph(UT_UCS4Char g) const
+UT_UCS4Char UT_contextGlyph::_remapGlyph(UT_UCS4Char g)
 {
 	// various hyphens
 	if(g >= 0x2010 && g <= 0x2015) return '-';

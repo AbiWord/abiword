@@ -113,8 +113,10 @@ class UT_contextGlyph
 {
 public:
 	UT_contextGlyph();
-	UT_contextGlyph(bool bNoInit);
-	void static_destructor();
+	static void static_destructor();
+
+	// at the moment we could make all the public functions static, but then we
+	// would need to worry about the static data being initalised
 
 	UTShapingResult renderString(UT_TextIterator & text,
 								 UT_UCSChar      * dest,
@@ -154,17 +156,17 @@ private:
 								UT_StringPtrMap * phChanges,
 								void            * data);
 
-	void _generateNoLigatureTable();
-	void _generateNoShapingTable();
-	void _fixHebrewLigatures(bool bShape);
-	void _fixHebrewLetters(bool bShape);
+	static void _generateNoLigatureTable();
+	static void _generateNoShapingTable();
+	static void _fixHebrewLigatures(bool bShape);
 	
-	UT_UCS4Char _remapGlyph(UT_UCS4Char g) const;
+	static UT_UCS4Char _remapGlyph(UT_UCS4Char g);
 
 	static bool 		    s_bInit;
-	static UT_uint32	    s_iGlyphTableSize;
 	static bool             s_bSmartQuotes;
 	static const XML_Char * s_pEN_US;
 	static UT_UCS4Char      s_cDefaultGlyph;
+	static bool             s_bHebrewShaping;
+	static bool             s_bLatinLigatures;
 };
 #endif
