@@ -116,7 +116,13 @@ void AP_Win32Dialog_Field::SetFieldsList(void)
 	}
 	for (;fp_FieldFmts[i].m_Tag != NULL && fp_FieldFmts[i].m_Type == FType;i++) 
 	{
-		SendMessage(m_hwndFormats, LB_ADDSTRING, 0, (LPARAM)fp_FieldFmts[i].m_Desc);
+		if((fp_FieldFmts[i].m_Num != FPFIELD_endnote_anch) &&
+		   (fp_FieldFmts[i].m_Num != FPFIELD_endnote_ref) &&
+		   (fp_FieldFmts[i].m_Num != FPFIELD_footnote_anch) &&
+		   (fp_FieldFmts[i].m_Num != FPFIELD_footnote_ref))
+		{ 
+			SendMessage(m_hwndFormats, LB_ADDSTRING, 0, (LPARAM)fp_FieldFmts[i].m_Desc);
+		}
 	}
 	SendMessage(m_hwndFormats, LB_SETCURSEL, 0, 0);
 }
