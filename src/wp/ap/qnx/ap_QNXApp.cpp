@@ -944,13 +944,10 @@ UT_Bool AP_QNXApp::parseCommandLine(void)
 		// no documents specified or were able to be opened, open an untitled one
 
 		AP_QNXFrame * pFirstQNXFrame = new AP_QNXFrame(this);
-		printf("APP: ParseCommandLine: Calling frame initialize \n");
 		pFirstQNXFrame->initialize();
-		printf("APP: ParseCommandLine: Calling load document \n");
 		pFirstQNXFrame->loadDocument(NULL, IEFT_Unknown);
 	}
 
-	printf("APP: ParseCommandLine: Returning true \n");
 	return UT_TRUE;
 }
 

@@ -38,25 +38,23 @@ public:
 	virtual ~AP_QNXStatusBar(void);
 
 	virtual void		setView(AV_View * pView);
-	void *			createWidget(void);
+	PtWidget_t *		createWidget(void);
 
 protected:
-	void *			m_wStatusBar;
+	PtWidget_t *		m_wStatusBar;
 
-#if 0
 	class _fe
 	{
 	public:
-		static int button_press_event(GtkWidget * w, GdkEventButton * e);
-		static int button_release_event(GtkWidget * w, GdkEventButton * e);
-		static int configure_event(GtkWidget* w, GdkEventConfigure *e);
-		static int motion_notify_event(GtkWidget* w, GdkEventMotion* e);
-		static int key_press_event(GtkWidget* w, GdkEventKey* e);
-		static int delete_event(GtkWidget * w, GdkEvent * /*event*/, gpointer /*data*/);
-		static int expose(GtkWidget * w, GdkEventExpose* pExposeEvent);
-		static void destroy (GtkWidget * /*widget*/, gpointer /*data*/);
+//		static int button_press_event(GtkWidget * w, GdkEventButton * e);
+//		static int button_release_event(GtkWidget * w, GdkEventButton * e);
+//		static int motion_notify_event(GtkWidget* w, GdkEventMotion* e);
+//		static int key_press_event(GtkWidget* w, GdkEventKey* e);
+//		static int delete_event(GtkWidget * w, GdkEvent * /*event*/, gpointer /*data*/);
+		static int resize(PtWidget_t* w, void *data,  PtCallbackInfo_t *info);
+		static int expose(PtWidget_t * w, PhTile_t *damage);
+//		static void destroy (GtkWidget * /*widget*/, gpointer /*data*/);
 	};
-#endif
 
 };
 

@@ -203,9 +203,7 @@ UT_Error AP_QNXFrame::_showDocument(UT_uint32 iZoom)
 	// frame is created.
 	((AP_FrameData*)m_pData)->m_pTopRuler->setView(pView, iZoom);
 	((AP_FrameData*)m_pData)->m_pLeftRuler->setView(pView, iZoom);
-#if 0
 	((AP_FrameData*)m_pData)->m_pStatusBar->setView(pView);
-#endif
 	
 	PtArg_t args[1];
 	PhArea_t *area;
@@ -244,9 +242,7 @@ UT_Error AP_QNXFrame::_showDocument(UT_uint32 iZoom)
 
 	((AP_FrameData*)m_pData)->m_pTopRuler->draw(NULL);
 	((AP_FrameData*)m_pData)->m_pLeftRuler->draw(NULL);
-#if 0
 	((AP_FrameData*)m_pData)->m_pStatusBar->draw();
-#endif
 	return UT_OK;
 
 Cleanup:
@@ -632,8 +628,6 @@ PtWidget_t * AP_QNXFrame::_createDocumentWindow(void)
 	area.pos.y = m_AvailableArea.pos.y;
 	area.pos.x = m_AvailableArea.pos.x + m_AvailableArea.size.w - area.size.w;
 	m_AvailableArea.size.w -= area.size.w;
-	printf("VSB: %d,%d %d/%d \n", 
-			area.pos.x, area.pos.y, area.size.w, area.size.h);
 	PtSetArg(&args[n], Pt_ARG_AREA, &area, 0); n++;
 #define _VS_ANCHOR_ (Pt_LEFT_ANCHORED_RIGHT | Pt_RIGHT_ANCHORED_RIGHT | \
 		     Pt_TOP_ANCHORED_TOP | Pt_BOTTOM_ANCHORED_BOTTOM)
@@ -659,8 +653,6 @@ PtWidget_t * AP_QNXFrame::_createDocumentWindow(void)
 	area.pos.y = m_AvailableArea.pos.y + m_AvailableArea.size.h - area.size.h;
 	area.pos.x = m_AvailableArea.pos.x;
 	m_AvailableArea.size.h -= area.size.h;
-	printf("HSB: %d,%d %d/%d \n", 
-			area.pos.x, area.pos.y, area.size.w, area.size.h);
 	PtSetArg(&args[n], Pt_ARG_AREA, &area, 0); n++;
 #define _HS_ANCHOR_ (Pt_LEFT_ANCHORED_LEFT | Pt_RIGHT_ANCHORED_RIGHT | \
 		     Pt_TOP_ANCHORED_BOTTOM | Pt_BOTTOM_ANCHORED_BOTTOM)
@@ -690,8 +682,6 @@ PtWidget_t * AP_QNXFrame::_createDocumentWindow(void)
 #if 0		//WHY DOES THIS NOT WORK ALL OF A SUDDEN?
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0); 
-	printf("MDA: %d,%d %d/%d \n", 
-		area.pos.x, area.pos.y, area.size.w, area.size.h);
 	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, Pt_GROUP_VERTICAL);
 	PtSetArg(&args[n++], Pt_ARG_FILL_COLOR, Pg_RED, 0); 
 #define _DA_ANCHOR_ (Pt_LEFT_ANCHORED_LEFT | Pt_RIGHT_ANCHORED_RIGHT | \
@@ -704,11 +694,9 @@ PtWidget_t * AP_QNXFrame::_createDocumentWindow(void)
 #else
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0); 
-	printf("MDA: %d,%d %d/%d \n", 
-		area.pos.x, area.pos.y, area.size.w, area.size.h);
 	PtSetArg(&args[n++], Pt_ARG_FILL_COLOR, Pg_TRANSPARENT, 0); 
 #define _DA_ANCHOR_ (Pt_LEFT_ANCHORED_LEFT | Pt_RIGHT_ANCHORED_RIGHT | \
-		     Pt_TOP_ANCHORED_TOP | Pt_BOTTOM_ANCHORED_BOTTOM)
+		             Pt_TOP_ANCHORED_TOP | Pt_BOTTOM_ANCHORED_BOTTOM)
 	PtSetArg(&args[n++], Pt_ARG_ANCHOR_FLAGS, _DA_ANCHOR_, _DA_ANCHOR_);
 	PtSetArg(&args[n++], Pt_ARG_USER_DATA, &data, sizeof(this)); 
 	group = PtCreateWidget(PtGroup, getTopLevelWindow(), n, args);
@@ -744,29 +732,24 @@ PtWidget_t * AP_QNXFrame::_createDocumentWindow(void)
 //This might be the place to do our co-ordinate conversions ...
 void AP_QNXFrame::translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y)
 {
-	printf("Translate Document To Screen %d,%d \n", x, y);
+	printf("TODO: Translate Document To Screen %d,%d \n", x, y);
 }
 
-void * AP_QNXFrame::_createStatusBarWindow(void)
+PtWidget_t * AP_QNXFrame::_createStatusBarWindow(void)
 {
-#if 0
 	AP_QNXStatusBar * pQNXStatusBar = new AP_QNXStatusBar(this);
 	UT_ASSERT(pQNXStatusBar);
 
 	((AP_FrameData *)m_pData)->m_pStatusBar = pQNXStatusBar;
 	
-	GtkWidget * w = pQNXStatusBar->createWidget();
+	PtWidget_t * w = pQNXStatusBar->createWidget();
 
 	return w;
-#endif
-	return(NULL);
 }
 
 void AP_QNXFrame::setStatusMessage(const char * szMsg)
 {
-#if 0
 	((AP_FrameData *)m_pData)->m_pStatusBar->setStatusMessage(szMsg);
-#endif
 }
 
 void AP_QNXFrame::_setWindowIcon(void)

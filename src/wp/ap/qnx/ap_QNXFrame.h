@@ -49,8 +49,8 @@ public:
 	virtual void				setStatusMessage(const char * szMsg);
 
 protected:
-	virtual PtWidget_t *			_createDocumentWindow(void);
-	virtual void *			_createStatusBarWindow(void);
+	virtual PtWidget_t *		_createDocumentWindow(void);
+	virtual PtWidget_t *		_createStatusBarWindow(void);
 	virtual void				_setWindowIcon(void);
 	UT_Error					_loadDocument(const char * szFilename, IEFileType ieft);
 	UT_Error					_showDocument(UT_uint32 iZoom=100);

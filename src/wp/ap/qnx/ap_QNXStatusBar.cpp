@@ -24,7 +24,7 @@
 #include "xap_QNXFrame.h"
 #include "gr_QNXGraphics.h"
 #include "ap_QNXStatusBar.h"
-
+#include "ut_qnxHelper.h"
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
@@ -46,17 +46,12 @@ void AP_QNXStatusBar::setView(AV_View * pView)
 	// unfortunately, the actual window (m_wStatusBar->window)
 	// is not created until the frame's top-level window is
 	// shown.
-#if 0
 	DELETEP(m_pG);	
-	XAP_QNXApp * app = static_cast<XAP_QNXApp *>(m_pFrame->getApp());
-	XAP_QNXFontManager * fontManager = app->getFontManager();
-	GR_QNXGraphics * pG = new GR_QNXGraphics(m_wStatusBar->window, fontManager);
-	m_pG = pG;
-	UT_ASSERT(m_pG);
+	XAP_QNXApp * app = (XAP_QNXApp *)m_pFrame->getApp();
+	XAP_QNXFrame *frame = (XAP_QNXFrame *) m_pFrame;
 
-	GtkStyle * style = gtk_widget_get_style((static_cast<XAP_QNXFrame *> (m_pFrame))->getTopLevelWindow());
-	UT_ASSERT(style);
-	pG->init3dColors(style);
+	m_pG = new GR_QNXGraphics(frame->getTopLevelWindow(), m_wStatusBar);
+	UT_ASSERT(m_pG);
 
 	GR_Font * pFont = m_pG->getGUIFont();
 	m_pG->setFont(pFont);
@@ -66,72 +61,108 @@ void AP_QNXStatusBar::setView(AV_View * pView)
 	// think and layout the fields.
 	
 	AP_StatusBar::setView(pView);
-#endif
 }
 
-void * AP_QNXStatusBar::createWidget(void)
+PtWidget_t * AP_QNXStatusBar::createWidget(void)
 {
-#if 0
+	PhArea_t	area;
+	PtArg_t 	args[10];
+	int 		n;
+
+	XAP_QNXFrame *frame = (XAP_QNXFrame *) m_pFrame;
+
 	UT_ASSERT(!m_pG && !m_wStatusBar);
-	
-	m_wStatusBar = gtk_drawing_area_new();
 
-	gtk_object_set_user_data(GTK_OBJECT(m_wStatusBar),this);
-	gtk_widget_show(m_wStatusBar);
-	gtk_widget_set_usize(m_wStatusBar, -1, s_iFixedHeight);
+	m_wStatusBar = NULL;
 
-	gtk_widget_set_events(GTK_WIDGET(m_wStatusBar), (GDK_EXPOSURE_MASK));
+	/* Create a group and then attach it to the bottom */
+	UT_QNXGetWidgetArea(frame->getTopLevelWindow(), NULL, NULL, &area.size.w, &area.size.h);
+	area.pos.x = 0;
+	area.pos.y = area.size.h - 24;
+	area.size.h = 24;
 
-	gtk_signal_connect(GTK_OBJECT(m_wStatusBar), "expose_event",
-					   GTK_SIGNAL_FUNC(_fe::expose), NULL);
-  
-	gtk_signal_connect(GTK_OBJECT(m_wStatusBar), "configure_event",
-					   GTK_SIGNAL_FUNC(_fe::configure_event), NULL);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0);
+	//PtSetArg(&args[n++], Pt_ARG_FILL_COLOR, Pg_YELLOW, 0);
+	PtSetArg(&args[n++], Pt_ARG_BORDER_WIDTH, 2, 0);
+#define _SB_ANCHOR_     (Pt_LEFT_ANCHORED_LEFT | Pt_RIGHT_ANCHORED_RIGHT | \
+                   		 Pt_TOP_ANCHORED_BOTTOM | Pt_BOTTOM_ANCHORED_BOTTOM)
+	PtSetArg(&args[n++], Pt_ARG_ANCHOR_FLAGS, _SB_ANCHOR_, _SB_ANCHOR_);
+	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, Pt_GROUP_STRETCH_FILL, Pt_GROUP_STRETCH_FILL);
+	PtWidget_t *group= PtCreateWidget(PtGroup, frame->getTopLevelWindow(), n, args);
+	PtAddCallback(group, Pt_CB_RESIZE, &(_fe::resize), this);
 
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_DIM, &area.size, 0); 
+	PtSetArg(&args[n++], Pt_ARG_FILL_COLOR, Pg_TRANSPARENT, 0); 
+	PtSetArg(&args[n++], Pt_ARG_RAW_DRAW_F, &(_fe::expose), 1);
+	void *data = this;
+	PtSetArg(&args[n++], Pt_ARG_USER_DATA, &data, sizeof(this));
+    PtSetArg(&args[n++], Pt_ARG_FLAGS, 0, Pt_GETS_FOCUS); 
+	m_wStatusBar = PtCreateWidget(PtRaw, group, n, args);
+
+
+	UT_ASSERT(m_wStatusBar);
 	return m_wStatusBar;
-#endif 
-	return(NULL);
 }
 
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
-#if 0
-int AP_QNXStatusBar::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
+int AP_QNXStatusBar::_fe::resize(PtWidget_t * w, void *data, PtCallbackInfo_t *info)
 {
 	// a static function
-	AP_QNXStatusBar * pQNXStatusBar = (AP_QNXStatusBar *)gtk_object_get_user_data(GTK_OBJECT(w));
+	AP_QNXStatusBar * pQNXStatusBar = (AP_QNXStatusBar *)data;
+	PtContainerCallback_t *cbinfo = (PtContainerCallback_t *)(info->cbdata);
 
-	UT_uint32 iHeight = (UT_uint32)e->height;
-	pQNXStatusBar->setHeight(iHeight);
+	if (pQNXStatusBar) {
+		UT_uint32 iHeight, iWidth;
 
-	UT_uint32 iWidth = (UT_uint32)e->width;
-	if (iWidth != pQNXStatusBar->getWidth())
+		iWidth = cbinfo->new_size.lr.x - cbinfo->new_size.ul.x; 
+		iHeight = cbinfo->new_size.lr.y - cbinfo->new_size.ul.y;
+
+		pQNXStatusBar->setHeight(iHeight);
 		pQNXStatusBar->setWidth(iWidth);
-	
-	return 1;
+	}	
+	return Pt_CONTINUE;
 }
 	
-int AP_QNXStatusBar::_fe::delete_event(GtkWidget * /* w */, GdkEvent * /*event*/, gpointer /*data*/)
+int AP_QNXStatusBar::_fe::expose(PtWidget_t * w, PhTile_t *damage)
 {
-	// a static function
-	// AP_QNXStatusBar * pQNXStatusBar = (AP_QNXStatusBar *)gtk_object_get_user_data(GTK_OBJECT(w));
-	// UT_DEBUGMSG(("QNXStatusBar: [p %p] received delete_event\n",pQNXStatusBar));
-	return 1;
-}
-	
-int AP_QNXStatusBar::_fe::expose(GtkWidget * w, GdkEventExpose * /*pExposeEvent*/)
-{
-	// a static function
-	AP_QNXStatusBar * pQNXStatusBar = (AP_QNXStatusBar *)gtk_object_get_user_data(GTK_OBJECT(w));
-	if (!pQNXStatusBar)
-		return 0;
+	PtArg_t args[1];
+	UT_Rect rClip;
+	PhRect_t rect;
 
+	PtSuperClassDraw(PtBasic, w, damage);
+	PtBasicWidgetCanvas(w, &rect);
+
+	AP_QNXStatusBar ** ppQNXStatusBar = NULL, *pQNXStatusBar = NULL;
+	PtSetArg(&args[0], Pt_ARG_USER_DATA, &ppQNXStatusBar, 0);
+	PtGetResources(w, 1, args);
+	pQNXStatusBar = (ppQNXStatusBar) ? *ppQNXStatusBar : NULL;
+
+	if (!pQNXStatusBar) {
+		return Pt_CONTINUE;
+	}
+
+#if 0
+    if (damage->next) {
+        damage = damage->next;
+    }
+    while (damage) {
+        rClip.left = damage->rect.ul.x;
+        rClip.top = damage->rect.ul.y;
+        rClip.width = damage->rect.lr.x - damage->rect.ul.x;
+        rClip.height = damage->rect.lr.y - damage->rect.ul.y;
+        damage = damage->next;
+
+        UT_DEBUGMSGr(("Clip to Rect %d,%d %d/%d ",
+            rClip.left, rClip.top, rClip.width, rClip.height));
+		pQNXRuler->draw(&rClip);
+		//pQNXRuler->draw(NULL);
+    }
+#else
 	pQNXStatusBar->draw();
-	return 0;
-}
-
-void AP_QNXStatusBar::_fe::destroy(GtkWidget * /*widget*/, gpointer /*data*/)
-{
-	// a static function
-}
 #endif
+
+	return Pt_CONTINUE;
+}
