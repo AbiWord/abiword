@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 4; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /* AbiSource Application Framework
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2001,2002 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -821,6 +821,9 @@ bool	XAP_UnixGnomePrintGraphics::_startDocument(void)
 
 bool XAP_UnixGnomePrintGraphics::_startPage(const char * szPageLabel)
 {
+		if ( !m_gpm )
+				return true ;
+
         gnome_print_beginpage(m_gpc, szPageLabel);
 		_setup_rotation ();
 		return true;
@@ -831,6 +834,9 @@ bool XAP_UnixGnomePrintGraphics::_endPage(void)
 	if(m_bNeedStroked)
 	  gnome_print_stroke(m_gpc);
 
+	if ( !m_gpm )
+			return true ;
+
 	gnome_print_showpage(m_gpc);
 	return true;
 }
@@ -839,8 +845,8 @@ bool XAP_UnixGnomePrintGraphics::_endDocument(void)
 {
 		// bonobo version, we'd don't own the context
 		// or the master, just return
-	if(!m_gpm)
-	  return true;
+		if(!m_gpm)
+				return true;
 
         gnome_print_master_close(m_gpm);
 

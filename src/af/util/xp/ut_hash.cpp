@@ -402,8 +402,12 @@ UT_StringPtrMap::find_slot(const UT_String& k,
 							void*			vi,
 							size_t			hashval_in) const
 {
-	hashval = (hashval_in ? hashval_in : key_wrapper::compute_hash(k));
+	if ( m_nSlots == 0 )
+	  {
+	    key_found = false ; return NULL ;
+	  }
 
+	hashval = (hashval_in ? hashval_in : key_wrapper::compute_hash(k));
 	int nSlot = hashval % m_nSlots;
 
 	xxx_UT_DEBUGMSG(("DOM: hashval for \"%s\" is %d (#%dth slot)\n", k.c_str(), hashval, nSlot));
