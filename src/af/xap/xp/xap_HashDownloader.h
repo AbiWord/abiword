@@ -87,7 +87,7 @@ protected:
 	void 				endElement(const XML_Char *name);
 	void 				charData(const XML_Char*, int);
 	UT_sint32			tryToDownloadHash(XAP_Frame *pFrame, const char *szFName, XAP_HashDownloader::tFileData *fileData);
-	virtual UT_sint32 	downloadFile(XAP_Frame *pFrame, const char *szURL, const char *szDescription, XAP_HashDownloader::tFileData *d, UT_uint32 show_progress) = 0;
+	virtual UT_sint32 	downloadFile(XAP_Frame *pFrame, UT_String szURL, const char *szDescription, XAP_HashDownloader::tFileData *d, UT_uint32 show_progress) = 0;
 	UT_sint32			getPref(XAP_Frame *pFrame, XML_Char *pref);
 	UT_sint32			setPref(XAP_Frame *pFrame, XML_Char *pref, UT_sint32 newVal);
 	UT_sint32			getComparableBuildDate(void);
@@ -102,7 +102,7 @@ protected:
 
 	virtual UT_sint32	downloadDictionaryList(XAP_Frame *pFrame, const char *endianess, UT_uint32 forceDownload) = 0;
 	virtual tPkgType	wantedPackageType(XAP_Frame *pFrame) = 0;
-	virtual UT_sint32	installPackage(XAP_Frame *pFrame, const char *szFName, const char *szLName, tPkgType pkgType, UT_sint32 rm) = 0;
+	virtual UT_sint32	installPackage(XAP_Frame *pFrame, UT_String szFName, const char *szLName, tPkgType pkgType, UT_sint32 rm) = 0;
 	
 	time_t		dictionaryListMaxAge;
 	tFileData 	fileData;

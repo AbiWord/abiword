@@ -61,14 +61,14 @@ AP_HashDownloader::~AP_HashDownloader()
  *			<0 - error
  */
 UT_sint32
-AP_HashDownloader::downloadFile(XAP_Frame *pFrame, const char *szURL, const char *szDescription, XAP_HashDownloader::tFileData *d, UT_uint32 show_progress)
+AP_HashDownloader::downloadFile(XAP_Frame *pFrame, UT_String szURL, const char *szDescription, XAP_HashDownloader::tFileData *d, UT_uint32 show_progress)
 {
 	const XAP_StringSet *pSS = pFrame->getApp()->getStringSet();
 	XAP_DialogFactory * pDialogFactory = (XAP_DialogFactory *)(pFrame->getDialogFactory());
 	AP_Dialog_Download_File *pDialog = (AP_Dialog_Download_File *)(pDialogFactory->requestDialog(AP_DIALOG_ID_DOWNLOAD_FILE));
 	
 	pDialog->setTitle(pSS->getValue(XAP_STRING_ID_DLG_HashDownloader_Dlg_Title));
-	pDialog->setURL(szURL);
+	pDialog->setURL(szURL.c_str());
 	pDialog->setDescription(szDescription);
 	pDialog->runModal(pFrame);
 	
@@ -162,7 +162,7 @@ AP_HashDownloader::downloadDictionaryList(XAP_Frame *pFrame, const char *endiane
 	fileData.data = NULL;
 	i = 0;
 	/* Find out how many bytes the uncompressed file is */
-	while ((ret = gzread(gzfp, szURL, 1)))
+	while ((ret = gzread(gzfp, szURL.c_str(), 1)))
 		i += ret;
 
 	fileData.data = (char *)malloc(i);
@@ -209,11 +209,11 @@ AP_HashDownloader::installPackageUnsupported(XAP_Frame *pFrame, const char *szFN
 
 
 UT_sint32 
-AP_HashDownloader::installPackage(XAP_Frame *pFrame, const char *szFName, const char *szLName, XAP_HashDownloader::tPkgType pkgType, UT_sint32 rm)
+AP_HashDownloader::installPackage(XAP_Frame *pFrame, UT_String szFName, const char *szLName, XAP_HashDownloader::tPkgType pkgType, UT_sint32 rm)
 {
 	// we delegate the work to a platform specific function so we can properly clean up on failure 
 	// and handle platform specific types such as RPM and maybe in the future EXEs
-	UT_sint32 ret = platformInstallPackage(pFrame, szFName, szLName, pkgType);
+	UT_sint32 ret = platformInstallPackage(pFrame, szFName.c_str(), szLName, pkgType);
 
 #ifdef DEBUG
 	// Let the user know we succeeded
@@ -222,10 +222,10 @@ AP_HashDownloader::installPackage(XAP_Frame *pFrame, const char *szFName, const 
 #endif
 
 	if (ret && (rm & RM_FAILURE))
-		UT_unlink(szFName);
+		UT_unlink(szFName.c_str());
 
 	if (!ret && (rm & RM_SUCCESS))
-		UT_unlink(szFName);
+		UT_unlink(szFName.c_str());
 	
 	return (ret);
 }

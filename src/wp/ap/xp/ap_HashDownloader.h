@@ -46,11 +46,11 @@ protected:
 
 	virtual tPkgType	wantedPackageType(XAP_Frame *pFrame) = 0;
 
-	virtual UT_sint32 	downloadFile(XAP_Frame *pFrame, const char *szURL, const char *szDescription, XAP_HashDownloader::tFileData *d, UT_uint32 show_progress);
+	virtual UT_sint32 	downloadFile(XAP_Frame *pFrame, UT_String szURL, const char *szDescription, XAP_HashDownloader::tFileData *d, UT_uint32 show_progress);
 	virtual UT_sint32	downloadDictionaryList(XAP_Frame *pFrame, const char *endianess, UT_uint32 forceDownload);
 
 	// calls platformInstallPackage, based on result and rm flag handles removal of downloaded package
-	virtual UT_sint32	installPackage(XAP_Frame *pFrame, const char *szFName, const char *szLName, tPkgType pkgType, UT_sint32 rm);
+	virtual UT_sint32	installPackage(XAP_Frame *pFrame, UT_String szFName, const char *szLName, tPkgType pkgType, UT_sint32 rm);
 	// displays message to user indicated downloaded package format unsupported
 	virtual UT_sint32	installPackageUnsupported(XAP_Frame *pFrame, const char *szFName, const char *szLName, tPkgType pkgType);
 
