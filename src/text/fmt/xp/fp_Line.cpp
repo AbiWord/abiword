@@ -3175,7 +3175,10 @@ void fp_Line::justify(UT_sint32 iAmount)
 						else
 							iJustifyAmountForRun = iAmount;
 
-						if (iSpaceCount == 1) iJustifyAmountForRun = 0;
+						// I am not sure why this was here, but it breaks justification
+						// at least on win32 with Uniscribe we can have runs that contain
+						// only a space and that do count toward justification. Tomas
+						// if (iSpaceCount == 1) iJustifyAmountForRun = 0;
 						pTR->justify(iJustifyAmountForRun, iMySpaces);
 
 						iAmount -= iJustifyAmountForRun;
