@@ -458,22 +458,18 @@ void AP_UnixDialog_Spell::_showMisspelledWord(void)
 			   gtk_text_get_length( GTK_TEXT(m_textWord) ) );
    
    UT_UCSChar *p;
-
    // insert start of sentence
    p = _getPreWord();
    gchar * preword = (gchar*) _convertToMB(p);
    FREEP(p);
    gtk_text_insert(GTK_TEXT(m_textWord), NULL, NULL, NULL,
 		   preword, strlen(preword));
-   FREEP(preword);
-   
    // insert misspelled word (in highlight color)
    p = _getCurrentWord();
    gchar * word = (gchar*) _convertToMB(p);
    FREEP(p);
    gtk_text_insert(GTK_TEXT(m_textWord) , NULL, &m_highlight, NULL,
 		   word, strlen(word));
-   FREEP(word);
    
    // insert end of sentence
    p = _getPostWord();
@@ -481,7 +477,6 @@ void AP_UnixDialog_Spell::_showMisspelledWord(void)
    FREEP(p);
    gtk_text_insert(GTK_TEXT(m_textWord), NULL, NULL, NULL,
 		   postword, strlen(postword));
-   FREEP(postword);
    
    // TODO: set scroll position so misspelled word is centered
 
@@ -496,7 +491,6 @@ void AP_UnixDialog_Spell::_showMisspelledWord(void)
    for (int i = 0; i < m_Suggestions.count; i++) {
       suggest[0] = (gchar*) _convertToMB((UT_UCSChar*)m_Suggestions.word[i]);
       gtk_clist_append( GTK_CLIST(m_clistSuggestions), suggest);
-      FREEP(suggest[0]);
    }
    
    if (!m_Suggestions.count) {
@@ -656,31 +650,8 @@ void AP_UnixDialog_Spell::event_ReplacementChanged()
 // make a multibyte encoded version of a string
 char * AP_UnixDialog_Spell::_convertToMB(UT_UCSChar *wword)
 {
-   char temp[8];
-   int mbindex = 0, wcindex = 0;
-   int mblength = 0;
-   int wclength = UT_UCS_strlen(wword);
-   while (wcindex < wclength) {
-      int len = wctomb(temp, (wchar_t)(wword[wcindex]));
-      UT_ASSERT(len >= 0);
-      mblength += len;
-      wcindex++;
-   }
-   wcindex = 0;
-   char * word = (char*) calloc(mblength + 1, sizeof(char));
-   if (word == NULL) return NULL;
-     
-   while (mbindex < mblength) {
-      int len = wctomb(word+mbindex, (wchar_t)(wword[wcindex]));
-      UT_ASSERT(len >= 0);
-      mbindex += len;
-      wcindex++;
-   }
-   word[mblength] = 0;
-
-   UT_DEBUGMSG(("wc2mb: wc %i/%i - mb %i/%i\n", wcindex, wclength, mbindex, mblength));
-   UT_ASSERT(mblength >= mbindex);
-   
+   static char word[1024];
+   UT_UCS_strcpy_to_char(word,wword);
    return word;
 }
 
@@ -692,9 +663,12 @@ UT_UCSChar * AP_UnixDialog_Spell::_convertFromMB(char *word)
    int mblength = strlen(word);
    while (mbindex < mblength) {
       int len = mblen(word+mbindex, mblength-mbindex);
-      UT_ASSERT(len >= 0);
-      mbindex += len;
-      wclength++;
+      //      UT_ASSERT(len >= 0);
+      if(len >= 0)
+	{
+	  mblength += len;
+	}
+      mbindex++;
    }
    mbindex = 0;
 
@@ -704,9 +678,12 @@ UT_UCSChar * AP_UnixDialog_Spell::_convertFromMB(char *word)
      
    while (wcindex < wclength) {
       int len = mbtowc(&wch, word+mbindex, mblength-mbindex);
-      UT_ASSERT(len >= 0);
-      mbindex += len;
-      wword[wcindex++] = (UT_UCSChar) wch;
+      //      UT_ASSERT(len >= 0);
+      if(len >= 0)
+	{
+	  mblength += len;
+	}
+      wcindex++;
    }
    wword[wclength] = 0;
    
