@@ -419,11 +419,11 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 		m_pDragImage = painter.genImageFromRectangle(m_recCurFrame);
 		return;
 	}
-	m_pView->_findPositionCoords(posLow, bEOL, xLow, yLow, xCaret2, yCaret2, heightCaret, bDirection, NULL, &pRunLow);
-	fl_BlockLayout * pBLow1 = pRunLow->getBlock();
 	fp_Run * pRunLow2 = NULL;
 	m_pView->_findPositionCoords(posLow+1, bEOL, xLow, yLow, xCaret2, yCaret2, heightCaret, bDirection, NULL, &pRunLow2);
 	fl_BlockLayout * pBLow2 = pRunLow2->getBlock();
+	m_pView->_findPositionCoords(posLow, bEOL, xLow, yLow, xCaret2, yCaret2, heightCaret, bDirection, NULL, &pRunLow);
+	fl_BlockLayout * pBLow1 = pRunLow->getBlock();
 	if(pBLow2 != pBLow1)
 	{
 		pRunLow = pRunLow2;
