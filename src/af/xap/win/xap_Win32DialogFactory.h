@@ -22,7 +22,7 @@
 
 #include "xap_DialogFactory.h"
 
-class AP_Win32DialogFactory : public XAP_DialogFactory
+class ABI_EXPORT AP_Win32DialogFactory : public XAP_DialogFactory
 {
 public:
 	AP_Win32DialogFactory(XAP_App * pApp);
