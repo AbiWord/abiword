@@ -229,7 +229,6 @@ bool GR_CocoaGraphics::queryProperties(GR_Graphics::Properties gp) const
 
 void GR_CocoaGraphics::setZoomPercentage(UT_uint32 iZoom)
 {
-	DELETEP (m_pFontGUI);
 	GR_Graphics::setZoomPercentage (iZoom); // chain up
 }
 

@@ -652,7 +652,6 @@ bool GR_UnixGraphics::queryProperties(GR_Graphics::Properties gp) const
 
 void GR_UnixGraphics::setZoomPercentage(UT_uint32 iZoom)
 {
-	DELETEP (m_pFontGUI);
 	GR_Graphics::setZoomPercentage (iZoom); // chain up
 }
 
