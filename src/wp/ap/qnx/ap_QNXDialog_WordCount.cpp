@@ -105,7 +105,7 @@ void  AP_QNXDialog_WordCount::activate(void)
 
 	ConstructWindowName();
 	PtSetResource(m_windowMain, Pt_ARG_WINDOW_TITLE, m_WindowName, 0);
-	PtWindowFocus(m_windowMain);
+//	PtWindowFocus(m_windowMain);
         
 	setCountFromActiveFrame ();
 	_updateWindowData ();
@@ -147,9 +147,9 @@ void AP_QNXDialog_WordCount::runModeless(XAP_Frame * pFrame)
 	UT_ASSERT(pQNXFrame);
 	
 	// Get the Window of the parent frame
-	PtWidget_t * parentWindow = pQNXFrame->getTopLevelWindow();
+/*	PtWidget_t * parentWindow = pQNXFrame->getTopLevelWindow();
 	UT_ASSERT(parentWindow);
-	PtSetParentWidget(parentWindow);
+	PtSetParentWidget(parentWindow);*/
 
 	// Build the window's widgets and arrange them
 	PtWidget_t * mainWindow = _constructWindow();
@@ -165,7 +165,7 @@ void AP_QNXDialog_WordCount::runModeless(XAP_Frame * pFrame)
 
 	event_Update();
 	
-	UT_QNXCenterWindow(parentWindow, mainWindow);
+//	UT_QNXCenterWindow(parentWindow, mainWindow);
 	PtRealizeWidget(mainWindow);
 
 	// Now construct the timer for auto-updating
@@ -298,7 +298,10 @@ PtWidget_t * AP_QNXDialog_WordCount::_constructWindow(void)
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, pSS->getValue(AP_STRING_ID_DLG_WordCount_WordCountTitle), 0);
     PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, ABI_MODAL_WINDOW_RENDER_FLAGS);
-    PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 0, ABI_MODAL_WINDOW_MANAGE_FLAGS);
+    PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, Ph_WM_FFRONT, ABI_MODAL_WINDOW_MANAGE_FLAGS|Ph_WM_FFRONT);
+	PtSetArg(&args[n++],Pt_ARG_WINDOW_STATE,Pt_TRUE,Ph_WM_STATE_ISFRONT);
+	PtSetArg(&args[n++],Pt_ARG_FLAGS,Pt_FALSE,Pt_GETS_FOCUS );
+	PtSetArg(&args[n++],Pt_ARG_RESIZE_FLAGS,Pt_TRUE,PT_RESIZE_XY_AS_REQUIRED);
 	m_windowMain = PtCreateWidget(PtWindow, NULL, n, args);
 	PtAddCallback(m_windowMain, Pt_CB_WINDOW_CLOSING, s_delete_clicked, this);
 
@@ -310,6 +313,7 @@ PtWidget_t * AP_QNXDialog_WordCount::_constructWindow(void)
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_GROUP_ROWS_COLS, 2, 0);
+	PtSetArg(&args[n++],Pt_ARG_RESIZE_FLAGS,Pt_TRUE,PT_RESIZE_XY_AS_REQUIRED);
 	PtWidget_t *hbox = PtCreateWidget(PtGroup, vgroup, n, args);
 	pretty_group(hbox, "Statistics");
 
