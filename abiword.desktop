@@ -1,9 +1,13 @@
 [Desktop Entry]
 Name=Word Processor
 Name[de]=Textverarbeitung
+Name[nb]=Tekstbehandling
+Name[nn]=Tekstbehandling
 Name[pt]=Processador de Texto
 Comment=AbiWord Word Processor
 Comment[de]=AbiWord Textverarbeitung
+Comment[nb]=Tekstbehandlingsprogrammet AbiWord
+Comment[nn]=Tekstbehandlingsprogrammet AbiWord
 Comment[pt]=Processor de Texto AbiWord
 Exec=abiword
 Icon=abiword_48.png

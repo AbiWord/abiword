@@ -29,8 +29,8 @@ ${SectionDict} "Italian"      "it" "IT" "i386"  1638
 ${SectionDict} "Latin"        "la" "IT" "i386"  2254  ;mlatin
 ${SectionDict} "Lietuviu"     "lt" "LT" "i386"  1907  ;Lithuanian
 ${SectionDict} "Dutch"        "nl" "NL" "i386"  1079  ;nederlands
-${SectionDict} "Norsk"        "nb" "NO" "i386"  2460  ;Norwegian
-${SectionDict} "Nynorsk"      "nn" "NO" "i386"  3001  ;Norwegian(nynorsk)
+${SectionDict} "Norsk (bokmål)"        "nb" "NO" "i386"  2460  ;Norwegian Bokmål
+${SectionDict} "Norsk (nynorsk)"      "nn" "NO" "i386"  3001  ;Norwegian Nynorsk
 ${SectionDict} "Polish"       "pl" "PL" "i386"  4143
 ${SectionDict} "Portugues"    "pt" "PT" "i386"  1117  ;Portuguese
 ${SectionDict} "Brazilian"    "pt" "BR" "i386"  1244  ;Portuguese

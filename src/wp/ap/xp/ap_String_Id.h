@@ -427,7 +427,7 @@ dcl(DLG_SplitCells_VertMid,	    	     "Split in Middle")
 dcl(DLG_SplitCells_Below,	    	     "Split on Bottom Side")
 
 
-dcl(DLG_FormatFrameTitle,	    	     "Format Frame")
+dcl(DLG_FormatFrameTitle,	    	     "Format Text Box")
 dcl(DLG_FormatFrame_Borders,	   	     "Borders")
 dcl(DLG_FormatFrame_Background,    	     "Background")
 dcl(DLG_FormatFrame_Border_Color,   	 "Border color:")
