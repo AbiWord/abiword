@@ -73,6 +73,7 @@ protected:
 		bool		bDoPrintSelection;
 		bool		bDoPrintToFile;
 		bool		bDoCollate;
+		bool		bDoReverse;
 		bool		bEnablePrintToFile;
 		bool		bEnableSelection;
 		bool		bEnablePageRange;

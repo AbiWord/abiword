@@ -5635,7 +5635,7 @@ static bool _toggleSpan(FV_View * pView,
 
 bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics,
 		     FV_View * pPrintView, const char *pDocName,
-		     UT_uint32 nCopies, bool bCollate,
+		     UT_uint32 nCopies, bool bCollate, bool bReverse,
 		     UT_sint32 iWidth,  UT_sint32 iHeight,
 		     UT_uint32 nToPage, UT_uint32 nFromPage)
 {
@@ -5663,16 +5663,50 @@ bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics,
 
 	  XML_Char msgBuf [1024];
 
-		if (bCollate)
+		if (bCollate&&bReverse)
 		{
-			for (j=1; (j <= nCopies); j++)
-				for (k=nFromPage; (k <= nToPage); k++)
+			for (k=nToPage; (k >= nFromPage); k--)
+				for (j=1; (j <= nCopies); j++)
+				{
+				sprintf (msgBuf, msgTmpl, k, nToPage);
+				pFrame->setStatusMessage ( msgBuf );
+				pFrame->nullUpdate();
+
+		  		// NB we will need a better way to calc
+				// pGraphics->m_iRasterPosition when
+				// iHeight is allowed to vary page to page
+				pGraphics->m_iRasterPosition = (k-1)*iHeight;
+				pGraphics->startPage(pDocName, k, orient, iWidth, iHeight);
+				pPrintView->draw(k-1, &da);
+			}
+		}
+		else if(bCollate)
+		{
+			for (k=nFromPage; (k <= nToPage); k++)
+				for (j=1; (j <= nCopies); j++)
 				{
 					sprintf (msgBuf, msgTmpl, k, nToPage);
 					pFrame->setStatusMessage ( msgBuf );
 					pFrame->nullUpdate();
 
-			  // NB we will need a better way to calc
+					// NB we will need a better way to calc
+					// pGraphics->m_iRasterPosition when
+					// iHeight is allowed to vary page to page
+					pGraphics->m_iRasterPosition = (k-1)*iHeight;
+					pGraphics->startPage(pDocName, k, orient, iWidth, iHeight);
+					pPrintView->draw(k-1, &da);
+				}
+		}
+		else if(bReverse)
+		{
+			for (j=1; (j <= nCopies); j++)
+				for (k=nToPage; (k >= nFromPage); k--)
+				{
+					sprintf (msgBuf, msgTmpl, k, nToPage);
+					pFrame->setStatusMessage ( msgBuf );
+					pFrame->nullUpdate();
+
+					// NB we will need a better way to calc
 					// pGraphics->m_iRasterPosition when
 					// iHeight is allowed to vary page to page
 					pGraphics->m_iRasterPosition = (k-1)*iHeight;
@@ -5682,8 +5716,8 @@ bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics,
 		}
 		else
 		{
-			for (k=nFromPage; (k <= nToPage); k++)
-				for (j=1; (j <= nCopies); j++)
+			for (j=1; (j <= nCopies); j++)
+				for (k=nFromPage; (k <= nToPage); k++)
 				{
 					sprintf (msgBuf, msgTmpl, k, nToPage);
 					pFrame->setStatusMessage ( msgBuf );
@@ -5774,6 +5808,7 @@ static bool s_doPrint(FV_View * pView, bool bTryToSuppressDialog,bool bPrintDire
 
 		UT_uint32 nCopies = pDialog->getNrCopies();
 		bool bCollate = pDialog->getCollate();
+		bool bReverse = pDialog->getReverse();
 
 		// TODO these are here temporarily to make printing work.  We'll fix the hack later.
 		// BUGBUG assumes all pages are same size and orientation
@@ -5782,7 +5817,7 @@ static bool s_doPrint(FV_View * pView, bool bTryToSuppressDialog,bool bPrintDire
 
 		const char *pDocName = ((doc->getFilename()) ? doc->getFilename() : pFrame->getTempNameFromTitle());
 
-		s_actuallyPrint(doc, pGraphics, pPrintView, pDocName, nCopies, bCollate,
+		s_actuallyPrint(doc, pGraphics, pPrintView, pDocName, nCopies, bCollate,bReverse,
 				iWidth,  iHeight, nToPage, nFromPage);
 
 		delete pDocLayout;
@@ -5851,6 +5886,7 @@ static bool s_doPrintPreview(FV_View * pView)
 
 	UT_uint32 nCopies = 1;
 	bool bCollate  = false;
+	bool bReverse  = false;
 
 	// TODO these are here temporarily to make printing work.  We'll fix the hack later.
 	// BUGBUG assumes all pages are same size and orientation
@@ -5859,7 +5895,7 @@ static bool s_doPrintPreview(FV_View * pView)
 
 	const char *pDocName = ((doc->getFilename()) ? doc->getFilename() : pFrame->getTempNameFromTitle());
 
-	s_actuallyPrint(doc, pGraphics, pPrintView, pDocName, nCopies, bCollate,
+	s_actuallyPrint(doc, pGraphics, pPrintView, pDocName, nCopies, bCollate,bReverse,
 			iWidth,  iHeight, nToPage, nFromPage);
 
 	delete pDocLayout;

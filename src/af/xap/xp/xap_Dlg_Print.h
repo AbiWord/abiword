@@ -54,6 +54,7 @@ public:
 	bool							getDoPrintToFile(const char *) const;
 	UT_uint32						getNrCopies(void) const;
 	bool							getCollate(void) const;
+	bool							getReverse(void) const;
 	GR_Graphics::ColorSpace			getColorSpace(void) const;
 	
 	virtual GR_Graphics *			getPrinterGraphicsContext(void) = 0;
@@ -66,6 +67,7 @@ protected:
 	UT_uint32						m_bPersistValid;		/* persists (internal) */
 	UT_uint32						m_persistNrCopies;		/* persists (internal) */
 	bool							m_persistCollate;		/* persists (internal) */
+	bool							m_persistReverse;		/* persists (internal) */
 	GR_Graphics::ColorSpace			m_persistColorSpace;	/* persists (internal) */
 	bool							m_persistPrintToFile;	/* persists (internal) */
 
@@ -77,8 +79,10 @@ protected:
 	bool							m_bEnablePrintToFile;	/* input */
 	bool							m_bDoPrintRange;		/* output */
 	bool							m_bDoPrintSelection;	/* output */
-	bool							m_bDoPrintToFile;		/* output */
-	bool							m_bCollate;				/* output */
+	bool							m_bDoPrintToFile;	/* output */
+	bool							m_bCollate;		/* output */
+	bool							m_bReverse;		/* output */
+
 	GR_Graphics::ColorSpace			m_cColorSpace;			/* output */
 	UT_uint32						m_nFirstPage;			/* input/output */
 	UT_uint32						m_nLastPage;			/* input/output */
