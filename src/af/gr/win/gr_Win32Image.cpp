@@ -187,7 +187,7 @@ UT_Bool GR_Win32Image::convertFromPNG(const UT_ByteBuf* pBB, UT_sint32 iDisplayW
 
 GR_Win32Image::~GR_Win32Image()
 {
-	delete m_pDIB;
+	free(m_pDIB);
 }
 
 static void _png_write(png_structp png_ptr, png_bytep data, png_size_t length)
