@@ -310,12 +310,17 @@ void  AP_UnixDialog_Stylist::_fillTree(void)
 		}
 	}
 
+	// create a new treeview
 	m_wStyleList = gtk_tree_view_new_with_model (GTK_TREE_MODEL (m_wModel));
 	g_object_unref (G_OBJECT (m_wModel));
+	gtk_tree_view_set_rules_hint (GTK_TREE_VIEW (m_wStyleList), true);
+
+	// get the current selection
 	sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (m_wStyleList));
 	gtk_tree_selection_set_mode (sel, GTK_SELECTION_BROWSE);
 	gtk_tree_selection_set_select_function (sel, tree_select_filter,
 														 NULL, NULL);
+	
 	const XAP_StringSet * pSS = m_pApp->getStringSet ();
 	m_wRenderer = gtk_cell_renderer_text_new ();
 	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (m_wStyleList),
@@ -358,4 +363,3 @@ void  AP_UnixDialog_Stylist::_connectSignals(void)
 			   G_CALLBACK(s_delete_clicked),
 			   (gpointer) this);
 }
-
