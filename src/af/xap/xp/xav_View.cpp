@@ -114,8 +114,11 @@ bool AV_View::notifyListeners(const AV_ChangeMask hint)
 	{
 		return false;
 	}
-	m_iTick++;
-
+	if(hint != AV_CHG_FOCUS)
+	{
+		xxx_UT_DEBUGMSG(("hint mask = %x \n",hint));
+		m_iTick++;
+	}
 	// make sure there's something left
 
 	if (hint == AV_CHG_NONE)

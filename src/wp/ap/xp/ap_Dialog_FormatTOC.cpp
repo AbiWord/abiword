@@ -376,8 +376,8 @@ void AP_Dialog_FormatTOC::fillTOCPropsFromDoc(void)
 //
 		PT_AttrPropIndex iAPI = m_pDoc->getAPIFromSDH(sdhTOC);
 		m_pDoc->getAttrProp(iAPI,&m_pAP);
-		m_bTOCFilled = true;
 	}
+	m_bTOCFilled = true;
 	setPropFromDoc("toc-dest-style1");
 	setPropFromDoc("toc-dest-style2");
 	setPropFromDoc("toc-dest-style3");

@@ -246,6 +246,8 @@ void AP_UnixDialog_FormatTOC::_setHasHeadingSensitivity(bool bSensitive)
 void AP_UnixDialog_FormatTOC::event_HasLabelChanged(GtkWidget * wid)
 {
 	UT_UTF8String sProp = static_cast<char *> (g_object_get_data(G_OBJECT(wid),"toc-prop"));
+	UT_String sNum =  UT_String_sprintf("%d",getMainLevel());
+	sProp += sNum.c_str();
 	UT_UTF8String sVal = "1";
 	if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(wid)) == FALSE)
 	{
