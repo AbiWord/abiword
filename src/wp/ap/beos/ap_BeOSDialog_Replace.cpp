@@ -25,9 +25,10 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 
+#include <InterfaceKit.h>
+
 #include "xap_Dialog_Id.h"
 #include "xap_BeOSApp.h"
-#include "xap_BeOSFrame.h"
 
 #include "ap_Dialog_Replace.h"
 #include "ap_BeOSDialog_Replace.h"
@@ -115,7 +116,7 @@ void FindWin::DispatchMessage(BMessage *msg, BHandler *handler) {
 		if (!(repltxt = (BTextControl *)FindView("txtReplace")))
 			break;
 		UT_DEBUGMSG(("FIND: replace %s \n", repltxt->Text()));
-        	UT_UCS_cloneString_char(&replaceString, repltxt->Text());
+        	UT_UCS4_cloneString_char(&replaceString, repltxt->Text());
 		UT_ASSERT(m_DlgReplace);
         	m_DlgReplace->setReplaceString(replaceString);
 		//Fall through
@@ -123,7 +124,7 @@ void FindWin::DispatchMessage(BMessage *msg, BHandler *handler) {
 		if (!(findtxt = (BTextControl *)FindView("txtFind")))
 			break;
 		UT_DEBUGMSG(("FIND: find %s \n", findtxt->Text()));
-        	UT_UCS_cloneString_char(&findString, findtxt->Text());
+        	UT_UCS4_cloneString_char(&findString, findtxt->Text());
 		UT_ASSERT(m_DlgReplace);
         	m_DlgReplace->setFindString(findString);
 		m_DlgReplace->setMatchCase(case_sensitive);
@@ -149,6 +150,10 @@ bool FindWin::QuitRequested() {
 }
 
 /*****************************************************************/
+
+void AP_BeOSDialog_Replace::_updateLists() {
+	return;
+}
 
 void AP_BeOSDialog_Replace::runModeless(XAP_Frame * pFrame)
 {
@@ -212,7 +217,6 @@ AP_BeOSDialog_Replace::AP_BeOSDialog_Replace(XAP_DialogFactory * pDlgFactory,
 
 	m_findString = NULL;
 	m_replaceString = NULL;
-    	m_matchCase = true;
 }
 
 AP_BeOSDialog_Replace::~AP_BeOSDialog_Replace(void)

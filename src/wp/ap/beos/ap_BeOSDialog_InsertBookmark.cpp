@@ -21,9 +21,11 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 
+#include <InterfaceKit.h>
+
 #include "xap_App.h"
 #include "xap_BeOSApp.h"
-#include "xap_BeOSFrame.h"
+#include "xap_BeOSFrameImpl.h"
 
 #include "ap_Strings.h"
 #include "ap_Dialog_Id.h"
@@ -230,8 +232,8 @@ void AP_BeOSDialog_InsertBookmark::runModal(XAP_Frame * pFrame)
 	BookmarkWin  *newwin;
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
-	XAP_BeOSFrame * pBeOSFrame = static_cast<XAP_BeOSFrame *>(pFrame);
-	BRect parentPosition = pBeOSFrame->getTopLevelWindow()->Frame();
+	XAP_BeOSFrameImpl * pBeOSFrameImpl = static_cast<XAP_BeOSFrameImpl *>(pFrame->getFrameImpl());
+	BRect parentPosition = pBeOSFrameImpl->getTopLevelWindow()->Frame();
 	// Center the dialog according to the parent
 	BRect dialogPosition = parentPosition;
 	// Let us suppose the dialog is 300x300

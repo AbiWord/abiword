@@ -21,9 +21,11 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 
+#include <InterfaceKit.h>
+
 #include "xap_App.h"
 #include "xap_BeOSApp.h"
-#include "xap_BeOSFrame.h"
+#include "xap_BeOSFrameImpl.h"
 
 #include "ap_Strings.h"
 #include "ap_Dialog_Id.h"
@@ -96,8 +98,8 @@ void AP_BeOSDialog_InsertHyperlink::runModal(XAP_Frame * pFrame)
 	HyperlinkWin  *newwin;
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
-	XAP_BeOSFrame * pBeOSFrame = static_cast<XAP_BeOSFrame *>(pFrame);
-	BRect parentPosition = pBeOSFrame->getTopLevelWindow()->Frame();
+	XAP_BeOSFrameImpl * pBeOSFrameImpl = static_cast<XAP_BeOSFrameImpl *>(pFrame->getFrameImpl());
+	BRect parentPosition = pBeOSFrameImpl->getTopLevelWindow()->Frame();
 	// Center the dialog according to the parent
 	BRect dialogPosition = parentPosition;
 	// Let us suppose the dialog is 300x350
@@ -238,8 +240,9 @@ void HyperlinkWin::DispatchMessage(BMessage *msg, BHandler *handler) {
 	case _eventOK:
 		if (m_CustomText->Text() != NULL)
 		{
-			link = m_CustomText->Text();
-			m_DlgHyperlink->setHyperlink(link);
+			// BROKEN:
+			//link = m_CustomText->Text();
+			//m_DlgHyperlink->setHyperlink(link);
 		}
 		m_DlgHyperlink->setAnswer(AP_Dialog_InsertHyperlink::a_OK);
 		be_app->PostMessage(B_QUIT_REQUESTED);

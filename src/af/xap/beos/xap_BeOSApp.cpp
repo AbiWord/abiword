@@ -53,11 +53,10 @@ XAP_BeOSApp::~XAP_BeOSApp(void)
 	DELETEP(m_pBeOSToolbarIcons);
 }
 
-bool XAP_BeOSApp::initialize(void)
+bool XAP_BeOSApp::initialize(const char * szKeyBindingsKey, const char * szKeyBindingsDefaultValue)
 {
 	// let our base class do it's thing.
-	
-	XAP_App::initialize();
+	XAP_App::initialize(szKeyBindingsKey, szKeyBindingsDefaultValue);
 
 	// load only one copy of the platform-specific icons.
 	m_pBeOSToolbarIcons = new AP_BeOSToolbar_Icons();
@@ -235,6 +234,7 @@ void ABI_BApp::RefsReceived(BMessage *msg) {
 		//Get the path for the ref ... open that file
 		BEntry entry(&ref);
 		BPath  path(&entry);
-		m_pApp->newFrame(path.Path());
+		// TODO: find out how to open a new frame and load the specified file
+		// old:  m_pApp->newFrame(path.Path());
 	}
 }

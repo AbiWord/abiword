@@ -22,9 +22,10 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 
+#include <InterfaceKit.h>
+
 #include "xap_App.h"
 #include "xap_BeOSApp.h"
-#include "xap_BeOSFrame.h"
 
 #include "ap_Strings.h"
 #include "ap_Dialog_Id.h"

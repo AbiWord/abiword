@@ -25,15 +25,16 @@
 #include <Entry.h>
 #include <Path.h>
 #include <Directory.h>
-#include <FilePanel.h>
 #include <String.h>
+#include <InterfaceKit.h>
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "xap_Dialog_Id.h"
 #include "xap_Dlg_MessageBox.h"
 #include "xap_BeOSDlg_FileOpenSaveAs.h"
 #include "xap_BeOSApp.h"
-#include "xap_BeOSFrame.h"
+#include "xap_FrameImpl.h"
+#include "xap_Frame.h"
 
 #include <InterfaceDefs.h>
 sem_id					sync_sem = -1;

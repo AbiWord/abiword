@@ -21,9 +21,10 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 
+#include <InterfaceKit.h>
+
 #include "xap_App.h"
 #include "xap_BeOSApp.h"
-#include "xap_BeOSFrame.h"
 
 #include "ap_Strings.h"
 #include "ap_Dialog_Id.h"
@@ -134,7 +135,7 @@ void GotoWin::DispatchMessage(BMessage *msg, BHandler *handler)
 				// Make sure everything we have is numeric
 				for( dwCounter = dwStart; dwCounter < dwTextLength; dwCounter++ )
 				{
-					if( !UT_UCS_isdigit( pBuf[ dwCounter ] ) )
+					if( !UT_UCS4_isdigit( pBuf[ dwCounter ] ) )
 					{
 						if( m_DlgGoto->m_pszOldValue == NULL )
 						{

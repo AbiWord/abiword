@@ -20,15 +20,15 @@
 #ifndef XAP_BEOSDIALOG_FILEOPENSAVEAS_H
 #define XAP_BEOSDIALOG_FILEOPENSAVEAS_H
 
+#include <FilePanel.h>
 #include "xap_Dlg_FileOpenSaveAs.h"
 #include "ut_string.h"
-
 class XAP_BeOSFrame;
+
 class DLGHandler;
 
 #include <OS.h>
 extern sem_id					sync_sem;
-
 
 /*****************************************************************/
 

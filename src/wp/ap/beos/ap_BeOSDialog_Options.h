@@ -54,6 +54,8 @@ public:
  	SET_GATHER			(SpellUppercase,	bool );
  	SET_GATHER			(SpellNumbers,		bool );
  	SET_GATHER			(SpellInternet,		bool );
+
+	SET_GATHER			(ShowSplash, bool);
  
 	SET_GATHER			(SmartQuotesEnable, bool );
  	SET_GATHER			(DefaultPageSize,	fp_PageSize::Predefined );
@@ -61,11 +63,9 @@ public:
  	SET_GATHER			(PrefsAutoSave,		bool );
  
  	SET_GATHER			(ViewShowRuler,		bool );
-	//TF: Deprecated with specific toolbar toggling
-//	SET_GATHER			(ViewShowToolbars,	bool );
-	SET_GATHER			(ViewShowStandardBar,	bool );
- 	SET_GATHER			(ViewShowFormatBar,	bool );
- 	SET_GATHER			(ViewShowExtraBar,	bool );
+
+	virtual bool _gatherViewShowToolbar(UT_uint32 t);
+	virtual void _setViewShowToolbar(UT_uint32 row, bool b);
 
  	SET_GATHER			(ViewShowStatusBar,	bool );
  
@@ -77,9 +77,12 @@ public:
  	SET_GATHER			(ViewUnprintable,	bool );
     SET_GATHER          (AllowCustomToolbars, bool);
     SET_GATHER          (AutoLoadPlugins, bool);
-  
+
+	SET_GATHER			(OtherDirectionRtl, bool);
+	SET_GATHER			(OtherSaveContextGlyphs, bool);
+	SET_GATHER			(OtherHebrewContextGlyphs, bool);
+
 	SET_GATHER			(AutoSaveFile, bool);
-	SET_GATHER			(ShowSplash, bool);
 	virtual void _gatherAutoSaveFilePeriod(UT_String &stRetVal);
 	virtual void _setAutoSaveFilePeriod(const UT_String &stPeriod);
 	virtual void _gatherAutoSaveFileExt(UT_String &stRetVal);

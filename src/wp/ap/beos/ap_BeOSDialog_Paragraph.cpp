@@ -26,9 +26,10 @@
 #include "ut_debugmsg.h"
 #include "ut_types.h"
 
+#include <InterfaceKit.h>
+
 #include "xap_App.h"
 #include "xap_BeOSApp.h"
-#include "xap_BeOSFrame.h"
 
 #include "ap_Dialog_Id.h"
 
@@ -248,8 +249,8 @@ void ParagraphWin::SetDlg(AP_BeOSDialog_Paragraph *brk)
 	view1->RemoveSelf();
 	view2->RemoveSelf();
 	
-	BTab* tab1 = pView->RemoveTab(0);
-	BTab* tab2 = pView->RemoveTab(0);
+	BTab* tab1 = pView->RemoveTab((long int)0);
+	BTab* tab2 = pView->RemoveTab((long int)0);
 	
 	
 	pNewTabView->AddTab(view1 , tab1);

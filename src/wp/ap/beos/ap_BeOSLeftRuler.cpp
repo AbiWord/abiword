@@ -20,12 +20,14 @@
 #include "ut_types.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
+
+#include <InterfaceKit.h>
+#include <MessageFilter.h>
+
 #include "xap_Frame.h"
-#include "xap_BeOSFrame.h"
+#include "xap_BeOSFrameImpl.h"
 #include "ap_BeOSLeftRuler.h"
 #include "gr_BeOSGraphics.h"
-
-#include <MessageFilter.h>
 
 #define ENSUREP(p)	do { UT_ASSERT(p); if (!p) goto Cleanup; } while (0)
 
@@ -168,8 +170,7 @@ void  AP_BeOSLeftRuler::createWidget(BRect r)
                                         B_FOLLOW_TOP_BOTTOM | B_FOLLOW_LEFT,
                                         B_WILL_DRAW);
         //Attach the widget to the window ...
-        be_Window *pBWin = (be_Window*)((XAP_BeOSFrame *)m_pFrame)->getTopLevelWindow()
-;
+        BWindow *pBWin = (BWindow*)((XAP_BeOSFrameImpl *)(m_pFrame->getFrameImpl()))->getTopLevelWindow();
         pBWin->AddChild(m_wLeftRuler);
         setHeight(r.Height()+1);
         setWidth(r.Width()+1);        

@@ -181,7 +181,7 @@ void _showSplash(XAP_Args * pArgs, const char * /*szAppName*/) {
 /*****************************************************************/
 
 AP_BeOSApp::AP_BeOSApp(XAP_Args * pArgs, const char * szAppName)
-	: XAP_BeOSApp(pArgs,szAppName)
+	: AP_App(pArgs,szAppName)
 {
 	m_pStringSet = NULL;
 	m_pClipboard = NULL;
@@ -189,7 +189,6 @@ AP_BeOSApp::AP_BeOSApp(XAP_Args * pArgs, const char * szAppName)
 
 AP_BeOSApp::~AP_BeOSApp(void)
 {
-//	SpellCheckCleanup();
 
 	DELETEP(m_pStringSet);
 	DELETEP(m_pClipboard);
@@ -246,7 +245,7 @@ bool AP_BeOSApp::initialize(void)
 	m_pToolbarActionSet = AP_CreateToolbarActionSet();
 	UT_ASSERT(m_pToolbarActionSet);
 		   
-	if (! XAP_BeOSApp::initialize())
+	if (! AP_App::initialize())
 		return false;
 	
 	//////////////////////////////////////////////////////////////////
@@ -355,23 +354,14 @@ bool AP_BeOSApp::initialize(void)
 	return true;
 }
 
-XAP_Frame * AP_BeOSApp::newFrame(const char *path)
-{
-	AP_BeOSFrame * pBeOSFrame = new AP_BeOSFrame(this);
-
-	if (pBeOSFrame)
-		pBeOSFrame->initialize();
-
-	pBeOSFrame->loadDocument(path, IEFT_Unknown);
-	return pBeOSFrame;
-}
-
 XAP_Frame * AP_BeOSApp::newFrame(void)
 {
 	AP_BeOSFrame * pBeOSFrame = new AP_BeOSFrame(this);
 
 	if (pBeOSFrame)
 		pBeOSFrame->initialize();
+
+//	pBeOSFrame->loadDocument(path, IEFT_Unknown);
 
 	return pBeOSFrame;
 }
@@ -522,7 +512,7 @@ ReturnTrue:
 
 /*****************************************************************/
 
-int AP_BeOSApp::main(const char * szAppName, int argc, char ** argv) {
+int AP_BeOSApp::main(const char * szAppName, int argc, const char ** argv) {
 	// This is a static function.
 #if CONVERT
 	bool bShowApp = true;
@@ -607,132 +597,6 @@ int AP_BeOSApp::main(const char * szAppName, int argc, char ** argv) {
 	return 0;
 }
 
-void AP_BeOSApp::ParseCommandLine(void)
-{
-	// parse the command line
-	// <app> [-script <scriptname>]* [-dumpstrings] [-lib <AbiSuiteLibDirectory>] [<documentname>]*
-	
-	// TODO when we refactor the App classes, consider moving
-	// TODO this to app-specific, cross-platform.
-
-	// TODO replace this with getopt or something similar.
-	
-	// BeOS puts the program name in argv[0], so [1] is the first argument.
-
-	int nFirstArg = 1;
-	int k;
-	int kWindowsOpened = 0;
-#if CONVERT
-	char *to = NULL;
-	int verbose = 1;
-	bool show = false;
-#endif
-
-	for (k=nFirstArg; (k<m_pArgs->m_argc); k++)
-	{
-		if (*m_pArgs->m_argv[k] == '-')
-		{
-			if (UT_stricmp(m_pArgs->m_argv[k],"-script") == 0)
-			{
-				// [-script scriptname]
-				k++;
-			}
-			else if (UT_stricmp(m_pArgs->m_argv[k],"-lib") == 0)
-			{
-				// [-lib <AbiSuiteLibDirectory>]
-				// we've already processed this when we initialized the App class
-				k++;
-			}
-			else if (UT_stricmp(m_pArgs->m_argv[k],"-dumpstrings") == 0)
-			{
-				// [-dumpstrings]
-#ifdef DEBUG
-				// dump the string table in english as a template for translators.
-				// see abi/docs/AbiSource_Localization.abw for details.
-				AP_BuiltinStringSet * pBuiltinStringSet = new AP_BuiltinStringSet(this,AP_PREF_DEFAULT_StringSet);
-				pBuiltinStringSet->dumpBuiltinSet("en-US.strings");
-				delete pBuiltinStringSet;
-#endif
-			}
-#if CONVERT
-			else if (UT_stricmp (m_pArgs->m_argv[k],"-to") == 0)
-			{
-				k++;
-				to = m_pArgs->m_argv[k];
-			}
-			else if (UT_stricmp (m_pArgs->m_argv[k], "-show") == 0)
-			{
-				show = true;
-			}
-			else if (UT_stricmp (m_pArgs->m_argv[k], "-verbose") == 0)
-			{
-				k++;
-				verbose = atoi (m_pArgs->m_argv[k]);
-			}
-#endif
-			else
-			{
-				UT_DEBUGMSG(("Unknown command line option [%s]\n",m_pArgs->m_argv[k]));
-				// TODO don't know if it has a following argument or not -- assume not
-			}
-		}
-		else
-		{
-			// [filename]
-#if CONVERT
-			if (to)
-			{
-				AP_Convert * conv = new AP_Convert(getApp());
-				conv->setVerbose(verbose);
-				conv->convertTo(m_pArgs->m_argv[k], to);
-				delete conv;
-			}
-			else
-			{
-#endif			
-				AP_BeOSFrame * pFirstBeOSFrame = new AP_BeOSFrame(this);
-				pFirstBeOSFrame->initialize();
-				UT_Error error = pFirstBeOSFrame->loadDocument(m_pArgs->m_argv[k], IEFT_Unknown);
-				if (!error)
-				{
-					kWindowsOpened++;
-				}
-				else
-				{
-					// TODO: warn user that we couldn't open that file
-
-#if 1
-					// TODO we crash if we just delete this without putting something
-					// TODO in it, so let's go ahead and open an untitled document
-					// TODO for now.  this would cause us to get 2 untitled documents
-					// TODO if the user gave us 2 bogus pathnames....
-					kWindowsOpened++;
-					pFirstBeOSFrame->loadDocument(NULL, IEFT_Unknown);
-#else
-					delete pFirstBeOSFrame;
-#endif
-				}
-#if CONVERT
-			}
-#endif
-		}
-	}
-						
-	// command-line conversion may not open any windows at all
-	if (to && !show)
-		return;
-
-	if (kWindowsOpened == 0)
-	{
-		// no documents specified or were able to be opened, open an untitled one
-
-		AP_BeOSFrame * pFirstBeOSFrame = new AP_BeOSFrame(this);
-		pFirstBeOSFrame->initialize();
-		pFirstBeOSFrame->loadDocument(NULL, IEFT_Unknown);
-	}
-
-	return;
-}
 
 void signalWrapper(int sig_num)
 {

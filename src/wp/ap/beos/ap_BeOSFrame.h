@@ -20,61 +20,51 @@
 #ifndef AP_BEOSFRAME_H
 #define AP_BEOSFRAME_H
 
-#include "xap_BeOSFrame.h"
 #include "ie_types.h"
 #include "ut_assert.h"
+#include "ap_BeOSFrameImpl.h"
 
 /*****************************************************************/
 
-class AP_BeOSFrame : public XAP_BeOSFrame
+class AP_BeOSFrame : public AP_Frame
 {
 public:
 	AP_BeOSFrame(XAP_BeOSApp * app);
 	AP_BeOSFrame(AP_BeOSFrame * f);
 	virtual ~AP_BeOSFrame(void);
 
-	virtual bool				initialize(void);
-	virtual XAP_Frame *			cloneFrame(void);
-	virtual XAP_Frame *			buildFrame(XAP_Frame * pF);
-	virtual UT_Error 			loadDocument(const char * szFilename, int ieft);
-	virtual UT_Error 			loadDocument(const char * szFilename, int ieft, bool createNew);
-	virtual UT_Error 			importDocument(const char * szFilename, int ieft, bool markClean = false);
-	virtual bool				initFrameData(void);
-	virtual void				killFrameData(void);
+	virtual XAP_Frame *			cloneFrame(void);	
+	virtual bool				initialize(XAP_FrameMode frameMode=XAP_NormalFrame);
 
 	virtual void				setXScrollRange(void);
 	virtual void				setYScrollRange(void);
+	virtual void  				translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y);
+	virtual void				setStatusMessage(const char * szMsg);
 
-	virtual void 				setZoomPercentage(UT_uint32 iZoom);
-	virtual void 				setStatusMessage(const char * szMsg);
-	
 	virtual void				toggleRuler(bool bRulerOn);
 	virtual void				toggleTopRuler(bool bRulerOn);
 	virtual void				toggleLeftRuler(bool bRulerOn);
 	virtual void 				toggleBar(UT_uint32 iBarNb, bool bToolBarOn);
 	virtual void 				toggleStatusBar(bool bStatusBarOn);
-	virtual void  				translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y);
-	virtual void				refillToolbarsInFrameData(void) {UT_ASSERT(0);}
 
 protected:
-	//virtual GtkWidget *			_createDocumentWindow(void);
-	UT_Error				_loadDocument(const char * szFilename, IEFileType ieft, bool createNew);
-	UT_Error				_showDocument(UT_uint32 zoom=100);
+	friend class AP_BeOSFrameImpl;
+	
+	// implementation of helper methods for AP_Frame::_showDocument
+	virtual bool _createViewGraphics(GR_Graphics *& pG, UT_uint32 iZoom);
+	virtual void _bindToolbars(AV_View *pView);
+	virtual void _setViewFocus(AV_View *pView);
+	virtual bool _createScrollBarListeners(AV_View * pView, AV_ScrollObj *& pScrollObj, 
+					       ap_ViewListener *& pViewListener, ap_Scrollbar_ViewListener *& pScrollbarViewListener,
+					       AV_ListenerId &lid, AV_ListenerId &lidScrollbarViewListener);
+	virtual UT_sint32 _getDocumentAreaWidth();
+	virtual UT_sint32 _getDocumentAreaHeight();
+
+
+	// scrolling functions
 	static void			_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 xlimit);
 	static void			_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 ylimit);
-	UT_Error				_replaceDocument(AD_Document * pDoc);
-	UT_Error				_importDocument(const char * szFilename, int ieft, bool markClean);
 
-/*
-	GtkAdjustment *				m_pVadj;
-	GtkAdjustment *				m_pHadj;
-	GtkWidget *					m_hScroll;
-	GtkWidget *					m_vScroll;
-	GtkWidget *					m_dArea;
-	GtkWidget *					m_table;
-	GtkWidget *					m_topRuler;
-	GtkWidget *					m_leftRuler;
-*/
 };
 
 #endif /* AP_BEOSFRAME_H */

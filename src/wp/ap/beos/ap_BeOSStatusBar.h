@@ -50,7 +50,7 @@ public:
 
 protected:
 	be_GRDrawView *				m_wStatusBar;
-	
+	GR_BeOSGraphics *			m_pG;	
 };
 
 #endif /* AP_BEOSSTATUSBAR_H */

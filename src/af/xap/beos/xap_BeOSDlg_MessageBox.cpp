@@ -17,11 +17,12 @@
  * 02111-1307, USA.
  */
 
+#include <Alert.h>
+
 #include "ut_assert.h"
 #include "ut_vector.h"
 #include "xap_BeOSDlg_MessageBox.h"
 #include "xap_BeOSApp.h"
-#include "xap_BeOSFrame.h"
 #include "ut_string.h"
 #include <string.h>
 

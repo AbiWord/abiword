@@ -21,9 +21,10 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 
+#include <InterfaceKit.h>
+
 #include "xap_App.h"
 #include "xap_BeOSApp.h"
-#include "xap_BeOSFrame.h"
 
 #include "ap_Strings.h"
 #include "ap_Dialog_Id.h"
@@ -171,8 +172,8 @@ void SpellWin::_change(void)
 	}
 	else
 	{
-		UT_UCS_cloneString_char(&replace, changeText->Text());
-		if (!UT_UCS_strlen(replace)) 
+		UT_UCS4_cloneString_char(&replace, changeText->Text());
+		if (!UT_UCS4_strlen(replace)) 
 		{
 			return;
 		}
@@ -229,8 +230,8 @@ void SpellWin::_changeAll(void)
 	}
 	else
 	{
-		UT_UCS_cloneString_char(&replace,changeText->Text());
-		if (!UT_UCS_strlen(replace)) 
+		UT_UCS4_cloneString_char(&replace,changeText->Text());
+		if (!UT_UCS4_strlen(replace)) 
 		{
 			return;
 		}
@@ -274,7 +275,8 @@ void SpellWin::_showMisspelledWord(void)
 
 	UT_sint32 iLength;
 
-    p = m_pWordIterator->getPreWord(iLength);
+// FIXME: broken
+//    p = m_pWordIterator->getPreWord(iLength);
 	if (0 < iLength)
 	{
 // FIXME: this is broken - should take iLength characters from p
@@ -290,7 +292,8 @@ void SpellWin::_showMisspelledWord(void)
 
 	array->runs[1].offset = sum;
 	
-    p = m_pWordIterator->getCurrentWord(iLength);
+// FIXME: broken
+//    p = m_pWordIterator->getCurrentWord(iLength);
 	if (0 < iLength)
 	{
 // FIXME: this is broken - should take iLength characters from p
@@ -306,7 +309,8 @@ void SpellWin::_showMisspelledWord(void)
 
 	array->runs[2].offset = sum;
 
-    p = m_pWordIterator->getPostWord(iLength);
+// FIXME: broken
+//    p = m_pWordIterator->getPostWord(iLength);
 	if (0 < iLength)
 	{
 // FIXME: this is broken - should take iLength characters from p
@@ -337,11 +341,11 @@ void SpellWin::_showMisspelledWord(void)
 		for (int i = 0; i < m_DlgSpell->m_Suggestions->size(); i++)
 		{
 			p = (UT_UCSChar *) m_DlgSpell->m_Suggestions->getNthItem(i);
-			len = UT_UCS_strlen(p);
+			len = UT_UCS4_strlen(p);
 			if (len)
 			{
 				buf = new char [len + 1];
-				UT_UCS_strcpy_to_char(buf, p);
+				UT_UCS4_strcpy_to_char(buf, p);
 				BStringItem* pItem = new BStringItem(buf);
 				suggestList->AddItem(pItem);
 				DELETEP(buf);

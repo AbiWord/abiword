@@ -20,7 +20,6 @@
 #ifndef XAP_BEOSDIALOG_MESSAGEBOX_H
 #define XAP_BEOSDIALOG_MESSAGEBOX_H
 
-#include "xap_BeOSFrame.h"
 #include "xap_Dlg_MessageBox.h"
 class XAP_BeOSFrame;
 

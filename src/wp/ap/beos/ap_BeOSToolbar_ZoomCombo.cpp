@@ -21,6 +21,7 @@
 #include "ut_vector.h"
 #include "ap_BeOSToolbar_ZoomCombo.h"
 #include "ap_Toolbar_Id.h"
+#include "xap_App.h"
 #include "xap_Frame.h"
 
 /*****************************************************************/

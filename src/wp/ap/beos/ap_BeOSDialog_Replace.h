@@ -43,6 +43,7 @@ public:
 	virtual void 		setAnswer(AP_Dialog_Replace::tAnswer a) { m_answer = a; }; 
 
 protected:
+	virtual void		_updateLists();
 
 };
 

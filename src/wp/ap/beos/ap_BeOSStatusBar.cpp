@@ -21,10 +21,12 @@
 #include "ut_assert.h"
 #include "ut_misc.h"
 #include "ut_debugmsg.h"
+
+#include <InterfaceKit.h>
+
 #include "xap_Frame.h"
 #include "gr_BeOSGraphics.h"
 #include "ap_BeOSStatusBar.h"
-#include "xap_BeOSFrame.h"
 
 //////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////
@@ -51,13 +53,15 @@ StatusBarDrawView::StatusBarDrawView(AP_BeOSStatusBar *pBar, AV_View *pView,
 		: be_GRDrawView(pView, frame, name, resizeMask, flags) {
 
 	m_pAPStatusBar = pBar;
+/* BROKEN:
 	m_pAPStatusBar->setHeight(STATUS_BAR_HEIGHT); //this line is the key 
 	m_pAPStatusBar->setWidth((int)frame.IntegerWidth()+1);
+*/
 }
 
 void StatusBarDrawView::FrameResized(float new_width, float new_height) {
 	//m_pAPStatusBar->setHeight((int)new_height);
-      m_pAPStatusBar->setWidth((int)new_width);
+    //m_pAPStatusBar->setWidth((int)new_width);
 
 	//TODO does this goes well?? umm.. we'll see later
 	BRect r;
@@ -75,8 +79,8 @@ void StatusBarDrawView::FrameResized(float new_width, float new_height) {
 }
 
 void StatusBarDrawView::Draw(BRect invalid) {
-
-	m_pAPStatusBar->draw();
+// BROKEN:
+//	m_pAPStatusBar->draw();
 
 }
 
@@ -120,11 +124,12 @@ void AP_BeOSStatusBar::setView(AV_View * pView)
 	GR_BeOSGraphics *pG = new GR_BeOSGraphics(m_wStatusBar , m_pFrame->getApp());
 	m_pG = pG;
 	UT_ASSERT(m_pG);
- 
-	be_Window *pBWin = (be_Window*)((XAP_BeOSFrame *)m_pFrame)->getTopLevelWindow();
-	pBWin->Lock();
-	m_wStatusBar->SetViewColor(pG->Get3DColor(GR_Graphics::CLR3D_Background));
-	pBWin->Unlock();
+
+// BROKEN: 
+//	be_Window *pBWin = (be_Window*)((XAP_BeOSFrame *)m_pFrame)->getTopLevelWindow();
+//	pBWin->Lock();
+//	m_wStatusBar->SetViewColor(pG->Get3DColor(GR_Graphics::CLR3D_Background));
+//	pBWin->Unlock();
 	
 //	pG->init3dColors();
 	

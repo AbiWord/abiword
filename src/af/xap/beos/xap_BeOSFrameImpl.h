@@ -48,11 +48,36 @@ public:
 	BWindow * getTopLevelWindow() const;
 
 protected:
-	//Main window and  document view 
+	virtual bool _close();
+	virtual bool _raise();
+	virtual bool _show();
+
+	virtual void _nullUpdate () const; // a virtual member function in xap_Frame
+	virtual void _initialize();
+
+	virtual void _setCursor(GR_Graphics::Cursor cursor);
+
+	virtual XAP_DialogFactory * _getDialogFactory();
+	virtual EV_Menu * _getMainMenu();
+	virtual EV_Toolbar * _newToolbar(XAP_App *pApp, XAP_Frame *pFrame,
+				 const char *szLayout,
+				 const char *szLanguage);
+
+	virtual bool _runModalContextMenu(AV_View * pView, const char * szMenuName,
+					  UT_sint32 x, UT_sint32 y);
+
+	virtual void _queue_resize();
+	void _rebuildToolbar(UT_uint32 ibar);
+
+	virtual void _setFullScreen(bool changeToFullScreen);
+
+	//Main window and document view 
 	BWindow * m_pBeWin;			
 
 	
 private:
+
+
 	AP_BeOSDialogFactory	m_dialogFactory;
 };
 

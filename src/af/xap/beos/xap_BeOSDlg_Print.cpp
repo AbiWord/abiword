@@ -24,10 +24,11 @@
 #include "ut_debugmsg.h"
 #include "ut_string.h"
 #include "ut_assert.h"
+#include "ap_FrameData.h"
 #include "xap_Dialog_Id.h"
 #include "xap_BeOSDlg_Print.h"
 #include "xap_BeOSApp.h"
-#include "xap_BeOSFrame.h"
+#include "xap_Frame.h"
 #include "gr_BeOSGraphics.h"
 
 #include <PrintJob.h>
@@ -44,7 +45,7 @@ XAP_BeOSDialog_Print::XAP_BeOSDialog_Print(XAP_DialogFactory * pDlgFactory,
 	: XAP_Dialog_Print(pDlgFactory,id)
 {
 	memset(&m_persistPrintDlg, 0, sizeof(m_persistPrintDlg));
-	m_pBeOSFrame = NULL;
+	m_pFrame = NULL;
 }
 
 XAP_BeOSDialog_Print::~XAP_BeOSDialog_Print(void)
@@ -83,12 +84,12 @@ void XAP_BeOSDialog_Print::useEnd(void)
 
 GR_Graphics * XAP_BeOSDialog_Print::getPrinterGraphicsContext(void) {
 	//Should I create a new context for this ???
-	printf("PRINT: Get PrinterGraphicsContext Frame 0x%x\n", m_pBeOSFrame);
+	printf("PRINT: Get PrinterGraphicsContext Frame 0x%x\n", m_pFrame);
 	UT_ASSERT(m_answer == a_OK);
-	UT_ASSERT(m_pBeOSFrame);
+	UT_ASSERT(m_pFrame);
 
-	printf("PRINT: Returning Graphics 0x%x \n", m_pBeOSFrame->Graphics());
-	return(m_pBeOSFrame->Graphics());
+	printf("PRINT: Returning Graphics 0x%x \n", ((AP_FrameData*)m_pFrame->getFrameData())->m_pG);
+	return(((AP_FrameData*)m_pFrame->getFrameData())->m_pG);
 }
 
 void XAP_BeOSDialog_Print::releasePrinterGraphicsContext(GR_Graphics * pGraphics) {
@@ -99,8 +100,8 @@ void XAP_BeOSDialog_Print::releasePrinterGraphicsContext(GR_Graphics * pGraphics
 
 void XAP_BeOSDialog_Print::runModal(XAP_Frame * pFrame)
 {
-	m_pBeOSFrame = static_cast<XAP_BeOSFrame *>(pFrame);
-	UT_ASSERT(m_pBeOSFrame);
+	m_pFrame = pFrame;
+	UT_ASSERT(m_pFrame);
 	
 	// see if they just want the properties of the printer without
 	// bothering the user.
@@ -121,7 +122,7 @@ void XAP_BeOSDialog_Print::runModal(XAP_Frame * pFrame)
 void XAP_BeOSDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 {
 	BPrintJob 	*job = new BPrintJob("Thomas Add Document Name");
-	GR_BeOSGraphics *gr = (GR_BeOSGraphics *)m_pBeOSFrame->Graphics();
+	GR_BeOSGraphics *gr = (GR_BeOSGraphics *)((AP_FrameData*)m_pFrame->getFrameData())->m_pG;
 	BMessage 	*msg;
 
 	UT_ASSERT(job);

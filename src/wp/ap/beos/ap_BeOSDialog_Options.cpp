@@ -25,11 +25,11 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 
+#include <InterfaceKit.h>
 #include "gr_BeOSGraphics.h"
 
 #include "xap_App.h"
 #include "xap_BeOSApp.h"
-#include "xap_BeOSFrame.h"
 #include "xap_Prefs.h"
 
 #include "ap_Dialog_Id.h"
@@ -207,16 +207,12 @@ void OptionsWin::DispatchMessage(BMessage *msg, BHandler *handler)
 		TOGGLE_BASED_ON_MESSAGE('chia' , m_DlgOptions->id_CHECK_SPELL_INTERNET)
 		TOGGLE_BASED_ON_MESSAGE('chas' , m_DlgOptions->id_CHECK_PREFS_AUTO_SAVE)
 		TOGGLE_BASED_ON_MESSAGE('cbru' , m_DlgOptions->id_CHECK_VIEW_SHOW_RULER)
-//		TOGGLE_BASED_ON_MESSAGE('chtb' , m_DlgOptions->id_CHECK_VIEW_SHOW_TOOLBARS)
 		TOGGLE_BASED_ON_MESSAGE('cbcb' , m_DlgOptions->id_CHECK_VIEW_CURSOR_BLINK)
 		TOGGLE_BASED_ON_MESSAGE('cbsq' , m_DlgOptions->id_CHECK_SMART_QUOTES_ENABLE)
 		TOGGLE_BASED_ON_MESSAGE('cbal' , m_DlgOptions->id_CHECK_VIEW_ALL)
 		TOGGLE_BASED_ON_MESSAGE('cbht' , m_DlgOptions->id_CHECK_VIEW_HIDDEN_TEXT)
 		TOGGLE_BASED_ON_MESSAGE('cbuc' , m_DlgOptions->id_CHECK_VIEW_UNPRINTABLE)
 	
-		TOGGLE_BASED_ON_MESSAGE('cbet' , m_DlgOptions->id_CHECK_VIEW_SHOW_EXTRA_TOOLBAR) 
-		TOGGLE_BASED_ON_MESSAGE('cbft' , m_DlgOptions->id_CHECK_VIEW_SHOW_FORMAT_TOOLBAR) 
-		TOGGLE_BASED_ON_MESSAGE('cbst' , m_DlgOptions->id_CHECK_VIEW_SHOW_STANDARD_TOOLBAR) 
 		TOGGLE_BASED_ON_MESSAGE('stat' , m_DlgOptions->id_CHECK_VIEW_SHOW_STATUS_BAR) 
 		break;
 
@@ -455,23 +451,6 @@ void AP_BeOSDialog_Options::_controlEnable( tControl id, bool value )
 		FIND_CONTROL(control, "chkCursorBlinkEnable")
 		break;
 	
-//TF: Deprecated with specific toolbar toggling
-/*	case id_CHECK_VIEW_SHOW_TOOLBARS:
-		FIND_CONTROL(control,"chkToolbarsEnable")
-		break;
-*/
-	case id_CHECK_VIEW_SHOW_STANDARD_TOOLBAR:
-		FIND_CONTROL(control,"chkStandardBarEnable")
-		break;
-
-	case id_CHECK_VIEW_SHOW_FORMAT_TOOLBAR:
-		FIND_CONTROL(control,"chkFormatBarEnable")
-		break;
-
-	case id_CHECK_VIEW_SHOW_EXTRA_TOOLBAR:
-		FIND_CONTROL(control,"chkExtraBarEnable")
-		break;
-
 	case id_CHECK_VIEW_SHOW_STATUS_BAR:
 		FIND_CONTROL(control,"chkStatusEnable")
 		break;
@@ -581,13 +560,6 @@ DEFINE_GET_SET_BOOL(SpellNumbers , "SpellNumbers");
 DEFINE_GET_SET_BOOL(SpellInternet , "SpellInternet");
 DEFINE_GET_SET_BOOL(PrefsAutoSave , "AutoSavePrefs");
 DEFINE_GET_SET_BOOL	(ViewShowRuler , "RulerEnable");
-
-//TF: Deprecated with specific toolbar toggling
-//DEFINE_GET_SET_BOOL	(ViewShowToolbars , "chkToolbarsEnable");
-DEFINE_GET_SET_BOOL	(ViewShowStandardBar , "chkStandardBarEnable");
-DEFINE_GET_SET_BOOL	(ViewShowFormatBar , "chkFormatBarEnable");
-DEFINE_GET_SET_BOOL	(ViewShowExtraBar , "chkExtraBarEnable");
-DEFINE_GET_SET_BOOL	(ViewShowStatusBar , "chkStatusEnable");
 
 DEFINE_GET_SET_BOOL	(ViewCursorBlink , "chkCursorBlinkEnable");
 DEFINE_GET_SET_BOOL	(ViewAll , "chkViewAll");

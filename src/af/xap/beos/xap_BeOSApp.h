@@ -56,10 +56,14 @@ public:
 	XAP_BeOSApp(XAP_Args * pArgs, const char * szAppName);
 	virtual ~XAP_BeOSApp(void);
 
-	virtual bool					initialize(void);
-	//For handling the double click messages, containing new file info
-	virtual XAP_Frame * 				newFrame(const char *path) = 0;
-	virtual void					reallyExit(void);
+	virtual const char * getDefaultEncoding () const
+	  {
+	    return "UTF-8" ;
+	  }
+
+	virtual bool							initialize(const char * szKeyBindingsKey, const char * szKeyBindingsDefaultValue);
+	virtual XAP_Frame *						newFrame(void) = 0;
+	virtual void							reallyExit(void);
 
 	virtual XAP_DialogFactory *				getDialogFactory(void);
 	virtual XAP_Toolbar_ControlFactory *	getControlFactory(void);
@@ -67,11 +71,10 @@ public:
 	virtual const char *					getAbiSuiteAppDir(void) const = 0;
 	virtual void							copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard = true) = 0;
  	virtual void							pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard, bool bHonorFormatting = true) = 0;
-	//virtual void							pasteFromClipboard(PD_DocumentRange * pDocRange, bool) = 0;
 	virtual bool							canPasteFromClipboard(void) = 0;
 	virtual void							cacheCurrentSelection(AV_View *) = 0;
 	virtual const char *					getUserPrivateDirectory(void);
-	virtual void 						_setAbiSuiteLibDir(void);
+	virtual void 							_setAbiSuiteLibDir(void);
 	virtual UT_sint32                       makeDirectory(const char * szPath, const UT_sint32 mode ) const;
 
 

@@ -20,9 +20,8 @@
 #ifndef XAP_BEOSDIALOG_PRINT_H
 #define XAP_BEOSDIALOG_PRINT_H
 
-#include "xap_BeOSFrame.h"
 #include "xap_Dlg_Print.h"
-class XAP_BeOSFrame;
+class XAP_Frame;
 class PS_Graphics;
 
 /*****************************************************************/
@@ -46,7 +45,7 @@ protected:
 
 	void					_raisePrintDialog(XAP_Frame * pFrame);
 	
-	XAP_BeOSFrame *			m_pBeOSFrame;
+	XAP_Frame *			m_pFrame;
 	struct
 	{
 		// add various fields here to persist between uses of the dialog....

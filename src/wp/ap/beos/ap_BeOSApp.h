@@ -27,14 +27,14 @@
 #define AP_BEOSAPP_H
 
 #include "xap_Args.h"
-#include "xap_BeOSApp.h"
+#include "ap_App.h"
 #include "ap_BeOSPrefs.h"
 #include "ap_BeOSClipboard.h"
 class PD_DocumentRange;
 class XAP_StringSet;
 
 
-class AP_BeOSApp : public XAP_BeOSApp
+class AP_BeOSApp : public AP_App
 {
 public:
 	AP_BeOSApp(XAP_Args * pArgs, const char * szAppName);
@@ -42,7 +42,6 @@ public:
 
 	virtual bool					initialize(void);
 	virtual XAP_Frame *				newFrame(void);
-	virtual XAP_Frame *				newFrame(const char *path);
 	virtual bool					shutdown(void);
 	virtual bool					getPrefsValueDirectory(bool bAppSpecific,
 														   const XML_Char * szKey, const XML_Char ** pszValue) const;
@@ -56,7 +55,7 @@ public:
 
 	void							ParseCommandLine(void);
 	
-	static int main (const char * szAppName, int argc, char ** argv);
+	static int main (const char * szAppName, int argc, const char ** argv);
 
 	void                                             catchSignals(int sig_num);
 
