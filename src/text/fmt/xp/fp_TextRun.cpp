@@ -2571,6 +2571,7 @@ void fp_TextRun::resetJustification()
 {
 	UT_sint32 iAccumDiff = 0;
 	UT_sint32 iWidth = getWidth();
+	xxx_UT_DEBUGMSG(("reset Justification of run %x \n",this));
 	if(m_bIsJustified)
 	{
 		UT_sint32 iSpaceWidthBefore = _getSpaceWidthBeforeJustification();
