@@ -146,7 +146,7 @@ public:
 	UT_Error		cmdInsertGraphic(FG_Graphic*, const char*);
 
 	virtual void    toggleCase(ToggleCase c);
-	virtual void    setPaperColor(UT_RGBColor &rgb);
+	virtual void    setPaperColor(const XML_Char * clr);
 
 	virtual void	cmdCopy(void);
 	virtual void	cmdCut(void);

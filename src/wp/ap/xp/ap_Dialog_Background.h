@@ -39,14 +39,16 @@ public:
 
 	AP_Dialog_Background::tAnswer		getAnswer(void) const;
 	
-	const UT_RGBColor & getColor (void) const;
-	void  setColor (UT_RGBColor & clr);
+	const XML_Char * getColor (void) const;
+	void  setColor (const XML_Char * pszColor);
+	void  setColor (UT_RGBColor& col);
 
  protected:
 	void setAnswer (AP_Dialog_Background::tAnswer);
 
  private:
 	UT_RGBColor m_color;
+	XML_Char    m_pszColor[12];
 	AP_Dialog_Background::tAnswer		m_answer;
 };
 

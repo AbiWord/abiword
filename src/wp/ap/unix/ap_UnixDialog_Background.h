@@ -39,10 +39,11 @@ public:
 
 	virtual void eventOk(void);
 	virtual void eventCancel(void);
-
+	void         colorCleared(void);
  protected:
 	virtual GtkWidget * _constructWindow (void);
 	virtual void _constructWindowContents (GtkWidget * container);
+	GtkWidget * m_wColorsel;
 
  private:
 	GtkWidget * m_dlg;

@@ -31,32 +31,38 @@
 #include "ap_Dialog_Id.h"
 #include "ap_UnixDialog_Background.h"
 
-	enum
-	{
-		RED,
-		GREEN,
-		BLUE,
-		OPACITY
-	};
+enum
+{
+	RED,
+	GREEN,
+	BLUE,
+	OPACITY
+};
+
+static void s_color_cleared(GtkWidget * btn, AP_UnixDialog_Background * dlg)
+{
+	UT_ASSERT(dlg);
+	dlg->colorCleared();
+}
 
 static void s_ok_clicked (GtkWidget * btn, AP_UnixDialog_Background * dlg)
 {
-  UT_ASSERT(dlg);
-  dlg->eventOk();
+	UT_ASSERT(dlg);
+	dlg->eventOk();
 }
 
 static void s_cancel_clicked (GtkWidget * btn, AP_UnixDialog_Background * dlg)
 {
-  UT_ASSERT(dlg);
-  dlg->eventCancel();
+	UT_ASSERT(dlg);
+	dlg->eventCancel();
 }
 
 static void s_delete_clicked(GtkWidget * /* widget */,
-			     gpointer /* data */,
-			     AP_UnixDialog_Background * dlg)
+							 gpointer /* data */,
+							 AP_UnixDialog_Background * dlg)
 {
-  UT_ASSERT(dlg);
-  dlg->eventCancel();
+	UT_ASSERT(dlg);
+	dlg->eventCancel();
 }
 
 #define CTI(c, v) (int)(c[v] * 255.0)
@@ -64,19 +70,16 @@ static void s_delete_clicked(GtkWidget * /* widget */,
 static void s_color_changed(GtkWidget * csel,
 			    AP_UnixDialog_Background * dlg)
 {
-  UT_ASSERT(csel && dlg);
+	UT_ASSERT(csel && dlg);
   
-  UT_RGBColor col;
+	GtkColorSelection * w = GTK_COLOR_SELECTION(csel);
+	gdouble cur [4];
 
-  GtkColorSelection * w = GTK_COLOR_SELECTION(csel);
+	gtk_color_selection_get_color (w, cur);
 
-  gdouble cur [4];
-
-  gtk_color_selection_get_color (w, cur);
-
-  UT_setColor(col, CTI(cur, RED), CTI(cur, GREEN), CTI(cur, BLUE));
-
-  dlg->setColor (col);
+	static char buf_color[12];
+	sprintf(buf_color, "%02x%02x%02x",CTI(cur, RED),CTI(cur, GREEN),CTI(cur, BLUE));
+	dlg->setColor ((const XML_Char *) buf_color);
 }
 
 #undef CTI
@@ -134,82 +137,110 @@ void AP_UnixDialog_Background::runModal(XAP_Frame * pFrame)
 	gtk_main();
 
 	if(mainWindow && GTK_IS_WIDGET(mainWindow))
-	  gtk_widget_destroy(mainWindow);
+		gtk_widget_destroy(mainWindow);
 }
 
 GtkWidget * AP_UnixDialog_Background::_constructWindow (void)
 {
-  GtkWidget * dlg;
-  GtkWidget * k;
-  GtkWidget * cancel;
-  GtkWidget * actionarea;
+	GtkWidget * dlg;
+	GtkWidget * k;
+	GtkWidget * cancel;
+	GtkWidget * actionarea;
 
-  const XAP_StringSet * pSS = m_pApp->getStringSet();
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-  dlg = gtk_dialog_new ();
-  gtk_window_set_title (GTK_WINDOW(dlg), 
-			pSS->getValue(AP_STRING_ID_DLG_Background_Title));
+	dlg = gtk_dialog_new ();
+	gtk_window_set_title (GTK_WINDOW(dlg), 
+						  pSS->getValue(AP_STRING_ID_DLG_Background_Title));
 
-  actionarea = GTK_DIALOG (dlg)->action_area;
+	actionarea = GTK_DIALOG (dlg)->action_area;
 
-  k = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_OK));
-  gtk_widget_show(k);
-  gtk_container_add (GTK_CONTAINER(actionarea), k);
-  gtk_signal_connect (GTK_OBJECT(k), "clicked", 
-		      GTK_SIGNAL_FUNC(s_ok_clicked), (gpointer)this);
+	k = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_OK));
+	gtk_widget_show(k);
+	gtk_container_add (GTK_CONTAINER(actionarea), k);
+	gtk_signal_connect (GTK_OBJECT(k), "clicked", 
+						GTK_SIGNAL_FUNC(s_ok_clicked), (gpointer)this);
 
-  cancel = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Cancel));
-  gtk_widget_show(cancel);
-  gtk_container_add (GTK_CONTAINER(actionarea), cancel);
-  gtk_signal_connect (GTK_OBJECT(cancel), "clicked", 
-		      GTK_SIGNAL_FUNC(s_cancel_clicked), (gpointer)this);
+	cancel = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Cancel));
+	gtk_widget_show(cancel);
+	gtk_container_add (GTK_CONTAINER(actionarea), cancel);
+	gtk_signal_connect (GTK_OBJECT(cancel), "clicked", 
+						GTK_SIGNAL_FUNC(s_cancel_clicked), (gpointer)this);
 
-  gtk_signal_connect_after(GTK_OBJECT(dlg),
-			   "destroy",
-			   NULL,
-			   NULL);
+	gtk_signal_connect_after(GTK_OBJECT(dlg),
+							 "destroy",
+							 NULL,
+							 NULL);
 
-  gtk_signal_connect(GTK_OBJECT(dlg),
-		     "delete_event",
-		     GTK_SIGNAL_FUNC(s_delete_clicked),
-		     (gpointer) this);
+	gtk_signal_connect(GTK_OBJECT(dlg),
+					   "delete_event",
+					   GTK_SIGNAL_FUNC(s_delete_clicked),
+					   (gpointer) this);
   
-  _constructWindowContents (GTK_DIALOG(dlg)->vbox);
-
-  return dlg;
+	_constructWindowContents (GTK_DIALOG(dlg)->vbox);
+	
+	return dlg;
 }
 
 void AP_UnixDialog_Background::_constructWindowContents (GtkWidget * parent)
 {
-  GtkWidget *colorsel;
+	GtkWidget *colorsel;
 
-  colorsel = gtk_color_selection_new();
-  gtk_widget_show (colorsel);
-  gtk_container_add (GTK_CONTAINER(parent), colorsel);
+	GtkWidget * vbox = gtk_vbox_new(false,0);
+	gtk_widget_show(vbox);
+	gtk_container_add (GTK_CONTAINER(parent), vbox);
 
-  UT_RGBColor c = getColor();
+	colorsel = gtk_color_selection_new();
+	gtk_widget_show (colorsel);
+	gtk_container_add (GTK_CONTAINER(vbox), colorsel);
 
-  gdouble currentColor[4] = { 0, 0, 0, 0 };
-  currentColor[RED] = ((gdouble) c.m_red / (gdouble) 255.0);
-  currentColor[GREEN] = ((gdouble) c.m_grn / (gdouble) 255.0);
-  currentColor[BLUE] = ((gdouble) c.m_blu / (gdouble) 255.0);
+	const XML_Char *  pszC = getColor();
+	UT_RGBColor c(255,255,255);
+	if(strcmp(pszC,"transparent") != 0)
+	{
+		UT_parseColor(pszC,c);
+	}
+	gdouble currentColor[4] = { 0, 0, 0, 0 };
+	currentColor[RED] = ((gdouble) c.m_red / (gdouble) 255.0);
+	currentColor[GREEN] = ((gdouble) c.m_grn / (gdouble) 255.0);
+	currentColor[BLUE] = ((gdouble) c.m_blu / (gdouble) 255.0);
 
-  gtk_color_selection_set_color (GTK_COLOR_SELECTION(colorsel),
-				 currentColor);
+	gtk_color_selection_set_color (GTK_COLOR_SELECTION(colorsel),
+								   currentColor);
+	m_wColorsel = colorsel;
+//
+// Button to clear background color
+//
+    GtkWidget * clearColor = gtk_button_new_with_label ("Clear Background Color");
+	gtk_widget_show(clearColor);
+	
+	gtk_container_add(GTK_CONTAINER(vbox),clearColor);
 
-  gtk_signal_connect (GTK_OBJECT(colorsel), "color-changed",
-		      GTK_SIGNAL_FUNC(s_color_changed),
-		      (gpointer) this);
+	gtk_signal_connect (GTK_OBJECT(colorsel), "color-changed",
+						GTK_SIGNAL_FUNC(s_color_changed),
+						(gpointer) this);
+	gtk_signal_connect(GTK_OBJECT(clearColor), "clicked",
+						GTK_SIGNAL_FUNC(s_color_cleared),
+						(gpointer) this);
 }
 
 void AP_UnixDialog_Background::eventOk (void)
 {
-  setAnswer (a_OK);
-  gtk_main_quit();
+	setAnswer (a_OK);
+	gtk_main_quit();
 }
 
 void AP_UnixDialog_Background::eventCancel (void)
 {
-  setAnswer(a_CANCEL);
-  gtk_main_quit ();
+	setAnswer(a_CANCEL);
+	gtk_main_quit ();
 }
+
+void AP_UnixDialog_Background::colorCleared(void)
+{
+	setColor(NULL);
+	gdouble currentColor[4] = { 1., 1., 1., 0 };
+	gtk_color_selection_set_color (GTK_COLOR_SELECTION(m_wColorsel),
+								   currentColor);
+}	
+	

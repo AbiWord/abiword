@@ -86,3 +86,11 @@ void AP_QNXDialog_Background::runModal(XAP_Frame * pFrame)
 
 	UT_ASSERT(UT_NOT_IMPLEMENTED);
 }
+
+
+
+
+
+
+
+

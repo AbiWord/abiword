@@ -58,7 +58,14 @@ void AP_Win32Dialog_Background::runModal(XAP_Frame * pFrame)
 	UT_ASSERT(pFrame);
 
 	XAP_Win32Frame * pWin32Frame = static_cast<XAP_Win32Frame *>(pFrame);
-	UT_RGBColor rgbColor = getColor();
+
+	const XML_Char *  pszC = getColor();
+	UT_RGBColor rgbColor(255,255,255);
+	if(strcmp(pszC,"transparent") != 0)
+	{
+		UT_parseColor(pszC,rgbColor);
+	}
+
 
 	CHOOSECOLOR cc;                 // common dialog box structure 
 	static COLORREF acrCustClr[16]; // array of custom colors 

@@ -3627,7 +3627,16 @@ static bool s_doFontDlg(FV_View * pView)
 		pDialog->setFontWeight(UT_getAttribute("font-weight", props_in));
 		pDialog->setFontStyle(UT_getAttribute("font-style", props_in));
 		pDialog->setColor(UT_getAttribute("color", props_in));
-
+		pDialog->setBGColor(UT_getAttribute("bgcolor", props_in));
+//
+// Set the background color for the preview
+//
+		static XML_Char  background[8];
+		UT_RGBColor * bgCol = pView->getCurrentPage()->getOwningSection()->getPaperColor();
+		sprintf(background, "%02x%02x%02x",bgCol->m_red,
+				bgCol->m_grn,bgCol->m_blu);
+		pDialog->setBackGroundColor( (const XML_Char *) background);
+		
 		// these behave a little differently since they are
 		// probably just check boxes and we don't have to
 		// worry about initializing a combo box with a choice
@@ -3702,6 +3711,12 @@ static bool s_doFontDlg(FV_View * pView)
 			props_out[k++] = s;
 		}
 
+		if (pDialog->getChangedBGColor(&s))
+		{
+			props_out[k++] = "bgcolor";
+			props_out[k++] = s;
+		}
+
 		bool bUnderline = false;
 		bool bChangedUnderline = pDialog->getChangedUnderline(&bUnderline);
 		bool bOverline = false;
@@ -3753,7 +3768,8 @@ static bool s_doFontDlg(FV_View * pView)
 */
 		props_out[k] = 0;						// put null after last pair.
 		UT_ASSERT(k < NrElements(props_out));
-
+		for(UT_uint32 i = 0; i<k; i= i+2 )
+			UT_DEBUGMSG(("SEVIOR: Props = %s: Values = %s \n",props_out[i],props_out[i+1]));
 		if (k > 0)								// if something changed
 			pView->setCharFormat(props_out);
 	}
@@ -6462,8 +6478,13 @@ Defun(dlgBackground)
 		= (AP_Dialog_Background *)(pDialogFactory->requestDialog(AP_DIALOG_ID_BACKGROUND));
 	UT_ASSERT(pDialog);
 
-	UT_RGBColor * pClr = pView->getCurrentPage()->getOwningSection()->getPaperColor();
-	pDialog->setColor(*pClr);
+//
+// Get Current background color
+//
+	const XML_Char ** propsSection = NULL;
+	pView->getSectionFormat(&propsSection);
+	const XML_Char * pszBackground = UT_getAttribute("background-color",propsSection);
+	pDialog->setColor(pszBackground);
 
 	pDialog->runModal (pFrame);
 
@@ -6471,12 +6492,12 @@ Defun(dlgBackground)
 	bool bOK = (ans == AP_Dialog_Background::a_OK);
 
 	if (bOK)
-	  {
+	{
 	    // let the view set the proper value in the
 	    // document and refresh/redraw itself
-	    UT_RGBColor clr = pDialog->getColor();
+	    const XML_Char * clr = pDialog->getColor();
 	    pView->setPaperColor (clr);
-	  }
+	}
 
 	pDialogFactory->releaseDialog(pDialog);
 	return bOK;

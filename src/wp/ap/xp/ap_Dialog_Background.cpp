@@ -29,7 +29,8 @@
 AP_Dialog_Background::AP_Dialog_Background(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
   : XAP_Dialog_NonPersistent(pDlgFactory,id), m_answer(a_OK)
 {
-  UT_setColor(m_color, 0xff, 0xff, 0xff);
+	sprintf(m_pszColor,"%s","transparent");
+	UT_setColor(m_color, 0xff, 0xff, 0xff);
 }
 
 AP_Dialog_Background::~AP_Dialog_Background(void)
@@ -43,15 +44,32 @@ AP_Dialog_Background::tAnswer AP_Dialog_Background::getAnswer(void) const
 
 void AP_Dialog_Background::setAnswer (AP_Dialog_Background::tAnswer answer)
 {
-  m_answer = answer;
+	m_answer = answer;
 }
 
-const UT_RGBColor & AP_Dialog_Background::getColor (void) const
+const XML_Char * AP_Dialog_Background::getColor (void) const
 {
-  return m_color;
+	return (const XML_Char *) m_pszColor;
 }
 
-void  AP_Dialog_Background::setColor (UT_RGBColor & clr)
+void  AP_Dialog_Background::setColor (const XML_Char * pszColor)
 {
-  UT_setColor(m_color, clr.m_red, clr.m_grn, clr.m_blu);
+	if(pszColor && strcmp(pszColor,"transparent") != 0)
+	{
+		UT_parseColor(pszColor,m_color);
+		sprintf(m_pszColor,"%s",pszColor);
+	}
+	else
+	{
+		UT_setColor(m_color, 255, 255, 255);
+		sprintf(m_pszColor,"%s","transparent");
+	}
+}
+
+
+void  AP_Dialog_Background::setColor (UT_RGBColor & col)
+{
+	UT_setColor(m_color, col.m_red, col.m_grn, col.m_blu);
+	sprintf(m_pszColor, "%02x%02x%02x",col.m_red,
+				col.m_grn,col.m_blu);
 }

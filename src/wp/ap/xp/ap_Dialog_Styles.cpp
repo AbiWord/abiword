@@ -27,6 +27,10 @@
 #include "xap_Dialog_Id.h"
 #include "xap_DialogFactory.h"
 #include "xap_Dlg_MessageBox.h"
+#include "fl_SectionLayout.h"
+#include "fp_Page.h"
+
+#include "ut_misc.h"
 
 #include "pd_Style.h"
 #include "ap_Dialog_Styles.h"
@@ -39,6 +43,8 @@ AP_Dialog_Styles::AP_Dialog_Styles(XAP_DialogFactory * pDlgFactory, XAP_Dialog_I
 	m_answer = a_OK;
 	m_pParaPreview = NULL;
 	m_pCharPreview = NULL;
+	if(m_vecCharProps.getItemCount() > 0)
+		m_vecCharProps.clear();
 }
 
 AP_Dialog_Styles::~AP_Dialog_Styles(void)
@@ -78,43 +84,27 @@ void AP_Dialog_Styles::_createCharPreviewFromGC(GR_Graphics * gc,
 {
 	UT_ASSERT(gc);
 
-	m_pCharPreview = new AP_Styles_CharPreview(gc);
+//
+// Set the Background color for the preview.
+//
+	static XML_Char  background[8];
+	UT_RGBColor * bgCol = m_pView->getCurrentPage()->getOwningSection()->getPaperColor();
+	sprintf(background, "%02x%02x%02x",bgCol->m_red,bgCol->m_grn,bgCol->m_blu);
+
+	m_pCharPreview = new XAP_Preview_FontPreview(gc,background);
 	UT_ASSERT(m_pCharPreview);
 	
 	m_pCharPreview->setWindowSize(width, height);
-}
-
-//////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////
-
-AP_Styles_CharPreview::AP_Styles_CharPreview(GR_Graphics * gc)
-	: XAP_Preview(gc)
-{
-
-}
-
-AP_Styles_CharPreview::~AP_Styles_CharPreview()
-{
-}
-
-
-void AP_Styles_CharPreview::draw(void)
-{
-	UT_sint32 iWidth = getWindowWidth();
-	UT_sint32 iHeight = getWindowHeight();
-
-	m_gc->fillRect(GR_Graphics::CLR3D_Background, 0, 0, iWidth, iHeight);
-
-	UT_Rect pageRect(5, 5, iWidth - 10, iHeight - 10);
-
-	m_gc->clearArea(pageRect.left, pageRect.top, pageRect.width, pageRect.height);
-	m_gc->setLineWidth(1);
-	m_gc->drawLine(pageRect.left, pageRect.top, pageRect.left + pageRect.width, pageRect.top);
-	m_gc->drawLine(pageRect.left, pageRect.top, pageRect.left, pageRect.top + pageRect.height);
-	m_gc->setLineWidth(3);
-	m_gc->drawLine(pageRect.left + pageRect.width, pageRect.top + 1, pageRect.left + pageRect.width, pageRect.top + pageRect.height);
-	m_gc->drawLine(pageRect.left + 1, pageRect.top + pageRect.height, pageRect.left + pageRect.width, pageRect.top + pageRect.height);
-
+//
+// Text for the Preview
+//
+	static UT_UCSChar szString[60];
+	UT_UCS_strcpy_char( (UT_UCSChar *) szString, "What Hath God Wrought");
+	m_pCharPreview->setDrawString((const UT_UCSChar *) szString);
+//
+// set our Vector of Character Properties into the preview class.
+//
+	m_pCharPreview->setVecProperties( &m_vecCharProps);
 }
 
 //////////////////////////////////////////////////////////////////
@@ -206,14 +196,17 @@ void AP_Dialog_Styles::event_paraPreviewUpdated (const XML_Char * pageLeftMargin
 
 void AP_Dialog_Styles::event_charPreviewUpdated (void) const
 {
-	//UT_ASSERT (m_pCharPreview); add this when we make a char preview
+	UT_ASSERT (m_pCharPreview); // add this when we make a char preview
 
 	// force a redraw
-	if(m_pCharPreview) // remove this when we actually make a char preview
+	if(m_pCharPreview) 
+	{
+		m_pCharPreview->setVecProperties( &m_vecCharProps);
 		m_pCharPreview->draw();
+	}
 }
 
-void AP_Dialog_Styles::_populatePreviews(void)  const
+void AP_Dialog_Styles::_populatePreviews(void)
 {
 	PD_Style * pStyle = NULL;
 	const char * szStyle = NULL;
@@ -226,7 +219,9 @@ void AP_Dialog_Styles::_populatePreviews(void)  const
 //
 // Note to Dom: Actually do this code for character previews
 //
-	const static XML_Char * charFields[] = {"color"};
+	const static XML_Char * charFields[] = 
+	{"bgcolor","color","font-family","font-size","font-stretch","font-variant",
+	"font-weight","text-decoration"};
 	const size_t nCharFlds = sizeof(charFields)/sizeof(charFields[0]);
 	const XML_Char * charValues [nCharFlds];
 
@@ -268,7 +263,12 @@ void AP_Dialog_Styles::_populatePreviews(void)  const
 			paraValues[i] = szValue;
 		}
 
+// Clear out old contents of the char vector if they exist
+		if(m_vecCharProps.getItemCount() > 0)
+			m_vecCharProps.clear();
+
 	    // now loop through and pass out each property:value combination for characters
+
 		for(i = 0; i < nCharFlds; i++)
 		{
 			const XML_Char * szName = charFields[i];
@@ -293,6 +293,12 @@ void AP_Dialog_Styles::_populatePreviews(void)  const
 				strDesc += "; ";
 
 			charValues[i] = szValue;
+//
+// Put them in our property vector for the Character preview
+//
+			m_vecCharProps.addItem((void *) szName);
+			m_vecCharProps.addItem((void *) szValue);
+					
 		}
 
 		if (!strDesc.empty())
@@ -307,8 +313,22 @@ void AP_Dialog_Styles::_populatePreviews(void)  const
 									 (const XML_Char *)paraValues[2], (const XML_Char *)paraValues[3], 
 									 (const XML_Char *)paraValues[4], (const XML_Char *)paraValues[5],
 									 (const XML_Char *)paraValues[6]);
-			
+			UT_DEBUGMSG(("SEVIOR: Calling FontPreview Draw \n"));
 			event_charPreviewUpdated();
 		}
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+

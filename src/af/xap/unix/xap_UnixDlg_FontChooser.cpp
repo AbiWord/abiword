@@ -41,6 +41,16 @@
 // your typographer's standard nonsense latin font phrase
 #define PREVIEW_ENTRY_DEFAULT_STRING	"Lorem ipsum dolor sit amet, consectetaur adipisicing..."
 
+//
+// For Screen color picker
+	enum
+	{
+		RED,
+		GREEN,
+		BLUE,
+		OPACITY
+	};
+
 /*****************************************************************/
 XAP_Dialog * XAP_UnixDialog_FontChooser::static_constructor(XAP_DialogFactory * pFactory,
 														 XAP_Dialog_Id id)
@@ -59,14 +69,23 @@ XAP_UnixDialog_FontChooser::XAP_UnixDialog_FontChooser(XAP_DialogFactory * pDlgF
 	m_sizeList = NULL;
 	m_checkStrikeOut = NULL;
 	m_checkUnderline = NULL;
+	m_checkOverline = NULL;
+	m_checkTransparency = NULL;
 	m_colorSelector = NULL;
+	m_bgcolorSelector = NULL;
 	m_preview = NULL;
 
 	m_lastFont = NULL;
 	m_gc = NULL;
 	m_pUnixFrame = NULL;
-
 	m_doneFirstFont = false;
+	for(UT_sint32 i = 0; i < 4;i++)
+	{	
+		m_currentFGColor[i] = 0.0;
+		m_currentBGColor[i] = -1.0;
+		m_funkyColor[i] = -1.0;
+	}
+
 /*
 #ifdef BIDI_ENABLED
 	m_checkDirection = NULL;
@@ -153,8 +172,17 @@ static gint s_color_update(GtkWidget * /* widget */,
 						   XAP_UnixDialog_FontChooser * dlg)
 {
 	UT_ASSERT(dlg);
-	dlg->updatePreview();
+	dlg->fgColorChanged();
+	return FALSE;
+}
 
+
+static gint s_bgcolor_update(GtkWidget * /* widget */,
+						   GdkEvent * /* event */,
+						   XAP_UnixDialog_FontChooser * dlg)
+{
+	UT_ASSERT(dlg);
+	dlg->bgColorChanged();
 	return FALSE;
 }
 
@@ -186,9 +214,9 @@ static void s_select_row_font(GtkWidget * /* widget */,
 							  XAP_UnixDialog_FontChooser * dlg)
 {
 	UT_ASSERT(dlg);
-
+    // update the row number and show the changed preview
 	// redisplay the preview text
-	dlg->updatePreview();
+	dlg->fontRowChanged();
 }
 
 static void s_select_row_style(GtkWidget * /* widget */,
@@ -200,7 +228,7 @@ static void s_select_row_style(GtkWidget * /* widget */,
 	UT_ASSERT(dlg);
 
 	// redisplay the preview text
-	dlg->updatePreview();
+	dlg->styleRowChanged();
 }
 
 static void s_select_row_size(GtkWidget * /* widget */,
@@ -212,7 +240,7 @@ static void s_select_row_size(GtkWidget * /* widget */,
 	UT_ASSERT(dlg);
 
 	// redisplay the preview text
-	dlg->updatePreview();
+	dlg->sizeRowChanged();
 }
 
 static gint s_drawing_area_expose(GtkWidget * w,
@@ -221,71 +249,216 @@ static gint s_drawing_area_expose(GtkWidget * w,
 	XAP_UnixDialog_FontChooser * dlg = (XAP_UnixDialog_FontChooser *)
 		                              gtk_object_get_user_data(GTK_OBJECT(w));
 
-	// if a font has been set since this dialog was launched, draw things with it
-	if (dlg->m_doneFirstFont)
-	{
-		char * entryString;
-
-		if (!dlg->getEntryString(&entryString))
-			return FALSE;
-
-		UT_UCSChar * unicodeString = NULL;
-		UT_UCS_cloneString_char(&unicodeString, entryString);
-
-		// erase the area with the background color of the document
-		UT_RGBColor bgcolor;
-		dlg->getBackgroundColor(&bgcolor);
-		dlg->m_gc->fillRect(bgcolor, 0, 0, GTK_WIDGET(dlg->m_preview)->allocation.width,
-							GTK_WIDGET(dlg->m_preview)->allocation.height);
-
-		// get metrics to center vertically in box
-		UT_sint32 top = (UT_sint32) PREVIEW_BOX_HEIGHT_PIXELS / (UT_sint32) 2 -
-			            (UT_sint32) dlg->m_gc->getFontHeight() / (UT_sint32) 2;
-
-		top -= 4; // things seem to line up better this way
-
-		// draw in 5 pixels or so from left edge
-		dlg->m_gc->drawChars(unicodeString, 0, UT_UCS_strlen(unicodeString), 5, top);
-		FREEP(unicodeString);
-#if 0
-		// TODO:
-		
-		// we draw decorations after the text, even though the underline looks
-		// kinda funny this way
-		UT_sint32 iDrop = (dlg->m_gc->getFontDescent() / 3);
-		dlg->m_gc->drawLine(5, top + iDrop + dlg->m_gc->getFontAscent(),
-							5 + getWidth(), yoff + iDrop + m_iAscent);
-			if (m_fDecorations & TEXT_DECOR_OVERLINE)
-	{
-		UT_sint32 y2 = yoff;
-		m_pG->drawLine(xoff, y2, xoff+getWidth(), y2);
-	}
-
-	if (m_fDecorations & TEXT_DECOR_LINETHROUGH)
-	{
-		UT_sint32 y2 = yoff + getAscent() * 2 / 3;
-		m_pG->drawLine(xoff, y2, xoff+getWidth(), y2);
-		
-	}
-#endif
-
-	}
-	else
-	{
-		// we get here when NO font has been set, because the user hasn't
-		// set one and the dialog didn't know enough to find its own
-
-		// simply fill
-		UT_RGBColor bgcolor;
-		dlg->getBackgroundColor(&bgcolor);
-		dlg->m_gc->fillRect(bgcolor, 0, 0, GTK_WIDGET(dlg->m_preview)->allocation.width,
-							GTK_WIDGET(dlg->m_preview)->allocation.height);
-	}
-		
+//
+// Look if updates are blocked and quit if they are.
+//
+	if(dlg->m_blockUpdate)
+		return FALSE;
+	dlg->updatePreview();
 	return FALSE;
 }
 
+static void s_underline_toggled(GtkWidget * w,  XAP_UnixDialog_FontChooser * dlg)
+{
+	dlg->underlineChanged();
+}
+
+
+static void s_overline_toggled(GtkWidget * w,  XAP_UnixDialog_FontChooser * dlg)
+{
+	dlg->overlineChanged();
+}
+
+
+static void s_strikeout_toggled(GtkWidget * w,  XAP_UnixDialog_FontChooser * dlg)
+{
+	dlg->strikeoutChanged();
+}
+
+
+static void s_transparency_toggled(GtkWidget * w,  XAP_UnixDialog_FontChooser * dlg)
+{
+	dlg->transparencyChanged();
+}
+
 /*****************************************************************/
+
+void XAP_UnixDialog_FontChooser::underlineChanged(void)
+{
+	m_bUnderline = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_checkUnderline));
+	m_bChangedUnderline = !m_bChangedUnderline;
+	setFontDecoration(m_bUnderline,m_bOverline,m_bStrikeout);
+	updatePreview();
+}
+
+
+void XAP_UnixDialog_FontChooser::strikeoutChanged(void)
+{
+	m_bStrikeout = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_checkStrikeOut));
+	m_bChangedStrikeOut = !m_bChangedStrikeOut;
+	setFontDecoration(m_bUnderline,m_bOverline,m_bStrikeout);
+	updatePreview();
+}
+
+
+void XAP_UnixDialog_FontChooser::overlineChanged(void)
+{
+	m_bOverline = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_checkOverline));
+	m_bChangedOverline = !m_bChangedOverline;
+	setFontDecoration(m_bUnderline,m_bOverline,m_bStrikeout);
+	updatePreview();
+}
+
+
+void XAP_UnixDialog_FontChooser::transparencyChanged(void)
+{
+	bool bTrans = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_checkTransparency));
+	if(bTrans)
+	{
+		addOrReplaceVecProp("bgcolor","transparent");
+		m_currentBGColor[RED]  = -1; 
+		m_currentBGColor[GREEN] = -1;
+		m_currentBGColor[BLUE] = -1;
+	}
+	updatePreview();
+}
+
+void XAP_UnixDialog_FontChooser::fontRowChanged(void)
+{
+	static char szFontFamily[60];
+	// this is used many times below to grab pointers to
+	// strings inside list elements
+	gchar * text[2] = {NULL, NULL};
+
+	GList * selectedRow = NULL;
+	gint rowNumber = 0;
+	
+	selectedRow = GTK_CLIST(m_fontList)->selection;
+	if (selectedRow)
+	{
+		rowNumber = GPOINTER_TO_INT(selectedRow->data);
+		gtk_clist_get_text(GTK_CLIST(m_fontList), rowNumber, 0, text);
+		UT_ASSERT(text && text[0]);
+		g_snprintf(szFontFamily, 50, "%s",text[0]); 
+		addOrReplaceVecProp("font-family",(XML_Char*)szFontFamily);
+	}
+	updatePreview();
+}
+
+void XAP_UnixDialog_FontChooser::styleRowChanged(void)
+{
+	// this is used many times below to grab pointers to
+	// strings inside list elements
+	gchar * text[2] = {NULL, NULL};
+
+	GList * selectedRow = NULL;
+	gint rowNumber = 0;
+	selectedRow = GTK_CLIST(m_styleList)->selection;
+	if (selectedRow)
+	{
+		rowNumber = GPOINTER_TO_INT(selectedRow->data);
+		gtk_clist_get_text(GTK_CLIST(m_styleList), rowNumber, 0, text);
+		UT_ASSERT(text && text[0]);
+
+		// perhaps these attributes really should be smashed
+		// into bitfields.  :)
+		if (rowNumber == LIST_STYLE_NORMAL)
+		{
+			addOrReplaceVecProp("font-style","normal");
+			addOrReplaceVecProp("font-weight","normal");
+		}
+		else if (rowNumber == LIST_STYLE_BOLD)
+		{
+			addOrReplaceVecProp("font-style","normal");
+			addOrReplaceVecProp("font-weight","bold");
+		}
+		else if (rowNumber == LIST_STYLE_ITALIC)
+		{
+			addOrReplaceVecProp("font-style","italic");
+			addOrReplaceVecProp("font-weight","normal");
+		}
+		else if (rowNumber == LIST_STYLE_BOLD_ITALIC)
+		{
+			addOrReplaceVecProp("font-style","italic");
+			addOrReplaceVecProp("font-weight","bold");
+		}
+		else
+		{
+			UT_ASSERT(0);
+		}
+	}
+	updatePreview();
+}
+
+
+void XAP_UnixDialog_FontChooser::sizeRowChanged(void)
+{
+	// used similarly to convert between text and numeric arguments
+	static char szFontSize[50];
+	// this is used many times below to grab pointers to
+	// strings inside list elements
+	gchar * text[2] = {NULL, NULL};
+
+	GList * selectedRow = NULL;
+	gint rowNumber = 0;
+	selectedRow = GTK_CLIST(m_sizeList)->selection;
+	if (selectedRow)
+	{
+		rowNumber = GPOINTER_TO_INT(selectedRow->data);
+		gtk_clist_get_text(GTK_CLIST(m_sizeList), rowNumber, 0, text);
+		UT_ASSERT(text && text[0]);
+		
+		g_snprintf(szFontSize, 50, "%spt", 
+				   XAP_EncodingManager::fontsizes_list.getFirst(text[0]));
+
+//		g_snprintf(szFontSize, 50, "%spt",(UT_convertToPoints(text[0]))); 
+//		g_snprintf(szFontSize, 50, "%spt",text[0]); 
+
+		addOrReplaceVecProp("font-size",(XML_Char *)szFontSize);
+	}
+	updatePreview();
+}
+
+void XAP_UnixDialog_FontChooser::fgColorChanged(void)
+{
+	static char buf_color[8];
+	gtk_color_selection_get_color(GTK_COLOR_SELECTION(m_colorSelector), m_currentFGColor);
+
+	// test for funkyColor-has-been-changed-to-sane-color case
+	if (m_currentFGColor[RED] >= 0 &&
+		m_currentFGColor[GREEN] >= 0 &&
+		m_currentFGColor[BLUE] >= 0)
+	{
+		sprintf(buf_color, "%02x%02x%02x",
+				(unsigned int) (m_currentFGColor[RED] 	* (gdouble) 255.0),
+				(unsigned int) (m_currentFGColor[GREEN]	* (gdouble) 255.0),
+				(unsigned int) (m_currentFGColor[BLUE] 	* (gdouble) 255.0));
+		addOrReplaceVecProp("color",(XML_Char *)buf_color);
+	}
+	updatePreview();
+}
+
+
+void XAP_UnixDialog_FontChooser::bgColorChanged(void)
+{
+	static char buf_color[8];
+	gtk_color_selection_get_color(GTK_COLOR_SELECTION(m_bgcolorSelector), m_currentBGColor);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_checkTransparency), FALSE);	
+	// test for funkyColor-has-been-changed-to-sane-color case
+	if (m_currentBGColor[RED] >= 0 &&
+		m_currentBGColor[GREEN] >= 0 &&
+		m_currentBGColor[BLUE] >= 0)
+	{
+		sprintf(buf_color, "%02x%02x%02x",
+				(unsigned int) (m_currentBGColor[RED] 	* (gdouble) 255.0),
+				(unsigned int) (m_currentBGColor[GREEN]	* (gdouble) 255.0),
+				(unsigned int) (m_currentBGColor[BLUE] 	* (gdouble) 255.0));
+		
+		addOrReplaceVecProp("bgcolor",(XML_Char *)buf_color);
+	}
+	updatePreview();
+}
+
 
 // Glade helper function
 void XAP_UnixDialog_FontChooser::set_notebook_tab(GtkWidget * notebook, gint page_num,
@@ -379,14 +552,17 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkObject *paren
 	GtkWidget *hboxDecorations;
 	GtkWidget *checkbuttonStrikeout;
 	GtkWidget *checkbuttonUnderline;
+	GtkWidget *checkbuttonOverline;
 	GtkWidget *labelEncoding;
 	GtkWidget *comboEncoding;
 	GtkWidget *listStyles;
 	GtkWidget *listSizes;
 	GtkWidget *hbox1;
 	GtkWidget *colorSelector;
+	GtkWidget *colorBGSelector;
 	GtkWidget *labelTabFont;
 	GtkWidget *labelTabColor;
+	GtkWidget *labelTabBGColor;
 	GtkWidget *frame4;
 /*
 #ifdef BIDI_ENABLED
@@ -435,7 +611,14 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkObject *paren
 	gtk_object_set_data_full (GTK_OBJECT (window1), "table1", table1,
 	                          (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (table1);
-	gtk_container_add (GTK_CONTAINER (notebookMain), table1);
+
+    // Label for first page of the notebook
+	labelTabFont = gtk_label_new (pSS->getValue(XAP_STRING_ID_DLG_UFS_FontTab));
+	gtk_widget_show (labelTabFont);
+//
+// Make first page of the notebook
+//
+    gtk_notebook_append_page(GTK_NOTEBOOK(notebookMain), table1,labelTabFont);
 
 	vbox1 = gtk_vbox_new (FALSE, 0);
 	gtk_widget_set_name (vbox1, "vbox1");
@@ -569,16 +752,19 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkObject *paren
 	gtk_container_add (GTK_CONTAINER (frameEffects), hboxDecorations);
 
 	checkbuttonStrikeout = gtk_check_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_UFS_StrikeoutCheck));
-	gtk_object_set_data (parent, "checkbuttonStrikeout", checkbuttonStrikeout);
 	gtk_container_border_width (GTK_CONTAINER (checkbuttonStrikeout), 5);
 	gtk_widget_show (checkbuttonStrikeout);
 	gtk_box_pack_start (GTK_BOX (hboxDecorations), checkbuttonStrikeout, TRUE, TRUE, 0);
 
 	checkbuttonUnderline = gtk_check_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_UFS_UnderlineCheck));
-	gtk_object_set_data (parent, "checkbuttonUnderline", checkbuttonUnderline);
 	gtk_container_border_width (GTK_CONTAINER (checkbuttonUnderline), 5);
 	gtk_widget_show (checkbuttonUnderline);
 	gtk_box_pack_start (GTK_BOX (hboxDecorations), checkbuttonUnderline, TRUE, TRUE, 0);
+
+	checkbuttonOverline = gtk_check_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_UFS_OverlineCheck));
+	gtk_container_border_width (GTK_CONTAINER (checkbuttonOverline), 5);
+	gtk_widget_show (checkbuttonOverline);
+	gtk_box_pack_start (GTK_BOX (hboxDecorations), checkbuttonOverline, TRUE, TRUE, 0);
 
 /*
 #ifdef BIDI_ENABLED
@@ -621,30 +807,55 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkObject *paren
 //	comboEncoding_items = g_list_append (comboEncoding_items, "These Are Bogus");	
 	gtk_combo_set_popdown_strings (GTK_COMBO (comboEncoding), comboEncoding_items);
 	g_list_free (comboEncoding_items);
-	/*another Notebook page*/
+
+	/* Notebook page for ForeGround Color Selector */
+
 	hbox1 = gtk_hbox_new (FALSE, 0);
-	gtk_object_set_data (parent, "hbox1", hbox1);
 	gtk_widget_show (hbox1);
-	gtk_container_add (GTK_CONTAINER (notebookMain),hbox1);
+
+    // Label for second page of the notebook
+
+	labelTabColor = gtk_label_new (pSS->getValue(XAP_STRING_ID_DLG_UFS_ColorTab));
+	gtk_widget_show (labelTabColor);
+
+//
+// Make second page of the notebook
+//
+    gtk_notebook_append_page(GTK_NOTEBOOK(notebookMain), hbox1,labelTabColor);
 
 	colorSelector = gtk_color_selection_new ();
-	gtk_object_set_data (parent, "colorSelector", colorSelector);
 	gtk_widget_show (colorSelector);
 	gtk_box_pack_start (GTK_BOX (hbox1), colorSelector, TRUE, TRUE, 0);
 
-	labelTabFont = gtk_label_new (pSS->getValue(XAP_STRING_ID_DLG_UFS_FontTab));
-	gtk_object_set_data (parent, "labelTabFont", labelTabFont);
-	gtk_widget_show (labelTabFont);
-	set_notebook_tab (notebookMain, 0, labelTabFont);
 
-	labelTabColor = gtk_label_new (pSS->getValue(XAP_STRING_ID_DLG_UFS_ColorTab));
-	gtk_object_set_data (parent, "labelTabColor", labelTabColor);
-	gtk_widget_show (labelTabColor);
-	set_notebook_tab (notebookMain, 1, labelTabColor);
+	/*Notebook page for Background Color Selector*/
+
+	GtkWidget * vboxBG = gtk_vbox_new (FALSE, 0);
+	gtk_widget_show (vboxBG);
+
+    // Label for third page of the notebook
+
+	labelTabBGColor = gtk_label_new (pSS->getValue(XAP_STRING_ID_DLG_UFS_BGColorTab));
+	gtk_widget_show (labelTabBGColor);
+//
+// Make third page of the notebook
+//
+    gtk_notebook_append_page(GTK_NOTEBOOK(notebookMain), vboxBG,labelTabBGColor);
+
+	colorBGSelector = gtk_color_selection_new ();
+	gtk_widget_show (colorBGSelector);
+	gtk_box_pack_start (GTK_BOX (vboxBG), colorBGSelector, TRUE, TRUE, 0);
+
+//
+// Make a toggle button to set hightlight color transparent
+//
+	GtkWidget * checkbuttonTrans = gtk_check_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_UFS_TransparencyCheck));
+	gtk_widget_show (checkbuttonTrans);
+	gtk_box_pack_start (GTK_BOX (vboxBG), checkbuttonTrans, TRUE, TRUE, 0);
 
 	/* frame with preview */
+
 	frame4 = gtk_frame_new (NULL);
-	gtk_object_set_data (parent, "frame4", frame4);
 	gtk_widget_show (frame4);
 	gtk_box_pack_start (GTK_BOX (vboxMain), frame4, FALSE, FALSE, PREVIEW_BOX_BORDER_WIDTH_PIXELS);
 	// setting the height takes into account the border applied on all
@@ -667,15 +878,40 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkObject *paren
 	m_styleList = listStyles;
 	m_sizeList = listSizes;
 	m_colorSelector = colorSelector;
+	m_bgcolorSelector = colorBGSelector;
 	m_preview = entryArea;
 	m_checkStrikeOut = checkbuttonStrikeout;
 	m_checkUnderline = checkbuttonUnderline;
+	m_checkOverline = checkbuttonOverline;
+	m_checkTransparency = checkbuttonTrans;
 /*
 #ifdef BIDI_ENABLED
 	m_checkDirection = checkbuttonDirection;
 #endif
 */
 	// bind signals to things
+	gtk_signal_connect(GTK_OBJECT(m_checkUnderline),
+					   "toggled",
+					   GTK_SIGNAL_FUNC(s_underline_toggled),
+					   (gpointer) this);
+
+	gtk_signal_connect(GTK_OBJECT(m_checkOverline),
+					   "toggled",
+					   GTK_SIGNAL_FUNC(s_overline_toggled),
+					   (gpointer) this);
+
+	gtk_signal_connect(GTK_OBJECT(m_checkStrikeOut),
+					   "toggled",
+					   GTK_SIGNAL_FUNC(s_strikeout_toggled),
+					   (gpointer) this);
+
+
+	gtk_signal_connect(GTK_OBJECT(m_checkTransparency),
+					   "toggled",
+					   GTK_SIGNAL_FUNC(s_transparency_toggled),
+					   (gpointer) this);
+
+
 	gtk_signal_connect(GTK_OBJECT(listFonts),
 					   "select_row",
 					   GTK_SIGNAL_FUNC(s_select_row_font),
@@ -688,7 +924,7 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkObject *paren
 					   "select_row",
 					   GTK_SIGNAL_FUNC(s_select_row_size),
 					   (gpointer) this);
-
+	
 	// we catch the color tab's wheel click event so we can do some nasty
 	// trickery with the value slider, so that when the user first does
 	// some wheel work, the value soars to 100%, instead of 0%, so the
@@ -702,12 +938,22 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkObject *paren
 							 GTK_SIGNAL_FUNC(s_color_wheel_clicked),
 							 (gpointer) GTK_COLOR_SELECTION(colorSelector)->wheel_area);
 
+	gtk_signal_connect_after(GTK_OBJECT(GTK_COLOR_SELECTION(colorBGSelector)->wheel_area),
+							 "event",
+							 GTK_SIGNAL_FUNC(s_color_wheel_clicked),
+							 (gpointer) GTK_COLOR_SELECTION(colorSelector)->wheel_area);
+
 	// This is a catch-all color selector callback which catches any
 	// real-time updating of the color so we can refresh our preview
 	// text
 	gtk_signal_connect(GTK_OBJECT(colorSelector),
 					   "event",
 					   GTK_SIGNAL_FUNC(s_color_update),
+					   (gpointer) this);
+
+	gtk_signal_connect(GTK_OBJECT(colorBGSelector),
+					   "event",
+					   GTK_SIGNAL_FUNC(s_bgcolor_update),
 					   (gpointer) this);
 	
 	GTK_WIDGET_SET_FLAGS(listFonts, GTK_CAN_FOCUS);
@@ -730,9 +976,10 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkObject *paren
 	// TODO perhaps populate the list based on the selected font/style?
 	{
 	    int sz = XAP_EncodingManager::fontsizes_list.size();
-	    for(int i=0;i<sz;++i) {
-		text[0]=(char*)XAP_EncodingManager::fontsizes_list.nth2(i);
-		gtk_clist_append(GTK_CLIST(m_sizeList), text);
+	    for(int i=0;i<sz;++i) 
+		{
+			text[0]=(char*)XAP_EncodingManager::fontsizes_list.nth2(i);
+			gtk_clist_append(GTK_CLIST(m_sizeList), text);
 	    };
 	}
 	gtk_clist_thaw(GTK_CLIST(m_sizeList));
@@ -752,32 +999,16 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 
 	UT_ASSERT(m_pApp);
 
-	UT_DEBUGMSG(("FontChooserStart: Family[%s] Size[%s] Weight[%s] Style[%s] Color[%s] Underline[%d] StrikeOut[%d]\n",
-				 ((m_pFontFamily) ? m_pFontFamily : ""),
-				 ((m_pFontSize) ? m_pFontSize : ""),
-				 ((m_pFontWeight) ? m_pFontWeight : ""),
-				 ((m_pFontStyle) ? m_pFontStyle : ""),
-				 ((m_pColor) ? m_pColor : "" ),
-				 (m_bUnderline),
-				 (m_bStrikeOut)));
-
-	// These define the color element offsets in a vector
-	guint RED = 0;
-	guint GREEN = 1;
-	guint BLUE = 2;
-	gdouble currentColor[3] = { 0, 0, 0 };
-	gdouble funkyColor[3] = { -1, -1, -1 };
-
 	// this is used many times below to grab pointers to
 	// strings inside list elements
 	gchar * text[2] = {NULL, NULL};
 	// used similarly to convert between text and numeric arguments
-	char sizeString[SIZE_STRING_SIZE];
+	static char sizeString[50];
 	
 	// Set up our own color space so we work well on 8-bit
 	// displays.
-    gtk_widget_push_visual(gtk_preview_get_visual());
-    gtk_widget_push_colormap(gtk_preview_get_cmap());
+//    gtk_widget_push_visual(gtk_preview_get_visual());
+//    gtk_widget_push_colormap(gtk_preview_get_cmap());
 
 	// establish the font manager before dialog creation
 	XAP_App * app = m_pUnixFrame->getApp();
@@ -822,38 +1053,36 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	gint foundAt = 0;
 
 	// is this safe with an XML_Char * string?
-	foundAt = searchCList(GTK_CLIST(m_fontList), (char *) m_pFontFamily);
+	foundAt = searchCList(GTK_CLIST(m_fontList), (char *) getVal("font-family"));
 
 	if (foundAt >= 0)
 	{
 		gtk_clist_select_row(GTK_CLIST(m_fontList), foundAt, 0);
-		//gtk_clist_moveto(GTK_CLIST(m_fontList), foundAt, 0, 0, -1);
 	}
 	
 	// this is pretty messy
 	listStyle st = LIST_STYLE_NORMAL;
-	if (!m_pFontStyle || !m_pFontWeight)
+	if (!getVal("font-style") || !getVal("font-weight"))
 	{
-		// select nothing
 	        st = LIST_STYLE_NONE;
 	}
-	else if (!UT_stricmp(m_pFontStyle, "normal") &&
-			 !UT_stricmp(m_pFontWeight, "normal"))
+	else if (!UT_stricmp(getVal("font-style"), "normal") &&
+			 !UT_stricmp(getVal("font-weight"), "normal"))
 	{
 		st = LIST_STYLE_NORMAL;
 	}
-	else if (!UT_stricmp(m_pFontStyle, "normal") &&
-			 !UT_stricmp(m_pFontWeight, "bold"))
+	else if (!UT_stricmp(getVal("font-style"), "normal") &&
+			 !UT_stricmp(getVal("font-weight"), "bold"))
 	{
 		st = LIST_STYLE_BOLD;
 	}
-	else if (!UT_stricmp(m_pFontStyle, "italic") &&
-			 !UT_stricmp(m_pFontWeight, "normal"))
+	else if (!UT_stricmp(getVal("font-style"), "italic") &&
+			 !UT_stricmp(getVal("font-weight"), "normal"))
 	{
 		st = LIST_STYLE_ITALIC;		
 	}
-	else if (!UT_stricmp(m_pFontStyle, "italic") &&
-			 !UT_stricmp(m_pFontWeight, "bold"))
+	else if (!UT_stricmp(getVal("font-style"), "italic") &&
+			 !UT_stricmp(getVal("font-weight"), "bold"))
 	{
 		st = LIST_STYLE_BOLD_ITALIC;		
 	}
@@ -862,30 +1091,28 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
 	if (st != LIST_STYLE_NONE)
-	  gtk_clist_select_row(GTK_CLIST(m_styleList), st, 0);
-	//gtk_clist_moveto(GTK_CLIST(m_styleList), st, 0, 0, -1);
+		gtk_clist_select_row(GTK_CLIST(m_styleList), st, 0);
 
-	g_snprintf(sizeString, SIZE_STRING_SIZE, "%s", std_size_string(UT_convertToPoints(m_pFontSize)));
+	g_snprintf(sizeString, 60, "%s", std_size_string(UT_convertToPoints(getVal("font-size"))));
 	foundAt = searchCList(GTK_CLIST(m_sizeList), (char *)XAP_EncodingManager::fontsizes_list.getSecond(sizeString));
 	
 
 	if (foundAt >= 0)
 	{
 		gtk_clist_select_row(GTK_CLIST(m_sizeList), foundAt, 0);
-		//gtk_clist_moveto(GTK_CLIST(m_sizeList), foundAt, 0, 0, -1);
 	}
 	
 	// Set color in the color selector
-	if (m_pColor)
+	if (getVal("color"))
 	{
 		UT_RGBColor c;
-		UT_parseColor(m_pColor, c);
+		UT_parseColor(getVal("color"), c);
 
-		currentColor[RED] = ((gdouble) c.m_red / (gdouble) 255.0);
-		currentColor[GREEN] = ((gdouble) c.m_grn / (gdouble) 255.0);
-		currentColor[BLUE] = ((gdouble) c.m_blu / (gdouble) 255.0);
+		m_currentFGColor[RED] = ((gdouble) c.m_red / (gdouble) 255.0);
+		m_currentFGColor[GREEN] = ((gdouble) c.m_grn / (gdouble) 255.0);
+		m_currentFGColor[BLUE] = ((gdouble) c.m_blu / (gdouble) 255.0);
 
-		gtk_color_selection_set_color(GTK_COLOR_SELECTION(m_colorSelector), currentColor);
+		gtk_color_selection_set_color(GTK_COLOR_SELECTION(m_colorSelector), m_currentFGColor);
 	}
 	else
 	{
@@ -894,12 +1121,37 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 		// the cases except where the user specifically enters -1 for
 		// all Red, Green and Blue attributes manually.  This user
 		// should expect it not to touch the color.  :)
-		gtk_color_selection_set_color(GTK_COLOR_SELECTION(m_colorSelector), funkyColor);
+		gtk_color_selection_set_color(GTK_COLOR_SELECTION(m_colorSelector), m_funkyColor);
+	}
+
+	// Set color in the color selector
+	const XML_Char * pszBGCol = getVal("bgcolor");
+	if (pszBGCol && strcmp(pszBGCol,"transparent") != 0)
+	{
+		UT_RGBColor c;
+		UT_parseColor(getVal("bgcolor"), c);
+
+		m_currentBGColor[RED] = ((gdouble) c.m_red / (gdouble) 255.0);
+		m_currentBGColor[GREEN] = ((gdouble) c.m_grn / (gdouble) 255.0);
+		m_currentBGColor[BLUE] = ((gdouble) c.m_blu / (gdouble) 255.0);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_checkTransparency), FALSE);	
+		gtk_color_selection_set_color(GTK_COLOR_SELECTION(m_bgcolorSelector), m_currentBGColor);
+	}
+	else
+	{
+		// if we have no color, use a placeholder of funky values
+		// the user can't pick interactively.  This catches ALL
+		// the cases except where the user specifically enters -1 for
+		// all Red, Green and Blue attributes manually.  This user
+		// should expect it not to touch the color.  :)
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_checkTransparency), TRUE);	
+		gtk_color_selection_set_color(GTK_COLOR_SELECTION(m_bgcolorSelector), m_funkyColor);
 	}
 
 	// set the strikeout and underline check buttons
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_checkStrikeOut), m_bStrikeOut);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_checkStrikeOut), m_bStrikeout);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_checkUnderline), m_bUnderline);	
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_checkOverline), m_bOverline);	
 /*
 #ifdef BIDI_ENABLED
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_checkDirection), m_bDirection);	
@@ -917,11 +1169,16 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	gtk_widget_show(GTK_WIDGET(cf));
 	gtk_grab_add(GTK_WIDGET(cf));
 
-	m_doneFirstFont = false;
+	m_doneFirstFont = true;
 	
 	// attach a new graphics context
 	XAP_App *pApp = frame->getApp();
 	m_gc = new GR_UnixGraphics(m_preview->window, m_fontManager, pApp);
+	_createFontPreviewFromGC(m_gc,m_preview->allocation.width,m_preview->allocation.height);
+//
+// This enables callbacks on the preview area with a widget pointer to 
+// access this dialog.
+//
 	gtk_object_set_user_data(GTK_OBJECT(m_preview), this);
 	
 	// unfreeze updates of the preview
@@ -931,134 +1188,11 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	
 	gtk_main();
 
-	if (m_answer == XAP_Dialog_FontChooser::a_OK)
-	{
-		GList * selectedRow = NULL;
-		gint rowNumber = 0;
-		
-		selectedRow = GTK_CLIST(m_fontList)->selection;
-		if (selectedRow)
-		{
-			rowNumber = GPOINTER_TO_INT(selectedRow->data);
-			gtk_clist_get_text(GTK_CLIST(m_fontList), rowNumber, 0, text);
-			UT_ASSERT(text && text[0]);
-			if (!m_pFontFamily || UT_stricmp(m_pFontFamily, text[0]))
-			{
-				setFontFamily((XML_Char*)text[0]);
-				m_bChangedFontFamily = true;
-			}
-		}
-		
-		selectedRow = GTK_CLIST(m_styleList)->selection;
-		if (selectedRow)
-		{
-			rowNumber = GPOINTER_TO_INT(selectedRow->data);
-			gtk_clist_get_text(GTK_CLIST(m_styleList), rowNumber, 0, text);
-			UT_ASSERT(text && text[0]);
+//
+// This is fail-safe code. The member variables should already be set to these
+// values from event callbacks.
+//
 
-		// perhaps these attributes really should be smashed
-		// into bitfields.  :)
-			if (rowNumber == LIST_STYLE_NORMAL)
-			{
-				if (!m_pFontStyle || UT_stricmp(m_pFontStyle, "normal"))
-				{
-					setFontStyle("normal");
-					m_bChangedFontStyle = true;
-				}
-				if (!m_pFontWeight || UT_stricmp(m_pFontWeight, "normal"))
-				{
-					setFontWeight("normal");
-					m_bChangedFontWeight = true;
-				}
-			}
-			else if (rowNumber == LIST_STYLE_BOLD)
-			{
-				if (!m_pFontStyle || UT_stricmp(m_pFontStyle, "normal"))
-				{
-					setFontStyle("normal");
-					m_bChangedFontStyle = true;
-				}
-				if (!m_pFontWeight || UT_stricmp(m_pFontWeight, "bold"))
-				{
-					setFontWeight("bold");
-					m_bChangedFontWeight = true;
-				}
-			}
-			else if (rowNumber == LIST_STYLE_ITALIC)
-			{
-				if (!m_pFontStyle || UT_stricmp(m_pFontStyle, "italic"))
-				{
-					setFontStyle("italic");
-					m_bChangedFontStyle = true;
-				}
-				if (!m_pFontWeight || UT_stricmp(m_pFontWeight, "normal"))
-				{
-					setFontWeight("normal");
-					m_bChangedFontWeight = true;
-				}
-			}
-			else if (rowNumber == LIST_STYLE_BOLD_ITALIC)
-			{
-				if (!m_pFontStyle || UT_stricmp(m_pFontStyle, "italic"))
-				{
-					setFontStyle("italic");
-					m_bChangedFontStyle = true;
-				}
-				if (!m_pFontWeight || UT_stricmp(m_pFontWeight, "bold"))
-				{
-					setFontWeight("bold");
-					m_bChangedFontWeight = true;
-				}
-			}
-			else
-			{
-				UT_ASSERT(0);
-			}
-		}
-		
-		selectedRow = GTK_CLIST(m_sizeList)->selection;
-		if (selectedRow)
-		{
-			rowNumber = GPOINTER_TO_INT(selectedRow->data);
-			gtk_clist_get_text(GTK_CLIST(m_sizeList), rowNumber, 0, text);
-			UT_ASSERT(text && text[0]);
-
-			g_snprintf(sizeString, SIZE_STRING_SIZE, "%spt", 
-			    XAP_EncodingManager::fontsizes_list.getFirst(text[0]));
-
-			if (!m_pFontSize || UT_stricmp(m_pFontSize, sizeString))
-			{
-				setFontSize((XML_Char*)sizeString);
-				m_bChangedFontSize = true;
-			}
-		}
-		
-		gtk_color_selection_get_color(GTK_COLOR_SELECTION(m_colorSelector), currentColor);
-
-		// test for funkyColor-has-been-changed-to-sane-color case
-		if (currentColor[RED] >= 0 &&
-			currentColor[GREEN] >= 0 &&
-			currentColor[BLUE] >= 0)
-		{
-			char buf_color[6];
-			sprintf(buf_color, "%02x%02x%02x",
-					(unsigned int) (currentColor[RED] 	* (gdouble) 255.0),
-					(unsigned int) (currentColor[GREEN]	* (gdouble) 255.0),
-					(unsigned int) (currentColor[BLUE] 	* (gdouble) 255.0));
-		
-			if (!m_pColor || UT_stricmp(m_pColor, buf_color))
-			{
-				setColor((XML_Char*)buf_color);
-				m_bChangedColor = true;
-			}
-		}
-
-		m_bChangedStrikeOut = (m_bStrikeOut != gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_checkStrikeOut)));
-		m_bChangedUnderline = (m_bUnderline != gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_checkUnderline)));
-		if (m_bChangedStrikeOut)
-			m_bStrikeOut = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_checkStrikeOut));
-		if (m_bChangedUnderline)
-			m_bUnderline = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_checkUnderline));
 /*
 #ifdef BIDI_ENABLED
 		m_bChangedDirection = (m_bDirection != gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_checkDirection)));
@@ -1066,7 +1200,7 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 			m_bDirection = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_checkDirection));
 #endif
 */
-	}
+ 
 
 	if(cf && GTK_IS_WIDGET(cf))
 	  gtk_widget_destroy (GTK_WIDGET(cf));
@@ -1075,131 +1209,22 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	// and this variable needs to get set back
 	m_doneFirstFont = false;
 	
-    gtk_widget_pop_visual();
-    gtk_widget_pop_colormap();
+//    gtk_widget_pop_visual();
+//    gtk_widget_pop_colormap();
 	
 	UT_DEBUGMSG(("FontChooserEnd: Family[%s%s] Size[%s%s] Weight[%s%s] Style[%s%s] Color[%s%s] Underline[%d%s] StrikeOut[%d%s]\n",
-				 ((m_pFontFamily) ? m_pFontFamily : ""),	((m_bChangedFontFamily) ? "(chg)" : ""),
-				 ((m_pFontSize) ? m_pFontSize : ""),		((m_bChangedFontSize) ? "(chg)" : ""),
-				 ((m_pFontWeight) ? m_pFontWeight : ""),	((m_bChangedFontWeight) ? "(chg)" : ""),
-				 ((m_pFontStyle) ? m_pFontStyle : ""),		((m_bChangedFontStyle) ? "(chg)" : ""),
-				 ((m_pColor) ? m_pColor : "" ),				((m_bChangedColor) ? "(chg)" : ""),
+				 ((getVal("font-family")) ? getVal("font-family") : ""),	((m_bChangedFontFamily) ? "(chg)" : ""),
+				 ((getVal("font-size")) ? getVal("font-size") : ""),		((m_bChangedFontSize) ? "(chg)" : ""),
+				 ((getVal("font-weight")) ? getVal("font-weight") : ""),	((m_bChangedFontWeight) ? "(chg)" : ""),
+				 ((getVal("font-style")) ? getVal("font-style") : ""),		((m_bChangedFontStyle) ? "(chg)" : ""),
+				 ((getVal("color")) ? getVal("color") : "" ),				((m_bChangedColor) ? "(chg)" : ""),
 				 (m_bUnderline),							((m_bChangedUnderline) ? "(chg)" : ""),
-				 (m_bStrikeOut),							((m_bChangedStrikeOut) ? "(chg)" : "")));
+				 (m_bStrikeout),							((m_bChangedStrikeOut) ? "(chg)" : "")));
 
 	// answer should be set by the appropriate callback
 	// the caller can get the answer from getAnswer().
 
 	m_pUnixFrame = NULL;
-}
-	
-bool XAP_UnixDialog_FontChooser::getFont(XAP_UnixFont ** font)
-{
-	UT_ASSERT(font);
-	
-	gchar * fontText[2] = {NULL, NULL};
-	XAP_UnixFont::style styleNumber;
-
-	GList * selectedRow = NULL;
-	gint rowNumber = 0;
-
-	selectedRow = GTK_CLIST(m_fontList)->selection;
-	if (selectedRow)
-	{
-		rowNumber = GPOINTER_TO_INT(selectedRow->data);
-		gtk_clist_get_text(GTK_CLIST(m_fontList), rowNumber, 0, fontText);
-		UT_ASSERT(fontText && fontText[0]);
-	}
-	else
-	{
-		return false;
-	}
-		
-	selectedRow = GTK_CLIST(m_styleList)->selection;
-	if (selectedRow)
-	{
-		gint style = GPOINTER_TO_INT(selectedRow->data);
-
-		switch(style)
-		{
-		case LIST_STYLE_NORMAL:
-			styleNumber = XAP_UnixFont::STYLE_NORMAL;
-			break;
-		case LIST_STYLE_BOLD:
-			styleNumber = XAP_UnixFont::STYLE_BOLD;
-			break;
-		case LIST_STYLE_ITALIC:
-			styleNumber = XAP_UnixFont::STYLE_ITALIC;
-			break;
-		case LIST_STYLE_BOLD_ITALIC:
-			styleNumber = XAP_UnixFont::STYLE_BOLD_ITALIC;
-			break;
-		case LIST_STYLE_NONE: // if we're this, selectedRow should be 0
-		default:
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			return false;
-		}
-	}
-	else
-	{
-		return false;
-	}
-	
-	const XAP_UnixFont * tempUnixFont = m_fontManager->getFont((const char *) fontText[0], styleNumber);
-
-	if (tempUnixFont)
-	{
-		// we got a font, set the variables and return success
-		*font = (XAP_UnixFont *) tempUnixFont;
-		return true;
-	}
-
-	return false;
-}
-
-bool XAP_UnixDialog_FontChooser::getDecoration(bool * strikeout,
-												 bool * underline)
-{
-	UT_ASSERT(strikeout && underline);
-
-	*strikeout = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_checkStrikeOut));
-	*underline = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_checkUnderline));
-
-	return true;
-}
-
-/*
-#ifdef BIDI_ENABLED
-bool XAP_UnixDialog_FontChooser::getDirection(bool * direction)
-{
-	UT_ASSERT(direction);
-
-	*direction = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_checkDirection));
-	return true;
-}
-#endif
-*/
-
-bool XAP_UnixDialog_FontChooser::getSize(UT_uint32 * pointsize)
-{
-	UT_ASSERT(pointsize);
-
-	GList * selectedRow = NULL;
-	gchar * sizeText[2] = {NULL, NULL};
-	gint rowNumber = 0;
-	
-	selectedRow = GTK_CLIST(m_sizeList)->selection;
-	if (selectedRow)
-	{
-		rowNumber = GPOINTER_TO_INT(selectedRow->data);
-		gtk_clist_get_text(GTK_CLIST(m_sizeList), rowNumber, 0, sizeText);
-		UT_ASSERT(sizeText && sizeText[0]);
-
-		*pointsize = (UT_uint32) atol(sizeText[0]);
-		return true;
-	}
-
-	return false;
 }
 
 bool XAP_UnixDialog_FontChooser::getEntryString(char ** string)
@@ -1214,97 +1239,30 @@ bool XAP_UnixDialog_FontChooser::getEntryString(char ** string)
 	return true;
 }
 
-bool XAP_UnixDialog_FontChooser::getForegroundColor(UT_RGBColor * color)
-{
-	UT_ASSERT(color);
-	
-	gdouble currentColor[3] = { 0, 0, 0 };
-
-	enum
-	{
-		RED = 0,
-		GREEN,
-		BLUE
-	};
-	
-	gtk_color_selection_get_color(GTK_COLOR_SELECTION(m_colorSelector), currentColor);
-
-	color->m_red = (unsigned char) (currentColor[RED]   * (gdouble) 255);
-	color->m_grn = (unsigned char) (currentColor[GREEN] * (gdouble) 255);
-	color->m_blu = (unsigned char) (currentColor[BLUE]  * (gdouble) 255);
-
-	return true;
-}
-
-bool XAP_UnixDialog_FontChooser::getBackgroundColor(UT_RGBColor * color)
-{
-	// this just returns white now, it should later query the document
-	// in the frame which launched this dialog
-	
-	UT_ASSERT(color);
-	
-	color->m_red = 255;
-	color->m_grn = 255;
-	color->m_blu = 255;
-
-	return true;
-}
-
-
 void XAP_UnixDialog_FontChooser::updatePreview(void)
 {
 	// if we don't have anything yet, just ignore this request
 	if (!m_gc)
 		return;
-	
-//	bool strikeout = false;
-//	bool underline = false;
-
-	XAP_UnixFont * font = NULL;
-	if (!getFont(&font))
-		return;
-
-	UT_uint32 pointsize = 0;
-	if (!getSize(&pointsize))
-		return;
-
-	UT_uint32 pixelsize = (UT_uint32) ((double) pointsize / (double) 72 * (double) m_gc->getResolution());
-
-	UT_ASSERT(pixelsize > 0);
-	
-	// Do some trickery to convert point sizes (as listed in the list box)
-	// to real pixel sizes for this GC.  The layout engine does this
-	// automatically because it's just that good.
-	XAP_UnixFontHandle * entry = new XAP_UnixFontHandle(font, pixelsize);
-
-	if (entry)
+	// if a font has been set since this dialog was launched, draw things with it
+	if (m_doneFirstFont)
 	{
-		// set the new font
-		m_gc->setFont(entry);
+		char * entryString;
 
-		// if we've set a font, this variable is true
-		m_doneFirstFont = true;
+		if (!getEntryString(&entryString))
+			return;
 
-		// now do the switch
-		DELETEP(m_lastFont);
-		m_lastFont = entry;
+		UT_UCSChar * unicodeString = NULL;
+		UT_UCS_cloneString_char(&unicodeString, entryString);
+		event_previewExposed(unicodeString);
 	}
 	else
 	{
-		// we didn't get the font we requested, which is really weird
-		// since this dialog can only let the user pick fonts the
-		// font manager says it KNOWS it has.
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		event_previewClear();
 	}
-		
-
-	// do the foreground (text) color
-	UT_RGBColor fgcolor;
-	if (!getForegroundColor(&fgcolor))
-		return;
-	m_gc->setColor(fgcolor);
-
-	s_drawing_area_expose(m_preview, NULL);
-	
 }
+
+
+
+
 

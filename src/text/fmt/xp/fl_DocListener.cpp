@@ -615,8 +615,6 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		UT_ASSERT(pL->getAttrPropIndex() == pcrxc->getOldIndexAP());
 		UT_ASSERT(pL->getAttrPropIndex() != pcr->getIndexAP());
 
-		UT_DEBUGMSG(("SEVIOR: pL->getType() = %d \n",pL->getType()));
-
 		switch (pL->getType())
 		{
 		case PTX_Section:

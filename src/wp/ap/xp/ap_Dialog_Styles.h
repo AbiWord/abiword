@@ -23,23 +23,11 @@
 #include "xap_Frame.h"
 #include "xap_Dialog.h"
 #include "fv_View.h"
-
+#include "xap_Dlg_FontChooser.h"
 class XAP_Frame;
 
 #include "xap_Preview.h"
 #include "ap_Preview_Paragraph.h"
-
-class AP_Styles_CharPreview : public XAP_Preview
-{
-public:
-
-	AP_Styles_CharPreview(GR_Graphics * gc);
-	virtual ~AP_Styles_CharPreview(void);
-				
-	void			draw(void);
-
-protected:
-};
 
 class AP_Dialog_Styles : public XAP_Dialog_NonPersistent
 {
@@ -66,7 +54,7 @@ class AP_Dialog_Styles : public XAP_Dialog_NonPersistent
 
 	virtual const char * getCurrentStyle (void) const = 0;
 	virtual void setDescription (const char * desc) const = 0;
-	virtual void _populatePreviews(void) const;
+	virtual void _populatePreviews(void);
 
 
  protected:
@@ -77,11 +65,12 @@ class AP_Dialog_Styles : public XAP_Dialog_NonPersistent
 
 	AP_Dialog_Styles::tAnswer	  m_answer;
 	AP_Preview_Paragraph  *		  m_pParaPreview;
-	AP_Styles_CharPreview *		  m_pCharPreview;
+	XAP_Preview_FontPreview *	  m_pCharPreview;
 	FV_View *                     m_pView;
 	PD_Document *                 m_pDoc;
 	PD_Style *                    m_pCurStyle;
 	char *                        m_pszCurStyleName;
+	UT_Vector                     m_vecCharProps;
 private:
 };
 

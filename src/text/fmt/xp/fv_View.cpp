@@ -340,12 +340,8 @@ void FV_View::toggleCase (ToggleCase c)
   delete[] replace;
 }
 
-void FV_View::setPaperColor(UT_RGBColor & rgb)
+void FV_View::setPaperColor(const XML_Char * clr)
 {
-
-	char clr[8];
-	sprintf(clr, "#%02x%02x%02x", rgb.m_red, rgb.m_grn, rgb.m_blu);
-
 	UT_DEBUGMSG(("DOM: color is: %s\n", clr));
 
 	const XML_Char * props [3];
@@ -816,6 +812,13 @@ void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before)
 	else
 	{
 		m_pDoc->deleteSpan(iSelAnchor, iPoint, p_AttrProp_Before);
+	}
+//
+// Can't leave list-tab on a line
+//
+	if(isTabListAheadPoint() == true)
+	{
+		m_pDoc->deleteSpan(getPoint(), getPoint()+2, p_AttrProp_Before);
 	}
 }
 
@@ -1647,6 +1650,11 @@ void FV_View::processSelectedBlocks(List_Type listType)
 
 	// Signal PieceTable Change
 	m_pDoc->notifyPieceTableChangeStart();
+//
+// Turn off cursor
+//
+	if(isSelectionEmpty())
+		_eraseInsertionPoint();
 
 	UT_Vector vBlock;
 	getBlocksInSelection( &vBlock);
@@ -1690,6 +1698,14 @@ void FV_View::processSelectedBlocks(List_Type listType)
 
 	// Signal piceTable is stable again
 	m_pDoc->notifyPieceTableChangeEnd();
+	if (isSelectionEmpty())
+	{
+		if (!_ensureThatInsertionPointIsOnScreen())
+		{
+			_fixInsertionPointCoords();
+			_drawInsertionPoint();
+		}
+	}
 
 }
 
@@ -3394,8 +3410,14 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 		{
 			if(isTabListAheadPoint() == true)
 			{
-				count = 2;
-				bisList = true;
+//
+// Check we're at the start of a block
+//
+				if(getPoint() == getCurrentBlock()->getPosition())
+				{
+					bisList = true;
+					count = 2;
+				}
 			}
 
 		}
@@ -3484,15 +3506,23 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 			{
 				m_pDoc->deleteSpan(posCur, posCur+amt);
  			}
-			// restore updates and clean up dirty lists
-			m_pDoc->enableListUpdates();
-			m_pDoc->updateDirtyLists();
 
 			if(fontFlag)
 			{
 				setCharFormat(properties);
 			}
 		}
+//
+// Dont leave a List field - tab on a line.
+//
+		if(isTabListAheadPoint())
+		{
+			m_pDoc->deleteSpan(getPoint(), getPoint()+2);
+		}
+
+		// restore updates and clean up dirty lists
+		m_pDoc->enableListUpdates();
+		m_pDoc->updateDirtyLists();
 
 		_generalUpdate();
 		free(props_in);

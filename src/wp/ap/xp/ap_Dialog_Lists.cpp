@@ -678,6 +678,10 @@ UT_uint32 AP_Dialog_Lists::getID(void)
        }
 }
 
+/*!
+ * This method returns the index to the value corresponding to the 
+ * key in this props vector
+ */
 UT_sint32  AP_Dialog_Lists::findVecItem(UT_Vector * v, char * key)
 {
 	UT_sint32 i = v->getItemCount();

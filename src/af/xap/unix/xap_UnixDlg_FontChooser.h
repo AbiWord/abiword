@@ -39,9 +39,17 @@ public:
 	virtual void			runModal(XAP_Frame * pFrame);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
-
+	void                    underlineChanged(void);
+	void                    overlineChanged(void);
+	void                    strikeoutChanged(void);
+	void                    transparencyChanged(void);
 	void 					updatePreview(void);
-	
+	void                    fontRowChanged(void);
+	void                    styleRowChanged(void);
+	void                    sizeRowChanged(void);
+	void                    fgColorChanged(void);
+	void                    bgColorChanged(void);
+
 	// the state of what data is hidden and what is public is
 	// pretty grave here.
 	XAP_UnixFontManager * 	m_fontManager;
@@ -50,19 +58,16 @@ public:
 	GtkWidget * 			m_sizeList;
 	GtkWidget * 			m_checkStrikeOut;
 	GtkWidget *				m_checkUnderline;
+	GtkWidget *				m_checkOverline;
+	GtkWidget *				m_checkTransparency;
 	GtkWidget *				m_colorSelector;
+	GtkWidget *				m_bgcolorSelector;
 	GtkWidget * 			m_preview;
 /*
 #ifdef BIDI_ENABLED
 	GtkWidget *				m_checkDirection;
 #endif
 */
-
-	bool					getFont(XAP_UnixFont ** font);
-	bool					getForegroundColor(UT_RGBColor * color);
-	bool					getBackgroundColor(UT_RGBColor * color);	
-	bool					getDecoration(bool * strikeout, bool * underline);
-	bool					getSize(UT_uint32 * pointsize);
 	bool					getEntryString(char ** string);
 /*	
 #ifdef BIDI_ENABLED
@@ -71,7 +76,8 @@ public:
 */
 	GR_UnixGraphics * 		m_gc;
 
-	bool					m_doneFirstFont;
+	bool		 			m_blockUpdate;
+	bool		 			m_doneFirstFont;
 	
 protected:
 /*
@@ -79,13 +85,12 @@ protected:
 	virtual void _enableDirectionCheck(bool b);
 #endif
 */
-	bool		 			m_blockUpdate;
 	
 	// careful, these must be in the order the
 	// list box will show them (Windows order)
 	typedef enum
 	{	
-	        LIST_STYLE_NONE = -1,
+		LIST_STYLE_NONE = -1,
 		LIST_STYLE_NORMAL = 0,
 		LIST_STYLE_ITALIC,
 		LIST_STYLE_BOLD,
@@ -104,6 +109,11 @@ protected:
 
 	// parent frame
 	XAP_UnixFrame *			m_pUnixFrame;
+	gdouble m_currentFGColor[4];
+	gdouble m_currentBGColor[4];
+	gdouble m_funkyColor[4];
+
+
 };
 
 #endif /* XAP_UNIXDIALOG_FONTCHOOSER_H */

@@ -27,7 +27,7 @@
 #include "ut_misc.h"
 #include "ut_assert.h"
 #include "ut_string.h"
-
+#include "ut_debugmsg.h"
 /*****************************************************************/
 /*****************************************************************/
 
@@ -157,6 +157,7 @@ void UT_parseColor(const char *p, UT_RGBColor& c)
 
 	// TODO consider accepting stock names (vga) colors, too?
 
+	UT_DEBUGMSG(("String = %s \n",p));
 	UT_ASSERT(UT_NOT_IMPLEMENTED);
 
 	return;

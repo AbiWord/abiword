@@ -67,7 +67,7 @@ protected:
 	// private construction functions
 	virtual GtkWidget * _constructWindow(void);
 	GtkWidget * _constructWindowContents(GtkWidget * parent);
-	void				_populateWindowData(void) const;
+	void				_populateWindowData(void);
 	void                            _populateCList(void) const;
 	void 				_storeWindowData(void) const;
 	void				_connectsignals(void) const;

@@ -193,6 +193,9 @@ void AP_UnixDialog_Styles::runModal(XAP_Frame * pFrame)
 	// Make it modal, and stick it up top
 	gtk_grab_add(mainWindow);
 
+    // populate the member variables for the  previews
+
+	_populatePreviews();
 	// *** this is how we add the gc for the para and char Preview's ***
 	// attach a new graphics context to the drawing area
 
@@ -271,7 +274,7 @@ void AP_UnixDialog_Styles::event_paraPreviewExposed(void)
 void AP_UnixDialog_Styles::event_charPreviewExposed(void)
 {
 	if(m_pCharPreview)
-		m_pCharPreview->draw();
+		event_charPreviewUpdated();
 }
 
 void AP_UnixDialog_Styles::event_DeleteClicked(void)
@@ -663,7 +666,7 @@ void AP_UnixDialog_Styles::_populateCList(void) const
 	gtk_clist_select_row (GTK_CLIST (m_wclistStyles), 0, 0);
 }
 
-void AP_UnixDialog_Styles::_populateWindowData(void) const
+void AP_UnixDialog_Styles::_populateWindowData(void)
 {
 	_populateCList();
 	_populatePreviews();
