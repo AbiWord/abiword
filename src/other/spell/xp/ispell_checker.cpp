@@ -311,6 +311,10 @@ static void couldNotLoadDictionary ( const char * szLang )
 {
   XAP_App             * pApp   = XAP_App::getApp ();
   XAP_Frame           * pFrame = pApp->getLastFocussedFrame ();
+
+  if ( !pFrame )
+    return;
+
   const XAP_StringSet * pSS    = pApp->getStringSet ();
 
   char buf[1024]; // evil hardcoded buffer size
