@@ -1148,6 +1148,8 @@ static bool s_AskForPathname(XAP_Frame * pFrame,
 	XAP_Dialog_FileOpenSaveAs * pDialog
 		= (XAP_Dialog_FileOpenSaveAs *)(pDialogFactory->requestDialog(id));
 	UT_ASSERT(pDialog);
+	if (!pDialog)
+		return false;
 
 	if (pSuggestedName && *pSuggestedName)
 	{
@@ -1960,6 +1962,8 @@ static bool s_doMoreWindowsDlg(XAP_Frame* pFrame, XAP_Dialog_Id id)
 	XAP_Dialog_WindowMore * pDialog
 		= (XAP_Dialog_WindowMore *)(pDialogFactory->requestDialog(id));
 	UT_ASSERT(pDialog);
+	if (!pDialog)
+		return false;
 
 	// run the dialog
 	pDialog->runModal(pFrame);
@@ -2000,6 +2004,8 @@ static bool s_doAboutDlg(XAP_Frame* pFrame, XAP_Dialog_Id id)
 	XAP_Dialog_About * pDialog
 		= (XAP_Dialog_About *)(pDialogFactory->requestDialog(id));
 	UT_ASSERT(pDialog);
+	if (!pDialog)
+		return false;
 
 	// run the dialog (it should really be modeless if anyone
 	// gets the urge to make it safe that way)
@@ -2032,6 +2038,8 @@ static bool s_doToggleCase(XAP_Frame * pFrame, FV_View * pView, XAP_Dialog_Id id
 	AP_Dialog_ToggleCase * pDialog
 		= (AP_Dialog_ToggleCase *)(pDialogFactory->requestDialog(id));
 	UT_ASSERT(pDialog);
+	if (!pDialog)
+		return false;
 
 	// run the dialog (it should really be modeless if anyone
 	// gets the urge to make it safe that way)
@@ -2082,6 +2090,8 @@ Defun1(fileNew)
 	AP_Dialog_New * pDialog
 		= (AP_Dialog_New *)(pDialogFactory->requestDialog(AP_DIALOG_ID_FILE_NEW));
 	UT_ASSERT(pDialog);
+	if (!pDialog)
+		return false;
 
 	pDialog->runModal(pFrame);
 	bool bOK = (pDialog->getAnswer() == AP_Dialog_New::a_OK);
@@ -2426,6 +2436,8 @@ Defun1(insertClipart)
 	XAP_Dialog_ClipArt * pDialog
 		= (XAP_Dialog_ClipArt *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_CLIPART));
 	UT_ASSERT(pDialog);
+	if (!pDialog)
+		return false;
 
 	// set the initial directory
 	UT_String dir = pApp->getAbiSuiteLibDir ();
@@ -3751,6 +3763,8 @@ static bool s_doGotoDlg(FV_View * pView, XAP_Dialog_Id id)
 	AP_Dialog_Goto * pDialog
 		= (AP_Dialog_Goto *)(pDialogFactory->requestDialog(id));
 	UT_ASSERT(pDialog);
+	if (!pDialog)
+		return false;
 
 	pDialog->runModeless(pFrame);
 	
@@ -3795,6 +3809,8 @@ static bool s_doSpellDlg(FV_View * pView, XAP_Dialog_Id id)
    AP_Dialog_Spell * pDialog
      = (AP_Dialog_Spell *)(pDialogFactory->requestDialog(id));
    UT_ASSERT(pDialog);
+   if (!pDialog)
+	   return false;
 	
    // run the dialog (it probably should be modeless if anyone
    // gets the urge to make it safe that way)
@@ -3833,6 +3849,8 @@ static bool s_doFindOrFindReplaceDlg(FV_View * pView, XAP_Dialog_Id id)
 	AP_Dialog_Replace * pDialog
 		= (AP_Dialog_Replace *)(pDialogFactory->requestDialog(id));
 	UT_ASSERT(pDialog);
+	if (!pDialog)
+		return false;
 
 	// prime the dialog with a "find" string if there's a
 	// current selection.
@@ -3901,6 +3919,8 @@ static bool s_doLangDlg(FV_View * pView)
 	XAP_Dialog_Language * pDialog
 		= (XAP_Dialog_Language *)(pDialogFactory->requestDialog(id));
 	UT_ASSERT(pDialog);
+	if (!pDialog)
+		return false;
 
 	const XML_Char ** props_in = NULL;
 	if (pView->getCharFormat(&props_in))
@@ -3961,6 +3981,8 @@ static bool s_doFontDlg(FV_View * pView)
 	XAP_Dialog_FontChooser * pDialog
 		= (XAP_Dialog_FontChooser *)(pDialogFactory->requestDialog(id));
 	UT_ASSERT(pDialog);
+	if (!pDialog)
+		return false;
 
 	// stuff the GR_Graphics into the dialog so that it
 	// can query the system for font info relative to our
@@ -4223,6 +4245,8 @@ static bool s_doParagraphDlg(FV_View * pView)
 	AP_Dialog_Paragraph * pDialog
 		= (AP_Dialog_Paragraph *)(pDialogFactory->requestDialog(AP_DIALOG_ID_PARAGRAPH));
 	UT_ASSERT(pDialog);
+	if (!pDialog)
+		return false;
 
 	const XML_Char ** props = NULL;
 
@@ -4312,6 +4336,8 @@ static bool s_doOptionsDlg(FV_View * pView)
 	AP_Dialog_Options * pDialog
 		= (AP_Dialog_Options *)(pDialogFactory->requestDialog(AP_DIALOG_ID_OPTIONS));
 	UT_ASSERT(pDialog);
+	if (!pDialog)
+		return false;
 
 	// run the dialog
 	pDialog->runModal(pFrame);
@@ -4568,6 +4594,8 @@ static bool s_doPrint(FV_View * pView, bool bTryToSuppressDialog,bool bPrintDire
 	XAP_Dialog_Print * pDialog
 		= (XAP_Dialog_Print *)(pDialogFactory->requestDialog(bPrintDirectly? XAP_DIALOG_ID_PRINT_DIRECTLY: XAP_DIALOG_ID_PRINT));
 	UT_ASSERT(pDialog);
+	if (!pDialog)
+		return false;
 
 	FL_DocLayout* pLayout = pView->getLayout();
 	PD_Document * doc = pLayout->getDocument();
@@ -4642,6 +4670,8 @@ static bool s_doPrintPreview(FV_View * pView)
 	XAP_Dialog_PrintPreview * pDialog
 		= (XAP_Dialog_PrintPreview *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_PRINTPREVIEW));
 	UT_ASSERT(pDialog);
+	if (!pDialog)
+		return false;
 
 	FL_DocLayout* pLayout = pView->getLayout();
 	PD_Document * doc = pLayout->getDocument();
@@ -4703,6 +4733,8 @@ static bool s_doZoomDlg(FV_View * pView)
 	XAP_Dialog_Zoom * pDialog
 		= (XAP_Dialog_Zoom *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_ZOOM));
 	UT_ASSERT(pDialog);
+	if (!pDialog)
+		return false;
 
 	pDialog->setZoomPercent(pFrame->getZoomPercentage());
 	pDialog->setZoomType(pFrame->getZoomType());
@@ -4750,6 +4782,8 @@ static bool s_doBreakDlg(FV_View * pView)
 	AP_Dialog_Break * pDialog
 		= (AP_Dialog_Break *)(pDialogFactory->requestDialog(AP_DIALOG_ID_BREAK));
 	UT_ASSERT(pDialog);
+	if (!pDialog)
+		return false;
 
 	pDialog->runModal(pFrame);
 
@@ -4824,6 +4858,8 @@ static bool s_doPageSetupDlg (FV_View * pView)
 	  (AP_Dialog_PageSetup *)(pDialogFactory->requestDialog(AP_DIALOG_ID_FILE_PAGESETUP));
 
 	UT_ASSERT(pDialog);
+	if (!pDialog)
+		return false;
 
 	PD_Document * pDoc = pView->getLayout()->getDocument();
 	//
@@ -5150,6 +5186,8 @@ static bool s_InsertSymbolDlg(FV_View * pView, XAP_Dialog_Id id  )
 	XAP_Dialog_Insert_Symbol * pDialog
 		= (XAP_Dialog_Insert_Symbol *)(pDialogFactory->requestDialog(id));
 	UT_ASSERT(pDialog);
+	if (!pDialog)
+		return false;
 	
 	if(pDialog->isRunning() == true)
 	{
@@ -5214,6 +5252,8 @@ Defun1(dlgPlugins)
 	XAP_Dialog_PluginManager * pDialog
 		= (XAP_Dialog_PluginManager *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_PLUGIN_MANAGER));
 	UT_ASSERT(pDialog);
+	if (!pDialog)
+		return false;
 
 	pDialog->runModal (pFrame);
 
@@ -5591,6 +5631,8 @@ static bool s_doInsertDateTime(FV_View * pView)
 	AP_Dialog_Insert_DateTime * pDialog
 		= (AP_Dialog_Insert_DateTime *)(pDialogFactory->requestDialog(AP_DIALOG_ID_INSERT_DATETIME));
 	UT_ASSERT(pDialog);
+	if (!pDialog)
+		return false;
 
 	pDialog->runModal(pFrame);
 
@@ -5654,6 +5696,8 @@ static bool s_doInsertPageNumbers(FV_View * pView)
 	AP_Dialog_PageNumbers * pDialog
 		= (AP_Dialog_PageNumbers *)(pDialogFactory->requestDialog(AP_DIALOG_ID_PAGE_NUMBERS));
 	UT_ASSERT(pDialog);
+	if (!pDialog)
+		return false;
 
 	pDialog->runModal(pFrame);
 
@@ -5693,6 +5737,8 @@ static bool s_doField(FV_View * pView)
 	AP_Dialog_Field * pDialog
 		= (AP_Dialog_Field *)(pDialogFactory->requestDialog(AP_DIALOG_ID_FIELD));
 	UT_ASSERT(pDialog);
+	if (!pDialog)
+		return false;
 
 	pDialog->runModal(pFrame);
 
@@ -5745,6 +5791,8 @@ static bool s_doBullets(FV_View *pView)
 	AP_Dialog_Lists * pDialog
 		= (AP_Dialog_Lists *)(pDialogFactory->requestDialog(AP_DIALOG_ID_LISTS));
 	UT_ASSERT(pDialog);
+	if (!pDialog)
+		return false;
 
 	if(pDialog->isRunning() == true)
 	{
@@ -5797,6 +5845,8 @@ static bool s_doColumnsDlg(FV_View * pView)
 	AP_Dialog_Columns * pDialog
 		= (AP_Dialog_Columns *)(pDialogFactory->requestDialog(AP_DIALOG_ID_COLUMNS));
 	UT_ASSERT(pDialog);
+	if (!pDialog)
+		return false;
 
 	if(pView->isHdrFtrEdit())
 		return false;
@@ -5889,7 +5939,7 @@ Defun(style)
 	return true;
 }
 
-
+// TODO Dialog is not released?!
 static bool s_doStylesDlg(FV_View * pView)
 {
 	XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
@@ -5903,6 +5953,9 @@ static bool s_doStylesDlg(FV_View * pView)
 	AP_Dialog_Styles * pDialog
 		= (AP_Dialog_Styles *)(pDialogFactory->requestDialog(AP_DIALOG_ID_STYLES));
 	UT_ASSERT(pDialog);
+	if (!pDialog)
+		return false;
+
 	pDialog->runModal(pFrame);
 
 	AP_Dialog_Styles::tAnswer ans = pDialog->getAnswer();
@@ -5975,6 +6028,8 @@ static bool s_doWordCountDlg(FV_View * pView)
 	AP_Dialog_WordCount * pDialog
 		= (AP_Dialog_WordCount *)(pDialogFactory->requestDialog(AP_DIALOG_ID_WORDCOUNT));
 	UT_ASSERT(pDialog);
+	if (!pDialog)
+		return false;
 
 	if(pDialog->isRunning())
 	{
@@ -6913,6 +6968,8 @@ Defun(dlgBackground)
 	AP_Dialog_Background * pDialog
 		= (AP_Dialog_Background *)(pDialogFactory->requestDialog(AP_DIALOG_ID_BACKGROUND));
 	UT_ASSERT(pDialog);
+	if (!pDialog)
+		return false;
 
 //
 // Get Current background color
