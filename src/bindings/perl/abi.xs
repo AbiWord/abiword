@@ -10,49 +10,65 @@
 
 MODULE = abi		PACKAGE = abi::FV_View
 
-bool
-scroll(pView, where)
+void
+moveCursorAbs(pView, target, where)
 	FV_View *pView
-	const char *where
+	const char *target
+	int where
 	CODE:
-		assert(where && where[0]);
-		switch (where[0])
+		UT_UCSChar *tmp;
+		char szWhere[16];
+		sprintf(szWhere, "%d", where);
+		assert(target && target[0]);
+		// printf("moveCursorAbs\n");
+
+		switch (target[0])
 		{
-		case 'd':
-			if (strncmp("down", where, 4) == 0)
-				pView->cmdScroll(AV_SCROLLCMD_LINEDOWN);
-			break;
-		case 'l':
-			if (strncmp("left", where, 4) == 0)
-				pView->cmdScroll(AV_SCROLLCMD_LINELEFT);
-			break;
-		case 'p':
-			if (strncmp("pagedown", where, 8) == 0)
-				pView->cmdScroll(AV_SCROLLCMD_PAGEDOWN);
-			else if (strncmp("pageup", where, 6) == 0)
-				pView->cmdScroll(AV_SCROLLCMD_PAGEUP);
-			break;
-		case 'r':
-			if (strncmp("right", where, 5) == 0)
+		case 'p': /* page */
+			if (UT_UCS_cloneString_char(&tmp, szWhere))
 			{
-				pView->cmdScroll(AV_SCROLLCMD_LINERIGHT);
-				printf("scrolling right\n");
-				fflush(stdout);
+				pView->gotoTarget(AP_JUMPTARGET_PAGE, tmp);
+				free(tmp);
 			}
 			break;
-		case 'u':
-			if (strncmp("up", where, 2) == 0)
+		case 'l': /* line */
+			if (UT_UCS_cloneString_char(&tmp, szWhere))
 			{
-				pView->cmdScroll(AV_SCROLLCMD_LINEUP);
-				printf("scrolling up\n");
-				fflush(stdout);
+				pView->gotoTarget(AP_JUMPTARGET_LINE, tmp);
+				free(tmp);
 			}
 			break;
 		}
 
-		RETVAL = true;
-	OUTPUT:
-		RETVAL
+void
+moveCursorRel(pView, target, where)
+	FV_View *pView
+	const char *target
+	int where
+	CODE:
+		UT_UCSChar *tmp;
+		char szWhere[16];
+		sprintf(szWhere, "%+d", where);
+		assert(target && target[0]);
+		// printf("moveCursorAbs\n");
+
+		switch (target[0])
+		{
+		case 'p': /* page */
+			if (UT_UCS_cloneString_char(&tmp, szWhere))
+			{
+				pView->gotoTarget(AP_JUMPTARGET_PAGE, tmp);
+				free(tmp);
+			}
+			break;
+		case 'l': /* line */
+			if (UT_UCS_cloneString_char(&tmp, szWhere))
+			{
+				pView->gotoTarget(AP_JUMPTARGET_LINE, tmp);
+				free(tmp);
+			}
+			break;
+		}
 
 bool
 setCharFormat (pView, ...)
@@ -60,6 +76,7 @@ setCharFormat (pView, ...)
 	CODE:
 	{
 		XML_Char **properties = new XML_Char* [items];
+		// printf("setCharFormat\n");
 
 		for (int i = 1; i < items; ++i)
 			properties[i - 1] = SvPV(ST(i), PL_na);
@@ -71,15 +88,16 @@ setCharFormat (pView, ...)
 		RETVAL = true;
 	}
 	OUTPUT:
-	RETVAL
+		RETVAL
 
 bool
-cmdSaveAs(pView, filename, left, cpy)
+saveAs(pView, filename, left, cpy)
 	FV_View *pView
 	const char * filename
 	int	left
 	bool	cpy
 	CODE:
+		// printf("saveAs\n");
 		pView->cmdSaveAs(filename, left, cpy);
 		RETVAL = true;
 	OUTPUT:
@@ -91,10 +109,19 @@ write(pView, pszText)
 	const char *pszText
 	CODE:
 		UT_UCSChar *text = NULL;
+		// printf("write\n");
 		UT_UCS_cloneString_char(&text, pszText);
 		pView->cmdCharInsert(text, strlen(pszText));
 		free(text);
 		RETVAL = true;
+	OUTPUT:
+		RETVAL
+
+unsigned int
+getPoint(pView)
+	FV_View *pView
+	CODE:
+		RETVAL = pView->getPoint();
 	OUTPUT:
 		RETVAL
 
@@ -103,8 +130,8 @@ MODULE = abi		PACKAGE = abi::XAP_Frame
 XAP_Frame *
 getLastFocussed()
 	CODE:
+		// printf("getLastFocussed\n");
 		RETVAL = XAP_App::getApp()->getLastFocussedFrame();
-		printf("getLastFocussed\n");
 	OUTPUT:
 		RETVAL
 
@@ -113,6 +140,7 @@ openFile(pszFilename)
 	const char *pszFilename
 	CODE:
 		XAP_App* app = XAP_App::getApp();
+		// printf("openFile\n");
 		RETVAL = app->newFrame();
 		RETVAL->loadDocument(pszFilename, 0, true);
 	OUTPUT:
@@ -122,6 +150,7 @@ FV_View *
 getCurrentView(pFrame)
 	XAP_Frame *pFrame
 	CODE:
+		// printf("getCurrentView\n");
 		RETVAL = (FV_View *) pFrame->getCurrentView();
 	OUTPUT:
 		RETVAL
