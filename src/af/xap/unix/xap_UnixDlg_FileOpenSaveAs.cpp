@@ -714,18 +714,21 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 
 gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 {
-  UT_ASSERT (m_FS && m_preview);
+        UT_ASSERT (m_FS && m_preview);
 
-  gchar * buf = gtk_file_selection_get_filename (m_FS);
+	XAP_UnixApp * unixapp = static_cast<XAP_UnixApp *> (m_pApp);
+	UT_ASSERT(unixapp);
 
-  if (!buf)
-    return 0;
+	// attach and clear the area immediately
+	GR_UnixGraphics* pGr = new GR_UnixGraphics(m_preview->window, unixapp->getFontManager(), m_pApp);
+	pGr->clearArea(0, 0, m_preview->allocation.width, m_preview->allocation.height);
 
-  UT_DEBUGMSG(("DOM: filename is '%s'\n", buf));
+	gchar * buf = gtk_file_selection_get_filename (m_FS);
 
-  // attach a new graphics context to the drawing area
-  XAP_UnixApp * unixapp = static_cast<XAP_UnixApp *> (m_pApp);
-  UT_ASSERT(unixapp);
+	if (!buf)
+	  return 0;
+
+	xxx_UT_DEBUGMSG(("DOM: filename is '%s'\n", buf));
 
 	// Load File into memory
 	UT_ByteBuf* pBB     = new UT_ByteBuf(0);
@@ -793,8 +796,6 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 	GR_UnixImage* pImage = new GR_UnixImage(NULL);
 	pImage->convertFromBuffer(pBB, scaled_width, scaled_height);
 
-	GR_UnixGraphics* pGr = new GR_UnixGraphics(m_preview->window, unixapp->getFontManager(), m_pApp);
-	pGr->clearArea(0, 0, m_preview->allocation.width, m_preview->allocation.height);
 	pGr->drawImage(pImage,
 		       (m_preview->allocation.width  - scaled_width ) / 2,
 		       (m_preview->allocation.height - scaled_height) / 2);
