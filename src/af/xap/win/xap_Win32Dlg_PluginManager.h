@@ -21,36 +21,32 @@
 #define XAP_WIN32DIALOG_PLUGIN_MANAGER_H
 
 #include "xap_Dlg_PluginManager.h"
-#include "xap_Frame.h"
+#include "xap_Win32DialogBase.h"
+
+class XAP_Frame;
 
 /*****************************************************************/
 
-class XAP_Win32Dialog_PluginManager: public XAP_Dialog_PluginManager
+class XAP_Win32Dialog_PluginManager: public XAP_Win32DialogBase, public XAP_Dialog_PluginManager
 {
 public:
 	XAP_Win32Dialog_PluginManager(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~XAP_Win32Dialog_PluginManager(void);
 
-	virtual void			runModal(XAP_Frame * pFrame);
+	virtual void		runModal(XAP_Frame * pFrame);
 
-	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
-
-	static BOOL CALLBACK		s_dlgProc(HWND,UINT,WPARAM,LPARAM);	
+	static XAP_Dialog *	static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
 protected:
 
-	BOOL						_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
-	BOOL						_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);   	
-	void						event_Load();
-	void 						refreshPluginList();
-	void 						refreshPluginInfo();
+	BOOL _onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL _onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);   	
+	BOOL _onDeltaPos(NM_UPDOWN * pnmud);	
+	void event_Load();
+	void refreshPluginList();
+	void refreshPluginInfo();
 	
-
-	UT_sint32					m_curSelection;
-	HWND						m_hwndDlg;		// parent dialog	
-	XAP_Frame*					m_pFrame;
-
-
+	UT_sint32 m_curSelection;
 };
 
 #endif /* XAP_WIN32DIALOG_PLUGIN_MANAGER_H */

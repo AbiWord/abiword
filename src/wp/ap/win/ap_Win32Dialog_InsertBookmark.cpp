@@ -31,7 +31,6 @@
 #include "ap_Dialog_Id.h"
 #include "ap_Dialog_InsertBookmark.h"
 #include "ap_Win32Dialog_InsertBookmark.h"
-#include "xap_Win32DialogHelper.h"
 #include "ap_Win32Resources.rc2"
 
 /*****************************************************************/

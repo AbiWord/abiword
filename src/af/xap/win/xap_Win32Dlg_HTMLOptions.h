@@ -20,12 +20,14 @@
 #ifndef XAP_WIN32DIALOG_HTMLOPTIONS_H
 #define XAP_WIN32DIALOG_HTMLOPTIONS_H
 
-#include "xap_Frame.h"
 #include "xap_Dlg_HTMLOptions.h"
+#include "xap_Win32DialogBase.h"
+
+class XAP_Frame;
 
 /*****************************************************************/
 
-class XAP_Win32Dialog_HTMLOptions : public XAP_Dialog_HTMLOptions
+class XAP_Win32Dialog_HTMLOptions : public XAP_Win32DialogBase, public XAP_Dialog_HTMLOptions
 {
 public:
 	XAP_Win32Dialog_HTMLOptions(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
@@ -34,13 +36,13 @@ public:
 	virtual void			runModal(XAP_Frame * pFrame);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
-	static BOOL CALLBACK	s_dlgProc(HWND hWnd,UINT msg, WPARAM wParam, LPARAM lParam);	
-protected:
-	BOOL					_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
-	BOOL					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
 
 private:
-	void					refreshStates(HWND hWnd);
+	BOOL _onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL _onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL _onDeltaPos(NM_UPDOWN * pnmud);
+
+	void refreshStates();
 };
 
 #endif /* XAP_WIN32DIALOG_HTMLOPTIONS_H */
