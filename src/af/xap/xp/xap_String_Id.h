@@ -212,7 +212,7 @@ dcl(DLG_PLUGIN_MANAGER_DETAILS, 		"Plugin Details")
 
 /* spellchecker */
 dcl(SPELL_CANTLOAD_DICT,				"Could not load the dictionary for the %s language")
-dcl(SPELL_CANTLOAD_DLL,					"AbiWord cannot find the spelling file %s.dll\nPlease download and install Aspell from ***TODO***.")
+dcl(SPELL_CANTLOAD_DLL,					"AbiWord cannot find the spelling file %s.dll\nPlease download and install Aspell from http://aspell.net/win32/")
 
 /* plugin error messages */
 dcl(DLG_PLUGIN_MANAGER_COULDNT_LOAD,	"Could not activate/load plugin")
