@@ -160,13 +160,6 @@ Group: Applications/Productivity
 %description clipart
 This is the clipart portfolio used by AbiWord.
 
-#%package help-de-DE
-#Summary: AbiWord Help for de-DE
-#Group: Documentation
-#
-#%description help-de-DE
-#This is the AbiWord Manual for German.
-
 %prep
 %__rm -rf $RPM_BUILD_ROOT
 
