@@ -3,7 +3,7 @@
 <columnmodel>
 <column type="box" left="0in" top="0in" width="*" height="*"/>
 </columnmodel>
-<p><c PROPS="font-size:10pt">$id: $</c></p>
+<p><c PROPS="font-size:10pt">$Id$</c></p>
 <p PROPS="text-align:center"><c PROPS="font-size:24pt; font-weight:bold">AbiWord Document Format</c></p>
 <p PROPS="text-align:center"><c PROPS="font-size:10pt">Version 1.0</c></p>
 <p PROPS="text-align:center"><c PROPS="font-size:10pt">Copyright </c><c PROPS="font-size:10pt">(C) 1998</c><c PROPS="font-size:10pt"> </c><c PROPS="font-size:10pt">AbiSource, Inc., </c><c PROPS="font-size:10pt">All Rights Reserved.</c></p>
