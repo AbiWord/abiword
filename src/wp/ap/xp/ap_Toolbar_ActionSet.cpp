@@ -36,7 +36,7 @@ EV_Toolbar_ActionSet * AP_CreateToolbarActionSet(void)
 
 	EV_Toolbar_ActionSet * pActionSet = new EV_Toolbar_ActionSet(AP_TOOLBAR_ID__BOGUS1__,
 																 AP_TOOLBAR_ID__BOGUS2__);
-	UT_ASSERT(pActionSet);
+	UT_return_val_if_fail (pActionSet, NULL);
 
 	// The following is a list of all toolbar id's that we define,
 	// the actions that they should be bound to, and various

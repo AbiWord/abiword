@@ -174,14 +174,14 @@ UT_UCS4Char PD_DocIterator::getChar()
 
 		if(!p)
 		{
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			m_status = UTIter_Error;
 			return UT_IT_ERROR;
 		}
 		
 		if(!(m_pos - pft->getPos() < pft->getLength()))
 		{
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			m_status = UTIter_Error;
 			return UT_IT_ERROR;
 		}
@@ -331,13 +331,12 @@ UT_uint32 PD_DocIterator::find(UT_TextIterator & text, UT_uint32 iLen, bool bFor
 			return getPosition() - iLen + 1;
 
 		// too bad, start over again
-		UT_ASSERT( i < iLen );
+		UT_return_val_if_fail ( i < iLen,0 );
 		(*this) += iInc;
 		text.setPosition(iOrigPos);
 	}
 
-	UT_ASSERT(getStatus() != UTIter_OK );
-	return 0;
+	UT_return_val_if_fail (getStatus() != UTIter_OK , 0);
 }
 	
 
@@ -385,12 +384,11 @@ UT_uint32 PD_DocIterator::find(UT_UCS4Char * what, UT_uint32 iLen, bool bForward
 			return getPosition() - iLen + 1;
 
 		// too bad, start over again
-		UT_ASSERT( i < iLen );
+		UT_return_val_if_fail ( i < iLen, 0 );
 		(*this) += iInc;
 	}
 
-	UT_ASSERT(getStatus() != UTIter_OK );
-	return 0;
+	UT_return_val_if_fail (getStatus() != UTIter_OK, 0 );
 }
 
 
@@ -445,7 +443,7 @@ UT_TextIterator * PD_StruxIterator::makeCopy()
 
 UT_uint32 PD_StruxIterator::find(UT_TextIterator & text, UT_uint32 iLen, bool bForward)
 {
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
+	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
 	m_status = UTIter_OutOfBounds;
 	return 0;
 }
@@ -453,7 +451,7 @@ UT_uint32 PD_StruxIterator::find(UT_TextIterator & text, UT_uint32 iLen, bool bF
 
 UT_uint32 PD_StruxIterator::find(UT_UCS4Char * what, UT_uint32 iLen, bool bForward)
 {
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
+	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
 	m_status = UTIter_OutOfBounds;
 	return 0;
 }
@@ -511,14 +509,14 @@ UT_UCS4Char PD_StruxIterator::getChar()
 
 		if(!p)
 		{
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			m_status = UTIter_Error;
 			return UT_IT_ERROR;
 		}
 		
 		if(!(m_offset - m_frag_offset < pft->getLength()))
 		{
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			m_status = UTIter_Error;
 			return UT_IT_ERROR;
 		}

@@ -117,7 +117,7 @@ void AP_Dialog_SplitCells::stopUpdater(void)
 void AP_Dialog_SplitCells::autoUpdateMC(UT_Worker * pTimer)
 {
 
-	UT_ASSERT(pTimer);
+	UT_return_if_fail (pTimer);
 	
 // this is a static callback method and does not have a 'this' pointer
 

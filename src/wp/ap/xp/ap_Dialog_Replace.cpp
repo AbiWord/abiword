@@ -104,10 +104,10 @@ bool AP_Dialog_Replace::setView(AV_View * view)
 	// so we can get WP specific information from it.
 	// This could be bad once we introduce an
 	// outline view, etc.
-	UT_ASSERT(view);
+	UT_return_val_if_fail (view, false);
 
 	m_pFrame = (XAP_Frame *) getActiveFrame();
-	UT_ASSERT(m_pFrame);
+	UT_return_val_if_fail (m_pFrame, false);
 	
 	m_pView = static_cast<FV_View *>(getActiveFrame()->getCurrentView());
 

@@ -116,7 +116,7 @@ void AP_Dialog_MergeCells::stopUpdater(void)
 void AP_Dialog_MergeCells::autoUpdateMC(UT_Worker * pTimer)
 {
 
-	UT_ASSERT(pTimer);
+	UT_return_if_fail (pTimer);
 	
 // this is a static callback method and does not have a 'this' pointer
 

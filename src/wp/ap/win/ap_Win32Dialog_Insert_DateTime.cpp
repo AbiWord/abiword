@@ -61,14 +61,14 @@ void AP_Win32Dialog_Insert_DateTime::runModal(XAP_Frame * pFrame)
 
     LPCTSTR lpTemplate = NULL;
 
-    UT_ASSERT(m_id == AP_DIALOG_ID_INSERT_DATETIME);
+    UT_return_if_fail (m_id == AP_DIALOG_ID_INSERT_DATETIME);
 
     lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_DATETIME);
 
     int result = DialogBoxParam(pWin32App->getInstance(),lpTemplate,
                 static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
                 (DLGPROC)s_dlgProc,(LPARAM)this);
-    UT_ASSERT((result != -1));
+    UT_ASSERT_HARMLESS((result != -1));
 }
 
 BOOL CALLBACK AP_Win32Dialog_Insert_DateTime::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)

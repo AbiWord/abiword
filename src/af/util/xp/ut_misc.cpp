@@ -802,7 +802,7 @@ bool UT_isWordDelimiter(UT_UCSChar currentChar, UT_UCSChar followChar, UT_UCSCha
 
 const XML_Char* UT_getAttribute(const XML_Char* name, const XML_Char** atts)
 {
-	UT_ASSERT(atts);
+	UT_return_val_if_fail( atts, NULL );
 
 	const XML_Char** p = atts;
 

@@ -39,7 +39,7 @@ bool pf_Frag_FmtMark::createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
 												   PT_DocPosition dpos,
 												   PT_BlockOffset blockOffset) const
 {
-	UT_ASSERT(ppcr);
+	UT_return_val_if_fail (ppcr,false);
 	
 	PX_ChangeRecord * pcr
 		= new PX_ChangeRecord_FmtMark(PX_ChangeRecord::PXT_InsertFmtMark,

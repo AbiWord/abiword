@@ -44,7 +44,7 @@ bool pt_PieceTable::_insertFmtMarkFragWithNotify(PTChangeFmt ptc,
 													const XML_Char ** attributes,
 													const XML_Char ** properties)
 {
-	UT_ASSERT(m_pts==PTS_Editing);
+	UT_return_val_if_fail (m_pts==PTS_Editing, false);
 
 	pf_Frag * pf;
 	PT_BlockOffset fo;
@@ -53,7 +53,7 @@ bool pt_PieceTable::_insertFmtMarkFragWithNotify(PTChangeFmt ptc,
 	// bool bFound =
 	getFragFromPosition(dpos,&pf,&fo);
 
-	UT_ASSERT(pf);
+	UT_return_val_if_fail (pf, false);
 	
 	if ((fo==0) && (pf->getPrev()))
 	{
@@ -66,7 +66,7 @@ bool pt_PieceTable::_insertFmtMarkFragWithNotify(PTChangeFmt ptc,
 			pf_Frag_Strux * pfsContainer = NULL;
 			bool bFoundStrux;
 			bFoundStrux = _getStruxOfTypeFromPosition(dpos,PTX_Block,&pfsContainer);
-			UT_ASSERT(bFoundStrux);
+			UT_return_val_if_fail (bFoundStrux, false);
 
 			return _fmtChangeFmtMarkWithNotify(ptc,pffm,dpos,attributes,properties,pfsContainer,NULL,NULL);
 		}
@@ -85,7 +85,7 @@ bool pt_PieceTable::_insertFmtMarkFragWithNotify(PTChangeFmt ptc,
 	PT_AttrPropIndex indexNewAP;
 	bool bMerged;
 	bMerged = m_varset.mergeAP(ptc,indexOldAP,attributes,properties,&indexNewAP,getDocument());
-	UT_ASSERT(bMerged);
+	UT_ASSERT_HARMLESS(bMerged);
 
 	if (indexOldAP == indexNewAP)		// the requested change will have no effect on this fragment.
 		return true;
@@ -93,7 +93,7 @@ bool pt_PieceTable::_insertFmtMarkFragWithNotify(PTChangeFmt ptc,
 	pf_Frag_Strux * pfs = NULL;
 	bool bFoundStrux;
 	bFoundStrux = _getStruxFromFragSkip(pf,&pfs);
-	UT_ASSERT(bFoundStrux);
+	UT_return_val_if_fail (bFoundStrux, false);
 	PT_BlockOffset blockOffset = _computeBlockOffset(pfs,pf) + fo;
 
 	if (!_insertFmtMark(pf,fo,indexNewAP))
@@ -105,7 +105,7 @@ bool pt_PieceTable::_insertFmtMarkFragWithNotify(PTChangeFmt ptc,
 	PX_ChangeRecord_FmtMark * pcr
 		= new PX_ChangeRecord_FmtMark(PX_ChangeRecord::PXT_InsertFmtMark,
 									  dpos,indexNewAP,blockOffset);
-	UT_ASSERT(pcr);
+	UT_return_val_if_fail (pcr,false);
 
 	m_history.addChangeRecord(pcr);
 	m_pDocument->notifyListeners(pfs,pcr);
@@ -137,7 +137,7 @@ bool pt_PieceTable::_insertFmtMark(pf_Frag * pf, UT_uint32 fragOffset, PT_AttrPr
 		// split the current fragment and insert the FmtMark between
 		// them.
 
-		UT_ASSERT(pf->getType() == pf_Frag::PFT_Text);
+		UT_return_val_if_fail (pf->getType() == pf_Frag::PFT_Text,false);
 		pf_Frag_Text * pft = static_cast<pf_Frag_Text *>(pf);
 		UT_uint32 lenTail = pft->getLength() - fragOffset;
 		PT_BufIndex biTail = m_varset.getBufIndex(pft->getBufIndex(),fragOffset);
@@ -161,14 +161,14 @@ bool pt_PieceTable::_insertFmtMarkAfterBlockWithNotify(pf_Frag_Strux * pfsBlock,
 														  PT_DocPosition dpos,
 														  PT_AttrPropIndex api)
 {
-	UT_ASSERT(m_pts==PTS_Editing);
+	UT_return_val_if_fail (m_pts==PTS_Editing, false);
 
 	PT_BlockOffset blockOffset = 0;
 
 #ifdef DEBUG
 	{
 		PT_DocPosition dposTest = getFragPosition(pfsBlock) + pfsBlock->getLength();
-		UT_ASSERT(dposTest == dpos);
+		UT_ASSERT_HARMLESS(dposTest == dpos);
 	}
 #endif
 
@@ -181,7 +181,7 @@ bool pt_PieceTable::_insertFmtMarkAfterBlockWithNotify(pf_Frag_Strux * pfsBlock,
 	PX_ChangeRecord_FmtMark * pcr
 		= new PX_ChangeRecord_FmtMark(PX_ChangeRecord::PXT_InsertFmtMark,
 									  dpos,api,blockOffset);
-	UT_ASSERT(pcr);
+	UT_return_val_if_fail (pcr,false);
 
 	m_history.addChangeRecord(pcr);
 	m_pDocument->notifyListeners(pfsBlock,pcr);
@@ -196,15 +196,15 @@ bool pt_PieceTable::_deleteFmtMarkWithNotify(PT_DocPosition dpos, pf_Frag_FmtMar
 												pf_Frag_Strux * pfs,
 												pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd)
 {
-	UT_ASSERT(m_pts==PTS_Editing);
-	UT_ASSERT(pfs);
+	UT_return_val_if_fail (m_pts==PTS_Editing,false);
+	UT_return_val_if_fail (pfs,false);
 
 	PT_BlockOffset blockOffset = _computeBlockOffset(pfs,pffm);
 
 	PX_ChangeRecord_FmtMark * pcr
 		= new PX_ChangeRecord_FmtMark(PX_ChangeRecord::PXT_DeleteFmtMark,
 									  dpos, pffm->getIndexAP(), blockOffset);
-	UT_ASSERT(pcr);
+	UT_return_val_if_fail (pcr,false);
 
 	// actually remove the fragment from the list and delete it.
 
@@ -236,7 +236,7 @@ bool pt_PieceTable::_fmtChangeFmtMarkWithNotify(PTChangeFmt ptc, pf_Frag_FmtMark
 												   pf_Frag_Strux * pfs,
 												   pf_Frag ** ppfNewEnd, UT_uint32 * pfragOffsetNewEnd)
 {
-	UT_ASSERT(m_pts==PTS_Editing);
+	UT_return_val_if_fail (m_pts==PTS_Editing,false);
 
 	// apply a span-level change to the given FmtMark.
 	// create a change record for this change and put it in the history.
@@ -245,7 +245,7 @@ bool pt_PieceTable::_fmtChangeFmtMarkWithNotify(PTChangeFmt ptc, pf_Frag_FmtMark
 	PT_AttrPropIndex indexOldAP = pffm->getIndexAP();
 	bool bMerged;
 	bMerged = m_varset.mergeAP(ptc,indexOldAP,attributes,properties,&indexNewAP,getDocument());
-	UT_ASSERT(bMerged);
+	UT_ASSERT_HARMLESS(bMerged);
 
 	if (indexOldAP == indexNewAP)		// the requested change will have no effect on this fragment.
 	{
@@ -263,7 +263,7 @@ bool pt_PieceTable::_fmtChangeFmtMarkWithNotify(PTChangeFmt ptc, pf_Frag_FmtMark
 	PX_ChangeRecord_FmtMarkChange * pcr
 		= new PX_ChangeRecord_FmtMarkChange(PX_ChangeRecord::PXT_ChangeFmtMark,
 											dpos, indexOldAP,indexNewAP, blockOffset);
-	UT_ASSERT(pcr);
+	UT_return_val_if_fail (pcr,false);
 
 	// apply the change to this fragment
 
@@ -293,7 +293,7 @@ bool pt_PieceTable::_insertFmtMarkFragWithNotify(PTChangeFmt ptc,
 													PT_DocPosition dpos,
 													PP_AttrProp *p_AttrProp)
 {
-	UT_ASSERT(p_AttrProp);
+	UT_return_val_if_fail (p_AttrProp,false);
 
 	const XML_Char * properties[] =	{ NULL, NULL, 0};
 

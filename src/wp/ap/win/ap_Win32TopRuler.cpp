@@ -35,7 +35,7 @@
 #define GWL(hwnd)		(AP_Win32TopRuler*)GetWindowLong((hwnd), GWL_USERDATA)
 #define SWL(hwnd, f)	(AP_Win32TopRuler*)SetWindowLong((hwnd), GWL_USERDATA,(LONG)(f))
 
-#define ENSUREP(p)		do { UT_ASSERT(p); if (!p) goto Cleanup; } while (0)
+#define ENSUREP(p)		do { UT_ASSERT_HARMLESS(p); if (!p) goto Cleanup; } while (0)
 
 static char s_TopRulerWndClassName[256];
 
@@ -69,7 +69,7 @@ void AP_Win32TopRuler::setView(AV_View * pView)
 	GR_Win32Graphics * pG = (GR_Win32Graphics *)XAP_App::getApp()->newGraphics(ai);
 
 	m_pG = pG;
-	UT_ASSERT(m_pG);		
+	UT_return_if_fail (m_pG);		
 	pG->init3dColors();
 
 	if (IsWindow(m_hwndTopRuler))
@@ -101,7 +101,7 @@ bool AP_Win32TopRuler::RegisterClass(XAP_Win32App * app)
 	wndclass.hIconSm       = NULL;
 
 	a = RegisterClassEx(&wndclass);
-	UT_ASSERT(a);
+	UT_ASSERT_HARMLESS(a);
 
 	return true;
 }
@@ -120,7 +120,7 @@ HWND AP_Win32TopRuler::createWindow(HWND hwndContainer,
 									WS_CHILD | WS_VISIBLE,
 									left, top, width, s_iFixedHeight,
 									hwndContainer, NULL, app->getInstance(), NULL);
-	UT_ASSERT(m_hwndTopRuler);
+	UT_return_val_if_fail (m_hwndTopRuler,0);
 	SWL(m_hwndTopRuler, this);
 
 	
@@ -128,8 +128,8 @@ HWND AP_Win32TopRuler::createWindow(HWND hwndContainer,
 	GR_Win32AllocInfo ai(GetDC(m_hwndTopRuler), m_hwndTopRuler, m_pFrame->getApp());
 	GR_Win32Graphics * pG = (GR_Win32Graphics *)XAP_App::getApp()->newGraphics(ai);
 	m_pG = pG;
+	UT_return_val_if_fail (m_pG, 0);
 	pG->init3dColors();
-	UT_ASSERT(m_pG);
 
 	RECT rSize;
 	GetClientRect(m_hwndTopRuler,&rSize);

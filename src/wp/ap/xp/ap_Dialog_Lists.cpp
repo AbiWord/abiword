@@ -125,7 +125,7 @@ void AP_Dialog_Lists::_createPreviewFromGC(GR_Graphics* gc,
 										   UT_uint32 width,
 										   UT_uint32 height)
 {
-	UT_ASSERT(gc);
+	UT_return_if_fail (gc);
 
 	m_iWidth = width;
 	m_iHeight = height;
@@ -135,7 +135,7 @@ void AP_Dialog_Lists::_createPreviewFromGC(GR_Graphics* gc,
 	DELETEP(m_pListsPreview);
 
 	m_pListsPreview = new AP_Lists_preview(gc, this);
-	UT_ASSERT(m_pListsPreview);
+	UT_return_if_fail (m_pListsPreview);
 
 	m_pListsPreview->setWindowSize(width, height);
 	//
@@ -162,16 +162,16 @@ void AP_Dialog_Lists::event_PreviewAreaExposed(void)
 	}
 	else
 	{
-		UT_ASSERT(0);
+		UT_ASSERT_HARMLESS(0);
 	}
 }
 
 void AP_Dialog_Lists::StartList(void)
 {
-	UT_ASSERT(!IS_NONE_LIST_TYPE(m_DocListType));
+	UT_ASSERT_HARMLESS(!IS_NONE_LIST_TYPE(m_DocListType));
 	getBlock()->listUpdate();
 	const XML_Char* pStyle = getBlock()->getListStyleString(m_DocListType);
-	UT_ASSERT(pStyle);
+	UT_return_if_fail (pStyle);
 	getView()->cmdStartList(pStyle);
 }
 
@@ -659,7 +659,7 @@ void  AP_Dialog_Lists::generateFakeLabels(void)
  */
 UT_UCSChar * AP_Dialog_Lists::getListLabel(UT_sint32 itemNo)
 {
-	UT_ASSERT(itemNo < 4);
+	UT_ASSERT_HARMLESS(itemNo < 4);
 	static UT_UCSChar lab[80];
 	const UT_UCSChar * tmp  = m_pFakeAuto->getLabel(m_pFakeSdh[itemNo]);
 	if(tmp == NULL)
@@ -1092,7 +1092,7 @@ void AP_Lists_preview::setData(XML_Char * pszFont,float fAlign,float fIndent)
 	{
 		m_pFont = m_gc->findFont((char *)pszFont, "normal", "", "normal", "", "16pt");
 	}	
-	UT_ASSERT(m_pFont);
+	UT_ASSERT_HARMLESS(m_pFont);
 	
 	m_fAlign = fAlign;
 	m_fIndent = fIndent;
@@ -1223,7 +1223,7 @@ void AP_Lists_preview::draw(void)
 				{
 					FriBidiChar * fLogStr = new FriBidiChar[len+1];
 					FriBidiChar * fVisStr = new FriBidiChar[len+1];
-					UT_ASSERT(fLogStr && fVisStr);
+					UT_return_if_fail (fLogStr && fVisStr);
 
 					for(j=0; j<=len;j++)
 						fLogStr[j] = lv[j];

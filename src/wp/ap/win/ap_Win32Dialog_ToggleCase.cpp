@@ -59,7 +59,7 @@ AP_Win32Dialog_ToggleCase::~AP_Win32Dialog_ToggleCase(void)
 
 void AP_Win32Dialog_ToggleCase::runModal(XAP_Frame * pFrame)
 {
-	UT_ASSERT(pFrame);
+	UT_return_if_fail (pFrame);
 	m_helper.runModal(pFrame, AP_DIALOG_ID_TOGGLECASE, AP_RID_DIALOG_TOGGLECASE, this);
 
 	

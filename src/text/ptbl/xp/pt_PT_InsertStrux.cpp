@@ -171,7 +171,7 @@ bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
 				break;
 
 			default:
-				UT_ASSERT(UT_NOT_IMPLEMENTED);
+				UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
 				iLen = 1;
 				break;
 		}
@@ -234,7 +234,7 @@ bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
 				break;
 
 			default:
-				UT_ASSERT(UT_NOT_IMPLEMENTED);
+				UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
 				iLen = 1;
 				break;
 		}
@@ -317,7 +317,7 @@ bool pt_PieceTable::_createStrux(PTStruxType pts,
 		break;
 
 	default:
-		UT_ASSERT(UT_NOT_IMPLEMENTED);
+		UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
 		break;
 	}
 
@@ -363,7 +363,7 @@ void pt_PieceTable::_insertStrux(pf_Frag * pf,
 	switch (pf->getType())
 	{
 	default:
-		UT_ASSERT(0);
+		UT_ASSERT_HARMLESS(0);
 		return;
 
 	case pf_Frag::PFT_Object:
@@ -373,7 +373,7 @@ void pt_PieceTable::_insertStrux(pf_Frag * pf,
 			// insert pfsNew before pf.
 			// TODO this may introduce some oddities due to empty paragraphs.
 			// TODO investigate this later.
-			UT_ASSERT(fragOffset == 0);
+			UT_return_if_fail (fragOffset == 0);
 //
 // OK find the real container strux.
 //
@@ -386,7 +386,7 @@ void pt_PieceTable::_insertStrux(pf_Frag * pf,
 			// insert pfsNew after pf.
             // before this.
 			// TODO check this.
-			UT_ASSERT(fragOffset == 0);
+			UT_return_if_fail (fragOffset == 0);
 			m_fragments.insertFrag(pf,pfsNew);
 			return;
 		}
@@ -434,7 +434,7 @@ void pt_PieceTable::_insertStrux(pf_Frag * pf,
 				UT_uint32 lenTail = pft->getLength() - fragOffset;
 				PT_BufIndex biTail = m_varset.getBufIndex(pft->getBufIndex(),fragOffset);
 				pf_Frag_Text * pftTail = new pf_Frag_Text(this,biTail,lenTail,pft->getIndexAP(),pft->getField());
-				UT_ASSERT(pftTail);
+				UT_return_if_fail (pftTail);
 
 				pft->changeLength(fragOffset);
 				m_fragments.insertFrag(pft,pfsNew);
@@ -461,7 +461,7 @@ bool pt_PieceTable::_realInsertStrux(PT_DocPosition dpos,
 	// a table.  this function can only be called while editing the
 	// document.
 
-	UT_ASSERT(m_pts==PTS_Editing);
+	UT_return_val_if_fail (m_pts==PTS_Editing, false);
 
 	// get the fragment at the doc postion containing the given
 	// document position.
@@ -469,13 +469,13 @@ bool pt_PieceTable::_realInsertStrux(PT_DocPosition dpos,
 	pf_Frag * pf = NULL;
 	PT_BlockOffset fragOffset = 0;
 	bool bFoundFrag = getFragFromPosition(dpos,&pf,&fragOffset);
-	UT_ASSERT(bFoundFrag);
+	UT_return_val_if_fail (bFoundFrag, false);
 
 	// get the strux containing the given position.
 
 	pf_Frag_Strux * pfsContainer = NULL;
 	bool bFoundContainer = _getStruxFromPosition(dpos,&pfsContainer);
-	UT_ASSERT(bFoundContainer);
+	UT_return_val_if_fail (bFoundContainer,false);
 	if(isEndFootnote(pfsContainer))
 	{
 		bFoundContainer = _getStruxFromFragSkip(pfsContainer,&pfsContainer);
@@ -505,7 +505,7 @@ bool pt_PieceTable::_realInsertStrux(PT_DocPosition dpos,
 	{
 		PT_AttrPropIndex pAPIold = indexAP;
 		bool bMerged = m_varset.mergeAP(PTC_AddFmt,pAPIold,attributes,properties,&indexAP,getDocument());
-		UT_ASSERT(bMerged);
+		UT_ASSERT_HARMLESS(bMerged);
 	}
 
 	pf_Frag_Strux * pfsNew = NULL;
@@ -578,7 +578,7 @@ bool pt_PieceTable::_realInsertStrux(PT_DocPosition dpos,
 	PX_ChangeRecord_Strux * pcrs
 		= new PX_ChangeRecord_Strux(PX_ChangeRecord::PXT_InsertStrux,
 									dpos,indexAP,pts);
-	UT_ASSERT(pcrs);
+	UT_return_val_if_fail (pcrs,false);
 
 	// add record to history.  we do not attempt to coalesce these.
 	m_history.addChangeRecord(pcrs);
@@ -586,7 +586,7 @@ bool pt_PieceTable::_realInsertStrux(PT_DocPosition dpos,
 
 	if (bNeedGlob)
 	{
-		UT_ASSERT(!pfsNew->getNext() || pfsNew->getNext()->getType()!=pf_Frag::PFT_FmtMark);
+		UT_return_val_if_fail (!pfsNew->getNext() || pfsNew->getNext()->getType()!=pf_Frag::PFT_FmtMark, false);
 		_insertFmtMarkAfterBlockWithNotify(pfsNew,dpos+pfsNew->getLength(),apFmtMark);
 		endMultiStepGlob();
 	}
@@ -625,7 +625,7 @@ bool pt_PieceTable::_computeFmtMarkForNewBlock(pf_Frag_Strux * /* pfsNewBlock */
 		{
 		default:
 			{
-				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+				UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 				return false;
 			}
 

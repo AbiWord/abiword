@@ -53,7 +53,7 @@ class PP_Revision: public PP_AttrProp
 	virtual ~PP_Revision(){};
 	
 	UT_uint32        getId()    const {return m_iID;}
-	void             setId(UT_uint32 iId) {UT_ASSERT( iId >= m_iID); m_iID = iId;}
+	void             setId(UT_uint32 iId) {UT_ASSERT_HARMLESS( iId >= m_iID); m_iID = iId;}
 	
 	PP_RevisionType  getType()  const {return m_eType;}
 	void             setType(PP_RevisionType t) {m_eType = t; m_bDirty = true;}

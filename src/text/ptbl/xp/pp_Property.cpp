@@ -305,7 +305,7 @@ static PD_Style * _getStyle(const PP_AttrProp * pAttrProp, PD_Document * pDoc)
 //
 	if (pAttrProp->getAttribute(PT_NAME_ATTRIBUTE_NAME, szValue))
 	{
-		UT_ASSERT(szValue && szValue[0]);
+		UT_return_val_if_fail (szValue && szValue[0], NULL);
 		if (pDoc)
 			pDoc->getStyle(reinterpret_cast<const char*>(szValue), &pStyle);
 
@@ -313,7 +313,7 @@ static PD_Style * _getStyle(const PP_AttrProp * pAttrProp, PD_Document * pDoc)
 	}
     else if(pAttrProp->getAttribute(PT_STYLE_ATTRIBUTE_NAME, szValue))
 	{
-		UT_ASSERT(szValue && szValue[0]);
+		UT_return_val_if_fail (szValue && szValue[0], NULL);
 		if (pDoc)
 			pDoc->getStyle(reinterpret_cast<const char*>(szValue), &pStyle);
 
@@ -694,7 +694,7 @@ PP_PropertyType *PP_PropertyType::createPropertyType(tProperty_type Type, const 
 		break;
 
 	default:
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		break;
 	}
 

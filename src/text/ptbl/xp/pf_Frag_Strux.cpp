@@ -67,7 +67,7 @@ bool pf_Frag_Strux::setFmtHandle(PL_ListenerId lid, PL_StruxFmtHandle sfh)
 bool pf_Frag_Strux::createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
 												 PT_DocPosition dpos) const
 {
-	UT_ASSERT(ppcr);
+	UT_return_val_if_fail (ppcr,false);
 	
 	PX_ChangeRecord_Strux * pcr
 		= new PX_ChangeRecord_Strux(PX_ChangeRecord::PXT_InsertStrux,

@@ -216,7 +216,24 @@ private:
 	XML_Char ** m_list;
 };
 
+#if 0 //def _MSC_VER // have to intialise the templates in order to have class exported
 
+struct _dataItemPair;
+template class ABI_EXPORT UT_GenericStringMap<struct _dataItemPair*>;
+
+class UT_UTF8String;
+template class ABI_EXPORT UT_GenericStringMap<UT_UTF8String *>;
+
+class PD_Style;
+template class ABI_EXPORT UT_GenericStringMap<PD_Style *>;
+
+class GR_Font;
+template class ABI_EXPORT UT_GenericStringMap<GR_Font *>;
+
+template class ABI_EXPORT UT_GenericStringMap<char *>;
+
+//template class ABI_EXPORT UT_GenericStringMap<void const*>;
+#endif
 typedef UT_GenericStringMap<void const *>  UT_StringPtrMap;
 
 
@@ -873,7 +890,7 @@ const UT_String& UT_GenericStringMap<T>::_key(UT_Cursor& c) const
 		return slot.m_key.value();
 	}
 	// should never happen
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 	static UT_String bad;
 	return bad;
 }

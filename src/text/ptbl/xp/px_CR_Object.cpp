@@ -44,7 +44,7 @@ PX_ChangeRecord * PX_ChangeRecord_Object::reverse(void) const
 {
 	PX_ChangeRecord_Object * pcr
 		= new PX_ChangeRecord_Object(getRevType(),m_position,m_indexAP,m_objectType,m_blockOffset,m_field);
-	UT_ASSERT(pcr);
+	UT_ASSERT_HARMLESS(pcr);
 	return pcr;
 }
 

@@ -1094,7 +1094,7 @@ void ie_imp_table::setCellRowNthCell(UT_sint32 row, UT_sint32 col)
 	}
 	if(!bFound)
 	{
-		UT_ASSERT(0);
+		UT_ASSERT_HARMLESS(0);
 		m_pCurImpCell = NULL;
 	}
 	else
@@ -1251,7 +1251,7 @@ void ie_imp_table::writeAllCellPropsInDoc(void)
 			if((pOldCell->getTop() == pCell->getTop()) && (pCell->getLeft() != pOldCell->getRight()))
 			{
 				UT_DEBUGMSG(("Illegal cell structure!!\n"));
-				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+				UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			}
 		}
 		pOldCell = pCell;
@@ -1512,8 +1512,8 @@ void ie_imp_table::buildTableStructure(void)
 		//
 		if(!bSkipThis)
 		{
-			UT_ASSERT(iRight>iLeft);
-			UT_ASSERT(iBot>iTop);
+			UT_ASSERT_HARMLESS(iRight>iLeft);
+			UT_ASSERT_HARMLESS(iBot>iTop);
 			pCell->setLeft(iLeft);
 			pCell->setRight(iRight);
 			pCell->setTop(iTop);
@@ -1636,7 +1636,7 @@ void ie_imp_table::removeOnThisCellRow(ie_imp_cell * pImpCell)
 	UT_sint32 row = pImpCell->getRow();
 	UT_DEBUGMSG(("Doing a delete on Row %d left %d top %d \n",row,pImpCell->getLeft(),pImpCell->getTop()));
 	deleteRow(row);
-	//	UT_ASSERT(0);
+	//	UT_ASSERT_HARMLESS(0);
 }
 
 /*!
@@ -1880,7 +1880,7 @@ bool ie_imp_table_control::NewRow(void)
 	UT_GenericVector<ie_imp_cell*> vecRow;
 	vecRow.clear();
 	UT_sint32 row = getTable()->getRow();
-    UT_ASSERT(row>0);
+    UT_ASSERT_HARMLESS(row>0);
 	bool bres = true;
 	bres = getTable()->getVecOfCellsOnRow(row, &vecRow);
 	if(!bres)
@@ -1921,7 +1921,7 @@ bool ie_imp_table_control::NewRow(void)
 	{
 		UT_DEBUGMSG(("Not a single valid sdh found on last row!!!! \n"));
 		UT_DEBUGMSG(("We're in deep shit!!!! \n"));
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		return false;
 	}
 
@@ -1936,7 +1936,7 @@ bool ie_imp_table_control::NewRow(void)
 	PL_StruxDocHandle sdh = m_pDoc->getLastStruxOfType(PTX_SectionTable);
 	getTable()->setTableSDH(sdh);
 	getTable()->CloseCell(); // This just sets the table used flag!
-//	UT_ASSERT(0);
+//	UT_ASSERT_HARMLESS(0);
 	return true;
 }
 
@@ -2575,7 +2575,7 @@ bool IE_Imp_TableHelperStack::Block (PTStruxType pts, const XML_Char ** attribut
 	if (th)
 		return th->Block (pts, attributes);
 
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 
 	return false;
 }
@@ -2595,7 +2595,7 @@ bool IE_Imp_TableHelperStack::Inline (const UT_UCSChar * ucs4_str, UT_sint32 len
 		return th->Inline (ucs4_str, length);
 
 
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 
 	return false;
 }
@@ -2606,7 +2606,7 @@ bool IE_Imp_TableHelperStack::InlineFormat (const XML_Char ** attributes)
 	if (th)
 		return th->InlineFormat (attributes);
 
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 
 	return false;
 }
@@ -2617,7 +2617,7 @@ bool IE_Imp_TableHelperStack::Object (PTObjectType pto, const XML_Char ** attrib
 	if (th)
 		return th->Object (pto, attributes);
 
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 
 	return false;
 }

@@ -65,7 +65,7 @@ AP_Win32Dialog_ListRevisions::~AP_Win32Dialog_ListRevisions(void)
 
 void AP_Win32Dialog_ListRevisions::runModal(XAP_Frame * pFrame)
 {
-	UT_ASSERT(pFrame);
+	UT_return_if_fail (pFrame);
 	// raise the dialog
 	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
 
@@ -73,14 +73,14 @@ void AP_Win32Dialog_ListRevisions::runModal(XAP_Frame * pFrame)
 
 	LPCTSTR lpTemplate = NULL;
 
-	UT_ASSERT(m_id == AP_DIALOG_ID_LIST_REVISIONS);
+	UT_return_if_fail (m_id == AP_DIALOG_ID_LIST_REVISIONS);
 
 	lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_LIST_REVISIONS);
 
 	int result = DialogBoxParam(pWin32App->getInstance(),lpTemplate,
 						static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
 						(DLGPROC)s_dlgProc,(LPARAM)this);
-	UT_ASSERT((result != -1));
+	UT_ASSERT_HARMLESS((result != -1));
 	if(result == -1)
 		UT_DEBUGMSG(( "AP_Win32Dialog_ListRevisions::runModal error %d\n", GetLastError() ));
 

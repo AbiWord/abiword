@@ -44,7 +44,7 @@ PX_ChangeRecord * PX_ChangeRecord_StruxChange::reverse(void) const
 		= new PX_ChangeRecord_StruxChange(getRevType(),
 										  m_position,
 										  m_indexAP,m_indexOldAP,m_pts);
-	UT_ASSERT(pcr);
+	UT_ASSERT_HARMLESS(pcr);
 	return pcr;
 }
 

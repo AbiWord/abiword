@@ -240,9 +240,9 @@ bool AP_DiskStringSet::setValue(XAP_String_Id id, const XML_Char * szString)
 			{
 				FriBidiChar *fbdStr = 0, *fbdStr2 = 0;
 				fbdStr   = new FriBidiChar [kLimit + 1];
-				UT_ASSERT(fbdStr);
+				UT_return_val_if_fail (fbdStr, false);
 				fbdStr2  = new FriBidiChar [kLimit + 1];
-				UT_ASSERT(fbdStr2);
+				UT_return_val_if_fail (fbdStr2, false);
 
 				UT_sint32 i;
 				for(i = 0; i < kLimit; i++)
@@ -267,7 +267,7 @@ bool AP_DiskStringSet::setValue(XAP_String_Id id, const XML_Char * szString)
 					p[i] = (UT_uint16) fbdStr2[i];
 				}
 
-				UT_ASSERT(p[i] == 0);
+				UT_ASSERT_HARMLESS(p[i] == 0);
 				delete[] fbdStr;
 				delete[] fbdStr2;
 			}
@@ -295,7 +295,7 @@ bool AP_DiskStringSet::setValue(XAP_String_Id id, const XML_Char * szString)
 
 	XML_Char * pOldValue = NULL;
 	bool bResult = (m_vecStringsAP.setNthItem(id-AP_STRING_ID__FIRST__,szDup,&pOldValue) == 0);
-	UT_ASSERT(pOldValue == NULL);		// duplicate string for this id
+	UT_ASSERT_HARMLESS(pOldValue == NULL);		// duplicate string for this id
 
 	if (bFoundMultiByte)
 	{

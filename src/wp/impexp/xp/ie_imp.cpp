@@ -110,7 +110,7 @@ bool IE_Imp::appendStruxFmt(pf_Frag_Strux * pfs, const XML_Char ** attributes)
 
 		if (pfs == NULL) 
 		{
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			bRes = false;
 		} 
 		else 
@@ -385,7 +385,7 @@ IEFileType IE_Imp::fileTypeForDescription(const char * szDescription)
 				return ieft;
 		}
 		else
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 	}
 
 	return ieft;
@@ -469,7 +469,7 @@ const char * IE_Imp::suffixesForFileType(IEFileType ieft)
 	if (pSniffer->getDlgLabels(&szDummy,&szSuffixes,&ieftDummy))
 		return szSuffixes;
 	else
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 
 	// The passed in filetype is invalid.
 	return 0;
@@ -493,7 +493,7 @@ const char * IE_Imp::descriptionForFileType(IEFileType ieft)
 	if (pSniffer->getDlgLabels(&szDescription,&szDummy,&ieftDummy))
 		return szDescription;
 	else
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 
 	// The passed in filetype is invalid.
 	return 0;

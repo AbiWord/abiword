@@ -58,7 +58,7 @@
 
 #define X_CheckError(v)			do {  if (!(v))								\
 									  {  m_error = UT_ERROR;			\
-UT_ASSERT(0); \
+UT_ASSERT_HARMLESS(0); \
 										 return; } } while (0)
 
 #define	X_EatIfAlreadyError()	do {  if (m_error) return; } while (0)
@@ -182,7 +182,7 @@ void IE_Imp_XML::startElement (const XML_Char * /*name*/, const XML_Char ** /*at
 	X_EatIfAlreadyError();	// xml parser keeps running until buffer consumed
 	m_error = UT_IE_UNSUPTYPE;
 	UT_DEBUGMSG(("you must override virtual method IE_Imp_XML::startElement\n"));
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 }
 
 void IE_Imp_XML::endElement (const XML_Char * /*name*/)
@@ -190,7 +190,7 @@ void IE_Imp_XML::endElement (const XML_Char * /*name*/)
 	X_EatIfAlreadyError();	// xml parser keeps running until buffer consumed
 	m_error = UT_IE_UNSUPTYPE;
 	UT_DEBUGMSG(("you must override virtual method IE_Imp_XML::endElement\n"));
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 }
 
 void IE_Imp_XML::_data_NewBlock ()
@@ -313,7 +313,7 @@ void IE_Imp_XML::charData(const XML_Char *s, int len)
 						// white space added for readability.  strip out any
 						// white space and put the rest in the ByteBuf.
 						
-						UT_ASSERT((sizeof(XML_Char) == sizeof(UT_Byte)));
+						UT_return_if_fail ((sizeof(XML_Char) == sizeof(UT_Byte)));
 						
 						UT_uint32 actualLen = m_currentDataItem.getLength();
 						m_currentDataItem.ins(actualLen, len); // allocate all the possibly needed memory at once

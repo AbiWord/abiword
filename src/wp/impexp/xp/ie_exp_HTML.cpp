@@ -3411,7 +3411,7 @@ void s_HTML_Listener::_setCellWidthInches(void)
 	double tot = 0;
 	UT_sint32 i =0;
 
-	UT_ASSERT((UT_sint32)m_vecDWidths.size() >= (right-1));
+	UT_ASSERT_HARMLESS((UT_sint32)m_vecDWidths.size() >= (right-1));
 
 	for(i=left; i<right; i++)
 	{
@@ -4540,7 +4540,7 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 					const PX_ChangeRecord * pcr,
 					PL_StruxFmtHandle * psfh)
 {
-	UT_ASSERT(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux);
+	UT_return_val_if_fail (pcr->getType() == PX_ChangeRecord::PXT_InsertStrux, false);
 
 	*psfh = 0; // we don't need it.
 
@@ -4688,7 +4688,7 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 bool s_HTML_Listener::change (PL_StruxFmtHandle /*sfh*/,
 							  const PX_ChangeRecord * /*pcr*/)
 {
-	UT_ASSERT(0);						// this function is not used.
+	UT_ASSERT_HARMLESS(0);						// this function is not used.
 	return false;
 }
 
@@ -4700,13 +4700,13 @@ bool s_HTML_Listener::insertStrux (PL_StruxFmtHandle /*sfh*/,
 															   PL_ListenerId /* lid */,
 															   PL_StruxFmtHandle /* sfhNew */))
 {
-	UT_ASSERT(0);						// this function is not used.
+	UT_ASSERT_HARMLESS(0);						// this function is not used.
 	return false;
 }
 
 bool s_HTML_Listener::signal (UT_uint32 /* iSignal */)
 {
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 	return false;
 }
 
@@ -5056,7 +5056,7 @@ bool s_StyleTree::populateStrux (PL_StruxDocHandle /*sdh*/,
 								 const PX_ChangeRecord * pcr,
 								 PL_StruxFmtHandle * psfh)
 {
-	UT_ASSERT(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux);
+	UT_return_val_if_fail (pcr->getType() == PX_ChangeRecord::PXT_InsertStrux, false);
 
 	*psfh = 0; // we don't need it.
 
@@ -5076,7 +5076,7 @@ bool s_StyleTree::populateStrux (PL_StruxDocHandle /*sdh*/,
 bool s_StyleTree::change (PL_StruxFmtHandle /*sfh*/,
 						  const PX_ChangeRecord * /*pcr*/)
 {
-	UT_ASSERT(0);						// this function is not used.
+	UT_ASSERT_HARMLESS(0);						// this function is not used.
 	return false;
 }
 
@@ -5088,13 +5088,13 @@ bool s_StyleTree::insertStrux (PL_StruxFmtHandle /*sfh*/,
 														   PL_ListenerId /* lid */,
 														   PL_StruxFmtHandle /* sfhNew */))
 {
-	UT_ASSERT(0);						// this function is not used.
+	UT_ASSERT_HARMLESS(0);						// this function is not used.
 	return false;
 }
 
 bool s_StyleTree::signal (UT_uint32 /* iSignal */)
 {
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 	return false;
 }
 

@@ -39,7 +39,7 @@ PX_ChangeRecord * PX_ChangeRecord_Glob::reverse(void) const
 	PX_ChangeRecord_Glob * pcr
 		= new PX_ChangeRecord_Glob(getRevType(),getRevFlags());
 
-	UT_ASSERT(pcr);
+	UT_ASSERT_HARMLESS(pcr);
 	return pcr;
 }
 
@@ -67,7 +67,7 @@ UT_Byte PX_ChangeRecord_Glob::getRevFlags(void) const
 	case PX_ChangeRecord_Glob::PXF_UserAtomicEnd:
 		return PX_ChangeRecord_Glob::PXF_UserAtomicStart;
 	default:
-		UT_ASSERT(0);
+		UT_ASSERT_HARMLESS(0);
 		return 0;
 	}
 }

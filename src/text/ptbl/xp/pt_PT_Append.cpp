@@ -72,16 +72,14 @@ bool pt_PieceTable::appendStrux(PTStruxType pts, const XML_Char ** attributes, p
 bool pt_PieceTable::appendStruxFmt(pf_Frag_Strux * pfs, const XML_Char ** attributes)
 {
 	// can only be used while loading the document
-	UT_ASSERT(m_pts==PTS_Loading);
+	UT_return_val_if_fail (m_pts==PTS_Loading,false);
 
 	// Only a strux can be appended to an empty document
-	UT_ASSERT(NULL != m_fragments.getFirst());
+	UT_return_val_if_fail (NULL != m_fragments.getFirst(), false);
 	if (!m_fragments.getFirst())
 		return false;
 
-	UT_ASSERT( pfs );
-	if(!pfs)
-		return false;
+	UT_return_val_if_fail ( pfs, false );
 
 	PT_AttrPropIndex currentAP = pfs->getIndexAP();
 
@@ -104,12 +102,10 @@ bool pt_PieceTable::appendStruxFmt(pf_Frag_Strux * pfs, const XML_Char ** attrib
 bool pt_PieceTable::appendFmt(const XML_Char ** attributes)
 {
 	// can only be used while loading the document
-	UT_ASSERT(m_pts==PTS_Loading);
+	UT_return_val_if_fail (m_pts==PTS_Loading, false);
 
 	// Only a strux can be appended to an empty document
-	UT_ASSERT(NULL != m_fragments.getFirst());
-	if (!m_fragments.getFirst())
-		return false;
+	UT_return_val_if_fail (NULL != m_fragments.getFirst(), false);
 
 	// create a new Attribute/Property structure in the table
 	// and set the current index to it.  the next span of text
@@ -128,12 +124,10 @@ bool pt_PieceTable::appendFmt(const XML_Char ** attributes)
 bool pt_PieceTable::appendFmt(const UT_GenericVector<XML_Char*> * pVecAttributes)
 {
 	// can only be used while loading the document
-	UT_ASSERT(m_pts==PTS_Loading);
+	UT_return_val_if_fail (m_pts==PTS_Loading, false);
 
 	// Only a strux can be appended to an empty document
-	UT_ASSERT(NULL != m_fragments.getFirst());
-	if (!m_fragments.getFirst())
-		return false;
+	UT_return_val_if_fail (NULL != m_fragments.getFirst(),false);
 
 	if (!m_varset.storeAP(pVecAttributes,&loading.m_indexCurrentInlineAP))
 		return false;
@@ -144,12 +138,10 @@ bool pt_PieceTable::appendFmt(const UT_GenericVector<XML_Char*> * pVecAttributes
 bool pt_PieceTable::appendSpan(const UT_UCSChar * pbuf, UT_uint32 length)
 {
 	// can only be used while loading the document
-	UT_ASSERT(m_pts==PTS_Loading);
+	UT_return_val_if_fail (m_pts==PTS_Loading, false);
 
 	// Only a strux can be appended to an empty document
-	UT_ASSERT(NULL != m_fragments.getFirst());
-	if (!m_fragments.getFirst())
-		return false;
+	UT_return_val_if_fail (NULL != m_fragments.getFirst(),false);
 
 	// append the text data to the end of the buffer.
 
@@ -230,12 +222,10 @@ bool pt_PieceTable::insertStruxBeforeFrag(pf_Frag * pF, PTStruxType pts,
 bool pt_PieceTable::insertSpanBeforeFrag(pf_Frag * pf, const UT_UCSChar * p, UT_uint32 length)
 {
 	// can only be used while loading the document
-	UT_ASSERT(m_pts==PTS_Loading);
+	UT_return_val_if_fail (m_pts==PTS_Loading, false);
 
 	// Only a strux can be appended to an empty document
-	UT_ASSERT(NULL != m_fragments.getFirst());
-	if (!m_fragments.getFirst())
-		return false;
+	UT_return_val_if_fail (NULL != m_fragments.getFirst(),false);
 
 	// cannot insert before first fragment (i.e., span cannot start a document)
 	UT_return_val_if_fail(pf && pf->getPrev() && pf != m_fragments.getFirst(), false);
@@ -335,7 +325,7 @@ bool pt_PieceTable::_makeStrux(PTStruxType pts, const XML_Char ** attributes, pf
 {
 	// create a new structure fragment at the current end of the document.
 	// this function can only be called while loading the document.
-	UT_ASSERT(m_pts==PTS_Loading);
+	UT_return_val_if_fail (m_pts==PTS_Loading, false);
 
 	// first, store the attributes and properties and get an index to them.
 
@@ -376,12 +366,10 @@ bool pt_PieceTable::_makeObject(PTObjectType pto, const XML_Char ** attributes, 
 {
 	// create a new object fragment at the current end of the document.
 	// this function can only be called while loading the document.
-	UT_ASSERT(m_pts==PTS_Loading);
+	UT_return_val_if_fail (m_pts==PTS_Loading, false);
 
 	// Only a strux can be appended to an empty document
-	UT_ASSERT(NULL != m_fragments.getFirst());
-	if (!m_fragments.getFirst())
-		return false;
+	UT_return_val_if_fail (NULL != m_fragments.getFirst(), false);
 
 	// first, store the attributes and properties and get an index to them.
 
@@ -398,12 +386,10 @@ bool pt_PieceTable::_makeObject(PTObjectType pto, const XML_Char ** attributes, 
 bool pt_PieceTable::_makeFmtMark(pf_Frag_FmtMark * &pff)
 {
 	// this function can only be called while loading the document.
-	UT_ASSERT(m_pts==PTS_Loading);
+	UT_return_val_if_fail (m_pts==PTS_Loading,false);
 
 	// Only a strux can be appended to an empty document
-	UT_ASSERT(NULL != m_fragments.getFirst());
-	if (!m_fragments.getFirst())
-		return false;
+	UT_return_val_if_fail (NULL != m_fragments.getFirst(),false);
 
 	pff = new pf_Frag_FmtMark(this,loading.m_indexCurrentInlineAP);
 	if (!pff)
@@ -416,12 +402,10 @@ bool pt_PieceTable::_makeFmtMark(pf_Frag_FmtMark * &pff)
 bool pt_PieceTable::_makeFmtMark(pf_Frag_FmtMark * &pff, const XML_Char ** attributes)
 {
 	// this function can only be called while loading the document.
-	UT_ASSERT(m_pts==PTS_Loading);
+	UT_return_val_if_fail (m_pts==PTS_Loading,false);
 
 	// Only a strux can be appended to an empty document
-	UT_ASSERT(NULL != m_fragments.getFirst());
-	if (!m_fragments.getFirst())
-		return false;
+	UT_return_val_if_fail (NULL != m_fragments.getFirst(), false);
 	if(attributes == NULL)
 		{
 			return _makeFmtMark(pff);

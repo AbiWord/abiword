@@ -1341,7 +1341,7 @@ void IE_Imp_XHTML::endElement(const XML_Char *name)
 	case TT_LI:
 	case TT_DT:
 	case TT_DD:
-		UT_ASSERT(m_lenCharDataSeen==0);
+		UT_ASSERT_HARMLESS(m_lenCharDataSeen==0);
 		m_parseState = _PS_Sec;
 		while (_getInlineDepth ()) _popInlineFmt ();
 		return;
@@ -1354,7 +1354,7 @@ void IE_Imp_XHTML::endElement(const XML_Char *name)
 	case TT_H5:
 	case TT_H6:
 	case TT_BLOCKQUOTE:
-		UT_ASSERT(m_lenCharDataSeen==0);
+		UT_ASSERT_HARMLESS(m_lenCharDataSeen==0);
 		if (m_listType == L_NONE)
 			{
 				m_parseState = _PS_Sec;
@@ -1383,7 +1383,7 @@ void IE_Imp_XHTML::endElement(const XML_Char *name)
 	case TT_CITE:
 	case TT_EM:
 	case TT_I:
-		UT_ASSERT(m_lenCharDataSeen==0);
+		UT_ASSERT_HARMLESS(m_lenCharDataSeen==0);
 		_popInlineFmt ();
 		if (m_parseState == _PS_Block)
 			{
@@ -1392,7 +1392,7 @@ void IE_Imp_XHTML::endElement(const XML_Char *name)
 		return;
 
 	case TT_SPAN:
-		UT_ASSERT(m_lenCharDataSeen==0);
+		UT_ASSERT_HARMLESS(m_lenCharDataSeen==0);
 		//UT_DEBUGMSG(("B %d\n", m_parseState));
 		X_VerifyParseState(_PS_Block);
 		X_CheckDocument(_getInlineDepth()>0);
@@ -1401,7 +1401,7 @@ void IE_Imp_XHTML::endElement(const XML_Char *name)
 		return;
 
 	case TT_BR:						// not a container, so we don't pop stack
-		UT_ASSERT(m_lenCharDataSeen==0);
+		UT_ASSERT_HARMLESS(m_lenCharDataSeen==0);
 		//UT_DEBUGMSG(("B %d\n", m_parseState));
 //		X_VerifyParseState(_PS_Block);
 		return;
@@ -1470,7 +1470,7 @@ void IE_Imp_XHTML::endElement(const XML_Char *name)
 		return;
 
 	case TT_PRE:
-		UT_ASSERT(m_lenCharDataSeen==0);
+		UT_ASSERT_HARMLESS(m_lenCharDataSeen==0);
 		if (m_parseState == _PS_Block) m_parseState = _PS_Sec;
 		m_iPreCount--;
 		m_bWhiteSignificant = (m_iPreCount > 0);
@@ -1483,7 +1483,7 @@ void IE_Imp_XHTML::endElement(const XML_Char *name)
 		// Eventually we want to render the <rt> text above the
 		// <ruby> text.  The <rp> text will not be rendered but should
 		// be retained so it can be exported.
-		UT_ASSERT(m_lenCharDataSeen==0);
+		UT_ASSERT_HARMLESS(m_lenCharDataSeen==0);
 		//UT_DEBUGMSG(("B %d\n", m_parseState));
 		X_VerifyParseState(_PS_Block);
 		X_CheckDocument(_getInlineDepth()==0);

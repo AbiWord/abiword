@@ -111,14 +111,14 @@ void AP_Win32Dialog_Paragraph::runModal(XAP_Frame * pFrame)
 
 	LPCTSTR lpTemplate = NULL;
 
-	UT_ASSERT(m_id == AP_DIALOG_ID_PARAGRAPH);
+	UT_return_if_fail (m_id == AP_DIALOG_ID_PARAGRAPH);
 
 	lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_PARAGRAPH);
 
 	int result = DialogBoxParam(pWin32App->getInstance(),lpTemplate,
 						static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
 						(DLGPROC)s_dlgProc,(LPARAM)this);
-	UT_ASSERT((result != -1));
+	UT_ASSERT_HARMLESS((result != -1));
 }
 
 BOOL CALLBACK AP_Win32Dialog_Paragraph::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
@@ -266,13 +266,13 @@ BOOL AP_Win32Dialog_Paragraph::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lP
 		pTemplate = UT_LockDlgRes(hinst, MAKEINTRESOURCE(tp.which));
 		w = CreateDialogIndirectParam(hinst, pTemplate, m_hwndTab,
 										(DLGPROC)s_tabProc, (LPARAM)&tp);
-		UT_ASSERT((w && (w == m_hwndSpacing)));
+		UT_ASSERT_HARMLESS((w && (w == m_hwndSpacing)));
 
 		tp.which = AP_RID_DIALOG_PARA_TAB2;
 		pTemplate = UT_LockDlgRes(hinst, MAKEINTRESOURCE(tp.which));
 		w = CreateDialogIndirectParam(hinst, pTemplate, m_hwndTab,
 										(DLGPROC)s_tabProc, (LPARAM)&tp);
-		UT_ASSERT((w && (w == m_hwndBreaks)));
+		UT_ASSERT_HARMLESS((w && (w == m_hwndBreaks)));
 	}
 
 	// HACK: make sure the first tab is visible
@@ -393,7 +393,7 @@ BOOL AP_Win32Dialog_Paragraph::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lPara
 		break;
 
 	default:
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		break;
 	}
 
@@ -574,7 +574,7 @@ BOOL AP_Win32Dialog_Paragraph::_onDeltaPos(NM_UPDOWN * pnmud)
 	_SPIN(m_hwndSpacing, AT,		id_SPIN_SPECIAL_SPACING);
 
 	default:
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		break;
 	}
 

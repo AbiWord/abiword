@@ -73,13 +73,13 @@ void AP_Dialog_Options::_storeWindowData(void)
 {
 	UT_uint32 i;
 	XAP_Prefs *pPrefs = m_pApp->getPrefs();
-	UT_ASSERT(pPrefs);
+	UT_return_if_fail (pPrefs);
 
 	AP_FrameData *pFrameData = (AP_FrameData *)m_pFrame->getFrameData();
-	UT_ASSERT(pFrameData);
+	UT_return_if_fail (pFrameData);
 
 	XAP_PrefsScheme *pPrefsScheme = pPrefs->getCurrentScheme();
-	UT_ASSERT(pPrefsScheme);
+	UT_return_if_fail (pPrefsScheme);
 
 	// turn off all notification to PrefListeners via XAP_Prefs
 	pPrefs->startBlockChange();
@@ -99,7 +99,7 @@ void AP_Dialog_Options::_storeWindowData(void)
 
 	// try again to make sure we've got an updatable scheme
 	pPrefsScheme = pPrefs->getCurrentScheme(true);
-	UT_ASSERT(pPrefsScheme);
+	UT_return_if_fail (pPrefsScheme);
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// save the values to the Prefs classes
@@ -182,7 +182,7 @@ void AP_Dialog_Options::_storeWindowData(void)
 	{
 		pFrameData->m_bShowPara = _gatherViewUnprintable() ;
 		AV_View * pAVView = m_pFrame->getCurrentView();
-		UT_ASSERT(pAVView);
+		UT_return_if_fail (pAVView);
 
 		FV_View * pView = static_cast<FV_View *> (pAVView);
 
@@ -207,7 +207,6 @@ void AP_Dialog_Options::_storeWindowData(void)
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// save screen color
-	UT_ASSERT(sizeof(XML_Char) && sizeof(char));
 	pPrefsScheme->setValue((XML_Char*)XAP_PREF_KEY_ColorForTransparent,
 				   _gatherColorForTransparent() );
 
@@ -263,7 +262,7 @@ void AP_Dialog_Options::_populateWindowData(void)
 	//		 dialog into an app-specific
 
 	pPrefs = m_pApp->getPrefs();
-	UT_ASSERT( pPrefs );
+	UT_return_if_fail ( pPrefs );
 
 	// ------------ Spell
 	if (pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_AutoSpellCheck,&b))
@@ -446,7 +445,7 @@ void AP_Dialog_Options::_event_SetDefaults(void)
 	int currentPage;
 
 	pPrefs = m_pApp->getPrefs();
-	UT_ASSERT(pPrefs);
+	UT_return_if_fail (pPrefs);
 
 	// SetDefaults
 	//	To set the defaults, save the scheme name and notebook page number,

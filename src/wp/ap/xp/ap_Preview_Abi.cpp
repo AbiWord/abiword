@@ -158,7 +158,7 @@ AP_Preview_Abi::AP_Preview_Abi(GR_Graphics * gc, UT_uint32 iWidth,
 		m_pDocument->m_docPageSize.Set(curWidth,curHeight,DIM_IN);
 		break;
 	default:
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 	}
 	m_pDocLayout = new FL_DocLayout(m_pDocument,gc);
 //

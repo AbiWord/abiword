@@ -135,7 +135,7 @@ void AP_Dialog_FormatTOC::stopUpdater(void)
 void AP_Dialog_FormatTOC::autoUpdate(UT_Worker * pTimer)
 {
 
-	UT_ASSERT(pTimer);
+	UT_return_if_fail (pTimer);
 	
 // this is a static callback method and does not have a 'this' pointer
 
@@ -153,16 +153,15 @@ UT_UTF8String AP_Dialog_FormatTOC::getNewStyle(UT_UTF8String & sProp)
 		return sNewStyle;
 	}
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
-	UT_ASSERT(pFrame);
+	UT_return_val_if_fail (pFrame, sNewStyle);
 	XAP_DialogFactory * pDialogFactory
 		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
 
 	AP_Dialog_Stylist * pDialog
 		= static_cast<AP_Dialog_Stylist *>(pDialogFactory->requestDialog(AP_DIALOG_ID_STYLIST));
-	UT_ASSERT(pDialog);
+	UT_return_val_if_fail (pDialog, sNewStyle);
 	UT_UTF8String sVal = getTOCPropVal(sProp);
-	if (!pDialog)
-		return sNewStyle;
+
 	pDialog->setCurStyle(sVal);
 	pDialog->runModal(pFrame);
 	if(pDialog->isStyleValid())
@@ -251,7 +250,7 @@ void AP_Dialog_FormatTOC::setTOCProperty(UT_UTF8String & sProp, UT_UTF8String & 
 
 void AP_Dialog_FormatTOC::setPropFromDoc(const char * szProp)
 {
-	UT_ASSERT(m_pAP);
+	UT_return_if_fail (m_pAP);
 	const char * szVal = NULL;
 	m_pAP->getProperty(szProp,szVal);
 	if(szVal == NULL)
@@ -259,7 +258,7 @@ void AP_Dialog_FormatTOC::setPropFromDoc(const char * szProp)
 		const PP_Property * pProp = PP_lookupProperty(szProp);
 		if(pProp == NULL)
 		{
-			UT_ASSERT(0);
+			UT_ASSERT_HARMLESS(0);
 			return;
 		}
 		szVal = pProp->m_pszInitial;
@@ -367,7 +366,7 @@ void AP_Dialog_FormatTOC::fillTOCPropsFromDoc(void)
 		PT_DocPosition pos = pView->getSelectionAnchor();
 		PL_StruxDocHandle sdhTOC = NULL;
 		m_pDoc->getStruxOfTypeFromPosition(pos,PTX_SectionTOC, &sdhTOC);
-		UT_ASSERT(sdhTOC);
+		UT_return_if_fail (sdhTOC);
 //
 // OK Now lets gets all props from here and place them in our local cache
 //

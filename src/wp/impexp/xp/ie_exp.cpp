@@ -171,7 +171,7 @@ void IE_Exp::_abortFile(void)
 {
 	// abort the write.
 	// TODO close the file and do any restore and/or cleanup.
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 	_closeFile();
 	return;
 }
@@ -303,7 +303,7 @@ IEFileType IE_Exp::fileTypeForSuffix(const char * szSuffix)
 	for (UT_uint32 k=0; k < nrElements; k++)
 	{
 		IE_ExpSniffer * s = m_sniffers.getNthItem(k);
-		UT_ASSERT(s);
+		UT_return_val_if_fail (s, IEFT_Unknown);
 		if (s->recognizeSuffix(szSuffix))
 		{
 			for (UT_uint32 a = 0; a < nrElements; a++)
@@ -312,7 +312,7 @@ IEFileType IE_Exp::fileTypeForSuffix(const char * szSuffix)
 					return static_cast<IEFileType>(a+1);
 			}
 
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			// Hm... an exporter has registered for the given suffix,
 			// but refuses to support any file type we request.
 			// Default to native format.
@@ -393,7 +393,7 @@ IEFileType IE_Exp::fileTypeForDescription(const char * szDescription)
 				return ieft;
 		}
 		else
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 	}
 
 	return ieft;
@@ -442,7 +442,7 @@ const char * IE_Exp::suffixesForFileType(IEFileType ieft)
 	if (pSniffer->getDlgLabels(&szDummy,&szSuffixes,&ieftDummy))
 		return szSuffixes;
 	else
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 
 	// The passed in filetype is invalid.
 	return 0;
@@ -466,7 +466,7 @@ const char * IE_Exp::descriptionForFileType(IEFileType ieft)
 	if (pSniffer->getDlgLabels(&szDescription,&szDummy,&ieftDummy))
 		return szDescription;
 	else
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 
 	// The passed in filetype is invalid.
 	return 0;
@@ -503,8 +503,8 @@ UT_Error IE_Exp::constructExporter(PD_Document * pDocument,
 		ieft = IE_Exp::fileTypeForSuffix(UT_pathSuffix(szFilename));
 	}
 
-	UT_ASSERT(ieft != IEFT_Unknown);
-	UT_ASSERT(ieft != IEFT_Bogus);
+	UT_return_val_if_fail (ieft != IEFT_Unknown, UT_ERROR);
+	UT_return_val_if_fail (ieft != IEFT_Bogus, UT_ERROR);
 
    	// let the caller know what kind of exporter they're getting
    	if (pieft != NULL) 

@@ -71,7 +71,7 @@ void AP_Win32Dialog_Replace::activate(void)
 
 	iResult = BringWindowToTop( m_hWnd );
 	
-	UT_ASSERT((iResult != 0));
+	UT_return_if_fail ((iResult != 0));
 	
 	{
 	UT_UCSChar * bufferUnicode = getFindString();
@@ -107,7 +107,7 @@ void AP_Win32Dialog_Replace::destroy(void)
 {
 	int iResult = DestroyWindow( m_hWnd );
 
-	UT_ASSERT((iResult != 0));
+	UT_ASSERT_HARMLESS((iResult != 0));
 
 	modeless_cleanup();
 }
@@ -147,7 +147,7 @@ void AP_Win32Dialog_Replace::runModeless(XAP_Frame * pFrame)
 		lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_FIND);
 	else
 	{
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		return;
 	}
 
@@ -158,7 +158,7 @@ void AP_Win32Dialog_Replace::runModeless(XAP_Frame * pFrame)
 							static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
 							(DLGPROC)s_dlgProc,(LPARAM)this);
 
-	UT_ASSERT((hResult != NULL));
+	UT_return_if_fail ((hResult != NULL));
 
 	m_hWnd = hResult;
 
@@ -173,7 +173,7 @@ void AP_Win32Dialog_Replace::runModeless(XAP_Frame * pFrame)
 	iResult = ShowWindow( m_hWnd, SW_SHOW );
 
 	iResult = BringWindowToTop( m_hWnd );
-	UT_ASSERT((iResult != 0));
+	UT_ASSERT_HARMLESS((iResult != 0));
 	m_pView->focusChange(AV_FOCUS_MODELESS);
 }
 
@@ -392,7 +392,7 @@ FreeMemory:
 
 BOOL AP_Win32Dialog_Replace::_onBtn_Replace(HWND hWnd)
 {
-	UT_ASSERT((m_id == AP_DIALOG_ID_REPLACE));
+	UT_return_val_if_fail ((m_id == AP_DIALOG_ID_REPLACE), 0);
 
 	char * pBufFromDialogFind = NULL;
 	char * pBufFromDialogReplace = NULL;
@@ -449,7 +449,7 @@ FreeMemory:
 
 BOOL AP_Win32Dialog_Replace::_onBtn_ReplaceAll(HWND hWnd)
 {
-	UT_ASSERT((m_id == AP_DIALOG_ID_REPLACE));
+	UT_return_val_if_fail ((m_id == AP_DIALOG_ID_REPLACE),0);
 
 	char * pBufFromDialogFind = NULL;
 	char * pBufFromDialogReplace = NULL;

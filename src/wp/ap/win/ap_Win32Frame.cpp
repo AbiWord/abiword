@@ -51,7 +51,7 @@ XAP_Frame* AP_Win32Frame::cloneFrame(void)
 {
 	AP_Win32Frame* pClone = new AP_Win32Frame(this);
 
-	UT_ASSERT(pClone);
+	UT_ASSERT_HARMLESS(pClone);
 	return pClone;
 }
 
@@ -152,7 +152,7 @@ bool AP_Win32Frame::_createScrollBarListeners(AV_View * pView, AV_ScrollObj *& p
 	if (!pView->addListener(pViewListener,&lid) ||
 		!pView->addListener(pScrollbarViewListener, &lidScrollbarViewListener))
 	{
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		return false;
 	}
 
@@ -179,7 +179,7 @@ void AP_Win32Frame::_scrollFuncY(void* pData, UT_sint32 yoff, UT_sint32 ylimit)
 {
 	// this is a static callback function and doesn't have a 'this' pointer.
 	AP_Win32Frame * pWin32Frame = static_cast<AP_Win32Frame *>(pData);
-	UT_ASSERT(pWin32Frame);
+	UT_return_if_fail (pWin32Frame);
 
 	pWin32Frame->getAPWin32FrameImpl()->_scrollFuncY(yoff, ylimit);
 }
@@ -188,7 +188,7 @@ void AP_Win32Frame::_scrollFuncX(void* pData, UT_sint32 xoff, UT_sint32 xlimit)
 {
 	// this is a static callback function and doesn't have a 'this' pointer.
 	AP_Win32Frame * pWin32Frame = static_cast<AP_Win32Frame *>(pData);
-	UT_ASSERT(pWin32Frame);
+	UT_return_if_fail (pWin32Frame);
 
 	pWin32Frame->getAPWin32FrameImpl()->_scrollFuncX(xoff, xlimit);
 }

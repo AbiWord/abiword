@@ -62,7 +62,7 @@ bool AP_Win32Prefs::loadBuiltinPrefs(void)
 		UT_DEBUGMSG(("Prefs: Using LOCALE info from environment [%s]\n", szLocaleInfo));
 		
 		AP_Win32App * pApp = static_cast<AP_Win32App*>(XAP_App::getApp()); 
-		UT_ASSERT(pApp);
+		UT_return_val_if_fail (pApp, false);
 				
 		/* Do we have a string set for this locale?*/
 		if (!pApp->doesStringSetExist(szLocaleInfo))
@@ -85,7 +85,7 @@ bool AP_Win32Prefs::loadBuiltinPrefs(void)
 	}
 	else
 	{
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 	}
 
 	return ret;

@@ -69,7 +69,7 @@ AP_Win32Dialog_PageNumbers::~AP_Win32Dialog_PageNumbers()
 
 void AP_Win32Dialog_PageNumbers::runModal(XAP_Frame* pFrame)
 {
-	UT_ASSERT(pFrame);
+	UT_return_if_fail (pFrame);
 
 	// raise the dialog
 	m_helper.runModal(pFrame, AP_DIALOG_ID_PAGE_NUMBERS, AP_RID_DIALOG_PAGENUMBERS, this);
@@ -193,24 +193,21 @@ BOOL AP_Win32Dialog_PageNumbers::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPa
 
 void AP_Win32Dialog_PageNumbers::_createPreviewWidget()
 {
-	UT_ASSERT(m_hThisDlg);
+	UT_return_if_fail (m_hThisDlg);
 
 	HWND hWndChild = GetDlgItem(m_hThisDlg, AP_RID_DIALOG_PAGENUMBERS_STATIC_PREVIEW_WIDGET);
 
 	// If we don't get the preview control things are bad!
-	UT_ASSERT(hWndChild);
+	UT_return_if_fail (hWndChild);
 
-	if (hWndChild)	// don't let it crash in non-debug builds
-	{
-		m_pPreviewWidget =
-			new XAP_Win32PreviewWidget(	static_cast<XAP_Win32App*>(m_pApp),
-										  hWndChild,
-										  0);
-		UT_uint32 w,h;
-		m_pPreviewWidget->getWindowSize(&w, &h);
-		_createPreviewFromGC(m_pPreviewWidget->getGraphics(), w, h);
-		m_pPreviewWidget->setPreview(m_preview);	// make it handle WM_PAINT!
-	}
+	m_pPreviewWidget =
+		new XAP_Win32PreviewWidget(	static_cast<XAP_Win32App*>(m_pApp),
+									hWndChild,
+									0);
+	UT_uint32 w,h;
+	m_pPreviewWidget->getWindowSize(&w, &h);
+	_createPreviewFromGC(m_pPreviewWidget->getGraphics(), w, h);
+	m_pPreviewWidget->setPreview(m_preview);	// make it handle WM_PAINT!
 }
 
 

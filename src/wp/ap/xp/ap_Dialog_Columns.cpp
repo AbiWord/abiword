@@ -67,10 +67,10 @@ void AP_Dialog_Columns::_createPreviewFromGC(GR_Graphics * gc,
 										   UT_uint32 width,
 										   UT_uint32 height)
 {
-	UT_ASSERT(gc);
+	UT_return_if_fail (gc);
 
 	m_pColumnsPreview = new AP_Columns_preview(gc,this);
-	UT_ASSERT(m_pColumnsPreview);
+	UT_return_if_fail (m_pColumnsPreview);
 
 	m_pColumnsPreview->setWindowSize(width, height);
 	m_pColumnsPreview->set(m_iColumns, m_bLineBetween);

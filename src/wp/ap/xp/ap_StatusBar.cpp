@@ -315,11 +315,11 @@ AP_StatusBarField_ProgressBar::~AP_StatusBarField_ProgressBar(void)
 
 static void updateProgress(UT_Worker * pWorker)
 {
-    UT_ASSERT(pWorker);
+    UT_return_if_fail (pWorker);
 
     AP_StatusBarField_ProgressBar *pfspb;
     pfspb = static_cast<AP_StatusBarField_ProgressBar *>(pWorker->getInstanceData());
-    UT_ASSERT(pfspb);
+    UT_return_if_fail (pfspb);
 
     if(pfspb->getListener())
 	pfspb->getListener()->notify();
@@ -367,7 +367,7 @@ AP_StatusBar::AP_StatusBar(XAP_Frame * pFrame)
 
 #define DclField(type,var)								\
 		type * var = new type(this);					\
-		UT_ASSERT((var));								\
+		UT_return_if_fail ((var));								\
 		m_vecFields.addItem((var));						\
 		
     DclField(ap_sbf_PageInfo, pf1);
@@ -441,7 +441,7 @@ bool AP_StatusBar::notify(AV_View * pView, const AV_ChangeMask mask)
 	
     // Let each field on the status bar update itself accordingly.
 	
-    UT_ASSERT(pView==m_pView);
+    UT_ASSERT_HARMLESS(pView==m_pView);
     UT_uint32 kLimit = m_vecFields.getItemCount();
     UT_uint32 k;
 

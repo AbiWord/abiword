@@ -31,13 +31,7 @@ PP_Revision::PP_Revision(UT_uint32 Id, PP_RevisionType eType, const XML_Char * p
 	if(props)
 	{
 		char * pProps = UT_strdup(props);
-
-		UT_ASSERT(pProps);
-		if(!pProps)
-		{
-			UT_DEBUGMSG(("PP_Revision::PP_Revision: out of memory\n"));
-			return;
-		}
+		UT_return_if_fail (pProps);
 
 		char * p = strtok(pProps, ":");
 
@@ -45,7 +39,7 @@ PP_Revision::PP_Revision(UT_uint32 Id, PP_RevisionType eType, const XML_Char * p
 		{
 			char * n = p;
 			p = strtok(NULL, ";");
-			UT_ASSERT(p && n);
+			UT_ASSERT_HARMLESS(p && n);
 
 			if(p && n)
 			{
@@ -69,7 +63,7 @@ PP_Revision::PP_Revision(UT_uint32 Id, PP_RevisionType eType, const XML_Char * p
 	{
 		char * pAttrs = UT_strdup(attrs);
 
-		UT_ASSERT(pAttrs);
+		UT_ASSERT_HARMLESS(pAttrs);
 		if(!pAttrs)
 		{
 			UT_DEBUGMSG(("PP_Revision::PP_Revision: out of memory\n"));
@@ -82,7 +76,7 @@ PP_Revision::PP_Revision(UT_uint32 Id, PP_RevisionType eType, const XML_Char * p
 		{
 			char * n = p;
 			p = strtok(NULL, ";");
-			UT_ASSERT(p && n);
+			UT_ASSERT_HARMLESS(p && n);
 
 			if(p && n)
 			{
@@ -470,7 +464,7 @@ void PP_RevisionAttr::pruneForCumulativeResult()
 	// finally, remove the revision attribute if present
 	r0->setAttribute("revision", NULL);
 
-	UT_ASSERT( m_vRev.getItemCount() == 1 );
+	UT_ASSERT_HARMLESS( m_vRev.getItemCount() == 1 );
 }
 
 
@@ -542,7 +536,7 @@ const PP_Revision *  PP_RevisionAttr::getGreatestLesserOrEqualRevision(UT_uint32
 	{
 		if(!m)
 		{
-			//UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			//UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			// this happens when there was no revision attribute
 			return NULL;
 		}
@@ -611,7 +605,7 @@ const PP_Revision * PP_RevisionAttr::getLastRevision()
 		}
 	}
 
-	UT_ASSERT( m_pLastRevision );
+	UT_ASSERT_HARMLESS( m_pLastRevision );
 	return m_pLastRevision;
 }
 
@@ -698,7 +692,8 @@ void PP_RevisionAttr::addRevision(UT_uint32 iId, PP_RevisionType eType, const XM
 			// editor just changed his mind
 			// we need to make distinction between different cases
 
-			if((eType == PP_REVISION_DELETION) && (r_type == PP_REVISION_ADDITION))
+			if((eType == PP_REVISION_DELETION) && (   r_type == PP_REVISION_ADDITION
+												   || r_type == PP_REVISION_ADDITION_AND_FMT))
 			{
 				// the editor originally inserted a new segment of
 				// text but now wants it out; we cannot just remove
@@ -757,7 +752,8 @@ void PP_RevisionAttr::addRevision(UT_uint32 iId, PP_RevisionType eType, const XM
 				const PP_Revision * pRevision = new PP_Revision(iId, eType, pProps, pAttrs);
 				m_vRev.addItem((void*)pRevision);
 			}
-			else if((eType == PP_REVISION_FMT_CHANGE) && (r_type == PP_REVISION_ADDITION))
+			else if((eType == PP_REVISION_FMT_CHANGE) && (   r_type == PP_REVISION_ADDITION
+														  || r_type == PP_REVISION_ADDITION_AND_FMT))
 			{
 				// the editor first added this fragment, and now wants
 				// to apply a format change on the top of that
@@ -891,12 +887,16 @@ void PP_RevisionAttr::_refreshString()
 
 		if(r_type != PP_REVISION_DELETION)
 		{
-			if(r->hasProperties())
-			{
+			// if we have no props but have attribs, we have to issue empty braces so as not to
+			// confuse attribs with props
+			if(r->hasProperties() || r->hasAttributes())
 				m_sXMLstring += "{";
+			
+			if(r->hasProperties())
 				m_sXMLstring += r->getPropsString();
+			
+			if(r->hasProperties() || r->hasAttributes())
 				m_sXMLstring += "}";
-			}
 			
 			if(r->hasAttributes())
 			{
@@ -939,7 +939,7 @@ bool PP_RevisionAttr::isFragmentSuperfluous() const
 	// and the fragment belongs only to a single revision level
 	if(m_iSuperfluous != 0 && m_vRev.getItemCount() == 1)
 	{
-		UT_ASSERT(((PP_Revision *)m_vRev.getNthItem(0))->getId() == m_iSuperfluous);
+		UT_return_val_if_fail (((PP_Revision *)m_vRev.getNthItem(0))->getId() == m_iSuperfluous,false);
 		return true;
 	}
 	else

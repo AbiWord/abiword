@@ -32,7 +32,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 
 	EV_Menu_ActionSet * pActionSet = new EV_Menu_ActionSet(AP_MENU_ID__BOGUS1__,
 														   AP_MENU_ID__BOGUS2__);
-	UT_ASSERT(pActionSet);
+	UT_return_val_if_fail (pActionSet, NULL);
 
 	// The following is a list of all menu id's that we define,
 	// the actions that they should be bound to, and various

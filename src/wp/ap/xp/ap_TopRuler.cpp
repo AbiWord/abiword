@@ -134,7 +134,7 @@ void AP_TopRuler::setView(AV_View* pView, UT_uint32 iZoom)
 {
 	this->setView(pView);
 
-	UT_ASSERT(m_pG);
+	UT_return_if_fail (m_pG);
 	m_pG->setZoomPercentage(iZoom);
 
     // TODO this dimension shouldn't be hard coded.
@@ -144,7 +144,7 @@ void AP_TopRuler::setView(AV_View* pView, UT_uint32 iZoom)
 
 void AP_TopRuler::setZoom(UT_uint32 iZoom)
 {
-	UT_ASSERT(m_pG);
+	UT_return_if_fail (m_pG);
 	m_pG->setZoomPercentage(iZoom);
 
     // TODO this dimension shouldn't be hard coded.
@@ -155,7 +155,7 @@ void AP_TopRuler::setViewHidden(AV_View *pView)
 {
 	if(m_pView != NULL)
 	{
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		return;
 	}
 	m_pView = pView;
@@ -180,7 +180,7 @@ void AP_TopRuler::setView(AV_View * pView)
 	// create an AV_ScrollObj to receive send*ScrollEvents()
 
 	m_pScrollObj = new AV_ScrollObj(this,_scrollFuncX,_scrollFuncY);
-	UT_ASSERT(m_pScrollObj);
+	UT_return_if_fail (m_pScrollObj);
 	m_pView->addScrollListener(m_pScrollObj);
 
 	// Register the TopRuler as a ViewListeners on the View.
@@ -268,7 +268,7 @@ bool AP_TopRuler::notify(AV_View * pView, const AV_ChangeMask mask)
 	{
 		return true;
 	}
-	UT_ASSERT(pView==m_pView);
+	UT_ASSERT_HARMLESS(pView==m_pView);
 	xxx_UT_DEBUGMSG(("AP_TopRuler::notify [view %p][mask %p]\n",pView,mask));
 
 	// if the column containing the caret has changed or any
@@ -300,7 +300,7 @@ bool AP_TopRuler::notify(AV_View * pView, const AV_ChangeMask mask)
 void AP_TopRuler::_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 xlimit)
 {
 	// static callback referenced by an AV_ScrollObj() for the ruler
-	UT_ASSERT(pData);
+	UT_return_if_fail (pData);
 
 	AP_TopRuler * pTopRuler = (AP_TopRuler *)(pData);
 
@@ -392,8 +392,8 @@ void AP_TopRuler::draw(const UT_Rect * pCR, AP_TopRulerInfo * pUseInfo)
 	}
 
 	/* if you get one of these two asserts then you forgot to call setWidth() or setHeight() */
-	UT_ASSERT(m_iHeight);
-	UT_ASSERT(m_iWidth);
+	UT_ASSERT_HARMLESS(m_iHeight);
+	UT_ASSERT_HARMLESS(m_iWidth);
 
 	// draw the background
 
@@ -501,7 +501,7 @@ void AP_TopRuler::_drawTickMark(const UT_Rect * pClipRect,
 		char buf[6];
 		UT_UCSChar span[6];
 		UT_GrowBufElement charWidths[6];
-		UT_ASSERT(n < 10000);
+		UT_ASSERT_HARMLESS(n < 10000);
 
 		sprintf(buf, "%d", n);
 		UT_UCS4_strcpy_char(span, buf);
@@ -525,9 +525,9 @@ void AP_TopRuler::_drawTicks(const UT_Rect * pClipRect,
 	// xTo gives the page-relative x-coordinate of where we should end drawing.
 	// if xTo is less than xFrom we draw with values increasing to the left.
 
-	UT_ASSERT(xFrom != xTo);
-	UT_ASSERT(xFrom >= 0);
-	UT_ASSERT(xTo >= 0);
+	UT_ASSERT_HARMLESS(xFrom != xTo);
+	UT_ASSERT_HARMLESS(xFrom >= 0);
+	UT_ASSERT_HARMLESS(xTo >= 0);
 
 	UT_sint32 xFixed = static_cast<UT_sint32>(m_pG->tlu(UT_MAX(m_iLeftRulerWidth,s_iFixedWidth)));
 	FV_View * pView = static_cast<FV_View *>(m_pView);
@@ -879,12 +879,12 @@ void AP_TopRuler::_getTabStopXAnchor(AP_TopRulerInfo * pInfo,
 	else
 	{
 		// look it up in the document
-		UT_ASSERT(k<pInfo->m_iTabStops);
+		UT_ASSERT_HARMLESS(k<pInfo->m_iTabStops);
 
 		fl_TabStop TabInfo;
 		bool bRes = pInfo->m_pfnEnumTabStops(pInfo->m_pVoidEnumTabStopsData,
 												k, &TabInfo);
-		UT_ASSERT(bRes);
+		UT_ASSERT_HARMLESS(bRes);
 		iPosition = TabInfo.getPosition();
 		iType = TabInfo.getType();
 		iLeader = TabInfo.getLeader();
@@ -967,7 +967,7 @@ void AP_TopRuler::_drawTabProperties(const UT_Rect * pClipRect,
 
 			m_pG->setColor3D(GR_Graphics::CLR3D_BevelDown);
 
-			// UT_ASSERT(pInfo->m_iDefaultTabInterval > 0);
+			// UT_ASSERT_HARMLESS(pInfo->m_iDefaultTabInterval > 0);
 			if (pInfo->m_iDefaultTabInterval > 0)			// prevent infinite loop -- just in case
 			{
 				UT_sint32 iPos = xAbsLeft;
@@ -1025,7 +1025,7 @@ const char * AP_TopRuler::_getTabStopString(AP_TopRulerInfo * pInfo, UT_sint32 k
 
 	bool bRes = pInfo->m_pfnEnumTabStops(pInfo->m_pVoidEnumTabStopsData,
 											k, &TabInfo);
-	UT_ASSERT(bRes);
+	UT_return_val_if_fail (bRes, NULL);
 
 	const char* pStart = &pInfo->m_pszTabStops[TabInfo.getOffset()];
 	const char* pEnd = pStart;
@@ -1035,7 +1035,7 @@ const char * AP_TopRuler::_getTabStopString(AP_TopRulerInfo * pInfo, UT_sint32 k
 	}
 
 	UT_uint32 iLen = pEnd - pStart;
-	UT_ASSERT(iLen<20);
+	UT_return_val_if_fail (iLen<20, NULL);
 
 	static char buf[20];
 
@@ -1381,7 +1381,7 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 void AP_TopRuler::_xorGuide(bool bClear)
 {
 	GR_Graphics * pG = (static_cast<FV_View *>(m_pView))->getGraphics();
-	UT_ASSERT(pG);
+	UT_return_if_fail (pG);
 	UT_uint32 xFixed = static_cast<UT_sint32>(pG->tlu(UT_MAX(m_iLeftRulerWidth,s_iFixedWidth)));
 	FV_View * pView = static_cast<FV_View *>(m_pView);
 	if(pView->getViewMode() != VIEW_PRINT)
@@ -1440,7 +1440,7 @@ void AP_TopRuler::_xorGuide(bool bClear)
 
 	if (!bClear)
 	{
-		UT_ASSERT(m_bValidMouseClick);
+		UT_ASSERT_HARMLESS(m_bValidMouseClick);
 
 	
 #if XAP_DONTUSE_XOR
@@ -2431,7 +2431,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 	switch (m_draggingWhat)
 	{
 	case DW_NOTHING:
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		if(m_pG)
 		{
 			m_pG->setCursor(GR_Graphics::GR_CURSOR_DEFAULT);
@@ -2483,7 +2483,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 					if(!pSectionAP || !pSectionAP->getProperty("xpos",pszXpos))
 					{
 						UT_DEBUGMSG(("No xpos defined for Frame !\n"));
-						UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+						UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 						return;
 					}
 					else
@@ -2493,7 +2493,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 					if(!pSectionAP || !pSectionAP->getProperty("frame-width",pszWidth))
 					{
 						UT_DEBUGMSG(("No Width defined for Frame !\n"));
-						UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+						UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 						return;
 					}
 					else
@@ -2569,7 +2569,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 					if(!pSectionAP || !pSectionAP->getProperty("frame-width",pszWidth))
 					{
 						UT_DEBUGMSG(("No Width defined for Frame !\n"));
-						UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+						UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 						return;
 					}
 					else
@@ -2959,7 +2959,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 			return;
 		}
 	default:
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		if(m_pG)
 			m_pG->setCursor(GR_Graphics::GR_CURSOR_DEFAULT);
 		return;
@@ -3160,7 +3160,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 	switch (m_draggingWhat)
 	{
 	case DW_NOTHING:
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		return;
 
 	case DW_TABTOGGLE:
@@ -3807,7 +3807,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 		return;
 
 	default:
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		return;
 	}
 }
@@ -3949,7 +3949,7 @@ void AP_TopRuler::_ignoreEvent(bool bDone)
 		
 	case DW_NOTHING:
 	default:
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		break;
 	}
 
@@ -4265,7 +4265,7 @@ void AP_TopRuler::_drawTabStop(UT_Rect & rect, eTabType iType, bool bFilled)
 			break;
 
 		default:
-			UT_ASSERT(UT_TODO);
+			UT_ASSERT_HARMLESS(UT_TODO);
 			break;
 	}
 
@@ -4321,14 +4321,14 @@ void AP_TopRuler::_drawColumnGapMarker(UT_Rect & rect)
 /*static*/ void AP_TopRuler::_prefsListener( XAP_App * /*pApp*/, XAP_Prefs *pPrefs, UT_StringPtrMap * /*phChanges*/, void *data )
 {
 	AP_TopRuler *pTopRuler = static_cast<AP_TopRuler *>(data);
-	UT_ASSERT( data && pPrefs );
+	UT_return_if_fail ( data && pPrefs );
 
 	const XML_Char *pszBuffer;
 	pPrefs->getPrefsValue(static_cast<const XML_Char *>(AP_PREF_KEY_RulerUnits), &pszBuffer );
 
 	// or should I just default to inches or something?
 	UT_Dimension dim = UT_determineDimension( pszBuffer, DIM_none );
-	UT_ASSERT( dim != DIM_none );
+	UT_ASSERT_HARMLESS( dim != DIM_none );
 
 	if ( dim != pTopRuler->getDimension() )
 		pTopRuler->setDimension( dim );
@@ -4391,7 +4391,7 @@ void AP_TopRuler::_displayStatusMessage(XAP_String_Id FormatMessageID)
 {
 	// this is a static callback method and does not have a 'this' pointer.
 	AP_TopRuler * pRuler = static_cast<AP_TopRuler *>(pWorker->getInstanceData());
-	UT_ASSERT(pRuler);
+	UT_return_if_fail (pRuler);
 
 	pRuler->_xorGuide(true);
 
@@ -4401,7 +4401,7 @@ void AP_TopRuler::_displayStatusMessage(XAP_String_Id FormatMessageID)
 	else if (pRuler->m_aScrollDirection == 'R')
 	  newXScrollOffset = pRuler->m_xScrollOffset + pRuler->m_pG->tlu(s_tr_AUTOSCROLL_PIXELS);
 	else
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 
 	if (newXScrollOffset >= 0)
 			pRuler->m_pView->sendHorizontalScrollEvent(newXScrollOffset); // YAY it works!!

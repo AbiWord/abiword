@@ -45,13 +45,13 @@ AP_Dialog_InsertHyperlink::tAnswer AP_Dialog_InsertHyperlink::getAnswer(void) co
 
 UT_uint32 AP_Dialog_InsertHyperlink::getExistingBookmarksCount() const
 {
-	UT_ASSERT(m_pDoc);
+	UT_return_val_if_fail (m_pDoc, 0);
 	return m_pDoc->getBookmarkCount();
 }
 
 const XML_Char * AP_Dialog_InsertHyperlink::getNthExistingBookmark(UT_uint32 n) const
 {
-	UT_ASSERT(m_pDoc);
+	UT_return_val_if_fail (m_pDoc, NULL);
 	return m_pDoc->getNthBookmark(n);
 }
 

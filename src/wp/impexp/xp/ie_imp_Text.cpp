@@ -117,14 +117,14 @@ bool ImportStream::getRawChar(UT_UCSChar &ucs)
 
 	// Watch for evil Unicode values!
 	// Surrogates
-	UT_ASSERT(!(wc >= 0xD800 && wc <= 0xDFFF));
+	UT_ASSERT_HARMLESS(!(wc >= 0xD800 && wc <= 0xDFFF));
 	// Private Use Area
 	// No, Private User Area is not evil!  Commenting it out for now.
-	/* UT_ASSERT(!((wc >= 0xDB80 && wc <= 0xDBFF)||(wc >= 0xE000 && wc <= 0xF8FF))); */
+	/* UT_ASSERT_HARMLESS(!((wc >= 0xDB80 && wc <= 0xDBFF)||(wc >= 0xE000 && wc <= 0xF8FF))); */
 	// AbiWord control characters
-	UT_ASSERT(wc < UCS_ABICONTROL_START || wc > UCS_ABICONTROL_END);
+	UT_ASSERT_HARMLESS(wc < UCS_ABICONTROL_START || wc > UCS_ABICONTROL_END);
 	// Illegal characters
-	UT_ASSERT(wc != 0xFFFE && wc != 0xFFFF);
+	UT_ASSERT_HARMLESS(wc != 0xFFFE && wc != 0xFFFF);
 
 	ucs = m_ucsLookAhead;
 	m_ucsLookAhead = wc;
@@ -204,9 +204,9 @@ bool IE_Imp_Text::_insertBlock()
 	if(!isPasting())
 	{
 		pf_Frag * pf = getDoc()->getPieceTable()->getFragments().getLast();
-		UT_ASSERT( pf->getType() == pf_Frag::PFT_Strux );
+		UT_return_val_if_fail( pf->getType() == pf_Frag::PFT_Strux, false);
 		m_pBlock = (pf_Frag_Strux *) pf;
-		UT_ASSERT( m_pBlock->getStruxType() == PTX_Block );
+		UT_return_val_if_fail( m_pBlock->getStruxType() == PTX_Block, false);
 	}
 	else
 	{
@@ -752,9 +752,9 @@ UT_Error IE_Imp_Text::_writeHeader(FILE * /* fp */)
 	X_ReturnNoMemIfError(appendStrux(PTX_Block, static_cast<const XML_Char**>(&propsArray[0])));
 
 	pf_Frag * pf = getDoc()->getPieceTable()->getFragments().getLast();
-	UT_ASSERT( pf->getType() == pf_Frag::PFT_Strux );
+	UT_return_val_if_fail( pf->getType() == pf_Frag::PFT_Strux, UT_ERROR);
 	m_pBlock = (pf_Frag_Strux *) pf;
-	UT_ASSERT( m_pBlock->getStruxType() == PTX_Block );
+	UT_return_val_if_fail( m_pBlock->getStruxType() == PTX_Block, UT_ERROR );
   
 	return UT_OK;
 }

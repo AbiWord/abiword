@@ -49,7 +49,7 @@ PX_ChangeRecord * PX_ChangeRecord_SpanChange::reverse(void) const
 										 m_position,
 										 m_indexAP,m_indexOldAP,
 										 m_bufIndex,m_length,m_blockOffset);
-	UT_ASSERT(pcr);
+	UT_ASSERT_HARMLESS(pcr);
 	return pcr;
 }
 

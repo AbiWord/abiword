@@ -77,7 +77,7 @@ bool pt_PieceTable::_tellAndMaybeAddListener(PL_Listener * pListener,
 				if(sfh != NULL)
 				{
 					bStatus1 = pft->createSpecialChangeRecord(&pcr,sum,blockOffset);
-					UT_ASSERT(bStatus1);
+					UT_return_val_if_fail (bStatus1, false);
 				}
 				else
 				{
@@ -88,7 +88,7 @@ bool pt_PieceTable::_tellAndMaybeAddListener(PL_Listener * pListener,
 					pfs = (pf_Frag_Strux *) sdh;
 					blockOffset = pos - pfs->getPos() -1;
 					bStatus1 = pft->createSpecialChangeRecord(&pcr,pos,blockOffset);
-					UT_ASSERT(bStatus1);
+					UT_return_val_if_fail (bStatus1,false);
 					// I do not understand at all why this was set to
 					// false; if the doc contains a footnote section
 					// followed by a text fragment and another
@@ -116,7 +116,7 @@ bool pt_PieceTable::_tellAndMaybeAddListener(PL_Listener * pListener,
 				sfh = 0;
 				PX_ChangeRecord * pcr = NULL;
 				bool bStatus1 = pfs->createSpecialChangeRecord(&pcr,sum);
-				UT_ASSERT(bStatus1);
+				UT_return_val_if_fail (bStatus1, false);
 				bool bStatus2 = pListener->populateStrux(sdh,pcr,&sfh);
 				if (bAdd)
 				{
@@ -144,7 +144,7 @@ bool pt_PieceTable::_tellAndMaybeAddListener(PL_Listener * pListener,
 				if(sfh != NULL)
 				{
 					bStatus1 = pfo->createSpecialChangeRecord(&pcr,sum,blockOffset);
-					UT_ASSERT(bStatus1);
+					UT_return_val_if_fail (bStatus1,false);
 				}
 				else
 				{
@@ -155,7 +155,7 @@ bool pt_PieceTable::_tellAndMaybeAddListener(PL_Listener * pListener,
 					pf_Frag_Strux * pfs = (pf_Frag_Strux *) sdh;
 					blockOffset = pos - pfs->getPos() -1;
 					bStatus1 = pfo->createSpecialChangeRecord(&pcr,pos,blockOffset);
-					UT_ASSERT(bStatus1);
+					UT_return_val_if_fail (bStatus1, false);
 					// I do not understand at all why this was set to
 					// false; if the doc contains a footnote section
 					// followed by a text fragment and another
@@ -165,7 +165,7 @@ bool pt_PieceTable::_tellAndMaybeAddListener(PL_Listener * pListener,
 					bAddOffset = true;
 				}
 
-				UT_ASSERT(bStatus1);
+				UT_return_val_if_fail (bStatus1,false);
 				bool bStatus2 = pListener->populate(sfh,pcr);
 				if (pcr)
 					delete pcr;
@@ -187,7 +187,7 @@ bool pt_PieceTable::_tellAndMaybeAddListener(PL_Listener * pListener,
 				if(sfh != NULL)
 				{
 					bStatus1 = pffm->createSpecialChangeRecord(&pcr,sum,blockOffset);
-					UT_ASSERT(bStatus1);
+					UT_return_val_if_fail (bStatus1,false);
 				}
 				else
 				{
@@ -198,7 +198,7 @@ bool pt_PieceTable::_tellAndMaybeAddListener(PL_Listener * pListener,
 					pfs = (pf_Frag_Strux *) sdh;
 					blockOffset = pos - pfs->getPos() -1;
 					bStatus1 = pffm->createSpecialChangeRecord(&pcr,pos,blockOffset);
-					UT_ASSERT(bStatus1);
+					UT_return_val_if_fail (bStatus1, false);
 					bAddOffset = false;
 				}
 				bool bStatus2 = pListener->populate(sfh,pcr);
@@ -217,7 +217,7 @@ bool pt_PieceTable::_tellAndMaybeAddListener(PL_Listener * pListener,
 			break;
 			
 		default:
-			UT_ASSERT(0);
+			UT_ASSERT_HARMLESS(0);
 			return false;
 		}
 
@@ -260,7 +260,7 @@ bool pt_PieceTable::tellListenerSubset(PL_Listener * pListener,
 				else
 					endOffset = pf->getLength();
 				bool bStatus1 = pft->createSpecialChangeRecord(&pcr,sum,blockOffset,fragOffset1,endOffset);
-				UT_ASSERT(bStatus1);
+				UT_return_val_if_fail (bStatus1,false);
 				bool bStatus2 = pListener->populate(sfh,pcr);
 				if (pcr)
 					delete pcr;
@@ -278,7 +278,7 @@ bool pt_PieceTable::tellListenerSubset(PL_Listener * pListener,
 				sfh = 0;
 				PX_ChangeRecord * pcr = NULL;
 				bool bStatus1 = pfs->createSpecialChangeRecord(&pcr,sum);
-				UT_ASSERT(bStatus1);
+				UT_return_val_if_fail (bStatus1,false);
 				bool bStatus2 = pListener->populateStrux(sdh,pcr,&sfh);
 				if (pcr)
 					delete pcr;
@@ -293,7 +293,7 @@ bool pt_PieceTable::tellListenerSubset(PL_Listener * pListener,
 				pf_Frag_Object * pfo = static_cast<pf_Frag_Object *> (pf);
 				PX_ChangeRecord * pcr = NULL;
 				bool bStatus1 = pfo->createSpecialChangeRecord(&pcr,sum,blockOffset);
-				UT_ASSERT(bStatus1);
+				UT_return_val_if_fail (bStatus1,false);
 				bool bStatus2 = pListener->populate(sfh,pcr);
 				if (pcr)
 					delete pcr;
@@ -308,7 +308,7 @@ bool pt_PieceTable::tellListenerSubset(PL_Listener * pListener,
 				pf_Frag_FmtMark * pffm = static_cast<pf_Frag_FmtMark *> (pf);
 				PX_ChangeRecord * pcr = NULL;
 				bool bStatus1 = pffm->createSpecialChangeRecord(&pcr,sum,blockOffset);
-				UT_ASSERT(bStatus1);
+				UT_return_val_if_fail (bStatus1,false);
 				bool bStatus2 = pListener->populate(sfh,pcr);
 				DELETEP(pcr);
 				if (!bStatus2)
@@ -322,7 +322,7 @@ bool pt_PieceTable::tellListenerSubset(PL_Listener * pListener,
 			break;
 			
 		default:
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			return false;
 		}
 

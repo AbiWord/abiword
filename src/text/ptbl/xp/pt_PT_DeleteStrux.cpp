@@ -127,7 +127,7 @@ bool pt_PieceTable::_unlinkStrux(pf_Frag_Strux * pfs,
 		return _unlinkStrux_Block(pfs,ppfEnd,pfragOffsetEnd);
 
 	default:
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		return false;
 	}
 }
@@ -135,7 +135,7 @@ bool pt_PieceTable::_unlinkStrux(pf_Frag_Strux * pfs,
 bool pt_PieceTable::_unlinkStrux_Block(pf_Frag_Strux * pfs,
 										  pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd)
 {
-	UT_ASSERT(pfs->getStruxType()==PTX_Block);
+	UT_return_val_if_fail (pfs->getStruxType()==PTX_Block,false);
 
 	// unlink this Block strux from the document.
 	// the caller is responsible for deleting pfs.
@@ -149,7 +149,7 @@ bool pt_PieceTable::_unlinkStrux_Block(pf_Frag_Strux * pfs,
 
 	pf_Frag_Strux * pfsPrev = NULL;
 	_getStruxFromPosition(pfs->getPos(),&pfsPrev, true); // should that really skip footnotes?
-	UT_ASSERT(pfsPrev);			// we have a block that's not in a section ??
+	UT_return_val_if_fail (pfsPrev, false);			// we have a block that's not in a section ??
 	//
 	// Code to prevent a crash. But this should not happen and if it does not everything will
     // be deleted - Sevior.
@@ -180,7 +180,7 @@ bool pt_PieceTable::_unlinkStrux_Block(pf_Frag_Strux * pfs,
 		{
 			// TODO decide if this should assert or just fail...
 			UT_DEBUGMSG(("Cannot delete first paragraph with content.\n"));
-			UT_ASSERT(0);
+			UT_ASSERT_HARMLESS(0);
 			return false;
 		}
 
@@ -194,7 +194,7 @@ bool pt_PieceTable::_unlinkStrux_Block(pf_Frag_Strux * pfs,
 		{
 			// TODO decide if this should assert or just fail...
 			UT_DEBUGMSG(("Cannot delete first paragraph with content.\n"));
-			UT_ASSERT(0);
+			UT_ASSERT_HARMLESS(0);
 			return false;
 		}
 
@@ -218,7 +218,7 @@ bool pt_PieceTable::_unlinkStrux_Block(pf_Frag_Strux * pfs,
 
 
 	default:
-		UT_ASSERT(0);
+		UT_ASSERT_HARMLESS(0);
 		return false;
 	}
 }
@@ -226,7 +226,7 @@ bool pt_PieceTable::_unlinkStrux_Block(pf_Frag_Strux * pfs,
 bool pt_PieceTable::_unlinkStrux_Section(pf_Frag_Strux * pfs,
 											pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd)
 {
-	UT_ASSERT(pfs->getStruxType()==PTX_Section
+	UT_return_val_if_fail (pfs->getStruxType()==PTX_Section
 			  || pfs->getStruxType()==PTX_SectionHdrFtr
 			  || pfs->getStruxType()==PTX_SectionEndnote
 			  || pfs->getStruxType()==PTX_SectionTable
@@ -240,7 +240,7 @@ bool pt_PieceTable::_unlinkStrux_Section(pf_Frag_Strux * pfs,
 			  || pfs->getStruxType()==PTX_SectionEndnote 
 			  || pfs->getStruxType()==PTX_EndEndnote
 			  || pfs->getStruxType()==PTX_SectionTOC 
-			  || pfs->getStruxType()==PTX_EndTOC );
+			  || pfs->getStruxType()==PTX_EndTOC, false );
 
 	// unlink this Section strux from the document.
 	// the caller is responsible for deleting pfs.
@@ -266,7 +266,7 @@ bool pt_PieceTable::_unlinkStrux_Section(pf_Frag_Strux * pfs,
 		// first section in the document cannot be deleted.
 		// TODO decide if this should assesrt or just file...
 		UT_DEBUGMSG(("Cannot delete first section in document.\n"));
-		UT_ASSERT(0);
+		UT_ASSERT_HARMLESS(0);
 		return false;
 	}
 
@@ -376,7 +376,7 @@ bool pt_PieceTable::_unlinkStrux_Section(pf_Frag_Strux * pfs,
 		// and the previous section.  this is not possible.
 		// TODO decide if this should assert or just fail...
 		UT_DEBUGMSG(("No blocks between sections ??\n"));
-		UT_ASSERT(0);
+		UT_ASSERT_HARMLESS(0);
 		return false;
 
 
@@ -390,11 +390,11 @@ bool pt_PieceTable::_unlinkStrux_Section(pf_Frag_Strux * pfs,
         // but no even pages exist yet.
 		UT_DEBUGMSG(("No blocks between sections ??\n"));
 //		_unlinkFrag(pfs,ppfEnd,pfragOffsetEnd);
-		UT_ASSERT(0);
+		UT_ASSERT_HARMLESS(0);
 		return false;
 
 	default:
-		UT_ASSERT(0);
+		UT_ASSERT_HARMLESS(0);
 		return false;
 	}
 }
@@ -408,7 +408,7 @@ bool pt_PieceTable::_deleteStruxWithNotify(PT_DocPosition dpos,
 	PX_ChangeRecord_Strux * pcrs
 		= new PX_ChangeRecord_Strux(PX_ChangeRecord::PXT_DeleteStrux,
 									dpos, pfs->getIndexAP(), pfs->getStruxType());
-	UT_ASSERT(pcrs);
+	UT_return_val_if_fail (pcrs, false);
 
 	if (!_unlinkStrux(pfs,ppfEnd,pfragOffsetEnd))
 		return false;
@@ -652,7 +652,7 @@ void pt_PieceTable::_deleteHdrFtrStruxWithNotify( pf_Frag_Strux * pfFragStruxHdr
 //
 //
 	UT_uint32 count = vecFragStrux.getItemCount();
-	UT_ASSERT(count > 1);
+	UT_return_if_fail (count > 1);
 	UT_uint32 i=0;
 	bool bres = false;
 //
@@ -668,16 +668,16 @@ void pt_PieceTable::_deleteHdrFtrStruxWithNotify( pf_Frag_Strux * pfFragStruxHdr
 		if(static_cast<pf_Frag *>(pfs) ==  getFragments().getLast())
 		{
 			UT_DEBUGMSG(("Delete Last Strux type %d \n",pfs->getStruxType()));
-			UT_ASSERT(0);
+			UT_ASSERT_HARMLESS(0);
 		}
 		UT_DEBUGMSG(("Delete Strux at %d strux type is %d \n",pfs->getPos(),pfs->getStruxType()));
 		if(pfs->getStruxType() != PTX_SectionHdrFtr)
 		{
 			bres = _deleteStruxWithNotify(pfs->getPos(),pfs,NULL,NULL);
 		}
-		UT_ASSERT(bres);
+		UT_return_if_fail (bres);
 	}
-	UT_ASSERT(bres);
+	UT_return_if_fail (bres);
 //	deleteSpan(HdrFtrPos,TextStartPos,NULL,true);
 }
 

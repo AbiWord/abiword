@@ -50,7 +50,7 @@
 #define X_TestParseState(ps)	((m_parseState==(ps)))
 
 #define X_VerifyParseState(ps)	do {  if (!(X_TestParseState(ps)))  \
-									  {  m_error = UT_IE_BOGUSDOCUMENT;	UT_ASSERT(0); \
+									  {  m_error = UT_IE_BOGUSDOCUMENT;	UT_ASSERT_HARMLESS(0); \
 										 return; } } while (0)
 
 #define X_CheckDocument(b)		do {  if (!(b))								\
@@ -420,7 +420,7 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 			if(!bOK)
 			{
 				UT_DEBUGMSG(("List id %d [%s] already in use\n",id,pszId));
-				UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
+				UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
 			}
 		}
 		X_CheckError(appendStrux(PTX_Block,atts));
@@ -1002,7 +1002,7 @@ void IE_Imp_AbiWord_1::endElement(const XML_Char *name)
 		return;
 
 	case TT_STYLE:
-		UT_ASSERT(m_lenCharDataSeen==0);
+		UT_ASSERT_HARMLESS(m_lenCharDataSeen==0);
 		X_VerifyParseState(_PS_Style);
 		m_parseState = _PS_StyleSec;
 		return;

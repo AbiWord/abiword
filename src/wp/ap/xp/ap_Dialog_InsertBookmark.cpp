@@ -44,13 +44,13 @@ AP_Dialog_InsertBookmark::tAnswer AP_Dialog_InsertBookmark::getAnswer(void) cons
 
 UT_uint32 AP_Dialog_InsertBookmark::getExistingBookmarksCount() const
 {
-	UT_ASSERT(m_pDoc);
+	UT_return_val_if_fail (m_pDoc, 0);
 	return m_pDoc->getBookmarkCount();
 }
 
 const XML_Char * AP_Dialog_InsertBookmark::getNthExistingBookmark(UT_uint32 n) const
 {
-	UT_ASSERT(m_pDoc);
+	UT_return_val_if_fail (m_pDoc, NULL);
 	return m_pDoc->getNthBookmark(n);
 }
 

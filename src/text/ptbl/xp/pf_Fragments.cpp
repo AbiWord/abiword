@@ -50,10 +50,10 @@ void pf_Fragments::appendFrag(pf_Frag * pf)
 {
 	// append a frag to the end of the list
 	
-	UT_ASSERT(pf);
+	UT_return_if_fail (pf);
 	if (!m_pLast)
 	{
-		UT_ASSERT(!m_pFirst);
+		UT_ASSERT_HARMLESS(!m_pFirst);
 		m_pFirst = pf;
 		m_pLast = pf;
 		pf->setNext(NULL);
@@ -61,7 +61,7 @@ void pf_Fragments::appendFrag(pf_Frag * pf)
 	}
 	else
 	{
-		UT_ASSERT(m_pLast->getType() != pf_Frag::PFT_EndOfDoc);
+		UT_ASSERT_HARMLESS(m_pLast->getType() != pf_Frag::PFT_EndOfDoc);
 		
 		m_pLast->setNext(pf);
 		pf->setPrev(m_pLast);
@@ -86,8 +86,8 @@ pf_Frag * pf_Fragments::getLast() const
 void pf_Fragments::insertFrag(pf_Frag * pfPlace, pf_Frag * pfNew)
 {
 	// insert the new fragment after the given fragment.
-	UT_ASSERT(pfPlace);
-	UT_ASSERT(pfNew);
+	UT_return_if_fail (pfPlace);
+	UT_return_if_fail (pfNew);
 
 	xxx_UT_DEBUGMSG(("Inserting frag %x of type %d after frag %x of type %d\n",pfNew,pfNew->getType(),pfPlace,pfPlace->getType()));
 
@@ -106,8 +106,8 @@ void pf_Fragments::insertFrag(pf_Frag * pfPlace, pf_Frag * pfNew)
 void pf_Fragments::insertFragBefore(pf_Frag * pfPlace, pf_Frag * pfNew)
 {
 	// insert the new fragment after the given fragment.
-	UT_ASSERT(pfPlace);
-	UT_ASSERT(pfNew);
+	UT_return_if_fail (pfPlace);
+	UT_return_if_fail (pfNew);
 
 	xxx_UT_DEBUGMSG(("Inserting frag %x of type %d after frag %x of type %d\n",pfNew,pfNew->getType(),pfPlace,pfPlace->getType()));
 
@@ -127,7 +127,7 @@ void pf_Fragments::unlinkFrag(pf_Frag * pf)
 {
 	// NOTE:  it is the caller's responsibility to delete pf if appropriate.
 	
-	UT_ASSERT(pf->getType() != pf_Frag::PFT_EndOfDoc);
+	UT_return_if_fail (pf->getType() != pf_Frag::PFT_EndOfDoc);
 	pf_Frag * pn = pf->getNext();
 	pf_Frag * pp = pf->getPrev();
 	setFragsDirty();
@@ -167,7 +167,7 @@ void pf_Fragments::cleanFrags(void) const
 		m_vecFrags.addItem((void *) pf);
 	}
 	
-	UT_ASSERT(pfLast /*&& (pfLast->getType() == pf_Frag::PFT_EndOfDoc)*/);
+	UT_return_if_fail (pfLast /*&& (pfLast->getType() == pf_Frag::PFT_EndOfDoc)*/);
 	xxx_UT_DEBUGMSG(("Found %d Frags dopos at end = %d \n",m_vecFrags.getItemCount(),getLast()->getPos()));
 	m_bAreFragsClean = true;
 	setCache(NULL);

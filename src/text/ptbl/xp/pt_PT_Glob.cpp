@@ -56,7 +56,7 @@ void pt_PieceTable::beginMultiStepGlob(void)
 
 	PX_ChangeRecord * pcr = new PX_ChangeRecord_Glob(PX_ChangeRecord::PXT_GlobMarker,
 													 PX_ChangeRecord_Glob::PXF_MultiStepStart);
-	UT_ASSERT(pcr);
+	UT_return_if_fail (pcr);
 
 	// add record to history.  we do not attempt to coalesce these.
 	m_history.addChangeRecord(pcr);
@@ -67,7 +67,7 @@ void pt_PieceTable::endMultiStepGlob(void)
 {
 	PX_ChangeRecord * pcr = new PX_ChangeRecord_Glob(PX_ChangeRecord::PXT_GlobMarker,
 													 PX_ChangeRecord_Glob::PXF_MultiStepEnd);
-	UT_ASSERT(pcr);
+	UT_return_if_fail (pcr);
 
 	// add record to history.  we do not attempt to coalesce these.
 	m_history.addChangeRecord(pcr);
@@ -94,7 +94,7 @@ void pt_PieceTable::beginUserAtomicGlob(void)
 
 	PX_ChangeRecord * pcr = new PX_ChangeRecord_Glob(PX_ChangeRecord::PXT_GlobMarker,
 													 PX_ChangeRecord_Glob::PXF_UserAtomicStart);
-	UT_ASSERT(pcr);
+	UT_return_if_fail (pcr);
 
 	// add record to history.  we do not attempt to coalesce these.
 	m_history.addChangeRecord(pcr);
@@ -112,7 +112,7 @@ void pt_PieceTable::endUserAtomicGlob(void)
 
 	PX_ChangeRecord * pcr = new PX_ChangeRecord_Glob(PX_ChangeRecord::PXT_GlobMarker,
 													 PX_ChangeRecord_Glob::PXF_UserAtomicEnd);
-	UT_ASSERT(pcr);
+	UT_return_if_fail (pcr);
 
 	// add record to history.  we do not attempt to coalesce these.
 	m_history.addChangeRecord(pcr);

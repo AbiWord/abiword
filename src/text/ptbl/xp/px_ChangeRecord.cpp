@@ -106,7 +106,7 @@ PX_ChangeRecord * PX_ChangeRecord::reverse(void) const
 	PX_ChangeRecord * pcr = new PX_ChangeRecord(getRevType(),
 												m_position,
 												m_indexAP);
-	UT_ASSERT(pcr);
+	UT_ASSERT_HARMLESS(pcr);
 	return pcr;
 }
 
@@ -166,7 +166,7 @@ PX_ChangeRecord::PXType PX_ChangeRecord::getRevType(void) const
 		return PX_ChangeRecord::PXT_ChangePoint;
 
 	default:
-		UT_ASSERT(0);
+		UT_ASSERT_HARMLESS(0);
 		return PX_ChangeRecord::PXT_GlobMarker;				// bogus
 	}
 }

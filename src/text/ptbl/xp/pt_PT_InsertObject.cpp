@@ -101,17 +101,17 @@ bool pt_PieceTable::_realInsertObject(PT_DocPosition dpos,
 									const XML_Char ** attributes,
 									const XML_Char ** properties,  pf_Frag_Object ** ppfo)
 {
-	UT_ASSERT(properties == NULL);
+	UT_return_val_if_fail (properties == NULL, false);
 
 	// dpos == 1 seems to be generally bad. - plam
 	// I'm curious about how often it happens.  Please mail me if it does!
-	UT_ASSERT(dpos > 1);
+	UT_ASSERT_HARMLESS(dpos > 1);
 
 	// TODO currently we force the caller to pass in the attr/prop.
 	// TODO this is probably a good thing for Images, but might be
 	// TODO bogus for things like Fields.
 
-	UT_ASSERT(m_pts==PTS_Editing);
+	UT_return_val_if_fail (m_pts==PTS_Editing, false);
 
 	// store the attributes and properties and get an index to them.
 	PT_AttrPropIndex apiOld = 0, indexAP;
@@ -119,16 +119,16 @@ bool pt_PieceTable::_realInsertObject(PT_DocPosition dpos,
 	pf_Frag * pf = NULL;
 	PT_BlockOffset fragOffset = 0;
 	bool bFound = getFragFromPosition(dpos,&pf,&fragOffset);
-	UT_ASSERT(bFound);
+	UT_return_val_if_fail (bFound,false);
 	pf_Frag_Strux * pfs = NULL;
 	bool bFoundStrux = _getStruxFromFrag(pf,&pfs);
 
-	UT_ASSERT(bFoundStrux);
+	UT_return_val_if_fail (bFoundStrux,false);
 	if(isEndFootnote((pf_Frag *) pfs))
 	{
 		bFoundStrux = _getStruxFromFragSkip((pf_Frag *)pfs,&pfs);
 	}
-	UT_ASSERT(bFoundStrux);
+	UT_return_val_if_fail (bFoundStrux, false);
 	
 	apiOld = _chooseIndexAP(pf,fragOffset);
 
@@ -149,7 +149,7 @@ bool pt_PieceTable::_realInsertObject(PT_DocPosition dpos,
 		= new PX_ChangeRecord_Object(PX_ChangeRecord::PXT_InsertObject,
 									 dpos,indexAP,pto,blockOffset,
                                      pfo->getField());
-	UT_ASSERT(pcr);
+	UT_return_val_if_fail (pcr,false);
 
 	m_history.addChangeRecord(pcr);
 	m_pDocument->notifyListeners(pfs,pcr);
@@ -163,17 +163,17 @@ bool pt_PieceTable::_realInsertObject(PT_DocPosition dpos,
 									const XML_Char ** attributes,
 									const XML_Char ** properties )
 {
-	UT_ASSERT(properties == NULL);
+	UT_ASSERT_HARMLESS(properties == NULL);
 
 	// dpos == 1 seems to be generally bad. - plam
 	// I'm curious about how often it happens.  Please mail me if it does!
-	UT_ASSERT(dpos > 1);
+	UT_ASSERT_HARMLESS(dpos > 1);
 
 	// TODO currently we force the caller to pass in the attr/prop.
 	// TODO this is probably a good thing for Images, but might be
 	// TODO bogus for things like Fields.
 
-	UT_ASSERT(m_pts==PTS_Editing);
+	UT_return_val_if_fail (m_pts==PTS_Editing,false);
 
 	// store the attributes and properties and get an index to them.
 
@@ -186,16 +186,16 @@ bool pt_PieceTable::_realInsertObject(PT_DocPosition dpos,
 	pf_Frag * pf = NULL;
 	PT_BlockOffset fragOffset = 0;
 	bool bFound = getFragFromPosition(dpos,&pf,&fragOffset);
-	UT_ASSERT(bFound);
+	UT_return_val_if_fail (bFound,false);
 
 	pf_Frag_Strux * pfs = NULL;
 	bool bFoundStrux = _getStruxFromFrag(pf,&pfs);
-	UT_ASSERT(bFoundStrux);
+	UT_return_val_if_fail (bFoundStrux,false);
 	if(isEndFootnote((pf_Frag *) pfs))
 	{
 		bFoundStrux = _getStruxFromFragSkip((pf_Frag *)pfs,&pfs);
 	}
-	UT_ASSERT(bFoundStrux);
+	UT_return_val_if_fail (bFoundStrux,false);
 	PT_BlockOffset blockOffset = _computeBlockOffset(pfs,pf) + fragOffset;
     pf_Frag_Object * pfo = NULL;
 	if (!_insertObject(pf,fragOffset,pto,indexAP,pfo))
@@ -208,7 +208,7 @@ bool pt_PieceTable::_realInsertObject(PT_DocPosition dpos,
 		= new PX_ChangeRecord_Object(PX_ChangeRecord::PXT_InsertObject,
 									 dpos,indexAP,pto,blockOffset,
                                      pfo->getField());
-	UT_ASSERT(pcr);
+	UT_return_val_if_fail (pcr,false);
 
 	m_history.addChangeRecord(pcr);
 	m_pDocument->notifyListeners(pfs,pcr);
@@ -238,14 +238,14 @@ bool pt_PieceTable::_createObject(PTObjectType pto,
 			{
 				pfo = new pf_Frag_Object(this,pto,indexAP);
 				po_Bookmark * pB = pfo->getBookmark();
-				UT_ASSERT(pB);
+				UT_return_val_if_fail (pB,false);
 				if(pB->getBookmarkType() == po_Bookmark::POBOOKMARK_START)
 					m_pDocument->addBookmark(pB->getName());
 			}
 			break;
 
 		default:
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 	}
 
 	if (!pfo)
@@ -287,7 +287,7 @@ bool pt_PieceTable::_insertObject(pf_Frag * pf,
 		// split the current fragment and insert the object between
 		// them.
 
-		UT_ASSERT(pf->getType() == pf_Frag::PFT_Text);
+		UT_return_val_if_fail (pf->getType() == pf_Frag::PFT_Text, false);
 		pf_Frag_Text * pft = static_cast<pf_Frag_Text *>(pf);
 		UT_uint32 lenTail = pft->getLength() - fragOffset;
 		PT_BufIndex biTail = m_varset.getBufIndex(pft->getBufIndex(),fragOffset);

@@ -221,7 +221,7 @@ static const XML_Char * s_translateStyleId(UT_uint32 id)
 
 		default:
 			UT_DEBUGMSG(("Unknown style Id [%d]; Please submit this document with a bug report!\n", id));
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			return NULL;
 	}
 	return NULL;
@@ -433,7 +433,7 @@ s_mapPageIdToString (UT_uint16 id)
 			
 		default:
 			UT_DEBUGMSG(("Unknow page size: please submit this document with a bug report\n"));
-			UT_ASSERT( 0 );
+			UT_ASSERT_HARMLESS( 0 );
 			return 0;
 	}
 }
@@ -1118,7 +1118,7 @@ void IE_Imp_MsWord_97::_flush ()
 			  else
 			  {
 				  UT_DEBUGMSG(("MSWord 97 _flush: Object not handled \n"));
-				  UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+				  UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			  }
 			  delete pObject;
 		  }
@@ -1475,7 +1475,8 @@ int IE_Imp_MsWord_97::_docProc (wvParseStruct * ps, UT_uint32 tag)
 		// now retrieve the note info ...
 		_handleNotes(ps);
 		_handleHeaders(ps);
-
+		_handleTextBoxes(ps);
+		
 
 		UT_DEBUGMSG(("Fnotes [%d,%d], Enotes [%d,%d]\n",
 					 m_iFootnotesStart, m_iFootnotesEnd, m_iEndnotesStart, m_iEndnotesEnd));
@@ -2244,7 +2245,7 @@ int IE_Imp_MsWord_97::_beginSect (wvParseStruct *ps, UT_uint32 tag,
 					propsArray[iOff++] = "footer-first";
 					break;
 				default:
-					UT_ASSERT(UT_NOT_REACHED);
+					UT_ASSERT_HARMLESS(UT_NOT_REACHED);
 			}
 
 			UT_String_sprintf(id[iId],"%d",m_pHeaders[k].pid);
@@ -2253,7 +2254,7 @@ int IE_Imp_MsWord_97::_beginSect (wvParseStruct *ps, UT_uint32 tag,
 	}
 	
 	propsArray[iOff++] = 0;
-	UT_ASSERT(iOff <= sizeof(propsArray));
+	UT_return_val_if_fail(iOff <= sizeof(propsArray), 1);
 	
 
 	if (!_appendStrux(PTX_Section, static_cast<const XML_Char **>(&propsArray[0])))
@@ -2624,7 +2625,7 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 		if(iAWListId == UT_UID_INVALID)
 		{
 			iAWListId = getDoc()->getUID(UT_UniqueId::List);
-			UT_ASSERT(iAWListId != UT_UID_INVALID);
+			UT_ASSERT_HARMLESS(iAWListId != UT_UID_INVALID);
 
 			m_vListIdMap.addItem(myListId);
 			m_vListIdMap.addItem(iAWListId);
@@ -2696,7 +2697,7 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 		
 		// NULL
 		list_atts[iOffset++] = 0;
-		UT_ASSERT( iOffset <=  sizeof(list_atts)/sizeof(XML_Char *) );
+		UT_return_val_if_fail( iOffset <=  sizeof(list_atts)/sizeof(XML_Char *), 1 );
 
 		// now add this to our vector of lists
 		ListIdLevelPair * llp = new ListIdLevelPair;
@@ -3771,9 +3772,9 @@ bool IE_Imp_MsWord_97::_build_ColumnWidths(UT_NumberVector & colWidths)
 			}
 		}
 		iLoop++;
-		UT_ASSERT(0);
+		UT_ASSERT_HARMLESS(0);
 	}
-	UT_ASSERT(iLoop < 1000);
+	UT_ASSERT_HARMLESS(iLoop < 1000);
 	return (iLoop < 1000);
 }
 
@@ -3999,7 +4000,7 @@ void IE_Imp_MsWord_97::_cell_open (const wvParseStruct *ps, const PAP *apap)
 	  m_iRight++;
   }
   xxx_UT_DEBUGMSG(("MSWord Import:  iLeft %d iRight %d m_iCurrentCell %d \n",m_iLeft,m_iRight,m_iCurrentCell));
-  UT_ASSERT(vspan >= 0);
+  UT_return_if_fail(vspan >= 0);
   UT_String_sprintf(propBuffer,
 		    "left-attach:%d; right-attach:%d; top-attach:%d; bot-attach:%d; ",
 		    m_iLeft,
@@ -4712,7 +4713,7 @@ void IE_Imp_MsWord_97::_handleNotes(const wvParseStruct *ps)
 				props[7] = "1";
 				break;
 			default:
-				UT_ASSERT(UT_NOT_REACHED);
+				UT_ASSERT_HARMLESS(UT_NOT_REACHED);
 		}
 
 		UT_String number;
@@ -4737,7 +4738,7 @@ void IE_Imp_MsWord_97::_handleNotes(const wvParseStruct *ps)
 				props[1] = "lower";
 				break;
 			default:
-				UT_ASSERT(UT_NOT_REACHED);
+				UT_ASSERT_HARMLESS(UT_NOT_REACHED);
 		}
 		
 		getDoc()->setProperties(&props[0]);
@@ -4805,7 +4806,7 @@ void IE_Imp_MsWord_97::_handleNotes(const wvParseStruct *ps)
 				break;
 
 			default:
-				UT_ASSERT(UT_NOT_REACHED);
+				UT_ASSERT_HARMLESS(UT_NOT_REACHED);
 		}
 
 		UT_String number;
@@ -4831,7 +4832,7 @@ void IE_Imp_MsWord_97::_handleNotes(const wvParseStruct *ps)
 				break;
 
 			default:
-				UT_ASSERT(UT_NOT_REACHED);
+				UT_ASSERT_HARMLESS(UT_NOT_REACHED);
 				
 		}
 
@@ -4846,12 +4847,33 @@ void IE_Imp_MsWord_97::_handleNotes(const wvParseStruct *ps)
 				props[11] = "1";
 				break;
 			default:
-				UT_ASSERT(UT_NOT_REACHED);
+				UT_ASSERT_HARMLESS(UT_NOT_REACHED);
 				
 		}
 				
 		getDoc()->setProperties(&props[0]);
 	}
+}
+
+void IE_Imp_MsWord_97::_handleTextBoxes(const wvParseStruct *ps)
+{
+	UT_uint32 i;
+
+	UT_uint32 *pPLCF_dgg = NULL;
+	UT_uint32 *pPLCF_txt = NULL;
+
+	bool bNoteError = false;
+
+	if(ps->fib.lcbDggInfo)
+	{
+		if(wvGetPLCF((void **) &pPLCF_dgg, ps->fib.fcDggInfo, ps->fib.lcbDggInfo, ps->tablefd))
+		{
+			bNoteError = true;
+		}
+
+		UT_DEBUGMSG(("IE_Imp_MsWord_97::_handleTextBoxes: dgginfo size %d bytes\n", ps->fib.lcbDggInfo));
+	}
+	
 }
 
 /*!
@@ -4926,7 +4948,7 @@ bool IE_Imp_MsWord_97::_insertFootnote(const footnote * f, UT_UCS4Char c)
 	attribsR[iOffR++] = "style";
 	attribsR[iOffR++] = m_charStyle.c_str();
 		
-	UT_ASSERT( iOffR <= sizeof(attribsR)/sizeof(XML_Char*) );
+	UT_return_val_if_fail( iOffR <= sizeof(attribsR)/sizeof(XML_Char*), false );
 	
 	if(f->type)
 	{
@@ -4981,7 +5003,7 @@ bool IE_Imp_MsWord_97::_insertEndnote(const footnote * f, UT_UCS4Char c)
 	attribsR[iOffR++] = "style";
 	attribsR[iOffR++] = m_charStyle.c_str();
 		
-	UT_ASSERT( iOffR <= sizeof(attribsR)/sizeof(XML_Char*) );
+	UT_return_val_if_fail(iOffR <= sizeof(attribsR)/sizeof(XML_Char*), false);
 	
 	if(f->type)
 	{
@@ -5670,7 +5692,7 @@ bool IE_Imp_MsWord_97::_handleHeadersText(UT_uint32 iDocPosition)
 						attribsS[1] = "footer-first";
 						break;
 					default:
-						UT_ASSERT(UT_NOT_REACHED);
+						UT_ASSERT_HARMLESS(UT_NOT_REACHED);
 					}
 					
 					// we use the document methods, not the importer methods intentionally 
@@ -5713,7 +5735,7 @@ bool IE_Imp_MsWord_97::_handleHeadersText(UT_uint32 iDocPosition)
 							attribsS[1] = "footer-first";
 							break;
 						default:
-							UT_ASSERT(UT_NOT_REACHED);
+							UT_ASSERT_HARMLESS(UT_NOT_REACHED);
 						}
 						
 						getDoc()->appendStrux(PTX_SectionHdrFtr, attribsS);

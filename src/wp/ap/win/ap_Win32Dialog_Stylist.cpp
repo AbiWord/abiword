@@ -57,7 +57,7 @@ AP_Win32Dialog_Stylist::~AP_Win32Dialog_Stylist(void)
 void AP_Win32Dialog_Stylist::runModal(XAP_Frame * pFrame)
 {
 	UT_return_if_fail(pFrame);
-	UT_ASSERT(0);
+	UT_ASSERT_HARMLESS(0);
 }
 
 void AP_Win32Dialog_Stylist::runModeless(XAP_Frame * pFrame)
@@ -89,7 +89,7 @@ void AP_Win32Dialog_Stylist::runModeless(XAP_Frame * pFrame)
 	from another working dialog.  
 */	
 
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
+	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
 }
 
 void  AP_Win32Dialog_Stylist::destroy(void)
@@ -99,7 +99,7 @@ void  AP_Win32Dialog_Stylist::destroy(void)
 
 void  AP_Win32Dialog_Stylist::setStyleInGUI(void)
 {
-	UT_ASSERT(0);
+	UT_ASSERT_HARMLESS(0);
 }
 
 void  AP_Win32Dialog_Stylist::activate(void)

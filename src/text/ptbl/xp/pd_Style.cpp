@@ -39,7 +39,7 @@ PD_Style::~PD_Style()
 
 bool PD_Style::setIndexAP(PT_AttrPropIndex indexAP)
 {
-	UT_ASSERT(indexAP != m_indexAP);
+	UT_ASSERT_HARMLESS(indexAP != m_indexAP);
 
 	// TODO: may need to rebind, handle undo, clear caches, etc.
 
@@ -253,7 +253,7 @@ bool PD_Style::isList(void)
 		
 		getAllProperties(&vProp, 0);
 		
-		UT_ASSERT(vProp.getItemCount()%2 == 0);
+		UT_ASSERT_HARMLESS(vProp.getItemCount()%2 == 0);
 		
 		for(UT_uint32 i = 0; i < vProp.getItemCount(); i += 2)
 		{

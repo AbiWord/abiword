@@ -168,7 +168,7 @@ void XAP_Toolbar_Factory_vec::insertItemBefore(void * p, XAP_Toolbar_Id id)
 			break;
 		}
 	}
-	UT_ASSERT(bFound);
+	UT_ASSERT_HARMLESS(bFound);
 }
 
 
@@ -193,7 +193,7 @@ void XAP_Toolbar_Factory_vec::insertItemAfter(void * p, XAP_Toolbar_Id id)
 			break;
 		}
 	}
-	UT_ASSERT(bFound);
+	UT_ASSERT_HARMLESS(bFound);
 }
 
 void XAP_Toolbar_Factory_vec::insertLastItem(void * p)
@@ -216,7 +216,7 @@ bool XAP_Toolbar_Factory_vec::removeToolbarId(XAP_Toolbar_Id id)
 			break;
 		}
 	}
-	UT_ASSERT(bFound);
+	UT_ASSERT_HARMLESS(bFound);
 	return true;
 }
 
@@ -319,18 +319,18 @@ EV_Toolbar_Layout * XAP_Toolbar_Factory::CreateToolbarLayout(const char * szName
 			bFound = true;
 			pLayout = new EV_Toolbar_Layout(pVec->getToolbarName(),pVec->getNrEntries());
 			
-			UT_ASSERT(pLayout);
+			UT_return_val_if_fail (pLayout, NULL);
 			UT_uint32 k = 0;
 			for (k=0; k < pVec->getNrEntries(); k++)
 			{
 				XAP_Toolbar_Factory_lt * plt = pVec->getNth_lt(k);
 				bool bResult = pLayout->setLayoutItem(k, plt->m_id, plt->m_flags);
-				UT_ASSERT(bResult);
+				UT_ASSERT_HARMLESS(bResult);
 			}
 			break;
 		}
 	}
-	UT_ASSERT(bFound);
+	UT_ASSERT_HARMLESS(bFound);
 	if(bFound)
 	{
 		return pLayout;
@@ -349,7 +349,7 @@ EV_Toolbar_Layout * XAP_Toolbar_Factory::DuplicateToolbarLayout(const char * szN
  */
 void XAP_Toolbar_Factory::restoreToolbarLayout(EV_Toolbar_Layout *pTB)
 {
-	UT_ASSERT(pTB);
+	UT_return_if_fail (pTB);
 	UT_String strName = pTB->getName();
 	UT_uint32 count = m_vecTT.getItemCount();  // NO toolabrs
 	UT_uint32 i = 0;
@@ -365,7 +365,7 @@ void XAP_Toolbar_Factory::restoreToolbarLayout(EV_Toolbar_Layout *pTB)
 			break;
 		}
 	}
-	UT_ASSERT(bFound);
+	UT_ASSERT_HARMLESS(bFound);
 	DELETEP(pVec);
 	pVec = new XAP_Toolbar_Factory_vec(pTB);
 	m_vecTT.setNthItem(i, (void *) pVec, NULL);
@@ -393,7 +393,7 @@ bool  XAP_Toolbar_Factory::addIconBefore(const char * szName,
 			break;
 		}
 	}
-	UT_ASSERT(bFound);
+	UT_ASSERT_HARMLESS(bFound);
 	if(!bFound)
 	{
 		return false;
@@ -425,7 +425,7 @@ bool  XAP_Toolbar_Factory::addIconAtEnd(const char * szName,
 			break;
 		}
 	}
-	UT_ASSERT(bFound);
+	UT_ASSERT_HARMLESS(bFound);
 	if(!bFound)
 	{
 		return false;
@@ -456,7 +456,7 @@ bool  XAP_Toolbar_Factory::addIconAfter(const char * szName,
 			break;
 		}
 	}
-	UT_ASSERT(bFound);
+	UT_ASSERT_HARMLESS(bFound);
 	if(!bFound)
 	{
 		return false;
@@ -486,7 +486,7 @@ bool  XAP_Toolbar_Factory::removeIcon(const char * szName,
 			break;
 		}
 	}
-	UT_ASSERT(bFound);
+	UT_ASSERT_HARMLESS(bFound);
 	if(!bFound)
 	{
 		return false;
@@ -530,7 +530,7 @@ bool  XAP_Toolbar_Factory::resetToolbarToDefault(const char * szName)
 			FREEP( szCurName );
 		}
 	}
-	UT_ASSERT(bFound);
+	UT_ASSERT_HARMLESS(bFound);
 	if(!bFound)
 	{
 		return false;
@@ -548,7 +548,7 @@ bool  XAP_Toolbar_Factory::resetToolbarToDefault(const char * szName)
 		}
 	}
 	FREEP(szCurName);
-	UT_ASSERT(bFound);
+	UT_ASSERT_HARMLESS(bFound);
 	if(!bFound)
 	{
 		return false;
@@ -678,7 +678,7 @@ bool  XAP_Toolbar_Factory::restoreToolbarsFromCurrentScheme(void)
 				{
 					continue;
 				}
-				UT_ASSERT(szCurId && *szCurId);
+				UT_return_val_if_fail (szCurId && *szCurId, false);
 				XAP_Toolbar_Id curId = (XAP_Toolbar_Id) atoi(szCurId);
 //
 // Here we should check whether the ID exists or not

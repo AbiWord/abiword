@@ -247,8 +247,8 @@ enum GR_Capability
 class GR_AllocInfo
 {
   public:
-	virtual GR_GraphicsId getType() const {UT_ASSERT(UT_NOT_IMPLEMENTED); return GRID_UNKNOWN;}
-	virtual bool isPrinterGraphics()const {UT_ASSERT(UT_NOT_IMPLEMENTED); return false;}
+	virtual GR_GraphicsId getType() const {UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED); return GRID_UNKNOWN;}
+	virtual bool isPrinterGraphics()const {UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED); return false;}
 };
 
 typedef GR_Graphics * (*GR_Allocator)(GR_AllocInfo&);
@@ -319,15 +319,15 @@ class ABI_EXPORT GR_Graphics
 	// the static method allows us to retrive the the class id for
 	// purposes of registration; we also need the virtual to identify
 	// the class from a generic GR_Graphics pointer
-	static UT_uint32 s_getClassId() {UT_ASSERT(UT_NOT_IMPLEMENTED); return GRID_UNKNOWN;}
+	static UT_uint32 s_getClassId() {UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED); return GRID_UNKNOWN;}
 	virtual UT_uint32 getClassId() {return s_getClassId();}
 	
-	virtual GR_Capability getCapability() {UT_ASSERT(UT_NOT_IMPLEMENTED); return GRCAP_UNKNOWN;}
+	virtual GR_Capability getCapability() {UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED); return GRCAP_UNKNOWN;}
 #if 0
 	// the following two static functions have to be implemented by all
 	// derrived classes and registered with GR_GraphicsFactory 
-	static const char *    graphicsDescriptor(void){UT_ASSERT(UT_NOT_IMPLEMENTED); return "???";}
-	static GR_Graphics *   graphicsAllocator(GR_AllocInfo&){UT_ASSERT(UT_NOT_IMPLEMENTED); return NULL;}
+	static const char *    graphicsDescriptor(void){UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED); return "???";}
+	static GR_Graphics *   graphicsAllocator(GR_AllocInfo&){UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED); return NULL;}
 #endif
 	
 	UT_sint32	tdu(UT_sint32 layoutUnits) const;
@@ -547,7 +547,7 @@ class ABI_EXPORT GR_Graphics
 
 	void              createCaret()
 		{
-			UT_ASSERT(!m_pCaret);
+			UT_ASSERT_HARMLESS(!m_pCaret);
 			m_pCaret = new GR_Caret(this);
 		}
 
@@ -615,7 +615,7 @@ class ABI_EXPORT GR_Graphics
 	// NB: you must not use s_Version to store the version of derrived
 	// classes, but have your own static variable for the derrived
 	// class !!!
-	virtual const UT_VersionInfo & getVersion() const {UT_ASSERT( UT_NOT_IMPLEMENTED ); return s_Version;}
+	virtual const UT_VersionInfo & getVersion() const {UT_ASSERT_HARMLESS( UT_NOT_IMPLEMENTED ); return s_Version;}
 	
  protected:
 
@@ -677,7 +677,7 @@ class ABI_EXPORT GR_Graphics
  private:
 	virtual bool _setTransform(const GR_Transform & tr)
 		{
-			UT_ASSERT( UT_NOT_IMPLEMENTED );
+			UT_ASSERT_HARMLESS( UT_NOT_IMPLEMENTED );
 			return false;
 		}
 

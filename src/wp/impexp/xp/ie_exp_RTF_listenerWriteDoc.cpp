@@ -244,7 +244,7 @@ void s_RTF_ListenerWriteDoc::_openFrame(PT_AttrPropIndex apiFrame)
 {
 	if(m_bInFrame)
 	{
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		return;
 	}
 //
@@ -297,7 +297,7 @@ void s_RTF_ListenerWriteDoc::_openFrame(PT_AttrPropIndex apiFrame)
 	else 
 	{
 		UT_DEBUGMSG(("Unknown Frame Type %s \n",pszFrameType));
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		iFrameType = FL_FRAME_TEXTBOX_TYPE;
 	}
 
@@ -314,7 +314,7 @@ void s_RTF_ListenerWriteDoc::_openFrame(PT_AttrPropIndex apiFrame)
 	else 
 	{
 		UT_DEBUGMSG(("Unknown Position to %s \n",pszPositionTo));
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		iFramePositionTo =  FL_FRAME_POSITIONED_TO_BLOCK_ABOVE_TEXT;
 	}
 
@@ -462,7 +462,7 @@ void s_RTF_ListenerWriteDoc::_openFrame(PT_AttrPropIndex apiFrame)
 	}
 	else
 	{
-		UT_ASSERT(UT_NOT_IMPLEMENTED);
+		UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
 		m_pie->_rtf_keyword("shpz",0); // All at z= 0;
 		m_pie->_rtf_keyword("shpbypara");
 		m_pie->_rtf_keyword("shpwr",3);
@@ -498,7 +498,7 @@ void s_RTF_ListenerWriteDoc::_openFrame(PT_AttrPropIndex apiFrame)
 	}
 	else
 	{
-		UT_ASSERT(UT_NOT_IMPLEMENTED);
+		UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
 		_writeSPNumProp("shapeType",202);  // Textbox
 	}
 
@@ -514,7 +514,7 @@ void s_RTF_ListenerWriteDoc::_openFrame(PT_AttrPropIndex apiFrame)
 	}
 	else
 	{
-		UT_ASSERT(UT_NOT_IMPLEMENTED);
+		UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
 		m_pie->_rtf_open_brace();
         m_pie->_rtf_keyword("shptxt"); // Is a text box
 	}
@@ -574,7 +574,7 @@ void s_RTF_ListenerWriteDoc::_outputData(const UT_UCSChar * data, UT_uint32 leng
 
 	#define FlushBuffer() do {m_pie->_rtf_chardata(sBuf.c_str(), sBuf.size()); sBuf.clear();} while (0)
 
-	UT_ASSERT(sizeof(UT_Byte) == sizeof(char));
+	UT_return_if_fail(sizeof(UT_Byte) == sizeof(char));
 
 	for (pData=data; (pData<data+length); /**/)
 	{
@@ -1375,7 +1375,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		 }
 		 else
 		 {
-			 UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			 UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			 return;
 		 }
 	 }
@@ -2396,12 +2396,12 @@ void s_RTF_ListenerWriteDoc::_newRow(void)
 		if(m_Table.getRight() <= i)
 		{
 			PL_StruxDocHandle cellSDH = m_pDocument->getCellSDHFromRowCol(m_Table.getTableSDH(),row,i);
-			UT_ASSERT(cellSDH);
+			UT_ASSERT_HARMLESS(cellSDH);
 			if(cellSDH)
 			{
 				m_pDocument->miniDump(cellSDH,8);
 			}
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			iNext = i+1;
 		}
 		else
@@ -3987,7 +3987,7 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 			}
 			if(iLevel > 8)
 			{
-				UT_ASSERT(0);
+				UT_ASSERT_HARMLESS(0);
 				iLevel = 8;
 			}
 			m_currID = id;

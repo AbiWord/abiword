@@ -34,7 +34,7 @@
 
 /*****************************************************************/
 
-#define ENSUREP_C(p)		do { UT_ASSERT(p); if (!p) goto Cleanup; } while (0)
+#define ENSUREP_C(p)		do { UT_ASSERT_HARMLESS(p); if (!p) goto Cleanup; } while (0)
 
 /*****************************************************************/
 
@@ -107,7 +107,7 @@ AP_Frame::~AP_Frame()
 
 bool AP_Frame::initFrameData()
 {
-	UT_ASSERT(!static_cast<AP_FrameData*>(m_pData));
+	UT_ASSERT_HARMLESS(!static_cast<AP_FrameData*>(m_pData));
 
 	AP_FrameData* pData = new AP_FrameData(static_cast<XAP_App *>(m_pApp));
 
@@ -148,7 +148,7 @@ UT_Error AP_Frame::_loadDocument(const char * szFilename, IEFileType ieft,
 		m_pApp->rememberFrame(this);
 	}
 	AD_Document * pNewDoc = new PD_Document(getApp());
-	UT_ASSERT(pNewDoc);
+	UT_return_val_if_fail (pNewDoc, UT_ERROR);
 	
 	if (!szFilename || !*szFilename)
 	{
@@ -219,7 +219,7 @@ UT_Error AP_Frame::_importDocument(const char * szFilename, int ieft,
 	// if no filename, create a new document.
 
 	AD_Document * pNewDoc = new PD_Document(getApp());
-	UT_ASSERT(pNewDoc);
+	UT_return_val_if_fail (pNewDoc, UT_ERROR);
 
 	if (!szFilename || !*szFilename)
 	{
@@ -382,7 +382,7 @@ UT_uint32 AP_Frame::getNewZoom(XAP_Frame::tZoomType * tZoom)
 	UT_GenericVector<XAP_Frame*> vecClones;
 	XAP_Frame *pF = NULL;
 	XAP_App * pApp = getApp();
-	UT_ASSERT(pApp);
+	UT_return_val_if_fail (pApp, 0);
 	XAP_Frame * pLastFrame = pApp->getLastFocussedFrame();
 	UT_uint32 iZoom = 100;
 	if(pLastFrame == NULL)
@@ -450,13 +450,13 @@ UT_Error AP_Frame::_showDocument(UT_uint32 iZoom)
 	if(isFrameLocked())
 	{
 		UT_DEBUGMSG(("_showDocument: Nasty race bug, please fix me!! \n"));
-		UT_ASSERT(0);
+		UT_ASSERT_HARMLESS(0);
 		return  UT_IE_ADDLISTENERERROR;
 	}
 	setFrameLocked(true);
 	if (!static_cast<AP_FrameData*>(m_pData))
 	{
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		setFrameLocked(false);
 		return UT_IE_IMPORTERROR;
 	}

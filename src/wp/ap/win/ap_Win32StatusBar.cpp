@@ -31,7 +31,7 @@
 LRESULT APIENTRY StatusbarWndProc (HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) { 
 
 	AP_Win32StatusBar *pBar = reinterpret_cast<AP_Win32StatusBar *>(GetWindowLong(hwnd, GWL_USERDATA));
-	UT_ASSERT(pBar);
+	UT_return_val_if_fail (pBar, 0);
 
     if ((uMsg == WM_SIZE || uMsg == SB_SETPARTS) && hwnd) {
 	
@@ -130,7 +130,7 @@ private:
 
 void ap_usb_TextListener::notify()
 {
-	UT_ASSERT(m_hWnd);	
+	UT_return_if_fail (m_hWnd);	
 	AP_StatusBarField_TextInfo * textInfo = ((AP_StatusBarField_TextInfo *)m_pStatusBarField);
 	UT_String 	s =	AP_Win32App::s_fromUTF8ToAnsi(textInfo->getBuf().utf8_str());	
 	SendMessage(m_hWnd, SB_SETTEXT, m_nID, (LPARAM)  s.c_str());
@@ -182,7 +182,7 @@ HWND AP_Win32StatusBar::createWindow(HWND hwndFrame,
 									WS_CHILD | WS_VISIBLE | SBS_SIZEGRIP,
 									0, 0, 0, 0,
 									hwndFrame, NULL, app->getInstance(), NULL);
-	UT_ASSERT(m_hwndStatusBar);	
+	UT_return_val_if_fail (m_hwndStatusBar,0);	
 
 	// route messages through our handler first (to size the status panels).
 	m_pOrgStatusbarWndProc = reinterpret_cast<WNDPROC>(SetWindowLong(
@@ -196,7 +196,7 @@ HWND AP_Win32StatusBar::createWindow(HWND hwndFrame,
 	for (UT_uint32 k=0; k<getFields()->getItemCount(); k++) 
 	{
  		AP_StatusBarField * pf = (AP_StatusBarField *)m_vecFields.getNthItem(k);
-		UT_ASSERT(pf); // we should NOT have null elements
+		UT_ASSERT_HARMLESS(pf); // we should NOT have null elements
 		
 		AP_StatusBarField_TextInfo *pf_TextInfo = static_cast<AP_StatusBarField_TextInfo*>(pf);
 
@@ -212,7 +212,7 @@ HWND AP_Win32StatusBar::createWindow(HWND hwndFrame,
 		}
 		else 
 		{
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN); // there are no other kinds of elements
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN); // there are no other kinds of elements
 		}
 				
 		pCurWidth++;

@@ -426,7 +426,7 @@ void AP_Dialog_Styles::ModifyLang(void)
 
 	XAP_Dialog_Language * pDialog
 		= (XAP_Dialog_Language *)(pDialogFactory->requestDialog(id));
-	UT_ASSERT(pDialog);
+	UT_return_if_fail (pDialog);
 
 	const XML_Char ** props_in = NULL;
 	if (getView()->getCharFormat(&props_in))
@@ -469,7 +469,7 @@ void AP_Dialog_Styles::ModifyFont(void)
 
 	XAP_Dialog_FontChooser * pDialog
 		= (XAP_Dialog_FontChooser *)(pDialogFactory->requestDialog(id));
-	UT_ASSERT(pDialog);
+	UT_return_if_fail (pDialog);
 
 	// stuff the GR_Graphics into the dialog so that it
 	// can query the system for font info relative to our
@@ -642,7 +642,7 @@ s_TabSaveCallBack (AP_Dialog_Tab * pDlg, FV_View * pView,
 				   const char * szTabStops, const char * szDflTabStop,
 				   void * closure)
 {
-	UT_ASSERT(closure);
+	UT_return_if_fail (closure);
 
 	AP_Dialog_Styles * pStyleDlg = static_cast<AP_Dialog_Styles *>(closure);
 
@@ -666,7 +666,7 @@ void AP_Dialog_Styles::ModifyTabs(void)
 
 	AP_Dialog_Tab * pDialog
 		= (AP_Dialog_Tab *)(pDialogFactory->requestDialog(id));
-	UT_ASSERT(pDialog);
+	UT_return_if_fail (pDialog);
 
 	pDialog->setSaveCallback(s_TabSaveCallBack, (void *)this);
 
@@ -698,7 +698,7 @@ void AP_Dialog_Styles::ModifyLists(void)
 	AP_Dialog_Lists * pDialog
 		= (AP_Dialog_Lists *)(pDialogFactory->justMakeTheDialog(AP_DIALOG_ID_LISTS));
 
-	UT_ASSERT(pDialog);
+	UT_return_if_fail (pDialog);
 
 //
 // Fill input list for Lists dialog
@@ -806,7 +806,7 @@ void AP_Dialog_Styles::ModifyParagraph(void)
 
 	AP_Dialog_Paragraph * pDialog
 		= (AP_Dialog_Paragraph *)(pDialogFactory->requestDialog(AP_DIALOG_ID_PARAGRAPH));
-	UT_ASSERT(pDialog);
+	UT_return_if_fail (pDialog);
 
 	const static XML_Char * paraFields[] = {"text-align", "text-indent", "margin-left", "margin-right", "margin-top", "margin-bottom", "line-height","tabstops","start-value","list-delim", "list-decimal","list-style","field-font","field-color", "keep-together","keep-with-next","orphans","widows","dom-dir"};
 
@@ -854,7 +854,7 @@ void AP_Dialog_Styles::ModifyParagraph(void)
 	{
 		// getDialogData() returns us XML_Char ** data we have to free
 		pDialog->getDialogData(props);
-		UT_ASSERT(props);
+		UT_return_if_fail (props);
 
 		// set properties into the vector. We have to save these as static char
         // strings so they persist past this method.
@@ -1018,9 +1018,8 @@ bool AP_Dialog_Styles::createNewStyle(const XML_Char * szName)
 //
 	PD_Style * pStyle = NULL;
 
-	UT_ASSERT(szName);
-	if(szName == NULL)
-		return false;
+	UT_return_val_if_fail (szName, false);
+
 	getDoc()->getStyle("szName", &pStyle);
 	if(pStyle != NULL)
 		return false;
@@ -1157,16 +1156,17 @@ void AP_Dialog_Styles::_createParaPreviewFromGC(GR_Graphics * gc,
                                                 UT_uint32 width,
 						UT_uint32 height)
 {
-	UT_ASSERT(gc);
+	UT_return_if_fail (gc);
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-
+	UT_return_if_fail (pSS);
+	
 	UT_UCSChar * str;
 
 	UT_UCS4_cloneString_char (&str, pSS->getValue(AP_STRING_ID_DLG_Styles_LBL_TxtMsg));
 
 	m_pParaPreview = new AP_Preview_Paragraph(gc, str, static_cast<XAP_Dialog*>(this));
-	UT_ASSERT(m_pParaPreview);
+	UT_return_if_fail (m_pParaPreview);
 
 	FREEP(str);
 
@@ -1178,10 +1178,11 @@ void AP_Dialog_Styles::_createCharPreviewFromGC(GR_Graphics * gc,
                                                 UT_uint32 width,
 						UT_uint32 height)
 {
-	UT_ASSERT(gc);
+	UT_return_if_fail (gc);
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-
+	UT_return_if_fail (pSS);
+	
 //
 // Set the Background color for the preview.
 //
@@ -1190,7 +1191,7 @@ void AP_Dialog_Styles::_createCharPreviewFromGC(GR_Graphics * gc,
 	sprintf(background, "%02x%02x%02x",bgCol->m_red,bgCol->m_grn,bgCol->m_blu);
 
 	m_pCharPreview = new XAP_Preview_FontPreview(gc,background);
-	UT_ASSERT(m_pCharPreview);
+	UT_return_if_fail (m_pCharPreview);
 
 	m_pCharPreview->setWindowSize(width, height);
 //
@@ -1214,11 +1215,11 @@ void AP_Dialog_Styles::_createAbiPreviewFromGC(GR_Graphics * gc,
                                                 UT_uint32 width,
 											   UT_uint32 height )
 {
-	UT_ASSERT(gc);
+	UT_return_if_fail (gc);
 	if(m_pAbiPreview)
 		DELETEP(m_pAbiPreview);
 	m_pAbiPreview = new AP_Preview_Abi(gc,width,height,getFrame(),PREVIEW_ZOOMED);
-	UT_ASSERT(m_pAbiPreview);
+	UT_return_if_fail (m_pAbiPreview);
 }
 
 /*!
@@ -1477,7 +1478,7 @@ void AP_Dialog_Styles::event_paraPreviewUpdated (const XML_Char * pageLeftMargin
 	const char * sz = NULL;
 	const char * pPlusFound = NULL;
 
-	UT_ASSERT(m_pParaPreview);
+	UT_return_if_fail (m_pParaPreview);
 
 	if (!align)
 		goto LblIndent; // skip to the next label if nothing's set here
@@ -1547,14 +1548,11 @@ void AP_Dialog_Styles::event_paraPreviewUpdated (const XML_Char * pageLeftMargin
  */
 void AP_Dialog_Styles::event_charPreviewUpdated (void) const
 {
-	UT_ASSERT (m_pCharPreview); // add this when we make a char preview
+	UT_return_if_fail (m_pCharPreview); // add this when we make a char preview
 
 	// force a redraw
-	if(m_pCharPreview)
-	{
-		m_pCharPreview->setVecProperties( &m_vecCharProps);
-		m_pCharPreview->draw();
-	}
+	m_pCharPreview->setVecProperties( &m_vecCharProps);
+	m_pCharPreview->draw();
 }
 
 /*!

@@ -63,7 +63,7 @@ pt_PieceTable::~pt_PieceTable()
 
 void pt_PieceTable::setPieceTableState(PTState pts)
 {
-	UT_ASSERT(pts >= m_pts);
+	UT_return_if_fail (pts >= m_pts);
 
 	if ((m_pts==PTS_Create) && (pts==PTS_Loading))
 	{
@@ -122,7 +122,7 @@ bool pt_PieceTable::insertStruxNoUpdateBefore(PL_StruxDocHandle sdh, PTStruxType
 	{		
 		PT_AttrPropIndex pAPIold = indexAP;
 		bool bMerged = m_varset.mergeAP(PTC_AddFmt,pAPIold,attributes,NULL,&indexAP,getDocument());
-		UT_ASSERT(bMerged);
+		UT_ASSERT_HARMLESS(bMerged);
 	}
 //
 // create a strux
@@ -133,11 +133,8 @@ bool pt_PieceTable::insertStruxNoUpdateBefore(PL_StruxDocHandle sdh, PTStruxType
 // Insert it.
 //
 	pf_Frag * pfPrev = pfs->getPrev();
-	UT_ASSERT(pfPrev);
-	if(!pfPrev)
-	{
-		return false;
-	}
+	UT_return_val_if_fail (pfPrev,false);
+
 	m_fragments.insertFrag(pfPrev,static_cast<pf_Frag *>(pNewStrux));
 #if 0
 	m_pDocument->miniDump(sdh,8);
@@ -195,7 +192,7 @@ bool pt_PieceTable::_struxHasContent(pf_Frag_Strux * pfs) const
 
 bool pt_PieceTable::getAttrProp(PT_AttrPropIndex indexAP, const PP_AttrProp ** ppAP) const
 {
-	UT_ASSERT(ppAP);
+	UT_return_val_if_fail (ppAP,false);
 
 	const PP_AttrProp * pAP = m_varset.getAP(indexAP);
 	if (!pAP)
@@ -242,13 +239,13 @@ bool pt_PieceTable::getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset, boo
 	// offset zero now refers to the first character in the block, so adding
 	// fl_BLOCK_STRUX_OFFSET to the offset in the call is no longer necessary.
 
-	UT_ASSERT(sdh);
-	UT_ASSERT(ppAP);
+	UT_return_val_if_fail (sdh,false);
+	UT_return_val_if_fail (ppAP,false);
 
 	const pf_Frag * pf = static_cast<const pf_Frag *>(sdh);
-	UT_ASSERT(pf->getType() == pf_Frag::PFT_Strux);
+	UT_return_val_if_fail (pf->getType() == pf_Frag::PFT_Strux,false);
 	const pf_Frag_Strux * pfsBlock = static_cast<const pf_Frag_Strux *> (pf);
-	UT_ASSERT(pfsBlock->getStruxType() == PTX_Block);
+	UT_return_val_if_fail (pfsBlock->getStruxType() == PTX_Block,false);
 
 	UT_uint32 cumOffset = 0;
 	UT_uint32 cumEndOffset = 0;
@@ -269,7 +266,7 @@ bool pt_PieceTable::getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset, boo
 			return _getSpanAttrPropHelper(pfTemp,ppAP);
 		}
 
-		UT_ASSERT(offset > cumOffset);
+		UT_return_val_if_fail (offset > cumOffset,false);
 
 		if (offset == cumEndOffset)		// there's a frag boundary exactly where we want. pfTemp is to our left.
 		{
@@ -284,7 +281,7 @@ bool pt_PieceTable::getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset, boo
 			return _getSpanAttrPropHelper(pfTemp,ppAP);
 		}
 
-		UT_ASSERT(offset < cumEndOffset);
+		UT_return_val_if_fail (offset < cumEndOffset,false);
 
 		// the place we want is inside of a fragment, so just use it.
 		return _getSpanAttrPropHelper(pfTemp,ppAP);
@@ -307,9 +304,9 @@ bool pt_PieceTable::getSpanPtr(PL_StruxDocHandle sdh, UT_uint32 offset,
 	*pLength = 0;
 
 	const pf_Frag * pf = static_cast<const pf_Frag *>(sdh);
-	UT_ASSERT(pf->getType() == pf_Frag::PFT_Strux);
+	UT_return_val_if_fail (pf->getType() == pf_Frag::PFT_Strux,false);
 	const pf_Frag_Strux * pfsBlock = static_cast<const pf_Frag_Strux *> (pf);
-	UT_ASSERT(pfsBlock->getStruxType() == PTX_Block);
+	UT_return_val_if_fail (pfsBlock->getStruxType() == PTX_Block,false);
 	xxx_UT_DEBUGMSG(("getSpanPtr: Requested offset %d \n",offset));
 	
 	UT_uint32 cumOffset = pf->getLength();
@@ -328,7 +325,7 @@ bool pt_PieceTable::getSpanPtr(PL_StruxDocHandle sdh, UT_uint32 offset,
 			if (pfTemp->getType() != pf_Frag::PFT_Text)
 			{
 				xxx_UT_DEBUGMSG(("getSpanPtr: Error 1 offset %d cumOffset %d \n",offset,cumOffset));
-//				UT_ASSERT(0);
+//				UT_ASSERT_HARMLESS(0);
 				return false;
 			}
 
@@ -381,7 +378,7 @@ PD_Document * pt_PieceTable::getDocument(void)
 bool pt_PieceTable::getBlockBuf(PL_StruxDocHandle sdh,
                                    UT_GrowBuf * pgb) const
 {
-    UT_ASSERT(pgb);
+    UT_return_val_if_fail (pgb,false);
 
     const pf_Frag * pf = static_cast<const pf_Frag *>(sdh);
     UT_return_val_if_fail(pf->getType() == pf_Frag::PFT_Strux, false);
@@ -397,7 +394,7 @@ bool pt_PieceTable::getBlockBuf(PL_StruxDocHandle sdh,
         switch (pfTemp->getType())
         {
         default:
-            UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+            UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
         case pf_Frag::PFT_Strux:
 //
 // Have to deal with embedded section struxes like Footnotes. We do this by
@@ -412,7 +409,7 @@ bool pt_PieceTable::getBlockBuf(PL_StruxDocHandle sdh,
 			{
 				countFoots++;
 				bAppended = pgb->ins(bufferOffset,&valz,1);
-				UT_ASSERT(bAppended);
+				UT_return_val_if_fail (bAppended,false);
 				bufferOffset++;
 				pfTemp = pfTemp->getNext();
 				break;
@@ -426,7 +423,7 @@ bool pt_PieceTable::getBlockBuf(PL_StruxDocHandle sdh,
 					break;
 				}
 				bAppended = pgb->ins(bufferOffset,&valz,1);
-				UT_ASSERT(bAppended);
+				UT_return_val_if_fail (bAppended,false);
 				bufferOffset++;
 				pfTemp = pfTemp->getNext();
 				break;
@@ -434,7 +431,7 @@ bool pt_PieceTable::getBlockBuf(PL_StruxDocHandle sdh,
 			if(countFoots>0)
 			{
 				bAppended = pgb->ins(bufferOffset,&valz,1);
-				UT_ASSERT(bAppended);
+				UT_return_val_if_fail (bAppended,false);
 				bufferOffset++;
 				pfTemp = pfTemp->getNext();
 				break;
@@ -458,7 +455,7 @@ bool pt_PieceTable::getBlockBuf(PL_StruxDocHandle sdh,
 
             bool bAppended;
             bAppended = pgb->ins(bufferOffset,reinterpret_cast<const UT_GrowBufElement*>(pSpan),length);
-            UT_ASSERT(bAppended);
+            UT_return_val_if_fail (bAppended,false);
 
             bufferOffset += length;
         }
@@ -502,7 +499,7 @@ bool pt_PieceTable::getBlockBuf(PL_StruxDocHandle sdh,
             bool bAppended;
             bAppended = pgb->ins(bufferOffset, reinterpret_cast<UT_GrowBufElement*>(pSpaces), length);
             delete[] pSpaces;
-            UT_ASSERT(bAppended);
+            UT_return_val_if_fail (bAppended,false);
 
             bufferOffset += length;
         }
@@ -511,7 +508,7 @@ bool pt_PieceTable::getBlockBuf(PL_StruxDocHandle sdh,
         }
     }
 
-    UT_ASSERT(bufferOffset == pgb->getLength());
+    UT_return_val_if_fail (bufferOffset == pgb->getLength(),false);
     return true;
 }
 
@@ -589,8 +586,8 @@ bool pt_PieceTable::getFragFromPosition(PT_DocPosition docPos,
 		xxx_UT_DEBUGMSG(("SEVIOR: I found frag %d \n",getFragNumber(pfLast)));
 	}
 
-	UT_ASSERT(pfLast);
-	UT_ASSERT(pfLast->getType() == pf_Frag::PFT_EndOfDoc);
+	UT_return_val_if_fail (pfLast,false);
+	UT_return_val_if_fail (pfLast->getType() == pf_Frag::PFT_EndOfDoc,false);
 
 	return true;
 }
@@ -644,9 +641,9 @@ bool pt_PieceTable::getFragsFromPositions(PT_DocPosition dPos1, PT_DocPosition d
 {
 	// compute the (fragment,offset) pairs for each position given.
 
-	UT_ASSERT(dPos1 <= dPos2);
-	UT_ASSERT(ppf1);
-	UT_ASSERT(pOffset1);
+	UT_return_val_if_fail (dPos1 <= dPos2,false);
+	UT_return_val_if_fail (ppf1,false);
+	UT_return_val_if_fail (pOffset1,false);
 
 	// the first set has to be done the hard way.
 
@@ -671,7 +668,7 @@ bool pt_PieceTable::getFragsFromPositions(PT_DocPosition dPos1, PT_DocPosition d
 
 	// a FmtMark has length zero.  we don't want to find it here.
 	// rather we want the thing to the right of it.
-	UT_ASSERT(pf->getType() != pf_Frag::PFT_FmtMark);
+	UT_return_val_if_fail (pf->getType() != pf_Frag::PFT_FmtMark,false);
 
 	if (ppf2)
 		*ppf2 = pf;
@@ -803,7 +800,7 @@ bool pt_PieceTable::_getStruxOfTypeFromPosition(PT_DocPosition dpos,
 {
 	// return the strux fragment of the given type containing
 	// the given absolute document position.
-	UT_ASSERT(ppfs);
+	UT_return_val_if_fail (ppfs, false);
 	xxx_UT_DEBUGMSG(("_getStruxOfTypeFromPosition: looking for type %d \n",pts));
 	*ppfs = NULL;
 
@@ -983,7 +980,7 @@ bool pt_PieceTable::_changePointWithNotify(PT_DocPosition dpos)
 	PX_ChangeRecord * pcr
 		= new PX_ChangeRecord(PX_ChangeRecord::PXT_ChangePoint,
 							  dpos, 0);
-	UT_ASSERT(pcr);
+	UT_return_val_if_fail (pcr,false);
 
 	m_history.addChangeRecord(pcr);
 	m_pDocument->notifyListeners(NULL, pcr);

@@ -82,7 +82,7 @@ UINT CALLBACK AP_Win32Dialog_Background::s_hookProc(HWND hdlg,UINT uiMsg,WPARAM 
 
 void AP_Win32Dialog_Background::runModal(XAP_Frame * pFrame)
 {
-	UT_ASSERT(pFrame);
+	UT_return_if_fail (pFrame);
 
 	const XML_Char *  pszC = getColor();
 	UT_RGBColor rgbColor(255,255,255);
@@ -123,7 +123,7 @@ void AP_Win32Dialog_Background::runModal(XAP_Frame * pFrame)
 
 void AP_Win32Dialog_Background::_centerDialog()
 {
-	UT_ASSERT(IsWindow(m_hDlg));
+	UT_return_if_fail (IsWindow(m_hDlg));
 	
 	RECT 	rc, rcParent;
 	int 	nWidth, nHeight;

@@ -109,8 +109,8 @@ bool pt_PieceTable::_fmtChangeSpan(pf_Frag_Text * pft, UT_uint32 fragOffset, UT_
 									  PT_AttrPropIndex indexNewAP,
 									  pf_Frag ** ppfNewEnd, UT_uint32 * pfragOffsetNewEnd)
 {
-	UT_ASSERT(length > 0);
-	UT_ASSERT(fragOffset+length <= pft->getLength());
+	UT_return_val_if_fail (length > 0,false);
+	UT_return_val_if_fail (fragOffset+length <= pft->getLength(), false);
 
 	// insert a format change within this text fragment.
 
@@ -283,9 +283,9 @@ bool pt_PieceTable::_fmtChangeSpan(pf_Frag_Text * pft, UT_uint32 fragOffset, UT_
 	PT_BufIndex bi_2 = m_varset.getBufIndex(pft->getBufIndex(),fragOffset);
 	PT_BufIndex bi_3 = m_varset.getBufIndex(pft->getBufIndex(),fragOffset+length);
 	pf_Frag_Text * pft_2 = new pf_Frag_Text(this,bi_2,len_2,indexNewAP,pft->getField());
-	UT_ASSERT(pft_2);
+	UT_return_val_if_fail (pft_2, false);
 	pf_Frag_Text * pft_3 = new pf_Frag_Text(this,bi_3,len_3,pft->getIndexAP(),pft->getField());
-	UT_ASSERT(pft_3);
+	UT_return_val_if_fail (pft_3, false);
 
 	pft->changeLength(len_1);
 	m_fragments.insertFrag(pft,pft_2);
@@ -317,14 +317,14 @@ bool pt_PieceTable::_fmtChangeSpanWithNotify(PTChangeFmt ptc,
 		return true;
 	}
 
-	UT_ASSERT(fragOffset+length <= pft->getLength());
+	UT_return_val_if_fail (fragOffset+length <= pft->getLength(), false);
 
 	PT_AttrPropIndex indexNewAP;
 	PT_AttrPropIndex indexOldAP = pft->getIndexAP();
 	bool bMerged;
 
 	bMerged = m_varset.mergeAP(ptc,indexOldAP,attributes,properties,&indexNewAP,getDocument());
-	UT_ASSERT(bMerged);
+	UT_ASSERT_HARMLESS(bMerged);
 
 	if (indexOldAP == indexNewAP)		// the requested change will have no effect on this fragment.
 	{
@@ -353,7 +353,7 @@ bool pt_PieceTable::_fmtChangeSpanWithNotify(PTChangeFmt ptc,
 										 dpos, indexOldAP,indexNewAP,
 										 m_varset.getBufIndex(pft->getBufIndex(),fragOffset),
 										 length,blockOffset);
-	UT_ASSERT(pcr);
+	UT_return_val_if_fail (pcr,false);
 	bool bResult = _fmtChangeSpan(pft,fragOffset,length,indexNewAP,ppfNewEnd,pfragOffsetNewEnd);
 
 	// add record to history.  we do not attempt to coalesce these.
@@ -371,7 +371,7 @@ bool pt_PieceTable::_realChangeSpanFmt(PTChangeFmt ptc,
 {
 	// apply a span-level formatting change to the given region.
 
-	UT_ASSERT(m_pts==PTS_Editing);
+	UT_return_val_if_fail (m_pts==PTS_Editing,false);
     _tweakFieldSpan(dpos1,dpos2);
 //
 // Deal with case of exactly selecting the endOfFootnote
@@ -398,9 +398,9 @@ bool pt_PieceTable::_realChangeSpanFmt(PTChangeFmt ptc,
 //
 		const XML_Char * szStyle = UT_getAttribute(PT_STYLE_ATTRIBUTE_NAME,attributes);
 		PD_Style * pStyle = NULL;
-		UT_ASSERT(szStyle);
+		UT_return_val_if_fail (szStyle,false);
 		getDocument()->getStyle(szStyle,&pStyle);
-		UT_ASSERT(pStyle);
+		UT_return_val_if_fail (pStyle,false);
 		UT_Vector vProps;
 //
 // Get the vector of properties
@@ -441,11 +441,11 @@ bool pt_PieceTable::_realChangeSpanFmt(PTChangeFmt ptc,
 		return bRes;
 	}
 
-	UT_ASSERT(dpos1 < dpos2);
+	UT_return_val_if_fail (dpos1 < dpos2,false);
 	bool bHaveAttributes, bHaveProperties;
 	bHaveAttributes = (attributes && *attributes);
 	bHaveProperties = (lProps && *lProps);
-	UT_ASSERT(bHaveAttributes || bHaveProperties); // must have something to do
+	UT_return_val_if_fail (bHaveAttributes || bHaveProperties, false); // must have something to do
 
 	pf_Frag * pf_First;
 	pf_Frag * pf_End;
@@ -454,7 +454,7 @@ bool pt_PieceTable::_realChangeSpanFmt(PTChangeFmt ptc,
 
 	bool bFound;
 	bFound = getFragsFromPositions(dpos1,dpos2,&pf_First,&fragOffset_First,&pf_End,&fragOffset_End);
-	UT_ASSERT(bFound);
+	UT_return_val_if_fail (bFound, false);
 
 #if 0
 	{
@@ -463,9 +463,9 @@ bool pt_PieceTable::_realChangeSpanFmt(PTChangeFmt ptc,
 
 		bool bFound1 = getFragFromPosition(dpos1,&pf1,&fo1);
 		bool bFound2 = getFragFromPosition(dpos2,&pf2,&fo2);
-		UT_ASSERT(bFound1 && bFound2);
-		UT_ASSERT((pf1==pf_First) && (fragOffset_First==fo1));
-		UT_ASSERT((pf2==pf_End) && (fragOffset_End==fo2));
+		UT_return_val_if_fail (bFound1 && bFound2, false);
+		UT_return_val_if_fail ((pf1==pf_First) && (fragOffset_First==fo1), false);
+		UT_return_val_if_fail ((pf2==pf_End) && (fragOffset_End==fo2), false);
 	}
 #endif
 
@@ -501,7 +501,7 @@ bool pt_PieceTable::_realChangeSpanFmt(PTChangeFmt ptc,
 			&& (!pf_First || pf_Frag::PFT_FmtMark != pf_First->getType()))
 			break;
 
-		UT_ASSERT(dpos1+length==dpos2);
+		UT_return_val_if_fail (dpos1+length==dpos2, false);
 
 		UT_uint32 lengthInFrag = pf_First->getLength() - fragOffset_First;
 		UT_uint32 lengthThisStep = UT_MIN(lengthInFrag, length);
@@ -511,7 +511,7 @@ bool pt_PieceTable::_realChangeSpanFmt(PTChangeFmt ptc,
 		case pf_Frag::PFT_EndOfDoc:
 		default:
 			UT_DEBUGMSG(("fragment type: %d\n",pf_First->getType()));
-			UT_ASSERT(0);
+			UT_ASSERT_HARMLESS(0);
 			if(bApplyStyle)
 			{
 				FREEP(sProps);
@@ -530,7 +530,7 @@ bool pt_PieceTable::_realChangeSpanFmt(PTChangeFmt ptc,
 				if(isEndFootnote(pfsContainer))
 				{
 					bFoundStrux = _getStruxFromFragSkip(pfsContainer,&pfsContainer);
-					UT_ASSERT(bFoundStrux);
+					UT_return_val_if_fail (bFoundStrux, false);
 				}
 			}
 			break;
@@ -541,11 +541,11 @@ bool pt_PieceTable::_realChangeSpanFmt(PTChangeFmt ptc,
 				{
 					bool bFoundStrux;
 					bFoundStrux = _getStruxFromPosition(dpos1,&pfsContainer);
-					UT_ASSERT(bFoundStrux);
+					UT_return_val_if_fail (bFoundStrux,false);
 					if(isEndFootnote(pfsContainer))
 					{
 						bFoundStrux = _getStruxFromFragSkip(pfsContainer,&pfsContainer);
-						UT_ASSERT(bFoundStrux);
+						UT_return_val_if_fail (bFoundStrux,false);
 					}
 				}
 
@@ -554,7 +554,7 @@ bool pt_PieceTable::_realChangeSpanFmt(PTChangeFmt ptc,
 											   fragOffset_First,dpos1,lengthThisStep,
 											   attributes,lProps,
 											   pfsContainer,&pfNewEnd,&fragOffsetNewEnd);
-				UT_ASSERT(bResult);
+				UT_return_val_if_fail (bResult,false);
 			}
 			break;
 
@@ -564,11 +564,11 @@ bool pt_PieceTable::_realChangeSpanFmt(PTChangeFmt ptc,
 				{
 					bool bFoundStrux;
 					bFoundStrux = _getStruxFromPosition(dpos1,&pfsContainer);
-					UT_ASSERT(bFoundStrux);
+					UT_return_val_if_fail (bFoundStrux,false);
 					if(isEndFootnote(pfsContainer))
 					{
 						bFoundStrux = _getStruxFromFragSkip(pfsContainer,&pfsContainer);
-						UT_ASSERT(bFoundStrux);
+						UT_return_val_if_fail (bFoundStrux,false);
 					}
 				}
 
@@ -577,7 +577,7 @@ bool pt_PieceTable::_realChangeSpanFmt(PTChangeFmt ptc,
 												 fragOffset_First,dpos1,lengthThisStep,
 												 attributes,lProps,
 												 pfsContainer,&pfNewEnd,&fragOffsetNewEnd);
-				UT_ASSERT(bResult);
+				UT_return_val_if_fail (bResult,false);
 			}
 			break;
 
@@ -587,11 +587,11 @@ bool pt_PieceTable::_realChangeSpanFmt(PTChangeFmt ptc,
 				{
 					bool bFoundStrux;
 					bFoundStrux = _getStruxFromPosition(dpos1,&pfsContainer);
-					UT_ASSERT(bFoundStrux);
+					UT_return_val_if_fail (bFoundStrux,false);
 					if(isEndFootnote(pfsContainer))
 					{
 						bFoundStrux = _getStruxFromFragSkip(pfsContainer,&pfsContainer);
-						UT_ASSERT(bFoundStrux);
+						UT_return_val_if_fail (bFoundStrux,false);
 					}
 
 				}
@@ -600,7 +600,7 @@ bool pt_PieceTable::_realChangeSpanFmt(PTChangeFmt ptc,
 				bResult = _fmtChangeFmtMarkWithNotify(ptc,static_cast<pf_Frag_FmtMark *>(pf_First),
 												  dpos1, attributes,lProps,
 												  pfsContainer,&pfNewEnd,&fragOffsetNewEnd);
-				UT_ASSERT(bResult);
+				UT_return_val_if_fail (bResult,false);
 			}
 			break;
 

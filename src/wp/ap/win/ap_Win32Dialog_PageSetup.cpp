@@ -76,7 +76,7 @@ AP_Win32Dialog_PageSetup::~AP_Win32Dialog_PageSetup()
 
 void AP_Win32Dialog_PageSetup::runModal(XAP_Frame *pFrame)
 {
-	UT_ASSERT(pFrame);
+	UT_return_if_fail (pFrame);
 
 	// raise the dialog
 	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
@@ -84,14 +84,14 @@ void AP_Win32Dialog_PageSetup::runModal(XAP_Frame *pFrame)
 
 	LPCTSTR lpTemplate = NULL;
 
-	UT_ASSERT(m_id == AP_DIALOG_ID_FILE_PAGESETUP);
+	UT_return_if_fail (m_id == AP_DIALOG_ID_FILE_PAGESETUP);
 
 	lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_PAGE_SETUP);
 
 	int result = DialogBoxParam(pWin32App->getInstance(),lpTemplate,
 						static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
 						(DLGPROC)s_dlgProc,(LPARAM)this);
-	UT_ASSERT((result != -1));
+	UT_ASSERT_HARMLESS((result != -1));
 
 }
 
@@ -224,9 +224,9 @@ BOOL AP_Win32Dialog_PageSetup::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lP
                                        m_hwndTab, 
 									   (DLGPROC)s_tabProc, 
                                        (LPARAM)&tp );
-		UT_ASSERT(( w
+		UT_return_val_if_fail (( w
 				    && ( m_vecSubDlgHWnd.getItemCount() > 0 )
-				    && ( w == m_vecSubDlgHWnd.getLastItem() ) ));
+				    && ( w == m_vecSubDlgHWnd.getLastItem() ) ), 0);
 
 		tp.which = AP_RID_DIALOG_PAGE_SETUP_MARGINS;
 		pTemplate = UT_LockDlgRes(hinst, MAKEINTRESOURCE(tp.which));
@@ -235,9 +235,9 @@ BOOL AP_Win32Dialog_PageSetup::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lP
                                        m_hwndTab, 
 									   (DLGPROC)s_tabProc, 
                                        (LPARAM)&tp ); 
-		UT_ASSERT(( w
+		UT_return_val_if_fail (( w
 				    && ( m_vecSubDlgHWnd.getItemCount() > 0 )
-				    && ( w == m_vecSubDlgHWnd.getLastItem() ) ));
+				    && ( w == m_vecSubDlgHWnd.getLastItem() ) ), 0);
 
 	}
 
@@ -505,7 +505,7 @@ BOOL AP_Win32Dialog_PageSetup::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lPara
 		break;
 
 	default:
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		break;
 	}
 

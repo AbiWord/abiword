@@ -97,7 +97,7 @@
 						bFound = true;
 					}
 				}
-				UT_ASSERT(bFound);
+				UT_ASSERT_HARMLESS(bFound);
 			};
 		void removeItem(XAP_Menu_Id id)
 			{
@@ -113,7 +113,7 @@
 						bFound = true;
 					}
 				}
-				UT_ASSERT(bFound);
+				UT_ASSERT_HARMLESS(bFound);
 			};
 		void setNthIDFlags(UT_uint32 n, XAP_Menu_Id id,EV_Menu_LayoutFlags flags)
 			{
@@ -255,7 +255,7 @@ XAP_Menu_Id XAP_Menu_Factory::getNewID(void)
 
 EV_Menu_Layout * XAP_Menu_Factory::CreateMenuLayout(const char * szName)
 {
-	UT_ASSERT(szName && *szName);		// no defaults
+	UT_return_val_if_fail (szName && *szName, NULL);		// no defaults
 
 	for (UT_uint32 k=0; k< m_vecTT.getItemCount(); k++)
 	{
@@ -264,19 +264,19 @@ EV_Menu_Layout * XAP_Menu_Factory::CreateMenuLayout(const char * szName)
 		{
 			UT_uint32 NrEntries = pVectt->getNrEntries();
 			EV_Menu_Layout * pLayout = new EV_Menu_Layout(pVectt->m_name,NrEntries);
-			UT_ASSERT(pLayout);
+			UT_return_val_if_fail (pLayout, NULL);
 			
 			for (UT_uint32 j=0; (j < NrEntries); j++)
 			{
 				_lt * plt = pVectt->getNth_lt(j);
 				bool bResult = pLayout->setLayoutItem(j, plt->m_id, plt->m_flags);
-				UT_ASSERT(bResult);
+				UT_ASSERT_HARMLESS(bResult);
 			}
 
 			return pLayout;
 		}
 	}
-	UT_ASSERT(0);						// no defaults
+	UT_ASSERT_HARMLESS(0);						// no defaults
 	return NULL;
 }
 
@@ -291,7 +291,7 @@ const char * XAP_Menu_Factory::FindContextMenu(EV_EditMouseContext emc)
 			return pVectt->m_name;
 		}
 	}
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
+	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
 	return NULL;
 }
 
@@ -301,7 +301,7 @@ XAP_Menu_Id XAP_Menu_Factory::addNewMenuAfter(const char * szMenu,
 											  EV_Menu_LayoutFlags flags,
 											  XAP_Menu_Id newID)
 {
-	UT_ASSERT(szMenu && *szMenu);		// no defaults
+	UT_return_val_if_fail (szMenu && *szMenu, 0);		// no defaults
 	UT_uint32 k = 0;
 	bool bFoundMenu = false;
 	_vectt * pVectt = NULL;
@@ -312,7 +312,7 @@ XAP_Menu_Id XAP_Menu_Factory::addNewMenuAfter(const char * szMenu,
 	}
 	if(!bFoundMenu)
 	{
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		return 0;
 	}
 	
@@ -331,7 +331,7 @@ XAP_Menu_Id XAP_Menu_Factory::addNewMenuAfter(const char * szMenu,
 		afterID = EV_searchMenuLabel( m_pEnglishLabelSet, After);
 		if(afterID == 0)
 		{	
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			return 0;
 		}
 	}
@@ -369,7 +369,7 @@ XAP_Menu_Id XAP_Menu_Factory::removeMenuItem(const char * szMenu,
 									  const char * szLanguage,
 											 const char * szNuke)
 {
-	UT_ASSERT(szMenu && *szMenu);		// no defaults
+	UT_return_val_if_fail (szMenu && *szMenu, 0);		// no defaults
 	UT_uint32 k = 0;
 	bool bFoundMenu = false;
 	_vectt * pVectt = NULL;
@@ -380,7 +380,7 @@ XAP_Menu_Id XAP_Menu_Factory::removeMenuItem(const char * szMenu,
 	}
 	if(!bFoundMenu)
 	{
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		return 0;
 	}
 	
@@ -399,7 +399,7 @@ XAP_Menu_Id XAP_Menu_Factory::removeMenuItem(const char * szMenu,
 		nukeID = EV_searchMenuLabel( m_pEnglishLabelSet, Nuke);
 		if(nukeID == 0)
 		{	
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			return 0;
 		}
 	}

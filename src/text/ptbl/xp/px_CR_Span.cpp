@@ -33,7 +33,7 @@ PX_ChangeRecord_Span::PX_ChangeRecord_Span(PXType type,
                                            fd_Field * pField)
 	: PX_ChangeRecord(type, position, indexNewAP)
 {
-	UT_ASSERT(length > 0);
+	UT_return_if_fail (length > 0);
 	
 	m_bufIndex = bufIndex;
 	m_length = length;
@@ -51,7 +51,7 @@ PX_ChangeRecord * PX_ChangeRecord_Span::reverse(void) const
 		= new PX_ChangeRecord_Span(getRevType(),m_position,m_indexAP,
 								   m_bufIndex,m_length,m_blockOffset,
                                    m_pField);
-	UT_ASSERT(pcr);
+	UT_ASSERT_HARMLESS(pcr);
 	return pcr;
 }
 
@@ -76,8 +76,8 @@ void PX_ChangeRecord_Span::coalesce(const PX_ChangeRecord_Span * pcr)
 
 	// some quick sanity checks.  our caller is supposed to have already verified this
 	
-	UT_ASSERT(getType() == pcr->getType());
-	UT_ASSERT(getIndexAP() == pcr->getIndexAP());
+	UT_return_if_fail (getType() == pcr->getType());
+	UT_return_if_fail (getIndexAP() == pcr->getIndexAP());
 
 	m_length += pcr->getLength();
 

@@ -48,7 +48,7 @@ PX_ChangeRecord * PX_ChangeRecord_ObjectChange::reverse(void) const
 										   m_indexAP,m_indexOldAP,
 										   m_objectType,
 										   m_blockOffset);
-	UT_ASSERT(pcr);
+	UT_ASSERT_HARMLESS(pcr);
 	return pcr;
 }
 

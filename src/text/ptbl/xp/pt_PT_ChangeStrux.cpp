@@ -95,7 +95,7 @@ bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 			{
 				case pf_Frag::PFT_EndOfDoc:
 				default:
-					UT_ASSERT(0);
+					UT_ASSERT_HARMLESS(0);
 					return false;
 
 				case pf_Frag::PFT_Strux:
@@ -124,7 +124,7 @@ bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 
 
 							bResult = _fmtChangeStruxWithNotify(ptc,pfs,ppRevAttrib,NULL);
-							UT_ASSERT(bResult);
+							UT_return_val_if_fail (bResult,false);
 						}
 						if (pfs == pfs_End)
 							bFinished = true;
@@ -154,14 +154,14 @@ bool pt_PieceTable::changeStruxFormatNoUpdate(PTChangeFmt ptc ,pf_Frag_Strux * p
 	PT_AttrPropIndex indexOldAP = pfs->getIndexAP();
 	bool bMerged;
 	bMerged = m_varset.mergeAP(ptc,indexOldAP,attributes,NULL,&indexNewAP,getDocument());
-	UT_ASSERT(bMerged);
+	UT_ASSERT_HARMLESS(bMerged);
 	xxx_UT_DEBUGMSG(("Merging atts/props oldindex=%d , newindex =%d \n",indexOldAP,indexNewAP));
 	if (indexOldAP == indexNewAP)		// the requested change will have no effect on this fragment.
 		return true;
 
 	bool bResult;
 	bResult = _fmtChangeStrux(pfs,indexNewAP);
-	UT_ASSERT(bResult);
+	UT_return_val_if_fail (bResult,false);
 
 	return true;
 
@@ -185,7 +185,7 @@ bool pt_PieceTable::_fmtChangeStruxWithNotify(PTChangeFmt ptc,
 	PT_AttrPropIndex indexOldAP = pfs->getIndexAP();
 	bool bMerged;
 	bMerged = m_varset.mergeAP(ptc,indexOldAP,attributes,properties,&indexNewAP,getDocument());
-	UT_ASSERT(bMerged);
+	UT_ASSERT_HARMLESS(bMerged);
 	xxx_UT_DEBUGMSG(("Merging atts/props oldindex=%d , newindex =%d \n",indexOldAP,indexNewAP));
 	if (indexOldAP == indexNewAP)		// the requested change will have no effect on this fragment.
 		return true;
@@ -202,11 +202,11 @@ bool pt_PieceTable::_fmtChangeStruxWithNotify(PTChangeFmt ptc,
 		= new PX_ChangeRecord_StruxChange(PX_ChangeRecord::PXT_ChangeStrux,
 										  dpos,
 										  indexOldAP,indexNewAP,pts);
-	UT_ASSERT(pcr);
+	UT_return_val_if_fail (pcr,false);
 
 	bool bResult;
 	bResult = _fmtChangeStrux(pfs,indexNewAP);
-	UT_ASSERT(bResult);
+	UT_return_val_if_fail (bResult,false);
 
 	// add record to history.  we do not attempt to coalesce these.
 	m_history.addChangeRecord(pcr);
@@ -230,7 +230,7 @@ bool pt_PieceTable::_realChangeStruxForLists(PL_StruxDocHandle sdh,
 	PT_AttrPropIndex indexOldAP = pfs->getIndexAP();
 	bool bMerged;
 	bMerged = m_varset.mergeAP( PTC_AddFmt ,indexOldAP,attributes,NULL,&indexNewAP,getDocument());
-	UT_ASSERT(bMerged);
+	UT_ASSERT_HARMLESS(bMerged);
 	xxx_UT_DEBUGMSG(("Merging atts/props oldindex=%d , newindex =%d \n",indexOldAP,indexNewAP));
 	if (indexOldAP == indexNewAP)		// the requested change will have no effect on this fragment.
 		return true;
@@ -247,11 +247,11 @@ bool pt_PieceTable::_realChangeStruxForLists(PL_StruxDocHandle sdh,
 		= new PX_ChangeRecord_StruxChange(PX_ChangeRecord::PXT_ChangeStrux,
 										  dpos,
 										  indexOldAP,indexNewAP,pts);
-	UT_ASSERT(pcr);
+	UT_return_val_if_fail (pcr,false);
 
 	bool bResult;
 	bResult = _fmtChangeStrux(pfs,indexNewAP);
-	UT_ASSERT(bResult);
+	UT_return_val_if_fail (bResult, false);
 
 	// add record to history.  So we can undo it later.
 
@@ -275,14 +275,14 @@ bool pt_PieceTable::_realChangeSectionAttsNoUpdate(pf_Frag_Strux * pfs,
 	PT_AttrPropIndex indexOldAP = pfs->getIndexAP();
 	bool bMerged;
 	bMerged = m_varset.mergeAP( PTC_AddFmt ,indexOldAP,attributes,NULL,&indexNewAP,getDocument());
-	UT_ASSERT(bMerged);
+	UT_ASSERT_HARMLESS(bMerged);
 	xxx_UT_DEBUGMSG(("Merging atts/props oldindex=%d , newindex =%d \n",indexOldAP,indexNewAP));
 	if (indexOldAP == indexNewAP)		// the requested change will have no effect on this fragment.
 		return true;
 
 	bool bResult;
 	bResult = _fmtChangeStrux(pfs,indexNewAP);
-	UT_ASSERT(bResult);
+	UT_return_val_if_fail (bResult,false);
 
 	return true;
 
@@ -295,15 +295,15 @@ bool pt_PieceTable::_realChangeStruxFmt(PTChangeFmt ptc,
 									  const XML_Char ** properties,
 									  PTStruxType pts)
 {
-	UT_ASSERT(m_pts==PTS_Editing);
+	UT_return_val_if_fail (m_pts==PTS_Editing,false);
 	bool bDoAll = (pts == PTX_StruxDummy);
 	// apply a strux-level formatting change to the given region.
 
-	UT_ASSERT(dpos1 <= dpos2);
+	UT_return_val_if_fail (dpos1 <= dpos2, false);
 	bool bHaveAttributes, bHaveProperties;
 	bHaveAttributes = (attributes && *attributes);
 	bHaveProperties = (properties && *properties);
-	UT_ASSERT(bHaveAttributes || bHaveProperties); // must have something to do
+	UT_return_val_if_fail (bHaveAttributes || bHaveProperties,false); // must have something to do
 
 	pf_Frag_Strux * pfs_First;
 	pf_Frag_Strux * pfs_End;
@@ -320,7 +320,7 @@ bool pt_PieceTable::_realChangeStruxFmt(PTChangeFmt ptc,
 	bFoundFirst = _getStruxOfTypeFromPosition(dpos1,ptsTemp,&pfs_First);
 	bool bFoundEnd;
 	bFoundEnd = _getStruxOfTypeFromPosition(dpos2,ptsTemp,&pfs_End);
-	UT_ASSERT(bFoundFirst && bFoundEnd);
+	UT_return_val_if_fail (bFoundFirst && bFoundEnd,false);
 	while(pfs_End && (pfs_End->getPos() < pfs_First->getPos() && (dpos2 >= dpos1)))
 	{
 		dpos2--;
@@ -354,7 +354,7 @@ bool pt_PieceTable::_realChangeStruxFmt(PTChangeFmt ptc,
 			{
 			case pf_Frag::PFT_EndOfDoc:
 			default:
-				UT_ASSERT(0);
+				UT_ASSERT_HARMLESS(0);
 				return false;
 
 			case pf_Frag::PFT_Strux:
@@ -364,7 +364,7 @@ bool pt_PieceTable::_realChangeStruxFmt(PTChangeFmt ptc,
 					{
 						bool bResult;
 						bResult = _fmtChangeStruxWithNotify(ptc,pfs,attributes,properties);
-						UT_ASSERT(bResult);
+						UT_return_val_if_fail (bResult,false);
 					}
 					if (pfs == pfs_End)
 						bFinished = true;
@@ -409,7 +409,7 @@ bool pt_PieceTable::_realChangeStruxFmt(PTChangeFmt ptc,
 		PD_Style * pStyle = NULL;
 		PTChangeFmt ptcs = PTC_RemoveFmt;
 		getDocument()->getStyle(szStyle,&pStyle);
-		UT_ASSERT(pStyle);
+		UT_return_val_if_fail (pStyle,false);
 		UT_Vector vProps;
 //
 // Get the vector of properties
@@ -443,12 +443,12 @@ bool pt_PieceTable::_realChangeStruxFmt(PTChangeFmt ptc,
 			switch (pf->getType())
 			{
 			case pf_Frag::PFT_EndOfDoc:
-				UT_ASSERT(bEndSeen);
+				UT_ASSERT_HARMLESS(bEndSeen);
 				bFinished = true;
 				break;
 
 			default:
-				UT_ASSERT(0);
+				UT_ASSERT_HARMLESS(0);
 				return false;
 
 			case pf_Frag::PFT_Strux:
@@ -460,7 +460,7 @@ bool pt_PieceTable::_realChangeStruxFmt(PTChangeFmt ptc,
 					{
 						bool bResult;
 						bResult = _fmtChangeStruxWithNotify(ptc,pfsContainer,attributes,sProps);
-						UT_ASSERT(bResult);
+						UT_return_val_if_fail (bResult,false);
 					}
 					if(!bEndSeen && isEndFootnote(static_cast<pf_Frag *>(pfsContainer)))
 					{
@@ -480,7 +480,7 @@ bool pt_PieceTable::_realChangeStruxFmt(PTChangeFmt ptc,
 												   0,dpos,lengthThisStep,
 													   attributes,sProps,
 												   pfsContainer,&pfNewEnd,&fragOffsetNewEnd);
-					UT_ASSERT(bResult);
+					UT_return_val_if_fail (bResult, false);
 					if (fragOffsetNewEnd > 0)
 					{
 						// skip over the rest of this frag since we've already
@@ -500,8 +500,8 @@ bool pt_PieceTable::_realChangeStruxFmt(PTChangeFmt ptc,
 													 0,dpos,lengthThisStep,
 														 attributes,sProps,
 													 pfsContainer,&pfNewEnd,&fragOffsetNewEnd);
-					UT_ASSERT(bResult);
-					UT_ASSERT(fragOffsetNewEnd == 0);
+					UT_return_val_if_fail (bResult, false);
+					UT_return_val_if_fail (fragOffsetNewEnd == 0,false);
 				}
 				break;
 
@@ -512,7 +512,7 @@ bool pt_PieceTable::_realChangeStruxFmt(PTChangeFmt ptc,
 														  dpos,
 														  attributes,sProps,
 													  pfsContainer,&pfNewEnd,&fragOffsetNewEnd);
-					UT_ASSERT(bResult);
+					UT_return_val_if_fail (bResult,false);
 				}
 				break;
 			}

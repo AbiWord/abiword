@@ -282,7 +282,7 @@ Failed:
 bool pt_PieceTable::_createBuiltinStyle(const char * szName, const XML_Char ** attributes)
 {
 	// this function can only be called before loading the document.
-	UT_ASSERT(m_pts==PTS_Create);
+	UT_return_val_if_fail (m_pts==PTS_Create, false);
 
 	PT_AttrPropIndex indexAP;
 	if (!m_varset.storeAP(attributes,&indexAP))
@@ -314,11 +314,11 @@ bool pt_PieceTable::appendStyle(const XML_Char ** attributes)
 
 	// verify unique name
 
-	UT_ASSERT(sizeof(char) == sizeof(XML_Char));
+	UT_ASSERT_HARMLESS(sizeof(char) == sizeof(XML_Char));
 	const char * szName = UT_getAttribute(PT_NAME_ATTRIBUTE_NAME, attributes);
 	if (!szName || !*szName)
 	{
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		return true;		// silently ignore unnamed styles
 	}
 	xxx_UT_DEBUGMSG(("SEVIOR: Appending style %s \n",szName));
@@ -326,7 +326,7 @@ bool pt_PieceTable::appendStyle(const XML_Char ** attributes)
 	if (getStyle(szName,&pStyle) == true)
 	{
 		// duplicate name
-		UT_ASSERT(pStyle);
+		UT_return_val_if_fail (pStyle, false);
 		if (pStyle->isUserDefined())
 		{
 			// already loaded, ignore redefinition
@@ -356,8 +356,8 @@ bool pt_PieceTable::appendStyle(const XML_Char ** attributes)
 
 bool pt_PieceTable::removeStyle (const XML_Char * szName)
 {
-	UT_ASSERT(szName);
-	UT_ASSERT(sizeof(char) == sizeof(XML_Char));
+	UT_return_val_if_fail (szName, false);
+	UT_ASSERT_HARMLESS(sizeof(char) == sizeof(XML_Char));
 
 	UT_DEBUGMSG(("DOM: remove the style, maybe recode the hash-table\n"));
 
@@ -430,7 +430,7 @@ bool pt_PieceTable::enumStyles(UT_uint32 k,
 	vStyle->qsort(compareStyleNames);
 
 	PD_Style * pStyle = vStyle->getNthItem(k);
-	UT_ASSERT(pStyle);
+	UT_return_val_if_fail (pStyle,false);
 
 	if (ppStyle)
 	{
@@ -441,7 +441,7 @@ bool pt_PieceTable::enumStyles(UT_uint32 k,
 	{
 	  *pszName = pStyle->getName();
 	}
-	UT_ASSERT(*pszName);
+	UT_ASSERT_HARMLESS(*pszName);
 
 	delete vStyle;
 

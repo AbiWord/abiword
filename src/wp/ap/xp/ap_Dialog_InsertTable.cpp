@@ -108,7 +108,7 @@ void AP_Dialog_InsertTable::_doSpin(UT_sint32 amt, double& dValue)
 		break;
 	default:
 
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		break;
 	}
 

@@ -114,7 +114,7 @@ bool pf_Frag::createSpecialChangeRecord(PX_ChangeRecord ** /*ppcr*/,
 	
 	// this function must be overloaded for all sub-classes.
 	
-	UT_ASSERT(0);
+	UT_ASSERT_HARMLESS(0);
 	return true;
 }
 

@@ -160,7 +160,7 @@ RTF_msword97_level::RTF_msword97_level(RTF_msword97_list * pmsword97List, UT_uin
 		m_AbiLevelID = UT_rand();
 #else
 	//m_AbiLevelID = m_sLastAssignedLevelID++;
-	UT_ASSERT(pmsword97List);
+	UT_return_if_fail(pmsword97List);
 	m_AbiLevelID = pmsword97List->m_pie_rtf->getDoc()->getUID(UT_UniqueId::List);
 #endif
 	m_pParaProps = NULL;
@@ -1081,7 +1081,7 @@ RTFFontTableItem::RTFFontTableItem(FontFamilyEnum fontFamily, int charSet, int c
 			case 255:	// OEM_CHARSET
 				// TODO Can iconv do this?
 				UT_DEBUGMSG(("RTF Font charset 'OEM'??\n"));
-				UT_ASSERT(UT_NOT_IMPLEMENTED);
+				UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
 				break;
 			default:
 				UT_DEBUGMSG(("RTF Font charset unknown: %d\n", m_charSet));
@@ -1196,9 +1196,9 @@ RTFProps_ParaProps& RTFProps_ParaProps::operator=(const RTFProps_ParaProps& othe
 				m_tabLeader.addItem(other.m_tabLeader.getNthItem(i));
 			}
 		}
-		UT_ASSERT(m_tabStops.getItemCount() ==
+		UT_ASSERT_HARMLESS(m_tabStops.getItemCount() ==
 					other.m_tabTypes.getItemCount() );
-		UT_ASSERT(m_tabStops.getItemCount() ==
+		UT_ASSERT_HARMLESS(m_tabStops.getItemCount() ==
 					other.m_tabLeader.getItemCount() );
 
 		m_isList = other.m_isList;
@@ -1734,7 +1734,7 @@ void IE_Imp_RTF::HandleCell(void)
 			pNewCell->copyCell(pCell);
 			vecCopyCells.addItem(pNewCell);
 		}
-		UT_ASSERT(vecOldCells.getItemCount() > 0);
+		UT_ASSERT_HARMLESS(vecOldCells.getItemCount() > 0);
 		CloseTable();
 		OpenTable(true);
 		for(i=0; i< vecCopyCells.getItemCount();i++)
@@ -1780,7 +1780,7 @@ void IE_Imp_RTF::HandleCell(void)
 	}
 	PL_StruxDocHandle sdh = getDoc()->getLastStruxOfType(PTX_SectionCell);
 	ie_imp_cell * pCell = getTable()->getNthCellOnRow(getTable()->getPosOnRow());
-	UT_ASSERT(sdh);
+	UT_return_if_fail(sdh);
 	if(!pCell)
 	{
 //
@@ -1885,7 +1885,7 @@ void IE_Imp_RTF::HandleCellX(UT_sint32 cellx)
 	{
 		OpenTable();
 	}
-//	UT_ASSERT(cellx != 3652);
+//	UT_ASSERT_HARMLESS(cellx != 3652);
 	UT_sint32 iRow = 0;
 	bool bNewCell = true;
 //
@@ -1916,7 +1916,7 @@ void IE_Imp_RTF::HandleCellX(UT_sint32 cellx)
 		getTable()->OpenCell();
 		xxx_UT_DEBUGMSG(("SEVIOR: created cell %x for cellx %d on row \n",getCell(),cellx,getTable()->getRow()));
 	}
-	UT_ASSERT(cellx>1);
+	UT_ASSERT_HARMLESS(cellx>1);
 	getTable()->setCellX(cellx);
 	UT_DEBUGMSG(("set cellx for class %x to %d \n",getCell(),cellx));
 	getTable()->incCellXOnRow();
@@ -1943,7 +1943,7 @@ void IE_Imp_RTF::HandleRow(void)
 		getTable()->removeCurrentRow();
 		getDoc()->miniDump(m_lastCellSDH,8);
 		m_bCellBlank = true;
-		UT_ASSERT(0);
+		UT_ASSERT_HARMLESS(0);
 	}
 //
 // Need these for strange barely legal docs like that in bug 4111
@@ -1961,14 +1961,14 @@ void IE_Imp_RTF::HandleRow(void)
  */
 void IE_Imp_RTF::HandleShapeProp(void)
 {
-	UT_ASSERT(m_sPendingShapeProp.size() == 0);
+	UT_ASSERT_HARMLESS(m_sPendingShapeProp.size() == 0);
 	UT_Byte ch = 0;
 	xxx_UT_DEBUGMSG(("Handle sp \n"));
 	while (ch != '}')
 	{
 		if (!ReadCharFromFile(&ch)) 
 		{
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			return;
 		}
 		if (ch != '}' && (ch != ' ')) 
@@ -1987,13 +1987,13 @@ void IE_Imp_RTF::HandleShapeVal(void)
 	UT_String sVal;
 	sVal.clear();
 	UT_Byte ch = 0;
-	UT_ASSERT(m_sPendingShapeProp.size() > 0);
+	UT_ASSERT_HARMLESS(m_sPendingShapeProp.size() > 0);
 	xxx_UT_DEBUGMSG(("Handle sp \n"));
 	while (ch != '}')
 	{
 		if (!ReadCharFromFile(&ch)) 
 		{
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			return;
 		}
 		if (ch != '}' && (ch != ' ')) 
@@ -3163,10 +3163,10 @@ bool IE_Imp_RTF::LoadPictData(PictFormat format, const char * image_name,
 		}
 	} else {
 #if 1
-		UT_ASSERT(UT_TODO);
+		UT_ASSERT_HARMLESS(UT_TODO);
 		UT_DEBUGMSG(("BIN SHPPICT control not currently handled correctly\n"));
 #else
-		UT_ASSERT(binaryLen);
+		UT_ASSERT_HARMLESS(binaryLen);
 		for (long i = 0; i < binaryLen; i++) {
 			pictData->append(&ch, 1);
 			if (!ReadCharFromFile(&ch))
@@ -3509,7 +3509,7 @@ bool IE_Imp_RTF::HandlePicture()
 			}
 			else if (strcmp(reinterpret_cast<char*>(&keyword[0]), "bin") == 0)
 			{
-				UT_ASSERT(parameterUsed);
+				UT_ASSERT_HARMLESS(parameterUsed);
 				if (parameterUsed) {
 					isBinary = true;
 					binaryLen = parameter;
@@ -3750,7 +3750,7 @@ bool IE_Imp_RTF::HandleField()
 	else
 	{
 		xxx_UT_DEBUGMSG (("RTF: Field instruction not present. Found '%s' in stream\n", keyword));
-		UT_ASSERT (UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS (UT_SHOULD_NOT_HAPPEN);
 		// continue
 	}
 
@@ -3805,7 +3805,7 @@ bool IE_Imp_RTF::HandleField()
 	else
 	{
 		UT_DEBUGMSG (("RTF: Field result not present. Found '%s' in stream. Ignoring.\n", keyword));
-		// UT_ASSERT (UT_SHOULD_NOT_HAPPEN);
+		// UT_ASSERT_HARMLESS (UT_SHOULD_NOT_HAPPEN);
 		// continue
 	}
 
@@ -3832,7 +3832,7 @@ bool IE_Imp_RTF::HandleField()
 			m_dposPaste++;
 		}
 		m_iHyperlinkOpen--;
-		UT_ASSERT( m_iHyperlinkOpen == iHyperlinkOpen );
+		UT_ASSERT_HARMLESS( m_iHyperlinkOpen == iHyperlinkOpen );
 	}
 		
 	return true;
@@ -4085,7 +4085,7 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField, 
 			else if( strstr(newBuf,"MMMM d, yyyy") != NULL)
 			{
 				xmlField = UT_strdup("date_mdy");
-				UT_ASSERT (xmlField);
+				UT_ASSERT_HARMLESS (xmlField);
 				isXML = (xmlField != NULL);
 			}
 			else if( strstr(newBuf,"MMM d, yy") != NULL)
@@ -6602,9 +6602,9 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 	}
 	if(m_currentRTFState.m_paraProps.m_tabStops.getItemCount() > 0)
 	{
-		UT_ASSERT(m_currentRTFState.m_paraProps.m_tabStops.getItemCount() ==
+		UT_ASSERT_HARMLESS(m_currentRTFState.m_paraProps.m_tabStops.getItemCount() ==
 					m_currentRTFState.m_paraProps.m_tabTypes.getItemCount() );
-		UT_ASSERT(m_currentRTFState.m_paraProps.m_tabStops.getItemCount() ==
+		UT_ASSERT_HARMLESS(m_currentRTFState.m_paraProps.m_tabStops.getItemCount() ==
 					m_currentRTFState.m_paraProps.m_tabLeader.getItemCount() );
 		propBuffer += "tabstops:";
 		for (UT_uint32 i = 0; i < m_currentRTFState.m_paraProps.m_tabStops.getItemCount(); i++)
@@ -7199,7 +7199,7 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 		case RTFProps_SectionProps::sbkOdd:
 			break;
 		default:
-			UT_ASSERT (UT_SHOULD_NOT_HAPPEN);
+			UT_ASSERT_HARMLESS (UT_SHOULD_NOT_HAPPEN);
 		}
 	}
 	if(true /*m_currentRTFState.m_sectionProps.m_leftMargTwips != 0*/)
@@ -7386,7 +7386,7 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 		propsArray [paramIndex] = szFtrLastID.c_str();
 		paramIndex++;
 	}
-	UT_ASSERT (paramIndex < 15);
+	UT_ASSERT_HARMLESS (paramIndex < 15);
 	propsArray [paramIndex] = NULL;
 
 	if (!bUseInsertNotAppend()) // if we are reading a file or parsing a header and footer
@@ -8644,7 +8644,7 @@ bool IE_Imp_RTF::HandleLists(_rtfListTable & rtfTable )
 							level++;
 						}
 						else if (ch == '}') {
-							UT_ASSERT(level);
+							UT_ASSERT_HARMLESS(level);
 							level--;
 						}
 						else {
@@ -10159,7 +10159,7 @@ bool IE_Imp_RTF::buildAllProps(char * propBuffer,  RTFProps_ParaProps * pParas,
 			cType ='B';
 			break;
 		default:
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		}
 		char cLeader = '0' + static_cast<char>(tabLeader);
 		UT_String_sprintf(tempBuffer, "%s/%c%c", UT_convertInchesToDimensionString(DIM_IN,tabIn,"04"),cType,cLeader);

@@ -334,7 +334,7 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 	mi->author = 0;
 	mi->usage = 0;
 
-	UT_ASSERT (m_sniffer);
+	UT_return_val_if_fail( m_sniffer, 0 );
 
 	IE_Exp::unregisterExporter (m_sniffer);
 	if (!m_sniffer->unref())
@@ -503,7 +503,7 @@ UT_Error IE_Exp_MsWord_97::_writeDocument(void)
 
 bool IE_Exp_MsWord_97::_openFile(const char * szFileName)
 {
-	UT_ASSERT(szFileName);
+	UT_return_val_if_fail(szFileName, false);
 
 	m_pExporter = wvExporter_create(szFileName);
 	if(!m_pExporter)
@@ -532,9 +532,7 @@ bool IE_Exp_MsWord_97::_openFile(const char * szFileName)
 
 UT_uint32 IE_Exp_MsWord_97::_writeBytes(const UT_Byte * pBytes, UT_uint32 length)
 {
-	UT_ASSERT(pBytes);
-	UT_ASSERT(length);
-
+	UT_return_val_if_fail(pBytes && length, UT_ERROR);
 	UT_DEBUGMSG(("Writing %s", pBytes));
 
 	return wvExporter_writeBytes(m_pExporter, sizeof(UT_Byte), 
@@ -543,9 +541,10 @@ UT_uint32 IE_Exp_MsWord_97::_writeBytes(const UT_Byte * pBytes, UT_uint32 length
 
 bool IE_Exp_MsWord_97::_writeBytes(const UT_Byte * pBytes)
 {
-	UT_ASSERT(pBytes);
+	UT_return_val_if_fail(pBytes, false);
+	
 	UT_uint32 length = static_cast<UT_uint32>(strlen(reinterpret_cast<const char *>(pBytes)));
-	UT_ASSERT(length);
+	UT_return_val_if_fail(length, false);
 
 	return (_writeBytes(pBytes, length) == length);
 }
@@ -638,7 +637,7 @@ bool s_MsWord_97_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 			  return true;
 
 			default:
-				UT_ASSERT(0);
+				UT_ASSERT_HARMLESS(0);
 				return false;
 			}
 		}
@@ -647,7 +646,7 @@ bool s_MsWord_97_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 		return true;
 		
 	default:
-		UT_ASSERT(0);
+		UT_ASSERT_HARMLESS(0);
 		return false;
 	}
 }
@@ -656,7 +655,7 @@ bool s_MsWord_97_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 										   const PX_ChangeRecord * pcr,
 										   PL_StruxFmtHandle * psfh)
 {
-	UT_ASSERT(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux);
+	UT_return_val_if_fail(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux, false);
 	const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);
 	*psfh = 0;							// we don't need it.
 
@@ -692,7 +691,7 @@ bool s_MsWord_97_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 		}
 
 	default:
-		UT_ASSERT(0);
+		UT_ASSERT_HARMLESS(0);
 		return false;
 	}
 }
@@ -700,7 +699,7 @@ bool s_MsWord_97_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 bool s_MsWord_97_Listener::change(PL_StruxFmtHandle /*sfh*/,
 									const PX_ChangeRecord * /*pcr*/)
 {
-	UT_ASSERT(0);						// this function is not used.
+	UT_ASSERT_HARMLESS(0);						// this function is not used.
 	return false;
 }
 
@@ -712,13 +711,13 @@ bool s_MsWord_97_Listener::insertStrux(PL_StruxFmtHandle /*sfh*/,
 																	  PL_ListenerId /* lid */,
 																	  PL_StruxFmtHandle /* sfhNew */))
 {
-	UT_ASSERT(0);						// this function is not used.
+	UT_ASSERT_HARMLESS(0);						// this function is not used.
 	return false;
 }
 
 bool s_MsWord_97_Listener::signal(UT_uint32 /* iSignal */)
 {
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 	return false;
 }
 

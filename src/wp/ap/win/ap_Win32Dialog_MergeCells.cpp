@@ -69,21 +69,21 @@ AP_Win32Dialog_MergeCells::~AP_Win32Dialog_MergeCells(void)
 
 void AP_Win32Dialog_MergeCells::runModeless(XAP_Frame * pFrame)
 {
-	UT_ASSERT(pFrame);	
+	UT_return_if_fail (pFrame);	
 	
 	// raise the dialog
 	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
 
 	LPCTSTR lpTemplate = NULL;
 
-	UT_ASSERT(m_id == AP_DIALOG_ID_MERGE_CELLS);
+	UT_return_if_fail (m_id == AP_DIALOG_ID_MERGE_CELLS);
 
 	lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_MERGECELLS);
 
 	int result = DialogBoxParam(pWin32App->getInstance(),lpTemplate,
 						static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
 						(DLGPROC)s_dlgProc,(LPARAM)this);
-	UT_ASSERT((result != -1));
+	UT_ASSERT_HARMLESS((result != -1));
 }
 
 BOOL CALLBACK AP_Win32Dialog_MergeCells::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)

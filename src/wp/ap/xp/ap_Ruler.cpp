@@ -108,7 +108,7 @@ ap_RulerTicks::ap_RulerTicks(GR_Graphics * pG, UT_Dimension dim)
 		break;
 
 	default:
-		UT_ASSERT(UT_NOT_IMPLEMENTED);
+		UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
 		break;
 	}
 };

@@ -551,7 +551,7 @@ void IE_Exp_RTF::_rtf_chardata(const char * pbuf, UT_uint32 buflen)
 	}
 
 	conv = UT_iconv_open("UCS-4", "utf-8");
-	UT_ASSERT(conv);
+	UT_return_if_fail (conv);
 	while (count < buflen) {
 		if (*current > 127) { 
 			UT_UCS4Char wc;
@@ -561,7 +561,7 @@ void IE_Exp_RTF::_rtf_chardata(const char * pbuf, UT_uint32 buflen)
 			sz = sizeof(wc);
 			UT_iconv(conv, &current, &insz, &dest, &sz);
 			if (wc > 0x00ff) {
-				UT_ASSERT(UT_NOT_IMPLEMENTED);
+				UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
 			}
 			else {
 				_rtf_nonascii_hex2(wc);
@@ -711,7 +711,7 @@ bool IE_Exp_RTF::_write_rtf_header(void)
 	                                    // document properties
 	const XML_Char * pszFootnoteType = NULL;
 	const PP_AttrProp* pDocAP = getDoc()->getAttrProp();
-	UT_ASSERT(pDocAP);
+	UT_return_val_if_fail (pDocAP, false);
 	pDocAP->getProperty("document-footnote-type", (const XML_Char *&)pszFootnoteType);
 	if (pszFootnoteType == NULL)
 	{
@@ -1089,7 +1089,7 @@ void IE_Exp_RTF::_write_charfmt(const s_RTF_AttrPropAdapter & apa)
 {
 	const XML_Char * szColor = apa.getProperty("color");
 	UT_sint32 ndxColor = _findColor((char*)szColor);
-	UT_ASSERT(ndxColor != -1);
+	UT_return_if_fail (ndxColor != -1);
 
 	if (ndxColor != 0) // black text, the default
 		_rtf_keyword("cf",ndxColor);

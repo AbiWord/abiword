@@ -41,7 +41,7 @@ AP_Win32Toolbar_FontCombo::AP_Win32Toolbar_FontCombo(EV_Toolbar * pToolbar,
 													 XAP_Toolbar_Id id)
 	: EV_Toolbar_Control(pToolbar/*,id*/)
 {
-	UT_ASSERT(id==AP_TOOLBAR_ID_FMT_FONT);
+	UT_return_if_fail (id==AP_TOOLBAR_ID_FMT_FONT);
 
 	m_nPixels = 160;		// TODO: do a better calculation
 	m_nLimit = LF_FACESIZE;
@@ -77,7 +77,7 @@ int CALLBACK AP_Win32Toolbar_FontCombo::_EnumFontsProc(LPLOGFONT lplf,
 													  LONG lParam)
 {
 	AP_Win32Toolbar_FontCombo * ctl = (AP_Win32Toolbar_FontCombo *) lParam;
-	UT_ASSERT(ctl);
+	UT_return_val_if_fail (ctl, 0);
 
 	/*
 	   WARNING: any changes to this function should be closely coordinated

@@ -62,7 +62,7 @@ AP_Win32Dialog_HdrFtr::~AP_Win32Dialog_HdrFtr(void)
 
 void AP_Win32Dialog_HdrFtr::runModal(XAP_Frame * pFrame)
 {
-	UT_ASSERT(pFrame);
+	UT_return_if_fail (pFrame);
 	_win32Dialog.runModal( pFrame,
 						   AP_DIALOG_ID_HDRFTR,
                            AP_RID_DIALOG_HDRFTR,
@@ -75,7 +75,7 @@ void AP_Win32Dialog_HdrFtr::runModal(XAP_Frame * pFrame)
 BOOL AP_Win32Dialog_HdrFtr::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
 	XAP_Win32App * app = static_cast<XAP_Win32App *> (m_pApp);
-	UT_ASSERT(app);
+	UT_return_val_if_fail (app,0);
 
 	m_hThisDlg = hWnd;
 	const XAP_StringSet * pSS = m_pApp->getStringSet();

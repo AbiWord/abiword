@@ -224,7 +224,7 @@ UT_Error IE_ImpGraphic::constructImporter(const char * szFilename,
   // importer to use and assign that back to ft.
   if (ft == IEGFT_Unknown)
     {
-      UT_ASSERT(szFilename && *szFilename);
+      UT_return_val_if_fail(szFilename && *szFilename, UT_ERROR);
       char szBuf[4096] = "";
       UT_uint32 iNumbytes = 0;
       FILE *f = NULL;

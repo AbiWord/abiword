@@ -124,12 +124,12 @@ void AP_App::initPopt (AP_Args * Args)
 
 void AP_App::errorMsgBadArg (AP_Args *, int)
 {
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 }
 
 void AP_App::errorMsgBadFile(XAP_Frame *, const char *, UT_Error)
 {
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 }
 
 bool AP_App::doWindowlessArgs (const AP_Args *)

@@ -74,7 +74,7 @@ XAP_FrameImpl * AP_Win32FrameImpl::createInstance(XAP_Frame *pFrame, XAP_App *pA
 {
 	XAP_FrameImpl *pFrameImpl = new AP_Win32FrameImpl(static_cast<AP_Frame *>(pFrame));
 
-	UT_ASSERT(pFrameImpl);
+	UT_ASSERT_HARMLESS(pFrameImpl);
 
 	return pFrameImpl;
 }
@@ -106,7 +106,7 @@ HWND AP_Win32FrameImpl::_createDocumentWindow(XAP_Frame *pFrame, HWND hwndParent
 									 WS_CHILD | WS_VISIBLE,
 									 iLeft, iTop, iWidth, iHeight,
 									 hwndParent, NULL, static_cast<XAP_Win32App *>(XAP_App::getApp())->getInstance(), NULL);
-	UT_ASSERT(m_hwndContainer);
+	UT_return_val_if_fail (m_hwndContainer, 0);
 	// WARNING!!! many places expect an XAP_Frame or descendant!!!
 	//SWL(m_hwndContainer, this);
 	SWL(m_hwndContainer, pFrame);
@@ -123,7 +123,7 @@ HWND AP_Win32FrameImpl::_createDocumentWindow(XAP_Frame *pFrame, HWND hwndParent
 									r.right - cxVScroll, cyHScroll,
 									m_hwndContainer,
 									0, static_cast<XAP_Win32App *>(XAP_App::getApp())->getInstance(), 0);
-	UT_ASSERT(m_hWndHScroll);
+	UT_return_val_if_fail (m_hWndHScroll, 0);
 	// WARNING!!! many places expact an XAP_Frame or descendant!!!
 	//SWL(m_hWndHScroll, this);
 	SWL(m_hWndHScroll, pFrame);
@@ -133,7 +133,7 @@ HWND AP_Win32FrameImpl::_createDocumentWindow(XAP_Frame *pFrame, HWND hwndParent
 									cxVScroll, r.bottom - cyHScroll,
 									m_hwndContainer,
 									0, static_cast<XAP_Win32App *>(XAP_App::getApp())->getInstance(), 0);
-	UT_ASSERT(m_hWndVScroll);
+	UT_return_val_if_fail (m_hWndVScroll, 0);
 	// WARNING!!! many places expact an XAP_Frame or descendant!!!
 	//SWL(m_hWndVScroll, this);
 	SWL(m_hWndVScroll, pFrame);
@@ -149,7 +149,7 @@ HWND AP_Win32FrameImpl::_createDocumentWindow(XAP_Frame *pFrame, HWND hwndParent
 										r.right-cxVScroll, r.bottom-cyHScroll, cxVScroll, cyHScroll,
 										m_hwndContainer, NULL, static_cast<XAP_Win32App *>(XAP_App::getApp())->getInstance(), NULL);
 
-	UT_ASSERT(m_hWndGripperHack);
+	UT_return_val_if_fail (m_hWndGripperHack,0);
 	// WARNING!!! many places expact an XAP_Frame or descendant!!!
 	//SWL(m_hWndGripperHack, this);
 	SWL(m_hWndGripperHack, pFrame);
@@ -163,7 +163,7 @@ HWND AP_Win32FrameImpl::_createDocumentWindow(XAP_Frame *pFrame, HWND hwndParent
 	GR_Win32AllocInfo ai(GetDC(m_hwndContainer), m_hwndContainer, XAP_App::getApp());
 	GR_Win32Graphics * pG = (GR_Win32Graphics *)XAP_App::getApp()->newGraphics(ai);
 
-	UT_ASSERT(pG);	   
+	UT_return_val_if_fail (pG, 0);	   
 	
 	static_cast<AP_FrameData *>(pFrame->getFrameData())->m_pG = pG;
 
@@ -183,7 +183,7 @@ HWND AP_Win32FrameImpl::_createDocumentWindow(XAP_Frame *pFrame, HWND hwndParent
 									r.right - xLeftRulerWidth - cxVScroll,
 									r.bottom - yTopRulerHeight - cyHScroll,
 									m_hwndContainer, NULL, static_cast<XAP_Win32App *>(XAP_App::getApp())->getInstance(), NULL);
-	UT_ASSERT(m_hwndDocument);
+	UT_return_val_if_fail (m_hwndDocument, 0);
 	// WARNING!!! many places expact an XAP_Frame or descendant!!!
 	//SWL(m_hwndDocument, this);
 	SWL(m_hwndDocument, pFrame);
@@ -197,7 +197,7 @@ HWND AP_Win32FrameImpl::_createStatusBarWindow(XAP_Frame *pFrame, HWND hwndParen
 {
 	UT_return_val_if_fail(pFrame, NULL);
 	AP_Win32StatusBar * pStatusBar = new AP_Win32StatusBar(pFrame);
-	UT_ASSERT(pStatusBar);
+	UT_return_val_if_fail (pStatusBar, 0);
 	_setHwndStatusBar(pStatusBar->createWindow(hwndParent,iLeft,iTop,iWidth));
 	static_cast<AP_FrameData *>(pFrame->getFrameData())->m_pStatusBar = pStatusBar;
 
@@ -206,12 +206,12 @@ HWND AP_Win32FrameImpl::_createStatusBarWindow(XAP_Frame *pFrame, HWND hwndParen
 
 void AP_Win32FrameImpl::_refillToolbarsInFrameData() 
 {
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
+	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
 }
 
 void AP_Win32FrameImpl::_rebuildToolbar(UT_uint32 ibar)
 {
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
+	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
 }
 
 void AP_Win32FrameImpl::_toggleBar(UT_uint32 iBarNb, bool bBarOn)
@@ -237,7 +237,7 @@ void AP_Win32FrameImpl::_toggleBar(UT_uint32 iBarNb, bool bBarOn)
 	{
 		EV_Win32Toolbar *pThisToolbar = (EV_Win32Toolbar *)m_vecToolbars.getNthItem(i);
 
-		UT_ASSERT(pThisToolbar);
+		UT_ASSERT_HARMLESS(pThisToolbar);
 
 		if (pThisToolbar)	// release build paranoia
 			if ( pThisToolbar->bVisible() )
@@ -305,7 +305,7 @@ void AP_Win32FrameImpl::_bindToolbars(AV_View *pView)
 void AP_Win32FrameImpl::_showOrHideToolbars(void)
 {
 	XAP_Frame* pFrame = getFrame();
-	UT_ASSERT( pFrame );
+	UT_return_if_fail ( pFrame );
 	bool *bShowBar = static_cast<AP_FrameData *>(pFrame->getFrameData())->m_bShowBar;
 
 	for (UT_uint32 i = 0; i < m_vecToolbarLayoutNames.getItemCount(); i++)
@@ -318,7 +318,7 @@ void AP_Win32FrameImpl::_showOrHideToolbars(void)
 void AP_Win32FrameImpl::_showOrHideStatusbar(void)
 {
 	XAP_Frame* pFrame = getFrame();
-	UT_ASSERT( pFrame );
+	UT_return_if_fail ( pFrame );
 	bool bShowStatusBar = static_cast<AP_FrameData *>(pFrame->getFrameData())->m_bShowStatusBar;
 	pFrame->toggleStatusBar(bShowStatusBar);
 }
@@ -359,7 +359,7 @@ void AP_Win32FrameImpl::_createTopRuler(XAP_Frame *pFrame)
 
 	// create the top ruler
 	AP_Win32TopRuler * pWin32TopRuler = new AP_Win32TopRuler(pFrame);
-	UT_ASSERT(pWin32TopRuler);
+	UT_return_if_fail (pWin32TopRuler);
 	m_hwndTopRuler = pWin32TopRuler->createWindow(m_hwndContainer,
 												  0,0, (r.right - cxVScroll));
 	static_cast<AP_FrameData *>(pFrame->getFrameData())->m_pTopRuler = pWin32TopRuler;
@@ -399,7 +399,7 @@ void AP_Win32FrameImpl::_createLeftRuler(XAP_Frame *pFrame)
 
 	// create the left ruler
 	AP_Win32LeftRuler * pWin32LeftRuler = new AP_Win32LeftRuler(pFrame);
-	UT_ASSERT(pWin32LeftRuler);
+	UT_return_if_fail (pWin32LeftRuler);
 	m_hwndLeftRuler = pWin32LeftRuler->createWindow(m_hwndContainer,0,yTopRulerHeight,
 													r.bottom - yTopRulerHeight - cyHScroll);
 	static_cast<AP_FrameData *>(pFrame->getFrameData())->m_pLeftRuler = pWin32LeftRuler;
@@ -1327,7 +1327,7 @@ LRESULT CALLBACK AP_Win32FrameImpl::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARA
 		case WM_TIMER:
 		{
 			TIMERPROC * pfn = (TIMERPROC *)lParam;
-			UT_ASSERT( (void *)(pfn) == (void *)(Global_Win32TimerProc) );
+			UT_ASSERT_HARMLESS( (void *)(pfn) == (void *)(Global_Win32TimerProc) );
 			Global_Win32TimerProc(hwnd,WM_TIMER,(UINT)wParam,NULL);
 			return 0;
 		}

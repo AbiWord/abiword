@@ -123,7 +123,7 @@ void AP_Dialog_Spell::_purgeSuggestions(void)
 
 void AP_Dialog_Spell::runModal(XAP_Frame * pFrame)
 {
-   UT_ASSERT(pFrame);
+   UT_return_if_fail (pFrame);
    m_pFrame = pFrame;
 			  
    AP_FrameData * frameData = static_cast<AP_FrameData*>(m_pFrame->getFrameData());
@@ -170,17 +170,16 @@ void AP_Dialog_Spell::runModal(XAP_Frame * pFrame)
  */
 bool AP_Dialog_Spell::nextMisspelledWord(void)
 {
-   UT_ASSERT(m_pWordIterator);
-   UT_ASSERT(m_pView && m_pView->getLayout() );	
+   UT_return_val_if_fail (m_pWordIterator && m_pView && m_pView->getLayout(), false);
 
    // Makes this honor spelling prefs
    XAP_App * pApp = m_pFrame->getApp();
-   UT_ASSERT(pApp);
+   UT_return_val_if_fail (pApp, false);
    XAP_Prefs * pPrefs = pApp->getPrefs();
-   UT_ASSERT(pPrefs);
+   UT_return_val_if_fail (pPrefs, false);
    
    XAP_PrefsScheme *pPrefsScheme = pPrefs->getCurrentScheme();
-   UT_ASSERT(pPrefsScheme);		  
+   UT_return_val_if_fail (pPrefsScheme, false);		  
    
    bool b = false;
    pPrefs->getPrefsValueBool(static_cast<const XML_Char *>(AP_PREF_KEY_AutoSpellCheck), &b);
@@ -244,10 +243,10 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
 					_purgeSuggestions();
 
 					// create an empty vector
-					UT_ASSERT(!m_Suggestions);
+					UT_ASSERT_HARMLESS(!m_Suggestions);
 
 					m_Suggestions = new UT_GenericVector<UT_UCSChar*>();
-					UT_ASSERT(m_Suggestions);
+					UT_return_val_if_fail (m_Suggestions, false);
 
 					// get suggestions from spelling engine
 					const UT_GenericVector<UT_UCSChar*> *cpvEngineSuggestions;
@@ -259,7 +258,7 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
 				   		for (UT_uint32 i = 0; i < cpvEngineSuggestions->getItemCount(); ++i)
 						{
 							UT_UCS4Char *sug = cpvEngineSuggestions->getNthItem(i);
-							UT_ASSERT(sug);
+							UT_return_val_if_fail (sug, false);
 							m_Suggestions->addItem(sug);
 						}
 					}
@@ -322,7 +321,7 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
 	 
 	   // update the iterator with our new block
 	   m_pWordIterator = new fl_BlockSpellIterator(m_pCurrBlock, 0);
-	   UT_ASSERT(m_pWordIterator);
+	   UT_return_val_if_fail (m_pWordIterator, false);
    }
 }
 
@@ -355,7 +354,7 @@ bool AP_Dialog_Spell::inChangeAll(void)
 {
 	UT_sint32 iLength;
 	const UT_UCSChar * bufferUnicode = m_pWordIterator->getCurrentWord(iLength);
-	UT_ASSERT(bufferUnicode);
+	UT_return_val_if_fail (bufferUnicode, false);
 	char * bufferNormal = static_cast<char *>(UT_calloc(iLength + 1, sizeof(char)));
 	UT_UCS4_strncpy_to_char(bufferNormal, bufferUnicode, iLength);
 	const UT_UCSChar * ent = m_pChangeAll->pick(bufferNormal);
@@ -374,7 +373,7 @@ bool AP_Dialog_Spell::addChangeAll(const UT_UCSChar * newword)
 {
 	UT_sint32 iLength;
 	const UT_UCSChar * bufferUnicode = m_pWordIterator->getCurrentWord(iLength);
-	UT_ASSERT(bufferUnicode);
+	UT_return_val_if_fail (bufferUnicode, false);
 	char * bufferNormal = static_cast<char *>(UT_calloc(iLength + 1, sizeof(char)));
 	UT_UCS4_strncpy_to_char(bufferNormal, bufferUnicode, iLength);
 

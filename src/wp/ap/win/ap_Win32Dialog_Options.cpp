@@ -93,8 +93,8 @@ void AP_Win32Dialog_Options::runModal(XAP_Frame * pFrame)
 	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);	
 	AP_Win32Dialog_Options_Sheet	sheet;	
 	
+	UT_return_if_fail (pFrame);	
 	m_pFrame = pFrame;
-	UT_ASSERT(pFrame);	
 	
 	/* Create the property sheet and associate its pages*/		
 	m_toolbars.setContainer(this);	
@@ -175,7 +175,7 @@ HWND	AP_Win32Dialog_Options::getPage(PSH_PAGES page)
 			break;
 	}
 	
-	UT_ASSERT(hWnd!=NULL);
+	UT_ASSERT_HARMLESS(hWnd!=NULL);
 	
 	return hWnd;
 }
@@ -913,7 +913,7 @@ void AP_Win32Dialog_Options_Layout::_onCommand(HWND hWnd, WPARAM wParam, LPARAM 
 		case AP_RID_DIALOG_OPTIONS_BTN_BGColor:
 		{
 			pColorDialog = (AP_Dialog_Background *)(pParent->getDialogFactory()->requestDialog(AP_DIALOG_ID_BACKGROUND));
-			UT_ASSERT(pColorDialog);
+			UT_return_if_fail (pColorDialog);
 	
 			UT_parseColor(pParent->_gatherColorForTransparent(), rgbColor );
 			pColorDialog->setColor(rgbColor);

@@ -45,7 +45,7 @@ PX_ChangeRecord * PX_ChangeRecord_FmtMarkChange::reverse(void) const
 											m_position,
 											m_indexAP,m_indexOldAP,
 											m_blockOffset);
-	UT_ASSERT(pcr);
+	UT_ASSERT_HARMLESS(pcr);
 	return pcr;
 }
 

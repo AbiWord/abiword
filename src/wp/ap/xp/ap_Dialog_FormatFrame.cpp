@@ -131,7 +131,7 @@ void AP_Dialog_FormatFrame::stopUpdater(void)
  */
 void AP_Dialog_FormatFrame::autoUpdateMC(UT_Worker * pTimer)
 {
-	UT_ASSERT(pTimer);
+	UT_return_if_fail (pTimer);
 	
 	// get the dialog pointer from the timer instance data
 	AP_Dialog_FormatFrame * pDialog = static_cast<AP_Dialog_FormatFrame *>(pTimer->getInstanceData());
@@ -158,7 +158,7 @@ void AP_Dialog_FormatFrame::askForGraphicPathName(void)
 
 	XAP_Dialog_FileOpenSaveAs * pDialog
 		= static_cast<XAP_Dialog_FileOpenSaveAs *>(pDialogFactory->requestDialog(XAP_DIALOG_ID_INSERT_PICTURE));
-	UT_ASSERT(pDialog);
+	UT_return_if_fail (pDialog);
 
 	pDialog->setCurrentPathname(NULL);
 	pDialog->setSuggestFilename(false);
@@ -201,7 +201,7 @@ void AP_Dialog_FormatFrame::askForGraphicPathName(void)
 				break;
 			default:
 				// it returned a type we don't know how to handle
-				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+				UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			}
 		else
 			m_iGraphicType = static_cast<IEGraphicFileType>(pDialog->getFileType());
@@ -363,7 +363,7 @@ void AP_Dialog_FormatFrame::setCurFrameProps(void)
 				fl_FrameLayout * pFrame = static_cast<fl_FrameLayout *>(pBL->myContainingLayout());
 				if(pFrame->getContainerType() != FL_CONTAINER_FRAME)
 				{
-					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+					UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 					DELETEP(m_pGraphic);
 					DELETEP(m_pImage);
 					m_sImagePath.clear();
@@ -561,10 +561,10 @@ void AP_Dialog_FormatFrame::_createPreviewFromGC(GR_Graphics * gc,
 											     UT_uint32 width,
 											     UT_uint32 height)
 {
-	UT_ASSERT(gc);
+	UT_return_if_fail (gc);
 
 	m_pFormatFramePreview = new AP_FormatFrame_preview(gc,this);
-	UT_ASSERT(m_pFormatFramePreview);
+	UT_return_if_fail (m_pFormatFramePreview);
 
 	m_pFormatFramePreview->setWindowSize(width, height);
 }

@@ -135,29 +135,31 @@ bool AP_Win32App::initialize(void)
 	bool bSuccess = true;
 	const char * szUserPrivateDirectory = getUserPrivateDirectory();
 	bool bVerified = s_createDirectoryIfNecessary(szUserPrivateDirectory);
-	UT_ASSERT(bVerified);
+	UT_return_val_if_fail (bVerified, false);
 
 	// load the preferences.
 	
 	m_prefs = new AP_Win32Prefs(this);
+	UT_return_val_if_fail (m_prefs, false);
+	
 	m_prefs->fullInit();
 		   
 	// now that preferences are established, let the xap init
 
 	m_pClipboard = new AP_Win32Clipboard();
-	UT_ASSERT(m_pClipboard);
+	UT_return_val_if_fail (m_pClipboard, false);
 	   
 	m_pEMC = AP_GetEditMethods();
-	UT_ASSERT(m_pEMC);
+	UT_return_val_if_fail (m_pEMC, false);
 
 	m_pBindingSet = new AP_BindingSet(m_pEMC);
-	UT_ASSERT(m_pBindingSet);
+	UT_return_val_if_fail (m_pBindingSet, false);
 	
 	m_pMenuActionSet = AP_CreateMenuActionSet();
-	UT_ASSERT(m_pMenuActionSet);
+	UT_return_val_if_fail (m_pMenuActionSet,false);
 
 	m_pToolbarActionSet = AP_CreateToolbarActionSet();
-	UT_ASSERT(m_pToolbarActionSet);
+	UT_return_val_if_fail (m_pToolbarActionSet,false);
 
 	//////////////////////////////////////////////////////////////////
 	// load the dialog and message box strings
@@ -168,7 +170,7 @@ bool AP_Win32App::initialize(void)
 		// set or as the fallback set).
 		
 		AP_BuiltinStringSet * pBuiltinStringSet = new AP_BuiltinStringSet(this,AP_PREF_DEFAULT_StringSet);
-		UT_ASSERT(pBuiltinStringSet);
+		UT_return_val_if_fail (pBuiltinStringSet, false);
 		m_pStringSet = pBuiltinStringSet;
 
 		// see if we should load an alternate set from the disk
@@ -182,10 +184,10 @@ bool AP_Win32App::initialize(void)
 			&& (UT_stricmp(szStringSet,AP_PREF_DEFAULT_StringSet) != 0))
 		{
 			getPrefsValueDirectory(true,AP_PREF_KEY_StringSetDirectory,&szDirectory);
-			UT_ASSERT((szDirectory) && (*szDirectory));
+			UT_return_val_if_fail ((szDirectory) && (*szDirectory), false);
 
 			char * szPathname = (char *)calloc(sizeof(char),strlen(szDirectory)+strlen(szStringSet)+100);
-			UT_ASSERT(szPathname);
+			UT_return_val_if_fail (szPathname, false);
 
 			sprintf(szPathname,"%s%s%s.strings",
 					szDirectory,
@@ -193,7 +195,7 @@ bool AP_Win32App::initialize(void)
 					szStringSet);
 
 			AP_DiskStringSet * pDiskStringSet = new AP_DiskStringSet(this);
-			UT_ASSERT(pDiskStringSet);
+			UT_return_val_if_fail (pDiskStringSet, false);
 
 			if (pDiskStringSet->loadStringsFromDisk(szPathname))
 			{
@@ -294,7 +296,7 @@ bool AP_Win32App::initialize(void)
 
 	// Ensure that common control DLL is loaded
 	HINSTANCE hinstCC = LoadLibrary("comctl32.dll");
-	UT_ASSERT(hinstCC);
+	UT_return_val_if_fail (hinstCC, false);
 	InitCommonControlsEx_fn  pInitCommonControlsEx = NULL;
 	if( hinstCC != NULL )
 		pInitCommonControlsEx = (InitCommonControlsEx_fn)GetProcAddress( hinstCC, "InitCommonControlsEx" );
@@ -411,7 +413,7 @@ bool AP_Win32App::getPrefsValueDirectory(bool bAppSpecific,
 	const XML_Char * dir = ((bAppSpecific) ? getAbiSuiteAppDir() : getAbiSuiteLibDir());
 
 	static XML_Char buf[1024];
-	UT_ASSERT((strlen(dir) + strlen(psz) + 2) < sizeof(buf));
+	UT_return_val_if_fail ((strlen(dir) + strlen(psz) + 2) < sizeof(buf), false);
 	
 	sprintf(buf,"%s\\%s",dir,psz);
 	*pszValue = buf;
@@ -423,7 +425,7 @@ const char * AP_Win32App::getAbiSuiteAppDir(void) const
 	// we return a static string, use it quickly.
 	
 	static XML_Char buf[1024];
-	UT_ASSERT((strlen(getAbiSuiteLibDir()) + strlen(ABIWORD_APP_LIBDIR) + 2) < sizeof(buf));
+	UT_return_val_if_fail ((strlen(getAbiSuiteLibDir()) + strlen(ABIWORD_APP_LIBDIR) + 2) < sizeof(buf), NULL);
 
 	sprintf(buf,"%s\\%s",getAbiSuiteLibDir(),ABIWORD_APP_LIBDIR);
 	return buf;
@@ -1168,7 +1170,7 @@ static GR_Image * _showSplash(HINSTANCE hInstance, const char * szAppName)
 		wndclass.hIconSm       = LoadIcon(hInstance, MAKEINTRESOURCE(AP_RID_ICON_APPLICATION_16)) /* app->getSmallIcon() */;
 
 		a = RegisterClassEx(&wndclass);
-		UT_ASSERT(a);
+		UT_ASSERT_HARMLESS(a);
 
 		// get the extents of the desktop window
 		RECT rect;
@@ -1187,7 +1189,7 @@ static GR_Image * _showSplash(HINSTANCE hInstance, const char * szAppName)
 								  iSplashWidth,
 								  iSplashHeight,
 								  NULL, NULL, hInstance, NULL);
-		UT_ASSERT(hwndSplash);
+		UT_ASSERT_HARMLESS(hwndSplash);
     
 		if (hwndSplash) 
 		{
@@ -1238,7 +1240,7 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 	HINSTANCE hinstRich = LoadLibrary("riched32.dll");
 	if (!hinstRich)
 		hinstRich = LoadLibrary("riched20.dll");
-	UT_ASSERT(hinstRich);
+	UT_return_val_if_fail (hinstRich, 1);
 	
 	AP_Win32App * pMyWin32App;
 
@@ -1268,7 +1270,7 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 
 	// Consider the user saved preferences for the Splash Screen
    	const XAP_Prefs * pPrefs = pMyWin32App->getPrefs();
-	UT_ASSERT(pPrefs);
+	UT_ASSERT_HARMLESS(pPrefs);
     if (pPrefs && pPrefs->getPrefsValueBool (AP_PREF_KEY_ShowSplash, &bSplashPref))
 	{
 		bShowSplash = bShowSplash && bSplashPref;
@@ -1331,7 +1333,7 @@ __try
 		for(UT_uint32 i = 0;i<pMyWin32App->m_vecFrames.getItemCount();i++)
 		{
 			AP_Win32Frame * curFrame = (AP_Win32Frame*)pMyWin32App->m_vecFrames[i];
-			UT_ASSERT(curFrame);
+			UT_return_val_if_fail (curFrame, 1);
 		
 			HWND hwnd = curFrame->getTopLevelWindow();
 			ShowWindow(hwnd, iCmdShow);
@@ -1384,14 +1386,14 @@ __except (1)
 {
 	AP_Win32App *pApp = (AP_Win32App *) XAP_App::getApp();
 	
-	UT_ASSERT(pApp);
+	UT_return_val_if_fail (pApp);
 	
 	UT_uint32 i = 0;
 	
 	for(;i<pApp->m_vecFrames.getItemCount();i++)
 	{
 		AP_Win32Frame * curFrame = (AP_Win32Frame*)pApp->m_vecFrames[i];
-		UT_ASSERT(curFrame);
+		UT_return_val_if_fail (curFrame,1);
 		
 		if (NULL == curFrame->getFilename())
 		  curFrame->backup(".abw.saved");

@@ -39,7 +39,7 @@ PX_ChangeRecord * PX_ChangeRecord_FmtMark::reverse(void) const
 {
 	PX_ChangeRecord_FmtMark * pcr
 		= new PX_ChangeRecord_FmtMark(getRevType(),m_position,m_indexAP,m_blockOffset);
-	UT_ASSERT(pcr);
+	UT_ASSERT_HARMLESS(pcr);
 	return pcr;
 }
 

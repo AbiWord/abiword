@@ -58,7 +58,7 @@ AP_Win32Dialog_MailMerge::~AP_Win32Dialog_MailMerge(void)
 
 void AP_Win32Dialog_MailMerge::runModeless(XAP_Frame * pFrame)
 {
-	UT_ASSERT(pFrame);	
+	UT_return_if_fail (pFrame);	
 	
 	m_pFrame = pFrame;
 
@@ -67,7 +67,7 @@ void AP_Win32Dialog_MailMerge::runModeless(XAP_Frame * pFrame)
 
 	LPCTSTR lpTemplate = NULL;
 
-	UT_ASSERT(m_id == AP_DIALOG_ID_MAILMERGE);
+	UT_return_if_fail (m_id == AP_DIALOG_ID_MAILMERGE);
 
 	lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_MAILMERGE);
 
@@ -75,7 +75,7 @@ void AP_Win32Dialog_MailMerge::runModeless(XAP_Frame * pFrame)
 							static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
 							(DLGPROC)s_dlgProc,(LPARAM)this);
 
-	UT_ASSERT((hResult != NULL));
+	UT_return_if_fail ((hResult != NULL));
 
 	m_hwndDlg = hResult;
 
@@ -86,7 +86,7 @@ void AP_Win32Dialog_MailMerge::runModeless(XAP_Frame * pFrame)
 	iResult = ShowWindow(m_hwndDlg, SW_SHOW );
 	iResult = BringWindowToTop( m_hwndDlg );
 
-	UT_ASSERT((iResult != 0));	
+	UT_ASSERT_HARMLESS((iResult != 0));	
 }
 
 BOOL CALLBACK AP_Win32Dialog_MailMerge::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)

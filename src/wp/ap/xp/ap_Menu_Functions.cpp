@@ -56,8 +56,7 @@
 Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Autotext)
 {
 	XAP_App * pApp = XAP_App::getApp();
-	UT_ASSERT(pApp);
-	UT_ASSERT(pLabel);
+	UT_return_val_if_fail (pApp && pLabel, NULL);
 
 	const char * c = NULL;
 
@@ -155,11 +154,10 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Autotext)
 Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Toolbar)
 {
 	XAP_App * pApp = XAP_App::getApp();
-	UT_ASSERT(pApp);
-	UT_ASSERT(pLabel);
+	UT_return_val_if_fail (pApp && pLabel, NULL);
 
-	UT_ASSERT(id >= AP_MENU_ID_VIEW_TB_1);
-	UT_ASSERT(id <= AP_MENU_ID_VIEW_TB_4);
+	UT_ASSERT_HARMLESS(id >= AP_MENU_ID_VIEW_TB_1);
+	UT_ASSERT_HARMLESS(id <= AP_MENU_ID_VIEW_TB_4);
 
 	UT_uint32 ndx = (id - AP_MENU_ID_VIEW_TB_1);
 	const UT_Vector & vec = pApp->getToolbarFactory()->getToolbarNames();
@@ -187,16 +185,15 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Recent)
 	// on the next call).
 
 	XAP_App * pApp = XAP_App::getApp();
-	UT_ASSERT(pApp);
-	UT_ASSERT(pLabel);
+	UT_return_val_if_fail (pApp && pLabel, NULL);
 
-	UT_ASSERT(id >= AP_MENU_ID_FILE_RECENT_1);
-	UT_ASSERT(id <= AP_MENU_ID_FILE_RECENT_9);
+	UT_ASSERT_HARMLESS(id >= AP_MENU_ID_FILE_RECENT_1);
+	UT_ASSERT_HARMLESS(id <= AP_MENU_ID_FILE_RECENT_9);
 
 	UT_uint32 ndx = (id - AP_MENU_ID_FILE_RECENT_1 + 1);
 
 	XAP_Prefs * pPrefs = pApp->getPrefs();
-	UT_ASSERT(pPrefs);
+	UT_return_val_if_fail (pPrefs, NULL);
 
 	if (ndx <= pPrefs->getRecentCount())
 	{
@@ -220,10 +217,9 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_About)
 	// Compute the menu label for the _help_about item.
 
 	XAP_App * pApp = XAP_App::getApp();
-	UT_ASSERT(pApp);
-	UT_ASSERT(pLabel);
+	UT_return_val_if_fail (pApp && pLabel, NULL);
 
-	UT_ASSERT(id == AP_MENU_ID_HELP_ABOUT);
+	UT_ASSERT_HARMLESS(id == AP_MENU_ID_HELP_ABOUT);
 
 	const char * szFormat = pLabel->getMenuLabel();
 	static char buf[128];
@@ -239,10 +235,9 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Contents)
 	// Compute the menu label for the _help_contents item.
 
 	XAP_App * pApp = XAP_App::getApp();
-	UT_ASSERT(pApp);
-	UT_ASSERT(pLabel);
+	UT_return_val_if_fail (pApp && pLabel, NULL);
 
-	UT_ASSERT(id == AP_MENU_ID_HELP_CONTENTS);
+	UT_ASSERT_HARMLESS(id == AP_MENU_ID_HELP_CONTENTS);
 
 	const char * szFormat = pLabel->getMenuLabel();
 	static char buf[128];
@@ -258,10 +253,9 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Index)
 	// Compute the menu label for the _help_index item.
 
 	XAP_App * pApp = XAP_App::getApp();
-	UT_ASSERT(pApp);
-	UT_ASSERT(pLabel);
+	UT_return_val_if_fail (pApp && pLabel, NULL);
 
-	UT_ASSERT(id == AP_MENU_ID_HELP_INDEX);
+	UT_ASSERT_HARMLESS(id == AP_MENU_ID_HELP_INDEX);
 
 	const char * szFormat = pLabel->getMenuLabel();
 	static char buf[128];
@@ -277,10 +271,9 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Search)
 	// Compute the menu label for the _help_search item.
 
 	XAP_App * pApp = XAP_App::getApp();
-	UT_ASSERT(pApp);
-	UT_ASSERT(pLabel);
+	UT_return_val_if_fail (pApp && pLabel, NULL);
 
-	UT_ASSERT(id == AP_MENU_ID_HELP_SEARCH);
+	UT_ASSERT_HARMLESS(id == AP_MENU_ID_HELP_SEARCH);
 
 	const char * szFormat = pLabel->getMenuLabel();
 	static char buf[128];
@@ -296,10 +289,9 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_AboutOS)
 	// Compute the menu label for the about OS help item.
 
 	XAP_App * pApp = XAP_App::getApp();
-	UT_ASSERT(pApp);
-	UT_ASSERT(pLabel);
+	UT_return_val_if_fail (pApp && pLabel, NULL);
 
-	UT_ASSERT(id == AP_MENU_ID_HELP_ABOUTOS);
+	UT_ASSERT_HARMLESS(id == AP_MENU_ID_HELP_ABOUTOS);
 
 	const char * szFormat = pLabel->getMenuLabel();
 	static char buf[128];
@@ -315,10 +307,9 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Checkver)
 	// Compute the menu label for the about the check version item.
 
 	XAP_App * pApp = XAP_App::getApp();
-	UT_ASSERT(pApp);
-	UT_ASSERT(pLabel);
+	UT_return_val_if_fail (pApp && pLabel, NULL);
 
-	UT_ASSERT(id == AP_MENU_ID_HELP_CHECKVER);
+	UT_ASSERT_HARMLESS(id == AP_MENU_ID_HELP_CHECKVER);
 
 	const char * szFormat = pLabel->getMenuLabel();
 	static char buf[128];
@@ -333,19 +324,19 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Checkver)
 
 Defun_EV_GetMenuItemState_Fn(ap_GetState_Window)
 {
-	UT_ASSERT(pAV_View);
+	UT_return_val_if_fail (pAV_View, EV_MIS_Gray);
 
-	UT_ASSERT(id >= AP_MENU_ID_WINDOW_1);
-	UT_ASSERT(id <= AP_MENU_ID_WINDOW_9);
+	UT_ASSERT_HARMLESS(id >= AP_MENU_ID_WINDOW_1);
+	UT_ASSERT_HARMLESS(id <= AP_MENU_ID_WINDOW_9);
 
 	UT_uint32 ndx = (id - AP_MENU_ID_WINDOW_1);
 
 	EV_Menu_ItemState s = EV_MIS_ZERO;
 
 	XAP_Frame * pFrame = static_cast<XAP_Frame *>(pAV_View->getParentData());
-	UT_ASSERT(pFrame);
+	UT_return_val_if_fail (pFrame, EV_MIS_Gray);
 	XAP_App * pApp = pFrame->getApp();
-	UT_ASSERT(pApp);
+	UT_return_val_if_fail (pApp, EV_MIS_Gray);
 
 	if (pFrame == pApp->getFrame(ndx))
 		s = EV_MIS_Toggled;
@@ -360,12 +351,10 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Window)
 	// on the next call).
 
 	XAP_App * pApp = XAP_App::getApp();
-	UT_ASSERT(pApp);
-	UT_ASSERT(pLabel);
+	UT_return_val_if_fail (pApp && pLabel, NULL);
 
-
-	UT_ASSERT(id >= AP_MENU_ID_WINDOW_1);
-	UT_ASSERT(id <= AP_MENU_ID_WINDOW_9);
+	UT_ASSERT_HARMLESS(id >= AP_MENU_ID_WINDOW_1);
+	UT_ASSERT_HARMLESS(id <= AP_MENU_ID_WINDOW_9);
 
 	UT_uint32 ndx = (id - AP_MENU_ID_WINDOW_1);
 
@@ -379,7 +368,7 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Window)
 		static char buf[128];
 
 		XAP_Frame * pFrame = pApp->getFrame(ndx);
-		UT_ASSERT(pFrame);
+		UT_return_val_if_fail (pFrame, NULL);
 
 		const char * szTitle = pFrame->getTitle(128 - strlen(szFormat));
 
@@ -398,9 +387,8 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_WindowMore)
 	// Compute the menu label for the _window_more ("More Windows...") item.
 
 	XAP_App * pApp = XAP_App::getApp();
-	UT_ASSERT(pApp);
-	UT_ASSERT(pLabel);
-	UT_ASSERT(id == AP_MENU_ID_WINDOW_MORE);
+	UT_return_val_if_fail (pApp && pLabel, NULL);
+	UT_ASSERT_HARMLESS(id == AP_MENU_ID_WINDOW_MORE);
 
 	// if we have more than 9 windows in our window list,
 	// we return the static menu label.  if not, we return
@@ -420,7 +408,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Spelling)
   EV_Menu_ItemState s = EV_MIS_ZERO ;
 
   XAP_Prefs *pPrefs = XAP_App::getApp()->getPrefs();
-  UT_ASSERT( pPrefs );
+  UT_return_val_if_fail (pPrefs, EV_MIS_Gray);
 
   bool b = true ;
   pPrefs->getPrefsValueBool(static_cast<const XML_Char *>(AP_PREF_KEY_AutoSpellCheck),&b) ;
@@ -438,7 +426,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Spelling)
 Defun_EV_GetMenuItemState_Fn(ap_GetState_ColumnsActive)
 {
   ABIWORD_VIEW ;
-  UT_ASSERT(pView) ;
+  UT_return_val_if_fail (pView, EV_MIS_Gray);
 
   EV_Menu_ItemState s = EV_MIS_ZERO ;
 
@@ -451,7 +439,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_ColumnsActive)
 Defun_EV_GetMenuItemState_Fn(ap_GetState_SomethingSelected)
 {
 	ABIWORD_VIEW ;
-	UT_ASSERT(pView) ;
+	UT_return_val_if_fail (pView, EV_MIS_Gray);
 
 	EV_Menu_ItemState s = EV_MIS_ZERO ;
 
@@ -466,10 +454,10 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_SomethingSelected)
 Defun_EV_GetMenuItemState_Fn(ap_GetState_Suggest)
 {
 	ABIWORD_VIEW;
-	UT_ASSERT(pView);
+	UT_return_val_if_fail (pView, EV_MIS_Gray);
 
-	UT_ASSERT(id >= AP_MENU_ID_SPELL_SUGGEST_1);
-	UT_ASSERT(id <= AP_MENU_ID_SPELL_SUGGEST_9);
+	UT_ASSERT_HARMLESS(id >= AP_MENU_ID_SPELL_SUGGEST_1);
+	UT_ASSERT_HARMLESS(id <= AP_MENU_ID_SPELL_SUGGEST_9);
 
 	UT_uint32 ndx = (id - AP_MENU_ID_SPELL_SUGGEST_1 + 1);
 
@@ -494,15 +482,14 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Suggest)
 	// on the next call).
 
 	XAP_App * pApp = XAP_App::getApp();
-	UT_ASSERT(pApp);
-	UT_ASSERT(pLabel);
+	UT_return_val_if_fail (pApp && pLabel, NULL);
 	XAP_Frame * frame = pApp->getLastFocussedFrame();
 
 	AV_View * pAV_View = frame->getCurrentView();
 	ABIWORD_VIEW;
 
-	UT_ASSERT(id >= AP_MENU_ID_SPELL_SUGGEST_1);
-	UT_ASSERT(id <= AP_MENU_ID_SPELL_SUGGEST_9);
+	UT_ASSERT_HARMLESS(id >= AP_MENU_ID_SPELL_SUGGEST_1);
+	UT_ASSERT_HARMLESS(id <= AP_MENU_ID_SPELL_SUGGEST_9);
 
 	UT_uint32 ndx = (id - AP_MENU_ID_SPELL_SUGGEST_1 + 1);
 
@@ -557,15 +544,15 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Suggest)
 Defun_EV_GetMenuItemState_Fn(ap_GetState_Changes)
 {
 	ABIWORD_VIEW;
-	UT_ASSERT(pView);
+	UT_return_val_if_fail (pView, EV_MIS_Gray);
 
 	EV_Menu_ItemState s = EV_MIS_ZERO;
 
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pAV_View->getParentData());
-	UT_ASSERT(pFrame);
+	UT_return_val_if_fail (pFrame, EV_MIS_Gray);
 
 	AP_FrameData *pFrameData = static_cast<AP_FrameData *> (pFrame->getFrameData());
-	UT_ASSERT(pFrameData);
+	UT_return_val_if_fail (pFrameData, EV_MIS_Gray);
 
 	switch(id)
 	{
@@ -633,7 +620,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Changes)
 		break;
 
 	default:
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		break;
 	}
 
@@ -657,10 +644,10 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Selection)
 {
         ABIWORD_VIEW;
 	XAP_App * pApp = XAP_App::getApp();
-	UT_ASSERT(pApp);
+	UT_return_val_if_fail (pApp, EV_MIS_Gray);
 
 	XAP_Prefs * pPrefs = pApp->getPrefs();
-	UT_ASSERT(pPrefs);
+	UT_return_val_if_fail (pPrefs, EV_MIS_Gray);
 
 	EV_Menu_ItemState s = EV_MIS_ZERO;
 
@@ -674,7 +661,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Selection)
 		break;
 
 	default:
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		break;
 	}
 
@@ -684,7 +671,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Selection)
 Defun_EV_GetMenuItemState_Fn(ap_GetState_Clipboard)
 {
 	ABIWORD_VIEW;
-	UT_ASSERT(pView);
+	UT_return_val_if_fail (pView, EV_MIS_Gray);
 
 	EV_Menu_ItemState s = EV_MIS_ZERO;
 
@@ -696,7 +683,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Clipboard)
 		break;
 
 	default:
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		break;
 	}
 
@@ -705,14 +692,14 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Clipboard)
 
 Defun_EV_GetMenuItemState_Fn(ap_GetState_Prefs)
 {
-        ABIWORD_VIEW;
-	UT_ASSERT(pView);
+    ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, EV_MIS_Gray);
 
 	XAP_App *pApp = XAP_App::getApp();
-	UT_ASSERT(pApp);
+	UT_return_val_if_fail (pApp, EV_MIS_Gray);
 
 	XAP_Prefs * pPrefs = pApp->getPrefs();
-	UT_ASSERT(pPrefs);
+	UT_return_val_if_fail (pPrefs, EV_MIS_Gray);
 
 	EV_Menu_ItemState s = EV_MIS_ZERO;
 
@@ -726,7 +713,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Prefs)
 	    break;
 
 	  default:
-	    UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	    UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 	    break;
 	  }
 
@@ -736,7 +723,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Prefs)
 Defun_EV_GetMenuItemState_Fn(ap_GetState_CharFmt)
 {
 	ABIWORD_VIEW;
-	UT_ASSERT(pView);
+	UT_return_val_if_fail (pView, EV_MIS_Gray);
 	bool bMultiple = false;
 
 	EV_Menu_ItemState s = EV_MIS_ZERO;
@@ -810,7 +797,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_CharFmt)
 		break;
 
 	default:
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		break;
 	}
 
@@ -849,7 +836,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_CharFmt)
 Defun_EV_GetMenuItemState_Fn(ap_GetState_BlockFmt)
 {
 	ABIWORD_VIEW;
-	UT_ASSERT(pView);
+	UT_return_val_if_fail (pView, EV_MIS_Gray);
 
 	EV_Menu_ItemState s = EV_MIS_ZERO;
 
@@ -884,7 +871,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_BlockFmt)
 		break;
 
 	default:
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		break;
 	}
 
@@ -910,16 +897,16 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_BlockFmt)
 Defun_EV_GetMenuItemState_Fn(ap_GetState_View)
 {
 	ABIWORD_VIEW;
-	UT_ASSERT(pView);
+	UT_return_val_if_fail (pView, EV_MIS_Gray);
 
 	XAP_Frame *pFrame = static_cast<XAP_Frame *> (pAV_View->getParentData());
-	UT_ASSERT(pFrame);
+	UT_return_val_if_fail (pFrame, EV_MIS_Gray);
 
 	AP_FrameData *pFrameData = static_cast<AP_FrameData *> (pFrame->getFrameData());
-	UT_ASSERT(pFrameData);
+	UT_return_val_if_fail (pFrameData, EV_MIS_Gray);
 
 	XAP_App *pApp = pFrame->getApp();
-	UT_ASSERT(pApp);
+	UT_return_val_if_fail (pApp, EV_MIS_Gray);
 
 	EV_Menu_ItemState s = EV_MIS_ZERO;
 
@@ -1014,7 +1001,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_View)
 	  break;
 
 	default:
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		break;
 	}
 
@@ -1024,7 +1011,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_View)
 Defun_EV_GetMenuItemState_Fn(ap_GetState_StylesLocked)
 {
 	ABIWORD_VIEW;
-	UT_ASSERT(pView);
+	UT_return_val_if_fail (pView, EV_MIS_Gray);
 
         if(pView->getDocument()->areStylesLocked()) {
             return EV_MIS_Gray;
@@ -1036,7 +1023,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_StylesLocked)
 Defun_EV_GetMenuItemState_Fn(ap_GetState_MarkRevisions)
 {
 	ABIWORD_VIEW;
-	UT_ASSERT(pView);
+	UT_return_val_if_fail (pView, EV_MIS_Gray);
 
 	if(pView->getDocument()->isAutoRevisioning())
 	{
@@ -1054,7 +1041,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_MarkRevisions)
 Defun_EV_GetMenuItemState_Fn(ap_GetState_RevisionsSelectLevel)
 {
 	ABIWORD_VIEW;
-	UT_ASSERT(pView);
+	UT_return_val_if_fail (pView, EV_MIS_Gray);
 
 	if(pView->getDocument()->isAutoRevisioning() || pView->isMarkRevisions())
 	{
@@ -1067,7 +1054,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_RevisionsSelectLevel)
 Defun_EV_GetMenuItemState_Fn(ap_GetState_HasRevisions)
 {
 	ABIWORD_VIEW;
-	UT_ASSERT(pView);
+	UT_return_val_if_fail (pView, EV_MIS_Gray);
 
 	if(pView->getDocument()->getHighestRevisionId() == 0)
 		return EV_MIS_Gray;
@@ -1078,7 +1065,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_HasRevisions)
 Defun_EV_GetMenuItemState_Fn(ap_GetState_AutoRevision)
 {
 	ABIWORD_VIEW;
-	UT_ASSERT(pView);
+	UT_return_val_if_fail (pView, EV_MIS_Gray);
 
 	if(pView->getDocument()->isAutoRevisioning())
 	{
@@ -1091,7 +1078,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_AutoRevision)
 Defun_EV_GetMenuItemState_Fn(ap_GetState_ShowRevisions)
 {
 	ABIWORD_VIEW;
-	UT_ASSERT(pView);
+	UT_return_val_if_fail (pView, EV_MIS_Gray);
 
 	if(pView->getDocument()->isAutoRevisioning())
 	{
@@ -1112,7 +1099,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_ShowRevisions)
 Defun_EV_GetMenuItemState_Fn(ap_GetState_ShowRevisionsAfter)
 {
 	ABIWORD_VIEW;
-	UT_ASSERT(pView);
+	UT_return_val_if_fail (pView, EV_MIS_Gray);
 
 	if(pView->getDocument()->isAutoRevisioning())
 	{
@@ -1140,7 +1127,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_ShowRevisionsAfter)
 Defun_EV_GetMenuItemState_Fn(ap_GetState_ShowRevisionsAfterPrev)
 {
 	ABIWORD_VIEW;
-	UT_ASSERT(pView);
+	UT_return_val_if_fail (pView, EV_MIS_Gray);
 
 	if(pView->getDocument()->isAutoRevisioning())
 	{
@@ -1166,7 +1153,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_ShowRevisionsAfterPrev)
 Defun_EV_GetMenuItemState_Fn(ap_GetState_ShowRevisionsBefore)
 {
 	ABIWORD_VIEW;
-	UT_ASSERT(pView);
+	UT_return_val_if_fail (pView, EV_MIS_Gray);
 
 	if(pView->getDocument()->isAutoRevisioning())
 	{
@@ -1193,7 +1180,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_ShowRevisionsBefore)
 Defun_EV_GetMenuItemState_Fn(ap_GetState_RevisionPresent)
 {
 	ABIWORD_VIEW;
-	UT_ASSERT(pView);
+	UT_return_val_if_fail (pView, EV_MIS_Gray);
 
 	if(pView->isMarkRevisions())
 		return EV_MIS_Gray;
@@ -1206,7 +1193,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_RevisionPresent)
 Defun_EV_GetMenuItemState_Fn(ap_GetState_RevisionPresentContext)
 {
 	ABIWORD_VIEW;
-	UT_ASSERT(pView);
+	UT_return_val_if_fail (pView, EV_MIS_Gray);
 
 	if(pView->isMarkRevisions())
 		return EV_MIS_Gray;
@@ -1217,7 +1204,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_RevisionPresentContext)
 Defun_EV_GetMenuItemState_Fn(ap_GetState_InTable)
 {
 	ABIWORD_VIEW;
-	UT_ASSERT(pView);
+	UT_return_val_if_fail (pView, EV_MIS_Gray);
 
 	if(pView->isInTable())
 		return EV_MIS_ZERO;
@@ -1229,7 +1216,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_InTable)
 Defun_EV_GetMenuItemState_Fn(ap_GetState_InTOC)
 {
 	ABIWORD_VIEW;
-	UT_ASSERT(pView);
+	UT_return_val_if_fail (pView, EV_MIS_Gray);
 	if(pView->isTOCSelected())
 	{
 		return EV_MIS_ZERO;
@@ -1240,7 +1227,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_InTOC)
 Defun_EV_GetMenuItemState_Fn(ap_GetState_InTableMerged)
 {
 	ABIWORD_VIEW;
-	UT_ASSERT(pView);
+	UT_return_val_if_fail (pView, EV_MIS_Gray);
 
 	if(pView->isInTable())
 	{
@@ -1253,7 +1240,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_InTableMerged)
 Defun_EV_GetMenuItemState_Fn(ap_GetState_InFootnote)
 {
 	ABIWORD_VIEW;
-	UT_ASSERT(pView);
+	UT_return_val_if_fail (pView, EV_MIS_Gray);
 
 	if(!pView->isInFootnote())
 	{
@@ -1291,7 +1278,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Zoom)
 	UT_return_val_if_fail(pView, EV_MIS_ZERO);
 
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pAV_View->getParentData());
-	UT_ASSERT(pFrame);
+	UT_return_val_if_fail (pFrame, EV_MIS_Gray);
 
 	EV_Menu_ItemState s = EV_MIS_ZERO;
 

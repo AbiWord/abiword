@@ -69,7 +69,7 @@ AP_Win32Dialog_New::~AP_Win32Dialog_New(void)
 void AP_Win32Dialog_New::runModal(XAP_Frame * pFrame)
 {
 
-	UT_ASSERT(pFrame);
+	UT_ASSERT_HARMLESS(pFrame);
 	m_pFrame = pFrame;
 
 	_win32Dialog.runModal( pFrame, 
@@ -86,7 +86,7 @@ BOOL AP_Win32Dialog_New::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	m_hThisDlg = hWnd;
 
 	XAP_Win32App * app = static_cast<XAP_Win32App *> (m_pApp);
-	UT_ASSERT(app);
+	UT_return_val_if_fail (app,1);
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
@@ -229,7 +229,7 @@ void AP_Win32Dialog_New::_doChoose()
 
 	XAP_Dialog_FileOpenSaveAs * pDialog
 		= (XAP_Dialog_FileOpenSaveAs *)(pDialogFactory->requestDialog(id));
-	UT_ASSERT(pDialog);
+	UT_return_if_fail (pDialog);
 
 	pDialog->setCurrentPathname(0);
 	pDialog->setSuggestFilename(false);
@@ -318,7 +318,7 @@ void AP_Win32Dialog_New::_setFileName( UT_sint32 nIndex )
 			templateName = XAP_App::getApp()->getAbiSuiteLibDir();
 			break;
 		default:
-			UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
+			UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
 			break;
 		}
 		templateName += "\\templates\\";

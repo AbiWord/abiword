@@ -77,7 +77,7 @@ bool pf_Frag_Text::createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
 												PT_DocPosition dpos,
 												PT_BlockOffset blockOffset) const
 {
-	UT_ASSERT(ppcr);
+	UT_return_val_if_fail (ppcr,false);
 	
 	PX_ChangeRecord * pcr
 		= new PX_ChangeRecord_Span(PX_ChangeRecord::PXT_InsertSpan,
@@ -96,9 +96,9 @@ bool pf_Frag_Text::createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
 												PT_BlockOffset startFragOffset,
 												PT_BlockOffset endFragOffset) const
 {
-	UT_ASSERT(ppcr);
-	UT_ASSERT(endFragOffset <= m_length);
-	UT_ASSERT(startFragOffset < endFragOffset);
+	UT_return_val_if_fail (ppcr,false);
+	UT_return_val_if_fail (endFragOffset <= m_length,false);
+	UT_return_val_if_fail (startFragOffset < endFragOffset,false);
 	
 	PX_ChangeRecord * pcr
 		= new PX_ChangeRecord_Span(PX_ChangeRecord::PXT_InsertSpan,
@@ -116,7 +116,7 @@ bool pf_Frag_Text::createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
 
 void pf_Frag_Text::changeLength(UT_uint32 newLength)
 {
-	UT_ASSERT(newLength > 0);
+	UT_ASSERT_HARMLESS(newLength > 0);
 	m_length = newLength;
 	m_pPieceTable->getFragments().setFragsDirty();
 }

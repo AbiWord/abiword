@@ -171,17 +171,17 @@ void AP_Win32Dialog_Styles::_onDrawButton(LPDRAWITEMSTRUCT lpDrawItemStruct, HWN
 
 void AP_Win32Dialog_Styles::runModal(XAP_Frame * pFrame)
 {
-	UT_ASSERT(pFrame);
+	UT_return_if_fail (pFrame);
 //
 // Get View and Document pointers. Place them in member variables
 //
 	setFrame(pFrame);
 
 	setView((FV_View *) pFrame->getCurrentView());
-	UT_ASSERT(getView());
+	UT_return_if_fail (getView());
 
 	setDoc(getView()->getLayout()->getDocument());
-	UT_ASSERT(getDoc());
+	UT_return_if_fail (getDoc());
 
 
 	// raise the dialog
@@ -204,7 +204,7 @@ void AP_Win32Dialog_Styles::runModal(XAP_Frame * pFrame)
 BOOL AP_Win32Dialog_Styles::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
 	XAP_Win32App * app = static_cast<XAP_Win32App *> (m_pApp);
-	UT_ASSERT(app);
+	UT_return_val_if_fail (app,0);
 	
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 

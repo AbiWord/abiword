@@ -74,12 +74,12 @@ AP_Win32Dialog_FormatFrame::~AP_Win32Dialog_FormatFrame(void)
 
 void AP_Win32Dialog_FormatFrame::runModeless(XAP_Frame * pFrame)
 {
-	UT_ASSERT(pFrame);		
+	UT_return_if_fail (pFrame);		
 	
 	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
 	LPCTSTR lpTemplate = NULL;
 	
-	UT_ASSERT(m_id == AP_DIALOG_ID_FORMAT_FRAME);	
+	UT_return_if_fail (m_id == AP_DIALOG_ID_FORMAT_FRAME);	
 
 	lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_FORMATFRAME);
 	
@@ -182,7 +182,7 @@ BOOL AP_Win32Dialog_FormatFrame::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM 
     
 	/* Preview*/
 	HWND hwndChild = GetDlgItem(hWnd, AP_RID_DIALOG_FORMATFRAME_STATIC_PREVIEW);	
-	UT_ASSERT(hwndChild);
+	UT_return_val_if_fail (hwndChild,1);
 
 	m_pPreviewWidget = new XAP_Win32PreviewWidget(static_cast<XAP_Win32App *>(m_pApp),  hwndChild, 0);	
 	m_pPreviewWidget->getGraphics()->init3dColors();

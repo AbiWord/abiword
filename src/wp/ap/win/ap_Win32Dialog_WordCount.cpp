@@ -64,14 +64,14 @@ void AP_Win32Dialog_WordCount::runModal(XAP_Frame * pFrame)
 
 	LPCTSTR lpTemplate = NULL;
 
-	UT_ASSERT(m_id == AP_DIALOG_ID_WORDCOUNT);
+	UT_return_if_fail (m_id == AP_DIALOG_ID_WORDCOUNT);
 
 	lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_WORDCOUNT);
 
 	int result = DialogBoxParam(pWin32App->getInstance(),lpTemplate,
 						static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
 						(DLGPROC)s_dlgProc,(LPARAM)this);
-	UT_ASSERT((result != -1));
+	UT_ASSERT_HARMLESS((result != -1));
 }
 
 void AP_Win32Dialog_WordCount::runModeless(XAP_Frame * pFrame)
@@ -82,7 +82,7 @@ void AP_Win32Dialog_WordCount::runModeless(XAP_Frame * pFrame)
 
 	LPCTSTR lpTemplate = NULL;
 
-	UT_ASSERT(m_id == AP_DIALOG_ID_WORDCOUNT);
+	UT_return_if_fail (m_id == AP_DIALOG_ID_WORDCOUNT);
 
 	lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_WORDCOUNT);
 
@@ -90,7 +90,7 @@ void AP_Win32Dialog_WordCount::runModeless(XAP_Frame * pFrame)
 							static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
 							(DLGPROC)s_dlgProc,(LPARAM)this);
 
-	UT_ASSERT((hResult != NULL));
+	UT_ASSERT_HARMLESS((hResult != NULL));
 
 	m_hWnd = hResult;
 
@@ -102,7 +102,7 @@ void AP_Win32Dialog_WordCount::runModeless(XAP_Frame * pFrame)
 
 	iResult = BringWindowToTop( m_hWnd );
 
-	UT_ASSERT((iResult != 0));
+	UT_ASSERT_HARMLESS((iResult != 0));
 }
 
 void    AP_Win32Dialog_WordCount::setUpdateCounter( UT_uint32 iRate )
@@ -127,7 +127,7 @@ void    AP_Win32Dialog_WordCount::setUpdateCounter( UT_uint32 iRate )
 
 void    AP_Win32Dialog_WordCount::autoupdateWC(UT_Worker * pTimer)
 {
-	UT_ASSERT(pTimer);
+	UT_return_if_fail (pTimer);
 
 	// this is a static callback method and does not have a 'this' pointer.
 
@@ -157,7 +157,7 @@ void AP_Win32Dialog_WordCount::destroy(void)
 
 	int iResult = DestroyWindow( m_hWnd );
 
-	UT_ASSERT((iResult != 0));
+	UT_ASSERT_HARMLESS((iResult != 0));
 
 	modeless_cleanup();
 }
@@ -174,7 +174,7 @@ void AP_Win32Dialog_WordCount::activate(void)
 
 	iResult = BringWindowToTop( m_hWnd );
 
-	UT_ASSERT((iResult != 0));
+	UT_ASSERT_HARMLESS((iResult != 0));
 }
 
 void AP_Win32Dialog_WordCount::notifyActiveFrame(XAP_Frame *pFrame)

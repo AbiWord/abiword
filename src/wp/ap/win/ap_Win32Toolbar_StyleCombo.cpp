@@ -43,7 +43,7 @@ AP_Win32Toolbar_StyleCombo::AP_Win32Toolbar_StyleCombo(EV_Toolbar * pToolbar,
 													 XAP_Toolbar_Id id)
 	: EV_Toolbar_Control(pToolbar/*,id*/)
 {
-	UT_ASSERT(id==AP_TOOLBAR_ID_FMT_STYLE);
+	UT_return_if_fail (id==AP_TOOLBAR_ID_FMT_STYLE);
 
 	m_nPixels = 160;		// TODO: do a better calculation
 	m_nLimit = 20;

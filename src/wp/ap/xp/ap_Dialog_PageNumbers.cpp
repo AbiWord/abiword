@@ -63,7 +63,7 @@ bool AP_Dialog_PageNumbers::isFooter(void)
 void AP_Dialog_PageNumbers::_updatePreview(AP_Dialog_PageNumbers::tAlign align, 
 					   AP_Dialog_PageNumbers::tControl ctrl)
 {
-	UT_ASSERT(m_preview);
+	UT_return_if_fail (m_preview);
 	m_preview->setHdrFtr (ctrl);
 	m_preview->setAlign (align);
 	m_preview->draw ();
@@ -73,9 +73,9 @@ void AP_Dialog_PageNumbers::_createPreviewFromGC(GR_Graphics * gc,
 						 UT_uint32 width,
 						 UT_uint32 height)
 {
-	UT_ASSERT(gc);
+	UT_return_if_fail (gc);
 	m_preview = new AP_Preview_PageNumbers (gc);
-	UT_ASSERT (m_preview);
+	UT_return_if_fail (m_preview);
 	
 	m_preview->setWindowSize (width, height);  
 }

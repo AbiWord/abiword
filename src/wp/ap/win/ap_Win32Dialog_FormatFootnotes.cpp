@@ -61,7 +61,7 @@ AP_Win32Dialog_FormatFootnotes::~AP_Win32Dialog_FormatFootnotes(void)
 
 void AP_Win32Dialog_FormatFootnotes::runModal(XAP_Frame * pFrame)
 {	
-	UT_ASSERT(pFrame);	
+	UT_return_if_fail (pFrame);	
 	setFrame(pFrame);
 	
 	// raise the dialog
@@ -70,7 +70,7 @@ void AP_Win32Dialog_FormatFootnotes::runModal(XAP_Frame * pFrame)
 
 	LPCTSTR lpTemplate = NULL;
 	
-	UT_ASSERT(m_id == AP_DIALOG_ID_FORMAT_FOOTNOTES);
+	UT_return_if_fail (m_id == AP_DIALOG_ID_FORMAT_FOOTNOTES);
 
 	lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_FORMATFOOTNOTES);
 
@@ -78,7 +78,7 @@ void AP_Win32Dialog_FormatFootnotes::runModal(XAP_Frame * pFrame)
 						static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
 						(DLGPROC)s_dlgProc,(LPARAM)this);
 						
-	UT_ASSERT((result != -1));
+	UT_ASSERT_HARMLESS((result != -1));
 }
 
 BOOL CALLBACK AP_Win32Dialog_FormatFootnotes::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)

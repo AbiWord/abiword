@@ -394,7 +394,7 @@ UT_Error PD_Document::readFromFile(const char * szFilename, int ieft,
 		return errorCode;
 	}
 
-	UT_ASSERT(!getFilename());
+	UT_ASSERT_HARMLESS(!getFilename());
 	_setFilename(UT_strdup(szFilename));
 	
 	if (!getFilename())
@@ -550,7 +550,7 @@ UT_Error PD_Document::newDocument(void)
 
 	if(!getDocUUID())
 	{
-		UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
+		UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
 	}
 	else
 		_getDocUUID()->makeUUID();
@@ -843,7 +843,7 @@ bool PD_Document::insertStrux(PT_DocPosition dpos,
 void PD_Document::deleteHdrFtrStrux(PL_StruxDocHandle sdh)
 {
 	pf_Frag_Strux * pfs_hdrftr = const_cast<pf_Frag_Strux *>(static_cast<const pf_Frag_Strux *>(sdh));
-	UT_ASSERT(pfs_hdrftr->getType()  == pf_Frag::PFT_Strux);
+	UT_return_if_fail (pfs_hdrftr->getType()  == pf_Frag::PFT_Strux);
 	m_pPieceTable->deleteHdrFtrStrux(pfs_hdrftr);
 }
 
@@ -889,7 +889,7 @@ bool PD_Document::insertFmtMark(PTChangeFmt ptc, PT_DocPosition dpos, PP_AttrPro
 
 bool PD_Document::appendStrux(PTStruxType pts, const XML_Char ** attributes, pf_Frag_Strux ** ppfs_ret)
 {
-	UT_ASSERT(m_pPieceTable);
+	UT_return_val_if_fail (m_pPieceTable, false);
 
 	// can only be used while loading the document
 //
@@ -903,14 +903,14 @@ bool PD_Document::appendStrux(PTStruxType pts, const XML_Char ** attributes, pf_
 
 bool  PD_Document::appendStruxFmt(pf_Frag_Strux * pfs, const XML_Char ** attributes)
 {
-	UT_ASSERT(m_pPieceTable);
+	UT_return_val_if_fail (m_pPieceTable, false);
 
 	return m_pPieceTable->appendStruxFmt(pfs,attributes);
 }
 
 bool PD_Document::appendFmt(const XML_Char ** attributes)
 {
-	UT_ASSERT(m_pPieceTable);
+	UT_return_val_if_fail (m_pPieceTable, false);
 
 	// can only be used while loading the document
 	return m_pPieceTable->appendFmt(attributes);
@@ -918,7 +918,7 @@ bool PD_Document::appendFmt(const XML_Char ** attributes)
 
 bool PD_Document::appendFmt(const UT_GenericVector<XML_Char*> * pVecAttributes)
 {
-	UT_ASSERT(m_pPieceTable);
+	UT_return_val_if_fail (m_pPieceTable, false);
 
 	// can only be used while loading the document
 
@@ -927,7 +927,7 @@ bool PD_Document::appendFmt(const UT_GenericVector<XML_Char*> * pVecAttributes)
 
 bool PD_Document::appendSpan(const UT_UCSChar * pbuf, UT_uint32 length)
 {
-	UT_ASSERT(m_pPieceTable);
+	UT_return_val_if_fail (m_pPieceTable, false);
 
 	// can only be used while loading the document
 
@@ -1002,7 +1002,7 @@ bool PD_Document::appendSpan(const UT_UCSChar * pbuf, UT_uint32 length)
 
 bool PD_Document::appendObject(PTObjectType pto, const XML_Char ** attributes)
 {
-	UT_ASSERT(m_pPieceTable);
+	UT_return_val_if_fail (m_pPieceTable, false);
 
 	// can only be used while loading the document
 
@@ -1011,7 +1011,7 @@ bool PD_Document::appendObject(PTObjectType pto, const XML_Char ** attributes)
 
 bool PD_Document::appendFmtMark(void)
 {
-	UT_ASSERT(m_pPieceTable);
+	UT_return_val_if_fail (m_pPieceTable, false);
 
 	// can only be used while loading the document
 
@@ -1033,7 +1033,7 @@ bool PD_Document::getAttributeFromSDH(PL_StruxDocHandle sdh, const char * szAttr
 	PT_AttrPropIndex indexAP = pfStrux->getIndexAP();
 	const PP_AttrProp * pAP = NULL;
 	m_pPieceTable->getAttrProp(indexAP,&pAP);
-	UT_ASSERT(pAP);
+	UT_return_val_if_fail (pAP, false);
 	const XML_Char * pszValue = NULL;
 	(pAP)->getAttribute(szAttribute, pszValue);
 	if(pszValue == NULL)
@@ -1069,7 +1069,7 @@ bool PD_Document::getPropertyFromSDH(PL_StruxDocHandle sdh, const char * szPrope
 	PT_AttrPropIndex indexAP = pfStrux->getIndexAP();
 	const PP_AttrProp * pAP = NULL;
 	m_pPieceTable->getAttrProp(indexAP,&pAP);
-	UT_ASSERT(pAP);
+	UT_return_val_if_fail (pAP, false);
 	const XML_Char * pszValue = NULL;
 	(pAP)->getProperty(szProperty, pszValue);
 	if(pszValue == NULL)
@@ -1088,7 +1088,7 @@ bool PD_Document::getPropertyFromSDH(PL_StruxDocHandle sdh, const char * szPrope
 bool  PD_Document::changeStruxAttsNoUpdate(PL_StruxDocHandle sdh, const char * attr, const char * attvalue)
 {
 	pf_Frag_Strux * pfStrux = const_cast<pf_Frag_Strux *>(static_cast<const pf_Frag_Strux *>(sdh));
-	UT_ASSERT(pfStrux);
+	UT_return_val_if_fail (pfStrux, false);
 	return m_pPieceTable->changeSectionAttsNoUpdate(pfStrux, attr, attvalue);
 }
 
@@ -1142,7 +1142,7 @@ PL_StruxDocHandle  PD_Document::getLastSectionSDH(void)
 	const pf_Frag_Strux * pfSecLast = NULL;
 	while (currentFrag!=m_pPieceTable->getFragments().getLast())
 	{
-		UT_ASSERT(currentFrag);
+		UT_return_val_if_fail (currentFrag,0);
 		if(currentFrag->getType()  == pf_Frag::PFT_Strux)
 		{
 		     const pf_Frag_Strux * pfSec = static_cast<const pf_Frag_Strux *>(currentFrag);
@@ -1171,7 +1171,7 @@ PL_StruxDocHandle  PD_Document::getLastStruxOfType(PTStruxType pts )
 		nest = 1;
 	while (!bFound && currentFrag!=m_pPieceTable->getFragments().getFirst())
 	{
-		UT_ASSERT(currentFrag);
+		UT_return_val_if_fail (currentFrag,0);
 		if(currentFrag->getType()  == pf_Frag::PFT_Strux)
 		{
 		     pf_Frag_Strux * pfSec = static_cast<pf_Frag_Strux *>(currentFrag);
@@ -1203,7 +1203,7 @@ bool PD_Document::verifySectionID(const XML_Char * pszId)
 	pf_Frag * currentFrag = m_pPieceTable->getFragments().getFirst();
 	while (currentFrag!=m_pPieceTable->getFragments().getLast())
 	{
-		UT_ASSERT(currentFrag);
+		UT_return_val_if_fail (currentFrag,0);
 		PT_AttrPropIndex indexAP = 0;
 		if(currentFrag->getType()  == pf_Frag::PFT_Strux)
 		{
@@ -1213,7 +1213,7 @@ bool PD_Document::verifySectionID(const XML_Char * pszId)
 				 indexAP = static_cast<pf_Frag_Text *>(currentFrag)->getIndexAP();
 				 const PP_AttrProp * pAP = NULL;
 				 m_pPieceTable->getAttrProp(indexAP,&pAP);
-				 UT_ASSERT(pAP);
+				 UT_return_val_if_fail (pAP,false);
 				 const XML_Char * pszIDName = NULL;
 				 (pAP)->getAttribute("header", pszIDName);
 				 if(pszIDName && strcmp(pszIDName,pszId) == 0)
@@ -1264,7 +1264,7 @@ PL_StruxDocHandle PD_Document::findHdrFtrStrux(const XML_Char * pszHdrFtr,
 	pf_Frag * currentFrag = m_pPieceTable->getFragments().getFirst();
 	while (currentFrag!=m_pPieceTable->getFragments().getLast())
 	{
-		UT_ASSERT(currentFrag);
+		UT_return_val_if_fail (currentFrag,0);
 		PT_AttrPropIndex indexAP = 0;
 		if(currentFrag->getType()  == pf_Frag::PFT_Strux)
 		{
@@ -1274,7 +1274,7 @@ PL_StruxDocHandle PD_Document::findHdrFtrStrux(const XML_Char * pszHdrFtr,
 				 indexAP = pfSec->getIndexAP();
 				 const PP_AttrProp * pAP = NULL;
 				 m_pPieceTable->getAttrProp(indexAP,&pAP);
-				 UT_ASSERT(pAP);
+				 UT_return_val_if_fail (pAP,false);
 				 const XML_Char * pszIDName = NULL;
 				 const XML_Char * pszHeaderName = NULL;
 				 (pAP)->getAttribute(PT_TYPE_ATTRIBUTE_NAME, pszHeaderName);
@@ -1300,7 +1300,7 @@ PL_StruxDocHandle PD_Document::findHdrFtrStrux(const XML_Char * pszHdrFtr,
 UT_sint32 PD_Document::getEmbeddedOffset(PL_StruxDocHandle sdh, PT_DocPosition posoff, PL_StruxDocHandle & sdhEmbedded)
 {
 	const pf_Frag_Strux * pfs = static_cast<const pf_Frag_Strux *>(sdh);
-	UT_ASSERT(pfs->getStruxType() == PTX_Block);
+	UT_return_val_if_fail (pfs->getStruxType() == PTX_Block,-1);
 	const pf_Frag * pf = static_cast<const pf_Frag *>(pfs);
 	pf = pf->getNext();
 	PT_DocPosition pos = m_pPieceTable->getStruxPosition(sdh) + posoff;
@@ -1396,7 +1396,7 @@ PL_StruxDocHandle PD_Document::getEndTableStruxFromTableSDH(PL_StruxDocHandle ta
 	UT_sint32 depth =0;
 	while (currentFrag!=m_pPieceTable->getFragments().getLast())
 	{
-		UT_ASSERT(currentFrag);
+		UT_return_val_if_fail (currentFrag,0);
 		if(currentFrag->getType()  == pf_Frag::PFT_Strux)
 		{
 			const pf_Frag_Strux * pfSec = static_cast<const pf_Frag_Strux *>(currentFrag);
@@ -1431,7 +1431,7 @@ PL_StruxDocHandle PD_Document::getEndCellStruxFromCellSDH(PL_StruxDocHandle cell
 	PL_StruxDocHandle EndCellSDH = NULL;
 	while (currentFrag && currentFrag!=m_pPieceTable->getFragments().getLast())
 	{
-		UT_ASSERT(currentFrag);
+		UT_return_val_if_fail (currentFrag,0);
 		if(currentFrag->getType()  == pf_Frag::PFT_Strux)
 		{
 			const pf_Frag_Strux * pfSec = static_cast<const pf_Frag_Strux *>(currentFrag);
@@ -1502,7 +1502,7 @@ bool PD_Document::getRowsColsFromTableSDH(PL_StruxDocHandle tableSDH, UT_sint32 
 	currentFrag = currentFrag->getNext();
 	while (currentFrag && currentFrag!=m_pPieceTable->getFragments().getLast())
 	{
-		UT_ASSERT(currentFrag);
+		UT_return_val_if_fail (currentFrag,0);
 		if(currentFrag->getType()  == pf_Frag::PFT_Strux)
 		{
 			const pf_Frag_Strux * pfSec = static_cast<const pf_Frag_Strux *>(currentFrag);
@@ -1652,7 +1652,7 @@ PL_StruxDocHandle PD_Document::getCellSDHFromRowCol(PL_StruxDocHandle tableSDH, 
 	currentFrag = currentFrag->getNext();
 	while (currentFrag && currentFrag!=m_pPieceTable->getFragments().getLast())
 	{
-		UT_ASSERT(currentFrag);
+		UT_return_val_if_fail (currentFrag,0);
 		if(currentFrag->getType() == pf_Frag::PFT_Strux)
 		{
 			const pf_Frag_Strux * pfSec = static_cast<const pf_Frag_Strux *>(currentFrag);
@@ -1716,7 +1716,7 @@ void PD_Document::getAllUsedStyles(UT_GenericVector <PD_Style*>* pVecStyles)
 	PD_Style * pStyle = NULL;
 	while (currentFrag!=m_pPieceTable->getFragments().getLast())
 	{
-		UT_ASSERT(currentFrag);
+		UT_return_if_fail (currentFrag);
 //
 // get indexAP
 // get PT_STYLE_ATTRIBUTE_NAME
@@ -1736,7 +1736,7 @@ void PD_Document::getAllUsedStyles(UT_GenericVector <PD_Style*>* pVecStyles)
 			indexAP = static_cast<pf_Frag_FmtMark *>(currentFrag)->getIndexAP();
 		const PP_AttrProp * pAP = NULL;
 		m_pPieceTable->getAttrProp(indexAP,&pAP);
-		UT_ASSERT(pAP);
+		UT_return_if_fail (pAP);
 		const XML_Char * pszStyleName = NULL;
 		(pAP)->getAttribute(PT_STYLE_ATTRIBUTE_NAME, pszStyleName);
 //
@@ -1745,7 +1745,7 @@ void PD_Document::getAllUsedStyles(UT_GenericVector <PD_Style*>* pVecStyles)
 		if(pszStyleName != NULL)
 		{
 			m_pPieceTable->getStyle(pszStyleName,&pStyle);
-			UT_ASSERT(pStyle);
+			UT_return_if_fail (pStyle);
 			if(pStyle)
 			{
 				if(pVecStyles->findItem(pStyle) < 0)
@@ -1796,14 +1796,14 @@ private:
  */
 bool PD_Document::removeStyle(const XML_Char * pszName)
 {
-	UT_ASSERT(m_pPieceTable);
+	UT_return_val_if_fail (m_pPieceTable, false);
 //
 // First replace all occurances of pszName with "Normal"
 //
 	PD_Style * pNormal = NULL;
 	PD_Style * pNuke = NULL;
 	m_pPieceTable->getStyle(pszName,&pNuke);
-	UT_ASSERT(pNuke);
+	UT_return_val_if_fail (pNuke, false);
 	pNormal = pNuke->getBasedOn();
 	const XML_Char * szBack = NULL;
 	if(pNormal == NULL)
@@ -1819,8 +1819,8 @@ bool PD_Document::removeStyle(const XML_Char * pszName)
 //
 		pNormal->getAttribute(PT_NAME_ATTRIBUTE_NAME, szBack);
 	}
-	UT_ASSERT(szBack);
-	UT_ASSERT(pNormal);
+	UT_return_val_if_fail (szBack, false);
+	UT_return_val_if_fail (pNormal, false);
 	PT_AttrPropIndex indexNormal = pNormal->getIndexAP();
 
 //
@@ -1834,7 +1834,7 @@ bool PD_Document::removeStyle(const XML_Char * pszName)
 	PT_DocPosition posLastStrux = 0;
 	pf_Frag_Strux * pfs = NULL;
 	pf_Frag * currentFrag = m_pPieceTable->getFragments().getFirst();
-	UT_ASSERT(currentFrag);
+	UT_return_val_if_fail (currentFrag,false);
 	while (currentFrag!=m_pPieceTable->getFragments().getLast())
 	{
 //
@@ -1866,7 +1866,7 @@ bool PD_Document::removeStyle(const XML_Char * pszName)
 		}
 		const PP_AttrProp * pAP = NULL;
 		m_pPieceTable->getAttrProp(indexAP,&pAP);
-		UT_ASSERT(pAP);
+		UT_return_val_if_fail (pAP, false);
 		const XML_Char * pszStyleName = NULL;
 		(pAP)->getAttribute(PT_STYLE_ATTRIBUTE_NAME, pszStyleName);
 //
@@ -1905,7 +1905,7 @@ bool PD_Document::removeStyle(const XML_Char * pszName)
 		{
 			PD_Style * cStyle = NULL;
 			m_pPieceTable->getStyle(pszStyleName,&cStyle);
-			UT_ASSERT(cStyle);
+			UT_ASSERT_HARMLESS(cStyle);
 			if(!cStyle)
 				break;
 			PD_Style * pBasedOn = cStyle->getBasedOn();
@@ -2077,7 +2077,7 @@ bool PD_Document::removeStyle(const XML_Char * pszName)
 
 bool PD_Document::appendStyle(const XML_Char ** attributes)
 {
-	UT_ASSERT(m_pPieceTable);
+	UT_return_val_if_fail (m_pPieceTable, false);
 
 	// can only be used while loading the document
 
@@ -2086,7 +2086,7 @@ bool PD_Document::appendStyle(const XML_Char ** attributes)
 
 size_t PD_Document::getStyleCount(void)
 {
-  UT_ASSERT(m_pPieceTable);
+  UT_return_val_if_fail (m_pPieceTable, false);
 
   return m_pPieceTable->getStyleCount();
 }
@@ -2096,17 +2096,17 @@ size_t PD_Document::getStyleCount(void)
 
 bool PD_Document::tellListener(PL_Listener* pListener)
 {
-	UT_ASSERT(pListener);
-	UT_ASSERT(m_pPieceTable);
+	UT_return_val_if_fail (pListener,false);
+	UT_return_val_if_fail (m_pPieceTable,false);
 
 	return m_pPieceTable->tellListener(pListener);
 }
 
 bool PD_Document::tellListenerSubset(PL_Listener* pListener, PD_DocumentRange * pDocRange)
 {
-	UT_ASSERT(pListener);
-	UT_ASSERT(m_pPieceTable);
-	UT_ASSERT(pDocRange && pDocRange->m_pDoc==this);
+	UT_return_val_if_fail (pListener, false);
+	UT_return_val_if_fail (m_pPieceTable, false);
+	UT_return_val_if_fail (pDocRange && pDocRange->m_pDoc==this, false);
 
 	return m_pPieceTable->tellListenerSubset(pListener,pDocRange);
 }
@@ -2130,19 +2130,19 @@ bool PD_Document::addListener(PL_Listener * pListener,
 
 	if (m_vecListeners.addItem(pListener,&k) != 0)
 	{
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		return false;				// could not add item to vector
 	}
   ClaimThisK:
 
 	// propagate the listener to the PieceTable and
 	// let it do its thing.
-	UT_ASSERT(m_pPieceTable);
+	UT_return_val_if_fail (m_pPieceTable, false);
 
 	// give our vector index back to the caller as a "Listener Id".
 
 	*pListenerId = k;
-	UT_ASSERT(pListener);
+	UT_return_val_if_fail (pListener, false);
 	m_pPieceTable->addListener(pListener,k);
 	return true;
 }
@@ -2271,8 +2271,8 @@ static void s_BindHandles(PL_StruxDocHandle sdhNew,
 						  PL_ListenerId lid,
 						  PL_StruxFmtHandle sfhNew)
 {
-	UT_ASSERT(sdhNew);
-	UT_ASSERT(sfhNew);
+	UT_return_if_fail (sdhNew);
+	UT_return_if_fail (sfhNew);
 
 	pf_Frag_Strux * pfsNew = const_cast<pf_Frag_Strux *>(static_cast<const pf_Frag_Strux *>(sdhNew));
 	UT_DEBUGMSG(("Set Format handle number %d of strux %x to format %x \n",lid,pfsNew,sfhNew));
@@ -2308,7 +2308,7 @@ bool PD_Document::notifyListeners(const pf_Frag_Strux * pfs,
 			if (pListener->insertStrux(sfh,pcr,sdhNew,lid,s_BindHandles))
 			{
 				// verify that the listener used our callback
-				UT_ASSERT(pfsNew->getFmtHandle(lid));
+				UT_ASSERT_HARMLESS(pfsNew->getFmtHandle(lid));
 			}
 		}
 	}
@@ -2377,7 +2377,7 @@ const PP_AttrProp * PD_Document::explodeRevisions(PP_RevisionAttr *& pRevisions,
 					
 					if(iMinId == 0xffffffff)
 					{
-						UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
+						UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
 						return NULL;
 					}
 
@@ -2419,7 +2419,7 @@ const PP_AttrProp * PD_Document::explodeRevisions(PP_RevisionAttr *& pRevisions,
 				{
 					if(iMinId == 0xffffffff)
 					{
-						UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
+						UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
 						break;
 					}
 
@@ -2503,7 +2503,7 @@ const PP_AttrProp * PD_Document::explodeRevisions(PP_RevisionAttr *& pRevisions,
 		{
 			// we are to show revisions with id <= iId
 			bHiddenRevision = true;
-			UT_ASSERT(!pNewAP);
+			UT_ASSERT_HARMLESS(!pNewAP);
 			return NULL;
 		}
 
@@ -2529,7 +2529,7 @@ const PP_AttrProp * PD_Document::explodeRevisions(PP_RevisionAttr *& pRevisions,
 			{
 				if(iMinId == 0xffffffff)
 				{
-					UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
+					UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
 					break;
 				}
 
@@ -2623,7 +2623,7 @@ bool PD_Document::getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset, bool 
 PTStruxType PD_Document::getStruxType(PL_StruxDocHandle sdh) const
 {
 	const pf_Frag * pf = static_cast<const pf_Frag *>(sdh);
-	UT_ASSERT(pf->getType() == pf_Frag::PFT_Strux);
+	UT_return_val_if_fail (pf->getType() == pf_Frag::PFT_Strux,(PTStruxType)0);
 	const pf_Frag_Strux * pfs = static_cast<const pf_Frag_Strux *> (pf);
 	return pfs->getStruxType();
 }
@@ -2631,9 +2631,9 @@ PTStruxType PD_Document::getStruxType(PL_StruxDocHandle sdh) const
 po_Bookmark * PD_Document::getBookmark(PL_StruxDocHandle sdh, UT_uint32 offset)
 {
 	const pf_Frag * pf = static_cast<const pf_Frag *>(sdh);
-	UT_ASSERT(pf->getType() == pf_Frag::PFT_Strux);
+	UT_return_val_if_fail (pf->getType() == pf_Frag::PFT_Strux, NULL);
 	const pf_Frag_Strux * pfsBlock = static_cast<const pf_Frag_Strux *> (pf);
-	UT_ASSERT(pfsBlock->getStruxType() == PTX_Block);
+	UT_return_val_if_fail (pfsBlock->getStruxType() == PTX_Block, NULL);
 
 	UT_uint32 cumOffset = 0;
 	pf_Frag_Object * pfo = NULL;
@@ -2661,9 +2661,9 @@ bool PD_Document::getField(PL_StruxDocHandle sdh, UT_uint32 offset,
 {
 
 	const pf_Frag * pf = static_cast<const pf_Frag *>(sdh);
-	UT_ASSERT(pf->getType() == pf_Frag::PFT_Strux);
+	UT_return_val_if_fail (pf->getType() == pf_Frag::PFT_Strux, false);
 	const pf_Frag_Strux * pfsBlock = static_cast<const pf_Frag_Strux *> (pf);
-	UT_ASSERT(pfsBlock->getStruxType() == PTX_Block);
+	UT_return_val_if_fail (pfsBlock->getStruxType() == PTX_Block, false);
 
 	UT_uint32 cumOffset = 0;
 	pf_Frag_Text * pft = NULL;
@@ -2725,7 +2725,7 @@ bool PD_Document::getPrevStruxOfType(PL_StruxDocHandle sdh,PTStruxType pts,
 					PL_StruxDocHandle * prevsdh)
 {
 	const pf_Frag_Strux * pfs = static_cast<const pf_Frag_Strux *>(sdh);
-	UT_ASSERT(pfs);
+	UT_return_val_if_fail (pfs, false);
 	pfs = static_cast<const pf_Frag_Strux *>(pfs->getPrev());
 	for (const pf_Frag * pf=pfs; (pf); pf=pf->getPrev())
 		if (pf->getType() == pf_Frag::PFT_Strux)
@@ -2751,7 +2751,7 @@ bool PD_Document::getNextStrux(PL_StruxDocHandle sdh,
 							   PL_StruxDocHandle * nextsdh)
 {
 	const pf_Frag_Strux * pfs = static_cast<const pf_Frag_Strux *>(sdh);
-	UT_ASSERT(pfs);
+	UT_return_val_if_fail (pfs, false);
 	pfs = static_cast<pf_Frag_Strux *>(pfs->getNext());
 	UT_sint32 iEmbedDepth = 0;
 	for (pf_Frag * pf=static_cast<pf_Frag *>(const_cast<pf_Frag_Strux *>(pfs)); (pf); pf=pf->getNext())
@@ -2794,7 +2794,7 @@ bool PD_Document::getNextStruxOfType(PL_StruxDocHandle sdh,PTStruxType pts,
 					PL_StruxDocHandle * nextsdh)
 {
 	const pf_Frag_Strux * pfs = static_cast<const pf_Frag_Strux *>(sdh);
-	UT_ASSERT(pfs);
+	UT_return_val_if_fail (pfs, false);
 	pfs = static_cast<pf_Frag_Strux *>(pfs->getNext());
 	for (const pf_Frag * pf=pfs; (pf); pf=pf->getNext())
 		if (pf->getType() == pf_Frag::PFT_Strux)
@@ -2876,7 +2876,7 @@ bool PD_Document::createDataItem(const char * szName, bool bBase64, const UT_Byt
 	// we must copy it if we want to keep it.  bBase64 is TRUE if the
 	// data is Base64 encoded.
 
-	UT_ASSERT(pByteBuf);
+	UT_return_val_if_fail (pByteBuf, false);
 
 	struct _dataItemPair* pPair = NULL;
 
@@ -2910,7 +2910,7 @@ bool PD_Document::createDataItem(const char * szName, bool bBase64, const UT_Byt
 	if (ppHandle)
 	{
 		const struct _dataItemPair* pHashEntry = m_hashDataItems.pick(szName);
-		UT_ASSERT(pHashEntry);
+		UT_return_val_if_fail (pHashEntry,false);
 		*ppHandle = const_cast<struct _dataItemPair *>(pHashEntry);
 	}
 
@@ -2933,14 +2933,14 @@ bool PD_Document::getDataItemDataByName(const char * szName,
 										   const void** ppToken,
 										   void ** ppHandle) const
 {
-	UT_ASSERT(szName && *szName);
+	UT_return_val_if_fail (szName && *szName, false);
 
 	const void *pHashEntry = m_hashDataItems.pick(szName);
 	if (!pHashEntry)
 		return false;
 
 	struct _dataItemPair* pPair = const_cast<struct _dataItemPair*>(static_cast<const struct _dataItemPair*>(pHashEntry));
-	UT_ASSERT(pPair);
+	UT_return_val_if_fail (pPair, false);
 
 	if (ppByteBuf)
 	{
@@ -2963,10 +2963,10 @@ bool PD_Document::getDataItemDataByName(const char * szName,
 bool PD_Document::setDataItemToken(void * pHandle,
 									  void* pToken)
 {
-	UT_ASSERT(pHandle);
+	UT_return_val_if_fail (pHandle, false);
 
 	struct _dataItemPair* pPair = static_cast<struct _dataItemPair*>(pHandle);
-	UT_ASSERT(pPair);
+	UT_return_val_if_fail (pPair, false);
 
 	pPair->pToken = pToken;
 
@@ -2978,10 +2978,10 @@ bool PD_Document::getDataItemData(void * pHandle,
 									 const UT_ByteBuf ** ppByteBuf,
 									 const void** ppToken) const
 {
-	UT_ASSERT(pHandle);
+	UT_return_val_if_fail (pHandle,false);
 
 	struct _dataItemPair* pPair = static_cast<struct _dataItemPair*>(pHandle);
-	UT_ASSERT(pPair);
+	UT_return_val_if_fail (pPair, false);
 
 	if (ppByteBuf)
 	{
@@ -2995,7 +2995,7 @@ bool PD_Document::getDataItemData(void * pHandle,
 
 	if (pszName)
 	{
-		UT_ASSERT(UT_TODO);
+		UT_ASSERT_HARMLESS(UT_TODO);
 		*pszName = 0;
 		//*pszName = pHashEntry->pszLeft;
 	}
@@ -3026,7 +3026,7 @@ bool PD_Document::enumDataItems(UT_uint32 k,
 		*ppHandle = const_cast<struct _dataItemPair*>(pHashEntry);
 
 	const struct _dataItemPair* pPair = pHashEntry;
-	UT_ASSERT(pPair);
+	UT_return_val_if_fail (pPair, false);
 
 	if (ppByteBuf)
 	{
@@ -3058,7 +3058,7 @@ void PD_Document::_destroyDataItemData(void)
 	  {
 		xxx_UT_DEBUGMSG(("DOM: destroying data item\n"));
 		struct _dataItemPair* pPair = val;
-		UT_ASSERT(pPair);
+		UT_return_if_fail (pPair);
 		UT_String key = c.key();
 		m_hashDataItems.remove (key, NULL);
 		delete pPair->pBuf;
@@ -3103,7 +3103,7 @@ bool PD_Document::_syncFileTypes(bool bReadSaveWriteOpen)
 
 	if (ieft == IEFT_Unknown || ieft == IEFT_Bogus)
 	{
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		return false;
 	}
 
@@ -3177,7 +3177,7 @@ PD_Style * PD_Document::getStyleFromSDH( PL_StruxDocHandle sdh)
 	PT_AttrPropIndex indexAP = pfs->getIndexAP();
 	const PP_AttrProp * pAP = NULL;
 	m_pPieceTable->getAttrProp(indexAP,&pAP);
-	UT_ASSERT(pAP);
+	UT_return_val_if_fail (pAP, NULL);
 	const XML_Char * pszStyleName = NULL;
 	(pAP)->getAttribute(PT_STYLE_ATTRIBUTE_NAME, pszStyleName);
 	if(pszStyleName == NULL  || UT_strcmp(pszStyleName,"Current Settings") == 0 || UT_strcmp(pszStyleName,"None") == 0)
@@ -3308,7 +3308,7 @@ PL_StruxDocHandle PD_Document::findPreviousStyleStrux(const XML_Char * szStyle, 
 			PT_AttrPropIndex indexAP = pfs->getIndexAP();
 			const PP_AttrProp * pAP = NULL;
 			m_pPieceTable->getAttrProp(indexAP,&pAP);
-			UT_ASSERT(pAP);
+			UT_return_val_if_fail (pAP,0);
 			const XML_Char * pszStyleName = NULL;
 			(pAP)->getAttribute(PT_STYLE_ATTRIBUTE_NAME, pszStyleName);
 			if(pszStyleName != NULL && strcmp(pszStyleName,szStyle)==0)
@@ -3357,7 +3357,7 @@ PL_StruxDocHandle PD_Document::findForwardStyleStrux(const XML_Char * szStyle, P
 			PT_AttrPropIndex indexAP = pfs->getIndexAP();
 			const PP_AttrProp * pAP = NULL;
 			m_pPieceTable->getAttrProp(indexAP,&pAP);
-			UT_ASSERT(pAP);
+			UT_return_val_if_fail (pAP, 0);
 			const XML_Char * pszStyleName = NULL;
 			(pAP)->getAttribute(PT_STYLE_ATTRIBUTE_NAME, pszStyleName);
 			if(pszStyleName != NULL && strcmp(pszStyleName,szStyle)==0)
@@ -3396,9 +3396,9 @@ bool   PD_Document::updateDocForStyleChange(const XML_Char * szStyle,
 	pf_Frag_Strux * pfs = NULL;
 	PD_Style * pStyle = NULL;
 	m_pPieceTable->getStyle(szStyle,&pStyle);
-	UT_ASSERT(pStyle);
+	UT_return_val_if_fail (pStyle, false);
 	pf_Frag * currentFrag = m_pPieceTable->getFragments().getFirst();
-	UT_ASSERT(currentFrag);
+	UT_return_val_if_fail (currentFrag, false);
 	while (currentFrag!=m_pPieceTable->getFragments().getLast())
 	{
 //
@@ -3416,7 +3416,7 @@ bool   PD_Document::updateDocForStyleChange(const XML_Char * szStyle,
 				PT_AttrPropIndex indexAP = pfs->getIndexAP();
 				const PP_AttrProp * pAP = NULL;
 				m_pPieceTable->getAttrProp(indexAP,&pAP);
-				UT_ASSERT(pAP);
+				UT_return_val_if_fail (pAP, false);
 				const XML_Char * pszStyleName = NULL;
 				(pAP)->getAttribute(PT_STYLE_ATTRIBUTE_NAME, pszStyleName);
 				bool bUpdate = false;
@@ -3439,7 +3439,7 @@ bool   PD_Document::updateDocForStyleChange(const XML_Char * szStyle,
 				{
 					PD_Style * cStyle = NULL;
 					m_pPieceTable->getStyle(pszStyleName,&cStyle);
-					UT_ASSERT(cStyle);
+					UT_ASSERT_HARMLESS(cStyle);
 					if(cStyle)
 					{
 						PD_Style * pBasedOn = cStyle->getBasedOn();
@@ -3484,7 +3484,7 @@ bool   PD_Document::updateDocForStyleChange(const XML_Char * szStyle,
 				PT_AttrPropIndex indexAP = pft->getIndexAP();
 				const PP_AttrProp * pAP = NULL;
 				m_pPieceTable->getAttrProp(indexAP,&pAP);
-				UT_ASSERT(pAP);
+				UT_return_val_if_fail (pAP, false);
 				const XML_Char * pszStyleName = NULL;
 				(pAP)->getAttribute(PT_STYLE_ATTRIBUTE_NAME, pszStyleName);
 
@@ -3536,7 +3536,7 @@ bool PD_Document::updateFields(void)
 	//
 	setDontChangeInsPoint();
 	pf_Frag * currentFrag = m_pPieceTable->getFragments().getFirst();
-	UT_ASSERT(currentFrag);
+	UT_return_val_if_fail (currentFrag,false);
 	while (currentFrag!=m_pPieceTable->getFragments().getLast())
 	{
 		if (currentFrag->getType()==pf_Frag::PFT_Object)
@@ -3545,7 +3545,7 @@ bool PD_Document::updateFields(void)
 				(currentFrag);
 			if (pfo->getObjectType()==PTO_Field)
 			{
-				UT_ASSERT (pfo->getField());
+				UT_return_val_if_fail (pfo->getField(), false);
 				pfo->getField()->update();
 			}
 		}
@@ -3634,7 +3634,7 @@ fl_AutoNum * PD_Document::getListByID(UT_uint32 id) const
 	cnt = m_vecLists.getItemCount();
 	if ( cnt <= 0)
 		return static_cast<fl_AutoNum *>(NULL);
-	UT_ASSERT(m_vecLists.getFirstItem());
+	UT_return_val_if_fail (m_vecLists.getFirstItem(), NULL);
 
 	while (i<cnt)
 	{
@@ -3661,7 +3661,7 @@ bool PD_Document::enumLists(UT_uint32 k, fl_AutoNum ** pAutoNum)
 
 fl_AutoNum * PD_Document::getNthList(UT_uint32 i) const
 {
-	UT_ASSERT(i >= 0);
+	UT_ASSERT_HARMLESS(i >= 0);
 	return m_vecLists[i];
 }
 
@@ -3690,7 +3690,7 @@ void PD_Document::listUpdate(PL_StruxDocHandle sdh )
 	//
 	// Notify all views of a listupdate
 	//
-	UT_ASSERT(sdh);
+	UT_return_if_fail (sdh);
 	const pf_Frag_Strux * pfs = static_cast<const pf_Frag_Strux *>(sdh);
 	PT_AttrPropIndex pAppIndex = pfs->getIndexAP();
 	PT_DocPosition pos = getStruxPosition(sdh);
@@ -3854,26 +3854,23 @@ bool PD_Document::fixListHierarchy(void)
 
 void PD_Document::removeList(fl_AutoNum * pAutoNum, PL_StruxDocHandle sdh )
 {
-	UT_ASSERT(pAutoNum);
+	UT_return_if_fail (pAutoNum);
 	UT_sint32 ndx = m_vecLists.findItem(pAutoNum);
-	UT_ASSERT(ndx >= 0);
-	if (ndx != -1)
-	{
-		//
-		// Notify all views of a remove List
-		//
-		const pf_Frag_Strux * pfs = static_cast<const pf_Frag_Strux *>(sdh);
-		PT_AttrPropIndex pAppIndex = pfs->getIndexAP();
-		PT_DocPosition pos = getStruxPosition(sdh);
+	UT_return_if_fail (ndx >= 0);
+	//
+	// Notify all views of a remove List
+	//
+	const pf_Frag_Strux * pfs = static_cast<const pf_Frag_Strux *>(sdh);
+	PT_AttrPropIndex pAppIndex = pfs->getIndexAP();
+	PT_DocPosition pos = getStruxPosition(sdh);
 #ifndef __MRC__
-		const PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_RemoveList,pos,pAppIndex);
+	const PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_RemoveList,pos,pAppIndex);
 #else
-		PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_RemoveList,pos,pAppIndex);
+	PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_RemoveList,pos,pAppIndex);
 #endif
-		notifyListeners(pfs, pcr);
-		delete pcr;
-		m_vecLists.deleteNthItem(ndx);
-	}
+	notifyListeners(pfs, pcr);
+	delete pcr;
+	m_vecLists.deleteNthItem(ndx);
 }
 
 void  PD_Document::setDoingPaste(void)
@@ -3995,7 +3992,7 @@ bool PD_Document::isBookmarkUnique(const XML_Char * pName) const
  * otherwise it's a bookmark. */
 bool PD_Document::isBookmarkRelativeLink(const XML_Char * pName) const
 {
-	UT_ASSERT(sizeof(char) == sizeof(XML_Char));
+	UT_ASSERT_HARMLESS(sizeof(char) == sizeof(XML_Char));
 	return strchr(static_cast<const char *>(pName), '.') != NULL;
 }
 
@@ -4326,7 +4323,7 @@ bool PD_Document::_exportFindVisDirectionRunAtPos(PT_DocPosition pos)
 bool PD_Document::insertStruxBeforeFrag(pf_Frag * pF, PTStruxType pts,
 										const XML_Char ** attributes, pf_Frag_Strux ** ppfs_ret)
 {
-	UT_ASSERT(m_pPieceTable);
+	UT_return_val_if_fail (m_pPieceTable, false);
 
 	// can only be used while loading the document
 	//
@@ -4342,7 +4339,7 @@ bool PD_Document::insertStruxBeforeFrag(pf_Frag * pF, PTStruxType pts,
 
 bool PD_Document::insertSpanBeforeFrag(pf_Frag * pF, const UT_UCSChar * pbuf, UT_uint32 length)
 {
-	UT_ASSERT(m_pPieceTable);
+	UT_return_val_if_fail (m_pPieceTable, false);
 
 	// can only be used while loading the document
 
@@ -4417,7 +4414,7 @@ bool PD_Document::insertSpanBeforeFrag(pf_Frag * pF, const UT_UCSChar * pbuf, UT
 bool PD_Document::insertObjectBeforeFrag(pf_Frag * pF, PTObjectType pto,
 										 const XML_Char ** attributes)
 {
-	UT_ASSERT(m_pPieceTable);
+	UT_return_val_if_fail (m_pPieceTable, false);
 
 	// can only be used while loading the document
 
@@ -4426,7 +4423,7 @@ bool PD_Document::insertObjectBeforeFrag(pf_Frag * pF, PTObjectType pto,
 
 bool PD_Document::insertFmtMarkBeforeFrag(pf_Frag * pF)
 {
-	UT_ASSERT(m_pPieceTable);
+	UT_return_val_if_fail (m_pPieceTable, false);
 
 	// can only be used while loading the document
 
@@ -4441,7 +4438,7 @@ bool PD_Document::changeStruxFormatNoUpdate(PTChangeFmt ptc ,PL_StruxDocHandle s
 
 bool PD_Document::insertFmtMarkBeforeFrag(pf_Frag * pF, const XML_Char ** attributes)
 {
-	UT_ASSERT(m_pPieceTable);
+	UT_return_val_if_fail (m_pPieceTable, false);
 
 	// can only be used while loading the document
 
@@ -4491,7 +4488,7 @@ pf_Frag * PD_Document::findFragOfType(pf_Frag::PFType type, UT_sint32 iSubtype, 
 					}
 					break;
 
-				default: UT_ASSERT(UT_NOT_REACHED);
+				default: UT_ASSERT_HARMLESS(UT_NOT_REACHED);
 			}
 
 			if(bBreak)
@@ -4641,7 +4638,7 @@ bool PD_Document::_acceptRejectRevision(bool bReject, UT_uint32 iStart, UT_uint3
 				return changeSpanFmt(PTC_RemoveFmt,iStart,iEnd,ppAttr,NULL);
 
 			default:
-				UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
+				UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
 				return false;
 		}
 	}
@@ -4744,7 +4741,7 @@ bool PD_Document::_acceptRejectRevision(bool bReject, UT_uint32 iStart, UT_uint3
 				return bRet;
 
 			default:
-				UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
+				UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
 		}
 	}
 
@@ -4765,7 +4762,7 @@ bool PD_Document::rejectAllHigherRevisions(UT_uint32 iLevel)
 
 		if(!pf)
 		{
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			endUserAtomicGlob();
 			return false;
 		}
@@ -4776,7 +4773,7 @@ bool PD_Document::rejectAllHigherRevisions(UT_uint32 iLevel)
 		m_pPieceTable->getAttrProp(API,&pAP);
 		if(!pAP)
 		{
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			endUserAtomicGlob();
 			return false;
 		}
@@ -4855,7 +4852,7 @@ bool PD_Document::acceptRejectRevision(bool bReject, UT_uint32 iPos1,
 		pf_Frag * pf = const_cast<pf_Frag *>(t.getFrag());
 		if(!pf)
 		{
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			endUserAtomicGlob();
 			return false;
 		}
@@ -4877,7 +4874,7 @@ bool PD_Document::acceptRejectRevision(bool bReject, UT_uint32 iPos1,
 		m_pPieceTable->getAttrProp(API,&pAP);
 		if(!pAP)
 		{
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			endUserAtomicGlob();
 			return false;
 		}
@@ -4998,7 +4995,7 @@ void PD_Document::diffIntoRevisions(const PD_Document &d)
 		PD_DocumentDiff * pDiff = (PD_DocumentDiff *) vDiff.getNthItem(i);
 		if(!pDiff)
 		{
-			UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
+			UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
 			continue;
 		}
 
@@ -5302,7 +5299,7 @@ bool PD_Document::findFirstDifferenceInContent(PT_DocPosition &pos, UT_sint32 &i
 
 		if(!pf1 || !pf2)
 		{
-			UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
+			UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
 			return true;
 		}
 		

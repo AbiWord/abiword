@@ -131,7 +131,7 @@ bool pt_PieceTable::_insertSpan(pf_Frag * pf,
 	switch (pf->getType())
 	{
 	default:
-		UT_ASSERT(0);
+		UT_ASSERT_HARMLESS(0);
 		return false;
 
 	case pf_Frag::PFT_EndOfDoc:
@@ -165,7 +165,7 @@ bool pt_PieceTable::_insertSpan(pf_Frag * pf,
 		// we need to replace the FmtMark with a Text frag with
 		// the same API.  This needs to be handled at the higher
 		// level (so the glob markers can be set).
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		return false;
 	}
 
@@ -295,7 +295,7 @@ bool pt_PieceTable::_insertSpan(pf_Frag * pf,
 	// if the change is in the middle of the fragment, we construct
 	// a second new text fragment for the portion after the insert.
 
-	UT_ASSERT(pft);
+	UT_return_val_if_fail (pft,false);
 
 	UT_uint32 lenTail = pft->getLength() - fragOffset;
 	PT_BufIndex biTail = m_varset.getBufIndex(pft->getBufIndex(),fragOffset);
@@ -341,7 +341,7 @@ bool pt_PieceTable::_lastUndoIsThisFmtMark(PT_DocPosition dpos)
 		}
 	}
 
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 	return false;
 }
 
@@ -352,14 +352,14 @@ bool pt_PieceTable::_realInsertSpan(PT_DocPosition dpos,
 {
 	// insert character data into the document at the given position.
 
-	UT_ASSERT(m_pts==PTS_Editing);
+	UT_return_val_if_fail (m_pts==PTS_Editing, false);
 
 	// get the fragment at the given document position.
 
 	pf_Frag * pf = NULL;
 	PT_BlockOffset fragOffset = 0;
 	bool bFound = getFragFromPosition(dpos,&pf,&fragOffset);
-	UT_ASSERT(bFound);
+	UT_return_val_if_fail (bFound,false);
 
 
 	// append the text data to the end of the current buffer.
@@ -371,12 +371,12 @@ bool pt_PieceTable::_realInsertSpan(PT_DocPosition dpos,
 	bool bSuccess = false;
 	pf_Frag_Strux * pfs = NULL;
 	bool bFoundStrux = _getStruxFromFrag(pf,&pfs);
-	UT_ASSERT(bFoundStrux);
+	UT_return_val_if_fail (bFoundStrux,false);
 	if(isEndFootnote((pf_Frag *)pfs))
 	{
 		bFoundStrux = _getStruxFromFragSkip((pf_Frag *) pfs,&pfs);
 	}
-	UT_ASSERT(pfs);
+	UT_return_val_if_fail (pfs,false);
 	// we just did a getFragFromPosition() which gives us the
 	// the thing *starting* at that position.  if we have a
 	// fragment boundary at that position, it's sort of arbitrary
@@ -454,15 +454,15 @@ bool pt_PieceTable::_realInsertSpan(PT_DocPosition dpos,
 			// but with a few shortcuts.
 
 			bFound = getFragFromPosition(dpos,&pf,&fragOffset);
-			UT_ASSERT(bFound);
+			UT_return_val_if_fail (bFound, false);
 
 			bFoundStrux = _getStruxFromFrag(pf,&pfs);
-			UT_ASSERT(bFoundStrux);
+			UT_return_val_if_fail (bFoundStrux,false);
 			if(isEndFootnote((pf_Frag *)pfs))
 			{
 				bFoundStrux = _getStruxFromFragSkip((pf_Frag *)pfs,&pfs);
 			}
-			UT_ASSERT(bFoundStrux);
+			UT_return_val_if_fail (bFoundStrux, false);
 			xxx_UT_DEBUGMSG(("Got FragStrux at Pos %d \n",pfs->getPos()));
 
 			// with the FmtMark now gone, we make a minor adjustment so that we
@@ -551,7 +551,7 @@ bool pt_PieceTable::_realInsertSpan(PT_DocPosition dpos,
 	pcr = new PX_ChangeRecord_Span(PX_ChangeRecord::PXT_InsertSpan,
 								   dpos,indexAP,bi,length,
                                    blockOffset, pField);
-	UT_ASSERT(pcr);
+	UT_return_val_if_fail (pcr, false);
 
 	if (!bAddChangeRec || _canCoalesceInsertSpan(pcr))
 	{
@@ -580,7 +580,7 @@ bool pt_PieceTable::_canCoalesceInsertSpan(PX_ChangeRecord_Span * pcrSpan) const
 {
 	// see if this record can be coalesced with the most recent undo record.
 
-	UT_ASSERT(pcrSpan->getType() == PX_ChangeRecord::PXT_InsertSpan);
+	UT_return_val_if_fail (pcrSpan->getType() == PX_ChangeRecord::PXT_InsertSpan, false);
 
 	PX_ChangeRecord * pcrUndo;
 	if (!m_history.getUndo(&pcrUndo))
@@ -689,7 +689,7 @@ PT_AttrPropIndex pt_PieceTable::_chooseIndexAP(pf_Frag * pf, PT_BlockOffset frag
 				return 0;
 
 			default:
-				UT_ASSERT(0);
+				UT_ASSERT_HARMLESS(0);
 				return 0;
 			}
 		}
@@ -703,7 +703,7 @@ PT_AttrPropIndex pt_PieceTable::_chooseIndexAP(pf_Frag * pf, PT_BlockOffset frag
 		}
 
 	default:
-		UT_ASSERT(0);
+		UT_ASSERT_HARMLESS(0);
 		return 0;
 	}
 }

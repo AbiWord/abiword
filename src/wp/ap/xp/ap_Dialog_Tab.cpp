@@ -71,11 +71,10 @@ AP_Dialog_Tab::tAnswer AP_Dialog_Tab::getAnswer(void) const
 
 void AP_Dialog_Tab::_storeWindowData()
 {
-	UT_ASSERT(m_pFrame); // needs to be set from runModal for some of the event_'s to work
+	UT_return_if_fail (m_pFrame); // needs to be set from runModal for some of the event_'s to work
 
 	FV_View *pView = (FV_View *)m_pFrame->getCurrentView();
-
-	UT_ASSERT(m_pCallbackFn);
+	UT_return_if_fail (pView && m_pCallbackFn);
 
 	(*m_pCallbackFn)(this, pView, m_pszTabStops, _gatherDefaultTabStop(), m_closure);
 }
@@ -88,10 +87,10 @@ void AP_Dialog_Tab::_populateWindowData(void)
 	else
 		m_dim = DIM_IN;
 
-	UT_ASSERT(m_pFrame); // needs to be set from runModal for some of the event_'s to work
+	UT_return_if_fail (m_pFrame); // needs to be set from runModal for some of the event_'s to work
 
 	FV_View *pView = (FV_View *)m_pFrame->getCurrentView();
-
+	UT_return_if_fail (pView);
 
 	// get the info used in the top ruler
 	AP_TopRulerInfo rulerInfo;
@@ -115,7 +114,7 @@ void AP_Dialog_Tab::_populateWindowData(void)
 	
 		// create new tab info
 		pTabInfo = new fl_TabStop();
-		UT_ASSERT(pTabInfo);
+		UT_return_if_fail (pTabInfo);
 
 
 		(*rulerInfo.m_pfnEnumTabStops)( rulerInfo.m_pVoidEnumTabStopsData,
@@ -184,7 +183,7 @@ void AP_Dialog_Tab::_event_TabSelected( UT_sint32 index )
 
 	if(index >= 0)
 	{
-		UT_ASSERT(index < (UT_sint32)m_tabInfo.getItemCount());
+		UT_return_if_fail (index < (UT_sint32)m_tabInfo.getItemCount());
 
 		fl_TabStop *pTabInfo = (fl_TabStop *)m_tabInfo.getNthItem(index);
 
@@ -230,7 +229,7 @@ void AP_Dialog_Tab::_event_Set(void)
 	for (  i = 0; i < m_tabInfo.getItemCount(); i++ )
 	{
 		fl_TabStop *pTabInfo = (fl_TabStop *)m_tabInfo.getNthItem(i);
-		UT_ASSERT(pTabInfo);
+		UT_return_if_fail (pTabInfo);
 
 		// if we have a tab at that unit
 		if ( memcmp(cbuffer, _getTabString(pTabInfo), Dimension_size) == 0 )
@@ -256,10 +255,11 @@ void AP_Dialog_Tab::_event_Set(void)
 	delete [] m_pszTabStops;
 	m_pszTabStops = p_temp;
 
-	UT_ASSERT(m_pFrame); // needs to be set from runModal for some of the event_'s to work
+	UT_return_if_fail (m_pFrame); // needs to be set from runModal for some of the event_'s to work
 
 	FV_View *pView = static_cast<FV_View *>(m_pFrame->getCurrentView());
-
+	UT_return_if_fail(pView);
+	
 	buildTabStops(pView->getGraphics(), m_pszTabStops, m_tabInfo);
 
 	_setTabList(m_tabInfo.getItemCount());
@@ -269,7 +269,7 @@ void AP_Dialog_Tab::_event_Set(void)
 	for (i = 0; i < m_tabInfo.getItemCount(); i++ )
 	{
 		fl_TabStop *pTabInfo = m_tabInfo.getNthItem(i);
-		UT_ASSERT(pTabInfo);
+		UT_return_if_fail (pTabInfo);
 
 		// if we have a tab at that unit
 		if ( memcmp(cbuffer, _getTabString(pTabInfo), Dimension_size) == 0 )
@@ -366,7 +366,7 @@ void AP_Dialog_Tab::_event_ClearAll(void)
 		break;
 
 	default:
-		UT_ASSERT(UT_NOT_IMPLEMENTED);
+		UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
 		ch = 'L';
 		break;
 	}
@@ -400,7 +400,7 @@ void AP_Dialog_Tab::_event_ClearAll(void)
 		break;
 
 	default:
-		UT_ASSERT(UT_NOT_IMPLEMENTED);
+		UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
 		a = FL_TAB_LEFT;
 	}
 	return a;
@@ -448,7 +448,7 @@ void AP_Dialog_Tab::_event_somethingChanged()
 	for ( UT_uint32 i = 0; i < m_tabInfo.getItemCount(); i++ )
 	{
 		fl_TabStop *pTabInfo = m_tabInfo.getNthItem(i);
-		UT_ASSERT(pTabInfo);
+		UT_return_if_fail (pTabInfo);
 
 		// if we have a tab at that unit
 		if ( !strcmp(cbuffer, _getTabString(pTabInfo)) )
@@ -476,7 +476,7 @@ void AP_Dialog_Tab::_event_somethingChanged()
 char *AP_Dialog_Tab::_getTabDimensionString(UT_uint32 tabIndex)
 {
 
-	UT_ASSERT(tabIndex < m_tabInfo.getItemCount());
+	UT_return_val_if_fail (tabIndex < m_tabInfo.getItemCount(), NULL);
 
 	fl_TabStop *pTabInfo = m_tabInfo.getNthItem(tabIndex);
 
@@ -488,7 +488,7 @@ char *AP_Dialog_Tab::_getTabDimensionString(UT_uint32 tabIndex)
 	}
 
 	UT_uint32 iLen = pEnd - pStart;
-	UT_ASSERT(iLen<20);
+	UT_return_val_if_fail (iLen<20, NULL);
 
 	strncpy(buf, pStart, iLen);
 	buf[iLen]=0;
@@ -506,7 +506,7 @@ char *AP_Dialog_Tab::_getTabString(fl_TabStop *pTabInfo)
 	}
 
 	UT_uint32 iLen = pEnd - pStart;
-	UT_ASSERT(iLen<20);
+	UT_return_val_if_fail (iLen<20, NULL);
 
 	strncpy(buf, pStart, iLen);
 	buf[iLen]=0;
@@ -566,7 +566,7 @@ void AP_Dialog_Tab::_deleteTabFromTabString(fl_TabStop *pTabInfo)
 void AP_Dialog_Tab::_doSpin(tControl id, UT_sint32 amt)
 {
   //	UT_ASSERT(amt); // zero makes no sense
-	UT_ASSERT(id == id_SPIN_DEFAULT_TAB_STOP);
+	UT_return_if_fail (id == id_SPIN_DEFAULT_TAB_STOP);
 	if(amt == 0 )
 	{
 	        UT_DEBUGMSG(("AMOUNT = 0 amt = %d \n",amt));
@@ -607,7 +607,7 @@ void AP_Dialog_Tab::_doSpin(tControl id, UT_sint32 amt)
 		break;
 	default:
 
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		break;
 	}
 
@@ -642,7 +642,7 @@ void AP_Dialog_Tab::_doSpin(tControl id, UT_sint32 amt)
 void AP_Dialog_Tab::_doSpinValue(tControl id, double value)
 {
   //	UT_ASSERT(amt); // zero makes no sense
-	UT_ASSERT(id == id_SPIN_DEFAULT_TAB_STOP);
+	UT_return_if_fail (id == id_SPIN_DEFAULT_TAB_STOP);
 
 	double d = value;
 
@@ -678,7 +678,7 @@ void AP_Dialog_Tab::_doSpinValue(tControl id, double value)
 		break;
 	default:
 
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		break;
 	}
 

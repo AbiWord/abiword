@@ -130,7 +130,7 @@ bool pp_TableAttrProp::createAP(const XML_Char ** attributes,
 		return false;
 
 	PP_AttrProp * pAP = m_vecTable.getNthItem(subscript);
-	UT_ASSERT(pAP);
+	UT_return_val_if_fail (pAP,false);
 	if (!pAP->setAttributes(attributes) || !pAP->setProperties(properties))
 		return false;
 
@@ -150,7 +150,7 @@ bool pp_TableAttrProp::createAP(const UT_GenericVector<XML_Char*> * pVector,
 		return false;
 
 	PP_AttrProp * pAP = m_vecTable.getNthItem(subscript);
-	UT_ASSERT(pAP);
+	UT_return_val_if_fail (pAP, false);
 	if (!pAP->setAttributes(pVector))
 		return false;
 	

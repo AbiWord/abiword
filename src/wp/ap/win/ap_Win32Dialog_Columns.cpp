@@ -64,8 +64,7 @@ AP_Win32Dialog_Columns::~AP_Win32Dialog_Columns(void)
 
 void AP_Win32Dialog_Columns::runModal(XAP_Frame * pFrame)
 {
-	UT_ASSERT(pFrame);
-	UT_ASSERT(m_id == AP_DIALOG_ID_COLUMNS);
+	UT_return_if_fail (pFrame, m_id == AP_DIALOG_ID_COLUMNS);
 	
 	// raise the dialog
 	setViewAndDoc(pFrame);
@@ -115,17 +114,17 @@ BOOL AP_Win32Dialog_Columns::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPar
 
 	bool bFoundIcon = Icons.getBitmapForIcon(hWnd, iWidth, iHeight, &Color, "1COLUMN",
 																&hBitmap);
-	UT_ASSERT(bFoundIcon);
+	UT_return_val_if_fail (bFoundIcon, false);
 	SendDlgItemMessage(hWnd, AP_RID_DIALOG_COLUMN_RADIO_ONE, BM_SETIMAGE, IMAGE_BITMAP, (LPARAM)hBitmap);
 
 	bFoundIcon = Icons.getBitmapForIcon(hWnd, iWidth, iHeight, &Color, "2COLUMN",
 																&hBitmap);
-	UT_ASSERT(bFoundIcon);
+	UT_return_val_if_fail (bFoundIcon, false);
 	SendDlgItemMessage(hWnd, AP_RID_DIALOG_COLUMN_RADIO_TWO, BM_SETIMAGE, IMAGE_BITMAP, (LPARAM)hBitmap);
 
 	bFoundIcon = Icons.getBitmapForIcon(hWnd, iWidth, iHeight, &Color, "3COLUMN",
 																&hBitmap);
-	UT_ASSERT(bFoundIcon);
+	UT_return_val_if_fail (bFoundIcon, false);
 	SendDlgItemMessage(hWnd, AP_RID_DIALOG_COLUMN_RADIO_THREE, BM_SETIMAGE, IMAGE_BITMAP, (LPARAM)hBitmap);
 
 	// set initial state

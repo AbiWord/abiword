@@ -83,9 +83,7 @@ void AP_Dialog_MailMerge::eventOpen ()
 	
 	XAP_Dialog_FileOpenSaveAs * pDialog
 		= static_cast<XAP_Dialog_FileOpenSaveAs *>(pDialogFactory->requestDialog(id));
-	UT_ASSERT(pDialog);
-	if (!pDialog)
-		return;
+	UT_return_if_fail (pDialog);
 
 	UT_uint32 filterCount = 0;
 	
@@ -136,10 +134,11 @@ void AP_Dialog_MailMerge::setFieldList()
 void AP_Dialog_MailMerge::addClicked()
 {
 	XAP_Frame * pFrame = m_pFrame;
-	UT_ASSERT(pFrame);
+	UT_return_if_fail (pFrame);
 
 	FV_View * pView = static_cast<FV_View*>(pFrame->getCurrentView());
-
+	UT_return_if_fail (pView);
+	
 	const XML_Char * pParam = getMergeField().utf8_str();
 	const XML_Char * pAttr[3];
 	const XML_Char param_name[] = "param";

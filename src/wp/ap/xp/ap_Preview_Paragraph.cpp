@@ -53,7 +53,7 @@ AP_Preview_Paragraph_Block::AP_Preview_Paragraph_Block(UT_RGBColor & clr,
 													   AP_Dialog_Paragraph::tAlignState align,
 													   UT_uint32 fontHeight)
 {
-	UT_ASSERT(gc);
+	UT_return_if_fail (gc);
 
 	m_clr.m_red = clr.m_red;
 	m_clr.m_grn = clr.m_grn;
@@ -91,7 +91,7 @@ AP_Preview_Paragraph_Block::~AP_Preview_Paragraph_Block()
 
 void AP_Preview_Paragraph_Block::setText(const UT_UCSChar * text)
 {
-	UT_ASSERT(text);
+	UT_return_if_fail (text);
 
 	// clear the words vector by freeing ONLY the first
 	// word (see the destructor for notes)
@@ -214,7 +214,7 @@ void AP_Preview_Paragraph_Block::setFormat(const XML_Char * pageLeftMargin,
 		m_firstLineLeftStop = m_leftStop;
 		break;
 	default:
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 	}
 
 	if (lineSpacing)
@@ -265,7 +265,7 @@ AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
 										   AP_Dialog_Lists * dlg)
   : XAP_Preview(gc), m_dir(FRIBIDI_TYPE_LTR)
 {
-	UT_ASSERT(text && dlg);
+	UT_ASSERT_HARMLESS(text && dlg);
 
 	m_font = NULL;
 	m_fontHeight = 0;
@@ -347,7 +347,7 @@ AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
 {
   // this method heavily relies upon the parent dlg to call setFormat()
   // rather than auto-generating defaults
-	UT_ASSERT(text && dlg);
+	UT_ASSERT_HARMLESS(text && dlg);
 
 	m_font = NULL;
 	m_fontHeight = 0;
@@ -400,7 +400,7 @@ AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
 					   AP_Dialog_Paragraph * dlg)
 	: XAP_Preview(gc),m_dir(FRIBIDI_TYPE_LTR)
 {
-	UT_ASSERT(text && dlg);
+	UT_ASSERT_HARMLESS(text && dlg);
 
 	m_font = NULL;
 	m_fontHeight = 0;
@@ -500,7 +500,7 @@ void AP_Preview_Paragraph::setFormat(const XML_Char * pageLeftMargin,
 										const XML_Char * lineSpacing,
 										AP_Dialog_Paragraph::tSpacingState spacing)
 {
-	UT_ASSERT(m_activeBlock);
+	UT_return_if_fail(m_activeBlock);
 	m_activeBlock->setFormat(pageLeftMargin, pageRightMargin,
 								align, firstLineIndent, indent, leftIndent,
 								rightIndent, beforeSpacing, afterSpacing,
@@ -509,7 +509,7 @@ void AP_Preview_Paragraph::setFormat(const XML_Char * pageLeftMargin,
 
 void AP_Preview_Paragraph::draw(void)
 {
-	UT_ASSERT(m_gc);
+	UT_return_if_fail (m_gc);
 
 	// paint white background (Word 97's background is always white, the
 	// text is always black, and the font is always the same size, regardless
@@ -564,7 +564,7 @@ void AP_Preview_Paragraph::_drawPageBorder(void)
 
 void AP_Preview_Paragraph::_appendBlock(AP_Preview_Paragraph_Block * block)
 {
-	UT_ASSERT(block);
+	UT_return_if_fail (block);
 
 	UT_uint32 ypre = 0;
 	UT_uint32 ypost = 0;
@@ -590,7 +590,7 @@ void AP_Preview_Paragraph::_appendBlock(AP_Preview_Paragraph_Block * block)
 			ypre = block->m_lineSpacing;
 			break;
 		default:
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		}
 	}
 
@@ -653,7 +653,7 @@ UT_uint32 AP_Preview_Paragraph::_appendLine(UT_Vector * words,
 											UT_uint32 y)
 {
 
-	UT_ASSERT(words && widths);
+	UT_return_val_if_fail (words && widths, 0);
 
 	// width of space character in pixels
 	UT_sint32 spaceCharWidth = m_gc->tlu(3);

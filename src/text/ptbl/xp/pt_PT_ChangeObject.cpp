@@ -51,13 +51,13 @@ bool pt_PieceTable::_fmtChangeObjectWithNotify(PTChangeFmt ptc,
 	// apply a span-level change to the given object.
 	// create a change record for this change and put it in the history.
 
-	UT_ASSERT(length == pfo->getLength());
-	UT_ASSERT(fragOffset == 0);
+	UT_return_val_if_fail (length == pfo->getLength(), false);
+	UT_return_val_if_fail (fragOffset == 0, false);
 	
 	PT_AttrPropIndex indexNewAP;
 	PT_AttrPropIndex indexOldAP = pfo->getIndexAP();
 	bool bMerged = m_varset.mergeAP(ptc,indexOldAP,attributes,properties,&indexNewAP,getDocument());
-	UT_ASSERT(bMerged);
+	UT_ASSERT_HARMLESS(bMerged);
 
 	if (indexOldAP == indexNewAP)		// the requested change will have no effect on this fragment.
 	{
@@ -76,7 +76,7 @@ bool pt_PieceTable::_fmtChangeObjectWithNotify(PTChangeFmt ptc,
 		= new PX_ChangeRecord_ObjectChange(PX_ChangeRecord::PXT_ChangeObject,
 										   dpos, indexOldAP,indexNewAP,
 										   pfo->getObjectType(),blockOffset);
-	UT_ASSERT(pcr);
+	UT_return_val_if_fail (pcr, false);
 
 	// apply the change to this fragment
 

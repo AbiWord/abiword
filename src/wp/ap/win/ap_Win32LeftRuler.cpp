@@ -32,7 +32,7 @@
 #define GWL(hwnd)		(AP_Win32LeftRuler*)GetWindowLong((hwnd), GWL_USERDATA)
 #define SWL(hwnd, f)	(AP_Win32LeftRuler*)SetWindowLong((hwnd), GWL_USERDATA,(LONG)(f))
 
-#define ENSUREP(p)		do { UT_ASSERT(p); if (!p) goto Cleanup; } while (0)
+#define ENSUREP(p)		do { UT_ASSERT_HARMLESS(p); if (!p) goto Cleanup; } while (0)
 
 static char s_LeftRulerWndClassName[256];
 
@@ -65,7 +65,7 @@ void AP_Win32LeftRuler::setView(AV_View * pView)
 	GR_Win32Graphics * pG = (GR_Win32Graphics *)XAP_App::getApp()->newGraphics(ai);
 	
 	m_pG = pG;
-	UT_ASSERT(m_pG);
+	UT_return_if_fail (m_pG);
 
 	pG->init3dColors();
 }
@@ -95,7 +95,7 @@ bool AP_Win32LeftRuler::RegisterClass(XAP_Win32App * app)
 	wndclass.hIconSm       = NULL;
 
 	a = RegisterClassEx(&wndclass);
-	UT_ASSERT(a);
+	UT_ASSERT_HARMLESS(a);
 
 	return true;
 }
@@ -110,7 +110,7 @@ HWND AP_Win32LeftRuler::createWindow(HWND hwndContainer,
 									 WS_CHILD | WS_VISIBLE,
 									 left, top, s_iFixedWidth, height,
 									 hwndContainer, NULL, app->getInstance(), NULL);
-	UT_ASSERT(m_hwndLeftRuler);
+	UT_return_val_if_fail (m_hwndLeftRuler,0);
 	SWL(m_hwndLeftRuler, this);
 	
 	
@@ -119,8 +119,8 @@ HWND AP_Win32LeftRuler::createWindow(HWND hwndContainer,
 	GR_Win32Graphics * pG = (GR_Win32Graphics *)XAP_App::getApp()->newGraphics(ai);
 
 	m_pG = pG;
+	UT_return_val_if_fail (pG, 0);
 	pG->init3dColors();
-	UT_ASSERT(m_pG);
 	
 	RECT rSize;
 	GetClientRect(m_hwndLeftRuler,&rSize);

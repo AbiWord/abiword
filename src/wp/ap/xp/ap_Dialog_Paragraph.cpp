@@ -56,10 +56,10 @@ AP_Dialog_Paragraph::AP_Dialog_Paragraph(XAP_DialogFactory* pDlgFactory, XAP_Dia
 
 	// determine unit system to use in this dialog
 	const XML_Char * szRulerUnits;
-	UT_ASSERT(m_pApp);
+	UT_return_if_fail (m_pApp);
 
 	XAP_Prefs* pPrefs = m_pApp->getPrefs();
-	UT_ASSERT(pPrefs);
+	UT_return_if_fail (pPrefs);
 
 	const bool bHasRulerUnits =
 		pPrefs->getPrefsValue((XML_Char*)AP_PREF_KEY_RulerUnits, &szRulerUnits);
@@ -99,7 +99,7 @@ AP_Dialog_Paragraph::~AP_Dialog_Paragraph(void)
 
 bool AP_Dialog_Paragraph::setDialogData(const XML_Char ** pProps)
 {
-	UT_ASSERT(pProps);
+	UT_return_val_if_fail (pProps, false);
 
 	// NOTICE : When setting values, this function always calls
 	// NOTICE : _set[thing]ItemValue() with the bToggleDirty flag
@@ -124,7 +124,7 @@ bool AP_Dialog_Paragraph::setDialogData(const XML_Char ** pProps)
 			else if (UT_XML_strcmp(sz, "left") == 0)
 				t = align_LEFT;
 			else
-				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+				UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 
 			_setMenuItemValue(id_MENU_ALIGNMENT, t, op_INIT);
 		}
@@ -139,7 +139,7 @@ bool AP_Dialog_Paragraph::setDialogData(const XML_Char ** pProps)
 			else if (UT_XML_strcmp(sz, "rtl") == 0)
 				t = check_TRUE;
 			else
-				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+				UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 
 			_setCheckItemValue(id_CHECK_DOMDIRECTION, t, op_INIT);
 		}
@@ -202,8 +202,8 @@ bool AP_Dialog_Paragraph::setDialogData(const XML_Char ** pProps)
 
 					// need to strip off that plus
 					int posPlus = pPlusFound - (char*) sz;
-					UT_ASSERT(posPlus>=0);
-					UT_ASSERT(posPlus<100);
+					UT_return_val_if_fail (posPlus>=0, false);
+					UT_return_val_if_fail (posPlus<100, false);
 
 					char pTmp[100];
 					strcpy(pTmp, sz);
@@ -374,7 +374,7 @@ bool AP_Dialog_Paragraph::getDialogData(const XML_Char **& pProps)
 			UT_XML_cloneString(p->val, "justify");
 			break;
 		default:
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		}
 		v.addItem(p);
 	}
@@ -501,7 +501,7 @@ bool AP_Dialog_Paragraph::getDialogData(const XML_Char **& pProps)
 		case spacing_ATLEAST:
 			nSize = UT_XML_strlen(pString);
 			pTmp = (XML_Char *) UT_calloc(nSize + 2, sizeof(XML_Char));
-			UT_ASSERT(pTmp);
+			UT_return_val_if_fail (pTmp, false);
 
 			UT_XML_strncpy(pTmp, nSize, pString);
 			// stick a '+' at the end
@@ -518,7 +518,7 @@ bool AP_Dialog_Paragraph::getDialogData(const XML_Char **& pProps)
 			UT_XML_cloneString(p->val, pString);
 			break;
 		default:
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		}
 		v.addItem(p);
 	}
@@ -641,24 +641,24 @@ void AP_Dialog_Paragraph::_createPreviewFromGC(GR_Graphics * gc,
 											   UT_uint32 width,
 											   UT_uint32 height)
 {
-	UT_ASSERT(gc);
+	UT_return_if_fail (gc);
 
 	// free any attached preview
 	DELETEP(m_paragraphPreview);
 
 	// platform's runModal should have set this
-	UT_ASSERT(m_pFrame);
+	UT_return_if_fail (m_pFrame);
 
 	AV_View * baseview = m_pFrame->getCurrentView();
-	UT_ASSERT(baseview);
+	UT_return_if_fail (baseview);
 
 	FV_View * view = static_cast<FV_View *> (baseview);
 
 	FL_DocLayout * dl = view->getLayout();
-	UT_ASSERT(dl);
+	UT_return_if_fail (dl);
 
 	fl_BlockLayout * bl = dl->findBlockAtPosition((PT_DocPosition) view->getPoint());
-	UT_ASSERT(bl);
+	UT_return_if_fail (bl);
 
 	UT_GrowBuf gb;
 	bool hadMem = bl->getBlockBuf(&gb);
@@ -681,7 +681,7 @@ void AP_Dialog_Paragraph::_createPreviewFromGC(GR_Graphics * gc,
 
 	FREEP(tmp);
 
-	UT_ASSERT(m_paragraphPreview);
+	UT_return_if_fail (m_paragraphPreview);
 
 	m_paragraphPreview->setWindowSize(width, height);
 
@@ -692,11 +692,10 @@ void AP_Dialog_Paragraph::_createPreviewFromGC(GR_Graphics * gc,
 void AP_Dialog_Paragraph::_setMenuItemValue(tControl item, UT_sint32 value,
 											tOperation op /* = op_UICHANGE */)
 {
-	UT_ASSERT((UT_uint32) item <= m_vecProperties.getItemCount());
+	UT_return_if_fail ((UT_uint32) item <= m_vecProperties.getItemCount());
 
 	sControlData * pItem = _getPropertyItem (item);
-	UT_ASSERT(pItem);
-	if (!pItem) return;
+	UT_return_if_fail (pItem);
 
 	pItem->setData (value);
 
@@ -711,25 +710,23 @@ void AP_Dialog_Paragraph::_setMenuItemValue(tControl item, UT_sint32 value,
 
 UT_sint32 AP_Dialog_Paragraph::_getMenuItemValue(tControl item)
 {
-	UT_ASSERT((UT_uint32) item <= m_vecProperties.getItemCount());
+	UT_return_val_if_fail ((UT_uint32) item <= m_vecProperties.getItemCount(), 0);
 
 	sControlData * pItem = _getPropertyItem (item);
-	UT_ASSERT(pItem);
+	UT_return_val_if_fail (pItem, 0);
 
 	UT_sint32 value = 0;
-	if (pItem)
-		pItem->getData (value);
+	pItem->getData (value);
 	return value;
 }
 
 void AP_Dialog_Paragraph::_setCheckItemValue(tControl item, tCheckState value,
 											tOperation op /* = op_UICHANGE */)
 {
-	UT_ASSERT((UT_uint32) item <= m_vecProperties.getItemCount());
+	UT_return_if_fail ((UT_uint32) item <= m_vecProperties.getItemCount());
 
 	sControlData * pItem = _getPropertyItem (item);
-	UT_ASSERT(pItem);
-	if (!pItem) return;
+	UT_return_if_fail (pItem);
 
 	pItem->setData (value);
 
@@ -743,10 +740,10 @@ void AP_Dialog_Paragraph::_setCheckItemValue(tControl item, tCheckState value,
 
 AP_Dialog_Paragraph::tCheckState AP_Dialog_Paragraph::_getCheckItemValue(tControl item)
 {
-	UT_ASSERT((UT_uint32) item <= m_vecProperties.getItemCount());
+	UT_return_val_if_fail ((UT_uint32) item <= m_vecProperties.getItemCount(), check_INDETERMINATE);
 
 	sControlData * pItem = _getPropertyItem (item);
-	UT_ASSERT(pItem);
+	UT_return_val_if_fail (pItem, check_INDETERMINATE);
 
 	tCheckState value = check_INDETERMINATE;
 	if (pItem)
@@ -776,12 +773,10 @@ const XML_Char * AP_Dialog_Paragraph::_makeAbsolute(const XML_Char * value)
 void AP_Dialog_Paragraph::_setSpinItemValue(tControl item, const XML_Char * value,
 											tOperation op /* = op_UICHANGE */)
 {
-	UT_ASSERT((UT_uint32) item <= m_vecProperties.getItemCount());
-	UT_ASSERT(value);
+	UT_return_if_fail ((UT_uint32) item <= m_vecProperties.getItemCount() && value);
 
 	sControlData * pItem = _getPropertyItem (item);
-	UT_ASSERT(pItem);
-	if (!pItem) return;
+	UT_return_if_fail (pItem);
 
 	// some spinbuttons have special data requirements
 	switch(item)
@@ -831,15 +826,14 @@ void AP_Dialog_Paragraph::_setSpinItemValue(tControl item, const XML_Char * valu
 
 const XML_Char * AP_Dialog_Paragraph::_getSpinItemValue(tControl item)
 {
-	UT_ASSERT((UT_uint32) item <= m_vecProperties.getItemCount());
+	UT_return_val_if_fail ((UT_uint32) item <= m_vecProperties.getItemCount(), NULL);
 
 	sControlData * pItem = _getPropertyItem (item);
-	UT_ASSERT(pItem);
+	UT_return_val_if_fail (pItem, NULL);
 
 	const XML_Char * value = NULL;
-	if (pItem)
-		pItem->getData (value);
-	UT_ASSERT(value);
+	pItem->getData (value);
+	UT_ASSERT_HARMLESS(value);
 	return value;
 }
 
@@ -858,7 +852,7 @@ const XML_Char * AP_Dialog_Paragraph::_getSpinItemValue(tControl item)
 
 void AP_Dialog_Paragraph::_doSpin(tControl edit, UT_sint32 amt)
 {
-	UT_ASSERT(amt); // zero makes no sense
+	UT_ASSERT_HARMLESS(amt); // zero makes no sense
 
 	// get current value from member
 	const XML_Char* szOld = _getSpinItemValue(edit);
@@ -886,7 +880,7 @@ void AP_Dialog_Paragraph::_doSpin(tControl edit, UT_sint32 amt)
 		case DIM_PI:	dSpinUnit = SPIN_INCR_PI;	break;
 		case DIM_PT:	dSpinUnit = SPIN_INCR_PT;	break;
 		default:
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			break;
 		}
 		break;
@@ -924,13 +918,13 @@ void AP_Dialog_Paragraph::_doSpin(tControl edit, UT_sint32 amt)
 			break;
 
 		default:
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			break;
 		}
 		break;
 
 	default:
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		break;
 	}
 
@@ -1066,7 +1060,7 @@ void AP_Dialog_Paragraph::_syncControls(tControl changed, bool bAll /* = false *
 				break;
 
 			default:
-				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+				UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 				break;
 			}
 
@@ -1180,7 +1174,7 @@ void AP_Dialog_Paragraph::_syncControls(tControl changed, bool bAll /* = false *
 			break;
 
 		default:
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			break;
 		}
 	}
@@ -1204,12 +1198,12 @@ void AP_Dialog_Paragraph::_syncControls(tControl changed, bool bAll /* = false *
 
 bool AP_Dialog_Paragraph::_wasChanged(tControl item)
 {
-	UT_ASSERT((UT_uint32) item <= m_vecProperties.getItemCount());
+	UT_return_val_if_fail ((UT_uint32) item <= m_vecProperties.getItemCount(), false);
 
 	sControlData * pItem = _getPropertyItem (item);
-	UT_ASSERT(pItem);
+	UT_return_val_if_fail (pItem, false);
 
-	return (pItem ? pItem->changed () : false);
+	return pItem->changed ();
 }
 
 void AP_Dialog_Paragraph::_addPropertyItem (tControl index, const sControlData & control_data)
@@ -1224,10 +1218,9 @@ void AP_Dialog_Paragraph::_addPropertyItem (tControl index, const sControlData &
 		{
 			pDataCopy = 0;
 		}
-	UT_ASSERT(pDataCopy);
+	UT_return_if_fail (pDataCopy);
 
-	if (pDataCopy)
-		m_vecProperties.setNthItem (static_cast<UT_uint32>(index), pDataCopy, 0);
+	m_vecProperties.setNthItem (static_cast<UT_uint32>(index), pDataCopy, 0);
 }
 
 AP_Dialog_Paragraph::sControlData::sControlData (UT_sint32 data) :
@@ -1292,10 +1285,9 @@ AP_Dialog_Paragraph::sControlData & AP_Dialog_Paragraph::sControlData::operator=
 						{
 							m_szData = 0;
 						}
-					UT_ASSERT(m_szData);
 				}
-			if (m_szData)
-				memcpy (m_szData, rhs.m_szData, SPIN_BUF_TEXT_SIZE * sizeof (XML_Char));
+			UT_return_val_if_fail (m_szData, *this);
+			memcpy (m_szData, rhs.m_szData, SPIN_BUF_TEXT_SIZE * sizeof (XML_Char));
 		}
 	else if (m_szData)
 		{
@@ -1318,8 +1310,7 @@ bool AP_Dialog_Paragraph::sControlData::setData (const XML_Char * data)
 				{
 					m_szData = 0;
 				}
-			UT_ASSERT(m_szData);
-			if (!m_szData) return false;
+			UT_return_val_if_fail (m_szData, false);
 
 			m_szData[SPIN_BUF_TEXT_SIZE-1] = 0;
 		}

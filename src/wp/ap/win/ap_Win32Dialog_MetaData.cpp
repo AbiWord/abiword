@@ -79,7 +79,7 @@ AP_Win32Dialog_MetaData::~AP_Win32Dialog_MetaData(void)
 
 void AP_Win32Dialog_MetaData::runModal(XAP_Frame * pFrame)
 {
-	UT_ASSERT(pFrame);	
+	UT_return_if_fail (pFrame);	
 	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(pFrame->getApp());	
 		
 	XAP_Win32PropertySheet				sheet;

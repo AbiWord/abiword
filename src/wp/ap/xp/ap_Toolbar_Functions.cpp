@@ -93,7 +93,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Spelling)
   EV_Toolbar_ItemState s = EV_TIS_ZERO;
 
   XAP_Prefs *pPrefs = XAP_App::getApp()->getPrefs();
-  UT_ASSERT( pPrefs );
+  UT_return_val_if_fail ( pPrefs, EV_TIS_Gray );
 
   bool b = true ;
   pPrefs->getPrefsValueBool(static_cast<const XML_Char *>(AP_PREF_KEY_AutoSpellCheck),&b) ;
@@ -139,7 +139,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Changes)
 		break;
 
 	default:
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		break;
 	}
 
@@ -166,7 +166,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Selection)
 		break;
 
 	default:
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		break;
 	}
 
@@ -197,7 +197,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Clipboard)
 	  break;
 
 	default:
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		break;
 	}
 
@@ -208,7 +208,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Clipboard)
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_HdrFtr)
 {
 	ABIWORD_VIEW;
-	UT_ASSERT(pView);
+	UT_return_val_if_fail (pView, EV_TIS_Gray);
 
 	if (pszState)
 		*pszState = NULL;
@@ -228,7 +228,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_HdrFtr)
 		  s = EV_TIS_Gray;
 		break;
 	default:
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		break;
 	}
 	return s;
@@ -270,7 +270,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Style)
 		}
 
 	default:
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		break;
 	}
 	return s;
@@ -290,7 +290,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Bullets)
 	}
 
 	fl_BlockLayout * pBlock = pView->getCurrentBlock();
-	UT_ASSERT(pBlock);
+	UT_return_val_if_fail (pBlock, EV_TIS_Gray);
 	if(pBlock->isListItem() == false)
 		return s;
 	if(pBlock->getListType() == BULLETED_LIST)
@@ -311,7 +311,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Numbers)
 	}
 
 	fl_BlockLayout * pBlock = pView->getCurrentBlock();
-        UT_ASSERT(pBlock);
+    UT_return_val_if_fail (pBlock, EV_TIS_Gray);
 	if(pBlock->isListItem() == false)
 	        return s;
 	if(pBlock->getListType() == NUMBERED_LIST)
@@ -449,7 +449,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_CharFmt)
 		break;
 
 	default:
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		break;
 	}
 
@@ -548,7 +548,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_SectionFmt)
 		val = "3";
 		break;
 	default:
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		break;
 	}
 	s = EV_TIS_ZERO;
@@ -658,7 +658,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_BlockFmt)
 
 	default:
 		UT_DEBUGMSG(("id=%d", id));
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		break;
 	}
 
@@ -698,7 +698,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_BlockFmt)
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Zoom)
 {
 	ABIWORD_VIEW;
-	UT_ASSERT(pView);
+	UT_return_val_if_fail (pView, EV_TIS_Gray);
 
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
@@ -731,13 +731,13 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Zoom)
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_View)
 {
 	ABIWORD_VIEW;
-	UT_ASSERT(pView);
+	UT_return_val_if_fail (pView, EV_TIS_Gray);
 
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pAV_View->getParentData());
-	UT_ASSERT(pFrame);
+	UT_return_val_if_fail (pFrame, EV_TIS_Gray);
 
 	AP_FrameData *pFrameData = static_cast<AP_FrameData *> (pFrame->getFrameData());
-	UT_ASSERT(pFrameData);
+	UT_return_val_if_fail (pFrameData, EV_TIS_Gray);
 
 	EV_Toolbar_ItemState s = EV_TIS_ZERO;
 
@@ -749,7 +749,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_View)
         break;
 
 	default:
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		break;
 	}
 
@@ -759,7 +759,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_View)
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_StylesLocked)
 {
         ABIWORD_VIEW;
-        UT_ASSERT(pView);
+        UT_return_val_if_fail (pView, EV_TIS_Gray);
 
         if(pView->getDocument()->areStylesLocked()) {
             return EV_TIS_Gray;
@@ -771,7 +771,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_StylesLocked)
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Table)
 {
   ABIWORD_VIEW;
-  UT_ASSERT(pView);
+  UT_return_val_if_fail (pView, EV_TIS_Gray);
   
   if(pView->isInTable())
     return EV_TIS_ZERO;
@@ -782,7 +782,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Table)
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_TableMerged)
 {
   ABIWORD_VIEW;
-  UT_ASSERT(pView);
+  UT_return_val_if_fail (pView, EV_TIS_Gray);
   
   if(pView->isInTable())
   {

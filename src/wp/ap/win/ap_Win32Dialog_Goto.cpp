@@ -67,7 +67,7 @@ void AP_Win32Dialog_Goto::activate(void)
 
 	iResult = BringWindowToTop( m_hWnd );
 
-	UT_ASSERT((iResult != 0));
+	UT_ASSERT_HARMLESS((iResult != 0));
 }
 
 
@@ -77,7 +77,7 @@ void AP_Win32Dialog_Goto::destroy(void)
 
 	int iResult = DestroyWindow( m_hWnd );
 
-	UT_ASSERT((iResult != 0));
+	UT_ASSERT_HARMLESS((iResult != 0));
 
 	modeless_cleanup();
 }
@@ -108,7 +108,7 @@ void AP_Win32Dialog_Goto::notifyCloseFrame(XAP_Frame *pFrame)
 
 void AP_Win32Dialog_Goto::runModeless(XAP_Frame * pFrame)
 {
-	UT_ASSERT(pFrame);
+	UT_return_if_fail (pFrame && m_id == AP_DIALOG_ID_GOTO);
 
 	// raise the dialog
 	int iResult;
@@ -116,15 +116,13 @@ void AP_Win32Dialog_Goto::runModeless(XAP_Frame * pFrame)
 
 	LPCTSTR lpTemplate = NULL;
 
-	UT_ASSERT(m_id == AP_DIALOG_ID_GOTO);
-
 	lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_GOTO);
 
 	HWND hResult = CreateDialogParam(pWin32App->getInstance(),lpTemplate,
 							static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
 							(DLGPROC)s_dlgProc,(LPARAM)this);
 
-	UT_ASSERT((hResult != NULL));
+	UT_return_if_fail ((hResult != NULL));
 
 	m_hWnd = hResult;
 
@@ -136,7 +134,7 @@ void AP_Win32Dialog_Goto::runModeless(XAP_Frame * pFrame)
 
 	iResult = BringWindowToTop( m_hWnd );
 
-	UT_ASSERT((iResult != 0));
+	UT_ASSERT_HARMLESS((iResult != 0));
 	m_pView->focusChange(AV_FOCUS_MODELESS);
 }
 
@@ -376,7 +374,7 @@ BOOL AP_Win32Dialog_Goto::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		return 1;
 
 	case AP_RID_DIALOG_GOTO_BTN_GOTO:
-		UT_ASSERT( m_pszOldValue );
+		UT_return_val_if_fail ( m_pszOldValue, 0 );
 		GoTo( m_pszOldValue );
 		return 1;
 

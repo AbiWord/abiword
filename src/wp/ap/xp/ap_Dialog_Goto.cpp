@@ -115,12 +115,12 @@ FV_View * AP_Dialog_Goto::getView(void)
 
 UT_uint32 AP_Dialog_Goto::getExistingBookmarksCount() const
 {
-	UT_ASSERT(m_pView);
+	UT_return_val_if_fail (m_pView, 0);
 	return m_pView->getDocument()->getBookmarkCount();
 }
 
 const XML_Char * AP_Dialog_Goto::getNthExistingBookmark(UT_uint32 n) const
 {
-	UT_ASSERT(m_pView);
+	UT_return_val_if_fail (m_pView, NULL);
 	return m_pView->getDocument()->getNthBookmark(n);
 }

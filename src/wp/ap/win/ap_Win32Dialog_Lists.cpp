@@ -143,7 +143,7 @@ BOOL AP_Win32Dialog_Lists::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam
 
 	const XAP_StringSet* pSS = m_pApp->getStringSet();
 
-	UT_ASSERT(pSS);	// TODO: Would an error handler be more appropriate here?
+	UT_return_val_if_fail (pSS,1);	// TODO: Would an error handler be more appropriate here?
 
 	// Set the locale specific strings
 	struct control_id_string_id {
@@ -196,7 +196,7 @@ BOOL AP_Win32Dialog_Lists::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam
 	HWND hwndChild = GetDlgItem(hWnd, AP_RID_DIALOG_LIST_FRAME_PREVIEW);
 
 	// If we don't get the preview control things are bad!
-	UT_ASSERT(hwndChild);
+	UT_return_val_if_fail (hwndChild,1);
 
 	m_pPreviewWidget = new XAP_Win32PreviewWidget(static_cast<XAP_Win32App *>(m_pApp),
 													  hwndChild,
@@ -225,12 +225,12 @@ BOOL AP_Win32Dialog_Lists::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam
 
 void AP_Win32Dialog_Lists::setFoldLevelInGUI(void)
 {
-	UT_ASSERT(0);
+	UT_ASSERT_HARMLESS(0);
 }
 
 bool AP_Win32Dialog_Lists::isPageLists(void)
 {
-	UT_ASSERT(0);
+	UT_ASSERT_HARMLESS(0);
 	return true;
 }
 
@@ -432,7 +432,7 @@ void AP_Win32Dialog_Lists::activate(void)
 
 	iResult = _win32Dialog.bringWindowToTop();
 
-	UT_ASSERT((iResult != 0));
+	UT_ASSERT_HARMLESS((iResult != 0));
 
 	_enableControls();
 }
@@ -515,7 +515,7 @@ void AP_Win32Dialog_Lists::_onApply()
 	const bool bResumeList     = _isResumeListChecked();
 
 	// There can be only one.
-	UT_ASSERT((int(bStartNewList) + int(bApplyToCurrent) + int(bResumeList)) == 1);
+	UT_return_if_fail ((int(bStartNewList) + int(bApplyToCurrent) + int(bResumeList)) == 1);
 
 	setbStartNewList(bStartNewList);
 	setbApplyToCurrent(bApplyToCurrent);
@@ -594,7 +594,7 @@ void AP_Win32Dialog_Lists::_fillTypeList()
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-	UT_ASSERT(pSS);	// TODO: Would an error handler be more appropriate here?
+	UT_return_if_fail (pSS);	// TODO: Would an error handler be more appropriate here?
 
 	static const XAP_String_Id rgIDs[] =
 	{
@@ -612,7 +612,7 @@ void AP_Win32Dialog_Lists::_fillTypeList()
 
 void AP_Win32Dialog_Lists::_fillStyleList(int iType)
 {
-	UT_ASSERT(iType >= -1 && iType <=2);
+	UT_return_if_fail (iType >= -1 && iType <=2);
 
 	const UT_sint32 idComboStyle = AP_RID_DIALOG_LIST_COMBO_STYLE;
 
@@ -667,10 +667,10 @@ void AP_Win32Dialog_Lists::_fillStyleList(int iType)
 	}
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	UT_ASSERT(pSS);	// TODO: Would an error handler be more appropriate here?
+	UT_return_if_fail (pSS);	// TODO: Would an error handler be more appropriate here?
 
 	HWND hComboStyle = GetDlgItem(m_hThisDlg, AP_RID_DIALOG_LIST_COMBO_STYLE);
-	UT_ASSERT(hComboStyle);
+	UT_return_if_fail (hComboStyle);
 	int nMaxWidth = 0;
 
 	// Get the HDC of the droplist to be able to get the
@@ -935,7 +935,7 @@ FL_ListType AP_Win32Dialog_Lists::_getListTypeFromCombos() const
 		iStyle += (OTHER_NUMBERED_LISTS - BULLETED_LIST + 1);
 
 	// Numbered List, but just to make really REALLY sure, we assert it
-	UT_ASSERT(IS_NUMBERED_LIST_TYPE(iStyle));
+	UT_ASSERT_HARMLESS(IS_NUMBERED_LIST_TYPE(iStyle));
 
 	return (FL_ListType)iStyle;
 }
@@ -959,7 +959,7 @@ void AP_Win32Dialog_Lists::_setListType(FL_ListType type)
 	}
 	else
 	{
-		UT_ASSERT(IS_BULLETED_LIST_TYPE(type));
+		UT_ASSERT_HARMLESS(IS_BULLETED_LIST_TYPE(type));
 		iType = 1;
 		iStyle = type - BULLETED_LIST;
 	}
@@ -992,11 +992,11 @@ void AP_Win32Dialog_Lists::_selectFont()
 	}
 
 	XAP_DialogFactory* pDialogFactory = pFrame->getDialogFactory();
-	UT_ASSERT(pDialogFactory);
+	UT_return_if_fail (pDialogFactory);
 
 	XAP_Dialog_FontChooser* pDialog
 		= (XAP_Dialog_FontChooser *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_FONT));
-	UT_ASSERT(pDialog);
+	UT_ASSERT_HARMLESS(pDialog);
 
 	if (!pDialog)	// runtime failsafe
 	{
@@ -1104,14 +1104,14 @@ void AP_Win32Dialog_Lists::_selectFont()
 
 void AP_Win32Dialog_Lists::autoupdateLists(UT_Worker * pWorker)
 {
-	UT_ASSERT(pWorker);
+	UT_return_if_fail (pWorker);
 	// this is a static callback method and does not have a 'this' pointer.
 	AP_Win32Dialog_Lists* pDialog =
 		reinterpret_cast<AP_Win32Dialog_Lists*>(pWorker->getInstanceData());
 	// Handshaking code. Plus only update if something in the document
 	// changed.
 
-	UT_ASSERT(pDialog);
+	UT_ASSERT_HARMLESS(pDialog);
 
 	if (pDialog)	// runtime failsafe
 	{

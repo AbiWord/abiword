@@ -245,7 +245,7 @@ bool pt_VarSet::mergeAP(PTChangeFmt ptc, PT_AttrPropIndex apiOld,
 		if (bFound && !pStyle)
 		{
 			UT_DEBUGMSG(("oops! tried to change from a nonexistent style [%s]!\n", szStyle));
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		}
 
         if(bFound && szStyle && UT_strcmp(szStyle, "None") && pStyle)
@@ -404,7 +404,7 @@ bool pt_VarSet::mergeAP(PTChangeFmt ptc, PT_AttrPropIndex apiOld,
 		}
 		
 	default:
-		UT_ASSERT(0);
+		UT_ASSERT_HARMLESS(0);
 		return false;
 	}
 }
@@ -417,7 +417,7 @@ bool pt_VarSet::addIfUniqueAP(PP_AttrProp * pAP, PT_AttrPropIndex * papi)
 	// it and return the index where we added it.
 	// return false if we have any errors.
 
-	UT_ASSERT(pAP && papi);
+	UT_return_val_if_fail (pAP && papi, false);
 	UT_uint32 subscript = 0;
 	UT_uint32 table = 0;
 
@@ -439,7 +439,7 @@ bool pt_VarSet::addIfUniqueAP(PP_AttrProp * pAP, PT_AttrPropIndex * papi)
 	}
 	
 	// memory error of some kind.
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 	delete pAP;
 	return false;
 }

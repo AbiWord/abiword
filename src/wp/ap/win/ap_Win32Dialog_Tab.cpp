@@ -72,7 +72,7 @@ void AP_Win32Dialog_Tab::runModal(XAP_Frame * pFrame)
 BOOL AP_Win32Dialog_Tab::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
 	XAP_Win32App * app = static_cast<XAP_Win32App *> (m_pApp);
-	UT_ASSERT(app);
+	UT_return_val_if_fail (app,0);
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
@@ -276,7 +276,7 @@ void AP_Win32Dialog_Tab::_controlEnable( tControl id, bool value )
 
 	default:
 		WinControlID = 0;
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		break;
 	}
 

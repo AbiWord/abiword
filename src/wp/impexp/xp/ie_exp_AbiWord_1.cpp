@@ -300,7 +300,7 @@ void s_AbiWord_1_Listener::_openTag(const char * szPrefix, const char * szSuffix
 								   bool bIgnoreProperties)
 {
 #ifdef ENABLE_RESOURCE_MANAGER
-	UT_ASSERT (!m_bOpenChar);
+	UT_ASSERT_HARMLESS (!m_bOpenChar);
 
 	UT_UTF8String tag("<");
 	tag += szPrefix;
@@ -433,7 +433,7 @@ void s_AbiWord_1_Listener::_outputXMLChar(const XML_Char * data, UT_uint32 lengt
 	UT_String sBuf;
 	const XML_Char * pData;
 
-	UT_ASSERT(sizeof(UT_Byte) == sizeof(char));
+	UT_return_if_fail(sizeof(UT_Byte) == sizeof(char));
 
 	for (pData=data; (pData<data+length); /**/)
 	{
@@ -468,7 +468,7 @@ void s_AbiWord_1_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length
 	UT_UTF8String sBuf;
 	const UT_UCSChar * pData;
 
-	UT_ASSERT(sizeof(UT_Byte) == sizeof(char));
+	UT_return_if_fail(sizeof(UT_Byte) == sizeof(char));
 
 	for (pData=data; (pData<data+length); /**/)
 	{
@@ -657,7 +657,7 @@ bool s_AbiWord_1_Listener::populate(PL_StruxFmtHandle /*sfh*/,
                     _closeField();
                     _openTag("field","",false,api);
                     m_pCurrentField = pcro->getField();
-                    UT_ASSERT(m_pCurrentField);
+                    UT_ASSERT_HARMLESS(m_pCurrentField);
                     return true;
                 }
    			case PTO_Bookmark:

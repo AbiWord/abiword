@@ -55,32 +55,32 @@ AP_Win32Dialog_FormatTOC::~AP_Win32Dialog_FormatTOC(void)
 
 void AP_Win32Dialog_FormatTOC::setTOCPropsInGUI(void)
 {
-	UT_ASSERT(0);
+	UT_ASSERT_HARMLESS(0);
 }
 
 void AP_Win32Dialog_FormatTOC::setSensitivity(bool bSensitive)
 {
-	UT_ASSERT(0);
+	UT_ASSERT_HARMLESS(0);
 }
 
 void AP_Win32Dialog_FormatTOC::destroy(void)
 {
-	UT_ASSERT(0);
+	UT_ASSERT_HARMLESS(0);
 	finalize();
 }
 
 void AP_Win32Dialog_FormatTOC::activate(void)
 {
-	UT_ASSERT (0);
+	UT_ASSERT_HARMLESS (0);
 }
 
 void AP_Win32Dialog_FormatTOC::notifyActiveFrame(XAP_Frame *pFrame)
 {
-    UT_ASSERT(0);
+    UT_ASSERT_HARMLESS(0);
 }
 
 void AP_Win32Dialog_FormatTOC::runModeless(XAP_Frame * pFrame)
 {
-	UT_ASSERT(0);
+	UT_ASSERT_HARMLESS(0);
 	startUpdater();
 }

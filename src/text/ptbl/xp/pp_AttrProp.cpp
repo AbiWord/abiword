@@ -211,7 +211,7 @@ bool PP_AttrProp::setProperties(const UT_GenericVector<XML_Char*> * pVector)
 bool	PP_AttrProp::setAttribute(const XML_Char * szName, const XML_Char * szValue)
 {
 	// TODO when this assert fails, switch this file to use UT_XML_ version of str*() functions.
-	UT_ASSERT(sizeof(char)==sizeof(XML_Char));
+	UT_return_val_if_fail (sizeof(char)==sizeof(XML_Char), false);
 
 	if (0 == strcmp(szName, PT_PROPS_ATTRIBUTE_NAME) && *szValue)	// PROPS -- cut value up into properties
 	{
@@ -289,7 +289,7 @@ bool	PP_AttrProp::setAttribute(const XML_Char * szName, const XML_Char * szValue
 		}
 
 		// make sure we store attribute names in lowercase
-		UT_ASSERT(sizeof(char) == sizeof(XML_Char));
+		UT_ASSERT_HARMLESS(sizeof(char) == sizeof(XML_Char));
 
 		char * copy;
 		if (!UT_cloneString(copy, szName))
@@ -338,7 +338,7 @@ bool	PP_AttrProp::setProperty(const XML_Char * szName, const XML_Char * szValue)
 
 		// hack. don't do it.
 		XML_Char* tmp = (XML_Char*)p->first();
-		UT_ASSERT(!m_bIsReadOnly);
+		UT_return_val_if_fail (!m_bIsReadOnly, false);
 		if(strcmp(szName,"line-height") == 0)
 		{
 			UT_DEBUGMSG(("Found line-height, Old value %s new value is %s \n",tmp,szValue));
@@ -523,7 +523,7 @@ bool PP_AttrProp::areAlreadyPresent(const XML_Char ** attributes, const XML_Char
 				at least for the 'param' attribute which goes with fields.
 				Is this bogus too? -PL
 			*/
-			UT_ASSERT(p[1] /* && *p[1]*/);	// require value for each name
+			UT_return_val_if_fail (p[1] /* && *p[1]*/, false);	// require value for each name
 			const XML_Char * szValue = NULL;
 			if (!getAttribute(p[0],szValue))
 				return false;		// item not present
@@ -543,7 +543,7 @@ bool PP_AttrProp::areAlreadyPresent(const XML_Char ** attributes, const XML_Char
 				*want* to represent no tabstops as an empty string.
 				If this isn't safe, let me know.   -- PCR
 			*/
-			UT_ASSERT(p[1] /* && *p[1] */);	// require value for each name
+			UT_return_val_if_fail (p[1] /* && *p[1] */, false);	// require value for each name
 			const XML_Char * szValue = NULL;
 			if (!getProperty(p[0],szValue))
 				return false;		// item not present
@@ -607,8 +607,8 @@ bool PP_AttrProp::isExactMatch(const PP_AttrProp * pMatch) const
 	s_Calls++;
 #endif
 
-	UT_ASSERT(pMatch);
-	UT_ASSERT(m_bIsReadOnly && pMatch->m_bIsReadOnly);
+	UT_return_val_if_fail (pMatch, false);
+	UT_return_val_if_fail (m_bIsReadOnly && pMatch->m_bIsReadOnly, false);
 	if (m_checkSum != pMatch->m_checkSum)
 		return false;
 
@@ -724,7 +724,7 @@ PP_AttrProp * PP_AttrProp::cloneWithReplacements(const XML_Char ** attributes,
 		// TODO them from this?  or should we expand it and override
 		// TODO individual properties?
 		// TODO for now, we just barf on it.
-		UT_ASSERT(strcmp(n,PT_PROPS_ATTRIBUTE_NAME)!=0); // cannot handle PROPS here
+		UT_return_val_if_fail (strcmp(n,PT_PROPS_ATTRIBUTE_NAME)!=0, false); // cannot handle PROPS here
 		if (!papNew->getAttribute(n,vNew))
 			if (!papNew->setAttribute(n,v))
 				goto Failed;
@@ -782,7 +782,7 @@ void PP_AttrProp::_clearEmptyProperties()
 			{
 
 				XML_Char* tmp = const_cast<XML_Char*>(p->first());
-				UT_ASSERT(!m_bIsReadOnly);
+				UT_return_if_fail (!m_bIsReadOnly);
 				FREEP(tmp);
 				if (p->second()) {
 					delete p->second();
@@ -807,7 +807,7 @@ void PP_AttrProp::_clearEmptyAttributes()
 	{
 		if (pEntry && !*pEntry)
 		{
-			UT_ASSERT(!m_bIsReadOnly);
+			UT_return_if_fail (!m_bIsReadOnly);
 			FREEP(pEntry);
 			m_pAttributes->remove(_hc1.key(),pEntry);
 		}
@@ -842,7 +842,7 @@ PP_AttrProp * PP_AttrProp::cloneWithElimination(const XML_Char ** attributes,
 			const XML_Char ** p = attributes;
 			while (*p)
 			{
-				UT_ASSERT(strcmp(p[0],PT_PROPS_ATTRIBUTE_NAME)!=0); // cannot handle PROPS here
+				UT_return_val_if_fail (strcmp(p[0],PT_PROPS_ATTRIBUTE_NAME)!=0, false); // cannot handle PROPS here
 				if (strcmp(n,p[0])==0)		// found it, so we don't put it in the result.
 					goto DoNotIncludeAttribute;
 				p += 2;								// skip over value
@@ -893,7 +893,7 @@ Failed:
 
 void PP_AttrProp::markReadOnly(void)
 {
-	UT_ASSERT(!m_bIsReadOnly);
+	UT_return_if_fail (!m_bIsReadOnly);
 	m_bIsReadOnly = true;
 	_computeCheckSum();
 }
@@ -926,7 +926,7 @@ PP_AttrProp * PP_AttrProp::cloneWithEliminationIfEqual(const XML_Char ** attribu
 			const XML_Char ** p = attributes;
 			while (*p)
 			{
-				UT_ASSERT(strcmp(p[0],PT_PROPS_ATTRIBUTE_NAME)!=0); // cannot handle PROPS here
+				UT_return_val_if_fail (strcmp(p[0],PT_PROPS_ATTRIBUTE_NAME)!=0, false); // cannot handle PROPS here
 				if (strcmp(n,p[0])==0 && strcmp(n,p[1])==0)		// found it, so we don't put it in the result.
 					goto DoNotIncludeAttribute;
 				p += 2;								// skip over value
@@ -1072,7 +1072,7 @@ void PP_AttrProp::_computeCheckSum(void)
 
 UT_uint32 PP_AttrProp::getCheckSum(void) const
 {
-	UT_ASSERT(m_bIsReadOnly);
+	UT_ASSERT_HARMLESS(m_bIsReadOnly);
 	return m_checkSum;
 }
 

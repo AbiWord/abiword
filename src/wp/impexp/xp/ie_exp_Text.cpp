@@ -543,7 +543,7 @@ void Text_Listener::_handleDirMarker(PT_AttrPropIndex api)
 			{
 				UT_DEBUGMSG(("Text_Listener::_handleDirMarker: dir-override value '%s'\n",
 							 szValue));
-				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+				UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			}
 		}
 		else
@@ -559,7 +559,7 @@ void Text_Listener::_handleDirMarker(PT_AttrPropIndex api)
 	{
 		UT_DEBUGMSG(("Text_Listener::_handleDirMarker: no props! (bHaveProp %d, pAP 0x%x)\n",
 					 bHaveProp, pAP));
-		UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
+		UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
 	}
 
 	// first see if there is a pending marker (for block direction)
@@ -752,7 +752,7 @@ bool Text_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 		return true;
 
 	default:
-		UT_ASSERT(0);
+		UT_ASSERT_HARMLESS(0);
 		return false;
 	}
 }
@@ -761,7 +761,7 @@ bool Text_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 									   const PX_ChangeRecord * pcr,
 									   PL_StruxFmtHandle * psfh)
 {
-	UT_ASSERT(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux);
+	UT_return_val_if_fail(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux, false);
 	const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *>(pcr);
 	*psfh = 0;							// we don't need it.
 

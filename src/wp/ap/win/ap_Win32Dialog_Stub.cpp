@@ -82,6 +82,6 @@ void AP_Win32Dialog_Stub::runModal(XAP_Frame * pFrame)
 	from another working dialog.  
 */	
 
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
+	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
 }
 

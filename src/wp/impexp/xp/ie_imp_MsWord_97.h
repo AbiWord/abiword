@@ -189,6 +189,7 @@ private:
 	void        _generateParaProps(UT_String &s, const PAP * apap, wvParseStruct *ps);
 	int         _handleBookmarks(const wvParseStruct *ps);
 	void        _handleNotes(const wvParseStruct *ps);
+	void        _handleTextBoxes(const wvParseStruct *ps);
 	bool        _insertNoteIfAppropriate(UT_uint32 iDocPosition,UT_UCS4Char c);
 	bool        _insertFootnote(const footnote * f, UT_UCS4Char c);
 	bool        _insertEndnote(const footnote * f, UT_UCS4Char c);

@@ -57,7 +57,7 @@ AP_Win32Dialog_MarkRevisions::~AP_Win32Dialog_MarkRevisions(void)
 
 void AP_Win32Dialog_MarkRevisions::runModal(XAP_Frame * pFrame)
 {
-	UT_ASSERT(pFrame);
+	UT_return_if_fail (pFrame);
 	// raise the dialog
 	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
 
@@ -65,14 +65,14 @@ void AP_Win32Dialog_MarkRevisions::runModal(XAP_Frame * pFrame)
 
 	LPCTSTR lpTemplate = NULL;
 
-	UT_ASSERT(m_id == AP_DIALOG_ID_MARK_REVISIONS);
+	UT_return_if_fail (m_id == AP_DIALOG_ID_MARK_REVISIONS);
 
 	lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_MARK_REVISIONS);
 
 	int result = DialogBoxParam(pWin32App->getInstance(),lpTemplate,
 						static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
 						(DLGPROC)s_dlgProc,(LPARAM)this);
-	UT_ASSERT((result != -1));
+	UT_ASSERT_HARMLESS((result != -1));
 	if(result == -1)
 		UT_DEBUGMSG(( "AP_Win32Dialog_MarkRevisions::runModal error %d\n", GetLastError() ));
 
@@ -168,8 +168,8 @@ BOOL AP_Win32Dialog_MarkRevisions::_onInitDialog(HWND hWnd, WPARAM wParam, LPARA
 
 static int _getRBOffset(HWND hWnd, int nIDFirstButton, int nIDLastButton)
 {
-	UT_ASSERT(hWnd && IsWindow(hWnd));
-	UT_ASSERT(nIDFirstButton < nIDLastButton);
+	UT_return_val_if_fail (hWnd && IsWindow(hWnd), -1);
+	UT_return_val_if_fail (nIDFirstButton < nIDLastButton, -1);
 
 	for (int i = nIDFirstButton; i <= nIDLastButton; i++)
 		if (BST_CHECKED == IsDlgButtonChecked(hWnd, i))

@@ -44,7 +44,7 @@ px_ChangeHistory::~px_ChangeHistory()
 void px_ChangeHistory::_invalidateRedo(void)
 {
 	UT_uint32 kLimit = m_vecChangeRecords.getItemCount();
-	UT_ASSERT(m_undoPosition <= kLimit);
+	UT_return_if_fail (m_undoPosition <= kLimit);
 	UT_uint32 k;
 
 	// walk backwards (most recent to oldest) from the end of the
@@ -73,7 +73,7 @@ bool px_ChangeHistory::addChangeRecord(PX_ChangeRecord * pcr)
 	_invalidateRedo();
 	
 	bool bResult = (m_vecChangeRecords.insertItemAt(pcr,m_undoPosition++) == 0);
-	UT_ASSERT(bResult);
+	UT_ASSERT_HARMLESS(bResult);
 	return bResult;
 }
 
@@ -106,7 +106,7 @@ bool px_ChangeHistory::getUndo(PX_ChangeRecord ** ppcr) const
 		return false;
 
 	PX_ChangeRecord * pcr = (PX_ChangeRecord *)m_vecChangeRecords.getNthItem(m_undoPosition-1);
-	UT_ASSERT(pcr);
+	UT_ASSERT_HARMLESS(pcr);
 	*ppcr = pcr;
 	return true;
 }
@@ -117,7 +117,7 @@ bool px_ChangeHistory::getUndo(PX_ChangeRecord ** ppcr, UT_uint32 undoNdx) const
 		return false;
 
 	PX_ChangeRecord * pcr = (PX_ChangeRecord *)m_vecChangeRecords.getNthItem(m_undoPosition-undoNdx-1);
-	UT_ASSERT(pcr);
+	UT_ASSERT_HARMLESS(pcr);
 	*ppcr = pcr;
 	return true;
 }
@@ -162,13 +162,13 @@ void px_ChangeHistory::coalesceHistory(const PX_ChangeRecord * pcr)
 	PX_ChangeRecord * pcrUndo;
 	bool bResult;
 	bResult = getUndo(&pcrUndo);
-	UT_ASSERT(bResult);
-	UT_ASSERT(pcr->getType() == pcrUndo->getType());
+	UT_return_if_fail (bResult);
+	UT_return_if_fail (pcr->getType() == pcrUndo->getType());
 
 	switch (pcr->getType())
 	{
 	default:
-		UT_ASSERT(0);
+		UT_ASSERT_HARMLESS(0);
 		return;
 		
 	case PX_ChangeRecord::PXT_InsertSpan:

@@ -37,7 +37,7 @@ AP_Win32Toolbar_ZoomCombo::AP_Win32Toolbar_ZoomCombo(EV_Toolbar * pToolbar,
 													 XAP_Toolbar_Id id)
 	: EV_Toolbar_Control(pToolbar/*,id*/)
 {
-	UT_ASSERT(id==AP_TOOLBAR_ID_ZOOM);
+	UT_return_if_fail (id==AP_TOOLBAR_ID_ZOOM);
 
 	m_nPixels = 90;	// TODO: do a better calculation
 	m_nLimit = 6;

@@ -73,14 +73,14 @@ void AP_Win32Dialog_Spell::runModal(XAP_Frame * pFrame)
 
 	LPCTSTR lpTemplate = NULL;
 
-	UT_ASSERT(m_id == AP_DIALOG_ID_SPELL);
+	UT_return_if_fail (m_id == AP_DIALOG_ID_SPELL);
 
 	lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_SPELL);
 
 	int result = DialogBoxParam(pWin32App->getInstance(),lpTemplate,
 						static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
 						(DLGPROC)s_dlgProc,(LPARAM)this);
-	UT_ASSERT((result != -1));
+	UT_ASSERT_HARMLESS((result != -1));
 }
 
 BOOL CALLBACK AP_Win32Dialog_Spell::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
@@ -280,7 +280,7 @@ void AP_Win32Dialog_Spell::_suggestChange(void)
 	else
 	{
 		// copy suggestion to edit field
-		UT_ASSERT((m_iSelectedRow > -1));
+		UT_return_if_fail ((m_iSelectedRow > -1));
 
 		char buf[256];
 		SendMessage(m_hwndSuggest, LB_GETTEXT, m_iSelectedRow, (LPARAM)buf);
@@ -388,7 +388,7 @@ void AP_Win32Dialog_Spell::_tryAgain(void)
 	else
 	{
 		// all done
-		UT_ASSERT((m_bCancelled == false));
+		UT_ASSERT_HARMLESS((m_bCancelled == false));
 		EndDialog(m_hwndDlg,0);
 	}
 }
