@@ -64,12 +64,6 @@ else
 dictionary = $(top_srcdir)/../abidistfiles/dictionary/LittleEndian32.american.hash
 endif
 
-if WITH_XFT
-INSTALLUNIXFONTS = no
-else
-INSTALLUNIXFONTS = yes
-endif
-
 if WITH_PSPELL
 INSTALLDICTIONARY = no
 else
@@ -80,18 +74,6 @@ dictionary_list=$(top_srcdir)/../abidistfiles/dictionary/ispell_dictionary_list.
 
 # Install the datafiles. This is quick-and-dirty.
 install-data-local:
-	@if test "$(INSTALLUNIXFONTS)" != "no" ; then \
-	  if test -d $(top_srcdir)/../unixfonts/fonts ; then \
-	    $(mkinstalldirs) $(DESTDIR)$(pkgdatadir)/fonts ;\
-	    for file in $(top_srcdir)/../unixfonts/fonts/* ; do \
-	      if test -f $$file ; then \
-	        $(INSTALL_DATA) $$file $(DESTDIR)$(pkgdatadir)/fonts; \
-	      fi ;\
-	    done; \
-	  else \
-	    echo "Warning: unixfonts package not found." ;\
-	  fi ;\
-	fi
 	@if test -d $(top_srcdir)/../abidistfiles ; then \
 	  for dir in `cd $(top_srcdir)/../abidistfiles; find . -type d ! -name CVS` ; do \
 	    $(mkinstalldirs) $(DESTDIR)$(pkgdatadir)/$$dir ;\
@@ -114,6 +96,7 @@ install-data-local:
 if WITH_GNOME
 else
 	rm -f $(DESTDIR)$(pkgdatadir)/icons/abiword_logo.xpm #XXX this is very dirty
+	@$(INSTALL_DATA) $(top_srcdir)/CREDITS.TXT $(DESTDIR)$(pkgdatadir)/AbiWord/help/en-US/credits.txt
 endif
 	@$(mkinstalldirs) $(DESTDIR)$(pkgdatadir)/AbiWord
 	@for dir in `cd $(top_srcdir)/user/wp; find . -type d ! -name CVS` ; do \
@@ -124,4 +107,3 @@ endif
 	    fi ; \
 	  done; \
 	done
-	@$(INSTALL_DATA) $(top_srcdir)/CREDITS.TXT $(DESTDIR)$(pkgdatadir)/AbiWord/help/en-US/credits.txt
