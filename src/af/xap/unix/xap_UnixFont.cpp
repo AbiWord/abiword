@@ -258,6 +258,7 @@ FontInfo * XAP_UnixFont::getMetricsData(void)
 				   "darn fatal error.",
 				   m_metricfile);
 		messageBoxOK(message);
+		fclose(fp);
 		return NULL;
 	}
 
@@ -294,6 +295,8 @@ FontInfo * XAP_UnixFont::getMetricsData(void)
 		break;
 	}
 
+	fclose(fp);
+	
 	UT_ASSERT(m_metricsData);
 	UT_ASSERT(m_metricsData->gfi);
 	return m_metricsData;

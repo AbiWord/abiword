@@ -1054,7 +1054,7 @@ void XAP_UnixDialog_FontChooser::updatePreview(void)
 	if (!getSize(&pointsize))
 		return;
 
-	UT_uint32 pixelsize = (double) pointsize / (double) 72 * (double) m_gc->getResolution();
+	UT_uint32 pixelsize = (UT_uint32) ((double) pointsize / (double) 72 * (double) m_gc->getResolution());
 
 	UT_ASSERT(pixelsize > 0);
 	
