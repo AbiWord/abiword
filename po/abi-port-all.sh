@@ -30,3 +30,4 @@ echo ""
 ./abi-extract.pl -N tr-TR
 ./abi-extract.pl -N ta-IN
 ./abi-extract.pl -N qu-BO
+./abi-extract.pl -N ast-ES
