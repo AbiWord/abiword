@@ -256,7 +256,7 @@ protected:
 
 	const char* TexPrologue;
 	UT_uint32 WinLanguageCode,WinCharsetCode;
-	UT_Bool is_cjk_,can_break_words_,m_bIsUnicodeLocale;
+	bool is_cjk_,can_break_words_,m_bIsUnicodeLocale;
 };
 
 /*
