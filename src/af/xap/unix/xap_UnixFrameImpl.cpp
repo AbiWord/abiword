@@ -1330,8 +1330,8 @@ void XAP_UnixFrameImpl::_setGeometry ()
 	geom.min_height  = 100;
 	geom.base_width  = user_w;
 	geom.base_height = user_h;
-	geom.width_inc  = 10; // ??
-	geom.height_inc = 10;
+	geom.width_inc  = 1;
+	geom.height_inc = 1;
 
 	if(getFrame()->getFrameMode() == XAP_NormalFrame)
 	{
