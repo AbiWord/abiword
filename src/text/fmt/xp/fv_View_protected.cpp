@@ -2826,8 +2826,8 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 					 "\t\twith [yScrollOffset %ld][windowHeight %ld]\n",
 					 x,y,width,height,bClip,
 					 m_yScrollOffset,m_iWindowHeight));
-
-//	CHECK_WINDOW_SIZE
+	
+	// CHECK_WINDOW_SIZE
 	// this can happen when the frame size is decreased and
 	// only the toolbars show...
 
@@ -2836,7 +2836,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 		UT_DEBUGMSG(("fv_View::draw() called with zero drawing area.\n"));
 		return;
 	}
-//	UT_ASSERT(bClip);
+
 	if ((width <= 0) || (height <= 0))
 	{
 		UT_DEBUGMSG(("fv_View::draw() called with zero width or height expose.\n"));
@@ -3049,15 +3049,15 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			}
 
 			// fill separator below page
-			if ((m_iWindowHeight - (adjustedBottom + 1) > 0) && (VIEW_PRINT == getViewMode()) )
+			if ((m_iWindowHeight - (adjustedBottom + 1) > 0) && (VIEW_PRINT == getViewMode()))
 			{
-				if(pPage->getNext() != NULL)
+			        if(pPage->getNext() != NULL)
 				{
 					m_pG->fillRect(clrMargin, adjustedLeft, adjustedBottom + 1, m_iWindowWidth - adjustedLeft, getPageViewSep());
 				}
 				else // found last page
 				{
-					UT_sint32 botfill = getWindowHeight() - adjustedBottom - 1 ;
+				        UT_sint32 botfill = getWindowHeight() - adjustedBottom - 1 ;
 					m_pG->fillRect(clrMargin, adjustedLeft, adjustedBottom + 1, m_iWindowWidth - adjustedLeft, botfill);
 				}
 			}

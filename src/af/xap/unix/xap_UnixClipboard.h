@@ -63,7 +63,7 @@ public:
 								  void ** ppData, UT_uint32 * pLen,
 								  const char **pszFormatFound);
 
-	static void s_primary_get_func(GtkClipboard *clipboard,
+	static inline void s_primary_get_func(GtkClipboard *clipboard,
 				       GtkSelectionData *selection_data,
 				       guint info,
 				       gpointer ptr)
@@ -72,7 +72,7 @@ public:
 	    pThis->primary_get_func(clipboard, selection_data, info);
 	  }
 
-	static void s_primary_clear_func (GtkClipboard *clipboard,
+	static inline void s_primary_clear_func (GtkClipboard *clipboard,
 					  gpointer ptr)
 	  {
 	    XAP_UnixClipboard * pThis = static_cast<XAP_UnixClipboard*>(ptr);
@@ -85,7 +85,7 @@ public:
 
 	void primary_clear_func (GtkClipboard *clipboard);
 
-	static void s_clipboard_get_func(GtkClipboard *clipboard,
+	static inline void s_clipboard_get_func(GtkClipboard *clipboard,
 					 GtkSelectionData *selection_data,
 					 guint info,
 					 gpointer ptr)
@@ -94,7 +94,7 @@ public:
 	    pThis->clipboard_get_func(clipboard, selection_data, info);
 	  }
 
-	static void s_clipboard_clear_func (GtkClipboard *clipboard,
+	static inline void s_clipboard_clear_func (GtkClipboard *clipboard,
 					  gpointer ptr)
 	  {
 	    XAP_UnixClipboard * pThis = static_cast<XAP_UnixClipboard*>(ptr);

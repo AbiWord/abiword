@@ -39,7 +39,6 @@ static AV_View * viewFromApp(XAP_App * pApp)
   XAP_Frame * pFrame = pApp->getLastFocussedFrame();
   if ( !pFrame ) 
     return 0 ;
-
   return pFrame->getCurrentView () ;
 }
 
@@ -169,6 +168,13 @@ bool XAP_UnixClipboard::addData(T_AllowGet tFrom, const char* format, void* pDat
     }
   else 
     {
+        // setup clipboard selection, delay primary until assertSelection()
+        gtk_clipboard_set_with_data (gtkClipboardForTarget(TAG_ClipboardOnly),
+				     m_Targets,
+				     m_nTargets,
+				     s_clipboard_get_func,
+				     s_clipboard_clear_func,
+				     this);
       if(!m_fakeClipboard.addData(format,pData,iNumBytes))
 	return false;
       return true;
@@ -201,16 +207,7 @@ bool XAP_UnixClipboard::getData(T_AllowGet tFrom, const char** formatList,
   *pLen = 0;
   
   if (TAG_ClipboardOnly == tFrom)
-    {
-        // setup clipboard selection, delay primary until assertSelection()
-        gtk_clipboard_set_with_data  (gtkClipboardForTarget(TAG_ClipboardOnly),
-				      m_Targets,
-				      m_nTargets,
-				      s_clipboard_get_func,
-				      s_clipboard_clear_func,
-				      this);
 	return _getDataFromServer(tFrom,formatList,ppData,pLen,pszFormatFound);
-    }
   else if (TAG_PrimaryOnly == tFrom)
         return _getDataFromServer(tFrom,formatList,ppData,pLen,pszFormatFound);
   else
@@ -233,7 +230,7 @@ bool XAP_UnixClipboard::_getDataFromFakeClipboard(T_AllowGet tFrom, const char**
 	return true;
       }
   
-  // should always happen since this is our internal buffer
+  // should never happen since this is our internal buffer
   return false;
 }
 

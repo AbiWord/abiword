@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998-2000 AbiSource, Inc.
+ * Copyright (C) 1998-2002 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -139,12 +139,10 @@ AP_UnixApp::AP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 //
 // hack to link abi_widget - thanks fjf
 //
-#ifdef ABI_GTK_DEPRECATED
 	if(this == 0)
 	{
 		GtkWidget * pUn = abi_widget_new_with_file("fred.abw");
 	}
-#endif
 }
 
 /*!
@@ -206,14 +204,15 @@ bool AP_UnixApp::initialize(void)
     const char * szUserPrivateDirectory = getUserPrivateDirectory();
     bool bVerified = s_createDirectoryIfNecessary(szUserPrivateDirectory);
 
-	if (!bVerified)
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+    if (!bVerified)
+      {
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+      }
 
     // load the preferences.
     
     m_prefs = new AP_UnixPrefs(this);
     m_prefs->fullInit();
-
 
     //////////////////////////////////////////////////////////////////
     // load the dialog and message box strings
@@ -242,8 +241,8 @@ bool AP_UnixApp::initialize(void)
 			   && (strcmp(szStringSet,AP_PREF_DEFAULT_StringSet) != 0))
 		{
 			getPrefsValueDirectory(true,
-								   (const XML_Char*)AP_PREF_KEY_StringSetDirectory,
-								   (const XML_Char**)&szDirectory);
+					       (const XML_Char*)AP_PREF_KEY_StringSetDirectory,
+					       (const XML_Char**)&szDirectory);
 			UT_ASSERT((szDirectory) && (*szDirectory));
 
 			UT_String szPathname = szDirectory;
@@ -299,16 +298,10 @@ bool AP_UnixApp::initialize(void)
     int i;
 	
     for (i = 0; fp_FieldTypes[i].m_Type != FPFIELDTYPE_END; i++)
-    {
-		(&fp_FieldTypes[i])->m_Desc = m_pStringSet->getValue(fp_FieldTypes[i].m_DescId);
-		UT_DEBUGMSG(("Setting field type desc for type %d, desc=%s\n", fp_FieldTypes[i].m_Type, fp_FieldTypes[i].m_Desc));
-    }
+      (&fp_FieldTypes[i])->m_Desc = m_pStringSet->getValue(fp_FieldTypes[i].m_DescId);
 
     for (i = 0; fp_FieldFmts[i].m_Tag != NULL; i++)
-    {
-		(&fp_FieldFmts[i])->m_Desc = m_pStringSet->getValue(fp_FieldFmts[i].m_DescId);
-		UT_DEBUGMSG(("Setting field desc for field %s, desc=%s\n", fp_FieldFmts[i].m_Tag, fp_FieldFmts[i].m_Desc));
-    }
+      (&fp_FieldFmts[i])->m_Desc = m_pStringSet->getValue(fp_FieldFmts[i].m_DescId);
 
     ///////////////////////////////////////////////////////////////////////
     /// Build a labelset so the plugins can add themselves to something ///
@@ -327,9 +320,8 @@ bool AP_UnixApp::initialize(void)
 	bool bLoadPlugins = true;
 	bool bFound = getPrefsValueBool(XAP_PREF_KEY_AutoLoadPlugins,&bLoadPlugins);
 	if(bLoadPlugins || !bFound)
-	{
 		loadAllPlugins();
-	}
+
     //////////////////////////////////////////////////////////////////
 
 #ifdef ABI_OPT_PERL
@@ -468,7 +460,6 @@ void AP_UnixApp::copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboar
     {
 		pExpRtf->copyToBuffer(pDocRange,&bufRTF);
 		DELETEP(pExpRtf);
-		UT_DEBUGMSG(("CopyToClipboard: copying %d bytes in RTF format.\n",bufRTF.getLength()));
     }
 
     // create XHTML buffer to put on the clipboard
@@ -478,7 +469,6 @@ void AP_UnixApp::copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboar
     {
         pExpHtml->copyToBuffer(pDocRange, &bufHTML);
         DELETEP(pExpHtml);
-        UT_DEBUGMSG(("CopyToClipboard: copying %d bytes in HTML format.\n", bufHTML.getLength()));
     }
 
     // create UTF-8 text buffer to put on the clipboard
@@ -488,7 +478,6 @@ void AP_UnixApp::copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboar
     {
 		pExpText->copyToBuffer(pDocRange,&bufTEXT);
 		DELETEP(pExpText);
-		UT_DEBUGMSG(("CopyToClipboard: copying %d bytes in TEXTPLAIN format.\n",bufTEXT.getLength()));
     }
 
     // NOTE: this clearData() will actually release our ownership of
@@ -521,7 +510,6 @@ void AP_UnixApp::copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboar
 	  pView->saveSelectedImage (&png);
 	  if (png && png->getLength() > 0)
 	    {
-	      UT_DEBUGMSG(("CopyToClipboard: copying %d bytes in PNG format.\n", png->getLength()));
 	      m_pClipboard->addPNGData(target, (UT_Byte*)png->getPointer(0), png->getLength());
 	    }
 	}
@@ -579,8 +567,6 @@ void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipb
     }
     else if (AP_UnixClipboard::isImageTag(szFormatFound))
       {
-	UT_DEBUGMSG(("DOM: got image data\n" ));
-
 	IE_ImpGraphic * pIEG = NULL;
 	FG_Graphic * pFG = NULL;
 	IEGraphicFileType iegft = IEGFT_Unknown;
@@ -642,33 +628,15 @@ void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipb
     return;
 }
 
-/*!
-  Theoretically, this should determine if we can paste from the
-  cliboard.  However, it isn't really possible to get this info, since
-  X has a weird clipboard model.  So we always return true.  If we
-  return true with no data on the clipboard, then the paste just ends
-  up being empty.  As far as we can tell, this has no bad effects.  
-  \bug Is this really right?  It seems like a hack.  
-  \return Always true. 
-*/
 bool AP_UnixApp::canPasteFromClipboard(void)
 {
-#if 0
+#if 1
     const char * szFormatFound = NULL;
     unsigned char * pData = NULL;
     UT_uint32 iLen = 0;
 
     XAP_UnixClipboard::T_AllowGet tFrom = XAP_UnixClipboard::TAG_ClipboardOnly;
-
-    // first, try to see if we can paste from the clipboard
-    bool bFoundOne = m_pClipboard->getData(tFrom,aszFormatsAccepted,(void**)&pData,&iLen,&szFormatFound);
-    if (bFoundOne)
-		return true;
-
-    // didn't work, try out the primary selection
-    tFrom = XAP_UnixClipboard::TAG_PrimaryOnly;
-    bFoundOne = m_pClipboard->getData(tFrom,aszFormatsAccepted,(void**)&pData,&iLen,&szFormatFound);
-    return bFoundOne;
+    return m_pClipboard->getSupportedData(XAP_UnixClipboard::TAG_ClipboardOnly,(void**)&pData,&iLen,&szFormatFound);
 #else
     return true;
 #endif
@@ -798,7 +766,6 @@ void AP_UnixApp::setSelectionStatus(AV_View * pView)
 		// one window has a selection currently and another window just
 		// asserted one.  we force clear the old one to enforce the X11
 		// style.
-
 		((FV_View *)m_pViewSelection)->cmdUnselectSelection();
     }
 
@@ -852,8 +819,6 @@ void AP_UnixApp::setSelectionStatus(AV_View * pView)
 
 bool AP_UnixApp::forgetFrame(XAP_Frame * pFrame)
 {
-
-
     if (m_pFrameSelection && (pFrame==m_pFrameSelection))
     {
 		m_pClipboard->clearData(false,true);
@@ -893,7 +858,6 @@ void AP_UnixApp::clearSelection(void)
     }
 	
     m_bSelectionInFlux = false;
-    return;
 }
 
 void AP_UnixApp::cacheCurrentSelection(AV_View * pView)
@@ -912,10 +876,6 @@ void AP_UnixApp::cacheCurrentSelection(AV_View * pView)
 		pFVView->getDocumentRangeOfCurrentSelection(&m_cacheDocumentRangeOfSelection);
 
 		m_cacheSelectionView = pView;
-		UT_DEBUGMSG(("Clipboard::cacheCurrentSelection: [view %p][range %d %d]\n",
-					 pFVView,
-					 m_cacheDocumentRangeOfSelection.m_pos1,
-					 m_cacheDocumentRangeOfSelection.m_pos2));
 		m_cacheDeferClear = false;
     }
     else
@@ -924,12 +884,9 @@ void AP_UnixApp::cacheCurrentSelection(AV_View * pView)
 		{
 			m_cacheDeferClear = false;
 			m_bHasSelection = false;
-			//m_pClipboard->clearData(false,true);
 		}
 		m_cacheSelectionView = NULL;
     }
-
-    return;
 }
 
 /*! 
@@ -961,7 +918,6 @@ bool AP_UnixApp::getCurrentSelection(const char** formatList,
     if (m_cacheSelectionView == m_pViewSelection)
     {
 		dr = m_cacheDocumentRangeOfSelection;
-		UT_DEBUGMSG(("Clipboard::getCurrentSelection: *using cached values* [range %d %d]\n",dr.m_pos1,dr.m_pos2));
     }
     else
     {
@@ -970,15 +926,12 @@ bool AP_UnixApp::getCurrentSelection(const char** formatList,
 		FV_View * pFVView = static_cast<FV_View *>(m_pViewSelection);
 	
 		pFVView->getDocumentRangeOfCurrentSelection(&dr);
-		UT_DEBUGMSG(("Clipboard::getCurrentSelection: [view %p][range %d %d]\n",pFVView,dr.m_pos1,dr.m_pos2));
     }
 	
     m_selectionByteBuf.truncate(0);
 
     for (j=0; (formatList[j]); j++)
     {
-		UT_DEBUGMSG(("Clipboard::getCurrentSelection: considering format [%s]\n",formatList[j]));
-
 		if ( AP_UnixClipboard::isRichTextTag(formatList[j]) )
 		{
 			IE_Exp_RTF * pExpRtf = new IE_Exp_RTF(dr.m_pDoc);
@@ -1009,7 +962,7 @@ bool AP_UnixApp::getCurrentSelection(const char** formatList,
 
  ReturnThisBuffer:
     UT_DEBUGMSG(("Clipboard::getCurrentSelection: copying %d bytes in format [%s].\n",
-				 m_selectionByteBuf.getLength(),formatList[j]));
+		 m_selectionByteBuf.getLength(),formatList[j]));
     *ppData = (void *)m_selectionByteBuf.getPointer(0);
     *pLen = m_selectionByteBuf.getLength();
     *pszFormatFound = formatList[j];
@@ -1122,52 +1075,6 @@ GR_Image * AP_UnixApp::_showSplash(UT_uint32 delay)
 
     UT_ByteBuf* pBB = NULL;
 
-    /*
-      What this does is look in the the user's private AbiSuite
-      directory (usually ~/.AbiSuite) for the file splash.png and
-      use that instead of the standard splash image on startup.
-      The only use for this that I can see would be testing new
-      images.  
-
-rms:  I'm adding something here to get a localized splash screen
-    */
-
-#ifdef DEBUG
-    const char * szDirectory = _getUserPrivateDirectory();
-
-    const char * szFile = "splash.png";
-    //const char * szFile = "splash"; // remove .png so I can add lang if exists
-
-    //const char * sLANG = getenv("LANG");
-    const char * sLANG = NULL;
-    const short  iLANGsize = sLANG ? strlen(sLANG) : 0;
-
-    // rms: I got tired of reading/writing this more than once
-    const unsigned short iSplashPathSize = strlen(szDirectory) +
-    					   strlen(szFile) + iLANGsize + 4 + 2;
-    char * buf;
-
-    if (iSplashPathSize >= PATH_MAX)
-		buf = NULL;
-    else
-    {
-		buf = (char *)malloc(iSplashPathSize);
-		memset(buf,0,sizeof(buf));
-		/* rms: I think the following LOC equals the next 5
-		      remember that having multiple / in a path equals
-		      having just one. So this is faster.
-		*/
-		g_snprintf(buf, iSplashPathSize, "%s/%s", szDirectory, szFile);
-		/*
-		strcpy(buf,szDirectory);
-		int len = strlen(buf);
-		if ( (len == 0) || (buf[len-1] != '/') )
-			strcat(buf,"/");
-		strcat(buf,szFile);
-		*/
-    }
-#endif
-		
     // store value for use by the expose event, which attaches the timer
     splashTimeoutValue = delay;
 	
@@ -1176,12 +1083,9 @@ rms:  I'm adding something here to get a localized splash screen
 	
     pBB = new UT_ByteBuf();
     if (
-#ifdef DEBUG
-		(pBB->insertFromFile(0, buf)) || 
-#endif
-		(pBB->ins(0, g_pngSplash, g_pngSplash_sizeof))
-		)
-    {
+	(pBB->ins(0, g_pngSplash, g_pngSplash_sizeof))
+	)
+      {
 		// get splash size
 		UT_sint32 iSplashWidth;
 		UT_sint32 iSplashHeight;
@@ -1235,9 +1139,6 @@ rms:  I'm adding something here to get a localized splash screen
     }
 
     DELETEP(pBB);
-#ifdef DEBUG
-    free(buf);
-#endif
 
     return pSplashImage;
 }
@@ -1276,28 +1177,28 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
 		return -1;	// make this something standard?
 	}
 
-	// do we show the app&splash?
-  	bool bShowSplash = Args.getShowSplash();
- 	bool bShowApp = Args.getShowApp();
+    // do we show the app&splash?
+    bool bShowSplash = Args.getShowSplash();
+    bool bShowApp = Args.getShowApp();
     pMyUnixApp->setDisplayStatus(bShowApp);
 
     const XAP_Prefs * pPrefs = pMyUnixApp->getPrefs();
-	UT_ASSERT(pPrefs);
+    UT_ASSERT(pPrefs);
     bool bSplashPref = true;
     if (pPrefs && 
-		pPrefs->getPrefsValueBool (AP_PREF_KEY_ShowSplash, &bSplashPref))
-	{
-		bShowSplash = bShowSplash && bSplashPref;
-	}
+	pPrefs->getPrefsValueBool (AP_PREF_KEY_ShowSplash, &bSplashPref))
+      {
+	bShowSplash = bShowSplash && bSplashPref;
+      }
     
     if (bShowSplash)
-		_showSplash(2000);
-
-	// Step 2: Handle all non-window args.
-
-	if (!Args.doWindowlessArgs())
-		return false;
-
+      _showSplash(1500);
+    
+    // Step 2: Handle all non-window args.
+    
+    if (!Args.doWindowlessArgs())
+      return false;
+    
     // Setup signal handlers, primarily for segfault
     // If we segfaulted before here, we *really* blew it
     
@@ -1307,7 +1208,7 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
     
     sigfillset(&sa.sa_mask);  // We don't want to hear about other signals
     sigdelset(&sa.sa_mask, SIGABRT); // But we will call abort(), so we can't ignore that
-/* #ifndef AIX - I presume these are always #define not extern... -fjf */
+    /* #ifndef AIX - I presume these are always #define not extern... -fjf */
 #if defined (SA_NODEFER) && defined (SA_RESETHAND)
     sa.sa_flags = SA_NODEFER | SA_RESETHAND; // Don't handle nested signals
 #else
@@ -1321,48 +1222,48 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
     sigaction(SIGFPE, &sa, NULL);
     // TODO: handle SIGABRT
     
-	// Step 3: Create windows as appropriate.
+    // Step 3: Create windows as appropriate.
     // if some args are botched, it returns false and we should
     // continue out the door.
     if (pMyUnixApp->parseCommandLine(Args.poptcon) && bShowApp)
-    {
-		// turn over control to gtk
-		gtk_main();
-    }
+      {
+	// turn over control to gtk
+	gtk_main();
+      }
     else
-	{
-		UT_DEBUGMSG(("DOM: not parsing command line or showing app\n"));
-	}
+      {
+	UT_DEBUGMSG(("DOM: not parsing command line or showing app\n"));
+      }
     
-	// Step 4: Destroy the App.  It should take care of deleting all frames.
+    // Step 4: Destroy the App.  It should take care of deleting all frames.
     pMyUnixApp->shutdown();
     delete pMyUnixApp;
     
-	poptFreeContext (Args.poptcon);
+    poptFreeContext (Args.poptcon);
     return 0;
 }
 
 XAP_Frame * AP_UnixApp::newFrame(AP_App * app)
 {
-	AP_UnixFrame * pFrame = new AP_UnixFrame(app);
-	if (pFrame)
-		pFrame->initialize();
-
-	return pFrame;
+  AP_UnixFrame * pFrame = new AP_UnixFrame(app);
+  if (pFrame)
+    pFrame->initialize();
+  
+  return pFrame;
 }
 
 void AP_UnixApp::errorMsgBadArg(AP_Args * Args, int nextopt)
 {
-	printf ("Error on option %s: %s.\nRun '%s --help' to see a full list of available command line options.\n",
-			poptBadOption (Args->poptcon, 0),
-			poptStrerror (nextopt),
-			Args->XArgs->m_argv[0]);
+  printf ("Error on option %s: %s.\nRun '%s --help' to see a full list of available command line options.\n",
+	  poptBadOption (Args->poptcon, 0),
+	  poptStrerror (nextopt),
+	  Args->XArgs->m_argv[0]);
 }
 
 void AP_UnixApp::errorMsgBadFile(XAP_Frame * pFrame, const char * file, 
-							 UT_Error error)
+				 UT_Error error)
 {
-	s_CouldNotLoadFileMessage (pFrame, file, error);
+  s_CouldNotLoadFileMessage (pFrame, file, error);
 }
 
 /*!
@@ -1371,14 +1272,14 @@ void AP_UnixApp::errorMsgBadFile(XAP_Frame * pFrame, const char * file,
  */
 bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args)
 {
-	if (Args->m_sGeometry)
-	{
-		// [--geometry <X geometry string>]
-
-		// TODO : does X have a dummy geometry value reserved for this?
-		gint dummy = 1 << ((sizeof(gint) * 8) - 1);
-		gint x = dummy;
-		gint y = dummy;
+  if (Args->m_sGeometry)
+    {
+      // [--geometry <X geometry string>]
+      
+      // TODO : does X have a dummy geometry value reserved for this?
+      gint dummy = 1 << ((sizeof(gint) * 8) - 1);
+      gint x = dummy;
+      gint y = dummy;
 		guint width = 0;
 		guint height = 0;
 		
@@ -1507,23 +1408,15 @@ void AP_UnixApp::catchSignals(int sig_num)
     // (not that it matters - this is mostly for race conditions)
     signal(SIGSEGV, signalWrapper);
 
-#if 0 // !!! remove this!!!! before committing 
-	// Use for debug Bonobo server
-	int ii = 1;
-    while( ii == 1)
-	{
-		UT_usleep(1000);
-	}
-#endif
     s_signal_count = s_signal_count + 1;
     if(s_signal_count > 1)
     {
-		UT_DEBUGMSG(("Segfault during filesave - no file saved  \n"));
+		UT_DEBUGMSG(("Crash during filesave - no file saved\n"));
 		fflush(stdout);
 		abort();
     }
     
-    UT_DEBUGMSG(("Oh no - we just segfaulted!\n"));
+    UT_DEBUGMSG(("Oh no - we just crashed!\n"));
 	
     UT_uint32 i = 0;
     for(;i<m_vecFrames.getItemCount();i++)
@@ -1538,4 +1431,3 @@ void AP_UnixApp::catchSignals(int sig_num)
     // Abort and dump core
     abort();
 }
-	
