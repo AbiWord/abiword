@@ -7402,13 +7402,11 @@ bool FV_View::getEditableBounds(bool isEnd, PT_DocPosition &posEOD, bool bOverid
 
 		// So if there are no HdrFtr sections, return m_pDoc->getBounds.
 
-		while(pSL->getNext() != NULL && (pSL->getType() == FL_SECTION_DOC ||
-										 pSL->getType() == FL_SECTION_ENDNOTE))
+		while(pSL->getNext() != NULL && (pSL->getContainerType() != FL_CONTAINER_HDRFTR))
 		{
 			pSL = static_cast<fl_SectionLayout *>(pSL->getNext());
 		}
-		if(pSL->getType() == FL_SECTION_DOC ||
-		   pSL->getType() == FL_SECTION_ENDNOTE)
+		if(pSL->getContainerType() != FL_CONTAINER_HDRFTR)
 		{
 			res = m_pDoc->getBounds(isEnd,posEOD);
 			return res;

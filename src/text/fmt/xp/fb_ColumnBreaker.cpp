@@ -187,7 +187,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 					for(i=0; i< static_cast<UT_sint32>(vecFootnotes.getItemCount());i++)
 					{
 						fp_FootnoteContainer * pFC = static_cast<fp_FootnoteContainer *>(vecFootnotes.getNthItem(i));
-						if(pFC->getPage() == NULL || pFC->getPage() != pCurPage)
+						if(pFC && ((pFC->getPage() == NULL) || (pFC->getPage() != pCurPage)))
 						{
 							iFootnoteHeight += pFC->getHeight();
 						}				
@@ -531,18 +531,21 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 					for(i=0; i< static_cast<UT_sint32>(vecFootnotes.getItemCount());i++)
 					{
 						fp_FootnoteContainer * pFC = static_cast<fp_FootnoteContainer *>(vecFootnotes.getNthItem(i));
-						fp_Page * myPage = pFC->getPage();
-						xxx_UT_DEBUGMSG(("Footnote %x is on Page %x \n",pFC,myPage));
-						if(myPage != pCurPage)
+						if(pFC != NULL)
 						{
-							if(myPage == NULL)
+							fp_Page * myPage = pFC->getPage();
+							xxx_UT_DEBUGMSG(("Footnote %x is on Page %x \n",pFC,myPage));
+							if(myPage != pCurPage)
 							{
-								pCurPage->insertFootnoteContainer(pFC);
-							}
-							else
-							{
-								myPage->removeFootnoteContainer(pFC);
-								pCurPage->insertFootnoteContainer(pFC);
+								if(myPage == NULL)
+								{
+									pCurPage->insertFootnoteContainer(pFC);
+								}
+								else
+								{
+									myPage->removeFootnoteContainer(pFC);
+									pCurPage->insertFootnoteContainer(pFC);
+								}
 							}
 						}
 					}
