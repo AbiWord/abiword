@@ -106,8 +106,7 @@
 		// So we let the system header files take care of it.
 
 #		include <assert.h>
-#               include <glib.h>
-#		define UT_ASSERT g_assert
+#		define UT_ASSERT assert
 
 #	else
 		// Otherwise, we want a slighly modified behavior.
