@@ -629,10 +629,13 @@ void AP_Win32Dialog_Lists::_fillStyleList(int iType)
 		AP_STRING_ID_DLG_Lists_Upper_Case_List,
 		AP_STRING_ID_DLG_Lists_Lower_Roman_List,
 		AP_STRING_ID_DLG_Lists_Upper_Roman_List
+/*
 #ifdef BIDI_ENABLED
 		,AP_STRING_ID_DLG_Lists_Arabic_List,
+
 		AP_STRING_ID_DLG_Lists_Hebrew_List
 #endif
+*/
 	};
 
 	const XAP_String_Id*	pIDs;
@@ -713,10 +716,15 @@ void AP_Win32Dialog_Lists::_styleChanged()
   	setDirty();
 	setNewListType(_getListTypeFromCombos());
 	setbisCustomized(false);
+/*
 #ifdef BIDI_ENABLED
+
 	// have to do this, since for instance the decimal delimter can change
+
 	fillUncustomizedValues();
+
 #endif
+*/
 	_previewExposed();
 	_setDisplayedData();
 	_enableControls();
@@ -991,11 +999,17 @@ void AP_Win32Dialog_Lists::_selectFont()
 	}
 
 	const XML_Char** props_in = NULL;
+
 	bool bUnderline = false;
+
 	bool bOverline = false;
+
 	bool bStrikeOut = false;
+
 	bool bTopLine = false;
+
 	bool bBottomLine = false;
+
 
 	if (pView->getCharFormat(&props_in))
 	{
@@ -1018,7 +1032,9 @@ void AP_Win32Dialog_Lists::_selectFont()
 			bUnderline = (strstr(s, "underline") != NULL);
 			bOverline = (strstr(s, "overline") != NULL);
 			bStrikeOut = (strstr(s, "line-through") != NULL);
+
 			bTopLine = (strstr(s, "topline") != NULL);
+
 			bBottomLine = (strstr(s, "bottomline") != NULL);
 		}
 		pDialog->setFontDecoration(bUnderline,bOverline,bStrikeOut,false,false);
@@ -1038,24 +1054,40 @@ void AP_Win32Dialog_Lists::_selectFont()
 	const XML_Char* pszFont;
 	bool bDirty = false;
 
+
 	if (pDialog->getChangedFontFamily(&pszFont))
+
 /*
+
 		|| pDialog->getChangedFontSize(&pszFont)
+
 		|| pDialog->getChangedFontWeight(&pszFont)
+
 		|| pDialog->getChangedFontStyle(&pszFont)
+
 		|| pDialog->getChangedBGColor(&pszFont)
+
 		|| pDialog->getChangedColor(&pszFont)
+
 		|| pDialog->getChangedUnderline(&bUnderline)
+
 		|| pDialog->getChangedOverline(&bOverline)
+
 		|| pDialog->getChangedStrikeOut(&bStrikeOut)
+
 		|| pDialog->getChangedTopline(&bTopLine)
+
 		|| pDialog->getChangedBottomline(&bBottomLine)
+
 		)
+
 */
 	{
+
 		setDirty();
 		copyCharToFont(pszFont);
 		_previewExposed();
+
 		_enableControls();
 	}
 }
