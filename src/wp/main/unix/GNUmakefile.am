@@ -51,4 +51,4 @@ endif
 install-exec-local:
 	$(top_srcdir)/src/pkg/common/unix/scripts/makewrapper.sh AbiWord $(pkglibdir) $(pkglibdir)/bin $(DESTDIR)
 	$(mkinstalldirs) $(bindir)
-	ln -f $(DESTDIR)$(pkglibdir)/bin/AbiWord $(bindir)/AbiWord
+	ln -f $(DESTDIR)$(pkglibdir)/bin/AbiWord $(DESTDIR)$(bindir)/AbiWord
