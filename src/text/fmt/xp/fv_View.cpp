@@ -690,6 +690,28 @@ bool FV_View::isInFrame(PT_DocPosition pos)
 	return false;
 }
 
+/*!
+ * Returns true if the suppiled position is not is a sepecial structure
+ * like a frame or table or whatever.
+ *
+ * pos defaults to 0. Ifpos == 0, I assume you actually what the values of
+ * getPoint()
+ */
+
+bool FV_View::isInDocSection(PT_DocPosition pos)
+{
+	if(pos == 0)
+	{
+		pos = getPoint();
+	}
+	fl_BlockLayout * pBL = _findBlockAtPosition(pos);
+	if(pBL && (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_DOCSECTION))
+	{
+		return true;
+	}
+	return false;
+}
+
 UT_RGBColor FV_View::getColorSelBackground ()
 {
   static UT_RGBColor bgcolor (192, 192, 192);

@@ -6563,6 +6563,20 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 
 		if (bSuccess)
 		{
+			XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
+			if(pFrame == NULL)
+			{
+				return false;
+			}
+			FV_View * pView = static_cast<FV_View*>(pFrame->getCurrentView());
+			if(pView == NULL)
+			{
+				return false;
+			}
+			if(!pView->isInDocSection(m_dposPaste))
+			{
+				return false;;
+			}
 			bSuccess = getDoc()->insertStrux(m_dposPaste,PTX_Section);
 			if (bSuccess)
 			{

@@ -334,6 +334,7 @@ public:
 
 	fl_BlockLayout* getBlockAtPosition(PT_DocPosition pos) const {return _findBlockAtPosition(pos);};
 	virtual void	updateScreen(bool bDirtyRunsOnly=true);
+	bool            isInDocSection(PT_DocPosition pos = 0);
 
 //---------
 //Visual Drag stuff
