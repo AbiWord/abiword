@@ -3443,7 +3443,7 @@ void FV_View::_doPaste(bool bUseClipboard, bool bHonorFormatting)
 }
 
 
-UT_Error FV_View::_deleteBookmark(const char* szName, bool bSignal, PT_DocPosition &pos1, PT_DocPosition &pos2)
+UT_Error FV_View::_deleteBookmark(const char* szName, bool bSignal, PT_DocPosition *posStart, PT_DocPosition *posEnd)
 {
 	if(!m_pDoc->isBookmarkUnique((const XML_Char *)szName))
 	{
@@ -3451,6 +3451,8 @@ UT_Error FV_View::_deleteBookmark(const char* szName, bool bSignal, PT_DocPositi
 		// call, we need to find out where both of the markers are in the
 		// document, so that the caller can adjust any stored doc positions
 		// if necessary
+
+		PT_DocPosition pos1, pos2;
 
 		fp_BookmarkRun * pB1;
 		UT_uint32 bmBlockOffset[2];
@@ -3514,6 +3516,16 @@ UT_Error FV_View::_deleteBookmark(const char* szName, bool bSignal, PT_DocPositi
 
 		pos1 = pBlock[0]->getPosition(false) + bmBlockOffset[0];
 		pos2 = pBlock[1]->getPosition(false) + bmBlockOffset[1];
+
+		if (posStart && *posStart > pos1)
+			(*posStart)--;
+		if (posStart && *posStart > pos2)
+			(*posStart)--;
+
+		if (posEnd && *posEnd > pos1)
+			(*posEnd)--;
+		if (posEnd && *posEnd > pos1)
+			(*posEnd)--;
 
 		UT_uint32 iRealDeleteCount;
 

@@ -2648,8 +2648,7 @@ void FV_View::cmdPasteSelectionAt(UT_sint32 xPos, UT_sint32 yPos)
 
 UT_Error FV_View::cmdDeleteBookmark(const char* szName)
 {
-	PT_DocPosition i,j;
-	return _deleteBookmark(szName,true,i,j);
+	return _deleteBookmark(szName, true);
 }
 
 UT_Error FV_View::cmdDeleteHyperlink()
@@ -2852,7 +2851,6 @@ UT_Error FV_View::cmdInsertBookmark(const char * szName)
 
 	PT_DocPosition posStart = getPoint();
 	PT_DocPosition posEnd = posStart;
-	PT_DocPosition pos1 = 0xFFFFFFFF,pos2 = 0xFFFFFFFF;
 
 	if (!isSelectionEmpty())
 	{
@@ -2872,20 +2870,8 @@ UT_Error FV_View::cmdInsertBookmark(const char * szName)
 	{
 		//bookmark already exists -- remove it and then reinsert
 		UT_DEBUGMSG(("fv_View::cmdInsertBookmark: bookmark \"%s\" exists - removing\n", szName));
-		_deleteBookmark((XML_Char*)szName, false,pos1,pos2);
+		_deleteBookmark((XML_Char*)szName, false, &posStart, &posEnd);
 	}
-
-
-	// if the bookmark we just deleted was before the current insertion
-	// position we have to adjust our positions correspondingly
-	if(posStart > pos1)
-		posStart--;
-	if(posStart > pos2)
-		posStart--;
-	if(posEnd > pos1)
-		posEnd--;
-	if(posEnd > pos2)
-		posEnd--;
 
 	XML_Char * pAttr[6];
 	const XML_Char ** pAt = (const XML_Char **)&pAttr[0];

@@ -109,6 +109,9 @@ void AP_UnixDialog_InsertBookmark::event_Cancel(void)
 
 void AP_UnixDialog_InsertBookmark::event_Delete(void)
 {
+	const XML_Char *mark = gtk_entry_get_text(GTK_ENTRY(m_comboEntry));
+	if (mark && *mark)
+		setBookmark(mark);
 	setAnswer(AP_Dialog_InsertBookmark::a_DELETE);
 }
 

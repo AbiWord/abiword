@@ -614,7 +614,7 @@ protected:
 	void				_removeThisHdrFtr(fl_HdrFtrSectionLayout * pHdrFtr);
 	void 				_cmdEditHdrFtr(HdrFtrType hfType);
 
-	UT_Error			_deleteBookmark(const char* szName, bool bSignal, PT_DocPosition &i, PT_DocPosition &j);
+	UT_Error			_deleteBookmark(const char* szName, bool bSignal, PT_DocPosition * pos1 = NULL, PT_DocPosition * pos2 = NULL);
 	UT_Error			_deleteHyperlink(PT_DocPosition &i, bool bSignal);
 	fp_HyperlinkRun *   _getHyperlinkInRange(PT_DocPosition &posStart,
 											 PT_DocPosition &posEnd);
