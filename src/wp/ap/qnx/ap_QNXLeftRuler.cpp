@@ -57,7 +57,7 @@ PtWidget_t * AP_QNXLeftRuler::createWidget(void)
 
 	area.pos.x = 0;
 	area.pos.y = pQNXFrame->m_AvailableArea.pos.y;
-	area.size.w = s_iFixedWidth;
+	area.size.w = _UD(s_iFixedWidth);
 	area.size.h = pQNXFrame->m_AvailableArea.size.h;
 	pQNXFrame->m_AvailableArea.pos.x += area.size.w + 3;
 	pQNXFrame->m_AvailableArea.size.w -= area.size.w + 3;
@@ -256,7 +256,7 @@ int AP_QNXLeftRuler::_fe::expose(PtWidget_t * w, PhTile_t * damage)
 {
 	PtArg_t args[1];
 	PhRect_t rect;
-
+	UT_Rect rClip;
 	//This will draw the basic widget
 	PtSuperClassDraw(PtBasic, w, damage);
 	PtBasicWidgetCanvas(w, &rect);
@@ -269,27 +269,12 @@ int AP_QNXLeftRuler::_fe::expose(PtWidget_t * w, PhTile_t * damage)
 	if (!pQNXRuler)
 		return 0;
 
-#if 0
-    if (damage->next) {
-        damage = damage->next;
-    }
-    while (damage) {
-        rClip.left = damage->rect.ul.x;
-        rClip.top = damage->rect.ul.y;
-        rClip.width = damage->rect.lr.x - damage->rect.ul.x;
-        rClip.height = damage->rect.lr.y - damage->rect.ul.y;
-        damage = damage->next;
-
-		/*
-        printf("Clip to Rect %d,%d %d/%d \n",
-            rClip.left, rClip.top, rClip.width, rClip.height);
-        pQNXRuler->draw(&rClip);
-		*/
-		pQNXRuler->draw(NULL);
-    }
-#else
-		pQNXRuler->draw(NULL);
-#endif
+   rClip.left = damage->rect.ul.x;
+   rClip.top = damage->rect.ul.y;
+   rClip.width = damage->rect.lr.x - damage->rect.ul.x;
+   rClip.height = damage->rect.lr.y - damage->rect.ul.y;
+//   pQNXRuler->draw(&rClip);
+	pQNXRuler->draw(0);
 
 	return 0;
 }

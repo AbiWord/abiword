@@ -81,7 +81,7 @@ PtWidget_t * AP_QNXStatusBar::createWidget(void)
 	UT_QNXGetWidgetArea(frame->getTopLevelWindow(), NULL, NULL, &area.size.w, &area.size.h);
 	area.pos.x = 0;
 	area.pos.y = area.size.h - 24;
-	area.size.h = 24;
+	area.size.h = _UD(s_iFixedHeight);
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0);
@@ -142,8 +142,8 @@ int AP_QNXStatusBar::_fe::resize(PtWidget_t * w, void *data, PtCallbackInfo_t *i
 		iWidth = cbinfo->new_size.lr.x - cbinfo->new_size.ul.x; 
 		iHeight = cbinfo->new_size.lr.y - cbinfo->new_size.ul.y;
 
-		pQNXStatusBar->setHeight(iHeight);
-		pQNXStatusBar->setWidth(iWidth);
+		pQNXStatusBar->setHeight(_UL(iHeight));
+		pQNXStatusBar->setWidth(_UL(iWidth));
 	}	
 	return Pt_CONTINUE;
 }

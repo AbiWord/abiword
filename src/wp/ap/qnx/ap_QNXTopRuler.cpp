@@ -59,7 +59,7 @@ PtWidget_t * AP_QNXTopRuler::createWidget(void)
 	area.pos.x = 0;
 	area.pos.y = pQNXFrame->m_AvailableArea.pos.y;
 	area.size.w = pQNXFrame->m_AvailableArea.size.w;
-	area.size.h = s_iFixedHeight;
+	area.size.h = _UD(s_iFixedHeight);
 	pQNXFrame->m_AvailableArea.pos.y += area.size.h + 3;
 	pQNXFrame->m_AvailableArea.size.h -= area.size.h + 3;
 	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0); 

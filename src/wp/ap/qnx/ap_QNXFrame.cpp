@@ -300,7 +300,7 @@ Cleanup:
 */
 void AP_QNXFrame::setXScrollRange(void)
 {
-	int width = ((AP_FrameData*)m_pData)->m_pDocLayout->getWidth();
+	int width = _UD(((AP_FrameData*)m_pData)->m_pDocLayout->getWidth());
 	int n, windowWidth;
 	PtArg_t args[6];
 
@@ -308,7 +308,7 @@ void AP_QNXFrame::setXScrollRange(void)
 	UT_QNXGetWidgetArea(m_dArea, NULL, NULL, &tmp, NULL);
 	windowWidth = tmp;
 
-	int newvalue = ((m_pView) ? m_pView->getXScrollOffset() : 0);
+	int newvalue = ((m_pView) ? _UD(m_pView->getXScrollOffset()) : 0);
 	int newmax = width - windowWidth; /* upper - page_size */
 	if (newmax <= 0)
 	{
@@ -340,13 +340,13 @@ void AP_QNXFrame::setXScrollRange(void)
 	//printf("Set X limits to %d -[%d]- %d \n", 0, newvalue, newmax);
 	
 	if (m_pView && (bDifferentPosition || bDifferentLimits)) {
-		m_pView->sendHorizontalScrollEvent(newvalue, (long) width-windowWidth);
+		m_pView->sendHorizontalScrollEvent(_UL(newvalue), _UL((long) width-windowWidth));
 	}
 }
 
 void AP_QNXFrame::setYScrollRange(void)
 {
-	int height = ((AP_FrameData*)m_pData)->m_pDocLayout->getHeight();
+	int height = _UD(((AP_FrameData*)m_pData)->m_pDocLayout->getHeight());
 	int n, windowHeight;
 	PtArg_t args[6];
 
@@ -354,7 +354,7 @@ void AP_QNXFrame::setYScrollRange(void)
 	UT_QNXGetWidgetArea(m_dArea, NULL, NULL, NULL, &tmp);
 	windowHeight = tmp;
 
-	int newvalue = ((m_pView) ? m_pView->getYScrollOffset() : 0);
+	int newvalue = ((m_pView) ? _UD(m_pView->getYScrollOffset()) : 0);
 	int newmax = height - windowHeight;	/* upper - page_size */
 	if (newmax <= 0)
 	{
@@ -383,7 +383,7 @@ void AP_QNXFrame::setYScrollRange(void)
 	//printf("Set Y limits to %d -[%d]- %d \n", 0, newvalue, newmax);
 
 	if (m_pView && (bDifferentPosition || bDifferentLimits))
-		m_pView->sendVerticalScrollEvent(newvalue, (long) height-windowHeight);
+		m_pView->sendVerticalScrollEvent(_UL(newvalue), _UL((long) height-windowHeight));
 }
 
 
@@ -718,10 +718,10 @@ void AP_QNXFrame::_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 /*xrange*
 	
 	//Do some range checking ...
 
-	PtSetArg(&args[0], Pt_ARG_SCROLLBAR_POSITION, xoff, 0);
+	PtSetArg(&args[0], Pt_ARG_SCROLLBAR_POSITION, _UD(xoff), 0);
 	PtSetResources(pQNXFrame->m_hScroll, 1, args);
 
-	pView->setXScrollOffset(xoff);
+	pView->setXScrollOffset(_UL(xoff));
 }
 
 void AP_QNXFrame::_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 /*yrange*/)
@@ -735,10 +735,10 @@ void AP_QNXFrame::_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 /*yrange*
 	
 	//Do some range checking ...
 
-	PtSetArg(&args[0], Pt_ARG_SCROLLBAR_POSITION, yoff, 0);
+	PtSetArg(&args[0], Pt_ARG_SCROLLBAR_POSITION, _UD(yoff), 0);
 	PtSetResources(pQNXFrame->m_vScroll, 1, args);
 
-	pView->setYScrollOffset(yoff);
+	pView->setYScrollOffset(_UL(yoff));
 }
 	
 PtWidget_t * AP_QNXFrame::_createDocumentWindow(void)
@@ -983,7 +983,7 @@ void AP_QNXFrame::toggleStatusBar(bool bStatusBarOn) {
     AP_FrameData *pFrameData = static_cast<AP_FrameData *> (getFrameData());
     UT_ASSERT(pFrameData);
 
-	height = pFrameData->m_pStatusBar->getHeight();
+	height = _UD(pFrameData->m_pStatusBar->getHeight());
     if (bStatusBarOn) {
 		_reflowLayout(-height, 0, 0, 0);
         pFrameData->m_pStatusBar->show();

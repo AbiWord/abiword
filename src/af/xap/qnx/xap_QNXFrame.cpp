@@ -138,7 +138,7 @@ int XAP_QNXFrame::_fe::resize(PtWidget_t * w, void *data, PtCallbackInfo_t *info
 	//FV_View * pfView = static_cast<FV_View*>(pView);
 
 	if (pView) {
-		UT_DEBUGMSG(("Document Area Resizing to %d,%d %d,%d (%d,%d) ",
+		UT_DEBUGMSG(("Document Area Resizing to %d,%d %d,%d ",
 			cbinfo->new_size.ul.x, cbinfo->new_size.ul.y,
 			cbinfo->new_size.lr.x, cbinfo->new_size.lr.y));
 		pView->setWindowSize(cbinfo->new_size.lr.x - cbinfo->new_size.ul.x, 

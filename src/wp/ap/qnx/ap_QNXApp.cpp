@@ -690,6 +690,7 @@ static int s_hideSplash(PtWidget_t *w, void *data, PtCallbackInfo_t *info)
 }
 
 static int s_drawingarea_expose(PtWidget_t *widget, PhTile_t *damage) {
+
 	if (pQNXGraphics && pSplashImage) {
 		pQNXGraphics->drawImage(pSplashImage, 0, 0);
 
@@ -763,7 +764,7 @@ static GR_Image * _showSplash(PtWidget_t *spwin, UT_uint32 delay)
 		// create image context
 		// TODO: find an XAP_App pointer for the following call:
 		pQNXGraphics = new GR_QNXGraphics(spwin, da, 0);
-		pSplashImage = pQNXGraphics->createNewImage("splash", pBB, iSplashWidth, iSplashHeight);
+		pSplashImage = pQNXGraphics->createNewImage("splash", pBB, _UL(iSplashWidth), _UL(iSplashHeight));
 
 		PtRealizeWidget(spwin);
 	}

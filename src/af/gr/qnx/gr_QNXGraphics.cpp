@@ -71,7 +71,6 @@ int GR_QNXGraphics::DrawSetup() {
 	if (m_pPrintContext) {
 		return 0;
 	}
-
 	//Set the region and the draw offset
 	PgSetRegion(PtWidgetRid(PtFindDisjoint(m_pDraw)));
 	PtWidgetOffset(m_pDraw, &m_OffsetPoint);
@@ -87,14 +86,10 @@ int GR_QNXGraphics::DrawSetup() {
 
 	//Add additional user clipping areas (only one for now)
 	if (m_pClipList) {
-/* This doesn't work right ... so just do the intersect ourselves
-		printf("Add Clip Rect %d,%d %d,%d \n",
-			m_pClipList->rect.ul.x, m_pClipList->rect.ul.y,
-			m_pClipList->rect.lr.x, m_pClipList->rect.lr.y);
-		PtClipAdd(m_pDraw, &m_pClipList->rect);
-*/
+//		PtClipAdd(m_pDraw, &m_pClipList->rect);
+
 		//Instead use this
-		if (PtRectIntersect(&_rdraw, &m_pClipList->rect) == 0) {
+		if (PhRectIntersect(&_rdraw, &m_pClipList->rect) == 0) {
 			//This should never happen!
 			UT_DEBUGMSG(("No intersection of widget %d,%d %d,%d ",
 						  _rdraw.ul.x, _rdraw.ul.y, _rdraw.lr.x, _rdraw.lr.y));
@@ -198,7 +193,7 @@ UT_uint32 GR_QNXGraphics::_getResolution(void) const
 	/*
 	return 96;
 	*/
-	return 96;
+	return _UL(96);
 }
 
 void GR_QNXGraphics::flush(void)
@@ -223,6 +218,11 @@ void GR_QNXGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	PhPoint_t pos;
 	char *utf8;
 	UT_uint32 len;
+
+	_UUD(xoff);
+	_UUD(yoff);
+
+
 	pos.x = xoff;
 	pos.y = yoff + getFontAscent();
 
@@ -300,8 +300,9 @@ GR_Font * GR_QNXGraphics::findFont(const char* pszFontFamily,
 
 	char fname[MAX_FONT_TAG];
 	int size = convertDimension(pszFontSize);
+//	int size = UT_convertToPoints(pszFontSize);
 	int style = 0;
-
+	fprintf(stderr,"%s,%d",pszFontSize,size);
 	// Only check for bold weight and italic style
 	if (UT_strcmp(pszFontWeight, "bold") == 0) {
 		style |= PF_STYLE_BOLD;
@@ -343,26 +344,32 @@ void GR_QNXGraphics::drawGlyph(UT_uint32 Char,UT_sint32 xoff,UT_sint32 yoff)
 void GR_QNXGraphics::setFont(GR_Font * pFont)
 {
 	QNXFont *qnxFont = (QNXFont *)pFont;
-	const char *backupfont = { "helv10" };
-	const char *font;
+//	const char *backupfont = { "helv10" };
+//	const char *font;
 
-	if (!qnxFont || !(font = qnxFont->getFont())) {
+if(pFont->getAllocNumber() != m_iFontAllocNo)
+{
+	m_pFont = qnxFont;
+	m_iFontAllocNo= pFont->getAllocNumber();
+	m_iAscentCache = m_iDescentCache = -1;
+}
+/*	if (!qnxFont || !(font = qnxFont->getFont())) {
 		UT_DEBUGMSG(("No font found, using helv10 as default"));
 		UT_ASSERT(0);
 		font = backupfont;
-	}
+	}*/
 
-	if (m_pFont && strcmp(m_pFont->getFont(), font) == 0) {
+/*	if (m_pFont && strcmp(m_pFont->getFont(), font) == 0) {
 		return;
 	} else if (m_pFont) {
 		delete(m_pFont);
-	}
+	}*/
 
-	m_pFont = new QNXFont(font);
+//	m_pFont = new QNXFont(font);
 
 	/* At the same time, load the font metrics into
        a local cache to speed up access as we use them! */
-	struct _fcache *tmp;
+/*	struct _fcache *tmp;
 	for (tmp = g_pFCache; tmp; tmp = tmp->next) {
 		if (strcmp(tmp->name, font) == 0) {
 			break;
@@ -384,8 +391,7 @@ void GR_QNXGraphics::setFont(GR_Font * pFont)
 			g_pFCache->prev = tmp;
 		}
 		tmp->prev = NULL;
-	}
-	m_iAscentCache = m_iDescentCache = -1;
+	}*/
 }
 
 UT_uint32 GR_QNXGraphics::getFontAscent()
@@ -504,8 +510,13 @@ void GR_QNXGraphics::setColor(const UT_RGBColor& clr)
 void GR_QNXGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,
 			      UT_sint32 x2, UT_sint32 y2)
 {
-	// TODO set the line width according to m_iLineWidth
 	DRAW_START
+
+	_UUD(x1);
+	_UUD(x2);
+	_UUD(y1);
+	_UUD(y2);
+
 	PgSetFillColor(m_currentColor);
 	PgSetStrokeColor(m_currentColor);
 	PgSetStrokeWidth(m_iLineWidth);
@@ -528,6 +539,7 @@ coverage.push_back((void*)(info->lochar - info->hichar));
 }
 void GR_QNXGraphics::setLineWidth(UT_sint32 iLineWidth)
 {
+	fprintf(stderr,"linewidth=%d",iLineWidth);
 	m_iLineWidth = iLineWidth;
 }
 
@@ -535,6 +547,7 @@ void GR_QNXGraphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
 			    UT_sint32 y2)
 {
 	int old;
+
 	old = PgSetDrawMode(Pg_DRAWMODE_XOR);
 	drawLine(x1, y1, x2, y2);
 	PgSetDrawMode(old);
@@ -562,8 +575,14 @@ void GR_QNXGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 
 	FREEP(points);
 #else
+	_UUD(pts[0].x);
+	_UUD(pts[0].y);
 	for (UT_uint32 k=1; k<nPoints; k++)
+	{
+		_UUD(pts[k].x);
+		_UUD(pts[k].y);
 		drawLine(pts[k-1].x,pts[k-1].y, pts[k].x,pts[k].y);
+	}
 #endif
 }
 
@@ -587,17 +606,18 @@ void GR_QNXGraphics::setClipRect(const UT_Rect* pRect)
 	if (pRect)
 	{
 		PhRect_t r;
-
-		r.ul.x = pRect->left;
-		r.ul.y = pRect->top;
-		r.lr.x = r.ul.x + pRect->width;
-		r.lr.y = r.ul.y + pRect->height;
+		
+		r.ul.x = _UD(pRect->left);
+		r.ul.y = _UD(pRect->top);
+		r.lr.x = r.ul.x + _UD(pRect->width);
+		r.lr.y = r.ul.y + _UD(pRect->height);
 
 //		UT_ASSERT(!m_pClipList);		//Only one item for now
 
 		if (m_pClipList || (m_pClipList = PhGetTile())) {
 			m_pClipList->rect = r;
 			m_pClipList->next = NULL; //One item list for now
+			fprintf(stderr,"Clip rect= %d,%d,%d,%d\n",r.ul.x,r.ul.y,r.lr.x,r.lr.y);
 		}
 	}
 	else
@@ -613,7 +633,10 @@ void GR_QNXGraphics::fillRect(const UT_RGBColor & c, UT_sint32 x, UT_sint32 y,
 			      UT_sint32 w, UT_sint32 h)
 {
 	PgColor_t newc;
-
+	_UUD(x);
+	_UUD(y);
+	_UUD(w);
+	_UUD(h);
 	//Why do we have to do this, why can't the xap code figure it right?
 	w = (w < 0) ? -1*w : w;
 	h = (h < 0) ? -1*h : h;
@@ -622,7 +645,7 @@ void GR_QNXGraphics::fillRect(const UT_RGBColor & c, UT_sint32 x, UT_sint32 y,
 	DRAW_START
 	PgSetFillColor(newc);
 	PgSetStrokeColor(newc);
-	//printf("fillRect RGB %d,%d %d/%d w/ %08x\n", x, y, w, h, newc);
+//	printf("fillRect RGB %d,%d %d/%d w/ %08x\n", x, y, w, h, newc);
 	PgDrawIRect(x, y, x+w, y+h, Pg_DRAW_FILL_STROKE);
 	DRAW_END
 }
@@ -647,9 +670,11 @@ inline void adjust_rect(PhRect_t *rect, PhPoint_t *offset) {
 
 void GR_QNXGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 {
-
 	PhRect_t  rect;
 	PhPoint_t offset;
+
+	_UUD(dx);
+	_UUD(dy);
 
 	PtBasicWidgetCanvas(m_pDraw, &rect);
 
@@ -674,10 +699,10 @@ void GR_QNXGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 	//way easier though.
 	adjust_rect(&rect, &offset);
 
-/*
+
 	UT_DEBUGMSG(("GR Scroll1 %d,%d %d,%d  by %d,%d",
 			rect.ul.x, rect.ul.y, rect.lr.x, rect.lr.y, offset.x, offset.y));
-*/
+
 	PhBlit(PtWidgetRid(PtFindDisjoint(m_pDraw)), &rect, &offset);
 	//to get an expose call PtDamageExtent(region_widget, damage_rect)
 }
@@ -688,6 +713,13 @@ void GR_QNXGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 {
 	PhRect_t 	rect, widgetrect;
 	PhPoint_t 	offset;
+
+	_UUD(x_dest);
+	_UUD(y_dest);
+	_UUD(x_src);
+	_UUD(y_src);
+	_UUD(width);
+	_UUD(height);
 
 	PtBasicWidgetCanvas(m_pDraw, &widgetrect);
 
@@ -731,10 +763,10 @@ void GR_QNXGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 	PtWidgetOffset(m_pDraw, &shift);
 	PtTranslateRect(&rect, &shift);
 
-/*
+
 	UT_DEBUGMSG(("GR Scroll2 %d,%d %d,%d  by %d,%d",
 			rect.ul.x, rect.ul.y, rect.lr.x, rect.lr.y, offset.x, offset.y));
-*/
+
 
 	PhBlit(PtWidgetRid(PtFindDisjoint(m_pDraw)), &rect, &offset);
 }
@@ -743,7 +775,6 @@ void GR_QNXGraphics::clearArea(UT_sint32 x, UT_sint32 y,
 				 UT_sint32 width, UT_sint32 height)
 {
 	UT_RGBColor clrWhite(255,255,255);
-	//printf("clearArea %d,%d %d/%d w/ %08x\n", x, y, width, height, clrWhite);
 	fillRect(clrWhite, x, y, width, height);
 }
 
@@ -752,6 +783,8 @@ void GR_QNXGraphics::clearArea(UT_sint32 x, UT_sint32 y,
 ***/
 GR_Image* GR_QNXGraphics::createNewImage(const char* pszName, const UT_ByteBuf* pBBPNG, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight, GR_Image::GRType iType)
 {
+	_UUD(iDisplayWidth);
+	_UUD(iDisplayHeight);
 	/* GR_QNXImage* pImg = NULL; */
 	GR_Image* pImg = NULL;
    	if (iType == GR_Image::GRT_Raster)
@@ -765,7 +798,11 @@ GR_Image* GR_QNXGraphics::createNewImage(const char* pszName, const UT_ByteBuf* 
 
 void GR_QNXGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
 {
+
 	UT_ASSERT(pImg);
+	_UUD(xDest);
+	_UUD(yDest);
+
 
    	if (pImg->getType() != GR_Image::GRT_Raster) {
       		pImg->render(this, xDest, yDest);
@@ -922,10 +959,15 @@ void GR_QNXGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 
 {
 	UT_ASSERT(c < COUNT_3D_COLORS);
 
+	_UUD(x);
+	_UUD(y);
+	_UUD(w);
+	_UUD(h);
+
 	DRAW_START
 	PgSetFillColor(m_3dColors[c]);
 	PgSetStrokeColor(m_3dColors[c]);
-	//printf("FillRect 3D %d,%d %d/%d w %08x\n", x, y, x+w, y+w, m_3dColors[c]);
+//	fprintf(stderr,"FillRect 3D %d,%d %d/%d w %08x\n", x, y, x+w, y+w, m_3dColors[c]);
 	PgDrawIRect(x, y, x+w, y+h, Pg_DRAW_FILL_STROKE);
 	DRAW_END
 }
@@ -978,6 +1020,9 @@ bool GR_QNXGraphics::startPage(const char * szPageLabel, UT_uint32 pageNumber,
 	UT_DEBUGMSG(("GR: Start Page %d W/H %d/%d (portrait:%d label:%s nextpage:%d)",
 		pageNumber, iWidth, iHeight, bPortrait, (szPageLabel) ? szPageLabel : "", m_bPrintNextPage));
 	UT_ASSERT(m_pPrintContext);
+
+	_UUD(iWidth);
+	_UUD(iHeight);
 
 	if (!m_pPrintContext) {
 		return false;
