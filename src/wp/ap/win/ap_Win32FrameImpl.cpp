@@ -262,25 +262,11 @@ void AP_Win32FrameImpl::_toggleBar(UT_uint32 iBarNb, bool bBarOn)
 			_setBarHeight(1);
 
 		GetClientRect(_getHwndContainer(), &r);
-		_onSize(static_cast<AP_FrameData *>(getFrame()->getFrameData()), r.right - r.left, r.bottom - r.top);
+		_onSize(static_cast<AP_FrameData *>(getFrame()->getFrameData()), r.right - r.left + 1, r.bottom - r.top + 1);
 	}
 
-	// We *need* to make the window recalc its layout after adding/removing a
-	// toolbar in the rebar control. Since we have no "recalcLayout" I'm
-	// aware of we use this not-so-good-but-old idiom of resizing the window.
-	RECT rc;
-	GetWindowRect(_getTopLevelWindow(), &rc);
-	const int cx = rc.right - rc.left;
-	const int cy = rc.bottom - rc.top;
-	const UINT fFlags =
-		SWP_FRAMECHANGED	|
-		SWP_NOACTIVATE		|
-		SWP_NOCOPYBITS		|
-		SWP_NOMOVE			|
-		SWP_NOOWNERZORDER	|
-		SWP_NOZORDER;
-	SetWindowPos(_getTopLevelWindow(), 0, 0, 0, cx - 1, cy - 1, fFlags | SWP_NOREDRAW);
-	SetWindowPos(_getTopLevelWindow(), 0, 0, 0, cx, cy, fFlags);
+	// Tell frame to recalculate layout (screen refresh)
+	this->getFrame()->queue_resize();
 }
 
 void AP_Win32FrameImpl::_bindToolbars(AV_View *pView)
