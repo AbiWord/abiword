@@ -592,7 +592,8 @@ void PS_Graphics::invertRect(const UT_Rect* /*pRect*/)
 
 void PS_Graphics::setClipRect(const UT_Rect* /*pRect*/)
 {
-	UT_ASSERT_NOT_REACHED ();
+	// Not Implement in PS currently. DON'T ASSERT
+//	UT_ASSERT_NOT_REACHED ();
 }
 
 void PS_Graphics::clearArea(UT_sint32 /*x*/, UT_sint32 /*y*/,
@@ -1133,7 +1134,7 @@ void PS_Graphics::drawRGBImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
 	
 	// translate for quadrant 2, so Y values are negative; land us at
 	// lower left of image (baseline), which is twice the height
-	g_snprintf(buf, sizeof (buf), "%d %d translate\n", xDest, 0 - (m_iRasterPosition + 2 * iDestHeight));
+	g_snprintf(buf, sizeof (buf), "%d %d translate\n", xDest, 0 - (yDest + iDestHeight));
 
 	UT_DEBUGMSG(("DOM: Raster:%d | YDest: %d IDestHeight:%d\n", m_iRasterPosition, yDest, iDestHeight));
 
