@@ -548,7 +548,7 @@ int AP_QNXApp::main(const char * szAppName, int argc, const char ** argv)
 
 	AP_QNXApp * pMyQNXApp = new AP_QNXApp(&XArgs, szAppName);
 	AP_Args Args = AP_Args(&XArgs,szAppName,pMyQNXApp);
-	pMyQNXApp->parsePoptOpts();
+	Args.parsePoptOpts();
 
 	// if the initialize fails, we don't have icons, fonts, etc.
 	if (!pMyQNXApp->initialize())
