@@ -206,7 +206,8 @@ public:
 	inline UT_sint32			getHeaderMarginInLayoutUnits(void) const { return m_iHeaderMarginLayoutUnits; }
 	inline UT_sint32			getSpaceAfter(void) const { return m_iSpaceAfter; }
 	inline UT_sint32			getSpaceAfterInLayoutUnits(void) const { return m_iSpaceAfterLayoutUnits; }
-	
+	inline UT_sint32            getMaxSectionColumnHeightInLayoutUnits(void) const { return m_iMaxSectionColumnHeightInLayoutUnits;}
+	inline UT_sint32            getMaxSectionColumnHeight(void) const { return m_iMaxSectionColumnHeight;}
 	UT_uint32			getNumColumns(void) const;
 	UT_uint32			getColumnGap(void) const;
 	UT_uint32			getColumnGapInLayoutUnits(void) const;
@@ -278,6 +279,9 @@ protected:
 	UT_sint32			m_iHeaderMargin;
 	UT_sint32			m_iHeaderMarginLayoutUnits;
 	double				m_dHeaderMarginUserUnits;
+	UT_sint32           m_iMaxSectionColumnHeightInLayoutUnits;
+	UT_sint32           m_iMaxSectionColumnHeight;
+	double              m_dMaxSectionColumnHeight;
 
 	bool				m_bForceNewPage;
 

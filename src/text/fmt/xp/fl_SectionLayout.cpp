@@ -985,6 +985,7 @@ void fl_DocSectionLayout::_lookupProperties(void)
 	const char* pszBottomMargin = NULL;
 	const char* pszFooterMargin = NULL;
 	const char* pszHeaderMargin = NULL;
+	const char* pszMaxColumnHeight = NULL;
 	pSectionAP->getProperty("page-margin-left", (const XML_Char *&)pszLeftMargin);
 	pSectionAP->getProperty("page-margin-top", (const XML_Char *&)pszTopMargin);
 	pSectionAP->getProperty("page-margin-right", (const XML_Char *&)pszRightMargin);
@@ -1114,6 +1115,19 @@ void fl_DocSectionLayout::_lookupProperties(void)
 		m_iHeaderMarginLayoutUnits = UT_convertToLayoutUnits("0.0in");
 		m_dHeaderMarginUserUnits = UT_convertDimensionless("0.0in");
 	}
+
+	pSectionAP->getProperty("section-max-column-height", (const XML_Char *&)pszMaxColumnHeight);
+	if (pszMaxColumnHeight && pszMaxColumnHeight[0])
+	{
+		m_iMaxSectionColumnHeight = m_pLayout->getGraphics()->convertDimension(pszMaxColumnHeight);
+		m_iMaxSectionColumnHeightInLayoutUnits = UT_convertToLayoutUnits(pszMaxColumnHeight);
+	}
+	else
+	{
+		m_iMaxSectionColumnHeight = m_pLayout->getGraphics()->convertDimension("0in");
+		m_iMaxSectionColumnHeightInLayoutUnits = UT_convertToLayoutUnits("0in");
+	}
+
 	setPaperColor();
 	m_bForceNewPage = false;
 }
@@ -1537,7 +1551,6 @@ UT_sint32 fl_DocSectionLayout::breakSection(fl_BlockLayout * pLastValidBlock)
 //
 	else
 	{
-		xxx_UT_DEBUGMSG(("SEVIOR: Doing break section with block %x \n",pLastValidBlock));
 		pFirstBlock = pLastValidBlock;
 		if (!pFirstBlock)
 		{
@@ -1552,8 +1565,15 @@ UT_sint32 fl_DocSectionLayout::breakSection(fl_BlockLayout * pLastValidBlock)
 		fp_Line* pFirstLineToKeep = pCurrentLine;
 		fp_Line* pLastLineToKeep = NULL;
 		fp_Line* pOffendingLine = NULL;
-		
-		UT_sint32 iMaxColHeight = pCurColumn->getMaxHeightInLayoutUnits();
+		UT_sint32 iMaxSecCol = getMaxSectionColumnHeightInLayoutUnits();
+ 		UT_sint32 iMaxColHeight = pCurColumn->getMaxHeightInLayoutUnits();
+		bool bEquivColumnBreak = false;
+		xxx_UT_DEBUGMSG(("SEVIOR: iMaxSecCol = %d iMaxColHeight = %d \n",iMaxSecCol,iMaxColHeight));
+		if((iMaxSecCol > 0) && (iMaxSecCol < iMaxColHeight))
+		{
+			iMaxColHeight = iMaxSecCol;
+		    bEquivColumnBreak = true;
+		}
 		UT_sint32 iWorkingColHeight = 0;
 
 		fp_Line* pCurLine = pFirstLineToKeep;
@@ -1573,13 +1593,14 @@ UT_sint32 fl_DocSectionLayout::breakSection(fl_BlockLayout * pLastValidBlock)
 		}
 		bool bBreakOnColumnBreak = false;
 		bool bBreakOnPageBreak = false;
+		UT_sint32  iTotalLineSpace = 0;
 		while (pCurLine)
 		{
 			UT_sint32 iLineHeight = pCurLine->getHeightInLayoutUnits();
 			UT_sint32 iLineMarginAfter = pCurLine->getMarginAfterInLayoutUnits();
-			UT_sint32 iTotalLineSpace = iLineHeight + iLineMarginAfter;
+			iTotalLineSpace = iLineHeight + iLineMarginAfter;
 
-			if ((iWorkingColHeight + iTotalLineSpace) > iMaxColHeight)
+			if ((iWorkingColHeight + iTotalLineSpace) > iMaxColHeight )
 			{
 				pOffendingLine = pCurLine;
 
@@ -1726,13 +1747,13 @@ UT_sint32 fl_DocSectionLayout::breakSection(fl_BlockLayout * pLastValidBlock)
 				iWorkingColHeight += iTotalLineSpace;
 				if (
 					pCurLine->containsForcedColumnBreak()
-					|| pCurLine->containsForcedPageBreak()
+					|| pCurLine->containsForcedPageBreak() 
 					)
 				{
 					pLastLineToKeep = pCurLine;
-					bBreakOnColumnBreak = pCurLine->containsForcedColumnBreak();
+					bBreakOnColumnBreak = ( pCurLine->containsForcedColumnBreak()) ;
 					bBreakOnPageBreak = pCurLine->containsForcedPageBreak();
-					if(iWorkingColHeight >=  iMaxColHeight)
+					if((iWorkingColHeight >=  iMaxColHeight))
 						bBreakOnColumnBreak = false;
 					break;
 				}
@@ -1743,6 +1764,7 @@ UT_sint32 fl_DocSectionLayout::breakSection(fl_BlockLayout * pLastValidBlock)
 //
 // End of big while loop here. After this we've found LastLineToKeep
 //
+		bEquivColumnBreak = bEquivColumnBreak && ( iMaxColHeight < (iWorkingColHeight + iTotalLineSpace));
 		if (pLastLineToKeep)
 		{
 			pCurrentLine = pLastLineToKeep->getNextLineInSection();
@@ -1787,7 +1809,7 @@ UT_sint32 fl_DocSectionLayout::breakSection(fl_BlockLayout * pLastValidBlock)
 				// Make sure there is a next column and that it
 				// falls on the next page if there's a page break.
 				pNextColumn = pNextColumn->getNext();
-				if(bBreakOnColumnBreak)
+				if(bBreakOnColumnBreak || bEquivColumnBreak)
 				{
 					if((pNextColumn != NULL) &&( pNextColumn != pCurColumn->getFollower()) && (pNextColumn->getPage() != pCurColumn->getPage()))
 					{
@@ -1796,7 +1818,7 @@ UT_sint32 fl_DocSectionLayout::breakSection(fl_BlockLayout * pLastValidBlock)
 				}
 				if (!pNextColumn)
 				{
-					if(bBreakOnColumnBreak)
+					if(bBreakOnColumnBreak || bEquivColumnBreak)
 					{
 						pNextColumn = (fp_Column*) getNewContainer(pLastLineToKeep->getNextLineInSection());
 					}
