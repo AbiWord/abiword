@@ -54,6 +54,8 @@ protected:
 	HWND					m_hwndSuggest;		// AP_RID_DIALOG_SPELL_LIST_SUGGEST
 
 	BOOL					m_bChangingSelection;
+
+    UT_sint32               m_iSentenceStart;
 };
 
 #endif /* AP_WIN32DIALOG_SPELL_H */
