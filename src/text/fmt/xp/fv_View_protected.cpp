@@ -3451,7 +3451,11 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 
 	UT_sint32 curY = getPageViewTopMargin();
 	fp_Page* pPage = m_pLayout->getFirstPage();
-	fl_DocSectionLayout * pDSL = pPage->getOwningSection();
+	fl_DocSectionLayout * pDSL = NULL;
+	
+	if (pPage)	// pPage can be NULL at this point
+		pDSL = pPage->getOwningSection();
+
 #if 0
 //
 // fixme for multiple sections in normal and web view
