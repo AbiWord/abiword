@@ -76,7 +76,7 @@ GtkWidget * AP_UnixGnomeDialog_Lists::_constructWindow(void)
 							   GNOME_STOCK_BUTTON_CLOSE);
 	wClose = GTK_WIDGET (g_list_last (GNOME_DIALOG (wMainWindow)->buttons)->data);
 	gtk_widget_show (wClose);
-	_setCloseButton(wApply);
+	_setCloseButton(wClose);
 
 	//gtk_widget_show_all(wMainWindow);
 	_connectSignals();
