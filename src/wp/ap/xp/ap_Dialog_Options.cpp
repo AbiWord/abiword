@@ -343,7 +343,9 @@ void AP_Dialog_Options::_populateWindowData(void)
 void AP_Dialog_Options::_enableDisableLogic( tControl id )
 {
 #if 1
+#ifdef BIDI_ENABLED
 	UT_DEBUGMSG(("_enableDisableLogic: id %d, myId %d\n", id,id_CHECK_OTHER_USE_CONTEXT_GLYPHS));
+#endif
 	switch (id)
 	{
 
