@@ -1494,7 +1494,7 @@ bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count, bool bForce)
 //
 // Convert pixels to inches.
 //
-					float maxWidthIN = ((float) pBlock->getFirstLine()->getContainer()->getWidth())/100. -0.6;
+					float maxWidthIN = (float)(((float) pBlock->getFirstLine()->getContainer()->getWidth())/100. -0.6);
 					if(fAlign + (float) LIST_DEFAULT_INDENT < maxWidthIN)
 					{
 						fAlign += (float) LIST_DEFAULT_INDENT;
@@ -6491,16 +6491,18 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 		UT_DEBUGMSG(("fv_View::draw() called with zero width or height expose.\n"));
 		return;
 	}
+
+	// TMN: Leave this rect at function scope!
+	// gr_Graphics only stores a _pointer_ to it!
+	UT_Rect rClip;
 	if (bClip)
 	{
-		// TMN: Leave this 'static'! setClipRect only stores the pointer!
-		static UT_Rect r;
 
-		r.left = x;
-		r.top = y;
-		r.width = width;
-		r.height = height;
-		m_pG->setClipRect(&r);
+		rClip.left = x;
+		rClip.top = y;
+		rClip.width = width;
+		rClip.height = height;
+		m_pG->setClipRect(&rClip);
 	}
 
 	// figure out where pages go, based on current window dimensions
