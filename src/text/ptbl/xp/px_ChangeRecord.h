@@ -25,33 +25,20 @@
 #include "pt_Types.h"
 #include "pd_Document.h"
 
-/*!
-
-  PX_ChangeRecord describes a change made to the document.  This
-  description should be sufficient to allow undo to work and
-  sufficient to allow the formatter to do a partial format and screen
-  update (if appropriate).  The change record must be free of
-  pointers, since it represents what was done to the document -- and
-  not how it was done (that is, not what was done to various
-  intermediate data structures).  This also lets it be cached to disk
-  (for autosave and maybe multi-session undo).
-
-  PX_ChangeRecord is an abstract base class.
-  We use an enum to remember type, rather than use any of
-  the language run-time stuff.  */
-
 class PX_ChangeRecord
 {
 public:
 	typedef enum _PXType { PXT_GlobMarker=-1,
-						   PXT_InsertSpan=0, 		PXT_DeleteSpan=1,		PXT_ChangeSpan=2,
-						   PXT_InsertStrux=3,		PXT_DeleteStrux=4,		PXT_ChangeStrux=5,
-						   PXT_InsertObject=6,		PXT_DeleteObject=7,		PXT_ChangeObject=8,
-						   PXT_InsertFmtMark=9,		PXT_DeleteFmtMark=10,	PXT_ChangeFmtMark=11,
-			       PXT_ChangePoint=12,  PXT_ListUpdate=13, 
-			       PXT_StopList=14,  PXT_DontChangeInsPoint=15,
-			       PXT_AllowChangeInsPoint=16, PXT_UpdateField=17,
-                               PXT_RemoveList=18
+						   PXT_InsertSpan=0, PXT_DeleteSpan=1,
+						   PXT_ChangeSpan=2, PXT_InsertStrux=3,
+						   PXT_DeleteStrux=4, PXT_ChangeStrux=5,
+						   PXT_InsertObject=6, PXT_DeleteObject=7,
+						   PXT_ChangeObject=8, PXT_InsertFmtMark=9,
+						   PXT_DeleteFmtMark=10, PXT_ChangeFmtMark=11,
+						   PXT_ChangePoint=12, PXT_ListUpdate=13, 
+						   PXT_StopList=14, PXT_DontChangeInsPoint=15,
+						   PXT_AllowChangeInsPoint=16, PXT_UpdateField=17,
+						   PXT_RemoveList=18
 	} PXType;
 
 	PX_ChangeRecord(PXType type,
@@ -63,24 +50,30 @@ public:
 	PXType					getType(void) const;
 	PT_DocPosition			getPosition(void) const;
 	PT_AttrPropIndex		getIndexAP(void) const;
-	bool 				getPersistance(void) const;
+	bool 					getPersistance(void) const;
 
-	inline void				setPersistance(bool persistant) { m_persistant = persistant; }
+	/*!
+  		Set persistance
+  		\param persistance New persistance setting
+	 */
+	inline void				setPersistance(bool persistant) 
+		{ m_persistant = persistant; }
 
-	virtual PX_ChangeRecord * reverse(void) const;
+	virtual PX_ChangeRecord* reverse(void) const;
 	PXType					getRevType(void) const;
 
 #ifdef PT_TEST
-	virtual void			__dump(void) const;
+	virtual void			__dump(FILE * fp) const;
 #endif
 	
 protected:
+	//! Type of this change record
 	PXType					m_type;
-	PT_DocPosition			m_position;			/* absolute document position of the change */
+	//! Absolute document position of the change record
+	PT_DocPosition			m_position;
+	//! Index of attribute property of this change record
 	PT_AttrPropIndex		m_indexAP;
+	//! Persistance flag
 	bool					m_persistant;
 };
-
 #endif /* PX_CHANGERECORD_H */
-
-

@@ -17,12 +17,33 @@
  * 02111-1307, USA.
  */
 
+/*!
+
+  PX_ChangeRecord describes a change made to the document.  This
+  description should be sufficient to allow undo to work and
+  sufficient to allow the formatter to do a partial format and screen
+  update (if appropriate).  The change record must be free of
+  pointers, since it represents what was done to the document -- and
+  not how it was done (that is, not what was done to various
+  intermediate data structures).  This also lets it be cached to disk
+  (for autosave and maybe multi-session undo).
+
+  PX_ChangeRecord is an abstract base class.
+  We use an enum to remember type, rather than use any of
+  the language run-time stuff. 
+*/
 
 #include "ut_types.h"
 #include "ut_debugmsg.h"
 #include "pt_Types.h"
 #include "px_ChangeRecord.h"
 
+/*!
+  Create change record
+  \param type Change record type
+  \param position Position of the change record
+  \param indexNewAP Index of new attribute property
+ */
 PX_ChangeRecord::PX_ChangeRecord(PXType type,
 								 PT_DocPosition position,
 								 PT_AttrPropIndex indexNewAP)
@@ -33,51 +54,73 @@ PX_ChangeRecord::PX_ChangeRecord(PXType type,
 	m_persistant = true;
 }
 
+/*!
+  Destruct change record
+*/
 PX_ChangeRecord::~PX_ChangeRecord()
 {
 }
 
+/*!
+  Get type of change record
+  \return Type
+*/
 PX_ChangeRecord::PXType PX_ChangeRecord::getType(void) const
 {
 	return m_type;
 }
 
+/*!
+  Get position of change record
+  \return Document position
+*/
 PT_DocPosition PX_ChangeRecord::getPosition(void) const
 {
 	return m_position;
 }
 
 /*!
-  Get index of attribute/property
-  \return attribute/property index
+  Get index of attribute property
+  \return Attribute property index
 */
 PT_AttrPropIndex PX_ChangeRecord::getIndexAP(void) const
 {
 	return m_indexAP;
 }
 
+/*!
+  Get persitance
+  \return Persitance
+*/
 bool PX_ChangeRecord::getPersistance(void) const
 {
 	return m_persistant;
 }
 
+/*!
+  Create reverse change record of this one
+  \return Reverse change record
+*/
 PX_ChangeRecord * PX_ChangeRecord::reverse(void) const
 {
-	PX_ChangeRecord * pcr
-		= new PX_ChangeRecord(getRevType(),
-							  m_position,
-							  m_indexAP);
+	PX_ChangeRecord * pcr = new PX_ChangeRecord(getRevType(),
+												m_position,
+												m_indexAP);
 	UT_ASSERT(pcr);
 	return pcr;
 }
 
+/*
+  Find reverse change record type of this one
+  \return Reverse change record type
+*/
 PX_ChangeRecord::PXType PX_ChangeRecord::getRevType(void) const
 {
 	switch (m_type)
 	{
 	case PX_ChangeRecord::PXT_GlobMarker:
-		return PX_ChangeRecord::PXT_GlobMarker;				// we are our own inverse
-		
+		// we are our own inverse
+		return PX_ChangeRecord::PXT_GlobMarker;
 
 	case PX_ChangeRecord::PXT_InsertSpan:
 		return PX_ChangeRecord::PXT_DeleteSpan;
@@ -86,8 +129,8 @@ PX_ChangeRecord::PXType PX_ChangeRecord::getRevType(void) const
 		return PX_ChangeRecord::PXT_InsertSpan;
 
 	case PX_ChangeRecord::PXT_ChangeSpan:
-		return PX_ChangeRecord::PXT_ChangeSpan;				// we are our own inverse
-		
+		// we are our own inverse
+		return PX_ChangeRecord::PXT_ChangeSpan;
 
 	case PX_ChangeRecord::PXT_InsertStrux:
 		return PX_ChangeRecord::PXT_DeleteStrux;
@@ -96,8 +139,8 @@ PX_ChangeRecord::PXType PX_ChangeRecord::getRevType(void) const
 		return PX_ChangeRecord::PXT_InsertStrux;
 
 	case PX_ChangeRecord::PXT_ChangeStrux:
-		return PX_ChangeRecord::PXT_ChangeStrux;			// we are our own inverse
-
+		// we are our own inverse
+		return PX_ChangeRecord::PXT_ChangeStrux;
 
 	case PX_ChangeRecord::PXT_InsertObject:
 		return PX_ChangeRecord::PXT_DeleteObject;
@@ -106,8 +149,8 @@ PX_ChangeRecord::PXType PX_ChangeRecord::getRevType(void) const
 		return PX_ChangeRecord::PXT_InsertObject;
 
 	case PX_ChangeRecord::PXT_ChangeObject:
-		return PX_ChangeRecord::PXT_ChangeObject;			// we are our own inverse
-
+		// we are our own inverse
+		return PX_ChangeRecord::PXT_ChangeObject;
 
 	case PX_ChangeRecord::PXT_InsertFmtMark:
 		return PX_ChangeRecord::PXT_DeleteFmtMark;
@@ -116,7 +159,8 @@ PX_ChangeRecord::PXType PX_ChangeRecord::getRevType(void) const
 		return PX_ChangeRecord::PXT_InsertFmtMark;
 
 	case PX_ChangeRecord::PXT_ChangeFmtMark:
-		return PX_ChangeRecord::PXT_ChangeFmtMark;			// we are our own inverse
+		// we are our own inverse
+		return PX_ChangeRecord::PXT_ChangeFmtMark;
 
 	case PX_ChangeRecord::PXT_ChangePoint:
 		return PX_ChangeRecord::PXT_ChangePoint;
