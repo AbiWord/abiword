@@ -51,11 +51,11 @@ class fl_AutoNum;
 /*!
   This macros allow the use of an iconv fallback name if needed.
  */
-#define CPNAME_OR_FALLBACK(destination,name,fallbackname)\
-{  \                                                                                             
-	static char* cpname = NULL;\                                     
-	if (!cpname)    \                                                                             
-	{       \                                                                             
+#define CPNAME_OR_FALLBACK(destination,name,fallbackname) \
+{  \
+	static char* cpname = NULL; \
+	if (!cpname)    \
+	{       \
 		iconv_t cd = iconv_open(name,name);     \
 		if (cd == (iconv_t)-1) \
 		{ \
@@ -66,8 +66,8 @@ class fl_AutoNum;
 			cpname = name;  \
 			iconv_close(cd); \
 		} \
-	} \                                                                             
-	destination = cpname;  \                                                                      
+	} \
+	destination = cpname;  \
 }
 
 
