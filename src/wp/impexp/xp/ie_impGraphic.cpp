@@ -114,8 +114,6 @@ UT_Bool IE_ImpGraphic::constructImporter(const char * szFilename,
 		ft = IE_ImpGraphic::fileTypeForSuffix(UT_pathSuffix(szFilename));
 	}
 
-	UT_ASSERT(ft != IEGFT_Unknown);
-
 	// use the importer for the specified file type
 	for (UT_uint32 k=0; (k < NrElements(s_impGraphicTable)); k++)
 	{
