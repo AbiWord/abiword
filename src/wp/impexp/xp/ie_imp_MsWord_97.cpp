@@ -2205,25 +2205,15 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height)
 
   MSWord_ImageType imgType = s_determineImageType ( b );
 
-	// will load (but not display the images) from http://www.stud.uni-karlsruhe.de/~uhwe/abi/
-
   if ( imgType == MSWord_RasterImage )
 	{
-#if 0
-	  while (EOF != (data = getc((FILE*)(b->blip.bitmap.m_pvBits))))
-#else
-	  while (EOF != (data = getc(((wvStream*)(b->blip.bitmap.m_pvBits))->stream.file_stream)))
-#endif
-	pictData->append((UT_Byte*)&data, 1);
+	  while (EOF != (data = getc(b->blip.bitmap.m_pvBits->stream.file_stream)))
+	    pictData->append((UT_Byte*)&data, 1);
 	}
   else if ( imgType == MSWord_VectorImage )
 	{
-#if 0
-	  while (EOF != (data = getc((FILE*)(b->blip.metafile.m_pvBits))))
-#else
-	  while (EOF != (data = getc(((wvStream*)(b->blip.metafile.m_pvBits))->stream.file_stream)))
-#endif
-	pictData->append((UT_Byte*)&data, 1);
+	  while (EOF != (data = getc(b->blip.metafile.m_pvBits->stream.file_stream)))
+	    pictData->append((UT_Byte*)&data, 1);
 	}
   else
 	{
