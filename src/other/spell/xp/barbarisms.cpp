@@ -33,8 +33,19 @@ BarbarismChecker::BarbarismChecker()
 }
 
 BarbarismChecker::~BarbarismChecker()
-{
-	UT_HASH_PURGEDATA(UT_Vector*, &m_map, delete);
+{	  
+	UT_StringPtrMap::UT_Cursor _hc1(&m_map);		
+
+    for (UT_Vector* pVec = (UT_Vector*) _hc1.first(); _hc1.is_valid(); pVec = (UT_Vector*) _hc1.next() ) 
+	{ 
+		if (pVec)									
+		{
+			for (UT_uint32 i=0; i < pVec->getItemCount(); i++)
+				delete (char *)pVec->getNthItem(i);
+				
+			delete pVec;			
+		}
+	} 
 }
 
 
@@ -224,7 +235,7 @@ void BarbarismChecker::startElement(const XML_Char *name, const XML_Char **atts)
 		m_pCurVector = new UT_Vector();
 		const char * word = UT_getAttribute ("word", atts);
 		if (word != NULL)
-			m_map.insert (UT_strdup(word), m_pCurVector);
+			m_map.insert (word, m_pCurVector);
 	}
 	else if (strcmp(name, "suggestion")==0)
 	{
