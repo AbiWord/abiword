@@ -34,6 +34,7 @@
 #include "ut_mbtowc.h"
 #include "fl_AutoLists.h"
 #include "fl_AutoNum.h"
+#include "fl_BlockLayout.h"
 
 // Font table entry
 class RTFFontTableItem
@@ -88,7 +89,6 @@ class RTFProps_ParaProps
 {
 public:
 	enum ParaJustification { pjLeft, pjCentre, pjRight, pjFull};
-	enum TabTypes { ttLeft, ttCentre, ttRight, ttDecimal};
 
 	RTFProps_ParaProps();
 	RTFProps_ParaProps& operator=(const RTFProps_ParaProps&);
@@ -103,6 +103,7 @@ public:
 	bool	m_lineSpaceExact;	// TRUE if m_lineSpaceVal is an exact value, FALSE if multiple
 	UT_Vector m_tabStops;
 	UT_Vector m_tabTypes;
+	UT_Vector m_tabLeader;
 	bool         m_isList;       // TRUE if para is an element of a list
 	UT_sint32       m_level;        // Level of list in para
 	char            m_pszStyle[30]; // Type of List
@@ -112,6 +113,8 @@ public:
 	char            m_pszListDelim[64];   // char between levels
 	char            m_pszFieldFont[64];   // field font name
 	UT_uint32       m_startValue;         // Start value of the list
+	eTabType        m_curTabType;        // Current Tab type
+	eTabLeader      m_curTabLeader;       // Current Tab Leader
 };                  
 
 
@@ -276,7 +279,7 @@ private:
 	bool ResetParagraphAttributes();
 	bool ApplyParagraphAttributes();
 	bool SetParaJustification(RTFProps_ParaProps::ParaJustification just);
-	bool AddTabstop(UT_sint32 stopDist);
+	bool AddTabstop(UT_sint32 stopDist, eTabType tabType, eTabLeader tableader);
 
 	bool HandleAbiLists(void);
 	bool HandleLists(void);

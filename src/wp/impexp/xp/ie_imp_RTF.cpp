@@ -206,6 +206,8 @@ RTFProps_ParaProps::RTFProps_ParaProps()
 	memset(m_pszListDelim,0,sizeof(m_pszListDelim)) ;
 	memset(m_pszFieldFont,0,sizeof(m_pszFieldFont)) ;
 	m_startValue = 0;
+	m_curTabType = FL_TAB_LEFT;
+	m_curTabLeader = FL_LEADER_NONE;
 };                  
 
 
@@ -215,7 +217,7 @@ RTFProps_ParaProps& RTFProps_ParaProps::operator=(const RTFProps_ParaProps& othe
 	{
 		m_tabStops.clear();
 		m_tabTypes.clear();
-
+		m_tabLeader.clear();
 		m_justification = other.m_justification;
 		m_spaceBefore = other.m_spaceBefore;
 		m_spaceAfter = other.m_spaceAfter;
@@ -239,6 +241,13 @@ RTFProps_ParaProps& RTFProps_ParaProps::operator=(const RTFProps_ParaProps& othe
 				m_tabTypes.addItem(other.m_tabTypes.getNthItem(i));
 			}
 		}
+		if (other.m_tabLeader.getItemCount() > 0)
+		{
+			for (UT_uint32 i = 0; i < other.m_tabLeader.getItemCount(); i++)
+			{
+				m_tabLeader.addItem(other.m_tabLeader.getNthItem(i));
+			}
+		}
 		m_isList = other.m_isList;
 		m_level = other.m_level;
 		strcpy((char *) m_pszStyle, (char *) other.m_pszStyle); 
@@ -248,6 +257,18 @@ RTFProps_ParaProps& RTFProps_ParaProps::operator=(const RTFProps_ParaProps& othe
 		strcpy((char *) m_pszListDelim, (char *) other.m_pszListDelim); 
 		strcpy((char *) m_pszFieldFont, (char *) other.m_pszFieldFont); 
 		m_startValue = other.m_startValue;
+		if(m_tabTypes.getItemCount() > 0)
+		{
+			UT_uint32 dum = (UT_uint32) m_tabTypes.getNthItem(0);
+			m_curTabType = (eTabType)  dum;
+			dum = (UT_uint32) m_tabLeader.getNthItem(0);
+			m_curTabLeader = (eTabLeader) dum;
+		}
+		else
+		{
+			m_curTabType = FL_TAB_LEFT;
+			m_curTabLeader = FL_LEADER_NONE;
+		}
 	}
 
 	return *this;
@@ -1762,7 +1783,57 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		else if (strcmp((char*)pKeyword, "tx") == 0)
 		{
 			UT_ASSERT(fParam);	// tabstops should have parameters
-			return AddTabstop(param);
+			bool bres = AddTabstop(param,
+								   m_currentRTFState.m_paraProps.m_curTabType,
+								   m_currentRTFState.m_paraProps.m_curTabLeader);
+			m_currentRTFState.m_paraProps.m_curTabType = FL_TAB_LEFT;
+			m_currentRTFState.m_paraProps.m_curTabLeader = FL_LEADER_NONE;
+			return bres;
+		}
+		else if (strcmp((char*)pKeyword, "tb") == 0)
+		{
+			UT_ASSERT(fParam);	// tabstops should have parameters
+
+			bool bres = AddTabstop(param,FL_TAB_BAR,
+								   m_currentRTFState.m_paraProps.m_curTabLeader);
+			m_currentRTFState.m_paraProps.m_curTabType = FL_TAB_LEFT;
+			m_currentRTFState.m_paraProps.m_curTabLeader = FL_LEADER_NONE;
+			return bres;
+		}
+		else if (strcmp((char*)pKeyword, "tqr") == 0)
+		{
+			m_currentRTFState.m_paraProps.m_curTabType = FL_TAB_RIGHT;
+			return true;
+		}
+		else if (strcmp((char*)pKeyword, "tqc") == 0)
+		{
+			m_currentRTFState.m_paraProps.m_curTabType = FL_TAB_CENTER;
+			return true;
+		}
+		else if (strcmp((char*)pKeyword, "tqdec") == 0)
+		{
+			m_currentRTFState.m_paraProps.m_curTabType = FL_TAB_DECIMAL;
+			return true;
+		}
+		else if (strcmp((char*)pKeyword, "tldot") == 0)
+		{
+			m_currentRTFState.m_paraProps.m_curTabLeader = FL_LEADER_DOT;
+			return true;
+		}
+		else if (strcmp((char*)pKeyword, "tlhyph") == 0)
+		{
+			m_currentRTFState.m_paraProps.m_curTabLeader = FL_LEADER_HYPHEN;
+			return true;
+		}
+		else if (strcmp((char*)pKeyword, "tlul") == 0)
+		{
+			m_currentRTFState.m_paraProps.m_curTabLeader = FL_LEADER_UNDERLINE;
+			return true;
+		}
+		else if (strcmp((char*)pKeyword, "tleq") == 0)
+		{
+			m_currentRTFState.m_paraProps.m_curTabLeader = FL_LEADER_EQUALSIGN;
+			return true;
 		}
 		break;
 
@@ -2044,7 +2115,6 @@ UT_uint32 IE_Imp_RTF::mapID(UT_uint32 id)
 	UT_uint32 mappedID = id;
 	if(id == 0)
 	{
-		UT_DEBUGMSG(("SEVIOR: Trying to map a non list item. This should not happen \n"));
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return id;
 	}
@@ -2086,7 +2156,6 @@ UT_uint32 IE_Imp_RTF::mapID(UT_uint32 id)
 						   }
 					   }
 				   }
-				   UT_DEBUGMSG(("SEVIOR: m_rtfAbiListTable[i].orig_parentid = \n",m_rtfAbiListTable[i].orig_parentid));
 				   if(pMapAuto == NULL )
 				          mappedID = rand();
 				   else if( m_rtfAbiListTable[i].level <= pMapAuto->getLevel() && pMapAuto->getID() != 0)
@@ -2139,14 +2208,12 @@ UT_uint32 IE_Imp_RTF::mapParentID(UT_uint32 id)
 	        return id;
 	}
 	UT_uint32 i;
-	UT_DEBUGMSG(("SEVIOR: Looking for id %d \n",id));
 	for(i=0; (i<m_numLists) && (m_rtfAbiListTable[i].orig_id == id); i++)
 	{
 	}
 	if( i < m_numLists && m_rtfAbiListTable[i].orig_id == id)
 	{
 	    mappedID =  m_rtfAbiListTable[i].mapped_id;
-	    UT_DEBUGMSG(("SEVIOR: Found it! mapping id %d to %d \n",id,mappedID));
 	}
 	return mappedID;
 }
@@ -2164,6 +2231,8 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 	{
 		UT_ASSERT(m_currentRTFState.m_paraProps.m_tabStops.getItemCount() ==
 					m_currentRTFState.m_paraProps.m_tabTypes.getItemCount() );
+		UT_ASSERT(m_currentRTFState.m_paraProps.m_tabStops.getItemCount() ==
+					m_currentRTFState.m_paraProps.m_tabLeader.getItemCount() );
 
 		strcat(propBuffer, "tabstops:");
 		for (UT_uint32 i = 0; i < m_currentRTFState.m_paraProps.m_tabStops.getItemCount(); i++)
@@ -2172,9 +2241,34 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 				strcat(propBuffer, ",");
 
 			UT_sint32 tabTwips = (UT_sint32)m_currentRTFState.m_paraProps.m_tabStops.getNthItem(i);
-			double tabIn = tabTwips/(20.0*72.0);
-
-			sprintf(tempBuffer, "%s/L", UT_convertInchesToDimensionString(DIM_IN,tabIn,"04"));	// TODO - left tabs only
+			double tabIn = tabTwips/(20.0*72.);
+			UT_uint32 idum = (UT_uint32)  m_currentRTFState.m_paraProps.m_tabTypes.getNthItem(i);
+			eTabType tabType = (eTabType) idum;
+			idum = (UT_uint32) (m_currentRTFState.m_paraProps.m_tabLeader.getNthItem(i));
+			eTabLeader tabLeader = (eTabLeader) idum;
+			char  cType = ' ';
+			switch(tabType)
+			{
+			case FL_TAB_LEFT:
+				cType ='L';
+				break;
+			case FL_TAB_RIGHT:
+				cType ='R';
+				break;
+			case FL_TAB_CENTER:
+				cType ='C';
+				break;
+			case FL_TAB_DECIMAL:
+				cType ='D';
+				break;
+			case FL_TAB_BAR:
+				cType ='B';
+				break;
+			default:
+				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			}
+			char cLeader = '0' + (char) tabLeader;
+			sprintf(tempBuffer, "%s/%c%c", UT_convertInchesToDimensionString(DIM_IN,tabIn,"04"),cType,cLeader); 
 			strcat(propBuffer, tempBuffer);
 		}
 
@@ -2329,7 +2423,6 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 		{
 			if(bPasteList)
 			{
-				UT_DEBUGMSG(("SEVIOR: Pasting list id %d \n",id));
 				bool bSuccess = m_pDocument->insertStrux(m_dposPaste,PTX_Block);
 				m_dposPaste++;
 				PL_StruxDocHandle sdh_cur,sdh_next;
@@ -2344,7 +2437,6 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 				 * been remapped.
 				 */
 				{
-					UT_DEBUGMSG(("SEVIOR: Creating a new list \n"));
 					List_Type lType = NOT_A_LIST;
 					UT_uint32 size_xml_lists = sizeof(xml_Lists)/sizeof(xml_Lists[0]);
 					for(j=0; j< size_xml_lists; j++)
@@ -2359,7 +2451,6 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 					else
 						lType = (List_Type) 0;
 					pAuto = new fl_AutoNum(id, pid, lType, startValue,(XML_Char *)  m_currentRTFState.m_paraProps.m_pszListDelim,(XML_Char *)  m_currentRTFState.m_paraProps.m_pszListDecimal, m_pDocument);
-					UT_DEBUGMSG(("SEVIOR: Created new list in Paste \n"));
 					m_pDocument->addList(pAuto);
 					pAuto->fixHierarchy(m_pDocument);
 				}
@@ -2446,8 +2537,6 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 bool IE_Imp_RTF::ResetParagraphAttributes()
 {
 	bool ok = FlushStoredChars();
-
-	UT_DEBUGMSG(("SEVIOR: clearing all paragraph properties \n"));
 	m_currentRTFState.m_paraProps = RTFProps_ParaProps();
 
 	return ok;
@@ -3272,7 +3361,6 @@ nextChar:	if (!ReadCharFromFile(&ch))
 	  }
 	  if(i >= m_numLists)
 	  {
-	         UT_DEBUGMSG(("SEVIOR: Found new id %d, adding it to mapping table at%d \n",m_currentRTFState.m_paraProps.m_rawID,m_numLists));
 		 m_rtfAbiListTable[m_numLists].orig_id = m_currentRTFState.m_paraProps.m_rawID ; 
 		 m_rtfAbiListTable[m_numLists].orig_parentid = m_currentRTFState.m_paraProps.m_rawParentID ;
 		 m_rtfAbiListTable[m_numLists].level = m_currentRTFState.m_paraProps.m_level ;
@@ -3414,11 +3502,26 @@ bool IE_Imp_RTF::SetParaJustification(RTFProps_ParaProps::ParaJustification just
 	return true;
 }
 
-bool IE_Imp_RTF::AddTabstop(UT_sint32 stopDist)
+bool IE_Imp_RTF::AddTabstop(UT_sint32 stopDist, eTabType tabType, eTabLeader tabLeader)
 {
 	m_currentRTFState.m_paraProps.m_tabStops.addItem((void*)stopDist);	// convert from twip to inch
-	m_currentRTFState.m_paraProps.m_tabTypes.addItem((void*)RTFProps_ParaProps::ttLeft);
-
+	if(tabType >=FL_TAB_LEFT && tabType <= FL_TAB_BAR  )
+	{
+		m_currentRTFState.m_paraProps.m_tabTypes.addItem((void*) tabType);
+	}
+	else
+	{
+		m_currentRTFState.m_paraProps.m_tabTypes.addItem((void*) FL_TAB_LEFT);
+	}
+	if(tabLeader >= FL_LEADER_NONE  && tabLeader <= FL_LEADER_EQUALSIGN)
+	{
+		m_currentRTFState.m_paraProps.m_tabLeader.addItem((void*) tabLeader);
+	}
+	else
+	{
+		m_currentRTFState.m_paraProps.m_tabLeader.addItem((void*) FL_LEADER_NONE);
+	}
+ 
 	return true;
 }
 

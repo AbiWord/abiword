@@ -668,12 +668,14 @@ void s_RTF_ListenerWriteDoc::_rtf_open_section(PT_AttrPropIndex api)
 class _t 
 {
 public:
-	_t(const char * szTT, const char * szTK, UT_sint32 tp)
+	_t(const char * szTL, const char * szTT, const char * szTK, UT_sint32 tp)
 		{
+			m_szTabLeaderKeyword = szTL;
 			m_szTabTypeKeyword = szTT;
 			m_szTabKindKeyword = szTK;
 			m_iTabPosition = tp;
 		}
+	const char *    m_szTabLeaderKeyword;
 	const char *	m_szTabTypeKeyword;
 	const char *	m_szTabKindKeyword;
 	UT_sint32		m_iTabPosition;
@@ -1022,7 +1024,7 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 		{
 			const char * szTT = "tx";	// TabType -- assume text tab (use "tb" for bar tab)
 			const char * szTK = NULL;	// TabKind -- assume left tab
-			
+			const char * szTL = NULL;    // TabLeader
 			const char* pEnd = pStart;
 			while (*pEnd && (*pEnd != ','))
 				pEnd++;
@@ -1040,7 +1042,16 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 				case 'R':	szTK = "tqr";	break;
 				case 'C':	szTK = "tqc";	break;
 				case 'D':	szTK = "tqdec";	break;
-				case 'B':	szTT = "tb";	break; // TabKind == bar tab
+				case 'B':	szTT = "tb";    szTK= NULL;	break; // TabKind == bar tab
+				}
+				switch (p1[2])
+				{
+				default:
+				case '0': szTL = NULL;      break;
+				case '1': szTL = "tldot";   break;
+				case '2': szTL = "tlhyph";    break;
+				case '3': szTL = "tlul";    break;
+				case '4': szTL = "tleq";    break;
 				}
 			}
 
@@ -1055,7 +1066,7 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 			double dbl = UT_convertToPoints(pszPosition);
 			UT_sint32 d = (UT_sint32)(dbl * 20.0);
 			
-			_t * p_t = new _t(szTT,szTK,d);
+			_t * p_t = new _t(szTL,szTT,szTK,d);
 			vecTabs.addItem(p_t);
 
 			pStart = pEnd;
@@ -1082,8 +1093,8 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 			// write <tabkind>
 			if (p_t->m_szTabKindKeyword && *p_t->m_szTabKindKeyword)
 				m_pie->_rtf_keyword(p_t->m_szTabKindKeyword);
-			// TODO write leader character in <tablead>
-			// write tab type
+			if (p_t->m_szTabLeaderKeyword && *p_t->m_szTabLeaderKeyword)
+				m_pie->_rtf_keyword(p_t->m_szTabLeaderKeyword);
 			m_pie->_rtf_keyword(p_t->m_szTabTypeKeyword,p_t->m_iTabPosition);
 
 			delete p_t;
