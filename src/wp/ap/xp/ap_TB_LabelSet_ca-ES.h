@@ -65,10 +65,15 @@ BeginSet(ca,ES,UT_TRUE)
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_STYLE,		"Estil",	NoIcon,			NULL, "Estil")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_FONT,		"Tipus de lletra",		NoIcon,			NULL, "Tipus de lletra")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_SIZE,		"Mida de la lletra", NoIcon,		NULL, "Mida de la lletra")
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_BOLD,		"Negreta",		tb_text_bold_xpm,		NULL, "Negreta")
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_ITALIC,		"Cursiva",	tb_text_italic_xpm,	NULL, "Cursiva")
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_UNDERLINE,	"Subratllat",tb_text_underline_xpm,	NULL, "Subratllat")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_BOLD,		"Negreta",		tb_text_bold_N_xpm,		NULL, "Negreta")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_ITALIC,		"Cursiva",	tb_text_italic_K_xpm,	NULL, "Cursiva")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_UNDERLINE,	"Subratllat",tb_text_underline_S_xpm,	NULL, "Subratllat")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_OVERLINE,	"Supraratllat",tb_text_overline_xpm,	NULL, "Supraratllat")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_STRIKE,		"Barrat",   tb_text_strikeout_xpm,	NULL, "Barrat")
+
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUPERSCRIPT,	"Superíndex",	tb_text_superscript_xpm,	NULL, "Superíndex")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUBSCRIPT,	"Subíndex",	tb_text_subscript_xpm,		NULL, "Subíndex")
+	ToolbarLabel(AP_TOOLBAR_ID_INSERT_SYMBOL,	"Símbol",			tb_symbol_xpm,			NULL, "Inserta un símbol")
 
 	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_LEFT,		"Esquerra",		tb_text_align_left_xpm,		NULL, "Alineació esquerra")
 	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_CENTER,	"Centre",	tb_text_center_xpm,	NULL, "Alineació central")
@@ -87,6 +92,8 @@ BeginSet(ca,ES,UT_TRUE)
 	ToolbarLabel(AP_TOOLBAR_ID_3COLUMN,			"3 columnes",		tb_3column_xpm,			NULL, "3 columnes")
 
 	ToolbarLabel(AP_TOOLBAR_ID_ZOOM,			"Zoom",		NoIcon,			NULL, "Zoom")
+	ToolbarLabel(AP_TOOLBAR_ID_LISTS_BULLETS,	"Vinyetes",			tb_lists_bullets_xpm,	NULL, "Vinyetes")
+	ToolbarLabel(AP_TOOLBAR_ID_LISTS_NUMBERS,	"Llistes",			tb_lists_numbers_xpm,	NULL, "Llistes numerades")
 	
 	// ... add others here ...
 
