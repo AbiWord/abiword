@@ -36,8 +36,12 @@
 #include "ut_string.h"
 #include "ut_Win32OS.h"
 
-#define WIN_SCALE_RATIO 1440.0/72.
-#define NEW_SCALE 1
+                                                                                
+
+	
+
+#define WIN_SCALE_RATIO 1440.0/72.                                              
+#define NEW_SCALE 0                                                             
 
 //#define GR_GRAPHICS_DEBUG	1
 
@@ -197,10 +201,10 @@ GR_Font* GR_Win32Graphics::getGUIFont(void)
 	{
 		// lazily grab this (once)
 		HFONT f = (HFONT) GetStockObject(DEFAULT_GUI_FONT);
-		LOGFONT lf;
-		int iRes = GetObject(f, sizeof(LOGFONT), &lf);
-		UT_sint32 iHeight = static_cast<UT_sint32>(lf.lfHeight);
-		m_pFontGUI = new GR_Win32Font(f, this,iHeight);
+		LOGFONT lf;                                                     
+		int iRes = GetObject(f, sizeof(LOGFONT), &lf);                  
+		UT_sint32 iHeight = static_cast<UT_sint32>(lf.lfHeight);                                                                                     
+		m_pFontGUI = new GR_Win32Font(f, this,iHeight);                 
 		UT_ASSERT(m_pFontGUI);
 	}
 
@@ -285,7 +289,7 @@ GR_Font* GR_Win32Graphics::findFont(const char* pszFontFamily,
 	if (!hFont)
 		return 0;
 
-	return new GR_Win32Font(hFont, this,iHeight);
+	return new GR_Win32Font(hFont, this, iHeight);
 }
 
 void GR_Win32Graphics::drawGlyph(UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff)
@@ -342,41 +346,6 @@ void GR_Win32Graphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
 	}
 }
 
-
-UT_uint16*	GR_Win32Graphics::_remapGlyphs(const UT_UCSChar* pChars, int iCharOffset, int &iLength)
-{
-	// TODO -- make this handle 32-bit chars properly
-	if (iLength > (int)m_remapBufferSize)
-	{
-		delete [] m_remapBuffer;
-
-		if(XAP_App::getApp()->theOSHasBidiSupport() != XAP_App::BIDI_SUPPORT_NONE)
-		{
-			delete [] m_remapIndices;
-			m_remapIndices = new UT_UCS2Char[iLength];
-		}
-
-		m_remapBuffer = new UT_UCS2Char[iLength];
-		m_remapBufferSize = iLength;
-	}
-
-    // Need to handle zero-width spaces correctly
-	int i, j;
-	for (i = 0, j = 0; i < iLength; ++i, ++j)
-	{
-		m_remapBuffer[j] = (UT_UCS2Char)pChars[iCharOffset + i];
-		
-		if(m_remapBuffer[j] == 0x200B || m_remapBuffer[j] == 0xFEFF
-		   /*|| m_remapBuffer[j] == UCS_LIGATURE_PLACEHOLDER*/)
-			j--;
-	}
-
-	iLength -= (i - j);
-
-	return m_remapBuffer;
-}
-
-
 void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 								 int iCharOffset, int iLengthOrig,
 								 UT_sint32 xoff, UT_sint32 yoff,
@@ -390,7 +359,6 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 	
 	xoff = tdu(xoff);
 	yoff = tdu(yoff);
-	int *pCharAdvances = NULL;
 	
 
 	// iLength can be modified by _remapGlyphs
@@ -420,13 +388,13 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 		int iConverted = WideCharToMultiByte(CP_ACP, NULL,
 			(LPCWSTR) currentChars, iLength,
 			str, iLength * sizeof(UT_UCSChar), NULL, NULL);
-
 		ExtTextOutA(m_hdc, xoff, yoff, 0, NULL, str, iConverted, NULL);
 		delete [] str;
 	}
 	else
 	{
 		int duCharWidths [256];
+		int *pCharAdvances;
 
 		if (pCharWidths)
 		{
@@ -440,26 +408,19 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 			// all 0x200B and 0xFEFF characters, we also have to
 			// remove their entires from the advances
 			UT_sint32 i,j;
-			UT_sint32 iwidth = 0;
-			UT_sint32 iadvance = 0;
-			UT_sint32 inextAdvance = 0;
+			
 			for (i = 0, j = 0; i < iLengthOrig; i++)
 			{
 				if(! (pChars[iCharOffset+i] == 0x200B || pChars[iCharOffset+i] == 0xFEFF
 				   /*|| pChars[iCharOffset+i] == UCS_LIGATURE_PLACEHOLDER*/ ) )
 				{
-					iwidth += pCharWidths[i];
-					inextAdvance = tdu(iwidth);
-					pCharAdvances[j] = inextAdvance - iadvance;
-					iadvance = inextAdvance;
-					j++;
+					pCharAdvances[j] = tdu (pCharWidths[i]);					
+                    j++;
 				}
 			}
 		}
 		else
-		  {
 			pCharAdvances=NULL;
-		  }
 
 		// Unicode font and default character set handling for WinNT and Win9x
 
@@ -519,6 +480,39 @@ simple_exttextout:
 			delete[] pCharAdvances;
 	}
 
+}
+
+UT_uint16*	GR_Win32Graphics::_remapGlyphs(const UT_UCSChar* pChars, int iCharOffset, int &iLength)
+{
+	// TODO -- make this handle 32-bit chars properly
+	if (iLength > (int)m_remapBufferSize)
+	{
+		delete [] m_remapBuffer;
+
+		if(XAP_App::getApp()->theOSHasBidiSupport() != XAP_App::BIDI_SUPPORT_NONE)
+		{
+			delete [] m_remapIndices;
+			m_remapIndices = new UT_UCS2Char[iLength];
+		}
+
+		m_remapBuffer = new UT_UCS2Char[iLength];
+		m_remapBufferSize = iLength;
+	}
+
+    // Need to handle zero-width spaces correctly
+	int i, j;
+	for (i = 0, j = 0; i < iLength; ++i, ++j)
+	{
+		m_remapBuffer[j] = (UT_UCS2Char)pChars[iCharOffset + i];
+		
+		if(m_remapBuffer[j] == 0x200B || m_remapBuffer[j] == 0xFEFF
+		   /*|| m_remapBuffer[j] == UCS_LIGATURE_PLACEHOLDER*/)
+			j--;
+	}
+
+	iLength -= (i - j);
+
+	return m_remapBuffer;
 }
 
 void GR_Win32Graphics::setFont(GR_Font* pFont)
@@ -1291,7 +1285,7 @@ GR_Win32Font::GR_Win32Font(HFONT hFont, GR_Graphics * pG, UT_sint32 iHeight)
 	m_defaultCharWidth(0),
 	m_tm(TEXTMETRIC()),
 	m_pG(pG),
-	m_iUnScaled(iHeight)
+	m_iUnScaled(iHeight)  
 {
 	UT_ASSERT(m_hFont);
 
@@ -1375,20 +1369,21 @@ UT_sint32 GR_Win32Font::measureUnremappedCharForCache(UT_UCSChar cChar) const
 	// calculate the limits of the 256-char page
 	UT_UCS4Char base = (cChar & 0xffffff00);
 	UT_UCS4Char limit = (cChar | 0x000000ff);
-#if NEW_SCALE
-	LOGFONT lf;
-	int iRes = GetObject(m_hFont, sizeof(LOGFONT), &lf);
-	lf.lfHeight= static_cast<LONG>(static_cast<double>(m_iUnScaled)*  WIN_SCALE_RATIO);
-	HFONT hFont = CreateFontIndirect(&lf);
-	HDC hdc = CreateDC("DISPLAY",NULL,NULL,NULL);
-	SelectObject(hdc,hFont);
-	_getCharWidths()->setCharWidthsOfRange(hdc, base, limit, m_pG);
-	DeleteObject(hFont);
-	DeleteDC(hdc);
-#else
+	
+	
+	#if NEW_SCALE                                                                               
+        LOGFONT lf;                                                             
+        int iRes = GetObject(m_hFont, sizeof(LOGFONT), &lf);                    
+        lf.lfHeight= static_cast<LONG>(static_cast<double>(m_iUnScaled)*  WIN_SCALE_RATIO);
+        HFONT hFont = CreateFontIndirect(&lf);                                  
+        HDC hdc = CreateDC("DISPLAY",NULL,NULL,NULL);                           
+        SelectObject(hdc,hFont);                                                
+        _getCharWidths()->setCharWidthsOfRange(hdc, base, limit, m_pG);         
+        DeleteObject(hFont);                                                    
+        DeleteDC(hdc);                                                          
+	#else  	
 	_getCharWidths()->setCharWidthsOfRange(m_oldHDC, base, limit, m_pG);
-
-#endif	
+	#endif
 	return _getCharWidths()->getWidth(cChar);
 }
 
@@ -1413,19 +1408,7 @@ void GR_Win32Font::setupFontInfo()
 	UINT d = m_tm.tmDefaultChar;
 
 	UT_return_if_fail(_getCharWidths());
-#if NEW_SCALE
-	LOGFONT lf;
-	int iRes = GetObject(m_hFont, sizeof(LOGFONT), &lf);
-	lf.lfHeight = static_cast<LONG>(static_cast<double>(m_iUnScaled)*  WIN_SCALE_RATIO);
-	HFONT hFont = CreateFontIndirect(&lf);
-	HDC hdc = CreateDC("DISPLAY",NULL,NULL,NULL);
-	SelectObject(hdc,hFont);
-	_getCharWidths()->setCharWidthsOfRange(hdc, d, d, m_pG);
-	DeleteObject(hFont);
-	DeleteDC(hdc);
-#else
 	_getCharWidths()->setCharWidthsOfRange(m_oldHDC, d, d, m_pG);
-#endif
 	m_defaultCharWidth = getCharWidthFromCache(d);
 }
 

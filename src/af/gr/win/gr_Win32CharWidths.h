@@ -25,6 +25,11 @@
 class UT_NumberVector;
 class GR_Graphics;
 
+#define _UL(x) (x)                                                              
+#define _UUL(x)(x) = (x)                                                        
+
+
+
 //////////////////////////////////////////////////////////////////
 // the only reason that we subclass is because Win32 provides a
 // routine to fetch the widths of a whole font in one call.

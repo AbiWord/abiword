@@ -35,7 +35,7 @@ class UT_ByteBuf;
 class GR_Win32Font : public GR_Font
 {
 public:
-	GR_Win32Font(HFONT hFont, GR_Graphics * pGr, UT_sint32 iUnscaled);
+	GR_Win32Font(HFONT hFont, GR_Graphics * pGr, UT_sint32 iUnscaled); 
 	~GR_Win32Font();
 
 
@@ -80,7 +80,7 @@ private:
 	UT_uint32				m_defaultCharWidth;
 	TEXTMETRIC				m_tm;
 	GR_Graphics            *m_pG;
-	UT_sint32               m_iUnScaled;
+	UT_sint32               m_iUnScaled; 
 };
 
 //////////////////////////////////////////////////////////////////
