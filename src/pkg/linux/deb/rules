@@ -54,7 +54,7 @@ install: build-stamp
 	cp -r unixfonts/fonts/* debian/tmp/usr/share/abisuite/fonts/.
 	cp -r abi-$(ABI_VER)/user/wp/strings/* debian/tmp/usr/share/abisuite/AbiWord/strings/.
 	cp -r abi-$(ABI_VER)/user/wp/help/* debian/tmp/usr/share/abisuite/AbiWord/help/.
-	ln -s ../../../lib/ispell/default.hash debian/tmp/usr/share/abisuite/dictionary/american.hash
+	ln -s ../../../lib/ispell/american.hash debian/tmp/usr/share/abisuite/dictionary/american.hash
 	touch install-stamp
 
 # Build architecture-dependent files here.
