@@ -23,7 +23,7 @@ AC_PREREQ(2.50)
 AC_INIT
 AC_CONFIG_SRCDIR([src/af/ev/xp/ev_Menu.h])
 AC_CONFIG_AUX_DIR(ac-helpers)
-AM_CONFIG_HEADERS(config.h)
+AC_CONFIG_HEADERS(config.h)
 
 AM_INIT_AUTOMAKE(AbiSuite,0.9.2)
 
