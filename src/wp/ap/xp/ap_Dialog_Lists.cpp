@@ -1015,17 +1015,18 @@ const XML_Char* AP_Dialog_Lists::_getDingbatsFontName() const
 AP_Lists_preview::AP_Lists_preview(GR_Graphics * gc, AP_Dialog_Lists * pLists)
 :	XAP_Preview(gc),
 	m_pLists(pLists),
+	m_pFont(NULL),
 	m_fAlign(0.0f),
 	m_fIndent(0.0f),
 	m_iLine_height(0),
 	m_bFirst(true)
 {
-	m_pszFont[0] = '\0';
 	m_iLine_pos[0] = 0;
 }
 
 AP_Lists_preview::~AP_Lists_preview()
 {
+	DELETEP(m_pFont);
 }
 
 AP_Dialog_Lists * AP_Lists_preview::getLists(void)
@@ -1035,7 +1036,19 @@ AP_Dialog_Lists * AP_Lists_preview::getLists(void)
 
 void AP_Lists_preview::setData(XML_Char * pszFont,float fAlign,float fIndent)
 {
-	UT_XML_strncpy(m_pszFont, 80, (const XML_Char *) pszFont);
+	//
+	// we draw at 16 points in this preview
+	//
+	if(!pszFont || strcmp(pszFont,"NULL")== 0)
+	{
+		m_pFont = m_gc->findFont("Times New Roman", "normal", "", "normal", "", "16pt");
+	}
+	else
+	{
+		m_pFont = m_gc->findFont((char *)pszFont, "normal", "", "normal", "", "16pt");
+	}	
+	UT_ASSERT(m_pFont);
+	
 	m_fAlign = fAlign;
 	m_fIndent = fIndent;
 }
@@ -1043,25 +1056,15 @@ void AP_Lists_preview::setData(XML_Char * pszFont,float fAlign,float fIndent)
 
 void AP_Lists_preview::draw(void)
 {
+	UT_return_if_fail(m_pFont);
+	m_gc->setFont(m_pFont);
+	
 	UT_RGBColor clrGrey = UT_RGBColor(128,128,128);
 	UT_RGBColor clrBlack = UT_RGBColor(0,0,0);
 	UT_sint32 iWidth = m_gc->tlu(getWindowWidth());
 	UT_sint32 iHeight = m_gc->tlu(getWindowHeight());
 	UT_UCSChar ucs_label[50];
-	GR_Font * font = NULL;
-	//
-	// we draw at 16 points in this preview
-	//
-	if(strcmp(m_pszFont,"NULL")== 0)
-	{
-		font = m_gc->findFont("Times New Roman", "normal", "", "normal", "", "16pt");
-	}
-	else
-	{
-		font = m_gc->findFont((char *)m_pszFont, "normal", "", "normal", "", "16pt");
-	}
 
-	m_gc->setFont(font);
 	UT_sint32 iDescent = m_gc->getFontDescent();
 	UT_sint32 iAscent = m_gc->getFontAscent();
 	UT_sint32 iFont = iDescent + iAscent;
@@ -1239,5 +1242,4 @@ void AP_Lists_preview::draw(void)
 				m_gc->fillRect(clrGrey,xy,yy,awidth,aheight);
 		}
 	}
-   DELETEP(font);
 }

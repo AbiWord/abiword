@@ -52,7 +52,7 @@ public:
 protected:
 
 	AP_Dialog_Lists*	m_pLists;
-	XML_Char			m_pszFont[80];
+	GR_Font*			m_pFont;
 	float				m_fAlign;
 	float				m_fIndent;
 	UT_sint32			m_iLine_pos[8];
@@ -212,9 +212,3 @@ private:
 
 
 #endif /* AP_DIALOG_LISTS_H */
-
-
-
-
-
-
