@@ -217,6 +217,7 @@ UT_Bool AP_Dialog_Spell::nextMisspelledWord(void)
 		     XAP_App * pApp = m_pFrame->getApp();
 
 			 UT_UCSChar theWord[101];
+			 //UT_DEBUGMSG(("char: %s", pBlockText[m_iWordOffset]));
 			 // convert smart quote apostrophe to ASCII single quote to be compatible with ispell
 			 for (int ldex=0; ldex<m_iWordLength; ++ldex)
 			 {
@@ -225,8 +226,8 @@ UT_Bool AP_Dialog_Spell::nextMisspelledWord(void)
 				 if (currentChar == UCS_RQUOTE) currentChar = '\'';
 				 theWord[ldex] = currentChar;
 			 }
-				
-		     if (!SpellCheckNWord16( theWord, m_iWordLength) &&
+			 UT_DEBUGMSG(("word: %s\n", theWord));
+			 if (!SpellCheckNWord16( theWord, m_iWordLength) &&
 				 !m_pDoc->isIgnore(  theWord, m_iWordLength) &&
 				 !pApp->isWordInDict(theWord, m_iWordLength)) {
 		  
