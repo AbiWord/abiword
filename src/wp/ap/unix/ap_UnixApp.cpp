@@ -704,8 +704,18 @@ extern "C" {
 	}
 } // extern "C" block
 
+#ifdef ABI_PLUGIN_BUILTIN
+extern void abipgn_builtin_register ();
+#endif
+
 void AP_UnixApp::loadAllPlugins ()
 {
+#ifdef ABI_PLUGIN_BUILTIN
+  UT_DEBUGMSG(("load preloaded plugins:\n"));
+  abipgn_builtin_register ();
+  UT_DEBUGMSG(("finished loading preloaded plugins.\n"));
+#endif
+
   struct dirent **namelist;
   int n = 0;
 
