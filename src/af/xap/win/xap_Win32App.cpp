@@ -32,9 +32,14 @@
 #include "xap_Win32_TB_CFactory.h"
 #include "xap_Win32Slurp.h"
 #include "xap_Win32EncodingManager.h"
+#include "xap_Prefs.h"
 
 #ifdef _MSC_VER
 #pragma warning(disable:4355)	// 'this' used in base member initializer list
+#endif
+
+#ifdef __MINGW32__
+#include <w32api.h>
 #endif
 
 
@@ -405,7 +410,8 @@ void XAP_Win32App::_setBidiOS(void)
 	gcpResult.lpDx = distanceArray;     // Distances between character cells
 	gcpResult.lpCaretPos = NULL;		// Caret positions
 	gcpResult.lpClass = NULL;         // Character classifications
-#ifdef __MINGW32__
+// w32api changed lpGlyphs from UINT * to LPWSTR to match MS PSDK in w32api v2.4
+#if defined(__MINGW32__) && (__W32API_MAJOR_VERSION == 2 && __W32API_MINOR_VERSION < 4)
 	gcpResult.lpGlyphs = (UINT *) glyphArray;    // Character glyphs
 #else	
 	gcpResult.lpGlyphs = (unsigned short *) glyphArray;    // Character glyphs
@@ -447,4 +453,12 @@ const char * XAP_Win32App::getDefaultEncoding () const
 {
 	XAP_EncodingManager * pEncodingManager = XAP_EncodingManager::get_instance();
 	return pEncodingManager->getNativeSystemEncodingName();
+}
+
+void XAP_Win32App::getDefaultGeometry(UT_uint32& width, UT_uint32& height, UT_uint32& flags)
+{
+	flags |= PREF_FLAG_GEOMETRY_MAXIMIZED;
+	
+	width = GetSystemMetrics(SM_CXFULLSCREEN);
+	height = GetSystemMetrics(SM_CYFULLSCREEN);	
 }

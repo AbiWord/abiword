@@ -38,7 +38,7 @@
 #include "fg_Graphic.h"
 #include "fl_AutoLists.h"
 #include "pp_Property.h"
-#include <fribidi/fribidi.h>
+#include <fribidi.h>
 #include "fl_ContainerLayout.h"
 #include "fl_SectionLayout.h"
 #include "fb_LineBreaker.h"
@@ -177,7 +177,7 @@ public:
 	const char* getProperty(const XML_Char * pszName, bool bExpandStyles = true) const;
 	const PP_PropertyType * getPropertyType(const XML_Char * szName, tProperty_type Type, bool bExpandStyles = true) const;
 	void setAlignment(UT_uint32 iAlignCmd);
-
+	UT_sint32       getLength(void);
 	bool            isEmbeddedType(void);
 	void            updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmebbedSize);
 	void            updateEnclosingBlockIfNeeded(void);

@@ -3972,11 +3972,9 @@ UT_UCSChar * FV_View::getSelectionText(void)
 
 	return NULL;
 }
-#if 0
-// this function has not been debugged
-UT_UCSChar *	FV_View::getTextBetweenPos(PT_DocPosition pos1, PT_DocPosition pos2)
-{
 
+UT_UCSChar * FV_View::getTextBetweenPos(PT_DocPosition pos1, PT_DocPosition pos2)
+{
 	UT_ASSERT(pos2 > pos1);
 
 	UT_GrowBuf buffer;
@@ -3989,7 +3987,7 @@ UT_UCSChar *	FV_View::getTextBetweenPos(PT_DocPosition pos1, PT_DocPosition pos2
 	// get the current block the insertion point is in
 	fl_BlockLayout * pBlock = m_pLayout->findBlockAtPosition(curPos);
 
-	UT_UCSChar * bufferRet = new UT_UCSChar[iLength];
+	UT_UCSChar * bufferRet = new UT_UCSChar[iLength+1];
 
 	UT_ASSERT(bufferRet);
 	if(!bufferRet)
@@ -4002,7 +4000,7 @@ UT_UCSChar *	FV_View::getTextBetweenPos(PT_DocPosition pos1, PT_DocPosition pos2
 		pBlock->getBlockBuf(&buffer);
 
 		PT_DocPosition offset = curPos - pBlock->getPosition(false);
-		UT_uint32 iLenToCopy = MIN(pos2 - curPos, buffer.getLength() - offset);
+		UT_uint32 iLenToCopy = UT_MIN(pos2 - curPos, buffer.getLength() - offset);
 		while(curPos < pos2 && (curPos < pBlock->getPosition(false) + pBlock->getLength()))
 		{
 			memmove(buff_ptr, buffer.getPointer(offset), iLenToCopy * sizeof(UT_UCSChar));
@@ -4015,9 +4013,9 @@ UT_UCSChar *	FV_View::getTextBetweenPos(PT_DocPosition pos1, PT_DocPosition pos2
 	}
 
 	UT_ASSERT(curPos == pos2);
+	*buff_ptr = 0;
 	return bufferRet;
 }
-#endif
 
 bool FV_View::isTabListBehindPoint(void)
 {
@@ -5521,6 +5519,10 @@ bool FV_View::isLeftMargin(UT_sint32 xPos, UT_sint32 yPos)
 	return bBOL;
 }
 
+void FV_View::ensureInsertionPointOnScreen(void)
+{
+	_ensureInsertionPointOnScreen();
+}
 
 
 void FV_View::setPoint(PT_DocPosition pt)
@@ -8178,6 +8180,13 @@ bool FV_View::isPointLegal(PT_DocPosition pos)
 	PL_StruxDocHandle prevSDH = NULL;
 	PL_StruxDocHandle nextSDH = NULL;
 	PT_DocPosition nextPos =0;
+//
+// Special case which would otherwise fail..
+//
+	if(m_pDoc->isEndFootnoteAtPos(pos))
+	{
+		return true;
+	}
 	bool bres = m_pDoc->getStruxOfTypeFromPosition(pos,PTX_Block,&prevSDH);
 	if(!bres)
 	{
@@ -8257,6 +8266,11 @@ bool FV_View::insertFootnote(bool bFootnote)
 	fl_SectionLayout * pSL =  _findBlockAtPosition(getPoint())->getSectionLayout();
 	if ( (pSL->getContainerType() != FL_CONTAINER_DOCSECTION) && (pSL->getContainerType() != FL_CONTAINER_CELL) )
 		return false;
+//
+// Do this first
+//
+	const XML_Char ** props_in = NULL;
+	getCharFormat(&props_in);
 
 	// add field for footnote reference
 	// first, make up an id for this footnote.
@@ -8307,12 +8321,18 @@ bool FV_View::insertFootnote(bool bFootnote)
 	bCreatedFootnoteSL = true;
 	_setPoint(dpBody);
 	FrefStart = dpBody;
+	bool bRet = false;
 	if(bFootnote)
 	{
 		if (cmdInsertField("footnote_ref", attrs)==false)
 			return false;
 		FrefEnd = FrefStart+1;
 		setStyleAtPos("Footnote Reference", FrefStart, FrefEnd,true);
+//
+// Put the character format back to it previous value
+//
+		bRet = m_pDoc->changeSpanFmt(PTC_AddFmt,getPoint(),getPoint(),NULL,props_in);
+		setCharFormat(props_in);
 	}
 	else
 	{
@@ -8320,7 +8340,12 @@ bool FV_View::insertFootnote(bool bFootnote)
 			return false;
 		FrefEnd = FrefStart+1;
 		setStyleAtPos("Endnote Reference", FrefStart, FrefEnd,true);
+//
+// Put the character format back to it previous value
+//
+		bRet = m_pDoc->changeSpanFmt(PTC_AddFmt,getPoint(),getPoint(),NULL,props_in);
 	}
+	free(props_in);
 	fl_BlockLayout * pBL;
 
 //
@@ -8347,6 +8372,16 @@ bool FV_View::insertFootnote(bool bFootnote)
 	{
 		cmdInsertField("endnote_anchor", attrs);
 	}
+//
+// Place a format mark before the field so we can select the field.
+//
+	const XML_Char * propListTag[] = {"list-tag",NULL,NULL};
+	static XML_Char sid[15];
+	UT_uint32 id = m_pDoc->getUID(UT_UniqueId::HeaderFtr);
+	sprintf(sid, "%i", id);
+	propListTag[1] = sid;
+	bRet = m_pDoc->changeSpanFmt(PTC_AddFmt,FanchStart,FanchStart,NULL,propListTag);
+
 	FanchEnd = FanchStart+1;
 	UT_DEBUGMSG(("insertFootnote: Inserting space after anchor field \n"));
 	//insert a space after the anchor
@@ -8356,13 +8391,24 @@ bool FV_View::insertFootnote(bool bFootnote)
 
 	// apply footnote text style to the body of the footnote and the
 	// reference style to the anchor follows it
+	propListTag[0]="text-position";
+	propListTag[1]="superscript";
 	if(bFootnote)
 	{
 		setStyleAtPos("Footnote Text", FanchStart, FanchEnd, true);
+//
+// Superscript the anchor
+//
+		bRet = m_pDoc->changeSpanFmt(PTC_AddFmt,FanchStart,FanchStart+1,NULL,propListTag);
+
 	}
 	else
 	{
 		setStyleAtPos("Endnote Text", FanchStart, FanchEnd, true);
+//
+// Superscript the anchor
+//
+		bRet = m_pDoc->changeSpanFmt(PTC_AddFmt,FanchStart,FanchStart+1,NULL,propListTag);
 	}
 
 	_setPoint(FanchEnd+1);

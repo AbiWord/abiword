@@ -24,6 +24,7 @@
 #include "ut_misc.h"
 #include "gr_Graphics.h"
 #include "gr_Win32CharWidths.h"
+#include "ut_vector.h"
 
 class UT_ByteBuf;
 
@@ -35,9 +36,8 @@ class UT_ByteBuf;
 class GR_Win32Font : public GR_Font
 {
 public:
-	GR_Win32Font(HFONT hFont, GR_Graphics * pGr, UT_sint32 iUnscaled);
-	~GR_Win32Font();
-
+	GR_Win32Font(LOGFONT & lf);
+	virtual ~GR_Win32Font();
 
 	// make GR_Win32Graphics an "aquaintance" of GR_Win32Font
 	class Acq
@@ -46,19 +46,18 @@ public:
 		friend class GR_Win32Font;
 	private:
 
-		static inline HFONT		getHFONT(GR_Win32Font& font)
-			{ return font.m_hFont; };
+		static inline HFONT		getDisplayFont(GR_Win32Font& font, GR_Graphics * pGr);
 
 		static UT_uint32	measureUnRemappedChar(	GR_Win32Font& font,
 													UT_UCSChar c);
 		static UT_uint32	getAscent(const GR_Win32Font& font)
-			{ return font.m_tm.tmAscent; };
+			{ return font.m_tm.tmAscent; }
 		static UT_uint32	getDescent(const GR_Win32Font& font)
-			{ return font.m_tm.tmDescent; };
+			{ return font.m_tm.tmDescent; }
 		static UT_uint32	getFontHeight(const GR_Win32Font& font)
-			{ return font.m_tm.tmHeight; };
+			{ return font.m_tm.tmHeight; }
 
-		static void				selectFontIntoDC(GR_Win32Font& font, HDC hdc);
+		static void				selectFontIntoDC(GR_Win32Font& font, GR_Graphics * pGr, HDC hdc);
 	};
 	friend class Acq;
 
@@ -69,18 +68,30 @@ protected:
 	GR_Win32CharWidths * _getCharWidths() const
 	{
 		return reinterpret_cast<GR_Win32CharWidths *>(GR_Font::_getCharWidths());
-	};
-	
-	
-	
+	}	
+   	
 private:
+
+	struct allocFont
+	{
+		UT_uint32			pixelSize;
+		HFONT			    hFont;
+	};
+
+	HFONT				    getFontFromCache(UT_uint32 pixelsize, bool bIsLayout, UT_uint32 zoomPercentage) const;
+	void					insertFontInCache(UT_uint32 pixelsize, HFONT pFont) const;
+	void					fetchFont(UT_uint32 pixelsize) const;
+
 	void					setupFontInfo();
+
 	HDC						m_oldHDC;
-	HFONT					m_hFont;
 	UT_uint32				m_defaultCharWidth;
+	HFONT                   m_layoutFont;
 	TEXTMETRIC				m_tm;
-	GR_Graphics            *m_pG;
-	UT_sint32               m_iUnScaled;
+	UT_uint32		        m_iHeight; // unscaled height
+
+	// a cache of 'allocFont *' at a given size
+	mutable UT_Vector		m_allocFonts;
 };
 
 //////////////////////////////////////////////////////////////////

@@ -211,7 +211,9 @@ protected:
 								 );
 
 private:
-void		_splitRunsAtSpaces(void);
+	void		_splitRunsAtSpaces(void);
+	void        _doClearScreenFromRunToEnd(UT_sint32 runIndex);
+	
 
 
 	fl_BlockLayout*	m_pBlock;

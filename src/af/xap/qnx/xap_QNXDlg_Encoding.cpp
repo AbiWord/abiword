@@ -222,7 +222,7 @@ PtWidget_t * XAP_QNXDialog_Encoding::_constructWindow(void)
 
 	// Create the new top level window.
 	windowMain = gtk_window_new (GTK_WINDOW_DIALOG);
-gtk_window_set_title (GTK_WINDOW (windowMain), pSS->getValueUTF8(XAP_STRING_ID_DLG_UENC_EncTitle ).c_str();
+gtk_window_set_title (GTK_WINDOW (windowMain), pSS->getValueUTF8(XAP_STRING_ID_DLG_UENC_EncTitle ).utf8_str();
 	// This policy allows the window to let the window manager shrink and grow it.
 	gtk_window_set_policy (GTK_WINDOW (windowMain), TRUE, TRUE, FALSE);
 
@@ -231,14 +231,14 @@ gtk_window_set_title (GTK_WINDOW (windowMain), pSS->getValueUTF8(XAP_STRING_ID_D
 	gtk_container_add (GTK_CONTAINER (windowMain), vboxMain);
 
 #else
-windowMain = gnome_dialog_new (pSS->getValueUTF8(XAP_STRING_ID_DLG_UENC_EncTitle).c_str(), GNOME_STOCK_BUTTON_OK,
+windowMain = gnome_dialog_new (pSS->getValueUTF8(XAP_STRING_ID_DLG_UENC_EncTitle).utf8_str(), GNOME_STOCK_BUTTON_OK,
 				       GNOME_STOCK_BUTTON_CANCEL, NULL);
 	vboxMain = GNOME_DIALOG(windowMain)->vbox;
 	buttonOK = GTK_WIDGET (g_list_first (GNOME_DIALOG (windowMain)->buttons)->data);
 	buttonCancel = GTK_WIDGET (g_list_last (GNOME_DIALOG (windowMain)->buttons)->data);
 #endif
 
-labelActivate = gtk_label_new (pSS->getValueUTF8(XAP_STRING_ID_DLG_UENC_EncLabel ).c_str();
+labelActivate = gtk_label_new (pSS->getValueUTF8(XAP_STRING_ID_DLG_UENC_EncLabel ).utf8_str();
 	gtk_widget_show (labelActivate);
 	gtk_box_pack_start (GTK_BOX (vboxMain), labelActivate, FALSE, TRUE, 0);
 	gtk_label_set_justify (GTK_LABEL (labelActivate), GTK_JUSTIFY_LEFT);
@@ -272,11 +272,11 @@ labelActivate = gtk_label_new (pSS->getValueUTF8(XAP_STRING_ID_DLG_UENC_EncLabel
 	gtk_button_box_set_child_size (GTK_BUTTON_BOX (buttonboxAction), 81, 27);
 	gtk_button_box_set_child_ipadding (GTK_BUTTON_BOX (buttonboxAction), 0, 0);
 
-buttonOK = gtk_button_new_with_label (pSS->getValueUTF8(XAP_STRING_ID_DLG_OK ).c_str();
+buttonOK = gtk_button_new_with_label (pSS->getValueUTF8(XAP_STRING_ID_DLG_OK ).utf8_str();
 	gtk_widget_show (buttonOK);
 	gtk_container_add (GTK_CONTAINER (buttonboxAction), buttonOK);
 
-buttonCancel = gtk_button_new_with_label (pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel ).c_str();
+buttonCancel = gtk_button_new_with_label (pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel ).utf8_str();
 	gtk_widget_show (buttonCancel);
 	gtk_container_add (GTK_CONTAINER (buttonboxAction), buttonCancel);
 #endif

@@ -50,7 +50,8 @@ struct LigatureSequence
 static LigatureData s_ligature[] =
 {
 	// code_low, code_high, intial, medial, final, stand-alone
-	
+
+#ifdef ENABLE_LATIN_LIGATURES
 	// Latin
 	{0x0021, 0x0021, 0x203c, 0, 0, 0}, // !!
 	{0x0021, 0x003f, 0x2049, 0, 0, 0}, // !?
@@ -60,6 +61,7 @@ static LigatureData s_ligature[] =
 	{0x0066, 0x0069, 0xFB01, 0xFB01, 0xFB01, 0}, // fi
 	{0x0066, 0x006C, 0xFB02, 0xFB02, 0xFB02, 0}, // fl
 	{0x017F, 0x0074, 0xFB05, 0xFB05, 0xFB05, 0},
+#endif
 	
 	// Greek
 	{0x0391, 0x0301, 0x0386, 0x0386, 0x0386, 0},

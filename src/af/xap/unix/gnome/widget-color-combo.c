@@ -47,7 +47,7 @@ enum {
 
 static guint color_combo_signals [LAST_SIGNAL] = { 0, };
 
-#define PARENT_TYPE GTK_COMBO_BOX_TYPE
+#define PARENT_TYPE GAL_COMBO_BOX_TYPE
 static GObjectClass *color_combo_parent_class;
 
 #define make_color(CC,COL) (((COL) != NULL) ? (COL) : ((CC) ? ((CC)->default_color) : NULL))
@@ -115,7 +115,7 @@ emit_color_changed (ColorCombo *cc, GdkColor *color,
   	g_signal_emit (cc,
 		       color_combo_signals [CHANGED], 0,
 		       color, is_custom, by_user, is_default);
-	gtk_combo_box_popup_hide (GTK_COMBO_BOX (cc));
+	gal_combo_box_popup_hide (GAL_COMBO_BOX (cc));
 }
 
 static void
@@ -143,13 +143,13 @@ preview_clicked (GtkWidget *button, ColorCombo *cc)
 	if (cc->instant_apply)
 		apply_current_color (cc);
 	else
-		gtk_combo_box_popup_display (GTK_COMBO_BOX (cc));
+		gal_combo_box_popup_display (GAL_COMBO_BOX (cc));
 }
 
 static void
 cb_cust_color_clicked (GtkWidget *widget, ColorCombo *cc)
 {
-	gtk_combo_box_popup_hide (GTK_COMBO_BOX (cc));
+	gal_combo_box_popup_hide (GAL_COMBO_BOX (cc));
 }
 
 /*
@@ -261,7 +261,7 @@ color_combo_construct (ColorCombo *cc, GdkPixbuf *icon,
 
 	gtk_widget_show_all (cc->preview_button);
 
-	gtk_combo_box_construct (GTK_COMBO_BOX (cc),
+	gal_combo_box_construct (GAL_COMBO_BOX (cc),
 				 cc->preview_button,
 				 GTK_WIDGET (cc->palette));
 

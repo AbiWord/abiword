@@ -52,7 +52,7 @@ public:
 protected:
 	BOOL					_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
 	BOOL					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
-
+	void					_setDlgItemInt(UINT nCtrl, int nValue);
 	void 					_updateWindowData(void);       
 
 	HWND                    m_hWnd;
