@@ -153,7 +153,11 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	//clearScreen();
 
 	bool bChanged = false;
-
+	bool bDontClear = false;
+	if(_getFont() == NULL)
+	{
+		bDontClear = true;
+	}
 
 	fd_Field * fd = NULL;
 	static_cast<fl_Layout *>(getBlock())->getField(getBlockOffset(),fd);
@@ -328,7 +332,7 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	else
 		setDirection(FRIBIDI_TYPE_UNSET, iNewOverride);
 
-	if(bChanged)
+	if(bChanged && !bDontClear)
 		clearScreen();
 	xxx_UT_DEBUGMSG(("fp_TextRun::lookupProperties: bChanged %d\n", static_cast<UT_uint32>(bChanged)));
 }
