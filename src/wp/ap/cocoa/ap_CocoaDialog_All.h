@@ -1,6 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001-2002 Hubert Figuiere
+ * Copyright (C) 2001-2003 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -85,7 +85,7 @@
 	DeclareDialog(XAP_DIALOG_ID_FILE_SAVEAS,	XAP_CocoaDialog_FileOpenSaveAs)
 //PORT	DeclareDialog(XAP_DIALOG_ID_PRINT,			XAP_CocoaDialog_Print)
 	DeclareDialog(XAP_DIALOG_ID_PRINTTOFILE,	XAP_CocoaDialog_FileOpenSaveAs)
-//PORT	DeclareDialog(XAP_DIALOG_ID_FONT,			XAP_CocoaDialog_FontChooser)
+	DeclareDialog(XAP_DIALOG_ID_FONT,			XAP_CocoaDialog_FontChooser)
 //PORT	DeclareDialog(XAP_DIALOG_ID_LANGUAGE,		XAP_CocoaDialog_Language)
 //PORT	DeclareDialog(XAP_DIALOG_ID_WINDOWMORE,		XAP_CocoaDialog_WindowMore)
 //PORT	DeclareDialog(XAP_DIALOG_ID_ZOOM,			XAP_CocoaDialog_Zoom)

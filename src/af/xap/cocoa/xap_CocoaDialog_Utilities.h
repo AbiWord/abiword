@@ -26,7 +26,20 @@
 #include "ut_string_class.h"
 #include "xap_Strings.h"
 
+class XAP_Dialog;
+
 void LocalizeControl (id control, const XAP_StringSet * pSS, XAP_String_Id stringId);
 void _convertLabelToMac (char * buf, size_t bufSize, const UT_String & label);
 
+@protocol XAP_CocoaDialogProtocol
+
+/* load the nib for the CocoaDialog */
+- (id)initFromNib;
+
+/* assign the controller an XAP object */
+- (void)setXAPOwner:(XAP_Dialog *)owner;
+/* discard that XAP because Life of Controller might be longer than the XAP Object */
+- (void)discardXAP;
+
+@end
 #endif

@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
-
+/* $Id */
 
 
 
@@ -39,8 +39,11 @@ void LocalizeControl (id control, const XAP_StringSet * pSS, XAP_String_Id strin
 	else if ([control isKindOfClass:[NSTabViewItem class]]) {
 		[control setLabel:str];
 	}
+	else if ([control isKindOfClass:[NSTextField class]]) {
+		[control setStringValue:str];
+	}
 	else {
-		NSLog(@"Unknown control type to localize");
+		NSLog(@"Unknown control type to localize: %@", [control class]);
 	}
 	[str release];
 }

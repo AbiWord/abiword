@@ -1,0 +1,47 @@
+{
+    IBClasses = (
+        {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
+        {
+            ACTIONS = {
+                cancelAction = id; 
+                colorWellAction = id; 
+                fontListAction = id; 
+                fontSizeAction = id; 
+                fontStyleAction = id; 
+                okAction = id; 
+                overlineAction = id; 
+                strikeoutAction = id; 
+                transparentAction = id; 
+                underlineAction = id; 
+            }; 
+            CLASS = "XAP_CocoaDialog_FontChooserController"; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {
+                "_cancelBtn" = NSButton; 
+                "_effectLabel" = NSTextField; 
+                "_fontLabel" = NSTextField; 
+                "_fontList" = NSTableView; 
+                "_helpBtn" = NSButton; 
+                "_hiddenButton" = NSButton; 
+                "_noHighlightColorButton" = NSButton; 
+                "_okBtn" = NSButton; 
+                "_overlineButton" = NSButton; 
+                "_preview" = "XAP_CocoaNSView"; 
+                "_previewBox" = NSBox; 
+                "_sizeLabel" = NSTextField; 
+                "_sizeList" = NSTableView; 
+                "_strikeButton" = NSButton; 
+                "_styleLabel" = NSTextField; 
+                "_styleList" = NSTableView; 
+                "_textColorLabel" = NSTextField; 
+                "_textColorWell" = NSColorWell; 
+                "_textHighlightColorLabel" = NSTextField; 
+                "_textHighlightColorWell" = NSColorWell; 
+                "_underlineButton" = NSButton; 
+            }; 
+            SUPERCLASS = NSWindowController; 
+        }, 
+        {CLASS = "XAP_CocoaNSView"; LANGUAGE = ObjC; SUPERCLASS = NSView; }
+    ); 
+    IBVersion = 1; 
+}

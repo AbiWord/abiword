@@ -1,5 +1,6 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2003 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,24 +21,17 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <gtk/gtk.h>
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_string.h"
 #include "ut_misc.h"
 #include "ut_hash.h"
 #include "ut_units.h"
-#include "xap_CocoaDialogHelper.h"
+#include "xap_CocoaDialog_Utilities.h"
 #include "xap_CocoaDlg_FontChooser.h"
 #include "xap_CocoaApp.h"
-#include "xap_CocoaFrame.h"
 #include "xap_EncodingManager.h"
 #include "gr_CocoaGraphics.h"
-
-#define SIZE_STRING_SIZE	(10+2)
-
-#define PREVIEW_BOX_BORDER_WIDTH_PIXELS 8
-#define PREVIEW_BOX_HEIGHT_PIXELS	80
 
 // your typographer's standard nonsense latin font phrase
 #define PREVIEW_ENTRY_DEFAULT_STRING	"Lorem ipsum dolor sit amet, consectetaur adipisicing..."
@@ -54,181 +48,29 @@
 
 /*****************************************************************/
 XAP_Dialog * XAP_CocoaDialog_FontChooser::static_constructor(XAP_DialogFactory * pFactory,
-														 XAP_Dialog_Id id)
+														 XAP_Dialog_Id dlgid)
 {
-	XAP_CocoaDialog_FontChooser * p = new XAP_CocoaDialog_FontChooser(pFactory,id);
+	XAP_CocoaDialog_FontChooser * p = new XAP_CocoaDialog_FontChooser(pFactory,dlgid);
 	return p;
 }
 
 XAP_CocoaDialog_FontChooser::XAP_CocoaDialog_FontChooser(XAP_DialogFactory * pDlgFactory,
-												   XAP_Dialog_Id id)
-	: XAP_Dialog_FontChooser(pDlgFactory,id)
+												   XAP_Dialog_Id dlgid)
+	: XAP_Dialog_FontChooser(pDlgFactory,dlgid),
+		m_currentFamily(NULL),
+		m_dlg(nil)
 {
-	m_fontManager = NULL;
-	m_fontList = NULL;
-	m_styleList = NULL;
-	m_sizeList = NULL;
-	m_checkStrikeOut = NULL;
-	m_checkUnderline = NULL;
-	m_checkOverline = NULL;
-	m_checkTransparency = NULL;
-	m_colorSelector = NULL;
-	m_bgcolorSelector = NULL;
-	m_preview = NULL;
-
-	m_lastFont = NULL;
-	m_gc = NULL;
-	m_pCocoaFrame = NULL;
-	m_doneFirstFont = false;
-	for(UT_sint32 i = 0; i < 4;i++)
-	{
-		m_currentFGColor[i] = 0.0;
-		m_currentBGColor[i] = -1.0;
-		m_funkyColor[i] = -1.0;
-	}
 }
 
 XAP_CocoaDialog_FontChooser::~XAP_CocoaDialog_FontChooser(void)
 {
-	DELETEP(m_gc);
-	DELETEP(m_lastFont);
+	FREEP(m_currentFamily);
+	DELETEP(m_pGraphics);
 }
 
 
+#if 0
 /*****************************************************************/
-
-// This is a little UI hack.  Check the widget callback connect point
-// for more info.
-
-static gint s_color_wheel_clicked(GtkWidget * area,
-                                  GdkEvent * event)
-{
-	GtkColorSelection * colorSelector;
-
-	colorSelector = (GtkColorSelection *) g_object_get_data(G_OBJECT(area), "_GtkColorSelection");
-
-	// these were stolen from gtkcolorsel.c, are private data,
-	// and as such are subject to immediate change and breakage
-	// without any warning.  the things we do for the user.  :)
-	enum
-	{
-		HUE,
-		SATURATION,
-		VALUE,
-		RED,
-		GREEN,
-		BLUE,
-		OPACITY,
-		NUM_CHANNELS
-	};
-
-	switch (event->type)
-    {
-    case GDK_BUTTON_PRESS:
-		// if the color is black (RGB:0,0,0), and someone clicked on
-		// the wheel, and since the wheel has no black area,
-		// snap the value up high
-
-		// I first tried checking the hue, but I _always_ got the
-		// "modified" version, which means it was never -1 but always
-		// processed through the wheel coordinate system, even if
-		// I did connect_after(), etc.  So I catch the RGB values,
-		// since they're a direct product of the hue, but aren't updated
-		// unless the value slider itself is.
-
-		// the 'less than' case catches the state of the color selector
-		// when no single color occupied the entire run of text
-		if ((gdouble) GTK_COLOR_SELECTION(colorSelector)->values[RED] 	<= (gdouble) 0 &&
-			(gdouble) GTK_COLOR_SELECTION(colorSelector)->values[GREEN] <= (gdouble) 0 &&
-			(gdouble) GTK_COLOR_SELECTION(colorSelector)->values[BLUE] 	<= (gdouble) 0)
-
-		{
-			// snap the "value" slider high
-			GTK_COLOR_SELECTION(colorSelector)->values[VALUE] = 1.0;
-		}
-		break;
-	default:
-		break;
-    }
-
-	return FALSE;
-}
-
-static gint s_color_update(GtkWidget * /* widget */,
-						   GdkEvent * /* event */,
-						   XAP_CocoaDialog_FontChooser * dlg)
-{
-	UT_ASSERT(dlg);
-	dlg->fgColorChanged();
-	return FALSE;
-}
-
-
-static gint s_bgcolor_update(GtkWidget * /* widget */,
-						   GdkEvent * /* event */,
-						   XAP_CocoaDialog_FontChooser * dlg)
-{
-	UT_ASSERT(dlg);
-	dlg->bgColorChanged();
-	return FALSE;
-}
-
-static void s_delete_clicked(GtkWidget * /* widget */,
-							 gpointer /* data */,
-							 XAP_Dialog_FontChooser::tAnswer * answer)
-{
-	*answer = XAP_Dialog_FontChooser::a_CANCEL;
-	gtk_main_quit();
-}
-
-static void s_ok_clicked(GtkWidget * /* widget */,
-						 XAP_Dialog_FontChooser::tAnswer * answer)
-{	*answer = XAP_Dialog_FontChooser::a_OK;
-	gtk_main_quit();
-}
-
-static void s_cancel_clicked(GtkWidget * /* widget */,
-							 XAP_Dialog_FontChooser::tAnswer * answer)
-{
-	*answer = XAP_Dialog_FontChooser::a_CANCEL;
-	gtk_main_quit();
-}
-
-static void s_select_row_font(GtkWidget * /* widget */,
-							  gint /* row */,
-							  gint /* column */,
-							  GdkEventButton * /* event */,
-							  XAP_CocoaDialog_FontChooser * dlg)
-{
-	UT_ASSERT(dlg);
-    // update the row number and show the changed preview
-	// redisplay the preview text
-	dlg->fontRowChanged();
-}
-
-static void s_select_row_style(GtkWidget * /* widget */,
-							   gint /* row */,
-							   gint /* column */,
-							   GdkEventButton * /* event */,
-							   XAP_CocoaDialog_FontChooser * dlg)
-{
-	UT_ASSERT(dlg);
-
-	// redisplay the preview text
-	dlg->styleRowChanged();
-}
-
-static void s_select_row_size(GtkWidget * /* widget */,
-							  gint /* row */,
-							  gint /* column */,
-							  GdkEventButton * /* event */,
-							  XAP_CocoaDialog_FontChooser * dlg)
-{
-	UT_ASSERT(dlg);
-
-	// redisplay the preview text
-	dlg->sizeRowChanged();
-}
 
 static gint s_drawing_area_expose(GtkWidget * w,
 								  GdkEventExpose * /* pExposeEvent */)
@@ -245,134 +87,89 @@ static gint s_drawing_area_expose(GtkWidget * w,
 	return FALSE;
 }
 
-static void s_underline_toggled(GtkWidget * w,  XAP_CocoaDialog_FontChooser * dlg)
-{
-	dlg->underlineChanged();
-}
-
-
-static void s_overline_toggled(GtkWidget * w,  XAP_CocoaDialog_FontChooser * dlg)
-{
-	dlg->overlineChanged();
-}
-
-
-static void s_strikeout_toggled(GtkWidget * w,  XAP_CocoaDialog_FontChooser * dlg)
-{
-	dlg->strikeoutChanged();
-}
-
-
-static void s_transparency_toggled(GtkWidget * w,  XAP_CocoaDialog_FontChooser * dlg)
-{
-	dlg->transparencyChanged();
-}
+#endif
 
 /*****************************************************************/
 
-void XAP_CocoaDialog_FontChooser::underlineChanged(void)
+void XAP_CocoaDialog_FontChooser::underlineChanged(bool value)
 {
-	m_bUnderline = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_checkUnderline));
+	m_bUnderline = value;
 	m_bChangedUnderline = !m_bChangedUnderline;
 	setFontDecoration(m_bUnderline,m_bOverline,m_bStrikeout,m_bTopline,m_bBottomline);
 	updatePreview();
 }
 
 
-void XAP_CocoaDialog_FontChooser::strikeoutChanged(void)
+void XAP_CocoaDialog_FontChooser::strikeoutChanged(bool value)
 {
-	m_bStrikeout = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_checkStrikeOut));
+	m_bStrikeout = value;
 	m_bChangedStrikeOut = !m_bChangedStrikeOut;
 	setFontDecoration(m_bUnderline,m_bOverline,m_bStrikeout,m_bTopline,m_bBottomline);
 	updatePreview();
 }
 
 
-void XAP_CocoaDialog_FontChooser::overlineChanged(void)
+void XAP_CocoaDialog_FontChooser::overlineChanged(bool value)
 {
-	m_bOverline = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_checkOverline));
+	m_bOverline = value;
 	m_bChangedOverline = !m_bChangedOverline;
 	setFontDecoration(m_bUnderline,m_bOverline,m_bStrikeout,m_bTopline,m_bBottomline);
 	updatePreview();
 }
 
 
-void XAP_CocoaDialog_FontChooser::transparencyChanged(void)
+void XAP_CocoaDialog_FontChooser::transparencyChanged(bool value)
 {
-	bool bTrans = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_checkTransparency));
+	bool bTrans = value;
 	if(bTrans)
 	{
 		addOrReplaceVecProp("bgcolor","transparent");
-		m_currentBGColor[RED]  = -1;
-		m_currentBGColor[GREEN] = -1;
-		m_currentBGColor[BLUE] = -1;
+		UT_DEBUGMSG (("Update background color"));
+//		m_currentBGColor[RED]  = -1;
+//		m_currentBGColor[GREEN] = -1;
+//		m_currentBGColor[BLUE] = -1;
 	}
 	updatePreview();
 }
 
 void XAP_CocoaDialog_FontChooser::fontRowChanged(void)
 {
-	static char szFontFamily[60];
-	// this is used many times below to grab pointers to
-	// strings inside list elements
-	gchar * text[2] = {NULL, NULL};
+	NSString *fontFamily;
+	
+	fontFamily = [m_dlg selectedFont];
+	NSLog (@"font family is %@", fontFamily);
+	FREEP(m_currentFamily);
+	m_currentFamily = UT_strdup([fontFamily UTF8String]);
+	addOrReplaceVecProp("font-family",m_currentFamily);
 
-	GList * selectedRow = NULL;
-	gint rowNumber = 0;
-
-	selectedRow = GTK_CLIST(m_fontList)->selection;
-	if (selectedRow)
-	{
-		rowNumber = GPOINTER_TO_INT(selectedRow->data);
-		gtk_clist_get_text(GTK_CLIST(m_fontList), rowNumber, 0, text);
-		UT_ASSERT(text && text[0]);
-		g_snprintf(szFontFamily, 50, "%s",text[0]);
-		addOrReplaceVecProp("font-family",(XML_Char*)szFontFamily);
-	}
 	updatePreview();
 }
 
-void XAP_CocoaDialog_FontChooser::styleRowChanged(void)
+void XAP_CocoaDialog_FontChooser::styleRowChanged(int rowNumber)
 {
-	// this is used many times below to grab pointers to
-	// strings inside list elements
-	gchar * text[2] = {NULL, NULL};
-
-	GList * selectedRow = NULL;
-	gint rowNumber = 0;
-	selectedRow = GTK_CLIST(m_styleList)->selection;
-	if (selectedRow)
+	if (rowNumber == 0)
 	{
-		rowNumber = GPOINTER_TO_INT(selectedRow->data);
-		gtk_clist_get_text(GTK_CLIST(m_styleList), rowNumber, 0, text);
-		UT_ASSERT(text && text[0]);
-
-		// perhaps these attributes really should be smashed
-		// into bitfields.  :)
-		if (rowNumber == LIST_STYLE_NORMAL)
-		{
-			addOrReplaceVecProp("font-style","normal");
-			addOrReplaceVecProp("font-weight","normal");
-		}
-		else if (rowNumber == LIST_STYLE_BOLD)
-		{
-			addOrReplaceVecProp("font-style","normal");
-			addOrReplaceVecProp("font-weight","bold");
-		}
-		else if (rowNumber == LIST_STYLE_ITALIC)
-		{
-			addOrReplaceVecProp("font-style","italic");
-			addOrReplaceVecProp("font-weight","normal");
-		}
-		else if (rowNumber == LIST_STYLE_BOLD_ITALIC)
-		{
-			addOrReplaceVecProp("font-style","italic");
-			addOrReplaceVecProp("font-weight","bold");
-		}
-		else
-		{
-			UT_ASSERT(0);
-		}
+		addOrReplaceVecProp("font-style","normal");
+		addOrReplaceVecProp("font-weight","normal");
+	}
+	else if (rowNumber == 1)
+	{
+		addOrReplaceVecProp("font-style","italic");
+		addOrReplaceVecProp("font-weight","normal");
+	}
+	else if (rowNumber == 2)
+	{
+		addOrReplaceVecProp("font-style","normal");
+		addOrReplaceVecProp("font-weight","bold");
+	}
+	else if (rowNumber == 3)
+	{
+		addOrReplaceVecProp("font-style","italic");
+		addOrReplaceVecProp("font-weight","bold");
+	}
+	else
+	{
+		UT_ASSERT(0);
 	}
 	updatePreview();
 }
@@ -380,688 +177,72 @@ void XAP_CocoaDialog_FontChooser::styleRowChanged(void)
 
 void XAP_CocoaDialog_FontChooser::sizeRowChanged(void)
 {
-	// used similarly to convert between text and numeric arguments
-	static char szFontSize[50];
-	// this is used many times below to grab pointers to
-	// strings inside list elements
-	gchar * text[2] = {NULL, NULL};
+	NSString* fontSize;
+	static char szFontSize[60];
+	
+	fontSize = [m_dlg selectedSize];
+	
+	snprintf(szFontSize, sizeof(szFontSize), "%spt",
+				   (XML_Char *)XAP_EncodingManager::fontsizes_mapping.lookupByTarget([fontSize UTF8String]));
+	addOrReplaceVecProp("font-size",(XML_Char *)szFontSize);
 
-	GList * selectedRow = NULL;
-	gint rowNumber = 0;
-	selectedRow = GTK_CLIST(m_sizeList)->selection;
-	if (selectedRow)
-	{
-		rowNumber = GPOINTER_TO_INT(selectedRow->data);
-		gtk_clist_get_text(GTK_CLIST(m_sizeList), rowNumber, 0, text);
-		UT_ASSERT(text && text[0]);
-
-		g_snprintf(szFontSize, 50, "%spt",
-				   (XML_Char *)XAP_EncodingManager::fontsizes_mapping.lookupByTarget(text[0]));
-
-//		g_snprintf(szFontSize, 50, "%spt",(UT_convertToPoints(text[0])));
-//		g_snprintf(szFontSize, 50, "%spt",text[0]);
-
-		addOrReplaceVecProp("font-size",(XML_Char *)szFontSize);
-	}
 	updatePreview();
 }
 
+
 void XAP_CocoaDialog_FontChooser::fgColorChanged(void)
 {
+	NSColor* color;
 	static char buf_color[8];
-	gtk_color_selection_get_color(GTK_COLOR_SELECTION(m_colorSelector), m_currentFGColor);
-
-	// test for funkyColor-has-been-changed-to-sane-color case
-	if (m_currentFGColor[RED] >= 0 &&
-		m_currentFGColor[GREEN] >= 0 &&
-		m_currentFGColor[BLUE] >= 0)
-	{
-		sprintf(buf_color, "%02x%02x%02x",
-				(unsigned int) (m_currentFGColor[RED] 	* (gdouble) 255.0),
-				(unsigned int) (m_currentFGColor[GREEN]	* (gdouble) 255.0),
-				(unsigned int) (m_currentFGColor[BLUE] 	* (gdouble) 255.0));
-		addOrReplaceVecProp("color",(XML_Char *)buf_color);
-	}
+	float r,g,b,a;
+	color = [m_dlg bgColor];
+	[color getRed:&r green:&g blue:&b alpha:&a];
+	snprintf(buf_color, sizeof(buf_color), "%02x%02x%02x",
+			(unsigned int) (r 	* (float) 255.0),
+			(unsigned int) (g	* (float) 255.0),
+			(unsigned int) (b * (float) 255.0));
+	addOrReplaceVecProp("color",(XML_Char *)buf_color);
 	updatePreview();
 }
 
 
 void XAP_CocoaDialog_FontChooser::bgColorChanged(void)
 {
+	NSColor* color;
 	static char buf_color[8];
-	gtk_color_selection_get_color(GTK_COLOR_SELECTION(m_bgcolorSelector), m_currentBGColor);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_checkTransparency), FALSE);
-	// test for funkyColor-has-been-changed-to-sane-color case
-	if (m_currentBGColor[RED] >= 0 &&
-		m_currentBGColor[GREEN] >= 0 &&
-		m_currentBGColor[BLUE] >= 0)
-	{
-		sprintf(buf_color, "%02x%02x%02x",
-				(unsigned int) (m_currentBGColor[RED] 	* (gdouble) 255.0),
-				(unsigned int) (m_currentBGColor[GREEN]	* (gdouble) 255.0),
-				(unsigned int) (m_currentBGColor[BLUE] 	* (gdouble) 255.0));
-
-		addOrReplaceVecProp("bgcolor",(XML_Char *)buf_color);
-	}
+	float r,g,b,a;
+	color = [m_dlg bgColor];
+	[color getRed:&r green:&g blue:&b alpha:&a];
+	snprintf(buf_color, sizeof(buf_color), "%02x%02x%02x",
+			(unsigned int) (r 	* (float) 255.0),
+			(unsigned int) (g	* (float) 255.0),
+			(unsigned int) (b * (float) 255.0));
+	addOrReplaceVecProp("bgcolor",(XML_Char *)buf_color);
 	updatePreview();
 }
 
 
-// Glade helper function
-void XAP_CocoaDialog_FontChooser::set_notebook_tab(GtkWidget * notebook, gint page_num,
-												 GtkWidget * widget)
-{
-	GtkNotebookPage *page;
-	GtkWidget *notebook_page;
-
-	page = (GtkNotebookPage*) g_list_nth (GTK_NOTEBOOK (notebook)->children, page_num)->data;
-	notebook_page = page->child;
-	gtk_widget_ref (notebook_page);
-	gtk_notebook_remove_page (GTK_NOTEBOOK (notebook), page_num);
-	gtk_notebook_insert_page (GTK_NOTEBOOK (notebook), notebook_page,
-							  widget, page_num);
-	gtk_widget_unref (notebook_page);
-}
-
-GtkWidget * XAP_CocoaDialog_FontChooser::constructWindow(void)
-{
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	GtkWidget *windowFontSelection;
-	GtkWidget *vboxMain;
-	GtkWidget *vboxOuter;
-
-	GtkWidget *fixedButtons;
-	GtkWidget *buttonOK;
-	GtkWidget *buttonCancel;
-
-	windowFontSelection = gtk_window_new (GTK_WINDOW_DIALOG);
-	g_object_set_data (G_OBJECT (windowFontSelection), "windowFontSelection", windowFontSelection);
-	gtk_window_set_title (GTK_WINDOW (windowFontSelection), pSS->getValue(XAP_STRING_ID_DLG_UFS_FontTitle));
-	gtk_window_set_policy (GTK_WINDOW (windowFontSelection), FALSE, TRUE, FALSE);
-
-	vboxOuter = gtk_vbox_new (FALSE, 0);
-	g_object_set_data (G_OBJECT (windowFontSelection), "vboxOuter", vboxOuter);
-	gtk_widget_show (vboxOuter);
-	gtk_container_add (GTK_CONTAINER (windowFontSelection), vboxOuter);
-
-	vboxMain = constructWindowContents(G_OBJECT (windowFontSelection));
-	gtk_box_pack_start (GTK_BOX (vboxOuter), vboxMain, TRUE, TRUE, 0);
-
-	fixedButtons = gtk_fixed_new ();
-	g_object_set_data (G_OBJECT (windowFontSelection), "fixedButtons", fixedButtons);
-	gtk_widget_show (fixedButtons);
-	gtk_box_pack_start (GTK_BOX (vboxOuter), fixedButtons, FALSE, TRUE, 0);
-
-	buttonOK = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_OK));
-	g_object_set_data (G_OBJECT (windowFontSelection), "buttonOK", buttonOK);
-	gtk_widget_show (buttonOK);
-	gtk_fixed_put (GTK_FIXED (fixedButtons), buttonOK, 279, 0);
-	GTK_WIDGET_SET_FLAGS (buttonOK, GTK_CAN_DEFAULT);
-	gtk_widget_grab_default (buttonOK);
-
-	buttonCancel = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Cancel));
-	g_object_set_data (G_OBJECT (windowFontSelection), "buttonCancel", buttonCancel);
-	gtk_widget_show (buttonCancel);
-	gtk_fixed_put (GTK_FIXED (fixedButtons), buttonCancel, 374, 6);
-
-	g_signal_connect_after(G_OBJECT(windowFontSelection),
-							  "destroy",
-							  NULL,
-							  NULL);
-	g_signal_connect(G_OBJECT(windowFontSelection),
-			   "delete_event",
-			   G_CALLBACK(s_delete_clicked),
-			   (gpointer) &m_answer);
-
-	g_signal_connect(G_OBJECT(buttonOK),
-					   "clicked",
-					   G_CALLBACK(s_ok_clicked),
-					   (gpointer) &m_answer);
-	g_signal_connect(G_OBJECT(buttonCancel),
-					   "clicked",
-					   G_CALLBACK(s_cancel_clicked),
-					   (gpointer) &m_answer);
-
-	return windowFontSelection;
-}
-
-// Glade generated dialog, using fixed widgets to closely match
-// the Windows layout, with some changes for color selector
-GtkWidget * XAP_CocoaDialog_FontChooser::constructWindowContents(GObject *parent)
-{
-	GtkWidget *vboxMain;
-	GtkWidget *notebookMain;
-	GtkWidget *labelFont;
-	GtkWidget *labelStyle;
-	GtkWidget *listFonts;
-	GtkWidget *labelSize;
-	GtkWidget *frameEffects;
-	GtkWidget *hboxDecorations;
-	GtkWidget *checkbuttonStrikeout;
-	GtkWidget *checkbuttonUnderline;
-	GtkWidget *checkbuttonOverline;
-	GtkWidget *labelEncoding;
-	GtkWidget *comboEncoding;
-	GtkWidget *listStyles;
-	GtkWidget *listSizes;
-	GtkWidget *hbox1;
-	GtkWidget *colorSelector;
-	GtkWidget *colorBGSelector;
-	GtkWidget *labelTabFont;
-	GtkWidget *labelTabColor;
-	GtkWidget *labelTabBGColor;
-	GtkWidget *frame4;
-	/*
-	  GtkWidget *fixedFont;
-	  GtkWidget *frameStyle;
-	  GtkWidget *frameFonts;
-	  GtkWidget *frameSize;
-	  GtkWidget *fixedColor;
-	*/
-
-	// the entry is a special drawing area full of one
-	// of our graphics contexts
-	GtkWidget *entryArea;
-
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
-
-	vboxMain = gtk_vbox_new (FALSE, 0);
-	g_object_set_data (parent, "vboxMain", vboxMain);
-	gtk_widget_show (vboxMain);
-
-	notebookMain = gtk_notebook_new ();
-	g_object_set_data (parent, "notebookMain", notebookMain);
-	gtk_widget_show (notebookMain);
-	gtk_box_pack_start (GTK_BOX (vboxMain), notebookMain, 1, 1, 0);
-	gtk_container_set_border_width (GTK_CONTAINER (notebookMain), 8);
-
-	GObject *window1 = parent;
-  	GtkWidget *table1;
-  	GtkWidget *vbox1;
-
- 	GtkWidget *scrolledwindow1;
-  	GtkWidget *vbox2;
-  	GtkWidget *scrolledwindow2;
-  	GtkWidget *vbox3;
-  	GtkWidget *scrolledwindow3;
-  	GtkWidget *vboxmisc;
-  	GtkWidget *hboxForEncoding;
-
-	table1 = gtk_table_new (2, 3, FALSE);
-	gtk_widget_set_name (table1, "table1");
-	gtk_widget_ref (table1);
-	g_object_set_data_full (G_OBJECT (window1), "table1", table1,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (table1);
-
-    // Label for first page of the notebook
-	labelTabFont = gtk_label_new (pSS->getValue(XAP_STRING_ID_DLG_UFS_FontTab));
-	gtk_widget_show (labelTabFont);
-//
-// Make first page of the notebook
-//
-    gtk_notebook_append_page(GTK_NOTEBOOK(notebookMain), table1,labelTabFont);
-
-	vbox1 = gtk_vbox_new (FALSE, 0);
-	gtk_widget_set_name (vbox1, "vbox1");
-	gtk_widget_ref (vbox1);
-	g_object_set_data_full (G_OBJECT (window1), "vbox1", vbox1,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (vbox1);
-	gtk_table_attach (GTK_TABLE (table1), vbox1, 0, 1, 0, 2,
-	                  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-	                  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 0);
-
-	labelFont = gtk_label_new (pSS->getValue(XAP_STRING_ID_DLG_UFS_FontLabel));
-	gtk_widget_set_name (labelFont, "labelFont");
-	gtk_widget_ref (labelFont);
-	g_object_set_data_full (G_OBJECT (window1), "labelFont", labelFont,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (labelFont);
-	gtk_box_pack_start (GTK_BOX (vbox1), labelFont, FALSE, FALSE, 0);
-
-	scrolledwindow1 = gtk_scrolled_window_new (NULL, NULL);
-	gtk_widget_set_name (scrolledwindow1, "scrolledwindow1");
-	gtk_widget_ref (scrolledwindow1);
-	g_object_set_data_full (G_OBJECT (window1), "scrolledwindow1", scrolledwindow1,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (scrolledwindow1);
-	gtk_box_pack_start (GTK_BOX (vbox1), scrolledwindow1, TRUE, TRUE, 0);
-	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolledwindow1), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
-	gtk_container_set_border_width (GTK_CONTAINER (scrolledwindow1), 3);
-
-	listFonts = gtk_clist_new (1);
-	gtk_widget_set_name (listFonts, "listFonts");
-	gtk_widget_ref (listFonts);
-	g_object_set_data_full (G_OBJECT (window1), "listFonts", listFonts,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (listFonts);
-	gtk_container_add (GTK_CONTAINER (scrolledwindow1), listFonts);
-	gtk_clist_set_column_auto_resize (GTK_CLIST(listFonts), 0, TRUE);
-
-	vbox2 = gtk_vbox_new (FALSE, 0);
-	gtk_widget_set_name (vbox2, "vbox2");
-	gtk_widget_ref (vbox2);
-	g_object_set_data_full (G_OBJECT (window1), "vbox2", vbox2,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (vbox2);
-	gtk_table_attach (GTK_TABLE (table1), vbox2, 1, 2, 0, 1,
-	                  (GtkAttachOptions) (GTK_FILL),
-	                  (GtkAttachOptions) (GTK_FILL), 0, 0);
-
-	labelStyle = gtk_label_new (pSS->getValue(XAP_STRING_ID_DLG_UFS_StyleLabel));
-	gtk_widget_set_name (labelStyle, "labelStyle");
-	gtk_widget_ref (labelStyle);
-	g_object_set_data_full (G_OBJECT (window1), "labelStyle", labelStyle,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (labelStyle);
-	gtk_box_pack_start (GTK_BOX (vbox2), labelStyle, FALSE, FALSE, 0);
-
-	scrolledwindow2 = gtk_scrolled_window_new (NULL, NULL);
-	gtk_widget_set_name (scrolledwindow2, "scrolledwindow2");
-	gtk_widget_ref (scrolledwindow2);
-	g_object_set_data_full (G_OBJECT (window1), "scrolledwindow2", scrolledwindow2,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (scrolledwindow2);
-	gtk_box_pack_start (GTK_BOX (vbox2), scrolledwindow2, TRUE, TRUE, 0);
-	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolledwindow2), GTK_POLICY_NEVER, GTK_POLICY_NEVER);
-	gtk_container_set_border_width (GTK_CONTAINER (scrolledwindow2), 3);
-
-	listStyles = gtk_clist_new (1);
-	gtk_widget_set_name (listStyles, "listStyles");
-	gtk_widget_ref (listStyles);
-	g_object_set_data_full (G_OBJECT (window1), "listStyles", listStyles,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (listStyles);
-	gtk_container_add (GTK_CONTAINER (scrolledwindow2), listStyles);
-	gtk_clist_set_column_auto_resize (GTK_CLIST(listStyles), 0, TRUE);
-
-	vbox3 = gtk_vbox_new (FALSE, 0);
-	gtk_widget_set_name (vbox3, "vbox3");
-	gtk_widget_ref (vbox3);
-	g_object_set_data_full (G_OBJECT (window1), "vbox3", vbox3,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (vbox3);
-	gtk_table_attach (GTK_TABLE (table1), vbox3, 2, 3, 0, 1,
-	                  (GtkAttachOptions) (GTK_FILL),
-	                  (GtkAttachOptions) (GTK_FILL), 0, 0);
-
-	labelSize = gtk_label_new (pSS->getValue(XAP_STRING_ID_DLG_UFS_SizeLabel));
-	gtk_widget_set_name (labelSize, "labelSize");
-	gtk_widget_ref (labelSize);
-	g_object_set_data_full (G_OBJECT (window1), "labelSize", labelSize,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (labelSize);
-	gtk_box_pack_start (GTK_BOX (vbox3), labelSize, FALSE, FALSE, 0);
-
-	scrolledwindow3 = gtk_scrolled_window_new (NULL, NULL);
-	gtk_widget_set_name (scrolledwindow3, "scrolledwindow3");
-	gtk_widget_ref (scrolledwindow3);
-	g_object_set_data_full (G_OBJECT (window1), "scrolledwindow3", scrolledwindow3,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (scrolledwindow3);
-	gtk_box_pack_start (GTK_BOX (vbox3), scrolledwindow3, TRUE, TRUE, 0);
-	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolledwindow3), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
-	gtk_container_set_border_width (GTK_CONTAINER (scrolledwindow3), 3);
-
-	listSizes = gtk_clist_new (1);
-	gtk_widget_set_name (listSizes, "listSizes");
-	gtk_widget_ref (listSizes);
-	g_object_set_data_full (G_OBJECT (window1), "listSizes", listSizes,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (listSizes);
-	gtk_container_add (GTK_CONTAINER (scrolledwindow3), listSizes);
-	gtk_clist_set_column_auto_resize (GTK_CLIST(listSizes), 0, TRUE);
-
-	vboxmisc = gtk_vbox_new (FALSE, 0);
-	gtk_widget_set_name (vboxmisc, "vboxmisc");
-	gtk_widget_ref (vboxmisc);
-	g_object_set_data_full (G_OBJECT (window1), "vboxmisc", vboxmisc,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (vboxmisc);
-	gtk_table_attach (GTK_TABLE (table1), vboxmisc, 1, 3, 1, 2,
-	                  (GtkAttachOptions) (GTK_FILL),
-	                  (GtkAttachOptions) (GTK_FILL), 0, 0);
-
-	frameEffects = gtk_frame_new (pSS->getValue(XAP_STRING_ID_DLG_UFS_EffectsFrameLabel));
-	g_object_set_data (parent, "frameEffects", frameEffects);
-	gtk_widget_show (frameEffects);
-	gtk_box_pack_start(GTK_BOX (vboxmisc), frameEffects, 0,0, 2);
-
-	hboxDecorations = gtk_hbox_new (FALSE, 0);
-	g_object_set_data (parent, "hboxDecorations", hboxDecorations);
-	gtk_widget_show (hboxDecorations);
-	gtk_container_add (GTK_CONTAINER (frameEffects), hboxDecorations);
-
-	checkbuttonStrikeout = gtk_check_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_UFS_StrikeoutCheck));
-	gtk_container_border_width (GTK_CONTAINER (checkbuttonStrikeout), 5);
-	gtk_widget_show (checkbuttonStrikeout);
-	gtk_box_pack_start (GTK_BOX (hboxDecorations), checkbuttonStrikeout, TRUE, TRUE, 0);
-
-	checkbuttonUnderline = gtk_check_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_UFS_UnderlineCheck));
-	gtk_container_border_width (GTK_CONTAINER (checkbuttonUnderline), 5);
-	gtk_widget_show (checkbuttonUnderline);
-	gtk_box_pack_start (GTK_BOX (hboxDecorations), checkbuttonUnderline, TRUE, TRUE, 0);
-
-	checkbuttonOverline = gtk_check_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_UFS_OverlineCheck));
-	gtk_container_border_width (GTK_CONTAINER (checkbuttonOverline), 5);
-	gtk_widget_show (checkbuttonOverline);
-	gtk_box_pack_start (GTK_BOX (hboxDecorations), checkbuttonOverline, TRUE, TRUE, 0);
-
-	hboxForEncoding = gtk_hbox_new (FALSE, 0);
-	gtk_widget_set_name (hboxForEncoding, "hboxForEncoding");
-	gtk_widget_ref (hboxForEncoding);
-	g_object_set_data_full (G_OBJECT (window1), "hboxForEncoding", hboxForEncoding,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (hboxForEncoding);
-	gtk_box_pack_start (GTK_BOX (vboxmisc), hboxForEncoding, TRUE, TRUE, 0);
-
-	labelEncoding = gtk_label_new (pSS->getValue(XAP_STRING_ID_DLG_UFS_EncodingLabel));
-	g_object_set_data (parent, "labelEncoding", labelEncoding);
-	gtk_widget_show (labelEncoding);
-	gtk_box_pack_start (GTK_BOX (hboxForEncoding), labelEncoding, 1,1, 2);
-	gtk_label_set_justify (GTK_LABEL (labelEncoding), GTK_JUSTIFY_LEFT);
-	gtk_misc_set_alignment (GTK_MISC (labelEncoding), 0, 0.5);
-
-	comboEncoding = gtk_combo_new ();
-	g_object_set_data (parent, "comboEncoding", comboEncoding);
-	gtk_widget_show (comboEncoding);
-	gtk_box_pack_start(GTK_BOX (hboxForEncoding), comboEncoding, 1, 1, 0);
-	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (GTK_COMBO (comboEncoding)->popup),
-									GTK_POLICY_NEVER,
-									GTK_POLICY_AUTOMATIC);
-	GList * comboEncoding_items = NULL;
-	comboEncoding_items = g_list_append (comboEncoding_items, (void *) "Placeholder");
-//	comboEncoding_items = g_list_append (comboEncoding_items, "Canadian");
-//	comboEncoding_items = g_list_append (comboEncoding_items, "British");
-//	comboEncoding_items = g_list_append (comboEncoding_items, "Irish");
-//	comboEncoding_items = g_list_append (comboEncoding_items, "Broken English");
-//	comboEncoding_items = g_list_append (comboEncoding_items, "These Are Bogus");
-	gtk_combo_set_popdown_strings (GTK_COMBO (comboEncoding), comboEncoding_items);
-	g_list_free (comboEncoding_items);
-
-	/* Notebook page for ForeGround Color Selector */
-
-	hbox1 = gtk_hbox_new (FALSE, 0);
-	gtk_widget_show (hbox1);
-
-    // Label for second page of the notebook
-
-	labelTabColor = gtk_label_new (pSS->getValue(XAP_STRING_ID_DLG_UFS_ColorTab));
-	gtk_widget_show (labelTabColor);
-
-//
-// Make second page of the notebook
-//
-    gtk_notebook_append_page(GTK_NOTEBOOK(notebookMain), hbox1,labelTabColor);
-
-	colorSelector = gtk_color_selection_new ();
-	gtk_widget_show (colorSelector);
-	gtk_box_pack_start (GTK_BOX (hbox1), colorSelector, TRUE, TRUE, 0);
-
-
-	/*Notebook page for Background Color Selector*/
-
-	GtkWidget * vboxBG = gtk_vbox_new (FALSE, 0);
-	gtk_widget_show (vboxBG);
-
-    // Label for third page of the notebook
-
-	labelTabBGColor = gtk_label_new (pSS->getValue(XAP_STRING_ID_DLG_UFS_BGColorTab));
-	gtk_widget_show (labelTabBGColor);
-//
-// Make third page of the notebook
-//
-    gtk_notebook_append_page(GTK_NOTEBOOK(notebookMain), vboxBG,labelTabBGColor);
-
-	colorBGSelector = gtk_color_selection_new ();
-	gtk_widget_show (colorBGSelector);
-	gtk_box_pack_start (GTK_BOX (vboxBG), colorBGSelector, TRUE, TRUE, 0);
-
-//
-// Make a toggle button to set hightlight color transparent
-//
-	GtkWidget * checkbuttonTrans = gtk_check_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_UFS_TransparencyCheck));
-	gtk_widget_show (checkbuttonTrans);
-	gtk_box_pack_start (GTK_BOX (vboxBG), checkbuttonTrans, TRUE, TRUE, 0);
-
-	/* frame with preview */
-
-	frame4 = gtk_frame_new (NULL);
-	gtk_widget_show (frame4);
-	gtk_box_pack_start (GTK_BOX (vboxMain), frame4, FALSE, FALSE, PREVIEW_BOX_BORDER_WIDTH_PIXELS);
-	// setting the height takes into account the border applied on all
-	// sides, so we need to double the single border width
-	gtk_widget_set_usize (frame4, -1, PREVIEW_BOX_HEIGHT_PIXELS + (PREVIEW_BOX_BORDER_WIDTH_PIXELS * 2));
-	gtk_container_border_width (GTK_CONTAINER (frame4), PREVIEW_BOX_BORDER_WIDTH_PIXELS);
-	gtk_frame_set_shadow_type (GTK_FRAME (frame4), GTK_SHADOW_IN);
-
-	entryArea = createDrawingArea ();
-	gtk_widget_set_events(entryArea, GDK_EXPOSURE_MASK);
-	g_signal_connect(G_OBJECT(entryArea), "expose_event",
-					   G_CALLBACK(s_drawing_area_expose), NULL);
-	gtk_widget_set_usize (entryArea, -1, PREVIEW_BOX_HEIGHT_PIXELS);
-	gtk_widget_show (entryArea);
-	gtk_container_add (GTK_CONTAINER (frame4), entryArea);
-
-
-	// save out to members for callback and class access
-    m_fontList = listFonts;
-	m_styleList = listStyles;
-	m_sizeList = listSizes;
-	m_colorSelector = colorSelector;
-	m_bgcolorSelector = colorBGSelector;
-	m_preview = entryArea;
-	m_checkStrikeOut = checkbuttonStrikeout;
-	m_checkUnderline = checkbuttonUnderline;
-	m_checkOverline = checkbuttonOverline;
-	m_checkTransparency = checkbuttonTrans;
-
-	// bind signals to things
-	g_signal_connect(G_OBJECT(m_checkUnderline),
-					   "toggled",
-					   G_CALLBACK(s_underline_toggled),
-					   (gpointer) this);
-
-	g_signal_connect(G_OBJECT(m_checkOverline),
-					   "toggled",
-					   G_CALLBACK(s_overline_toggled),
-					   (gpointer) this);
-
-	g_signal_connect(G_OBJECT(m_checkStrikeOut),
-					   "toggled",
-					   G_CALLBACK(s_strikeout_toggled),
-					   (gpointer) this);
-
-
-	g_signal_connect(G_OBJECT(m_checkTransparency),
-					   "toggled",
-					   G_CALLBACK(s_transparency_toggled),
-					   (gpointer) this);
-
-
-	g_signal_connect(G_OBJECT(listFonts),
-					   "select_row",
-					   G_CALLBACK(s_select_row_font),
-					   (gpointer) this);
-	g_signal_connect(G_OBJECT(listStyles),
-					   "select_row",
-					   G_CALLBACK(s_select_row_style),
-					   (gpointer) this);
-	g_signal_connect(G_OBJECT(listSizes),
-					   "select_row",
-					   G_CALLBACK(s_select_row_size),
-					   (gpointer) this);
-
-	// we catch the color tab's wheel click event so we can do some nasty
-	// trickery with the value slider, so that when the user first does
-	// some wheel work, the value soars to 100%, instead of 0%, so the
-	// color they get is not always black
-	//
-	// also, we must do connect_after() so we get the information before
-	// any other native color selector events get the chance to change
-	// things on us
-	g_signal_connect_after(G_OBJECT(GTK_COLOR_SELECTION(colorSelector)->wheel_area),
-							 "event",
-							 G_CALLBACK(s_color_wheel_clicked),
-							 (gpointer) GTK_COLOR_SELECTION(colorSelector)->wheel_area);
-
-	g_signal_connect_after(G_OBJECT(GTK_COLOR_SELECTION(colorBGSelector)->wheel_area),
-							 "event",
-							 G_CALLBACK(s_color_wheel_clicked),
-							 (gpointer) GTK_COLOR_SELECTION(colorSelector)->wheel_area);
-
-	// This is a catch-all color selector callback which catches any
-	// real-time updating of the color so we can refresh our preview
-	// text
-	g_signal_connect(G_OBJECT(colorSelector),
-					   "event",
-					   G_CALLBACK(s_color_update),
-					   (gpointer) this);
-
-	g_signal_connect(G_OBJECT(colorBGSelector),
-					   "event",
-					   G_CALLBACK(s_bgcolor_update),
-					   (gpointer) this);
-
-	GTK_WIDGET_SET_FLAGS(listFonts, GTK_CAN_FOCUS);
-	GTK_WIDGET_SET_FLAGS(listStyles, GTK_CAN_FOCUS);
-	GTK_WIDGET_SET_FLAGS(listSizes, GTK_CAN_FOCUS);
-
-	gchar * text[2] = {NULL, NULL};
-
-	// update the styles list
-	gtk_clist_freeze(GTK_CLIST(m_styleList));
-	gtk_clist_clear(GTK_CLIST(m_styleList));
-	text[0] = (gchar *) pSS->getValue(XAP_STRING_ID_DLG_UFS_StyleRegular); 		gtk_clist_append(GTK_CLIST(m_styleList), text);
-	text[0] = (gchar *) pSS->getValue(XAP_STRING_ID_DLG_UFS_StyleItalic); 		gtk_clist_append(GTK_CLIST(m_styleList), text);
-	text[0] = (gchar *) pSS->getValue(XAP_STRING_ID_DLG_UFS_StyleBold); 	   	gtk_clist_append(GTK_CLIST(m_styleList), text);
-	text[0] = (gchar *) pSS->getValue(XAP_STRING_ID_DLG_UFS_StyleBoldItalic);  	gtk_clist_append(GTK_CLIST(m_styleList), text);
-	gtk_clist_thaw(GTK_CLIST(m_styleList));
-
-	gtk_clist_freeze(GTK_CLIST(m_sizeList));
-	gtk_clist_clear(GTK_CLIST(m_sizeList));
-	// TODO perhaps populate the list based on the selected font/style?
-	{
-		int sz = XAP_EncodingManager::fontsizes_mapping.size();
-		for (int i = 0; i < sz; ++i)
-		{
-			text[0]=(char*)XAP_EncodingManager::fontsizes_mapping.nth2(i);
-			gtk_clist_append(GTK_CLIST(m_sizeList), text);
-	    }
-	}
-	gtk_clist_thaw(GTK_CLIST(m_sizeList));
-
-	return vboxMain;
-}
 
 void XAP_CocoaDialog_FontChooser::runModal(XAP_Frame * pFrame)
 {
-	m_pCocoaFrame = (XAP_CocoaFrame *)pFrame;
-	UT_ASSERT(m_pCocoaFrame);
-
 	UT_ASSERT(m_pApp);
 
-	// this is used many times below to grab pointers to
-	// strings inside list elements
-	gchar * text[2] = {NULL, NULL};
+	m_dlg = [[XAP_CocoaDialog_FontChooserController alloc] initFromNib];
+	
 	// used similarly to convert between text and numeric arguments
-	static char sizeString[50];
-
-	// Set up our own color space so we work well on 8-bit
-	// displays.
-//    gtk_widget_push_visual(gtk_preview_get_visual());
-//    gtk_widget_push_colormap(gtk_preview_get_cmap());
-
-	// establish the font manager before dialog creation
-	XAP_App * app = m_pCocoaFrame->getApp();
-	XAP_CocoaApp * unixapp = static_cast<XAP_CocoaApp *> (app);
-	m_fontManager = unixapp->getFontManager();
-
+	[m_dlg setXAPOwner:this];
+	
 	// build the dialog
-	GtkWidget * cf = constructWindow();
-	UT_ASSERT(cf);
-	connectFocus(GTK_WIDGET(cf),pFrame);
+	NSWindow * window = [m_dlg window];
+	UT_ASSERT(window);
 
 	// freeze updates of the preview
-	m_blockUpdate = true;
 
-	// to sort out dupes
-	UT_StringPtrMap fontHash(256);
-
-	gtk_clist_freeze(GTK_CLIST(m_fontList));
-	gtk_clist_clear(GTK_CLIST(m_fontList));
-
-	// throw them in the hash save duplicates
-	UT_Vector * fonts = m_fontManager->getAllFonts();
-	for (UT_uint32 i = 0; i < fonts->size(); i++)
-	{
-		XAP_CocoaFont * pFont = (XAP_CocoaFont *)fonts->getNthItem(i);
-		const char * fName = pFont->getName();
-		if (!fontHash.contains(fName, NULL))
-		  {
-		    fontHash.insert(fName,
-				    (void *) fName);
-		    text[0] = (gchar*)fName;
-		    gtk_clist_append(GTK_CLIST(m_fontList), text);
-		  }
-	}
-
-	DELETEP(fonts);
-
-	gtk_clist_thaw(GTK_CLIST(m_fontList));
 
 	// Set the defaults in the list boxes according to dialog data
-	gint foundAt = 0;
-
-	// is this safe with an XML_Char * string?
-	foundAt = searchCList(GTK_CLIST(m_fontList), (char *) getVal("font-family"));
-
-	if (foundAt >= 0)
-	{
-		gtk_clist_select_row(GTK_CLIST(m_fontList), foundAt, 0);
-	}
-
-	// this is pretty messy
-	listStyle st = LIST_STYLE_NORMAL;
-	if (!getVal("font-style") || !getVal("font-weight"))
-	{
-	        st = LIST_STYLE_NONE;
-	}
-	else if (!UT_stricmp(getVal("font-style"), "normal") &&
-			 !UT_stricmp(getVal("font-weight"), "normal"))
-	{
-		st = LIST_STYLE_NORMAL;
-	}
-	else if (!UT_stricmp(getVal("font-style"), "normal") &&
-			 !UT_stricmp(getVal("font-weight"), "bold"))
-	{
-		st = LIST_STYLE_BOLD;
-	}
-	else if (!UT_stricmp(getVal("font-style"), "italic") &&
-			 !UT_stricmp(getVal("font-weight"), "normal"))
-	{
-		st = LIST_STYLE_ITALIC;
-	}
-	else if (!UT_stricmp(getVal("font-style"), "italic") &&
-			 !UT_stricmp(getVal("font-weight"), "bold"))
-	{
-		st = LIST_STYLE_BOLD_ITALIC;
-	}
-	else
-	{
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-	}
-	if (st != LIST_STYLE_NONE)
-		gtk_clist_select_row(GTK_CLIST(m_styleList), st, 0);
-
-	g_snprintf(sizeString, 60, "%s", std_size_string(UT_convertToPoints(getVal("font-size"))));
-	foundAt = searchCList(GTK_CLIST(m_sizeList), (char *)XAP_EncodingManager::fontsizes_mapping.lookupBySource(sizeString));
-
-	if (foundAt >= 0)
-	{
-		gtk_clist_select_row(GTK_CLIST(m_sizeList), foundAt, 0);
-	}
+	[m_dlg selectFont:(char*)getVal("font-family")];
+	[m_dlg selectStyle:(char*)getVal("font-style") withWeight:(char*)getVal("font-weight")];
+	[m_dlg selectSize:(char*)getVal("font-size")];
 
 	// Set color in the color selector
 	if (getVal("color"))
@@ -1069,22 +250,13 @@ void XAP_CocoaDialog_FontChooser::runModal(XAP_Frame * pFrame)
 		UT_RGBColor c;
 		UT_parseColor(getVal("color"), c);
 
-		m_currentFGColor[RED] = ((gdouble) c.m_red / (gdouble) 255.0);
-		m_currentFGColor[GREEN] = ((gdouble) c.m_grn / (gdouble) 255.0);
-		m_currentFGColor[BLUE] = ((gdouble) c.m_blu / (gdouble) 255.0);
-
-		gtk_color_selection_set_color(GTK_COLOR_SELECTION(m_colorSelector), m_currentFGColor);
+		NSColor *color = GR_CocoaGraphics::_utRGBColorToNSColor(c);
+		[m_dlg setTextColor:color];
 	}
-	else
-	{
-		// if we have no color, use a placeholder of funky values
-		// the user can't pick interactively.  This catches ALL
-		// the cases except where the user specifically enters -1 for
-		// all Red, Green and Blue attributes manually.  This user
-		// should expect it not to touch the color.  :)
-		gtk_color_selection_set_color(GTK_COLOR_SELECTION(m_colorSelector), m_funkyColor);
+	else {
+		[m_dlg setTextColor:[NSColor blackColor]];	
 	}
-
+	
 	// Set color in the color selector
 	const XML_Char * pszBGCol = getVal("bgcolor");
 	if (pszBGCol && strcmp(pszBGCol,"transparent") != 0)
@@ -1092,73 +264,27 @@ void XAP_CocoaDialog_FontChooser::runModal(XAP_Frame * pFrame)
 		UT_RGBColor c;
 		UT_parseColor(getVal("bgcolor"), c);
 
-		m_currentBGColor[RED] = ((gdouble) c.m_red / (gdouble) 255.0);
-		m_currentBGColor[GREEN] = ((gdouble) c.m_grn / (gdouble) 255.0);
-		m_currentBGColor[BLUE] = ((gdouble) c.m_blu / (gdouble) 255.0);
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_checkTransparency), FALSE);
-		gtk_color_selection_set_color(GTK_COLOR_SELECTION(m_bgcolorSelector), m_currentBGColor);
+		NSColor *color = GR_CocoaGraphics::_utRGBColorToNSColor(c);
+		[m_dlg setBgColor:color];
 	}
 	else
 	{
-		// if we have no color, use a placeholder of funky values
-		// the user can't pick interactively.  This catches ALL
-		// the cases except where the user specifically enters -1 for
-		// all Red, Green and Blue attributes manually.  This user
-		// should expect it not to touch the color.  :)
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_checkTransparency), TRUE);
-		gtk_color_selection_set_color(GTK_COLOR_SELECTION(m_bgcolorSelector), m_funkyColor);
+		[m_dlg setBgColor:[NSColor whiteColor]];	
 	}
 
 	// set the strikeout and underline check buttons
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_checkStrikeOut), m_bStrikeout);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_checkUnderline), m_bUnderline);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_checkOverline), m_bOverline);
-
-	// get top level window and its GtkWidget *
-	XAP_CocoaFrame * frame = static_cast<XAP_CocoaFrame *>(pFrame);
-	UT_ASSERT(frame);
-	GtkWidget * parent = frame->getTopLevelWindow();
-	UT_ASSERT(parent);
-	// center it
-    centerDialog(parent, GTK_WIDGET(cf));
-
-	// Run the dialog
-	gtk_widget_show(GTK_WIDGET(cf));
-	gtk_grab_add(GTK_WIDGET(cf));
-
-	m_doneFirstFont = true;
-
-	// attach a new graphics context
-	XAP_App *pApp = frame->getApp();
-	m_gc = new GR_CocoaGraphics(m_preview->window, m_fontManager, pApp);
-	_createFontPreviewFromGC(m_gc,m_preview->allocation.width,m_preview->allocation.height);
-//
-// This enables callbacks on the preview area with a widget pointer to
-// access this dialog.
-//
-	g_object_set_user_data(G_OBJECT(m_preview), this);
-
-	// unfreeze updates of the preview
-	m_blockUpdate = false;
-	// manually trigger an update
+	[m_dlg setStrikeout:m_bStrikeout];
+	[m_dlg setUnderline:m_bUnderline];
+	[m_dlg setOverline:m_bOverline];
+	
 	updatePreview();
+	// Run the dialog
+	[NSApp runModalForWindow:window];
 
-	gtk_main();
-
-//
-// This is fail-safe code. The member variables should already be set to these
-// values from event callbacks.
-//
-
-	if(cf && GTK_IS_WIDGET(cf))
-	  gtk_widget_destroy (GTK_WIDGET(cf));
-
-	// these dialogs are cached around through the dialog framework,
-	// and this variable needs to get set back
-	m_doneFirstFont = false;
-
-//    gtk_widget_pop_visual();
-//    gtk_widget_pop_colormap();
+	[m_dlg discardXAP];
+	[m_dlg close];
+	[m_dlg release];
+	m_dlg = nil;
 
 	UT_DEBUGMSG(("FontChooserEnd: Family[%s%s] Size[%s%s] Weight[%s%s] Style[%s%s] Color[%s%s] Underline[%d%s] StrikeOut[%d%s]\n",
 				 ((getVal("font-family")) ? getVal("font-family") : ""),	((m_bChangedFontFamily) ? "(chg)" : ""),
@@ -1169,10 +295,6 @@ void XAP_CocoaDialog_FontChooser::runModal(XAP_Frame * pFrame)
 				 (m_bUnderline),							((m_bChangedUnderline) ? "(chg)" : ""),
 				 (m_bStrikeout),							((m_bChangedStrikeOut) ? "(chg)" : "")));
 
-	// answer should be set by the appropriate callback
-	// the caller can get the answer from getAnswer().
-
-	m_pCocoaFrame = NULL;
 }
 
 bool XAP_CocoaDialog_FontChooser::getEntryString(char ** string)
@@ -1190,27 +312,339 @@ bool XAP_CocoaDialog_FontChooser::getEntryString(char ** string)
 void XAP_CocoaDialog_FontChooser::updatePreview(void)
 {
 	// if we don't have anything yet, just ignore this request
-	if (!m_gc)
+	if (!m_pGraphics)
 		return;
 	// if a font has been set since this dialog was launched, draw things with it
-	if (m_doneFirstFont)
-	{
+//	if (m_doneFirstFont)
+//	{
 		char * entryString;
 
 		if (!getEntryString(&entryString))
 			return;
 
 		UT_UCSChar * unicodeString = NULL;
-		UT_UCS_cloneString_char(&unicodeString, entryString);
+		UT_UCS4_cloneString_char(&unicodeString, entryString);
 		event_previewExposed(unicodeString);
+//	}
+//	else
+//	{
+//		event_previewClear();
+//	}
+}
+
+void XAP_CocoaDialog_FontChooser::_okAction(void)
+{
+	m_answer = XAP_Dialog_FontChooser::a_CANCEL;
+	[NSApp stopModal];
+}
+
+
+void XAP_CocoaDialog_FontChooser::_cancelAction(void)
+{
+	m_answer = XAP_Dialog_FontChooser::a_CANCEL;
+	[NSApp stopModal];
+}
+
+/* callbacks to create / release the GR_Graphics when the window is loaded / released */
+void	XAP_CocoaDialog_FontChooser::_createGC(XAP_CocoaNSView* owner)
+{
+	NSSize  size;
+	m_pGraphics = new GR_CocoaGraphics(owner, m_pApp);
+	size = [owner bounds].size;
+	_createFontPreviewFromGC(m_pGraphics, lrintf(size.width), lrintf(size.height));
+}
+
+void XAP_CocoaDialog_FontChooser::_deleteGC(void)
+{
+	DELETEP(m_pGraphics);
+	m_pGraphics = NULL;
+}
+
+@implementation XAP_CocoaDialog_FontChooserController
+
+- (id)initFromNib
+{
+	self = [super initWithWindowNibName:@"xap_CocoaDlg_FontChooser"];
+	return self;
+}
+
+-(void)discardXAP
+{
+	if (_xap) {
+		_xap->_deleteGC();
+		_xap = NULL;
 	}
-	else
-	{
-		event_previewClear();
+}
+
+-(void)dealloc
+{
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
+	[super dealloc];
+	[m_sizeDataSource release];
+	[m_stylesDataSource release];
+}
+
+- (void)setXAPOwner:(XAP_Dialog *)owner
+{
+	_xap = dynamic_cast<XAP_CocoaDialog_FontChooser*>(owner);
+}
+
+-(void)windowDidLoad
+{
+	if (_xap) {
+		_xap->_createGC(_preview);
+		_xap->event_previewClear();
+		/* localize */
+		const XAP_StringSet * pSS = _xap->getApp()->getStringSet();
+		[[self window] setTitle:[NSString stringWithUTF8String:pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_FontTitle).c_str()]];
+		LocalizeControl(_okBtn, pSS, XAP_STRING_ID_DLG_OK);
+		LocalizeControl(_cancelBtn, pSS, XAP_STRING_ID_DLG_Cancel);
+		LocalizeControl(_fontLabel, pSS, XAP_STRING_ID_DLG_UFS_FontLabel);
+		LocalizeControl(_styleLabel, pSS, XAP_STRING_ID_DLG_UFS_StyleLabel);
+		LocalizeControl(_sizeLabel, pSS, XAP_STRING_ID_DLG_UFS_SizeLabel);
+		LocalizeControl(_effectLabel, pSS, XAP_STRING_ID_DLG_UFS_EffectsFrameLabel);
+		LocalizeControl(_strikeButton, pSS, XAP_STRING_ID_DLG_UFS_StrikeoutCheck);
+		LocalizeControl(_underlineButton, pSS, XAP_STRING_ID_DLG_UFS_UnderlineCheck);
+		LocalizeControl(_overlineButton, pSS, XAP_STRING_ID_DLG_UFS_OverlineCheck);
+		LocalizeControl(_strikeButton, pSS, XAP_STRING_ID_DLG_UFS_StrikeoutCheck);
+	//	LocalizeControl(_strikeButton, pSS, XAP_STRING_ID_DLG_UFS_EncodingLabel);
+		LocalizeControl(_textColorLabel, pSS, XAP_STRING_ID_DLG_UFS_ColorTab);
+		LocalizeControl(_textHighlightColorLabel, pSS, XAP_STRING_ID_DLG_UFS_BGColorTab);
+		LocalizeControl(_noHighlightColorButton, pSS, XAP_STRING_ID_DLG_UFS_TransparencyCheck);
+		
+		m_fontDataSource = [[XAP_StringListDataSource alloc] init];
+		[m_fontDataSource loadFontList];
+		[_fontList setDataSource:m_fontDataSource];
+		[_fontList setDelegate:self];
+	
+		m_stylesDataSource = [[XAP_StringListDataSource alloc] init];
+		[m_stylesDataSource addUT_String:pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_StyleRegular)];
+		[m_stylesDataSource addUT_String:pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_StyleItalic)];
+		[m_stylesDataSource addUT_String:pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_StyleBold)];
+		[m_stylesDataSource addUT_String:pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_StyleBoldItalic)];
+		[_styleList setDataSource:m_stylesDataSource];
+		[_styleList setDelegate:self];
+	
+		m_sizeDataSource = [[XAP_StringListDataSource alloc] init];
+		{
+			int sz = XAP_EncodingManager::fontsizes_mapping.size();
+			for (int i = 0; i < sz; ++i)
+			{
+				char* str = (char*)XAP_EncodingManager::fontsizes_mapping.nth2(i);
+				if (str) {
+					[m_sizeDataSource addString:[NSString stringWithUTF8String:str]];
+				}
+				else {
+					NSLog(@"attempting to add NULL to string data source (%s:%d)", __FILE__, __LINE__);
+				}
+			}
+		}
+		[_sizeList setDataSource:m_sizeDataSource];
+		[_sizeList setDelegate:self];
+		
+		[[NSNotificationCenter defaultCenter] addObserver:self 
+						selector:@selector(colorWellDidChange:) 
+						name:nil
+						object:_textColorWell];
+		[[NSNotificationCenter defaultCenter] addObserver:self 
+						selector:@selector(colorWellDidChange:) 
+						name:nil
+						object:_textHighlightColorWell];
+	}
+	else {
+		NSLog(@"Loaded Windows without XAP (%s:%d)", __FILE__, __LINE__);
+	}
+}
+
+-(IBAction)okAction:(id)sender
+{
+	static_cast<XAP_CocoaDialog_FontChooser*>(_xap)->_okAction();
+}
+
+
+-(IBAction)cancelAction:(id)sender
+{
+	static_cast<XAP_CocoaDialog_FontChooser*>(_xap)->_cancelAction();
+}
+
+
+-(IBAction)colorWellAction:(id)sender
+{
+	NSColorPanel*	panel = [NSColorPanel sharedColorPanel];
+	[panel setTarget:sender];
+	[panel setColor:[sender color]];
+}
+
+-(IBAction)underlineAction:(id)sender
+{
+	static_cast<XAP_CocoaDialog_FontChooser*>(_xap)->underlineChanged
+				([(NSControl*)sender intValue] == NSOffState ? 0 : 1);
+}
+
+
+-(IBAction)overlineAction:(id)sender
+{
+	static_cast<XAP_CocoaDialog_FontChooser*>(_xap)->overlineChanged
+			([(NSControl*)sender intValue] == NSOffState ? 0 : 1);
+}
+
+
+-(IBAction)strikeoutAction:(id)sender
+{
+	static_cast<XAP_CocoaDialog_FontChooser*>(_xap)->strikeoutChanged
+			([(NSControl*)sender intValue] == NSOffState ? 0 : 1);
+}
+
+
+-(IBAction)transparentAction:(id)sender
+{
+	static_cast<XAP_CocoaDialog_FontChooser*>(_xap)->strikeoutChanged
+			([(NSControl*)sender intValue] == NSOffState ? 0 : 1);
+}
+
+- (void)colorPanelDidChange:(NSNotification *)aNotification
+{
+	id obj = [aNotification object];
+
+}
+
+
+- (void)colorWellDidChange:(NSNotification *)aNotification
+{
+	id obj = [aNotification object];
+	UT_DEBUGMSG(("received notification\n"));
+	if (obj == _textColorWell) {
+		_xap->fgColorChanged();
+	}
+	else if (obj == _textHighlightColorWell) {
+		_xap->bgColorChanged();
 	}
 }
 
 
+- (void)tableViewSelectionDidChange:(NSNotification *)aNotification
+{
+	id obj = [aNotification object];
+	if (obj == _fontList) {
+		_xap->fontRowChanged();
+	} 
+	else if (obj == _styleList) {
+		int idx;
+		idx = [_styleList selectedRow];
+		_xap->styleRowChanged(idx);
+	}
+	else if (obj == _sizeList) {
+		_xap->sizeRowChanged();	
+	}
+}
+
+-(void)setStrikeout:(bool)value
+{
+	[_strikeButton setIntValue:value];
+}
 
 
+-(void)setUnderline:(bool)value
+{
+	[_underlineButton setIntValue:value];
+}
+
+
+-(void)setOverline:(bool)value
+{
+	[_overlineButton setIntValue:value];
+}
+
+
+-(void)selectFont:(char*)value
+{
+	if (value) {
+		int idx = [(XAP_StringListDataSource*)[_fontList dataSource] rowWithCString:value];
+		if (idx >= 0) {
+			[_fontList selectRow:idx byExtendingSelection:NO];
+		}
+	}
+}
+
+
+-(NSString*)selectedFont
+{
+	int idx = [_fontList selectedRow];
+	return [[(XAP_StringListDataSource*)[_fontList dataSource] array] objectAtIndex:idx];
+}
+
+
+-(void)selectSize:(char*)value
+{
+	int idx;
+	char sizeString[60];
+	
+	snprintf(sizeString, 60, "%s", std_size_string(UT_convertToPoints(value)));
+	idx = [(XAP_StringListDataSource*)[_sizeList dataSource] rowWithCString:(char *)XAP_EncodingManager::fontsizes_mapping.lookupBySource(sizeString)];
+	if (idx >= 0) {
+		[_sizeList selectRow:idx byExtendingSelection:NO];
+	}
+}
+
+
+-(NSString*)selectedSize
+{
+	int idx = [_sizeList selectedRow];
+	return [[(XAP_StringListDataSource*)[_sizeList dataSource] array] objectAtIndex:idx];
+}
+
+
+-(void)selectStyle:(char*)style withWeight:(char*)weight
+{
+	// this is pretty messy
+	int st = 0;
+	if (!style || !weight) {
+		st = -1;
+	}
+	else if (!UT_stricmp(style, "normal") &&
+					!UT_stricmp(weight, "normal")) {
+		st = 0;
+	}
+	else if (!UT_stricmp(style, "italic") &&
+					!UT_stricmp(weight, "normal")) {
+		st = 1;
+	}
+	else if (!UT_stricmp(style, "normal") &&
+					!UT_stricmp(weight, "bold")){
+		st = 2;
+	}
+	else if (!UT_stricmp(style, "italic") &&
+					!UT_stricmp(weight, "bold")) {
+		st = 3;
+	}
+	else {
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	}
+	if (st != -1) {
+		[_styleList selectRow:st byExtendingSelection:NO];
+	}
+}
+
+
+-(NSColor*)textColor
+{
+	return [_textColorWell color];
+}
+
+-(void)setTextColor:(NSColor*)color
+{
+	[_textColorWell setColor:color];
+}
+
+-(NSColor*)bgColor
+{
+	return [_textHighlightColorWell color];
+}
+
+-(void)setBgColor:(NSColor*)color
+{
+	[_textHighlightColorWell setColor:color];
+}
+
+@end
 

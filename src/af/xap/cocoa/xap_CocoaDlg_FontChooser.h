@@ -1,6 +1,6 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001 Hubert Figuiere
+ * Copyright (C) 2001-2003 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,16 +17,83 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
+ /* $Id */
 
 #ifndef XAP_COCOADIALOG_FONTCHOOSER_H
 #define XAP_COCOADIALOG_FONTCHOOSER_H
 
+#import <Cocoa/Cocoa.h>
 #include "xap_App.h"
 #include "xap_Dlg_FontChooser.h"
 #include "ut_misc.h"
 
-class XAP_CocoaFrame;
+#import "xap_CocoaDialog_Utilities.h"
+#import "xap_Cocoa_NSTableUtils.h"
+#import "xap_CocoaFrame.h"
+
 class GR_CocoaGraphics;
+class XAP_CocoaDialog_FontChooser;
+
+@interface XAP_CocoaDialog_FontChooserController : NSWindowController <XAP_CocoaDialogProtocol>
+{
+	IBOutlet NSTextField*		_fontLabel;
+	IBOutlet NSTableView*		_fontList;
+	IBOutlet NSTextField*		_styleLabel;
+	IBOutlet NSTableView*		_styleList;
+	IBOutlet NSTextField*		_sizeLabel;
+	IBOutlet NSTableView*		_sizeList;
+	IBOutlet NSTextField*		_effectLabel;
+	IBOutlet NSButton*			_strikeButton;
+	IBOutlet NSButton*			_underlineButton;
+	IBOutlet NSButton*			_overlineButton;
+	IBOutlet NSButton*			_hiddenButton;
+	IBOutlet NSTextField*		_textColorLabel;
+	IBOutlet NSColorWell*		_textColorWell;
+	IBOutlet NSTextField*		_textHighlightColorLabel;
+	IBOutlet NSColorWell*		_textHighlightColorWell;
+	IBOutlet NSButton*			_noHighlightColorButton;
+
+	/* bottom part */
+	IBOutlet XAP_CocoaNSView * _preview;
+	IBOutlet NSButton*			_okBtn;
+	IBOutlet NSButton*			_cancelBtn;
+	IBOutlet NSButton*			_helpBtn;
+	IBOutlet NSBox*			_previewBox;
+	
+	XAP_StringListDataSource*	m_fontDataSource;
+	XAP_StringListDataSource*	m_sizeDataSource;
+	XAP_StringListDataSource*	m_stylesDataSource;
+	XAP_CocoaDialog_FontChooser*	_xap;
+}
+
+-(IBAction)okAction:(id)sender;
+-(IBAction)cancelAction:(id)sender;
+-(IBAction)colorWellAction:(id)sender;
+-(IBAction)underlineAction:(id)sender;
+-(IBAction)overlineAction:(id)sender;
+-(IBAction)strikeoutAction:(id)sender;
+-(IBAction)transparentAction:(id)sender;		// = no higlight color ?
+
+- (void)colorWellDidChange:(NSNotification *)aNotification;
+- (void)tableViewSelectionDidChange:(NSNotification *)aNotification;
+
+/* accessors */
+-(void)setStrikeout:(bool)value;
+-(void)setUnderline:(bool)value;
+-(void)setOverline:(bool)value;
+
+-(void)selectFont:(char*)value;
+-(NSString*)selectedFont;
+-(void)selectSize:(char*)value;
+-(NSString*)selectedSize;
+-(void)selectStyle:(char*)style withWeight:(char*)weight;
+
+-(NSColor*)textColor;
+-(void)setTextColor:(NSColor*)color;
+-(NSColor*)bgColor;
+-(void)setBgColor:(NSColor*)color;
+
+@end
 
 /*****************************************************************/
 
@@ -39,68 +106,33 @@ public:
 	virtual void			runModal(XAP_Frame * pFrame);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
-	void                    underlineChanged(void);
-	void                    overlineChanged(void);
-	void                    strikeoutChanged(void);
-	void                    transparencyChanged(void);
+	void                    underlineChanged(bool);
+	void                    overlineChanged(bool);
+	void                    strikeoutChanged(bool);
+	void                    transparencyChanged(bool);
 	void 					updatePreview(void);
 	void                    fontRowChanged(void);
-	void                    styleRowChanged(void);
+	void                    styleRowChanged(int);
 	void                    sizeRowChanged(void);
 	void                    fgColorChanged(void);
 	void                    bgColorChanged(void);
 
 	// the state of what data is hidden and what is public is
 	// pretty grave here.
-//	XAP_CocoaFontManager * 	m_fontManager;
-#if 0
-	GtkWidget * 			m_fontList;
-	GtkWidget * 			m_styleList;
-	GtkWidget * 			m_sizeList;
-	GtkWidget * 			m_checkStrikeOut;
-	GtkWidget *				m_checkUnderline;
-	GtkWidget *				m_checkOverline;
-	GtkWidget *				m_checkTransparency;
-	GtkWidget *				m_colorSelector;
-	GtkWidget *				m_bgcolorSelector;
-	GtkWidget * 			m_preview;
-#endif
 	bool					getEntryString(char ** string);
-	GR_CocoaGraphics * 		m_gc;
 
-	bool		 			m_blockUpdate;
-	bool		 			m_doneFirstFont;
-
-protected:
-	// careful, these must be in the order the
-	// list box will show them (Windows order)
-	typedef enum
-	{
-		LIST_STYLE_NONE = -1,
-		LIST_STYLE_NORMAL = 0,
-		LIST_STYLE_ITALIC,
-		LIST_STYLE_BOLD,
-		LIST_STYLE_BOLD_ITALIC
-	} listStyle;
-
-#if 0
-	// these are Glade helper or Glade generated functions
-	GtkWidget * 			get_widget(GtkWidget * widget, gchar * widget_name);
-	void 					set_notebook_tab(GtkWidget * notebook, gint page_num, GtkWidget * widget);
-	virtual GtkWidget *             constructWindow(void);
-	GtkWidget *                     constructWindowContents(GtkObject *);
-
-	// a temporary font to hold dynamically allocated "rented"
-	// fonts between style changes
-	XAP_CocoaFontHandle * 	m_lastFont;
-
-	// parent frame
-	XAP_CocoaFrame *			m_pCocoaFrame;
-	gdouble m_currentFGColor[4];
-	gdouble m_currentBGColor[4];
-	gdouble m_funkyColor[4];
-#endif
-
+	/* GUI actions */
+	void _okAction(void);
+	void _cancelAction(void);
+	
+	/* GUI creation */
+	void				_createGC(XAP_CocoaNSView* owner);
+	void				_deleteGC(void);
+	
+private:
+	XML_Char*	m_currentFamily;
+	XAP_CocoaDialog_FontChooserController*	m_dlg;
 };
+
 
 #endif /* XAP_COCOADIALOG_FONTCHOOSER_H */

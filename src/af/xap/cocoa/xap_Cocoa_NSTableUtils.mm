@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 2002 Hubert Figuiere
+ * Copyright (C) 2002-2003 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -62,5 +62,36 @@
 {
 	[_array addObject:string];
 }
+
+- (void)addUT_String:(const UT_String &)string
+{
+	NSString *str = [[NSString alloc] initWithUTF8String:string.c_str()];
+	[_array addObject:str];		
+	[str release];
+}
+
+- (int)rowWithCString:(char *)cString
+{
+	NSString *string = [[NSString alloc] initWithUTF8String:cString];
+	unsigned int idx = [_array indexOfObject:string];
+	[string release];
+	if (idx == NSNotFound) { 
+		return -1;
+	}
+	return idx;
+}
+
+- (NSArray*)array
+{
+	return _array;
+}
+
+
+- (void)loadFontList
+{
+	[_array removeAllObjects];
+	[_array addObjectsFromArray:[[NSFontManager sharedFontManager] availableFontFamilies]];
+}
+
 
 @end
