@@ -3802,7 +3802,12 @@ void FV_View::getAllBlocksInList(UT_GenericVector<fl_BlockLayout *> * v)
 	//
 	fl_BlockLayout * pBlock;
 	fl_AutoNum * pAuto = getCurrentBlock()->getAutoNum();
-	UT_ASSERT(pAuto);
+	if(pAuto == NULL)
+	{
+		pBlock = getCurrentBlock();
+		v->addItem(pBlock);
+		return;
+	}
 	PL_StruxDocHandle pFirstSdh = pAuto->getFirstItem();
 	PL_StruxDocHandle pLastSdh = pAuto->getNthBlock(pAuto->getNumLabels()-1);
 	fl_SectionLayout * pSl = getCurrentBlock()->getSectionLayout();
