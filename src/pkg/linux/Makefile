@@ -129,7 +129,7 @@ pack_rpm:
 	@rm -rf $(PACK_ROOT)
 	@echo "Making source pack in directory [$(PACK_ROOT)]..."
 	@mkdir -p $(PACK_ROOT)
-	@(cd $(ABI_ROOT)/..; tar --exclude=CVS cf - $(MODULE_LIST)) | \
+	@(cd $(ABI_ROOT)/..; tar --exclude=CVS -cf - $(MODULE_LIST)) | \
 		(cd $(PACK_ROOT); tar xf -)
 	@rm -f $(RPM_SOURCE_DIR)/SOURCES/abisuite-$(ABI_BUILD_VERSION).tar
 	@(cd $(PACK_ROOT)/..; tar cf $(RPM_SOURCE_DIR)/SOURCES/abisuite-$(ABI_BUILD_VERSION).tar \
