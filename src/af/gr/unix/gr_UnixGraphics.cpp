@@ -880,21 +880,21 @@ void GR_UnixGraphics::setFont(GR_Font * pFont)
 
 	m_pFont = pUFont;
 	char * szUnixFontName = UT_strdup(m_pFont->getUnixFont()->getName());
-	const char * szFontName = UT_lowerString(szUnixFontName);
+	const char * szLCFontName = UT_lowerString(szUnixFontName);
 
-	if (szFontName)
+	if (szLCFontName)
 	{
-		if(strstr(szFontName,"symbol") != NULL)
+		if(strstr(szLCFontName,"symbol") != NULL)
 		{
-			if(strstr(szFontName,"star") != NULL)
+			if(strstr(szLCFontName,"star") != NULL)
 				m_bIsSymbol = false;
 			else
 				m_bIsSymbol = true;
 		}
-		if(strstr(szFontName,"dingbat") != NULL)
+		if(strstr(szLCFontName,"dingbat") != NULL)
 			m_bIsDingbat = true;
 	}
-	FREEP(szFontName);
+	FREEP(szLCFontName);
 	m_pXftFontL = m_pFont->getLayoutXftFont();
 	m_pXftFontD = m_pFont->getDeviceXftFont(getZoomPercentage());
 }
@@ -1043,7 +1043,7 @@ GR_Font * GR_UnixGraphics::findFont(const char* pszFontFamily,
 									const char* pszFontSize)
 {
 	XAP_UnixFont* pUnixFont = m_pFontManager->findNearestFont(pszFontFamily, pszFontStyle, pszFontVariant, pszFontWeight,
-															  pszFontStretch, pszFontSize);
+															  pszFontStretch, pszFontSize,this);
 
 	// bury the pointer to our Unix font in a XAP_UnixFontHandle with the correct size.
 	UT_uint32 iSize = static_cast<UT_uint32>(UT_convertToPoints(pszFontSize));

@@ -178,7 +178,8 @@ XAP_UnixFont::XAP_UnixFont(const XAP_UnixFont & copy)
 	m_fontKey = NULL;
 
 	openFileAs(copy.getFontfile(), copy.getMetricfile(), copy.getName(), copy.getXLFD(), copy.getStyle());
-
+	m_bIsSymbol = copy.m_bIsSymbol;
+	m_bIsDingbat = copy.m_bIsDingbat;
 	m_pEncodingTable = NULL;
 	m_iEncodingTableSize = 0;
 	if (copy.getEncodingTable())
@@ -250,18 +251,18 @@ bool XAP_UnixFont::openFileAs(const char *fontfile, const char *metricfile, cons
 	m_bIsSymbol = false;
 	m_bIsDingbat = false;
 	char * szUnixFontName = UT_strdup(m_name);
-	const char * szFontName = UT_lowerString(szUnixFontName);
+	const char * szLCFontName = UT_lowerString(szUnixFontName);
 
-	if(strstr(szUnixFontName,"symbol") != NULL)
+	if(strstr(szLCFontName,"symbol") != NULL)
 	{
-		if(strstr(szUnixFontName,"star") != NULL)
+		if(strstr(szLCFontName,"star") != NULL)
 			m_bIsSymbol = false;
 		else
 			m_bIsSymbol = true;
 	}
-	if(strstr(szUnixFontName,"dingbat") != NULL)
+	if(strstr(szLCFontName,"dingbat") != NULL)
 		m_bIsDingbat = true;
-	FREEP(szFontName);
+	FREEP(szLCFontName);
 
 	// save to memebers
 	FREEP(m_fontfile);
@@ -301,18 +302,18 @@ void XAP_UnixFont::setName(const char *name)
 	m_bIsSymbol = false;
 	m_bIsDingbat = false;
 	char * szUnixFontName = UT_strdup(m_name);
-	const char * szFontName = UT_lowerString(szUnixFontName);
+	const char * szLCFontName = UT_lowerString(szUnixFontName);
 
-	if(strstr(szUnixFontName,"symbol") != NULL)
+	if(strstr(szLCFontName,"symbol") != NULL)
 	{
-		if(strstr(szUnixFontName,"star") != NULL)
+		if(strstr(szLCFontName,"star") != NULL)
 			m_bIsSymbol = false;
 		else
 			m_bIsSymbol = true;
 	}
-	if(strstr(szUnixFontName,"dingbat") != NULL)
+	if(strstr(szLCFontName,"dingbat") != NULL)
 		m_bIsDingbat = true;
-	FREEP(szFontName);
+	FREEP(szLCFontName);
 }
 
 const char *XAP_UnixFont::getName(void) const

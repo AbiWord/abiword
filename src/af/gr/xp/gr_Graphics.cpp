@@ -198,6 +198,7 @@ void GR_Graphics::setLineProperties ( double    inWidthPixels,
   UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 }
 
+
 #ifndef WITH_PANGO
 UT_uint32 GR_Graphics::getMaxCharacterWidth(const UT_UCSChar*s, UT_uint32 Length)
 {

@@ -216,6 +216,7 @@ class ABI_EXPORT GR_Graphics
 	virtual UT_uint32 getFontDescent(GR_Font *) PURE_VIRTUAL_IF_NOT_PANGO;
 	virtual UT_uint32 getFontHeight(GR_Font *)  PURE_VIRTUAL_IF_NOT_PANGO;
 
+
 #ifndef WITH_PANGO
 	UT_uint32         getMaxCharacterWidth(const UT_UCSChar*s, UT_uint32 Length);
 #else
