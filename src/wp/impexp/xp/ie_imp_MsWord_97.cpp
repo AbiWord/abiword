@@ -622,60 +622,67 @@ UT_Error IE_Imp_MsWord_97::importFile(const char * szFilename)
   UT_DEBUGMSG(("DOM: about to get summary information\n"));
 
   // now get the summary information, if available
-  MsOleSummary *summary = ms_ole_summary_open (ps.ole_file);
-  if (summary)
+  ret = wvQuerySupported (&ps.fib, NULL);
+
+  // word 2 used an OLE like mechanism inside of a FILE*, but
+  // good luck trying to ms_ole_summary_open something using that...
+  if (WORD2 != ret)
     {
-      UT_DEBUGMSG(("DOM: getting summary information\n"));
-
-      char *prop_str = NULL;
-      gboolean found = FALSE;
-
-      // title
-      prop_str = ms_ole_summary_get_string (summary, MS_OLE_SUMMARY_TITLE, &found);
-      if (found && prop_str)
-	getDoc()->setMetaDataProp ( PD_META_KEY_TITLE, prop_str ) ;
-
-      // subject
-      prop_str = ms_ole_summary_get_string (summary, MS_OLE_SUMMARY_SUBJECT, &found);
-      if (found && prop_str)
-	getDoc()->setMetaDataProp ( PD_META_KEY_SUBJECT, prop_str ) ;
-
-      // author
-      prop_str = ms_ole_summary_get_string (summary, MS_OLE_SUMMARY_AUTHOR, &found);
-      if (found && prop_str)
-	getDoc()->setMetaDataProp ( PD_META_KEY_CREATOR, prop_str ) ;
-
-      prop_str = ms_ole_summary_get_string (summary, MS_OLE_SUMMARY_LASTAUTHOR, &found);
-      if (found && prop_str)
-	getDoc()->setMetaDataProp ( PD_META_KEY_CONTRIBUTOR, prop_str ) ;
-
-      // keywords
-      prop_str = ms_ole_summary_get_string (summary, MS_OLE_SUMMARY_KEYWORDS, &found);
-      if (found && prop_str)
-	getDoc()->setMetaDataProp ( PD_META_KEY_KEYWORDS, prop_str ) ;
-
-      // comments
-      prop_str = ms_ole_summary_get_string (summary, MS_OLE_SUMMARY_COMMENTS, &found);
-      if (found && prop_str)
-	getDoc()->setMetaDataProp ( PD_META_KEY_DESCRIPTION, prop_str ) ;
-
-      // category
-      prop_str = ms_ole_summary_get_string (summary, MS_OLE_SUMMARY_CATEGORY, &found);
-      if (found && prop_str)
-	getDoc()->setMetaDataProp ( PD_META_KEY_TYPE, prop_str ) ;
-
-      // organization
-      prop_str = ms_ole_summary_get_string (summary, MS_OLE_SUMMARY_COMPANY, &found);
-      if (found && prop_str)
-	getDoc()->setMetaDataProp ( PD_META_KEY_PUBLISHER, prop_str ) ;
-
-      ms_ole_summary_close (summary);
+      MsOleSummary *summary = ms_ole_summary_open (ps.ole_file);
+      if (summary)
+	{
+	  UT_DEBUGMSG(("DOM: getting summary information\n"));
+	  
+	  char *prop_str = NULL;
+	  gboolean found = FALSE;
+	  
+	  // title
+	  prop_str = ms_ole_summary_get_string (summary, MS_OLE_SUMMARY_TITLE, &found);
+	  if (found && prop_str)
+	    getDoc()->setMetaDataProp ( PD_META_KEY_TITLE, prop_str ) ;
+	  
+	  // subject
+	  prop_str = ms_ole_summary_get_string (summary, MS_OLE_SUMMARY_SUBJECT, &found);
+	  if (found && prop_str)
+	    getDoc()->setMetaDataProp ( PD_META_KEY_SUBJECT, prop_str ) ;
+	  
+	  // author
+	  prop_str = ms_ole_summary_get_string (summary, MS_OLE_SUMMARY_AUTHOR, &found);
+	  if (found && prop_str)
+	    getDoc()->setMetaDataProp ( PD_META_KEY_CREATOR, prop_str ) ;
+	  
+	  prop_str = ms_ole_summary_get_string (summary, MS_OLE_SUMMARY_LASTAUTHOR, &found);
+	  if (found && prop_str)
+	    getDoc()->setMetaDataProp ( PD_META_KEY_CONTRIBUTOR, prop_str ) ;
+	  
+	  // keywords
+	  prop_str = ms_ole_summary_get_string (summary, MS_OLE_SUMMARY_KEYWORDS, &found);
+	  if (found && prop_str)
+	    getDoc()->setMetaDataProp ( PD_META_KEY_KEYWORDS, prop_str ) ;
+	  
+	  // comments
+	  prop_str = ms_ole_summary_get_string (summary, MS_OLE_SUMMARY_COMMENTS, &found);
+	  if (found && prop_str)
+	    getDoc()->setMetaDataProp ( PD_META_KEY_DESCRIPTION, prop_str ) ;
+	  
+	  // category
+	  prop_str = ms_ole_summary_get_string (summary, MS_OLE_SUMMARY_CATEGORY, &found);
+	  if (found && prop_str)
+	    getDoc()->setMetaDataProp ( PD_META_KEY_TYPE, prop_str ) ;
+	  
+	  // organization
+	  prop_str = ms_ole_summary_get_string (summary, MS_OLE_SUMMARY_COMPANY, &found);
+	  if (found && prop_str)
+	    getDoc()->setMetaDataProp ( PD_META_KEY_PUBLISHER, prop_str ) ;
+	  
+	  ms_ole_summary_close (summary);
+	}
     }
 
   UT_DEBUGMSG(("DOM: finished summary info\n"));
 
   // HACK - this will do until i sort out some global stream ugliness in wv
-  if ( !decrypted )
+  if ( !decrypted && WORD2 != ret )
     wvOLEFree(&ps);
 
   // We can't be in a good state if we didn't add any sections!
