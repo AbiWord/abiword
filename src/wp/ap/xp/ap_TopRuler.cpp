@@ -1406,13 +1406,12 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 			unsigned char iType;
 			UT_sint32 iTab = _findTabStop(&m_infoCache, x, y, iType);
 
-			if ((iTab >= 0) && (iTab == m_draggingTab))
+			if (iTab >= 0)
 			{
-				// this tabstop is already set here ==> NOOP
+				// a tabstop is already set here ==> delete the one we're dragging
 				m_draggingWhat = DW_NOTHING;
-				return;
+				_setTabStops(tick, iTab, UT_TRUE); // UT_TRUE for the last arg will cause this to be deleted
 			}
-
 			_setTabStops(tick, iTab, UT_FALSE);
 		}
 		return;
