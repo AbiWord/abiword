@@ -24,6 +24,7 @@
 #define UTVECTOR_H
 
 #include "ut_types.h"
+#include "ut_assert.h"
 
 // TODO change the 'int' types to 'UT_[su]int32' whichever is appropriate.
 
@@ -62,5 +63,17 @@ protected:
 	UT_uint32		m_iCutoffDouble;
 	UT_uint32		m_iPostCutoffIncrement;
 };
+
+// NB: this macro is useful only in destructors
+#define UT_VECTOR_PURGEALL(d, v)						\
+	do	{	int utmax = v.getItemCount();				\
+			for (int uti=utmax-1; uti>=0; uti--)		\
+			{											\
+				d* p = (d*) v.getNthItem(uti);			\
+				UT_ASSERT(p);							\
+				if (p)									\
+					delete p;							\
+			}											\
+	} while (0)
 
 #endif /* UTVECTOR_H */
