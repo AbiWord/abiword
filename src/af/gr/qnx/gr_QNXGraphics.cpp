@@ -597,7 +597,7 @@ void GR_QNXGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,
 	setDamage(__min(x1,x2),__min(y1,y2),__max(y1,y2),__max(x1,x2)); 
 }
 
-void GR_QNXGraphics::getCoverage(UT_Vector &coverage)
+void GR_QNXGraphics::getCoverage(UT_NumberVector &coverage)
 {
 FontQueryInfo info;
 const char *font;
@@ -607,8 +607,8 @@ return;
 coverage.clear();
 memset(&info,0,sizeof(info));
 PfQueryFontInfoCx(m_pFontCx,font,&info);
-coverage.push_back((void*)info.lochar);
-coverage.push_back((void*)(info.hichar - info.lochar));
+coverage.push_back(info.lochar);
+coverage.push_back((info.hichar - info.lochar));
 }
 
 void GR_QNXGraphics::setLineWidth(UT_sint32 iLineWidth)

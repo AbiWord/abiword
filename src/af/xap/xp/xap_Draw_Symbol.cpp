@@ -149,8 +149,8 @@ void XAP_Draw_Symbol::draw(void)
 	
 	for (i = 0; i < m_vCharSet.size(); i += 2)
 	{
-		UT_UCSChar base = static_cast<UT_UCSChar>(reinterpret_cast<UT_uint32>(m_vCharSet[i]));
-		size_t nb_chars = reinterpret_cast<size_t>(m_vCharSet[i + 1]);
+		UT_UCSChar base = static_cast<UT_UCSChar>(m_vCharSet[i]);
+		size_t nb_chars = static_cast<size_t>(m_vCharSet[i + 1]);
 
 		for (UT_UCSChar j = base; j < base + nb_chars; ++j)
 		{
@@ -185,11 +185,11 @@ UT_UCSChar XAP_Draw_Symbol::calcSymbolFromCoords(UT_uint32 ix, UT_uint32 iy)
 	UT_DEBUGMSG(("calcSymbolFromCoords(x = [%u], y = [%u]) =", ix, iy));
 	for (size_t i = 0; i < m_vCharSet.size(); i += 2)
 	{
-		count += reinterpret_cast<UT_uint32>(m_vCharSet[i + 1]);
+		count += m_vCharSet[i + 1];
 		if (count > index)
 		{
-			UT_DEBUGMSG((" %u\n", static_cast<UT_uint32>(reinterpret_cast<UT_uint32>(m_vCharSet[i]) + index - count + reinterpret_cast<UT_uint32>(m_vCharSet[i + 1]))));
-			return static_cast<UT_UCSChar>(reinterpret_cast<UT_uint32>(m_vCharSet[i]) + index - count + reinterpret_cast<UT_uint32>(m_vCharSet[i + 1]));
+			UT_DEBUGMSG((" %u\n", static_cast<UT_uint32>(m_vCharSet[i] + index - count + m_vCharSet[i + 1])));
+			return static_cast<UT_UCSChar>(m_vCharSet[i] + index - count + m_vCharSet[i + 1]);
 		}
 	}
 
@@ -217,8 +217,8 @@ void XAP_Draw_Symbol::calculatePosition(UT_UCSChar c, UT_uint32 &x, UT_uint32 &y
 
 	for (size_t i = 0; i < m_vCharSet.size(); i += 2)
 	{
-		UT_uint32 base = reinterpret_cast<UT_uint32>(m_vCharSet[i]);
-		UT_uint32 size = reinterpret_cast<UT_uint32>(m_vCharSet[i + 1]);
+		UT_uint32 base = static_cast<UT_uint32>(m_vCharSet[i]);
+		UT_uint32 size = static_cast<UT_uint32>(m_vCharSet[i + 1]);
 		
 		if (base + size > c)
 		{

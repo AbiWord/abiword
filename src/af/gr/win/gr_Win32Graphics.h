@@ -153,7 +153,7 @@ public:
 
 	virtual UT_uint32		getFontAscent();
 	virtual UT_uint32		getFontDescent();
-	virtual void			getCoverage(UT_Vector& coverage);
+	virtual void			getCoverage(UT_NumberVector& coverage);
 	virtual void			drawLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
 	virtual void			xorLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
 	virtual void			setLineWidth(UT_sint32);

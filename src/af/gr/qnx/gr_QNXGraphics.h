@@ -92,7 +92,7 @@ class GR_QNXGraphics : public GR_Graphics
 	virtual UT_uint32 	getFontAscent();
 	virtual UT_uint32 	getFontDescent();
 	virtual UT_uint32 	getFontHeight();
-	virtual void getCoverage(UT_Vector &coverage);
+	virtual void getCoverage(UT_NumberVector &coverage);
 
 	virtual void		_beginPaint();
 	virtual void		_endPaint();

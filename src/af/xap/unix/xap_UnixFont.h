@@ -118,7 +118,7 @@ class ABI_EXPORT XAP_UnixFont
 	bool					is_PS_font()  const {return ((m_fontType == FONT_TYPE_PFA) || (m_fontType == FONT_TYPE_PFB));}
 	font_type				getFontType() const {return m_fontType;}
 
-	void					getCoverage(UT_Vector& coverage);
+	void					getCoverage(UT_NumberVector& coverage);
 
 	float					getAscender(UT_uint32 iSize) const;
 	float					getDescender(UT_uint32 iSize) const;

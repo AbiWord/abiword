@@ -216,7 +216,7 @@ void XAP_UnixGnomePrintGraphics::drawGlyph (UT_uint32 Char, UT_sint32 xoff, UT_s
 	UT_ASSERT_NOT_REACHED ();
 }
 
-void XAP_UnixGnomePrintGraphics::getCoverage (UT_Vector& coverage)
+void XAP_UnixGnomePrintGraphics::getCoverage (UT_NumberVector& coverage)
 {
 	UT_ASSERT_NOT_REACHED ();
 }

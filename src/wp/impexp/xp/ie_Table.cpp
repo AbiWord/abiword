@@ -1028,7 +1028,7 @@ UT_sint32 ie_imp_table::NewRow(void)
 			UT_sint32 j = 0;
 			for(j=0; !bMatch && (j < static_cast<UT_sint32>(m_vecCellX.getItemCount())); j++)
 			{
-				UT_sint32 prevX = reinterpret_cast<UT_sint32>(m_vecCellX.getNthItem(j));
+				UT_sint32 prevX = m_vecCellX.getNthItem(j);
 				UT_DEBUGMSG(("Prev cell %d cellx %d \n",j,prevX));
 				bool bLast = ((j-1) == szCurRow);
 				bMatch =  doCellXMatch(prevX,curX,bLast);
@@ -1179,7 +1179,7 @@ void ie_imp_table::writeTablePropsInDoc(void)
 		sColWidth.clear();
 		for(i=0; i< static_cast<UT_sint32>(m_vecCellX.getItemCount()); i++)
 		{
-			UT_sint32 iCellx = reinterpret_cast<UT_sint32>(m_vecCellX.getNthItem(i));
+			UT_sint32 iCellx = m_vecCellX.getNthItem(i);
 			xxx_UT_DEBUGMSG(("final cellx import cellx %d iPrev %x \n",iCellx,iPrev));
 			UT_sint32 iDiffCellx = iCellx - iPrev;
 			double dCellx = static_cast<double>(iDiffCellx)/1440.0 -dColSpace;
@@ -1357,9 +1357,9 @@ void ie_imp_table::_buildCellXVector(void)
 	{
 		pCell = static_cast<ie_imp_cell *>(m_vecCells.getNthItem(i));
 		UT_sint32 cellx = pCell->getCellX();
-		if(m_vecCellX.findItem(reinterpret_cast<void *>(cellx)) < 0)
+		if(m_vecCellX.findItem(cellx) < 0)
 		{
-			m_vecCellX.addItem(reinterpret_cast<void *>(cellx));
+			m_vecCellX.addItem(cellx);
 		}
 	}
 	m_vecCellX.qsort(compareCellX);
@@ -1377,7 +1377,7 @@ UT_sint32 ie_imp_table::getColNumber(ie_imp_cell * pImpCell)
 	UT_sint32 iSub = 0;
 	for(i=0; !bFound && (i< static_cast<UT_sint32>(m_vecCellX.getItemCount())); i++)
 	{
-		UT_sint32 icellx = reinterpret_cast<UT_sint32>(m_vecCellX.getNthItem(i));
+		UT_sint32 icellx = m_vecCellX.getNthItem(i);
 		if(icellx == -1)
 		{
 			iSub++;

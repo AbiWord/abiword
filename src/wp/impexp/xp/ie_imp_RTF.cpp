@@ -551,7 +551,7 @@ bool RTF_msword97_listOverride::setList(void)
 /*!
  * This returns returns a pointer to the tabstop vector defined in the list level.
  */
-UT_Vector * RTF_msword97_listOverride::getTabStopVect(UT_uint32 iLevel)
+UT_NumberVector * RTF_msword97_listOverride::getTabStopVect(UT_uint32 iLevel)
 {
 	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
 	return &(pLevel->m_pParaProps->m_tabStops);
@@ -559,7 +559,7 @@ UT_Vector * RTF_msword97_listOverride::getTabStopVect(UT_uint32 iLevel)
 /*!
  * This returns returns a pointer to the tab Type vector defined in the list level.
  */
-UT_Vector * RTF_msword97_listOverride::getTabTypeVect(UT_uint32 iLevel)
+UT_NumberVector * RTF_msword97_listOverride::getTabTypeVect(UT_uint32 iLevel)
 {
 	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
 	return &(pLevel->m_pParaProps->m_tabTypes);
@@ -567,7 +567,7 @@ UT_Vector * RTF_msword97_listOverride::getTabTypeVect(UT_uint32 iLevel)
 /*!
  * This returns returns a pointer to the tab Leadervector defined in the list level.
  */
-UT_Vector * RTF_msword97_listOverride::getTabLeaderVect(UT_uint32 iLevel)
+UT_NumberVector * RTF_msword97_listOverride::getTabLeaderVect(UT_uint32 iLevel)
 {
 	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
 	return &(pLevel->m_pParaProps->m_tabLeader);
@@ -1211,9 +1211,9 @@ RTFProps_ParaProps& RTFProps_ParaProps::operator=(const RTFProps_ParaProps& othe
 		m_iOverrideLevel = other.m_iOverrideLevel;
 		if(m_tabTypes.getItemCount() > 0)
 		{
-			UT_uint32 dum = reinterpret_cast<UT_uint32>(m_tabTypes.getNthItem(0));
+			UT_uint32 dum = m_tabTypes.getNthItem(0);
 			m_curTabType = static_cast<eTabType>(dum);
-			dum = reinterpret_cast<UT_uint32>(m_tabLeader.getNthItem(0));
+			dum = m_tabLeader.getNthItem(0);
 			m_curTabLeader = static_cast<eTabLeader>(dum);
 		}
 		else
@@ -2458,7 +2458,7 @@ UT_uint32 IE_Imp_RTF::GetNthTableColour(UT_uint32 colNum)
 {
 	if (colNum < m_colourTable.getItemCount())
 	{
-		return reinterpret_cast<UT_uint32>(m_colourTable.getNthItem(colNum));
+		return m_colourTable.getNthItem(colNum);
 	}
 	else
 	{
@@ -2470,7 +2470,7 @@ UT_sint32 IE_Imp_RTF::GetNthTableBgColour(UT_uint32 colNum)
 {
 	if (colNum < m_colourTable.getItemCount())
 	{
-		return reinterpret_cast<UT_sint32>(m_colourTable.getNthItem(colNum));
+		return m_colourTable.getNthItem(colNum);
 	}
 	else
 	{
@@ -6359,11 +6359,11 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 			if (i > 0)
 				propBuffer += ",";
 
-			UT_sint32 tabTwips = reinterpret_cast<UT_sint32>(m_currentRTFState.m_paraProps.m_tabStops.getNthItem(i));
+			UT_sint32 tabTwips = m_currentRTFState.m_paraProps.m_tabStops.getNthItem(i);
 			double tabIn = tabTwips/(20.0*72.);
-			UT_uint32 idum = reinterpret_cast<UT_uint32>(m_currentRTFState.m_paraProps.m_tabTypes.getNthItem(i));
+			UT_uint32 idum = m_currentRTFState.m_paraProps.m_tabTypes.getNthItem(i);
 			eTabType tabType = static_cast<eTabType>(idum);
-			idum = reinterpret_cast<UT_uint32>((m_currentRTFState.m_paraProps.m_tabLeader.getNthItem(i)));
+			idum = static_cast<UT_uint32>((m_currentRTFState.m_paraProps.m_tabLeader.getNthItem(i)));
 			eTabLeader tabLeader = static_cast<eTabLeader>(idum);
 			char  cType = ' ';
 			switch(tabType)
@@ -7257,6 +7257,7 @@ bool IE_Imp_RTF::ReadListTable()
 		}
 		if(ch == '{')  //new list or listoverride?
 		{
+			nesting++;
 			if (!ReadCharFromFile(&ch))
 			{
 				return false;
@@ -8308,7 +8309,7 @@ bool IE_Imp_RTF::ReadColourTable()
 		else if(ch!= '}' || bValidColor)
 		{
 			UT_DEBUGMSG(("Add colour %d to table \n",colour));
-			m_colourTable.addItem(reinterpret_cast<void*>(colour));
+			m_colourTable.addItem(colour);
 
 			// Read in the next char
 			if (!ReadCharFromFile(&ch))
@@ -9089,22 +9090,22 @@ bool IE_Imp_RTF::SetParaJustification(RTFProps_ParaProps::ParaJustification just
 
 bool IE_Imp_RTF::AddTabstop(UT_sint32 stopDist, eTabType tabType, eTabLeader tabLeader)
 {
-	m_currentRTFState.m_paraProps.m_tabStops.addItem(reinterpret_cast<void*>(stopDist));	// convert from twip to inch
+	m_currentRTFState.m_paraProps.m_tabStops.addItem(stopDist);	// convert from twip to inch
 	if(tabType >=FL_TAB_LEFT && tabType <= FL_TAB_BAR  )
 	{
-		m_currentRTFState.m_paraProps.m_tabTypes.addItem(reinterpret_cast<void*>(tabType));
+		m_currentRTFState.m_paraProps.m_tabTypes.addItem(tabType);
 	}
 	else
 	{
-		m_currentRTFState.m_paraProps.m_tabTypes.addItem(reinterpret_cast<void*>(FL_TAB_LEFT));
+		m_currentRTFState.m_paraProps.m_tabTypes.addItem(FL_TAB_LEFT);
 	}
 	if(tabLeader >= FL_LEADER_NONE  && tabLeader <= FL_LEADER_EQUALSIGN)
 	{
-		m_currentRTFState.m_paraProps.m_tabLeader.addItem(reinterpret_cast<void*>(tabLeader));
+		m_currentRTFState.m_paraProps.m_tabLeader.addItem(tabLeader);
 	}
 	else
 	{
-		m_currentRTFState.m_paraProps.m_tabLeader.addItem(reinterpret_cast<void*>(FL_LEADER_NONE));
+		m_currentRTFState.m_paraProps.m_tabLeader.addItem(FL_LEADER_NONE);
 	}
 
 	return true;
@@ -9114,22 +9115,22 @@ bool IE_Imp_RTF::AddTabstop(UT_sint32 stopDist, eTabType tabType, eTabLeader tab
 
 bool IE_Imp_RTF::AddTabstop(UT_sint32 stopDist, eTabType tabType, eTabLeader tabLeader,  RTFProps_ParaProps * pParas)
 {
-	pParas->m_tabStops.addItem(reinterpret_cast<void*>(stopDist));	// convert from twip to inch
+	pParas->m_tabStops.addItem(stopDist);	// convert from twip to inch
 	if(tabType >=FL_TAB_LEFT && tabType <= FL_TAB_BAR  )
 	{
-		pParas->m_tabTypes.addItem(reinterpret_cast<void*>(tabType));
+		pParas->m_tabTypes.addItem(tabType);
 	}
 	else
 	{
-		pParas->m_tabTypes.addItem(reinterpret_cast<void*>(FL_TAB_LEFT));
+		pParas->m_tabTypes.addItem(FL_TAB_LEFT);
 	}
 	if(tabLeader >= FL_LEADER_NONE  && tabLeader <= FL_LEADER_EQUALSIGN)
 	{
-		pParas->m_tabLeader.addItem(reinterpret_cast<void*>(tabLeader));
+		pParas->m_tabLeader.addItem(tabLeader);
 	}
 	else
 	{
-		pParas->m_tabLeader.addItem(reinterpret_cast<void*>(FL_LEADER_NONE));
+		pParas->m_tabLeader.addItem(FL_LEADER_NONE);
 	}
 
 	return true;
@@ -9867,11 +9868,11 @@ bool IE_Imp_RTF::buildAllProps(char * propBuffer,  RTFProps_ParaProps * pParas,
 		if (i > 0)
 			strcat(propBuffer, ",");
 
-		UT_sint32 tabTwips = reinterpret_cast<UT_sint32>(pParas->m_tabStops.getNthItem(i));
+		UT_sint32 tabTwips = pParas->m_tabStops.getNthItem(i);
 		double tabIn = tabTwips/(20.0*72.);
-		UT_uint32 idum = reinterpret_cast<UT_uint32>(pParas->m_tabTypes.getNthItem(i));
+		UT_uint32 idum = pParas->m_tabTypes.getNthItem(i);
 		eTabType tabType = static_cast<eTabType>(idum);
-		idum = (UT_uint32) (pParas->m_tabLeader.getNthItem(i));
+		idum = pParas->m_tabLeader.getNthItem(i);
 		eTabLeader tabLeader = static_cast<eTabLeader>(idum);
 		char  cType = ' ';
 		switch(tabType)

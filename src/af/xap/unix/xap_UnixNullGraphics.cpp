@@ -154,7 +154,7 @@ UT_uint32 UnixNull_Graphics::getFontHeight(GR_Font * fnt)
 	return getFontAscent(fnt) + getFontDescent(fnt);
 }
 
-void UnixNull_Graphics::getCoverage(UT_Vector& converage)
+void UnixNull_Graphics::getCoverage(UT_NumberVector& coverage)
 {
 }
 

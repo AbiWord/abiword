@@ -94,7 +94,7 @@ class GR_UnixGraphics : public GR_Graphics
 	virtual UT_uint32	getFontAscent();
 	virtual UT_uint32	getFontDescent();
 
-	virtual void		getCoverage(UT_Vector& coverage);
+	virtual void		getCoverage(UT_NumberVector& coverage);
 
 	virtual void		setLineWidth(UT_sint32);
 

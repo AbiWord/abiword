@@ -219,7 +219,7 @@ void AP_UnixDialog_FormatFootnotes::event_MenuStyleFootnoteChange(GtkWidget * wi
 {
 	/* note to typecast facist: rebuild on every platform before even thinking committing a change
 	 * to the cast below */
-	FootnoteType iType = (FootnoteType)reinterpret_cast<int>(g_object_get_data(G_OBJECT(widget), "user_data"));
+	FootnoteType iType = (FootnoteType)GPOINTER_TO_INT(g_object_get_data(G_OBJECT(widget), "user_data"));
 	setFootnoteType(iType);
 	refreshVals();
 }
@@ -229,7 +229,7 @@ void AP_UnixDialog_FormatFootnotes::event_MenuStyleEndnoteChange(GtkWidget * wid
 {
 	/* note to typecast facist: rebuild on every platform before even thinking committing a change
 	 * to the cast below */
-	FootnoteType iType = (FootnoteType)reinterpret_cast<int>(g_object_get_data(G_OBJECT(widget), "user_data"));
+	FootnoteType iType = (FootnoteType)GPOINTER_TO_INT(g_object_get_data(G_OBJECT(widget), "user_data"));
 	setEndnoteType(iType);
 	refreshVals();
 }

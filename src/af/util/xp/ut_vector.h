@@ -211,7 +211,7 @@ public:
 	 */
 	UT_sint32			findItem (UT_sint32 number) const;
 
-	// void				qsort (bool ascending = true);
+	void		qsort(int (*compar)(const void *, const void *));
 
 private:
 	/* grow() returns 0 on success, -1 on failure:

@@ -594,11 +594,11 @@ UT_uint32 GR_Win32Graphics::getFontDescent()
 	return (UT_uint32)((GR_Win32Font::Acq::getDescent(*m_pFont)) * getResolution() / getDeviceResolution());
 }
 
-void GR_Win32Graphics::getCoverage(UT_Vector& coverage)
+void GR_Win32Graphics::getCoverage(UT_NumberVector& coverage)
 {
 	coverage.clear();
-	coverage.push_back((void*) ' ');
-	coverage.push_back((void*) (255 - ' '));
+	coverage.push_back(' ');
+	coverage.push_back((255 - ' '));
 	
 	//UT_ASSERT(UT_TODO);
 }

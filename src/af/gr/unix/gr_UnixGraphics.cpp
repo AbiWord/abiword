@@ -981,7 +981,7 @@ UT_uint32 GR_UnixGraphics::getFontHeight(GR_Font * fnt)
 	return getFontAscent(fnt)+getFontDescent(fnt);
 }
 
-void GR_UnixGraphics::getCoverage(UT_Vector& coverage)
+void GR_UnixGraphics::getCoverage(UT_NumberVector& coverage)
 {
 	m_pFont->getUnixFont()->getCoverage(coverage);
 }

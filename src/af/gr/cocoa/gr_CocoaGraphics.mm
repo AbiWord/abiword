@@ -475,7 +475,7 @@ UT_sint32 GR_CocoaGraphics::measureUnRemappedChar(const UT_UCSChar c)
 }
 
 
-void GR_CocoaGraphics::getCoverage(UT_Vector& coverage)
+void GR_CocoaGraphics::getCoverage(UT_NumberVector& coverage)
 {
 	m_pFont->getCoverage(coverage);	
 }

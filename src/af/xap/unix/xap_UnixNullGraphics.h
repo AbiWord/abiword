@@ -71,7 +71,7 @@ public:
 	virtual UT_uint32 getFontDescent();
 	virtual UT_uint32 getFontHeight();
 
-	virtual void getCoverage(UT_Vector& converage);
+	virtual void getCoverage(UT_NumberVector& converage);
 	
 	virtual UT_uint32 getFontAscent(GR_Font *);
 	virtual UT_uint32 getFontDescent(GR_Font *);

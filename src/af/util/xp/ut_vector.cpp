@@ -437,6 +437,12 @@ UT_sint32 UT_NumberVector::findItem (UT_sint32 number) const
 				break;
 			}
 	return retval;
+
+}
+
+void UT_NumberVector::qsort(int (*compar)(const void *, const void *))
+{
+	::qsort(m_pEntries, m_iCount, sizeof(UT_sint32), compar);
 }
 
 /* grow() returns 0 on success, -1 on failure:
