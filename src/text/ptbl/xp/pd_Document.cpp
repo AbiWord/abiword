@@ -128,7 +128,7 @@ UT_Error PD_Document::readFromFile(const char * szFilename, int ieft)
 	}
 
 	m_pPieceTable->setPieceTableState(PTS_Editing);
-        updateFields();
+	updateFields();
 	_setClean();							// mark the document as not-dirty
 	return UT_OK;
 }
@@ -187,7 +187,7 @@ UT_Error PD_Document::saveAs(const char * szFilename, int ieft)
 	}
 	
 	char * szFilenameCopy = NULL;
-    if (!UT_cloneString(szFilenameCopy,szFilename))
+	if (!UT_cloneString(szFilenameCopy,szFilename))
 		return UT_SAVE_OTHERERROR;
 	m_szFilename = szFilenameCopy;
 
@@ -200,8 +200,8 @@ UT_Error PD_Document::save(void)
 	if (!m_szFilename || !*m_szFilename)
 		return UT_SAVE_NAMEERROR;
 	if (m_lastSavedAsType == IEFT_Unknown)
-     		return UT_EXTENSIONERROR;
-   
+		return UT_EXTENSIONERROR;
+
 	IE_Exp * pie = NULL;
 	UT_Error errorCode;
 
@@ -265,8 +265,8 @@ UT_Bool	PD_Document::insertObject(PT_DocPosition dpos,
 										 const XML_Char ** attributes,
 										 const XML_Char ** properties, fd_Field ** pField)
 {
-        pf_Frag_Object * pfo = NULL;
-        UT_Bool bres =  m_pPieceTable->insertObject(dpos, pto, attributes, properties, &pfo);
+	pf_Frag_Object * pfo = NULL;
+	UT_Bool bres =  m_pPieceTable->insertObject(dpos, pto, attributes, properties, &pfo);
 	*pField = pfo->getField();
 	return bres;
 }
@@ -579,34 +579,34 @@ UT_Bool PD_Document::getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset, UT
 UT_Bool PD_Document::getField(PL_StruxDocHandle sdh, UT_uint32 offset,
                                fd_Field * & pField)
 {
-    
-    pf_Frag * pf = (pf_Frag *)sdh;
-    UT_ASSERT(pf->getType() == pf_Frag::PFT_Strux);
+
+	pf_Frag * pf = (pf_Frag *)sdh;
+	UT_ASSERT(pf->getType() == pf_Frag::PFT_Strux);
 	pf_Frag_Strux * pfsBlock = static_cast<pf_Frag_Strux *> (pf);
 	UT_ASSERT(pfsBlock->getStruxType() == PTX_Block);
 
 	UT_uint32 cumOffset = 0;
-    pf_Frag_Text * pft = NULL;
+	pf_Frag_Text * pft = NULL;
 	for (pf_Frag * pfTemp=pfsBlock->getNext(); (pfTemp); pfTemp=pfTemp->getNext())
 	{
-        cumOffset += pfTemp->getLength();
-        if (offset < cumOffset)
-        {
-            switch (pfTemp->getType()) 
-            {
-            case pf_Frag::PFT_Text:
-                pft = static_cast<pf_Frag_Text *> (pfTemp);
-                pField = pft->getField();
-                return UT_TRUE; // break out of loop
-                break;
-            default:
-                return UT_FALSE;
-                break;
-            }
-        }
-        
-    }
-    return UT_FALSE;
+		cumOffset += pfTemp->getLength();
+		if (offset < cumOffset)
+		{
+			switch (pfTemp->getType()) 
+			{
+			case pf_Frag::PFT_Text:
+				pft = static_cast<pf_Frag_Text *> (pfTemp);
+				pField = pft->getField();
+				return UT_TRUE; // break out of loop
+				break;
+			default:
+				return UT_FALSE;
+				break;
+			}
+		}
+
+	}
+	return UT_FALSE;
 }
 
 UT_Bool PD_Document::getStruxFromPosition(PL_ListenerId listenerId,
@@ -851,7 +851,7 @@ void PD_Document::_destroyDataItemData(void)
 
 		delete pPair->pBuf;
 		FREEP(pPair->pToken);
-	   	delete pPair;
+		delete pPair;
 
 		pHE->pData = NULL;
 	}
@@ -881,63 +881,63 @@ void PD_Document::clearIfAtFmtMark(PT_DocPosition dpos)
 
 UT_Bool PD_Document::updateFields(void)
 {
-  //
-  // Turn off Insertion point motion during this general update
-  //
-    setDontChangeInsPoint();
-    pf_Frag * currentFrag = m_pPieceTable->getFragments().getFirst();
-    UT_ASSERT(currentFrag);
-    while (currentFrag!=m_pPieceTable->getFragments().getLast())
-    {
-        if (currentFrag->getType()==pf_Frag::PFT_Object)
-        {
-            pf_Frag_Object * pfo = static_cast<pf_Frag_Object *>
-                (currentFrag);
-            if (pfo->getObjectType()==PTO_Field)
-            {
-                UT_ASSERT (pfo->getField());
-                pfo->getField()->update();
-            }
-        }
-        currentFrag = currentFrag->getNext();
-    }
-    //
-    // Restore insertion point motion
-    //
-    allowChangeInsPoint();
-    return true;
+	//
+	// Turn off Insertion point motion during this general update
+	//
+	setDontChangeInsPoint();
+	pf_Frag * currentFrag = m_pPieceTable->getFragments().getFirst();
+	UT_ASSERT(currentFrag);
+	while (currentFrag!=m_pPieceTable->getFragments().getLast())
+	{
+		if (currentFrag->getType()==pf_Frag::PFT_Object)
+		{
+			pf_Frag_Object * pfo = static_cast<pf_Frag_Object *>
+				(currentFrag);
+			if (pfo->getObjectType()==PTO_Field)
+			{
+				UT_ASSERT (pfo->getField());
+				pfo->getField()->update();
+			}
+		}
+		currentFrag = currentFrag->getNext();
+	}
+	//
+	// Restore insertion point motion
+	//
+	allowChangeInsPoint();
+	return true;
 }
 
 void PD_Document::setDontChangeInsPoint(void)
 {
-        //
-        // Notify all views that they cannot change the insertion point
-        //
-        pf_Frag * currentFrag = m_pPieceTable->getFragments().getFirst();
-     //
-     //Look for the first strux so we can notify the views via a strux listner
-     //
-        while (currentFrag!=m_pPieceTable->getFragments().getLast())
-        {
-              if (currentFrag->getType()==pf_Frag::PFT_Strux)
-	      {
-		     break;
-	      }
-        currentFrag = currentFrag->getNext();
+	//
+	// Notify all views that they cannot change the insertion point
+	//
+	pf_Frag * currentFrag = m_pPieceTable->getFragments().getFirst();
+	//
+	//Look for the first strux so we can notify the views via a strux listner
+	//
+	while (currentFrag!=m_pPieceTable->getFragments().getLast())
+	{
+		if (currentFrag->getType()==pf_Frag::PFT_Strux)
+		{
+			break;
+		}
+		currentFrag = currentFrag->getNext();
 	}
 	if(currentFrag!=m_pPieceTable->getFragments().getLast())
 	{
-	      pf_Frag_Strux * pfs = ( pf_Frag_Strux *) currentFrag;
-	      PT_AttrPropIndex pAppIndex = pfs->getIndexAP();
-	      PT_DocPosition pos = getStruxPosition(pfs);
-	      const PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_DontChangeInsPoint,pos,pAppIndex);
-	      notifyListeners(pfs, pcr);
-	      delete pcr;		
-	}				  
+		pf_Frag_Strux * pfs = ( pf_Frag_Strux *) currentFrag;
+		PT_AttrPropIndex pAppIndex = pfs->getIndexAP();
+		PT_DocPosition pos = getStruxPosition(pfs);
+		const PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_DontChangeInsPoint,pos,pAppIndex);
+		notifyListeners(pfs, pcr);
+		delete pcr;		
+	}
 	else
 	{
-	      UT_DEBUGMSG(("setDontChangeInsPoint: No strux in document!! \n"));
-	      UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_DEBUGMSG(("setDontChangeInsPoint: No strux in document!! \n"));
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
 }
 
@@ -946,31 +946,31 @@ void PD_Document::allowChangeInsPoint(void)
   //
   // Notify all views that they can change the insertion point
   //
-        pf_Frag * currentFrag = m_pPieceTable->getFragments().getFirst();
-     //
-     //Look for the first strux so we can notify the views via a strux listner
-     //
-        while (currentFrag!=m_pPieceTable->getFragments().getLast())
-        {
-              if (currentFrag->getType()==pf_Frag::PFT_Strux)
-	      {
-		     break;
-	      }
-        currentFrag = currentFrag->getNext();
+	pf_Frag * currentFrag = m_pPieceTable->getFragments().getFirst();
+	//
+	//Look for the first strux so we can notify the views via a strux listner
+	//
+	while (currentFrag!=m_pPieceTable->getFragments().getLast())
+	{
+		if (currentFrag->getType()==pf_Frag::PFT_Strux)
+		{
+			break;
+		}
+		currentFrag = currentFrag->getNext();
 	}
 	if(currentFrag!=m_pPieceTable->getFragments().getLast())
 	{
-	      pf_Frag_Strux * pfs = ( pf_Frag_Strux *) currentFrag;
-	      PT_AttrPropIndex pAppIndex = pfs->getIndexAP();
-	      PT_DocPosition pos = getStruxPosition(pfs);
-	      const PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_AllowChangeInsPoint,pos,pAppIndex);
-	      notifyListeners(pfs, pcr);
-	      delete pcr;		
+		pf_Frag_Strux * pfs = ( pf_Frag_Strux *) currentFrag;
+		PT_AttrPropIndex pAppIndex = pfs->getIndexAP();
+		PT_DocPosition pos = getStruxPosition(pfs);
+		const PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_AllowChangeInsPoint,pos,pAppIndex);
+		notifyListeners(pfs, pcr);
+		delete pcr;
 	}
 	else
 	{
-	      UT_DEBUGMSG(("allowChangeInsPoint: No strux in document!! \n"));
-	      UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_DEBUGMSG(("allowChangeInsPoint: No strux in document!! \n"));
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
 }
 
@@ -983,20 +983,20 @@ fl_AutoNum * PD_Document::getListByID(UT_uint32 id) const
 {
 	UT_uint16 i = 0;
 	UT_sint32 cnt = 0;
-        fl_AutoNum * pAutoNum;
-	        
+	fl_AutoNum * pAutoNum;
+
 	cnt = m_vecLists.getItemCount();
-        if ( cnt <= 0)
-	        return (fl_AutoNum *) NULL;
+	if ( cnt <= 0)
+		return (fl_AutoNum *) NULL;
 	UT_ASSERT(m_vecLists.getFirstItem());
-		        
+
 	while (i<cnt)
 	{
-	 	pAutoNum = (fl_AutoNum *)m_vecLists[i];
-                if (pAutoNum->getID() == id)
-        		return pAutoNum;
-	     	i++;
-        }
+		pAutoNum = (fl_AutoNum *)m_vecLists[i];
+		if (pAutoNum->getID() == id)
+			return pAutoNum;
+		i++;
+	}
 	
 	return (fl_AutoNum *) NULL;
 }
@@ -1026,45 +1026,46 @@ UT_uint32 PD_Document::getListsCount(void) const
 
 void PD_Document::addList(fl_AutoNum * pAutoNum)
 {
-        UT_uint32 id = pAutoNum->getID();
+	UT_uint32 id = pAutoNum->getID();
 	UT_uint32 i;
 	UT_uint32 numlists = m_vecLists.getItemCount();
 	for(i=0; i < numlists; i++)
 	{
-	        fl_AutoNum * pAuto = (fl_AutoNum *) m_vecLists.getNthItem(i);
+		fl_AutoNum * pAuto = (fl_AutoNum *) m_vecLists.getNthItem(i);
 		if(pAuto->getID() == id)
-		         break;
+			break;
 	}
 	if(i >= numlists)
-	        m_vecLists.addItem(pAutoNum);
+		m_vecLists.addItem(pAutoNum);
 }
 
 void PD_Document::listUpdate(PL_StruxDocHandle sdh )
 {
-  //
-  // Notify all views of a listupdate
-  //
-        pf_Frag_Strux * pfs = (pf_Frag_Strux *) sdh;
-        PT_AttrPropIndex pAppIndex = pfs->getIndexAP();
+	//
+	// Notify all views of a listupdate
+	//
+	UT_ASSERT(sdh);
+	pf_Frag_Strux * pfs = (pf_Frag_Strux *) sdh;
+	PT_AttrPropIndex pAppIndex = pfs->getIndexAP();
 	//PT_DocPosition pos = getStruxPosition(sdh) + fl_BLOCK_STRUX_OFFSET;
 	PT_DocPosition pos = getStruxPosition(sdh);
-        const PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_ListUpdate,pos,pAppIndex);
+		const PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_ListUpdate,pos,pAppIndex);
 	notifyListeners(pfs, pcr);
-	delete pcr;						  
+	delete pcr;
 }
 
 
 void PD_Document::StopList(PL_StruxDocHandle sdh )
 {
-  //
-  // Notify all views of a stoplist
-  //
-        pf_Frag_Strux * pfs = (pf_Frag_Strux *) sdh;
-        PT_AttrPropIndex pAppIndex = pfs->getIndexAP();
+	//
+	// Notify all views of a stoplist
+	//
+	pf_Frag_Strux * pfs = (pf_Frag_Strux *) sdh;
+	PT_AttrPropIndex pAppIndex = pfs->getIndexAP();
 	PT_DocPosition pos = getStruxPosition(sdh);
-        const PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_StopList,pos,pAppIndex);
+	const PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_StopList,pos,pAppIndex);
 	notifyListeners(pfs, pcr);
-	delete pcr;						  
+	delete pcr;
 }
 
 
@@ -1101,18 +1102,18 @@ UT_Bool PD_Document::appendList(const XML_Char ** attributes)
 	if(!szDelim)
 		return UT_FALSE;
 	if(!szDec)
-	        szDec = (const XML_Char *) ".";
+		szDec = (const XML_Char *) ".";
 	id = atoi(szID);
 	UT_uint32 i;
 	UT_uint32 numlists = m_vecLists.getItemCount();
 	for(i=0; i < numlists; i++)
 	{
-	        fl_AutoNum * pAuto = (fl_AutoNum *) m_vecLists.getNthItem(i);
+		fl_AutoNum * pAuto = (fl_AutoNum *) m_vecLists.getNthItem(i);
 		if(pAuto->getID() == id)
-		         break;
+			break;
 	}
 	if(i < numlists)
-	        return UT_TRUE; // List is already present
+		return UT_TRUE; // List is already present
 	parent_id = atoi(szPid);
 	type = (List_Type)atoi(szType);
 	start = atoi(szStart);
@@ -1125,46 +1126,46 @@ UT_Bool PD_Document::appendList(const XML_Char ** attributes)
 
 void PD_Document::disableListUpdates(void)
 {
-        UT_uint32 iNumLists = m_vecLists.getItemCount();
+	UT_uint32 iNumLists = m_vecLists.getItemCount();
 	UT_uint32 i;
 	fl_AutoNum * pAutoNum;
 	for(i=0; i< iNumLists; i++)
 	{
-	         pAutoNum = (fl_AutoNum *) m_vecLists.getNthItem(i);
-	         pAutoNum->setUpdatePolicy(UT_FALSE);
+		pAutoNum = (fl_AutoNum *) m_vecLists.getNthItem(i);
+		pAutoNum->setUpdatePolicy(UT_FALSE);
 	}
 }
 
 
 void PD_Document::enableListUpdates(void)
 {
-        UT_uint32 iNumLists = m_vecLists.getItemCount();
+	UT_uint32 iNumLists = m_vecLists.getItemCount();
 	UT_uint32 i;
 	fl_AutoNum * pAutoNum;
 	for(i=0; i< iNumLists; i++)
 	{
-	         pAutoNum = (fl_AutoNum *) m_vecLists.getNthItem(i);
-	         pAutoNum->setUpdatePolicy(UT_TRUE);
+		pAutoNum = (fl_AutoNum *) m_vecLists.getNthItem(i);
+		pAutoNum->setUpdatePolicy(UT_TRUE);
 	}
 }
 
 void PD_Document::updateDirtyLists(void)
 {
-        UT_uint32 iNumLists = m_vecLists.getItemCount();
+	UT_uint32 iNumLists = m_vecLists.getItemCount();
 	UT_uint32 i;
 	fl_AutoNum * pAutoNum;
 	for(i=0; i< iNumLists; i++)
 	{
-	         pAutoNum = (fl_AutoNum *) m_vecLists.getNthItem(i);
-	         if(pAutoNum->isDirty() == UT_TRUE)
-		 {
-		         pAutoNum->update(0);
-		 }
+		pAutoNum = (fl_AutoNum *) m_vecLists.getNthItem(i);
+		if(pAutoNum->isDirty() == UT_TRUE)
+		{
+			pAutoNum->update(0);
+		}
 	}
 	for(i=0; i< iNumLists; i++)
 	{
-	         pAutoNum = (fl_AutoNum *) m_vecLists.getNthItem(i);
-		 pAutoNum->findAndSetParentItem();
+		pAutoNum = (fl_AutoNum *) m_vecLists.getNthItem(i);
+		pAutoNum->findAndSetParentItem();
 	}
 }
 
@@ -1173,7 +1174,7 @@ UT_Bool PD_Document::fixListHierarchy(void)
 {
 	UT_uint32 iNumLists = m_vecLists.getItemCount();
 	fl_AutoNum * pAutoNum;
-	
+
 	if (iNumLists == 0)
 	{
 		return UT_FALSE;
@@ -1196,10 +1197,10 @@ void PD_Document::removeList(fl_AutoNum * pAutoNum, PL_StruxDocHandle sdh )
 	UT_ASSERT(ndx >= 0);
 	if (ndx != -1)
 	{
-	        //
-	        // Notify all views of a remove List
-	        //
-	        pf_Frag_Strux * pfs = (pf_Frag_Strux *) sdh;
+		//
+		// Notify all views of a remove List
+		//
+		pf_Frag_Strux * pfs = (pf_Frag_Strux *) sdh;
 		PT_AttrPropIndex pAppIndex = pfs->getIndexAP();
 		PT_DocPosition pos = getStruxPosition(sdh);
 		const PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_RemoveList,pos,pAppIndex);
