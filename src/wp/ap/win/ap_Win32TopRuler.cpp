@@ -168,6 +168,14 @@ LRESULT CALLBACK AP_Win32TopRuler::_TopRulerWndProc(HWND hwnd, UINT iMsg, WPARAM
 		return 0;
 		
 	case WM_MOUSEMOVE:
+		{
+			// HACK for not updating Ruler for incremental Loading
+			FV_View * pView = (FV_View *) pRuler->getView();
+			if(pView && (pView->getPoint() == 0))
+			{
+				return 0;
+			}
+		}
 		pRuler->mouseMotion(s_GetEMS(wParam),signedLoWord(lParam),signedHiWord(lParam));
 		pRuler->isMouseOverTab(signedLoWord(lParam),signedHiWord(lParam));
 		return 0;
