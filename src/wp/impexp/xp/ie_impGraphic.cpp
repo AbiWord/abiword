@@ -100,11 +100,14 @@ IEGraphicFileType IE_ImpGraphic::fileTypeForSuffix(const char * szSuffix)
 			for (UT_sint32 a = 0; a < (int) nrElements; a++)
 			{
 				if (s->supportsType(static_cast<IEGraphicFileType>(a+1)))
-				  best = static_cast<IEGraphicFileType>(a+1);
-
-				// short-circuit if we're 100% sure
-				if ( UT_CONFIDENCE_PERFECT == best_confidence )
-				  return best;
+				  {
+				    best = static_cast<IEGraphicFileType>(a+1);
+				    
+				    // short-circuit if we're 100% sure
+				    if ( UT_CONFIDENCE_PERFECT == best_confidence )
+				      return best;
+				    break;
+				  }
 			}
 		}
 	}
@@ -132,11 +135,14 @@ IEGraphicFileType IE_ImpGraphic::fileTypeForContents(const char * szBuf, UT_uint
 			for (UT_sint32 a = 0; a < (int) nrElements; a++)
 			{
 				if (s->supportsType((IEGraphicFileType) (a+1)))
-				  best = static_cast<IEGraphicFileType>(a+1);
-
-				// short-circuit if we're 100% sure
-				if ( UT_CONFIDENCE_PERFECT == best_confidence )
-				  return best;
+				  {
+				    best = static_cast<IEGraphicFileType>(a+1);
+				    
+				    // short-circuit if we're 100% sure
+				    if ( UT_CONFIDENCE_PERFECT == best_confidence )
+				      return best;
+				    break;
+				  }
 			}
 		}
 	}

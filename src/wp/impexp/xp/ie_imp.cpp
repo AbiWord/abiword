@@ -145,16 +145,20 @@ IEFileType IE_Imp::fileTypeForContents(const char * szBuf, UT_uint32 iNumbytes)
 		  for (UT_sint32 a = 0; a < (int) nrElements; a++)
 		    {
 		      if (s->supportsFileType((IEFileType) (a+1)))
-			best = (IEFileType) (a+1);
+			{
+			  best = (IEFileType) (a+1);
 
-		      // short-circuit if we're 100% sure
-		      if ( UT_CONFIDENCE_PERFECT == best_confidence )
-			return best;
+			  // short-circuit if we're 100% sure
+			  if ( UT_CONFIDENCE_PERFECT == best_confidence )
+			    return best;
+
+			  break;
+			}
 		    }
 		}
 	}
 
-	return best;	
+	return best;
 }
 
 /*! 
@@ -190,11 +194,14 @@ IEFileType IE_Imp::fileTypeForSuffix(const char * szSuffix)
 			for (UT_sint32 a = 0; a < (int) nrElements; a++)
 			{
 				if (s->supportsFileType(static_cast<IEFileType>(a+1)))
-					best = static_cast<IEFileType>(a+1);
-
-				// short-circuit if we're 100% sure
-				if ( UT_CONFIDENCE_PERFECT == best_confidence )
-				  return best;
+				{
+				  best = static_cast<IEFileType>(a+1);
+				  
+				  // short-circuit if we're 100% sure
+				  if ( UT_CONFIDENCE_PERFECT == best_confidence )
+				    return best;
+				  break;
+				}
 			}
 		}
 	}
