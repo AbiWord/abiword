@@ -21,8 +21,6 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 
-#include "ut_dialogHelper.h"
-
 #include "xap_App.h"
 #include "xap_BeOSApp.h"
 #include "xap_BeOSFrame.h"
