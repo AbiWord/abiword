@@ -60,79 +60,32 @@ AP_UnixGnomeDialog_Paragraph::~AP_UnixGnomeDialog_Paragraph(void)
 }
 
 /*****************************************************************/
-/* These are static callbacks for dialog widgets                 */
-/*****************************************************************/
-
-static void s_ok_clicked(GtkWidget * widget, AP_UnixGnomeDialog_Paragraph * dlg)
-{ UT_ASSERT(widget && dlg); dlg->event_OK(); }
-
-static void s_cancel_clicked(GtkWidget * widget, AP_UnixGnomeDialog_Paragraph * dlg)
-{ UT_ASSERT(widget && dlg); dlg->event_Cancel(); }
-
-static void s_tabs_clicked(GtkWidget * widget, AP_UnixGnomeDialog_Paragraph * dlg)
-{ UT_ASSERT(widget && dlg);	dlg->event_Tabs(); }
-
-static void s_delete_clicked(GtkWidget * /* widget */,
-							 gpointer /* data */,
-							 AP_UnixGnomeDialog_Paragraph * dlg)
-{ UT_ASSERT(dlg); dlg->event_WindowDelete(); }
-
-/*****************************************************************/
 
 GtkWidget * AP_UnixGnomeDialog_Paragraph::_constructWindow(void)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-
-	GtkWidget * windowParagraph;
 	GtkWidget * windowContents;
-
-	GtkWidget * buttonTabs;
-	GtkWidget * buttonOK;
-	GtkWidget * buttonCancel;
-
 	XML_Char * unixstr = NULL;
-	
 
 	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_ParaTitle) );
-	windowParagraph = gnome_dialog_new (unixstr, NULL);
-
-	gtk_object_set_data (GTK_OBJECT (windowParagraph), "windowParagraph", windowParagraph);
-	gtk_widget_set_usize (windowParagraph, 441, -2);
+	m_windowMain = gnome_dialog_new (unixstr, NULL);
+	gtk_widget_set_usize (m_windowMain, 441, -2);
 	FREEP(unixstr);
-	gtk_window_set_policy (GTK_WINDOW (windowParagraph), FALSE, FALSE, FALSE);
-
+	gtk_window_set_policy (GTK_WINDOW (m_windowMain), FALSE, FALSE, FALSE);
 
 	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_ButtonTabs));
-	gnome_dialog_append_button(GNOME_DIALOG(windowParagraph), unixstr);
+	gnome_dialog_append_button(GNOME_DIALOG(m_windowMain), unixstr);
 	FREEP(unixstr);
 
-	gnome_dialog_append_button(GNOME_DIALOG(windowParagraph), GNOME_STOCK_BUTTON_OK);
-	gnome_dialog_append_button(GNOME_DIALOG(windowParagraph), GNOME_STOCK_BUTTON_CANCEL);
+	gnome_dialog_append_button(GNOME_DIALOG(m_windowMain), GNOME_STOCK_BUTTON_OK);
+	gnome_dialog_append_button(GNOME_DIALOG(m_windowMain), GNOME_STOCK_BUTTON_CANCEL);
 
+	windowContents = _constructWindowContents(m_windowMain);
+	gtk_box_pack_start (GTK_BOX (GNOME_DIALOG (m_windowMain)->vbox), windowContents, TRUE, TRUE, 0);
 
-	windowContents = _constructWindowContents(windowParagraph);
-	gtk_box_pack_start (GTK_BOX (GNOME_DIALOG (windowParagraph)->vbox), windowContents, TRUE, TRUE, 0);
+	m_buttonTabs = GTK_WIDGET (g_list_nth_data (GNOME_DIALOG (m_windowMain)->buttons, 0));
+	m_buttonOK = GTK_WIDGET (g_list_nth_data (GNOME_DIALOG (m_windowMain)->buttons, 1));
+	m_buttonCancel = GTK_WIDGET (g_list_nth_data (GNOME_DIALOG (m_windowMain)->buttons, 2));
 
-	buttonTabs = GTK_WIDGET (g_list_nth_data (GNOME_DIALOG (windowParagraph)->buttons, 0) );
-	gtk_widget_ref (buttonTabs);
-	gtk_object_set_data_full (GTK_OBJECT (windowParagraph), "buttonTabs", buttonTabs,
-							  (GtkDestroyNotify) gtk_widget_unref);
-
-	buttonOK = GTK_WIDGET (g_list_nth_data (GNOME_DIALOG (windowParagraph)->buttons, 1) );
-	gtk_widget_ref (buttonOK);
-	gtk_object_set_data_full (GTK_OBJECT (windowParagraph), "buttonOK", buttonOK,
-							  (GtkDestroyNotify) gtk_widget_unref);
-
-	buttonCancel = GTK_WIDGET (g_list_nth_data (GNOME_DIALOG (windowParagraph)->buttons, 2) );
-	gtk_widget_ref (buttonCancel);
-	gtk_object_set_data_full (GTK_OBJECT (windowParagraph), "buttonCancel", buttonCancel,
-							  (GtkDestroyNotify) gtk_widget_unref);
-
-	m_windowMain = windowParagraph;
-
-	m_buttonOK = buttonOK;
-	m_buttonCancel = buttonCancel;
-	m_buttonTabs = buttonTabs;
-
-	return windowParagraph;
+	return m_windowMain;
 }

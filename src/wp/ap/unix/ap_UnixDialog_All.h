@@ -55,6 +55,7 @@
 #ifdef HAVE_GNOME
 #   include "xap_UnixGnomeDlg_About.h"
 #   include "xap_UnixGnomeDlg_FontChooser.h"
+#   include "xap_UnixGnomeDlg_Insert_Symbol.h"
 #   include "xap_UnixGnomeDlg_MessageBox.h"
 #   include "xap_UnixGnomeDlg_Zoom.h"
 
@@ -80,7 +81,7 @@
 	DeclareDialog(XAP_DIALOG_ID_WINDOWMORE,		XAP_UnixDialog_WindowMore)
 	DeclareDialog(XAP_DIALOG_ID_ZOOM,			XAP_UnixGnomeDialog_Zoom)
 	DeclareDialog(XAP_DIALOG_ID_ABOUT,			XAP_UnixGnomeDialog_About)
-	DeclareDialog(XAP_DIALOG_ID_INSERT_SYMBOL,  XAP_UnixDialog_Insert_Symbol)
+	DeclareDialog(XAP_DIALOG_ID_INSERT_SYMBOL,  XAP_UnixGnomeDialog_Insert_Symbol)
 
 	DeclareDialog(AP_DIALOG_ID_REPLACE,			AP_UnixGnomeDialog_Replace)
 	DeclareDialog(AP_DIALOG_ID_FIND,			AP_UnixGnomeDialog_Replace)
@@ -90,7 +91,7 @@
 	DeclareDialog(AP_DIALOG_ID_OPTIONS,			AP_UnixGnomeDialog_Options)
 	DeclareDialog(AP_DIALOG_ID_INSERT_DATETIME,	AP_UnixDialog_Insert_DateTime)			
 	DeclareDialog(AP_DIALOG_ID_WORDCOUNT,       AP_UnixGnomeDialog_WordCount)
-	DeclareDialog(AP_DIALOG_ID_FIELD,       AP_UnixDialog_Field)
+	DeclareDialog(AP_DIALOG_ID_FIELD,			AP_UnixDialog_Field)
 
 	// ... also add new dialogs here ...
 #   else

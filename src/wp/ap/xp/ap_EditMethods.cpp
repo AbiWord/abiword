@@ -4125,13 +4125,6 @@ Defun1(insSymbol)
 	XAP_Dialog_Id id = XAP_DIALOG_ID_INSERT_SYMBOL;
 
 	return s_InsertSymbolDlg(pView,id);
-	/*
-OLD CODE
-	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
-	UT_ASSERT(pFrame);
-	s_TellNotImplemented(pFrame, "Insert symbol dialog", __LINE__);
-	return UT_TRUE;
-	*/
 }
 
 

@@ -46,7 +46,7 @@
 #	include "ap_UnixDialog_Break.h"
 #	include "ap_UnixDialog_Paragraph.h"
 #	include "ap_UnixDialog_Spell.h"
-#   include "ap_UnixDialog_Insert_Symbol.h"
+#	include "ap_UnixDialog_Insert_Symbol.h"
 
 	// ... add new dialogs here ...
 

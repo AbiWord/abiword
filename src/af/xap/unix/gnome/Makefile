@@ -25,6 +25,7 @@ include $(ABI_ROOT)/src/config/abi_defs.mk
 CPPSRCS=		xap_UnixGnomeApp.cpp               \
 			xap_UnixGnomeDlg_About.cpp         \
 			xap_UnixGnomeDlg_FontChooser.cpp   \
+			xap_UnixGnomeDlg_Insert_Symbol.cpp   \
 			xap_UnixGnomeDlg_MessageBox.cpp    \
 			xap_UnixGnomeDlg_Zoom.cpp          \
 			xap_UnixGnomeFrame.cpp

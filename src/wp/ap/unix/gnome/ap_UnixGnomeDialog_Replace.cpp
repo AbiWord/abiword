@@ -264,22 +264,6 @@ GtkWidget * AP_UnixGnomeDialog_Replace::_constructWindow(void)
 
 	}
 	
-	// button box at the bottom
-//  	hbuttonbox1 = gtk_hbutton_box_new ();
-//  	gtk_object_set_data (GTK_OBJECT (windowReplace), "hbuttonbox1", hbuttonbox1);
-//  	gtk_widget_show (hbuttonbox1);
-//  	gtk_box_pack_start (GTK_BOX (vboxReplace), hbuttonbox1, FALSE, FALSE, 0);
-//  	gtk_button_box_set_layout (GTK_BUTTON_BOX (hbuttonbox1), GTK_BUTTONBOX_END);
-//  	gtk_button_box_set_spacing (GTK_BUTTON_BOX (hbuttonbox1), 10);
-//  	gtk_button_box_set_child_size (GTK_BUTTON_BOX (hbuttonbox1), 85, 24);
-
-//  	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_FR_FindNextButton));	
-//  	buttonFindNext = gtk_button_new_with_label (unixstr);
-//  	FREEP(unixstr);
-//  	gtk_object_set_data (GTK_OBJECT (windowReplace), "buttonFindNext", buttonFindNext);
-//  	gtk_widget_show (buttonFindNext);
-//  	gtk_container_add (GTK_CONTAINER (hbuttonbox1), buttonFindNext);
- 	// button "Find Next" GNOME
    	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_FR_FindNextButton));	
    	gnome_dialog_append_button_with_pixmap (GNOME_DIALOG (windowReplace), unixstr, GNOME_STOCK_PIXMAP_SEARCH);
 	gtk_button_box_set_spacing (GTK_BUTTON_BOX (GNOME_DIALOG (windowReplace)->action_area), 10);

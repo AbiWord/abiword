@@ -62,10 +62,11 @@ protected:
 	GR_UnixGraphics *       m_unixarea;
 
 	// private construction functions
-	GtkWidget * _constructWindow(void);
-	GtkWidget * preview_new(int w, int h);
-	GList *     get_glist_fonts(void);
-	GtkWidget * create_combobox_with_fonts (void);
+	virtual GtkWidget * _constructWindow(void);
+	GtkWidget * _previewNew(int w, int h);
+	GList *     _getGlistFonts(void);
+	GtkWidget * _createComboboxWithFonts (void);
+	void        _connectSignals (void);
 
 	// pointers to widgets we need to query/set
 	GtkWidget * m_windowMain;
