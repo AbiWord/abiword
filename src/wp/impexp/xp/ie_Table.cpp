@@ -977,7 +977,7 @@ bool ie_imp_table::doCellXMatch(UT_sint32 iCellX1, UT_sint32 iCellX2, bool bLast
   */
 UT_sint32 ie_imp_table::NewRow(void)
 {
-	xxx_UT_DEBUGMSG(("Doing NewRow in ie_imp_table rowcounter %d \n",m_iRowCounter));
+	UT_DEBUGMSG(("Doing NewRow in ie_imp_table rowcounter %d \n",m_iRowCounter));
 	if(m_iRowCounter > 0)
 	{
 		ie_imp_cell * pCell = getNthCellOnRow(0);
@@ -1008,8 +1008,11 @@ UT_sint32 ie_imp_table::NewRow(void)
 					//
 					return 1;
 				}
-				pPrevCell = static_cast<ie_imp_cell *>(vecPrev.getNthItem(i));
-				pCell->copyCell(pPrevCell);
+				else
+				{
+					pPrevCell = static_cast<ie_imp_cell *>(vecPrev.getNthItem(i));
+					pCell->copyCell(pPrevCell);
+				}
 			}
 		}
 //
@@ -1021,11 +1024,13 @@ UT_sint32 ie_imp_table::NewRow(void)
 		{
 			pCell = static_cast<ie_imp_cell *>(vecCur.getNthItem(i));
 			UT_sint32 curX = pCell->getCellX();
+			UT_DEBUGMSG(("Cur cell %d cellx %d \n",i,curX));
 			bool bMatch = false;
 			UT_sint32 j = 0;
 			for(j=0; !bMatch && (j < static_cast<UT_sint32>(m_vecCellX.getItemCount())); j++)
 			{
 				UT_sint32 prevX = reinterpret_cast<UT_sint32>(m_vecCellX.getNthItem(j));
+				UT_DEBUGMSG(("Prev cell %d cellx %d \n",j,prevX));
 				bool bLast = ((j-1) == szCurRow);
 				bMatch =  doCellXMatch(prevX,curX,bLast);
 			}
@@ -1034,7 +1039,7 @@ UT_sint32 ie_imp_table::NewRow(void)
 				iMatch++;
 			}
 		}
-		xxx_UT_DEBUGMSG(("SEVIOR: iMatch = %d \n",iMatch));
+		UT_DEBUGMSG(("SEVIOR: iMatch = %d \n",iMatch));
 		if(iMatch == 0)
 		{
 			return +1;
@@ -1865,7 +1870,8 @@ bool ie_imp_table_control::NewRow(void)
 	{
 		return bres;
 	}
-	xxx_UT_DEBUGMSG(("Number of cells on row %d \n",vecRow.getItemCount()));
+	UT_DEBUGMSG(("Number of cells on row %d \n",vecRow.getItemCount()));
+	UT_ASSERT(0);
 //
 // Got last row, now remove it.
 //
@@ -1873,11 +1879,35 @@ bool ie_imp_table_control::NewRow(void)
 //
 // Close the old table.
 //
-	ie_imp_cell * pCell = static_cast<ie_imp_cell *>(vecRow.getNthItem(0));
-	PL_StruxDocHandle sdhCell = pCell->getCellSDH();
-	m_pDoc->insertStruxNoUpdateBefore(sdhCell,PTX_EndTable,NULL);
-	bool bAuto = getTable()->isAutoFit();
-	CloseTable();
+	UT_sint32 i =0;
+	PL_StruxDocHandle sdhCell = NULL;
+	ie_imp_cell * pCell = NULL;
+	bool bFound = false;
+	bool bAuto = false;
+	for(i=0; i < static_cast<UT_sint32>(vecRow.getItemCount()) && !bFound;i++)
+	{
+		pCell = static_cast<ie_imp_cell *>(vecRow.getNthItem(i));
+		if(pCell->getCellSDH())
+		{
+			bFound = true;
+			break;
+		}
+	}
+	if(bFound)
+	{
+		sdhCell = pCell->getCellSDH();
+		m_pDoc->insertStruxNoUpdateBefore(sdhCell,PTX_EndTable,NULL);
+		bAuto = getTable()->isAutoFit();
+		CloseTable();
+	}
+	else
+	{
+		UT_DEBUGMSG(("Not a single valid sdh found on last row!!!! \n"));
+		UT_DEBUGMSG(("We're in deep shit!!!! \n"));
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return false;
+	}
+
 //
 // Now create a new table with the old last row and the first new row.
 //

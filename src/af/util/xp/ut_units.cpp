@@ -152,7 +152,6 @@ const char * UT_convertInchesToDimensionString(UT_Dimension dim, double valueInI
 
 	// TODO what should the decimal precision of each different
 	// TODO unit of measurement be ??
-
 	static char buf[100];
 	char bufFormat[100];
 	double valueScaled;

@@ -64,6 +64,7 @@ public:
 	virtual bool		signal(UT_uint32 iSignal);
 
 protected:
+	UT_sint32            getRightOfCell(UT_sint32 row,UT_sint32 col);
 	void				_closeSection(void);
 	void				_closeBlock(PT_AttrPropIndex nextApi = 0);
 	void				_closeSpan();

@@ -1603,13 +1603,22 @@ void s_RTF_ListenerWriteDoc::_open_cell(PT_AttrPropIndex api)
 			UT_sint32 i =0;
 			for(i=0; i<count; i++)
 			{
+
 				if(m_Table.getNestDepth() < 2)
 				{
-					m_pie->_rtf_keyword("cell");
+					UT_sint32 iRight = getRightOfCell(m_Table.getCurRow() -1,m_iRight + i);
+					if(iRight == (m_iRight + i +1))
+					{
+						m_pie->_rtf_keyword("cell");
+					}
 				}
 				else
 				{
-					m_pie->_rtf_keyword("nestcell");
+					UT_sint32 iRight = getRightOfCell(m_Table.getCurRow() -1,m_iRight + i);
+					if(iRight == (m_iRight + i +1))
+					{
+						m_pie->_rtf_keyword("nestcell");
+					}
 				}
 			}
 			if(m_Table.getNestDepth() < 2)
@@ -1642,6 +1651,10 @@ void s_RTF_ListenerWriteDoc::_open_cell(PT_AttrPropIndex api)
 //
 // Output cell markers for all vertically merged cells at the start of the row
 //
+//
+// fix me have to handle horizontally and vertically merged cells at the
+// left of a table.
+
 		if(m_Table.getNestDepth() < 2)
 		{
 			for(i = 0; i < m_Table.getLeft(); i++)
@@ -1668,8 +1681,15 @@ void s_RTF_ListenerWriteDoc::_open_cell(PT_AttrPropIndex api)
 			if(m_Table.getNestDepth() < 2)
 			{
 				for(i = m_iRight; i < m_Table.getLeft(); i++)
+//
+// We don't output these cell's if they're horiztonally merged too.
+//
 				{
-					m_pie->_rtf_keyword("cell");
+					UT_sint32 iRight = getRightOfCell(m_Table.getCurRow(),m_iRight + i);
+					if(iRight == (m_iRight + i +1))
+					{
+						m_pie->_rtf_keyword("cell");
+					}
 				}
 			}
 			else
@@ -1677,7 +1697,11 @@ void s_RTF_ListenerWriteDoc::_open_cell(PT_AttrPropIndex api)
 				for(i = m_iRight; i < m_Table.getLeft(); i++)
 				{
 					UT_DEBUGMSG(("Writing nestcell in wrong spot 2 \n"));
-					m_pie->_rtf_keyword("nestcell");
+					UT_sint32 iRight = getRightOfCell(m_Table.getCurRow(),m_iRight + i);
+					if(iRight == (m_iRight + i +1))
+					{
+						m_pie->_rtf_keyword("nestcell");
+					}
 				}
 			}
 		}
@@ -1689,6 +1713,23 @@ void s_RTF_ListenerWriteDoc::_open_cell(PT_AttrPropIndex api)
 	m_iBot = m_Table.getBot();
 }
 
+/*!
+ * This returns the right-attach of the cell to the right of the cell at (row,
+ * col)
+ */
+UT_sint32  s_RTF_ListenerWriteDoc::getRightOfCell(UT_sint32 row,UT_sint32 col)
+{
+	PL_StruxDocHandle sdhCell = m_pDocument->getCellSDHFromRowCol(m_Table.getTableSDH(),row,col);
+	if(sdhCell == NULL)
+	{
+		return -1;
+	}
+	const char * szRight;
+	m_pDocument->getPropertyFromSDH(sdhCell,"right-attach",&szRight);
+	UT_sint32 iRight = atoi(szRight);
+	return iRight;
+}
+	
 void s_RTF_ListenerWriteDoc::_newRow(void)
 {
 	UT_sint32 i;
