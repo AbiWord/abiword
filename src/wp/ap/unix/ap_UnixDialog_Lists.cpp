@@ -273,7 +273,7 @@ void  AP_UnixDialog_Lists::typeChanged(gint type)
 		_fillNoneStyleMenu(m_wListStyleNone_menu);
 
 
-		gtk_signal_handler_unblock(  GTK_OBJECT(m_wListStyleBox),m_iStyleBoxID  );
+		gtk_signal_handler_block(  GTK_OBJECT(m_wListStyleBox),m_iStyleBoxID  );
 		gtk_option_menu_set_menu (GTK_OPTION_MENU (m_wListStyleBox), 
 								  m_wListStyleNone_menu);
 		gtk_signal_handler_unblock(  GTK_OBJECT(m_wListStyleBox),m_iStyleBoxID  );
