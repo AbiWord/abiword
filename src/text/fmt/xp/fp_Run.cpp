@@ -1196,7 +1196,6 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 	if(FL_TAB_BAR == getTabType())
 	{
 		// need to draw to the full height of line to join with line above.
-		UT_DEBUGMSG(("SEVIOR: Drawing tab bar \n"));
 		UT_sint32 iFillHeight = getLine()->getHeight();
 //
 // Scale the vertical line thickness for printers

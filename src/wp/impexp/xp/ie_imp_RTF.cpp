@@ -31,6 +31,7 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_string.h"
+#include "ut_string_class.h"
 #include "ut_units.h"
 #include "ie_types.h"
 #include "ie_imp_RTF.h"
@@ -172,6 +173,8 @@ RTFProps_CharProps::RTFProps_CharProps()
 	m_italic = false;
 	m_underline = false;
 	m_overline = false;
+	m_topline = false;
+	m_botline = false;
 	m_strikeout = false;
 	m_superscript = false;
 	m_superscript_pos = 0.0;
@@ -1918,6 +1921,16 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 						{ 
 							return HandleAbiLists();
 						}
+						else if( strcmp((char*)keyword_star,"topline") == 0)
+						{ 
+							return HandleTopline(parameterUsed_star ? 
+												  (parameter_star != 0): true);
+						}
+						else if( strcmp((char*)keyword_star,"botline") == 0)
+						{ 
+							return HandleBotline(parameterUsed_star ? 
+												  (parameter_star != 0): true);
+						}
 					}
 				}
 				UT_DEBUGMSG (("RTF: star keyword %s not handled\n", keyword_star));
@@ -1979,38 +1992,38 @@ bool IE_Imp_RTF::ApplyCharacterAttributes()
 	strcat(propBuffer, m_currentRTFState.m_charProps.m_italic ? "italic" : "normal");
 	// underline & overline & strike-out
 	strcat(propBuffer, "; text-decoration:");
-	if (m_currentRTFState.m_charProps.m_underline  &&  m_currentRTFState.m_charProps.m_strikeout && !m_currentRTFState.m_charProps.m_overline)
+	static UT_String decors;
+	decors.clear();
+	if (m_currentRTFState.m_charProps.m_underline)
 	{
-		strcat(propBuffer, "underline line-through");
+		decors += "underline ";
 	}
-	else if (m_currentRTFState.m_charProps.m_underline  &&  !m_currentRTFState.m_charProps.m_strikeout  && !m_currentRTFState.m_charProps.m_overline)
+	if (m_currentRTFState.m_charProps.m_strikeout)
 	{
-		strcat(propBuffer, "underline");
+		decors += "line-through ";
 	}
-	else if (!m_currentRTFState.m_charProps.m_underline  &&  m_currentRTFState.m_charProps.m_strikeout  && !m_currentRTFState.m_charProps.m_overline)
+	if(m_currentRTFState.m_charProps.m_overline)
 	{
-		strcat(propBuffer, "line-through");
+		decors += "overline ";
 	}
-	else if(m_currentRTFState.m_charProps.m_underline  &&  m_currentRTFState.m_charProps.m_strikeout && m_currentRTFState.m_charProps.m_overline)
+	if(m_currentRTFState.m_charProps.m_topline)
 	{
-		strcat(propBuffer, "underline overline line-through");
+		decors += "topline ";
 	}
-	else if(!m_currentRTFState.m_charProps.m_underline  &&  m_currentRTFState.m_charProps.m_strikeout && m_currentRTFState.m_charProps.m_overline)
+	if(m_currentRTFState.m_charProps.m_botline)
 	{
-		strcat(propBuffer, "overline line-through");
+		decors += "bottomline";
 	}
-	else if(m_currentRTFState.m_charProps.m_underline  &&  !m_currentRTFState.m_charProps.m_strikeout && m_currentRTFState.m_charProps.m_overline)
+	if(!m_currentRTFState.m_charProps.m_underline  &&  
+	   !m_currentRTFState.m_charProps.m_strikeout && 
+	   !m_currentRTFState.m_charProps.m_overline &&
+	   !m_currentRTFState.m_charProps.m_topline &&
+	   !m_currentRTFState.m_charProps.m_botline)
 	{
-		strcat(propBuffer, "underline overline");
+		decors = "none";
 	}
-	else if(!m_currentRTFState.m_charProps.m_underline  &&  !m_currentRTFState.m_charProps.m_strikeout && m_currentRTFState.m_charProps.m_overline)
-	{
-		strcat(propBuffer, "overline");
-	}
-	else
-	{
-		strcat(propBuffer, "none");
-	}
+	strcat(propBuffer, decors.c_str());
+
 	//superscript and subscript
 	strcat(propBuffer, "; text-position:");
 	if (m_currentRTFState.m_charProps.m_superscript)
@@ -3411,6 +3424,18 @@ bool IE_Imp_RTF::HandleUnderline(bool state)
 bool IE_Imp_RTF::HandleOverline(bool state)
 {
 	return HandleBoolCharacterProp(state, &m_currentRTFState.m_charProps.m_overline);
+}
+
+
+bool IE_Imp_RTF::HandleTopline(bool state)
+{
+	return HandleBoolCharacterProp(state, &m_currentRTFState.m_charProps.m_topline);
+}
+
+
+bool IE_Imp_RTF::HandleBotline(bool state)
+{
+	return HandleBoolCharacterProp(state, &m_currentRTFState.m_charProps.m_botline);
 }
 
 bool IE_Imp_RTF::HandleStrikeout(bool state)

@@ -137,6 +137,16 @@ void s_RTF_ListenerWriteDoc::_openSpan(PT_AttrPropIndex apiSpan)
 			m_pie->_rtf_keyword("ol");
 		if (strstr(szFontDecoration,"line-through") != 0)
 			m_pie->_rtf_keyword("strike");
+		if (strstr(szFontDecoration,"topline") != 0)
+		{
+			m_pie->_rtf_keyword("*");
+			m_pie->_rtf_keyword("topline");
+		}
+		if (strstr(szFontDecoration,"bottomline") != 0)
+		{
+			m_pie->_rtf_keyword("*");
+			m_pie->_rtf_keyword("botline");
+		}
 	}
 
 	const XML_Char * szFontPosition = PP_evalProperty("text-position",pSpanAP,pBlockAP,pSectionAP,m_pDocument,true);

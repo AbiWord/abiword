@@ -69,8 +69,10 @@ public:
 	bool	m_bold;
 	bool	m_italic;
 	bool	m_underline;
-	bool m_overline;
+	bool    m_overline;
 	bool	m_strikeout;
+	bool	m_topline;
+	bool	m_botline;
 	bool m_superscript;
 	double m_superscript_pos;       // unit is pt. if 0.0, ignore
 	bool m_subscript;
@@ -262,6 +264,8 @@ private:
 	bool HandleUnderline(bool state);
 	bool HandleOverline(bool state);
 	bool HandleStrikeout(bool state);
+	bool HandleTopline(bool state);
+	bool HandleBotline(bool state);
 	bool HandleSuperscript(bool state);
 	bool HandleSuperscriptPosition(UT_uint32 pos);
 	bool HandleSubscript(bool state);
