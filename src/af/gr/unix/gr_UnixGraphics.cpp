@@ -527,8 +527,25 @@ GR_Font * GR_UnixGraphics::findFont(const char* pszFontFamily,
 	}
 
 	// bury the pointer to our Unix font in a XAP_UnixFontHandle with the correct size.
-	XAP_UnixFontHandle * pFont = new XAP_UnixFontHandle(unixfont, convertDimension(pszFontSize));
+
+//
+// This piece of code scales the FONT chosen at low resolution to that at high
+// resolution. This fixes bug 1632 and other non-WYSIWYG behaviour.
+//
+	bool curRes = m_bLayoutResolutionModeEnabled;
+	m_bLayoutResolutionModeEnabled = false;
+	UT_sint32 iSize = convertDimension(pszFontSize);
+	m_bLayoutResolutionModeEnabled = curRes;
+
+	if( m_bLayoutResolutionModeEnabled)
+	{
+		double dSize = (double) iSize;
+		double rat = (double) UT_LAYOUT_UNITS / (double) getResolution();
+		iSize = (UT_sint32) (dSize * rat + 0.5);
+	} 
+	XAP_UnixFontHandle * pFont = new XAP_UnixFontHandle(unixfont, iSize);
 	UT_ASSERT(pFont);
+	UT_DEBUGMSG(("SEVIOR: Using GDK Font Size %d \n",iSize));
 
 	return pFont;
 }
