@@ -32,10 +32,10 @@ PROGRAM=		AbiWord
 # TODO in order to get all symbols to resolve, i had to list them
 # TODO several times.  see if there is a better way of doing this.
 
-LoadOrder=		AbiGr AbiFmt AbiPTbl AbiImpExp MsWordView AbiXAp AbiWPAp AbiEv AbiUtil AbiWordVer AbiSpell
+LoadOrder=		AbiGr AbiFmt AbiPTbl AbiImpExp MsWordView AbiXAp AbiWPAp AbiEv AbiUtil AbiWordVer AbiSpell Abi_expat
 ABI_APPLIBS=		$(LoadOrder) $(LoadOrder) $(LoadOrder)
 
-ABI_OTHLIBS=		expat $(DL_LIBS)
+ABI_OTHLIBS=		$(DL_LIBS)
 ABI_LIBS=		stdc++
 
 TARGETS=		$(PROGRAM)
