@@ -76,6 +76,7 @@
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 #include "ut_string.h"
+#include "fp_MathRun.h"
 
 #include "xap_EncodingManager.h"
 
@@ -4619,6 +4620,15 @@ bool	fl_BlockLayout::_doInsertTabRun(PT_BlockOffset blockOffset)
 }
 
 
+bool	fl_BlockLayout::_doInsertMathRun(PT_BlockOffset blockOffset,PT_AttrPropIndex indexAP)
+{
+	fp_Run * pNewRun = NULL;
+	pNewRun = new fp_MathRun(this,blockOffset,indexAP);
+	UT_ASSERT(pNewRun); // TODO check for outofmem
+
+	return _doInsertRun(pNewRun);
+}
+
 bool	fl_BlockLayout::_doInsertTOCTabRun(PT_BlockOffset blockOffset)
 {
 	fp_Run* pNewRun = new fp_TabRun(this,blockOffset, 1);
@@ -7419,6 +7429,11 @@ bool fl_BlockLayout::doclistener_populateObject(PT_BlockOffset blockOffset,
 		_doInsertHyperlinkRun(blockOffset);
 		return true;
 
+	case PTO_Math:
+		UT_DEBUGMSG(("Populate:InsertMathML:\n"));
+		_doInsertMathRun(blockOffset,pcro->getIndexAP());
+		return true;
+
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return false;
@@ -7479,6 +7494,16 @@ bool fl_BlockLayout::doclistener_insertObject(const PX_ChangeRecord_Object * pcr
 
 	}
 
+	case PTO_Math:
+	{
+		UT_DEBUGMSG(("Edit:InsertObject:Math:\n"));
+		blockOffset = pcro->getBlockOffset();
+		_doInsertMathRun(blockOffset,pcro->getIndexAP());
+		break;
+
+	}
+
+
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return false;
@@ -7535,6 +7560,13 @@ bool fl_BlockLayout::doclistener_deleteObject(const PX_ChangeRecord_Object * pcr
 		case PTO_Image:
 		{
 			UT_DEBUGMSG(("Edit:DeleteObject:Image:\n"));
+			blockOffset = pcro->getBlockOffset();
+			_delete(blockOffset, 1);
+			break;
+		}
+		case PTO_Math:
+		{
+			UT_DEBUGMSG(("Edit:DeleteObject:Math:\n"));
 			blockOffset = pcro->getBlockOffset();
 			_delete(blockOffset, 1);
 			break;
@@ -7689,6 +7721,42 @@ bool fl_BlockLayout::doclistener_changeObject(const PX_ChangeRecord_ObjectChange
 					pFieldRun->clearScreen();
 				}
 				pFieldRun->lookupProperties();
+
+				goto done;
+			}
+			pRun = pRun->getNextRun();
+		}
+
+		return false;
+	}
+	case PTO_Math:
+	{
+		UT_DEBUGMSG(("Edit:ChangeObject:Math:\n"));
+		blockOffset = pcroc->getBlockOffset();
+		fp_Run* pRun = m_pFirstRun;
+		while (pRun)
+		{
+			if (pRun->getBlockOffset() == blockOffset && (pRun->getType()!= FPRUN_FMTMARK))
+			{
+				if(pRun->getType()!= FPRUN_MATH)
+				{
+					UT_DEBUGMSG(("!!! run type NOT OBJECT, instead = %d !!!! \n",pRun->getType()));
+					while(pRun && pRun->getType() == FPRUN_FMTMARK)
+					{
+						pRun = pRun->getNextRun();
+					}
+				}
+				if(!pRun || pRun->getType() != FPRUN_MATH)
+				{
+					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+					return false;
+				}
+				fp_MathRun* pMathRun = static_cast<fp_MathRun*>(pRun);
+				if(!isHdrFtr())
+				{
+					pMathRun->clearScreen();
+				}
+				pMathRun->lookupProperties();
 
 				goto done;
 			}

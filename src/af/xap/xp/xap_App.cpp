@@ -54,6 +54,7 @@
 #include "gr_CharWidthsCache.h"
 #include "gr_ContextGlyph.h"
 #include "xav_Listener.h"
+#include "gr_EmbedManager.h"
 
 UT_Map * abi_ut_map_instance = 0;
 
@@ -129,6 +130,8 @@ XAP_App::~XAP_App()
 
 	// run thru and destroy all frames on our window list.
 	UT_VECTOR_PURGEALL(XAP_Frame *, m_vecFrames);
+
+	UT_VECTOR_PURGEALL(GR_EmbedManager  *, m_vecEmbedManagers);
 
 	FREEP(m_szAbiSuiteLibDir);
 	DELETEP(m_pEMC);
@@ -206,6 +209,73 @@ EV_Toolbar_ActionSet *XAP_App::getToolbarActionSet()
 	return m_pToolbarActionSet;
 }
 
+
+/*!
+ * Register an embeddable plugin with XAP_App
+ */
+UT_uint32 XAP_App::registerEmbeddable(GR_EmbedManager * pEmbed)
+{
+     UT_sint32 i=0;
+     bool bFound = false;
+     GR_EmbedManager * pCur = NULL;
+     for(i=0; !bFound && (i< static_cast<UT_sint32>(m_vecEmbedManagers.getItemCount())); i++)
+     {
+       pCur =  m_vecEmbedManagers.getNthItem(i);
+       if(UT_strcmp(pCur->getObjectType(),pEmbed->getObjectType()) == 0)
+       {
+	 bFound = true;
+       }
+     }
+     if(!bFound)
+     {
+       m_vecEmbedManagers.addItem(pEmbed);
+       return  m_vecEmbedManagers.getItemCount() - 1;
+     }
+     return 0xFFFFFFF;
+}
+
+
+/*!
+ * UnRegister an embeddable plugin with XAP_App. The plugin itself is 
+ * responsible for actually deleting the object.
+ */
+bool XAP_App::unRegisterEmbeddable(UT_uint32 uid)
+{
+  if(uid < m_vecEmbedManagers.getItemCount())
+    {
+      m_vecEmbedManagers.setNthItem(uid,NULL,NULL);
+      return true;
+    }
+  return false;
+}
+
+/*!
+ * Return a copy of the requested embedable plugin or a default manager.
+ * The calling routine must delete this.
+ */
+GR_EmbedManager * XAP_App:: getEmbeddableManager(GR_Graphics * pG, const char * szObjectType)
+{
+     UT_sint32 i=0;
+     bool bFound = false;
+     GR_EmbedManager * pCur = NULL;
+     for(i=0; !bFound && (i< static_cast<UT_sint32>(m_vecEmbedManagers.getItemCount())); i++)
+     {
+       pCur =  m_vecEmbedManagers.getNthItem(i);
+       UT_DEBUGMSG(("Look at Manager for Object type %s requested %s strcmp %d UT_strcmp %d \n",pCur->getObjectType(),szObjectType,UT_strcmp(pCur->getObjectType(),szObjectType),strcmp(pCur->getObjectType(),szObjectType) ));
+
+       if(UT_strcmp(pCur->getObjectType(),szObjectType) == 0)
+       {
+	 bFound = true;
+       }
+     }
+     if(bFound)
+     {
+       UT_DEBUGMSG(("Found a plugin of type %s \n",pCur->getObjectType()));
+       return pCur->create(pG);
+     }
+     return new GR_EmbedManager(pG);
+}
+ 
 bool XAP_App::initialize(const char * szKeyBindingsKey, const char * szKeyBindingsDefaultValue)
 {
 	// create application-wide resources that

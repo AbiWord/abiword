@@ -70,6 +70,7 @@ class PX_ChangeRecord_StruxChange;
 class fl_FootnoteLayout;
 class fl_EndnoteLayout;
 class fp_EndnoteContainer;
+class GR_EmbedManager;
 
 // the following get used by view and layout code, 
 // since they're private to the formatter, we stick 'em here
@@ -175,7 +176,7 @@ public:
 	fl_DocSectionLayout* 	findSectionForHdrFtr(const char* pszHdrFtrID) const;
 	void 				deleteEmptyColumnsAndPages(void);
 	void 				deleteEmptyPages( bool bDontNotify = false);
-
+	GR_EmbedManager * getEmbedManager(const char * szEmbedType);
 // --------------------------------------------------------------------
 // Footnote Methods
 // fl_DocLAyout stores this Vector of footnotes to speed things up and
@@ -342,6 +343,7 @@ private:
 	PT_DocPosition      m_iDocSize;
 	UT_sint32           m_iFilled;
 	bool                m_bSpellCheckInProgress;
+	UT_GenericVector<GR_EmbedManager *> m_vecEmbedManager;
 };
 
 #endif /* DOCLAYOUT_H */

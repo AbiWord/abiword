@@ -50,6 +50,7 @@
 #include "ut_string.h"
 #include "xap_Frame.h"
 #include "spell_manager.h"
+#include "gr_EmbedManager.h"
 
 #define REDRAW_UPDATE_MSECS	500
 
@@ -196,6 +197,42 @@ FL_DocLayout::~FL_DocLayout()
 		delete m_pFirstSection;
 		m_pFirstSection = pNext;
 	}
+	UT_VECTOR_PURGEALL(GR_EmbedManager *,m_vecEmbedManager);
+}
+
+
+/*!
+ * Get an embedManager of the requested Type.
+ */
+GR_EmbedManager * FL_DocLayout::getEmbedManager(const char * szEmbedType)
+{
+  // Look in the current collection first.
+  UT_uint32 i = 0;
+  GR_EmbedManager * pDefault = NULL;
+  GR_EmbedManager * pEmbed = NULL;
+  for(i=0; i< m_vecEmbedManager.getItemCount(); i++)
+    {
+      pEmbed = m_vecEmbedManager.getNthItem(i);
+      if(UT_strcmp(pEmbed->getObjectType(),szEmbedType) == 0)
+	{
+	  return pEmbed;
+	}
+      if(UT_strcmp(pEmbed->getObjectType(),"default") == 0)
+	{
+	  pDefault = pEmbed;
+	}
+    }
+  pEmbed = XAP_App::getApp()->getEmbeddableManager(m_pG,szEmbedType);
+  if((UT_strcmp(pEmbed->getObjectType(),"default") == 0) && pDefault != NULL)
+    {
+      delete pEmbed;
+      return pDefault;
+    }
+  UT_DEBUGMSG(("Got mamanger of type %s \n",pEmbed->getObjectType()));
+  m_vecEmbedManager.addItem(pEmbed);
+  pEmbed->initialize();
+  
+  return pEmbed;
 }
 
 /*! 

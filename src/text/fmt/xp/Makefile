@@ -66,7 +66,8 @@ CPPSRCS=		fv_View.cpp			\
 			fb_ColumnBreaker.cpp \
 			fv_FrameEdit.cpp \
 			fv_VisualDragText.cpp \
-			fv_Selection.cpp 
+			fv_Selection.cpp \
+			fp_MathRun.cpp \
 
 LIBRARY_NAME=		AbiFmt
 LIBRARY_VERSION=	$(ABI_VERSION)

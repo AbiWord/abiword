@@ -67,6 +67,7 @@ class GR_Graphics;
 class GR_AllocInfo;
 class XAP_InputModes;
 class AV_Listener;
+class GR_EmbedManager;
 
 /*****************************************************************
 ******************************************************************
@@ -239,6 +240,10 @@ public:
 	bool			            removeListener(AV_ListenerId listenerId);
 	virtual bool	            notifyListeners(AV_View * pView, const AV_ChangeMask hint,void * pPrivateData = NULL);
 
+    UT_uint32                   registerEmbeddable(GR_EmbedManager * pEmbed);
+    bool                        unRegisterEmbeddable(UT_uint32 uid);
+	GR_EmbedManager *           getEmbeddableManager(GR_Graphics * pG, const char * szObjectType);
+
 protected:
 	void									_setAbiSuiteLibDir(const char * sz);
 	virtual const char *                    _getKbdLanguage() {return NULL;}
@@ -283,7 +288,7 @@ private:
 	UT_uint32                               m_iDefaultGraphicsId;
 	
 	XAP_InputModes *						m_pInputModes;
-	
+	UT_GenericVector <GR_EmbedManager *>    m_vecEmbedManagers;	
 	XAP_App(const XAP_App&);				// should not even be called. Just to avoid a warning.
 	void operator=(const XAP_App&);
 #ifdef DEBUG
