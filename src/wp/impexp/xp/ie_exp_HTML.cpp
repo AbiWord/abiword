@@ -441,6 +441,7 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 				    {
 					m_pie->write("<span style=\"text-decoration: underline");	
 					span = UT_TRUE;
+					textD = UT_TRUE;
 				    }
 				  else if (!textD)
 				    {
@@ -482,6 +483,7 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 				    {
 					m_pie->write("<span style=\"text-decoration: line-through");	
 					span = UT_TRUE;
+					textD = UT_TRUE;
 				    }
 				  else if (!textD)
 				    {
@@ -523,6 +525,7 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 				    {
 					m_pie->write("<span style=\"text-decoration: overline");	
 					span = UT_TRUE;
+					textD = UT_TRUE;
 				    }
 				  else if (!textD)
 				    {
@@ -540,9 +543,6 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 
 			free(p);
 		}
-
-		if (span)
-		  m_pie->write("\">");
 
 		if (pAP->getProperty("text-position", szValue))
 		{
@@ -570,35 +570,72 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 		    pAP->getProperty("font-size", pszFontSize);
 		    pAP->getProperty("font-family", pszFontFamily);
 
-			m_pie->write("<font");
 			if (pszColor)
 			{
-				m_pie->write(" color=\"");
-				char szColor[16];
-				_convertColor(szColor, pszColor);
-				m_pie->write(szColor);
-				m_pie->write("\"");
+			  if (!span)
+				    {
+					m_pie->write("<span style=\"color: ");	
+					char szColor[16];
+					_convertColor(szColor, pszColor);
+					m_pie->write(szColor);
+					m_pie->write(";");
+					span = UT_TRUE;
+				    }
+				  else 
+				    {
+					m_pie->write(" color: ");	
+					char szColor[16];
+					_convertColor(szColor, pszColor);
+					m_pie->write(szColor);
+					m_pie->write(";");
+				    }
 			}
 			
 			if (pszFontFamily)
 			{
-				m_pie->write(" face=\"");
-				m_pie->write(pszFontFamily);
-				m_pie->write("\"");
+				  if (!span)
+				    {
+					m_pie->write("<span style=\"font-family: ");	
+					m_pie->write(pszFontFamily);
+					m_pie->write(";");
+					span = UT_TRUE;
+				    }
+				  else 
+				    {
+					m_pie->write(" font-family: ");	
+					m_pie->write(pszFontFamily);
+					m_pie->write(";");
+				    }
+
 			}
 			
+			char szSize[4];
+
 			if (pszFontSize)
 			{
-				m_pie->write(" size=\"");
-				char szSize[16];
-				_convertFontSize(szSize, pszFontSize);
-				m_pie->write(szSize);
-				m_pie->write("\"");
+				  if (!span)
+				    {
+					m_pie->write("<span style=\"font-size: ");	
+					sprintf(szSize, "%f", UT_convertToPoints(pszFontSize));
+					m_pie->write(szSize);
+					m_pie->write("pt;");
+					span = UT_TRUE;
+				    }
+				  else 
+				    {
+					m_pie->write(" font-size: ");	
+					sprintf(szSize, "%f", UT_convertToPoints(pszFontSize));
+					m_pie->write(szSize);
+					m_pie->write("pt;");
+				    }
+
 			}
 
-			m_pie->write(">");
 		}
 		
+		if (span)
+		  m_pie->write("\">");
+
 		m_bInSpan = UT_TRUE;
 		m_pAP_Span = pAP;
 	}
@@ -613,6 +650,8 @@ void s_HTML_Listener::_closeSpan(void)
 	
 	if (pAP)
 	{
+
+		UT_Bool closeSpan = UT_FALSE;
 		const XML_Char * szValue;
 		
 		if (
@@ -621,7 +660,7 @@ void s_HTML_Listener::_closeSpan(void)
 		    || (pAP->getProperty("font-family", szValue))
 			)
 		{
-			m_pie->write("</font>");
+		  closeSpan = UT_TRUE;
 		}
 
 		if (pAP->getProperty("text-position", szValue))
@@ -636,7 +675,7 @@ void s_HTML_Listener::_closeSpan(void)
 			}
 		}
 
-		UT_Bool closeSpan = UT_FALSE;
+
 
 		if (
 			(pAP->getProperty("text-decoration", szValue))
