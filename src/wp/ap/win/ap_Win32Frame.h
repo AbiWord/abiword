@@ -79,9 +79,6 @@ protected:
 	HWND						m_hwndContainer;
 	HWND						m_hwndTopRuler;
 	HWND						m_hwndLeftRuler;
-	HWND						m_hwndDeadLowerRight;
-	HWND						m_hwndVScroll;
-	HWND						m_hwndHScroll;
 	HWND						m_hwndDocument;	/* the actual document window */
 
 	UT_uint32					m_vScale; /* vertical scroll scaling to get around 16-bit scrollbar problems */
