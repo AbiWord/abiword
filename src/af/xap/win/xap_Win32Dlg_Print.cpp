@@ -122,7 +122,11 @@ void XAP_Win32Dialog_Print::releasePrinterGraphicsContext(GR_Graphics * pGraphic
 	if (pGraphics)
 		delete pGraphics;
 
+#if 0
+	// Do not delete the DC, since the original view will use it to do its layout and will
+	// delete it when no longer needed. Tomas
 	DeleteDC(m_pPersistPrintDlg->hDC);
+#endif
 	m_pPersistPrintDlg->hDC = 0;
 
 	memset(&m_DocInfo, 0, sizeof(m_DocInfo));

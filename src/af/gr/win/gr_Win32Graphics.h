@@ -36,12 +36,17 @@ class UT_ByteBuf;
 class ABI_EXPORT GR_Win32Font : public GR_Font
 {
 public:
-	static GR_Win32Font * newFont(LOGFONT & lf, double fPoints);
+	static GR_Win32Font * newFont(LOGFONT & lf, double fPoints, HDC hdc, HDC printDC);
 	virtual ~GR_Win32Font();
 
-	UT_uint32	getAscent()  const { return m_tm.tmAscent; }
-	UT_uint32	getDescent() const { return m_tm.tmDescent; }
-	UT_uint32	getHeight()  const { return m_tm.tmHeight; }
+	// need these to allow for adjustements in response to changes of device
+	void    	setAscent(UT_uint32 n)  { m_tm.tmAscent = n; }
+	void 	    setDescent(UT_uint32 n) { m_tm.tmDescent = n; }
+	void        setHeight(UT_uint32 n)  { m_tm.tmHeight = n; }
+	
+	UT_uint32	getAscent(HDC hdc, HDC printHDC);
+	UT_uint32	getDescent(HDC hdc, HDC printHDC);
+	UT_uint32	getHeight(HDC hdc, HDC printHDC);
 	UT_uint32   getUnscaledHeight() const { return m_iHeight;}
 
 	HFONT       getDisplayFont(GR_Graphics * pGr);
@@ -55,8 +60,14 @@ public:
 	void        markGUIFont() {m_bGUIFont = true;}
 	bool        isFontGUI() const {return m_bGUIFont;}
 
-	HDC         getFontHDC() const {return m_oldHDC;}
+	const HDC   getPrimaryHDC() const {return m_hdc;}
+	const HDC   getXHDC() const {return m_xhdc;}
+	const HDC   getYHDC() const {return m_yhdc;}
 
+	void        setPrimaryHDC(const HDC hdc) {m_hdc = hdc;}
+	void        setXHDC(const HDC hdc) {m_xhdc = hdc;}
+	void        setYHDC(const HDC hdc) {m_yhdc = hdc;}
+	
 	
 	// NB: the font handle is one which was associated with this font when it was
 	// origianlly created; however, it is not necessarily one that is to be used for
@@ -66,10 +77,10 @@ public:
 	// affected by zoom, such as retrieving face names, etc.)
 	HFONT       getFontHandle() const {return m_layoutFont;}
 	double      getPointSize() const {return m_fPointSize;}
-	
+
 protected:
 	// all construction has to be done via the graphics class
-	GR_Win32Font(LOGFONT & lf, double fPoints);
+	GR_Win32Font(LOGFONT & lf, double fPoints, HDC hdc, HDC printHDC);
 
 	GR_Win32CharWidths * _getCharWidths() const
 	{
@@ -84,6 +95,8 @@ protected:
 	// it is prinicipally intened to be used when we share fonts between screen and
 	// printer 
 	virtual void _clearAnyCachedInfo() {};
+	void         _updateFontYMetrics(HDC hdc, HDC printHDC);
+
 
 public:
 	HFONT        getFontFromCache(UT_uint32 pixelsize, bool bIsLayout,
@@ -101,9 +114,18 @@ private:
 
 	void					insertFontInCache(UT_uint32 pixelsize, HFONT pFont) const;
 
-	void					setupFontInfo();
-
-	HDC						m_oldHDC;
+	// we will store three different HDC values
+	// m_hdc is handle to the device on which we are meant to draw
+	// m_xhdc is handle to the device which was used for obtaining x-axis metrics
+	// m_yhdc is handle to the device which was used for obtaining y-axis metrics
+	// we have no control over the lifetime of any of
+	// these dc's -- we only use these to check that the metrics and other font info is
+	// uptodate -- they should NEVER be passed to any win32 API
+	
+	HDC				m_hdc;
+	HDC				m_xhdc;
+	HDC				m_yhdc;
+	
 	UT_uint32				m_defaultCharWidth;
 	HFONT                   m_layoutFont;
 	TEXTMETRIC				m_tm;
@@ -254,7 +276,7 @@ protected:
 	void					_setColor(DWORD clrRef);
 
   private:
-	virtual GR_Win32Font *          _newFont(LOGFONT & lf, double fPointSize);
+	virtual GR_Win32Font * _newFont(LOGFONT & lf, double fPointSize, HDC hdc, HDC printDC);
 
   protected:
 
@@ -277,6 +299,8 @@ protected:
 
 	DWORD					m_clrCurrent;
 	DWORD					m_3dColors[COUNT_3D_COLORS];
+	int                     m_nPrintLogPixelsY;
+
 
 private:
 	void 					_constructorCommonCode(HDC);

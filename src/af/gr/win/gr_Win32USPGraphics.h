@@ -38,7 +38,7 @@
 class ABI_EXPORT GR_Win32USPFont : public GR_Win32Font
 {
   public:
-	static  GR_Win32USPFont * newFont(LOGFONT & lf, double fPoints);
+	static  GR_Win32USPFont * newFont(LOGFONT & lf, double fPoints, HDC hdc, HDC printHDC);
 	virtual ~GR_Win32USPFont();
 
 	SCRIPT_CACHE * getScriptCache() {return &m_sc;}
@@ -47,7 +47,7 @@ class ABI_EXPORT GR_Win32USPFont : public GR_Win32Font
 
   protected:
 	// all construction has to be done via the graphics class
-	GR_Win32USPFont(LOGFONT & lf, double fPoints): GR_Win32Font(lf, fPoints), m_sc(NULL), m_printHDC(NULL){};
+	GR_Win32USPFont(LOGFONT & lf, double fPoints, HDC hdc, HDC printHDC);
 	
 	virtual void _clearAnyCachedInfo();
 
@@ -80,6 +80,13 @@ public:
 									  UT_sint32 xoff, UT_sint32 yoff,
 									  int * pCharWidth);
 
+	virtual UT_uint32		getFontHeight();
+	virtual UT_uint32		getFontAscent();
+	virtual UT_uint32		getFontDescent();
+	virtual UT_uint32		getFontAscent(GR_Font *);
+	virtual UT_uint32		getFontDescent(GR_Font *);
+	virtual UT_uint32		getFontHeight(GR_Font *);
+	
 	///////////////////////////////////////////////////////////////////
 	// complex script processing
 	//
@@ -128,13 +135,12 @@ public:
 	
   private:
 	bool      _constructorCommonCode();
-	virtual GR_Win32Font * _newFont(LOGFONT & lf, double fPoints);
+	virtual GR_Win32Font * _newFont(LOGFONT & lf, double fPoints, HDC hdc, HDC printHDC);
 
 	void   _setupFontOnDC(GR_Win32USPFont *pFont, bool bZoomMe);
 
 	UT_uint32 m_iDCFontAllocNo;
 	bool   m_bConstructorSucceeded;
-	int    m_nPrintLogPixelsY;
 	
 	static HINSTANCE s_hUniscribe;
 	static UT_uint32 s_iInstanceCount;

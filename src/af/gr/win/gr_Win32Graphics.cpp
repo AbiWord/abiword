@@ -103,6 +103,7 @@ void GR_Win32Graphics::_constructorCommonCode(HDC hdc)
 
 	m_hdc = hdc;
 	m_printHDC = NULL;
+	m_nPrintLogPixelsY = 0;
 	m_hwnd = 0;
 	m_iLineWidth = 0;	// default to a hairline
 	m_bPrint = false;
@@ -153,30 +154,13 @@ GR_Win32Graphics::GR_Win32Graphics(HDC hdc, HWND hwnd, XAP_App * app)
 	m_pApp = app;
 	m_hwnd = hwnd;
 
-#if 0
-	// do not do this, because the dialgue is frame persistent -- when the graphics is
-	// created, the frame is new, and so the dialogue has not been yet used
-	XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
-	if(pFrame)
+	// init the print HDC with one for the default printer
+	m_printHDC = UT_GetDefaultPrinterDC();
+
+	if(m_printHDC)
 	{
-		XAP_DialogFactory * pDialogFactory = static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
-		
-		XAP_Win32Dialog_Print * pDialog =
-			static_cast<XAP_Win32Dialog_Print *>(pDialogFactory->requestDialog(XAP_DIALOG_ID_PRINT));
-
-		PRINTDLG * pPDLG = pDialog->getPrintDlg();
-
-		if(pPDLG)
-		{
-			m_printHDC = pPDLG->hDC;
-		}
-
-		// it is likely that m_printHDC == NULL, if the user has not chosen the printer
-		// we should probably find out which is the default printer and use it to
-		// CreateDC, but for now we will just leave it
+		m_nPrintLogPixelsY = GetDeviceCaps(getPrintDC(), LOGPIXELSY);
 	}
-#endif
-
 }
 
 void GR_Win32Graphics::setPrintDC(HDC dc)
@@ -229,6 +213,9 @@ GR_Win32Graphics::~GR_Win32Graphics()
 	delete m_pArPens;
 
 	DELETEP(m_pFontGUI);
+
+	if(m_printHDC)
+		DeleteDC(m_printHDC);
 }
 
 bool GR_Win32Graphics::queryProperties(GR_Graphics::Properties gp) const
@@ -247,9 +234,9 @@ bool GR_Win32Graphics::queryProperties(GR_Graphics::Properties gp) const
 	}
 }
 
-GR_Win32Font * GR_Win32Graphics::_newFont(LOGFONT & lf, double fPoints)
+GR_Win32Font * GR_Win32Graphics::_newFont(LOGFONT & lf, double fPoints, HDC hdc, HDC printHDC)
 {
-	return GR_Win32Font::newFont(lf, fPoints);
+	return GR_Win32Font::newFont(lf, fPoints, hdc, printHDC);
 }
 
 GR_Font* GR_Win32Graphics::getGUIFont(void)
@@ -260,7 +247,7 @@ GR_Font* GR_Win32Graphics::getGUIFont(void)
 		HFONT f = (HFONT) GetStockObject(DEFAULT_GUI_FONT);
 		LOGFONT lf;
 		int iRes = GetObject(f, sizeof(LOGFONT), &lf);
-		m_pFontGUI = _newFont(lf, 0);
+		m_pFontGUI = _newFont(lf, 0, m_hdc, m_hdc);
 		UT_ASSERT(m_pFontGUI);
 		DeleteObject(f);
 	}
@@ -294,7 +281,7 @@ GR_Font* GR_Win32Graphics::_findFont(const char* pszFontFamily,
 	#endif
 	
 	LOGFONT lf = { 0 };
-	HDC hDC = GetDC(NULL);
+	HDC hPrintDC = m_printHDC ? m_printHDC : m_hdc;
 
 	/*
 		TODO we need to fill out the LOGFONT object such that
@@ -307,8 +294,7 @@ GR_Font* GR_Win32Graphics::_findFont(const char* pszFontFamily,
 
 	// See: http://support.microsoft.com/support/kb/articles/Q74/2/99.asp
 	double fPointSize = UT_convertToPoints(pszFontSize);
-	UT_sint32 iHeight = (UT_sint32)fPointSize;
-	lf.lfHeight = -MulDiv(iHeight, GetDeviceCaps(m_hdc, LOGPIXELSY), 72);		
+	lf.lfHeight = (int)(-fPointSize * (double)GetDeviceCaps(m_hdc, LOGPIXELSY) / 72.0);		
 
 	// TODO note that we don't support all those other ways of expressing weight.
 	if (0 == UT_stricmp(pszFontWeight, "bold"))
@@ -338,15 +324,13 @@ GR_Font* GR_Win32Graphics::_findFont(const char* pszFontFamily,
 	LOGFONT enumlf = { 0 };
 	enumlf.lfCharSet = DEFAULT_CHARSET;
 	strcpy(enumlf.lfFaceName, lf.lfFaceName);
-	EnumFontFamiliesEx(hDC, &enumlf,
+	EnumFontFamiliesEx(m_hdc, &enumlf,
 		(FONTENUMPROC)win32Internal_fontEnumProcedure, (LPARAM)&lf, 0);
 
 	lf.lfOutPrecision = OUT_TT_ONLY_PRECIS;		// Choose only True Type fonts.
 	lf.lfQuality = PROOF_QUALITY;
 
-	ReleaseDC(NULL, hDC);
-
-	return _newFont(lf, fPointSize);
+	return _newFont(lf, fPointSize, m_hdc, hPrintDC);
 }
 
 void GR_Win32Graphics::drawGlyph(UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff)
@@ -621,7 +605,7 @@ void GR_Win32Graphics::setFont(GR_Font* pFont)
 	// this should work though, the allocation number is unique, even
 	// if the pointers are identical
 	if (m_pFont == NULL || pFont->getAllocNumber() != m_iFontAllocNo
-		|| pWin32Font->getFontHDC() != m_hdc)
+		|| pWin32Font->getPrimaryHDC() != m_hdc)
 	{
 		m_pFont = pWin32Font;
 		m_iFontAllocNo = pFont->getAllocNumber();
@@ -641,7 +625,8 @@ UT_uint32 GR_Win32Graphics::getFontHeight(GR_Font * fnt)
 UT_uint32 GR_Win32Graphics::getFontHeight()
 {
 	UT_return_val_if_fail( m_pFont, 0 );
-	return (UT_uint32)((m_pFont->getHeight()) * getResolution() / getDeviceResolution());
+
+	return (UT_uint32)((m_pFont->getHeight(m_hdc, m_printHDC)) * getResolution() / getDeviceResolution());
 }
 
 UT_uint32 GR_Win32Graphics::getFontAscent(GR_Font* fnt)
@@ -656,7 +641,7 @@ UT_uint32 GR_Win32Graphics::getFontAscent(GR_Font* fnt)
 UT_uint32 GR_Win32Graphics::getFontAscent()
 {
 	UT_return_val_if_fail( m_pFont, 0 );
-	return (UT_uint32)((m_pFont->getAscent()) * getResolution() / getDeviceResolution());
+	return (UT_uint32)((m_pFont->getAscent(m_hdc, m_printHDC)) * getResolution() / getDeviceResolution());
 }
 
 UT_uint32 GR_Win32Graphics::getFontDescent(GR_Font* fnt)
@@ -671,7 +656,7 @@ UT_uint32 GR_Win32Graphics::getFontDescent(GR_Font* fnt)
 UT_uint32 GR_Win32Graphics::getFontDescent()
 {
 	UT_return_val_if_fail( m_pFont, 0 );
-	return (UT_uint32)((m_pFont->getDescent()) * getResolution() / getDeviceResolution());
+	return (UT_uint32)((m_pFont->getDescent(m_hdc, m_printHDC)) * getResolution() / getDeviceResolution());
 }
 
 void GR_Win32Graphics::getCoverage(UT_NumberVector& coverage)
@@ -1397,8 +1382,14 @@ void GR_Font::s_getGenericFontProperties(const char * szFontName,
 	return;
 }
 
-GR_Win32Font::GR_Win32Font(LOGFONT & lf, double fPoints)
-:	m_oldHDC(0),
+/*!
+    hdc - the primary hdc on which we are expected to draw
+    printHDC - the hdc for which to retrive metrics
+*/
+GR_Win32Font::GR_Win32Font(LOGFONT & lf, double fPoints, HDC hdc, HDC printHDC)
+:	m_hdc(hdc),
+	m_xhdc(0), // once all the processing is done, this is changed to printHDC
+	m_yhdc(0), // once all the processing is done, this is changed to printHDC
 	m_layoutFont (0),
 	m_defaultCharWidth(0),
 	m_tm(TEXTMETRIC()),
@@ -1411,18 +1402,37 @@ GR_Win32Font::GR_Win32Font(LOGFONT & lf, double fPoints)
 
 	if(!m_layoutFont)
 	{
-		LOG_WIN32_EXCPT("CreateFontIndirectFailed")
+		LOG_WIN32_EXCPT("CreateFontIndirectFailed");
 		return;
 	}
 	
 	insertFontInCache (m_iHeight, m_layoutFont);
 
+	HFONT printFont = m_layoutFont;
+	
+	if(hdc != printHDC)
+	{
+		int nLogPixelsY      = GetDeviceCaps(hdc, LOGPIXELSY);
+		int nPrintLogPixelsY = GetDeviceCaps(printHDC, LOGPIXELSY);
+
+		lf.lfHeight = MulDiv(lf.lfHeight, nPrintLogPixelsY, nLogPixelsY);
+		printFont = CreateFontIndirect(&lf);
+		
+		if(!printFont)
+		{
+			LOG_WIN32_EXCPT("CreateFontIndirectFailed");
+			return;
+		}
+
+		insertFontInCache(abs(lf.lfHeight), printFont);
+
+	}
+	
 	//
 	// TMN: We need to initialize 'this' to _something_, why we use the
 	// screen DC. Note that this is a *bad hack* forced by bad design. :-(
 	//
-	HDC hDC = GetDC(0);
-	if (!hDC)
+	if (!hdc || !printHDC)
 	{
 		// NOW what? We can't throw an exeption, and this object isn't
 		// legal yet...
@@ -1432,8 +1442,8 @@ GR_Win32Font::GR_Win32Font(LOGFONT & lf, double fPoints)
 	}
 	else
 	{
-		m_oldHDC = hDC;
-		HFONT hOldFont = (HFONT)SelectObject(hDC, m_layoutFont);
+		// now we need to retrieve the y-axis metrics
+		HFONT hOldFont = (HFONT)SelectObject(printHDC, printFont);
 		if (hOldFont == (HFONT)GDI_ERROR)
 		{
 			LOG_WIN32_EXCPT("Could not select font into DC.")
@@ -1444,28 +1454,44 @@ GR_Win32Font::GR_Win32Font(LOGFONT & lf, double fPoints)
 		{
 			// Setting the m_hashKey 
 			char lpFaceName[1000];
-			TEXTMETRIC tm;
 			
-			GetTextFace( hDC, 1000, lpFaceName );
-			GetTextMetrics(hDC,	&tm);
+			GetTextFace(printHDC, 1000, lpFaceName );
 
+			_updateFontYMetrics(hdc, printHDC);
+			
 			UT_String_sprintf(m_hashKey, "%s-%d-%d-%d-%d-%d",
 							  lpFaceName,
-							  tm.tmHeight, tm.tmWeight, tm.tmItalic, tm.tmUnderlined,
-							  tm.tmStruckOut);
+							  m_tm.tmHeight, m_tm.tmWeight, m_tm.tmItalic, m_tm.tmUnderlined,
+							  m_tm.tmStruckOut);
 
-			setupFontInfo();
+			// now we measure the default character
+			// 
+			// when we are called, the char widths might not exist yet; we
+			// will force initialisation by a bogus call to
+			// getCharWidthFromCache(); by measuring the space, we will
+			// preload the entire Latin1 page
+			getCharWidthFromCache(' ');
+			
+			UINT d = m_tm.tmDefaultChar;
 
-			SelectObject(hDC, (HGDIOBJ)hOldFont);
+			UT_return_if_fail(_getCharWidths());
+			_getCharWidths()->setCharWidthsOfRange(printHDC, d, d);
+			m_defaultCharWidth = getCharWidthFromCache(d);
+
+			// this is not good SelectObject() is very expensive, and chances are this
+			// call is unnecessary, but because of the design of the graphics class we
+			// have no way of knowing
+			SelectObject(printHDC, hOldFont);
 		}
-		m_oldHDC = 0;
-		ReleaseDC(0, hDC);
+
+		m_xhdc = printHDC;
+		m_yhdc = printHDC;
 	}
 }
 
-GR_Win32Font * GR_Win32Font::newFont(LOGFONT &lf, double fPoints)
+GR_Win32Font * GR_Win32Font::newFont(LOGFONT &lf, double fPoints, HDC hdc, HDC printHDC)
 {
-	GR_Win32Font * f = new GR_Win32Font(lf, fPoints);
+	GR_Win32Font * f = new GR_Win32Font(lf, fPoints, hdc, printHDC);
 
 	if(!f || !f->getFontHandle())
 	{
@@ -1491,9 +1517,9 @@ GR_Win32Font::~GR_Win32Font()
 	DWORD dwObjType;
 	bool bIsDC;
 
-	if(m_oldHDC) 
+	if(m_hdc) 
 	{
-		dwObjType = GetObjectType((HGDIOBJ)m_oldHDC);
+		dwObjType = GetObjectType((HGDIOBJ)m_hdc);
 		bIsDC = dwObjType == OBJ_DC || dwObjType == OBJ_MEMDC;
 	}
 
@@ -1501,9 +1527,9 @@ GR_Win32Font::~GR_Win32Font()
 	  {
 		  allocFont *p = (allocFont *)m_allocFonts.getNthItem(i);
 
-		  if(m_oldHDC) 
+		  if(m_hdc) 
 		  {
-			  if (!bIsDC || p->hFont != (HFONT)::GetCurrentObject(m_oldHDC, OBJ_FONT))
+			  if (!bIsDC || p->hFont != (HFONT)::GetCurrentObject(m_hdc, OBJ_FONT))
 			  {
 				  DeleteObject(p->hFont);
 			  }
@@ -1512,6 +1538,76 @@ GR_Win32Font::~GR_Win32Font()
 		  delete p;
 	  }
 }
+
+/*!
+    hdc -- handle to the primary DC on which we draw
+    printHDC -- handle to the DC on which we want to measure the font (typically the printer)
+                can be NULL (in which case hdc will be used
+
+    NB: the caller must ensure that the corresponding HFONT is already selected onto the
+    DC represented by printHDC (or hdc if NULL).
+*/
+void GR_Win32Font::_updateFontYMetrics(HDC hdc, HDC printHDC)
+{
+	// have to have at least the prinary DC
+	UT_return_if_fail( hdc );
+	
+	// only do this if we have reason to believe the cached values are stale
+	if(!printHDC)
+	{
+		printHDC = hdc;
+	}
+	
+	if(printHDC != m_yhdc)
+	{
+		GetTextMetrics(printHDC,&m_tm);
+
+		// now we have to scale the metrics down from the printHDC to primary dc
+		// NB: we do not want to obtain the metrics directly for the primary dc
+		// Windows is designed to get slightly bigger font for the screen than the
+		// user asks for (MS say to improve readibility), and this causes us
+		// non-WYSIWYG behaviour (basically our characters are wider on screen than on
+		// the printer and our lines are further apart)
+		int nLogPixelsY      = GetDeviceCaps(hdc, LOGPIXELSY);
+		int nPrintLogPixelsY = GetDeviceCaps(printHDC, LOGPIXELSY);
+
+		if(nLogPixelsY != nPrintLogPixelsY)
+		{
+			m_tm.tmAscent  = MulDiv(m_tm.tmAscent, nLogPixelsY, nPrintLogPixelsY);
+			m_tm.tmDescent = MulDiv(m_tm.tmDescent, nLogPixelsY, nPrintLogPixelsY);
+			m_tm.tmHeight  = MulDiv(m_tm.tmHeight, nLogPixelsY, nPrintLogPixelsY);
+		}
+
+		// now remember what HDC these values are for
+		m_yhdc = printHDC;
+	}
+}
+
+
+/*! hdc - handle to device context for which the measurment is required */
+UT_uint32 GR_Win32Font::getAscent(HDC hdc, HDC printHDC)
+{
+	if(!m_bGUIFont)
+		_updateFontYMetrics(hdc, printHDC);
+	return m_tm.tmAscent;
+}
+
+/*! hdc - handle to device context for which the measurment is required */
+UT_uint32 GR_Win32Font::getDescent(HDC hdc, HDC printHDC)
+{
+	if(!m_bGUIFont)
+		_updateFontYMetrics(hdc, printHDC);
+	return m_tm.tmDescent;
+}
+
+/*! hdc - handle to device context for which the measurment is required */
+UT_uint32 GR_Win32Font::getHeight(HDC hdc, HDC printHDC)
+{
+	if(!m_bGUIFont)
+		_updateFontYMetrics(hdc, printHDC);
+	return m_tm.tmHeight;
+}
+
 
 UT_sint32 GR_Win32Font::measureUnremappedCharForCache(UT_UCSChar cChar) const
 {
@@ -1604,24 +1700,6 @@ HFONT GR_Win32Font::getDisplayFont(GR_Graphics * pG)
 	return getFontFromCache(pixels, false, zoom);
 }
 
-void GR_Win32Font::setupFontInfo()
-{
-	// when we are called, the char widths might not exist yet; we
-	// will force initialisation by a bogus call to
-	// getCharWidthFromCache(); by measuring the space, we will
-	// preload the entire Latin1 page
-	getCharWidthFromCache(' ');
-	
-	GetTextMetrics(m_oldHDC, &m_tm);
-	UINT d = m_tm.tmDefaultChar;
-
-	UT_return_if_fail(_getCharWidths());
-	HDC hdc = CreateDC("DISPLAY",NULL,NULL,NULL);
-	_getCharWidths()->setCharWidthsOfRange(hdc, d, d);
-	DeleteDC(hdc);
-	m_defaultCharWidth = getCharWidthFromCache(d);
-}
-
 UT_sint32 GR_Win32Font::measureUnRemappedChar(UT_UCSChar c)
 {
 #ifndef ABI_GRAPHICS_PLUGIN_NO_WIDTHS
@@ -1644,7 +1722,7 @@ void GR_Win32Font::selectFontIntoDC(GR_Graphics * pGr, HDC hdc)
 	// hate having to do the cast, here
 	UT_ASSERT_HARMLESS( hRet != (void*)GDI_ERROR);
 	
-	if (hdc != m_oldHDC)
+	if (hdc != m_hdc)
 	{
 		// invalidate cached info when we change hdc's.
 		// this is probably unnecessary except when
@@ -1654,7 +1732,7 @@ void GR_Win32Font::selectFontIntoDC(GR_Graphics * pGr, HDC hdc)
 		// TODO both on screen.
 
 		_clearAnyCachedInfo();
-		m_oldHDC = hdc;
+		m_hdc = hdc;
 	}
 }
 

@@ -297,9 +297,9 @@ GR_Win32USPGraphics::GR_Win32USPGraphics(HDC hdc, const DOCINFO * pDI, XAP_App *
 	m_bConstructorSucceeded = true;
 }
 
-GR_Win32Font * GR_Win32USPGraphics::_newFont(LOGFONT & lf, double fPoints)
+GR_Win32Font * GR_Win32USPGraphics::_newFont(LOGFONT & lf, double fPoints, HDC hdc, HDC printHDC)
 {
-	return GR_Win32USPFont::newFont(lf, fPoints);
+	return GR_Win32USPFont::newFont(lf, fPoints, hdc, printHDC);
 }
 
 #define loadUSPFunction(name)                           \
@@ -501,6 +501,78 @@ GR_Graphics *   GR_Win32USPGraphics::graphicsAllocator(GR_AllocInfo& info)
 		return NULL;
 }
 
+UT_uint32 GR_Win32USPGraphics::getFontHeight(GR_Font * fnt)
+{
+	UT_return_val_if_fail( fnt, 0 );
+	GR_Font * pOldFont = m_pFont;
+	setFont(fnt);
+	
+	UT_uint32 i = getFontHeight();
+	if(pOldFont)
+		setFont(pOldFont);
+	return i;
+}
+
+UT_uint32 GR_Win32USPGraphics::getFontHeight()
+{
+	UT_return_val_if_fail( m_pFont, 0 );
+
+	if(getPrintDC() != m_pFont->getYHDC())
+	{
+		_setupFontOnDC((GR_Win32USPFont*)m_pFont, false);
+	}
+	
+	return (UT_uint32)((m_pFont->getHeight(m_hdc, getPrintDC())) * getResolution() / getDeviceResolution());
+}
+
+UT_uint32 GR_Win32USPGraphics::getFontAscent(GR_Font* fnt)
+{
+	UT_return_val_if_fail( fnt, 0 );
+	GR_Font * pOldFont = m_pFont;
+	setFont(fnt);
+	
+	UT_uint32 i = getFontAscent();
+	if(pOldFont)
+		setFont(pOldFont);
+	return i;
+}
+
+UT_uint32 GR_Win32USPGraphics::getFontAscent()
+{
+	UT_return_val_if_fail( m_pFont, 0 );
+
+	if(getPrintDC() != m_pFont->getYHDC())
+	{
+		_setupFontOnDC((GR_Win32USPFont*)m_pFont, false);
+	}
+	
+	return (UT_uint32)((m_pFont->getAscent(m_hdc, getPrintDC())) * getResolution() / getDeviceResolution());
+}
+
+UT_uint32 GR_Win32USPGraphics::getFontDescent(GR_Font* fnt)
+{
+	UT_return_val_if_fail( fnt, 0 );
+	GR_Font * pOldFont = m_pFont;
+	setFont(fnt);
+	
+	UT_uint32 i = getFontDescent();
+	if(pOldFont)
+		setFont(pOldFont);
+	return i;
+}
+
+UT_uint32 GR_Win32USPGraphics::getFontDescent()
+{
+	UT_return_val_if_fail( m_pFont, 0 );
+
+	if(getPrintDC() != m_pFont->getYHDC())
+	{
+		_setupFontOnDC((GR_Win32USPFont*)m_pFont, false);
+	}
+	
+	return (UT_uint32)((m_pFont->getDescent(m_hdc, getPrintDC())) * getResolution() / getDeviceResolution());
+}
+
 /*!
     The USP library maintains an internal font cache, which allows it to avoid accessing
     the DC for things like measuring fonts, etc. This means that often it is not necessary
@@ -520,6 +592,7 @@ void GR_Win32USPGraphics::setFont(GR_Font* pFont)
 	else
 		m_iFontAllocNo = 0;
 }
+
 
 void GR_Win32USPGraphics::_setupFontOnDC(GR_Win32USPFont *pFont, bool bZoomMe)
 {
@@ -568,18 +641,31 @@ void GR_Win32USPGraphics::_setupFontOnDC(GR_Win32USPFont *pFont, bool bZoomMe)
 	{
 		if(NULL == SelectObject(hdc, hFont))
 		{
+			DWORD e = GetLastError();
+			LPVOID lpMsgBuf;
+ 
+			FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+						  NULL,
+						  e,
+						  MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
+						  (LPTSTR) &lpMsgBuf,
+						  0,
+						  NULL);
+
 			UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
 			LOGFONT lf;
 			if(GetObject(hFont, sizeof(LOGFONT), &lf))
 			{
 				// this assumes that the lfFaceName is a char string; it could be wchar in
 				// fact but it seems to work elsewhere in the win32 graphics class
-				LOG_USP_EXCPT_SX("Could not select font into DC", lf.lfFaceName, lf.lfHeight)
+				LOG_USP_EXCPT_SX((char*)lpMsgBuf, lf.lfFaceName, lf.lfHeight)
 			}
 			else
 			{
 				LOG_USP_EXCPT("Could not select font into DC")
 			}
+
+			LocalFree( lpMsgBuf );
 		}
 		
 		m_iDCFontAllocNo = pFont->getAllocNumber();
@@ -782,7 +868,7 @@ bool GR_Win32USPGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 		// so that ScriptShape measures it correctly for the cache
 		// we do not want to scale the font for this
 		_setupFontOnDC(pFont, false);
-		hdc = m_hdc;
+		hdc = m_printHDC ? m_printHDC : m_hdc;
 	}
 
 	RI->m_bShapingFailed = false;
@@ -799,7 +885,7 @@ bool GR_Win32USPGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 		UT_ASSERT_HARMLESS( hdc == 0 );
 
 		_setupFontOnDC(pFont, false);
-		hdc = m_hdc;
+		hdc = m_printHDC ? m_printHDC : m_hdc;
 		hRes = fScriptShape(hdc, pFont->getScriptCache(), pInChars, si.m_iLength,
 							iGlyphBuffSize, & pItem->m_si.a, pGlyphs,
 							RI->m_pClust, pVa, &iGlyphCount);
@@ -1161,15 +1247,15 @@ void GR_Win32USPGraphics::renderChars(GR_RenderInfo & ri)
 		pItem->m_si.a.eScript = GRScriptType_Undefined;
 
 	HRESULT hRes = fScriptTextOut(m_hdc, pFont->getScriptCache(), xoff, yoff,
-								 dFlags, /*option flags*/
-								 NULL, /*not sure about this*/
-								 & pItem->m_si.a,
-								 NULL, 0, /*reserved*/
-								 RI.m_pIndices  + iGlyphOffset,
-								 iGlyphCount,
-								 RI.s_pAdvances + iGlyphOffset,
-								 pJustify,
-								 RI.m_pGoffsets);
+								  dFlags, /*option flags*/
+								  NULL, /*not sure about this*/
+								  & pItem->m_si.a,
+								  NULL, 0, /*reserved*/
+								  RI.m_pIndices  + iGlyphOffset,
+								  iGlyphCount,
+								  RI.s_pAdvances + iGlyphOffset,
+								  pJustify,
+								  RI.m_pGoffsets);
 
 	pItem->m_si.a.eScript = eScript;
 	//RI.m_bRejustify = false; -- the docs are misleading; rejustification is always needed
@@ -1183,10 +1269,16 @@ void GR_Win32USPGraphics::renderChars(GR_RenderInfo & ri)
 
 void GR_Win32USPGraphics::setPrintDC(HDC dc)
 {
-#if 0
+#if 1
+	// only do this for screen graphics
 	if(!m_bPrint && dc != m_printHDC)
 	{
-		// only do this for screen graphics
+		// since this is a printer DC we have to delete it once not needed
+		// the win32 graphics does not delete the printer dc, which is a bug in the pure
+		// win32 graphics class, but exactly what we need here.
+		if(m_printHDC)
+			DeleteDC(m_printHDC);
+		
 		m_printHDC = dc;
 
 		if(getPrintDC())
@@ -1250,6 +1342,18 @@ void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 		{
 			fScriptFreeCache(pFont->getScriptCache());
 			*(pFont->getScriptCache()) = NULL;
+		}
+
+		if(getPrintDC())
+		{
+			// we also need to remeasure the font metrics as well
+			// and scale it down for the screen
+			TEXTMETRIC tm = { 0 };
+			GetTextMetrics(getPrintDC(), &tm);
+
+			pFont->setHeight(MulDiv(tm.tmHeight, getDeviceResolution(), m_nPrintLogPixelsY));
+			pFont->setAscent(MulDiv(tm.tmAscent, getDeviceResolution(), m_nPrintLogPixelsY));
+			pFont->setDescent(MulDiv(tm.tmDescent, getDeviceResolution(), m_nPrintLogPixelsY));
 		}
 	}
 
@@ -2163,9 +2267,9 @@ bool GR_Win32USPRenderInfo::isJustified() const
 	return (m_pJustify != NULL);
 }
 
-GR_Win32USPFont *  GR_Win32USPFont::newFont(LOGFONT &lf, double fPoints)
+GR_Win32USPFont *  GR_Win32USPFont::newFont(LOGFONT &lf, double fPoints, HDC hdc, HDC printHDC)
 {
-	GR_Win32USPFont * f = new GR_Win32USPFont(lf, fPoints);
+	GR_Win32USPFont * f = new GR_Win32USPFont(lf, fPoints, hdc, printHDC);
 
 	if(!f || !f->getFontHandle())
 	{
@@ -2175,6 +2279,15 @@ GR_Win32USPFont *  GR_Win32USPFont::newFont(LOGFONT &lf, double fPoints)
 
 	return f;
 }
+
+GR_Win32USPFont::GR_Win32USPFont(LOGFONT & lf, double fPoints, HDC hdc, HDC printHDC)
+	: GR_Win32Font(lf, fPoints, hdc, printHDC),
+	  m_sc(NULL),
+	  m_printHDC(NULL)
+{
+	// we need to get text metrix for the font afresh
+	// GetTextMetrics(hdc, m_tm);
+};
 
 void GR_Win32USPFont::_clearAnyCachedInfo()
 {
