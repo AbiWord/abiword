@@ -536,6 +536,7 @@ IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
 	m_bLTRCharContext(true),
 	m_bLTROverrideIssued(false),
 	m_bLanguageRTL(false),
+	m_bBidiDocument(false),
 	m_iDocPosition(0),
 	m_pBookmarks(NULL),
 	m_iBookmarksCount(0),
@@ -924,6 +925,10 @@ int IE_Imp_MsWord_97::_docProc (wvParseStruct * ps, UT_uint32 tag)
 	switch ((wvTag)tag)
 	{
 	case DOCBEGIN:
+
+		// test the bidi nature of this document
+		m_bBidiDocument = wvIsBidiDocument(ps);
+		UT_DEBUGMSG(("IE_Imp_MsWord_97::_docProc: complex %d, bidi %d\n",ps->fib.fComplex,m_bBidiDocument));
 		UT_uint32 i,j;
 
 		if(m_pBookmarks)
@@ -1151,9 +1156,13 @@ int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U
 	// I am going to disable this for now, to simplify debugging
 	// processing of numbers in RTL context (Tomas, Jan 30, 2003)
 
-	// if the character is a weak and we are in LTR context then we
-	// need to issue a direction override
-	if(!FRIBIDI_IS_STRONG(cType) && m_bLTRCharContext && !m_bLTROverrideIssued)
+	// if the character is a European number and we are in LTR context
+	// then we need to issue a direction override; we will cancel this
+	// override when we reach either any strong character or a
+	// character that has a directional property RTL, i.e., any
+	// neutral characters enclosed in a sequence of numbers will also
+	// be subject to the override.
+	if(cType == FRIBIDI_TYPE_EN && m_bLTRCharContext && !m_bLTROverrideIssued)
 	{
 		this->_flush();
 
@@ -1181,9 +1190,10 @@ int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U
 		}
 		m_bLTROverrideIssued = true;
 	}
-	// if this is a strong character and we previously issued an LTR
-	// override, we need to cancel it.
-	else if(FRIBIDI_IS_STRONG(cType) && m_bLTROverrideIssued)
+	// if we previously issued an LTR
+	// override, and this is either a strong character or any RTL
+	// character we need to cancel it.
+	else if(m_bLTROverrideIssued && (FRIBIDI_IS_STRONG(cType) || FRIBIDI_IS_RTL(cType)))
 	{
 		this->_flush();
 		
@@ -1475,6 +1485,18 @@ int IE_Imp_MsWord_97::_beginSect (wvParseStruct *ps, UT_uint32 tag,
 						  "1.4"));
 	props += propBuffer;
 
+	if(asep->fBidi)
+	{
+		// this is an RTL section, set dominant direction to rtl
+		props += "dom-dir:rtl;";
+	}
+	{
+		// this is an LTR section, we want to set the direction
+		// explicitely so that we do not end up with wrong default
+		props += "dom-dir:ltr;";
+	}
+	
+	
 	if(asep->fPgnRestart)
 	  {
 		// set to 1 when page numbering should be restarted at the beginning of this section

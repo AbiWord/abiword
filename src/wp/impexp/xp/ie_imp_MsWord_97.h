@@ -155,6 +155,7 @@ private:
 	bool m_bLTRCharContext;
 	bool m_bLTROverrideIssued;
 	bool m_bLanguageRTL;
+	bool m_bBidiDocument;
 	UT_uint32 m_iDocPosition;
 	bookmark * m_pBookmarks;
 	UT_uint32  m_iBookmarksCount;
