@@ -108,7 +108,7 @@ bool EV_QNXToolbar::toolbarEvent(XAP_Toolbar_Id id,
 	EV_EditMethod * pEM = pEMC->findEditMethodByName(szMethodName);
 	UT_ASSERT(pEM);						// make sure it's bound to something
 
-	invokeToolbarMethod(pView,pEM,pData,dataLength);
+	invokeToolbarMethod(pView,pEM,(UT_UCSChar*)pData,dataLength);
 	return true;
 }
 
