@@ -486,22 +486,26 @@ AC_OUTPUT(
  src/af/ev/GNUmakefile
  src/af/ev/xp/GNUmakefile
  src/af/ev/cocoa/GNUmakefile
+ src/af/ev/mac/GNUmakefile
+ src/af/ev/qnx/GNUmakefile
  src/af/ev/unix/GNUmakefile
  src/af/ev/unix/gnome/GNUmakefile
- src/af/ev/mac/GNUmakefile
  src/af/gr/GNUmakefile
  src/af/gr/xp/GNUmakefile
  src/af/gr/mac/GNUmakefile
  src/af/gr/cocoa/GNUmakefile
+ src/af/gr/qnx/GNUmakefile
  src/af/gr/unix/GNUmakefile
  src/af/util/GNUmakefile
  src/af/util/xp/GNUmakefile
  src/af/util/mac/GNUmakefile
+ src/af/util/qnx/GNUmakefile
  src/af/util/unix/GNUmakefile
  src/af/xap/GNUmakefile
  src/af/xap/xp/GNUmakefile
  src/af/xap/cocoa/GNUmakefile
  src/af/xap/mac/GNUmakefile
+ src/af/xap/qnx/GNUmakefile
  src/af/xap/unix/GNUmakefile
  src/af/xap/unix/gnome/GNUmakefile
  src/other/GNUmakefile
@@ -519,6 +523,7 @@ AC_OUTPUT(
  src/wp/ap/xp/GNUmakefile
  src/wp/ap/cocoa/GNUmakefile
  src/wp/ap/mac/GNUmakefile
+ src/wp/ap/qnx/GNUmakefile
  src/wp/ap/unix/GNUmakefile
  src/wp/ap/unix/gnome/GNUmakefile
  src/wp/impexp/GNUmakefile
@@ -530,11 +535,13 @@ AC_OUTPUT(
  src/wp/main/xp/GNUmakefile
  src/wp/main/cocoa/GNUmakefile
  src/wp/main/mac/GNUmakefile
+ src/wp/main/qnx/GNUmakefile
  src/wp/main/unix/GNUmakefile
  src/wp/main/unix/gnome/GNUmakefile
  src/tools/GNUmakefile
  src/tools/cdump/GNUmakefile
  src/tools/cdump/xp/GNUmakefile
+ src/tools/cdump/qnx/GNUmakefile
  src/tools/pfa2afm/GNUmakefile
  src/tools/pfa2afm/unix/GNUmakefile
  src/tools/ttftool/GNUmakefile
