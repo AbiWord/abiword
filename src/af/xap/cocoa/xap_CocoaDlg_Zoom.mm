@@ -36,6 +36,7 @@
 #include "xap_Dialog_Id.h"
 #include "xap_Dlg_Zoom.h"
 #include "xap_CocoaDlg_Zoom.h"
+#include "xav_View.h"
 
 /*****************************************************************/
 
@@ -63,7 +64,9 @@ XAP_CocoaDialog_Zoom::~XAP_CocoaDialog_Zoom(void)
 void XAP_CocoaDialog_Zoom::runModal(XAP_Frame * pFrame)
 {
 	NSWindow* window;
-
+	m_pFrame = pFrame;
+	UT_ASSERT(m_pFrame);
+	
 	m_dlg = [[XAP_CocoaDlg_ZoomController alloc] initFromNib];
 	[m_dlg setXAPOwner:this];
 	window = [m_dlg window];
@@ -82,6 +85,7 @@ void XAP_CocoaDialog_Zoom::runModal(XAP_Frame * pFrame)
 	[m_dlg close];
 	[m_dlg release];
 	m_dlg = nil;
+	m_pFrame = NULL;
 }
 
 void XAP_CocoaDialog_Zoom::event_OK(void)
@@ -117,13 +121,13 @@ void XAP_CocoaDialog_Zoom::event_Radio75Clicked(void)
 void XAP_CocoaDialog_Zoom::event_RadioPageWidthClicked(void)
 {
 	[m_dlg _enablePercentSpin:NO];
-	// TODO : figure out the dimensions
+    _updatePreviewZoomPercent(m_pFrame->getCurrentView()->calculateZoomPercentForPageWidth());
 }
 
 void XAP_CocoaDialog_Zoom::event_RadioWholePageClicked(void)
 {
 	[m_dlg _enablePercentSpin:NO];
-	// TODO : figure out the dimensions
+	_updatePreviewZoomPercent(m_pFrame->getCurrentView()->calculateZoomPercentForWholePage());
 }
 
 void XAP_CocoaDialog_Zoom::event_RadioPercentClicked(void)
