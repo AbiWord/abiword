@@ -90,7 +90,9 @@
 - (void)loadFontList
 {
 	[_array removeAllObjects];
-	[_array addObjectsFromArray:[[NSFontManager sharedFontManager] availableFontFamilies]];
+	[_array addObjectsFromArray:
+		[[[NSFontManager sharedFontManager] availableFontFamilies] 
+			sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)]];
 }
 
 
