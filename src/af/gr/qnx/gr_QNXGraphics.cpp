@@ -583,6 +583,29 @@ void GR_QNXGraphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
 	DRAW_END
 }
 
+void GR_QNXGraphics::polygon(UT_RGBColor& c,UT_Point *pts,UT_uint32 nPoints)
+{
+	PgColor_t newc,oldc;
+	PhPoint_t pos={0,0};
+
+	PhPoint_t* points = new PhPoint_t[nPoints];
+	UT_ASSERT(pts);
+	for (UT_uint32 i = 0;i < nPoints;i++){
+		points[i].x = tdu(pts[i].x);
+		points[i].y = tdu(pts[i].y);
+	}
+	newc = PgRGB(c.m_red, c.m_grn, c.m_blu);
+	GR_CaretDisabler caretDisabler(getCaret());
+	DRAW_START
+	oldc = PgSetFillColor(newc);
+	
+	PgDrawPolygon(points,nPoints,&pos,Pg_DRAW_FILL);
+	delete[] points;
+
+	PgSetFillColor(oldc);
+	DRAW_END
+}
+
 void GR_QNXGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 {
 	GR_CaretDisabler caretDisabler(getCaret());
@@ -636,7 +659,7 @@ void GR_QNXGraphics::setClipRect(const UT_Rect* pRect)
 void GR_QNXGraphics::fillRect(const UT_RGBColor & c, UT_sint32 x, UT_sint32 y,
 			      UT_sint32 w, UT_sint32 h)
 {
-	PgColor_t newc;
+	PgColor_t newc,oldc;
 	x = tdu(x);
 	y = tdu(y);
 	w = tdu(w);
@@ -646,9 +669,9 @@ void GR_QNXGraphics::fillRect(const UT_RGBColor & c, UT_sint32 x, UT_sint32 y,
 	GR_CaretDisabler caretDisabler(getCaret());
 	DRAW_START
 	
-	PgSetFillColor(newc);
-//	printf("fillRect RGB %d,%d %d/%d w/ %08x\n", x, y, w, h, newc);
+	oldc = PgSetFillColor(newc);
 	PgDrawIRect(x, y, x+w, y+h, Pg_DRAW_FILL);
+	PgSetFillColor(oldc);
 	DRAW_END
 }
 
