@@ -4980,7 +4980,7 @@ void FV_View::warpInsPtNextPrevScreen(bool bNext)
 	_clearIfAtFmtMark(getPoint());
 	_moveInsPtNextPrevScreen(bNext);
 
-	notifyListeners(AV_CHG_MOTION);
+	notifyListeners(AV_CHG_MOTION| AV_CHG_ALL);
 }
 
 /*!
@@ -5002,7 +5002,7 @@ void FV_View::warpInsPtNextPrevPage(bool bNext)
 	_clearIfAtFmtMark(getPoint());
 	_moveInsPtNextPrevPage(bNext);
 
-	notifyListeners(AV_CHG_MOTION);
+	notifyListeners(AV_CHG_MOTION | AV_CHG_ALL);
 }
 
 /*!
@@ -5022,9 +5022,16 @@ void FV_View::warpInsPtNextPrevLine(bool bNext)
 
 	_resetSelection();
 	_clearIfAtFmtMark(getPoint());
+	fp_Page * pPage = getCurrentPage();
 	_moveInsPtNextPrevLine(bNext);
-
-	notifyListeners(AV_CHG_MOTION);
+	if(getCurrentPage() != pPage)
+	{
+		notifyListeners(AV_CHG_MOTION | AV_CHG_ALL);
+	}
+	else
+	{
+		notifyListeners(AV_CHG_MOTION);
+	}
 }
 
 void FV_View::extSelNextPrevLine(bool bNext)
@@ -5061,7 +5068,7 @@ void FV_View::extSelNextPrevLine(bool bNext)
 		}
 	}
 
-	notifyListeners(AV_CHG_MOTION);
+	notifyListeners(AV_CHG_MOTION | AV_CHG_ALL);
 }
 
 // TODO preferably we should implement a new function for the simple
@@ -5110,7 +5117,7 @@ void FV_View::extSelNextPrevScreen(bool bNext)
 		}
 	}
 
-	notifyListeners(AV_CHG_MOTION);
+	notifyListeners(AV_CHG_MOTION| AV_CHG_ALL);
 }
 
 void FV_View::extSelNextPrevPage(bool bNext)
@@ -5147,7 +5154,7 @@ void FV_View::extSelNextPrevPage(bool bNext)
 		}
 	}
 
-	notifyListeners(AV_CHG_MOTION);
+	notifyListeners(AV_CHG_MOTION | AV_CHG_ALL);
 }
 
 void FV_View::extSelHorizontal(bool bForward, UT_uint32 count)
@@ -5186,7 +5193,7 @@ void FV_View::extSelHorizontal(bool bForward, UT_uint32 count)
 		_drawSelection();
 	}
 
-	notifyListeners(AV_CHG_MOTION);
+	notifyListeners(AV_CHG_MOTION | AV_CHG_ALL);
 }
 
 void FV_View::endDragSelection(UT_sint32 xpos, UT_sint32 ypos)
@@ -5242,7 +5249,7 @@ void FV_View::extSelTo(FV_DocPos dp)
 		}
 	}
 
-	notifyListeners(AV_CHG_MOTION);
+	notifyListeners(AV_CHG_MOTION | AV_CHG_ALL);
 }
 
 
@@ -5326,7 +5333,7 @@ void FV_View::extSelToXY(UT_sint32 xPos, UT_sint32 yPos, bool bDrag)
 	if (!bPostpone)
 	{
 		_extSelToPos(iNewPoint);
-		notifyListeners(AV_CHG_MOTION);
+		notifyListeners(AV_CHG_MOTION | AV_CHG_ALL);
 	}
 }
 
@@ -5410,7 +5417,7 @@ void FV_View::extSelToXYword(UT_sint32 xPos, UT_sint32 yPos, bool bDrag)
 	if (!bPostpone)
 	{
 		_extSelToPos(iNewPointWord);
-		notifyListeners(AV_CHG_MOTION);
+		notifyListeners(AV_CHG_MOTION | AV_CHG_ALL);
 	}
 }
 

@@ -552,6 +552,7 @@ public:
 	bool                cmdInsertCol(PT_DocPosition posTable, bool bBefore);
 	bool                cmdSplitCells(AP_CellSplitType iSplitType);
 	bool                cmdSelectColumn(PT_DocPosition posOfColumn);
+	bool                cmdAutoFitTable(void);
 	bool                cmdMergeCells(PT_DocPosition posSource, PT_DocPosition posDestination);
 	bool                _MergeCells( PT_DocPosition posDestination,PT_DocPosition posSource, bool bBefore);
 	bool                getCellParams(PT_DocPosition posCol, UT_sint32 *iLeft, 

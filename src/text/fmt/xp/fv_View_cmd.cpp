@@ -662,9 +662,9 @@ bool FV_View::cmdSplitCells(AP_CellSplitType iSplitType)
 // Put the insertion point in a legal position
 //
 	setPoint(posFirstInsert);
-	notifyListeners(AV_CHG_MOTION);
 	_fixInsertionPointCoords();
 	_ensureInsertionPointOnScreen();
+	notifyListeners(AV_CHG_MOTION);
 	return true;
 }
 
@@ -1340,9 +1340,9 @@ bool FV_View::cmdAutoSizeCols(void)
 	// restore updates and clean up dirty lists
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
-	notifyListeners(AV_CHG_MOTION);
 	_fixInsertionPointCoords();
 	_ensureInsertionPointOnScreen();
+	notifyListeners(AV_CHG_MOTION);
 	return true;
 }
 
@@ -1380,9 +1380,51 @@ bool FV_View::cmdAutoSizeRows(void)
 	// restore updates and clean up dirty lists
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
-	notifyListeners(AV_CHG_MOTION);
 	_fixInsertionPointCoords();
 	_ensureInsertionPointOnScreen();
+	notifyListeners(AV_CHG_MOTION);
+	return true;
+}
+
+
+/*!
+ * Make a table Rows autosizing by removing all the row and col properties.
+ */
+bool FV_View::cmdAutoFitTable(void)
+{
+//
+// Got all we need, now set things up to do the delete nicely
+//
+	// Signal PieceTable Change
+	_saveAndNotifyPieceTableChange();
+
+	// Turn off list updates
+
+	m_pDoc->disableListUpdates();
+	m_pDoc->beginUserAtomicGlob();
+	const char * pszTable[7] = {NULL,NULL,NULL,NULL,NULL,NULL,NULL};
+	pszTable[0] = "table-row-heights";
+	pszTable[1] = "1";
+	pszTable[2] =  "table-column-leftpos";
+	pszTable[3] = "1";
+	pszTable[4] = "table-column-props";
+	pszTable[5] = "1";
+
+	m_pDoc->changeStruxFmt(PTC_RemoveFmt,getPoint(),getPoint(),NULL,pszTable,PTX_SectionTable);
+	m_pDoc->endUserAtomicGlob();
+	m_pDoc->setDontImmediatelyLayout(false);
+
+	// Signal PieceTable Changes have finished
+	_restorePieceTableState();
+	_generalUpdate();
+
+
+	// restore updates and clean up dirty lists
+	m_pDoc->enableListUpdates();
+	m_pDoc->updateDirtyLists();
+	_fixInsertionPointCoords();
+	_ensureInsertionPointOnScreen();
+	notifyListeners(AV_CHG_MOTION | AV_CHG_ALL);
 	return true;
 }
 
@@ -1841,9 +1883,9 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 // Put the insertion point in a legal position
 //
 	setPoint(posFirstInsert);
-	notifyListeners(AV_CHG_MOTION);
 	_fixInsertionPointCoords();
 	_ensureInsertionPointOnScreen();
+	notifyListeners(AV_CHG_MOTION);
 	return true;
 }
 
@@ -2130,9 +2172,9 @@ bool FV_View::cmdInsertRow(PT_DocPosition posRow, bool bBefore)
     // restore updates and clean up dirty lists
     m_pDoc->enableListUpdates();
     m_pDoc->updateDirtyLists();
-    notifyListeners(AV_CHG_MOTION);
 	_fixInsertionPointCoords();
     _ensureInsertionPointOnScreen();
+    notifyListeners(AV_CHG_MOTION);
     return true;
 }
 
@@ -2335,10 +2377,10 @@ bool FV_View::cmdDeleteCol(PT_DocPosition posCol)
 	// restore updates and clean up dirty lists
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
-    notifyListeners(AV_CHG_MOTION);
 	_fixInsertionPointCoords();
 
 	_ensureInsertionPointOnScreen();
+    notifyListeners(AV_CHG_MOTION);
 	return true;
 }
 
@@ -2395,9 +2437,9 @@ bool FV_View::cmdDeleteTable(PT_DocPosition posTable)
 	// restore updates and clean up dirty lists
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
-    notifyListeners(AV_CHG_MOTION);
 	_fixInsertionPointCoords();
 	_ensureInsertionPointOnScreen();
+    notifyListeners(AV_CHG_MOTION);
 
 	return true;
 }
@@ -2600,10 +2642,10 @@ bool FV_View::cmdDeleteRow(PT_DocPosition posRow)
 	// restore updates and clean up dirty lists
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
-    notifyListeners(AV_CHG_MOTION);
 	_fixInsertionPointCoords();
 
 	_ensureInsertionPointOnScreen();
+    notifyListeners(AV_CHG_MOTION);
 	return true;
 }
 
@@ -2673,10 +2715,10 @@ bool FV_View::cmdDeleteCell(PT_DocPosition cellPos)
 	// restore updates and clean up dirty lists
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
-    notifyListeners(AV_CHG_MOTION);
 	_fixInsertionPointCoords();
 
 	_ensureInsertionPointOnScreen();
+    notifyListeners(AV_CHG_MOTION);
 	return true;
 #endif
 }
@@ -2801,11 +2843,11 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const XML
 	_generalUpdate();
 	setPoint(pointTable);
 	_fixInsertionPointCoords();
-	AV_View::notifyListeners (AV_CHG_ALL);
 	m_pG->getCaret()->setBlink(false);
 	focusChange(AV_FOCUS_HERE);
 	_fixInsertionPointCoords();
 	_ensureInsertionPointOnScreen();
+	AV_View::notifyListeners (AV_CHG_ALL);
 	return e;
 }
 
@@ -3193,6 +3235,8 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
 	_setPoint(getPoint());
+	notifyListeners(AV_CHG_MOTION | AV_CHG_ALL);
+
 }
 
 
@@ -3594,6 +3638,7 @@ void FV_View::cmdCut(void)
 	_setPoint(getPoint());
 	_fixInsertionPointCoords();
 	_ensureInsertionPointOnScreen();
+	notifyListeners(AV_CHG_ALL);
 
 }
 
@@ -3668,10 +3713,10 @@ void FV_View::cmdPaste(bool bHonorFormatting)
 //
 // Do a complete update coz who knows what happened in the paste!
 //
-	notifyListeners(AV_CHG_ALL);
 
 	_fixInsertionPointCoords();
 	_ensureInsertionPointOnScreen();
+	notifyListeners(AV_CHG_ALL);
 }
 
 void FV_View::cmdPasteSelectionAt(UT_sint32 xPos, UT_sint32 yPos)

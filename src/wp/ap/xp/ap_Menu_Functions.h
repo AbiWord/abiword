@@ -60,6 +60,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_History);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_BreakOK);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_TOCOK);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_TableOK);
+Defun_EV_GetMenuItemState_Fn(ap_GetState_TextToTableOK);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_InTOC);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_InTable);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_InTableMerged);

@@ -316,6 +316,7 @@ public:
 	static EV_EditMethod_Fn mergeCells;
 	static EV_EditMethod_Fn splitCells;
 	static EV_EditMethod_Fn formatTable;
+	static EV_EditMethod_Fn autoFitTable;
 
 	static EV_EditMethod_Fn replaceChar;
 
@@ -727,6 +728,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(alignJustify), 		0,		""),
 	EV_EditMethod(NF(alignLeft),			0,		""),
 	EV_EditMethod(NF(alignRight),			0,		""),
+	EV_EditMethod(NF(autoFitTable),         0,      ""),
 
 	// b
 	EV_EditMethod(NF(beginHDrag), 0, ""),
@@ -12238,6 +12240,15 @@ Defun(clearSetCols)
 	ABIWORD_VIEW;
 	bool bres = pView->cmdAutoSizeCols();
 	pView->setDragTableLine(false);
+	return bres;
+}
+
+
+Defun(autoFitTable)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	bool bres = pView->cmdAutoFitTable();
 	return bres;
 }
 
