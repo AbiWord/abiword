@@ -97,8 +97,11 @@ void XAP_CocoaDialog_WindowMore::runModal(XAP_Frame * pFrame)
 	
 	window = [m_dlg window];
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	[m_dlg setTitle:[NSString stringWithUTF8String:pSS->getValueUTF8(XAP_STRING_ID_DLG_MW_MoreWindows).utf8_str()]];
-	[m_dlg setLabel:[NSString stringWithUTF8String:pSS->getValueUTF8(XAP_STRING_ID_DLG_MW_Activate).utf8_str()]];
+	UT_UTF8String label;
+	pSS->getValueUTF8(XAP_STRING_ID_DLG_MW_MoreWindows, label);
+	[m_dlg setTitle:[NSString stringWithUTF8String:label.utf8_str()]];
+	pSS->getValueUTF8(XAP_STRING_ID_DLG_MW_Activate, label);
+	[m_dlg setLabel:[NSString stringWithUTF8String:label.utf8_str()]];
 
 	// Populate the window's data items
 	_populateWindowData();

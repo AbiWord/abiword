@@ -147,55 +147,55 @@ void XAP_CocoaDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	case XAP_DIALOG_ID_INSERT_PICTURE:
 	  {
 		m_panel = [NSOpenPanel openPanel];
-		szTitle = pSS->getValueUTF8(XAP_STRING_ID_DLG_IP_Title);
-		szFileTypeLabel = pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel);
+		pSS->getValueUTF8(XAP_STRING_ID_DLG_IP_Title, szTitle);
+		pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel, szFileTypeLabel);
 		bCheckWritePermission = false;    
 	  }
 	case XAP_DIALOG_ID_FILE_OPEN:
 	{
 		m_panel = [NSOpenPanel openPanel];
-		szTitle = pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_OpenTitle);
-		szFileTypeLabel = pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel);
+		pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_OpenTitle, szTitle);
+		pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel, szFileTypeLabel);
 		bCheckWritePermission = false;
 		break;
 	}
 	case XAP_DIALOG_ID_FILE_SAVEAS:
 	{
 		m_panel = [NSSavePanel savePanel];
-		szTitle = pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_SaveAsTitle);
-		szFileTypeLabel = pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileSaveTypeLabel);
+		pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_SaveAsTitle, szTitle);
+		pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileSaveTypeLabel, szFileTypeLabel);
 		bCheckWritePermission = true;
 		break;
 	}
 	case XAP_DIALOG_ID_FILE_IMPORT:
 	  {
 	  	m_panel = [NSOpenPanel openPanel];
-		szTitle = pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_ImportTitle);
-		szFileTypeLabel = pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel);
+		pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_ImportTitle, szTitle);
+		pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel, szFileTypeLabel);
 		bCheckWritePermission = false;
 	    break;
 	  }
 	case XAP_DIALOG_ID_FILE_EXPORT:
 	  {
 		m_panel = [NSSavePanel savePanel];
-		szTitle = pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_ExportTitle);
-		szFileTypeLabel = pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileSaveTypeLabel);
+		pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_ExportTitle, szTitle);
+		pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileSaveTypeLabel, szFileTypeLabel);
 		bCheckWritePermission = true;
 	    break;
 	  }
 	case XAP_DIALOG_ID_INSERT_FILE:
 	  {
 		m_panel = [NSOpenPanel openPanel];
-		szTitle = pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_InsertTitle);
-		szFileTypeLabel = pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel);
+		pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_InsertTitle, szTitle);
+		pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel, szFileTypeLabel);
 		bCheckWritePermission = false;
 		break;
 	  }
 	case XAP_DIALOG_ID_PRINTTOFILE:
 	{
 		m_panel = [NSSavePanel savePanel];
-		szTitle = pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_PrintToFileTitle);
-		szFileTypeLabel = pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FilePrintTypeLabel);
+		pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_PrintToFileTitle, szTitle);
+		pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FilePrintTypeLabel, szFileTypeLabel);
 		bCheckWritePermission = true;
 		break;
 	}
@@ -221,8 +221,10 @@ void XAP_CocoaDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	[m_accessoryViewsController removeItemsOfFileTypesMenu];
 	NSMenuItem*	item;
 	NSMenu* fileTypesMenu = [m_accessoryViewsController fileTypesMenu];
+	UT_UTF8String label;
+	pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileTypeAutoDetect, label);
 	item = [[NSMenuItem alloc]	initWithTitle:
-			[NSString stringWithUTF8String:pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileTypeAutoDetect).utf8_str()]
+			[NSString stringWithUTF8String:label.utf8_str()]
 			action:nil 
 			keyEquivalent:@""];
 	[item setTag:XAP_DIALOG_FILEOPENSAVEAS_FILE_TYPE_AUTO];

@@ -39,7 +39,9 @@ void LocalizeControl (id control, const XAP_StringSet * pSS, XAP_String_Id strin
 {
 	char buf [1024];
 	NSString*	str;
-	_convertLabelToMac(buf, sizeof (buf), pSS->getValueUTF8(stringId));
+	UT_UTF8String label;
+	pSS->getValueUTF8(stringId, label);
+	_convertLabelToMac(buf, sizeof (buf), label);
 
 	str = [[NSString alloc] initWithUTF8String:buf];
 	if ([control isKindOfClass:[NSButton class]] 
@@ -72,7 +74,9 @@ void LocalizeControl (id control, const XAP_StringSet * pSS, XAP_String_Id strin
 NSString* LocalizedString (const XAP_StringSet * pSS, XAP_String_Id stringId)
 {
 	char buf [1024];
-	_convertLabelToMac(buf, sizeof (buf), pSS->getValueUTF8(stringId));
+	UT_UTF8String label;
+	pSS->getValueUTF8(stringId, label);
+	_convertLabelToMac(buf, sizeof (buf), label);
 	return [NSString stringWithUTF8String:buf];
 }
 

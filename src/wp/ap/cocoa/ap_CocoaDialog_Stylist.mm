@@ -351,7 +351,9 @@ void  AP_CocoaDialog_Stylist::_populateWindowData(void)
 		LocalizeControl([self window], pSS, AP_STRING_ID_DLG_Stylist_Title);
 		LocalizeControl(_applyBtn, pSS, XAP_STRING_ID_DLG_Apply);
 		columns = [_stylistList tableColumns];
-		[[[columns objectAtIndex:0] headerCell] setStringValue:[NSString stringWithUTF8String:pSS->getValueUTF8(AP_STRING_ID_DLG_Stylist_Styles).utf8_str()]];
+		UT_UTF8String label;
+		pSS->getValueUTF8(AP_STRING_ID_DLG_Stylist_Styles, label);
+		[[[columns objectAtIndex:0] headerCell] setStringValue:[NSString stringWithUTF8String:label.utf8_str()]];
 		[_stylistList setDoubleAction:@selector(outlineDoubleAction:)];
 		// data source an delegate for style list should be set by the Nib.
 	}
