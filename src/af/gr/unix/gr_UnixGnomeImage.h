@@ -39,7 +39,8 @@ public:
    	GdkPixbuf *			getData(void) const { return m_image; }
 
 private:
-
+	UT_sint32 m_width;
+	UT_sint32 m_height;
 	GdkPixbuf * m_image;
 };
 

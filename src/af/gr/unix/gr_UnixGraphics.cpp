@@ -839,17 +839,19 @@ void GR_UnixGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest
 
    	GR_UnixGnomeImage * pUnixImage = static_cast<GR_UnixGnomeImage *>(pImg);
 
-   	GdkPixbuf * image = pUnixImage->getData();
-
    	UT_sint32 iImageWidth = pUnixImage->getDisplayWidth();
    	UT_sint32 iImageHeight = pUnixImage->getDisplayHeight();
 
+	GdkPixbuf * image = gdk_pixbuf_scale_simple (pUnixImage->getData(),
+						     iImageWidth, iImageHeight, GDK_INTERP_NEAREST);
+	
 	gdk_pixbuf_render_to_drawable (image, m_pWin, m_pGC,
 								   0, 0,
 								   xDest, yDest,
 								   iImageWidth, iImageHeight,
 								   GDK_RGB_DITHER_NORMAL,
 								   0, 0);
+	gdk_pixbuf_unref (image);
 }
 
 #endif /* HAVE_GNOME */

@@ -37,6 +37,8 @@ GR_UnixGnomeImage::GR_UnixGnomeImage(const char* szName)
     {
 		strcpy(m_szName, "UnixGnomeImage");
     }
+	m_width = 0;
+	m_height = 0;
 }
 
 GR_UnixGnomeImage::~GR_UnixGnomeImage()
@@ -46,12 +48,12 @@ GR_UnixGnomeImage::~GR_UnixGnomeImage()
 
 UT_sint32	GR_UnixGnomeImage::getDisplayWidth(void) const
 {
-	return gdk_pixbuf_get_width (m_image);
+    return m_width;
 }
 
 UT_sint32	GR_UnixGnomeImage::getDisplayHeight(void) const
 {
-	return gdk_pixbuf_get_height (m_image);
+    return m_height;
 }
 
 bool		GR_UnixGnomeImage::convertToBuffer(UT_ByteBuf** ppBB) const
@@ -97,7 +99,8 @@ bool	GR_UnixGnomeImage::convertFromBuffer(const UT_ByteBuf* pBB,
 		return false;
 	}
 	gdk_pixbuf_ref(m_image);
-	
+	m_width = iDisplayWidth;
+	m_height = iDisplayHeight;
 #ifdef HAVE_GTK_2_0
 	g_error_free (err);
 #endif
