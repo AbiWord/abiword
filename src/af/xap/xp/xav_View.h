@@ -67,7 +67,7 @@ class AV_ScrollObj
 	void (*m_pfnY)(void *, UT_sint32 yoff, UT_sint32 ylimit);
 };
 
-class AV_View
+class ABI_EXPORT AV_View
 {
 public:
 	AV_View(XAP_App * pApp, void*);

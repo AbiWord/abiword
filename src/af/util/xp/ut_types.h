@@ -50,6 +50,7 @@ typedef unsigned int		UT_uint32;
 typedef signed int		UT_sint32;
 
 #ifdef WIN32
+  #define ABI_PLUGIN_EXPORT __declspec(dllexport)
   #ifndef ABI_DLL
      /* we are building AbiWord and wish for its parts to be used by plugins */
      #define ABI_EXPORT __declspec(dllexport)
@@ -59,11 +60,12 @@ typedef signed int		UT_sint32;
   #endif
 #else
   #define ABI_EXPORT
+  #define ABI_PLUGIN_EXPORT
 #endif
 
 /* ABI_FAR_CALL: C function that we want to expose across plugin boundaries */
 #define ABI_CALL extern "C"
-#define ABI_FAR_CALL ABI_CALL ABI_EXPORT
+#define ABI_FAR_CALL ABI_CALL ABI_PLUGIN_EXPORT
 
 
 

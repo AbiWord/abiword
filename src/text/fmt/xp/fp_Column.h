@@ -332,7 +332,7 @@ public:
 protected:
 };
 
-class ABI_EXPORT fp_EndnoteSectionContainer : public fp_Container
+class fp_EndnoteSectionContainer : public fp_Container
 {
 public:
 	fp_EndnoteSectionContainer(fl_SectionLayout* pSectionLayout);

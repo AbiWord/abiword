@@ -29,7 +29,7 @@
 // fwd. decl.
 class UT_StringPtrMap;
 
-class AD_Document
+class ABI_EXPORT AD_Document
 {
 public:
 	AD_Document();

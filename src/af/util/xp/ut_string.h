@@ -49,7 +49,7 @@ char * UT_strdup(const char * szSource);
 // "ABCDE" < "ABCD^", but "abcde" > "abcd^".
 // This functionality is comparable with the 'standard' GNU strcasecmp(...)
 // and the Microsoft stricmp functions.
-UT_sint32 UT_stricmp(const char *s1, const char *s2);
+ABI_EXPORT UT_sint32 UT_stricmp(const char *s1, const char *s2);
 UT_sint32 UT_strnicmp(const char *s1, const char *s2, int ilen);
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -548,9 +548,9 @@ UINT XAP_Win32Dialog_FileOpenSaveAs::_previewPicture(HWND hDlg)
 	}
 	else
 	{
-		UT_sint32 layoutWidth;
-		UT_sint32 layoutHeight;
-		// TODO Fix this
+	//	TODO Fix this
+	//	UT_sint32 layoutWidth;
+	//	UT_sint32 layoutHeight;
 	//	UT_SVG_getDimensions(pBB, pGr, iImageWidth, iImageHeight, layoutWidth, layoutHeight);
 		iImageWidth = 0;
 		iImageHeight = 0;
