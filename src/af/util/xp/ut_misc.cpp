@@ -349,14 +349,15 @@ UT_Vector * simpleSplit (const UT_String & str, char separator,
 {
 	UT_Vector * utvResult = new UT_Vector();
 	UT_String* utsEntry;
-	int start = -1;
+	UT_sint32 start = -1;
 
-	for(size_t j = 0; max == 0 || j < max || str.size() == start; j++)
+	for(size_t j = 0; (max == 0 || j < max) && 
+			               start < (UT_sint32)str.size(); j++)
 	{
 		utsEntry = new UT_String;
 
-		for (start++; str[start] != separator
-				|| j == max - 1 || str.size() == start; start++)
+		for (start++; (str[start] != separator
+				|| j == max - 1) && start < (UT_sint32)str.size(); start++)
 			*utsEntry += str[start];
 		
 		if (utsEntry->empty())
