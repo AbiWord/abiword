@@ -252,7 +252,7 @@ GtkWidget * XAP_UnixDialog_About::_constructWindow(void)
 	gtk_object_set_data (GTK_OBJECT (windowAbout), "textCopyright", textCopyright);
 	gtk_widget_show (textCopyright);
 	gtk_box_pack_start (GTK_BOX (vboxInfo), textCopyright, TRUE, FALSE, 10);
-	gtk_widget_set_usize (textCopyright, 290, 165);
+	gtk_widget_set_usize (textCopyright, 290, 200);
 	gtk_widget_realize (textCopyright);
 	gtk_text_insert (GTK_TEXT (textCopyright), NULL, NULL, NULL, buf, strlen(buf));
 
