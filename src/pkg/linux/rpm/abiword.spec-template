@@ -444,7 +444,7 @@ rm -rf $RPM_BUILD_ROOT $RPM_BUILD_DIR/file.list.%{name}
 
 # Fixes for symlink in {prefix}/bin
 mkdir -p %{prefix}/bin
-ln -s %{ABIPREFIX}/AbiSuite/bin/AbiWord %{prefix}/bin/abiword
+ln -sf %{ABIPREFIX}/AbiSuite/bin/AbiWord %{prefix}/bin/abiword
 
 
 %changelog
