@@ -118,6 +118,9 @@ fp_Line::fp_Line(fl_SectionLayout * pSectionLayout) :
 	++s_iClassInstanceCounter; // this tells us how many instances of Line are out there
 							   //we use this to decide whether the above should be
 							   //deleted by the destructor
+
+	UT_ASSERT((getPrev() == NULL));
+	UT_ASSERT((getNext() == NULL));
 }
 
 fp_Line::~fp_Line()
@@ -575,6 +578,10 @@ void fp_Line::remove(void)
 		xxx_UT_DEBUGMSG(("Removing line %x from container \n",this));
 		static_cast<fp_VerticalContainer *>(getContainer())->removeContainer(this);
 	}
+#ifdef USE_STATIC_MAP
+	if (s_pMapOwner == this)
+		s_pMapOwner = NULL;
+#endif
 }
 
 void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos,
