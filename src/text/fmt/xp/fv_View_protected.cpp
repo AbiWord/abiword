@@ -3589,7 +3589,6 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 
 		yPoint += iPageOffset;
 		xPoint += getPageViewLeftMargin();
-
 		yPoint2 += iPageOffset;
 		xPoint2 += getPageViewLeftMargin();
 
@@ -3600,13 +3599,13 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 		xPoint2 -= m_xScrollOffset;
 		yPoint2 -= m_yScrollOffset;
 
-
 		// now, return the results
 		x = xPoint;
 		y = yPoint;
 
 		x2 = xPoint2;
 		y2 = yPoint2;
+		xxx_UT_DEBUGMSG(("x pos in view %d \n",x));
 
 		height = iPointHeight;
 	}
@@ -3647,6 +3646,7 @@ void FV_View::_fixInsertionPointCoords()
 				yoff = 0;
 			}
 		}
+		xxx_UT_DEBUGMSG(("Xpoint in fixpoint %d \n",m_xPoint));
 		m_pG->getCaret()->setCoords(m_xPoint, m_yPoint+yoff, m_iPointHeight-yoff,
 									m_xPoint2, m_yPoint2+yoff, m_iPointHeight-yoff, 
 									m_bPointDirection, pClr);

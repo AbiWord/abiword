@@ -51,6 +51,44 @@ fp_ContainerObject::fp_ContainerObject(FP_ContainerType iType, fl_SectionLayout*
 	UT_ASSERT(pSectionLayout);
 }
 
+
+const char * fp_ContainerObject::getContainerString(void)
+{
+	switch (getContainerType())
+	{
+	case 	FP_CONTAINER_RUN:
+		return "FP_CONTAINER_RUN";
+	case 	FP_CONTAINER_LINE:
+		return "FP_CONTAINER_LINE";
+	case	FP_CONTAINER_VERTICAL:
+		return "FP_CONTAINER_VERTICAL";
+	case 	FP_CONTAINER_ROW:
+		return "FP_CONTAINER_ROW";
+    case	FP_CONTAINER_TABLE:
+		return "FP_CONTAINER_TABLE";
+    case 	FP_CONTAINER_CELL:
+		return "FP_CONTAINER_CELL";
+	case 	FP_CONTAINER_COLUMN:
+		return "FP_CONTAINER_COLUMN";
+	case FP_CONTAINER_HDRFTR:
+		return "FP_CONTAINER_HDRFTR";
+	case FP_CONTAINER_ENDNOTE:
+		return "FP_CONTAINER_ENDNOTE";
+	case FP_CONTAINER_FOOTNOTE:
+		return "FP_CONTAINER_FOOTNOTE";
+	case FP_CONTAINER_COLUMN_POSITIONED:
+		return "FP_CONTAINER_COLUMN_POSITIONED";
+	case FP_CONTAINER_COLUMN_SHADOW:
+		return "FP_CONTAINER_COLUMN_SHADOW";
+	case FP_CONTAINER_FRAME:
+		return "FP_CONTAINER_FRAME";
+	case FP_CONTAINER_TOC:
+		return "FP_CONTAINER_TOC";
+	default:
+		return "unknown FP_CONTAINER object";
+	}
+}
+
 /*!
   Destruct container
  */

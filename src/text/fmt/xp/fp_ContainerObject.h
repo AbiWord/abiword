@@ -218,6 +218,7 @@ public:
 	virtual fp_Container * getPrevContainerInSection(void) const = 0;
     virtual UT_Rect *      getScreenRect() = 0;
     virtual void           markDirtyOverlappingRuns(UT_Rect & recScreen) = 0;
+	const char *           getContainerString(void);
 private:
 	/*!
 	  Container type

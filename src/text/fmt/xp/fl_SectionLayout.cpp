@@ -1652,6 +1652,7 @@ void fl_DocSectionLayout::redrawUpdate(void)
 			addValidPages();
 		}
 	}
+
 }
 
 bool fl_DocSectionLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc)
@@ -4410,36 +4411,25 @@ fl_ContainerLayout * fl_HdrFtrShadow::findBlockAtPosition(PT_DocPosition pos)
 	}
 	while(doNext)
 	{
-		UT_ASSERT(pNext->getPosition(true) < pos);
 		pBL = pNext;
-		if(pNext->getContainerType() == FL_CONTAINER_TABLE)
+		pNext = pNext->getNextBlockInDocument();
+		if(pNext && (pNext->getPosition(true) < pos))
 		{
-			pNext = pNext->getFirstLayout();
-			bInTable = true;
-		}
-		else if(bInTable && pNext->getContainerType() == FL_CONTAINER_CELL)
-		{
-			pNext = pNext->getFirstLayout();
-		}
-		else if(bInTable && (pNext->getNext() == NULL))
-		{
-			if(pNext->getContainerType() == FL_CONTAINER_CELL)
+			if(getNext())
 			{
-				pNext = pNext->myContainingLayout()->getNext();
-				bInTable = false;
+				if(getNext()->getPosition(true) > pNext->getPosition(true))
+				{
+					doNext = true;
+				}
+				else
+				{
+					doNext = false;
+				}
 			}
 			else
 			{
-				pNext = pNext->myContainingLayout()->getNext();
+				doNext = true;
 			}
-		}
-		else
-		{
-			pNext = pNext->getNext();
-		}
-		if(pNext)
-		{
-			doNext = (pNext->getPosition(true) < pos);
 		}
 		else
 		{

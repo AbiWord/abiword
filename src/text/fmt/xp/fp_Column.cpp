@@ -327,6 +327,7 @@ void fp_VerticalContainer::getOffsets(fp_ContainerObject* pContainer, UT_sint32&
 	while(pCon && !pCon->isColumnType())
 	{
 		my_xoff += pCon->getX();
+		xxx_UT_DEBUGMSG(("my_xoff = %d pCon %x Type is %s \n",my_xoff,pCon,pCon->getContainerString()));
 		UT_sint32 iycon = pCon->getY();
 		my_yoff += iycon;
 //
@@ -457,10 +458,6 @@ void fp_VerticalContainer::getOffsets(fp_ContainerObject* pContainer, UT_sint32&
 		}
 		xoff = pCon->getX() + my_xoff + pOrig->getX();
 		yoff = pCon->getY() + my_yoff + pOrig->getY();
-		if(pCon->getContainerType() != FP_CONTAINER_COLUMN_SHADOW)
-		{
-			return;
-		}
 	}
 	if(pPrev && pPrev->getContainerType() == FP_CONTAINER_TOC)
 	{
@@ -506,13 +503,16 @@ void fp_VerticalContainer::getOffsets(fp_ContainerObject* pContainer, UT_sint32&
 		yoff = pCon->getY() + my_yoff + pOrig->getY();
 		if(pCon->getContainerType() != FP_CONTAINER_COLUMN_SHADOW)
 		{
+			xxx_UT_DEBUGMSG(("Not in shadow final xoff %d \n",xoff));
 			return;
 		}
+		xxx_UT_DEBUGMSG(("Offsets not FP_CONTAINER_COLUMN_SHADOW x= %d \n",xoff));
 	}
 	if(pCon && pCon->getContainerType() == FP_CONTAINER_COLUMN_SHADOW)
 	{
 		xoff = pCon->getX() + my_xoff + pOrig->getX();
 		yoff = pCon->getY() + my_yoff + pOrig->getY();
+		xxx_UT_DEBUGMSG(("Offsets in FP_CONTAINER_COLUMN_SHADOW x= %d \n",xoff));
 		return;
 	}
 	if(pCon)
@@ -615,6 +615,7 @@ void fp_VerticalContainer::getScreenOffsets(fp_ContainerObject* pContainer,
 	while(!pCon->isColumnType())
 	{
 		my_xoff += pCon->getX();
+		xxx_UT_DEBUGMSG(("Screen offsets my_xoff %d pCon %x type %s \n",my_xoff,pCon,pCon->getContainerString()));
 		UT_sint32 iycon = pCon->getY();
 		my_yoff += iycon;
 //
