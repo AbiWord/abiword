@@ -37,6 +37,8 @@
 #include "xap_App.h"
 #include "xap_EncodingManager.h"
 
+#include "ut_string_class.h"
+
 /*****************************************************************/
 /*****************************************************************/
 
@@ -655,93 +657,82 @@ void s_LaTeX_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 	{
 		return;
 	}
-	
-	// TODO deal with unicode.
-	// TODO for now, just squish it into ascii.
-	
-#define MY_BUFFER_SIZE		1024
-#define MY_HIGHWATER_MARK	20
-	char buf[MY_BUFFER_SIZE];
-	char * pBuf;
+
+	UT_String sBuf;
 	const UT_UCSChar * pData;
 
-	for (pBuf = buf, pData = data; (pData < data + length); /**/)
-	{
-		if (pBuf >= (buf + MY_BUFFER_SIZE - MY_HIGHWATER_MARK))
-		{
-			m_pie->write (buf, (pBuf - buf));
-			pBuf = buf;
-		}
+	UT_ASSERT(sizeof(UT_Byte) == sizeof(char));
 
+	for (pData = data; (pData < data + length); /**/)
+	{
 		switch (*pData)
 		{
 		case '\\':
-			strncpy (pBuf, "\\ensuremath{\\backslash}}", MY_BUFFER_SIZE);
-			pBuf += strlen ("\\ensuremath{\\backslash}}");
+			sBuf += "\\ensuremath{\\backslash}}";
 			pData++;
 			break;
 			
 		case '$':
-			*pBuf++ = '\\';
-			*pBuf++ = '$';
+			sBuf += '\\'; 
+			sBuf += '$';
 			pData++;
 			break;
 
 		case '%':
-			*pBuf++ = '\\';
-			*pBuf++ = '%';
+			sBuf += '\\'; 
+			sBuf += '%';
 			pData++;
 			break;
 			
 		case '&':
-			*pBuf++ = '\\';
-			*pBuf++ = '&';
+			sBuf += '\\'; 
+			sBuf += '&';
 			pData++;
 			break;
 
 		case '#':
-			*pBuf++ = '\\';
-			*pBuf++ = '#';
+			sBuf += '\\'; 
+			sBuf += '#';
 			pData++;
 			break;
 
 		case '_':
-			*pBuf++ = '\\';
-			*pBuf++ = '_';
+			sBuf += '\\'; 
+			sBuf += '_';
 			pData++;
 			break;
 
 		case '{':
-			*pBuf++ = '\\';
-			*pBuf++ = '{';
+			sBuf += '\\'; 
+			sBuf += '{';
 			pData++;
 			break;
 
 		case '}':
-			*pBuf++ = '\\';
-			*pBuf++ = '}';
+			sBuf += '\\';
+			sBuf += '}';
 			pData++;
 			break;
 
 		case '~':
-			*pBuf++ = '\\';
-			*pBuf++ = '~';
-			*pBuf++ = '{';
-			*pBuf++ = '}';
+			sBuf += '\\';
+			sBuf += '~';
+			sBuf += '{';
+			sBuf += '}';
 			pData++;
 			break;
 
 		case '^':
-			*pBuf++ = '\\';
-			*pBuf++ = '^';
-			*pBuf++ = '{';
-			*pBuf++ = '}';
+			sBuf += '\\';
+			sBuf += '^';
+			sBuf += '{';
+			sBuf += '}';
 			pData++;
 			break;
 
 		case UCS_LF:					// LF -- representing a Forced-Line-Break
-			*pBuf++ = '\\';
-			*pBuf++ = '\\';
+			sBuf += '\\';
+			sBuf += '\\';
 			pData++;
 			break;
 
@@ -750,15 +741,15 @@ void s_LaTeX_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 			break;
 			
 		case UCS_FF:					// FF -- representing a Forced-Page-Break
-			*pBuf++ = '\\';
-			*pBuf++ = 'n';
-			*pBuf++ = 'e';
-			*pBuf++ = 'w';
-			*pBuf++ = 'p';
-			*pBuf++ = 'a';
-			*pBuf++ = 'g';
-			*pBuf++ = 'e';
-			*pBuf++ = '\n';
+			sBuf += '\\';
+			sBuf += 'n';
+			sBuf += 'e';
+			sBuf += 'w';
+			sBuf += 'p';
+			sBuf += 'a';
+			sBuf += 'g';
+			sBuf += 'e';
+			sBuf += '\n';
 			pData++;
 			break;
 			
@@ -769,7 +760,7 @@ void s_LaTeX_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 			if (translated) 
 			{
 				while (*subst)
-					*pBuf++ = *subst++;
+					sBuf += *subst++;
 				pData++;
 			}
 			else 
@@ -778,15 +769,14 @@ void s_LaTeX_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 				int len;
 				if (m_wctomb.wctomb(buf,len,(wchar_t)*pData++)) {
 				    for(int i=0;i<len;++i)
-					*pBuf++ = buf[i];
+						sBuf += buf[i];
 				};
 			}
 			break;
 		}
 	}
 
-	if (pBuf > buf)
-		m_pie->write(buf,(pBuf-buf));
+	m_pie->write(sBuf.c_str(),sBuf.size());
 }
 
 s_LaTeX_Listener::s_LaTeX_Listener(PD_Document * pDocument,

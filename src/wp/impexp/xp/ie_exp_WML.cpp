@@ -38,6 +38,8 @@
 
 #include "xap_EncodingManager.h"
 
+#include "ut_string_class.h"
+
 // first declare the listener
 
 /*****************************************************************/
@@ -464,53 +466,30 @@ void s_WML_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 	// TODO deal with unicode.
 	// TODO for now, just squish it into ascii.
 	
-#define MY_BUFFER_SIZE		1024
-#define MY_HIGHWATER_MARK	20
-	char buf[MY_BUFFER_SIZE];
-	char * pBuf;
+	UT_String sBuf;
 	const UT_UCSChar * pData;
 
-	for (pBuf=buf, pData=data; (pData<data+length); /**/)
+	for (pData=data; (pData<data+length); /**/)
 	{
-		if (pBuf >= (buf+MY_BUFFER_SIZE-MY_HIGHWATER_MARK))
-		{
-			m_pie->write(buf,(pBuf-buf));
-			pBuf = buf;
-		}
-
 		switch (*pData)
 		{
 		case '<':
-			*pBuf++ = '&';
-			*pBuf++ = 'l';
-			*pBuf++ = 't';
-			*pBuf++ = ';';
+			sBuf += "&lt;";
 			pData++;
 			break;
 			
 		case '>':
-			*pBuf++ = '&';
-			*pBuf++ = 'g';
-			*pBuf++ = 't';
-			*pBuf++ = ';';
+			sBuf += "&gt;";
 			pData++;
 			break;
 			
 		case '&':
-			*pBuf++ = '&';
-			*pBuf++ = 'a';
-			*pBuf++ = 'm';
-			*pBuf++ = 'p';
-			*pBuf++ = ';';
+			sBuf += "&amp;";
 			pData++;
 			break;
 
 		case UCS_LF:					// LF -- representing a Forced-Line-Break
-			*pBuf++ = '<';				// these get mapped to <br/>
-			*pBuf++ = 'b';
-			*pBuf++ = 'r';
-			*pBuf++ = '/';
-			*pBuf++ = '>';
+			sBuf += "<br/>";
 			pData++;
 			break;
 
@@ -521,19 +500,14 @@ void s_WML_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 		  //
 		  if(m_bWasSpace)
 		    {
-		      *pBuf++ = '&';
-		      *pBuf++ = 'n';
-		      *pBuf++ = 'b';
-		      *pBuf++ = 's';
-		      *pBuf++ = 'p';
-		      *pBuf++ = ';';
-		      pData++;
+				sBuf += "&nbsp;";
+				pData++;
 		    }
 		  else
 		    {
 		      // just tack on a single space to the textrun
 		      m_bWasSpace = true;
-		      *pBuf++ = ' ';
+		      sBuf += " ";
 		      pData++;
 		    }
 		  break;
@@ -543,69 +517,55 @@ void s_WML_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 		  // reset this variable
 		  m_bWasSpace = false;
 
-		  // thanks for the international patch, vlad :-)
-		  if (*pData > 0x007f)
-		    {
-#if 1
-#	if 0
-				// convert non us-ascii into numeric entities.
-				// this has the advantage that our file format is
-				// 7bit clean and safe for email and other network
-				// transfers....
-				char localBuf[20];
-				char * plocal = localBuf;
-				sprintf(localBuf,"&#x%x;",*pData++);
-				while (*plocal)
-					*pBuf++ = (UT_Byte)*plocal++;
-#	else
-				/*
-				Try to convert to native encoding and if
-				character fits into byte, output raw byte. This 
-				is somewhat essential for single-byte non-latin
-				languages like russian or polish - since
-				tools like grep and sed can be used then for
-				these files without any problem.
-				Networks and mail transfers are 8bit clean
-				these days.  - VH
-				*/
-				UT_UCSChar c = XAP_EncodingManager::instance->try_UToNative(*pData);
-				if (c==0 || c>255)
+			if (*pData > 0x007f)
+			{
+				if(XAP_EncodingManager::instance->isUnicodeLocale() || 
+				   (XAP_EncodingManager::instance->try_nativeToU(0xa1) == 0xa1))
+
 				{
-					char localBuf[20];
-					char * plocal = localBuf;
-					sprintf(localBuf,"&#x%x;",*pData++);
-					while (*plocal)
-						*pBuf++ = (UT_Byte)*plocal++;
+					XML_Char * pszUTF8 = UT_encodeUTF8char(*pData++);
+					while (*pszUTF8)
+					{
+						sBuf += (char)*pszUTF8;
+						pszUTF8++;
+					}
 				}
 				else
 				{
-					*pBuf++ = (UT_Byte)c;
-					pData++;
+					/*
+					Try to convert to native encoding and if
+					character fits into byte, output raw byte. This 
+					is somewhat essential for single-byte non-latin
+					languages like russian or polish - since
+					tools like grep and sed can be used then for
+					these files without any problem.
+					Networks and mail transfers are 8bit clean
+					these days.  - VH
+					*/
+					UT_UCSChar c = XAP_EncodingManager::instance->try_UToNative(*pData);
+					if (c==0 || c>255)
+					{
+						char localBuf[20];
+						char * plocal = localBuf;
+						sprintf(localBuf,"&#x%x;",*pData++);
+						sBuf += plocal;
+					}
+					else
+					{
+						sBuf += (char)c;
+						pData++;
+					}
 				}
-#	endif
-#else
-				// convert to UTF8
-				// TODO if we choose this, do we have to put the ISO header in
-				// TODO like we did for the strings files.... i hesitate to
-				// TODO make such a change to our file format.
-				XML_Char * pszUTF8 = UT_encodeUTF8char(*pData);
-				while (*pszUTF8)
-				{
-					*pBuf++ = (UT_Byte)*pszUTF8;
-					pszUTF8++;
-				}
-#endif
 			}
 			else
 			{
-				*pBuf++ = (UT_Byte)*pData++;
+				sBuf += (char)*pData++;
 			}
 			break;
 		}
 	}
 
-	if (pBuf > buf)
-		m_pie->write(buf,(pBuf-buf));
+	m_pie->write(sBuf.c_str(),sBuf.size());
 }
 
 void s_WML_Listener::_closeSpan(void)

@@ -89,6 +89,11 @@ bool UT_String::empty() const
 	return pimpl->empty();
 }
 
+void UT_String::clear() const
+{
+	pimpl->clear();
+}
+
 UT_String UT_String::substr(size_t iStart, size_t nChars) const
 {
 	const size_t nSize = pimpl->size();
@@ -180,6 +185,13 @@ UT_String& UT_String::operator+=(const UT_String& rhs)
 UT_String& UT_String::operator+=(const char* rhs)
 {
 	pimpl->append(rhs, strlen(rhs));
+	return *this;
+}
+
+UT_String& UT_String::operator+=(char rhs)
+{
+	char cs = rhs;
+	pimpl->append(&cs, 1);
 	return *this;
 }
 

@@ -309,9 +309,9 @@ void IE_Imp_UTF8::pasteFromBuffer(PD_DocumentRange * pDocRange,
 bool IE_Imp_UTF8::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
 {
 	bool bSuccess = false;
-	const char *p = szBuf;
+	const unsigned char *p = reinterpret_cast<const unsigned char *>(szBuf);
 
-	while (p < szBuf + iNumbytes)
+	while (p < reinterpret_cast<const unsigned char *>(szBuf + iNumbytes))
 	{
 		int len;
 		
@@ -320,10 +320,15 @@ bool IE_Imp_UTF8::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
 			++p;
 			continue;
 		}
+		else if ((*p & 0xc0) == 0x80)			// not UTF-8
+		{
+			return false;
+		}
 		else if (*p == 0xfe || *p == 0xff)		// BOM markers?  RFC2279 says illegal
 		{
 			//UT_DEBUGMSG(("  BOM?\n"));
-			break;
+			++p;
+			continue;
 		}
 		else if ((*p & 0xfe) == 0xfc)			// lead byte in 6-byte sequence
 			len = 6;
@@ -335,16 +340,17 @@ bool IE_Imp_UTF8::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
 			len = 3;
 		else if ((*p & 0xe0) == 0xc0)			// lead byte in 2-byte sequence
 			len = 2;
-		else						// not UTF-8 lead byte
+		else	
 		{
-			//UT_DEBUGMSG(("  not utf-8 lead byte\n"));
+			// the above code covers all cases - if we reach here the logic is wrong
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			return false;
 		}
 	
 		while (--len)
 		{
 			++p;
-			if (p >= szBuf + iNumbytes)
+			if (p >= reinterpret_cast<const unsigned char *>(szBuf + iNumbytes))
 			{
 				//UT_DEBUGMSG(("  out of data!\n"));
 				break;

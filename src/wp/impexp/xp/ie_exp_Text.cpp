@@ -32,6 +32,8 @@
 #include "px_CR_Strux.h"
 #include "ut_wctomb.h"
 
+#include "ut_string_class.h"
+
 //////////////////////////////////////////////////////////////////
 // a private listener class to help us translate the document
 // into a text stream.  code is at the bottom of this file.
@@ -159,47 +161,39 @@ void s_Text_Listener::_closeBlock(void)
 
 void s_Text_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 {
-#define MY_BUFFER_SIZE		1024
-#define MY_HIGHWATER_MARK	20
-	char buf[MY_BUFFER_SIZE];
-	char * pBuf;
+	UT_String sBuf;
 	const UT_UCSChar * pData;
 	
 	int mbLen;
 	char pC[MB_LEN_MAX];
 	
-	for (pBuf=buf, pData=data; (pData<data+length); /**/)
+	UT_ASSERT(sizeof(UT_Byte) == sizeof(char));
+
+	for (pData=data; (pData<data+length); /**/)
 	{
-		if (pBuf >= (buf+MY_BUFFER_SIZE-MY_HIGHWATER_MARK))
-		{
-			m_pie->write(buf,(pBuf-buf));
-			pBuf = buf;
-		}
 		if(!m_wctomb.wctomb(pC,mbLen,(wchar_t)*pData))
 		{
 		    mbLen=1;
 		    pC[0]='?';
 		    m_wctomb.initialize();
 		}
-    		pData++;		
+		pData++;		
 		if (mbLen>1)		
 		{
-			memcpy(pBuf,pC,mbLen*sizeof(char));
-			pBuf+= mbLen;		
+			sBuf += pC;
 		}
 		else
 		{
 			// We let any UCS_LF's (forced line breaks) go out as is.
 #ifdef WIN32
 			if (m_bToClipboard && pC[0]==UCS_LF)
-				*pBuf++ = '\r';
+				sBuf += "\r";
 #endif
-			*pBuf++ = (UT_Byte)pC[0];
+			sBuf += (char)pC[0];
 		}
 	}
 
-	if (pBuf > buf)
-		m_pie->write(buf,(pBuf-buf));
+	m_pie->write(sBuf.c_str(),sBuf.size());
 }
 
 s_Text_Listener::s_Text_Listener(PD_Document * pDocument,

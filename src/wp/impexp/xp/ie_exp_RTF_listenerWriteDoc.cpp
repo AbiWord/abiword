@@ -43,6 +43,8 @@
 #include "fl_AutoLists.h"
 
 #include "xap_EncodingManager.h"
+#include "ut_string_class.h"
+
 void s_RTF_ListenerWriteDoc::_closeSection(void)
 {
 	m_apiThisSection = 0;
@@ -141,28 +143,24 @@ void s_RTF_ListenerWriteDoc::_openSpan(PT_AttrPropIndex apiSpan)
 
 void s_RTF_ListenerWriteDoc::_outputData(const UT_UCSChar * data, UT_uint32 length)
 {
-#define MY_BUFFER_SIZE		1024
-#define MY_HIGHWATER_MARK	20
-#define FlushBuffer()		do { if (pBuf > buf) { m_pie->_rtf_chardata(buf,(pBuf-buf)); pBuf=buf; } } while (0)
-
-	char buf[MY_BUFFER_SIZE];
-	char * pBuf;
+	UT_String sBuf;
 	const UT_UCSChar * pData;
 	char mbbuf[30];
 	int mblen;
 
-	for (pBuf=buf, pData=data; (pData<data+length); /**/)
-	{
-		if (pBuf >= (buf+MY_BUFFER_SIZE-MY_HIGHWATER_MARK))
-			FlushBuffer();
+	#define FlushBuffer() do {m_pie->_rtf_chardata(sBuf.c_str(), sBuf.size()); sBuf.clear();} while (0)
 
+	UT_ASSERT(sizeof(UT_Byte) == sizeof(char));
+
+	for (pData=data; (pData<data+length); /**/)
+	{
 		switch (*pData)
 		{
 		case '\\':
 		case '{':
 		case '}':
-			*pBuf++ = '\\';
-			*pBuf++ = (UT_Byte)*pData++;
+			sBuf += '\\';
+			sBuf += (char)*pData++;
 			break;
 
 		case UCS_LF:					// LF -- representing a Forced-Line-Break
@@ -216,9 +214,9 @@ void s_RTF_ListenerWriteDoc::_outputData(const UT_UCSChar * data, UT_uint32 leng
 							case '\\':
 							case '{':
 							case '}':
-								*pBuf++ = '\\';
+								sBuf += '\\';
 						}
-						*pBuf++ = mbbuf[i];
+						sBuf += mbbuf[i];
 					}
 				}
 			} else if (!m_pie->m_atticFormat) 
@@ -259,11 +257,11 @@ void s_RTF_ListenerWriteDoc::_outputData(const UT_UCSChar * data, UT_uint32 leng
 				}
 				else
 				{
-					*pBuf++ = (UT_Byte)*pData++;
+					sBuf += (char)*pData++;
 				}
 			} else {
 				/* 
-				    wordpad (and probably word6/7 don't understand
+				    wordpad (and probably word6/7) don't understand
 				    \uc0\u<UUUU> format at all.
 				*/
 				UT_UCSChar c = *pData++;
@@ -307,7 +305,7 @@ void s_RTF_ListenerWriteDoc::_outputData(const UT_UCSChar * data, UT_uint32 leng
 					}
 					else
 					{
-						*pBuf++ = (UT_Byte)lc;
+						sBuf += (char)lc;
 					}
 				}
 			};

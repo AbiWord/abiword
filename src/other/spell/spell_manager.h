@@ -40,7 +40,7 @@ public:
 		LOOKUP_ERROR = 2      // internal error
 	} SpellCheckResult;
 	
-	virtual SpellCheckResult checkWord (const UT_UCSChar * word, size_t len) = 0;
+	virtual SpellChecker::SpellCheckResult checkWord (const UT_UCSChar * word, size_t len) = 0;
 	virtual UT_Vector * suggestWord (const UT_UCSChar * word, size_t len) = 0;
 	
 protected:

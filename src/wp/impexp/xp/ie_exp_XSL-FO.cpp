@@ -492,91 +492,52 @@ void s_XSL_FO_Listener::_convertFontSize(char* szDest, const char* pszFontSize)
 
 void s_XSL_FO_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 {
-#define MY_BUFFER_SIZE		1024
-#define MY_HIGHWATER_MARK	20
-	char buf[MY_BUFFER_SIZE];
-	char * pBuf;
+	UT_String sBuf;
 	const UT_UCSChar * pData;
 
-	for (pBuf=buf, pData=data; (pData<data+length); /**/)
-	{
-		if (pBuf >= (buf+MY_BUFFER_SIZE-MY_HIGHWATER_MARK))
-		{
-			m_pie->write(buf,(pBuf-buf));
-			pBuf = buf;
-		}
+	UT_ASSERT(sizeof(UT_Byte) == sizeof(char));
 
+	for (pData=data; (pData<data+length); /**/)
+	{
 		switch (*pData)
 		{
 		case '<':
-			*pBuf++ = '&';
-			*pBuf++ = 'l';
-			*pBuf++ = 't';
-			*pBuf++ = ';';
+			sBuf += "&lt;";
 			pData++;
 			break;
 			
 		case '>':
-			*pBuf++ = '&';
-			*pBuf++ = 'g';
-			*pBuf++ = 't';
-			*pBuf++ = ';';
+			sBuf += "&gt;";
 			pData++;
 			break;
 			
 		case '&':
-			*pBuf++ = '&';
-			*pBuf++ = 'a';
-			*pBuf++ = 'm';
-			*pBuf++ = 'p';
-			*pBuf++ = ';';
+			sBuf += "&amp;";
 			pData++;
 			break;
 
 		case UCS_LF:					// LF -- representing a Forced-Line-Break
-			*pBuf++ = '<';				// these get mapped to <br/>
-			*pBuf++ = 'b';
-			*pBuf++ = 'r';
-			*pBuf++ = '/';
-			*pBuf++ = '>';
+			// TODO
+			UT_ASSERT(UT_TODO);
 			pData++;
 			break;
 			
 		case UCS_VTAB:					// VTAB -- representing a Forced-Column-Break
-			*pBuf++ = '<';				// these get mapped to <cbr/>
-			*pBuf++ = 'c';
-			*pBuf++ = 'b';
-			*pBuf++ = 'r';
-			*pBuf++ = '/';
-			*pBuf++ = '>';
+			// TODO
+			UT_ASSERT(UT_TODO);
 			pData++;
 			break;
 			
 		case UCS_FF:					// FF -- representing a Forced-Page-Break
-			*pBuf++ = '<';				// these get mapped to <pbr/>
-			*pBuf++ = 'p';
-			*pBuf++ = 'b';
-			*pBuf++ = 'r';
-			*pBuf++ = '/';
-			*pBuf++ = '>';
+			// TODO:
+			UT_ASSERT(UT_TODO);
 			pData++;
 			break;
 			
 		default:
+
 			if (*pData > 0x007f)
 			{
-#if 1
-#	if 0
-				// convert non us-ascii into numeric entities.
-				// this has the advantage that our file format is
-				// 7bit clean and safe for email and other network
-				// transfers....
-				char localBuf[20];
-				char * plocal = localBuf;
-				sprintf(localBuf,"&#x%x;",*pData++);
-				while (*plocal)
-					*pBuf++ = (UT_Byte)*plocal++;
-#	else
 				if(XAP_EncodingManager::instance->isUnicodeLocale() || 
 				   (XAP_EncodingManager::instance->try_nativeToU(0xa1) == 0xa1))
 
@@ -584,7 +545,7 @@ void s_XSL_FO_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 					XML_Char * pszUTF8 = UT_encodeUTF8char(*pData++);
 					while (*pszUTF8)
 					{
-						*pBuf++ = (UT_Byte)*pszUTF8;
+						sBuf += (char)*pszUTF8;
 						pszUTF8++;
 					}
 				}
@@ -606,37 +567,22 @@ void s_XSL_FO_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 						char localBuf[20];
 						char * plocal = localBuf;
 						sprintf(localBuf,"&#x%x;",*pData++);
-						while (*plocal)
-							*pBuf++ = (UT_Byte)*plocal++;
+						sBuf += plocal;
 					}
 					else
 					{
-						*pBuf++ = (UT_Byte)c;
+						sBuf += (char)c;
 						pData++;
 					}
 				}
-#	endif
-#else
-				// convert to UTF8
-				// TODO if we choose this, do we have to put the ISO header in
-				// TODO like we did for the strings files.... i hesitate to
-				// TODO make such a change to our file format.
-				XML_Char * pszUTF8 = UT_encodeUTF8char(*pData);
-				while (*pszUTF8)
-				{
-					*pBuf++ = (UT_Byte)*pszUTF8;
-					pszUTF8++;
-				}
-#endif
 			}
 			else
 			{
-				*pBuf++ = (UT_Byte)*pData++;
+				sBuf += (char)*pData++;
 			}
 			break;
 		}
 	}
 
-	if (pBuf > buf)
-		m_pie->write(buf,(pBuf-buf));
+	m_pie->write(sBuf.c_str(), sBuf.size());
 }

@@ -41,6 +41,7 @@ public:
 
 	size_t		size() const;
 	bool		empty() const;
+	void        clear() const;
 
 	UT_String	substr(size_t iStart, size_t nChars) const;
 
@@ -48,10 +49,11 @@ public:
 	UT_String&	operator=(const char*      rhs);
 	UT_String&	operator+=(const UT_String& rhs);
 	UT_String&	operator+=(const char*      rhs);
+	UT_String&  operator+=(char rhs);
 
 	void		swap(UT_String& rhs);
 	UT_Vector	*simplesplit(char separator = ' ', 
-				     size_t max = 0 /* 0 == full split */);
+							 size_t max = 0 /* 0 == full split */);
 
 	// The returned pointer is valid until the next non-const
 	// operation. You will _always_ get a legal pointer back,

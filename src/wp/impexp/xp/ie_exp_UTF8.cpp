@@ -30,6 +30,8 @@
 #include "px_CR_Span.h"
 #include "px_CR_Strux.h"
 
+#include "ut_string_class.h"
+
 //////////////////////////////////////////////////////////////////
 // a private listener class to help us translate the document
 // into a UTF8 text stream.  code is at the bottom of this file.
@@ -156,39 +158,32 @@ void s_UTF8_Listener::_closeBlock(void)
 
 void s_UTF8_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 {
-#define MY_BUFFER_SIZE		1024
-#define MY_HIGHWATER_MARK	20
-	char buf[MY_BUFFER_SIZE];
-	char * pBuf;
+	UT_String sBuf;
 	const UT_UCSChar * pData;
 
-	for (pBuf=buf, pData=data; (pData<data+length); /**/)
-	{
-		if (pBuf >= (buf+MY_BUFFER_SIZE-MY_HIGHWATER_MARK))
-		{
-			m_pie->write(buf,(pBuf-buf));
-			pBuf = buf;
-		}
+	UT_ASSERT(sizeof(UT_Byte) == sizeof(char));
+	UT_ASSERT(sizeof(XML_Char) == sizeof(char));
 
+	for (pData=data; (pData<data+length); /**/)
+	{
 		if (*pData > 0x007f)
 		{
 			const XML_Char * s = UT_encodeUTF8char(*pData++);
 			while (*s)
-				*pBuf++ = *s++;
+				sBuf += (char)*s++;
 		}
 		else
 		{
 			// We let any UCS_LF's (forced line breaks) go out as is.
 #ifdef WIN32
 			if (m_bToClipboard && *pData==UCS_LF)
-				*pBuf++ = '\r';
+				sBuf += '\r';
 #endif
-			*pBuf++ = (UT_Byte)*pData++;
+			sBuf += (char)*pData++;
 		}
 	}
 
-	if (pBuf > buf)
-		m_pie->write(buf,(pBuf-buf));
+	m_pie->write(sBuf.c_str(),sBuf.size());
 }
 
 s_UTF8_Listener::s_UTF8_Listener(PD_Document * pDocument,
