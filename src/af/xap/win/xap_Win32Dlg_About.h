@@ -20,7 +20,7 @@
 #ifndef AP_WIN32DIALOG_ABOUT_H
 #define AP_WIN32DIALOG_ABOUT_H
 
-#include "ap_Dialog_About.h"
+#include "xap_Dlg_About.h"
 
 /*****************************************************************/
 
