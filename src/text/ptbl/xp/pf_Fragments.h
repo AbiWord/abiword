@@ -20,6 +20,8 @@ public:
 	~pf_Fragments();
 
 	void					appendFrag(pf_Frag * pf);
+	void					insertFrag(pf_Frag * pfPlace, pf_Frag * pfNew);
+	
 	pf_Frag *				getFirst(void) const;
 
 	void					dump(FILE * fp) const;

@@ -18,6 +18,8 @@ pf_Fragments::~pf_Fragments()
 
 void pf_Fragments::appendFrag(pf_Frag * pf)
 {
+	// append a frag to the end of the list
+	
 	UT_ASSERT(pf);
 	
 	if (!m_pLast)
@@ -43,6 +45,23 @@ pf_Frag * pf_Fragments::getFirst(void) const
 	return m_pFirst;
 }
 
+void pf_Fragments::insertFrag(pf_Frag * pfPlace, pf_Frag * pfNew)
+{
+	// insert the new fragment after the given fragment.
+
+	UT_ASSERT(pfPlace);
+	UT_ASSERT(pfNew);
+
+	pf_Frag * pfQ = pfPlace->getNext();
+	
+	pfNew->setNext(pfQ);
+	if (pfQ)
+		pfQ->setPrev(pfNew);
+	pfNew->setPrev(pfPlace);
+	pfPlace->setNext(pfNew);
+	if (m_pLast == pfPlace)
+		m_pLast = pfNew;
+}
 
 void pf_Fragments::dump(FILE * fp) const
 {

@@ -26,6 +26,7 @@ public:
 	UT_uint32				getLength(void) const;
 	PT_VarSetIndex			getVSindex(void) const;
 	PT_AttrPropIndex		getIndexAP(void) const;
+	void					changeLength(UT_uint32 newLength);
 	
 	virtual void			dump(FILE * fp) const;
 

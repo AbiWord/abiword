@@ -12,6 +12,9 @@
 #include "pf_Frag_Strux_Section.h"
 #include "pf_Frag_Text.h"
 #include "pf_Fragments.h"
+#include "px_ChangeRecord.h"
+#include "px_ChangeRecord_Span.h"
+
 
 #define NrElements(a)		(sizeof(a)/sizeof(a[0]))
 
@@ -46,6 +49,7 @@ void pt_PieceTable::setPieceTableState(PTState pts)
 		break;
 
 	case PTS_Editing:
+		m_vsIndex = 1;
 		break;
 
 	case PTS_Invalid:
@@ -66,6 +70,78 @@ UT_Bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 								  UT_UCSChar * p,
 								  UT_uint32 length)
 {
+	// insert character data into the document at the given position.
+
+	UT_ASSERT(m_pts==PTS_Editing);
+
+	// append the text data to the end of the current buffer.
+
+	VarSet * pvs = &m_vs[m_vsIndex];
+	pt_BufPosition bufOffset = pvs->m_buffer.getLength();
+	if (!pvs->m_buffer.ins(bufOffset,p,length))
+		return UT_FALSE;
+
+	pf_Frag_Strux * pfs = NULL;
+	pf_Frag_Text * pft = NULL;
+	PT_BlockOffset fragOffset = 0;
+	if (!getTextFragFromPosition(dpos,bLeftSide,&pfs,&pft,&fragOffset))
+		return UT_FALSE;
+
+	// see if the character data is contiguous with the
+	// fragment we found (very likely during data entry).
+
+	UT_uint32 fragLen = pft->getLength();
+	
+	if (   (fragOffset == fragLen)						// at right-end of fragment
+		&& (m_vsIndex == pft->getVSindex())				// in the same buffer
+		&& (pft->getOffset()+fragLen == bufOffset))		// contiguous in buffer
+	{
+		// new text is contiguous, we just update the length of this fragment.
+
+		pft->changeLength(fragLen+length);
+	}
+	else
+	{
+		// new text is not contiguous, we need to insert one or two new text
+		// fragment(s) into the list.  first we construct a new text fragment
+		// for the data that we inserted.
+
+		pf_Frag_Text * pftNew = new pf_Frag_Text(this,m_vsIndex,bufOffset,length,pft->getIndexAP());
+		if (!pftNew)
+			return UT_FALSE;
+
+		// if change is at the beginning of the fragment, we insert a
+		// single new text fragment before the one we found.
+		// if the change is in the middle of the fragment, we construct
+		// a second new text fragment for the portion after the insert.
+
+		if (fragOffset == 0)
+		{
+			m_fragments.insertFrag(pft->getPrev(),pftNew);
+		}
+		else
+		{
+			pf_Frag_Text * pftTail = new pf_Frag_Text(this,m_vsIndex,pft->getOffset()+fragOffset,
+													  fragLen-fragOffset,pft->getIndexAP());
+			if (!pftTail)
+				return UT_FALSE;
+			
+			pft->changeLength(fragOffset);
+			m_fragments.insertFrag(pft,pftNew);
+			m_fragments.insertFrag(pftNew,pftTail);
+		}
+	}
+
+	// now we notify all listeners who have subscribed.
+	
+	PX_ChangeRecord_Span * pcr = new PX_ChangeRecord_Span(PX_ChangeRecord::PXT_InsertSpan,
+														  UT_FALSE,UT_FALSE,dpos,m_vsIndex,
+														  bLeftSide,pft->getIndexAP(),
+														  bufOffset,length);
+	if (!pcr)
+		return UT_FALSE;
+	m_pDocument->notifyListeners(pfs,pcr);
+	
 	return UT_TRUE;
 }
 
@@ -192,7 +268,7 @@ UT_Bool pt_PieceTable::appendSpan(UT_UCSChar * pbuf, UT_uint32 length)
 	// set the formatting Attributes/Properties to that
 	// of the last fmt set in this paragraph.
 	// becauase we are loading, we do not create change
-	// records or any of the other stuff that an insertData
+	// records or any of the other stuff that an insertSpan
 	// would do.
 
 	VarSet * pvs = &m_vs[m_vsIndex];
@@ -416,6 +492,71 @@ UT_Bool pt_PieceTable::getStruxFromPosition(PL_ListenerId listenerId,
 	pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *> (pfLastStrux);
 	*psfh = pfs->getFmtHandle(listenerId);
 	return UT_TRUE;
+}
+
+UT_Bool pt_PieceTable::getTextFragFromPosition(PT_DocPosition docPos,
+											   UT_Bool bLeftSide,
+											   pf_Frag_Strux ** ppfs,
+											   pf_Frag_Text ** ppft,
+											   PT_BlockOffset * pOffset) const
+{
+	UT_ASSERT(ppft);
+	UT_ASSERT(pOffset);
+	
+	// return the text fragment containing the given position.
+	// return the strux containing the text fragment we find.
+	// return the offset from the start of the fragment.
+	// if the position is between 2 fragments, return the
+	// one w/r/t bLeftSide.
+	
+	PT_DocPosition sum = 0;
+	pf_Frag_Strux * pfLastStrux = NULL;
+	
+	for (pf_Frag * pf = m_fragments.getFirst(); (pf); pf=pf->getNext())
+	{
+		if (pf->getType() == pf_Frag::PFT_Strux)
+			pfLastStrux = static_cast<pf_Frag_Strux *>(pf);
+		
+		if (pf->getType() != pf_Frag::PFT_Text)
+			continue;
+
+		pf_Frag_Text * pfText = static_cast<pf_Frag_Text *>(pf);
+		if (docPos == sum)				// if on left-edge of this fragment
+		{
+			*pOffset = 0;
+			*ppft = pfText;
+			*ppfs = pfLastStrux;
+			return UT_TRUE;
+		}
+		
+		UT_uint32 len = pfText->getLength();
+
+		if (docPos < sum+len)			// if position inside this fragment
+		{
+			*pOffset = (docPos - sum);
+			*ppft = pfText;
+			*ppfs = pfLastStrux;
+			return UT_TRUE;
+		}
+
+		sum += len;
+		if ((docPos == sum) && bLeftSide)	// if on right-edge of this fragment 
+		{									// (aka the left side of this position).
+			*pOffset = len;
+			*ppft = pfText;
+			*ppfs = pfLastStrux;
+			return UT_TRUE;
+		}
+	}
+
+	// if we fall out of the loop, we didn't have a text node
+	// at or around the document position requested.
+	// TODO this looks like it should be an error, for now we bail
+	// TODO and see if it ever goes off.  later we can just return
+	// TODO the last node in the list.
+	
+	UT_ASSERT(0);
+	return UT_FALSE;
 }
 
 void pt_PieceTable::dump(FILE * fp) const

@@ -59,6 +59,12 @@ UT_Bool pf_Frag_Text::createSpecialChangeRecord(PX_ChangeRecord ** ppcr) const
 	return UT_TRUE;
 }
 
+void pf_Frag_Text::changeLength(UT_uint32 newLength)
+{
+	UT_ASSERT(newLength > 0);
+	m_length = newLength;
+}
+
 void pf_Frag_Text::dump(FILE * fp) const
 {
 	fprintf(fp,"      TextFragment 0x%08lx vs[%d] b[%d,%d] api[%d]\n",

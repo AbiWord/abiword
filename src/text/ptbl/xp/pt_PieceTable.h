@@ -9,6 +9,8 @@
 #include "pp_TableAttrProp.h"
 #include "px_ChangeHistory.h"
 #include "pf_Fragments.h"
+class pf_Frag_Text;
+class pf_Frag_Strux;
 
 
 // pt_PieceTable implements a "Piece Table" as described/suggested
@@ -70,6 +72,11 @@ public:
 	UT_Bool					getStruxFromPosition(PL_ListenerId listenerId,
 												 PT_DocPosition docPos,
 												 PL_StruxFmtHandle * psfh) const;
+	UT_Bool					getTextFragFromPosition(PT_DocPosition docPos,
+													UT_Bool bLeftSide,
+													pf_Frag_Strux ** ppfs,
+													pf_Frag_Text ** ppft,
+													PT_BlockOffset * pOffset) const;
 
 	// TODO add stuff for objects like in-line images.
 

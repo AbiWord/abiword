@@ -11,6 +11,7 @@
 #include "pt_PieceTable.h"
 #include "pl_Listener.h"
 #include "ie_imp.h"
+#include "pf_Frag_Strux.h"
 
 PD_Document::PD_Document()
 {
@@ -149,13 +150,13 @@ UT_Bool PD_Document::insertSpan(PT_DocPosition dpos,
 								  UT_UCSChar * p,
 								  UT_uint32 length)
 {
-	return UT_TRUE;
+	return m_pPieceTable->insertSpan(dpos,bLeftSide,p,length);
 }
 
 UT_Bool PD_Document::deleteSpan(PT_DocPosition dpos,
 								  UT_uint32 length)
 {
-	return UT_TRUE;
+	return m_pPieceTable->deleteSpan(dpos,length);
 }
 
 UT_Bool PD_Document::insertFmt(PT_DocPosition dpos1,
@@ -260,6 +261,28 @@ UT_Bool PD_Document::addListener(PL_Listener * pListener,
 UT_Bool PD_Document::removeListener(PL_ListenerId listenerId)
 {
 	return (m_vecListeners.setNthItem(listenerId,NULL,NULL) == 0);
+}
+
+UT_Bool PD_Document::notifyListeners(pf_Frag_Strux * pfs, PX_ChangeRecord * pcr) const
+{
+	PL_ListenerId lid;
+	PL_ListenerId lidCount = m_vecListeners.getItemCount();
+
+	// for each listener in our vector, we send a notification.
+	// we step over null listners (for listeners which have been
+	// removed (views that went away)).
+	
+	for (lid=0; lid<lidCount; lid++)
+	{
+		PL_Listener * pListener = (PL_Listener *)m_vecListeners.getNthItem(lid);
+		if (pListener)
+		{
+			PL_StruxFmtHandle sfh = pfs->getFmtHandle(lid);
+			pListener->change(sfh,pcr);
+		}
+	}
+
+	return UT_TRUE;
 }
 
 UT_Bool PD_Document::getAttrProp(PT_VarSetIndex vsIndex, PT_AttrPropIndex indexAP,
