@@ -216,7 +216,7 @@ clean_ZLIB_:
 
 clean_LIBPNG_:
 	@if [ -d $(ABI_ROOT)/../libpng ]; then		\
-		$(MAKE) -C $(ABI_ROOT)/../libpng clean;	\
+		$(MAKE) -f Makefile.abi -C $(ABI_ROOT)/../libpng clean;	\
 	fi
 
 clean_PSICONV_:
