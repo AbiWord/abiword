@@ -2895,7 +2895,14 @@ void fp_Line::distributeJustificationAmongstSpaces(UT_sint32 iAmount)
 					if(bFoundStart && iSpacesInText)
 					{
 						UT_uint32 iMySpaces = abs(iSpacesInText);
-						UT_sint32 iJustifyAmountForRun = static_cast<int>(static_cast<double>(iAmount) / (iSpaceCount-1) * iMySpaces);
+						UT_sint32 iJustifyAmountForRun;
+						UT_sint32 iSpaceCountByMySpaces = (iSpaceCount-1) * iMySpaces;
+
+						if (iSpaceCountByMySpaces)
+							iJustifyAmountForRun =  static_cast<int>(static_cast<double>(iAmount) / iSpaceCountByMySpaces);
+						else
+							iJustifyAmountForRun = iAmount;
+
 						if (iSpaceCount == 1) iJustifyAmountForRun = 0;
 						pTR->distributeJustificationAmongstSpaces(iJustifyAmountForRun, iMySpaces);
 
