@@ -829,6 +829,8 @@ fl_BlockLayout* FV_View::_findBlockAtPosition(PT_DocPosition pos)
 
 UT_Bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count)
 {
+	m_pDoc->beginUserAtomicGlob();
+
 	if (!isSelectionEmpty())
 	{
 		_deleteSelection();
@@ -839,6 +841,8 @@ UT_Bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count)
 	}
 
 	UT_Bool bResult = m_pDoc->insertSpan(getPoint(), text, count);
+
+	m_pDoc->endUserAtomicGlob();
 
 	_generalUpdate();
 	
@@ -853,6 +857,8 @@ UT_Bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count)
 
 void FV_View::insertSectionBreak(void)
 {
+	m_pDoc->beginUserAtomicGlob();
+
 	if (!isSelectionEmpty())
 	{
 		_deleteSelection();
@@ -872,7 +878,9 @@ void FV_View::insertSectionBreak(void)
 	
 	m_pDoc->insertStrux(iPoint, PTX_Block);
 	m_pDoc->insertStrux(iPoint, PTX_Section);
-	
+
+	m_pDoc->endUserAtomicGlob();
+
 	_generalUpdate();
 	
 	if (!_ensureThatInsertionPointIsOnScreen())
@@ -884,6 +892,8 @@ void FV_View::insertSectionBreak(void)
 
 void FV_View::insertParagraphBreak(void)
 {
+	m_pDoc->beginUserAtomicGlob();
+
 	if (!isSelectionEmpty())
 	{
 		_deleteSelection();
@@ -899,6 +909,8 @@ void FV_View::insertParagraphBreak(void)
 	// ==>: we *don't* call _clearPointAP() in this case 
 
 	m_pDoc->insertStrux(getPoint(), PTX_Block);
+
+	m_pDoc->endUserAtomicGlob();
 	
 	_generalUpdate();
 	
@@ -4241,6 +4253,8 @@ UT_Bool FV_View::_insertPNGImage(UT_ByteBuf* pBB, const char* szName, UT_sint32 
 
 UT_Bool FV_View::cmdInsertPNGImage(UT_ByteBuf* pBB, const char* pszName)
 {
+	m_pDoc->beginUserAtomicGlob();
+
 	if (!isSelectionEmpty())
 	{
 		_deleteSelection();
@@ -4274,6 +4288,8 @@ UT_Bool FV_View::cmdInsertPNGImage(UT_ByteBuf* pBB, const char* pszName)
 		bOK = _insertPNGImage(pBB, szName, iImageWidth, iImageHeight);
 	else
 		DELETEP(pBB);
+
+	m_pDoc->endUserAtomicGlob();
 	
 	_generalUpdate();
 	
