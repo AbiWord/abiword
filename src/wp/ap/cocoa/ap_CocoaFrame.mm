@@ -111,13 +111,13 @@ UT_Error AP_CocoaFrame::_showDocument(UT_uint32 iZoom)
 	pDocLayout = new FL_DocLayout(static_cast<PD_Document *>(m_pDoc), pG);
 	ENSUREP(pDocLayout);
   
-//	pDocLayout->formatAll();
-
-	pView = new FV_View(getApp(), this, pDocLayout);
 	if (m_pView != NULL)
 	{
 		point = ((FV_View *) m_pView)->getPoint();
 	}
+//	pDocLayout->formatAll();
+
+	pView = new FV_View(getApp(), this, pDocLayout);
 	ENSUREP(pView);
 
 //	bFocus=GPOINTER_TO_INT(gtk_object_get_data(GTK_OBJECT(m_wTopLevelWindow),"toplevelWindowFocus"));
@@ -218,19 +218,21 @@ UT_Error AP_CocoaFrame::_showDocument(UT_uint32 iZoom)
 	// views, like we do for all the other objects.  We also do not
 	// allocate the TopRuler, LeftRuler  here; that is done as the
 	// frame is created.
-	if ( ((AP_FrameData*)m_pData)->m_bShowRuler )
-	{
-	  if ( ((AP_FrameData*)m_pData)->m_pTopRuler )
-	    ((AP_FrameData*)m_pData)->m_pTopRuler->setView(pView, iZoom);
-	  if ( ((AP_FrameData*)m_pData)->m_pLeftRuler )
-		((AP_FrameData*)m_pData)->m_pLeftRuler->setView(pView, iZoom);
+	if (((AP_FrameData*)m_pData)->m_bShowRuler)	{
+		if ( ((AP_FrameData*)m_pData)->m_pTopRuler ) {
+			((AP_FrameData*)m_pData)->m_pTopRuler->setView(pView, iZoom);
+		}
+		if ( ((AP_FrameData*)m_pData)->m_pLeftRuler ) {
+			((AP_FrameData*)m_pData)->m_pLeftRuler->setView(pView, iZoom);
+		}
 	}
 
-	if ( ((AP_FrameData*)m_pData)->m_pStatusBar )
-	  ((AP_FrameData*)m_pData)->m_pStatusBar->setView(pView);
+	if ( ((AP_FrameData*)m_pData)->m_pStatusBar ) {
+		((AP_FrameData*)m_pData)->m_pStatusBar->setView(pView);
+	}
+    ((FV_View *) m_pView)->setShowPara(((AP_FrameData*)m_pData)->m_bShowPara);
 
 	pView->setInsertMode(((AP_FrameData*)m_pData)->m_bInsertMode);
-    ((FV_View *) m_pView)->setShowPara(((AP_FrameData*)m_pData)->m_bShowPara);
 
 	rect = [[_getController() window] frame];
 	m_pView->setWindowSize(rect.size.width , rect.size.height);
@@ -238,8 +240,6 @@ UT_Error AP_CocoaFrame::_showDocument(UT_uint32 iZoom)
 	setYScrollRange();
 	updateTitle();
 
-	if (point != 0)
-		((FV_View *) m_pView)->moveInsPtTo(point);
 #if 1
 	/*
 	  UPDATE:  this code is back, but I'm leaving these comments as
@@ -255,6 +255,8 @@ UT_Error AP_CocoaFrame::_showDocument(UT_uint32 iZoom)
 	  section of the code.  See me if this causes problems.
 	*/
 	pDocLayout->fillLayouts();
+	if (point != 0) 
+		((FV_View *) m_pView)->moveInsPtTo(point);
 	m_pView->draw();
 #endif	
 	
@@ -412,6 +414,21 @@ void AP_CocoaFrame::_showOrHideToolbars()
 		EV_CocoaToolbar * pCocoaToolbar = static_cast<EV_CocoaToolbar *> (m_vecToolbars.getNthItem(i));
 		static_cast<AP_FrameData*> (m_pData)->m_pToolbar[i] = pCocoaToolbar;
 		toggleBar(i, bShowBar[i]);
+	}
+}
+
+/*!
+ * Refills the framedata class with pointers to the current toolbars. We 
+ * need to do this after a toolbar icon and been dragged and dropped.
+ */
+void AP_CocoaFrame::	refillToolbarsInFrameData(void)
+{
+	UT_uint32 cnt = m_vecToolbarLayoutNames.getItemCount();
+
+	for (UT_uint32 i = 0; i < cnt; i++)
+	{
+		EV_CocoaToolbar * pCocoaToolbar = static_cast<EV_CocoaToolbar *> (m_vecToolbars.getNthItem(i));
+		static_cast<AP_FrameData*> (m_pData)->m_pToolbar[i] = pCocoaToolbar;
 	}
 }
 

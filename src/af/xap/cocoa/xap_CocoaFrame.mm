@@ -1,6 +1,6 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998-2000 AbiSource, Inc.
- * Copyright (C) 2001 Hubert Figuiere
+ * Copyright (C) 2001-2002 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,7 +18,7 @@
  * 02111-1307, USA.
  */
 
-#import <AppKit/AppKit.h>
+#import <Cocoa/Cocoa.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -698,6 +698,10 @@ void XAP_CocoaFrame::rebuildToolbar(UT_uint32 ibar)
 						   (const char *) m_szToolbarLabelSetName);
 	static_cast<EV_CocoaToolbar *>(pToolbar)->rebuildToolbar(oldpos);
 	m_vecToolbars.setNthItem(ibar, (void *) pToolbar, NULL);
+//
+// Refill the framedata pointers
+//
+	refillToolbarsInFrameData();
 	repopulateCombos();
 }
 

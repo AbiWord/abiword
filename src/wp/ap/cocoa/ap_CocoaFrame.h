@@ -76,7 +76,7 @@ public:
 	virtual void				toggleStatusBar(bool bStatusBarOn);
 	virtual NSString *			_getNibName ();
 	virtual XAP_CocoaFrameController *_createController();
-	virtual void                refillToolbarsInFrameData(void) {UT_ASSERT(0);}
+	virtual void                refillToolbarsInFrameData(void);
 
 protected:
 	virtual void			_createDocumentWindow(void);
