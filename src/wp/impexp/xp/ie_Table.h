@@ -270,7 +270,7 @@ private:
 };
 
 // EXPERIMENTAL CODE
-#define USE_IE_IMP_TABLEHELPER 1 */
+#define USE_IE_IMP_TABLEHELPER 0
 
 #ifdef USE_IE_IMP_TABLEHELPER
 enum TableZone
