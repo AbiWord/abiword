@@ -17,8 +17,6 @@
  * 02111-1307, USA.
  */
 
-
-
 #ifndef DOCLAYOUT_H
 #define DOCLAYOUT_H
 
@@ -31,7 +29,7 @@
 
 class FV_View;
 class fl_DocListener;
-class fl_SectionLayout;
+class fl_DocSectionLayout;
 class fl_BlockLayout;
 class fp_Page;
 class PD_Document;
@@ -117,12 +115,12 @@ public:
 	void 		queueBlockForSpell(fl_BlockLayout *pBlock, UT_Bool bHead=UT_FALSE);
 	void 		dequeueBlock(fl_BlockLayout *pBlock);
 
-	void		addSection(fl_SectionLayout*);
-	void		removeSection(fl_SectionLayout*);
-	void		insertSectionAfter(fl_SectionLayout* pAfter, fl_SectionLayout* pNewSL);
+	void		addSection(fl_DocSectionLayout*);
+	void		removeSection(fl_DocSectionLayout*);
+	void		insertSectionAfter(fl_DocSectionLayout* pAfter, fl_DocSectionLayout* pNewSL);
 
-	inline		fl_SectionLayout* getFirstSection(void) const { return m_pFirstSection; }
-	inline		fl_SectionLayout* getLastSection(void) const { return m_pLastSection; }
+	inline		fl_DocSectionLayout* getFirstSection(void) const { return m_pFirstSection; }
+	inline		fl_DocSectionLayout* getLastSection(void) const { return m_pLastSection; }
 
 #ifdef FMT_TEST
 	void		__dump(FILE * fp) const;
@@ -140,8 +138,8 @@ protected:
 	PL_ListenerId		m_lid;
 
 	UT_Vector			m_vecPages;
-	fl_SectionLayout*	m_pFirstSection;
-	fl_SectionLayout*	m_pLastSection;
+	fl_DocSectionLayout*m_pFirstSection;
+	fl_DocSectionLayout*m_pLastSection;
 	
 	UT_HashTable		m_hashFontCache;
 

@@ -17,8 +17,6 @@
  * 02111-1307, USA.
  */
 
-
-
 #include "fp_Line.h"
 #include "fp_Column.h"
 #include "fl_BlockLayout.h"
@@ -40,7 +38,7 @@ fp_Line::fp_Line()
 	m_iHeight = 0;
 	m_iX = 0;
 	m_iY = 0;
-	m_pColumn = NULL;
+	m_pContainer = NULL;
 	m_pBlock = NULL;
 }
 
@@ -53,19 +51,19 @@ void fp_Line::setMaxWidth(UT_sint32 iMaxWidth)
 	m_iMaxWidth = iMaxWidth;
 }
 
-void fp_Line::setColumn(fp_Column* pColumn)
+void fp_Line::setContainer(fp_Container* pContainer)
 {
-	if (pColumn == m_pColumn)
+	if (pContainer == m_pContainer)
 	{
 		return;
 	}
 
-	if (m_pColumn)
+	if (m_pContainer)
 	{
 		clearScreen();
 	}
 	
-	m_pColumn = pColumn;
+	m_pContainer = pContainer;
 }
 
 UT_Bool fp_Line::removeRun(fp_Run* pRun, UT_Bool bTellTheRunAboutIt)
@@ -138,7 +136,7 @@ void fp_Line::remove(void)
 		m_pPrev->setNext(m_pNext);
 	}
 
-	m_pColumn->removeLine(this);
+	m_pContainer->removeLine(this);
 }
 
 void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL)
@@ -250,7 +248,7 @@ void fp_Line::getOffsets(fp_Run* pRun, UT_sint32& xoff, UT_sint32& yoff)
 	UT_sint32 my_xoff;
 	UT_sint32 my_yoff;
 
-	m_pColumn->getOffsets(this, my_xoff, my_yoff);
+	m_pContainer->getOffsets(this, my_xoff, my_yoff);
 	
 	xoff = my_xoff + pRun->getX();
 	yoff = my_yoff + pRun->getY() + m_iAscent - pRun->getAscent();
@@ -268,7 +266,7 @@ void fp_Line::getScreenOffsets(fp_Run* pRun,
 	  run, referring to the UPPER-LEFT corner of the run.
 	*/
 	
-	m_pColumn->getScreenOffsets(this, my_xoff, my_yoff);
+	m_pContainer->getScreenOffsets(this, my_xoff, my_yoff);
 	
 	xoff = my_xoff + pRun->getX();
 	yoff = my_yoff + pRun->getY();
@@ -354,7 +352,7 @@ void fp_Line::draw(GR_Graphics* pG)
 	
 	UT_sint32 my_xoff = 0, my_yoff = 0;
 	
-	m_pColumn->getScreenOffsets(this, my_xoff, my_yoff);
+	m_pContainer->getScreenOffsets(this, my_xoff, my_yoff);
 
 	dg_DrawArgs da;
 	
@@ -598,7 +596,7 @@ void fp_Line::recalcMaxWidth()
 
 	setX(iX);
 
-	UT_sint32 iMaxWidth = m_pColumn->getWidth();
+	UT_sint32 iMaxWidth = m_pContainer->getWidth();
 	iMaxWidth -= m_pBlock->getRightMargin();
 	iMaxWidth -= m_pBlock->getLeftMargin();
 	if (isFirstLineInBlock())

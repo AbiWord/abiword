@@ -435,7 +435,7 @@ s_AbiWord_1_Listener::s_AbiWord_1_Listener(PD_Document * pDocument,
 	// TODO add a file-format name/value pair to this tag.
 	// TODO add application name and version name/value pairs to this tag.
 	
-	m_pie->write("<awml>\n");
+	m_pie->write("<abiword>\n");
 	_handleStyles();
 }
 
@@ -446,7 +446,7 @@ s_AbiWord_1_Listener::~s_AbiWord_1_Listener()
 	_closeSection();
 	_handleDataItems();
 	
-	m_pie->write("</awml>\n");
+	m_pie->write("</abiword>\n");
 }
 
 UT_Bool s_AbiWord_1_Listener::populate(PL_StruxFmtHandle /*sfh*/,
@@ -475,12 +475,12 @@ UT_Bool s_AbiWord_1_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 			{
 			case PTO_Image:
 				_closeSpan();
-				_openTag("i","/",UT_FALSE,api);
+				_openTag("image","/",UT_FALSE,api);
 				return UT_TRUE;
 
 			case PTO_Field:
 				_closeSpan();
-				_openTag("f","/",UT_FALSE,api);
+				_openTag("field","/",UT_FALSE,api);
 				return UT_TRUE;
 
 			default:

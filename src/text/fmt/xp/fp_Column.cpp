@@ -17,7 +17,6 @@
  * 02111-1307, USA.
  */
 
-
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
@@ -36,15 +35,11 @@
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 
-fp_Column::fp_Column(fl_SectionLayout* pSectionLayout)
+fp_Container::fp_Container(UT_uint32 iType, fl_SectionLayout* pSectionLayout)
 {
-	m_pNext = NULL;
-	m_pPrev = NULL;
-
-	m_pLeader = NULL;
-	m_pNextFollower = NULL;
-	
+	m_iType = iType;
 	m_pSectionLayout = pSectionLayout;
+	
 	m_pG = m_pSectionLayout->getDocLayout()->getGraphics();
 
 	m_iWidth = 0;
@@ -56,7 +51,7 @@ fp_Column::fp_Column(fl_SectionLayout* pSectionLayout)
 	m_iY = 0;
 }
 
-fp_Column::~fp_Column()
+fp_Container::~fp_Container()
 {
 	/*
 	  Note that we do not delete the lines here.  They are owned by
@@ -64,12 +59,12 @@ fp_Column::~fp_Column()
 	*/
 }
 
-void fp_Column::setPage(fp_Page* pPage)
+void fp_Container::setPage(fp_Page* pPage)
 {
 	m_pPage = pPage;
 }
 
-void fp_Column::setWidth(UT_sint32 iWidth)
+void fp_Container::setWidth(UT_sint32 iWidth)
 {
 	if (iWidth == m_iWidth)
 	{
@@ -83,7 +78,7 @@ void fp_Column::setWidth(UT_sint32 iWidth)
 //	UT_ASSERT(UT_NOT_IMPLEMENTED);
 }
 
-void fp_Column::setHeight(UT_sint32 iHeight)
+void fp_Container::setHeight(UT_sint32 iHeight)
 {
 	if (iHeight == m_iHeight)
 	{
@@ -96,7 +91,7 @@ void fp_Column::setHeight(UT_sint32 iHeight)
 	UT_ASSERT(UT_NOT_IMPLEMENTED);
 }
 
-void fp_Column::setMaxHeight(UT_sint32 iMaxHeight)
+void fp_Container::setMaxHeight(UT_sint32 iMaxHeight)
 {
 	UT_ASSERT(iMaxHeight > 0);
 
@@ -108,33 +103,13 @@ void fp_Column::setMaxHeight(UT_sint32 iMaxHeight)
 	m_iMaxHeight = iMaxHeight;
 }
 
-void fp_Column::setLeader(fp_Column* p)
-{
-	m_pLeader = p;
-}
-
-void fp_Column::setFollower(fp_Column* p)
-{
-	m_pNextFollower = p;
-}
-
-void fp_Column::setNext(fp_Column*p)
-{
-	m_pNext = p;
-}
-
-void fp_Column::setPrev(fp_Column*p)
-{
-	m_pPrev = p;
-}
-
-void fp_Column::getOffsets(fp_Line* pLine, UT_sint32& xoff, UT_sint32& yoff)
+void fp_Container::getOffsets(fp_Line* pLine, UT_sint32& xoff, UT_sint32& yoff)
 {
 	xoff = getX() + pLine->getX();
 	yoff = getY() + pLine->getY();
 }
 
-void fp_Column::getScreenOffsets(fp_Line* pLine,
+void fp_Container::getScreenOffsets(fp_Line* pLine,
 									 UT_sint32& xoff, UT_sint32& yoff)
 {
 	UT_sint32 my_xoff;
@@ -146,7 +121,7 @@ void fp_Column::getScreenOffsets(fp_Line* pLine,
 	yoff = my_yoff + pLine->getY();
 }
 
-void fp_Column::removeLine(fp_Line* pLine)
+void fp_Container::removeLine(fp_Line* pLine)
 {
 	UT_sint32 ndx = m_vecLines.findItem(pLine);
 	UT_ASSERT(ndx >= 0);
@@ -156,22 +131,22 @@ void fp_Column::removeLine(fp_Line* pLine)
 	// don't delete the line here, it's deleted elsewhere.
 }
 
-UT_Bool fp_Column::insertLine(fp_Line* pNewLine)
+UT_Bool fp_Container::insertLine(fp_Line* pNewLine)
 {
 	m_vecLines.insertItemAt(pNewLine, 0);
 		
-	pNewLine->setColumn(this);
+	pNewLine->setContainer(this);
 
 	pNewLine->recalcMaxWidth();
 
 	return UT_TRUE;
 }
 
-UT_Bool fp_Column::addLine(fp_Line* pNewLine)
+UT_Bool fp_Container::addLine(fp_Line* pNewLine)
 {
 	m_vecLines.addItem(pNewLine);
 		
-	pNewLine->setColumn(this);
+	pNewLine->setContainer(this);
 
 	pNewLine->recalcMaxWidth();
 
@@ -208,12 +183,21 @@ void fp_Column::layout(void)
 	m_pPage->columnHeightChanged(this);
 }
 
-UT_Bool fp_Column::insertLineAfter(fp_Line*	pNewLine, fp_Line*	pAfterLine)
+UT_Bool fp_Container::insertLineAfter(fp_Line*	pNewLine, fp_Line*	pAfterLine)
 {
+	/*
+	  TODO this routine should not be allowing pAfterLine to be NULL.
+	  Right now, we've fixed the symptom, but we really should fix
+	  the problem.
+	*/
+	
 	UT_sint32 ndx = m_vecLines.findItem(pAfterLine);
-	UT_ASSERT(ndx >= 0);
+//	UT_ASSERT(ndx >= 0);
 
-	if (ndx == (m_vecLines.getItemCount() - 1))
+	if (
+		(ndx < 0)
+		|| (ndx == (m_vecLines.getItemCount() - 1))
+		)
 	{
 		m_vecLines.addItem(pNewLine);
 	}
@@ -222,19 +206,19 @@ UT_Bool fp_Column::insertLineAfter(fp_Line*	pNewLine, fp_Line*	pAfterLine)
 		m_vecLines.insertItemAt(pNewLine, ndx+1);
 	}
 
-	pNewLine->setColumn(this);
+	pNewLine->setContainer(this);
 
 	pNewLine->recalcMaxWidth();
 
 	return UT_TRUE;
 }
 
-UT_Bool fp_Column::isEmpty(void) const
+UT_Bool fp_Container::isEmpty(void) const
 {
 	return (m_vecLines.getItemCount() == 0);
 }
 
-void fp_Column::clearScreen(void)
+void fp_Container::clearScreen(void)
 {
 	int count = m_vecLines.getItemCount();
 	for (int i = 0; i<count; i++)
@@ -245,7 +229,7 @@ void fp_Column::clearScreen(void)
 	}
 }
 
-void fp_Column::draw(dg_DrawArgs* pDA)
+void fp_Container::draw(dg_DrawArgs* pDA)
 {
 	int count = m_vecLines.getItemCount();
 	for (int i = 0; i<count; i++)
@@ -266,7 +250,7 @@ void fp_Column::draw(dg_DrawArgs* pDA)
 #endif	
 }
 
-void fp_Column::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL)
+void fp_Container::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL)
 {
 	int count = m_vecLines.getItemCount();
 
@@ -334,7 +318,7 @@ void fp_Column::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, U
 	UT_ASSERT(UT_NOT_IMPLEMENTED);
 }
 
-UT_uint32	fp_Column::distanceFromPoint(UT_sint32 x, UT_sint32 y)
+UT_uint32	fp_Container::distanceFromPoint(UT_sint32 x, UT_sint32 y)
 {
 	UT_sint32 dx;
 	UT_sint32 dy;
@@ -382,7 +366,7 @@ UT_uint32	fp_Column::distanceFromPoint(UT_sint32 x, UT_sint32 y)
 	return dist;
 }
 
-void fp_Column::setX(UT_sint32 iX)
+void fp_Container::setX(UT_sint32 iX)
 {
 	if (iX == m_iX)
 	{
@@ -400,7 +384,7 @@ void fp_Column::setX(UT_sint32 iX)
 	m_iX = iX;
 }
 
-void fp_Column::setY(UT_sint32 iY)
+void fp_Container::setY(UT_sint32 iY)
 {
 	if (iY == m_iY)
 	{
@@ -418,7 +402,7 @@ void fp_Column::setY(UT_sint32 iY)
 	m_iY = iY;
 }
 
-fp_Line* fp_Column::getFirstLine(void) const
+fp_Line* fp_Container::getFirstLine(void) const
 {
 	if (m_vecLines.getItemCount() > 0)
 	{
@@ -430,7 +414,7 @@ fp_Line* fp_Column::getFirstLine(void) const
 	}
 }
 
-fp_Line* fp_Column::getLastLine(void) const
+fp_Line* fp_Container::getLastLine(void) const
 {
 	UT_uint32 iCount = m_vecLines.getItemCount();
 	
@@ -442,6 +426,40 @@ fp_Line* fp_Column::getLastLine(void) const
 	{
 		return NULL;
 	}
+}
+
+fp_Column::fp_Column(fl_SectionLayout* pSectionLayout) : fp_Container(FP_CONTAINER_COLUMN, pSectionLayout)
+{
+	m_pNext = NULL;
+	m_pPrev = NULL;
+
+	m_pLeader = NULL;
+	m_pNextFollower = NULL;
+}
+
+fp_Column::~fp_Column()
+{
+
+}
+
+void fp_Column::setLeader(fp_Column* p)
+{
+	m_pLeader = p;
+}
+
+void fp_Column::setFollower(fp_Column* p)
+{
+	m_pNextFollower = p;
+}
+
+void fp_Column::setNext(fp_Column*p)
+{
+	m_pNext = p;
+}
+
+void fp_Column::setPrev(fp_Column*p)
+{
+	m_pPrev = p;
 }
 
 void fp_Column::bumpLines(fp_Line* pLastLineToKeep)
@@ -477,4 +495,11 @@ void fp_Column::bumpLines(fp_Line* pLastLineToKeep)
 	{
 		m_vecLines.deleteNthItem(i);
 	}
+}
+
+fl_DocSectionLayout* fp_Column::getDocSectionLayout(void) const
+{
+	UT_ASSERT(m_pSectionLayout->getType() == FL_SECTION_DOC);
+
+	return (fl_DocSectionLayout*) m_pSectionLayout;
 }

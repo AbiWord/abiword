@@ -2,7 +2,16 @@
 <section PROPS="columns:1;section-space-after:0.25in">
 <p PROPS="line-height:1.0; margin-top:12pt; text-align:center"><c PROPS="font-size:18pt; font-weight:bold">Interview with AbiSource Founder Eric Sink</c></p>
 </section>
-<section PROPS="column-gap:0.25in; columns:2">
+
+<!--
+<section type="header" id="hdr01">
+<p>
+This is a header, appearing at the top of every page in the section.
+</p>
+</section>
+-->
+
+<section PROPS="column-gap:0.25in; columns:2" HEADER="hdr01">
 <p PROPS="line-height:1.0; margin-left:0.25in; margin-top:12pt; text-indent:-0.25in"><c PROPS="font-weight:bold">Dale: Eric, tell me a bit about yourself and how you were involved with Mosaic development at Spyglass?</c></p>
 <p PROPS="line-height:1.0; margin-left:0.25in; margin-top:12pt; text-indent:-0.25in">Eric: I was with Spyglass early on, before it was an Internet company. In the spring of 1994, I helped launch the Spyglass web browser project, first as the primary engineer, and later as the Project Lead. Anyway, Mosaic turned out to be a string of great technical successes, interleaved with a string of great marketing failures. Both were excellent learning experiences for me.</p>
 <p PROPS="line-height:1.0; margin-left:0.25in; margin-top:12pt; text-indent:-0.25in"><c PROPS="font-weight:bold">Dale: So, tell me about your new company.</c></p>

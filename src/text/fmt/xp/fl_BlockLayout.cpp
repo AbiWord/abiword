@@ -667,7 +667,7 @@ fp_Line* fl_BlockLayout::getNewLine(void)
 	pLine->setBlock(this);
 	pLine->setNext(NULL);
 	
-	fp_Column* pCol = NULL;
+	fp_Container* pContainer = NULL;
 	
 	if (m_pLastLine)
 	{
@@ -680,9 +680,9 @@ fp_Line* fl_BlockLayout::getNewLine(void)
 		m_pLastLine->setNext(pLine);
 		m_pLastLine = pLine;
 
-		pCol = pOldLastLine->getColumn();
+		pContainer = pOldLastLine->getContainer();
 
-		pCol->insertLineAfter(pLine, pOldLastLine);
+		pContainer->insertLineAfter(pLine, pOldLastLine);
 	}
 	else
 	{
@@ -695,23 +695,23 @@ fp_Line* fl_BlockLayout::getNewLine(void)
 		if (m_pPrev)
 		{
 			pPrevLine = m_pPrev->getLastLine();
-			pCol = pPrevLine->getColumn();
+			pContainer = pPrevLine->getContainer();
 		}
 		else if (m_pNext && m_pNext->getFirstLine())
 		{
-			pCol = m_pNext->getFirstLine()->getColumn();
+			pContainer = m_pNext->getFirstLine()->getContainer();
 		}
-		else if (m_pSectionLayout->getFirstColumn())
+		else if (m_pSectionLayout->getFirstContainer())
 		{
-			// TODO assert something here about what's in that column
-			pCol = m_pSectionLayout->getFirstColumn();
+			// TODO assert something here about what's in that container
+			pContainer = m_pSectionLayout->getFirstContainer();
 		}
 		else
 		{
-			pCol = m_pSectionLayout->getNewColumn();
+			pContainer = m_pSectionLayout->getNewContainer();
 		}
 		
-		pCol->insertLineAfter(pLine, pPrevLine);
+		pContainer->insertLineAfter(pLine, pPrevLine);
 	}
 
 	return pLine;
@@ -2496,15 +2496,18 @@ UT_Bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * 
 	
 	UT_ASSERT(pcrx->getType()==PX_ChangeRecord::PXT_InsertStrux);
 	UT_ASSERT(pcrx->getStruxType()==PTX_Section);
+
+	UT_ASSERT(m_pSectionLayout->getType() == FL_SECTION_DOC);
+	fl_DocSectionLayout* pDSL = (fl_DocSectionLayout*) m_pSectionLayout;
 	
-	fl_SectionLayout* pSL = new fl_SectionLayout(m_pLayout, sdh, pcrx->getIndexAP());
+	fl_DocSectionLayout* pSL = new fl_DocSectionLayout(m_pLayout, sdh, pcrx->getIndexAP());
 	if (!pSL)
 	{
 		UT_DEBUGMSG(("no memory for SectionLayout"));
 		return UT_FALSE;
 	}
-	
-	m_pLayout->insertSectionAfter(m_pSectionLayout, pSL);
+
+	m_pLayout->insertSectionAfter(pDSL, pSL);
 	
 	// must call the bind function to complete the exchange
 	// of handles with the document (piece table) *** before ***
@@ -2514,7 +2517,7 @@ UT_Bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * 
 	PL_StruxFmtHandle sfhNew = (PL_StruxFmtHandle)pSL;
 	pfnBindHandles(sdh,lid,sfhNew);
 
-	fl_SectionLayout* pOldSL = m_pSectionLayout;
+	fl_DocSectionLayout* pOldSL = pDSL;
 	fl_BlockLayout* pBL = getNext();
 	while (pBL)
 	{

@@ -23,6 +23,7 @@
 #include "ut_types.h"
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
+#include "ut_string.h"
 #include "pt_Types.h"
 #include "px_ChangeRecord.h"
 #include "px_CR_Object.h"
@@ -123,42 +124,76 @@ UT_Bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 	switch (pcrx->getStruxType())
 	{
 	case PTX_Section:
-		{
-			// append a SectionLayout to this DocLayout
-			fl_SectionLayout* pSL = new fl_SectionLayout(m_pLayout, sdh, pcr->getIndexAP());
-			if (!pSL)
-			{
-				UT_DEBUGMSG(("no memory for SectionLayout"));
-				return UT_FALSE;
-			}
+	{
+		PT_AttrPropIndex indexAP = pcr->getIndexAP();
+		const PP_AttrProp* pAP = NULL;
 			
-			m_pLayout->addSection(pSL);
+		if (m_pDoc->getAttrProp(indexAP, &pAP) && pAP)
+		{
+			const XML_Char* pszSectionType = NULL;
+			pAP->getAttribute("type", pszSectionType);
+			if (
+				!pszSectionType
+				|| (0 == UT_stricmp(pszSectionType, "doc"))
+				)
+			{
+				// append a SectionLayout to this DocLayout
+				fl_DocSectionLayout* pSL = new fl_DocSectionLayout(m_pLayout, sdh, pcr->getIndexAP());
+				if (!pSL)
+				{
+					UT_DEBUGMSG(("no memory for SectionLayout"));
+					return UT_FALSE;
+				}
+			
+				m_pLayout->addSection(pSL);
 
-			*psfh = (PL_StruxFmtHandle)pSL;
+				*psfh = (PL_StruxFmtHandle)pSL;
+			}
+			else
+			{
+				if (0 == UT_stricmp(pszSectionType, "header"))
+				{
+					return UT_FALSE;
+				}
+				else if (0 == UT_stricmp(pszSectionType, "footer"))
+				{
+					return UT_FALSE;
+				}
+				else
+				{
+					return UT_FALSE;
+				}
+			}
 		}
-		break;
+		else
+		{
+			// TODO fail?
+			return UT_FALSE;
+		}
+	}
+	break;
 
 	case PTX_Block:
+	{
+		// locate the last SectionLayout
+		fl_DocSectionLayout* pSL = m_pLayout->getLastSection();
+		UT_ASSERT(pSL);
+
+		// append a new BlockLayout to that SectionLayout
+		fl_BlockLayout*	pBL = pSL->appendBlock(sdh, pcr->getIndexAP());
+		if (!pBL)
 		{
-			// locate the last SectionLayout
-			fl_SectionLayout* pSL = m_pLayout->getLastSection();
-			UT_ASSERT(pSL);
-
-			// append a new BlockLayout to that SectionLayout
-			fl_BlockLayout*	pBL = pSL->appendBlock(sdh, pcr->getIndexAP());
-			if (!pBL)
-			{
-				UT_DEBUGMSG(("no memory for BlockLayout"));
-				return UT_FALSE;
-			}
-
-			// BUGBUG: this is *not* thread-safe, but should work for now
-			if (m_bScreen)
-				m_pLayout->queueBlockForSpell(pBL);
-
-			*psfh = (PL_StruxFmtHandle)pBL;
+			UT_DEBUGMSG(("no memory for BlockLayout"));
+			return UT_FALSE;
 		}
-		break;
+
+		// BUGBUG: this is *not* thread-safe, but should work for now
+		if (m_bScreen)
+			m_pLayout->queueBlockForSpell(pBL);
+
+		*psfh = (PL_StruxFmtHandle)pBL;
+	}
+	break;
 			
 	default:
 		UT_ASSERT(0);
@@ -300,7 +335,7 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		{
 			fl_Layout * pL = (fl_Layout *)sfh;
 			UT_ASSERT(pL->getType() == PTX_Section);
-			fl_SectionLayout * pSL = static_cast<fl_SectionLayout *>(pL);
+			fl_DocSectionLayout * pSL = static_cast<fl_DocSectionLayout *>(pL);
 			bResult = pSL->doclistener_deleteStrux(pcrx);
 			goto finish_up;
 		}
@@ -336,7 +371,7 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		{
 		case PTX_Section:
 		{
-			fl_SectionLayout* pSL = static_cast<fl_SectionLayout*>(pL);
+			fl_DocSectionLayout* pSL = static_cast<fl_DocSectionLayout*>(pL);
 			bResult = pSL->doclistener_changeStrux(pcrxc);
 			goto finish_up;
 		}

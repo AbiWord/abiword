@@ -17,8 +17,6 @@
  * 02111-1307, USA.
  */
 
-
-
 #ifndef PAGE_H
 #define PAGE_H
 
@@ -29,6 +27,7 @@
 
 class FL_DocLayout;
 class fp_Column;
+class fp_Container;
 class fl_SectionLayout;
 class FV_View;
 class GR_Graphics;
@@ -56,8 +55,8 @@ class fp_Page
 	void            setView(FV_View*);
 
 	void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL);
-	void			getOffsets(fp_Column*, UT_sint32& xoff, UT_sint32& yoff);
-	void			getScreenOffsets(fp_Column*, UT_sint32& xoff, UT_sint32& yoff);
+	void			getOffsets(fp_Container*, UT_sint32& xoff, UT_sint32& yoff);
+	void			getScreenOffsets(fp_Container*, UT_sint32& xoff, UT_sint32& yoff);
 
 	void			draw(dg_DrawArgs*);
 	UT_Bool			needsRedraw(void) const;

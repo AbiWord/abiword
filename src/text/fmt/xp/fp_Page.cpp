@@ -17,8 +17,6 @@
  * 02111-1307, USA.
  */
 
-
-
 #include <stdlib.h>
 #include <string.h>
 
@@ -86,21 +84,21 @@ UT_sint32 fp_Page::getBottom(void) const
 	}
 
 	fp_Column* pFirstColumnLeader = getNthColumnLeader(0);
-	fl_SectionLayout* pFirstSectionLayout = pFirstColumnLeader->getSectionLayout();
+	fl_DocSectionLayout* pFirstSectionLayout = pFirstColumnLeader->getDocSectionLayout();
 //	UT_sint32 iTopMargin = pFirstSectionLayout->getTopMargin();
 	UT_sint32 iBottomMargin = pFirstSectionLayout->getBottomMargin();
 	
 	return m_iHeight - iBottomMargin;
 }	
 
-void fp_Page::getScreenOffsets(fp_Column* pCol, UT_sint32& xoff, UT_sint32& yoff)
+void fp_Page::getScreenOffsets(fp_Container* pContainer, UT_sint32& xoff, UT_sint32& yoff)
 {
 	UT_ASSERT(m_pView);
 	
 	m_pView->getPageScreenOffsets(this, xoff, yoff);
 
-	xoff += pCol->getX();
-	yoff += pCol->getY();
+	xoff += pContainer->getX();
+	yoff += pContainer->getY();
 }
 
 fp_Page* fp_Page::getNext(void) const
@@ -182,7 +180,7 @@ void fp_Page::_reformat(void)
 	}
 
 	fp_Column* pFirstColumnLeader = getNthColumnLeader(0);
-	fl_SectionLayout* pFirstSectionLayout = pFirstColumnLeader->getSectionLayout();
+	fl_DocSectionLayout* pFirstSectionLayout = (pFirstColumnLeader->getDocSectionLayout());
 	UT_sint32 iLeftMargin = pFirstSectionLayout->getLeftMargin();
 	UT_sint32 iRightMargin = pFirstSectionLayout->getRightMargin();
 	UT_sint32 iTopMargin = pFirstSectionLayout->getTopMargin();
@@ -199,7 +197,7 @@ void fp_Page::_reformat(void)
 		}
 
 		fp_Column* pLeader = getNthColumnLeader(i);
-		fl_SectionLayout* pSL = pLeader->getSectionLayout();
+		fl_DocSectionLayout* pSL = (pLeader->getDocSectionLayout());
 		UT_uint32 iNumColumns = pSL->getNumColumns();
 		UT_uint32 iColumnGap = pSL->getColumnGap();
 
@@ -225,13 +223,13 @@ void fp_Page::_reformat(void)
 
 		iY += iMostHeight;
 
-		iY += pLeader->getSectionLayout()->getSpaceAfter();
+		iY += pLeader->getDocSectionLayout()->getSpaceAfter();
 	}
 
 	while (i < count)
 	{
 		// fp_Column* pLeader = getNthColumnLeader(i);
-		// fl_SectionLayout* pSL = pLeader->getSectionLayout();
+		// fl_DocSectionLayout* pSL = pLeader->getDocSectionLayout();
 
 		UT_ASSERT(UT_TODO);
 		

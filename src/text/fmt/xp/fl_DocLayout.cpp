@@ -17,8 +17,6 @@
  * 02111-1307, USA.
  */
 
-
-
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -86,7 +84,7 @@ FL_DocLayout::~FL_DocLayout()
 	
 	while (m_pFirstSection)
 	{
-		fl_SectionLayout* pNext = m_pFirstSection->getNext();
+		fl_DocSectionLayout* pNext = m_pFirstSection->getNextDocSection();
 		delete m_pFirstSection;
 		m_pFirstSection = pNext;
 	}
@@ -330,11 +328,11 @@ void FL_DocLayout::_deleteEmptyColumnsAndPages(void)
 {
 	int i;
 
-	fl_SectionLayout* pSL = m_pFirstSection;
+	fl_DocSectionLayout* pSL = m_pFirstSection;
 	while (pSL)
 	{
 		pSL->deleteEmptyColumns();
-		pSL = pSL->getNext();
+		pSL = pSL->getNextDocSection();
 	}
 
 	int iCountPages = m_vecPages.getItemCount();
@@ -581,7 +579,7 @@ UT_Bool	FL_DocLayout::touchesPendingWord(fl_BlockLayout *pBlock,
 	return m_pPendingWord->doesTouch(iOffset, len);
 }
 
-void FL_DocLayout::addSection(fl_SectionLayout* pSL)
+void FL_DocLayout::addSection(fl_DocSectionLayout* pSL)
 {
 	if (m_pLastSection)
 	{
@@ -602,7 +600,7 @@ void FL_DocLayout::addSection(fl_SectionLayout* pSL)
 	}
 }
 
-void FL_DocLayout::insertSectionAfter(fl_SectionLayout* pAfter, fl_SectionLayout* pNewSL)
+void FL_DocLayout::insertSectionAfter(fl_DocSectionLayout* pAfter, fl_DocSectionLayout* pNewSL)
 {
 	pNewSL->setNext(pAfter->getNext());
 	pNewSL->setPrev(pAfter);
@@ -618,7 +616,7 @@ void FL_DocLayout::insertSectionAfter(fl_SectionLayout* pAfter, fl_SectionLayout
 	}
 }
 
-void FL_DocLayout::removeSection(fl_SectionLayout * pSL)
+void FL_DocLayout::removeSection(fl_DocSectionLayout * pSL)
 {
 	UT_ASSERT(pSL);
 	UT_ASSERT(m_pFirstSection);
@@ -635,7 +633,7 @@ void FL_DocLayout::removeSection(fl_SectionLayout * pSL)
 	
 	if (pSL == m_pFirstSection)
 	{
-		m_pFirstSection = m_pFirstSection->getNext();
+		m_pFirstSection = m_pFirstSection->getNextDocSection();
 		if (!m_pFirstSection)
 		{
 			m_pLastSection = NULL;
@@ -644,7 +642,7 @@ void FL_DocLayout::removeSection(fl_SectionLayout * pSL)
 
 	if (pSL == m_pLastSection)
 	{
-		m_pLastSection = m_pLastSection->getPrev();
+		m_pLastSection = m_pLastSection->getPrevDocSection();
 		if (!m_pLastSection)
 		{
 			m_pFirstSection = NULL;

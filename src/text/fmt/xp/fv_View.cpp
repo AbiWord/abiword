@@ -17,7 +17,6 @@
  * 02111-1307, USA.
  */
 
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <ctype.h>
@@ -131,8 +130,8 @@ FL_DocLayout* FV_View::getLayout() const
 UT_Bool FV_View::notifyListeners(const AV_ChangeMask hint)
 {
 	/*
-		IDEA: The view caches its change state as of the last notification, 
-		to minimize noise from duplicate notifications.  
+	  IDEA: The view caches its change state as of the last notification, 
+	  to minimize noise from duplicate notifications.  
 	*/
 	UT_ASSERT(hint != AV_CHG_NONE);
 	AV_ChangeMask mask = hint;
@@ -187,8 +186,8 @@ UT_Bool FV_View::notifyListeners(const AV_ChangeMask hint)
 	if (mask & AV_CHG_FMTBLOCK)
 	{
 		/*
-			The following brute-force solution works, but is atrociously 
-			expensive, so we should avoid using it whenever feasible.  
+		  The following brute-force solution works, but is atrociously 
+		  expensive, so we should avoid using it whenever feasible.  
 		*/
 		const XML_Char ** propsBlock = NULL;
 		getBlockFormat(&propsBlock);
@@ -234,10 +233,10 @@ UT_Bool FV_View::notifyListeners(const AV_ChangeMask hint)
 	if (mask & AV_CHG_FMTCHAR)
 	{
 		/*
-			The following brute-force solution works, but is atrociously 
-			expensive, so we should avoid using it whenever feasible.  
+		  The following brute-force solution works, but is atrociously 
+		  expensive, so we should avoid using it whenever feasible.  
 
-			TODO: devise special case logic for (at minimum) char motion
+		  TODO: devise special case logic for (at minimum) char motion
 		*/
 		const XML_Char ** propsChar = NULL;
 		getCharFormat(&propsChar);
@@ -283,8 +282,8 @@ UT_Bool FV_View::notifyListeners(const AV_ChangeMask hint)
 	if (mask & AV_CHG_FMTSECTION)
 	{
 		/*
-			The following brute-force solution works, but is atrociously 
-			expensive, so we should avoid using it whenever feasible.  
+		  The following brute-force solution works, but is atrociously 
+		  expensive, so we should avoid using it whenever feasible.  
 		*/
 		const XML_Char ** propsSection = NULL;
 		getSectionFormat(&propsSection);
@@ -343,19 +342,29 @@ UT_Bool FV_View::notifyListeners(const AV_ChangeMask hint)
 
 		_findPositionCoords(getPoint(), m_bPointEOL, xCaret, yCaret, heightCaret, NULL, &pRun);
 
-		fp_Column * pColumn = pRun->getLine()->getColumn();
-		UT_uint32 nCol=0;
-		fp_Column * pNthColumn=pColumn->getLeader();
-		while (pNthColumn && (pNthColumn != pColumn))
-		{
-			nCol++;
-			pNthColumn = pNthColumn->getFollower();
-		}
+		fp_Container * pContainer = pRun->getLine()->getContainer();
 
-		if (nCol != m_chg.iColumn)
-			m_chg.iColumn = nCol;
-		else
-			mask ^= AV_CHG_COLUMN;
+		if (pContainer->getType() == FP_CONTAINER_COLUMN)
+		{
+			fp_Column* pColumn = (fp_Column*) pContainer;
+			
+			UT_uint32 nCol=0;
+			fp_Column * pNthColumn = pColumn->getLeader();
+			while (pNthColumn && (pNthColumn != pColumn))
+			{
+				nCol++;
+				pNthColumn = pNthColumn->getFollower();
+			}
+
+			if (nCol != m_chg.iColumn)
+			{
+				m_chg.iColumn = nCol;
+			}
+			else
+			{
+				mask ^= AV_CHG_COLUMN;
+			}
+		}
 	}
 	
 	// base class does the rest
@@ -824,7 +833,7 @@ void FV_View::cmdCharMotion(UT_Bool bForward, UT_uint32 count)
 	notifyListeners(AV_CHG_MOTION);
 }
 
-fl_BlockLayout* FV_View::_findBlockAtPosition(PT_DocPosition pos)
+fl_BlockLayout* FV_View::_findBlockAtPosition(PT_DocPosition pos) const
 {
 	return m_pLayout->findBlockAtPosition(pos);
 }
@@ -1610,9 +1619,15 @@ void FV_View::_moveInsPtNextPrevLine(UT_Bool bNext)
 	fp_Run* pOldRun = pOldBlock->findPointCoords(getPoint(), m_bPointEOL, xPoint, yPoint, iPointHeight);
 	fl_SectionLayout* pOldSL = pOldBlock->getSectionLayout();
 	fp_Line* pOldLine = pOldRun->getLine();
-	fp_Column* pOldColumn = pOldLine->getColumn();
-	fp_Column* pOldLeader = pOldColumn->getLeader();
-	fp_Page* pOldPage = pOldColumn->getPage();
+	fp_Container* pOldContainer = pOldLine->getContainer();
+	fp_Page* pOldPage = pOldContainer->getPage();
+	UT_Bool bDocSection = (pOldSL->getType() == FL_SECTION_DOC);
+
+	fp_Column* pOldLeader = NULL;
+	if (bDocSection)
+	{
+		pOldLeader = ((fp_Column*) (pOldContainer))->getLeader();
+	}
 
 	UT_sint32 iPageOffset;
 	getPageYOffset(pOldPage, iPageOffset);
@@ -1620,7 +1635,7 @@ void FV_View::_moveInsPtNextPrevLine(UT_Bool bNext)
 	UT_sint32 iLineX = 0;
 	UT_sint32 iLineY = 0;
 
-	pOldColumn->getOffsets(pOldLine, iLineX, iLineY);
+	pOldContainer->getOffsets(pOldLine, iLineX, iLineY);
 	yPoint = iLineY;
 
 	iLineHeight = pOldLine->getHeight();
@@ -1629,18 +1644,18 @@ void FV_View::_moveInsPtNextPrevLine(UT_Bool bNext)
 
 	if (bNext)
 	{
-		if (pOldLine != pOldColumn->getLastLine())
+		if (pOldLine != pOldContainer->getLastLine())
 		{
 			// just move off this line
 			yPoint += (iLineHeight + pOldLine->getMarginAfter());
 		}
-		else if (pOldSL->getLastColumn()->getLeader() == pOldLeader)
+		else if (bDocSection && (((fp_Column*) (pOldSL->getLastContainer()))->getLeader() == pOldLeader))
 		{
 			// move to next section
 			fl_SectionLayout* pSL = pOldSL->getNext();
 			if (pSL)
 			{
-				yPoint = pSL->getFirstColumn()->getY();
+				yPoint = pSL->getFirstContainer()->getY();
 			}
 			else
 			{
@@ -1664,18 +1679,18 @@ void FV_View::_moveInsPtNextPrevLine(UT_Bool bNext)
 	}
 	else
 	{
-		if (pOldLine != pOldColumn->getFirstLine())
+		if (pOldLine != pOldContainer->getFirstLine())
 		{
 			// just move off this line
 			yPoint -= (pOldLine->getMarginBefore() + 1);
 		}
-		else if (pOldSL->getFirstColumn() == pOldLeader)
+		else if (bDocSection && (pOldSL->getFirstContainer() == pOldLeader))
 		{
 			// move to prev section
 			fl_SectionLayout* pSL = pOldSL->getPrev();
 			if (pSL)
 			{
-				fp_Column* pTmpCol = pSL->getLastColumn()->getLeader();
+				fp_Column* pTmpCol = ((fp_Column*) (pSL->getLastContainer()))->getLeader();
 				yPoint = pTmpCol->getY();
 
 				UT_sint32 iMostHeight = 0;
@@ -3039,7 +3054,7 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 	if (pRun)
 	{
 		// we now have coords relative to the page containing the ins pt
-		fp_Page* pPointPage = pRun->getLine()->getColumn()->getPage();
+		fp_Page* pPointPage = pRun->getLine()->getContainer()->getPage();
 
 		UT_sint32 iPageOffset;
 		getPageYOffset(pPointPage, iPageOffset);
@@ -4179,24 +4194,40 @@ void FV_View::getTopRulerInfo(AP_TopRulerInfo * pInfo)
 
 		_findPositionCoords(getPoint(), m_bPointEOL, xCaret, yCaret, heightCaret, &pBlock, &pRun);
 
-		fp_Column * pColumn = pRun->getLine()->getColumn();
-		UT_uint32 nCol=0;
-		fp_Column * pNthColumn=pColumn->getLeader();
-		while (pNthColumn && (pNthColumn != pColumn))
+		fp_Container * pContainer = pRun->getLine()->getContainer();
+		fl_SectionLayout * pSection = pContainer->getSectionLayout();
+		if (pSection->getType() == FL_SECTION_DOC)
 		{
-			nCol++;
-			pNthColumn = pNthColumn->getFollower();
+			fp_Column* pColumn = (fp_Column*) pContainer;
+			fl_DocSectionLayout* pDSL = (fl_DocSectionLayout*) pSection;
+			
+			UT_uint32 nCol=0;
+			fp_Column * pNthColumn=pColumn->getLeader();
+			while (pNthColumn && (pNthColumn != pColumn))
+			{
+				nCol++;
+				pNthColumn = pNthColumn->getFollower();
+			}
+			pInfo->m_iCurrentColumn = nCol;
+			pInfo->m_iNumColumns = pDSL->getNumColumns();
+
+			pInfo->u.c.m_xaLeftMargin = pDSL->getLeftMargin();
+			pInfo->u.c.m_xaRightMargin = pDSL->getRightMargin();
+			pInfo->u.c.m_xColumnGap = pDSL->getColumnGap();
+			pInfo->u.c.m_xColumnWidth = pColumn->getWidth();
 		}
-
-		fl_SectionLayout * pSection = pColumn->getSectionLayout();
-
+		else
+		{
+			// TODO fill in the same info as above, with whatever is appropriate
+		}
+		
 		// fill in the details
 		
 		pInfo->m_mode = AP_TopRulerInfo::TRI_MODE_COLUMNS;
 		pInfo->m_xPaperSize = m_pG->convertDimension("8.5in"); // TODO eliminate this constant
 		pInfo->m_xPageViewMargin = fl_PAGEVIEW_MARGIN_X;
 
-		pInfo->m_xrPoint = xCaret - pColumn->getX();
+		pInfo->m_xrPoint = xCaret - pContainer->getX();
 		pInfo->m_xrLeftIndent = m_pG->convertDimension(pBlock->getProperty("margin-left"));
 		pInfo->m_xrRightIndent = m_pG->convertDimension(pBlock->getProperty("margin-right"));
 		pInfo->m_xrFirstLineIndent = m_pG->convertDimension(pBlock->getProperty("text-indent"));
@@ -4207,13 +4238,6 @@ void FV_View::getTopRulerInfo(AP_TopRulerInfo * pInfo)
 		pInfo->m_iDefaultTabInterval = pBlock->getDefaultTabInterval();
 		pInfo->m_pszTabStops = pBlock->getProperty("tabstops");
 
-		pInfo->m_iCurrentColumn = nCol;
-		pInfo->m_iNumColumns = pSection->getNumColumns();
-
-		pInfo->u.c.m_xaLeftMargin = pSection->getLeftMargin();
-		pInfo->u.c.m_xaRightMargin = pSection->getRightMargin();
-		pInfo->u.c.m_xColumnGap = pSection->getColumnGap();
-		pInfo->u.c.m_xColumnWidth = pColumn->getWidth();
 	}
 	else
 	{
@@ -4399,3 +4423,50 @@ EV_EditMouseContext FV_View::getInsertionPointContext(UT_sint32 * pxPos, UT_sint
 	return emc;
 }
 
+fp_Page* FV_View::getCurrentPage(void) const
+{
+	UT_sint32 xPoint;
+	UT_sint32 yPoint;
+	UT_sint32 iPointHeight;
+	UT_uint32 pos = getPoint();
+	UT_Bool bEOL;
+	
+	fl_BlockLayout* pBlock = _findBlockAtPosition(pos);
+	UT_ASSERT(pBlock);
+	fp_Run* pRun = pBlock->findPointCoords(pos, bEOL, xPoint, yPoint, iPointHeight);
+
+	// NOTE prior call will fail if the block isn't currently formatted,
+	// NOTE so we won't be able to figure out more specific geometry
+
+	if (pRun)
+	{
+		// we now have coords relative to the page containing the ins pt
+		fp_Page* pPointPage = pRun->getLine()->getContainer()->getPage();
+
+		return pPointPage;
+	}
+
+	return NULL;
+}
+
+UT_uint32 FV_View::getCurrentPageNumForStatusBar(void) const
+{
+	fp_Page* pCurrentPage = getCurrentPage();
+	UT_uint32 ndx = 1;
+
+	fp_Page* pPage = m_pLayout->getFirstPage();
+	while (pPage)
+	{
+		if (pPage == pCurrentPage)
+		{
+			return ndx;
+		}
+
+		ndx++;
+		pPage = pPage->getNext();
+	}
+
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+
+	return 0;
+}

@@ -1,3 +1,6 @@
+
+#error This file is no longer used
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 

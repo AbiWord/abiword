@@ -17,8 +17,6 @@
  * 02111-1307, USA.
  */
 
-
-
 #ifndef SECTIONLAYOUT_H
 #define SECTIONLAYOUT_H
 
@@ -30,43 +28,39 @@
 class FL_DocLayout;
 class fl_BlockLayout;
 class fb_LineBreaker;
-class fb_ColumnBreaker;
 class fp_Column;
+class fp_Container;
 class PD_Document;
 class PP_AttrProp;
 class PX_ChangeRecord_StruxChange;
 class PX_ChangeRecord_Strux;
+
+#define FL_SECTION_DOC		1
 
 class fl_SectionLayout : public fl_Layout
 {
 	friend class fl_DocListener;
 
 public:
-	fl_SectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_AttrPropIndex ap);
+	fl_SectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_AttrPropIndex ap, UT_uint32 iType);
 	~fl_SectionLayout();
 
-	FL_DocLayout*		getDocLayout() const;
-	fp_Column*			getNewColumn();
-	fp_Column*			getFirstColumn() const;
-	fp_Column*			getLastColumn() const;
+	inline UT_uint32	getType(void) const { return m_iType; }
 
-	void				format();
-	void				updateLayout();
+	FL_DocLayout*		getDocLayout(void) const;
 
-	inline UT_sint32			getLeftMargin(void) const { return m_iLeftMargin; }
-	inline UT_sint32			getRightMargin(void) const { return m_iRightMargin; }
-	inline UT_sint32			getTopMargin(void) const { return m_iTopMargin; }
-	inline UT_sint32			getBottomMargin(void) const { return m_iBottomMargin; }
+	virtual fp_Container*		getNewContainer() = 0;
+	virtual fp_Container*		getFirstContainer() const = 0;
+	virtual fp_Container*		getLastContainer() const = 0;
+
+	virtual void		format(void) = 0;
+	virtual void		updateLayout(void) = 0;
+
 	inline fl_SectionLayout*	getPrev(void) const { return m_pPrev; }
 	inline fl_SectionLayout*	getNext(void) const { return m_pNext; }
-	inline UT_sint32			getSpaceAfter(void) const { return m_iSpaceAfter; }
-
 	void				setPrev(fl_SectionLayout*);
 	void				setNext(fl_SectionLayout*);
 	
-	UT_uint32			getNumColumns(void) const;
-	UT_uint32			getColumnGap(void) const;
-
 	fl_BlockLayout *	getFirstBlock(void) const;
 	fl_BlockLayout *	getLastBlock(void) const;
 	fl_BlockLayout *	appendBlock(PL_StruxDocHandle sdh, PT_AttrPropIndex indexAP);
@@ -74,33 +68,61 @@ public:
 	void				addBlock(fl_BlockLayout* pBL);
 	void				removeBlock(fl_BlockLayout * pBL);
 
-	void				deleteEmptyColumns(void);
-	UT_Bool 			doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc);
-	UT_Bool				doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx);
-#if 0	
-	UT_Bool				doclistener_insertStrux(const PX_ChangeRecord_Strux * pcrx,
-												PL_StruxDocHandle sdh,
-												PL_ListenerId lid,
-												void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
-																		PL_ListenerId lid,
-																		PL_StruxFmtHandle sfhNew));
-#endif	
+	virtual UT_Bool 	doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc) = 0;
 
 protected:
+	virtual void		_lookupProperties(void) = 0;
+	
 	void				_purgeLayout();
 	fb_LineBreaker *	_getLineBreaker(void);
-	void				_lookupProperties(void);
 
+	UT_uint32			m_iType;
+	
 	fl_SectionLayout*	m_pPrev;
 	fl_SectionLayout*	m_pNext;
 	
 	FL_DocLayout*		m_pLayout;
 	fb_LineBreaker*		m_pLB;
-	fb_ColumnBreaker*	m_pCB;
 
 	fl_BlockLayout*		m_pFirstBlock;
 	fl_BlockLayout*		m_pLastBlock;
+};
 
+class fl_DocSectionLayout : public fl_SectionLayout
+{
+	friend class fl_DocListener;
+
+public:
+	fl_DocSectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_AttrPropIndex ap);
+	~fl_DocSectionLayout();
+
+	fl_DocSectionLayout* getNextDocSection(void) const;
+	fl_DocSectionLayout* getPrevDocSection(void) const;
+	
+	virtual void		format(void);
+	virtual void		updateLayout(void);
+	UT_sint32			breakSection(void);
+	
+	virtual fp_Container*		getNewContainer();
+	virtual fp_Container*		getFirstContainer() const;
+	virtual fp_Container*		getLastContainer() const;
+
+	inline UT_sint32			getLeftMargin(void) const { return m_iLeftMargin; }
+	inline UT_sint32			getRightMargin(void) const { return m_iRightMargin; }
+	inline UT_sint32			getTopMargin(void) const { return m_iTopMargin; }
+	inline UT_sint32			getBottomMargin(void) const { return m_iBottomMargin; }
+	inline UT_sint32			getSpaceAfter(void) const { return m_iSpaceAfter; }
+	
+	UT_uint32			getNumColumns(void) const;
+	UT_uint32			getColumnGap(void) const;
+
+	void				deleteEmptyColumns(void);
+	virtual UT_Bool 	doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc);
+	UT_Bool				doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx);
+
+protected:
+	virtual void		_lookupProperties(void);
+	
 	UT_uint32			m_iNumColumns;
 	UT_uint32			m_iColumnGap;
 

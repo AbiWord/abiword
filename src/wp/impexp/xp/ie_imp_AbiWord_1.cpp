@@ -210,13 +210,30 @@ struct _TokenTable
 	int				m_type;
 };
 
+/*
+  TODO remove tag synonyms.  We're currently accepted
+  synonyms for tags, as follows:
+
+  abiword	awml
+  field		f
+  image		i
+
+  The renaming of these tags occurred 26 Mar 1999, shortly
+  after tarball 0.5.2.  Eventually, this backwards compatibility
+  code should be removed.
+*/
+
 static struct _TokenTable s_Tokens[] =
-{	{	"awml",			TT_DOCUMENT		},
+{
+	{	"abiword",		TT_DOCUMENT		},
+	{	"awml",			TT_DOCUMENT		},
 	{	"section",		TT_SECTION		},
 	{	"p",			TT_BLOCK		},
 	{	"c",			TT_INLINE		},
 	{	"i",			TT_IMAGE		},
+	{	"image",		TT_IMAGE		},
 	{	"f",			TT_FIELD		},
+	{	"field",		TT_FIELD		},
 	{	"br",			TT_BREAK		},
 	{	"data",			TT_DATASECTION	},
 	{	"d",			TT_DATAITEM		},
@@ -384,7 +401,9 @@ void IE_Imp_AbiWord_1::_startElement(const XML_Char *name, const XML_Char **atts
 	case TT_OTHER:
 	default:
 		UT_DEBUGMSG(("Unknown tag [%s]\n",name));
+#if 0
 		m_iestatus = IES_BogusDocument;
+#endif		
 		return;
 	}
 }
@@ -473,7 +492,9 @@ void IE_Imp_AbiWord_1::_endElement(const XML_Char *name)
 	case TT_OTHER:
 	default:
 		UT_DEBUGMSG(("Unknown end tag [%s]\n",name));
+#if 0
 		m_iestatus = IES_BogusDocument;
+#endif		
 		return;
 	}
 }

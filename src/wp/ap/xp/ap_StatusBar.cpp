@@ -28,6 +28,8 @@
 #include "xap_Frame.h"
 #include "xav_View.h"
 #include "ap_Strings.h"
+#include "fl_DocLayout.h"
+#include "fv_View.h"
 
 #define MyMax(a,b)		(((a)>(b)) ? (a) : (b))
 
@@ -174,15 +176,15 @@ void ap_sb_Field_PageInfo::draw(void)
 	}
 }
 
-void ap_sb_Field_PageInfo::notify(AV_View * /*pavView*/, const AV_ChangeMask mask)
+void ap_sb_Field_PageInfo::notify(AV_View * pavView, const AV_ChangeMask mask)
 {
-	//FV_View * pView = (FV_View *)pavView;
+	FV_View * pView = (FV_View *)pavView;
 	
 	UT_Bool bNeedNewString = UT_FALSE;
 	
 	if (mask && (AV_CHG_PAGECOUNT))
 	{
-		UT_uint32 newPageCount = 1;		// TODO use pView to get total number of pages in document.
+		UT_uint32 newPageCount = pView->getLayout()->countPages();
 
 		if (newPageCount != m_nrPages)
 		{
@@ -193,7 +195,7 @@ void ap_sb_Field_PageInfo::notify(AV_View * /*pavView*/, const AV_ChangeMask mas
 
 	if (mask && (AV_CHG_MOTION | AV_CHG_PAGECOUNT))
 	{
-		UT_uint32 currentPage = 1;		// TODO use pView to get the current page number.
+		UT_uint32 currentPage = pView->getCurrentPageNumForStatusBar();
 
 		if (currentPage != m_pageNr)
 		{

@@ -73,7 +73,7 @@ class FV_View : public AV_View
 {
 	friend class fl_DocListener;
 	friend class fl_BlockLayout;
-	friend class fl_SectionLayout;
+	friend class fl_DocSectionLayout;
 	
 public:
 	FV_View(XAP_App*, void*, FL_DocLayout*);
@@ -109,7 +109,9 @@ public:
 	virtual EV_EditMouseContext getInsertionPointContext(UT_sint32 * pxPos, UT_sint32 * pyPos);
 	
 // ----------------------
-	FL_DocLayout* getLayout() const;
+	FL_DocLayout* 	getLayout() const;
+	UT_uint32		getCurrentPageNumForStatusBar(void) const;
+	fp_Page*		getCurrentPage(void) const;
 
 	void draw(int page, dg_DrawArgs* da);
 
@@ -213,7 +215,7 @@ protected:
 											UT_uint32& height,
 											fl_BlockLayout** ppBlock,
 											fp_Run** ppRun);
-	fl_BlockLayout* 	_findBlockAtPosition(PT_DocPosition pos);
+	fl_BlockLayout* 	_findBlockAtPosition(PT_DocPosition pos) const;
 
 	fp_Page*			_getPageForXY(UT_sint32 xPos, 
 									  UT_sint32 yPos, 

@@ -17,8 +17,6 @@
  * 02111-1307, USA.
  */
 
-
-
 #ifndef LINE_H
 #define LINE_H
 
@@ -30,7 +28,7 @@
 
 class fp_Run;
 class GR_Graphics;
-class fp_Column;
+class fp_Container;
 
 struct dg_DrawArgs;
 
@@ -46,7 +44,7 @@ public:
 	fp_Line();
 	~fp_Line();
 
-	inline fp_Column* 			getColumn(void) const		{ return m_pColumn; }
+	inline fp_Container* 		getContainer(void) const	{ return m_pContainer; }
 	inline fl_BlockLayout*		getBlock(void) const 		{ return m_pBlock; }
 	inline UT_sint32 			getHeight(void) const 		{ return m_iHeight; }
 	
@@ -61,12 +59,12 @@ public:
 	inline UT_sint32			getAscent(void) const 		{ return m_iAscent; }
 	inline UT_sint32			getDescent(void) const 		{ return m_iDescent; }
 	
-	void		setMaxWidth(UT_sint32);
-	void		setX(UT_sint32);
-	void		setY(UT_sint32);
+	void				setMaxWidth(UT_sint32);
+	void				setX(UT_sint32);
+	void				setY(UT_sint32);
 	inline	void		setNext(fp_Line * p)				{ m_pNext = p; }
 	inline	void        setPrev(fp_Line * p)				{ m_pPrev = p; }
-	void		setColumn(fp_Column*);
+	void				setContainer(fp_Container*);
 	inline	void		setBlock(fl_BlockLayout * pBlock)	{ m_pBlock = pBlock; }
 
 	fp_Line*	getNextLineInSection(void) const;
@@ -112,7 +110,7 @@ public:
 	
 protected:
 	fl_BlockLayout*	m_pBlock;
-	fp_Column*		m_pColumn;
+	fp_Container*	m_pContainer;
 	
 	UT_sint32	 	m_iWidth;
 	UT_sint32	 	m_iMaxWidth;

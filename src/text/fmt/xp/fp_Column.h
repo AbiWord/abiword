@@ -17,8 +17,6 @@
  * 02111-1307, USA.
  */
 
-
-
 #ifndef COLUMN_H
 #define COLUMN_H
 
@@ -27,6 +25,7 @@
 #include "ut_vector.h"
 #include "pt_Types.h"
 
+class fl_DocSectionLayout;
 class fl_SectionLayout;
 class fp_Line;
 class fp_Page;
@@ -35,21 +34,16 @@ class GR_Graphics;
 struct dg_DrawArgs;
 struct fp_Sliver;
 
-// ----------------------------------------------------------------
-/*
-	TODO should columns have borders, margins, and padding, plus bg colors?
-*/
+#define FP_CONTAINER_COLUMN		1
 
-class fp_Column
+class fp_Container
 {
 public:
-	fp_Column(fl_SectionLayout* pSectionLayout);
-	~fp_Column();
+	fp_Container(UT_uint32 iType, fl_SectionLayout* pSectionLayout);
+	~fp_Container();
 
-	void				setLeader(fp_Column*);
-	void				setFollower(fp_Column*);
-	void 				setNext(fp_Column*);
-	void 				setPrev(fp_Column*);
+	inline UT_uint32	getType(void) const { return m_iType; }
+	
 	void				setPage(fp_Page*);
 	void				setWidth(UT_sint32);
 	void				setMaxHeight(UT_sint32);
@@ -61,16 +55,10 @@ public:
 	inline				UT_sint32			getWidth(void) const 			{ return m_iWidth; }
 	inline				UT_sint32			getX(void) const 				{ return m_iX; }
 	inline				UT_sint32			getY(void) const				{ return m_iY; }
-	inline				fp_Column*			getLeader(void) const 			{ return m_pLeader; }
-	inline				fp_Column*			getFollower(void) const 		{ return m_pNextFollower; }
-	inline				fp_Column*			getNext(void) const				{ return m_pNext; }
-	inline				fp_Column*			getPrev(void) const				{ return m_pPrev; }
 	inline				fp_Page*			getPage(void) const				{ return m_pPage; }
 	inline				fl_SectionLayout*	getSectionLayout(void) const	{ return m_pSectionLayout; }
 	inline				UT_sint32			getHeight(void) const			{ return m_iHeight; }
 
-	UT_Bool				isEmpty(void) const;
-	
 	fp_Line*			getFirstLine(void) const;
 	fp_Line*			getLastLine(void) const;
 	
@@ -78,8 +66,7 @@ public:
 	UT_Bool				insertLine(fp_Line*);
 	UT_Bool				addLine(fp_Line*);
 	void				removeLine(fp_Line*);
-	
-	void				layout(void);
+	UT_Bool				isEmpty(void) const;
 	
 	UT_Bool 			containsPoint(UT_sint32 x, UT_sint32 y);
 	UT_uint32 			distanceFromPoint(UT_sint32 x, UT_sint32 y);
@@ -92,11 +79,10 @@ public:
 	void 				dump();
 
 	void				clearScreen(void);
-	void 				bumpLines(fp_Line* pLastLineToKeep);
-	
-protected:
-	UT_uint32 				_getBottomOfLastLine(void) const;
 
+protected:
+	UT_uint32				m_iType;
+	
 	fp_Page*				m_pPage;
 
 	UT_sint32 				m_iWidth;
@@ -108,15 +94,41 @@ protected:
 
 	UT_Vector				m_vecLines;
 	
+	fl_SectionLayout*		m_pSectionLayout;
+
+	GR_Graphics*			m_pG;
+};
+
+class fp_Column : public fp_Container
+{
+public:
+	fp_Column(fl_SectionLayout* pSectionLayout);
+	~fp_Column();
+
+	void				setLeader(fp_Column*);
+	void				setFollower(fp_Column*);
+	void 				setNext(fp_Column*);
+	void 				setPrev(fp_Column*);
+
+	fl_DocSectionLayout*	getDocSectionLayout(void) const;
+	
+	inline				fp_Column*			getLeader(void) const 			{ return m_pLeader; }
+	inline				fp_Column*			getFollower(void) const 		{ return m_pNextFollower; }
+	inline				fp_Column*			getNext(void) const				{ return m_pNext; }
+	inline				fp_Column*			getPrev(void) const				{ return m_pPrev; }
+
+	void				layout(void);
+	
+	void 				bumpLines(fp_Line* pLastLineToKeep);
+	
+protected:
+	UT_uint32 				_getBottomOfLastLine(void) const;
+
 	fp_Column*				m_pNext;
 	fp_Column*				m_pPrev;
 
 	fp_Column*				m_pLeader;
 	fp_Column*				m_pNextFollower;
-	
-	fl_SectionLayout*		m_pSectionLayout;
-
-	GR_Graphics*			m_pG;
 };
 
 #endif /* COLUMN_H */
