@@ -26,8 +26,8 @@
 #include "ut_debugmsg.h"
 
 #include "xap_App.h"
+#include "xap_Frame.h"
 #include "xap_Win32App.h"
-#include "xap_Win32Frame.h"
 
 #include "ap_Strings.h"
 #include "ap_Dialog_Id.h"
