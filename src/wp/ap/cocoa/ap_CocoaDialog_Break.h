@@ -1,6 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001 Hubert Figuiere
+ * Copyright (C) 2001, 2003 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -24,10 +24,11 @@
 #import <Cocoa/Cocoa.h>
 
 #include "ap_Dialog_Break.h"
+#include "xap_CocoaDialog_Utilities.h"
 
 class AP_CocoaDialog_Break;
 
-@interface AP_CocoaDialog_BreakController : NSWindowController
+@interface AP_CocoaDialog_BreakController : NSWindowController <XAP_CocoaDialogProtocol>
 {
     IBOutlet NSMatrix *m_insertRadioBtns;
 	IBOutlet NSMatrix *m_sectionBreakBtns;
@@ -41,15 +42,15 @@ class AP_CocoaDialog_Break;
 	IBOutlet NSButtonCell *m_oddPgBtn;
 	AP_CocoaDialog_Break * m_xap;		// the app dialog owner
 }
-+ (AP_CocoaDialog_BreakController *)loadFromNib;
 - (void)windowDidLoad;
 
-- (void)setXAPOwner:(AP_CocoaDialog_Break *)owner;
 - (IBAction)cancelAction:(id)sender;
 - (IBAction)okAction:(id)sender;
-- (IBAction)sectionBrkAction:(id)sender;
 - (IBAction)insertAction:(id)sender;
 
+- (void)_updateButtonsState;
+- (NSMatrix*)insertMatrix;
+- (NSMatrix*)sectionMatrix;
 @end
 
 /*****************************************************************/

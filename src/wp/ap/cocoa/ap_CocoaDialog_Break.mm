@@ -1,6 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2002 Hubert Figuiere.
+ * Copyright (C) 2002-2003 Hubert Figuiere.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -44,7 +44,8 @@ XAP_Dialog * AP_CocoaDialog_Break::static_constructor(XAP_DialogFactory * pFacto
 
 AP_CocoaDialog_Break::AP_CocoaDialog_Break(XAP_DialogFactory * pDlgFactory,
 										 XAP_Dialog_Id dlgid)
-	: AP_Dialog_Break(pDlgFactory,dlgid)
+	: AP_Dialog_Break(pDlgFactory,dlgid),
+		m_dlg(nil)
 {
 }
 
@@ -57,20 +58,19 @@ AP_CocoaDialog_Break::~AP_CocoaDialog_Break(void)
 void AP_CocoaDialog_Break::runModal(XAP_Frame * pFrame)
 {
 	// Build the window's widgets and arrange them
-	m_dlg = [AP_CocoaDialog_BreakController loadFromNib];	// autoreleased
+	m_dlg = [[AP_CocoaDialog_BreakController alloc] initFromNib];	// autoreleased
 	[m_dlg setXAPOwner:this];
 	NSWindow *win = [m_dlg window];		// force the window to be loaded.
 
 	// Populate the window's data items
 	_populateWindowData();
 	
-	// To center the dialog, we need the frame of its parent.
-	AP_CocoaFrame * pCocoaFrame = static_cast<AP_CocoaFrame *>(pFrame);
-	UT_ASSERT(pCocoaFrame);
-	
 	[NSApp runModalForWindow:win];
 
 	_storeWindowData();
+	[m_dlg close];
+	[m_dlg release];
+	m_dlg = nil;
 }
 
 
@@ -88,36 +88,78 @@ void AP_CocoaDialog_Break::_storeWindowData(void)
 
 AP_Dialog_Break::breakType AP_CocoaDialog_Break::_getActiveRadioItem(void)
 {
-	UT_ASSERT (UT_NOT_IMPLEMENTED);
+	int x, y;
+	NSMatrix* insertMatrix = [m_dlg insertMatrix];
+	NSMatrix* sectionMatrix = [m_dlg sectionMatrix];
+	y = [insertMatrix selectedRow];
+	switch (y) {
+	case 0:
+		return AP_Dialog_Break::b_PAGE;
+		break;
+	case 1:
+		return AP_Dialog_Break::b_COLUMN;
+		break;
+	case 2:
+		x = [sectionMatrix selectedColumn];
+		y = [sectionMatrix selectedRow];
+		if (x == 0) {
+			if (y == 0) {
+				return AP_Dialog_Break::b_NEXTPAGE;
+			}
+			else if (y == 1) {
+				return AP_Dialog_Break::b_EVENPAGE;
+			}
+		}
+		else if (x == 1) {
+			if (y == 0) {
+				return AP_Dialog_Break::b_CONTINUOUS;
+			}
+			else if (y == 1) {
+				return AP_Dialog_Break::b_ODDPAGE;
+			}		
+		}
+		break;
+	}
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	return AP_Dialog_Break::b_PAGE;
 }
 
 
 @implementation AP_CocoaDialog_BreakController
 
-+ (AP_CocoaDialog_BreakController *)loadFromNib
+- (AP_CocoaDialog_BreakController *)initFromNib
 {
-	AP_CocoaDialog_BreakController * dlg = [[AP_CocoaDialog_BreakController alloc] initWithWindowNibName:@"ap_CocoaDialog_Break"];
-	return [dlg autorelease];
+	self =[super initWithWindowNibName:@"ap_CocoaDialog_Break"];
+	return self;
 }
 
 
-- (void)setXAPOwner:(AP_CocoaDialog_Break *)owner
+- (void)setXAPOwner:(XAP_Dialog *)owner
 {
-	UT_ASSERT (owner);
-	m_xap = owner;
+	m_xap = dynamic_cast<AP_CocoaDialog_Break*>(owner);
+	UT_ASSERT (m_xap);
 }
+
+- (void)discardXAP
+{
+	m_xap = nil;
+}
+
 
 - (void)windowDidLoad
 {
-#if 0
-	// translate the whole dialog.
-	XAP_CocoaFrame *pFrame = m_xap->_getFrame ();
 	// we get all our strings from the application string set
-	const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
-	[[self window] setTitle:[NSString stringWithUTF8String:pSS->getValue(AP_STRING_ID_DLG_Break_BreakTitle)]];
-	[m_insertGrp setTitle:[NSString stringWithUTF8String:pSS->getValue(AP_STRING_ID_DLG_Break_Insert)]];
-#endif
+	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
+	LocalizeControl([self window], pSS, AP_STRING_ID_DLG_Break_BreakTitle);
+	LocalizeControl(m_insertGrp, pSS, AP_STRING_ID_DLG_Break_Insert);
+	LocalizeControl(m_pgBrkBtn, pSS, AP_STRING_ID_DLG_Break_PageBreak);
+	LocalizeControl(m_sectionBrkBtn, pSS, AP_STRING_ID_DLG_Break_SectionBreaks);
+	LocalizeControl(m_nxtPgBtn, pSS, AP_STRING_ID_DLG_Break_NextPage);
+	LocalizeControl(m_continuousBtn, pSS, AP_STRING_ID_DLG_Break_Continuous);
+	LocalizeControl(m_evenPgBtn, pSS, AP_STRING_ID_DLG_Break_EvenPage);
+	LocalizeControl(m_oddPgBtn, pSS, AP_STRING_ID_DLG_Break_OddPage);
+	
+	[self _updateButtonsState];
 }
 
 - (IBAction)cancelAction:(id)sender
@@ -134,20 +176,33 @@ AP_Dialog_Break::breakType AP_CocoaDialog_Break::_getActiveRadioItem(void)
 	[NSApp stopModal];
 }
 
-- (IBAction)sectionBrkAction:(id)sender;
-{
-}
 
 - (IBAction)insertAction:(id)sender;
 {
-	if ([m_sectionBrkBtn compare:sender] == NSOrderedSame) {
-		// enable all the section break buttons
-	}
-	else {
-		// disable all the section break buttons
-	}	
+	[self _updateButtonsState];
 }
 
+- (void)_updateButtonsState
+{
+	if ([m_insertRadioBtns selectedRow] == 2) {
+		[m_sectionBreakBtns setEnabled:YES];	
+	}
+	else {
+		[m_sectionBreakBtns setEnabled:NO];
+	}
+}
+
+
+- (NSMatrix*)insertMatrix
+{
+	return m_insertRadioBtns;
+}
+
+
+- (NSMatrix*)sectionMatrix
+{
+	return m_sectionBreakBtns;
+}
 
 @end
 
