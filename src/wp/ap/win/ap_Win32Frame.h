@@ -82,8 +82,8 @@ class ABI_EXPORT AP_Win32Frame : public AP_Frame
 
  private:
 
-	static void					_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 xlimit);
-	static void					_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 ylimit);
+	static void					_scrollFuncX(void * pData, double xoff, double xlimit);
+	static void					_scrollFuncY(void * pData, double yoff, double ylimit);
 };
 
 #endif /* AP_WIN32FRAME_H */

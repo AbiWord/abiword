@@ -19,7 +19,6 @@
  */
 
 #include <ctype.h>
-#include <math.h>
 #include <string.h>
 
 #include "xap_App.h"
@@ -27,6 +26,7 @@
 #include "xap_EncodingManager.h"
 #include "gr_Graphics.h"
 #include "gr_CharWidths.h"
+#include "ut_math.h"
 #include "ut_assert.h"
 #include "ut_string.h"
 #include "ut_units.h"
@@ -218,50 +218,14 @@ void GR_Graphics::endPaint ()
 		_endPaint ();
 }
 
-UT_sint32 GR_Graphics::tdu(UT_sint32 layoutUnits) const
+UT_sint32 GR_Graphics::tdu(double layoutUnits) const
 {
-	double d = (static_cast<double>(layoutUnits) * static_cast<double>(getDeviceResolution()) * static_cast<double>(getZoomPercentage())) / (100. * static_cast<double>(getResolution())) + 0.1;
-	return static_cast<UT_sint32>(d);
+	return static_cast<UT_sint32>(rint((layoutUnits * static_cast<double>(getDeviceResolution()) * static_cast<double>(getZoomPercentage())) / (100. * static_cast<double>(getResolution()))));
 }
 
-/*!
- * This method converts to device units while taking account of the X-scroll
- * offset. This will always give the exact same logical location on the screen
- * no matter what the X-scroll offset is. This fixes off-by-1-pixel bugs in X.
- */
-UT_sint32 GR_Graphics::_tduX(UT_sint32 layoutUnits) const
+double GR_Graphics::tlu(UT_sint32 deviceUnits) const
 {
-	return tdu(layoutUnits+getPrevXOffset()) - tdu(getPrevXOffset());
-}
-
-/*!
- * This method converts to device units while taking account of the Y-scroll
- * offset. This will always give the exact same logical location on the screen
- * no matter what the Y-scroll offset is. This fixes off-by-1-pixel bugs in Y.
- */
-UT_sint32 GR_Graphics::_tduY(UT_sint32 layoutUnits) const
-{
-	return tdu(layoutUnits+getPrevYOffset()) - tdu(getPrevYOffset());
-}
-
-/*!
- * This method converts rectangle widths and heights to device units while 
- * taking account rounding down errors.
- * This fixes off-by-1-pixel-bugs in Rectangle widths and heights.
- */
-UT_sint32 GR_Graphics::_tduR(UT_sint32 layoutUnits) const
-{
-	UT_sint32 idh = tdu(layoutUnits);
-	if(tlu(idh) < layoutUnits)
-	{
-		idh += 1;
-	}
-	return idh;
-}
-
-UT_sint32 GR_Graphics::tlu(UT_sint32 deviceUnits) const
-{
-	return static_cast<UT_sint32>((static_cast<double>(deviceUnits) * static_cast<double>(getResolution()) * 100.) / (static_cast<double>(getDeviceResolution()) * static_cast<double>(getZoomPercentage())));;
+	return (static_cast<double>(deviceUnits) * static_cast<double>(getResolution()) * 100.) / (static_cast<double>(getDeviceResolution()) * static_cast<double>(getZoomPercentage()));
 }
 
 double GR_Graphics::tduD(double layoutUnits) const
@@ -373,8 +337,8 @@ const char * GR_Graphics::invertDimension(UT_Dimension dim, double dValue) const
 }
 
 bool GR_Graphics::scaleDimensions(const char * szLeftIn, const char * szWidthIn,
-									 UT_uint32 iWidthAvail,
-									 UT_sint32 * piLeft, UT_uint32 * piWidth) const
+									 double iWidthAvail,
+									 double * piLeft, double * piWidth) const
 {
 	/* Scale the given left-offset and width using the width available.
 	** Compute the actual left-offset and actual width used.
@@ -388,8 +352,8 @@ bool GR_Graphics::scaleDimensions(const char * szLeftIn, const char * szWidthIn,
 	UT_ASSERT(szLeftIn);
 	UT_ASSERT(szWidthIn);
 
-	UT_sint32 iLeft = UT_convertToLogicalUnits(szLeftIn);
-	UT_uint32 iWidth;
+	double iLeft = UT_convertToLogicalUnits(szLeftIn);
+	double iWidth;
 
 	if (szWidthIn[0] == '*')
 		iWidth = iWidthAvail - iLeft;
@@ -412,7 +376,7 @@ void GR_Graphics::flush(void)
  * Draw the specified image at the location specified in local units 
  * (xDest,yDest). xDest and yDest are in logical units.
  */
-void GR_Graphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
+void GR_Graphics::drawImage(GR_Image* pImg, double xDest, double yDest)
 {
    if (pImg)
      pImg->render(this, xDest, yDest);
@@ -424,7 +388,7 @@ void GR_Graphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
  * doesn't scale if the resolution or zoom changes. Instead you must create
  * a new image.
  */
-GR_Image* GR_Graphics::createNewImage(const char* pszName, const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight, GR_Image::GRType iType)
+GR_Image* GR_Graphics::createNewImage(const char* pszName, const UT_ByteBuf* pBB, double iWidth, double iHeight, GR_Image::GRType iType)
 {
    GR_VectorImage * vectorImage = NULL;
 
@@ -437,13 +401,13 @@ GR_Image* GR_Graphics::createNewImage(const char* pszName, const UT_ByteBuf* pBB
    }
 
    if (vectorImage) {
-      vectorImage->convertFromBuffer(pBB, iDisplayWidth, iDisplayHeight);
+      vectorImage->convertFromBuffer(pBB, tdu(iWidth), tdu(iHeight));
    }
 
    return vectorImage;
 }
 
-bool GR_Graphics::_PtInPolygon(UT_Point * pts,UT_uint32 nPoints,UT_sint32 x,UT_sint32 y)
+bool GR_Graphics::_PtInPolygon(UT_Point * pts, UT_uint32 nPoints, double x, double y)
 {
     UT_uint32 i,j;
     bool bResult = false;
@@ -459,7 +423,7 @@ bool GR_Graphics::_PtInPolygon(UT_Point * pts,UT_uint32 nPoints,UT_sint32 x,UT_s
 
 void GR_Graphics::polygon(UT_RGBColor& c,UT_Point *pts,UT_uint32 nPoints)
 {
-    UT_sint32 minX,maxX,minY,maxY,x,y;
+    double minX,maxX,minY,maxY,x,y;
     minX = maxX = pts[0].x;
     minY = maxY = pts[0].y;
     for(UT_uint32 i = 0;i < nPoints - 1;i++){
@@ -554,7 +518,7 @@ void GR_Graphics::setExposedAreaAccessed(bool exposeState)
 \param width the width of the rectangle.
 \param height the height of the rectangle.
 */
-void  GR_Graphics::setPendingRect( UT_sint32 x, UT_sint32 y, UT_sint32 width, UT_sint32 height)
+void  GR_Graphics::setPendingRect(double x, double y, double width, double height)
 {
 	m_PendingExposeArea.set(x,y,width,height);
 }
@@ -705,7 +669,7 @@ void GR_Graphics::fillRect(const UT_RGBColor& c, const UT_Rect &r)
 }
 #if XAP_DONTUSE_XOR
 #else
-void GR_Graphics::xorRect(UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
+void GR_Graphics::xorRect(double x, double y, double w, double h)
 {
 	xorLine(x,     y,     x + w, y);
 	xorLine(x + w, y,     x + w, y + h);
@@ -1248,7 +1212,7 @@ void GR_Graphics::justify(GR_RenderInfo & ri)
 	}
 }
 
-UT_uint32 GR_Graphics::XYToPosition(const GR_RenderInfo & ri, UT_sint32 x, UT_sint32 y) const
+UT_uint32 GR_Graphics::XYToPosition(const GR_RenderInfo & ri, double x, double y) const
 {
 	UT_return_val_if_fail(ri.getType() == GRRI_XP, 0);
 	GR_XPRenderInfo & RI = (GR_XPRenderInfo &) ri;
@@ -1259,9 +1223,9 @@ UT_uint32 GR_Graphics::XYToPosition(const GR_RenderInfo & ri, UT_sint32 x, UT_si
 }
 
 void GR_Graphics::positionToXY(const GR_RenderInfo & ri,
-						 	  UT_sint32& x, UT_sint32& y,
-							  UT_sint32& x2, UT_sint32& y2,
-							  UT_sint32& height, bool& bDirection) const
+						 	  double& x, double& y,
+							  double& x2, double& y2,
+							  double& height, bool& bDirection) const
 {
 	UT_return_if_fail(ri.getType() == GRRI_XP);
 	GR_XPRenderInfo & RI = (GR_XPRenderInfo &) ri;

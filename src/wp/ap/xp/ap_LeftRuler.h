@@ -50,10 +50,10 @@ class fp_TableContainer;
 class AP_LeftRulerTableInfo
 {
 public:
-	UT_sint32 m_iTopCellPos;
-	UT_sint32 m_iTopSpacing;
-	UT_sint32 m_iBotCellPos;
-	UT_sint32 m_iBotSpacing;
+	double m_iTopCellPos;
+	double m_iTopSpacing;
+	double m_iBotCellPos;
+	double m_iBotSpacing;
 	fp_CellContainer * m_pCell;
 };
 
@@ -99,11 +99,11 @@ public:
 
 	/* all values are in layout units */
 
-	UT_uint32				m_yPageStart;		/* absolute coord of start of page */
-	UT_uint32				m_yPageSize;		/* absolute page size for the current page */
-	UT_uint32				m_yPoint;			/* absolute coord of current insertion point */
-	UT_sint32				m_yTopMargin;		/* content start relative to top of page */
-	UT_sint32				m_yBottomMargin;	/* content end relative to top of page */
+	double					m_yPageStart;		/* absolute coord of start of page */
+	double					m_yPageSize;		/* absolute page size for the current page */
+	double					m_yPoint;			/* absolute coord of current insertion point */
+	double					m_yTopMargin;		/* content start relative to top of page */
+	double					m_yBottomMargin;	/* content end relative to top of page */
 	
 // Things we need for Tables
 
@@ -147,8 +147,8 @@ public:
     virtual  AV_ListenerType getType(void) { return AV_LISTENER_LEFTRULER;}
 
 	/* used with AV_ScrollObj */
-	static void			_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 xlimit);
-	static void			_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 ylimit);
+	static void			_scrollFuncX(void * pData, double xoff, double xlimit);
+	static void			_scrollFuncY(void * pData, double yoff, double ylimit);
 	
 	/* for use with the prefs listener top_ruler_prefs_listener */
 	UT_Dimension	    getDimension() const { return m_dim; }
@@ -224,7 +224,7 @@ private:
 	bool				m_bValidMouseClick;
 	bool				m_bEventIgnored;
 	UT_Rect             m_draggingRect;
-	UT_sint32           m_minPageLength;
+	double              m_minPageLength;
 	PT_DocPosition       m_draggingDocPos;
 	bool                m_bIsHidden;
 #if XAP_DONTUSE_XOR

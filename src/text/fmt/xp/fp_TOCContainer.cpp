@@ -130,16 +130,16 @@ void fp_TOCContainer::clearScreen(void)
 	if(isThisBroken() && getContainer())
 	{
 		xxx_UT_DEBUGMSG(("Doing Clear Screen on Broken TOC %x \n",this));
-		UT_sint32 iHeight = getHeight();
-		UT_sint32 iWidth = getContainer()->getWidth();
-		UT_sint32 srcX  = getX();
-		UT_sint32 srcY = getY();
+		double iHeight = getHeight();
+		double iWidth = getContainer()->getWidth();
+		double srcX  = getX();
+		double srcY = getY();
 		if(getFirstBrokenTOC() == this)
 		{
 			srcY = getMasterTOC()->getY();
 		}
 		fp_Column * pCol = static_cast<fp_Column *>(getColumn());
-		UT_sint32 x,y;
+		double x,y;
 		getPage()->getScreenOffsets(pCol,x,y);
 		x += srcX;
 		y += srcY;
@@ -221,8 +221,8 @@ void fp_TOCContainer::draw(dg_DrawArgs* pDA)
 	dg_DrawArgs da = *pDA;
 	
 	UT_uint32 count = pMaster->countCons();
-	UT_sint32 iYStart = getYBreak();
-	UT_sint32 iYBottom = getYBottom();
+	double iYStart = getYBreak();
+	double iYBottom = getYBottom();
 	xxx_UT_DEBUGMSG(("Drawing TOC, yBreak %d ybottom %d \n",iYStart,iYBottom));
 	for (UT_uint32 i = 0; i<count; i++)
 	{
@@ -340,14 +340,14 @@ bool fp_TOCContainer::isInBrokenTOC(fp_Container * pCon)
  	{
  		return false;
  	}
-	UT_sint32 iTop = 0;
+	double iTop = 0;
 	iTop = pCon->getY();
-	UT_sint32 iHeight = pCon->getHeight();
+	double iHeight = pCon->getHeight();
 
-	UT_sint32 iBot = iTop + iHeight;
+	double iBot = iTop + iHeight; // FIXME: iBot is actually iTop + iHeight - tlu(1) - MARCM
 
-	UT_sint32 iBreak = getYBreak();
-	UT_sint32 iBottom = getYBottom();
+	double iBreak = getYBreak();
+	double iBottom = getYBottom();
 	xxx_UT_DEBUGMSG(("Column %x iTop = %d ybreak %d iBot= %d ybottom= %d \n",getBrokenColumn(),iTop,iBreak,iBot,iBottom));
 	if(iBot >= iBreak)
 	{
@@ -565,10 +565,10 @@ fp_ContainerObject * fp_TOCContainer::VBreakAt(UT_sint32 vpos)
 /*!
  * Overload the setY method
  */
-void fp_TOCContainer::setY(UT_sint32 i)
+void fp_TOCContainer::setY(double i)
 {
 	bool bIsFirstBroken = false;
-	UT_sint32 iOldY = getY();
+	double iOldY = getY();
 	xxx_UT_DEBUGMSG(("fp_TOCContainer: setY set to %d \n",i));
 	if(isThisBroken())
 	{
@@ -589,7 +589,7 @@ void fp_TOCContainer::setY(UT_sint32 i)
 		VBreakAt(0);
 	}
 	iOldY = getY();
-	if(i == iOldY)
+	if(UT_dEQ(i, iOldY))
 	{
 		return;
 	}
@@ -605,9 +605,9 @@ void fp_TOCContainer::setY(UT_sint32 i)
 }
 
 
-void fp_TOCContainer::setYBreakHere(UT_sint32 i)
+void fp_TOCContainer::setYBreakHere(double i)
 {
-	xxx_UT_DEBUGMSG(("SEVIOR: Ybreak set to %d \n",i));
+	xxx_UT_DEBUGMSG(("SEVIOR: Ybreak set to %.2f \n",i));
 	m_iYBreakHere = i;
 	if(i > 0)
 	{
@@ -615,7 +615,7 @@ void fp_TOCContainer::setYBreakHere(UT_sint32 i)
 	}
 }
 
-void fp_TOCContainer::setYBottom(UT_sint32 i)
+void fp_TOCContainer::setYBottom(double i)
 {
 	m_iYBottom = i;
 	//	UT_ASSERT(getHeight() > 0);
@@ -626,15 +626,15 @@ void fp_TOCContainer::setYBottom(UT_sint32 i)
  * given. It returns the actual break height, which will always be
  * less than or equal to the requested height.
  */
-UT_sint32 fp_TOCContainer::wantVBreakAt(UT_sint32 vpos)
+double fp_TOCContainer::wantVBreakAt(double vpos)
 {
 	if(isThisBroken())
 	{
 		return getMasterTOC()->wantVBreakAt(vpos);
 	}
 	UT_sint32 count = countCons();
-	UT_sint32 i =0;
-	UT_sint32 iYBreak = vpos;
+	UT_sint32 i = 0;
+	double iYBreak = vpos;
 	fp_Line * pLine;
 	for(i=0; i< count; i++)
 	{
@@ -655,9 +655,9 @@ UT_sint32 fp_TOCContainer::wantVBreakAt(UT_sint32 vpos)
  * Return the height of this Table taking into account the possibility
  * of it being broken.
  */
-UT_sint32 fp_TOCContainer::getHeight(void)
+double fp_TOCContainer::getHeight(void)
 {
-	UT_sint32 iFullHeight =  fp_VerticalContainer::getHeight();
+	double iFullHeight =  fp_VerticalContainer::getHeight();
 	if(!isThisBroken())
 	{
 //
@@ -673,7 +673,7 @@ UT_sint32 fp_TOCContainer::getHeight(void)
 		}
 		return iFullHeight;
 	}
-	UT_sint32 iMyHeight = getYBottom() - getYBreak();
+	double iMyHeight = getYBottom() - getYBreak();
 	return iMyHeight;
 }
 
@@ -699,12 +699,12 @@ void fp_TOCContainer::adjustBrokenTOCs(void)
 	return;
 	fp_TOCContainer * pBroke = getFirstBrokenTOC();
 	fp_VerticalContainer * pVC = static_cast<fp_VerticalContainer *>(getContainer());
-	UT_sint32 iNewHeight = pVC->getMaxHeight() - getY();	
-	UT_sint32 ishift = iNewHeight - pBroke->getYBottom();
-	UT_sint32 iNewBot = pBroke->getYBottom() + ishift;
-	UT_sint32 iTOCHeight = fp_VerticalContainer::getHeight();
+	double iNewHeight = pVC->getMaxHeight() - getY();	
+	double ishift = iNewHeight - pBroke->getYBottom();
+	double iNewBot = pBroke->getYBottom() + ishift;
+	double iTOCHeight = fp_VerticalContainer::getHeight();
 	UT_DEBUGMSG(("SEVIOR: ishift = %d iNewHeight %d  pBroke->getYBottom() %d \n",ishift,iNewHeight,pBroke->getYBottom()));
-	if(ishift == 0)
+	if(UT_dEQ(ishift, 0))
 	{
 		return;
 	}
@@ -718,7 +718,7 @@ void fp_TOCContainer::adjustBrokenTOCs(void)
 	pBroke = static_cast<fp_TOCContainer *>(pBroke->getNext());
 	while(pBroke)
 	{
-		UT_sint32 iNewTop = pBroke->getYBreak();
+		double iNewTop = pBroke->getYBreak();
 		iNewBot = pBroke->getYBottom();
 		pBroke->setYBreakHere(iNewTop + ishift);
 		if(pBroke->getNext())
@@ -738,7 +738,7 @@ void fp_TOCContainer::adjustBrokenTOCs(void)
 // the previous position is less that the column height we can delete
 // this broken TOC. 
 //
-		UT_sint32 iMaxHeight = 0;
+		double iMaxHeight = 0;
 		bool bDeleteOK = false;
 		if(pPrev)
 		{
@@ -914,7 +914,7 @@ void fp_TOCContainer::setContainer(fp_Container * pContainer)
 void fp_TOCContainer::layout(void)
 {
 	_setMaxContainerHeight(0);
-	UT_sint32 iY = 0, iPrevY = 0;
+	double iY = 0, iPrevY = 0;
 	iY= 0;
 	UT_uint32 iCountContainers = countCons();
 	fp_Container *pContainer, *pPrevContainer = NULL;
@@ -927,19 +927,18 @@ void fp_TOCContainer::layout(void)
 		if(pContainer->getHeight() > _getMaxContainerHeight())
 			_setMaxContainerHeight(pContainer->getHeight());
 
-		if(pContainer->getY() != iY)
+		if(!UT_dEQ(pContainer->getY(), iY))
 		{
 			pContainer->clearScreen();
 		}
 			
 		pContainer->setY(iY);
 
-		UT_sint32 iContainerHeight = pContainer->getHeight();
-		UT_sint32 iContainerMarginAfter = pContainer->getMarginAfter();
+		double iContainerHeight = pContainer->getHeight();
+		double iContainerMarginAfter = pContainer->getMarginAfter();
 
 		iY += iContainerHeight;
 		iY += iContainerMarginAfter;
-		//iY +=  0.5;
 		if (pPrevContainer)
 		{
 			pPrevContainer->setAssignedScreenHeight(iY - iPrevY);
@@ -951,15 +950,14 @@ void fp_TOCContainer::layout(void)
 	// Correct height position of the last line
 	if (pPrevContainer)
 	{
-		pPrevContainer->setAssignedScreenHeight(iY - iPrevY + 1);
+		pPrevContainer->setAssignedScreenHeight(iY - iPrevY + 1); // FIXME: this +1 should not be here (not in layout units, but its presence itself seems funcky as well) - MARCM
 	}
 
-	if (fp_VerticalContainer::getHeight() == iY)
+	if (UT_dEQ(fp_VerticalContainer::getHeight(), iY))
 	{
 		return;
 	}
-	UT_DEBUGMSG(("Height in TOCContainer set to %d Old Height %d \n",iY,getHeight()));
+	UT_DEBUGMSG(("Height in TOCContainer set to %.2f Old Height %.2fd \n",iY,getHeight()));
 	setHeight(iY);
 	deleteBrokenTOCs(true);
 }
-

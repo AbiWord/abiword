@@ -198,7 +198,7 @@ GR_Image * FG_GraphicRaster::regenerateImage(GR_Graphics * pG)
 //
 GR_Image* FG_GraphicRaster::generateImage(GR_Graphics* pG,
 										  const PP_AttrProp * pSpanAP,
-										  UT_sint32 maxW, UT_sint32 maxH)
+										  double maxW, double maxH)
 {
 	UT_ASSERT(m_pSpanAP);
 	UT_ASSERT(m_pszDataID);
@@ -216,32 +216,32 @@ GR_Image* FG_GraphicRaster::generateImage(GR_Graphics* pG,
 	bool bFoundWidthProperty = m_pSpanAP->getProperty("width", pszWidth);
 	bool bFoundHeightProperty = m_pSpanAP->getProperty("height", pszHeight);
 
-	UT_sint32 iDisplayWidth = 0;
-	UT_sint32 iDisplayHeight = 0;
+	double iWidth = 0;
+	double iHeight = 0;
 	if (bFoundWidthProperty && bFoundHeightProperty && pszWidth && pszHeight && pszWidth[0] && pszHeight[0])
 	{
-		iDisplayWidth = UT_convertToLogicalUnits(static_cast<const char*>(pszWidth));
-		iDisplayHeight = UT_convertToLogicalUnits(static_cast<const char*>(pszHeight));
+		iWidth = UT_convertToLogicalUnits(static_cast<const char*>(pszWidth));
+		iHeight = UT_convertToLogicalUnits(static_cast<const char*>(pszHeight));
 	}
-	if((iDisplayWidth==0) || (iDisplayHeight == 0)) 
+	if(UT_dEQ(iWidth,0) || UT_dEQ(iHeight,0)) 
 	{
 		UT_sint32 iImageWidth;
 		UT_sint32 iImageHeight;
 
 		UT_PNG_getDimensions(m_pbbPNG, iImageWidth, iImageHeight);
 
-		iDisplayWidth = pG->tlu(iImageWidth);
-		iDisplayHeight = pG->tlu(iImageHeight);
+		iWidth = pG->tlu(iImageWidth);
+		iHeight = pG->tlu(iImageHeight);
 	}
 
-	UT_ASSERT(iDisplayWidth > 0);
-	UT_ASSERT(iDisplayHeight > 0);
+	UT_ASSERT(iWidth > 0);
+	UT_ASSERT(iHeight > 0);
 
-	if (maxW != 0 && iDisplayWidth > maxW) iDisplayWidth = maxW;
-	if (maxH != 0 && iDisplayHeight > maxH)	iDisplayHeight = maxH;
+	if (!UT_dEQ(maxW,0) && iWidth > maxW) iWidth = maxW;
+	if (!UT_dEQ(maxH,0) && iHeight > maxH) iHeight = maxH;
 	m_iMaxW = maxW;
 	m_iMaxH = maxH;
-   	GR_Image *pImage = pG->createNewImage(static_cast<const char*>(m_pszDataID), m_pbbPNG, iDisplayWidth, iDisplayHeight, GR_Image::GRT_Raster);
+   	GR_Image *pImage = pG->createNewImage(static_cast<const char*>(m_pszDataID), m_pbbPNG, iWidth, iHeight, GR_Image::GRT_Raster);
 
 	return pImage;
 }

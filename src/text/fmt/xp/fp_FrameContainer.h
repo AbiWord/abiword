@@ -57,22 +57,22 @@ public:
 	virtual fp_Container * getNextContainerInSection(void) const;
 	virtual fp_Container * getPrevContainerInSection(void) const;
 	virtual fp_Page *   getPage(void) { return m_pPage;}
-	virtual UT_sint32   getX() const;
-	virtual UT_sint32   getY() const;
-	virtual UT_sint32   getWidth() const;
-	virtual UT_sint32   getHeight() const;
+	virtual double      getX() const;
+	virtual double      getY() const;
+	virtual double      getWidth() const;
+	virtual double      getHeight() const;
 	virtual bool        isVBreakable(void)
 		{ return false;}
-	UT_sint32           getFullX() const;
-	UT_sint32           getFullY() const;
-	UT_sint32           getFullWidth() const;
-	UT_sint32           getFullHeight() const;
-	void                setXpad(UT_sint32 xPad)
+	double              getFullX() const;
+	double              getFullY() const;
+	double              getFullWidth() const;
+	double              getFullHeight() const;
+	void                setXpad(double xPad)
 		{m_iXpad = xPad;}
-	void                setYpad(UT_sint32 yPad)
+	void                setYpad(double yPad)
 		{m_iYpad = yPad;}
-	UT_sint32           getXPad(void) { return m_iXpad;}
-	UT_sint32           getYPad(void) { return m_iYpad;}
+	double              getXPad(void) { return m_iXpad;}
+	double              getYPad(void) { return m_iYpad;}
 	void                setPage(fp_Page * pPage);
 	fl_DocSectionLayout * getDocSectionLayout(void);
 		
@@ -92,13 +92,13 @@ public:
 		{ return m_bIsWrapped;}
 private:
 	void                   _drawLine (const PP_PropertyMap::Line & style,
-									  UT_sint32 left, UT_sint32 top, 
-									  UT_sint32 right, UT_sint32 bot,
+									  double left, double top, 
+									  double right, double bot,
 									  GR_Graphics * pGr);
 	void                   _drawHandleBox(UT_Rect box); 
 	fp_Page * m_pPage;
-	UT_sint32 m_iXpad;
-	UT_sint32 m_iYpad;
+	double m_iXpad;
+	double m_iYpad;
 	bool      m_bNeverDrawn;
 
 // cell-background properties

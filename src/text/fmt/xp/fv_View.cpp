@@ -66,6 +66,7 @@
 #include "fd_Field.h"
 #include "spell_manager.h"
 #include "ut_rand.h"
+#include "ut_math.h"
 #include "fp_TableContainer.h"
 #include "fl_TableLayout.h"
 #include "xap_Dlg_Zoom.h"
@@ -637,7 +638,7 @@ void FV_View::convertInLineToPositioned(PT_DocPosition pos,const XML_Char ** att
 	fp_Run *  pRun = NULL;
 	bool bEOL,bDir;
 	bEOL = false;
-	UT_sint32 x1,y1,x2,y2,iHeight;
+	double x1,y1,x2,y2,iHeight;
 	if(pBlock)
 	{
 		pRun = pBlock->findPointCoords(pos,bEOL,x1,y1,x2,y2,iHeight,bDir);
@@ -1865,9 +1866,9 @@ bool FV_View::notifyListeners(const AV_ChangeMask hint)
 		// i'm not sure it's worth the effort here...
 
 		fp_Run * pRun = NULL;
-		UT_sint32 xCaret, yCaret;
-		UT_uint32 heightCaret;
-		UT_sint32 xCaret2, yCaret2;
+		double xCaret, yCaret;
+		double heightCaret;
+		double xCaret2, yCaret2;
 		bool bDirection;
 		_findPositionCoords(getPoint(), m_bPointEOL, xCaret, yCaret, xCaret2, yCaret2, heightCaret, bDirection, NULL, &pRun);
 
@@ -2011,8 +2012,8 @@ PT_DocPosition FV_View::getSelectedImage(const char **dataId)
 				{
 					pos = getPoint();
 				}
-				UT_sint32 x,y,x2,y2;
-				UT_uint32 height;
+				double x,y,x2,y2;
+				double height;
 
 				bool bEOL = false;
 				bool bDirection;
@@ -2159,8 +2160,8 @@ UT_uint32 FV_View::getCurrentPageNumber(void)
 	UT_sint32 iPageNum = 0;
 	PT_DocPosition pos = getPoint();
 	fl_BlockLayout * pBlock;
-	UT_sint32 xPoint, yPoint, xPoint2, yPoint2;
-	UT_uint32 iPointHeight;
+	double xPoint, yPoint, xPoint2, yPoint2;
+	double iPointHeight;
 	bool bDirection;
 	fp_Run* pRun;
 	_findPositionCoords(pos, m_bPointEOL, xPoint, yPoint, xPoint2, yPoint2, iPointHeight, bDirection,&pBlock, &pRun);
@@ -2336,11 +2337,11 @@ bool FV_View::isPointBeforeListLabel(void)
 	// Now look to see if the point is before the list label
 	//
 	PT_DocPosition pos = getPoint();
-	UT_sint32 xPoint;
-	UT_sint32 yPoint;
-	UT_sint32 iPointHeight;
-	UT_sint32 xPoint2;
-	UT_sint32 yPoint2;
+	double xPoint;
+	double yPoint;
+	double iPointHeight;
+	double xPoint2;
+	double yPoint2;
 	bool   bDirection;
 
 	fp_Run* pRun = pBlock->findPointCoords(pos, m_bPointEOL, xPoint, yPoint, xPoint2, yPoint2, iPointHeight, bDirection);
@@ -3465,8 +3466,8 @@ bool FV_View::getStyle(const XML_Char ** style)
 		const PP_AttrProp * pSpanAP = NULL;
 
 		// 3. locate char style at insertion point
-		UT_sint32 xPoint, yPoint, xPoint2, yPoint2;
-		UT_uint32 iPointHeight;
+		double xPoint, yPoint, xPoint2, yPoint2;
+		double iPointHeight;
 		bool bDirection;
 
 		fl_BlockLayout* pBlock;
@@ -3906,8 +3907,8 @@ bool FV_View::getAttributes(const PP_AttrProp ** ppSpanAP, const PP_AttrProp ** 
 		posStart = 2;
 	}
 	// 1. assemble complete set at insertion point
-	UT_sint32 xPoint, yPoint, xPoint2, yPoint2;
-	UT_uint32 iPointHeight;
+	double xPoint, yPoint, xPoint2, yPoint2;
+	double iPointHeight;
 	bool bDirection;
 
 	fl_BlockLayout* pBlock;
@@ -4235,8 +4236,8 @@ bool FV_View::getCharFormat(const XML_Char *** pProps, bool bExpandStyles, PT_Do
 		posStart = 2;
 	}
 	// 1. assemble complete set at insertion point
-	UT_sint32 xPoint, yPoint, xPoint2, yPoint2;
-	UT_uint32 iPointHeight;
+	double xPoint, yPoint, xPoint2, yPoint2;
+	double iPointHeight;
 	bool bDirection;
 
 	fl_BlockLayout* pBlock;
@@ -5540,8 +5541,8 @@ bool FV_View::isTabListBehindPoint(void)
 	PT_DocPosition posBOD;
 	bool bRes;
 	bool bEOL = false;
-	UT_uint32 iPointHeight;
-	UT_sint32 xPoint, yPoint, xPoint2, yPoint2;
+	double iPointHeight;
+	double xPoint, yPoint, xPoint2, yPoint2;
 	bool   bDirection;
 
 	bRes = getEditableBounds(false, posBOD);
@@ -5602,8 +5603,8 @@ bool FV_View::isTabListAheadPoint(void)
 	PT_DocPosition cpos = getPoint();
 
 	bool bEOL = false;
-	UT_uint32 iPointHeight;
-	UT_sint32 xPoint, yPoint, xPoint2, yPoint2;
+	double iPointHeight;
+	double xPoint, yPoint, xPoint2, yPoint2;
 	bool   bDirection;
 
 	fl_BlockLayout* pBlock;
@@ -5938,11 +5939,11 @@ void FV_View::extSelTo(FV_DocPos dp)
 /*!
  * This method returns the document position at xpos,ypos on the screen.
  */
-PT_DocPosition FV_View::getDocPositionFromXY(UT_sint32 xpos, UT_sint32 ypos, bool bNotFrames)
+PT_DocPosition FV_View::getDocPositionFromXY(double xpos, double ypos, bool bNotFrames)
 {
 	// Figure out which page we clicked on.
 	// Pass the click down to that page.
-	UT_sint32 xClick, yClick;
+	double xClick, yClick;
 	fp_Page* pPage = _getPageForXY(xpos, ypos, xClick, yClick);
 
 	PT_DocPosition iNewPoint;
@@ -5958,11 +5959,11 @@ PT_DocPosition FV_View::getDocPositionFromXY(UT_sint32 xpos, UT_sint32 ypos, boo
 	return iNewPoint;
 }
 
-void FV_View::extSelToXY(UT_sint32 xPos, UT_sint32 yPos, bool bDrag)
+void FV_View::extSelToXY(double xPos, double yPos, bool bDrag)
 {
 	// Figure out which page we clicked on.
 	// Pass the click down to that page.
-	UT_sint32 xClick, yClick;
+	double xClick, yClick;
 	fp_Page* pPage = _getPageForXY(xPos, yPos, xClick, yClick);
 	xxx_UT_DEBUGMSG((" Selected to x %d \n",xPos));
 
@@ -6019,7 +6020,7 @@ void FV_View::extSelToXY(UT_sint32 xPos, UT_sint32 yPos, bool bDrag)
 	}
 }
 
-void FV_View::extSelToXYword(UT_sint32 xPos, UT_sint32 yPos, bool bDrag)
+void FV_View::extSelToXYword(double xPos, double yPos, bool bDrag)
 {
 	// extend the current selection to
 	// include the WORD at the given XY.
@@ -6028,7 +6029,7 @@ void FV_View::extSelToXYword(UT_sint32 xPos, UT_sint32 yPos, bool bDrag)
 
 	// Figure out which page we clicked on.
 	// Pass the click down to that page.
-	UT_sint32 xClick, yClick;
+	double xClick, yClick;
 	fp_Page* pPage = _getPageForXY(xPos, yPos, xClick, yClick);
 
 	PT_DocPosition iNewPoint;
@@ -6756,7 +6757,7 @@ void FV_View::insertSymbol(UT_UCSChar c, XML_Char * symfont)
 		properties[1] = currentfont;
 		setCharFormat(properties);
 
-		UT_sint32 xPoint, yPoint, xPoint2, yPoint2, iPointHeight;
+		double xPoint, yPoint, xPoint2, yPoint2, iPointHeight;
 		bool bDirection;
 
 		fl_BlockLayout * pBL =	m_pLayout->findBlockAtPosition(getPoint());
@@ -6780,7 +6781,7 @@ void FV_View::insertSymbol(UT_UCSChar c, XML_Char * symfont)
 
 		cmdCharInsert(&c,1);
 
-		UT_sint32 xPoint, yPoint, xPoint2, yPoint2, iPointHeight;
+		double xPoint, yPoint, xPoint2, yPoint2, iPointHeight;
 		bool bDirection;
 
 		fl_BlockLayout * pBL =	m_pLayout->findBlockAtPosition(getPoint());
@@ -6801,14 +6802,14 @@ void FV_View::insertSymbol(UT_UCSChar c, XML_Char * symfont)
 }
 
 
-void FV_View::warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos, bool bClick = false)
+void FV_View::warpInsPtToXY(double xPos, double yPos, bool bClick = false)
 {
 	/*
 	  Figure out which page we clicked on.
 	  Pass the click down to that page.
 	*/
 
-	UT_sint32 xClick, yClick;
+	double xClick, yClick;
 	fp_Page* pPage = _getPageForXY(xPos, yPos, xClick, yClick);
 
 	if (!isSelectionEmpty())
@@ -6853,10 +6854,10 @@ void FV_View::warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos, bool bClick = false)
 }
 
 
-void FV_View::getPageScreenOffsets(const fp_Page* pThePage, UT_sint32& xoff,
-								   UT_sint32& yoff)
+void FV_View::getPageScreenOffsets(const fp_Page* pThePage, double& xoff,
+								   double& yoff)
 {
-	UT_uint32 y = getPageViewTopMargin();
+	double y = getPageViewTopMargin();
 
 	const fp_Page* pPage = m_pLayout->getFirstPage();
 	fl_DocSectionLayout * pDSL = pPage->getOwningSection();
@@ -6864,7 +6865,7 @@ void FV_View::getPageScreenOffsets(const fp_Page* pThePage, UT_sint32& xoff,
 // Note this code assumes the page size is the same throughout the document.
 //
 	UT_sint32 iPage = m_pLayout->findPage(const_cast<fp_Page *>(pThePage));
-	UT_sint32 iDiff = pPage->getHeight() + getPageViewSep();
+	double iDiff = pPage->getHeight() + getPageViewSep();
 	if(getViewMode() != VIEW_PRINT)
 	{
 		iDiff = iDiff - pDSL->getTopMargin() - pDSL->getBottomMargin();
@@ -6901,16 +6902,16 @@ void FV_View::getPageScreenOffsets(const fp_Page* pThePage, UT_sint32& xoff,
 	xoff = getPageViewLeftMargin() - m_xScrollOffset;
 }
 
-void FV_View::getPageYOffset(fp_Page* pThePage, UT_sint32& yoff) const
+void FV_View::getPageYOffset(fp_Page* pThePage, double& yoff) const
 {
-	UT_uint32 y = getPageViewTopMargin();
+	double y = getPageViewTopMargin();
 //
 // Note this code assumes the page size is the same throughout the document.
 //
 	UT_sint32 iPage = m_pLayout->findPage(pThePage);
 	fp_Page* pPage = m_pLayout->getFirstPage();
 	fl_DocSectionLayout * pDSL = pPage->getOwningSection();
-	UT_sint32 iDiff = pPage->getHeight() + getPageViewSep();
+	double iDiff = pPage->getHeight() + getPageViewSep();
 	if(getViewMode() != VIEW_PRINT)
 	{
 		iDiff = iDiff - pDSL->getTopMargin() - pDSL->getBottomMargin();
@@ -6946,7 +6947,7 @@ void FV_View::getPageYOffset(fp_Page* pThePage, UT_sint32& yoff) const
 	yoff = y;
 }
 
-UT_sint32 FV_View::getPageViewSep(void) const
+double FV_View::getPageViewSep(void) const
 {
 	// return the amount of gray-space we draw above the top
 	// of the paper in "Page View".  return zero if not in
@@ -6962,7 +6963,7 @@ UT_sint32 FV_View::getPageViewSep(void) const
 }
 
 
-UT_sint32 FV_View::getPageViewLeftMargin(void) const
+double FV_View::getPageViewLeftMargin(void) const
 {
 	// return the amount of gray-space we draw to the left
 	// of the paper in "Page View".  return zero if not in
@@ -6973,7 +6974,7 @@ UT_sint32 FV_View::getPageViewLeftMargin(void) const
 		return fl_PAGEVIEW_MARGIN_X;
 }
 
-UT_sint32 FV_View::getPageViewTopMargin(void) const
+double FV_View::getPageViewTopMargin(void) const
 {
 	// return the amount of gray-space we draw above the top
 	// of the paper in "Page View".  return zero if not in
@@ -6984,19 +6985,19 @@ UT_sint32 FV_View::getPageViewTopMargin(void) const
 		return fl_PAGEVIEW_MARGIN_Y;
 }
 
-void FV_View::setXScrollOffset(UT_sint32 v)
+void FV_View::setXScrollOffset(double v)
 {
 	CHECK_WINDOW_SIZE
-	UT_sint32 dx = v - m_xScrollOffset;
+	double dx = v - m_xScrollOffset;
 
-	if (dx == 0)
+	if (UT_dEQ(dx, 0))
 		return;
 
 	m_pG->scroll(dx, 0);
 	m_xScrollOffset = v;
 
-	UT_sint32 x1 = 0;
-	UT_sint32 dx2 = getWindowWidth();
+	double x1 = 0;
+	double dx2 = getWindowWidth();
 
 	if (dx > 0)
 	{
@@ -7019,19 +7020,19 @@ void FV_View::setXScrollOffset(UT_sint32 v)
 	_fixInsertionPointCoords();
 }
 
-void FV_View::setYScrollOffset(UT_sint32 v)
+void FV_View::setYScrollOffset(double v)
 {
 	CHECK_WINDOW_SIZE
-	UT_sint32 dy = v - m_yScrollOffset;
+	double dy = v - m_yScrollOffset;
 
-	if (dy == 0)
+	if (UT_dEQ(dy, 0))
 		return;
 
 	m_pG->scroll(0, dy);
 	m_yScrollOffset = v;
 
-	UT_sint32 y1 = 0;
-	UT_sint32 dy2 = getWindowHeight();
+	double y1 = 0;
+	double dy2 = getWindowHeight();
 
 	if (dy > 0)
 	{
@@ -7101,13 +7102,13 @@ void FV_View::updateScreen(bool bDirtyRunsOnly)
 	_draw(0,0,getWindowWidth(),getWindowHeight(),bDirtyRunsOnly,false);
 }
 
-bool FV_View::isLeftMargin(UT_sint32 xPos, UT_sint32 yPos)
+bool FV_View::isLeftMargin(double xPos, double yPos)
 {
 	/*
 	  Figure out which page we clicked on.
 	  Pass the click down to that page.
 	*/
-	UT_sint32 xClick, yClick;
+	double xClick, yClick;
 	fp_Page* pPage = _getPageForXY(xPos, yPos, xClick, yClick);
 
 	PT_DocPosition iNewPoint;
@@ -7741,7 +7742,7 @@ void FV_View::getTopRulerInfo(AP_TopRulerInfo * pInfo)
 	getTopRulerInfo(getPoint(), pInfo);
 }
 
-void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
+void FV_View::getTopRulerInfo(PT_DocPosition pos, AP_TopRulerInfo * pInfo)
 {
 	if(m_pDoc->isPieceTableChanging())
 	{
@@ -7751,9 +7752,9 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 
 	fl_BlockLayout * pBlock = NULL;
 	fp_Run * pRun = NULL;
-	UT_sint32 xCaret, yCaret;
-	UT_uint32 heightCaret;
-	UT_sint32 xCaret2, yCaret2;
+	double xCaret, yCaret;
+	double heightCaret;
+	double xCaret2, yCaret2;
 	bool bDirection;
 	_findPositionCoords(pos, m_bPointEOL, xCaret, yCaret, xCaret2, yCaret2, heightCaret, bDirection, &pBlock, &pRun);
 
@@ -7955,7 +7956,7 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 			{
 				pInfo->m_iCurCell = iCellCount;
 			}
-			UT_sint32 ioff_x = 0;
+			double ioff_x = 0;
 			fp_Container * pCon = static_cast<fp_Container*>(pTab->getContainer());
 			while(pCon && !pCon->isColumnType())
 			{
@@ -7964,7 +7965,7 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 			}
 			if(pCur)
 			{
-				AP_TopRulerTableInfo *pTInfo = new  AP_TopRulerTableInfo;
+				AP_TopRulerTableInfo *pTInfo = new AP_TopRulerTableInfo;
 				pTInfo->m_pCell = pCur;
 				pTInfo->m_iLeftCellPos = pCur->getLeftPos() +ioff_x;
 				pTInfo->m_iRightCellPos = pCur->getRightPos() +ioff_x;
@@ -7986,8 +7987,8 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 //
 		pInfo->m_vecFullTable = new UT_GenericVector<AP_TopRulerTableInfo *>();
 		fp_TableRowColumn * pRC = NULL;
-		UT_sint32 iCum = 0;
-		UT_sint32 ioff_x = 0;
+		double iCum = 0;
+		double ioff_x = 0;
 		fp_Container * pCon = static_cast<fp_Container*>(pTab->getContainer());
 		while(!pCon->isColumnType())
 		{
@@ -8003,7 +8004,7 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 		{
 			pCur = pTab->getCellAtRowColumn(0,i);
 			pRC = pTab->getNthCol(i);
-			UT_sint32 width = pRC->allocation + pRC->spacing;
+			double width = pRC->allocation + pRC->spacing;
 			if(pCur)
 			{
 				AP_TopRulerTableInfo *pTInfo = new  AP_TopRulerTableInfo;
@@ -8121,9 +8122,9 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 
 		fl_BlockLayout * pBlock = NULL;
 		fp_Run * pRun = NULL;
-		UT_sint32 xCaret, yCaret;
-		UT_uint32 heightCaret;
-		UT_sint32 xCaret2, yCaret2;
+		double xCaret, yCaret;
+		double heightCaret;
+		double xCaret2, yCaret2;
 		bool bDirection;
 		_findPositionCoords(pos, m_bPointEOL, xCaret, yCaret, xCaret2, yCaret2, heightCaret, bDirection, &pBlock, &pRun);
 
@@ -8203,7 +8204,7 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 
 		if ((isFootnote || isEndnote || pContainer->getContainerType() == FP_CONTAINER_COLUMN) && !isHdrFtrEdit())
 		{
-			UT_sint32 yoff = 0;
+			double yoff = 0;
 			getPageYOffset(pPage, yoff);
 			pInfo->m_yPageStart = static_cast<UT_uint32>(yoff);
 			pInfo->m_yPageSize = pPage->getHeight();
@@ -8229,7 +8230,7 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 				return;
 			}
 
-			UT_sint32 yoff = 0;
+			double yoff = 0;
 			getPageYOffset(pPage, yoff);
 			pInfo->m_yPageStart = static_cast<UT_uint32>(yoff);
 			pInfo->m_yPageSize = pPage->getHeight();
@@ -8285,7 +8286,7 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 				}
 				if(pCur)
 				{
-					AP_LeftRulerTableInfo *pLInfo = new  AP_LeftRulerTableInfo;
+					AP_LeftRulerTableInfo *pLInfo = new AP_LeftRulerTableInfo;
 					pLInfo->m_pCell = pCur;
 					pLInfo->m_iTopCellPos = pCur->getStartY();
 					pLInfo->m_iBotCellPos = pCur->getStopY();
@@ -8313,7 +8314,7 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 				return;
 			}
-			UT_sint32 yoff = 0;
+			double yoff = 0;
 			getPageYOffset(pPage, yoff);
 			pInfo->m_yPageStart = static_cast<UT_uint32>(yoff);
 			pInfo->m_yPageSize = pPage->getHeight();
@@ -8327,7 +8328,7 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 		{
 			fl_HdrFtrSectionLayout * pHF =	m_pEditShadow->getHdrFtrSectionLayout();
 			pDSL = pHF->getDocSectionLayout();
-			UT_sint32 yoff = 0;
+			double yoff = 0;
 			getPageYOffset(pPage, yoff);
 			pInfo->m_yPageStart = static_cast<UT_uint32>(yoff);
 			pInfo->m_yPageSize = pPage->getHeight();
@@ -8359,12 +8360,12 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 }
 
 
-bool FV_View::isXYSelected(UT_sint32 xPos, UT_sint32 yPos) const
+bool FV_View::isXYSelected(double xPos, double yPos) const
 {
 	if (isSelectionEmpty())
 		return false;
 
-	UT_sint32 xClick, yClick;
+	double xClick, yClick;
 	fp_Page* pPage = _getPageForXY(xPos, yPos, xClick, yClick);
 	if (!pPage)
 		return false;
@@ -8390,8 +8391,8 @@ bool FV_View::isXYSelected(UT_sint32 xPos, UT_sint32 yPos) const
 fp_CellContainer * FV_View::getCellAtPos(PT_DocPosition pos)
 {
 	bool bEOL = false;
-	UT_uint32 iPointHeight;
-	UT_sint32 xPoint, yPoint, xPoint2, yPoint2;
+	double iPointHeight;
+	double xPoint, yPoint, xPoint2, yPoint2;
 	bool bDirection;
 	fl_BlockLayout* pBlock;
 	fp_Run* pRun;
@@ -8430,18 +8431,16 @@ fp_Run * FV_View::getHyperLinkRun(PT_DocPosition pos)
 	return NULL;
 }
 
-
-
-EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
+EV_EditMouseContext FV_View::getMouseContext(double xPos, double yPos)
 {
 	xxx_UT_DEBUGMSG(("layout view mouse pos x %x pos y %d \n",xPos,yPos));
-	UT_sint32 xClick, yClick;
+	double xClick, yClick;
 	PT_DocPosition pos;
 	bool bBOL = false;
 	bool bEOL = false;
 	bool isTOC = false;
-	UT_uint32 iPointHeight;
-	UT_sint32 xPoint, yPoint, xPoint2, yPoint2;
+	double iPointHeight;
+	double xPoint, yPoint, xPoint2, yPoint2;
 	bool bDirection;
 	m_iMouseX = xPos;
 	m_iMouseY = yPos;
@@ -8512,14 +8511,14 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 		//
 		// OK find the coordinates of the frame.
 		//
-		UT_sint32 xPage,yPage;
+		double xPage,yPage;
 		getPageScreenOffsets(pPage,xPage,yPage);
 		fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(pBlock->myContainingLayout());
 		fp_FrameContainer * pFCon = static_cast<fp_FrameContainer *>(pFL->getFirstContainer());
-		UT_sint32 iLeft = xPage + pFCon->getFullX();
-		UT_sint32 iRight = xPage + pFCon->getFullX() + pFCon->getFullWidth();
-		UT_sint32 iTop = yPage + pFCon->getFullY();
-		UT_sint32 iBot = yPage + pFCon->getFullY() + pFCon->getFullHeight();
+		double iLeft = xPage + pFCon->getFullX();
+		double iRight = xPage + pFCon->getFullX() + pFCon->getFullWidth() - getGraphics()->tlu(1);
+		double iTop = yPage + pFCon->getFullY();
+		double iBot = yPage + pFCon->getFullY() + pFCon->getFullHeight() - getGraphics()->tlu(1);
 		bool bLeft = (iLeft - xPos < ires) && (xPos - iLeft < ires);
 		bool bRight = (iRight - xPos < ires) && (xPos - iRight < ires);
 		bool bTop = (iTop - yPos < ires) && (yPos - iTop < ires);
@@ -8560,16 +8559,16 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 			if(pCell && pCell->getContainerType() == FP_CONTAINER_CELL)
 			{
 				xxx_UT_DEBUGMSG(("getcontext: Looking at Table \n"));
-				UT_sint32 iLeft = pCell->getLeftPos();
-				UT_sint32 iRight = pCell->getRightPos();
-				UT_sint32 iTop = pCell->getStartY();
-				UT_sint32 iBot = pCell->getStopY();
+				double iLeft = pCell->getLeftPos();
+				double iRight = pCell->getRightPos();
+				double iTop = pCell->getStartY();
+				double iBot = pCell->getStopY();
 				UT_sint32 iTopAttach = pCell->getTopAttach();
-				UT_sint32 offy =0;
-				UT_sint32 offx =0;
+				double offy =0;
+				double offx =0;
 				fp_VerticalContainer * pCol = static_cast<fp_Column *>(pCell->getColumn(pLine));
-				UT_sint32 col_x =0;
-				UT_sint32 col_y =0;
+				double col_x =0;
+				double col_y =0;
 				pPage->getScreenOffsets(pCol, col_x,col_y);
 //
 // Now find the brokentable the line is in.
@@ -8727,7 +8726,7 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 			{
 				// This image is selected. Now get the image size.
 				
-				UT_sint32 xoff = 0, yoff = 0;
+				double xoff = 0, yoff = 0;
 				pRun->getLine()->getScreenOffsets(pRun, xoff, yoff);
 	
 				// Sevior's infamous + 1....
@@ -8798,11 +8797,11 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 			{
 				// This image is selected. Now get the image size.
 				
-				UT_sint32 xoff = 0, yoff = 0;
+				double xoff = 0, yoff = 0;
 				pRun->getLine()->getScreenOffsets(pRun, xoff, yoff);
 	
 				// Sevior's infamous + 1....
-				yoff += pRun->getLine()->getAscent() - pRun->getAscent() + 1;				
+				yoff += pRun->getLine()->getAscent() - pRun->getAscent() + 1; // FIXME: this +1 should NOT be there... certainly not in non-layout units - MARCM	
 				
 				// Set the image size in the image selection rect
 				m_selImageRect = UT_Rect(xoff,yoff,pRun->getWidth(),pRun->getHeight());
@@ -9038,8 +9037,8 @@ bool FV_View::doesSelectionContainRevision() const
 {
 	fl_BlockLayout* pBlock;
 	fp_Run* pRun;
-	UT_sint32 x, y, x2, y2;
-	UT_uint32 h;
+	double x, y, x2, y2;
+	double h;
 	bool b;
 
 	UT_uint32 iPos1 = UT_MIN(m_iInsPoint, getSelectionAnchor());
@@ -9076,7 +9075,7 @@ bool FV_View::doesSelectionContainRevision() const
 }
 
 
-EV_EditMouseContext FV_View::getInsertionPointContext(UT_sint32 * pxPos, UT_sint32 * pyPos)
+EV_EditMouseContext FV_View::getInsertionPointContext(double * pxPos, double * pyPos)
 {
 	// compute an EV_EMC_ context for the position
 	// of the current insertion point and return
@@ -9091,8 +9090,8 @@ EV_EditMouseContext FV_View::getInsertionPointContext(UT_sint32 * pxPos, UT_sint
 
 	fl_BlockLayout* pBlock;
 	fp_Run* pRun;
-	UT_sint32 x, y, x2, y2;
-	UT_uint32 h;
+	double x, y, x2, y2;
+	double h;
 	bool b;
 
 	_findPositionCoords(m_iInsPoint, false, x, y, x2, y2, h, b,&pBlock, &pRun);
@@ -9152,7 +9151,7 @@ EV_EditMouseContext FV_View::getInsertionPointContext(UT_sint32 * pxPos, UT_sint
 			{
 				// This image is selected. Now get the image size.
 				
-				UT_sint32 xoff = 0, yoff = 0;
+				double xoff = 0, yoff = 0;
 				pRun->getLine()->getScreenOffsets(pRun, xoff, yoff);
 	
 				// Sevior's infamous + 1....
@@ -9197,9 +9196,9 @@ EV_EditMouseContext FV_View::getInsertionPointContext(UT_sint32 * pxPos, UT_sint
 
 fp_Page* FV_View::getCurrentPage(void) const
 {
-	UT_sint32 xPoint, yPoint, xPoint2, yPoint2;
+	double xPoint, yPoint, xPoint2, yPoint2;
 	UT_uint32 pos = getPoint();
-	UT_uint32 iPointHeight;
+	double iPointHeight;
 	bool bDirection;
 
 //
@@ -10645,8 +10644,8 @@ bool FV_View::insertFootnote(bool bFootnote)
 		its widths
 	*/
 	fp_Run* pRun;
-	UT_sint32 x, y, x2, y2;
-	UT_uint32 height;
+	double x, y, x2, y2;
+	double height;
 	bool bDirection;
 	_findPositionCoords(FrefStart, false, x, y, x2, y2, height, bDirection,&pBL,&pRun);
 
@@ -10839,8 +10838,8 @@ UT_uint32 FV_View::calculateZoomPercentForPageWidth()
 
 	// Verify scale as a positive non-zero number else return old zoom
 	UT_uint32 iZoom = 100;
-	UT_sint32 iWindowWidth =  getWindowWidth();
-	if(iWindowWidth == 0)
+	double iWindowWidth = getWindowWidth();
+	if(UT_dEQ(iWindowWidth, 0))
 	{
 	// Get fall-back defaults for zoom from prefs
 		const XML_Char * szZoom = NULL;
@@ -10874,8 +10873,8 @@ UT_uint32 FV_View::calculateZoomPercentForPageHeight()
 	const fp_PageSize pageSize = getPageSize();
 	double pageHeight = pageSize.Height(DIM_IN);
 	UT_uint32 iZoom = 100;
-	UT_sint32 iWindowHeight =  getWindowHeight();
-	if(iWindowHeight == 0)
+	double iWindowHeight = getWindowHeight();
+	if(UT_dEQ(iWindowHeight, 0))
 	{
 	// Get fall-back defaults for zoom from prefs
 		const XML_Char * szZoom = NULL;
@@ -11209,21 +11208,21 @@ PT_DocPosition FV_View::findCellPosAt(PT_DocPosition posTable, UT_sint32 row, UT
 void FV_View:: getVisibleDocumentPagesAndRectangles(UT_GenericVector<UT_Rect*> &vRect, 
 													UT_GenericVector<fp_Page*> &vPages) const
 {
-	UT_sint32 curY = getPageViewTopMargin();
+	double curY = getPageViewTopMargin();
 	fp_Page * pPage = m_pLayout->getFirstPage();
 
 	while (pPage)
 	{
-		UT_sint32 iPageWidth		= pPage->getWidth();
-		UT_sint32 iPageHeight		= pPage->getHeight();
-		UT_sint32 adjustedTop		= curY - m_yScrollOffset;
+		double iPageWidth		= pPage->getWidth();
+		double iPageHeight		= pPage->getHeight();
+		double adjustedTop		= curY - m_yScrollOffset;
 		fl_DocSectionLayout * pDSL = pPage->getOwningSection();
 		if(getViewMode() != VIEW_PRINT)
 		{
 			iPageHeight = iPageHeight - pDSL->getTopMargin() - pDSL->getBottomMargin();
 		}
 
-		UT_sint32 adjustedBottom = adjustedTop + iPageHeight + getPageViewSep();
+		double adjustedBottom = adjustedTop + iPageHeight + getPageViewSep();
 
 		if (adjustedTop > getWindowHeight())
 		{
@@ -11268,11 +11267,11 @@ void FV_View:: getVisibleDocumentPagesAndRectangles(UT_GenericVector<UT_Rect*> &
 			// want the rect to be relative to the top left page
 			// corner
 
-			UT_sint32 iLeftGrayWidth = getPageViewLeftMargin() - m_xScrollOffset;
-			UT_uint32 iPortTop       = adjustedTop >= 0 ? 0 : -adjustedTop;
-			UT_uint32 iPortLeft      = iLeftGrayWidth >= 0 ? 0 : -iLeftGrayWidth;
-			UT_uint32 iWindowWidth   = getWindowWidth() - iLeftGrayWidth > 0 ? getWindowWidth() - iLeftGrayWidth : 0;
-			UT_uint32 iPortHeight;
+			double iLeftGrayWidth = getPageViewLeftMargin() - m_xScrollOffset;
+			double iPortTop       = adjustedTop >= 0 ? 0 : -adjustedTop;
+			double iPortLeft      = iLeftGrayWidth >= 0 ? 0 : -iLeftGrayWidth;
+			double iWindowWidth   = getWindowWidth() - iLeftGrayWidth > 0 ? getWindowWidth() - iLeftGrayWidth : 0;
+			double iPortHeight;
 			if( adjustedBottom <= getWindowHeight() && adjustedTop >=0)
 			{
 				iPortHeight = adjustedBottom - adjustedTop;
@@ -11294,7 +11293,7 @@ void FV_View:: getVisibleDocumentPagesAndRectangles(UT_GenericVector<UT_Rect*> &
 			
 			
 			
-			UT_uint32 iPortWidth = UT_MIN(static_cast<UT_uint32>(iPageWidth), iWindowWidth);
+			double iPortWidth = UT_MIN(static_cast<UT_uint32>(iPageWidth), iWindowWidth);
 
 			UT_Rect * pRect = new UT_Rect(iPortLeft,
 										  iPortTop,
@@ -11325,7 +11324,7 @@ UT_Rect FV_View::getImageSelRect()
 
 /*! Returns the size of the image selection boxes
 */
-UT_sint32 FV_View::getImageSelInfo()
+double FV_View::getImageSelInfo()
 {
 	return getGraphics()->tlu(m_iImageSelBoxSize);
 }
@@ -11342,7 +11341,7 @@ GR_Graphics::Cursor FV_View::getImageSelCursor()
     \param xPos -- x position to check
     \param xPos -- y position to check
 */
-bool FV_View::isOverImageResizeBox(GR_Graphics::Cursor &cur, UT_uint32 xPos, UT_uint32 yPos)
+bool FV_View::isOverImageResizeBox(GR_Graphics::Cursor &cur, double xPos, double yPos)
 {
 	if (UT_Rect(m_selImageRect.left, m_selImageRect.top, getImageSelInfo(), getImageSelInfo()).containsPoint(xPos, yPos))
 	{
@@ -11465,13 +11464,13 @@ bool FV_View::isDraggingImage()
 	return m_bIsDraggingImage;
 }
 
-void FV_View::startImageDrag(fp_Run * pRun, UT_sint32 xPos, UT_sint32 yPos)
+void FV_View::startImageDrag(fp_Run * pRun, double xPos, double yPos)
 {
 	UT_ASSERT(pRun);
 	
 	m_pDraggedImageRun = pRun;
 	
-	UT_sint32 xoff = 0, yoff = 0;
+	double xoff = 0, yoff = 0;
 	pRun->getLine()->getScreenOffsets(pRun, xoff, yoff);
 
 	// Sevior's infamous + 1....
@@ -11489,7 +11488,7 @@ void FV_View::startImageDrag(fp_Run * pRun, UT_sint32 xPos, UT_sint32 yPos)
 	m_bIsDraggingImage = true;
 }
 
-void FV_View::drawDraggedImage(UT_sint32 xPos, UT_sint32 yPos)
+void FV_View::drawDraggedImage(double xPos, double yPos)
 {
 	UT_ASSERT(m_pDraggedImageRun);
 	GR_Image * pImage = (static_cast<fp_ImageRun *>(m_pDraggedImageRun))->getImage();
@@ -11529,7 +11528,7 @@ void FV_View::drawDraggedImage(UT_sint32 xPos, UT_sint32 yPos)
 						m_curImageSel.left,
 						(m_curImageSel.top <= bounds.top ? m_curImageSel.top : bounds.top + bounds.height),
 						m_curImageSel.width,
-						abs(bounds.top - m_curImageSel.top)
+						fabs(bounds.top - m_curImageSel.top)
 					  );
 	draw(&clipRect);
 	
@@ -11537,8 +11536,8 @@ void FV_View::drawDraggedImage(UT_sint32 xPos, UT_sint32 yPos)
 	clipRect = UT_Rect( 
 						(m_curImageSel.left <= bounds.left ? m_curImageSel.left : bounds.left + bounds.width),
 						UT_MAX(m_curImageSel.top, bounds.top),
-						abs(bounds.left - m_curImageSel.left),
-						m_curImageSel.height - abs(bounds.top - m_curImageSel.top)
+						fabs(bounds.left - m_curImageSel.left),
+						m_curImageSel.height - fabs(bounds.top - m_curImageSel.top)
 					  );
 	draw(&clipRect);
 	
@@ -11546,7 +11545,7 @@ void FV_View::drawDraggedImage(UT_sint32 xPos, UT_sint32 yPos)
 	m_curImageSel = bounds;
 }
 
-void FV_View::stopImageDrag(UT_sint32 xPos, UT_sint32 yPos)
+void FV_View::stopImageDrag(double xPos, double yPos)
 {
 	m_bIsDraggingImage = false;
 	

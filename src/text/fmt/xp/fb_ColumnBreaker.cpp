@@ -152,9 +152,9 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 		xxx_UT_DEBUGMSG(("SEVIOR: first to keep 1 %x \n",pFirstContainerToKeep));
 		fp_Container* pLastContainerToKeep = NULL;
 		fp_Container* pOffendingContainer = NULL;
-		UT_sint32 iMaxSecCol = pSL->getMaxSectionColumnHeight();
- 		UT_sint32 iMaxColHeight = pCurColumn->getMaxHeight();
-		UT_sint32 iFootnoteHeight = 0;
+		double iMaxSecCol = pSL->getMaxSectionColumnHeight();
+ 		double iMaxColHeight = pCurColumn->getMaxHeight();
+		double iFootnoteHeight = 0;
 		bool bEquivColumnBreak = false;
 		xxx_UT_DEBUGMSG(("fb_ColumnBreaker: iMaxSecCol = %d iMaxColHeight = %d \n",iMaxSecCol,iMaxColHeight));
 		if((iMaxSecCol > 0) && (iMaxSecCol < iMaxColHeight))
@@ -162,7 +162,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 			iMaxColHeight = iMaxSecCol;
 		    bEquivColumnBreak = true;
 		}
-		UT_sint32 iWorkingColHeight = 0;
+		double iWorkingColHeight = 0;
 
 		fp_Container* pCurContainer = pFirstContainerToKeep;
 		
@@ -193,7 +193,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 		bool bBreakOnPageBreak = false;
 		// plam: this var is redundant if the #if 0 remains dead.
 		//bool bDoTableBreak = false;
-		UT_sint32 iTotalContainerSpace = 0;
+		double iTotalContainerSpace = 0;
 		fp_Container * pPrevWorking = pCurContainer;
 		while (pCurContainer)
 		{
@@ -214,18 +214,18 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 				pCurContainer = _getNext(pCurContainer);
 				continue;
 			}
-			UT_sint32 iContainerHeight = 0;
-			UT_sint32 iContainerMarginAfter = pCurContainer->getMarginAfter();
+			double iContainerHeight = 0;
+			double iContainerMarginAfter = pCurContainer->getMarginAfter();
 			fp_Container * pVTab = NULL;
 			if(pCurContainer->isVBreakable())
 			{
 				pVTab = static_cast<fp_Container *>(pCurContainer);
-				UT_sint32 iOldBreak = _getLastWantedVBreak(pVTab); 
+				double iOldBreak = _getLastWantedVBreak(pVTab); 
 				xxx_UT_DEBUGMSG(("pVTab height is %d \n",pVTab->getHeight()));
 				if( (iOldBreak > 0) && !_isThisBroken(pVTab))
 				{
-					UT_sint32 iAvail = iMaxColHeight - iWorkingColHeight - iContainerMarginAfter;
-					UT_sint32 iBreakAt = pVTab->wantVBreakAt(iAvail-1);
+					double iAvail = iMaxColHeight - iWorkingColHeight - iContainerMarginAfter;
+					double iBreakAt = pVTab->wantVBreakAt(iAvail-1);
 					if(iBreakAt != iOldBreak)
 					{
 //
@@ -1011,7 +1011,7 @@ bool fb_ColumnBreaker::_isThisBroken(fp_Container * pCon)
 	}
 }
 
-void fb_ColumnBreaker::_setLastWantedVBreak(fp_Container * pCon, UT_sint32 iBreakAt)
+void fb_ColumnBreaker::_setLastWantedVBreak(fp_Container * pCon, double iBreakAt)
 {
 	if(pCon->getContainerType() == FP_CONTAINER_TABLE)
 	{
@@ -1024,15 +1024,14 @@ void fb_ColumnBreaker::_setLastWantedVBreak(fp_Container * pCon, UT_sint32 iBrea
 }
 
 
-UT_sint32 fb_ColumnBreaker::_getLastWantedVBreak(fp_Container * pCon)
+double fb_ColumnBreaker::_getLastWantedVBreak(fp_Container * pCon)
 {
 	if(pCon->getContainerType() == FP_CONTAINER_TABLE)
 	{
 		return static_cast<fp_TableContainer *>(pCon)->getLastWantedVBreak();
 	}
 	fp_TOCContainer * pTOC = static_cast<fp_TOCContainer *>(pCon);
-	UT_sint32 i = pTOC->getLastWantedVBreak();
-	return i;
+	return pTOC->getLastWantedVBreak();
 }
 
 /*!
@@ -1041,9 +1040,9 @@ UT_sint32 fb_ColumnBreaker::_getLastWantedVBreak(fp_Container * pCon)
  */
 bool fb_ColumnBreaker::_breakCON(fp_Container*& pOffendingContainer,
 								   fp_Container*& pLastContainerToKeep,
-								   int iMaxColHeight, 
-								   int iWorkingColHeight,
-								   int iContainerMarginAfter)
+								   double iMaxColHeight, 
+								   double iWorkingColHeight,
+								   double iContainerMarginAfter)
 {
 	if(pOffendingContainer->getContainerType() == FP_CONTAINER_TABLE)
 	{
@@ -1062,9 +1061,9 @@ bool fb_ColumnBreaker::_breakCON(fp_Container*& pOffendingContainer,
  */
 bool fb_ColumnBreaker::_breakTable(fp_Container*& pOffendingContainer,
 								   fp_Container*& pLastContainerToKeep,
-								   int iMaxColHeight, 
-								   int iWorkingColHeight,
-								   int iContainerMarginAfter)
+								   double iMaxColHeight, 
+								   double iWorkingColHeight,
+								   double iContainerMarginAfter)
 {
 	bool bDoTableBreak;
 
@@ -1090,8 +1089,8 @@ bool fb_ColumnBreaker::_breakTable(fp_Container*& pOffendingContainer,
 // will be adjusted at the setY() in the layout stage.
 //
 	fp_TableContainer * pBroke = NULL;
-	UT_sint32 iAvail = iMaxColHeight - iWorkingColHeight - iContainerMarginAfter;
-	UT_sint32 iBreakAt = pTab->wantVBreakAt(iAvail-1);
+	double iAvail = iMaxColHeight - iWorkingColHeight - iContainerMarginAfter;
+	double iBreakAt = pTab->wantVBreakAt(iAvail-1);
 	pTab->setLastWantedVBreak(iBreakAt);
 	xxx_UT_DEBUGMSG(("breakTable column: iAvail %d actual break at %d \n",iAvail,iBreakAt));
 //
@@ -1175,9 +1174,9 @@ bool fb_ColumnBreaker::_breakTable(fp_Container*& pOffendingContainer,
  */
 bool fb_ColumnBreaker::_breakTOC(fp_Container*& pOffendingContainer,
 								   fp_Container*& pLastContainerToKeep,
-								   int iMaxColHeight, 
-								   int iWorkingColHeight,
-								   int iContainerMarginAfter)
+								   double iMaxColHeight, 
+								   double iWorkingColHeight,
+								   double iContainerMarginAfter)
 {
 	bool bDoTOCBreak;
 
@@ -1203,8 +1202,8 @@ bool fb_ColumnBreaker::_breakTOC(fp_Container*& pOffendingContainer,
 // will be adjusted at the setY() in the layout stage.
 //
 	fp_TOCContainer * pBroke = NULL;
-	UT_sint32 iAvail = iMaxColHeight - iWorkingColHeight - iContainerMarginAfter;
-	UT_sint32 iBreakAt = pTOC->wantVBreakAt(iAvail-1);
+	double iAvail = iMaxColHeight - iWorkingColHeight - iContainerMarginAfter;
+	double iBreakAt = pTOC->wantVBreakAt(iAvail-1); // FIXME: this -1 should not be here - MARCM
 	pTOC->setLastWantedVBreak(iBreakAt);
 	UT_DEBUGMSG(("breakTOC column: iAvail %d actual break at %d \n",iAvail,iBreakAt));
 //
@@ -1217,7 +1216,7 @@ bool fb_ColumnBreaker::_breakTOC(fp_Container*& pOffendingContainer,
 		return false;
 	}
 
-	UT_ASSERT(iBreakAt <= (iAvail-1));
+	UT_ASSERT(iBreakAt <= (iAvail-1)); // FIXME: this -1 should not be here - MARCM
 
 	if(bDoTOCBreak && (iBreakAt + iWorkingColHeight <= iMaxColHeight))
 	{
@@ -1256,7 +1255,7 @@ bool fb_ColumnBreaker::_breakTOC(fp_Container*& pOffendingContainer,
 //
 // Look to see if we have to move the table out of this container.
 //
-		if(iBreakAt < 30)
+		if(iBreakAt < 30) // FIXME: this 30 is too arbitrary - MARCM
 		{
 			pOffendingContainer = static_cast<fp_Container *>(pTOC);
 		}
@@ -1322,4 +1321,3 @@ fp_Container * fb_ColumnBreaker::_getNext(fp_Container * pCon)
 
 	return pNext;
 }
-	

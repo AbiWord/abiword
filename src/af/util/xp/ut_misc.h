@@ -136,25 +136,25 @@ class ABI_EXPORT UT_Rect
 {
 public:
 	UT_Rect();
-	UT_Rect(UT_sint32 iLeft, UT_sint32 iTop, UT_sint32 iWidth, UT_sint32 iHeight);
+	UT_Rect(double iLeft, double dTop, double dWidth, double dHeight);
 	UT_Rect(const UT_Rect &);
 	UT_Rect(const UT_Rect * r);
 
-	bool containsPoint(UT_sint32 x, UT_sint32 y) const;
-	void set(UT_sint32 iLeft, UT_sint32 iTop, UT_sint32 iWidth, UT_sint32 iHeight);
+	bool containsPoint(double x, double y) const;
+	void set(double dLeft, double dTop, double dWidth, double dHeight);
 	bool intersectsRect(const UT_Rect * pRect) const;
 	void unionRect( const UT_Rect *pRect);
-	UT_sint32	left;
-	UT_sint32	top;
-	UT_sint32	width;
-	UT_sint32	height;
+	double	left;
+	double	top;
+	double	width;
+	double	height;
 };
 
 // ----------------------------------------------------------------
 struct ABI_EXPORT UT_Point
 {
-	UT_sint32	x;
-	UT_sint32	y;
+	double	x;
+	double	y;
 };
 
 #define UT_MAX(A,B)	(((A) > (B)) ? (A) : (B))
@@ -305,3 +305,8 @@ const XML_Char ** UT_setPropsToValue(const XML_Char ** props, const XML_Char * v
 
 const XML_Char ** UT_splitPropsToArray(XML_Char * props);
 #endif /* UTMISC_H */
+
+/*!
+ * This function returns true if two double are very close together.
+ */
+bool UT_dEQ(double x, double y);

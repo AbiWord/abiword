@@ -100,25 +100,25 @@ void fp_FootnoteContainer::clearScreen(void)
 	{
 		fl_DocSectionLayout * pDSL = getPage()->getOwningSection();
 		UT_RGBColor * pBGColor = getFillType()->getColor();
-		UT_sint32 iLeftMargin = pDSL->getLeftMargin();
-		UT_sint32 iRightMargin = pDSL->getRightMargin();
-//		UT_sint32 diff = getPage()->getWidth()/10;
-		UT_sint32 diff = 0; // FIXME make a property
-		UT_sint32 xoff,yoff;
+		double iLeftMargin = pDSL->getLeftMargin();
+		double iRightMargin = pDSL->getRightMargin();
+//		double diff = getPage()->getWidth()/10;
+		double diff = 0; // FIXME make a property
+		double xoff,yoff;
 		getPage()->getScreenOffsets(this,xoff,yoff);
-		UT_sint32 xoffStart = xoff  + diff;
-		UT_sint32 width = (getPage()->getWidth() - iLeftMargin -iRightMargin)/3;
-		UT_sint32 xoffEnd = xoff + width;
+		double xoffStart = xoff  + diff;
+		double width = (getPage()->getWidth() - iLeftMargin -iRightMargin)/3;
+		double xoffEnd = xoff + width - getGraphics()->tlu(1);
 
 		getGraphics()->setColor(*pBGColor);
-		UT_sint32 iLineThick = pDSL->getFootnoteLineThickness();
+		double iLineThick = pDSL->getFootnoteLineThickness();
 		getGraphics()->setLineWidth(iLineThick);
-		UT_sint32 yline = yoff;
+		double yline = yoff;
 		yline = yline - iLineThick - 4; // FIXME This should not be a magic numer!
-		xxx_UT_DEBUGMSG(("fp_TableContainer: clearScreen (%d,%d) to (%d,%d) \n",xoffStart,yline,xoffEnd,yline));
-		UT_sint32 srcX = getX() + diff -1;
-		UT_sint32 srcY = getY() - iLineThick -4;
-		getFillType()->Fill(getGraphics(),srcX,srcY,xoffStart-1, yline, xoffEnd-xoffStart +2, iLineThick+1);
+		xxx_UT_DEBUGMSG(("fp_TableContainer: clearScreen (%.2f,%.2f) to (%.2f,%.2f) \n",xoffStart,yline,xoffEnd,yline));
+		double srcX = getX() + diff -1; // AND THIS
+		double srcY = getY() - iLineThick -4; // AND THIS .. sort the mess out please!
+		getFillType()->Fill(getGraphics(),srcX,srcY,xoffStart-1, yline, xoffEnd-xoffStart +2, iLineThick+1); // and ALL THE +1 +2 -1... FIX IT!
 	}
 
 	fp_Container * pCon = NULL;
@@ -172,31 +172,31 @@ void fp_FootnoteContainer::draw(dg_DrawArgs* pDA)
 	{
 		UT_RGBColor black(0,0,0);
 		fl_DocSectionLayout * pDSL = getPage()->getOwningSection();
-		UT_sint32 iLeftMargin = pDSL->getLeftMargin();
-		UT_sint32 iRightMargin = pDSL->getRightMargin();
-//		UT_sint32 diff = getPage()->getWidth()/10;
-		UT_sint32 diff = 0; // FIXME make a property
-		UT_sint32 xoffStart = pDA->xoff + diff;
-		UT_sint32 width = (getPage()->getWidth() - iLeftMargin -iRightMargin)/3;
-		UT_sint32 xoffEnd = pDA->xoff + width;
+		double iLeftMargin = pDSL->getLeftMargin();
+		double iRightMargin = pDSL->getRightMargin();
+//		double diff = getPage()->getWidth()/10;
+		double diff = 0; // FIXME make a property
+		double xoffStart = pDA->xoff + diff;
+		double width = (getPage()->getWidth() - iLeftMargin -iRightMargin)/3;
+		double xoffEnd = pDA->xoff + width;
 
-		UT_sint32 yline = pDA->yoff;
+		double yline = pDA->yoff;
 		pDA->pG->setColor(black);
 		pDA->pG->setLineProperties(pDA->pG->tlu(1),
 									 GR_Graphics::JOIN_MITER,
 									 GR_Graphics::CAP_PROJECTING,
 									 GR_Graphics::LINE_SOLID);
 
-		UT_sint32 iLineThick = pDSL->getFootnoteLineThickness();
+		double iLineThick = pDSL->getFootnoteLineThickness();
 		iLineThick = UT_MAX(1,iLineThick);
 		pDA->pG->setLineWidth(iLineThick);
 		yline = yline - iLineThick - 3; // FIXME This should not be a magic numer!
-		xxx_UT_DEBUGMSG(("Drawline form (%d,%d) to (%d,%d) \n",xoffStart,yline,xoffEnd,yline));
+		xxx_UT_DEBUGMSG(("Drawline form (%.2f,%.2f) to (%.2f,%.2f) \n",xoffStart,yline,xoffEnd,yline));
 
 		GR_Painter painter (pDA->pG);
 		painter.drawLine(xoffStart, yline, xoffEnd, yline);
 	}
-	xxx_UT_DEBUGMSG(("Footnote: Drawing unbroken footnote %x x %d, y %d width %d height %d \n",this,getX(),getY(),getWidth(),getHeight()));
+	xxx_UT_DEBUGMSG(("Footnote: Drawing unbroken footnote %x x %.2f, y %.2f width %.2f height %.2f \n",this,getX(),getY(),getWidth(),getHeight()));
 
 //
 // Only draw the lines in the clipping region.
@@ -250,10 +250,10 @@ fp_Container * fp_FootnoteContainer::getPrevContainerInSection() const
 void fp_FootnoteContainer::layout(void)
 {
 	_setMaxContainerHeight(0);
-	UT_sint32 iY = 0, iPrevY = 0;
+	double iY = 0, iPrevY = 0;
 	iY= 0;
 	fl_DocSectionLayout * pDSL = getDocSectionLayout();
-	UT_sint32 iMaxFootHeight = 0;
+	double iMaxFootHeight = 0;
 	iMaxFootHeight = pDSL->getActualColumnHeight();
 	iMaxFootHeight -= getGraphics()->tlu(20)*3;
 	UT_uint32 iCountContainers = countCons();
@@ -274,12 +274,11 @@ void fp_FootnoteContainer::layout(void)
 			
 		pContainer->setY(iY);
 
-		UT_sint32 iContainerHeight = pContainer->getHeight();
-		UT_sint32 iContainerMarginAfter = pContainer->getMarginAfter();
+		double iContainerHeight = pContainer->getHeight();
+		double iContainerMarginAfter = pContainer->getMarginAfter();
 
 		iY += iContainerHeight;
 		iY += iContainerMarginAfter;
-		//iY +=  0.5;
 		if(iY > iMaxFootHeight)
 		{
 			iY = iMaxFootHeight;
@@ -298,7 +297,7 @@ void fp_FootnoteContainer::layout(void)
 	// Correct height position of the last line
 	if (pPrevContainer)
 	{
-		pPrevContainer->setAssignedScreenHeight(iY - iPrevY + 1);
+		pPrevContainer->setAssignedScreenHeight(iY - iPrevY + 1); // FIX THIS, WE DON'T WANT TO HAVE +1 IN THE CODE!!!
 	}
 
 	if (getHeight() == iY)
@@ -347,7 +346,7 @@ fp_EndnoteContainer::~fp_EndnoteContainer()
 	m_bOnPage = false;
 }
 
-void fp_EndnoteContainer::setY(UT_sint32 iY)
+void fp_EndnoteContainer::setY(double iY)
 {
 	if(iY == m_iY)
 	{
@@ -357,7 +356,7 @@ void fp_EndnoteContainer::setY(UT_sint32 iY)
 	m_iY = iY;
 }
 
-UT_sint32 fp_EndnoteContainer::getY(void) const
+double fp_EndnoteContainer::getY(void) const
 {
 	return m_iY;
 }
@@ -396,14 +395,14 @@ void fp_EndnoteContainer::clearScreen(void)
 		{
 			return;
 		}
-		UT_sint32 iLeftMargin = pDSL->getLeftMargin();
-		UT_sint32 iRightMargin = pDSL->getRightMargin();
-		UT_sint32 iWidth = getPage()->getWidth();
+		double iLeftMargin = pDSL->getLeftMargin();
+		double iRightMargin = pDSL->getRightMargin();
+		double iWidth = getPage()->getWidth();
 		iWidth = iWidth - iLeftMargin - iRightMargin;
-		UT_sint32 xoff,yoff;
+		double xoff,yoff;
 		static_cast<fp_Column *>(getColumn())->getScreenOffsets(this,xoff,yoff);
-		UT_sint32 srcX = getX();
-		UT_sint32 srcY = getY();
+		double srcX = getX();
+		double srcY = getY();
 		getFillType()->Fill(getGraphics(),srcX,srcY,xoff,yoff,iWidth,getHeight());
 	}
 	fp_Container * pCon = NULL;
@@ -469,12 +468,12 @@ fl_DocSectionLayout * fp_EndnoteContainer::getDocSectionLayout(void)
  */
 void fp_EndnoteContainer::draw(dg_DrawArgs* pDA)
 {
-	UT_DEBUGMSG(("Endnote: Drawing unbroken Endnote %x x %d, y %d width %d height %d \n",this,getX(),getY(),getWidth(),getHeight()));
+	UT_DEBUGMSG(("Endnote: Drawing unbroken Endnote %x x %.2f, y %.2f width %.2f height %.2f \n",this,getX(),getY(),getWidth(),getHeight()));
 	UT_DEBUGMSG(("pDA yoff %d \n",pDA->yoff));
 	const UT_Rect * pClipRect = pDA->pG->getClipRect();
 	if(pClipRect)
 	{
-		UT_DEBUGMSG(("clip y %d height %d \n",pClipRect->top, pClipRect->height));
+		UT_DEBUGMSG(("clip y %.2f height %.2f \n",pClipRect->top, pClipRect->height));
 	}
 	m_bCleared = false;
 //
@@ -508,7 +507,7 @@ fp_Container * fp_EndnoteContainer::getPrevContainerInSection() const
 void fp_EndnoteContainer::layout(void)
 {
 	_setMaxContainerHeight(0);
-	UT_sint32 iY = 0, iPrevY = 0;
+	double iY = 0, iPrevY = 0;
 	iY= 0;
 	UT_uint32 iCountContainers = countCons();
 	fp_Container *pContainer, *pPrevContainer = NULL;
@@ -527,8 +526,8 @@ void fp_EndnoteContainer::layout(void)
 		}
 			
 		pContainer->setY(iY);
-		UT_sint32 iContainerHeight = pContainer->getHeight();
-		UT_sint32 iContainerMarginAfter = pContainer->getMarginAfter();
+		double iContainerHeight = pContainer->getHeight();
+		double iContainerMarginAfter = pContainer->getMarginAfter();
 		if (pPrevContainer)
 		{
 			pPrevContainer->setAssignedScreenHeight(iY - iPrevY);
@@ -546,7 +545,7 @@ void fp_EndnoteContainer::layout(void)
 		pPrevContainer->setAssignedScreenHeight(iY - iPrevY + 1);
 	}
 
-	UT_sint32 iNewHeight = iY;
+	double iNewHeight = iY;
 
 	if (getHeight() == iNewHeight)
 	{

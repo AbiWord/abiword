@@ -126,8 +126,8 @@ public:
     void                formatAll(void);
 	virtual void        format(void);
 	void                formatWrappedFromHere(fp_Line * pLine,fp_Page * pPage);
-	fp_Line *           getNextWrappedLine(UT_sint32 iX,
-											  UT_sint32 iHeight,
+	fp_Line *           getNextWrappedLine(double iX,
+										   double iHeight,
 										   fp_Page * pPage);
 	virtual bool		recalculateFields(UT_uint32 iUpdateCount);
 
@@ -147,11 +147,11 @@ public:
 	UT_sint32       getEmbeddedOffset(UT_sint32 startOffset, fl_ContainerLayout *& pEmbedCL);
 	void            shuffleEmbeddedIfNeeded(fl_BlockLayout * pBlock, UT_uint32 blockOffset);
 
-	bool            getXYOffsetToLine(UT_sint32 & xoff, UT_sint32 & yoff, fp_Line * pLine);
+	bool            getXYOffsetToLine(double & xoff, double & yoff, fp_Line * pLine);
 	bool            setFramesOnPage(fp_Line * pLastLine);
-	UT_sint32       getHeightOfBlock(void);
+	double          getHeightOfBlock(void);
 	fp_Line *       findLineWithFootnotePID(UT_uint32 pid);
-	UT_sint32 getMaxNonBreakableRun(void);
+	double          getMaxNonBreakableRun(void);
 	fp_Line* findPrevLineInDocument(fp_Line*);
 	fp_Line* findNextLineInDocument(fp_Line*);
 	virtual void     appendTextToBuf(UT_GrowBuf & buf);
@@ -196,7 +196,7 @@ public:
 	UT_uint32 canSlurp(fp_Line* pLine) const;
 
 	PT_DocPosition getPosition(bool bActualBlockPos=false) const;
-	fp_Run* findPointCoords(PT_DocPosition position, bool bEOL, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection);
+	fp_Run* findPointCoords(PT_DocPosition position, bool bEOL, double& x, double& y, double& x2, double& y2, double& height, bool& bDirection);
 
 	fp_Run* findRunAtOffset(UT_uint32 offset) const;
 	
@@ -205,11 +205,11 @@ public:
 	void clearScreen(GR_Graphics*);
 
 	void                getStyle(UT_UTF8String & sStyle);
-	inline UT_sint32	getTextIndent(void) const { return m_iTextIndent; }
-	inline UT_sint32	getLeftMargin(void) const { return m_iLeftMargin; }
-	inline UT_sint32	getRightMargin(void) const { return m_iRightMargin; }
-	inline UT_sint32	getTopMargin(void) const { return m_iTopMargin; }
-	inline UT_sint32	getBottomMargin(void) const { return m_iBottomMargin; }
+	inline double   	getTextIndent(void) const { return m_iTextIndent; }
+	inline double 	    getLeftMargin(void) const { return m_iLeftMargin; }
+	inline double   	getRightMargin(void) const { return m_iRightMargin; }
+	inline double   	getTopMargin(void) const { return m_iTopMargin; }
+	inline double   	getBottomMargin(void) const { return m_iBottomMargin; }
 	inline fb_Alignment *		getAlignment(void) const { return m_pAlignment; }
 	virtual FL_DocLayout*		getDocLayout(void) const { return m_pLayout; }
 	virtual fl_SectionLayout*	getSectionLayout(void) const { return m_pSectionLayout;}
@@ -236,15 +236,15 @@ public:
 
 	bool checkSpelling(void);
 	void debugFlashing(void);
-	bool	findNextTabStop(UT_sint32 iStartX, UT_sint32 iMaxX,
-							UT_sint32& iPosition, eTabType& iType,
+	bool	findNextTabStop(double iStartX, double iMaxX,
+							double & iPosition, eTabType& iType,
 							eTabLeader &iLeader );
-	bool	findPrevTabStop(UT_sint32 iStartX, UT_sint32 iMaxX,
-							UT_sint32& iPosition, eTabType& iType,
+	bool	findPrevTabStop(double iStartX, double iMaxX,
+							double & iPosition, eTabType& iType,
 							eTabLeader &iLeader );
 	bool    hasUpdatableField(void) { return m_bHasUpdatableField;}
 	void    setUpdatableField(bool bValue) { m_bHasUpdatableField = bValue;}
-	inline UT_sint32 getDefaultTabInterval(void) const { return m_iDefaultTabInterval; }
+	inline double getDefaultTabInterval(void) const { return m_iDefaultTabInterval; }
 	inline UT_sint32 getTabsCount(void) const { return static_cast<UT_sint32>(m_vecTabs.getItemCount()); }
 
 	bool doclistener_populateSpan(const PX_ChangeRecord_Span * pcrs, PT_BlockOffset blockOffset, UT_uint32 len);
@@ -320,10 +320,10 @@ public:
 	    { return m_bIsTOC;}
 	FootnoteType            getTOCNumType(void);
 	eTabLeader              getTOCTabLeader(UT_sint32 iOff);
-	UT_sint32               getTOCTabPosition(UT_sint32 iOff);
-	void                    setAccumHeight(UT_sint32 i)
-	{ m_iAccumulatedHeight =i;}
-	UT_sint32               getAccumHeight(void) const
+	double                  getTOCTabPosition(UT_sint32 iOff);
+	void                    setAccumHeight(double d)
+	{ m_iAccumulatedHeight =d;}
+	double                getAccumHeight(void) const
 	{ return m_iAccumulatedHeight;}
 	static bool 		s_EnumTabStops(void * myThis, UT_uint32 k, fl_TabStop *pTabInfo);
 
@@ -422,15 +422,15 @@ protected:
 	fl_SectionLayout*		m_pSectionLayout;
 
 	UT_GenericVector<fl_TabStop*>	m_vecTabs;
-	UT_sint32				m_iDefaultTabInterval;
+	double  				m_iDefaultTabInterval;
 	// read-only caches of the underlying properties
 	UT_uint32				m_iOrphansProperty;
 	UT_uint32				m_iWidowsProperty;
-	UT_sint32				m_iTopMargin;
-	UT_sint32				m_iBottomMargin;
-	UT_sint32				m_iLeftMargin;
-	UT_sint32				m_iRightMargin;
-	UT_sint32				m_iTextIndent;
+	double  				m_iTopMargin;
+	double  				m_iBottomMargin;
+	double  				m_iLeftMargin;
+	double  				m_iRightMargin;
+    double  				m_iTextIndent;
 	fb_Alignment *			m_pAlignment;
 	double					m_dLineSpacing;
 	//bool					m_bExactSpacing;
@@ -455,7 +455,7 @@ protected:
 	UT_sint32               m_iTOCLevel;
 
 	bool                    m_bSameYAsPrevious;
-	UT_sint32               m_iAccumulatedHeight;
+	double                  m_iAccumulatedHeight;
 	fp_VerticalContainer *  m_pVertContainer;
 	UT_sint32               m_iLinePosInContainer;
 	bool                    m_bForceSectionBreak;
@@ -497,8 +497,8 @@ public:
 
 	fl_TabStop();
 
-	UT_sint32		getPosition() const { return iPosition;}
-	void			setPosition(UT_sint32 value) { iPosition = value;}
+	double  		getPosition() const { return iPosition;}
+	void			setPosition(double value) { iPosition = value;}
 	eTabType		getType() { return iType;}
 	void			setType(eTabType type) { iType = type;}
 	eTabLeader		getLeader() { return iLeader;};
@@ -517,7 +517,7 @@ public:
 
 protected:
 
-	UT_sint32		iPosition;
+	double  		iPosition;
 	eTabType		iType;
 	eTabLeader		iLeader;
 	UT_uint32		iOffset;

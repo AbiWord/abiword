@@ -80,7 +80,7 @@ class GR_UnixGraphics : public GR_Graphics
 	
 	virtual void		setFont(GR_Font* pFont);
 	virtual void        clearFont(void) {m_pFont = NULL;} 
-	virtual UT_uint32	getFontHeight();
+	virtual double	    getFontHeight();
 	// virtual UT_uint32	measureString(const UT_UCSChar*s, int iOffset, int num, unsigned short* pWidths);
 	virtual UT_sint32 measureUnRemappedChar(const UT_UCSChar c);
 
@@ -91,21 +91,21 @@ class GR_UnixGraphics : public GR_Graphics
 
 	virtual GR_Font*	getDefaultFont(UT_String& fontFamily);
 
-	virtual UT_uint32	getFontAscent();
-	virtual UT_uint32	getFontDescent();
+	virtual double		getFontAscent();
+	virtual double		getFontDescent();
 
 	virtual void		getCoverage(UT_NumberVector& coverage);
 
-	virtual void		setLineWidth(UT_sint32);
+	virtual void		setLineWidth(double);
 
 	virtual void		setClipRect(const UT_Rect* pRect);
-	virtual void		scroll(UT_sint32, UT_sint32);
+	virtual void		scroll(double, double);
 	virtual void		scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 							   UT_sint32 x_src, UT_sint32 y_src,
 							   UT_sint32 width, UT_sint32 height);
 
 	virtual GR_Image*	createNewImage(const char* pszName, const UT_ByteBuf* pBB,
-					       UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight,
+					       double iWidth, double iHeight,
 					       GR_Image::GRType = GR_Image::GRT_Raster);
   
 	virtual bool		queryProperties(GR_Graphics::Properties gp) const;
@@ -136,9 +136,9 @@ class GR_UnixGraphics : public GR_Graphics
 					 GR_Graphics::LineStyle inLineStyle = LINE_SOLID ) ;
 
 	/* GR_Font versions of the above -- TODO: should I add drawChar* methods too? */
-	virtual UT_uint32 getFontAscent(GR_Font *);
-	virtual UT_uint32 getFontDescent(GR_Font *);
-	virtual UT_uint32 getFontHeight(GR_Font *);
+	virtual double getFontAscent(GR_Font *);
+	virtual double getFontDescent(GR_Font *);
+	virtual double getFontHeight(GR_Font *);
     virtual GR_Image * genImageFromRectangle(const UT_Rect & r);
 	virtual void	  saveRectangle(UT_Rect & r, UT_uint32 iIndx);
 	virtual void	  restoreRectangle(UT_uint32 iIndx);
@@ -154,26 +154,26 @@ class GR_UnixGraphics : public GR_Graphics
 	virtual void _beginPaint ();
 	virtual void _endPaint ();
 
-	virtual void        drawGlyph(UT_uint32 glyph_idx, UT_sint32 xoff, UT_sint32 yoff);
+	virtual void        drawGlyph(UT_uint32 glyph_idx, double xoff, double yoff);
 	virtual void		drawChars(const UT_UCSChar* pChars, int iCharOffset,
-								  int iLength, UT_sint32 xoff, UT_sint32 yoff,
+								  int iLength, double xoff, double yoff,
 								  int * pCharWidths = NULL);
 	virtual void		fillRect(GR_Color3D c,
-								 UT_sint32 x, UT_sint32 y,
-								 UT_sint32 w, UT_sint32 h);
+								 double x, double y,
+								 double w, double h);
 	virtual void		fillRect(GR_Color3D c, UT_Rect &r);   
 	virtual void		polygon(UT_RGBColor& c,UT_Point *pts,UT_uint32 nPoints);
-	virtual void		clearArea(UT_sint32, UT_sint32, UT_sint32, UT_sint32);  
-	virtual void		drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest);
-	virtual void		xorLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
+	virtual void		clearArea(double, double, double, double);  
+	virtual void		drawImage(GR_Image* pImg, double xDest, double yDest);
+	virtual void		xorLine(double, double, double, double);
 	virtual void		polyLine(UT_Point * pts, UT_uint32 nPoints);
 	virtual void		fillRect(const UT_RGBColor& c,
-								 UT_sint32 x, UT_sint32 y,
-								 UT_sint32 w, UT_sint32 h);
+								 double x, double y,
+								 double w, double h);
 	virtual void		invertRect(const UT_Rect* pRect);
-	virtual void		drawLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
-	bool                isDingbat(void) const;
-	bool                isSymbol(void) const;
+	virtual void		drawLine(double, double, double, double);
+	bool			isDingbat(void) const;
+	bool			isSymbol(void) const;
 
 	virtual GR_Font*	_findFont(const char* pszFontFamily, 
 								  const char* pszFontStyle, 
@@ -204,7 +204,7 @@ class GR_UnixGraphics : public GR_Graphics
   
 	GdkColormap* 	 		m_pColormap;
 	int          			m_iWindowHeight, m_iWindowWidth;
-	UT_sint32				m_iLineWidth;
+	double					m_iLineWidth;
 	GR_Graphics::Cursor		m_cursor;
 
 	GR_Graphics::ColorSpace	m_cs;
@@ -223,8 +223,8 @@ private:
 	Colormap				m_Colormap;
 
 	FcChar32				m_aMap[FC_CHARSET_MAP_SIZE];
-	UT_sint32               m_iXoff;
-	UT_sint32               m_iYoff;
+	double					m_iXoff;
+	double					m_iYoff;
 	UT_RGBColor				m_curColor;
 
 	UT_GenericVector<UT_Rect*>     m_vSaveRect;

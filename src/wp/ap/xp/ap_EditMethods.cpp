@@ -3637,7 +3637,7 @@ Defun(selectObject)
 	fl_BlockLayout * pBlock = pView->getBlockAtPosition(pos);
 	if(pBlock)
 	{
-		UT_sint32 x1,x2,y1,y2,iHeight;
+		double x1,x2,y1,y2,iHeight;
 		bool bEOL = false;
 		bool bDir = false;
 		
@@ -4174,7 +4174,7 @@ Defun1(contextMenu)
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
-	UT_sint32 xPos, yPos;
+	double xPos, yPos;
 	EV_EditMouseContext emc = pView->getInsertionPointContext(&xPos,&yPos);
 
 	const char * szContextMenuName = XAP_App::getApp()->getMenuFactory()->FindContextMenu(emc);
@@ -9502,7 +9502,7 @@ Defun(dlgFmtImage)
 		= static_cast<XAP_Dialog_Image *>(pDialogFactory->requestDialog(XAP_DIALOG_ID_IMAGE));
 UT_return_val_if_fail(pDialog, false);
 	double max_width = 0., max_height = 0.;
-	UT_sint32 x1,x2,y1,y2,iHeight,iWidth;
+	double x1,x2,y1,y2,iHeight,iWidth;
 	bool bEOL = false;
 	bool bDir = false;
 
@@ -9758,10 +9758,10 @@ UT_return_val_if_fail(pDialog, false);
 //
 // Now calculate the Y offset to the paragraph
 //
-				  UT_sint32 xBlockOff,yBlockOff = 0;
+				  double xBlockOff,yBlockOff = 0.0;
 				  bool bValid = false;
 				  bValid = pBlock->getXYOffsetToLine(xBlockOff,yBlockOff,pLine);
-				  ypos = static_cast<double>(yBlockOff)/static_cast<double>(UT_LAYOUT_RESOLUTION);
+				  ypos = yBlockOff/static_cast<double>(UT_LAYOUT_RESOLUTION);
 				  sProp = "ypos";
 				  sVal = UT_formatDimensionedValue(ypos,"in", NULL);
 				  UT_String_setProperty(sFrameProps,sProp,sVal);
@@ -12634,7 +12634,7 @@ Defun(resizeImage)
 		
 		UT_DEBUGMSG(("MARCM: ap_EditMethods::resizing image! Origin at pos: (x:%d,y:%d) - mouse at pos (x:%d,y:%d)\n", xOrigin, yOrigin, pCallData->m_xPos, pCallData->m_yPos));
 	
-		UT_sint32 x1,x2,y1,y2,iHeight;
+		double x1,x2,y1,y2,iHeight;
 		bool bEOL = false;
 		bool bDir = false;
 	
@@ -12816,7 +12816,7 @@ Defun(endResizeImage)
 		
 		UT_DEBUGMSG(("MARCM: ap_EditMethods::done resizing image! new size in px (h:%d,w:%d)\n", newImgBounds.width, newImgBounds.height));
 	
-		UT_sint32 x1,x2,y1,y2,iHeight;
+		double x1,x2,y1,y2,iHeight;
 		bool bEOL = false;
 		bool bDir = false;
 	
@@ -13050,7 +13050,7 @@ Defun(dragImage)
 		
 		if (!pView->isDraggingImage())
 		{
-			UT_sint32 x1,x2,y1,y2,iHeight;
+			double x1,x2,y1,y2,iHeight;
 			bool bEOL = false;
 			bool bDir = false;
 			

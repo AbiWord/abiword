@@ -52,15 +52,3 @@ private:
 };
 
 #endif /* GR_UNIXGNOMEIMAGE_H */
-
-
-
-
-
-
-
-
-
-
-
-

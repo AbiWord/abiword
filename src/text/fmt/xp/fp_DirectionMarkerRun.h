@@ -32,24 +32,24 @@ public:
 						  UT_uint32 iOffsetFirst,
 						  UT_UCS4Char cMarker);
 
-	virtual void			mapXYToPosition(UT_sint32 xPos,
-											UT_sint32 yPos,
+	virtual void			mapXYToPosition(double xPos,
+											double yPos,
 											PT_DocPosition& pos,
 											bool& bBOL,
 											bool& bEOL,
 											bool & isTOC);
 	
 	virtual void 			findPointCoords(UT_uint32 iOffset,
-											UT_sint32& x,
-											UT_sint32& y,
-											UT_sint32& x2,
-											UT_sint32& y2,
-											UT_sint32& height,
+											double& x,
+											double& y,
+											double& x2,
+											double& y2,
+											double& height,
 											bool& bDirection);
 	
 	virtual bool			canBreakAfter(void) const;
 	virtual bool			canBreakBefore(void) const;
-	virtual UT_sint32       getDrawingWidth() const { return static_cast<UT_sint32>(m_iDrawWidth);}
+	virtual double       getDrawingWidth() const { return m_iDrawWidth;}
 
 	// for the purposes of linebreaking, direction markers are just whitespace
 	virtual bool		    doesContainNonBlankData(void) const { return false; }
@@ -67,9 +67,9 @@ protected:
 	virtual bool            _deleteFollowingIfAtInsPoint() const;
 
 private:
-	UT_uint32				m_iXoffText;
-	UT_uint32				m_iYoffText;
-	UT_uint32				m_iDrawWidth;
+	double					m_iXoffText;
+	double					m_iYoffText;
+	double					m_iDrawWidth;
 	UT_UCS4Char             m_iMarker;
 };
 

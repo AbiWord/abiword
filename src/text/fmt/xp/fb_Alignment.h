@@ -51,7 +51,7 @@ class ABI_EXPORT fb_Alignment
 public:
 
 	virtual void		initialize(fp_Line *pLine) = 0;
-	virtual UT_sint32	getStartPosition() = 0;
+	virtual double  	getStartPosition() = 0;
 	virtual void		eraseLineFromRun(fp_Line *pLine, UT_uint32 runIndex) = 0;
     virtual FB_AlignmentType getType() = 0;
 
@@ -62,13 +62,13 @@ class ABI_EXPORT fb_Alignment_left : public fb_Alignment
 public:
 
 	void		initialize(fp_Line *pLine);
-	UT_sint32	getStartPosition();
+	double  	getStartPosition();
 	void		eraseLineFromRun(fp_Line *pLine, UT_uint32 runIndex);
     FB_AlignmentType getType(){return FB_ALIGNMENT_LEFT;};
 
 private:
 
-	UT_sint32	m_iStartPosition;
+	double  	m_iStartPosition;
 };
 
 class ABI_EXPORT fb_Alignment_center : public fb_Alignment
@@ -76,13 +76,13 @@ class ABI_EXPORT fb_Alignment_center : public fb_Alignment
 public:
 
 	void		initialize(fp_Line *pLine);
-	UT_sint32	getStartPosition();
+    double	    getStartPosition();
 	void		eraseLineFromRun(fp_Line *pLine, UT_uint32 runIndex);
     FB_AlignmentType getType(){return FB_ALIGNMENT_CENTER;};
 
 private:
 
-	UT_sint32	m_startPosition;
+	double  	m_startPosition;
 };
 
 class ABI_EXPORT fb_Alignment_right : public fb_Alignment
@@ -90,13 +90,13 @@ class ABI_EXPORT fb_Alignment_right : public fb_Alignment
 public:
 
 	void		initialize(fp_Line *pLine);
-	UT_sint32	getStartPosition();
+	double  	getStartPosition();
 	void		eraseLineFromRun(fp_Line *pLine, UT_uint32 runIndex);
     FB_AlignmentType getType(){return FB_ALIGNMENT_RIGHT;};
 
 private:
 
-	UT_sint32	m_startPosition;
+	double  	m_startPosition;
 };
 
 class ABI_EXPORT fb_Alignment_justify : public fb_Alignment
@@ -104,16 +104,16 @@ class ABI_EXPORT fb_Alignment_justify : public fb_Alignment
 public:
 
 	void		initialize(fp_Line *pLine);
-	UT_sint32	getStartPosition();
+	double  	getStartPosition();
 	void		eraseLineFromRun(fp_Line *pLine, UT_uint32 runIndex);
     FB_AlignmentType getType(){return FB_ALIGNMENT_JUSTIFY;};
 
 private:
 
-	int			m_iSpaceCountLeft;
-	int			m_iSpaceCount;
-	int			m_iExtraWidth;
-	UT_sint32	m_iStartPosition;
+	double			m_iSpaceCountLeft;
+	double			m_iSpaceCount;
+	double			m_iExtraWidth;
+	double    	m_iStartPosition;
 
 
 };

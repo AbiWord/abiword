@@ -44,7 +44,7 @@ public:
 	virtual GR_Image*	regenerateImage(GR_Graphics* pG);
 	virtual GR_Image*	generateImage(GR_Graphics* pG,
 									  const PP_AttrProp * pSpanAP,
-									  UT_sint32 maxW, UT_sint32 maxH);
+									  double maxW, double maxH);
 
 	virtual UT_Error   	insertIntoDocument(PD_Document* pDoc, UT_uint32 res,
 										   UT_uint32 iPos, const char* szName);
@@ -64,9 +64,10 @@ protected:
 	UT_ByteBuf* m_pbbPNG;
 	bool m_bOwnPNG;
 
-	UT_sint32 m_iWidth, m_iHeight;
-	UT_sint32 m_iMaxW;
-	UT_sint32 m_iMaxH;
+	UT_sint32 m_iWidth;
+	UT_sint32 m_iHeight;
+	double m_iMaxW;
+	double m_iMaxH;
 	const PP_AttrProp* m_pSpanAP;
 	const XML_Char* m_pszDataID;
 };

@@ -34,6 +34,7 @@
 #include "xap_Frame.h"
 #include "gr_Painter.h"
 #include "xap_App.h"
+#include "ut_math.h"
 
 FV_FrameEdit::FV_FrameEdit (FV_View * pView)
 	: m_pView (pView), 
@@ -115,8 +116,8 @@ void FV_FrameEdit::_autoScroll(UT_Worker * pWorker)
 	FV_FrameEdit * pFE = static_cast<FV_FrameEdit *>(pWorker->getInstanceData());
 	UT_ASSERT(pFE);
 	FV_View * pView = pFE->m_pView;
-	UT_sint32 x = pFE->m_xLastMouse;
-	UT_sint32 y = pFE->m_yLastMouse;
+	double x = pFE->m_xLastMouse;
+	double y = pFE->m_yLastMouse;
 	bool bScrollDown = false;
 	bool bScrollUp = false;
 	bool bScrollLeft = false;
@@ -181,7 +182,7 @@ UT_sint32 FV_FrameEdit::haveDragged(void) const
 	{
 		return 0;
 	}
-	if((abs(m_xLastMouse - m_iFirstEverX) + abs(m_yLastMouse - m_iFirstEverY)) <
+	if((fabs(m_xLastMouse - m_iFirstEverX) + fabs(m_yLastMouse - m_iFirstEverY)) <
 		getGraphics()->tlu(3))
 	{
 		return 1;
@@ -210,7 +211,7 @@ void  FV_FrameEdit::_endGlob(void)
 }
 
 
-void FV_FrameEdit::mouseDrag(UT_sint32 x, UT_sint32 y)
+void FV_FrameEdit::mouseDrag(double x, double y)
 {
 	if(!m_bFirstDragDone)
 	{
@@ -218,13 +219,13 @@ void FV_FrameEdit::mouseDrag(UT_sint32 x, UT_sint32 y)
 		m_iFirstEverY = y;
 	}
 	m_bFirstDragDone = true;
-	UT_sint32 diffx = 0;
-	UT_sint32 diffy = 0;
-	UT_sint32 dx = 0;
-	UT_sint32 dy = 0;
+	double diffx = 0;
+	double  diffy = 0;
+	double  dx = 0;
+	double  dy = 0;
 	UT_Rect expX(0,m_recCurFrame.top,0,m_recCurFrame.height);
 	UT_Rect expY(m_recCurFrame.left,0,m_recCurFrame.width,0);
-	UT_sint32 iext = getGraphics()->tlu(3);
+	double  iext = getGraphics()->tlu(3);
 	m_xLastMouse = x;
 	m_yLastMouse = y;
 	switch (m_iDraggingWhat)
@@ -584,10 +585,10 @@ void FV_FrameEdit::mouseDrag(UT_sint32 x, UT_sint32 y)
 	}
 	else if (FV_FrameEdit_RESIZE_EXISTING == m_iFrameEditMode)
 	{
-		UT_sint32 iW = m_recCurFrame.width;
-		UT_sint32 iH = m_recCurFrame.height;
-		UT_sint32 newX = m_pFrameContainer->getFullX();
-		UT_sint32 newY = m_pFrameContainer->getFullY();
+		double iW = m_recCurFrame.width;
+		double iH = m_recCurFrame.height;
+		double newX = m_pFrameContainer->getFullX();
+		double newY = m_pFrameContainer->getFullY();
 		m_pFrameLayout->localCollapse();
 		m_pFrameLayout->setFrameWidth(iW);
 		m_pFrameLayout->setFrameHeight(iH);
@@ -617,8 +618,8 @@ void FV_FrameEdit::mouseDrag(UT_sint32 x, UT_sint32 y)
 	}
 	else if (FV_FrameEdit_DRAG_EXISTING == m_iFrameEditMode)
 	{
-		UT_sint32 newX = m_pFrameContainer->getFullX();
-		UT_sint32 newY = m_pFrameContainer->getFullY();
+		double newX = m_pFrameContainer->getFullX();
+		double newY = m_pFrameContainer->getFullY();
 		newX += dx;
 		newY += dy;
 		m_pFrameContainer->_setX(newX);
@@ -661,7 +662,7 @@ void FV_FrameEdit::mouseDrag(UT_sint32 x, UT_sint32 y)
  *
  * The method also sets the fl_FrameLayout and FP_FrameContainer pointers. 
  */
-void FV_FrameEdit::setDragType(UT_sint32 x, UT_sint32 y, bool bDrawFrame)
+void FV_FrameEdit::setDragType(double x, double y, bool bDrawFrame)
 {
 	xxx_UT_DEBUGMSG(("setDragType called frameEdit mode %d \n",m_iFrameEditMode));
 	PT_DocPosition posAtXY = m_pView->getDocPositionFromXY(x,y,false);
@@ -732,8 +733,8 @@ void FV_FrameEdit::setDragType(UT_sint32 x, UT_sint32 y, bool bDrawFrame)
 	//
 	// OK find the coordinates of the frame.
 	//
-	UT_sint32 xPage,yPage;
-	UT_sint32 xClick, yClick;
+	double xPage,yPage;
+	double xClick, yClick;
 	fp_Page* pPage = m_pView->_getPageForXY(x, y, xClick, yClick);
 	m_pView->getPageScreenOffsets(pPage,xPage,yPage);
 	if(m_iFrameEditMode == FV_FrameEdit_EXISTING_SELECTED)
@@ -755,11 +756,11 @@ void FV_FrameEdit::setDragType(UT_sint32 x, UT_sint32 y, bool bDrawFrame)
 		}
 	}
 	UT_return_if_fail(pFCon);
-	UT_sint32 ires = getGraphics()->tlu(FRAME_HANDLE_SIZE); // 6 pixels wide hit area
-	UT_sint32 iLeft = xPage + pFCon->getFullX();
-	UT_sint32 iRight = xPage + pFCon->getFullX() + pFCon->getFullWidth();
-	UT_sint32 iTop = yPage + pFCon->getFullY();
-	UT_sint32 iBot = yPage + pFCon->getFullY() + pFCon->getFullHeight();
+	double ires = getGraphics()->tlu(FRAME_HANDLE_SIZE); // 6 pixels wide hit area
+	double iLeft = xPage + pFCon->getFullX();
+	double iRight = xPage + pFCon->getFullX() + pFCon->getFullWidth();
+	double iTop = yPage + pFCon->getFullY();
+	double iBot = yPage + pFCon->getFullY() + pFCon->getFullHeight();
 	bool bX = (iLeft - ires < x) && (x < iRight + ires);
 	bool bY = (iTop - ires < y) && (iBot + ires > y);
 	bool bLeft = (iLeft - ires < x) && (x  < iLeft + ires);
@@ -855,7 +856,7 @@ void FV_FrameEdit::setDragType(UT_sint32 x, UT_sint32 y, bool bDrawFrame)
 /*!
  * This method responds to a mouse click and decides what to do with it.
  */
-void FV_FrameEdit::mouseLeftPress(UT_sint32 x, UT_sint32 y)
+void FV_FrameEdit::mouseLeftPress(double x, double y)
 {
 	m_bFirstDragDone = false;
 	if(!isActive())
@@ -924,10 +925,10 @@ void FV_FrameEdit::mouseLeftPress(UT_sint32 x, UT_sint32 y)
 //
 // Now insert a text box
 //
-		UT_sint32 iCursorOff = getGraphics()->tlu(8);
-		UT_sint32 origX = x + iCursorOff;
-		UT_sint32 origY = y + iCursorOff;
-		UT_sint32 iSize = getGraphics()->tlu(32);
+		double iCursorOff = getGraphics()->tlu(8);
+		double origX = x + iCursorOff;
+		double origY = y + iCursorOff;
+		double iSize = getGraphics()->tlu(32);
 		m_recCurFrame.left = origX - iSize;;
 		m_recCurFrame.top = origY - iSize;;
 		m_recCurFrame.width = iSize;
@@ -948,7 +949,7 @@ void FV_FrameEdit::mouseLeftPress(UT_sint32 x, UT_sint32 y)
 	}
 }
 
-bool FV_FrameEdit::getFrameStrings(UT_sint32 x, UT_sint32 y, 
+bool FV_FrameEdit::getFrameStrings(double x, double y, 
 										UT_String & sXpos,
 										UT_String & sYpos,
 										UT_String & sWidth,
@@ -969,12 +970,12 @@ bool FV_FrameEdit::getFrameStrings(UT_sint32 x, UT_sint32 y,
 		fl_BlockLayout * pBL = NULL;
 		fp_Run * pRun = NULL;
 		fp_Line * pLine = NULL;
-		UT_sint32 x1,x2,y1,y2;
-		UT_uint32 height;
+		double x1,x2,y1,y2;
+		double height;
 		bool bEOL=false;
 		bool bDir=false;
 		m_pView->_findPositionCoords(posAtXY,bEOL,x1,y1,x2,y2,height,bDir,&pBL,&pRun);
-		UT_DEBUGMSG((" Requested y %d frameEdit y1= %d y2= %d \n",y,y1,y2));
+		UT_DEBUGMSG((" Requested y %.2f frameEdit y1= %.2f y2= %.2f \n",y,y1,y2));
 		if((pBL == NULL) || (pRun == NULL))
 		{
 			return false;
@@ -1011,13 +1012,13 @@ bool FV_FrameEdit::getFrameStrings(UT_sint32 x, UT_sint32 y,
 //
 // Find the screen coords of pCol and substract then from x,y
 //
-		UT_sint32 iColx = 0;
-		UT_sint32 iColy = 0;
+		double iColx = 0;
+		double iColy = 0;
 		fp_Page * pPage = pCol->getPage();
 		pPage->getScreenOffsets(pCol,iColx,iColy);
-		UT_sint32 xp,yp;
+		double xp,yp;
 		m_pView->getPageScreenOffsets(pPage,xp,yp);
-		UT_sint32 finalColx = x - iColx;
+		double finalColx = x - iColx;
 		if(finalColx + iColx - xp < 0)
 		{
 			x += -finalColx -iColx +xp;
@@ -1028,7 +1029,7 @@ bool FV_FrameEdit::getFrameStrings(UT_sint32 x, UT_sint32 y,
 		}
 		finalColx = x - iColx;
 
-		UT_sint32 finalColy = y - iColy;
+		double finalColy = y - iColy;
 		if(finalColy + iColy - yp < 0 )
 		{
 			y += -iColy - finalColy +yp;
@@ -1039,8 +1040,8 @@ bool FV_FrameEdit::getFrameStrings(UT_sint32 x, UT_sint32 y,
 		}
 		finalColy = y - iColy;
 
-		double xPos = static_cast<double>(finalColx)/static_cast<double>(UT_LAYOUT_RESOLUTION);
-		double yPos = static_cast<double>(finalColy)/static_cast<double>(UT_LAYOUT_RESOLUTION);
+		double xPos = finalColx/UT_LAYOUT_RESOLUTION;
+		double yPos = finalColy/UT_LAYOUT_RESOLUTION;
 		sColXpos = UT_formatDimensionedValue(xPos,"in", NULL);
 		sColYpos = UT_formatDimensionedValue(yPos,"in", NULL);
 
@@ -1049,21 +1050,21 @@ bool FV_FrameEdit::getFrameStrings(UT_sint32 x, UT_sint32 y,
 // point. After that workout the offset to the first line of the block.
 //
 //
-		UT_sint32 xBlockOff =0;
-		UT_sint32 yBlockOff = 0;
+		double xBlockOff =0.0;
+		double yBlockOff = 0.0;
 		bool bValid = false;
 		bValid = pBL->getXYOffsetToLine(xBlockOff,yBlockOff,pLine);
 		fp_Line * pFirstL = static_cast<fp_Line *>(pBL->getFirstContainer());
-		UT_sint32 xFirst,yFirst;
+		double xFirst,yFirst;
 		pFirstL->getScreenOffsets(pFirstL->getFirstRun(),xFirst,yFirst);
-		UT_DEBUGMSG(("First line x  %d y %d \n",xFirst,yFirst));
-		UT_DEBUGMSG(("xBlockOffset %d yBlockOffset %d \n",xBlockOff,yBlockOff));
-		UT_sint32 xLineOff = 0;
-		UT_sint32 yLineOff = 0;
+		UT_DEBUGMSG(("First line x  %.2f y %.2f \n",xFirst,yFirst));
+		UT_DEBUGMSG(("xBlockOffset %.2f yBlockOffset %.2f \n",xBlockOff,yBlockOff));
+		double xLineOff = 0;
+		double yLineOff = 0;
 		fp_VerticalContainer * pVCon = static_cast<fp_VerticalContainer *>(pLine->getContainer());
 		pVCon->getOffsets(pLine,xLineOff,yLineOff);
 		xLineOff -= pLine->getX();
-		UT_DEBUGMSG(("Closest Line yLineoff %d \n",yLineOff));
+		UT_DEBUGMSG(("Closest Line yLineoff %.2f \n",yLineOff));
 
 // OK correct for page offsets
 		pPage = pVCon->getPage();
@@ -1075,7 +1076,7 @@ bool FV_FrameEdit::getFrameStrings(UT_sint32 x, UT_sint32 y,
 		xLineOff = x -xp - xLineOff;
 //		yLineOff = y + pRun->getY() - yLineOff  + yBlockOff;
 		yLineOff = y - yp - yLineOff + yBlockOff;
-		UT_DEBUGMSG(("fv_FrameEdit: (x,y) %d %d xLineOff %d yLineOff %d \n",x,y,xLineOff,yLineOff));
+		UT_DEBUGMSG(("fv_FrameEdit: (x,y) %.2f %.2f xLineOff %.2f yLineOff %.2f \n",x,y,xLineOff,yLineOff));
 //
 // The sXpos and sYpos values are the numbers that need to be added from the
 // top left corner of thefirst line of the block to reach the top left 
@@ -1091,7 +1092,7 @@ bool FV_FrameEdit::getFrameStrings(UT_sint32 x, UT_sint32 y,
 		return true;
 }
 
-void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
+void FV_FrameEdit::mouseRelease(double x, double y)
 {
 //
 // If we've just selected the frame, ignore this event.
@@ -1744,7 +1745,7 @@ void FV_FrameEdit::deleteFrame(void)
 /*!
  * Method to deal with mouse coordinates.
  */
-FV_FrameEditDragWhat FV_FrameEdit::mouseMotion(UT_sint32 x, UT_sint32 y)
+FV_FrameEditDragWhat FV_FrameEdit::mouseMotion(double x, double y)
 {
 	return getFrameEditDragWhat();
 }
@@ -1760,7 +1761,7 @@ void FV_FrameEdit::drawFrame(bool bWithHandles)
 	dg_DrawArgs da;
 	da.pG = getGraphics();
 	da.bDirtyRunsOnly = false;
-	UT_sint32 xPage,yPage;
+	double xPage,yPage;
 	m_pView->getPageScreenOffsets(pPage,xPage,yPage);
 	da.xoff = xPage + m_pFrameContainer->getX();
 	da.yoff = yPage + m_pFrameContainer->getY();

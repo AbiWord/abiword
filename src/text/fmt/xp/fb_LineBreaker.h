@@ -43,8 +43,8 @@ public:
 
 protected:
 	void		_breakTheLineAtLastRunToKeep(fp_Line *pLine, fl_BlockLayout *pBlock,fp_Page * pPage);
-	UT_sint32	_moveBackToFirstNonBlankData(fp_Run *pCurrentRun, fp_Run **pOffendingRun);
-	bool		_splitAtOrBeforeThisRun(fp_Run *pCurrentRun, UT_sint32 iTrailSpace);
+	double	    _moveBackToFirstNonBlankData(fp_Run *pCurrentRun, fp_Run **pOffendingRun);
+	bool		_splitAtOrBeforeThisRun(fp_Run *pCurrentRun, double dTrailSpace);
 	bool		_splitAtNextNonBlank(fp_Run *pCurrentRun);
 	void		_splitRunAt(fp_Run *pCurrentRun, fp_RunSplitInfo &splitInfo);
 
@@ -52,8 +52,8 @@ private:
 	fp_Run* 	m_pFirstRunToKeep;
 	fp_Run* 	m_pLastRunToKeep;
 	
-	UT_sint32	m_iMaxLineWidth;
-	UT_sint32	m_iWorkingLineWidth;
+	double		m_iMaxLineWidth;
+	double		m_iWorkingLineWidth;
 };
 
 #endif /* FB_LINEBREAKER_H */

@@ -56,7 +56,7 @@ public:
    
 	static GRType		getBufferType(const UT_ByteBuf* pBB);
    	virtual GRType		getType() const;
-   	virtual bool		render(GR_Graphics *pGR, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
+   	virtual bool		render(GR_Graphics *pGR, double xDest, double yDest);
 
  protected:
 	void setName ( const char * szName );
@@ -66,8 +66,8 @@ public:
 
 private:
    	UT_String		m_szName;
-	UT_sint32			m_iDisplayWidth;
-	UT_sint32			m_iDisplayHeight;
+	UT_sint32		m_iDisplayWidth;
+	UT_sint32		m_iDisplayHeight;
 };
 
 class ABI_EXPORT GR_RasterImage : public GR_Image

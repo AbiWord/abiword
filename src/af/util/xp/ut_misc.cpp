@@ -35,6 +35,8 @@
 #define AUTO_LIST_RESERVED 1000
 #include <limits.h>
 
+#define EPSILON 1.0e-7
+
 /*****************************************************************/
 /*****************************************************************/
 
@@ -43,12 +45,12 @@ UT_Rect::UT_Rect()
 	left = top = height = width = 0;
 }
 
-UT_Rect::UT_Rect(UT_sint32 iLeft, UT_sint32 iTop, UT_sint32 iWidth, UT_sint32 iHeight)
+UT_Rect::UT_Rect(double dLeft, double dTop, double dWidth, double dHeight)
 {
-	left = iLeft;
-	top = iTop;
-	width = iWidth;
-	height = iHeight;
+	left = dLeft;
+	top = dTop;
+	width = dWidth;
+	height = dHeight;
 }
 
 UT_Rect::UT_Rect(const UT_Rect & r)
@@ -68,7 +70,7 @@ UT_Rect::UT_Rect(const UT_Rect * r)
 	height = r->height;
 }
 
-bool UT_Rect::containsPoint(UT_sint32 x, UT_sint32 y) const
+bool UT_Rect::containsPoint(double x, double y) const
 {
 	// return true iff the given (x,y) is inside the rectangle.
 
@@ -80,12 +82,12 @@ bool UT_Rect::containsPoint(UT_sint32 x, UT_sint32 y) const
 	return true;
 }
 
-void UT_Rect::set(int iLeft, int iTop, int iWidth, int iHeight)
+void UT_Rect::set(double dLeft, double dTop, double dWidth, double dHeight)
 {
-	left = iLeft;
-	top = iTop;
-	width = iWidth;
-	height = iHeight;
+	left = dLeft;
+	top = dTop;
+	width = dWidth;
+	height = dHeight;
 }
 
 /*!
@@ -95,7 +97,7 @@ void UT_Rect::set(int iLeft, int iTop, int iWidth, int iHeight)
  */
 void UT_Rect::unionRect(const UT_Rect * pRect)
 {
-	UT_sint32 fx1,fx2,fy1,fy2;
+	double fx1,fx2,fy1,fy2;
 	fx1 = UT_MIN(left,pRect->left);
 	fx2 = UT_MAX(left+width,pRect->left + pRect->width);
 	fy1 = UT_MIN(top,pRect->top);
@@ -1152,7 +1154,7 @@ const XML_Char ** UT_splitPropsToArray(XML_Char * pProps)
 
 		char * semi = NULL;
 		const char * p = pProps;
-		while(semi = strchr(p, ';'))
+		while(semi = strchr(p, ';')) // FIXME gcc gives a warning here!
 		{
 			*semi = 0;
 			p = semi + 1;
@@ -1193,3 +1195,11 @@ const XML_Char ** UT_splitPropsToArray(XML_Char * pProps)
 		return pPropsArray;
 }
 
+/*!
+ * This function returns true if two double are very close together.
+ * This is a work around for '==' 
+ */
+bool UT_dEQ(double x, double y)
+{
+	return fabs(x - y) < EPSILON;
+}

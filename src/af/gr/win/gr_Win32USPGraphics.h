@@ -77,15 +77,15 @@ public:
 	
 	virtual void			drawChars(const UT_UCSChar* pChars,
 									  int iCharOffset, int iLength,
-									  UT_sint32 xoff, UT_sint32 yoff,
+									  double xoff, double yoff,
 									  int * pCharWidth);
 
-	virtual UT_uint32		getFontHeight();
-	virtual UT_uint32		getFontAscent();
-	virtual UT_uint32		getFontDescent();
-	virtual UT_uint32		getFontAscent(GR_Font *);
-	virtual UT_uint32		getFontDescent(GR_Font *);
-	virtual UT_uint32		getFontHeight(GR_Font *);
+	virtual double			getFontHeight();
+	virtual double			getFontAscent();
+	virtual double			getFontDescent();
+	virtual double			getFontAscent(GR_Font *);
+	virtual double			getFontDescent(GR_Font *);
+	virtual double			getFontHeight(GR_Font *);
 	
 	///////////////////////////////////////////////////////////////////
 	// complex script processing
@@ -105,11 +105,11 @@ public:
 	virtual UT_sint32 countJustificationPoints(const GR_RenderInfo & ri) const;
 	virtual void      justify(GR_RenderInfo & ri);
 
-    virtual UT_uint32 XYToPosition(const GR_RenderInfo & ri, UT_sint32 x, UT_sint32 y) const;
+    virtual UT_uint32 XYToPosition(const GR_RenderInfo & ri, double x, double y) const;
     virtual void      positionToXY(const GR_RenderInfo & ri,
-								   UT_sint32& x, UT_sint32& y,
-								   UT_sint32& x2, UT_sint32& y2,
-								   UT_sint32& height, bool& bDirection) const;
+								   double& x, double& y,
+								   double& x2, double& y2,
+								   double& height, bool& bDirection) const;
 	
 	virtual UT_sint32 getTextWidth(GR_RenderInfo & ri);
 

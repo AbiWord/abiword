@@ -121,8 +121,8 @@ void XAP_Preview_Zoom::draw(void)
 	
 	GR_Painter painter(m_gc);
 
-	UT_sint32 iWidth = m_gc->tlu (getWindowWidth());
-	UT_sint32 iHeight = m_gc->tlu (getWindowHeight());
+	double iWidth = m_gc->tlu (getWindowWidth());
+	double iHeight = m_gc->tlu (getWindowHeight());
 	UT_Rect pageRect(m_gc->tlu(7), m_gc->tlu(7), iWidth - m_gc->tlu(14), iHeight - m_gc->tlu(14));	
 	
 	painter.fillRect(GR_Graphics::CLR3D_Background, 0, 0, iWidth, iHeight);

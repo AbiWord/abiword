@@ -186,7 +186,7 @@ GR_Image * FG_GraphicVector::regenerateImage(GR_Graphics * pG)
 //
 GR_Image* FG_GraphicVector::generateImage(GR_Graphics* pG,
 										  const PP_AttrProp * pSpanAP,
-										  UT_sint32 maxW, UT_sint32 maxH)
+										  double maxW, double maxH)
 {
 	UT_ASSERT(m_pSpanAP);
 	UT_ASSERT(m_pszDataID);
@@ -205,27 +205,27 @@ GR_Image* FG_GraphicVector::generateImage(GR_Graphics* pG,
 	bool bFoundWidthProperty = m_pSpanAP->getProperty("width", pszWidth);
 	bool bFoundHeightProperty = m_pSpanAP->getProperty("height", pszHeight);
 
-	UT_sint32 iDisplayWidth = 0;
-	UT_sint32 iDisplayHeight = 0;
+	double iWidth = 0;
+	double iHeight = 0;
 	if (bFoundWidthProperty && bFoundHeightProperty && pszWidth && pszHeight && pszWidth[0] && pszHeight[0])
 	{
-		iDisplayWidth = UT_convertToLogicalUnits(static_cast<const char*>(pszWidth));
-		iDisplayHeight = UT_convertToLogicalUnits(static_cast<const char*>(pszHeight));
+		iWidth = UT_convertToLogicalUnits(static_cast<const char*>(pszWidth));
+		iHeight = UT_convertToLogicalUnits(static_cast<const char*>(pszHeight));
 	}
 	else
 	{
-		UT_sint32 iLogicalWidth, iLogicalHeight; // throwaway
-		UT_SVG_getDimensions(m_pbbSVG, pG, iDisplayWidth, iDisplayHeight, iLogicalWidth, iLogicalHeight);
+		UT_sint32 iDisplayWidth, iDisplayHeight; // throwaway
+		UT_SVG_getDimensions(m_pbbSVG, pG, iDisplayWidth, iDisplayHeight, iWidth, iHeight);
 	}
-	UT_DEBUGMSG(("SVG image: width = %d, height = %d\n",static_cast<int>(iDisplayWidth),static_cast<int>(iDisplayHeight)));
-	UT_ASSERT(iDisplayWidth > 0);
-	UT_ASSERT(iDisplayHeight > 0);
+	UT_DEBUGMSG(("SVG image: width = %.2f, height = %.2f\n", iWidth, iHeight));
+	UT_ASSERT(iWidth > 0);
+	UT_ASSERT(iHeight > 0);
 
-	if (maxW != 0 && iDisplayWidth > maxW) iDisplayWidth = maxW;
-	if (maxH != 0 && iDisplayHeight > maxH) iDisplayHeight = maxH;
+	if (!UT_dEQ(maxW,0) && iWidth > maxW) iWidth = maxW;
+	if (!UT_dEQ(maxH,0) && iHeight > maxH) iHeight = maxH;
 	m_iMaxH = maxH;
 	m_iMaxW = maxW;
-	GR_Image *pImage = pG->createNewImage(static_cast<const char*>(m_pszDataID), m_pbbSVG, iDisplayWidth, iDisplayHeight, GR_Image::GRT_Vector);
+	GR_Image *pImage = pG->createNewImage(static_cast<const char*>(m_pszDataID), m_pbbSVG, iWidth, iHeight, GR_Image::GRT_Vector);
 	return pImage;
 }
 
@@ -341,8 +341,8 @@ bool FG_GraphicVector::setVector_SVG(UT_ByteBuf* pBB)
 	m_pbbSVG = pBB;
 	m_bOwnSVG = true;
 
-	UT_sint32 layoutWidth;
-	UT_sint32 layoutHeight;
+	double layoutWidth;
+	double layoutHeight;
 
 	return UT_SVG_getDimensions(pBB, 0, m_iWidth, m_iHeight, layoutWidth, layoutHeight);
 }

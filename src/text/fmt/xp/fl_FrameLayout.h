@@ -107,34 +107,34 @@ public:
 	PT_DocPosition           getDocPosition(void);
 	UT_uint32                getLength(void);
 	void                     setContainerProperties(void);
-	UT_sint32                getBoundingSpace(void) const;
+	double                   getBoundingSpace(void) const;
 	FL_FrameType             getFrameType(void) const 
 		{return m_iFrameType;}
 	FL_FrameFormatMode       getFramePositionTo(void) const
 		{ return m_iFramePositionTo;}
 	FL_FrameWrapMode         getFrameWrapMode(void) const
 		{ return m_iFrameWrapMode;}
-	UT_sint32                getFrameWidth(void) const
+	double                   getFrameWidth(void) const
 		{ return m_iWidth;}
-	UT_sint32                getFrameHeight(void) const
+	double                   getFrameHeight(void) const
 		{ return m_iHeight;}
-	UT_sint32                getFrameXpos(void) const
+	double                   getFrameXpos(void) const
 		{ return m_iXpos;}
-	UT_sint32                getFrameYpos(void) const
+	double                   getFrameYpos(void) const
 		{ return m_iYpos;}
-	UT_sint32                getFrameXColpos(void) const
+	double                   getFrameXColpos(void) const
 		{ return m_iXColumn;}
-	UT_sint32                getFrameYColpos(void) const
+	double                   getFrameYColpos(void) const
 		{ return m_iYColumn;}
-	UT_sint32                getFrameXPagepos(void) const
+	double                   getFrameXPagepos(void) const
 		{ return m_iXPage;}
-	UT_sint32                getFrameYPagepos(void) const
+	double                  getFrameYPagepos(void) const
 		{ return m_iYPage;}
 
-	void                setFrameWidth(UT_sint32 iW) { m_iWidth = iW;}
-	void                setFrameHeight(UT_sint32 iH) { m_iHeight = iH;}
-	void                setFrameXpos(UT_sint32 iX) 	{ m_iXpos = iX;}
-	void                setFrameYpos(UT_sint32 iY) { m_iYpos = iY;}
+	void                setFrameWidth(double iW) { m_iWidth = iW;}
+	void                setFrameHeight(double iH) { m_iHeight = iH;}
+	void                setFrameXpos(double iX) 	{ m_iXpos = iX;}
+	void                setFrameYpos(double iY) { m_iYpos = iY;}
 	bool                isEndFrameIn(void) const
 		{ return m_bHasEndFrame;}
 private:
@@ -159,21 +159,21 @@ private:
 	PP_PropertyMap::Line   m_lineRight;
 	PP_PropertyMap::Line   m_lineTop;
 
-	UT_sint32               m_iWidth;
-	UT_sint32               m_iHeight;
-	UT_sint32               m_iXpos;
-	UT_sint32               m_iYpos;
+	double               m_iWidth;
+	double               m_iHeight;
+	double               m_iXpos;
+	double               m_iYpos;
 
-	UT_sint32               m_iXpad;
-	UT_sint32               m_iYpad;
+	double               m_iXpad;
+	double               m_iYpad;
 
-	UT_sint32               m_iXColumn;
-	UT_sint32               m_iYColumn;
+	double               m_iXColumn;
+	double               m_iYColumn;
 
-	UT_sint32               m_iXPage;
-	UT_sint32               m_iYPage;
+	double               m_iXPage;
+	double               m_iYPage;
 
-	UT_sint32               m_iBoundingSpace;
+	double               m_iBoundingSpace;
     FL_FrameWrapMode        m_iFrameWrapMode;
 };
 

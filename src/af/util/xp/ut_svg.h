@@ -37,7 +37,7 @@
 bool UT_SVG_recognizeContent(const char* szBuf,UT_uint32 iNumbytes);
 bool UT_SVG_getDimensions(const UT_ByteBuf* pBB, GR_Graphics* pG, 
 			  UT_sint32 & iDisplayWidth, UT_sint32 & iDisplayHeight, 
-			  UT_sint32 & iLayoutWidth,  UT_sint32 & iLayoutHeight);
+			  double & iLayoutWidth,  double & iLayoutHeight);
 
 class ABI_EXPORT UT_svg : public UT_XML::Listener
 {
@@ -62,10 +62,10 @@ public:
 
 	GR_Graphics *m_pG;
 
-	UT_sint32 m_iDisplayWidth;
-	UT_sint32 m_iDisplayHeight;
-	UT_sint32 m_iLayoutWidth;
-	UT_sint32 m_iLayoutHeight;
+	double m_iDisplayWidth;
+	double m_iDisplayHeight;
+	double m_iLayoutWidth;
+	double m_iLayoutHeight;
 
 	UT_svg(GR_Graphics * pG,ParseMode ePM = pm_parse);
 	~UT_svg();

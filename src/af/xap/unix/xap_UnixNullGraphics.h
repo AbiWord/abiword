@@ -60,22 +60,22 @@ public:
 	static const char *    graphicsDescriptor(void) { return "Unix Null Graphics";}
 	static GR_Graphics *   graphicsAllocator(GR_AllocInfo&);
 
-	virtual void drawGlyph(UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff);
+	virtual void drawGlyph(UT_uint32 Char, double xoff, double yoff);
 	virtual void drawChars(const UT_UCSChar* pChars, 
 						   int iCharOffset, int iLength,
-						   UT_sint32 xoff, UT_sint32 yoff,
+						   double xoff, double yoff,
 						   int * pCharWidths = NULL);
 	virtual void setFont(GR_Font* pFont);
 	virtual void clearFont(void) {}
-	virtual UT_uint32 getFontAscent();
-	virtual UT_uint32 getFontDescent();
-	virtual UT_uint32 getFontHeight();
+	virtual double getFontAscent();
+	virtual double getFontDescent();
+	virtual double getFontHeight();
 
 	virtual void getCoverage(UT_NumberVector& converage);
 	
-	virtual UT_uint32 getFontAscent(GR_Font *);
-	virtual UT_uint32 getFontDescent(GR_Font *);
-	virtual UT_uint32 getFontHeight(GR_Font *);
+	virtual double getFontAscent(GR_Font *);
+	virtual double getFontDescent(GR_Font *);
+	virtual double getFontHeight(GR_Font *);
 
 	// virtual UT_uint32 measureString(const UT_UCSChar*s, int iOffset, int num, unsigned short* pWidths);
 	virtual UT_sint32 measureUnRemappedChar(const UT_UCSChar c);
@@ -84,20 +84,20 @@ public:
 	virtual void getColor(UT_RGBColor& clr);
 	virtual GR_Font* getGUIFont();
 
-	virtual void drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 y2);
-	virtual void setLineWidth(UT_sint32);
-	virtual void xorLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
+	virtual void drawLine(double x1, double y1, double x2, double y2);
+	virtual void setLineWidth(double);
+	virtual void xorLine(double, double, double, double);
 	virtual void polyLine(UT_Point * pts, UT_uint32 nPoints);
-	virtual void fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h);
+	virtual void fillRect(const UT_RGBColor& c, double x, double y, double w, double h);
 	virtual void invertRect(const UT_Rect*);
 	virtual void setClipRect(const UT_Rect*);
-	virtual void scroll(UT_sint32, UT_sint32);
+	virtual void scroll(double, double);
 	virtual void scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 						UT_sint32 x_src, UT_sint32 y_src,
 						UT_sint32 width, UT_sint32 height);
-	virtual void clearArea(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
+	virtual void clearArea(double, double, double, double);
 
-	virtual void drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest);
+	virtual void drawImage(GR_Image* pImg, double xDest, double yDest);
 	virtual void drawRGBImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest);
 	virtual void drawGrayImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest);
 	virtual void drawBWImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest);	
@@ -118,7 +118,7 @@ public:
 
 	virtual void					setColor3D(GR_Color3D c);
 	virtual UT_RGBColor *			getColor3D(GR_Color3D c);
-	virtual void fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h);
+	virtual void fillRect(GR_Color3D c, double x, double y, double w, double h);
 	virtual void fillRect(GR_Color3D c, UT_Rect &r);
 	virtual void setPageSize(char* pageSizeName, UT_uint32 iwidth = 0, UT_uint32 iheight=0);
 	virtual void setPageCount(UT_uint32 iCount) {}

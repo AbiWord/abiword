@@ -63,11 +63,11 @@ void AP_UnixFrame::setXScrollRange(void)
 	AP_UnixFrameImpl * pFrameImpl = static_cast<AP_UnixFrameImpl *>(getFrameImpl());
 	GR_Graphics * pGr = pFrameImpl->getFrame ()->getCurrentView ()->getGraphics ();
 
-	int width = static_cast<AP_FrameData*>(m_pData)->m_pDocLayout->getWidth();
-	int windowWidth = static_cast<int>(pGr->tluD (GTK_WIDGET(pFrameImpl->m_dArea)->allocation.width));
+	double width = static_cast<AP_FrameData*>(m_pData)->m_pDocLayout->getWidth();
+	double windowWidth = pGr->tlu(GTK_WIDGET(pFrameImpl->m_dArea)->allocation.width);
 	
-	int newvalue = ((m_pView) ? m_pView->getXScrollOffset() : 0);
-	int newmax = width - windowWidth; /* upper - page_size */
+	double newvalue = ((m_pView) ? m_pView->getXScrollOffset() : 0);
+	double newmax = width - windowWidth; /* upper - page_size */
 	if (newmax <= 0)
 		newvalue = 0;
 	else if (newvalue > newmax)
@@ -214,7 +214,7 @@ bool AP_UnixFrame::initialize(XAP_FrameMode frameMode)
 /*****************************************************************/
 
 // WL_REFACTOR: Put this in the helper
-void AP_UnixFrame::_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 /*yrange*/)
+void AP_UnixFrame::_scrollFuncY(void * pData, double yoff, double /*yrange*/)
 {
 	// this is a static callback function and doesn't have a 'this' pointer.
 	
@@ -226,8 +226,8 @@ void AP_UnixFrame::_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 /*yrange
 	// a keyboard motion).  push the new values into the scrollbar widgets
 	// (with clamping).  then cause the view to scroll.
 	
-	gfloat yoffNew = yoff;
-	gfloat yoffMax = pFrameImpl->m_pVadj->upper - 
+	double yoffNew = yoff;
+	double yoffMax = pFrameImpl->m_pVadj->upper - 
 		pFrameImpl->m_pVadj->page_size;
 	if (yoffMax <= 0)
 		yoffNew = 0;
@@ -238,24 +238,19 @@ void AP_UnixFrame::_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 /*yrange
 	// actual scroll is given by the formula xoffNew-pView->getXScrollOffset()
 
 	// this is exactly the same computation that we do in the scrolling code.
-	// I don't think we need as much precision anymore, now that we have
-	// precise rounding, but it can't really be a bad thing.
 	GR_Graphics * pG = static_cast<FV_View*>(pView)->getGraphics();
 
-	UT_sint32 dy = static_cast<UT_sint32>
-		(pG->tluD(static_cast<UT_sint32>(pG->tduD
-			   (static_cast<UT_sint32>(pView->getYScrollOffset()-yoffNew)))));
-	gfloat yoffDisc = static_cast<UT_sint32>(pView->getYScrollOffset()) - dy;
+	double dy = pView->getYScrollOffset() - yoffNew;
+	double yoffDisc = pView->getYScrollOffset() - dy;
 
 	gtk_adjustment_set_value(GTK_ADJUSTMENT(pFrameImpl->m_pVadj),yoffNew);
 
-	if (pG->tdu(static_cast<UT_sint32>(yoffDisc) - 
-				pView->getYScrollOffset()) != 0)
-	pView->setYScrollOffset(static_cast<UT_sint32>(yoffDisc));
+	if (pG->tdu(yoffDisc - pView->getYScrollOffset()) != 0)
+		pView->setYScrollOffset(yoffDisc);
 }
 
 // WL_REFACTOR: Put this in the helper
-void AP_UnixFrame::_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 /*xrange*/)
+void AP_UnixFrame::_scrollFuncX(void * pData, double xoff, double /*xrange*/)
 {
 	// this is a static callback function and doesn't have a 'this' pointer.
 	
@@ -267,8 +262,8 @@ void AP_UnixFrame::_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 /*xrange
 	// a keyboard motion).  push the new values into the scrollbar widgets
 	// (with clamping).  then cause the view to scroll.
 
-	gfloat xoffNew = xoff;
-	gfloat xoffMax = pFrameImpl->m_pHadj->upper - 
+	double xoffNew = xoff;
+	double xoffMax = pFrameImpl->m_pHadj->upper - 
 		pFrameImpl->m_pHadj->page_size;
 	if (xoffMax <= 0)
 		xoffNew = 0;
@@ -279,23 +274,15 @@ void AP_UnixFrame::_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 /*xrange
 	// actual scroll is given by the formula xoffNew-pView->getXScrollOffset()
 
 	// this is exactly the same computation that we do in the scrolling code.
-	// I don't think we need as much precision anymore, now that we have
-	// precise rounding, but it can't really be a bad thing.
 	GR_Graphics * pG = static_cast<FV_View*>(pView)->getGraphics();
 
-	UT_sint32 dx = static_cast<UT_sint32>
-		(pG->tluD(static_cast<UT_sint32>(pG->tduD
-			   (static_cast<UT_sint32>(pView->getXScrollOffset()-xoffNew)))));
-	gfloat xoffDisc = static_cast<UT_sint32>(pView->getXScrollOffset()) - dx;
+	double dx = pView->getXScrollOffset() - xoffNew;
+	double xoffDisc = pView->getXScrollOffset() - dx;
 
 	gtk_adjustment_set_value(GTK_ADJUSTMENT(pFrameImpl->m_pHadj),xoffDisc);
 
-	// (this is the calculation for dx again, post rounding)
-	// This may not actually be helpful, because we could still lose if the
-	// second round of rounding gives us the wrong number.  Leave it for now.
-	if (pG->tdu(static_cast<UT_sint32>(xoffDisc) - 
-				pView->getXScrollOffset()) != 0)
-		pView->setXScrollOffset(static_cast<UT_sint32>(xoffDisc));
+	if (pG->tdu(xoffDisc - pView->getXScrollOffset()) != 0)
+		pView->setXScrollOffset(xoffDisc);
 }
 
 void AP_UnixFrame::translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y)

@@ -45,11 +45,11 @@ public:
 	void							draw(void);
 protected:
 	void                            _createFontPreviewFromGC(GR_Graphics * gc,
-															 UT_uint32 width,
-															 UT_uint32 height);
+															 double width,
+															 double height);
 	const XML_Char *                m_pColorBackground;
-	UT_sint32						m_width;
-	UT_sint32						m_height;
+	double							m_width;
+	double							m_height;
 private:
 	XAP_Preview_FontPreview *       m_pFontPreview;
 	UT_UCSChar *                    m_drawString;

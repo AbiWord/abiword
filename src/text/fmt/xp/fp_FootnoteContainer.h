@@ -78,13 +78,13 @@ public:
 	fp_EndnoteContainer * getLocalNext(void);
 	fp_EndnoteContainer * getLocalPrev(void);
 	fl_DocSectionLayout * getDocSectionLayout(void);
-	virtual void        setY(UT_sint32 iY);
-	virtual UT_sint32   getY(void) const;
+	virtual void        setY(double iY);
+	virtual double      getY(void) const;
 	
 private:
 	fp_EndnoteContainer * m_pLocalNext;
 	fp_EndnoteContainer * m_pLocalPrev;
-	UT_sint32             m_iY;
+	double                m_iY;
 	bool                  m_bOnPage;
 	bool                  m_bCleared;
 };

@@ -109,7 +109,7 @@ bool fp_Page::isOnScreen(void)
 	{
 	    return false;
 	}
-	UT_sint32 xoff,yoff;
+	double xoff,yoff;
 	m_pView->getPageScreenOffsets(this,xoff,yoff);
 	if(yoff+getHeight() < 0)
 	{
@@ -122,17 +122,17 @@ bool fp_Page::isOnScreen(void)
 	return true;
 }
 
-UT_sint32 fp_Page::getWidth(void) const
+double fp_Page::getWidth(void) const
 {
-	return static_cast<UT_sint32>(m_iResolution * m_pageSize.Width(DIM_IN));
+	return m_iResolution * m_pageSize.Width(DIM_IN);
 }
 
-UT_sint32 fp_Page::getHeight(void) const
+double fp_Page::getHeight(void) const
 {
-	return static_cast<UT_sint32>(m_iResolution * m_pageSize.Height(DIM_IN));
+	return m_iResolution * m_pageSize.Height(DIM_IN);
 }
 
-UT_sint32 fp_Page::getColumnGap(void) const
+double fp_Page::getColumnGap(void) const
 {
 	return getOwningSection()->getColumnGap();
 }
@@ -510,7 +510,7 @@ bool fp_Page::overlapsWrappedFrame(UT_Rect & rec)
 		}
 		UT_Rect * pMyFrameRec = pFC->getScreenRect();
 		fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(pFC->getSectionLayout());
-		UT_sint32 iextra = pFL->getBoundingSpace() -2;
+		double iextra = pFL->getBoundingSpace()-2; // FIXME: SHOULD NOT USE -2!!! - MARCM
 		pMyFrameRec->left -= iextra;
 		pMyFrameRec->top -= iextra;
 		pMyFrameRec->width += 2*iextra;
@@ -584,10 +584,10 @@ fp_TableContainer * fp_Page::getContainingTable(PT_DocPosition pos)
 	return NULL;
 }
 
-UT_sint32 fp_Page::getAvailableHeight(void) const
+double fp_Page::getAvailableHeight(void) const
 {
 	fl_DocSectionLayout * pDSL = getNthColumnLeader(0)->getDocSectionLayout();
-	UT_sint32 avail = getHeight() - pDSL->getTopMargin() - pDSL->getBottomMargin();
+	double avail = getHeight() - pDSL->getTopMargin() - pDSL->getBottomMargin();
 	UT_sint32 i =0;
 	for(i=0; i< static_cast<UT_sint32>(countFootnoteContainers()); i++)
 	{
@@ -602,18 +602,18 @@ UT_sint32 fp_Page::getAvailableHeight(void) const
  * subtracts the height given to previous columns on the page as well as the 
  * height given to footnotes.
 */  
-UT_sint32 fp_Page::getAvailableHeightForColumn(const fp_Column * pColumn) const
+double fp_Page::getAvailableHeightForColumn(const fp_Column * pColumn) const
 {
 	fp_Column * pLeader = pColumn->getLeader();
-    fp_Column * pCurLeader = getNthColumnLeader(0);
+	fp_Column * pCurLeader = getNthColumnLeader(0);
 	fl_DocSectionLayout * pDSL = pCurLeader->getDocSectionLayout();
-	UT_sint32 avail = getHeight() - pDSL->getTopMargin() - pDSL->getBottomMargin();
+	double avail = getHeight() - pDSL->getTopMargin() - pDSL->getBottomMargin();
 	UT_sint32 i =0;
 	xxx_UT_DEBUGMSG(("fp_Page:: Total avail after margins subtracted %d \n",avail));
 	UT_sint32 nLeaders = static_cast<UT_sint32>(countColumnLeaders()); 
 	while((pCurLeader != pLeader) && (nLeaders > 1))	
 	{
-		UT_sint32 iMostHeight = pCurLeader->getHeight();
+		double iMostHeight = pCurLeader->getHeight();
 		fp_Column* pTmpCol = pCurLeader;
 		while(pTmpCol)
 		{
@@ -649,10 +649,10 @@ UT_sint32 fp_Page::getAvailableHeightForColumn(const fp_Column * pColumn) const
  * on it.
  * If prevLine is non-NULL the maximum column height up to this line is calculated.
  */
-UT_sint32 fp_Page::getFilledHeight(fp_Container * prevContainer) const
+double fp_Page::getFilledHeight(fp_Container * prevContainer) const
 {
-	UT_sint32 totalHeight = 0;
-    UT_sint32 maxHeight = 0;
+	double totalHeight = 0;
+	double maxHeight = 0;
 	fp_Column * pColumn = NULL;
 	UT_uint32 i =0;
 	fp_Column * prevColumn = NULL;
@@ -672,7 +672,7 @@ UT_sint32 fp_Page::getFilledHeight(fp_Container * prevContainer) const
 			{
 				bstop = true;
 				fp_Container * pCurContainer = static_cast<fp_Container *>(pColumn->getFirstContainer());
-				UT_sint32 curHeight = 0;
+				double curHeight = 0;
 				while((pCurContainer != NULL) && (pCurContainer != prevContainer))
 				{
 					if(pCurContainer->getContainerType() == FP_CONTAINER_TABLE)
@@ -712,7 +712,7 @@ UT_sint32 fp_Page::getFilledHeight(fp_Container * prevContainer) const
 }
 
 
-UT_sint32 fp_Page::getBottom(void) const
+double fp_Page::getBottom(void) const
 {
 	int count = countColumnLeaders();
 	if (count <= 0)
@@ -725,13 +725,12 @@ UT_sint32 fp_Page::getBottom(void) const
 	fl_DocSectionLayout* pFirstSectionLayout = pFirstColumnLeader->getDocSectionLayout();
 	UT_ASSERT(m_pOwner == pFirstSectionLayout);
 
-//	UT_sint32 iTopMargin = pFirstSectionLayout->getTopMargin();
-	UT_sint32 iBottomMargin = pFirstSectionLayout->getBottomMargin();
+	double iBottomMargin = pFirstSectionLayout->getBottomMargin();
 
 	return getHeight() - iBottomMargin;
 }
 
-void fp_Page::getScreenOffsets(fp_Container* pContainer, UT_sint32& xoff, UT_sint32& yoff) const
+void fp_Page::getScreenOffsets(fp_Container* pContainer, double& xoff, double& yoff) const
 {
 	if(!m_pView)
 	{
@@ -783,20 +782,20 @@ void fp_Page::_drawCropMarks(dg_DrawArgs* pDA)
         fl_DocSectionLayout* pFirstSectionLayout = (pFirstColumnLeader->getDocSectionLayout());
 		UT_ASSERT(m_pOwner == pFirstSectionLayout);
 
-        UT_sint32 iLeftMargin = pFirstSectionLayout->getLeftMargin();
-        UT_sint32 iRightMargin = pFirstSectionLayout->getRightMargin();
-        UT_sint32 iTopMargin = pFirstSectionLayout->getTopMargin();
-        UT_sint32 iBottomMargin = pFirstSectionLayout->getBottomMargin();
+        double iLeftMargin = pFirstSectionLayout->getLeftMargin();
+        double iRightMargin = pFirstSectionLayout->getRightMargin();
+        double iTopMargin = pFirstSectionLayout->getTopMargin();
+        double iBottomMargin = pFirstSectionLayout->getBottomMargin();
 
-        UT_sint32 xoffStart = pDA->xoff + iLeftMargin - pDA->pG->tlu(1);
-        UT_sint32 yoffStart = pDA->yoff + iTopMargin - pDA->pG->tlu(1);
-        UT_sint32 xoffEnd = pDA->xoff + getWidth() - iRightMargin + pDA->pG->tlu(2);
-        UT_sint32 yoffEnd = pDA->yoff + getHeight() - iBottomMargin + pDA->pG->tlu(2);
+        double xoffStart = pDA->xoff + iLeftMargin - pDA->pG->tlu(1);
+        double yoffStart = pDA->yoff + iTopMargin - pDA->pG->tlu(1);
+        double xoffEnd = pDA->xoff + getWidth() - iRightMargin - pDA->pG->tlu(1) + pDA->pG->tlu(1);
+        double yoffEnd = pDA->yoff + getHeight() - iBottomMargin - pDA->pG->tlu(1) + pDA->pG->tlu(1);
 
-        UT_sint32 iLeftWidth = UT_MIN(iLeftMargin,pDA->pG->tlu(20));
-        UT_sint32 iRightWidth = UT_MIN(iRightMargin,pDA->pG->tlu(20));
-        UT_sint32 iTopHeight = UT_MIN(iTopMargin,pDA->pG->tlu(20));
-        UT_sint32 iBottomHeight = UT_MIN(iBottomMargin,pDA->pG->tlu(20));
+        double iLeftWidth = UT_MIN(iLeftMargin,pDA->pG->tlu(20));
+        double iRightWidth = UT_MIN(iRightMargin,pDA->pG->tlu(20));
+        double iTopHeight = UT_MIN(iTopMargin,pDA->pG->tlu(20));
+        double iBottomHeight = UT_MIN(iBottomMargin,pDA->pG->tlu(20));
 
         pDA->pG->setColor(getDocLayout()->getView()->getColorShowPara());
 
@@ -842,13 +841,13 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool bAlwaysUseWhiteBackground)
 	if(!pDA->bDirtyRunsOnly)
 	{
 		xxx_UT_DEBUGMSG(("Doing a rectangular color fill \n"));
- 		UT_sint32 xmin = pDA->xoff;
-  		UT_sint32 ymin = pDA->yoff;
+ 		double xmin = pDA->xoff;
+  		double ymin = pDA->yoff;
 
-		UT_sint32 height =getHeight();
-		UT_sint32 width = getWidth();
-		UT_sint32 srcX = 0;
-		UT_sint32 srcY = 0;
+		double height =getHeight();
+		double width = getWidth();
+		double srcX = 0;
+		double srcY = 0;
 		getFillType()->Fill(pDA->pG,srcX,srcY,xmin,ymin,width,height);
 	}
 
@@ -877,8 +876,8 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool bAlwaysUseWhiteBackground)
 			{
 				// draw line between columns if required.
 
-				UT_sint32 x = pDA->xoff + (pCol->getX() + pCol->getWidth() + pNextCol->getX()) / 2;
-				UT_sint32 y = pDA->yoff + pCol->getY();
+				double x = pDA->xoff + (pCol->getX() + pCol->getWidth() + pNextCol->getX()) / 2;
+				double y = pDA->yoff + pCol->getY();
 				pDA->pG->setColor(m_pView->getColorColumnLine());
 				painter.drawLine(x, y, x, y + pCol->getHeight());
 			}
@@ -954,13 +953,13 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool bAlwaysUseWhiteBackground)
 
 }
 
-void   fp_Page::expandDamageRect(UT_sint32 x, UT_sint32 y, 
-										 UT_sint32 width, UT_sint32 height)
+void   fp_Page::expandDamageRect(double x, double y, 
+										 double width, double height)
 {
 //
 // x and y and in screen offsets turn into page coords
 //
-	UT_sint32 xoff,yoff;
+	double xoff,yoff;
 	m_pView->getPageScreenOffsets(this, xoff, yoff);
 	x -= xoff;
 	y -= yoff;
@@ -1035,8 +1034,8 @@ bool fp_Page::TopBotMarginChanged(void)
 //
 // Adjust header/footer shadows first
 //
-	UT_sint32 iTopM = m_pOwner->getTopMargin();
-	UT_sint32 iBotM = m_pOwner->getBottomMargin();
+	double iTopM = m_pOwner->getTopMargin();
+	double iBotM = m_pOwner->getBottomMargin();
 	clearScreenFrames();
 	if(m_pHeader)
 	{
@@ -1066,18 +1065,18 @@ bool fp_Page::breakPage(void)
 	{
 		return true;
 	}
-	UT_sint32 iYPrev = 0;
+	double iYPrev = 0;
 	fp_Column* pFirstColumnLeader = getNthColumnLeader(0);
 	fl_DocSectionLayout* pFirstSectionLayout = (pFirstColumnLeader->getDocSectionLayout());
 	UT_ASSERT(m_pOwner == pFirstSectionLayout);
-	UT_sint32 iTopMargin = pFirstSectionLayout->getTopMargin();
-	UT_sint32 iBottomMargin = pFirstSectionLayout->getBottomMargin();
-	UT_sint32 iY = iTopMargin;
-	UT_sint32 availHeight = getHeight() - iBottomMargin;
+	double iTopMargin = pFirstSectionLayout->getTopMargin();
+	double iBottomMargin = pFirstSectionLayout->getBottomMargin();
+	double iY = iTopMargin;
+	double availHeight = getHeight() - iBottomMargin;
 		
 	// we need the height of the footnotes on this page, to deduct.
 	UT_uint32 i = 0;
-	UT_uint32 iFootnoteHeight = 2*pFirstSectionLayout->getFootnoteLineThickness();
+	double iFootnoteHeight = 2*pFirstSectionLayout->getFootnoteLineThickness();
 	for (i = 0; i < countFootnoteContainers(); i++)
 	{
 		iFootnoteHeight += getNthFootnoteContainer(i)->getHeight();
@@ -1088,7 +1087,7 @@ bool fp_Page::breakPage(void)
 	{
 		fp_Column* pLeader = getNthColumnLeader(i);
 		fp_Column* pTmpCol = pLeader;
-		UT_sint32 iMostHeight = 0;
+		double iMostHeight = 0;
 		iYPrev = iY;
 		while (pTmpCol)
 		{
@@ -1122,8 +1121,8 @@ bool fp_Page::breakPage(void)
 			return true;
 		}
 		fp_Column * pPrev = getNthColumnLeader(i);
-		UT_sint32 maxContainers= 0;
-		UT_sint32 maxContainerHeight = 0;
+		UT_sint32 maxContainers = 0;
+		double maxContainerHeight = 0;
 		fp_Column * pCol = pPrev;
 		while(pCol != NULL)
 		{
@@ -1295,15 +1294,15 @@ void fp_Page::_reformatColumns(void)
 	UT_ASSERT(m_pOwner == pFirstSectionLayout);
 
 
-	UT_sint32 iLeftMargin = 0;
-	UT_sint32 iRightMargin = 0;
-	UT_sint32 iTopMargin = pFirstSectionLayout->getTopMargin();
-	UT_sint32 iBottomMargin = pFirstSectionLayout->getBottomMargin();
-	UT_sint32 iY = iTopMargin;
+	double iLeftMargin = 0;
+	double iRightMargin = 0;
+	double iTopMargin = pFirstSectionLayout->getTopMargin();
+	double iBottomMargin = pFirstSectionLayout->getBottomMargin();
+	double iY = iTopMargin;
 
 	// we need the height of the footnotes on this page, to deduct.
 	UT_uint32 i = 0;
-	UT_uint32 iFootnoteHeight = 2*pFirstSectionLayout->getFootnoteLineThickness();
+	double iFootnoteHeight = 2*pFirstSectionLayout->getFootnoteLineThickness();
 	for (i = 0; i < countFootnoteContainers(); i++)
 	{
 		iFootnoteHeight += getNthFootnoteContainer(i)->getHeight();
@@ -1334,14 +1333,14 @@ void fp_Page::_reformatColumns(void)
 		iLeftMargin = pSL->getLeftMargin();
 		iRightMargin = pSL->getRightMargin();
 
-		UT_uint32 iSpace = getWidth() - iLeftMargin - iRightMargin;
+		double iSpace = getWidth() - iLeftMargin - iRightMargin;
 		pSL->checkAndAdjustColumnGap(iSpace);
 
 		UT_uint32 iNumColumns = pSL->getNumColumns();
-		UT_uint32 iColumnGap = pSL->getColumnGap();
-		UT_uint32 iColWidth = (iSpace - ((iNumColumns - 1) * iColumnGap)) / iNumColumns;
+		double iColumnGap = pSL->getColumnGap();
+		double iColWidth = (iSpace - ((iNumColumns - 1) * iColumnGap)) / iNumColumns;
 
-		UT_sint32 iX;
+		double iX;
 		if(pSL->getColumnOrder())
 		{
 			iX = getWidth() - iRightMargin - iColWidth;
@@ -1352,7 +1351,7 @@ void fp_Page::_reformatColumns(void)
 		}
 
 		fp_Column* pTmpCol = pLeader;
-		UT_sint32 iMostHeight = 0;
+		double iMostHeight = 0;
 
 		while (pTmpCol)
 		{
@@ -1406,7 +1405,7 @@ void fp_Page::_reformatColumns(void)
 			{
 				return;
 			}
-			UT_sint32 iYNext = pFirstNextContainer->getHeight();
+			double iYNext = pFirstNextContainer->getHeight();
 			bool bIsTable = (pFirstNextContainer->getContainerType() == FP_CONTAINER_TABLE)  || (countFootnoteContainers() > 0) || (pNext->countFootnoteContainers() > 0);
 			if( !bIsTable && (iY + 3*iYNext) < (getHeight() - getFootnoteHeight() - iBottomMargin))
 			{
@@ -1451,9 +1450,9 @@ void fp_Page::clearScreenFootnotes(void)
 	}
 }
 
-UT_sint32 fp_Page::getFootnoteHeight(void)
+double fp_Page::getFootnoteHeight(void)
 {
-	UT_uint32 iFootnoteHeight = 0;
+	double iFootnoteHeight = 0;
 	UT_uint32 i = 0;
 	for (i = 0; i < countFootnoteContainers(); i++)
 	{
@@ -1474,9 +1473,9 @@ void fp_Page::_reformatFootnotes(void)
 	fp_Column* pFirstColumnLeader = getNthColumnLeader(0);
 	fl_DocSectionLayout* pFirstSectionLayout = (pFirstColumnLeader->getDocSectionLayout());
 	UT_ASSERT(m_pOwner == pFirstSectionLayout);
-	UT_sint32 iBottomMargin = pFirstSectionLayout->getBottomMargin();
-	UT_uint32 pageHeight = getHeight() - iBottomMargin;
-	UT_uint32 iFootnoteHeight = 0;
+	double iBottomMargin = pFirstSectionLayout->getBottomMargin();
+	double pageHeight = getHeight() - iBottomMargin;
+	double iFootnoteHeight = 0;
 	UT_uint32 i = 0;
 	for (i = 0; i < countFootnoteContainers(); i++)
 	{
@@ -1745,7 +1744,7 @@ PT_DocPosition fp_Page::getFirstLastPos(bool bFirst) const
 	return pos;
 }
 
-void fp_Page::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, bool& bBOL, bool& bEOL,bool &isTOC, bool bUseHdrFtr, fl_HdrFtrShadow ** pShadow )
+void fp_Page::mapXYToPosition(double x, double y, PT_DocPosition& pos, bool& bBOL, bool& bEOL,bool &isTOC, bool bUseHdrFtr, fl_HdrFtrShadow ** pShadow )
 {
 	fl_HdrFtrShadow * pShad = NULL;
 	if(pShadow == NULL)
@@ -1772,15 +1771,15 @@ void fp_Page::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, boo
  \return pos The Document position corresponding the text at location x,y
  \return pShadow A pointer to the shadow corresponding to this header/footer
  */
-void fp_Page::mapXYToPosition(bool bNotFrames,UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC, bool bUseHdrFtr, fl_HdrFtrShadow ** pShadow )
+void fp_Page::mapXYToPosition(bool bNotFrames,double x, double y, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC, bool bUseHdrFtr, fl_HdrFtrShadow ** pShadow )
 {
 	int count = m_vecColumnLeaders.getItemCount();
-	UT_uint32 iMinDist = 0xffffffff;
+	double iMinDist = 0xffffffff; // FIXME: This looks rather hacky, please fix - MARCM
 	fp_VerticalContainer * pMinDist = NULL;
 	fp_Column* pColumn = NULL;
-	UT_uint32 iMinXDist = 0xffffffff;
+	double iMinXDist = 0xffffffff; // FIXME: This looks rather hacky please fix - MARCM
 	fp_VerticalContainer* pMinXDist = NULL;
-	UT_uint32 iDist = 0;
+	double iDist = 0;
 	fp_Column* pLeader = NULL;
 //
 // Start by looking in Frames for this point.
@@ -1795,7 +1794,7 @@ void fp_Page::mapXYToPosition(bool bNotFrames,UT_sint32 x, UT_sint32 y, PT_DocPo
 // frame. Without this distance clicking inside a text box would always place 
 // the caret in text rather than selecting the frame to drag/resize etc.
 //
-		UT_sint32 iextra = m_pLayout->getGraphics()->tlu(4);
+		double iextra = m_pLayout->getGraphics()->tlu(4);
 		// loop from high z to low z
 		// Because we draw from old to new, the new appears on top
 		// and because the new appears on top, it should be treated as such
@@ -1835,7 +1834,7 @@ void fp_Page::mapXYToPosition(bool bNotFrames,UT_sint32 x, UT_sint32 y, PT_DocPo
 // before placing hte point inside th text box
 //
 
-				if(static_cast<UT_sint32>(iDist) > m_pLayout->getGraphics()->tlu(3))
+				if(iDist > m_pLayout->getGraphics()->tlu(3))
 				{
 					iDist += 200000;
 				}

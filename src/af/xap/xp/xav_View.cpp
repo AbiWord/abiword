@@ -36,8 +36,7 @@ AV_View::AV_View(XAP_App * pApp, void* pParentData)
 	m_bInsertMode(true),
 	m_bIsLayoutFilling(false),
 	m_iWindowHeight(0),
-	m_iWindowWidth(0),
-	m_dOneTDU(0)
+	m_iWindowWidth(0)
 {
 }
 
@@ -188,7 +187,6 @@ void AV_View::setWindowSize(UT_sint32 width, UT_sint32 height)
 {
 	m_iWindowWidth  = getGraphics()->tlu(width);
 	m_iWindowHeight = getGraphics()->tlu(height);
-	m_dOneTDU = getGraphics()->tduD(1.0);
 
 	notifyListeners(AV_CHG_WINDOWSIZE);
 }
@@ -216,7 +214,7 @@ void AV_View::removeScrollListener(AV_ScrollObj* pObj)
 
 /*! the input is in layout units
  */
-void AV_View::sendVerticalScrollEvent(UT_sint32 yoff, UT_sint32 ylimit)
+void AV_View::sendVerticalScrollEvent(double yoff, double ylimit)
 {
 	if(getWindowHeight() < getGraphics()->tlu(20))
 		return;
@@ -231,7 +229,7 @@ void AV_View::sendVerticalScrollEvent(UT_sint32 yoff, UT_sint32 ylimit)
 
 /*! the input is in layout units
  */
-void AV_View::sendHorizontalScrollEvent(UT_sint32 xoff, UT_sint32 xlimit)
+void AV_View::sendHorizontalScrollEvent(double xoff, double xlimit)
 {
 	if(getWindowHeight() < getGraphics()->tlu(20))
 		return;
@@ -246,14 +244,12 @@ void AV_View::sendHorizontalScrollEvent(UT_sint32 xoff, UT_sint32 xlimit)
 	}
 }
 
-UT_sint32 AV_View::getWindowHeight(void) const
+double AV_View::getWindowHeight(void) const
 { 
-	return static_cast<UT_sint32>(m_iWindowHeight * m_dOneTDU /
-								  getGraphics()->tduD(1.0)); 
+	return m_iWindowHeight; 
 }
 
-UT_sint32 AV_View::getWindowWidth(void) const
+double AV_View::getWindowWidth(void) const
 {
-	return static_cast<UT_sint32>(m_iWindowWidth * m_dOneTDU /
-								  getGraphics()->tduD(1.0));
+	return m_iWindowWidth;
 }

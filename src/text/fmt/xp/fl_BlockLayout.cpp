@@ -266,7 +266,7 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 
 fl_TabStop::fl_TabStop()
 {
-	iPosition = 0;
+	iPosition = 0.0;
 	iType = FL_TAB_NONE;
 	iLeader = FL_LEADER_NONE;
 }
@@ -308,7 +308,7 @@ void buildTabStops(GR_Graphics * pG, const char* pszTabStops, UT_GenericVector<f
 	{
 		eTabType	iType = FL_TAB_NONE;
 		eTabLeader	iLeader = FL_LEADER_NONE;
-		UT_sint32	iPosition = 0;
+		double	iPosition = 0.0;
 
 		const char* pStart = pszTabStops;
 		while (*pStart)
@@ -572,7 +572,7 @@ void fl_BlockLayout::_lookupProperties(const PP_AttrProp* pBlockAP)
 	struct MarginAndIndent_t
 	{
 		const char* szProp;
-		UT_sint32*	pVar;
+		double*	pVar;
 	}
 	const rgProps[] =
 	{
@@ -1312,7 +1312,7 @@ eTabLeader fl_BlockLayout::getTOCTabLeader(UT_sint32 iOff)
 	return FL_LEADER_NONE;
 }
 
-UT_sint32 fl_BlockLayout::getTOCTabPosition(UT_sint32 iOff)
+double fl_BlockLayout::getTOCTabPosition(UT_sint32 iOff)
 {
 	UT_ASSERT(m_bIsTOC);
 	fl_TOCLayout * pTOCL = static_cast<fl_TOCLayout *>(getSectionLayout());
@@ -1324,10 +1324,10 @@ UT_sint32 fl_BlockLayout::getTOCTabPosition(UT_sint32 iOff)
 	return 0;
 }
 
-UT_sint32 fl_BlockLayout::getMaxNonBreakableRun(void)
+double fl_BlockLayout::getMaxNonBreakableRun(void)
 {
 	fp_Run * pRun = getFirstRun();
-	UT_sint32 iMax = 6; // this is the pixel width of a typical 12 point char
+	double dMax = 6.0; // this is the pixel width of a typical 12 point char
 	if(pRun)
 	{
 #if 0
@@ -1345,11 +1345,11 @@ UT_sint32 fl_BlockLayout::getMaxNonBreakableRun(void)
 	{
 		if(pRun->getType() == FPRUN_IMAGE)
 		{
-			iMax = UT_MAX(iMax,pRun->getWidth());
+			dMax = UT_MAX(dMax,pRun->getWidth());
 		}
 		pRun = pRun->getNextRun();
 	}
-	return iMax;
+	return dMax;
 }
 
 bool fl_BlockLayout::isHdrFtr(void)
@@ -1917,13 +1917,13 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 		}
 		if(pFrame->getFramePositionTo() == FL_FRAME_POSITIONED_TO_BLOCK)
 		{
-			UT_sint32 xFpos = pFrame->getFrameXpos();
-			UT_sint32 yFpos = pFrame->getFrameYpos();
+			double xFpos = pFrame->getFrameXpos();
+			double yFpos = pFrame->getFrameYpos();
 			UT_DEBUGMSG(("xFpos %d yFpos %d \n",xFpos,yFpos));
 			// Now scan through the lines until we find a line below
 			// yFpos
 
-			UT_sint32 yoff = 0;
+			double yoff = 0;
 			fp_Line * pFirstLine = static_cast<fp_Line *>(getFirstContainer());
 			fp_Line * pCon = pFirstLine;
 			if(pCon == NULL)
@@ -1970,7 +1970,7 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 			// The Frame should be placed on the same page as this line
 			//
 			fp_Page * pPage = pCon->getPage();
-			UT_sint32 Xref = pCon->getX();
+			double Xref = pCon->getX();
 			if(pPage == NULL)
 			{
 				return false;
@@ -1981,8 +1981,8 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 			fp_Page * pFirstPage = pFirstLine->getPage();
 			UT_sint32 iFirstPageNo = getDocLayout()->findPage(pFirstPage);
 			UT_sint32 iThisPageNo = getDocLayout()->findPage(pPage);
-			UT_sint32 pageHeight = 0;
-			UT_sint32 yLineOff,xLineOff;
+			double pageHeight = 0;
+			double yLineOff,xLineOff;
 			fp_VerticalContainer * pVCon = NULL;
 			if(iThisPageNo > iFirstPageNo)
 			{
@@ -2051,8 +2051,8 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 				fp_Line * pLine = pLLast;
 				if(pPageFirst != pPageLast)
 				{
-					UT_sint32 idLast = abs(pLLast->getY() - pFrame->getFrameYColpos());
-					UT_sint32 idFirst =  abs(pLFirst->getY() - pFrame->getFrameYColpos());
+					double idLast = fabs(pLLast->getY() - pFrame->getFrameYColpos());
+					double idFirst =  fabs(pLFirst->getY() - pFrame->getFrameYColpos());
 					if(idFirst < idLast)
 					{
 						pPage = pPageFirst;
@@ -2091,8 +2091,8 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 				fp_Page * pPage = pPageLast;
 				if(pPageFirst != pPageLast)
 				{
-					UT_sint32 idLast = abs(pLLast->getY() - pFrame->getFrameYColpos());
-					UT_sint32 idFirst =  abs(pLFirst->getY() - pFrame->getFrameYColpos());
+					double idLast = fabs(pLLast->getY() - pFrame->getFrameYColpos());
+					double idFirst =  fabs(pLFirst->getY() - pFrame->getFrameYColpos());
 					if(idFirst < idLast)
 					{
 						pPage = pPageFirst;
@@ -2119,7 +2119,7 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
  * This returns the distance from the first line in the block to the
  * line presented here.
  */
-bool fl_BlockLayout::getXYOffsetToLine(UT_sint32 & xoff, UT_sint32 & yoff, fp_Line * pLine)
+bool fl_BlockLayout::getXYOffsetToLine(double & xoff, double & yoff, fp_Line * pLine)
 {
 	if(pLine == NULL)
 	{
@@ -2147,14 +2147,14 @@ bool fl_BlockLayout::getXYOffsetToLine(UT_sint32 & xoff, UT_sint32 & yoff, fp_Li
  * If a line height
  * changes or an ascent/descent changes we must do a section break.
  */
-UT_sint32 fl_BlockLayout::getHeightOfBlock(void)
+double fl_BlockLayout::getHeightOfBlock(void)
 {
 	if(m_bForceSectionBreak)
 	{
 		m_bForceSectionBreak = false;
 		return 0;
 	}
-	UT_sint32 iHeight = 0;
+	double iHeight = 0;
 	fp_Line * pCon = static_cast<fp_Line *>(getFirstContainer());
 	while(pCon)
 	{
@@ -2222,7 +2222,7 @@ void fl_BlockLayout::formatWrappedFromHere(fp_Line * pLine, fp_Page * pPage)
 	rec.left = pRec->left;
 	delete pRec;
 	m_bSameYAsPrevious = pLine->isSameYAsPrevious();
-	UT_sint32 iHeight = pLine->getHeight() + pLine->getMarginAfter();
+	double iHeight = pLine->getHeight() + pLine->getMarginAfter();
 	//
 	// Stuff remaining content on the line
 	//
@@ -2252,8 +2252,8 @@ void fl_BlockLayout::formatWrappedFromHere(fp_Line * pLine, fp_Page * pPage)
 	// the wrapped objects. We do this by looping though the wrapped objects
 	// on the page
 	//
-	UT_sint32 iX = getLeftMargin();
-	UT_sint32 iMaxX = m_pVertContainer->getWidth();
+	double iX = getLeftMargin();
+	double iMaxX = m_pVertContainer->getWidth();
 	iMaxX -=  getLeftMargin();
 	iMaxX -= getRightMargin();
 	bool bFirst = false;
@@ -2272,7 +2272,7 @@ void fl_BlockLayout::formatWrappedFromHere(fp_Line * pLine, fp_Page * pPage)
 	// the left side of the container or the previous line.
 	//
 	fp_Line * pPrev = static_cast<fp_Line *>(pLine->getPrev());
-	UT_sint32 iWidth = 0;
+	double iWidth = 0;
 	if(pPrev)
 	{
 		if(pLine->isSameYAsPrevious() && (pPrev->getY() == pLine->getY()))
@@ -2290,7 +2290,7 @@ void fl_BlockLayout::formatWrappedFromHere(fp_Line * pLine, fp_Page * pPage)
 	{
 		iWidth = iMaxX;
 	}
-	UT_sint32 xoff = rec.left - pLine->getX();
+	double xoff = rec.left - pLine->getX();
 	if(iWidth < 20*4)
 	{
 		xxx_UT_DEBUGMSG(("!!!!!!! ttttOOOO NAAARRRROOOWWWW iMaxX %d iX %d \n",iMaxX,iX));
@@ -2333,7 +2333,7 @@ void fl_BlockLayout::formatWrappedFromHere(fp_Line * pLine, fp_Page * pPage)
 			}
 			UT_Rect * pRec = pFC->getScreenRect();
 			fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(pFC->getSectionLayout());
-			UT_sint32 iExpand = pFL->getBoundingSpace() + 2;
+			double iExpand = pFL->getBoundingSpace() + 2.0;
 			pRec->height += 2*iExpand;
 			pRec->width += 2*iExpand;
 			pRec->left -= iExpand;
@@ -2342,13 +2342,13 @@ void fl_BlockLayout::formatWrappedFromHere(fp_Line * pLine, fp_Page * pPage)
 			{
 				if((pRec->left <= rec.left) && (pRec->left + pRec->width) > rec.left)
 				{
-					UT_sint32 diff = pRec->left + pRec->width - rec.left;
+					double diff = pRec->left + pRec->width - rec.left;
 					rec.left = pRec->left + pRec->width;
 					rec.width -= diff;
 				}
 				else if((pRec->left >= rec.left) && (rec.left + rec.width > pRec->left))
 				{
-					UT_sint32 diff = pRec->left - rec.left;
+					double diff = pRec->left - rec.left;
 					rec.width = diff;
 				}
 			}
@@ -2444,12 +2444,12 @@ void fl_BlockLayout::formatWrappedFromHere(fp_Line * pLine, fp_Page * pPage)
             is the height of the previous line).
  * pPage    Pointer to the page with the positioned objects.
  */  
-fp_Line *  fl_BlockLayout::getNextWrappedLine(UT_sint32 iX,
-											  UT_sint32 iHeight,
+fp_Line *  fl_BlockLayout::getNextWrappedLine(double iX,
+											  double iHeight,
 											  fp_Page * pPage)
 {
-	UT_sint32 iMaxX = m_pVertContainer->getWidth();
-	UT_sint32 iXDiff = getLeftMargin();
+	double iMaxX = m_pVertContainer->getWidth();
+	double iXDiff = getLeftMargin();
 	UT_ASSERT(iHeight > 0);
 	if(iHeight == 0)
 	{
@@ -2473,7 +2473,7 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(UT_sint32 iX,
 			iXDiff += getTextIndent();
 		}
 	}
-	UT_sint32 xoff,yoff;
+	double xoff,yoff;
 	pPage->getScreenOffsets(m_pVertContainer,xoff,yoff);
  	fp_FrameContainer * pFC = NULL;
 	fp_Line * pLine = NULL;
@@ -2487,7 +2487,7 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(UT_sint32 iX,
 	else
 	{
 		UT_sint32 i = 0;
-		UT_sint32 iScreenX = iX + xoff;
+		double iScreenX = iX + xoff;
 		UT_Rect projRec;
 		projRec.left = iScreenX;
 		projRec.height = iHeight;
@@ -2502,7 +2502,7 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(UT_sint32 iX,
 			}
 			UT_Rect * pRec = pFC->getScreenRect();
 			fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(pFC->getSectionLayout());
-			UT_sint32 iExpand = pFL->getBoundingSpace() + 2;
+			double iExpand = pFL->getBoundingSpace() + 2;
 			pRec->height += 2*iExpand;
 			pRec->width += 2*iExpand;
 			pRec->left -= iExpand;
@@ -2511,13 +2511,13 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(UT_sint32 iX,
 			{
 				if((pRec->left <= projRec.left) && (pRec->left + pRec->width) > projRec.left)
 				{
-					UT_sint32 diff = pRec->left + pRec->width - projRec.left;
+					double diff = pRec->left + pRec->width - projRec.left;
 					projRec.left = pRec->left + pRec->width;
 					projRec.width -= diff;
 				}
 				else if((pRec->left >= projRec.left) && (projRec.left + projRec.width > pRec->left))
 				{
-					UT_sint32 diff = pRec->left - projRec.left;
+					double diff = pRec->left - projRec.left;
 					projRec.width = diff;
 				}
 			}
@@ -2592,7 +2592,7 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(UT_sint32 iX,
 	while(!bStop)
     {
 		UT_sint32 i = 0;
-		UT_sint32 iScreenX = iX + xoff;
+		double iScreenX = iX + xoff;
 		UT_Rect projRec;
 		projRec.left = iScreenX;
 		projRec.height = iHeight;
@@ -2607,7 +2607,7 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(UT_sint32 iX,
 			}
 			UT_Rect * pRec = pFC->getScreenRect();
 			fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(pFC->getSectionLayout());
-			UT_sint32 iExpand = pFL->getBoundingSpace() +2; 
+			double iExpand = pFL->getBoundingSpace() +2; 
 			pRec->height += 2*iExpand;
 			pRec->width += 2*iExpand;
 			pRec->left -= iExpand;
@@ -2616,13 +2616,13 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(UT_sint32 iX,
 			{
 				if((pRec->left <= projRec.left) && (pRec->left + pRec->width) > projRec.left)
 				{
-					UT_sint32 diff = pRec->left + pRec->width - projRec.left;
+					double diff = pRec->left + pRec->width - projRec.left;
 					projRec.left = pRec->left + pRec->width;
 					projRec.width -= diff;
 				}
 				else if((pRec->left >= projRec.left) && (projRec.left + projRec.width > pRec->left))
 				{
-					UT_sint32 diff = pRec->left - projRec.left;
+					double diff = pRec->left - projRec.left;
 					projRec.width = diff;
 				}
 			}
@@ -2780,7 +2780,7 @@ void fl_BlockLayout::format()
 	// Save the old height of the block. We compare to the new height after
 	// the format.
 	//
-	UT_sint32 iOldHeight = getHeightOfBlock();
+	double iOldHeight = getHeightOfBlock();
 	xxx_UT_DEBUGMSG(("Old Height of block %d \n",iOldHeight));
 	//
 	// Need this to find where to break section in the document.
@@ -2955,9 +2955,9 @@ void fl_BlockLayout::format()
 	//
 	// Only break section if the height of the block changes.
 	//
-	UT_sint32 iNewHeight = getHeightOfBlock();
-	xxx_UT_DEBUGMSG(("New height of block %d \n",iNewHeight));
-	if((iNewHeight == 0) || (iOldHeight != iNewHeight))
+	double iNewHeight = getHeightOfBlock();
+	xxx_UT_DEBUGMSG(("New height of block %f.2 \n",iNewHeight));
+	if(UT_dEQ(iNewHeight,0) || !UT_dEQ(iOldHeight,iNewHeight))
 	{
 		if(getSectionLayout()->getContainerType() != FL_CONTAINER_DOCSECTION)
 		{
@@ -3376,9 +3376,9 @@ bool	fl_BlockLayout::getBlockBuf(UT_GrowBuf * pgb) const
 fp_Run*
 fl_BlockLayout::findPointCoords(PT_DocPosition iPos,
 								bool bEOL,
-								UT_sint32& x,  UT_sint32& y,
-								UT_sint32& x2, UT_sint32& y2,
-								UT_sint32& height,
+								double& x,  double& y,
+								double& x2, double& y2,
+								double& height,
 								bool& bDirection)
 {
 	if (!getFirstContainer() || !m_pFirstRun)
@@ -7762,11 +7762,11 @@ bool fl_BlockLayout::recalculateFields(UT_uint32 iUpdateCount)
 }
 
 
-bool	fl_BlockLayout::findNextTabStop( UT_sint32 iStartX, UT_sint32 iMaxX, UT_sint32& iPosition,
+bool	fl_BlockLayout::findNextTabStop( double iStartX, double iMaxX, double& iPosition,
 										 eTabType & iType, eTabLeader &iLeader )
 {
 #ifdef DEBUG
-	UT_sint32 iMinLeft = m_iLeftMargin;
+	double iMinLeft = m_iLeftMargin;
   	if(m_iTextIndent < 0)
 		iMinLeft += m_iTextIndent;
 	UT_ASSERT(iStartX >= iMinLeft);
@@ -7830,7 +7830,7 @@ bool	fl_BlockLayout::findNextTabStop( UT_sint32 iStartX, UT_sint32 iMaxX, UT_sin
 
 	// now, handle the default tabs
 
-	UT_sint32 iMin;
+	double iMin;
 
 	if(m_iDomDirection == UT_BIDI_RTL)
 		iMin = m_iRightMargin;
@@ -7852,7 +7852,7 @@ bool	fl_BlockLayout::findNextTabStop( UT_sint32 iStartX, UT_sint32 iMaxX, UT_sin
 	UT_ASSERT(m_iDefaultTabInterval > 0);
 
 	// mathematical approach
-	const UT_sint32 iPos = (iStartX / m_iDefaultTabInterval + 1) *
+	const double iPos = (iStartX / m_iDefaultTabInterval + 1) *
 		m_iDefaultTabInterval;
 
 	if(iPos > iMaxX)
@@ -7870,11 +7870,11 @@ bool	fl_BlockLayout::findNextTabStop( UT_sint32 iStartX, UT_sint32 iMaxX, UT_sin
 	return true;
 }
 
-bool	fl_BlockLayout::findPrevTabStop( UT_sint32 iStartX, UT_sint32 iMaxX, UT_sint32& iPosition,
+bool	fl_BlockLayout::findPrevTabStop( double iStartX, double iMaxX, double& iPosition,
 										 eTabType & iType, eTabLeader &iLeader )
 {
 #ifdef DEBUG
-	UT_sint32 iMinLeft = m_iLeftMargin;
+	double iMinLeft = m_iLeftMargin;
 	if(m_iTextIndent < 0)
 		iMinLeft += m_iTextIndent;
 	
@@ -7953,7 +7953,7 @@ bool	fl_BlockLayout::findPrevTabStop( UT_sint32 iStartX, UT_sint32 iMaxX, UT_sin
 
 	// now, handle the default tabs
 
-	UT_sint32 iMin;
+	double iMin;
 
 	if(m_iDomDirection == UT_BIDI_RTL)
 		iMin = m_iRightMargin;
@@ -7976,7 +7976,7 @@ bool	fl_BlockLayout::findPrevTabStop( UT_sint32 iStartX, UT_sint32 iMaxX, UT_sin
 
 	// mathematical approach
 	// the -1 is to ensure we do not get iStartX
-	const UT_sint32 iPos = ((iStartX - 1)/ m_iDefaultTabInterval) *
+	const double iPos = ((iStartX - 1)/ m_iDefaultTabInterval) *
 		m_iDefaultTabInterval;
 	iPosition = iPos;
 

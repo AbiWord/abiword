@@ -640,12 +640,12 @@ void XAP_Preview_FontPreview::draw(void)
 //
 // Calculate the draw coordinates position
 //
-	UT_sint32 iWinWidth = m_gc->tlu(getWindowWidth());
-	UT_sint32 iWinHeight = m_gc->tlu(getWindowHeight());
-	UT_sint32 iTop = (iWinHeight - m_iHeight)/2;
+	double iWinWidth = m_gc->tlu(getWindowWidth());
+	double iWinHeight = m_gc->tlu(getWindowHeight());
+	double iTop = (iWinHeight - m_iHeight)/2;
 	UT_sint32 len = UT_UCS4_strlen(m_pszChars);
-	UT_sint32 twidth = m_gc->measureString(m_pszChars,0,len,NULL);
-	UT_sint32 iLeft = (iWinWidth - twidth)/2;
+	double twidth = m_gc->measureString(m_pszChars,0,len,NULL);
+	double iLeft = (iWinWidth - twidth)/2;
 //
 // Fill the background color
 //
@@ -664,17 +664,17 @@ void XAP_Preview_FontPreview::draw(void)
 //
 	if(isUnder)
 	{
-		UT_sint32 iDrop = iTop + m_iAscent + m_iDescent/3;
+		double iDrop = iTop + m_iAscent + m_iDescent/3;
 		painter.drawLine(iLeft,iDrop,iLeft+twidth,iDrop);
 	}
 	if(isOver)
 	{
-		UT_sint32 iDrop = iTop + m_gc->tlu(1) + (UT_MAX(m_gc->tlu(10),m_iAscent) - m_gc->tlu(10))/8;
+		double iDrop = iTop + m_gc->tlu(1) + (UT_MAX(m_gc->tlu(10),m_iAscent) - m_gc->tlu(10))/8;
 		painter.drawLine(iLeft,iDrop,iLeft+twidth,iDrop);
 	}
 	if(isStrike)
 	{
-		UT_sint32 iDrop = iTop + m_iAscent * 2 /3;
+		double iDrop = iTop + m_iAscent * 2 /3;
 		painter.drawLine(iLeft,iDrop,iLeft+twidth,iDrop);
 	}
 

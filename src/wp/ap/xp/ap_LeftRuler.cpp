@@ -1230,14 +1230,14 @@ bool AP_LeftRuler::notify(AV_View * pView, const AV_ChangeMask mask)
 
 /*****************************************************************/
 
-void AP_LeftRuler::_scrollFuncX(void * /* pData */, UT_sint32 /* xoff */, UT_sint32 /* xlimit */)
+void AP_LeftRuler::_scrollFuncX(void * /* pData */, double /* xoff */, double /* xlimit */)
 {
 	// static callback referenced by an AV_ScrollObj() for the ruler
 	// we don't care about horizontal scrolling.
 	return;
 }
 
-void AP_LeftRuler::_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 ylimit)
+void AP_LeftRuler::_scrollFuncY(void * pData, double yoff, double ylimit)
 {
 	// static callback referenced by an AV_ScrollObj() for the ruler
 	UT_ASSERT(pData);

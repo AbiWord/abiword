@@ -115,6 +115,7 @@ bool GR_VectorImage::convertToBuffer(UT_ByteBuf** ppBB) const
   return bCopied;
 }
 
+// note that this does take device units, unlike everything else.
 bool GR_VectorImage::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
 {
   setDisplaySize ( iDisplayWidth, iDisplayHeight );
@@ -130,7 +131,7 @@ bool GR_VectorImage::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplay
   return bCopied;
 }
 
-bool GR_VectorImage::render(GR_Graphics* pGR, UT_sint32 xDest, UT_sint32 yDest)
+bool GR_VectorImage::render(GR_Graphics* pGR, double xDest, double yDest)
 {
   // Set origin
   m_iDisplayOx = xDest;

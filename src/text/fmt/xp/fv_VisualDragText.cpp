@@ -193,11 +193,11 @@ void FV_VisualDragText::mouseDrag(UT_sint32 x, UT_sint32 y)
 		m_pAutoScrollTimer->start();
 		return;
 	}
-	UT_sint32 dx = 0;
-	UT_sint32 dy = 0;
+	double dx = 0;
+	double dy = 0;
 	UT_Rect expX(0,m_recCurFrame.top,0,m_recCurFrame.height);
 	UT_Rect expY(m_recCurFrame.left,0,m_recCurFrame.width,0);
-	UT_sint32 iext = getGraphics()->tlu(3);
+	double iext = getGraphics()->tlu(3);
 	dx = x - m_iLastX;
 	dy = y - m_iLastY;
 	m_recCurFrame.left += dx;
@@ -303,9 +303,9 @@ void FV_VisualDragText::drawCursor(PT_DocPosition newPos)
 
 	fp_Run * pRunLow = NULL;
 	fl_BlockLayout * pBlock = NULL;
-	UT_sint32 xLow, yLow;
-	UT_uint32 heightCaret;
-	UT_sint32 xCaret2, yCaret2;
+	double xLow, yLow;
+	double heightCaret;
+	double xCaret2, yCaret2;
 	bool bDirection=false;
 	bool bEOL=false;
 	m_pView->_findPositionCoords(newPos, bEOL, xLow, yLow, xCaret2, yCaret2, heightCaret, bDirection, &pBlock, &pRunLow);
@@ -327,7 +327,7 @@ void FV_VisualDragText::drawCursor(PT_DocPosition newPos)
  * the drag rectangle, the initial offsets and the initial positions 
  * of the cursor.
  */
-void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
+void FV_VisualDragText::getImageFromSelection(double x, double y)
 {
 //
 // OK first work out the locations in the document of the anchor and point
@@ -336,9 +336,9 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 	PT_DocPosition posHigh = 0;
 
 	fp_Run * pRunLow = NULL;
-	UT_sint32 xLow, yLow,xHigh,yHigh;
-	UT_uint32 heightCaret;
-	UT_sint32 xCaret2, yCaret2;
+	double xLow, yLow,xHigh,yHigh;
+	double heightCaret;
+	double xCaret2, yCaret2;
 	bool bDirection = false;
 	bool bEOL = false;
 	if(m_pView->getSelectionMode() < 	FV_SelectionMode_Multiple)
@@ -441,7 +441,7 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 // Grab that first charcter!
 //
 		m_pView->_findPositionCoords(posLow, bEOL, xLow, yLow, xCaret2, yCaret2, heightCaret, bDirection, NULL, &pRunLow2);
-		UT_sint32 xx,yy;
+		double xx,yy;
 		pLineLow->getScreenOffsets(pRunLow,xx,yy);
 		m_recCurFrame.left = xLow;
 		m_recCurFrame.width = xHigh - xLow;
@@ -462,7 +462,7 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 // low and high are on different rows. First get top, left
 //
 //
-		UT_sint32 xx,yy;
+		double xx,yy;
 		fp_Run * pRun = pLineLow->getFirstRun();
 		pLineLow->getScreenOffsets(pRun,xx,yy);
 		xx -= pRun->getX();
@@ -474,8 +474,7 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 		m_recCurFrame.left = xx;
 		m_recCurFrame.top = yy;
 		fp_Line * pNext = pLineLow;
-		UT_sint32 width = 0;
-		UT_sint32 iRightpos = 0;
+		double width = 0;
 		while(pNext && (pNext != pLineHigh))
 		{
 			pRun = pNext->getFirstRun();
@@ -598,7 +597,7 @@ void FV_VisualDragText::mouseCopy(UT_sint32 x, UT_sint32 y)
 	m_pView->_resetSelection();
 }
 
-PT_DocPosition FV_VisualDragText::getPosFromXY(UT_sint32 x, UT_sint32 y)
+PT_DocPosition FV_VisualDragText::getPosFromXY(double x, double y)
 {
 //
 // Convert this to a document position and paste!

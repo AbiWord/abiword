@@ -159,12 +159,12 @@ void fl_TableLayout::createTableContainer(void)
 	setTableContainerProperties(pTableContainer);
 	fl_ContainerLayout * pCL = myContainingLayout();
 	fp_Container * pCon = pCL->getLastContainer();
-	UT_sint32 iWidth = 0;
+	double iWidth = 0;
 	if(pCon != NULL)
 	{
 		iWidth = pCon->getWidth();
 	}
-	if(iWidth == 0)
+	if(UT_dEQ(iWidth, 0))
 	{
 		iWidth = getDocSectionLayout()->getWidth();
 		if(pCon)
@@ -202,7 +202,7 @@ void fl_TableLayout::decNumNestedTables(void)
 void fl_TableLayout::setTableContainerProperties(fp_TableContainer * pTab)
 {
 	pTab->setHomogeneous(m_bIsHomogeneous);
-	UT_sint32 borderWidth = m_iLeftOffset + m_iRightOffset;
+	double borderWidth = m_iLeftOffset + m_iRightOffset;
 	pTab->setBorderWidth(borderWidth);
 	pTab->setColSpacings(m_iColSpacing);
 	pTab->setRowSpacings(m_iRowSpacing);
@@ -375,7 +375,7 @@ bool fl_TableLayout::doSimpleChange(void)
 		return false;
 	}
 	fp_CellContainer * pCell = pTab->getCellAtRowColumn(iTop,0);
-	UT_sint32 iMaxHeight = 0;
+	double iMaxHeight = 0;
 	fp_Requisition Req;
 	while(pCell)
 	{
@@ -399,7 +399,7 @@ bool fl_TableLayout::doSimpleChange(void)
 		return false;
 	}
 	fp_TableRowColumn * pRow = pTab->getNthRow(iTop);
-	UT_sint32 iAlloc = pRow->allocation;	
+	double iAlloc = pRow->allocation;	
 	iMaxHeight = pTab->getRowHeight(iTop,iMaxHeight);
 	if(iAlloc == iMaxHeight)
 	{
@@ -408,7 +408,7 @@ bool fl_TableLayout::doSimpleChange(void)
 	pTab->deleteBrokenTables(true,true);
 	setNeedsRedraw();
 	markAllRunsDirty();
-	UT_sint32 diff = iMaxHeight - iAlloc;
+	double diff = iMaxHeight - iAlloc;
 	pRow->allocation += diff;
 	while(pCell)
 	{
@@ -479,7 +479,7 @@ void fl_TableLayout::format(void)
 	//
 	// Get the old height of the table
 	//
-	UT_sint32 iOldHeight = 0;
+	double iOldHeight = 0;
 	if(getFirstContainer())
 	{
 		iOldHeight = getFirstContainer()->getHeight();
@@ -575,7 +575,7 @@ void fl_TableLayout::format(void)
    		markAllRunsDirty();
 		m_bIsDirty = false;
 	}
-	UT_sint32 iNewHeight = -10;
+	double iNewHeight = -10; // FIXME: should not use non-layout-unit values - MARCM
 	bool isBroken = false;
 	if(getFirstContainer())
 	{
@@ -1425,38 +1425,38 @@ void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 
 }
 
-UT_sint32 fl_TableLayout::getColSpacing(void) const
+double fl_TableLayout::getColSpacing(void) const
 {
 	return m_iColSpacing;
 }
 
 
-UT_sint32 fl_TableLayout::getRowSpacing(void) const
+double fl_TableLayout::getRowSpacing(void) const
 {
 	return m_iRowSpacing;
 }
 
-UT_sint32 fl_TableLayout::getLineThickness(void) const
+double fl_TableLayout::getLineThickness(void) const
 {
 	return m_iLineThickness;
 }
 
-UT_sint32 fl_TableLayout::getTopOffset(void) const
+double fl_TableLayout::getTopOffset(void) const
 {
 	return m_iTopOffset;
 }
 
-UT_sint32 fl_TableLayout::getBottomOffset(void) const
+double fl_TableLayout::getBottomOffset(void) const
 {
 	return m_iBottomOffset;
 }
 
-UT_sint32   fl_TableLayout::getLeftOffset(void) const
+double   fl_TableLayout::getLeftOffset(void) const
 {
 	return m_iLeftOffset;
 }
 
-UT_sint32   fl_TableLayout::getRightOffset(void) const
+double   fl_TableLayout::getRightOffset(void) const
 {
 	return m_iRightOffset;
 }
@@ -1630,9 +1630,9 @@ fl_CellLayout::fl_CellLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_At
 	  m_iTopAttach(0),
 	  m_iBottomAttach(1),
 	  m_bCellPositionedOnPage(false),
-	  m_iCellHeight(0),
+	  m_iNumNestedTables(0),
 	  m_iCellWidth(0),
-	  m_iNumNestedTables(0)
+	  m_iCellHeight(0)
 {
 	createCellContainer();
 }
@@ -1690,7 +1690,7 @@ void fl_CellLayout::createCellContainer(void)
 		pDSL = static_cast<fl_DocSectionLayout *>(pCL);
 	}
 	UT_ASSERT(pDSL != NULL);
-	UT_sint32 iWidth = pDSL->getWidth();
+	double iWidth = pDSL->getWidth();
 	pCellContainer->setWidth(iWidth);
 	// Now do cell image
 
@@ -1759,8 +1759,8 @@ void fl_CellLayout::setCellContainerProperties(fp_CellContainer * pCell)
 			const PP_AttrProp * pAP = NULL;
 			getAP(pAP);
 			GR_Graphics * pG = getDocLayout()->getGraphics();
-			UT_sint32 iWidth = pG->tlu(100);
-			UT_sint32 iHeight = pG->tlu(100);
+			double iWidth = pG->tlu(100);
+			double iHeight = pG->tlu(100);
 			if(m_pGraphicImage->getType() == FGT_Raster)
 			{
 				UT_sint32 iImageWidth;
@@ -1950,7 +1950,7 @@ void fl_CellLayout::format(void)
 		getNewContainer(NULL);
 	}
 	m_bDoingFormat = true;
-	UT_sint32 iOldHeight = getFirstContainer()->getHeight();
+	double iOldHeight = getFirstContainer()->getHeight();
 	fl_ContainerLayout * pPrevCL = myContainingLayout()->getPrev();
 	fp_Page * pPrevP = NULL;
 	if(pPrevCL)
@@ -1987,12 +1987,12 @@ void fl_CellLayout::format(void)
 	}
 	static_cast<fp_CellContainer *>(getFirstContainer())->layout();
 	
-	UT_sint32 iNewHeight = getFirstContainer()->getHeight();
+	double iNewHeight = getFirstContainer()->getHeight();
 	fl_ContainerLayout * myL = myContainingLayout();
 	if((myL->getContainerType() != FL_CONTAINER_SHADOW) &&
 	   (myL->getContainerType() != FL_CONTAINER_HDRFTR))
 	{
-		if(iNewHeight != iOldHeight)
+		if(!UT_dEQ(iNewHeight, iOldHeight))
 		{
 			getDocSectionLayout()->setNeedsSectionBreak(true,pPrevP);
 		}
@@ -2397,7 +2397,7 @@ void fl_CellLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 		if(pVecCols->getItemCount() > 0)
 		{
 			UT_sint32 i = 0;
-			UT_sint32 cellW = 0; 
+			double cellW = 0; 
 			for(i=getLeftAttach(); i<getRightAttach() && i<static_cast<UT_sint32>(pVecCols->getItemCount());i++)
 			{
 				fl_ColProps* pCol = pVecCols->getNthItem(i);
@@ -2412,7 +2412,7 @@ void fl_CellLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 		if(pVecRows->getItemCount() > 0)
 		{
 			UT_sint32 i = 0;
-			UT_sint32 cellH = 0; 
+			double cellH = 0; 
 			for(i=getTopAttach(); i<getBottomAttach() && i<static_cast<UT_sint32>(pVecRows->getItemCount());i++)
 			{
 				fl_RowProps* pRow = pVecRows->getNthItem(i);
@@ -2427,23 +2427,23 @@ void fl_CellLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	}
 }
 
-UT_sint32   fl_CellLayout::getLeftOffset(void) const
+double   fl_CellLayout::getLeftOffset(void) const
 {
 	return m_iLeftOffset;
 }
 
-UT_sint32   fl_CellLayout::getRightOffset(void) const
+double   fl_CellLayout::getRightOffset(void) const
 {
 	return m_iRightOffset;
 }
 
-UT_sint32 fl_CellLayout::getTopOffset(void) const
+double fl_CellLayout::getTopOffset(void) const
 {
 	return m_iTopOffset;
 }
 
 
-UT_sint32 fl_CellLayout::getBottomOffset(void) const
+double fl_CellLayout::getBottomOffset(void) const
 {
 	return m_iBottomOffset;
 }

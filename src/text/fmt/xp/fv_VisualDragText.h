@@ -53,8 +53,8 @@ public:
 	void                  mouseCopy(UT_sint32 x, UT_sint32 y);
 	void                  mouseRelease(UT_sint32 x, UT_sint32 y);
 	void                  drawImage(void);
-	void                  getImageFromSelection(UT_sint32 x, UT_sint32 y); 	
-	PT_DocPosition        getPosFromXY(UT_sint32 x, UT_sint32 y);
+	void                  getImageFromSelection(double x, double y); 	
+	PT_DocPosition        getPosFromXY(double x, double y);
 	void                  drawCursor(PT_DocPosition newPos);
 	static void 		  _autoScroll(UT_Worker * pTimer);
 	void                  clearCursor(void);
@@ -63,11 +63,11 @@ private:
 	FV_View *             m_pView;
 	FV_VisualDragMode     m_iVisualDragMode;
 	GR_Image *            m_pDragImage;
-	UT_sint32             m_iLastX;
-	UT_sint32             m_iLastY;
+	double                m_iLastX;
+	double                m_iLastY;
 	UT_Rect               m_recCurFrame;
-	UT_sint32             m_iInitialOffX;
-	UT_sint32             m_iInitialOffY;
+	double                m_iInitialOffX;
+	double                m_iInitialOffY;
 	UT_Rect               m_recOrigLeft;
 	UT_Rect               m_recOrigRight;
 	bool                  m_bTextCut;

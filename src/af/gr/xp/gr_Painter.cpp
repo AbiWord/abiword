@@ -35,19 +35,19 @@ GR_Painter::~GR_Painter ()
 	DELETEP(m_pCaretDisabler);
 }
 
-void GR_Painter::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 y2)
+void GR_Painter::drawLine(double x1, double y1, double x2, double y2)
 {
 	m_pGr->drawLine (x1, y1, x2, y2);
 }
 
 #if XAP_DONTUSE_XOR
 #else
-void GR_Painter::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 y2)
+void GR_Painter::xorLine(double x1, double y1, double x2, double y2)
 {
 	m_pGr->xorLine (x1, y1, x2, y2);
 }
 
-void GR_Painter::xorRect(UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
+void GR_Painter::xorRect(double x, double y, double w, double h)
 {
 	m_pGr->xorRect (x, y, w, h);
 }
@@ -64,10 +64,10 @@ void GR_Painter::invertRect(const UT_Rect* pRect)
 }
 
 void GR_Painter::fillRect(const UT_RGBColor& c,
-						  UT_sint32 x,
-						  UT_sint32 y,
-						  UT_sint32 w,
-						  UT_sint32 h)
+						  double x,
+						  double y,
+						  double w,
+						  double h)
 {
 	m_pGr->fillRect (c, x, y, w, h);
 }
@@ -77,12 +77,12 @@ void GR_Painter::fillRect(GR_Image *pImg, const UT_Rect &src, const UT_Rect & de
 	m_pGr->fillRect (pImg, src, dest);
 }
 
-void GR_Painter::clearArea(UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
+void GR_Painter::clearArea(double x, double y, double w, double h)
 {
 	m_pGr->clearArea (x, y, w, h);
 }
 
-void GR_Painter::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
+void GR_Painter::drawImage(GR_Image* pImg, double xDest, double yDest)
 {
 	m_pGr->drawImage (pImg, xDest, yDest);
 }
@@ -110,8 +110,8 @@ void GR_Painter::drawGlyph(UT_uint32 glyph_idx, UT_sint32 xoff, UT_sint32 yoff)
 void GR_Painter::drawChars(const UT_UCSChar* pChars,
 						   int iCharOffset,
 						   int iLength,
-						   UT_sint32 xoff,
-						   UT_sint32 yoff,
+						   double xoff,
+						   double yoff,
 						   int* pCharWidths)
 {
 	m_pGr->drawChars (pChars, iCharOffset, iLength, xoff, yoff, pCharWidths);
@@ -129,10 +129,10 @@ void GR_Painter::fillRect(GR_Graphics::GR_Color3D c, UT_Rect &r)
 }
 
 void GR_Painter::fillRect(GR_Graphics::GR_Color3D c,
-						  UT_sint32 x,
-						  UT_sint32 y,
-						  UT_sint32 w,
-						  UT_sint32 h)
+						  double x,
+						  double y,
+						  double w,
+						  double h)
 {
 	m_pGr->fillRect (c, x, y, w, h);
 }

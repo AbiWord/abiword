@@ -45,7 +45,7 @@ public:
 	void						setSelectedFont(const char *font);
 	void						setFontString();
 	void						setFontStringarea();
-	void						setFontToGC(GR_Graphics *p_gc, UT_uint32 MaxWidthAllowable, UT_sint32 PointSize);
+	void						setFontToGC(GR_Graphics *p_gc, double MaxWidthAllowable, UT_sint32 PointSize);
 	void						setFontfont(GR_Font * font);
 	void						setWindowSize(UT_uint32 width, UT_uint32 height);
 	void						setAreaSize(UT_uint32 width, UT_uint32 height);
@@ -63,17 +63,17 @@ public:
 	UT_UCSChar					getCurrent() { return m_CurrentSymbol; }
 
 	void						onLeftButtonDown(UT_sint32 x, UT_sint32 y);
-	void						calculatePosition(UT_UCSChar c, UT_uint32 &x, UT_uint32 &y);
+	void						calculatePosition(UT_UCSChar c, double &x, double &y);
 	GR_Graphics * 				getGraphics(void){return m_areagc;};
 
 protected:
 	GR_Graphics *               m_areagc;
 	GR_Font *			        m_pFont;	// so we can delete it
 
-	UT_uint32                   m_drawWidth;
-	UT_uint32                   m_drawHeight;
-	UT_uint32                   m_drawareaWidth;
-	UT_uint32                   m_drawareaHeight;
+	double                      m_drawWidth;
+	double                      m_drawHeight;
+	double                      m_drawareaWidth;
+	double                      m_drawareaHeight;
 
 	UT_UCSChar					m_CurrentSymbol;
 	UT_UCSChar					m_PreviousSymbol;
@@ -85,16 +85,3 @@ private:
 };
 
 #endif /* XAP_Draw_Symbol_H */
-
-
-
-
-
-
-
-
-
-
-
-
-

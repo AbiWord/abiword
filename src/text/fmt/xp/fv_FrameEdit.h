@@ -72,14 +72,14 @@ public:
 		{ return m_iFrameEditMode;}
 	FV_FrameEditDragWhat  getFrameEditDragWhat(void) const 
 		{ return m_iDraggingWhat;}
-	void                  mouseDrag(UT_sint32 x, UT_sint32 y);
-	void                  mouseLeftPress(UT_sint32 x, UT_sint32 y);
-	void                  mouseRelease(UT_sint32 x, UT_sint32 y);
-	FV_FrameEditDragWhat  mouseMotion(UT_sint32 x, UT_sint32 y);
+	void                  mouseDrag(double x, double y);
+	void                  mouseLeftPress(double x, double y);
+	void                  mouseRelease(double x, double y);
+	FV_FrameEditDragWhat  mouseMotion(double x, double y);
 	void                  drawFrame(bool bWithHandles);
 	void                  deleteFrame(void);
-	void                  setDragType(UT_sint32 x,UT_sint32 y, bool bDrawFrame);
-	bool                  getFrameStrings(UT_sint32 x, UT_sint32 y, 
+	void                  setDragType(double x, double y, bool bDrawFrame);
+	bool                  getFrameStrings(double x, double y, 
 										  UT_String & sXpos,
 										  UT_String & sYpos,
 										  UT_String & sWidth,
@@ -101,22 +101,22 @@ private:
 	fl_FrameLayout *      m_pFrameLayout;
 	fp_FrameContainer *   m_pFrameContainer;
 	FV_FrameEditDragWhat  m_iDraggingWhat;
-	UT_sint32             m_iLastX;
-	UT_sint32             m_iLastY;
+	double                m_iLastX;
+	double                m_iLastY;
 	UT_Rect               m_recCurFrame;
-	UT_sint32             m_iInitialDragX;
-	UT_sint32             m_iInitialDragY;
+	double                m_iInitialDragX;
+	double                 m_iInitialDragY;
 	bool                  m_bFirstDragDone;
 	bool                  m_bInitialClick;
 	GR_Image *            m_pFrameImage;
 
 	// autoscroll stuff
 	UT_Timer *			  m_pAutoScrollTimer;
-	UT_sint32			  m_xLastMouse;
-	UT_sint32			  m_yLastMouse;
+	double    			  m_xLastMouse;
+	double   			  m_yLastMouse;
 
-	UT_sint32             m_iFirstEverX;
-	UT_sint32             m_iFirstEverY;
+	double                m_iFirstEverX;
+	double                m_iFirstEverY;
 	UT_sint32             m_iGlobCount;
 };
 

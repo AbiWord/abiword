@@ -123,8 +123,8 @@ public:
 	void			notifyBlockIsBeingDeleted(fl_BlockLayout *pBlock);
 	void            setSkipUpdates(UT_uint32 numSkips) {m_iSkipUpdates = numSkips;}
 	UT_uint32       getSkipUpdates(void) { return m_iSkipUpdates;}
-	UT_sint32		getHeight();
-	UT_sint32       getWidth();
+	double          getHeight();
+	double          getWidth();
 
 	const GR_Font*	findFont(const PP_AttrProp * pSpanAP,
 							 const PP_AttrProp * pBlockAP,
@@ -344,5 +344,3 @@ private:
 };
 
 #endif /* DOCLAYOUT_H */
-
-

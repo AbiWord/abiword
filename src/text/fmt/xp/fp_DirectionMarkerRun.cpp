@@ -45,7 +45,7 @@ fp_DirectionMarkerRun::fp_DirectionMarkerRun(fl_BlockLayout* pBL,
 
 bool fp_DirectionMarkerRun::_recalcWidth(void)
 {
-	UT_sint32 iOldWidth = getWidth();
+	double iOldWidth = getWidth();
 	FV_View* pView = _getView();
 
 	if (pView && pView->getShowPara())
@@ -145,8 +145,8 @@ bool fp_DirectionMarkerRun::_deleteFollowingIfAtInsPoint() const
 	return false;
 }
 
-void fp_DirectionMarkerRun::mapXYToPosition(UT_sint32 x,
-											UT_sint32 y,
+void fp_DirectionMarkerRun::mapXYToPosition(double x,
+											double y,
 											PT_DocPosition& pos,
 											bool& bBOL,
 											bool& bEOL,
@@ -162,9 +162,9 @@ void fp_DirectionMarkerRun::mapXYToPosition(UT_sint32 x,
 }
 
 void fp_DirectionMarkerRun::findPointCoords(UT_uint32 iOffset,
-										   UT_sint32& x, UT_sint32& y,
-										   UT_sint32& x2, UT_sint32& y2,
-										   UT_sint32& height,
+										   double& x, double& y,
+										   double& x2, double& y2,
+										   double& height,
 										   bool& bDirection)
 {
 	fp_Run* pPropRun = _findPrevPropertyRun();
@@ -200,7 +200,7 @@ void fp_DirectionMarkerRun::_clearScreen(bool /* bFullLineHeightRect */)
 
 	if(getWidth())
 	{
-		UT_sint32 xoff = 0, yoff = 0;
+		double xoff = 0, yoff = 0;
 		getLine()->getScreenOffsets(this, xoff, yoff);
 
 		if(getVisDirection() == UT_BIDI_RTL)
@@ -245,7 +245,7 @@ void fp_DirectionMarkerRun::_draw(dg_DrawArgs* pDA)
 	if (/* pView->getFocus()!=AV_FOCUS_NONE && */	(iSel1 <= iRunBase) && (iSel2 > iRunBase))
 		bIsSelected = true;
 
-	UT_sint32 iAscent;
+	double iAscent;
 
 	fp_Run* pPropRun = _findPrevPropertyRun();
 	if (pPropRun && (FPRUN_TEXT == pPropRun->getType()))

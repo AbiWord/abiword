@@ -330,8 +330,8 @@ class ABI_EXPORT GR_Graphics
 	static GR_Graphics *   graphicsAllocator(GR_AllocInfo&){UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED); return NULL;}
 #endif
 	
-	UT_sint32	tdu(UT_sint32 layoutUnits) const;
-	UT_sint32	tlu(UT_sint32 deviceUnits) const;
+	UT_sint32	tdu(double layoutUnits) const;
+	double		tlu(UT_sint32 deviceUnits) const;
 	double	    tduD(double layoutUnits) const;
 	double  	tluD(double deviceUnits) const;
 	/*!
@@ -343,9 +343,9 @@ class ABI_EXPORT GR_Graphics
 	
 	virtual void      setFont(GR_Font* pFont) = 0;
     virtual void      clearFont(void) = 0;
-	virtual UT_uint32 getFontAscent() = 0;
-	virtual UT_uint32 getFontDescent() = 0;
-	virtual UT_uint32 getFontHeight() = 0;
+	virtual double    getFontAscent() = 0;
+	virtual double    getFontDescent() = 0;
+	virtual double    getFontHeight() = 0;
 	void              invalidateCache(void);
 
 	virtual UT_uint32 measureString(const UT_UCSChar*s,
@@ -357,9 +357,9 @@ class ABI_EXPORT GR_Graphics
 	virtual void getCoverage(UT_NumberVector& coverage) = 0;
 	
 	/* GR_Font versions of the above -- TODO: should I add drawChar* methods too? */
-	virtual UT_uint32 getFontAscent(GR_Font *)  = 0;
-	virtual UT_uint32 getFontDescent(GR_Font *) = 0;
-	virtual UT_uint32 getFontHeight(GR_Font *)  = 0;
+	virtual double getFontAscent(GR_Font *)  = 0;
+	virtual double getFontDescent(GR_Font *) = 0;
+	virtual double getFontHeight(GR_Font *)  = 0;
 
 	UT_uint32         getMaxCharacterWidth(const UT_UCSChar*s, UT_uint32 Length);
 
@@ -384,21 +384,21 @@ class ABI_EXPORT GR_Graphics
 
 	bool              scaleDimensions(const char * szLeftIn,
 									  const char * szWidthIn,
-									  UT_uint32 iWidthAvail,
-									  UT_sint32 * piLeft,
-									  UT_uint32 * piWidth) const;
+									  double iWidthAvail,
+									  double * piLeft,
+									  double * piWidth) const;
 
    	virtual GR_Image* createNewImage(const char* pszName,
 									 const UT_ByteBuf* pBB,
-									 UT_sint32 iWidth,
-									 UT_sint32 iHeight,
+									 double iWidth,
+									 double iHeight,
 									 GR_Image::GRType iType = GR_Image::GRT_Raster);
 
-	virtual void      setLineWidth(UT_sint32) = 0;
+	virtual void      setLineWidth(double) = 0;
 
 	virtual void      setClipRect(const UT_Rect* pRect) = 0;
 	const UT_Rect *   getClipRect(void) const { return m_pRect;}
-	virtual void      scroll(UT_sint32, UT_sint32) = 0;
+	virtual void      scroll(double, double) = 0;
 	virtual void      scroll(UT_sint32 x_dest,
 							 UT_sint32 y_dest,
 							 UT_sint32 x_src,
@@ -514,10 +514,10 @@ class ABI_EXPORT GR_Graphics
 	const bool        isSpawnedRedraw(void) const;
 	void              setSpawnedRedraw(bool exposeState);
 
-	void              setPendingRect(UT_sint32 x,
-									 UT_sint32 y,
-									 UT_sint32 width,
-									 UT_sint32 height);
+	void              setPendingRect(double x,
+									 double y,
+									 double width,
+									 double height);
 
 	void              unionPendingRect( UT_Rect * pRect);
 	void              setRecentRect( UT_Rect * pRect);
@@ -559,12 +559,10 @@ class ABI_EXPORT GR_Graphics
 // the logical difference to these first, then calculate how much
 // the screen needs to scroll in device units
 //
-	UT_sint32         getPrevYOffset(void) const { return m_iPrevYOffset;}
-	UT_sint32         getPrevXOffset(void) const { return m_iPrevXOffset;}
-	void              setPrevYOffset(UT_sint32 y) { m_iPrevYOffset = y;}
-	void              setPrevXOffset(UT_sint32 x) { m_iPrevXOffset = x;}
-
-	UT_sint32         _tduX(UT_sint32 layoutUnits) const;
+	double            getPrevYOffset(void) const { return m_iPrevYOffset;}
+	double            getPrevXOffset(void) const { return m_iPrevXOffset;}
+	void              setPrevYOffset(double y) { m_iPrevYOffset = y;}
+	void              setPrevXOffset(double x) { m_iPrevXOffset = x;}
 
 
 	///////////////////////////////////////////////////////////////////
@@ -631,11 +629,11 @@ class ABI_EXPORT GR_Graphics
 	virtual UT_sint32 countJustificationPoints(const GR_RenderInfo & ri) const VIRTUAL_SFX;
 	virtual void justify(GR_RenderInfo & ri) VIRTUAL_SFX;
 	
-    virtual UT_uint32 XYToPosition(const GR_RenderInfo & ri, UT_sint32 x, UT_sint32 y) const VIRTUAL_SFX;
+    virtual UT_uint32 XYToPosition(const GR_RenderInfo & ri, double x, double y) const VIRTUAL_SFX;
     virtual void      positionToXY(const GR_RenderInfo & ri,
-								   UT_sint32& x, UT_sint32& y,
-								   UT_sint32& x2, UT_sint32& y2,
-								   UT_sint32& height, bool& bDirection) const VIRTUAL_SFX;
+								   double& x, double& y,
+								   double& x2, double& y2,
+								   double& height, bool& bDirection) const VIRTUAL_SFX;
 
 	virtual UT_sint32 getTextWidth(GR_RenderInfo & ri) VIRTUAL_SFX;
 	
@@ -655,9 +653,6 @@ class ABI_EXPORT GR_Graphics
 	virtual void _beginPaint () {}
 	virtual void _endPaint () {}
 
-	UT_sint32         _tduY(UT_sint32 layoutUnits) const;
-	UT_sint32         _tduR(UT_sint32 layoutUnits) const;
-
 	void _destroyFonts ();
 
 	virtual GR_Font* _findFont(const char* pszFontFamily,
@@ -668,37 +663,37 @@ class ABI_EXPORT GR_Graphics
 							   const char* pszFontSize) = 0;
 
 	// only called by GR_Painter
-	virtual void drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 y2) = 0;
+	virtual void drawLine(double x1, double y1, double x2, double y2) = 0;
 #if XAP_DONTUSE_XOR
 #else
-	virtual void xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 y2) = 0;
+	virtual void xorLine(double x1, double y1, double x2, double y2) = 0;
 #endif
 	virtual void invertRect(const UT_Rect* pRect) = 0;
 #if XAP_DONTUSE_XOR
 #else
-	void xorRect(UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h);
+	void xorRect(double x, double y, double w, double h);
 	void xorRect(const UT_Rect& r);
 #endif
 
 	virtual void fillRect(GR_Image *pImg, const UT_Rect &src, const UT_Rect & dest);
 	virtual void fillRect(const UT_RGBColor& c, const UT_Rect &r);
-	virtual void fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y,
-						  UT_sint32 w, UT_sint32 h) = 0;
+	virtual void fillRect(const UT_RGBColor& c, double x, double y,
+						  double w, double h) = 0;
 
-	virtual void clearArea(UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h) = 0;
-	virtual void drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest);
+	virtual void clearArea(double x, double y, double w, double h) = 0;
+	virtual void drawImage(GR_Image* pImg, double xDest, double yDest);
 	virtual void fillRect(GR_Color3D c, UT_Rect &r) = 0;
 	virtual void fillRect(GR_Color3D c,
-						  UT_sint32 x, UT_sint32 y,
-						  UT_sint32 w, UT_sint32 h) = 0;
+						  double x, double y,
+						  double w, double h) = 0;
 	virtual void polygon(UT_RGBColor& c, UT_Point *pts, UT_uint32 nPoints);
 	virtual void polyLine(UT_Point * pts, UT_uint32 nPoints) = 0;
-	virtual void drawGlyph(UT_uint32 glyph_idx, UT_sint32 xoff, UT_sint32 yoff) = 0;
+	virtual void drawGlyph(UT_uint32 glyph_idx, double xoff, double yoff) = 0;
 	virtual void drawChars(const UT_UCSChar* pChars,
 						   int iCharOffset,
 						   int iLength,
-						   UT_sint32 xoff,
-						   UT_sint32 yoff,
+						   double xoff,
+						   double yoff,
 						   int* pCharWidths = NULL) = 0;
 	virtual GR_Image *	  genImageFromRectangle(const UT_Rect & r) = 0;
 
@@ -740,7 +735,7 @@ class ABI_EXPORT GR_Graphics
 
  private:
 	GR_Caret *		 m_pCaret;
-    bool             _PtInPolygon(UT_Point * pts,UT_uint32 nPoints,UT_sint32 x,UT_sint32 y);
+    bool             _PtInPolygon(UT_Point * pts, UT_uint32 nPoints, double x, double y);
     bool             m_bIsPortrait;
 	bool             m_bSpawnedRedraw;
 	UT_Rect          m_PendingExposeArea;
@@ -753,8 +748,8 @@ class ABI_EXPORT GR_Graphics
 // These hold the previous x and Y offset calculated from the scrolling code
 // in Logical units. We need them to avoid off by 1 errors in scrolling.
 //
-	UT_sint32        m_iPrevYOffset;
-	UT_sint32        m_iPrevXOffset;
+	double           m_iPrevYOffset;
+	double           m_iPrevXOffset;
 	GR_Transform     m_Transform;
 
 	UT_GenericStringMap<GR_Font*> m_hashFontCache;

@@ -1894,7 +1894,7 @@ const UT_UCSChar * s_RTF_ListenerWriteDoc::_getFieldValue(void)
 	}
 	fl_BlockLayout* pBL = static_cast<fl_BlockLayout *>(pL);
 	bool bDirection;
-	UT_sint32 x, y, x2, y2, height;
+	double x, y, x2, y2, height;
 	fp_Run * pRun = pBL->findPointCoords(m_posDoc,false,x,y,x2,y2,height,bDirection);
 //
 // Check the run to make sure it is a field.

@@ -44,8 +44,8 @@ XAP_FontPreview::~XAP_FontPreview(void)
 }
 
 void XAP_FontPreview::_createFontPreviewFromGC(GR_Graphics * gc,
-											   UT_uint32 width,
-											   UT_uint32 height)
+											   double width,
+											   double height)
 {
 	UT_ASSERT(gc);
 	UT_DEBUGMSG(("SEVIOR!!!!!!!!!!! font priview created!!!!!\n"));
@@ -104,4 +104,3 @@ void XAP_FontPreview::draw()
   if (m_pFontPreview)
     m_pFontPreview->draw();
 }
-

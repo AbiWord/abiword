@@ -85,7 +85,7 @@ class PX_ChangeRecord_StruxChange;
 class fl_ColProps
 {
 public:
-	UT_sint32 m_iColWidth;
+	double m_iColWidth;
 };
 
 class fl_RowProps
@@ -99,7 +99,7 @@ public:
 	virtual ~fl_RowProps(void)
 	{
 	}
-	UT_sint32          m_iRowHeight;
+	double             m_iRowHeight;
 	FL_RowHeightType   m_iRowHeightType;
 };
 
@@ -173,20 +173,20 @@ public:
     void                        markForReformat(void) { m_bNeedsReformat = true;}
     bool                        needsReFormat(void) const { return m_bNeedsReformat;}
 
-	UT_sint32                getLeftOffset(void) const;
+	double                   getLeftOffset(void) const;
 	void                     setHeightChanged(fp_CellContainer * pCell);
     bool                     doSimpleChange(void);
-UT_sint32                    getRightOffset(void) const;
-	UT_sint32                getTopOffset(void) const;
-UT_sint32                    getBottomOffset(void) const;
+	double                   getRightOffset(void) const;
+	double                   getTopOffset(void) const;
+	double                   getBottomOffset(void) const;
 	bool                     isDirty(void) const
 		{ return m_bIsDirty;}
 	void                     setDirty(void);
 
-	UT_sint32                getLineThickness(void) const;
-	UT_sint32                getColSpacing(void) const;
-	UT_sint32                getRowSpacing(void) const;
-	UT_sint32                getLeftColPos(void) const
+	double                getLineThickness(void) const;
+	double                getColSpacing(void) const;
+	double                getRowSpacing(void) const;
+	double                getLeftColPos(void) const
 		{ return m_iLeftColPos;}
 	const UT_GenericVector<fl_ColProps*> * getVecColProps(void) const
 		{ return &m_vecColProps;}
@@ -214,13 +214,13 @@ protected:
 private:
 	bool                   m_bNeedsRebuild;
 	FL_TableJustification  m_iJustification;
-	UT_sint32              m_iLeftOffset;
+	double                 m_iLeftOffset;
 	double                 m_dLeftOffsetUserUnits;
-	UT_sint32              m_iRightOffset;
+	double                 m_iRightOffset;
 	double                 m_dRightOffsetUserUnits;
-	UT_sint32              m_iTopOffset;
+	double                 m_iTopOffset;
 	double                 m_dTopOffsetUserUnits;
-	UT_sint32              m_iBottomOffset;
+	double                 m_iBottomOffset;
 	double                 m_dBottomOffsetUserUnits;
 	
 	bool                   m_bIsHomogeneous;
@@ -232,15 +232,15 @@ private:
 	bool                   m_bRowsPositionedOnPage;
 	bool                   m_bIsDirty;
 	bool                   m_bDontImmediatelyLayout;
-	UT_sint32              m_iLineThickness;
-	UT_sint32              m_iColSpacing;
-	UT_sint32              m_iRowSpacing;
-	UT_sint32              m_iLeftColPos;
+	double                 m_iLineThickness;
+	double                 m_iColSpacing;
+	double                 m_iRowSpacing;
+	double                 m_iLeftColPos;
 	bool                   m_bRecursiveFormat;
 	UT_GenericVector<fl_ColProps *> m_vecColProps;
 	UT_GenericVector<fl_RowProps *> m_vecRowProps;
 	FL_RowHeightType       m_iRowHeightType;
-	UT_sint32              m_iRowHeight;
+	double                 m_iRowHeight;
 
 // table-background properties
 	PP_PropertyMap::Background	m_background;
@@ -303,10 +303,10 @@ public:
 	void				     __dump(FILE * fp) const;
 #endif
 
-	UT_sint32                getLeftOffset(void) const;
-UT_sint32                    getRightOffset(void) const;
-	UT_sint32                getTopOffset(void) const;
-UT_sint32                    getBottomOffset(void) const;
+	double                   getLeftOffset(void) const;
+	double                   getRightOffset(void) const;
+	double                   getTopOffset(void) const;
+	double                   getBottomOffset(void) const;
 	UT_sint32                getNumNestedTables(void) const;
 	void                     incNumNestedTables(void);
 	void                     decNumNestedTables(void);
@@ -318,22 +318,22 @@ UT_sint32                    getBottomOffset(void) const;
 		{ return m_iTopAttach;}
 	UT_sint32                getBottomAttach(void) const
 		{ return m_iBottomAttach;}
-	UT_sint32                getCellHeight(void) const
+	double                   getCellHeight(void) const
 		{ return m_iCellHeight;}
-	UT_sint32                getCellWidth(void) const
+	double                   getCellWidth(void) const
 		{ return m_iCellWidth;}
 protected:
 	virtual void		     _lookupProperties(const PP_AttrProp* pAP);
 	virtual void             _purgeLayout(void);
 private:
 	bool                   m_bNeedsRebuild;
-	UT_sint32              m_iLeftOffset;
+	double                 m_iLeftOffset;
 	double                 m_dLeftOffsetUserUnits;
-	UT_sint32              m_iRightOffset;
+	double                 m_iRightOffset;
 	double                 m_dRightOffsetUserUnits;
-	UT_sint32              m_iTopOffset;
+	double                 m_iTopOffset;
 	double                 m_dTopOffsetUserUnits;
-	UT_sint32              m_iBottomOffset;
+	double                 m_iBottomOffset;
 	double                 m_dBottomOffsetUserUnits;
 	
 	UT_sint32              m_iLeftAttach;
@@ -342,8 +342,8 @@ private:
 	UT_sint32              m_iBottomAttach;
 	
 	bool                   m_bCellPositionedOnPage;
-	UT_sint32              m_iCellHeight;
-	UT_sint32              m_iCellWidth;
+	double                 m_iCellWidth;
+	double                 m_iCellHeight;
 
 // cell-background properties
 	PP_PropertyMap::Background	m_background;

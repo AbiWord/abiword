@@ -68,32 +68,32 @@ public:
 		);
 	~fp_Page();
 
-	UT_sint32			getWidth(void) const;
-	const fp_PageSize&	getPageSize() const;
-	UT_sint32			getHeight(void) const;
-	UT_sint32			getBottom(void) const;
+	double				getWidth(void) const;
+	const fp_PageSize&		getPageSize() const;
+	double				getHeight(void) const;
+	double				getBottom(void) const;
 	fp_Page*			getNext(void) const;
 	fp_Page*			getPrev(void) const;
 	void				setNext(fp_Page*);
 	void				setPrev(fp_Page*);
-	void                markAllDirty(void) {m_bNeedsRedraw = true;}
-	UT_sint32			getColumnGap(void) const;
-	FL_DocLayout*		getDocLayout() const;
+	void				markAllDirty(void) {m_bNeedsRedraw = true;}
+	double				getColumnGap(void) const;
+	FL_DocLayout*			getDocLayout() const;
 	void				setView(FV_View*);
     bool                isOnScreen(void);
 
 	inline fl_DocSectionLayout* getOwningSection(void) const { return m_pOwner; }
 
-	PT_DocPosition		getFirstLastPos(bool bFirst) const;
-	void				mapXYToPosition(bool bNotFrames,UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL,bool & isTOC, bool bUseHdrFtr = false, fl_HdrFtrShadow ** pShadow = NULL);
-	void				mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool & isTOC,bool bUseHdrFtr = false, fl_HdrFtrShadow ** pShadow = NULL);
-	void				getScreenOffsets(fp_Container*, UT_sint32& xoff, UT_sint32& yoff) const;
+	PT_DocPosition			getFirstLastPos(bool bFirst) const;
+	void				mapXYToPosition(bool bNotFrames,double xPos, double yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL,bool & isTOC, bool bUseHdrFtr = false, fl_HdrFtrShadow ** pShadow = NULL);
+	void				mapXYToPosition(double xPos, double yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool & isTOC,bool bUseHdrFtr = false, fl_HdrFtrShadow ** pShadow = NULL);
+	void				getScreenOffsets(fp_Container*, double& xoff, double& yoff) const;
 
 	void				draw(dg_DrawArgs*, bool bAlaysUseWhiteBackground=false);
 	bool				needsRedraw(void) const;
-    UT_sint32           getFilledHeight(fp_Container * prevContainer) const;
-	UT_sint32           getAvailableHeight(void) const;
-	UT_sint32           getAvailableHeightForColumn(const fp_Column * pColumn) const;
+	double              getFilledHeight(fp_Container * prevContainer) const;
+	double              getAvailableHeight(void) const;
+	double              getAvailableHeightForColumn(const fp_Column * pColumn) const;
 	fp_TableContainer * getContainingTable(PT_DocPosition pos);
 
 	// Leader (e.g. column) functions.
@@ -120,7 +120,7 @@ public:
 	void				removeFootnoteContainer(fp_FootnoteContainer * pFC);
 	UT_sint32           findFootnoteContainer(fp_FootnoteContainer * pFC);
 	void                clearScreenFootnotes(void);
-	UT_sint32           getFootnoteHeight(void);
+	double              getFootnoteHeight(void);
 
 	// Frame functions.
 	void 				frameHeightChanged(void);
@@ -131,8 +131,8 @@ public:
 	UT_sint32           findFrameContainer(fp_FrameContainer * pFC);
 	void                clearScreenFrames(void);
 	void                markDirtyOverlappingRuns(fp_FrameContainer * pFC);
-    void                expandDamageRect(UT_sint32 x, UT_sint32 y, 
-										 UT_sint32 width, UT_sint32 height);
+    void                expandDamageRect(double x, double y, 
+										 double width, double height);
 	void                redrawDamagedFrames(dg_DrawArgs* pDA);
 	bool                overlapsWrappedFrame(fp_Line * pLine);
 	bool                overlapsWrappedFrame(UT_Rect & rec);

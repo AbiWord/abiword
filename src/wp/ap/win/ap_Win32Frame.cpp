@@ -175,7 +175,7 @@ void AP_Win32Frame::_replaceView(GR_Graphics * pG, FL_DocLayout *pDocLayout,
 	);
 }
 
-void AP_Win32Frame::_scrollFuncY(void* pData, UT_sint32 yoff, UT_sint32 ylimit)
+void AP_Win32Frame::_scrollFuncY(void* pData, double yoff, double ylimit)
 {
 	// this is a static callback function and doesn't have a 'this' pointer.
 	AP_Win32Frame * pWin32Frame = static_cast<AP_Win32Frame *>(pData);
@@ -184,7 +184,7 @@ void AP_Win32Frame::_scrollFuncY(void* pData, UT_sint32 yoff, UT_sint32 ylimit)
 	pWin32Frame->getAPWin32FrameImpl()->_scrollFuncY(yoff, ylimit);
 }
 
-void AP_Win32Frame::_scrollFuncX(void* pData, UT_sint32 xoff, UT_sint32 xlimit)
+void AP_Win32Frame::_scrollFuncX(void* pData, double xoff, double xlimit)
 {
 	// this is a static callback function and doesn't have a 'this' pointer.
 	AP_Win32Frame * pWin32Frame = static_cast<AP_Win32Frame *>(pData);

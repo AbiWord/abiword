@@ -617,7 +617,7 @@ void XAP_Frame::setZoomPercentage(UT_uint32 iZoom)
 	{
 		pScheme->setValue(XAP_PREF_KEY_ZoomType,sZoom.c_str());
 	}
-	UT_DEBUGMSG(("zoom is set to %s \n",sZoom.c_str()));
+	xxx_UT_DEBUGMSG(("zoom is set to %s \n",sZoom.c_str()));
 	pScheme->setValue(XAP_PREF_KEY_ZoomPercentage,sZoom.c_str());
 }
 

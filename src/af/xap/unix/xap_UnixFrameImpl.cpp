@@ -381,8 +381,8 @@ static void s_gtkMenuPositionFunc(GtkMenu * /* menu */, gint * x, gint * y, gboo
 {
 	struct UT_Point * p = static_cast<struct UT_Point *>(user_data);
 
-	*x = p->x;
-	*y = p->y;
+	*x = (gint)p->x;
+	*y = (gint)p->y;
 	*push_in = TRUE ;
 }
 

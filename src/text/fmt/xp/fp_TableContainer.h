@@ -71,9 +71,9 @@ class fp_TableRowColumn
 public:
 	fp_TableRowColumn(void);
 	virtual ~fp_TableRowColumn(void);
-	UT_sint32 requisition;
-	UT_sint32 allocation;
-	UT_sint32 spacing;
+	double requisition;
+	double allocation;
+	double spacing;
 	bool need_expand;
 	bool need_shrink;
 	bool expand;
@@ -120,32 +120,32 @@ public:
 	void                draw(fp_Line * pLine);
 	fp_TableContainer * getBrokenTable(fp_Container * pCon);
 	fp_VerticalContainer * getColumn(fp_Container *pCon);
-	UT_sint32           tweakBrokenTable(fp_TableContainer * pBroke);
+	double              tweakBrokenTable(fp_TableContainer * pBroke);
 	virtual void		draw(dg_DrawArgs*);
 	virtual void		draw(GR_Graphics*) {}
 	virtual void        setContainer(fp_Container * pContainer);
-	virtual void        setWidth(UT_sint32 iWidth);
-	virtual void        setHeight(UT_sint32 iHeight);
+	virtual void        setWidth(double iWidth);
+	virtual void        setHeight(double iHeight);
 	        void        _drawBoundaries(dg_DrawArgs* pDA, fp_TableContainer *pBroke);
 	virtual bool        isVBreakable(void);
 	virtual bool        isHBreakable(void) {return false;}
-	virtual UT_sint32   wantVBreakAt(UT_sint32);
-	virtual UT_sint32   wantHBreakAt(UT_sint32) {return 0;}
-	virtual fp_ContainerObject * VBreakAt(UT_sint32);
-	virtual fp_ContainerObject * HBreakAt(UT_sint32) {return NULL;}
+	virtual double		wantVBreakAt(double);
+	virtual double		wantHBreakAt(double) {return 0;}
+	virtual fp_ContainerObject * VBreakAt(double);
+	virtual fp_ContainerObject * HBreakAt(double) {return NULL;}
 	void                recalcMaxWidth(bool bDontClearIfNeeded = false) {}
-	virtual void        setAssignedScreenHeight(UT_sint32) {}
+	virtual void        setAssignedScreenHeight(double) {}
 	virtual fp_Container * getNextContainerInSection(void) const;
 	virtual fp_Container * getPrevContainerInSection(void) const;
 	fp_TableContainer * getTopmostTable(void) const;
-	UT_sint32           getCellX(fp_Line * pLine) const; 
-	UT_sint32           getCellY(fp_Line * pLine) const;
-	UT_sint32           getSpannedHeight(void);
+	double				getCellX(fp_Line * pLine) const; 
+	double				getCellY(fp_Line * pLine) const;
+	double				getSpannedHeight(void);
 	void                setLineMarkers(void);
 	bool                containsFootnoteReference(void);
 	void                deleteBrokenTables(bool bClearFirst=true);
 	bool                getFootnoteContainers(UT_GenericVector<fp_FootnoteContainer*>* pvecFoots);
-	void                getLeftTopOffsets(UT_sint32 & xoff, UT_sint32 & yoff);
+	void                getLeftTopOffsets(double & xoff, double & yoff);
    UT_sint32           getLeftAttach(void) const
 		{ return m_iLeftAttach;}
     UT_sint32           getRightAttach(void) const
@@ -163,21 +163,21 @@ public:
     void                setBottomAttach(UT_sint32 i)
 		{ m_iBottomAttach = i;}
 	void                setToAllocation(void);
-	UT_sint32           getLeftPad(void) const
+	double				getLeftPad(void) const
 		{ return m_iLeftPad;}
-	UT_sint32           getRightPad(void) const
+	double				getRightPad(void) const
 		{ return m_iRightPad;}
-	UT_sint32           getTopPad(void) const
+	double				getTopPad(void) const
 		{ return m_iTopPad;}
-	UT_sint32           getBotPad(void) const
+	double				getBotPad(void) const
 		{ return m_iBotPad;}
-	void                setLeftPad(UT_sint32 i)
+	void                setLeftPad(double i)
 		{ m_iLeftPad = i;}
-	void                setRightPad(UT_sint32 i)
+	void                setRightPad(double i)
 		{ m_iRightPad = i;}
-	void                setTopPad(UT_sint32 i)
+	void                setTopPad(double i)
 		{ m_iTopPad = i;}
-	void                setBotPad(UT_sint32 i)
+	void                setBotPad(double i)
 		{ m_iBotPad = i;}
 		
 	PP_PropertyMap::Background getBackground () const;
@@ -219,13 +219,13 @@ public:
 		{ m_bXfill = b;}
 	void                setYfill(bool b)
 		{ m_bYfill = b;}
-	UT_sint32           getStartY(void) const
+	double           	getStartY(void) const
 		{ return m_iTopY;}
-	UT_sint32           getStopY(void) const
+	double           	getStopY(void) const
 		{ return m_iBotY;}
-	UT_sint32           getLeftPos(void) const
+	double           	getLeftPos(void) const
 		{  return m_iLeft; }
-	UT_sint32           getRightPos(void) const
+	double           	getRightPos(void) const
 		{  return m_iRight; }
 	void                markAsDirty(void) { m_bDirty = true;}
 	bool                isDirty(void) const
@@ -241,7 +241,7 @@ private:
 		
 	void                _clear(fp_TableContainer * pBroke);
 	void				_drawLine(const PP_PropertyMap::Line & style,
-								  UT_sint32 left, UT_sint32 top, UT_sint32 right, UT_sint32 bot,GR_Graphics * pG);
+								  double left, double top, double right, double bot, GR_Graphics * pG);
 	void				_getBrokenRect(fp_TableContainer * pBroke, fp_Page* &pPage, UT_Rect &bRec, GR_Graphics * pG);
 		
 //
@@ -271,10 +271,10 @@ private:
 //
 // Padding left,right, top and bottom
 //
-	UT_sint32           m_iLeftPad;
-	UT_sint32           m_iRightPad;
-	UT_sint32           m_iTopPad;
-	UT_sint32           m_iBotPad;
+	double           	m_iLeftPad;
+	double           	m_iRightPad;
+	double           	m_iTopPad;
+	double           	m_iBotPad;
 //
 // Needed since a cell can span multiple pages.
 //
@@ -300,10 +300,10 @@ private:
 
 // Coordinates of the cell used for drawing lines around it.
 
-	UT_sint32           m_iLeft;
-	UT_sint32           m_iRight;
-	UT_sint32           m_iTopY;
-	UT_sint32           m_iBotY;
+	double				m_iLeft;
+	double				m_iRight;
+	double				m_iTopY;
+	double				m_iBotY;
 	bool                m_bDrawLeft;
 	bool                m_bDrawTop;
 	bool                m_bDrawBot;
@@ -338,21 +338,21 @@ public:
 
 	void                sizeRequest(fp_Requisition * pRequest);
 	void                sizeAllocate(fp_Allocation * pAllocate);
-    virtual void        mapXYToPosition(UT_sint32 x, UT_sint32 y, 
+    virtual void        mapXYToPosition(double x, double y, 
 										PT_DocPosition& pos,
 										bool& bBOL, bool& bEOL, bool &isTOC);
 	virtual fp_Page *   getPage(void);
 	fp_Line *           getFirstLineInColumn(fp_Column * pCol);
 	fp_Line *           getLastLineInColumn(fp_Column * pCol);
 	void				layout(void);
-	virtual void        setY(UT_sint32 iY);
-	virtual UT_sint32   getHeight(void);
-	virtual void        setHeight(UT_sint32 iHeight);
+	virtual void        setY(double iY);
+	virtual double      getHeight(void);
+	virtual void        setHeight(double iHeight);
 	virtual void        setContainer(fp_Container * pContainer);
 	virtual void		draw(dg_DrawArgs*);
 	virtual void		draw(GR_Graphics*) {}
-	virtual UT_sint32   getMarginBefore(void) const;
-	virtual UT_sint32   getMarginAfter(void) const;
+	virtual double      getMarginBefore(void) const;
+	virtual double      getMarginAfter(void) const;
 	fp_Column *         getBrokenColumn(void);
 	void                drawLines();
 	bool                containsFootnoteReference(void);
@@ -361,37 +361,37 @@ public:
     virtual void        clearScreen(void);
 	virtual bool        isVBreakable(void);
 	virtual bool        isHBreakable(void) {return false;}
-	virtual UT_sint32   wantVBreakAt(UT_sint32);
-	virtual UT_sint32   wantHBreakAt(UT_sint32) {return 0;}
-	virtual fp_ContainerObject * VBreakAt(UT_sint32);
-	void                breakCellsAt(UT_sint32 vpos);
-	virtual fp_ContainerObject * HBreakAt(UT_sint32) {return NULL;}
+	virtual double      wantVBreakAt(double);
+	virtual double      wantHBreakAt(double) {return 0;}
+	virtual fp_ContainerObject * VBreakAt(double);
+	void                breakCellsAt(double vpos);
+	virtual fp_ContainerObject * HBreakAt(double) {return NULL;}
 	UT_sint32           getBrokenNumber(void);
 	void                setToAllocation(void);
 	void                tableAttach(fp_CellContainer * pCell);
 	void                setHomogeneous (bool bIsHomogeneous);
-	void                setColSpacings (UT_sint32  spacing);
-	void                setRowSpacings ( UT_sint32 spacing);
-	void                setColSpacing(UT_sint32 column,UT_sint32 spacing);
-	void                setRowSpacing (UT_sint32 row, UT_sint32  spacing);
+	void                setColSpacings (double spacing);
+	void                setRowSpacings (double spacing);
+	void                setColSpacing(UT_sint32 column, double spacing);
+	void                setRowSpacing (UT_sint32 row, double spacing);
 	void                resize(UT_sint32 n_rows, UT_sint32 n_cols);
-	void                setBorderWidth(UT_sint32 i);
-	UT_sint32           getBorderWidth(void) const
+	void                setBorderWidth(double i);
+	double              getBorderWidth(void) const
 		{ return m_iBorderWidth;}
-	void                setLeftOffset(UT_sint32 iLeftOff)
+	void                setLeftOffset(double iLeftOff)
 		{ m_iLeftOffset = iLeftOff;}
-	void                setRightOffset(UT_sint32 iRightOff)
+	void                setRightOffset(double iRightOff)
 		{ m_iRightOffset = iRightOff;}
-	void                setTopOffset(UT_sint32 iTopOff)
+	void                setTopOffset(double iTopOff)
 		{ m_iTopOffset = iTopOff;}
-	void                setBottomOffset(UT_sint32 iBotOff)
+	void                setBottomOffset(double iBotOff)
 		{ m_iBottomOffset = iBotOff;}
-	void                setLineThickness(UT_sint32 iLineThickness)
+	void                setLineThickness(double iLineThickness)
 		{ m_iLineThickness = iLineThickness;}
-	UT_sint32           getLineThickness(void)
+	double              getLineThickness(void)
 		{ return m_iLineThickness;}
 	void                queueResize(void);
-	UT_sint32           getYOfRow(UT_sint32 row);
+	double              getYOfRow(UT_sint32 row);
 	fp_CellContainer *  getCellAtRowColumn(UT_sint32 row, UT_sint32 column);
 	fp_CellContainer *  getCellAtRowColumnLinear(UT_sint32 row, UT_sint32 column);
 	virtual fp_Container * getNextContainerInSection(void) const;
@@ -400,8 +400,8 @@ public:
 		{ return m_pMasterTable; }
 	bool                isThisBroken(void) const
 		{ return m_bIsBroken;}
-	void                setYBreakHere(UT_sint32 iBreakHere);
-	void                setYBottom(UT_sint32 iBotContainer);
+	void                setYBreakHere(double iBreakHere);
+	void                setYBottom(double iBotContainer);
 	bool                isInBrokenTable(fp_CellContainer * pCell, 
 										fp_Container * pCon);
 
@@ -409,12 +409,12 @@ public:
 // This is the smallest Y value of the Table allowed in this 
 // broken Table.
 //
-	UT_sint32           getYBreak(void) const
+	double           getYBreak(void) const
 		{return m_iYBreakHere;}
 //
 // This is the largest Y value of the Table allowed in this broken table
 //
-	UT_sint32           getYBottom(void) const
+	double              getYBottom(void) const
 		{return m_iYBottom;}
 	fp_TableContainer * getFirstBrokenTable(void) const;
 	fp_TableContainer * getLastBrokenTable(void) const;
@@ -430,7 +430,7 @@ public:
 		{ m_iBrokenBottom = iBot;}
 	UT_sint32           getNumRows(void) const;
 	UT_sint32           getNumCols(void) const;
-	UT_sint32           getRowHeight(UT_sint32 iRow, UT_sint32 iMeasHeight);
+	double              getRowHeight(UT_sint32 iRow, double iMeasHeight);
 	void                setRedrawLines(void)
 		{ m_bRedrawLines = true;}
 	bool                doRedrawLines(void) const
@@ -442,15 +442,15 @@ public:
 		{
 	      m_iRowHeightType = iType;
 		}		
-	void setRowHeight(UT_sint32 iHeight)
+	void setRowHeight(double iHeight)
 		{
 	      m_iRowHeight = iHeight;
 		}		
-	void setLastWantedVBreak(UT_sint32 iBreakAt)
+	void setLastWantedVBreak(double iBreakAt)
 	{
 		m_iLastWantedVBreak = iBreakAt;
 	}
-	UT_sint32 getLastWantedVBreak(void) const
+	double getLastWantedVBreak(void) const
 	{
 		return m_iLastWantedVBreak;
 	}
@@ -474,7 +474,7 @@ private:
 
 	UT_sint32               m_iRows;
 	UT_sint32               m_iCols;
-	UT_sint32               m_iBorderWidth;
+	double                  m_iBorderWidth;
 	bool                    m_bIsHomogeneous;
 
 	UT_GenericVector<fp_TableRowColumn *> m_vecRows;
@@ -485,8 +485,8 @@ private:
 	fp_Allocation           m_MyAllocation;
 	fp_Requisition          m_MyRequest;
 
-	UT_sint32               m_iRowSpacing;
-	UT_sint32               m_iColSpacing;
+	double                  m_iRowSpacing;
+	double                  m_iColSpacing;
 //
 // Variables for Tables broken across Vertical Containers.
 //
@@ -494,29 +494,29 @@ private:
 	fp_TableContainer *     m_pLastBrokenTable;
 	bool                    m_bIsBroken;
 	fp_TableContainer *     m_pMasterTable;
-	UT_sint32               m_iYBreakHere;
-	UT_sint32               m_iYBottom;
+	double                  m_iYBreakHere;
+	double                  m_iYBottom;
 	UT_sint32               m_iBrokenTop;
 	UT_sint32               m_iBrokenBottom;
 	bool                    m_bRedrawLines;
 //
 // Global Table properties
 //
-	UT_sint32               m_iLeftOffset;
-	UT_sint32               m_iRightOffset;
-	UT_sint32               m_iTopOffset;
-	UT_sint32               m_iBottomOffset;
-	UT_sint32               m_iLineThickness;
+	double                  m_iLeftOffset;
+	double                  m_iRightOffset;
+	double                  m_iTopOffset;
+	double                  m_iBottomOffset;
+	double                  m_iLineThickness;
 
 // Global row height type
-	FL_RowHeightType    m_iRowHeightType;
+	FL_RowHeightType        m_iRowHeightType;
 
 // Global row height
-	UT_sint32           m_iRowHeight;
+	double                  m_iRowHeight;
 
 // Last requested vbreak height
 
-	UT_sint32           m_iLastWantedVBreak;
+	double                  m_iLastWantedVBreak;
 
 // Cache the first and last cells of a broken table
 

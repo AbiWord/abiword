@@ -404,9 +404,9 @@ double UT_convertToPoints(const char* s)
 	return result;
 }
 
-UT_sint32 UT_convertToLogicalUnits(const char* s)
+double UT_convertToLogicalUnits(const char* s)
 {
-	return static_cast<UT_sint32>(UT_convertToInches(s) * UT_LAYOUT_RESOLUTION);
+	return UT_convertToInches(s) * UT_LAYOUT_RESOLUTION;
 }
 
 UT_sint32 UT_convertSizeToLayoutUnits(double Value, UT_Dimension dim)

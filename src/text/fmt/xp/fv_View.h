@@ -161,9 +161,10 @@ public:
 
 	virtual void focusChange(AV_Focus focus);
 
-	virtual void	setXScrollOffset(UT_sint32);
-	virtual void	setYScrollOffset(UT_sint32);
-	virtual void	cmdScroll(AV_ScrollCmd cmd, UT_uint32 iPos = 0);
+	virtual void	setXScrollOffset(double);
+	virtual void	setYScrollOffset(double);
+	
+	virtual void	cmdScroll(AV_ScrollCmd cmd, double iPos = 0);
 
 	virtual void	cmdHyperlinkJump(UT_sint32 xPos, UT_sint32 yPos);
 	void	        cmdHyperlinkJump(PT_DocPosition pos);
@@ -189,7 +190,7 @@ public:
 	fp_Run *        getHyperLinkRun(PT_DocPosition pos);
 	UT_Error		cmdDeleteHyperlink();
 	UT_Error		cmdInsertTOC(void);
-	UT_Error		cmdHyperlinkStatusBar(UT_sint32 xPos, UT_sint32 yPos);
+	UT_Error		cmdHyperlinkStatusBar(double xPos, double yPos);
 
 	UT_Error		cmdInsertGraphic(FG_Graphic*);
 	UT_Error        cmdInsertGraphicAtStrux(FG_Graphic* pFG, PT_DocPosition iPos, PTStruxType iStruxType);
@@ -213,8 +214,8 @@ public:
         virtual void    setCursorWait(void);
 	virtual void    clearCursorWait(void);
 	virtual void    setCursorToContext(void);
-	virtual EV_EditMouseContext getMouseContext(UT_sint32 xPos, UT_sint32 yPos);
-	virtual EV_EditMouseContext getInsertionPointContext(UT_sint32 * pxPos, UT_sint32 * pyPos);
+	virtual EV_EditMouseContext getMouseContext(double xPos, double yPos);
+	virtual EV_EditMouseContext getInsertionPointContext(double * pxPos, double * pyPos);
 	virtual void        updateLayout(void);
 	virtual bool		isSelectionEmpty(void) const;
 	virtual void		cmdUnselectSelection(void);
@@ -238,11 +239,11 @@ public:
 
 	// TODO some of these functions should move into protected
 
-	void	getPageScreenOffsets(const fp_Page* pPage, UT_sint32& xoff, UT_sint32& yoff);
-	void	getPageYOffset(fp_Page* pPage, UT_sint32& yoff)const;
-	virtual UT_sint32 getPageViewLeftMargin(void) const;
-	virtual UT_sint32 getPageViewTopMargin(void) const;
-	virtual UT_sint32 getPageViewSep(void) const;
+	void	getPageScreenOffsets(const fp_Page* pPage, double& xoff, double& yoff);
+	void	getPageYOffset(fp_Page* pPage, double& yoff)const;
+	virtual double getPageViewLeftMargin(void) const;
+	virtual double getPageViewTopMargin(void) const;
+	virtual double getPageViewSep(void) const;
 
 	bool	setSectionFormat(const XML_Char * properties[]);
 	bool	getSectionFormat(const XML_Char *** properties);
@@ -312,9 +313,9 @@ public:
 	void	insertSymbol(UT_UCSChar c, XML_Char * symfont);
 
 	// ----------------------
-	bool			isLeftMargin(UT_sint32 xPos, UT_sint32 yPos);
-	void			cmdSelect(UT_sint32 xPos, UT_sint32 yPos, FV_DocPos dpBeg, FV_DocPos dpEnd);
-	void			cmdSelectTOC(UT_sint32 xPos, UT_sint32 yPos);
+	bool			isLeftMargin(double xPos, double yPos);
+	void			cmdSelect(double xPos, double yPos, FV_DocPos dpBeg, FV_DocPos dpEnd);
+	void			cmdSelectTOC(double xPos, double yPos);
 	bool            isTOCSelected(void);
 	bool            setTOCProps(PT_DocPosition pos, const char * szProps);
 
@@ -327,15 +328,15 @@ public:
 
 	UT_UCSChar *	getTextBetweenPos(PT_DocPosition pos1, PT_DocPosition pos2);
 	inline PT_DocPosition  getInsPoint () const { return m_iInsPoint; }
-	void			warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos, bool bClick);
+	void			warpInsPtToXY(double xPos, double yPos, bool bClick);
 	void			moveInsPtTo(FV_DocPos dp, bool bClearSelection = true);
 	void			moveInsPtTo(PT_DocPosition dp);
 	void			warpInsPtNextPrevPage(bool bNext);
 	void			warpInsPtNextPrevLine(bool bNext);
 	void            warpInsPtNextPrevScreen(bool bNext);
 	void			extSelHorizontal(bool bForward, UT_uint32 count);
-	void			extSelToXY(UT_sint32 xPos, UT_sint32 yPos, bool bDrag);
-	void			extSelToXYword(UT_sint32 xPos, UT_sint32 yPos, bool bDrag);
+	void			extSelToXY(double xPos, double yPos, bool bDrag);
+	void			extSelToXYword(double xPos, double yPos, bool bDrag);
 	void			extSelTo(FV_DocPos dp);
 
 	SpellChecker * getDictForSelection ();
@@ -347,7 +348,7 @@ public:
 
 	void endDragSelection(UT_sint32 xPos, UT_sint32 yPos);
 
-	PT_DocPosition  getDocPositionFromXY(UT_sint32 xpos, UT_sint32 ypos, bool bNotFrames = false);
+	PT_DocPosition  getDocPositionFromXY(double xpos, double ypos, bool bNotFrames = false);
 	PT_DocPosition  getDocPositionFromLastXY(void);
 
 	fl_BlockLayout* getBlockAtPosition(PT_DocPosition pos) const {return _findBlockAtPosition(pos);};
@@ -384,7 +385,7 @@ public:
 // ----------------------
 
 	bool			isPosSelected(PT_DocPosition pos) const;
-	bool			isXYSelected(UT_sint32 xPos, UT_sint32 yPos) const;
+	bool			isXYSelected(double xPos, double yPos) const;
 	FV_SelectionMode getSelectionMode(void) const;
 	FV_SelectionMode getPrevSelectionMode(void) const;
 	PD_DocumentRange * getNthSelection(UT_sint32 i);
@@ -632,7 +633,7 @@ public:
 	//
 	void				setImageSelRect(UT_Rect r);
 	UT_Rect				getImageSelRect();
-	UT_sint32			getImageSelInfo();
+	double				getImageSelInfo();
 	GR_Graphics::Cursor getImageSelCursor();
 	void				setCurImageSel(UT_Rect r);
 	UT_Rect				getCurImageSel();
@@ -640,15 +641,15 @@ public:
 	void				setCurImageSelCache(GR_Image* cache);
 	GR_Image* 			getCurImageSelCache();
 #endif
-	bool				isOverImageResizeBox(GR_Graphics::Cursor &cur, UT_uint32 xPos, UT_uint32 yPos);
+	bool				isOverImageResizeBox(GR_Graphics::Cursor &cur, double xPos, double yPos);
 	void				startImageResizing(UT_sint32 xPos, UT_sint32 yPos);
 	void				stopImageResizing();
 	bool				isResizingImage();
 	void				getResizeOrigin(UT_sint32 &xOrigin, UT_sint32 &yOrigin);
 	bool				isDraggingImage();
-	void				startImageDrag(fp_Run * pRun, UT_sint32 xPos, UT_sint32 yPos);
-	void				drawDraggedImage(UT_sint32 xPos, UT_sint32 yPos);
-	void				stopImageDrag(UT_sint32 xPos, UT_sint32 yPos);
+	void				startImageDrag(fp_Run * pRun, double xPos, double yPos);
+	void				drawDraggedImage(double xPos, double yPos);
+	void				stopImageDrag(double xPos, double yPos);
 
 	bool                isImageSelected(void);
 
@@ -680,7 +681,7 @@ protected:
 	void				_restorePieceTableState(void);
 	
 
-	void				_draw(UT_sint32, UT_sint32, UT_sint32, UT_sint32, bool bDirtyRunsOnly, bool bClip=false);
+	void				_draw(double, double, double, double, bool bDirtyRunsOnly, bool bClip=false);
 
 	void				_drawBetweenPositions(PT_DocPosition left, PT_DocPosition right);
 	bool				_clearBetweenPositions(PT_DocPosition left, PT_DocPosition right, bool bFullLineHeightRect);
@@ -698,22 +699,22 @@ protected:
 	PT_DocPosition		_getDocPos(FV_DocPos dp, bool bKeepLooking=true);
 	void				_findPositionCoords(PT_DocPosition pos,
 											bool b,
-											UT_sint32& x,
-											UT_sint32& y,
-											UT_sint32& x2, //these are needed for BiDi split carret
-											UT_sint32& y2,
+											double& x,
+											double& y,
+											double& x2, //these are needed for BiDi split carret
+											double& y2,
 
-											UT_uint32& height,
+											double& height,
 											bool& bDirection,
 											fl_BlockLayout** ppBlock,
 											fp_Run** ppRun)const;
 
 	fl_BlockLayout* 	_findBlockAtPosition(PT_DocPosition pos) const;
 
-	fp_Page*			_getPageForXY(UT_sint32 xPos,
-									  UT_sint32 yPos,
-									  UT_sint32& xClick,
-									  UT_sint32& yClick) const;
+	fp_Page*			_getPageForXY(double xPos,
+									  double yPos,
+									  double& xClick,
+									  double& yClick) const;
 	bool                _insertField(const char* szName, 
 									 const XML_Char ** extra_attrs = NULL, 
 									 const XML_Char ** extra_props = NULL);
@@ -759,17 +760,17 @@ protected:
 	
 private:
 	PT_DocPosition		m_iInsPoint;
-	UT_sint32			m_xPoint;
-	UT_sint32			m_yPoint;
+	double				m_xPoint;
+	double				m_yPoint;
 	//the followingare BiDi specific, but need to be in place because of the
 	//change to the signature of findPointCoords
-	UT_sint32			m_xPoint2;
-	UT_sint32			m_yPoint2;
+	double				m_xPoint2;
+	double				m_yPoint2;
 	bool			    m_bPointDirection;
 	bool				m_bDefaultDirectionRtl;
 	bool				m_bUseHebrewContextGlyphs;
-	UT_uint32			m_iPointHeight;
-	UT_sint32			m_xPointSticky; 	// used only for _moveInsPtNextPrevLine()
+	double				m_iPointHeight;
+	double				m_xPointSticky; 	// used only for _moveInsPtNextPrevLine()
 
 	bool				m_bPointVisible;
 	bool				m_bPointEOL;
@@ -780,8 +781,8 @@ private:
 
 	// autoscroll stuff
 	UT_Timer *			m_pAutoScrollTimer;
-	UT_sint32			m_xLastMouse;
-	UT_sint32			m_yLastMouse;
+	double				m_xLastMouse;
+	double				m_yLastMouse;
 
 	bool				m_bCursorIsOn;
 	bool				m_bEraseSaysStopBlinking;
@@ -827,8 +828,8 @@ private:
 	//_saveAndNotifyPieceTableChange();
 	UT_uint32			m_iPieceTableState;
 
-	UT_sint32           m_iMouseX;
-	UT_sint32           m_iMouseY;
+	double              m_iMouseX;
+	double              m_iMouseY;
 
 	UT_uint32           m_iViewRevision;
 
@@ -849,8 +850,8 @@ private:
 	bool				m_bIsDraggingImage;
 	fp_Run *			m_pDraggedImageRun;
 	UT_Rect				m_dragImageRect;
-	UT_sint32			m_ixDragOrigin;
-	UT_sint32			m_iyDragOrigin;
+	double				m_ixDragOrigin;
+	double				m_iyDragOrigin;
 	
 	// default color values
 	UT_RGBColor			m_colorShowPara;

@@ -131,23 +131,24 @@ void GR_Caret::s_enable(UT_Worker * _w)
 	c->m_enabler->stop();
 }
 
-void GR_Caret::setWindowSize(UT_uint32 width, UT_uint32 height)
+void GR_Caret::setWindowSize(double width, double height)
 {
 	m_iWindowWidth = width; m_iWindowHeight = height;
 
-	if(m_xPoint < m_pG->tlu(3)+1 || m_yPoint < 0 || m_xPoint > static_cast<UT_sint32>(m_iWindowWidth) || m_yPoint > static_cast<UT_sint32>(m_iWindowHeight))
+	// FIXME: all the +1 mess is horrible and needs to go!!!! - MARCM
+	if(m_xPoint < m_pG->tlu(3)+1 || m_yPoint < 0 || m_xPoint > m_iWindowWidth || m_yPoint > m_iWindowHeight)
 		m_bCaret1OnScreen = false;
 	else
 		m_bCaret1OnScreen = true;
 	
-	if(m_xPoint2 < m_pG->tlu(3)+1 || m_yPoint2 < 0 || m_xPoint2 > static_cast<UT_sint32>(m_iWindowWidth) || m_yPoint2 > static_cast<UT_sint32>(m_iWindowHeight))
+	if(m_xPoint2 < m_pG->tlu(3)+1 || m_yPoint2 < 0 || m_xPoint2 > m_iWindowWidth || m_yPoint2 > m_iWindowHeight)
 		m_bCaret2OnScreen = false;
 	else
 		m_bCaret2OnScreen = true;
 }
 
-void GR_Caret::setCoords(UT_sint32 x, UT_sint32 y, UT_uint32 h,
-						 UT_sint32 x2, UT_sint32 y2, UT_uint32 h2,
+void GR_Caret::setCoords(double x, double y, double h,
+						 double x2, double y2, double h2,
 						 bool bPointDirection, UT_RGBColor * pClr)
 {
 	// if visible, then hide while we change positions.
@@ -158,12 +159,12 @@ void GR_Caret::setCoords(UT_sint32 x, UT_sint32 y, UT_uint32 h,
 	m_bPointDirection = bPointDirection; m_pClr = pClr;
 	m_bPositionSet = true;
 
-	if(x < m_pG->tlu(3)+1 || y <= 0 || x > static_cast<UT_sint32>(m_iWindowWidth) || y > static_cast<UT_sint32>(m_iWindowHeight))
+	if(x < m_pG->tlu(3)+1 || y <= 0 || x > m_iWindowWidth || y > m_iWindowHeight)
 		m_bCaret1OnScreen = false;
 	else
 		m_bCaret1OnScreen = true;
 	
-	if(x2 < m_pG->tlu(3)+1 || y2 <= 0 || x2 > static_cast<UT_sint32>(m_iWindowWidth) || y2 > static_cast<UT_sint32>(m_iWindowHeight))
+	if(x2 < m_pG->tlu(3)+1 || y2 <= 0 || x2 > m_iWindowWidth || y2 > m_iWindowHeight)
 		m_bCaret2OnScreen = false;
 	else
 		m_bCaret2OnScreen = true;
@@ -281,7 +282,7 @@ void GR_Caret::_blink(bool bExplicit)
 			// the following value as a sign to avoid having to branch
 			// all the draw calls (Tomas, Oct 26, 2003).
 			
-			UT_sint32 iDelta = m_bPointDirection ? 1 : -1;
+			double iDelta = m_bPointDirection ? 1 : -1;
 			
 			UT_Rect r0(m_xPoint-m_pG->tlu(2),
 					   m_yPoint+m_pG->tlu(1),
@@ -296,10 +297,10 @@ void GR_Caret::_blink(bool bExplicit)
 				
 				// have to save the rectangle for the joining line
 				// before we draw the carets
-				UT_uint32 xmin = UT_MIN(m_xPoint, m_xPoint2);
-				UT_uint32 xmax = UT_MAX(m_xPoint, m_xPoint2);
-				UT_uint32 ymin = UT_MIN(m_yPoint, m_yPoint2);
-				UT_uint32 ymax = UT_MAX(m_yPoint, m_yPoint2);
+				double xmin = UT_MIN(m_xPoint, m_xPoint2);
+				double xmax = UT_MAX(m_xPoint, m_xPoint2);
+				double ymin = UT_MIN(m_yPoint, m_yPoint2);
+				double ymax = UT_MAX(m_yPoint, m_yPoint2);
 			
 				UT_Rect r2(xmin-m_pG->tlu(1),
 						   ymin + m_iPointHeight,
@@ -320,9 +321,9 @@ void GR_Caret::_blink(bool bExplicit)
 			{
 				// draw the primary caret
 				xxx_UT_DEBUGMSG(("blink cursor turned on \n")); 
-				UT_sint32 x1 = m_xPoint + iDelta * m_pG->tlu(1);
-				UT_sint32 x2 = m_xPoint;
-				while(m_pG->_tduX(x1) == m_pG->_tduX(x2))
+				double x1 = m_xPoint + iDelta * m_pG->tlu(1);
+				double x2 = m_xPoint;
+				while(m_pG->tdu(x1) == m_pG->tdu(x2))
 				{
 					x1 += iDelta;
 				}

@@ -165,7 +165,7 @@ fp_Run::~fp_Run()
 	DELETEP(m_pRevisions);
 }
 
-UT_sint32 fp_Run::getHeight() const
+double fp_Run::getHeight() const
 {
 	if(isHidden() == FP_VISIBLE)
 		return m_iHeight;
@@ -173,7 +173,7 @@ UT_sint32 fp_Run::getHeight() const
 	return 0;
 }
 
-UT_sint32 fp_Run::getWidth() const
+double fp_Run::getWidth() const
 {
 	if(isHidden() == FP_VISIBLE)
 		return m_iWidth;
@@ -181,7 +181,7 @@ UT_sint32 fp_Run::getWidth() const
 	return 0;
 }
 
-UT_uint32 fp_Run::getAscent() const
+double fp_Run::getAscent() const
 {
 	if(isHidden() == FP_VISIBLE)
 		return m_iAscent;
@@ -189,7 +189,7 @@ UT_uint32 fp_Run::getAscent() const
 	return 0;
 }
 
-UT_uint32 fp_Run::getDescent() const
+double fp_Run::getDescent() const
 {
 	if(isHidden() == FP_VISIBLE)
 		return m_iDescent;
@@ -197,10 +197,10 @@ UT_uint32 fp_Run::getDescent() const
 	return 0;
 }
 
-UT_sint32 fp_Run::getDrawingWidth() const
+double fp_Run::getDrawingWidth() const
 {
 	if(isHidden() == FP_VISIBLE)
-		return static_cast<UT_sint32>(m_iWidth);
+		return m_iWidth;
 
 	return 0;
 }
@@ -271,7 +271,7 @@ PT_DocPosition fp_Run::posSelHigh(void) const
 bool fp_Run::clearIfNeeded(void)
 {
 	//	if((getTmpX() == getX()) && (getTmpWidth() == getWidth()) && (getTmpY() == getY()))
-	if((getTmpX() == getX()) && (getTmpY() == getY()) && (getTmpLine() == getLine()))
+	if(UT_dEQ(getTmpX(),getX()) && UT_dEQ(getTmpY(),getY()) && (getTmpLine() == getLine()))
 	{
 		return true;
 	}
@@ -289,9 +289,9 @@ bool fp_Run::clearIfNeeded(void)
 		markWidthDirty();
 		return false;
 	}
-	UT_sint32 iWidth = getWidth();
-	UT_sint32 iX = getX();
-	UT_sint32 iY = getY();
+	double iWidth = getWidth();
+	double iX = getX();
+	double iY = getY();
 	_setWidth(getTmpWidth());
 	_setX(getTmpX());
 	_setY(getTmpY());
@@ -313,18 +313,18 @@ bool fp_Run::clearIfNeeded(void)
 	_setY(iY);
 	return false;
 }
-void fp_Run::Fill(GR_Graphics * pG, UT_sint32 x, UT_sint32 y, UT_sint32 width,
-				  UT_sint32 height)
+void fp_Run::Fill(GR_Graphics * pG, double x, double y, double width,
+				  double height)
 {
 	xxx_UT_DEBUGMSG(("-------------------Fill called!!!!---- x %d width %d \n",x,width));
 	if((width < 1) || (height < 1))
 	{
 		return;
 	}
-	UT_sint32 srcX = 0;
-	UT_sint32 srcY = 0;
+	double srcX = 0;
+	double srcY = 0;
 	fp_Line * pLine = getLine();
-	UT_sint32 xoff=0,yoff=0;
+	double xoff=0,yoff=0;
 	if(pLine)
 	{
 		pLine->getScreenOffsets(this,xoff,yoff);
@@ -458,7 +458,7 @@ void fp_Run::lookupProperties(GR_Graphics * pG)
  This implementation simply returns false, forcing line breaker to
  look for a split point in previous Runs.
 */
-bool fp_Run::findMaxLeftFitSplitPoint(UT_sint32 /* iMaxLeftWidth */,
+bool fp_Run::findMaxLeftFitSplitPoint(double /* iMaxLeftWidth */,
 									  fp_RunSplitInfo& /* si */,
 									  bool /* bForce */)
 {
@@ -668,7 +668,7 @@ void fp_Run::getSpanAP(const PP_AttrProp * &pSpanAP)
 	}
 }
 
-void fp_Run::setX(UT_sint32 iX, bool bDontClearIfNeeded)
+void fp_Run::setX(double iX, bool bDontClearIfNeeded)
 {
 	Run_setX(iX, FP_CLEARSCREEN_AUTO);
 }
@@ -679,7 +679,7 @@ void fp_Run::setX(UT_sint32 iX, bool bDontClearIfNeeded)
 // only a temporary value of iX which is then adjusted in the
 // second pass, without this the run will redraw twice, once always unnecessarily
 // and most of the time both times unnecessarily
-void	fp_Run::Run_setX(UT_sint32 iX, FPRUN_CLEAR_SCREEN eClearScreen)
+void	fp_Run::Run_setX(double iX, FPRUN_CLEAR_SCREEN eClearScreen)
 {
 	switch(eClearScreen)
 	{
@@ -707,7 +707,7 @@ void	fp_Run::Run_setX(UT_sint32 iX, FPRUN_CLEAR_SCREEN eClearScreen)
 
 }
 
-void fp_Run::setY(UT_sint32 iY)
+void fp_Run::setY(double iY)
 {
 	if (iY == m_iY)
 	{
@@ -838,8 +838,8 @@ void fp_Run::markAsDirty(void)
  */
 UT_Rect * fp_Run::getScreenRect(void)
 {
-	UT_sint32 xoff = 0;
-	UT_sint32 yoff = 0;
+	double xoff = 0;
+	double yoff = 0;
 	UT_Rect * pRec = NULL; 
 	fp_Line * pLine = getLine();
 	if(pLine)
@@ -960,11 +960,11 @@ void fp_Run::Run_ClearScreen(bool bFullLineHeightRect)
 				{
 					bool bRTL = (getVisDirection() == UT_BIDI_RTL);
 					
-					UT_sint32 xoff,yoff;
+					double xoff,yoff;
 					getLine()->getScreenOffsets(this, xoff, yoff);
-					UT_sint32 xLeft = xoff;
-					UT_sint32 xRight = xLeft + getWidth();
-					UT_sint32 x1,y1,x2,y2,height;
+					double xLeft = xoff;
+					double xRight = xLeft + getWidth(); // FIXME: shouldn't this be xLeft + getWidth() - tlu(1) ? - MARCM
+					double x1,y1,x2,y2,height;
 					bool bDir;
 					if(posSelLow() > getBlock()->getPosition(true) + getBlockOffset())
 					{
@@ -1154,9 +1154,9 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 		if((getType() == FPRUN_TEXT) && getLine())
 		{
 			bool bRTL = (getVisDirection() == UT_BIDI_RTL);
-			UT_sint32 xLeft = pDA->xoff;
-			UT_sint32 xRight = xLeft + getWidth();
-			UT_sint32 x1,y1,x2,y2,height;
+			double xLeft = pDA->xoff;
+			double xRight = xLeft + getWidth(); // FIXME: - tlu(1)!! - MARCM
+			double x1,y1,x2,y2,height;
 			bool bDir;
 			
 			if(posSelLow() > getBlock()->getPosition(true) + getBlockOffset())
@@ -1187,7 +1187,7 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 					xRight -= _getView()->getXScrollOffset();
 				}
 			}
-			UT_sint32 width = xRight-xLeft;
+			double width = xRight-xLeft;
 			clip.set(xLeft,pDA->yoff-getLine()->getAscent(),width,getLine()->getHeight());
 			pDA->pG->setClipRect(&clip);
 		}
@@ -1217,7 +1217,8 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 		const PP_Revision * r = m_pRevisions->getLastRevision();
 		UT_ASSERT(r != NULL);
 
-		if (r) {
+		if (r)
+		{
 			PP_RevisionType r_type = r->getType();
 			UT_uint32 iId = r->getId();
 			UT_uint32 iShowId = pView->getRevisionLevel();
@@ -1227,31 +1228,29 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 				iId--;
 			
 			if(!bMark || !iShowId || iId == iShowId)
-				{
+			{
 					pG->setColor(getFGColor());
 					
 					UT_uint32 iWidth = getDrawingWidth();
 					
 					if(r_type == PP_REVISION_ADDITION || r_type == PP_REVISION_ADDITION_AND_FMT)
-						{
-							painter.fillRect(s_fgColor,pDA->xoff, pDA->yoff, iWidth, getGraphics()->tlu(1));
-							painter.fillRect(s_fgColor,pDA->xoff, pDA->yoff + getGraphics()->tlu(2),
-											 iWidth, getGraphics()->tlu(1));
-							
-						}
+					{
+						painter.fillRect(s_fgColor,pDA->xoff, pDA->yoff, iWidth, getGraphics()->tlu(1));
+						painter.fillRect(s_fgColor,pDA->xoff, pDA->yoff + getGraphics()->tlu(2),
+										 iWidth, getGraphics()->tlu(1));	
+					}
 					else if(r_type == PP_REVISION_FMT_CHANGE)
-						{
-							// draw a thick line underneath
-							painter.fillRect(s_fgColor,pDA->xoff, pDA->yoff, iWidth, getGraphics()->tlu(2));
-						}
+					{
+						// draw a thick line underneath
+						painter.fillRect(s_fgColor,pDA->xoff, pDA->yoff, iWidth, getGraphics()->tlu(2));
+					}
 					else
-						{
-							// draw a strike-through line
-							
-							painter.fillRect(s_fgColor,pDA->xoff, pDA->yoff - m_iHeight/3,
-											 iWidth, getGraphics()->tlu(2));
-						}
-				}
+					{
+						// draw a strike-through line						
+						painter.fillRect(s_fgColor,pDA->xoff, pDA->yoff - m_iHeight/3,
+										 iWidth, getGraphics()->tlu(2));
+					}
+			}
 		}
 	}
 
@@ -1431,7 +1430,7 @@ bool fp_Run::_recalcWidth(void)
 	return false;
 }
 
-void fp_Run::drawDecors(UT_sint32 xoff, UT_sint32 yoff, GR_Graphics * pG)
+void fp_Run::drawDecors(double xoff, double yoff, GR_Graphics * pG)
 {
 
 	/*
@@ -1459,13 +1458,13 @@ void fp_Run::drawDecors(UT_sint32 xoff, UT_sint32 yoff, GR_Graphics * pG)
 
 	GR_Painter painter(pG);
 
-	const UT_sint32 old_LineWidth = m_iLineWidth;
-	UT_sint32 cur_linewidth = pG->tlu(1) + UT_MAX(pG->tlu(10),static_cast<UT_sint32>(getAscent())-pG->tlu(10))/8;
+	const double old_LineWidth = m_iLineWidth;
+	double cur_linewidth = pG->tlu(1) + UT_MAX(pG->tlu(10),static_cast<UT_sint32>(getAscent())-pG->tlu(10))/8;
 //
 // Line thickness is too thick.
 //
 	cur_linewidth = UT_MAX(pG->tlu(1),cur_linewidth/2);
-	UT_sint32 iDrop = 0;
+	double iDrop = 0;
 
 	// need to do this in the visual space
 	fp_Run* P_Run = getPrevVisual();
@@ -1561,13 +1560,13 @@ be drawn.
 		if ( b_Underline)
 		{
 			iDrop = UT_MAX( getMaxUnderline(), iDrop);
-			UT_sint32 totx = getUnderlineXoff();
+			double totx = getUnderlineXoff();
 			painter.drawLine(totx, iDrop, xoff+getWidth(), iDrop);
 		}
 		if ( b_Overline)
 		{
 			iDrop = UT_MIN( getMinOverline(), iDrop);
-			UT_sint32 totx = getOverlineXoff();
+			double totx = getOverlineXoff();
 			painter.drawLine(totx, iDrop, xoff+getWidth(), iDrop);
 		}
 	}
@@ -1583,7 +1582,7 @@ is drawn later.
 		     if(!N_Run->isUnderline() || isSelectionDraw())
 		     {
 				 iDrop = UT_MAX( getMaxUnderline(), iDrop);
-				 UT_sint32 totx = getUnderlineXoff();
+				 double totx = getUnderlineXoff();
 				 painter.drawLine(totx, iDrop, xoff+getWidth(), iDrop);
 		     }
 		     else
@@ -1596,7 +1595,7 @@ is drawn later.
 			if(!N_Run->isOverline() || isSelectionDraw())
 			{
 				iDrop = UT_MIN( getMinOverline(), iDrop);
-				UT_sint32 totx = getOverlineXoff();
+				double totx = getOverlineXoff();
 				painter.drawLine(totx, iDrop, xoff+getWidth(), iDrop);
 			}
 			else
@@ -1624,7 +1623,7 @@ text so we can keep the original code.
 	/*
 	  We always draw Topline right at the top of the line so there is no ambiguity
 	*/
-	UT_sint32 ithick = getToplineThickness();
+	double ithick = getToplineThickness();
 
 	UT_RGBColor clrFG;
 	const PP_AttrProp * pSpanAP = NULL;
@@ -1645,7 +1644,7 @@ text so we can keep the original code.
 
 	if ( b_Topline)
 	{
-		UT_sint32 ybase = yoff + getAscent() - getLine()->getAscent() + pG->tlu(1);
+		double ybase = yoff + getAscent() - getLine()->getAscent() + pG->tlu(1);
 		painter.fillRect(clrFG, xoff, ybase, getWidth(), ithick);
 	}
 	/*
@@ -1685,57 +1684,57 @@ inline bool fp_Run::isBottomline(void) const
 	return ((m_fDecorations & TEXT_DECOR_BOTTOMLINE) !=  0);
 }
 
-void fp_Run::setLinethickness(UT_sint32 max_linethickness)
+void fp_Run::setLinethickness(double max_linethickness)
 {
 	m_iLinethickness = max_linethickness;
 }
 
-void fp_Run::setUnderlineXoff(UT_sint32 xoff)
+void fp_Run::setUnderlineXoff(double xoff)
 {
 	m_iUnderlineXoff = xoff;
 }
 
-UT_sint32 fp_Run::getUnderlineXoff(void)
+double fp_Run::getUnderlineXoff(void)
 {
 	return m_iUnderlineXoff;
 }
 
-void fp_Run::setOverlineXoff(UT_sint32 xoff)
+void fp_Run::setOverlineXoff(double xoff)
 {
 	m_iOverlineXoff = xoff;
 }
 
-UT_sint32 fp_Run::getOverlineXoff(void)
+double fp_Run::getOverlineXoff(void)
 {
 	return m_iOverlineXoff;
 }
 
-void fp_Run::setMaxUnderline(UT_sint32 maxh)
+void fp_Run::setMaxUnderline(double maxh)
 {
 	m_imaxUnderline = maxh;
 }
 
-UT_sint32 fp_Run::getMaxUnderline(void)
+double fp_Run::getMaxUnderline(void)
 {
 	return m_imaxUnderline;
 }
 
-void fp_Run::setMinOverline(UT_sint32 minh)
+void fp_Run::setMinOverline(double minh)
 {
 	m_iminOverline = minh;
 }
 
-UT_sint32 fp_Run::getMinOverline(void)
+double fp_Run::getMinOverline(void)
 {
 	return m_iminOverline;
 }
 
-UT_sint32 fp_Run::getLinethickness( void)
+double fp_Run::getLinethickness( void)
 {
 	return m_iLinethickness;
 }
 
-UT_sint32 fp_Run::getToplineThickness(void)
+double fp_Run::getToplineThickness(void)
 {
 	return UT_convertToLogicalUnits("0.8pt");
 }
@@ -1753,7 +1752,7 @@ UT_sint32 fp_Run::getToplineThickness(void)
  * \bug Currently, this does not detect whether it is on the screen or
  * not, so it redraws way too often.
 */
-void fp_Run::_drawTextLine(UT_sint32 xoff,UT_sint32 yoff,UT_uint32 iWidth,UT_uint32 iHeight,UT_UCSChar *pText)
+void fp_Run::_drawTextLine(double xoff,double yoff,double iWidth,double iHeight,UT_UCSChar *pText)
 {
     GR_Font *pFont = getGraphics()->getGUIFont();
 
@@ -1761,18 +1760,18 @@ void fp_Run::_drawTextLine(UT_sint32 xoff,UT_sint32 yoff,UT_uint32 iWidth,UT_uin
     getGraphics()->setFont(pFont);
 
     UT_uint32 iTextLen = UT_UCS4_strlen(pText);
-    UT_uint32 iTextWidth = getGraphics()->measureString(pText,0,iTextLen,NULL);
-    UT_uint32 iTextHeight = getGraphics()->getFontHeight(pFont);
+    double iTextWidth = getGraphics()->measureString(pText,0,iTextLen,NULL);
+    double iTextHeight = getGraphics()->getFontHeight(pFont);
 
-    UT_uint32 xoffText = xoff + (iWidth - iTextWidth) / 2;
-    UT_uint32 yoffText = yoff - getGraphics()->getFontAscent(pFont) * 2 / 3;
+    double xoffText = xoff + (iWidth - iTextWidth) / 2;
+    double yoffText = yoff - getGraphics()->getFontAscent(pFont) * 2 / 3;
 
     painter.drawLine(xoff,yoff,xoff + iWidth,yoff);
 
     if((iTextWidth < iWidth) && (iTextHeight < iHeight))
 	{
 		Fill(getGraphics(),xoffText,yoffText,iTextWidth,iTextHeight);
-        painter.drawChars(pText,0,iTextLen,xoffText,yoffText);
+        painter.drawChars(pText,0,iTextLen,static_cast<UT_sint32>(xoffText+0.5),static_cast<UT_sint32>(yoffText+0.5));
     }
 }
 
@@ -1896,7 +1895,7 @@ bool fp_TabRun::hasLayoutProperties(void) const
 	return true;
 }
 
-void fp_TabRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC)
+void fp_TabRun::mapXYToPosition(double x, double /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC)
 {
 	// If X is left of the middle, return offset to the left,
 	// otherwise the offset to the right.
@@ -1909,13 +1908,13 @@ void fp_TabRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& po
 	bEOL = false;
 }
 
-void fp_TabRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection)
+void fp_TabRun::findPointCoords(UT_uint32 iOffset, double& x, double& y, double& x2, double& y2, double& height, bool& bDirection)
 {
 	//UT_DEBUGMSG(("fintPointCoords: TabRun\n"));
-	UT_sint32 xoff;
-	UT_sint32 yoff;
-	UT_sint32 xoff2;
-	UT_sint32 yoff2;
+	double xoff;
+	double yoff;
+	double xoff2;
+	double yoff2;
 
 	UT_ASSERT(getLine());
 
@@ -1988,7 +1987,7 @@ void fp_TabRun::setTOCTabListLabel(void)
     m_TabType =	FL_TAB_LEFT;	
 }
 
-void fp_TabRun::setTabWidth(UT_sint32 iWidth)
+void fp_TabRun::setTabWidth(double iWidth)
 {
 	clearScreen();
 	fp_Run::_setWidth(iWidth);
@@ -2022,14 +2021,14 @@ void fp_TabRun::_clearScreen(bool /* bFullLineHeightRect */)
 	//	UT_ASSERT(!isDirty());
 	UT_ASSERT(getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN));
 
-	UT_sint32 xoff = 0, yoff = 0;
+	double xoff = 0, yoff = 0;
 
 	// need to clear full height of line, in case we had a selection
 	getLine()->getScreenOffsets(this, xoff, yoff);
 	Fill(getGraphics(),xoff, yoff, getWidth(), getLine()->getHeight());
 }
 
-void fp_TabRun::_drawArrow(UT_uint32 iLeft,UT_uint32 iTop,UT_uint32 iWidth, UT_uint32 iHeight)
+void fp_TabRun::_drawArrow(double iLeft, double iTop, double iWidth, double iHeight)
 {
     if (!(getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))){
         return;
@@ -2039,10 +2038,10 @@ void fp_TabRun::_drawArrow(UT_uint32 iLeft,UT_uint32 iTop,UT_uint32 iWidth, UT_u
 
     UT_Point points[NPOINTS];
 
-    UT_sint32 cur_linewidth = getGraphics()->tlu(1) + UT_MAX(getGraphics()->tlu(10),static_cast<UT_sint32>(getAscent()) - getGraphics()->tlu(10)) / 8;
-    UT_uint32 iyAxis = iTop + getLine()->getAscent() * 2 / 3;
-    UT_uint32 iMaxWidth = UT_MIN(iWidth / 10 * 6, static_cast<UT_uint32>(cur_linewidth) * 9);
-    UT_uint32 ixGap = (iWidth - iMaxWidth) / 2;
+    double cur_linewidth = getGraphics()->tlu(1) + UT_MAX(getGraphics()->tlu(10),static_cast<UT_sint32>(getAscent()) - getGraphics()->tlu(10)) / 8;
+    double iyAxis = iTop + getLine()->getAscent() * 2 / 3;
+    double iMaxWidth = UT_MIN(iWidth / 10 * 6, cur_linewidth * 9);
+    double ixGap = (iWidth - iMaxWidth) / 2;
 
 	//UT_DEBUGMSG(("iLeft %d, iWidth %d, visDir \"%s\"\n", iLeft,iWidth, getVisDirection() == UT_BIDI_LTR ? "ltr":"rtl"));
 	if(getVisDirection() == UT_BIDI_LTR)
@@ -2090,7 +2089,7 @@ void fp_TabRun::_drawArrow(UT_uint32 iLeft,UT_uint32 iTop,UT_uint32 iWidth, UT_u
 
     // only draw the rectangle if iMaxWidth - cur_linewidth * 4 > 0, otherwise
     // we get the rect running pass the end of the line and off the screen
-    if(static_cast<UT_sint32>(iMaxWidth - cur_linewidth * 4) > 0)
+    if(iMaxWidth - cur_linewidth * 4 > 0)
 	    if(getVisDirection() == UT_BIDI_LTR)
 		{
 		    painter.fillRect(clrShowPara,iLeft + ixGap,iyAxis - cur_linewidth / 2,iMaxWidth - cur_linewidth * 4,cur_linewidth);
@@ -2108,14 +2107,14 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 	GR_Graphics * pG = pDA->pG;
 
 	// need to draw to the full height of line to join with line above.
-	UT_sint32 xoff= 0, yoff=0, DA_xoff = pDA->xoff;
+	double xoff= 0, yoff=0, DA_xoff = pDA->xoff;
 
 	getLine()->getScreenOffsets(this, xoff, yoff);
 
 	// need to clear full height of line, in case we had a selection
 
-	UT_sint32 iFillHeight = getLine()->getHeight();
-	UT_sint32 iFillTop = pDA->yoff - getLine()->getAscent();
+	double iFillHeight = getLine()->getHeight();
+	double iFillTop = pDA->yoff - getLine()->getAscent();
 
 	FV_View* pView = _getView();
 	UT_uint32 iSelAnchor = pView->getSelectionAnchor();
@@ -2202,13 +2201,12 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 
 		i = (i>=3) ? i - 2 : 1;
 		pG->setColor(clrFG);
-		painter.drawChars(tmp, 1, i, /*pDA->xoff*/DA_xoff, iFillTop,wid);
+		painter.drawChars(tmp, 1, i, /*pDA->xoff*/static_cast<UT_sint32>(DA_xoff+0.5), static_cast<UT_sint32>(iFillTop+0.5),wid);
 	}
 //
 // Draw underline/overline/strikethough
 //
-	UT_sint32 yTopOfRun = pDA->yoff - getAscent()-1; // Hack to remove
-	                                                 //character dirt
+	double yTopOfRun = pDA->yoff - getAscent(); 
 	drawDecors( xoff, yTopOfRun,pG);
 //
 // Draw bar seperators
@@ -2216,11 +2214,11 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 	if(FL_TAB_BAR == getTabType())
 	{
 		// need to draw to the full height of line to join with line above.
-		UT_sint32 iFillHeight = getLine()->getHeight();
+		double iFillHeight = getLine()->getHeight();
 //
 // Scale the vertical line thickness for printers
 //
-		UT_sint32 ithick = getToplineThickness();
+		double ithick = getToplineThickness();
 		painter.fillRect(clrFG, /*pDA->xoff*/DA_xoff+getWidth()-ithick, iFillTop, ithick, iFillHeight);
 	}
 }
@@ -2297,7 +2295,7 @@ bool fp_ForcedLineBreakRun::_letPointPass(void) const
 	return false;
 }
 
-void fp_ForcedLineBreakRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC)
+void fp_ForcedLineBreakRun::mapXYToPosition(double /* x */, double /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC)
 {
 	//UT_DEBUGMSG(("fp_ForcedLineBreakRun::mapXYToPosition\n"));
 	pos = getBlock()->getPosition() + getBlockOffset();
@@ -2305,13 +2303,13 @@ void fp_ForcedLineBreakRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, 
 	bEOL = false;
 }
 
-void fp_ForcedLineBreakRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection)
+void fp_ForcedLineBreakRun::findPointCoords(UT_uint32 iOffset, double& x, double& y, double& x2, double& y2, double& height, bool& bDirection)
 {
 	// this assert is wrong -- a run can be asked to return coords for position it does
 	// not contain if the run which contains it cannot contain point
 	// UT_ASSERT(getBlockOffset() == iOffset || getBlockOffset()+1 == iOffset);
 
-	UT_sint32 xoff, yoff;
+	double xoff, yoff;
 
 	fp_Run* pPropRun = _findPrevPropertyRun();
 
@@ -2360,8 +2358,8 @@ void fp_ForcedLineBreakRun::_clearScreen(bool /* bFullLineHeightRect */)
 void fp_ForcedLineBreakRun::_draw(dg_DrawArgs* pDA)
 {
 
-	UT_sint32 iXoffText = 0;
-	UT_sint32 iYoffText = 0;
+	double iXoffText = 0.0;
+	double iYoffText = 0.0;
 
 	FV_View* pView = _getView();
 	if(!pView || !pView->getShowPara())
@@ -2394,7 +2392,7 @@ void fp_ForcedLineBreakRun::_draw(dg_DrawArgs* pDA)
 	//UT_UCSChar pEOP[] = { UCS_LINESEP, 0 };
 	UT_UCSChar pEOP[] = { '^', 'l', 0 };
 	UT_uint32 iTextLen = UT_UCS4_strlen(pEOP);
-	UT_sint32 iAscent;
+	double iAscent;
 
 	fp_Run* pPropRun = _findPrevPropertyRun();
 	if (pPropRun && (FPRUN_TEXT == pPropRun->getType()))
@@ -2458,7 +2456,7 @@ void fp_ForcedLineBreakRun::_draw(dg_DrawArgs* pDA)
     {
 		// Draw pilcrow
 		getGraphics()->setColor(clrShowPara);
-		painter.drawChars(pEOP, 0, iTextLen, iXoffText, iYoffText);
+		painter.drawChars(pEOP, 0, iTextLen, static_cast<UT_sint32>(iXoffText+0.5), static_cast<UT_sint32>(iYoffText+0.5));
     }
 }
 
@@ -2496,7 +2494,7 @@ bool fp_FieldStartRun::_letPointPass(void) const
 	return true;
 }
 
-void fp_FieldStartRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC)
+void fp_FieldStartRun::mapXYToPosition(double /* x */, double /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC)
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 
@@ -2506,7 +2504,7 @@ void fp_FieldStartRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_Do
 }
 
 
-void fp_FieldStartRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection)
+void fp_FieldStartRun::findPointCoords(UT_uint32 iOffset, double& x, double& y, double& x2, double& y2, double& height, bool& bDirection)
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 }
@@ -2556,7 +2554,7 @@ bool fp_FieldEndRun::_letPointPass(void) const
 	return true;
 }
 
-void fp_FieldEndRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC)
+void fp_FieldEndRun::mapXYToPosition(double /* x */, double /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC)
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 
@@ -2565,7 +2563,7 @@ void fp_FieldEndRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocP
 	bEOL = false;
 }
 
-void fp_FieldEndRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection)
+void fp_FieldEndRun::findPointCoords(UT_uint32 iOffset, double& x, double& y, double& x2, double& y2, double& height, bool& bDirection)
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 }
@@ -2713,14 +2711,14 @@ UT_uint32 fp_BookmarkRun::getBookmarkedDocPosition(bool bAfter) const
 	}
 }
 
-void fp_BookmarkRun::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC)
+void fp_BookmarkRun::mapXYToPosition(double x, double y, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC)
 {
 	fp_Run *pRun = getNextRun();
 	UT_ASSERT(pRun);
 	pRun->mapXYToPosition(x, y, pos, bBOL, bEOL,isTOC);
 }
 
-void fp_BookmarkRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y,  UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection)
+void fp_BookmarkRun::findPointCoords(UT_uint32 iOffset, double& x, double& y,  double& x2, double& y2, double& height, bool& bDirection)
 {
 	fp_Run * pRun = getNextRun();
 	UT_ASSERT(pRun);
@@ -2738,8 +2736,7 @@ void fp_BookmarkRun::_clearScreen(bool /* bFullLineHeightRect */)
     	return;
     }
 
-
-	UT_sint32 xoff = 0, yoff = 0;
+	double xoff = 0, yoff = 0;
 	getLine()->getScreenOffsets(this, xoff, yoff);
 
 	if(m_bIsStart)
@@ -2907,14 +2904,14 @@ bool fp_HyperlinkRun::_deleteFollowingIfAtInsPoint() const
 	return true;
 }
 
-void fp_HyperlinkRun::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC)
+void fp_HyperlinkRun::mapXYToPosition(double x, double y, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC)
 {
 	fp_Run *pRun = getNextRun();
 	UT_ASSERT(pRun);
 	pRun->mapXYToPosition(x, y, pos, bBOL, bEOL,isTOC);
 }
 
-void fp_HyperlinkRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y,  UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection)
+void fp_HyperlinkRun::findPointCoords(UT_uint32 iOffset, double& x, double& y,  double& x2, double& y2, double& height, bool& bDirection)
 {
 	fp_Run * pRun = getNextRun();
 	UT_ASSERT(pRun);
@@ -3041,7 +3038,7 @@ bool fp_EndOfParagraphRun::_letPointPass(void) const
 	return false;
 }
 
-void fp_EndOfParagraphRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC)
+void fp_EndOfParagraphRun::mapXYToPosition(double /* x */, double /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC)
 {
 	pos = getBlock()->getPosition() + getBlockOffset();
 	bBOL = false;
@@ -3049,9 +3046,9 @@ void fp_EndOfParagraphRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, P
 }
 
 void fp_EndOfParagraphRun::findPointCoords(UT_uint32 iOffset,
-										   UT_sint32& x, UT_sint32& y,
-										   UT_sint32& x2, UT_sint32& y2,
-										   UT_sint32& height,
+										   double& x, double& y,
+										   double& x2, double& y2,
+										   double& height,
 										   bool& bDirection)
 {
 	// FIXME:jskov Find out why we are sometimes asked to find pos at
@@ -3091,7 +3088,7 @@ void fp_EndOfParagraphRun::_clearScreen(bool /* bFullLineHeightRect */)
 	{
 		return;
 	}
-	UT_sint32 xoff = 0, yoff = 0;
+	double xoff = 0, yoff = 0;
 	getLine()->getScreenOffsets(this, xoff, yoff);
 
 	if(getBlock()->getDominantDirection() == UT_BIDI_RTL)
@@ -3146,7 +3143,7 @@ void fp_EndOfParagraphRun::_draw(dg_DrawArgs* pDA)
 
 	UT_UCSChar pEOP[] = { UCS_PILCROW, 0 };
 	UT_uint32 iTextLen = UT_UCS4_strlen(pEOP);
-	UT_sint32 iAscent;
+	double iAscent;
 
 	fp_Run* pPropRun = _findPrevPropertyRun();
 	if (pPropRun && (FPRUN_TEXT == pPropRun->getType()))
@@ -3212,7 +3209,7 @@ void fp_EndOfParagraphRun::_draw(dg_DrawArgs* pDA)
 		// use the hard-coded colour only if not revised
 		if(!getRevisions() || !pView->isShowRevisions())
 			getGraphics()->setColor(pView->getColorShowPara());
-        painter.drawChars(pEOP, 0, iTextLen, m_iXoffText, m_iYoffText);
+        painter.drawChars(pEOP, 0, iTextLen, static_cast<UT_sint32>(m_iXoffText), static_cast<UT_sint32>(m_iYoffText));
 	}
 }
 
@@ -3295,8 +3292,8 @@ void fp_ImageRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	{
 		p = pDSL->getDocLayout()->getNthPage(0);
 	}
-	UT_sint32 maxW = static_cast<UT_sint32>(static_cast<double>(pDSL->getActualColumnWidth())*0.95);
-	UT_sint32 maxH = static_cast<UT_sint32>(static_cast<double>(pDSL->getActualColumnHeight())*0.95);
+	double maxW = static_cast<double>(pDSL->getActualColumnWidth())*0.95; // FIXME: these numbers look quite heuristic to me - MARCM
+	double maxH = pDSL->getActualColumnHeight()*0.95;
 	fl_ContainerLayout * pCL = getBlock()->myContainingLayout();
 	if(pCL && pCL->getContainerType() == FL_CONTAINER_FRAME)
 	{
@@ -3311,14 +3308,14 @@ void fp_ImageRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	else if (pCL && pCL->getContainerType() == FL_CONTAINER_CELL)
 	{
 		fl_CellLayout * pCell = static_cast<fl_CellLayout *>(pCL);
-		maxW = static_cast<UT_sint32>(static_cast<double>(maxW)*0.95);
-		maxH = static_cast<UT_sint32>(static_cast<double>(maxH)*0.95);
+		maxW = maxW*0.95;
+		maxH = maxH*0.95;
 		if(pCell->getCellWidth() > pG->tlu(2) && pCell->getCellWidth() < maxW)
 		{
 			maxW = pCell->getCellWidth();
 		}
 	}
-	if(pG->tdu(maxW) < 3)
+	if(pG->tdu(maxW) < 3) // FIXME: ... AND THESE TO... - MARCM
 	{
 		maxW = pG->tlu(3);
 	}
@@ -3335,7 +3332,7 @@ void fp_ImageRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 		m_sCachedWidthProp = szWidth;
 		m_sCachedHeightProp = szHeight;
 		DELETEP(m_pImage);
-		m_pImage = m_pFGraphic->generateImage(pG, pSpanAP, maxW, maxH);
+		m_pImage = m_pFGraphic->generateImage(pG, pSpanAP, static_cast<UT_sint32>(maxW), static_cast<UT_sint32>(maxH));
 		markAsDirty();
 		if(getLine())
 		{
@@ -3399,7 +3396,7 @@ bool fp_ImageRun::hasLayoutProperties(void) const
 	return true;
 }
 
-void fp_ImageRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC)
+void fp_ImageRun::mapXYToPosition(double x, double /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC)
 {
 	if (x > getWidth())
 		pos = getBlock()->getPosition() + getBlockOffset() + getLength();
@@ -3410,11 +3407,11 @@ void fp_ImageRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& 
 	bEOL = false;
 }
 
-void fp_ImageRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection)
+void fp_ImageRun::findPointCoords(UT_uint32 iOffset, double& x, double& y, double& x2, double& y2, double& height, bool& bDirection)
 {
 	//UT_DEBUGMSG(("fintPointCoords: ImmageRun\n"));
-	UT_sint32 xoff;
-	UT_sint32 yoff;
+	double xoff;
+	double yoff;
 
 	UT_ASSERT(getLine());
 
@@ -3441,11 +3438,11 @@ void fp_ImageRun::_clearScreen(bool  bFullLineHeightRect )
 
 	UT_ASSERT(getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN));
 
-	UT_sint32 xoff = 0, yoff = 0;
+	double xoff = 0, yoff = 0;
 
 	// need to clear full height of line, in case we had a selection
 	getLine()->getScreenOffsets(this, xoff, yoff);
-	UT_sint32 iLineHeight = getLine()->getHeight();
+	double iLineHeight = getLine()->getHeight();
 	Fill(getGraphics(),xoff, yoff, getWidth(), iLineHeight);
 	markAsDirty();
 	setCleared();
@@ -3459,10 +3456,10 @@ const char * fp_ImageRun::getDataId(void) const
 void fp_ImageRun::_drawResizeBox(UT_Rect box)
 {
 	GR_Graphics * pG = getGraphics();
-	UT_sint32 left = box.left;
-	UT_sint32 top = box.top;
-	UT_sint32 right = box.left + box.width - pG->tlu(1);
-	UT_sint32 bottom = box.top + box.height - pG->tlu(1);
+	double left = box.left;
+	double top = box.top;
+	double right = box.left + box.width - pG->tlu(1);
+	double bottom = box.top + box.height - pG->tlu(1);
 	
 	GR_Painter painter(pG);
 	
@@ -3499,7 +3496,7 @@ void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 		regenerateImage(pG);
 		m_iGraphicTick = getBlock()->getDocLayout()->getGraphicTick()+999;
 	}
-	UT_sint32 xoff = 0, yoff = 0;
+	double xoff = 0, yoff = 0;
 
 	if(pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{	
@@ -3541,7 +3538,7 @@ void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 		// Take the interesction of the applied rectangle;
 		if(pSavedRect != NULL)
 		{
-			UT_sint32 iTop,iLeft,iWidth,iHeight;
+			double iTop,iLeft,iWidth,iHeight;
 			iTop = 0;
 			iLeft = 0;
 			iWidth = 0;
@@ -3551,12 +3548,12 @@ void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 			{
 				iTop = pSavedRect->top;
 			}
-			UT_sint32 iBot = pClipRect.top + pClipRect.height;
+			double iBot = pClipRect.top + pClipRect.height - pG->tlu(1);
 			if((pSavedRect->top + pSavedRect->height) < (pClipRect.top + pClipRect.height))
 			{
-				iBot = pSavedRect->top + pSavedRect->height;
+				iBot = pSavedRect->top + pSavedRect->height - pG->tlu(1);
 			}
-			iHeight = iBot - iTop;
+			iHeight = iBot - iTop + pG->tlu(1);
 			if(iHeight < pG->tlu(1))
 			{
 				iHeight = pG->tlu(2);
@@ -3566,12 +3563,12 @@ void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 			{
 				iLeft = pSavedRect->left;
 			}
-			UT_sint32 iRight = pClipRect.left + pClipRect.width;
+			double iRight = pClipRect.left + pClipRect.width - pG->tlu(1);
 			if((pSavedRect->left + pSavedRect->width) < (pClipRect.left + pClipRect.width))
 			{
-				iRight = pSavedRect->left + pSavedRect->width;
+				iRight = pSavedRect->left + pSavedRect->width - pG->tlu(1);
 			}
-			iWidth = iRight - iLeft;
+			iWidth = iRight - iLeft + pG->tlu(1);
 			if(iWidth < pG->tlu(1))
 			{
 				iWidth = pG->tlu(2);
@@ -3614,12 +3611,12 @@ void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 				&& (iSel2 > iRunBase)
 				)
 			{
-				UT_uint32 top = yoff;
-				UT_uint32 left = xoff;
-				UT_uint32 right = xoff + getWidth() - pG->tlu(1);
-				UT_uint32 bottom = yoff + getHeight() - pG->tlu(1);
+				double top = yoff;
+				double left = xoff;
+				double right = xoff + getWidth() - pG->tlu(1);
+				double bottom = yoff + getHeight() - pG->tlu(1);
 
-				UT_sint32 boxSize = pView->getImageSelInfo();
+				double boxSize = pView->getImageSelInfo();
 			
 				// now, draw the resize boxes around the image
 	
@@ -4005,7 +4002,7 @@ bool fp_FieldRun::hasLayoutProperties(void) const
 	return true;
 }
 
-void fp_FieldRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC)
+void fp_FieldRun::mapXYToPosition(double x, double /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC)
 {
 	// If X is left of the middle, return offset to the left,
 	// otherwise the offset to the right.
@@ -4025,13 +4022,13 @@ void fp_FieldRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& 
 	}
 }
 
-void fp_FieldRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x,
-                                  UT_sint32& y, UT_sint32& x2,
-                                  UT_sint32& y2, UT_sint32& height, bool& bDirection)
+void fp_FieldRun::findPointCoords(UT_uint32 iOffset, double& x,
+                                  double& y, double& x2,
+                                  double& y2, double& height, bool& bDirection)
 {
 	xxx_UT_DEBUGMSG(("findPointCoords: FieldRun offset %d \n",iOffset));
-	UT_sint32 xoff;
-	UT_sint32 yoff;
+	double xoff;
+	double yoff;
 
 	UT_ASSERT(getLine());
 
@@ -4081,7 +4078,7 @@ void fp_FieldRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x,
 		if(getNextRun() && getNextRun()->hasLayoutProperties()  )
 		{
 			height = getNextRun()->getHeight();
-			UT_sint32 xx,xx2,yy2,hheight;
+			double xx,xx2,yy2,hheight;
 			bool bbDirection;
 			getNextRun()->findPointCoords(iOffset+1,xx,y,xx2,yy2, hheight,
 									   bbDirection);
@@ -4140,11 +4137,11 @@ void fp_FieldRun::_clearScreen(bool /* bFullLineHeightRect */)
 	//	UT_ASSERT(!isDirty());
 
 	UT_ASSERT(getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN));
-	UT_sint32 xoff = 0, yoff = 0;
+	double xoff = 0, yoff = 0;
 
 	// need to clear full height of line, in case we had a selection
 	getLine()->getScreenOffsets(this, xoff, yoff);
-	UT_sint32 iLineHeight = getLine()->getHeight();
+	double iLineHeight = getLine()->getHeight();
 	Fill(getGraphics(), xoff, yoff, getWidth(), iLineHeight);
 }
 
@@ -4156,7 +4153,7 @@ void fp_FieldRun::_defaultDraw(dg_DrawArgs* pDA)
 	// should not be, since lookupProperties is called on
 	// formatting changes - Tomas
 	// lookupProperties();
-	UT_sint32 xoff = 0, yoff = 0;
+	double xoff = 0, yoff = 0;
 
 	GR_Painter painter(pG);
 
@@ -4164,7 +4161,7 @@ void fp_FieldRun::_defaultDraw(dg_DrawArgs* pDA)
 
 	getLine()->getScreenOffsets(this, xoff, yoff);
 
-	UT_sint32 iYdraw =  pDA->yoff - getAscent()-1;
+	double iYdraw =  pDA->yoff - getAscent();
 
 	if (m_fPosition == TEXT_POSITION_SUPERSCRIPT)
 	{
@@ -4178,12 +4175,8 @@ void fp_FieldRun::_defaultDraw(dg_DrawArgs* pDA)
 	//if (pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
 		UT_uint32 iRunBase = getBlock()->getPosition() + getBlockOffset();
-
-//
-// Sevior was here
-//		UT_sint32 iFillTop = iYdraw;
-		UT_sint32 iFillTop = iYdraw+1;
-		UT_sint32 iFillHeight = getAscent() + getDescent();
+		double iFillTop = iYdraw;
+		double iFillHeight = getAscent() + getDescent();
 
 		FV_View* pView = _getView();
 		UT_uint32 iSelAnchor = pView->getSelectionAnchor();
@@ -4222,11 +4215,11 @@ void fp_FieldRun::_defaultDraw(dg_DrawArgs* pDA)
 	
 	/*UT_sint32 iNewWidth = */ getGraphics()->measureString(m_sFieldValue, 0, len, aCharWidths);
 
-	painter.drawChars(m_sFieldValue, 0, len, pDA->xoff,iYdraw, aCharWidths);
+	painter.drawChars(m_sFieldValue, 0, len, static_cast<UT_sint32>(pDA->xoff+0.5),static_cast<UT_sint32>(iYdraw+0.5), aCharWidths);
 //
 // Draw underline/overline/strikethough
 //
-	UT_sint32 yTopOfRun = pDA->yoff - getAscent()-1; // Hack to remove
+	double yTopOfRun = pDA->yoff - getAscent()-1; // Hack to remove
 	                                                 //character dirt
 	drawDecors( xoff, yTopOfRun,pG);
 
@@ -5317,19 +5310,19 @@ bool fp_ForcedColumnBreakRun::_letPointPass(void) const
 	return false;
 }
 
-void fp_ForcedColumnBreakRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC)
+void fp_ForcedColumnBreakRun::mapXYToPosition(double /* x */, double /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC)
 {
 	pos = getBlock()->getPosition() + getBlockOffset();
 	bBOL = false;
 	bEOL = false;
 }
 
-void fp_ForcedColumnBreakRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection)
+void fp_ForcedColumnBreakRun::findPointCoords(UT_uint32 iOffset, double& x, double& y, double& x2, double& y2, double& height, bool& bDirection)
 {
 	//UT_DEBUGMSG(("fintPointCoords: ForcedColumnBreakRun\n"));
 	UT_ASSERT(getBlockOffset() == iOffset || getBlockOffset()+1 == iOffset);
 
-	UT_sint32 xoff, yoff;
+	double xoff, yoff;
 
 	fp_Run* pPropRun = _findPrevPropertyRun();
 
@@ -5364,9 +5357,9 @@ void fp_ForcedColumnBreakRun::_clearScreen(bool /* bFullLineHeightRect */)
 	//	UT_ASSERT(!isDirty());
 	UT_ASSERT(getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN));
 
-    UT_sint32 xoff = 0, yoff = 0;
+    double xoff = 0, yoff = 0;
     getLine()->getScreenOffsets(this, xoff, yoff);
-    UT_sint32 iWidth  = getLine()->getMaxWidth() - getLine()->calculateWidthOfLine();
+    double iWidth  = getLine()->getMaxWidth() - getLine()->calculateWidthOfLine();
 	Fill(getGraphics(),xoff,yoff,iWidth,getLine()->getHeight());
 }
 
@@ -5383,7 +5376,7 @@ void fp_ForcedColumnBreakRun::_draw(dg_DrawArgs* pDA)
         return;
     }
 
-    UT_sint32 iLineWidth  = getLine()->getMaxWidth();
+    double iLineWidth  = getLine()->getMaxWidth();
 
     UT_UCSChar *pColumnBreak;
     UT_UCS4_cloneString_char(&pColumnBreak,"Column Break");
@@ -5428,19 +5421,19 @@ bool fp_ForcedPageBreakRun::_letPointPass(void) const
 	return false;
 }
 
-void fp_ForcedPageBreakRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC)
+void fp_ForcedPageBreakRun::mapXYToPosition(double /* x */, double /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC)
 {
 	pos = getBlock()->getPosition() + getBlockOffset();
 	bBOL = false;
 	bEOL = false;
 }
 
-void fp_ForcedPageBreakRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection)
+void fp_ForcedPageBreakRun::findPointCoords(UT_uint32 iOffset, double& x, double& y, double& x2, double& y2, double& height, bool& bDirection)
 {
 	//UT_DEBUGMSG(("fintPointCoords: ForcedPageBreakRun\n"));
 	UT_ASSERT(getBlockOffset() == iOffset || getBlockOffset()+1 == iOffset);
 
-	UT_sint32 xoff, yoff;
+	double xoff, yoff;
 
 	fp_Run* pPropRun = _findPrevPropertyRun();
 
@@ -5485,9 +5478,9 @@ void fp_ForcedPageBreakRun::_clearScreen(bool /* bFullLineHeightRect */)
 	//	UT_ASSERT(!isDirty());
 	UT_ASSERT(getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN));
 
-    UT_sint32 xoff = 0, yoff = 0;
+    double xoff = 0, yoff = 0;
     getLine()->getScreenOffsets(this, xoff, yoff);
-    UT_sint32 iWidth  = getLine()->getMaxWidth() - getLine()->calculateWidthOfLine();
+    double iWidth  = getLine()->getMaxWidth() - getLine()->calculateWidthOfLine();
 	Fill(getGraphics(),xoff,yoff,iWidth,getLine()->getHeight());
 }
 
@@ -5505,7 +5498,7 @@ void fp_ForcedPageBreakRun::_draw(dg_DrawArgs* pDA)
         return;
     }
 
-    UT_sint32 iLineWidth  = getLine()->getMaxWidth();
+    double iLineWidth  = getLine()->getMaxWidth();
 
     UT_UCSChar *pPageBreak;
     UT_UCS4_cloneString_char(&pPageBreak,"Page Break");

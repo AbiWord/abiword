@@ -69,14 +69,14 @@ class AV_ScrollObj
 {
  public:
 	AV_ScrollObj(void * pData,
-				 void (*pfnX)(void *,UT_sint32,UT_sint32),
-				 void (*pfnY)(void *,UT_sint32,UT_sint32))
+				 void (*pfnX)(void *,double,double),
+				 void (*pfnY)(void *,double,double))
 			: m_pData(pData), m_pfnX(pfnX), m_pfnY(pfnY)
 		{	};
 	
 	void* m_pData;
-	void (*m_pfnX)(void *, UT_sint32 xoff, UT_sint32 xlimit);
-	void (*m_pfnY)(void *, UT_sint32 yoff, UT_sint32 ylimit);
+	void (*m_pfnX)(void *, double xoff, double xlimit);
+	void (*m_pfnY)(void *, double yoff, double ylimit);
 };
 
 class ABI_EXPORT AV_View
@@ -92,31 +92,30 @@ public:
 	void*			getParentData() const;
 
 	void			setInsertMode(bool bInsert);
-	/*! the parameters are in device units! */
-	void			setWindowSize(UT_sint32, UT_sint32);
-	virtual void	setXScrollOffset(UT_sint32) = 0;
-	virtual void	setYScrollOffset(UT_sint32) = 0;
+	void			setWindowSize(UT_sint32, UT_sint32); /*! the parameters are in device units! */
+	virtual void	setXScrollOffset(double) = 0;
+	virtual void	setYScrollOffset(double) = 0;
 	UT_uint32               getTick(void);
 	void                    incTick(void);
 	inline XAP_App *	getApp(void) const { return m_pApp; };
 	virtual void    setCursorToContext(void) =0;
 
 	/*! the return values of these functions are in logical units !!!*/
-	UT_sint32		getWindowWidth(void) const;
-	UT_sint32		getWindowHeight(void) const;
-	inline UT_sint32	getXScrollOffset(void) const { return m_xScrollOffset; }
-	inline UT_sint32	getYScrollOffset(void) const { return m_yScrollOffset; }
+	double				getWindowWidth(void) const;
+	double				getWindowHeight(void) const;
+	inline double		getXScrollOffset(void) const { return m_xScrollOffset; }
+	inline double		getYScrollOffset(void) const { return m_yScrollOffset; }
 
 	virtual void	      draw(const UT_Rect* pRect=static_cast<UT_Rect*>(NULL)) = 0;
 	virtual void	      updateScreen(bool bDirtyRunsOnly=true) = 0;
 	virtual GR_Graphics * getGraphics(void) const = 0;
     virtual void          updateLayout(void) = 0;
-	virtual void	cmdScroll(AV_ScrollCmd cmd, UT_uint32 iPos = 0) = 0;
+	virtual void	cmdScroll(AV_ScrollCmd cmd, double iPos = 0) = 0;
 	void			addScrollListener(AV_ScrollObj*);
 	void			removeScrollListener(AV_ScrollObj*);
 	/*! input parameters of these functions are in logical units !!! */
-	void			sendVerticalScrollEvent(UT_sint32 yoff, UT_sint32 ylimit = -1);
-	void			sendHorizontalScrollEvent(UT_sint32 xoff, UT_sint32 xlimit = -1);
+	void			sendVerticalScrollEvent(double yoff, double ylimit = -1);
+	void			sendHorizontalScrollEvent(double xoff, double xlimit = -1);
 
 
 	bool			addListener(AV_Listener * pListener, AV_ListenerId * pListenerId);
@@ -133,7 +132,7 @@ public:
 	virtual UT_Error	cmdSaveAs(const char * szFilename, int ieft) = 0;
 	virtual UT_Error        cmdSaveAs(const char * szFilename, int ieft, bool cpy) = 0;
 
-	virtual EV_EditMouseContext getMouseContext(UT_sint32 xPos, UT_sint32 yPos) = 0;
+	virtual EV_EditMouseContext getMouseContext(double xPos, double  yPos) = 0;
 	virtual bool 	isSelectionEmpty(void) const = 0;
 
 	virtual void	cmdCopy(bool bToClipboard = true) = 0;
@@ -161,8 +160,8 @@ protected:
 	XAP_App *			m_pApp;
 	void*				m_pParentData;
 
-	UT_sint32			m_xScrollOffset;
-	UT_sint32			m_yScrollOffset;
+	double				m_xScrollOffset;
+	double				m_yScrollOffset;
 	AV_Focus			m_focus;
 	UT_uint32                       m_iTick; // Count changes
 	bool				m_bInsertMode;
@@ -175,24 +174,8 @@ private:
 	void operator=(AV_View&);	// no impl.
 	bool m_bIsLayoutFilling;
 
-	UT_sint32			m_iWindowHeight;
-	UT_sint32			m_iWindowWidth;
-	double				m_dOneTDU;
+	double				m_iWindowHeight;
+	double				m_iWindowWidth;
 };
 
 #endif /* AV_VIEW_H */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

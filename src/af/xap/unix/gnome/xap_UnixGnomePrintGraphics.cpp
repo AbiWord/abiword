@@ -192,7 +192,7 @@ UT_sint32 XAP_UnixGnomePrintGraphics::measureUnRemappedChar(const UT_UCSChar c)
 	return static_cast<UT_uint32>(rint(fWidth));
 }
 
-void XAP_UnixGnomePrintGraphics::drawGlyph (UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff)
+void XAP_UnixGnomePrintGraphics::drawGlyph (UT_uint32 Char, double xoff, double yoff)
 {
 	UT_ASSERT_NOT_REACHED ();
 }
@@ -226,7 +226,7 @@ GnomeGlyphList * XAP_UnixGnomePrintGraphics::_createGlyphList ()
 
 void XAP_UnixGnomePrintGraphics::drawChars(const UT_UCSChar* pChars, 
 										   int iCharOffset, int iLength,
-										   UT_sint32 xoff, UT_sint32 yoff,
+										   double xoff, double yoff,
 										   int * pCharWidths)
 {
 	if (!m_bStartPage)
@@ -269,8 +269,8 @@ void XAP_UnixGnomePrintGraphics::drawChars(const UT_UCSChar* pChars,
 	gnome_print_grestore (m_gpc);
 }
 
-void XAP_UnixGnomePrintGraphics::drawLine (UT_sint32 x1, UT_sint32 y1,
-										   UT_sint32 x2, UT_sint32 y2)
+void XAP_UnixGnomePrintGraphics::drawLine (double x1, double y1,
+										   double x2, double y2)
 {
 	if (!m_bStartPage)
 		return;
@@ -342,13 +342,12 @@ void XAP_UnixGnomePrintGraphics::setColor(const UT_RGBColor& clr)
 	gnome_print_setrgbcolor(m_gpc,red,green,blue);
 }
 
-void XAP_UnixGnomePrintGraphics::setLineWidth(UT_sint32 iLineWidth)
+void XAP_UnixGnomePrintGraphics::setLineWidth(double iLineWidth)
 {
 	if (!m_bStartPage)
 		return;
 
- 	m_dLineWidth = tduD(static_cast<double>(iLineWidth));
-	gnome_print_setlinewidth (m_gpc, m_dLineWidth); 
+	gnome_print_setlinewidth (m_gpc, tduD(iLineWidth)); 
 }
 
 bool XAP_UnixGnomePrintGraphics::startPrint(void)
@@ -428,14 +427,14 @@ void XAP_UnixGnomePrintGraphics::_drawAnyImage (GR_Image* pImg,
 	gnome_print_grestore(m_gpc);
 }
 
-void XAP_UnixGnomePrintGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, 
-										   UT_sint32 yDest)
+void XAP_UnixGnomePrintGraphics::drawImage(GR_Image* pImg, double xDest, 
+										   double yDest)
 {
 	if (!m_bStartPage)
 		return;
 
-	xDest = scale_xdir (tdu(xDest));
-	yDest = scale_ydir (tdu(yDest));
+	UT_sint32 i_xDest = scale_xdir (tdu(xDest));
+	UT_sint32 i_yDest = scale_ydir (tdu(yDest));
 
    	if (pImg->getType() != GR_Image::GRT_Raster) 
 	    pImg->render(this, xDest, yDest);
@@ -443,11 +442,11 @@ void XAP_UnixGnomePrintGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest,
 		switch(m_cs)
 			{
 			case GR_Graphics::GR_COLORSPACE_COLOR:
-				_drawAnyImage(pImg, xDest, yDest, true);
+				_drawAnyImage(pImg, i_xDest, i_yDest, true);
 				break;
 			case GR_Graphics::GR_COLORSPACE_GRAYSCALE:
 			case GR_Graphics::GR_COLORSPACE_BW:
-				_drawAnyImage(pImg, xDest, yDest, false);
+				_drawAnyImage(pImg, i_xDest, i_yDest, false);
 				break;
 			default:
 				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -531,8 +530,8 @@ UT_uint32 XAP_UnixGnomePrintGraphics::_getResolution(void) const
 }
 
 void XAP_UnixGnomePrintGraphics::fillRect(const UT_RGBColor& c, 
-										  UT_sint32 x, UT_sint32 y, 
-										  UT_sint32 w, UT_sint32 h)
+										  double x, double y, 
+										  double w, double h)
 {
 	if (!m_bStartPage)
 		return;
@@ -575,8 +574,8 @@ GR_Graphics::Cursor XAP_UnixGnomePrintGraphics::getCursor(void) const
 	return GR_CURSOR_INVALID;
 }
 
-void XAP_UnixGnomePrintGraphics::xorLine(UT_sint32, UT_sint32, UT_sint32, 
-										 UT_sint32)
+void XAP_UnixGnomePrintGraphics::xorLine(double, double, double, 
+										 double)
 {
 	UT_ASSERT_NOT_REACHED ();
 }
@@ -592,13 +591,13 @@ void XAP_UnixGnomePrintGraphics::invertRect(const UT_Rect* /*pRect*/)
 	UT_ASSERT_NOT_REACHED ();
 }
 
-void XAP_UnixGnomePrintGraphics::clearArea(UT_sint32 /*x*/, UT_sint32 /*y*/,
-										   UT_sint32 /*width*/, UT_sint32 /*height*/)
+void XAP_UnixGnomePrintGraphics::clearArea(double /*x*/, double /*y*/,
+										   double /*width*/, double /*height*/)
 {
 	UT_ASSERT_NOT_REACHED ();
 }
 
-void XAP_UnixGnomePrintGraphics::scroll(UT_sint32, UT_sint32)
+void XAP_UnixGnomePrintGraphics::scroll(double, double)
 {
 	UT_ASSERT_NOT_REACHED ();
 }
@@ -630,7 +629,7 @@ GR_Font* XAP_UnixGnomePrintGraphics::getGUIFont()
 	return NULL;
 }
 
-void XAP_UnixGnomePrintGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
+void XAP_UnixGnomePrintGraphics::fillRect(GR_Color3D c, double x, double y, double w, double h)
 {
 	UT_ASSERT_NOT_REACHED ();
 }
@@ -649,39 +648,40 @@ void XAP_UnixGnomePrintGraphics::setPageSize(char* pageSizeName, UT_uint32 iwidt
 /*                                Fonts                                */
 /***********************************************************************/
 
-UT_uint32 XAP_UnixGnomePrintGraphics::getFontAscent(GR_Font *fnt)
+double XAP_UnixGnomePrintGraphics::getFontAscent(GR_Font *fnt)
 {
-	PSFont*	hndl = static_cast<PSFont*> (fnt);
-	// FIXME we should really be getting stuff from the font in layout units,
+	// FIXME: we should return a value in layout units, independent of the zoom.
 	// FIXME but we're not smart enough to do that yet
-	// we call getDeviceResolution() to avoid zoom
-   	return static_cast<UT_uint32>(hndl->getUnixFont()->getAscender(hndl->getSize()) * getResolution() / getDeviceResolution() + 0.5);
+	PSFont*	hndl = static_cast<PSFont*> (fnt);
+	XAP_UnixFont* pFont = hndl->getUnixFont();
+	return pFont->getAscender(hndl->getSize()) * getResolution() / getDeviceResolution();
 }
 
-UT_uint32 XAP_UnixGnomePrintGraphics::getFontAscent()
+double XAP_UnixGnomePrintGraphics::getFontAscent()
 {
 	return getFontAscent(static_cast<GR_Font *>(m_pCurrentPSFont));
 }
 
-UT_uint32 XAP_UnixGnomePrintGraphics::getFontDescent(GR_Font *fnt)
+double XAP_UnixGnomePrintGraphics::getFontDescent(GR_Font *fnt)
 {
-	PSFont*	psfnt = static_cast<PSFont*> (fnt);
-	// FIXME we should really be getting stuff from the font in layout units,
-	// FIXME but we're not smart enough to do that yet
-   	return static_cast<UT_uint32>(psfnt->getUnixFont()->getDescender(psfnt->getSize()) * getResolution() / getDeviceResolution() + 0.5);
+	// FIXME: we should return a value in layout units, independent of the zoom.
+	// FIXME but we're not smart enough to do that yet	
+	PSFont*	hndl = static_cast<PSFont*> (fnt);
+	XAP_UnixFont* pFont = hndl->getUnixFont();
+	return pFont->getDescender(hndl->getSize()) * getResolution() / getDeviceResolution();
 }
 
-UT_uint32 XAP_UnixGnomePrintGraphics::getFontDescent()
+double XAP_UnixGnomePrintGraphics::getFontDescent()
 {
 	return getFontDescent(static_cast<GR_Font *>(m_pCurrentPSFont));
 }
 
-UT_uint32 XAP_UnixGnomePrintGraphics::getFontHeight()
+double XAP_UnixGnomePrintGraphics::getFontHeight()
 {
 	return (getFontAscent() + getFontDescent());
 }
 
-UT_uint32 XAP_UnixGnomePrintGraphics::getFontHeight(GR_Font *fnt)
+double XAP_UnixGnomePrintGraphics::getFontHeight(GR_Font *fnt)
 {
 	return (getFontAscent(fnt) + getFontDescent(fnt));
 }
@@ -800,5 +800,5 @@ UT_sint32 XAP_UnixGnomePrintGraphics::scale_ydir (UT_sint32 in)
 
 UT_sint32 XAP_UnixGnomePrintGraphics::scale_xdir (UT_sint32 in)
 {
-	return static_cast<UT_sint32>(in);
+	return in;
 }

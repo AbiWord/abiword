@@ -74,6 +74,7 @@ bool PS_Image::convertToBuffer(UT_ByteBuf ** /* ppBB */) const
 	return false;
 }
 
+// note that this does take device units, unlike everything else.
 bool PS_Image::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
 {
    	png_structp png_ptr;

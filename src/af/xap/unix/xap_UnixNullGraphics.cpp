@@ -122,34 +122,35 @@ void UnixNull_Graphics::setFont(GR_Font* pFont)
 	m_pCurrentFont = pNewFont;
 }
 
-UT_uint32 UnixNull_Graphics::getFontAscent(GR_Font * fnt)
+double UnixNull_Graphics::getFontAscent(GR_Font * fnt)
 {
-	PSFont*	hndl = static_cast<PSFont*> (fnt);
-	// FIXME we should really be getting stuff fromt he font in layout units,
+	// FIXME: we should return a value in layout units, independent of the zoom.
 	// FIXME but we're not smart enough to do that yet
-	// we call getDeviceResolution() to avoid zoom
-	return static_cast<UT_uint32>(hndl->getUnixFont()->getAscender(hndl->getSize()) * getResolution() / getDeviceResolution() + 0.5);
+	PSFont*	hndl = static_cast<PSFont*> (fnt);
+	XAP_UnixFont* pFont = hndl->getUnixFont();
+	return pFont->getAscender(hndl->getSize()) * getResolution() / getDeviceResolution();
 }
 
-UT_uint32 UnixNull_Graphics::getFontAscent()
+double UnixNull_Graphics::getFontAscent()
 {
 	return getFontAscent(m_pCurrentFont);
 }
 
-UT_uint32 UnixNull_Graphics::getFontDescent(GR_Font * fnt)
+double UnixNull_Graphics::getFontDescent(GR_Font * fnt)
 {
-	PSFont*				psfnt = static_cast<PSFont*> (fnt);
-	// FIXME we should really be getting stuff fromt he font in layout units,
-	// FIXME but we're not smart enough to do that yet
-	return static_cast<UT_uint32>(psfnt->getUnixFont()->getDescender(psfnt->getSize()) * getResolution() / getDeviceResolution() + 0.5);
+	// FIXME: we should return a value in layout units, independent of the zoom.
+	// FIXME but we're not smart enough to do that yet	
+	PSFont*	hndl = static_cast<PSFont*> (fnt);
+	XAP_UnixFont* pFont = hndl->getUnixFont();
+	return pFont->getDescender(hndl->getSize()) * getResolution() / getDeviceResolution();
 }
 
-UT_uint32 UnixNull_Graphics::getFontDescent()
+double UnixNull_Graphics::getFontDescent()
 {
 	return getFontDescent(m_pCurrentFont);
 }
 
-UT_uint32 UnixNull_Graphics::getFontHeight(GR_Font * fnt)
+double UnixNull_Graphics::getFontHeight(GR_Font * fnt)
 {
 	return getFontAscent(fnt) + getFontDescent(fnt);
 }
@@ -158,7 +159,7 @@ void UnixNull_Graphics::getCoverage(UT_NumberVector& coverage)
 {
 }
 
-UT_uint32 UnixNull_Graphics::getFontHeight()
+double UnixNull_Graphics::getFontHeight()
 {
 	return getFontAscent(static_cast<GR_Font *>(m_pCurrentFont)) + getFontDescent(static_cast<GR_Font *>(m_pCurrentFont));
 }
@@ -268,26 +269,26 @@ GR_Font* UnixNull_Graphics::_findFont(const char* pszFontFamily,
 	return pFont;
 }
 
-void UnixNull_Graphics::drawGlyph(UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff)
+void UnixNull_Graphics::drawGlyph(UT_uint32 Char, double xoff, double yoff)
 {
 }
 
 
 void UnixNull_Graphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
-								  int iLength, UT_sint32 xoff, UT_sint32 yoff,
+								  int iLength, double xoff, double yoff,
 								  int * pCharWidths)
 {
 }
 
-void UnixNull_Graphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 y2)
+void UnixNull_Graphics::drawLine(double x1, double y1, double x2, double y2)
 {
 }
 
-void UnixNull_Graphics::setLineWidth(UT_sint32 iLineWidth)
+void UnixNull_Graphics::setLineWidth(double iLineWidth)
 {
 }
 
-void UnixNull_Graphics::xorLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32)
+void UnixNull_Graphics::xorLine(double, double, double, double)
 {
 }
 
@@ -295,7 +296,7 @@ void UnixNull_Graphics::polyLine(UT_Point * /* pts */, UT_uint32 /* nPoints */)
 {
 }
 
-void UnixNull_Graphics::fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
+void UnixNull_Graphics::fillRect(const UT_RGBColor& c, double x, double y, double w, double h)
 {
 }
 
@@ -307,13 +308,13 @@ void UnixNull_Graphics::setClipRect(const UT_Rect* r)
 {
 }
 
-void UnixNull_Graphics::clearArea(UT_sint32 /*x*/, UT_sint32 /*y*/,
-							UT_sint32 /*width*/, UT_sint32 /*height*/)
+void UnixNull_Graphics::clearArea(double /*x*/, double /*y*/,
+							double /*width*/, double /*height*/)
 {
 
 }
 
-void UnixNull_Graphics::scroll(UT_sint32, UT_sint32)
+void UnixNull_Graphics::scroll(double, double)
 {
 
 }
@@ -347,7 +348,7 @@ bool UnixNull_Graphics::endPrint(void)
 /*****************************************************************/
 /*****************************************************************/
 
-void UnixNull_Graphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
+void UnixNull_Graphics::drawImage(GR_Image* pImg, double xDest, double yDest)
 {
 }
 	
@@ -396,7 +397,7 @@ UT_RGBColor * UnixNull_Graphics::getColor3D(GR_Color3D /*c*/)
 	return NULL;
 }
 
-void UnixNull_Graphics::fillRect(GR_Color3D /*c*/, UT_sint32 /*x*/, UT_sint32 /*y*/, UT_sint32 /*w*/, UT_sint32 /*h*/)
+void UnixNull_Graphics::fillRect(GR_Color3D /*c*/, double /*x*/, double /*y*/, double /*w*/, double /*h*/)
 {
 }
 

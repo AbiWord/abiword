@@ -170,8 +170,8 @@ public:
 	virtual bool bl_doclistener_changeFmtMark(fl_ContainerLayout*, const PX_ChangeRecord_FmtMarkChange * pcrfmc);
 
 	virtual void         checkGraphicTick(GR_Graphics * pG);
-	virtual void         setImageWidth(UT_sint32 iWidth);
-	virtual void         setImageHeight(UT_sint32 iHeight);
+	virtual void         setImageWidth(double iWidth);
+	virtual void         setImageHeight(double iHeight);
 
 #ifdef FMT_TEST
 	virtual void		__dump(FILE * fp) const;
@@ -190,8 +190,8 @@ protected:
 	FG_Graphic *        m_pGraphicImage;
 	GR_Image *          m_pImageImage;
 	UT_uint32           m_iGraphicTick;
-	UT_sint32           m_iDocImageWidth;
-	UT_sint32           m_iDocImageHeight;
+	double              m_iDocImageWidth;
+	double              m_iDocImageHeight;
 };
 
 class ABI_EXPORT fl_DocSectionLayout : public fl_SectionLayout
@@ -224,18 +224,18 @@ public:
 	virtual void		redrawUpdate(void);
 	virtual fp_Container*		getNewContainer(fp_Container * pFirstContainer = NULL);
 
-	inline UT_sint32			getLeftMargin(void) const { return m_iLeftMargin; }
-	inline UT_sint32			getRightMargin(void) const { return m_iRightMargin; }
-	UT_sint32                   getTopMargin(void) const;
-    UT_sint32                   getBottomMargin(void) const;
-	inline UT_sint32			getFooterMargin(void) const { return m_iFooterMargin; }
-	inline UT_sint32			getHeaderMargin(void) const { return m_iHeaderMargin; }
-	inline UT_sint32			getSpaceAfter(void) const { return m_iSpaceAfter; }
-	inline UT_sint32            getMaxSectionColumnHeight(void) const { return m_iMaxSectionColumnHeight;}
-	UT_sint32                   getColumnGap(void) const;
-	UT_uint32			        getFootnoteLineThickness(void) const
+	inline double				getLeftMargin(void) const { return m_iLeftMargin; }
+	inline double				getRightMargin(void) const { return m_iRightMargin; }
+	double               	    getTopMargin(void) const;
+    double               	    getBottomMargin(void) const;
+	inline double				getFooterMargin(void) const { return m_iFooterMargin; }
+	inline double				getHeaderMargin(void) const { return m_iHeaderMargin; }
+	inline double				getSpaceAfter(void) const { return m_iSpaceAfter; }
+	inline double   	        getMaxSectionColumnHeight(void) const { return m_iMaxSectionColumnHeight;}
+	double 						getColumnGap(void) const;
+	double				        getFootnoteLineThickness(void) const
 		{ return m_iFootnoteLineThickness;}
-	UT_uint32			        getFootnoteYoff(void) const
+	double			        getFootnoteYoff(void) const
 		{ return m_iFootnoteYoff;}
 
 	void                completeBreakSection(void);
@@ -266,8 +266,8 @@ public:
 	fl_HdrFtrSectionLayout*         getHeaderLast(void);
 	fl_HdrFtrSectionLayout*         getFooterLast(void);
 
-	bool                            setHdrFtrHeightChange(bool bDoHdr, UT_sint32 newHeight);
-	static void         _HdrFtrChangeCallback(UT_Worker * pWorker);
+	bool                            setHdrFtrHeightChange(bool bDoHdr, double newHeight);
+	static void                     _HdrFtrChangeCallback(UT_Worker * pWorker);
 
 	void				addOwnedPage(fp_Page*);
 	void                            prependOwnedHeaderPage(fp_Page * p_Page);
@@ -276,7 +276,7 @@ public:
 	void                markForRebuild(void) { m_bNeedsRebuild = true;}
 	void                clearRebuild(void) { m_bNeedsRebuild = false;}
 	bool                needsRebuild(void) const { return m_bNeedsRebuild;}
-	void				checkAndAdjustColumnGap(UT_sint32 iLayoutWidth);
+	void				checkAndAdjustColumnGap(double iLayoutWidth);
     void                markForReformat(void) { m_bNeedsFormat = true;}
     bool                needsReFormat(void) const { return m_bNeedsFormat;}
 	bool                isThisPageValid(HdrFtrType hfType, fp_Page * pThisPage);
@@ -292,9 +292,9 @@ public:
 	fp_Container *      getFirstEndnoteContainer(void);
 	fp_Container *      getLastEndnoteContainer(void);
 	void                deleteBrokenTablesFromHere(fl_ContainerLayout * pTL);
-	UT_sint32           getWidth(void);
-	UT_sint32           getActualColumnHeight(void);
-	UT_sint32           getActualColumnWidth(void);
+	double              getWidth(void);
+	double              getActualColumnHeight(void);
+	double              getActualColumnWidth(void);
 	bool                isCollapsing(void) const
 		{ return m_bDoingCollapse;}
 private:
@@ -313,29 +313,29 @@ private:
 	fl_HdrFtrSectionLayout*		m_pFooterLastSL;
 
 	UT_uint32			m_iNumColumns;
-	UT_sint32			m_iColumnGap;
+	double				m_iColumnGap;
 	bool				m_bColumnLineBetween;
 	UT_uint32			m_iColumnOrder;
 
-	UT_sint32			m_iSpaceAfter;
+	double				m_iSpaceAfter;
 	bool                m_bRestart;
 	UT_sint32           m_iRestartValue;
-	UT_sint32			m_iLeftMargin;
+	double				m_iLeftMargin;
 	double				m_dLeftMarginUserUnits;
-	UT_sint32			m_iRightMargin;
+	double				m_iRightMargin;
 	double				m_dRightMarginUserUnits;
-	UT_sint32			m_iTopMargin;
+	double				m_iTopMargin;
 	double				m_dTopMarginUserUnits;
-	UT_sint32			m_iBottomMargin;
+	double				m_iBottomMargin;
 	double				m_dBottomMarginUserUnits;
-	UT_sint32			m_iFooterMargin;
+	double				m_iFooterMargin;
 	double				m_dFooterMarginUserUnits;
-	UT_sint32			m_iHeaderMargin;
+	double				m_iHeaderMargin;
 	double				m_dHeaderMarginUserUnits;
-	UT_sint32           m_iMaxSectionColumnHeight;
-	double              m_dMaxSectionColumnHeight;
-	UT_sint32           m_iFootnoteLineThickness;
-	UT_sint32           m_iFootnoteYoff;
+	double	        	        m_iMaxSectionColumnHeight;
+	double                          m_dMaxSectionColumnHeight;
+	double 		                m_iFootnoteLineThickness;
+	double                          m_iFootnoteYoff;
 	
 	bool				m_bForceNewPage;
 
@@ -353,8 +353,8 @@ private:
 	bool                m_bDeleteingBrokenContainers;
 	UT_String           m_sPaperColor;
 	UT_String           m_sScreenColor;
-	UT_sint32           m_iNewHdrHeight;
-	UT_sint32           m_iNewFtrHeight;
+	double              m_iNewHdrHeight;
+	double              m_iNewFtrHeight;
 	UT_Worker *         m_pHdrFtrChangeTimer;
 	UT_String           m_sHdrFtrChangeProps;
 	bool                m_bDoingCollapse;

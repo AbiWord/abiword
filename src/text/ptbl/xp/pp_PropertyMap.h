@@ -266,7 +266,7 @@ public:
 		TypeThickness	m_t_thickness;
 
 		UT_RGBColor		m_color;		// in case of color_color
-		UT_uint32		m_thickness;	// in case of thickness_length
+		double			m_thickness;	// in case of thickness_length
 	};
 	class ABI_EXPORT Background
 	{

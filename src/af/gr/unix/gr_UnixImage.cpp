@@ -169,14 +169,14 @@ void GR_UnixImage::scaleImageTo(GR_Graphics * pG, const UT_Rect & rec)
 	UT_ASSERT(G_OBJECT(m_image)->ref_count == 1);
 }
 
-UT_sint32  GR_UnixImage::getDisplayHeight(void) const
+UT_sint32 GR_UnixImage::getDisplayHeight(void) const
 {
 	UT_return_val_if_fail(m_image, 0);
 
 	return gdk_pixbuf_get_height (m_image);
 }
 
-bool  GR_UnixImage::convertToBuffer(UT_ByteBuf** ppBB) const
+bool GR_UnixImage::convertToBuffer(UT_ByteBuf** ppBB) const
 {
   if (!m_image)
     {

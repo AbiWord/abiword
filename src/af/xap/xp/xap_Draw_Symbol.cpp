@@ -72,7 +72,7 @@ void XAP_Draw_Symbol::setFontString( void )
 	setFontToGC(m_gc, m_drawWidth / 32, 14);	
 }
 
-void XAP_Draw_Symbol::setFontToGC(GR_Graphics *p_gc, UT_uint32 MaxWidthAllowable, UT_sint32 PointSize)
+void XAP_Draw_Symbol::setFontToGC(GR_Graphics *p_gc, double MaxWidthAllowable, UT_sint32 PointSize)
 {
 	UT_ASSERT(p_gc);
 	UT_ASSERT(MaxWidthAllowable);
@@ -97,7 +97,7 @@ void XAP_Draw_Symbol::setFontToGC(GR_Graphics *p_gc, UT_uint32 MaxWidthAllowable
 		
 		p_gc->setFont(font);
 		
-		UT_uint32 MaxWidth = p_gc->getMaxCharacterWidth(p_buffer, 224);
+		double MaxWidth = p_gc->getMaxCharacterWidth(p_buffer, 224);
 			
 		if (MaxWidth < MaxWidthAllowable)
 			SizeOK = true;
@@ -133,15 +133,15 @@ void XAP_Draw_Symbol::setFontStringarea(void)
 void XAP_Draw_Symbol::draw(void)
 {
 	UT_ASSERT(m_gc);
-	UT_uint32 wwidth, wheight, yoff, xoff, x, y;
+	double wwidth, wheight, yoff, xoff, x, y;
 	size_t i;
 
 	GR_Painter painter(m_gc);
 	
 	wwidth = m_drawWidth;
 	wheight = m_drawHeight;
-	UT_uint32 tmpw = wwidth / 32;
-	UT_uint32 tmph = wheight / 7;
+	double tmpw = wwidth / 32;
+	double tmph = wheight / 7;
 	yoff = wheight / 14;
 	xoff = wwidth / 64;
 	painter.clearArea(0, 0, wwidth, wheight);
@@ -155,8 +155,8 @@ void XAP_Draw_Symbol::draw(void)
 		for (UT_UCSChar j = base; j < base + nb_chars; ++j)
 		{
 			unsigned short w = m_gc->measureUnRemappedChar(j);
-			UT_uint32 x = (pos % 32) * tmpw + (tmpw - w) / 2;
-			UT_uint32 y = pos / 32 * tmph;
+			double x = (pos % 32) * tmpw + (tmpw - w) / 2;
+			double y = pos / 32 * tmph;
 			painter.drawChars(&j, 0, 1, x, y);
 			++pos;
 		}
@@ -198,20 +198,20 @@ UT_UCSChar XAP_Draw_Symbol::calcSymbolFromCoords(UT_uint32 ix, UT_uint32 iy)
 
 UT_UCSChar XAP_Draw_Symbol::calcSymbol(UT_uint32 x, UT_uint32 y)
 {
-	UT_uint32 width = m_drawWidth;
-	UT_uint32 height = m_drawHeight;
-	UT_uint32 ix;
-	UT_uint32 iy;
+	double width = m_drawWidth;
+	double height = m_drawHeight;
+	double ix;
+	double iy;
 	
 	if (x > width || y > height)
 		return static_cast<UT_UCSChar>(0);
 
-	iy = m_gc->tlu(y) / (height / 7);
-	ix = m_gc->tlu(x) / (width / 32);
+	iy = m_gc->tlu(y) * 7 / height;
+	ix = m_gc->tlu(x) * 32 / width;
 	return calcSymbolFromCoords(ix, iy);
 }
 
-void XAP_Draw_Symbol::calculatePosition(UT_UCSChar c, UT_uint32 &x, UT_uint32 &y)
+void XAP_Draw_Symbol::calculatePosition(UT_UCSChar c, double &x, double &y)
 {
 	UT_uint32 index = 0;
 
@@ -249,8 +249,8 @@ void XAP_Draw_Symbol::drawarea(UT_UCSChar c, UT_UCSChar p)
 	//
 {
 	UT_ASSERT(m_areagc);
-	UT_uint32 wwidth,wheight,x,y,cx,cy,px,py,swidth,sheight;
-	UT_uint32 cx1,cy1,px1,py1;
+	double wwidth,wheight,x,y,cx,cy,px,py,swidth,sheight;
+	double cx1,cy1,px1,py1;
 
 	GR_Painter areaPainter(m_areagc);
 	GR_Painter painter(m_gc);
@@ -275,8 +275,8 @@ void XAP_Draw_Symbol::drawarea(UT_UCSChar c, UT_UCSChar p)
 	// along with the widths of the appropriate boxes.
 	swidth = m_drawWidth;
 	sheight = m_drawHeight;
-	UT_uint32 tmpw = m_drawWidth / 32;
-	UT_uint32 tmph = m_drawHeight / 7;
+	double tmpw = m_drawWidth / 32;
+	double tmph = m_drawHeight / 7;
 
 	calculatePosition(c, cx, cy);
 	unsigned short wc = m_gc->measureUnRemappedChar(c);

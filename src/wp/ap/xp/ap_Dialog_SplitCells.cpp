@@ -165,7 +165,7 @@ void AP_Dialog_SplitCells::setAllSensitivities(void)
 //
 	fl_BlockLayout * pBL =	pView->getLayout()->findBlockAtPosition(iCurPos);
 	fp_Run * pRun;
-	UT_sint32 xPoint,yPoint,xPoint2,yPoint2,iPointHeight;
+	double xPoint,yPoint,xPoint2,yPoint2,iPointHeight;
 	bool bDirection;
 	pRun = pBL->findPointCoords(iCurPos, false, xPoint,
 							    yPoint, xPoint2, yPoint2,

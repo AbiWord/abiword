@@ -544,13 +544,13 @@ GR_UnixGraphics::GR_UnixGraphics(GdkWindow * win, XAP_UnixFontManager * fontMana
 	m_pColormap = gdk_rgb_get_colormap();
 
 	//
-	// Martin's attempt to make double buffering work.with xft
+	// Martin's attempt to make double buffering work with xft
 	//
-	m_iXoff = 0;
-	m_iYoff = 0;
+	UT_sint32 iXoff = 0;
+	UT_sint32 iYoff = 0;
 	GdkDrawable * realDraw;
-	gdk_window_get_internal_paint_info (m_pWin, &realDraw,&m_iXoff,&m_iYoff);
-    m_iXoff = tlu(m_iXoff); m_iYoff = tlu(m_iYoff);
+	gdk_window_get_internal_paint_info (m_pWin, &realDraw,&iXoff,&iYoff);
+    m_iXoff = tlu(iXoff); m_iYoff = tlu(iYoff);
 	m_pGC = gdk_gc_new(realDraw);
 	m_pXORGC = gdk_gc_new(realDraw);
 	m_pVisual = GDK_VISUAL_XVISUAL( gdk_drawable_get_visual(realDraw));
@@ -631,18 +631,13 @@ GR_UnixGraphics::GR_UnixGraphics(GdkPixmap * win, XAP_UnixFontManager * fontMana
 	m_pColormap = gdk_rgb_get_colormap();
 
 
-	//
-	// Martin's attempt to make double buffering work.with xft
-	//
-	m_iXoff = 0;
-	m_iYoff = 0;
 	GdkDrawable * realDraw = static_cast<GdkDrawable *>(win);
 	if(bUseDrawable)
 	{
 		realDraw = static_cast<GdkDrawable *>(win);
 	}
 
-    m_iXoff = tlu(m_iXoff); m_iYoff = tlu(m_iYoff);
+    m_iXoff = 0; m_iYoff = 0;
 	m_pGC = gdk_gc_new(realDraw);
 	m_pXORGC = gdk_gc_new(realDraw);
 	m_pVisual = GDK_VISUAL_XVISUAL( gdk_drawable_get_visual(realDraw));
@@ -807,7 +802,7 @@ void GR_UnixGraphics::setLineProperties ( double inWidth,
 								 mapJoinStyle ( inJoinStyle ) ) ;
 }
 
-void GR_UnixGraphics::drawGlyph(UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff)
+void GR_UnixGraphics::drawGlyph(UT_uint32 Char, double xoff, double yoff)
 {
 	UT_uint32 iChar = Char;
 	if(isSymbol() && (iChar < 255)  && (iChar >= 32))
@@ -824,32 +819,23 @@ void GR_UnixGraphics::drawGlyph(UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff)
 		iChar =  FT_Get_Char_Index(face,Char);
 		XftUnlockFace (m_pXftFontD);
 	}
-	
-	// FIXME ascent in wrong unit
 
-	UT_sint32 idy = _tduY(yoff);
-	UT_sint32 idx = _tduX(xoff);
-
-	XftDrawGlyphs(m_pXftDraw, &m_XftColor, m_pXftFontD, tdu(m_iXoff) +idx, tdu(m_pXftFontL->ascent * getResolution() / s_getDeviceResolution() + m_iYoff)+idy, &iChar, 1);
+	XftDrawGlyphs(m_pXftDraw, &m_XftColor, m_pXftFontD, tdu(m_iXoff + xoff), m_pXftFontD->ascent + tdu(m_iYoff + yoff), &iChar, 1);
 }
 
 void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
-				int iLength, UT_sint32 xoff, UT_sint32 yoff,
+				int iLength, double xoff, double yoff,
 				int * pCharWidths)
 {
 	xxx_UT_DEBUGMSG(("UnixGraphics:drawChars: m_bIsSymbol %d iLength %d \n",m_bIsSymbol,iLength));
 	if (iLength == 0)
 		return;
-	// FIXME shouldn't need to do this - plam
-	UT_sint32 idy = _tduY(yoff);
-	UT_sint32 idx = _tduX(xoff);
 
-	UT_sint32 iAscent = m_pXftFontL->ascent * getResolution() / s_getDeviceResolution();
 	if (!pCharWidths)
 	{
 		if(!isSymbol() && !isDingbat())
 		{
-			XftDrawString32(m_pXftDraw, &m_XftColor, m_pXftFontD, tdu(m_iXoff) + idx, tdu(iAscent + m_iYoff)+idy,
+			XftDrawString32(m_pXftDraw, &m_XftColor, m_pXftFontD, tdu(m_iXoff + xoff), m_pXftFontD->ascent + tdu(m_iYoff + yoff),
 							const_cast<XftChar32*> (pChars + iCharOffset), iLength);
 		}
 		else if(isSymbol())
@@ -865,7 +851,7 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 					xxx_UT_DEBUGMSG(("drawchars: mapped %d to %d \n",pChars[i],uChars[i]));
 				}
 			}
-			XftDrawString32(m_pXftDraw, &m_XftColor, m_pXftFontD, tdu(m_iXoff) + idx, tdu(iAscent + m_iYoff)+idy,
+			XftDrawString32(m_pXftDraw, &m_XftColor, m_pXftFontD, tdu(m_iXoff + xoff), m_pXftFontD->ascent + tdu(m_iYoff + yoff),
 							const_cast<XftChar32*> (uChars), iLength);
 			delete [] uChars;
 		}
@@ -883,7 +869,7 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 			}
 			XftUnlockFace (m_pXftFontD);
 			XftDrawGlyphs(m_pXftDraw, &m_XftColor, m_pXftFontD, 
-						  tdu(m_iXoff) +idx, tdu(iAscent + m_iYoff)+idy,
+						  tdu(m_iXoff + xoff), m_pXftFontD->ascent + (m_iYoff + yoff),
 						  uChars, iLength);
 			delete [] uChars;
 		}
@@ -896,7 +882,7 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 		XftGlyphSpec * pGlyphSpec = NULL;
 		FT_Face face = NULL;
 
-		UT_sint32 currentYoff = idy +tdu(iAscent);
+		UT_sint32 currentYoff = tdu(yoff) + m_pXftFontD->ascent;
 		if(isDingbat())
 		{
 			face = XftLockFace(m_pXftFontD);
@@ -908,7 +894,7 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 		if (iLength > 256)
 			pCharSpec = new XftCharSpec[iLength];
 
-		UT_uint32 xPos = xoff;
+		double xPos = xoff;
 		for (int i = 0; i < iLength; ++i)
 		{
 			uChar = static_cast<UT_uint32>(pChars[i + iCharOffset]);
@@ -931,15 +917,14 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 			// it turns out that we don't fit in a short.
 			// or we can keep it in an int array, then transfer to shorts.
 			// that's probably better.
-			idx = _tduX(xPos);
 			if(!isDingbat())
 			{
-				pCharSpec[i].x = idx;
-				pCharSpec[i].y = currentYoff;
+				pCharSpec[i].x = tdu(xPos);
+				pCharSpec[i].y = tdu(yoff) + m_pXftFontD->ascent;
 			}
 			else
 			{
-				pGlyphSpec[i].x = idx;
+				pGlyphSpec[i].x = tdu(xPos);
 				pGlyphSpec[i].y = currentYoff;
 			}
 			if (i < iLength - 1) {
@@ -1048,7 +1033,7 @@ void GR_UnixGraphics::setFont(GR_Font * pFont)
 	m_pXftFontD = m_pFont->getDeviceXftFont(getZoomPercentage());
 }
 
-UT_uint32 GR_UnixGraphics::getFontHeight(GR_Font * fnt)
+double GR_UnixGraphics::getFontHeight(GR_Font * fnt)
 {
 	return getFontAscent(fnt)+getFontDescent(fnt);
 }
@@ -1058,7 +1043,7 @@ void GR_UnixGraphics::getCoverage(UT_NumberVector& coverage)
 	m_pFont->getUnixFont()->getCoverage(coverage);
 }
 
-UT_uint32 GR_UnixGraphics::getFontHeight()
+double GR_UnixGraphics::getFontHeight()
 {
 	if (!m_pFontManager)
 		return 0;
@@ -1210,64 +1195,50 @@ GR_Font* GR_UnixGraphics::getDefaultFont(UT_String& fontFamily)
 	return &fontHandle;
 }
 
-UT_uint32 GR_UnixGraphics::getFontAscent(GR_Font * fnt)
+double GR_UnixGraphics::getFontAscent(GR_Font * fnt)
 {
-	// should return a value in layout units, independent of the zoom.
-	// ideally, the font should return something appropriate to us.
-
+	// FIXME: we should return a value in layout units, independent of the zoom.
+	// FIXME but we're not smart enough to do that yet
 	UT_ASSERT(fnt);
 	UT_ASSERT(m_pGC);
 
 	XAP_UnixFontHandle * hndl = static_cast<XAP_UnixFontHandle *>(fnt);
-	
-	// FIXME we should really be getting stuff fromt he font in layout units,
-	// FIXME but we're not smart enough to do that yet
-    // we call s_getDeviceResolution() to avoid zoom
-	return static_cast<UT_uint32>(hndl->getUnixFont()->getAscender(hndl->getSize()) * getResolution() / s_getDeviceResolution() + 0.5);
+	XAP_UnixFont* pFont = hndl->getUnixFont();
+	return pFont->getAscender(hndl->getSize()) * getResolution() / getDeviceResolution();
 }
 
-UT_uint32 GR_UnixGraphics::getFontAscent()
+double GR_UnixGraphics::getFontAscent()
 {
 	return getFontAscent(m_pFont);
 }
 
-UT_uint32 GR_UnixGraphics::getFontDescent(GR_Font * fnt)
+double GR_UnixGraphics::getFontDescent(GR_Font * fnt)
 {
+	// FIXME: we should return a value in layout units, independent of the zoom.
+	// FIXME but we're not smart enough to do that yet	
 	UT_ASSERT(fnt);
 	UT_ASSERT(m_pGC);
 
 	XAP_UnixFontHandle * hndl = static_cast<XAP_UnixFontHandle *>(fnt);
-
 	XAP_UnixFont* pFont = hndl->getUnixFont();
-	// FIXME we should really be getting stuff fromt he font in layout units,
-	// FIXME but we're not smart enough to do that yet
-	return static_cast<UT_uint32>(pFont->getDescender(hndl->getSize()) * getResolution() / getDeviceResolution() + 0.5);
+	return pFont->getDescender(hndl->getSize()) * getResolution() / getDeviceResolution();
 }
 
-UT_uint32 GR_UnixGraphics::getFontDescent()
+double GR_UnixGraphics::getFontDescent()
 {
 	return getFontDescent(m_pFont);
 }
 
 
-void GR_UnixGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,
-							   UT_sint32 x2, UT_sint32 y2)
+void GR_UnixGraphics::drawLine(double x1, double y1,
+							   double x2, double y2)
 {
-	GdkGCValues gcV;
-	gdk_gc_get_values(m_pGC, &gcV);
-	
-	UT_sint32 idx1 = _tduX(x1);
-	UT_sint32 idx2 = _tduX(x2);
-
-	UT_sint32 idy1 = _tduY(y1);
-	UT_sint32 idy2 = _tduY(y2);
-	
-	gdk_draw_line(m_pWin, m_pGC, idx1, idy1, idx2, idy2);
+	gdk_draw_line(m_pWin, m_pGC, tdu(x1), tdu(y1), tdu(x2), tdu(y2));
 }
 
-void GR_UnixGraphics::setLineWidth(UT_sint32 iLineWidth)
+void GR_UnixGraphics::setLineWidth(double iLineWidth)
 {
-	m_iLineWidth = tdu(iLineWidth);
+	m_iLineWidth = iLineWidth;
 
 	// Get the current values of the line attributes
 
@@ -1278,42 +1249,24 @@ void GR_UnixGraphics::setLineWidth(UT_sint32 iLineWidth)
 	GdkJoinStyle  cur_join_style = cur_line_att.join_style;
 
 	// Set the new line width
-	gdk_gc_set_line_attributes(m_pGC,m_iLineWidth,cur_line_style,cur_cap_style,cur_join_style);
-
+	gdk_gc_set_line_attributes(m_pGC,tdu(m_iLineWidth),cur_line_style,cur_cap_style,cur_join_style);
 }
 
-void GR_UnixGraphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
-							  UT_sint32 y2)
+void GR_UnixGraphics::xorLine(double x1, double y1, double x2,
+							  double y2)
 {
-	UT_sint32 idx1 = _tduX(x1);
-	UT_sint32 idx2 = _tduX(x2);
-
-	UT_sint32 idy1 = _tduY(y1);
-	UT_sint32 idy2 = _tduY(y2);
-
-	gdk_draw_line(m_pWin, m_pXORGC, idx1, idy1, idx2, idy2);
+	gdk_draw_line(m_pWin, m_pXORGC, tdu(x1), tdu(y1), tdu(x2), tdu(y2));
 }
 
 void GR_UnixGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 {
-	// see bug #303 for what this is about
-
 	GdkPoint * points = static_cast<GdkPoint *>(calloc(nPoints, sizeof(GdkPoint)));
 	UT_ASSERT(points);
 
 	for (UT_uint32 i = 0; i < nPoints; i++)
 	{
-		UT_sint32 idx = _tduX(pts[i].x);
-		points[i].x = idx;
-		// It seems that Windows draws each pixel along the the Y axis
-		// one pixel beyond where GDK draws it (even though both coordinate
-		// systems start at 0,0 (?)).  Subtracting one clears this up so
-		// that the poly line is in the correct place relative to where
-		// the rest of GR_UnixGraphics:: does things (drawing text, clearing
-		// areas, etc.).
-		UT_sint32 idy1 = _tduY(pts[i].y);
-
-		points[i].y = idy1 - 1;
+		points[i].x = tdu(pts[i].x);
+		points[i].y = tdu(pts[i].y);
 	}
 
 	gdk_draw_lines(m_pWin, m_pGC, points, nPoints);
@@ -1325,13 +1278,8 @@ void GR_UnixGraphics::invertRect(const UT_Rect* pRect)
 {
 	UT_ASSERT(pRect);
 
-	UT_sint32 idy = _tduY(pRect->top);
-	UT_sint32 idx = _tduX(pRect->left);
-	UT_sint32 idw = _tduR(pRect->width);
-	UT_sint32 idh = _tduR(pRect->height);
-
-	gdk_draw_rectangle(m_pWin, m_pXORGC, 1, idx, idy,
-			   idw, idh);
+	gdk_draw_rectangle(m_pWin, m_pXORGC, 1, tdu(pRect->left), tdu(pRect->top),
+			   tdu(pRect->width), tdu(pRect->height));
 }
 
 void GR_UnixGraphics::setClipRect(const UT_Rect* pRect)
@@ -1340,33 +1288,34 @@ void GR_UnixGraphics::setClipRect(const UT_Rect* pRect)
 	if (pRect)
 	{
 		GdkRectangle r;
-		UT_sint32 idy = _tduY(pRect->top);
-		UT_sint32 idx = _tduX(pRect->left);
-		//UT_sint32 idw = _tduR(pRect->width);
-		//UT_sint32 idh = _tduR(pRect->height);
-		r.x = idx;
-		r.y = idy;
-		r.width = _tduR(pRect->width);
-		r.height = _tduR(pRect->height);
+		r.x = tdu(pRect->left);
+		r.y = tdu(pRect->top);
+		r.width = tdu(pRect->width);
+		r.height = tdu(pRect->height);
 
 		gdk_gc_set_clip_rectangle(m_pGC, &r);
 		gdk_gc_set_clip_rectangle(m_pXORGC, &r);
 		Region region;
 		XPoint points[4];
 	
-		points[0].x = r.x + tdu(m_iXoff);
-		points[0].y = r.y + tdu(m_iYoff);
+		/* NOTE: normally, left + width would get an additional "- tlu(1)" term.
+		However, XPolygonRegion handles regions a bit different than GDK, which 
+		makes this term unneeded. See the XCreateGC manual pages for details
+		(search for the section	explaining the 'EvenOddRule' rule). */
+		
+		points[0].x = tdu(pRect->left + m_iXoff);
+		points[0].y = tdu(pRect->top + m_iYoff);
 			
-		points[1].x = r.x + r.width  + tdu(m_iXoff);
-		points[1].y = r.y + tdu(m_iYoff);
+		points[1].x = tdu(pRect->left + pRect->width + m_iXoff);
+		points[1].y = tdu(pRect->top + m_iYoff);
 			
-		points[2].x = r.x + r.width  + tdu(m_iXoff);
-		points[2].y = r.y + r.height + tdu(m_iYoff);
+		points[2].x = tdu(pRect->left + pRect->width + m_iXoff);
+		points[2].y = tdu(pRect->top + pRect->height + m_iYoff);
 			
-		points[3].x = r.x  + tdu(m_iXoff);
-		points[3].y = r.y + r.height + tdu(m_iYoff);
+		points[3].x = tdu(pRect->left + m_iXoff);
+		points[3].y = tdu(pRect->top + pRect->height + m_iYoff);
 
-		xxx_UT_DEBUGMSG(("Setting clipping rectangle: (%d, %d, %d, %d)\n", r.x, r.y, r.width, r.height));
+		xxx_UT_DEBUGMSG(("Setting clipping rectangle: (%.2f, %.2f, %.2f, %.2f)\n", r.x, r.y, r.width, r.height));
 		region = XPolygonRegion(points, 4, EvenOddRule);
 		if (region)
 		{
@@ -1384,8 +1333,8 @@ void GR_UnixGraphics::setClipRect(const UT_Rect* pRect)
 	}
 }
 
-void GR_UnixGraphics::fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y,
-							   UT_sint32 w, UT_sint32 h)
+void GR_UnixGraphics::fillRect(const UT_RGBColor& c, double x, double y,
+							   double w, double h)
 {
 	// save away the current color, and restore it after we fill the rect
 	GdkGCValues gcValues;
@@ -1407,22 +1356,18 @@ void GR_UnixGraphics::fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y,
 	gdk_colormap_alloc_color(m_pColormap, &nColor, FALSE, TRUE);
 
 	gdk_gc_set_foreground(m_pGC, &nColor);
-	UT_sint32 idx = _tduX(x);
-	UT_sint32 idy = _tduY(y);
-	UT_sint32 idw = _tduR(w);
-	UT_sint32 idh = _tduR(h);
- 	gdk_draw_rectangle(m_pWin, m_pGC, 1, idx, idy, idw, idh);
+ 	gdk_draw_rectangle(m_pWin, m_pGC, 1, tdu(x), tdu(y), tdu(w), tdu(h));
 
 	gdk_gc_set_foreground(m_pGC, &oColor);
 }
 
-void GR_UnixGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
+void GR_UnixGraphics::scroll(double dx, double dy)
 {
 	GR_CaretDisabler caretDisabler(getCaret());
 	UT_sint32 oldDY = tdu(getPrevYOffset());
 	UT_sint32 oldDX = tdu(getPrevXOffset());
-	UT_sint32 newY = getPrevYOffset() + dy;
-	UT_sint32 newX = getPrevXOffset() + dx;
+	double newY = getPrevYOffset() + dy;
+	double newX = getPrevXOffset() + dx;
 	UT_sint32 ddx = -(tdu(newX) - oldDX);
 	UT_sint32 ddy = -(tdu(newY) - oldDY);
 	setPrevYOffset(newY);
@@ -1469,8 +1414,8 @@ void GR_UnixGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
    				  tdu(x_dest), tdu(y_dest), tdu(width), tdu(height));
 }
 
-void GR_UnixGraphics::clearArea(UT_sint32 x, UT_sint32 y,
-				UT_sint32 width, UT_sint32 height)
+void GR_UnixGraphics::clearArea(double x, double y,
+				double width, double height)
 {
 	if (width > 0)
 	{
@@ -1505,7 +1450,7 @@ bool GR_UnixGraphics::endPrint(void)
  * doesn't scale if the resolution or zoom changes. Instead you must create
  * a new image.
  */
-GR_Image* GR_UnixGraphics::createNewImage(const char* pszName, const UT_ByteBuf* pBB, UT_sint32 iWidth, UT_sint32 iHeight, GR_Image::GRType iType)
+GR_Image* GR_UnixGraphics::createNewImage(const char* pszName, const UT_ByteBuf* pBB, double iWidth, double iHeight, GR_Image::GRType iType)
 {
    	GR_Image* pImg = NULL;
 
@@ -1523,7 +1468,7 @@ GR_Image* GR_UnixGraphics::createNewImage(const char* pszName, const UT_ByteBuf*
  * Draw the specified image at the location specified in local units 
  * (xDest,yDest). xDest and yDest are in logical units.
  */
-void GR_UnixGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
+void GR_UnixGraphics::drawImage(GR_Image* pImg, double xDest, double yDest)
 {
 	UT_ASSERT(pImg);
 
@@ -1534,20 +1479,16 @@ void GR_UnixGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest
 
    	UT_sint32 iImageWidth = pUnixImage->getDisplayWidth();
    	UT_sint32 iImageHeight = pUnixImage->getDisplayHeight();
-	UT_sint32 idx = _tduX(xDest);
-	UT_sint32 idy = _tduY(yDest);
-
-	xDest = idx; yDest = idy;
 
 	if (gdk_pixbuf_get_has_alpha (image))
 		gdk_draw_pixbuf (m_pWin, NULL, image,
-						 0, 0, xDest, yDest,
+						 0, 0, tdu(xDest), tdu(yDest),
 						 iImageWidth, iImageHeight,
 						 GDK_RGB_DITHER_NORMAL,
 						 0, 0);
 	else
 		gdk_draw_pixbuf (m_pWin, m_pGC, image,
-						 0, 0, xDest, yDest,
+						 0, 0, tdu(xDest), tdu(yDest),
 						 iImageWidth, iImageHeight,
 						 GDK_RGB_DITHER_NORMAL,
 						 0, 0);
@@ -1715,7 +1656,7 @@ void GR_UnixGraphics::init3dColors(GtkStyle * pStyle)
 	m_3dColors[CLR3D_Highlight]  = pStyle->bg[GTK_STATE_PRELIGHT];
 }
 
-void GR_UnixGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
+void GR_UnixGraphics::fillRect(GR_Color3D c, double x, double y, double w, double h)
 {
 	UT_ASSERT(c < COUNT_3D_COLORS);
 	gdk_gc_set_foreground(m_pGC, &m_3dColors[c]);
@@ -1755,10 +1696,8 @@ void GR_UnixGraphics::polygon(UT_RGBColor& c,UT_Point *pts,UT_uint32 nPoints)
     UT_ASSERT(points);
 
     for (UT_uint32 i = 0;i < nPoints;i++){
-		UT_sint32 idx = _tduX(pts[i].x);
-        points[i].x = idx;
-		UT_sint32 idy = _tduY(pts[i].y);
-        points[i].y = idy;
+        points[i].x = tdu(pts[i].x);
+        points[i].y = tdu(pts[i].y);
     }
 	gdk_draw_polygon(m_pWin, m_pGC, 1, points, nPoints);
 	delete[] points;
@@ -1796,16 +1735,11 @@ void GR_Font::s_getGenericFontProperties(const char * /*szFontName*/,
  */
 GR_Image * GR_UnixGraphics::genImageFromRectangle(const UT_Rect &rec)
 {
-	UT_sint32 idx = _tduX(rec.left);
-	UT_sint32 idy = _tduY(rec.top);
-	UT_sint32 idw = _tduR(rec.width);
-	UT_sint32 idh = _tduR(rec.height);
-
 	GdkPixbuf * pix = gdk_pixbuf_get_from_drawable(NULL,
 												   m_pWin,
 												   NULL,
-												   idx, idy, 0, 0,
-												   idw, idh);
+												   tdu(rec.left), tdu(rec.top), 0, 0,
+												   tdu(rec.width), tdu(rec.height));
 	
 	UT_return_val_if_fail(pix, NULL);
 
@@ -1824,16 +1758,11 @@ void GR_UnixGraphics::saveRectangle(UT_Rect & r, UT_uint32 iIndx)
 	}
 
 	GdkPixbuf * oldC = NULL;
-	UT_sint32 idx = _tduX(r.left);
-	UT_sint32 idy = _tduY(r.top);
-	UT_sint32 idw = _tduR(r.width);
-	UT_sint32 idh = _tduR(r.height);
-
 	GdkPixbuf * pix = gdk_pixbuf_get_from_drawable(NULL,
 												   m_pWin,
 												   NULL,
-												   idx, idy, 0, 0,
-												   idw, idh);
+												   tdu(r.left), tdu(r.top), 0, 0,
+												   tdu(r.width), tdu(r.height));
 	m_vSaveRectBuf.setNthItem(iIndx, pix, &oldC);
 
 	if(oldC)
@@ -1844,13 +1773,10 @@ void GR_UnixGraphics::restoreRectangle(UT_uint32 iIndx)
 {
 	UT_Rect * r = m_vSaveRect.getNthItem(iIndx);
 	GdkPixbuf *p = m_vSaveRectBuf.getNthItem(iIndx);
-	UT_sint32 idx = _tduX(r->left);
-	UT_sint32 idy = _tduY(r->top);
-
 
 	if (p && r)
 		gdk_draw_pixbuf (m_pWin, NULL, p, 0, 0,
-						 idx, idy,
+						 tdu(r->left), tdu(r->top),
 						 -1, -1, GDK_RGB_DITHER_NONE, 0, 0);
 }
 

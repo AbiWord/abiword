@@ -107,6 +107,7 @@ bool GR_Image::convertToBuffer(UT_ByteBuf** ppBB) const
   return false; 
 }
 
+// note that this does take device units, unlike everything else.
 bool GR_Image::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iWidth, UT_sint32 iHeight) 
 { 
   // default no impl
@@ -125,7 +126,7 @@ GR_Image::GRType GR_Image::getType() const
 	return GRT_Raster;
 }
 
-bool GR_Image::render(GR_Graphics *pGR, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
+bool GR_Image::render(GR_Graphics *pGR, double xDest, double yDest)
 { 
   UT_ASSERT_NOT_REACHED ();
   return false; 

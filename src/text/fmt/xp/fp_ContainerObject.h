@@ -75,8 +75,8 @@ typedef struct _fp_Allocation    fp_Allocation;
  */
 struct _fp_Requisition
 {
-  UT_sint32 width;
-  UT_sint32 height;
+  double width;
+  double height;
 };
 
 /*!
@@ -86,10 +86,10 @@ struct _fp_Requisition
  */
 struct _fp_Allocation
 {
-  UT_sint32 x;
-  UT_sint32 y;
-  UT_sint32 width;
-  UT_sint32 height;
+  double x;
+  double y;
+  double width;
+  double height;
 };
 
 class GR_Graphics;
@@ -131,14 +131,14 @@ public:
 	void           setColor(const char * pszColor);
 	void           setTransColor(UT_RGBColor & color);
 	void           setTransColor(const char * pszColor);
-	void           setImage(FG_Graphic * pGraphic, GR_Image * pImage,GR_Graphics * pG, UT_sint32 width, UT_sint32 height);
+	void           setImage(FG_Graphic * pGraphic, GR_Image * pImage,GR_Graphics * pG, double width, double height);
 	void           setTransparent(void);
-	void           setWidthHeight(GR_Graphics * pG, UT_sint32 width, UT_sint32 height, bool doImage = false);
-	void           setWidth(GR_Graphics * pG, UT_sint32 width);
-	void           setHeight(GR_Graphics * pG, UT_sint32 height);
+	void           setWidthHeight(GR_Graphics * pG, double width, double height, bool doImage = false);
+	void           setWidth(GR_Graphics * pG, double width);
+	void           setHeight(GR_Graphics * pG, double height);
 	void           setDocLayout(FL_DocLayout * pDocLayout);
 	void           markTransparentForPrint(void);
-	void           Fill(GR_Graphics * pG, UT_sint32 & srcX, UT_sint32 & srcY, UT_sint32 x, UT_sint32 y, UT_sint32 width, UT_sint32 height);
+	void           Fill(GR_Graphics * pG, double & srcX, double & srcY, double x, double y, double width, double height);
 	fg_FillType *  getParent(void) const;
 	FG_Fill_Type   getFillType(void) const;
 	FL_DocLayout * getDocLayout(void);
@@ -159,8 +159,8 @@ private:
 	UT_RGBColor          m_TransColor;
 	bool                 m_bTransColorSet;
 	bool                 m_bColorSet;
-	UT_sint32            m_iWidth;
-	UT_sint32            m_iHeight;
+	double               m_iWidth;
+	double               m_iHeight;
 	GR_Image **          m_pDocImage;
 	FG_Graphic **        m_pDocGraphic;
 };
@@ -177,18 +177,18 @@ public:
 	*/
 	FP_ContainerType	getContainerType(void) const { return m_iConType; }
 	bool                isColumnType(void) const;
-	virtual void		setWidth(UT_sint32) = 0;
-	virtual void		setHeight(UT_sint32) = 0 ;
-	virtual void		setX(UT_sint32, bool bDontClearIfNeeded = false) = 0;
-	virtual void		setY(UT_sint32) = 0;
-	virtual UT_sint32	getWidth(void) const = 0;
+	virtual void		setWidth(double) = 0;
+	virtual void		setHeight(double) = 0 ;
+	virtual void		setX(double, bool bDontClearIfNeeded = false) = 0;
+	virtual void		setY(double) = 0;
+	virtual double	getWidth(void) const = 0;
 
 	// all containers that may wish to draw stuff outwith the normal
 	// drawing region, such as the pilcrow on a line, should overwrite this
-	virtual UT_sint32   getDrawingWidth(void) const {return getWidth();}
+	virtual double   getDrawingWidth(void) const {return getWidth();}
 
-	virtual UT_sint32	getX(void) const = 0;
-	virtual UT_sint32	getY(void) const = 0;
+	virtual double	getX(void) const = 0;
+	virtual double	getY(void) const = 0;
 	fl_SectionLayout*   getSectionLayout(void) const
 		{ return m_pSectionLayout; }
     void         setSectionLayout(fl_SectionLayout * pSL)
@@ -196,7 +196,7 @@ public:
 	virtual inline UT_BidiCharType getDirection(void)
 		{ return m_iDirection;}
 	virtual inline void setDirection(UT_BidiCharType c) {m_iDirection = c;}
-	virtual UT_sint32	getHeight(void) const = 0;
+	virtual double	getHeight(void) const = 0;
 
 
 	virtual void		draw(dg_DrawArgs*) = 0;
@@ -209,11 +209,11 @@ public:
     virtual void        setPrev(fp_ContainerObject * pNext) = 0;
 	virtual bool        isVBreakable(void) = 0;
 	virtual bool        isHBreakable(void) = 0;
-	virtual UT_sint32   wantVBreakAt(UT_sint32) = 0;
-	virtual UT_sint32   wantHBreakAt(UT_sint32) = 0;
-	virtual fp_ContainerObject * VBreakAt(UT_sint32) =0;
-	virtual fp_ContainerObject * HBreakAt(UT_sint32) = 0;
-	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool& isTOC) = 0;
+	virtual double		wantVBreakAt(double) = 0;
+	virtual double		wantHBreakAt(double) = 0;
+	virtual fp_ContainerObject * VBreakAt(double) = 0;
+	virtual fp_ContainerObject * HBreakAt(double) = 0;
+	virtual void			mapXYToPosition(double xPos, double yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool& isTOC) = 0;
 	virtual fp_Container * getNextContainerInSection(void) const = 0;
 	virtual fp_Container * getPrevContainerInSection(void) const = 0;
     virtual UT_Rect *      getScreenRect() = 0;
@@ -247,8 +247,8 @@ public:
     fp_Container *         getContainer(void) const;
 	fp_Container *         getColumn(void) const;
 	fp_Page *              getPage(void) const;
-	virtual UT_sint32      getMarginBefore(void) const =0;
-	virtual UT_sint32      getMarginAfter(void) const =0;
+	virtual double      getMarginBefore(void) const = 0;
+	virtual double      getMarginAfter(void) const = 0;
     virtual fp_ContainerObject * getNext(void) const {return m_pNext;}
     virtual fp_ContainerObject * getPrev(void) const {return m_pPrev;}
     virtual void        setNext(fp_ContainerObject * pNext)
@@ -265,9 +265,9 @@ public:
 	void                   deleteNthCon(UT_sint32 i);
 	void                   insertConAt(fp_ContainerObject * pCon, UT_sint32 i);
 	bool                   isEmpty(void) const;
-	virtual UT_uint32 	distanceFromPoint(UT_sint32 x, UT_sint32 y) =0;
+	virtual double 		distanceFromPoint(double x, double y) = 0;
 	virtual void        recalcMaxWidth(bool bDontClearIfNeeded = false) = 0;
-	virtual void        setAssignedScreenHeight(UT_sint32 iY) =0;
+	virtual void        setAssignedScreenHeight(double iY) = 0;
 	bool                getPageRelativeOffsets(UT_Rect &r) const;
 	bool                isOnScreen() const;
 	fp_Container *      getMyBrokenContainer(void) const;
@@ -278,9 +278,9 @@ public:
 	UT_uint32           getBrokenCount(void) { return m_cBrokenContainers; }
 	void                incBrokenCount(void) { m_cBrokenContainers += 1; }
 	void                decBrokenCount(void) { if (m_cBrokenContainers > 0) { 
-			m_cBrokenContainers -= 1; }}
+												m_cBrokenContainers -= 1; }}
 
-fg_FillType *       getFillType(void);
+	fg_FillType *       getFillType(void);
 private:
 	fp_Container*          m_pContainer;
 	fp_ContainerObject *   m_pNext;
@@ -293,9 +293,3 @@ private:
 
 
 #endif /*  CONTAINEROBJECT_H */
-
-
-
-
-
-

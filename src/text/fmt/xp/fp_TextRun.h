@@ -42,13 +42,13 @@ public:
 	fp_TextRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen, bool bLookupProperties=true);
 	virtual ~fp_TextRun();
 
-	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC);
-	virtual void			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection);
+	virtual void			mapXYToPosition(double xPos, double yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC);
+	virtual void			findPointCoords(UT_uint32 iOffset, double& x, double& y, double& x2, double& y2, double& height, bool& bDirection);
 	virtual bool			canBreakAfter(void) const;
 	virtual bool			canBreakBefore(void) const;
 	virtual bool			alwaysFits(void) const;
-	virtual bool			findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, bool bForce=false);
-	virtual UT_sint32		findTrailingSpaceDistance(void) const;
+	virtual bool			findMaxLeftFitSplitPoint(double iMaxLeftWidth, fp_RunSplitInfo& si, bool bForce=false);
+	virtual double			findTrailingSpaceDistance(void) const;
 	void					drawSquiggle(UT_uint32, UT_uint32);
 
 	bool					split(UT_uint32 iSplitOffset);
@@ -65,10 +65,10 @@ public:
 	{
 		Calculate_full_width = -1
 	};
-	UT_sint32				simpleRecalcWidth(UT_sint32 iLength = Calculate_full_width);
+	double					simpleRecalcWidth(UT_sint32 iLength = Calculate_full_width);
 
 	void					resetJustification(bool bPermanent);
-	void					justify(UT_sint32 iAmount, UT_uint32 iSpacesInRun);
+	void					justify(double iAmount, UT_uint32 iSpacesInRun);
 	UT_sint32				countJustificationPoints(bool bLast) const;
 
 	bool					getCharacter(UT_uint32 run_offset, UT_UCSChar &Character) const;
@@ -137,13 +137,13 @@ protected:
 	virtual void			_draw(dg_DrawArgs*);
 	virtual void			_clearScreen(bool bFullLineHeightRect = true);
 
-	void					_drawInvisibleSpaces(UT_sint32, UT_sint32);
-	void					_drawInvisibles(UT_sint32, UT_sint32);
-	void					_drawSquiggle(UT_sint32 top, UT_sint32 left, UT_sint32 right);
+	void					_drawInvisibleSpaces(double, double);
+	void					_drawInvisibles(double, double);
+	void					_drawSquiggle(double top, double left, double right);
 
 	void					_getPartRect(UT_Rect* pRect,
-										 UT_sint32 xoff,
-										 UT_sint32 yoff,
+										 double xoff,
+										 double yoff,
 										 UT_uint32 iStart,
 										 UT_uint32 iLen);
 
@@ -152,8 +152,8 @@ protected:
 	void					_drawFirstChar(bool bSelection);
 
 	void					_fillRect(UT_RGBColor& clr,
-									  UT_sint32 xoff,
-									  UT_sint32 yoff,
+									  double xoff,
+									  double yoff,
 									  UT_uint32 iStart,
 									  UT_uint32 iLen,
 									  UT_Rect & rect,

@@ -43,7 +43,7 @@ void fb_Alignment_left::initialize(fp_Line * pLine )
 		}
 }
 
-UT_sint32 fb_Alignment_left::getStartPosition()
+double fb_Alignment_left::getStartPosition()
 {
 	return m_iStartPosition;
 }
@@ -59,14 +59,14 @@ void fb_Alignment_left::eraseLineFromRun(fp_Line *pLine, UT_uint32 runIndex)
 
 void fb_Alignment_center::initialize(fp_Line *pLine)
 {
-	UT_sint32 iWidth = pLine->calculateWidthOfLine();
+	double iWidth = pLine->calculateWidthOfLine();
 
-	UT_sint32 m_iExtraWidth = pLine->getMaxWidth() - iWidth;
+	double m_iExtraWidth = pLine->getMaxWidth() - iWidth;
 
-	m_startPosition = m_iExtraWidth / 2;
+	m_startPosition = m_iExtraWidth / 2.0;
 }
 
-UT_sint32 fb_Alignment_center::getStartPosition()
+double fb_Alignment_center::getStartPosition()
 {
 	return m_startPosition;
 }
@@ -82,8 +82,8 @@ void fb_Alignment_center::eraseLineFromRun(fp_Line *pLine, UT_uint32 runIndex)
 
 void fb_Alignment_right::initialize(fp_Line *pLine)
 {
-	UT_sint32 iTrailing = pLine->calculateWidthOfTrailingSpaces();
-	UT_sint32 iWidth = pLine->calculateWidthOfLine() - iTrailing;
+	double iTrailing = pLine->calculateWidthOfTrailingSpaces();
+	double iWidth = pLine->calculateWidthOfLine() - iTrailing;
 
 	m_startPosition = pLine->getMaxWidth() - iWidth;
 	
@@ -93,7 +93,7 @@ void fb_Alignment_right::initialize(fp_Line *pLine)
 	}
 }
 
-UT_sint32 fb_Alignment_right::getStartPosition()
+double fb_Alignment_right::getStartPosition()
 {
 	return m_startPosition;
 }
@@ -122,7 +122,7 @@ void fb_Alignment_justify::initialize(fp_Line *pLine)
 	{
 		pLine->resetJustification(false); // non-permanent reset
 
-		UT_sint32 iWidth = pLine->calculateWidthOfLine() - pLine->calculateWidthOfTrailingSpaces();
+		double iWidth = pLine->calculateWidthOfLine() - pLine->calculateWidthOfTrailingSpaces();
 
 		m_iExtraWidth = pLine->getMaxWidth() - iWidth;
 
@@ -135,7 +135,7 @@ void fb_Alignment_justify::initialize(fp_Line *pLine)
 		}
 		else
 		{
-			m_iStartPosition = 0;
+			m_iStartPosition = 0.0;
 		}
 	}
 	else if(pLine->getBlock()->getDominantDirection() == UT_BIDI_RTL) //this is RTL block, the last line behaves as if right-justified
@@ -145,11 +145,11 @@ void fb_Alignment_justify::initialize(fp_Line *pLine)
 	else
 	{
 	    xxx_UT_DEBUGMSG(("Justified block, last line, left justified\n"));
-	    m_iStartPosition = 0;
+	    m_iStartPosition = 0.0;
 	}
 }
 
-UT_sint32 fb_Alignment_justify::getStartPosition()
+double fb_Alignment_justify::getStartPosition()
 {
 	return m_iStartPosition;
 }

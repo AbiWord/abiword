@@ -899,8 +899,8 @@ PT_DocPosition FV_View::_getDocPos(FV_DocPos dp, bool bKeepLooking)
 
 PT_DocPosition FV_View::_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp, bool bKeepLooking)
 {
-	UT_sint32 xPoint, yPoint, xPoint2, yPoint2;
-	UT_uint32 iPointHeight;
+	double xPoint, yPoint, xPoint2, yPoint2;
+	double iPointHeight;
 	bool bDirection;
 
 	PT_DocPosition iPos;
@@ -1489,15 +1489,15 @@ void FV_View::_insertSectionBreak(void)
 */
 void FV_View::_moveInsPtNextPrevLine(bool bNext)
 {
-	UT_sint32 xPoint, yPoint, xPoint2, yPoint2;
-	UT_uint32 iPointHeight, iLineHeight;
+	double xPoint, yPoint, xPoint2, yPoint2;
+	double iPointHeight, iLineHeight;
 	bool bDirection;
 
 //
 // No need to to do background updates for 1 seconds.
 //
  	m_pLayout->setSkipUpdates(2);
-	UT_sint32 xOldSticky = m_xPointSticky;
+	double xOldSticky = m_xPointSticky;
 
 	// first, find the line we are on now
 	PT_DocPosition iOldPoint = getPoint();
@@ -1536,11 +1536,11 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 		pOldLeader = (static_cast<fp_Column*>(pOldLine->getColumn()))->getLeader();
 	}
 
-	UT_sint32 iPageOffset;
+	double iPageOffset;
 	getPageYOffset(pOldPage, iPageOffset);
 
-	UT_sint32 iLineX = 0;
-	UT_sint32 iLineY = 0;
+	double iLineX = 0;
+	double iLineY = 0;
 
 	pOldContainer->getOffsets(static_cast<fp_Container *>(pOldLine), iLineX, iLineY);
 	yPoint = iLineY;
@@ -1556,7 +1556,7 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 	{
 		if (pOldLine != static_cast<fp_Line *>(pOldContainer->getLastContainer()))
 		{
-			UT_sint32 iAfter = m_pG->tlu(1);
+			double iAfter = m_pG->tlu(1);
 			yPoint += (iLineHeight + iAfter);
 		}
 		else if (bDocSection)
@@ -1594,12 +1594,12 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 		}
 		else if(bCellSection)
 		{
-			UT_sint32 iAfter = m_pG->tlu(1);
+			double iAfter = m_pG->tlu(1);
 			yPoint += (iLineHeight + iAfter);
 		}
 		else if(bEndNoteSection)
 		{
-			UT_sint32 iAfter = m_pG->tlu(1);
+			double iAfter = m_pG->tlu(1);
 			yPoint += (iLineHeight + iAfter);
 			if(pOldPage->getBottom() < yPoint)
 			{
@@ -1614,7 +1614,7 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 		}
 		else if(bFootnoteSection)
 		{
-			UT_sint32 iAfter = m_pG->tlu(1);
+			double iAfter = m_pG->tlu(1);
 			yPoint += (iLineHeight + iAfter);
 			if(pOldPage->getBottom() < yPoint)
 			{
@@ -1682,7 +1682,7 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 		}
 		else if(bCellSection)
 		{
-			UT_sint32 iAfter = m_pG->tlu(2);
+			double iAfter = m_pG->tlu(2);
 			yPoint -= iAfter;
 			if(yPoint < 0)
 			{
@@ -1703,15 +1703,15 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 		}
 		else if(bEndNoteSection || bFootnoteSection)
 		{
-			UT_sint32 iAfter = m_pG->tlu(2);
+			double iAfter = m_pG->tlu(2);
 			yPoint -= iAfter;
 
 			// change to screen coordinates
-			UT_sint32 xP = m_xPointSticky - m_xScrollOffset + getPageViewLeftMargin();
-			UT_sint32 yP = yPoint + iPageOffset - m_yScrollOffset;
+			double xP = m_xPointSticky - m_xScrollOffset + getPageViewLeftMargin();
+			double yP = yPoint + iPageOffset - m_yScrollOffset;
 			
 			// hit-test to figure out where that puts us
-			UT_sint32 xC, yC;
+			double xC, yC;
 
 			PT_DocPosition iNewP;
 			fp_Page* pPage = _getPageForXY(xP, yP, xC, yC);
@@ -1763,7 +1763,7 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 	yPoint += iPageOffset - m_yScrollOffset;
 
 	// hit-test to figure out where that puts us
-	UT_sint32 xClick, yClick;
+	double xClick, yClick;
 	fp_Page* pPage = _getPageForXY(xPoint, yPoint, xClick, yClick);
 
 	PT_DocPosition iNewPoint = 0;
@@ -1805,7 +1805,7 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 		pPage->mapXYToPosition(xClick, yClick, iNewPoint, bBOL, bEOL,isTOC);
 		if (bNext)
 		{
-			int delta = iLineHeight;
+			double delta = iLineHeight;
 //
 // Whoops! foornotes/endnotes can screw this up since they placed on the page
 // out of order to their location in the PieceTable
@@ -1828,7 +1828,7 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 		}
 		else
 		{
-			int delta = iLineHeight;
+			double delta = iLineHeight;
 //
 // Whoops! foornotes/endnotes can screw this up since they placed on the page
 // out of order to their location in the PieceTable
@@ -1994,11 +1994,11 @@ void FV_View::_moveInsPtNextPrevScreen(bool bMovingDown)
 {
 	fl_BlockLayout * pBlock;
 	fp_Run * pRun;
-	UT_sint32 x,y,x2,y2;
-	UT_uint32 iHeight;
+	double x,y,x2,y2;
+	double iHeight;
 	bool bDirection;
 	bool bBOL,bEOL,isTOC;
-	UT_sint32 iYnext,iYscroll;
+	double iYnext,iYscroll;
 	PT_DocPosition iNewPoint;
 	_findPositionCoords(getPoint(),false,x,y,x2,y2,iHeight,bDirection,&pBlock,&pRun);
 	if(!pRun)
@@ -2013,7 +2013,7 @@ void FV_View::_moveInsPtNextPrevScreen(bool bMovingDown)
 		clearHdrFtrEdit();
 		warpInsPtToXY(0,0,false);
 	}
-	UT_sint32 xoff,yoff;
+	double xoff,yoff;
 
     // get Screen coordinates of the top of the page and add the y location to this.
 	getPageScreenOffsets(pPage, xoff,yoff);
@@ -2055,7 +2055,7 @@ void FV_View::_moveInsPtNextPrevScreen(bool bMovingDown)
 	pPage->mapXYToPosition(x, iYnext, iNewPoint, bBOL, bEOL,isTOC);
 	if (bMovingDown)
 	{
-		int delta = pPage->getHeight()/4;
+		double delta = pPage->getHeight()/4;
 		while (iNewPoint <= getPoint() && pPage)
 		{
 			if (iYnext+delta > pPage->getHeight())
@@ -2073,7 +2073,7 @@ void FV_View::_moveInsPtNextPrevScreen(bool bMovingDown)
 	}
 	else
 	{
-		int delta = pPage->getHeight()/4;
+		double delta = pPage->getHeight()/4;
 		while (iNewPoint >= getPoint() && pPage)
 		{
 			if (iYnext+delta < 0)
@@ -2090,8 +2090,8 @@ void FV_View::_moveInsPtNextPrevScreen(bool bMovingDown)
 		}
 	}
 
-	UT_sint32 newX,newY;
-	UT_uint32 newHeight;
+	double newX,newY;
+	double newHeight;
 	
 	_findPositionCoords(iNewPoint,false,newX,newY,x2,y2,newHeight,bDirection,&pBlock,&pRun);
 	if(!pRun)
@@ -2114,7 +2114,7 @@ void FV_View::_moveInsPtNextPrevScreen(bool bMovingDown)
     // Couldn't advance! Try scanning x across the page at this new iYnext.
 	if(pLine == pNewLine && pPage)
 	{
-		UT_sint32 step = pPage->getWidth()/20 + 1;
+		double step = pPage->getWidth()/20 + 1; // FIXME: this non-layout-unit -1 should not be here! - MARCM
 
 		for (x=0; x < pPage->getWidth(); x += step)
 		{
@@ -2143,8 +2143,8 @@ void FV_View::_moveInsPtNextPrevScreen(bool bMovingDown)
 
 fp_Page *FV_View::_getCurrentPage(void)
 {
-	UT_sint32 xPoint, yPoint, xPoint2, yPoint2;
-	UT_uint32 iPointHeight;
+	double xPoint, yPoint, xPoint2, yPoint2;
+	double iPointHeight;
 	bool bDirection;
 	/*
 	  This function moves the IP to the beginning of the previous or
@@ -2184,7 +2184,7 @@ void FV_View::_moveInsPtToPage(fp_Page *page)
 	_setPoint(iNewPoint, false);
 
 	// explicit vertical scroll to top of page
-	UT_sint32 iPageOffset;
+	double iPageOffset;
 	getPageYOffset(page, iPageOffset);
 
 	iPageOffset -= getPageViewSep() /2;
@@ -2239,8 +2239,8 @@ void FV_View::_autoScroll(UT_Worker * pWorker)
 	else
 	{
 		// not far enough to change the selection ... do we still need to scroll?
-		UT_sint32 xPos = pView->m_xLastMouse;
-		UT_sint32 yPos = pView->m_yLastMouse;
+		double xPos = pView->m_xLastMouse;
+		double yPos = pView->m_yLastMouse;
 
 		// TODO: clamp xPos, yPos to viewable area??
 
@@ -2290,14 +2290,14 @@ void FV_View::_autoScroll(UT_Worker * pWorker)
 }
 
 
-fp_Page* FV_View::_getPageForXY(UT_sint32 xPos, UT_sint32 yPos, UT_sint32& xClick, UT_sint32& yClick) const
+fp_Page* FV_View::_getPageForXY(double xPos, double yPos, double& xClick, double& yClick) const
 {
 	xClick = xPos + m_xScrollOffset - getPageViewLeftMargin();
 	yClick = yPos + m_yScrollOffset - getPageViewTopMargin();
 	fp_Page* pPage = m_pLayout->getFirstPage();
 	while (pPage)
 	{
-		UT_sint32 iPageHeight = pPage->getHeight();
+		double iPageHeight = pPage->getHeight();
 		if(getViewMode() != VIEW_PRINT)
 		{
 			iPageHeight = iPageHeight - pPage->getOwningSection()->getTopMargin() -
@@ -2320,7 +2320,7 @@ fp_Page* FV_View::_getPageForXY(UT_sint32 xPos, UT_sint32 yPos, UT_sint32& xClic
 		// we're below the last page
 		pPage = m_pLayout->getLastPage();
 
-		UT_sint32 iPageHeight = pPage->getHeight();
+		double iPageHeight = pPage->getHeight();
 		yClick += iPageHeight + getPageViewSep();
 	}
 
@@ -2675,8 +2675,6 @@ FV_View::_findGetNextBlockBuffer(fl_BlockLayout** pBlock,
 				if(sdhEnd)
 				{
 					PT_DocPosition posStart = getDocument()->getStruxPosition(sdhStart);
-					PT_DocPosition posEnd = getDocument()->getStruxPosition(sdhEnd);
-					UT_uint32 iSize = posEnd - posStart + 1;
 					PL_StruxFmtHandle  psfh = NULL;
 					getDocument()->getStruxOfTypeFromPosition((*pBlock)->getDocLayout()->getLID(),posStart,PTX_Block, &psfh);
 					newBlock = reinterpret_cast<fl_BlockLayout *>(const_cast<void *>(psfh));
@@ -3325,9 +3323,9 @@ bool FV_View::_drawOrClearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition 
 	xxx_UT_DEBUGMSG(("Draw between positions %d to %d \n",iPos1,iPos2));
 	fp_Run* pRun1;
 	fp_Run* pRun2;
-	UT_sint32 xoff;
-	UT_sint32 yoff;
-	UT_uint32 uheight;
+	double xoff;
+	double yoff;
+	double uheight;
 	UT_GenericVector<CellLine *> vecTables;
 	UT_GenericVector<fp_Page *>vecPages;
 //
@@ -3340,10 +3338,10 @@ bool FV_View::_drawOrClearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition 
 	}
 //	_fixInsertionPointCoords();
 	{
-		UT_sint32 x;
-		UT_sint32 y;
-		UT_sint32 x2;
-		UT_sint32 y2;
+		double x;
+		double y;
+		double x2;
+		double y2;
 		bool bDirection;
 		fl_BlockLayout* pBlock1;
 		fl_BlockLayout* pBlock2;
@@ -3540,7 +3538,7 @@ bool FV_View::_drawOrClearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition 
 	for(i=0; i< static_cast<UT_sint32>(vecPages.getItemCount()); i++)
 	{
 		fp_Page * pPage = vecPages.getNthItem(i);
-		UT_sint32 xoff,yoff;
+		double xoff,yoff;
 		getPageScreenOffsets(pPage,xoff, yoff);
 		dg_DrawArgs da;
 		da.pG = m_pG;
@@ -3570,14 +3568,14 @@ bool FV_View::_clearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2,
 	}
 	fp_Run* pRun1;
 	fp_Run* pRun2;
-	UT_uint32 uheight;
+	double uheight;
 
 	_fixInsertionPointCoords();
 	{
-		UT_sint32 x;
-		UT_sint32 y;
-		UT_sint32 x2;
-		UT_sint32 y2;
+		double x;
+		double y;
+		double x2;
+		double y2;
 		bool bDirection;
 		fl_BlockLayout* pBlock1;
 		fl_BlockLayout* pBlock2;
@@ -3686,20 +3684,20 @@ bool FV_View::_clearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2,
 
 void FV_View::_findPositionCoords(PT_DocPosition pos,
 								  bool bEOL,
-								  UT_sint32& x,
-								  UT_sint32& y,
-								  UT_sint32& x2,
-								  UT_sint32& y2,
-								  UT_uint32& height,
+								  double& x,
+								  double& y,
+								  double& x2,
+								  double& y2,
+								  double& height,
 								  bool& bDirection,
 								  fl_BlockLayout** ppBlock,
 								  fp_Run** ppRun) const
 {
-	UT_sint32 xPoint = 0;
-	UT_sint32 yPoint = 0;
-	UT_sint32 xPoint2 = 0;
-	UT_sint32 yPoint2 = 0;
-	UT_sint32 iPointHeight;
+	double xPoint = 0;
+	double yPoint = 0;
+	double xPoint2 = 0;
+	double yPoint2 = 0;
+	double iPointHeight;
 	if(ppRun)
 	{
 		*ppRun = NULL;
@@ -3869,7 +3867,7 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 
 		fp_Page* pPointPage = pLine->getPage();
 
-		UT_sint32 iPageOffset;
+		double iPageOffset;
 		getPageYOffset(pPointPage, iPageOffset);
 
 		yPoint += iPageOffset;
@@ -3920,12 +3918,12 @@ void FV_View::_fixInsertionPointCoords()
 		UT_RGBColor * pClr = NULL;
 		if (pPage)
 			pClr = pPage->getFillType()->getColor();
-		UT_sint32 yoff = 0;
+		double yoff = 0;
 		if(m_yPoint < 0)
 		{
-			UT_sint32 negY  = -m_yPoint;
+			double negY  = -m_yPoint;
 			yoff = negY + 1;
-			if(negY > (UT_sint32)m_iPointHeight)
+			if(negY > m_iPointHeight)
 			{
 				m_iPointHeight = 0;
 				yoff = 0;
@@ -3951,8 +3949,8 @@ void FV_View::_fixInsertionPointCoords()
 	}
 }
 
-void FV_View::_draw(UT_sint32 x, UT_sint32 y,
-					UT_sint32 width, UT_sint32 height,
+void FV_View::_draw(double x, double y,
+					double width, double height,
 					bool bDirtyRunsOnly, bool bClip)
 {
 	xxx_UT_DEBUGMSG(("FV_View::draw_3 [x %ld][y %ld][w %ld][h %ld][bClip %ld]\n"
@@ -3994,7 +3992,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 	// figure out where pages go, based on current window dimensions
 	// TODO: don't calc for every draw
 	// HYP:  cache calc results at scroll/size time
-	UT_sint32 iDocHeight = m_pLayout->getHeight();
+	double iDocHeight = m_pLayout->getHeight();
 
 	// TODO: handle positioning within oversized viewport
 	// TODO: handle variable-size pages (envelope, landscape, etc.)
@@ -4017,11 +4015,12 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 		if (m_yScrollOffset < getPageViewTopMargin() && (getViewMode() == VIEW_PRINT))
 		{
 			// fill top margin
+			// FIXME: Why is there a + m_pG->tlu(1) in here ???? - MARCM
 			painter.fillRect(clrMargin, 0, 0, getWindowWidth() + m_pG->tlu(1), getPageViewTopMargin() - m_yScrollOffset);
 		}
 	}
 
-	UT_sint32 curY = getPageViewTopMargin();
+	double curY = getPageViewTopMargin();
 	fp_Page* pPage = m_pLayout->getFirstPage();
 	fl_DocSectionLayout * pDSL = NULL;
 	
@@ -4032,7 +4031,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 //
 // fixme for multiple sections in normal and web view
 // 
-	UT_sint32 totPageHeight = pPage->getHeight();
+	double totPageHeight = pPage->getHeight();
 	if(getViewMode() == VIEW_PRINT)
 	{
 		totPageHeight += getPageViewSep();
@@ -4058,16 +4057,16 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 	xxx_UT_DEBUGMSG(("Starting at page %x \n",pPage));
 	while (pPage)
 	{
-		UT_sint32 iPageWidth		= pPage->getWidth();
-		UT_sint32 iPageHeight		= pPage->getHeight();
-		UT_sint32 adjustedTop		= curY - m_yScrollOffset;
+		double iPageWidth		= pPage->getWidth();
+		double iPageHeight		= pPage->getHeight();
+		double adjustedTop		= curY - m_yScrollOffset;
 		pDSL = pPage->getOwningSection();
 		if(getViewMode() != VIEW_PRINT)
 		{
 			iPageHeight = iPageHeight - pDSL->getTopMargin() - pDSL->getBottomMargin();
 		}
 
-		UT_sint32 adjustedBottom = adjustedTop + iPageHeight + getPageViewSep();
+		double adjustedBottom = adjustedTop + iPageHeight + getPageViewSep();
 
 		if (adjustedTop > getWindowHeight())
 		{
@@ -4139,8 +4138,8 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			da.pG = m_pG;
 			da.xoff = getPageViewLeftMargin() - m_xScrollOffset;
 			da.yoff = adjustedTop;
-			UT_sint32 adjustedLeft	= getPageViewLeftMargin() - m_xScrollOffset;
-			UT_sint32 adjustedRight = adjustedLeft + iPageWidth;
+			double adjustedLeft	= getPageViewLeftMargin() - m_xScrollOffset;
+			double adjustedRight = adjustedLeft + iPageWidth;
 
 			adjustedBottom -= getPageViewSep();
 
@@ -4222,7 +4221,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 				}
 				else // found last page
 				{
-					UT_sint32 botfill = getWindowHeight() - adjustedBottom - m_pG->tlu(1) ;
+					double botfill = getWindowHeight() - adjustedBottom - m_pG->tlu(1) ;
 					painter.fillRect(clrMargin, adjustedLeft, adjustedBottom + m_pG->tlu(1), getWindowWidth() - adjustedLeft + m_pG->tlu(1), botfill + m_pG->tlu(1));
 				}
 			}
@@ -4260,8 +4259,8 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 	if ((curY <= iDocHeight) && !bNotEnd)
 	{
 		// fill below bottom of document
-		UT_sint32 y = curY - m_yScrollOffset;
-		UT_sint32 h = getWindowHeight() - y;
+		double y = curY - m_yScrollOffset;
+		double h = getWindowHeight() - y;
 		if (h > 0)
 		{
 			xxx_UT_DEBUGMSG(("Height of grey fill %d window height %d y %d curY %d \n",h,getWindowHeight(),y,curY));
@@ -4413,12 +4412,12 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars, bool bSkipCannotCo
 	PT_DocPosition posOld = m_iInsPoint;
 	fp_Run* pRun = NULL;
 	fl_BlockLayout* pBlock = NULL;
-	UT_sint32 x=0;
-	UT_sint32 y=0;
-	UT_sint32 x2=0;
-	UT_sint32 y2=0;
+	double x=0;
+	double y=0;
+	double x2=0;
+	double y2=0;
 	bool bDirection=false;
-	UT_uint32 uheight;
+	double uheight;
 	m_bPointEOL = false;
 	UT_sint32 iOldDepth = getEmbedDepth(getPoint());
 	UT_DEBUGMSG(("_charMotion: Old Position is %d embed depth %d \n",posOld,iOldDepth));
@@ -4438,7 +4437,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars, bool bSkipCannotCo
 	// versions of findPositionCoords. I think there's been some bugs
 	// due to that function being overloaded to be used from this
 	// code.
-	UT_sint32 xold,yold,x2old,y2old=0;
+	double xold,yold,x2old,y2old=0;
 	bool bDirectionOld=false;
 	UT_DEBUGMSG(("Count Chars %d \n",countChars));
 	_findPositionCoords(m_iInsPoint, false, xold, yold, x2old,y2old,uheight, bDirectionOld, &pBlock, &pRun);
@@ -5321,17 +5320,14 @@ void FV_View::_removeThisHdrFtr(fl_HdrFtrSectionLayout * pHdrFtr)
 //
 // Need this to remove the HdrFtr attributes in the section strux.
 //
-	fl_DocSectionLayout * pDSL = pHdrFtr->getDocSectionLayout();
 	const XML_Char * pszHdrFtrType = NULL;
 	UT_ASSERT(pHdrFtr->getContainerType() == FL_CONTAINER_HDRFTR);
 	PL_StruxDocHandle sdhHdrFtr = pHdrFtr->getStruxDocHandle();
 	m_pDoc->getAttributeFromSDH(sdhHdrFtr,isShowRevisions(),getRevisionLevel(),PT_TYPE_ATTRIBUTE_NAME, &pszHdrFtrType);
-	PT_DocPosition	posDSL = m_pDoc->getStruxPosition(pDSL->getStruxDocHandle());
 //
 // Remove the header/footer strux
 //
 	m_pDoc->deleteHdrFtrStrux(sdhHdrFtr);
-
 }
 
 void FV_View::_cmdEditHdrFtr(HdrFtrType hfType)

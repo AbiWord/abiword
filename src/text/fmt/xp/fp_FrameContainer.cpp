@@ -97,14 +97,14 @@ void fp_FrameContainer::clearScreen(void)
 	{
 		return;
 	}
-	UT_sint32 srcX,srcY;
-	UT_sint32 xoff,yoff;
+	double srcX,srcY;
+	double xoff,yoff;
 	getView()->getPageScreenOffsets(pPage,xoff,yoff);
 	xxx_UT_DEBUGMSG(("pagescreenoffsets xoff %d yoff %d \n",xoff,yoff));
-	UT_sint32 leftThick = m_lineLeft.m_thickness;
-	UT_sint32 rightThick = m_lineRight.m_thickness;
-	UT_sint32 topThick = m_lineTop.m_thickness;
-	UT_sint32 botThick = m_lineBottom.m_thickness;
+	double leftThick = m_lineLeft.m_thickness;
+	double rightThick = m_lineRight.m_thickness;
+	double topThick = m_lineTop.m_thickness;
+	double botThick = m_lineBottom.m_thickness;
 
 	srcX = getFullX() - leftThick;
 	srcY = getFullY() - topThick;
@@ -125,49 +125,49 @@ void fp_FrameContainer::clearScreen(void)
  * All these methods are used to implement an X and Y padding around the
  * Frame
  */
-UT_sint32 fp_FrameContainer::getFullWidth(void) const
+double fp_FrameContainer::getFullWidth(void) const
 {
 	return fp_VerticalContainer::getWidth();
 }
 
-UT_sint32 fp_FrameContainer::getFullHeight(void) const
+double fp_FrameContainer::getFullHeight(void) const
 {
 	return fp_VerticalContainer::getHeight();
 }
 
-UT_sint32 fp_FrameContainer::getFullX(void) const
+double fp_FrameContainer::getFullX(void) const
 {
 	return fp_VerticalContainer::getX();
 }
 
-UT_sint32 fp_FrameContainer::getFullY(void) const
+double fp_FrameContainer::getFullY(void) const
 {
 	return fp_VerticalContainer::getY();
 }
 
 
-UT_sint32 fp_FrameContainer::getWidth(void) const
+double fp_FrameContainer::getWidth(void) const
 {
-	UT_sint32 iWidth = fp_VerticalContainer::getWidth() - m_iXpad*2;
+	double iWidth = fp_VerticalContainer::getWidth() - m_iXpad*2;
 	return iWidth;
 }
 
-UT_sint32 fp_FrameContainer::getX(void) const
+double fp_FrameContainer::getX(void) const
 {
-	UT_sint32 iX = fp_VerticalContainer::getX() + m_iXpad;
+	double iX = fp_VerticalContainer::getX() + m_iXpad;
 	return iX;
 }
 
 
-UT_sint32 fp_FrameContainer::getY(void) const
+double fp_FrameContainer::getY(void) const
 {
-	UT_sint32 iY = fp_VerticalContainer::getY() + m_iYpad;
+	double iY = fp_VerticalContainer::getY() + m_iYpad;
 	return iY;
 }
 
-UT_sint32 fp_FrameContainer::getHeight(void) const
+double fp_FrameContainer::getHeight(void) const
 {
-	UT_sint32 iHeight = fp_VerticalContainer::getHeight() - m_iYpad*2;
+	double iHeight = fp_VerticalContainer::getHeight() - m_iYpad*2;
 	return iHeight;
 }
 
@@ -189,7 +189,7 @@ fl_DocSectionLayout * fp_FrameContainer::getDocSectionLayout(void)
 /* just a little helper function
  */
 void fp_FrameContainer::_drawLine (const PP_PropertyMap::Line & style,
-								  UT_sint32 left, UT_sint32 top, UT_sint32 right, UT_sint32 bot,GR_Graphics * pGr)
+								  double left, double top, double right, double bot, GR_Graphics * pGr)
 {
 	GR_Painter painter(getGraphics());
 
@@ -218,7 +218,7 @@ void fp_FrameContainer::_drawLine (const PP_PropertyMap::Line & style,
 	pGr->setColor (style.m_color);
 
 
-	xxx_UT_DEBUGMSG(("_drawLine: top %d bot %d \n",top,bot));
+	xxx_UT_DEBUGMSG(("_drawLine: top %.2f bot %.2f \n",top,bot));
 
 	painter.drawLine (left, top, right, bot);
 	
@@ -228,12 +228,12 @@ void fp_FrameContainer::_drawLine (const PP_PropertyMap::Line & style,
 /*!
  * Draw the frame boundaries
  */
-void  fp_FrameContainer::drawBoundaries(dg_DrawArgs * pDA)
+void fp_FrameContainer::drawBoundaries(dg_DrawArgs * pDA)
 {
-	UT_sint32 iXlow = pDA->xoff - m_iXpad;
-	UT_sint32 iXhigh = iXlow + getFullWidth() ;
-	UT_sint32 iYlow = pDA->yoff - m_iYpad;
-	UT_sint32 iYhigh = iYlow + getFullHeight();
+	double iXlow = pDA->xoff - m_iXpad;
+	double iXhigh = iXlow + getFullWidth() ;
+	double iYlow = pDA->yoff - m_iYpad;
+	double iYhigh = iYlow + getFullHeight();
 	if(getPage())
 	{
 		getPage()->expandDamageRect(iXlow,iYlow,getFullWidth(),getFullHeight());
@@ -251,14 +251,14 @@ void  fp_FrameContainer::drawBoundaries(dg_DrawArgs * pDA)
  */
 void  fp_FrameContainer::drawHandles(dg_DrawArgs * pDA)
 {
-	UT_sint32 iXlow = pDA->xoff - m_iXpad;
-	UT_sint32 iXhigh = iXlow + getFullWidth() ;
-	UT_sint32 iYlow = pDA->yoff - m_iYpad;
-	UT_sint32 iYhigh = iYlow + getFullHeight();
-	UT_sint32 iXMid = (iXlow + iXhigh)/2;
-	UT_sint32 iYMid = (iYlow + iYhigh)/2;
+	double iXlow = pDA->xoff - m_iXpad;
+	double iXhigh = iXlow + getFullWidth() ;
+	double iYlow = pDA->yoff - m_iYpad;
+	double iYhigh = iYlow + getFullHeight();
+	double iXMid = (iXlow + iXhigh)/2;
+	double iYMid = (iYlow + iYhigh)/2;
 	GR_Graphics * pG = pDA->pG;
-	UT_sint32 res = pG->tlu(8);
+	double res = pG->tlu(8);
 	_drawHandleBox(UT_Rect(iXlow,iYlow,res,res));
 	_drawHandleBox(UT_Rect(iXMid-res/2,iYlow,res,res));
 	_drawHandleBox(UT_Rect(iXhigh-res,iYlow,res,res));
@@ -275,10 +275,10 @@ void fp_FrameContainer::_drawHandleBox(UT_Rect box)
 // Code cut and pasted from uwog's handle boxes on images.
 //
 	GR_Graphics * pGr = getGraphics();
-	UT_sint32 left = box.left;
-	UT_sint32 top = box.top;
-	UT_sint32 right = box.left + box.width - pGr->tlu(1);
-	UT_sint32 bottom = box.top + box.height - pGr->tlu(1);
+	double left = box.left;
+	double top = box.top;
+	double right = box.left + box.width - pGr->tlu(1);
+	double bottom = box.top + box.height - pGr->tlu(1);
 	
 	GR_Painter painter(pGr);
 
@@ -340,13 +340,13 @@ void fp_FrameContainer::draw(dg_DrawArgs* pDA)
 		{
 			pDA->bDirtyRunsOnly= false;
 		} 
-		UT_sint32 srcX,srcY;
+		double srcX,srcY;
 
 		srcX = -m_iXpad;
 		srcY = -m_iYpad;
 
-		UT_sint32 x = pDA->xoff - m_iXpad;
-		UT_sint32 y = pDA->yoff - m_iYpad;
+		double x = pDA->xoff - m_iXpad;
+		double y = pDA->yoff - m_iYpad;
 		if(getPage())
 		{
 			getPage()->expandDamageRect(x,y,getFullWidth(),getFullHeight());
@@ -374,8 +374,8 @@ void fp_FrameContainer::draw(dg_DrawArgs* pDA)
 	else if(pPrevRect)
 	{
 		newRect.top = UT_MAX(pPrevRect->top,pRect->top);
-		UT_sint32 iBotPrev = pPrevRect->height + pPrevRect->top;
-		UT_sint32 iBot = pRect->height + pRect->top;
+		double iBotPrev = pPrevRect->height + pPrevRect->top; // FIXME: the bottom of the prev is actually pPrevRect->top + pPrevRect->height - tlu(1) - MARCM
+		double iBot = pRect->height + pRect->top; // FIXME: the bottom is actually pRect->top + pRect->height - tlu(1) - MARCM
 		newRect.height = UT_MIN(iBotPrev,iBot) - newRect.top;
 		newRect.width = pPrevRect->width;
 		newRect.left = pPrevRect->left;
@@ -443,7 +443,7 @@ fp_Container * fp_FrameContainer::getPrevContainerInSection() const
 void fp_FrameContainer::layout(void)
 {
 	_setMaxContainerHeight(0);
-	UT_sint32 iY = 0, iPrevY = 0;
+	double iY = 0, iPrevY = 0;
 	iY= 0;
 	UT_uint32 iCountContainers = countCons();
 	fp_Container *pContainer, *pPrevContainer = NULL;
@@ -468,8 +468,8 @@ void fp_FrameContainer::layout(void)
 		{
 			pContainer->setY(iY);
 		}
-		UT_sint32 iContainerHeight = pContainer->getHeight();
-		UT_sint32 iContainerMarginAfter = pContainer->getMarginAfter();
+		double iContainerHeight = pContainer->getHeight();
+		double iContainerMarginAfter = pContainer->getMarginAfter();
 		if(pContainer->getContainerType() == FP_CONTAINER_TABLE)
 		{
 			fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pContainer);

@@ -51,10 +51,10 @@ class  AP_TopRulerTableInfo;
 class AP_TopRulerTableInfo
 {
 public:
-	UT_sint32 m_iLeftCellPos;
-	UT_sint32 m_iLeftSpacing;
-	UT_sint32 m_iRightCellPos;
-	UT_sint32 m_iRightSpacing;
+	double m_iLeftCellPos;
+	double m_iLeftSpacing;
+	double m_iRightCellPos;
+	double m_iRightSpacing;
 	fp_CellContainer * m_pCell;
 };
 
@@ -123,23 +123,23 @@ public:
 		}		
 		
 	Mode					m_mode;
-	UT_uint32				m_xPaperSize;
-	UT_uint32				m_xPageViewMargin;
+	double					m_xPaperSize;
+	double					m_xPageViewMargin;
 	
 	// current caret position -- relative to the current column
 	
-	UT_sint32				m_xrPoint;
-	UT_sint32				m_xrLeftIndent;
-	UT_sint32				m_xrFirstLineIndent;
-	UT_sint32				m_xrRightIndent;
-	UT_sint32				m_xrTabStop;
+	double					m_xrPoint;
+	double					m_xrLeftIndent;
+	double					m_xrFirstLineIndent;
+	double					m_xrRightIndent;
+	double					m_xrTabStop;
 
 	// tab stop information
 
 	bool					(*m_pfnEnumTabStops)(void * pData, UT_uint32 k, fl_TabStop *pTabInfo);
 	void *					m_pVoidEnumTabStopsData;
 	UT_sint32				m_iTabStops;
-	UT_sint32				m_iDefaultTabInterval;
+	double   				m_iDefaultTabInterval;
 	const char *			m_pszTabStops;
 
 	// current column number and the number of columns
@@ -151,7 +151,7 @@ public:
 
 	UT_GenericVector<AP_TopRulerTableInfo *> * m_vecTableColInfo;
 	UT_GenericVector<AP_TopRulerTableInfo *> * m_vecFullTable;
-	UT_sint32               m_iTablePadding;
+	double		            m_iTablePadding;
 	UT_sint32               m_iCells;
 	UT_sint32               m_iCurCell;
 	union _u {
@@ -160,14 +160,14 @@ public:
 
 			// page absolute document margins
 			
-			UT_sint32		m_xaLeftMargin;
-			UT_sint32		m_xaRightMargin;
+			double			m_xaLeftMargin;
+			double			m_xaRightMargin;
 
 			// column width and spacing -- currently we only support
 			// uniform gaps and widths for columns
 			
-			UT_uint32		m_xColumnGap;
-			UT_uint32		m_xColumnWidth;
+			double			m_xColumnGap;
+			double			m_xColumnWidth;
 
 		} c;									/* valid when column mode */
 
@@ -213,8 +213,8 @@ public:
     virtual  AV_ListenerType getType(void) { return AV_LISTENER_TOPRULER;}
 
 	/* used with AV_ScrollObj */
-	static void		_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 xlimit);
-	static void		_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 ylimit);
+	static void		_scrollFuncX(void * pData, double xoff, double xlimit);
+	static void		_scrollFuncY(void * pData, double yoff, double ylimit);
 
 	/* for use with the prefs listener top_ruler_prefs_listener */
 	UT_Dimension	getDimension() const { return m_dim; }
@@ -226,7 +226,7 @@ protected:
 	void	_drawTickMark(const UT_Rect * pClipRect,
 						  AP_TopRulerInfo * pInfo, ap_RulerTicks &tick,
 						  GR_Graphics::GR_Color3D clr3d, GR_Font * pFont,
-						  UT_sint32 k, UT_sint32 xTick);
+						  UT_sint32 k, double xTick);
 	void	_drawTicks(const UT_Rect * pClipRect,
 					   AP_TopRulerInfo * pInfo, ap_RulerTicks &tick,
 					   GR_Graphics::GR_Color3D clr3d, GR_Font * pFont,

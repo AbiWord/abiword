@@ -753,12 +753,12 @@ bool fl_SectionLayout::bl_doclistener_changeFmtMark(fl_ContainerLayout* pBL, con
 }
 
 
-void fl_SectionLayout::setImageWidth(UT_sint32 iWidth)
+void fl_SectionLayout::setImageWidth(double iWidth)
 {
     m_iDocImageWidth = iWidth;
 }
 
-void  fl_SectionLayout::setImageHeight(UT_sint32 iHeight)
+void  fl_SectionLayout::setImageHeight(double iHeight)
 {
     m_iDocImageHeight = iHeight;
 }
@@ -933,9 +933,9 @@ fl_FootnoteLayout * fl_DocSectionLayout::getFootnoteLayout(UT_uint32 pid)
  * Returns the usuable height of the Column in logical units (after subtracting
  * top and bottom margins)
  */ 
-UT_sint32 fl_DocSectionLayout::getActualColumnHeight(void)
+double fl_DocSectionLayout::getActualColumnHeight(void)
 {
-	UT_sint32 Height = static_cast<UT_sint32>(getDocument()->m_docPageSize.Height(DIM_IN) * UT_LAYOUT_RESOLUTION /getDocument()->m_docPageSize.getScale());
+	double Height = getDocument()->m_docPageSize.Height(DIM_IN) * UT_LAYOUT_RESOLUTION /getDocument()->m_docPageSize.getScale();
 	Height -= (getTopMargin() + getBottomMargin());
 	if(m_iMaxSectionColumnHeight > 0)
 	{
@@ -950,9 +950,9 @@ UT_sint32 fl_DocSectionLayout::getActualColumnHeight(void)
  * left and right margins)
  */ 
 
-UT_sint32 fl_DocSectionLayout::getActualColumnWidth(void)
+double fl_DocSectionLayout::getActualColumnWidth(void)
 {
-	UT_sint32 width = static_cast<UT_sint32>(getDocument()->m_docPageSize.Width(DIM_IN) * UT_LAYOUT_RESOLUTION /getDocument()->m_docPageSize.getScale());
+	double width = getDocument()->m_docPageSize.Width(DIM_IN) * UT_LAYOUT_RESOLUTION /getDocument()->m_docPageSize.getScale();
 	width -= (getLeftMargin() + getRightMargin());
 	if(m_iNumColumns > 1)
 	{
@@ -962,10 +962,10 @@ UT_sint32 fl_DocSectionLayout::getActualColumnWidth(void)
 	return width;
 }
 			
-UT_sint32 fl_DocSectionLayout::getWidth(void)
+double fl_DocSectionLayout::getWidth(void)
 {
 	UT_sint32 ires = m_pLayout->getGraphics()->getResolution();
-	UT_sint32 width = static_cast<UT_sint32>(ires * getDocument()->m_docPageSize.Width(DIM_IN));
+	double width = ires * getDocument()->m_docPageSize.Width(DIM_IN);
 	return width;
 }
 
@@ -1236,7 +1236,7 @@ void fl_DocSectionLayout::doMarginChangeOnly(void)
  *
  * In both caes the header/footers grow "into" the document area.
  */
-bool fl_DocSectionLayout::setHdrFtrHeightChange(bool bHdrFtr, UT_sint32 newHeight)
+bool fl_DocSectionLayout::setHdrFtrHeightChange(bool bHdrFtr, double newHeight)
 {
 //
 // Look to see if we've already sent a signal and if we have to adjust
@@ -1250,7 +1250,7 @@ bool fl_DocSectionLayout::setHdrFtrHeightChange(bool bHdrFtr, UT_sint32 newHeigh
 		}
 		m_iNewHdrHeight = newHeight;
 		getDocument()->setNewHdrHeight(newHeight);
-		UT_sint32 fullHeight = newHeight + getHeaderMargin();
+		double fullHeight = newHeight + getHeaderMargin();
 		UT_String sHeight = m_pLayout->getGraphics()->invertDimension(DIM_IN, static_cast<double>(fullHeight));
 		UT_String sProp = "page-margin-top";
 		UT_String_setProperty(m_sHdrFtrChangeProps,sProp,sHeight);
@@ -1263,7 +1263,7 @@ bool fl_DocSectionLayout::setHdrFtrHeightChange(bool bHdrFtr, UT_sint32 newHeigh
 		}
 		m_iNewFtrHeight = newHeight;
 		getDocument()->setNewFtrHeight(newHeight);
-		UT_sint32 fullHeight = newHeight + getFooterMargin();
+		double fullHeight = newHeight + getFooterMargin();
 		UT_String sHeight = m_pLayout->getGraphics()->invertDimension(DIM_IN, static_cast<double>(fullHeight));
 		UT_String sProp = "page-margin-bottom";
 		UT_String_setProperty(m_sHdrFtrChangeProps,sProp,sHeight);
@@ -1375,13 +1375,13 @@ fp_Container* fl_DocSectionLayout::getNewContainer(fp_Container * pFirstContaine
 	fp_Page* pPage = NULL;
 	fp_Column* pLastColumn = static_cast<fp_Column*>(getLastContainer());
 	fp_Column* pAfterColumn = NULL;
-	UT_sint32 iNextCtrHeight = 0;
+	double iNextCtrHeight = 0;
 
 	if (pLastColumn)
 	{
 		fp_Container * prevContainer = NULL;
 		fp_Page* pTmpPage = NULL;
-		UT_sint32 pageHeight = 0;
+		double pageHeight = 0;
 		pTmpPage = pLastColumn->getPage();
 		iNextCtrHeight = 0;
 		if(pFirstContainer != NULL)
@@ -1405,9 +1405,9 @@ fp_Container* fl_DocSectionLayout::getNewContainer(fp_Container * pFirstContaine
 		{
 			iNextCtrHeight =12*14; // approximately one average line
 		}
-		UT_sint32 avail =  pTmpPage->getAvailableHeight();
+		double avail =  pTmpPage->getAvailableHeight();
 
-		UT_sint32 newHeight = pageHeight+ 3*iNextCtrHeight;
+		double newHeight = pageHeight+ 3*iNextCtrHeight;
 		xxx_UT_DEBUGMSG(("SEVIOR: Pageheight =%d nextlineheight =%d newheight = %d availableheight =%d linepos %d \n",pageHeight,iNextCtrHeight,newHeight,avail));
 		if( newHeight  >= avail || pFirstContainer == NULL)
 		{
@@ -1475,7 +1475,7 @@ fp_Container* fl_DocSectionLayout::getNewContainer(fp_Container * pFirstContaine
 				prevContainer = static_cast<fp_Container *>(pFirstContainer->getPrevContainerInSection());
 			}
 
-			UT_sint32 pageHeight = pTmpPage->getFilledHeight(prevContainer);
+			double pageHeight = pTmpPage->getFilledHeight(prevContainer);
 			if(pFirstContainer != NULL)
 			{
 				iNextCtrHeight = pFirstContainer->getHeight();
@@ -2148,12 +2148,12 @@ void fl_DocSectionLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	m_bForceNewPage = false;
 }
 
-UT_sint32 fl_DocSectionLayout::getTopMargin(void) const
+double fl_DocSectionLayout::getTopMargin(void) const
 {
 	return m_iTopMargin;
 }
 
-UT_sint32 fl_DocSectionLayout::getBottomMargin(void) const
+double fl_DocSectionLayout::getBottomMargin(void) const
 {
 	return m_iBottomMargin;
 }
@@ -2281,7 +2281,7 @@ UT_uint32 fl_DocSectionLayout::getNumColumns(void) const
 	return m_iNumColumns;
 }
 
-UT_sint32 fl_DocSectionLayout::getColumnGap(void) const
+double fl_DocSectionLayout::getColumnGap(void) const
 {
 	UT_ASSERT( m_iColumnGap < 200000);
 	return m_iColumnGap;
@@ -2893,12 +2893,12 @@ bool fl_DocSectionLayout::isThisPageValid(HdrFtrType hfType, fp_Page * pThisPage
 	return true; //if we're here all pages are valid.
 }
 
-void fl_DocSectionLayout::checkAndAdjustColumnGap(UT_sint32 iLayoutWidth)
+void fl_DocSectionLayout::checkAndAdjustColumnGap(double iLayoutWidth)
 {
 	// Check to make sure column gap is not to wide to fit on the page with the
 	// given number of columns.
-	UT_sint32 minColumnWidth =0;
-	UT_sint32 iColWidth= 0;
+	double minColumnWidth = 0;
+	double iColWidth = 0;
 	if(m_iNumColumns > 1)
 	{
 		minColumnWidth = UT_convertToLogicalUnits("0.5in");	//TODO should this dimension be hard coded.
@@ -2911,7 +2911,7 @@ void fl_DocSectionLayout::checkAndAdjustColumnGap(UT_sint32 iLayoutWidth)
 
 	}
 	UT_ASSERT(m_iColumnGap < 2000000);
-	if(m_iColumnGap < 30 || (m_iColumnGap > 200000))
+	if(m_iColumnGap < 30 || (m_iColumnGap > 200000)) // FIXME: 30 seems to be very arbitraty, and whacky since we are comaparing it against layout units - MARCM
 	{
 		m_iColumnGap = 30;
 	}
@@ -3095,7 +3095,7 @@ fp_Container* fl_HdrFtrSectionLayout::getLastContainer() const
 fp_Container* fl_HdrFtrSectionLayout::getNewContainer(fp_Container * pFirstContainer)
 {
 	DELETEP(m_pHdrFtrContainer);
-	UT_sint32 iWidth = m_pDocSL->getFirstContainer()->getPage()->getWidth(); // why is this different than the next one ?
+	double iWidth = m_pDocSL->getFirstContainer()->getPage()->getWidth(); // why is this different than the next one ?
 	m_pHdrFtrContainer = static_cast<fp_Container *>(new fp_HdrFtrContainer(iWidth, static_cast<fl_SectionLayout *>(this)));
 	return m_pHdrFtrContainer;
 }
@@ -5321,5 +5321,3 @@ bool fl_ShadowListener::signal(UT_uint32 /*iSignal*/)
 
 	return false;
 }
-
-

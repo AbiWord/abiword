@@ -44,21 +44,21 @@ public:
 		{ UT_ASSERT_NOT_REACHED() ; return NULL; }
 
    	virtual GRType		getType() const { return GRT_Vector; }
-   	virtual bool		render(GR_Graphics *pGR, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
+   	virtual bool		render(GR_Graphics *pGR, double xDest, double yDest);
 
 private:
    	bool m_status;
    	UT_Stack *m_context;
 	UT_Vector m_elements;  
    
-	UT_sint32 m_iDisplayOx;
-	UT_sint32 m_iDisplayOy;
+	double m_iDisplayOx;
+	double m_iDisplayOy;
 
 	UT_svg *m_pSVG;
 	UT_ByteBuf *m_pBB_Image;
 public:
-	UT_sint32 getDisplayOx() const { return m_iDisplayOx; }
-	UT_sint32 getDisplayOy() const { return m_iDisplayOy; }
+	double getDisplayOx() const { return m_iDisplayOx; }
+	double getDisplayOy() const { return m_iDisplayOy; }
 
 	UT_svg *getSVG() const { return m_pSVG; }
 

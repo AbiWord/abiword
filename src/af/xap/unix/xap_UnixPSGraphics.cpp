@@ -133,29 +133,30 @@ void PS_Graphics::setFont(GR_Font* pFont)
 		_emit_SetFont();
 }
 
-UT_uint32 PS_Graphics::getFontAscent(GR_Font * fnt)
+double PS_Graphics::getFontAscent(GR_Font * fnt)
 {
-	PSFont*	hndl = static_cast<PSFont*> (fnt);
-	// FIXME we should really be getting stuff from the font in layout units,
+	// FIXME: we should return a value in layout units, independent of the zoom.
 	// FIXME but we're not smart enough to do that yet
-	// we call getDeviceResolution() to avoid zoom
-	return static_cast<UT_uint32>(hndl->getUnixFont()->getAscender(hndl->getSize()) * getResolution() / getDeviceResolution() + 0.5);
+	PSFont*	hndl = static_cast<PSFont*> (fnt);
+	XAP_UnixFont* pFont = hndl->getUnixFont();
+	return pFont->getAscender(hndl->getSize()) * getResolution() / getDeviceResolution();
 }
 
-UT_uint32 PS_Graphics::getFontAscent()
+double PS_Graphics::getFontAscent()
 {
   return getFontAscent(m_pCurrentFont);
 }
 
-UT_uint32 PS_Graphics::getFontDescent(GR_Font * fnt)
+double PS_Graphics::getFontDescent(GR_Font * fnt)
 {
-	PSFont*	psfnt = static_cast<PSFont*> (fnt);
-	// FIXME we should really be getting stuff from the font in layout units,
-	// FIXME but we're not smart enough to do that yet
-	return static_cast<UT_uint32>(psfnt->getUnixFont()->getDescender(psfnt->getSize()) * getResolution() / getDeviceResolution() + 0.5);
+	// FIXME: we should return a value in layout units, independent of the zoom.
+	// FIXME but we're not smart enough to do that yet	
+	PSFont*	hndl = static_cast<PSFont*> (fnt);
+	XAP_UnixFont* pFont = hndl->getUnixFont();
+	return pFont->getDescender(hndl->getSize()) * getResolution() / getDeviceResolution();
 }
 
-UT_uint32 PS_Graphics::getFontDescent()
+double PS_Graphics::getFontDescent()
 {
   return getFontDescent(m_pCurrentFont);
 }
@@ -165,12 +166,12 @@ void PS_Graphics::getCoverage(UT_NumberVector& coverage)
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 }
 
-UT_uint32 PS_Graphics::getFontHeight(GR_Font * fnt)
+double PS_Graphics::getFontHeight(GR_Font * fnt)
 {
 	return getFontAscent(fnt) + getFontDescent(fnt);
 }
 
-UT_uint32 PS_Graphics::getFontHeight()
+double PS_Graphics::getFontHeight()
 {
 	return getFontAscent(m_pCurrentFont) + getFontDescent(m_pCurrentFont);
 }
@@ -267,13 +268,13 @@ GR_Font * PS_Graphics::_findFont(const char* pszFontFamily,
 	return pFont;
 }
 
-void PS_Graphics::drawGlyph(UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff)
+void PS_Graphics::drawGlyph(UT_uint32 Char, double xoff, double yoff)
 {
 	UT_ASSERT_NOT_REACHED ();
 }
 
 void PS_Graphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
-							int iLength, UT_sint32 xoff, UT_sint32 yoff,
+							int iLength, double xoff, double yoff,
 							int * pCharWidths)
 {
 	if (!m_bStartPage)
@@ -289,7 +290,7 @@ void PS_Graphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	// this means that we must emit moveto()s instead of spaces
 	UT_UTF8String utf8;
 	bool last_was_overstriking = false;
-	UT_sint32 advance = 0, prevAdvance = 0;
+	double advance = 0, prevAdvance = 0;
 
 	for (UT_sint32 i = 0; i < iLength; i++) {
 		UT_UCS4Char ch = pChars[iCharOffset + i];
@@ -453,7 +454,7 @@ void PS_Graphics::_drawCharsUTF8(const UT_UCSChar* pChars, UT_uint32 iCharOffset
 		delete ae;
 }
 
-void PS_Graphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 y2)
+void PS_Graphics::drawLine(double x1, double y1, double x2, double y2)
 {
   if (!m_bStartPage)
     return;
@@ -470,7 +471,7 @@ void PS_Graphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 y
 	m_ps->writeBytes(buf);
 }
 
-void PS_Graphics::setLineWidth(UT_sint32 iLineWidth)
+void PS_Graphics::setLineWidth(double iLineWidth)
 {
 	m_iLineWidth = tdu (iLineWidth);
 }
@@ -549,7 +550,7 @@ void PS_Graphics::setLineProperties ( double inWidthPixels,
 #endif
 }
 
-void PS_Graphics::xorLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32)
+void PS_Graphics::xorLine(double, double, double, double)
 {
 }
 
@@ -559,7 +560,7 @@ void PS_Graphics::polyLine(UT_Point * /* pts */, UT_uint32 /* nPoints */)
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 }
 
-void PS_Graphics::fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
+void PS_Graphics::fillRect(const UT_RGBColor& c, double x, double y, double w, double h)
 {
   if (!m_bStartPage)
     return;
@@ -567,20 +568,20 @@ void PS_Graphics::fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y, UT_si
   UT_RGBColor cl = m_currentColor;
   setColor(c);
 
-  x = tdu(x);
-  y = tdu(y);
-  w = tdu(w);
-  h = tdu(h);
+  UT_sint32 ix = tdu(x);
+  UT_sint32 iy = tdu(y);
+  UT_sint32 iw = tdu(w);
+  UT_sint32 ih = tdu(h);
 
   char buf[256];
   buf[0] = 0;
 
   sprintf(buf, "%d %d MT\n%d %d LT\n%d %d LT\n%d %d LT\n%d %d LT\nCP\nF\n",
-	  x,y,
-	  x+w, y,
-	  x+w, y+h,
-	  x, y+h,
-	  x, y
+	  ix,iy,
+	  ix+iw-1, iy,
+	  ix+iw-1, iy+ih-1,
+	  ix, iy+ih-1,
+	  ix, iy
 	  );
   m_ps->writeBytes(buf);
 
@@ -599,15 +600,15 @@ void PS_Graphics::setClipRect(const UT_Rect* /*pRect*/)
 //	UT_ASSERT_NOT_REACHED ();
 }
 
-void PS_Graphics::clearArea(UT_sint32 /*x*/, UT_sint32 /*y*/,
-							UT_sint32 /*width*/, UT_sint32 /*height*/)
+void PS_Graphics::clearArea(double /*x*/, double /*y*/,
+							double /*width*/, double /*height*/)
 {
 	// clearArea is only used for re-drawing edited regions, which does not apply on paper.
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 
 }
 
-void PS_Graphics::scroll(UT_sint32, UT_sint32)
+void PS_Graphics::scroll(double, double)
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 }
@@ -1021,7 +1022,7 @@ void PS_Graphics::_emit_SetColor(void)
   m_ps->writeBytes(buf);
 }
 
-GR_Image* PS_Graphics::createNewImage(const char* pszName, const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight, GR_Image::GRType iType)
+GR_Image* PS_Graphics::createNewImage(const char* pszName, const UT_ByteBuf* pBB, double iWidth, double iHeight, GR_Image::GRType iType)
 {
 	GR_Image* pImg = NULL;
    
@@ -1030,33 +1031,33 @@ GR_Image* PS_Graphics::createNewImage(const char* pszName, const UT_ByteBuf* pBB
    	else if (iType == GR_Image::GRT_Vector)
      		pImg = new GR_VectorImage(pszName);
    
-	pImg->convertFromBuffer(pBB, tdu(iDisplayWidth), tdu(iDisplayHeight));
+	pImg->convertFromBuffer(pBB, tdu(iWidth), tdu(iHeight));
 
 	return pImg;
 }
 
-void PS_Graphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
+void PS_Graphics::drawImage(GR_Image* pImg, double xDest, double yDest)
 {
 	if (!m_bStartPage)
 		return;
 	
-	xDest = tdu(xDest); yDest = tdu(yDest);
+	UT_sint32 xiDest = tdu(xDest); UT_sint32 yiDest = tdu(yDest);
 
    	if (pImg->getType() != GR_Image::GRT_Raster) {
-	   pImg->render(this, xDest, yDest);
+	   pImg->render(this, xiDest, yiDest);
 	   return;
 	}
    
    	switch(m_cs)
      	{
        	case GR_Graphics::GR_COLORSPACE_COLOR:
-		drawRGBImage(pImg, xDest, yDest);
+		drawRGBImage(pImg, xiDest, yiDest);
 		break;
       	case GR_Graphics::GR_COLORSPACE_GRAYSCALE:
-		drawGrayImage(pImg, xDest, yDest);
+		drawGrayImage(pImg, xiDest, yiDest);
 		break;
       	case GR_Graphics::GR_COLORSPACE_BW:
-		drawBWImage(pImg, xDest, yDest);
+		drawBWImage(pImg, xiDest, yiDest);
 		break;
       	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -1268,7 +1269,7 @@ UT_RGBColor * PS_Graphics::getColor3D(GR_Color3D /*c*/)
 	return NULL;
 }
 
-void PS_Graphics::fillRect(GR_Color3D /*c*/, UT_sint32 /*x*/, UT_sint32 /*y*/, UT_sint32 /*w*/, UT_sint32 /*h*/)
+void PS_Graphics::fillRect(GR_Color3D /*c*/, double /*x*/, double /*y*/, double /*w*/, double /*h*/)
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 }

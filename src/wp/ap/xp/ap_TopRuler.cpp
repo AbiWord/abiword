@@ -286,7 +286,7 @@ bool AP_TopRuler::notify(AV_View * pView, const AV_ChangeMask mask)
 
 /*****************************************************************/
 
-void AP_TopRuler::_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 xlimit)
+void AP_TopRuler::_scrollFuncX(void * pData, double xoff, double xlimit)
 {
 	// static callback referenced by an AV_ScrollObj() for the ruler
 	UT_return_if_fail (pData);
@@ -298,7 +298,7 @@ void AP_TopRuler::_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 xlimit)
 	pTopRuler->scrollRuler(xoff,xlimit);
 }
 
-void AP_TopRuler::_scrollFuncY(void * /*pData*/, UT_sint32 /*yoff*/, UT_sint32 /*ylimit*/)
+void AP_TopRuler::_scrollFuncY(void * /*pData*/, double /*yoff*/, double /*ylimit*/)
 {
 	// static callback referenced by an AV_ScrollObj() for the ruler
 	// we don't care about vertical scrolling.
@@ -447,10 +447,10 @@ void AP_TopRuler::_drawBar(const UT_Rect * pClipRect, AP_TopRulerInfo * pInfo,
 void AP_TopRuler::_drawTickMark(const UT_Rect * pClipRect,
 								AP_TopRulerInfo * /* pInfo */, ap_RulerTicks &tick,
 								GR_Graphics::GR_Color3D clr3d, GR_Font * pFont,
-								UT_sint32 k, UT_sint32 xTick)
+								UT_sint32 k, double xTick)
 {
-	UT_sint32 yTop = m_pG->tlu(s_iFixedHeight)/4;
-	UT_sint32 yBar = m_pG->tlu(s_iFixedHeight)/2;
+	double yTop = m_pG->tlu(s_iFixedHeight)/4.;
+	double yBar = m_pG->tlu(s_iFixedHeight)/4.;
 
 	GR_Painter painter(m_pG);
 
@@ -467,8 +467,8 @@ void AP_TopRuler::_drawTickMark(const UT_Rect * pClipRect,
 	if (k % tick.tickLabel)
 	{
 		// draw the ticks
-		UT_uint32 h = ((k % tick.tickLong) ? m_pG->tlu(2) : m_pG->tlu(6));
-		UT_sint32 y = yTop + (yBar-h)/2;
+		double h = ((k % tick.tickLong) ? m_pG->tlu(2) : m_pG->tlu(6));
+		double y = yTop + yBar - h/2.;
 		m_pG->setColor3D(clr3d);
 		painter.drawLine(xTick,y,xTick,y+h);
 	}
@@ -480,7 +480,7 @@ void AP_TopRuler::_drawTickMark(const UT_Rect * pClipRect,
 //
 // The graphics class works in logical units almost exclusively.
 //
-		UT_uint32 iFontHeight = m_pG->getFontAscent();
+		UT_uint32 iFontHeight = m_pG->getFontAscent(); // FIXME: FontHeight != Font Ascent!! The Win32 code below is correct. Fix the Unix getGUIFont code - MARCM
 
 		UT_uint32 n = k / tick.tickLabel * tick.tickScale;
 
@@ -496,19 +496,16 @@ void AP_TopRuler::_drawTickMark(const UT_Rect * pClipRect,
 		UT_UCS4_strcpy_char(span, buf);
 		UT_uint32 len = strlen(buf);
 
-		UT_sint32 w = m_pG->measureString(span, 0, len, charWidths) * 100 / m_pG->getZoomPercentage();
-
-//                UT_sint32 yDU = s_iFixedHeight/4 + 
-//                        (s_iFixedHeight/2 - s_iFixedHeight*m_pG->getZoomPercentage()/(4*100))/2;
+		double w = m_pG->measureString(span, 0, len, charWidths) * 100 / m_pG->getZoomPercentage();
 
 		// The following code works perfectly on UNIX
-                UT_sint32 yDU = 2*s_iFixedHeight/3;
+        UT_sint32 yDU = 2*s_iFixedHeight/3;
 		UT_sint32 yLU = m_pG->tlu(yDU);
 		yLU = yLU - iFontHeight;
 		xxx_UT_DEBUGMSG(("s_iFixedHeight %d yDU %d yLU %d \n",s_iFixedHeight,yDU,yLU));
 		//
 		// FIXME HACK for Windows! There is something wrong with
-		// here. Thi sis Tomas's code which works for Windows
+		// here. This is Tomas's code which works for Windows
 		// but not Unix
 		//
 #ifdef WIN32
@@ -524,7 +521,7 @@ void AP_TopRuler::_drawTickMark(const UT_Rect * pClipRect,
                         (s_iFixedHeight/2 - iFontHeight*m_pG->getDeviceResolution()/m_pG->getResolution())/2;
                 yLU = m_pG->tlu(yDU);                                 
 #endif
-               painter.drawChars(span, 0, len, xTick - w/2, yLU);	
+		painter.drawChars(span, 0, len, xTick - w/2, yLU);	
 	}
 }
 
@@ -543,7 +540,7 @@ void AP_TopRuler::_drawTicks(const UT_Rect * pClipRect,
 	UT_ASSERT_HARMLESS(xFrom >= 0);
 	UT_ASSERT_HARMLESS(xTo >= 0);
 
-	UT_sint32 xFixed = static_cast<UT_sint32>(m_pG->tlu(UT_MAX(m_iLeftRulerWidth,s_iFixedWidth)));
+	double xFixed = m_pG->tlu(UT_MAX(m_iLeftRulerWidth,s_iFixedWidth));
 	FV_View * pView = static_cast<FV_View *>(m_pView);
 	if(pView->getViewMode() != VIEW_PRINT)
 	{
@@ -553,9 +550,9 @@ void AP_TopRuler::_drawTicks(const UT_Rect * pClipRect,
 
 	// convert page-relative coordinates into absolute coordinates.
 
-	UT_sint32 xAbsOrigin = xFixed + pInfo->m_xPageViewMargin + xOrigin - m_xScrollOffset;
-	UT_sint32 xAbsFrom   = xFixed + pInfo->m_xPageViewMargin + xFrom   - m_xScrollOffset;
-	UT_sint32 xAbsTo     = xFixed + pInfo->m_xPageViewMargin + xTo     - m_xScrollOffset;
+	double xAbsOrigin = xFixed + pInfo->m_xPageViewMargin + xOrigin - m_xScrollOffset;
+	double xAbsFrom   = xFixed + pInfo->m_xPageViewMargin + xFrom   - m_xScrollOffset;
+	double xAbsTo     = xFixed + pInfo->m_xPageViewMargin + xTo     - m_xScrollOffset;
 
 	// we need to do our own clipping for the fixed area
 	//UT_DEBUGMSG(("xAbsFrom %d, xAbsTo %d\n",xAbsFrom,xAbsTo));
@@ -578,7 +575,7 @@ void AP_TopRuler::_drawTicks(const UT_Rect * pClipRect,
 		while (1)
 		{
 			UT_ASSERT(k < 10000);
-			UT_sint32 xTick = xAbsOrigin + k*tick.tickUnit/tick.tickUnitScale;
+			double xTick = xAbsOrigin + k*tick.tickUnit/tick.tickUnitScale;
 			if (xTick > xAbsTo)
 				break;
 
@@ -597,7 +594,7 @@ void AP_TopRuler::_drawTicks(const UT_Rect * pClipRect,
 		while (1)
 		{
 			UT_ASSERT(k < 10000);
-			UT_sint32 xTick = xAbsOrigin - k*tick.tickUnit/tick.tickUnitScale;
+			double xTick = xAbsOrigin - k*tick.tickUnit/tick.tickUnitScale;
 			if (xTick < xAbsTo)
 				break;
 			if (xTick <= xAbsFrom)
@@ -860,15 +857,15 @@ void AP_TopRuler::_drawParagraphProperties(const UT_Rect * pClipRect,
 void AP_TopRuler::_getTabToggleRect(UT_Rect * prToggle)
 {
 	if (prToggle) {
-		UT_sint32 l,xFixed = static_cast<UT_sint32>(m_pG->tlu(UT_MAX(m_iLeftRulerWidth,s_iFixedWidth)));
+		double l,xFixed = UT_MAX(m_iLeftRulerWidth,s_iFixedWidth);
 		FV_View * pView = static_cast<FV_View *>(m_pView);
 		if(pView->getViewMode() != VIEW_PRINT)
-			xFixed = m_pG->tlu(s_iFixedWidth);
+			xFixed = s_iFixedWidth;
 		
-		l = (xFixed - m_pG->tlu(17))/2;
+		l = m_pG->tlu(static_cast<UT_sint32>((xFixed - 17)/2));
 		
-		UT_sint32 t = (m_pG->tlu(s_iFixedHeight) - m_pG->tlu(17))/2;
-		prToggle->set(t, l, m_pG->tlu(17), m_pG->tlu(17));
+		double t = m_pG->tlu(static_cast<UT_sint32>((s_iFixedHeight - 17) / 2));
+		prToggle->set(l, t, m_pG->tlu(17), m_pG->tlu(17));
 	}
 }
 
@@ -1168,20 +1165,20 @@ void AP_TopRuler::_drawMarginProperties(const UT_Rect * /* pClipRect */,
 	painter.fillRect(GR_Graphics::CLR3D_Background, rLeft);
 
 	m_pG->setColor3D(GR_Graphics::CLR3D_Foreground);
-	painter.drawLine( rLeft.left,  rLeft.top, rLeft.left + rLeft.width, rLeft.top);
-	painter.drawLine( rLeft.left + rLeft.width,  rLeft.top, rLeft.left + rLeft.width, rLeft.top + rLeft.height);
-	painter.drawLine( rLeft.left + rLeft.width,  rLeft.top + rLeft.height, rLeft.left, rLeft.top + rLeft.height);
-	painter.drawLine( rLeft.left,  rLeft.top + rLeft.height, rLeft.left, rLeft.top);
+	painter.drawLine( rLeft.left,  rLeft.top, rLeft.left + rLeft.width - m_pG->tlu(1), rLeft.top);
+	painter.drawLine( rLeft.left + rLeft.width - m_pG->tlu(1),  rLeft.top, rLeft.left + rLeft.width - m_pG->tlu(1), rLeft.top + rLeft.height - m_pG->tlu(1));
+	painter.drawLine( rLeft.left + rLeft.width - m_pG->tlu(1),  rLeft.top + rLeft.height - m_pG->tlu(1), rLeft.left, rLeft.top + rLeft.height - m_pG->tlu(1));
+	painter.drawLine( rLeft.left,  rLeft.top + rLeft.height - m_pG->tlu(1), rLeft.left, rLeft.top);
 	m_pG->setColor3D(GR_Graphics::CLR3D_BevelUp);
 	painter.drawLine( rLeft.left + m_pG->tlu(1), rLeft.top + m_pG->tlu(1), rLeft.left + rLeft.width - m_pG->tlu(2), rLeft.top + m_pG->tlu(1));
 	painter.drawLine( rLeft.left + m_pG->tlu(1), rLeft.top + m_pG->tlu(1), rLeft.left + m_pG->tlu(1), rLeft.top + rLeft.height - m_pG->tlu(2));
 	painter.fillRect(GR_Graphics::CLR3D_Background, rRight);
 
 	m_pG->setColor3D(GR_Graphics::CLR3D_Foreground);
-	painter.drawLine( rRight.left,  rRight.top, rRight.left + rRight.width, rRight.top);
-	painter.drawLine( rRight.left + rRight.width,  rRight.top, rRight.left + rRight.width, rRight.top + rRight.height);
-	painter.drawLine( rRight.left + rRight.width,  rRight.top + rRight.height, rRight.left, rRight.top + rRight.height);
-	painter.drawLine( rRight.left,  rRight.top + rRight.height, rRight.left, rRight.top);
+	painter.drawLine( rRight.left,  rRight.top, rRight.left + rRight.width - m_pG->tlu(1), rRight.top);
+	painter.drawLine( rRight.left + rRight.width - m_pG->tlu(1),  rRight.top, rRight.left + rRight.width - m_pG->tlu(1), rRight.top + rRight.height - m_pG->tlu(1));
+	painter.drawLine( rRight.left + rRight.width - m_pG->tlu(1),  rRight.top + rRight.height - m_pG->tlu(1), rRight.left, rRight.top + rRight.height - m_pG->tlu(1));
+	painter.drawLine( rRight.left,  rRight.top + rRight.height - m_pG->tlu(1), rRight.left, rRight.top);
 	m_pG->setColor3D(GR_Graphics::CLR3D_BevelUp);
 	painter.drawLine( rRight.left + m_pG->tlu(1), rRight.top + m_pG->tlu(1), rRight.left + rRight.width - m_pG->tlu(2), rRight.top + m_pG->tlu(1));
 	painter.drawLine( rRight.left + m_pG->tlu(1), rRight.top + m_pG->tlu(1), rRight.left + m_pG->tlu(1), rRight.top + rRight.height - m_pG->tlu(2));
@@ -1229,6 +1226,9 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 		pView->getTopRulerInfo(pInfo);
 	}
 
+	// first of all, set the line style for all to use
+	m_pG->setLineProperties (m_pG->tlu(1), GR_Graphics::JOIN_MITER, GR_Graphics::CAP_PROJECTING, GR_Graphics::LINE_SOLID);
+	
 	// draw the tab toggle inside the fixed area in the left-hand corner
 	_drawTabToggle(pClipRect, false);
 
@@ -1753,10 +1753,10 @@ void AP_TopRuler::_drawCellMark(UT_Rect * prDrag, bool bUp)
 
 	GR_Painter painter(m_pG);
 
-	UT_sint32 left = prDrag->left + m_pG->tlu(2);
-	UT_sint32 right = left + prDrag->width -m_pG->tlu(4);
-	UT_sint32 top = prDrag->top + m_pG->tlu(2);
-	UT_sint32 bot = top + prDrag->height - m_pG->tlu(4);
+	double left = prDrag->left + m_pG->tlu(2);
+	double right = left + prDrag->width - m_pG->tlu(1) - m_pG->tlu(4);
+	double top = prDrag->top + m_pG->tlu(2);
+	double bot = top + prDrag->height - m_pG->tlu(1) - m_pG->tlu(4);
 	m_pG->setColor3D(GR_Graphics::CLR3D_Foreground);
 	painter.drawLine(left,top,left,bot);
 	painter.drawLine(left,bot,right,bot);
@@ -4145,8 +4145,8 @@ void AP_TopRuler::_drawLeftIndentMarker(UT_Rect & rect, bool bFilled)
 	GR_Graphics::GR_Color3D clr3dBorder, clr3dBevel;
 	_computeEffects(bFilled,clr3dBorder,clr3dBevel);
 
-	UT_sint32 l = rect.left;
-	UT_sint32 t = rect.top;
+	double l = rect.left;
+	double t = rect.top;
 
 	//FV_View * pView = (static_cast<FV_View *>(m_pView));
 	fl_BlockLayout *pBlock = (static_cast<FV_View *>(m_pView))->getCurrentBlock();
@@ -4179,8 +4179,8 @@ void AP_TopRuler::_drawLeftIndentMarker(UT_Rect & rect, bool bFilled)
 		// draw border
 
 		m_pG->setColor3D(clr3dBorder);
-		painter.drawLine(	l+m_pG->tlu(5),   t,    l+m_pG->tlu(11), t+m_pG->tlu(6) );
-		painter.drawLine(	l+m_pG->tlu(5),   t,    l- m_pG->tlu(1), t+m_pG->tlu(6) );
+		painter.drawLine(	l+m_pG->tlu(5),   t,    l+m_pG->tlu(10), t+m_pG->tlu(5) );
+		painter.drawLine(	l+m_pG->tlu(5),   t,    l, t+m_pG->tlu(5) );
 		
 		painter.drawLine(	l,     t+m_pG->tlu(5),  l,    t+m_pG->tlu(8) );
 		painter.drawLine(	l+m_pG->tlu(10),  t+m_pG->tlu(5),  l+m_pG->tlu(10), t+m_pG->tlu(8) );
@@ -4215,8 +4215,8 @@ void AP_TopRuler::_drawLeftIndentMarker(UT_Rect & rect, bool bFilled)
 		// draw border
 
 		m_pG->setColor3D(clr3dBorder);
-		painter.drawLine(	l+m_pG->tlu(5),   t,    l+m_pG->tlu(11), t+m_pG->tlu(6) );
-		painter.drawLine(	l+m_pG->tlu(5),   t,    l- m_pG->tlu(1), t+m_pG->tlu(6) );
+		painter.drawLine(	l+m_pG->tlu(5),   t,    l+m_pG->tlu(10), t+m_pG->tlu(5) );
+		painter.drawLine(	l+m_pG->tlu(5),   t,    l, t+m_pG->tlu(5) );
 		
 		painter.drawLine(	l,     t+m_pG->tlu(5),  l,    t+m_pG->tlu(14));
 		painter.drawLine(	l+m_pG->tlu(10),  t+m_pG->tlu(5),  l+m_pG->tlu(10), t+m_pG->tlu(14));
@@ -4271,8 +4271,8 @@ void AP_TopRuler::_drawRightIndentMarker(UT_Rect & rect, bool bFilled)
 		// draw border
 
 		m_pG->setColor3D(clr3dBorder);
-		painter.drawLine(	l+m_pG->tlu(5),   t,    l+m_pG->tlu(11), t+m_pG->tlu(6));
-		painter.drawLine(	l+m_pG->tlu(5),   t,    l- m_pG->tlu(1), t+m_pG->tlu(6));
+		painter.drawLine(	l+m_pG->tlu(5),   t,    l+m_pG->tlu(10), t+m_pG->tlu(5));
+		painter.drawLine(	l+m_pG->tlu(5),   t,    l, t+m_pG->tlu(5));
 		
 		painter.drawLine(	l,     t+m_pG->tlu(5),  l,    t+m_pG->tlu(14));
 		painter.drawLine(	l+m_pG->tlu(10),  t+m_pG->tlu(5),  l+m_pG->tlu(10), t+m_pG->tlu(14));
@@ -4300,8 +4300,8 @@ void AP_TopRuler::_drawRightIndentMarker(UT_Rect & rect, bool bFilled)
 		// draw border
 
 		m_pG->setColor3D(clr3dBorder);
-		painter.drawLine(	l+m_pG->tlu(5),   t,    l+m_pG->tlu(11), t+m_pG->tlu(6) );
-		painter.drawLine(	l+m_pG->tlu(5),   t,    l- m_pG->tlu(1), t+m_pG->tlu(6) );
+		painter.drawLine(	l+m_pG->tlu(5),   t,    l+m_pG->tlu(10), t+m_pG->tlu(5) );
+		painter.drawLine(	l+m_pG->tlu(5),   t,    l, t+m_pG->tlu(5) );
 		
 		painter.drawLine(	l,     t+m_pG->tlu(5),  l,    t+m_pG->tlu(8) );
 		painter.drawLine(	l+m_pG->tlu(10),  t+m_pG->tlu(5),  l+m_pG->tlu(10), t+m_pG->tlu(8) );
@@ -4339,8 +4339,8 @@ void AP_TopRuler::_drawFirstLineIndentMarker(UT_Rect & rect, bool bFilled)
 	// draw border
 
 	m_pG->setColor3D(clr3dBorder);
-	painter.drawLine(	l+m_pG->tlu(10),  t+m_pG->tlu(3),  l+m_pG->tlu(4),  t+m_pG->tlu(9));
-	painter.drawLine(	l,     t+m_pG->tlu(3),  l+m_pG->tlu(6),  t+m_pG->tlu(9));
+	painter.drawLine(	l+m_pG->tlu(10),  t+m_pG->tlu(3),  l+m_pG->tlu(5),  t+m_pG->tlu(8));
+	painter.drawLine(	l,     t+m_pG->tlu(3),  l+m_pG->tlu(5),  t+m_pG->tlu(8));
 	
 	painter.drawLine(	l,     t,    l,    t+m_pG->tlu(3));
 	painter.drawLine(	l+m_pG->tlu(10),  t,    l+m_pG->tlu(10), t+m_pG->tlu(3));
@@ -4361,10 +4361,10 @@ void AP_TopRuler::_drawTabToggle(const UT_Rect * pClipRect, bool bErase)
 
 	if (!pClipRect || rect.intersectsRect(pClipRect) || bErase)
 	{
-		UT_sint32 left = rect.left;
-		UT_sint32 right = rect.left + rect.width - m_pG->tlu(1);
-		UT_sint32 top = rect.top;
-		UT_sint32 bot = rect.top + rect.height - m_pG->tlu(1);
+		double left = rect.left;
+		double right = rect.left + rect.width - m_pG->tlu(1);
+		double top = rect.top;
+		double bot = rect.top + rect.height - m_pG->tlu(1);
 
 		// first draw the frame
 
@@ -4403,9 +4403,9 @@ void AP_TopRuler::_drawTabStop(UT_Rect & rect, eTabType iType, bool bFilled)
 	else
 		clr3d = GR_Graphics::CLR3D_Background;
 
-	UT_sint32 l = rect.left;
-	UT_sint32 t = rect.top;
-	UT_sint32 r = rect.left + rect.width;
+	double l = rect.left;
+	double t = rect.top;
+	double r = rect.left + rect.width - m_pG->tlu(1);
 
 	GR_Painter painter (m_pG);
 
@@ -4445,7 +4445,7 @@ void AP_TopRuler::_drawTabStop(UT_Rect & rect, eTabType iType, bool bFilled)
 			break;
 	}
 
-	painter.fillRect(clr3d, l,     t+ m_pG->tlu(4),  r-l,  m_pG->tlu(2));
+	painter.fillRect(clr3d, l,     t+ m_pG->tlu(4),  r-l+m_pG->tlu(1),  m_pG->tlu(2));
 }
 
 void AP_TopRuler::_drawColumnGapMarker(UT_Rect & rect)
@@ -4593,4 +4593,3 @@ void AP_TopRuler::_displayStatusMessage(XAP_String_Id FormatMessageID)
 	else
 		pRuler->mouseMotion(0, static_cast<UT_sint32>(pRuler->getWidth ()) + 1, fakeY); // getWidth ()+1 will be greater than getWidth ()
 }
-

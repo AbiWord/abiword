@@ -63,9 +63,9 @@ private:
 
 	GR_Font * m_pFont;
 	
-	UT_sint32 m_iAscent;
-	UT_sint32 m_iDescent;
-	UT_sint32 m_iHeight;
+	double m_iAscent;
+	double m_iDescent;
+	double m_iHeight;
 };
 
 /*****************************************************************/

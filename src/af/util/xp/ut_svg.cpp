@@ -26,10 +26,10 @@
 #include "ut_debugmsg.h"
 #include "ut_svg.h"
 
-static bool  _recognizeContent(const char* buffer,UT_uint32 buflen,UT_svg* data);
+static bool  _recognizeContent(const char* buffer, UT_uint32 buflen, UT_svg* data);
 
-static void _css_length (const char *str,GR_Graphics* pG,
-			 UT_sint32 *iDisplayLength,UT_sint32 *iLayoutLength);
+static void _css_length (const char *str, GR_Graphics* pG,
+			 double *iDisplayLength, double *iLayoutLength);
 
 UT_svg::UT_svg(GR_Graphics* pG,ParseMode ePM) :
 	m_ePM(ePM),
@@ -99,7 +99,7 @@ const char * UT_svg::getAttribute (const char * name,const char ** atts)
 
 bool UT_SVG_getDimensions(const UT_ByteBuf* pBB, GR_Graphics* pG,
 			  UT_sint32 & iDisplayWidth, UT_sint32 & iDisplayHeight,
-			  UT_sint32 & iLayoutWidth,  UT_sint32 & iLayoutHeight)
+			  double & iLayoutWidth,  double & iLayoutHeight)
 {
 	const char *buffer = reinterpret_cast<const char *>(pBB->getPointer(0));
 	UT_uint32 buflen = pBB->getLength();
@@ -147,7 +147,7 @@ static bool _recognizeContent(const char* buffer,UT_uint32 buflen,UT_svg* data)
 }
 
 static void _css_length (const char *str,GR_Graphics* pG,
-			 UT_sint32 *iDisplayLength,UT_sint32 *iLayoutLength)
+			 double *iDisplayLength, double *iLayoutLength)
 {
    	UT_sint32 dim = UT_determineDimension(static_cast<const char*>(str), DIM_PX);
 
@@ -155,7 +155,7 @@ static void _css_length (const char *str,GR_Graphics* pG,
 	{
 		if (pG == 0)
 		{
-			*iDisplayLength = static_cast<UT_sint32>((UT_convertToInches(str) * 72.0) + 0.05);
+			*iDisplayLength = (UT_convertToInches(str) * 72.0) + 0.05; // FIXME: what is this 0.05 for? It looks like it should be removed! - MARCM
 		}
 		else
 		{
@@ -168,10 +168,10 @@ static void _css_length (const char *str,GR_Graphics* pG,
 		double iImageLength = UT_convertDimensionless(str);
 
 		double fScale = pG ? (pG->getResolution() / 72.0) : 1;
-		*iDisplayLength = static_cast<UT_sint32>(iImageLength * fScale);
+		*iDisplayLength = iImageLength * fScale;
 
 		fScale = 1440.0 / 72.0;
-		*iLayoutLength = static_cast<UT_sint32>(iImageLength * fScale);
+		*iLayoutLength = iImageLength * fScale;
 	}
 }
 
@@ -1105,8 +1105,3 @@ bool UT_SVGMatrix::applyTransform (UT_SVGMatrix * currentMatrix,const char * tra
 
   return !bParseError;
 }
-
-
-
-
-

@@ -348,7 +348,7 @@ eTabLeader fl_TOCLayout::getTabLeader(UT_sint32 iLevel)
 	return static_cast<eTabLeader>(0);
 }
 
-UT_sint32 fl_TOCLayout::getTabPosition(UT_sint32 iLevel, fl_BlockLayout * pBlock)
+double fl_TOCLayout::getTabPosition(UT_sint32 iLevel, fl_BlockLayout * pBlock)
 {
 	fp_TOCContainer * pTOCC = static_cast<fp_TOCContainer *>(getFirstContainer());
 	if(pTOCC == NULL)
@@ -356,7 +356,7 @@ UT_sint32 fl_TOCLayout::getTabPosition(UT_sint32 iLevel, fl_BlockLayout * pBlock
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return 0;
 	}
-	UT_sint32 iWidth = pTOCC->getWidth() -pBlock->getLeftMargin();
+	double iWidth = pTOCC->getWidth() - pBlock->getLeftMargin();
 	UT_UTF8String sStr("");
 	if(iLevel == 1)
 	{
@@ -1425,7 +1425,7 @@ void fl_TOCLayout::_createTOCContainer(void)
 
 	fp_Container * pCon = pCL->getLastContainer();
 	UT_ASSERT(pCon);
-	UT_sint32 iWidth = pCon->getWidth();
+	double iWidth = pCon->getWidth();
 	pTOCContainer->setWidth(iWidth);
 	if(m_bHasEndTOC)
 	{
@@ -2430,5 +2430,3 @@ bool fl_TOCListener::signal(UT_uint32 /*iSignal*/)
 
 	return false;
 }
-
-

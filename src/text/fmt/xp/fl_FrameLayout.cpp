@@ -163,8 +163,8 @@ void 	fl_FrameLayout::setContainerProperties(void)
 			const PP_AttrProp * pAP = NULL;
 			getAP(pAP);
 			GR_Graphics * pG = getDocLayout()->getGraphics();
-			UT_sint32 iWidth = pG->tlu(100);
-			UT_sint32 iHeight = pG->tlu(100);
+			double iWidth = pG->tlu(100);
+			double iHeight = pG->tlu(100);
 			if(m_pGraphicImage->getType() == FGT_Raster)
 			{
 				UT_sint32 iImageWidth;
@@ -201,7 +201,7 @@ void 	fl_FrameLayout::setContainerProperties(void)
 	}
 }
 
-UT_sint32 fl_FrameLayout::getBoundingSpace(void) const
+double fl_FrameLayout::getBoundingSpace(void) const
 {
 	return m_iBoundingSpace;
 }
@@ -1081,7 +1081,7 @@ static void s_border_properties (const XML_Char * border_color, const XML_Char *
 			if (UT_determineDimension (border_width, (UT_Dimension)-1) == DIM_PX)
 				{
 					double thickness = UT_LAYOUT_RESOLUTION * UT_convertDimensionless (border_width);
-					line.m_thickness = static_cast<UT_sint32>(thickness / UT_PAPER_UNITS_PER_INCH);
+					line.m_thickness = static_cast<double>(thickness / UT_PAPER_UNITS_PER_INCH);
 				}
 			else
 				line.m_thickness = UT_convertToLogicalUnits (border_width);
@@ -1089,12 +1089,12 @@ static void s_border_properties (const XML_Char * border_color, const XML_Char *
 			if (!line.m_thickness)
 				{
 					double thickness = UT_LAYOUT_RESOLUTION;
-					line.m_thickness = static_cast<UT_sint32>(thickness / UT_PAPER_UNITS_PER_INCH);
+					line.m_thickness = static_cast<double>(thickness / UT_PAPER_UNITS_PER_INCH);
 				}
 		}
 	else // ??
 		{
 			double thickness = UT_LAYOUT_RESOLUTION;
-			line.m_thickness = static_cast<UT_sint32>(thickness / UT_PAPER_UNITS_PER_INCH);
+			line.m_thickness = static_cast<double>(thickness / UT_PAPER_UNITS_PER_INCH);
 		}
 }

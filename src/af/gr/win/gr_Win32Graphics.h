@@ -181,26 +181,26 @@ public:
 	static  GR_Graphics *   getPrinterGraphics(const char * pPrinterName,
 											   const char * pDocName);
 	
-	virtual void			drawGlyph(UT_uint32 glyph_idx, UT_sint32 xoff, UT_sint32 yoff);
-	virtual void			drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff);
+	virtual void			drawGlyph(UT_uint32 glyph_idx, double xoff, double yoff);
+	virtual void			drawChar(UT_UCSChar Char, double xoff, double yoff);
 	virtual void			drawChars(const UT_UCSChar* pChars,
 									  int iCharOffset, int iLength,
-									  UT_sint32 xoff, UT_sint32 yoff,
+									  double xoff, double yoff,
 									  int * pCharWidth);
 	virtual void			setFont(GR_Font* pFont);
 	virtual void            clearFont(void) { m_pFont = NULL;}
-	virtual UT_uint32		getFontHeight();
+	virtual double			getFontHeight();
 	virtual UT_sint32		measureUnRemappedChar(const UT_UCSChar c);
 	virtual void			setColor(const UT_RGBColor& clr);
 	virtual void            getColor(UT_RGBColor& clr);
 	virtual GR_Font*		getGUIFont();
 
-	virtual UT_uint32		getFontAscent();
-	virtual UT_uint32		getFontDescent();
+	virtual double			getFontAscent();
+	virtual double			getFontDescent();
 	virtual void			getCoverage(UT_NumberVector& coverage);
-	virtual void			drawLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
-	virtual void			xorLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
-	virtual void			setLineWidth(UT_sint32);
+	virtual void			drawLine(double, double, double, double);
+	virtual void			xorLine(double, double, double, double);
+	virtual void			setLineWidth(double);
 
 	virtual void            setLineProperties ( double inWidthPixels,
 												JoinStyle inJoinStyle = JOIN_MITER,
@@ -209,15 +209,15 @@ public:
 
 	virtual void			polyLine(UT_Point * pts, UT_uint32 nPoints);
 	virtual void			fillRect(const UT_RGBColor& c,
-									 UT_sint32 x, UT_sint32 y,
-									 UT_sint32 w, UT_sint32 h);
+									 double x, double y,
+									 double w, double h);
 	virtual void			invertRect(const UT_Rect* pRect);
 	virtual void			setClipRect(const UT_Rect* pRect);
-	virtual void			scroll(UT_sint32 dx, UT_sint32 dy);
+	virtual void			scroll(double dx, double dy);
 	virtual void			scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 								   UT_sint32 x_src, UT_sint32 y_src,
 								   UT_sint32 width, UT_sint32 height);
-	virtual void			clearArea(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
+	virtual void			clearArea(double, double, double, double);
 
 	virtual void			drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest);
 	virtual GR_Image*		createNewImage(const char* pszName, const UT_ByteBuf* pBB,
@@ -242,13 +242,13 @@ public:
 	virtual void			setColor3D(GR_Color3D c);
 	void					init3dColors(void);
 	virtual void			fillRect(GR_Color3D c,
-									 UT_sint32 x, UT_sint32 y,
-									 UT_sint32 w, UT_sint32 h);
+									 double x, double y,
+									 double w, double h);
 	virtual void			fillRect(GR_Color3D c, UT_Rect &r);
     virtual void            polygon(UT_RGBColor& c,UT_Point *pts,UT_uint32 nPoints);
-	virtual UT_uint32		getFontAscent(GR_Font *);
-	virtual UT_uint32		getFontDescent(GR_Font *);
-	virtual UT_uint32		getFontHeight(GR_Font *);
+	virtual double			getFontAscent(GR_Font *);
+	virtual double			getFontDescent(GR_Font *);
+	virtual double			getFontHeight(GR_Font *);
 
     virtual GR_Image * genImageFromRectangle(const UT_Rect & r);
 	virtual void		  saveRectangle(UT_Rect & r, UT_uint32 iIndx);
@@ -294,7 +294,7 @@ protected:
 	bool					m_bStartPage;
 	GR_Win32Font*			m_pFont;
 	GR_Win32Font*			m_pFontGUI;
-	UT_sint32				m_iLineWidth;
+	double					m_iLineWidth;
     JoinStyle               m_eJoinStyle;
 	CapStyle                m_eCapStyle;
 	LineStyle               m_eLineStyle;

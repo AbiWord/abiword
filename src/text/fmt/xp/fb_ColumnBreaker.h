@@ -17,13 +17,10 @@
  * 02111-1307, USA.
  */
 
-
-
 #ifndef COLUMNBREAKER_H
 #define COLUMNBREAKER_H
 
 #include "ut_types.h"
-
 
 class fp_Container;
 class fl_DocSectionLayout;
@@ -40,26 +37,26 @@ public:
 	fp_Page * getStartPage(void) { return m_pStartPage;}
 private:
 	bool                    _isThisBroken(fp_Container * pCon);
-	void                    _setLastWantedVBreak(fp_Container * pCon, UT_sint32 iBreakAt);
-	UT_sint32               _getLastWantedVBreak(fp_Container * pCon);
+	void                    _setLastWantedVBreak(fp_Container * pCon, double iBreakAt);
+	double                  _getLastWantedVBreak(fp_Container * pCon);
 	bool _breakCON(fp_Container *& pOffendingContainer,
 							fp_Container *& pLastContainerToKeep,
-							int iMaxColHeight, int iWorkingColHeight,
-							int iContainerMarginAfter);
+							double iMaxColHeight, double iWorkingColHeight,
+							double iContainerMarginAfter);
 	bool _breakTable(fp_Container *& pOffendingContainer,
 							fp_Container *& pLastContainerToKeep,
-							int iMaxColHeight, int iWorkingColHeight,
-							int iContainerMarginAfter);
+							double iMaxColHeight, double iWorkingColHeight,
+							double iContainerMarginAfter);
 	bool _breakTOC(fp_Container *& pOffendingContainer,
 							fp_Container *& pLastContainerToKeep,
-							int iMaxColHeight, int iWorkingColHeight,
-							int iContainerMarginAfter);
-	fp_Container * _getNext(fp_Container * pCon);
-	fp_Page *             m_pStartPage;
-	bool                  m_bStartFromStart;
-	bool                  m_bReBreak;
-	fl_DocSectionLayout * m_pDocSec;
-	fl_BlockLayout *      m_pCurrentBlock;
+							double iMaxColHeight, double iWorkingColHeight,
+							double iContainerMarginAfter);
+	fp_Container *          _getNext(fp_Container * pCon);
+	fp_Page *               m_pStartPage;
+	bool                    m_bStartFromStart;
+	bool                    m_bReBreak;
+	fl_DocSectionLayout *   m_pDocSec;
+	fl_BlockLayout *        m_pCurrentBlock;
 };
 
 #endif /* COLUMNBREAKER_H */

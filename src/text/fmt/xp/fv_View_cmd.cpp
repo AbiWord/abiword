@@ -681,9 +681,9 @@ bool FV_View::cmdSplitCells(AP_CellSplitType iSplitType)
 	return true;
 }
 
-void  FV_View::cmdSelectTOC(UT_sint32 x, UT_sint32 y)
+void  FV_View::cmdSelectTOC(double x, double y)
 {
-	UT_sint32 xClick=0,yClick = 0;
+	double xClick=0,yClick = 0;
 	fp_Page* pPage = _getPageForXY(x,y,xClick,yClick);
 	fl_TOCLayout * pTOCL = pPage->getLastMappedTOC();
 	m_Selection.setTOCSelected(pTOCL);
@@ -737,9 +737,9 @@ bool FV_View::cmdSelectColumn(PT_DocPosition posOfColumn)
 
 	fl_BlockLayout * pBlock = NULL;
 	fp_Run * pRun = NULL;
-	UT_sint32 xCaret, yCaret;
-	UT_uint32 heightCaret;
-	UT_sint32 xCaret2, yCaret2;
+	double xCaret, yCaret;
+	double heightCaret;
+	double xCaret2, yCaret2;
 	bool bDirection;
 	_findPositionCoords(posOfColumn, bEOL, xCaret, yCaret, xCaret2, yCaret2, heightCaret, bDirection, &pBlock, &pRun);
 	UT_return_val_if_fail(pBlock,false);
@@ -2153,7 +2153,7 @@ bool FV_View::cmdInsertRow(PT_DocPosition posRow, bool bBefore)
 	//
 	fl_BlockLayout * pBL =	m_pLayout->findBlockAtPosition(posRow);
 	fp_Run * pRun;
-	UT_sint32 xPoint,yPoint,xPoint2,yPoint2,iPointHeight;
+	double xPoint,yPoint,xPoint2,yPoint2,iPointHeight;
 	bool bDirection;
 	pRun = pBL->findPointCoords(posRow, false, xPoint,
 								yPoint, xPoint2, yPoint2,
@@ -2429,7 +2429,7 @@ bool FV_View::cmdDeleteCol(PT_DocPosition posCol)
 //
 	fl_BlockLayout * pBL =	m_pLayout->findBlockAtPosition(posCol);
 	fp_Run * pRun;
-	UT_sint32 xPoint,yPoint,xPoint2,yPoint2,iPointHeight;
+	double xPoint,yPoint,xPoint2,yPoint2,iPointHeight;
 	bool bDirection;
 	pRun = pBL->findPointCoords(posCol, false, xPoint,
 							    yPoint, xPoint2, yPoint2,
@@ -2694,7 +2694,7 @@ bool FV_View::cmdDeleteRow(PT_DocPosition posRow)
 //
 	fl_BlockLayout * pBL =	m_pLayout->findBlockAtPosition(posRow);
 	fp_Run * pRun;
-	UT_sint32 xPoint,yPoint,xPoint2,yPoint2,iPointHeight;
+	double xPoint,yPoint,xPoint2,yPoint2,iPointHeight;
 	bool bDirection;
 	pRun = pBL->findPointCoords(posRow, false, xPoint,
 							    yPoint, xPoint2, yPoint2,
@@ -3591,22 +3591,22 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 }
 
 
-void FV_View::cmdScroll(AV_ScrollCmd cmd, UT_uint32 iPos)
+void FV_View::cmdScroll(AV_ScrollCmd cmd, double iPos)
 {
 #define HACK_LINE_HEIGHT				20 // TODO Fix this!!
 
-	UT_sint32 lineHeight = iPos;
-	UT_sint32 docHeight = 0;
+	double lineHeight = iPos;
+	double docHeight = 0;
 	bool bVertical = false;
 	bool bHorizontal = false;
 
 	docHeight = m_pLayout->getHeight();
 
-	if (lineHeight == 0)
+	if (UT_dEQ(lineHeight, 0))
 		lineHeight = m_pG->tlu(HACK_LINE_HEIGHT);
 
-	UT_sint32 yoff = m_yScrollOffset;
-	UT_sint32 xoff = m_xScrollOffset;
+	double yoff = m_yScrollOffset;
+	double xoff = m_xScrollOffset;
 
 	switch(cmd)
 	{
@@ -3651,7 +3651,7 @@ void FV_View::cmdScroll(AV_ScrollCmd cmd, UT_uint32 iPos)
 		break;
 	case AV_SCROLLCMD_TOBOTTOM:
 		fp_Page* pPage = m_pLayout->getFirstPage();
-		UT_sint32 iDocHeight = getPageViewTopMargin();
+		double iDocHeight = getPageViewTopMargin();
 		while (pPage)
 		{
 			iDocHeight += pPage->getHeight() + getPageViewSep();
@@ -3718,7 +3718,7 @@ void FV_View::cmdSelect(PT_DocPosition dpBeg, PT_DocPosition dpEnd)
 
 #define IS_SELECTALL(a, b) ((a) == FV_DOCPOS_BOD && (b) == FV_DOCPOS_EOD)
 
-void FV_View::cmdSelect(UT_sint32 xPos, UT_sint32 yPos, FV_DocPos dpBeg, FV_DocPos dpEnd)
+void FV_View::cmdSelect(double xPos, double  yPos, FV_DocPos dpBeg, FV_DocPos dpEnd)
 {
 	UT_DEBUGMSG(("Double click on mouse \n"));
 
@@ -3748,7 +3748,7 @@ void FV_View::cmdSelect(UT_sint32 xPos, UT_sint32 yPos, FV_DocPos dpBeg, FV_DocP
 	if((dpBeg == FV_DOCPOS_BOL) || (dpBeg == FV_DOCPOS_BOP) || (dpBeg == FV_DOCPOS_BOD))
 	{
 		fl_BlockLayout * pBlock =  _findBlockAtPosition(iPosLeft);
-		UT_sint32 x, y, x2, y2, h;
+		double x, y, x2, y2, h;
 		bool b;
 		fp_Run* pRun = pBlock->findPointCoords(m_iInsPoint, false, x, y, x2, y2, h, b);
 		if(pRun)
@@ -4190,9 +4190,9 @@ UT_Error FV_View::cmdDeleteHyperlink()
 }
 
 
-UT_Error FV_View::cmdHyperlinkStatusBar(UT_sint32 xPos, UT_sint32 yPos)
+UT_Error FV_View::cmdHyperlinkStatusBar(double xPos, double yPos)
 {
-	UT_sint32 xClick, yClick;
+	double xClick, yClick;
 	fp_Page* pPage = _getPageForXY(xPos, yPos, xClick, yClick);
 
 	PT_DocPosition pos;
@@ -5132,7 +5132,7 @@ bool FV_View::cmdFindRevision(bool bNext, UT_sint32 xPos, UT_sint32 yPos)
 		return false;
 	
 	fp_Run * pRun;
-	UT_sint32 xPoint,yPoint,xPoint2,yPoint2,iPointHeight;
+	double xPoint,yPoint,xPoint2,yPoint2,iPointHeight;
 	bool bDirection;
 
 	pRun = pBL->findPointCoords(getPoint(), false, xPoint,

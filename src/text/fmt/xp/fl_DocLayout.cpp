@@ -819,7 +819,7 @@ void FL_DocLayout::removeEndnoteContainer(fp_EndnoteContainer * pECon)
 	{
 		pECon->getNext()->setPrev(pECon->getPrev());
 	}
-	fl_EndnoteLayout * pEL = static_cast<fl_EndnoteLayout *>(pECon->getSectionLayout());
+//	fl_EndnoteLayout * pEL = static_cast<fl_EndnoteLayout *>(pECon->getSectionLayout());
 //	pDSL = static_cast<fl_DocSectionLayout *>(pEL->myContainingLayout());
 //	if(!pDSL->isCollapsing())
 	{
@@ -1349,9 +1349,9 @@ bool FL_DocLayout::updateTOCsOnBookmarkChange(const XML_Char * pBookmark)
 
 
 //------------------------------------------------------------------
-UT_sint32 FL_DocLayout::getHeight()
+double FL_DocLayout::getHeight()
 {
-	UT_sint32 iHeight = 0;
+	double iHeight = 0;
 	int count = m_vecPages.getItemCount();
 
 //
@@ -1387,13 +1387,13 @@ UT_sint32 FL_DocLayout::getHeight()
 	{
 		iHeight = 0;
 	}
-	xxx_UT_DEBUGMSG(("returned height %d \n",iHeight));
+	xxx_UT_DEBUGMSG(("returned height %.2f \n",iHeight));
 	return iHeight;
 }
 
-UT_sint32 FL_DocLayout::getWidth()
+double FL_DocLayout::getWidth()
 {
-	UT_sint32 iWidth = 0;
+	double iWidth = 0;
 	int count = m_vecPages.getItemCount();
 
 	for (int i=0; i<count; i++)
@@ -1401,7 +1401,7 @@ UT_sint32 FL_DocLayout::getWidth()
 		fp_Page* p = m_vecPages.getNthItem(i);
 
 		// we layout pages vertically, so this is max, not sum
-		if (static_cast<UT_sint32>(iWidth) < p->getWidth())
+		if (iWidth < p->getWidth())
 			iWidth = p->getWidth();
 	}
 
@@ -2926,9 +2926,9 @@ void FL_DocLayout::_redrawUpdate(UT_Worker * pWorker)
 	bEnd = false;
 	fl_BlockLayout * pBlock = NULL;
 	fp_Run *pRun = NULL;
-	UT_sint32 x1,x2,y1,y2;
-	UT_uint32 height;
-	UT_sint32 origY;
+	double x1,x2,y1,y2;
+	double height;
+	double origY;
 	pView->_findPositionCoords(pView->getPoint(),bEnd,x1,y1,x2,y2,height,bDir,&pBlock,&pRun);
 	origY = y1;
 	while (pSL && !bStopOnRebuild)

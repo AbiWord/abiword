@@ -634,7 +634,7 @@ void fg_FillType::setTransparent(void)
 /*!
  * set this class to have an image background for fills.
  */
-void fg_FillType::setImage(FG_Graphic * pGraphic, GR_Image * pImage, GR_Graphics * pG, UT_sint32 iWidth, UT_sint32 iHeight)
+void fg_FillType::setImage(FG_Graphic * pGraphic, GR_Image * pImage, GR_Graphics * pG, double iWidth, double iHeight)
 {
 	m_FillType = FG_FILL_IMAGE;
 	DELETEP(m_pImage);
@@ -712,7 +712,7 @@ UT_RGBColor * fg_FillType::getColor(void)
 	return &m_color;
 }
 
-void fg_FillType::setWidthHeight(GR_Graphics * pG, UT_sint32 iWidth, UT_sint32 iHeight, bool bDoImage)
+void fg_FillType::setWidthHeight(GR_Graphics * pG, double iWidth, double iHeight, bool bDoImage)
 {
 	if((m_iWidth == iWidth) && (m_iHeight == iHeight))
 	{
@@ -741,7 +741,7 @@ void fg_FillType::setWidthHeight(GR_Graphics * pG, UT_sint32 iWidth, UT_sint32 i
 }
 
 
-void fg_FillType::setWidth(GR_Graphics * pG, UT_sint32 iWidth)
+void fg_FillType::setWidth(GR_Graphics * pG, double iWidth)
 {
 	if(iWidth == m_iWidth)
 	{
@@ -768,7 +768,7 @@ void fg_FillType::setWidth(GR_Graphics * pG, UT_sint32 iWidth)
 	}
 }
 
-void fg_FillType::setHeight(GR_Graphics * pG, UT_sint32 iHeight)
+void fg_FillType::setHeight(GR_Graphics * pG, double iHeight)
 {
 	if(iHeight == m_iHeight)
 	{
@@ -799,7 +799,7 @@ void fg_FillType::setHeight(GR_Graphics * pG, UT_sint32 iHeight)
 /*!
  * Actually do the fill for this class.
  */
-void fg_FillType::Fill(GR_Graphics * pG, UT_sint32 & srcX, UT_sint32 & srcY, UT_sint32 x, UT_sint32 y, UT_sint32 width, UT_sint32 height)
+void fg_FillType::Fill(GR_Graphics * pG, double & srcX, double & srcY, double x, double y, double width, double height)
 {
 //
 // Have to adjust for spacing between cells
@@ -809,7 +809,7 @@ void fg_FillType::Fill(GR_Graphics * pG, UT_sint32 & srcX, UT_sint32 & srcY, UT_
 	if(m_pContainer && (m_pContainer->getContainerType() == FP_CONTAINER_CELL))
 	{
 		fp_CellContainer * pCell = static_cast<fp_CellContainer *>(m_pContainer);
-		UT_sint32 xoff,yoff;
+		double xoff,yoff;
 		pCell->getLeftTopOffsets(xoff,yoff);
 		if(m_FillType == FG_FILL_IMAGE)
 		{
@@ -820,8 +820,8 @@ void fg_FillType::Fill(GR_Graphics * pG, UT_sint32 & srcX, UT_sint32 & srcY, UT_
 	if(m_pContainer && (m_pContainer->getContainerType() == FP_CONTAINER_FRAME))
 	{
 		fp_FrameContainer * pFrame = static_cast<fp_FrameContainer *>(m_pContainer);
-		UT_sint32 xoff = pFrame->getXPad();
-		UT_sint32 yoff = pFrame->getYPad();
+		double xoff = pFrame->getXPad();
+		double yoff = pFrame->getYPad();
 		if(m_FillType == FG_FILL_IMAGE)
 		{
 			srcX += xoff;
@@ -852,8 +852,8 @@ void fg_FillType::Fill(GR_Graphics * pG, UT_sint32 & srcX, UT_sint32 & srcY, UT_
 		{
 			if(getParent() && m_pContainer)
 			{
-				 UT_sint32 newX = x + (m_pContainer->getX());
-				 UT_sint32 newY = y + (m_pContainer->getY());
+				 double newX = x + (m_pContainer->getX());
+				 double newY = y + (m_pContainer->getY());
 				 getParent()->Fill(pG,newX,newY,x,y,width,height);
 				 return;
 			 }
@@ -905,8 +905,8 @@ void fg_FillType::Fill(GR_Graphics * pG, UT_sint32 & srcX, UT_sint32 & srcY, UT_
 		 if(getParent() && m_pContainer)
 		 {
 			 xxx_UT_DEBUGMSG(("Fill type transparent chaining up to parent %x ! \n",getParent()));
-			 UT_sint32 newX = srcX + (m_pContainer->getX());
-			 UT_sint32 newY = srcY + (m_pContainer->getY());
+			 double newX = srcX + m_pContainer->getX();
+			 double newY = srcY + m_pContainer->getY();
 			 getParent()->Fill(pG,newX,newY,x,y,width,height);
 			 return;
 		 }
@@ -923,7 +923,6 @@ void fg_FillType::Fill(GR_Graphics * pG, UT_sint32 & srcX, UT_sint32 & srcY, UT_
 	 }
 	 if(m_FillType == FG_FILL_IMAGE)
 	 {
-		 xxx_UT_DEBUGMSG(("Fill type Image ! srcX %d srcY %d x  %d y %d width %d height %d \n",srcX,srcY,x,y,width,height));
 		 if((m_pDocImage == NULL) && (m_pDocLayout->getGraphicTick() != m_iGraphicTick))
 		 {
 			 _regenerateImage(pG);
@@ -931,7 +930,7 @@ void fg_FillType::Fill(GR_Graphics * pG, UT_sint32 & srcX, UT_sint32 & srcY, UT_
 		 
 		 if(srcX < 0)
 		 {
-			 UT_sint32 iX = -srcX;
+			 double iX = -srcX;
 			 srcX = 0;
 			 UT_RGBColor white(255,255,255);
 			 painter.fillRect(white,x,y,iX,height);
@@ -940,7 +939,7 @@ void fg_FillType::Fill(GR_Graphics * pG, UT_sint32 & srcX, UT_sint32 & srcY, UT_
 		 
 		 if(srcY < 0)
 		 {
-			 UT_sint32 iY = -srcY;
+			 double iY = -srcY;
 			 srcY = 0;
 			 UT_RGBColor white(255,255,255);
 			 painter.fillRect(white,x,y,width,iY);
@@ -960,10 +959,10 @@ void fg_FillType::Fill(GR_Graphics * pG, UT_sint32 & srcX, UT_sint32 & srcY, UT_
 		const UT_Rect * pClip = pG->getClipRect();
 		if(pClip != NULL)
 		{
-			UT_sint32 leftDiff = 0;
-			UT_sint32 widthDiff = 0;
-			UT_sint32 topDiff = 0;
-			UT_sint32 heightDiff = 0;
+			double leftDiff = 0;
+			double widthDiff = 0;
+			double topDiff = 0;
+			double heightDiff = 0;
 			if(pClip->left > dest.left)
 			{
 				leftDiff = pClip->left - dest.left - pG->tlu(2) -1;
@@ -1032,4 +1031,3 @@ void fg_FillType::Fill(GR_Graphics * pG, UT_sint32 & srcX, UT_sint32 & srcY, UT_
 	 }
 	return;
 }
-

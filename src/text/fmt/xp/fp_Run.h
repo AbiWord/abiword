@@ -54,8 +54,8 @@ class fp_HyperlinkRun;
 
 struct fp_RunSplitInfo
 {
-	UT_sint32 iLeftWidth;
-	UT_sint32 iRightWidth;
+	double iLeftWidth;
+	double iRightWidth;
 	UT_sint32 iOffset;
 };
 
@@ -137,14 +137,14 @@ public:
 	FP_RUN_TYPE		        getType() const 				{ return m_iType; }
 	fp_Line*		        getLine() const 				{ return m_pLine; }
 	fl_BlockLayout*	        getBlock() const 				{ return m_pBL; }
-	UT_sint32		        getX() const 					{ return m_iX; }
-	UT_sint32		        getY() const 					{ return m_iY; }
+	double			        getX() const 					{ return m_iX; }
+	double			        getY() const 					{ return m_iY; }
 
-	UT_sint32		        getHeight() const;
-	UT_sint32		        getWidth() const;
-	UT_uint32		        getAscent() const;
-	UT_uint32		        getDescent() const;
-	virtual UT_sint32       getDrawingWidth() const;
+	double			        getHeight() const;
+	double					getWidth() const;
+	double					getAscent() const;
+	double					getDescent() const;
+	virtual double       getDrawingWidth() const;
 	
 	
 	fp_Run* 		        getNextRun() const					{ return m_pNext; }
@@ -158,8 +158,8 @@ public:
 	virtual void                 setPrev(fp_ContainerObject * pNull) {}
 	virtual void                 draw(GR_Graphics * pG) {}
 
-	UT_uint32		    getBlockOffset() const			{ return m_iOffsetFirst; }
-	UT_uint32		    getLength() const				{ return m_iLen; }
+	UT_uint32			    getBlockOffset() const			{ return m_iOffsetFirst; }
+	UT_uint32			    getLength() const				{ return m_iLen; }
 	GR_Graphics*	    getGraphics() const;
 	fp_HyperlinkRun *   getHyperlink() const 			{ return m_pHyperlink;}
 #if DEBUG
@@ -186,10 +186,10 @@ public:
 
 	void				setLine(fp_Line*);
 	void				setBlock(fl_BlockLayout * pBL) { _setBlock(pBL); }
-	virtual void        setX(UT_sint32 x, bool bDontClearIfNeeded = false);
-	void			    Run_setX(UT_sint32, FPRUN_CLEAR_SCREEN eClearScreen = FP_CLEARSCREEN_AUTO);
-	virtual void		setY(UT_sint32);
-	void				setBlockOffset(UT_uint32);
+	virtual void        setX(double x, bool bDontClearIfNeeded = false);
+	void			    Run_setX(double, FPRUN_CLEAR_SCREEN eClearScreen = FP_CLEARSCREEN_AUTO);
+	virtual void		setY(double);
+	void				setBlockOffset(UT_uint32 iOffset);
 	void				setLength(UT_uint32 iLen, bool bRefresh = true);
 	void				setNextRun(fp_Run*, bool bRefresh = true);
 	void				setPrevRun(fp_Run*, bool bRefresh = true);
@@ -210,14 +210,14 @@ public:
 	virtual void		draw(dg_DrawArgs*);
 	virtual void        clearScreen(void);
 	void                Run_ClearScreen(bool bFullLineHeightRect = false);
-	virtual void        setWidth(UT_sint32 iW) {}
-	virtual void        setHeight(UT_sint32 iH) {}
+	virtual void        setWidth(double iW) {}
+	virtual void        setHeight(double iH) {}
 	virtual bool        isVBreakable(void) {return false;}
 	virtual bool        isHBreakable(void) {return false;}
-	virtual UT_sint32   wantVBreakAt(UT_sint32 i) {return i;}
-	virtual UT_sint32   wantHBreakAt(UT_sint32 i) {return i;}
-	virtual fp_ContainerObject * VBreakAt(UT_sint32) { return NULL;}
-	virtual fp_ContainerObject * HBreakAt(UT_sint32) { return NULL;}
+	virtual double		wantVBreakAt(double i) {return i;}
+	virtual double		wantHBreakAt(double i) {return i;}
+	virtual fp_ContainerObject * VBreakAt(double) { return NULL;}
+	virtual fp_ContainerObject * HBreakAt(double) { return NULL;}
 
 	void				markAsDirty(void);
 	void                setCleared(void);
@@ -230,28 +230,28 @@ public:
     virtual void        markDirtyOverlappingRuns(UT_Rect & recScreen);
 
 	virtual void		_draw(dg_DrawArgs*) = 0;
-    void                _drawTextLine(UT_sint32, UT_sint32, UT_uint32, UT_uint32, UT_UCSChar *);
+    void                _drawTextLine(double, double, double, double, UT_UCSChar *);
 	virtual void       	_clearScreen(bool bFullLineHeightRect) = 0;
 	virtual bool		canBreakAfter(void) const = 0;
 	virtual bool		canBreakBefore(void) const = 0;
 	bool		        letPointPass(void) const;
 	virtual bool		isForcedBreak(void) const { return false; }
 	virtual bool		alwaysFits(void) const { return false; }
-	virtual bool		findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si,
+	virtual bool		findMaxLeftFitSplitPoint(double iMaxLeftWidth, fp_RunSplitInfo& si,
 												 bool bForce=false);
 	
-	virtual UT_sint32	findTrailingSpaceDistance(void) const { return 0; }
+	virtual double		findTrailingSpaceDistance(void) const { return 0; }
 	virtual bool		findFirstNonBlankSplitPoint(fp_RunSplitInfo& /*si*/) { return false; }
-	virtual void		mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos,
+	virtual void		mapXYToPosition(double xPos, double yPos,
 										PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool & isTOC) = 0;
 	
-	virtual void 		findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y,
-										UT_sint32& x2, UT_sint32& y2, UT_sint32& height,
+	virtual void 		findPointCoords(UT_uint32 iOffset, double& x, double& y,
+										double& x2, double& y2, double& height,
 										bool& bDirection) = 0;
 	
 	void			    lookupProperties(GR_Graphics * pG=NULL);
 	virtual bool		doesContainNonBlankData(void) const { return true; }	// Things like text whould return false if it is all spaces.
-	void                drawDecors(UT_sint32 xoff, UT_sint32 yoff, GR_Graphics * pG);
+	void                drawDecors(double xoff, double yoff, GR_Graphics * pG);
 	virtual bool		isSuperscript(void) const { return false; }
 	virtual bool		isSubscript(void) const { return false; }
     bool			    isUnderline(void) const ;
@@ -259,17 +259,17 @@ public:
 	bool			    isStrikethrough(void) const ;
 	bool			    isTopline(void) const ;
 	bool			    isBottomline(void) const ;
-	void			    setLinethickness(UT_sint32 max_linethickness);
-    UT_sint32		    getLinethickness(void) ;
-	void			    setUnderlineXoff(UT_sint32 xoff);
-	UT_sint32		    getUnderlineXoff(void);
-	void			    setOverlineXoff(UT_sint32 xoff) ;
-	UT_sint32		    getOverlineXoff(void) ;
-	void			    setMaxUnderline(UT_sint32 xoff) ;
-	UT_sint32		    getMaxUnderline(void) ;
-	void			    setMinOverline(UT_sint32 xoff) ;
-	UT_sint32		    getMinOverline(void) ;
-	UT_sint32           getToplineThickness(void);
+	void			    setLinethickness(double max_linethickness);
+    double			    getLinethickness(void) ;
+	void			    setUnderlineXoff(double xoff);
+	double			    getUnderlineXoff(void);
+	void			    setOverlineXoff(double xoff) ;
+	double			    getOverlineXoff(void) ;
+	void			    setMaxUnderline(double xoff) ;
+	double		  		getMaxUnderline(void) ;
+	void			    setMinOverline(double xoff) ;
+	double			    getMinOverline(void) ;
+	double				getToplineThickness(void);
 
 	virtual UT_BidiCharType	getDirection() const { return m_iDirection; };
 	UT_BidiCharType		getVisDirection();
@@ -296,25 +296,25 @@ public:
 	FPVisibility        getVisibility() const {return m_eVisibility;}
 	bool         isHidden() const {return _wouldBeHidden(m_eVisibility);}
 	void                setVisibility(FPVisibility eVis);
-	void                Fill(GR_Graphics * pG, UT_sint32 x, UT_sint32 y,
-							 UT_sint32 width, UT_sint32 height);
+	void                Fill(GR_Graphics * pG, double x, double y,
+							 double width, double height);
 	
 	fg_FillType *       getFillType(void);            
 	fp_Line *           getTmpLine(void) const
 	{ return m_pTmpLine;}
 	void                setTmpLine(fp_Line * pLine)
 	{ m_pTmpLine = pLine;}
-	UT_sint32           getTmpX(void) const
+	double				getTmpX(void) const
 	{ return m_iTmpX;}
-	void                setTmpX(UT_sint32 iX)
+	void                setTmpX(double iX)
 	{ m_iTmpX = iX;}
-	UT_sint32           getTmpY(void) const
+	double				getTmpY(void) const
 	{ return m_iTmpY;}
-	void                setTmpY(UT_sint32 iY)
+	void                setTmpY(double iY)
 	{ m_iTmpY = iY;}
-	UT_sint32           getTmpWidth(void) const
+	double           getTmpWidth(void) const
 	{ return m_iTmpWidth;}
-	void                setTmpWidth(UT_sint32 iWidth)
+	void                setTmpWidth(double iWidth)
 	{ m_iTmpWidth = iWidth;}
 	bool                clearIfNeeded(void);
 
@@ -353,22 +353,22 @@ protected:
 		{ m_pColorHL.setColor(pszColor); }
 	
 	void				_setLine(fp_Line* pLine) { m_pLine = pLine; }
-	void				_setHeight(UT_sint32 iHeight)
+	void				_setHeight(double iHeight)
 							{ m_iHeight = iHeight;}
-	void				_setWidth(UT_sint32 iWidth)
+	void				_setWidth(double iWidth)
                         	{ m_iWidth = iWidth; }
 
 	// use these with great care -- most of the time we need to use
 	// getWidth() and getHeight() which deal with
 	// visibility/hiddenness issues
-	UT_sint32           _getWidth() {return m_iWidth;}
-	UT_sint32           _getHeight(){return m_iHeight;}
+	double				_getWidth() {return m_iWidth;}
+	double				_getHeight(){return m_iHeight;}
 	
 	void				_setBlock(fl_BlockLayout * pBL) { m_pBL = pBL; }
-	void				_setAscent(int iAscent) { m_iAscent = iAscent; }
-	void				_setDescent(int iDescent) {m_iDescent = iDescent;}
-	void				_setX(int iX) { m_iX = iX; }
-	void				_setY(int iY) { m_iY = iY; }
+	void				_setAscent(double dAscent) { m_iAscent = dAscent; }
+	void				_setDescent(double dDescent) {m_iDescent = dDescent;}
+	void				_setX(double dX) { m_iX = dX; }
+	void				_setY(double dY) { m_iY = dY; }
 	void				_setDirection(UT_BidiCharType c) { m_iDirection = c; }
 	UT_BidiCharType		_getDirection(void) const { return m_iDirection; }
 	UT_BidiCharType		_getVisDirection(void) const { return m_iVisDirection; }
@@ -378,10 +378,10 @@ protected:
 	void				_setDecorations(unsigned char d) {m_fDecorations = d;}
 	
 	void				_orDecorations(unsigned char d) { m_fDecorations |= d; }
-	UT_sint32			_getLineWidth(void) { return m_iLineWidth; }
-	bool				_setLineWidth(UT_sint32 w)
+	double  			_getLineWidth(void) { return m_iLineWidth; }
+	bool				_setLineWidth(double w)
 	                         {
-								 UT_sint32 o = m_iLineWidth;
+								 double o = m_iLineWidth;
 								 m_iLineWidth = w;
 								 return o != w;
 							 }
@@ -426,13 +426,13 @@ private:
 	fl_BlockLayout*			m_pBL;
 	fp_Run*					m_pNext;
 	fp_Run*					m_pPrev;
-	UT_sint32				m_iX;
-	UT_sint32				m_iOldX;
-	UT_sint32				m_iY;
-	UT_sint32				m_iWidth;
-	UT_sint32				m_iHeight;
-	UT_uint32				m_iAscent;
-	UT_uint32				m_iDescent;
+	double					m_iX;
+	double					m_iOldX;
+	double					m_iY;
+	double					m_iWidth;
+	double					m_iHeight;
+	double					m_iAscent;
+	double					m_iDescent;
 
 	UT_uint32				m_iOffsetFirst;
 	UT_uint32				m_iLen;
@@ -450,12 +450,12 @@ private:
 	bool					m_bRecalcWidth;
 
 	unsigned char			m_fDecorations;
-	UT_sint32				m_iLineWidth;
-	UT_sint32               m_iLinethickness;
-	UT_sint32               m_iUnderlineXoff;
-	UT_sint32               m_imaxUnderline;
-	UT_sint32               m_iminOverline;
-	UT_sint32               m_iOverlineXoff;
+	double					m_iLineWidth;
+	double					m_iLinethickness;
+	double					m_iUnderlineXoff;
+	double					m_imaxUnderline;
+	double					m_iminOverline;
+	double       	        m_iOverlineXoff;
 	fp_HyperlinkRun *		m_pHyperlink;
 	PP_RevisionAttr *       m_pRevisions;
 
@@ -467,9 +467,9 @@ private:
 	fg_FillType             m_FillType;
 	bool                    m_bPrinting;
 	GR_Graphics *           m_pG;
-	UT_sint32               m_iTmpX;
-	UT_sint32               m_iTmpY;
-	UT_sint32               m_iTmpWidth;
+	double					m_iTmpX;
+	double					m_iTmpY;
+	double					m_iTmpWidth;
 	fp_Line *               m_pTmpLine;
 
 	// Variables for selection drawing
@@ -485,12 +485,12 @@ class ABI_EXPORT fp_TabRun : public fp_Run
 {
 public:
 	fp_TabRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
-	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool & isTOC);
-	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection);
+	virtual void			mapXYToPosition(double xPos, double yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool & isTOC);
+	virtual void 			findPointCoords(UT_uint32 iOffset, double& x, double& y, double& x2, double& y2, double& height, bool& bDirection);
 	virtual bool			canBreakAfter(void) const;
 	virtual bool			canBreakBefore(void) const;
 	virtual bool 			hasLayoutProperties(void) const;
-	void			       	setTabWidth(UT_sint32);
+	void			       	setTabWidth(double );
 	void			       	setLeader(eTabLeader iTabType);
 	eTabLeader			    getLeader(void);
 	void                    setTabType(eTabType iTabType);
@@ -503,7 +503,7 @@ public:
 	{ return m_bIsTOCListLabel;}
 
 protected:
-	virtual void			_drawArrow(UT_uint32 iLeft,UT_uint32 iTop,UT_uint32 iWidth, UT_uint32 iHeight);
+	virtual void			_drawArrow(double iLeft, double iTop, double iWidth, double iHeight);
 	virtual void			_draw(dg_DrawArgs*);
 	virtual void			_clearScreen(bool bFullLineHeightRect);
 	virtual void			_lookupProperties(const PP_AttrProp * pSpanAP,
@@ -526,8 +526,8 @@ class ABI_EXPORT fp_ForcedLineBreakRun : public fp_Run
 {
 public:
 	fp_ForcedLineBreakRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
-	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool & isTOC);
-	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection);
+	virtual void			mapXYToPosition(double xPos, double yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool & isTOC);
+	virtual void 			findPointCoords(UT_uint32 iOffset, double& x, double& y, double& x2, double& y2, double& height, bool& bDirection);
 	virtual bool			canBreakAfter(void) const;
 	virtual bool			canBreakBefore(void) const;
 	virtual bool			isForcedBreak(void) const { return true; }
@@ -546,8 +546,8 @@ class ABI_EXPORT fp_FieldStartRun : public fp_Run
 {
 public:
 	fp_FieldStartRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
-	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool & isTOC);
-	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection);
+	virtual void			mapXYToPosition(double xPos, double yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool & isTOC);
+	virtual void 			findPointCoords(UT_uint32 iOffset, double& x, double& y, double& x2, double& y2, double& height, bool& bDirection);
 	virtual bool			canBreakAfter(void) const;
 	virtual bool			canBreakBefore(void) const;
 	virtual bool			isForcedBreak(void) const { return true; }
@@ -566,8 +566,8 @@ class ABI_EXPORT fp_FieldEndRun : public fp_Run
 {
 public:
 	fp_FieldEndRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
-	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool & isTOC);
-	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection);
+	virtual void			mapXYToPosition(double xPos, double yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool & isTOC);
+	virtual void 			findPointCoords(UT_uint32 iOffset, double& x, double& y, double& x2, double& y2, double& height, bool& bDirection);
 	virtual bool			canBreakAfter(void) const;
 	virtual bool			canBreakBefore(void) const;
 	virtual bool			isForcedBreak(void) const { return true; }
@@ -587,8 +587,8 @@ class ABI_EXPORT fp_ForcedColumnBreakRun : public fp_Run
 public:
 	fp_ForcedColumnBreakRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
-	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool & isTOC);
-	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection);
+	virtual void			mapXYToPosition(double xPos, double yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool & isTOC);
+	virtual void 			findPointCoords(UT_uint32 iOffset, double& x, double& y, double& x2, double& y2, double& height, bool& bDirection);
 	virtual bool			canBreakAfter(void) const;
 	virtual bool			canBreakBefore(void) const;
 	virtual bool			isForcedBreak(void) const { return true; }
@@ -607,8 +607,8 @@ class ABI_EXPORT fp_ForcedPageBreakRun : public fp_Run
 {
 public:
 	fp_ForcedPageBreakRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
-	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool & isTOC);
-	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection);
+	virtual void			mapXYToPosition(double xPos, double yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool & isTOC);
+	virtual void 			findPointCoords(UT_uint32 iOffset, double& x, double& y, double& x2, double& y2, double& height, bool& bDirection);
 	virtual bool			canBreakAfter(void) const;
 	virtual bool			canBreakBefore(void) const;
 	virtual bool			isForcedBreak(void) const { return true; }
@@ -629,11 +629,11 @@ class ABI_EXPORT fp_EndOfParagraphRun : public fp_Run
 public:
 	fp_EndOfParagraphRun(fl_BlockLayout* pBL,  UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
-	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isToc);
-	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection);
+	virtual void			mapXYToPosition(double xPos, double yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isToc);
+	virtual void 			findPointCoords(UT_uint32 iOffset, double& x, double& y, double& x2, double& y2, double& height, bool& bDirection);
 	virtual bool			canBreakAfter(void) const;
 	virtual bool			canBreakBefore(void) const;
-	virtual UT_sint32       getDrawingWidth() const { return static_cast<UT_sint32>(m_iDrawWidth);}
+	virtual double			getDrawingWidth() const { return m_iDrawWidth;}
 
 //
 // Tomas this breaks line breaking....
@@ -651,9 +651,9 @@ protected:
 	virtual bool			_recalcWidth(void);
 
 private:
-	UT_uint32				m_iXoffText;
-	UT_uint32				m_iYoffText;
-	UT_uint32				m_iDrawWidth;
+	double					m_iXoffText;
+	double					m_iYoffText;
+	double					m_iDrawWidth;
 
 };
 
@@ -669,19 +669,19 @@ public:
 	virtual bool canBreakAfter(void) const;
 	virtual bool canBreakBefore(void) const;
 
-	virtual void mapXYToPosition(UT_sint32 x,
-								 UT_sint32 y,
+	virtual void mapXYToPosition(double x,
+								 double y,
 								 PT_DocPosition& pos,
 								 bool& bBOL,
 								 bool& bEOL,
 								 bool & isTOC);
 
 	virtual void findPointCoords(UT_uint32 iOffset,
-								 UT_sint32& x,
-								 UT_sint32& y,
-								 UT_sint32& x2,
-								 UT_sint32& y2,
-								 UT_sint32& height,
+								 double& x,
+								 double& y,
+								 double& x2,
+								 double& y2,
+								 double& height,
 								 bool& bDirection);
 	virtual bool hasLayoutProperties(void) const
 	{ return false; }
@@ -721,19 +721,19 @@ public:
 	virtual bool canBreakAfter(void) const;
 	virtual bool canBreakBefore(void) const;
 
-	virtual void mapXYToPosition(UT_sint32 x,
-								 UT_sint32 y,
+	virtual void mapXYToPosition(double x,
+								 double y,
 								 PT_DocPosition& pos,
 								 bool& bBOL,
 								 bool& bEOL,
 								 bool &isTOC);
 
 	virtual void findPointCoords(UT_uint32 iOffset,
-								 UT_sint32& x,
-								 UT_sint32& y,
-								 UT_sint32& x2,
-								 UT_sint32& y2,
-								 UT_sint32& height,
+								 double& x,
+								 double& y,
+								 double& x2,
+								 double& y2,
+								 double& height,
 								 bool& bDirection);
 
 	virtual bool hasLayoutProperties(void) const
@@ -765,8 +765,8 @@ public:
 	fp_ImageRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen, FG_Graphic * pGraphic);
 	virtual ~fp_ImageRun();
 
-	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool & isTOC);
-	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection);
+	virtual void			mapXYToPosition(double xPos, double yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool & isTOC);
+	virtual void 			findPointCoords(UT_uint32 iOffset, double& x, double& y, double& x2, double& y2, double& height, bool& bDirection);
 	virtual bool			canBreakAfter(void) const;
 	virtual bool			canBreakBefore(void) const;
 	const char *            getDataId(void) const;
@@ -787,11 +787,11 @@ protected:
 private:
 	FG_Graphic *             m_pFGraphic;
 	GR_Image*				m_pImage;
-	UT_sint32               m_iImageWidth;
-	UT_sint32               m_iImageHeight;
+	double					m_iImageWidth;
+	double           	    m_iImageHeight;
 	UT_String               m_sCachedWidthProp;
 	UT_String               m_sCachedHeightProp;
-	UT_sint32               m_iPointHeight;
+	double					m_iPointHeight;
 	const PP_AttrProp *     m_pSpanAP;
 	UT_uint32               m_iGraphicTick;
 };
@@ -863,8 +863,8 @@ public:
 	fp_FieldRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 	virtual ~fp_FieldRun();
 
-	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC);
-	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection);
+	virtual void			mapXYToPosition(double xPos, double yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC);
+	virtual void 			findPointCoords(UT_uint32 iOffset, double& x, double& y, double& x2, double& y2, double& height, bool& bDirection);
 	virtual bool			canBreakAfter(void) const;
 	virtual fp_FieldsEnum	getFieldType(void) const;
 	virtual bool			canBreakBefore(void) const;
@@ -1509,8 +1509,8 @@ class ABI_EXPORT fp_FmtMarkRun : public fp_Run
 public:
 	fp_FmtMarkRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst);
 
-	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool & isTOC);
-	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection);
+	virtual void			mapXYToPosition(double xPos, double yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool & isTOC);
+	virtual void 			findPointCoords(UT_uint32 iOffset, double& x, double& y, double& x2, double& y2, double& height, bool& bDirection);
 	virtual bool			canBreakAfter(void) const;
 	virtual bool			canBreakBefore(void) const;
 	virtual bool			isSuperscript(void) const ;
@@ -1543,8 +1543,8 @@ class ABI_EXPORT fp_DummyRun : public fp_Run
 public:
 	fp_DummyRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst);
 
-	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC);
-	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection);
+	virtual void			mapXYToPosition(double xPos, double yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC);
+	virtual void 			findPointCoords(UT_uint32 iOffset, double& x, double& y, double& x2, double& y2, double& height, bool& bDirection);
 	virtual bool			canBreakAfter(void) const;
 	virtual bool			canBreakBefore(void) const;
 	virtual bool			isSuperscript(void) const ;
@@ -1563,13 +1563,3 @@ protected:
 };
 
 #endif /* FP_RUN_H */
-
-
-
-
-
-
-
-
-
-

@@ -51,43 +51,43 @@ public:
 	fp_VerticalContainer(FP_ContainerType iType, fl_SectionLayout* pSectionLayout);
 	virtual ~fp_VerticalContainer();
 
-	virtual void		setWidth(UT_sint32);
-	void		        _setWidth(UT_sint32 iWidth) {m_iWidth = iWidth;}
-	virtual void		setHeight(UT_sint32);
-	void		        _setHeight(UT_sint32 iHeight) {m_iHeight = iHeight;}
-	virtual void		setMaxHeight(UT_sint32);
-	virtual void		setX(UT_sint32, bool bDontClearIfNeeded=false);
-	virtual void		setY(UT_sint32);
+	virtual void		setWidth(double);
+	void		        _setWidth(double iWidth) {m_iWidth = iWidth;}
+	virtual void		setHeight(double);
+	void		        _setHeight(double iHeight) {m_iHeight = iHeight;}
+	virtual void		setMaxHeight(double);
+	virtual void		setX(double, bool bDontClearIfNeeded=false);
+	virtual void		setY(double);
 	/*!
 	  Get container's max height
 	  \return Max height
 	*/
-	inline UT_sint32	getMaxHeight(void) const
+	inline double	getMaxHeight(void) const
  		{ return m_iMaxHeight; }
 	
 	/*!
 	  Get container's width
 	  \return Width
 	*/
-	virtual UT_sint32	getWidth(void) const
+	virtual double	getWidth(void) const
 		{ return m_iWidth; }
 	
-	virtual UT_sint32	getX(void) const;
+	virtual double	getX(void) const;
 
-	void        _setX( UT_sint32 iX) { m_iX = iX;}
+	void        _setX( double iX) { m_iX = iX;}
 
-	virtual UT_sint32	getY(void) const;
-	UT_sint32	        getY(GR_Graphics * pG) const;
+	virtual double	getY(void) const;
+	double	        getY(GR_Graphics * pG) const;
 
-	void        _setY( UT_sint32 iY) { m_iY = iY;}
+	void        _setY( double iY) { m_iY = iY;}
 	/*!
 	  Get container's height
 	  \return Height
 	*/
-	virtual UT_sint32	getHeight(void) const
+	virtual double	getHeight(void) const
 		{ return m_iHeight; }
 	
-	UT_sint32	getColumnGap(void) const;
+	double	getColumnGap(void) const;
 
 	/*!
 	  Get container's intentionally empty flag
@@ -103,7 +103,7 @@ public:
 
 	fp_Container*			getFirstContainer(void) const;
 	fp_Container*			getLastContainer(void) const;
-	UT_sint32               getYoffsetFromTable(fp_Container * pT,
+	double               getYoffsetFromTable(fp_Container * pT,
 												fp_Container* pCell,
 												fp_ContainerObject * pCon);
 	bool				insertContainerAfter(fp_Container* pNewContainer, fp_Container*	pAfterContainer);
@@ -111,21 +111,21 @@ public:
 	bool				addContainer(fp_Container*);
 	void				removeContainer(fp_Container* pContainer, bool bClear = false);
 
-	virtual UT_uint32 	distanceFromPoint(UT_sint32 x, UT_sint32 y);
+	virtual double 	distanceFromPoint(double x, double y);
 
-	virtual void		mapXYToPosition(UT_sint32 xPos,
-										UT_sint32 yPos,
+	virtual void		mapXYToPosition(double xPos,
+										double yPos,
 										PT_DocPosition& pos,
 										bool& bBOL, bool& bEOL, bool &isTOC);
 
 	void		 		getOffsets(fp_ContainerObject* pContainer,
-								   UT_sint32& xoff,
-								   UT_sint32& yoff);
+								   double& xoff,
+								   double& yoff);
 	fp_TableContainer * getCorrectBrokenTable(fp_Container * pLine);
 	fp_TOCContainer *   getCorrectBrokenTOC(fp_Container * pLine);
 	void		 		getScreenOffsets(fp_ContainerObject* pContainer,
-										 UT_sint32& xoff,
-										 UT_sint32& yoff);
+										 double& xoff,
+										 double& yoff);
 
     virtual UT_Rect *       getScreenRect();
     virtual void            markDirtyOverlappingRuns(UT_Rect & recScreen);
@@ -137,14 +137,14 @@ public:
 	void 				bumpContainers(fp_ContainerObject* pLastContainerToKeep);
 	virtual bool        isVBreakable(void) {return true;}
 	virtual bool        isHBreakable(void) {return false;}
-	virtual UT_sint32   wantVBreakAt(UT_sint32) {return 0;}
-	virtual UT_sint32   wantHBreakAt(UT_sint32) {return 0;}
-	virtual fp_ContainerObject * VBreakAt(UT_sint32) {return NULL;}
-	virtual fp_ContainerObject * HBreakAt(UT_sint32) {return NULL;}
+	virtual double      wantVBreakAt(double) {return 0;}
+	virtual double      wantHBreakAt(double) {return 0;}
+	virtual fp_ContainerObject * VBreakAt(double) {return NULL;}
+	virtual fp_ContainerObject * HBreakAt(double) {return NULL;}
 	void                recalcMaxWidth(bool bDontClearIfNeeded = false) {}
-	virtual UT_sint32   getMarginBefore(void) const { return 0;}
-	virtual UT_sint32   getMarginAfter(void) const { return 0;}
-	virtual void        setAssignedScreenHeight(UT_sint32) {}
+	virtual double      getMarginBefore(void) const { return 0;}
+	virtual double      getMarginAfter(void) const { return 0;}
+	virtual void        setAssignedScreenHeight(double) {}
 	virtual fp_Container * getNextContainerInSection(void) const
 		{return NULL;}
 	virtual fp_Container * getPrevContainerInSection(void) const
@@ -161,8 +161,8 @@ public:
 	fp_Line *           getNthWrappedLine(UT_sint32 i)
 		{ return m_vecWrappedLines.getNthItem(i);}
 protected:
-    void                _setMaxContainerHeight(UT_sint32 iContainerHeight);
-	UT_sint32           _getMaxContainerHeight(void) const;
+    void                _setMaxContainerHeight(double iContainerHeight);
+	double           _getMaxContainerHeight(void) const;
 
 	virtual void			_drawBoundaries(dg_DrawArgs* pDA);
 private:
@@ -170,25 +170,25 @@ private:
 	/*!
 	  Width of the container
 	*/
-	UT_sint32 				m_iWidth;
+	double 				m_iWidth;
 	
 	/*!
 	  Height of the container
 	*/
-	UT_sint32 				m_iHeight;
+	double 				m_iHeight;
 	/*!
 	  Maximum height of the container
 	*/
-	UT_sint32				m_iMaxHeight;
+	double				m_iMaxHeight;
 
 	/*!
 	  X coordinate of container
 	*/
-	UT_sint32				m_iX;
+	double				m_iX;
 	/*!
 	  Y coordinate of container
 	*/
-	UT_sint32				m_iY;
+	double				m_iY;
 
 	/*!
 	  Set if this container is intentionally left empty
@@ -199,7 +199,7 @@ private:
 	  will delete the container.
 	 */
 	bool					m_bIntentionallyEmpty;
-	UT_sint32               m_imaxContainerHeight;
+	double               m_imaxContainerHeight;
     UT_GenericVector<fp_Line *> m_vecWrappedLines;
 };
 
@@ -227,7 +227,7 @@ public:
 	  Get container's max height
 	  \return Max height
 	*/
-	UT_sint32	        getMaxHeight(void) const;
+	double		        getMaxHeight(void) const;
  	
 	void				layout(void);
 
@@ -237,7 +237,7 @@ public:
 #endif
 
 protected:
-	UT_uint32 				_getBottomOfLastContainer(void) const;
+	double	 				_getBottomOfLastContainer(void) const;
 
 	void					_drawBoundaries(dg_DrawArgs* pDA);
 
@@ -251,8 +251,8 @@ private:
 class ABI_EXPORT fp_ShadowContainer : public fp_VerticalContainer
 {
 public:
-	fp_ShadowContainer(UT_sint32 iX, UT_sint32 iY,
-					   UT_sint32 iWidth, UT_sint32 iHeight,
+	fp_ShadowContainer(double iX, double iY,
+					   double iWidth, double iHeight,
 					   fl_SectionLayout* pSL);
 	~fp_ShadowContainer();
 
@@ -271,10 +271,10 @@ protected:
 	void                _drawHdrFtrBoundaries(dg_DrawArgs * pDA);
 private:
 	bool                m_bHdrFtrBoxDrawn;
-	UT_sint32           m_ixoffBegin;
-	UT_sint32           m_iyoffBegin;
-	UT_sint32           m_ixoffEnd;
-	UT_sint32           m_iyoffEnd;
+	double				m_ixoffBegin;
+	double				m_iyoffBegin;
+	double				m_ixoffEnd;
+	double				m_iyoffEnd;
 	fp_Page*			m_pPage;
 
 };
@@ -283,7 +283,7 @@ private:
 class ABI_EXPORT fp_HdrFtrContainer : public fp_VerticalContainer
 {
 public:
-	fp_HdrFtrContainer( UT_sint32 iWidth,
+	fp_HdrFtrContainer( double iWidth,
 					   fl_SectionLayout* pSL);
 	~fp_HdrFtrContainer();
 
@@ -291,8 +291,8 @@ public:
  	virtual void		draw(dg_DrawArgs*);
   	virtual void		layout(void);
  	virtual void		clearScreen(void);
-	void		 		getScreenOffsets(fp_ContainerObject* pContainer, UT_sint32& xoff,
-										 UT_sint32& yoff);
+	void		 		getScreenOffsets(fp_ContainerObject* pContainer, double& xoff,
+										 double& yoff);
 
 protected:
 };
