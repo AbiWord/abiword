@@ -1,35 +1,119 @@
+# BUILD OPTIONS: 1 for yes, 0 for no
+%define enable_static __UNIX_CAN_BUILD_STATIC__
+%define enable_debug __ABI_OPT_DEBUG__
+%define enable_gnome __ABI_OPT_GNOME__
+%define enable_bidi __ABI_OPT_BIDI_ENABLED__
+%define enable_perl __ABI_OPT_PERL__
+%define enable_jpeg __ABI_OPT_LIBJPEG__
+%define enable_xml2 __ABI_OPT_LIBXML2__
+%define enable_optimize __ABI_OPT_OPTIMIZE__
+%define enable_pspell __ABI_OPT_PSPELL__
+
+# PLUGIN OPTIONS: 1 for yes, 0 for no
+%define enable_aiksaurus 0
+%define enable_gdict 1
+%define enable_babelfish 1
+%define enable_urldict 1
+%define enable_wikipedia 1
+%define enable_freetranslation 1
+%define enable_bz2abw 1
+%define enable_imagemagick 0
+%define enable_gdkpixbuf 1
+%define enable_openwriter 0
+%define enable_eg 0
+
 %define name abiword
 %define prefix /usr
 %define version __ABI_BUILD_VERSION__
 %define release	__ABI_RELEASE_NUMBER__
 
 # define to 0 if you don't want, 1 if you want
-%define no_static UNIX_CAN_BUILD_STATIC=__UNIX_CAN_BUILD_STATIC__
-%define debug ABI_OPT_DEBUG=__ABI_OPT_DEBUG__
-%define gnome ABI_OPT_GNOME=__ABI_OPT_GNOME__
-%define bidi ABI_OPT_BIDI_ENABLED=__ABI_OPT_BIDI_ENABLED__
-%define perl ABI_OPT_PERL=__ABI_OPT_PERL__
-%define jpeg ABI_OPT_LIBJPEG=__ABI_OPT_LIBJPEG__
-%define libxml2 ABI_OPT_LIBXML2=__ABI_OPT_LIBXML2__
-%define optimize ABI_OPT_OPTIMIZE=__ABI_OPT_OPTIMIZE__
-%define pspell ABI_OPT_PSPELL=__ABI_OPT_PSPELL__
+%define no_static UNIX_CAN_BUILD_STATIC=%{enable_static}
+%define debug ABI_OPT_DEBUG=%{enable_debug}
+%define gnome ABI_OPT_GNOME=%{enable_gnome}
+%define bidi ABI_OPT_BIDI_ENABLED=%{enable_bidi}
+%define perl ABI_OPT_PERL=%{enable_perl}
+%define jpeg ABI_OPT_LIBJPEG=%{enable_jpeg}
+%define libxml2 ABI_OPT_LIBXML2=%{enable_xml2}
+%define optimize ABI_OPT_OPTIMIZE=%{enable_optimize}
+%define pspell ABI_OPT_PSPELL=%{enable_pspell}
 
+%if %{enable_gnome}
+
+%define enable_gdkpixbuf 1
+
+%endif
+
+%if %{enable_aiksaurus}
+%define plugin_aiksaurus --enable-aiksaurus
+%else
 %define plugin_aiksaurus --disable-aiksaurus
+%endif
+
+%if %{enable_gdict}
 %define plugin_gdict --enable-gdict
+%else
+%define plugin_gdict --disable-gdict
+%endif
+
+%if %{enable_babelfish}
 %define plugin_babelfish --enable-babelfish
+%else
+%define plugin_babelfish --disable-babelfish
+%endif
+
+%if %{enable_urldict}
 %define plugin_urldict --enable-urldict
+%else
+%define plugin_urldict --disable-urldict
+%endif
+
+%if %{enable_wikipedia}
 %define plugin_wikipedia --enable-wikipedia
+%else
+%define plugin_wikipedia --disable-wikipedia
+%endif
+
+%if %{enable_freetranslation}
 %define plugin_freetranslation --enable-freetranslation
+%else
+%define plugin_freetranslation --disable-freetranslation
+%endif
+
+%if %{enable_bz2abw}
 %define plugin_bz2abw --enable-bz2abw
+%else
+%define plugin_bz2abw --disable-bz2abw
+%endif
+
+%if %{enable_imagemagick}
+%define plugin_imagemagick --enable-magick
+%else
 %define plugin_imagemagick --disable-magick
+%endif
+
+%if %{enable_gdkpixbuf}
 %define plugin_gdkpixbuf --enable-gdkpixbuf
+%else
+%define plugin_gdkpixbuf --disable-gdkpixbuf
+%endif
+
+%if %{enable_openwriter}
+%define plugin_openwriter --enable-OpenWriter
+%else
 %define plugin_openwriter --disable-OpenWriter
+%endif
+
+%if %{enable_eg}
+%define plugin_tests --enable-eg
+%else
 %define plugin_tests --disable-eg
+%endif
+
 
 %define version_flag ABI_BUILD_VERSION=%{version}
 
 %define ABIPREFIX %{prefix}/share
-
 Name: %{name}
 Summary: Multiplattform word processor
 Version: %{version}
@@ -48,17 +132,17 @@ Requires: gtk+ >= 1.2.7
 Requires: glib >= 1.2.7
 Requires: %{name}-fonts
 
-%if %(echo %{jpeg}|cut -f 2 -d '=')
+%if %{enable_jpeg}
 Requires: libjpeg
 BuildRequires: libjpeg-devel
 %endif
 
-%if %(echo %{pspell}|cut -f 2 -d '=')
+%if %{enable_pspell}
 Requires: pspell >= 0.11.1
 BuildRequires: pspell-devel >= 0.11.1
 %endif
 
-%if %(echo %{libxml2}|cut -f 2 -d '=')
+%if %{enable_xml2}
 Requires: libxml >= 2.0
 BuildRequires: libxml-devel >= 2.0
 %else
@@ -67,13 +151,15 @@ BuildRequires: expat-devel >= 1.95.1
 %endif
 
 # Requirements for GNOME build
-%if %(echo %{gnome}|cut -f 2 -d '=')
+%if %{enable_gnome}
 Requires: gnome-libs >= 1.0.57
 Requires: gal >= 0.8
 Requires: gnome-print >= 0.29
+Requires: gnome-vfs
 BuildRequires: gnome-libs-devel
 BuildRequires: gal-devel
 BuildRequires: gnome-print-devel
+BuildRequires: gnome-vfs-devel
 
 %description
 AbiWord is a Multiplatform Wordprocesser which for the Unix plattform comes with a GTK+ interface. For extended functionality and intergration this version is compiled with GNOME support. Abiword with the GNOME frontend is part of the GNOME Office Suite. AbiWord is made available under the GNU GPL license.
@@ -83,7 +169,7 @@ AbiWord is a Multiplatform Wordprocesser which for the Unix plattform comes with
 %endif
 
 
-%if %(echo %{perl}|cut -f 2 -d '=')
+%if %{enable_perl}
 %package perl
 Summary: Perl Bindings Module
 Group: Development/Libraries
@@ -92,9 +178,9 @@ BuildRequires: perl >= 5.005
 
 %description perl
 Perl Module containing classes for AbiWord Scripting.
-
 %endif
 
+%if %{enable_babelfish}
 %package plugin-babelfish
 Summary: Plugin to allow abiword to show babelfish translations.
 Group: Applications/Productivity
@@ -102,7 +188,9 @@ Requires: abiword
 
 %description plugin-babelfish
 Installing this plugin will allow abiword fetch babelfish translations for selected text.
+%endif
 
+%if %{enable_gdkpixbuf} && ! %{enable_gnome}
 %package plugin-gdkpixbuf
 Summary: Plugin to allow abiword to import several image types with gdk-pixbuf
 Group: Applications/Productivity
@@ -111,7 +199,9 @@ BuildRequires: gdk-pixbuf-devel
 
 %description plugin-gdkpixbuf
 Installing this plugin will allow abiword to import all image types supported by gdk-pixbuf.
+%endif
 
+%if %{enable_urldict}
 %package plugin-urldict
 Summary: Plugin to allow abiword to use dict through a web browser
 Group: Applications/Productivity
@@ -119,7 +209,9 @@ Requires: abiword
 
 %description plugin-urldict
 Installing this plugin will allow abiword to use dict through a web browser on selected text.
+%endif
 
+%if %{enable_gdict}
 %package plugin-gdict
 Summary: Plugin to allow abiword to use gdict as a dictionary
 Group: Applications/Productivity
@@ -127,7 +219,9 @@ Requires: abiword
 
 %description plugin-gdict
 Installing this plugin will allow abiword to use gdict as a dictionary on selected text.
+%endif
 
+%if %{enable_bz2abw}
 %package plugin-bz2abw
 Summary: Plugin to allow abiword documents compressed with bzip2
 Group: Applications/Productivity
@@ -136,7 +230,9 @@ BuildRequires: bzip2-devel
 
 %description plugin-bz2abw
 Installing this plugin will allow abiword to open abiword documents compressed with bzip2.
+%endif
 
+%if %{enable_wikipedia}
 %package plugin-wikipedia
 Summary: Plugin to allow abiword to connect with WikiPedia.
 Group: Applications/Productivity
@@ -144,7 +240,9 @@ Requires: abiword
 
 %description plugin-wikipedia
 Plugin to allow abiword to connect with WikiPedia.
+%endif
 
+%if %{enable_freetranslation}
 %package plugin-freetranslation
 Summary: Plugin to allow abiword to connect with freetranslation.
 Group: Applications/Productivity
@@ -152,6 +250,7 @@ Requires: abiword
 
 %description plugin-freetranslation
 Plugin to allow abiword to connect with freetranslation.
+%endif
 
 %package fonts
 Summary: AbiWord Fonts
@@ -226,7 +325,7 @@ ln  $RPM_BUILD_ROOT%{ABIPREFIX}/AbiSuite/bin/AbiWord $RPM_BUILD_ROOT%{prefix}/bi
 # Creates GNOME menu entries
 mkdir -p $RPM_BUILD_ROOT%{prefix}/share/pixmaps
 cp $RPM_BUILD_DIR/%{name}-%{version}/abidistfiles/icons/abiword_48.png $RPM_BUILD_ROOT%{prefix}/share/pixmaps/abiword_48.png
-%if %(echo %{gnome}|cut -f 2 -d '=')
+%if %{enable_gnome}
 mkdir -p $RPM_BUILD_ROOT%{prefix}/share/gnome/apps/Applications/
 cp $RPM_BUILD_DIR/%{name}-%{version}/abi/src/pkg/linux/rpm/data/abiword.desktop $RPM_BUILD_ROOT%{prefix}/share/gnome/apps/Applications/abiword.desktop
 %endif
@@ -265,34 +364,47 @@ rm -rf $RPM_BUILD_ROOT $RPM_BUILD_DIR/file.list.%{name}
 %{ABIPREFIX}/AbiSuite/dictionary
 %{ABIPREFIX}/AbiSuite/icons
 %{ABIPREFIX}/AbiSuite/templates
-%attr(755,-,-) %{prefix}/bin/abiword
-%attr(644,-,-) %{prefix}/share/pixmaps/abiword_48.png
-
-%if %(echo %{gnome}|cut -f 2 -d '=')
+%attr(755,root,root) %{prefix}/bin/abiword
+%attr(644,root,root) %{prefix}/share/pixmaps/abiword_48.png
+%if %{enable_gnome}
 %{prefix}/share/gnome/apps/Applications/abiword.desktop
+%{ABIPREFIX}/AbiSuite/plugins/libAbiGdkPixbuf.*
 %endif
 
+%if %{enable_gdict}
 %files plugin-gdict
 %{ABIPREFIX}/AbiSuite/plugins/libGdictAbiPlugin.*
+%endif
 
+%if %{enable_babelfish}
 %files plugin-babelfish
 %{ABIPREFIX}/AbiSuite/plugins/libAbiBabelfish.*
+%endif
 
+%if %{enable_urldict}
 %files plugin-urldict
 %{ABIPREFIX}/AbiSuite/plugins/libAbiURLDict.*
+%endif
 
+%if %{enable_wikipedia}
 %files plugin-wikipedia
 %{ABIPREFIX}/AbiSuite/plugins/libAbiWikipedia.*
+%endif
 
+%if %{enable_freetranslation}
 %files plugin-freetranslation
 %{ABIPREFIX}/AbiSuite/plugins/libAbiFreeTranslation.*
+%endif
 
+%if %{enable_bz2abw}
 %files plugin-bz2abw
 %{ABIPREFIX}/AbiSuite/plugins/libBZ2Abw.*
+%endif
 
+%if %{enable_gdkpixbuf} && ! %{enable_gnome}
 %files plugin-gdkpixbuf
 %{ABIPREFIX}/AbiSuite/plugins/libAbiGdkPixbuf.*
-
+%endif
 
 %files clipart
 %defattr(-,root,root)
