@@ -37,6 +37,62 @@
 
 
 /*****************************************************************/
+int ph_event_ok( PtWidget_t *widget, AP_QNXDialog_InsertHyperlink * dlg, 
+           PtCallbackInfo_t *info)
+{
+UT_ASSERT(widget && dlg);
+dlg->event_OK();
+
+}
+
+void AP_QNXDialog_InsertHyperlink::event_OK(void)
+{
+	char *res;
+	// get the bookmark name, if any (return cancel if no name given)
+	
+	PtGetResource(mSelectedBookmark,Pt_ARG_TEXT_STRING,&res,0);
+	
+	if(res && *res)	
+	{
+		setAnswer(AP_Dialog_InsertHyperlink::a_OK);
+		setHyperlink((XML_Char*)res);
+	}
+	else
+	{
+		setAnswer(AP_Dialog_InsertHyperlink::a_CANCEL);
+	}
+	done=1;
+}
+
+int ph_event_cancel( PtWidget_t *widget, AP_QNXDialog_InsertHyperlink * dlg, 
+           PtCallbackInfo_t *info)
+{
+UT_ASSERT(widget && dlg);
+dlg->event_Cancel();
+
+}
+void AP_QNXDialog_InsertHyperlink::event_Cancel(void)
+{
+	setAnswer(AP_Dialog_InsertHyperlink::a_CANCEL);
+	done=1;
+}
+
+int ph_listselection( PtWidget_t *widget, AP_QNXDialog_InsertHyperlink * dlg, PtCallbackInfo_t *info)
+{
+UT_ASSERT(widget && dlg);
+
+PtListCallback_t *cb=(PtListCallback_t*)info->cbdata;
+
+if(info->reason_subtype == (Pt_LIST_SELECTION_FINAL || Pt_LIST_SELECTION_BROWSE))
+{
+PtSetResource(dlg->mSelectedBookmark,Pt_ARG_TEXT_STRING,cb->item,0);
+}
+}
+int ph_event_close( PtWidget_t *widget, AP_QNXDialog_InsertHyperlink * dlg, PtCallbackInfo_t *info)
+{
+UT_ASSERT(widget && dlg);
+dlg->done=1;
+}
 
 XAP_Dialog * AP_QNXDialog_InsertHyperlink::static_constructor(XAP_DialogFactory * pFactory,
 													 XAP_Dialog_Id id)
@@ -58,31 +114,129 @@ AP_QNXDialog_InsertHyperlink::~AP_QNXDialog_InsertHyperlink(void)
 void AP_QNXDialog_InsertHyperlink::runModal(XAP_Frame * pFrame)
 {
 	UT_ASSERT(pFrame);
-
-/*
-	NOTE: This template can be used to create a working stub for a
-	new dialog on this platform.  To do so:
+	PtWidget_t *mainWindow = _constructWindow();
+	UT_ASSERT(mainWindow);
+	connectFocus(mainWindow,pFrame);
 	
-	1.  Copy this file (and its associated header file) and rename
-		them accordingly.
+   // To center the dialog, we need the frame of its parent.
+    XAP_QNXFrame * pQNXFrame = static_cast<XAP_QNXFrame *>(pFrame);
+    UT_ASSERT(pQNXFrame);
+    
+    // Get the Window of the parent frame
+    PtWidget_t * parentWindow = pQNXFrame->getTopLevelWindow();
+    UT_ASSERT(parentWindow);
+    
+    // Center our new dialog in its parent and make it a transient
+    // so it won't get lost underneath
+    // Make it modal, and stick it up top
+	UT_QNXCenterWindow(parentWindow, mainWindow);
+	UT_QNXBlockWidget(parentWindow, 1);
 
-	2.  Do a case sensitive global replace on the words InsertHyperlink and STUB
-		in both files. 
+    // Show the top level dialog,
+	PtRealizeWidget(mainWindow);
 
-	3.  Add stubs for any required methods expected by the XP class. 
-		If the build fails because you didn't do this step properly,
-		you've just broken the donut rule.  
+    // Run the event loop for this window.
+	int count;
+	count = PtModalStart();
+	done=0;
+	do {
+    		PtProcessEvent();
+	} while (!done);
 
-	4.	Replace this useless comment with specific instructions to 
-		whoever's porting your dialog so they know what to do.
-		Skipping this step may not cost you any donuts, but it's 
-		rude.  
+	PtModalEnd(MODAL_END_ARG(count));
+	UT_QNXBlockWidget(parentWindow,0);
+	PtDestroyWidget(mainWindow);
+}
 
-	This file should *only* be used for stubbing out platforms which 
-	you don't know how to implement.  When implementing a new dialog 
-	for your platform, you're probably better off starting with code
-	from another working dialog.  
-*/	
+PtWidget_t *AP_QNXDialog_InsertHyperlink::_constructWindow(void)
+{
+const XAP_StringSet *pSS = m_pApp->getStringSet();
+PtWidget_t *windowHyperlink;
+PtWidget_t *PtButton_ok;
+PtWidget_t *PtButton_cancel;
 
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
+
+		PhDim_t dim = { 250,100 };
+		PtArg_t args[] = {
+			Pt_ARG(Pt_ARG_DIM,&dim,0),
+			Pt_ARG(Pt_ARG_WINDOW_TITLE,pSS->getValue(AP_STRING_ID_DLG_InsertHyperlink_Title),0),
+			Pt_ARG(Pt_ARG_WINDOW_RENDER_FLAGS,0,ABI_MODAL_WINDOW_RENDER_FLAGS),
+			Pt_ARG(Pt_ARG_WINDOW_MANAGED_FLAGS,0,ABI_MODAL_WINDOW_MANAGE_FLAGS)
+		};
+		//Top Pane.
+	 PhArea_t area1 = { { 0, 0 }, { 248, 202 } };
+	 PtArg_t args1[] = {
+		Pt_ARG( Pt_ARG_AREA, &area1, 0 ),
+		Pt_ARG( Pt_ARG_FLAGS, 256,256 ),
+		Pt_ARG( Pt_ARG_BEVEL_WIDTH, 1, 0 ),
+		};
+	//PtList.
+	 PhArea_t area2 = { { 3, 65 }, { 239, 131 } };
+	 PtArg_t args2[] = {
+		Pt_ARG( Pt_ARG_AREA, &area2, 0 ),
+		};
+	//PtList.
+	 PhArea_t area3 = { { 2, 35 }, { 240, 27 } };
+	 PtArg_t args3[] = {
+		Pt_ARG( Pt_ARG_AREA, &area3, 0 ),
+		};
+	//Msg label.
+	 PhArea_t area4 = { { 2, 5 }, { 241, 21 } };
+	 PtArg_t args4[] = {
+		Pt_ARG( Pt_ARG_AREA, &area4, 0 ),
+		Pt_ARG( Pt_ARG_TEXT_STRING,pSS->getValue(AP_STRING_ID_DLG_InsertHyperlink_Msg) , 0 ),
+		};
+	//Bottom pane.
+	 PhArea_t area5 = { { 0, 201 }, { 248, 33 } };
+	 PtArg_t args5[] = {
+		Pt_ARG( Pt_ARG_AREA, &area5, 0 ),
+		Pt_ARG( Pt_ARG_FLAGS, 258,1334445470 ),
+		Pt_ARG( Pt_ARG_BEVEL_WIDTH, 1, 0 ),
+		Pt_ARG( Pt_ARG_FILL_COLOR, 0xc0c0c0, 0 ),
+		Pt_ARG( Pt_ARG_BASIC_FLAGS, 67056,4194303 ),
+		};
+	//Cancel button
+	 PhArea_t area6 = { { 72, 2 }, { 82, 27 } };
+	 PtArg_t args6[] = {
+		Pt_ARG( Pt_ARG_AREA, &area6, 0 ),
+		Pt_ARG( Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_Cancel), 0 ),
+		};
+	//OK button
+	 PhArea_t area7 = { { 160, 2 }, { 82, 27 } };
+	 PtArg_t args7[] = {
+		Pt_ARG( Pt_ARG_AREA, &area7, 0 ),
+		Pt_ARG( Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_OK), 0 ),
+		};
+
+	windowHyperlink= PtCreateWidget(PtWindow,NULL,sizeof(args) / sizeof(PtArg_t),args);
+
+	PtCreateWidget( PtPane, NULL, sizeof(args1) / sizeof(PtArg_t), args1 );
+
+	mBookmarkList=PtCreateWidget( PtList, NULL, sizeof(args2) / sizeof(PtArg_t), args2 );
+
+	mSelectedBookmark=PtCreateWidget( PtText, NULL, sizeof(args3) / sizeof(PtArg_t), args3 );
+
+	PtCreateWidget( PtLabel, NULL, sizeof(args4) / sizeof(PtArg_t), args4 );
+
+	PtCreateWidget( PtPane, windowHyperlink, sizeof(args5) / sizeof(PtArg_t), args5 );
+
+	PtButton_cancel=PtCreateWidget( PtButton, NULL, sizeof(args6) / sizeof(PtArg_t), args6 );
+
+	PtButton_ok=PtCreateWidget( PtButton, NULL, sizeof(args7) / sizeof(PtArg_t), args7 );
+
+	//Add existing bookmarks to the list.
+ XML_Char ** pBookmarks = (XML_Char **)calloc(getExistingBookmarksCount(),sizeof(XML_Char*));
+	
+  for (int i = 0; i < (int)getExistingBookmarksCount(); i++)
+   pBookmarks[i] =(XML_Char *) getNthExistingBookmark(i);
+	PtListAddItems(mBookmarkList,(const char **)pBookmarks,getExistingBookmarksCount(),0);
+	free(pBookmarks);	
+	
+	PtAddCallback(PtButton_cancel,Pt_CB_ACTIVATE,ph_event_cancel,this);
+	PtAddCallback(PtButton_ok,Pt_CB_ACTIVATE,ph_event_ok,this);
+	PtAddCallback(mSelectedBookmark,Pt_CB_ACTIVATE,ph_event_ok,this);
+	PtAddCallback(mBookmarkList,Pt_CB_SELECTION,ph_listselection,this);
+	PtAddCallback(windowHyperlink,Pt_CB_WINDOW_CLOSING,ph_event_close,this);
+
+	return windowHyperlink;
 }

@@ -36,8 +36,15 @@ public:
 	virtual void			runModal(XAP_Frame * pFrame);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
-	
+	int done;
+  void 					event_OK(void);
+  void 					event_Cancel(void);
+	void 					ListSelection(void);
+	PtWidget_t *mBookmarkList;
+	PtWidget_t *mSelectedBookmark;
 protected:
+	PtWidget_t *	_constructWindow(void);
+
 
 };
 
