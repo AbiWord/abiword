@@ -1,5 +1,6 @@
 /* AbiWord
  * Copyright (C) 2000 AbiSource, Inc.
+ * Copyright (C) 2004 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,9 +21,13 @@
 #ifndef AP_COCOADIALOG_FORMATTOC_H
 #define AP_COCOADIALOG_FORMATTOC_H
 
+#include <Cocoa/Cocoa.h>
+
 #include "ap_Dialog_FormatTOC.h"
 
-class XAP_CocoaFrame;
+
+@class AP_CocoaDialog_FormatTOC_Controller;
+@protocol XAP_CocoaDialogProtocol;
 
 /*****************************************************************/
 
@@ -39,8 +44,54 @@ public:
     virtual void            setSensitivity(bool bSensitive);
 	virtual void            destroy(void);
 	virtual void            activate(void);	
-protected:
-
+	void			_createLevelItems(NSPopUpButton*);
+private:
+	void			_populateWindowData(void);
+	AP_CocoaDialog_FormatTOC_Controller *m_dlg;
 };
+
+
+@interface AP_CocoaDialog_FormatTOC_Controller : NSWindowController <XAP_CocoaDialogProtocol>
+{
+    IBOutlet NSButton *_applyBtn;
+    IBOutlet NSTextField *_displayStyleLabel;
+    IBOutlet NSPopUpButton *_displayStylePopup;
+    IBOutlet NSTextField *_fillStyleLabel;
+    IBOutlet NSPopUpButton *_fillStylePopup;
+    IBOutlet NSBox *_hasHeadingBox;
+    IBOutlet NSButton *_hasHeadingBtn;
+    IBOutlet NSButton *_hasLabelBtn;
+	IBOutlet NSPopUpButton *_headingStyleData;
+	IBOutlet NSTextField *_headingStyleLabel;
+	IBOutlet NSTextField *_headingTextData;
+	IBOutlet NSTextField *_headingTextLabel;
+    IBOutlet NSTextField *_indentData;
+    IBOutlet NSTextField *_indentLabel;
+    IBOutlet NSButton *_inheritLabelBtn;
+    IBOutlet NSBox *_labelDefBox;
+    IBOutlet NSPopUpButton *_layoutLevelPopup;
+    IBOutlet NSPopUpButton *_mainLevelPopup;
+    IBOutlet NSBox *_mainPropBox;
+    IBOutlet NSPopUpButton *_numberingTypeData;
+    IBOutlet NSTextField *_numberingTypeLabel;
+    IBOutlet NSPopUpButton *_pageNumberingData;
+    IBOutlet NSTextField *_pageNumberingLabel;
+    IBOutlet NSTextField *_startAtData;
+    IBOutlet NSTextField *_startAtLabel;
+    IBOutlet NSPopUpButton *_tabLeadersData;
+    IBOutlet NSTextField *_tabLeadersLabel;
+    IBOutlet NSBox *_tabsAndPageNumbBox;
+    IBOutlet NSTabView *_tabView;
+    IBOutlet NSTextField *_textAfterData;
+    IBOutlet NSTextField *_textAfterLabel;
+    IBOutlet NSTextField *_textBeforeData;
+    IBOutlet NSTextField *_textBeforeLabel;
+	AP_CocoaDialog_FormatTOC *_xap;
+}
+- (IBAction)mainLevelAction:(id)sender;
+- (IBAction)detailLevelAction:(id)sender;
+- (IBAction)applyAction:(id)sender;
+- (void)enableApply:(BOOL)enable;
+@end
 
 #endif /* AP_COCOADIALOG_FORMATOC_H */

@@ -69,6 +69,15 @@ public:
 	void              incrementStartAt(UT_sint32 iLevel, bool bInc);
     double            getIncrement(const char * sz);
     void              incrementIndent(UT_sint32 iLevel, bool bInc);
+
+	void					setDetailsLevel(UT_sint32 v)
+		{ m_iDetailsLevel = v; }
+	UT_sint32               getDetailsLevel(void)
+		{ return m_iDetailsLevel;}
+	void					setMainLevel(UT_sint32 v)
+		{ m_iMainLevel = v; }
+	UT_sint32               getMainLevel(void)
+		{ return m_iMainLevel;}
 private:
 	PD_Document *         m_pDoc;
 	UT_Timer *            m_pAutoUpdater;
@@ -79,6 +88,8 @@ private:
 	UT_GenericVector<const XML_Char*> m_vecTABLeadersLabel;
 	UT_GenericVector<const XML_Char*> m_vecTABLeadersProp;
 	UT_GenericVector<const XML_Char*> m_vecLabelPropValue;
+	UT_sint32   m_iMainLevel;
+	UT_sint32   m_iDetailsLevel;
 };
 
 #endif /* AP_DIALOG_FORMATTOC_H */

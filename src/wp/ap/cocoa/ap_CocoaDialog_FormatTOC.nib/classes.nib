@@ -1,0 +1,47 @@
+{
+    IBClasses = (
+        {
+            ACTIONS = {applyAction = id; detailLevelAction = id; mainLevelAction = id; }; 
+            CLASS = "AP_CocoaDialog_FormatTOC_Controller"; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {
+                "_applyBtn" = NSButton; 
+                "_displayStyleLabel" = NSTextField; 
+                "_displayStylePopup" = NSPopUpButton; 
+                "_fillStyleLabel" = NSTextField; 
+                "_fillStylePopup" = NSPopUpButton; 
+                "_hasHeadingBox" = NSBox; 
+                "_hasHeadingBtn" = NSButton; 
+                "_hasLabelBtn" = NSButton; 
+                "_headingStyleData" = NSPopUpButton; 
+                "_headingStyleLabel" = NSTextField; 
+                "_headingTextData" = NSTextField; 
+                "_headingTextLabel" = NSTextField; 
+                "_indentData" = NSTextField; 
+                "_indentLabel" = NSTextField; 
+                "_inheritLabelBtn" = NSButton; 
+                "_labelDefBox" = NSBox; 
+                "_layoutLevelPopup" = NSPopUpButton; 
+                "_mainLevelPopup" = NSPopUpButton; 
+                "_mainPropBox" = NSBox; 
+                "_numberingTypeData" = NSPopUpButton; 
+                "_numberingTypeLabel" = NSTextField; 
+                "_pageNumberingData" = NSPopUpButton; 
+                "_pageNumberingLabel" = NSTextField; 
+                "_startAtData" = NSTextField; 
+                "_startAtLabel" = NSTextField; 
+                "_tabLeadersData" = NSPopUpButton; 
+                "_tabLeadersLabel" = NSTextField; 
+                "_tabView" = NSTabView; 
+                "_tabsAndPageNumbBox" = NSBox; 
+                "_textAfterData" = NSTextField; 
+                "_textAfterLabel" = NSTextField; 
+                "_textBeforeData" = NSTextField; 
+                "_textBeforeLabel" = NSTextField; 
+            }; 
+            SUPERCLASS = NSWindowController; 
+        }, 
+        {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }
+    ); 
+    IBVersion = 1; 
+}

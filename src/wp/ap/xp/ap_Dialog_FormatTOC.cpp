@@ -54,7 +54,9 @@ AP_Dialog_FormatTOC::AP_Dialog_FormatTOC(XAP_DialogFactory * pDlgFactory, XAP_Di
 	  m_iTick(0),
 	  m_pAP(NULL),
 	  m_bTOCFilled(false),
-	  m_sTOCProps("")
+	  m_sTOCProps(""),
+  	  m_iMainLevel(1),
+	  m_iDetailsLevel(1)
 {
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet ();
 	static UT_UTF8String sNone;

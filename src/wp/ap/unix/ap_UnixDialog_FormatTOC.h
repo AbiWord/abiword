@@ -46,10 +46,6 @@ public:
     virtual void            setSensitivity(bool bSensitive);
 	virtual void            notifyActiveFrame(XAP_Frame * pFrame);
 	virtual void            setTOCPropsInGUI(void);
-	UT_sint32               getDetailsLevel(void)
-		{ return m_iDetailsLevel;}
-	UT_sint32               getMainLevel(void)
-		{ return m_iMainLevel;}
 	void                    setMainLevel(UT_sint32 iLevel);
 	void                    setDetailsLevel(UT_sint32 iLevel);
 	void                    event_IndentChanged(GtkWidget * wSpin);
@@ -73,8 +69,6 @@ private:
 	UT_Vector   m_vecStyleEntries;
 	UT_Vector   m_vecTextTypes;
 	UT_GenericVector<UT_UTF8String*>   m_vecAllPropVals;
-	UT_sint32   m_iMainLevel;
-	UT_sint32   m_iDetailsLevel;
 	UT_sint32   m_iIndentValue;
 	UT_sint32   m_iStartValue;
 	guint       m_iStartID;

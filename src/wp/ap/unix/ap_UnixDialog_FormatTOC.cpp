@@ -140,8 +140,6 @@ AP_UnixDialog_FormatTOC::AP_UnixDialog_FormatTOC(XAP_DialogFactory * pDlgFactory
 	  m_wApply(NULL),
 	  m_wClose(NULL),
 	  m_pXML(NULL),
-	  m_iMainLevel(1),
-	  m_iDetailsLevel(1),
 	  m_iIndentValue(1),
 	  m_iStartValue(1)
 {
@@ -169,7 +167,7 @@ void AP_UnixDialog_FormatTOC::setStyle(GtkWidget * wid)
 	UT_UTF8String sProp = static_cast<char *> (g_object_get_data(G_OBJECT(pLabel),"toc-prop"));
 	if(UT_stricmp("toc-heading-style",sProp.utf8_str()) != 0)
 	{
-		UT_String sNum =  UT_String_sprintf("%d",m_iMainLevel);
+		UT_String sNum =  UT_String_sprintf("%d",getMainLevel());
 		sProp += sNum.c_str();
 	}
 	sVal = getNewStyle(sProp);
@@ -215,8 +213,8 @@ void AP_UnixDialog_FormatTOC::event_StartAtChanged(GtkWidget * wSpin)
 		bInc = false;
 	}
 	m_iStartValue = iNew;
-	incrementStartAt(m_iDetailsLevel,bInc);
-	UT_UTF8String sVal = getTOCPropVal("toc-label-start",m_iDetailsLevel);
+	incrementStartAt(getDetailsLevel(),bInc);
+	UT_UTF8String sVal = getTOCPropVal("toc-label-start",getDetailsLevel());
 	GtkWidget * pW = _getWidget("wStartEntry");
 	gtk_entry_set_text(GTK_ENTRY(pW),sVal.utf8_str());
 }
@@ -237,8 +235,8 @@ void AP_UnixDialog_FormatTOC::event_IndentChanged(GtkWidget * wSpin)
 		bInc = false;
 	}
 	m_iIndentValue = iNew;
-	incrementIndent(m_iDetailsLevel,bInc);
-	UT_UTF8String sVal = getTOCPropVal("toc-indent",m_iDetailsLevel);
+	incrementIndent(getDetailsLevel(),bInc);
+	UT_UTF8String sVal = getTOCPropVal("toc-indent",getDetailsLevel());
 	GtkWidget * pW = _getWidget("wIndentEntry");
 	gtk_entry_set_text(GTK_ENTRY(pW),sVal.utf8_str());
 }
@@ -342,14 +340,14 @@ GtkWidget * AP_UnixDialog_FormatTOC::_constructWindow(void)
 
 void AP_UnixDialog_FormatTOC::setMainLevel(UT_sint32 iLevel)
 {
-	m_iMainLevel = iLevel;
+	setMainLevel(iLevel);
 	UT_UTF8String sVal;
-	sVal = getTOCPropVal("toc-dest-style",m_iMainLevel);
+	sVal = getTOCPropVal("toc-dest-style",getMainLevel());
 	GtkWidget * pW= _getWidget("wDispStyle");
 	gtk_label_set_text(GTK_LABEL(pW),sVal.utf8_str());
 
 
-	sVal = getTOCPropVal("toc-has-label",m_iMainLevel);
+	sVal = getTOCPropVal("toc-has-label",getMainLevel());
 	pW = _getWidget("wHasLabel");
 	if(UT_stricmp(sVal.utf8_str(),"1") == 0)
 	{
@@ -360,7 +358,7 @@ void AP_UnixDialog_FormatTOC::setMainLevel(UT_sint32 iLevel)
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(pW),FALSE);
 	}
 
-	sVal = getTOCPropVal("toc-source-style",m_iMainLevel);
+	sVal = getTOCPropVal("toc-source-style",getMainLevel());
 	pW = _getWidget("wFillStyle");
 	gtk_label_set_text(GTK_LABEL(pW),sVal.utf8_str());
 }
@@ -368,28 +366,28 @@ void AP_UnixDialog_FormatTOC::setMainLevel(UT_sint32 iLevel)
 
 void AP_UnixDialog_FormatTOC::setDetailsLevel(UT_sint32 iLevel)
 {
-	m_iDetailsLevel = iLevel;
+	setDetailsLevel(iLevel);
 	UT_UTF8String sVal;
 
-	sVal = getTOCPropVal("toc-label-after",m_iDetailsLevel);
+	sVal = getTOCPropVal("toc-label-after",getDetailsLevel());
 	GtkWidget * pW = _getWidget("wTextAfter");
 	gtk_entry_set_text(GTK_ENTRY(pW),sVal.utf8_str());
 
-	sVal = getTOCPropVal("toc-label-before",m_iDetailsLevel);
+	sVal = getTOCPropVal("toc-label-before",getDetailsLevel());
 	pW = _getWidget("wTextBefore");
 	gtk_entry_set_text(GTK_ENTRY(pW),sVal.utf8_str());
 
-	sVal = getTOCPropVal("toc-label-start",m_iDetailsLevel);
+	sVal = getTOCPropVal("toc-label-start",getDetailsLevel());
 	pW = _getWidget("wStartEntry");
 	gtk_entry_set_text(GTK_ENTRY(pW),sVal.utf8_str());
 
 
-	sVal = getTOCPropVal("toc-indent",m_iDetailsLevel);
+	sVal = getTOCPropVal("toc-indent",getDetailsLevel());
 	pW = _getWidget("wIndentEntry");
 	gtk_entry_set_text(GTK_ENTRY(pW),sVal.utf8_str());
 	
 
-	sVal = getTOCPropVal("toc-label-inherits",m_iDetailsLevel);
+	sVal = getTOCPropVal("toc-label-inherits",getDetailsLevel());
 	pW = _getWidget("wInherit");
 	if(UT_stricmp(sVal.utf8_str(),"1") == 0)
 	{
@@ -402,17 +400,17 @@ void AP_UnixDialog_FormatTOC::setDetailsLevel(UT_sint32 iLevel)
 
 
 	FV_View * pView = static_cast<FV_View *>(getActiveFrame()->getCurrentView());
-	sVal = getTOCPropVal("toc-label-type",m_iDetailsLevel);
+	sVal = getTOCPropVal("toc-label-type",getDetailsLevel());
 	pW = _getWidget("wLabelChoose"); 
 	UT_sint32 iHist = static_cast<UT_sint32>(pView->getLayout()->FootnoteTypeFromString(sVal.utf8_str()));
 	gtk_option_menu_set_history(GTK_OPTION_MENU(pW),iHist);
 
-	sVal = getTOCPropVal("toc-page-type",m_iDetailsLevel);
+	sVal = getTOCPropVal("toc-page-type",getDetailsLevel());
 	pW = _getWidget("wPageNumberingChoose"); 
 	iHist = static_cast<UT_sint32>(pView->getLayout()->FootnoteTypeFromString(sVal.utf8_str()));
 	gtk_option_menu_set_history(GTK_OPTION_MENU(pW),iHist);
 
-	sVal = getTOCPropVal("toc-tab-leader",m_iDetailsLevel);
+	sVal = getTOCPropVal("toc-tab-leader",getDetailsLevel());
 	pW = _getWidget("wTabLeaderChoose");
 	if(UT_stricmp(sVal.utf8_str(),"none") == 0)
 	{
@@ -628,7 +626,7 @@ void  AP_UnixDialog_FormatTOC::event_Apply(void)
 	pW = _getWidget("wTextAfter");
 	sVal = gtk_entry_get_text(GTK_ENTRY(pW));
 	UT_UTF8String sProp = static_cast<char *> (g_object_get_data(G_OBJECT(pW),"toc-prop"));
-	UT_String sNum =  UT_String_sprintf("%d",m_iDetailsLevel);
+	UT_String sNum =  UT_String_sprintf("%d",getDetailsLevel());
 	sProp += sNum.c_str();
 	setTOCProperty(sProp,sVal);
 
@@ -687,14 +685,14 @@ void  AP_UnixDialog_FormatTOC::_fillGUI(void)
 
 	FV_View * pView = static_cast<FV_View *>(getActiveFrame()->getCurrentView());
 
-	sVal = getTOCPropVal("toc-dest-style",m_iMainLevel);
+	sVal = getTOCPropVal("toc-dest-style",getMainLevel());
 	pW= _getWidget("wDispStyle");
 	gtk_label_set_text(GTK_LABEL(pW),sVal.utf8_str());
 	g_object_set_data(G_OBJECT(_getWidget("wChangeDisp")),"display-widget",(gpointer)pW);
 	g_object_set_data(G_OBJECT(pW),"toc-prop",(gpointer) "toc-dest-style");
 
 
-	sVal = getTOCPropVal("toc-has-label",m_iMainLevel);
+	sVal = getTOCPropVal("toc-has-label",getMainLevel());
 	pW = _getWidget("wHasLabel");
 	if(UT_stricmp(sVal.utf8_str(),"1") == 0)
 	{
@@ -710,17 +708,17 @@ void  AP_UnixDialog_FormatTOC::_fillGUI(void)
 					 G_CALLBACK(s_check_changedMain),
 					 (gpointer) this);
 
-	sVal = getTOCPropVal("toc-label-after",m_iDetailsLevel);
+	sVal = getTOCPropVal("toc-label-after",getDetailsLevel());
 	pW = _getWidget("wTextAfter");
 	gtk_entry_set_text(GTK_ENTRY(pW),sVal.utf8_str());
 	g_object_set_data(G_OBJECT(pW),"toc-prop",(gpointer) "toc-label-after");
 
-	sVal = getTOCPropVal("toc-label-before",m_iDetailsLevel);
+	sVal = getTOCPropVal("toc-label-before",getDetailsLevel());
 	pW = _getWidget("wTextBefore");
 	gtk_entry_set_text(GTK_ENTRY(pW),sVal.utf8_str());
 	g_object_set_data(G_OBJECT(pW),"toc-prop",(gpointer) "toc-label-before");
 
-	sVal = getTOCPropVal("toc-label-inherits",m_iDetailsLevel);
+	sVal = getTOCPropVal("toc-label-inherits",getDetailsLevel());
 	pW = _getWidget("wInherit");
 	if(UT_stricmp(sVal.utf8_str(),"1") == 0)
 	{
@@ -737,7 +735,7 @@ void  AP_UnixDialog_FormatTOC::_fillGUI(void)
 					 (gpointer) this);
 
 
-	sVal = getTOCPropVal("toc-label-start",m_iDetailsLevel);
+	sVal = getTOCPropVal("toc-label-start",getDetailsLevel());
 	pW = _getWidget("wStartEntry");
 	gtk_entry_set_text(GTK_ENTRY(pW),sVal.utf8_str());
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON (_getWidget("wStartSpin")),
@@ -747,7 +745,7 @@ void  AP_UnixDialog_FormatTOC::_fillGUI(void)
 							  G_CALLBACK(s_StartAt_changed),
 							  reinterpret_cast<gpointer>(this));
 
-	sVal = getTOCPropVal("toc-indent",m_iDetailsLevel);
+	sVal = getTOCPropVal("toc-indent",getDetailsLevel());
 	pW = _getWidget("wIndentEntry");
 	gtk_entry_set_text(GTK_ENTRY(pW),sVal.utf8_str());
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON (_getWidget("wIndentSpin")),
@@ -758,23 +756,23 @@ void  AP_UnixDialog_FormatTOC::_fillGUI(void)
 							  reinterpret_cast<gpointer>(this));
 	
 
-	sVal = getTOCPropVal("toc-label-type",m_iDetailsLevel);
+	sVal = getTOCPropVal("toc-label-type",getDetailsLevel());
 	pW = _getWidget("wLabelChoose"); 
 	UT_sint32 iHist = static_cast<UT_sint32>(pView->getLayout()->FootnoteTypeFromString(sVal.utf8_str()));
 	gtk_option_menu_set_history(GTK_OPTION_MENU(pW),iHist);
 
-	sVal = getTOCPropVal("toc-page-type",m_iDetailsLevel);
+	sVal = getTOCPropVal("toc-page-type",getDetailsLevel());
 	pW = _getWidget("wPageNumberingChoose"); 
 	iHist = static_cast<UT_sint32>(pView->getLayout()->FootnoteTypeFromString(sVal.utf8_str()));
 	gtk_option_menu_set_history(GTK_OPTION_MENU(pW),iHist);
 
-	sVal = getTOCPropVal("toc-source-style",m_iMainLevel);
+	sVal = getTOCPropVal("toc-source-style",getMainLevel());
 	pW = _getWidget("wFillStyle");
 	gtk_label_set_text(GTK_LABEL(pW),sVal.utf8_str());
 	g_object_set_data(G_OBJECT(_getWidget("wChangeFill")),"display-widget",(gpointer)pW);
 	g_object_set_data(G_OBJECT(pW),"toc-prop",(gpointer) "toc-source-style");
 
-	sVal = getTOCPropVal("toc-tab-leader",m_iDetailsLevel);
+	sVal = getTOCPropVal("toc-tab-leader",getDetailsLevel());
 	pW = _getWidget("wTabLeaderChoose");
 	if(UT_stricmp(sVal.utf8_str(),"none") == 0)
 	{
