@@ -37,6 +37,7 @@
 #define DELETEP(p)	do { if (p) delete p; } while (0)
 
 /*****************************************************************/
+#define COMBO_BUF_LEN 256
 
 class _wd								// a private little class to help
 {										// us remember all the widgets that
@@ -58,13 +59,29 @@ public:									// we create...
 		// this is a static callback method and does not have a 'this' pointer.
 		// map the user_data into an object and dispatch the event.
 	
-		_wd * wd = (_wd *)user_data;
+		_wd * wd = (_wd *) user_data;
 		UT_ASSERT(wd);
 
 		if (!wd->m_blockSignal)
-			wd->m_pUnixToolbar->toolbarEvent(wd->m_id);
+			wd->m_pUnixToolbar->toolbarEvent(wd->m_id, 0, 0);
 	};
 
+	// TODO: should this move out of wd?  It's convenient here; maybe I'll make
+	// a microclass for combo boxes.
+	static void s_combo_out_focus(GtkEntry * widget, gpointer blah, gpointer user_data)
+	{
+		_wd * wd = (_wd *) user_data;
+		UT_ASSERT(wd);
+
+		gchar * buffer = gtk_entry_get_text(widget);
+		UT_uint32 length = widget->text_length;
+ 
+		UT_UCSChar * text = (UT_UCSChar *) buffer;
+		if (!wd->m_blockSignal)
+			wd->m_pUnixToolbar->toolbarEvent(wd->m_id, text, length);
+
+	};
+	
 	EV_UnixToolbar *	m_pUnixToolbar;
 	AP_Toolbar_Id		m_id;
 	GtkWidget *			m_widget;
@@ -92,7 +109,10 @@ EV_UnixToolbar::~EV_UnixToolbar(void)
 	_releaseListener();
 }
 
-UT_Bool EV_UnixToolbar::toolbarEvent(AP_Toolbar_Id id)
+UT_Bool EV_UnixToolbar::toolbarEvent(AP_Toolbar_Id id,
+									 UT_UCSChar * pData,
+									 UT_uint32 dataLength)
+
 {
 	// user selected something from this toolbar.
 	// invoke the appropriate function.
@@ -114,7 +134,7 @@ UT_Bool EV_UnixToolbar::toolbarEvent(AP_Toolbar_Id id)
 	EV_EditMethod * pEM = pEMC->findEditMethodByName(szMethodName);
 	UT_ASSERT(pEM);						// make sure it's bound to something
 
-	invokeToolbarMethod(m_pUnixFrame->getCurrentView(),pEM,1,0,0);
+	invokeToolbarMethod(m_pUnixFrame->getCurrentView(),pEM,1,pData,dataLength);
 	return UT_TRUE;
 }
 
@@ -229,33 +249,18 @@ UT_Bool EV_UnixToolbar::synthesize(void)
 					iWidth = pControl->getPixelWidth();
 				}
 
-/*
-				bControls = UT_TRUE;
-				tbb.fsStyle = TBSTYLE_SEP;   
-				tbb.iBitmap = iWidth;
-*/
-
 				GtkWidget * comboBox = gtk_combo_new();
 				UT_ASSERT(comboBox);
 
-				gtk_widget_set_usize(comboBox, iWidth + 20, 20);
-/*				
-				// create a matching child control
-				HWND hwndCombo = CreateWindowEx ( 0L,   // No extended styles.
-												  "COMBOBOX",                    // Class name.
-												  "",                            // Default text.
-												  WS_CHILD | WS_BORDER | WS_VISIBLE |
-												  CBS_HASSTRINGS | CBS_DROPDOWN,    // Styles and defaults.
-												  0, 2, iWidth, 250,             // Size and position.
-												  m_hwnd,                        // Parent window.
-												  (HMENU) u,                     // ID.
-												  m_pWin32App->getInstance(),    // Current instance.
-												  NULL );                        // No class data.
+				// set the size of the entry to set the total combo size
+				gtk_widget_set_usize(GTK_COMBO(comboBox)->entry, iWidth, 0);
 
-				UT_ASSERT(hwndCombo);
-						
-				SendMessage(hwndCombo, WM_SETFONT, (WPARAM)GetStockObject(DEFAULT_GUI_FONT), MAKELPARAM(TRUE, 0));
-*/
+				// we override the "lost focus" event to effect document changes
+				gtk_signal_connect(GTK_OBJECT(GTK_COMBO(comboBox)->entry),
+								   "focus_out_event",
+								   GTK_SIGNAL_FUNC(_wd::s_combo_out_focus),
+								   wd);
+
 				// populate it
 				if (pControl)
 				{
@@ -276,49 +281,7 @@ UT_Bool EV_UnixToolbar::synthesize(void)
 						}
 					}
 				}
-/*
-				// override the window procedure for the combo box
-				s_lpfnDefCombo = (WHICHPROC)GetWindowLong(hwndCombo, GWL_WNDPROC);
-				SetWindowLong(hwndCombo, GWL_WNDPROC, (LONG)_ComboWndProc);
-				SetWindowLong(hwndCombo, GWL_USERDATA, (LONG)this);
 
-				// override the window procedure for its edit control, too
-				POINT pt;
-				pt.x = 4;
-				pt.y = 4; 
-				HWND hwndComboEdit = ChildWindowFromPoint(hwndCombo, pt); 
-				UT_ASSERT(hwndComboEdit);
-				UT_ASSERT(hwndComboEdit != hwndCombo);
-				s_lpfnDefComboEdit = (WHICHPROC)GetWindowLong(hwndComboEdit, GWL_WNDPROC);
-				SetWindowLong(hwndComboEdit, GWL_WNDPROC, (LONG)_ComboEditWndProc);
-				SetWindowLong(hwndComboEdit, GWL_USERDATA, (LONG)this);
-
-				// Get the handle to the tooltip window.
-				HWND hwndTT = (HWND)SendMessage(m_hwnd, TB_GETTOOLTIPS, 0, 0);
-
-				if (hwndTT)
-				{
-					const char * szToolTip = pLabel->getToolTip();
-					if (!szToolTip || !*szToolTip)
-					{
-						szToolTip = pLabel->getStatusMsg();
-					}
-
-					// Fill in the TOOLINFO structure.
-					TOOLINFO ti;
-
-					ti.cbSize = sizeof(ti);
-					ti.uFlags = TTF_IDISHWND | TTF_CENTERTIP;
-					ti.lpszText = (char *) szToolTip;
-					ti.hwnd = m_hwnd;		// TODO: should this be the frame?
-					ti.uId = (UINT)hwndCombo;
-					// Set up tooltips for the combo box.
-					SendMessage(hwndTT, TTM_ADDTOOL, 0, (LPARAM)(LPTOOLINFO)&ti);
-				}
-						
-				// bind this separator to its control
-				tbb.dwData = (DWORD) hwndCombo;
-*/
 				// Give a final show
 				gtk_widget_show(comboBox);
 
@@ -495,23 +458,32 @@ UT_Bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 					break;
 				case EV_TBIT_ComboBox:
 				{
-#if 0					
 					UT_Bool bGrayed = EV_TIS_ShouldBeGray(tis);
-
+					UT_Bool bString = EV_TIS_ShouldUseString(tis);
+					
 					_wd * wd = (_wd *) m_vecToolbarWidgets.getNthItem(k);
 					UT_ASSERT(wd);
-					GtkButton * item = GTK_BUTTON(wd->m_widget);
+					GtkCombo * item = GTK_COMBO(wd->m_widget);
 					UT_ASSERT(item);
 						
 					// Disable/enable toolbar item
 					gtk_widget_set_sensitive(GTK_WIDGET(item), !bGrayed);
 
-					UT_DEBUGMSG(("refreshToolbar: PushButton [%s] is %s\n",
+					// NOTE: we always update the control even if !bString
+					// Is this logic correct at all?
+					if (GTK_ENTRY(item->entry)->text_length > 0)
+						gtk_entry_select_region(GTK_ENTRY(item->entry), 0, GTK_ENTRY(item->entry)->text_length);
+					else
+						gtk_entry_set_text(GTK_ENTRY(item->entry), szState);
+					
+					UT_DEBUGMSG(("refreshToolbar: ComboBox [%s] is %s and %s\n",
 								 m_pToolbarLabelSet->getLabel(id)->getToolbarLabel(),
-								 ((bGrayed) ? "disabled" : "enabled")));
-
+								 ((bGrayed) ? "disabled" : "enabled"),
+								 ((bString) ? szState : "no state")));
+					
 
 					/////////////////////////////////////////////////
+#if 0					
 					UT_Bool bGrayed = EV_TIS_ShouldBeGray(tis);
 					UT_Bool bString = EV_TIS_ShouldUseString(tis);
 
