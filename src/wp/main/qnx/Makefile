@@ -43,7 +43,7 @@ ABI_APPLIBDEP=		$(LoadOrder)
 # libdl flags go into the process later
 # We needed libstdc++ at one point, not any more apparently
 ABI_LIBS=		ph phrender m 
-STUPID_STATIC_LIBS= -Bstatic -lph
+STUPID_STATIC_LIBS= -Wl,-Bstatic -lph
 
 # include both dynamic and static binaries
 TARGETS=		$(PROGRAM) $(PROGRAM_S)

@@ -36,9 +36,16 @@ public:
 	virtual void			runModal(XAP_Frame * pFrame);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
-	
+  void 					event_OK(void);
+  void 					event_Cancel(void);
+  void 					event_Delete(void);	
+	int 					done;
 protected:
 
+	PtWidget_t *	_constructWindow(void);
+	void				_setCombo(void);
+
+	PtWidget_t *m_comboBox;
 };
 
 #endif /* AP_QNXDIALOG_STUB_H */
