@@ -2397,13 +2397,13 @@ void fp_ImageRun::lookupProperties(void)
 	m_pBL->getField(m_iOffsetFirst,m_pField);
 	const PP_AttrProp * pSpanAP = NULL;
 	m_pBL->getSpanAttrProp(m_iOffsetFirst,false,&pSpanAP);
-	const char * szWidth = NULL;
+	const XML_Char * szWidth = NULL;
 	pSpanAP->getProperty("width", szWidth);
 	if(szWidth == NULL)
 	{
 		szWidth = "0in";
 	}
-	const char * szHeight = NULL;
+	const XML_Char * szHeight = NULL;
 	pSpanAP->getProperty("height", szHeight);
 	if(szHeight == NULL)
 	{

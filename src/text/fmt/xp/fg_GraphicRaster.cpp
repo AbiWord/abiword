@@ -104,7 +104,7 @@ double FG_GraphicRaster::getHeight(void)
  */
 const char * FG_GraphicRaster::getWidthProp(void)
 {
-	const char * szWidth = NULL;
+	const XML_Char * szWidth = NULL;
 	m_pSpanAP->getProperty("width", szWidth);
 	if(szWidth == NULL)
 	{
@@ -119,7 +119,7 @@ const char * FG_GraphicRaster::getWidthProp(void)
  */
 const char * FG_GraphicRaster::getHeightProp(void)
 {
-	const char * szHeight = NULL;
+	const XML_Char * szHeight = NULL;
 	m_pSpanAP->getProperty("height", szHeight);
 	if(szHeight == NULL)
 	{
