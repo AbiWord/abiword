@@ -23,7 +23,7 @@
 ABI_DEPTH=..
 include $(ABI_DEPTH)/config/abi_defs.mk
 
-ifeq ($(BUILDWXWIN),NO)
+ifeq ($(BUILDWXWIN),)
 DIRS=		docstrux impexp fmt guts
 else
 DIRS=		docstrux impexp fmt guts gui
