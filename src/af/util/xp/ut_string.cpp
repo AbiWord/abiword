@@ -958,6 +958,7 @@ XML_Char *UT_decodeXMLstring(XML_Char *in)
 			     __FILE__, __LINE__));
 	}
 	// TODO: who owns the storage for this?
+	// TMN: The caller of this function.
 	out = UT_strdup(out);
 	if (parser) XML_ParserFree(parser);
 	return out;
