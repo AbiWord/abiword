@@ -182,7 +182,7 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
    UT_ASSERT(pPrefsScheme);		  
    
    bool b = false;
-   pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_AutoSpellCheck, &b);
+   pPrefs->getPrefsValueBool(static_cast<XML_Char*>AP_PREF_KEY_AutoSpellCheck, &b);
 
 
    // Yes, I know. This is a bit anal. But it works, and I'm too tired
@@ -427,4 +427,3 @@ bool AP_Dialog_Spell::addToDict(void)
 {
   return _getDict()->addToCustomDict(m_pWord, m_iWordLength);
 }
-
