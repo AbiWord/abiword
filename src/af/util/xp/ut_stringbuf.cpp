@@ -467,6 +467,30 @@ void UT_UTF8Stringbuf::appendUCS4 (const UT_UCS4Char * sz, size_t n /* == 0 => n
 	*m_pEnd = 0;
 }
 
+void UT_UTF8Stringbuf::appendUCS2 (const UT_UCS2Char * sz, size_t n /* == 0 => null-termination */)
+{
+	size_t bytelength = 0;
+	size_t i;
+	for (i = 0; (i < n) || (n == 0); i++)
+	{
+		int seql = UT_UCS4Stringbuf::UTF8_ByteLength ((UT_UCS4Char)sz[i]);
+		if (seql < 0) continue; // not UCS-4 !!
+		if (seql == 0) break; // end-of-string?
+		bytelength += static_cast<size_t>(seql);
+	}
+	if (!grow (bytelength + 1)) return;
+
+	for (i = 0; (i < n) || (n == 0); i++)
+	{
+		int seql = UT_UCS4Stringbuf::UTF8_ByteLength ((UT_UCS4Char)sz[i]);
+		if (seql < 0) continue; // not UCS-4 !!
+		if (seql == 0) break; // end-of-string?
+		UT_UCS4Stringbuf::UCS4_to_UTF8 (m_pEnd, bytelength, (UT_UCS4Char)sz[i]);
+		m_strlen++;
+	}
+	*m_pEnd = 0;
+}
+
 /* replaces <str1> with <str2> in the current string
  */
 void UT_UTF8Stringbuf::escape (const UT_UTF8String & utf8_str1,

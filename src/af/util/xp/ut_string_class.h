@@ -210,6 +210,7 @@ public:
 	void        appendBuf (const UT_ByteBuf & buf, UT_UCS4_mbtowc & converter);
 
 	void		appendUCS4 (const UT_UCS4Char * sz, size_t n = 0 /* 0 == null-termination */);
+	void		appendUCS2 (const UT_UCS2Char * sz, size_t n = 0 /* 0 == null-termination */);
 
 	const UT_UTF8String & escape (const UT_UTF8String & str1,
 				      const UT_UTF8String & str2);  // replaces <str1> with <str2> in the current string

@@ -876,6 +876,11 @@ void UT_UTF8String::appendUCS4 (const UT_UCS4Char * sz, size_t n /* == 0 => null
 	pimpl->appendUCS4 (sz, n);
 }
 
+void UT_UTF8String::appendUCS2 (const UT_UCS2Char * sz, size_t n /* == 0 => null-termination */)
+{
+	pimpl->appendUCS2 (sz, n);
+}
+
 /* replaces <str1> with <str2> in the current string
  */
 const UT_UTF8String & UT_UTF8String::escape (const UT_UTF8String & str1, const UT_UTF8String & str2)
