@@ -22,6 +22,8 @@
 #ifndef __XAP_MAC_RESID_H__
 #define __XAP_MAC_RESID_H__
 
+#define RES_MENU_APPLE			1000
+
 /* 'ALRT' resource IDs */
 #define RES_ALRT_OK				128
 #define RES_ALRT_OKCANCEL		129
