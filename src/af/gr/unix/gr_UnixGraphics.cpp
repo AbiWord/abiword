@@ -1004,6 +1004,8 @@ GR_Font * GR_UnixGraphics::getGUIFont(void)
 		// get the font resource
 		GtkStyle *tempStyle = gtk_style_new();
 		const char *guiFontName = pango_font_description_get_family(tempStyle->font_desc);
+		if (!guiFontName)
+			guiFontName = "Times New Roman";
 		XAP_UnixFont * font = static_cast<XAP_UnixFont *>(m_pFontManager->searchFont(guiFontName)); // this operation should never fail
 		g_object_unref(G_OBJECT(tempStyle));
 		UT_ASSERT(font);
