@@ -343,34 +343,36 @@ int try_cancel(void)
 }
 
 // Main_OnBrowse - browses for a program folder. 
-// hwnd - handle of the application's main window 
-void BrowseDir(HWND hwnd, char* pszDest) 
+// hwnd - handle of the application's main window
+// returns 0 on cancel
+int BrowseDir(HWND hwnd, char* pszDest) 
 { 
 	LPMALLOC      pMalloc;
     BROWSEINFO bi; 
     LPSTR lpBuffer; 
     LPITEMIDLIST pidlPrograms;  // PIDL for Programs folder 
     LPITEMIDLIST pidlBrowse;    // PIDL selected by user 
- 
+	int result = 0;
+	
 	// We are going to create a pidl, and it will need to be
 	// freed by the shell mallocator. Get the shell mallocator
 	// object using API SHGetMalloc function. Return if failure.
 	if(FAILED(SHGetMalloc(&pMalloc)))
 	{
-		return;
+		return 0;
 	}
 
     // Allocate a buffer to receive browse information. 
     if ((lpBuffer = (LPSTR) pMalloc->lpVtbl->Alloc(pMalloc, MAX_PATH)) == NULL)
 	{
-        return;
+        return 0;
 	}
  
     // Get the PIDL for the Programs folder. 
     if (!SUCCEEDED(SHGetSpecialFolderLocation(hwnd, CSIDL_DRIVES, &pidlPrograms)))
 	{ 
         pMalloc->lpVtbl->Free(pMalloc, lpBuffer); 
-        return; 
+        return 0; 
     } 
  
     // Fill in the BROWSEINFO structure. 
@@ -381,7 +383,7 @@ void BrowseDir(HWND hwnd, char* pszDest)
     bi.ulFlags = 0; 
     bi.lpfn = NULL; 
     bi.lParam = 0; 
- 
+
     // Browse for a folder and return its PIDL. 
     pidlBrowse = SHBrowseForFolder(&bi); 
     if (pidlBrowse != NULL)
@@ -389,6 +391,7 @@ void BrowseDir(HWND hwnd, char* pszDest)
         if (SHGetPathFromIDList(pidlBrowse, lpBuffer))
 		{
 			strcpy(pszDest, lpBuffer);
+			result = 1;
 		}
  
         // Free the PIDL returned by SHBrowseForFolder. 
@@ -397,7 +400,9 @@ void BrowseDir(HWND hwnd, char* pszDest)
  
     // Clean up. 
     pMalloc->lpVtbl->Free(pMalloc, pidlPrograms); 
-    pMalloc->lpVtbl->Free(pMalloc, lpBuffer); 
+    pMalloc->lpVtbl->Free(pMalloc, lpBuffer);
+
+	return result;
 } 
 
 LRESULT CALLBACK WndProc_Main(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -492,9 +497,10 @@ LRESULT CALLBACK WndProc_Pane(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			{
 				char szPath[1024];
 				
-				BrowseDir(g_hwndMain, szPath);
-
-				_updateDirAndSpace(szPath);
+				if (BrowseDir(g_hwndMain, szPath))
+				{
+					_updateDirAndSpace(szPath);
+				}
 				
 				return 0;
 			}
