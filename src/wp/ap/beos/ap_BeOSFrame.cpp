@@ -395,7 +395,7 @@ void AP_BeOSFrame::killFrameData(void)
 	m_pData = NULL;
 }
 
-UT_Bool AP_BeOSFrame::_loadDocument(const char * szFilename, IEFileType ieft)
+UT_Error AP_BeOSFrame::_loadDocument(const char * szFilename, IEFileType ieft)
 {
 	// are we replacing another document?
 	if (m_pDoc)
@@ -460,7 +460,7 @@ Cleanup:
 	return NULL;
 }
 
-UT_Bool AP_BeOSFrame::loadDocument(const char * szFilename, int ieft)
+UT_Error AP_BeOSFrame::loadDocument(const char * szFilename, int ieft)
 {
 	UT_Bool bUpdateClones;
 	UT_Vector vClones;
