@@ -47,7 +47,7 @@ AD_Document::AD_Document() :
 	m_iRefCount(1),
 	m_szFilename(NULL),
 	m_szEncodingName(""), // Should this have a default? UTF-8, perhaps?
-	m_lastSavedTime(time(NULL)),
+	m_lastSavedTime(0),
 	m_lastOpenedTime(time(NULL)),
     m_iEditTime(0),
     m_iVersion(0),
@@ -215,6 +215,19 @@ time_t AD_Document::getHistoryNthTimeStarted(UT_uint32 i)const
 	return v->getStartTime();
 }
 
+bool AD_Document::getHistoryNthAutoRevisioned(UT_uint32 i)const
+{
+	if(!m_vHistory.getItemCount())
+		return 0;
+
+	AD_VersionData * v = (AD_VersionData*)m_vHistory.getNthItem(i);
+
+	if(!v)
+		return false;
+
+	return v->isAutoRevisioned();
+}
+
 
 /*!
     Get get cumulative edit time for n-th record in version history
@@ -351,7 +364,7 @@ const AD_Revision * AD_Document::getHighestRevision() const
 	return r;
 }
 
-bool AD_Document::addRevision(UT_uint32 iId, UT_UCS4Char * pDesc, time_t tStart)
+bool AD_Document::addRevision(UT_uint32 iId, UT_UCS4Char * pDesc, time_t tStart, UT_uint32 iVer)
 {
 	for(UT_uint32 i = 0; i < m_vRevisions.getItemCount(); i++)
 	{
@@ -360,7 +373,7 @@ bool AD_Document::addRevision(UT_uint32 iId, UT_UCS4Char * pDesc, time_t tStart)
 			return false;
 	}
 
-	AD_Revision * pRev = new AD_Revision(iId, pDesc, tStart);
+	AD_Revision * pRev = new AD_Revision(iId, pDesc, tStart, iVer);
 
 	m_vRevisions.addItem(static_cast<void*>(pRev));
 	forceDirty();
@@ -369,9 +382,8 @@ bool AD_Document::addRevision(UT_uint32 iId, UT_UCS4Char * pDesc, time_t tStart)
 }
 
 bool AD_Document::addRevision(UT_uint32 iId,
-							  const UT_UCS4Char * pDesc,
-							  UT_uint32 iLen,
-							  time_t tStart)
+							  const UT_UCS4Char * pDesc, UT_uint32 iLen,
+							  time_t tStart, UT_uint32 iVer)
 {
 	for(UT_uint32 i = 0; i < m_vRevisions.getItemCount(); i++)
 	{
@@ -389,7 +401,7 @@ bool AD_Document::addRevision(UT_uint32 iId,
 		pD[iLen] = 0;
 	}
 	
-	AD_Revision * pRev = new AD_Revision(iId, pD, tStart);
+	AD_Revision * pRev = new AD_Revision(iId, pD, tStart, iVer);
 
 	m_vRevisions.addItem(static_cast<void*>(pRev));
 	forceDirty();
@@ -454,18 +466,26 @@ void AD_Document::setAutoRevisioning(bool b)
 {
 	if(b != m_bAutoRevisioning)
 	{
+		// first of all, we will increase the document version
+		// number; this will allow us to match autorevision id to a
+		// document version number
+		time_t t = time(NULL);
+		m_iVersion++;
+		AD_VersionData v(m_iVersion, t, b);
+		addRecordToHistory(v);
+		
 		m_bAutoRevisioning = b;
 
 		if(b)
 		{
-			// create new revision
+			// now create new revision
 			const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 			UT_return_if_fail(pSS);
 			UT_UCS4String ucs4(pSS->getValue(XAP_STRING_ID_MSG_AutoRevision));
 
 			UT_uint32 iId = getRevisionId()+1;
 			setRevisionId(iId);
-			addRevision(iId, ucs4.ucs4_str(),ucs4.length(),time(NULL));
+			addRevision(iId, ucs4.ucs4_str(),ucs4.length(),t, m_iVersion);
 
 			// collapse all revisions ...
 			setShowRevisionId(0xffffffff);
@@ -474,6 +494,68 @@ void AD_Document::setAutoRevisioning(bool b)
 		setMarkRevisions(b);
 	}
 }
+
+/*!
+   Find revision id that corresponds to given document version
+   \return: id > 0 on success or 0 on failure
+*/
+UT_uint32 AD_Document::findAutoRevisionId(UT_uint32 iVersion) const
+{
+	for(UT_uint32 i = 0; i < m_vRevisions.getItemCount(); i++)
+	{
+		const AD_Revision *pRev=reinterpret_cast<const AD_Revision*>(m_vRevisions.getNthItem(i));
+		UT_return_val_if_fail(pRev, 0);
+		
+		if(pRev->getVersion() == iVersion)
+			return pRev->getId();
+	}
+
+	UT_DEBUGMSG(("AD_Document::findAutoRevisionId: autorevision for version %d not found\n",
+				 iVersion));
+
+	return 0;
+}
+
+/*!
+    Finds the nearest autorevision for the given document version
+    \param UT_uint32 iVersion: the document version
+    \param bool bLesser: indicates whether nearest lesser or nearest
+                         greater autorevision is required
+    \return: id > 0 on success or 0 on failure
+*/
+UT_uint32 AD_Document::findNearestAutoRevisionId(UT_uint32 iVersion, bool bLesser) const
+{
+	UT_uint32 iId = 0;
+	
+	for(UT_uint32 i = 0; i < m_vRevisions.getItemCount(); i++)
+	{
+		const AD_Revision *pRev=reinterpret_cast<const AD_Revision*>(m_vRevisions.getNthItem(i));
+		UT_return_val_if_fail(pRev, 0);
+
+		if(bLesser)
+		{
+			if(pRev->getVersion() < iVersion)
+				iId = pRev->getId();
+			else
+				break;
+		}
+		else
+		{
+			if(pRev->getVersion() > iVersion)
+				return pRev->getId();
+		}
+	}
+
+#ifdef DEBUG
+	if(iId == 0)
+	{
+		UT_DEBUGMSG(("AD_Document::findNearestAutoRevisionId: not found [ver. %d, bLesser=%d]\n",
+					 iVersion, bLesser));
+	}
+#endif
+	return iId;
+}
+
 
 /*!
     Update document history and version information; should only be
@@ -487,10 +569,16 @@ void AD_Document::_adjustHistoryOnSave()
 	
 	if(!m_bHistoryWasSaved || m_bAutoRevisioning)
 	{
-		m_bHistoryWasSaved = true;
-		AD_VersionData v(m_iVersion, m_lastOpenedTime);
+		// if this is the first save, we will record the time the doc
+		// was opened as the start time, otherwise, we will use the
+		// current time
+		time_t t = !m_bHistoryWasSaved ? m_lastOpenedTime : time(NULL);
+		
+		AD_VersionData v(m_iVersion,t,m_bAutoRevisioning);
 		m_lastSavedTime = v.getTime(); // store the time of this save
 		addRecordToHistory(v);
+
+		m_bHistoryWasSaved = true;
 	}
 	else
 	{
@@ -515,7 +603,7 @@ void AD_Document::_adjustHistoryOnSave()
 
 		UT_uint32 iId = getRevisionId()+1;
 		setRevisionId(iId);
-		addRevision(iId, ucs4.ucs4_str(),ucs4.length(),time(NULL));
+		addRevision(iId, ucs4.ucs4_str(),ucs4.length(),time(NULL), m_iVersion);
 	}
 }
 
@@ -523,8 +611,8 @@ void AD_Document::_adjustHistoryOnSave()
 // AD_VersionData
 //
 // constructor for new entries
-AD_VersionData::AD_VersionData(UT_uint32 v, time_t start)
-	:m_iId(v),m_pUUID(NULL),m_tStart(start)
+AD_VersionData::AD_VersionData(UT_uint32 v, time_t start, bool autorev)
+	:m_iId(v),m_pUUID(NULL),m_tStart(start),m_bAutoRevision(autorev)
 {
 	UT_UUIDGenerator * pGen = XAP_App::getApp()->getUUIDGenerator();
 	UT_return_if_fail(pGen);
@@ -536,8 +624,8 @@ AD_VersionData::AD_VersionData(UT_uint32 v, time_t start)
 
 
 // constructors for importers
-AD_VersionData::AD_VersionData(UT_uint32 v, UT_String &uuid, time_t start):
-	m_iId(v),m_pUUID(NULL),m_tStart(start)
+AD_VersionData::AD_VersionData(UT_uint32 v, UT_String &uuid, time_t start, bool autorev):
+	m_iId(v),m_pUUID(NULL),m_tStart(start),m_bAutoRevision(autorev)
 {
 	UT_UUIDGenerator * pGen = XAP_App::getApp()->getUUIDGenerator();
 	UT_return_if_fail(pGen);
@@ -546,8 +634,8 @@ AD_VersionData::AD_VersionData(UT_uint32 v, UT_String &uuid, time_t start):
 	UT_ASSERT(m_pUUID);
 };
 
-AD_VersionData::AD_VersionData(UT_uint32 v, const char *uuid, time_t start):
-	m_iId(v),m_pUUID(NULL),m_tStart(start)
+AD_VersionData::AD_VersionData(UT_uint32 v, const char *uuid, time_t start, bool autorev):
+	m_iId(v),m_pUUID(NULL),m_tStart(start),m_bAutoRevision(autorev)
 {
 	UT_UUIDGenerator * pGen = XAP_App::getApp()->getUUIDGenerator();
 	UT_return_if_fail(pGen);
@@ -558,7 +646,7 @@ AD_VersionData::AD_VersionData(UT_uint32 v, const char *uuid, time_t start):
 
 // copy constructor
 AD_VersionData::AD_VersionData(const AD_VersionData & v):
-		m_iId(v.m_iId), m_pUUID(NULL)
+	m_iId(v.m_iId), m_pUUID(NULL), m_bAutoRevision(v.m_bAutoRevision)
 {
 	UT_return_if_fail(v.m_pUUID);
 	UT_UUIDGenerator * pGen = XAP_App::getApp()->getUUIDGenerator();
@@ -575,12 +663,14 @@ AD_VersionData & AD_VersionData::operator = (const AD_VersionData &v)
 	m_iId       = v.m_iId;
 	*m_pUUID    = *(v.m_pUUID);
 	m_tStart    = v.m_tStart;
+	m_bAutoRevision = v.m_bAutoRevision;
 	return *this;
 }
 
 bool AD_VersionData::operator == (const AD_VersionData &v)
 {
-	return (m_iId == v.m_iId && m_tStart == v.m_tStart && *m_pUUID == *(v.m_pUUID));
+	return (m_iId == v.m_iId && m_tStart == v.m_tStart
+			&& *m_pUUID == *(v.m_pUUID) && m_bAutoRevision == v.m_bAutoRevision);
 }
 
 AD_VersionData::~AD_VersionData()

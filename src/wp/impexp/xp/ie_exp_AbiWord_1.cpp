@@ -1298,18 +1298,20 @@ void s_AbiWord_1_Listener::_handleRevisions(void)
 		
 		if (!bWroteOpenRevisionsSection)
 		{
-			UT_String_sprintf(s, "<revisions show=\"%d\" mark=\"%d\" show-level=\"%d\">\n",
+			UT_String_sprintf(s, "<revisions show=\"%d\" mark=\"%d\" show-level=\"%d\" auto=\"%d\">\n",
 							  m_pDocument->isShowRevisions(),
 							  m_pDocument->isMarkRevisions(),
-							  m_pDocument->getShowRevisionId());
+							  m_pDocument->getShowRevisionId(),
+							  m_pDocument->getAutoRevisioning());
 			
 			m_pie->write(s.c_str());
 			bWroteOpenRevisionsSection = true;
 		}
 
-		UT_String_sprintf(s, "<r id=\"%d\" time-started=\"%d\">",
+		UT_String_sprintf(s, "<r id=\"%d\" time-started=\"%d\" version=\"%d\">",
 						  pRev->getId(),
-						  pRev->getStartTime());
+						  pRev->getStartTime(),
+						  pRev->getVersion());
 		
 		m_pie->write(s.c_str());
 
@@ -1340,6 +1342,7 @@ void s_AbiWord_1_Listener::_handleHistory(void)
 		UT_uint32 iVersion  =  m_pDocument->getHistoryNthId(k);
 		const UT_UUID& UID  =  m_pDocument->getHistoryNthUID(k);
 		time_t tStarted     =  m_pDocument->getHistoryNthTimeStarted(k);
+		bool bAuto          =  m_pDocument->getHistoryNthAutoRevisioned(k);
 		
 		UT_String s, hUid;
 		UID.toString(hUid);
@@ -1358,8 +1361,8 @@ void s_AbiWord_1_Listener::_handleHistory(void)
 			bWroteOpenSection = true;
 		}
 
-		UT_String_sprintf(s, "<version id=\"%d\" started=\"%d\" uid=\"%s\"/>\n",
-						  iVersion, tStarted, hUid.c_str());
+		UT_String_sprintf(s, "<version id=\"%d\" started=\"%d\" uid=\"%s\" auto=\"%d\"/>\n",
+						  iVersion, tStarted, hUid.c_str(),bAuto);
 		
 		m_pie->write(s.c_str());
 	}

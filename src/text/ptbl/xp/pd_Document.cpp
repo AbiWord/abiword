@@ -4349,7 +4349,7 @@ void PD_Document::diffIntoRevisions(const PD_Document &d)
 	UT_return_if_fail(pSS);
 	UT_UCS4String ucs4(pSS->getValue(AP_STRING_ID_MSG_AutoMerge));
 
-	addRevision(getRevisionId()+1, ucs4.ucs4_str(),ucs4.length(),time(NULL));
+	addRevision(getRevisionId()+1, ucs4.ucs4_str(),ucs4.length(),time(NULL),0);
 
 	for(UT_uint32 i = 0; i < vDiff.getItemCount(); ++i)
 	{

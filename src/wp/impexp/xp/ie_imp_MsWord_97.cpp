@@ -2925,7 +2925,7 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 	{
 		// revision "hack" - add a single revision for all revisioned text
 		UT_UCS4String revisionStr ("msword_revisioned_text");
-		getDoc()->addRevision(1, revisionStr.ucs4_str(), revisionStr.size(), 0);
+		getDoc()->addRevision(1, revisionStr.ucs4_str(), revisionStr.size(), 0, 0);
 		m_bEncounteredRevision = true;
 	}
 

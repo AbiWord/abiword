@@ -48,11 +48,11 @@ class AD_VersionData
   public:
 
 	// constructor for importers
-	AD_VersionData(UT_uint32 v, UT_String &uuid, time_t start);
-	AD_VersionData(UT_uint32 v, const char * uuid, time_t start);
+	AD_VersionData(UT_uint32 v, UT_String &uuid, time_t start, bool autorev);
+	AD_VersionData(UT_uint32 v, const char * uuid, time_t start, bool autorev);
 	
 	// constructor for new entries
-	AD_VersionData(UT_uint32 v, time_t start);
+	AD_VersionData(UT_uint32 v, time_t start, bool autorev);
 
 	// copy constructor
 	AD_VersionData(const AD_VersionData & v);
@@ -68,20 +68,25 @@ class AD_VersionData
 	time_t         getStartTime()const {return m_tStart;}
 	const UT_UUID& getUID()const {return (const UT_UUID&)*m_pUUID;}
 	bool           newUID(); // true on success
+	
 	void           setId(UT_uint32 iid) {m_iId = iid;}
+
+	bool           isAutoRevisioned()const {return m_bAutoRevision;}
+	void           setAutoRevisioned(bool autorev) {m_bAutoRevision = autorev;}
 	
   private:
 	UT_uint32   m_iId;
 	UT_UUID *   m_pUUID;
 	time_t      m_tStart;
+	bool        m_bAutoRevision;
 };
 
 // a helper class for keeping track of revisions in the document
 class AD_Revision
 {
   public:
-	AD_Revision(UT_uint32 iId, UT_UCS4Char * pDesc, time_t start)
-		:m_iId(iId),m_pDescription(pDesc), m_tStart(start){};
+	AD_Revision(UT_uint32 iId, UT_UCS4Char * pDesc, time_t start, UT_uint32 iVer = 0)
+		:m_iId(iId),m_pDescription(pDesc), m_tStart(start), m_iVersion(iVer){};
 	
 	~AD_Revision(){delete [] m_pDescription;}
 	
@@ -92,10 +97,14 @@ class AD_Revision
 	time_t            getStartTime() const {return m_tStart;}
 	void              setStartTime(time_t t) {m_tStart = t;}
 
+	UT_uint32         getVersion()const {return m_iVersion;}
+	void              setVersion(UT_uint32 iVer) {m_iVersion = iVer;}
+
   private:
 	UT_uint32     m_iId;
 	UT_UCS4Char * m_pDescription;
 	time_t        m_tStart;
+	UT_uint32     m_iVersion;
 };
 
 
@@ -135,6 +144,7 @@ public:
 	 */
 	UT_uint32       getTimeSinceSave () const { return (time(NULL) - m_lastSavedTime); }
 	time_t          getLastSavedTime() const {return m_lastSavedTime;}
+	void            setLastSavedTime(time_t t) {m_lastSavedTime = t;}
 
 	UT_uint32       getTimeSinceOpen () const { return (time(NULL) - m_lastOpenedTime); }
 	time_t          getLastOpenedTime() const {return m_lastOpenedTime;}
@@ -161,7 +171,8 @@ public:
 	time_t          getHistoryNthTimeStarted(UT_uint32 i)const;
 	UT_uint32       getHistoryNthEditTime(UT_uint32 i)const;
 	const UT_UUID&  getHistoryNthUID(UT_uint32 i)const;
-
+	bool            getHistoryNthAutoRevisioned(UT_uint32 i)const;
+		
 	bool            areDocumentsRelated (const AD_Document &d) const;
 	bool            areDocumentHistoriesEqual(const AD_Document &d) const;
 
@@ -174,22 +185,25 @@ public:
 	UT_uint64       getNewUUID64() const;
 	
 	bool            addRevision(UT_uint32 iId, UT_UCS4Char * pDesc,
-										time_t tStart);
+								time_t tStart, UT_uint32 iVersion);
 	
 	bool            addRevision(UT_uint32 iId, const UT_UCS4Char * pDesc, UT_uint32 iLen,
-										time_t tStart);
+								time_t tStart, UT_uint32 iVersion);
 	
 	UT_Vector &         getRevisions() {return m_vRevisions;}
 	UT_uint32           getHighestRevisionId() const;
-	const AD_Revision* getHighestRevision() const;
+	const AD_Revision*  getHighestRevision() const;
 
 	bool                isMarkRevisions() const{ return m_bMarkRevisions;}
 	bool                isShowRevisions() const{ return m_bShowRevisions;}
 
 	UT_uint32           getShowRevisionId() const {return m_iShowRevisionID;}
 	UT_uint32           getRevisionId() const{ return m_iRevisionID;}
-	bool                getAutoRevisioning() const {return m_bAutoRevisioning;}
 
+	bool                getAutoRevisioning() const {return m_bAutoRevisioning;}
+	UT_uint32           findAutoRevisionId(UT_uint32 iVersion) const;
+	UT_uint32           findNearestAutoRevisionId(UT_uint32 iVersion, bool bLesser = true) const;
+	
 	void                toggleMarkRevisions();
 	void                toggleShowRevisions();
 

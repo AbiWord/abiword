@@ -155,6 +155,7 @@ protected:
     UT_String		m_currentMetaDataName;
 	UT_uint32       m_currentRevisionId;
 	time_t          m_currentRevisionTime;
+	UT_uint32       m_currentRevisionVersion;
 
 	UT_NumberMap    m_tokens;
 

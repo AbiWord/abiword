@@ -83,6 +83,7 @@ dcl(DLG_Delete, 				"Delete")
 dcl(DLG_Compare, 				"Compare")
 dcl(DLG_Select, 				"Select")
 dcl(DLG_Merge, 				    "Merge")
+dcl(DLG_Show, 				    "Show")
 	
 /* Units */
 dcl(DLG_Unit_inch,				"inch")
@@ -482,3 +483,17 @@ dcl(XIM_Methods, "Input Methods")
 //than ap_String_Id.h
 dcl(DLG_Options_Label_LangWithKeyboard,         "Change Language when changing keyboard")
 dcl(DLG_Options_Label_DirMarkerAfterClosingParenthesis, "Auto-insert direction markers")
+
+dcl(DLG_History_WindowLabel, "Document History")
+dcl(DLG_History_Path, "Document name:")
+dcl(DLG_History_Created, "Created:")
+dcl(DLG_History_Version, "Version:")
+dcl(DLG_History_LastSaved, "Last saved:")
+dcl(DLG_History_EditTime, "Editing time:")
+dcl(DLG_History_Id, "Identifier:")
+
+dcl(DLG_History_List_Title, "Versions history")
+dcl(DLG_History_Version_Version, "Version")
+dcl(DLG_History_Version_Started, "Created")
+dcl(DLG_History_Version_AutoRevisioned, "Auto-revision")
+	

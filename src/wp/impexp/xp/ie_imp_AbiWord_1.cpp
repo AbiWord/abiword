@@ -633,6 +633,13 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 			i = atoi(szS);
 			getDoc()->setShowRevisionId(i);
 		}
+
+		szS = UT_getAttribute("auto",atts);
+		if(szS)
+		{
+			i = atoi(szS);
+			getDoc()->setAutoRevisioning(i == 1);
+		}
 		return;
 	}
 
@@ -650,6 +657,10 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 			szS = UT_getAttribute("time-started",atts);
 			if(szS)
 				m_currentRevisionTime = (time_t)atoi(szS);
+
+			szS = UT_getAttribute("version",atts);
+			if(szS)
+				m_currentRevisionVersion = atoi(szS);
 		}
 
 		return;
@@ -677,6 +688,12 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 			getDoc()->setEditTime(i);
 		}
 		
+		szS = UT_getAttribute("last-saved",atts);
+		if(szS)
+		{
+			i = atoi(szS);
+			getDoc()->setLastSavedTime((time_t)i);
+		}
 		szS = UT_getAttribute("uid",atts);
 		if(szS)
 		{
@@ -700,10 +717,17 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 			szS = UT_getAttribute("started",atts);
 			if(szS)
 				tStarted = (time_t) atoi(szS);
+
+			bool bAuto = false;
+			szS = UT_getAttribute("auto",atts);
+			if(szS)
+				bAuto = (0 != atoi(szS));
+			else
+				bAuto = false;
 			
 			szS = UT_getAttribute("uid",atts);
 
-			AD_VersionData v(iId, szS, tStarted);
+			AD_VersionData v(iId, szS, tStarted, bAuto);
 			getDoc()->addRecordToHistory(v);
 		}
 
@@ -991,7 +1015,8 @@ void IE_Imp_AbiWord_1::endElement(const XML_Char *name)
 			// the revision had no comment associated, so it was not
 			// added to the doc by the xml paraser
 			X_CheckError(getDoc()->addRevision(m_currentRevisionId, NULL, 0,
-											   m_currentRevisionTime));
+											   m_currentRevisionTime,
+											   m_currentRevisionVersion));
 			m_currentRevisionId = 0;
 		}
 		
