@@ -925,8 +925,6 @@ void ie_imp_table::writeTablePropsInDoc(void)
 	UT_return_if_fail(m_tableSDH);
 	UT_String colwidths;
 	UT_sint32 i=0;
-	if(!m_bAutoFit)
-	{
 /*
 	table-column-props:1.2in/3.0in/1.3in/;
 
@@ -945,21 +943,23 @@ void ie_imp_table::writeTablePropsInDoc(void)
    OK start by looking up table-col-spacing and table-column-leftpos. The defaults for
    these if undefined are 0.05in and 0.0in respectively.
 */
-		UT_String sColSpace = getPropVal("table-col-spacing");
-		if(sColSpace.size() == 0)
-		{
-			sColSpace = "0.05in";
-		}
-		UT_String sLeftPos = getPropVal("table-column-leftpos");
-		if(sLeftPos.size()==0)
-		{
-			sLeftPos = "0.0in";
-		}
-		double dLeftPos = UT_convertToInches(sLeftPos.c_str());
-		double dColSpace = UT_convertToInches(sColSpace.c_str());
-		setProp("table-col-spacing",sColSpace.c_str());
-		setProp("table-column-leftpos",sLeftPos.c_str());
-		UT_sint32 iPrev = 0;
+	UT_String sColSpace = getPropVal("table-col-spacing");
+	if(sColSpace.size() == 0)
+	{
+		sColSpace = "0.05in";
+	}
+	UT_String sLeftPos = getPropVal("table-column-leftpos");
+	if(sLeftPos.size()==0)
+	{
+		sLeftPos = "0.0in";
+	}
+	double dLeftPos = UT_convertToInches(sLeftPos.c_str());
+	double dColSpace = UT_convertToInches(sColSpace.c_str());
+	setProp("table-col-spacing",sColSpace.c_str());
+	setProp("table-column-leftpos",sLeftPos.c_str());
+	UT_sint32 iPrev = 0;
+	if(!m_bAutoFit)
+	{
 //
 // Now build the table-col-width string.
 //

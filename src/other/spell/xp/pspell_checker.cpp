@@ -76,8 +76,10 @@ utf32_to_utf8(const UT_UCS4Char * word32, int length)
 			"utf-8", NULL, &len_out);
 
 	/* We assume that UT_convert creates a buffer big enough for this: */
-	result[len_out] = 0;
-
+	if(len_out > 0)
+	{
+		result[len_out] = 0;
+	}
 	return result;
 }
 

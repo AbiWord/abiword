@@ -3897,6 +3897,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 			UT_DEBUGMSG(("SEVIOR: handling trowd paraprops %x \n",m_currentRTFState.m_paraProps));
 			if(getTable() == NULL)
 			{
+				UT_DEBUGMSG(("SEVIOR:Open Table trowd1 %x \n"));
 				OpenTable();
 				m_currentRTFState.m_paraProps.m_tableLevel = m_TableControl.getNestDepth();
 			}
@@ -3912,13 +3913,13 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 					OpenTable();
 				}
 				UT_DEBUGMSG(("After trowd m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
-				
 			}
 			else if(m_currentRTFState.m_paraProps.m_tableLevel < m_TableControl.getNestDepth())
 			{
 				UT_DEBUGMSG(("At trowd m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
 				while(m_currentRTFState.m_paraProps.m_tableLevel < m_TableControl.getNestDepth())
 				{
+					UT_DEBUGMSG(("SEVIOR:Close Table trowd1  \n"));
 					CloseTable();
 					m_bCellBlank = true;
 				}
@@ -3927,10 +3928,11 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 //
 // Look to see if m_bNestTableProps is true for nested tables.
 //
-			if((m_TableControl.getNestDepth() > 1) && !m_bNestTableProps)
+			else if((m_TableControl.getNestDepth() > 1) && !m_bNestTableProps)
 			{
 				while(m_TableControl.getNestDepth() > 1)
 				{
+					UT_DEBUGMSG(("SEVIOR:Close Table trowd2 \n"));
 					CloseTable();
 					m_bCellBlank = true;
 				}
@@ -3938,8 +3940,10 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 			}
 //
 // If a trowd appears without  a preceding \cell we close the previous table
-			if(false == m_bCellBlank)
+//
+			else if(!m_bCellBlank && !m_bNestTableProps)
 			{
+				UT_DEBUGMSG(("After trowd closing table coz no cell detected\n"));
 				CloseTable();
 			}
 			m_bNestTableProps = false;
@@ -5048,6 +5052,7 @@ bool IE_Imp_RTF::ResetTableAttributes(void)
 
 bool IE_Imp_RTF::ResetParagraphAttributes()
 {
+	UT_DEBUGMSG(("Reset Para Attributes \n"));
 	bool ok = FlushStoredChars();
 	m_currentRTFState.m_paraProps = RTFProps_ParaProps();
 
