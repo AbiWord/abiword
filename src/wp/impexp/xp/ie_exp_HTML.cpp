@@ -946,19 +946,15 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 			if (pszColor)
 			{
 				if (!span)
-				{
-					m_pie->write("<span style=\"color:#");	
-					char szColor[16];
-					_convertColor(szColor,(char*)pszColor);
-					m_pie->write(szColor);
-					span = true;
+				  {
+				    m_pie->write("<span style=\"color:#");
+				    m_pie->write(pszColor);
+				    span = true;
 				}
 				else 
 				{
 					m_pie->write("; color:#");	
-					char szColor[16];
-					_convertColor(szColor,(char*)pszColor);
-					m_pie->write(szColor);
+					m_pie->write(pszColor);
 				}
 			}
 			
@@ -998,7 +994,9 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 				if (!span)
 				{
 					m_pie->write("<span style=\"font-size: ");	
+					setlocale (LC_NUMERIC, "C");
 					sprintf(szSize, "%f", UT_convertToPoints(pszFontSize));
+					setlocale (LC_NUMERIC, "");
 					m_pie->write(szSize);
 					m_pie->write("pt");
 					span = true;
@@ -1006,7 +1004,9 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 				else 
 				{
 					m_pie->write("; font-size: ");	
+					setlocale (LC_NUMERIC, "C");
 					sprintf(szSize, "%f", UT_convertToPoints(pszFontSize));
+					setlocale (LC_NUMERIC, "");
 					m_pie->write(szSize);
 					m_pie->write("pt");
 				}
@@ -1017,17 +1017,12 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 				if (!span)
 				{
 					m_pie->write("<span style=\"background: #");	
-					char szColor[16];
-					_convertColor(szColor,(char*)pszBgColor);
-					m_pie->write(szColor);
+					m_pie->write(pszBgColor);
 					span = true;
 				}
 				else 
 				{
-					m_pie->write("; background: #");	
-					char szColor[16];
-					_convertColor(szColor,(char*)pszBgColor);
-					m_pie->write(szColor);
+					m_pie->write("; background: #");						m_pie->write(pszBgColor);
 				}
 			}
 		}
@@ -1440,11 +1435,9 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 		szValue = PP_evalProperty("background-color",
 								  NULL, NULL, pAP, m_pDocument, true);
 		m_pie->write("background-color: ");
-		char color[16];
-		_convertColor(color, szValue);
 		if (*szValue != '#')
 			m_pie->write("#");
-		m_pie->write(color);
+		m_pie->write(szValue);
 		m_pie->write(";\n}\n\n@print\n{\n\tbody\n\t{\n\t\t");
 		
 		szValue = PP_evalProperty("page-margin-top",
