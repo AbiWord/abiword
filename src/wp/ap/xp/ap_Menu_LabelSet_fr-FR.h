@@ -66,6 +66,7 @@ BeginSet(FrFR)
     MenuLabel(AP_MENU_ID_EDIT_FIND,         "Rec&hercher",      "Recherche le texte spécifié")
     MenuLabel(AP_MENU_ID_EDIT_REPLACE,      "R&emplacer",       "Recherche le teste spécifié et le remplace par un texte différent")
     MenuLabel(AP_MENU_ID_EDIT_GOTO,         "A&tteindre",       "Déplace le point d'insertion à l'endroit spécifié")
+	MenuLabel(AP_MENU_ID_EDIT_SPELL,		"&Spelling",		"Check the document for incorrect spelling")
     MenuLabel(AP_MENU_ID_EDIT_OPTIONS,      "Option&s",         "Configure les différentes options")
     
     MenuLabel(AP_MENU_ID_VIEW,              "&Affichage",       NULL)

@@ -34,32 +34,33 @@
 #include "xap_BeOSDlg_FileOpenSaveAs.h"
 #include "xap_BeOSDlg_Print.h"
 #include "xap_BeOSDlg_FontChooser.h"
+#include "xap_BeOSDlg_WindowMore.h"
 #include "xap_BeOSDlg_Zoom.h"
 #include "xap_BeOSDlg_About.h"
 
 #include "ap_BeOSDialog_Replace.h"
 #include "ap_BeOSDialog_Break.h"
 #include "ap_BeOSDialog_Paragraph.h"
+#include "ap_BeOSDialog_Spell.h"
 
 	// ... add new dialogs here ...
 
 #else
 
-	DeclareDialog(XAP_DIALOG_ID_MESSAGE_BOX, XAP_BeOSDialog_MessageBox)
-	DeclareDialog(XAP_DIALOG_ID_FILE_OPEN,	 XAP_BeOSDialog_FileOpenSaveAs)
-	DeclareDialog(XAP_DIALOG_ID_FILE_SAVEAS, XAP_BeOSDialog_FileOpenSaveAs)
-	DeclareDialog(XAP_DIALOG_ID_PRINT,       XAP_BeOSDialog_Print)
-	DeclareDialog(XAP_DIALOG_ID_PRINTTOFILE, XAP_BeOSDialog_FileOpenSaveAs)
-	DeclareDialog(XAP_DIALOG_ID_FONT,	 XAP_BeOSDialog_FontChooser)
+	DeclareDialog(XAP_DIALOG_ID_MESSAGE_BOX,	XAP_BeOSDialog_MessageBox)
+	DeclareDialog(XAP_DIALOG_ID_FILE_OPEN,		XAP_BeOSDialog_FileOpenSaveAs)
+	DeclareDialog(XAP_DIALOG_ID_FILE_SAVEAS,	XAP_BeOSDialog_FileOpenSaveAs)
+	DeclareDialog(XAP_DIALOG_ID_PRINT,			XAP_BeOSDialog_Print)
+	DeclareDialog(XAP_DIALOG_ID_PRINTTOFILE,	XAP_BeOSDialog_FileOpenSaveAs)
+	DeclareDialog(XAP_DIALOG_ID_FONT,			XAP_BeOSDialog_FontChooser)
+	DeclareDialog(XAP_DIALOG_ID_WINDOWMORE,		XAP_BeOSDialog_WindowMore) 
+	DeclareDialog(XAP_DIALOG_ID_ZOOM,			XAP_BeOSDialog_Zoom) 
+	DeclareDialog(XAP_DIALOG_ID_ABOUT,			XAP_BeOSDialog_About) 
 
-//	DeclareDialog(XAP_DIALOG_ID_WINDOWMORE,	 XAP_BeOSDialog_Zoom) 
-
-	DeclareDialog(XAP_DIALOG_ID_ZOOM,	 XAP_BeOSDialog_Zoom) 
-	DeclareDialog(XAP_DIALOG_ID_ABOUT,	 XAP_BeOSDialog_About) 
-
-	DeclareDialog(AP_DIALOG_ID_REPLACE,	AP_BeOSDialog_Replace)
-	DeclareDialog(AP_DIALOG_ID_FIND,	AP_BeOSDialog_Replace)
-	DeclareDialog(AP_DIALOG_ID_BREAK,	AP_BeOSDialog_Break)
+	DeclareDialog(AP_DIALOG_ID_REPLACE,		AP_BeOSDialog_Replace)
+	DeclareDialog(AP_DIALOG_ID_FIND,		AP_BeOSDialog_Replace)
+	DeclareDialog(AP_DIALOG_ID_BREAK,		AP_BeOSDialog_Break)
+	DeclareDialog(AP_DIALOG_ID_SPELL,		AP_BeOSDialog_Spell)
 	DeclareDialog(AP_DIALOG_ID_PARAGRAPH,	AP_BeOSDialog_Paragraph)
 	
 	// ... also add new dialogs here ...

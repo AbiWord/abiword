@@ -416,6 +416,10 @@ const char * EV_EditBindingMap::getShortcutFor(const EV_EditMethod * pEM) const
 			szNVK = "F4";
 			break;
 
+		case EV_NVK_F7:
+			szNVK = "F7";
+			break;
+
 		default:
 			szNVK = "unmapped NVK";
 			break;

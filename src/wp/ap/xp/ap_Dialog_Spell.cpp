@@ -89,7 +89,7 @@ void AP_Dialog_Spell::runModal(XAP_Frame * pFrame)
    m_pChangeAll = new UT_HashTable(7); // is 7 buckets adequate? too much?
    m_pIgnoreAll = new UT_HashTable(7);
 
-   UT_DEBUGMSG(("modal spell dialog: xp init complete"));
+   UT_DEBUGMSG(("modal spell dialog: xp init complete\n"));
 }
 
 UT_Bool AP_Dialog_Spell::nextMisspelledWord(void)
@@ -204,7 +204,7 @@ UT_Bool AP_Dialog_Spell::nextMisspelledWord(void)
 			   _updateSentenceBoundaries();
 			}
 
-			UT_DEBUGMSG(("misspelled word found"));
+			UT_DEBUGMSG(("misspelled word found\n"));
 		     
 			// return to caller
 			return UT_TRUE;
@@ -231,7 +231,7 @@ UT_Bool AP_Dialog_Spell::nextMisspelledWord(void)
 
 UT_Bool AP_Dialog_Spell::makeWordVisible(void)
 {
-   UT_DEBUGMSG(("making misspelled word visible in main window"));
+   UT_DEBUGMSG(("making misspelled word visible in main window\n"));
    
    if (!m_pView->isSelectionEmpty())
      m_pView->cmdUnselectSelection();
@@ -310,7 +310,7 @@ UT_Bool AP_Dialog_Spell::changeWordWith(UT_UCSChar * newword)
 {
    UT_Bool result = UT_TRUE;
 
-   UT_DEBUGMSG(("changing word"));
+   UT_DEBUGMSG(("changing word\n"));
    
    m_iWordLength = UT_UCS_strlen(newword);
    result = m_pView->cmdCharInsert(newword, m_iWordLength);

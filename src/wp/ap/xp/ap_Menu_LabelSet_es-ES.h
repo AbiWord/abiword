@@ -66,6 +66,7 @@ BeginSet(EsES)
 	MenuLabel(AP_MENU_ID_EDIT_FIND,			"&Buscar",			"Buscar el texto indicado")
 	MenuLabel(AP_MENU_ID_EDIT_REPLACE,		"R&eemplazar",		"Reemplazar el texto indicado con otro texto")
 	MenuLabel(AP_MENU_ID_EDIT_GOTO,			"&Ir a",			"Mover el punto de inserción a un lugar especifico")
+	MenuLabel(AP_MENU_ID_EDIT_SPELL,		"&Spelling",		"Check the document for incorrect spelling")
 	MenuLabel(AP_MENU_ID_EDIT_OPTIONS,		"&Opciones",		"Configurar las opciones")
 	
 	MenuLabel(AP_MENU_ID_VIEW,				"&Ver",				NULL)

@@ -67,6 +67,7 @@ BeginSet(ItIT)
 	MenuLabel(AP_MENU_ID_EDIT_FIND,			"&Trova",			"Cerca il testo specificato")
 	MenuLabel(AP_MENU_ID_EDIT_REPLACE,		"Sostit&uisci",		"Sostituisce il testo specificato con un altro")
 	MenuLabel(AP_MENU_ID_EDIT_GOTO,			"&Vai a",			"Sposta il cursore nel punto specificato")
+	MenuLabel(AP_MENU_ID_EDIT_SPELL,		"&Spelling",		"Check the document for incorrect spelling")
 	MenuLabel(AP_MENU_ID_EDIT_OPTIONS,		"&Opzioni",			"Setta le opzioni")
 	
 	MenuLabel(AP_MENU_ID_VIEW,				"&Visualizza",			NULL)

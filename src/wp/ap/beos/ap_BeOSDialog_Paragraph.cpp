@@ -47,12 +47,12 @@ AP_BeOSDialog_Paragraph::AP_BeOSDialog_Paragraph(XAP_DialogFactory * pDlgFactory
 												 XAP_Dialog_Id id)
 	: AP_Dialog_Paragraph(pDlgFactory,id)
 {
-	m_unixGraphics = NULL;
+	m_pBeOSGraphics = NULL;
 }
 
 AP_BeOSDialog_Paragraph::~AP_BeOSDialog_Paragraph(void)
 {
-	DELETEP(m_unixGraphics);
+	DELETEP(m_pBeOSGraphics);
 }
 
 /*****************************************************************/

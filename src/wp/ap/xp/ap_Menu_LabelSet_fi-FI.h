@@ -66,6 +66,7 @@ BeginSet(FiFI)
 	MenuLabel(AP_MENU_ID_EDIT_FIND,			"&Etsi",			"Etsi haluttu teksti")
 	MenuLabel(AP_MENU_ID_EDIT_REPLACE,		"K&orvaa",			"Korvaa haluttu teksti toisella tekstillä")
 	MenuLabel(AP_MENU_ID_EDIT_GOTO,			"&Mene",			"Siirrä osoitin haluttuun kohtaan")
+	MenuLabel(AP_MENU_ID_EDIT_SPELL,		"&Spelling",		"Check the document for incorrect spelling")
 	MenuLabel(AP_MENU_ID_EDIT_OPTIONS,		"&Asetukset",			"Muuta asetuksia")
 	
 	MenuLabel(AP_MENU_ID_VIEW,				"&Näytä",			NULL)

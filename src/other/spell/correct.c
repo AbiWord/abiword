@@ -50,6 +50,10 @@ static char Rcs_Id[] =
 
 /*
  * $Log$
+ * Revision 1.2  1999/10/05 16:17:28  paul
+ * Fixed build, and other tidyness.
+ * Spell dialog enabled by default, with keyboard binding of F7.
+ *
  * Revision 1.1  1999/09/29 23:33:32  justin
  * Updates to the underlying ispell-based code to support suggested corrections.
  *
@@ -782,8 +786,9 @@ static void save_root_cap (word, pattern, prestrip, preadd, sufstrip, sufadd,
 		{
 		/* Followcase is the tough one. */
 		p = strtosichar (dent->word, 1);
-		(void) bcopy ((char *) (p + prestrip),
+		(void) memmove (
 		  (char *) (newword + preadd),
+		  (char *) (p + prestrip),
 		  (len - prestrip - sufstrip) * sizeof (ichar_t));
 		if (myupper (p[prestrip]))
 		    {

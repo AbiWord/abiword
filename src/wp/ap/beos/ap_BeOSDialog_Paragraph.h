@@ -39,7 +39,7 @@ public:
 
 protected:
 
-	GR_BeOSGraphics *		m_BeOSGraphics;
+	GR_BeOSGraphics *		m_pBeOSGraphics;
 };
 
 #endif /* XAP_BEOSDIALOG_PARAGRAPH_H */

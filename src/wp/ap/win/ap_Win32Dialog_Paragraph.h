@@ -22,6 +22,7 @@
 
 #include "ap_Dialog_Paragraph.h"
 
+class GR_Win32Graphics;
 class XAP_Win32Frame;
 
 /*****************************************************************/
@@ -38,6 +39,7 @@ public:
 
 protected:
 
+	GR_Win32Graphics *		m_pWin32Graphics;
 };
 
 #endif /* XAP_WIN32DIALOG_PARAGRAPH_H */

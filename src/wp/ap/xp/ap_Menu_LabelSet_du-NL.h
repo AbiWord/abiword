@@ -67,6 +67,7 @@ BeginSet(DuNL)
 	MenuLabel(AP_MENU_ID_EDIT_FIND,			"&Zoeken",			"Zoek de opgegeven tekst")
 	MenuLabel(AP_MENU_ID_EDIT_REPLACE,		"&Vervang",			"Vervang geselecteerde tekst met de andere tekst")
 	MenuLabel(AP_MENU_ID_EDIT_GOTO,			"&Ga Naar",			"Verplaats invoegplaats naar aangewezen lokatie")
+	MenuLabel(AP_MENU_ID_EDIT_SPELL,		"&Spelling",		"Check the document for incorrect spelling")
 	MenuLabel(AP_MENU_ID_EDIT_OPTIONS,		"&Opties",			"Opties instellen")
 	
 	MenuLabel(AP_MENU_ID_VIEW,			"&Visueel",			NULL)

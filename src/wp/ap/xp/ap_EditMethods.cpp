@@ -2867,7 +2867,7 @@ static UT_Bool s_doSpellDlg(FV_View * pView, XAP_Dialog_Id id)
            
 Defun1(dlgSpell)
 {
-#if 0
+#if 1
    ABIWORD_VIEW;
    XAP_Dialog_Id id = AP_DIALOG_ID_SPELL;
 

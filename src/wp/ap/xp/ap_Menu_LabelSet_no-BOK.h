@@ -67,6 +67,7 @@ BeginSet(NoNO)
 	MenuLabel(AP_MENU_ID_EDIT_FIND,			"&Søk",				"Søk etter tekst")
 	MenuLabel(AP_MENU_ID_EDIT_REPLACE,		"&Erstatt",			"Erstatt med en annen tekst")
 	MenuLabel(AP_MENU_ID_EDIT_GOTO,			"Gå t&il",			"Flytt markøren til et spesifisert sted")
+	MenuLabel(AP_MENU_ID_EDIT_SPELL,		"&Spelling",		"Check the document for incorrect spelling")
 	MenuLabel(AP_MENU_ID_EDIT_OPTIONS,		"Egens&kaper",			"Sett egenskaper")
 	
 	MenuLabel(AP_MENU_ID_VIEW,				"&Vis",				NULL)

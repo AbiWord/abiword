@@ -66,6 +66,7 @@ BeginSet(DeDE)
 	MenuLabel(AP_MENU_ID_EDIT_FIND,			"&Suchen",			"Text im Dokument suchen")
 	MenuLabel(AP_MENU_ID_EDIT_REPLACE,		"&Ersetzen",		"Text im Dokument ersetzen")
 	MenuLabel(AP_MENU_ID_EDIT_GOTO,			"&Gehe zu",			"Einfügemarke im Dokument bewegen")
+	MenuLabel(AP_MENU_ID_EDIT_SPELL,		"&Spelling",		"Check the document for incorrect spelling")
 	MenuLabel(AP_MENU_ID_EDIT_OPTIONS,		"&Optionen",		"Einstellungen für das Programm ändern")
 	
 	MenuLabel(AP_MENU_ID_VIEW,				"&Ansicht",			NULL)

@@ -66,6 +66,7 @@ BeginSet(DaDK)
 	MenuLabel(AP_MENU_ID_EDIT_FIND,			"&Søg",				"Søg efter en specificeret tekst")
 	MenuLabel(AP_MENU_ID_EDIT_REPLACE,		"&Erstat",			"Erstat en specificeret tekst med en anden tekst")
 	MenuLabel(AP_MENU_ID_EDIT_GOTO,			"Gå t&il",			"Flyt kurseren til en specificeret lokalisation")
+	MenuLabel(AP_MENU_ID_EDIT_SPELL,		"&Spelling",		"Check the document for incorrect spelling")
 	MenuLabel(AP_MENU_ID_EDIT_OPTIONS,		"O&psætning",			"Sæt opsætningen")
 	
 	MenuLabel(AP_MENU_ID_VIEW,				"&Vis",				NULL)
