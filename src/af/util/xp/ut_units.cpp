@@ -58,6 +58,9 @@ const char * UT_dimensionName(UT_Dimension dim)
 	case DIM_PX:
 	   	return "px";
 	   
+	case DIM_PERCENT:
+		return "%";
+	   
 	case DIM_none:
 		return "";
 
@@ -96,6 +99,9 @@ UT_Dimension UT_determineDimension(const char * sz, UT_Dimension fallback)
 	   	if (UT_stricmp(p,"px") == 0)
 			return DIM_PX;
 
+	   	if (UT_stricmp(p,"%") == 0)
+			return DIM_PERCENT;
+	   
 		UT_ASSERT(UT_TODO);
 	}
 
@@ -170,6 +176,11 @@ const char * UT_convertToDimensionString(UT_Dimension dim, double value, const c
  	case DIM_none:
 		valueScaled = value;
 		sprintf(bufFormat,"%%%sf",((szPrecision && *szPrecision) ? szPrecision : ""));
+		break;
+
+	case DIM_PERCENT:
+		valueScaled = value;
+		sprintf(bufFormat,"%%%sf%%",((szPrecision && *szPrecision) ? szPrecision : ""));
 		break;
 
 	default:

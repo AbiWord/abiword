@@ -31,7 +31,7 @@ UT_BEGIN_EXTERN_C
 #define UT_LAYOUT_UNITS						1440
 
 
-typedef enum _ut_dimension { DIM_IN, DIM_CM, DIM_MM, DIM_PI, DIM_PT, DIM_PX, DIM_none } UT_Dimension;
+typedef enum _ut_dimension { DIM_IN, DIM_CM, DIM_MM, DIM_PI, DIM_PT, DIM_PX, DIM_PERCENT, DIM_none } UT_Dimension;
 
 double UT_convertToInches(const char* s);
 double UT_convertToPoints(const char* s);
