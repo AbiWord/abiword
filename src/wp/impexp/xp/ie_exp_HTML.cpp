@@ -295,7 +295,6 @@ static const char * s_prop_list[] = {
 	"font-variant",		"normal",
 	"font-weight",		"normal",
 	"height",			"auto",
-   	"lang",             0,
 	"margin-bottom",	"0pt",
 	"margin-left",		"0pt",
 	"margin-right",		"0pt",
@@ -2444,7 +2443,6 @@ void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 		const XML_Char * szP_TextPosition = 0;
 		const XML_Char * szP_Color = 0;
 		const XML_Char * szP_BgColor = 0;
-		const XML_Char * szP_Lang = 0;
 
 		pAP->getProperty ("font-weight",     szP_FontWeight);
 		pAP->getProperty ("font-style",      szP_FontStyle);
@@ -2454,7 +2452,6 @@ void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 		pAP->getProperty ("text-position",   szP_TextPosition);
 		pAP->getProperty ("color",           szP_Color);
 		pAP->getProperty ("bgcolor",         szP_BgColor);
-		pAP->getProperty ("lang",         szP_Lang);
 
 		if(first)
 			m_utf8_1 = "span style=\"";
@@ -2480,14 +2477,6 @@ void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 					m_utf8_1 += "font-style:italic";
 					first = false;
 				}
-		if (szP_Lang)
-			if (!compareStyle ("font-style", szP_Lang))
-			{
-				if (!first) m_utf8_1 += ";";
-				m_utf8_1 += "lang:";
-				m_utf8_1 += szP_Lang;
-				first = false;
-			}
 
 		if (szP_FontSize)
 		{
@@ -2627,10 +2616,28 @@ void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 		bInSpan = true;
 	}
 
+	const XML_Char * szP_Lang = 0;
+	pAP->getProperty ("lang",         szP_Lang);
+	
+	if (szP_Lang)
+		{
+			if (!get_HTML4 ()) {
+				// we want to emit xml:lang in addition to lang
+				m_utf8_1 += " xml:lang=\"";
+				m_utf8_1 += szP_Lang;
+				m_utf8_1 += "\"";
+			}
+
+			m_utf8_1 += " lang=\"";
+			m_utf8_1 += szP_Lang;
+			m_utf8_1 += "\"";
+			bInSpan = true;
+		}
+	
 	/* if the dir-override is set, or dir is 'rtl' or 'ltr', we will output
 	 * the dir property; however, this property cannot be within a style 
 	 * sheet, so anything that needs to be added to this code and belongs 
-	 * withing a style property must be above us; further it should be noted 
+	 * within a style property must be above us; further it should be noted 
 	 * that there is a good chance that the html browser will not handle it 
 	 * correctly. For instance IE will take dir=rtl as an indication that 
 	 * the span should have rtl placement on a line, but it will ignore this 
