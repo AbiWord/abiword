@@ -2633,7 +2633,10 @@ bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len
 	{
 		FriBidiCharType iPrevType, iType = FRIBIDI_TYPE_UNSET;
 		getSpanPtr((UT_uint32) curOffset, &pSpan, &lenSpan);
-
+		UT_ASSERT(pSpan);
+		if(!pSpan)
+			return false;
+		
 		iType = fribidi_get_type((FriBidiChar)pSpan[0]);
 
 		UT_uint32 trueLen = UT_MIN(lenSpan,len);
