@@ -58,6 +58,7 @@ if test $abi_spell != ispell; then
 		_abi_cppflags="$CPPFLAGS"
 		CPPFLAGS="$CPPFLAGS $abi_pspell_cflags"
 	fi
+	AC_LANG_CPLUSPLUS
 	AC_CHECK_HEADER(pspell/pspell.h,[
 		AC_CHECK_LIB(pspell,new_pspell_config,[
 			SPELL_LIBS="$abi_pspell_libs"
@@ -68,6 +69,7 @@ if test $abi_spell != ispell; then
 	],[	AC_MSG_WARN([* * * pspell not found in system location * * *])
 		abi_spell_default=yes
 	])
+	AC_LANG_C
 	if test $abi_spell = pspell; then
 		CPPFLAGS="$_abi_cppflags"
 	else
