@@ -58,6 +58,7 @@ public:
 	UT_Bool					addChangeRecord(PX_ChangeRecord * pcr);
 	UT_Bool					canDo(UT_Bool bUndo) const;
 	UT_Bool					getUndo(PX_ChangeRecord ** ppcr) const;
+	UT_Bool					getUndo(PX_ChangeRecord ** ppcr, UT_uint32 undoNdx) const;
 	UT_Bool					getRedo(PX_ChangeRecord ** ppcr) const;
 	UT_Bool					didUndo(void);
 	UT_Bool					didRedo(void);

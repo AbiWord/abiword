@@ -237,25 +237,37 @@ UT_Bool pt_PieceTable::_insertSpan(pf_Frag * pf,
 
 UT_Bool pt_PieceTable::_lastUndoIsThisFmtMark(PT_DocPosition dpos)
 {
-	PX_ChangeRecord * pcr;
-	UT_Bool bHaveUndo = m_history.getUndo(&pcr);
-
-	if (!bHaveUndo)
-		return UT_FALSE;
-	if (!pcr)
-		return UT_FALSE;
-	if (pcr->getPosition() != dpos)
-		return UT_FALSE;
+	// look backwards thru the undo from this point and see
+	// if we have <InsertFmtMark>[<ChangeFmtMark>*]
 	
-	switch (pcr->getType())
-	{
-	case PX_ChangeRecord::PXT_InsertFmtMark:
-	case PX_ChangeRecord::PXT_ChangeFmtMark:
-		return UT_TRUE;
+	PX_ChangeRecord * pcr;
+	UT_uint32 undoNdx = 0;
 
-	default:
-		return UT_FALSE;
+	while (1)
+	{
+		UT_Bool bHaveUndo = m_history.getUndo(&pcr,undoNdx);
+
+		if (!bHaveUndo)
+			return UT_FALSE;
+		if (!pcr)
+			return UT_FALSE;
+		if (pcr->getPosition() != dpos)
+			return UT_FALSE;
+		
+		switch (pcr->getType())
+		{
+		default:
+			return UT_FALSE;
+		case PX_ChangeRecord::PXT_InsertFmtMark:
+			return UT_TRUE;
+		case PX_ChangeRecord::PXT_ChangeFmtMark:
+			undoNdx++;
+			break;
+		}
 	}
+
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	return UT_FALSE;
 }
 
 UT_Bool pt_PieceTable::insertSpan(PT_DocPosition dpos,

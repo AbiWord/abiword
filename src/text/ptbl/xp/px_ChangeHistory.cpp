@@ -94,6 +94,17 @@ UT_Bool px_ChangeHistory::getUndo(PX_ChangeRecord ** ppcr) const
 	return UT_TRUE;
 }
 
+UT_Bool px_ChangeHistory::getUndo(PX_ChangeRecord ** ppcr, UT_uint32 undoNdx) const
+{
+	if (m_undoPosition <= undoNdx)
+		return UT_FALSE;
+
+	PX_ChangeRecord * pcr = (PX_ChangeRecord *)m_vecChangeRecords.getNthItem(m_undoPosition-undoNdx-1);
+	UT_ASSERT(pcr);
+	*ppcr = pcr;
+	return UT_TRUE;
+}
+
 UT_Bool px_ChangeHistory::getRedo(PX_ChangeRecord ** ppcr) const
 {
 	if (m_undoPosition >= m_vecChangeRecords.getItemCount())
