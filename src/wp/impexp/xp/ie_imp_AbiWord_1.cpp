@@ -28,17 +28,21 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_string.h"
-#include "ie_imp_AbiWord_1.h"
-#include "ie_types.h"
-#include "pd_Document.h"
-#include "pd_Style.h"
-#include "ut_bytebuf.h"
-#include "xap_EncodingManager.h"
+#include "ut_string_class.h"
 #include "ut_misc.h"
+#include "ut_bytebuf.h"
+#include "ut_hash.h"
 
+#include "xap_EncodingManager.h"
 #ifdef ENABLE_RESOURCE_MANAGER
 #include "xap_ResourceManager.h"
 #endif
+
+#include "pd_Document.h"
+#include "pd_Style.h"
+
+#include "ie_imp_AbiWord_1.h"
+#include "ie_types.h"
 
 /*****************************************************************/
 /*****************************************************************/
@@ -135,11 +139,19 @@ IE_Imp_AbiWord_1::~IE_Imp_AbiWord_1()
     X_CheckError(getDoc()->appendStrux(PTX_Section,NULL));
   if ( !m_bWroteParagraph )
     X_CheckError(getDoc()->appendStrux(PTX_Block,NULL));
+
+  if (m_refMap)
+	  {
+		  UT_HASH_PURGEDATA (UT_UTF8String *, m_refMap, delete);
+		  delete m_refMap;
+		  m_refMap = 0;
+	  }
 }
 
 IE_Imp_AbiWord_1::IE_Imp_AbiWord_1(PD_Document * pDocument)
   : IE_Imp_XML(pDocument, true), m_bWroteSection (false),
-    m_bWroteParagraph(false), m_bDocHasLists(false), m_bDocHasPageSize(false)
+    m_bWroteParagraph(false), m_bDocHasLists(false), m_bDocHasPageSize(false),
+    m_iInlineStart(0), m_refMap(new UT_StringPtrMap)
 {
 }
 
@@ -802,7 +814,7 @@ bool IE_Imp_AbiWord_1::_getDataItemEncoded(const XML_Char ** atts)
 bool IE_Imp_AbiWord_1::_handleImage (const XML_Char ** atts)
 {
 #ifdef ENABLE_RESOURCE_MANAGER
-	static const char * psz_id = "id";
+	static const char * psz_href = "href"; // could make this xlink:href, but is #ID valid in XLINK?
 
 	XAP_ResourceManager & RM = getDoc()->resourceManager ();
 
@@ -810,51 +822,93 @@ bool IE_Imp_AbiWord_1::_handleImage (const XML_Char ** atts)
 	 * new: <image href="#ID" props="height:HH; width:WW" />
 	 * 
 	 * going to assume the document is one or the other, not a mixture...
+	 * 
+	 * we need to re-map resource IDs so that we can allocate new IDs
+	 * sensibly later on
 	 */
-	bool bResource = false; // assume old-style
+	const char * old_id = 0;
+
+	bool is_data = false;
+	bool is_href = false;
 
 	UT_uint32 natts = 0;
-	const XML_Char ** attr = atts;
+	const char ** attr = atts;
 	while (*attr)
 		{
-			if (strcmp (*attr++, "href") == 0)
+			if ((strcmp (*attr, "href") == 0) || (strcmp (*attr, "xlink:href") == 0))
 				{
-					bResource = true;
-					RM.ref (*attr);
-					break;
+					attr++;
+					old_id = *attr;
+					is_href = true;
 				}
+			else if (strcmp (*attr, "dataid") == 0)
+				{
+					attr++;
+					old_id = *attr;
+					is_data = true;
+				}
+			else attr++;
 			attr++;
 			natts += 2;
 		}
-	if (bResource) return getDoc()->appendObject (PTO_Image, atts);
+	if (is_href & is_data) return false; // huh?
 
-	/* old-style - convert to new-style
-	 */
+	if ( old_id == 0) return false; // huh?
+	if (*old_id == 0) return false; // huh?
+
+	if (is_href && (*old_id != '#'))
+		{
+			/* this is a hyperlink, there's no need to do anything special here...
+			 */
+			RM.ref (old_id); // reference the object
+			return getDoc()->appendObject (PTO_Image, atts);
+		}
+
+	const UT_UTF8String * new_id = 0;
+	if ((new_id = reinterpret_cast<const UT_UTF8String *>(m_refMap->pick (old_id))) == 0)
+		{
+			/* first occurence of this href/dataid; add to map
+			 */
+			UT_UTF8String * r_id = new UT_UTF8String(RM.new_id());
+			if (r_id)
+				{
+					m_refMap->insert (old_id, r_id);
+					if ((new_id = reinterpret_cast<const UT_UTF8String *>(m_refMap->pick (old_id))) == 0)
+						{
+							delete r_id;
+						}
+				}
+		}
+	if (new_id == 0) return false; // hmm
+
 	const char ** new_atts = (const char **) malloc ((natts + 2) * sizeof (char *));
-	if (new_atts == 0) return false;
+	if (new_atts == 0) return false; // hmm
 
-	UT_UTF8String r_id = RM.new_id ();
+	RM.ref (new_id->utf8_str ()); // reference the object
 
 	const char ** new_attr = new_atts;
 	attr = atts;
 	while (*attr)
 		{
-			if (strcmp (*attr, "dataid") == 0)
+			if ((strcmp (*attr, "href") == 0) || (strcmp (*attr, "xlink:href") == 0) || (strcmp (*attr, "dataid") == 0))
 				{
-					*new_attr++ = psz_id; // id="#ID"
-					// TODO: map *attr -> r_id.utf8_str ()
-					*new_attr++ = r_id.utf8_str ();
+					*new_attr++ = psz_href; // href="#ID"
+					*new_attr++ = new_id->utf8_str ();
 				}
 			else
 				{
-					*new_attr++ = (const char *) *attr++;
-					*new_attr++ = (const char *) *attr++;
+					*new_attr++ = *attr++;
+					*new_attr++ = *attr++;
 				}
 		}
 	*new_attr++ = 0;
 	*new_attr++ = 0;
 
-	return getDoc()->appendObject (PTO_Image, new_atts);
+	bool success = getDoc()->appendObject (PTO_Image, new_atts);
+
+	free (new_atts);
+
+	return success;
 #else
 	return false;
 #endif

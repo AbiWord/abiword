@@ -1,5 +1,7 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998-2002 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -22,10 +24,19 @@
 #define IE_IMP_ABIWORD_1_H
 
 #include <stdio.h>
-#include "ut_vector.h"
-#include "ut_stack.h"
+
+/* pre-emptive dismissal; ut_types.h is needed by just about everything,
+ * so even if it's commented out in-file that's still a lot of work for
+ * the preprocessor to do...
+ */
+#ifndef UT_TYPES_H
+#include "ut_types.h"
+#endif
+
 #include "ie_imp_XML.h"
-#include "ut_bytebuf.h"
+
+class UT_StringPtrMap;
+
 class PD_Document;
 
 // The importer/reader for AbiWord file format version 1.
@@ -53,6 +64,7 @@ class ABI_EXPORT IE_Imp_AbiWord_1 : public IE_Imp_XML
 {
 public:
     IE_Imp_AbiWord_1(PD_Document * pDocument);
+
     virtual ~IE_Imp_AbiWord_1();
 
     void				startElement(const XML_Char *name, const XML_Char **atts);
@@ -63,22 +75,19 @@ public:
 protected:
     const XML_Char *	_getDataItemName(const XML_Char ** atts);
     const XML_Char *	_getDataItemMimeType(const XML_Char ** atts);
-    bool		_getDataItemEncoded(const XML_Char ** atts);
+    bool				_getDataItemEncoded(const XML_Char ** atts);
 
-    bool		_handleImage (const XML_Char ** atts);
+    bool				_handleImage(const XML_Char ** atts);
 
  private:
-    bool m_bWroteSection;
-    bool m_bWroteParagraph;
-    bool			m_bDocHasLists;
-    bool			m_bDocHasPageSize;
-    UT_uint32		m_iInlineStart;
+    bool				m_bWroteSection;
+    bool				m_bWroteParagraph;
+    bool				m_bDocHasLists;
+    bool				m_bDocHasPageSize;
 
+    UT_uint32			m_iInlineStart;
+
+	UT_StringPtrMap *	m_refMap;
 };
 
 #endif /* IE_IMP_ABIWORD_1_H */
-
-
-
-
-
