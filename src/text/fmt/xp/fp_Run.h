@@ -291,6 +291,19 @@ public:
 							 UT_sint32 width, UT_sint32 height);
 	
 	fg_FillType *       getFillType(void);            
+	UT_sint32           getTmpX(void) const
+	{ return m_iTmpX;}
+	void                setTmpX(UT_sint32 iX)
+	{ m_iTmpX = iX;}
+	UT_sint32           getTmpY(void) const
+	{ return m_iTmpY;}
+	void                setTmpY(UT_sint32 iY)
+	{ m_iTmpY = iY;}
+	UT_sint32           getTmpWidth(void) const
+	{ return m_iTmpWidth;}
+	void                setTmpWidth(UT_sint32 iWidth)
+	{ m_iTmpWidth = iWidth;}
+	bool                clearIfNeeded(void);
 
 #ifdef FMT_TEST
 	virtual void		__dump(FILE * fp) const;
@@ -419,6 +432,9 @@ private:
 	fg_FillType             m_FillType;
 	bool                    m_bPrinting;
 	GR_Graphics *           m_pG;
+	UT_sint32               m_iTmpX;
+	UT_sint32               m_iTmpY;
+	UT_sint32               m_iTmpWidth;
 };
 
 class ABI_EXPORT fp_TabRun : public fp_Run

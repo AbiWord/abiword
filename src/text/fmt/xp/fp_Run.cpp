@@ -127,7 +127,10 @@ fp_Run::fp_Run(fl_BlockLayout* pBL,
 	m_bIsCleared(true),
 	m_FillType(NULL,static_cast<fp_ContainerObject *>(this),FG_FILL_TRANSPARENT),
 	m_bPrinting(false),
-	m_pG(NULL)
+	m_pG(NULL),
+	m_iTmpX(0),
+	m_iTmpY(0),
+	m_iTmpWidth(0)
 {
 	xxx_UT_DEBUGMSG(("fp_Run %x created!!! \n",this));
 	m_FillType.setDocLayout(m_pBL->getDocLayout());
@@ -168,6 +171,29 @@ bool fp_Run::isInSelectedTOC(void)
 			
 }
 
+/*!
+ * This method looks at the values of TmpX and TmpWidth and compares them
+ * to the new ones. If they're different we do a clearscreen on them.
+ */
+bool fp_Run::clearIfNeeded(void)
+{
+	if((getTmpX() == getX()) && (getTmpWidth() == getWidth()) && (getTmpY() == getY()))
+	{
+		return true;
+	}
+	UT_sint32 iWidth = getWidth();
+	UT_sint32 iX = getX();
+	UT_sint32 iY = getY();
+	_setWidth(getTmpWidth());
+	_setX(getTmpX());
+	_setY(getTmpY());
+	clearScreen();
+	markWidthDirty();
+	_setX(iX);
+	_setWidth(iWidth);
+	_setY(iY);
+	return false;
+}
 void fp_Run::Fill(GR_Graphics * pG, UT_sint32 x, UT_sint32 y, UT_sint32 width,
 				  UT_sint32 height)
 {

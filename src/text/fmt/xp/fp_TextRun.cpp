@@ -2359,9 +2359,6 @@ void fp_TextRun::justify(UT_sint32 iAmount, UT_uint32 iSpacesInRun)
 
 	if(iSpacesInRun && getLength() > 0)
 	{
-		if(getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN)) {
-			_clearScreen();
-		}
 		m_pRenderInfo->m_iLength = getLength();
 	
 		_setWidth(getWidth() + iAmount);

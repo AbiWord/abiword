@@ -2106,9 +2106,22 @@ void fl_BlockLayout::format()
 		else
 			pRunToStartAt = m_pFirstRun;
 		
+		
 		//
 		// Reset justification before we recalc width of runs
 		//
+		fp_Run* pRun = m_pFirstRun;
+		//
+		// Save old X position and width
+		//
+		while(pRun)
+		{
+			pRun->setTmpX(pRun->getX());
+			pRun->setTmpY(pRun->getY());
+			pRun->setTmpWidth(pRun->getWidth());
+			pRun = pRun->getNextRun();
+		}
+
 		fp_Line* pLine = static_cast<fp_Line *>(getFirstContainer());
 		while(pLine && 	bJustifyStuff)
 		{
@@ -2117,8 +2130,8 @@ void fl_BlockLayout::format()
 		}
 
 		// Recalculate widths of Runs if necessary.
-		fp_Run* pRun = m_pFirstRun;
 		bool bDoit = false; // was false. Same kludge from
+		pRun = m_pFirstRun;
 		// sevior. Kludge very expensive,
 		// proper fix required. Tomas
 
@@ -2132,16 +2145,10 @@ void fl_BlockLayout::format()
 					setUpdatableField(true);
 				}
 			}
-
 			if(pRun == pRunToStartAt)
 				bDoit = true;
-
 			if(bJustifyStuff || (bDoit && (pRun->getType() != FPRUN_ENDOFPARAGRAPH)))
 			{
-				if(bJustifyStuff)
-				{
-					pRun->markWidthDirty();
-				}
 				pRun->recalcWidth();
 				xxx_UT_DEBUGMSG(("Run %x has width %d \n",pRun,pRun->getWidth()));
 			}
@@ -2195,6 +2202,15 @@ void fl_BlockLayout::format()
 		{
 			pLastLine->resetJustification(bJustifyStuff); // permanent reset
 		}
+	}
+	fp_Run * pRun = m_pFirstRun;
+	//
+	// Compare old positions and width. Clear those that don't match.
+	//
+	while(pRun)
+	{
+		pRun->clearIfNeeded();
+		pRun = pRun->getNextRun();
 	}
 
 	m_bIsCollapsed = false;
