@@ -585,7 +585,7 @@ void fl_BlockLayout::_lookupProperties(void)
 	fl_AutoNum * pAutoNum;
 	if(id != 0)
 	{
-//		UT_DEBUGMSG(("SEVIOR: id = %d parent_id= %d \n",id,parent_id));
+		xxx_UT_DEBUGMSG(("SEVIOR: id = %d parent_id= %d \n",id,parent_id));
 		//UT_DEBUGMSG(("SEVIOR: margin-left = %s \n", getProperty("margin-left")));
 	}
 	if ((m_pAutoNum) && (id) && (m_pAutoNum->getID() != id))
@@ -2244,7 +2244,7 @@ bool fl_BlockLayout::_checkMultiWord(const UT_UCSChar* pBlockText,
 	bool bFound;
 	bool bAllUpperCase, bHasNumeric;
 	
-	UT_DEBUGMSG(("fl_BlockLayout::_checkMultiWord\n"));
+	xxx_UT_DEBUGMSG(("fl_BlockLayout::_checkMultiWord\n"));
 
 	while (wordBeginning < eor)
 	{
@@ -2353,7 +2353,7 @@ bool fl_BlockLayout::checkWord(fl_PartOfBlock* pPOB)
 	bool bRes = getBlockBuf(&pgb);
 	UT_ASSERT(bRes);
 
-	UT_DEBUGMSG(("fl_BlockLayout::checkWord\n"));
+	xxx_UT_DEBUGMSG(("fl_BlockLayout::checkWord\n"));
 
 	const UT_UCSChar* pBlockText = pgb.getPointer(0);
 	if (!pBlockText)
@@ -3000,7 +3000,6 @@ bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs)
 		sqlist = new UT_uint32[len];
 	}
 	xxx_UT_DEBUGMSG(("fl_BlockLayout::doclistener_insertSpan(), len=%d, c=|%c|\n", len, pChars[0]));
-	UT_DEBUGMSG(("fl_BlockLayout::doclistener_insertSpan(), len=%d, c=|%c|\n", len, pChars[0]));
 	for (i=0; i<len; i++)
 	{
 		switch (pChars[i])
@@ -4529,7 +4528,7 @@ bool fl_BlockLayout::doclistener_insertFmtMark(const PX_ChangeRecord_FmtMark * p
 
 	PT_BlockOffset blockOffset = pcrfm->getBlockOffset();
 
-	UT_DEBUGMSG(("Edit:InsertFmtMark [blockOffset %ld]\n",blockOffset));
+	xxx_UT_DEBUGMSG(("Edit:InsertFmtMark [blockOffset %ld]\n",blockOffset));
 
 	fp_FmtMarkRun * pNewRun = new fp_FmtMarkRun(this,m_pLayout->getGraphics(),blockOffset);
 	UT_ASSERT(pNewRun);
@@ -4564,7 +4563,7 @@ bool fl_BlockLayout::doclistener_deleteFmtMark(const PX_ChangeRecord_FmtMark * p
 
 	PT_BlockOffset blockOffset = pcrfm->getBlockOffset();
 
-	UT_DEBUGMSG(("Edit:DeleteFmtMark: [blockOffset %ld]\n",blockOffset));
+	xxx_UT_DEBUGMSG(("Edit:DeleteFmtMark: [blockOffset %ld]\n",blockOffset));
 
 	// we can't use the regular _delete() since we are of length zero
 	_deleteFmtMark(blockOffset);
@@ -4657,7 +4656,7 @@ bool fl_BlockLayout::doclistener_changeFmtMark(const PX_ChangeRecord_FmtMarkChan
 
 	PT_BlockOffset blockOffset = pcrfmc->getBlockOffset();
 	
-	UT_DEBUGMSG(("Edit:ChangeFmtMark: [blockOffset %ld]\n",blockOffset));
+	xxx_UT_DEBUGMSG(("Edit:ChangeFmtMark: [blockOffset %ld]\n",blockOffset));
 
 	fp_Run* pRun = m_pFirstRun;
 	while (pRun)
@@ -5170,8 +5169,6 @@ void    fl_BlockLayout::StartList( List_Type lType, UT_uint32 start,const XML_Ch
 	pAutoNum = m_pDoc->getListByID(id);
 	if(pAutoNum != NULL)
 	{
-		//UT_DEBUGMSG(("SEVIOR: Starting a sub list \n"));
-		//		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		m_pAutoNum = pAutoNum;
 		m_bListItem = true;
 		listUpdate();
