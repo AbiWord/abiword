@@ -1135,7 +1135,7 @@ bool FV_View::cmdInsertRow(PT_DocPosition posRow, bool bBefore)
 //
 // We insert at this position
 //
-		posCell =  findCellPosAt(posTable,Top,0);
+		posCell =  findCellPosAt(posTable,prevTop,0);
 	}
 	else
 	{
@@ -1149,13 +1149,13 @@ bool FV_View::cmdInsertRow(PT_DocPosition posRow, bool bBefore)
 			UT_DEBUGMSG(("Sevior: Cell position left %d right %d top %d bot %d \n",Left,Right,Top,Bot));
 			if(Bot > prevBot)
 			{
-				prevTop = Bot;
+				prevBot = Bot;
 			}
 		}
 //
 // We insert at poscell position
 //
-		if(prevTop > numRows -1)
+		if(prevBot > numRows -1)
 		{
 //
 // After Last row so just before the end of table
@@ -1173,7 +1173,8 @@ bool FV_View::cmdInsertRow(PT_DocPosition posRow, bool bBefore)
 		}
 		else
 		{
-			posCell =  findCellPosAt(posTable,prevTop,0);
+			prevTop = prevBot;
+			posCell =  findCellPosAt(posTable,prevBot,0);
 		}
 		UT_DEBUGMSG(("SEVIOR: Inserting after row %d \n",prevTop));
 	}		
