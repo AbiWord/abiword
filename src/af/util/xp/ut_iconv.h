@@ -61,7 +61,7 @@ class ABI_EXPORT auto_iconv
 
 UT_BEGIN_EXTERN_C
 
-const char * ucs2Internal ();
+ABI_EXPORT const char * ucs2Internal ();
 #define UCS_2_INTERNAL ucs2Internal()
 
 ABI_EXPORT UT_iconv_t  UT_iconv_open( const char* to, const char* from );
