@@ -36,6 +36,8 @@ PP_AttrProp::PP_AttrProp()
 {
 	m_pAttributes = NULL;
 	m_pProperties = NULL;
+	m_bIsReadOnly = UT_FALSE;
+	m_checkSum = 0;
 }
 
 PP_AttrProp::~PP_AttrProp()
@@ -327,11 +329,27 @@ UT_Bool PP_AttrProp::areAnyOfTheseNamesPresent(const XML_Char ** attributes, con
 
 UT_Bool PP_AttrProp::isExactMatch(const PP_AttrProp * pMatch) const
 {
+#ifdef PT_TEST
+	static UT_uint32 s_Calls = 0;
+	static UT_uint32 s_PassedCheckSum = 0;
+	static UT_uint32 s_Matches = 0;
+#endif
+
 	// return TRUE iff we exactly match the AP given.
 
-	if (!pMatch)
+#ifdef PT_TEST
+	s_Calls++;
+#endif
+
+	UT_ASSERT(pMatch);
+	UT_ASSERT(m_bIsReadOnly && pMatch->m_bIsReadOnly);
+	if (m_checkSum != pMatch->m_checkSum)
 		return UT_FALSE;
-	
+
+#ifdef PT_TEST
+	s_PassedCheckSum++;
+#endif
+
 	UT_uint32 countMyAttrs = ((m_pAttributes) ? m_pAttributes->getEntryCount() : 0);
 	UT_uint32 countMatchAttrs = ((pMatch->m_pAttributes) ? pMatch->m_pAttributes->getEntryCount() : 0);
 	if (countMyAttrs != countMatchAttrs)
@@ -363,6 +381,10 @@ UT_Bool PP_AttrProp::isExactMatch(const PP_AttrProp * pMatch) const
 		if (UT_XML_stricmp(pMyEntry->pszRight,pMatchEntry->pszRight) != 0)
 			return UT_FALSE;
 	}
+
+#ifdef PT_TEST
+	s_Matches++;
+#endif
 
 	return UT_TRUE;
 }
@@ -497,5 +519,48 @@ PP_AttrProp * PP_AttrProp::cloneWithElimination(const XML_Char ** attributes,
 Failed:
 	if (papNew) delete papNew;
 	return NULL;
+}
+
+void PP_AttrProp::markReadOnly(void)
+{
+	UT_ASSERT(!m_bIsReadOnly);
+	m_bIsReadOnly = UT_TRUE;
+	_computeCheckSum();
+}
+
+void PP_AttrProp::_computeCheckSum(void)
+{
+	m_checkSum = 0;
+
+	// compute some easy-to-compute checksum for this AP. something
+	// that is guaranteed to return the same result for the same input.
+	// something that we can use like a hash for a quick check in
+	// isExactMatch() to quickly dismiss different APs.  it should be
+	// based strictly on the content of the name/value pairs and be
+	// pointer- and order-independent.
+
+	UT_uint32 k;
+	UT_uint32 countMyAttrs = ((m_pAttributes) ? m_pAttributes->getEntryCount() : 0);
+	for (k=0; (k < countMyAttrs); k++)
+	{
+		UT_HashTable::UT_HashEntry * pMyEntry = m_pAttributes->getNthEntryAlpha(k);
+		m_checkSum += UT_XML_strlen(pMyEntry->pszLeft);
+		m_checkSum += UT_XML_strlen(pMyEntry->pszRight);
+	}
+	UT_uint32 countMyProps = ((m_pProperties) ? m_pProperties->getEntryCount() : 0);
+	for (k=0; (k < countMyProps); k++)
+	{
+		UT_HashTable::UT_HashEntry * pMyEntry = m_pProperties->getNthEntryAlpha(k);
+		m_checkSum += UT_XML_strlen(pMyEntry->pszLeft);
+		m_checkSum += UT_XML_strlen(pMyEntry->pszRight);
+	}
+
+	return;
+}
+
+UT_uint32 PP_AttrProp::getCheckSum(void) const
+{
+	UT_ASSERT(m_bIsReadOnly);
+	return m_checkSum;
 }
 

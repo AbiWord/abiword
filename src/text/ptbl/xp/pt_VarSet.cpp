@@ -47,6 +47,9 @@ UT_Bool pt_VarSet::_finishConstruction(void)
 	if (   !m_tableAttrProp[0].createAP(&foo)
 		|| !m_tableAttrProp[1].createAP(&foo))
 		return UT_FALSE;
+	((PP_AttrProp *)getAP(_makeAPIndex(0,0)))->markReadOnly();
+	((PP_AttrProp *)getAP(_makeAPIndex(1,0)))->markReadOnly();
+	
 	m_bInitialized = UT_TRUE;
 	return UT_TRUE;
 }
@@ -79,15 +82,12 @@ UT_Bool pt_VarSet::storeAP(const XML_Char ** attributes, PT_AttrPropIndex * papi
 	// create an AP for this set of attributes -- iff unique.
 	// return the index for the new one (or the one we found).
 
-	UT_uint32 subscript = 0;
-	UT_uint32 table = 0;
-
 	if (!attributes || !*attributes)
 	{
 		// we preloaded the zeroth cell (of both tables)
 		// with empty attributes.  return index back to
 		// the first table.
-		*papi = _makeAPIndex(table,subscript);
+		*papi = _makeAPIndex(0,0);
 		return UT_TRUE;
 	}
 
@@ -100,31 +100,15 @@ UT_Bool pt_VarSet::storeAP(const XML_Char ** attributes, PT_AttrPropIndex * papi
 
 	PP_AttrProp * pTemp = new PP_AttrProp();
 	if (!pTemp)
-		goto Failed;
-	if (!pTemp->setAttributes(attributes))
-		goto Failed;
-	
-	for (table=0; table<2; table++)
-		if (m_tableAttrProp[table].findMatch(pTemp,&subscript))
-		{
-			*papi = _makeAPIndex(table,subscript);
-			goto FoundIt;
-		}
+		return UT_FALSE;
 
-	// we did not find a match, so we create a new one.
+	if (pTemp->setAttributes(attributes))
+	{
+		pTemp->markReadOnly();
+		return addIfUniqueAP(pTemp,papi);
+	}
 	
-	if (!m_tableAttrProp[m_currentVarSet].addAP(pTemp,&subscript))
-		goto Failed;
-
-	*papi = _makeAPIndex(m_currentVarSet,subscript);
-	return UT_TRUE;
-
-FoundIt:
-	if (pTemp) delete pTemp;
-	return UT_TRUE;
-	
-Failed:
-	if (pTemp) delete pTemp;
+	delete pTemp;
 	return UT_FALSE;
 }
 
@@ -137,15 +121,12 @@ UT_Bool pt_VarSet::storeAP(const UT_Vector * pVecAttributes, PT_AttrPropIndex * 
 	// create an AP for this set of attributes -- iff unique.
 	// return the index for the new one (or the one we found).
 	
-	UT_uint32 subscript = 0;
-	UT_uint32 table = 0;
-
 	if (!pVecAttributes || pVecAttributes->getItemCount()==0)
 	{
 		// we preloaded the zeroth cell (of both tables)
 		// with empty attributes.  return index back to
 		// the first table.
-		*papi = _makeAPIndex(table,subscript);
+		*papi = _makeAPIndex(0,0);
 		return UT_TRUE;
 	}
 
@@ -158,31 +139,15 @@ UT_Bool pt_VarSet::storeAP(const UT_Vector * pVecAttributes, PT_AttrPropIndex * 
 
 	PP_AttrProp * pTemp = new PP_AttrProp();
 	if (!pTemp)
-		goto Failed;
-	if (!pTemp->setAttributes(pVecAttributes))
-		goto Failed;
+		return UT_FALSE;
 	
-	for (table=0; table<2; table++)
-		if (m_tableAttrProp[table].findMatch(pTemp,&subscript))
-		{
-			*papi = _makeAPIndex(table,subscript);
-			goto FoundIt;
-		}
+	if (pTemp->setAttributes(pVecAttributes))
+	{
+		pTemp->markReadOnly();
+		return addIfUniqueAP(pTemp,papi);
+	}
 
-	// we did not find a match, so we create a new one.
-	
-	if (!m_tableAttrProp[m_currentVarSet].addAP(pTemp,&subscript))
-		goto Failed;
-
-	*papi = _makeAPIndex(m_currentVarSet,subscript);
-	return UT_TRUE;
-
-FoundIt:
-	if (pTemp) delete pTemp;
-	return UT_TRUE;
-	
-Failed:
-	if (pTemp) delete pTemp;
+	delete pTemp;
 	return UT_FALSE;
 }
 
@@ -266,29 +231,8 @@ UT_Bool pt_VarSet::mergeAP(PTChangeFmt ptc, PT_AttrPropIndex apiOld,
 			if (!pNew)
 				return UT_FALSE;
 
-			UT_uint32 subscript = 0;
-			for (UT_uint32 table=0; table<2; table++)
-				if (m_tableAttrProp[table].findMatch(pNew,&subscript))
-				{
-					// found match in existing AP, delete ours and return the match.
-					
-					delete pNew;
-					*papiNew = _makeAPIndex(table,subscript);
-					return UT_TRUE;
-				}
-
-			// otherwise, add ours to the table, and return it.
-			
-			if (m_tableAttrProp[m_currentVarSet].addAP(pNew,&subscript))
-			{
-				*papiNew = _makeAPIndex(m_currentVarSet,subscript);
-				return UT_TRUE;
-			}
-
-			// memory problem, give up.
-
-			delete pNew;
-			return UT_FALSE;
+			pNew->markReadOnly();
+			return addIfUniqueAP(pNew,papiNew);
 		}
 
 	case PTC_RemoveFmt:
@@ -308,30 +252,9 @@ UT_Bool pt_VarSet::mergeAP(PTChangeFmt ptc, PT_AttrPropIndex apiOld,
 			PP_AttrProp * pNew = papOld->cloneWithElimination(attributes,properties);
 			if (!pNew)
 				return UT_FALSE;
-			
-			UT_uint32 subscript = 0;
-			for (UT_uint32 table=0; table<2; table++)
-				if (m_tableAttrProp[table].findMatch(pNew,&subscript))
-				{
-					// found match in existing AP, delete ours and return the match.
-					
-					delete pNew;
-					*papiNew = _makeAPIndex(table,subscript);
-					return UT_TRUE;
-				}
 
-			// otherwise, add ours to the table, and return it.
-			
-			if (m_tableAttrProp[m_currentVarSet].addAP(pNew,&subscript))
-			{
-				*papiNew = _makeAPIndex(m_currentVarSet,subscript);
-				return UT_TRUE;
-			}
-
-			// memory problem, give up.
-
-			delete pNew;
-			return UT_FALSE;
+			pNew->markReadOnly();
+			return addIfUniqueAP(pNew,papiNew);
 		}
 		
 	default:
@@ -340,3 +263,37 @@ UT_Bool pt_VarSet::mergeAP(PTChangeFmt ptc, PT_AttrPropIndex apiOld,
 	}
 }
 
+UT_Bool pt_VarSet::addIfUniqueAP(PP_AttrProp * pAP, PT_AttrPropIndex * papi)
+{
+	// Add the AP to our tables iff it is unique.
+	// If not unique, delete it and return the index
+	// of the one that matches.  If it is unique, add
+	// it and return the index where we added it.
+	// return false if we have any errors.
+
+	UT_ASSERT(pAP && papi);
+	UT_uint32 subscript = 0;
+	UT_uint32 table = 0;
+	
+	for (table=0; table<2; table++)
+		if (m_tableAttrProp[table].findMatch(pAP,&subscript))
+		{
+			// use the one that we already have in the table.
+			delete pAP;
+			*papi = _makeAPIndex(table,subscript);
+			return UT_TRUE;
+		}
+
+	// we did not find a match, so we store our new one.
+	
+	if (m_tableAttrProp[m_currentVarSet].addAP(pAP,&subscript))
+	{
+		*papi = _makeAPIndex(m_currentVarSet,subscript);
+		return UT_TRUE;
+	}
+	
+	// memory error of some kind.
+	
+	delete pAP;
+	return UT_FALSE;
+}

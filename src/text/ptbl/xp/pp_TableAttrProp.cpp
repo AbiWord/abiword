@@ -67,6 +67,8 @@ UT_Bool pp_TableAttrProp::createAP(const XML_Char ** attributes,
 	if (!pAP->setAttributes(attributes) || !pAP->setProperties(properties))
 		return UT_FALSE;
 
+	pAP->markReadOnly();
+	
 	*pSubscript = subscript;
 	return UT_TRUE;
 }
@@ -82,6 +84,8 @@ UT_Bool pp_TableAttrProp::createAP(const UT_Vector * pVector,
 	UT_ASSERT(pAP);
 	if (!pAP->setAttributes(pVector))
 		return UT_FALSE;
+	
+	pAP->markReadOnly();
 	
 	*pSubscript = subscript;
 	return UT_TRUE;

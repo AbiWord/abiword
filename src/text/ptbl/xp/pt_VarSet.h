@@ -44,6 +44,7 @@ public:
 	UT_Bool					mergeAP(PTChangeFmt ptc,PT_AttrPropIndex apiOld,
 									const XML_Char ** attributes, const XML_Char ** properties,
 									PT_AttrPropIndex * papiNew);
+	UT_Bool					addIfUniqueAP(PP_AttrProp * pAP, PT_AttrPropIndex * papi);
 	
 private:
 	inline UT_uint32		_subscriptFromBufIndex(PT_BufIndex bi) const;

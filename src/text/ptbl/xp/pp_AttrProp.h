@@ -68,10 +68,16 @@ public:
 										const XML_Char ** properties) const;
 	PP_AttrProp * cloneWithElimination(const XML_Char ** attributes,
 									   const XML_Char ** properties) const;
-
+	void markReadOnly(void);
+	UT_uint32 getCheckSum(void) const;
+	
 protected:
+	void _computeCheckSum(void);
+	
 	UT_AlphaHashTable * m_pAttributes;
 	UT_AlphaHashTable * m_pProperties;
+	UT_Bool				m_bIsReadOnly;
+	UT_uint32			m_checkSum;
 };
 
 #endif /* PP_ATTRPROP_H */
