@@ -736,7 +736,7 @@ void s_AbiWord_1_Listener::_handleStyles(void)
 
 	for (UT_uint32 k=0; (m_pDocument->enumStyles(k,&szName,&pStyle)); k++)
 	{
-		if (!pStyle->isUsed())
+		if (!pStyle->isUsed() || !pStyle->isUserDefined())
 			continue;
 
 		if (!bWroteOpenStyleSection)
