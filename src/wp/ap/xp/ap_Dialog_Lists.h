@@ -88,6 +88,7 @@ public:
 	XML_Char *					getListStyleString( UT_uint32 iListType);
 	UT_uint32					decodeListType(char * listformat);
 	UT_sint32					findVecItem(UT_Vector * v, char * key);
+	UT_sint32					findVecItem(UT_Vector * v, const char * key);
 	void						fillUncustomizedValues(void);
 	UT_uint32					getID(void);
 	UT_uint32					getStoredID(void) { return m_iID;}
