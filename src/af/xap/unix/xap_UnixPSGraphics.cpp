@@ -579,12 +579,29 @@ void PS_Graphics::polyLine(UT_Point * /* pts */, UT_uint32 /* nPoints */)
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 }
 
-void PS_Graphics::fillRect(UT_RGBColor& /*c*/, UT_sint32 /*x*/, UT_sint32 /*y*/, UT_sint32 /*w*/, UT_sint32 /*h*/)
+void PS_Graphics::fillRect(UT_RGBColor& c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
 {
+  UT_RGBColor cl = m_currentColor;
+  setColor(c);
+
+  char buf[256];
+  buf[0] = 0;
+
+  sprintf(buf, "%d %d MT\n%d %d LT\n%d %d LT\n%d %d LT\n%d %d LT\nCP\nF\n",
+	  x,y,
+	  x+w, y,
+	  x+w, y+h,
+	  x, y+h,
+	  x, y
+	  );
+  m_ps->writeBytes(buf);
+
+  setColor(cl);
 }
 
-void PS_Graphics::fillRect(UT_RGBColor& /*c*/, UT_Rect & /*r*/)
+void PS_Graphics::fillRect(UT_RGBColor& c, UT_Rect & r)
 {
+  fillRect(c, r.left, r.top, r.width, r.height);
 }
 
 void PS_Graphics::invertRect(const UT_Rect* /*pRect*/)
@@ -917,7 +934,11 @@ void PS_Graphics::_emit_PrologMacros(void)
 		"       /Encoding ISOLatin1Encoding def",
 		"       currentdict",
 		"       end} bind def",
-		"/EXC {exch definefont pop} bind def"				// Exchange font entry
+		"/EXC {exch definefont pop} bind def",				// Exchange font entry
+		"/CP {closepath} bind def",
+		"/F {fill} bind def",
+		"/LT {neg lineto} bind def",
+		"/MT {neg moveto} bind def"
 	};
 
 	char buf[1024];
