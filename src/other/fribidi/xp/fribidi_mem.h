@@ -48,8 +48,8 @@ extern "C"
   typedef signed long int32;
   typedef unsigned long uint32;
 	
-#define TRUE 1
-#define FALSE 0
+#define FRIBIDI_TRUE 1
+#define FRIBIDI_FALSE 0
 
   typedef struct _FriBidiList FriBidiList;
   struct _FriBidiList
