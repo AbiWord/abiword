@@ -47,8 +47,10 @@ public:
 	static LRESULT CALLBACK	_StatusBarWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
 	
 protected:
+	virtual void			show();
+	virtual void			hide();
+
 	HWND					m_hwndStatusBar;
-	HWND					m_hwndSizeGrip;
 };
 
 #endif /* AP_WIN32STATUSBAR_H */

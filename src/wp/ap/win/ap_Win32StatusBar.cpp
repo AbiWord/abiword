@@ -112,15 +112,6 @@ HWND AP_Win32StatusBar::createWindow(HWND hwndFrame,
 	setHeight(rSize.bottom);
 	setWidth(rSize.right);
 
-	int cxVScroll = GetSystemMetrics(SM_CXVSCROLL);
-	int cyHScroll = GetSystemMetrics(SM_CYHSCROLL);
-	m_hwndSizeGrip = CreateWindowEx(0,"ScrollBar",NULL,
-									WS_CHILD | WS_VISIBLE | SBS_SIZEGRIP,
-									rSize.right-cxVScroll, rSize.bottom-cyHScroll, cxVScroll, cyHScroll,
-									m_hwndStatusBar, NULL, app->getInstance(), NULL);
-	UT_ASSERT(m_hwndSizeGrip);
-	SWL(m_hwndSizeGrip, this);
-
 	return m_hwndStatusBar;
 }
 	
@@ -137,22 +128,53 @@ LRESULT CALLBACK AP_Win32StatusBar::_StatusBarWndProc(HWND hwnd, UINT iMsg, WPAR
 	{
 	case WM_SIZE:
 		{
-			int nWidth = LOWORD(lParam);
-			int nHeight = HIWORD(lParam);
+			const int nWidth  = LOWORD(lParam);
+			const int nHeight = HIWORD(lParam);
+			const int nPrevWidth = pStatusBar->getWidth();
 			pStatusBar->setHeight(nHeight);
 			pStatusBar->setWidth(nWidth);
-			int cxVScroll = GetSystemMetrics(SM_CXVSCROLL);
-			int cyHScroll = GetSystemMetrics(SM_CYHSCROLL);
-			MoveWindow(pStatusBar->m_hwndSizeGrip, nWidth-cxVScroll, nHeight-cyHScroll, cxVScroll, cyHScroll, TRUE);
+
+			const int nDX = nWidth - nPrevWidth;
+			const int cxVScroll = GetSystemMetrics(SM_CXVSCROLL);
+			const int cyHScroll = GetSystemMetrics(SM_CYHSCROLL);
+
+			// unconditionally repaint its current position
+			RECT rcGrip = { nWidth - cxVScroll, nHeight - cyHScroll, nWidth, nHeight };
+			::InvalidateRect(pStatusBar->m_hwndStatusBar, &rcGrip, FALSE);
+
+			if (nDX > 0)
+			{
+				// must erase previous "grip handle" position
+				RECT rc;
+				if (nDX < cxVScroll)
+				{	// Less than a "grip width" revealed.
+					const int nMaxX = nWidth - cxVScroll;
+					const RECT rcTmp = { nMaxX - nDX, 0, nMaxX, nHeight };
+					rc = rcTmp;
+				}
+				else
+				{	// More than a "grip width" revealed.
+					rc = rcGrip;
+					::OffsetRect(&rc, -nDX, 0);
+				}
+				::InvalidateRect(pStatusBar->m_hwndStatusBar, &rc, TRUE);
+			}
 
 			return 0;
 		}
-	
+
 	case WM_PAINT:
 		{
+			const int x2 = pStatusBar->getWidth();
+			const int y2 = pStatusBar->getHeight();
+			const int x1 = x2 - GetSystemMetrics(SM_CXVSCROLL);
+			const int y1 = y2 - GetSystemMetrics(SM_CYHSCROLL);
+			RECT rcGrip   = { x1, y1, x2, y2 };
+
 			PAINTSTRUCT ps;
 			HDC hdc = BeginPaint(hwnd, &ps);
 			pStatusBar->draw();
+			DrawFrameControl(hdc, &rcGrip, DFC_SCROLL, DFCS_SCROLLSIZEGRIP);
 			EndPaint(hwnd,&ps);
 			return 0;
 		}
@@ -163,10 +185,37 @@ LRESULT CALLBACK AP_Win32StatusBar::_StatusBarWndProc(HWND hwnd, UINT iMsg, WPAR
 			pG->init3dColors();
 			return 0;
 		}
-		
+
+	case WM_NCHITTEST:
+		{
+			POINT ptMouse = { LOWORD(lParam), HIWORD(lParam) };
+			::ScreenToClient(pStatusBar->m_hwndStatusBar, &ptMouse);
+			const int cxVScroll = GetSystemMetrics(SM_CXVSCROLL);
+			const int cyHScroll = GetSystemMetrics(SM_CYHSCROLL);
+			const int nWidth    = pStatusBar->getWidth();
+			const int nHeight   = pStatusBar->getHeight();
+			const RECT rcGrip   = { nWidth - cxVScroll, nHeight - cyHScroll, nWidth, nHeight };
+			if (::PtInRect(&rcGrip, ptMouse))
+			{
+				return HTBOTTOMRIGHT;
+			}
+		}
+		break;
+
 	default:
 		break;
 	}
 
 	return DefWindowProc(hwnd, iMsg, wParam, lParam);
 }
+
+void AP_Win32StatusBar::show()
+{
+	::ShowWindow(m_hwndStatusBar, SW_SHOW);
+}
+
+void AP_Win32StatusBar::hide()
+{
+	::ShowWindow(m_hwndStatusBar, SW_HIDE);
+}
+
