@@ -439,79 +439,7 @@ void    AP_CocoaDialog_Options::_setViewRulerUnits(UT_Dimension dim)
 	[popup selectItemAtIndex:idx];
 }
 
-void AP_CocoaDialog_Options::_setDefaultPageSize(fp_PageSize::Predefined pre)
-{
-	NSPopUpButton * popup = [m_dlg _lookupWidget:AP_Dialog_Options::id_LIST_DEFAULT_PAGE_SIZE];
-	NSMenu* menu = [popup menu];
-	int idx = [menu indexOfItemWithTag:static_cast<int>(pre)];
-	[popup selectItemAtIndex:idx];
-}
 
-fp_PageSize::Predefined AP_CocoaDialog_Options::_gatherDefaultPageSize(void)
-{
-	NSPopUpButton * popup = [m_dlg _lookupWidget:AP_Dialog_Options::id_LIST_DEFAULT_PAGE_SIZE];
-	return static_cast<fp_PageSize::Predefined>([[popup selectedItem] tag]);
-}
-
-#if 0
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-// This function will lookup a option box by the value stored in the
-//	user data under the key WIDGET_MENU_VALUE_TAG
-//
-typedef struct {
-	int index;
-	int found;
-	gchar *key;
-	gpointer data;
-} search_data;
-
-static void search_for_value ( GtkWidget *widget, gpointer _value )
-{
-	search_data *value = (search_data *)_value;
-
-	if ( !GTK_IS_MENU_ITEM(widget))
-		return;
-
-	value->index++;
-
-	gint v = (gint) g_object_get_data( G_OBJECT(widget), value->key );
-	if ( v == (gint)value->data )
-	{
-		// UT_DEBUGMSG(("search_for_value [%d]", (gint) value->data ));
-		value->found = value->index;
-	}
-}
-
-// returns -1 if not found
-int option_menu_set_by_key ( GtkWidget *option_menu, gpointer value, gchar *key )
-{
-	UT_ASSERT( option_menu && key && GTK_IS_OPTION_MENU(option_menu));
-
-	// at least make sure the value will be restored by the _gather
-	g_object_set_data( G_OBJECT(option_menu), key, value);
-
-	// lookup for the key with the value of dim
-	search_data data = { -1, -1, key, value };
-
-	GtkWidget *menu = gtk_option_menu_get_menu( GTK_OPTION_MENU(option_menu));
-	UT_ASSERT(menu&&GTK_IS_MENU(menu));
-
-	// iterate through all the values
-	gtk_container_forall ( GTK_CONTAINER(menu), search_for_value, (gpointer) &data );
-
-	// if we found a value that matches, then say select it
-	if ( data.found >= 0 )
-	{
-		gtk_option_menu_set_history( GTK_OPTION_MENU(option_menu), data.found );
-		//UT_DEBUGMSG(("search found %d\n", data.found ));
-	}
-	else
-		UT_DEBUGMSG(("%s:%f search NOT found (searched %d indexes)\n", __FILE__, __LINE__, data.index ));
-
-	return data.found;
-}
-#endif
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -720,20 +648,6 @@ void AP_CocoaDialog_Options::_storeWindowData(void)
 	[menu addItem:item];
 	[item release];
 
-	// page size menu
-	[m_layoutDefaultPageSizePopup removeAllItems];		
-	menu = [m_layoutDefaultPageSizePopup menu];
-	for (int i = static_cast<int>(fp_PageSize::_first_predefined_pagesize_);
-			i < static_cast<int>(fp_PageSize::_last_predefined_pagesize_dont_use_); i++) {
-		item = [[NSMenuItem alloc] initWithTitle:[NSString stringWithUTF8String:
-						fp_PageSize::PredefinedToName(static_cast<fp_PageSize::Predefined>(i))
-				]
-				action:nil keyEquivalent:@""];
-		[item setTag:i];
-		[menu addItem:item];
-		[item release];
-	}
-	LocalizeControl(m_layoutDefaultPageSizeLabel, pSS, AP_STRING_ID_DLG_Options_Label_DefaultPageSize);
 	LocalizeControl(m_layoutUnitsLabel, pSS, AP_STRING_ID_DLG_Options_Label_ViewUnits);
 	LocalizeControl(m_layoutEnableSmartQuotesBtn, pSS, AP_STRING_ID_DLG_Options_Label_SmartQuotesEnable);
 	LocalizeControl(m_layoutAllowScreenColorsBtn, pSS, AP_STRING_ID_DLG_Options_Label_CheckWhiteForTransparent);
@@ -805,9 +719,6 @@ void AP_CocoaDialog_Options::_storeWindowData(void)
 	// other
 	case AP_Dialog_Options::id_CHECK_SMART_QUOTES_ENABLE:
 		return m_layoutEnableSmartQuotesBtn;
-
-	case AP_Dialog_Options::id_LIST_DEFAULT_PAGE_SIZE:
-		return m_layoutDefaultPageSizePopup;
 
 	case AP_Dialog_Options::id_SHOWSPLASH:
 		return m_prefsShowSplashBtn;

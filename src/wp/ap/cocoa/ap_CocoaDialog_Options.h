@@ -42,8 +42,6 @@ class AP_CocoaDialog_Options;
     IBOutlet NSButton *m_layoutChooseScreenBtn;
     IBOutlet NSButton *m_layoutCursorBlinkBtn;
     IBOutlet NSButton *m_layoutCustomToolbarBtn;
-    IBOutlet NSTextField *m_layoutDefaultPageSizeLabel;
-    IBOutlet NSPopUpButton *m_layoutDefaultPageSizePopup;
     IBOutlet NSButton *m_layoutEnableSmartQuotesBtn;
     IBOutlet NSButton *m_layoutHiddenTextBtn;
     IBOutlet NSButton *m_layoutInvisbleMarksBtn;
@@ -158,7 +156,6 @@ public:
  	SET_GATHER			(ShowSplash,	bool);
 
 	SET_GATHER			(SmartQuotesEnable,	bool );
-	SET_GATHER			(DefaultPageSize,  fp_PageSize::Predefined);
 
  	SET_GATHER			(PrefsAutoSave,		bool );
 

@@ -22,8 +22,6 @@
                 "m_layoutChooseScreenBtn" = NSButton; 
                 "m_layoutCursorBlinkBtn" = NSButton; 
                 "m_layoutCustomToolbarBtn" = NSButton; 
-                "m_layoutDefaultPageSizeLabel" = NSTextField; 
-                "m_layoutDefaultPageSizePopup" = NSPopUpButton; 
                 "m_layoutEnableSmartQuotesBtn" = NSButton; 
                 "m_layoutHiddenTextBtn" = NSButton; 
                 "m_layoutInvisbleMarksBtn" = NSButton; 
