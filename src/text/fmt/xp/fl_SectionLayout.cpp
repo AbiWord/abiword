@@ -1762,7 +1762,7 @@ fp_Container* fl_HdrFtrSectionLayout::getNewContainer(void)
 	DELETEP(m_pVirContainer);
 	UT_sint32 iWidth = m_pDocSL->getFirstContainer()->getPage()->getWidth();
 	UT_sint32 iWidthLayout = m_pDocSL->getFirstContainer()->getPage()->getWidthInLayoutUnits() - m_pDocSL->getLeftMarginInLayoutUnits() - m_pDocSL->getRightMarginInLayoutUnits();
-	m_pVirContainer = (fp_Container *) new fp_VirtualContainer(iWidth,iWidthLayout, (fl_SectionLayout *) this);
+	m_pVirContainer =  new fp_VirtualContainer(iWidth,iWidthLayout, (fl_SectionLayout *) this);
 	return m_pVirContainer;
 }
 
@@ -2001,9 +2001,12 @@ void fl_HdrFtrSectionLayout::deletePage(fp_Page* pPage)
  */
 void fl_HdrFtrSectionLayout::localFormat(void)
 {
+	UT_DEBUGMSG(("SEVIOR: Doing a Local Format of the hdrftr section \n"));
 	fl_BlockLayout*	pBL = m_pFirstBlock;
 	while (pBL)
 	{
+		UT_DEBUGMSG(("SEVIOR: Block %x is in HDRFTR \n"));
+		pBL->setHdrFtr();
 		pBL->format();
 		pBL = pBL->getNext();
 	}
@@ -2434,13 +2437,15 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_insertBlock(fl_BlockLayout* pBL, con
 //	localFormat();
 	m_pDoc->allowChangeInsPoint();
 
+	UT_DEBUGMSG(("SEVIOR: In hdrFtr Block %x marked as hdrftr state %d \n",ppBL,ppBL->isHdrFtr()));
+    ppBL->setHdrFtr();
     bResult = ppBL->doclistener_insertBlock(pcrx,sdh,lid,pfnBindHandles)
 		&& bResult;
 //
 // Mark the Block as HdrFtr
 //
 	ppBL->getNext()->setHdrFtr();
-
+	UT_DEBUGMSG(("SEVIOR: Marking Block %x as Header/Footer \n",ppBL->getNext()));
 	format();
 	updateLayout();
 	redrawUpdate();

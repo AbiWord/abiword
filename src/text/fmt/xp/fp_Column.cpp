@@ -1052,6 +1052,21 @@ fl_HdrFtrSectionLayout* fp_VirtualContainer::getHdrFtrSectionLayout(void) const
 
 
 /*!
+  Get line's offsets relative to the screen for this method we just return 
+  * -100000 since virtual containers are never drawn.
+ \param  pLine Line
+ \retval xoff Line's X offset relative the screen actually -10000
+ \retval yoff Line's Y offset relative the screen actually -10000
+ */
+void fp_VirtualContainer::getScreenOffsets(fp_Line* pLine,
+									UT_sint32& xoff, UT_sint32& yoff)
+{
+	xoff = -100000;
+	yoff = -100000;
+}
+
+
+/*!
   NOP's for clear screen.
 */
 void fp_VirtualContainer::clearScreen(void)

@@ -171,7 +171,6 @@ void ap_sb_Field_PageInfo::draw(void)
 		UT_uint32 y = m_rect3d.top + (m_rect3d.height-iFontHeight)/2;
 
 		pG->setColor3D(GR_Graphics::CLR3D_Foreground);
-	
 		pG->setClipRect(&m_rect3d);
 		pG->drawChars(m_bufUCS,0,m_lenBufUCS,x,y);
 		pG->setClipRect(NULL);

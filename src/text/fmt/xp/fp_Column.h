@@ -319,6 +319,8 @@ public:
  	void				draw(dg_DrawArgs*);
   	void				layout(void);
  	void				clearScreen(void);
+	void		 		getScreenOffsets(fp_Line* pLine, UT_sint32& xoff, 
+										 UT_sint32& yoff);
 	
 protected:
 

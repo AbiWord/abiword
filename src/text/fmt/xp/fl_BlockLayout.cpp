@@ -998,25 +998,28 @@ bool fl_BlockLayout::_truncateLayout(fp_Run* pTruncRun)
 		m_pFirstRun = NULL;
 	}
 	fp_Run * pRun = NULL;
-	// Remove runs from screen
-	fp_Line * pLine = pTruncRun->getLine();
-	if(pLine != NULL)
+	// Remove runs from screen. No need for HdrFtr's though 
+	if(!isHdrFtr())
 	{
-		pLine->clearScreenFromRunToEnd(pTruncRun);
-		pLine = pLine->getNext();
-		while(pLine)
+		fp_Line * pLine = pTruncRun->getLine();
+		if(pLine != NULL)
 		{
-			pLine->clearScreen();
-			pLine= pLine->getNext();
+			pLine->clearScreenFromRunToEnd(pTruncRun);
+			pLine = pLine->getNext();
+			while(pLine)
+			{
+				pLine->clearScreen();
+				pLine= pLine->getNext();
+			}
 		}
-	}
-	else
-	{
-		pRun = pTruncRun;
-		while (pRun)
+		else
 		{
-			pRun->clearScreen();
-			pRun = pRun->getNext();
+			pRun = pTruncRun;
+			while (pRun)
+			{
+				pRun->clearScreen();
+				pRun = pRun->getNext();
+			}
 		}
 	}
 
@@ -3808,6 +3811,8 @@ bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
 	fl_SectionLayout* pSL = m_pSectionLayout;
 	UT_ASSERT(pSL);
 	fl_BlockLayout*	pNewBL = pSL->insertBlock(sdh, this, pcrx->getIndexAP());
+	if(isHdrFtr())
+		pNewBL->setHdrFtr();
 	if (!pNewBL)
 	{
 		UT_DEBUGMSG(("no memory for BlockLayout\n"));

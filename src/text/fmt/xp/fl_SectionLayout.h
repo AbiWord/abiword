@@ -41,6 +41,7 @@ class fp_Column;
 class fp_Run;
 class fp_Line;
 class fp_Container;
+class fp_VirtualContainer;
 class PD_Document;
 class PP_AttrProp;
 class fl_HdrFtrShadow;
@@ -339,7 +340,7 @@ protected:
 	
 	fl_DocSectionLayout*		m_pDocSL;
 	HdrFtrType					m_iHFType;
-	fp_Container *              m_pVirContainer;
+	fp_VirtualContainer *       m_pVirContainer;
 	UT_Vector					m_vecPages;
 };
 
