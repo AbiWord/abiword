@@ -81,6 +81,7 @@ UT_uint32 XAP_UnixFontHandle::getSize(void)
 
 XAP_UnixFont::XAP_UnixFont(void)
 {
+	//UT_DEBUGMSG(("XAP_UnixFont:: constructor (void)\n"));	
 	m_is_cjk=0;
 	m_name = NULL;
 	m_style = STYLE_LAST;
@@ -104,6 +105,7 @@ XAP_UnixFont::XAP_UnixFont(void)
 
 XAP_UnixFont::XAP_UnixFont(XAP_UnixFont & copy)
 {
+	//UT_DEBUGMSG(("XAP_UnixFont:: copy constructor\n"));
 	m_is_cjk=copy.m_is_cjk;
 	m_cjk_font_metric =copy.m_cjk_font_metric;
 	
@@ -163,6 +165,8 @@ bool XAP_UnixFont::openFileAs(const char * fontfile,
 	if (!xlfd)
 		return false;
 
+	//UT_DEBUGMSG(("XAP_UnixFont::openFileAs [fontfile `%s']\n", fontfile));
+
 	struct stat buf;
 	
 	if (!m_is_cjk) //HJ's patch had this logic
@@ -211,7 +215,10 @@ bool XAP_UnixFont::openFileAs(const char * fontfile,
 	else if(strstr(m_fontfile, ".pfb"))
 		m_fontType = FONT_TYPE_PFB;
 	else
+	{
 		m_fontType = FONT_TYPE_UNKNOWN;
+		return false;
+	}
 
 	return true;
 }
@@ -697,7 +704,7 @@ bool XAP_UnixFont::openPFA(void)
 		when the font was first used; this file contains Type 42 PS font
 		corresponding to our ttf font
 	*/	
-	char* pfafile;
+	char* pfafile = 0;
 	bool  delete_pfa = false;
 	if(is_TTF_font())
 	{
@@ -720,6 +727,7 @@ bool XAP_UnixFont::openPFA(void)
 	
 	UT_DEBUGMSG(("UnixFont::openPFA: opening file %s\n", pfafile));
 	m_PFFile = fopen(pfafile, "r");
+	//UT_DEBUGMSG(("UnixFont::openPFA: opened  file %s (handle 0x%x)\n", pfafile, m_PFFile));
 
 	if (!m_PFFile)
 	{
@@ -735,8 +743,10 @@ bool XAP_UnixFont::openPFA(void)
 	ungetc(peeked, m_PFFile);
 	m_PFB = peeked == PFB_MARKER;
 	m_bufpos = 0;
-	if(delete_pfa)
+	if(delete_pfa && pfafile)
 		delete[] pfafile;
+	
+	//UT_DEBUGMSG(("UnixFont::openPFA: about to return\n"));
 	return true;
 }
 
