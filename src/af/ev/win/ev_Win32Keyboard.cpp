@@ -141,21 +141,17 @@ bool ev_Win32Keyboard::onKeyDown(AV_View * pView,
 	int						charLen;
 	UT_UCSChar				charData[2];
 
-	// ALT key for windows {menus, ... }, but a combination of ALT and CTRL is for abiord 
+	// ALT key for windows {menus, ... }, but a combination of ALT and CTRL is for abiword 
 	// (what about shift?) 
 	if (((ems & EV_EMS_ALT) != 0) && ((ems & EV_EMS_CONTROL) == 0))
-	{
 		return true;
-	}
 	
 	// Get abiword keyid
 	nvk = s_mapVirtualKeyCodeToNVK(nVirtKey);
 
 	// If it is not a special key or a CTRL combination, there is nothing to do
 	if (nvk == EV_NVK__IGNORE__ || (nvk == 0 && ((ems & EV_EMS_CONTROL) == 0)))
-	{
 		return true;
-	}
 
 	if (nvk != 0)
 	{	// Special key
@@ -178,11 +174,13 @@ bool ev_Win32Keyboard::onKeyDown(AV_View * pView,
 			return true;
 
 		charLen		= 1;
-		charData[0]	= UT_UCSChar(char_value[0]);
+		charData[0]	= UT_UCSChar(char_value [0] & 0x000000FF);		
 		charData[1]	= 0;
 	}
 
-	switch (m_pEEM->Keystroke(EV_EKP_PRESS | ems | charData[0], &pEM))
+	
+
+	switch (m_pEEM->Keystroke(EV_EKP_PRESS | ems | charData[0], &pEM)) //#define EV_EKP_PRESS			((EV_EditKeyPress)		0x00800000)
 	{
 		
 	case EV_EEMR_BOGUS_START:
