@@ -1100,7 +1100,7 @@ int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 
 			if (wv0x01(&blip, fil, picf.lcb - picf.cbHeader))
 			  {
-			this->_handleImage(&blip, picf.dxaGoal, picf.dyaGoal);
+                       this->_handleImage(&blip, picf.mx * picf.dxaGoal / 1000, picf.my * picf.dyaGoal / 1000);
 			  }
 			else
 			  {
@@ -2258,8 +2258,6 @@ int IE_Imp_MsWord_97::_fieldProc (wvParseStruct *ps, U16 eachchar,
 			else
 				m_fieldRet = 0;
 
-			xxx_UT_DEBUGMSG(("DOM: Field: command %s, ret is %d\n",
-							 wvWideStrToMB(command), m_fieldRet));
 			wvFree(m_fieldC);
 			m_fieldWhich = m_argument;
 			m_fieldI = 0;
