@@ -113,7 +113,7 @@ void AP_UnixDialog_Spell::runModal(XAP_Frame * pFrame)
       
       _storeWindowData();
       
-      gtk_widget_destroy(mainWindow);
+      //gtk_widget_destroy(mainWindow);
    }
    
    // TODO: all done message?
@@ -373,10 +373,10 @@ void AP_UnixDialog_Spell::_connectSignals(void)
 					   (gpointer) this);
    
    // the catch-alls
-   gtk_signal_connect_after(GTK_OBJECT(m_windowMain),
-			    "delete_event",
-			    GTK_SIGNAL_FUNC(s_delete_clicked),
-			    (gpointer) this);
+   gtk_signal_connect(GTK_OBJECT(m_windowMain),
+		      "delete_event",
+		      GTK_SIGNAL_FUNC(s_delete_clicked),
+		      (gpointer) this);
          
    gtk_signal_connect_after(GTK_OBJECT(m_windowMain),
 			    "destroy",
