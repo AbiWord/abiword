@@ -22,6 +22,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <errno.h>
+#include <string.h>
 
 #define return_val_if_fail(c, v) if(!(c)) return (v)
 #define return_if_fail(c) if(!(c)) return

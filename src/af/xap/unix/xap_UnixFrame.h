@@ -67,7 +67,6 @@ public:
 
 	GtkWidget *					getTopLevelWindow(void) const;
 	GtkWidget *					getVBoxWidget(void) const;
-		
 	virtual XAP_DialogFactory *	getDialogFactory(void);
 	virtual void				setXScrollRange(void)=0;
 	virtual void				setYScrollRange(void)=0;
@@ -80,7 +79,6 @@ public:
 	
 	virtual void				toggleRuler(bool bRulerOn) = 0;
 	virtual void				queue_resize();
-	virtual void                doRepaint(UT_Rect * rClip);
 protected:
 	virtual GtkWidget *			_createDocumentWindow(void)=0;
 	virtual GtkWidget *			_createStatusBarWindow(void)=0;
@@ -113,6 +111,7 @@ protected:
 		static gint key_press_event(GtkWidget* w, GdkEventKey* e);
 		static gint delete_event(GtkWidget * w, GdkEvent * /*event*/, gpointer /*data*/);
 		static gint expose(GtkWidget * w, GdkEventExpose* pExposeEvent);
+		static gint abi_expose_repaint( gpointer /* xap_UnixFrame * */ p);
 		static void vScrollChanged(GtkAdjustment * w, gpointer /*data*/);
 		static void hScrollChanged(GtkAdjustment * w, gpointer /*data*/);
 		static void destroy (GtkWidget * /*widget*/, gpointer /*data*/);

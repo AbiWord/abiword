@@ -658,7 +658,7 @@ inline void adjust_rect(PhRect_t *rect, PhPoint_t *offset) {
 	}
 }
 
-void GR_QNXGraphics::scroll(UT_sint32 dx, UT_sint32 dy, XAP_Frame * pFrame)
+void GR_QNXGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 {
 
 	PhRect_t  rect;

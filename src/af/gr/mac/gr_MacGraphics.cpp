@@ -316,7 +316,7 @@ void GR_MacGraphics::setClipRect(const UT_Rect* pRect)
 	}
 }
 
-void GR_MacGraphics::scroll(UT_sint32, UT_sint32, XAP_Frame * )
+void GR_MacGraphics::scroll(UT_sint32, UT_sint32 )
 {
     UT_ASSERT (UT_NOT_IMPLEMENTED);
 }

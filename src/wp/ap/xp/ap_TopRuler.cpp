@@ -290,7 +290,6 @@ void AP_TopRuler::draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 	
 	if (pClipRect)
 	{
-		m_pFrame->getClipLock();
 		m_pG->setClipRect(pClipRect);
 	}
 
@@ -305,7 +304,6 @@ void AP_TopRuler::draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 	if (pClipRect)
 	{
 		m_pG->setClipRect(NULL);
-		m_pFrame->releaseClipLock();
 	}
 }
 

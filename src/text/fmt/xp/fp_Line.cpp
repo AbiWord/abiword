@@ -660,7 +660,7 @@ void fp_Line::clearScreen(void)
 			// in case the line is asked to render before it's been
 			// assigned a height. Call it robustness, if you want.
 
-			xxx_UT_DEBUGMSG(("SEVIOR: Clear Line cleartopos = %d xoffline = %d \n",m_iClearToPos,m_iMaxWidth));
+			xxx_UT_DEBUGMSG(("SEVIOR: Clear FullLine cleartopos = %d xoffline = %d \n",m_iClearToPos,m_iMaxWidth));
 			pRun->getGraphics()->fillRect(*pClr,xoffLine - m_iClearLeftOffset, yoffLine, m_iClearToPos + m_iClearLeftOffset, getHeight());
 //
 // Sevior: I added this for robustness. 
@@ -807,10 +807,12 @@ void fp_Line::clearScreenFromRunToEnd(UT_uint32 runIndex)
 
 		getScreenOffsets(pRun, xoff, yoff);
 		UT_sint32 xoffLine, yoffLine;
-
+//		UT_sint32 oldheight = getHeight();
+//		recalcHeight();
+//		UT_ASSERT(oldheight == getHeight());
 		m_pContainer->getScreenOffsets(this, xoffLine, yoffLine);
 		UT_RGBColor * pClr = pRun->getPageColor();
-		xxx_UT_DEBUGMSG(("SEVIOR: ClearToEnd cleartopos = %d xoff = %d xoffline =%d \n",m_iClearToPos,xoff,xoffLine));
+		xxx_UT_DEBUGMSG(("SEVIOR: ClearToEnd index cleartopos = %d yoff = %d height =%d \n",m_iClearToPos,yoff,getHeight()));
 		pRun->getGraphics()->fillRect(*pClr,xoff - leftClear, yoff, m_iClearToPos  + leftClear - (xoff - xoffLine) , getHeight());
 //
 // Sevior: I added this for robustness.

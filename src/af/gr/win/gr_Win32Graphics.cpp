@@ -611,7 +611,7 @@ bool GR_Win32Graphics::endPrint(void)
  ** dx & dy are the change in x/y from the current scrolled position
  ** negative values indcate left/up movement, positive right/down movement
  **/
-void GR_Win32Graphics::scroll(UT_sint32 dx, UT_sint32 dy, XAP_Frame * pFrame)
+void GR_Win32Graphics::scroll(UT_sint32 dx, UT_sint32 dy)
 {
 	ScrollWindowEx(m_hwnd, -dx, -dy, NULL, NULL, NULL, 0, SW_INVALIDATE);
 }

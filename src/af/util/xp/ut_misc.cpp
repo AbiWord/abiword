@@ -91,13 +91,6 @@ void UT_Rect::set(int iLeft, int iTop, int iWidth, int iHeight)
 void UT_Rect::unionRect(const UT_Rect * pRect)
 {
 	UT_sint32 fx1,fx2,fy1,fy2;
-	if(left <= 0)
-	{
-		left = pRect->left;
-		top = pRect->top;
-		width = pRect->width;
-		height = pRect->height;
-	}
 	fx1 = UT_MIN(left,pRect->left);
 	fx2 = UT_MAX(left+width,pRect->left + pRect->width);
 	fy1 = UT_MIN(top,pRect->top);

@@ -654,7 +654,7 @@ void AP_LeftRuler::_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 ylimit)
 
 void AP_LeftRuler::scrollRuler(UT_sint32 yoff, UT_sint32 ylimit)
 {
-	//UT_DEBUGMSG(("LeftRuler:: scroll [y %d]\n",yoff));
+	xxx_UT_DEBUGMSG(("Sevior: LeftRuler:: scroll [y %d] gc= %x \n",yoff,m_pG));
 	UT_Rect rClip;
 	UT_Rect * prClip;
 
@@ -786,11 +786,9 @@ void AP_LeftRuler::draw(const UT_Rect * pClipRect, AP_LeftRulerInfo & lfi)
 {
 	if (!m_pG)
 		return;
-	
 	if (pClipRect)
 	{
 		//UT_DEBUGMSG(("LeftRuler:: draw [clip %ld %ld %ld %ld]\n",pClipRect->left,pClipRect->top,pClipRect->width,pClipRect->height));
-		m_pFrame->getClipLock();
 		m_pG->setClipRect(pClipRect);
 	}
 	else
@@ -943,7 +941,6 @@ void AP_LeftRuler::draw(const UT_Rect * pClipRect, AP_LeftRulerInfo & lfi)
 	if (pClipRect)
 	{
 		m_pG->setClipRect(NULL);
-		m_pFrame->releaseClipLock();
 	}
 	m_lfi = lfi;
 }

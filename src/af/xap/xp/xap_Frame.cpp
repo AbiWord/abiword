@@ -76,11 +76,7 @@ XAP_Frame::XAP_Frame(XAP_App * app)
 	  m_iIdAutoSaveTimer(0),
 	  m_iAutoSavePeriod(0),
 	  m_stAutoSaveExt(),
-	  m_bBackupRunning(false),
-	  m_bSpawnedRedraw(false),
-	  m_bExposePending(false),
-	  m_bIsExposedAreaAccessed(false),
-	  m_bClipLock(false)
+	  m_bBackupRunning(false)
 {
 	m_app->rememberFrame(this);
 	memset(m_szTitle,0,sizeof(m_szTitle));
@@ -108,11 +104,7 @@ XAP_Frame::XAP_Frame(XAP_Frame * f)
 	m_pData(0),
 	m_pInputModes(0),
 	m_iIdAutoSaveTimer(0),
-	m_bBackupRunning(false),
-	m_bSpawnedRedraw(false),
-	m_bExposePending(false),
-	m_bIsExposedAreaAccessed(false),
-	m_bClipLock(false)
+	m_bBackupRunning(false)
 {
 	m_app->rememberFrame(this, f);
 	memset(m_szTitle,0,sizeof(m_szTitle));
@@ -766,111 +758,6 @@ void XAP_Frame::updateZoom(void)
 	default:
        ;
    }
-}
-
-
-/*!
- * Hand shaking variables to let the App know when expose events are being
- * handled.
- * Returns true if the exposed redraw method is running.
- */
-const bool  XAP_Frame::isSpawnedRedraw(void) const
-{ 
-	return m_bSpawnedRedraw;
-}
-
-/*!
- * sets/clears the redraw running variable
- */
-void  XAP_Frame::setSpawnedRedraw( bool exposeState) 
-{
-	m_bSpawnedRedraw = exposeState;
-}
-
-/*!
- * Informs if there are unprocessed expose information present
- * Returns true is so.
- */
-const bool XAP_Frame::isExposePending(void) const
-{
-	return m_bExposePending;
-}
-
-/*!
- * sets the exposed Pending state.
- */
-void XAP_Frame::setExposePending(bool exposeState) 
-{
-	m_bExposePending = exposeState;
-}
-
-/*!
- * Informs if a process is accessing the global merged expose area.
- * Returns true is so.
- */
-const bool XAP_Frame::isExposedAreaAccessed(void) const
-{
-	return m_bIsExposedAreaAccessed;
-}
-
-/*!
- * sets the varaible explaining the state of the Merged area 
- */
-void XAP_Frame::setExposedAreaAccessed(bool exposeState) 
-{
-	m_bIsExposedAreaAccessed = exposeState;
-}
-
-/*!
- * Methods to manipulate the expose rectangle.
- */
-
-/*!
- * Set values inside the PendingArea Rectangle
-\param x the x-coord of the upper left corner.
-\param y the y-coord of the upper left corner.
-\param width the width of the rectangle.
-\param height the height of the rectangle.
-*/
-void  XAP_Frame::setPendingRect( UT_sint32 x, UT_sint32 y, UT_sint32 width, UT_sint32 height)
-{
-	m_PendingExposeArea.set(x,y,width,height);
-}
-
-/*!
- * Do a union of the current rectangle with the one presented in the 
- * parameter list. The makes the new rectangle the smallest possible that 
- * covers both rectangles.
-\param  UT_Rect * pRect pointer to the rectangle to merge with.
-*/
-void  XAP_Frame::unionPendingRect( UT_Rect * pRect) 
-{ 
-	m_PendingExposeArea.unionRect(pRect);
-}
-
-/*!
-\returns a const pointer to the PendingExposeArea.
-*/
-const UT_Rect * XAP_Frame::getPendingRect(void) const 
-{
-	return & m_PendingExposeArea;
-}
-
-bool XAP_Frame::getClipLock(void)
-{
-//  	while(m_bClipLock)
-//  	{
-//  		UT_usleep(100); // wait 100 microseconds...
-//  	}
-//  	m_bClipLock = true;
-	return true;
-}
-
-
-bool XAP_Frame::releaseClipLock(void)
-{
-	m_bClipLock = false;
-	return m_bClipLock;
 }
 
 //////////////////////////////////////////////////////////////////

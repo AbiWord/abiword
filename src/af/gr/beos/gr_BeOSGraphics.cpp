@@ -648,7 +648,7 @@ void GR_BeOSGraphics::setClipRect(const UT_Rect* pRect)
 	}
 }
 
-void GR_BeOSGraphics::scroll(UT_sint32 dx, UT_sint32 dy, XAP_Frame * pFrame)
+void GR_BeOSGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 {
 
 	DPRINTF(printf("GR: Scroll dx %d dy %d\n", dx, dy));

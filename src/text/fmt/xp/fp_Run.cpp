@@ -1542,7 +1542,12 @@ void fp_EndOfParagraphRun::_clearScreen(bool /* bFullLineHeightRect */)
 	UT_ASSERT(m_pG->queryProperties(GR_Graphics::DGP_SCREEN));
 
 	FV_View* pView = m_pBL->getDocLayout()->getView();
-	m_pG->fillRect(m_colorPG, m_iXoffText, m_iYoffText, m_iWidth, m_pLine->getHeight());
+		
+	UT_sint32 xoff = 0, yoff = 0;
+	m_pLine->getScreenOffsets(this, xoff, yoff);
+	m_pG->fillRect(m_colorPG, xoff, yoff, m_iWidth, m_pLine->getHeight());
+	UT_DEBUGMSG(("SEVIOR: Doing clear screen in End of Pargraph run \n"));
+//	m_pG->fillRect(m_colorPG, m_iXoffText, m_iYoffText, m_iWidth, m_pLine->getHeight());
 }
 
 /*!
@@ -1612,17 +1617,17 @@ void fp_EndOfParagraphRun::_draw(dg_DrawArgs* pDA)
 	m_iWidth  = m_pG->measureString(pEOP, 0, iTextLen, NULL);
 	m_iHeight = m_pG->getFontHeight();
 	m_iXoffText = pDA->xoff;
-	m_iYoffText = pDA->yoff - iAscent;
+	m_iYoffText = pDA->yoff - iAscent; 
 	xxx_UT_DEBUGMSG(("fp_EndOfParagraphRun::draw: width %d\n", m_iWidth));
 
 	if (bIsSelected)
 	{
-		m_pG->fillRect(clrSelBackground, m_iXoffText, m_iYoffText, m_iWidth, m_iHeight);
+		m_pG->fillRect(clrSelBackground, m_iXoffText, m_iYoffText, m_iWidth, m_pLine->getHeight());
 		UT_setColor(clrShowPara, 80, 80, 80);
 	}
 	else
 	{
-		m_pG->fillRect(m_colorPG, m_iXoffText, m_iYoffText, m_iWidth, m_iHeight);
+		m_pG->fillRect(m_colorPG, m_iXoffText, m_iYoffText, m_iWidth, m_pLine->getHeight());
 	}
 	if (pView->getShowPara())
 	{

@@ -5559,7 +5559,7 @@ void FV_View::warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos, bool bClick = false)
 		_drawInsertionPoint();
 	}
 
-//	notifyListeners(AV_CHG_MOTION | AV_CHG_HDRFTR );
+//	notifyListeners(AV_CHG_MOTION | AV_CHG_HDRFTR ); // Sevior Put this in
 	notifyListeners(AV_CHG_HDRFTR );
 
 
@@ -6127,9 +6127,7 @@ void FV_View::setXScrollOffset(UT_sint32 v)
 	if (dx == 0)
 		return;
 	_fixInsertionPointCoords();
-	XAP_Frame * pFrame = (XAP_Frame *) getParentData();
-	UT_ASSERT((pFrame));
-	m_pG->scroll(dx, 0, pFrame);
+	m_pG->scroll(dx, 0);
 	m_xScrollOffset = v;
 	if (dx > 0)
 	{
@@ -6165,10 +6163,7 @@ void FV_View::setYScrollOffset(UT_sint32 v)
 	if (dy == 0)
 		return;
 	_fixInsertionPointCoords();
-	XAP_Frame * pFrame = (XAP_Frame *) getParentData();
-	UT_ASSERT((pFrame));
-
-	m_pG->scroll(0, dy,pFrame);
+	m_pG->scroll(0, dy);
 	m_yScrollOffset = v;
 	if (dy > 0)
 	{
@@ -6198,7 +6193,7 @@ void FV_View::setYScrollOffset(UT_sint32 v)
 
 void FV_View::draw(int page, dg_DrawArgs* da)
 {
-	xxx_UT_DEBUGMSG(("FV_View::draw_1: [page %ld]\n",page));
+	UT_DEBUGMSG(("FV_View::draw_1: [page %ld]\n",page));
 
 	da->pG = m_pG;
 	fp_Page* pPage = m_pLayout->getNthPage(page);
@@ -6245,13 +6240,12 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 		UT_DEBUGMSG(("fv_View::draw() called with zero drawing area.\n"));
 		return;
 	}
-
+//	UT_ASSERT(bClip);
 	if ((width <= 0) || (height <= 0))
 	{
 		UT_DEBUGMSG(("fv_View::draw() called with zero width or height expose.\n"));
 		return;
 	}
-
 	if (bClip)
 	{
 		UT_Rect r;
@@ -6260,9 +6254,6 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 		r.top = y;
 		r.width = width;
 		r.height = height;
-		XAP_Frame * pFrame = (XAP_Frame *) getParentData();
-		UT_ASSERT(pFrame);
-		pFrame->getClipLock();
 		m_pG->setClipRect(&r);
 	}
 
@@ -6439,9 +6430,6 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 
 	if (bClip)
 	{
-		XAP_Frame * pFrame = (XAP_Frame *) getParentData();
-		UT_ASSERT(pFrame);
-		pFrame->releaseClipLock();
 		m_pG->setClipRect(NULL);
 	}
 
@@ -6456,7 +6444,6 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 		m_pG->fillRect(clrRed,60,20,10,10);
 	}
 #endif
-
 }
 
 void FV_View::cmdScroll(AV_ScrollCmd cmd, UT_uint32 iPos)
@@ -7631,8 +7618,12 @@ void FV_View::_clearIfAtFmtMark(PT_DocPosition dpos)
 	if ( ( dpos != _getDocPosFromPoint(dpos,FV_DOCPOS_BOL) )) 
 	{
 		m_pDoc->clearIfAtFmtMark(dpos);
+		_generalUpdate();//  Sevior: May be able to live with notify.. always
 	}
-	_generalUpdate();
+	else
+	{
+		notifyListeners(AV_CHG_TYPING | AV_CHG_FMTCHAR | AV_CHG_FMTBLOCK);
+	}
 }
 
 // ndx is one-based, not zero-based

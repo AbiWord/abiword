@@ -28,6 +28,7 @@
 #include "gr_UnixGraphics.h"
 #include "gr_UnixImage.h"
 #include "ut_sleep.h"
+#include "xap_UnixFrame.h"
 
 #ifdef HAVE_GNOME
 #include <gnome.h>
@@ -635,8 +636,8 @@ void GR_UnixGraphics::invertRect(const UT_Rect* pRect)
 
 void GR_UnixGraphics::setClipRect(const UT_Rect* pRect)
 {
-//	if(pRect != NULL)
-//		UT_ASSERT(m_pRect==NULL);
+	if(pRect != NULL)
+		UT_ASSERT(m_pRect==NULL);
 	m_pRect = pRect;
 	if (pRect)
 	{
@@ -691,67 +692,77 @@ void GR_UnixGraphics::fillRect(UT_RGBColor& c, UT_sint32 x, UT_sint32 y,
 	gdk_gc_set_foreground(m_pGC, &oColor);
 }
 
-void GR_UnixGraphics::scroll(UT_sint32 dx, UT_sint32 dy, XAP_Frame * pFrame)
+void GR_UnixGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 {
 	GdkWindowPrivate* pPWin = (GdkWindowPrivate*) m_pWin;
 
 	UT_sint32 winWidth = pPWin->width;
 	UT_sint32 winHeight = pPWin->height;
-	bool doExposeEvent = false;
 	UT_Rect exposeArea;
-	if(pFrame != NULL)
-	{
 //
 // Handle pending expose. The idea is that if there is an expose event that
 // has not yet been painted, we expand the expose area to take account of the
 // scroll we're about to make.
 //
-		if(pFrame->isExposePending())
-		{
-			while(pFrame->isExposedAreaAccessed())
-			{
-				UT_usleep(10); // 10 microseconds
-			}
+	while(isSpawnedRedraw())
+	{
+		UT_usleep(100); // 100 microseconds
+	}
+	setDontRedraw(true);
+	while(isExposedAreaAccessed())
+	{
+		UT_usleep(10); // 10 microseconds
+	}
 //
 // Don't let the repaint procede until after this adjustment
 //
-			pFrame->setExposedAreaAccessed(true);
-			exposeArea.top = pFrame->getPendingRect()->top;
-			exposeArea.left = pFrame->getPendingRect()->left;
-			exposeArea.width = pFrame->getPendingRect()->width;
-			exposeArea.height = pFrame->getPendingRect()->height;
-			if(dy < 0)
-			{
-				//
-				// We're moving up so height is increased top is reduced.
-				//
-				exposeArea.height -= dy;
-				doExposeEvent = true;
-			}
-			if(dy > 0)
-			{
-				exposeArea.top -= dy;
-				exposeArea.height += dy;
-				doExposeEvent = true;
-			}
-			if(dx < 0)
-			{
-				exposeArea.width -= dx;
-				doExposeEvent = true;
-			}
-			if(dx > 0)
-			{
-				//
-				// We're moving left so left is reduced
-				//
-				exposeArea.left += dx;
-				exposeArea.width += dx;
-				doExposeEvent = true;
-			}
-			pFrame->unionPendingRect(&exposeArea);
-			pFrame->setExposedAreaAccessed(false);
-		}
+	setExposedAreaAccessed(true);
+	exposeArea.top = getPendingRect()->top;
+	exposeArea.left = getPendingRect()->left;
+	exposeArea.width = getPendingRect()->width;
+	exposeArea.height = getPendingRect()->height;
+	xxx_UT_DEBUGMSG(("SEVIOR: before expand top %d left %d width %d height %d \n",exposeArea.top,exposeArea.left,exposeArea.width,exposeArea.height));
+	if(dy < 0)
+	{
+		//
+		// We're moving up so height is increased top is reduced.
+		//
+		exposeArea.height -= dy;
 	}
+	if(dy > 0)
+	{
+		exposeArea.top -= dy;
+		exposeArea.height += dy;
+	}
+	if(dx < 0)
+	{
+		exposeArea.width -= dx;
+	}
+	if(dx > 0)
+	{
+		//
+		// We're moving left so left is reduced
+		//
+		exposeArea.left += dx;
+		exposeArea.width += dx;
+	}
+	if(exposeArea.width > 100000 || exposeArea.height > 100000)
+	{
+		setPendingRect(0,0,0,0);
+	}
+	else
+	{
+		unionPendingRect(&exposeArea);
+	}
+	xxx_UT_DEBUGMSG(("SEVIOR: After expand top %d left %d width %d height %d \n",exposeArea.top,exposeArea.left,exposeArea.width,exposeArea.height));
+	xxx_UT_DEBUGMSG(("SEVIOR: After Union top %d left %d width %d height %d \n",getPendingRect()->top,getPendingRect()->left,getPendingRect()->width,getPendingRect()->height));
+//
+// Merge into previous areas
+//
+	setDoMerge(true);
+	setExposedAreaAccessed(false);
+
+	xxx_UT_DEBUGMSG(("SEVIOR: Scrolling \n"));
 	if (dy > 0)
     {
 		if (dy < winHeight)
@@ -777,11 +788,7 @@ void GR_UnixGraphics::scroll(UT_sint32 dx, UT_sint32 dy, XAP_Frame * pFrame)
 			gdk_window_copy_area(m_pWin, m_pGC, -dx, 0,
 								 m_pWin, 0, 0, winWidth + dx, winHeight);
     }
-//
-// Now do a repaint of the expanded exposed area if needed.
-//	
-//	if(exposeArea.top > 0)
-//		pFrame->doRepaint( &exposeArea);
+	setDontRedraw(false);
 }
 
 void GR_UnixGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,

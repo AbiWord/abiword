@@ -26,6 +26,7 @@
 #include "ap_UnixLeftRuler.h"
 #include "gr_UnixGraphics.h"
 #include "ut_dialogHelper.h"
+#include "ut_sleep.h"
 
 #define ENSUREP(p)		do { UT_ASSERT(p); if (!p) goto Cleanup; } while (0)
 
@@ -81,7 +82,7 @@ AP_UnixLeftRuler::AP_UnixLeftRuler(XAP_Frame * pFrame)
 	m_rootWindow = NULL;
 	m_wLeftRuler = NULL;
 	m_pG = NULL;
-
+	m_iBackgroundRedrawID = 0;
     // change ruler color on theme change
 	GtkWidget * toplevel = (static_cast<XAP_UnixFrame *> (m_pFrame))->getTopLevelWindow();
 	gtk_signal_connect_after (GTK_OBJECT(toplevel),
@@ -131,7 +132,18 @@ GtkWidget * AP_UnixLeftRuler::createWidget(void)
   
 	gtk_signal_connect(GTK_OBJECT(m_wLeftRuler), "configure_event",
 					   GTK_SIGNAL_FUNC(_fe::configure_event), NULL);
-
+	if( m_iBackgroundRedrawID == 0)
+	{
+//
+// Start background repaint
+//
+		m_iBackgroundRedrawID = gtk_timeout_add(200,(GtkFunction) _fe::abi_expose_repaint, (gpointer) this);
+	}
+	else
+    {
+		gtk_timeout_remove(m_iBackgroundRedrawID);
+		m_iBackgroundRedrawID = gtk_timeout_add(200,(GtkFunction) _fe::abi_expose_repaint, (gpointer) this);
+	}
 	return m_wLeftRuler;
 }
 
@@ -181,7 +193,7 @@ gint AP_UnixLeftRuler::_fe::button_press_event(GtkWidget * w, GdkEventButton * e
 {
 	// a static function
 	AP_UnixLeftRuler * pUnixLeftRuler = (AP_UnixLeftRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
-	UT_DEBUGMSG(("UnixLeftRuler: [p %p] received button_press_event\n",pUnixLeftRuler));
+	xxx_UT_DEBUGMSG(("UnixLeftRuler: [p %p] received button_press_event\n",pUnixLeftRuler));
 
 	// grab the mouse for the duration of the drag.
 	gtk_grab_add(w);
@@ -214,7 +226,7 @@ gint AP_UnixLeftRuler::_fe::button_release_event(GtkWidget * w, GdkEventButton *
 {
 	// a static function
 	AP_UnixLeftRuler * pUnixLeftRuler = (AP_UnixLeftRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
-	UT_DEBUGMSG(("UnixLeftRuler: [p %p] received button_release_event\n",pUnixLeftRuler));
+	xxx_UT_DEBUGMSG(("UnixLeftRuler: [p %p] received button_release_event\n",pUnixLeftRuler));
 	EV_EditModifierState ems;
 	EV_EditMouseButton emb = 0;
 	
@@ -294,7 +306,7 @@ gint AP_UnixLeftRuler::_fe::key_press_event(GtkWidget* w, GdkEventKey* /* e */)
 {
 	// a static function
 	AP_UnixLeftRuler * pUnixLeftRuler = (AP_UnixLeftRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
-	UT_DEBUGMSG(("UnixLeftRuler: [p %p] received key_press_event\n",pUnixLeftRuler));
+	xxx_UT_DEBUGMSG(("UnixLeftRuler: [p %p] received key_press_event\n",pUnixLeftRuler));
 	return 1;
 }
 	
@@ -318,9 +330,57 @@ gint AP_UnixLeftRuler::_fe::expose(GtkWidget * w, GdkEventExpose* pExposeEvent)
 	rClip.top = pExposeEvent->area.y;
 	rClip.width = pExposeEvent->area.width;
 	rClip.height = pExposeEvent->area.height;
-
+	xxx_UT_DEBUGMSG(("gtk in leftruler expose painting area:  left=%d, top=%d, width=%d, height=%d\n", rClip.left, rClip.top, rClip.width, rClip.height));
+	pUnixLeftRuler->getGraphics()->doRepaint(&rClip);
 	pUnixLeftRuler->draw(&rClip);
 	return 0;
+}
+
+
+/*!
+ * Background abi repaint function.
+\param XAP_UnixFrame * p pointer to the Frame that initiated this background
+       repainter.
+ */
+gint AP_UnixLeftRuler::_fe::abi_expose_repaint( gpointer p)
+{
+//
+// Grab our pointer so we can do useful stuff.
+//
+	UT_Rect localCopy;
+	AP_UnixLeftRuler * pR = static_cast<AP_UnixLeftRuler *>(p);
+	GR_Graphics * pG = pR->getGraphics();
+	if(pG->isDontRedraw())
+	{
+//
+// Come back later
+//
+		return TRUE;
+	}
+	pG->setSpawnedRedraw(true);
+	if(pG->isExposePending())
+	{
+		while(pG->isExposedAreaAccessed())
+		{
+			UT_usleep(10); // 10 microseconds
+		}
+		pG->setExposedAreaAccessed(true);
+		localCopy.set(pG->getPendingRect()->left,pG->getPendingRect()->top,
+					  pG->getPendingRect()->width,pG->getPendingRect()->height);
+//
+// Clear out this set of expose info
+//
+		pG->setExposePending(false);
+		pG->setExposedAreaAccessed(false);
+		xxx_UT_DEBUGMSG(("Painting area on Left ruler:  left=%d, top=%d, width=%d, height=%d\n", localCopy.left, localCopy.top, localCopy.width, localCopy.height));
+		xxx_UT_DEBUGMSG(("SEVIOR: Repaint now \n"));
+		pR->draw(&localCopy);
+	}
+//
+// OK we've finshed. Wait for the next signal
+//
+	pG->setSpawnedRedraw(false);
+	return TRUE;
 }
 
 void AP_UnixLeftRuler::_fe::destroy(GtkWidget * /*widget*/, gpointer /*data*/)

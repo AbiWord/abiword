@@ -53,7 +53,7 @@ public:
 protected:
 	GtkWidget *		m_wLeftRuler;
 	GdkWindowPrivate *	m_rootWindow;
-
+    guint            m_iBackgroundRedrawID;
 protected:
 
 	class _fe
@@ -66,6 +66,7 @@ protected:
 		static gint key_press_event(GtkWidget* w, GdkEventKey* e);
 		static gint delete_event(GtkWidget * w, GdkEvent * /*event*/, gpointer /*data*/);
 		static gint expose(GtkWidget * w, GdkEventExpose* pExposeEvent);
+		static gint abi_expose_repaint( gpointer /* AP_UnixLeftRuler * */ p);
 		static void destroy (GtkWidget * /*widget*/, gpointer /*data*/);
 	};
 

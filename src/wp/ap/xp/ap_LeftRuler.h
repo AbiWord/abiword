@@ -93,7 +93,7 @@ public:
 	/* for use with the prefs listener top_ruler_prefs_listener */
 	UT_Dimension	    getDimension() const { return m_dim; }
 	void			    setDimension( UT_Dimension newdim );
-	
+	GR_Graphics *       getGraphics(void) const { return m_pG;}
 protected:
 	void                _refreshView(void);
 

@@ -30,6 +30,7 @@
 #include "ut_units.h"
 #include "ut_growbuf.h"
 #include "ut_debugmsg.h"
+#include "ut_sleep.h"
 
 #ifdef BIDI_ENABLED
 #include "ut_OverstrikingChars.h"
@@ -65,6 +66,11 @@ GR_Graphics::GR_Graphics()
 
 	m_instanceCount++;
 	m_pRect = NULL;
+	m_bSpawnedRedraw = false;
+	m_bExposePending = false;
+	m_bIsExposedAreaAccessed = false;
+	m_bDontRedraw = false;
+	m_bDoMerge = false;
 }
 
 
@@ -439,3 +445,218 @@ void GR_Graphics::polygon(UT_RGBColor& c,UT_Point *pts,UT_uint32 nPoints)
         }
     }
  }
+
+
+
+
+/*!
+ * Hand shaking variables to let the App know when expose events are being
+ * handled.
+ * Returns true if the exposed redraw method is running.
+ */
+const bool  GR_Graphics::isSpawnedRedraw(void) const
+{ 
+	return m_bSpawnedRedraw;
+}
+
+/*!
+ * sets/clears the redraw running variable
+ */
+void  GR_Graphics::setSpawnedRedraw( bool exposeState) 
+{
+	m_bSpawnedRedraw = exposeState;
+}
+
+/*!
+ * Informs if there are unprocessed expose information present
+ * Returns true is so.
+ */
+const bool GR_Graphics::isExposePending(void) const
+{
+	return m_bExposePending;
+}
+
+/*!
+ * sets the exposed Pending state.
+ */
+void GR_Graphics::setExposePending(bool exposeState) 
+{
+	m_bExposePending = exposeState;
+	if(!exposeState)
+	{
+		m_PendingExposeArea.left = m_RecentExposeArea.left;
+		m_PendingExposeArea.top = m_RecentExposeArea.top;
+		m_PendingExposeArea.width = m_RecentExposeArea.width;
+		m_PendingExposeArea.height = m_RecentExposeArea.height;
+	}
+}
+
+/*!
+ * Sets the Most recent expose rectangle to something sane after repaint.
+ *
+ */
+void GR_Graphics::setRecentRect(UT_Rect * pRect)
+{
+		m_RecentExposeArea.left = pRect->left;
+		m_RecentExposeArea.top = pRect->top;
+	    m_RecentExposeArea.width = pRect->width;
+		m_RecentExposeArea.height = pRect->height;
+}
+ 
+
+/*!
+ * Informs if a process is accessing the global merged expose area.
+ * Returns true is so.
+ */
+const bool GR_Graphics::isExposedAreaAccessed(void) const
+{
+	return m_bIsExposedAreaAccessed;
+}
+
+/*!
+ * sets the varaible explaining the state of the Merged area 
+ */
+void GR_Graphics::setExposedAreaAccessed(bool exposeState) 
+{
+	m_bIsExposedAreaAccessed = exposeState;
+}
+
+/*!
+ * Methods to manipulate the expose rectangle.
+ */
+
+/*!
+ * Set values inside the PendingArea Rectangle
+\param x the x-coord of the upper left corner.
+\param y the y-coord of the upper left corner.
+\param width the width of the rectangle.
+\param height the height of the rectangle.
+*/
+void  GR_Graphics::setPendingRect( UT_sint32 x, UT_sint32 y, UT_sint32 width, UT_sint32 height)
+{
+	m_PendingExposeArea.set(x,y,width,height);
+}
+
+/*!
+ * Do a union of the current rectangle with the one presented in the 
+ * parameter list. The makes the new rectangle the smallest possible that 
+ * covers both rectangles.
+\param  UT_Rect * pRect pointer to the rectangle to merge with.
+*/
+void  GR_Graphics::unionPendingRect( UT_Rect * pRect) 
+{ 
+	m_PendingExposeArea.unionRect(pRect);
+}
+
+/*!
+\returns a const pointer to the PendingExposeArea.
+*/
+const UT_Rect * GR_Graphics::getPendingRect(void) const 
+{
+	return & m_PendingExposeArea;
+}
+
+/*
+ * Hand shaking fail safe variable sto make sure we don'tr repaint till
+ * we're absolueltely ready.
+ */
+void  GR_Graphics::setDontRedraw(bool bDontRedraw)
+{
+	m_bDontRedraw = bDontRedraw;
+}
+
+
+/*
+ * Hand shaking fail safe variable sto make sure we don'tr repaint till
+ * we're absolueltely ready.
+ */
+bool GR_Graphics::isDontRedraw(void)
+{
+	return m_bDontRedraw;
+}
+/*!
+ * Alternate method to tell the doRepaint to merge the next expose so that
+ * expands of exposed area due to scrolls can be merged without doing a 
+ * display update. 
+ \returns the doMerge boolean (set from scroll) 
+*/
+bool GR_Graphics::doMerge(void) const
+{
+	return m_bDoMerge;
+}
+
+/*!
+ * Sets the do merge boolean
+ * Set for scroll, clear from doRepaint
+ */
+void GR_Graphics::setDoMerge( bool bMergeState)
+{
+	m_bDoMerge = bMergeState;
+}
+
+/*!
+ * Method to handle expose events with a background repainter. Events that
+ * Pass through here are rapidly delt with by either expanding an 
+ * already existing expose rectangle to cover the expose rectangle of 
+ *  the current event or if there is no pending expose rectangle, because 
+ *  the background repainter has cleared it, set a new expose rectangle.
+\params UT_Rect *rClip the rectangle of the expose event.
+*/
+void GR_Graphics::doRepaint( UT_Rect * rClip)
+{
+//
+// Look if we have a pending expose left over.
+//
+	while(isSpawnedRedraw())
+	{
+		UT_usleep(100);
+	}
+//
+// Stop the repainter
+//
+	setDontRedraw(true);
+//
+// Gte a lock on the expose rectangle
+//
+	while(isExposedAreaAccessed())
+	{
+		UT_usleep(10); // 10 microseconds
+	}
+	setExposedAreaAccessed(true);
+	if(isExposePending() || doMerge())
+	{
+		//
+        // If so merge in the current expose area
+        //
+		xxx_UT_DEBUGMSG(("Doing a union in expose handler\n"));
+		unionPendingRect( rClip);
+		setRecentRect(rClip);
+		setDoMerge(false);
+	}
+	else
+	{
+//
+// Otherwise Load the current expose area into the redraw area.
+//
+		xxx_UT_DEBUGMSG(("Setting Exposed Area in expose handler \n"));
+		setPendingRect(rClip->left,rClip->top,rClip->width,rClip->height);
+		setRecentRect(rClip);
+  	}
+//
+// Release expose rectangle lock
+//
+	setExposedAreaAccessed(false);
+//
+// Tell the repainter there is something to repaint.
+//
+	setExposePending(true);
+//
+// Allow the repainter to paint
+//
+	setDontRedraw(false);
+//
+// OK this event is handled.
+//
+}
+	
+

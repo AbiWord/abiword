@@ -937,7 +937,7 @@ void fp_TextRun::_clearScreen(bool /* bFullLineHeightRect */)
 		  changed, for things such as table cells.
 		*/
 		UT_RGBColor clrNormalBackground(m_colorHL.m_red, m_colorHL.m_grn, m_colorHL.m_blu);
-		
+		xxx_UT_DEBUGMSG(("SEVIOR: Entering Clearscreen in TextRun \n"));
 		if (m_pField)
 		{
 		  UT_setColor (clrNormalBackground, 220, 220, 220);
@@ -1573,11 +1573,8 @@ bool	fp_TextRun::doesContainNonBlankData(void) const
 			if(lenSpan <= 0)
 			{ 
 				fp_Line * pLine = m_pBL->getFirstLine();
-				UT_DEBUGMSG(("SEVIOR: Line for this run = %x \n",getLine()));
-				UT_DEBUGMSG(("SEVIOR: Line list Run %x Block %x pLine %x \n",this,m_pBL,pLine));
 				while(pLine)
 				{
-					UT_DEBUGMSG(("SEVIOR: Line list Run %x Block %x pLine %x \n",this,m_pBL,pLine));
 					pLine = pLine->getNext();
 				}
 			}
