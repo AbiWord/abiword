@@ -199,20 +199,22 @@ void fl_BlockLayout::_lookupProperties(void)
 		}
 	}
 
+	// no matter what, clear prior tabstops
+	UT_uint32 iCount = m_vecTabs.getItemCount();
+	UT_uint32 i;
+
+	for (i=0; i<iCount; i++)
+	{
+		fl_TabStop* pTab = (fl_TabStop*) m_vecTabs.getNthItem(i);
+
+		delete pTab;
+	}
+	m_vecTabs.clear();
+
+	// parse any new tabstops
 	const char* pszTabStops = getProperty("tabstops");
 	if (pszTabStops && pszTabStops[0])
 	{
-		UT_uint32 iCount = m_vecTabs.getItemCount();
-		UT_uint32 i;
-
-		for (i=0; i<iCount; i++)
-		{
-			fl_TabStop* pTab = (fl_TabStop*) m_vecTabs.getNthItem(i);
-
-			delete pTab;
-		}
-		m_vecTabs.clear();
-
 		unsigned char iType = 0;
 		UT_sint32 iPosition = 0;
 		
