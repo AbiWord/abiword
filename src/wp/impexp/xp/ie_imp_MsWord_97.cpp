@@ -1650,7 +1650,7 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 		  else
 		{
 		  myLFOLVL = &ps->lfolvl[j];
-		  UT_DEBUGMSG(("list: lfovl: iStartAt %d, fStartAt", myLFOLVL->iStartAt,myLFOLVL->fStartAt,myLFOLVL->fFormatting));
+		  UT_DEBUGMSG(("list: lfovl: iStartAt %d, fStartAt\n", myLFOLVL->iStartAt,myLFOLVL->fStartAt,myLFOLVL->fFormatting));
 		  if(!myLFOLVL->fFormatting && myLFOLVL->fStartAt)
 			myStartAt = myLFOLVL->iStartAt;
 		}
@@ -1666,12 +1666,12 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 	  bool bLST_LVL_format = true;
 	  if(myLFOLVL)
 		{
-		  // this branch has not been debugged, as I have not been able to create a
-		  // Word document that would use the LFO LVL
+		  // this branch has not been (thoroughly) debugged
+		  // Abi bugs 2205 and 2393 exhibit this behavior
 		  UT_DEBUGMSG(("list: using the LVL from LFO\n"));
 		  myListId = myLFOLVL->iStartAt;
 		  i = 0;
-		  xxx_UT_DEBUGMSG(("list: number of LSTs %d, my lsid %d\n", ps->noofLST,myListId));
+		  UT_DEBUGMSG(("list: number of LSTs %d, my lsid %d\n", ps->noofLST,myListId));
 		  while(i < ps->noofLST && ps->lst[i].lstf.lsid != myListId)
 		{
 		  i++;
@@ -1913,7 +1913,7 @@ list_error:
 		return 1;
 	}
 
-	if (myListId > 0)
+	if (myListId > 0 && myLVLF)
 	  {
 		// TODO: honor more props
 		const XML_Char *list_field_fmt[3];
