@@ -304,8 +304,8 @@ void AP_Dialog_Lists::Apply(void)
  * 2. start a new list with the properties given if there is not a 
  * list at the current point.
  *
- * 3. Start a sublist at the current point if a list already exists there and is
- *    non-empty
+ * 3. Start a sublist at the current point if a list already exists there and
+ *    contains two or more items.
  *
  * 4. Change the list to the requested value if a list already eists but only
  *    has one item in it.

@@ -105,8 +105,10 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_EDIT_FIND,		0,1,0,	"find",				NULL,					NULL);
 	_s(AP_MENU_ID_EDIT_REPLACE,		0,1,0,	"replace",			NULL,					NULL);
 	_s(AP_MENU_ID_EDIT_GOTO,		0,1,0,	"go",				NULL,					NULL);
-	_s(AP_MENU_ID_EDIT_EDITHEADER,		0,1,0,	"editHeader",				NULL,					NULL);
-	_s(AP_MENU_ID_EDIT_EDITFOOTER,		0,1,0,	"editFooter",				NULL,					NULL);
+	_s(AP_MENU_ID_EDIT_EDITHEADER,		0,1,0,	"editHeader",	NULL,					NULL);
+	_s(AP_MENU_ID_EDIT_EDITFOOTER,		0,1,0,	"editFooter",	NULL,					NULL);
+	_s(AP_MENU_ID_EDIT_REMOVEHEADER,		0,1,0,"removeHeader",ap_GetState_Changes	,					NULL);
+	_s(AP_MENU_ID_EDIT_REMOVEFOOTER,		0,1,0,	"removeFooter",ap_GetState_Changes,					NULL);
 
 	_s(AP_MENU_ID_VIEW,				1,0,0,	NULL,				NULL,					NULL);
 	_s(AP_MENU_ID_VIEW_NORMAL, 0,0,1, "viewNormalLayout", ap_GetState_View, NULL);

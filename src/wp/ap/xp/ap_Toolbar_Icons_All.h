@@ -88,6 +88,10 @@
 #	include "tb_view_showpara.xpm"
 #	include "tb_text_fgcolor.xpm"
 #	include "tb_text_bgcolor.xpm"
+#	include "tb_edit_editheader.xpm"
+#	include "tb_edit_editfooter.xpm"
+#	include "tb_edit_removeheader.xpm"
+#	include "tb_edit_removefooter.xpm"
 
 #ifdef ABI_OPT_PERL
 #	include "tb_script_play.xpm"
@@ -189,6 +193,10 @@
 	DefineToolbarIcon(tb_view_showpara_xpm)
 	DefineToolbarIcon(tb_text_fgcolor_xpm)
 	DefineToolbarIcon(tb_text_bgcolor_xpm)
+	DefineToolbarIcon(tb_edit_editheader_xpm)
+ 	DefineToolbarIcon(tb_edit_editfooter_xpm)
+ 	DefineToolbarIcon(tb_edit_removeheader_xpm)
+ 	DefineToolbarIcon(tb_edit_removefooter_xpm)
 #ifdef ABI_OPT_PERL
 	DefineToolbarIcon(tb_script_play_xpm)
 #endif

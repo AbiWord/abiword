@@ -125,6 +125,34 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Clipboard)
 	return s;
 }
 
+
+Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_HdrFtr)
+{
+	ABIWORD_VIEW;
+	UT_ASSERT(pView);
+
+	if (pszState)
+		*pszState = NULL;
+
+	EV_Toolbar_ItemState s = EV_TIS_ZERO;
+
+
+	switch (id)
+	{
+	case AP_TOOLBAR_ID_EDIT_REMOVEHEADER:
+		s = ( (pView->isHeaderOnPage()) ? EV_TIS_ZERO : EV_TIS_Gray );
+		break;
+
+	case AP_TOOLBAR_ID_EDIT_REMOVEFOOTER:
+		s = ( (pView->isFooterOnPage()) ? EV_TIS_ZERO : EV_TIS_Gray );
+		break;
+	default:
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		break;
+	}
+	return s;
+}
+
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Style)
 {
 	ABIWORD_VIEW;

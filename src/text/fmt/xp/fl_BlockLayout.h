@@ -272,7 +272,7 @@ public:
 	void setDominantDirection(bool bDirection);
 #endif
 
-	bool isHdrFtr(void) { return m_bIsHdrFtr;}
+	bool isHdrFtr(void);
 	void setHdrFtr(void) { m_bIsHdrFtr = true;}
 	void clearHdrFtr(void) { m_bIsHdrFtr = false;}
 

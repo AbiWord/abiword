@@ -187,7 +187,6 @@ bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, bool bUndo)
 			pf_Frag_Strux * pfsContainer = NULL;
 			bool bFoundContainer = _getStruxFromPosition(pcrStrux->getPosition(),&pfsContainer);
 			UT_ASSERT(bFoundContainer);
-
 			_insertStrux(pf,fragOffset,pfsNew);
 			DONE();
 			m_pDocument->notifyListeners(pfsContainer,pfsNew,pcr);

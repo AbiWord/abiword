@@ -318,7 +318,6 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 	{
 		PT_AttrPropIndex indexAP = pcr->getIndexAP();
 		const PP_AttrProp* pAP = NULL;
-			
 		if (m_pDoc->getAttrProp(indexAP, &pAP) && pAP)
 		{
 			const XML_Char* pszSectionType = NULL;
@@ -1027,150 +1026,173 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 
 	UT_ASSERT(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux);
 	const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);
-
 	fl_Layout * pL = (fl_Layout *)sfh;
+	xxx_UT_DEBUGMSG(("Previous strux type %d \n",pL->getType()));
+	xxx_UT_DEBUGMSG(("Insert strux type %d \n",pcrx->getStruxType()));
 	switch (pL->getType())				// see what the immediately prior strux is.
 	{
 	case PTX_Section:					// the immediately prior strux is a section.
-
+    {
 		switch (pcrx->getStruxType())	// see what we are inserting.
 		{
 		case PTX_Section:				// we are inserting a section.
-			// We are inserting a section immediately after a section (with no
-			// intervening block).  This is probably a bug, because there should
-			// at least be an empty block between them (so that the user can set
-			// the cursor there and start typing, if nothing else).
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			return false;
-				
+		   {	// We are inserting a section immediately after a section (with no
+			   // intervening block).  This is probably a bug, because there should
+			   // at least be an empty block between them (so that the user can set
+			   // the cursor there and start typing, if nothing else).
+			   UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			   return false;
+		   }		
 		case PTX_Block:					// we are inserting a block.
-		{
-			// The immediately prior strux is a section.  So, this
-			// will become the first block of the section and have no
-			// text.
+		   {
+			   // The immediately prior strux is a section.  So, this
+			   // will become the first block of the section and have no
+			   // text.
 
-			fl_SectionLayout * pSL = static_cast<fl_SectionLayout *>(pL);
-			bool bResult = pSL->bl_doclistener_insertBlock(NULL, pcrx,sdh,lid,pfnBindHandles);
-			if (0 == m_iGlobCounter)
-			{
-#ifndef UPDATE_LAYOUT_ON_SIGNAL
-				m_pLayout->updateLayout();
-#endif
-			}
-	
-			return bResult;
-		}
+			   fl_SectionLayout * pSL = static_cast<fl_SectionLayout *>(pL);
+			   bool bResult = pSL->bl_doclistener_insertBlock(NULL, pcrx,sdh,lid,pfnBindHandles);
+			   return bResult;
+		   }
 		case PTX_SectionHdrFtr:				// we are inserting a HdrFtr section.
-			// We are inserting a HdrFtr section immediately after a section 
-			// (with no
-			// intervening block).  This is probably a bug, because there should
-			// at least be an empty block between them (so that the user can set
-			// the cursor there and start typing, if nothing else).
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			return false;
+		   {
+			   // We are inserting a HdrFtr section immediately after a section 
+			   // (with no
+			   // intervening block).  This is probably a bug, because there should
+			   // at least be an empty block between them (so that the user can set
+			   // the cursor there and start typing, if nothing else).
+			   UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			   return false;
+		   }
 		case PTX_SectionEndnote:
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			return false;
-
+		   {
+			   UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			   return false;
+		   }
 		default:						// unknown strux.
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			return false;
+		   {
+			   UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			   return false;
+		   }
 		}
-		
-	case PTX_Block:						// the immediately prior strux is a block.
-
+	}	
+	case PTX_SectionHdrFtr:	   // the immediately prior strux is a HdrFtr.
+	{	
+		xxx_UT_DEBUGMSG(("Immediately prior strux is a HdrFtr \n"));
 		switch (pcrx->getStruxType())	// see what we are inserting.
 		{
 		case PTX_Section:				// we are inserting a section.
-		{
-			// The immediately prior strux is a block.  Everything
-			// from this point forward (to the next section) needs to
-			// be re-parented to this new section.  We also need to
-			// verify that there is a block immediately after this new
-			// section -- a section must be followed by a block
-			// because a section cannot contain content.
-			
-			fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
-			fl_SectionLayout* pBLSL = pBL->getSectionLayout();
-			bool bResult = pBLSL->bl_doclistener_insertSection(pBL, FL_SECTION_DOC, pcrx,sdh,lid,pfnBindHandles);
-			if (0 == m_iGlobCounter)
-			{
-#ifndef UPDATE_LAYOUT_ON_SIGNAL
-				m_pLayout->updateLayout();
-#endif
-			}
-	
-			return bResult;
+		   {
+			   // The immediately prior strux is a hdrftr. This should not
+			   // happen.
+			   UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			   return false;
+		   }
+		case PTX_Block:					// we are inserting a block.
+		   {
+			   xxx_UT_DEBUGMSG(("Inserting a block after hdrftr \n"));
+			   // The immediately prior strux is a hdrftr.  Insert the new
+			   // block.
+			   fl_SectionLayout* pBLSL = static_cast<fl_SectionLayout *>(pL);
+			   bool bResult = pBLSL->bl_doclistener_insertBlock(NULL, pcrx,sdh,lid,pfnBindHandles);
+			   return bResult;
+		   }
+	    case PTX_SectionHdrFtr:
+		   {
+			   // The immediately prior strux is a HdrFtr.  
+			   // This should not happen.
+
+			   UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			   return false;
+		   }
+		case PTX_SectionEndnote:
+		   {	
+			   // The immediately prior strux is a HdrFtr.  
+			   // This should not happen.
+
+			   UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			   return false;
+		   }
+		default:
+		   {
+			   UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			   return false;
+		   }
 		}
+	}
+    case PTX_Block:						// the immediately prior strux is a block.
+    {
+		switch (pcrx->getStruxType())	// see what we are inserting.
+		{
+		case PTX_Section:				// we are inserting a section.
+		   {
+			   // The immediately prior strux is a block.  Everything
+			   // from this point forward (to the next section) needs to
+			   // be re-parented to this new section.  We also need to
+			   // verify that there is a block immediately after this new
+			   // section -- a section must be followed by a block
+			   // because a section cannot contain content.
+			
+			   fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
+			   fl_SectionLayout* pBLSL = pBL->getSectionLayout();
+			   bool bResult = pBLSL->bl_doclistener_insertSection(pBL, FL_SECTION_DOC, pcrx,sdh,lid,pfnBindHandles);
+	
+			   return bResult;
+		   }
 		
 		case PTX_Block:					// we are inserting a block.
-		{
-			// The immediately prior strux is also a block.  Insert the new
-			// block and split the content between the two blocks.
-			fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
-			fl_SectionLayout* pBLSL = pBL->getSectionLayout();
-			bool bResult = true;
-			if(pBLSL->getType() == FL_SECTION_SHADOW)
-			{
-				fl_HdrFtrSectionLayout * pHdr = pBLSL->getHdrFtrSectionLayout();
-				bResult = pHdr->bl_doclistener_insertBlock(pBL, pcrx,sdh,lid,pfnBindHandles);
-			}
-			else
-				bResult = pBLSL->bl_doclistener_insertBlock(pBL, pcrx,sdh,lid,pfnBindHandles);
-			if (0 == m_iGlobCounter)
-			{
-#ifndef UPDATE_LAYOUT_ON_SIGNAL
-				m_pLayout->updateLayout();
-#endif
-			}
-	
-			return bResult;
-		}
+		   {
+			   // The immediately prior strux is also a block.  Insert the new
+			   // block and split the content between the two blocks.
+			   fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
+			   fl_SectionLayout* pBLSL = pBL->getSectionLayout();
+			   bool bResult = true;
+			   if(pBLSL->getType() == FL_SECTION_SHADOW)
+			   {
+				   fl_HdrFtrSectionLayout * pHdr = pBLSL->getHdrFtrSectionLayout();
+				   bResult = pHdr->bl_doclistener_insertBlock(pBL, pcrx,sdh,lid,pfnBindHandles);
+			   }
+			   else
+			   {
+				   bResult = pBLSL->bl_doclistener_insertBlock(pBL, pcrx,sdh,lid,pfnBindHandles);
+			   }
+			   return bResult;
+		   }
 	    case PTX_SectionHdrFtr:
-		{
-			// The immediately prior strux is a block.  Everything
-			// from this point forward (to the next section) needs to
-			// be re-parented to this new HdrFtr section.  We also need to
-			// verify that there is a block immediately after this new
-			// section -- a section must be followed by a block
-			// because a section cannot contain content.
+		   {
+			   // The immediately prior strux is a block.  Everything
+			   // from this point forward (to the next section) needs to
+			   // be re-parented to this new HdrFtr section.  We also need to
+			   // verify that there is a block immediately after this new
+			   // section -- a section must be followed by a block
+			   // because a section cannot contain content.
 			
-			fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
-			fl_SectionLayout* pBLSL = pBL->getSectionLayout();
-			bool bResult = pBLSL->bl_doclistener_insertSection(pBL, FL_SECTION_HDRFTR, pcrx,sdh,lid,pfnBindHandles);
-			if (0 == m_iGlobCounter)
-			{
-#ifndef UPDATE_LAYOUT_ON_SIGNAL
-				m_pLayout->updateLayout();
-#endif
-			}
-	
-			return bResult;
-		}
+			   fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
+			   fl_SectionLayout* pBLSL = pBL->getSectionLayout();
+			   bool bResult = pBLSL->bl_doclistener_insertSection(pBL, FL_SECTION_HDRFTR, pcrx,sdh,lid,pfnBindHandles);
+			   return bResult;
+		   }
 		case PTX_SectionEndnote:
-		{
-			fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
-			fl_SectionLayout* pBLSL = pBL->getSectionLayout();
+		   {
+			   fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
+			   fl_SectionLayout* pBLSL = pBL->getSectionLayout();
 
-			bool bResult = pBLSL->bl_doclistener_insertSection(pBL, FL_SECTION_ENDNOTE, pcrx,sdh,lid,pfnBindHandles);
-			if (0 == m_iGlobCounter)
-			{
-#ifndef UPDATE_LAYOUT_ON_SIGNAL
-				m_pLayout->updateLayout();
-#endif
-			}
-	
-			return bResult;
-		}
+			   bool bResult = pBLSL->bl_doclistener_insertSection(pBL, FL_SECTION_ENDNOTE, pcrx,sdh,lid,pfnBindHandles);
+			   return bResult;
+		   }
 		default:
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			return false;
+		   {
+			   UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			   return false;
+		   }
 		}
-
+	}
 	default:
+	{	
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return false;
 	}
+
+	} // finish the overall switch
 
 	/*NOTREACHED*/
 	UT_ASSERT(0);

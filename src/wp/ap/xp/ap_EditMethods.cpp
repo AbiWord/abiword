@@ -267,6 +267,8 @@ public:
 	static EV_EditMethod_Fn replace;
 	static EV_EditMethod_Fn editHeader;
 	static EV_EditMethod_Fn editFooter;
+    static EV_EditMethod_Fn removeHeader;
+    static EV_EditMethod_Fn removeFooter;
 
 	static EV_EditMethod_Fn viewStd;
 	static EV_EditMethod_Fn viewFormat;
@@ -746,6 +748,8 @@ static EV_EditMethod s_arrayEditMethods[] =
 
 	// r
 	EV_EditMethod(NF(redo),					0,	""),
+	EV_EditMethod(NF(removeFooter),         0,  ""),
+	EV_EditMethod(NF(removeHeader),         0,  ""),
 	EV_EditMethod(NF(replace),				0,	""),
 	EV_EditMethod(NF(replaceChar),			_D_,	""),
 
@@ -3769,6 +3773,19 @@ Defun1(editFooter)
 	return true;
 }
 
+Defun1(removeHeader)
+{
+	ABIWORD_VIEW;
+	pView->cmdRemoveHdrFtr(true);
+	return true;
+}
+
+Defun1(removeFooter)
+{
+	ABIWORD_VIEW;
+	pView->cmdRemoveHdrFtr(false);
+	return true;
+}
 
 Defun1(editHeader)
 {

@@ -123,7 +123,8 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		_m_findNextString(0),
 		m_bShowPara(false),
 		m_viewMode(VIEW_NORMAL),
-		m_previewMode(PREVIEW_NONE)
+		m_previewMode(PREVIEW_NONE),
+		m_bDontUpdateScreenOnGeneralUpdate(false)
 {
 //	UT_ASSERT(m_pG->queryProperties(GR_Graphics::DGP_SCREEN));
 
@@ -1729,6 +1730,10 @@ void FV_View::processSelectedBlocks(List_Type listType)
 
 	// Signal PieceTable Change
 	m_pDoc->notifyPieceTableChangeStart();
+
+    // don't screen update till we're done!
+	_setScreenUpdateOnGeneralUpdate(false);
+
 //
 // Turn off cursor
 //
@@ -1741,6 +1746,7 @@ void FV_View::processSelectedBlocks(List_Type listType)
 	m_pDoc->disableListUpdates();
 
 	m_pDoc->beginUserAtomicGlob();
+
 
 	for(i=0; i< vBlock.getItemCount(); i++)
 	{
@@ -1769,11 +1775,13 @@ void FV_View::processSelectedBlocks(List_Type listType)
 	// closes bug # 1255 - unselect a list after creation
 	cmdUnselectSelection();
 
-	_generalUpdate();
-
 	// restore updates and clean up dirty lists
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
+
+    // enable screen updates now.
+	_setScreenUpdateOnGeneralUpdate(true);
+	_generalUpdate();
 
 	// Signal piceTable is stable again
 	m_pDoc->notifyPieceTableChangeEnd();
@@ -1994,7 +2002,6 @@ bool FV_View::setStyle(const XML_Char * style, bool bDontGeneralUpdate)
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return false;
 	}
-	UT_DEBUGMSG(("SEVIOR: In fv_View setStyle \n"));
 //
 // Get This info before it's lost from the following processing
 // 
@@ -2004,7 +2011,6 @@ bool FV_View::setStyle(const XML_Char * style, bool bDontGeneralUpdate)
 	bool bisListStyle = false;
 	if(pszStyle)
 		bisListStyle = (NOT_A_LIST != pBL->getListTypeFromStyle( pszStyle));
-	UT_DEBUGMSG(("SEVIOR: islist =%d \n",bisListStyle));
 //
 // Can't handle lists inside header/Footers. Bail out
 //
@@ -2019,8 +2025,6 @@ bool FV_View::setStyle(const XML_Char * style, bool bDontGeneralUpdate)
 	}
 
 	bool bCharStyle = pStyle->isCharStyle();
-	if(bCharStyle)
-		UT_DEBUGMSG(("SEVIOR: Style is Character Type \n"));
 	const XML_Char * attribs[] = { PT_STYLE_ATTRIBUTE_NAME, 0, 0 };
 	attribs[1] = style;
 	if(bisListStyle)
@@ -2047,7 +2051,6 @@ bool FV_View::setStyle(const XML_Char * style, bool bDontGeneralUpdate)
 		{
 			_eraseInsertionPoint();
 		}
-		UT_DEBUGMSG(("SEVIOR: Setting character style in setStyle \n"));
 		_clearIfAtFmtMark(getPoint());	// TODO is this correct ??
 		_eraseSelection();
 
@@ -2102,7 +2105,6 @@ bool FV_View::setStyle(const XML_Char * style, bool bDontGeneralUpdate)
 		_clearIfAtFmtMark(getPoint());	// TODO is this correct ??
 
 		// NB: clear explicit props at both block and char levels
-		UT_DEBUGMSG(("SEVIOR: Setting Paragraph style in setStyle \n"));
 		bRet = m_pDoc->changeStruxFmt(PTC_AddStyle,posStart,posEnd,attribs,NULL,PTX_Block);
 #ifdef BIDI_ENABLED
 		/*	
@@ -5427,7 +5429,8 @@ void FV_View::insertSymbol(UT_UCSChar c, XML_Char * symfont)
 */
 void FV_View::_generalUpdate(void)
 {
-	m_pDoc->signalListeners(PD_SIGNAL_UPDATE_LAYOUT);
+	if(_shouldScreenUpdateOnGeneralUpdate())
+		m_pDoc->signalListeners(PD_SIGNAL_UPDATE_LAYOUT);
 //
 // No need to update other stuff if we're doing a preview
 //
@@ -6313,7 +6316,7 @@ void FV_View::drawInsertionPoint()
 
 void FV_View::_drawInsertionPoint()
 {
-	if(m_focus==AV_FOCUS_NONE)
+	if(m_focus==AV_FOCUS_NONE || !_shouldScreenUpdateOnGeneralUpdate())
 		return;
 	if (m_bCursorBlink && (m_focus==AV_FOCUS_HERE || m_focus==AV_FOCUS_MODELESS || AV_FOCUS_NEARBY))
 	{
@@ -6497,7 +6500,6 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 	UT_Rect rClip;
 	if (bClip)
 	{
-
 		rClip.left = x;
 		rClip.top = y;
 		rClip.width = width;
@@ -8335,6 +8337,185 @@ void FV_View::setShowPara(bool bShowPara)
 };
 
 /*!
+ * Remove the Header or footer from the section owning the current Page.
+\params bool isHeader remove the header if true, the footer if false.
+*/
+void FV_View::cmdRemoveHdrFtr( bool isHeader)
+{
+//
+// Branch to Header/Footer sections.
+//
+	fp_ShadowContainer * pHFCon = NULL;
+	fl_HdrFtrShadow * pShadow = NULL;
+	fl_HdrFtrSectionLayout * pHdrFtr = NULL;
+	fl_BlockLayout * pLast = NULL;
+	PT_DocPosition posBOS = 0;
+	PT_DocPosition posEOS = 0;
+
+	if(isHeader)
+	{
+		fp_Page * pPage = getCurrentPage();
+		pHFCon = pPage->getHeaderP();
+		if(pHFCon == NULL)
+		{
+			return;
+		}
+//
+// Now see if we are in the header to be removed. If so, jump out.
+//
+		if (isSelectionEmpty())
+			_eraseInsertionPoint();
+		else
+			_clearSelection();
+		if(isHdrFtrEdit())
+		{
+			clearHdrFtrEdit();
+			_setPoint(pPage->getFirstLastPos(true));
+		}
+	}
+	else
+	{
+		fp_Page * pPage = getCurrentPage();
+		pHFCon = pPage->getFooterP();
+		if(pHFCon == NULL)
+		{
+			return;
+		}
+//
+// Now see if we are in the Footer to be removed. If so, jump out.
+//
+		if (isSelectionEmpty())
+			_eraseInsertionPoint();
+		else
+			_clearSelection();
+		if(isHdrFtrEdit())
+		{
+			clearHdrFtrEdit();
+			_setPoint(pPage->getFirstLastPos(false));
+		}
+	}
+	pShadow = pHFCon->getShadow();
+	UT_ASSERT(pShadow);
+	if(!pShadow)
+		return;
+	
+	m_pDoc->beginUserAtomicGlob();
+	// Signal PieceTable Change
+    // dont screen update till we're done!
+	_setScreenUpdateOnGeneralUpdate(false);
+
+	m_pDoc->notifyPieceTableChangeStart();
+//
+// Save current document position.
+//
+	PT_DocPosition curPoint = getPoint();
+//
+// Get the hdrftrSectionLayout
+// Get it's position.
+// Find the last run in the Section and get it's position.
+//
+	pHdrFtr = pShadow->getHdrFtrSectionLayout();
+	posBOS = m_pDoc->getStruxPosition(pHdrFtr->getStruxDocHandle());
+	pLast = pHdrFtr->getLastBlock();
+	posEOS = pLast->getPosition(false);
+//
+// This code assumes there is an End of Block run at the end of the Block. Thanks
+// to Jesper, there always is!
+//
+	while(pLast->getNext() != NULL)
+	{
+		pLast = pLast->getNext();
+	}
+	fp_Run * pRun = pLast->getFirstRun();
+	while( pRun->getNext() != NULL)
+	{
+		pRun = pRun->getNext();
+	}
+	posEOS += pRun->getBlockOffset();
+//
+// deleteSpan covers from char to last char + 1;
+// 
+//   n.e.x.t.
+//   ^.......^
+// pos1    pos2
+//
+// Location of the start of the text in the header/footer.
+//
+	PT_DocPosition posBOT = pHdrFtr->getFirstBlock()->getPosition(false);
+//
+// Also need the location of the owning section for this header.
+//
+	fl_DocSectionLayout * pDSL = pHdrFtr->getDocSectionLayout();
+//	PT_DocPosition posDSL = pDSL->getFirstBlock()->getPosition();
+//
+// Ok Now we've got a document range to delete that covers exactly this header.
+// Do the Deed!
+//
+// I'm going to do exactly the reverse of how a header is made since Undo on 
+// creating a section works.
+//
+// First delete all text in header.
+//
+	m_pDoc->deleteSpan(posBOT,posEOS,NULL);
+//
+// Now delete the header strux.
+//
+	m_pDoc->deleteSpan(posBOS,posBOS+2,NULL);
+
+    // screen update now!
+
+	_setScreenUpdateOnGeneralUpdate(true);
+	_generalUpdate();
+//
+// After erasing the cursor, Restore to the point before all this mess started.
+//
+	_eraseInsertionPoint();
+	_setPoint(curPoint);
+	if (!_ensureThatInsertionPointIsOnScreen())
+	{
+		_fixInsertionPointCoords();
+		_drawInsertionPoint();
+	}
+
+	// Signal PieceTable Changes have finished
+
+	m_pDoc->notifyPieceTableChangeEnd();
+    m_pDoc->endUserAtomicGlob();
+}
+
+/*!
+ * This function returns true if there is a header on the current page.
+\returns true if is there a header on the current page.
+*/
+bool FV_View::isHeaderOnPage(void)
+{
+	fp_Page * pPage = getCurrentPage();
+	fp_ShadowContainer * pHFCon = NULL;
+	pHFCon = pPage->getHeaderP();
+	if(pHFCon == NULL)
+	{
+		return false;
+	}
+	return true;
+}
+
+/*!
+ * This function returns true if there is a footer on the current page.
+\returns true if is there a footer on the current page.
+*/
+bool FV_View::isFooterOnPage(void)
+{
+	fp_Page * pPage = getCurrentPage();
+	fp_ShadowContainer * pHFCon = NULL;
+	pHFCon = pPage->getFooterP();
+	if(pHFCon == NULL)
+	{
+		return false;
+	}
+	return true;
+}
+
+/*!
  *  This method sets a bool variable which tells getEditableBounds we are
  *  editting a header/Footer.
  *  \param  pSectionLayout pointer to the SectionLayout being editted.
@@ -8750,7 +8931,8 @@ bool FV_View::insertHeaderFooter(const XML_Char ** props, HdrFtrType hfType)
 	} 
 
 //
-// Next set the style to Normal so weird properties at the end of the doc aren't
+// Next set the style to Normal Clean so weird properties at the end of the 
+// doc aren't
 // inherited into the header.
 //
 	setStyle("Normal Clean",true);

@@ -75,6 +75,8 @@ BeginSet(en,AU,false)
 	MenuLabel(AP_MENU_ID_EDIT_GOTO,			"&Go To",			"Move the insertion point to a specific location")
 	MenuLabel(AP_MENU_ID_EDIT_EDITHEADER,			"Edit Header",			"Edit the Header on the current page")
 	MenuLabel(AP_MENU_ID_EDIT_EDITFOOTER,			"Edit Footer",			"Edit the Footer on the current page")
+	MenuLabel(AP_MENU_ID_EDIT_REMOVEHEADER,			"Remove Header",			"Remove the Header on this page from the Document")
+	MenuLabel(AP_MENU_ID_EDIT_REMOVEFOOTER,			"Remove Footer",			"Remove the Footer on this page from the Document")
 	
 	MenuLabel(AP_MENU_ID_VIEW,				"&View",			NULL)
 	MenuLabel(AP_MENU_ID_VIEW_NORMAL, "&Normal", "Normal View")

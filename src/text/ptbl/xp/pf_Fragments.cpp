@@ -24,6 +24,7 @@
 #include "pf_Fragments.h"
 #include "pf_Frag.h"
 #include "ut_debugmsg.h"
+#include "pf_Frag_Strux.h"
 
 pf_Fragments::pf_Fragments()
 	: m_pFirst(0),
@@ -88,6 +89,8 @@ void pf_Fragments::insertFrag(pf_Frag * pfPlace, pf_Frag * pfNew)
 	UT_ASSERT(pfPlace);
 	UT_ASSERT(pfNew);
 
+	xxx_UT_DEBUGMSG(("Inserting frag %x of type %d after frag %x of type %d\n",pfNew,pfNew->getType(),pfPlace,pfPlace->getType()));
+
 	pf_Frag * pfQ = pfPlace->getNext();
 	
 	pfNew->setNext(pfQ);
@@ -107,7 +110,6 @@ void pf_Fragments::unlinkFrag(pf_Frag * pf)
 	UT_ASSERT(pf->getType() != pf_Frag::PFT_EndOfDoc);
 	pf_Frag * pn = pf->getNext();
 	pf_Frag * pp = pf->getPrev();
-
 	setFragsDirty();
 	if (pn)
 	{

@@ -85,12 +85,16 @@ bool pt_PieceTable::_createStrux(PTStruxType pts,
 	return true;
 }
 
+/*!
+ * If we do an insert strux on a pf_Frag_Strux we actually insert the new strux
+ * BEFORE pf. In this case the container is actually in strux before this one.
+ * In this case pfsActual returns the rela containing strux.
+ */
 void pt_PieceTable::_insertStrux(pf_Frag * pf,
 								 PT_BlockOffset fragOffset,
 								 pf_Frag_Strux * pfsNew)
 {
 	// insert the new strux frag at (pf,fragOffset)
-
 	switch (pf->getType())
 	{
 	default:
@@ -105,6 +109,9 @@ void pt_PieceTable::_insertStrux(pf_Frag * pf,
 			// TODO this may introduce some oddities due to empty paragraphs.
 			// TODO investigate this later.
 			UT_ASSERT(fragOffset == 0);
+//
+// OK find the real container strux.
+//
 			m_fragments.insertFrag(pf->getPrev(),pfsNew);
 			return;
 		}
@@ -112,6 +119,7 @@ void pt_PieceTable::_insertStrux(pf_Frag * pf,
 	case pf_Frag::PFT_FmtMark:
 		{
 			// insert pfsNew after pf.
+            // before this.
 			// TODO check this.
 			UT_ASSERT(fragOffset == 0);
 			m_fragments.insertFrag(pf,pfsNew);
@@ -250,8 +258,9 @@ bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
 		}
 	}
 
-	// insert this frag into the fragment list.
+	// insert this frag into the fragment list. Update the container strux as needed
 
+	pf_Frag_Strux * pfsActualContainer = pfsContainer;
 	_insertStrux(pf,fragOffset,pfsNew);
 
 	// create a change record to describe the change, add

@@ -306,6 +306,10 @@ public:
 	void                cmdEditHeader(void);
 	void                cmdEditFooter(void);
 
+	void                cmdRemoveHdrFtr(bool isHeader);
+	bool                isFooterOnPage(void);
+	bool                isHeaderOnPage(void);
+
 // ----------------------
 // Stuff for edittable endnotes
 //
@@ -449,7 +453,11 @@ protected:
 
 	void				_checkPendingWordForSpell(void);
 
-        bool                            _isSpaceBefore(PT_DocPosition pos);
+    bool                _isSpaceBefore(PT_DocPosition pos);
+	void                _setScreenUpdateOnGeneralUpdate( bool bDoit) 
+		{m_bDontUpdateScreenOnGeneralUpdate = !bDoit;}
+	bool                _shouldScreenUpdateOnGeneralUpdate(void) const 
+		{ return !m_bDontUpdateScreenOnGeneralUpdate;}
 
 	PT_DocPosition		m_iInsPoint;
 	UT_sint32			m_xPoint;
@@ -527,6 +535,7 @@ protected:
 	bool		m_bShowPara;
 	ViewMode        m_viewMode;
 	PreViewMode m_previewMode;
+	bool m_bDontUpdateScreenOnGeneralUpdate;         
 };
 
 #endif /* FV_VIEW_H */

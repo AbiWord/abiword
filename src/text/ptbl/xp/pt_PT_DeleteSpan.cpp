@@ -428,19 +428,19 @@ bool pt_PieceTable::_tweakDeleteSpan(PT_DocPosition & dpos1,
 	//  We want to keep tweaking the delete span until there is nothing
 	//  more to tweak.  We check to see if nothing has changed in the
 	//  last tweak, and if so, we are done. 
-//	while (1)
-//	{
-//		PT_DocPosition old_dpos1 = dpos1;
-//		PT_DocPosition old_dpos2 = dpos2;
-//		UT_uint32 old_iStackSize = pstDelayStruxDelete->getDepth();
+	while (1)
+	{
+		PT_DocPosition old_dpos1 = dpos1;
+		PT_DocPosition old_dpos2 = dpos2;
+		UT_uint32 old_iStackSize = pstDelayStruxDelete->getDepth();
+		
+		if(!_tweakDeleteSpanOnce(dpos1, dpos2, pstDelayStruxDelete))
+			return false;
 
-	if(!_tweakDeleteSpanOnce(dpos1, dpos2, pstDelayStruxDelete))
-		return false;
-
-//		if (dpos1 == old_dpos1 && dpos2 == old_dpos2
-//			&& pstDelayStruxDelete->getDepth() == old_iStackSize)
-	return true;
-//	}
+		if (dpos1 == old_dpos1 && dpos2 == old_dpos2
+			&& pstDelayStruxDelete->getDepth() == old_iStackSize)
+			return true;
+	}
 }
 
 bool pt_PieceTable::_deleteFormatting(PT_DocPosition dpos1,
@@ -881,3 +881,8 @@ void pt_PieceTable::_tweakFieldSpan(PT_DocPosition & dpos1,
         dpos2 = getFragPosition(pf_Other);
     }
 }
+
+
+
+
+

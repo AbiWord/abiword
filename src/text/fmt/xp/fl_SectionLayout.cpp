@@ -188,7 +188,6 @@ fl_BlockLayout * fl_SectionLayout::insertBlock(PL_StruxDocHandle sdh, fl_BlockLa
 	{
 		m_pFirstBlock = pBL;
 	}
-
 	return pBL;
 }
 
@@ -1664,6 +1663,15 @@ fl_HdrFtrSectionLayout::fl_HdrFtrSectionLayout(HdrFtrType iHFType, FL_DocLayout*
 	m_iType = FL_SECTION_HDRFTR;
 	m_pHdrFtrContainer = NULL;
 	fl_Layout::setType(PTX_SectionHdrFtr); // Set the type of this strux
+//
+// Since we're almost certainly removing blocks at the end of the doc, tell the
+// view to remember the current position on the active view.
+//
+	FV_View * pView = m_pLayout->getView();
+	if(pView && pView->isActive())
+	{
+		pView->markSavedPositionAsNeeded();
+	}
 }
 
 fl_HdrFtrSectionLayout::~fl_HdrFtrSectionLayout()
@@ -1738,6 +1746,29 @@ void fl_HdrFtrSectionLayout::collapse(void)
 	}
 	m_vecPages.clear();
 	DELETEP(m_pHdrFtrContainer);
+}
+
+/*!
+ * This method removes the block pBlock from all the shadowLayouts.
+ */
+void fl_HdrFtrSectionLayout::collapseBlock(fl_BlockLayout *pBlock)
+{
+	UT_uint32 iCount = m_vecPages.getItemCount();
+	UT_uint32 i;
+	for (i=0; i<iCount; i++)
+	{
+		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
+		fl_BlockLayout * pShadowBL = pPair->pShadow->findMatchingBlock(pBlock);
+		UT_ASSERT(pShadowBL);
+		if(pShadowBL)
+		{
+			pPair->pShadow->removeBlock( pShadowBL);
+			// In case we've never checked this one
+			m_pLayout->dequeueBlockForBackgroundCheck(pShadowBL);
+			delete pShadowBL;
+			pPair->pShadow->format();
+		}
+	}
 }
 
 bool fl_HdrFtrSectionLayout::recalculateFields(void)
@@ -2309,7 +2340,6 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_insertSpan(fl_BlockLayout* pBL, cons
 		// Find matching block in this shadow.
 
 		pShadowBL = pPair->pShadow->findMatchingBlock(pBL);
-		xxx_UT_DEBUGMSG(("SEVIOR: SectionLayout for shadow %d is %x \n",i,pShadowBL->getSectionLayout()));
 		bResult = pShadowBL->doclistener_insertSpan(pcrs)
 			&& bResult;
 	}
@@ -2420,12 +2450,7 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_changeStrux(fl_BlockLayout* pBL, con
 	return bResult;
 }
 
-bool fl_HdrFtrSectionLayout::bl_doclistener_insertBlock(fl_BlockLayout* pBL, const PX_ChangeRecord_Strux * pcrx,
-														PL_StruxDocHandle sdh,
-														PL_ListenerId lid,
-														void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
-																				PL_ListenerId lid,
-																				PL_StruxFmtHandle sfhNew))
+bool fl_HdrFtrSectionLayout::bl_doclistener_insertBlock(fl_BlockLayout* pBL, const PX_ChangeRecord_Strux * pcrx,PL_StruxDocHandle sdh,PL_ListenerId lid,void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,	PL_ListenerId lid, PL_StruxFmtHandle sfhNew))
 {
 	bool bResult = true;
 //
@@ -2439,31 +2464,59 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_insertBlock(fl_BlockLayout* pBL, con
 		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
 
 		// Find matching block in this shadow.
-
-		pShadowBL = pPair->pShadow->findMatchingBlock(pBL);
-		bResult = pShadowBL->doclistener_insertBlock(pcrx,sdh,lid,pfnBindHandles)
-			&& bResult;
+		if(pBL)
+		{
+			pShadowBL = pPair->pShadow->findMatchingBlock(pBL);
+			bResult = pShadowBL->doclistener_insertBlock(pcrx,sdh,lid,pfnBindHandles)
+				&& bResult;
+		}
+		else
+//
+// This is the first block in the shadow
+//
+		{
+			fl_BlockLayout*	pNewBL = pPair->pShadow->insertBlock(sdh, NULL, pcrx->getIndexAP());
+			if (!pNewBL)
+			{
+				UT_DEBUGMSG(("no memory for BlockLayout\n"));
+				return false;
+			}
+			bResult = bResult && pNewBL->doclistener_insertFirstBlock(pcrx, sdh, 
+													lid, pfnBindHandles);
+		}
 	}
 //
 // Find Matching Block in this HdrFtrSectionLayout!!
 //
-	fl_BlockLayout * ppBL = findMatchingBlock(pBL);
+	if(pBL)
+	{
+		fl_BlockLayout * ppBL = findMatchingBlock(pBL);
+		m_pDoc->allowChangeInsPoint();
 
-//	localFormat();
-	m_pDoc->allowChangeInsPoint();
-
-	xxx_UT_DEBUGMSG(("In hdrFtr Block %x marked as hdrftr state %d \n",ppBL,ppBL->isHdrFtr()));
-    ppBL->setHdrFtr();
-    bResult = ppBL->doclistener_insertBlock(pcrx,sdh,lid,pfnBindHandles)
-		&& bResult;
+		ppBL->setHdrFtr();
+		bResult = ppBL->doclistener_insertBlock(pcrx,sdh,lid,pfnBindHandles)
+			&& bResult;
 //
 // Mark the Block as HdrFtr
 //
-	ppBL->getNext()->setHdrFtr();
-	xxx_UT_DEBUGMSG(("Marking Block %x as Header/Footer \n",ppBL->getNext()));
-//	format();
-//	updateLayout();
-//	redrawUpdate();
+		ppBL->getNext()->setHdrFtr();
+	}
+	else
+//
+// First block in the section
+//
+	{
+		fl_BlockLayout*	pNewBL = insertBlock(sdh, NULL, pcrx->getIndexAP());
+		if (!pNewBL)
+		{
+			UT_DEBUGMSG(("no memory for BlockLayout\n"));
+			return false;
+		}
+		bResult = bResult && pNewBL->doclistener_insertFirstBlock(pcrx, sdh, 
+													lid, pfnBindHandles);
+		m_pDoc->allowChangeInsPoint();
+		pNewBL->setHdrFtr();
+	}
 	return bResult;
 }
 

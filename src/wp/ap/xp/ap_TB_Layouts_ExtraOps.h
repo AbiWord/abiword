@@ -46,6 +46,13 @@ BeginLayout(ExtraOps)
 	ToolbarItem(AP_TOOLBAR_ID_MIDDLE_SPACE)
 	ToolbarItem(AP_TOOLBAR_ID_DOUBLE_SPACE)
 
+	Spacer()
+	ToolbarItem(AP_TOOLBAR_ID_EDIT_HEADER)
+	ToolbarItem(AP_TOOLBAR_ID_EDIT_FOOTER)
+	Spacer()
+	ToolbarItem(AP_TOOLBAR_ID_EDIT_REMOVEHEADER)
+	ToolbarItem(AP_TOOLBAR_ID_EDIT_REMOVEFOOTER)
+
 #ifdef ABI_OPT_PERL
 	Spacer()
 	ToolbarItem(AP_TOOLBAR_ID_SCRIPT_PLAY)

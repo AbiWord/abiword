@@ -253,6 +253,11 @@ UT_RGBColor * fp_Run::getHighlightColor(void)
 			pPage = pLine->getContainer()->getPage();
 		if(pPage != NULL)
 			pClr = pPage->getOwningSection()->getPaperColor();
+		else if(m_pBL->isHdrFtr())
+		{
+			UT_setColor (m_colorHL, 255, 255, 255);
+			return &m_colorHL;
+		}
 		else
 			pClr = m_pBL->getDocSectionLayout()->getPaperColor();
 		UT_setColor (m_colorHL, pClr->m_red, pClr->m_grn, pClr->m_blu);
@@ -275,6 +280,11 @@ UT_RGBColor * fp_Run::getPageColor(void)
 		pPage = pLine->getContainer()->getPage();
 	if(pPage != NULL)
 		pClr = pPage->getOwningSection()->getPaperColor();
+	else if(m_pBL->isHdrFtr())
+	{
+		UT_setColor (m_colorPG, 0, 0, 0);
+		return &m_colorPG;
+	}
 	else
 		pClr = m_pBL->getDocSectionLayout()->getPaperColor();
 	UT_setColor (m_colorPG, pClr->m_red, pClr->m_grn, pClr->m_blu);

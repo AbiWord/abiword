@@ -188,6 +188,10 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 	m_bCursorErased = false;
 	m_uBackgroundCheckReasons = 0;
 	m_bIsHdrFtr = bIsHdrFtr;
+	if(m_pSectionLayout && m_pSectionLayout->getType() == FL_SECTION_HDRFTR)
+	{
+		m_bIsHdrFtr = true;
+	}
 	m_pLayout = m_pSectionLayout->getDocLayout();
 	m_pDoc = m_pLayout->getDocument();
 
@@ -258,6 +262,10 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 	m_bCursorErased = false;
 	m_uBackgroundCheckReasons = 0;
 	m_bIsHdrFtr = false;
+	if(m_pSectionLayout && m_pSectionLayout->getType() == FL_SECTION_HDRFTR)
+	{
+		m_bIsHdrFtr = true;
+	}
 	m_pLayout = m_pSectionLayout->getDocLayout();
 	m_pDoc = m_pLayout->getDocument();
 
@@ -797,6 +805,14 @@ fl_DocSectionLayout * fl_BlockLayout::getDocSectionLayout(void)
 	}
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	return NULL;
+}
+
+bool fl_BlockLayout::isHdrFtr(void) 
+{
+	if(getSectionLayout()!= NULL)
+		return (getSectionLayout()->getType() == FL_SECTION_HDRFTR);
+	else
+		return m_bIsHdrFtr;
 }
 
 void fl_BlockLayout::clearScreen(GR_Graphics* /* pG */)
@@ -3229,7 +3245,8 @@ bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs)
 	if (pView && (pView->isActive() || pView->isPreview()))
 	{
 		pView->_setPoint(pcrs->getPosition() + len);
-		pView->notifyListeners(AV_CHG_FMTCHAR); // TODO verify that this is necessary.
+		if(!isHdrFtr())
+			pView->notifyListeners(AV_CHG_FMTCHAR); // TODO verify that this is necessary.
 	}
 	else if(pView && pView->getPoint() > pcrs->getPosition())
 		pView->_setPoint(pView->getPoint() + len);
@@ -3771,8 +3788,9 @@ bool fl_BlockLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange *
 	clearScreen(m_pLayout->getGraphics());
 	setAttrPropIndex(pcrxc->getIndexAP());
 	xxx_UT_DEBUGMSG(("SEVIOR: In changeStrux in fl_BlockLayout \n"));
-
-	const XML_Char * szOldStyle = m_szStyle;
+//
+// Not sure if we'll ever need this. We don't need this now I'll comment it out.
+//	const XML_Char * szOldStyle = m_szStyle;
 #ifdef BIDI_ENABLED
 	bool bOldDomDirection = m_bDomDirection;
 #endif
@@ -3873,6 +3891,9 @@ bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
 		UT_DEBUGMSG(("no memory for BlockLayout\n"));
 		return false;
 	}
+	xxx_UT_DEBUGMSG(("Inserting block %x it's sectionLayout is %x \n",pNewBL,pNewBL->getSectionLayout()));
+	xxx_UT_DEBUGMSG(("Inserting block at pos %d \n",getPosition(true)));
+	xxx_UT_DEBUGMSG(("shd of strux block = %x of new block is %x \n",getStruxDocHandle(),pNewBL->getStruxDocHandle()));
 	// The newly returned block will contain a line and EOP. Delete those
 	// since the code below expects an empty block
 	pNewBL->_purgeEndOfParagraphRun();
@@ -4062,7 +4083,7 @@ bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
 	}
 
 	_assertRunListIntegrity();
-
+	xxx_UT_DEBUGMSG(("Prev Block = %x Next block = %x \n",pNewBL->getPrev(),pNewBL->getNext()));
 	return true;
 }
 
@@ -4093,10 +4114,22 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 	UT_ASSERT(iType != FL_SECTION_HDRFTR || pcrx->getStruxType() == PTX_SectionHdrFtr);
 	UT_ASSERT(iType != FL_SECTION_ENDNOTE || pcrx->getStruxType() == PTX_SectionEndnote);
 
-	UT_ASSERT(m_pSectionLayout->getType() == FL_SECTION_DOC);
-	fl_DocSectionLayout* pDSL = (fl_DocSectionLayout*) m_pSectionLayout;
-	
+//
+// Not true always. eg Undo on a delete header/footer. We should detect this
+// and deal with it.
+//
+	PT_DocPosition pos1;
+//
+// This is to clean the fragments
+//
+	m_pDoc->getBounds(true,pos1);
+	fl_DocSectionLayout* pDSL = NULL;
+    if(m_pSectionLayout->getType() == FL_SECTION_DOC)
+		pDSL =  (fl_DocSectionLayout *) m_pSectionLayout;
+		//UT_ASSERT(m_pSectionLayout->getType() == FL_SECTION_DOC);
+	xxx_UT_DEBUGMSG(("SectionLayout for block is %x block is %x \n",m_pSectionLayout,this));
 	fl_SectionLayout* pSL;
+	const XML_Char* pszHFID = NULL;
 	switch (iType)
 	{
 	case FL_SECTION_DOC:
@@ -4117,7 +4150,9 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		break;
 	}
-
+	xxx_UT_DEBUGMSG(("Insert section at pos %d sdh of section =%x sdh of block =%x \n",getPosition(true),pSL->getStruxDocHandle(),getStruxDocHandle()));
+	PT_DocPosition posSL = m_pDoc->getStruxPosition(pSL->getStruxDocHandle());
+	PT_DocPosition posThis = m_pDoc->getStruxPosition(getStruxDocHandle());
 	if (!pSL)
 	{
 		UT_DEBUGMSG(("no memory for SectionLayout"));
@@ -4130,8 +4165,58 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 		m_pLayout->insertSectionAfter(pDSL, static_cast<fl_DocSectionLayout*>(pSL));
 		break;
 	case FL_SECTION_HDRFTR:
+	{
 		m_pLayout->addHdrFtrSection(pSL);
+//
+// Need to find the DocSectionLayout associated with this.
+//
+		PT_AttrPropIndex indexAP = pcrx->getIndexAP();
+		const PP_AttrProp* pHFAP = NULL;
+		bool bres = (m_pDoc->getAttrProp(indexAP, &pHFAP) && pHFAP);
+		UT_ASSERT(bres);
+		pHFAP->getAttribute("id", pszHFID);
+//
+// pszHFID may not be defined yet. If not we can't do this stuff. If it is defined
+// this step is essential
+//
+		if(pszHFID)
+		{
+			fl_DocSectionLayout* pDocSL = m_pLayout->findSectionForHdrFtr((char*)pszHFID);
+			UT_ASSERT(pDocSL); 
+//
+// Determine if this is a header or a footer.
+//
+			const XML_Char* pszHFSectionType = NULL;
+			pHFAP->getAttribute("type", pszHFSectionType);
+			//
+			// Got a header
+			//
+			fl_HdrFtrSectionLayout * pHFSL = static_cast<fl_HdrFtrSectionLayout *>(pSL);
+			if(pszHFSectionType && UT_strcmp(pszHFSectionType,"header") == 0)
+			{
+				pHFSL->setDocSectionLayout(pDocSL);
+				pHFSL->setHdrFtr(FL_HDRFTR_HEADER);
+				//
+				// Set the pointers to this header/footer
+				//
+				pDocSL->setHdrFtr(FL_HDRFTR_HEADER, pHFSL);
+			}
+			else
+			{
+				pHFSL->setDocSectionLayout(pDocSL);
+				pHFSL->setHdrFtr(FL_HDRFTR_FOOTER);
+				//
+				// Set the pointers to this header/footer
+				//
+				pDocSL->setHdrFtr(FL_HDRFTR_FOOTER, pHFSL);
+			}
+		}
+		else
+		{
+			UT_DEBUGMSG(("NO ID found with insertSection HdrFtr \n"));
+		}
 		break;
+	}
 	case FL_SECTION_ENDNOTE:
 		m_pLayout->addEndnoteSection(pSL);
 		break;
@@ -4148,19 +4233,32 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 	PL_StruxFmtHandle sfhNew = (PL_StruxFmtHandle)pSL;
 	pfnBindHandles(sdh,lid,sfhNew);
 
-	fl_DocSectionLayout* pOldSL = pDSL;
+	fl_SectionLayout* pOldSL = m_pSectionLayout;
 //
 // Now move all the blocks following into the new section
 //
-	fl_BlockLayout* pBL = getNext();
+	fl_BlockLayout* pBL = NULL;
+	if(posSL < posThis)
+	{
+		pBL = this;
+	}
+	else
+	{
+		pBL = getNext();
+	}
 	while (pBL)
 	{
 		fl_BlockLayout* pNext = pBL->getNext();
 
 		pBL->collapse();
+		if(pBL->isHdrFtr())
+		{
+			fl_HdrFtrSectionLayout * pHF = (fl_HdrFtrSectionLayout *) pBL->getSectionLayout();
+			pHF->collapseBlock(pBL);
+		}
 		pOldSL->removeBlock(pBL);
 		pSL->addBlock(pBL);
-		pBL->m_pSectionLayout = pSL;
+		pBL->setSectionLayout( pSL);
 		pBL->m_bNeedsReformat = true;
 		pBL = pNext;
 	}
@@ -4170,7 +4268,19 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 	setNext(NULL);
 	pOldSL->setLastBlock( this);
 
-	pOldSL->deleteEmptyColumns();
+	if(pOldSL->getType() == FL_SECTION_DOC)
+	{
+		((fl_DocSectionLayout * )pOldSL)->deleteEmptyColumns();
+	}
+//
+// In the case of Header/Footer sections we must now format this stuff to create
+// the shadows.
+//
+	if(iType ==  FL_SECTION_HDRFTR && pszHFID!= NULL)
+	{
+			pSL->format();
+			pSL->redrawUpdate();
+	}
 
 	FV_View* pView = m_pLayout->getView();
 	if (pView && (pView->isActive() || pView->isPreview()))
@@ -4645,6 +4755,8 @@ void fl_BlockLayout::setSectionLayout(fl_SectionLayout* pSectionLayout)
 		UT_ASSERT(m_pSectionLayout != NULL);
 	}
 	m_pSectionLayout = pSectionLayout;
+	if(pSectionLayout)
+		m_bIsHdrFtr = (pSectionLayout->getType() == FL_SECTION_HDRFTR);
 }
 
 //////////////////////////////////////////////////////////////////
@@ -4673,7 +4785,8 @@ bool fl_BlockLayout::doclistener_insertFmtMark(const PX_ChangeRecord_FmtMark * p
 	if (pView)
 	{
 		pView->_resetSelection();
-		pView->notifyListeners(AV_CHG_FMTCHAR);
+		if(!isHdrFtr())
+			pView->notifyListeners(AV_CHG_FMTCHAR);
 	}
 
 #ifdef FASTSQUIGGLE
@@ -4705,7 +4818,8 @@ bool fl_BlockLayout::doclistener_deleteFmtMark(const PX_ChangeRecord_FmtMark * p
 	{
 		pView->_resetSelection();
 		pView->_setPoint(pcrfm->getPosition());
-		pView->notifyListeners(AV_CHG_FMTCHAR);
+		if(!isHdrFtr())
+			pView->notifyListeners(AV_CHG_FMTCHAR);
 	}
 
 #ifdef FASTSQUIGGLE
@@ -4808,7 +4922,8 @@ bool fl_BlockLayout::doclistener_changeFmtMark(const PX_ChangeRecord_FmtMarkChan
 	FV_View* pView = m_pLayout->getView();
 	if (pView && (pView->isActive() || pView->isPreview()))
 	{
-		pView->notifyListeners(AV_CHG_FMTCHAR);
+		if(!isHdrFtr())
+			pView->notifyListeners(AV_CHG_FMTCHAR);
 	}
 
 	_assertRunListIntegrity();

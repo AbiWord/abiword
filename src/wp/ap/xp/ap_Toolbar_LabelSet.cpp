@@ -159,3 +159,5 @@ const char * AP_GetNthToolbarLabelLanguageName(UT_uint32 ndx)
 	return s_ltTable[ndx].m_name;
 }
 
+
+

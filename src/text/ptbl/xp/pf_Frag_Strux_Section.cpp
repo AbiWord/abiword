@@ -31,6 +31,7 @@ pf_Frag_Strux_Section::pf_Frag_Strux_Section(pt_PieceTable * pPT,
 											 PT_AttrPropIndex indexAP)
 	: pf_Frag_Strux(pPT,PTX_Section,pf_FRAG_STRUX_SECTION_LENGTH,indexAP)
 {
+	m_struxType =  PTX_Section;
 }
 
 pf_Frag_Strux_Section::~pf_Frag_Strux_Section()
@@ -42,6 +43,7 @@ pf_Frag_Strux_SectionHdrFtr::pf_Frag_Strux_SectionHdrFtr(pt_PieceTable * pPT,
 											 PT_AttrPropIndex indexAP)
 	: pf_Frag_Strux(pPT,PTX_SectionHdrFtr,pf_FRAG_STRUX_SECTION_LENGTH,indexAP)
 {
+	m_struxType =  PTX_SectionHdrFtr;
 }
 
 pf_Frag_Strux_SectionHdrFtr::~pf_Frag_Strux_SectionHdrFtr()
@@ -56,6 +58,7 @@ pf_Frag_Strux_SectionEndnote::pf_Frag_Strux_SectionEndnote(pt_PieceTable * pPT,
 
 pf_Frag_Strux_SectionEndnote::~pf_Frag_Strux_SectionEndnote()
 {
+	m_struxType =  PTX_SectionEndnote;
 }
 
 

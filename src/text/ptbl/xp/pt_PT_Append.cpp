@@ -52,8 +52,29 @@ bool pt_PieceTable::appendStrux(PTStruxType pts, const XML_Char ** attributes)
 	PT_AttrPropIndex indexAP;
 	if (!m_varset.storeAP(attributes,&indexAP))
 		return false;
-	xxx_UT_DEBUGMSG(("SEVIOR: Storing indexAP in append strux %d \n",indexAP));
 	pf_Frag_Strux * pfs = NULL;
+//
+// OK we've got to interogate attributes to determine what sort of section strux
+// we have.
+//
+	if((pts == PTX_Section) && (attributes != NULL))
+	{
+		const char * szStruxType = UT_getAttribute("type",attributes);
+		if(szStruxType)
+		{
+			if(UT_strcmp(szStruxType,"header") == 0)
+			{
+				pts = PTX_SectionHdrFtr;
+			}
+			else if(UT_strcmp(szStruxType,"footer") == 0)
+			{
+				pts = PTX_SectionHdrFtr;
+			}
+//
+// FIXME! EndNote shuld go in here.
+//
+	    }
+	}
 	if (!_createStrux(pts,indexAP,&pfs))
 		return false;
 	

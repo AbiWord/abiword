@@ -297,6 +297,7 @@ public:
 	bool                        doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx);
 	void                        localFormat(void);
 	void                        localCollapse(void);
+	void                        collapseBlock(fl_BlockLayout * pBlock);
 	virtual void				format(void);
 	virtual void				updateLayout(void);
 	void                        layout(void);
