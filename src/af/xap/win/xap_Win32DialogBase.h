@@ -74,6 +74,7 @@ protected:
 	void selectComboItem(UT_sint32 controlId, int index);
 	int  setComboDataItem(UT_sint32 controlId, int nIndex, DWORD dwData);
 	int  getComboDataItem(UT_sint32 controlId, int nIndex);
+	int  getComboItemIndex(UT_sint32 controlId, LPCSTR p_str);
 	int	 getComboSelectedIndex(UT_sint32 controlId) const;
 	void resetComboContent(UT_sint32 controlId);
 
