@@ -24,13 +24,11 @@
 #include "gr_Graphics.h"
 #include "ut_misc.h"
 
-#include "xap_UnixFont.h"
-#include "xap_UnixFontManager.h"
-
 #include "xap_UnixPSFont.h"
 #include "xap_UnixPSGenerate.h"
 
 class UT_ByteBuf;
+class XAP_UnixFontManager;
 
 /*****************************************************************/
 /*****************************************************************/
