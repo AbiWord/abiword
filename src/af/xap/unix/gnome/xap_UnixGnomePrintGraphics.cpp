@@ -303,7 +303,7 @@ void XAP_UnixGnomePrintGraphics::_drawAnyImage (GR_Image* pImg,
 		gnome_print_grayimage (m_gpc, pixels, width, height, rowstride);
 	else if (gdk_pixbuf_get_has_alpha (image))
 		gnome_print_rgbaimage (m_gpc, pixels, width, height, rowstride);
-	ekse
+	else
 		gnome_print_rgbimage (m_gpc, pixels, width, height, rowstride);
 
 	gnome_print_grestore(m_gpc);
