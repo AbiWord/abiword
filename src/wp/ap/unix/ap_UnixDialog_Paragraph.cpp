@@ -426,6 +426,11 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
                     (GtkAttachOptions) (GTK_FILL), 0, 0);
 
 	listAlignment_menu = gtk_menu_new ();
+	
+	glade_menuitem = gtk_menu_item_new_with_label(" "); // add an empty menu option to fix bug 594
+	gtk_widget_show (glade_menuitem);
+	gtk_menu_shell_append (GTK_MENU_SHELL (listAlignment_menu), glade_menuitem);
+	
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_AlignLeft,s);
 	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str());
 	glade_menuitem = gtk_menu_item_new_with_label (unixstr);
@@ -556,6 +561,10 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
                     (GtkAttachOptions) (GTK_FILL), 0, 0);
 	listSpecial_menu = gtk_menu_new ();
 
+	glade_menuitem = gtk_menu_item_new_with_label(" "); // add an empty menu option to fix bug 594
+	gtk_widget_show (glade_menuitem);
+	gtk_menu_shell_append (GTK_MENU_SHELL (listSpecial_menu), glade_menuitem);
+
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_SpecialNone,s);
 	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str());
 	glade_menuitem = gtk_menu_item_new_with_label (unixstr);
@@ -683,6 +692,11 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (GTK_FILL), 0, 0);
 	listLineSpacing_menu = gtk_menu_new ();
+	
+	glade_menuitem = gtk_menu_item_new_with_label(" "); // add an empty menu option to fix bug 594
+	gtk_widget_show (glade_menuitem);
+	gtk_menu_shell_append (GTK_MENU_SHELL (listLineSpacing_menu), glade_menuitem);	
+	
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_SpacingSingle,s);
 	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str());
 	glade_menuitem = gtk_menu_item_new_with_label (unixstr);
