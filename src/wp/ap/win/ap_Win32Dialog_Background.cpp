@@ -154,7 +154,7 @@ void AP_Win32Dialog_Background::_centerDialog()
 	MoveWindow (m_hDlg, pt.x, pt.y, nWidth, nHeight, TRUE);		
 }
 
-extern bool helpLocalizeAndOpenURL(XAP_Frame * pFrame, bool bLocal, const char* pathBeforeLang, const char* pathAfterLang);
+extern bool helpLocalizeAndOpenURL(XAP_Frame * pFrame, const char* pathBeforeLang, const char* pathAfterLang, const char *remoteURLbase);
 
 void AP_Win32Dialog_Background::_callHelp()
 {
@@ -162,7 +162,7 @@ void AP_Win32Dialog_Background::_callHelp()
 
 	if ( getHelpUrl().size () > 0 )
     {
-		helpLocalizeAndOpenURL ( pFrame, true, "AbiWord/help", getHelpUrl().c_str() ) ;
+		helpLocalizeAndOpenURL ( pFrame, "AbiWord/help", getHelpUrl().c_str(), "http://www.abisource.com/help/");
     }
 	else
     {

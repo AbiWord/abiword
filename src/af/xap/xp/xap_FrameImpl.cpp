@@ -95,8 +95,9 @@ inline static void _catPath(UT_String& st, const char* st2)
 	st += st2;
 }
 
-UT_String XAP_FrameImpl::_localizeHelpUrl (bool bLocal, const char * pathBeforeLang, 
-										   const char * pathAfterLang)
+UT_String XAP_FrameImpl::_localizeHelpUrl (const char * pathBeforeLang, 
+										   const char * pathAfterLang,
+										   const char * remoteURLbase)
 {
 	XAP_App* pApp = m_pFrame->getApp();
 
@@ -111,39 +112,44 @@ UT_String XAP_FrameImpl::_localizeHelpUrl (bool bLocal, const char * pathBeforeL
 	// evil...
 	pPrefs->getPrefsValue((XML_Char*)"StringSet", &abiSuiteLocString);
 
-	if (bLocal)
+	// 1st try file on user's computer (local file), if not exist try remote help
+	UT_String path(abiSuiteLibDir);
+	_catPath(path, pathBeforeLang);
+
+	UT_String localized_path(path);
+	_catPath(localized_path, abiSuiteLocString);
+
+	if (UT_directoryExists(localized_path.c_str()))
 	{
-		UT_String path(abiSuiteLibDir);
-		_catPath(path, pathBeforeLang);
+		// the localised help exists, so use it
+		path = localized_path;
+	}
+	else
+	{
+		// the localised help directory does not exist, so fall back to the
+		// en-US help location, which is the default lang, so usually available
+		localized_path = path;
+		_catPath(localized_path, "en-US");
+	}
 
-		UT_String localized_path(path);
-		_catPath(localized_path, abiSuiteLocString);
+	_catPath(localized_path, pathAfterLang);
+	localized_path += ".html";
 
-		if (UT_directoryExists(localized_path.c_str()))
-		{
-			// the localised help exists, so use it
-			path = localized_path;
-		}
-		else
-		{
-			// the localised help directory does not exist, so fall back to the
-			// en-US help localtion, which should always be available
-			localized_path = path;
-			_catPath(localized_path, "en-US");
-		}
-
-		_catPath(localized_path, pathAfterLang);
+	if (remoteURLbase && !UT_isRegularFile(localized_path.c_str()))
+	{
+		// not found, so build localized path for remote URL (but we can't verify remote URL)
+		url = remoteURLbase;
+		//_catPath(url, pathBeforeLang);
+		_catPath(url, abiSuiteLocString);
+		_catPath(url, pathAfterLang);
+		url += ".html";
+	}
+	else
+	{
 		url = "file://";
 		url += localized_path;
 	}
-	else {
-		//TODO: No one uses this, so what kind of prefix should it have?
-		url = pathBeforeLang;
-		_catPath(url, abiSuiteLocString);
-		_catPath(url, pathAfterLang);
-	}
 
-	url += ".html";
 	return url;
 }
 

@@ -894,12 +894,6 @@ EV_Menu *XAP_QNXFrameImpl::_getMainMenu(void)
 	return m_pQNXMenu;
 }
 
-UT_String XAP_QNXFrameImpl::_localizeHelpUrl (bool bLocal, const char * pathBefore, 
-											   const char * pathAfter)
-{
-	return XAP_FrameImpl::_localizeHelpUrl (bLocal, pathBefore, pathAfter);
-}
-
 
 void XAP_QNXFrameImpl::_queue_resize()
 {

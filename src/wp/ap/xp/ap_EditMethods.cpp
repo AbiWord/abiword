@@ -2962,30 +2962,30 @@ static bool _openURL(AV_View* pAV_View, const char* url)
 	return true;
 }
 
-bool helpLocalizeAndOpenURL(XAP_Frame * pFrame, bool bLocal, const char* pathBeforeLang, const char* pathAfterLang)
+bool helpLocalizeAndOpenURL(XAP_Frame * pFrame, const char* pathBeforeLang, const char* pathAfterLang, const char* remoteURLbase)
 {	
 	UT_return_val_if_fail(pFrame, false);
-	UT_String url (pFrame->localizeHelpUrl (bLocal, pathBeforeLang, pathAfterLang));
+	UT_String url (pFrame->localizeHelpUrl (pathBeforeLang, pathAfterLang, remoteURLbase));
 	return _helpOpenURL(pFrame, url.c_str());
 }
 	
-static bool _helpLocalizeAndOpenURL(AV_View* pAV_View, bool bLocal, const char* pathBeforeLang, const char* pathAfterLang)
+static bool _helpLocalizeAndOpenURL(AV_View* pAV_View, const char* pathBeforeLang, const char* pathAfterLang, const char *remoteURLbase)
 {
 	XAP_Frame* pFrame = static_cast<XAP_Frame*> (pAV_View->getParentData());
 
-	return helpLocalizeAndOpenURL(pFrame, bLocal, pathBeforeLang, pathAfterLang);
+	return helpLocalizeAndOpenURL(pFrame, pathBeforeLang, pathAfterLang, remoteURLbase);
 }
 
 Defun1(helpContents)
 {
 	CHECK_FRAME;
-	return _helpLocalizeAndOpenURL(pAV_View, true, "AbiWord/help", "index");
+	return _helpLocalizeAndOpenURL(pAV_View, "AbiWord/help", "index", "http://www.abisource.com/help/");
 }
 
 Defun1(helpIndex)
 {
 	CHECK_FRAME;
-	return _helpLocalizeAndOpenURL(pAV_View, true, "AbiWord/help", "introduction");
+	return _helpLocalizeAndOpenURL(pAV_View, "AbiWord/help", "introduction", "http://www.abisource.com/help/");
 }
 
 Defun1(helpCheckVer)
@@ -3013,13 +3013,13 @@ Defun1(helpReportBug)
 Defun1(helpSearch)
 {
 	CHECK_FRAME;
-	return _helpLocalizeAndOpenURL(pAV_View, true, "AbiWord/help", "search");
+	return _helpLocalizeAndOpenURL(pAV_View, "AbiWord/help", "search", "http://www.abisource.com/help/");
 }
 
 Defun1(helpCredits)
 {
 	CHECK_FRAME;
-	return _helpLocalizeAndOpenURL(pAV_View, true, "AbiWord/help", "credits");
+	return _helpLocalizeAndOpenURL(pAV_View, "AbiWord/help", "credits", "http://www.abisource.com/help/");
 }
 
 Defun1(helpAboutGnu)
@@ -3037,7 +3037,7 @@ Defun1(helpAboutGnomeOffice)
 Defun1(helpAboutOS)
 {
 	CHECK_FRAME;
-	return _helpLocalizeAndOpenURL(pAV_View, true, "AbiWord/help", "aboutos");
+	return _helpLocalizeAndOpenURL(pAV_View, "AbiWord/help", "aboutos", "http://www.abisource.com/help/");
 }
 
 Defun1(cycleWindows)

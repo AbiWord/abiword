@@ -94,8 +94,6 @@ protected:
 	virtual bool _openURL(const char * szURL);
 	virtual bool _openHelpURL(const char * szURL) { _openURL(szURL); return true; }
 	virtual void _setFullScreen(bool changeToFullScreen);
-	virtual UT_String _localizeHelpUrl (bool bLocal, const char * pathBefore, 
-										const char * pathAfter);
 	class _fe
         {
 	friend class XAP_Frame;

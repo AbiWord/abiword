@@ -484,7 +484,7 @@ void createLabelAccelerators( GtkWidget *widget )
 /****************************************************************/
 
 // in ap_editmethods.cpp
-extern bool helpLocalizeAndOpenURL(XAP_Frame * pFrame, bool bLocal, const char* pathBeforeLang, const char* pathAfterLang);
+extern bool helpLocalizeAndOpenURL(XAP_Frame * pFrame, const char* pathBeforeLang, const char* pathAfterLang, const char *remoteURLbase);
 
 static void sDoHelp ( XAP_Dialog * pDlg )
 {
@@ -499,7 +499,7 @@ static void sDoHelp ( XAP_Dialog * pDlg )
 	// open the url
 	if ( pDlg->getHelpUrl().size () > 0 )
     {
-		helpLocalizeAndOpenURL ( pFrame, true, "AbiWord/help", pDlg->getHelpUrl().c_str() ) ;
+		helpLocalizeAndOpenURL ( pFrame, "AbiWord/help", pDlg->getHelpUrl().c_str(), NULL );
     }
 	else
     {

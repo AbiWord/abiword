@@ -1574,15 +1574,16 @@ EV_Menu* XAP_UnixFrameImpl::_getMainMenu()
 	return m_pUnixMenu;
 }
 
-UT_String XAP_UnixFrameImpl::_localizeHelpUrl (bool bLocal, const char * pathBefore, 
-											   const char * pathAfter)
+UT_String XAP_UnixFrameImpl::_localizeHelpUrl (const char * pathBefore, 
+											   const char * pathAfter,
+											   const char * remoteURLbase)
 {
 #if 0 //def HAVE_GNOME
 	UT_String path (pathAfter);
 	path += ".html";
 	return path;
 #else
-	return XAP_FrameImpl::_localizeHelpUrl (bLocal, pathBefore, pathAfter);
+	return XAP_FrameImpl::_localizeHelpUrl (pathBefore, pathAfter, remoteURLbase);
 #endif
 }
 

@@ -111,8 +111,9 @@ protected:
 
 	virtual bool _openURL(const char * szURL);
 	virtual bool _openHelpURL(const char * szURL);
-	virtual UT_String _localizeHelpUrl (bool bLocal, const char * pathBefore, 
-										const char * pathAfter);
+	virtual UT_String _localizeHelpUrl (const char * pathBefore, 
+										const char * pathAfter,
+										const char * remoteURLbase);
 	virtual void _setFullScreen(bool changeToFullScreen);
 
 	class _fe
