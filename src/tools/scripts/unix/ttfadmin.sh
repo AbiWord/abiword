@@ -25,12 +25,15 @@ fi
 
 TTFTOOL=${0%ttfadmin.sh}ttftool
 
-FILES=`ls -1 $1/*.ttf`
+# TODO should do .ttc (TrueType font collection) too, but ttftool
+# TODO doesn't yet support them
+
+FILES=`ls -1 $1/*.[tT][tT][fF]`
 for dir in $FILES
 do
 	echo "Processing font $dir"
-	AFM=${dir%.ttf}.afm
-	UTOG=${dir%.ttf}.u2g
-	T42=${dir%.ttf}.t42
+	AFM=${dir%.[tT][tT][fF]}.afm
+	UTOG=${dir%.[tT][tT][fF]}.u2g
+	T42=${dir%.[tT][tT][fF]}.t42
 	`$TTFTOOL -f $dir -a $AFM -p $T42 -u $UTOG $ENCODING`
 done
