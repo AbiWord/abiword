@@ -528,3 +528,56 @@ UT_uint32 IE_Imp::getImporterCount(void)
 {
 	return m_sniffers.size();
 }
+
+/**************************************************************/
+/**************************************************************/
+
+IE_ImpInserter::IE_ImpInserter (PD_Document * pDoc)
+	: m_doc (pDoc), m_isPaste (false), m_dpos (0)
+{
+}
+
+IE_ImpInserter::IE_ImpInserter (PD_Document * pDoc, PT_DocPosition dpos)
+	: m_doc (pDoc), m_isPaste (true), m_dpos (dpos)
+{
+}
+
+IE_ImpInserter::~IE_ImpInserter ()
+{
+}
+
+bool IE_ImpInserter::appendStrux (PTStruxType pts, const XML_Char ** attributes)
+{
+	if (m_isPaste)
+		return m_doc->appendStrux (pts, attributes);
+	else
+		{
+			bool bRes = m_doc->insertStrux (m_dpos, PTX_Block, attributes, NULL);
+			m_dpos++;
+			return bRes;
+		}
+}
+
+bool IE_ImpInserter::appendSpan (const UT_UCSChar * p, UT_uint32 length)
+{
+	if (m_isPaste)
+		return m_doc->appendSpan(p, length);
+	else
+		{
+			bool bRes = m_doc->insertSpan (m_dpos, p, length);
+			m_dpos += length;
+			return bRes;
+		}
+}
+
+bool IE_ImpInserter::appendObject (PTObjectType pto, const XML_Char ** attributes)
+{
+	if (m_isPaste)
+		return m_doc->appendObject (pto, attributes);
+	else
+		{
+			bool bRes = m_doc->insertObject (m_dpos, pto, attributes, NULL);
+			m_dpos++;
+			return bRes;
+		}
+}
