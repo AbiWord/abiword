@@ -101,6 +101,21 @@ typedef enum _PTChangeFmt { PTC_AddFmt=0, PTC_RemoveFmt=1, PTC_AddStyle=2 } PTCh
 
 //! ID of a listener - this is its location in m_vecListeners
 typedef UT_uint32 PL_ListenerId;
+
+typedef enum _PLListenerType
+{
+	PTL_UNKNOWN,
+	PTL_DocLayout,
+	PTL_ShadowLayout,
+	PTL_AbiWordExp,
+	PTL_HTMLExp,
+	PTL_MSWord97Exp,
+	PTL_RTFExpGetProps,
+	PTL_RTFExpWriteDoc,
+	PTL_TextExp
+}PLListenerType;
+
+
 //! opaque document data
 typedef const void * PL_StruxDocHandle;
 //! opaque layout data

@@ -61,6 +61,7 @@ public:
 															PL_StruxFmtHandle sfhNew));
 
 	virtual bool		signal(UT_uint32 iSignal);
+	virtual PLListenerType getType() const {return PTL_RTFExpWriteDoc;}
 
 protected:
 	void				_closeSection(void);
@@ -69,7 +70,7 @@ protected:
 	void				_openSpan(PT_AttrPropIndex apiSpan,const PP_AttrProp * pSpanAP = NULL );
 	void				_openTag(const char * szPrefix, const char * szSuffix,
 								 bool bNewLineAfter, PT_AttrPropIndex api);
-	void				_outputData(const UT_UCSChar * p, UT_uint32 length);
+	void				_outputData(const UT_UCSChar * p, UT_uint32 length, PT_DocPosition pos, bool bIgnorePos);
 	bool                _isListBlock(void) const { return m_bIsListBlock;}
 	bool                _isTabEaten(void) const { return m_bIsTabEaten;}
 	void                _setListBlock( bool bListBlock) 

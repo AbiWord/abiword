@@ -474,6 +474,8 @@ public:
 
 	virtual bool				signal(UT_uint32 iSignal);
 
+	virtual PLListenerType getType() const {return PTL_ShadowLayout;} 
+
 private:
 	PD_Document*				m_pDoc;
 	fl_HdrFtrShadow* 			m_pShadow;

@@ -37,6 +37,7 @@
 #include "ie_FileInfo.h"
 #include "fp_PageSize.h"
 #include "ut_string_class.h"
+#include <fribidi/fribidi.h>
 
 class UT_ByteBuf;
 class UT_GrowBuf;
@@ -49,6 +50,8 @@ class XAP_App;
 class fd_Field;
 class po_Bookmark;
 class fl_AutoNum;
+class fl_BlockLayout;
+class fp_Run;
 
 #ifdef PT_TEST
 #include "ut_test.h"
@@ -450,6 +453,16 @@ protected:
 	void					_destroyDataItemData(void);
 	bool					_syncFileTypes(bool bReadSaveWriteOpen);
 
+public:
+	// these functions allow us to retrieve visual direction at document
+	// position pos from an associated layout. They are intended to be
+	// used by exporters into (daft) formats where such information
+	// might be required (e.g. RTF).
+	bool                    exportGetVisDirectionAtPos(PT_DocPosition pos, FriBidiCharType &type);
+private:
+	bool                    _exportInitVisDirection(PT_DocPosition pos);
+	bool                    _exportFindVisDirectionRunAtPos(PT_DocPosition pos);
+	
 private:
 	bool					m_ballowListUpdates;
 	pt_PieceTable *			m_pPieceTable;
@@ -486,6 +499,12 @@ private:
 
 public:
 	UT_XML_ID_Generator		m_XML_ID;
+
+private:
+	// these are for use with the export*VisDirection functions
+	const fl_BlockLayout *  m_pVDBl;
+	fp_Run *                m_pVDRun;
+	PT_DocPosition          m_iVDLastPos;
 };
 
 #endif /* PD_DOCUMENT_H */

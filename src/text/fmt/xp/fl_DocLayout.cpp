@@ -1231,7 +1231,7 @@ fp_Page* FL_DocLayout::addNewPage(fl_DocSectionLayout* pOwner, bool bNoUpdate)
           rigth of that position. May return NULL.
 
 */
-fl_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos)
+fl_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos) const
 {
 	fl_BlockLayout* pBL = NULL;
 	PL_StruxFmtHandle sfh = 0;

@@ -1,6 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (c) 2001,2002 Tomas Frydrych
+ * Copyright (c) 2001,2002,2003 Tomas Frydrych
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -55,6 +55,12 @@
 #include "ut_sleep.h"
 #include "ut_path.h"
 
+// these are needed because of the exportGetVisDirectionAtPosition() mechanism
+#include "fp_Run.h"
+#include "fl_BlockLayout.h"
+#include "fl_DocListener.h"
+#include "fl_DocLayout.h"
+
 // our currently used DTD
 #define ABIWORD_FILEFORMAT_VERSION "1.1"
 
@@ -91,7 +97,10 @@ PD_Document::PD_Document(XAP_App *pApp)
     m_bMarkRevisions(false),
 	m_iRevisionID(1),
 	m_bDontImmediatelyLayout(false),
-    m_iLastDirMarker(0)
+	m_iLastDirMarker(0),
+	m_pVDBl(NULL),
+	m_pVDRun(NULL),
+	m_iVDLastPos(0xffffffff)
 {
 	m_pApp = pApp;
 
@@ -3696,4 +3705,138 @@ void PD_Document::lockStyles(bool b)
 	m_bLockedStyles = b;
 }
 
+/*!
+    Some exporters (RTF) need to know the visual direction at each
+    position in the document as it is being exported. The problem is
+    that visual direction is a property of the layout not of the
+    document itself (I shall not make any comments about badly
+    designed file formats here!). Since our document is not directly
+    aware of any of its layouts, we have to find a listener for
+    FL_DocLayout that is registered with this document (it does not
+    matter if there are more FL_DocLayout listeners registered, the
+    visual direction will be same for all, so we grab the first one),
+    and from the listener we can get access to the layout, down to the
+    runs which carry the information that we need.  Tomas, May 3, 2003
+ */
+bool PD_Document::exportGetVisDirectionAtPos(PT_DocPosition pos, FriBidiCharType &type)
+{
+	if(pos == m_iVDLastPos && m_pVDRun)
+	{
+		// we have all the info we need cached, so just use it
+		type = m_pVDRun->getVisDirection();
+		return true;
+	}
+	else if(pos < m_iVDLastPos)
+	{
+		// this is the worst-case scenario, we have to start from the
+		// beginning
+		m_iVDLastPos = pos;
+		if(!_exportInitVisDirection(pos))
+			return false;
+	}
+	else
+	{
+		// we can continue from where we left of the last time
+		m_iVDLastPos = pos;
+		if(!_exportFindVisDirectionRunAtPos(pos))
+			return false;
+	}
+	
+	// make sure nothing has gone wrong here ...
+	UT_return_val_if_fail(m_pVDRun, false);
+	
+	type = m_pVDRun->getVisDirection();
+	return true;
+}
+
+bool PD_Document::_exportInitVisDirection(PT_DocPosition pos)
+{
+	m_pVDBl = NULL;
+	m_pVDRun = NULL;
+
+	// find the first DocLayout listener
+	UT_uint32 count = m_vecListeners.getItemCount();
+    fl_DocListener* pDocListener = NULL;
+	
+	for(UT_uint32 i = 0; i < count; i++)
+	{
+		PL_Listener * pL = (PL_Listener *) m_vecListeners.getNthItem(i);
+		if(pL && pL->getType() == PTL_DocLayout)
+		{
+			pDocListener = (fl_DocListener*) pL;
+			break;
+		}
+	}
+
+	UT_return_val_if_fail(pDocListener, false);
+
+	const FL_DocLayout * pDL = pDocListener->getLayout();
+	UT_return_val_if_fail(pDL, false);
+
+	
+	m_pVDBl = pDL->findBlockAtPosition(pos);
+	UT_return_val_if_fail(m_pVDBl, false);
+
+	UT_uint32 iOffset = pos - m_pVDBl->getPosition();
+	m_pVDRun = m_pVDBl->findRunAtOffset(iOffset);
+	UT_return_val_if_fail(m_pVDRun, false);
+	return true;
+}
+
+bool PD_Document::_exportFindVisDirectionRunAtPos(PT_DocPosition pos)
+{
+	// this is similar to the above, except we will first try to use
+	// the cached info
+
+	if(m_pVDBl && m_pVDRun)
+	{
+		UT_uint32 iOffset = pos - m_pVDBl->getPosition();
+
+		//first see if the cached run matches (this will often be the
+		//case since this we typicaly crawl over the document position
+		//by position
+		if(m_pVDRun->getBlockOffset() <= iOffset
+		   && (m_pVDRun->getBlockOffset() + m_pVDRun->getLength()) > iOffset)
+		{
+			return true;
+		}
+
+		// now try to use the present block and any blocks that are
+		// chained with it
+		const fl_BlockLayout * pBL        = m_pVDBl;
+		fp_Run *         pRunResult = NULL;
+
+		while (1)
+		{
+			UT_sint32 iOffset = pos - pBL->getPosition();
+
+			if(iOffset < 0)
+				break;
+			
+			pRunResult = pBL->findRunAtOffset((UT_uint32)iOffset);
+
+			if(pRunResult)
+				break;
+			
+			const fl_ContainerLayout * pCL = pBL->getNext();
+			
+			if(pCL && pCL->getContainerType() == FL_CONTAINER_BLOCK)
+				pBL = reinterpret_cast<const fl_BlockLayout*>(pCL);
+			else
+				break;
+		}
+
+		if(pRunResult)
+		{
+			m_pVDRun = pRunResult;
+			m_pVDBl = pBL;
+			return true;
+		}
+	}
+
+	// if we got so far the offset is past the present
+	// block-chain, i.e., in a different section, we start from
+	// the beginning
+	return _exportInitVisDirection(pos);
+}
 

@@ -234,6 +234,8 @@ public:
 	PT_DocPosition getPosition(bool bActualBlockPos=false) const;
 	fp_Run* findPointCoords(PT_DocPosition position, bool bEOL, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection);
 
+	fp_Run* findRunAtOffset(UT_uint32 offset) const;
+	
 	bool getSpanPtr(UT_uint32 offset, const UT_UCSChar ** ppSpan, UT_uint32 * pLength) const;
 	bool	getBlockBuf(UT_GrowBuf * pgb) const;
 

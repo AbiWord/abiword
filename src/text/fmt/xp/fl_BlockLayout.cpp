@@ -7558,6 +7558,28 @@ fl_BlockLayout::debugFlashing(void)
 }
 
 
+fp_Run* fl_BlockLayout::findRunAtOffset(UT_uint32 offset) const
+{
+	fp_Run * pRun = getFirstRun();
+	UT_return_val_if_fail(pRun, NULL);
+
+	fp_Run * pRunResult = NULL;
+
+	while (pRun)
+	{
+		if(    pRun->getBlockOffset() <= offset
+		   && (pRun->getBlockOffset() + pRun->getLength()) > offset )
+		{
+			pRunResult = pRun;
+			break;
+		}
+		
+		pRun = pRun->getNext();
+	}
+
+	return pRunResult;
+}
+
 
 
 /*!

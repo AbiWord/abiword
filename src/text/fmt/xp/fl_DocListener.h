@@ -62,6 +62,9 @@ public:
 	void                setHoldTableLayout(bool bHold) {m_bHoldTableLayout = bHold;}
 	bool                holdTableLayout(void) { return m_bHoldTableLayout;}
 	virtual bool		signal(UT_uint32 iSignal);
+	virtual PLListenerType getType() const {return PTL_DocLayout;}
+
+	const FL_DocLayout* getLayout() const {return (const FL_DocLayout*) m_pLayout;}
 
 private:
 	fl_ContainerLayout *   popContainerLayout(void);

@@ -131,8 +131,8 @@ public:
 	UT_uint32	countPages();
 	UT_sint32   findPage(fp_Page * pPage);
 	void        setLayoutIsFilling(bool bisFill) { m_bisLayoutFilling = bisFill;}
-	bool        isLayoutFilling(void) { return m_bisLayoutFilling;}
-	fl_BlockLayout*	findBlockAtPosition(PT_DocPosition pos);
+	bool        isLayoutFilling(void) const { return m_bisLayoutFilling;}
+	fl_BlockLayout*	findBlockAtPosition(PT_DocPosition pos) const;
 	void		deletePage(fp_Page* pPage, bool bDontNotify);
 
 	void		formatAll();
