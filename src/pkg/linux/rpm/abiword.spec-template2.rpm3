@@ -167,7 +167,6 @@ This is the clipart portfolio used by AbiWord.
 make %{version_flag} ABI_OPT_DEBUG=%{enable_debug} ABI_OPT_LIBXML2=%{enable_xml2} UNIX_CAN_BUILD_STATIC=%{enable_static} ABI_OPT_GNOME=%{enable_gnome} ABI_OPT_LIBJPEG=%{enable_jpeg} ABI_OPT_BIDI_ENABLED=%{enable_bidi} ABI_OPT_PERL=%{enable_perl} ABI_OPT_OPTIMIZE=%{enable_optimize} compile canonical prefix=$RPM_BUILD_ROOT%{ABIPREFIX}
 
 cd ../abiword-plugins
-./autogen.sh
 ./configure --prefix=$RPM_BUILD_ROOT%{ABIPREFIX}/AbiSuite %{plugin_tools} %{plugin_impexp} 
 make
 

@@ -192,7 +192,6 @@ This is the clipart portfolio used by AbiWord.
 %__make
 
 cd ../abiword-plugins
-./nextgen.sh
 %configure --prefix=$RPM_BUILD_ROOT/%{ABIPREFIX}/AbiSuite --disable-all --disable-nroff --disable-eg %{plugin_tools} %{plugin_impexp}
 %__make
 
