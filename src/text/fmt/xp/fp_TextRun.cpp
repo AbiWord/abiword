@@ -706,7 +706,7 @@ void fp_TextRun::mapXYToPosition(UT_sint32 x, UT_sint32 y,
 
 				// NOTE: this allows inserted text to be coalesced in the PT
 				bEOL = true;
-				pos = getBlock()->getPosition() + i;
+				pos = getBlock()->getPosition() + getBlockOffset() + i;
 				return;
 			}
 		}
