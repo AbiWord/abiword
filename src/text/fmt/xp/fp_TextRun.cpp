@@ -1195,7 +1195,15 @@ void fp_TextRun::_drawSquiggle(UT_sint32 top, UT_sint32 left, UT_sint32 right)
 			to move the coordinates into a platform-specific point 
 			structure.  They're all x, y but different widths.  Bummer. 
 	*/
-	UT_Point * points = (UT_Point *)calloc(nPoints, sizeof(UT_Point));
+	UT_Point * points, scratchpoints[100];
+	if ((unsigned)nPoints < (sizeof(scratchpoints)/sizeof(scratchpoints[0])))
+	{
+		points = scratchpoints;
+	}
+	else
+	{
+		points = new UT_Point[nPoints];
+	}
 	UT_ASSERT(points);
 
 	points[0].x = left;
@@ -1217,7 +1225,7 @@ void fp_TextRun::_drawSquiggle(UT_sint32 top, UT_sint32 left, UT_sint32 right)
 
 	m_pG->polyLine(points, nPoints);
 
-	FREEP(points);
+	if (points != scratchpoints) delete points;
 }
 
 void fp_TextRun::drawSquiggle(UT_uint32 iOffset, UT_uint32 iLen)

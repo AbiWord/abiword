@@ -464,8 +464,7 @@ void fp_TabRun::_drawArrow(UT_uint32 iLeft,UT_uint32 iTop,UT_uint32 iWidth, UT_u
 
     #define NPOINTS 8
 
-    UT_Point * points = (UT_Point *)calloc(NPOINTS,sizeof(UT_Point));
-    UT_ASSERT(points);
+    UT_Point * points[NPOINTS];
 
     UT_sint32 cur_linewidth = 1 + (UT_MAX(10,m_iAscent) - 10) / 8;
     UT_uint32 iyAxis = iTop + m_pLine->getAscent() * 2 / 3;
@@ -498,7 +497,6 @@ void fp_TabRun::_drawArrow(UT_uint32 iLeft,UT_uint32 iTop,UT_uint32 iWidth, UT_u
 
     m_pG->setColor(m_colorFG);
     m_pG->polyLine(points,NPOINTS);
-    FREEP(points);
 }
 
 void fp_TabRun::_draw(dg_DrawArgs* pDA)

@@ -112,42 +112,26 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	UT_ASSERT(m_pFont);
 
 	GdkFont *font = m_pFont->getGdkFont();
-
-   	if (iLength > 1) {
-		/*
-		 * TODO -  We need to seriously look for a way to avoid this.
-	  	 * Doing a memory allocation on every draw is painful.
-		 */
-		// Blargh... GDK wants strings in 32 bits, we use 16 internally
-    		GdkWChar *pNChars = new GdkWChar[iLength];
-
-   		for (int i = 0; i < iLength; i++)
-     		{
-			pNChars[i] = remapGlyph(pChars[i + iCharOffset], UT_FALSE);
-    		}
-  	
-
-		// Use "wide-char" function
-		gdk_draw_text_wc (m_pWin, font, m_pGC,
-				  xoff, yoff + font->ascent, pNChars, iLength);
-		//XDrawString16 (drawable_private->xdisplay, drawable_private->xwindow,
-		//			   gc_private->xgc, xoff, yoff + xfont->ascent, pNChars,
-		//			   iLength);
-
-		delete pNChars;
-	} else {
-	 
-	   	// the vast majority of calls to this function are
-	   	// to draw a single character, so we'll optimize this case
-	   
-	   	GdkWChar pChar = remapGlyph(pChars[iCharOffset], UT_FALSE);
-	   	gdk_draw_text_wc (m_pWin, font, m_pGC,
-				  xoff, yoff + font->ascent, &pChar, 1);
+	// Blargh... GDK wants strings in 32 bits, we use 16 internally
+	GdkWChar *pNChars, utb[150];  // arbitrary biggish size for utb
+	if ((unsigned)iLength < (sizeof(utb) / sizeof(utb[0])))
+	{
+		// avoid new/delete overhead for most cases via ubiquitous temp buf
+		pNChars = utb;
 	}
+	else
+	{
+		pNChars = new GdkWChar[iLength];
+	}
+	for (int i = 0; i < iLength; i++)
+	{
+		pNChars[i] = remapGlyph(pChars[i + iCharOffset], UT_FALSE);
+	}
+	// Use "wide-char" function
+	gdk_draw_text_wc(m_pWin, font, m_pGC, xoff, yoff + font->ascent, pNChars, iLength);
+	if (pNChars != utb) delete pNChars;
 
-#if 1
 	flush();
-#endif	
 }
 
 void GR_UnixGraphics::setFont(GR_Font * pFont)
