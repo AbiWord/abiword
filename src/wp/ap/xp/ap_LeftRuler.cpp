@@ -434,9 +434,9 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 				{
 					const PP_AttrProp* pSectionAP = NULL;
 					pFrame->getAttrProp(&pSectionAP);
-					const char * pszYpos = NULL;
+					const XML_Char * pszYpos = NULL;
 					UT_sint32 iYpos;
-					const char * pszHeight = NULL;
+					const XML_Char * pszHeight = NULL;
 					UT_sint32 iHeight;
 					if(!pSectionAP || !pSectionAP->getProperty("ypos",pszYpos))
 					{
@@ -520,7 +520,7 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 				{
 					const PP_AttrProp* pSectionAP = NULL;
 					pFrame->getAttrProp(&pSectionAP);
-					const char * pszHeight = NULL;
+					const XML_Char * pszHeight = NULL;
 					UT_sint32 iHeight;
 					if(!pSectionAP || !pSectionAP->getProperty("frame-height",pszHeight))
 					{
@@ -1823,7 +1823,7 @@ void AP_LeftRuler::_xorGuide(bool bClear)
 	UT_ASSERT( data && pPrefs );
 
 	const XML_Char *pszBuffer;
-	pPrefs->getPrefsValue(static_cast<XML_Char*>(AP_PREF_KEY_RulerUnits), &pszBuffer );
+	pPrefs->getPrefsValue(static_cast<const XML_Char *>(AP_PREF_KEY_RulerUnits), &pszBuffer );
 
 	// or should I just default to inches or something?
 	UT_Dimension dim = UT_determineDimension( pszBuffer, DIM_none );

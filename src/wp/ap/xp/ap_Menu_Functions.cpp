@@ -423,7 +423,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Spelling)
   UT_ASSERT( pPrefs );
 
   bool b = true ;
-  pPrefs->getPrefsValueBool(static_cast<XML_Char*>(AP_PREF_KEY_AutoSpellCheck),&b) ;
+  pPrefs->getPrefsValueBool(static_cast<const XML_Char *>(AP_PREF_KEY_AutoSpellCheck),&b) ;
 
   // if there are no loaded dictionaries and we are spell checking
   // as we type
@@ -726,7 +726,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Prefs)
 	switch (id)
 	  {
 	  case AP_MENU_ID_TOOLS_AUTOSPELL:
-	    pPrefs->getPrefsValueBool(static_cast<XML_Char*>(AP_PREF_KEY_AutoSpellCheck), &b);
+	    pPrefs->getPrefsValueBool(static_cast<const XML_Char *>(AP_PREF_KEY_AutoSpellCheck), &b);
 	    s = (b ? EV_MIS_Toggled : EV_MIS_ZERO);
 	    break;
 

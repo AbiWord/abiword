@@ -1309,8 +1309,8 @@ Defun1(toggleAutoSpell)
 
 	bool b = false;
 
-	pPrefs->getPrefsValueBool(static_cast<XML_Char*>(AP_PREF_KEY_AutoSpellCheck), &b);
-	return pPrefsScheme->setValueBool(static_cast<XML_Char*>(AP_PREF_KEY_AutoSpellCheck), !b);
+	pPrefs->getPrefsValueBool(static_cast<const XML_Char *>(AP_PREF_KEY_AutoSpellCheck), &b);
+	return pPrefsScheme->setValueBool(static_cast<const XML_Char *>(AP_PREF_KEY_AutoSpellCheck), !b);
 }
 
 Defun1(scrollPageDown)
@@ -1802,7 +1802,7 @@ static bool s_AskForPathname(XAP_Frame * pFrame,
 
 		const XML_Char * ftype = 0;
 
-		pPrefs->getPrefsValue (static_cast<XML_Char*>(AP_PREF_KEY_DefaultSaveFormat), &ftype);
+		pPrefs->getPrefsValue (static_cast<const XML_Char *>(AP_PREF_KEY_DefaultSaveFormat), &ftype);
 		if (!ftype)
 		  ftype = ".abw";
 
@@ -3246,7 +3246,7 @@ Defun(closeWindow)
 
 	bool close = false;
 
-	pPrefs->getPrefsValueBool(static_cast<XML_Char*>(AP_PREF_KEY_CloseOnLastDoc), &close);
+	pPrefs->getPrefsValueBool(static_cast<const XML_Char *>(AP_PREF_KEY_CloseOnLastDoc), &close);
 	return s_closeWindow (pAV_View, pCallData, close);
 #else
 	// must, to comply with the HIG
@@ -4613,7 +4613,7 @@ Defun(insertClosingParenthesis)
 
 	bool bLang = false, bMarker = false;
 
-	pPrefs->getPrefsValueBool(static_cast<XML_Char*>(XAP_PREF_KEY_ChangeLanguageWithKeyboard),
+	pPrefs->getPrefsValueBool(static_cast<const XML_Char *>(XAP_PREF_KEY_ChangeLanguageWithKeyboard),
 							  &bLang);
 
 	const UT_LangRecord * pLR = NULL;
@@ -4622,7 +4622,7 @@ Defun(insertClosingParenthesis)
 	{
 		pLR = pApp->getKbdLanguage();
 		
-		pPrefs->getPrefsValueBool(static_cast<XML_Char*>(XAP_PREF_KEY_DirMarkerAfterClosingParenthesis), &bMarker);
+		pPrefs->getPrefsValueBool(static_cast<const XML_Char *>(XAP_PREF_KEY_DirMarkerAfterClosingParenthesis), &bMarker);
 	}
 
 	if(bMarker && pLR)
@@ -4667,7 +4667,7 @@ Defun(insertOpeningParenthesis)
 
 	bool bLang = false, bMarker = false;
 
-	pPrefs->getPrefsValueBool(static_cast<XML_Char*>(XAP_PREF_KEY_ChangeLanguageWithKeyboard),
+	pPrefs->getPrefsValueBool(static_cast<const XML_Char *>(XAP_PREF_KEY_ChangeLanguageWithKeyboard),
 							  &bLang);
 
 	const UT_LangRecord * pLR = NULL;
@@ -4676,7 +4676,7 @@ Defun(insertOpeningParenthesis)
 	{
 		pLR = pApp->getKbdLanguage();
 		
-		pPrefs->getPrefsValueBool(static_cast<XML_Char*>(XAP_PREF_KEY_DirMarkerAfterClosingParenthesis), &bMarker);
+		pPrefs->getPrefsValueBool(static_cast<const XML_Char *>(XAP_PREF_KEY_DirMarkerAfterClosingParenthesis), &bMarker);
 	}
 	
 	if(bMarker && pLR)
@@ -7746,8 +7746,8 @@ static bool s_doPageSetupDlg (FV_View * pView)
 	XAP_PrefsScheme *pPrefsScheme = pPrefs->getCurrentScheme();
 	UT_ASSERT(pPrefsScheme);
 
-	pPrefsScheme->setValue(static_cast<XML_Char*>(AP_PREF_KEY_RulerUnits),
-						   static_cast<const XML_Char*>(UT_dimensionName(final_unit)));
+	pPrefsScheme->setValue(static_cast<const XML_Char *>(AP_PREF_KEY_RulerUnits),
+						   static_cast<const XML_Char *>(UT_dimensionName(final_unit)));
 
 	//
 	// Recover ppView
@@ -8084,7 +8084,7 @@ Defun1(viewStd)
 	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
 	UT_ASSERT(pScheme);
 
-	pScheme->setValueBool(static_cast<XML_Char*>(AP_PREF_KEY_StandardBarVisible), pFrameData->m_bShowBar[0]);
+	pScheme->setValueBool(static_cast<const XML_Char *>(AP_PREF_KEY_StandardBarVisible), pFrameData->m_bShowBar[0]);
 
 	return true;
 }
@@ -8116,7 +8116,7 @@ Defun1(viewFormat)
 	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
 	UT_ASSERT(pScheme);
 
-	pScheme->setValueBool(static_cast<XML_Char*>(AP_PREF_KEY_FormatBarVisible), pFrameData->m_bShowBar[1]);
+	pScheme->setValueBool(static_cast<const XML_Char *>(AP_PREF_KEY_FormatBarVisible), pFrameData->m_bShowBar[1]);
 
 	return true;
 }
@@ -8149,7 +8149,7 @@ Defun1(viewTable)
 	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
 	UT_ASSERT(pScheme);
 
-	pScheme->setValueBool(static_cast<XML_Char*>(AP_PREF_KEY_TableBarVisible), pFrameData->m_bShowBar[2]);
+	pScheme->setValueBool(static_cast<const XML_Char *>(AP_PREF_KEY_TableBarVisible), pFrameData->m_bShowBar[2]);
 
 	return true;
 }
@@ -8181,7 +8181,7 @@ Defun1(viewExtra)
 	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
 	UT_ASSERT(pScheme);
 
-	pScheme->setValueBool(static_cast<XML_Char*>(AP_PREF_KEY_ExtraBarVisible), pFrameData->m_bShowBar[3]);
+	pScheme->setValueBool(static_cast<const XML_Char *>(AP_PREF_KEY_ExtraBarVisible), pFrameData->m_bShowBar[3]);
 
 	return true;
 }
@@ -8207,7 +8207,7 @@ Defun(lockToolbarLayout)
 
 	pApp->setToolbarsCustomizable (!b);
 
-	pScheme->setValueBool(static_cast<XML_Char*>(XAP_PREF_KEY_AllowCustomToolbars), !b);
+	pScheme->setValueBool(static_cast<const XML_Char *>(XAP_PREF_KEY_AllowCustomToolbars), !b);
 
 	return true;
 }
@@ -8367,7 +8367,7 @@ Defun1(viewStatus)
 	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
 	UT_ASSERT(pScheme);
 
-	pScheme->setValueBool(static_cast<XML_Char*>(AP_PREF_KEY_StatusBarVisible), pFrameData->m_bShowStatusBar);
+	pScheme->setValueBool(static_cast<const XML_Char *>(AP_PREF_KEY_StatusBarVisible), pFrameData->m_bShowStatusBar);
 	return true;
 }
 
@@ -8397,7 +8397,7 @@ Defun1(viewRuler)
 	UT_ASSERT(pPrefs);
 	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
 	UT_ASSERT(pScheme);
-	pScheme->setValueBool(static_cast<XML_Char*>(AP_PREF_KEY_RulerVisible), pFrameData->m_bShowRuler);
+	pScheme->setValueBool(static_cast<const XML_Char *>(AP_PREF_KEY_RulerVisible), pFrameData->m_bShowRuler);
 
 	return true;
 }
@@ -10113,7 +10113,7 @@ Defun1(cycleInputMode)
 
 	// this edit method may get ignored entirely
 	bool b;
-	if (pPrefs->getPrefsValueBool(static_cast<XML_Char*>(AP_PREF_KEY_KeyBindingsCycle), &b) && !b)
+	if (pPrefs->getPrefsValueBool(static_cast<const XML_Char *>(AP_PREF_KEY_KeyBindingsCycle), &b) && !b)
 		return false;
 
 	const char * szCurrentInputMode = pApp->getInputMode();
@@ -10128,8 +10128,8 @@ Defun1(cycleInputMode)
 	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
 	UT_ASSERT(pScheme);
 
-	pScheme->setValue(static_cast<XML_Char*>(AP_PREF_KEY_KeyBindings),
-					  const_cast<XML_Char*>(szNextInputMode));
+	pScheme->setValue(static_cast<const XML_Char *>(AP_PREF_KEY_KeyBindings),
+					  const_cast<const XML_Char *>(szNextInputMode));
 
 	return bResult;
 }
@@ -10146,7 +10146,7 @@ Defun1(toggleInsertMode)
 
 	// this edit method may get ignored entirely
 	bool b;
-	if (pPrefs->getPrefsValueBool(static_cast<XML_Char*>(AP_PREF_KEY_InsertModeToggle), &b) && !b)
+	if (pPrefs->getPrefsValueBool(static_cast<const XML_Char*>(AP_PREF_KEY_InsertModeToggle), &b) && !b)
 		return false;
 
 	// toggle the insert mode
@@ -10162,7 +10162,7 @@ Defun1(toggleInsertMode)
 	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
 	UT_ASSERT(pScheme);
 
-	pScheme->setValueBool(static_cast<XML_Char*>(AP_PREF_KEY_InsertMode), pFrameData->m_bInsertMode);
+	pScheme->setValueBool(static_cast<const XML_Char*>(AP_PREF_KEY_InsertMode), pFrameData->m_bInsertMode);
 
 	return true;
 }

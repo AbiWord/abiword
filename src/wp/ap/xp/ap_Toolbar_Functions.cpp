@@ -96,7 +96,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Spelling)
   UT_ASSERT( pPrefs );
 
   bool b = true ;
-  pPrefs->getPrefsValueBool(static_cast<XML_Char*>(AP_PREF_KEY_AutoSpellCheck),&b) ;
+  pPrefs->getPrefsValueBool(static_cast<const XML_Char *>(AP_PREF_KEY_AutoSpellCheck),&b) ;
 
   // if there are no loaded dictionaries and we are spell checking
   // as we type

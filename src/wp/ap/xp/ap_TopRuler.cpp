@@ -1100,7 +1100,7 @@ void AP_TopRuler::_getMarginMarkerRects(AP_TopRulerInfo * pInfo, UT_Rect &rLeft,
 	UT_sint32 xAbsLeft,xAbsRight;
 
 	bool bRTL;
-	XAP_App::getApp()->getPrefsValueBool(static_cast<XML_Char*>(AP_PREF_KEY_DefaultDirectionRtl), &bRTL);
+	XAP_App::getApp()->getPrefsValueBool(static_cast<const XML_Char *>(AP_PREF_KEY_DefaultDirectionRtl), &bRTL);
 
 	if(bRTL)
 	{
@@ -1201,7 +1201,7 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 	// draw a dark-gray bar over the left margin
 
 	bool bRTL;
-	XAP_App::getApp()->getPrefsValueBool(static_cast<XML_Char*>(AP_PREF_KEY_DefaultDirectionRtl), &bRTL);
+	XAP_App::getApp()->getPrefsValueBool(static_cast<const XML_Char *>(AP_PREF_KEY_DefaultDirectionRtl), &bRTL);
 
     UT_sint32 xAbsRight = pInfo->u.c.m_xaLeftMargin + (pInfo->u.c.m_xColumnWidth + pInfo->u.c.m_xColumnGap) * pInfo->m_iNumColumns - pInfo->u.c.m_xColumnGap;
 
@@ -1531,7 +1531,7 @@ bool AP_TopRuler::isMouseOverTab(UT_uint32 x, UT_uint32 y)
 
 	UT_sint32 xAbsRight = xAbsLeft + m_infoCache.u.c.m_xColumnWidth;
 	bool bRTLglobal;
-	XAP_App::getApp()->getPrefsValueBool(static_cast<XML_Char*>(AP_PREF_KEY_DefaultDirectionRtl), &bRTLglobal);
+	XAP_App::getApp()->getPrefsValueBool(static_cast<const XML_Char *>(AP_PREF_KEY_DefaultDirectionRtl), &bRTLglobal);
 
 	fl_BlockLayout * pBL = (static_cast<FV_View *>(m_pView))->getCurrentBlock();
 	UT_return_val_if_fail(pBL,false);
@@ -2396,7 +2396,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 
 
 	bool bRTLglobal;
-	XAP_App::getApp()->getPrefsValueBool(static_cast<XML_Char*>(AP_PREF_KEY_DefaultDirectionRtl), &bRTLglobal);
+	XAP_App::getApp()->getPrefsValueBool(static_cast<const XML_Char *>(AP_PREF_KEY_DefaultDirectionRtl), &bRTLglobal);
 
 	bool bRTLpara = (static_cast<FV_View *>(m_pView))->getCurrentBlock()->getDominantDirection() == FRIBIDI_TYPE_RTL;
 
@@ -2475,8 +2475,8 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 				{
 					const PP_AttrProp* pSectionAP = NULL;
 					pFrame->getAttrProp(&pSectionAP);
-					const char * pszXpos = NULL;
-					const char * pszWidth = NULL;
+					const XML_Char * pszXpos = NULL;
+					const XML_Char * pszWidth = NULL;
 					UT_sint32 iX;
 					UT_sint32 iWidth;
 					if(!pSectionAP || !pSectionAP->getProperty("xpos",pszXpos))
@@ -2563,7 +2563,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 				{
 					const PP_AttrProp* pSectionAP = NULL;
 					pFrame->getAttrProp(&pSectionAP);
-					const char * pszWidth = NULL;
+					const XML_Char * pszWidth = NULL;
 					UT_sint32 iWidth;
 					if(!pSectionAP || !pSectionAP->getProperty("frame-width",pszWidth))
 					{
@@ -3087,7 +3087,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 							// a right edge of the rightmost column.
 
 	bool bRTLglobal;
-	XAP_App::getApp()->getPrefsValueBool(static_cast<XML_Char*>(AP_PREF_KEY_DefaultDirectionRtl), &bRTLglobal);
+	XAP_App::getApp()->getPrefsValueBool(static_cast<const XML_Char *>(AP_PREF_KEY_DefaultDirectionRtl), &bRTLglobal);
 
 	bool bRTLpara = (static_cast<FV_View *>(m_pView))->getCurrentBlock()->getDominantDirection() == FRIBIDI_TYPE_RTL;
 
@@ -3849,7 +3849,7 @@ UT_sint32 AP_TopRuler::_getFirstPixelInColumn(AP_TopRulerInfo * pInfo, UT_uint32
 	UT_sint32 xAbsLeft = xFixed + ixMargin + xOrigin - m_xScrollOffset;
 
 	bool bRTL;
-	XAP_App::getApp()->getPrefsValueBool(static_cast<XML_Char*>(AP_PREF_KEY_DefaultDirectionRtl), &bRTL);
+	XAP_App::getApp()->getPrefsValueBool(static_cast<const XML_Char *>(AP_PREF_KEY_DefaultDirectionRtl), &bRTL);
 
 	if(bRTL)
 	{
@@ -4323,7 +4323,7 @@ void AP_TopRuler::_drawColumnGapMarker(UT_Rect & rect)
 	UT_ASSERT( data && pPrefs );
 
 	const XML_Char *pszBuffer;
-	pPrefs->getPrefsValue(static_cast<XML_Char*>(AP_PREF_KEY_RulerUnits), &pszBuffer );
+	pPrefs->getPrefsValue(static_cast<const XML_Char *>(AP_PREF_KEY_RulerUnits), &pszBuffer );
 
 	// or should I just default to inches or something?
 	UT_Dimension dim = UT_determineDimension( pszBuffer, DIM_none );
