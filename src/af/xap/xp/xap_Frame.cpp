@@ -190,38 +190,7 @@ bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyBind
 {
 	XAP_App * pApp = getApp();
 
-	//////////////////////////////////////////////////////////////////
-	// choose which set of key- and mouse-bindings to load
-	// create a EventMapper state-machine to process our events
-	//////////////////////////////////////////////////////////////////
 
-#define UT_WARNING "remove me at some point"
-#include "ut_warning.h"
-	
-#if 0 		// moved out to XAP_App
-	const char * szBindings = NULL;
-	EV_EditBindingMap * pBindingMap = NULL;
-
-	if ((pApp->getPrefsValue(szKeyBindingsKey,
-				 static_cast<const XML_Char**>(&szBindings))) && 
-	    (szBindings) && (*szBindings))
-		pBindingMap = m_pApp->getBindingMap(szBindings);
-	if (!pBindingMap)
-		pBindingMap = m_pApp->getBindingMap(szKeyBindingsDefaultValue);
-	UT_ASSERT(pBindingMap);
-
-	if (!m_pInputModes)
-	{
-		m_pInputModes = new XAP_InputModes();
-		UT_ASSERT(m_pInputModes);
-	}
-	bool bResult;
-	bResult = m_pInputModes->createInputMode(szBindings,pBindingMap);
-	UT_ASSERT(bResult);
-	bool bResult2;
-	bResult2 = m_pInputModes->setCurrentMap(szBindings);
-	UT_ASSERT(bResult2);
-#endif	
 	//////////////////////////////////////////////////////////////////
 	// select which menu bar we should use
 	//////////////////////////////////////////////////////////////////
