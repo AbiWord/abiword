@@ -84,6 +84,7 @@ public:
  	void        runSizeChanged(fp_Run*, UT_sint32 oldWidth, UT_sint32 newWidth);
 	void		remove();
 	UT_sint32	getMarginBefore(void) const;
+	UT_sint32	getMarginAfter(void) const;
 
 	void		mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL);
 	void		getOffsets(fp_Run* pRun, void* p, UT_sint32& xoff, UT_sint32& yoff);

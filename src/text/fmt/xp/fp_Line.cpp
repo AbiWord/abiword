@@ -613,3 +613,25 @@ UT_sint32 fp_Line::getMarginBefore(void) const
 	return 0;
 }
 
+UT_sint32 fp_Line::getMarginAfter(void) const
+{
+	DG_Graphics* pG = getBlock()->getDocLayout()->getGraphics();
+	
+	if (isLastLineInBlock() && getBlock()->getNext(UT_FALSE))
+	{
+		fp_Line* pNextLine = getBlock()->getNext(UT_FALSE)->getFirstLine();
+		UT_ASSERT(pNextLine);
+		UT_ASSERT(pNextLine->isFirstLineInBlock());
+					
+		UT_sint32 iBottomMargin = getBlock()->getBottomMargin();
+		
+		UT_sint32 iNextTopMargin = pNextLine->getBlock()->getTopMargin();
+		
+		UT_sint32 iMargin = UT_MAX(iBottomMargin, iNextTopMargin);
+
+		return iMargin;
+	}
+
+	return 0;
+}
+

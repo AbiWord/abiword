@@ -46,6 +46,7 @@ class fp_Page
 
 	UT_sint32		getWidth(void) const;
 	UT_sint32		getHeight(void) const;
+	UT_sint32		getBottom(void) const;
 	fp_Page*		getNext(void) const;
 	fp_Page*		getPrev(void) const;
 	void			setNext(fp_Page*);

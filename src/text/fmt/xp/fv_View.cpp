@@ -33,6 +33,7 @@
 #include "fv_View.h"
 #include "fl_DocLayout.h"
 #include "fl_BlockLayout.h"
+#include "fl_SectionLayout.h"
 #include "fp_Page.h"
 #include "fp_Column.h"
 #include "fp_Line.h"
@@ -1323,73 +1324,148 @@ void FV_View::_moveInsPtNextPrevLine(UT_Bool bNext)
 	UT_uint32 yPoint;
 	UT_uint32 iPointHeight;
 
+	/*
+		This function moves the IP up or down one line, attempting to get 
+		as close as possible to the prior "sticky" x position.  The notion 
+		of "next" is strictly physical, not logical. 
+
+		For example, instead of always moving from the last line of one block
+		to the first line of the next, you might wind up skipping over a 
+		bunch of blocks to wind up in the first line of the second column. 
+	*/
+	UT_sint32 xOldSticky = m_xPointSticky;
+
 	// first, find the line we are on now
 	UT_uint32 iOldPoint = _getPoint();
 
 	fl_BlockLayout* pOldBlock = _findBlockAtPosition(iOldPoint);
 	fp_Run* pOldRun = pOldBlock->findPointCoords(_getPoint(), m_bPointEOL, xPoint, yPoint, iPointHeight);
+	fl_SectionLayout* pOldSL = pOldBlock->getSectionLayout();
 	fp_Line* pOldLine = pOldRun->getLine();
+	fp_Column* pOldColumn = pOldLine->getColumn();
+	fp_Column* pOldLeader = pOldColumn->getLeader();
+	fp_Page* pOldPage = pOldColumn->getPage();
 
-	fp_Line* pDestLine;
+	UT_sint32 iPageOffset;
+	getPageYOffset(pOldPage, iPageOffset);
+
+	iPointHeight = pOldLine->getHeight();
+
+	UT_Bool bNOOP = UT_FALSE;
+
 	if (bNext)
 	{
-		pDestLine = pOldBlock->findNextLineInDocument(pOldLine);
-	}
-	else
-	{
-		pDestLine = pOldBlock->findPrevLineInDocument(pOldLine);
-	}
-
-	if (pDestLine)
-	{
-		fl_BlockLayout* pNewBlock = pDestLine->getBlock();
-		
-		if (bNext)
+		if (pOldLine != pOldColumn->getLastLine())
 		{
-			UT_ASSERT((pOldBlock != pNewBlock) || (pOldLine->getNext() == pDestLine));
+			// just move off this line
+			yPoint += iPointHeight + pOldLine->getMarginAfter();
 		}
-		else
+		else if (pOldSL->getLastColumn()->getLeader() == pOldLeader)
 		{
-			UT_ASSERT((pOldBlock != pNewBlock) || (pDestLine->getNext() == pOldLine));
+			// move to next section
+			fl_SectionLayout* pSL = m_pLayout->getNextSection(pOldSL);
+			if (pSL)
+			{
+				yPoint = pSL->getFirstColumn()->getY();
+			}
+			else
+			{
+				bNOOP = UT_TRUE;
+			}
 		}
-	
-		// how many characters are we from the front of our current line?
-		fp_Run* pFirstRunOnOldLine = pOldLine->getFirstRun();
-		PT_DocPosition iFirstPosOnOldLine = pFirstRunOnOldLine->getBlockOffset() + pOldBlock->getPosition();
-		UT_ASSERT(iFirstPosOnOldLine <= iOldPoint);
-		UT_sint32 iNumChars = _getDataCount(iFirstPosOnOldLine, iOldPoint);
-		
-		fp_Run* pFirstRunOnNewLine = pDestLine->getFirstRun();
-		PT_DocPosition iFirstPosOnNewLine = pFirstRunOnNewLine->getBlockOffset() + pNewBlock->getPosition();
-		if (bNext)
+		else 
 		{
-			UT_ASSERT((iFirstPosOnNewLine > iOldPoint) || (m_bPointEOL && (iFirstPosOnNewLine == iOldPoint)));
-		}
-		else
-		{
-			UT_ASSERT(iFirstPosOnNewLine < iOldPoint);
-		}
-
-		UT_uint32 iNumCharsOnNewLine = pDestLine->getNumChars();
-		if (iNumChars >= (UT_sint32)iNumCharsOnNewLine)
-		{
-			iNumChars = iNumCharsOnNewLine;
-		}
-		
-		_setPoint(iFirstPosOnNewLine);
-		_charMotion(UT_TRUE, iNumChars);
-
-		if (!_ensureThatInsertionPointIsOnScreen())
-		{
-			_fixInsertionPointCoords();
-			_drawInsertionPoint();
+			// move to next page
+			fp_Page* pPage = pOldPage->getNext();
+			if (pPage)
+			{
+				getPageYOffset(pPage, iPageOffset);
+				yPoint = 0;
+			}
+			else
+			{
+				bNOOP = UT_TRUE;
+			}
 		}
 	}
 	else
+	{
+		if (pOldLine != pOldColumn->getFirstLine())
+		{
+			// just move off this line
+			yPoint -= pOldLine->getMarginBefore() + 1;
+		}
+		else if (pOldSL->getFirstColumn() == pOldLeader)
+		{
+			// move to prev section
+			fl_SectionLayout* pSL = m_pLayout->getPrevSection(pOldSL);
+			if (pSL)
+			{
+				fp_Column* pTmpCol = pSL->getLastColumn()->getLeader();
+				yPoint = pTmpCol->getY();
+
+				UT_sint32 iMostHeight = 0;
+				while (pTmpCol)
+				{
+					iMostHeight = UT_MAX(iMostHeight, pTmpCol->getHeight());
+
+					pTmpCol = pTmpCol->getFollower();
+				}
+
+				yPoint += iMostHeight;
+			}
+			else
+			{
+				bNOOP = UT_TRUE;
+			}
+		}
+		else 
+		{
+			// move to prev page
+			fp_Page* pPage = pOldPage->getPrev();
+			if (pPage)
+			{
+				getPageYOffset(pPage, iPageOffset);
+				yPoint = pPage->getBottom();
+			}
+			else
+			{
+				bNOOP = UT_TRUE;
+			}
+		}
+	}
+
+	if (bNOOP)
 	{
 		// cannot move.  should we beep?
 		_drawInsertionPoint();
+		return;
 	}
+
+	// change to screen coordinates
+	xPoint = m_xPointSticky - m_xScrollOffset + fl_PAGEVIEW_MARGIN_X;
+	yPoint += iPageOffset - m_yScrollOffset;
+
+	// hit-test to figure out where that puts us
+	UT_sint32 xClick, yClick;
+	fp_Page* pPage = _getPageForXY(xPoint, yPoint, xClick, yClick);
+
+	PT_DocPosition iNewPoint;
+	UT_Bool bBOL, bEOL;
+	pPage->mapXYToPosition(xClick, yClick, iNewPoint, bBOL, bEOL);
+
+	UT_ASSERT(iNewPoint != iOldPoint);
+
+	_setPoint(iNewPoint);
+
+	if (!_ensureThatInsertionPointIsOnScreen())
+	{
+		_fixInsertionPointCoords();
+		_drawInsertionPoint();
+	}
+
+	// this is the only place where we override changes to m_xPointSticky 
+	m_xPointSticky = xOldSticky;
 }
 
 UT_Bool FV_View::_ensureThatInsertionPointIsOnScreen(void)
@@ -1587,8 +1663,9 @@ void FV_View::_autoScroll(UT_Timer * pTimer)
 }
 
 
-fp_Page* FV_View::_getPageForXY(UT_sint32 xPos, UT_sint32 yPos, UT_sint32& yClick)
+fp_Page* FV_View::_getPageForXY(UT_sint32 xPos, UT_sint32 yPos, UT_sint32& xClick, UT_sint32& yClick)
 {
+	xClick = xPos + m_xScrollOffset - fl_PAGEVIEW_MARGIN_X;
 	yClick = yPos + m_yScrollOffset - fl_PAGEVIEW_MARGIN_Y;
 	fp_Page* pPage = m_pLayout->getFirstPage();
 	while (pPage)
@@ -1624,12 +1701,12 @@ void FV_View::extSelToXY(UT_sint32 xPos, UT_sint32 yPos, UT_Bool bDrag)
 	  Figure out which page we clicked on.
 	  Pass the click down to that page.
 	*/
-	UT_sint32 yClick;
-	fp_Page* pPage = _getPageForXY(xPos, yPos, yClick);
+	UT_sint32 xClick, yClick;
+	fp_Page* pPage = _getPageForXY(xPos, yPos, xClick, yClick);
 
 	PT_DocPosition iNewPoint;
 	UT_Bool bBOL, bEOL;
-	pPage->mapXYToPosition(xPos + m_xScrollOffset - fl_PAGEVIEW_MARGIN_X, yClick, iNewPoint, bBOL, bEOL);
+	pPage->mapXYToPosition(xClick, yClick, iNewPoint, bBOL, bEOL);
 
 	UT_Bool bPostpone = UT_FALSE;
 
@@ -2249,8 +2326,8 @@ void FV_View::warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos)
 	  Figure out which page we clicked on.
 	  Pass the click down to that page.
 	*/
-	UT_sint32 yClick;
-	fp_Page* pPage = _getPageForXY(xPos, yPos, yClick);
+	UT_sint32 xClick, yClick;
+	fp_Page* pPage = _getPageForXY(xPos, yPos, xClick, yClick);
 
 	_clearPointAP(UT_TRUE);
 
@@ -2266,7 +2343,7 @@ void FV_View::warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos)
 	PT_DocPosition pos;
 	UT_Bool bBOL, bEOL;
 	
-	pPage->mapXYToPosition(xPos + m_xScrollOffset - fl_PAGEVIEW_MARGIN_X, yClick, pos, bBOL, bEOL);
+	pPage->mapXYToPosition(xClick, yClick, pos, bBOL, bEOL);
 	
 	_setPoint(pos, bEOL);
 	_fixInsertionPointCoords();
@@ -2474,6 +2551,9 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 void FV_View::_fixInsertionPointCoords()
 {
 	_findPositionCoords(_getPoint(), m_bPointEOL, m_xPoint, m_yPoint, m_iPointHeight, NULL, NULL);
+
+	// hang onto this for _moveInsPtNextPrevLine()
+	m_xPointSticky = m_xPoint + m_xScrollOffset - fl_PAGEVIEW_MARGIN_X;
 }
 
 void FV_View::_updateInsertionPoint()
@@ -2987,12 +3067,12 @@ UT_Bool FV_View::isLeftMargin(UT_sint32 xPos, UT_sint32 yPos)
 	  Figure out which page we clicked on.
 	  Pass the click down to that page.
 	*/
-	UT_sint32 yClick;
-	fp_Page* pPage = _getPageForXY(xPos, yPos, yClick);
+	UT_sint32 xClick, yClick;
+	fp_Page* pPage = _getPageForXY(xPos, yPos, xClick, yClick);
 
 	PT_DocPosition iNewPoint;
 	UT_Bool bBOL, bEOL;
-	pPage->mapXYToPosition(xPos + m_xScrollOffset - fl_PAGEVIEW_MARGIN_X, yClick, iNewPoint, bBOL, bEOL);
+	pPage->mapXYToPosition(xClick, yClick, iNewPoint, bBOL, bEOL);
 
 	return bBOL;
 }

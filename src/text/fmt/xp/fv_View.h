@@ -191,6 +191,7 @@ protected:
 
 	fp_Page*			_getPageForXY(UT_sint32 xPos, 
 									  UT_sint32 yPos, 
+									  UT_sint32& xClick, 
 									  UT_sint32& yClick);
 
 	void				_moveToSelectionEnd(UT_Bool bForward);
@@ -223,7 +224,9 @@ protected:
 	UT_sint32			m_xPoint;
 	UT_sint32			m_yPoint;
 	UT_uint32			m_iPointHeight;
-	
+
+	UT_sint32			m_xPointSticky;		// used only for _moveInsPtNextPrevLine() 
+
 	UT_Bool				m_bPointVisible;
 	UT_Bool				m_bPointEOL;
 

@@ -76,6 +76,23 @@ UT_sint32 fp_Page::getHeight(void) const
 	return m_iHeight;
 }
 
+UT_sint32 fp_Page::getBottom(void) const
+{
+	int count = countColumnLeaders();
+	if (count <= 0)
+	{
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return 0;
+	}
+
+	fp_Column* pFirstColumnLeader = getNthColumnLeader(0);
+	fl_SectionLayout* pFirstSectionLayout = pFirstColumnLeader->getSectionLayout();
+	UT_sint32 iTopMargin = pFirstSectionLayout->getTopMargin();
+	UT_sint32 iBottomMargin = pFirstSectionLayout->getBottomMargin();
+	
+	return m_iHeight - iBottomMargin - iTopMargin;
+}	
+
 void fp_Page::getScreenOffsets(fp_Column* pCol, UT_sint32& xoff, UT_sint32& yoff, UT_sint32& width, UT_sint32& height)
 {
 	UT_ASSERT(m_pView);
