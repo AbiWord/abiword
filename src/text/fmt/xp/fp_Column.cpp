@@ -162,7 +162,7 @@ UT_sint32 fp_VerticalContainer::getYoffsetFromTable(fp_Container * pT,
  */
 fp_TableContainer * fp_VerticalContainer::getCorrectBrokenTable(fp_Container * pLine)
 {
-	UT_DEBUGMSG(("VerticalContainer: In get Correct proken table \n"));
+	xxx_UT_DEBUGMSG(("VerticalContainer: In get Correct proken table \n"));
 	bool bFound = false;
 	UT_return_val_if_fail(pLine->getContainerType() == FP_CONTAINER_LINE, NULL);
 	fp_CellContainer * pCell = static_cast<fp_CellContainer *>(pLine->getContainer());
@@ -204,7 +204,7 @@ fp_TableContainer * fp_VerticalContainer::getCorrectBrokenTable(fp_Container * p
 	}
 	if(bFound)
 	{
-		UT_DEBUGMSG(("getCorrect: Found table after %d tries \n",iCount));
+		xxx_UT_DEBUGMSG(("getCorrect: Found table after %d tries \n",iCount));
 		return  pTab;
 	}
 	UT_DEBUGMSG(("getCorrectBroken: No table found after %d tries \n",iCount));

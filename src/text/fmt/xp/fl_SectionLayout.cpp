@@ -2408,8 +2408,8 @@ void fl_HdrFtrSectionLayout::addPage(fp_Page* pPage)
 	//
 	// Populate the shadow
 	//
-
 	fl_ShadowListener* pShadowListener = new fl_ShadowListener(this, pPair->getShadow());
+	UT_DEBUGMSG(("shadow listener %x created \n",pShadowListener));
 //
 // Populate with just this section so find the start and end of it
 //
@@ -3738,6 +3738,7 @@ bool fl_ShadowListener::populateStrux(PL_StruxDocHandle sdh,
 		{
 			// append a new BlockLayout to that SectionLayout
 			fl_ContainerLayout*	pBL = m_pShadow->append(sdh, pcr->getIndexAP(),FL_CONTAINER_BLOCK);
+			UT_DEBUGMSG(("New Shadow block %x created and set as current \n",pBL));
 			if (!pBL)
 			{
 				UT_DEBUGMSG(("no memory for BlockLayout"));

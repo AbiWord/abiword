@@ -443,7 +443,7 @@ bool pt_VarSet::addIfUniqueAP(PP_AttrProp * pAP, PT_AttrPropIndex * papi)
 	}
 	
 	// memory error of some kind.
-	
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	delete pAP;
 	return false;
 }

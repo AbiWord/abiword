@@ -1211,6 +1211,7 @@ bool FV_View::cmdInsertRow(PT_DocPosition posRow, bool bBefore)
 		if(posEndCell+1 >= posEndTable)
 		{
 			bEnd = true;
+			break;
 		}
 		posCell =  m_pDoc->getStruxPosition(cellSDH);
 		getCellParams(posCell+1, &iCurLeft, &iCurRight,&iCurTop,&iCurBot);

@@ -1306,7 +1306,7 @@ fp_Page::buildHdrFtrContainer(fl_HdrFtrSectionLayout* pHFSL,
 									              m_pOwner->getFooterMargin(),
 									 getWidth() - (m_pOwner->getLeftMargin()+ 
                                                   m_pOwner->getRightMargin()),
-									 m_pOwner->getBottomMargin(),
+									   m_pOwner->getBottomMargin() - m_pOwner->getFooterMargin(),
 									 pHFSL);
 	}
 

@@ -282,6 +282,10 @@ void fp_CellContainer::clearScreen(void)
 	{
 		return;
 	}
+	if(getPage() == NULL)
+	{
+		return;
+	}
 	xxx_UT_DEBUGMSG(("Doing cell clearscreen \n"));
 // only clear the embeded containers if no background is set: the background clearing will also these containers
 // FIXME: should work, but doesn't??

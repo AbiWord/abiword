@@ -5734,20 +5734,8 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 	else if(pSection->getContainerType() == FL_CONTAINER_CELL)
 	{
 		fp_CellContainer * pCell = static_cast<fp_CellContainer *>(pContainer);
-		fl_ContainerLayout * pCL = pSection->myContainingLayout();
-		pInfo->m_mode = AP_TopRulerInfo::TRI_MODE_TABLE;
-		while(pCL && pCL->getContainerType() != FL_CONTAINER_DOCSECTION)
-		{
-			pCL = pCL->myContainingLayout();
-		}
-		fl_DocSectionLayout * pDSL = static_cast<fl_DocSectionLayout *>(pCL);
-		if(pDSL == NULL)
-		{
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			return;
-		}
-		fp_Column * pColumn = static_cast<fp_Column *>(pContainer->getColumn());
-
+		fl_DocSectionLayout* pDSL = pSection->getDocSectionLayout();
+		fp_Column * pColumn = static_cast<fp_Column *>(pCell->getColumn());
 		UT_uint32 nCol=0;
 		fp_Column * pNthColumn=pColumn->getLeader();
 		while (pNthColumn && (pNthColumn != pColumn))
@@ -5757,7 +5745,7 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 		}
 		pInfo->m_iCurrentColumn = nCol;
 		pInfo->m_iNumColumns = pDSL->getNumColumns();
-
+		pInfo->m_mode = AP_TopRulerInfo::TRI_MODE_TABLE;
 		pInfo->u.c.m_xaLeftMargin = pDSL->getLeftMargin();
 		pInfo->u.c.m_xaRightMargin = pDSL->getRightMargin();
 		pInfo->u.c.m_xColumnGap = pDSL->getColumnGap();
@@ -5816,7 +5804,7 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 		{
 			pCur = pTab->getCellAtRowColumn(0,i);
 			UT_sint32 j =0;
-			while(pCur && ((pCur->getLeftAttach()+1) != pCur->getRightAttach()) && j <= numrows)
+			while(pCur && ((pCur->getLeftAttach()+1) != pCur->getRightAttach()) && (j <= numrows))
 			{
 				pCur = pTab->getCellAtRowColumn(j,i);
 				if(pCur)
@@ -7917,11 +7905,11 @@ bool FV_View::insertFootnote(bool bFootnote)
 	// reference style to the anchor follows it
 	if(bFootnote)
 	{
-		setStyleAtPos("Footnote Reference", FanchStart, FanchEnd, true);
+		setStyleAtPos("Footnote Text", FanchStart, FanchEnd, true);
 	}
 	else
 	{
-		setStyleAtPos("Endnote Reference", FanchStart, FanchEnd, true);
+		setStyleAtPos("Endnote Text", FanchStart, FanchEnd, true);
 	}
 
 	_setPoint(FanchEnd+1);
