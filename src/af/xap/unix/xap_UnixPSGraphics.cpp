@@ -345,7 +345,7 @@ void PS_Graphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 
 		// TODO deal with Unicode issues.
 
-		currentChar = remapGlyph(*pS, currentChar >= 256 ? UT_TRUE : UT_FALSE);
+		currentChar = remapGlyph(*pS, *pS >= 256 ? UT_TRUE : UT_FALSE);
 		switch (currentChar)
 		{
 		case 0x08:		*pD++ = '\\';	*pD++ = 'b';	break;
