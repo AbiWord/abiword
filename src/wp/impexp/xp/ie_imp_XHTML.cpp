@@ -287,6 +287,9 @@ IE_Imp_XHTML::~IE_Imp_XHTML()
 
 #define TT_HREF                 41              // <a> anchor tag
 
+#define TT_DL                   42
+#define TT_DT                   43
+#define TT_DD                   44
 
 // This certainly leaves off lots of tags, but with HTML, this is inevitable - samth
 
@@ -300,8 +303,11 @@ static struct xmlToIdMapping s_Tokens[] =
 	{	"br",			TT_BREAK		},
 	{       "cite",                 TT_CITE                 },
 	{       "code",                 TT_CODE                 },
+	{       "dd",                   TT_DD                   },
 	{       "def",                  TT_DFN                  },
 	{	"div",		        TT_DIV		        },
+    {       "dl",                   TT_DL                   },
+    {       "dt",                   TT_DT                   },
 	{       "em",                   TT_EM                   },
 	{       "font",                 TT_FONT                 },
 	{       "h1",                   TT_H1                   },
@@ -727,6 +733,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 
 	case TT_OL:	  
 	case TT_UL:
+	case TT_DL:
 	{
 		if(tokenIndex == TT_OL)
 	  		m_listType = L_OL;
@@ -766,6 +773,8 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 		return;
 	}
 	case TT_LI:
+	case TT_DT:
+	case TT_DD:
 	{
 		X_VerifyParseState(_PS_Sec);
 		m_parseState = _PS_Block;
@@ -995,6 +1004,7 @@ void IE_Imp_XHTML::endElement(const XML_Char *name)
 
 	case TT_OL:
 	case TT_UL:
+	case TT_DL:
 		UT_uint16 *temp;
 
 		if(m_utsParents.pop((void**) &temp))
@@ -1009,6 +1019,8 @@ void IE_Imp_XHTML::endElement(const XML_Char *name)
 		return;
 
 	case TT_LI:
+	case TT_DT:
+	case TT_DD:
 	case TT_P:
 	case TT_TR:
 	case TT_H1:
