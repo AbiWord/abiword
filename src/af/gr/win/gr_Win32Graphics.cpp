@@ -607,10 +607,14 @@ UT_sint32 GR_Win32Graphics::measureUnRemappedChar(const UT_UCSChar c)
 
 	UT_ASSERT(m_pFont);
 	UT_sint32 iWidth = GR_Win32Font::Acq::measureUnRemappedChar(*m_pFont, c);
+
+	if (iWidth==GR_CW_UNKNOWN || iWidth==GR_CW_ABSENT)
+		return iWidth;
+	
 	iWidth *= (UT_sint32)getResolution();
 	iWidth /= (UT_sint32)getDeviceResolution();
 	
-	return iWidth;
+	return iWidth;	
 }
 
 UT_uint32 GR_Win32Graphics::getDeviceResolution(void) const
