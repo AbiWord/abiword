@@ -70,6 +70,11 @@ typedef enum
 #define  LIST_DEFAULT_INDENT 0.50
 #define  LIST_DEFAULT_INDENT_LABEL 0.50
 
+//
+// Reserved the first 10000 id's for useful purposes....
+//
+#define  AUTO_LIST_RESERVED 1000
+
 #define fmt_NUMBERED_LIST ((const char *)"%*%d")
 #define  fmt_LOWERCASE_LIST ((const char *)"%*%a")
 #define  fmt_UPPERCASE_LIST ((const char *)"%*%A")

@@ -6371,9 +6371,21 @@ void FV_View::getLeftRulerInfo(AP_LeftRulerInfo * pInfo)
 		UT_uint32 heightCaret;
 		UT_sint32 xCaret2, yCaret2;
 		bool bDirection;
+		PT_DocPosition pos = getPoint();
 		_findPositionCoords(getPoint(), m_bPointEOL, xCaret, yCaret, xCaret2, yCaret2, heightCaret, bDirection, &pBlock, &pRun);
 
 		UT_ASSERT(pRun);
+		///
+		/// Bug Here!! Can be triggered by doing stuff in header/footer
+		/// region. Try to recover..
+		///
+		if(!pRun)
+		{
+  		       PT_DocPosition posEOD = 0;
+		       getEditableBounds(true,posEOD);
+		       UT_DEBUGMSG(("SEVIOR: Doc Position = %d EOD = \n",pos,posEOD));
+		       _findPositionCoords(posEOD, m_bPointEOL, xCaret, yCaret, xCaret2, yCaret2, heightCaret, bDirection, &pBlock, &pRun);
+		}
 		UT_ASSERT(pRun->getLine());
 
 		fp_Container * pContainer = pRun->getLine()->getContainer();
@@ -7100,13 +7112,19 @@ void FV_View::setShowPara(bool bShowPara)
 	}
 };
 
+/*!
 
-//
-// This method keeps the insertion point out of the header/footer end of
-// of the document. 
-// TODO find clever way to cache the size of the 
-// header/footer region so we can just subtract it off.
-//
+   This method is a replacement for getBounds which returns the beggining 
+   and end points of the document. It keeps the insertion point out of the 
+   header/footer region of the document by not counting the size of the 
+   header/footer region in the document length.
+   \param   isEnd true to get the end of the document. False gets the beginning
+   \param   posEnd is the value of the doc position at the beginning and end 
+            of the doc
+   \return  true if succesful
+   \todo speed this up by finding clever way to cache the size of the 
+         header/footer region so we can just subtract it off.
+*/
 bool    FV_View::getEditableBounds(bool isEnd, PT_DocPosition &posEOD)
 {
 	bool res;
@@ -7163,14 +7181,20 @@ bool FV_View::insertHeaderFooter(const XML_Char ** props, bool ftr)
 	// TODO: The fact that it is hardcoded means that only
 	// TODO: one section can have footers at one time, currently
 
+	static XML_Char sid[15];
+	UT_uint32 id = 0;
+	while(id < AUTO_LIST_RESERVED)
+                id = rand();
+	sprintf(sid, "%i", id);
+
 	const XML_Char*	sec_attributes1[] = {
 		"type", szString,
-		"id", "page_num","listid","0","parentid","0",
+		"id",sid,"listid","0","parentid","0",
 		NULL, NULL
 	};
 
 	const XML_Char*	sec_attributes2[] = {
-		szString, "page_num",
+		szString, sid,
 		NULL, NULL
 	};
 
@@ -7193,8 +7217,6 @@ bool FV_View::insertHeaderFooter(const XML_Char ** props, bool ftr)
 	}
 	// change the section to point to the footer which doesn't exist yet.
 	m_pDoc->changeStruxFmt(PTC_AddFmt, getPoint(), getPoint(), sec_attributes2, NULL, PTX_Section);
-
-	UT_DEBUGMSG(("EOD: %d\n", FV_DOCPOS_EOD));
 
 	moveInsPtTo(FV_DOCPOS_EOD);	// Move to the end, where we will create the page numbers
 
