@@ -84,10 +84,26 @@ void AP_Dialog_Tab::_populateWindowData(void)
 		pTabInfo = new tTabInfo();
 		UT_ASSERT(pTabInfo);
 
+#if 0
 		// get tab information	
-		(*rulerInfo.m_pfnEnumTabStops)( rulerInfo.m_pVoidEnumTabStopsData,
-						iTab, pTabInfo->iPosition, pTabInfo->iType, pTabInfo->iOffset,
+		(*rulerInfo.m_pfnEnumTabStops)(
+						rulerInfo.m_pVoidEnumTabStopsData,	// void* pData
+						iTab,								// UT_uint32 k
+						pTabInfo->iPosition,				// UT_sint32& iPosition
+						pTabInfo->iType,					// unsigned char& iType
+						pTabInfo->iOffset,					// UT_uint32& iOffset
 						pTabInfo->iLeader );
+#else
+// TMN: Pathched to get it to compile. Either 'iLeader' has been added here,
+// and the corresponding header has not been updated, or the the header
+// have dropped this last parameter. Let's hope it's the last assumption.
+		(*rulerInfo.m_pfnEnumTabStops)(
+						rulerInfo.m_pVoidEnumTabStopsData,
+						iTab,
+						pTabInfo->iPosition,
+						pTabInfo->iType,
+						pTabInfo->iOffset);
+#endif
 
 		// parse string stuff out
 		int i = 0;
