@@ -188,6 +188,11 @@ void XAP_QNXDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		for (UT_uint32 i = 0; i < end; i++) {
 			UT_uint32 totallen;
 
+			if(m_nTypeList[i] == m_nDefaultFileType) {
+				printf("Missing FEATURE: No way to show default filter\n");
+				break;
+			}
+
 #define PHOTON_HAS_STUPID_FILTER_LIMITATION
 #if defined(PHOTON_HAS_STUPID_FILTER_LIMITATION)
 			if(i >= 10) {

@@ -196,7 +196,9 @@ int XAP_QNXFrame::_fe::expose(PtWidget_t * w, PhTile_t * damage)
 	PhRect_t rect;
 
    	PhPoint_t pnt;
+/*
    	PtSuperClassDraw(PtBasic, w, damage);
+*/
    	PtBasicWidgetCanvas(w, &rect);
    	PtWidgetOffset(w, &pnt);
 /*

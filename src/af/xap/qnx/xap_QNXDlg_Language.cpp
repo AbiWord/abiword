@@ -118,7 +118,6 @@ void XAP_QNXDialog_Language::runModal(XAP_Frame * pFrame)
 		if (index && *index) {
 			langindex = (*index) - 1;
 
-			UT_ASSERT(text && text[0]);
 			if (!m_pLanguage || UT_stricmp(m_pLanguage, m_ppLanguages[langindex])) {
 				_setLanguage(m_ppLanguages[langindex]);
 				m_bChangedLanguage = true;
