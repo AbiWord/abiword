@@ -354,6 +354,7 @@ private:
 };
 
 UT_UTF8String operator+(const UT_UTF8String & s1, const UT_UTF8String & s2);
+UT_UTF8String & UT_UTF8String_sprintf(UT_UTF8String & inStr, const char * inFormat, ...);
 
 
 #endif	// UT_STRING_CLASS_H

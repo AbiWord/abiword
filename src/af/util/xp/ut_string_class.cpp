@@ -1005,6 +1005,21 @@ UT_UTF8String operator+(const UT_UTF8String & s1, const UT_UTF8String & s2)
 }
 
 
+
+UT_UTF8String & UT_UTF8String_sprintf(UT_UTF8String & inStr, const char * inFormat, ...)
+{
+  UT_String str ("");
+
+  va_list args;
+  va_start (args, inFormat);
+  UT_String_vprintf (str, inFormat, args);
+  va_end (args);
+
+  // create a validated utf8 string based on the input
+  inStr = str.c_str();
+  return inStr;
+}
+
 /**************************************************************************/
 /*************************************************************************/
 
