@@ -107,7 +107,7 @@ static int s_drawingarea_expose(PtWidget_t * w, PhTile_t * damage)
 	PhRect_t raw_canvas;
 
 	PtSuperClassDraw(PtBasic, w, damage);
-	PtBasicWidgetCanvas(w, &raw_canvas);
+	PtCalcCanvas(w, &raw_canvas);
 	PtClipAdd(w, &raw_canvas);
 
 	XAP_QNXDialog_About *pQNXAbout, **ppQNXAbout = NULL;

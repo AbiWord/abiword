@@ -281,13 +281,11 @@ int XAP_QNXFrameImpl::_fe::expose(PtWidget_t * w, PhTile_t * damage)
 	PtArg_t args[1];
 	UT_Rect rClip;
 	PhRect_t rect;
+ 	PhPoint_t pnt;
 
-   	PhPoint_t pnt;
-/*
-   	PtSuperClassDraw(PtBasic, w, damage);
-*/
-   	PtBasicWidgetCanvas(w, &rect);
-   	PtWidgetOffset(w, &pnt);
+
+ 	PtCalcCanvas(w, &rect);
+ 	PtWidgetOffset(w, &pnt);
 	
 	XAP_FrameImpl *pQNXFrameImpl, **ppQNXFrameImpl = NULL;
 	PtSetArg(&args[0], Pt_ARG_USER_DATA, &ppQNXFrameImpl, 0);
@@ -295,6 +293,7 @@ int XAP_QNXFrameImpl::_fe::expose(PtWidget_t * w, PhTile_t * damage)
 	pQNXFrameImpl = (ppQNXFrameImpl) ? *ppQNXFrameImpl : NULL;
 
 	UT_ASSERT(pQNXFrameImpl);
+
 	
 //XXX: Or AV_View as before??	
 	FV_View * pView = (FV_View *) pQNXFrameImpl->getFrame()->getCurrentView();
@@ -321,20 +320,25 @@ int XAP_QNXFrameImpl::_fe::expose(PtWidget_t * w, PhTile_t * damage)
 		}
 		while (damage) {
 			/* At one point in time this required some fiddling to put it in the widget co-ordinates*/
-			rClip.width = (damage->rect.lr.x - damage->rect.ul.x) + 1;
-			rClip.height = (damage->rect.lr.y - damage->rect.ul.y) + 1;
+			rClip.width = (damage->rect.lr.x - damage->rect.ul.x);
+			rClip.height = (damage->rect.lr.y - damage->rect.ul.y);
 			rClip.left = damage->rect.ul.x - pnt.x;
 			rClip.top = damage->rect.ul.y - pnt.y;
 
-			//Don't bother setting the clip here, the Graphics routine does it
 
 			//OR: Pass the draw function the clipping rectangle
 			//This is preferred since this way the application
 			//can optimize their drawing routines as well.
-			pView->draw(&rClip);
+/*
+			fprintf(stderr,"Calling draw from XAP_QNXFrameImpl! = %d,%d,%d,%d\n",rClip.width,rClip.height,rClip.left,rClip.top);
+			if(rClip.width < 0) rClip.width=0;
+			if(rClip.height < 0) rClip.height=0;
+			if(rClip.top < 0) rClip.top =0;
+			if(rClip.left < 0) rClip.left=0;
+			pView->draw(&rClip);*/
 
 			//OR: Completely unoptimized
-			//pView->draw(NULL);
+			pView->draw(NULL);
 			//break;
 
 #if defined(MULTIPLE_EXPOSE_EVENTS) 
@@ -345,8 +349,6 @@ int XAP_QNXFrameImpl::_fe::expose(PtWidget_t * w, PhTile_t * damage)
 		}
 
 	}
-	UT_DEBUGMSG(("====="));
-
 	return 0;
 }
 	
@@ -753,6 +755,8 @@ void XAP_QNXFrameImpl::createTopLevelWindow(void)
 	//Remember the settings for next time
 	m_pQNXApp->getPrefs()->setGeometry(x,y,width,height,f);
 
+
+	PgSetDrawBufferSize(16*1024);
 return;
 }
 

@@ -98,7 +98,7 @@ static int s_sym_SymbolMap_exposed(PtWidget_t * w, PhTile_t * damage)
 
    	PhRect_t rect;
    	PtSuperClassDraw(PtBasic, w, damage);
-   	PtBasicWidgetCanvas(w, &rect);
+   	PtCalcCanvas(w, &rect);
 	//clip to our basic canvas (it's only polite).
     PtClipAdd( w, &rect );
 
@@ -120,7 +120,7 @@ static int s_Symbolarea_exposed(PtWidget_t * w, PhTile_t * damage)
 
    	PhRect_t rect;
    	PtSuperClassDraw(PtBasic, w, damage);
-   	PtBasicWidgetCanvas(w, &rect);
+   	PtCalcCanvas(w, &rect);
 	//clip to our basic canvas (it's only polite).
     PtClipAdd( w, &rect );
 

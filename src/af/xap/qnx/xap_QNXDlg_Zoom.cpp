@@ -157,7 +157,7 @@ static int s_preview_exposed(PtWidget_t * w, PhTile_t * damage) {
 
    	PhRect_t rect;
    	PtSuperClassDraw(PtBasic, w, damage);
-   	PtBasicWidgetCanvas(w, &rect);
+   	PtCalcCanvas(w, &rect);
 	//clip to our basic canvas (it's only polite).
     PtClipAdd( w, &rect );
 
