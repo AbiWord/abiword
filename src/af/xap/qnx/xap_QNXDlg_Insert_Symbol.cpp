@@ -213,6 +213,7 @@ void XAP_QNXDialog_Insert_Symbol::notifyCloseFrame(XAP_Frame *pFrame) {
 
 void XAP_QNXDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 {
+	#if 0
 	unsigned short w, h;
 
 	// First see if the dialog is already running
@@ -290,6 +291,8 @@ void XAP_QNXDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 	UT_QNXCenterWindow(parentWindow, mainWindow);
 	PtRealizeWidget(mainWindow);
 	PgFlush();
+#endif 
+UT_ASSERT(0);
 }
 
 void XAP_QNXDialog_Insert_Symbol::event_OK(void)
@@ -331,23 +334,22 @@ void XAP_QNXDialog_Insert_Symbol::Symbolarea_exposed(void )
 
 void XAP_QNXDialog_Insert_Symbol::Key_Pressed(void * e)
 {
+	UT_DEBUGMSG(("TODO: Key Press Navigation "));
+#if 0
 	int move = 0;
-	PhKeyEvent_t *ev=(PhKeyEvent_t* )PhGetData((PhEvent_t*)e);
 
-if(!(ev->key_flags & Pk_KF_Sym_Valid)) return;
-
-	switch (ev->key_sym)
+	switch (e->keyval)
 	{
-	case Pk_Up:
+	case GDK_Up:
 		move = -32;
 		break;
-	case Pk_Down:
+	case GDK_Down:
 		move = 32;
 		break;
-	case Pk_Left:
+	case GDK_Left:
 		move = -1;
 		break;
-	case Pk_Right:
+	case GDK_Right:
 		move = 1;
 		break;
 	}
@@ -362,7 +364,11 @@ if(!(ev->key_flags & Pk_KF_Sym_Valid)) return;
 			m_CurrentSymbol = m_CurrentSymbol + move;
 			iDrawSymbol->drawarea(m_CurrentSymbol, m_PreviousSymbol);
 		}
+
+		gtk_signal_emit_stop_by_name((GTK_OBJECT(m_windowMain)),
+									 "key_press_event");
 	}
+#endif
 }
 
 void XAP_QNXDialog_Insert_Symbol::SymbolMap_clicked( PtCallbackInfo_t * e)
@@ -459,6 +465,7 @@ PtWidget_t * XAP_QNXDialog_Insert_Symbol::_constructWindow(void)
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 0, ABI_MODAL_WINDOW_MANAGE_FLAGS);
 	windowInsertS = PtCreateWidget(PtWindow, NULL, n, args);
 	PtAddCallback(windowInsertS, Pt_CB_WINDOW_CLOSING, s_delete_clicked, this);
+
 	//Create a vertical group to contain the font selector, 
 	// raw drawing area and then a horizontal group of buttons
 	n = 0;
@@ -499,7 +506,7 @@ PtWidget_t * XAP_QNXDialog_Insert_Symbol::_constructWindow(void)
 		PtSetArg(&args[n++], Pt_ARG_USER_DATA, &data, sizeof(this)); 
 		PtSetArg(&args[n++], Pt_ARG_RAW_DRAW_F, &s_sym_SymbolMap_exposed, 1); 
 		SymbolMap = PtCreateWidget(PtRaw, symgroup, n, args);
-		PtAddEventHandler(SymbolMap, Ph_EV_BUT_PRESS/* | Ph_EV_BUT_RELEASE */, 
+		PtAddEventHandler(SymbolMap, Ph_EV_BUT_PRESS /* | Ph_EV_BUT_RELEASE */, 
 							s_SymbolMap_clicked, this);
    	}
 	
