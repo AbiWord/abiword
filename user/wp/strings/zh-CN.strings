@@ -11,7 +11,7 @@
 <!-- zh-CN translations provided by hj <huangj@citiz.net> -->
 
 
-<AbiStrings app="AbiWord Personal" ver="1.0" language="en-US">
+<AbiStrings app="AbiWord" ver="1.0" language="en-US">
 
 <Strings	class="XAP"
 UntitledDocument="Untitled%d"

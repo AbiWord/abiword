@@ -11,7 +11,7 @@
 <!-- Ukrainian translations provided by Oper <vadim@krug.uch.net> -->
 
 
-<AbiStrings app="AbiWord Personal" ver="1.0" language="uk-UA">
+<AbiStrings app="AbiWord" ver="1.0" language="uk-UA">
 
 <Strings	class="XAP"
 UntitledDocument="БезИмени%d"

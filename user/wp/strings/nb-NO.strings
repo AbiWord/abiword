@@ -11,7 +11,7 @@
 <!--                          and Gro Elin Hansen <Gro.Hansen@student.uib.no> -->
 <!--                       and Karl Trygve Kalleberg <karltk@sourceforge.net> -->
 
-<AbiStrings app="AbiWord Personal" ver="1.0" language="nb-NO">
+<AbiStrings app="AbiWord" ver="1.0" language="nb-NO">
 
 <Strings	class="XAP"
 DLG_Apply="Bruk"

@@ -11,7 +11,7 @@
 <!-- es-ES translation provided by ?? -->
 
 
-<AbiStrings app="AbiWord Personal" ver="1.0" language="es-ES">
+<AbiStrings app="AbiWord" ver="1.0" language="es-ES">
 
 <Strings	class="XAP"
 UntitledDocument="Documento%d"

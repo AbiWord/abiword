@@ -11,7 +11,7 @@
 <!-- Galician translation by Jesus Bravo Alvarez <jba@pobox.com> -->
 <!-- Last Revision: May 16, 2000 -->
 
-<AbiStrings app="AbiWord Personal" ver="1.0" language="gl-ES">
+<AbiStrings app="AbiWord" ver="1.0" language="gl-ES">
 
 <Strings	class="XAP"
 UntitledDocument="SenTítulo%d"

@@ -12,7 +12,7 @@
 <!-- modifications by Gilles Saint-Denis <stdenisg@cedep.net> and Christophe Caron <ChrisDigo@aol.com> -->
 
 
-<AbiStrings app="AbiWord Personal" ver="1.0" language="fr-FR">
+<AbiStrings app="AbiWord" ver="1.0" language="fr-FR">
 
 <Strings	class="XAP"
 UntitledDocument="Document%d"

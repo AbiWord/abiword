@@ -7,7 +7,7 @@
 <!-- This file is covered by the GNU Public License (GPL).           -->
 <!-- ==============================================================  -->
 
-<AbiStrings app="AbiWord Personal" ver="1.0" language="ru-RU">
+<AbiStrings app="AbiWord" ver="1.0" language="ru-RU">
 
 <Strings    class="XAP"
 DLG_Break_Insert="Начать"

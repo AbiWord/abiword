@@ -1,8 +1,8 @@
 [Desktop Entry]
-Name=AbiWord Personal
-Name[da]=AbiWord Personal
-Comment=AbiWord Personal Wordprocessor
-Comment[da]=AbiWord Personal tekstbehandlingsprogram
+Name=AbiWord
+Name[da]=AbiWord
+Comment=AbiWord Wordprocessor
+Comment[da]=AbiWord tekstbehandlingsprogram
 Exec=abiword
 Icon=abiword_48.png
 Terminal=0

@@ -7,7 +7,7 @@
 <!-- This file is covered by the GNU Public License (GPL).           -->
 <!-- ==============================================================  -->
 
-<AbiStrings app="AbiWord Personal" ver="1.0" language="lt-LT">
+<AbiStrings app="AbiWord" ver="1.0" language="lt-LT">
 
 <Strings    class="XAP"
 DLG_Apply="Pritaikyti"

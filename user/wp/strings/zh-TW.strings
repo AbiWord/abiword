@@ -15,7 +15,7 @@
 <!--                                    August 2000, TopTech Inc., -->
 <!--                                    Updated November 2000      -->
 
-<AbiStrings app=3D"AbiWord Personal" ver=3D"1.0" language=3D"zh-TW">
+<AbiStrings app=3D"AbiWord" ver=3D"1.0" language=3D"zh-TW">
 
 <Strings	class=3D"XAP"
 UntitledDocument=3D"=E6=9C=AA=E5=91=BD=E5=90=8D%d"

@@ -30,35 +30,19 @@ ABI_AP_INCS+=	/wp/ap/$(ABI_NATIVE)/$(ABI_GNOME_DIR)
 endif
 
 ##################################################################
-## Deal with branding issues.
 ##
-## ABI_NAMEDEFS defines a -D symbol containing the
-##              official name of the application
-##              that the user will see -- whether
-##              the branded version or the personal
-##              version.  The Win32 crap is here 
-##              because of command line quoting issues....
+## Define the name of the application.  The quoting stuff is beacuse
+## of Win32 slash lossage.  
+##
 
 ifdef ABI_BIDI_ENABLED
 BIDI_STRING= -BiDi
 endif
 
-ifdef ABISOURCE_LICENSED_TRADEMARKS
-
 ifeq ($(ABI_ESCAPE_QUOTES),YES)
 ABI_NAMEDEFS=	-DABIWORD_APP_NAME=\"\"AbiWord$(BIDI_STRING)\"\"
 else
 ABI_NAMEDEFS=	-DABIWORD_APP_NAME="\"AbiWord$(BIDI_STRING)\""
-endif
-
-else
-
-ifeq ($(ABI_ESCAPE_QUOTES),YES)
-ABI_NAMEDEFS=	-DABIWORD_APP_NAME=\"\"AbiWord$(BIDI_STRING) Personal\"\"
-else
-ABI_NAMEDEFS=	-DABIWORD_APP_NAME="\"AbiWord$(BIDI_STRING) Personal\""
-endif
-
 endif
 
 ################################################################

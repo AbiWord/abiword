@@ -23,5 +23,5 @@ int main(int argc, char ** argv)
 {
 	// TODO abstract the naming of the app to somewhere else
 	
-	return AP_UnixApp::main("AbiHello Personal", argc, argv);
+	return AP_UnixApp::main("AbiHello", argc, argv);
 }

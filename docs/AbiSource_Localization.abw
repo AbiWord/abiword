@@ -90,7 +90,7 @@
 <p>[4] either change the value of {<c props="font-family:Courier New">Win32</c>,<c props="font-family:Courier New">Unix</c>,<c props="font-family:Courier New">BeOS</c>}<c props="font-family:Courier New">StringSetDirectory</c> to the directory you placed the <c props="font-family:Courier New">.strings</c> file or move the <c props="font-family:Courier New">.strings</c> file to the directory listed in this value.</p>
 <p>[5] launch AbiWord again.  In the debug output, you should find something like the following:</p>
 <p></p>
-<p style="Plain Text"><c props="font-size:8pt">Found strings file for application [AbiWord Personal] (this is [AbiWord Personal]).</c></p>
+<p style="Plain Text"><c props="font-size:8pt">Found strings file for application [AbiWord] (this is [AbiWord]).</c></p>
 <p style="Plain Text"><c props="font-size:8pt">Found strings for language [fi-FI].</c></p>
 <p style="Plain Text"><c props="font-size:8pt">Using StringSet [C:\work\abi\user\wp\strings\fi-FI.strings]</c></p>
 <p style="Plain Text"></p>

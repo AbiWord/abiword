@@ -11,7 +11,7 @@
 <!-- Hungarian translations provided by Tamas Decsi <tamas.decsi@techie.com> -->
 
 
-<AbiStrings app="AbiWord Personal" ver="1.0" language="hu-HU">
+<AbiStrings app="AbiWord" ver="1.0" language="hu-HU">
 
 <Strings	class="XAP"
 UntitledDocument="Névtelen%d"

@@ -11,7 +11,7 @@
 <!-- czech translations provided by Ladislav Michl <Ladislav.Michl@seznam.cz> -->
 
 
-<AbiStrings app="AbiWord Personal" ver="0.1" language="cs-CZ">
+<AbiStrings app="AbiWord" ver="0.1" language="cs-CZ">
 
 <Strings	class="XAP"
 UntitledDocument="Dokument%d"

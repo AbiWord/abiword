@@ -42,7 +42,7 @@ if (open(CREDITS, "< $abiroot/$targetLang.credits")){
 }
 print "\n\n";
 
-print "<AbiStrings app=\"AbiWord Personal\" ver=\"1.0\" language=\"$targetLang\">\n\n";
+print "<AbiStrings app=\"AbiWord\" ver=\"1.0\" language=\"$targetLang\">\n\n";
 
 
 ## en-US is in a different file in a different format

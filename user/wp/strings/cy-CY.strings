@@ -9,7 +9,7 @@
 <!--Welsh translations provided by Owen Thomas <owenthomas@netcymraeg.co.uk> -->
 
 
-<AbiStrings app="AbiWord Personal" ver="1.0" language="cy-CY">
+<AbiStrings app="AbiWord" ver="1.0" language="cy-CY">
 
 <Strings	class="XAP"
 UntitledDocument="Dogfen ddi-deitl"

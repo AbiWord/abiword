@@ -12,7 +12,7 @@
 <!-- problemy co to jest collate? zestawienie                            -->
 
 
-<AbiStrings app="AbiWord Personal" ver="1.0" language="pl-PL">
+<AbiStrings app="AbiWord" ver="1.0" language="pl-PL">
 
 <Strings	class="XAP"
 UntitledDocument="Nienazwany%d"

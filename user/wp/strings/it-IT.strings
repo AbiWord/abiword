@@ -12,7 +12,7 @@
 <!-- Work continued by Marco Innocenti <dot0037@iperbole.bologna.it> -->
 
 
-<AbiStrings app="AbiWord Personal" ver="1.0" language="it-IT">
+<AbiStrings app="AbiWord" ver="1.0" language="it-IT">
 
 <Strings	class="XAP"
 UntitledDocument="Senza Titolo%d"

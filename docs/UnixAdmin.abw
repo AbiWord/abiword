@@ -57,7 +57,7 @@
 <p style="Normal"></p>
 <p style="Normal">Each AbiWord user needs a file called .AbiSuite/AbiWord.Profile in the home directory. Use a text editor to create a profile to use as a template in AbiWord's directory (in the example above, the "share" directory would be a logical location. The contents of the profile should be as follows:</p>
 <p style="Normal"></p>
-<p style="Normal" props="margin-left:0.5000in; text-indent:0.0000in"><c props="font-family:Courier; font-size:9pt">&lt;AbiPreferences app="AbiWord Personal" ver="1.0"&gt;</c></p>
+<p style="Normal" props="margin-left:0.5000in; text-indent:0.0000in"><c props="font-family:Courier; font-size:9pt">&lt;AbiPreferences app="AbiWord" ver="1.0"&gt;</c></p>
 <p style="Normal" props="margin-left:0.5000in; text-indent:0.0000in"></p>
 <p style="Normal" props="margin-left:0.5000in; text-indent:0.0000in"><c props="font-family:Courier; font-size:9pt">	&lt;Select</c></p>
 <p style="Normal" props="margin-left:0.5000in; text-indent:0.0000in"><c props="font-family:Courier; font-size:9pt">		scheme="normal"</c></p>
