@@ -50,6 +50,14 @@
 // the resolution that we report to the application (pixels per inch).
 #define PS_RESOLUTION		7200
 
+/*
+	How long line in the PS output we will allow;
+	DSC3.0 limits to 256, but we may need to print a few extra
+	characters after we reach the end of our buffer
+*/
+#define OUR_LINE_LIMIT		220			
+#define LINE_BUFFER_SIZE   OUR_LINE_LIMIT + 30
+
 #if 1
 #include <gdk/gdkprivate.h>
 static bool isFontUnicode(GdkFont *font)
@@ -447,8 +455,6 @@ GR_Font* PS_Graphics::findFont(const char* pszFontFamily,
 	return pFont;
 }
 
-#define OUR_LINE_LIMIT		70			/* DSC3.0 limits to 256 */
-
 void PS_Graphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 							int iLength, UT_sint32 xoff, UT_sint32 yoff)
 {
@@ -529,7 +535,7 @@ void PS_Graphics::_drawCharsOverstriking(const UT_UCSChar* pChars, UT_uint32 iCh
 	yoff += getFontAscent();
 
 	// unsigned buffer holds Latin-1 data to character code 255
-	char buf[OUR_LINE_LIMIT*2];
+	char buf[LINE_BUFFER_SIZE]; //some extra space at the end
 	char * pD = buf;
 
 	const UT_UCSChar * pS = pChars+iCharOffset;
@@ -649,7 +655,7 @@ void PS_Graphics::_drawCharsCJK(const UT_UCSChar* pChars, UT_uint32 iCharOffset,
 	yoff += getFontAscent();
 
 	// unsigned buffer holds Latin-1 data to character code 255
-	char buf[OUR_LINE_LIMIT*2];
+	char buf[LINE_BUFFER_SIZE];
 	char * pD = buf;
 
 	const UT_UCSChar * pS = pChars+iCharOffset;
@@ -735,7 +741,7 @@ void PS_Graphics::_drawCharsNonCJK(const UT_UCSChar* pChars, UT_uint32 iCharOffs
 	yoff += getFontAscent();
 
 	// unsigned buffer holds Latin-1 data to character code 255
-	char buf[OUR_LINE_LIMIT*2];
+	char buf[LINE_BUFFER_SIZE];
 	char * pD = buf;
 
 	const UT_UCSChar * pS = pChars+iCharOffset;
@@ -822,7 +828,7 @@ void PS_Graphics::_drawCharsUTF8(const UT_UCSChar* pChars, UT_uint32 iCharOffset
 	yoff += getFontAscent();
 
 	// unsigned buffer holds Latin-1 data to character code 255
-	char buf[OUR_LINE_LIMIT*2];
+	char buf[LINE_BUFFER_SIZE];
 	char * pD = buf;
 
 	const UT_UCSChar * pS = pChars+iCharOffset;
@@ -931,7 +937,7 @@ void PS_Graphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 y
 	// emit a change in line width
 	_emit_SetLineWidth();
 	
-	char buf[OUR_LINE_LIMIT*2];
+	char buf[LINE_BUFFER_SIZE];
 //	UT_sint32 nA = getFontAscent();
 	g_snprintf(buf,sizeof (buf),"%d %d %d %d ML\n", x2, y2, x1, y1);
 	m_ps->writeBytes(buf);
