@@ -35,7 +35,10 @@ public:
 };
 #else /*portable version using iconv*/
 
+// make freebsd happy - sam 11-1-00
+extern "C" {
 #include "iconv.h"
+}
 
 class UT_Wctomb
 {
