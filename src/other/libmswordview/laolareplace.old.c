@@ -382,6 +382,11 @@ int myOLEdecode(char *filename, FILE **mainfd, FILE **tablefd0, FILE
        }
        rewind(OLEfile);
      }
+
+    for(j=0;j<len*4;j++) {
+	 	free(pps_list[j]);
+	 }
+    free(pps_list);
     free(Root);
     free(BDepot);
     free(Block);

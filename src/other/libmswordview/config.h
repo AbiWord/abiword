@@ -72,3 +72,6 @@ typedef RETSIGTYPE SigHandler ();
 
 #include "getopt.h"
 
+#ifdef WIN32
+#include "ut_types.h"	/* to get leak checking */
+#endif

@@ -727,7 +727,10 @@ void cleanupglobals(void)
 	if (patternurl!=NULL)
 		free(patternurl);
 	if (outputfilename!=NULL)
+	{
 		free(outputfilename);
+		outputfilename = NULL;
+	}
 	if (errorfilename!=NULL)
 		free(errorfilename);
 	if (filename!=NULL)
