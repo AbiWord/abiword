@@ -3300,10 +3300,9 @@ UT_Bool fl_BlockLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChang
 {
 	UT_ASSERT(pcrxc->getType()==PX_ChangeRecord::PXT_ChangeStrux);
 
-
-        FV_View* ppView = m_pLayout->getView();
-        if(ppView)
-	        ppView->eraseInsertionPoint();
+	FV_View* ppView = m_pLayout->getView();
+	if(ppView)
+		ppView->eraseInsertionPoint();
 	m_bCursorErased = UT_TRUE; 
 
 	// erase the old version
@@ -3312,8 +3311,8 @@ UT_Bool fl_BlockLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChang
 
 	const XML_Char * szOldStyle = m_szStyle;
 	_lookupProperties();
-        if(ppView)
-	        ppView->eraseInsertionPoint();
+	if(ppView)
+		ppView->eraseInsertionPoint();
 
 	if ((szOldStyle != m_szStyle) && 
 		(!szOldStyle || !m_szStyle || !!(UT_XML_strcmp(szOldStyle, m_szStyle))))
@@ -3382,9 +3381,9 @@ UT_Bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pc
 	UT_ASSERT(pcrx->getType()==PX_ChangeRecord::PXT_InsertStrux);
 	UT_ASSERT(pcrx->getStruxType()==PTX_Block);
 
-        FV_View* ppView = m_pLayout->getView();
-        if(ppView)
-	        ppView->eraseInsertionPoint();
+	FV_View* ppView = m_pLayout->getView();
+	if(ppView)
+		ppView->eraseInsertionPoint();
 
 	fl_SectionLayout* pSL = m_pSectionLayout;
 	UT_ASSERT(pSL);
@@ -3394,10 +3393,10 @@ UT_Bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pc
 		UT_DEBUGMSG(("no memory for BlockLayout\n"));
 		return UT_FALSE;
 	}
-        if(ppView)
-	        ppView->eraseInsertionPoint();
+	if(ppView)
+		ppView->eraseInsertionPoint();
 
-	// must call the bind function to complete the exchange
+	// Must call the bind function to complete the exchange
 	// of handles with the document (piece table) *** before ***
 	// anything tries to call down into the document (like all
 	// of the view listeners).
@@ -3456,9 +3455,9 @@ UT_Bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pc
 
 	if (pFirstNewRun && (pFirstNewRun->getType() == FPRUN_FMTMARK))
 	{
-		// since a FmtMark has length zero, both it and the next
-		// run have the same blockOffset.  we always want to be
-		// to the right of the FmtMark, so we take the next one.
+		// Since a FmtMark has length zero, both it and the next run
+		// have the same blockOffset.  We always want to be to the
+		// right of the FmtMark, so we take the next one.
 		pFirstNewRun = pFirstNewRun->getNext();
 	}
 
@@ -3470,27 +3469,26 @@ UT_Bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pc
 		pFirstNewRun->setPrev(NULL);
 	}
 
-	// pFirstNew can be NULL at this point.  it means that
-	// the entire set of runs in this block must remain
-	// with this block -- and the newly created block will
-	// be empty.
+	// pFirstNew can be NULL at this point.  It means that the entire
+	// set of runs in this block must remain with this block -- and
+	// the newly created block will be empty.
 	//
-	// also, note if pFirstNew == m_pFirstRun then we will
-	// be moving the entire set of runs to the newly created
-	// block -- and leave the current block empty.
+	// Also, note if pFirstNew == m_pFirstRun then we will be moving
+	// the entire set of runs to the newly created block -- and leave
+	// the current block empty.
 	
-	// split charwidths across the two blocks
+	// Split charwidths across the two blocks
 	UT_uint32 lenNew = m_gbCharWidths.getLength() - blockOffset;
 	if (lenNew > 0)
 	{
-		// NOTE: we do the length check on the outside for speed
+		// NOTE: We do the length check on the outside for speed
 		// TODO [1] can we move info from the current to the new
 		// TODO CharWidths to keep from having to compute it in [2].
 		pNewBL->m_gbCharWidths.ins(0, m_gbCharWidths, blockOffset, lenNew);
 		m_gbCharWidths.truncate(blockOffset);
 	}
 
-	// move remaining runs to new block
+	// Move remaining runs to new block
 	pNewBL->m_pFirstRun = pFirstNewRun;
 
 	for (pRun=pFirstNewRun; (pRun); pRun=pRun->getNext())
@@ -3504,7 +3502,7 @@ UT_Bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pc
 		pRun->recalcWidth();
 	}
 
-	// explicitly truncate rest of this block's layout
+	// Explicitly truncate rest of this block's layout
 	truncateLayout(pFirstNewRun);
 	if (m_pFirstRun)
 		coalesceRuns();
@@ -3513,7 +3511,7 @@ UT_Bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pc
 
 	setNeedsReformat();
 
-	// throw all the runs onto one jumbo line in the new block
+	// Throw all the runs onto one jumbo line in the new block
 	pNewBL->_stuffAllRunsOnALine();
 	if (pNewBL->m_pFirstRun)
 		pNewBL->coalesceRuns();
@@ -3530,17 +3528,17 @@ UT_Bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pc
 #ifdef FASTSQUIGGLE
 	if (m_pLayout->getAutoSpellCheck() && m_vecSquiggles.getItemCount() > 0)
 	{
-		// we have squiggles, so move them 
+		// We have squiggles, so move them 
 		_breakSquiggles(blockOffset, pNewBL);
 	}
 	else
 #endif
 	{
-		// this block may never have been checked
-		// just to be safe, let's make sure both will
-	        UT_uint32 reason = 0;
+		// This block may never have been checked just to be safe,
+		// let's make sure both will
+		UT_uint32 reason = 0;
 		if( m_pLayout->getAutoSpellCheck())
-		          reason = (UT_uint32) FL_DocLayout::bgcrSpelling;
+			reason = (UT_uint32) FL_DocLayout::bgcrSpelling;
 		m_pLayout->queueBlockForBackgroundCheck(reason, this);
 		m_pLayout->queueBlockForBackgroundCheck(reason, pNewBL);
 	}
@@ -3555,12 +3553,12 @@ UT_Bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * 
 																		  PL_ListenerId lid,
 																		  PL_StruxFmtHandle sfhNew))
 {
-	// insert a section at the location given in the change record.
-	// everything from this point forward (to the next section) needs
-	// to be re-parented to this new section.  we also need to verify
+	// Insert a section at the location given in the change record.
+	// Everything from this point forward (to the next section) needs
+	// to be re-parented to this new section.  We also need to verify
 	// that this insertion point is at the end of the block (and that
-	// another block follows).  this is because because a section
-	// cannot contain content.
+	// another block follows).  This is because a section cannot
+	// contain content.
 
 	UT_ASSERT(pcrx);
 	UT_ASSERT(pfnBindHandles);
@@ -3579,10 +3577,10 @@ UT_Bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * 
 	}
 	m_pLayout->insertSectionAfter(pDSL, pSL);
 	
-	// must call the bind function to complete the exchange
-	// of handles with the document (piece table) *** before ***
-	// anything tries to call down into the document (like all
-	// of the view listeners).
+	// Must call the bind function to complete the exchange of handles
+	// with the document (piece table) *** before *** anything tries
+	// to call down into the document (like all of the view
+	// listeners).
 
 	PL_StruxFmtHandle sfhNew = (PL_StruxFmtHandle)pSL;
 	pfnBindHandles(sdh,lid,sfhNew);

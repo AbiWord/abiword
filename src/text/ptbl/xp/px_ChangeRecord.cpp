@@ -47,6 +47,10 @@ PT_DocPosition PX_ChangeRecord::getPosition(void) const
 	return m_position;
 }
 
+/*!
+  Get index of attribute/property
+  \return attribute/property index
+*/
 PT_AttrPropIndex PX_ChangeRecord::getIndexAP(void) const
 {
 	return m_indexAP;

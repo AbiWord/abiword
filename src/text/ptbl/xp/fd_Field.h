@@ -27,21 +27,24 @@
 
 class pf_Frag_Object;
 
-// This class will eventually have subclasses to implement the different
-// types of fields.
+/*!
+ \note This class will eventually have subclasses to implement the different
+ types of fields.
+*/
 
 class fd_Field
 {
  public:
     // TBD: convention for naming 
     typedef enum _FieldType 
-        { FD_Test,
-	  FD_MartinTest,
-          FD_Time, 
-          FD_PageNumber, 
-          FD_PageCount,
-	  FD_ListLabel
-        } FieldType;
+	{
+		FD_Test,
+		FD_MartinTest,
+		FD_Time, 
+		FD_PageNumber, 
+		FD_PageCount,
+		FD_ListLabel
+	} FieldType;
     fd_Field(pf_Frag_Object& fO, pt_PieceTable * pt, FieldType fieldType);
     virtual                              ~fd_Field(void);
     UT_Bool                              update(void);

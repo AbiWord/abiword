@@ -48,6 +48,11 @@
 
 #define UPDATE_LAYOUT_ON_SIGNAL
 
+/*!
+ Create DocListener
+ \param doc Client of this DocListener
+ \param pLayout Layout notified by this DocListener
+*/
 fl_DocListener::fl_DocListener(PD_Document* doc, FL_DocLayout *pLayout)
 {
 	m_pDoc = doc;
@@ -57,10 +62,15 @@ fl_DocListener::fl_DocListener(PD_Document* doc, FL_DocLayout *pLayout)
 	m_pCurrentSL = NULL;
 }
 
+/*!
+ Destruct DocListener
+*/
 fl_DocListener::~fl_DocListener()
 {
 }
 
+/*!
+ */
 UT_Bool fl_DocListener::populate(PL_StruxFmtHandle sfh,
 								 const PX_ChangeRecord * pcr)
 {
@@ -72,62 +82,61 @@ UT_Bool fl_DocListener::populate(PL_StruxFmtHandle sfh,
 	switch (pcr->getType())
 	{
 	case PX_ChangeRecord::PXT_InsertSpan:
+	{
+		const PX_ChangeRecord_Span * pcrs = static_cast<const PX_ChangeRecord_Span *> (pcr);
+
+		fl_Layout * pL = (fl_Layout *)sfh;
+		UT_ASSERT(pL->getType() == PTX_Block);
+		fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
+		if(pBL->getPrev()!= NULL && pBL->getPrev()->getLastLine()==NULL)
 		{
-			const PX_ChangeRecord_Span * pcrs = static_cast<const PX_ChangeRecord_Span *> (pcr);
-
-			fl_Layout * pL = (fl_Layout *)sfh;
-			UT_ASSERT(pL->getType() == PTX_Block);
-			fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
-			if(pBL->getPrev()!= NULL && pBL->getPrev()->getLastLine()==NULL)
-			{
-				UT_DEBUGMSG(("In DocListner no LastLine in Previous Block Fixing this now \n"));
-				UT_DEBUGMSG(("getPrev = %d this = %d \n",pBL->getPrev(),pBL));
-				if( pBL->getSectionLayout()->getType() != FL_SECTION_HDRFTR)
-					pBL->getPrev()->format();
-				
-			}
-
-			PT_BlockOffset blockOffset = pcrs->getBlockOffset();
-			UT_uint32 len = pcrs->getLength();
-			fl_SectionLayout* pBLSL = pBL->getSectionLayout();
-			bResult = pBLSL->bl_doclistener_populateSpan(pBL, pcrs, blockOffset, len);
-			if(pBL->getLastLine()==NULL)
-			{
-				UT_DEBUGMSG(("In  DocListner no LastLine in this block fixing this now \n"));
-				UT_DEBUGMSG(("getPrev = %d this = %d \n",pBL->getPrev(),pBL));
-				if(pBL->getSectionLayout()->getType() != FL_SECTION_HDRFTR && pBL->getPrev()!= NULL)
-					pBL->format();
-				//UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			}
-
-			goto finish_up;
+			UT_DEBUGMSG(("In DocListner no LastLine in Previous Block Fixing this now \n"));
+			UT_DEBUGMSG(("getPrev = %d this = %d \n",pBL->getPrev(),pBL));
+			if( pBL->getSectionLayout()->getType() != FL_SECTION_HDRFTR)
+				pBL->getPrev()->format();
 		}
+
+		PT_BlockOffset blockOffset = pcrs->getBlockOffset();
+		UT_uint32 len = pcrs->getLength();
+		fl_SectionLayout* pBLSL = pBL->getSectionLayout();
+		bResult = pBLSL->bl_doclistener_populateSpan(pBL, pcrs, blockOffset, len);
+		if(pBL->getLastLine()==NULL)
+		{
+			UT_DEBUGMSG(("In  DocListner no LastLine in this block fixing this now \n"));
+			UT_DEBUGMSG(("getPrev = %d this = %d \n",pBL->getPrev(),pBL));
+			if(pBL->getSectionLayout()->getType() != FL_SECTION_HDRFTR && pBL->getPrev()!= NULL)
+				pBL->format();
+			//UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		}
+
+		goto finish_up;
+	}
 
 	case PX_ChangeRecord::PXT_InsertObject:
-		{
-			const PX_ChangeRecord_Object * pcro = static_cast<const PX_ChangeRecord_Object *>(pcr);
+	{
+		const PX_ChangeRecord_Object * pcro = static_cast<const PX_ChangeRecord_Object *>(pcr);
 
-			fl_Layout * pL = (fl_Layout *)sfh;
-			UT_ASSERT(pL->getType() == PTX_Block);
-			fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
-			PT_BlockOffset blockOffset = pcro->getBlockOffset();
+		fl_Layout * pL = (fl_Layout *)sfh;
+		UT_ASSERT(pL->getType() == PTX_Block);
+		fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
+		PT_BlockOffset blockOffset = pcro->getBlockOffset();
 
-			fl_SectionLayout* pBLSL = pBL->getSectionLayout();
-			bResult = pBLSL->bl_doclistener_populateObject(pBL, blockOffset,pcro);
-			goto finish_up;
-		}
+		fl_SectionLayout* pBLSL = pBL->getSectionLayout();
+		bResult = pBLSL->bl_doclistener_populateObject(pBL, blockOffset,pcro);
+		goto finish_up;
+	}
 
 	case PX_ChangeRecord::PXT_InsertFmtMark:
-		{
-			const PX_ChangeRecord_FmtMark * pcrfm = static_cast<const PX_ChangeRecord_FmtMark *>(pcr);
+	{
+		const PX_ChangeRecord_FmtMark * pcrfm = static_cast<const PX_ChangeRecord_FmtMark *>(pcr);
 
-			fl_Layout * pL = (fl_Layout *)sfh;
-			UT_ASSERT(pL->getType() == PTX_Block);
-			fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
-			fl_SectionLayout* pBLSL = pBL->getSectionLayout();
-			bResult = pBLSL->bl_doclistener_insertFmtMark(pBL, pcrfm);
-			goto finish_up;
-		}
+		fl_Layout * pL = (fl_Layout *)sfh;
+		UT_ASSERT(pL->getType() == PTX_Block);
+		fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
+		fl_SectionLayout* pBLSL = pBL->getSectionLayout();
+		bResult = pBLSL->bl_doclistener_insertFmtMark(pBL, pcrfm);
+		goto finish_up;
+	}
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return UT_FALSE;
@@ -144,6 +153,8 @@ finish_up:
 	return bResult;
 }
 
+/*!
+ */
 UT_Bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 									  const PX_ChangeRecord * pcr,
 									  PL_StruxFmtHandle * psfh)
@@ -170,7 +181,7 @@ UT_Bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 				|| (0 == UT_strcmp(pszSectionType, "doc"))
 				)
 			{
-				// append a SectionLayout to this DocLayout
+				// Append a SectionLayout to this DocLayout
 				fl_DocSectionLayout* pSL = new fl_DocSectionLayout(m_pLayout, sdh, pcr->getIndexAP());
 				if (!pSL)
 				{
@@ -194,7 +205,7 @@ UT_Bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 					fl_DocSectionLayout* pDocSL = m_pLayout->findSectionForHdrFtr((char*)pszID);
 					UT_ASSERT(pDocSL);
 			
-					// append a HdrFtrSectionLayout to this DocLayout
+					// Append a HdrFtrSectionLayout to this DocLayout
 					fl_HdrFtrSectionLayout* pSL = new fl_HdrFtrSectionLayout(FL_HDRFTR_HEADER, m_pLayout, pDocSL, sdh, pcr->getIndexAP());
 					if (!pSL)
 					{
@@ -216,7 +227,7 @@ UT_Bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 					fl_DocSectionLayout* pDocSL = m_pLayout->findSectionForHdrFtr((char*)pszID);
 					UT_ASSERT(pDocSL);
 			
-					// append a HdrFtrSectionLayout to this DocLayout
+					// Append a HdrFtrSectionLayout to this DocLayout
 					fl_HdrFtrSectionLayout* pSL = new fl_HdrFtrSectionLayout(FL_HDRFTR_FOOTER, m_pLayout, pDocSL, sdh, pcr->getIndexAP());
 					if (!pSL)
 					{
@@ -248,7 +259,7 @@ UT_Bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 	{
 		UT_ASSERT(m_pCurrentSL);
 		
-		// append a new BlockLayout to that SectionLayout
+		// Append a new BlockLayout to that SectionLayout
 		fl_BlockLayout*	pBL = m_pCurrentSL->appendBlock(sdh, pcr->getIndexAP());
 		if (!pBL)
 		{
@@ -293,6 +304,8 @@ UT_Bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 	return UT_TRUE;
 }
 
+/*!
+ */
 UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 							   const PX_ChangeRecord * pcr)
 {
@@ -474,7 +487,7 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 			if(pszSectionType && UT_strcmp(pszSectionType,"header") == 0)
 			{
 				//
-				//  Ok first we need a previous section with a
+				//  OK first we need a previous section with a
 				//  matching ID
 				//
 				const XML_Char* pszID = NULL;
@@ -483,7 +496,7 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 				fl_DocSectionLayout* pDocSL = m_pLayout->findSectionForHdrFtr((char*)pszID);
 				UT_ASSERT(pDocSL); 
 			        
-				// append a HdrFtrSectionLayout to this DocLayout
+				// Append a HdrFtrSectionLayout to this DocLayout
 				fl_HdrFtrSectionLayout* pHeadSL = new fl_HdrFtrSectionLayout(FL_HDRFTR_HEADER, m_pLayout, pDocSL, sdh, pcr->getIndexAP());
 				if (!pHeadSL)
 				{
@@ -495,7 +508,7 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 				//
 				pDocSL->setHdrFtr(FL_HDRFTR_HEADER, pHeadSL);
 
-				// OK Now clean up the old section and transfer
+				// OK now clean up the old section and transfer
 				// blocks into this header section.
 				
 				pHeadSL->changeStrux(pSL);
@@ -506,7 +519,7 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 			else if(pszSectionType && UT_strcmp(pszSectionType,"footer") == 0)
 			{
 				//
-				//  Ok first we need a previous section with a
+				//  OK first we need a previous section with a
 				//  matching ID
 				//
 				const XML_Char* pszID = NULL;
@@ -515,7 +528,7 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 				fl_DocSectionLayout* pDocSL = m_pLayout->findSectionForHdrFtr((char*)pszID);
 				UT_ASSERT(pDocSL); 
 			        
-				// append a HdrFtrSectionLayout to this DocLayout
+				// Append a HdrFtrSectionLayout to this DocLayout
 				fl_HdrFtrSectionLayout* pFootSL = new fl_HdrFtrSectionLayout(FL_HDRFTR_FOOTER, m_pLayout, pDocSL, sdh, pcr->getIndexAP());
 				if (!pFootSL)
 				{
@@ -669,6 +682,8 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 	return bResult;
 }
 
+/*!
+ */
 UT_Bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 									const PX_ChangeRecord * pcr,
 									PL_StruxDocHandle sdh,
@@ -690,8 +705,8 @@ UT_Bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 		switch (pcrx->getStruxType())	// see what we are inserting.
 		{
 		case PTX_Section:				// we are inserting a section.
-			// we are inserting a section immediately after a section (with no
-			// interviening block).  this is probably a bug, because there should
+			// We are inserting a section immediately after a section (with no
+			// intervening block).  This is probably a bug, because there should
 			// at least be an empty block between them (so that the user can set
 			// the cursor there and start typing, if nothing else).
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -699,8 +714,9 @@ UT_Bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 				
 		case PTX_Block:					// we are inserting a block.
 		{
-			// the immediately prior strux is a section.  So, this will
-			// become the first block of the section and have no text.
+			// The immediately prior strux is a section.  So, this
+			// will become the first block of the section and have no
+			// text.
 
 			fl_SectionLayout * pSL = static_cast<fl_SectionLayout *>(pL);
 			UT_Bool bResult = pSL->bl_doclistener_insertBlock(NULL, pcrx,sdh,lid,pfnBindHandles);
@@ -725,10 +741,11 @@ UT_Bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 		{
 		case PTX_Section:				// we are inserting a section.
 		{
-			// the immediately prior strux is a block.  everything from this point
-			// forward (to the next section) needs to be re-parented to this new
-			// section.  we also need to verify that there is a block immediately
-			// after this new section -- a section must be followed by a block
+			// The immediately prior strux is a block.  Everything
+			// from this point forward (to the next section) needs to
+			// be re-parented to this new section.  We also need to
+			// verify that there is a block immediately after this new
+			// section -- a section must be followed by a block
 			// because a section cannot contain content.
 			
 			fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
@@ -746,7 +763,7 @@ UT_Bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 		
 		case PTX_Block:					// we are inserting a block.
 		{
-			// the immediately prior strux is also a block.  insert the new
+			// The immediately prior strux is also a block.  Insert the new
 			// block and split the content between the two blocks.
 			fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
 			fl_SectionLayout* pBLSL = pBL->getSectionLayout();
@@ -776,6 +793,8 @@ UT_Bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 	return UT_FALSE;
 }
 
+/*!
+ */
 UT_Bool fl_DocListener::signal(UT_uint32 iSignal)
 {
 	UT_Bool bCursorErased = UT_FALSE;

@@ -312,7 +312,7 @@ UT_Bool fl_SectionLayout::bl_doclistener_insertBlock(fl_BlockLayout* pBL, const 
 	}
 	else
 	{
-		//  Insert the block at the beginning of the section
+		// Insert the block at the beginning of the section
 		fl_BlockLayout*	pNewBL = insertBlock(sdh, NULL, pcrx->getIndexAP());
 		if (!pNewBL)
 		{
@@ -2353,7 +2353,3 @@ UT_Bool fl_ShadowListener::signal(UT_uint32 /*iSignal*/)
 
 	return UT_FALSE;
 }
-
-
-
-

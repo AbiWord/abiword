@@ -61,10 +61,17 @@ public:
 	virtual UT_Bool		signal(UT_uint32 iSignal);
 
 protected:
+	//! Document which is client of this DocListener
 	PD_Document*		m_pDoc;
+	//! The Layout notified by this DocListener
 	FL_DocLayout*		m_pLayout;
+	//! Set when the document is drawn on screen
 	UT_Bool				m_bScreen;
+	//! Counter used to keep track of when to update the Layout. In
+	//! case of multi-step changes, updating is suspended.
 	UT_uint32			m_iGlobCounter;
+	//! SectionLayout currently being constructed (multi-step change
+	//! related?!?)
 	fl_SectionLayout*	m_pCurrentSL;
 };
 

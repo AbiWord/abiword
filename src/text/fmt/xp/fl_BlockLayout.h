@@ -513,10 +513,3 @@ protected:
 };
 
 #endif /* FL_BLOCKLAYOUT_H */
-
-
-
-
-
-
-
