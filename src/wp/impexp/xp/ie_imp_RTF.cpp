@@ -4682,6 +4682,10 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, UT_sint16 param, bool
 		UT_uint32 footerID = 0;
 		return HandleHeaderFooter (RTFHdrFtr::hftFooter, footerID);
 	}
+	case RTF_KW_footery:
+		// Height ot the header in twips
+		m_currentRTFState.m_sectionProps.m_footerYTwips = param;
+		break;
 	case RTF_KW_gutter:
 		// Gap between text and left (or right) margin in twips
 		m_currentRTFState.m_sectionProps.m_gutterTwips = param;
@@ -6968,6 +6972,16 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 	}
 	UT_DEBUGMSG(("SEVIOR: propBuffer = %s \n",propBuffer.c_str()));
 #endif
+	if(m_currentRTFState.m_sectionProps.m_footerYTwips != 0)
+	{
+		UT_LocaleTransactor(LC_NUMERIC, "C");
+		propBuffer += "; page-margin-footer:";
+		double inch = static_cast<double>( m_currentRTFState.m_sectionProps.m_footerYTwips)/1440.;
+		UT_String sinch;
+		UT_String_sprintf(sinch,"%fin",inch);
+		propBuffer += sinch;
+	}
+	UT_DEBUGMSG(("SEVIOR: propBuffer = %s \n",propBuffer.c_str()));
 	if(m_currentRTFState.m_sectionProps.m_dir != UT_BIDI_UNSET)
 	{
 		const char r[] = "rtl";

@@ -3008,7 +3008,7 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 			}
 
 			pAP->getAttribute("footer-even", pszFooterEvenID);
-			if(pszHeaderEvenID != NULL)
+			if(pszFooterEvenID != NULL)
 			{
 				bFooterEven = true;
 			}
@@ -3429,14 +3429,10 @@ void s_RTF_ListenerWriteDoc::_rtf_open_section(PT_AttrPropIndex api)
 	const XML_Char * szHeaderY = PP_evalProperty("page-margin-header",
 												 pSpanAP,pBlockAP,pSectionAP,
 												 m_pDocument,true);
-#if 0
-//
-// This is not a gutter. I don't know what is right now
-//
-	const XML_Char * szGutter = PP_evalProperty("page-margin-footer",
+
+	const XML_Char * szFooterY = PP_evalProperty("page-margin-footer",
 												 pSpanAP,pBlockAP,pSectionAP,
 												 m_pDocument,true);
-#endif
 
 // 	const XML_Char * szSpaceAfter = PP_evalProperty("section-space-after",
 // 												 pSpanAP,pBlockAP,pSectionAP,
@@ -3493,13 +3489,21 @@ void s_RTF_ListenerWriteDoc::_rtf_open_section(PT_AttrPropIndex api)
 		{
 			m_pie->_rtf_keyword ("linebetcol");
 		}
-		if(szHeaderExists)
+		if(szHeaderY)
 		{
 			double hMarg = UT_convertToInches(szHeaderY);
 			UT_String sHeaderY;
 			
 			UT_String_sprintf(sHeaderY,"%fin",hMarg);
 			m_pie->_rtf_keyword_ifnotdefault_twips("headery", static_cast<const char*>(sHeaderY.c_str()), 720);			
+		}
+		if(szFooterY)
+		{
+			double hMarg = UT_convertToInches(szFooterY);
+			UT_String sFooterY;
+			
+			UT_String_sprintf(sFooterY,"%fin",hMarg);
+			m_pie->_rtf_keyword_ifnotdefault_twips("footery", static_cast<const char*>(sFooterY.c_str()), 720);			
 		}
 		if(szMarginTop)
 		{
@@ -3510,15 +3514,7 @@ void s_RTF_ListenerWriteDoc::_rtf_open_section(PT_AttrPropIndex api)
 			UT_String_sprintf(sRtfTop,"%fin",tMarg);
 			m_pie->_rtf_keyword_ifnotdefault_twips("margtsxn", static_cast<const char*>(sRtfTop.c_str()), 1440);
 		}
-#if 0
-		if(szFooterExists  && szMarginBottom)
-		{
-			double Gutter = UT_convertToInches(szGutter);
-			UT_String sGutter;
-			UT_String_sprintf(sGutter,"%fin",Gutter);
-			m_pie->_rtf_keyword_ifnotdefault_twips("gutter", static_cast<const char*>(sGutter.c_str()), 0);
-		}
-#endif
+
 		if(szMarginBottom)
 		{
 			double bMarg = UT_convertToInches(szMarginBottom);
