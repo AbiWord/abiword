@@ -786,7 +786,11 @@ UT_Bool IE_Imp_RTF::ReadOneFontFromTable()
 			return UT_FALSE;
 	}
 	keyword[count] = 0;
-	pFontName = strdup((char*)keyword);
+
+	if (!UT_cloneString(pFontName, (char*)keyword))
+	{
+		// TODO outofmem
+	}			
 
 	// Munch the remaining control words down to the close brace
 	while (ch != '}')
