@@ -73,7 +73,9 @@ typedef enum _ToggleCase
   CASE_LOWER,
   CASE_UPPER,
   CASE_TITLE,
-  CASE_TOGGLE
+  CASE_TOGGLE,
+  CASE_FIRST_CAPITAL,
+  CASE_ROTATE
 } ToggleCase;
 
 typedef enum

@@ -330,6 +330,7 @@ public:
 	static EV_EditMethod_Fn dlgStyle;
 	static EV_EditMethod_Fn dlgTabs;
 	static EV_EditMethod_Fn dlgToggleCase;
+	static EV_EditMethod_Fn	rotateCase;
 	static EV_EditMethod_Fn dlgLanguage;
 	static EV_EditMethod_Fn dlgPlugins;
 	static EV_EditMethod_Fn dlgColorPickerFore;
@@ -805,7 +806,8 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(removeFooter),         0,  ""),
 	EV_EditMethod(NF(removeHeader),         0,  ""),
 	EV_EditMethod(NF(replace),				0,	""),
-	EV_EditMethod(NF(replaceChar),			_D_,	""),
+	EV_EditMethod(NF(replaceChar),			_D_,""),
+	EV_EditMethod(NF(rotateCase),           0,  ""),
 
 	// s
 #ifdef ABI_OPT_PERL
@@ -2182,6 +2184,14 @@ Defun1(dlgToggleCase)
 	UT_ASSERT(pFrame);
 
 	return s_doToggleCase(pFrame, static_cast<FV_View *>(pAV_View), AP_DIALOG_ID_TOGGLECASE);
+}
+
+Defun1(rotateCase)
+{
+	FV_View * pView = static_cast<FV_View *>(pAV_View);
+	pView->toggleCase(CASE_ROTATE);
+	
+	return true;
 }
 
 Defun1(dlgAbout)

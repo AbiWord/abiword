@@ -240,7 +240,7 @@ ap_bs_NVK NVKTable[] =
 						  "",					"",					"",				""					}},
 //	{EV_NVK_F2,			{ "",					"",					"",				"",
 //						  "",					"",					"",				""					}},
-	{EV_NVK_F3,			{ "findAgain",			"",					"",				"",
+	{EV_NVK_F3,			{ "findAgain",			"rotateCase",		"",				"",
 						  "",					"",					"",				""					}},
 	{EV_NVK_F4,			{ "",					"",					"closeWindow",	"",
 						  "querySaveAndExit",	"",					"",				""					}},

@@ -260,13 +260,46 @@ FV_View::~FV_View()
 // first character of selection gets capitalized.
 // TODO: make me respect sentence boundaries
 static void _toggleSentence (const UT_UCSChar * src, 
-			     UT_UCSChar * dest, UT_uint32 len)
+			     UT_UCSChar * dest, UT_uint32 len, const UT_UCSChar * prev)
 {
-    dest[0] = UT_UCS_toupper (src[0]);
-
-    for (UT_uint32 i = 1; i < len; i++)
+	if(!prev || (UT_UCS_isSentenceSeparator(prev[0]) && UT_UCS_isspace (prev[1])))
 	{
-		dest[i] = src[i];
+	    dest[0] = UT_UCS_toupper (src[0]);
+    	dest[1] = src[1];
+ 	}
+ 	else
+ 	{
+		dest[0] = src[0];
+		dest[1] = src[1];
+ 	}
+
+    for (UT_uint32 i = 2; i < len; i++)
+	{
+		if(UT_UCS_isSentenceSeparator(src[i-2]) && UT_UCS_isspace (src[i-1]))
+			dest[i] = UT_UCS_toupper (src[i]);
+		else
+			dest[i] = src[i];
+	}
+}
+
+static void _toggleFirstCapital(const UT_UCSChar * src,
+			     UT_UCSChar * dest, UT_uint32 len, const UT_UCSChar * prev)
+{
+	if(!prev || UT_UCS_isspace(prev[0]))
+	{
+		dest[0] = UT_UCS_toupper(src[0]);
+	}
+	else
+	{
+		dest[0] = UT_UCS_tolower(src[0]);
+	}
+	
+	for (UT_uint32 i = 1; i < len; i++)
+	{
+		if(UT_UCS_isspace(src[i-1]))
+			dest[i] = UT_UCS_toupper (src[i]);
+		else
+			dest[i] = UT_UCS_tolower (src[i]);
 	}
 }
 
@@ -366,8 +399,16 @@ bool FV_View::_isSpaceBefore(PT_DocPosition pos)
 void FV_View::toggleCase (ToggleCase c)
 {
 	// if there is no selection, select the current word	
+	PT_DocPosition origPos = 0;
 	if (isSelectionEmpty())
-		cmdSelect(FV_DOCPOS_BOW, FV_DOCPOS_EOW_SELECT);
+	{
+		origPos = m_iInsPoint;
+		PT_DocPosition iPosLeft = _getDocPos(FV_DOCPOS_BOW, false);
+		PT_DocPosition iPosRight = _getDocPos(FV_DOCPOS_EOW_SELECT, false);
+
+		cmdSelect (iPosLeft, iPosRight);
+	
+	}
 	
 	PT_DocPosition low, high;
 	
@@ -381,6 +422,8 @@ void FV_View::toggleCase (ToggleCase c)
 		high = m_iInsPoint;
 		low  = m_iSelectionAnchor;
 	}
+	
+	UT_DEBUGMSG(("fv_View::toggleCase: low %d, high %d\n", low, high));
 	
 	UT_sint32 xPoint, yPoint, xPoint2, yPoint2, iPointHeight;
 	bool bDirection;
@@ -396,13 +439,49 @@ void FV_View::toggleCase (ToggleCase c)
 	_saveAndNotifyPieceTableChange();
 	m_pDoc->beginUserAtomicGlob();
 
+	UT_UCSChar * prev;
+	
 	while(pBL && low < high)
 	{
 		UT_GrowBuf buffer;
 		pBL->getBlockBuf(&buffer);
 
 		PT_DocPosition offset = low - pBL->getPosition(false);
-		
+
+		if(c == CASE_ROTATE)
+		{
+			// workout the current case
+			UT_UCSChar * pT = buffer.getPointer(offset);
+			xxx_UT_DEBUGMSG(("pT 0x%x, pT + 1 0x%x\n", *pT, *(pT+1)));
+			
+			if(pT && UT_UCS_islower(*pT) && buffer.getLength() > 1 && UT_UCS_islower (*(pT+1)))
+			{
+				// lowercase, make first capital
+				xxx_UT_DEBUGMSG(("case 1\n"));
+				c = CASE_FIRST_CAPITAL;
+			}
+			else if(pT && !UT_UCS_islower (*pT) && buffer.getLength() > 1 && UT_UCS_islower (*(pT+1)))
+			{
+				// first capital, make upper
+				xxx_UT_DEBUGMSG(("case 2\n"));
+				c = CASE_UPPER;
+			}
+			else if(pT && buffer.getLength() == 1 && UT_UCS_islower (*pT))
+			{
+				// single lowercase letter
+				xxx_UT_DEBUGMSG(("case 3\n"));
+				c = CASE_UPPER;
+			}
+			else
+			{
+				UT_DEBUGMSG(("case 4\n"));
+				c = CASE_LOWER;
+			}
+			
+			xxx_UT_DEBUGMSG(("CASE_ROTATE translated to %d\n", c));
+			
+		}
+				
 		const PP_AttrProp * pSpanAPAfter = NULL;
 		pBL->getSpanAttrProp(offset,false,&pSpanAPAfter);
 		PP_AttrProp * pSpanAPNow = const_cast<PP_AttrProp *>(pSpanAPAfter);
@@ -476,9 +555,20 @@ void FV_View::toggleCase (ToggleCase c)
 			
 				switch (c)
 			    {
-           		
+           			case CASE_FIRST_CAPITAL:
+           				if(offset == 0)
+           					prev = NULL;
+           				else
+           					prev = buffer.getPointer(offset - 1);
+           				_toggleFirstCapital(pTemp,pTemp, iLen, prev);
+           				break;
+           				
 		    		case CASE_SENTENCE:
-		    			_toggleSentence (pTemp, pTemp, iLen);
+           				if(offset < 2)
+           					prev = NULL;
+           				else
+           					prev = buffer.getPointer(offset - 2);
+		    			_toggleSentence (pTemp, pTemp, iLen, prev);
 						break;
    	
 				    case CASE_LOWER:
@@ -503,7 +593,7 @@ void FV_View::toggleCase (ToggleCase c)
 
     			// get the props after our segment
 				pBL->getSpanAttrProp(offset+iLen,false,&pSpanAPAfter);
-    			UT_DEBUGMSG(("fv_View::toggleCase: delete/insert: low %d, iLen %d, pSpanAPAfter 0x%x, pSpanAPNow 0x%x\n", low, iLen,pSpanAPAfter,pSpanAPNow));
+    			xxx_UT_DEBUGMSG(("fv_View::toggleCase: delete/insert: low %d, iLen %d, pSpanAPAfter 0x%x, pSpanAPNow 0x%x\n", low, iLen,pSpanAPAfter,pSpanAPNow));
 				
 				bool bResult = m_pDoc->deleteSpan(low, low + iLen,NULL);
 				UT_ASSERT(bResult);
@@ -528,6 +618,11 @@ void FV_View::toggleCase (ToggleCase c)
 	m_pDoc->endUserAtomicGlob();
 	_generalUpdate();
 	_restorePieceTableState();
+	if(origPos)
+		_setPoint(origPos);
+	_fixInsertionPointCoords();
+	_drawInsertionPoint();
+	
 }
 
 void FV_View::setPaperColor(const XML_Char* clr)

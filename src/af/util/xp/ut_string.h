@@ -122,6 +122,7 @@ ABI_EXPORT bool  UT_isSmartQuotedCharacter(UT_UCSChar c);
 ABI_EXPORT bool  UT_UCS_isupper(UT_UCSChar c);
 ABI_EXPORT bool  UT_UCS_islower(UT_UCSChar c);
 ABI_EXPORT bool  UT_UCS_isalpha(UT_UCSChar c);
+ABI_EXPORT bool	 UT_UCS_isSentenceSeparator(UT_UCSChar c);
 #endif
 #define UT_UCS_isalnum(x)	(UT_UCS_isalpha(x) || UT_UCS_isdigit(x))		// HACK: not UNICODE-safe
 #define UT_UCS_isspace(x)   (((x)==' '||((x)=='\r')||((x)=='\n')||((x)=='\t')||((x)=='\f')))  // HACK: not UNICODE safe

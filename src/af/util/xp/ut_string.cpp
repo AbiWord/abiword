@@ -1002,6 +1002,18 @@ bool UT_UCS_isalpha(UT_UCSChar c)
 		local > 0xff /* we consider it alpha if it's > 0xff */;
 };
 
+bool UT_UCS_isSentenceSeparator(UT_UCSChar c)
+{
+	switch(c)
+	{
+		case '.':
+			return true;
+			
+		default:
+			return false;
+	}
+}
+
 /*
  this one prints floating point value but using dot as fractional serparator
  independent of the current locale's settings.
