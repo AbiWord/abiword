@@ -53,9 +53,11 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, DG_Graphics* pG)
 
 	if (doc->addListener(static_cast<PL_Listener *>(m_pDocListener),&m_lid))
 	{
+#if 0
 		FILE * fpDump1 = fopen("dump1","w");
 		doc->dump(fpDump1);
 		fclose(fpDump1);
+#endif
 	}
 }
 
