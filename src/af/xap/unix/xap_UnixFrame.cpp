@@ -71,6 +71,7 @@ public:
 		if (pView)
 		{
 			pView->setWindowSize(e->width, e->height);
+			pView->draw();
 		}
 		return 1;
 	};
@@ -142,6 +143,8 @@ public:
 		rClip.top = pExposeEvent->area.y;
 		rClip.width = pExposeEvent->area.width;
 		rClip.height = pExposeEvent->area.height;
+
+		UT_DEBUGMSG(("gtk expose:  left=%d, top=%d, width=%d, height=%d\n", rClip.left, rClip.top, rClip.width, rClip.height));
 		
 		AP_UnixFrame * pUnixFrame = (AP_UnixFrame *)gtk_object_get_user_data(GTK_OBJECT(w));
 		AV_View * pView = pUnixFrame->getCurrentView();

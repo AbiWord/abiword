@@ -1259,6 +1259,11 @@ void FV_View::_moveInsPtNextPrevLine(UT_Bool bNext)
 
 UT_Bool FV_View::_ensureThatInsertionPointIsOnScreen(void)
 {
+	if (m_iWindowHeight <= 0)
+	{
+		return UT_FALSE;
+	}
+	
 	_fixInsertionPointCoords();
 
 	if (m_yPoint < 0)
@@ -1817,6 +1822,11 @@ void FV_View::_eraseInsertionPoint()
 
 void FV_View::_drawInsertionPoint()
 {
+	if (m_iWindowHeight <= 0)
+	{
+		return;
+	}
+	
 	if (!isSelectionEmpty())
 	{
 		return;

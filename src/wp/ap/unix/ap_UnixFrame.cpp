@@ -139,12 +139,20 @@ UT_Bool AP_UnixFrame::_showDocument(void)
 	m_lidScrollbarViewListener = lidScrollbarViewListener;
 
 	m_pView->addScrollListener(m_pScrollObj);
+	
 	m_pView->setWindowSize(GTK_WIDGET(m_dArea)->allocation.width,
 						   GTK_WIDGET(m_dArea)->allocation.height);
 	setYScrollRange();
 	updateTitle();
 
+#if 0
+	/*
+	  I've removed this once again.  (Eric)  I replaced it with a call
+	  to draw() which is now in the configure event handler in the GTK
+	  section of the code.  See me if this causes problems.
+	*/
 	m_pView->draw();
+#endif	
 
 	return UT_TRUE;
 
