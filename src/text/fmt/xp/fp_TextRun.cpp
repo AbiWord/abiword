@@ -543,7 +543,7 @@ bool	fp_TextRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitIn
 		// previous call to canBreak we were told where the next break
 		// point is -- canBreak() can be quite expensive for complex
 		// scripts, so we do not want to call it unnecessarily
-		if (bForce || iNext == i || getGraphics()->canBreak(*m_pRenderInfo, iNext))
+		if (bForce || iNext == (UT_sint32)i || getGraphics()->canBreak(*m_pRenderInfo, iNext))
 		   //	&& ((i + offset) != (getBlockOffset() + getLength() - 1))
 		{
 			UT_sint32 ispace = 0;
@@ -601,7 +601,7 @@ bool	fp_TextRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitIn
 			// legal break offset is; we just scroll through the
 			// characters in between; i-th char has been processed
 			// already
-			for(UT_uint32 n = i+1; n < iNext; ++n)
+			for(UT_uint32 n = i+1; n < (UT_uint32)iNext; ++n)
 			{
 				UT_uint32 m = bReverse ? getLength() - n - 1: n;
 				//UT_sint32 iCW = RI.m_pWidths[k] > 0 ? RI.m_pWidths[k] : 0;
