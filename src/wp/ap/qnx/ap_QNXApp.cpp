@@ -350,9 +350,6 @@ void AP_QNXApp::copyToClipboard(PD_DocumentRange * pDocRange)
 	if (pExpRtf)
 	{
 		pExpRtf->copyToBuffer(pDocRange,&rtfbuf);
-		UT_Byte b = 0;
-		rtfbuf.append(&b,1);			// null terminate string
-		UT_DEBUGMSG(("CopyToClipboard: copying %d bytes in RTF format.",rtfbuf.getLength()));
 		DELETEP(pExpRtf);
 	}
 	// put raw 8bit text on the clipboard
@@ -360,15 +357,19 @@ void AP_QNXApp::copyToClipboard(PD_DocumentRange * pDocRange)
 	if (pExpText)
 	{
 		pExpText->copyToBuffer(pDocRange,&txtbuf);
-		UT_Byte b = 0;
-		txtbuf.append(&b,1);			// null terminate string
-		UT_DEBUGMSG(("CopyToClipboard: copying %d bytes in TEXTPLAIN format.\n",txtbuf.getLength()));
 		DELETEP(pExpText);
 	}
-	if(rtfbuf.getLength() > 0)
+	UT_Byte b = 0;
+	if(rtfbuf.getLength() > 0){
+		rtfbuf.append(&b,1);			// null terminate string
+		UT_DEBUGMSG(("CopyToClipboard: copying %d bytes in RTF format.",rtfbuf.getLength()));
 		m_pClipboard->addData(Ph_CLIPBOARD_RTF,(UT_Byte *)rtfbuf.getPointer(0),rtfbuf.getLength());
-	if(txtbuf.getLength() > 0)
+	}
+	if(txtbuf.getLength() > 0){
+		txtbuf.append(&b,1);			// null terminate string
+		UT_DEBUGMSG(("CopyToClipboard: copying %d bytes in TEXTPLAIN format.\n",txtbuf.getLength()));
 		m_pClipboard->addData(Ph_CLIPBOARD_TEXT,(UT_Byte *)txtbuf.getPointer(0),txtbuf.getLength());		
+	}
 
 	return;
 }
@@ -381,14 +382,14 @@ void AP_QNXApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipbo
 	unsigned char * pData = NULL;
 	UT_uint32 iLen=0;
 
-	if (bHonorFormatting && m_pClipboard->getClipboardData(AP_CLIPBOARD_RTF,(void**)&pData,&iLen)) {
+	if (bHonorFormatting && m_pClipboard->getClipboardData(Ph_CLIPBOARD_RTF,(void**)&pData,&iLen)) {
 		iLen = MyMin(iLen,strlen((const char *) pData));
 		UT_DEBUGMSG(("PasteFromClipboard: pasting %d bytes in RTF format.\n",iLen));
 		IE_Imp_RTF * pImpRTF = new IE_Imp_RTF(pDocRange->m_pDoc);
 		pImpRTF->pasteFromBuffer(pDocRange,pData,iLen);
 		DELETEP(pImpRTF);
 	}
-	else if (m_pClipboard->getClipboardData(AP_CLIPBOARD_TEXTPLAIN_8BIT,(void**)&pData,&iLen)) {
+	else if (m_pClipboard->getClipboardData(Ph_CLIPBOARD_TEXT,(void**)&pData,&iLen)) {
 		iLen = MyMin(iLen,strlen((const char *) pData));
 		UT_DEBUGMSG(("PasteFromClipboard: pasting %d bytes in TEXTPLAIN format.\n",iLen));
 		IE_Imp_Text * pImpText = new IE_Imp_Text(pDocRange->m_pDoc);
