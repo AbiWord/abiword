@@ -2209,7 +2209,6 @@ void fl_BlockLayout::formatWrappedFromHere(fp_Line * pLine, fp_Page * pPage)
 		_removeAllEmptyLines(); // try again
 		return;
 	}
-	GR_Graphics * pG = pLine->getGraphics();
 	fp_Run * pRun = pLine->getLastRun();
 	if(pLine->getHeight() == 0)
 	{
@@ -2262,9 +2261,9 @@ void fl_BlockLayout::formatWrappedFromHere(fp_Line * pLine, fp_Page * pPage)
 	// on the page
 	//
 	UT_sint32 iX = getLeftMargin();
-	UT_sint32 iMaxX = m_pVertContainer->getWidth();
-	iMaxX -=  getLeftMargin();
-	iMaxX -= getRightMargin();
+	UT_sint32 iMaxW = m_pVertContainer->getWidth();
+	iMaxW -=  getLeftMargin();
+	iMaxW -= getRightMargin();
 	bool bFirst = false;
 	if(pLine == static_cast<fp_Line *>(getFirstContainer()))
 	{
@@ -2272,7 +2271,7 @@ void fl_BlockLayout::formatWrappedFromHere(fp_Line * pLine, fp_Page * pPage)
 		UT_BidiCharType iBlockDir = getDominantDirection();
 		if(iBlockDir == UT_BIDI_LTR)
 		{
-			iMaxX -= getTextIndent();
+			iMaxW -= getTextIndent();
 			iX += getTextIndent();
 		}
 	}
@@ -2287,20 +2286,22 @@ void fl_BlockLayout::formatWrappedFromHere(fp_Line * pLine, fp_Page * pPage)
 		if(pLine->isSameYAsPrevious() && (pPrev->getY() == pLine->getY()))
 		{
 			iX = pPrev->getX() + pPrev->getMaxWidth();
-			iWidth = iMaxX - iX;
+			iWidth = iMaxW - iX;
 		}
 		else
 		{
-			iWidth = iMaxX;
+			iWidth = iMaxW;
 			pLine->setSameYAsPrevious(false);
 		}
 	}
 	else
 	{
-		iWidth = iMaxX;
+		iWidth = iMaxW;
 		pLine->setSameYAsPrevious(false);
 	}
 	UT_sint32 xoff = rec.left - pLine->getX();
+	UT_sint32 iMinR = iWidth + xoff;
+	GR_Graphics * pG = m_pLayout->getGraphics();
 	if(iWidth < 20*4)
 	{
 		xxx_UT_DEBUGMSG(("!!!!!!! ttttOOOO NAAARRRROOOWWWW iMaxX %d iX %d \n",iMaxX,iX));
@@ -2333,7 +2334,8 @@ void fl_BlockLayout::formatWrappedFromHere(fp_Line * pLine, fp_Page * pPage)
 		UT_sint32 i = 0;
 		fp_FrameContainer * pFC = NULL;
 		UT_sint32 iMinLeft = BIG_NUM_BLOCKBL;
-		UT_sint32 iMinWidth = iWidth;
+		UT_sint32 iMinWidth = BIG_NUM_BLOCKBL;
+		UT_sint32 iMinRight = BIG_NUM_BLOCKBL;
 		for(i=0; i< static_cast<UT_sint32>(pPage->countFrameContainers());i++)
 		{
 			rec.left = iX + xoff;
@@ -2358,7 +2360,7 @@ void fl_BlockLayout::formatWrappedFromHere(fp_Line * pLine, fp_Page * pPage)
 					delete pRec;
 					continue;
 				}
-				if((pRec->left <= rec.left) && (pRec->left + pRec->width) > rec.left)
+				if((pRec->left <= rec.left - iExpand -pG->tlu(1)) && (pRec->left + pRec->width) > (rec.left -iExpand -pG->tlu(1)))
 				{
 					UT_sint32 iRightP = 0;
 					if(bIsTight)
@@ -2366,11 +2368,15 @@ void fl_BlockLayout::formatWrappedFromHere(fp_Line * pLine, fp_Page * pPage)
 						//
 						// Project back into image over the transparent region
 						//
-						iRightP = pFC->getRightPad(m_iAccumulatedHeight,iHeight) - iExpand +2 + pG->tlu(1);
+						iRightP = pFC->getRightPad(m_iAccumulatedHeight,iHeight) + iExpand;
 						xxx_UT_DEBUGMSG(("Project Right (3) %d \n",iRightP));
 					}
-					rec.left = pRec->left + pRec->width + iRightP;
-					rec.width = iWidth - rec.left +xoff;
+					rec.left = pRec->left + pRec->width + iRightP + pG->tlu(1);
+					if(rec.left < iMinLeft)
+					{
+						iMinLeft = rec.left;
+					}
+
 				}
 				else if((pRec->left >= rec.left) && (rec.left + rec.width > pRec->left))
 				{
@@ -2380,21 +2386,14 @@ void fl_BlockLayout::formatWrappedFromHere(fp_Line * pLine, fp_Page * pPage)
 						//
 						// Project into the image over the transparent region
 						//
-						iLeftP = pFC->getLeftPad(m_iAccumulatedHeight,iHeight) - iExpand + 2 + pG->tlu(1);
+						iLeftP = pFC->getLeftPad(m_iAccumulatedHeight,iHeight) -iExpand;
 						xxx_UT_DEBUGMSG(("Project into (3) image with distance %d \n",iLeftP));
 					}
-					UT_sint32 diff = pRec->left - rec.left - iLeftP;
-					rec.width = diff;
-				}
-				if(rec.left <iMinLeft)
-				{
-					iMinWidth = rec.width;
-					iMinLeft = rec.left;
-				}
-				else if((rec.left == iMinLeft) && (rec.width < iMinWidth))
-				{
-					iMinWidth = rec.width;
-					iMinLeft = rec.left;
+					UT_sint32 diff = pRec->left - iLeftP -pG->tlu(1);
+					if(diff < iMinRight)
+					{
+						iMinRight = diff;
+					}
 				}
 			}
 			delete pRec;
@@ -2403,6 +2402,11 @@ void fl_BlockLayout::formatWrappedFromHere(fp_Line * pLine, fp_Page * pPage)
 		{
 			iMinLeft = iX+xoff;
 		}
+		if(iMinRight == BIG_NUM_BLOCKBL)
+		{
+			iMinRight = iMinR;
+		}
+		iMinWidth = iMinRight - iMinLeft;
 		iX = iMinLeft - xoff;
 		pLine->setX(iX);
 		if(iMinWidth < 20*4)
@@ -2497,7 +2501,8 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(UT_sint32 iX,
 											  UT_sint32 iHeight,
 											  fp_Page * pPage)
 {
-	UT_sint32 iMaxX = m_pVertContainer->getWidth();
+	UT_sint32 iMaxW = m_pVertContainer->getWidth();
+	UT_sint32 iMinR = m_pVertContainer->getWidth();
 	UT_sint32 iXDiff = getLeftMargin();
 	GR_Graphics * pG = m_pLayout->getGraphics();
 	UT_ASSERT(iHeight > 0);
@@ -2512,25 +2517,27 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(UT_sint32 iX,
 			iHeight = m_pLayout->getGraphics()->tlu(2);
 		}
 	}
-	//	iMaxX -=  getLeftMargin();
-	iMaxX -= getRightMargin();
+	iMaxW -=  getLeftMargin();
+	iMaxW -= getRightMargin();
+	iMinR -= getRightMargin();
 	if (getFirstContainer() == NULL)
 	{
 		UT_BidiCharType iBlockDir = getDominantDirection();
 		if(iBlockDir == UT_BIDI_LTR)
 		{
-			iMaxX -= getTextIndent();
+			iMaxW -= getTextIndent();
 			iXDiff += getTextIndent();
 		}
 	}
 	UT_sint32 xoff,yoff;
 	pPage->getScreenOffsets(m_pVertContainer,xoff,yoff);
+	iMinR += xoff;
  	fp_FrameContainer * pFC = NULL;
 	fp_Line * pLine = NULL;
-	if((iMaxX - iX) < 20*4)
+	if((iMinR - iX -xoff) < 20*4)
 	{
-		xxx_UT_DEBUGMSG(("!!!!!!! ttttOOOO NAAARRRROOOWWWW iMaxX %d iX %d \n",iMaxX,iX));
-		iX = getLeftMargin();
+		xxx_UT_DEBUGMSG(("!!!!!!! ttttOOOO NAAARRRROOOWWWW iMaxW %d iX %d \n",iMaxW,iX));
+		iX = iXDiff;
 		m_iAccumulatedHeight += iHeight;
 		m_bSameYAsPrevious = false;
 	}
@@ -2541,12 +2548,13 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(UT_sint32 iX,
 		UT_Rect projRec;
 		bool bIsTight = false;
 		UT_sint32 iMinLeft = BIG_NUM_BLOCKBL;
-		UT_sint32 iMinWidth =iMaxX - (iX - iXDiff);
+		UT_sint32 iMinWidth = BIG_NUM_BLOCKBL;
+		UT_sint32 iMinRight = BIG_NUM_BLOCKBL;
 		for(i=0; i< static_cast<UT_sint32>(pPage->countFrameContainers());i++)
 		{
 			projRec.left = iScreenX;
 			projRec.height = iHeight;
-			projRec.width = iMaxX - (iX - iXDiff);
+			projRec.width = iMaxW;
 			projRec.top = m_iAccumulatedHeight;
 			pFC = pPage->getNthFrameContainer(i);
 			if(!pFC->isWrappingSet())
@@ -2576,13 +2584,17 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(UT_sint32 iX,
 						//
 						// Project back into image over the transparent region
 						//
-						iRightP = pFC->getRightPad(m_iAccumulatedHeight,iHeight) - iExpand + 2 + pG->tlu(1);
+						iRightP = pFC->getRightPad(m_iAccumulatedHeight,iHeight) - iExpand;
 						xxx_UT_DEBUGMSG(("Projecnt Right %d \n",iRightP));
 					}
-					projRec.left = pRec->left + pRec->width + iRightP;
-					projRec.width = iMaxX - projRec.left +xoff;
+					projRec.left = pRec->left + pRec->width + iRightP + pG->tlu(1);
+					if(projRec.left < iMinLeft)
+					{
+						iMinLeft = projRec.left;
+					}
+
 				}
-				else if((pRec->left >= projRec.left) && (projRec.left + projRec.width > pRec->left))
+				else if((pRec->left >= (projRec.left -iExpand -pG->tlu(1))) && (projRec.left + projRec.width > (pRec->left -iExpand - pG->tlu(1))))
 				{
 					UT_sint32 iLeftP = 0;
 					if(bIsTight)
@@ -2590,21 +2602,14 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(UT_sint32 iX,
 						//
 						// Project into the image over the transparent region
 						//
-						iLeftP = pFC->getLeftPad(m_iAccumulatedHeight,iHeight) -iExpand + 2 + pG->tlu(1);
+						iLeftP = pFC->getLeftPad(m_iAccumulatedHeight,iHeight) - iExpand;
 						xxx_UT_DEBUGMSG(("Project into (1) image with distance %d \n",iLeftP));
 					}
-					UT_sint32 diff = pRec->left - projRec.left - iLeftP;
-					projRec.width = diff;
-				}
-				if(projRec.left < iMinLeft)
-				{
-					iMinLeft = projRec.left;
-					iMinWidth = projRec.width;
-				}
-				else if((projRec.left == iMinLeft) && (projRec.width < iMinWidth))
-				{
-					iMinWidth = projRec.width;
-					iMinLeft = projRec.left;
+					UT_sint32 diff = pRec->left - iLeftP -pG->tlu(1);
+					if(diff < iMinRight)
+					{
+						iMinRight = diff;
+					}
 				}
 			}
 			delete pRec;
@@ -2613,6 +2618,11 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(UT_sint32 iX,
 		{
 			iMinLeft = iScreenX;
 		}
+		if(iMinRight == BIG_NUM_BLOCKBL)
+		{
+			iMinRight = iMinR;
+		}
+		iMinWidth = iMinRight - iMinLeft;
 		if(iMinWidth <  20*4)
 		{
 			iX = getLeftMargin();
@@ -2642,7 +2652,7 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(UT_sint32 iX,
 				pLine->setMaxWidth(iMinWidth);
 				pLine->setX(iMinLeft-xoff);
 				pLine->setSameYAsPrevious(false);
-				pLine->setWrapped((iMaxX != iMinWidth));
+				pLine->setWrapped((iMaxW != iMinWidth));
 				m_bSameYAsPrevious = true;
 			}
 			else
@@ -2652,7 +2662,7 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(UT_sint32 iX,
 				setLastContainer(pLine);
 
 				fp_VerticalContainer * pContainer = static_cast<fp_VerticalContainer *>(pOldLastLine->getContainer());
-				pLine->setWrapped((iMaxX != iMinWidth));
+				pLine->setWrapped((iMaxW != iMinWidth));
 				pLine->setBlock(this);
 				if(pContainer)
 				{
@@ -2686,12 +2696,13 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(UT_sint32 iX,
 		UT_Rect projRec;
 		bool bIsTight = false;
 		UT_sint32 iMinLeft = BIG_NUM_BLOCKBL;
-		UT_sint32 iMinWidth = iMaxX - (iX - iXDiff);
+		UT_sint32 iMinWidth = BIG_NUM_BLOCKBL;
+		UT_sint32 iMinRight = BIG_NUM_BLOCKBL;
 		for(i=0; i< static_cast<UT_sint32>(pPage->countFrameContainers());i++)
 		{
 			projRec.left = iScreenX;
 			projRec.height = iHeight;
-			projRec.width = iMaxX - (iX - iXDiff);
+			projRec.width = iMaxW;
 			projRec.top = m_iAccumulatedHeight;
 			pFC = pPage->getNthFrameContainer(i);
 			if(!pFC->isWrappingSet())
@@ -2713,7 +2724,7 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(UT_sint32 iX,
 					delete pRec;
 					continue;
 				}
-				if((pRec->left <= projRec.left + pG->tlu(1)) && (pRec->left + pRec->width) > projRec.left)
+				if((pRec->left <= projRec.left - iExpand - pG->tlu(1)) && (pRec->left + pRec->width) > (projRec.left -iExpand - pG->tlu(1)))
 				{
 					UT_sint32 iRightP = 0;
 					if(bIsTight)
@@ -2721,11 +2732,15 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(UT_sint32 iX,
 						//
 						// Project back into image over the transparent region
 						//
-						iRightP = pFC->getRightPad(m_iAccumulatedHeight,iHeight) - iExpand +2 + pG->tlu(1);
+						iRightP = pFC->getRightPad(m_iAccumulatedHeight,iHeight) - iExpand;
 						xxx_UT_DEBUGMSG(("Project Right %d \n",iRightP));
 					}
-					projRec.left = pRec->left + pRec->width + iRightP;
-					projRec.width = iMaxX - projRec.left +xoff;
+					projRec.left = pRec->left + pRec->width + iRightP + pG->tlu(1);
+					if(projRec.left < iMinLeft)
+					{
+						iMinLeft = projRec.left;
+					}
+
 				}
 				else if((pRec->left >= projRec.left) && (projRec.left + projRec.width > pRec->left))
 				{
@@ -2735,21 +2750,14 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(UT_sint32 iX,
 						//
 						// Project into the image over the transparent region
 						//
-						iLeftP = pFC->getLeftPad(m_iAccumulatedHeight,iHeight) - iExpand + 2 + pG->tlu(1);
+						iLeftP = pFC->getLeftPad(m_iAccumulatedHeight,iHeight) -iExpand;
 						xxx_UT_DEBUGMSG(("Project into (2) image with distance %d \n",iLeftP));
 					}
-					UT_sint32 diff = pRec->left - projRec.left - iLeftP;
-					projRec.width = diff;
-				}
-				if(projRec.left < iMinLeft)
-				{
-					iMinLeft = projRec.left;
-					iMinWidth = projRec.width;
-				}
-				else if((projRec.left == iMinLeft) && (projRec.width < iMinWidth))
-				{
-					iMinWidth = projRec.width;
-					iMinLeft = projRec.left;
+					UT_sint32 diff = pRec->left - iLeftP -pG->tlu(1);
+					if(diff < iMinRight)
+					{
+						iMinRight = diff;
+					}
 				}
 			}
 			delete pRec;
@@ -2758,6 +2766,11 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(UT_sint32 iX,
 		{
 			iMinLeft = iScreenX;
 		}
+		if(iMinRight == BIG_NUM_BLOCKBL)
+		{
+			iMinRight = iMinR;
+		}
+		iMinWidth = iMinRight - iMinLeft;
 		fp_Line* pLine = new fp_Line(getSectionLayout());
 		fp_Line* pOldLastLine = static_cast<fp_Line *>(getLastContainer());
 		if(iMinWidth >  20*4)
@@ -2775,7 +2788,7 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(UT_sint32 iX,
 				pLine->setMaxWidth(iMinWidth);
 				pLine->setX(iMinLeft-xoff);
 				pLine->setSameYAsPrevious(false);
-				pLine->setWrapped((iMaxX != iMinWidth));
+				pLine->setWrapped((iMaxW != iMinWidth));
 				m_bSameYAsPrevious = true;
 			}
 			else
@@ -2785,7 +2798,7 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(UT_sint32 iX,
 				setLastContainer(pLine);
 				
 				fp_VerticalContainer * pContainer = static_cast<fp_VerticalContainer *>(pOldLastLine->getContainer());
-				pLine->setWrapped((iMaxX != iMinWidth));
+				pLine->setWrapped((iMaxW != iMinWidth));
 				pLine->setBlock(this);
 				if(pContainer)
 				{
@@ -2805,11 +2818,11 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(UT_sint32 iX,
 			return pLine;
 		}
 		xxx_UT_DEBUGMSG(("Max width 6 set to %d \n",20));
-		pLine->setMaxWidth(20);
+		pLine->setMaxWidth(61);
 		pLine->setX(iMinLeft-xoff);
 		pLine->setBlock(this);
 		pLine->setSameYAsPrevious(false);
-		pLine->setWrapped((iMaxX != iMinWidth));
+		pLine->setWrapped((iMaxW != iMinWidth));
 		pOldLastLine = static_cast<fp_Line *>(getLastContainer());
 		if(pOldLastLine)
 		{
