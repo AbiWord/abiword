@@ -128,25 +128,6 @@ AP_Win32Dialog_MetaData_General::~AP_Win32Dialog_MetaData_General()
 	
 }
 
-/*
-	
-*/	
-int CALLBACK AP_Win32Dialog_MetaData_General::s_pageWndProc(HWND hWnd, UINT msg, WPARAM wParam,
-   LPARAM lParam)
-{
-	
-	if (msg==WM_NOTIFY)
-	{
-		NMHDR* pHdr = (NMHDR*)lParam;
-
-		if (pHdr->code==PSN_SETACTIVE)
-			XAP_Win32DialogHelper::s_centerDialog(GetParent(hWnd));			
-		
-	}   	
-	
-	return XAP_Win32PropertyPage::s_pageWndProc(hWnd, msg, wParam,lParam);
-}
-
 
 /*
 	
@@ -180,7 +161,8 @@ void AP_Win32Dialog_MetaData_General::_onInitDialog()
 	HWND hParent = GetParent(getHandle());						
 	SetDlgItemText(hParent, IDOK, pSS->getValue(XAP_STRING_ID_DLG_OK));
 	SetDlgItemText(hParent, IDCANCEL, pSS->getValue(XAP_STRING_ID_DLG_Cancel));				
-				
+	
+	XAP_Win32DialogHelper::s_centerDialog(hParent);							
 }
 
 char* AP_Win32Dialog_MetaData_General::_get_text(XAP_String_Id nID, char *szBuff, int nSize)

@@ -72,6 +72,7 @@ private:
 	void						_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
 		
 	AP_Win32Dialog_Options*		m_pParent;	
+	int							m_nCentered;
 	
 };
 

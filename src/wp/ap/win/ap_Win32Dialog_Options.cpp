@@ -646,7 +646,8 @@ void AP_Win32Dialog_Options_Sheet::_onInitDialog(HWND hwnd)
 
 AP_Win32Dialog_Options_Toolbars::AP_Win32Dialog_Options_Toolbars()
 {
-	setDialogProc(s_pageWndProc);
+	setDialogProc(s_pageWndProc);	
+	m_nCentered = 0;
 }
 
 AP_Win32Dialog_Options_Toolbars::~AP_Win32Dialog_Options_Toolbars()
@@ -663,10 +664,19 @@ int CALLBACK AP_Win32Dialog_Options_Toolbars::s_pageWndProc(HWND hWnd, UINT msg,
 	
 	if (msg==WM_NOTIFY)
 	{
+		AP_Win32Dialog_Options_Toolbars *pThis = (AP_Win32Dialog_Options_Toolbars *) GetWindowLong(hWnd, GWL_USERDATA);					
+		
+		
 		NMHDR* pHdr = (NMHDR*)lParam;
 
-		if (pHdr->code==PSN_SETACTIVE)
-			XAP_Win32DialogHelper::s_centerDialog(GetParent(hWnd));			
+		if (pHdr->code==PSN_SETACTIVE)			
+		{
+			if (pThis->m_nCentered<2)
+			{
+			   	pThis->m_nCentered++;
+				XAP_Win32DialogHelper::s_centerDialog(GetParent(hWnd));			
+			}
+		}
 	}   	
 	
 	return XAP_Win32PropertyPage::s_pageWndProc(hWnd, msg, wParam,lParam);
@@ -719,6 +729,8 @@ void AP_Win32Dialog_Options_Toolbars::_onInitDialog()
 	EnableWindow( GetDlgItem(getHandle(), AP_RID_DIALOG_OPTIONS_RDO_Text), 		false );
 	EnableWindow( GetDlgItem(getHandle(), AP_RID_DIALOG_OPTIONS_RDO_IconsAndText), false );
 	EnableWindow( GetDlgItem(getHandle(), AP_RID_DIALOG_OPTIONS_CHK_ViewToolTips), false );
+	
+	SetWindowLong(getHandle(), GWL_USERDATA, (LONG)this);	
 			
 }
 
