@@ -122,6 +122,13 @@ public:
 																	  PL_ListenerId lid,
 																	  PL_StruxFmtHandle sfhNew));
 
+	virtual bool               bl_doclistener_insertTable( const PX_ChangeRecord_Strux * pcrx,
+											   SectionType iType,
+											   PL_StruxDocHandle sdh,
+											   PL_ListenerId lid,
+											   void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+																	   PL_ListenerId lid,
+																	   PL_StruxFmtHandle sfhNew));
 
 #ifdef FMT_TEST
 	virtual void		__dump(FILE * fp) const;

@@ -487,7 +487,7 @@ void FL_DocLayout::deletePage(fp_Page* pPage, bool bDontNotify /* default false 
 	}
 }
 
-fp_Page* FL_DocLayout::addNewPage(fl_DocSectionLayout* pOwner)
+fp_Page* FL_DocLayout::addNewPage(fl_DocSectionLayout* pOwner, bool bNoUpdate)
 {
 	fp_Page*		pLastPage;
 
@@ -518,7 +518,7 @@ fp_Page* FL_DocLayout::addNewPage(fl_DocSectionLayout* pOwner)
 	// so that it can update the scroll bar ranges
 	// and whatever else it needs to do.
 
-	if (m_pView && m_pView->shouldScreenUpdateOnGeneralUpdate() && m_pView->getPoint() > 0) // skip this if rebuilding or if we're loading a document
+	if (m_pView && m_pView->shouldScreenUpdateOnGeneralUpdate() && m_pView->getPoint() > 0 && !bNoUpdate) // skip this if rebuilding or if we're loading a document
 	{
 		m_pView->notifyListeners(AV_CHG_PAGECOUNT);
 	}

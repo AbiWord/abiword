@@ -775,7 +775,7 @@ fl_BlockLayout::~fl_BlockLayout()
 	m_pDoc = NULL;
 	m_pLayout = NULL;
 #endif
-	xxx_UT_DEBUGMSG(("SEVIOR: Deleting block %x \n",this));
+	xxx_UT_DEBUGMSG(("~fl_BlockLayout: Deleting block %x \n",this));
 }
 
 /*!

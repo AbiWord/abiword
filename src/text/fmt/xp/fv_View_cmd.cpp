@@ -1795,6 +1795,16 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const XML
 // Insert the table strux at the same spot. This will make the table link correctly in the
 // middle of the broken text.
 //
+// Handle special case of not putting a table immediately after a section break
+//
+	PL_StruxDocHandle secSDH = NULL;
+	bool bres = m_pDoc->getStruxOfTypeFromPosition(pointBreak-1,PTX_Section,&secSDH);
+	PT_DocPosition secPos = m_pDoc->getStruxPosition(secSDH);
+	UT_DEBUGMSG(("SEVIOR: SecPos %d pointBreak %d \n",secPos,pointBreak));
+	if(secPos == (pointBreak-2))
+	{
+		pointBreak++;
+	}
 	setPoint(pointBreak-1);
 	e |= (UT_sint32)(m_pDoc->insertStrux(getPoint(),PTX_SectionTable,NULL,pPropsArray));
 //

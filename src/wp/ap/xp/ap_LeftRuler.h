@@ -165,6 +165,7 @@ private:
 
 	void                _getCellMarkerRects(AP_LeftRulerInfo * pInfo, UT_sint32 iCell, UT_Rect &rCell);
 	void		        _drawCellProperties( AP_LeftRulerInfo * pInfo);
+	void                _drawCellMark(UT_Rect *prDrag, bool bUp);
 
 	void                _xorGuide(bool bClear=false);
 	void				_displayStatusMessage(XAP_String_Id messageID, const ap_RulerTicks &tick, double dValue);
@@ -204,7 +205,7 @@ private:
 
 	bool				m_bValidMouseClick;
 	bool				m_bEventIgnored;
-
+	UT_Rect             m_draggingRect;
 	UT_sint32           m_minPageLength;
 };
 

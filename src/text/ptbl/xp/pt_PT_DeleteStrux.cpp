@@ -63,6 +63,10 @@ bool pt_PieceTable::_unlinkStrux(pf_Frag_Strux * pfs,
 	{
 		UT_DEBUGMSG(("_unlink Strux Block %x \n",pfs));
 	}
+	else if(pfs->getStruxType() == PTX_Section)
+	{
+		UT_DEBUGMSG(("_unlink Strux Section %x \n",pfs));
+	}
 //	m_pDocument->miniDump((PL_StruxDocHandle) pfs, 1);
 #endif
 	switch (pfs->getStruxType())

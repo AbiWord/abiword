@@ -111,7 +111,7 @@ public:
 							 bool isField = false
 		);
 	void        changeDocSections(const PX_ChangeRecord_StruxChange * pcrx, fl_DocSectionLayout * pDSL);
-	fp_Page*	addNewPage(fl_DocSectionLayout* pOwner);
+	fp_Page*	addNewPage(fl_DocSectionLayout* pOwner, bool bNoUpdate=false);
 	fp_Page*	getFirstPage();
 	fp_Page*	getLastPage();
 	fp_Page*	getNthPage(int n);

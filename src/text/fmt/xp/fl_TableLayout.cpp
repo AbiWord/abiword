@@ -533,6 +533,54 @@ bool fl_TableLayout::bl_doclistener_insertBlock(fl_ContainerLayout* pLBlock,
 }
 
 
+bool fl_TableLayout::bl_doclistener_insertTable( const PX_ChangeRecord_Strux * pcrx,
+											   SectionType iType,
+											   PL_StruxDocHandle sdh,
+											   PL_ListenerId lid,
+											   void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+																	   PL_ListenerId lid,
+																	   PL_StruxFmtHandle sfhNew))
+{
+	UT_ASSERT(iType == FL_SECTION_TABLE);
+	UT_ASSERT(pcrx->getType()==PX_ChangeRecord::PXT_InsertStrux);
+	UT_ASSERT(pcrx->getStruxType()==PTX_SectionTable);
+	PT_DocPosition pos1;
+//
+// This is to clean the fragments
+//
+	m_pDoc->getBounds(true,pos1);
+
+	fl_SectionLayout* pSL = NULL;
+
+	pSL = (fl_SectionLayout *) static_cast<fl_ContainerLayout *>(getSectionLayout())->insert(sdh,this,pcrx->getIndexAP(), FL_CONTAINER_TABLE);
+
+		// Must call the bind function to complete the exchange of handles
+		// with the document (piece table) *** before *** anything tries
+		// to call down into the document (like all of the view
+		// listeners).
+
+	PL_StruxFmtHandle sfhNew = (PL_StruxFmtHandle)pSL;
+	pfnBindHandles(sdh,lid,sfhNew);
+
+//
+// increment the insertion point in the view.
+//
+	FV_View* pView = m_pLayout->getView();
+	if (pView && (pView->isActive() || pView->isPreview()))
+	{
+		pView->setPoint(pcrx->getPosition() + fl_BLOCK_STRUX_OFFSET);
+	}
+	else if(pView && pView->getPoint() > pcrx->getPosition())
+	{
+		pView->setPoint(pView->getPoint() + fl_BLOCK_STRUX_OFFSET);
+	}
+//
+// OK that's it!
+//
+	return true;
+}
+
+
 bool fl_TableLayout::bl_doclistener_insertCell(fl_ContainerLayout* pCell,
 											  const PX_ChangeRecord_Strux * pcrx,
 											  PL_StruxDocHandle sdh,

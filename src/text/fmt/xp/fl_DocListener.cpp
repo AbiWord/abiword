@@ -1236,6 +1236,18 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 			fl_SectionLayout * pSL = static_cast<fl_SectionLayout *>(pL);
 			return pSL->bl_doclistener_insertBlock(NULL, pcrx,sdh,lid,pfnBindHandles);
 		}
+#if 0
+//
+// FIXME When I get brave I'll see if we can't make a table te first layout
+// in a section.
+//
+		case PTX_SectionTable:
+		{
+			UT_DEBUGMSG(("Insert Table immediately after Section \n"));
+			fl_SectionLayout * pSL = static_cast<fl_SectionLayout *>(pL);
+			return pSL->bl_doclistener_insertTable(NULL, pcrx,sdh,lid,pfnBindHandles);
+		}
+#endif
 		default:						// unknown strux.
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			return false;
@@ -1379,11 +1391,19 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 			   UT_DEBUGMSG(("Insert Block into Table/EndTable \n"));
 			
 			   fl_TableLayout * pTL = static_cast<fl_TableLayout *>(pL);
-			   xxx_UT_DEBUGMSG(("Doing Insert Block after EndTable \n"));
 			   bool bResult = pTL->bl_doclistener_insertBlock(NULL,pcrx,sdh,lid,pfnBindHandles);
 			   return bResult;
 		   }
-
+		case PTX_SectionTable: // insert table after a table this is valid
+		{
+			   // The immediately prior strux is a EndTable.  
+			   // This isnerts a Table after that. Thus we we have two tables
+			   // in a row.
+			   UT_DEBUGMSG(("Insert Table after Table/EndTable \n"));
+			   fl_TableLayout * pTL = static_cast<fl_TableLayout *>(pL);
+			   bool bResult = pTL->bl_doclistener_insertTable(pcrx, FL_SECTION_TABLE,sdh,lid,pfnBindHandles);
+			   return bResult;
+		}
 		default:
 		   {
 			   UT_DEBUGMSG(("Illegal strux type after table %d \n",pcrx->getStruxType()));

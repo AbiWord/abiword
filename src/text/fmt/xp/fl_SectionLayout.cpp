@@ -756,7 +756,7 @@ fp_Container* fl_DocSectionLayout::getNewContainer(fp_Container * pFirstContaine
 			}
 			else
 			{
-				pPage = m_pLayout->addNewPage(this);
+				pPage = m_pLayout->addNewPage(this,true);
 			}
 		}
 	}
@@ -1636,7 +1636,7 @@ bool fl_DocSectionLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * 
 {
 	UT_ASSERT(pcrx->getType()==PX_ChangeRecord::PXT_DeleteStrux);
 	UT_ASSERT(pcrx->getStruxType()==PTX_Section || pcrx->getStruxType()==PTX_SectionEndnote);
-
+	UT_DEBUGMSG(("Doing Section delete \n"));
 	fl_DocSectionLayout* pPrevSL = getPrevDocSection();
 	if (!pPrevSL)
 	{
@@ -1691,6 +1691,7 @@ bool fl_DocSectionLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * 
 		pBPrev->setNext(pBCur);
 		while(pBCur != NULL)
 		{
+			xxx_UT_DEBUGMSG(("updating block %x \n",pBCur));
 			pBCur->setContainingLayout(pBPrev->myContainingLayout());
 			if(pBCur->getContainerType() == FL_CONTAINER_BLOCK)
 			{
@@ -1700,6 +1701,7 @@ bool fl_DocSectionLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * 
 			pBCur = pBCur->getNext();
 		}
 		setFirstLayout(NULL);
+		setLastLayout(NULL);
 	}
 //
 // Get this before we remove this section from the run list!

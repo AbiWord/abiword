@@ -207,6 +207,7 @@ void AP_LeftRuler::mousePress(EV_EditModifierState /* ems */, EV_EditMouseButton
  		m_bValidMouseClick = true;
  		m_draggingWhat = DW_TOPMARGIN;
  		m_bBeforeFirstMotion = true;
+		m_pG->setCursor(GR_Graphics::GR_CURSOR_GRAB);
  		return;
  	}
 
@@ -227,8 +228,28 @@ void AP_LeftRuler::mousePress(EV_EditModifierState /* ems */, EV_EditMouseButton
  		m_bValidMouseClick = true;
  		m_draggingWhat = DW_BOTTOMMARGIN;
  		m_bBeforeFirstMotion = true;
+		m_pG->setCursor(GR_Graphics::GR_CURSOR_GRAB);
  		return;
  	}
+	if (m_infoCache.m_mode ==  AP_LeftRulerInfo::TRI_MODE_TABLE)
+	{
+		UT_sint32 i = 0;
+		bool bFound = false;
+		for(i=0; (i<= m_infoCache.m_iNumRows) && !bFound; i++)
+		{
+			UT_Rect rCell;
+			_getCellMarkerRects(&m_infoCache, i,rCell);
+			if(rCell.containsPoint(x,y))
+			{
+				m_bValidMouseClick = true;
+				m_draggingWhat = DW_CELLMARK;
+				m_bBeforeFirstMotion = true;
+				m_draggingCell = i;
+				m_pG->setCursor(GR_Graphics::GR_CURSOR_GRAB);
+				return;
+			}
+		}
+	}
 }
 
 /*****************************************************************/
@@ -350,6 +371,7 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 	case DW_CELLMARK:
 		{
 			UT_DEBUGMSG(("CellMark not handled yet \n"));
+			return;
 		}
 		break;
 	}
@@ -433,6 +455,25 @@ void AP_LeftRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 
 		{
 			m_pG->setCursor( GR_Graphics::GR_CURSOR_UPDOWN);
 		}
+		else if (m_infoCache.m_mode ==  AP_LeftRulerInfo::TRI_MODE_TABLE)
+		{
+			UT_sint32 i = 0;
+			bool bFound = false;
+			for(i=0; (i<= m_infoCache.m_iNumRows) && !bFound; i++)
+			{
+				UT_Rect rCell;
+				_getCellMarkerRects(&m_infoCache, i,rCell);
+				if(rCell.containsPoint(x,y))
+				{
+					m_pG->setCursor( GR_Graphics::GR_CURSOR_UPDOWN);
+					bFound = true;
+				}
+			}
+			if(!bFound)
+			{
+				m_pG->setCursor( GR_Graphics::GR_CURSOR_DEFAULT);
+			}
+		}
 		else
 		{
 			m_pG->setCursor( GR_Graphics::GR_CURSOR_DEFAULT);
@@ -515,6 +556,7 @@ void AP_LeftRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 
 
 		if (effectiveSize < m_minPageLength)
 			m_draggingCenter = oldDragCenter;
+		m_pG->setCursor(GR_Graphics::GR_CURSOR_GRAB);
 
 		if(m_draggingCenter == oldDragCenter)
 		{
@@ -567,7 +609,13 @@ void AP_LeftRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 
 		}
 		}
 		return;
-
+	case DW_CELLMARK:
+		{
+			_xorGuide();
+			m_pG->setCursor(GR_Graphics::GR_CURSOR_GRAB);
+			m_bBeforeFirstMotion = false;
+			return;
+		}
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return;
@@ -883,7 +931,8 @@ void AP_LeftRuler::_getCellMarkerRects(AP_LeftRulerInfo * pInfo, UT_sint32 iCell
 	}
 	
 	UT_uint32 xLeft = s_iFixedHeight / 4;
-	rCell.set(xLeft, pos - bottomSpacing, xLeft * 2, bottomSpacing + topSpacing); //left/top/width/height
+//	rCell.set(xLeft, pos - bottomSpacing, xLeft * 2, bottomSpacing + topSpacing); //left/top/width/height
+	rCell.set(xLeft, pos-2, xLeft * 2, _UL(4));
 }
 
 /*!
@@ -898,23 +947,65 @@ void AP_LeftRuler::_drawCellProperties(AP_LeftRulerInfo * pInfo)
 
 	UT_sint32 nrows = pInfo->m_iNumRows;
 	UT_sint32 i = 0;
+	UT_Rect rCell;
 	for(i=0;i <= nrows; i++)
 	{
-		UT_Rect rCell;
 		_getCellMarkerRects(pInfo,i,rCell);
-		if(rCell.height >= 0)
+		if(rCell.height > 0)
 		{
-			UT_Rect tCell, bCell;
-
-			tCell.set(rCell.left, rCell.top, rCell.width, _UL(1));
-			bCell.set(rCell.left, rCell.top + rCell.height - _UL(1), rCell.width, _UL(1));
-			rCell.set(rCell.left, rCell.top + _UL(1), rCell.width, rCell.height - _UL(2));
-
-			m_pG->fillRect(GR_Graphics::CLR3D_Background, tCell);
-			if (rCell.height > 0)
-				m_pG->fillRect(GR_Graphics::CLR3D_BevelDown, rCell);
-			m_pG->fillRect(GR_Graphics::CLR3D_Background, bCell);
+			_drawCellMark(&rCell,true);
 		}
+	}
+//
+// Draw bottom marker.
+//
+// 	if(nrows>0)
+// 	{
+// 		_getCellMarkerRects(pInfo,nrows-1,rCell);
+// 		if(rCell.height > 0)
+// 		{
+// 			rCell.top += rCell.height;
+// 			_drawCellMark(&rCell,true);
+// 		}
+// 	}
+}
+
+void AP_LeftRuler::_drawCellMark(UT_Rect *prDrag, bool bUp)
+{
+//
+// Draw square inside
+//
+	UT_sint32 left = prDrag->left;
+	UT_sint32 right = left + prDrag->width;
+	UT_sint32 top = prDrag->top;
+	UT_sint32 bot = top + 4;
+	m_pG->setColor3D(GR_Graphics::CLR3D_Foreground);
+	m_pG->drawLine(left,top,left,bot);
+	m_pG->drawLine(left,bot,right,bot);
+	m_pG->drawLine(right,bot,right,top);
+	m_pG->drawLine(right,top,left,top);
+	if(bUp)
+	{
+//
+// Draw a bevel up
+//
+		m_pG->setColor3D(GR_Graphics::CLR3D_BevelUp);
+		left += 1;
+		top += 1;
+		right -= 1;
+		bot -= 1;
+		m_pG->drawLine(left,top,left,bot);
+		m_pG->drawLine(left,bot,right,bot);
+		m_pG->drawLine(right,bot,right,top);
+		m_pG->drawLine(right,top,left,top);
+//
+// Fill with Background?? color
+//
+		left += 1;
+		top += 1;
+		right -= 1;
+		bot -= 1;
+		m_pG->fillRect(GR_Graphics::CLR3D_Background,left,top,right -left,bot - top);
 	}
 }
 
