@@ -30,6 +30,7 @@ EXPORT_HEADERS=		pd_Document.h			\
 			pp_Property.h			\
 			pt_Types.h			\
 			px_ChangeRecord.h		\
+			px_ChangeRecord_Glob.h		\
 			px_ChangeRecord_Span.h		\
 			px_ChangeRecord_SpanChange.h	\
 			px_ChangeRecord_Strux.h		\
@@ -84,6 +85,7 @@ CPPSRCS=		pd_Document.cpp			\
 			pt_VarSet.cpp			\
 			px_ChangeHistory.cpp		\
 			px_ChangeRecord.cpp		\
+			px_ChangeRecord_Glob.cpp	\
 			px_ChangeRecord_Span.cpp	\
 			px_ChangeRecord_SpanChange.cpp	\
 			px_ChangeRecord_Strux.cpp	\

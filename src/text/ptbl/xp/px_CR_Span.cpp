@@ -26,7 +26,6 @@
 #include "px_ChangeRecord_Span.h"
 
 PX_ChangeRecord_Span::PX_ChangeRecord_Span(PXType type,
-										   UT_Byte atomic,
 										   PT_DocPosition position,
 										   PT_AttrPropIndex indexOldAP,
 										   PT_AttrPropIndex indexNewAP,
@@ -35,7 +34,7 @@ PX_ChangeRecord_Span::PX_ChangeRecord_Span(PXType type,
 										   PT_BufIndex bufIndex,
 										   UT_uint32 length,
 										   PT_Differences bDifferentFmt)
-	: PX_ChangeRecord(type, atomic, position, indexOldAP, indexNewAP, bTempBefore, bTempAfter)
+	: PX_ChangeRecord(type, position, indexOldAP, indexNewAP, bTempBefore, bTempAfter)
 {
 	UT_ASSERT(length > 0);
 	
@@ -51,7 +50,7 @@ PX_ChangeRecord_Span::~PX_ChangeRecord_Span()
 PX_ChangeRecord * PX_ChangeRecord_Span::reverse(void) const
 {
 	PX_ChangeRecord_Span * pcr
-		= new PX_ChangeRecord_Span(getRevType(),getRevFlags(),
+		= new PX_ChangeRecord_Span(getRevType(),
 								   m_position,
 								   m_indexAP,m_indexOldAP,
 								   m_bTempAfter,m_bTempBefore,

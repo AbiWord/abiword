@@ -130,7 +130,6 @@ UT_Bool pt_PieceTable::_deleteStruxWithNotify(PT_DocPosition dpos,
 	
 	PX_ChangeRecord_Strux * pcrs
 		= new PX_ChangeRecord_Strux(PX_ChangeRecord::PXT_DeleteStrux,
-									PX_ChangeRecord::PXF_Null,
 									dpos,
 									m_indexAPTemporarySpanFmt,pfs->getIndexAP(),
 									m_bHaveTemporarySpanFmt,UT_FALSE,

@@ -83,7 +83,6 @@ UT_Bool pf_Frag_Strux::createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
 	
 	PX_ChangeRecord_Strux * pcr
 		= new PX_ChangeRecord_Strux(PX_ChangeRecord::PXT_InsertStrux,
-									PX_ChangeRecord::PXF_Null,
 									dpos,
 									m_indexAP,m_indexAP,
 									UT_FALSE,UT_FALSE,

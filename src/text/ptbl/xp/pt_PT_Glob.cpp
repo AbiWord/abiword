@@ -40,6 +40,7 @@
 #include "px_ChangeRecord_Span.h"
 #include "px_ChangeRecord_SpanChange.h"
 #include "px_ChangeRecord_Strux.h"
+#include "px_ChangeRecord_Glob.h"
 
 /****************************************************************/
 /****************************************************************/
@@ -57,20 +58,20 @@ void pt_PieceTable::beginMultiStepGlob(void)
 	// TODO screen activity during a multi-step change (and only
 	// TODO update the screen after the last step).
 
-	PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_GlobMarker,
-												PX_ChangeRecord::PXF_MultiStepStart,
-												0,0,0,0,0);
+	PX_ChangeRecord * pcr = new PX_ChangeRecord_Glob(PX_ChangeRecord::PXT_GlobMarker,
+													 PX_ChangeRecord_Glob::PXF_MultiStepStart);
 	UT_ASSERT(pcr);
 	m_history.addChangeRecord(pcr);
+	m_pDocument->notifyListeners(NULL,pcr);
 }
 
 void pt_PieceTable::endMultiStepGlob(void)
 {
-	PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_GlobMarker,
-												PX_ChangeRecord::PXF_MultiStepEnd,
-												0,0,0,0,0);
+	PX_ChangeRecord * pcr = new PX_ChangeRecord_Glob(PX_ChangeRecord::PXT_GlobMarker,
+													 PX_ChangeRecord_Glob::PXF_MultiStepEnd);
 	UT_ASSERT(pcr);
 	m_history.addChangeRecord(pcr);
+	m_pDocument->notifyListeners(NULL,pcr);
 }
 
 void pt_PieceTable::beginUserAtomicGlob(void)
@@ -84,18 +85,18 @@ void pt_PieceTable::beginUserAtomicGlob(void)
 	//
 	// we do not notify the listeners.
 	
-	PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_GlobMarker,
-												PX_ChangeRecord::PXF_UserAtomicStart,
-												0,0,0,0,0);
+	PX_ChangeRecord * pcr = new PX_ChangeRecord_Glob(PX_ChangeRecord::PXT_GlobMarker,
+													 PX_ChangeRecord_Glob::PXF_UserAtomicStart);
 	UT_ASSERT(pcr);
 	m_history.addChangeRecord(pcr);
+	m_pDocument->notifyListeners(NULL,pcr);
 }
 
 void pt_PieceTable::endUserAtomicGlob(void)
 {
-	PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_GlobMarker,
-												PX_ChangeRecord::PXF_UserAtomicEnd,
-												0,0,0,0,0);
+	PX_ChangeRecord * pcr = new PX_ChangeRecord_Glob(PX_ChangeRecord::PXT_GlobMarker,
+													 PX_ChangeRecord_Glob::PXF_UserAtomicEnd);
 	UT_ASSERT(pcr);
 	m_history.addChangeRecord(pcr);
+	m_pDocument->notifyListeners(NULL,pcr);
 }

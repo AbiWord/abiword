@@ -340,7 +340,7 @@ UT_Bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 	// TODO decide what indexAP's should be in the before and after.
 	
 	PX_ChangeRecord_Span * pcr
-		= new PX_ChangeRecord_Span(PX_ChangeRecord::PXT_InsertSpan,PX_ChangeRecord::PXF_Null,
+		= new PX_ChangeRecord_Span(PX_ChangeRecord::PXT_InsertSpan,
 								   dpos,
 								   indexAP,indexAP,
 								   m_bHaveTemporarySpanFmt,UT_FALSE,

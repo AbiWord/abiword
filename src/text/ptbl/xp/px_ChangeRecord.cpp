@@ -26,7 +26,6 @@
 #include "px_ChangeRecord.h"
 
 PX_ChangeRecord::PX_ChangeRecord(PXType type,
-								 UT_Byte atomic,
 								 PT_DocPosition position,
 								 PT_AttrPropIndex indexOldAP,
 								 PT_AttrPropIndex indexNewAP,
@@ -34,7 +33,6 @@ PX_ChangeRecord::PX_ChangeRecord(PXType type,
 								 UT_Bool bTempAfter)
 {
 	m_type = type;
-	m_atomic = atomic;
 	m_position = position;
 	m_indexOldAP = indexOldAP;
 	m_indexAP = indexNewAP;
@@ -49,11 +47,6 @@ PX_ChangeRecord::~PX_ChangeRecord()
 PX_ChangeRecord::PXType PX_ChangeRecord::getType(void) const
 {
 	return m_type;
-}
-
-UT_Byte PX_ChangeRecord::getFlags(void) const
-{
-	return m_atomic;
 }
 
 PT_DocPosition PX_ChangeRecord::getPosition(void) const
@@ -84,7 +77,7 @@ UT_Bool PX_ChangeRecord::getTempAfter(void) const
 PX_ChangeRecord * PX_ChangeRecord::reverse(void) const
 {
 	PX_ChangeRecord * pcr
-		= new PX_ChangeRecord(getRevType(),getRevFlags(),
+		= new PX_ChangeRecord(getRevType(),
 							  m_position,
 							  m_indexAP,m_indexOldAP,
 							  m_bTempAfter,m_bTempBefore);
@@ -120,29 +113,5 @@ PX_ChangeRecord::PXType PX_ChangeRecord::getRevType(void) const
 	default:
 		UT_ASSERT(0);
 		return PX_ChangeRecord::PXT_GlobMarker;				// bogus
-	}
-}
-
-UT_Byte PX_ChangeRecord::getRevFlags(void) const
-{
-	switch (m_atomic)
-	{
-	case PX_ChangeRecord::PXF_Null:
-		return PX_ChangeRecord::PXF_Null;
-		
-	case PX_ChangeRecord::PXF_MultiStepStart:
-		return PX_ChangeRecord::PXF_MultiStepEnd;
-		
-	case PX_ChangeRecord::PXF_MultiStepEnd:
-		return PX_ChangeRecord::PXF_MultiStepStart;
-		
-	case PX_ChangeRecord::PXF_UserAtomicStart:
-		return PX_ChangeRecord::PXF_UserAtomicEnd;
-		
-	case PX_ChangeRecord::PXF_UserAtomicEnd:
-		return PX_ChangeRecord::PXF_UserAtomicStart;
-	default:
-		UT_ASSERT(0);
-		return 0;
 	}
 }

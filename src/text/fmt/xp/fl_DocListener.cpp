@@ -25,12 +25,15 @@
 #include <stdlib.h>
 
 #include "ut_types.h"
+#include "ut_debugmsg.h"
+#include "ut_assert.h"
 #include "pt_Types.h"
 #include "px_ChangeRecord.h"
 #include "px_ChangeRecord_Span.h"
 #include "px_ChangeRecord_SpanChange.h"
 #include "px_ChangeRecord_Strux.h"
 #include "px_ChangeRecord_StruxChange.h"
+#include "px_ChangeRecord_Glob.h"
 #include "fv_View.h"
 #include "fl_DocListener.h"
 #include "fl_DocLayout.h"
@@ -42,8 +45,6 @@
 #include "fp_Run.h"
 #include "pd_Document.h"
 
-#include "ut_debugmsg.h"
-#include "ut_assert.h"
 
 fl_DocListener::fl_DocListener(PD_Document* doc, FL_DocLayout *pLayout)
 {
@@ -60,7 +61,6 @@ UT_Bool fl_DocListener::populate(PL_StruxFmtHandle sfh,
 {
 	UT_ASSERT(m_pLayout);
 	UT_DEBUGMSG(("fl_DocListener::populate\n"));
-	pcr->dump();
 
 	UT_ASSERT(pcr->getType() == PX_ChangeRecord::PXT_InsertSpan);
 	const PX_ChangeRecord_Span * pcrs = static_cast<const PX_ChangeRecord_Span *> (pcr);
@@ -123,7 +123,6 @@ UT_Bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 {
 	UT_ASSERT(m_pLayout);
 	UT_DEBUGMSG(("fl_DocListener::populateStrux\n"));
-	pcr->dump();
 
 	UT_ASSERT(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux);
 	const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);
@@ -222,10 +221,31 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 							   const PX_ChangeRecord * pcr)
 {
 	UT_DEBUGMSG(("fl_DocListener::change\n"));
-	pcr->dump();
 
 	switch (pcr->getType())
 	{
+	case PX_ChangeRecord::PXT_GlobMarker:
+		{
+			UT_ASSERT(sfh == 0);							// globs are not strux-relative
+			const PX_ChangeRecord_Glob * pcrg = static_cast<const PX_ChangeRecord_Glob *> (pcr);
+			switch (pcrg->getFlags())
+			{
+			default:
+			case PX_ChangeRecord_Glob::PXF_Null:			// not a valid glob type
+				UT_ASSERT(0);
+				return UT_FALSE;
+				
+			case PX_ChangeRecord_Glob::PXF_MultiStepStart:	// TODO add code to inhibit screen updates
+			case PX_ChangeRecord_Glob::PXF_MultiStepEnd:	// TODO until we get the end.
+				return UT_TRUE;
+				
+			case PX_ChangeRecord_Glob::PXF_UserAtomicStart:	// TODO decide what (if anything) we need
+			case PX_ChangeRecord_Glob::PXF_UserAtomicEnd:	// TODO to do here.
+				return UT_TRUE;
+			}
+		}
+		break;
+			
 	case PX_ChangeRecord::PXT_InsertSpan:
 		{
 			const PX_ChangeRecord_Span * pcrs = static_cast<const PX_ChangeRecord_Span *> (pcr);
@@ -695,8 +715,9 @@ UT_Bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 									PL_StruxFmtHandle * psfh)
 {
 	UT_DEBUGMSG(("fl_DocListener::insertStrux\n"));
-	pcr->dump();
 
+	// TODO coordinate screen updating with the MultiStepStart/End noted in the previous function.
+	
 	UT_ASSERT(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux);
 	const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);
 

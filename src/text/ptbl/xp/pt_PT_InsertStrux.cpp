@@ -219,7 +219,6 @@ UT_Bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
 	
 	PX_ChangeRecord_Strux * pcrs
 		= new PX_ChangeRecord_Strux(PX_ChangeRecord::PXT_InsertStrux,
-									PX_ChangeRecord::PXF_Null,
 									dpos,
 									m_indexAPTemporarySpanFmt,indexAP,
 									m_bHaveTemporarySpanFmt,UT_FALSE,

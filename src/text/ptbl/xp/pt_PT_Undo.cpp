@@ -41,6 +41,7 @@
 #include "px_ChangeRecord_SpanChange.h"
 #include "px_ChangeRecord_Strux.h"
 #include "px_ChangeRecord_StruxChange.h"
+#include "px_ChangeRecord_Glob.h"
 
 /****************************************************************/
 /****************************************************************/
@@ -222,6 +223,21 @@ UT_Bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr)
 	}
 }
 
+/*****************************************************************/
+/*****************************************************************/
+
+#define GETGLOBFLAGS(pcr)			(  (pcr->getType() == PX_ChangeRecord::PXT_GlobMarker)			\
+									 ? (static_cast<PX_ChangeRecord_Glob *>((pcr))->getFlags())		\
+									 : PX_ChangeRecord_Glob::PXF_Null)
+#define GETREVGLOBFLAGS(pcr)		(  (pcr->getType() == PX_ChangeRecord::PXT_GlobMarker)			\
+									 ? (static_cast<PX_ChangeRecord_Glob *>((pcr))->getRevFlags())	\
+									 : PX_ChangeRecord_Glob::PXF_Null)
+#define SHOULDUPDATETEMPSPAN(pcr)	(pcr->getType() != PX_ChangeRecord::PXT_GlobMarker)
+
+
+/*****************************************************************/
+/*****************************************************************/
+	
 UT_Bool pt_PieceTable::undoCmd(void)
 {
 	// do a user-atomic undo.
@@ -232,35 +248,41 @@ UT_Bool pt_PieceTable::undoCmd(void)
 		return UT_FALSE;
 	UT_ASSERT(pcr);
 
-	// the flags on the first undo record tells us whether it is
-	// a simple change, a multi-step change (display atomic) or
-	// a user-atomic (via globbing).
+	// the first undo record tells us whether it is
+	// a simple change or a glob.  there are two kinds
+	// of globs: a multi-step change (display atomic)
+	// like deleting a selection that spans a paragraph
+	// break; and a user-atomic glob like doing a search
+	// and replace over the whole document.
+	//
 	// for a simple change, we just do it and return.
-	// for a multi-step or user-atomic we loop until we do the
+	// for a glob, we loop until we do the
 	// corresponding other end.
-	
-	UT_Byte flagsFirst = pcr->getFlags();
-	while (m_history.getUndo(&pcr))
+
+	UT_Byte flagsFirst = GETGLOBFLAGS(pcr);
+
+	do
 	{
 		PX_ChangeRecord * pcrRev = pcr->reverse(); // we must delete this.
 		UT_ASSERT(pcrRev);
-		UT_Byte flagsRev = pcrRev->getFlags();
+		UT_Byte flagsRev = GETGLOBFLAGS(pcrRev);
 		UT_Bool bResult = _doTheDo(pcrRev);
-		delete pcrRev;
 
-		if (pcr->getType() != PX_ChangeRecord::PXT_GlobMarker)
+		if (SHOULDUPDATETEMPSPAN(pcrRev))
 		{
-			m_bHaveTemporarySpanFmt = pcr->getTempBefore();
-			m_indexAPTemporarySpanFmt = pcr->getOldIndexAP();
-			m_dposTemporarySpanFmt = pcr->getPosition();
+			m_bHaveTemporarySpanFmt = pcrRev->getTempAfter();
+			m_indexAPTemporarySpanFmt = pcrRev->getIndexAP();
+			m_dposTemporarySpanFmt = pcrRev->getPosition();
 		}
+		delete pcrRev;
 		
 		if (!bResult)
 			return UT_FALSE;
 		m_history.didUndo();
 		if (flagsRev == flagsFirst)		// stop when we have a matching end
 			break;
-	}
+
+	} while (m_history.getUndo(&pcr));
 
 	return UT_TRUE;
 }
@@ -275,20 +297,25 @@ UT_Bool pt_PieceTable::redoCmd(void)
 		return UT_FALSE;
 	UT_ASSERT(pcr);
 
-	// the flags on the first redo record tells us whether it is
-	// a simple change, a multi-step change (display atomic) or
-	// a user-atomic (via globbing).
+	// the first undo record tells us whether it is
+	// a simple change or a glob.  there are two kinds
+	// of globs: a multi-step change (display atomic)
+	// like deleting a selection that spans a paragraph
+	// break; and a user-atomic glob like doing a search
+	// and replace over the whole document.
+	//
 	// for a simple change, we just do it and return.
-	// for a multi-step or user-atomic we loop until we do the
+	// for a glob, we loop until we do the
 	// corresponding other end.
-	
-	UT_Byte flagsRevFirst = pcr->getRevFlags();
+
+	UT_Byte flagsRevFirst = GETREVGLOBFLAGS(pcr);
+
 	while (m_history.getRedo(&pcr))
 	{
 		if (!_doTheDo(pcr))
 			return UT_FALSE;
 
-		if (pcr->getType() != PX_ChangeRecord::PXT_GlobMarker)
+		if (SHOULDUPDATETEMPSPAN(pcr))
 		{
 			m_bHaveTemporarySpanFmt = pcr->getTempAfter();
 			m_indexAPTemporarySpanFmt = pcr->getIndexAP();
@@ -296,7 +323,7 @@ UT_Bool pt_PieceTable::redoCmd(void)
 		}
 		
 		m_history.didRedo();
-		if (flagsRevFirst == pcr->getFlags())		// stop when we have a matching end
+		if (flagsRevFirst == GETGLOBFLAGS(pcr))		// stop when we have a matching end
 			break;
 	}
 

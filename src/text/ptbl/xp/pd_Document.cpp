@@ -304,6 +304,12 @@ UT_Bool PD_Document::removeListener(PL_ListenerId listenerId)
 
 UT_Bool PD_Document::notifyListeners(pf_Frag_Strux * pfs, const PX_ChangeRecord * pcr) const
 {
+	// notify listeners of a change.
+	
+#ifdef PT_TEST
+	pcr->__dump();
+#endif
+
 	PL_ListenerId lid;
 	PL_ListenerId lidCount = m_vecListeners.getItemCount();
 
@@ -316,7 +322,9 @@ UT_Bool PD_Document::notifyListeners(pf_Frag_Strux * pfs, const PX_ChangeRecord 
 		PL_Listener * pListener = (PL_Listener *)m_vecListeners.getNthItem(lid);
 		if (pListener)
 		{
-			PL_StruxFmtHandle sfh = pfs->getFmtHandle(lid);
+			PL_StruxFmtHandle sfh = 0;
+			if (pfs)
+				sfh = pfs->getFmtHandle(lid);
 			pListener->change(sfh,pcr);
 		}
 	}
@@ -331,6 +339,10 @@ UT_Bool PD_Document::notifyListeners(pf_Frag_Strux * pfs,
 	// notify listeners of a new strux.  this is slightly
 	// different from the other one because we need to exchange
 	// handles with the listener for the new strux.
+
+#ifdef PT_TEST
+	pcr->__dump();
+#endif
 	
 	PL_ListenerId lid;
 	PL_ListenerId lidCount = m_vecListeners.getItemCount();

@@ -48,7 +48,6 @@ class PX_ChangeRecord_SpanChange : public PX_ChangeRecord
 {
 public:
 	PX_ChangeRecord_SpanChange(PXType type,
-							   UT_Byte atomic,
 							   PT_DocPosition position,
 							   PT_AttrPropIndex indexOldAP,
 							   PT_AttrPropIndex indexNewAP,

@@ -198,7 +198,6 @@ UT_Bool pt_PieceTable::_fmtChangeSpanWithNotify(PTChangeFmt ptc,
 	UT_ASSERT(!m_bHaveTemporarySpanFmt);
 	PX_ChangeRecord_SpanChange * pcr
 		= new PX_ChangeRecord_SpanChange(PX_ChangeRecord::PXT_ChangeSpan,
-										 PX_ChangeRecord::PXF_Null,
 										 dpos,
 										 indexOldAP,indexNewAP,
 										 m_bHaveTemporarySpanFmt,UT_FALSE,

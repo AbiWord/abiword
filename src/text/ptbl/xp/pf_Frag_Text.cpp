@@ -62,7 +62,6 @@ UT_Bool pf_Frag_Text::createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
 	
 	PX_ChangeRecord * pcr
 		= new PX_ChangeRecord_Span(PX_ChangeRecord::PXT_InsertSpan,
-								   PX_ChangeRecord::PXF_Null,
 								   dpos,
 								   m_indexAP,m_indexAP,
 								   UT_FALSE,UT_FALSE,

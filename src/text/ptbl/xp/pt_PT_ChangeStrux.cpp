@@ -65,7 +65,6 @@ UT_Bool pt_PieceTable::_fmtChangeStruxWithNotify(PTChangeFmt ptc,
 
 	PX_ChangeRecord_StruxChange * pcr
 		= new PX_ChangeRecord_StruxChange(PX_ChangeRecord::PXT_ChangeStrux,
-										  PX_ChangeRecord::PXF_Null,
 										  getFragPosition(pfs),
 										  indexOldAP,indexNewAP,
 										  m_bHaveTemporarySpanFmt,UT_FALSE,

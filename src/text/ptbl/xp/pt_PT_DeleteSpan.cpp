@@ -138,7 +138,6 @@ UT_Bool pt_PieceTable::_deleteSpanWithNotify(PT_DocPosition dpos,
 		
 	PX_ChangeRecord_Span * pcr
 		= new PX_ChangeRecord_Span(PX_ChangeRecord::PXT_DeleteSpan,
-								   PX_ChangeRecord::PXF_Null,
 								   dpos,
 								   m_indexAPTemporarySpanFmt,pft->getIndexAP(),
 								   m_bHaveTemporarySpanFmt,UT_FALSE,

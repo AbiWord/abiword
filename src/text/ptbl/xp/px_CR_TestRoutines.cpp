@@ -31,7 +31,7 @@
 /*****************************************************************/
 /*****************************************************************/
 
-void PX_ChangeRecord::dump(void) const
+void PX_ChangeRecord::__dump(void) const
 {
 	static const char * name = "????????";
 	
@@ -46,7 +46,7 @@ void PX_ChangeRecord::dump(void) const
 	case PX_ChangeRecord::PXT_ChangeStrux:				name = "ChngStrx";	break;
 	}
 	
-	UT_DEBUGMSG(("CRec: T[%s] [b %x] [ap %08lx]\n", name,m_atomic,m_indexAP));
+	UT_DEBUGMSG(("CRec: T[%s] [ap %08lx]\n", name,m_indexAP));
 }
 
 #endif /* PT_TEST */

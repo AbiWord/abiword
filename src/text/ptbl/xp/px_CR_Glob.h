@@ -20,14 +20,14 @@
 **  
 */
 
-#ifndef PX_CHANGERECORD_STRUXCHANGE_H
-#define PX_CHANGERECORD_STRUXCHANGE_H
+#ifndef PX_CHANGERECORD_GLOB_H
+#define PX_CHANGERECORD_GLOB_H
 
 #include "ut_types.h"
 #include "px_ChangeRecord.h"
 
-// PX_ChangeRecord_StruxChange describes a PXT_ChangeStrux
-// made to the document (a formatting change).
+// PX_ChangeRecord_Glob describes an insertSpan or
+// deleteSpan change made to the document.
 // This description should be sufficient to allow undo to
 // work and sufficient to allow the formatter to do a
 // partial format and screen update (if appropriate).
@@ -39,25 +39,31 @@
 // undo).
 //
 // m_position contains the absolute document position of
-// the strux at the time the change was made.
+// the text span at the time the change was made.
+// m_bufIndex,m_length describe the actual contents
+// of the text span.
 
 
-class PX_ChangeRecord_StruxChange : public PX_ChangeRecord
+class PX_ChangeRecord_Glob : public PX_ChangeRecord
 {
 public:
-	PX_ChangeRecord_StruxChange(PXType type,
-								PT_DocPosition position,
-								PT_AttrPropIndex indexOldAP,
-								PT_AttrPropIndex indexNewAP,
-								UT_Bool bTempBefore,
-								UT_Bool bTempAfter,
-								PTChangeFmt ptc);
-	~PX_ChangeRecord_StruxChange();
+	typedef enum _PXFlags { PXF_Null=				0x00,
+							PXF_MultiStepStart=		0x01, /* display-atomic */
+							PXF_MultiStepEnd=		0x02,
+							PXF_UserAtomicStart=	0x04, /* user-level-atomic */
+							PXF_UserAtomicEnd=		0x08 } PXFlags;
+
+	PX_ChangeRecord_Glob(PXType type,
+						 UT_Byte flags);
+	~PX_ChangeRecord_Glob();
 
 	virtual PX_ChangeRecord * reverse(void) const;
+
+	UT_Byte					getFlags(void) const;
+	UT_Byte					getRevFlags(void) const;
 	
 protected:
-	PTChangeFmt				m_ptc;
+	UT_Byte					m_flags;			/* see PXFlags above */
 };
 
-#endif /* PX_CHANGERECORD_STRUXCHANGE_H */
+#endif /* PX_CHANGERECORD_GLOB_H */
