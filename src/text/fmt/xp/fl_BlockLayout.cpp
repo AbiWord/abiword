@@ -4125,6 +4125,7 @@ fl_BlockLayout::_assertRunListIntegrityImpl(void)
 	}
 	while (pRun)
 	{
+		UT_ASSERT(m_pFirstRun->getBlockOffset() == 0);
 		// Verify that offset of this block is correct.
 #if 0
 //

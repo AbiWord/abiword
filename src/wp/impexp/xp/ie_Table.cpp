@@ -74,7 +74,8 @@ ie_PartTable::ie_PartTable(PD_Document * pDoc) :
 	m_iPrevTop(-1),
 	m_iPrevBot(-1),
 	m_TableSDH(NULL),
-	m_bIsCellJustOpenned(false)
+	m_bIsCellJustOpenned(false),
+	m_iCurRow(-1)
 {
 	xxx_UT_DEBUGMSG(("ie_PartTable created %x \n",this));
 }
@@ -229,7 +230,7 @@ void ie_PartTable::setCellApi(PT_AttrPropIndex iApi)
 	_clearAllCell();
 	m_iPrevLeft = iL;
 	m_iPrevRight = iR;
-	UT_DEBUGMSG(("New prevRight is %d \n",m_iPrevRight));
+	xxx_UT_DEBUGMSG(("New prevRight is %d \n",m_iPrevRight));
 	m_iPrevTop = iT;
 	m_iPrevBot = iB;
 	m_apiCell = iApi;
@@ -417,14 +418,40 @@ void ie_Table::CloseTable(void)
 	delete pPT;
 }
 
+/*!
+ * The returns the Right attached column of the previous cell. We
+ * needs to get vertically merged cells at the right edge of a table.
+ */
 UT_sint32 ie_Table::getPrevNumRightMostVMerged(void)
 {
 	ie_PartTable * pPT = NULL;
 	m_sLastTable.viewTop(reinterpret_cast<void **>(&pPT));
-	UT_DEBUGMSG(("PrevRight %d curRight %d \n",pPT->getPrevRight(),pPT->getRight()));
+	xxx_UT_DEBUGMSG(("PrevRight %d curRight %d \n",pPT->getPrevRight(),pPT->getRight()));
 	UT_sint32 num = pPT->getNumCols() - pPT->getPrevRight();
 	return num;
 }
+
+
+/*!
+ * This returns the current row counter
+ */
+UT_sint32 ie_Table::getCurRow(void)
+{
+	ie_PartTable * pPT = NULL;
+	m_sLastTable.viewTop(reinterpret_cast<void **>(&pPT));
+	return pPT->getCurRow();
+}
+
+/*!
+ * This increments the current row counter
+ */
+void ie_Table::incCurRow(void)
+{
+	ie_PartTable * pPT = NULL;
+	m_sLastTable.viewTop(reinterpret_cast<void **>(&pPT));
+	pPT->incCurRow();
+}
+
 
 /*!
  * Convience function to get the left attach of the current cell.
@@ -594,7 +621,7 @@ ie_imp_cell::ie_imp_cell(ie_imp_table * pImpTable, PD_Document * pDoc,
 	m_bFirstHori(false)
 {
 	m_sCellProps.clear();
-	UT_DEBUGMSG(("Cell %x created \n",this));
+	xxx_UT_DEBUGMSG(("Cell %x created \n",this));
 }
 
 
@@ -841,7 +868,7 @@ ie_imp_table::ie_imp_table(PD_Document * pDoc):
 
 ie_imp_table::~ie_imp_table(void)
 {
-	UT_DEBUGMSG(("SEVIOR: deleteing table %x table used %d \n",this,m_bTableUsed));
+	xxx_UT_DEBUGMSG(("SEVIOR: deleteing table %x table used %d \n",this,m_bTableUsed));
 	if(!m_bTableUsed)
 	{
 		//		UT_ASSERT(0);
@@ -1178,13 +1205,13 @@ void ie_imp_table::writeAllCellPropsInDoc(void)
 		pCell = static_cast<ie_imp_cell *>(m_vecCells.getNthItem(i));
 		if(!pCell->isMergedAbove() && !pCell->isMergedRight() && !pCell->isMergedLeft())
 		{
-			xxx_UT_DEBUGMSG(("SEVIOR: pCell %d row %d left %d right %d top %d bot %d sdh %x \n",i,pCell->getRow(),pCell->getLeft(),pCell->getRight(),pCell->getTop(),pCell->getBot(),pCell->getCellSDH())); 
 			bool bCellPresent = pCell->writeCellPropsInDoc();
 			if(!bCellPresent)
 			{
 				//				removeOnThisCellRow(pCell);
 				continue;
 			}
+			xxx_UT_DEBUGMSG(("writeallcellprops: pCell %d row %d left %d right %d top %d bot %d sdh %x \n",i,pCell->getRow(),pCell->getLeft(),pCell->getRight(),pCell->getTop(),pCell->getBot(),pCell->getCellSDH())); 
 		}
 		if(pCell->isMergedAbove() && (pCell->getCellSDH() != NULL))
 		{
@@ -1400,7 +1427,6 @@ void ie_imp_table::buildTableStructure(void)
 		bool bSkipThis = false;
 		pCell = static_cast<ie_imp_cell *>(m_vecCells.getNthItem(i));
 		cellx = pCell->getCellX();
-		UT_DEBUGMSG(("i %d cellx %d row %d iLeft %d iRight %d \n",i,cellx,pCell->getRow(),iLeft,iRight));
 		if(i==0 || (pCell->getRow() > curRow))
 		{
 			curRow = pCell->getRow();
@@ -1411,8 +1437,8 @@ void ie_imp_table::buildTableStructure(void)
 //
 // This cell is vertically merged. Advance the left pointer to the position after this cell.
 //
-			xxx_UT_DEBUGMSG(("SEVIOR: This cell is meregd above!!!!!!!!! cellx %d \n",cellx));
-			iLeft = getColNumber(pCell);
+			iRight = getColNumber(pCell);
+			xxx_UT_DEBUGMSG(("SEVIOR: This cell is meregd above!!!!!!!!! cellx %d iLeft %d \n",cellx,iLeft));
 			bSkipThis = true;
 		}
 		if(pCell->isMergedLeft())
@@ -1425,14 +1451,17 @@ void ie_imp_table::buildTableStructure(void)
 		}
 		else
 		{
-			iRight = getColNumber(pCell);
-			if(iRight <= iLeft)
+			if(!bSkipThis)
 			{
-				iRight = iLeft+1;
+				iRight = getColNumber(pCell);
+				if(iRight <= iLeft)
+				{
+					iRight = iLeft+1;
+				}
 			}
 		}
 		iTop = curRow;
-		if(pCell->isFirstVerticalMerged())
+		if(pCell->isFirstVerticalMerged()  && !bSkipThis)
 		{
 			//
 			// The cells below this are vertically merged with this. go hunting for the last one.
@@ -1467,7 +1496,7 @@ void ie_imp_table::buildTableStructure(void)
 			pCell->setRight(iRight);
 			pCell->setTop(iTop);
 			pCell->setBot(iBot);
-			xxx_UT_DEBUGMSG(("SEVIOR: cellx %d Left %d Right %d top %d bot %d \n",pCell->getCellX(),iLeft,iRight,iTop,iBot));
+			xxx_UT_DEBUGMSG(("SEVIOR: i%d cellx %d Left %d Right %d top %d bot %d \n",i,pCell->getCellX(),iLeft,iRight,iTop,iBot));
 		}
 //
 // Advance left attach to the right most cell.

@@ -167,10 +167,20 @@ void fp_CellContainer::setHeight(UT_sint32 iHeight)
 fp_TableContainer * fp_CellContainer::getBrokenTable(fp_Line * pLine)
 {
 	fp_TableContainer * pMaster = static_cast<fp_TableContainer *>(getContainer());
+	fp_CellContainer * pTopCell = this;
+	while(pMaster && pMaster->getContainer() && pMaster->getContainer()->getContainerType() != FP_CONTAINER_COLUMN)
+	{
+		pTopCell = static_cast<fp_CellContainer *>(pMaster->getContainer());
+		pMaster = static_cast<fp_TableContainer *>(pTopCell->getContainer());
+	}
+	if(pMaster == NULL)
+	{
+		return pMaster;
+	}
 	fp_TableContainer * pBroke = pMaster->getFirstBrokenTable();
 	while(pBroke != NULL)
     {
-		if(doesOverlapBrokenTable(pBroke))
+		if(pTopCell->doesOverlapBrokenTable(pBroke))
 		{
 			if(pBroke->isInBrokenTable(this,pLine))
 			{
@@ -3691,6 +3701,14 @@ bool fp_TableContainer::isInBrokenTable(fp_CellContainer * pCell, fp_Container *
  	}
 	UT_sint32 iTop = 0;
 	iTop = pCell->getY() + pCon->getY();
+	fp_CellContainer * pTopCell = pCell;
+	while(pTopCell && pTopCell->getContainer() != pTab)
+	{
+		fp_TableContainer * pNextTab = static_cast<fp_TableContainer *>(pTopCell->getContainer());
+		iTop += pNextTab->getY();
+		pTopCell = static_cast<fp_CellContainer *>(pNextTab->getContainer());
+		iTop += pTopCell->getY();
+	}
 	UT_sint32 iBot = iTop + pCon->getHeight();
 	UT_sint32 iBreak = getYBreak();
 	UT_sint32 iBottom = getYBottom();

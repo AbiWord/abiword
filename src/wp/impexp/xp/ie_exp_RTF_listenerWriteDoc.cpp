@@ -1559,20 +1559,25 @@ void s_RTF_ListenerWriteDoc::_open_cell(PT_AttrPropIndex api)
 
 	UT_sint32 iOldRow = m_iTop;
 	UT_sint32 i =0;
+	UT_sint32 iOldRight = m_iRight;
 	UT_DEBUGMSG(("Setting cell API 1 NOW!!!!!!!!!!!!!!!!! %d \n",api));
+	PT_AttrPropIndex prevAPI = api;
 	m_Table.OpenCell(api);
 	bool bNewRow = false;
 	UT_DEBUGMSG(("iOldRow %d newTop %d \n",iOldRow,m_Table.getTop()));
-	if(	m_Table.getTop() != iOldRow)
+	if(	(m_Table.getLeft() < iOldRight) || m_bNewTable)
 	{
 		UT_DEBUGMSG(("NEW ROW DETECTED !!!!!!!!!!!!!!!!!\n"));
 		if(m_bNewTable)
 		{
 			m_pie->_rtf_open_brace();
-			_newRow();
 			if(m_Table.getNestDepth() > 1)
 			{
 				m_pie->_rtf_close_brace();
+			}
+			else
+			{
+				_newRow();
 			}
 		}
 		else
@@ -1598,14 +1603,19 @@ void s_RTF_ListenerWriteDoc::_open_cell(PT_AttrPropIndex api)
 			if(m_Table.getNestDepth() < 2)
 			{
 				m_pie->_rtf_keyword("row");
+				_newRow();
 			}
 			else
 			{
+				m_Table.OpenCell(prevAPI);
+				_newRow();
+				m_Table.OpenCell(api);
 				m_pie->_rtf_keyword("nestrow");
 			}
-			_newRow();
 			if(m_Table.getNestDepth() > 1)
 			{
+//
+// This closes off the \nesttableprops
 				m_pie->_rtf_close_brace();
 			}
 		}
@@ -1670,6 +1680,7 @@ void s_RTF_ListenerWriteDoc::_open_cell(PT_AttrPropIndex api)
 void s_RTF_ListenerWriteDoc::_newRow(void)
 {
 	UT_sint32 i;
+	m_Table.incCurRow();
 	m_pie->_rtf_nl();
 	if(m_Table.getNestDepth() > 1)
 	{
@@ -1680,6 +1691,8 @@ void s_RTF_ListenerWriteDoc::_newRow(void)
 	} 
 	m_pie->_rtf_keyword("trowd");
 	m_pie->write(" ");
+	m_pie->_rtf_keyword("itap",m_Table.getNestDepth());
+
 //
 // Set spacing between cells
 //
@@ -1769,7 +1782,7 @@ void s_RTF_ListenerWriteDoc::_newRow(void)
 //
 // OK now output all the cell properties, including merged cell controls.
 //
-	UT_sint32 row = m_Table.getTop();
+	UT_sint32 row = m_Table.getCurRow();
 	UT_sint32 col = m_Table.getLeft();
 	double cellpos = cellLeftPos + dColSpace*0.5;
 	double colwidth = 0.0;
@@ -2270,6 +2283,7 @@ void s_RTF_ListenerWriteDoc::_open_table(PT_AttrPropIndex api)
 // Export the AbiWord table Properties as RTF extension
 //
 	_export_AbiWord_Table_props(api);
+	m_pie->_rtf_keyword("par");
 
 	if(m_Table.getNestDepth() > 1)
 	{
@@ -2318,7 +2332,8 @@ void s_RTF_ListenerWriteDoc::_close_table(void)
 		m_pie->_rtf_keyword("row");
 	}
 	else
-	{
+	{				
+		_newRow();
 		m_pie->_rtf_keyword("nestrow");
 	}
 	m_pie->_rtf_close_brace();
@@ -2957,7 +2972,8 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 		{
 			bJustOpennedCell = m_Table.isCellJustOpenned();
 		}
-		if(!m_bOpennedFootnote && (!bJustOpennedCell || (m_Table.getNestDepth()==0)))
+//		if(!m_bOpennedFootnote && (!bJustOpennedCell || (m_Table.getNestDepth()==0)))
+		if(!m_bOpennedFootnote && !bJustOpennedCell)
 		{
 			m_pie->_rtf_keyword("par");
 		}

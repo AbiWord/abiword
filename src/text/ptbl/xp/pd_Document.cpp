@@ -1334,16 +1334,27 @@ PL_StruxDocHandle PD_Document::getEndCellStruxFromCellSDH(PL_StruxDocHandle cell
 				PL_StruxDocHandle endTab = getEndTableStruxFromTableSDH(static_cast<PL_StruxDocHandle >(pfSec));
 				currentFrag = static_cast<const pf_Frag *>(endTab);
 			}
-			else if(pfSec->getStruxType() == PTX_EndCell)
+			else if(pfSec->getStruxType() == PTX_EndCell )
 			{
 				EndCellSDH = static_cast<PL_StruxDocHandle>(pfSec);
 				return EndCellSDH;
+			}
+			else if(pfSec->getStruxType() == PTX_SectionCell)
+			{
+				return NULL;
+			}
+			else if(pfSec->getStruxType() == PTX_EndTable)
+			{
+				return NULL;
 			}
 		}
 //
 // Get Next frag in the table.
 //
-		currentFrag = currentFrag->getNext();
+		if(currentFrag)
+		{
+			currentFrag = currentFrag->getNext();
+		}
 	}
 	return NULL;
 }
