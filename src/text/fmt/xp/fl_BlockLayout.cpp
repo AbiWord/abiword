@@ -7079,6 +7079,20 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 			pBL->setSectionLayout( pSL);
 			pBL->m_iNeedsReformat = 0;
 		}
+		if(pSL->getType() == FL_SECTION_DOC)
+		{
+			fl_DocSectionLayout * pDDSL = static_cast<fl_DocSectionLayout *>(pSL);
+			if(pCL->getContainerType() == FL_CONTAINER_FOOTNOTE)
+			{
+				static_cast<fl_FootnoteLayout *>(pCL)->
+					setDocSectionLayout(pDDSL);
+			}
+			if(pCL->getContainerType() == FL_CONTAINER_ENDNOTE)
+			{
+				static_cast<fl_EndnoteLayout *>(pCL)->
+					setDocSectionLayout(pDDSL);
+			}
+		}
 		pCL = pNext;
 	}
 

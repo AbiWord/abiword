@@ -2442,6 +2442,7 @@ bool fl_DocSectionLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * 
 	UT_ASSERT(pcrx->getStruxType()==PTX_Section);
 	UT_DEBUGMSG(("Doing Section delete \n"));
 	fl_DocSectionLayout* pPrevSL = getPrevDocSection();
+	UT_DEBUGMSG(("Deleting DocSec %x Prev DocSec %x \n",this,pPrevSL));
 	if (!pPrevSL)
 	{
 		// TODO shouldn't this just assert?
@@ -2488,12 +2489,23 @@ bool fl_DocSectionLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * 
 		while(pBCur != NULL)
 		{
 			xxx_UT_DEBUGMSG(("updating block %x \n",pBCur));
-			pBCur->setContainingLayout(pBPrev->myContainingLayout());
+			pBCur->setContainingLayout(pPrevSL);
 			if(pBCur->getContainerType() == FL_CONTAINER_BLOCK)
 			{
 				static_cast<fl_BlockLayout *>(pBCur)->
 					setSectionLayout(pPrevSL);
 			}
+			if(pBCur->getContainerType() == FL_CONTAINER_FOOTNOTE)
+			{
+				static_cast<fl_FootnoteLayout *>(pBCur)->
+					setDocSectionLayout(pPrevSL);
+			}
+			if(pBCur->getContainerType() == FL_CONTAINER_ENDNOTE)
+			{
+				static_cast<fl_EndnoteLayout *>(pBCur)->
+					setDocSectionLayout(pPrevSL);
+			}
+
 			pPrevSL->setLastLayout(pBCur);
 			pBCur = pBCur->getNext();
 		}

@@ -73,6 +73,8 @@ public:
 	virtual void		     redrawUpdate(void);
 	virtual fp_Container*	 getNewContainer(fp_Container* = NULL) =0;
 	fl_DocSectionLayout*	 getDocSectionLayout(void) const { return m_pDocSL; }
+	void                     setDocSectionLayout(fl_DocSectionLayout * pDSL) 
+	  { m_pDocSL = pDSL;}
 	bool                     isEndFootnoteIn(void) const
 		{return m_bHasEndFootnote;}
 	void                     setFootnoteEndIn(void)
