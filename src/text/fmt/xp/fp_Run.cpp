@@ -94,9 +94,9 @@ fp_Run::fp_Run(fl_BlockLayout* pBL,
 		m_bDirty(true),	// a run which has just been created is not onscreen, therefore it is dirty
 		m_pField(0)
 {
-	// set a default background color
-	UT_setColor(m_colorBG, 255, 255, 255);
-
+        // set the default background color to a sensible default for the time being
+        UT_setColor (m_colorBG, 255, 255, 255);
+	
 #ifdef BIDI_ENABLED
 	m_iDirection = -1; //by default all runs are whitespace
 #endif
@@ -403,8 +403,6 @@ void fp_Run::_drawTextLine(UT_sint32 xoff,UT_sint32 yoff,UT_uint32 iWidth,UT_uin
     UT_uint32 yoffText = yoff - m_pG->getFontAscent() * 2 / 3;
 
     m_pG->drawLine(xoff,yoff,xoff + iWidth,yoff);
-
-    //UT_RGBColor clrPaper(255,255,255);
 
     UT_DEBUGMSG(("DOM: drawTextLine\n"));
     if((iTextWidth < iWidth) && (iTextHeight < iHeight)){

@@ -128,6 +128,9 @@ public:
 	UT_Error		cmdInsertField(const char* szName);
 	UT_Error		cmdInsertGraphic(FG_Graphic*, const char*);
 	
+	virtual void    setPaperColor(UT_RGBColor &rgb);
+	virtual inline UT_RGBColor &getPaperColor(void) {return m_clrPaper;}
+
 	virtual void	cmdCopy(void);
 	virtual void	cmdCut(void);
 	virtual void	cmdPaste(void);
@@ -452,6 +455,7 @@ protected:
 	static void _prefsListener( XAP_App *, XAP_Prefs *, UT_AlphaHashTable *, void *);
 
 	bool		m_bShowPara;
+	UT_RGBColor     m_clrPaper;
 };
 
 #endif /* FV_VIEW_H */

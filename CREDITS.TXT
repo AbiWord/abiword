@@ -96,6 +96,7 @@ Jesper Skov <jskov@redhat.com>                  Documentation, Cursor motion fix
 Justin Smith <jsmith@mcs.drexel.edu>            OpenBSD fixes
 Ed Stafford <dysan_2000@hotmail.com>            Ghost cursor fix
 <kstailey@kstailey.tzo.com>                     OpenBSD
+Diego Sueiro <dsueiro@yahoo.com>                Gnome work & bugfixes
 Owen Stenseth <owen@pdaverticals.com>           script to output translation data
 Nigel Stepp <stepp@mithril.res.cmu.edu>         VI keybindings
 Keith Stribley                                  Piece Table Fields

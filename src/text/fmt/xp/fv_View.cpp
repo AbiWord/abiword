@@ -110,7 +110,8 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_pEditShadow(NULL),
 		_m_matchCase(false),
 		_m_findNextString(0),
-		m_bShowPara(false)
+		m_bShowPara(false),
+		m_clrPaper(255,255,255)
 {
 //	UT_ASSERT(m_pG->queryProperties(GR_Graphics::DGP_SCREEN));
 
@@ -195,6 +196,11 @@ FV_View::~FV_View()
 	FREEP(m_chg.propsChar);
 	FREEP(m_chg.propsBlock);
 	FREEP(m_chg.propsSection);
+}
+
+void FV_View::setPaperColor(UT_RGBColor & rgb)
+{
+  UT_setColor(m_clrPaper, rgb.m_red, rgb.m_grn, rgb.m_blu);
 }
 
 void FV_View::focusChange(AV_Focus focus)
@@ -5404,9 +5410,9 @@ void FV_View::_xorInsertionPoint()
 {
 	if (m_iPointHeight > 0 )
 	{
-		UT_RGBColor clr(255,255,255);
+	  //UT_RGBColor clr(255,255,255);
 
-		m_pG->setColor(clr);
+		m_pG->setColor(m_clrPaper);
 		m_pG->xorLine(m_xPoint-1, m_yPoint+1, m_xPoint-1, m_yPoint + m_iPointHeight+1);
 		m_pG->xorLine(m_xPoint, m_yPoint+1, m_xPoint, m_yPoint + m_iPointHeight+1);
 		m_bCursorIsOn = !m_bCursorIsOn;
@@ -5797,8 +5803,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 
 			if (!bDirtyRunsOnly || pPage->needsRedraw())
 			{
-				UT_RGBColor clrPaper(255,255,255);
-				m_pG->fillRect(clrPaper,adjustedLeft+1,adjustedTop+1,iPageWidth-1,iPageHeight-1);
+				m_pG->fillRect(m_clrPaper,adjustedLeft+1,adjustedTop+1,iPageWidth-1,iPageHeight-1);
 			}
 
 			pPage->draw(&da);
