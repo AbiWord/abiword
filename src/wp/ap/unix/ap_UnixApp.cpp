@@ -116,6 +116,8 @@
 #include <gnome.h>
 #include <libbonoboui.h>
 #include <libgnomevfs/gnome-vfs.h>
+#include "xap_UnixGnomePrintGraphics.h"
+#include "ap_EditMethods.h"
 
 static int mainBonobo(int argc, char ** argv);
 #endif
@@ -1591,6 +1593,79 @@ static BonoboControl * AbiWidget_control_new (AbiWidget * abi);
    Bonobo/PersistFile:1.0 Interfaces */
 /*****************************************************************/
 
+#if 0
+
+// (working) code patiently waiting for Bonobo printing to rise from the grave
+
+static void
+print_document (GnomePrintContext *ctx,
+				double                     inWidth,
+				double                     inHeight,
+				const Bonobo_PrintScissor *opt_scissor,
+				gpointer                   user_data)
+{
+	// assert pre-conditions
+	g_return_if_fail (user_data != NULL);
+	g_return_if_fail (IS_ABI_WIDGET (user_data));
+	
+	// get me!
+	AbiWidget * abi = ABI_WIDGET(user_data);
+	
+	// get our frame
+	XAP_Frame * pFrame = abi_widget_get_frame ( abi ) ;
+	UT_return_if_fail(pFrame != NULL);
+	
+	// get our current view so we can get the document being worked on
+	FV_View * pView = (FV_View*) pFrame->getCurrentView();
+	UT_return_if_fail(pView!=NULL);
+	
+	// get the current document
+	PD_Document * pDoc = pView->getDocument () ;
+	UT_return_if_fail(pDoc!=NULL);
+	
+	// get the current app
+	XAP_UnixApp * pApp = (XAP_UnixApp*) XAP_App::getApp () ;
+	
+	// create a graphics drawing class
+	GR_Graphics *pGraphics = new XAP_UnixGnomePrintGraphics (ctx, inWidth, inHeight) ;
+	UT_return_if_fail(pGraphics!=NULL);
+	
+	// layout the document
+	FL_DocLayout * pDocLayout = new FL_DocLayout(pDoc,pGraphics);
+	UT_ASSERT(pDocLayout);
+	
+	// create a new printing view of the document
+	FV_View printView (pFrame->getApp(),pFrame,pDocLayout);
+	pDocLayout->setView (&printView);
+	pDocLayout->fillLayouts();
+	pDocLayout->formatAll();
+	
+	// get the best fit width & height of the printed pages
+	UT_sint32 iWidth  =  pDocLayout->getWidth();
+	UT_sint32 iHeight =  pDocLayout->getHeight();
+	//UT_sint32 iPages  = pDocLayout->countPages();
+	UT_uint32 width   = MIN(iWidth, pGraphics->tluD(inWidth));
+	UT_uint32 height  = MIN(iHeight, pGraphics->tluD(inHeight));
+	
+	// figure out roughly how many pages to print
+	UT_sint32 iPagesToPrint = (UT_sint32) (height/pGraphics->tluD(pDoc->m_docPageSize.Height(DIM_PT)));
+	if (iPagesToPrint < 1)
+		iPagesToPrint = 1;
+	
+	// actually print - TODO: can make this better if we figure out what page is focussed
+	s_actuallyPrint (pDoc, pGraphics,
+					 &printView, "bonobo_printed_document",
+					 1, false,
+					 width, height,
+					 1, iPagesToPrint ) ;
+	
+	// clean up
+	DELETEP(pGraphics);
+	DELETEP(pDocLayout);
+}
+
+#endif
+
 #define ABI_BUFFER_SIZE 32768
 
 /*
@@ -1714,25 +1789,24 @@ save_document_to_stream (BonoboPersistStream *ps,
 
 	do 
 	{
-	  len_read = fread ( buffer, sizeof(CORBA_octet), ABI_BUFFER_SIZE, tmpfile ) ;
+		len_read = fread ( buffer, sizeof(CORBA_octet), ABI_BUFFER_SIZE, tmpfile ) ;
 
-	  stream_buffer = Bonobo_Stream_iobuf__alloc ();
-	  stream_buffer->_buffer = (CORBA_octet*)buffer;
-	  stream_buffer->_length = len_read;
-
-	  Bonobo_Stream_write (stream, stream_buffer, ev);
-
-	  if (ev->_major != CORBA_NO_EXCEPTION)
-	    goto exit_clean;
-	  
-	  CORBA_free (buffer);
+		stream_buffer = Bonobo_Stream_iobuf__alloc ();
+		stream_buffer->_buffer = (CORBA_octet*)buffer;
+		stream_buffer->_length = len_read;
+		
+		Bonobo_Stream_write (stream, stream_buffer, ev);
+		
+		if (ev->_major != CORBA_NO_EXCEPTION)
+			goto exit_clean;
+		
+		CORBA_free (buffer);
 	} 
 	while (len_read > 0);
-
+	
  exit_clean:
 	fclose (tmpfile);
 	unlink(szTempfile);
-	return;
 }
 
 //

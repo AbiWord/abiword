@@ -139,6 +139,26 @@ XAP_UnixGnomePrintGraphics::XAP_UnixGnomePrintGraphics(GnomePrintJob *gpm, bool 
 	m_cs             = GR_Graphics::GR_COLORSPACE_COLOR;
 }
 
+// useful for bonobo
+XAP_UnixGnomePrintGraphics::XAP_UnixGnomePrintGraphics(GnomePrintContext *ctx,
+													   double inWidthDevice, double inHeightDevice)
+{
+	m_pApp         = XAP_App::getApp ();
+	m_gpm          = NULL;
+	m_gpc          = ctx;
+	
+	m_width  = inWidthDevice;
+	m_height = inHeightDevice;
+
+	m_bIsPreview     = false;
+	m_fm             = static_cast<XAP_UnixApp *>(m_pApp)->getFontManager();
+	m_bStartPrint    = false;
+	m_bStartPage     = false;
+	m_pCurrentFont   = NULL;
+	m_pCurrentPSFont = NULL;	
+	m_cs             = GR_Graphics::GR_COLORSPACE_COLOR;
+}
+
 GnomeFont * XAP_UnixGnomePrintGraphics::_allocGnomeFont(PSFont* pFont)
 {
 	XAP_UnixFont *uf          = pFont->getUnixFont();
@@ -293,7 +313,7 @@ void XAP_UnixGnomePrintGraphics::setLineWidth(UT_sint32 iLineWidth)
 
 bool XAP_UnixGnomePrintGraphics::startPrint(void)
 {
-	UT_ASSERT(!m_bStartPrint);
+	UT_ASSERT(!m_bStartPrint || !m_gpm);
 	m_bStartPrint = true;
 	return _startDocument();
 }
@@ -303,7 +323,7 @@ bool XAP_UnixGnomePrintGraphics::startPage (const char *szPageLabel,
 											UT_uint32 width, UT_uint32 height)
 {
 	if (m_bStartPage)
-	  _endPage();
+		_endPage();
 	m_bStartPage = true;
 	m_bNeedStroked = false;
 	return _startPage(szPageLabel);
@@ -312,7 +332,7 @@ bool XAP_UnixGnomePrintGraphics::startPage (const char *szPageLabel,
 bool XAP_UnixGnomePrintGraphics::endPrint()
 {
 	if (m_bStartPage)
-	  _endPage();
+		_endPage();
 	return _endDocument();
 }
 

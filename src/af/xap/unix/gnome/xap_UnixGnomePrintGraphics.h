@@ -41,8 +41,12 @@ class XAP_UnixGnomePrintGraphics : public GR_Graphics
 {
  public:
 
-	explicit XAP_UnixGnomePrintGraphics(GnomePrintJob *gpm,
-										bool isPreview = false);
+	XAP_UnixGnomePrintGraphics(GnomePrintJob *gpm,
+							   bool isPreview = false);
+
+	// for bonobo
+	XAP_UnixGnomePrintGraphics(GnomePrintContext *ctx,
+							   double inWidthDevice, double inHeightDevice);
 
 	virtual ~XAP_UnixGnomePrintGraphics();
 
