@@ -64,7 +64,7 @@
 #include "fd_Field.h"
 #include "spell_manager.h"
 #include "ut_rand.h"
-
+#include "fl_FootnoteLayout.h"
 #include "pp_Revision.h"
 #if 1
 // todo: work around to remove the INPUTWORDLEN restriction for pspell
@@ -3197,8 +3197,22 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 	// will iterate forwards until it actually find a block if there
 	// isn't one previous to pos.
 	// (Removed code duplication. Jesper, 2001.01.25)
-	fl_BlockLayout* pBlock = _findBlockAtPosition(pos);
 
+//
+// Have to deal with special case of point being exactly on a footnote/endnote
+// boundary
+//
+	bool onFootnoteBoundary = false;
+	if(m_pDoc->isFootnoteAtPos(pos))
+	{
+		onFootnoteBoundary = true;
+		pos--;
+	}
+	fl_BlockLayout* pBlock = _findBlockAtPosition(pos);
+	if(onFootnoteBoundary)
+	{
+		pos++;
+	}
 	// probably an empty document, return instead of
 	// dereferencing NULL.	Dom 11.9.00
 	if(!pBlock)
@@ -3690,7 +3704,20 @@ void FV_View::_setPoint(PT_DocPosition pt, bool bEOL)
 {
 	if (!m_pDoc->getAllowChangeInsPoint())
 		return;
-
+	if(!m_pDoc->isPieceTableChanging())
+	{
+//
+// Have to deal with special case of point being exactly on a footnote/endnote
+// boundary. Move the point past the footnote so we always have Footnote field
+// followed by footnotestrux in the piecetable
+//
+		fl_FootnoteLayout * pFL = NULL;
+		if(m_pDoc->isFootnoteAtPos(pt))
+		{
+			pFL = getClosestFootnote(pt);
+			pt += pFL->getLength();
+		}		
+	}
 	m_iInsPoint = pt;
 	m_bPointEOL = bEOL;
 	_fixInsertionPointCoords();
@@ -3794,7 +3821,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 	UT_uint32 uheight;
 	m_bPointEOL = false;
 	UT_sint32 iOldDepth = getEmbedDepth(getPoint());
-	UT_DEBUGMSG(("_charMotion: Old Position is %d embed depth \n",posOld,iOldDepth));
+	UT_DEBUGMSG(("_charMotion: Old Position is %d embed depth %d \n",posOld,iOldDepth));
 	/*
 	  we don't really care about the coords.  We're calling these
 	  to get the Run pointer
@@ -3966,7 +3993,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 	// run on the left of the requested position, so we just need to move
 	// to its end if the position does not fall into that run
 	xxx_UT_DEBUGMSG(("_charMotion: iRunEnd %d \n",iRunEnd));
-	if(!bForward && (iRunEnd <= m_iInsPoint) && (pRun->getBlockOffset() > 0))
+	if(!bForward && (iRunEnd < m_iInsPoint) && (pRun->getBlockOffset() > 0))
 	{
 		_setPoint(iRunEnd - 1);
 	}

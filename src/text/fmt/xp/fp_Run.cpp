@@ -3322,7 +3322,14 @@ void fp_FieldRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& 
 		pos = getBlock()->getPosition() + getBlockOffset() + getLength();
 
 	bBOL = false;
-	bEOL = false;
+	if(getNextRun() == NULL)
+	{
+		bEOL = true;
+	}
+	if(getNextRun()->getType() == FPRUN_ENDOFPARAGRAPH)
+	{
+		bEOL = true;
+	}
 }
 
 void fp_FieldRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x,

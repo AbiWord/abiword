@@ -2500,7 +2500,7 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 		}
 		else
 		{
-			if(!isInFootnote() && isInFootnote(getPoint() - count))
+			if(!isInFootnote(getPoint()) && isInFootnote(getPoint() - count))
 			{
 				fl_FootnoteLayout * pFL = getClosestFootnote(getPoint());
 				count += pFL->getLength();

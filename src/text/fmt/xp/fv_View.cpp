@@ -8914,6 +8914,13 @@ bool FV_View::isPointLegal(PT_DocPosition pos)
 	PL_StruxDocHandle prevSDH = NULL;
 	PL_StruxDocHandle nextSDH = NULL;
 	PT_DocPosition nextPos =0;
+//
+// Special case which would otherwise fail..
+//
+	if(m_pDoc->isEndFootnoteAtPos(pos))
+	{
+		return true;
+	}
 	bool bres = m_pDoc->getStruxOfTypeFromPosition(pos,PTX_Block,&prevSDH);
 	if(!bres)
 	{
@@ -8993,6 +9000,11 @@ bool FV_View::insertFootnote(bool bFootnote)
 	fl_SectionLayout * pSL =  _findBlockAtPosition(getPoint())->getSectionLayout();
 	if ( (pSL->getContainerType() != FL_CONTAINER_DOCSECTION) && (pSL->getContainerType() != FL_CONTAINER_CELL) )
 		return false;
+//
+// Do this first
+//
+	const XML_Char ** props_in = NULL;
+	getCharFormat(&props_in);
 
 	// add field for footnote reference
 	// first, make up an id for this footnote.
@@ -9043,12 +9055,18 @@ bool FV_View::insertFootnote(bool bFootnote)
 	bCreatedFootnoteSL = true;
 	_setPoint(dpBody);
 	FrefStart = dpBody;
+	bool bRet = false;
 	if(bFootnote)
 	{
 		if (cmdInsertField("footnote_ref", attrs)==false)
 			return false;
 		FrefEnd = FrefStart+1;
 		setStyleAtPos("Footnote Reference", FrefStart, FrefEnd,true);
+//
+// Put the character format back to it previous value
+//
+		bRet = m_pDoc->changeSpanFmt(PTC_AddFmt,getPoint(),getPoint(),NULL,props_in);
+		setCharFormat(props_in);
 	}
 	else
 	{
@@ -9056,7 +9074,12 @@ bool FV_View::insertFootnote(bool bFootnote)
 			return false;
 		FrefEnd = FrefStart+1;
 		setStyleAtPos("Endnote Reference", FrefStart, FrefEnd,true);
+//
+// Put the character format back to it previous value
+//
+		bRet = m_pDoc->changeSpanFmt(PTC_AddFmt,getPoint(),getPoint(),NULL,props_in);
 	}
+	free(props_in);
 	fl_BlockLayout * pBL;
 
 //
@@ -9083,6 +9106,16 @@ bool FV_View::insertFootnote(bool bFootnote)
 	{
 		cmdInsertField("endnote_anchor", attrs);
 	}
+//
+// Place a format mark before the field so we can select the field.
+//
+	const XML_Char * propListTag[] = {"list-tag",NULL,NULL};
+	static XML_Char sid[15];
+	UT_uint32 id = m_pDoc->getUID(UT_UniqueId::HeaderFtr);
+	sprintf(sid, "%i", id);
+	propListTag[1] = sid;
+	bRet = m_pDoc->changeSpanFmt(PTC_AddFmt,FanchStart,FanchStart,NULL,propListTag);
+
 	FanchEnd = FanchStart+1;
 	UT_DEBUGMSG(("insertFootnote: Inserting space after anchor field \n"));
 	//insert a space after the anchor
