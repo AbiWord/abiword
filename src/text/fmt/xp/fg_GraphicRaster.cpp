@@ -212,9 +212,7 @@ UT_Bool FG_GraphicRaster::setRaster_PNG(UT_ByteBuf* pBB)
 	m_bOwnPNG = UT_TRUE;
 
 	//  We want to calculate the dimensions of the image here.
-	UT_PNG_getDimensions(pBB, m_iWidth, m_iHeight);
-
-	return UT_TRUE;
+	return UT_PNG_getDimensions(pBB, m_iWidth, m_iHeight);
 }
 
 UT_ByteBuf* FG_GraphicRaster::getRaster_PNG(void)

@@ -230,7 +230,7 @@ UT_Bool FG_GraphicVector::setVector_SVG(UT_ByteBuf* pBB)
 
 	//  We want to calculate the dimensions of the image here.
 	UT_Byte * pszWidth, * pszHeight;
-   	UT_SVG_getDimensions(pBB, &pszWidth, &pszHeight);
+   	if (!UT_SVG_getDimensions(pBB, &pszWidth, &pszHeight)) return UT_FALSE;
 
    	if (UT_determineDimension((const char*)pszWidth, DIM_PX) != DIM_PX)
      		m_iWidth = (UT_sint32)(UT_convertToInches((const char*)pszWidth) * 72);
