@@ -59,6 +59,7 @@ public:
 #if DEBUG
 	virtual void            printText(void);
 #endif
+	void                    appendTextToBuf(UT_GrowBuf & buf);
 	virtual bool			hasLayoutProperties(void) const;
 	virtual void			fetchCharWidths(fl_CharWidths * pgbCharWidths);
 #ifndef WITH_PANGO

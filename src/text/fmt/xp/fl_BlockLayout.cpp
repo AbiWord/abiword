@@ -3757,6 +3757,24 @@ bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 	return true;
 }
 
+
+/*!
+ * This method extracts all the text from the current block and appends it
+ * to the supplied growbuf.
+ */
+void fl_BlockLayout::appendTextToBuf(UT_GrowBuf & buf)
+{
+	fp_Run * pRun = m_pFirstRun;
+	while(pRun)
+    {
+		if(pRun->getType() == 	FPRUN_TEXT)
+		{
+			fp_TextRun * pTRun = static_cast<fp_TextRun *>(pRun);
+			pTRun->appendTextToBuf(buf);
+		}
+		pRun = pRun->getNext();
+	}
+}
 bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs)
 {
 	_assertRunListIntegrity();

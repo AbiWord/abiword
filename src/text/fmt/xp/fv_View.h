@@ -230,6 +230,10 @@ public:
 	PT_DocPosition saveSelectedImage (const char * toFile );
 	PT_DocPosition saveSelectedImage (const UT_ByteBuf ** outByteBuf);
 
+	void            getTextInCurrentBlock(UT_GrowBuf & buf);
+	void            getTextInCurrentSection(UT_GrowBuf & buf);
+	void            getTextInDocument(UT_GrowBuf & buf);
+
 // ----------------------
 	FL_DocLayout*	getLayout() const;
 	UT_uint32		getCurrentPageNumForStatusBar(void) const;

@@ -66,7 +66,7 @@ class fp_ContainerObject;
 class fp_Container;
 class fp_Run;
 class fl_DocSectionLayout;
-
+class UT_GrowBuf;
 
 class ABI_EXPORT fl_ContainerLayout : public fl_Layout
 {
@@ -87,6 +87,7 @@ public:
 	virtual fp_Container*		getNewContainer(fp_Container * pFirstContainer = NULL) = 0;
 	virtual FL_DocLayout *      getDocLayout(void) const;
 	virtual void		format(void) = 0;
+	virtual void        appendTextToBuf(UT_GrowBuf & buf);
 	virtual void		updateLayout(void) = 0;
 	virtual void        markAllRunsDirty(void) =0;
 	virtual void        collapse(void) = 0;

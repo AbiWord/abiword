@@ -39,7 +39,7 @@
 #include "ut_string.h"
 #include "ut_growbuf.h"
 #include "ut_units.h"
-
+#include "ut_types.h"
 #include "xap_EncodingManager.h"
 
 #include "ut_OverstrikingChars.h"
@@ -332,6 +332,17 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 		clearScreen();
 	xxx_UT_DEBUGMSG(("fp_TextRun::lookupProperties: bChanged %d\n", static_cast<UT_uint32>(bChanged)));
 }
+
+/*!
+* This method append the text in this run to the growbuf supplied in the
+* parameter.
+*/
+void fp_TextRun::appendTextToBuf(UT_GrowBuf & buf)
+{
+	UT_uint32 len = getLength();
+	buf.append(reinterpret_cast<UT_GrowBufElement *>(m_pSpanBuff),len);
+}
+
 
 #if DEBUG
 void fp_TextRun::printText(void)

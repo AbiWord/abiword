@@ -898,6 +898,44 @@ void FV_View::toggleCase (ToggleCase c)
 }
 
 /*!
+ * This method appends all the text in the current Block to the supplied
+ * Growbuf.
+ */
+void FV_View::getTextInCurrentBlock(UT_GrowBuf & buf)
+{
+	fl_BlockLayout * pBlock = getCurrentBlock();
+	pBlock->appendTextToBuf(buf);
+}
+
+
+/*!
+ * This method appends all the text in the current DocSection to the supplied
+ * Growbuf.
+ */
+void FV_View:: getTextInCurrentSection(UT_GrowBuf & buf)
+{
+	fl_BlockLayout * pBlock = getCurrentBlock();
+	fl_DocSectionLayout * pDSL = pBlock->getDocSectionLayout();
+	pDSL->appendTextToBuf(buf);
+}
+
+
+/*!
+ * This method appends all the text in the Document to the supplied
+ * Growbuf.
+ */
+void FV_View:: getTextInDocument(UT_GrowBuf & buf)
+{
+	fl_ContainerLayout * pDSL = static_cast<fl_ContainerLayout *>(m_pLayout->getFirstSection());
+	while(pDSL)
+	{
+		pDSL->appendTextToBuf(buf);
+		pDSL = pDSL->getNext();
+	}
+}
+
+
+/*!
  * Goes through the document and reformats any paragraphs that need this.
  */
 void FV_View::updateLayout(void)
