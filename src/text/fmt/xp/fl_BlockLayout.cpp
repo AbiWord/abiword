@@ -1444,6 +1444,7 @@ fp_Line* fl_BlockLayout::getNewLine(void)
 		else
 		{
 			pContainer = m_pSectionLayout->getNewContainer();
+			UT_ASSERT(pContainer->getWidth() >0);
 		}
 
 		if (!pPrevLine)
@@ -1568,19 +1569,22 @@ fl_BlockLayout::findPointCoords(PT_DocPosition iPos,
 	// in this manner, we do a mimimum of computation to find the
 	// approximate location.
 	fp_Run* pRun = m_pFirstRun;
-	while (pRun && pRun->getBlockOffset() < iRelOffset)
+	while (pRun->getNext() && pRun->getBlockOffset() < iRelOffset)
+	{
 		pRun = pRun->getNext();
-	
+	}
 	// Now scan farther if necessary - the block may contain Runs
 	// with zero length. This is only a problem when empty Runs
 	// appear for no good reason (i.e., an empty Run on an empty
 	// line should be OK).
-	while (pRun && pRun->getBlockOffset() + pRun->getLength() < iRelOffset)
+	while (pRun->getNext() && pRun->getBlockOffset() + pRun->getLength() < iRelOffset)
+	{
 		pRun = pRun->getNext();
-
+	}
 	// We may have scanned past the last Run in the block. Back up.
 	if (!pRun)
 	{
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		pRun = getLastLine()->getLastRun();
 		bCoordOfPrevRun = false;
 	}
@@ -1676,12 +1680,25 @@ fl_BlockLayout::findPointCoords(PT_DocPosition iPos,
 			{
 				pPrevRun = pRun;
 			}
-
-			pPrevRun->findPointCoords(iRelOffset, x, y, x2, y2, height, bDirection);
+			if(getFirstRun()->getLine())
+			{
+				pPrevRun->findPointCoords(iRelOffset, x, y, x2, y2, height, bDirection);
+			}
+			else
+			{
+				height = 0;
+			}
 	    }
 		else
 		{
-			pRun->findPointCoords(iRelOffset, x, y, x2, y2, height, bDirection);
+			if(getFirstRun()->getLine())
+			{
+				pRun->findPointCoords(iRelOffset, x, y, x2, y2, height, bDirection);
+			}
+			else
+			{
+				height = 0;
+			}
 	    }
 
 	    return pRun;
@@ -1702,7 +1719,14 @@ fl_BlockLayout::findPointCoords(PT_DocPosition iPos,
 	pPrevRun = pRun->getPrev();
 	if (!pPrevRun || !pPrevRun->letPointPass())
 	{
-		pRun->findPointCoords(iRelOffset, x, y, x2, y2, height, bDirection);
+		if(getFirstRun()->getLine())
+		{
+			pRun->findPointCoords(iRelOffset, x, y, x2, y2, height, bDirection);
+		}
+		else
+		{
+			height = 0;
+		}
 	    return pRun;
 	}
 
@@ -1731,7 +1755,14 @@ fl_BlockLayout::findPointCoords(PT_DocPosition iPos,
 	// originally found Run is the only one on this display line.
 	if (!pPrevRun)
 	{
-		pRun->findPointCoords(iRelOffset, x, y, x2, y2, height, bDirection);
+		if(getFirstRun()->getLine())
+		{
+			pRun->findPointCoords(iRelOffset, x, y, x2, y2, height, bDirection);
+		}
+		else
+		{
+			height = 0;
+		}
 	    return pRun;
 	}
 
@@ -1740,7 +1771,14 @@ fl_BlockLayout::findPointCoords(PT_DocPosition iPos,
 	// right than pPrevRun.
 	if (pPrevRun->getLine() == pRun->getLine())
 	{
-		pRun->findPointCoords(iRelOffset, x, y, x2, y2, height, bDirection);
+		if(getFirstLine())
+		{
+			pRun->findPointCoords(iRelOffset, x, y, x2, y2, height, bDirection);
+		}
+		else
+		{
+			height = 0;
+		}
 	    return pRun;
 	}
 
@@ -1749,7 +1787,14 @@ fl_BlockLayout::findPointCoords(PT_DocPosition iPos,
 	// Always return position _and_ Run of the previous line. Old
 	// implementation returned pRun, but this will cause the
 	// cursor to wander if End is pressed multiple times.
-	pPrevRun->findPointCoords(iRelOffset, x, y, x2, y2, height, bDirection);
+	if(getFirstRun()->getLine())
+	{
+		pPrevRun->findPointCoords(iRelOffset, x, y, x2, y2, height, bDirection);
+	}
+	else
+	{
+		height = 0;
+	}
 	return pPrevRun;
 }
 
@@ -4266,11 +4311,19 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 //
 	setNext(NULL);
 	pOldSL->setLastBlock( this);
-
+//
+// OK we have to redo all the containers now.
+//
 	if(pSL->getType() == FL_SECTION_DOC)
 	{
-		((fl_DocSectionLayout * )pOldSL)->deleteEmptyColumns();
-		fl_DocSectionLayout * pDSL = static_cast<fl_DocSectionLayout *>(pSL);
+		fl_DocSectionLayout * pFirstDSL = static_cast<fl_DocSectionLayout *>(pOldSL);
+		pDSL = pFirstDSL;
+		while(pDSL != NULL)
+		{
+			pDSL->collapseDocSection();
+			pDSL = pDSL->getNextDocSection();
+		}
+		pDSL = pFirstDSL;
 		while(pDSL != NULL)
 		{
 			pDSL->updateDocSection();
@@ -4283,8 +4336,13 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 //
 	if(iType ==  FL_SECTION_HDRFTR && pszHFID!= NULL)
 	{
-			pSL->format();
-			pSL->redrawUpdate();
+		pSL->format();
+		pSL->redrawUpdate();
+	}
+
+	if(iType ==  FL_SECTION_HDRFTR && pszHFID == NULL)
+	{
+		return true;
 	}
 
 	FV_View* pView = m_pLayout->getView();

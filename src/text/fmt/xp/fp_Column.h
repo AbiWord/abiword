@@ -68,7 +68,7 @@ public:
 	void				setHeight(UT_sint32);
 	void				setMaxHeight(UT_sint32);
 	void				setMaxHeightInLayoutUnits(UT_sint32);
-
+	void                setHeightLayoutUnits(UT_sint32 ihLayout) {m_iHeightLayoutUnits = ihLayout;}
 	void				setX(UT_sint32);
 	void				setY(UT_sint32);
 	/*!
@@ -101,12 +101,14 @@ public:
 	*/
 	inline UT_sint32	getX(void) const
 		{ return m_iX; }
+	void _setX( UT_sint32 iX) { m_iX = iX;}
 	/*!
 	  Get container's Y position
 	  \return Y position
 	*/
 	inline UT_sint32	getY(void) const
 		{ return m_iY; }
+	void _setY( UT_sint32 iY) { m_iY = iY;}
 	/*!
 	  Get page container is located on
 	  \return Page
@@ -176,8 +178,15 @@ public:
 	void				draw(dg_DrawArgs*);
 
 	void				clearScreen(void);
-
+    GR_Graphics*        getGraphics(void) const {return m_pG;}
 protected:
+
+	virtual void			_drawBoundaries(dg_DrawArgs* pDA);
+	/*!
+	  Vector of lines (fp_Line) in containter
+	*/
+	UT_Vector				m_vecLines;
+private:
 	/*!
 	  Container type
 	*/
@@ -219,10 +228,6 @@ protected:
 	*/
 	UT_sint32				m_iY;
 	/*!
-	  Vector of lines (fp_Line) in containter
-	*/
-	UT_Vector				m_vecLines;
-	/*!
 	  Section layout type used for this container
 	*/
 	fl_SectionLayout*		m_pSectionLayout;
@@ -230,8 +235,6 @@ protected:
 	  GR_Graphics this container is drawn on
 	*/
 	GR_Graphics*			m_pG;
-
-	virtual void			_drawBoundaries(dg_DrawArgs* pDA);
 
 	/*!
 	  Set if this container is intentionally left empty
@@ -242,7 +245,6 @@ protected:
 	  will delete the container.
 	 */
 	bool					m_bIntentionallyEmpty;
-private:
 	UT_sint32               m_imaxLineHeight;
 };
 
@@ -302,6 +304,7 @@ public:
 	void                clearHdrFtrBoundaries(void);
 protected:
 	void                _drawHdrFtrBoundaries(dg_DrawArgs * pDA);
+private:
 	bool                m_bHdrFtrBoxDrawn;
 	UT_sint32           m_ixoffBegin;
 	UT_sint32           m_iyoffBegin;

@@ -93,7 +93,7 @@ public:
 	inline UT_sint32			getMaxWidthInLayoutUnits(void) const 	{ UT_ASSERT(m_iMaxWidthLayoutUnits); return m_iMaxWidthLayoutUnits; }
 	inline UT_sint32			getAscent(void) const 		{ return m_iAscent; }
 	inline UT_sint32			getDescent(void) const 		{ return m_iDescent; }
-
+	UT_sint32                   getNumRunsInLine(void) const {return m_vecRuns.getItemCount();}
 	inline UT_sint32			getColumnGap(void) const	{ return m_pContainer->getColumnGap(); }
 	
 	void				setAssignedScreenHeight(UT_sint32);

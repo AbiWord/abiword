@@ -105,8 +105,6 @@ void fp_Container::setWidthInLayoutUnits(UT_sint32 iWidth)
 /*!
  Set height
  \param iHeight Height of container
- \bug This function does not appear to have any use as it asserts if
-      the height of the container is ever attempted changed. 
  */
 void fp_Container::setHeight(UT_sint32 iHeight)
 {
@@ -116,9 +114,6 @@ void fp_Container::setHeight(UT_sint32 iHeight)
 	}
 	
 	m_iHeight = iHeight;
-
-	// what do we do here?  does it ever happen?
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
 }
 
 /*!
@@ -588,20 +583,21 @@ fp_Column::~fp_Column()
 */
 void fp_Column::_drawBoundaries(dg_DrawArgs* pDA)
 {
-    UT_ASSERT(pDA->pG == m_pG);
-    if(m_pPage->getDocLayout()->getView()->getShowPara() && m_pG->queryProperties(GR_Graphics::DGP_SCREEN)){
+    UT_ASSERT(pDA->pG == getGraphics());
+    if(getPage()->getDocLayout()->getView()->getShowPara() && getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))
+    {
         UT_RGBColor clrShowPara(127,127,127);
-        m_pG->setColor(clrShowPara);
+        getGraphics()->setColor(clrShowPara);
         UT_sint32 xoffBegin = pDA->xoff - 1;
         UT_sint32 yoffBegin = pDA->yoff - 1;
-        UT_sint32 xoffEnd = pDA->xoff + m_iWidth + 2;
+        UT_sint32 xoffEnd = pDA->xoff + getWidth() + 2;
 
         UT_sint32 iHeight = 0;
 		fp_Column* pCol = getLeader();
 		if (getPage()->getNthColumnLeader(getPage()->countColumnLeaders()-1) == pCol)
 		{
 			// If there's no column rows after this one on the page, use max height
-			iHeight = m_iMaxHeight;
+			iHeight = getMaxHeight();
 		}
 		else
 		{
@@ -615,10 +611,10 @@ void fp_Column::_drawBoundaries(dg_DrawArgs* pDA)
 		}
 		UT_sint32 yoffEnd = pDA->yoff + iHeight + 2;
 
-        m_pG->drawLine(xoffBegin, yoffBegin, xoffEnd, yoffBegin);
-        m_pG->drawLine(xoffBegin, yoffEnd, xoffEnd, yoffEnd);
-        m_pG->drawLine(xoffBegin, yoffBegin, xoffBegin, yoffEnd);
-        m_pG->drawLine(xoffEnd, yoffBegin, xoffEnd, yoffEnd);
+        getGraphics()->drawLine(xoffBegin, yoffBegin, xoffEnd, yoffBegin);
+        getGraphics()->drawLine(xoffBegin, yoffEnd, xoffEnd, yoffEnd);
+        getGraphics()->drawLine(xoffBegin, yoffBegin, xoffBegin, yoffEnd);
+        getGraphics()->drawLine(xoffEnd, yoffBegin, xoffEnd, yoffEnd);
     }
 }
 
@@ -651,8 +647,7 @@ void fp_Column::layout(void)
 	UT_sint32 iYLayoutUnits = 0;
 	UT_sint32 iY = 0, iPrevY = 0;
 	double ScaleLayoutUnitsToScreen;
-	ScaleLayoutUnitsToScreen = (double)m_pG->getResolution() / UT_LAYOUT_UNITS;
-	xxx_UT_DEBUGMSG(("SEVIOR: In layout resolution = %d ScaleLayoutUnitsToScreen = %f \n",m_pG->getResolution(),ScaleLayoutUnitsToScreen));
+	ScaleLayoutUnitsToScreen = (double)getGraphics()->getResolution() / UT_LAYOUT_UNITS;
 	UT_uint32 iCountLines = m_vecLines.getItemCount();
 	fp_Line *pLine, *pPrevLine = NULL;
 	for (UT_uint32 i=0; i < iCountLines; i++)
@@ -673,7 +668,6 @@ void fp_Column::layout(void)
 		if(pLine->getY() != iY)
 		{
 			pLine->clearScreen();
-			xxx_UT_DEBUGMSG(("SEVIOR: clearing line %d \n",i));
 		}
 		pLine->setY(iY);
 		pLine->setYInLayoutUnits(iYLayoutUnits);
@@ -699,18 +693,16 @@ void fp_Column::layout(void)
 		pPrevLine->setAssignedScreenHeight(iY - iPrevY + 1);
 	}
 
-	xxx_UT_DEBUGMSG(("SEVIOR: In layout maxLineHeight = %d  \n",getMaxLineHeight()));
 	UT_sint32 iNewHeight = (int)(ScaleLayoutUnitsToScreen * iYLayoutUnits);
-	xxx_UT_DEBUGMSG(("SEVIOR: In layout Document Height = %d  \n",iNewHeight));
-	if (m_iHeight == iNewHeight)
+	if (getHeight() == iNewHeight)
 	{
 		return;
 	}
 
-	m_iHeight = iNewHeight;
-	m_iHeightLayoutUnits = iYLayoutUnits;
+	setHeight(iNewHeight);
+	setHeightLayoutUnits(iYLayoutUnits);
 	
-	m_pPage->columnHeightChanged(this);
+	getPage()->columnHeightChanged(this);
 }
 
 /*!
@@ -754,10 +746,10 @@ void fp_Column::bumpLines(fp_Line* pLastLineToKeep)
 
 fl_DocSectionLayout* fp_Column::getDocSectionLayout(void) const
 {
-	UT_ASSERT(m_pSectionLayout->getType() == FL_SECTION_DOC ||
-			  m_pSectionLayout->getType() == FL_SECTION_ENDNOTE);
+	UT_ASSERT(getSectionLayout()->getType() == FL_SECTION_DOC ||
+			  getSectionLayout()->getType() == FL_SECTION_ENDNOTE);
 
-	return (fl_DocSectionLayout*) m_pSectionLayout;
+	return (fl_DocSectionLayout*) getSectionLayout();
 }
 
 /*!
@@ -775,14 +767,14 @@ fp_ShadowContainer::fp_ShadowContainer(UT_sint32 iX,
 									   fl_SectionLayout* pSectionLayout) 
 	: fp_Container(FP_CONTAINER_SHADOW, pSectionLayout)
 {
-	m_iX = iX;
-	m_iY = iY;
-	m_iWidth = iWidth;
-	m_iHeight = iHeight;
-	m_iWidthLayoutUnits = iWidthLayout;
-	m_iHeightLayoutUnits = iHeightLayout;
-	m_iMaxHeight = m_iHeight;
-	m_iMaxHeightLayoutUnits = (UT_sint32)(  (double) m_iHeight * ( (double) iHeightLayout/ (double) m_iMaxHeight)) ;
+	_setX(iX);
+	_setY(iY);
+	setWidth(iWidth);
+	setHeight(iHeight);
+	setWidthInLayoutUnits(iWidthLayout);
+	setHeightLayoutUnits(iHeightLayout);
+	setMaxHeight(iHeight);
+	setMaxHeightInLayoutUnits( (UT_sint32)(  (double) getHeight() * ( (double) iHeightLayout/ (double) getMaxHeight()))) ;
    m_bHdrFtrBoxDrawn = false;
 }
 
@@ -794,7 +786,7 @@ void fp_ShadowContainer::layout(void)
 {
 	double ScaleLayoutUnitsToScreen;
 	double yHardOffset = 5.0; // Move 5 pixels away from the very edge 
-	ScaleLayoutUnitsToScreen = (double)m_pG->getResolution() / UT_LAYOUT_UNITS;
+	ScaleLayoutUnitsToScreen = (double)getGraphics()->getResolution() / UT_LAYOUT_UNITS;
 	UT_sint32 iYLayoutUnits = (UT_sint32) (yHardOffset/	ScaleLayoutUnitsToScreen);
 	UT_uint32 iCountLines = m_vecLines.getItemCount();
 	
@@ -805,7 +797,7 @@ void fp_ShadowContainer::layout(void)
 		UT_sint32 iLineHeightLayoutUnits = pLine->getHeightInLayoutUnits();
 		UT_sint32 iLineMarginAfterLayoutUnits = pLine->getMarginAfterInLayoutUnits();
 		UT_sint32 sum = iLineHeightLayoutUnits + iLineMarginAfterLayoutUnits;
-		if((iYLayoutUnits + sum) <= (m_iMaxHeightLayoutUnits))
+		if((iYLayoutUnits + sum) <= (getMaxHeightInLayoutUnits()))
 		{
 //			if(pLine->getYInLayoutUnits() != iYLayoutUnits)
 //				pLine->clearScreen();
@@ -825,14 +817,14 @@ void fp_ShadowContainer::layout(void)
 	}
 
 	UT_sint32 iNewHeight = (int)(ScaleLayoutUnitsToScreen * iYLayoutUnits);
-	if (m_iHeight == iNewHeight)
+	if (getHeight() == iNewHeight)
 	{
 		return;
 	}
-	if(iYLayoutUnits <= m_iMaxHeightLayoutUnits)
+	if(iYLayoutUnits <= getMaxHeightInLayoutUnits())
 	{
-		m_iHeight = iNewHeight;
-		m_iHeightLayoutUnits = iYLayoutUnits;
+		setHeight(iNewHeight);
+		setHeightLayoutUnits(iYLayoutUnits);
 	}
 	
 }
@@ -849,9 +841,9 @@ fl_HdrFtrShadow * fp_ShadowContainer::getShadow(void)
 
 fl_HdrFtrSectionLayout* fp_ShadowContainer::getHdrFtrSectionLayout(void) const
 {
-	UT_ASSERT(m_pSectionLayout->getType() == FL_SECTION_HDRFTR);
+	UT_ASSERT(getSectionLayout()->getType() == FL_SECTION_HDRFTR);
 
-	return (fl_HdrFtrSectionLayout*) m_pSectionLayout;
+	return (fl_HdrFtrSectionLayout*) getSectionLayout();
 }
 
 
@@ -896,12 +888,12 @@ void fp_ShadowContainer::draw(dg_DrawArgs* pDA)
 //
 // Clip to keep inside header/footer container
 //
-		if(iY > m_iMaxHeightLayoutUnits)
+		if(iY > getMaxHeightInLayoutUnits())
 			break;
 		pLine->draw(&da);
 	}
-	FV_View * pView = m_pPage->getDocLayout()->getView();
-    if(pView && pView->isHdrFtrEdit() && m_pG->queryProperties(GR_Graphics::DGP_SCREEN) && pView->getEditShadow() == getShadow())
+	FV_View * pView = getPage()->getDocLayout()->getView();
+    if(pView && pView->isHdrFtrEdit() && getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN) && pView->getEditShadow() == getShadow())
 	{
 		_drawHdrFtrBoundaries(pDA);
 	}
@@ -917,28 +909,28 @@ void fp_ShadowContainer::draw(dg_DrawArgs* pDA)
  */
 void fp_ShadowContainer::_drawHdrFtrBoundaries(dg_DrawArgs * pDA)
 {
-    UT_ASSERT(pDA->pG == m_pG);
+    UT_ASSERT(pDA->pG == getGraphics());
 //
 // Can put this in to speed things up.
 //
 //	if(m_bHdrFtrBoxDrawn)
 //		return;
 	UT_RGBColor clrDrawHdrFtr(0,0,0);
-	m_pG->setLineWidth(1);
-	m_pG->setColor(clrDrawHdrFtr);
+	getGraphics()->setLineWidth(1);
+	getGraphics()->setColor(clrDrawHdrFtr);
 //
 // These magic numbers stop clearscreens from blanking the lines
 //
 	m_ixoffBegin = pDA->xoff-2; 
 	m_iyoffBegin = pDA->yoff+2;
-	m_ixoffEnd = pDA->xoff + m_iWidth +1;
-	m_iyoffEnd = pDA->yoff + m_iMaxHeight -1;
+	m_ixoffEnd = pDA->xoff + getWidth() +1;
+	m_iyoffEnd = pDA->yoff + getMaxHeight() -1;
 
-	m_pG->drawLine(m_ixoffBegin, m_iyoffBegin, m_ixoffEnd, m_iyoffBegin);
-	m_pG->drawLine(m_ixoffBegin, m_iyoffEnd, m_ixoffEnd, m_iyoffEnd);
-	m_pG->drawLine(m_ixoffBegin, m_iyoffBegin, m_ixoffBegin, m_iyoffEnd);
-	m_pG->drawLine(m_ixoffEnd, m_iyoffBegin, m_ixoffEnd, m_iyoffEnd);
-	m_pG->setLineWidth(1);
+	getGraphics()->drawLine(m_ixoffBegin, m_iyoffBegin, m_ixoffEnd, m_iyoffBegin);
+	getGraphics()->drawLine(m_ixoffBegin, m_iyoffEnd, m_ixoffEnd, m_iyoffEnd);
+	getGraphics()->drawLine(m_ixoffBegin, m_iyoffBegin, m_ixoffBegin, m_iyoffEnd);
+	getGraphics()->drawLine(m_ixoffEnd, m_iyoffBegin, m_ixoffEnd, m_iyoffEnd);
+	getGraphics()->setLineWidth(1);
     m_bHdrFtrBoxDrawn = true;
 }
 
@@ -951,16 +943,16 @@ void fp_ShadowContainer::clearHdrFtrBoundaries(void)
 	if(!m_bHdrFtrBoxDrawn)
 		return;
 	UT_RGBColor * pClr = getPage()->getOwningSection()->getPaperColor();
-	m_pG->setLineWidth(1);
-	m_pG->setColor(*pClr);
+	getGraphics()->setLineWidth(1);
+	getGraphics()->setColor(*pClr);
 //
 // Paint over the previous lines with the page color
 //
-	m_pG->drawLine(m_ixoffBegin, m_iyoffBegin, m_ixoffEnd, m_iyoffBegin);
-	m_pG->drawLine(m_ixoffBegin, m_iyoffEnd, m_ixoffEnd, m_iyoffEnd);
-	m_pG->drawLine(m_ixoffBegin, m_iyoffBegin, m_ixoffBegin, m_iyoffEnd);
-	m_pG->drawLine(m_ixoffEnd, m_iyoffBegin, m_ixoffEnd, m_iyoffEnd);
-	m_pG->setLineWidth(1);
+	getGraphics()->drawLine(m_ixoffBegin, m_iyoffBegin, m_ixoffEnd, m_iyoffBegin);
+	getGraphics()->drawLine(m_ixoffBegin, m_iyoffEnd, m_ixoffEnd, m_iyoffEnd);
+	getGraphics()->drawLine(m_ixoffBegin, m_iyoffBegin, m_ixoffBegin, m_iyoffEnd);
+	getGraphics()->drawLine(m_ixoffEnd, m_iyoffBegin, m_ixoffEnd, m_iyoffEnd);
+	getGraphics()->setLineWidth(1);
 	m_bHdrFtrBoxDrawn = false;
 }
 
@@ -980,13 +972,13 @@ fp_HdrFtrContainer::fp_HdrFtrContainer(UT_sint32 iWidth,
 									   fl_SectionLayout* pSectionLayout) 
 	: fp_Container(FP_CONTAINER_HDRFTR, pSectionLayout)
 {
-	m_iX = 0;
-	m_iY = 0;
-	m_iWidth = iWidth;
-	m_iHeight = 0;
-	m_iWidthLayoutUnits = iWidthLayout;
-	m_iHeightLayoutUnits = 0;
-	m_pPage = NULL; // Never a page associated with this
+	_setX(0);
+	_setY(0);
+	setWidth(iWidth);
+	setHeight(0);
+	setWidthInLayoutUnits(iWidthLayout);
+	setHeightLayoutUnits(0);
+	setPage(NULL); // Never a page associated with this
 }
 
 fp_HdrFtrContainer::~fp_HdrFtrContainer()
@@ -1002,7 +994,7 @@ void fp_HdrFtrContainer::layout(void)
 {
 	UT_sint32 iYLayoutUnits = 0;
 	double ScaleLayoutUnitsToScreen;
-	ScaleLayoutUnitsToScreen = (double)m_pG->getResolution() / UT_LAYOUT_UNITS;
+	ScaleLayoutUnitsToScreen = (double)getGraphics()->getResolution() / UT_LAYOUT_UNITS;
 	UT_uint32 iCountLines = m_vecLines.getItemCount();
 	
 	for (UT_uint32 i=0; i < iCountLines; i++)
@@ -1021,13 +1013,13 @@ void fp_HdrFtrContainer::layout(void)
 	}
 
 	UT_sint32 iNewHeight = (int)(ScaleLayoutUnitsToScreen * iYLayoutUnits);
-	if (m_iHeight == iNewHeight)
+	if (getHeight() == iNewHeight)
 	{
 		return;
 	}
 
-	m_iHeight = iNewHeight;
-	m_iHeightLayoutUnits = iYLayoutUnits;
+	setHeight(iNewHeight);
+	setHeightLayoutUnits(iYLayoutUnits);
 	
 }
 
@@ -1036,9 +1028,9 @@ void fp_HdrFtrContainer::layout(void)
  */
 fl_HdrFtrSectionLayout* fp_HdrFtrContainer::getHdrFtrSectionLayout(void) const
 {
-	UT_ASSERT(m_pSectionLayout->getType() == FL_SECTION_HDRFTR);
+	UT_ASSERT(getSectionLayout()->getType() == FL_SECTION_HDRFTR);
 
-	return (fl_HdrFtrSectionLayout*) m_pSectionLayout;
+	return (fl_HdrFtrSectionLayout*) getSectionLayout();
 }
 
 

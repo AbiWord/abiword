@@ -31,6 +31,11 @@
 #include "ut_string.h"
 
 fb_LineBreaker::fb_LineBreaker()
+:
+	m_pFirstRunToKeep(NULL),
+	m_pLastRunToKeep(NULL),
+	m_iMaxLineWidth(0),
+	m_iWorkingLineWidth(0)
 {
 }
 
@@ -616,8 +621,7 @@ void fb_LineBreaker::_breakTheLineAtLastRunToKeep(fp_Line *pLine,
 
 	fp_Line* pNextLine = NULL;
 
-	if (
-		m_pLastRunToKeep
+	if ( m_pLastRunToKeep != NULL
 		&& (pLine->getLastRun() != m_pLastRunToKeep)
 		)
 	{
@@ -632,10 +636,9 @@ void fb_LineBreaker::_breakTheLineAtLastRunToKeep(fp_Line *pLine,
 		}
 
 		fp_Run* pRunToBump = pLine->getLastRun();
-		while (pLine->getLastRun() != m_pLastRunToKeep)
+		while (pLine->getNumRunsInLine() && pLine->getLastRun() != m_pLastRunToKeep)
 		{
 			UT_ASSERT(pRunToBump->getLine() == pLine);
-
 			pLine->removeRun(pRunToBump);
 			pNextLine->insertRun(pRunToBump);
 

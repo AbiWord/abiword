@@ -116,7 +116,7 @@ public:
 	UT_uint32	countPages();
 
 	fl_BlockLayout*	findBlockAtPosition(PT_DocPosition pos);
-	void		deletePage(fp_Page*);
+	void		deletePage(fp_Page* pPage, bool bDontNotify);
 
 	void		formatAll();
 	void  		updateLayout();
@@ -147,7 +147,7 @@ public:
 
 	fl_DocSectionLayout* 	findSectionForHdrFtr(const char* pszHdrFtrID) const;
 	void 				deleteEmptyColumnsAndPages(void);
-	void 				deleteEmptyPages(void);
+	void 				deleteEmptyPages( bool bDontNotify = false);
 
 
 	bool		getAutoSpellCheck(void) const { return (hasBackgroundCheckReason(bgcrSpelling)); }

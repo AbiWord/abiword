@@ -59,8 +59,7 @@ fp_Page::fp_Page(FL_DocLayout* pLayout,
 	UT_ASSERT(pG);
 
 	m_iResolution = pG->getResolution();
-	UT_DEBUGMSG(("SEVIOR: Owner initially set to %x \n",m_pOwner));
-
+	UT_ASSERT(m_pOwner);
 	m_pOwner->addOwnedPage(this);
 }
 
@@ -110,6 +109,7 @@ UT_sint32 fp_Page::getBottom(void) const
 	fp_Column* pFirstColumnLeader = getNthColumnLeader(0);
 	fl_DocSectionLayout* pFirstSectionLayout = pFirstColumnLeader->getDocSectionLayout();
 	UT_ASSERT(m_pOwner == pFirstSectionLayout);
+
 //	UT_sint32 iTopMargin = pFirstSectionLayout->getTopMargin();
 	UT_sint32 iBottomMargin = pFirstSectionLayout->getBottomMargin();
 	
@@ -155,10 +155,13 @@ void fp_Page::_drawCropMarks(dg_DrawArgs* pDA)
 {
     if(m_pView->getShowPara() 
 	   && pDA->pG->queryProperties(GR_Graphics::DGP_SCREEN)
-	   && countColumnLeaders() > 0){
+	   && countColumnLeaders() > 0)
+	{
         fp_Column* pFirstColumnLeader = getNthColumnLeader(0);
         fl_DocSectionLayout* pFirstSectionLayout = (pFirstColumnLeader->getDocSectionLayout());
-        UT_ASSERT(m_pOwner == pFirstSectionLayout);
+		UT_ASSERT(m_pOwner == pFirstSectionLayout);
+
+
         UT_sint32 iLeftMargin = pFirstSectionLayout->getLeftMargin();
         UT_sint32 iRightMargin = pFirstSectionLayout->getRightMargin();
         UT_sint32 iTopMargin = pFirstSectionLayout->getTopMargin();
@@ -202,7 +205,7 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool bAlwaysUseWhiteBackground)
 //
 	if(!bAlwaysUseWhiteBackground && !pDA->pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
-		UT_DEBUGMSG(("SEVIOR: Doing a rectangular color fill \n"));
+		xxx_UT_DEBUGMSG(("Doing a rectangular color fill \n"));
 		UT_RGBColor * pClr = getOwningSection()->getPaperColor();
 		double ScaleLayoutUnitsToScreen;
 		ScaleLayoutUnitsToScreen = (double)pDA->pG->getResolution() / UT_LAYOUT_UNITS;
@@ -288,7 +291,9 @@ void fp_Page::_reformat(void)
 
 	fp_Column* pFirstColumnLeader = getNthColumnLeader(0);
 	fl_DocSectionLayout* pFirstSectionLayout = (pFirstColumnLeader->getDocSectionLayout());
+	
 	UT_ASSERT(m_pOwner == pFirstSectionLayout);
+	
 	UT_sint32 iLeftMargin = pFirstSectionLayout->getLeftMargin();
 	UT_sint32 iRightMargin = pFirstSectionLayout->getRightMargin();
 	UT_sint32 iTopMargin = pFirstSectionLayout->getTopMargin();
@@ -339,10 +344,8 @@ void fp_Page::_reformat(void)
 			pTmpCol->setWidth(iColWidth);
 			pTmpCol->setWidthInLayoutUnits(iColWidthLayoutUnits);
 			iX += (iColWidth + iColumnGap);
-
 			iMostHeight = UT_MAX(iMostHeight, pTmpCol->getHeight());
 			iMostHeightLayoutUnits = UT_MAX(iMostHeightLayoutUnits, pTmpCol->getHeightInLayoutUnits());
-
 			pTmpCol = pTmpCol->getFollower();
 		}
 
@@ -403,14 +406,17 @@ void fp_Page::removeColumnLeader(fp_Column* pLeader)
 	// Are there still any rows on this page?
 	int count = countColumnLeaders();
 	if (0 == count)
+	{
 		return;
-
+	}
 	// Update owner and reformat
 	fp_Column* pFirstColumnLeader = getNthColumnLeader(0);
-	UT_DEBUGMSG(("SEVIOR: Owner %x changed to %x \n",m_pOwner, pFirstColumnLeader->getDocSectionLayout()));
-	m_pOwner = pFirstColumnLeader->getDocSectionLayout();
-
-	_reformat();
+//
+// Sevior. Code is changed so that page ownership is never lost. 
+// A page is destroyed if the ownership of it changes.
+//
+	if(pFirstColumnLeader->getDocSectionLayout() == m_pOwner)
+		_reformat();
 }
 
 /*!
@@ -427,7 +433,6 @@ bool fp_Page::insertColumnLeader(fp_Column* pLeader, fp_Column* pAfter)
 	{
 		UT_sint32 ndx = m_vecColumnLeaders.findItem(pAfter);
 		UT_ASSERT(ndx >= 0);
-
 		m_vecColumnLeaders.insertItemAt(pLeader, ndx+1);
 	}
 	else

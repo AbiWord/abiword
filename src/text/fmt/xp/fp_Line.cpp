@@ -52,25 +52,28 @@
 
 fp_Line::fp_Line() 
 {
-	m_iAscent = 0;
-	m_iDescent = 0;
-	m_iMaxWidth = 0;
-	m_iClearToPos = 0;
-	m_iClearLeftOffset = 0;
-	m_iMaxWidthLayoutUnits = 0;
+	m_pBlock = NULL;
+	m_pContainer = NULL;
 	m_iWidth = 0;
 	m_iWidthLayoutUnits = 0;
+	m_iMaxWidth = 0;
+	m_iMaxWidthLayoutUnits = 0;
+	m_iClearToPos = 0;
+	m_iClearLeftOffset = 0;
 	m_iHeight = 0;
+
 	m_iScreenHeight = -1;
 	m_iHeightLayoutUnits = 0;
+	m_iAscent = 0;
+	m_iDescent = 0;
 	m_iX = 0;
 	m_iXLayoutUnits = 0;
 	m_iY = -2000000; // So setY(0) triggers a clearscreen and redraw!
 	m_iYLayoutUnits = 0;
-	m_pContainer = NULL;
-	m_pBlock = NULL;
-
+	m_pNext = NULL;
+	m_pPrev = NULL;
 	m_bNeedsRedraw = false;
+	
 #ifdef BIDI_ENABLED
 	m_iRunsRTLcount = 0;
 	m_iRunsLTRcount = 0;
@@ -1355,6 +1358,7 @@ void fp_Line::recalcMaxWidth()
 	setX(iX);
 
 	UT_sint32 iMaxWidth = m_pContainer->getWidth();
+	UT_ASSERT(iMaxWidth > 0);
 	fl_DocSectionLayout * pSL =  getBlock()->getDocSectionLayout();
 	UT_ASSERT(pSL);
 	if(pSL->getNumColumns() > 1)

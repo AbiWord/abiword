@@ -606,7 +606,6 @@ fp_Container* fl_DocSectionLayout::getNewContainer(void)
 	for (UT_uint32 i=0; i<m_iNumColumns; i++)
 	{
 		fp_Column* pCol = new fp_Column(this);
-
 		if (pTail)
 		{
 			pCol->setLeader(pLeaderColumn);
@@ -646,15 +645,18 @@ fp_Container* fl_DocSectionLayout::getNewContainer(void)
 	}
 	m_pLastColumn = pLastNewCol;
 	UT_ASSERT(!(m_pLastColumn->getNext()));
+	UT_ASSERT(!(m_pLastColumn->getFollower()));
 
 	pPage->insertColumnLeader(pLeaderColumn, pAfterColumn);
 	
 	fp_Column* pTmpCol = pLeaderColumn;
+	UT_uint32 i = 0;
  	while (pTmpCol)
 	{
 		UT_ASSERT(pTmpCol->getPage());
 		
 		pTmpCol = pTmpCol->getFollower();
+		i++;
 	}
 
 	return pLeaderColumn;
@@ -722,7 +724,6 @@ bool fl_DocSectionLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxCha
 
 
 	setAttrPropIndex(pcrxc->getIndexAP());
-	updateDocSection();
 	return true;
 }
 
@@ -740,13 +741,15 @@ void fl_DocSectionLayout::updateDocSection(void)
 	_lookupProperties();
 
 	// clear all the columns
+    // Assume that all columns and formatting have already been removed via a collapseDocSection()
+    //
 
 	/*
 	  TODO to more closely mirror the architecture we're using for BlockLayout, this code
 	  should probably just set a flag, indicating the need to reformat this section.  Then,
 	  when it's time to update everything, we'll actually do the format.
 	*/
-	collapseDocSection();
+
 	format();
 	redrawUpdate();
 	updateBackgroundColor();
@@ -770,6 +773,7 @@ void fl_DocSectionLayout::updateDocSection(void)
 	FV_View* pView = m_pLayout->getView();
 	if (pView)
 	{
+		pView->eraseInsertionPoint();
 		pView->updateScreen(false);
 		pView->notifyListeners(AV_CHG_TYPING | AV_CHG_FMTSECTION);
 	}
@@ -1184,6 +1188,15 @@ void fl_DocSectionLayout::collapseDocSection(void)
 	}
 	m_pFirstColumn = NULL;
 	m_pLastColumn = NULL;
+
+//
+// Remove all the empty pages thus created. Don't notify of the deletion though.
+//
+	getDocLayout()->deleteEmptyPages(true);
+//
+// This Doc Section No longer owns pages so this becomes NULL
+//
+	m_pFirstOwnedPage = NULL;
 }
 
 bool fl_DocSectionLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)
@@ -1198,6 +1211,11 @@ bool fl_DocSectionLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * 
 		UT_DEBUGMSG(("no prior SectionLayout"));
 		return false;
 	}
+
+//
+// Collapse previous section too. We need this so it can be rebuilt properly.
+//
+	pPrevSL->collapseDocSection();
 
 	// clear all the columns
 	collapseDocSection();
@@ -1238,7 +1256,6 @@ bool fl_DocSectionLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * 
 	m_pLastBlock = NULL;
 
 	m_pLayout->removeSection(this);
-
 	pPrevSL->format();
 	
 //	FV_View* pView = m_pLayout->getView();
@@ -1960,7 +1977,12 @@ bool fl_HdrFtrSectionLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux
 
 void fl_HdrFtrSectionLayout::addPage(fp_Page* pPage)
 {
-	UT_ASSERT(0 > _findShadow(pPage));
+//
+//  Sevior:
+//  This triggers if we're rebuilding a section before page is defined like in a section change
+//  strux. Reinstate if needed to find other bugs.
+//	UT_ASSERT(0 > _findShadow(pPage));
+
 	UT_sint32 icnt = m_vecPages.getItemCount();
 	if(_findShadow(pPage) > -1)
 		return;

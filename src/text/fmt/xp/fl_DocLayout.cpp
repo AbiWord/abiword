@@ -345,11 +345,18 @@ GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 
 void FL_DocLayout::changeDocSections(const PX_ChangeRecord_StruxChange * pcrx, fl_DocSectionLayout * pDSL)
 {
+	fl_DocSectionLayout * pCur = pDSL;
 	pDSL->doclistener_changeStrux(pcrx);
-	while(pDSL->getNextDocSection() != NULL)
+	while(pCur != NULL)
 	{
-		pDSL = pDSL->getNextDocSection();
-		pDSL->updateDocSection();
+		pCur->collapseDocSection();
+		pCur = pCur->getNextDocSection();
+	}
+	pCur = pDSL;
+	while(pCur != NULL)
+	{
+		pCur->updateDocSection();
+		pCur = pCur->getNextDocSection();
 	}
 }
 
@@ -386,7 +393,7 @@ fp_Page* FL_DocLayout::getLastPage()
 	return (fp_Page*) m_vecPages.getNthItem(m_vecPages.getItemCount()-1);
 }
 
-void FL_DocLayout::deletePage(fp_Page* pPage)
+void FL_DocLayout::deletePage(fp_Page* pPage, bool bDontNotify /* default false */)
 {
 	UT_sint32 ndx = m_vecPages.findItem(pPage);
 	UT_ASSERT(ndx >= 0);
@@ -400,7 +407,7 @@ void FL_DocLayout::deletePage(fp_Page* pPage)
 	{
 		pPage->getNext()->setPrev(pPage->getPrev());
 	}
-		
+
 	m_vecPages.deleteNthItem(ndx);
 	delete pPage;
 		
@@ -408,7 +415,7 @@ void FL_DocLayout::deletePage(fp_Page* pPage)
 	// so that it can update the scroll bar ranges
 	// and whatever else it needs to do.
 
-	if (m_pView)
+	if (m_pView && !bDontNotify)
 	{
 		m_pView->notifyListeners(AV_CHG_PAGECOUNT);
 	}
@@ -548,7 +555,7 @@ void FL_DocLayout::deleteEmptyColumnsAndPages(void)
 	deleteEmptyPages();
 }
 
-void FL_DocLayout::deleteEmptyPages(void)
+void FL_DocLayout::deleteEmptyPages( bool bDontNotify /* default false */)
 {
 	int i;
 
@@ -559,7 +566,7 @@ void FL_DocLayout::deleteEmptyPages(void)
 
 		if (p->isEmpty())
 		{
-			deletePage(p);
+			deletePage(p, bDontNotify);
 		}
 	}
 }
@@ -1304,7 +1311,10 @@ void FL_DocLayout::_redrawUpdate(UT_Timer * pTimer)
 //
 	PD_Document * pDoc = pDocLayout->getDocument();
 	if(pDoc->isPieceTableChanging())
+	{  
+		UT_DEBUGMSG(("PieceTable changing don't redraw \n"));
 		return;
+	}
 //
 // Check if we've been asked to wait for a while..
 //

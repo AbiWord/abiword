@@ -1820,11 +1820,18 @@ void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 	pClipRect.left = xoff;
 	pClipRect.height = m_pLine->getContainer()->getHeight();
 	pClipRect.width = m_pLine->getContainer()->getWidth();
-	m_pG->setClipRect(&pClipRect);
-
+	//
+	// SEVIOR Says don't touch this if statement unless you know how to make windows 
+	// and gnome-print print images. Otherwise your commit priviliges will be revoked.
+	//
+	if(m_pG->queryProperties(GR_Graphics::DGP_SCREEN))
+	{
+	    m_pG->setClipRect(&pClipRect);
+	}
 	if (m_pImage)
 	{
 		// draw the image (always)
+		UT_DEBUGMSG(("SEVIOR: Drawing image now \n"));
 		m_pG->drawImage(m_pImage, xoff, yoff);
 
 		// if we're the selection, draw a pretty box

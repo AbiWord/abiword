@@ -124,7 +124,8 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_bShowPara(false),
 		m_viewMode(VIEW_NORMAL),
 		m_previewMode(PREVIEW_NONE),
-		m_bDontUpdateScreenOnGeneralUpdate(false)
+		m_bDontUpdateScreenOnGeneralUpdate(false),
+		m_bPieceTableState(false)
 {
 //	UT_ASSERT(m_pG->queryProperties(GR_Graphics::DGP_SCREEN));
 
@@ -385,14 +386,14 @@ void FV_View::toggleCase (ToggleCase c)
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
     }
 
-	m_pDoc->notifyPieceTableChangeStart();
+	_saveAndNotifyPieceTableChange();
 	m_pDoc->beginUserAtomicGlob();
 
 	cmdCharInsert (replace, replace_len, true);
 
 	m_pDoc->endUserAtomicGlob();
 	_generalUpdate();
-	m_pDoc->notifyPieceTableChangeEnd();
+	_restorePieceTableState();
 
 	FREEP(cur);
 	delete[] replace;
@@ -463,6 +464,13 @@ bool FV_View::notifyListeners(const AV_ChangeMask hint)
 //
 	if(isPreview())
 		return true;
+//
+// Sevior check if we need this?
+// For some complex operations we can't update stuff in the middle. 
+// In particular insert headers/footers
+//
+//	if(!_shouldScreenUpdateOnGeneralUpdate())
+//		return false;
 	/*
 	  IDEA: The view caches its change state as of the last notification,
 	  to minimize noise from duplicate notifications.
@@ -1438,7 +1446,7 @@ bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count, bool bForce)
 	bool bResult = true;
 
 	// Signal PieceTable Change
-	m_pDoc->notifyPieceTableChangeStart();
+	_saveAndNotifyPieceTableChange();
 
 	// Turn off list updates
 	m_pDoc->disableListUpdates();
@@ -1531,12 +1539,10 @@ bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count, bool bForce)
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
 
-
 	// Signal PieceTable Changes have finished
-	m_pDoc->notifyPieceTableChangeEnd();
+	_restorePieceTableState();
 
 	_ensureThatInsertionPointIsOnScreen();
-
 	return bResult;
 }
 
@@ -1548,7 +1554,8 @@ void FV_View::insertSectionBreak(BreakSectionType type)
 	// if Type = 2 "even page" section break
 	// if Type = 3 "odd page" section break
 
-	// Signal PieceTable Change
+
+	// Signal PieceTable Changes have Started
 	m_pDoc->notifyPieceTableChangeStart();
 
 	UT_UCSChar c = UCS_FF;
@@ -1560,8 +1567,8 @@ void FV_View::insertSectionBreak(BreakSectionType type)
 		break;
 	case BreakSectionNextPage:
 		m_pDoc->beginUserAtomicGlob();
-		cmdCharInsert(&c,1);
 		_insertSectionBreak();
+		cmdCharInsert(&c,1);
 		m_pDoc->endUserAtomicGlob();
 		break;
 	case BreakSectionEvenPage:
@@ -1570,8 +1577,8 @@ void FV_View::insertSectionBreak(BreakSectionType type)
 		iPageNum = getCurrentPageNumber();
 		if( (iPageNum & 1) == 1)
 		{
-			cmdCharInsert(&c,1);
 			_insertSectionBreak();
+			cmdCharInsert(&c,1);
 		}
 		else
 		{
@@ -1585,8 +1592,8 @@ void FV_View::insertSectionBreak(BreakSectionType type)
 		iPageNum = getCurrentPageNumber();
 		if( (iPageNum & 1) == 0)
 		{
-			cmdCharInsert(&c,1);
 			_insertSectionBreak();
+			cmdCharInsert(&c,1);
 		}
 		else
 		{
@@ -1598,8 +1605,9 @@ void FV_View::insertSectionBreak(BreakSectionType type)
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
 
-	// Signal piceTable is stable again
+	// Signal PieceTable Changes have Started
 	m_pDoc->notifyPieceTableChangeEnd();
+
 
 }
 
@@ -1607,7 +1615,13 @@ void FV_View::insertSectionBreak(void)
 {
 	m_pDoc->beginUserAtomicGlob();
 
+	// Signal PieceTable Changes have Started
+	m_pDoc->notifyPieceTableChangeStart();
+
 	_insertSectionBreak();
+
+	// Signal PieceTable Changes have ended
+	m_pDoc->notifyPieceTableChangeEnd();
 	m_pDoc->endUserAtomicGlob();
 }
 
@@ -1729,7 +1743,7 @@ void FV_View::processSelectedBlocks(List_Type listType)
 	//
 
 	// Signal PieceTable Change
-	m_pDoc->notifyPieceTableChangeStart();
+	_saveAndNotifyPieceTableChange();
 
     // don't screen update till we're done!
 	_setScreenUpdateOnGeneralUpdate(false);
@@ -1784,12 +1798,11 @@ void FV_View::processSelectedBlocks(List_Type listType)
 	_generalUpdate();
 
 	// Signal piceTable is stable again
-	m_pDoc->notifyPieceTableChangeEnd();
+	_restorePieceTableState();
 	if (isSelectionEmpty())
 	{
 		_ensureThatInsertionPointIsOnScreen();
 	}
-
 }
 
 
@@ -1829,7 +1842,7 @@ void FV_View::insertParagraphBreak(void)
 	// Prevent access to Piecetable for things like spellchecks until
 	// paragraphs have stablized
 	//
-	m_pDoc->notifyPieceTableChangeStart();
+	_saveAndNotifyPieceTableChange();
 
 	if (!isSelectionEmpty())
 	{
@@ -1926,12 +1939,13 @@ void FV_View::insertParagraphBreak(void)
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
 
-	// Signal piceTable is stable again
-	m_pDoc->notifyPieceTableChangeEnd();
 
 	_generalUpdate();
-	_ensureThatInsertionPointIsOnScreen();
 
+	// Signal piceTable is stable again
+	_restorePieceTableState();
+
+	_ensureThatInsertionPointIsOnScreen();
 	m_pLayout->considerPendingSmartQuoteCandidate();
 	_checkPendingWordForSpell();
 }
@@ -1977,7 +1991,7 @@ bool FV_View::setStyle(const XML_Char * style, bool bDontGeneralUpdate)
 	PT_DocPosition posEnd = posStart;
 
 	// Signal PieceTable Change
-	m_pDoc->notifyPieceTableChangeStart();
+	_saveAndNotifyPieceTableChange();
 
 	// Turn off list updates
 	m_pDoc->disableListUpdates();
@@ -2318,7 +2332,7 @@ bool FV_View::setStyle(const XML_Char * style, bool bDontGeneralUpdate)
 		m_pDoc->updateDirtyLists();
 
 		// Signal piceTable is stable again
-
+		_restorePieceTableState();
 		if (isSelectionEmpty())
 		{
 			_fixInsertionPointCoords();
@@ -2326,7 +2340,7 @@ bool FV_View::setStyle(const XML_Char * style, bool bDontGeneralUpdate)
 		}
 	}
 	m_pDoc->endUserAtomicGlob();
-	m_pDoc->notifyPieceTableChangeEnd();
+	_restorePieceTableState();
 	return bRet;
 }
 
@@ -2521,7 +2535,7 @@ bool FV_View::setCharFormat(const XML_Char * properties[])
 	bool bRet;
 
 	// Signal PieceTable Change
-	m_pDoc->notifyPieceTableChangeStart();
+	_saveAndNotifyPieceTableChange();
 
 	if (isSelectionEmpty())
 	{
@@ -2550,15 +2564,15 @@ bool FV_View::setCharFormat(const XML_Char * properties[])
 
 	_generalUpdate();
 
+
+	// Signal piceTable is stable again
+	_restorePieceTableState();
+
 	if (isSelectionEmpty())
 	{
 		_fixInsertionPointCoords();
 		_drawInsertionPoint();
 	}
-
-	// Signal piceTable is stable again
-	m_pDoc->notifyPieceTableChangeEnd();
-
 	return bRet;
 }
 
@@ -2844,7 +2858,7 @@ bool FV_View::setBlockIndents(bool doLists, double indentChange, double page_siz
 	//
 	// Signal PieceTable Change
 	//
-	m_pDoc->notifyPieceTableChangeStart();
+	_saveAndNotifyPieceTableChange();
 
 	_eraseInsertionPoint();
 	m_pDoc->beginUserAtomicGlob();
@@ -2887,15 +2901,15 @@ bool FV_View::setBlockIndents(bool doLists, double indentChange, double page_siz
 	_generalUpdate();
 
 	m_pDoc->endUserAtomicGlob();
+
 	// Signal PieceTable Changes have finished
-	m_pDoc->notifyPieceTableChangeEnd();
+	_restorePieceTableState();
 
 	if (isSelectionEmpty())
 	{
 		_fixInsertionPointCoords();
 		_drawInsertionPoint();
 	}
-
 	return bRet;
 }
 
@@ -2905,7 +2919,7 @@ bool FV_View::setBlockFormat(const XML_Char * properties[])
 
 
 	// Signal PieceTable Change
-	m_pDoc->notifyPieceTableChangeStart();
+	_saveAndNotifyPieceTableChange();
 
 
 	_clearIfAtFmtMark(getPoint());
@@ -2931,14 +2945,13 @@ bool FV_View::setBlockFormat(const XML_Char * properties[])
 	_generalUpdate();
 
 	// Signal PieceTable Changes have finished
-	m_pDoc->notifyPieceTableChangeEnd();
+	_restorePieceTableState();
 
 	if (isSelectionEmpty())
 	{
 		_fixInsertionPointCoords();
 		_drawInsertionPoint();
 	}
-
 	return bRet;
 }
 
@@ -3020,7 +3033,7 @@ bool FV_View::processPageNumber(HdrFtrType hfType, const XML_Char ** atts)
 
 	// Signal PieceTable Change
 
-	m_pDoc->notifyPieceTableChangeStart();
+	_saveAndNotifyPieceTableChange();
 //
 // Just set the format of the Block if a PageNumber has been found.
 //
@@ -3037,7 +3050,7 @@ bool FV_View::processPageNumber(HdrFtrType hfType, const XML_Char ** atts)
 
 		// Signal PieceTable Changes have finished
 		_generalUpdate();
-		m_pDoc->notifyPieceTableChangeEnd();
+		_restorePieceTableState();
 		if (isSelectionEmpty())
 		{
 			_fixInsertionPointCoords();
@@ -3081,9 +3094,10 @@ bool FV_View::processPageNumber(HdrFtrType hfType, const XML_Char ** atts)
 	bRet = m_pDoc->insertObject(pos, PTO_Field, f_attributes, NULL);
 	m_pDoc->endUserAtomicGlob();
 
-	// Signal PieceTable Changes have finished
-	m_pDoc->notifyPieceTableChangeEnd();
 	_generalUpdate();
+
+	// Signal PieceTable Changes have finished
+	_restorePieceTableState();
 	if (isSelectionEmpty())
 	{
 		_fixInsertionPointCoords();
@@ -3118,7 +3132,7 @@ void FV_View::changeListStyle(	fl_AutoNum* pAuto,
 	PL_StruxDocHandle sdh = pAuto->getNthBlock(i);
 
 	// Signal PieceTable Change
-	m_pDoc->notifyPieceTableChangeStart();
+	_saveAndNotifyPieceTableChange();
 
 	m_pDoc->disableListUpdates();
 
@@ -3141,12 +3155,12 @@ void FV_View::changeListStyle(	fl_AutoNum* pAuto,
 		}
 
 		_generalUpdate();
+
 		m_pDoc->enableListUpdates();
 		m_pDoc->updateDirtyLists();
 
 		// Signal PieceTable Changes have finished
-		m_pDoc->notifyPieceTableChangeEnd();
-
+		_restorePieceTableState();
 		return;
 	}
 
@@ -3224,9 +3238,9 @@ void FV_View::changeListStyle(	fl_AutoNum* pAuto,
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
 
-	// Signal PieceTable Changes have finished
-	m_pDoc->notifyPieceTableChangeEnd();
 
+	// Signal PieceTable Changes have finished
+	_restorePieceTableState();
 	_ensureThatInsertionPointIsOnScreen(false);
 	DELETEP(attribs);
 	DELETEP(props);
@@ -3237,7 +3251,7 @@ bool FV_View::cmdStopList(void)
 
 
 	// Signal PieceTable Change
-	m_pDoc->notifyPieceTableChangeStart();
+	_saveAndNotifyPieceTableChange();
 
 	m_pDoc->beginUserAtomicGlob();
 	fl_BlockLayout * pBlock = getCurrentBlock();
@@ -3245,8 +3259,7 @@ bool FV_View::cmdStopList(void)
 	m_pDoc->endUserAtomicGlob();
 
 	// Signal PieceTable Changes have finished
-	m_pDoc->notifyPieceTableChangeEnd();
-
+	_restorePieceTableState();
 	return true;
 }
 
@@ -3540,7 +3553,7 @@ void FV_View::delTo(FV_DocPos dp)
 
 
 	// Signal PieceTable Change
-	m_pDoc->notifyPieceTableChangeStart();
+	_saveAndNotifyPieceTableChange();
 
 	if (iPos == getPoint())
 	{
@@ -3553,7 +3566,7 @@ void FV_View::delTo(FV_DocPos dp)
 	_generalUpdate();
 
 	// Signal PieceTable Changes have finished
-	m_pDoc->notifyPieceTableChangeEnd();
+	_restorePieceTableState();
 
 	_fixInsertionPointCoords();
 	_drawInsertionPoint();
@@ -3732,7 +3745,7 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 	fl_BlockLayout * nBlock = NULL;
 
 	// Signal PieceTable Change
-	m_pDoc->notifyPieceTableChangeStart();
+	_saveAndNotifyPieceTableChange();
 
 	if (!isSelectionEmpty())
 	{
@@ -3891,8 +3904,7 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 	}
 
 	// Signal PieceTable Changes have finished
-	m_pDoc->notifyPieceTableChangeEnd();
-
+	_restorePieceTableState();
 }
 
 /*!
@@ -4099,6 +4111,13 @@ bool FV_View::_ensureThatInsertionPointIsOnScreen(bool bDrawIP)
 	}
 
 	_fixInsertionPointCoords();
+//
+// If ==0 no layout information is present. Don't scroll.
+//
+	if( m_iPointHeight == 0)
+	{
+		return false;
+	}
 
 	//UT_DEBUGMSG(("_ensure: [xp %ld][yp %ld][ph %ld] [w %ld][h %ld]\n",m_xPoint,m_yPoint,m_iPointHeight,m_iWindowWidth,m_iWindowHeight));
 
@@ -5429,8 +5448,9 @@ void FV_View::insertSymbol(UT_UCSChar c, XML_Char * symfont)
 */
 void FV_View::_generalUpdate(void)
 {
-	if(_shouldScreenUpdateOnGeneralUpdate())
-		m_pDoc->signalListeners(PD_SIGNAL_UPDATE_LAYOUT);
+//	if(!_shouldScreenUpdateOnGeneralUpdate())
+//		return;
+	m_pDoc->signalListeners(PD_SIGNAL_UPDATE_LAYOUT);
 //
 // No need to update other stuff if we're doing a preview
 //
@@ -5451,7 +5471,9 @@ void FV_View::_generalUpdate(void)
 	  TODO WRONG! WRONG! WRONG! having the notification in fl_BlockLayout
 	  TODO WRONG! WRONG! WRONG! will get each view on the document.
 	*/
-	notifyListeners(AV_CHG_TYPING | AV_CHG_FMTCHAR | AV_CHG_FMTBLOCK);
+//
+//	notifyListeners(AV_CHG_TYPING | AV_CHG_FMTCHAR | AV_CHG_FMTBLOCK );
+	notifyListeners(AV_CHG_TYPING | AV_CHG_FMTCHAR | AV_CHG_FMTBLOCK | AV_CHG_PAGECOUNT );
 }
 
 UT_uint32 FV_View::findReplaceAll(const UT_UCSChar * find, const UT_UCSChar * replace,
@@ -5765,7 +5787,7 @@ void FV_View::warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos, bool bClick = false)
 	*/
 
 	// Signal PieceTable Change
-	m_pDoc->notifyPieceTableChangeStart();
+	_saveAndNotifyPieceTableChange();
 	UT_sint32 xClick, yClick;
 	fp_Page* pPage = _getPageForXY(xPos, yPos, xClick, yClick);
 
@@ -5800,19 +5822,19 @@ void FV_View::warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos, bool bClick = false)
 	if ((pos != getPoint()) && !bClick)
 		_clearIfAtFmtMark(getPoint());
 
+
+	// Signal PieceTable Changes have finished
+	_restorePieceTableState();
+
 	_setPoint(pos, bEOL);
 	if (!_ensureThatInsertionPointIsOnScreen())
 	{
 		_fixInsertionPointCoords();
 		_drawInsertionPoint();
 	}
-
 	notifyListeners(AV_CHG_MOTION | AV_CHG_HDRFTR ); // Sevior Put this in
 //	notifyListeners(AV_CHG_HDRFTR );
 
-
-	// Signal PieceTable Changes have finished
-	m_pDoc->notifyPieceTableChangeEnd();
 }
 
 
@@ -7135,8 +7157,6 @@ void FV_View::cmdUndo(UT_uint32 count)
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
 
-	// Signal PieceTable Changes have finished
-	m_pDoc->notifyPieceTableChangeEnd();
 
 	if (isSelectionEmpty())
 	{
@@ -7146,6 +7166,8 @@ void FV_View::cmdUndo(UT_uint32 count)
 			_drawInsertionPoint();
 		}
 	}
+	// Signal PieceTable Changes have finished
+	m_pDoc->notifyPieceTableChangeEnd();
 }
 
 void FV_View::cmdRedo(UT_uint32 count)
@@ -7187,8 +7209,6 @@ void FV_View::cmdRedo(UT_uint32 count)
 //
 	notifyListeners(AV_CHG_ALL);
 
-	// Signal PieceTable Changes have finished
-	m_pDoc->notifyPieceTableChangeEnd();
 	
 	if (isSelectionEmpty())
 	{
@@ -7198,6 +7218,8 @@ void FV_View::cmdRedo(UT_uint32 count)
 			_drawInsertionPoint();
 		}
 	}
+	// Signal PieceTable Changes have finished
+	m_pDoc->notifyPieceTableChangeEnd();
 }
 
 UT_Error FV_View::cmdSave(void)
@@ -7251,11 +7273,12 @@ void FV_View::cmdCut(void)
 
 	_generalUpdate();
 
-	// Signal PieceTable Changes have finished
-	m_pDoc->notifyPieceTableChangeEnd();
 	
 	_fixInsertionPointCoords();
 	_drawInsertionPoint();
+
+	// Signal PieceTable Changes have finished
+	m_pDoc->notifyPieceTableChangeEnd();
 }
 
 void FV_View::getDocumentRangeOfCurrentSelection(PD_DocumentRange * pdr)
@@ -7333,7 +7356,7 @@ void FV_View::cmdPasteSelectionAt(UT_sint32 xPos, UT_sint32 yPos)
 	m_pDoc->beginUserAtomicGlob();
 
 	// Signal PieceTable Change
-	m_pDoc->notifyPieceTableChangeStart();
+	_saveAndNotifyPieceTableChange();
 
 	if (!isSelectionEmpty())
 		m_pApp->cacheCurrentSelection(this);
@@ -7342,7 +7365,7 @@ void FV_View::cmdPasteSelectionAt(UT_sint32 xPos, UT_sint32 yPos)
 	m_pApp->cacheCurrentSelection(NULL);
 
 	// Signal PieceTable Changes have finished
-	m_pDoc->notifyPieceTableChangeEnd();
+	_restorePieceTableState();
 
 	m_pDoc->endUserAtomicGlob();
 }
@@ -7375,7 +7398,7 @@ bool FV_View::setSectionFormat(const XML_Char * properties[])
 
 	//
 	// Signal PieceTable Change 
-	m_pDoc->notifyPieceTableChangeStart();
+	_saveAndNotifyPieceTableChange();
 	_eraseInsertionPoint();
 	if(isHdrFtrEdit())
 	{
@@ -7403,14 +7426,13 @@ bool FV_View::setSectionFormat(const XML_Char * properties[])
 	_generalUpdate();
 	
 	// Signal PieceTable Changes have finished
-	m_pDoc->notifyPieceTableChangeEnd();
+	_restorePieceTableState();
 
 	_fixInsertionPointCoords();
 	if (isSelectionEmpty())
 	{
 		_drawInsertionPoint();
 	}
-
 	return bRet;
 }
 
@@ -7526,17 +7548,31 @@ void FV_View::getLeftRulerInfo(AP_LeftRulerInfo * pInfo)
 		_findPositionCoords(getPoint(), m_bPointEOL, xCaret, yCaret, xCaret2, yCaret2, heightCaret, bDirection, &pBlock, &pRun);
 
 		UT_ASSERT(pRun);
-		///
-		/// Bug Here!! Can be triggered by doing stuff in header/footer
-		/// region. Try to recover..
-		///
+//
+// No useful info here. Just return 0
+//
 		if(!pRun)
 		{
-			PT_DocPosition posEOD = 0;
-			getEditableBounds(true,posEOD);
-			_findPositionCoords(posEOD, m_bPointEOL, xCaret, yCaret, xCaret2, yCaret2, heightCaret, bDirection, &pBlock, &pRun);
+			pInfo->m_yPageStart = 0;
+			pInfo->m_yPageSize = 0;
+			pInfo->m_yPoint = 0;
+			pInfo->m_yTopMargin = 0;
+			pInfo->m_yBottomMargin = 0;
+			return;
 		}
+//
+// No useful info here. Just return 0
+//
 		UT_ASSERT(pRun->getLine());
+		if(!pRun->getLine())
+		{
+			pInfo->m_yPageStart = 0;
+			pInfo->m_yPageSize = 0;
+			pInfo->m_yPoint = 0;
+			pInfo->m_yTopMargin = 0;
+			pInfo->m_yBottomMargin = 0;
+			return;
+		}
 
 		fp_Container * pContainer = pRun->getLine()->getContainer();
 
@@ -7628,7 +7664,7 @@ UT_Error FV_View::cmdInsertField(const char* szName, const XML_Char ** extra_att
 */
 
 	// Signal PieceTable Change
-	m_pDoc->notifyPieceTableChangeStart();
+	_saveAndNotifyPieceTableChange();
 
 	fd_Field * pField = NULL;
 	if (!isSelectionEmpty())
@@ -7654,14 +7690,13 @@ UT_Error FV_View::cmdInsertField(const char* szName, const XML_Char ** extra_att
 	_generalUpdate();
 
 	// Signal PieceTable Changes have finished
-	m_pDoc->notifyPieceTableChangeEnd();
+	_restorePieceTableState();
 
 	if (!_ensureThatInsertionPointIsOnScreen())
 	{
 		_fixInsertionPointCoords();
 		_drawInsertionPoint();
 	}
-
 	return bResult;
 }
 
@@ -7679,7 +7714,7 @@ UT_Error FV_View::cmdInsertGraphic(FG_Graphic* pFG, const char* pszName)
 	bool bDidGlob = false;
 
 	// Signal PieceTable Change
-	m_pDoc->notifyPieceTableChangeStart();
+	_saveAndNotifyPieceTableChange();
 
 	if (!isSelectionEmpty())
 	{
@@ -7713,8 +7748,8 @@ UT_Error FV_View::cmdInsertGraphic(FG_Graphic* pFG, const char* pszName)
 		m_pDoc->endUserAtomicGlob();
 
 	_generalUpdate();
-	m_pDoc->notifyPieceTableChangeEnd();
 
+	_restorePieceTableState();
 	if (!_ensureThatInsertionPointIsOnScreen())
 	{
 		_fixInsertionPointCoords();
@@ -7875,6 +7910,14 @@ fp_Page* FV_View::getCurrentPage(void) const
 	UT_ASSERT(pBlock);
 	fp_Run* pRun = pBlock->findPointCoords(pos, m_bPointEOL, xPoint, yPoint, xPoint2, yPoint2, iPointHeight, bDirection);
 
+//
+// Detect if we have no Lines at the curren tpoint and bail out.
+//
+	if(iPointHeight == 0)
+	{
+		return NULL;
+	}
+
 	// NOTE prior call will fail if the block isn't currently formatted,
 	// NOTE so we won't be able to figure out more specific geometry
 
@@ -7905,8 +7948,8 @@ UT_uint32 FV_View::getCurrentPageNumForStatusBar(void) const
 		ndx++;
 		pPage = pPage->getNext();
 	}
-
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	UT_DEBUGMSG(("Current page not found - could be has been deleted. Hopefully we can recover \n"));
+//	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 
 	return 0;
 }
@@ -8430,7 +8473,7 @@ void FV_View::cmdRemoveHdrFtr( bool isHeader)
     // dont screen update till we're done!
 	_setScreenUpdateOnGeneralUpdate(false);
 
-	m_pDoc->notifyPieceTableChangeStart();
+	_saveAndNotifyPieceTableChange();
 //
 // Save current document position.
 //
@@ -8495,6 +8538,9 @@ void FV_View::cmdRemoveHdrFtr( bool isHeader)
 	_setPoint(curPoint);
 
 	_generalUpdate();
+
+	// Signal PieceTable Changes have finished
+	_restorePieceTableState();
 	updateScreen (); // fix 1803, force screen update/redraw
 
 	if (!_ensureThatInsertionPointIsOnScreen())
@@ -8502,10 +8548,6 @@ void FV_View::cmdRemoveHdrFtr( bool isHeader)
 		_fixInsertionPointCoords();
 		_drawInsertionPoint();
 	}
-
-	// Signal PieceTable Changes have finished
-
-	m_pDoc->notifyPieceTableChangeEnd();
     m_pDoc->endUserAtomicGlob();
 }
 
@@ -8809,6 +8851,23 @@ void FV_View::cmdEditFooter(void)
 	}
 }
 
+void FV_View::_saveAndNotifyPieceTableChange(void)
+{
+	m_bPieceTableState = m_pDoc->isPieceTableChanging();
+	m_pDoc->notifyPieceTableChangeStart();
+}
+
+void FV_View::_restorePieceTableState(void)
+{
+    if(m_bPieceTableState)
+	{
+		m_pDoc->notifyPieceTableChangeStart();
+	}
+	else
+	{
+		m_pDoc->notifyPieceTableChangeEnd();
+	}
+}
 
 void FV_View::insertHeaderFooter(HdrFtrType hfType)
 {
@@ -8822,14 +8881,16 @@ void FV_View::insertHeaderFooter(HdrFtrType hfType)
 //
 	if(isHdrFtrEdit())
 		clearHdrFtrEdit();
+	UT_uint32 iPageNo = getCurrentPageNumber() - 1;
+
 	m_pDoc->beginUserAtomicGlob(); // Begin the big undo block
 
 	// Signal PieceTable Changes have Started
 	m_pDoc->notifyPieceTableChangeStart();
+
 	m_pDoc->disableListUpdates();
 
 	insertHeaderFooter(block_props, hfType); // cursor is now in the header/footer
-
 	
 	// restore updates and clean up dirty lists
 	m_pDoc->enableListUpdates();
@@ -8838,16 +8899,17 @@ void FV_View::insertHeaderFooter(HdrFtrType hfType)
 	// Signal PieceTable Changes have Ended
 
 	m_pDoc->notifyPieceTableChangeEnd();
-
+	m_bPieceTableState = false;
 	m_pDoc->endUserAtomicGlob(); // End the big undo block
 
 // Update Layout everywhere. This actually creates the header/footer container
-//	m_pLayout->updateLayout(); // Update document layout everywhere
-//	updateScreen();
+
+	m_pLayout->updateLayout(); // Update document layout everywhere
+//	updateScreen(false);
 //
 // Now extract the shadow section from this.
 //
-	fp_Page * pPage = getCurrentPage();
+	fp_Page * pPage = m_pLayout->getNthPage(iPageNo);
 	fl_HdrFtrShadow * pShadow = NULL;
 	fp_ShadowContainer * pHFCon = NULL;
 	if(hfType == FL_HDRFTR_FOOTER)
@@ -8865,6 +8927,7 @@ void FV_View::insertHeaderFooter(HdrFtrType hfType)
 // Set Header/footer mode and we're done! Easy :-)
 //
 	setHdrFtrEdit(pShadow);
+
 	_generalUpdate();
 	if (!_ensureThatInsertionPointIsOnScreen())
 	{
@@ -8934,8 +8997,13 @@ bool FV_View::insertHeaderFooter(const XML_Char ** props, HdrFtrType hfType)
 
 	// change the section to point to the footer which doesn't exist yet.
 
+    // No stupid flicker yet.
+
+	_setScreenUpdateOnGeneralUpdate(false);
+
 	m_pDoc->changeStruxFmt(PTC_AddFmt, posSec, posSec, sec_attributes2, NULL, PTX_Section);
 
+ 
 	moveInsPtTo(FV_DOCPOS_EOD);	// Move to the end, where we will create the page numbers
 
 	// Now create the footer section
@@ -8943,6 +9011,8 @@ bool FV_View::insertHeaderFooter(const XML_Char ** props, HdrFtrType hfType)
 
 	UT_uint32 iPoint = getPoint();
 	m_pDoc->insertStrux(getPoint(), PTX_Block);
+
+
 	//
 	// If there is a list item here remove it!
 	//
@@ -8973,13 +9043,16 @@ bool FV_View::insertHeaderFooter(const XML_Char ** props, HdrFtrType hfType)
 // Give the Footer section the properties it needs to attach itself to the
 // correct DocSectionLayout.
 //
-
+	m_iInsPoint++;
       	m_pDoc->changeStruxFmt(PTC_AddFmt, getPoint(), getPoint(), sec_attributes1, NULL, PTX_SectionHdrFtr);
 
 	// Change the formatting of the new footer appropriately 
     //(currently just center it)
 
 	m_pDoc->changeStruxFmt(PTC_AddFmt, getPoint(), getPoint(), NULL, props, PTX_Block);
+
+   // Allow screen updates
+	_setScreenUpdateOnGeneralUpdate(true);
 
 // OK it's in!
 
@@ -9073,7 +9146,7 @@ bool FV_View::insertEndnoteSection(const XML_Char * enpid)
 	m_pDoc->beginUserAtomicGlob(); // Begin the big undo block
 
 	// Signal PieceTable Changes have Started
-	m_pDoc->notifyPieceTableChangeStart();
+	_saveAndNotifyPieceTableChange();
 	m_pDoc->disableListUpdates();
 
 	if (!insertEndnoteSection(block_props, block_attrs)) // cursor is now in the endnotes
@@ -9083,13 +9156,13 @@ bool FV_View::insertEndnoteSection(const XML_Char * enpid)
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
 
-	// Signal PieceTable Changes have Ended
-
-	m_pDoc->notifyPieceTableChangeEnd();
 
 	m_pDoc->endUserAtomicGlob(); // End the big undo block
 
 	_generalUpdate();
+
+	// Signal PieceTable Changes have Ended
+	_restorePieceTableState();
 	if (!_ensureThatInsertionPointIsOnScreen())
 	{
 		_fixInsertionPointCoords();
@@ -9216,7 +9289,7 @@ bool FV_View::insertPageNum(const XML_Char ** props, HdrFtrType hfType)
 	m_pDoc->beginUserAtomicGlob(); // Begin the big undo block
 
 	// Signal PieceTable Changes have Started
-	m_pDoc->notifyPieceTableChangeStart();
+	_saveAndNotifyPieceTableChange();
 	m_pDoc->disableListUpdates();
 
 	_eraseInsertionPoint();
@@ -9243,10 +9316,10 @@ bool FV_View::insertPageNum(const XML_Char ** props, HdrFtrType hfType)
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
 
-	// Signal PieceTable Changes have Ended
-
-	m_pDoc->notifyPieceTableChangeEnd();
 	_generalUpdate();
+
+	// Signal PieceTable Changes have Ended
+	_restorePieceTableState();
 	if (!_ensureThatInsertionPointIsOnScreen())
 	{
 		_fixInsertionPointCoords();

@@ -382,6 +382,8 @@ public:
 	inline PD_Document * getDocument (void) const {return m_pDoc;}
 
 protected:
+	void                _saveAndNotifyPieceTableChange(void);
+	void                _restorePieceTableState(void);
 	void				_generalUpdate(void);
 	
 	void 				_draw(UT_sint32, UT_sint32, UT_sint32, UT_sint32, bool bDirtyRunsOnly, bool bClip=false);
@@ -532,10 +534,11 @@ protected:
 	// prefs listener - to change cursor blink on/off (and possibly others)
 	static void _prefsListener( XAP_App *, XAP_Prefs *, UT_StringPtrMap *, void *);
 
-	bool		m_bShowPara;
-	ViewMode        m_viewMode;
-	PreViewMode m_previewMode;
-	bool m_bDontUpdateScreenOnGeneralUpdate;         
+	bool		         m_bShowPara;
+	ViewMode             m_viewMode;
+	PreViewMode          m_previewMode;
+	bool                 m_bDontUpdateScreenOnGeneralUpdate; 
+	bool                 m_bPieceTableState;
 };
 
 #endif /* FV_VIEW_H */
