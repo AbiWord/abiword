@@ -113,3 +113,7 @@ dcl(DLG_Para_PushNoHyphenate,			"&Don't hyphenate")
 dcl(DLG_Para_PushKeepWithNext,			"Keep with ne&xt")
 
 dcl(DLG_Para_ButtonTabs,		"&Tabs...")
+
+dcl(DLG_Para_PreviewSampleFallback, "This paragraph represents words as they might appear in your document.  "
+                                    "To see text from your document used in this preview, position your cursor "
+                                    "into a document paragraph with some text in it and launch this dialog.")

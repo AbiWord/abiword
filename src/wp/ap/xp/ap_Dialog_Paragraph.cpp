@@ -22,12 +22,19 @@
 #include <string.h>
 #include "ut_assert.h"
 #include "ut_string.h"
+#include "ut_growbuf.h"
 #include "ut_debugmsg.h"
 #include "ut_units.h"
 
 #include "xap_Dialog_Id.h"
 #include "xap_DialogFactory.h"
 #include "xap_Prefs.h"
+
+#include "ap_Strings.h"
+
+#include "fv_View.h"
+#include "fl_DocLayout.h"
+#include "fl_BlockLayout.h"
 
 #include "ap_Preview_Paragraph.h"
 #include "ap_Dialog_Paragraph.h"
@@ -583,12 +590,39 @@ void AP_Dialog_Paragraph::_createPreviewFromGC(GR_Graphics * gc,
 	// free any attached preview
 	DELETEP(m_paragraphPreview);
 
-	// we have to pass it a block of text to use as the current block.
-	// we use the first 150 characters from the document's current block.
+	// platform's runModal should have set this
+	UT_ASSERT(m_pFrame);
+
+	AV_View * baseview = m_pFrame->getCurrentView();
+	UT_ASSERT(baseview);
+
+	FV_View * view = static_cast<FV_View *> (baseview);
+
+	FL_DocLayout * dl = view->getLayout();
+	UT_ASSERT(dl);
+
+	fl_BlockLayout * bl = dl->findBlockAtPosition((PT_DocPosition) view->getPoint());
+	UT_ASSERT(bl);
+
+	UT_GrowBuf gb;
+	UT_Bool hadMem = bl->getBlockBuf(&gb);
+
+	// we use the first 200 characters from the document's current block.
 	UT_UCSChar * tmp = NULL;
 
-	UT_UCS_cloneString_char(&tmp, "This is a test of the emergency broadcast system.  "
-							"If a real emergency had occurred, we'd all be dead right now, not testing paragraph dialogs.");
+	if (hadMem && gb.getLength() > 0)
+	{
+		// cap it at 200
+		gb.truncate(200);
+		UT_UCS_cloneString(&tmp, (UT_UCSChar *) gb.getPointer(0));
+	}
+	else
+	{
+		const XAP_StringSet * pSS = m_pApp->getStringSet();
+	
+		// if the paragraph was empty, use our sample
+		UT_UCS_cloneString_char(&tmp, pSS->getValue(AP_STRING_ID_DLG_Para_PreviewSampleFallback));
+	}
 
 	m_paragraphPreview = new AP_Preview_Paragraph(gc, tmp, this);
 
