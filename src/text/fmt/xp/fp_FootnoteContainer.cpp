@@ -252,19 +252,9 @@ void fp_FootnoteContainer::layout(void)
 	_setMaxContainerHeight(0);
 	UT_sint32 iY = 0, iPrevY = 0;
 	iY= 0;
-	fp_Page * pPage = getPage();
 	fl_DocSectionLayout * pDSL = getDocSectionLayout();
 	UT_sint32 iMaxFootHeight = 0;
-	if(pPage != NULL)
-	{
-		iMaxFootHeight = pPage->getHeight();
-	}
-	else
-	{
-		iMaxFootHeight = pDSL->getDocLayout()->getHeight();
-	}
-	iMaxFootHeight -= pDSL->getTopMargin();
-	iMaxFootHeight -= pDSL->getBottomMargin();
+	iMaxFootHeight = pDSL->getActualColumnHeight();
 	iMaxFootHeight -= getGraphics()->tlu(20)*3;
 	UT_uint32 iCountContainers = countCons();
 	fp_Container *pContainer, *pPrevContainer = NULL;
@@ -318,6 +308,7 @@ void fp_FootnoteContainer::layout(void)
 
 	setHeight(iY);
 //	UT_ASSERT(pPage);
+	fp_Page * pPage = getPage();
 	if(pPage)
 	{
 		pPage->footnoteHeightChanged();

@@ -389,7 +389,7 @@ protected:
 	bool					_deleteFmtMark(PT_BlockOffset blockOffset);
 
 	virtual void			_lookupProperties(const PP_AttrProp* pAP);
-	void					_removeLine(fp_Line*);
+	void					_removeLine(fp_Line*, bool bRemoveFromContainer=false);
 	void                    _purgeLine(fp_Line*);
 	void					_removeAllEmptyLines(void);
 

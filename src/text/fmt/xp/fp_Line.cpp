@@ -285,16 +285,9 @@ UT_Rect * fp_Line::getScreenRect(void)
 	UT_sint32 yoff = 0;
 	UT_Rect * pRec = NULL; 
 	fp_Run * pRun = getFirstRun();
-	if(pRun)
-	{
-		getScreenOffsets(pRun,xoff,yoff);
-		pRec= new UT_Rect(xoff,yoff,getMaxWidth(),getHeight());
-		return pRec;
-	}
-	else
-	{
-		return NULL;
-	}
+	getScreenOffsets(pRun,xoff,yoff);
+	pRec= new UT_Rect(xoff,yoff,getMaxWidth(),getHeight());
+	return pRec;
 }
 	
 /*!
@@ -577,11 +570,21 @@ void fp_Line::remove(void)
 	{
 		xxx_UT_DEBUGMSG(("Removing line %x from container \n",this));
 		static_cast<fp_VerticalContainer *>(getContainer())->removeContainer(this);
+		setContainer(NULL);
 	}
 #ifdef USE_STATIC_MAP
 	if (s_pMapOwner == this)
 		s_pMapOwner = NULL;
 #endif
+	fp_Line * pNLine = static_cast<fp_Line *>(pNext);
+	if(pNLine && pNLine->isSameYAsPrevious())
+	{
+	  if(!isSameYAsPrevious())
+	  {
+	       pNLine->setSameYAsPrevious(false);
+	       pNLine->setY(getY());
+	  }
+	}
 }
 
 void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos,
@@ -747,9 +750,26 @@ void fp_Line::getScreenOffsets(fp_Run* pRun,
 	*/
 	fp_VerticalContainer * pVCon= (static_cast<fp_VerticalContainer *>(getContainer()));
 	pVCon->getScreenOffsets(this, my_xoff, my_yoff);
+	if(pRun)
+        {
+	  xoff = my_xoff + pRun->getX();
+	  yoff = my_yoff + pRun->getY();
+	}
+	else
+	{
+	  xoff = my_xoff;
+	  yoff = my_yoff;
+	}
+}
 
-	xoff = my_xoff + pRun->getX();
-	yoff = my_yoff + pRun->getY();
+void fp_Line::setBlock(fl_BlockLayout * pBlock)
+{
+  if(pBlock != NULL)
+    {
+      UT_ASSERT(m_pBlock == NULL);
+      //      UT_ASSERT(pBlock->findLineInBlock(this) >= 0);
+    }
+  m_pBlock = pBlock;
 }
 
 /*!

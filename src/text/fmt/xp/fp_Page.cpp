@@ -372,6 +372,11 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 									bFoundOne = true;
 								}
 							}
+							else
+							{
+							  xxx_UT_DEBUGMSG(("Not converging \n"));
+							}
+
 						}
 						else
 						{
@@ -464,6 +469,12 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 	}
 	pNextCol = static_cast<fp_Column *>(pNewFirstCon->getColumn());
 	pNewFirstCon = static_cast<fp_Container *>(pNextCol->getNthCon(0));
+	if(pNewFirstCon->getContainerType() == FP_CONTAINER_LINE)
+	  {
+	    fp_Line * pFLine = static_cast<fp_Line *>(pNewFirstCon);
+	    UT_ASSERT(pFLine->getBlock() && (pFLine->getBlock()->findLineInBlock(pFLine) >= 0));
+	    //	    UT_ASSERT(!pFLine-isEmpty());
+	  }
 	return pNewFirstCon;
 }
 
@@ -1300,9 +1311,10 @@ void fp_Page::_reformatColumns(void)
 
 	for (i = 0; i < count; i++)
 	{
+#if 0
 		if (iY >= (static_cast<UT_sint32>(getHeight() - iBottomMargin - iFootnoteHeight)))
 		{
-			UT_DEBUGMSG(("SEVIOR: Page incorrectly laid out iYlayoutuints= %d  \n",iY));
+			xxx_UT_DEBUGMSG(("SEVIOR: Page incorrectly laid out iYlayoutuints= %d  \n",iY));
 //			m_pOwner->markForRebuild();
 //
 // FIXME see if this code works instead
@@ -1313,6 +1325,7 @@ void fp_Page::_reformatColumns(void)
 			return;
 //			break;
 		}
+#endif
 
 		fp_Column* pLeader = getNthColumnLeader(i);
 		UT_ASSERT(pLeader->getContainerType() == FP_CONTAINER_COLUMN);
@@ -1372,7 +1385,7 @@ void fp_Page::_reformatColumns(void)
 // Look for blank space to put more text
 //
 	fp_Column * pFirstOfNext = NULL;
-	fp_Page *pNext = getNext();
+	fp_Page * pNext = getNext();
 	if(pNext && pLastCol)
 	{
 		fp_Container * pLastContainer = static_cast<fp_Container *>(pLastCol->getLastContainer());

@@ -1485,6 +1485,7 @@ void fl_BlockLayout::coalesceRuns(void)
 
 void fl_BlockLayout::collapse(void)
 {
+	UT_DEBUGMSG(("Collapsing Block %x No containers %d \n",this,findLineInBlock(static_cast<fp_Line *>(getLastContainer()))));
 	fp_Run* pRun = m_pFirstRun;
 	while (pRun)
 	{
@@ -1496,7 +1497,15 @@ void fl_BlockLayout::collapse(void)
 	fp_Line* pLine = static_cast<fp_Line *>(getFirstContainer());
 	while (pLine)
 	{
-		_removeLine(pLine);
+		fl_DocSectionLayout * pDSL = getDocSectionLayout();
+		if(!pDSL->isCollapsing())
+		{
+			_removeLine(pLine,true);
+		}
+		else
+		{
+			_removeLine(pLine,false);
+		}
 		pLine = static_cast<fp_Line *>(getFirstContainer());
 	}
 	xxx_UT_DEBUGMSG(("Block collapsed in collapsed %x \n",this));
@@ -1527,7 +1536,7 @@ void fl_BlockLayout::purgeLayout(void)
 	}
 }
 
-void fl_BlockLayout::_removeLine(fp_Line* pLine)
+void fl_BlockLayout::_removeLine(fp_Line* pLine, bool bRemoveFromContainer)
 {
 
 	if (getFirstContainer() == static_cast<fp_Container *>(pLine))
@@ -1551,6 +1560,14 @@ void fl_BlockLayout::_removeLine(fp_Line* pLine)
 
 	pLine->setBlock(NULL);
 	pLine->remove();
+	if(pLine->getContainer() && bRemoveFromContainer)
+	{
+		fp_VerticalContainer * pVert = static_cast<fp_VerticalContainer *>(pLine->getContainer());
+		pVert->removeContainer(pLine);
+		pLine->setContainer(NULL);
+	}
+	xxx_UT_DEBUGMSG(("Removed line %x \n",pLine));
+	UT_ASSERT(findLineInBlock(pLine) == -1);
 
 	delete pLine;
 #if DEBUG
@@ -1592,10 +1609,11 @@ void fl_BlockLayout::_removeAllEmptyLines(void)
 	pLine = static_cast<fp_Line *>(getFirstContainer());
 	while (pLine)
 	{
-		if (pLine->countRuns() == 0)
+		if (pLine->isEmpty())
 		{
-			_removeLine(pLine);
-			pLine = static_cast<fp_Line *>(getFirstContainer());
+			fp_Line * pNext = static_cast<fp_Line *>(pLine->getNext());
+			_removeLine(pLine, true);
+			pLine = pNext;
 		}
 		else
 		{
@@ -2180,6 +2198,7 @@ void fl_BlockLayout::formatWrappedFromHere(fp_Line * pLine, fp_Page * pPage)
 	}
 	if(!bFound)
 	{
+		_removeAllEmptyLines(); // try again
 		return;
 	}
 	fp_Run * pRun = pLine->getLastRun();
@@ -2221,8 +2240,8 @@ void fl_BlockLayout::formatWrappedFromHere(fp_Line * pLine, fp_Page * pPage)
 		fp_Line * pLineToDelete = pDumLine;
 		pDumLine = static_cast<fp_Line *>(pDumLine->getNext());
 		pLineToDelete->setBlock(NULL);
-		pLineToDelete->remove();
-		delete pLineToDelete;
+// delete this and remove from container
+		_removeLine(pLineToDelete,true); 
 	}
 	//
 	// OK our line is the last line left
@@ -2282,17 +2301,18 @@ void fl_BlockLayout::formatWrappedFromHere(fp_Line * pLine, fp_Page * pPage)
 		m_iAccumulatedHeight += iHeight;
 		m_bSameYAsPrevious = false;
 		fp_Line * pNew = getNextWrappedLine(iX,iHeight,pPage);
+		while(pNew && (pNew->getPrev() != pLine))
+		{
+			pNew = static_cast<fp_Line *>(pNew->getPrev());
+		}
 		fp_Run * pRun = pLine->getFirstRun();
 		while(pRun)
 		{
 			pNew->addRun(pRun);
 			pRun= pRun->getNextRun();
 		}
-		pLine->setBlock(NULL);
-		pLine->remove();
-		delete pLine;
+		_removeLine(pLine,true);
 		pLine = pNew;
-		setLastContainer(pLine);
 		if(bFirst)
 		{
 			setFirstContainer(pLine);
@@ -2342,6 +2362,7 @@ void fl_BlockLayout::formatWrappedFromHere(fp_Line * pLine, fp_Page * pPage)
 			// Can't fit on this line.
 			// transfer to new wrapped line and delete the old one
 			//
+			xxx_UT_DEBUGMSG(("Line too narrow in formatwrapped %x block %d \n",pLine,this));
 			iX = getLeftMargin();
 			bool bFirst = false;
 			if(pLine == static_cast<fp_Line *>(getFirstContainer()))
@@ -2356,21 +2377,21 @@ void fl_BlockLayout::formatWrappedFromHere(fp_Line * pLine, fp_Page * pPage)
 			m_iAccumulatedHeight += iHeight;
 			m_bSameYAsPrevious = false;
 			fp_Line * pNew = getNextWrappedLine(iX,iHeight,pPage);
+			while(pNew && static_cast<fp_Line *>(pNew->getPrev()) != pLine)
+			{
+				pNew = static_cast<fp_Line *>(pNew->getPrev());
+			}
 			fp_Run * pRun = pLine->getFirstRun();
 			while(pRun)
 			{
 				pNew->addRun(pRun);
 				pRun= pRun->getNextRun();
 			}
-			pLine->setBlock(NULL);
-			pLine->remove();
-			delete pLine;
+			_removeLine(pLine,true);
 			pLine = pNew;
-			setLastContainer(pLine);
 			if(bFirst)
 			{
 				pLine->setPrev(NULL);
-				UT_ASSERT(pLine->getNext() == NULL);
 				setFirstContainer(pLine);
 			}
 		}
@@ -2387,7 +2408,8 @@ void fl_BlockLayout::formatWrappedFromHere(fp_Line * pLine, fp_Page * pPage)
 	// 
 		// Reformat paragraph
 	m_Breaker.breakParagraph(this, pLine,pPage);
-	_removeAllEmptyLines();
+	xxx_UT_DEBUGMSG(("Format wrapped text in blobk %x \n",this));
+
 	pLine = static_cast<fp_Line *>(getFirstContainer());
 	while(pLine)
 	{
@@ -2562,6 +2584,7 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(UT_sint32 iX,
 				UT_ASSERT(getFirstContainer()->getPrev() == NULL);
 			}
 #endif
+			UT_ASSERT(findLineInBlock(pLine) >= 0);
 			return pLine;
 		}
 	}
@@ -2648,6 +2671,7 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(UT_sint32 iX,
 			}
 			xxx_UT_DEBUGMSG(("-2- New line %x has X %d Max width %d wrapped %d sameY %d \n",pLine,pLine->getX(),pLine->getMaxWidth(),pLine->isWrapped(),pLine->isSameYAsPrevious()));
 			pLine->setHeight(iHeight);
+			UT_ASSERT(findLineInBlock(pLine) >= 0);
 			return pLine;
 		}
 		xxx_UT_DEBUGMSG(("Max width 6 set to %d \n",20));
@@ -2691,6 +2715,7 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(UT_sint32 iX,
 		UT_ASSERT(getFirstContainer()->getPrev() == NULL);
 	}
 #endif
+	UT_ASSERT(findLineInBlock(pLine) >= 0);
 	return pLine;
 }
 
@@ -3218,6 +3243,7 @@ fp_Container* fl_BlockLayout::getNewContainer(fp_Container * /* pCon*/)
 		UT_ASSERT(getFirstContainer()->getPrev() == NULL);
 	}
 #endif
+	UT_ASSERT(findLineInBlock(pLine) >= 0);
 	return static_cast<fp_Container *>(pLine);
 }
 

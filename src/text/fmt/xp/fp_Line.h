@@ -102,7 +102,8 @@ public:
 	virtual void				setY(UT_sint32);
 	
 	virtual void				setContainer(fp_Container*);
-	inline	void		        setBlock(fl_BlockLayout * pBlock)	{ m_pBlock = pBlock; }
+	void		        setBlock(fl_BlockLayout * pBlock);
+
 	fp_Container *              getColumn(void);
 	fp_Page *                   getPage(void);
 
