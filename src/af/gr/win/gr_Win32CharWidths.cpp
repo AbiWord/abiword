@@ -414,7 +414,7 @@ void GR_Win32CharWidths::_retrieveFontInfo(HDC hdc)
 #ifdef DEBUG
 	for(UT_uint32 n = 0; n < m_vRanges.getItemCount() - 1; n += 2)
 	{
-		UT_DEBUGMSG(("GR_Win32CharWidths::_retrieveFontInfo: range 0x%04x - 0x%04x\n",
+		xxx_UT_DEBUGMSG(("GR_Win32CharWidths::_retrieveFontInfo: range 0x%04x - 0x%04x\n",
 					 m_vRanges.getNthItem(n), m_vRanges.getNthItem(n+1)));
 	}
 	
