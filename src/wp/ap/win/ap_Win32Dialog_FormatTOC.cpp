@@ -38,6 +38,8 @@
 #include "ap_Win32Resources.rc2"
 #include "xap_Win32DialogHelper.h"
 #include "ap_Dialog_FormatFootnotes.h"
+#include "ap_Win32App.h"                                                        
+#include "pt_PieceTable.h"
 
 /*****************************************************************/
 
@@ -144,15 +146,19 @@ void AP_Win32Dialog_FormatTOC::runModeless(XAP_Frame * pFrame)
 
 void AP_Win32Dialog_FormatTOC::setStyle(HWND hwndCtrl)
 {
-	UT_UTF8String sVal;	
+	UT_UTF8String sVal, str_loc;	
 	UT_UTF8String sProp = static_cast<char *> ("toc-prop");
+
 	if(UT_stricmp("toc-heading-style",sProp.utf8_str()) != 0)
 	{
 		UT_String sNum =  UT_String_sprintf("%d",getMainLevel());
 		sProp += sNum.c_str();
 	}
+
 	sVal = getNewStyle(sProp);
-	SendMessage (hwndCtrl, 	WM_SETTEXT, 0,  (LPARAM)sVal.utf8_str());
+	pt_PieceTable::s_getLocalisedStyleName (sVal.utf8_str(), str_loc);
+
+	SendMessage (hwndCtrl, 	WM_SETTEXT, 0,  (LPARAM)str_loc.utf8_str());
 	setTOCProperty(sProp,sVal);
 }
 
@@ -160,17 +166,24 @@ void AP_Win32Dialog_FormatTOC::setStyle(HWND hwndCtrl)
 void AP_Win32Dialog_FormatTOC::setMainLevel(UT_sint32 iLevel)
 {
 	AP_Dialog_FormatTOC::setMainLevel(iLevel);
-	UT_UTF8String sVal;
+	UT_UTF8String sVal, str_loc;
+	UT_String str;
+
 	sVal = getTOCPropVal("toc-dest-style",getMainLevel());
 
 	SendMessage (GetDlgItem (m_pGeneral->getHandle(), AP_RID_DIALOG_FORMATTOC_GENERAL_TEXT_DISPLAYSTYLEVALUE), 	
 		WM_SETTEXT, 0, (LPARAM)sVal.utf8_str());
 
 	sVal = getTOCPropVal("toc-source-style",getMainLevel());
+
+	pt_PieceTable::s_getLocalisedStyleName (sVal.utf8_str(), str_loc);
+	str = AP_Win32App::s_fromUTF8ToWinLocale (str_loc.utf8_str()); 
+
 	SendMessage (GetDlgItem (m_pGeneral->getHandle(), AP_RID_DIALOG_FORMATTOC_GENERAL_TEXT_FILLSTYLEVALUE), 	
-		WM_SETTEXT, 0, (LPARAM)sVal.utf8_str());	
+		WM_SETTEXT, 0, (LPARAM)str.c_str());	
 
 	sVal = getTOCPropVal("toc-has-label",getMainLevel());
+	
 	CheckDlgButton(m_pGeneral->getHandle(), AP_RID_DIALOG_FORMATTOC_GENERAL_CHECK_HASHEADING,
 		(UT_stricmp(sVal.utf8_str(),"1") == 0) ? BST_CHECKED :BST_UNCHECKED);	
 }
@@ -222,7 +235,8 @@ AP_Win32Dialog_FormatTOC_General::~AP_Win32Dialog_FormatTOC_General()
 void AP_Win32Dialog_FormatTOC_General::_fillGUI()
 {														 	
 	
-	UT_UTF8String sVal; 
+	UT_UTF8String sVal, str_loc;
+	UT_String str;
 
 	sVal = getContainer()->getTOCPropVal("toc-has-heading"); 
 	CheckDlgButton(getHandle(), AP_RID_DIALOG_FORMATTOC_GENERAL_CHECK_HASHEADING,
@@ -233,14 +247,21 @@ void AP_Win32Dialog_FormatTOC_General::_fillGUI()
 		(UT_stricmp(sVal.utf8_str(),"1") == 0) ? BST_CHECKED :BST_UNCHECKED);
 
 	sVal = getContainer()->getTOCPropVal("toc-heading-style");
+	pt_PieceTable::s_getLocalisedStyleName (sVal.utf8_str(), str_loc);
+	str = AP_Win32App::s_fromUTF8ToWinLocale (str_loc.utf8_str()); 
+
 	SendMessage (GetDlgItem (getHandle(), AP_RID_DIALOG_FORMATTOC_GENERAL_TEXT_HEADINGSTYLEVALUE), 	
-		WM_SETTEXT, 0, (LPARAM)sVal.utf8_str());
+		WM_SETTEXT, 0, (LPARAM)str.c_str());	
 
 	getContainer()->setMainLevel(getContainer()->getMainLevel());
 
 	sVal = getContainer()->getTOCPropVal("toc-heading");
+	pt_PieceTable::s_getLocalisedStyleName (sVal.utf8_str(), str_loc);
+	str = AP_Win32App::s_fromUTF8ToWinLocale (str_loc.utf8_str()); 
+
 	SetWindowText (GetDlgItem (getHandle(),
-		AP_RID_DIALOG_FORMATTOC_GENERAL_EDIT_HEADINGTEXT), sVal.utf8_str());
+		AP_RID_DIALOG_FORMATTOC_GENERAL_EDIT_HEADINGTEXT), str.c_str());
+	
 	
 }
 
@@ -351,12 +372,15 @@ void AP_Win32Dialog_FormatTOC_General::_onCommand(HWND hWnd, WPARAM wParam, LPAR
 
 void AP_Win32Dialog_FormatTOC_General::_onApply()
 {
-	char szText[1024];	
+	char szText[1024];
+	UT_UTF8String sUTF8;
 
 	GetWindowText(GetDlgItem (getHandle(),
 		AP_RID_DIALOG_FORMATTOC_GENERAL_EDIT_HEADINGTEXT), szText, 1024);
 
-	getContainer()->setTOCProperty("toc-heading", szText);
+	sUTF8 = AP_Win32App::s_fromWinLocaleToUTF8 (szText); 
+	
+	getContainer()->setTOCProperty("toc-heading", sUTF8.utf8_str());
 	getContainer()->Apply();
 }
 
