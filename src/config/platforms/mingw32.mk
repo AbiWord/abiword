@@ -51,13 +51,15 @@ IA64_ARCH_FLAGS		=
 # Define tools
 CC		= gcc
 CCC		= g++
-RANLIB		= ranlib
+RANLIB	= ranlib
+AR		= ar cr $@
+RC		= windres
 
 # Suffixes
 OBJ_SUFFIX	= o
 LIB_SUFFIX	= a
 DLL_SUFFIX	= so # We dont use actual dlls, for disting anyway.  We could though, but given the windows using church secretary, I think current system is safer.
-AR		= ar cr $@
+EXE_SUFFIX = .exe
 
 OBJ_DIR_SFX	=
 DEFINES		=
@@ -153,12 +155,6 @@ UNIX_CAN_BUILD_STATIC=1
 # I'm still not totally decided really...I'll need to experiment some more.
 
 ABI_REQUIRE_PEER_ICONV = 1
-
-# Define tools - resource compiler
-RC		= windres
-
-# Suffixes
-EXE_SUFFIX = .exe
 
 # Compiler flags
 # requires the commctrl.dll from ie4.0 or greater

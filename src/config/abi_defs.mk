@@ -130,8 +130,12 @@ include $(ABI_ROOT)/src/config/predefines.mk$(PREDEF_FILE)
 # This doesn't mean it didn't use your optimizations.
 
 # this makes HP-UX look like "HP" (sed turns "HP-UX" into "HP" with the -.* pattern)
+ifneq ($(ABI_OPT_WINELIB), 1)
 ifndef OS_NAME
 OS_NAME		:= $(shell uname -s | sed "s/\//-/" | sed "s/_/-/" | sed "s/-.*//g")
+endif
+else
+OS_NAME		:= MINGW32
 endif
 ifndef OS_RELEASE
 OS_RELEASE	:= $(shell uname -r | sed "s/\//-/" | sed "s/[() ].*//g")
@@ -283,7 +287,7 @@ endif
 ##
 ## ABI_XAP_INCS define the cross-platform, cross-application directories
 ## ABI_OTH_INCS define the header directories in src/other
-## ABI_PEEER_INCS define header directories in source trees that are peers to abi
+## ABI_PEER_INCS define header directories in source trees that are peers to abi
 ##
 ## ABI_AP_INCS should define application-specific headers.  these are set
 ##             in abi_defs_*.mk -- one for each application in AbiSuite.
@@ -409,8 +413,12 @@ ifeq ($(OS_NAME), CYGWIN)
 include $(ABI_ROOT)/src/config/platforms/cygwin.mk
 endif
 
+ifeq ($(ABI_OPT_WINELIB), 1)
+include $(ABI_ROOT)/src/config/platforms/winelib.mk
+else
 ifeq ($(OS_NAME), MINGW32)
 include $(ABI_ROOT)/src/config/platforms/mingw32.mk
+endif
 endif
 
 ifeq ($(OS_NAME), Linux)
@@ -801,4 +809,3 @@ endif
 ifeq ($(OS_NAME), MINGW32)
 	CFLAGS += -I$(ABI_ROOT)/../fribidi	# so <fribidi.h> works
 endif
-
