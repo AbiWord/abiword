@@ -24,16 +24,17 @@ include $(ABI_ROOT)/src/config/abi_defs_wp.mk
 
 CPPSRCS=		ie_exp.cpp				\
 			ie_exp_AbiWord_1.cpp			\
-                      ie_exp_GZipAbiWord.cpp                  \
+			ie_exp_GZipAbiWord.cpp                  \
 			ie_exp_HTML.cpp				\
 			ie_exp_Text.cpp				\
 			ie_exp_RTF.cpp				\
 			ie_exp_RTF_listenerGetProps.cpp		\
 			ie_exp_RTF_listenerWriteDoc.cpp		\
 			ie_exp_UTF8.cpp				\
+			ie_exp_LATEX.cpp			\
 			ie_imp.cpp				\
 			ie_imp_AbiWord_1.cpp			\
-                      ie_imp_GZipAbiWord.cpp                  \
+			ie_imp_GZipAbiWord.cpp                  \
 			ie_imp_MsWord_97.cpp			\
 			ie_imp_RTF.cpp				\
 			ie_imp_Text.cpp				\

@@ -33,6 +33,7 @@
 #include "ie_exp_Text.h"
 #include "ie_exp_HTML.h"
 #include "ie_exp_UTF8.h"
+#include "ie_exp_LATEX.h"
 
 /*****************************************************************/
 /*****************************************************************/
@@ -54,11 +55,12 @@ struct _xp
 static struct _xp s_expTable[] =
 {
 	DeclareExporter(IE_Exp_AbiWord_1),
-      DeclareExporter(IE_Exp_GZipAbiWord),
+	DeclareExporter(IE_Exp_GZipAbiWord),
 	DeclareExporter(IE_Exp_RTF),
 	DeclareExporter(IE_Exp_Text),
 	DeclareExporter(IE_Exp_UTF8),
 	DeclareExporter(IE_Exp_HTML),
+	DeclareExporter(IE_Exp_LATEX),
 };
 
 /*****************************************************************/
