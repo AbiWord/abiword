@@ -11,7 +11,7 @@
 <!-- am-ET translation provided by የግዕዝ Frontier Foundation -->
 
 
-<AbiStrings app="AbiWord" ver="1.0" language="am-ET" encoding="UTF-8">
+<AbiStrings app="AbiWord" ver="1.0" language="am-ET">
 
 <Strings	class="XAP"
 MSG_ShowUnixFontWarning=""

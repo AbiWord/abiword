@@ -7,7 +7,7 @@
 <!-- This file is covered by the GNU Public License (GPL).           -->
 <!-- ==============================================================  -->
 
-<AbiStrings app="AbiWord" ver="1.0" language="bg-BG" encoding="CP1251">
+<AbiStrings app="AbiWord" ver="1.0" language="bg-BG">
 
 <Strings    class="XAP"
 DICTIONARY_CANTLOAD="Не мога да заредя речника за %s"

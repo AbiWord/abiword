@@ -11,7 +11,7 @@
 <!-- es-ES translation provided by ?? -->
 
 
-<AbiStrings app="AbiWord" ver="1.0" language="es-ES" encoding="iso-8859-1">
+<AbiStrings app="AbiWord" ver="1.0" language="es-ES">
 
 <Strings	class="XAP"
 MSG_ShowUnixFontWarning="AbiWord no fue capaz de añadir sus fuentes al X font path.&#10;Esto no significa que haya nada mal en su&#10;sistema, pero usted tiene que modificar su font path manualmente.&#10;Por favor, vea &quot;Unix Font Path Problem&quot; en la sección FAQ del&#10;fichero de ayuda de Abiword para mas información detallada, incluyendo&#10;instrucciones acerca de como quitar este mensaje."

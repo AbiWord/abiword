@@ -12,7 +12,7 @@
 <!-- modifications by Gilles Saint-Denis <stdenisg@cedep.net> and Christophe Caron <ChrisDigo@aol.com> -->
 
 
-<AbiStrings app="AbiWord" ver="1.0" language="fr-FR" encoding="iso-8859-1">
+<AbiStrings app="AbiWord" ver="1.0" language="fr-FR">
 
 <Strings	class="XAP"
 MSG_ShowUnixFontWarning="AbiWord n'a pas été en mesure d'ajouter ses polices de caractères&#10;au chemin d'accès des polices X. S'il vous plait voir &#10;&quot;Problèmes de chemin d'accès des polices de caractères Unix&quot; &#10;dans la section FAQ des fichiers d'aide d'Abiword."

@@ -11,7 +11,7 @@
 <!-- British (and Irish) English Localisation provided by Alan Horkan <Alan.Horkan@maths.tcd.ie> -->
 <!-- en-GB is mostly the same as en-US, and en-IE does not conflict with en-GB to the best of my knowledge  -->  
 
-<AbiStrings app="AbiWord" ver="1.0" language="en-GB" encoding="iso-8859-1">
+<AbiStrings app="AbiWord" ver="1.0" language="en-GB">
 
 <Strings	class="XAP"
 DLG_UFS_ColorTab="   Colour   "

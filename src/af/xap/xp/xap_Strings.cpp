@@ -93,8 +93,12 @@ UT_String XAP_StringSet::getValue(XAP_String_Id id, const char * inEncoding) con
 
 UT_String XAP_StringSet::getValueUTF8(XAP_String_Id id) const
 {
+#if 0
   // HACK- wildly sub-optimal. TODO: cache a UT_iconv_t cd
   return getValue(id, "UTF-8");
+#else
+  return UT_String(getValue(id));
+#endif
 }
 
 void XAP_StringSet::setEncoding(const XML_Char * inEncoding)
@@ -366,11 +370,6 @@ void XAP_DiskStringSet::startElement(const XML_Char *name, const XML_Char **atts
 				if (!setLanguage(a[1]))
 					goto MemoryError;
 			}
-			else if (strcmp((char*)a[0], "encoding") == 0)
-			  {
-			    UT_DEBUGMSG(("String encoding is %s\n", a[1]));
-			    setEncoding(a[1]);
-			  }
 
 			a += 2;
 		}

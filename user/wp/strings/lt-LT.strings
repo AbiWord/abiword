@@ -7,7 +7,7 @@
 <!-- This file is covered by the GNU Public License (GPL).           -->
 <!-- ==============================================================  -->
 
-<AbiStrings app="AbiWord" ver="1.0" language="lt-LT" encoding="iso-8859-13">
+<AbiStrings app="AbiWord" ver="1.0" language="lt-LT">
 
 <Strings    class="XAP"
 DICTIONARY_CANTLOAD="Negalëjau ákelti þodyno %s kalbai"

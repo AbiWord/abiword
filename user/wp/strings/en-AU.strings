@@ -10,7 +10,7 @@
 
 <!-- copied from en-IE by Alan <horkana@tcd.ie>  -->  
 
-<AbiStrings app="AbiWord" ver="1.0" language="en-AU" encoding="iso-8859-1">
+<AbiStrings app="AbiWord" ver="1.0" language="en-AU">
 
 <Strings	class="XAP"
 DLG_UFS_ColorTab="   Colour   "

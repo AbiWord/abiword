@@ -11,7 +11,7 @@
 <!-- _Language_ translations provided by Alan Horkan <Alan.Horkan@maths.tcd.ie> -->
 
 
-<AbiStrings app="AbiWord" ver="1.0" language="ga-IE" encoding="iso-8859-1">
+<AbiStrings app="AbiWord" ver="1.0" language="ga-IE">
 
 <Strings	class="XAP"
 UntitledDocument="Untitled%d"

@@ -11,7 +11,7 @@
 <!-- Turkish translations provided by "alper" <shullgum@yahoo.com> -->
 
 
-<AbiStrings app="AbiWord" ver="1.0" language="tr-TR" encoding="cp1254">
+<AbiStrings app="AbiWord" ver="1.0" language="tr-TR">
 
 <Strings	class="XAP"
 MSG_ShowUnixFontWarning="AbiWord, yazýtiplerini X yazýtipi yoluna ekleyemedi. Lütfen, AbiWord yardým dosyasýnýn SSS bölümündeki &quot;Unix Yazýtipi Yolu Sorunu&quot; baþlýklý maddeye baþvurunuz."

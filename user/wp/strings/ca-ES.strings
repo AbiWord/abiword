@@ -16,7 +16,7 @@
 
 -->
 
-<AbiStrings app="AbiWord" ver="1.0" language="ca-ES" encoding="iso-8859-1">
+<AbiStrings app="AbiWord" ver="1.0" language="ca-ES">
 
 <Strings	class="XAP"
 MSG_ShowUnixFontWarning="Advertència"

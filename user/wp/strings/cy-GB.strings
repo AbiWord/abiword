@@ -7,7 +7,7 @@
 <!-- This file is covered by the GNU Public License (GPL).           -->
 <!-- ==============================================================  -->
 
-<AbiStrings app="AbiWord" ver="1.0" language="cy-GB" encoding="UTF-8">
+<AbiStrings app="AbiWord" ver="1.0" language="cy-GB">
 
 <Strings    class="XAP"
 DICTIONARY_CANTLOAD="Methu llwytho geiriadur ar gyfer yr iaith %s"
