@@ -175,6 +175,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_FMT_STYLE_DEFINE,		0,1,0,0,	"dlgStyle",			NULL,					NULL);
 	_s(AP_MENU_ID_FMT_STYLE,		1,0,0,0,	NULL,			NULL,					NULL);
 	_s(AP_MENU_ID_FMT_IMPORTSTYLES,		0,1,0,0,	"importStyles",	NULL,					NULL);
+	_s(AP_MENU_ID_FMT_STYLIST,		0,1,0,0,	"dlgStylist",	NULL,					NULL);
 	_s(AP_MENU_ID_FMT_TABS,			0,1,0,0,	"dlgTabs",			NULL,					NULL);
 	_s(AP_MENU_ID_FMT_BOLD,			0,0,1,0,	"toggleBold",		ap_GetState_CharFmt,	NULL);
 	_s(AP_MENU_ID_FMT_ITALIC,		0,0,1,0,	"toggleItalic",		ap_GetState_CharFmt,	NULL);

@@ -43,6 +43,7 @@ PLATFORM_OBJS=	$(OBJDIR)/ap_$(ABI_FE)App.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_Paragraph.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_Spell.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_Styles.$(OBJ_SUFFIX)	\
+		$(OBJDIR)/ap_$(ABI_FE)Dialog_Stylist.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_Columns.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_Tab.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_InsertBookmark.$(OBJ_SUFFIX)	\
@@ -203,6 +204,7 @@ OBJS=		$(PLATFORM_OBJS)				\
 		$(OBJDIR)/ap_App.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ap_Args.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ap_Frame.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/ap_Dialog_Stylist.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_wp_splash.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_wp_sidebar.$(OBJ_SUFFIX)		
 

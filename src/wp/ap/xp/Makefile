@@ -96,6 +96,7 @@ CPPSRCS=	ap_Args.cpp			\
 		ap_Toolbar_LabelSet.cpp		\
 		ap_Toolbar_Layouts.cpp		\
 		ap_Frame.cpp			\
+		ap_Dialog_Stylist.cpp		\
 		ap_App.cpp			\
 		ap_TopRuler.cpp
 

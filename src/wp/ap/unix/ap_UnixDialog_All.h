@@ -53,6 +53,7 @@
 #	include "ap_UnixDialog_Options.h"
 #	include "ap_UnixDialog_Spell.h"
 #	include "ap_UnixDialog_Styles.h"
+#   include "ap_UnixDialog_Stylist.h"
 #	include "ap_UnixDialog_Tab.h"
 #	include "ap_UnixDialog_Insert_DateTime.h"
 #	include "ap_UnixDialog_WordCount.h"
@@ -129,6 +130,7 @@
 	DeclareDialog(AP_DIALOG_ID_BREAK,			AP_UnixDialog_Break)
 	DeclareDialog(AP_DIALOG_ID_SPELL,			AP_UnixDialog_Spell)
 	DeclareDialog(AP_DIALOG_ID_STYLES,			AP_UnixDialog_Styles)
+		DeclareDialog(AP_DIALOG_ID_STYLIST,			AP_UnixDialog_Stylist)
     DeclareDialog(AP_DIALOG_ID_PAGE_NUMBERS,    AP_UnixDialog_PageNumbers)
 	DeclareDialog(AP_DIALOG_ID_PARAGRAPH,		AP_UnixDialog_Paragraph)
 	DeclareDialog(AP_DIALOG_ID_OPTIONS,			AP_UnixDialog_Options)

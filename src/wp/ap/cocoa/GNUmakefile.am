@@ -37,6 +37,7 @@ libWpAp_cocoa_a_SOURCES=\
 	ap_CocoaDialog_MetaData.mm	\
 	ap_CocoaDialog_New.mm	\
 	ap_CocoaDialog_Options.mm	\
+	ap_CocoaDialog_Stylist.mm	\
 	ap_CocoaDialog_Paragraph.mm	\
 	ap_CocoaDialog_PageSetup.mm	\
 	ap_CocoaDialog_Tab.mm	\

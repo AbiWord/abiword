@@ -53,7 +53,7 @@ static void s_merge_right(GtkWidget *widget, gpointer data )
 	dlg->onMerge();
 }
 
-void s_response(GtkWidget * wid, gint id, AP_UnixDialog_MergeCells * me )
+static void s_response(GtkWidget * wid, gint id, AP_UnixDialog_MergeCells * me )
 {
     abiDestroyWidget( wid ) ;// will emit signals for us
 }
@@ -83,8 +83,7 @@ static void s_merge_below(GtkWidget *widget, gpointer data )
 XAP_Dialog * AP_UnixDialog_MergeCells::static_constructor(XAP_DialogFactory * pFactory,
 													       XAP_Dialog_Id id)
 {
-	AP_UnixDialog_MergeCells * p = new AP_UnixDialog_MergeCells(pFactory,id);
-	return p;
+	return new AP_UnixDialog_MergeCells(pFactory,id);
 }
 
 AP_UnixDialog_MergeCells::AP_UnixDialog_MergeCells(XAP_DialogFactory * pDlgFactory,

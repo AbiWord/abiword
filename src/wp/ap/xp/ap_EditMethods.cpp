@@ -63,6 +63,7 @@
 #include "ap_Dialog_Options.h"
 #include "ap_Dialog_Spell.h"
 #include "ap_Dialog_Styles.h"
+#include "ap_Dialog_Stylist.h"
 #include "ap_Dialog_Tab.h"
 #include "ap_Dialog_Insert_DateTime.h"
 #include "ap_Dialog_Field.h"
@@ -403,6 +404,7 @@ public:
 	static EV_EditMethod_Fn style;
 	static EV_EditMethod_Fn dlgBackground;
 	static EV_EditMethod_Fn dlgStyle;
+	static EV_EditMethod_Fn dlgStylist;
 	static EV_EditMethod_Fn dlgTabs;
 	static EV_EditMethod_Fn formatFootnotes;
 	static EV_EditMethod_Fn dlgToggleCase;
@@ -727,6 +729,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(dlgSpell), 			0,	""),
 	EV_EditMethod(NF(dlgSpellPrefs), 		0,	""),
 	EV_EditMethod(NF(dlgStyle), 			0,	""),
+	EV_EditMethod(NF(dlgStylist),           0,  ""),
 	EV_EditMethod(NF(dlgTabs),				0,	""),
 	EV_EditMethod(NF(dlgToggleCase),		0,	""),
 	EV_EditMethod(NF(dlgWordCount), 		0,	""),
@@ -9011,6 +9014,7 @@ Defun1(formatFootnotes)
 #endif
 	return true;
 }
+
 Defun1(dlgStyle)
 {
 	CHECK_FRAME;
@@ -9019,6 +9023,19 @@ Defun1(dlgStyle)
 	ABIWORD_VIEW;
 
 	return s_doStylesDlg(pView);
+}
+
+Defun1(dlgStylist)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pAV_View->getParentData());
+	UT_ASSERT(pFrame);
+
+	UT_ASSERT(UT_TODO);
+
+	return true;
 }
 
 Defun1(dlgTabs)

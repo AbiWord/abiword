@@ -149,6 +149,7 @@ menuitem(FMT_IMAGE)
 menuitem(FMT_STYLE)
 menuitem(FMT_STYLE_DEFINE)
 menuitem(FMT_IMPORTSTYLES)
+menuitem(FMT_STYLIST)
 
 menuitem(FMT)
 menuitem(FMT_BOLD)

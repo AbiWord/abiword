@@ -99,6 +99,7 @@ libWpAp_xp_a_SOURCES=	ap_Args.cpp		\
 		ap_TopRuler.cpp			\
 		ap_App.cpp			\
 		ap_Frame.cpp			\
+		ap_Dialog_Stylist.cpp		\
 		ap_wp_splash.cpp		\
 		ap_wp_sidebar.cpp
 
