@@ -56,7 +56,8 @@
 ;!define EXENAME "setup_abiword.${VERSION_MAJOR}-${VERSION_MINOR}-${VERSION_MICRO}.exe"
 !define EXENAME "setup_abiword.exe"
 !define APPSET  "AbiSuite"
-!define MAINPROGRAM "Abiword\bin\Abiword.exe"
+!define PROGRAMEXE "AbiWord.exe"
+!define MAINPROGRAM "AbiWord\bin\${PROGRAMEXE}"
 
 
 ; Some checks of user defines
@@ -237,7 +238,7 @@ InstallDirRegKey HKLM SOFTWARE\${APPSET}\${PRODUCT}\v${VERSION_MAJOR} "Install_D
 ; English
 ; Section titles, what user sees to select components for installation
 LangString TITLE_ssection_core                 ${LANG_English} "Primary components"
-LangString TITLE_section_abi                   ${LANG_English} "Abiword.exe (required)"
+LangString TITLE_section_abi                   ${LANG_English} "${PROGRAMEXE} (required)"
 Langstring TITLE_section_shellupdate           ${LANG_English} "Update Registry Settings"
 LangString TITLE_ssection_shortcuts            ${LANG_English} "Shortcuts"
 LangString TITLE_ssection_shortcuts_cu         ${LANG_English} "Shortcuts (Current User)"
@@ -271,7 +272,7 @@ LangString TITLE_ssection_plugins              ${LANG_English} "Plugins"
 
 ; Section descriptions displayed to user when mouse hovers over a section
 LangString DESC_ssection_core            ${LANG_English} "Primary (core) set of components for AbiWord to run well."
-LangString DESC_section_abi              ${LANG_English} "Required.  Installs the actual AbiWord.exe program."
+LangString DESC_section_abi              ${LANG_English} "Required.  Installs the actual ${PROGRAMEXE} program."
 Langstring DESC_section_shellupdate      ${LANG_English} "Adds entries to the Windows registry to allow the shell (Explorer) to handle supported file formats."
 LangString DESC_ssection_shortcuts       ${LANG_English} "Installs shortcuts in various places to allow starting AbiWord through additional locations."
 LangString DESC_ssection_shortcuts_cu    ${LANG_English} "Installs shortcuts for the currently logged on user."
@@ -459,7 +460,7 @@ Section "$(TITLE_section_abi)" section_abi
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	; Set output path to the installation directory.
 	SetOutPath $INSTDIR\${PRODUCT}\bin
-	File "AbiWord.exe"
+	File "${PROGRAMEXE}"
 
 	SetOutPath $INSTDIR\${PRODUCT}
 	File "..\AbiSuite\AbiWord\system.*"
@@ -495,7 +496,7 @@ Section "$(TITLE_section_abi)" section_abi
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT}${VERSION_MAJOR}" "DisplayName" "${PRODUCT} ${VERSION} (remove only)"
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT}${VERSION_MAJOR}" "UninstallString" '"$INSTDIR\Uninstall${PRODUCT}${VERSION_MAJOR}.exe"'
 
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\AppPaths\AbiWord" "" '"$INSTDIR\AbiWord\bin\AbiWord.exe"'
+	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\App Paths\${PROGRAMEXE}" "" '"$INSTDIR\${MAINPROGRAM}"'
 
 	; New Uninstaller 
 	WriteUninstaller "Uninstall${PRODUCT}${VERSION_MAJOR}.exe"
