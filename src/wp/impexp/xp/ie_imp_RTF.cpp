@@ -9955,9 +9955,16 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 			PD_Style * pStyle = NULL;
 			if(getDoc()->getStyle(szName, &pStyle))
 			{
-				pStyle->addAttributes(attribs);
-				pStyle->getBasedOn();
-				pStyle->getFollowedBy();
+				if (!isPasting())
+				{
+					pStyle->addAttributes(attribs);
+					pStyle->getBasedOn();
+					pStyle->getFollowedBy();
+				} 
+				else
+				{
+					UT_DEBUGMSG(("DOM: refusing to append props to an already existing style while pasting\n"));
+				}
 			}
 			else
 			{
