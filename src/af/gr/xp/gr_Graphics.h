@@ -31,6 +31,7 @@ class UT_RGBColor;
 class XAP_App;
 class XAP_PrefsScheme;
 class XAP_Frame;
+class UT_String;
 
 #ifndef WITH_PANGO
 // some functions that are pure virtual in the non-Pango implementation, are
@@ -50,9 +51,9 @@ class ABI_EXPORT GR_Font
 	GR_Font();
 	virtual ~GR_Font();
 
-	typedef enum { FF_Unknown=0, FF_Roman=1, FF_Swiss=2, FF_Modern=3,
-				   FF_Script=4, FF_Decorative=5, FF_Technical=6, FF_BiDi=7 } FontFamilyEnum;
-	typedef enum { FP_Unknown=0, FP_Fixed=1, FP_Variable=2 } FontPitchEnum;
+	typedef enum { FF_Unknown = 0, FF_Roman, FF_Swiss, FF_Modern,
+				   FF_Script, FF_Decorative, FF_Technical, FF_BiDi, FF_Last } FontFamilyEnum;
+	typedef enum { FP_Unknown = 0, FP_Fixed, FP_Variable } FontPitchEnum;
 
 	// The following is actually implemented in platform code.
 	// It is primarily used to characterize fonts for RTF export.
@@ -61,6 +62,7 @@ class ABI_EXPORT GR_Font
 										   FontPitchEnum * pfp,
 										   bool * pbTrueType);
 
+	virtual const char* getFamily() const { return NULL; }
 };
 #else
 #define GR_Font PangoFont
@@ -96,7 +98,7 @@ class ABI_EXPORT GR_Graphics
 	virtual ~GR_Graphics();
 
 #ifndef WITH_PANGO
-	virtual void      drawChar (UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff);
+	virtual void      drawGlyph(UT_uint32 glyph_idx, UT_sint32 xoff, UT_sint32 yoff) = 0;
 	virtual void      drawChars(const UT_UCSChar* pChars,
 								int iCharOffset,
 								int iLength,
@@ -147,8 +149,9 @@ class ABI_EXPORT GR_Graphics
 									UT_GrowBufElement* pWidths);
 
 	virtual UT_uint32 measureUnRemappedChar(const UT_UCSChar c) = 0;
+	virtual void getCoverage(UT_Vector& coverage) = 0;
 #endif
-
+	
 	/* GR_Font versions of the above -- TODO: should I add drawChar* methods too? */
 	virtual UT_uint32 getFontAscent(GR_Font *)  PURE_VIRTUAL_IF_NOT_PANGO;
 	virtual UT_uint32 getFontDescent(GR_Font *) PURE_VIRTUAL_IF_NOT_PANGO;
@@ -174,6 +177,12 @@ class ABI_EXPORT GR_Graphics
 							   const char* pszFontWeight,
 							   const char* pszFontStretch,
 							   const char* pszFontSize) PURE_VIRTUAL_IF_NOT_PANGO;
+	static const char* findNearestFont(const char* pszFontFamily,
+									   const char* pszFontStyle,
+									   const char* pszFontVariant,
+									   const char* pszFontWeight,
+									   const char* pszFontStretch,
+									   const char* pszFontSize);
 
 	UT_sint32         convertDimension(const char*) const;
 	UT_sint32         convertDimension(double Value, UT_Dimension Dim) const;
@@ -203,12 +212,12 @@ class ABI_EXPORT GR_Graphics
 	virtual void      polyLine(UT_Point * pts, UT_uint32 nPoints) = 0;
 
 	virtual void      fillRect(const UT_RGBColor& c,
-				   UT_sint32 x,
-				   UT_sint32 y,
-				   UT_sint32 w,
-				   UT_sint32 h) = 0;
+							   UT_sint32 x,
+							   UT_sint32 y,
+							   UT_sint32 w,
+							   UT_sint32 h) = 0;
 
-	virtual void      fillRect(const UT_RGBColor& c, UT_Rect &r) = 0;
+	void      fillRect(const UT_RGBColor& c, const UT_Rect &r);
 	virtual void      invertRect(const UT_Rect* pRect) = 0;
 	virtual void      setClipRect(const UT_Rect* pRect) = 0;
 	const UT_Rect *   getClipRect(void) const { return m_pRect;}
@@ -442,5 +451,11 @@ class ABI_EXPORT GR_Graphics
 	static XAP_PangoFontManager * s_pPangoFontManager;
 #endif
 };
+
+#ifdef DEBUG
+void xorRect(GR_Graphics* pG, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h);
+void xorRect(GR_Graphics* pG, const UT_Rect& r);
+void flash(GR_Graphics* pG, const UT_Rect& r, const UT_RGBColor& c);
+#endif
 
 #endif /* GR_GRAPHICS_H */

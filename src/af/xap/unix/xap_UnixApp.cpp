@@ -51,10 +51,22 @@
 #include "xap_UnixNullGraphics.h"
 
 /*****************************************************************/
+// #include <sys/time.h> // tmp just to measure the time that XftInit takes
 
 XAP_UnixApp::XAP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 	: XAP_App(pArgs, szAppName), m_dialogFactory(this), m_controlFactory()
 {
+#ifdef USE_XFT
+	/* UT_DEBUGMSG(("Before XftInit.\n"));
+	   timeval tv1, tv2;
+	   gettimeofday(&tv1, NULL); */
+	
+	XftInit(NULL);
+	
+	/* gettimeofday(&tv2, NULL);
+	   UT_DEBUGMSG(("Before XftInit [%d us].\n", (tv2.tv_sec - tv1.tv_sec) * 1000000 + tv2.tv_usec - tv1.tv_usec)); */
+#endif
+
 	m_pUnixToolbarIcons = 0;
 
 	_setAbiSuiteLibDir();
@@ -70,12 +82,10 @@ XAP_UnixApp::XAP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 	// size (which is set above), not a position.
 	m_geometry.flags = GEOMETRY_FLAG_SIZE;
 	m_bBonoboRunning = false;
-	// hack to ensure UnixNull_Graphics is linked properly
-	// this condition should be false always
+	// We need to link UnixNull_Graphics because the AbiCommand
+	// plugin uses it.
 	if (this == 0)
-	{
-		UnixNull_Graphics * pUN_G = new UnixNull_Graphics(0,0);
-	}
+		delete(new UnixNull_Graphics(0,0));
 }
 
 XAP_UnixApp::~XAP_UnixApp()
@@ -264,7 +274,9 @@ bool XAP_UnixApp::_loadFonts()
  	// HUH? These don't match somehow. Abort!!
  	UT_ASSERT(relativePathsSoFar == relativePathCount);
 	//UT_DEBUGMSG(("Using FontPath from preferences [%s].\n",szPrefFontPathPtr));
+#ifndef USE_XFT
 	m_fontManager->setFontPath(szPrefFontPathPtr);
+#endif
 	FREEP(szTemp);
 	
 	// let it loose

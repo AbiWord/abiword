@@ -25,6 +25,7 @@
 #include "ut_assert.h"
 #include "ut_types.h"
 #include "ut_string.h"
+#include "gr_Graphics.h"
 
 #include "xap_Preview_Zoom.h"
 

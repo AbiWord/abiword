@@ -247,8 +247,8 @@ void XAP_UnixDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 #ifndef WITH_PANGO	
 	m_unixGraphics = new GR_UnixGraphics(m_SymbolMap->window, unixapp->getFontManager(), m_pApp);
 #else
-	m_unixGraphics = new GR_UnixGraphics(m_SymbolMap->window, m_pApp);
-#endif 	
+	m_unixarea = new GR_UnixGraphics(m_areaCurrentSym->window,m_pApp);
+#endif
 
 	// let the widget materialize
 	_createSymbolFromGC(m_unixGraphics,
@@ -281,7 +281,7 @@ void XAP_UnixDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 
 	if ( xap_UnixDlg_Insert_Symbol_first == 0)
 	{
-		iDrawSymbol->setSelectedFont( (char *) DEFAULT_UNIX_SYMBOL_FONT);
+		iDrawSymbol->setSelectedFont(DEFAULT_UNIX_SYMBOL_FONT);
 		m_CurrentSymbol = ' ';
 		m_PreviousSymbol = ' ';
 		xap_UnixDlg_Insert_Symbol_first = 1;
@@ -291,10 +291,10 @@ void XAP_UnixDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 
 	gtk_widget_show(mainWindow);
 
-        // Put the current font in the entry box
-	char* iSelectedFont = iDrawSymbol->getSelectedFont();
+	// Put the current font in the entry box
+	const char* iSelectedFont = iDrawSymbol->getSelectedFont();
 	gtk_entry_set_text(GTK_ENTRY(GTK_COMBO(m_fontcombo)->entry),
-					   (gchar *)   iSelectedFont);
+					   iSelectedFont);
 
 	// Show the Previously selected symbol
 
@@ -372,7 +372,7 @@ void XAP_UnixDialog_Insert_Symbol::Key_Pressed(GdkEventKey * e)
 		move = 1;
 		break;
         case GDK_Return:
-	        g_signal_emit_stop_by_name((G_OBJECT(m_windowMain)),
+	        gtk_signal_emit_stop_by_name((GTK_OBJECT(m_windowMain)),
 					     "key_press_event");
 			event_OK();
 		break;
@@ -389,7 +389,7 @@ void XAP_UnixDialog_Insert_Symbol::Key_Pressed(GdkEventKey * e)
 			iDrawSymbol->drawarea(m_CurrentSymbol, m_PreviousSymbol);
 		}
 
-		g_signal_emit_stop_by_name((G_OBJECT(m_windowMain)),
+		gtk_signal_emit_stop_by_name((GTK_OBJECT(m_windowMain)),
 									 "key_press_event");
 	}
 }
@@ -495,7 +495,7 @@ GtkWidget * XAP_UnixDialog_Insert_Symbol::_constructWindow(void)
 
 	// Finally construct the combo box
 	m_fontcombo = _createComboboxWithFonts ();
-	g_object_set_data (G_OBJECT(m_windowMain), "fontcombo", m_fontcombo);
+	gtk_object_set_data (GTK_OBJECT(m_windowMain), "fontcombo", m_fontcombo);
 
 	// Now put the font combo box at the top of the dialog 
 	gtk_box_pack_start(GTK_BOX(vhbox), m_fontcombo, TRUE, FALSE, 0);
@@ -503,14 +503,14 @@ GtkWidget * XAP_UnixDialog_Insert_Symbol::_constructWindow(void)
 	// Now the Symbol Map. 
 	// TODO: 32 * x (19) = 608, 7 * y (21) = 147  FIXME!
 	m_SymbolMap = _previewNew (608, 147);
-	g_object_set_data (G_OBJECT (m_windowMain), "SymbolMap", m_SymbolMap);
+	gtk_object_set_data (GTK_OBJECT (m_windowMain), "SymbolMap", m_SymbolMap);
 	gtk_box_pack_start(GTK_BOX(vboxInsertS), m_SymbolMap, FALSE, FALSE, 0);
 	
 	// Now make a Hbox to hold  OK, Current Selection and Cancel
 	hboxInsertS = gtk_hbox_new (FALSE, 1);
 
 	// Insert the hbox into the dialog window
-	g_object_set_data (G_OBJECT (m_windowMain), "hboxInsertS", hboxInsertS);
+	gtk_object_set_data (GTK_OBJECT (m_windowMain), "hboxInsertS", hboxInsertS);
 	gtk_widget_show (hboxInsertS);
 	gtk_box_pack_start (GTK_BOX (vboxInsertS), hboxInsertS, TRUE, TRUE, 0);
 
@@ -518,13 +518,13 @@ GtkWidget * XAP_UnixDialog_Insert_Symbol::_constructWindow(void)
 	m_buttonOK = gtk_button_new_with_label (tmp);
 	FREEP(tmp);
 
-	g_object_set_data (G_OBJECT (m_windowMain), "buttonOK", m_buttonOK);
+	gtk_object_set_data (GTK_OBJECT (m_windowMain), "buttonOK", m_buttonOK);
 	gtk_widget_show (m_buttonOK);
 	gtk_box_pack_start(GTK_BOX(hboxInsertS), m_buttonOK, TRUE, FALSE, 4);
 	GTK_WIDGET_SET_FLAGS (m_buttonOK, GTK_CAN_DEFAULT);
 
 	m_areaCurrentSym = _previewNew (60, 45);
-	g_object_set_data (G_OBJECT (m_windowMain), 
+	gtk_object_set_data (GTK_OBJECT (m_windowMain), 
 						 "areaCurrentSym", m_areaCurrentSym);
 	gtk_box_pack_start(GTK_BOX(hboxInsertS), m_areaCurrentSym, TRUE, FALSE, 0);
 
@@ -532,7 +532,7 @@ GtkWidget * XAP_UnixDialog_Insert_Symbol::_constructWindow(void)
 	m_buttonCancel = gtk_button_new_with_label (tmp);
 	FREEP(tmp);
 
-	g_object_set_data (G_OBJECT (m_windowMain), "buttonCancel", m_buttonCancel);
+	gtk_object_set_data (GTK_OBJECT (m_windowMain), "buttonCancel", m_buttonCancel);
 	gtk_widget_show (m_buttonCancel);
 	gtk_box_pack_start(GTK_BOX(hboxInsertS), m_buttonCancel, TRUE, FALSE, 4);
 	GTK_WIDGET_SET_FLAGS (m_buttonCancel, GTK_CAN_DEFAULT);
@@ -632,8 +632,8 @@ GtkWidget *XAP_UnixDialog_Insert_Symbol::_createComboboxWithFonts (void)
 	gtk_combo_set_popdown_strings(GTK_COMBO(fontcombo), m_InsertS_Font_list);
 
 	// Put the current font in the entry box.
-	gtk_entry_set_text(GTK_ENTRY(GTK_COMBO(fontcombo)->entry),
-					   (gchar *) DEFAULT_UNIX_SYMBOL_FONT);
+	// gtk_entry_set_text(GTK_ENTRY(GTK_COMBO(fontcombo)->entry),
+	// _getCurrentSymbolMap()->getSelectedFont());
 
 	// Turn off keyboard entry in the font selection box
 	gtk_entry_set_editable(GTK_ENTRY(GTK_COMBO(fontcombo)->entry),FALSE);
@@ -644,40 +644,40 @@ GtkWidget *XAP_UnixDialog_Insert_Symbol::_createComboboxWithFonts (void)
 void XAP_UnixDialog_Insert_Symbol::_connectSignals (void)
 {
 	// Now connect the signals
-	g_signal_connect(G_OBJECT(m_buttonOK),
+	gtk_signal_connect(GTK_OBJECT(m_buttonOK),
 					   "clicked",
-					   G_CALLBACK(s_ok_clicked),
+					   GTK_SIGNAL_FUNC(s_ok_clicked),
 					   (gpointer) this);
 	
-	g_signal_connect(G_OBJECT(m_buttonCancel),
+	gtk_signal_connect(GTK_OBJECT(m_buttonCancel),
 					   "clicked",
-					   G_CALLBACK(s_cancel_clicked),
+					   GTK_SIGNAL_FUNC(s_cancel_clicked),
 					   (gpointer) this);
 
 	// The event to choose the Symbol!
-	g_signal_connect(G_OBJECT(m_SymbolMap),
+	gtk_signal_connect(GTK_OBJECT(m_SymbolMap),
 					   "button_press_event",
-				       G_CALLBACK(s_SymbolMap_clicked),
+				       GTK_SIGNAL_FUNC(s_SymbolMap_clicked),
 					   (gpointer) this);
 
 #if 0
 	// Motion over the dialog
-	g_signal_connect(G_OBJECT(m_SymbolMap),
+	gtk_signal_connect(GTK_OBJECT(m_SymbolMap),
 			   "motion_notify_event",
-			   G_CALLBACK(s_motion_event),
+			   GTK_SIGNAL_FUNC(s_motion_event),
 			   (gpointer) this);
 #endif
 
 	// The event to choose the Symbol!
-	g_signal_connect(G_OBJECT(m_areaCurrentSym),
+	gtk_signal_connect(GTK_OBJECT(m_areaCurrentSym),
 			   "button_press_event",
-			   G_CALLBACK(s_CurrentSymbol_clicked),
+			   GTK_SIGNAL_FUNC(s_CurrentSymbol_clicked),
 			   (gpointer) this);
 
 	// Look for keys pressed
-	g_signal_connect(G_OBJECT(m_windowMain),
+	gtk_signal_connect(GTK_OBJECT(m_windowMain),
 					   "key_press_event",
-					   G_CALLBACK(s_keypressed),
+					   GTK_SIGNAL_FUNC(s_keypressed),
 					   (gpointer) this);
 
 
@@ -685,29 +685,29 @@ void XAP_UnixDialog_Insert_Symbol::_connectSignals (void)
 	// Code stolen from ev_UnixGnomeToolbar.cpp
 	GtkEntry * blah = GTK_ENTRY(GTK_COMBO(m_fontcombo)->entry);
 	GtkEditable * yuck = GTK_EDITABLE(blah);
-	g_signal_connect(G_OBJECT(&yuck->widget),
+	gtk_signal_connect(GTK_OBJECT(&yuck->widget),
 					   "changed",
-					   G_CALLBACK(s_new_font),
+					   GTK_SIGNAL_FUNC(s_new_font),
 					   (gpointer) this);
 
 	// the catch-alls
-	// Dont use g_signal_connect_after for modeless dialogs
-	g_signal_connect(G_OBJECT(m_windowMain),
+	// Dont use gtk_signal_connect_after for modeless dialogs
+	gtk_signal_connect(GTK_OBJECT(m_windowMain),
 							 "delete_event",
-							 G_CALLBACK(s_delete_clicked),
+							 GTK_SIGNAL_FUNC(s_delete_clicked),
 							 (gpointer) this);
 
-	g_signal_connect_after(G_OBJECT(m_windowMain),
+	gtk_signal_connect_after(GTK_OBJECT(m_windowMain),
 							 "destroy",NULL, NULL);
 	
 	// the expose event of the m_SymbolMap
-	g_signal_connect(G_OBJECT(m_SymbolMap),
+	gtk_signal_connect(GTK_OBJECT(m_SymbolMap),
 					   "expose_event",
-					   G_CALLBACK(s_sym_SymbolMap_exposed),
+					   GTK_SIGNAL_FUNC(s_sym_SymbolMap_exposed),
 					   (gpointer) this);
 
-	g_signal_connect(G_OBJECT(m_areaCurrentSym),
+	gtk_signal_connect(GTK_OBJECT(m_areaCurrentSym),
 					   "expose_event",
-					   G_CALLBACK(s_Symbolarea_exposed),
+					   GTK_SIGNAL_FUNC(s_Symbolarea_exposed),
 					   (gpointer) this);
 }

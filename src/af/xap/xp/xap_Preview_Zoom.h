@@ -23,8 +23,9 @@
 
 #include "ut_misc.h"
 #include "ut_types.h"
-
 #include "xap_Preview.h"
+
+class GR_Font;
 
 class XAP_Preview_Zoom : public XAP_Preview
 {

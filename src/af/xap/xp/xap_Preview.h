@@ -26,7 +26,7 @@
 
 #include "ev_EditBits.h"
 
-#include "gr_Graphics.h"
+class GR_Graphics;
 
 class ABI_EXPORT XAP_Preview
 {

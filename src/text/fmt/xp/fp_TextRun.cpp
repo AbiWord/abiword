@@ -999,12 +999,12 @@ void fp_TextRun::_fetchCharWidths(GR_Font* pFont, UT_GrowBufElement* pCharWidths
 	UT_uint32 len = getLength();
 	bool bContinue = true;
 
+	getGR()->setFont(pFont);
+
 	while (bContinue)
 	{
 		bContinue = getBlock()->getSpanPtr(offset, &pSpan, &lenSpan);
 		UT_ASSERT(lenSpan>0);
-
-		getGR()->setFont(pFont);
 
 		if (len <= lenSpan)
 		{
@@ -1038,7 +1038,6 @@ void fp_TextRun::fetchCharWidths(fl_CharWidths * pgbCharWidths)
 		_fetchCharWidths(_getScreenFont(), pCharWidths);
 		pCharWidths = pgbCharWidths->getCharWidthsLayoutUnits()->getPointer(0);
 		_fetchCharWidths(_getLayoutFont(), pCharWidths);
-		getGR()->setFont(_getScreenFont());
 #else
 		_fetchCharWidths(_getPangoFont(), pCharWidths);
 #endif
@@ -1287,20 +1286,15 @@ void fp_TextRun::_clearScreen(bool /* bFullLineHeightRect */)
 		UT_sint32 leftClear = 0;
 		if(thisLine != NULL)
 		{
-			while(pPrev != NULL && pPrev->getLine() == thisLine && pPrev->getLength()== 0)
-			{
+			while(pPrev != NULL && pPrev->getLine() == thisLine && pPrev->getLength() == 0)
 				pPrev = pPrev->getPrev();
-			}
+
 			leftClear = getDescent();
-			bool bthis = (pPrev != NULL) && (pPrev->getLine() ==thisLine);
-			if(bthis && pPrev->getType() == FPRUN_TEXT)
-				leftClear = 0;
-			if(bthis  && pPrev->getType() == FPRUN_FIELD)
-				leftClear = 0;
-			if(bthis && pPrev->getType() == FPRUN_IMAGE)
-				leftClear = 0;
+			if (pPrev != NULL && pPrev->getLine() == thisLine &&
+				(pPrev->getType() == FPRUN_TEXT || pPrev->getType() == FPRUN_FIELD || pPrev->getType() == FPRUN_IMAGE))
+ 				leftClear = 0;
 		}
-		getGR()->fillRect(clrNormalBackground,xoff-leftClear , yoff, getWidth()+leftClear, getLine()->getHeight());
+		getGR()->fillRect(clrNormalBackground, xoff - leftClear, yoff, getWidth() + leftClear, getLine()->getHeight());
 	}
 
 }
@@ -1318,9 +1312,8 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 
 	_refreshDrawBuffer();
 	xxx_UT_DEBUGMSG(("fp_TextRun::_draw (0x%x): m_iVisDirection %d, _getDirection() %d\n", this, m_iVisDirection, _getDirection()));
-
-	UT_sint32 yTopOfRun = pDA->yoff - getAscent()-1; // Hack to remove
-	UT_sint32 yTopOfSel = yTopOfRun+1; // final character dirt
+	UT_sint32 yTopOfRun = pDA->yoff - getAscent() - 1; // Hack to remove
+	UT_sint32 yTopOfSel = yTopOfRun + 1; // final character dirt
 
 	/*
 	  TODO We should add more possibilities for text placement here.

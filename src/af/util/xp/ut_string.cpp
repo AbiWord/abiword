@@ -192,13 +192,16 @@ bool UT_cloneString(char *& rszDest, const char * szSource)
 	if (szSource && *szSource)
 	{
 		UT_uint32 length = strlen(szSource) + 1;
-		rszDest = (char *)UT_calloc(length,sizeof(char));
+		rszDest = (char *) malloc(length);
+
 		if (!rszDest)
 			return false;
-		memmove(rszDest,szSource,length*sizeof(char));
+
+		memmove(rszDest, szSource, length);
 	}
 	else
 		rszDest = NULL;
+	
 	return true;
 }
 

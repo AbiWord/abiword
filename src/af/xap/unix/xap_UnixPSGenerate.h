@@ -42,7 +42,9 @@ public:
 	bool		formatComment(const char * szCommentName, const char **argv, int argc);
 	bool		formatComment(const char * szCommentName, const UT_Vector * pVec);
 	bool		formatComment(const char * szCommentName, const UT_sint32 iArg);
-
+	// That kinda of ruins the abstraction from FILE*
+	FILE*		getFileHandle() { return m_fp; }
+	
 protected:
  	void 		doProtectFromPipe(void);
 	void 		undoProtectFromPipe(void);

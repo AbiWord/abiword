@@ -39,6 +39,16 @@
 /*****************************************************************/
 UT_sint32 GR_Win32Graphics::s_iScreenResolution = 0;
 
+const char* GR_Graphics::findNearestFont(const char* pszFontFamily,
+										 const char* pszFontStyle,
+										 const char* pszFontVariant,
+										 const char* pszFontWeight,
+										 const char* pszFontStretch,
+										 const char* pszFontSize)
+{
+	return pszFontFamily;
+}
+
 // A small helper class
 class private_FontReverter
 {
@@ -664,11 +674,6 @@ void GR_Win32Graphics::fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y, 
 	::ExtTextOut(hdc, 0, 0, ETO_OPAQUE, &r, NULL, 0, NULL);
 	::SetBkColor(hdc, cr);
 #endif
-}
-
-void GR_Win32Graphics::fillRect(const UT_RGBColor& c, UT_Rect &r)
-{
-	fillRect(c,r.left,r.top,r.width,r.height);
 }
 
 bool GR_Win32Graphics::startPrint(void)

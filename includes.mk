@@ -62,6 +62,7 @@ endif
 
 OTHER_INCLUDES=-I'$(top_srcdir)/src/other/spell/xp'
 OTHER_INCLUDES+=-I'$(top_srcdir)/src/other/fribidi/xp'
+OTHER_INCLUDES+=-I'$(top_srcdir)/src/other/ttftool/@PLATFORM@'
 
 TEXT_INCLUDES=-I'$(top_srcdir)/src/text/ptbl/xp'
 TEXT_INCLUDES+=-I'$(top_srcdir)/src/text/fmt/xp'
@@ -81,7 +82,7 @@ WV_INCLUDES+=-I'$(top_srcdir)/../wv/glib-wv'
 
 ABI_CFLAGS=@WARNING_CFLAGS@ @DEBUG_CFLAGS@ @OPTIMIZE_CFLAGS@ \
 	@PROFILE_CFLAGS@ @XML_CFLAGS@ @SCRIPT_CFLAGS@ @BIDI_CFLAGS@ \
-	@WV_CFLAGS@ @LIBPOPT_CFLAGS@ \
+	@WV_CFLAGS@ @LIBPOPT_CFLAGS@ @XFT_CFLAGS@ \
 	@LIBPNG_CFLAGS@ @ZLIB_CFLAGS@ @CURLHASH_CFLAGS@ @LIBCURL_CFLAGS@
 
 MACOSX_CFLAGS=-DXP_MAC_TARGET_MACOSX -DXP_MAC_TARGET_QUARTZ 
@@ -109,7 +110,7 @@ ABI_GNOME_PREFIX = Gnome
 
 OTHER_LIBS=@SPELL_LIBS@ @XML_LIBS@ @SCRIPT_LIBS@ \
 	@WV_LIBS@ @GLIB_LIBS@ @ICONV_LIBS@ \
-	@LIBPNG_LIBS@ @ZLIB_LIBS@ @LIBPOPT_LIBS@ @LIBCURL_LIBS@
+	@LIBPNG_LIBS@ @ZLIB_LIBS@ @LIBPOPT_LIBS@ @LIBCURL_LIBS@ @XFT_LIBS@
 
 # BiDi needs a specific lib
 if BIDI_ENABLED
@@ -124,6 +125,7 @@ ABI_LIBS+=$(top_builddir)/src/af/util/libUtil.a
 ABI_LIBS+=$(top_builddir)/src/af/gr/libGr.a
 ABI_LIBS+=$(top_builddir)/src/af/ev/libEv.a
 ABI_LIBS+=$(top_builddir)/src/other/spell/xp/libSpell.a
+ABI_LIBS+=$(top_builddir)/src/other/ttftool/@PLATFORM@/libTtfTool.a
 ABI_LIBS+=$(top_builddir)/src/other/fribidi/xp/libFribidi.a
 ABI_LIBS+=$(top_builddir)/src/text/fmt/xp/libFmt.a
 ABI_LIBS+=$(top_builddir)/src/text/ptbl/xp/libPtbl.a

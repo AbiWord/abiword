@@ -171,7 +171,7 @@ public:
 protected:
 	void					_fetchCharWidths(GR_Font* pFont, UT_GrowBufElement* pCharWidths);
 	virtual void			_draw(dg_DrawArgs*);
-	virtual void			_clearScreen(bool bFullLineHeightRect);
+	virtual void			_clearScreen(bool bFullLineHeightRect = true);
 
 	void					_drawInvisibleSpaces(UT_sint32, UT_sint32);
 	void					_drawInvisibles(UT_sint32, UT_sint32);

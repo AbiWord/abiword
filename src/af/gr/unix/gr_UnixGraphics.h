@@ -27,7 +27,12 @@
 #include "xap_Frame.h"
 #include "gr_Graphics.h"
 
+#ifdef USE_XFT
+#include <X11/Xft/Xft.h>
+#endif
+
 class UT_ByteBuf;
+class UT_String;
 
 class GR_UnixGraphics : public GR_Graphics
 {
@@ -40,8 +45,7 @@ class GR_UnixGraphics : public GR_Graphics
 	~GR_UnixGraphics();
 
 #ifndef WITH_PANGO 
-	// HACK: I need more speed
-	virtual void        drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff);
+	virtual void        drawGlyph(UT_uint32 glyph_idx, UT_sint32 xoff, UT_sint32 yoff);
 	virtual void		drawChars(const UT_UCSChar* pChars, int iCharOffset,
 								  int iLength, UT_sint32 xoff, UT_sint32 yoff);
 	virtual void		setFont(GR_Font* pFont);
@@ -60,8 +64,12 @@ class GR_UnixGraphics : public GR_Graphics
 								 const char* pszFontWeight, 
 								 const char* pszFontStretch, 
 								 const char* pszFontSize);
+	virtual GR_Font*	getDefaultFont(UT_String& fontFamily);
+
 	virtual UT_uint32	getFontAscent();
 	virtual UT_uint32	getFontDescent();
+
+	virtual void		getCoverage(UT_Vector& coverage);
 #endif	
 	virtual void		drawLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
 	virtual void		setLineWidth(UT_sint32);
@@ -70,7 +78,6 @@ class GR_UnixGraphics : public GR_Graphics
 	virtual void		fillRect(const UT_RGBColor& c,
 								 UT_sint32 x, UT_sint32 y,
 								 UT_sint32 w, UT_sint32 h);
-	virtual void		fillRect(const UT_RGBColor& c, UT_Rect &r);
 	virtual void		invertRect(const UT_Rect* pRect);
 	virtual void		setClipRect(const UT_Rect* pRect);
 	virtual void		scroll(UT_sint32, UT_sint32);
@@ -156,7 +163,22 @@ class GR_UnixGraphics : public GR_Graphics
 private:
 #ifndef WITH_PANGO 	
 	XAP_UnixFontHandle *	m_pFallBackFontHandle;
-#endif	
+#endif
+
+#ifdef USE_XFT
+	XftDraw*				m_pXftDraw;
+	XftColor				m_XftColor;
+	XftFont*				m_pXftFont;
+	XftFaceLocker			m_XftFaceLocker;
+	
+	Drawable				m_Drawable;
+	Visual*					m_pVisual;
+	Colormap				m_Colormap;
+
+	FcChar32				m_aMap[FC_CHARSET_MAP_SIZE];
+	// hack
+	bool					m_bLayoutUnits;
+#endif
 };
 
 #endif /* GR_UNIXGRAPHICS_H */

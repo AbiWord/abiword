@@ -26,56 +26,55 @@
 
 #include "xap_Preview.h"
 
+class GR_Font;
 
 class XAP_Draw_Symbol : public XAP_Preview
 {
 public:
 
 	XAP_Draw_Symbol(GR_Graphics * gc);
-	virtual ~XAP_Draw_Symbol(void);
+	virtual ~XAP_Draw_Symbol();
 				
 	// data twiddlers
-	void			setSelectedFont(char *font);
-	void			setFontString(void);
-	void			setFontStringarea(void);
-	void			setFontToGC(GR_Graphics *p_gc, UT_uint32 MaxWidthAllowable, UT_sint32 PointSize);
-	void			setFontfont(GR_Font * font);
-	void			setWindowSize(UT_uint32 width, UT_uint32 height);
-	void			setAreaSize(UT_uint32 width, UT_uint32 height);
-	void			setAreaGc(GR_Graphics *);
-	char *	                getSelectedFont(void);
+	void						setSelectedFont(const char *font);
+	void						setFontString();
+	void						setFontStringarea();
+	void						setFontToGC(GR_Graphics *p_gc, UT_uint32 MaxWidthAllowable, UT_sint32 PointSize);
+	void						setFontfont(GR_Font * font);
+	void						setWindowSize(UT_uint32 width, UT_uint32 height);
+	void						setAreaSize(UT_uint32 width, UT_uint32 height);
+	void						setAreaGc(GR_Graphics *);
+	const char*					getSelectedFont();
 
     // where all the Symbol-specific drawing happens
 	
-	void			draw(void);
-	void			drawarea(UT_UCSChar c, UT_UCSChar p);
-	UT_UCSChar		calcSymbol(UT_uint32 x, UT_uint32 y);
+	void						draw(void);
+	void						drawarea(UT_UCSChar c, UT_UCSChar p);
 
-	void			setCurrent(UT_UCSChar c)
-	{
-		m_PreviousSymbol = m_CurrentSymbol;
-		m_CurrentSymbol = c;
-		drawarea(m_CurrentSymbol, m_PreviousSymbol);
-	}
-	UT_UCSChar		getCurrent(void)
-	{
-		return m_CurrentSymbol;
-	}
-	void			onLeftButtonDown(UT_sint32 x, UT_sint32 y);
+	UT_UCSChar					calcSymbol(UT_uint32 x, UT_uint32 y);
+
+	void						setCurrent(UT_UCSChar c);
+	UT_UCSChar					getCurrent() { return m_CurrentSymbol; }
+
+	void						onLeftButtonDown(UT_sint32 x, UT_sint32 y);
 
 protected:
 	GR_Graphics *               m_areagc;
 	GR_Font *			        m_pFont;	// so we can delete it
 
-	GR_Font *                   m_fontarea;
-	
 	UT_uint32                   m_drawWidth;
 	UT_uint32                   m_drawHeight;
 	UT_uint32                   m_drawareaWidth;
 	UT_uint32                   m_drawareaHeight;
 
-	UT_UCSChar m_CurrentSymbol;
-	UT_UCSChar m_PreviousSymbol;
+	UT_UCSChar					m_CurrentSymbol;
+	UT_UCSChar					m_PreviousSymbol;
+
+private:
+	void						calculatePosition(UT_UCSChar c, UT_uint32 &x, UT_uint32 &y);
+
+	UT_Vector					m_vCharSet;
+	UT_String					m_stFont;
 };
 
 #endif /* XAP_Draw_Symbol_H */

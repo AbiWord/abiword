@@ -145,6 +145,8 @@ const PP_Property * PP_lookupProperty(const XML_Char * pszName);
 
 void PP_resetInitialBiDiValues(const XML_Char * pszValue);
 
+ABI_EXPORT void PP_setDefaultFontFamily(const char* pszFamily);
+
 ABI_EXPORT const XML_Char * PP_evalProperty(const XML_Char * pszName,
 								 const PP_AttrProp * pSpanAttrProp,
 								 const PP_AttrProp * pBlockAttrProp,

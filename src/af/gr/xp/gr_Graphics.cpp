@@ -33,6 +33,9 @@
 #include "ut_debugmsg.h"
 #include "ut_sleep.h"
 #include "ut_OverstrikingChars.h"
+#ifdef DEBUG
+#include "ut_sleep.h"
+#endif
 
 // static class member initializations
 #ifndef WITH_PANGO
@@ -124,10 +127,6 @@ void GR_Graphics::setLineProperties ( double    inWidthPixels,
 }
 
 #ifndef WITH_PANGO
-void GR_Graphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
-{
-}
-
 UT_uint32 GR_Graphics::getMaxCharacterWidth(const UT_UCSChar*s, UT_uint32 Length)
 {
 	UT_GrowBufElement *pWidths = new UT_GrowBufElement[Length];
@@ -758,6 +757,41 @@ void GR_Graphics::doRepaint( UT_Rect * rClip)
 //
 }
 
+void GR_Graphics::fillRect(const UT_RGBColor& c, const UT_Rect &r)
+{
+	fillRect(c, r.left, r.top, r.width, r.height);
+}
+
+#ifdef DEBUG // XXX
+void xorRect(GR_Graphics* pG, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
+{
+	pG->xorLine(x,     y,     x + w, y);
+	pG->xorLine(x + w, y,     x + w, y + h);
+	pG->xorLine(x + w, y + h, x,     y + h);
+	pG->xorLine(x,     y + h, x,     y);
+}
+
+void xorRect(GR_Graphics* pG, const UT_Rect& r)
+{
+	xorRect(pG, r.left, r.top, r.width, r.height);
+}
+
+void flash(GR_Graphics* pG, const UT_Rect& r, const UT_RGBColor& c)
+{
+/*
+	UT_RGBColor black(0, 0, 0);
+
+	pG->setColor(c);
+	xorRect(pG, r);
+	flush();
+	UT_usleep(10000);
+	xorRect(pG, r);
+	flush();
+	UT_usleep(1000);
+	pG->setColor(black);
+*/
+}
+#endif
 
 #ifdef WITH_PANGO
 /*!

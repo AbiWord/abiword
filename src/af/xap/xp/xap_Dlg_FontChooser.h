@@ -25,6 +25,7 @@
 #include "ut_string.h"
 #include "xap_Dialog.h"
 #include "xap_Preview.h"
+#include "ut_vector.h"
 
 class GR_Graphics;
 

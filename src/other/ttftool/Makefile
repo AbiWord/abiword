@@ -1,5 +1,7 @@
-## AbiSource Applications
-## Copyright (C) 2001 Sam Tobin-Hochstadt
+#! gmake
+
+## AbiWord
+## Copyright (C) 1998 AbiSource, Inc.
 ##
 ## This program is free software; you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License
@@ -16,7 +18,10 @@
 ## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
 ## 02111-1307, USA.
 
+ABI_ROOT:=$(shell pwd)/../../..
+include $(ABI_ROOT)/src/config/abi_defs_wp.mk
 
-SUBDIRS = spell fribidi ttftool
+DIRS=	$(ABI_NATIVE)
 
+include $(ABI_ROOT)/src/config/abi_rules.mk
 

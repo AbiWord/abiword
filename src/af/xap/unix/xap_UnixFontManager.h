@@ -23,6 +23,7 @@
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
 #include <gdk/gdkx.h>
+#include <fontconfig/fontconfig.h>
 
 #include "ut_types.h"
 #include "ut_vector.h"
@@ -32,34 +33,58 @@
 
 /*****************************************************************/
 
+class UT_String;
+
 class ABI_EXPORT XAP_UnixFontManager
 {
 public:
 	XAP_UnixFontManager(void);
 	~XAP_UnixFontManager(void);
 
+#ifndef USE_XFT
 	bool					setFontPath(const char * searchpath);
+	XAP_UnixFont *			getDefaultFont16Bit(void);
+#endif
 	bool					scavengeFonts(void);
 
 	UT_Vector *			    getAllFonts(void);
-	XAP_UnixFont *			getDefaultFont(void);
-	XAP_UnixFont *			getDefaultFont16Bit(void);
+	XAP_UnixFont *			getDefaultFont(GR_Font::FontFamilyEnum f = GR_Font::FF_Roman) const;
+
 	XAP_UnixFont *			getFont(const char * fontname,
 									XAP_UnixFont::style s);
-		
-protected:
 
+#ifdef USE_XFT	
+	static XAP_UnixFont*	findNearestFont(const char* pszFontFamily,
+											const char* pszFontStyle,
+											const char* pszFontVariant,
+											const char* pszFontWeight,
+											const char* pszFontStretch,
+											const char* pszFontSize);
+#endif
+	
+private:
+
+#ifndef USE_XFT
 	void					_allocateThisFont(const char * line,
-	    						                              const char * workingdir, int iLine);
-	void 				_allocateCJKFont(const char * line, int iLine);
-	void					_addFont(XAP_UnixFont * font);
+											  const char * workingdir, int iLine);
+	void 					_allocateCJKFont(const char * line, int iLine);
+#endif
+	
+	void					_addFont(XAP_UnixFont* font);
 
 	// perhaps this should be a hash to avoid duplicates?
 	UT_Vector				m_searchPaths;
 
-	UT_StringPtrMap 			m_fontHash;
+	UT_StringPtrMap 		m_fontHash;
+
+#ifndef USE_XFT
 	char ** 				m_pExtraXFontPath;
 	UT_sint32				m_iExtraXFontPathCount;
+#endif
+
+#ifdef USE_XFT
+	FcFontSet*				m_pFontSet;
+#endif
 };
 
 #endif /* XAP_UNIXFONTMANAGER_H */

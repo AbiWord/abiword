@@ -33,6 +33,8 @@
 #include "xap_UnixFontXLFD.h"
 #include "xap_EncodingManager.h"
 #include "xap_App.h"
+#include "ttftool.h"
+#include "xap_UnixPSGenerate.h"
 //#include "ut_AdobeEncoding.h"
 
 //this one is for use with qsort
@@ -60,6 +62,41 @@ static int s_compareUniWidthsChar(const void * c, const void * w)
 	return 0;
 }
 
+#ifdef USE_XFT
+/* Xft face locker impl. */
+XftFaceLocker::XftFaceLocker(XftFont* pFont)
+	: m_pFont(pFont)
+{
+	m_pFace = pFont ? XftLockFace(pFont) : NULL;
+}
+
+XftFaceLocker::~XftFaceLocker()
+{
+	if (m_pFont)
+		XftUnlockFace(m_pFont);
+}
+
+XftFaceLocker::XftFaceLocker(const XftFaceLocker& other)
+{
+	m_pFont = other.m_pFont;
+	m_pFace = m_pFont ? XftLockFace(m_pFont) : NULL;
+}
+
+XftFaceLocker& XftFaceLocker::operator= (const XftFaceLocker& other)
+{
+	if (&other != this)
+	{
+		if (m_pFont)
+			XftUnlockFace(m_pFont);
+		
+		m_pFont = other.m_pFont;
+		m_pFace = XftLockFace(m_pFont);
+	}
+
+	return *this;
+}
+#endif
+
 #define ASSERT_MEMBERS	do { UT_ASSERT(m_name); UT_ASSERT(m_fontfile); UT_ASSERT(m_metricfile); } while (0)
 
 /*******************************************************************/
@@ -74,14 +111,13 @@ XAP_UnixFontHandle::XAP_UnixFontHandle(XAP_UnixFont * font, UT_uint32 size)
 {
 }
 
-XAP_UnixFontHandle::XAP_UnixFontHandle(XAP_UnixFontHandle & copy)
-  : GR_Font(copy), m_font(copy.m_font), m_size(copy.m_size)
+#ifdef USE_XFT
+XftFont * XAP_UnixFontHandle::getXftFont(void)
 {
+	return m_font ? m_font->getXftFont(m_size) : NULL;
 }
 
-XAP_UnixFontHandle::~XAP_UnixFontHandle()
-{
-}
+#else
 
 GdkFont * XAP_UnixFontHandle::getGdkFont(void)
 {
@@ -90,12 +126,6 @@ GdkFont * XAP_UnixFontHandle::getGdkFont(void)
 	else
 		return NULL;
 }
-
-UT_uint32 XAP_UnixFontHandle::getSize(void)
-{
-	return m_size;
-}
-
 
 void XAP_UnixFontHandle::explodeUnixFonts(XAP_UnixFont ** pSingleByte, XAP_UnixFont ** pMultiByte)
 {
@@ -131,6 +161,7 @@ void XAP_UnixFontHandle::explodeGdkFonts(GdkFont* & non_cjk_one,GdkFont*& cjk_on
 		cjk_one=getMatchGdkFont();
 	  }
 }
+#endif
 
 
 /*******************************************************************/		
@@ -142,6 +173,9 @@ XAP_UnixFont::XAP_UnixFont(void)
      m_PFB(false), m_bufpos(0), m_pEncodingTable(NULL),
      m_iEncodingTableSize(0), m_is_cjk(false), m_fontType(FONT_TYPE_UNKNOWN),
      m_bisCopy(false)
+#ifdef USE_XFT
+	, m_pXftFont(0)
+#endif
 {
 	//UT_DEBUGMSG(("XAP_UnixFont:: constructor (void)\n"));	
 
@@ -150,7 +184,7 @@ XAP_UnixFont::XAP_UnixFont(void)
 	m_cjk_font_metric.width   = 0;
 }
 
-XAP_UnixFont::XAP_UnixFont(XAP_UnixFont & copy)
+XAP_UnixFont::XAP_UnixFont(const XAP_UnixFont & copy)
 {
 	//UT_DEBUGMSG(("XAP_UnixFont:: copy constructor\n"));
 
@@ -182,6 +216,16 @@ XAP_UnixFont::XAP_UnixFont(XAP_UnixFont & copy)
 	if(copy.getEncodingTable())
 		loadEncodingFile();
 	m_bisCopy = true;
+
+#ifdef USE_XFT
+	/* copy the fonts in our cache */
+	const UT_Vector& copyAllocFonts = copy.m_allocFonts;
+	for (UT_uint32 i = 0; i < m_allocFonts.getItemCount(); ++i)
+	{
+		allocFont* p = (allocFont*) copyAllocFonts.getNthItem(i);
+		insertFontInCache(p->pixelSize, XftFontCopy(GDK_DISPLAY(), p->xftFont));
+	}
+#endif
 }
 
 XAP_UnixFont::~XAP_UnixFont(void)
@@ -194,10 +238,14 @@ XAP_UnixFont::~XAP_UnixFont(void)
 	FREEP(m_fontKey);
 
 	//	UT_VECTOR_PURGEALL(allocFont *, m_allocFonts);
-	for(UT_uint32 i =0; i < m_allocFonts.getItemCount(); i++)
+	for (UT_uint32 i = 0; i < m_allocFonts.getItemCount(); ++i)
 	{
-		allocFont * p = (allocFont *) m_allocFonts.getNthItem(i);
+		allocFont* p = (allocFont*) m_allocFonts.getNthItem(i);
+#ifdef USE_XFT
+		XftFontClose(GDK_DISPLAY(), p->xftFont);
+#else
 		gdk_font_unref(p->gdkFont);
+#endif
 		delete p;
 	}
 	if(m_uniWidths)
@@ -223,10 +271,69 @@ XAP_UnixFont::~XAP_UnixFont(void)
 	}
 }
 
+#ifdef USE_XFT
+
+bool XAP_UnixFont::openFileAs(const char* fontfile,
+							  const char* metricfile,
+							  const char* xlfd, // xft_pattern
+							  XAP_UnixFont::style s)
+{
+	if (!fontfile || !metricfile || !xlfd)
+		return false;
+
+	// m_name is the font family
+	XftResult result;
+	FcPattern* fp = XftNameParse(xlfd);
+	FcPattern* result_fp = XftFontMatch(GDK_DISPLAY(), DefaultScreen(GDK_DISPLAY()), fp, &result);
+	FcPatternDestroy(fp);
+
+	// if that fails, it means that we're building the pattern the wrong way
+	UT_ASSERT(result_fp);
+
+	// get the family name and store it
+	unsigned char* family;
+	FREEP(m_name);
+	FcPatternGetString(result_fp, FC_FAMILY, 0, &family);
+	UT_cloneString(m_name, (const char*) family);
+
+	FcPatternDestroy(result_fp);
+	
+	// save to memebers
+	FREEP(m_fontfile);
+	UT_cloneString(m_fontfile, fontfile);
+	FREEP(m_metricfile);
+	UT_cloneString(m_metricfile, metricfile);
+	m_style = s;
+	setXLFD(xlfd);
+
+	// update our key so we can be identified
+	_makeFontKey();
+	size_t stFontFile = strlen(m_fontfile);
+
+	m_fontType = FONT_TYPE_UNKNOWN;
+	
+	if (stFontFile > 4)
+	{
+		if (!UT_stricmp(m_fontfile + stFontFile - 4, ".ttf"))
+			m_fontType = FONT_TYPE_TTF;
+		else if (!UT_stricmp(m_fontfile + stFontFile - 4, ".pfa"))
+			m_fontType = FONT_TYPE_PFA;
+		else if (!UT_stricmp(m_fontfile + stFontFile - 4, ".pfb"))
+			m_fontType = FONT_TYPE_PFB;
+	}
+
+	if (m_fontType == FONT_TYPE_UNKNOWN)
+		return false;
+
+	return true;
+}
+
+#else
+
 bool XAP_UnixFont::openFileAs(const char * fontfile,
-			      const char * metricfile,
-			      const char * xlfd,
-			      XAP_UnixFont::style s)
+							  const char * metricfile,
+							  const char * xlfd,
+							  XAP_UnixFont::style s)
 {
 	// test all our data to make sure we can continue
 	if (!fontfile)
@@ -271,37 +378,39 @@ bool XAP_UnixFont::openFileAs(const char * fontfile,
 	FREEP(m_metricfile);
 	UT_cloneString(m_metricfile, metricfile);
 	m_style = s;
-	FREEP(m_xlfd);
-	UT_cloneString(m_xlfd, xlfd);
+	setXLFD(xlfd);
 
 	// update our key so we can be identified
 	_makeFontKey();
+	size_t stFontFile = strlen(m_fontfile);
 
-	if(strstr(m_fontfile, ".ttf"))
-		m_fontType = FONT_TYPE_TTF;
-	else if(strstr(m_fontfile, ".pfa"))
-		m_fontType = FONT_TYPE_PFA;
-	else if(strstr(m_fontfile, ".pfb"))
-		m_fontType = FONT_TYPE_PFB;
-	else
+	m_fontType = FONT_TYPE_UNKNOWN;
+	
+	if (stFontFile > 4)
 	{
-		m_fontType = FONT_TYPE_UNKNOWN;
-		if(!m_is_cjk)	/* cjk has different fonts.dir format. */
-		  {
-		    return false;
-		  }
+		if (!UT_stricmp(m_fontfile + stFontFile - 4, ".ttf"))
+			m_fontType = FONT_TYPE_TTF;
+		else if(!UT_stricmp(m_fontfile + stFontFile - 4, ".pfa"))
+			m_fontType = FONT_TYPE_PFA;
+		else if(!UT_stricmp(m_fontfile + stFontFile - 4, ".pfb"))
+			m_fontType = FONT_TYPE_PFB;
 	}
+
+	if(m_fontType == FONT_TYPE_UNKNOWN && !m_is_cjk)	/* cjk has different fonts.dir format. */
+		return false;
 
 	return true;
 }
 
-void XAP_UnixFont::setName(const char * name)
+#endif
+
+void XAP_UnixFont::setName(const char* name)
 {
 	FREEP(m_name);
 	UT_cloneString(m_name, name);
 }
 
-const char * XAP_UnixFont::getName(void)
+const char * XAP_UnixFont::getName(void) const
 {
 	ASSERT_MEMBERS;
 	return m_name;
@@ -312,20 +421,20 @@ void XAP_UnixFont::setStyle(XAP_UnixFont::style s)
 	m_style = s;
 }
 
-XAP_UnixFont::style XAP_UnixFont::getStyle(void)
+XAP_UnixFont::style XAP_UnixFont::getStyle(void) const
 {
 	ASSERT_MEMBERS;
 	return m_style;
 }
 
-const char * XAP_UnixFont::getFontfile(void)
+const char * XAP_UnixFont::getFontfile(void) const
 {
 	ASSERT_MEMBERS;
 	
 	return m_fontfile;
 }
 
-const char * XAP_UnixFont::getMetricfile(void)
+const char * XAP_UnixFont::getMetricfile(void) const
 {
 	ASSERT_MEMBERS;
 	return m_metricfile;
@@ -337,11 +446,39 @@ void XAP_UnixFont::setXLFD(const char * xlfd)
 	UT_cloneString(m_xlfd, xlfd);
 }
 
-const char * XAP_UnixFont::getXLFD(void)
+const char * XAP_UnixFont::getXLFD(void) const
 {
 	ASSERT_MEMBERS;
 	return m_xlfd;
 }
+
+#ifdef USE_XFT
+/**
+ * Calculates the width of a character in original font units
+ */
+UT_uint16 XAP_UnixFont::getCharWidth(UT_UCSChar c) const
+{
+	/* don't care about the pixel size */
+	UT_uint16 width = (UT_uint16) m_cw.getWidth(c);
+	
+	if (width == 0)
+	{
+		XftFaceLocker locker(getXftFont(12));
+		FT_Face pFace = locker.getFace();
+		
+		FT_UInt glyph_index = FT_Get_Char_Index(pFace, c);
+		FT_Error error = FT_Load_Glyph(pFace, glyph_index, FT_LOAD_LINEAR_DESIGN | FT_LOAD_IGNORE_TRANSFORM | FT_LOAD_NO_BITMAP | FT_LOAD_NO_SCALE);
+		if (error)
+			return 0;
+
+		width = pFace->glyph->linearHoriAdvance;
+		m_cw.setWidth(c, width);
+	}
+
+	return width;
+}
+
+#else
 
 UT_uint16 XAP_UnixFont::getCharWidth(UT_UCSChar c)
 {
@@ -354,6 +491,7 @@ UT_uint16 XAP_UnixFont::getCharWidth(UT_UCSChar c)
 	else
 		return 0;
 }
+#endif
 
 bool	XAP_UnixFont::_getMetricsDataFromX(void)
 {
@@ -374,6 +512,60 @@ void XAP_UnixFont::_deleteEncodingTable()
 	}
 }
 
+#ifdef USE_XFT
+static int s_compare (const void * a, const void * b)
+{
+  const encoding_pair* pair1 = (const encoding_pair*) a;
+  const encoding_pair* pair2 = (const encoding_pair*) b;
+
+  return UT_strcmp (pair1->adb, pair2->adb);
+}
+
+const encoding_pair* XAP_UnixFont::loadEncodingFile()
+{
+	if (!m_pXftFont)
+		return 0;
+	
+	XftFaceLocker locker(m_pXftFont);
+	FT_Face face = locker.getFace();
+	
+	// it should be "if (!FT_Has_PS_Glyph_Names(face))", but I don't have this function in my freetype version...
+	if (!FT_HAS_GLYPH_NAMES(face))
+		return 0;
+	
+	UT_Vector coverage;
+	getCoverage(coverage);
+
+	size_t nb_glyphs = 0;
+	for (size_t i = 0; i < coverage.size(); i += 2)
+		nb_glyphs += (size_t) coverage[i + 1];
+	
+	m_pEncodingTable = new encoding_pair[nb_glyphs];
+
+	size_t idx = 0;
+	for (size_t i = 0; i < coverage.size(); i += 2)
+	{
+		UT_UCSChar c1 = (UT_UCSChar) (UT_uint32) coverage[i];
+		UT_UCSChar c2 = (UT_UCSChar) (UT_uint32) c1 + (UT_UCSChar) (UT_uint32) coverage[i + 1];
+		for (UT_UCSChar c = c1; c < c2; ++c)
+		{
+			FT_UInt glyph_idx = FT_Get_Char_Index(face, c);
+			char* glyph_name = (char*) malloc(256);
+
+			FT_Get_Glyph_Name(face, glyph_idx, glyph_name, 256);
+			m_pEncodingTable[idx].ucs = c;
+			m_pEncodingTable[idx].adb = glyph_name;
+			++idx;
+		}
+	}
+
+	qsort(m_pEncodingTable, nb_glyphs, sizeof(encoding_pair), s_compare);
+	m_iEncodingTableSize = nb_glyphs;
+	
+	return m_pEncodingTable;
+}
+
+#else
 const encoding_pair * XAP_UnixFont::loadEncodingFile()
 {
 	char * encfile = new char[strlen(m_fontfile)+3]; //3 to be on the safe side, in case extension is < 3
@@ -414,7 +606,7 @@ const encoding_pair * XAP_UnixFont::loadEncodingFile(char * encfile)
 	{
 		//if the file does not exist, we will load a generic one
 		//get the path from m_fontfile
-		char * full_name = new char[strlen(XAP_App::getApp()->getAbiSuiteLibDir())+30];
+		char * full_name = new char[strlen(XAP_App::getApp()->getAbiSuiteLibDir()) + 257];
 		strcpy(full_name, m_fontfile);
 
 		char * slash = strrchr(full_name, '/');
@@ -517,6 +709,7 @@ const encoding_pair * XAP_UnixFont::loadEncodingFile(char * encfile)
 	fclose(ef);
 	return m_pEncodingTable;
 };
+#endif
 
 bool XAP_UnixFont::_createPsSupportFiles()
 {
@@ -777,56 +970,58 @@ ABIFontInfo * XAP_UnixFont::getMetricsData(void)
 	}
 }
 
+bool XAP_UnixFont::embedInto(ps_Generate& ps)
+{
+	if (openPFA())
+	{
+		signed char ch = 0;
+
+		while ((ch = getPFAChar()) != EOF)
+			if (!ps.writeBytes((UT_Byte *) &ch, 1))
+			{
+				closePFA();
+				return false;
+			}
+
+		closePFA();
+	}
+	else
+	{
+		// PFA file doesn't exists.  Maybe a TrueType font not converted to type 42.
+		// We generate the type 42 in the fly, and we embed it in the postscript file.
+		// TODO: Check for errors, and return false on error
+		create_type42(m_fontfile, ps.getFileHandle());
+	}
+
+	return true;
+}
+
 bool XAP_UnixFont::openPFA(void)
 {
 	ASSERT_MEMBERS;
 	int peeked;
+	const char* extension = NULL;
+	size_t sFontfile;
 
-	/*	If this is a ttf font rather than a pfa/pfb font, we will try to
-		open a .t42 file for the font which should have been generated
-		when the font was first used; this file contains Type 42 PS font
-		corresponding to our ttf font
-	*/	
-	char* pfafile = 0;
-	bool  delete_pfa = false;
-	if(is_TTF_font())
-	{
-		pfafile = new char[strlen(m_fontfile)+1];
-		strcpy(pfafile, m_fontfile);
-		delete_pfa = true;
-		char* dot = strrchr(pfafile, '.');
-		if(dot)
-		{
-			*(dot+2) = '4';
-			*(dot+3) = '2';
-		}
-		else
-			return false;
-	}
-	else
-	{
-		pfafile = m_fontfile;
-	}
+	UT_ASSERT(m_fontfile);
+	sFontfile = strlen(m_fontfile);
+	if (sFontfile > 3)
+		extension = m_fontfile + sFontfile - 3;
 	
-	UT_DEBUGMSG(("UnixFont::openPFA: opening file %s\n", pfafile));
-	m_PFFile = fopen(pfafile, "r");
+	UT_DEBUGMSG(("UnixFont::openPFA: opening file %s\n", m_fontfile));
+	if (extension && (UT_stricmp(extension, "pfa") == 0 || UT_stricmp(extension, "pfb") == 0))
+		m_PFFile = fopen(m_fontfile, "r");
+	else
+		m_PFFile = 0;
 
 	if (!m_PFFile)
-	{
-		char message[1024];
-		g_snprintf(message, 1024,
-				   "Font data file [%s] can not be opened for reading.\n", m_fontfile);
-		messageBoxOK(message);
 		return false;
-	}
 
 	/* Check to see if it's a binary or ascii PF file */
 	peeked = fgetc(m_PFFile);
 	ungetc(peeked, m_PFFile);
 	m_PFB = peeked == PFB_MARKER;
 	m_bufpos = 0;
-	if(delete_pfa && pfafile)
-		delete[] pfafile;
 	
 	//UT_DEBUGMSG(("UnixFont::openPFA: about to return\n"));
 	return true;
@@ -961,6 +1156,88 @@ bool XAP_UnixFont::isSizeInCache(UT_uint32 pixelsize)
     return false;
 }
 
+#ifdef USE_XFT
+XftFont* XAP_UnixFont::getFontFromCache(UT_uint32 pixelsize) const
+{
+    UT_uint32 l = 0;
+	UT_uint32 count = m_allocFonts.getItemCount();
+	allocFont* entry;
+
+	while (l < count)
+	{
+		entry = (allocFont *) m_allocFonts.getNthItem(l);
+		if (entry && entry->pixelSize == pixelsize)
+			return entry->xftFont;
+		else
+			l++;
+	}
+
+	return NULL;
+}
+
+void XAP_UnixFont::insertFontInCache(UT_uint32 pixelsize, XftFont* pXftFont) const
+{
+		allocFont* entry = new allocFont;
+		entry->pixelSize = pixelsize;
+		entry->xftFont = pXftFont;
+
+		m_pXftFont = pXftFont;
+		m_allocFonts.push_back((void*) entry);
+}
+
+static inline UT_uint32 myMax(UT_uint32 a, UT_uint32 b)
+{
+	return a > b ? a : b;
+}
+
+XftFont* XAP_UnixFont::getXftFont(UT_uint32 pixelsize) const
+{
+	XftFont* pXftFont = getFontFromCache(pixelsize);
+
+	if (!pXftFont)
+	{
+		// If the font is really, really small (an EXTREMELY low Zoom can trigger this) some
+		// fonts will be calculated to 0 height.  Bump it up to 2 since the user obviously
+		// doesn't care about readability anyway.  :)
+		pixelsize = myMax(pixelsize, 2);
+
+		FcPattern* fp = XftNameParse(m_xlfd);
+		FcResult result;
+		FcPattern* result_fp = XftFontMatch(GDK_DISPLAY(), DefaultScreen(GDK_DISPLAY()), fp, &result);
+		UT_ASSERT(result_fp);
+		FcPatternDestroy(fp);
+		// just in case they already exist...
+		FcPatternDel(result_fp, FC_PIXEL_SIZE);
+		FcPatternDel(result_fp, FC_DPI);
+		FcPatternAddInteger(result_fp, FC_PIXEL_SIZE, pixelsize);
+		FcPatternAddDouble(result_fp, FC_DPI, 96.0);
+
+		UT_DEBUGMSG(("Before print.\n"));
+#ifdef DEBUG
+		FcPatternPrint(result_fp);
+#endif
+		UT_DEBUGMSG(("After print.\n"));
+
+		UT_DEBUGMSG(("Before open.\n"));
+		pXftFont = XftFontOpenPattern(GDK_DISPLAY(), result_fp);
+		UT_DEBUGMSG(("After open.\n"));
+		
+		UT_DEBUGMSG(("Before destroy.\n"));
+		// FcPatternDestroy(result_fp);
+		UT_DEBUGMSG(("After destroy.\n"));
+
+		// That means that we should should be 100% sure that,
+		// at this point, the font exists in the system
+		UT_ASSERT(pXftFont);
+
+		insertFontInCache(pixelsize, pXftFont);
+	}
+
+	return pXftFont;
+}
+
+#else
+
 GdkFont * XAP_UnixFont::getGdkFont(UT_uint32 pixelsize)
 {
 	// this might return NULL, but that means a font at a certain
@@ -969,7 +1246,7 @@ GdkFont * XAP_UnixFont::getGdkFont(UT_uint32 pixelsize)
 	UT_uint32 count = m_allocFonts.getItemCount();
 	xxx_UT_DEBUGMSG(("There are %d allocated fonts for %s \n",count,m_name));
 	allocFont * entry;
-        char buf[1000];
+	char buf[1000];
 
  	bool bFontNotFound = false;
 		
@@ -1097,6 +1374,7 @@ GdkFont * XAP_UnixFont::getGdkFont(UT_uint32 pixelsize)
 
 	return gdkfont;
 }
+#endif
 
 void XAP_UnixFont::_makeFontKey()
 {
@@ -1125,6 +1403,7 @@ void XAP_UnixFont::_makeFontKey()
 XAP_UnixFont *XAP_UnixFont::s_defaultNonCJKFont[4];
 XAP_UnixFont *XAP_UnixFont::s_defaultCJKFont[4];
 
+#ifndef USE_XFT
 GdkFont * XAP_UnixFont::getMatchGdkFont(UT_uint32 size)
 {
   if (!XAP_EncodingManager::get_instance()->cjk_locale())
@@ -1152,43 +1431,154 @@ GdkFont * XAP_UnixFont::getMatchGdkFont(UT_uint32 size)
 }
 
 
-XAP_UnixFont * XAP_UnixFont::getMatchUnixFont(void)
+XAP_UnixFont* XAP_UnixFont::getMatchUnixFont(void)
 {
-  if (!XAP_EncodingManager::get_instance()->cjk_locale())
-      return this;
-  int s;
-  switch(m_style)
-  {
-      case XAP_UnixFont::STYLE_NORMAL:
-		  s=0;
-		  break;
-      case XAP_UnixFont::STYLE_BOLD:
-		  s=1;
-		  break;
-	  case XAP_UnixFont::STYLE_ITALIC:
-		  s=2;
-		  break;
-	  case XAP_UnixFont::STYLE_BOLD_ITALIC:
-		  s=3;
-		  break;
-	  default:
-		  s=0;
-  }
-  XAP_UnixFont *pMatchUnixFont= NULL;
-  if(is_CJK_font())
-  {
-	  pMatchUnixFont = s_defaultNonCJKFont[s];
-  }
-  else
-  {
-	  pMatchUnixFont = s_defaultCJKFont[s];
-  }
-  if(pMatchUnixFont != NULL)
-  {
-	  return pMatchUnixFont;
-  }
-  else
-  {
-	  return this;
-  }
+	if (!XAP_EncodingManager::get_instance()->cjk_locale())
+		return this;
+
+	int s;
+	switch(m_style)
+	{
+	case XAP_UnixFont::STYLE_NORMAL:
+		s = 0;
+		break;
+	case XAP_UnixFont::STYLE_BOLD:
+		s = 1;
+		break;
+	case XAP_UnixFont::STYLE_ITALIC:
+		s = 2;
+		break;
+	case XAP_UnixFont::STYLE_BOLD_ITALIC:
+		s = 3;
+		break;
+	default:
+		s = 0;
+	}
+
+	XAP_UnixFont *pMatchUnixFont =  NULL;
+	if (is_CJK_font())
+		pMatchUnixFont = s_defaultNonCJKFont[s];
+	else
+		pMatchUnixFont = s_defaultCJKFont[s];
+
+	if (pMatchUnixFont != NULL)
+		return pMatchUnixFont;
+	else
+		return this;
 }
+#endif
+
+#ifdef USE_XFT
+void XAP_UnixFont::getCoverage(UT_Vector& coverage)
+{
+	FcChar32 coverage_map[FC_CHARSET_MAP_SIZE];
+	FcChar32 next;
+	const FcChar32 invalid = (FcChar32) -1;
+	FcChar32 base_range = invalid;
+	coverage.clear();
+	
+	int i;
+
+	for (FcChar32 ucs4 = FcCharSetFirstPage (m_pXftFont->charset, coverage_map, &next);
+		 ucs4 != FC_CHARSET_DONE;
+		 ucs4 = FcCharSetNextPage (m_pXftFont->charset, coverage_map, &next))
+	{
+		for (i = 0; i < FC_CHARSET_MAP_SIZE; i++)
+		{
+			FcChar32 bits = coverage_map[i];
+			FcChar32 base = ucs4 + (i << 5);
+			int b = 0;
+
+			if (base_range != invalid && bits == 0xFFFFFFFF)
+				continue;
+			
+			while (bits)
+			{
+				if (bits & 1)
+				{
+					if (base_range == invalid)
+						base_range = base + b;
+				}
+				else
+				{
+					if (base_range != invalid)
+					{
+						coverage.push_back((void*) base_range);
+						coverage.push_back((void*) (base + b - base_range));
+						base_range = invalid;
+					}
+				}
+
+				bits >>= 1;
+				b++;
+			}
+
+			if (b < 32 && base_range != invalid)
+			{
+				coverage.push_back((void*) base_range);
+				coverage.push_back((void*) (base + b - base_range));
+				base_range = invalid;
+			}
+		}
+	}
+}
+
+#else
+
+void XAP_UnixFont::getCoverage(UT_Vector& coverage)
+{
+	coverage.clear();
+	UT_DEBUGMSG(("getCoverage without Xft NOT YET IMPLEMENTED!!!!\n"));
+	/* TODO */
+}
+
+#endif
+
+#ifdef USE_XFT
+inline static float fontPoints2float(UT_uint32 iSize, FT_Face pFace, UT_uint32 iFontPoints)
+{
+	return iFontPoints * iSize * 1.0 / pFace->units_per_EM;
+}
+
+float XAP_UnixFont::getAscender(UT_uint32 iSize) const
+{
+	// in fact, we don't care about the pixelsize of the font, as we're going to use font units here
+	XftFaceLocker locker(getXftFont(12));
+	FT_Face pFace = locker.getFace();
+	FT_Short ascender = pFace->ascender;
+	float fAscender = fontPoints2float(iSize, pFace, ascender);
+	xxx_UT_DEBUGMSG(("XAP_UnixFont::getAscender(%u) -> %f\n", iSize, fAscender));
+	
+	return fAscender;
+}
+
+float XAP_UnixFont::getDescender(UT_uint32 iSize) const
+{
+	// in fact, we don't care about the pixelsize of the font, as we're going to use font units here
+	XftFaceLocker locker(getXftFont(12));
+	FT_Face pFace = locker.getFace();
+	FT_Short descender = -pFace->descender;
+	float fDescender = fontPoints2float(iSize, pFace, descender);
+	xxx_UT_DEBUGMSG(("XAP_UnixFont::getDescender(%u) -> %f\n", iSize, fDescender));
+
+	return fDescender;
+}
+
+float XAP_UnixFont::measureUnRemappedChar(const UT_UCSChar c, UT_uint32 iSize) const
+{
+	// in fact, we don't care about the pixelsize of the font, as we're going to use font units here
+	XftFaceLocker locker(getXftFont(12));
+	float width = fontPoints2float(iSize, locker.getFace(), getCharWidth(c));
+	xxx_UT_DEBUGMSG(("XAP_UnixFont::measureUnRemappedChar(%c, %u) -> %f\n", (char) c, iSize, width));
+	return width;
+}
+
+UT_String XAP_UnixFont::getPostscriptName() const
+{
+	// in fact, we don't care about the pixelsize of the font, as we're going to extrqct the postscript name
+	XftFaceLocker locker(getXftFont(12));
+	const char* pszName = FT_Get_Postscript_Name(locker.getFace());
+	return (pszName == NULL ? "" : pszName);
+}
+
+#endif

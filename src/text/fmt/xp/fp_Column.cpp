@@ -562,16 +562,17 @@ void fp_VerticalContainer::draw(dg_DrawArgs* pDA)
 	}
 	bool bStop = false;
 	bool bStart = false;
+
 //
 // Only draw the lines in the clipping region.
 //
+	dg_DrawArgs da = *pDA;
 	for ( i = 0; (i<count && !bStop); i++)
 	{
 		fp_ContainerObject* pContainer = (fp_ContainerObject*) getNthCon(i);
 
-		dg_DrawArgs da = *pDA;
-		da.xoff += pContainer->getX();
-		da.yoff += pContainer->getY();
+		da.xoff = pDA->xoff + pContainer->getX();
+		da.yoff = pDA->yoff + pContainer->getY();
 		UT_sint32 ydiff = da.yoff + pContainer->getHeight();
 		bool bTable = false;
 		if(pContainer->getContainerType() == FP_CONTAINER_TABLE)

@@ -50,6 +50,16 @@ struct _fcache {
 } *g_pFCache = NULL;
 
 
+const char* GR_Graphics::findNearestFont(const char* pszFontFamily,
+										 const char* pszFontStyle,
+										 const char* pszFontVariant,
+										 const char* pszFontWeight,
+										 const char* pszFontStretch,
+										 const char* pszFontSize)
+{
+	return pszFontFamily;
+}
+
 /***
  Initialization/Teardown for drawing on a widget outside of the normal
  stream of "damage" events
@@ -585,11 +595,6 @@ void GR_QNXGraphics::setClipRect(const UT_Rect* pRect)
 			m_pClipList = NULL;
 		}
 	}
-}
-
-void GR_QNXGraphics::fillRect(const UT_RGBColor& c, UT_Rect &r)
-{
-	fillRect(c, r.left, r.top, r.width, r.height);
 }
 
 void GR_QNXGraphics::fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y,

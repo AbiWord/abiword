@@ -44,6 +44,7 @@ public:
 	UnixNull_Graphics(XAP_UnixFontManager * fontManager,XAP_App *pApp);
 	virtual ~UnixNull_Graphics();
 
+	virtual void drawGlyph(UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff);
 	virtual void drawChars(const UT_UCSChar* pChars, 
 						   int iCharOffset, int iLength,
 						   UT_sint32 xoff, UT_sint32 yoff);
@@ -52,6 +53,8 @@ public:
 	virtual UT_uint32 getFontAscent();
 	virtual UT_uint32 getFontDescent();
 	virtual UT_uint32 getFontHeight();
+
+	virtual void getCoverage(UT_Vector& converage);
 	
 	virtual UT_uint32 getFontAscent(GR_Font *);
 	virtual UT_uint32 getFontDescent(GR_Font *);
@@ -73,7 +76,6 @@ public:
 	virtual void xorLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
 	virtual void polyLine(UT_Point * pts, UT_uint32 nPoints);
 	virtual void fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h);
-	virtual void fillRect(const UT_RGBColor& c, UT_Rect &r);
 	virtual void invertRect(const UT_Rect*);
 	virtual void setClipRect(const UT_Rect*);
 	virtual void scroll(UT_sint32, UT_sint32);
@@ -107,9 +109,9 @@ public:
 	virtual void fillRect(GR_Color3D c, UT_Rect &r);
 	virtual void setPageSize(char* pageSizeName, UT_uint32 iwidth = 0, UT_uint32 iheight=0);
 	virtual void setPageCount(UT_uint32 iCount) { m_iPageCount = iCount;}
-
+	
 #ifdef WITH_PANGO
- private:
+private:
 	virtual void _drawFT2Bitmap(UT_sint32 x, UT_sint32 y, FT_Bitmap * pBitmap) const;
 #endif	
 

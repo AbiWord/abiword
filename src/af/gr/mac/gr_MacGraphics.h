@@ -75,8 +75,7 @@ public:
 	**   begin fill at x0,y0,
 	**   ?? should x0+w,y0+h or x0+w+1,y0+h+1 be the last pixel affected ??
 	*/
-	virtual void fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h);
-       	virtual void fillRect(const UT_RGBColor& c, UT_Rect &r);
+	virtual void fillRect(UT_RGBColor& c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h);
 	virtual void invertRect(const UT_Rect* pRect);
 	virtual void setClipRect(const UT_Rect* pRect);
 	virtual void scroll(UT_sint32, UT_sint32);

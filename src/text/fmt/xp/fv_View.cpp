@@ -210,6 +210,11 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 	}
 #endif
 
+	// findFont will do a fuzzy match, and return the nearest font in the system
+	const char* pszFamily = m_pG->findFont("Times New Roman", "normal", "", "normal", "", "12pt")->getFamily();
+	if (pszFamily)
+		PP_setDefaultFontFamily(pszFamily);
+
 	// initialize change cache
 	m_chg.bUndo = false;
 	m_chg.bRedo = false;

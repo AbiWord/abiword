@@ -39,6 +39,7 @@
 // TODO get this from some higher-level place
 #define FONTS_DIR_FILE	"/fonts.dir"
 
+#ifndef USE_XFT
 static char **	s_oldFontPath = NULL;
 static int		s_oldFontPathCount = 0;
 static int		(*s_oldErrorHandler)(Display *dsp, XErrorEvent *e);
@@ -125,17 +126,31 @@ unhandled:
 	return s_oldErrorHandler(dsp,e);
 }
 
-XAP_UnixFontManager::XAP_UnixFontManager(void) : m_fontHash(256), m_pExtraXFontPath(0),
-m_iExtraXFontPathCount(0)
+#endif
+
+XAP_UnixFontManager::XAP_UnixFontManager(void) : m_fontHash(256)
+#ifndef USE_XFT
+												 , m_pExtraXFontPath(0),
+												 m_iExtraXFontPathCount(0)
+#endif
 {
+#ifdef USE_XFT
+	m_pFontSet = FcConfigGetFonts(FcConfigGetCurrent(), FcSetSystem);
+//, FC_FAMILY, FC_STYLE, FC_SLANT, FC_WEIGHT, FC_SIZE, FC_FILE, 0);
+#endif
 }
 
 XAP_UnixFontManager::~XAP_UnixFontManager(void)
 {
+#ifdef USE_XFT
+	FcFontSetDestroy(m_pFontSet);
+#endif
+	
 	UT_VECTOR_FREEALL(char *, m_searchPaths);
 
 	UT_HASH_PURGEDATA(XAP_UnixFont *, &m_fontHash, delete);
 
+#ifndef USE_XFT
 	// we have to remove what we have added to the X font path
 	// the code below is not perfect, because if some other
 	// program adds one of our paths while we are running,
@@ -198,8 +213,10 @@ XAP_UnixFontManager::~XAP_UnixFontManager(void)
 
 		delete[] newPath ;
 	}
+#endif // !USE_XFT
 }
 
+#ifndef USE_XFT
 bool XAP_UnixFontManager::setFontPath(const char * searchpath)
 {
 	gchar ** table = g_strsplit(searchpath, ";", 0);
@@ -568,6 +585,7 @@ invalid_old_path:
 	
 	return true;
 }
+#endif // USE_XFT
 
 /*!
  * compareFontNames this function is used to compare the char * strings names
@@ -585,58 +603,308 @@ static UT_sint32 compareFontNames(const void * vF1, const void * vF2)
 
 UT_Vector * XAP_UnixFontManager::getAllFonts(void)
 {
-	UT_Vector * pVec = m_fontHash.enumerate();
+	UT_Vector* pVec = m_fontHash.enumerate();
 	UT_ASSERT(pVec);
-	if(pVec->getItemCount()> 1)
+	if(pVec->getItemCount() > 1)
 		pVec->qsort(compareFontNames);
-
+	
 	return pVec;
 }
 
-XAP_UnixFont * XAP_UnixFontManager::getDefaultFont(void)
+#ifdef USE_XFT
+
+static XAP_UnixFont* buildFont(FcPattern* fp)
 {
-	// this function (perhaps incorrectly) always assumes
+	unsigned char* fontFile = NULL;
+	bool bold = false;
+	int slant = FC_SLANT_ROMAN;
+	int weight;
+	UT_String metricFile;
+
+	// is it right to assume that filenames are ASCII??
+	// I though that if the result is FcResultMatch, then we can assert that fontFile is != NULL,
+	// but it doesn't seem to work that way...
+	if (FcPatternGetString(fp, FC_FILE, 0, &fontFile) != FcResultMatch || !fontFile)
+	{
+		// ok, and now what?  If we can not get the font file of the font, we can not print it!
+		UT_DEBUGMSG(("Unknow font file!!\n"));
+		return false;
+	}
+	
+	if (FcPatternGetInteger(fp, FC_WEIGHT, 0, &weight) != FcResultMatch)
+		weight = FC_WEIGHT_MEDIUM;
+	
+	if (FcPatternGetInteger(fp, FC_SLANT, 0, &slant) != FcResultMatch)
+		slant = FC_SLANT_ROMAN;
+
+	// convert the font file to the font metrics file
+	// TODO: We should follow symlinks.
+	metricFile = (char*) fontFile;
+	size_t ffs = metricFile.size();
+	if (ffs < 4 && fontFile[ffs - 4] != '.')
+		return NULL;
+
+	metricFile[ffs - 3] = 'a';
+	metricFile[ffs - 2] = 'f';
+	metricFile[ffs - 1] = 'm';
+	
+	if (weight == FC_WEIGHT_BOLD || weight == FC_WEIGHT_BLACK)
+		bold = true;
+
+	// create the string representing our Pattern
+	char* xlfd = (char*) FcNameUnparse(fp);
+
+	XAP_UnixFont::style s = XAP_UnixFont::STYLE_NORMAL;
+
+	switch (slant)
+	{
+	default:
+	case FC_SLANT_ROMAN:
+		s = bold ? XAP_UnixFont::STYLE_BOLD : XAP_UnixFont::STYLE_NORMAL;
+		break;
+	case FC_SLANT_ITALIC:
+		s = bold ? XAP_UnixFont::STYLE_BOLD_ITALIC : XAP_UnixFont::STYLE_ITALIC;
+		break;
+	case FC_SLANT_OBLIQUE:
+		// uh. The old (non fc) code uses slant o as outline, but it seems to be oblique...
+		s = bold ? XAP_UnixFont::STYLE_BOLD_OUTLINE : XAP_UnixFont::STYLE_OUTLINE;
+		break;
+	}
+			
+	XAP_UnixFont* font = new XAP_UnixFont;
+	if (!font->openFileAs((char*) fontFile, metricFile.c_str(), xlfd, s))
+	{
+		UT_DEBUGMSG(("Impossible to open font file [%s] [%d]\n.", (char*) fontFile, s));
+		DELETEP(font);
+	}
+
+	free(xlfd);
+	return font;
+}
+
+bool XAP_UnixFontManager::scavengeFonts()
+{
+	for (int i = 0; i < m_pFontSet->nfont; ++i)
+	{
+		XAP_UnixFont* pFont = buildFont(m_pFontSet->fonts[i]);
+
+		if (pFont)
+			_addFont(pFont);
+	}
+
+	return true;
+}
+
+static XAP_UnixFont* searchFont(const char* pszXftName)
+{
+	FcPattern* fp;
+	FcPattern* result_fp;
+	FcResult result;
+
+	UT_DEBUGMSG(("searchFont [%s]\n", pszXftName));
+	fp = XftNameParse(pszXftName);
+	result_fp = XftFontMatch(GDK_DISPLAY(), DefaultScreen(GDK_DISPLAY()), fp, &result);
+	UT_ASSERT(result_fp);
+	FcPatternDestroy(fp);
+		
+	if (!result_fp)
+	{
+		UT_String message("AbiWord has not been able to find any font.  Please check that\n"
+						  "you have configured correctly your font config file (it's usually\n"
+						  "located at /etc/fonts/fonts.conf)");
+		messageBoxOK(message.c_str());
+		return NULL;
+	}
+
+	XAP_UnixFont* pFont = buildFont(result_fp);
+	FcPatternDestroy(result_fp);
+	return pFont;
+}
+
+class FontHolder
+{
+public:
+	FontHolder(XAP_UnixFont* pFont = NULL) : m_pFont(pFont) {}
+	~FontHolder() { free(m_pFont); }
+
+	void setFont(XAP_UnixFont* pFont) { delete m_pFont; m_pFont = pFont; }
+	XAP_UnixFont* getFont() { return m_pFont; }
+
+private:
+	FontHolder(const FontHolder&);
+	FontHolder& operator= (const FontHolder&);
+	
+	XAP_UnixFont* m_pFont;
+};
+
+XAP_UnixFont* XAP_UnixFontManager::getDefaultFont(GR_Font::FontFamilyEnum f) const
+{
+	static bool fontInitted[GR_Font::FF_Last - GR_Font::FF_Unknown];
+	static FontHolder m_f[GR_Font::FF_Last - GR_Font::FF_Unknown];
+
+	if (!fontInitted[f])
+	{
+		switch (f)
+		{
+		case GR_Font::FF_Roman:
+			m_f[f].setFont(searchFont("Times-12"));
+			break;
+
+		case GR_Font::FF_Swiss:
+			m_f[f].setFont(searchFont("Helvetica-12"));
+			break;
+
+		case GR_Font::FF_Modern:
+			m_f[f].setFont(searchFont("Courier-12"));
+			break;
+
+		case GR_Font::FF_Script:
+			m_f[f].setFont(searchFont("Cursive-12"));
+			break;
+
+		case GR_Font::FF_Decorative:
+			m_f[f].setFont(searchFont("Old English-12"));
+			break;
+
+		// ugh!?  BiDi is not a font family, what is it doing here?
+		// And what's that "Technical" thing?
+		case GR_Font::FF_Technical:
+		case GR_Font::FF_BiDi:
+			m_f[f].setFont(searchFont("Arial-12"));
+			break;
+			
+		default:
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		}
+
+		if (m_f[f].getFont() == NULL)
+		{
+			UT_String message("AbiWord has not been able to find any font.  Please check that\n"
+							  "you have configured correctly your font config file (it's usually\n"
+							  "located at /etc/fonts/fonts.conf)");
+			messageBoxOK(message.c_str());
+			exit(1);
+		}
+
+	    fontInitted[f] = true;
+	}
+
+	return m_f[f].getFont();
+}
+
+/* everybody seems to ignore variant and stretch...
+   In the future, we may switch to something as PANOSE
+   to find similar fonts.  By now, I will just leave
+   fontconf choose the font (it chooses using the
+   alias that the user writes in fonts.conf)
+ */
+XAP_UnixFont* XAP_UnixFontManager::findNearestFont(const char* pszFontFamily,
+												   const char* pszFontStyle,
+												   const char* /* pszFontVariant */,
+												   const char* pszFontWeight,
+												   const char* /* pszFontStretch */,
+												   const char* pszFontSize)
+{
+	UT_String st(pszFontFamily);
+
+	if (pszFontSize && *pszFontSize)
+	{
+		st += '-';
+		st += pszFontSize;
+	}
+
+	if (pszFontStyle && *pszFontStyle)
+	{
+		switch (*pszFontStyle)
+		{
+		case 'i':
+		case 'I':
+			if (UT_stricmp(pszFontStyle, "italic") == 0)
+				st += ":slant=100";
+			break;
+		case 'o':
+		case 'O':
+			if (UT_stricmp(pszFontStyle, "oblique") == 0)
+				st += ":slant=110";
+			break;
+		case 'n':
+		case 'N':
+		case 'r':
+		case 'R':
+		default:
+			if (UT_stricmp(pszFontStyle, "normal") == 0 || UT_stricmp(pszFontStyle, "roman") == 0)
+				st += ":slant=0";
+			break;
+		}
+	}
+
+	if (pszFontWeight && *pszFontWeight)
+	{
+		st += ":weight=";
+		st += pszFontWeight;
+	}
+
+	return searchFont(st.c_str());
+}
+
+#else
+
+XAP_UnixFont * XAP_UnixFontManager::getDefaultFont(GR_Font::FontFamilyEnum f) const
+{
+	// TODO: This function ignores font family
+	// this function always assumes
 	// it will be able to find this font on the display.
 	// this is probably not such a bad assumption, since
 	// gtk itself uses it all over (and it ships with every
 	// X11R6 I can think of)
-	UT_DEBUGMSG(("XAP_UnixFontManager::getDefaultFont\n"));
+	xxx_UT_DEBUGMSG(("XAP_UnixFontManager::getDefaultFont\n"));
 
 	static bool fontInitted = false ;
 	static XAP_UnixFont m_f ;
 
 	if ( !fontInitted )
-	  {
+	{
 	    // do some manual behind-the-back construction
 	    m_f.setName("Default");
 	    m_f.setStyle(XAP_UnixFont::STYLE_NORMAL);
+
+		// m_f.setXLFD(searchFont("Helvetica-10").c_str());
 	    m_f.setXLFD("-*-helvetica-medium-r-*-*-*-100-*-*-*-*-*-*");
+
 	    fontInitted = true ;
-	  }
+	}
 
 	return &m_f;
 }
 
 XAP_UnixFont * XAP_UnixFontManager::getDefaultFont16Bit(void)
 {
-	UT_DEBUGMSG(("XAP_UnixFontManager::getDefaultFont16Bit\n"));
+	xxx_UT_DEBUGMSG(("XAP_UnixFontManager::getDefaultFont16Bit\n"));
 
-	XAP_UnixFont * f = NULL;
+	static bool fontInitted = false;
+	static XAP_UnixFont m_f;
 	
-	if(XAP_EncodingManager::get_instance()->isUnicodeLocale())
+	if (XAP_EncodingManager::get_instance()->isUnicodeLocale())
 	{
-		XAP_UnixFont * f = new XAP_UnixFont();
-		UT_ASSERT(f);
-		// people runing utf-8 locale will probably have the
-		// MS Arial ttf font ...
-		f->setName("Default");
-		f->setStyle(XAP_UnixFont::STYLE_NORMAL);
-		f->setXLFD("-*-Arial-medium-r-*-*-*-*-*-*-*-*-iso10646-1");
-		return f;
+		if (!fontInitted)
+		{
+			// people runing utf-8 locale will probably have the
+			// MS Arial ttf font ...
+			m_f.setName("Default");
+			m_f.setStyle(XAP_UnixFont::STYLE_NORMAL);
+
+			// m_f.setXLFD(searchFont("Arial-10:encoding=iso10646-1").c_str());
+			m_f.setXLFD("-*-Arial-medium-r-*-*-*-*-*-*-*-*-iso10646-1");
+			fontInitted = true;
+		}
+
+		return &m_f;
 	}
     else
 		return getDefaultFont();	
 }
+
+#endif
 
 XAP_UnixFont * XAP_UnixFontManager::getFont(const char * fontname,
 											XAP_UnixFont::style s)
@@ -644,22 +912,17 @@ XAP_UnixFont * XAP_UnixFontManager::getFont(const char * fontname,
 	// We use a static buffer because this function gets called a lot.
 	// Doing an allocation is really slow on many machines.
 	static char keyBuffer[512];
-
-	char * copy;
-	UT_cloneString(copy, fontname);
-	UT_upperString(copy);
+	g_snprintf(keyBuffer, 512, "%s@%d", fontname, s);
+	UT_upperString(keyBuffer);
 	
-	g_snprintf(keyBuffer, 512, "%s@%d", copy, s);
-
-	FREEP(copy);
-	
-	const XAP_UnixFont * entry = static_cast<const XAP_UnixFont *>(m_fontHash.pick(keyBuffer));
+	const XAP_UnixFont* entry = static_cast<const XAP_UnixFont *>(m_fontHash.pick(keyBuffer));
 
 	//UT_DEBUGMSG(("Found font [%p] in table.\n", entry));
 	
 	return const_cast<XAP_UnixFont *>(entry);
 }
 
+#ifndef USE_XFT
 void XAP_UnixFontManager::_allocateThisFont(const char * line,
 											const char * workingdir,int iLine)
 {
@@ -823,7 +1086,8 @@ void XAP_UnixFontManager::_allocateThisFont(const char * line,
 	FREEP(metricfile);
 	FREEP(linedup);
 }
-	  
+#endif // !USE_XFT
+
 void XAP_UnixFontManager::_addFont(XAP_UnixFont * newfont)
 {
 	// we index fonts by a combined "name" and "style"
@@ -845,9 +1109,10 @@ void XAP_UnixFontManager::_addFont(XAP_UnixFont * newfont)
 	*/
 
 	m_fontHash.insert(fontkey,
-			  (void *) newfont);		
+					  (void *) newfont);		
 }
 
+#ifndef USE_XFT
 void XAP_UnixFontManager::_allocateCJKFont(const char * line,
 											   int iLine)
 {
@@ -935,6 +1200,7 @@ void XAP_UnixFontManager::_allocateCJKFont(const char * line,
 
 	g_strfreev(sa);
 }
+#endif // !USE_XFT
 
 
 

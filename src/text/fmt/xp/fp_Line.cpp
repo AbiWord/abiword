@@ -1058,7 +1058,9 @@ void fp_Line::draw(GR_Graphics* pG)
 	da.yoff = my_yoff + m_iAscent;
 	da.xoff = my_xoff;
 	da.pG = pG;
-
+	da.bDirtyRunsOnly = true; //magic line to give a factor 2 speed up!
+	const UT_Rect* pRect = pG->getClipRect();
+		
 	FV_View* pView = getBlock()->getDocLayout()->getView();
 	bool bShowHidden = pView->getShowPara();
 
@@ -1092,8 +1094,19 @@ void fp_Line::draw(GR_Graphics* pG)
 		}
 
 		da.yoff += pRun->getY();
-		da.bDirtyRunsOnly = true; //magic line to give a factor 2 speed up!
-		pRun->draw(&da);
+
+		// shortcircuit drawing if we're not included in the dirty region
+		UT_Rect runRect(da.xoff, da.yoff, pRun->getWidth(), pRun->getHeight());
+
+		flash(pG, runRect, UT_RGBColor(255, 255, 0));
+
+		if (pRect)
+			flash(pG, *pRect, UT_RGBColor(0, 255, 255));
+		else
+			xxx_UT_DEBUGMSG(("pRect NULL\n"));
+
+		if (pRect == NULL || pRect->intersectsRect(&runRect))
+			pRun->draw(&da);
 
 		da.xoff -= pRun->getX();
 		da.yoff -= pRun->getY();
@@ -1123,6 +1136,7 @@ void fp_Line::draw(dg_DrawArgs* pDA)
 	bool bShowHidden = pView->getShowPara();
 
 	pDA->yoff += m_iAscent;
+	const UT_Rect* pRect = pDA->pG->getClipRect();
 
 	for (int i=0; i<count; i++)
 	{
@@ -1154,8 +1168,15 @@ void fp_Line::draw(dg_DrawArgs* pDA)
 		{
 			da.xoff += pRun->getX();
 		}
+
 		da.yoff += pRun->getY();
-		pRun->draw(&da);
+		UT_Rect runRect(da.xoff, da.yoff - m_iAscent, pRun->getWidth(), pRun->getHeight());
+		// flash(pDA->pG, runRect, UT_RGBColor(0, 255, 0));
+
+		if (pRect == NULL || pRect->intersectsRect(&runRect))
+			pRun->draw(&da);
+
+		da.yoff -= pRun->getY();
 	}
 //
 // Check if this is in a cell, if so redraw the lines around it.

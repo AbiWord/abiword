@@ -119,6 +119,8 @@ AM_CONDITIONAL(DEBUG, test x$debug = xtrue)
 
 ABI_GNOME_QUICK
 
+ABI_XFT_QUICK
+
 abi_build_shared=yes
 abi_build_static=no
 
@@ -267,12 +269,20 @@ esac
 
 if test "$PLATFORM" = "unix"; then
 	if test "$gnome" = "true"; then
-		PLATFORM_CFLAGS="$GNOME_CFLAGS $GMODULE_CFLAGS $GTK_CFLAGS -DSUPPORTS_UT_IDLE=1"
-		PLATFORM_LIBS=
+		if test "$xft" = "true"; then
+			PLATFORM_CFLAGS="$XFT_CFLAGS $GNOME_CFLAGS $GMODULE_CFLAGS $GTK_CFLAGS -DSUPPORTS_UT_IDLE=1"
+			PLATFORM_LIBS=
+		else
+			PLATFORM_CFLAGS="$GNOME_CFLAGS $GMODULE_CFLAGS $GTK_CFLAGS -DSUPPORTS_UT_IDLE=1"			
+			PLATFORM_LIBS=
+		fi
 	else
-		PLATFORM_CFLAGS="$GMODULE_CFLAGS $GTK_CFLAGS -DSUPPORTS_UT_IDLE=1"
-		PLATFORM_LIBS=
-	fi
+		if test "$xft" = "true"; then
+			PLATFORM_CFLAGS="$XFT_CFLAGS $GMODULE_CFLAGS $GTK_CFLAGS -DSUPPORTS_UT_IDLE=1"
+			PLATFORM_LIBS=
+		else
+			PLATFORM_CFLAGS="$GMODULE_CFLAGS $GTK_CFLAGS -DSUPPORTS_UT_IDLE=1"			
+			PLATFORM_LIBS=
 fi
 dnl AUTOCONF SUCKS
 if test "$PLATFORM" = "mac"; then
@@ -435,6 +445,8 @@ AC_OUTPUT(
  src/other/spell/xp/GNUmakefile
  src/other/fribidi/GNUmakefile
  src/other/fribidi/xp/GNUmakefile
+ src/other/ttftool/GNUmakefile
+ src/other/ttftool/unix/GNUmakefile
  src/text/GNUmakefile
  src/text/fmt/GNUmakefile
  src/text/fmt/xp/GNUmakefile

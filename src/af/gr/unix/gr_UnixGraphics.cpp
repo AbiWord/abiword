@@ -43,9 +43,27 @@
 #include "ut_wctomb.h"
 #include "xap_EncodingManager.h"
 #include "ut_OverstrikingChars.h"
+#ifdef USE_XFT
+#include <X11/Xlib.h>
+#endif
 
+const char* GR_Graphics::findNearestFont(const char* pszFontFamily,
+										 const char* pszFontStyle,
+										 const char* pszFontVariant,
+										 const char* pszFontWeight,
+										 const char* pszFontStretch,
+										 const char* pszFontSize)
+{
+#ifdef USE_XFT	
+	XAP_UnixFont* pUnixFont = XAP_UnixFontManager::findNearestFont(pszFontFamily, pszFontStyle, pszFontVariant, pszFontWeight,
+																   pszFontStretch, pszFontSize);
+	return pUnixFont->getName();
+#else
+	return NULL;
+#endif
+}
 
-#if (1 && !defined(WITH_PANGO))
+#if (1 && (!defined(WITH_PANGO) || !defined(USE_XFT)))
 #include <gdk/gdkprivate.h>
 static bool isFontUnicode(GdkFont *font)
 {
@@ -77,6 +95,9 @@ GR_UnixGraphics::GR_UnixGraphics(GdkWindow * win, XAP_UnixFontManager * fontMana
 #else
 GR_UnixGraphics::GR_UnixGraphics(GdkWindow * win, XAP_App * app)
 #endif
+#ifdef USE_XFT
+	: m_bLayoutUnits(false)
+#endif
 {
 	m_pApp = app;
 	m_pWin = win;
@@ -92,6 +113,14 @@ GR_UnixGraphics::GR_UnixGraphics(GdkWindow * win, XAP_App * app)
 	m_pXORGC = gdk_gc_new(m_pWin);
 
 	m_pColormap = gdk_rgb_get_cmap(); // = gdk_colormap_get_system();
+#ifdef USE_XFT
+	m_pVisual = GDK_VISUAL_XVISUAL(gdk_window_get_visual(win));
+	m_Drawable = GDK_WINDOW_XWINDOW(win);
+	m_Colormap = GDK_COLORMAP_XCOLORMAP(m_pColormap);
+	m_pXftFont = NULL;
+
+	m_pXftDraw = XftDrawCreate(GDK_DISPLAY(), m_Drawable, m_pVisual, m_Colormap);
+#endif
 
 	gdk_gc_set_function(m_pXORGC, GDK_XOR);
 
@@ -102,6 +131,14 @@ GR_UnixGraphics::GR_UnixGraphics(GdkWindow * win, XAP_App * app)
  	GdkColor clrBlack;
 	gdk_color_black(m_pColormap, &clrBlack);
 	gdk_gc_set_foreground(m_pGC, &clrBlack);
+
+#ifdef USE_XFT
+	m_XftColor.color.red = clrBlack.red;
+	m_XftColor.color.green = clrBlack.green;
+	m_XftColor.color.blue = clrBlack.blue;
+	m_XftColor.color.alpha = 0xffff;
+	m_XftColor.pixel = clrBlack.pixel;
+#endif
 
 	// I only want to set CAP_NOT_LAST, but the call takes all
 	// arguments (and doesn't have a default value).  Set the
@@ -123,7 +160,8 @@ GR_UnixGraphics::GR_UnixGraphics(GdkWindow * win, XAP_App * app)
 	m_cursor = GR_CURSOR_INVALID;
 	setCursor(GR_CURSOR_DEFAULT);
 
-#ifndef WITH_PANGO
+#if (!defined(WITH_PANGO) || !defined(USE_XFT))
+
 	m_pFallBackFontHandle = new XAP_UnixFontHandle(m_pFontManager->getDefaultFont(), FALLBACK_FONT_SIZE);
 #endif
 }
@@ -133,8 +171,15 @@ GR_UnixGraphics::~GR_UnixGraphics()
 	s_iInstanceCount--;
 	if(!s_iInstanceCount)
 		DELETEP(s_pFontGUI);
+
+#ifdef USE_XFT
+	/* WARNING: Don't use XftDrawDestroy.  XftDrawDestroy will also destroy the drawable */
+	if (m_pXftDraw)
+		free(m_pXftDraw);
+
 #ifndef WITH_PANGO
 	delete m_pFallBackFontHandle;
+#endif
 #endif
 }
 
@@ -206,7 +251,7 @@ void GR_UnixGraphics::setLineProperties ( double inWidthPixels,
 			       mapJoinStyle ( inJoinStyle ) ) ;
 }
 
-#ifndef WITH_PANGO
+#if (!defined(WITH_PANGO) || !defined(USE_XFT))
 /* let's cache this, since construction of UT_Wctomb is rather slow */
 static UT_Wctomb* w = NULL;
 static char text[MB_LEN_MAX];
@@ -232,11 +277,14 @@ static bool fallback_used;
 		    fallback_used = 1;	\
 		}	\
 	}
+#endif
 
-
-// HACK: I need more speed
-void GR_UnixGraphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
+#ifndef WITH_PANGO
+void GR_UnixGraphics::drawGlyph(UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff)
 {
+#ifdef USE_XFT
+	XftDrawGlyphs(m_pXftDraw, &m_XftColor, m_pXftFont, xoff, yoff + m_pXftFont->ascent, &Char, 1);
+#else
 	UT_UCSChar Wide_char = remapGlyph(Char, false);
 	if(Wide_char == 0x200B || Wide_char == 0xFEFF) //zero width spaces
 		return;
@@ -268,11 +316,16 @@ void GR_UnixGraphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
 		CONVERT_TO_MBS(Wide_char);
 		gdk_draw_text(m_pWin,font,m_pGC,xoff,yoff+font->ascent,text,text_length);
 	}
+#endif
 }
 
 void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 							 int iLength, UT_sint32 xoff, UT_sint32 yoff)
 {
+#ifdef USE_XFT
+	XftDrawString32(m_pXftDraw, &m_XftColor, m_pXftFont, xoff, yoff + m_pXftFont->ascent,
+					const_cast<XftChar32*> (pChars + iCharOffset), iLength);
+#else
 	if (!m_pFontManager)
 		return;
 	UT_ASSERT(m_pFont);
@@ -353,6 +406,7 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 				switch(isOverstrikingChar(*pC))
 				{
 				case UT_NOT_OVERSTRIKING:
+				default:
 					curWidth = gdk_text_width(font, (gchar*)&beucs, 2);
 					curX = x;
 					break;
@@ -379,6 +433,7 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 				switch(isOverstrikingChar(*pC))
 				{
 				case UT_NOT_OVERSTRIKING:
+				default:
 					curWidth = gdk_text_width(font, (gchar*)&gc, 1);
 					curX = x;
 					break;
@@ -405,35 +460,72 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 		}
 	}
 	flush();
+#endif // USE_XFT
 }
 
 void GR_UnixGraphics::setFont(GR_Font * pFont)
 {
 	XAP_UnixFontHandle * pUFont = static_cast<XAP_UnixFontHandle *> (pFont);
-#if 1
+
+	// Sometimes we ask gr_UnixGraphics to build big (*BIG*) fonts only to
+	// get the linear metrics of the font (in the so called "layout units").
+	// Xft is not able to open fonts so big, so if we are called with such
+	// a font, then we don't even try to open it.
+	// IMO the code should not create a big GR_Font to get the linear metrics,
+	// but just ask for the metrics with float precision, for instance.
+	// I'm just taking here the shortest path to get Xft working...
+
 	// this is probably caching done on the wrong level
 	// but it's currently faster to shortcut
 	// than to call explodeGdkFonts
 	// TODO: turn this off when our text runs get a bit smarter
 	if(m_pFont && (pUFont->getUnixFont() == m_pFont->getUnixFont()) &&
 	   (pUFont->getSize() == m_pFont->getSize()))
-	  return;
-#endif
+		return;
 
 	m_pFont = pUFont;
+
+#ifdef USE_XFT
+	UT_uint32 size = pUFont->getSize();
+	if (size < MAX_ABI_GDK_FONT_SIZE)
+	{
+		m_bLayoutUnits = false;
+		m_pXftFont = m_pFont->getXftFont();
+		m_XftFaceLocker = XftFaceLocker(m_pXftFont);
+
+	}
+	else
+	{
+		m_bLayoutUnits = true;
+		m_pXftFont = NULL;
+	}
+#else
 //
 // Only use gdk fonts for Low resolution
 //
 	if(pUFont->getSize()< MAX_ABI_GDK_FONT_SIZE)
-	{
 		m_pFont->explodeGdkFonts(m_pSingleByteFont,m_pMultiByteFont);
-	}
+#endif
 }
 
 UT_uint32 GR_UnixGraphics::getFontHeight(GR_Font * fnt)
 {
 	return getFontAscent(fnt)+getFontDescent(fnt);
 }
+
+#ifdef USE_XFT
+void GR_UnixGraphics::getCoverage(UT_Vector& coverage)
+{
+	m_pFont->getUnixFont()->getCoverage(coverage);
+}
+#else
+void GR_UnixGraphics::getCoverage(UT_Vector& coverage)
+{
+	coverage.clear();
+	coverage.push_back((void*) ' ');
+	coverage.push_back((void*) (127 - ' '));
+}
+#endif
 
 UT_uint32 GR_UnixGraphics::getFontHeight()
 {
@@ -449,6 +541,23 @@ UT_uint32 GR_UnixGraphics::measureUnRemappedChar(const UT_UCSChar c)
 	// but its not (for presumed performance reasons).  Also, a difference
 	// is that measureString() uses remapping to get past zero-width
 	// character cells.
+
+#ifdef USE_XFT
+	if (m_bLayoutUnits)
+	{
+		xxx_UT_DEBUGMSG(("Using measureUnRemappedChar in layout units\n"));
+		float width = m_pFont->getUnixFont()->measureUnRemappedChar(c, m_pFont->getSize());
+		return (UT_uint32) (width + 0.5);
+	}
+	else
+	{
+		xxx_UT_DEBUGMSG(("Using measureUnRemappedChar in screen units\n"));
+		XGlyphInfo extents;
+		XftTextExtents32(GDK_DISPLAY(), m_pXftFont, const_cast<XftChar32*> (&c), 1, &extents);
+		return extents.xOff;
+	}
+
+#else
 
 	if(c == 0x200B || c == 0xFEFF) // 0-with spaces
 		return 0;
@@ -526,7 +635,7 @@ UT_uint32 GR_UnixGraphics::measureUnRemappedChar(const UT_UCSChar c)
 			return width;
 		}
 	}
-
+#endif
 }
 
 #if 0
@@ -582,11 +691,11 @@ void GR_UnixGraphics::_drawFT2Bitmap(UT_sint32 x, UT_sint32 y, FT_Bitmap * pBitm
 
 UT_uint32 GR_UnixGraphics::_getResolution(void) const
 {
-	// this is hard-coded at 100 for X now, since 75 (which
+	// this is hard-coded at 96 for X now, since 75 (which
 	// most X servers return when queried for a resolution)
 	// makes for tiny fonts on modern resolutions.
 
-	return 100;
+	return 96;
 }
 
 void GR_UnixGraphics::setColor(const UT_RGBColor& clr)
@@ -609,6 +718,14 @@ void GR_UnixGraphics::_setColor(GdkColor & c)
 
 	gdk_gc_set_foreground(m_pGC, &c);
 
+#ifdef USE_XFT
+	m_XftColor.color.red = c.red;
+	m_XftColor.color.green = c.green;
+	m_XftColor.color.blue = c.blue;
+	m_XftColor.color.alpha = 0xffff;
+	m_XftColor.pixel = c.pixel;
+#endif
+	
 	/* Set up the XOR gc */
 	gdk_gc_set_foreground(m_pXORGC, &c);
 	gdk_gc_set_function(m_pXORGC, GDK_XOR);
@@ -619,6 +736,7 @@ GR_Font * GR_UnixGraphics::getGUIFont(void)
 #ifndef WITH_PANGO
 	if (!m_pFontManager)
 		return NULL;
+
 	if (!s_pFontGUI)
 	{
 		// get the font resource
@@ -636,6 +754,34 @@ GR_Font * GR_UnixGraphics::getGUIFont(void)
 }
 
 #ifndef WITH_PANGO
+#ifdef USE_XFT
+/**
+ * Finds a font which match the family, style, variant, weight and size
+ * asked.  It will do a fuzzy match to find the font (using the aliases
+ * found in fonts.conf
+ */
+GR_Font * GR_UnixGraphics::findFont(const char* pszFontFamily,
+									const char* pszFontStyle,
+									const char* pszFontVariant,
+									const char* pszFontWeight,
+									const char* pszFontStretch,
+									const char* pszFontSize)
+{
+	XAP_UnixFont* pUnixFont = XAP_UnixFontManager::findNearestFont(pszFontFamily, pszFontStyle, pszFontVariant, pszFontWeight,
+																   pszFontStretch, pszFontSize);
+
+	// bury the pointer to our Unix font in a XAP_UnixFontHandle with the correct size.
+	// This piece of code scales the FONT chosen at low resolution to that at high
+	// resolution. This fixes bug 1632 and other non-WYSIWYG behaviour.
+	UT_uint32 iSize = getAppropriateFontSizeFromString(pszFontSize);
+	XAP_UnixFontHandle* pFont = new XAP_UnixFontHandle(pUnixFont, iSize);
+	UT_ASSERT(pFont);
+
+	return pFont;
+}
+
+#else
+
 GR_Font * GR_UnixGraphics::findFont(const char* pszFontFamily,
 									const char* pszFontStyle,
 									const char* /*pszFontVariant*/,
@@ -737,6 +883,15 @@ GR_Font * GR_UnixGraphics::findFont(const char* pszFontFamily,
 
 	return pFont;
 }
+#endif
+
+GR_Font* GR_UnixGraphics::getDefaultFont(UT_String& fontFamily)
+{
+	static XAP_UnixFontHandle fontHandle(m_pFontManager->getDefaultFont(), 12);
+	fontFamily = fontHandle.getUnixFont()->getName();
+	
+	return &fontHandle;
+}
 
 UT_uint32 GR_UnixGraphics::getFontAscent(GR_Font * fnt)
 {
@@ -744,6 +899,10 @@ UT_uint32 GR_UnixGraphics::getFontAscent(GR_Font * fnt)
 	UT_ASSERT(m_pGC);
 
 	XAP_UnixFontHandle * hndl = static_cast<XAP_UnixFontHandle *>(fnt);
+	
+#ifdef USE_XFT
+	return (UT_uint32) (hndl->getUnixFont()->getAscender(hndl->getSize()) + 0.5);
+#else
 //
 // Use GDK at low resolution.
 //
@@ -782,6 +941,7 @@ UT_uint32 GR_UnixGraphics::getFontAscent(GR_Font * fnt)
 		UT_uint32 ascmulti = (UT_uint32) ( (double) pMultiByte->get_CJK_Ascent() * (double) hndl->getSize() /1000.);
 		return MAX(ascsingle,ascmulti);
 	}
+#endif
 }
 
 UT_uint32 GR_UnixGraphics::getFontAscent()
@@ -796,6 +956,11 @@ UT_uint32 GR_UnixGraphics::getFontDescent(GR_Font * fnt)
 	UT_ASSERT(m_pGC);
 
 	XAP_UnixFontHandle * hndl = static_cast<XAP_UnixFontHandle *>(fnt);
+
+#ifdef USE_XFT
+	XAP_UnixFont* pFont = hndl->getUnixFont();
+	return (UT_uint32) (pFont->getDescender(hndl->getSize()) + 0.5);
+#else
 //
 // Use GDK at low resolution.
 //
@@ -819,6 +984,7 @@ UT_uint32 GR_UnixGraphics::getFontDescent(GR_Font * fnt)
 		UT_uint32 dmulti = (UT_uint32) ( (double) pMultiByte->get_CJK_Descent() * (double) hndl->getSize() /1000.);
 		return MAX(dsingle,dmulti);
 	}
+#endif
 }
 
 UT_uint32 GR_UnixGraphics::getFontDescent()
@@ -911,17 +1077,41 @@ void GR_UnixGraphics::setClipRect(const UT_Rect* pRect)
 
 		gdk_gc_set_clip_rectangle(m_pGC, &r);
 		gdk_gc_set_clip_rectangle(m_pXORGC, &r);
+#ifdef USE_XFT
+		Region region;
+		XPoint points[4];
+
+		points[0].x = r.x;
+		points[0].y = r.y;
+			
+		points[1].x = r.x + r.width;
+		points[1].y = r.y;
+			
+		points[2].x = r.x + r.width;
+		points[2].y = r.y + r.height;
+			
+		points[3].x = r.x;
+		points[3].y = r.y + r.height;
+
+		xxx_UT_DEBUGMSG(("Setting clipping rectangle: (%d, %d, %d, %d)\n", r.x, r.y, r.width, r.height));
+		region = XPolygonRegion(points, 4, EvenOddRule);
+		if (region)
+		{
+			XftDrawSetClip(m_pXftDraw, region);
+			XDestroyRegion (region);
+		}
+#endif
 	}
 	else
 	{
 		gdk_gc_set_clip_rectangle(m_pGC, NULL);
 		gdk_gc_set_clip_rectangle(m_pXORGC, NULL);
-	}
-}
 
-void GR_UnixGraphics::fillRect(const UT_RGBColor& c, UT_Rect &r)
-{
-	fillRect(c,r.left,r.top,r.width,r.height);
+#ifdef USE_XFT
+		xxx_UT_DEBUGMSG(("Setting clipping rectangle NULL\n"));
+		XftDrawSetClip(m_pXftDraw, 0);
+#endif
+	}
 }
 
 void GR_UnixGraphics::fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y,

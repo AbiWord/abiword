@@ -158,19 +158,21 @@ bool ps_Generate::formatComment(const char * szCommentName, const char **argv, i
 	// we PS-escapify each arg as we output it.
 	// return true if successful.
 	
-        UT_String buf = "%%";
+	UT_String buf = "%%";
 	int bufLen;
 	
-        buf += szCommentName;
-        buf += ":";
-	for (int k=0; k<argc; k++)
+	buf += szCommentName;
+	buf += ":";
+	for (int k = 0; k < argc; k++)
 	{
+		UT_String arg(argv[k]);
+
 		bufLen = buf.size();
-		if (bufLen+strlen(argv[k]) < 256)
+		if (bufLen + arg.size() < 256)
 		{
 			// TODO see if we need to PS-style esacpe the string before we add it.
 			buf += " ";
-			buf += argv[k];
+			buf += arg;
 		}
 		else
 		{
@@ -205,12 +207,14 @@ bool ps_Generate::formatComment(const char * szCommentName, const UT_Vector * pV
 	for (UT_uint32 k=0; k<argc; k++)
 	{
 		const char * psz = (const char *)pVec->getNthItem(k);
+		UT_String arg(psz);
+
 		bufLen = buf.size();
-		if (bufLen+strlen(psz) < 256)
+		if (bufLen + arg.size() < 256)
 		{
 			// TODO see if we need to PS-style esacpe the string before we add it.
 			buf += " ";
-			buf += psz;
+			buf += arg;
 		}
 		else
 		{

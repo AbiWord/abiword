@@ -16,7 +16,10 @@
 ## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
 ## 02111-1307, USA.
 
+include $(top_srcdir)/includes.mk
 
-SUBDIRS = spell fribidi ttftool
+INCLUDES = $(AF_INCLUDES) $(ICONV_INCLUDES) 
 
+noinst_LIBRARIES = libTtfTool.a
 
+libTtfTool_a_SOURCES = parse.c ps.c ttfutils.c

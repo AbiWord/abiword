@@ -28,6 +28,8 @@
 #include "pd_Style.h"
 #include "fl_AutoLists.h"
 #include "ut_hash.h"
+// that's only to use the findNearestFont method
+#include "gr_Graphics.h"
 
 ///////////////////////////////////////////////////////////////////
 // Styles represent named collections of formatting properties.
@@ -42,88 +44,120 @@
 			0};									\
 		if (!_createBuiltinStyle(name, a))		\
 			goto Failed;						\
-	} while(0);
+	} while(0)
 
 bool pt_PieceTable::_loadBuiltinStyles(void)
 {
-	/*
+	/* 	
 		!!! if adding or removing properties to the list_fmt, you have to make also changes to
 		pt_VarSet.cpp mergeAP()
 	*/
+	char* old_locale = setlocale (LC_NUMERIC, "C");
+	char* list_fmt = " list-style:%s; start-value:%s; margin-left:%fin; text-indent:-%fin; "
+		"field-color:%s;list-delim:%s; field-font:%s; list-decimal:%s";
+	UT_String list_fmt_tmp;
+	UT_String stTmp;
+	const char* szFmt;
+	
+	// findNearestFont will do a fuzzy match, and return the nearest font in the system
+	const char* pszFamily = GR_Graphics::findNearestFont("Times New Roman", "normal", "", "normal", "", "12pt");
+	UT_String_sprintf(stTmp, "font-family:%s; font-size:12pt; font-weight:normal; "
+					  "font-style:normal; font-stretch:normal; font-variant:normal; "
+					  "margin-top:0pt; margin-bottom:0pt; "
+					  "margin-left:0pt; margin-right:0pt; text-decoration:none; "
+					  "text-indent:0in; text-position:normal; line-height:1.0; "
+					  "color:000000; bgcolor:transparent; widows:2", pszFamily);
 
-	char * old_locale = setlocale (LC_NUMERIC, "C");
+	pszFamily = GR_Graphics::findNearestFont("Arial", "normal", "", "normal", "", "12pt");
+	
+	stTmp += "; dom-dir:";
+#	ifdef BIDI_RTL_DOMINANT
+	stTmp += "rtl; text-align:right";
+#	else
+	stTmp += "ltr; text-align:left";
+#	endif
 
-	char* list_fmt = " list-style:%s; start-value:%s; margin-left:%fin; text-indent:-%fin; field-color:%s;list-delim:%s; field-font:%s; list-decimal:%s";
-	char list_fmt_tmp[1024];
-#ifdef BIDI_RTL_DOMINANT
-	_s("Normal",	"P", "",       "Current Settings", "font-family:Times New Roman; font-size:12pt; font-weight:normal; font-style:normal; font-stretch:normal; font-variant:normal; dom-dir:rtl; text-align:right; margin-top:0pt; margin-bottom:0pt; margin-left:0pt; margin-right:0pt; text-decoration:none; text-indent:0in; text-position:normal; line-height:1.0; color:000000; bgcolor:transparent; widows:2");
-#else
-	_s("Normal",	"P", "",       "Current Settings", "font-family:Times New Roman; font-size:12pt; dom-dir:ltr; font-weight:normal; font-style:normal; font-stretch:normal; font-variant:normal; margin-top:0pt; margin-bottom:0pt; margin-left:0pt; margin-right:0pt; text-decoration:none; text-indent:0in; text-position:normal; text-align:left; line-height:1.0; color:000000; bgcolor:transparent; widows:2");
-#endif
-	_s("Heading 1",	"P", "Normal", "Normal", "font-family:Arial; font-size:17pt; font-weight:bold; margin-top:22pt; margin-bottom:3pt; keep-with-next:1");
-	_s("Heading 2",	"P", "Normal", "Normal", "font-family:Arial; font-size:14pt; font-weight:bold; margin-top:22pt; margin-bottom:3pt; keep-with-next:1");
-	_s("Heading 3",	"P", "Normal", "Normal", "font-family:Arial; font-size:12pt; font-weight:bold; margin-top:22pt; margin-bottom:3pt; keep-with-next:1");
+	_s("Normal",	"P", "",       "Current Settings", stTmp.c_str());
+	
+	szFmt = "font-family:%s; font-size:%dpt; font-weight:bold; margin-top:22pt; margin-bottom:3pt; keep-with-next:1";
+	UT_String_sprintf(stTmp, szFmt, pszFamily, 17);
+	_s("Heading 1",	"P", "Normal", "Normal", stTmp.c_str());
+	UT_String_sprintf(stTmp, szFmt, pszFamily, 14);
+	_s("Heading 2",	"P", "Normal", "Normal", stTmp.c_str());
+	UT_String_sprintf(stTmp, szFmt, pszFamily, 12);
+	_s("Heading 3",	"P", "Normal", "Normal", stTmp.c_str());
 	_s("Plain Text","P", "Normal", "Current Settings", "font-family:Courier New");
 	_s("Block Text","P", "Normal", "Current Settings", "margin-left:1in; margin-right:1in; margin-bottom:6pt");
 
-	sprintf(list_fmt_tmp, list_fmt, "Numbered List", "1",LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L.", "NULL", ".");
-	_s("Numbered List","P", "", "Current Settings", list_fmt_tmp);
+	UT_String_sprintf(stTmp, list_fmt, "Numbered List", "1",LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L.", "NULL", ".");
+	_s("Numbered List","P", "", "Current Settings", stTmp.c_str());
 
-	sprintf(list_fmt_tmp, list_fmt, "Lower Case List","1", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L)", "NULL", ".");
-	_s("Lower Case List","P", "Numbered List", "Current Settings", list_fmt_tmp);
-	sprintf(list_fmt_tmp, list_fmt, "Upper Case List","1", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L)", "NULL", ".");
-	_s("Upper Case List","P", "Numbered List", "Current Settings", list_fmt_tmp);
+	UT_String_sprintf(stTmp, list_fmt, "Lower Case List","1", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L)", "NULL", ".");
+	_s("Lower Case List","P", "Numbered List", "Current Settings", stTmp.c_str());
+	UT_String_sprintf(stTmp, list_fmt, "Upper Case List","1", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L)", "NULL", ".");
+	_s("Upper Case List","P", "Numbered List", "Current Settings", stTmp.c_str());
 
-	sprintf(list_fmt_tmp, list_fmt, "Lower Roman List","1", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "NULL", ".");
-	_s("Lower Roman List","P", "Normal", "Current Settings", list_fmt_tmp);
+	UT_String_sprintf(stTmp, list_fmt, "Lower Roman List","1", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "NULL", ".");
+	_s("Lower Roman List","P", "Normal", "Current Settings", stTmp.c_str());
 
-	sprintf(list_fmt_tmp, list_fmt,"Upper Roman List","1", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "NULL", ".");
-	_s("Upper Roman List","P", "Numbered List", "Current Settings", list_fmt_tmp);
+	UT_String_sprintf(stTmp, list_fmt,"Upper Roman List","1", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "NULL", ".");
+	_s("Upper Roman List","P", "Numbered List", "Current Settings", stTmp.c_str());
 
-	sprintf(list_fmt_tmp, list_fmt, "Bullet List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "Symbol", "NULL");
+	UT_String_sprintf(stTmp, list_fmt, "Bullet List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "Symbol", "NULL");
 
-	_s("Bullet List", "P", "", "Current Settings", list_fmt_tmp);
-	sprintf(list_fmt_tmp, list_fmt, "Implies List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "Symbol", "NULL");
-	_s("Implies List", "P", "", "Current Settings", list_fmt_tmp);
+	_s("Bullet List", "P", "", "Current Settings", stTmp.c_str());
+	UT_String_sprintf(stTmp, list_fmt, "Implies List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "Symbol", "NULL");
+	_s("Implies List", "P", "", "Current Settings", stTmp.c_str());
 
-	sprintf(list_fmt_tmp, list_fmt, "Dashed List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "NULL", "NULL");
-	_s("Dashed List", "P", "", "Current Settings", list_fmt_tmp);
+	UT_String_sprintf(stTmp, list_fmt, "Dashed List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "NULL", "NULL");
+	_s("Dashed List", "P", "", "Current Settings", stTmp.c_str());
 
-	sprintf(list_fmt_tmp, list_fmt, "Square List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "Dingbats", "NULL");
-	_s("Square List", "P", "", "Current Settings", list_fmt_tmp);
+	UT_String_sprintf(stTmp, list_fmt, "Square List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "Dingbats", "NULL");
+	_s("Square List", "P", "", "Current Settings", stTmp.c_str());
 
-	sprintf(list_fmt_tmp, list_fmt, "Triangle List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "Dingbats", "NULL");
-	_s("Triangle List", "P", "", "Current Settings", list_fmt_tmp);
+	UT_String_sprintf(stTmp, list_fmt, "Triangle List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "Dingbats", "NULL");
+	_s("Triangle List", "P", "", "Current Settings", stTmp.c_str());
 
-	sprintf(list_fmt_tmp, list_fmt, "Diamond List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "Dingbats", "NULL");
-	_s("Diamond List", "P", "", "Current Settings", list_fmt_tmp);
+	UT_String_sprintf(stTmp, list_fmt, "Diamond List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "Dingbats", "NULL");
+	_s("Diamond List", "P", "", "Current Settings", stTmp.c_str());
 
-	sprintf(list_fmt_tmp, list_fmt, "Star List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "Dingbats", "NULL");
-	_s("Star List", "P", "", "Current Settings", list_fmt_tmp);
+	UT_String_sprintf(stTmp, list_fmt, "Star List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "Dingbats", "NULL");
+	_s("Star List", "P", "", "Current Settings", stTmp.c_str());
 
-	sprintf(list_fmt_tmp, list_fmt, "Tick List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "Dingbats", "NULL");
-	_s("Tick List", "P", "", "Current Settings", list_fmt_tmp);
+	UT_String_sprintf(stTmp, list_fmt, "Tick List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "Dingbats", "NULL");
+	_s("Tick List", "P", "", "Current Settings", stTmp.c_str());
 
-	sprintf(list_fmt_tmp, list_fmt, "Box List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "Dingbats", "NULL");
-	_s("Box List", "P", "", "Current Settings", list_fmt_tmp);
+	UT_String_sprintf(stTmp, list_fmt, "Box List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "Dingbats", "NULL");
+	_s("Box List", "P", "", "Current Settings", stTmp.c_str());
 
-	sprintf(list_fmt_tmp, list_fmt, "Hand List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "Dingbats", "NULL");
-	_s("Hand List", "P", "", "Current Settings", list_fmt_tmp);
+	UT_String_sprintf(stTmp, list_fmt, "Hand List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "Dingbats", "NULL");
+	_s("Hand List", "P", "", "Current Settings", stTmp.c_str());
 
-	sprintf(list_fmt_tmp, list_fmt, "Heart List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "Dingbats", "NULL");
-	_s("Heart List", "P", "", "Current Settings", list_fmt_tmp);
+	UT_String_sprintf(stTmp, list_fmt, "Heart List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "Dingbats", "NULL");
+	_s("Heart List", "P", "", "Current Settings", stTmp.c_str());
 
-    _s("Numbered Heading 1","P","Heading 1","Normal","tabstops:0.3in/L0; list-style:Numbered List; start-value:1; margin-left:0.0in; text-indent:0.0in; field-color:transparent; list-delim:%L.; field-font:Arial; list-decimal:");
+	// pszFamily is the nearest font to Arial found in the system
+	UT_String_sprintf(stTmp, "tabstops:0.3in/L0; list-style:Numbered List; "
+					  "start-value:1; margin-left:0.0in; text-indent:0.0in; "
+					  "field-color:transparent; list-delim:%%L.; field-font:%s; "
+					  "list-decimal:", pszFamily);
 
-    _s("Numbered Heading 2","P","Heading 2","Normal","tabstops:0.3in/L0; list-style:Numbered List; start-value:1; margin-left:0.0in; text-indent:0.0in; field-color:transparent; list-delim:%L.; field-font:Arial; list-decimal:");
+    _s("Numbered Heading 1","P","Heading 1","Normal", stTmp.c_str());
+    _s("Numbered Heading 2","P","Heading 2","Normal", stTmp.c_str());
+    _s("Numbered Heading 3","P","Heading 3","Normal", stTmp.c_str());
 
-    _s("Numbered Heading 3","P","Heading 3","Normal","tabstops:0.3in/L0; list-style:Numbered List; start-value:1; margin-left:0.0in; text-indent:0.0in; field-color:transparent; list-delim:%L.; field-font:Arial; list-decimal:");
+	szFmt = "tabstops:1.1in/L0; list-style:Numbered List; "
+		"start-value:1; margin-left:0.0in; text-indent:0.0in; "
+		"field-color:transparent; list-delim:%s %%L.; "
+		"field-font:%s; list-decimal:";
+	UT_String_sprintf(stTmp, szFmt, pszFamily, "Chapter");
 
-    _s("Chapter Heading","P","Numbered Heading 1","Normal","tabstops:1.1in/L0; list-style:Numbered List; start-value:1; margin-left:0.0in; text-indent:0.0in; field-color:transparent; list-delim:Chapter %L.; field-font:Arial; list-decimal:");
+    _s("Chapter Heading","P","Numbered Heading 1","Normal", stTmp.c_str());
 
-    _s("Section Heading","P","Numbered Heading 1","Normal","tabstops:1.1in/L0; list-style:Numbered List; start-value:1; margin-left:0.0in; text-indent:0.0in; field-color:transparent; list-delim:Section %L.; field-font:Arial; list-decimal:");
+	UT_String_sprintf(stTmp, szFmt, pszFamily, "Section");
+    _s("Section Heading","P","Numbered Heading 1","Normal", stTmp.c_str());
 
-#ifdef DEBUG
+#ifndef NDEBUG
 	_s("Endnote Reference","C", "None", "Current Settings", "text-position:superscript; font-size:10pt");
 	_s("Endnote Text","P", "Normal", "Current Settings", "text-position:normal");
 #endif
@@ -156,10 +190,8 @@ bool pt_PieceTable::_createBuiltinStyle(const char * szName, const XML_Char ** a
 
 	pStyle = new PD_BuiltinStyle(this, indexAP, szName);
 	if (pStyle)
-	  {
-		m_hashStyles.insert(szName,
-				    (void *)pStyle);
-	  }
+		m_hashStyles.insert(szName, (void*) pStyle);
+
 	return true;
 }
 

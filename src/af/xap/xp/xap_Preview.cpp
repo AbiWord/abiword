@@ -21,6 +21,7 @@
 #include "ut_types.h"
 
 #include "xap_Preview.h"
+#include "gr_Graphics.h"
 
 XAP_Preview::XAP_Preview(GR_Graphics * gc)
 {

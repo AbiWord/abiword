@@ -102,6 +102,16 @@ private:
 XAP_CocoaFontHandle *	GR_CocoaGraphics::s_pFontGUI = NULL;
 UT_uint32 				GR_CocoaGraphics::s_iInstanceCount = 0;
 
+const char* GR_Graphics::findNearestFont(const char* pszFontFamily,
+										 const char* pszFontStyle,
+										 const char* pszFontVariant,
+										 const char* pszFontWeight,
+										 const char* pszFontStretch,
+										 const char* pszFontSize)
+{
+	return pszFontFamily;
+}
+
 GR_CocoaGraphics::GR_CocoaGraphics(NSView * win, XAP_CocoaFontManager * fontManager, XAP_App * app)
 	: m_updateCallback(NULL),
 	m_updateCBparam (NULL),
@@ -694,12 +704,6 @@ void GR_CocoaGraphics::setClipRect(const UT_Rect* pRect)
 	else {
 		UT_DEBUGMSG (("ClipRect reset!!\n"));
 	}
-}
-
-void GR_CocoaGraphics::fillRect(const UT_RGBColor& c, UT_Rect &r)
-{
-	UT_DEBUGMSG(("GR_CocoaGraphics::fillRect(UT_RGBColor&, UT_Rect &)\n"));
-	fillRect(c,r.left,r.top,r.width,r.height);
 }
 
 void GR_CocoaGraphics::fillRect(const UT_RGBColor& clr, UT_sint32 x, UT_sint32 y,

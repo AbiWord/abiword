@@ -63,7 +63,6 @@ class GR_CocoaGraphics : public GR_Graphics
 	virtual void		fillRect(const UT_RGBColor& c,
 								 UT_sint32 x, UT_sint32 y,
 								 UT_sint32 w, UT_sint32 h);
-	virtual void		fillRect(const UT_RGBColor& c, UT_Rect &r);
 	virtual void		invertRect(const UT_Rect* pRect);
 	virtual void		setClipRect(const UT_Rect* pRect);
 	virtual void		scroll(UT_sint32, UT_sint32);

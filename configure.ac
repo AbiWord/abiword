@@ -123,6 +123,8 @@ AM_CONDITIONAL(DEBUG, test x$debug = xtrue)
 
 ABI_GNOME_QUICK
 
+ABI_XFT_QUICK
+
 abi_build_shared=yes
 abi_build_static=no
 
@@ -176,6 +178,49 @@ AC_ARG_ENABLE(bidi,
        *) AC_MSG_ERROR(bad value ${enableval} for --enable-bidi) ;;
      esac],[BIDI_CFLAGS=""])
 AM_CONDITIONAL(BIDI_ENABLED, test "x$bidi" = "xtrue")
+
+#
+# Checks for FreeType
+#
+FREETYPE_LIBS=
+FREETYPE_CFLAGS=
+have_freetype=false
+AC_PATH_PROG(FREETYPE_CONFIG, freetype-config, no)
+if test "x$FREETYPE_CONFIG" != "xno" ; then
+  FREETYPE_CFLAGS=`$FREETYPE_CONFIG --cflags`
+  FREETYPE_LIBS=`$FREETYPE_CONFIG --libs`
+
+  AC_CHECK_LIB(freetype, FT_New_Face, have_freetype=true
+	       ,:,$FREETYPE_LIBS)
+
+  if $have_freetype ; then
+    abi_save_cppflags="$CPPFLAGS"
+    CPPFLAGS="$CPPFLAGS $FREETYPE_CFLAGS"
+
+    AC_MSG_CHECKING([For sufficiently new FreeType (at least 2.0.1)])
+    AC_TRY_COMPILE([
+#include <freetype/freetype.h>
+#include FT_ERRORS_H
+]
+                ,[(void)1;],:,have_freetype=false)
+    if $have_freetype ; then
+      AC_MSG_RESULT(yes)
+    else
+      AC_MSG_RESULT(no)
+    fi
+
+    CPPFLAGS="$abi_save_cppflags"
+  fi
+fi
+AC_SUBST(FREETYPE_LIBS)
+AC_SUBST(FREETYPE_CFLAGS)
+AM_CONDITIONAL(HAVE_FREETYPE, $have_freetype) 
+
+## see which freetype we have, 2.0.3 vs. 2.0.4
+abi_save_cppflags="$CPPFLAGS"  
+CPPFLAGS="$CPPFLAGS $FREETYPE_CFLAGS"
+AC_CHECK_HEADER(freetype/internal/tterrors.h, AC_DEFINE(HAVE_FREETYPE_2_0_3))
+CPPFLAGS="$abi_save_cppflags"
 
 # by default, configure in the abi directory runs the same configure command
 # in the peer directories (wv, expat, etc...).  this provides a way to
@@ -373,6 +418,8 @@ AC_CONFIG_FILES([GNUmakefile
  src/other/spell/xp/GNUmakefile
  src/other/fribidi/GNUmakefile
  src/other/fribidi/xp/GNUmakefile
+ src/other/ttftool/GNUmakefile
+ src/other/ttftool/unix/GNUmakefile
  src/text/GNUmakefile
  src/text/fmt/GNUmakefile
  src/text/fmt/xp/GNUmakefile
@@ -452,6 +499,11 @@ esac
 case "$bidi" in
      "true" )
         AC_MSG_RESULT([Configured with BiDi support.]) ;;
+esac
+
+case "$xft" in
+     "true" )
+	AC_MSG_RESULT([Configured with XFT support.]) ;;
 esac
 
 echo " "

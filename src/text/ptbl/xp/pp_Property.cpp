@@ -58,7 +58,7 @@
 
 
 /*!
- * Definitions are: Property Nme: Ininital Value: Can Inherit: Pointer to class
+ * Definitions are: Property Nme: Initial Value: Can Inherit: Pointer to class
  */
 static PP_Property _props[] =
 {
@@ -77,7 +77,7 @@ static PP_Property _props[] =
 	{ "dom-dir", default_dominant_direction, true, NULL},  //added by #TF, dominant direction of writing in a paragraph, can be either ltr or rtl (i.e., left-to-right, right-to-left)
 	{ "field-color", "dcdcdc", true, NULL},
 	{ "field-font",	"NULL",	true, NULL},
-	{ "font-family", "Times New Roman", true, NULL},	// TODO this is Win32-specific.  must fix!
+	{ "font-family", "Times New Roman", true, NULL},
 	{ "font-size",	"12pt",	true, NULL},	// MS word defaults to 10pt, but it just seems too small
 	{ "font-stretch", "normal", true, NULL},
 	{ "font-style",	"normal", true, NULL},
@@ -212,6 +212,12 @@ void PP_resetInitialBiDiValues(const XML_Char * pszValue)
 	}
 }
 
+void PP_setDefaultFontFamily(const char* pszFamily)
+{
+	static UT_String family(pszFamily);
+	PP_Property* prop = (PP_Property*) bsearch ("font-family", _props, NrElements(_props), sizeof(_props[0]), s_compare);
+	prop->m_pszInitial = (XML_Char*) family.c_str();
+}
 
 static PD_Style * _getStyle(const PP_AttrProp * pAttrProp, PD_Document * pDoc)
 {

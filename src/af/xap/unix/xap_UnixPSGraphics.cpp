@@ -1,25 +1,27 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
- *
+ * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
  * 02111-1307, USA.
  */
 
 #include <stdio.h>
 #include <string.h>
 #include <locale.h>
+#include <freetype/ftsnames.h>
+#include <freetype/ttnameid.h>
 
 #include "ut_types.h"
 #include "ut_assert.h"
@@ -39,7 +41,10 @@
 #include "xap_UnixFontManager.h"
 #include "xap_UnixFontXLFD.h"
 #include "xap_EncodingManager.h"
+
+#ifdef BIDI_ENABLED
 #include "ut_OverstrikingChars.h"
+#endif
 
 #include "xap_Prefs.h"
 #include "xap_App.h"
@@ -52,16 +57,16 @@
 	DSC3.0 limits to 256, but we may need to print a few extra
 	characters after we reach the end of our buffer
 */
-#define OUR_LINE_LIMIT		220
+#define OUR_LINE_LIMIT		220			
 #define LINE_BUFFER_SIZE   OUR_LINE_LIMIT + 30
 
-#if (1 && !defined(WITH_PANGO))
+#if (1 && (!defined(WITH_PANGO) || !defined(USE_XFT)))
 #include <gdk/gdkprivate.h>
 static bool isFontUnicode(GdkFont *font)
 {
 	GdkFontPrivate *font_private = (GdkFontPrivate*) font;
 	XFontStruct *xfont = (XFontStruct *) font_private->xfont;
-
+	
 	return ((xfont->min_byte1 == 0) || (xfont->max_byte1 == 0));
 }
 #endif
@@ -69,7 +74,17 @@ static bool isFontUnicode(GdkFont *font)
 static
 UT_uint32 _scaleFont(PSFont * pFont, UT_uint32 units)
 {
-  return (units * pFont->getSize() / 1000);
+#ifdef USE_XFT
+	XftFont* pXftFont = pFont->getUnixFont()->getXftFont(pFont->getSize());
+	XftFaceLocker locker(pXftFont);
+
+	UT_uint32 retval = units * pFont->getSize() / locker.getFace()->units_per_EM;
+	UT_DEBUGMSG(("_scaleFont(%u) -> %u\n", units, retval));
+
+	return retval;
+#else
+	return (units * pFont->getSize() / 1000); 
+#endif
 }
 
 /*****************************************************************
@@ -82,7 +97,7 @@ UT_uint32 _scaleFont(PSFont * pFont, UT_uint32 units)
 PS_Graphics::PS_Graphics(const char * szFilename,
 						 const char * szTitle,
 						 const char * szSoftwareNameAndVersion,
-						 XAP_UnixFontManager * fontManager,
+						 XAP_UnixFontManager * fontManager,						 
 						 bool	  bIsFile,
 						 XAP_App *pApp)
 {
@@ -99,7 +114,7 @@ PS_Graphics::PS_Graphics(const char * szFilename,
 	m_ps = 0;
 
 	m_cs = GR_Graphics::GR_COLORSPACE_COLOR;
-
+	
 	m_fm = fontManager;
 
 	m_currentColor.m_red = 0;
@@ -111,7 +126,8 @@ PS_Graphics::PS_Graphics(const char * szFilename,
 PS_Graphics::~PS_Graphics()
 {
 	// TODO free stuff
-        FREEP(m_szPageSizeName);
+	// UT_VECTOR_PURGEALL(PSFont*, m_vecFontList);
+	FREEP(m_szPageSizeName);
 }
 
 bool PS_Graphics::queryProperties(GR_Graphics::Properties gp) const
@@ -138,7 +154,7 @@ void PS_Graphics::setFont(GR_Font* pFont)
 	// TODO Not always what we want, i.e., start of a new page.
 	// TODO I added a call directly to _startPage to call _emit_SetFont();
 	// TODO I would rather do it all here.
-	if (pNewFont == m_pCurrentFont )
+	if (pNewFont == m_pCurrentFont ) 
 		return;
 
 	UT_ASSERT(pFont);
@@ -148,9 +164,12 @@ void PS_Graphics::setFont(GR_Font* pFont)
 		_emit_SetFont();
 }
 
-
 UT_uint32 PS_Graphics::getFontAscent(GR_Font * fnt)
 {
+#ifdef USE_XFT
+	PSFont*				psfnt = static_cast<PSFont*> (fnt);
+	return (UT_uint32) (psfnt->getUnixFont()->getAscender(psfnt->getSize()) + 0.5);
+#else
   PSFont * psfnt = static_cast<PSFont *>(fnt);
   PSFont *pEnglishFont;
   PSFont *pChineseFont;
@@ -165,7 +184,7 @@ UT_uint32 PS_Graphics::getFontAscent(GR_Font * fnt)
   //#if 0
   //  e = _scaleFont(psfnt, gfi->fontBBox.ury);
   //#endif
-
+    
 
   XAP_UnixFont * pUFont = psfnt->getUnixFont();
   UT_sint32 iSize = psfnt->getSize();
@@ -184,6 +203,7 @@ UT_uint32 PS_Graphics::getFontAscent(GR_Font * fnt)
 
   c= pChineseFont == pEnglishFont ? 0 :_scaleFont(psfnt, pChineseFont->getUnixFont()->get_CJK_Ascent());
   return MAX(e,c);
+#endif
 }
 
 UT_uint32 PS_Graphics::getFontAscent()
@@ -193,6 +213,10 @@ UT_uint32 PS_Graphics::getFontAscent()
 
 UT_uint32 PS_Graphics::getFontDescent(GR_Font * fnt)
 {
+#ifdef USE_XFT
+	PSFont*				psfnt = static_cast<PSFont*> (fnt);
+	return (UT_uint32) (psfnt->getUnixFont()->getDescender(psfnt->getSize()) + 0.5);
+#else
   PSFont * psfnt = static_cast<PSFont *>(fnt);
   PSFont *pEnglishFont;
   PSFont *pChineseFont;
@@ -219,12 +243,20 @@ UT_uint32 PS_Graphics::getFontDescent(GR_Font * fnt)
 
   c= pChineseFont == pEnglishFont ? 0 :_scaleFont(psfnt, pChineseFont->getUnixFont()->get_CJK_Descent());
   return MAX(e,c);
+#endif
 }
 
 UT_uint32 PS_Graphics::getFontDescent()
 {
   return getFontDescent(m_pCurrentFont);
 }
+
+
+void PS_Graphics::getCoverage(UT_Vector& coverage)
+{
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+}
+
 
 UT_uint32 PS_Graphics::getFontHeight(GR_Font * fnt)
 {
@@ -243,12 +275,16 @@ UT_uint32 PS_Graphics::getFontHeight(GR_Font * fnt)
 
 UT_uint32 PS_Graphics::getFontHeight()
 {
-	UT_sint32 height = getFontAscent((GR_Font *)m_pCurrentFont) + getFontDescent((GR_Font *) m_pCurrentFont);
+	UT_sint32 height = getFontAscent(m_pCurrentFont) + getFontDescent(m_pCurrentFont);
 	return height;
 }
-
+	
 UT_uint32 PS_Graphics::measureUnRemappedChar(const UT_UCSChar c)
 {
+#ifdef USE_XFT
+ 	UT_ASSERT(m_pCurrentFont);
+	return (UT_uint32) (m_pCurrentFont->getUnixFont()->measureUnRemappedChar(c, m_pCurrentFont->getSize()) + 0.5);
+#else
  	UT_ASSERT(m_pCurrentFont);
 //
 // If the font is in cache we're doing layout calculations so use exactly
@@ -260,18 +296,18 @@ UT_uint32 PS_Graphics::measureUnRemappedChar(const UT_UCSChar c)
 	PSFont *pEnglishFont;
 	PSFont *pChineseFont;
 	_explodePSFonts(m_pCurrentFont, pEnglishFont,pChineseFont);
-
+	
 	if (XAP_EncodingManager::get_instance()->is_cjk_letter(c))
 	    return _scale(pChineseFont->getUnixFont()->get_CJK_Width());
 	else
-	{
+	{	
 		if(pUFont->isSizeInCache(iSize))
 		{
 			UT_UCSChar Wide_char = c;
-
+			
 			XAP_UnixFontHandle * pHndl = new XAP_UnixFontHandle(pUFont, iSize);
 			GdkFont* font = pHndl->getGdkFont();
-
+			
 			if(isFontUnicode(font))
 			{
 				//this is a unicode font
@@ -287,7 +323,7 @@ UT_uint32 PS_Graphics::measureUnRemappedChar(const UT_UCSChar c)
 				{
 					gchar gc = (gchar) c;
 					return gdk_text_width(font, (gchar*)&gc, 1);
-				}
+				}		
 			}
 
 			delete pHndl;
@@ -298,12 +334,13 @@ UT_uint32 PS_Graphics::measureUnRemappedChar(const UT_UCSChar c)
 			return width;
 		}
 	}
+#endif
 }
 #if 0
 /*
     WARNING: this code doesn't support non-latin1 chars.
 */
-UT_uint32 PS_Graphics::measureString(const UT_UCSChar* s, int iOffset,
+UT_uint32 PS_Graphics::measureString(const UT_UCSChar* s, int iOffset, 
 									int num, unsigned short* pWidths)
 {
 	UT_ASSERT(m_pCurrentFont);
@@ -315,16 +352,16 @@ UT_uint32 PS_Graphics::measureString(const UT_UCSChar* s, int iOffset,
 	for (int k=0; k<num; k++)
 	{
 		//UT_ASSERT(p[k] < 256);			// TODO deal with Unicode
-
+	
     	register int x;
 		UT_UCSChar currentChar;
 		currentChar = remapGlyph(p[k], false);
 		x = (currentChar < 256 ? _scale(cwi[currentChar]) : 0;
-
+		
 		iCharWidth += x;
 		pWidths[k] = x;
 	}
-
+		
 	return iCharWidth;
 }
 #endif
@@ -360,10 +397,10 @@ GR_Font* PS_Graphics::getGUIFont()
 	return NULL;
 }
 
-GR_Font* PS_Graphics::findFont(const char* pszFontFamily,
-							   const char* pszFontStyle,
+GR_Font* PS_Graphics::findFont(const char* pszFontFamily, 
+							   const char* pszFontStyle, 
 							   const char* /* pszFontVariant */,
-							   const char* pszFontWeight,
+							   const char* pszFontWeight, 
 							   const char* /* pszFontStretch */,
 							   const char* pszFontSize)
 {
@@ -371,7 +408,7 @@ GR_Font* PS_Graphics::findFont(const char* pszFontFamily,
 	UT_ASSERT(pszFontStyle);
 	UT_ASSERT(pszFontWeight);
 	UT_ASSERT(pszFontSize);
-
+	
 	// convert styles to XAP_UnixFont:: formats
 	XAP_UnixFont::style s = XAP_UnixFont::STYLE_NORMAL;
 
@@ -437,7 +474,7 @@ GR_Font* PS_Graphics::findFont(const char* pszFontFamily,
 		PSFont * psf = (PSFont *) m_vecFontList.getNthItem(k);
 		UT_ASSERT(psf);
 		// is this good enough for a match?
-		if (!strcmp(psf->getUnixFont()->getFontKey(),pFont->getUnixFont()->getFontKey()) &&
+		if (!strcmp(psf->getUnixFont()->getFontKey(),pFont->getUnixFont()->getFontKey()) &&		
 			psf->getSize() == pFont->getSize())
 		{
 			// don't return the one in the vector, even though
@@ -454,11 +491,17 @@ GR_Font* PS_Graphics::findFont(const char* pszFontFamily,
 	// it's always the last in the list
 	UT_uint32 n = m_vecFontList.getItemCount() - 1;
 	pFont->setIndex(n);
-
+	
 	return pFont;
 }
 
 #ifndef WITH_PANGO
+void PS_Graphics::drawGlyph(UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff)
+{
+	/* we should not reach this point */
+	UT_ASSERT(false);
+}
+
 void PS_Graphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 							int iLength, UT_sint32 xoff, UT_sint32 yoff)
 {
@@ -480,22 +523,35 @@ void PS_Graphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 			_emit_SetFont(pChineseFont);
 			_drawCharsCJK(pS,0,pE-pS,xS,yoff);
 		}
-
+#ifdef BIDI_ENABLED
 		bool font_emitted = false;
 		for(pS=pE,xS=xoff; pE<pEnd && !XAP_EncodingManager::get_instance()->is_cjk_letter(*pE) && (isOverstrikingChar(*pE) == UT_NOT_OVERSTRIKING); ++pE)
-			xoff += _scale(pEnglishFont->getCharWidth(remapGlyph(*pE,/**pS > 0xff*/0)));
-
+#else
+		for(pS=pE,xS=xoff; pE<pEnd && !XAP_EncodingManager::get_instance()->is_cjk_letter(*pE); ++pE)
+#endif
+		xoff += _scale(pEnglishFont->getCharWidth(remapGlyph(*pE,/**pS > 0xff*/0)));
 		if(pE>pS)
 		{
 			_emit_SetFont(pEnglishFont);
+#ifdef BIDI_ENABLED
 			font_emitted = true;
+#endif
 
+			UT_DEBUGMSG(("ARRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR\n"));
+			
+			// What??!!  That means that if we don't use an unicode locale,
+			// we can not print accented characters!  Why??
+#ifndef USE_XFT
 			if(XAP_EncodingManager::get_instance()->isUnicodeLocale())
 				_drawCharsUTF8(pS,0,pE-pS,xS,yoff);
 			else
 				_drawCharsNonCJK(pS,0,pE-pS,xS,yoff);
+#else
+			// in the Xft code I always use the UTF8 variant (that basically works)
+			_drawCharsUTF8(pS, 0, pE - pS, xS, yoff);
+#endif
 		}
-
+#ifdef BIDI_ENABLED
 		for(pS=pE,xS=xoff; pE<pEnd && !XAP_EncodingManager::get_instance()->is_cjk_letter(*pE) && (isOverstrikingChar(*pE) != UT_NOT_OVERSTRIKING); ++pE)
 			;
 		if(pE>pS)
@@ -504,16 +560,18 @@ void PS_Graphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 				_emit_SetFont(pEnglishFont);
 			_drawCharsOverstriking(pS,0,pE-pS,xS,yoff);
 		}
+#endif
 	}
   	while(pE<pEnd);
 }
 
+#ifdef BIDI_ENABLED
 void PS_Graphics::_drawCharsOverstriking(const UT_UCSChar* pChars, UT_uint32 iCharOffset,
 							 UT_uint32 iLength, UT_sint32 xoff, UT_sint32 yoff)
 {
 	const encoding_pair*  enc = 0;
 	UT_AdobeEncoding* ae = 0;
-
+	
 	UT_ASSERT(m_pCurrentFont);
 
 	enc = m_pCurrentFont->getUnixFont()->loadEncodingFile();
@@ -526,7 +584,7 @@ void PS_Graphics::_drawCharsOverstriking(const UT_UCSChar* pChars, UT_uint32 iCh
 		UT_DEBUGMSG(("UnixPS_Graphics: no encoding available!\n"));
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
-
+	
 	// The GR classes are expected to take yoff as the upper-left of
 	// each glyph.  PostScript interprets the yoff as the baseline,
 	// which doesn't match this expectation.  Adding the ascent of the
@@ -543,10 +601,10 @@ void PS_Graphics::_drawCharsOverstriking(const UT_UCSChar* pChars, UT_uint32 iCh
 
 	//when printing 8-bit chars we enclose them in brackets, but 16-bit
 	//chars must be printed by name without brackets
-
+	
 	bool open_bracket = false;
 	bool using_names = false;
-
+	
 	for(; pS < pEnd; pS++)
 	{
 		if (pD-buf > OUR_LINE_LIMIT)
@@ -588,7 +646,7 @@ void PS_Graphics::_drawCharsOverstriking(const UT_UCSChar* pChars, UT_uint32 iCh
 				m_ps->writeBytes(buf);
 				pD = buf;
 			}
-
+				
 			*pD++ = ' ';
 			*pD++ = '/';
 			strcpy(pD, (const char*)glyph);
@@ -604,7 +662,7 @@ void PS_Graphics::_drawCharsOverstriking(const UT_UCSChar* pChars, UT_uint32 iCh
 				open_bracket = true;
 				using_names = false;
 			}
-
+			
 		    switch (currentChar)
 		    {
 				case 0x08:		*pD++ = '\\';	*pD++ = 'b';	break;
@@ -629,23 +687,25 @@ void PS_Graphics::_drawCharsOverstriking(const UT_UCSChar* pChars, UT_uint32 iCh
 		*pD++ = '\n';
 		*pD++ = 0;
 	}
-
+			
 	m_ps->writeBytes(buf);
 	if(ae)
 		delete ae;
-
+	
 }
-
+#endif
+							 
 static UT_Wctomb* pWctomb = NULL;
 
 void PS_Graphics::_drawCharsCJK(const UT_UCSChar* pChars, UT_uint32 iCharOffset,
 							 UT_uint32 iLength, UT_sint32 xoff, UT_sint32 yoff)
 {
+	UT_DEBUGMSG(("_drawCharsCJK\n"));
 	if (!pWctomb)
 	    pWctomb = new UT_Wctomb;
 	else
 	    pWctomb->initialize();
-
+	
 	UT_ASSERT(m_pCurrentFont);
 
 	// The GR classes are expected to take yoff as the upper-left of
@@ -665,7 +725,7 @@ void PS_Graphics::_drawCharsCJK(const UT_UCSChar* pChars, UT_uint32 iCharOffset,
 
 	//when printing 8-bit chars we enclose them in brackets, but 16-bit
 	//chars must be printed by name without brackets
-
+	
 	bool open_bracket = false;
 	bool using_names = false;
 	while (pS<pEnd)
@@ -719,21 +779,22 @@ void PS_Graphics::_drawCharsCJK(const UT_UCSChar* pChars, UT_uint32 iCharOffset,
 		*pD++ = '\n';
 		*pD++ = 0;
 	}
-
+			
 	m_ps->writeBytes(buf);
 }
 
 void PS_Graphics::_drawCharsNonCJK(const UT_UCSChar* pChars, UT_uint32 iCharOffset,
 							 UT_uint32 iLength, UT_sint32 xoff, UT_sint32 yoff)
 {
+	UT_DEBUGMSG(("_drawCharsNonCJK\n"));
 	if (!pWctomb)
 	    pWctomb = new UT_Wctomb;
 	else
 	    pWctomb->initialize();
-
+	
 	UT_ASSERT(m_pCurrentFont);
 
-
+	
 	// The GR classes are expected to take yoff as the upper-left of
 	// each glyph.  PostScript interprets the yoff as the baseline,
 	// which doesn't match this expectation.  Adding the ascent of the
@@ -750,7 +811,7 @@ void PS_Graphics::_drawCharsNonCJK(const UT_UCSChar* pChars, UT_uint32 iCharOffs
 
 	//when printing 8-bit chars we enclose them in brackets, but 16-bit
 	//chars must be printed by name without brackets
-
+	
 	bool open_bracket = false;
 	bool using_names = false;
 	while (pS<pEnd)
@@ -798,29 +859,28 @@ void PS_Graphics::_drawCharsNonCJK(const UT_UCSChar* pChars, UT_uint32 iCharOffs
 		*pD++ = '\n';
 		*pD++ = 0;
 	}
-
+			
 	m_ps->writeBytes(buf);
 }
 
 void PS_Graphics::_drawCharsUTF8(const UT_UCSChar* pChars, UT_uint32 iCharOffset,
 							 UT_uint32 iLength, UT_sint32 xoff, UT_sint32 yoff)
 {
+	UT_DEBUGMSG(("_drawCharsUTF8\n"));
 	const encoding_pair*  enc = 0;
 	UT_AdobeEncoding* ae = 0;
-
+	
 	UT_ASSERT(m_pCurrentFont);
 
 	enc = m_pCurrentFont->getUnixFont()->loadEncodingFile();
 	if(enc)
-	{
 		ae = new UT_AdobeEncoding(enc, m_pCurrentFont->getUnixFont()->getEncodingTableSize());
-	}
 	else
 	{
 		UT_DEBUGMSG(("UnixPS_Graphics: no encoding available!\n"));
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
-
+	
 	// The GR classes are expected to take yoff as the upper-left of
 	// each glyph.  PostScript interprets the yoff as the baseline,
 	// which doesn't match this expectation.  Adding the ascent of the
@@ -837,7 +897,7 @@ void PS_Graphics::_drawCharsUTF8(const UT_UCSChar* pChars, UT_uint32 iCharOffset
 
 	//when printing 8-bit chars we enclose them in brackets, but 16-bit
 	//chars must be printed by name without brackets
-
+	
 	bool open_bracket = false;
 	bool using_names = false;
 	while (pS<pEnd)
@@ -853,8 +913,11 @@ void PS_Graphics::_drawCharsUTF8(const UT_UCSChar* pChars, UT_uint32 iCharOffset
 		}
 
 		currentChar = remapGlyph(*pS, false);
-		if(currentChar > 255)
+		if (!((currentChar >= 'a' && currentChar <= 'z') || (currentChar >= 'A' && currentChar <= 'Z') ||
+			  currentChar == ' '))
 		{
+			// if currentChar is not an english character, we will have to write it
+			// using parentheses
 			if(open_bracket)
 			{
 				open_bracket = false;
@@ -868,10 +931,11 @@ void PS_Graphics::_drawCharsUTF8(const UT_UCSChar* pChars, UT_uint32 iCharOffset
 				pD = buf + strlen(buf);
 				using_names = true;
 			}
-
+				
 			// we don't properly handle double mappings:
 			// http://partners.adobe.com/asn/developer/type/unicodegn.html#4
 			const char * glyph = ae->ucsToAdobe(currentChar);
+
 			// ' /glyph GS '
 			if(pD - buf + strlen(glyph) + 6 > OUR_LINE_LIMIT)
 			{
@@ -881,7 +945,7 @@ void PS_Graphics::_drawCharsUTF8(const UT_UCSChar* pChars, UT_uint32 iCharOffset
 				m_ps->writeBytes(buf);
 				pD = buf;
 			}
-
+				
 			*pD++ = ' ';
 			*pD++ = '/';
 			strcpy(pD, (const char*)glyph);
@@ -891,6 +955,8 @@ void PS_Graphics::_drawCharsUTF8(const UT_UCSChar* pChars, UT_uint32 iCharOffset
 		}
 		else
 		{
+			UT_DEBUGMSG(("char < 255\n"));
+
 			if(!open_bracket)
 			{
 				*pD++ = '(';
@@ -898,6 +964,7 @@ void PS_Graphics::_drawCharsUTF8(const UT_UCSChar* pChars, UT_uint32 iCharOffset
 				using_names = false;
 			}
 
+#if 0			
 		    switch (currentChar)
 		    {
 				case 0x08:		*pD++ = '\\';	*pD++ = 'b';	break;
@@ -910,6 +977,9 @@ void PS_Graphics::_drawCharsUTF8(const UT_UCSChar* pChars, UT_uint32 iCharOffset
 				case ')':		*pD++ = '\\';	*pD++ = ')';	break;
 				default:		*pD++ = (char)currentChar; 	break;
 	    	}
+#else
+			*pD++ = (char)currentChar;
+#endif
 		}
 		pS++;
 	}
@@ -923,7 +993,7 @@ void PS_Graphics::_drawCharsUTF8(const UT_UCSChar* pChars, UT_uint32 iCharOffset
 		*pD++ = '\n';
 		*pD++ = 0;
 	}
-
+			
 	m_ps->writeBytes(buf);
 	if(ae)
 		delete ae;
@@ -938,7 +1008,7 @@ void PS_Graphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 y
 
 	// emit a change in line width
 	_emit_SetLineWidth();
-
+	
 	char buf[LINE_BUFFER_SIZE];
 //	UT_sint32 nA = getFontAscent();
 	g_snprintf(buf,sizeof (buf),"%d %d %d %d ML\n", x2, y2, x1, y1);
@@ -978,11 +1048,6 @@ void PS_Graphics::fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y, UT_si
   m_ps->writeBytes(buf);
 
   setColor(cl);
-}
-
-void PS_Graphics::fillRect(const UT_RGBColor& c, UT_Rect & r)
-{
-  fillRect(c, r.left, r.top, r.width, r.height);
 }
 
 void PS_Graphics::invertRect(const UT_Rect* /*pRect*/)
@@ -1058,8 +1123,8 @@ UT_uint32 PS_Graphics::_scale(UT_uint32 units) const
 	// we are given a value from the AFM file which are
 	// expressed in 1/1000ths of the scaled font.
 	// return the number of pixels at our resolution.
-
-
+	// It's 1/2048 for TrueType fonts.  The Xft code does the right thing.
+  
 	return _scaleFont(m_pCurrentFont, units);
 }
 
@@ -1071,13 +1136,13 @@ bool PS_Graphics::_startDocument(void)
 	//////////////////////////////////////////////////////////////////
 	// DSC3.0/Prolog/Header
 	//////////////////////////////////////////////////////////////////
-
+	
 	if (!m_ps->openFile(m_bIsFile))
 		return false;
 
 	// we use the argv-version of these so that we get PS-escaping on
 	// the strings (which will probably have spaces in them).
-
+	
 	if (m_szSoftwareNameAndVersion && *m_szSoftwareNameAndVersion)
 		m_ps->formatComment("Creator",&m_szSoftwareNameAndVersion,1);
 	if (m_szTitle && *m_szTitle)
@@ -1085,26 +1150,26 @@ bool PS_Graphics::_startDocument(void)
 	m_ps->formatComment("Orientation", isPortrait() ? "Portrait" : "Landscape");
 
 	m_ps->formatComment("Pages",m_iPageCount);
-
-	//TODO: emit iWidth and iHeight in BoundingBox somehow (what's a
+	
+	//TODO: emit iWidth and iHeight in BoundingBox somehow (what's a 
 	//factor between them and PS units (that are 1/72 of inch IIRC)
 	m_ps->formatComment("DocumentPaperSizes",m_szPageSizeName);
 
 	_emit_DocumentNeededResources();
-
+	
 	// TODO add other header-comments here
-
+	
 	m_ps->formatComment("EndComments");
 
 	///////////////////////////////////////////////////////////////////
 	// DSC3.0/Prolog/ProcedureDefinitions
 	///////////////////////////////////////////////////////////////////
-
+		
 	m_ps->formatComment("BeginProlog");
 
 	_emit_PrologMacros();
 	_emit_FontMacros();
-
+	
 	// TODO add rest of prolog
 
 	m_ps->formatComment("EndProlog");
@@ -1116,7 +1181,7 @@ bool PS_Graphics::_startDocument(void)
 	m_ps->formatComment("BeginSetup");
 
 	_emit_IncludeResource();
-
+	
 	// TODO add other setup stuff
 
 	m_ps->formatComment("EndSetup");
@@ -1127,7 +1192,7 @@ bool PS_Graphics::_startPage(const char * szPageLabel, UT_uint32 pageNumber,
 								bool bPortrait, UT_uint32 iWidth, UT_uint32 iHeight)
 {
 	// emit stuff prior to each page
-
+	
 	char buf[1024];
 	g_snprintf(buf, sizeof(buf),"%d",pageNumber);
 
@@ -1140,7 +1205,7 @@ bool PS_Graphics::_startPage(const char * szPageLabel, UT_uint32 pageNumber,
 
 	g_snprintf(buf,sizeof (buf),"%d %d %d %s\n",iWidth,iHeight,PS_RESOLUTION,((bPortrait) ? "BPP" : "BPL"));
 	m_ps->writeBytes(buf);
-
+	
 	// TODO add page-setup stuff here
 
 	m_ps->formatComment("EndPageSetup");
@@ -1176,7 +1241,7 @@ bool PS_Graphics::_endDocument(void)
 	// emit the document trailer
 
 	m_ps->formatComment("Trailer");
-
+	
 	// TODO add any trailer stuff here
 	// TODO (this includes an atend's that we used in the document header)
 
@@ -1203,24 +1268,41 @@ void PS_Graphics::_emit_DocumentNeededResources(void)
         {
             if(bFontKeyword)
             {
+#ifdef USE_XFT
+        		vec.addItem((void *) UT_strdup("font"));
+#else
         		vec.addItem((void *) "font");
+#endif
                 bFontKeyword = false;
             }
-
+            
             // only include each font name once
+#ifdef USE_XFT
+			UT_String pName(psf->getUnixFont()->getPostscriptName());
+			UT_DEBUGMSG(("pName: %s\n", pName.c_str()));
+#else	
             const char * pName = psf->getMetricsData()->gfi->fontName;
+#endif
             bool bFound = false;
             for(n = 0; n < vec.getItemCount(); n++)
             {
+#ifdef USE_XFT
+                if(!UT_strcmp(pName.c_str(), (const char *)vec.getNthItem(n)))
+#else
                 if(!UT_strcmp(pName, (const char *)vec.getNthItem(n)))
+#endif
                 {
                     bFound = true;
                     break;
                 }
             }
-
+            
             if(!bFound)
-    		    vec.addItem((void*)pName);
+#ifdef USE_XFT
+    		    vec.addItem(UT_strdup(pName.c_str()));
+#else
+    		    vec.addItem((void*) pName);
+#endif
         }
 	}
 
@@ -1231,6 +1313,10 @@ void PS_Graphics::_emit_DocumentNeededResources(void)
         m_ps->formatComment("DocumentSuppliedResources",&vec);
     else
     	m_ps->formatComment("DocumentNeededResources",&vec);
+
+#ifdef USE_XFT
+	UT_VECTOR_FREEALL(char*, vec);
+#endif
 }
 
 void PS_Graphics::_emit_IncludeResource(void)
@@ -1254,19 +1340,19 @@ void PS_Graphics::_emit_IncludeResource(void)
     		char buf[128];
 
     		PSFont * psf = (PSFont *) m_vecFontList.getNthItem(k);
-
+		
     		// m_ps->formatComment("IncludeResource",psf->getMetricsData()->gfi->fontName);
 
     		// Instead of including the resources, we actually splat the fonts
     		// into the document.  This looks really slow... perhaps buffer line
     		// by line or in larger chunks the font data.
     		XAP_UnixFont * unixfont = psf->getUnixFont();
-
+		
     		if(unixfont->is_CJK_font())
 		      continue;
     		bool match = false;
             const char * pName = unixfont->getFontKey();
-    		for(UT_uint32 i=0;i<vec.getItemCount();++i)
+    		for(size_t i = 0; i < vec.getItemCount(); ++i)
     		{
 				if(!strcmp(pName,(const char*)vec.getNthItem(i)))
     			{
@@ -1276,30 +1362,24 @@ void PS_Graphics::_emit_IncludeResource(void)
     		}
     		if(match)
 		    	continue;
-
+            
             vec.addItem((void*)pName);
 
     		// Make sure the font file will open, maybe it disappeared...
-    		if(!unixfont->openPFA())
+			UT_ASSERT(m_ps);
+			if (!unixfont->embedInto(*m_ps))
     		{
-    			char message[1024];
-    			g_snprintf(message, sizeof (message),
-					   "Font data file [%s] cannot be opened for reading!\n"
-					   "Did it disappear on us?  AbiWord can't print without\n"
-					   "this file; your PostScript might be missing this resource.",
-					   unixfont->getFontfile());
+				UT_String message("Font data file [");
+				message += unixfont->getFontfile();
+				message += "cannot be opened for reading!\n"
+					"Did it disappear on us?  AbiWord can't print without\n"
+					"this file; your PostScript might be missing this resource.";
 
     			// we don't have any frame info, so we use the non-parented dialog box
-    			messageBoxOK(message);
+    			messageBoxOK(message.c_str());
     			return;
     		}
-
-    		signed char ch = 0;
-    		while ((ch = unixfont->getPFAChar()) != EOF)
-    			m_ps->writeBytes((UT_Byte *) &ch, 1);
-
-    		unixfont->closePFA();
-
+		
     		// NOTE : here's an internationalization process step.  If the font
     		// NOTE : encoding is NOT "iso8859", we do not emit this macro.
     		// NOTE : this keeps fonts like Standard Symbols, and really
@@ -1307,22 +1387,30 @@ void PS_Graphics::_emit_IncludeResource(void)
     		// NOTE : not intended to guarantee that these other encodings
     		// NOTE : actually work.  that requires more design work.
 
+    		// write findfont
+#ifdef USE_XFT
+			UT_String stName(psf->getUnixFont()->getPostscriptName());
+    		g_snprintf(buf, sizeof (buf), "/%s findfont\n", stName.c_str());
+#else
+    		g_snprintf(buf, sizeof (buf), "/%s findfont\n", psf->getMetricsData()->gfi->fontName);
+#endif
+    		m_ps->writeBytes(buf);
+
+#ifndef USE_XFT
     		// Fetch an XLFD object from the font
     		XAP_UnixFontXLFD myXLFD(unixfont->getXLFD());
 
-    		// write findfont
-    		g_snprintf(buf, sizeof (buf), "/%s findfont\n", psf->getMetricsData()->gfi->fontName);
-    		m_ps->writeBytes(buf);
-
     		// Compare with iso8859, and emit LAT for that font
     		if (!UT_stricmp(myXLFD.getRegistry(), "iso8859") && !UT_strcmp(myXLFD.getEncoding(), "1"))
-    		{
-    			g_snprintf(buf, sizeof (buf), "LAT\n");
-    			m_ps->writeBytes(buf);
-    		}
+				m_ps->writeBytes("LAT\n");
+#endif
 
     		// exec the swapper macro
-    		g_snprintf(buf, sizeof (buf), "/%s EXC\n", psf->getMetricsData()->gfi->fontName);
+#ifdef USE_XFT
+    		g_snprintf(buf, sizeof (buf), "/%s EXC\n", stName.c_str());
+#else
+			g_snprintf(buf, sizeof (buf), "/%s EXC\n", psf->getMetricsData()->gfi->fontName);
+#endif
     		m_ps->writeBytes(buf);
 
     	}
@@ -1339,32 +1427,51 @@ void PS_Graphics::_emit_IncludeResource(void)
 			{
 				if(bFontKeyword)
 				{
-					vec.addItem((void *) "font");
+					vec.addItem((void *) UT_strdup("font"));
 					bFontKeyword = false;
 				}
-
+            
 				// only include each font name once
+#ifdef USE_XFT
+				UT_String pName(psf->getUnixFont()->getPostscriptName());
+#else
 				const char * pName = psf->getMetricsData()->gfi->fontName;
+#endif
 				bool bFound = false;
 				for(n = 0; n < vec.getItemCount(); n++)
 				{
+#ifdef USE_XFT
+					if(!UT_strcmp(pName.c_str(), (const char *)vec.getNthItem(n)))
+#else
 					if(!UT_strcmp(pName, (const char *)vec.getNthItem(n)))
+#endif
 					{
 						bFound = true;
 						break;
 					}
 				}
-
+            
+#ifdef USE_XFT
 				if(!bFound)
 				{
-					vec.addItem((void*)pName);
-					pFResource[1] = pName;
-					m_ps->formatComment("IncludeResource", pFResource,2);
+					vec.addItem((void*) UT_strdup(pName.c_str()));
+					pFResource[1] = pName.c_str();
+					m_ps->formatComment("IncludeResource", pFResource, 2);
 				}
+#else
+				if(!bFound)
+				{
+					vec.addItem((void*) UT_strdup(pName));
+					pFResource[1] = pName;
+					m_ps->formatComment("IncludeResource", pFResource, 2);
+				}
+#endif
 			}
 		}
-	}
 
+		UT_VECTOR_FREEALL(char*, vec);
+	}
+        
 	// TODO add any other IncludeResource's here
 }
 
@@ -1397,7 +1504,7 @@ void PS_Graphics::_emit_PrologMacros(void)
 	};
 
 	char buf[1024];
-
+	
 	for (unsigned int k=0; k<NrElements(t); k++)
 	{
 		g_snprintf(buf,sizeof(buf),"  %s\n",t[k]);
@@ -1414,10 +1521,16 @@ void PS_Graphics::_emit_FontMacros(void)
 	for (k=0; k<kLimit; k++)
 	{
 		PSFont * psf = (PSFont *)m_vecFontList.getNthItem(k);
+#ifdef USE_XFT
+		UT_String stName(psf->getUnixFont()->getPostscriptName());
+		g_snprintf(buf,sizeof(buf),"  /F%d {%d /%s FSF setfont} bind def\n", k,
+				psf->getSize(), stName.c_str());
+#else
 		g_snprintf(buf,sizeof(buf),"  /F%d {%d /%s FSF setfont} bind def\n", k,
 				psf->getSize(), psf->getUnixFont()->is_CJK_font() ?
-					psf->getUnixFont()->getFontfile() :
+					psf->getUnixFont()->getFontfile() : 
 					psf->getMetricsData()->gfi->fontName);
+#endif
 		m_ps->writeBytes(buf);
 	}
 }
@@ -1469,26 +1582,26 @@ void PS_Graphics::_emit_SetColor(void)
 
         if (m_currentColor.m_red + m_currentColor.m_grn + m_currentColor.m_blu > 3*250) // yay, arbitrary threshold!
 			g_snprintf(buf,sizeof(buf),"1 setgray\n");
-         else
+         else		
 			 g_snprintf(buf,sizeof(buf),"0 setgray\n");
 		break;
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
 	setlocale(LC_NUMERIC,old_locale); // restore original locale
-
+	
 	m_ps->writeBytes(buf);
 }
 
  GR_Image* PS_Graphics::createNewImage(const char* pszName, const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight, GR_Image::GRType iType)
 {
 	GR_Image* pImg = NULL;
-
+   
    	if (iType == GR_Image::GRT_Raster)
      		pImg = new PS_Image(pszName);
    	else if (iType == GR_Image::GRT_Vector)
      		pImg = new GR_VectorImage(pszName);
-
+   
 	pImg->convertFromBuffer(pBB, iDisplayWidth, iDisplayHeight);
 
 	return pImg;
@@ -1500,7 +1613,7 @@ void PS_Graphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
 	   pImg->render(this, xDest, yDest);
 	   return;
 	}
-
+   
    	switch(m_cs)
      	{
        	case GR_Graphics::GR_COLORSPACE_COLOR:
@@ -1516,14 +1629,14 @@ void PS_Graphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
      }
 }
-
+	
 void PS_Graphics::drawRGBImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
 {
 	UT_ASSERT(pImg);
 
 	UT_sint32 iDestWidth = pImg->getDisplayWidth();
 	UT_sint32 iDestHeight = pImg->getDisplayHeight();
-
+	
 	PS_Image * pPSImage = static_cast<PS_Image *>(pImg);
 
 	PSFatmap * image = pPSImage->getData();
@@ -1533,15 +1646,15 @@ void PS_Graphics::drawRGBImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
 	// preface with the sizing, position, and scale data
 	char buf[128];
 
-	// remember all the context information
+	// remember all the context information 
 	g_snprintf(buf, sizeof(buf), "gsave\n");
-	m_ps->writeBytes(buf);
+	m_ps->writeBytes(buf);	
 
 	// this is the number of bytes in a "row" of image data, which
 	// is image->width times 3 bytes per pixel
 	g_snprintf(buf, sizeof(buf),"/rowdata %d string def\n", image->width * 3);
 	m_ps->writeBytes(buf);
-
+	
 	// translate for quadrant 2, so Y values are negative; land us at
 	// lower left of image (baseline), which is twice the height
 	g_snprintf(buf, sizeof (buf), "%d %d translate\n", xDest, m_iRasterPosition - yDest  - iDestHeight);
@@ -1550,14 +1663,14 @@ void PS_Graphics::drawRGBImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
 	g_snprintf(buf, sizeof (buf),"%d %d scale\n", iDestWidth, iDestHeight);
 	m_ps->writeBytes(buf);
 
-	// use true image source data dimensions for matrix
+	// use true image source data dimensions for matrix 
 	g_snprintf(buf, sizeof (buf),"%d %d 8 [%d 0 0 %d 0 %d]\n", image->width, image->height,
 			image->width, image->height * -1, image->height);
 	m_ps->writeBytes(buf);
-
+	
 	g_snprintf(buf, sizeof (buf),"{currentfile\n  rowdata readhexstring pop}\nfalse 3\ncolorimage\n");
 	m_ps->writeBytes(buf);
-
+	
 	// "image" is full of 24 bit data; throw the data specifications
 	// and then the raw data (in hexadeicmal) into the file.
 	UT_Byte * start = image->data;
@@ -1584,7 +1697,7 @@ void PS_Graphics::drawRGBImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
 	// recall all that great info
 	g_snprintf(buf, sizeof(buf),"grestore\n");
 	m_ps->writeBytes(buf);
-
+	
 }
 
 void PS_Graphics::drawGrayImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
@@ -1593,7 +1706,7 @@ void PS_Graphics::drawGrayImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest
 
 	UT_sint32 iDestWidth = pImg->getDisplayWidth();
 	UT_sint32 iDestHeight = pImg->getDisplayHeight();
-
+	
 	PS_Image * pPSImage = static_cast<PS_Image *>(pImg);
 
 	PSFatmap * image = pPSImage->getData();
@@ -1603,15 +1716,15 @@ void PS_Graphics::drawGrayImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest
 	// preface with the sizing, position, and scale data
 	char buf[128];
 
-	// remember all the context information
+	// remember all the context information 
 	g_snprintf(buf, sizeof(buf),"gsave\n");
-	m_ps->writeBytes(buf);
+	m_ps->writeBytes(buf);	
 
 	// this is the number of bytes in a "row" of image data, which
 	// is image->width in a grayscale image
 	g_snprintf(buf, sizeof(buf),"/rowdata %d string def\n", image->width);
 	m_ps->writeBytes(buf);
-
+	
 	// translate for quadrant 2, so Y values are negative; land us at
 	// lower left of image (baseline), which is twice the height
 	g_snprintf(buf, sizeof(buf),"%d %d translate\n", xDest, m_iRasterPosition - yDest  - iDestHeight);
@@ -1620,7 +1733,7 @@ void PS_Graphics::drawGrayImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest
 	g_snprintf(buf, sizeof(buf),"%d %d scale\n", iDestWidth, iDestHeight);
 	m_ps->writeBytes(buf);
 
-	// use true image source data dimensions for matrix
+	// use true image source data dimensions for matrix 
 	g_snprintf(buf, sizeof(buf),"%d %d 8 [%d 0 0 %d 0 %d]\n", image->width, image->height,
 			image->width, image->height * -1, image->height);
 	m_ps->writeBytes(buf);
@@ -1629,14 +1742,14 @@ void PS_Graphics::drawGrayImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest
 	// color image does:
 	// sprintf(buf, "{currentfile\n  rowdata readhexstring pop}\nfalse 3\ncolorimage\n");
 	m_ps->writeBytes(buf);
-
+	
 	UT_Byte * start = image->data;
 	UT_Byte * cursor = NULL;
 	// 3 bytes per pixel in original RGB data
 	UT_Byte * end = start + image->width * image->height * 3;
 
 	UT_Byte hexbuf[3];
-
+	
 	cursor = start;
 	UT_uint16 col = 0;
 	while (cursor < end)
@@ -1650,7 +1763,7 @@ void PS_Graphics::drawGrayImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest
 		// TODO : Balance these colors!  I don't like the output
 		// TODO : I get from a simple average or adding the YIQ
 		// TODO : weights.  Look at Netscape for something better.
-
+		
 #if 0
 		// We can use the Y channel from the YIQ spec, which weights
 		// the R, G, and B channels to be perceptually more balanced.
@@ -1678,7 +1791,7 @@ void PS_Graphics::drawGrayImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest
 	// recall all that great info
 	g_snprintf(buf, sizeof(buf),"grestore\n");
 	m_ps->writeBytes(buf);
-
+	
 }
 void PS_Graphics::drawBWImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
 {
@@ -1758,14 +1871,14 @@ PSFont *PS_Graphics::_findMatchPSFontCJK(PSFont * pFont)
 	  PSFont * psf = (PSFont *) m_vecFontList.getNthItem(k);
 	  UT_ASSERT(psf);
 	  if (!strcmp(psf->getUnixFont()->getFontKey(),
-			(pFont->getUnixFont()->is_CJK_font() ?
-			    XAP_UnixFont::s_defaultNonCJKFont[s] :
+			(pFont->getUnixFont()->is_CJK_font() ? 
+			    XAP_UnixFont::s_defaultNonCJKFont[s] : 
 			    XAP_UnixFont::s_defaultCJKFont[s])->getFontKey()) &&
 		  psf->getSize() == pFont->getSize())
 		return psf;
-	}
-  PSFont * p = new PSFont(pFont->getUnixFont()->is_CJK_font() ?
-          XAP_UnixFont::s_defaultNonCJKFont[s] :
+	}  
+  PSFont * p = new PSFont(pFont->getUnixFont()->is_CJK_font() ? 
+          XAP_UnixFont::s_defaultNonCJKFont[s] : 
 	  XAP_UnixFont::s_defaultCJKFont[s] , pFont->getSize() );
   UT_ASSERT(p);
   m_vecFontList.addItem((void *) p);
@@ -1803,7 +1916,7 @@ void PS_Graphics::_explodePSFonts(PSFont *current, PSFont*& pEnglishFont,PSFont*
 void PS_Graphics::setPageSize(char* pageSizeName, UT_uint32 iwidth, UT_uint32 iheight)
 {
 	m_szPageSizeName = UT_strdup(pageSizeName);
-	m_iWidth = iwidth;
+	m_iWidth = iwidth; 
 	m_iHeight = iheight;
 }
 

@@ -859,7 +859,7 @@ void AP_TopRuler::_drawTabProperties(const UT_Rect * pClipRect,
 
 			m_pG->setColor3D(GR_Graphics::CLR3D_BevelDown);
 
-			UT_ASSERT(pInfo->m_iDefaultTabInterval > 0);
+			// UT_ASSERT(pInfo->m_iDefaultTabInterval > 0);
 			if (pInfo->m_iDefaultTabInterval > 0)			// prevent infinite loop -- just in case
 			{
 				UT_sint32 iPos = xAbsLeft;

@@ -21,6 +21,7 @@
 
 XAP_Dialog_Image::XAP_Dialog_Image(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
   : XAP_Dialog_NonPersistent (pDlgFactory, id), 
+	m_bAspect(true),
 	m_width(0), 
 	m_height(0),
     m_maxWidth (0), 
@@ -30,7 +31,6 @@ XAP_Dialog_Image::XAP_Dialog_Image(XAP_DialogFactory * pDlgFactory, XAP_Dialog_I
 	m_WidthString("0.0in"),
 	m_bHeightChanged(false),
 	m_bWidthChanged(false),
-	m_bAspect(true),
 	m_PreferedUnits(DIM_IN)
 {
 }

@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- *
+ * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
  * 02111-1307, USA.
  */
 
@@ -25,7 +25,7 @@
 #include "gr_BeOSGraphics.h"
 #include "gr_BeOSImage.h"
 
-#include "xap_BeOSFrame.h"	//For be_DocView
+#include "xap_BeOSFrame.h"	//For be_DocView 
 #include <limits.h>
 #include <Font.h>
 
@@ -38,10 +38,10 @@
  OPTIMIZATIONS:
  -Make BView callbacks for the scroll code that would
 replay a previously recorded BPicture.
- -Get rid of all the sync calls
+ -Get rid of all the sync calls 
 */
 
-#define DPRINTF(x)
+#define DPRINTF(x) 	
 #if defined(USE_BACKING_BITMAP)
 #define UPDATE_VIEW			if (m_pFrontView->Window()->Lock()){	\
 					m_pFrontView->DrawBitmapAsync(m_pShadowBitmap);	\
@@ -56,10 +56,20 @@ replay a previously recorded BPicture.
 					}
 #endif
 
-inline uint32
-utf8_char_len(uchar byte)
+inline uint32 
+utf8_char_len(uchar byte) 
+{ 
+  return (((0xE5000000 >> ((byte >> 3) & 0x1E)) & 3) + 1); 
+}
+
+const char* GR_Graphics::findNearestFont(const char* pszFontFamily,
+										 const char* pszFontStyle,
+										 const char* pszFontVariant,
+										 const char* pszFontWeight,
+										 const char* pszFontStretch,
+										 const char* pszFontSize)
 {
-  return (((0xE5000000 >> ((byte >> 3) & 0x1E)) & 3) + 1);
+	return pszFontFamily;
 }
 
 GR_BeOSGraphics::GR_BeOSGraphics(BView *docview, XAP_App * app) {
@@ -71,12 +81,12 @@ GR_BeOSGraphics::GR_BeOSGraphics(BView *docview, XAP_App * app) {
 	m_pPrintSettings = NULL;
 	m_pPrintJob = NULL;
 	m_pFrontView = docview;
- 	m_bPrint = FALSE;
+ 	m_bPrint = FALSE;  
 	if (!m_pFrontView)
 		return;
 
 	m_cs = GR_Graphics::GR_COLORSPACE_COLOR;
-
+	
 #if defined(USE_BACKING_BITMAP)
 BRect r;
 if (m_pFrontView->Window()->Lock())
@@ -90,7 +100,7 @@ if (m_pFrontView->Window()->Lock())
 	}
 	if (!(m_pShadowView = new BView(r, "ShadowView", NULL, NULL))) {
 		UT_ASSERT(0);
-		return;
+		return; 
 	}
 	if (m_pShadowBitmap->Lock()) {
 		m_pShadowBitmap->AddChild(m_pShadowView);
@@ -109,7 +119,7 @@ if (m_pFrontView->Window()->Lock())
  white for _highlight & _bevelup
         black for foreground
         lite gray(192*) for background
-        dark gray(128*) for beveldown
+        dark gray(128*) for beveldown          
 */
 
 	rgb_color c;
@@ -124,7 +134,7 @@ if (m_pFrontView->Window()->Lock())
         m_3dColors[CLR3D_Highlight] = c;
 	c.red = c.blue = c.green = 255;		//White
         m_3dColors[CLR3D_BevelUp] = c;
-}
+}		
 
 GR_BeOSGraphics::~GR_BeOSGraphics() {
 #if defined(USE_BACKING_BITMAP)
@@ -151,17 +161,17 @@ void GR_BeOSGraphics::ResizeBitmap(BRect r) {
 			m_pShadowBitmap->Unlock();
 		}
 		//Don't really need to nuke the View, just resize
-		delete m_pShadowBitmap;
-		delete m_pShadowView;
+		delete m_pShadowBitmap;	
+		delete m_pShadowView;	
 	}
-
+	
 	if (!(m_pShadowBitmap = new BBitmap(r, B_RGB32, true, false))) {
 		UT_ASSERT(0);
 		return;
 	}
 	if (!(m_pShadowView = new BView(r, "ShadowView", NULL, NULL))) {
 		UT_ASSERT(0);
-		return;
+		return; 
 	}
 	if (m_pShadowBitmap->Lock())
 	{
@@ -193,22 +203,22 @@ void GR_BeOSGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 {
 	int i;
 	char buffer[2*(iLength+1)];
-
+	
     buffer[0] = '\0';
     char* builder=buffer;
 	for (i=0; i<iLength; ++i) {
 		char* utf8buf = UT_encodeUTF8char(remapGlyph(pChars[i+iCharOffset], false));
 		int len = utf8_char_len(*utf8buf);
 		memcpy(builder, utf8buf, len);
-		builder+=len;
+		builder+=len; 						
 	}
-
+	
 	if (!m_pShadowView->Window()->Lock()) {
 		printf("Lock fail\n");
 		DEBUGGER("Lock fail");
 		return;
 	}
-
+	
 	// If we use B_OP_OVER, our text will anti-alias correctly against
 	// e.g. the ruler and the status bar.
     drawing_mode oldMode = m_pShadowView->DrawingMode();
@@ -242,7 +252,7 @@ void GR_BeOSGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	// TODO: need remapGlyph() before the following function call?
 	m_pShadowView->DrawString(UT_encodeUTF8char(remapGlyph(pChars[0+iCharOffset], false)),
 							  BPoint(xoff,yoff+offset));
-
+								  
 	for (i=1; i<iLength; i++)
 	{
 		int widthAbiWants;
@@ -263,20 +273,20 @@ void GR_BeOSGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	UPDATE_VIEW
 }
 
-BFont *findClosestFont(const char* pszFontFamily,
-		 	const char* pszFontStyle,
+BFont *findClosestFont(const char* pszFontFamily, 
+		 	const char* pszFontStyle, 
 			const char* pszFontWeight) {
 
 	BFont 	*aFont = new BFont();
 	font_family family;
-	font_style style;
-	uint32 flags, i;
+	font_style style; 
+	uint32 flags, i; 
 
 	//Try and get a good family ... or one that matches
-	int32 numFamilies = count_font_families();
-   	for (i = 0; i < numFamilies; i++ ) {
-       uint32 flags;
-       if ((get_font_family(i, &family, &flags) == B_OK) &&
+	int32 numFamilies = count_font_families(); 
+   	for (i = 0; i < numFamilies; i++ ) { 
+       uint32 flags; 
+       if ((get_font_family(i, &family, &flags) == B_OK) &&  
            (strcmp(family, pszFontFamily) == 0)) {
            DPRINTF(printf("Font Match %s and %s \n", family, pszFontFamily));
            break;
@@ -292,14 +302,14 @@ BFont *findClosestFont(const char* pszFontFamily,
 #define BOLD_BIT	0x4
 #define ITALIC_BIT	0x8
 #define BOLD_ITALIC_BIT	0x10
-
-	//Then try and match the styles
+	
+	//Then try and match the styles 
 	//(sub normal for Regular if possible, Roman if required)
-	int32 numStyles = count_font_styles(family);
+	int32 numStyles = count_font_styles(family); 
 	int32 stylemask = 0;
-	for ( int32 j = 0; j < numStyles; j++ ) {
+	for ( int32 j = 0; j < numStyles; j++ ) { 
 		if ( get_font_style(family, j, &style, &flags) == B_OK ) {
-			if (strcmp(style, "Regular") == 0)
+			if (strcmp(style, "Regular") == 0) 
 				stylemask |= REGULAR_BIT;
 			else if (strcmp(style, "Roman") == 0)
 				stylemask |= ROMAN_BIT;
@@ -308,41 +318,41 @@ BFont *findClosestFont(const char* pszFontFamily,
 			else if (strcmp(style, "Bold") == 0)
 				stylemask |= BOLD_BIT;
 			else if (strcmp(style, "Bold Italic") == 0)
-				stylemask |= BOLD_ITALIC_BIT;
-		}
+				stylemask |= BOLD_ITALIC_BIT;			
+		} 
 	}
-
-	int32 targetstyle = 0;
+	
+	int32 targetstyle = 0;								 
 	if ((strcmp(pszFontStyle, "italic") == 0) &&
 	    (strcmp(pszFontWeight, "bold") == 0)) {
 	    targetstyle |= BOLD_BIT | ITALIC_BIT | BOLD_ITALIC_BIT;
 	}
-	else if (strcmp(pszFontStyle, "italic") == 0)
+	else if (strcmp(pszFontStyle, "italic") == 0) 
 		targetstyle |= ITALIC_BIT;
-	else if (strcmp(pszFontWeight, "bold") == 0)
+	else if (strcmp(pszFontWeight, "bold") == 0) 
 		targetstyle |= BOLD_BIT;
-	else
+	else 
 		targetstyle |= ROMAN_BIT | REGULAR_BIT;
-
+		
 	//Search order preference
-	//Bold Italic --> Bold Italic;
+	//Bold Italic --> Bold Italic; 
 	//Bold    --> Bold
 	//Italic  --> Italic
 	//Regular --> Normal/Roman
-	if (targetstyle & stylemask & BOLD_ITALIC_BIT)
+	if (targetstyle & stylemask & BOLD_ITALIC_BIT) 
 		strcpy(style, "Bold Italic");
-	else if (targetstyle & stylemask & ITALIC_BIT)
+	else if (targetstyle & stylemask & ITALIC_BIT) 
 		strcpy(style, "Italic");
-	else if (targetstyle & stylemask & BOLD_BIT)
+	else if (targetstyle & stylemask & BOLD_BIT) 
 		strcpy(style, "Bold");
-	else if (targetstyle & stylemask & ROMAN_BIT)
+	else if (targetstyle & stylemask & ROMAN_BIT) 
 		strcpy(style, "Roman");
-	else if (targetstyle & stylemask & REGULAR_BIT)
+	else if (targetstyle & stylemask & REGULAR_BIT) 
 		strcpy(style, "Regular");
 
 	DPRINTF(printf("Setting Style %s \n", style));
-
-	aFont->SetFamilyAndStyle((strlen(family) == 0) ? NULL : family,
+	
+	aFont->SetFamilyAndStyle((strlen(family) == 0) ? NULL : family, 
 	                         (strlen(style) == 0) ? NULL : style);
 	return(aFont);
 }
@@ -357,11 +367,11 @@ GR_Font* GR_BeOSGraphics::getGUIFont(void)
 	return m_pFontGUI;
 }
 
-GR_Font* GR_BeOSGraphics::findFont(const char* pszFontFamily,
-								const char* pszFontStyle,
-								const char* /*pszFontVariant*/,
-								const char* pszFontWeight,
-								const char* /*pszFontStretch*/,
+GR_Font* GR_BeOSGraphics::findFont(const char* pszFontFamily, 
+								const char* pszFontStyle, 
+								const char* /*pszFontVariant*/, 
+								const char* pszFontWeight, 
+								const char* /*pszFontStretch*/, 
 								const char* pszFontSize)
 {
 	BFont 	*aFont;
@@ -373,7 +383,7 @@ GR_Font* GR_BeOSGraphics::findFont(const char* pszFontFamily,
 	DPRINTF(printf("\n\tStyle: %s ", pszFontStyle));
 	DPRINTF(printf("\n\tWeight: %s ", pszFontWeight));
 	DPRINTF(printf("\n\tSize: %s (%d) ", pszFontSize, size));
-
+	
 	aFont = findClosestFont(pszFontFamily, pszFontStyle, pszFontWeight);
 	aFont->SetSize(size);
 	DPRINTF(printf("GR: -- Located Font: \n"));
@@ -386,11 +396,11 @@ GR_Font* GR_BeOSGraphics::findFont(const char* pszFontFamily,
 void GR_BeOSGraphics::setFont(GR_Font* pFont)
 {
 	BeOSFont *tmpFont;
-
+	
 	DPRINTF(printf("GR: Set Font\n"));
 	tmpFont = static_cast<BeOSFont*> (pFont);
 	UT_ASSERT(tmpFont);
-
+	
 	m_pBeOSFont = tmpFont;
 	m_pBeOSFont->get_font()->SetSpacing(B_BITMAP_SPACING);
 	if (m_pShadowView->Window()->Lock())
@@ -408,7 +418,7 @@ void GR_BeOSGraphics::setFont(GR_Font* pFont)
 UT_uint32 GR_BeOSGraphics::getFontHeight()
 {
 	font_height fh;
-
+	
 	if(m_pShadowView->Window()->Lock())
 	{
 		m_pShadowView->GetFontHeight(&fh);
@@ -453,7 +463,7 @@ UT_uint32 GR_BeOSGraphics::getFontAscent(GR_Font *font)
 	BeOSFont* bFont = static_cast<BeOSFont *>(font);
 
 	bFont->get_font()->GetHeight(&fh);
-
+	
 	return((UT_uint32)(fh.ascent + 0.5));
 }
 
@@ -463,7 +473,7 @@ UT_uint32 GR_BeOSGraphics::getFontDescent(GR_Font *font)
 	BeOSFont* bFont = static_cast<BeOSFont *>(font);
 
 	bFont->get_font()->GetHeight(&fh);
-
+	
 	return((UT_uint32)(fh.descent + 0.5));
 }
 
@@ -473,7 +483,7 @@ UT_uint32 GR_BeOSGraphics::getFontHeight(GR_Font *font)
 	BeOSFont* bFont = static_cast<BeOSFont *>(font);
 
 	bFont->get_font()->GetHeight(&fh);
-
+	
 	return((UT_uint32)(fh.ascent + fh.descent + fh.leading + 0.5));
 }
 
@@ -485,10 +495,10 @@ UT_uint32 GR_BeOSGraphics::measureUnRemappedChar(const UT_UCSChar c)
 
 	BFont viewFont;
 	BPoint escapementArray[1];
-
+	
 	char * utf8char;
 	utf8char =  UT_encodeUTF8char(c);
-	strcpy(buffer, utf8char);
+	strcpy(buffer, utf8char);						
 
 	escapement_delta tempdelta;
 	tempdelta.space=0.0;
@@ -496,12 +506,12 @@ UT_uint32 GR_BeOSGraphics::measureUnRemappedChar(const UT_UCSChar c)
 	float fontsize=0.0f;
 
 	if (m_pShadowView->Window()->Lock()) {
-
+		
 		m_pShadowView->GetFont(&viewFont);
 		viewFont.SetSpacing(B_BITMAP_SPACING);
 
 		m_pShadowView->SetFont(&viewFont);
-
+		
 		//Hope this works on UTF8 characters buffers
 		viewFont.GetEscapements(buffer,1,&tempdelta,escapementArray);
 		fontsize=viewFont.Size();
@@ -510,7 +520,7 @@ UT_uint32 GR_BeOSGraphics::measureUnRemappedChar(const UT_UCSChar c)
 
 		return (escapementArray[0].x *fontsize);
 	}
-
+	
 	return 1.0f; // Shouldn't happen.
 }
 
@@ -536,8 +546,8 @@ void GR_BeOSGraphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
 	DPRINTF(printf("GR: Draw Line\n"));
 	if (m_pShadowView->Window()->Lock())
 	{
-
-		m_pShadowView->StrokeLine(BPoint(x1, y1),
+		
+		m_pShadowView->StrokeLine(BPoint(x1, y1), 
 					  beosiseLineEnding(x1, y1, x2, y2));
 		m_pShadowView->Window()->Unlock();
 	}
@@ -547,7 +557,7 @@ void GR_BeOSGraphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
 void GR_BeOSGraphics::setLineWidth(UT_sint32 iLineWidth)
 {
 	DPRINTF(printf("GR: Set Line Width %d \n", iLineWidth));
-
+	
 	if(m_pShadowView->Window()->Lock())
 	{
 		m_pShadowView->SetPenSize(iLineWidth);
@@ -562,11 +572,11 @@ void GR_BeOSGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 	if (m_pShadowView->Window()->Lock())
         {
 	for (UT_uint32 k=1; k<nPoints; k++)
-		drawLine(pts[k-1].x,pts[k-1].y, pts[k].x,pts[k].y);
-
+		drawLine(pts[k-1].x,pts[k-1].y, pts[k].x,pts[k].y); 
+	
 		m_pShadowView->Window()->Unlock();
 	}
-
+	
 	UPDATE_VIEW
 }
 
@@ -576,7 +586,7 @@ void GR_BeOSGraphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
 {
 	DPRINTF(printf("GR: XOR Line\n"));
 	if (m_pShadowView->Window()->Lock())
-	{
+	{	
 		drawing_mode oldmode = m_pShadowView->DrawingMode();
 		m_pShadowView->SetDrawingMode(B_OP_INVERT);//or B_OP_BLEND
 		m_pShadowView->StrokeLine(BPoint(x1, y1), BPoint(x2, y2));
@@ -605,17 +615,13 @@ void GR_BeOSGraphics::invertRect(const UT_Rect* pRect)
 	UPDATE_VIEW
 }
 
-void GR_BeOSGraphics::fillRect(const UT_RGBColor& c, UT_Rect &r) {
-	fillRect(c,r.left,r.top,r.width,r.height);
-}
 
-
-void GR_BeOSGraphics::fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y,
-			       UT_sint32 w, UT_sint32 h)
+void GR_BeOSGraphics::fillRect(UT_RGBColor& c, UT_sint32 x, UT_sint32 y,
+						UT_sint32 w, UT_sint32 h)
 {
 	DPRINTF(printf("GR: Flll Rect\n"));
 	if (m_pShadowView->Window()->Lock())
-	{
+	{	
 		rgb_color old_colour = m_pShadowView->HighColor();
 		m_pShadowView->SetHighColor(c.m_red, c.m_grn, c.m_blu);
 		m_pShadowView->FillRect(BRect(x, y, x+w-1, y+h-1));
@@ -632,15 +638,15 @@ void GR_BeOSGraphics::setClipRect(const UT_Rect* pRect)
 	BRegion region;
 	BRegion *r = NULL;
 	if (pRect) {
-		DPRINTF(printf("GR: Set Clip Rect: %d-%d -> %d-%d\n",
-				pRect->left, pRect->top,
+		DPRINTF(printf("GR: Set Clip Rect: %d-%d -> %d-%d\n", 
+				pRect->left, pRect->top, 
 				pRect->left+pRect->width,
 				pRect->top+pRect->height));
-		region.Set(BRect(pRect->left, pRect->top,
+		region.Set(BRect(pRect->left, pRect->top, 
 				 pRect->left+pRect->width-1,
 				pRect->top+pRect->height-1));
 		r = &region;
-	}
+	}	
 	if (m_pShadowView->Window()->Lock())
 	{
 		m_pShadowView->ConstrainClippingRegion(r);
@@ -665,7 +671,7 @@ void GR_BeOSGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 		(dy < 0) ? (r.top -= dy) : (r.bottom -= dy);
 		(dx < 0) ? (r.left -= dx) : (r.right -= dx);
 		printf("Invalidating "); r.PrintToStream();
-		region.Set(BRect(pRect->left, pRect->top,
+		region.Set(BRect(pRect->left, pRect->top, 
 				 pRect->left+pRect->width,
 				pRect->top+pRect->height));
 		m_pShadowView->ConstrainClippingRegion(&region);
@@ -699,7 +705,7 @@ void GR_BeOSGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 void GR_BeOSGraphics::clearArea(UT_sint32 x, UT_sint32 y,
 			     UT_sint32 width, UT_sint32 height)
 {
-	DPRINTF(printf("GR: Clear Area %d-%d -> %d-%d\n",
+	DPRINTF(printf("GR: Clear Area %d-%d -> %d-%d\n", 
 					x, y, x+width, y+height));
 	if(m_pShadowView->Window()->Lock())
 	{
@@ -747,10 +753,10 @@ bool GR_BeOSGraphics::startPrint(void)
 	return(true);
 }
 
-bool GR_BeOSGraphics::startPage(const char * /*szPageLabel*/,
+bool GR_BeOSGraphics::startPage(const char * /*szPageLabel*/, 
 				   UT_uint32 /*pageNumber*/,
-				   bool /*bPortrait*/,
-				   UT_uint32 /*iWidth*/,
+				   bool /*bPortrait*/, 
+				   UT_uint32 /*iWidth*/, 
 				   UT_uint32 /*iHeight*/) {
 
 	if (!m_pPrintJob || !m_pPrintJob->CanContinue() || !m_pShadowView) {
@@ -763,17 +769,17 @@ bool GR_BeOSGraphics::startPage(const char * /*szPageLabel*/,
 		BRect     r;
 
 		if(m_pShadowView->Window()->Lock())
-		{
+		{	
 			r = m_pShadowView->Bounds();
 			tmppic = m_pShadowView->EndPicture();
 			m_pShadowView->Window()->Unlock();
 		}
 		((be_DocView *)m_pShadowView)->SetPrintPicture(tmppic);
-		m_pPrintJob->DrawView(m_pShadowView,
-				      //BRect(0, 0, 600, 600),
-				      BRect(0, 0, SHRT_MAX-1, SHRT_MAX-1),
+		m_pPrintJob->DrawView(m_pShadowView, 
+				      //BRect(0, 0, 600, 600), 
+				      BRect(0, 0, SHRT_MAX-1, SHRT_MAX-1), 
 				      BPoint(0,0));
-
+		
 		//Commit this page and move to the next one
 		m_pPrintJob->SpoolPage();
 		delete(tmppic);
@@ -800,11 +806,11 @@ bool GR_BeOSGraphics::endPrint(void) {
 			m_pShadowView->Window()->Unlock();
 		}
 		((be_DocView *)m_pShadowView)->SetPrintPicture(tmppic);
-		m_pPrintJob->DrawView(m_pShadowView,
-				      //BRect(0, 0, FLT_MAX, FLT_MAX),
-				      BRect(0, 0, SHRT_MAX-1, SHRT_MAX-1),
+		m_pPrintJob->DrawView(m_pShadowView, 
+				      //BRect(0, 0, FLT_MAX, FLT_MAX), 
+				      BRect(0, 0, SHRT_MAX-1, SHRT_MAX-1), 
                                       BPoint(0,0));
-
+		
 		//Commit this page and move to the next one
 		m_pPrintJob->SpoolPage();
 		delete(tmppic);
@@ -817,9 +823,9 @@ bool GR_BeOSGraphics::endPrint(void) {
 	return(true);
 }
 
-GR_Image* GR_BeOSGraphics::createNewImage(const char* pszName,
+GR_Image* GR_BeOSGraphics::createNewImage(const char* pszName, 
 					  const UT_ByteBuf* pBB,
-					  UT_sint32 iDisplayWidth,
+					  UT_sint32 iDisplayWidth, 
 					  UT_sint32 iDisplayHeight,
 					  GR_Image::GRType iType)
 {
@@ -829,7 +835,7 @@ GR_Image* GR_BeOSGraphics::createNewImage(const char* pszName,
 	   	pImg = new GR_BeOSImage(pszName);
    	else
      		pImg = new GR_VectorImage(pszName);
-
+   
 	pImg->convertFromBuffer(pBB, iDisplayWidth, iDisplayHeight);
 	return pImg;
 }
@@ -837,12 +843,12 @@ GR_Image* GR_BeOSGraphics::createNewImage(const char* pszName,
 void GR_BeOSGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
 {
 	UT_ASSERT(pImg);
-
+	
    	if (pImg->getType() != GR_Image::GRT_Raster) {
       		pImg->render(this, xDest, yDest);
       		return;
    	}
-
+   
 	GR_BeOSImage * pBeOSImage = static_cast<GR_BeOSImage *>(pImg);
 	BBitmap* image = pBeOSImage->getData();
 	if (!image)
@@ -852,7 +858,7 @@ void GR_BeOSGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest
 
 	if(m_pShadowView->Window()->Lock())
 	{
-		m_pShadowView->DrawBitmapAsync(image, BPoint(xDest, yDest));
+		m_pShadowView->DrawBitmapAsync(image, BPoint(xDest, yDest)); 
 		m_pShadowView->Window()->Unlock();
 	}
 	UPDATE_VIEW
@@ -865,7 +871,7 @@ void GR_BeOSGraphics::flush(void)
 
 void GR_BeOSGraphics::setColorSpace(GR_Graphics::ColorSpace c)
 {
-	// TODO:  maybe?
+	// TODO:  maybe? 
 	//UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 }
 
@@ -879,11 +885,11 @@ void GR_BeOSGraphics::setCursor(GR_Graphics::Cursor c)
 /*
 	if (m_cursor == c)
 		return;
-
+	
 	m_cursor = c;
-
+	
 	enum GdkCursorType cursor_number;
-
+	
 	switch (c)
 	{
 	default:
@@ -892,7 +898,7 @@ void GR_BeOSGraphics::setCursor(GR_Graphics::Cursor c)
 	case GR_CURSOR_DEFAULT:
 		cursor_number = GDK_TOP_LEFT_ARROW;
 		break;
-
+		
 	case GR_CURSOR_IBEAM:
 		cursor_number = GDK_XTERM;
 		break;
@@ -901,43 +907,43 @@ void GR_BeOSGraphics::setCursor(GR_Graphics::Cursor c)
 		cursor_number = GDK_SB_RIGHT_ARROW; //GDK_ARROW;
 		break;
 
-//#error choose a suitable cursor; this is just a placeholder !!!
+//#error choose a suitable cursor; this is just a placeholder !!!		
 	case GR_CURSOR_LEFTARROW:
 		cursor_number = GDK_SB_LEFT_ARROW; //GDK_ARROW;
 		break;
-
+	
 	case GR_CURSOR_IMAGE:
 		cursor_number = GDK_FLEUR;
 		break;
-
+		
 	case GR_CURSOR_IMAGESIZE_NW:
 		cursor_number = GDK_TOP_LEFT_CORNER;
 		break;
-
+		
 	case GR_CURSOR_IMAGESIZE_N:
 		cursor_number = GDK_TOP_SIDE;
 		break;
-
+		
 	case GR_CURSOR_IMAGESIZE_NE:
 		cursor_number = GDK_TOP_RIGHT_CORNER;
 		break;
-
+		
 	case GR_CURSOR_IMAGESIZE_E:
 		cursor_number = GDK_RIGHT_SIDE;
 		break;
-
+		
 	case GR_CURSOR_IMAGESIZE_SE:
 		cursor_number = GDK_BOTTOM_RIGHT_CORNER;
 		break;
-
+		
 	case GR_CURSOR_IMAGESIZE_S:
 		cursor_number = GDK_BOTTOM_SIDE;
 		break;
-
+		
 	case GR_CURSOR_IMAGESIZE_SW:
 		cursor_number = GDK_BOTTOM_LEFT_CORNER;
 		break;
-
+		
 	case GR_CURSOR_IMAGESIZE_W:
 		cursor_number = GDK_LEFT_SIDE;
 		break;
@@ -969,7 +975,7 @@ void GR_BeOSGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32
 {
 	DPRINTF(printf("GR:FillRect 3D %d!\n", c));
 	if(m_pShadowView->Window()->Lock())
-	{
+	{	
 		rgb_color old_colour = m_pShadowView->HighColor();
 		drawing_mode oldmode=m_pShadowView->DrawingMode();
 		m_pShadowView->SetHighColor(m_3dColors[c]);
@@ -986,7 +992,7 @@ void GR_BeOSGraphics::fillRect(GR_Color3D c, UT_Rect &r)
 {
         UT_ASSERT(c < COUNT_3D_COLORS);
         fillRect(c,r.left,r.top,r.width,r.height);
-}
+}                               
 
 //////////////////////////////////////////////////////////////////
 // This is a static method in the GR_Font base class implemented

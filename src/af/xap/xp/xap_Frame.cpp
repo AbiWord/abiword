@@ -1052,7 +1052,6 @@ void XAP_Frame::dragEnd(XAP_Toolbar_Id srcId)
 		const char * szTBSrcName = (const char *) m_vecToolbarLayoutNames.getNthItem(m_isrcTBNr);
 		getApp()->getToolbarFactory()->removeIcon(szTBSrcName,m_isrcId);
 		const char * szTBDestName = (const char *) m_vecToolbarLayoutNames.getNthItem(m_idestTBNr);
-		const EV_Toolbar_Layout * pTBDest = getToolbar(m_idestTBNr)->getToolbarLayout();
 		getApp()->getToolbarFactory()->addIconAtEnd(szTBDestName,m_isrcId);
 		rebuildToolbar(m_isrcTBNr);
 		if(m_isrcTBNr != m_idestTBNr)

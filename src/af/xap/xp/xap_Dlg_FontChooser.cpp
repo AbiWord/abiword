@@ -24,6 +24,8 @@
 #include "ut_debugmsg.h"
 #include "xap_Dlg_FontChooser.h"
 #include "ut_string_class.h"
+#include "gr_Graphics.h"
+
 /*****************************************************************/
 
 // your typographer's standard nonsense latin font phrase

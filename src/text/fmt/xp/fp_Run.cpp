@@ -762,27 +762,19 @@ const UT_RGBColor fp_Run::getPageColor(void)
 
 void fp_Run::draw(dg_DrawArgs* pDA)
 {
-	if (pDA->bDirtyRunsOnly)
-	{
-		if (!isDirty())
-		{
-			return;
-		}
-	}
-	if(getLine())
-	{
+	if (pDA->bDirtyRunsOnly && !m_bDirty)
+		return;
+
+	if (getLine())
 		getLine()->setScreenCleared(false);
-	}
+
 //	UT_usleep(100000); // 0.1 seconds useful for debugging
 	xxx_UT_DEBUGMSG(("SEVIOR: draw this %x \n"));
 
 	// shortcircuit drawing if we're way off base.
-	long imax = (1<<15) -1;
-	if(((pDA->yoff < -imax) || (pDA->yoff > imax)) && getGR()->queryProperties(GR_Graphics::DGP_SCREEN))
-	{
+	long imax = (1 << 15) - 1;
+	if (((pDA->yoff < -imax) || (pDA->yoff > imax)) && getGR()->queryProperties(GR_Graphics::DGP_SCREEN))
 	     return;
-	}
-
 
 	getGR()->setColor(getFGColor());
 
@@ -1381,7 +1373,7 @@ void fp_TabRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, U
 	getLine()->getOffsets(this, xoff, yoff);
 
 	fp_Run * pRun = 0;
-	UT_sint32 iNextDir;
+	UT_sint32 iNextDir = getVisDirection();
 
 	if (iOffset == (getBlockOffset() + getLength()))  //#TF is this the right-most logical element of the run?
 	{
@@ -4269,7 +4261,7 @@ bool fp_FieldPageReferenceRun::calculateValue(void)
 	if(!pView)
 		return false;
 
-	fp_Run * pRun;
+	fp_Run* pRun = NULL;
 	fl_BlockLayout * pBlock;
 	fl_SectionLayout * pSection = pView->getLayout()->getFirstSection();
 	UT_ASSERT(pSection);
