@@ -251,6 +251,8 @@ public:
 	static EV_EditMethod_Fn findAgain;
 	static EV_EditMethod_Fn go;
 	static EV_EditMethod_Fn replace;
+	static EV_EditMethod_Fn editHeader;
+	static EV_EditMethod_Fn editFooter;
 
 	static EV_EditMethod_Fn viewStd;
 	static EV_EditMethod_Fn viewFormat;
@@ -550,6 +552,8 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(dragToXYword),			0,	""),
 
 	// e
+	EV_EditMethod(NF(editFooter),			0,	""),
+	EV_EditMethod(NF(editHeader),			0,	""),
 	EV_EditMethod(NF(endDrag),			0,	""),
 	EV_EditMethod(NF(extSelBOB),			0,	""),
 	EV_EditMethod(NF(extSelBOD),			0,	""),
@@ -3312,6 +3316,23 @@ Defun(pasteSelection)
 	// this is intended for the X11 middle mouse thing.
 	ABIWORD_VIEW;
 	pView->cmdPasteSelectionAt(pCallData->m_xPos, pCallData->m_yPos);
+	
+	return true;
+}
+
+Defun1(editFooter)
+{
+	ABIWORD_VIEW;
+	pView->cmdEditFooter();
+	
+	return true;
+}
+
+
+Defun1(editHeader)
+{
+	ABIWORD_VIEW;
+	pView->cmdEditHeader();
 	
 	return true;
 }

@@ -225,7 +225,6 @@ public:
 	UT_uint32		getCurrentPageNumber(void);
 
 	bool    getEditableBounds(bool bEnd, PT_DocPosition & docPos, bool bOverride=false);
-//	bool    getEditableBounds(bool bEnd, PT_DocPosition & docPos);
 
 	void	insertParagraphBreak(void);
 	void	insertParagraphBreaknoListUpdate(void);
@@ -279,6 +278,9 @@ public:
 	void                clearSavedPosition(void);
 	void                markSavedPositionAsNeeded(void);
 	bool                needSavedPosition(void);
+	void                insertHeaderFooter(bool ftr);
+	void                cmdEditHeader(void);
+	void                cmdEditFooter(void);
 // ----------------------
 
 	bool 		gotoTarget(AP_JumpTarget type, UT_UCSChar * data);

@@ -756,10 +756,10 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_View)
 		else
 		  s = EV_MIS_ZERO;
 		break;
-	case AP_MENU_ID_VIEW_HEADFOOT:
-		// TODO: implement view methods to check, toggle state
-		s = EV_MIS_Gray;
-		break;
+//	case AP_MENU_ID_VIEW_HEADFOOT:
+//		// TODO: implement view methods to check, toggle state
+//		s = EV_MIS_Gray;
+//		break;
 	case AP_MENU_ID_VIEW_TB_STD:
 		if ( pFrameData->m_bShowBar[0] && !pFrameData->m_bIsFullScreen) 
 			s = EV_MIS_Toggled;

@@ -2317,6 +2317,10 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_insertObject(fl_BlockLayout* pBL, co
 	pBL = findMatchingBlock(pBL);
    	bResult = pBL->doclistener_insertObject(pcro)
 		&& bResult;
+
+	format();
+	updateLayout();
+	redrawUpdate();
 	return bResult;
 }
 
@@ -2339,6 +2343,10 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_deleteObject(fl_BlockLayout* pBL, co
 	pBL = findMatchingBlock(pBL);
 	bResult = pBL->doclistener_deleteObject(pcro)
 		&& bResult;
+
+	format();
+	updateLayout();
+	redrawUpdate();
 	return bResult;
 }
 
@@ -2361,6 +2369,10 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_changeObject(fl_BlockLayout* pBL, co
 	pBL = findMatchingBlock(pBL);
    	bResult = pBL->doclistener_changeObject(pcroc)
 		&& bResult;
+
+	format();
+	updateLayout();
+	redrawUpdate();
 	return bResult;
 }
 
@@ -2383,6 +2395,10 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_insertFmtMark(fl_BlockLayout* pBL, c
 	pBL = findMatchingBlock(pBL);
 	bResult = pBL->doclistener_insertFmtMark(pcrfm)
 		&& bResult;
+
+	format();
+	updateLayout();
+	redrawUpdate();
 	return bResult;
 }
 
@@ -2405,6 +2421,10 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_deleteFmtMark(fl_BlockLayout* pBL, c
 	pBL = findMatchingBlock(pBL);
 	bResult = pBL->doclistener_deleteFmtMark(pcrfm)
 		&& bResult;
+
+	format();
+	updateLayout();
+	redrawUpdate();
 	return bResult;
 }
 
@@ -2427,6 +2447,11 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_changeFmtMark(fl_BlockLayout* pBL, c
 	pBL = findMatchingBlock(pBL);
    	bResult = pBL->doclistener_changeFmtMark(pcrfmc)
 		&& bResult;
+
+	format();
+	updateLayout();
+	redrawUpdate();
+
 	return bResult;
 }
 

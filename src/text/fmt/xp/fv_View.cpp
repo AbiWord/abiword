@@ -5323,8 +5323,11 @@ void FV_View::warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos, bool bClick = false)
 		_clearIfAtFmtMark(getPoint());
 	
 	_setPoint(pos, bEOL);
-	_fixInsertionPointCoords();
-	_drawInsertionPoint();
+	if (!_ensureThatInsertionPointIsOnScreen())
+	{
+		_fixInsertionPointCoords();
+		_drawInsertionPoint();
+	}
 
 	notifyListeners(AV_CHG_MOTION);
 
@@ -6340,6 +6343,42 @@ void FV_View::cmdSelect(PT_DocPosition dpBeg, PT_DocPosition dpEnd)
 
 void FV_View::cmdSelect(UT_sint32 xPos, UT_sint32 yPos, FV_DocPos dpBeg, FV_DocPos dpEnd)
 {
+	UT_DEBUGMSG(("SEVIOR: Double click on mouse \n"));
+//
+// Code to handle footer/header insertion 
+//
+	fp_Page * pPage = getCurrentPage();
+	fl_DocSectionLayout * pDSL = pPage->getOwningSection();
+	if(pPage->getHeaderP() == NULL)
+	{
+//
+// No header. Look to see if the user has clicked in the header region.
+//
+		if(xPos >=0 && yPos >=0 && yPos < pDSL->getTopMargin())
+		{
+//
+// Yes so insert a header put the cursor there and return
+//
+			insertHeaderFooter(false); // false for header
+			return;
+		}
+	}
+	if(pPage->getFooterP() == NULL)
+	{
+//
+// No Footer. Look to see if the user has clicked in the footer region.
+//
+		UT_DEBUGMSG(("SEVIOR: ypos = %d pPage->getBottom() = %d pDSL->getBottomMargin() %d \n",ypos,pPage->getBottom(),pDSL->getBottomMargin()));
+		if(xPos >=0 && yPos < (pPage->getBottom() + pDSL->getBottomMargin()) && yPos > pPage->getBottom())
+		{
+//
+// Yes so insert a footer put the cursor there and return
+//
+			insertHeaderFooter(true); // true for footer
+			return;
+		}
+	}
+
 	warpInsPtToXY(xPos, yPos,true);
 
 	//_eraseInsertionPoint();
@@ -7848,6 +7887,154 @@ bool FV_View::getEditableBounds(bool isEnd, PT_DocPosition &posEOD, bool bOverid
 	posEOD--;
 	return true;
 }
+/*!
+ * Method start edit header mode. If there is no header one will be inserted.
+ * otherwise start editting the header on the current page.
+ */
+void FV_View::cmdEditHeader(void)
+{
+	if(isHdrFtrEdit())
+		clearHdrFtrEdit();
+	fp_Page * pPage = getCurrentPage();
+//
+// If there is no header, insert it and start to edit it.
+//
+	fl_HdrFtrShadow * pShadow = NULL;
+	fp_HdrFtrContainer * pHFCon = NULL;
+	pHFCon = pPage->getHeaderP();
+	if(pHFCon == NULL)
+	{
+		insertHeaderFooter(false);
+		return;
+	}
+	pShadow = pHFCon->getShadow();
+	UT_ASSERT(pShadow);
+//
+// Put the insertion point at the beginning of the header
+//
+	fl_BlockLayout * pBL = pShadow->getFirstBlock();
+	if (isSelectionEmpty())
+		_eraseInsertionPoint();
+	else
+		_clearSelection();
+
+	_setPoint(pBL->getPosition());
+//
+// Set Header/footer mode and we're done! Easy :-)
+//
+	setHdrFtrEdit(pShadow);
+	_generalUpdate();
+	if (!_ensureThatInsertionPointIsOnScreen())
+	{
+		_fixInsertionPointCoords();
+		_drawInsertionPoint();
+	}
+}
+
+/*!
+ * Method start edit footer mode. If there is no footer one will be inserted.
+ * otherwise start editting the footer on the current page.
+ */
+void FV_View::cmdEditFooter(void)
+{
+	if(isHdrFtrEdit())
+		clearHdrFtrEdit();
+	fp_Page * pPage = getCurrentPage();
+//
+// If there is no header, insert it and start to edit it.
+//
+	fl_HdrFtrShadow * pShadow = NULL;
+	fp_HdrFtrContainer * pHFCon = NULL;
+	pHFCon = pPage->getFooterP();
+	if(pHFCon == NULL)
+	{
+		insertHeaderFooter(true);
+		return;
+	}
+	pShadow = pHFCon->getShadow();
+	UT_ASSERT(pShadow);
+//
+// Put the insertion point at the beginning of the header
+//
+	fl_BlockLayout * pBL = pShadow->getFirstBlock();
+	if (isSelectionEmpty())
+		_eraseInsertionPoint();
+	else
+		_clearSelection();
+
+	_setPoint(pBL->getPosition());
+//
+// Set Header/footer mode and we're done! Easy :-)
+//
+	setHdrFtrEdit(pShadow);
+	_generalUpdate();
+	if (!_ensureThatInsertionPointIsOnScreen())
+	{
+		_fixInsertionPointCoords();
+		_drawInsertionPoint();
+	}
+}
+
+
+void FV_View::insertHeaderFooter(bool ftr)
+{
+	const XML_Char*	block_props[] = {
+		"text-align", "left",
+		NULL, NULL
+	};
+//
+// insert the header/footer and leave the cursor in there. Set us in header/footer
+//	edit mode.
+//
+	if(isHdrFtrEdit())
+		clearHdrFtrEdit();
+	m_pDoc->beginUserAtomicGlob(); // Begin the big undo block
+
+	// Signal PieceTable Changes have Started
+	m_pDoc->notifyPieceTableChangeStart();
+	m_pDoc->disableListUpdates();
+
+	insertHeaderFooter(block_props, ftr); // cursor is now in the header/footer
+
+	
+	// restore updates and clean up dirty lists
+	m_pDoc->enableListUpdates();
+	m_pDoc->updateDirtyLists();
+
+	// Signal PieceTable Changes have Ended
+
+	m_pDoc->notifyPieceTableChangeEnd();
+
+	m_pDoc->endUserAtomicGlob(); // End the big undo block
+
+// Update Layout everywhere. This actually creates the header/footer container
+//	m_pLayout->updateLayout(); // Update document layout everywhere
+//	updateScreen();
+//
+// Now extract the shadow section from this.
+//
+	fp_Page * pPage = getCurrentPage();
+	fl_HdrFtrShadow * pShadow = NULL;
+	fp_HdrFtrContainer * pHFCon = NULL;
+	if(ftr)
+		pHFCon = pPage->getFooterP();
+	else
+		pHFCon = pPage->getHeaderP();
+	UT_ASSERT(pHFCon);
+	pShadow = pHFCon->getShadow();
+	UT_ASSERT(pShadow);
+//
+// Set Header/footer mode and we're done! Easy :-)
+//
+	setHdrFtrEdit(pShadow);
+	_generalUpdate();
+	if (!_ensureThatInsertionPointIsOnScreen())
+	{
+		_fixInsertionPointCoords();
+		_drawInsertionPoint();
+	}
+}
+
 
 bool FV_View::insertHeaderFooter(const XML_Char ** props, bool ftr)
 {
@@ -7890,11 +8077,7 @@ bool FV_View::insertHeaderFooter(const XML_Char ** props, bool ftr)
 	if(!props)
 		props = block_props; // use the defaults
 
-	if (!isSelectionEmpty())
-	{
-		_deleteSelection();
-	}
-	else
+	if (isSelectionEmpty())
 	{
 		_eraseInsertionPoint();
 	}
@@ -8024,9 +8207,11 @@ bool FV_View::insertPageNum(const XML_Char ** props, bool ftr)
 
 	m_pDoc->notifyPieceTableChangeEnd();
 	_generalUpdate();
-	_fixInsertionPointCoords();
-	_drawInsertionPoint();
-
+	if (!_ensureThatInsertionPointIsOnScreen())
+	{
+		_fixInsertionPointCoords();
+		_drawInsertionPoint();
+	}
 	return bResult;
 }
 

@@ -72,6 +72,8 @@ BeginSet(en,US,true)
 	MenuLabel(AP_MENU_ID_EDIT_FIND,			"&Find",			"Find the specified text")
 	MenuLabel(AP_MENU_ID_EDIT_REPLACE,		"R&eplace",			"Replace the specified text with different text")
 	MenuLabel(AP_MENU_ID_EDIT_GOTO,			"&Go To",			"Move the insertion point to a specific location")
+	MenuLabel(AP_MENU_ID_EDIT_EDITHEADER,			"Edit Header",			"Edit the Header on the current page")
+	MenuLabel(AP_MENU_ID_EDIT_EDITFOOTER,			"Edit Footer",			"Edit the Footer on the current page")
 	
 	MenuLabel(AP_MENU_ID_VIEW,				"&View",			NULL)
      MenuLabel(AP_MENU_ID_VIEW_NORMAL, "&Normal", "Normal View")
