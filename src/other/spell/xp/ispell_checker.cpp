@@ -385,8 +385,8 @@ ISpellChecker::requestDictionary(const char *szLang)
         char teststring[64];
         int n1;
 
-        /* Look for "altstringtype" names from latin1 to latin9 */
-        for(n1 = 1; n1 <= 9; n1++)
+        /* Look for "altstringtype" names from latin1 to latin15 */
+        for(n1 = 1; n1 <= 15; n1++)
         {
             sprintf(teststring, "latin%u", n1);
             prefstringchar = findfiletype(DEREF_FIRST_ARG(m_pISpellState) teststring, 1, deftflag < 0 ? &deftflag : (int *) NULL);
