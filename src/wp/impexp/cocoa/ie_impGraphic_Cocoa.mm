@@ -32,7 +32,7 @@
 UT_Confidence_t IE_ImpGraphicCocoa_Sniffer::recognizeSuffix(const char * szSuffix)
 {
 	UT_Confidence_t conf = UT_CONFIDENCE_ZILCH;
-	NSString* str = [[NSString alloc] initWithUTF8String:szSuffix];
+	NSString* str = [[NSString alloc] initWithUTF8String:&(szSuffix[1])];
 	if ([[NSImage imageFileTypes] containsObject:str]) {
 		conf = UT_CONFIDENCE_PERFECT;
 	}
@@ -59,7 +59,7 @@ bool IE_ImpGraphicCocoa_Sniffer::getDlgLabels(const char ** pszDesc, const char 
 {
 //	NSArray* a = [NSImage imageFileTypes] ;
 	*pszDesc = "Cocoa-Readable Image";
-	*pszSuffixList = "*.tiff; *.pict; *.jpg; *.jpeg";
+	*pszSuffixList = "*.tiff; *.tif; *.pict; *.jpg; *.jpeg";
 	//[[a componentsJoinedByString: @"; *."] UTF8String];
 	*ft = getType ();
 	return true;
@@ -79,7 +79,6 @@ UT_Error IE_ImpGraphicCocoa_Sniffer::constructImporter(IE_ImpGraphic **ppieg)
 UT_Error IE_ImpGraphic_Cocoa::importGraphic(UT_ByteBuf* pBB, 
 										  FG_Graphic ** ppfg)
 {
-	//fprintf(stderr, "Using %s to import\n", __FILE__);
 	UT_Error err = _convertGraphic(pBB); 
    	if (err != UT_OK) 
 		return err;
@@ -103,7 +102,6 @@ UT_Error IE_ImpGraphic_Cocoa::importGraphic(UT_ByteBuf* pBB,
 UT_Error IE_ImpGraphic_Cocoa::convertGraphic(UT_ByteBuf* pBB,
 					   UT_ByteBuf** ppBB)
 {
-	//fprintf(stderr, "Using %s to convert\n", __FILE__);
    	if (!ppBB) return UT_ERROR;
 
    	UT_Error err = _convertGraphic(pBB);
@@ -143,12 +141,13 @@ static NSData* convertImageToPNG(NSImage* image)
 	return [rep representationUsingType:NSPNGFileType properties:props];
 }
 
-static void* convertImageDataToPNG(NSData* data) 
+static NSData* convertImageDataToPNG(NSData* data) 
 {
+	NSData *returned;
 	NSImage* image = [[NSImage alloc] initWithData: data];
-	data = convertImageToPNG(image);
+	returned = convertImageToPNG(image);
 	[image release];
-	return data;
+	return returned;
 }
 
 UT_Error IE_ImpGraphic_Cocoa::_convertGraphic (UT_ByteBuf* pBB)
@@ -191,7 +190,7 @@ ABI_FAR_CALL int abi_plugin_register (XAP_ModuleInfo * mi)
 	mi->name = "Cocoa Image Import Plugin";
 	mi->desc = "Import Images Using Cocoa";
 	mi->version = ABI_VERSION_STRING;
-	mi->author = "AbiSource and Nisus Software";
+	mi->author = "Nisus Software and Hubert Figuiere";
 	mi->usage = "No Usage";
 
 	IE_ImpGraphic::registerImporter (m_impSniffer);
