@@ -163,6 +163,7 @@ static UT_Bool s_bMapped = UT_FALSE;
 static HKL s_hKeyboardLayout = 0;
 static iconv_t s_iconv= (iconv_t)-1; /* Selected translation to Unicode */
 
+
 static EV_EditBits s_mapVirtualKeyCodeToNVK(WPARAM nVirtKey);
 
 /*****************************************************************/
@@ -181,17 +182,23 @@ void ev_Win32Keyboard::remapKeyboard(HKL hKeyboardLayout)
 	char  szCodePage[10];
 
 	if( s_iconv != (iconv_t)-1 )
+
 	{
 		iconv_close( s_iconv );
+
 		s_iconv = (iconv_t)-1;
+
 	}
 	if( hKeyboardLayout != 0 )
 	{
 		strcpy( szCodePage, "CP" );
 		if( GetLocaleInfo( LOWORD( hKeyboardLayout ), LOCALE_IDEFAULTANSICODEPAGE, &szCodePage[2], sizeof( szCodePage ) / sizeof( szCodePage[0] ) - 2 ) )
+
 		{
+
 			s_iconv = iconv_open( "UCS-2-INTERNAL", szCodePage );
 		}
+
 	}
 
 	s_hKeyboardLayout = hKeyboardLayout;
@@ -370,12 +377,12 @@ UT_Bool ev_Win32Keyboard::onKeyDown(AV_View * pView,
 	// an unnamed-virtual-key -- a character key possibly with some sugar on it.
 
 	BYTE keyState[256];
-	WORD buffer[10]; // Win32 doc say 1, 2 or more, this chould be on the safe side.
+	BYTE buffer[2];
 	int count;
 
 	unsigned int scancode = (keyData & 0x00ff0000)>>16;
 	GetKeyboardState(keyState);
-	count = ToAsciiEx(nVirtKey,scancode,keyState,buffer,0,s_hKeyboardLayout);
+	count = ToAsciiEx(nVirtKey,scancode,keyState,(WORD *)buffer,0,s_hKeyboardLayout);
 
 	if (count == -1)
 	{
@@ -404,7 +411,7 @@ UT_Bool ev_Win32Keyboard::onKeyDown(AV_View * pView,
 		keyState[VK_RCONTROL] &= ~0x80;
 		keyState[VK_RMENU] &= ~0x80;
 
-		count = ToAsciiEx(nVirtKey,scancode,keyState,buffer,0,s_hKeyboardLayout);
+		count = ToAsciiEx(nVirtKey,scancode,keyState,(WORD *)buffer,0,s_hKeyboardLayout);
 
 		if (count == 1)
 		{
@@ -476,7 +483,7 @@ UT_Bool ev_Win32Keyboard::onKeyDown(AV_View * pView,
 		keyState[VK_RCONTROL] &= ~0x80;
 		keyState[VK_RMENU] &= ~0x80;
 		
-		count = ToAsciiEx(nVirtKey,scancode,keyState,buffer,0,s_hKeyboardLayout);
+		count = ToAsciiEx(nVirtKey,scancode,keyState,(WORD *)buffer,0,s_hKeyboardLayout);
 
 		if (count == 1)
 		{
@@ -500,7 +507,7 @@ UT_Bool ev_Win32Keyboard::onKeyDown(AV_View * pView,
 
 void ev_Win32Keyboard::_emitChar(AV_View * pView,
 								 HWND hWnd, UINT iMsg, WPARAM nVirtKey, LPARAM keyData,
-								 WORD w, EV_EditModifierState ems)
+								 BYTE b, EV_EditModifierState ems)
 {
 	// do the dirty work of pumping this character thru the state machine.
 
@@ -514,7 +521,7 @@ void ev_Win32Keyboard::_emitChar(AV_View * pView,
 	{
 		// convert to 8bit string and null terminate
 		size_t len_in, len_out;
-		const char *In = (const char *)&w;
+		const char *In = (const char *)&b;
 		char *Out = (char *)&charData;
 
 		len_in = 1;
@@ -522,10 +529,10 @@ void ev_Win32Keyboard::_emitChar(AV_View * pView,
 		iconv( s_iconv, &In, &len_in, &Out, &len_out );
 	}
 	else
-		charData = w;
+		charData = b;
 
 	EV_EditMethod * pEM;
-	EV_EditEventMapperResult result = m_pEEM->Keystroke(EV_EKP_PRESS|ems|w,&pEM);
+	EV_EditEventMapperResult result = m_pEEM->Keystroke(EV_EKP_PRESS|ems|b,&pEM);
 
 	switch (result)
 	{
