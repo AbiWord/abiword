@@ -50,8 +50,9 @@ CPPSRCS= 	ie_exp_AbiWord_1.cpp 			\
 		ie_imp_PasteListener.cpp		\
 		ie_FileInfo.cpp				\
 		ie_Table.cpp				\
-		ie_imp_MathML.cpp				\
-		ie_mailmerge.cpp
+		ie_imp_MathML.cpp			\
+		ie_mailmerge.cpp			\
+		ie_TOC.cpp
 
 TARGETS=		$(OBJS)
 

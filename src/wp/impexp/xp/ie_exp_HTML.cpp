@@ -64,6 +64,7 @@
 
 #include "fl_AutoNum.h"
 
+#include "ie_TOC.h"
 #include "ie_impexp_HTML.h"
 #include "ie_exp_HTML.h"
 
@@ -5593,8 +5594,9 @@ void s_TemplateHandler::Default (const XML_Char * buffer, int length)
 
 IE_Exp_HTML::IE_Exp_HTML (PD_Document * pDocument)
 	: IE_Exp(pDocument),
-		  m_style_tree(new s_StyleTree(pDocument)),
-		  m_bSuppressDialog(false)
+	  m_style_tree(new s_StyleTree(pDocument)),
+	  m_bSuppressDialog(false),
+	  m_toc_helper(0)
 {
 	m_exp_opt.bIs4         = false;
 	m_exp_opt.bIsAbiWebDoc = false;
@@ -5618,6 +5620,7 @@ IE_Exp_HTML::IE_Exp_HTML (PD_Document * pDocument)
 IE_Exp_HTML::~IE_Exp_HTML ()
 {
 	DELETEP(m_style_tree);
+	DELETEP(m_toc_helper);
 
 	// 
 }
@@ -5648,9 +5651,16 @@ void IE_Exp_HTML::_buildStyleTree ()
 		getDoc()->tellListener (m_style_tree);
 }
 
+void IE_Exp_HTML::_buildTOC()
+{
+	if (!m_toc_helper)
+		m_toc_helper = new IE_TOCHelper (getDoc());
+}
+
 UT_Error IE_Exp_HTML::_writeDocument ()
 {
 	_buildStyleTree ();
+	_buildTOC ();
 
 	if (isCopying ()) // ClipBoard
 	{
