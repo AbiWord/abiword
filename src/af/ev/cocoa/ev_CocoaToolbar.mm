@@ -76,9 +76,9 @@ public:									// we create...
 		_wd* wd = (_wd*)[sender tag];
 		NSString * str = [sender stringValue];
 		int numChars = [str cStringLength];
-		UT_UCSChar * data = (UT_UCSChar *)malloc (sizeof (UT_UCSChar) * (numChars + 1));
+		UT_UCS2Char * data = (UT_UCS2Char *)malloc (sizeof (UT_UCS2Char) * (numChars + 1));
 		[str getCharacters:data];
-		wd->m_pCocoaToolbar->toolbarEvent (wd, data, numChars * sizeof(UT_UCSChar));	
+		wd->m_pCocoaToolbar->toolbarEvent (wd, data, numChars * sizeof(UT_UCS2Char));
 //		wd->m_pCocoaToolbar->toolbarEvent (wd, NULL, 0);
 		FREEP (data);
 	}
@@ -223,12 +223,12 @@ _wd::~_wd(void)
 			else // widget has no ->parent, so use the buffer's results
 			{
 
-				// TODO : do a real conversion to UT_UCSChar or figure out the casting
+				// TODO : do a real conversion to UT_UCS2Char or figure out the casting
 
 				// don't do changes for empty combo texts
 				if (UT_strcmp(wd->m_comboEntryBuffer, ""))
 				{
-					UT_UCSChar * text = (UT_UCSChar *) 
+					UT_UCS2Char * text = (UT_UCS2Char *) 
 					    (wd->m_id == AP_TOOLBAR_ID_FMT_SIZE ? 
 					    XAP_EncodingManager::fontsizes_mapping.lookupByTarget(wd->m_comboEntryBuffer) :
 					    wd->m_comboEntryBuffer);
@@ -325,7 +325,7 @@ NSButton * EV_CocoaToolbar::_makeToolbarButton (int type, EV_Toolbar_Label * pLa
 }
 
 bool EV_CocoaToolbar::toolbarEvent(_wd * wd,
-									 UT_UCSChar * pData,
+									 UT_UCS2Char * pData,
 									 UT_uint32 dataLength)
 
 {
@@ -382,7 +382,11 @@ bool EV_CocoaToolbar::toolbarEvent(_wd * wd,
 	EV_EditMethod * pEM = pEMC->findEditMethodByName(szMethodName);
 	UT_ASSERT(pEM);						// make sure it's bound to something
 
-	invokeToolbarMethod(pView,pEM,pData,dataLength);
+	// Now we'd better convert pData into a UT_UCS4Char.
+	UT_UCS4Char * pData4 = (UT_UCS4Char*) UT_convert((char*)pData,
+		dataLength, "UCS-2", "UCS-4", NULL, NULL);
+	invokeToolbarMethod(pView,pEM,pData4,dataLength);
+	free(pData4);
 	return true;
 }
 
