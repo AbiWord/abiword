@@ -1383,12 +1383,13 @@ fl_BlockLayout* FV_View::_findBlockAtPosition(PT_DocPosition pos) const
 //
 // Sevior should remove this after a while..
 //
-#if(0)
+#if(1)
 	if(pBL->isHdrFtr())
 	{
-		  fl_HdrFtrSectionLayout * pSSL = (fl_HdrFtrSectionLayout *) pBL->getSectionLayout();
-		  pBL = pSSL->getFirstShadow()->findMatchingBlock(pBL);
+//		  fl_HdrFtrSectionLayout * pSSL = (fl_HdrFtrSectionLayout *) pBL->getSectionLayout();
+//		  pBL = pSSL->getFirstShadow()->findMatchingBlock(pBL);
 		  UT_DEBUGMSG(("<<<<SEVIOR>>>: getfirstshadow in view \n"));
+		  UT_ASSERT(0);
 	}
 #endif
 	return pBL;
@@ -1980,6 +1981,13 @@ bool FV_View::setStyle(const XML_Char * style, bool bDontGeneralUpdate)
 	if(pszStyle)
 		bisListStyle = (NOT_A_LIST != pBL->getListTypeFromStyle( pszStyle));
 	UT_DEBUGMSG(("SEVIOR: islist =%d \n",bisListStyle));
+//
+// Can't handle lists inside header/Footers. Bail out
+//
+	if(bisListStyle && isHdrFtrEdit())
+	{
+		return false;
+	}
 	UT_Vector vBlock;
 	if(bisListStyle)
 	{
@@ -2401,6 +2409,12 @@ bool FV_View::getCharFormat(const XML_Char *** pProps, bool bExpandStyles)
 	
 	fl_BlockLayout* pBlock = _findBlockAtPosition(posStart);
 	UT_uint32 blockPosition = pBlock->getPosition();
+	if(blockPosition > posStart)
+	{
+		posStart = blockPosition;
+		if(posEnd < posStart)
+			posEnd = posStart;
+	}
 	fp_Run* pRun = pBlock->findPointCoords(posStart, false, xPoint, yPoint, xPoint2, yPoint2, iPointHeight, bDirection);
 	bool bLeftSide = true;
 

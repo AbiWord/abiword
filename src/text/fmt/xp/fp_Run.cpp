@@ -1941,7 +1941,12 @@ void fp_FieldRun::lookupProperties(void)
 	const PP_AttrProp * pBlockAP = NULL;
 	const PP_AttrProp * pSectionAP = NULL; // TODO do we care about section-level inheritance?
 	
+//
+// Sevior sez This is an interesting bug. We get repeat page number fields after
+// multiple changes of page sizes.
+//
 	m_pBL->getSpanAttrProp(m_iOffsetFirst,false,&pSpanAP);
+//	m_pBL->getSpanAttrProp(m_iOffsetFirst,false,&pSpanAP);
 	//	UT_DEBUGMSG(("SEVIOR: Doing Lookupprops for block %x run %x  offset =%d \n ",m_pBL,this,m_iOffsetFirst));
 	UT_ASSERT(pSpanAP);
 	PD_Document * pDoc = m_pBL->getDocument();
@@ -2008,8 +2013,10 @@ void fp_FieldRun::lookupProperties(void)
 		m_fPosition = TEXT_POSITION_NORMAL;
 	}
 
-	pSpanAP->getAttribute("type", pszType);
-
+	if(pSpanAP)
+		pSpanAP->getAttribute("type", pszType);
+	else
+		pBlockAP->getAttribute("type",pszType);
 	// i leave this in because it might be obscuring a larger bug
 	//UT_ASSERT(pszType);
 	if (!pszType) return;

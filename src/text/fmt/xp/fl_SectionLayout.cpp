@@ -683,16 +683,6 @@ void fl_DocSectionLayout::format(void)
 	}
 
 	breakSection();
-//	if(m_pHeaderSL)
-//	{
-//		m_pHeaderSL->format();
-//		m_pHeaderSL->layout();
-//	}
-//	if(m_pFooterSL)
-//	{
-//		m_pFooterSL->format();
-//		m_pFooterSL->layout();
-//	}
 }
 
 void fl_DocSectionLayout::updateLayout(void)
@@ -2045,7 +2035,7 @@ void fl_HdrFtrSectionLayout::localFormat(void)
 /*!
  *  Just collapse the HdrFtrSectionLayout blocks for an insertBlock method.
  *  This removes all lines and references to containers but leaves the blocks
- *  and runs intack.
+ *  and runs intact.
  */
 void fl_HdrFtrSectionLayout::localCollapse(void)
 {
@@ -2400,13 +2390,7 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_deleteStrux(fl_BlockLayout* pBL, con
 
 	m_pDoc->allowChangeInsPoint();
 	pBL = findMatchingBlock(pBL);
-   	bResult = pBL->doclistener_deleteStrux(pcrx)
-		&& bResult;
-
-	format();
-	updateLayout();
-	redrawUpdate();
-
+   	bResult = pBL->doclistener_deleteStrux(pcrx) && bResult;
 	return bResult;
 }
 
@@ -2476,9 +2460,9 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_insertBlock(fl_BlockLayout* pBL, con
 //
 	ppBL->getNext()->setHdrFtr();
 	UT_DEBUGMSG(("SEVIOR: Marking Block %x as Header/Footer \n",ppBL->getNext()));
-	format();
-	updateLayout();
-	redrawUpdate();
+//	format();
+//	updateLayout();
+//	redrawUpdate();
 	return bResult;
 }
 
@@ -2522,12 +2506,7 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_insertObject(fl_BlockLayout* pBL, co
 	// Update the overall block too.
 	m_pDoc->allowChangeInsPoint();
 	pBL = findMatchingBlock(pBL);
-   	bResult = pBL->doclistener_insertObject(pcro)
-		&& bResult;
-
-	format();
-	updateLayout();
-	redrawUpdate();
+   	bResult = pBL->doclistener_insertObject(pcro) && bResult;
 	return bResult;
 }
 
@@ -2548,12 +2527,8 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_deleteObject(fl_BlockLayout* pBL, co
 	// Update the overall block too.
 	m_pDoc->allowChangeInsPoint();
 	pBL = findMatchingBlock(pBL);
-	bResult = pBL->doclistener_deleteObject(pcro)
-		&& bResult;
+	bResult = pBL->doclistener_deleteObject(pcro) && bResult;
 
-	format();
-	updateLayout();
-	redrawUpdate();
 	return bResult;
 }
 
@@ -2574,12 +2549,8 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_changeObject(fl_BlockLayout* pBL, co
 	// Update the overall block too.
 	m_pDoc->allowChangeInsPoint();
 	pBL = findMatchingBlock(pBL);
-   	bResult = pBL->doclistener_changeObject(pcroc)
-		&& bResult;
+   	bResult = pBL->doclistener_changeObject(pcroc) && bResult;
 
-	format();
-	updateLayout();
-	redrawUpdate();
 	return bResult;
 }
 
@@ -2600,12 +2571,7 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_insertFmtMark(fl_BlockLayout* pBL, c
 	// Update the overall block too.
 	m_pDoc->allowChangeInsPoint();
 	pBL = findMatchingBlock(pBL);
-	bResult = pBL->doclistener_insertFmtMark(pcrfm)
-		&& bResult;
-
-	format();
-	updateLayout();
-	redrawUpdate();
+	bResult = pBL->doclistener_insertFmtMark(pcrfm) && bResult;
 	return bResult;
 }
 
@@ -2626,12 +2592,7 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_deleteFmtMark(fl_BlockLayout* pBL, c
 	// Update the overall block too.
 	m_pDoc->allowChangeInsPoint();
 	pBL = findMatchingBlock(pBL);
-	bResult = pBL->doclistener_deleteFmtMark(pcrfm)
-		&& bResult;
-
-	format();
-	updateLayout();
-	redrawUpdate();
+	bResult = pBL->doclistener_deleteFmtMark(pcrfm)	&& bResult;
 	return bResult;
 }
 
@@ -2652,13 +2613,7 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_changeFmtMark(fl_BlockLayout* pBL, c
 	// Update the overall block too.
 	m_pDoc->allowChangeInsPoint();
 	pBL = findMatchingBlock(pBL);
-   	bResult = pBL->doclistener_changeFmtMark(pcrfmc)
-		&& bResult;
-
-	format();
-	updateLayout();
-	redrawUpdate();
-
+   	bResult = pBL->doclistener_changeFmtMark(pcrfmc) && bResult;
 	return bResult;
 }
 

@@ -313,8 +313,7 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 	break;
 
 	case PTX_SectionHdrFtr:
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		// I claim that this code path is never taken - PL
+		// This path is taken on a change of page type. Eg A4 => letter.
 	{
 		PT_AttrPropIndex indexAP = pcr->getIndexAP();
 		const PP_AttrProp* pAP = NULL;

@@ -5969,8 +5969,6 @@ Defun(style)
 	return true;
 }
 
-
-// TODO Dialog is not released?!
 static bool s_doStylesDlg(FV_View * pView)
 {
 	XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
@@ -5986,6 +5984,12 @@ static bool s_doStylesDlg(FV_View * pView)
 	UT_ASSERT(pDialog);
 	if (!pDialog)
 		return false;
+	if(pView->isHdrFtrEdit())
+	{
+		pView->eraseInsertionPoint();
+		pView->clearHdrFtrEdit();
+		pView->warpInsPtToXY(0,0,false);
+	}
 
 	pDialog->runModal(pFrame);
 
@@ -6021,6 +6025,8 @@ static bool s_doStylesDlg(FV_View * pView)
 		PD_Document * pDoc = pView->getLayout()->getDocument();
 		pDoc->signalListeners(PD_SIGNAL_UPDATE_LAYOUT);
 	}
+
+	pDialogFactory->releaseDialog(pDialog);
 	return bOK;
 }
 
