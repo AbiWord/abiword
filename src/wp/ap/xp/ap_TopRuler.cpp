@@ -563,6 +563,7 @@ void AP_TopRuler::_drawTicks(const UT_Rect * pClipRect,
 		UT_sint32 k=0;
 		while (1)
 		{
+			UT_ASSERT(k < 10000);
 			UT_sint32 xTick = xAbsOrigin + k*tick.tickUnit/tick.tickUnitScale;
 			if (xTick > xAbsTo)
 				break;
@@ -581,6 +582,7 @@ void AP_TopRuler::_drawTicks(const UT_Rect * pClipRect,
 		UT_sint32 k=0;
 		while (1)
 		{
+			UT_ASSERT(k < 10000);
 			UT_sint32 xTick = xAbsOrigin - k*tick.tickUnit/tick.tickUnitScale;
 			if (xTick < xAbsTo)
 				break;

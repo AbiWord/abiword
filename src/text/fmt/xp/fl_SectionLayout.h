@@ -234,7 +234,7 @@ public:
 	inline UT_sint32			getHeaderMargin(void) const { return m_iHeaderMargin; }
 	inline UT_sint32			getSpaceAfter(void) const { return m_iSpaceAfter; }
 	inline UT_sint32            getMaxSectionColumnHeight(void) const { return m_iMaxSectionColumnHeight;}
-	UT_uint32                   getColumnGap(void) const;
+	UT_sint32                   getColumnGap(void) const;
 	UT_uint32			        getFootnoteLineThickness(void) const
 		{ return m_iFootnoteLineThickness;}
 
@@ -308,7 +308,7 @@ private:
 	fl_HdrFtrSectionLayout*		m_pFooterLastSL;
 
 	UT_uint32			m_iNumColumns;
-	UT_uint32			m_iColumnGap;
+	UT_sint32			m_iColumnGap;
 	bool				m_bColumnLineBetween;
 	UT_uint32			m_iColumnOrder;
 

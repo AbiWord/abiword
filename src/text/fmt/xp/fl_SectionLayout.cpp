@@ -1758,7 +1758,7 @@ void fl_DocSectionLayout::_lookupProperties(void)
 	{
 		m_iColumnGap = UT_convertToLogicalUnits("0.25in");
 	}
-
+	UT_ASSERT(m_iColumnGap < 2000000);
 	const char* pszColumnLineBetween = NULL;
 	pSectionAP->getProperty("column-line", (const XML_Char *&)pszColumnLineBetween);
 	if (pszColumnLineBetween && pszColumnLineBetween[0])
@@ -2121,8 +2121,9 @@ UT_uint32 fl_DocSectionLayout::getNumColumns(void) const
 	return m_iNumColumns;
 }
 
-UT_uint32 fl_DocSectionLayout::getColumnGap(void) const
+UT_sint32 fl_DocSectionLayout::getColumnGap(void) const
 {
+	UT_ASSERT( m_iColumnGap < 200000);
 	return m_iColumnGap;
 }
 
@@ -2689,19 +2690,24 @@ void fl_DocSectionLayout::checkAndAdjustColumnGap(UT_sint32 iLayoutWidth)
 {
 	// Check to make sure column gap is not to wide to fit on the page with the
 	// given number of columns.
-
+	UT_sint32 minColumnWidth =0;
+	UT_sint32 iColWidth= 0;
 	if(m_iNumColumns > 1)
 	{
-		UT_sint32 minColumnWidth = UT_convertToLogicalUnits("0.5in");	//TODO should this dimension be hard coded.
-		UT_sint32 iColWidth = (iLayoutWidth - static_cast<UT_sint32>(((m_iNumColumns - 1) * m_iColumnGap))) / static_cast<UT_sint32>(m_iNumColumns);
+		minColumnWidth = UT_convertToLogicalUnits("0.5in");	//TODO should this dimension be hard coded.
+		iColWidth = (iLayoutWidth - static_cast<UT_sint32>(((m_iNumColumns - 1) * m_iColumnGap))) / static_cast<UT_sint32>(m_iNumColumns);
 
 		if(iColWidth < minColumnWidth)
 		{
-			m_iColumnGap = (iLayoutWidth - minColumnWidth * m_iNumColumns) / (m_iNumColumns - 1);
+			m_iColumnGap = (iLayoutWidth - minColumnWidth * static_cast<UT_sint32>(m_iNumColumns)) / (static_cast<UT_sint32>(m_iNumColumns) - 1);
 		}
 
 	}
-
+	UT_ASSERT(m_iColumnGap < 2000000);
+	if(m_iColumnGap < 30 || (m_iColumnGap > 200000))
+	{
+		m_iColumnGap = 30;
+	}
 }
 
 //////////////////////////////////////////////////////////////////
