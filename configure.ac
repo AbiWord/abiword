@@ -93,7 +93,6 @@ dnl   --enable-profile
 dnl   --enable-bidi
 dnl   --enable-peer-config
 dnl   --with-pspell
-dnl   --with-libjpeg
 dnl   --with-libxml2
 dnl The defined values are used mostly in includes.mk, but also in
 dnl some other places
@@ -113,6 +112,7 @@ AM_CONDITIONAL(DEBUG, test x$debug = xtrue)
 
 ABI_GNOME_QUICK
 ABI_CURLHASH
+AM_CONDITIONAL(WITH_CURL, test x$abi_curlhash = xtrue)
 
 AC_ARG_WITH(pspell,
     [  --with-pspell    Turn on pspell ],
@@ -124,54 +124,6 @@ AC_ARG_WITH(pspell,
        *) AC_MSG_ERROR(bad value ${withval} for --with-pspell) ;;
      esac],[PSPELL_LIBS=""])
 AM_CONDITIONAL(WITH_PSPELL, test x$pspell = xtrue)
-
-AC_ARG_WITH(libjpeg,
-    [  --with-libjpeg    Turn on jpeglib support ],
-     [case "${withval}" in
-       yes) libjpeg=true ;;
-       no)  libjpeg=false ;;
-       *) AC_MSG_ERROR(bad value ${withval} for --with-libjpeg) ;;
-     esac],[libjpeg=false])
-AM_CONDITIONAL(WITH_LIBJPEG, test x$libjpeg = xtrue)
-
-AC_ARG_WITH(libwmf,
-    [  --with-libwmf    Turn on libwmf ],
-     [case "${withval}" in
-       yes) LIBWMF_DIR="" ;;
-       no)  LIBWMF_DIR="" ;
-            libwmf=false ;;
-       *)   LIBWMF_DIR="${withval}" ;;
-     esac
-     if [ test "x$libwmf" != "xfalse" ]; then
-        if [ test -n "$LIBWMF_DIR" ]; then
-           AC_PATH_PROG(LIBWMF_CONFIG,libwmf-config, ,[$LIBWMF_DIR/bin:$PATH])
-        else
-           AC_PATH_PROG(LIBWMF_CONFIG,libwmf-config)
-        fi
-        if [ test -n "$LIBWMF_CONFIG" ]; then
-           LIBWMF_CFLAGS="`$LIBWMF_CONFIG --cflags` -DHAVE_LIBWMF=1"
-           LIBWMF_LIBS="`$LIBWMF_CONFIG --libs`"
-        else
-           AC_MSG_ERROR(* * * unable to find libwmf-config; unable to continue * * *)
-        fi
-        wmf_save_CPPFLAGS="$CPPFLAGS"
-        wmf_save_LDFLAGS="$LDFLAGS"
-        CPPFLAGS="$CPPFLAGS $LIBWMF_CFLAGS"
-        LDFLAGS="$LDFLAGS $LIBWMF_LIBS"
-        AC_CHECK_HEADER(libwmf/gd.h,[
-           AC_CHECK_LIB(wmf,wmf_size,libwmf=true,[
-              AC_MSG_ERROR(* * * libwmf version 0.2.1 or later is required * * *)
-           ])
-        ])
-        CPPFLAGS="$wmf_save_CPPFLAGS"
-        LDFLAGS="$wmf_save_LDFLAGS"
-     else
-        LIBWMF_CFLAGS=""
-        LIBWMF_LIBS=""
-     fi],[LIBWMF_CFLAGS=""
-         LIBWMF_LIBS=""])
-AC_SUBST(LIBWMF_CFLAGS)
-AC_SUBST(LIBWMF_LIBS)
 
 AC_ARG_ENABLE(profile,
     [  --enable-profile    Turn on profile ],
