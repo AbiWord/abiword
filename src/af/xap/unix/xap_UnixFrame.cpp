@@ -105,7 +105,27 @@ gint XAP_UnixFrame::_fe::key_press_event(GtkWidget* w, GdkEventKey* e)
 	{
 		pUnixKeyboard->keyPressEvent(pView, e);
 	}
-	return 1;
+
+	// HACK : This one's ugly.  If we continue through the callback chain,
+	// HACK : GTK will pick up key presses and hand them off to widgets with
+	// HACK : focus (like toolbar combos).  This is bad, since we have already
+	// HACK : acted on the key press (like space, we would insert a space
+	// HACK : in the document, but GTK will let space mean "open the menu"
+	// HACK : to a combo).  The user is confused and things are annoying.
+	// HACK :
+	// HACK : We _could_ block all GTK key handling, and do everything 
+	// HACK : ourselves, but then we lose the automatic menu accelerator
+	// HACK : bindings (Alt-F for File menu).  
+	// HACK :
+	// HACK : What we do is let ONLY Alt-modified keys through to GTK.
+
+	if (! (e->state & GDK_MODIFIER_MASK))
+	{
+		gtk_signal_emit_stop_by_name(GTK_OBJECT(w), "key_press_event");
+		return 1;
+	}
+
+	return 0;
 }
 	
 gint XAP_UnixFrame::_fe::delete_event(GtkWidget * w, GdkEvent * /*event*/, gpointer /*data*/)
