@@ -2429,47 +2429,6 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 		_eraseSelection();
         UT_DEBUGMSG(("Applying Character style: start %d, end %d\n", posStart, posEnd));
 		bRet = m_pDoc->changeSpanFmt(PTC_AddStyle,posStart,posEnd,attribs,NULL);
-#if 0//def BIDI_ENABLED
-		/*	
-			we need to restore the direction of each run
-			to do so we will make use of the fact that the previous operation
-			did not clear m_iDirection of the runs involved
-		*/
-		fl_BlockLayout* prevBlock = NULL;
-		fl_BlockLayout* currBlock = NULL;
-		for(UT_uint32 i = posStart; i<=posEnd; i++)
-		{
-			currBlock = _findBlockAtPosition(i);
-			if(currBlock == prevBlock)
-				continue;
-				
-			PT_DocPosition blockPos = currBlock->getPosition();
-			fp_Run * currRun = currBlock->getFirstRun();
-			PT_DocPosition runStart, runEnd;
-				
-			UT_uint32 j;
-			for(j = i; j <= posEnd; j++)
-			{
-				runStart = blockPos + currRun->getBlockOffset();
-				runEnd = runStart + currRun->getLength();
-				if(runStart > posEnd)
-					break;
-				if(runStart <= j && runEnd >= j)
-				{
-					currRun->setDirectionProperty(currRun->getDirection());
-					j = runEnd;
-				}
-				currRun = currRun->getNext();
-				if(currRun->getBlock() != currBlock)
-					break;
-			}
-			
-			if(runStart > posEnd)
-				break;
-			i = j;
-			prevBlock = currBlock;
-		}
-#endif		
 	}
 	else
 	{
@@ -2482,40 +2441,6 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 
 		// NB: clear explicit props at both block and char levels
 		bRet = m_pDoc->changeStruxFmt(PTC_AddStyle,posStart,posEnd,attribs,NULL,PTX_Block);
-#if 0//def BIDI_ENABLED
-		/*	
-			we need to restore the direction of each run
-			to do so we will used the direction information chached
-			in m_iDirection of each run, which was not reset by
-			the previous operation
-		*/
-		fl_BlockLayout* prevBlock = NULL;
-		fl_BlockLayout* currBlock = NULL;
-		for(UT_uint32 i = posStart; i<=posEnd; i++)
-		{
-			currBlock = _findBlockAtPosition(i);
-			UT_ASSERT((currBlock));
-			if(currBlock == prevBlock)
-				continue;
-				
-			fp_Run * currRun = currBlock->getFirstRun();
-			UT_ASSERT((currRun));
-			fl_BlockLayout* currRunBlock = currRun->getBlock();
-			while(currBlock == currRunBlock)
-			{
-				if(currRun->getType() == FPRUN_ENDOFPARAGRAPH)
-					break;
-				currRun->setDirectionProperty(currRun->getDirection());
-				currRun = currRun->getNext();
-				if(currRun)
-					currRunBlock = currRun->getBlock();
-				else
-					break;
-			}
-			
-			prevBlock = currBlock;
-		}
-#endif		
 	}
 //
 // Do the list elements processing
@@ -4426,6 +4351,8 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 
 	bool bNOOP = false;
 
+	xxx_UT_DEBUGMSG(("fv_View::_moveInsPtNextPrevLine: old line 0x%x\n", pOldLine));
+	
 	if (bNext)
 	{
 		if (pOldLine != pOldContainer->getLastLine())
