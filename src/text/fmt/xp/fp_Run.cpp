@@ -3161,7 +3161,7 @@ void fp_FieldRun::_defaultDraw(dg_DrawArgs* pDA)
 static FV_View *
 _getViewFromBlk(fl_BlockLayout* pBlock)
 {
-	FV_View *pView    = pBlock->getView();	
+	FV_View *pView    = pBlock->getDocLayout()->getView();
 	return pView;
 }
 

@@ -1402,7 +1402,7 @@ fl_BlockLayout::format(fp_Line * pLineToStartAt)
 		if (!m_pFirstLine)
 			_stuffAllRunsOnALine();
 
-		recalculateFields(false);
+		recalculateFields(0);
 
 		// Reformat paragraph
 		m_pBreaker->breakParagraph(this, pLineToStartAt);
@@ -3094,7 +3094,7 @@ bool	fl_BlockLayout::_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_Chan
 	pNewRun->calculateValue();
 
 	_doInsertRun(pNewRun);
-	recalculateFields(false);
+	recalculateFields(0);
 	return true;
 }
 
