@@ -73,6 +73,7 @@ XAP_Frame::XAP_Frame(XAP_FrameImpl *pFrameImpl, XAP_App * pApp)
 	  m_iAutoSavePeriod(0),
 	  m_stAutoSaveExt(),
 	  m_bBackupRunning(false),
+	  m_bBackupInProgress(false),
 	  m_isrcId(0),
 	  m_isrcTBNr(0),
 	  m_idestId(0),
@@ -163,13 +164,13 @@ XAP_Frame::~XAP_Frame(void)
 		UT_Timer *timer = UT_Timer::findTimer(m_iIdAutoSaveTimer);
 		if (timer != 0)
 		{
-			UT_DEBUGMSG(("Stopping timer [%d]\n", m_iIdAutoSaveTimer));
+			UT_DEBUGMSG(("Stopping Autosave timer [%d]\n", m_iIdAutoSaveTimer));
 			timer->stop();
 			DELETEP(timer);
 		}
 		else
 		{
-			UT_DEBUGMSG(("Timer [%d] not found\n", m_iIdAutoSaveTimer));
+			UT_DEBUGMSG(("Autosave Timer [%d] not found\n", m_iIdAutoSaveTimer));
 		}
 	}
 }
@@ -312,7 +313,8 @@ bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyBind
 
 	if (autosave)
 		_createAutoSaveTimer();
-	
+	setAutoSaveFile(autosave);
+
 	//////////////////////////////////////////////////////////////////
 	// select the default zoom settings
 	//////////////////////////////////////////////////////////////////
@@ -401,7 +403,7 @@ bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyBind
 extern "C" {
 static void autoSaveCallback(UT_Worker *wkr)
 {
-	UT_DEBUGMSG(("Autosaving doc...\n"));
+	xxx_UT_DEBUGMSG(("Autosaving doc...\n"));
 	XAP_Frame *me = static_cast<XAP_Frame *> (wkr->getInstanceData());
 	AD_Document * pDoc = me->getCurrentDoc();
 	if(pDoc && pDoc->isPieceTableChanging())
@@ -413,9 +415,9 @@ static void autoSaveCallback(UT_Worker *wkr)
 		UT_Error error = me->backup();
 
 		if (!error)
-			UT_DEBUGMSG(("Document Auto saved\n"));
+			xxx_UT_DEBUGMSG(("Document Auto saved\n"));
 		else
-			UT_DEBUGMSG(("Error [%d] saving document.\n", error));
+			xxx_UT_DEBUGMSG(("Error [%d] saving document.\n", error));
 	}
 	else
 	{
@@ -751,12 +753,15 @@ UT_sint32 XAP_Frame::findToolbarNr(EV_Toolbar * pTB)
 
 void XAP_Frame::setAutoSaveFile(bool b)
 {
+	m_bBackupRunning = b;
 	if (b && !m_iIdAutoSaveTimer)
 	{
 		UT_Timer *timer = UT_Timer::static_constructor(autoSaveCallback, this);
 		UT_ASSERT(m_iAutoSavePeriod != 0);
 		timer->set(m_iAutoSavePeriod * 60000);
 		m_iIdAutoSaveTimer = timer->getIdentifier();
+		timer->start();
+		return;
 	}
 
 	if (!b && m_iIdAutoSaveTimer)
@@ -768,6 +773,12 @@ void XAP_Frame::setAutoSaveFile(bool b)
 		UT_Timer *timer = UT_Timer::findTimer(m_iIdAutoSaveTimer);
 		if (timer)
 			timer->stop();
+	}
+	if(b)
+	{
+		UT_Timer *timer = UT_Timer::findTimer(m_iIdAutoSaveTimer);
+		timer->start();
+		return;
 	}
 }
 
@@ -861,7 +872,7 @@ UT_String XAP_Frame::makeBackupName(const char* szExt)
   UT_String ext(szExt ? szExt : m_stAutoSaveExt.c_str());
   UT_String oldName(m_pDoc->getFilename() ? m_pDoc->getFilename() : "");
   UT_String backupName;
-  
+  UT_DEBUGMSG(("In make Backup name. Old Name is  %s \n",oldName.c_str()));
   if (oldName.empty())
     {
       const XAP_StringSet * pSS = m_pApp->getStringSet();
@@ -885,9 +896,9 @@ UT_String XAP_Frame::makeBackupName(const char* szExt)
  * If the extension is empty, then it save the document with
  * the default extension (as defined in the preferences dialog box)
  */
-UT_Error XAP_Frame::backup(const char* szExt)
+UT_Error XAP_Frame::backup(const char* szExt, UT_sint32 iEFT)
 {
-	if (m_bBackupRunning)
+	if (m_bBackupInProgress)
 		return UT_OK;
 
 	if (!m_pDoc)
@@ -896,14 +907,28 @@ UT_Error XAP_Frame::backup(const char* szExt)
 		return UT_OK;
 	}
 
-	m_bBackupRunning = true;
+	m_bBackupInProgress = true;
 
 	UT_String backupName = makeBackupName ( szExt );
+	
+	UT_Error error;
+//
+// Don't put this auto-save in the most recent list.
+//
+	getApp()->getPrefs()->setIgorneNextRecent();
 
-	UT_Error error = m_pDoc->saveAs(backupName.c_str(), m_pDoc->getLastSavedAsType(), false);
+	if(iEFT < 0)
+	{
+		error = m_pDoc->saveAs(backupName.c_str(), m_pDoc->getLastSavedAsType(), false);
+	}
+	else
+	{
+		error = m_pDoc->saveAs(backupName.c_str(), iEFT, false);
+	}
+
 	UT_DEBUGMSG(("File %s saved.\n", backupName.c_str()));
 
-	m_bBackupRunning = false;
+	m_bBackupInProgress = false;
 	return error;
 }
 
