@@ -4298,6 +4298,15 @@ Defun1(cycleInputMode)
 
 	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
 	UT_ASSERT(pFrame);
+	XAP_App * pApp = pFrame->getApp();
+	UT_ASSERT(pApp);
+	XAP_Prefs * pPrefs = pApp->getPrefs();
+	UT_ASSERT(pPrefs);
+
+	// this edit method may get ignored entirely
+	UT_Bool b;
+	if (pPrefs->getPrefsValueBool(AP_PREF_KEY_KeyBindingsCycle, &b) && !b)
+		return UT_FALSE;
 
 	const char * szCurrentInputMode = pFrame->getInputMode();
 	UT_ASSERT(szCurrentInputMode);

@@ -59,8 +59,9 @@
 #define AP_PREF_KEY_RulerUnits						"RulerUnits"				/* value in UT_dimensionName() */
 #define AP_PREF_DEFAULT_RulerUnits					"in"
 
-#define AP_PREF_KEY_RulerVisible					"RulerVisible"				/* are the rulers visible? */
+#define AP_PREF_KEY_RulerVisible					"RulerVisible"				/* are the rulers visible? {0,1} */
 #define AP_PREF_DEFAULT_RulerVisible				"1"
+
 
 
 #define AP_PREF_KEY_SpellCheckWordList				"SpellCheckWordList"		/* name of ispell hash file */
@@ -71,6 +72,9 @@
 
 #define AP_PREF_KEY_KeyBindings						"KeyBindings"
 #define AP_PREF_DEFAULT_KeyBindings					"default"					/* value in ap_LoadBindings.cpp */
+
+#define AP_PREF_KEY_KeyBindingsCycle				"KeyBindingsCycle"			/* does F12 cycle keybindings? {0,1} */
+#define AP_PREF_DEFAULT_KeyBindingsCycle			"0"
 
 #define AP_PREF_KEY_MenuLayout						"MenuLayouts"
 #define AP_PREF_DEFAULT_MenuLayout					"Main"						/* value in BeginLayout() */
@@ -104,6 +108,7 @@ dcl(RulerVisible)
 dcl(SpellCheckWordList)
 dcl(StringSet)
 dcl(KeyBindings)
+dcl(KeyBindingsCycle)
 dcl(MenuLayout)
 dcl(MenuLabelSet)
 dcl(ToolbarLabelSet)
