@@ -159,6 +159,8 @@ bool AD_Document::enumIgnores(UT_uint32 k, const UT_UCSChar **pszWord) const
    
 	*pszWord = (const UT_UCSChar*) pHE;
 
+	DELETEP(v);
+
 	return true;
 }
 

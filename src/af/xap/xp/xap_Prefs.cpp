@@ -82,6 +82,8 @@ XAP_PrefsScheme::~XAP_PrefsScheme(void)
 	    char * val = (char *)pVec->getNthItem (i);
 	    FREEP(val);
 	  }
+
+	DELETEP(pVec);
 }
 
 const XML_Char * XAP_PrefsScheme::getSchemeName(void) const
