@@ -563,10 +563,10 @@ bool FV_View::cmdMergeCells(PT_DocPosition posSource, PT_DocPosition posDestinat
 			UT_sint32 origRight = dRight;
 			PL_StruxDocHandle sdhCell = NULL;
 			PT_DocPosition posCell = 0;
-			UT_GenericVector<PL_StruxDocHandle> vecCells;
+			UT_Vector vecCells;
 			posCell = findCellPosAt(posTable, dTop, dLeft)+1;
 			m_pDoc->getStruxOfTypeFromPosition(posCell,PTX_SectionCell,&sdhCell);
-			vecCells.addItem(sdhCell);
+			vecCells.addItem(static_cast<const void*>(sdhCell));
 			getCellParams(posCell,&dLeft,&dRight,&dTop,&dBot);
 			dRight -= diff;
 			_changeCellTo(posTable,dTop,dLeft,dLeft,dRight,dTop,dBot); 
@@ -577,7 +577,7 @@ bool FV_View::cmdMergeCells(PT_DocPosition posSource, PT_DocPosition posDestinat
 				{
 					posCell = findCellPosAt(posTable, row, col)+1;
 					m_pDoc->getStruxOfTypeFromPosition(posCell,PTX_SectionCell,&sdhCell);
-					if((sdhCell==NULL) || (vecCells.findItem(sdhCell) >= 0))
+					if((sdhCell==NULL) || (vecCells.findItem(const_cast<void*>(sdhCell)) >= 0))
 					{
 						continue;
 					}
@@ -595,7 +595,7 @@ bool FV_View::cmdMergeCells(PT_DocPosition posSource, PT_DocPosition posDestinat
 					}
 					if(bDoIt)
 					{
-						vecCells.addItem(sdhCell);
+						vecCells.addItem(static_cast<const void*>(sdhCell));
 						_changeCellTo(posTable,row,col,dLeft,dRight,dTop,dBot); 
 					}
 				}
