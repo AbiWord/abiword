@@ -41,6 +41,7 @@ protected:
 	XAP_Win32Frame *		m_pWin32Frame;
 
 	UINT _previewPicture(HWND hwnd);
+	UINT _initPreviewDlg(HWND hwnd);
 
 	void _buildFilterList(char * szFilter);
 };

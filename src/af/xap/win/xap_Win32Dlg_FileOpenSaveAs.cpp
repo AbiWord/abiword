@@ -21,6 +21,7 @@
 #include <windows.h>
 
 #include "ut_png.h"
+#include "ut_svg.h"
 #include "ut_misc.h"
 #include "ut_string.h"
 #include "ut_assert.h"
@@ -28,6 +29,7 @@
 #include "ut_debugmsg.h"
 
 #include "xap_App.h"
+#include "xap_Strings.h"
 #include "xap_Win32App.h"
 #include "xap_Win32Frame.h"
 
@@ -283,6 +285,7 @@ UINT CALLBACK XAP_Win32Dialog_FileOpenSaveAs::s_hookProc(HWND hDlg, UINT msg, WP
 	case WM_PAINT:
 		if (bPreviewImage) pThis->_previewPicture(hDlg);
 		return false;
+		break;
 
 	case WM_NOTIFY:
 		// Only bother if Preview Image is selected
@@ -299,6 +302,7 @@ UINT CALLBACK XAP_Win32Dialog_FileOpenSaveAs::s_hookProc(HWND hDlg, UINT msg, WP
 			return ( pThis->_previewPicture(hDlg) );
 		}
 		return false;
+		break;
 
 	case WM_COMMAND:
 		// Check box to Activate Image Preview
@@ -323,24 +327,20 @@ UINT CALLBACK XAP_Win32Dialog_FileOpenSaveAs::s_hookProc(HWND hDlg, UINT msg, WP
 						         SW_HIDE );
 					ShowWindow( GetDlgItem(hDlg,XAP_RID_DIALOG_INSERT_PICTURE_TEXT_WIDTH),
 						         SW_HIDE );
-					SetDlgItemText( hDlg,
-								    XAP_RID_DIALOG_INSERT_PICTURE_IMAGE_PREVIEW,
-									"No Picture" );
-					return true;
-				}
-					
+					return ( pThis->_initPreviewDlg(hDlg) );
+				}	
 			} 
 		}             
 		return false;
+		break;
 
 	case WM_INITDIALOG:
-		SetDlgItemText( hDlg,
-					    XAP_RID_DIALOG_INSERT_PICTURE_IMAGE_PREVIEW,
-						"No Picture" );
-		return true;
+		return ( pThis->_initPreviewDlg(hDlg) );
+		break;
 
 	default:
 		return false;
+		break;
 
 	}
 	// Default Dialog handles all other issues
@@ -349,11 +349,17 @@ UINT CALLBACK XAP_Win32Dialog_FileOpenSaveAs::s_hookProc(HWND hDlg, UINT msg, WP
 	
 UINT XAP_Win32Dialog_FileOpenSaveAs::_previewPicture(HWND hDlg)
 {
+	HWND hFOSADlg   = GetParent(hDlg);
+	HWND hFrame     = GetParent(hFOSADlg);
+	HWND hThumbnail = GetDlgItem(hDlg,XAP_RID_DIALOG_INSERT_PICTURE_IMAGE_PREVIEW);
+
+	XAP_Win32Frame* pWin32Frame = (XAP_Win32Frame *) ( GetWindowLong(hFrame,GWL_USERDATA) );
+	const XAP_StringSet*  pSS   = pWin32Frame->getApp()->getStringSet();
+
 	// Check if File Name is for a file
 	char buf[MAX_DLG_INS_PICT_STRING];
-	SendMessage( GetParent(hDlg), CDM_GETFILEPATH,
-				 sizeof(buf),	  (LPARAM) buf   );
-//	// If a Directory stop
+	SendMessage( hFOSADlg, CDM_GETFILEPATH, sizeof(buf), (LPARAM) buf );
+	// If a Directory stop
 	if ( GetFileAttributes( buf ) == FILE_ATTRIBUTE_DIRECTORY )
 	{
 		return false;
@@ -380,7 +386,7 @@ UINT XAP_Win32Dialog_FileOpenSaveAs::_previewPicture(HWND hDlg)
 	iegft = pIEG->fileTypeForContents( (const char *) pBB->getPointer(0), 50);
 
 	// Skip import if PNG or SVG file
-	if (iegft != IEGFT_PNG /* And SVG Exception */)
+	if (iegft != IEGFT_PNG || iegft != IEGFT_SVG)
 	{
 		// Convert to PNG or SVG (pBB Memoried freed in function
 		errorCode = pIEG->convertGraphic(pBB, &pTempBB);  
@@ -393,26 +399,44 @@ UINT XAP_Win32Dialog_FileOpenSaveAs::_previewPicture(HWND hDlg)
 			return false;
 		}
 	}
+	// Reset file type based on conversion
+	iegft = pIEG->fileTypeForContents( (const char *) pBB->getPointer(0), 50);
 	DELETEP(pIEG);
+
 
 	double		scale_factor = 0.0;
 	UT_sint32	scaled_width,scaled_height;
 	UT_sint32	iImageWidth,iImageHeight;
+	UT_Byte     *pszWidth,*pszHeight;
 	RECT		r;
 
-	HWND hThumbnail = GetDlgItem(hDlg,XAP_RID_DIALOG_INSERT_PICTURE_IMAGE_PREVIEW);
 	GetClientRect (hThumbnail, &r);
 	InvalidateRect(hThumbnail, &r, true);
 
-	// Add switch for SVG File
-	UT_PNG_getDimensions(pBB, iImageWidth, iImageHeight);
+	if (iegft == IEGFT_PNG)
+	{
+		UT_PNG_getDimensions(pBB, iImageWidth, iImageHeight);
+	}
+	else
+	{
+		UT_SVG_getDimensions(pBB, &pszWidth, &pszHeight);
+		iImageWidth  = (UT_sint32)(*pszWidth);
+		iImageHeight = (UT_sint32)(*pszHeight);
+	}
 
 	// Update Height and Width Strings
-	sprintf(buf, "Height: %d", iImageHeight);
+	sprintf( buf, 
+		     "%s %d",
+		      pSS->getValue(XAP_STRING_ID_DLG_IP_Height_Label), 
+		      iImageHeight );
 	SetDlgItemText( hDlg,
 					XAP_RID_DIALOG_INSERT_PICTURE_TEXT_HEIGHT,
 					buf );
-	sprintf(buf, "Width: %d", iImageWidth);
+
+	sprintf( buf, 
+		     "%s %d",
+			 pSS->getValue(XAP_STRING_ID_DLG_IP_Width_Label),
+			 iImageWidth );
 	SetDlgItemText( hDlg,
 					XAP_RID_DIALOG_INSERT_PICTURE_TEXT_WIDTH,
 					buf );
@@ -422,7 +446,7 @@ UINT XAP_Win32Dialog_FileOpenSaveAs::_previewPicture(HWND hDlg)
 		scale_factor = 1.0;
 	else
 		scale_factor = min( (double) r.right/iImageWidth,
-							(double) r.bottom/iImageHeight);
+							(double) r.bottom/iImageHeight );
 
 	scaled_width  = (int) (scale_factor * iImageWidth);
 	scaled_height = (int) (scale_factor * iImageHeight);
@@ -433,7 +457,7 @@ UINT XAP_Win32Dialog_FileOpenSaveAs::_previewPicture(HWND hDlg)
 	PAINTSTRUCT ps;
 	HDC hdc = BeginPaint(hThumbnail, &ps);
 	FillRect(hdc, &r, GetSysColorBrush(COLOR_BTNFACE));
-	GR_Win32Graphics* pGr = new GR_Win32Graphics(hdc,hThumbnail,m_pWin32Frame->getApp());
+	GR_Win32Graphics* pGr = new GR_Win32Graphics(hdc,hThumbnail,pWin32Frame->getApp());
 	pGr->drawImage(pImage,
 	 	          (r.right  - scaled_width ) / 2,
 	 			  (r.bottom - scaled_height) / 2);
@@ -444,4 +468,36 @@ UINT XAP_Win32Dialog_FileOpenSaveAs::_previewPicture(HWND hDlg)
 	DELETEP(pGr);
 
 	return true;
+}
+
+UINT XAP_Win32Dialog_FileOpenSaveAs::_initPreviewDlg(HWND hDlg)
+{
+	HWND hFOSADlg   = GetParent(hDlg);
+	HWND hFrame     = GetParent(hFOSADlg);
+	HWND hThumbnail = GetDlgItem(hDlg,XAP_RID_DIALOG_INSERT_PICTURE_IMAGE_PREVIEW);
+
+	XAP_Win32Frame* pWin32Frame = (XAP_Win32Frame *) ( GetWindowLong(hFrame,GWL_USERDATA) );
+	XAP_App*              pApp        = pWin32Frame->getApp();
+	const XAP_StringSet*  pSS         = pApp->getStringSet();
+	
+	SetWindowText( hDlg, pSS->getValue(XAP_STRING_ID_DLG_IP_Title) );
+
+	SetDlgItemText( hDlg,
+					XAP_RID_DIALOG_INSERT_PICTURE_IMAGE_PREVIEW,
+					pSS->getValue(XAP_STRING_ID_DLG_IP_No_Picture_Label) );
+
+	SetDlgItemText( hDlg,
+					XAP_RID_DIALOG_INSERT_PICTURE_CHECK_ACTIVATE_PREVIEW,
+					pSS->getValue(XAP_STRING_ID_DLG_IP_Activate_Label) );
+
+	SetDlgItemText( hDlg,
+					XAP_RID_DIALOG_INSERT_PICTURE_TEXT_HEIGHT,
+					pSS->getValue(XAP_STRING_ID_DLG_IP_Height_Label) );
+
+	SetDlgItemText( hDlg,
+					XAP_RID_DIALOG_INSERT_PICTURE_TEXT_WIDTH,
+					pSS->getValue(XAP_STRING_ID_DLG_IP_Width_Label) );
+
+	return true;
+
 }
