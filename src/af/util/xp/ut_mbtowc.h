@@ -1,7 +1,16 @@
 #ifndef UT_MBTOWC_H
 #define UT_MBTOWC_H
 
+
+#ifndef __OpenBSD__
 #include <wchar.h>
+#else
+/* Note: wchar.h doesn't exist in OpenBSD systems */
+typedef int mbstate_t;
+typedef unsigned long wchar_t;
+size_t mbrtowc(wchar_t&,char*,int,mbstate_t);
+#endif
+
 #include <limits.h>
 
 #if defined(__BEOS__)

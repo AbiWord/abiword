@@ -48,7 +48,10 @@ ABI_APPLIBDEP=		$(LoadOrder)
 ABI_LIBS=		png z 
 ifdef __FreeBSD__
 ABI_LIBS+=		iconv
-endif
+endif # FreeBSD
+ifdef __OpenBSD__
+ABI_LIBS+=		iconv intl
+endif # OpenBSD
 
 # include both dynamic and static binaries
 TARGETS=		$(PROGRAM) $(PROGRAM_S)
@@ -62,6 +65,9 @@ include $(ABI_ROOT)/src/config/abi_rules.mk
 # One build gets dynamic libdl flags, the other gets static flags
 DYNAMIC_LDFLAGS=	$(addprefix -l,$(DL_LIBS))
 STATIC_LDFLAGS =	$(STATIC_FLAGS)
+ifdef __OpenBSD__
+STATIC_LDFLAGS += -lintl
+endif
 
 # we override the $(PROGRAM) rule.
 

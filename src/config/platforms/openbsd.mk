@@ -88,9 +88,13 @@ UNIX_CAN_BUILD_STATIC=1
 
 # Compiler options for static and dynamic linkage
 DL_LIBS			= 
-STATIC_FLAGS		= -static
+STATIC_FLAGS		=  -static
 
 ABI_NATIVE	= unix
 ABI_FE		= Unix
 
 # End of OpenBSD defs
+
+ABIPKGDIR	= openbsd
+
+__OpenBSD__ = 1
