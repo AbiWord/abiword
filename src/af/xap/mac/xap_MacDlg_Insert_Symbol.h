@@ -20,7 +20,7 @@
 #ifndef XAP_MacDIALOG_INSERT_SYMBOL_H
 #define XAP_MacDIALOG_INSERT_SYMBOL_H
 
-#include "xap_Dialog_Insert_Symbol.h"
+#include "xap_Dlg_Insert_Symbol.h"
 class XAP_MacFrame;
 
 /*****************************************************************/
