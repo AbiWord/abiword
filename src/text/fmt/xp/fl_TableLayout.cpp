@@ -1325,6 +1325,33 @@ void fl_CellLayout::setCellContainerProperties(fp_CellContainer * pCell)
 }
 
 /*!
+ * Returns true if the cell is selected.
+ */
+bool fl_CellLayout::isCellSelected(void)
+{
+	FV_View* pView = m_pLayout->getView();
+	PT_DocPosition posStartCell = getPosition();
+	PT_DocPosition posEndCell =0;
+	PL_StruxDocHandle sdhEnd,sdhStart;
+	sdhStart = getStruxDocHandle();
+	m_pDoc->getNextStruxOfType(sdhStart, PTX_EndCell, &sdhEnd);
+	posEndCell = m_pDoc->getStruxPosition(sdhEnd);
+	PT_DocPosition iAnchor = pView->getSelectionAnchor();
+	PT_DocPosition iPoint = pView->getPoint();
+	if(iAnchor > iPoint)
+	{
+		PT_DocPosition swap = iPoint;
+		iPoint = iAnchor;
+		iAnchor = swap;
+	}
+	if(iAnchor < posStartCell && iPoint > posEndCell)
+	{
+		return true;
+	}
+	return false;
+}
+
+/*!
  * This method measures the cell height and compares it to the previously
  * measured height. If they disagree update the layout of the table.
  */

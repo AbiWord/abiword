@@ -2556,6 +2556,7 @@ void FV_View::_drawBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2)
 // Look to see if the Block is in a table.
 //
 		fl_ContainerLayout * pCL = pBlock->myContainingLayout();
+		bool bCellSelected = false;
 		if(pCL->getContainerType() == FL_CONTAINER_CELL)
 		{
 			fp_Container * pCP = static_cast<fp_Container *>(pCL->getFirstContainer());
@@ -2572,6 +2573,74 @@ void FV_View::_drawBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2)
 					{
 						vecTables.addItem(static_cast<void *>(pTab));
 					}
+				}
+			}
+			fl_CellLayout * pCellLayout = static_cast<fl_CellLayout *>(pCL);
+//
+// See if the whole cell is selected. If so draw it.
+//
+			bCellSelected = pCellLayout->isCellSelected();
+			if(bCellSelected)
+			{
+				fp_CellContainer * pCellCon = static_cast<fp_CellContainer *>(pCP);
+				fp_Container * pLastCon = pCellCon->drawSelectedCell(pCurRun->getLine());
+				if(pLastCon == NULL)
+				{
+					fl_BlockLayout * pBlock = pCurRun->getBlock();
+					pBlock = pBlock->getNextBlockInDocument();
+					if(pBlock)
+					{
+						pCurRun = pBlock->getFirstRun();
+						continue;
+					}
+					pCurRun = NULL;
+					continue;
+				}
+				fp_Container * pNextCon = pLastCon->getNextContainerInSection();
+				if(pNextCon)
+				{
+					if(pNextCon->getContainerType() == FP_CONTAINER_LINE)
+					{
+						pCurRun = static_cast<fp_Line *>(pNextCon)->getFirstRun();
+						continue;
+					}
+					fl_SectionLayout * pSL = pNextCon->getSectionLayout();
+					fl_ContainerLayout * pCL = pSL->getFirstLayout();
+					while(pCL->getContainerType() != FL_CONTAINER_BLOCK)
+					{
+						pCL = pCL->getFirstLayout();
+					}
+					pCurRun = static_cast<fl_BlockLayout *>(pCL)->getFirstRun();
+					continue;
+				}
+				fl_SectionLayout * pSL = pLastCon->getSectionLayout();
+				pSL = static_cast<fl_SectionLayout *>(pSL->getNext());
+				if(pSL == NULL )
+				{
+					pCurRun = NULL;
+					continue;
+				}
+				if(pSL->getContainerType() == FL_CONTAINER_HDRFTR)
+				{
+					pCurRun = NULL;
+					continue;
+				}
+				fl_ContainerLayout * pCL = pSL->getFirstLayout();
+				while(pCL->getContainerType() != FL_CONTAINER_BLOCK)
+				{
+					pCL = pCL->getFirstLayout();
+				}
+				pCurRun = static_cast<fl_BlockLayout *>(pCL)->getFirstRun();
+				continue;
+			}
+			else
+			{
+				fp_CellContainer * pCellCon = static_cast<fp_CellContainer *>(pCP);
+				if(pCellCon->getSelectionColor() != NULL)
+				{
+					pCellCon->clearSelectionColor();
+					pCellCon->clearScreen();
+					pCellCon->draw(pCurRun->getLine());
 				}
 			}
 		}
@@ -2694,8 +2763,43 @@ bool FV_View::_clearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2,
 			bDone = true;
 		}
 
+		fl_BlockLayout* pBlock = pCurRun->getBlock();
+		UT_ASSERT(pBlock);
+//
+// Look to see if the Block is in a table.
+//
+		fl_ContainerLayout * pCL = pBlock->myContainingLayout();
+		if(pCL->getContainerType() == FL_CONTAINER_CELL)
+		{
+			fp_CellContainer * pCell = static_cast<fp_CellContainer *>(pCL->getFirstContainer());
+			if(pCell->getSelectionColor())
+			{
+				pCell->clearSelectionColor();
+				pCell->clearScreen();
+			
+				fl_BlockLayout * pBlock = NULL;
+				fl_ContainerLayout * pLastCL = pCL->getFirstLayout();
+				while(pLastCL->getNext())
+				{
+					pLastCL = pLastCL->getNext();
+				}
+				while(pLastCL->getContainerType() != FL_CONTAINER_BLOCK)
+				{
+					pLastCL = pLastCL->getFirstLayout();
+				}
+				pBlock = static_cast<fl_BlockLayout *>(pLastCL);
+				pBlock = pBlock->getNextBlockInDocument();
+				if(pBlock)
+				{
+					pCurRun = pBlock->getFirstRun();
+					continue;
+				}
+				pCurRun = NULL;
+				bDone = true;
+				continue;
+			}
+		}
 		pCurRun->clearScreen(bFullLineHeightRect);
-
 		if (pCurRun->getNext())
 		{
 			pCurRun = pCurRun->getNext();

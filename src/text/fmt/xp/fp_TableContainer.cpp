@@ -112,7 +112,8 @@ fp_CellContainer::fp_CellContainer(fl_SectionLayout* pSectionLayout)
 	  m_bDrawBot(false),
 	  m_bDrawRight(false),
 	  m_bLinesDrawn(false),
-	  m_bBgDirty(true)
+	  m_bBgDirty(true),
+	  m_cClrSelection(NULL)
 {
 }
 
@@ -240,6 +241,7 @@ void fp_CellContainer::clearScreen(void)
 //	{
 		fp_Container * pCon = NULL;
 		UT_sint32 i = 0;
+
 		for(i=0; i< static_cast<UT_sint32>(countCons()); i++)
 		{
 			pCon = static_cast<fp_Container *>(getNthCon(i));
@@ -404,7 +406,7 @@ void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 // then clear the background as well
 // NOTE: if we support non-solid backgrounds this ought to be changed - the
 //       parent container should be asked to redraw the exposed area
-		if (background.m_t_background != PP_PropertyMap::background_none)
+//		if (background.m_t_background != PP_PropertyMap::background_none)
 		{
 			getGraphics()->fillRect (page_color,bRec.left,bRec.top,bRec.width,bRec.height);
 		}
@@ -1040,9 +1042,135 @@ void fp_CellContainer::draw(dg_DrawArgs* pDA)
     _drawBoundaries(pDA,NULL);
 }
 
+
+/*!
+ * Draw the whole cell with the selection colour background.
+\Param pLine pointer to the line contained within the cell the cell.
+*/
+void fp_CellContainer::draw(fp_Line * pLine)
+{
+	UT_ASSERT(getPage());
+	if(!getPage())
+	{
+		return;
+	}
+	FV_View * pView = getPage()->getDocLayout()->getView();
+	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(getContainer());
+	if(pTab == NULL)
+	{
+		return;
+	}
+	UT_ASSERT(pTab->getContainerType() == FP_CONTAINER_TABLE);
+	fp_TableContainer * pBroke = pTab->getFirstBrokenTable();
+	if(pBroke == NULL)
+	{
+		return;
+	}
+	bool bFound = false;
+
+	while(pBroke && !bFound)
+	{
+		if(pBroke->isInBrokenTable(this,pLine))
+		{
+			bFound = true;
+			break;
+		}
+		pBroke = static_cast<fp_TableContainer *>(pBroke->getNext());
+	}
+	if(!bFound)
+	{
+		return;
+	}
+	fp_Container * pLast = static_cast<fp_Container *>(pLine);
+	while(pLast->getNext() && pBroke->isInBrokenTable(this,pLast))
+	{
+		pLast = static_cast<fp_Container*>(pLast->getNext());
+	}
+	//
+	// Now get a rectangle to calculate draw arguments
+	//
+	UT_Rect bRec;
+	fp_Page * pLinePage;
+	_getBrokenRect(pBroke, pLinePage, bRec);
+	dg_DrawArgs da;
+	da.xoff = bRec.left -getX();
+	da.yoff = bRec.top -getY();
+	da.bDirtyRunsOnly = false;
+	da.pG = pView->getGraphics();
+	drawBroken(&da,pBroke);
+	return ;
+}
+
+/*!
+ * Draw the whole cell with the selection colour background.
+ * returns the last drawn cell in the container or NULL
+\Param pLine pointer to the line contained within the cell the cell.
+*/
+fp_Container * fp_CellContainer::drawSelectedCell(fp_Line * pLine)
+{
+	UT_ASSERT(getPage());
+	if(!getPage())
+	{
+		return NULL;
+	}
+	FV_View * pView = getPage()->getDocLayout()->getView();
+	UT_RGBColor clrSelBackground = pView->getColorSelBackground();
+	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(getContainer());
+	if(pTab == NULL)
+	{
+		return NULL;
+	}
+	UT_ASSERT(pTab->getContainerType() == FP_CONTAINER_TABLE);
+	fp_TableContainer * pBroke = pTab->getFirstBrokenTable();
+	if(pBroke == NULL)
+	{
+		return NULL;
+	}
+	bool bFound = false;
+
+	while(pBroke && !bFound)
+	{
+		if(pBroke->isInBrokenTable(this,pLine))
+		{
+			bFound = true;
+			break;
+		}
+		pBroke = static_cast<fp_TableContainer *>(pBroke->getNext());
+	}
+	if(!bFound)
+	{
+		return NULL;
+	}
+	fp_Container * pLast = static_cast<fp_Container *>(pLine);
+	while(pLast->getNext() && pBroke->isInBrokenTable(this,pLast))
+	{
+		pLast = static_cast<fp_Container*>(pLast->getNext());
+	}
+	//
+	// Set the colour to be drawn in the selected cell.
+	//
+	m_cClrSelection = &clrSelBackground;
+	//
+	// Now get a rectangle to calculate draw arguments
+	//
+	UT_Rect bRec;
+	fp_Page * pLinePage;
+	_getBrokenRect(pBroke, pLinePage, bRec);
+	dg_DrawArgs da;
+	da.xoff = bRec.left -getX();
+	da.yoff = bRec.top -getY();
+	da.bDirtyRunsOnly = false;
+	da.pG = pView->getGraphics();
+	drawBroken(&da,pBroke);
+	m_bBgDirty = true;
+	return pLast;
+}
+
+
 /*!
  Draw container content visible within the supplied broken table
  \param pDA Draw arguments
+ \param pBroke broken table that cell is part of
  */
 void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 								  fp_TableContainer * pBroke)
@@ -1095,7 +1223,7 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 // Now draw the cell background.
 //
 
-	if (m_bBgDirty || !pDA->bDirtyRunsOnly)
+	if ((m_cClrSelection == NULL) && (m_bBgDirty || !pDA->bDirtyRunsOnly))
 	{
 		fp_Page * pPage;
 		UT_Rect bRec;
@@ -1122,7 +1250,17 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 		}	
 		m_bBgDirty = false;
 	}
-	
+	//
+	// This cell is selected, fill it with colour
+	//
+	else if(m_cClrSelection != NULL)
+	{
+		UT_Rect bRec;
+		fp_Page * pPage;
+		_getBrokenRect(pBroke, pPage, bRec);
+		getGraphics()->fillRect(*m_cClrSelection,bRec.left,bRec.top,bRec.width,bRec.height);
+	}
+
 //
 // Only draw the lines in the clipping region.
 //

@@ -104,10 +104,19 @@ public:
 	void                sizeRequest(fp_Requisition * pRequest);
 	void                sizeAllocate(fp_Allocation * pAllocate);
 	void				layout(void);
+	fp_Container *      drawSelectedCell(fp_Line * pLine);
+	UT_RGBColor *       getSelectionColor(void) const
+	{ return m_cClrSelection; }
+	void                clearSelectionColor(void) 
+	{ m_cClrSelection = NULL; 
+	  m_bLinesDrawn = true;
+	}
+		
 	void		        drawBroken(dg_DrawArgs* pDa, fp_TableContainer * pTab);
 	virtual void		clearScreen(void);
 	void                drawLines(fp_TableContainer * pBroke);
 	void                drawLinesAdjacent(void);
+	void                draw(fp_Line * pLine);
 	virtual void		draw(dg_DrawArgs*);
 	virtual void		draw(GR_Graphics*) {}
 	virtual void        setContainer(fp_Container * pContainer);
@@ -296,6 +305,9 @@ private:
 	PP_PropertyMap::Line   m_lineLeft;
 	PP_PropertyMap::Line   m_lineRight;
 	PP_PropertyMap::Line   m_lineTop;
+
+// Pointer to selection Colour
+	UT_RGBColor *          m_cClrSelection;
 };
 
 class ABI_EXPORT fp_TableContainer : public fp_VerticalContainer
