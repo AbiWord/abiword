@@ -80,6 +80,7 @@ OS_CFLAGS		= $(DSO_CFLAGS) $(PLATFORM_FLAGS) $(PORT_FLAGS)
 PLATFORM_FLAGS		+=
 PORT_FLAGS		+= 
 
+GLIB_CONFIG		= glib-config
 GTK_CONFIG		= gtk-config
 
 # Shared library flags

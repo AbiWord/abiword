@@ -114,6 +114,7 @@ PLATFORM_FLAGS		+= $(M68K_ARCH_FLAGS)
 OS_ENDIAN		= BigEndian32
 endif
 
+GLIB_CONFIG		= glib-config
 GTK_CONFIG		= gtk-config
 
 # Shared library flags

@@ -77,6 +77,7 @@ OS_CFLAGS		= $(DSO_CFLAGS) $(PLATFORM_FLAGS) $(PORT_FLAGS)
 # Architecture-specific flags
 OS_ENDIAN		= BigEndian32
 
+GLIB_CONFIG		= glib-config
 GTK_CONFIG		= gtk-config
 
 # Shared library flags

@@ -77,6 +77,7 @@ OS_CFLAGS		= $(DSO_CFLAGS) $(PLATFORM_FLAGS) $(PORT_FLAGS)
 PLATFORM_FLAGS		+= 
 PORT_FLAGS		+= 
 
+GLIB_CONFIG		= glib12-config
 GTK_CONFIG		= gtk12-config
 
 # Shared library flags
