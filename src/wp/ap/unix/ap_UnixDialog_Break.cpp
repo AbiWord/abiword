@@ -110,7 +110,7 @@ GtkWidget * AP_UnixDialog_Break::_constructWindow(void)
 	// might need to be queried or altered later
 	window = glade_xml_get_widget(xml, "ap_UnixDialog_Break");
 	m_radioGroup = gtk_radio_button_group (GTK_RADIO_BUTTON ( glade_xml_get_widget(xml, "rbPageBreak") ));
-	
+
 	// set the dialog title
 	abiDialogSetTitle(window, pSS->getValueUTF8(AP_STRING_ID_DLG_Break_BreakTitle).c_str());
 	
