@@ -19,6 +19,10 @@
 
 !include "{ABI_ROOT}src:config:abi_defs.mk.mpw"
 
+LocalCPPOptions = -i "{ABI_ROOT}:wv:libole2:, ¶
+				{ABI_ROOT}:psiconv:, {ABI_ROOT}:psiconv:mac:, ¶
+				{ABI_ROOT}:wv:exporter:,{ABI_ROOT}:wv:glib-wv:"
+
 TARGETS = ie_exp.cpp.o ¶
 		   ie_exp_AbiWord_1.cpp.o ¶
 		   ie_exp_DocBook.cpp.o ¶
