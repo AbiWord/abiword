@@ -333,15 +333,15 @@ public:
 	    return ret ;
 	  }
 
-	inline void setOrginization ( const UT_String & value )
+	inline void setOrganization ( const UT_String & value )
 	  {
-	    setMetaDataProp ( "Orginization", value ) ;
+	    setMetaDataProp ( "Organization", value ) ;
 	  }
 
-	inline UT_String getOrginization () const
+	inline UT_String getOrganization () const
 	  {
 	    UT_String ret;
-	    getMetaDataProp ( "Orginization", ret ) ;
+	    getMetaDataProp ( "Organization", ret ) ;
 	    return ret ;
 	  }
 
@@ -378,6 +378,18 @@ public:
 	  {
 	    UT_String ret;
 	    getMetaDataProp ( "Comments", ret ) ;
+	    return ret ;
+	  }
+
+	inline void setCategory ( const UT_String & value )
+	  {
+	    setMetaDataProp ( "Category", value ) ;
+	  }
+
+	inline UT_String getCategory () const
+	  {
+	    UT_String ret;
+	    getMetaDataProp ( "Category", ret ) ;
 	    return ret ;
 	  }
 

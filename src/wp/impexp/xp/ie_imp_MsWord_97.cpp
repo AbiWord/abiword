@@ -19,7 +19,6 @@
  * 02111-1307, USA.
  */
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -497,7 +496,7 @@ IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
 /****************************************************************************/
 /****************************************************************************/
 
-#define ErrCleanupAndExit(code)  do {wvOLEFree (); return(code);} while(0)
+#define ErrCleanupAndExit(code)  do {wvOLEFree (&ps); return(code);} while(0)
 
 #define GetPassword() _getPassword ( getDoc()->getApp()->getLastFocussedFrame() )
 
@@ -612,11 +611,64 @@ UT_Error IE_Imp_MsWord_97::importFile(const char * szFilename)
   wvSetSpecialCharHandler(&ps, specCharProc);
   wvSetDocumentHandler (&ps, docProc);
 
+  UT_DEBUGMSG(("DOM: wvText\n"));
+
   wvText(&ps);
+
+  UT_DEBUGMSG(("DOM: about to get summary information\n"));
+
+  // now get the summary information, if available
+  MsOleSummary *summary = ms_ole_summary_open (ps.ole_file);
+  if (summary)
+    {
+      UT_DEBUGMSG(("DOM: getting summary information\n"));
+
+      char *prop_str = NULL;
+      gboolean found = FALSE;
+
+      // title
+      prop_str = ms_ole_summary_get_string (summary, MS_OLE_SUMMARY_TITLE, &found);
+      if (found && prop_str)
+	getDoc()->setTitle ( prop_str ) ;
+
+      // subject
+      prop_str = ms_ole_summary_get_string (summary, MS_OLE_SUMMARY_SUBJECT, &found);
+      if (found && prop_str)
+	getDoc()->setSubject ( prop_str ) ;
+
+      // author
+      prop_str = ms_ole_summary_get_string (summary, MS_OLE_SUMMARY_AUTHOR, &found);
+      if (found && prop_str)
+	getDoc()->setAuthor ( prop_str ) ;
+
+      // keywords
+      prop_str = ms_ole_summary_get_string (summary, MS_OLE_SUMMARY_KEYWORDS, &found);
+      if (found && prop_str)
+	getDoc()->setKeywords ( prop_str ) ;
+
+      // comments
+      prop_str = ms_ole_summary_get_string (summary, MS_OLE_SUMMARY_COMMENTS, &found);
+      if (found && prop_str)
+	getDoc()->setComments ( prop_str ) ;
+
+      // category
+      prop_str = ms_ole_summary_get_string (summary, MS_OLE_SUMMARY_CATEGORY, &found);
+      if (found && prop_str)
+	getDoc()->setCategory ( prop_str ) ;
+
+      // organization
+      prop_str = ms_ole_summary_get_string (summary, MS_OLE_SUMMARY_COMPANY, &found);
+      if (found && prop_str)
+	getDoc()->setOrganization ( prop_str ) ;
+
+      ms_ole_summary_close (summary);
+    }
+
+  UT_DEBUGMSG(("DOM: finished summary info\n"));
 
   // HACK - this will do until i sort out some global stream ugliness in wv
   if ( !decrypted )
-    wvOLEFree();
+    wvOLEFree(&ps);
 
   // We can't be in a good state if we didn't add any sections!
   if (m_nSections == 0)
