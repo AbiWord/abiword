@@ -28,6 +28,7 @@
 #include "ie_types.h"
 #include "pd_Document.h"
 #include "ut_growbuf.h"
+#include "ut_units.h"
 
 /*
  * This file is meant to import KWord 1.x documents.
@@ -151,8 +152,8 @@ IE_Imp_KWord_1::~IE_Imp_KWord_1()
 }
 
 IE_Imp_KWord_1::IE_Imp_KWord_1(PD_Document *pDocument) : IE_Imp_XML(pDocument, true)
+  , m_bInText(false)
 {
-  m_bInText = false;
 }
 
 void IE_Imp_KWord_1::_charData(const XML_Char *s, int len)
@@ -379,8 +380,6 @@ kVertAlignToTextPos ( const char * sz )
 
 void IE_Imp_KWord_1::_startElement(const XML_Char *name, const XML_Char **atts)
 {
-  UT_DEBUGMSG(("KWord import: startElement: %s\n", name));
-
   // xml parser keeps running until buffer consumed
   X_EatIfAlreadyError();
 
@@ -392,25 +391,25 @@ void IE_Imp_KWord_1::_startElement(const XML_Char *name, const XML_Char **atts)
   {
     case TT_ATTRIBUTE:
       {
-        UT_DEBUGMSG(("ABIDEBUG: begin ATTRIBUTE\n"));
+        xxx_UT_DEBUGMSG(("ABIDEBUG: begin ATTRIBUTE\n"));
         break;
       }
 
     case TT_BOTTOMBORDER:
       {
-        UT_DEBUGMSG(("ABIDEBUG: begin BOTTOMBORDER\n"));
+        xxx_UT_DEBUGMSG(("ABIDEBUG: begin BOTTOMBORDER\n"));
         break;
       }
 
     case TT_CHARSET:
       {
-        UT_DEBUGMSG(("ABIDEBUG: begin CHARSET\n"));
+        xxx_UT_DEBUGMSG(("ABIDEBUG: begin CHARSET\n"));
         break;
       }
 
     case TT_CLIPARTS:
       {
-        UT_DEBUGMSG(("ABIDEBUG: begin CLIPARTS\n"));
+        xxx_UT_DEBUGMSG(("ABIDEBUG: begin CLIPARTS\n"));
         break;
       }
 
@@ -435,16 +434,16 @@ void IE_Imp_KWord_1::_startElement(const XML_Char *name, const XML_Char **atts)
 	
 	char buf[7];
 	sprintf(buf, "%02x%02x%02x", red, green, blue);
-	m_szProps += "color:";
-	m_szProps += buf;
-	m_szProps += "; ";
+	m_szCharProps += "color:";
+	m_szCharProps += buf;
+	m_szCharProps += "; ";
 	break;
 
       }
 
     case TT_COUNTER:
       {
-        UT_DEBUGMSG(("ABIDEBUG: begin COUNTER\n"));
+        xxx_UT_DEBUGMSG(("ABIDEBUG: begin COUNTER\n"));
         break;
       }
 
@@ -457,58 +456,68 @@ void IE_Imp_KWord_1::_startElement(const XML_Char *name, const XML_Char **atts)
       
     case TT_FOLLOWING:
       {
-        UT_DEBUGMSG(("ABIDEBUG: begin FOLLOWING\n"));
+        xxx_UT_DEBUGMSG(("ABIDEBUG: begin FOLLOWING\n"));
         break;
       }
       
     case TT_FRAME:
       {
-        UT_DEBUGMSG(("ABIDEBUG: begin FRAME\n"));
+        xxx_UT_DEBUGMSG(("ABIDEBUG: begin FRAME\n"));
 
-	// TODO: left,right,top,bottom
-        X_CheckError(getDoc()->appendStrux(PTX_Section,(const XML_Char**)NULL));
+	m_szSectProps[m_szSectProps.size() - 2] = 0; // nock off the final ';'
+
+	const XML_Char *propsArray[3];
+	propsArray[0] = (XML_Char *)"props";
+	propsArray[1] = (XML_Char *)m_szSectProps.c_str();
+	propsArray[2] = 0;
+
+        X_CheckError(getDoc()->appendStrux(PTX_Section,(const XML_Char**)propsArray));
+	m_szSectProps.clear(); //reset cached properties
+
+	UT_DEBUGMSG(("DOM: CREATED SECTION\n"));
+
         break;
       }
       
     case TT_FRAMESET:
       {
-        UT_DEBUGMSG(("ABIDEBUG: begin FRAMESET\n"));
+        xxx_UT_DEBUGMSG(("ABIDEBUG: begin FRAMESET\n"));
         break;
       }
       
     case TT_INDENTS:
       {
-        UT_DEBUGMSG(("ABIDEBUG: begin INDENTS\n"));
+        xxx_UT_DEBUGMSG(("ABIDEBUG: begin INDENTS\n"));
         break;
       }
       
     case TT_LAYOUT:
       {
-        UT_DEBUGMSG(("ABIDEBUG: begin LAYOUT\n"));
+        xxx_UT_DEBUGMSG(("ABIDEBUG: begin LAYOUT\n"));
         break;
       }
       
     case TT_LEFTBORDER:
       {
-        UT_DEBUGMSG(("ABIDEBUG: begin LEFTBORDER\n"));
+        xxx_UT_DEBUGMSG(("ABIDEBUG: begin LEFTBORDER\n"));
         break;
       }
       
     case TT_LINESPACING:
       {
-        UT_DEBUGMSG(("ABIDEBUG: begin LINESPACING\n"));
+        xxx_UT_DEBUGMSG(("ABIDEBUG: begin LINESPACING\n"));
         break;
       }
     
     case TT_OFFSETS:
       {
-        UT_DEBUGMSG(("ABIDEBUG: begin OFFSETS\n"));
+        xxx_UT_DEBUGMSG(("ABIDEBUG: begin OFFSETS\n"));
         break;
       }
       
     case TT_PAPER:
       {
-        UT_DEBUGMSG(("ABIDEBUG: begin PAPER\n"));
+        xxx_UT_DEBUGMSG(("ABIDEBUG: begin PAPER\n"));
 	
 	const XML_Char * pVal = NULL;
 
@@ -550,40 +559,56 @@ void IE_Imp_KWord_1::_startElement(const XML_Char *name, const XML_Char **atts)
 	    page_height = atof(pVal);
 	  }
 
-	getDoc()->m_docPageSize.Set(page_width, page_height, fp_PageSize::mm);
+	if ( page_height != 0. && page_width != 0. )
+	  getDoc()->m_docPageSize.Set(page_width, page_height, fp_PageSize::mm);
 	break;
       }
       
     case TT_PAPERBORDERS:
       {
-        UT_DEBUGMSG(("ABIDEBUG: begin PAPERBORDERS\n"));
+        xxx_UT_DEBUGMSG(("ABIDEBUG: begin PAPERBORDERS\n"));
 
 	// margins
 
 	const XML_Char * pVal = NULL;
 
-	pVal = _getXMLPropValue("left", atts);
-	if(pVal)
-	  {
-	    // page-margin-left from mm
-	  }
-
 	pVal = _getXMLPropValue("right", atts);
 	if(pVal)
 	  {
 	    // page-margin-right from mm
+	    m_szSectProps += "page-margin-right:";
+	    m_szSectProps += pVal;
+	    m_szSectProps += "mm; ";
+	  }
+
+	// todo: really get these
+	m_szSectProps += "page-margin-footer:0.0mm; page-margin-header:0.0mm; ";
+
+	pVal = _getXMLPropValue("left", atts);
+	if(pVal)
+	  {
+	    // page-margin-left from mm
+	    m_szSectProps += "page-margin-left:";	    
+	    m_szSectProps += pVal;
+	    m_szSectProps += "mm; ";
 	  }
 
 	pVal = _getXMLPropValue("top", atts);
 	if(pVal)
 	  {
 	    // page-margin-top from mm
+	    m_szSectProps += "page-margin-top:";
+	    m_szSectProps += pVal;
+	    m_szSectProps += "mm; ";
 	  }
 
 	pVal = _getXMLPropValue("bottom", atts);
 	if(pVal)
 	  {
 	    // page-margin-bottom from mm
+	    m_szSectProps += "page-margin-bottom:";
+	    m_szSectProps += pVal;
+	    m_szSectProps += "mm; ";
 	  }
 
         break;
@@ -591,13 +616,15 @@ void IE_Imp_KWord_1::_startElement(const XML_Char *name, const XML_Char **atts)
       
     case TT_PAGEBREAKING:
       {
-        UT_DEBUGMSG(("ABIDEBUG: begin PAGEBREAKING\n"));
+        xxx_UT_DEBUGMSG(("ABIDEBUG: begin PAGEBREAKING\n"));
         break;
       }
       
     case TT_PARAGRAPH:
       {
-        UT_DEBUGMSG(("ABIDEBUG: begin PARAGRPAHS\n"));
+        xxx_UT_DEBUGMSG(("ABIDEBUG: begin PARAGRPAH\n"));
+
+	UT_DEBUGMSG(("DOM: CREATED PARAGRAPH\n"));
 
 	// TODO: handle properties
         X_CheckError(getDoc()->appendStrux(PTX_Block, NULL));
@@ -606,19 +633,19 @@ void IE_Imp_KWord_1::_startElement(const XML_Char *name, const XML_Char **atts)
       
     case TT_RIGHTBORDER:
       {
-        UT_DEBUGMSG(("ABIDEBUG: begin RIGHTBORDER\n"));
+        xxx_UT_DEBUGMSG(("ABIDEBUG: begin RIGHTBORDER\n"));
         break;
       }
       
     case TT_STYLE:
       {
-        UT_DEBUGMSG(("ABIDEBUG: begin STYLE\n"));
+        xxx_UT_DEBUGMSG(("ABIDEBUG: begin STYLE\n"));
         break;
       }
       
     case TT_STYLES:
       {
-        UT_DEBUGMSG(("ABIDEBUG: begin STYLES\n"));
+        xxx_UT_DEBUGMSG(("ABIDEBUG: begin STYLES\n"));
         break;
       }
       
@@ -630,7 +657,7 @@ void IE_Imp_KWord_1::_startElement(const XML_Char *name, const XML_Char **atts)
       
     case TT_TOPBORDER:
       {
-        UT_DEBUGMSG(("ABIDEBUG: begin TOPBORDER\n"));
+        xxx_UT_DEBUGMSG(("ABIDEBUG: begin TOPBORDER\n"));
         break;
       }
       
@@ -638,7 +665,7 @@ void IE_Imp_KWord_1::_startElement(const XML_Char *name, const XML_Char **atts)
       {
         pVal = (XML_Char *)_getXMLPropValue("value", atts);
         if (pVal && UT_strcmp(pVal, "1") == 0 )
-        m_szProps += "font-style:italic; ";
+        m_szCharProps += "font-style:italic; ";
         break;
       }
       
@@ -646,7 +673,7 @@ void IE_Imp_KWord_1::_startElement(const XML_Char *name, const XML_Char **atts)
       {
         pVal = (XML_Char *)_getXMLPropValue("value", atts);
         if (pVal && UT_strcmp(pVal, "1") == 0 )
-        m_szProps += "text-decoration:underline; ";
+        m_szCharProps += "text-decoration:underline; ";
         break;
       }
       
@@ -654,7 +681,7 @@ void IE_Imp_KWord_1::_startElement(const XML_Char *name, const XML_Char **atts)
       {
         pVal = (XML_Char *)_getXMLPropValue("value", atts);
         if ( pVal && UT_strcmp ( pVal, "75" ) == 0 )
-        m_szProps += "font-weight:bold; ";
+        m_szCharProps += "font-weight:bold; ";
         break;
       }
       
@@ -662,7 +689,7 @@ void IE_Imp_KWord_1::_startElement(const XML_Char *name, const XML_Char **atts)
       {
         pVal = (XML_Char *)_getXMLPropValue("value", atts);
         if (pVal && UT_strcmp(pVal, "1") == 0 )
-        m_szProps += "text-decoration:strike-through; ";
+        m_szCharProps += "text-decoration:strike-through; ";
         break;
       }
       
@@ -671,9 +698,9 @@ void IE_Imp_KWord_1::_startElement(const XML_Char *name, const XML_Char **atts)
         pVal = (XML_Char *)_getXMLPropValue("name", atts);
         if (pVal)
         {
-          m_szProps += "font-face:";
-          m_szProps += pVal;
-          m_szProps += "; ";
+          m_szCharProps += "font-face:";
+          m_szCharProps += pVal;
+          m_szCharProps += "; ";
         }
         break;
       }
@@ -683,9 +710,9 @@ void IE_Imp_KWord_1::_startElement(const XML_Char *name, const XML_Char **atts)
         pVal = (XML_Char *)_getXMLPropValue("value", atts);
         if (pVal)
         {
-          m_szProps += "font-size:";
-          m_szProps += pVal;
-          m_szProps += "; ";
+          m_szCharProps += "font-size:";
+          m_szCharProps += pVal;
+          m_szCharProps += "; ";
         }
         break;
       }
@@ -695,7 +722,7 @@ void IE_Imp_KWord_1::_startElement(const XML_Char *name, const XML_Char **atts)
     case TT_NAME:
     case TT_VERTALIGN:
     default:
-      UT_DEBUGMSG(("ABIBUG: work in progress\n"));
+      xxx_UT_DEBUGMSG(("ABIDEBUG: work in progress\n"));
       break;
     }
   
@@ -710,15 +737,13 @@ void IE_Imp_KWord_1::_appendText()
         UT_DEBUGMSG(("Error appending text run\n"));
         return;
       }
+      UT_DEBUGMSG(("DOM: APPENDED TEXT\n"));
       m_szTextBuffer.clear();
     }
 }
 
 void IE_Imp_KWord_1::_endElement(const XML_Char *name)
 {
-
-  UT_DEBUGMSG(("KWord import: endElement %s\n", name));
-
   X_EatIfAlreadyError();
 
   UT_uint32 tokenIndex = _mapNameToToken (name, s_Tokens, TokenTableSize);
@@ -726,73 +751,73 @@ void IE_Imp_KWord_1::_endElement(const XML_Char *name)
   switch (tokenIndex)
   {
     case TT_ATTRIBUTE:
-      UT_DEBUGMSG(("ABIDEBUG: end ATTRIBUTE\n"));
+      xxx_UT_DEBUGMSG(("ABIDEBUG: end ATTRIBUTE\n"));
       break;
 
     case TT_BOTTOMBORDER:
-      UT_DEBUGMSG(("ABIDEBUG: end BOTTOMBORDER\n"));
+      xxx_UT_DEBUGMSG(("ABIDEBUG: end BOTTOMBORDER\n"));
       break;
 
     case TT_CHARSET:
-      UT_DEBUGMSG(("ABIDEBUG: end CHARSET\n"));
+      xxx_UT_DEBUGMSG(("ABIDEBUG: end CHARSET\n"));
       break;
 
     case TT_CLIPARTS:
-      UT_DEBUGMSG(("ABIDEBUG: end CLIPARTS\n"));
+      xxx_UT_DEBUGMSG(("ABIDEBUG: end CLIPARTS\n"));
       break;
 
     case TT_COLOR:
-      UT_DEBUGMSG(("ABIDEBUG: end COLOR\n"));
+      xxx_UT_DEBUGMSG(("ABIDEBUG: end COLOR\n"));
       break;
 
     case TT_COUNTER:
-      UT_DEBUGMSG(("ABIDEBUG: end COUNTER\n"));
+      xxx_UT_DEBUGMSG(("ABIDEBUG: end COUNTER\n"));
       break;
 
     case TT_DOC:
     {
       //  X_VerifyParseState(_PS_Init);
       m_parseState = _PS_Doc;
-      X_CheckError(getDoc()->appendStrux(PTX_Section,(const XML_Char**)NULL));
-      X_CheckError(getDoc()->appendStrux(PTX_Block, NULL));
       return;
     }
 
     case TT_FLOW:
-      UT_DEBUGMSG(("ABIDEBUG: end FLOW\n"));
+      xxx_UT_DEBUGMSG(("ABIDEBUG: end FLOW\n"));
       break;
 
     case TT_FOLLOWING:
-      UT_DEBUGMSG(("ABIDEBUG: end FOLLOWING\n"));
+      xxx_UT_DEBUGMSG(("ABIDEBUG: end FOLLOWING\n"));
       break;
 
     case TT_FONT:
-      UT_DEBUGMSG(("ABIDEBUG: end FONT\n"));
+      xxx_UT_DEBUGMSG(("ABIDEBUG: end FONT\n"));
       break;
 
     case TT_FORMAT:
     {
       const XML_Char *propsArray[3];
 
-      if (m_szProps.size() == 0)
+      if (m_szCharProps.size() == 0)
         {
-          UT_DEBUGMSG(("ABIDEBUG: no properties\n"));
+          xxx_UT_DEBUGMSG(("ABIDEBUG: no properties\n"));
           _appendText ();
           break;
         }
 
-      m_szProps[m_szProps.size() - 2] = 0; // nock off the final ';'
+      m_szCharProps[m_szCharProps.size() - 2] = 0; // nock off the final ';'
 
       propsArray[0] = (XML_Char *)"props";
-      propsArray[1] = (XML_Char *)m_szProps.c_str();
+      propsArray[1] = (XML_Char *)m_szCharProps.c_str();
       propsArray[2] = 0;
 
-      UT_DEBUGMSG(("ABIDEBUG: formatting properties are: %s\n",propsArray[1]));
+      xxx_UT_DEBUGMSG(("ABIDEBUG: formatting properties are: %s\n",propsArray[1]));
 
       X_CheckError(_pushInlineFmt(propsArray));
       X_CheckError(getDoc()->appendFmt(&m_vecInlineFmt));
 
-      m_szProps.clear();
+      UT_DEBUGMSG(("DOM: APPENDED FORMAT\n"));
+
+      m_szCharProps.clear();
       _appendText();
 
       _popInlineFmt();
@@ -802,79 +827,79 @@ void IE_Imp_KWord_1::_endElement(const XML_Char *name)
     }
 
     case TT_FORMATS:
-      UT_DEBUGMSG(("ABIDEBUG: end FORMATS\n"));
+      xxx_UT_DEBUGMSG(("ABIDEBUG: end FORMATS\n"));
       break;
 
     case TT_FRAME:
-      UT_DEBUGMSG(("ABIDEBUG: end FRAME\n"));
+      xxx_UT_DEBUGMSG(("ABIDEBUG: end FRAME\n"));
       break;
 
     case TT_FRAMESET:
-      UT_DEBUGMSG(("ABIDEBUG: end FRAMESET\n"));
+      xxx_UT_DEBUGMSG(("ABIDEBUG: end FRAMESET\n"));
       break;
 
     case TT_INDENTS:
-      UT_DEBUGMSG(("ABIDEBUG: end INDENTS\n"));
+      xxx_UT_DEBUGMSG(("ABIDEBUG: end INDENTS\n"));
       break;
 
     case TT_ITALIC:
-      UT_DEBUGMSG(("ABIDEBUG: end ITALIC\n"));
+      xxx_UT_DEBUGMSG(("ABIDEBUG: end ITALIC\n"));
       break;
 
     case TT_LAYOUT:
-      UT_DEBUGMSG(("ABIDEBUG: end LAYOUT\n"));
+      xxx_UT_DEBUGMSG(("ABIDEBUG: end LAYOUT\n"));
       break;
 
     case TT_LEFTBORDER:
-      UT_DEBUGMSG(("ABIDEBUG: end LEFTBORDER\n"));
+      xxx_UT_DEBUGMSG(("ABIDEBUG: end LEFTBORDER\n"));
       break;
 
     case TT_LINESPACING:
-      UT_DEBUGMSG(("ABIDEBUG: end LINESPACING\n"));
+      xxx_UT_DEBUGMSG(("ABIDEBUG: end LINESPACING\n"));
       break;
 
    case TT_NAME:
-      UT_DEBUGMSG(("ABIDEBUG: end NAME\n"));
+      xxx_UT_DEBUGMSG(("ABIDEBUG: end NAME\n"));
       break;
 
     case TT_OFFSETS:
-      UT_DEBUGMSG(("ABIDEBUG: end OFFSETS\n"));
+      xxx_UT_DEBUGMSG(("ABIDEBUG: end OFFSETS\n"));
       break;
 
     case TT_PAPER:
-      UT_DEBUGMSG(("ABIDEBUG: end PAPER\n"));
+      xxx_UT_DEBUGMSG(("ABIDEBUG: end PAPER\n"));
       break;
 
     case TT_PAPERBORDERS:
-      UT_DEBUGMSG(("ABIDEBUG: end PAPERBORDERS\n"));
+      xxx_UT_DEBUGMSG(("ABIDEBUG: end PAPERBORDERS\n"));
       break;
 
     case TT_PAGEBREAKING:
-      UT_DEBUGMSG(("ABIDEBUG: end PAGEBREAKING\n"));
+      xxx_UT_DEBUGMSG(("ABIDEBUG: end PAGEBREAKING\n"));
       break;
 
     case TT_PARAGRAPH:
-      UT_DEBUGMSG(("ABIDEBUG: end PARAGRPAH\n"));
+      xxx_UT_DEBUGMSG(("ABIDEBUG: end PARAGRPAH\n"));
       break;
 
     case TT_RIGHTBORDER:
-      UT_DEBUGMSG(("ABIDEBUG: end RIGHTBORDER\n"));
+      xxx_UT_DEBUGMSG(("ABIDEBUG: end RIGHTBORDER\n"));
       break;
 
     case TT_SIZE:
-      UT_DEBUGMSG(("ABIDEBUG: end SIZE\n"));
+      xxx_UT_DEBUGMSG(("ABIDEBUG: end SIZE\n"));
       break;
 
     case TT_STRIKEOUT:
-      UT_DEBUGMSG(("ABIDEBUG: end STRIKEOUT\n"));
+      xxx_UT_DEBUGMSG(("ABIDEBUG: end STRIKEOUT\n"));
       break;
 
     case TT_STYLE:
-      UT_DEBUGMSG(("ABIDEBUG: end STYLE\n"));
+      xxx_UT_DEBUGMSG(("ABIDEBUG: end STYLE\n"));
       break;
 
     case TT_STYLES:
-      UT_DEBUGMSG(("ABIDEBUG: end STYLES\n"));
+      xxx_UT_DEBUGMSG(("ABIDEBUG: end STYLES\n"));
       break;
 
     case TT_TEXT:
@@ -882,19 +907,19 @@ void IE_Imp_KWord_1::_endElement(const XML_Char *name)
       return;
 
     case TT_TOPBORDER:
-      UT_DEBUGMSG(("ABIDEBUG: end TOPBORDER\n"));
+      xxx_UT_DEBUGMSG(("ABIDEBUG: end TOPBORDER\n"));
       break;
 
     case TT_UNDERLINE:
-      UT_DEBUGMSG(("ABIDEBUG: end UNDERLINE\n"));
+      xxx_UT_DEBUGMSG(("ABIDEBUG: end UNDERLINE\n"));
       break;
 
     case TT_VERTALIGN:
-      UT_DEBUGMSG(("ABIDEBUG: end VERTALIGN\n"));
+      xxx_UT_DEBUGMSG(("ABIDEBUG: end VERTALIGN\n"));
       break;
 
     case TT_WEIGHT:
-      UT_DEBUGMSG(("ABIDEBUG: end WEIGHT\n"));
+      xxx_UT_DEBUGMSG(("ABIDEBUG: end WEIGHT\n"));
       break;
 
   }

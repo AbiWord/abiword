@@ -62,7 +62,8 @@ private:
   void _appendText ();
 
   UT_UCS2String m_szTextBuffer;
-  UT_String m_szProps;
+  UT_String m_szCharProps;
+  UT_String m_szSectProps;
   bool m_bInText;
 };
 
