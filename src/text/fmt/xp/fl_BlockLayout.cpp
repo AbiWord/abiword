@@ -2350,6 +2350,10 @@ UT_sint32 fl_BlockLayout::getLength()
 	PT_DocPosition posThis = getPosition(true);
 	PL_StruxDocHandle nextSDH =NULL;
 	m_pDoc->getNextStrux(getStruxDocHandle(),&nextSDH);
+	if(nextSDH == NULL)
+	{
+		return 1;
+	}
 	PT_DocPosition posNext = m_pDoc->getStruxPosition(nextSDH);
 	UT_sint32 length = static_cast<UT_sint32>(posNext) - static_cast<UT_sint32>(posThis);
 	return length;

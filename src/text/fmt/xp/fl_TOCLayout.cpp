@@ -304,6 +304,7 @@ void fl_TOCLayout::_addBlockInVec(fl_BlockLayout * pBlock, UT_Vector * pVecBlock
 	fl_BlockLayout * pPrevBL = NULL;
 	UT_sint32 i = 0;
 	bool bFound = false;
+	UT_sint32 iThisVec  =0;
 	for(i=0; i< static_cast<UT_sint32>(pVecBlocks->getItemCount()); i++)
 	{
 		pPrevBL = static_cast<fl_BlockLayout *>(pVecBlocks->getNthItem(i));
@@ -313,8 +314,8 @@ void fl_TOCLayout::_addBlockInVec(fl_BlockLayout * pBlock, UT_Vector * pVecBlock
 			break;
 		}
 	}
+	iThisVec  =i;
 	bFound = false;
-	UT_sint32 iThisVec = i;
 	for(i=0; i< static_cast<UT_sint32>(m_vecAllBlocks.getItemCount()); i++)
 	{
 		pPrevBL = static_cast<fl_BlockLayout *>(m_vecAllBlocks.getNthItem(i));
@@ -324,6 +325,8 @@ void fl_TOCLayout::_addBlockInVec(fl_BlockLayout * pBlock, UT_Vector * pVecBlock
 			break;
 		}
 	}
+
+	UT_sint32 iAllBlocks = 0;
 	if(bFound)
 	{
 		if(i > 0)
@@ -335,7 +338,7 @@ void fl_TOCLayout::_addBlockInVec(fl_BlockLayout * pBlock, UT_Vector * pVecBlock
 			pPrevBL = NULL;
 		}
 	}
-	UT_sint32 iAllBlocks = i;
+	iAllBlocks = i;
 	PD_Style * pStyle = NULL;
 	m_pDoc->getStyle(sStyle.utf8_str(),&pStyle);
 	fl_TOCListener * pListen = new fl_TOCListener(this,pPrevBL,pStyle);
@@ -373,7 +376,7 @@ void fl_TOCLayout::_addBlockInVec(fl_BlockLayout * pBlock, UT_Vector * pVecBlock
 	}
 	else if (iAllBlocks < static_cast<UT_sint32>(m_vecAllBlocks.getItemCount()-1))
 	{
-		m_vecAllBlocks.insertItemAt(static_cast<void *>(pNewBlock),iAllBlocks+1);
+		m_vecAllBlocks.insertItemAt(static_cast<void *>(pNewBlock),iAllBlocks);
 	}
 	else
 	{
@@ -385,7 +388,7 @@ void fl_TOCLayout::_addBlockInVec(fl_BlockLayout * pBlock, UT_Vector * pVecBlock
 	}
 	else if (iThisVec < static_cast<UT_sint32>(pVecBlocks->getItemCount()-1))
 	{
-		pVecBlocks->insertItemAt(static_cast<void *>(pNewBlock),iAllBlocks+1);
+		pVecBlocks->insertItemAt(static_cast<void *>(pNewBlock),iThisVec);
 	}
 	else
 	{
@@ -736,8 +739,7 @@ void fl_TOCLayout::_createTOCContainer(void)
 
 	fp_Container * pCon = pCL->getLastContainer();
 	UT_ASSERT(pCon);
-	UT_sint32 iWidth = pCon->getPage()->getWidth();
-	iWidth = iWidth - pDSL->getLeftMargin() - pDSL->getRightMargin();
+	UT_sint32 iWidth = pCon->getWidth();
 	pTOCContainer->setWidth(iWidth);
 	m_pLayout->fillTOC(this);
 }
