@@ -753,6 +753,21 @@ void XAP_UnixGnomePrintGraphics::fillRect(GR_Color3D c, UT_Rect &r)
 /*                                 Done                                */
 /***********************************************************************/
 
+UT_uint32 XAP_UnixGnomePrintGraphics::getFontAscent(GR_Font *fnt)
+{
+	GnomeFont * gfnt = _allocGnomeFont(static_cast<PSFont*>(fnt));
+	const GnomeFontFace *face;
+	const ArtDRect *bbox;
+	UT_uint32 asc;
+
+	face = gnome_font_get_face (gfnt);
+	bbox = 	gnome_font_face_get_stdbbox (face);
+	asc = (gint) (bbox->y1 * gnome_font_get_size (gfnt) / 10);
+	gnome_font_unref (gfnt);
+
+	return asc;
+}
+
 /* This function does not expect in return the font ascent,
    it expects the font bbox.ury. Chema */
 UT_uint32 XAP_UnixGnomePrintGraphics::getFontAscent()
@@ -763,21 +778,27 @@ UT_uint32 XAP_UnixGnomePrintGraphics::getFontAscent()
 	UT_uint32 asc;
 
 	font = m_pCurrentFont;
-		
-        UT_ASSERT(GNOME_IS_FONT (font));
 	face = gnome_font_get_face (font);
-        UT_ASSERT(GNOME_IS_FONT_FACE (face));
 	bbox = 	gnome_font_face_get_stdbbox (face);
-
 	asc = (gint) (bbox->y1 * gnome_font_get_size (font) / 10);
-	/* Hack so that we can compare the non-gnome output with
-	   this one */
-	//asc = (gint) (((double) 915.0) * gnome_font_get_size (font) / 10);
-
-//	xxx_UT_DEBUGMSG(("Font \"Ascent\" %i [%g, %g]\n", asc, bbox->y1,
-//		     gnome_font_get_size (font)));
 
 	return asc;
+}
+
+UT_uint32 XAP_UnixGnomePrintGraphics::getFontDescent(GR_Font *fnt)
+{
+	GnomeFont * gfnt = _allocGnomeFont(static_cast<PSFont*>(fnt));
+	const GnomeFontFace *face;
+	const ArtDRect *bbox;
+	UT_uint32 des;
+
+	face = gnome_font_get_face (gfnt);
+	bbox = 	gnome_font_face_get_stdbbox (face);
+
+	des = (gint) (bbox->y0 * gnome_font_get_size (gfnt) / 10);
+	des *= -1;
+	gnome_font_unref (gfnt);
+	return des;
 }
 
 UT_uint32 XAP_UnixGnomePrintGraphics::getFontDescent()
@@ -797,9 +818,6 @@ UT_uint32 XAP_UnixGnomePrintGraphics::getFontDescent()
 	des = (gint) (bbox->y0 * gnome_font_get_size (font) / 10);
 	des *= -1;
 
-//	xxx_UT_DEBUGMSG(("Font \"Descent\" %i [%g, %g]\n", des, bbox->y0,
-//		     gnome_font_get_size (font)));
-
 	return des;
 }
 
@@ -807,8 +825,12 @@ UT_uint32 XAP_UnixGnomePrintGraphics::getFontHeight()
 {
 	UT_ASSERT(m_pCurrentFont);
 
-	UT_uint32 height = getFontAscent() - getFontDescent();
-	return height;
+	return getFontAscent() - getFontDescent();
+}
+
+UT_uint32 XAP_UnixGnomePrintGraphics::getFontHeight(GR_Font *fnt)
+{
+		return getFontAscent(fnt) - getFontDescent(fnt);
 }
 
 GR_Font* XAP_UnixGnomePrintGraphics::findFont(const char* pszFontFamily, 

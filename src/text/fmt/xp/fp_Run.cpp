@@ -92,7 +92,9 @@ fp_Run::fp_Run(fl_BlockLayout* pBL,
 		m_iDescentLayoutUnits(0),
 		m_pG(pG),
 		m_bDirty(true),	// a run which has just been created is not onscreen, therefore it is dirty
-		m_pField(0)
+		m_pField(0),
+		m_pScreenFont(0),
+		m_pLayoutFont(0)
 {
         // set the default background color to a sensible default for the time being
         UT_setColor (m_colorBG, 255, 255, 255);
@@ -181,19 +183,24 @@ fp_Run::_inheritProperties(void)
 		m_pBL->getAttrProp(&pBlockAP);
 
 		FL_DocLayout * pLayout = m_pBL->getDocLayout();
-		GR_Font* pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, FL_DocLayout::FIND_FONT_AT_SCREEN_RESOLUTION);
 
-		m_pG->setFont(pFont);
-		m_iAscent = m_pG->getFontAscent();	
-		m_iDescent = m_pG->getFontDescent();
-		m_iHeight = m_pG->getFontHeight();
+		GR_Font* pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, FL_DocLayout::FIND_FONT_AT_SCREEN_RESOLUTION);
+		if (pFont != m_pScreenFont)
+		  {
+		    m_pScreenFont = pFont;
+		    m_iAscent = m_pG->getFontAscent(pFont);	
+		    m_iDescent = m_pG->getFontDescent(pFont);
+		    m_iHeight = m_pG->getFontHeight(pFont);
+		  }
 
 		pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, FL_DocLayout::FIND_FONT_AT_LAYOUT_RESOLUTION);
-
-		m_pG->setFont(pFont);
-		m_iAscentLayoutUnits = m_pG->getFontAscent();	
-		m_iDescentLayoutUnits = m_pG->getFontDescent();
-		m_iHeightLayoutUnits = m_pG->getFontHeight();
+		if (pFont != m_pLayoutFont)
+		  {
+		    m_pLayoutFont = pFont;
+		    m_iAscentLayoutUnits = m_pG->getFontAscent(pFont);	
+		    m_iDescentLayoutUnits = m_pG->getFontDescent(pFont);
+		    m_iHeightLayoutUnits = m_pG->getFontHeight(pFont);
+		  }
 	}
 }
 
@@ -410,14 +417,15 @@ const PP_AttrProp* fp_Run::getAP(void) const
 void fp_Run::_drawTextLine(UT_sint32 xoff,UT_sint32 yoff,UT_uint32 iWidth,UT_uint32 iHeight,UT_UCSChar *pText)
 {
 
-    m_pG->setFont(m_pG->getGUIFont());
+    GR_Font *pFont = m_pG->getGUIFont();
+    m_pG->setFont(pFont);
 
     UT_uint32 iTextLen = UT_UCS_strlen(pText);
     UT_uint32 iTextWidth = m_pG->measureString(pText,0,iTextLen,NULL);
-    UT_uint32 iTextHeight = m_pG->getFontHeight();
+    UT_uint32 iTextHeight = m_pG->getFontHeight(pFont);
 
     UT_uint32 xoffText = xoff + (iWidth - iTextWidth) / 2;
-    UT_uint32 yoffText = yoff - m_pG->getFontAscent() * 2 / 3;
+    UT_uint32 yoffText = yoff - m_pG->getFontAscent(pFont) * 2 / 3;
 
     m_pG->drawLine(xoff,yoff,xoff + iWidth,yoff);
 
@@ -451,21 +459,27 @@ void fp_TabRun::lookupProperties(void)
 	FL_DocLayout * pLayout = m_pBL->getDocLayout();
 	GR_Font* pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, FL_DocLayout::FIND_FONT_AT_SCREEN_RESOLUTION);
 
-    UT_parseColor(PP_evalProperty("color",pSpanAP,pBlockAP,pSectionAP, m_pBL->getDocument(), true), m_colorFG);
+	UT_parseColor(PP_evalProperty("color",pSpanAP,pBlockAP,pSectionAP, m_pBL->getDocument(), true), m_colorFG);
+	
+	UT_parseColor(PP_evalProperty("bgcolor",pSpanAP,pBlockAP,pSectionAP, m_pBL->getDocument(), true), m_colorBG);
 
-    UT_parseColor(PP_evalProperty("bgcolor",pSpanAP,pBlockAP,pSectionAP, m_pBL->getDocument(), true), m_colorBG);
-
-	m_pG->setFont(pFont);
-	m_iAscent = m_pG->getFontAscent();	
-	m_iDescent = m_pG->getFontDescent();
-	m_iHeight = m_pG->getFontHeight();
+	if (pFont != m_pScreenFont)
+	  {
+	    m_pScreenFont = pFont;
+	    m_iAscent = m_pG->getFontAscent(pFont);	
+	    m_iDescent = m_pG->getFontDescent(pFont);
+	    m_iHeight = m_pG->getFontHeight(pFont);
+	  }
 
 	pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, FL_DocLayout::FIND_FONT_AT_LAYOUT_RESOLUTION);
 
-	m_pG->setFont(pFont);
-	m_iAscentLayoutUnits = m_pG->getFontAscent();	
-	m_iDescentLayoutUnits = m_pG->getFontDescent();
-	m_iHeightLayoutUnits = m_pG->getFontHeight();
+	if (pFont != m_pLayoutFont)
+	  {
+	    m_pLayoutFont = pFont;
+	    m_iAscentLayoutUnits = m_pG->getFontAscent(pFont);	
+	    m_iDescentLayoutUnits = m_pG->getFontDescent(pFont);
+	    m_iHeightLayoutUnits = m_pG->getFontHeight(pFont);
+	  }
 #ifdef BIDI_ENABLED
 	m_iDirection = -1;
 #endif
@@ -1313,18 +1327,15 @@ void fp_FieldRun::lookupProperties(void)
 	UT_parseColor(PP_evalProperty("field-color",pSpanAP,pBlockAP,pSectionAP, m_pBL->getDocument(), true), m_colorBG);
 	UT_parseColor(PP_evalProperty("bgcolor",pSpanAP,pBlockAP,pSectionAP, m_pBL->getDocument(), true), m_colorBG);
 
-	m_pG->setFont(m_pFont);
+	m_iAscent = m_pG->getFontAscent(m_pFont);	
+	m_iDescent = m_pG->getFontDescent(m_pFont);
+	m_iHeight = m_pG->getFontHeight(m_pFont);
 
-	m_iAscent = m_pG->getFontAscent();	
-	m_iDescent = m_pG->getFontDescent();
-	m_iHeight = m_pG->getFontHeight();
+	m_iAscentLayoutUnits = m_pG->getFontAscent(m_pFontLayout);	
+	m_iDescentLayoutUnits = m_pG->getFontDescent(m_pFontLayout);
+	m_iHeightLayoutUnits = m_pG->getFontHeight(m_pFontLayout);
 
-	m_pG->setFont(m_pFontLayout);
-	m_iAscentLayoutUnits = m_pG->getFontAscent();	
-	m_iDescentLayoutUnits = m_pG->getFontDescent();
-	m_iHeightLayoutUnits = m_pG->getFontHeight();
-
-	m_pG->setFont(m_pFont);
+	//m_pG->setFont(m_pFont); DOM!!
 
 	const XML_Char* pszType = NULL;
 

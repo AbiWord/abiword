@@ -97,6 +97,11 @@ class GR_UnixGraphics : public GR_Graphics
 	
 	virtual void		polygon(UT_RGBColor& c,UT_Point *pts,UT_uint32 nPoints);
 	
+	/* GR_Font versions of the above -- TODO: should I add drawChar* methods too? */
+	virtual UT_uint32 getFontAscent(GR_Font *);
+	virtual UT_uint32 getFontDescent(GR_Font *);
+	virtual UT_uint32 getFontHeight(GR_Font *);
+
  protected:
 	virtual UT_uint32 	_getResolution(void) const;
 	void				_setColor(GdkColor & c);

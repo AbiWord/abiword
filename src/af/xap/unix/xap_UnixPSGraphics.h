@@ -56,6 +56,10 @@ public:
 	virtual UT_uint32 getFontDescent();
 	virtual UT_uint32 getFontHeight();
 	
+	virtual UT_uint32 getFontAscent(GR_Font *);
+	virtual UT_uint32 getFontDescent(GR_Font *);
+	virtual UT_uint32 getFontHeight(GR_Font *);
+
 	// virtual UT_uint32 measureString(const UT_UCSChar*s, int iOffset, int num, unsigned short* pWidths);
 	virtual UT_uint32 measureUnRemappedChar(const UT_UCSChar c);
 	
@@ -152,7 +156,7 @@ protected:
 
 #endif
 
-	void 			_explodePSFonts(PSFont*& non_cjk_font,PSFont*& cjk_font);
+	void 			_explodePSFonts(PSFont *current, PSFont*& non_cjk_font,PSFont*& cjk_font);	
 	
 	UT_Vector		m_vecFontList;
 	PSFont *		m_pCurrentFont;

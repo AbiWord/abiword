@@ -65,8 +65,6 @@ fp_TextRun::fp_TextRun(fl_BlockLayout* pBL,
 :	fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_TEXT),
 	m_fPosition(TEXT_POSITION_NORMAL)
 {
-	m_pFont = NULL;
-	m_pFontLayout = NULL;
 	m_fDecorations = 0;
 	m_iLineWidth = 0;
 	m_bSquiggled = false;
@@ -127,8 +125,6 @@ void fp_TextRun::lookupProperties(void)
 	static_cast<fl_Layout *>(m_pBL)->getField(m_iOffsetFirst,m_pField);
 	// look for fonts in this DocLayout's font cache
 	FL_DocLayout * pLayout = m_pBL->getDocLayout();
-	m_pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, FL_DocLayout::FIND_FONT_AT_SCREEN_RESOLUTION);
-	m_pFontLayout = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, FL_DocLayout::FIND_FONT_AT_LAYOUT_RESOLUTION);
 
 	PD_Document * pDoc = m_pBL->getDocument();
 
@@ -185,18 +181,29 @@ void fp_TextRun::lookupProperties(void)
 	}
 	else m_fPosition = TEXT_POSITION_NORMAL;
 
-	m_pG->setFont(m_pFont);
-	m_iAscent = m_pG->getFontAscent();	
-	m_iDescent = m_pG->getFontDescent();
-	m_iHeight = m_pG->getFontHeight();
+	GR_Font * pFont;
 
-	m_pG->setFont(m_pFontLayout);
-	m_iAscentLayoutUnits = m_pG->getFontAscent();	
-	UT_ASSERT(m_iAscentLayoutUnits);
-	m_iDescentLayoutUnits = m_pG->getFontDescent();
-	m_iHeightLayoutUnits = m_pG->getFontHeight();
+	pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, FL_DocLayout::FIND_FONT_AT_SCREEN_RESOLUTION);
+	if (m_pScreenFont != pFont)
+	  {
+	    m_pScreenFont = pFont;
+	    m_iAscent = m_pG->getFontAscent(m_pScreenFont);	
+	    m_iDescent = m_pG->getFontDescent(m_pScreenFont);
+	    m_iHeight = m_pG->getFontHeight(m_pScreenFont);
+	  }
 
-	m_pG->setFont(m_pFont);
+	pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, FL_DocLayout::FIND_FONT_AT_LAYOUT_RESOLUTION);
+	if (m_pLayoutFont != pFont)
+	  {
+	    m_pLayoutFont = pFont;
+	    m_iAscentLayoutUnits = m_pG->getFontAscent(m_pLayoutFont);	
+	    UT_ASSERT(m_iAscentLayoutUnits);
+	    m_iDescentLayoutUnits = m_pG->getFontDescent(m_pLayoutFont);
+	    m_iHeightLayoutUnits = m_pG->getFontHeight(m_pLayoutFont);
+	  }
+#if 1
+	m_pG->setFont(m_pScreenFont);
+#endif
 
 	//set the language member
 	UT_Language *lls = new UT_Language;
@@ -617,8 +624,8 @@ bool fp_TextRun::canMergeWithNext(void)
 	if (
 		(pNext->m_iOffsetFirst != (m_iOffsetFirst + m_iLen))
 		|| (pNext->m_fDecorations != m_fDecorations)
-		|| (pNext->m_pFont != m_pFont)
-		|| (pNext->m_pFontLayout != m_pFontLayout)
+		|| (pNext->m_pScreenFont != m_pScreenFont)
+		|| (pNext->m_pLayoutFont != m_pLayoutFont)
 		|| (m_iHeight != pNext->m_iHeight)
 		|| (m_iSpaceWidthBeforeJustification != JUSTIFICATION_NOT_USED)
 		|| (pNext->m_iSpaceWidthBeforeJustification != JUSTIFICATION_NOT_USED)
@@ -644,8 +651,8 @@ void fp_TextRun::mergeWithNext(void)
 	fp_TextRun* pNext = (fp_TextRun*) m_pNext;
 
 	UT_ASSERT(pNext->m_iOffsetFirst == (m_iOffsetFirst + m_iLen));
-	UT_ASSERT(pNext->m_pFont == m_pFont);	// is this legal?
-	UT_ASSERT(pNext->m_pFontLayout == m_pFontLayout);	// is this legal?
+	UT_ASSERT(pNext->m_pScreenFont == m_pScreenFont);	// is this legal?
+	UT_ASSERT(pNext->m_pLayoutFont == m_pLayoutFont);	// is this legal?
 	UT_ASSERT(pNext->m_fDecorations == m_fDecorations);
 	UT_ASSERT(m_iAscent == pNext->m_iAscent);
 	UT_ASSERT(m_iDescent == pNext->m_iDescent);
@@ -680,8 +687,8 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 	
 	fp_TextRun* pNew = new fp_TextRun(m_pBL, m_pG, iSplitOffset, m_iLen - (iSplitOffset - m_iOffsetFirst), false);
 	UT_ASSERT(pNew);
-	pNew->m_pFont = this->m_pFont;
-	pNew->m_pFontLayout = this->m_pFontLayout;
+	pNew->m_pScreenFont = this->m_pScreenFont;
+	pNew->m_pLayoutFont = this->m_pLayoutFont;
 	pNew->m_fDecorations = this->m_fDecorations;
 	pNew->m_colorFG = this->m_colorFG;
 	pNew->m_pField = this->m_pField;
@@ -779,12 +786,12 @@ void fp_TextRun::fetchCharWidths(fl_CharWidths * pgbCharWidths)
 	}
 
 	UT_uint16* pCharWidths = pgbCharWidths->getCharWidths()->getPointer(0);
-	_fetchCharWidths(m_pFont, pCharWidths);
+	_fetchCharWidths(m_pScreenFont, pCharWidths);
 
 	pCharWidths = pgbCharWidths->getCharWidthsLayoutUnits()->getPointer(0);
-	_fetchCharWidths(m_pFontLayout, pCharWidths);
+	_fetchCharWidths(m_pLayoutFont, pCharWidths);
 
-	m_pG->setFont(m_pFont);
+	m_pG->setFont(m_pScreenFont);
 
 }
 
@@ -902,7 +909,7 @@ void fp_TextRun::_clearScreen(bool /* bFullLineHeightRect */)
 	}
 	else
 	{
-		m_pG->setFont(m_pFont);
+		m_pG->setFont(m_pScreenFont);
 		
 		/*
 		  TODO this should not be hard-coded.  We need to figure out
@@ -953,7 +960,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	const UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths()->getCharWidths();
 	UT_uint32 iBase = m_pBL->getPosition();
 
-	m_pG->setFont(m_pFont);
+	m_pG->setFont(m_pScreenFont);
 	m_pG->setColor(m_colorFG);
 
 	/*

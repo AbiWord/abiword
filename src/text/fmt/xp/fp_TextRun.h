@@ -99,7 +99,7 @@ public:
 	UT_uint32				countTrailingSpaces(void) const;
     bool                 canContainPoint(void) const;
 	GR_Font*				getFont(void) const
-		{ return m_pFont; }
+		{ return m_pScreenFont; }
 	UT_RGBColor				getFGColor(void) const
 		{ return m_colorFG; }
 
@@ -180,8 +180,8 @@ protected:
 	  retrieved from multiple fonts.
 	  TODO fix this issue
 	*/
-	GR_Font*				m_pFont;
-	GR_Font*				m_pFontLayout;
+	//GR_Font*				m_pFont;
+	//GR_Font*				m_pFontLayout;
 	UT_RGBColor				m_colorFG;
 	bool					m_bSquiggled;
 

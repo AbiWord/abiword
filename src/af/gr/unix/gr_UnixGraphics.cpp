@@ -286,6 +286,7 @@ void GR_UnixGraphics::setFont(GR_Font * pFont)
 	// this is probably caching done on the wrong level
 	// but it's currently faster to shortcut
 	// than to call explodeGdkFonts
+	// TODO: turn this off when our text runs get a bit smarter
 	if(m_pFont && (pUFont->getUnixFont() == m_pFont->getUnixFont()) && 
 	   (pUFont->getSize() == m_pFont->getSize()))
 	  return;
@@ -295,12 +296,15 @@ void GR_UnixGraphics::setFont(GR_Font * pFont)
 	m_pFont->explodeGdkFonts(m_pSingleByteFont,m_pMultiByteFont);
 }
 
+UT_uint32 GR_UnixGraphics::getFontHeight(GR_Font * fnt)
+{
+	return getFontAscent(fnt)+getFontDescent(fnt);
+}
+
 UT_uint32 GR_UnixGraphics::getFontHeight()
 {
 	if (!m_pFontManager)
 		return 0;
-
-	UT_ASSERT(m_pFont);
 
 	return getFontAscent()+getFontDescent();
 }
@@ -521,30 +525,38 @@ GR_Font * GR_UnixGraphics::findFont(const char* pszFontFamily,
 	return pFont;
 }
 
-UT_uint32 GR_UnixGraphics::getFontAscent()
+UT_uint32 GR_UnixGraphics::getFontAscent(GR_Font * fnt)
 {
-	if (!m_pFontManager)
-		return 0;
-
-	UT_ASSERT(m_pFont);
+	UT_ASSERT(fnt);
 	UT_ASSERT(m_pGC);
 
-	GdkFont* pFont = m_pFont->getGdkFont();
-	GdkFont* pMatchFont=m_pFont->getMatchGdkFont();
+	XAP_UnixFontHandle * hndl = static_cast<XAP_UnixFontHandle *>(fnt);
+
+	GdkFont* pFont = hndl->getGdkFont();
+	GdkFont* pMatchFont=hndl->getMatchGdkFont();
 	return MAX(pFont->ascent, pMatchFont->ascent);
+}
+
+UT_uint32 GR_UnixGraphics::getFontAscent()
+{
+	return getFontAscent(m_pFont);
+}
+
+UT_uint32 GR_UnixGraphics::getFontDescent(GR_Font * fnt)
+{
+	UT_ASSERT(fnt);
+	UT_ASSERT(m_pGC);
+
+	XAP_UnixFontHandle * hndl = static_cast<XAP_UnixFontHandle *>(fnt);
+
+	GdkFont* pFont = hndl->getGdkFont();
+	GdkFont* pMatchFont=hndl->getMatchGdkFont();
+	return MAX(pFont->descent, pMatchFont->descent);
 }
 
 UT_uint32 GR_UnixGraphics::getFontDescent()
 {
-	if (!m_pFontManager)
-		return 0;
-  
-	UT_ASSERT(m_pFont);
-	UT_ASSERT(m_pGC);
-
-	GdkFont* pFont = m_pFont->getGdkFont();
-	GdkFont* pMatchFont=m_pFont->getMatchGdkFont();
-	return MAX(pFont->descent, pMatchFont->descent);
+	return getFontDescent(m_pFont);
 }
 
 void GR_UnixGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,

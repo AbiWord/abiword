@@ -236,6 +236,9 @@ protected:
 	// the paper's color at any given time
 	UT_RGBColor             m_colorBG;
 
+	GR_Font * m_pScreenFont;
+	GR_Font * m_pLayoutFont;
+
 private:
 	fp_Run(const fp_Run&);			// no impl.
 	void operator=(const fp_Run&);	// no impl.

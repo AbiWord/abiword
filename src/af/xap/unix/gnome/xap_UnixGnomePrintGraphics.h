@@ -63,6 +63,10 @@ class XAP_UnixGnomePrintGraphics : public GR_Graphics
 	virtual UT_uint32 getFontDescent();
 	virtual UT_uint32 getFontHeight();
 	
+	virtual UT_uint32 getFontAscent(GR_Font *);
+	virtual UT_uint32 getFontDescent(GR_Font *);
+	virtual UT_uint32 getFontHeight(GR_Font *);
+
 	virtual UT_uint32 measureUnRemappedChar(const UT_UCSChar c);
 	
 	virtual void setColor(UT_RGBColor& clr);

@@ -64,17 +64,15 @@ void fp_FmtMarkRun::lookupProperties(void)
 	FL_DocLayout * pLayout = m_pBL->getDocLayout();
 	GR_Font* pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, FL_DocLayout::FIND_FONT_AT_SCREEN_RESOLUTION);
 
-	m_pG->setFont(pFont);
-	m_iAscent = m_pG->getFontAscent();	
-	m_iDescent = m_pG->getFontDescent();
-	m_iHeight = m_pG->getFontHeight();
+	m_iAscent = m_pG->getFontAscent(pFont);	
+	m_iDescent = m_pG->getFontDescent(pFont);
+	m_iHeight = m_pG->getFontHeight(pFont);
 
 	pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, FL_DocLayout::FIND_FONT_AT_LAYOUT_RESOLUTION);
 
-	m_pG->setFont(pFont);
-	m_iAscentLayoutUnits = m_pG->getFontAscent();	
-	m_iDescentLayoutUnits = m_pG->getFontDescent();
-	m_iHeightLayoutUnits = m_pG->getFontHeight();
+	m_iAscentLayoutUnits = m_pG->getFontAscent(pFont);	
+	m_iDescentLayoutUnits = m_pG->getFontDescent(pFont);
+	m_iHeightLayoutUnits = m_pG->getFontHeight(pFont);
 
 	PD_Document * pDoc = m_pBL->getDocument();
 

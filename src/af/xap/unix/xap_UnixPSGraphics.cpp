@@ -49,6 +49,12 @@
 // the resolution that we report to the application (pixels per inch).
 #define PS_RESOLUTION		7200
 
+static
+UT_uint32 _scaleFont(PSFont * pFont, UT_uint32 units)
+{
+  return (units * pFont->getSize() / 1000); 
+}
+
 /*****************************************************************
 ******************************************************************
 ** This file contains the Interface between the application and
@@ -120,49 +126,63 @@ void PS_Graphics::setFont(GR_Font* pFont)
 		_emit_SetFont();
 }
 
-UT_uint32 PS_Graphics::getFontAscent()
+UT_uint32 PS_Graphics::getFontAscent(GR_Font * fnt)
 {
-  UT_ASSERT(m_pCurrentFont);
+  PSFont * psfnt = static_cast<PSFont *>(fnt);
   PSFont *pEnglishFont;
   PSFont *pChineseFont;
-  _explodePSFonts(pEnglishFont,pChineseFont);
+  _explodePSFonts(psfnt, pEnglishFont,pChineseFont);
   UT_ASSERT(pEnglishFont && pChineseFont);
   int e,c;
   GlobalFontInfo * gfi = pEnglishFont->getMetricsData()->gfi;
   UT_ASSERT(gfi);
 #if 0
-  e = _scale(gfi->ascender);
+  e = _scaleFont(psfnt, gfi->ascender);
 #else
-  e = _scale(gfi->fontBBox.ury);
+  e = _scaleFont(psfnt, gfi->fontBBox.ury);
 #endif	
-  c= pChineseFont == pEnglishFont ? 0 :_scale(pChineseFont->getUnixFont()->get_CJK_Ascent());
+  c= pChineseFont == pEnglishFont ? 0 :_scaleFont(psfnt, pChineseFont->getUnixFont()->get_CJK_Ascent());
   return MAX(e,c);
 }
 
-UT_uint32 PS_Graphics::getFontDescent()
+UT_uint32 PS_Graphics::getFontAscent()
 {
-  UT_ASSERT(m_pCurrentFont);
+  return getFontAscent(m_pCurrentFont);
+}
+
+UT_uint32 PS_Graphics::getFontDescent(GR_Font * fnt)
+{
+  PSFont * psfnt = static_cast<PSFont *>(fnt);
   PSFont *pEnglishFont;
   PSFont *pChineseFont;
-  _explodePSFonts(pEnglishFont,pChineseFont);
+  _explodePSFonts(psfnt, pEnglishFont,pChineseFont);
   UT_ASSERT(pEnglishFont && pChineseFont);
   int e,c;
   GlobalFontInfo * gfi = pEnglishFont->getMetricsData()->gfi;
   UT_ASSERT(gfi);
 #if 0	
   UT_ASSERT(gfi->descender <= 0);
-  e=_scale(-gfi->descender);
+  e=_scaleFont(psfnt, -gfi->descender);
 #else
   UT_ASSERT(gfi->fontBBox.lly <= 0);
-  e=_scale(-(gfi->fontBBox.lly));
+  e=_scaleFont(psfnt, -(gfi->fontBBox.lly));
 #endif	
-  c= pChineseFont == pEnglishFont ? 0 :_scale(pChineseFont->getUnixFont()->get_CJK_Descent());
+  c= pChineseFont == pEnglishFont ? 0 :_scaleFont(psfnt, pChineseFont->getUnixFont()->get_CJK_Descent());
   return MAX(e,c);
+}
+
+UT_uint32 PS_Graphics::getFontDescent()
+{
+  return getFontDescent(m_pCurrentFont);
+}
+
+UT_uint32 PS_Graphics::getFontHeight(GR_Font * fnt)
+{
+  return getFontAscent(fnt)+getFontDescent(fnt);
 }
 
 UT_uint32 PS_Graphics::getFontHeight()
 {
-  UT_ASSERT(m_pCurrentFont);
   return getFontAscent()+getFontDescent();
 }
 	
@@ -171,7 +191,7 @@ UT_uint32 PS_Graphics::measureUnRemappedChar(const UT_UCSChar c)
  	UT_ASSERT(m_pCurrentFont);
 	PSFont *pEnglishFont;
 	PSFont *pChineseFont;
-	_explodePSFonts(pEnglishFont,pChineseFont);
+	_explodePSFonts(m_pCurrentFont, pEnglishFont,pChineseFont);
 	
 	if (XAP_EncodingManager::instance->is_cjk_letter(c))
 	    return _scale(pChineseFont->getUnixFont()->get_CJK_Width());
@@ -334,7 +354,7 @@ void PS_Graphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 {
 	PSFont *pEnglishFont;
 	PSFont *pChineseFont;
-	_explodePSFonts(pEnglishFont,pChineseFont);
+	_explodePSFonts(m_pCurrentFont, pEnglishFont,pChineseFont);
 	UT_ASSERT(pEnglishFont && pChineseFont);
 
 	const UT_UCSChar *pS;
@@ -927,7 +947,8 @@ UT_uint32 PS_Graphics::_scale(UT_uint32 units) const
 	// expressed in 1/1000ths of the scaled font.
 	// return the number of pixels at our resolution.
 
-	return (units * m_pCurrentFont->getSize() / 1000);
+  
+	return _scaleFont(m_pCurrentFont, units);
 }
 
 bool PS_Graphics::_startDocument(void)
@@ -1575,16 +1596,18 @@ void PS_Graphics::_emit_SetFont(PSFont *pFont)
 };
 
 
-void PS_Graphics::_explodePSFonts(PSFont*& pEnglishFont,PSFont*& pChineseFont)
+
+
+void PS_Graphics::_explodePSFonts(PSFont *current, PSFont*& pEnglishFont,PSFont*& pChineseFont)
 {
-  if(m_pCurrentFont->getUnixFont()->is_CJK_font())
+  if (current->getUnixFont()->is_CJK_font())
 	{
-	  pChineseFont=m_pCurrentFont;
+	  pChineseFont=current;
 	  pEnglishFont=_findMatchPSFontCJK(pChineseFont);
 	}
   else
 	{
-	  pEnglishFont=m_pCurrentFont;
+	  pEnglishFont=current;
 	  pChineseFont=_findMatchPSFontCJK(pEnglishFont);
 	}
 }
