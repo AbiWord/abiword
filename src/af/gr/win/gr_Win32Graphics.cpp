@@ -667,6 +667,13 @@ void GR_Win32Graphics::invertRect(const UT_Rect* pRect)
 
 void GR_Win32Graphics::setClipRect(const UT_Rect* pRect)
 {
+	if (queryProperties(GR_Graphics::DGP_PAPER))
+	{
+		// FIXME: Currently it seems the cliprect doesn't work
+		// when printing images, clipping out large portions of them.
+		return;
+	}
+
 	int res;
 	m_pRect = pRect;
 	if (pRect)

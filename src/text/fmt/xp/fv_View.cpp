@@ -5870,7 +5870,7 @@ UT_sint32 FV_View::getPageViewLeftMargin(void) const
 	// return the amount of gray-space we draw to the left
 	// of the paper in "Page View".  return zero if not in
 	// "Page View".
-	if(isPreview())
+	if (isPreview() || m_pG->queryProperties(GR_Graphics::DGP_PAPER))
 		return 0;
 	else
 		return fl_PAGEVIEW_MARGIN_X;
@@ -5881,7 +5881,7 @@ UT_sint32 FV_View::getPageViewTopMargin(void) const
 	// return the amount of gray-space we draw above the top
 	// of the paper in "Page View".  return zero if not in
 	// "Page View".
-	if(isPreview())
+	if(isPreview() || m_pG->queryProperties(GR_Graphics::DGP_PAPER))
 		return 0;
 	else
 		return fl_PAGEVIEW_MARGIN_Y;

@@ -694,13 +694,16 @@ text so we can keep the original code.
 	m_pBL->getSpanAttrProp(m_iOffsetFirst,false,&pSpanAP);
 	m_pBL->getAttrProp(&pBlockAP);
 	UT_parseColor(PP_evalProperty("color",pSpanAP,pBlockAP, pSectionAP, pDoc, true), clrFG);
+
 	// This gives the baseline of the selection.
 	// need to clear full height of line, in case we had a selection
-	UT_sint32 xxoff=0 ,ybase =0;
-	m_pLine->getScreenOffsets(this, xxoff, ybase);
+//	UT_sint32 xxoff=0 ,ybase =0;
+//	m_pLine->getScreenOffsets(this, xxoff, ybase);
+
 
 	if ( b_Topline)
 	{
+		UT_sint32 ybase = yoff + getAscent() - getLine()->getAscent() + 1;
 		m_pG->fillRect(clrFG, xoff, ybase, getWidth(), ithick);
 	}
 	/*
@@ -708,7 +711,7 @@ text so we can keep the original code.
 	*/
 	if ( b_Bottomline)
 	{
-		m_pG->fillRect(clrFG, xoff, ybase+getLine()->getHeight()-ithick, getWidth(), ithick);
+		m_pG->fillRect(clrFG, xoff, yoff+getLine()->getHeight()-ithick+1, getWidth(), ithick);
 	}
 }
 
@@ -1800,7 +1803,7 @@ void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 //
 // Sevior's infamous + 1....
 	yoff += m_pLine->getAscent() - m_iAscent + 1;
-	
+
 	// clip drawing to the page
 	UT_Rect pClipRect;
 	pClipRect.top = yoff;
