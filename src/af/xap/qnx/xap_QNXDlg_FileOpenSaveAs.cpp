@@ -57,7 +57,7 @@ XAP_QNXDialog_FileOpenSaveAs::~XAP_QNXDialog_FileOpenSaveAs(void)
 
 void XAP_QNXDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 {
-	char file_filter[70];	
+	char file_filter[80];	
 	m_pQNXFrame = (XAP_QNXFrame *)pFrame;
 	UT_ASSERT(m_pQNXFrame);
 
@@ -186,25 +186,39 @@ void XAP_QNXDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		UT_uint32 end = UT_pointerArrayLength((void **) m_szDescriptions);
 
 		for (UT_uint32 i = 0; i < end; i++) {
-			//This description is in the form of: Wordy Description (.ext) .. would be nice to add
-			/*
-			if (strlen(file_filter) + strlen(m_szDescriptions[i]) > sizeof(file_filter)) {
-				printf("Not enough room for filter! \n");
+			UT_uint32 totallen;
+
+#define PHOTON_HAS_STUPID_FILTER_LIMITATION
+#if defined(PHOTON_HAS_STUPID_FILTER_LIMITATION)
+			if(i >= 10) {
+				printf("PHOTON BUG: Not enough room for filter \n");
 				break;
 			}
-			*/
-			if (strlen(file_filter) + strlen(m_szSuffixes[i]) + 3 > sizeof(file_filter)) {
-				printf("Not enough room for filter! \n");
+#endif
+
+			totallen = strlen(file_filter) + strlen(m_szSuffixes[i]) + 2;
+#if defined(PHOTON_SUPPORTS_COMBOFILTER)
+			totallen += strlen(m_szDescriptions[i]) + 1;
+#endif
+
+			if (totallen > sizeof(file_filter)) {
+				printf("PHOTON BUG: File filter string is limited to 80 characters \n");
 				break;
 			}
 
+#if defined(PHOTON_SUPPORTS_COMBOFILTER)
+			strcat(file_filter, "|");
+			strcat(file_filter, m_szDescriptions[i]);
+			strcat(file_filter, "|");
+			strcat(file_filter, m_szSuffixes[i]);
+#else	
 			if (*file_filter) {
 				strcat(file_filter, ",");
 			}
 			strcat(file_filter, m_szSuffixes[i]);
+#endif
 		}
 	}
-		
 	
 	ret = PtFileSelection(parent,											/* Parent */
 						  NULL,												/* Position */
