@@ -1,6 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001,2002 Hubert Figuiere
+ * Copyright (C) 2001 - 2003 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -33,6 +33,8 @@ class XAP_Frame;
 class GR_CocoaGraphics;
 class AP_CocoaStatusBar;
 
+//////////////////////////////////////////////////////////////////
+
 @interface XAP_CocoaNSStatusBar : NSView
 {
 	AP_CocoaStatusBar*	_xap;
@@ -42,7 +44,6 @@ class AP_CocoaStatusBar;
 
 @end
 
-//////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
 class AP_CocoaStatusBar : public AP_StatusBar

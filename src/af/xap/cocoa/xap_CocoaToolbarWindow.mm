@@ -129,6 +129,7 @@ static XAP_CocoaToolbarWindow * pSharedToolbar = nil;
 	bounds.size.height = height;
 	bounds.origin.y += delta;
 	[[self window] setFrame:bounds display:NO];
+	XAP_CocoaFrameImpl::setToolbarRect(bounds);
 	
 	NSEnumerator*	iter = [toolbars objectEnumerator];
 	NSView*		superView = [[self window] contentView];

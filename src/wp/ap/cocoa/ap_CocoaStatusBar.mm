@@ -1,6 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001-2003 Hubert Figuiere
+ * Copyright (C) 2001-2004 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -94,6 +94,11 @@ AP_CocoaStatusBar::AP_CocoaStatusBar(XAP_Frame * pFrame)
 	/* fetch the widget from the controller */
 	m_wStatusBar = [(XAP_CocoaFrameController *)(static_cast<XAP_CocoaFrameImpl*>(m_pFrame->getFrameImpl()))->_getController() getStatusBar];
 	[m_wStatusBar setPostsFrameChangedNotifications:YES];
+	[m_wStatusBar setPostsBoundsChangedNotifications:YES];
+	UT_DEBUGMSG(("XAP_CocoaNSStatusBar did subscribe to resize notification\n"));
+	NSRect frame = [m_wStatusBar frame];
+	[m_wStatusBar setXAPOwner:this];
+	UT_DEBUGMSG(("m_wStatusBar x=%f y=%f w=%f h=%f\n", frame.origin.x, frame.origin.y, frame.size.width, frame.size.height));
 	[[NSNotificationCenter defaultCenter] addObserver:m_wStatusBar 
 				selector:@selector(statusBarDidResize:) 
 				name:NSViewFrameDidChangeNotification
@@ -104,6 +109,7 @@ AP_CocoaStatusBar::~AP_CocoaStatusBar(void)
 {
 	if ((m_hidden) && ([m_wStatusBar superview] == nil))
 	{
+		[m_wStatusBar setXAPOwner:nil];
 		[m_wStatusBar release];
 		[[NSNotificationCenter defaultCenter] removeObserver:m_wStatusBar];
 	}
@@ -231,6 +237,12 @@ void AP_CocoaStatusBar::hide(void)
 
 @implementation XAP_CocoaNSStatusBar
 
+- (id)initWithFrame:(NSRect)frame
+{
+	self = [super initWithFrame:frame];
+	return self;
+}
+
 - (void)setXAPOwner:(AP_CocoaStatusBar*)owner
 {
 	_xap = owner;
@@ -239,6 +251,7 @@ void AP_CocoaStatusBar::hide(void)
 - (void)statusBarDidResize:(NSNotification *)notification
 {
 	if (_xap) {
+		UT_DEBUGMSG(("-[XAP_CocoaNSStatusBar statusBarDidResize:]\n"));
 		_xap->_repositionFields([self subviews]);
 	}
 }

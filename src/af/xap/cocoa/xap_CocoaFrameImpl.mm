@@ -1,6 +1,6 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001-2002 Hubert Figuiere
+ * Copyright (C) 2001-2004 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -278,9 +278,9 @@ void XAP_CocoaFrameImpl::_createTopLevelWindow(void)
 		NSRect screenFrame = [[NSScreen mainScreen] visibleFrame];
 
 		windowFrame.size.width = UT_MIN(screenFrame.size.width - 30, 813);
-		windowFrame.size.height = UT_MIN(screenFrame.size.height - 100, 836);
+		windowFrame.size.height = UT_MIN(screenFrame.size.height, 836);
 		windowFrame.origin.x = screenFrame.origin.x;
-		windowFrame.origin.y = screenFrame.origin.y;
+		windowFrame.origin.y = screenFrame.size.height - windowFrame.size.height;
 		[theWindow setFrame:windowFrame display:YES];
 	}
 
@@ -501,6 +501,28 @@ void XAP_CocoaFrameImpl::_setController (XAP_CocoaFrameController * ctrl)
 		[m_frameController release];
 	}
 	m_frameController = ctrl; 
+}
+
+void XAP_CocoaFrameImpl::setToolbarRect(const NSRect &r)
+{
+	UT_uint32 frameCount = XAP_App::getApp()->getFrameCount();
+	UT_uint32 i;
+	
+	for (i = 0; i < frameCount; i++) {
+		XAP_CocoaFrameImpl* impl = dynamic_cast<XAP_CocoaFrameImpl*>(XAP_App::getApp()->getFrame(i)->getFrameImpl());
+		XAP_CocoaFrameController* ctrl  = impl->_getController();
+		NSRect frame = [[ctrl window] frame];
+		if (NSIntersectsRect(frame, r)) {
+			if (frame.origin.y + frame.size.height > r.origin.y) {
+				UT_DEBUGMSG(("original frame is %f %f %f %f\n", frame.origin.x, frame.origin.y,
+									frame.size.width, frame.size.height));
+				frame.size.height = r.origin.y - frame.origin.y;
+				[[ctrl window] setFrame:frame display:YES];
+				UT_DEBUGMSG(("resized frame is %f %f %f %f\n", frame.origin.x, frame.origin.y,
+									frame.size.width, frame.size.height));
+			}
+		}
+	}
 }
 
 

@@ -1,6 +1,6 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998-2000 AbiSource, Inc.
- * Copyright (C) 2001-2002 Hubert Figuiere
+ * Copyright (C) 2001-2004 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -58,10 +58,7 @@
 	self = [super initWithFrame:windowFrame];
 	[[NSNotificationCenter defaultCenter] addObserver:self
 					selector:@selector(hasBeenResized:)
-					name:NSViewBoundsDidChangeNotification object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self
-					selector:@selector(hasBeenResized:)
-					name:NSViewFrameDidChangeNotification object:nil];
+					name:NSViewFrameDidChangeNotification object:self];
 
 	return self;
 }
@@ -175,18 +172,12 @@
 - (void)hasBeenResized:(NSNotification*)notif
 {
 	if (m_pGR) {
-		NSRect rect = [self bounds];
-		if (!NSEqualRects(m_previousFrame, rect)) {
-			AV_View * pView = m_pFrame->getCurrentView();
-			m_previousFrame = rect;
-			if (pView && !pView->isLayoutFilling()) {
-				pView->setWindowSize(rect.size.width, rect.size.height);
-				m_pGR->_callUpdateCallback(&rect);
+		AV_View * pView = m_pFrame->getCurrentView();
+		NSRect rect = [self frame];
+		if (pView && !pView->isLayoutFilling()) {
+			pView->setWindowSize(rect.size.width, rect.size.height);
+			m_pGR->_callUpdateCallback(&rect);
 //				m_pFrame->quickZoom(); // was update zoom
-			}
-		}
-		else {
-			UT_DEBUGMSG(("hasBeenResized: same size\n"));
 		}
 	}
 }
