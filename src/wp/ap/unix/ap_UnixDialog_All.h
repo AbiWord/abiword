@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -69,7 +69,8 @@
 #   include "ap_UnixDialog_HdrFtr.h"
 #	include "ap_UnixDialog_InsertBookmark.h"
 #	include "ap_UnixDialog_InsertHyperlink.h"
-#include "ap_UnixDialog_MetaData.h"
+#   include "ap_UnixDialog_MetaData.h"
+#   include "ap_UnixDialog_MarkRevisions.h"
 
 #ifdef HAVE_GNOME
 #	include "xap_UnixGnomeDlg_About.h"
@@ -124,7 +125,7 @@
 	DeclareDialog(XAP_DIALOG_ID_PRINT,			XAP_UnixGnomeDialog_Print)
     DeclareDialog(XAP_DIALOG_ID_PRINTPREVIEW, XAP_UnixGnomeDialog_PrintPreview)
 	DeclareDialog(XAP_DIALOG_ID_PRINTTOFILE,	XAP_UnixDialog_FileOpenSaveAs)
-#	ifdef HAVE_GNOME_DIRECT_PRINT	
+#	ifdef HAVE_GNOME_DIRECT_PRINT
 		DeclareDialog(XAP_DIALOG_ID_PRINT_DIRECTLY,	XAP_UnixDialog_Print)
 #	endif
 	DeclareDialog(XAP_DIALOG_ID_FONT,			XAP_UnixGnomeDialog_FontChooser)
@@ -146,7 +147,7 @@
 	DeclareDialog(AP_DIALOG_ID_STYLES,			AP_UnixGnomeDialog_Styles)
 	DeclareDialog(AP_DIALOG_ID_TAB,				AP_UnixGnomeDialog_Tab)
     DeclareDialog(AP_DIALOG_ID_PAGE_NUMBERS,    AP_UnixGnomeDialog_PageNumbers)
-    DeclareDialog(AP_DIALOG_ID_FILE_PAGESETUP,  AP_UnixGnomeDialog_PageSetup) 
+    DeclareDialog(AP_DIALOG_ID_FILE_PAGESETUP,  AP_UnixGnomeDialog_PageSetup)
 	DeclareDialog(AP_DIALOG_ID_PARAGRAPH,		AP_UnixGnomeDialog_Paragraph)
 	DeclareDialog(AP_DIALOG_ID_OPTIONS,			AP_UnixGnomeDialog_Options)
 	DeclareDialog(AP_DIALOG_ID_INSERT_DATETIME,	AP_UnixGnomeDialog_Insert_DateTime)
@@ -165,7 +166,7 @@
         DeclareDialog(XAP_DIALOG_ID_FILE_EXPORT, XAP_UnixDialog_FileOpenSaveAs)
      DeclareDialog(XAP_DIALOG_ID_INSERT_FILE, XAP_UnixDialog_FileOpenSaveAs)
  	DeclareDialog(AP_DIALOG_ID_INSERTHYPERLINK,	AP_UnixGnomeDialog_InsertHyperlink)
- 	DeclareDialog(AP_DIALOG_ID_INSERTBOOKMARK,	AP_UnixGnomeDialog_InsertBookmark)	
+ 	DeclareDialog(AP_DIALOG_ID_INSERTBOOKMARK,	AP_UnixGnomeDialog_InsertBookmark)
      DeclareDialog(XAP_DIALOG_ID_IMAGE, XAP_UnixGnomeDialog_Image)
      // ... also add new dialogs here ...
 #   else
@@ -192,8 +193,8 @@
 	DeclareDialog(AP_DIALOG_ID_SPELL,			AP_UnixDialog_Spell)
 	DeclareDialog(AP_DIALOG_ID_STYLES,			AP_UnixDialog_Styles)
     DeclareDialog(AP_DIALOG_ID_PAGE_NUMBERS,    AP_UnixDialog_PageNumbers)
-	DeclareDialog(AP_DIALOG_ID_PARAGRAPH,		AP_UnixDialog_Paragraph)	
-	DeclareDialog(AP_DIALOG_ID_OPTIONS,			AP_UnixDialog_Options)	
+	DeclareDialog(AP_DIALOG_ID_PARAGRAPH,		AP_UnixDialog_Paragraph)
+	DeclareDialog(AP_DIALOG_ID_OPTIONS,			AP_UnixDialog_Options)
 	DeclareDialog(AP_DIALOG_ID_TAB,				AP_UnixDialog_Tab)
 	DeclareDialog(AP_DIALOG_ID_INSERT_DATETIME,	AP_UnixDialog_Insert_DateTime)
 	DeclareDialog(AP_DIALOG_ID_WORDCOUNT,		AP_UnixDialog_WordCount)
@@ -212,9 +213,10 @@
      DeclareDialog(XAP_DIALOG_ID_INSERT_FILE, XAP_UnixDialog_FileOpenSaveAs)
      DeclareDialog(XAP_DIALOG_ID_PASSWORD, XAP_UnixDialog_Password)
  	DeclareDialog(AP_DIALOG_ID_INSERTBOOKMARK,	AP_UnixDialog_InsertBookmark)
- 	DeclareDialog(AP_DIALOG_ID_INSERTHYPERLINK,	AP_UnixDialog_InsertHyperlink)	
+ 	DeclareDialog(AP_DIALOG_ID_INSERTHYPERLINK,	AP_UnixDialog_InsertHyperlink)
      DeclareDialog(XAP_DIALOG_ID_IMAGE, XAP_UnixDialog_Image)
      DeclareDialog(AP_DIALOG_ID_METADATA,		AP_UnixDialog_MetaData)
+     DeclareDialog(AP_DIALOG_ID_MARK_REVISIONS,		AP_UnixDialog_MarkRevisions)
  	// ... also add new dialogs here ...
 #   endif
 

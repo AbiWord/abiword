@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -70,6 +70,7 @@
 #   include "ap_QNXDialog_HdrFtr.h"
 #	include "ap_QNXDialog_InsertBookmark.h"
 #	include "ap_QNXDialog_InsertHyperlink.h"
+#	include "ap_QNXDialog_MarkRevisions.h"
 	// ... add new dialogs here ...
 
 #else
@@ -104,8 +105,8 @@
 	DeclareDialog(AP_DIALOG_ID_TAB,				AP_QNXDialog_Tab)
 	DeclareDialog(AP_DIALOG_ID_PAGE_NUMBERS,	AP_QNXDialog_PageNumbers)
 	DeclareDialog(AP_DIALOG_ID_FILE_PAGESETUP,	AP_QNXDialog_PageSetup)
-	DeclareDialog(AP_DIALOG_ID_PARAGRAPH,		AP_QNXDialog_Paragraph)	
-	DeclareDialog(AP_DIALOG_ID_OPTIONS,			AP_QNXDialog_Options)	
+	DeclareDialog(AP_DIALOG_ID_PARAGRAPH,		AP_QNXDialog_Paragraph)
+	DeclareDialog(AP_DIALOG_ID_OPTIONS,			AP_QNXDialog_Options)
 	DeclareDialog(AP_DIALOG_ID_INSERT_DATETIME, AP_QNXDialog_Insert_DateTime)
 	DeclareDialog(AP_DIALOG_ID_WORDCOUNT,		AP_QNXDialog_WordCount)
 	DeclareDialog(AP_DIALOG_ID_FIELD,			AP_QNXDialog_Field)
@@ -117,6 +118,7 @@
         DeclareDialog(XAP_DIALOG_ID_FILE_EXPORT, XAP_QNXDialog_FileOpenSaveAs)
  	DeclareDialog(AP_DIALOG_ID_INSERTBOOKMARK,	AP_QNXDialog_InsertBookmark)
  	DeclareDialog(AP_DIALOG_ID_INSERTHYPERLINK,	AP_QNXDialog_InsertHyperlink)
+ 	DeclareDialog(AP_DIALOG_ID_MarkRevisions,	AP_QNXDialog_MarkRevisions)
 	// ... also add new dialogs here ...
 
 #endif

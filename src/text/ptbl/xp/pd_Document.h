@@ -355,12 +355,19 @@ public:
 	void					addBookmark(const XML_Char * pName);
 	void					removeBookmark(const XML_Char * pName);
 
+	/////////////////////////////////////////////////////////////////////////////
+	// Functions for dealing with revisions
+	//
 	bool                    isMarkRevisions() const{ return m_bMarkRevisions;}
 	void                    toggleMarkRevisions(){m_bMarkRevisions = m_bMarkRevisions ? false : true;}
 	UT_uint32               getRevisionId() const{ return m_iRevisionID;}
+	void                    setRevisionId(UT_uint32 iId) {m_iRevisionID  = iId;}
 	bool                    addRevision(UT_uint32 iId, UT_UCS4Char * pDesc);
 	bool                    addRevision(UT_uint32 iId, const UT_UCS4Char * pDesc, UT_uint32 iLen);
 	UT_Vector &             getRevisions() {return m_vRevisions;}
+	UT_uint32               getHighestRevisionId() const;
+	const PD_Revision *     getHighestRevision() const;
+
 
 
 #ifdef PT_TEST

@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -53,11 +53,11 @@
 #include "ap_BeOSDialog_Insert_DateTime.h"
 #include "ap_BeOSDialog_Field.h"
 #include "ap_BeOSDialog_Tab.h"
-#include "ap_BeOSDialog_Columns.h" 
+#include "ap_BeOSDialog_Columns.h"
 #include "ap_BeOSDialog_PageNumbers.h"
 #include "ap_BeOSDialog_InsertBookmark.h"
 #include "ap_BeOSDialog_InsertHyperlink.h"
-
+#include "ap_BeOSDialog_MarkRevisions.h"
 	// ... add new dialogs here ...
 
 #else
@@ -70,10 +70,10 @@
 	DeclareDialog(XAP_DIALOG_ID_FONT,			XAP_BeOSDialog_FontChooser)
 	DeclareDialog(XAP_DIALOG_ID_LANGUAGE,			XAP_BeOSDialog_Language)
 	DeclareDialog(XAP_DIALOG_ID_ENCODING,			XAP_BeOSDialog_Encoding)
-	DeclareDialog(XAP_DIALOG_ID_WINDOWMORE,		XAP_BeOSDialog_WindowMore) 
-	DeclareDialog(XAP_DIALOG_ID_ZOOM,			XAP_BeOSDialog_Zoom) 
-	DeclareDialog(XAP_DIALOG_ID_ABOUT,			XAP_BeOSDialog_About) 
-	DeclareDialog(XAP_DIALOG_ID_INSERT_SYMBOL,		XAP_BeOSDialog_Insert_Symbol) 
+	DeclareDialog(XAP_DIALOG_ID_WINDOWMORE,		XAP_BeOSDialog_WindowMore)
+	DeclareDialog(XAP_DIALOG_ID_ZOOM,			XAP_BeOSDialog_Zoom)
+	DeclareDialog(XAP_DIALOG_ID_ABOUT,			XAP_BeOSDialog_About)
+	DeclareDialog(XAP_DIALOG_ID_INSERT_SYMBOL,		XAP_BeOSDialog_Insert_Symbol)
 	DeclareDialog(XAP_DIALOG_ID_INSERT_PICTURE,	XAP_BeOSDialog_FileOpenSaveAs)
 	DeclareDialog(AP_DIALOG_ID_REPLACE,			AP_BeOSDialog_Replace)
 	DeclareDialog(AP_DIALOG_ID_FIND,			AP_BeOSDialog_Replace)
@@ -93,6 +93,7 @@
         DeclareDialog(XAP_DIALOG_ID_FILE_EXPORT, XAP_BeOSDialog_FileOpenSaveAs)
  	DeclareDialog(AP_DIALOG_ID_INSERTBOOKMARK,	AP_BeOSDialog_InsertBookmark)
  	DeclareDialog(AP_DIALOG_ID_INSERTHYPERLINK,	AP_BeOSDialog_InsertHyperlink)
+ 	DeclareDialog(AP_DIALOG_ID_MARK_REVISIONS,	AP_BeOSDialog_MarkRevisions)
 	// ... also add new dialogs here ...
 
 #endif

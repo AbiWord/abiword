@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -65,6 +65,7 @@
 #	include "ap_Win32Dialog_InsertBookmark.h"
 #	include "ap_Win32Dialog_InsertHyperlink.h"
 #	include "ap_Win32Dialog_New.h"
+#   include "ap_Win32Dialog_MarkRevisions.h"
 	// ... add new dialogs here ...
 
 #else
@@ -108,9 +109,10 @@
 	DeclareDialog(AP_DIALOG_ID_TOGGLECASE,		AP_Win32Dialog_ToggleCase)
 	DeclareDialog(AP_DIALOG_ID_BACKGROUND,		AP_Win32Dialog_Background)
 	DeclareDialog(AP_DIALOG_ID_HDRFTR,  		AP_Win32Dialog_HdrFtr)
- 	DeclareDialog(AP_DIALOG_ID_INSERTBOOKMARK,	AP_Win32Dialog_InsertBookmark)	
+ 	DeclareDialog(AP_DIALOG_ID_INSERTBOOKMARK,	AP_Win32Dialog_InsertBookmark)
  	DeclareDialog(AP_DIALOG_ID_INSERTHYPERLINK,	AP_Win32Dialog_InsertHyperlink)
 	DeclareDialog(AP_DIALOG_ID_FILE_NEW,		AP_Win32Dialog_New)
+	DeclareDialog(AP_DIALOG_ID_MARK_REVISIONS,	AP_Win32Dialog_MarkRevisions)
  	// ... also add new dialogs here ...
 
 #endif

@@ -74,6 +74,7 @@
 #include "ap_Dialog_InsertBookmark.h"
 #include "ap_Dialog_InsertHyperlink.h"
 #include "ap_Dialog_MetaData.h"
+#include "ap_Dialog_MarkRevisions.h"
 
 #include "xap_App.h"
 #include "xap_DialogFactory.h"
@@ -9408,11 +9409,55 @@ Defun(hyperlinkStatusBar)
 	return true;
 }
 
+static bool s_doMarkRevisions(XAP_Frame * pFrame, PD_Document * pDoc, FV_View * pView)
+{
+	UT_ASSERT(pFrame);
+
+	pFrame->raise();
+
+	XAP_DialogFactory * pDialogFactory
+		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+
+	AP_Dialog_MarkRevisions * pDialog
+		= (AP_Dialog_MarkRevisions *)(pDialogFactory->requestDialog(AP_DIALOG_ID_MARK_REVISIONS));
+	UT_ASSERT(pDialog);
+	if (!pDialog)
+		return false;
+
+	pDialog->setDocument(pDoc);
+	pDialog->runModal(pFrame);
+	bool bOK = (pDialog->getAnswer() == AP_Dialog_MarkRevisions::a_OK);
+
+	if (!bOK)
+	{
+		// we have already turned this on, so turn it off again
+		pView->toggleMarkRevisions();
+	}
+	else
+	{
+		pDialog->addRevision();
+	}
+
+
+	pDialogFactory->releaseDialog(pDialog);
+
+		return bOK;
+}
+
 Defun1(toggleMarkRevisions)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+
 	pView->toggleMarkRevisions();
+
+	if(pView->isMarkRevisions())
+	{
+		PD_Document * pDoc = pView->getDocument();
+		XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
+		s_doMarkRevisions(pFrame, pDoc, pView);
+	}
+
 	return true;
 }
 
@@ -9438,4 +9483,5 @@ Defun1(revisionSetViewLevel)
 	ABIWORD_VIEW;
 	// TODO -- this is just a dummy -- this will need a dialogue
 	pView->cmdSetRevisionLevel(0);
+	return true;
 }

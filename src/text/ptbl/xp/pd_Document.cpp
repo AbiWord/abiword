@@ -89,8 +89,7 @@ PD_Document::PD_Document(XAP_App *pApp)
     m_bForcedDirty(false),
     m_bLockedStyles(false),        // same as lockStyles(false)
     m_bMarkRevisions(false),
-    m_iRevisionID(1)               // TODO set this based on highest
-                                   // revision in the doc
+    m_iRevisionID(1)
 {
 	m_pApp = pApp;
 
@@ -122,6 +121,39 @@ PD_Document::~PD_Document()
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
 
+UT_uint32 PD_Document::getHighestRevisionId() const
+{
+	UT_uint32 iId = 0;
+
+	for(UT_uint32 i = 0; i < m_vRevisions.getItemCount(); i++)
+	{
+		iId = UT_MAX(iId, ((const PD_Revision *)m_vRevisions.getNthItem(i))->getId());
+	}
+
+	return iId;
+}
+
+const PD_Revision * PD_Document::getHighestRevision() const
+{
+	UT_uint32 iId = 0;
+	const PD_Revision * r = NULL;
+
+	for(UT_uint32 i = 0; i < m_vRevisions.getItemCount(); i++)
+	{
+		const PD_Revision * t = (const PD_Revision *)m_vRevisions.getNthItem(i);
+		UT_uint32 t_id = t->getId();
+
+		if(t_id > iId)
+		{
+			iId = t_id;
+			r = t;
+		}
+	}
+
+	return r;
+}
+
+
 bool PD_Document::addRevision(UT_uint32 iId, UT_UCS4Char * pDesc)
 {
 	for(UT_uint32 i = 0; i < m_vRevisions.getItemCount(); i++)
@@ -134,6 +166,8 @@ bool PD_Document::addRevision(UT_uint32 iId, UT_UCS4Char * pDesc)
 	PD_Revision * pRev = new PD_Revision(iId, pDesc);
 
 	m_vRevisions.addItem((void*)pRev);
+	m_bForcedDirty = true;
+	m_iRevisionID = iId;
 	return true;
 }
 
@@ -152,6 +186,8 @@ bool PD_Document::addRevision(UT_uint32 iId, const UT_UCS4Char * pDesc, UT_uint3
 	PD_Revision * pRev = new PD_Revision(iId, pD);
 
 	m_vRevisions.addItem((void*)pRev);
+	m_bForcedDirty = true;
+	m_iRevisionID = iId;
 	return true;
 }
 

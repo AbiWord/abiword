@@ -569,6 +569,12 @@ dcl(DLG_InsertBookmark_Msg, "Type a name for the bookmark, or select existing on
 dcl(DLG_InsertHyperlink_Title, "Insert Hyperlink")
 dcl(DLG_InsertHyperlink_Msg, "Select a target bookmark from the list.")
 
+	/* Mark revisions dialog */
+dcl(DLG_MarkRevisions_Title, "Mark Revisions")
+dcl(DLG_MarkRevisions_Check1Label, "Contiue previous revision (number %d)")
+dcl(DLG_MarkRevisions_Check2Label, "Start a new revision")
+dcl(DLG_MarkRevisions_Comment2Label, "Comment to be associated with the revision:")
+
 dcl(WORD_PassRequired, "Password required, this is an encrypted document")
 dcl(WORD_PassInvalid, "Incorrect Password")
 	 dcl(SCRIPT_NOSCRIPTS, "No scripts found")

@@ -7,15 +7,15 @@
 ## modify it under the terms of the GNU General Public License
 ## as published by the Free Software Foundation; either version 2
 ## of the License, or (at your option) any later version.
-## 
+##
 ## This program is distributed in the hope that it will be useful,
 ## but WITHOUT ANY WARRANTY; without even the implied warranty of
 ## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ## GNU General Public License for more details.
-## 
+##
 ## You should have received a copy of the GNU General Public License
 ## along with this program; if not, write to the Free Software
-## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 ## 02111-1307, USA.
 
 ABI_ROOT:=$(shell pwd)/../../../..
@@ -52,6 +52,7 @@ CPPSRCS=		ap_$(ABI_FE)App.cpp			\
 			ap_$(ABI_FE)Dialog_Columns.cpp		\
 			ap_$(ABI_FE)Dialog_InsertBookmark.cpp \
 			ap_$(ABI_FE)Dialog_InsertHyperlink.cpp \
+			ap_$(ABI_FE)Dialog_MarkRevisions.cpp \
 			ap_$(ABI_FE)Dialog_MetaData.cpp		\
 			ap_$(ABI_FE)Frame.cpp			\
 			ap_$(ABI_FE)LeftRuler.cpp		\
@@ -64,7 +65,7 @@ CPPSRCS=		ap_$(ABI_FE)App.cpp			\
 			ap_$(ABI_FE)_TB_CFactory.cpp		\
 			ap_$(ABI_FE)TopRuler.cpp		\
 			ap_$(ABI_FE)ViewListener.cpp \
-	                abiwidget.cpp 
+	                abiwidget.cpp
 
 ifeq ($(ABI_OPT_CURLHASH),1)
 CPPSRCS +=		ap_$(ABI_FE)HashDownloader.cpp
