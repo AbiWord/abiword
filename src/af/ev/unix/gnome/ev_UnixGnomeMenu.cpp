@@ -524,7 +524,7 @@ UT_Bool EV_UnixGnomeMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 			// Get the dynamic label
 			const char ** data = _ev_GetLabelName(m_pUnixApp, m_pUnixFrame, pAction, pLabel);
 			const char * szLabelName = data[0];
-			
+
 			if (szLabelName && *szLabelName)
 			{
 				char buf[1024];
@@ -541,8 +541,7 @@ UT_Bool EV_UnixGnomeMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 			if (GTK_IS_CHECK_MENU_ITEM(item))
 				GTK_CHECK_MENU_ITEM(item)->active = bCheck;
 			
-			gtk_widget_set_sensitive(GTK_WIDGET(item), bEnable);
-			
+			gtk_widget_set_sensitive(GTK_WIDGET(item), bEnable);			
 			break;
 		}
 		case EV_MLF_BeginSubMenu:
@@ -607,6 +606,10 @@ void EV_UnixGnomeMenu::_attachWidgetsAndSignals(GtkWidget * wMenuRoot, GnomeUIIn
 		}
 
 		if (uiinfo->type == GNOME_APP_UI_SUBTREE) {
+			// hack - refresh all of the menus whenever one gets selected
+			// because we can't refresh just one
+			gtk_signal_connect(GTK_OBJECT(((GnomeUIInfo *) uiinfo->widget)), "select",
+							   GTK_SIGNAL_FUNC(s_onInitMenu), uiinfo->user_data);		
 			gtk_signal_connect(GTK_OBJECT(((GnomeUIInfo *) uiinfo->moreinfo)->widget), "map",
 							   GTK_SIGNAL_FUNC(s_onInitMenu), uiinfo->user_data);
 			gtk_signal_connect(GTK_OBJECT(((GnomeUIInfo *) uiinfo->moreinfo)->widget), "unmap",
