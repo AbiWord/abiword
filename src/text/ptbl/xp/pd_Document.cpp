@@ -1342,7 +1342,13 @@ bool PD_Document::createDataItem(const char * szName, bool bBase64, const UT_Byt
 
 Failed:
 	if (pNew)
+	{
 		delete pNew;
+	}
+	
+	// we also have to free the pToken, which was created by UT_strdup
+	FREEP(pToken);
+	
 	return false;
 }
 
