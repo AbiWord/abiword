@@ -26,7 +26,6 @@
 //////////////////////////////////////////////////////////////////
 
 class GR_Graphics;
-class XAP_Frame;
 
 class AP_Convert
 {
@@ -49,7 +48,7 @@ class AP_Convert
 	void setVerbose(int level);
 	XAP_App* getApp() { return m_pApp; }
 
-	void print(XAP_Frame * pFrame, GR_Graphics * pGraphics);
+	void print(const char * file, GR_Graphics * pGraphics);
 
  private:
 	int m_iVerbose;

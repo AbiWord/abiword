@@ -30,10 +30,17 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 
-#include "xap_Frame.h"
 #include "gr_Graphics.h"
 #include "fv_View.h"
 #include "fl_BlockLayout.h"
+
+#if !defined(WIN32) && !defined(__BEOS__) && !defined(__QNX__) && !defined(TARGET_OS_MAC)
+#define ANY_UNIX 1
+#endif
+
+#ifdef ANY_UNIX
+#include "xap_UnixPSGraphics.h"
+#endif
 
 class XAP_App;
 
@@ -160,20 +167,25 @@ void AP_Convert::setVerbose(int level)
 		m_iVerbose = level;
 }
 
-void AP_Convert::print(XAP_Frame * pFrame, GR_Graphics * pGraphics)
+void AP_Convert::print(const char * szFile, GR_Graphics * pGraphics)
 {
-  UT_DEBUGMSG(("DOM: AP_Convert::print\n"));
+  UT_DEBUGMSG(("DOM: AP_Convert::print %s\n", szFile));
 
-  UT_ASSERT(pFrame);
   UT_ASSERT(pGraphics);
 
   // get the current document
-  PD_Document * doc = static_cast<PD_Document*>(pFrame->getCurrentDoc ());
+  PD_Document * pDoc = new PD_Document(getApp());
+  UT_ASSERT(pDoc);
+
+  UT_Error err = pDoc->readFromFile(szFile, IEFT_Unknown);
 
   // create a new layout and view object for the doc
-  FL_DocLayout * pDocLayout = new FL_DocLayout(doc,pGraphics);
+  FL_DocLayout * pDocLayout = new FL_DocLayout(pDoc,pGraphics);
+  UT_ASSERT(pDocLayout);
   pDocLayout->formatAll();
-  FV_View * pPrintView = new FV_View(pFrame->getApp(),pFrame,pDocLayout);
+
+  FV_View * pPrintView = new FV_View(getApp(),0,pDocLayout);
+  UT_ASSERT(pPrintView);
 
   // get the width, height, orient
   UT_sint32 iWidth = pDocLayout->getWidth();
@@ -187,15 +199,25 @@ void AP_Convert::print(XAP_Frame * pFrame, GR_Graphics * pGraphics)
   memset(&da, 0, sizeof(da));
   da.pG = NULL;
 
+#ifdef ANY_UNIX
+  PS_Graphics *psGr = static_cast<PS_Graphics*>(pGraphics);
+  psGr->setColorSpace(GR_Graphics::GR_COLORSPACE_COLOR);
+  psGr->setPageSize(pPrintView->getPageSize().getPredefinedName());
+#endif
+
   if(pGraphics->startPrint())
     {
       // iterate over the pages, printing each one
       for (UT_uint32 k = 1; (k <= pDocLayout->countPages()); k++)
 	{
 	  pGraphics->m_iRasterPosition = (k-1)*iHeight;
-	  pGraphics->startPage(doc->getFileName(), k, orient, iWidth, iHeight);
+	  pGraphics->startPage(szFile, k, orient, iWidth, iHeight);
 	  pPrintView->draw(k-1, &da);
 	}
       pGraphics->endPrint();
     }
+
+  delete pDocLayout;
+  delete pPrintView;
+  UNREFP(pDoc);
 }

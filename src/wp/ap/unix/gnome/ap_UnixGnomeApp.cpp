@@ -74,6 +74,8 @@
 #include "xap_Prefs.h"
 #include "ap_Prefs_SchemeIds.h"
 
+#include "xap_UnixPSGraphics.h"
+
 // quick hack - this is defined in ap_EditMethods.cpp
 extern XAP_Dialog_MessageBox::tAnswer s_CouldNotLoadFileMessage(XAP_Frame * pFrame, const char * pNewFile, UT_Error errorCode);
 
@@ -106,6 +108,7 @@ int AP_UnixGnomeApp::main(const char * szAppName, int argc, char ** argv)
 #endif
 	 {"to", 't', POPT_ARG_STRING, NULL, 0, "The target format of the file (abw, zabw, rtf, txt, utf8, html, latex)", "FORMAT"},
 	 {"verbose", 'v', POPT_ARG_INT, NULL, 0, "The verbosity level (0, 1, 2)", "LEVEL"},
+	 {"print", 'p', POPT_ARG_STRING, NULL, 0, "print this file to a file or printer", "FILE or |lpr"},
 	 {"show", '\0', POPT_ARG_NONE, NULL, 0, "If you really want to start the GUI (even if you use the --to option)", ""},
 	 {NULL, '\0', 0, NULL, 0, NULL, NULL} /* end the list */
 	};
@@ -133,6 +136,16 @@ int AP_UnixGnomeApp::main(const char * szAppName, int argc, char ** argv)
   		if (*Args.m_argv[k] == '-')
   			if ((UT_stricmp(Args.m_argv[k],"--to") == 0) ||
  				(UT_stricmp(Args.m_argv[k],"-t") == 0))
+  			{
+ 				bShowApp = false;
+  				bShowSplash = false;
+  				break;
+  			}
+
+	for (k = 1; k < Args.m_argc; k++)
+  		if (*Args.m_argv[k] == '-')
+  			if ((UT_stricmp(Args.m_argv[k],"--print") == 0) ||
+ 				(UT_stricmp(Args.m_argv[k],"-p") == 0))
   			{
  				bShowApp = false;
   				bShowSplash = false;
@@ -229,6 +242,7 @@ bool AP_UnixGnomeApp::parseCommandLine()
 	char *geometry = NULL;
 	char *file = NULL;
 	char *to = NULL;
+	char *printto = NULL;
 	int verbose = 1;
 	int show = 0;
 #ifdef DEBUG
@@ -248,6 +262,7 @@ bool AP_UnixGnomeApp::parseCommandLine()
 	  "HACK", NULL},
 #endif
 	 {"to", 't', POPT_ARG_STRING, &to, 0, "HACK", "HACK"},
+	 {"print", 'p', POPT_ARG_STRING, &printto, 0, "HACK", "HACK"},
 	 {"verbose", 'v', POPT_ARG_INT, &verbose, 0, "HACK", "HACK"},
 	 {"show", '\0', POPT_ARG_NONE, &show, 0, "HACK", NULL},
 	 {NULL, '\0', 0, NULL, 0, NULL, NULL} /* end the list */
@@ -319,7 +334,33 @@ bool AP_UnixGnomeApp::parseCommandLine()
 		if (!show)
 			return true;
 	}
+	
+	if (printto) {
+	  if ((file = poptGetArg (poptcon)) != NULL)
+	    {
+	      UT_DEBUGMSG(("DOM: Printing file %s\n", file));
 
+	      AP_Convert * conv = new AP_Convert(this);
+	      conv->setVerbose(verbose);
+	      
+	      PS_Graphics * pG = new PS_Graphics ((printto[0] == '|' ? printto+1 : printto), file, 
+						  getApplicationName(), getFontManager(),
+						  (printto[0] != '|'), this);
+	      
+	      conv->print (file, pG);
+	      
+	      delete pG;
+	      delete conv;
+	    }
+	  else
+	    {
+	      // couldn't load document
+	      UT_DEBUGMSG(("DOM: Couldn't load frame\n"));
+	    }
+	  if (!show)
+	    return true;
+	}
+	
 	while ((file = poptGetArg (poptcon)) != NULL) {
 		AP_UnixFrame * pFirstUnixFrame = new AP_UnixFrame(this);
 		pFirstUnixFrame->initialize();

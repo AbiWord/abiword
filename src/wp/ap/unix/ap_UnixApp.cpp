@@ -79,6 +79,7 @@
 #include "gr_Image.h"
 
 #include "xap_ModuleManager.h"
+#include "xap_UnixPSGraphics.h"
 
 #ifdef GTK_WIN_POS_CENTER_ALWAYS
 #define WIN_POS GTK_WIN_POS_CENTER_ALWAYS
@@ -1100,6 +1101,11 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
 			if ((strcmp(Args.m_argv[k],"-to") == 0)
 				|| (strcmp(Args.m_argv[k],"--to") == 0))
 				bTo = true;
+
+			// Do a quick and dirty find for "-to"
+			else if ((strcmp(Args.m_argv[k],"-p") == 0)
+				|| (strcmp(Args.m_argv[k],"--print") == 0))
+				bTo = true;
 		
 		// Do a quick and dirty find for "-show"
 			else if ((strcmp(Args.m_argv[k],"-show") == 0)
@@ -1231,6 +1237,9 @@ bool AP_UnixApp::parseCommandLine()
     char *to = NULL;
     int verbose = 1;
     bool show = false;
+
+    char *printto = NULL;
+
 #ifdef ABI_OPT_PERL
     bool script = false;
 #endif
@@ -1306,6 +1315,12 @@ bool AP_UnixApp::parseCommandLine()
 				k++;
 				to = m_pArgs->m_argv[k];
 			}
+			else if ((strcmp (m_pArgs->m_argv[k],"-print") == 0)
+					 || (strcmp (m_pArgs->m_argv[k],"--print") == 0))
+			{
+				k++;
+				printto = m_pArgs->m_argv[k];
+			}
 			else if ((strcmp (m_pArgs->m_argv[k], "-show") == 0)
 					 || (strcmp (m_pArgs->m_argv[k], "--show") == 0))
 			{
@@ -1362,6 +1377,27 @@ bool AP_UnixApp::parseCommandLine()
 				conv->convertTo(m_pArgs->m_argv[k], to);
 				delete conv;
 			}
+			else if (printto)
+			  {
+			    const char * file = m_pArgs->m_argv[k];
+			    if (file)
+			      {
+				AP_Convert * conv = new AP_Convert(this);
+				conv->setVerbose(verbose);
+				
+				PS_Graphics * pG = new PS_Graphics ((printto[0] == '|' ? printto+1 : printto), file,
+								    getApplicationName(), getFontManager(),
+								    (printto[0] != '|'), this);
+				conv->print (file, pG);			       
+
+				delete pG;
+				delete conv;
+			      }
+			    else
+			      {
+				// no filename
+			      }
+			  }
 			else
 			{
 				AP_UnixFrame * pFirstUnixFrame = new AP_UnixFrame(this);
@@ -1398,8 +1434,8 @@ bool AP_UnixApp::parseCommandLine()
 		}
     }
 	
-    // command-line conversion may not open any windows at all
-    if (to && !show)
+    // command-line conversion or printing may not open any windows at all
+    if ((to || printto) && !show)
 		return true;
     
     if (kWindowsOpened == 0)
