@@ -124,7 +124,7 @@ UT_sint32 UT_Vector::insertItemAt(void* p, UT_uint32 ndx)
 	return 0;
 }
 
-UT_sint32 UT_Vector::addItem(void* p, UT_uint32 * pIndex)
+UT_sint32 UT_Vector::addItem(const void* p, UT_uint32 * pIndex)
 {
 	UT_sint32 err = addItem(p);
 	if (!err && pIndex)
@@ -132,7 +132,7 @@ UT_sint32 UT_Vector::addItem(void* p, UT_uint32 * pIndex)
 	return err;
 }
 
-UT_sint32 UT_Vector::addItem(void* p)
+UT_sint32 UT_Vector::addItem(const void* p)
 {
 	if ((m_iCount+1) > m_iSpace)
 	{
@@ -284,7 +284,7 @@ UT_sint32 UT_Vector::insertItemAt(void* p, UT_uint32 ndx)
 	return 0;
 }
 
-UT_sint32 UT_Vector::addItem(void* p, UT_uint32 * pIndex)
+UT_sint32 UT_Vector::addItem(const void* p, UT_uint32 * pIndex)
 {
 	UT_sint32 err = addItem(p);
 	if (!err && pIndex)
@@ -292,7 +292,7 @@ UT_sint32 UT_Vector::addItem(void* p, UT_uint32 * pIndex)
 	return err;
 }
 
-UT_sint32 UT_Vector::addItem(void* p)
+UT_sint32 UT_Vector::addItem(const void* p)
 {
 	m_STLVec.push_back(p);
 

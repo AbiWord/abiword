@@ -72,12 +72,12 @@ public:
 	UT_Vector& operator=(const UT_Vector&);
 	~UT_Vector();
 
-	UT_sint32	addItem(void*);
+	UT_sint32	addItem(const void*);
 	inline UT_sint32	push_back(void *item)	{ return addItem(item); }
 	bool				pop_back();
 	inline const void*	back() const			{ return getLastItem(); }
 	 
-	UT_sint32	addItem(void* p, UT_uint32 * pIndex);
+	UT_sint32	addItem(const void* p, UT_uint32 * pIndex);
 	inline void*getNthItem(UT_uint32 n) const
 	{
 	    UT_ASSERT(m_pEntries);
@@ -124,8 +124,8 @@ class ABI_EXPORT UT_Vector
 	UT_Vector(UT_uint32 sizehint = 2048);
 	~UT_Vector();
 
-	UT_sint32	addItem(void*);
-	UT_sint32	addItem(void* p, UT_uint32 * pIndex);
+	UT_sint32	addItem(const void*);
+	UT_sint32	addItem(const void* p, UT_uint32 * pIndex);
 	void*		getNthItem(UT_uint32 n) const;
 	const void*	operator[](UT_uint32 i) const;
 	UT_sint32	setNthItem(UT_uint32 ndx, void * pNew, void ** ppOld);
