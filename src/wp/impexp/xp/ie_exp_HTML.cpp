@@ -382,6 +382,9 @@ static char * s_removeWhiteSpace (const char * text, UT_UTF8String & utf8str,
 
 class s_HTML_Listener;
 
+bool m_bSecondPass = false;
+bool m_bInAFENote = false;
+
 class s_StyleTree : public PL_Listener
 {
 private:
@@ -479,6 +482,10 @@ public:
 	bool	populateStrux (PL_StruxDocHandle sdh,
 						   const PX_ChangeRecord * pcr,
 						   PL_StruxFmtHandle * psfh);
+
+	//See note in _writeDocument
+	//bool 	startOfDocument ();
+	bool 	endOfDocument ();
 
 	bool	change (PL_StruxFmtHandle sfh,
 					const PX_ChangeRecord * pcr);
@@ -606,6 +613,7 @@ private:
 	void			tagCommentOpen ();
 	void			tagCommentClose ();
 	void			styleIndent ();
+	
 public:
 	void			styleOpen (const UT_UTF8String & rule);
 	void			styleClose ();
@@ -629,6 +637,12 @@ private:
 	bool			compareStyle (const char * key, const char * value);
 	void            _fillColWidthsVector();
 	void            _setCellWidthInches(void);
+	
+	void                addFootnote(PD_DocumentRange * pDocRange);         
+	void                addEndnote(PD_DocumentRange * pDocRange);
+	UT_uint32           getNumFootnotes(void);
+	UT_uint32           getNumEndnotes(void);
+	
 	/* temporary strings; use with extreme caution
 	 */
 	UT_UTF8String	m_utf8_0; // low-level
@@ -668,6 +682,8 @@ private:
 
 	UT_uint32       m_iOutputLen;
 	bool            m_bCellHasData;
+	UT_GenericVector<PD_DocumentRange *> m_vecFootnotes;
+	UT_GenericVector<PD_DocumentRange *> m_vecEndnotes;
 };
 
 /*****************************************************************/
@@ -3803,6 +3819,7 @@ s_HTML_Listener::s_HTML_Listener (PD_Document * pDocument, IE_Exp_HTML * pie, bo
 
 s_HTML_Listener::~s_HTML_Listener()
 {
+	UT_DEBUGMSG(("deleteing lisnter %x \n",this));
 	_closeTag ();
 
 	listPopToDepth (0);
@@ -3810,7 +3827,9 @@ s_HTML_Listener::~s_HTML_Listener()
 	_closeSection ();
 
 	_outputEnd ();
-
+	
+	UT_VECTOR_PURGEALL(PD_DocumentRange *,m_vecFootnotes);
+	UT_VECTOR_PURGEALL(PD_DocumentRange *,m_vecEndnotes);
 	UT_VECTOR_PURGEALL(double *,m_vecDWidths);
 }
 
@@ -4247,77 +4266,80 @@ void s_HTML_Listener::_handleMeta ()
 
 bool s_HTML_Listener::populate (PL_StruxFmtHandle /*sfh*/, const PX_ChangeRecord * pcr)
 {
-	if (m_bFirstWrite && m_bClipBoard)
-	{
-		_openSection (0);
-		_openTag (0, 0);
-	}
-	if(m_bIgnoreTillEnd)
-	{
-		return true;
-	}
-
-	switch (pcr->getType ())
-	{
-		case PX_ChangeRecord::PXT_InsertSpan:
-			{
-				const PX_ChangeRecord_Span * pcrs = 0;
-				pcrs = static_cast<const PX_ChangeRecord_Span *>(pcr);
-
-				PT_AttrPropIndex api = pcr->getIndexAP ();
-
-				_openSpan (api);
-
-				PT_BufIndex bi = pcrs->getBufIndex ();
-				_outputData (m_pDocument->getPointer (bi), pcrs->getLength ());
-
-				// don't _closeSpan (); - leave open in case of identical sequences
-
-				return true;
-			}
-
-		case PX_ChangeRecord::PXT_InsertObject:
-			{
-				if (m_bInSpan) _closeSpan ();
-
-				m_bWroteText = true;
-
-				const PX_ChangeRecord_Object * pcro = 0;
-				pcro = static_cast<const PX_ChangeRecord_Object *>(pcr);
-
-				PT_AttrPropIndex api = pcr->getIndexAP ();
-
-				switch (pcro->getObjectType ())
-				{
-					case PTO_Image:
-						_handleImage (api);
-						return true;
-
-					case PTO_Field:
-						_handleField (pcro, api);
-						return true;
-
-					case PTO_Hyperlink:
-						_handleHyperlink (api);
-						return true;
-
-					case PTO_Bookmark:
-						_handleBookmark (api);
-						return true;
-
-					default:
-						UT_DEBUGMSG(("WARNING: ie_exp_HTML.cpp: unhandled object type!\n"));
-						return false;
-				}
-			}
-
-		case PX_ChangeRecord::PXT_InsertFmtMark:
+	if (!m_bSecondPass || (m_bSecondPass && m_bInAFENote)) {
+		if (m_bFirstWrite && m_bClipBoard)
+		{
+			_openSection (0);
+			_openTag (0, 0);
+		}
+		if(m_bIgnoreTillEnd)
+		{
 			return true;
-		
-		default:
-			UT_DEBUGMSG(("WARNING: ie_exp_HTML.cpp: unhandled record type!\n"));
-			return false;
+		}
+	
+		switch (pcr->getType ())
+		{
+			case PX_ChangeRecord::PXT_InsertSpan:
+				{
+					const PX_ChangeRecord_Span * pcrs = 0;
+					pcrs = static_cast<const PX_ChangeRecord_Span *>(pcr);
+	
+					PT_AttrPropIndex api = pcr->getIndexAP ();
+	
+					_openSpan (api);
+	
+					PT_BufIndex bi = pcrs->getBufIndex ();
+					_outputData (m_pDocument->getPointer (bi), pcrs->getLength ());
+	
+					// don't _closeSpan (); - leave open in case of identical sequences
+	
+					return true;
+				}
+	
+			case PX_ChangeRecord::PXT_InsertObject:
+				{
+					if (m_bInSpan) _closeSpan ();
+	
+					m_bWroteText = true;
+	
+					const PX_ChangeRecord_Object * pcro = 0;
+					pcro = static_cast<const PX_ChangeRecord_Object *>(pcr);
+	
+					PT_AttrPropIndex api = pcr->getIndexAP ();
+	
+					switch (pcro->getObjectType ())
+					{
+						case PTO_Image:
+							_handleImage (api);
+							return true;
+	
+						case PTO_Field:
+							_handleField (pcro, api);
+							return true;
+	
+						case PTO_Hyperlink:
+							_handleHyperlink (api);
+							return true;
+	
+						case PTO_Bookmark:
+							_handleBookmark (api);
+							return true;
+	
+						default:
+							UT_DEBUGMSG(("WARNING: ie_exp_HTML.cpp: unhandled object type!\n"));
+							return false;
+					}
+				}
+	
+			case PX_ChangeRecord::PXT_InsertFmtMark:
+				return true;
+			
+			default:
+				UT_DEBUGMSG(("WARNING: ie_exp_HTML.cpp: unhandled record type!\n"));
+				return false;
+		}
 	}
+	else return true;
 }
 
 bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
@@ -4423,6 +4445,9 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 				return true;
 			}
 #endif /* HTML_TABLES_SUPPORTED */
+		
+	/* Note that one could very well print this in order on a second pass, but
+		we don't do that, yet anyway. */
 		case PTX_SectionFootnote:
 		case PTX_SectionEndnote:
 			{
@@ -4436,24 +4461,21 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 				PD_DocumentRange * pDocRange = new PD_DocumentRange(m_pDocument, m_iEmbedStartPos, pcrx->getPosition() -1);
 				if(pcrx->getStruxType () == PTX_EndFootnote)
 				{
-					m_pie->addFootnote(pDocRange);
-					UT_DEBUGMSG(("Footnote thingy: pDocRange = %x", pDocRange));
+					addFootnote(pDocRange);
 				}
 				else
 				{
-					m_pie->addEndnote(pDocRange);
+					addEndnote(pDocRange);
 				}
 				m_bIgnoreTillEnd = false;
 				return true;
+				
 			}
 #if 0
 		case PTX_EndFrame:
 		case PTX_EndMarginnote:
-		case PTX_EndFootnote:
 		case PTX_SectionFrame:
 		case PTX_SectionMarginnote:
-		case PTX_SectionFootnote:
-		case PTX_EndEndnote:
 #endif
 			// because headers and footers live at the end of AW
 			// documents, we cannot just oputput them; until we find a
@@ -4469,9 +4491,9 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 			// separate file, based on preference.  As for developing this,
 			// since AFAIK file-based image export is currently broken, it
 			// might make the most sense to focus on base64enc first.
-//		case PTX_SectionHdrFtr:
+		case PTX_SectionHdrFtr:
 //			m_bIgnoreTillEnd = true;
-//			return true;
+			return true;
 			// NB: IgnoreTillEnd DOES NOT WORK!!! Must leave unhandled or other pieces
 			// that we would be able to handle get left out.  Not sure how this code is
 			// supposed to work, but it doesn't. -mg
@@ -4479,7 +4501,42 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 			UT_DEBUGMSG(("WARNING: ie_exp_HTML.cpp: unhandled strux type!\n"));
 			return false;
 	}
+
+
 }
+
+bool s_HTML_Listener::endOfDocument () {
+	//
+	// Output footnotes
+	//
+	UT_uint32 i = 0;
+	UT_UTF8String footnoteNum;
+	for(i = 0; i < getNumFootnotes(); i = i + 1)
+	{
+		PD_DocumentRange * pDocRange = m_vecFootnotes.getNthItem(i);
+		startEmbeddedStrux();
+		UT_UTF8String_sprintf(footnoteNum, "[ %d ]", (i + 1));
+		m_pie->write (footnoteNum.utf8_str (), footnoteNum.byteLength ());
+		m_bInAFENote = true;
+		m_pDocument->tellListenerSubset(this,pDocRange);
+		m_bInAFENote = false;
+		tagPop(); //P OR S // Normal or broken?
+		tagPop(); //D OR P
+	}
+	//
+	// Output Endnotes
+	//
+	for(i=0; i< getNumEndnotes(); i++)
+	{
+		PD_DocumentRange * pDocRange = m_vecEndnotes.getNthItem(i);
+		startEmbeddedStrux();
+		m_bInAFENote = true;
+		m_pDocument->tellListenerSubset(this,pDocRange);
+		m_bInAFENote = false;
+	}
+	return true;
+}
+
 
 /*****************************************************************/
 /*****************************************************************/
@@ -5431,9 +5488,6 @@ IE_Exp_HTML::~IE_Exp_HTML ()
 {
 	DELETEP(m_style_tree);
 
-	UT_VECTOR_PURGEALL(PD_DocumentRange *,m_vecFootnotes);
-	UT_VECTOR_PURGEALL(PD_DocumentRange *,m_vecEndnotes);
-	
 	// 
 }
 
@@ -5664,33 +5718,13 @@ UT_Error IE_Exp_HTML::_writeDocument (bool bClipBoard, bool bTemplateBody)
 	{
 		okay = getDoc()->tellListenerSubset (pL, getDocRange ());
 	}
-	else okay = getDoc()->tellListener (pL);
-	UT_sint32 i = 0;
-	//
-	// Output footnotes
-	//
-	for(i=0; i< getNumFootnotes(); i++)
-	{
-		// TODO: get the format spec from the document
-		PD_DocumentRange * pDocRange = reinterpret_cast<PD_DocumentRange *>(m_vecFootnotes.getNthItem(i));
-		pListener->startEmbeddedStrux();
-		UT_UTF8String footnoteNum;
-		footnoteNum = "[";
-		UT_UTF8String fNStore = UT_UTF8String_sprintf("%d", (i + 1));
-		footnoteNum += fNStore.utf8_str();
-		footnoteNum += "] ";
-		write (footnoteNum.utf8_str (), footnoteNum.byteLength ());
-		okay = getDoc()->tellListenerSubset(pL,pDocRange);
+	else {
+		//This may benefit from a pass system, since we havent been populated such to store yet.
+		//if(okay) okay = pListener->startOfDocument();
+		okay = getDoc()->tellListener (pL);
+		if(okay) okay = pListener->endOfDocument();
 	}
-	//
-	// Output Endnotes
-	//
-	for(i=0; i< getNumEndnotes(); i++)
-	{
-		PD_DocumentRange * pDocRange = reinterpret_cast<PD_DocumentRange *>(m_vecEndnotes.getNthItem(i));
-		pListener->startEmbeddedStrux();
-		okay = getDoc()->tellListenerSubset(pL,pDocRange);
-	}
+	
 	DELETEP(pListener);
 	
 	if ((m_error == UT_OK) && (okay == true)) return UT_OK;
@@ -5736,23 +5770,23 @@ bool IE_Exp_HTML::_openFile (const char * szFilename)
 	return IE_Exp::_openFile (szFilename);
 }
 
-void IE_Exp_HTML::addFootnote(PD_DocumentRange * pDocRange)
+void s_HTML_Listener::addFootnote(PD_DocumentRange * pDocRange)
 {
 	m_vecFootnotes.addItem(pDocRange);
 }
 
-void IE_Exp_HTML::addEndnote(PD_DocumentRange * pDocRange)
+void s_HTML_Listener::addEndnote(PD_DocumentRange * pDocRange)
 {
 	m_vecEndnotes.addItem(pDocRange);
 }
 
-UT_sint32 IE_Exp_HTML::getNumFootnotes(void)
+UT_uint32 s_HTML_Listener::getNumFootnotes(void)
 {
-	return static_cast<UT_sint32>(m_vecFootnotes.getItemCount());
+	return m_vecFootnotes.getItemCount();
 }
 
 
-UT_sint32 IE_Exp_HTML::getNumEndnotes(void)
+UT_uint32 s_HTML_Listener::getNumEndnotes(void)
 {
-	return static_cast<UT_sint32>(m_vecEndnotes.getItemCount());
+	return m_vecEndnotes.getItemCount();
 }
