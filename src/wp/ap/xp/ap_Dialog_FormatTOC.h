@@ -71,6 +71,7 @@ private:
 	UT_Timer *            m_pAutoUpdater;
 	UT_uint32             m_iTick;
 	const PP_AttrProp *   m_pAP;
+	bool                  m_bTOCFilled;
 	UT_UTF8String         m_sTOCProps;
 	UT_Vector             m_vecTABLeadersLabel;
 	UT_Vector             m_vecTABLeadersProp;

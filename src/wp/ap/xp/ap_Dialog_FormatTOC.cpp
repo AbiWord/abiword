@@ -53,6 +53,7 @@ AP_Dialog_FormatTOC::AP_Dialog_FormatTOC(XAP_DialogFactory * pDlgFactory, XAP_Di
 	  m_pAutoUpdater(0),
 	  m_iTick(0),
 	  m_pAP(NULL),
+	  m_bTOCFilled(false),
 	  m_sTOCProps("")
 {
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet ();
@@ -191,16 +192,16 @@ void AP_Dialog_FormatTOC::updateDialog(void)
 	}
 	setSensitivity(true);
 	PD_Document * pDoc = pView->getDocument();
-	if((m_iTick != pView->getTick()) || (m_pDoc != pDoc))
+	if((m_iTick != pView->getTick()) || (m_pDoc != pDoc) || !m_bTOCFilled)
 	{
 		m_iTick = pView->getTick();
 		if(pDoc != m_pDoc)
 		{
 			m_pDoc = pDoc;
-			fillTOCPropsFromDoc();
-			setTOCPropsInGUI();
-			return;
 		}
+		fillTOCPropsFromDoc();
+		setTOCPropsInGUI();
+		return;
 	}
 }			
 
@@ -276,18 +277,23 @@ void AP_Dialog_FormatTOC::fillTOCPropsFromDoc(void)
 	}
 	if(!pView->isTOCSelected())
 	{
-		return;
+		fl_BlockLayout * pBL = pView->getCurrentBlock();
+		pBL->getAttrProp(&m_pAP);
 	}
-	PT_DocPosition pos = pView->getSelectionAnchor();
-	PL_StruxDocHandle sdhTOC = NULL;
-	m_pDoc->getStruxOfTypeFromPosition(pos,PTX_SectionTOC, &sdhTOC);
-	UT_ASSERT(sdhTOC);
+	else
+	{
+		PT_DocPosition pos = pView->getSelectionAnchor();
+		PL_StruxDocHandle sdhTOC = NULL;
+		m_pDoc->getStruxOfTypeFromPosition(pos,PTX_SectionTOC, &sdhTOC);
+		UT_ASSERT(sdhTOC);
 //
 // OK Now lets gets all props from here and place them in our local cache
 //
-	const char * szPropVal = NULL;
-	PT_AttrPropIndex iAPI = m_pDoc->getAPIFromSDH(sdhTOC);
-	m_pDoc->getAttrProp(iAPI,&m_pAP);
+		const char * szPropVal = NULL;
+		PT_AttrPropIndex iAPI = m_pDoc->getAPIFromSDH(sdhTOC);
+		m_pDoc->getAttrProp(iAPI,&m_pAP);
+		m_bTOCFilled = true;
+	}
 	setPropFromDoc("toc-dest-style1");
 	setPropFromDoc("toc-dest-style2");
 	setPropFromDoc("toc-dest-style3");
