@@ -614,6 +614,9 @@ BOOL AP_Win32Dialog_Options::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		return 0;
 
 	case IDOK:									// also AP_RID_DIALOG_OPTIONS_BTN_OK
+		if( IsDlgButtonChecked( (HWND)m_vecSubDlgHWnd.getNthItem(LAYOUT_INDEX), AP_RID_DIALOG_OPTIONS_CHK_BGColorEnable ) != BST_CHECKED )
+			strcpy( m_CurrentTransparentColor, "ffffff" );
+
 		_storeWindowData();						// remember current settings
 		m_answer = a_OK;
 		EndDialog(hWnd,0);
