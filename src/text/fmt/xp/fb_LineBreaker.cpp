@@ -333,8 +333,14 @@ bool fb_LineBreaker::_splitAtOrBeforeThisRun(fp_Run *pCurrentRun)
 		while (pRunLookingBackwards != m_pFirstRunToKeep)
 		{
 			pRunLookingBackwards = pRunLookingBackwards->getPrev();
-
-			if (pRunLookingBackwards->canBreakAfter())
+			
+			if ( !pRunLookingBackwards )
+			  {
+			    bFoundBreakAfter = false;
+			    m_pLastRunToKeep = pCurrentRun;
+			    break;
+			  }
+			else if (pRunLookingBackwards->canBreakAfter())
 			{
 				/*
 				  OK, we can break after this

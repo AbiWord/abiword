@@ -297,11 +297,14 @@ bool IE_Imp_MsWord_97_Sniffer::recognizeContents (const char * szBuf,
 	// ok, that didn't work, we'll try to dig through the OLE stream
 	if (iNumbytes > 8)
 	{
+#if 0
+	  // this code is too generic - also picks up .wri documents
 		if (szBuf[0] == (char)0x31 && szBuf[1] == (char)0xbe &&
 			szBuf[2] == (char)0 && szBuf[3] == (char)0)
 		{
 			return true;
 		}
+#endif
 		if (szBuf[0] == 'P' && szBuf[1] == 'O' &&
 			szBuf[2] == '^' && szBuf[3] == 'Q' && szBuf[4] == '`')
 		{

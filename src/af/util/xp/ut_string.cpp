@@ -44,6 +44,25 @@
 
 #include "xap_EncodingManager.h"
 
+// really simple way to determine if something is a hyperlink
+// probably not 100% correct, but better than !stricmp(http://), ...
+bool UT_isUrl ( const char * szName )
+{
+  if (!szName)
+    return false;
+
+  int len = strlen ( szName );
+  int mailto_len = strlen ( "mailto:" );
+
+  if ( NULL != strstr ( szName, "://") ) // dumb check, but probably true
+    return true;
+  else if ( ( len >= mailto_len ) && 
+	    !UT_XML_strnicmp ( "mailto:", szName, mailto_len ) )
+    return true;
+  else
+    return false;
+}
+
 /*
  * This is cut & pasted from glib 1.3 (c) RedHat
  * We need this for to convert UTF16 to UTF8

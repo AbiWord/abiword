@@ -4969,7 +4969,7 @@ bool FV_View::gotoTarget(AP_JumpTarget type, UT_UCSChar *data)
 			bool bFound = false;
 			
 			UT_DEBUGMSG(("fv_View::gotoTarget: bookmark [%s]\n",numberString));
-			if(!strncmp(numberString,"http://",7))
+			if(UT_isUrl(numberString))
 			{
 				XAP_Frame * pFrame = (XAP_Frame *) getParentData();
 				UT_ASSERT((pFrame));
@@ -8200,6 +8200,7 @@ UT_Error FV_View::_deleteHyperlink(PT_DocPosition &pos1, bool bSignal)
 }
 
 /******************************************************************/
+
 UT_Error FV_View::cmdInsertHyperlink(const char * szName)
 {
 	bool bRet;
@@ -8233,10 +8234,7 @@ UT_Error FV_View::cmdInsertHyperlink(const char * szName)
 		return false;
 	}
 	
-	if(!UT_XML_strnicmp(szName, "http://",7))
-	{
-	}
-	else if(m_pDoc->isBookmarkUnique(szName))
+	if(!UT_isUrl(szName) && m_pDoc->isBookmarkUnique(szName))
 	{
 		//No bookmark of that name in document
 		XAP_Frame * pFrame = (XAP_Frame *) getParentData();
@@ -8282,7 +8280,7 @@ UT_Error FV_View::cmdInsertHyperlink(const char * szName)
 	UT_uint32 target_len = UT_XML_strlen(szName);
 	XML_Char * target  = new XML_Char[ target_len+ 2];
 	
-	if(!UT_XML_strnicmp(szName, "http://",7))
+	if(UT_isUrl(szName))
 	{
 		UT_XML_strncpy(target, target_len + 1, (XML_Char*)szName);
 	}
