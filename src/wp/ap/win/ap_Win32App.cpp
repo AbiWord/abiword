@@ -267,6 +267,7 @@ bool AP_Win32App::initialize(void)
 	// Check for necessary DLLs now that we can do localized error messages
 	//////////////////////////////////////////////////////////////////
 
+#if 0 /* re-enable once we use unicows again */
 	// Ensure that we have Unicows dll
 	if (!UT_IsWinNT())
 	{
@@ -284,6 +285,7 @@ bool AP_Win32App::initialize(void)
 		else
 			FreeLibrary(hModule);
 	}
+#endif
 
 	// Ensure that common control DLL is loaded
 	HINSTANCE hinstCC = LoadLibrary("comctl32.dll");
